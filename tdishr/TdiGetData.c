@@ -82,9 +82,10 @@ static void FixupDollarNodes(int nid, struct descriptor *out_ptr) {
 
 int TdiImpose(struct descriptor_a *in_ptr, struct descriptor_xd *out_ptr)
 {
+  INIT_STATUS;
   array_bounds *pout = (array_bounds *) out_ptr->pointer;
   array_bounds arr;
-  int in_size, out_size, dimct, status = 1;
+  int in_size, out_size, dimct;
 
   if (pout == 0)
     return 1;
@@ -169,9 +170,9 @@ int TdiGetData(unsigned char omits[], struct descriptor *their_ptr, struct descr
   struct descriptor_signal *keep;
   struct descriptor_xd hold = EMPTY_XD;
   struct descriptor_r *pin = (struct descriptor_r *)their_ptr;
-  int status = 1;
-
-  int *recursion_count = &((TdiThreadStatic())->TdiGetData_recursion_count);
+  INIT_STATUS;
+  GET_TDITHREADSTATIC_P;
+  int *recursion_count = &(TdiThreadStatic_p->TdiGetData_recursion_count);
   *recursion_count = (*recursion_count + 1);
   if ((*recursion_count) > 1800)
     return TdiRECURSIVE;
@@ -195,7 +196,7 @@ int TdiGetData(unsigned char omits[], struct descriptor *their_ptr, struct descr
 	if (pin->pointer) {
 	  status = TdiGetData(omits, (struct descriptor *)pin->pointer, &hold);
 /********************* Why is this needed????????????? *************************************/
-	  if (status & 1)
+	  if STATUS_OK
 	    status = TdiImpose((struct descriptor_a *)pin, &hold);
 /***************************************************************************************/
 	} else
@@ -213,7 +214,7 @@ int TdiGetData(unsigned char omits[], struct descriptor *their_ptr, struct descr
                 ***********************/
 	case DTYPE_IDENT:
 	  status = TdiGetIdent(pin, &hold);
- redo:	  if (status & 1)
+ redo:	  if STATUS_OK
 	    status = TdiGetData(omits, (struct descriptor *)&hold, &hold);
 	  break;
 	case DTYPE_NID:
@@ -225,7 +226,7 @@ int TdiGetData(unsigned char omits[], struct descriptor *their_ptr, struct descr
 	    char *path = MdsDescrToCstring((struct descriptor *)pin);
 	    status = TreeFindNode(path, &nid);
 	    MdsFree(path);
-	    if (status & 1)
+	    if STATUS_OK
 	      status = TdiGetRecord(nid, &hold);
 	  }
 	  goto redo;
@@ -253,23 +254,23 @@ int TdiGetData(unsigned char omits[], struct descriptor *their_ptr, struct descr
 		      pin->dscptrs, &hold);
 	  goto redo;
 	case DTYPE_PARAM:
-	  keep = (struct descriptor_signal *)TdiThreadStatic()->TdiSELF_PTR;
-	  TdiThreadStatic()->TdiSELF_PTR = (struct descriptor_xd *)pin;
+	  keep = (struct descriptor_signal *)TdiThreadStatic_p->TdiSELF_PTR;
+	  TdiThreadStatic_p->TdiSELF_PTR = (struct descriptor_xd *)pin;
 	  status =
 	      TdiGetData(omits,
 			 (struct descriptor *)((struct descriptor_param *)pin)->value, &hold);
-	  TdiThreadStatic()->TdiSELF_PTR = (struct descriptor_xd *)keep;
+	  TdiThreadStatic_p->TdiSELF_PTR = (struct descriptor_xd *)keep;
 	  break;
 	case DTYPE_SIGNAL:
 			/******************************************
                         We must set up for reference to our $VALUE.
                         ******************************************/
-	  keep = (struct descriptor_signal *)TdiThreadStatic()->TdiSELF_PTR;
-	  TdiThreadStatic()->TdiSELF_PTR = (struct descriptor_xd *)pin;
+	  keep = (struct descriptor_signal *)TdiThreadStatic_p->TdiSELF_PTR;
+	  TdiThreadStatic_p->TdiSELF_PTR = (struct descriptor_xd *)pin;
 	  status =
 	      TdiGetData(omits,
 			 (struct descriptor *)((struct descriptor_signal *)pin)->data, &hold);
-	  TdiThreadStatic()->TdiSELF_PTR = (struct descriptor_xd *)keep;
+	  TdiThreadStatic_p->TdiSELF_PTR = (struct descriptor_xd *)keep;
 	  break;
 		/***************
                 Windowless axis.
@@ -307,7 +308,7 @@ int TdiGetData(unsigned char omits[], struct descriptor *their_ptr, struct descr
         Watch out for input same as output.
         **********************************/
   MdsFree1Dx(out_ptr, NULL);
-  if (status & 1)
+  if STATUS_OK
     *out_ptr = hold;
   else
     MdsFree1Dx(&hold, NULL);
@@ -321,7 +322,7 @@ int TdiGetData(unsigned char omits[], struct descriptor *their_ptr, struct descr
 */
 extern EXPORT int TdiGetFloat(struct descriptor *in_ptr, float *val_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
 
   if (in_ptr == 0)
     *val_ptr = (float)0.0;
@@ -367,7 +368,7 @@ extern EXPORT int TdiGetFloat(struct descriptor *in_ptr, float *val_ptr)
   } else {
     struct descriptor_xd tmp = EMPTY_XD;
     status = TdiData(in_ptr, &tmp MDS_END_ARG);
-    if (status & 1)
+    if STATUS_OK
       switch (tmp.pointer->class) {
       case CLASS_S:
       case CLASS_D:
@@ -390,7 +391,7 @@ extern EXPORT int TdiGetFloat(struct descriptor *in_ptr, float *val_ptr)
 */
 extern EXPORT int TdiGetLong(struct descriptor *in_ptr, int *val_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
 
   if (in_ptr == 0)
     *val_ptr = 0;
@@ -435,7 +436,7 @@ extern EXPORT int TdiGetLong(struct descriptor *in_ptr, int *val_ptr)
   } else {
     struct descriptor_xd tmp = EMPTY_XD;
     status = TdiData(in_ptr, &tmp MDS_END_ARG);
-    if (status & 1)
+    if STATUS_OK
       switch (tmp.pointer->class) {
       case CLASS_S:
       case CLASS_D:
@@ -458,7 +459,7 @@ extern EXPORT int TdiGetLong(struct descriptor *in_ptr, int *val_ptr)
 */
 extern EXPORT int TdiGetNid(struct descriptor *in_ptr, int *nid_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   unsigned char omits[] = {
     DTYPE_NID,
@@ -467,7 +468,7 @@ extern EXPORT int TdiGetNid(struct descriptor *in_ptr, int *nid_ptr)
   };
 
   status = TdiGetData(omits, in_ptr, &tmp);
-  if (status & 1)
+  if STATUS_OK {
     switch (tmp.pointer->dtype) {
     case DTYPE_T:
     case DTYPE_PATH:
@@ -484,6 +485,8 @@ extern EXPORT int TdiGetNid(struct descriptor *in_ptr, int *nid_ptr)
       status = TdiINVDTYDSC;
       break;
     }
+    MdsFree1Dx(&tmp, NULL);
+  }
   return status;
 }
 
@@ -500,9 +503,10 @@ extern EXPORT int TdiGetNid(struct descriptor *in_ptr, int *nid_ptr)
 int Tdi1This(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 	     struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
-  int status = 1;
-  if (TdiThreadStatic()->TdiSELF_PTR)
-    status = MdsCopyDxXd((struct descriptor *)(TdiThreadStatic()->TdiSELF_PTR), out_ptr);
+  INIT_STATUS;
+  GET_TDITHREADSTATIC_P;
+  if (TdiThreadStatic_p->TdiSELF_PTR)
+    status = MdsCopyDxXd((struct descriptor *)(TdiThreadStatic_p->TdiSELF_PTR), out_ptr);
   else
     status = TdiNO_SELF_PTR;
   return status;
@@ -517,17 +521,17 @@ int Tdi1This(int opcode __attribute__ ((unused)), int narg __attribute__ ((unuse
 int Tdi1Value(int opcode __attribute__ ((unused)) , int narg __attribute__ ((unused)),
 	      struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
-  int status = 1;
-
-  if (TdiThreadStatic()->TdiSELF_PTR)
-    switch (TdiThreadStatic()->TdiSELF_PTR->dtype) {
+  INIT_STATUS;
+  GET_TDITHREADSTATIC_P;
+  if (TdiThreadStatic_p->TdiSELF_PTR)
+    switch (TdiThreadStatic_p->TdiSELF_PTR->dtype) {
     case DTYPE_SIGNAL:
       status =
-	  MdsCopyDxXd(((struct descriptor_signal *)TdiThreadStatic()->TdiSELF_PTR)->raw, out_ptr);
+	  MdsCopyDxXd(((struct descriptor_signal *)TdiThreadStatic_p->TdiSELF_PTR)->raw, out_ptr);
       break;
     case DTYPE_PARAM:
       status =
-	  MdsCopyDxXd(((struct descriptor_param *)TdiThreadStatic()->TdiSELF_PTR)->value, out_ptr);
+	  MdsCopyDxXd(((struct descriptor_param *)TdiThreadStatic_p->TdiSELF_PTR)->value, out_ptr);
       break;
     default:
       status = TdiINVDTYDSC;
@@ -546,7 +550,7 @@ int Tdi1Value(int opcode __attribute__ ((unused)) , int narg __attribute__ ((unu
 int Tdi1Data(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 	     struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
 
   unsigned char omits[] = { 0 };
   status = TdiGetData(omits, list[0], out_ptr);
@@ -564,7 +568,7 @@ int Tdi1Data(int opcode __attribute__ ((unused)), int narg __attribute__ ((unuse
 */
 int Tdi1Units(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   struct descriptor_r *rptr;
   struct descriptor_xd tmp = EMPTY_XD, uni[2];
   struct TdiCatStruct cats[3];
@@ -581,7 +585,7 @@ int Tdi1Units(int opcode __attribute__ ((unused)), int narg, struct descriptor *
 
   status = TdiGetData((unsigned char *)omits, list[0], &tmp);
   rptr = (struct descriptor_r *)tmp.pointer;
-  if (status & 1)
+  if STATUS_OK
     switch (rptr->dtype) {
     case DTYPE_DIMENSION:
       status = TdiUnits(((struct descriptor_dimension *)rptr)->axis, out_ptr MDS_END_ARG);
@@ -589,17 +593,17 @@ int Tdi1Units(int opcode __attribute__ ((unused)), int narg, struct descriptor *
     case DTYPE_RANGE:
     case DTYPE_SLOPE:
       uni[1] = uni[0] = EMPTY_XD;
-      for (j = rptr->ndesc; --j >= 0 && status & 1;) {
+      for (j = rptr->ndesc; --j >= 0 && STATUS_OK;) {
 	if (rptr->dscptrs[j])
 	  status = TdiUnits(rptr->dscptrs[j], &uni[1] MDS_END_ARG);
-	if (uni[1].pointer && status & 1)
+	if (uni[1].pointer && STATUS_OK)
 	  status = Tdi2Add(narg, uni, 0, cats, 0);
       }
       MdsFree1Dx(&uni[1], NULL);
       if (uni[0].pointer) {
 	MdsFree1Dx(out_ptr, NULL);
 	*out_ptr = uni[0];
-      } else if (status & 1)
+      } else if STATUS_OK
 	status = MdsCopyDxXd((struct descriptor *)&blank_dsc, out_ptr);
       break;
     case DTYPE_WINDOW:
@@ -629,18 +633,18 @@ STATIC_CONSTANT DESCRIPTOR_WITH_UNITS(null, 0, 0);
 int Tdi1DataWithUnits(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 		      struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   STATIC_CONSTANT unsigned char omits[] = { DTYPE_WITH_UNITS, 0 };
   struct descriptor_with_units dwu = null;
   struct descriptor_xd data = EMPTY_XD, units = EMPTY_XD;
   dwu.data = null.data = (struct descriptor *)&missing_dsc;
   status = TdiGetData((unsigned char *)omits, list[0], out_ptr);
-  if (status & 1) {
+  if STATUS_OK {
     struct descriptor_with_units *pwu = (struct descriptor_with_units *)out_ptr->pointer;
     if (pwu) {
       if (pwu->dtype == DTYPE_WITH_UNITS) {
 	status = TdiData(pwu->data, &data MDS_END_ARG);
-	if (status & 1)
+	if STATUS_OK
 	  status = TdiData(pwu->units, &units MDS_END_ARG);
 	dwu.data = data.pointer;
 	dwu.units = units.pointer;
@@ -668,7 +672,8 @@ int Tdi1DataWithUnits(int opcode __attribute__ ((unused)), int narg __attribute_
 int Tdi1Validation(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 		   struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
+  GET_TDITHREADSTATIC_P;
   struct descriptor_r *rptr;
   struct descriptor_xd *keep;
   STATIC_CONSTANT unsigned char omits[] = { DTYPE_PARAM, 0 };
@@ -676,16 +681,16 @@ int Tdi1Validation(int opcode __attribute__ ((unused)), int narg __attribute__ (
 
   status = TdiGetData((unsigned char *)omits, list[0], out_ptr);
   rptr = (struct descriptor_r *)out_ptr->pointer;
-  if (status & 1)
+  if STATUS_OK
     switch (rptr->dtype) {
     case DTYPE_PARAM:
 		/******************************************
                 We must set up for reference to our $VALUE.
                 ******************************************/
-      keep = TdiThreadStatic()->TdiSELF_PTR;
-      TdiThreadStatic()->TdiSELF_PTR = (struct descriptor_xd *)rptr;
+      keep = TdiThreadStatic_p->TdiSELF_PTR;
+      TdiThreadStatic_p->TdiSELF_PTR = (struct descriptor_xd *)rptr;
       status = TdiGetData(noomits, ((struct descriptor_param *)rptr)->validation, out_ptr);
-      TdiThreadStatic()->TdiSELF_PTR = keep;
+      TdiThreadStatic_p->TdiSELF_PTR = keep;
       break;
     default:
       status = TdiINVDTYDSC;
@@ -697,7 +702,7 @@ int Tdi1Validation(int opcode __attribute__ ((unused)), int narg __attribute__ (
 static int use_get_record_fun = 0;
 EXPORT int TdiGetRecord(int nid, struct descriptor_xd *out)
 {
-  int status;
+  INIT_STATUS;
   if (use_get_record_fun) {
     int stat;
     short opcode = 162;		/* external function */
@@ -713,19 +718,17 @@ EXPORT int TdiGetRecord(int nid, struct descriptor_xd *out)
     getrec.dscptrs[3] = (struct descriptor *)&var_d;
     var_d.dtype = DTYPE_IDENT;
     status = TdiEvaluate(&getrec, &stat_d MDS_END_ARG);
-    if (status == TdiUNKNOWN_VAR || status == TdiSYNTAX) {
+    if (status == TdiUNKNOWN_VAR || status == TdiSYNTAX)
       use_get_record_fun = 0;
-    } else if (status & 1) {
+    else if STATUS_OK {
       status = stat;
-      if (stat & 1) {
+      if IS_OK(stat)
 	status = TdiGetIdent(&var_d, out);
-      }
     }
   }
-  if (!use_get_record_fun) {
+  if (!use_get_record_fun)
     status = TreeGetRecord(nid, (struct descriptor_xd *)out);
-  }
-  if (status & 1)
+  if STATUS_OK
     FixupDollarNodes(nid,(struct descriptor *)out);
   return status;
 }

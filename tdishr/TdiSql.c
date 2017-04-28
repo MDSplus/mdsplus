@@ -119,7 +119,10 @@ typedef BYTE *LPBYTE;
 typedef const LPBYTE LPCBYTE;
 #include <windows.h>
 #include <sqlfront.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wignored-qualifiers"
 #include <sqldb.h>
+#pragma GCC diagnostic pop
 #define SYBCHAR         SQLCHAR
 #define SYBTEXT         SQLTEXT
 #define SYBFLT8         SQLFLT8
@@ -140,12 +143,12 @@ STATIC_ROUTINE int TDISQL_LINK(char *name, int (**routine) ())
   STATIC_CONSTANT DESCRIPTOR(dimage2, "sybdb");
 #endif
   struct descriptor dname = { 0, DTYPE_T, CLASS_S, 0 };
-  int status;
+  INIT_STATUS;
   dname.length = (unsigned short)strlen(name);
   dname.pointer = name;
   status = TdiFindImageSymbol(&dimage, &dname, routine);
 #ifdef __APPLE__
-  if (!(status & 1))
+  if STATUS_NOT_OK
     status = TdiFindImageSymbol(&dimage2, &dname, routine);
 #endif
   return status;
@@ -159,12 +162,12 @@ STATIC_ROUTINE int TDISQL_LINKCPTR(char *name, char *(**routine) ())
   STATIC_CONSTANT DESCRIPTOR(dimage2, "sybdb");
 #endif
   struct descriptor dname = { 0, DTYPE_T, CLASS_S, 0 };
-  int status;
+  INIT_STATUS;
   dname.length = (unsigned short)strlen(name);
   dname.pointer = name;
   status = TdiFindImageSymbol(&dimage, &dname, routine);
 #ifdef __APPLE__
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     status = TdiFindImageSymbol(&dimage2, &dname, routine);
 #endif
   return status;
@@ -232,7 +235,7 @@ STATIC_ROUTINE void AppendAnswer(int idx, void *buffer, int len, int dtype)
 
 STATIC_ROUTINE void StoreAnswer(int idx, struct descriptor *dst, int type)
 {
-  int status = 1;
+  INIT_STATUS;
   DESCRIPTOR_A(src, 0, 0, 0, 0);
   struct descriptor_xd xs = { 0, DTYPE_DSC, CLASS_XS, 0, sizeof(src) };
   EMPTYXD(xd);
@@ -291,9 +294,9 @@ STATIC_ROUTINE void StoreAnswer(int idx, struct descriptor *dst, int type)
     }
     break;
   default:
-    status = 0;
+    status = MDSplusERROR;
   }
-  if (status & 1)
+  if STATUS_OK
     status = TdiPutIdent(dst, &xs);
   else
     status = TdiPutIdent(dst, &xd);
@@ -307,7 +310,7 @@ DBPROCESS *dbproc;
 int *prows;
 ARGLIST *arg;
 {
-  int status = 1;
+  INIT_STATUS;
   int rows = *prows, used = arg->used;
   int ncol = SYB_dbnumcols(dbproc);
   int ind, j, type = 0, len, dtype;
@@ -346,7 +349,7 @@ ARGLIST *arg;
 	  status = StrConcat(dst =
 			     (struct descriptor *)&madeup,
 			     (struct descriptor *)&dunderscore, &name MDS_END_ARG);
-	  if (!(status & 1))
+	  if STATUS_NOT_OK
 	    break;
 	  dst->dtype = DTYPE_IDENT;
 	}
@@ -491,7 +494,7 @@ ARGLIST *arg;
 	  } else {
 						/***convert to text***/
 	    if (!ind) {
-	      int status;
+	      INIT_STATUS;
 #ifdef WORDS_BIGENDIAN
 	      unsigned long hi = *(unsigned long *)buf;
 	      *(unsigned long *)buf = *((unsigned long *)buf + 1);
@@ -593,7 +596,7 @@ ARGLIST *arg;
 /*********************************************************/
 int Tdi1Dsql(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   int rows = 0;
   ARGLIST user_args = { 0 };
   struct descriptor_d dtext = { 0, DTYPE_T, CLASS_D, 0 };
@@ -606,27 +609,27 @@ int Tdi1Dsql(int opcode __attribute__ ((unused)), int narg, struct descriptor *l
 
   if (SQL_DYNAMIC == 0) {
     status = TDISQL_LINK("SQL_DYNAMIC", &SQL_DYNAMIC);
-    if ((status & 1) && (SQL_GETDBMSGTEXT == 0))
+    if (STATUS_OK && (SQL_GETDBMSGTEXT == 0))
       TDISQL_LINKCPTR("GetDBMsgText", &SQL_GETDBMSGTEXT);
-    if ((status & 1) && (SYB_dbconvert == 0))
+    if (STATUS_OK && (SYB_dbconvert == 0))
       TDISQL_LINK("dbconvert", &SYB_dbconvert);
-    if ((status & 1) && (SYB_dbnumcols == 0))
+    if (STATUS_OK && (SYB_dbnumcols == 0))
       TDISQL_LINK("dbnumcols", &SYB_dbnumcols);
-    if ((status & 1) && (SYB_dbcolname == 0))
+    if (STATUS_OK && (SYB_dbcolname == 0))
       TDISQL_LINKCPTR("dbcolname", &SYB_dbcolname);
-    if ((status & 1) && (SYB_dbcoltype == 0))
+    if (STATUS_OK && (SYB_dbcoltype == 0))
       TDISQL_LINK("dbcoltype", &SYB_dbcoltype);
-    if ((status & 1) && (SYB_dbdatlen == 0))
+    if (STATUS_OK && (SYB_dbdatlen == 0))
       TDISQL_LINK("dbdatlen", &SYB_dbdatlen);
-    if ((status & 1) && (SYB_dbdata == 0))
+    if (STATUS_OK && (SYB_dbdata == 0))
       TDISQL_LINKCPTR("dbdata", &SYB_dbdata);
   }
-  if (status & 1)
+  if STATUS_OK
     status = TdiData(list[0], &dtext MDS_END_ARG);
   status = StrConcat((struct descriptor *)&dtext, (struct descriptor *)&dtext, &zero MDS_END_ARG);
 
   /* see if the last argument is "/date" */
-  if (status & 1) {
+  if STATUS_OK {
     int ss = TdiData(list[narg - 1], &dq_text MDS_END_ARG);
     if (ss) {
       if (dq_text.length == 5)
@@ -639,7 +642,7 @@ int Tdi1Dsql(int opcode __attribute__ ((unused)), int narg, struct descriptor *l
   }
 
   /* see if the 2nd to last argument is "/NaN" */
-  if ((status & 1) && (narg > 2)) {
+  if (STATUS_OK && (narg > 2)) {
     int ss = TdiData(list[narg - 2], &dq_text MDS_END_ARG);
     if (ss) {
       if (dq_text.length == 4)
@@ -652,7 +655,7 @@ int Tdi1Dsql(int opcode __attribute__ ((unused)), int narg, struct descriptor *l
   } else
     NaN = 0;
 
-  if (status & 1)
+  if STATUS_OK
     status = SQL_DYNAMIC(Gets,	/*routine to fill markers       */
 			 Puts,	/*routine to store selctions    */
 			 dtext.pointer,	/*text string descriptor        */
@@ -660,7 +663,7 @@ int Tdi1Dsql(int opcode __attribute__ ((unused)), int narg, struct descriptor *l
 			 &rows);	/*output, number of rows        */
 
   StrFree1Dx(&dtext);
-  if (status & 1) {
+  if STATUS_OK {
     status = MdsCopyDxXd(&drows, out_ptr);
   } else {
     struct descriptor msg = { 0, DTYPE_T, CLASS_S, 0 };
@@ -688,23 +691,23 @@ int Tdi1IsqlSet()
 STATIC_CONSTANT DESCRIPTOR(const msg,
 			   "Sybase support not compiled into TDI.  Did you want to MDSConnect ?");
 
-int Tdi1Dsql(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Dsql(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), const struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   status = MdsCopyDxXd((struct descriptor *)&msg, out_ptr);
   return status;
 }
 
-int Tdi1Isql(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Isql(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), const struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   status = MdsCopyDxXd((struct descriptor *)&msg, out_ptr);
   return status;
 }
 
-int Tdi1IsqlSet(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1IsqlSet(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), const struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   status = MdsCopyDxXd((struct descriptor *)&msg, out_ptr);
   return status;
 }

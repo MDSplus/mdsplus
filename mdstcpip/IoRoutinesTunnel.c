@@ -76,35 +76,25 @@ static int tunnel_disconnect(int id)
 }
 #endif
 
-#ifdef _WIN32
-static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait)
-{
+static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait __attribute__ ((unused))){
   struct TUNNEL_PIPES *p = getTunnelPipes(id);
+#ifdef _WIN32
   ssize_t num = 0;
   return (p && WriteFile(p->stdin_pipe, buffer, buflen, (DWORD *)&num, NULL)) ? num : -1;
-}
 #else
-static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait __attribute__ ((unused)))
-{
-  struct TUNNEL_PIPES *p = getTunnelPipes(id);
   return p ? write(p->stdin_pipe, buffer, buflen) : -1;
-}
 #endif
+}
 
-#ifdef _WIN32
-static ssize_t tunnel_recv(int id, void *buffer, size_t buflen)
-{
+static ssize_t tunnel_recv(int id, void *buffer, size_t buflen){
   struct TUNNEL_PIPES *p = getTunnelPipes(id);
+#ifdef _WIN32
   ssize_t num = 0;
   return (p && ReadFile(p->stdout_pipe, buffer, buflen, (DWORD *)&num, NULL)) ? num : -1;
-}
 #else
-static ssize_t tunnel_recv(int id, void *buffer, size_t buflen)
-{
-  struct TUNNEL_PIPES *p = getTunnelPipes(id);
   return p ? read(p->stdout_pipe, buffer, buflen) : -1;
-}
 #endif
+}
 
 #ifndef _WIN32
 static void ChildSignalHandler(int num __attribute__ ((unused)))
@@ -140,9 +130,8 @@ static void ChildSignalHandler(int num __attribute__ ((unused)))
 }
 #endif
 
+static int tunnel_connect(int id, char *protocol, char *host){
 #ifdef _WIN32
-static int tunnel_connect(int id, char *protocol, char *host)
-{
   SECURITY_ATTRIBUTES saAttr;
   size_t len = strlen(protocol) * 2 + strlen(host) + 512;
   char *cmd = (char *)malloc(len);
@@ -156,8 +145,6 @@ static int tunnel_connect(int id, char *protocol, char *host)
   HANDLE g_hChildStd_OUT_Rd = NULL;
   HANDLE g_hChildStd_OUT_Rd_tmp = NULL;
   HANDLE g_hChildStd_OUT_Wr = NULL;
-  HANDLE g_hInputFile = NULL;
-  int nSize;
   int status;
   _snprintf_s(cmd, len, len - 1, "cmd.exe /Q /C mdsip-client-%s %s mdsip-server-%s", protocol, host,
 	      protocol);
@@ -198,14 +185,11 @@ static int tunnel_connect(int id, char *protocol, char *host)
     status = 1;
   } else {
     DWORD errstatus = GetLastError();
-    fprintf(stderr,"Error in CreateProcees, error: %d\n",errstatus);
+    fprintf(stderr,"Error in CreateProcees, error: %lu\n",errstatus);
     status = 0;
   }
   return status;
-}
 #else
-static int tunnel_connect(int id, char *protocol, char *host)
-{
   pid_t pid;
   int pipe_fd1[2], pipe_fd2[2];
   pipe(pipe_fd1);
@@ -244,17 +228,13 @@ static int tunnel_connect(int id, char *protocol, char *host)
     SetConnectionInfo(id, "tunnel", p.stdout_pipe, &p, sizeof(p));
   }
   return 0;
-}
 #endif
-
-#ifdef _WIN32
-static int tunnel_listen(int argc, char **argv)
-{
-  return 0;
 }
+
+static int tunnel_listen(int argc __attribute__ ((unused)), char **argv __attribute__ ((unused))){
+#ifdef _WIN32
+  return 0;
 #else
-static int tunnel_listen(int argc __attribute__ ((unused)), char **argv __attribute__ ((unused)))
-{
   struct TUNNEL_PIPES p = { 1, 0, 0 };
   int id;
   char *username;
@@ -268,5 +248,5 @@ static int tunnel_listen(int argc __attribute__ ((unused)), char **argv __attrib
     free(username);
   while (DoMessage(id) != 0) ;
   return 1;
-}
 #endif
+}

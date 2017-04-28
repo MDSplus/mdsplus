@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
 
-	Name:	JAVA$RESAMPLE   
+	Name:	JAVA$RESAMPLE
 
 	Type:   C function
 
@@ -30,7 +30,6 @@
 
 		    time range of the signal fits into max_samples
 
-		    
 
  Output arguments: float *out: output vector, already allocated (max_samples elements)
 
@@ -84,7 +83,7 @@ EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
   actMin = *xmin;
   actMax = *xmax;
   actDelta = *dt;
-
+  maxSegment = numSegments - 1;
   for (currSegment = 0; currSegment < numSegments; currSegment++) {
     status = TreeGetSegmentLimits(nid, currSegment, &startXd, &endXd);
     if (status & 1)
@@ -507,8 +506,8 @@ static int traverseExprMinMax(struct descriptor *dsc, float *xMin, float *xMax)
     }
   default:
     printf("JavaGetMinMax: Unsupported class: %d\n", dsc->class);
-    return 0;
   }
+  return 0;
 }
 
 static int traverseNodeMinMax(int nid, float *xMin, float *xMax)
@@ -560,7 +559,7 @@ static int traverseNodeMinMax(int nid, float *xMin, float *xMax)
   return 1;
 }
 
-//Find minimum and maximum time for an expression involving signals 
+//Find minimum and maximum time for an expression involving signals
 EXPORT int JavaGetMinMax(char *sigExpr, float *xMin, float *xMax)
 {
   EMPTYXD(xd);

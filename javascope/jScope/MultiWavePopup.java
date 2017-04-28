@@ -112,7 +112,7 @@ public class MultiWavePopup
         boolean s_state[] = wave.GetSignalsState();
 
         if (! (s_name != null && s_state != null &&
-               s_name.length > 0 && s_name.length > 0 &&
+               s_name.length > 0 && s_state.length > 0 &&
                s_name.length == s_state.length))
             return;
 

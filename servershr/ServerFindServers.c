@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$FIND_SERVERS   
+		Name:   SERVER$FIND_SERVERS
 
 		Type:   C function
 
@@ -8,11 +8,11 @@
 
 		Date:   19-MAY-1992
 
-    		Purpose: Find all servers in a cluster 
+    		Purpose: Find all servers in a cluster
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 int SERVER$FIND_SERVERS(int *ctx, struct dsc$descriptor *server )
 
@@ -33,15 +33,19 @@ int SERVER$FIND_SERVERS(int *ctx, struct dsc$descriptor *server )
 #include <sys/types.h>
 #include <dirent.h>
 #endif
+#include <status.h>
 #include <string.h>
 #include <stdlib.h>
 #include <config.h>
 #include <strroutines.h>
 
-EXPORT char *ServerFindServers(void **ctx, char *wild_match)
-{
-#ifndef _WIN32
-  char *ans = 0;
+#ifdef _WIN32
+EXPORT char *ServerFindServers(void **ctx __attribute__ ((unused)), char *wild_match __attribute__ ((unused))){
+  return NULL;
+}
+#else
+EXPORT char *ServerFindServers(void **ctx, char *wild_match){
+  char *ans = NULL;
   DIR *dir = (DIR *) * ctx;
   if (dir == 0) {
     char *serverdir = getenv("MDSIP_SERVER_LOGDIR");
@@ -49,20 +53,16 @@ EXPORT char *ServerFindServers(void **ctx, char *wild_match)
       *ctx = dir = opendir(serverdir);
   }
   if (dir) {
-    while (1) {
+    for (;;) {
       struct dirent *entry = readdir(dir);
       if (entry) {
 	char *ans_c = strcpy(malloc(strlen(entry->d_name) + 1), entry->d_name);
 	if ((strcmp(ans_c, ".") == 0) || (strcmp(ans_c, "..") == 0))
           continue;
 	else {
-	  struct descriptor ans_d = { 0, DTYPE_T, CLASS_S, 0 };
-	  struct descriptor wild_d = { 0, DTYPE_T, CLASS_S, 0 };
-	  ans_d.pointer = ans_c;
-	  ans_d.length = strlen(ans_c);
-	  wild_d.pointer = wild_match;
-	  wild_d.length = strlen(wild_match);
-	  if ((StrMatchWild(&ans_d, &wild_d) & 1)) {
+	  struct descriptor ans_d  = { strlen(ans_c),      DTYPE_T, CLASS_S, ans_c };
+	  struct descriptor wild_d = { strlen(wild_match), DTYPE_T, CLASS_S, wild_match };
+	  if IS_OK(StrMatchWild(&ans_d, &wild_d)) {
 	    ans = ans_c;
             break;
           }
@@ -76,7 +76,5 @@ EXPORT char *ServerFindServers(void **ctx, char *wild_match)
     }
   }
   return ans;
-#else
-  return 0;
-#endif
 }
+#endif

@@ -69,8 +69,6 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 		       struct descriptor_xd *data_dsc_ptr, NCI * previous_nci);
 static int UpdateDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 			  struct descriptor_xd *data_dsc_ptr);
-static NCI TemplateNci;
-
 extern int PutRecordRemote();
 
 extern void **TreeCtx();
@@ -142,12 +140,13 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 	extended = 1;
       }
     }
-    if (status & 1) {
+    if STATUS_OK {
       if (utility_update) {
-	local_nci.flags = TemplateNci.flags;
+        NCI *nci = &TreeGetThreadStatic()->TemplateNci;
+	local_nci.flags = nci->flags;
 	bitassign(0, local_nci.flags, NciM_VERSIONS);
-	local_nci.owner_identifier = TemplateNci.owner_identifier;
-	local_nci.time_inserted = TemplateNci.time_inserted;
+	local_nci.owner_identifier = nci->owner_identifier;
+	local_nci.time_inserted = nci->time_inserted;
       } else {
 	bitassign(dblist->setup_info, local_nci.flags, NciM_SETUP_INFORMATION);
 	local_nci.owner_identifier = saved_uic;
@@ -351,7 +350,13 @@ static int FixupPath()
   return 0;
 }
 
-int TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
+int TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile){
+  WRLOCKINFO(info);
+  int status = _TreeOpenDatafileW(info, stv_ptr, tmpfile);
+  UNLOCKINFO(info);
+  return status;
+}
+int _TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
 {
   int status = TreeNORMAL;
   if (info->header->readonly)
@@ -506,7 +511,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
     int64_t eof;
     unsigned char rfa[6];
     status = TreeLockDatafile(info, 0, 0);
-    if (status & 1) {
+    if STATUS_OK {
       unsigned short rlength = bytes_this_time + 10;
       eof = MDS_IO_LSEEK(info->data_file->put, 0, SEEK_END);
       bytes_to_put -= bytes_this_time;
@@ -522,7 +527,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 	    bytes_this_time) == bytes_this_time)
 	  ? TreeNORMAL : TreeFAILURE;
       if (!bytes_to_put) {
-	if (status & 1) {
+	if STATUS_OK {
 	  bitassign(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
 	  SeekToRfa(eof, rfa);
 	  memcpy(nci_ptr->DATA_INFO.DATA_LOCATION.rfa, rfa,
@@ -594,31 +599,28 @@ static int UpdateDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 	NIDs converted to PATHs for TREE$COPY_TO_RECORD.
 	Eliminates DSC descriptors. Need DSC for classes A and APD?
 -----------------------------------------------------------------*/
-int TreeSetTemplateNci(NCI * nci)
-{
-  TemplateNci = *nci;
+int TreeSetTemplateNci(NCI * nci){
+  TreeGetThreadStatic()->TemplateNci = *nci;
   return TreeSUCCESS;
 }
 
-int TreeLockDatafile(TREE_INFO * info, int readonly, int64_t offset)
-{
+int TreeLockDatafile(TREE_INFO * info, int readonly, int64_t offset){
+  INIT_STATUS;
   int deleted = 1;
-  int status = 1;
   if (! info->header->readonly) {
     while (deleted && status & 1) {
       status = MDS_IO_LOCK(readonly ? info->data_file->get : info->data_file->put,
 			   offset, offset >= 0 ? 12 : (DATAF_C_MAX_RECORD_SIZE * 3),
 			   readonly ? MDS_IO_LOCK_RD : MDS_IO_LOCK_WRT, &deleted);
-      if (deleted && status & 1)
+      if (deleted && STATUS_OK)
 	status = TreeReopenDatafile(info);
     }
   }
   return status;
 }
 
-int TreeUnLockDatafile(TREE_INFO * info, int readonly, int64_t offset)
-{
-  int status=1;
+int TreeUnLockDatafile(TREE_INFO * info, int readonly, int64_t offset){
+  INIT_STATUS;
   if (! info->header->readonly )
     status = MDS_IO_LOCK(readonly ? info->data_file->get : info->data_file->put,
 			 offset, offset >= 0 ? 12 : (DATAF_C_MAX_RECORD_SIZE * 3), MDS_IO_LOCK_NONE, 0);

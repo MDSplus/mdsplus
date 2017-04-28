@@ -29,11 +29,11 @@ int Tdi3MdsDefault(struct descriptor *in_ptr __attribute__ ((unused)), struct de
   lst[0].pointer = (unsigned char *)value;
   lst[0].return_length_address = &retlen;
   status = TreeGetDbi(lst);
-  if (status & 1) {
+  if STATUS_OK {
     len = (unsigned short)retlen;
     status = MdsGet1DxS(&len, &dtype, out_ptr);
   }
-  if (status & 1)
+  if STATUS_OK
     memcpy(out_ptr->pointer->pointer, value, len);
   return status;
 }
@@ -53,11 +53,11 @@ int Tdi3Expt(struct descriptor *in_ptr __attribute__ ((unused)), struct descript
   lst[0].pointer = (unsigned char *)value;
   lst[0].return_length_address = &retlen;
   status = TreeGetDbi(lst);
-  if (status & 1) {
+  if STATUS_OK {
     len = (unsigned short)retlen;
     status = MdsGet1DxS(&len, &dtype, out_ptr);
   }
-  if (status & 1)
+  if STATUS_OK
     memcpy(out_ptr->pointer->pointer, value, len);
   return status;
 }
@@ -77,11 +77,11 @@ int Tdi3Shot(struct descriptor *in_ptr __attribute__ ((unused)), struct descript
   lst[0].pointer = (unsigned char *)&value;
   lst[0].return_length_address = &retlen;
   status = TreeGetDbi(lst);
-  if (status & 1) {
+  if STATUS_OK {
     len = (unsigned short)retlen;
     status = MdsGet1DxS(&len, &dtype, out_ptr);
   }
-  if (status & 1)
+  if STATUS_OK
     *(int *)out_ptr->pointer->pointer = value;
   return status;
 }
@@ -106,7 +106,7 @@ int Tdi3Shotname(struct descriptor *in_ptr __attribute__ ((unused)), struct desc
     dmodel.pointer = string;
     dmodel.length = (unsigned short)strlen(string);
   }
-  if (status & 1)
+  if STATUS_OK
     status = MdsCopyDxXd((struct descriptor *)&dmodel, out_ptr);
   return status;
 }

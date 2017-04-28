@@ -37,24 +37,25 @@ extern int Tdi1Vector();
 int Tdi1Evaluate(int opcode __attribute__ ((unused)),
 		 int narg __attribute__ ((unused)),
 		 struct descriptor *list[], struct descriptor_xd *out_ptr)
+// SsINTERNAL: requires MdsCopyDxXd
 {
-  int status = 1;
+  INIT_STATUS;
   struct descriptor_function *pfun;
   int nid, *pnid;
 
-	/*****************************
-        Cannot evaluate a null pointer
-        *****************************/
+  /*****************************
+  Cannot evaluate a null pointer
+  *****************************/
   if (list[0] == 0)
     return MdsCopyDxXd(&missing, out_ptr);
 
   switch (list[0]->class) {
   case CLASS_XD:
-		/***************************************************
-                If input is an class XD and dtype DSC and points to
-                real stuff, we can just copy its descriptor.
-                Release any lingering output unless it is our input.
-                ***************************************************/
+    /***************************************************
+    If input is an class XD and dtype DSC and points to
+    real stuff, we can just copy its descriptor.
+    Release any lingering output unless it is our input.
+    ***************************************************/
     switch (list[0]->dtype) {
     case DTYPE_DSC:
       if (list[0]->pointer == 0)
@@ -81,9 +82,9 @@ int Tdi1Evaluate(int opcode __attribute__ ((unused)),
       }
       break;
     }
-/*****************************************************************************
-WARNING falls through if an XD but not DSC of usable data (no known examples).
-*****************************************************************************/
+  /*****************************************************************************
+  WARNING falls through if an XD but not DSC of usable data (no known examples).
+  *****************************************************************************/
   case CLASS_S:
   case CLASS_D:
   case CLASS_XS:
@@ -97,7 +98,7 @@ WARNING falls through if an XD but not DSC of usable data (no known examples).
     case DTYPE_NID:
       pnid = (int *)list[0]->pointer;
       status = TdiGetRecord(*pnid, out_ptr);
-      if (status & 1)
+      if STATUS_OK
 	status = TdiEvaluate(out_ptr, out_ptr MDS_END_ARG);
       break;
     case DTYPE_PATH:
@@ -105,15 +106,15 @@ WARNING falls through if an XD but not DSC of usable data (no known examples).
 	char *path = MdsDescrToCstring(list[0]);
 	status = TreeFindNode(path, &nid);
 	MdsFree(path);
-	if (status & 1)
+	if STATUS_OK
 	  status = TdiGetRecord(nid, out_ptr);
-	if (status & 1)
+	if STATUS_OK
 	  status = TdiEvaluate(out_ptr, out_ptr MDS_END_ARG);
       }
       break;
     default:
       if (list[0]->dtype < 160)
-	status = -1;
+	status = SsINTERNAL;
       else
 	status = TdiINVCLADTY;
       break;
@@ -124,7 +125,7 @@ WARNING falls through if an XD but not DSC of usable data (no known examples).
     case DTYPE_FUNCTION:
       pfun = (struct descriptor_function *)list[0];
       status = TdiIntrinsic(*(unsigned short *)pfun->pointer,
-			    pfun->ndesc, pfun->arguments, out_ptr);
+          pfun->ndesc, pfun->arguments, out_ptr);
       break;
     case DTYPE_PARAM:
     case DTYPE_SIGNAL:
@@ -143,7 +144,7 @@ WARNING falls through if an XD but not DSC of usable data (no known examples).
     case DTYPE_CONDITION:
     case DTYPE_EVENT:
     case DTYPE_WITH_UNITS:
-      status = -1;
+      status = SsINTERNAL;
       break;
     case DTYPE_CALL:
       pfun = (struct descriptor_function *)list[0];
@@ -152,41 +153,41 @@ WARNING falls through if an XD but not DSC of usable data (no known examples).
 		  pfun->arguments, out_ptr);
       break;
     default:
-			/***********************
-                        NEED error if full list.
-                        ***********************/
+      /***********************
+      NEED error if full list.
+      ***********************/
       if (list[0]->dtype < DTYPE_PARAM)
 	status = TdiINVCLADTY;
       else
-	status = -1;
+	status = SsINTERNAL;
       break;
     }
     break;
-	/***************************************
-        Must expand compressed data. 24-Apr-1991
-        ***************************************/
   case CLASS_CA:
+    /***************************************
+    Must expand compressed data. 24-Apr-1991
+    ***************************************/
     status = TdiEvaluate(list[0]->pointer, out_ptr MDS_END_ARG);
-    if (status & 1)
+    if STATUS_OK
       status = TdiImpose(list[0], out_ptr);
     break;
   case CLASS_A:
-		/*******************************
-                Arrays of most types.
-                NEED array(dsc/nid/path)=?
-                *******************************/
-    status = -1;
+    /*************************
+    Arrays of most types.
+    NEED array(dsc/nid/path)=?
+    *************************/
+    status = SsINTERNAL;
     break;
   case CLASS_APD:
     if (list[0]->dtype == DTYPE_DICTIONARY || list[0]->dtype == DTYPE_TUPLE
 	|| list[0]->dtype == DTYPE_LIST || list[0]->dtype == DTYPE_OPAQUE) {
-      status = -1;
+      status = SsINTERNAL;
     } else {
       status =
 	  Tdi1Vector(0,
 		     (int)((struct descriptor_a *)list[0])->arsize /
 		     (int)list[0]->length, list[0]->pointer, out_ptr);
-      if (status & 1)
+      if STATUS_OK
 	status = TdiImpose(list[0], out_ptr);
     }
     break;
@@ -194,11 +195,11 @@ WARNING falls through if an XD but not DSC of usable data (no known examples).
     status = TdiINVCLADSC;
     break;
   }
-	/****************************
-        VMS type or MDS special type.
-        Make a descriptor, class XD.
-        ****************************/
-  if (status == -1)
+  /****************************
+  VMS type or MDS special type.
+  Make a descriptor, class XD.
+  ****************************/
+  if (status == SsINTERNAL)
     status = MdsCopyDxXd(list[0], out_ptr);
   if (list[0]->pointer)
     MdsFree1Dx((struct descriptor_xd *)list[0], NULL);

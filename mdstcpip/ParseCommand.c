@@ -34,7 +34,7 @@ void PrintHelp(char *option)
 
 ///
 /// Parse standard input command options.
-/// 
+///
 void ParseCommand(int argc, char **argv, Options options[], int more, int *rem_argc,
 		  char ***rem_argv)
 {
@@ -99,12 +99,13 @@ void ParseCommand(int argc, char **argv, Options options[], int more, int *rem_a
   if (rem_argc) {
     *rem_argc = extra_argc;
     *rem_argv = extra_argv;
-  }
+  } else
+     free(extra_argv);
 }
 
 ///
 /// Parse standard input command options.
-/// 
+///
 void ParseStdArgs(int argc, char **argv, int *extra_argc, char ***extra_argv)
 {
   Options options[] = { 

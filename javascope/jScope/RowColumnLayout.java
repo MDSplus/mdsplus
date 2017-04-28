@@ -317,7 +317,6 @@ public class RowColumnLayout implements LayoutManager {
         //if(row.length < column)
         //    return; //exception
         b_comp = 0;
-        //this.column = column;
         column = 0;
 	    this.row = new int[row.length];
 	    for(int i = 0; i < row.length; i++)
@@ -328,12 +327,9 @@ public class RowColumnLayout implements LayoutManager {
 	            column++;
 	    }
 	    b_comp--;
-        this.column = column;
 //        setSize(main_p);
 	    sizeUnknown = true;
-
     }
-
 
     /**
      * Return normalize height of ith componet

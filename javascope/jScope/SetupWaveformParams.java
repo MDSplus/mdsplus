@@ -25,8 +25,8 @@ public class SetupWaveformParams extends JDialog implements ActionListener
 
    private JTextField    x_grid_lines, y_grid_lines;
    private JTextField    vertical_offset, horizontal_offset;
-   private JComboBox	 grid_mode;
-   private JComboBox     legend_mode;
+   private JComboBox<String> grid_mode;
+   private JComboBox<String> legend_mode;
    private JCheckBox     reversed_b;
    int	   x_curr_lines_grid = 3,
            y_curr_lines_grid = 3;
@@ -148,12 +148,12 @@ public class SetupWaveformParams extends JDialog implements ActionListener
         lab = new JLabel("Grid: Mode");
         panel1.add(lab);
 
-        grid_mode = new JComboBox(Grid.GRID_MODE);
+        grid_mode = new JComboBox<>(Grid.GRID_MODE);
         panel1.add(grid_mode);
 
         lab = new JLabel("Legend:");
         panel1.add(lab);
-        legend_mode = new JComboBox();
+        legend_mode = new JComboBox<>();
         legend_mode.addItem("In Graphics");
         legend_mode.addItem("Fixed Bottom");
         legend_mode.addItem("Fixed Right");
@@ -192,56 +192,6 @@ public class SetupWaveformParams extends JDialog implements ActionListener
       getContentPane().add(p1);
  	  pack();
   }
-
-   private int IsGridMode(String mode)
-   {
-        for(int i = 0; i < Grid.GRID_MODE.length ; i++)
-            if(Grid.GRID_MODE[i].equals(mode))
-                return i;
-        return -1;
-   }
-
-   /*
-   private void GetPropertiesValue()
-   {
-       Properties js_prop = main_scope.js_prop;
-       String prop;
-       int val = 0;
-
-       if(js_prop == null) return;
-
-       prop = (String)js_prop.getProperty("jScope.reversed");
-       if(prop != null && ( prop.equals("true") || prop.equals("false")))
-       {
-         reversed = new Boolean(prop).booleanValue();
-       }
-
-       prop = (String)js_prop.getProperty("jScope.grid_mode");
-       if(prop != null && (val = IsGridMode(prop)) > 0)
-         curr_grid_mode =  val;
-
-       prop = (String)js_prop.getProperty("jScope.x_grid");
-       if(prop != null)
-       {
-            try
-            {
-                val = Integer.parseInt(prop);
-                x_curr_lines_grid = val > Grid.MAX_GRID ? Grid.MAX_GRID : val;
-            }
-            catch (NumberFormatException e) {}
-       }
-
-       prop = (String)js_prop.getProperty("jScope.y_grid");
-       if(prop != null)
-       {
-            try
-            {
-                val = Integer.parseInt(prop);
-                y_curr_lines_grid = val > Grid.MAX_GRID ? Grid.MAX_GRID : val;
-            } catch (NumberFormatException e) {}
-       }
-   }
-   */
 
    public void eraseForm()
    {
@@ -356,7 +306,7 @@ public class SetupWaveformParams extends JDialog implements ActionListener
       int h_ofs = 0, v_ofs = 0;
 	  try
 	  {
-	    h_ofs = new Integer(horizontal_offset.getText().trim()).intValue();
+	    h_ofs = Integer.parseInt(horizontal_offset.getText().trim());
 	  }
 	  catch (NumberFormatException exc)
 	  {
@@ -367,7 +317,7 @@ public class SetupWaveformParams extends JDialog implements ActionListener
 
 	  try
 	  {
-	    v_ofs = new Integer(vertical_offset.getText().trim()).intValue();
+	    v_ofs = Integer.parseInt(vertical_offset.getText().trim());
 	  }
 	  catch (NumberFormatException exc)
 	  {
@@ -379,7 +329,7 @@ public class SetupWaveformParams extends JDialog implements ActionListener
 
 	  try
 	  {
-	    x_curr_lines_grid = new Integer(x_grid_lines.getText().trim()).intValue();
+	    x_curr_lines_grid = Integer.parseInt(x_grid_lines.getText().trim());
 	  }
 	  catch (NumberFormatException exc)
 	  {
@@ -390,7 +340,7 @@ public class SetupWaveformParams extends JDialog implements ActionListener
 
 	  try
 	  {
-	    y_curr_lines_grid = new Integer(y_grid_lines.getText().trim()).intValue();
+	    y_curr_lines_grid = Integer.parseInt(y_grid_lines.getText().trim());
       }
 	  catch (NumberFormatException exc)
 	  {

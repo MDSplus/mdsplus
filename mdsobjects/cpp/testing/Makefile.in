@@ -93,8 +93,9 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@ENABLE_SANITIZE_TRUE@am__append_1 = ${ENABLE_SANITIZE_OPTIONS}=${SANITIZE_SUPPRESSIONS}:${SAN_OPTIONS}:${${ENABLE_SANITIZE_OPTIONS}}:start_deactivated=1:exitcode=1 \
-@ENABLE_SANITIZE_TRUE@	LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH} \
+@ENABLE_SANITIZE_TRUE@am__append_1 = ${ENABLE_SANITIZE_OPTIONS}=${${ENABLE_SANITIZE_OPTIONS}_SUPP}:${SAN_OPTIONS}:${${ENABLE_SANITIZE_OPTIONS}}:start_deactivated=1:exitcode=1 \
+@ENABLE_SANITIZE_TRUE@	LSAN_OPTIONS=${LSAN_OPTIONS_SUPP}:${LSAN_OPTIONS} \
+@ENABLE_SANITIZE_TRUE@	TEST_LD_PRELOAD=${TEST_LD_PRELOAD} \
 @ENABLE_SANITIZE_TRUE@	TEST_TIMEUNIT=5
 @ENABLE_SANITIZE_TRUE@am__append_2 = $(shell ${_check_sanitize_ldd} || \
 @ENABLE_SANITIZE_TRUE@	echo --skip;) $(shell test \
@@ -121,6 +122,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/m4/ax_compare_version.m4 \
 	$(top_srcdir)/m4/ax_compiler_vendor.m4 \
 	$(top_srcdir)/m4/ax_compiler_version.m4 \
+	$(top_srcdir)/m4/ax_target_selfhelp.m4 \
 	$(top_srcdir)/m4/m4_ac_search_readline.m4 \
 	$(top_srcdir)/m4/m4_am_path_xml2.m4 \
 	$(top_srcdir)/m4/m4_ax_check_enable_debug.m4 \
@@ -639,6 +641,7 @@ EGREP = @EGREP@
 ENABLE_SANITIZE = @ENABLE_SANITIZE@
 ENABLE_SANITIZE_LIBPATH = @ENABLE_SANITIZE_LIBPATH@
 ENABLE_SANITIZE_OPTIONS = @ENABLE_SANITIZE_OPTIONS@
+ENABLE_VALGRIND = @ENABLE_VALGRIND@
 EXEEXT = @EXEEXT@
 EXPORTS_FILE = @EXPORTS_FILE@
 FC = @FC@
@@ -727,7 +730,6 @@ MOTIF_LDSHARE = @MOTIF_LDSHARE@
 MOTIF_LD_LDARC = @MOTIF_LD_LDARC@
 MOTIF_LD_LDSHARE = @MOTIF_LD_LDSHARE@
 NEED_SEMUN = @NEED_SEMUN@
-NOSETESTS = @NOSETESTS@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -786,7 +788,6 @@ UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
 VALGRIND = @VALGRIND@
-VALGRIND_ENABLED = @VALGRIND_ENABLED@
 VALGRIND_FLAGS = @VALGRIND_FLAGS@
 VALGRIND_HAVE_TOOL_drd = @VALGRIND_HAVE_TOOL_drd@
 VALGRIND_HAVE_TOOL_exp_sgcheck = @VALGRIND_HAVE_TOOL_exp_sgcheck@
@@ -884,10 +885,16 @@ SUFFIXES = .log .tap .xml
 @ENABLE_SANITIZE_TRUE@   ( test "${ENABLE_SANITIZE}" != "no" -a -n "${ENABLE_SANITIZE_LIBPATH}" && \
 @ENABLE_SANITIZE_TRUE@     ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep ${ENABLE_SANITIZE_LIBPATH}  > /dev/null; )
 
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  TAP TARGET   ////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+# .PHONY: $(TEST_SUITE_TAP)
 TEST_BUILD_TAP = test-build.tap
 TEST_SUITE_TAP = test-suite.tap
 AM_CFLAGS = $(TARGET_ARCH) $(WARNFLAGS) $(TEST_CFLAGS)
-AM_CXXFLAGS = $(TARGET_ARCH) $(WARNFLAGS) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
+AM_CXXFLAGS = $(TARGET_ARCH) $(WARNFLAGS) -fsigned-char -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
 AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@
 AM_LIBS = $(LIBS) $(TEST_LIBS) testutils/libMdsTestUtils.a
 LDADD = $(AM_LIBS) -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr
@@ -905,7 +912,7 @@ AM_DEFAULT_SOURCE_EXT = .cpp
 # generate suppressions codes.
 #
 VALGRIND_SUPPRESSIONS_FILES = \
-                              $(top_srcdir)/testing/valgrind-mdsplus.supp \
+			      $(top_srcdir)/conf/valgrind-mdsplus.supp \
                               $(top_srcdir)/mdsshr/testing/valgrind-mdsshr.supp \
                               $(srcdir)/valgrind-mdsobjects-cpp.supp
 
@@ -1730,8 +1737,8 @@ uninstall-am:
 
 
 include @top_builddir@/Makefile.inc
-TEST_FORMAT    ?= log,tap
-AM_MAKEFLAGS   ?= V=0
+TEST_FORMAT     ?= log,tap
+AM_MAKEFLAGS    ?= V=0
 
 .PHONY: tap xml log
 tap: $(TEST_SUITE_TAP)
@@ -1741,17 +1748,17 @@ log: $(TEST_SUITE_LOG)
 .PHONY: rebuild-tests
 rebuild-tests:
 	@ \
-	echo "//// Rebuilding tests ////"; \
-	rm -f *.$(OBJEXT); \
-	rm -f $(check_PROGRAMS); \
-	if [ -n "$${VALGRIND_BUILD}" ]; then \
-	 echo "building clean tests for valgrind"; \
-	 $(MAKE) -k $(AM_MAKEFLAGS) all ||:; \
-	else \
-	 echo "building tests using D_TESTING set"; \
-	 $(MAKE) -k $(AM_MAKEFLAGS) all \
-	 CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING" ||:; \
-	fi;
+	if [ -n "$(check_PROGRAMS)" ]; then \
+	 echo "//// Rebuilding tests ////"; \
+	 rm -f *.$(OBJEXT); \
+	 rm -f $(check_PROGRAMS); \
+	 if [ -n "$${VALGRIND_BUILD}" ]; then \
+	  $(MAKE) -k $(AM_MAKEFLAGS) all ||:; \
+	 else \
+	  $(MAKE) -k $(AM_MAKEFLAGS) all \
+	  CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING" ||:; \
+	 fi; \
+	fi
 
 .PHONY: tests
 tests: rebuild-tests
@@ -1773,18 +1780,30 @@ tests: rebuild-tests
 # ///  SANITIZE RULES  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-@ENABLE_SANITIZE_TRUE@  SANITIZE_SUPPRESSIONS ?= suppressions=$(top_srcdir)/testing/sanitizer.supp
+@ENABLE_SANITIZE_TRUE@  # // sanitizer options specific (overload this in your Makefile.am) //
+@ENABLE_SANITIZE_TRUE@  LSAN_OPTIONS       ?=
+@ENABLE_SANITIZE_TRUE@  ASAN_OPTIONS       ?=
+@ENABLE_SANITIZE_TRUE@  TSAN_OPTIONS       ?=
+@ENABLE_SANITIZE_TRUE@  UBSAN_OPTIONS      ?=
+
+@ENABLE_SANITIZE_TRUE@  # // suppressions files (overload this in your Makefile.am) //
+@ENABLE_SANITIZE_TRUE@  LSAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/gcc-lsan.supp
+@ENABLE_SANITIZE_TRUE@  ASAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/gcc-asan.supp
+@ENABLE_SANITIZE_TRUE@  TSAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/gcc-tsan.supp
+@ENABLE_SANITIZE_TRUE@  UBSAN_OPTIONS_SUPP ?= suppressions=$(top_srcdir)/conf/gcc-ubsan.supp
+
+@ENABLE_SANITIZE_TRUE@  # Preloaded libraries to be exported within the test-driver script. This was
+@ENABLE_SANITIZE_TRUE@  # done to avoid having libraries for 32bit preloaded when we trigger the
+@ENABLE_SANITIZE_TRUE@  # shell executable to run script. NOTE: This could harm a possible preload
+@ENABLE_SANITIZE_TRUE@  # order that we would add in the future ... maybe an AM_LD_PRELOAD should be
+@ENABLE_SANITIZE_TRUE@  # foreseen.
+@ENABLE_SANITIZE_TRUE@  #
+@ENABLE_SANITIZE_TRUE@  TEST_LD_PRELOAD    ?= ${ENABLE_SANITIZE_LIBPATH}
 
 @ENABLE_SANITIZE_TRUE@  # // NOTE:
 @ENABLE_SANITIZE_TRUE@  # somtimes thread sanitizer does not work with python... probably because of
 @ENABLE_SANITIZE_TRUE@  # the -fpie flag for now we will disable it at all.
 @ENABLE_SANITIZE_TRUE@  #
-
-# //////////////////////////////////////////////////////////////////////////// #
-# ///  TAP TARGET   ////////////////////////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
-
-.PHONY: $(TEST_SUITE_TAP)
 
 # Single tap output
 # ^^^^^^^^^^^^^^^^^
@@ -1804,17 +1823,19 @@ $(TEST_LOGS:.log=.tap):
 
 $(TEST_BUILD_TAP):
 	@ \
-	echo "Try to build targets one by one"; \
-	echo "TAP version 13" > $@; \
-	count=0; \
-	for i in $(check_PROGRAMS); do \
+	if [ -n "$(check_PROGRAMS)" ]; then \
+	 echo "Try to build targets one by one"; \
+	 echo "TAP version 13" > $@; \
+	 count=0; \
+	 for i in $(check_PROGRAMS); do \
 	  if ! $(MAKE) -q $$i; then \
 	    $(MAKE) -k $(AM_MAKEFLAGS) $$i || \
 	    { ((count++)); \
 	      echo "not ok $${count} - Build of $${i} failed." >> $@; \
 	    }; \
 	  fi; \
-	done; \
+	 done; \
+	fi; \
 	echo "1..$${count}" >> $@;
 
 # Tap Test Suite
@@ -1824,16 +1845,19 @@ $(TEST_BUILD_TAP):
 # configure should have diabled HAVE_PL_TAP_PARSER.
 #
 # TODO: fix this in the case the only tap is provided as TEST_FORMAT and the
-# test taps are streamed into the .log file directly
+# test taps are streamed into the .log file directly ... for now a workaround
+# was added: both TEST_LOGS and TEST_LOGS.tap are added to ${suite} so in both
+# cases it is able to collect results. remember to add $(TEST_LOGS:.log=.tap)
+# to prerequisites in the future when fix will be done.
 #
 
-$(TEST_SUITE_TAP): $(TEST_BUILD_TAP) $(TEST_LOGS:.log=.tap)
+$(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 @HAVE_PL_TAP_PARSER_TRUE@	@ ## collate test-build.tap \
 @HAVE_PL_TAP_PARSER_TRUE@	if [ -n "$(VALGRIND_TOOL)" ]; then suite="$@.$(VALGRIND_TOOL)"; \
 @HAVE_PL_TAP_PARSER_TRUE@	else suite="$@"; \
 @HAVE_PL_TAP_PARSER_TRUE@	fi; \
 @HAVE_PL_TAP_PARSER_TRUE@	perl $(top_srcdir)/testing/collate_tap.pl $(TEST_BUILD_TAP) \
-@HAVE_PL_TAP_PARSER_TRUE@	     $(TEST_LOGS:.log=.tap) > $${suite} \
+@HAVE_PL_TAP_PARSER_TRUE@	     $(TEST_LOGS) $(TEST_LOGS:.log=.tap) > $${suite} \
 @HAVE_PL_TAP_PARSER_TRUE@	     || exit 1
 @HAVE_PL_TAP_PARSER_FALSE@	@ ## test parser not available \
 @HAVE_PL_TAP_PARSER_FALSE@	echo "Can not collate tap results" >2;
@@ -1869,6 +1893,12 @@ tests-envdump:
 	for _i in ${TESTS_ENVIRONMENT}; do \
 	 echo "     $${_i}"; \
 	done;
+
+test-env:
+	for _i in ${TESTS_ENVIRONMENT}; do \
+	  export $${_i}; \
+	done; \
+	bash -i
 
 @HAVE_WINE_TRUE@wineconsole:
 @HAVE_WINE_TRUE@	@ \

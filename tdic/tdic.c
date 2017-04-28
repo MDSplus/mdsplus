@@ -18,17 +18,18 @@
 #include <readline/history.h>
 #endif
 
-static void *TDIhandle = NULL;
 #include <dlfcn.h>
 #ifdef DYNTdiShr
+static void *TDIhandle = NULL;
 int (*BTdiExecute) () = NULL;
 #else
 extern int TdiExecute();
 #define BTdiExecute TdiExecute
 #endif
 
-static void *READhandle = NULL;
 #ifdef DYNreadline
+static void *READhandle = NULL;
+static void *CURSEShandle = NULL;
 #include <dlfcn.h>
 #ifndef PARAMS
 #define PARAMS(gub) gub
@@ -48,7 +49,6 @@ char *(*Breadline) PARAMS((const char *)) = NULL;;
 #define Breadline readline
 #endif
 
-static void *CURSEShandle = NULL;
 #define HFILE "/.tdic"
 
 char *bfgets(char *s, int size, FILE * stream, char *prompt);	/* fgets replacement */
@@ -293,7 +293,7 @@ int main(int argc, char **argv)
       expr[prefixlen] = 0;
       strcat(expr, line_in);
       if (!(comment = line_in[len - 1] == ';'))
-	strcat(line_in, " = ");
+          strcat(line_in, " = ");
 	expr_dsc.length = strlen(expr);
 /*
       expr_dsc.length = strlen(expr)-1;    

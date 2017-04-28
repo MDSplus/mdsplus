@@ -217,9 +217,7 @@ public class MdsDataProvider
                 pixel_size = d.readInt();
                 int width = d.readInt();
                 int height = d.readInt();
-                int img_size = height * width;
                 int n_frame = d.readInt();
-                Vector f_time = new Vector();
 
                 dim = new Dimension(width, height);
                 if (in_x == null || in_x.length() == 0)
@@ -393,7 +391,6 @@ public class MdsDataProvider
         boolean titleEvaluated = false;
         boolean xLabelEvaluated = false;
         boolean yLabelEvaluated = false;
-        boolean continuousUpdate = false;
         String wd_experiment;
         long wd_shot;
         AsynchDataSource asynchSource = null;
@@ -416,7 +413,7 @@ public class MdsDataProvider
             var_idx+=2;
             if(segmentMode == SEGMENTED_UNKNOWN)
             {
-                Vector args = new Vector();
+                Vector<Descriptor> args = new Vector<>();
                 String fixedY = in_y.replaceAll("\\\\", "\\\\\\\\");
                 args.addElement(new Descriptor(null, fixedY));
                 try {
@@ -459,7 +456,7 @@ public class MdsDataProvider
             var_idx += 2;
             if(segmentMode == SEGMENTED_UNKNOWN)
             {
-                Vector args = new Vector();
+                Vector<Descriptor> args = new Vector<>();
                 String fixedY = in_y.replaceAll("\\\\", "\\\\\\\\");
                 args.addElement(new Descriptor(null, fixedY));
                 try {
@@ -500,10 +497,6 @@ public class MdsDataProvider
         
         
         
-        public void setContinuousUpdate(boolean continuousUpdate)
-        {
-            this.continuousUpdate = continuousUpdate;
-        }
 
         public int getNumDimension() throws IOException
         {
@@ -697,7 +690,7 @@ public class MdsDataProvider
 
              if(segmentMode == SEGMENTED_UNKNOWN)
              {
-                Vector args = new Vector();
+                Vector<Descriptor> args = new Vector<>();
                 args.addElement(new Descriptor(null, in_y));
                 try {                 
                     byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);                              
@@ -734,7 +727,7 @@ public class MdsDataProvider
                 }
             }            
             
-                Vector args = new Vector();
+                Vector<Descriptor> args = new Vector<>();
                 args.addElement(new Descriptor(null, yExpr));
                 if(in_x == null)
                     args.addElement(new Descriptor(null, ""));
@@ -861,17 +854,10 @@ public class MdsDataProvider
                     nSamples = 0;
                 }
  */               //Got resampled signal, if it is segmented and jScope.refreshPeriod > 0, enqueue a new request
-                if(segmentMode == SEGMENTED_YES && continuousUpdate)
-                {
-                    long refreshPeriod = jScopeFacade.getRefreshPeriod();
-                    if(refreshPeriod <= 0) refreshPeriod = 1000; //default 1 s refresh
-                    updateWorker.updateInfo(/*xmin*/maxX, Double.MAX_VALUE, 2000,
-                        waveDataListenersV, this, isLong, refreshPeriod);
-                }
                 return res;
              }catch(Exception exc)
              {
-                 System.out.println("MdsMisc->GetXYSignal Failed: "+exc);
+                 //System.out.println("MdsMisc->GetXYSignal Failed: "+exc);  It means that MdsMisc->GetXYSignal() is likely not available on the server
              }
  //If execution arrives here probably MdsMisc->GetXYSignal() is not available on the server, so use the traditional approach
 //            float y[] = GetFloatArray("SetTimeContext(*,*,*); ("+yExpr+");");
@@ -967,7 +953,7 @@ public class MdsDataProvider
         public boolean isXLong(){return isXLong;}
 
         //Async update management
-        Vector<WaveDataListener> waveDataListenersV = new Vector<WaveDataListener>();
+        Vector<WaveDataListener> waveDataListenersV = new Vector<>();
 
 
         public void addWaveDataListener(WaveDataListener listener)
@@ -1009,7 +995,7 @@ public class MdsDataProvider
             }
         }
         boolean enabled = true;
-        Vector<UpdateDescriptor>requestsV = new Vector<UpdateDescriptor>();
+        Vector<UpdateDescriptor>requestsV = new Vector<>();
         void updateInfo(double updateLowerBound, double updateUpperBound, int updatePoints,
                 Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong, long delay)
         {
@@ -1027,7 +1013,7 @@ public class MdsDataProvider
         synchronized void intUpdateInfo(double updateLowerBound, double updateUpperBound, int updatePoints,
                 Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong, long updateTime)
         {
-            if(updateTime > 0)  //If a delayed request for update
+            if(updateTime > 0)  //If a delayed request for update NOTE NOT USED!!!!Use MdsStreamingDataProvider instead
             {
                 for(int i = 0; i < requestsV.size(); i++)
                 {
@@ -1111,7 +1097,7 @@ public class MdsDataProvider
                         i++;
                     }
                 }
-                if(nextTime != -1) //If a pending request for which time did not expire, schedure a new notification
+                if(nextTime != -1) //If a pending request for which time did not expire, schedure a new notification NOTE NOT USED
                 {
                     currTime = Calendar.getInstance().getTimeInMillis();
                     java.util.Timer timer = new java.util.Timer();
@@ -1174,12 +1160,10 @@ public class MdsDataProvider
 
     protected void finalize()
     {
-        int status;
-        String err = new String("");
         if (open)
             mds.MdsValue("JavaClose(\"" + experiment + "\"," + shot + ")");
         if (connected)
-            status = mds.DisconnectFromMds();
+            mds.DisconnectFromMds();
     }
     //To be overridden by any DataProvider implementation with added dynamic generation
     public jScope.AsynchDataSource getAsynchSource()
@@ -1251,7 +1235,6 @@ public class MdsDataProvider
 
     public synchronized byte[] GetAllFrames(String in_frame) throws IOException
     {
-        byte img_buf[], out[] = null;
         float time[];
         int shape[];
         int pixel_size = 8;
@@ -1280,7 +1263,7 @@ public class MdsDataProvider
 
         //in = in_frame;
         in = "_jScope_img";
-        img_buf = GetByteArray(in);
+        byte[] img_buf = GetByteArray(in);
         if (img_buf == null)
             return null;
 
@@ -1304,23 +1287,16 @@ public class MdsDataProvider
         }
 
         ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream d = new DataOutputStream(b);
-
-        d.writeInt(pixel_size);
-
-        d.writeInt(shape[0]);
-        d.writeInt(shape[1]);
-        d.writeInt(num_time);
-
-        for (int i = 0; i < num_time; i++)
-            d.writeFloat(time[i]);
-
-        d.write(img_buf);
-        img_buf = null;
-        out = b.toByteArray();
-        d.close();
-
-        return out;
+        try (DataOutputStream d = new DataOutputStream(b)) {
+            d.writeInt(pixel_size);
+            d.writeInt(shape[0]);
+            d.writeInt(shape[1]);
+            d.writeInt(num_time);
+            for (int i = 0; i < num_time; i++)
+                d.writeFloat(time[i]);
+            d.write(img_buf);
+            return b.toByteArray();
+	}
     }
 
     public synchronized float[] GetFrameTimes(String in_frame)
@@ -1627,7 +1603,7 @@ public class MdsDataProvider
             }
         }
         else
-            return new Float(in).floatValue();
+            return Float.parseFloat(in);
         return 0;
     }
 
@@ -1920,15 +1896,12 @@ public class MdsDataProvider
         }
         if (open && def_node_changed)
         {
-            Descriptor descr;
-            if (default_node != null)
-            {
-                descr = mds.MdsValue("TreeSetDefault(\"\\\\" + default_node + "\")");
-                if( (descr.int_data[0] & 1 ) == 0   )
+            if (default_node != null) {
+                Descriptor descr = mds.MdsValue("TreeSetDefault(\"\\\\" + default_node + "\")");
+                if ((descr.int_data[0] & 1 ) == 0)
                     mds.MdsValue("TreeSetDefault(\"\\\\" + experiment + "::TOP\")");
-            }
-            else
-                descr = mds.MdsValue("TreeSetDefault(\"\\\\" + experiment + "::TOP\")");
+            } else
+                mds.MdsValue("TreeSetDefault(\"\\\\" + experiment + "::TOP\")");
 
             def_node_changed = false;
         }
@@ -1952,27 +1925,17 @@ public class MdsDataProvider
 
     protected boolean NotYetNumber(String in)
     {
-        boolean ris;
-        ris = false;
-        try
-        {
-            Float f = new Float(in);
+        try {
+            Float.parseFloat(in);
+	    return false;
+        } catch (NumberFormatException e) {
+            return true;
         }
-        catch (NumberFormatException e)
-        {
-            ris = true;
-        }
-
-        return ris;
     }
 
     public synchronized void AddUpdateEventListener(UpdateEventListener l,
         String event_name) throws IOException
     {
-
-        int eventid;
-        String error;
-
         if (event_name == null || event_name.trim().length() == 0)
             return;
         CheckConnection();
@@ -1982,9 +1945,6 @@ public class MdsDataProvider
     public synchronized void RemoveUpdateEventListener(UpdateEventListener l,
         String event_name) throws IOException
     {
-        int eventid;
-        String error;
-
         if (event_name == null || event_name.trim().length() == 0)
             return;
         CheckConnection();
@@ -1993,29 +1953,20 @@ public class MdsDataProvider
 
     public synchronized void AddConnectionListener(ConnectionListener l)
     {
-        if (mds == null)
-        {
-            return;
-        }
-        mds.addConnectionListener(l);
+        if (mds != null)
+            mds.addConnectionListener(l);
     }
 
     public synchronized void RemoveConnectionListener(ConnectionListener l)
     {
-        if (mds == null)
-        {
-            return;
-        }
-        mds.removeConnectionListener(l);
+        if (mds != null)
+            mds.removeConnectionListener(l);
     }
 
     protected void DispatchConnectionEvent(ConnectionEvent e)
     {
-        if (mds == null)
-        {
-            return;
-        }
-        mds.dispatchConnectionEvent(e);
+        if (mds != null)
+            mds.dispatchConnectionEvent(e);
     }
 
     public boolean SupportsTunneling()
@@ -2023,10 +1974,8 @@ public class MdsDataProvider
         return true;
     }
 
-
     public int InquireCredentials(JFrame f, DataServerItem server_item)
     {
-
         mds.setUser(server_item.user);
         is_tunneling = false;
         if (server_item.tunnel_port != null &&

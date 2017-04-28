@@ -58,39 +58,9 @@ $ MCR ACTMON -monitor monitor-name
 extern int ServerMonitorCheckin();
 extern int str_element();
 
-#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
-#define pthread_condattr_default NULL
-#define pthread_mutexattr_default NULL
-#endif
-#define def_lock(name) \
-\
-static int name##_mutex_initialized = 0;\
-static pthread_mutex_t name##_mutex;\
-\
-static void lock_##name()\
-{\
-\
-  if(! name##_mutex_initialized)\
-  {\
-    name##_mutex_initialized = 1;\
-    pthread_mutex_init(&name##_mutex, pthread_mutexattr_default);\
-  }\
-  pthread_mutex_lock(&name##_mutex);\
-}\
-\
-static void unlock_##name()\
-{\
-\
-  if(! name##_mutex_initialized)\
-  {\
-    name##_mutex_initialized = 1;\
-    pthread_mutex_init(&name##_mutex, pthread_mutexattr_default);\
-  }\
-\
-  pthread_mutex_unlock(&name##_mutex);\
-}
-
-def_lock(event_queue)
+static pthread_mutex_t eventqueue_mutex = PTHREAD_MUTEX_INITIALIZER;
+#define   LOCK_EVENTQUEUE pthread_mutex_lock  (&eventqueue_mutex)
+#define UNLOCK_EVENTQUEUE pthread_mutex_unlock(&eventqueue_mutex)
 
 extern int TdiExecute();
 
@@ -149,7 +119,7 @@ static int current_shot = -9999;
 static int current_phase = -9999;
 static int current_node_entry;
 static int current_on;
-static const char *asterisks = "****************************************************************";
+static const char *asterisks = "********************************************";
 #define MaxLogLines 4000
 #define EventEfn 1
 #define DOING 1
@@ -177,10 +147,9 @@ int main(int argc, String * argv)
 
   MrmType class;
   static XrmOptionDescRec options[] = { {"-monitor", "*monitor", XrmoptionSepArg, NULL} };
-  static XtResource resources[] =
-      { {"monitor", "Monitor", XtRString, sizeof(String), 0, XtRString, "CMOD_MONITOR"}
-  ,
-  {"images", "Images", XtRString, sizeof(String), sizeof(String), XtRString, ""}
+  static XtResource resources[] = {
+    {"monitor", "Monitor", XtRString, sizeof(String), 0, XtRString, "ACTION_MONITOR"},
+    {"images",  "Images",  XtRString, sizeof(String), sizeof(String), XtRString, ""}
   };
   MrmHierarchy drm_hierarchy;
   struct {
@@ -217,8 +186,7 @@ int main(int argc, String * argv)
   return 0;
 }
 
-static void Exit(Widget w __attribute__ ((unused)), int *tag __attribute__ ((unused)), XtPointer callback_data __attribute__ ((unused)))
-{
+static void Exit(Widget w __attribute__ ((unused)), int *tag __attribute__ ((unused)), XtPointer callback_data __attribute__ ((unused))){
   exit(0);
 }
 
@@ -230,8 +198,7 @@ typedef struct serverList {
 
 static ServerList *Servers = NULL;
 
-static Widget FindTop(Widget w)
-{
+static Widget FindTop(Widget w){
   for (; w && XtParent(w); w = XtParent(w)) ;
   return w;
 }
@@ -251,8 +218,7 @@ static void SetKillTarget(Widget w __attribute__ ((unused)), int *tag __attribut
   }
 }
 
-static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb __attribute__ ((unused)))
-{
+static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb __attribute__ ((unused))){
   static int operation;
   static Widget dialog = NULL;
   XmString text_cs;
@@ -291,8 +257,7 @@ static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb __attribu
   }
 }
 
-static int executable(const char *script)
-{
+static int executable(const char *script){
   int status;
   static const char *cmd_front = "/bin/sh -c '/usr/bin/which ";
   static const char *cmd_back = " > /dev/null 2>/dev/null'";
@@ -307,8 +272,7 @@ static int executable(const char *script)
   return !status;
 }
 
-static void SetKillSensitive(Widget top)
-{
+static void SetKillSensitive(Widget top){
   int i;
   static const char *widgets[] = { "*abort_server_b", "*kill_server_b", "*kill_dispatcher_b" };
   static const char *scripts[] =
@@ -390,67 +354,55 @@ static void ParseTime(LinkedEvent * event)
     event->time = strtok(0, " ");
 }
 
-static int ParseMsg(char *msg, LinkedEvent * event)
+static int parseMsg(char *msg, LinkedEvent * event)
 {
   char *tmp;
+  if (!msg) return C_ERROR;
   event->msg = strcpy(malloc(strlen(msg) + 1), msg);
   event->tree = strtok(event->msg, " ");
-  if (!event->tree)
-    return 0;
+  if (!event->tree) return C_ERROR;
   tmp = strtok(0, " ");
-  if (!tmp)
-    return 0;
+  if (!tmp) return C_ERROR;
   event->shot = atoi(tmp);
-  if (event->shot <= 0)
-    return 0;
+  if (event->shot <= 0) return C_ERROR;
   tmp = strtok(0, " ");
-  if (!tmp)
-    return 0;
+  if (!tmp) return C_ERROR;
   event->phase = atoi(tmp);
   tmp = strtok(0, " ");
-  if (!tmp)
-    return 0;
+  if (!tmp) return C_ERROR;
   event->nid = atoi(tmp);
   tmp = strtok(0, " ");
-  if (!tmp)
-    return 0;
+  if (!tmp) return C_ERROR;
   event->on = atoi(tmp);
-  if (event->on != 0 && event->on != 1)
-    return 0;
+  if (event->on != 0 && event->on != 1) return C_ERROR;
   tmp = strtok(0, " ");
-  if (!tmp)
-    return 0;
+  if (!tmp) return C_ERROR;
   event->mode = atoi(tmp);
   event->server = strtok(0, " ");
-  if (!event->server)
-    return 0;
+  if (!event->server) return C_ERROR;
   tmp = strtok(0, " ");
-  if (!tmp)
-    return 0;
+  if (!tmp) return C_ERROR;
   event->status = atoi(tmp);
   event->fullpath = strtok(0, " ");
-  if (!event->fullpath)
-    return 0;
+  if (!event->fullpath) return C_ERROR;
   event->time = strtok(0, ";");
-  if (!event->time)
-    return 0;
+  if (!event->time) return C_ERROR;
   event->status_text = strtok(0, ";");
-  if (!event->status_text)
-    return 0;
+  if (!event->status_text) return C_ERROR;
   ParseTime(event);
-  return 1;
+ return C_OK;
 }
 
 static LinkedEvent *GetQEvent()
 {
   LinkedEvent *ans = 0;
-  lock_event_queue();
+  LOCK_EVENTQUEUE;
   ans = EventQueueHead;
   if (EventQueueHead)
     EventQueueHead = EventQueueHead->next;
   if (!EventQueueHead)
     EventQueueTail = 0;
-  unlock_event_queue();
+  UNLOCK_EVENTQUEUE;
   return ans;
 }
 
@@ -469,28 +421,28 @@ static void DoTimer()
 static void QEvent(LinkedEvent * ev)
 {
   ev->next = 0;
-  lock_event_queue();
+  LOCK_EVENTQUEUE;
   if (EventQueueTail)
     EventQueueTail->next = ev;
   else {
     EventQueueHead = ev;
   }
   EventQueueTail = ev;
-  unlock_event_queue();
+  UNLOCK_EVENTQUEUE;
 }
 
-static void MessageAst(int dummy __attribute__ ((unused)), char *reply)
+static void MessageAst(void* dummy __attribute__ ((unused)), char *reply)
 {
   LinkedEvent *event = malloc(sizeof(LinkedEvent));
-  event->msg = 0;
-  if (reply && ParseMsg(reply, event)) {
+  event->msg = NULL;
+  if (!parseMsg(reply, event)) {
     QEvent(event);
-  } else {
-    if (event->msg)
-      free(event->msg);
-    free(event);
-    CheckIn(0);
+    return;
   }
+  if (event->msg)
+    free(event->msg);
+  free(event);
+  CheckIn(0);
 }
 
 static void EventUpdate(LinkedEvent * event)
@@ -550,8 +502,7 @@ static void PutLog(char *time, char *mode, char *status, char *server, char *pat
   int items;
   if ((LogWidgetOff && CurrentWidgetOff) || (LogWidget == 0))
     return;
-  sprintf(text, "%s %12d %-10.10s %-32.32s %-20.20s %s", time, current_shot, mode, status, server,
-	  path);
+  sprintf(text, "%s %12d %-10.10s %-44.44s %-20.20s %s", time, current_shot, mode, status, server, path);
   item = XmStringCreateSimple(text);
   if (!LogWidgetOff) {
     XmListAddItemUnselected(LogWidget, item, 0);
@@ -594,7 +545,7 @@ static void PutError(char *time, String mode, char *status, char *server, char *
 
   if (ErrorWidgetOff)
     return;
-  sprintf(text, "%s %12d %s %-36.36s %-20.20s %s", time, current_shot, mode, status, server, path);
+  sprintf(text, "%s %12d %-10.10s %-44.44s %-20.20s %s", time, current_shot, mode, status, server, path);
   item = XmStringCreateSimple(text);
   XmListAddItemUnselected(ErrorWidget, item, 0);
   XmStringFree(item);
@@ -703,15 +654,14 @@ static void Done(LinkedEvent * event)
 static void CheckIn(String monitor_in)
 {
   static String monitor;
-  int status = 0;
+  INIT_STATUS_ERROR;
   if (monitor_in)
     monitor = monitor_in;
-  while (!(status & 1)) {
+  for (;;) {
     status = ServerMonitorCheckin(monitor, MessageAst, 0);
-    if (!(status & 1)) {
-      printf("Error connecting to monitor: %s, will try again shortly\n", monitor);
-      sleep(2);
-    }
+    if STATUS_OK return;
+    printf("Error connecting to monitor: %s, will try again shortly\n", monitor);
+    sleep(2);
   }
 }
 /*

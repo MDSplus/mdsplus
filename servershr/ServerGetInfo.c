@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$GET_INFO   
+		Name:   SERVER$GET_INFO
 
 		Type:   C function
 
@@ -8,11 +8,11 @@
 
 		Date:   17-APR-1992
 
-    		Purpose: Find out what server is doing 
+    		Purpose: Find out what server is doing
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 int SERVER$GET_INFO(int efn, struct dsc$descriptor *server, struct dsc$descriptor *response)
 
@@ -40,8 +40,7 @@ doing.
 extern int ServerConnect();
 extern int GetAnswerInfoTS();
 
-EXPORT char *ServerGetInfo(int full __attribute__ ((unused)), char *server)
-{
+EXPORT char *ServerGetInfo(int full __attribute__ ((unused)), char *server){
   char *cmd = "MdsServerShr->ServerInfo:dsc()";
   char *ans;
   char *ansret;
@@ -49,17 +48,15 @@ EXPORT char *ServerGetInfo(int full __attribute__ ((unused)), char *server)
   void *mem = 0;
   int sock = ServerConnect(server);
   if (sock >= 0) {
-    int status =
-	SendArg(sock, (unsigned char)0, (char)DTYPE_CSTRING, (unsigned char)1, (short)strlen(cmd),
-		0, 0, cmd);
-    if (status & 1) {
+    int status = SendArg(sock,(unsigned char)0,(char)DTYPE_CSTRING,(unsigned char)1,(short)strlen(cmd),0,0,cmd);
+    if STATUS_OK {
       char dtype;
       char ndims;
       int dims[8];
       int numbytes;
       char *reply;
       status = GetAnswerInfoTS(sock, &dtype, &len, &ndims, dims, &numbytes, (void **)&reply, &mem);
-      if ((status & 1) && (dtype == DTYPE_CSTRING))
+      if (STATUS_OK && (dtype == DTYPE_CSTRING))
 	ans = reply;
       else {
 	ans = "Invalid response from server";

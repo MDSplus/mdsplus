@@ -59,7 +59,7 @@ Concatenate units.
 *****************/
 STATIC_ROUTINE void multiply(struct descriptor_xd *left_ptr, struct descriptor_xd *right_ptr)
 {
-  int status;
+  INIT_STATUS;
 
   if (left_ptr->pointer == 0) {
     *left_ptr = *right_ptr;
@@ -67,7 +67,7 @@ STATIC_ROUTINE void multiply(struct descriptor_xd *left_ptr, struct descriptor_x
   } else if (right_ptr->pointer) {
     /*NEED cleaver code here */
     status = TdiConcat(left_ptr, &asterisk, right_ptr, left_ptr MDS_END_ARG);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       *left_ptr = BAD;
   }
 }
@@ -77,19 +77,19 @@ Reciprocate units.
 *****************/
 STATIC_ROUTINE void divide(struct descriptor_xd *left_ptr, struct descriptor_xd *right_ptr)
 {
-  int status;
+  INIT_STATUS;
 
   if (right_ptr->pointer) {
     /*NEED cleaver code here */
     /*NEED to fix up leading / or * */
     status = TdiTranslate(right_ptr, &star_slash, &slash_star, right_ptr MDS_END_ARG);
-    if (status & 1) {
+    if STATUS_OK {
       if (left_ptr->pointer)
 	status = TdiConcat(left_ptr, &slash, right_ptr, left_ptr MDS_END_ARG);
       else
 	status = TdiConcat(&slash, right_ptr, left_ptr MDS_END_ARG);
     }
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       *left_ptr = BAD;
   }
 }
@@ -169,7 +169,7 @@ int Tdi2Adjust(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
 int Tdi2Aint(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), struct descriptor_xd dat[1],
 	     struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
 {
-  int status = 1;
+  INIT_STATUS;
 
 	/**************************
         Check for valid second arg.
@@ -231,7 +231,7 @@ int Tdi2Btest(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
 int Tdi2Char(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), struct descriptor_xd dat[1],
 	     struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
 {
-  int status = 1;
+  INIT_STATUS;
 
 	/**************************
         Check for valid second arg.
@@ -263,7 +263,7 @@ int Tdi2Cmplx(int narg, struct descriptor_xd uni[1],
 	      struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
 	      int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
 {
-  int status = 1;
+  INIT_STATUS;
 
 	/********************************
         Omitted second arg just converts.
@@ -796,7 +796,7 @@ int Tdi2Range(int narg, struct descriptor_xd uni[1],
 int Tdi2Real(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), struct descriptor_xd dat[1],
 	     struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
 {
-  int status = 1;
+  INIT_STATUS;
 
 	/**************************
         Check for valid second arg.
@@ -827,7 +827,7 @@ int Tdi2Repeat(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
   unsigned int ncopies, status;
 
   status = TdiGetLong(dat[1].pointer, &ncopies);
-  if (status & 1) {
+  if STATUS_OK {
     if ((ncopies *= cats[0].digits) < 65535)
       cats[narg].digits = (unsigned short)ncopies;
     else
@@ -871,7 +871,7 @@ int Tdi2Square(int narg __attribute__ ((unused)), struct descriptor_xd uni[1],
 	       int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
 {
   struct descriptor_xd tmp = EMPTY_XD;
-  int status;
+  INIT_STATUS;
 
   status = MdsCopyDxXd(uni[0].pointer, &tmp);
   multiply(&uni[0], &tmp);
@@ -892,7 +892,7 @@ int Tdi2String(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
   cats[1].out_cat = cats[1].in_cat;
   cats[1].digits = dat[1].length;
   status = TdiGetLong(dat[1].pointer, &length);
-  if (status & 1) {
+  if STATUS_OK {
     if (length > 65535)
       status = TdiTOO_BIG;
     else if (length > 0)
@@ -913,7 +913,7 @@ int Tdi2Text(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), str
   cats[1].out_cat = cats[1].in_cat;
   cats[1].digits = dat[1].length;
   status = TdiGetLong(dat[1].pointer, &length);
-  if (status & 1) {
+  if STATUS_OK {
     if (length > 65535)
       status = TdiTOO_BIG;
     else if (length > 0)

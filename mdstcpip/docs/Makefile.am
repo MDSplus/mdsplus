@@ -1,5 +1,6 @@
 SUBDIRS = img .
 
+include @top_builddir@/Makefile.inc
 include ../../docs/config/doxygen.am
 
 

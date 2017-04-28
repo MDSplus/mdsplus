@@ -143,7 +143,7 @@ struct descriptor_a {
             {rows, columns}}
 
 #define DESCRIPTOR_A_BOUNDS(name, len, type, ptr, dimct, arsize) \
-  ARRAY_BOUNDS(char, dimct) name = {len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,1,1}, dimct, arsize, 0, {0},{{0}}}
+  ARRAY_BOUNDS(char, dimct) name = {len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,1,1}, dimct, arsize, 0, {0},{{0,0}}}
 
 /************************************************
   CLASS_XD extended dynamic descriptor definition.
@@ -370,8 +370,8 @@ struct descriptor_function {
 				}
 
 #define DESCRIPTOR_FUNCTION(name, op_code_ptr, nargs) \
-	FUNCTION(nargs) name = {sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, \
-				(unsigned char *)op_code_ptr, nargs, {0}}
+	FUNCTION(nargs) name = {.length=sizeof(unsigned short), .dtype=DTYPE_FUNCTION, .class=CLASS_R, \
+				.pointer=(unsigned char *)op_code_ptr, .ndesc=nargs}
 
 #define DESCRIPTOR_FUNCTION_0(name, op_code_ptr) \
 	struct descriptor_function name = {sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, \

@@ -185,7 +185,7 @@ EXPORT int IDLMdsEvent(int argc, void * *argv)
 	  && (stub_rec = IDL_WidgetStubLookup(*stub_id))) {
 	/* IDL_WidgetSetStubIds(stub_rec, parent_rec, parent_rec);   */
 #ifdef WIN32
-	if (sock > 0) {
+	if (sock != INVALID_SOCKET) {
 	  e->thread_handle = CreateThread((LPSECURITY_ATTRIBUTES) NULL,
 					  0,
 					  (LPTHREAD_START_ROUTINE) MdsDispatchEvent,
@@ -196,7 +196,7 @@ EXPORT int IDLMdsEvent(int argc, void * *argv)
 	if (!XTINPUTID) {
 	  Widget w1, w2;
 	  IDL_WidgetGetStubIds(parent_rec, (unsigned long *)&w1, (unsigned long *)&w2);
-	  if (sock >= 0) {
+	  if (sock != INVALID_SOCKET) {
 	    XtAppAddInput(XtWidgetToApplicationContext(w1), sock, (XtPointer) XtInputExceptMask,
 			  MdsDispatchEvent, (char *)0+sock);
 	  }
@@ -212,7 +212,7 @@ EXPORT int IDLMdsEvent(int argc, void * *argv)
 	strncpy(e->name, name, sizeof(e->name));
 	e->next = EventList;
 	EventList = e;
-	if (sock >= 0) {
+	if (sock != INVALID_SOCKET) {
 	  MdsEventAst(sock, name, EventAst, e, &e->event_id);
 	} else {
 	  MDSEventAst(name, EventAst, e, &e->event_id);

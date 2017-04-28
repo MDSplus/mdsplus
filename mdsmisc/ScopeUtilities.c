@@ -8,6 +8,7 @@
 #include <mdstypes.h>
 #include <tdishr.h>
 #include <xtreeshr.h>
+#include <ncidef.h>
 #define MAX_LIMIT 1E10
 
 static int recIsSegmented(struct descriptor *dsc);
@@ -516,6 +517,16 @@ static int recIsSegmented(struct descriptor *dsc)
 {
     int nid, numSegments, status, i;
     char *path;
+    int retClassLen, retDtypeLen;
+    unsigned int nciClass, nciDtype;
+    struct nci_itm nciList[] = {{1, NciCLASS, &nciClass, &retClassLen},
+	  {1, NciDTYPE, &nciDtype, &retDtypeLen},
+	  {NciEND_OF_LIST, 0, 0, 0}};
+	  
+    EMPTYXD(xd);
+	  
+    int retNid;
+  
     struct descriptor_r *rDsc;
     if(!dsc) return FALSE;
 
@@ -527,6 +538,18 @@ static int recIsSegmented(struct descriptor *dsc)
 		status = TreeGetNumSegments(nid, &numSegments);
 		if((status & 1) && numSegments > 0)
 		    return nid; 
+		//Now check if the node contains an expression or a direct nid reference
+		status = TreeGetNci(nid, nciList);
+		if((status & 1) && ((nciClass == CLASS_S && (nciDtype == DTYPE_NID ||nciDtype == DTYPE_PATH))||nciClass == CLASS_R))
+		{
+		    status = TreeGetRecord(nid, &xd);
+		    if((status & 1) && xd.l_length > 0)
+		    {
+		        retNid = recIsSegmented(xd.pointer);
+			MdsFree1Dx(&xd, 0);
+			return retNid;
+		    }
+		}
 		return 0;
 	    }
 	    else if(dsc->dtype == DTYPE_PATH)

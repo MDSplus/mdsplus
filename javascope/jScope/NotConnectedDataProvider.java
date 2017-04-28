@@ -41,22 +41,22 @@ class NotConnectedDataProvider implements DataProvider
     public void    SetArgument(String arg){}
     public boolean SupportsTunneling() {return false; }
 
-
-
     public void SetEnvironment(String exp)
     {
     }
+
     public void Update(String exp, long s)
     {
     }
+
     public String GetString(String in)
     {
         return "";
     }
+
     public double GetFloat(String in)
     {
-        Double f = new Double(in);
-        return f.doubleValue();
+        return Double.parseDouble(in);
     }
 
     public float[] GetFloatArray(String in_x, String in_y, float start, float end)
@@ -80,19 +80,23 @@ class NotConnectedDataProvider implements DataProvider
     {
         return error;
     }
+
     public void AddUpdateEventListener(UpdateEventListener l, String event)
     {
     }
+
     public void RemoveUpdateEventListener(UpdateEventListener l, String event)
     {
     }
-    public void    AddConnectionListener(ConnectionListener l)
+
+    public void AddConnectionListener(ConnectionListener l)
     {
     }
-    public void    RemoveConnectionListener(ConnectionListener l)
+
+    public void RemoveConnectionListener(ConnectionListener l)
     {
     }
-    public void setContinuousUpdate(){}
+
 
     public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
     {
@@ -103,5 +107,4 @@ class NotConnectedDataProvider implements DataProvider
     {
         return false;
     }
-
- }
+}

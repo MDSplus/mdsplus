@@ -3,14 +3,9 @@
 #ifdef __VMS
 #pragma module TdiYacc TdiYacc
 #endif
-
-#ifdef WIN32
-#pragma warning (disable : 4244 4102 )	/* int to short conversions and unreferenced label */
-#endif
-
 /*      TdiYacc.Y
         YACC converts this to TdiYacc.C to compile TDI statements.
-        Each YACC-LEX symbol has a returned token and a yylval value.
+        Each YACC-LEX symbol has a returned token and a tdiyylval value.
         Precedence is associated with a token and is set left and right below.
         TdiLex_... routines and TdiRefFunction depend on tokens from TdiYacc.
         Tdi0Decompile depends on TdiRefFunction and precedence.
@@ -53,19 +48,6 @@
 #include <tdishr_messages.h>
 #include <mds_stdarg.h>
 
-#ifdef ERROR
-#undef ERROR
-#endif
-#ifdef TEXT
-#undef TEXT
-#endif
-#ifdef CONST
-#undef CONST
-#endif
-#ifdef IN
-#undef IN
-#endif
-
 extern unsigned short
  OpcAbort,
     OpcAdd,
@@ -86,8 +68,6 @@ extern unsigned short
     OpcPostInc,
     OpcPreInc, OpcStatement, OpcSubscript, OpcUnaryMinus, OpcUnaryPlus, OpcUsing, OpcVector;
 
-struct TdiZoneStruct TdiRefZone = { 0 };
-
 extern int TdiYacc_RESOLVE();
 extern int TdiLex();
 extern int TdiYacc_IMMEDIATE();
@@ -97,85 +77,26 @@ extern int TdiLexPath();
 
 #define YYMAXDEPTH      250
 
-#define yyparse         TdiYacc
-#define _RESOLVE(arg)   if (TdiYacc_RESOLVE(&arg.rptr)) {yyerror(0);}
-#define _FULL1(opcode,arg1,out)                 if (TdiYacc_BUILD(255, 1, opcode, &out, &arg1)) {yyerror(0);}
-#define _FULL2(opcode,arg1,arg2,out)            if (TdiYacc_BUILD(255, 2, opcode, &out, &arg1, &arg2)) {yyerror(0);}
+#define tdiyyparse         TdiYacc
+#define _RESOLVE(arg)   			if IS_NOT_OK(TdiYacc_RESOLVE(&arg.rptr)) {tdiyyerror(0);}
+#define _FULL1(opcode,arg1,out)                 if IS_NOT_OK(TdiYacc_BUILD(255, 1, opcode, &out, &arg1)) {tdiyyerror(0);}
+#define _FULL2(opcode,arg1,arg2,out)            if IS_NOT_OK(TdiYacc_BUILD(255, 2, opcode, &out, &arg1, &arg2)) {tdiyyerror(0);}
 	/*****************************
         Two args for image->routine.
         *****************************/
-#define _JUST0(opcode,out)                      if (TdiYacc_BUILD(2, 0, opcode, &out)) {yyerror(0);}
-#define _JUST1(opcode,arg1,out)                 if (TdiYacc_BUILD(3, 1, opcode, &out, &arg1)) {yyerror(0);}
-#define _JUST2(opcode,arg1,arg2,out)            if (TdiYacc_BUILD(2, 2, opcode, &out, &arg1, &arg2)) {yyerror(0);}
-#define _JUST3(opcode,arg1,arg2,arg3,out)       if (TdiYacc_BUILD(3, 3, opcode, &out, &arg1, &arg2, &arg3)) {yyerror(0);}
-#define _JUST4(opcode,arg1,arg2,arg3,arg4,out)  if (TdiYacc_BUILD(4, 4, opcode, &out, &arg1, &arg2, &arg3, &arg4)) {yyerror(0);}
+#define _JUST0(opcode,out)                      if IS_NOT_OK(TdiYacc_BUILD(2, 0, opcode, &out)) {tdiyyerror(0);}
+#define _JUST1(opcode,arg1,out)                 if IS_NOT_OK(TdiYacc_BUILD(3, 1, opcode, &out, &arg1)) {tdiyyerror(0);}
+#define _JUST2(opcode,arg1,arg2,out)            if IS_NOT_OK(TdiYacc_BUILD(2, 2, opcode, &out, &arg1, &arg2)) {tdiyyerror(0);}
+#define _JUST3(opcode,arg1,arg2,arg3,out)       if IS_NOT_OK(TdiYacc_BUILD(3, 3, opcode, &out, &arg1, &arg2, &arg3)) {tdiyyerror(0);}
+#define _JUST4(opcode,arg1,arg2,arg3,arg4,out)  if IS_NOT_OK(TdiYacc_BUILD(4, 4, opcode, &out, &arg1, &arg2, &arg3, &arg4)) {tdiyyerror(0);}
 
 STATIC_THREADSAFE struct marker _EMPTY_MARKER = { 0 };
 
-//#line 111 "TdiYacc.y"
-typedef union {
-  struct marker mark;
-} YYSTYPE;
-#ifdef __cplusplus
-#include <stdio.h>
-#include <yacc.h>
-#endif				/* __cplusplus */
-#define ERROR 257
-#define IDENT 258
-#define POINT 259
-#define TEXT 260
-#define VALUE 261
-#define BREAK 262
-#define CASE 263
-#define COND 264
-#define DEFAULT 265
-#define DO 266
-#define ELSE 267
-#define ELSEW 268
-#define FOR 269
-#define GOTO 270
-#define IF 271
-#define LABEL 272
-#define RETURN 273
-#define SIZEOF 274
-#define SWITCH 275
-#define USING 276
-#define WHERE 277
-#define WHILE 278
-#define ARG 279
-#define CAST 280
-#define CONST 281
-#define INC 282
-#define ADD 283
-#define CONCAT 284
-#define IAND 285
-#define IN 286
-#define IOR 287
-#define IXOR 288
-#define LEQV 289
-#define POWER 290
-#define PROMO 291
-#define RANGE 292
-#define SHIFT 293
-#define BINEQ 294
-#define LAND 295
-#define LEQ 296
-#define LGE 297
-#define LOR 298
-#define MUL 299
-#define UNARY 300
-#define LANDS 301
-#define LEQS 302
-#define LGES 303
-#define LORS 304
-#define MULS 305
-#define UNARYS 306
-#define FUN 307
-#define MODIF 308
-#define VBL 309
-#define yyclearin yychar = -1
-#define yyerrok yyerrflag = 0
-extern int yychar;
+#include "tdiyacc.h"
+
+#define tdiyyclearin tdiyychar = -1
+#define tdiyyerrok tdiyyerrflag = 0
+extern int tdiyychar;
 #ifndef YYMAXDEPTH
 #define YYMAXDEPTH 150
 #endif
@@ -191,9 +112,9 @@ extern int yychar;
 #ifndef __YYSCLASS
 #define __YYSCLASS STATIC_THREADSAFE
 #endif
-YYSTYPE yylval;
-__YYSCLASS YYSTYPE yyval;
-typedef int yytabelem;
+YYSTYPE tdiyylval;
+__YYSCLASS YYSTYPE tdiyyval;
+typedef int tdiyytabelem;
 #define YYERRCODE 256
 
 //#line 468 "TdiYacc.y"
@@ -249,8 +170,8 @@ const int
     LEX_LORS = LORS,
     LEX_MULS = MULS, LEX_UNARYS = UNARYS, LEX_FUN = FUN, LEX_VBL = VBL, LEX_MODIF = MODIF;
 
-YYSTYPE *TdiYylvalPtr = &yylval;
-__YYSCLASS yytabelem yyexca[] = {
+YYSTYPE *TdiYylvalPtr = &tdiyylval;
+__YYSCLASS tdiyytabelem tdiyyexca[] = {
   -1, 0,
   0, 120,
   44, 78,
@@ -287,7 +208,7 @@ __YYSCLASS yytabelem yyexca[] = {
 
 #define YYNPROD 123
 #define YYLAST 1236
-__YYSCLASS yytabelem yyact[] = {
+__YYSCLASS tdiyytabelem tdiyyact[] = {
 
   59, 160, 27, 98, 97, 96, 97, 96, 42, 79,
   67, 122, 85, 86, 69, 44, 87, 46, 47, 88,
@@ -415,7 +336,7 @@ __YYSCLASS yytabelem yyact[] = {
   0, 0, 0, 0, 0, 224
 };
 
-__YYSCLASS yytabelem yypact[] = {
+__YYSCLASS tdiyytabelem tdiyypact[] = {
 
   -40, -3000, 260, -3000, -3000, -3000, 7, -3, -85, 50,
   -299, 45, -278, 45, 45, 45, 260, 260, 260, 20,
@@ -442,13 +363,13 @@ __YYSCLASS yytabelem yypact[] = {
   -3000, -3000, 29, 260, -3000
 };
 
-__YYSCLASS yytabelem yypgo[] = {
+__YYSCLASS tdiyytabelem tdiyypgo[] = {
 
   0, 107, 55, 1011, 101, 78, 100, 99, 98, 97,
   974, 1007, 968, 93, 96, 94, 92, 53, 613, 91
 };
 
-__YYSCLASS yytabelem yyr1[] = {
+__YYSCLASS tdiyytabelem tdiyyr1[] = {
 
   0, 4, 5, 5, 5, 5, 5, 5, 5, 5,
   5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -465,7 +386,7 @@ __YYSCLASS yytabelem yyr1[] = {
   1, 1, 1
 };
 
-__YYSCLASS yytabelem yyr2[] = {
+__YYSCLASS tdiyytabelem tdiyyr2[] = {
 
   0, 5, 2, 2, 2, 2, 2, 2, 2, 2,
   2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
@@ -482,7 +403,7 @@ __YYSCLASS yytabelem yyr2[] = {
   1, 3, 3
 };
 
-__YYSCLASS yytabelem yychk[] = {
+__YYSCLASS tdiyytabelem tdiyychk[] = {
 
   -3000, -1, -2, 257, 256, -3, 262, 263, 266, 269,
   270, 271, -4, 275, 277, 278, -8, 96, 123, -12,
@@ -509,7 +430,7 @@ __YYSCLASS yytabelem yychk[] = {
   41, 59, -12, 41, -3
 };
 
-__YYSCLASS yytabelem yydef[] = {
+__YYSCLASS tdiyytabelem tdiyydef[] = {
 
   -2, -2, -2, 121, 122, 117, 9, 12, 13, 15,
   6, 16, 0, 18, 20, 21, 78, 78, 78, 0,
@@ -539,14 +460,14 @@ __YYSCLASS yytabelem yydef[] = {
 typedef struct {
   char *t_name;
   int t_val;
-} yytoktype;
+} tdiyytoktype;
 #ifndef YYDEBUG
 #define YYDEBUG  0		/* don't allow debugging */
 #endif
 
 #if YYDEBUG
 
-__YYSCLASS yytoktype yytoks[] = {
+__YYSCLASS tdiyytoktype tdiyytoks[] = {
   "ERROR", 257,
   "IDENT", 258,
   "POINT", 259,
@@ -608,7 +529,7 @@ __YYSCLASS yytoktype yytoks[] = {
   "-unknown-", -1		/* ends search */
 };
 
-__YYSCLASS char *yyreds[] = {
+__YYSCLASS char *tdiyyreds[] = {
   "-no such reduction-",
   "slabel : LABEL VBL",
   "label : CONST",
@@ -752,29 +673,30 @@ __YYSCLASS char *yyreds[] = {
 /*
 ** yacc user known macros and defines
 */
-#define YYERROR         goto yyerrlab
+#define YYERROR         goto tdiyyerrlab
 
 #ifndef __RUNTIME_YYMAXDEPTH
-#define YYACCEPT        {return(0);}
-#define YYABORT         {return(1);}
+#define YYACCEPT        {return MDSplusSUCCESS;}
+#define YYABORT         {return MDSplusERROR;}
 #else
-#define YYACCEPT        {free_stacks(); return(0);}
-#define YYABORT         {free_stacks(); return(1);}
+#define YYACCEPT        {free_stacks(); return MDSplusSUCCESS;}
+#define YYABORT         {free_stacks(); return MDSplusERROR;}
 #endif
 
 #define YYBACKUP( newtoken, newvalue )\
 {\
-        if ( yychar >= 0 || ( yyr2[ yytmp ] >> 1 ) != 1 )\
+        if ( tdiyychar >= 0 || ( tdiyyr2[ tdiyytmp ] >> 1 ) != 1 )\
         {\
-                yyerror( (nl_msg(30001,"syntax error - cannot backup")) );\
-                goto yyerrlab;\
+                tdiyyerror( (nl_msg(30001,"syntax error - cannot backup")) );\
+                goto tdiyyerrlab;\
         }\
-        yychar = newtoken;\
-        yystate = *yyps;\
-        yylval = newvalue;\
-        goto yynewstate;\
+        tdiyychar = newtoken;\
+        tdiyystate = *tdiyyps;\
+        tdiyylval = newvalue;\
+        goto tdiyynewstate;\
 }
-#define YYRECOVERING()  (!!yyerrflag)
+//"
+#define YYRECOVERING()  (!!tdiyyerrflag)
 #ifndef YYDEBUG
 #define YYDEBUG  1		/* make debugging available */
 #endif
@@ -782,7 +704,7 @@ __YYSCLASS char *yyreds[] = {
 /*
 ** user known globals
 */
-int yydebug;			/* set to 1 to get debugging */
+int tdiyydebug;			/* set to 1 to get debugging */
 
 /*
 ** driver internal defines
@@ -794,11 +716,11 @@ int yydebug;			/* set to 1 to get debugging */
 ** global variables used by the parser
 */
 #ifndef __RUNTIME_YYMAXDEPTH
-__YYSCLASS YYSTYPE yyv[YYMAXDEPTH];	/* value stack */
-__YYSCLASS int yys[YYMAXDEPTH];	/* state stack */
+__YYSCLASS YYSTYPE tdiyyv[YYMAXDEPTH];	/* value stack */
+__YYSCLASS int tdiyys[YYMAXDEPTH];	/* state stack */
 #else
-__YYSCLASS YYSTYPE *yyv;	/* pointer to malloc'ed value stack */
-__YYSCLASS int *yys;		/* pointer to malloc'ed stack stack */
+__YYSCLASS YYSTYPE *tdiyyv;	/* pointer to malloc'ed value stack */
+__YYSCLASS int *tdiyys;		/* pointer to malloc'ed stack stack */
 
 #if defined(__STDC__) || defined (__cplusplus)
 #include <stdlib.h>
@@ -814,72 +736,74 @@ STATIC_ROUTINE void free_stacks();
 #define YYINCREMENT (YYMAXDEPTH/2) + 10
 #endif
 #endif				/* __RUNTIME_YYMAXDEPTH */
-long yymaxdepth = YYMAXDEPTH;
+long tdiyymaxdepth = YYMAXDEPTH;
 
-__YYSCLASS YYSTYPE *yypv;	/* top of value stack */
-__YYSCLASS int *yyps;		/* top of state stack */
+__YYSCLASS YYSTYPE *tdiyypv;	/* top of value stack */
+__YYSCLASS int *tdiyyps;		/* top of state stack */
 
-__YYSCLASS int yystate;		/* current state */
-__YYSCLASS int yytmp;		/* extra var (lasts between blocks) */
+__YYSCLASS int tdiyystate;		/* current state */
+__YYSCLASS int tdiyytmp;		/* extra var (lasts between blocks) */
 
-int yynerrs;			/* number of errors */
-__YYSCLASS int yyerrflag;	/* error recovery flag */
-int yychar;			/* current input token number */
+int tdiyynerrs;			/* number of errors */
+__YYSCLASS int tdiyyerrflag;	/* error recovery flag */
+int tdiyychar;			/* current input token number */
 
 /*
-** yyparse - return 0 if worked, 1 if syntax error not recovered from
+** tdiyyparse - return 0 if worked, 1 if syntax error not recovered from
 */
-int yyparse()
+int tdiyyparse()
 {
-  register YYSTYPE *yypvt;	/* top of value stack for $vars */
+  GET_TDITHREADSTATIC_P;
+  register YYSTYPE *tdiyypvt;	/* top of value stack for $vars */
 
   /*
-   ** Initialize externals - yyparse may be called more than once
+   ** Initialize externals - tdiyyparse may be called more than once
    */
 #ifdef __RUNTIME_YYMAXDEPTH
   if (allocate_stacks())
     YYABORT;
 #endif
-  //    yypv = &yyv[-1];
-  yypv = yyv - 1;
-  //    yyps = &yys[-1];
-  yyps = yys - 1;
-  yystate = 0;
-  yytmp = 0;
-  yynerrs = 0;
-  yyerrflag = 0;
-  yychar = -1;
+  tdiyyval.mark.w_ok=0;
+  //  tdiyypv = &tdiyyv[-1];
+  tdiyypv = tdiyyv - 1;
+  //  tdiyyps = &tdiyys[-1];
+  tdiyyps = tdiyys - 1;
+  tdiyystate = 0;
+  tdiyytmp = 0;
+  tdiyynerrs = 0;
+  tdiyyerrflag = 0;
+  tdiyychar = -1;
 
-  goto yystack;
+  goto tdiyystack;
   {
-    register YYSTYPE *yy_pv;	/* top of value stack */
-    register int *yy_ps;	/* top of state stack */
-    register int yy_state;	/* current state */
-    register int yy_n;		/* internal state number info */
+    register YYSTYPE *tdiyy_pv;	/* top of value stack */
+    register int *tdiyy_ps;	/* top of state stack */
+    register int tdiyy_state;	/* current state */
+    register int tdiyy_n;		/* internal state number info */
 
     /*
      ** get globals into registers.
      ** branch to here only if YYBACKUP was called.
      */
-    // yynewstate:
-    yy_pv = yypv;
-    yy_ps = yyps;
-    yy_state = yystate;
-    goto yy_newstate;
+    // tdiyynewstate:
+    tdiyy_pv = tdiyypv;
+    tdiyy_ps = tdiyyps;
+    tdiyy_state = tdiyystate;
+    goto tdiyy_newstate;
 
     /*
      ** get globals into registers.
      ** either we just started, or we just finished a reduction
      */
- yystack:
-    yy_pv = yypv;
-    yy_ps = yyps;
-    yy_state = yystate;
+ tdiyystack:
+    tdiyy_pv = tdiyypv;
+    tdiyy_ps = tdiyyps;
+    tdiyy_state = tdiyystate;
 
     /*
      ** top of for (;;) loop while no reductions done
      */
- yy_stack:
+ tdiyy_stack:
     /*
      ** put a state and value onto the stacks
      */
@@ -890,115 +814,115 @@ int yyparse()
      ** Note: linear search is used since time is not a real
      ** consideration while debugging.
      */
-    if (yydebug) {
-      register int yy_i;
+    if (tdiyydebug) {
+      register int tdiyy_i;
 
-      printf("State %d, token ", yy_state);
-      if (yychar == 0)
+      printf("State %d, token ", tdiyy_state);
+      if (tdiyychar == 0)
 	printf("end-of-file\n");
-      else if (yychar < 0)
+      else if (tdiyychar < 0)
 	printf("-none-\n");
       else {
-	for (yy_i = 0; yytoks[yy_i].t_val >= 0; yy_i++) {
-	  if (yytoks[yy_i].t_val == yychar)
+	for (tdiyy_i = 0; tdiyytoks[tdiyy_i].t_val >= 0; tdiyy_i++) {
+	  if (tdiyytoks[tdiyy_i].t_val == tdiyychar)
 	    break;
 	}
-	printf("%s\n", yytoks[yy_i].t_name);
+	printf("%s\n", tdiyytoks[tdiyy_i].t_name);
       }
     }
 #endif				/* YYDEBUG */
-    if (++yy_ps >= &yys[yymaxdepth]) {	/* room on stack? */
+    if (++tdiyy_ps >= &tdiyys[tdiyymaxdepth]) {	/* room on stack? */
 #ifndef __RUNTIME_YYMAXDEPTH
-      yyerror((nl_msg(30002, "yacc stack overflow")));
+      tdiyyerror((nl_msg(30002, "yacc stack overflow")));
       YYABORT;
 #else
       /* save old stack bases to recalculate pointers */
-      YYSTYPE *yyv_old = yyv;
-      int *yys_old = yys;
-      yymaxdepth += YYINCREMENT;
-      yys = (int *)realloc(yys, yymaxdepth * sizeof(int));
-      yyv = (YYSTYPE *) realloc(yyv, yymaxdepth * sizeof(YYSTYPE));
-      if (yys == 0 || yyv == 0) {
-	yyerror((nl_msg(30002, "yacc stack overflow")));
+      YYSTYPE *tdiyyv_old = tdiyyv;
+      int *tdiyys_old = tdiyys;
+      tdiyymaxdepth += YYINCREMENT;
+      tdiyys = (int *)realloc(tdiyys, tdiyymaxdepth * sizeof(int));
+      tdiyyv = (YYSTYPE *) realloc(tdiyyv, tdiyymaxdepth * sizeof(YYSTYPE));
+      if (tdiyys == 0 || tdiyyv == 0) {
+	tdiyyerror((nl_msg(30002, "yacc stack overflow")));
 	YYABORT;
       }
       /* Reset pointers into stack */
-      yy_ps = (yy_ps - yys_old) + yys;
-      yyps = (yyps - yys_old) + yys;
-      yy_pv = (yy_pv - yyv_old) + yyv;
-      yypv = (yypv - yyv_old) + yyv;
+      tdiyy_ps = (tdiyy_ps - tdiyys_old) + tdiyys;
+      tdiyyps = (tdiyyps - tdiyys_old) + tdiyys;
+      tdiyy_pv = (tdiyy_pv - tdiyyv_old) + tdiyyv;
+      tdiyypv = (tdiyypv - tdiyyv_old) + tdiyyv;
 #endif
 
     }
-    *yy_ps = yy_state;
-    *++yy_pv = yyval;
+    *tdiyy_ps = tdiyy_state;
+    *++tdiyy_pv = tdiyyval;
 
     /*
      ** we have a new state - find out what to do
      */
- yy_newstate:
-    if ((yy_n = yypact[yy_state]) <= YYFLAG)
-      goto yydefault;		/* simple state */
+ tdiyy_newstate:
+    if ((tdiyy_n = tdiyypact[tdiyy_state]) <= YYFLAG)
+      goto tdiyydefault;		/* simple state */
 #if YYDEBUG
     /*
      ** if debugging, need to mark whether new token grabbed
      */
-    yytmp = yychar < 0;
+    tdiyytmp = tdiyychar < 0;
 #endif
-    if ((yychar < 0) && ((yychar = yylex()) < 0))
-      yychar = 0;		/* reached EOF */
+    if ((tdiyychar < 0) && ((tdiyychar = tdiyylex()) < 0))
+      tdiyychar = 0;		/* reached EOF */
 #if YYDEBUG
-    if (yydebug && yytmp) {
-      register int yy_i;
+    if (tdiyydebug && tdiyytmp) {
+      register int tdiyy_i;
 
       printf("Received token ");
-      if (yychar == 0)
+      if (tdiyychar == 0)
 	printf("end-of-file\n");
-      else if (yychar < 0)
+      else if (tdiyychar < 0)
 	printf("-none-\n");
       else {
-	for (yy_i = 0; yytoks[yy_i].t_val >= 0; yy_i++) {
-	  if (yytoks[yy_i].t_val == yychar)
+	for (tdiyy_i = 0; tdiyytoks[tdiyy_i].t_val >= 0; tdiyy_i++) {
+	  if (tdiyytoks[tdiyy_i].t_val == tdiyychar)
 	    break;
 	}
-	printf("%s\n", yytoks[yy_i].t_name);
+	printf("%s\n", tdiyytoks[tdiyy_i].t_name);
       }
     }
 #endif				/* YYDEBUG */
-    if (((yy_n += yychar) < 0) || (yy_n >= YYLAST))
-      goto yydefault;
-    if (yychk[yy_n = yyact[yy_n]] == yychar) {	/*valid shift */
-      yychar = -1;
-      yyval = yylval;
-      yy_state = yy_n;
-      if (yyerrflag > 0)
-	yyerrflag--;
-      goto yy_stack;
+    if (((tdiyy_n += tdiyychar) < 0) || (tdiyy_n >= YYLAST))
+      goto tdiyydefault;
+    if (tdiyychk[tdiyy_n = tdiyyact[tdiyy_n]] == tdiyychar) {	/*valid shift */
+      tdiyychar = -1;
+      tdiyyval = tdiyylval;
+      tdiyy_state = tdiyy_n;
+      if (tdiyyerrflag > 0)
+	tdiyyerrflag--;
+      goto tdiyy_stack;
     }
 
- yydefault:
-    if ((yy_n = yydef[yy_state]) == -2) {
+ tdiyydefault:
+    if ((tdiyy_n = tdiyydef[tdiyy_state]) == -2) {
 #if YYDEBUG
-      yytmp = yychar < 0;
+      tdiyytmp = tdiyychar < 0;
 #endif
-      if ((yychar < 0) && ((yychar = yylex()) < 0))
-	yychar = 0;		/* reached EOF */
+      if ((tdiyychar < 0) && ((tdiyychar = tdiyylex()) < 0))
+	tdiyychar = 0;		/* reached EOF */
 #if YYDEBUG
-      if (yydebug && yytmp) {
-	register int yy_i;
+      if (tdiyydebug && tdiyytmp) {
+	register int tdiyy_i;
 
 	printf("Received token ");
-	if (yychar == 0)
+	if (tdiyychar == 0)
 	  printf("end-of-file\n");
-	else if (yychar < 0)
+	else if (tdiyychar < 0)
 	  printf("-none-\n");
 	else {
-	  for (yy_i = 0; yytoks[yy_i].t_val >= 0; yy_i++) {
-	    if (yytoks[yy_i].t_val == yychar) {
+	  for (tdiyy_i = 0; tdiyytoks[tdiyy_i].t_val >= 0; tdiyy_i++) {
+	    if (tdiyytoks[tdiyy_i].t_val == tdiyychar) {
 	      break;
 	    }
 	  }
-	  printf("%s\n", yytoks[yy_i].t_name);
+	  printf("%s\n", tdiyytoks[tdiyy_i].t_name);
 	}
       }
 #endif				/* YYDEBUG */
@@ -1006,13 +930,13 @@ int yyparse()
        ** look through exception table
        */
       {
-	register int *yyxi = yyexca;
+	register int *tdiyyxi = tdiyyexca;
 
-	while ((*yyxi != -1) || (yyxi[1] != yy_state)) {
-	  yyxi += 2;
+	while ((*tdiyyxi != -1) || (tdiyyxi[1] != tdiyy_state)) {
+	  tdiyyxi += 2;
 	}
-	while ((*(yyxi += 2) >= 0) && (*yyxi != yychar)) ;
-	if ((yy_n = yyxi[1]) < 0)
+	while ((*(tdiyyxi += 2) >= 0) && (*tdiyyxi != tdiyychar)) ;
+	if ((tdiyy_n = tdiyyxi[1]) < 0)
 	  YYACCEPT;
       }
     }
@@ -1020,39 +944,36 @@ int yyparse()
     /*
      ** check for syntax error
      */
-    if (yy_n == 0) {		/* have an error */
+    if (tdiyy_n == 0) {		/* have an error */
       /* no worry about speed here! */
-      switch (yyerrflag) {
+      switch (tdiyyerrflag) {
       case 0:			/* new error */
-	yyerror((nl_msg(30003, "syntax error")));
-	yynerrs++;
-	goto skip_init;
-	// yyerrlab:
+	tdiyyerror((nl_msg(30003, "syntax error")));
+	// tdiyyerrlab:
 	/*
 	 ** get globals into registers.
 	 ** we have a user generated syntax type error
+	tdiyy_pv = tdiyypv;
+	tdiyy_ps = tdiyyps;
+	tdiyy_state = tdiyystate;
 	 */
-	yy_pv = yypv;
-	yy_ps = yyps;
-	yy_state = yystate;
-	yynerrs++;
- skip_init:
+	tdiyynerrs++;
       case 1:
       case 2:			/* incompletely recovered error */
 	/* try again... */
-	yyerrflag = 3;
+	tdiyyerrflag = 3;
 	/*
 	 ** find state where "error" is a legal
 	 ** shift action
 	 */
-	while (yy_ps >= yys) {
-	  yy_n = yypact[*yy_ps] + YYERRCODE;
-	  if (yy_n >= 0 && yy_n < YYLAST && yychk[yyact[yy_n]] == YYERRCODE) {
+	while (tdiyy_ps >= tdiyys) {
+	  tdiyy_n = tdiyypact[*tdiyy_ps] + YYERRCODE;
+	  if (tdiyy_n >= 0 && tdiyy_n < YYLAST && tdiyychk[tdiyyact[tdiyy_n]] == YYERRCODE) {
 	    /*
 	     ** simulate shift of "error"
 	     */
-	    yy_state = yyact[yy_n];
-	    goto yy_stack;
+	    tdiyy_state = tdiyyact[tdiyy_n];
+	    goto tdiyy_stack;
 	  }
 	  /*
 	   ** current state has no shift on
@@ -1060,12 +981,12 @@ int yyparse()
 	   */
 #if YYDEBUG
 #define _POP_ "Error recovery pops state %d, uncovers state %d\n"
-	  if (yydebug)
-	    printf(_POP_, *yy_ps, yy_ps[-1]);
+	  if (tdiyydebug)
+	    printf(_POP_, *tdiyy_ps, tdiyy_ps[-1]);
 #undef _POP_
 #endif
-	  yy_ps--;
-	  yy_pv--;
+	  tdiyy_ps--;
+	  tdiyy_pv--;
 	}
 	/*
 	 ** there is no state on stack with "error" as
@@ -1081,33 +1002,33 @@ int yyparse()
 	 ** debugging, it doesn't hurt to leave the
 	 ** tests here.
 	 */
-	if (yydebug) {
-	  register int yy_i;
+	if (tdiyydebug) {
+	  register int tdiyy_i;
 
 	  printf("Error recovery discards ");
-	  if (yychar == 0)
+	  if (tdiyychar == 0)
 	    printf("token end-of-file\n");
-	  else if (yychar < 0)
+	  else if (tdiyychar < 0)
 	    printf("token -none-\n");
 	  else {
-	    for (yy_i = 0; yytoks[yy_i].t_val >= 0; yy_i++) {
-	      if (yytoks[yy_i].t_val == yychar) {
+	    for (tdiyy_i = 0; tdiyytoks[tdiyy_i].t_val >= 0; tdiyy_i++) {
+	      if (tdiyytoks[tdiyy_i].t_val == tdiyychar) {
 		break;
 	      }
 	    }
-	    printf("token %s\n", yytoks[yy_i].t_name);
+	    printf("token %s\n", tdiyytoks[tdiyy_i].t_name);
 	  }
 	}
 #endif				/* YYDEBUG */
-	if (yychar == 0)	/* reached EOF. quit */
+	if (tdiyychar == 0)	/* reached EOF. quit */
 	  YYABORT;
-	yychar = -1;
-	goto yy_newstate;
+	tdiyychar = -1;
+	goto tdiyy_newstate;
       }
     }
-    /* end if ( yy_n == 0 ) */
+    /* end if ( tdiyy_n == 0 ) */
     /*
-     ** reduction by production yy_n
+     ** reduction by production tdiyy_n
      ** put stack tops, etc. so things right after switch
      */
 #if YYDEBUG
@@ -1116,350 +1037,350 @@ int yyparse()
      ** specification of the reduction which is just about
      ** to be done.
      */
-    if (yydebug)
-      printf("Reduce by (%d) \"%s\"\n", yy_n, yyreds[yy_n]);
+    if (tdiyydebug)
+      printf("Reduce by (%d) \"%s\"\n", tdiyy_n, tdiyyreds[tdiyy_n]);
 #endif
-    yytmp = yy_n;		/* value to switch over */
-    yypvt = yy_pv;		/* $vars top of value stack */
+    tdiyytmp = tdiyy_n;		/* value to switch over */
+    tdiyypvt = tdiyy_pv;		/* $vars top of value stack */
     /*
      ** Look in goto table for next state
-     ** Sorry about using yy_state here as temporary
+     ** Sorry about using tdiyy_state here as temporary
      ** register variable, but why not, if it works...
-     ** If yyr2[ yy_n ] doesn't have the low order bit
+     ** If tdiyyr2[ tdiyy_n ] doesn't have the low order bit
      ** set, then there is no action to be done for
      ** this reduction.  So, no saving & unsaving of
      ** registers done.  The only difference between the
      ** code just after the if and the body of the if is
-     ** the goto yy_stack in the body.  This way the test
+     ** the goto tdiyy_stack in the body.  This way the test
      ** can be made before the choice of what to do is needed.
      */
     {
       /* length of production doubled with extra bit */
-      register int yy_len = yyr2[yy_n];
+      register int tdiyy_len = tdiyyr2[tdiyy_n];
 
-      if (!(yy_len & 01)) {
-	yy_len >>= 1;
-	yyval = (yy_pv -= yy_len)[1];	/* $$ = $1 */
-	yy_state = yypgo[yy_n = yyr1[yy_n]] + *(yy_ps -= yy_len) + 1;
-	if (yy_state >= YYLAST || yychk[yy_state = yyact[yy_state]] != -yy_n) {
-	  yy_state = yyact[yypgo[yy_n]];
+      if (!(tdiyy_len & 01)) {
+	tdiyy_len >>= 1;
+	tdiyyval = (tdiyy_pv -= tdiyy_len)[1];	/* $$ = $1 */
+	tdiyy_state = tdiyypgo[tdiyy_n = tdiyyr1[tdiyy_n]] + *(tdiyy_ps -= tdiyy_len) + 1;
+	if (tdiyy_state >= YYLAST || tdiyychk[tdiyy_state = tdiyyact[tdiyy_state]] != -tdiyy_n) {
+	  tdiyy_state = tdiyyact[tdiyypgo[tdiyy_n]];
 	}
-	goto yy_stack;
+	goto tdiyy_stack;
       }
-      yy_len >>= 1;
-      yyval = (yy_pv -= yy_len)[1];	/* $$ = $1 */
-      yy_state = yypgo[yy_n = yyr1[yy_n]] + *(yy_ps -= yy_len) + 1;
-      if (yy_state >= YYLAST || yychk[yy_state = yyact[yy_state]] != -yy_n) {
-	yy_state = yyact[yypgo[yy_n]];
+      tdiyy_len >>= 1;
+      tdiyyval = (tdiyy_pv -= tdiyy_len)[1];	/* $$ = $1 */
+      tdiyy_state = tdiyypgo[tdiyy_n = tdiyyr1[tdiyy_n]] + *(tdiyy_ps -= tdiyy_len) + 1;
+      if (tdiyy_state >= YYLAST || tdiyychk[tdiyy_state = tdiyyact[tdiyy_state]] != -tdiyy_n) {
+	tdiyy_state = tdiyyact[tdiyypgo[tdiyy_n]];
       }
     }
     /* save until reenter driver code */
-    yystate = yy_state;
-    yyps = yy_ps;
-    yypv = yy_pv;
+    tdiyystate = tdiyy_state;
+    tdiyyps = tdiyy_ps;
+    tdiyypv = tdiyy_pv;
   }
   /*
    ** code supplied by user is placed in this switch
    */
-  switch (yytmp) {
+  switch (tdiyytmp) {
 
   case 1:
 //#line 184 "TdiYacc.y"
     {
-      yyval.mark = yypvt[-0].mark;
+      tdiyyval.mark = tdiyypvt[-0].mark;
     }
     break;
   case 32:
 //#line 199 "TdiYacc.y"
     {
-      yyval.mark.rptr = yypvt[-0].mark.rptr;
-      yyval.mark.builtin = -2;
-      TdiRefZone.l_status = TdiYacc_IMMEDIATE(&yyval.mark.rptr);
+      tdiyyval.mark.rptr = tdiyypvt[-0].mark.rptr;
+      tdiyyval.mark.builtin = -2;
+      TdiRefZone.l_status = TdiYacc_IMMEDIATE(&tdiyyval.mark.rptr);
       if (!(TdiRefZone.l_status & 1)) {
-	yyerror(0);
+	tdiyyerror(0);
       }
     }
     break;
   case 33:
 //#line 203 "TdiYacc.y"
     {
-      _JUST2(OpcEquals, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(OpcEquals, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 34:
 //#line 204 "TdiYacc.y"
     {
       struct marker tmp;	/*binary operation and assign */
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, tmp);
-      _JUST1(OpcEqualsFirst, tmp, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tmp);
+      _JUST1(OpcEqualsFirst, tmp, tdiyyval.mark);
     } break;
   case 35:
 //#line 207 "TdiYacc.y"
     {
-      if (yypvt[-0].mark.rptr && yypvt[-0].mark.rptr->dtype == DTYPE_RANGE)
-	if (yypvt[-0].mark.rptr->ndesc == 2) {
-	  yyval.mark = yypvt[-0].mark;
-	  yyval.mark.rptr->dscptrs[2] = yyval.mark.rptr->dscptrs[1];
-	  yyval.mark.rptr->dscptrs[1] = yyval.mark.rptr->dscptrs[0];
-	  yyval.mark.rptr->dscptrs[0] = (struct descriptor *)yypvt[-2].mark.rptr;
-	  ++yyval.mark.rptr->ndesc;
+      if (tdiyypvt[-0].mark.rptr && tdiyypvt[-0].mark.rptr->dtype == DTYPE_RANGE)
+	if (tdiyypvt[-0].mark.rptr->ndesc == 2) {
+	  tdiyyval.mark = tdiyypvt[-0].mark;
+	  tdiyyval.mark.rptr->dscptrs[2] = tdiyyval.mark.rptr->dscptrs[1];
+	  tdiyyval.mark.rptr->dscptrs[1] = tdiyyval.mark.rptr->dscptrs[0];
+	  tdiyyval.mark.rptr->dscptrs[0] = (struct descriptor *)tdiyypvt[-2].mark.rptr;
+	  ++tdiyyval.mark.rptr->ndesc;
 	} else {
 	  TdiRefZone.l_status = TdiEXTRA_ARG;
-	  return (1);
+	  return MDSplusERROR;
       } else {
 	unsigned int vmlen = sizeof(struct descriptor_range);
-	LibGetVm(&vmlen, (void **)&yyval.mark.rptr, &TdiRefZone.l_zone);
-	yyval.mark.rptr->length = 0;
-	yyval.mark.rptr->dtype = DTYPE_RANGE;
-	yyval.mark.rptr->class = CLASS_R;
-	yyval.mark.rptr->pointer = 0;
-	yyval.mark.rptr->ndesc = 2;
-	yyval.mark.rptr->dscptrs[0] = (struct descriptor *)yypvt[-2].mark.rptr;
-	yyval.mark.rptr->dscptrs[1] = (struct descriptor *)yypvt[-0].mark.rptr;
-	_RESOLVE(yyval.mark);
+	LibGetVm(&vmlen, (void **)&tdiyyval.mark.rptr, &TdiRefZone.l_zone);
+	tdiyyval.mark.rptr->length = 0;
+	tdiyyval.mark.rptr->dtype = DTYPE_RANGE;
+	tdiyyval.mark.rptr->class = CLASS_R;
+	tdiyyval.mark.rptr->pointer = 0;
+	tdiyyval.mark.rptr->ndesc = 2;
+	tdiyyval.mark.rptr->dscptrs[0] = (struct descriptor *)tdiyypvt[-2].mark.rptr;
+	tdiyyval.mark.rptr->dscptrs[1] = (struct descriptor *)tdiyypvt[-0].mark.rptr;
+	_RESOLVE(tdiyyval.mark);
       }
     } break;
   case 36:
 //#line 226 "TdiYacc.y"
     {
-      _JUST3(OpcConditional, yypvt[-2].mark, yypvt[-0].mark, yypvt[-4].mark, yyval.mark);
+      _JUST3(OpcConditional, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyypvt[-4].mark, tdiyyval.mark);
     }
     break;
   case 37:
 //#line 227 "TdiYacc.y"
     {
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 38:
 //#line 228 "TdiYacc.y"
     {
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 39:
 //#line 229 "TdiYacc.y"
     {
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 40:
 //#line 230 "TdiYacc.y"
     {
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 41:
 //#line 231 "TdiYacc.y"
     {
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 42:
 //#line 232 "TdiYacc.y"
     {
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 43:
 //#line 233 "TdiYacc.y"
     {
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 44:
 //#line 234 "TdiYacc.y"
     {
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 45:
 //#line 235 "TdiYacc.y"
     {
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 46:
 //#line 236 "TdiYacc.y"
     {
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 47:
 //#line 237 "TdiYacc.y"
     {
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 48:
 //#line 238 "TdiYacc.y"
     {
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 49:
 //#line 239 "TdiYacc.y"
     {
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 50:
 //#line 240 "TdiYacc.y"
     {
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 51:
 //#line 241 "TdiYacc.y"
     {
-      if (yyval.mark.rptr == 0)
-	yyval.mark = yypvt[-0].mark;
-      else if (yyval.mark.rptr->dtype == DTYPE_FUNCTION
-	       && *(unsigned short *)yyval.mark.rptr->pointer == OpcConcat
-	       && yyval.mark.rptr->ndesc < 250) {
-	yyval.mark.rptr->dscptrs[yyval.mark.rptr->ndesc++] =
-	    (struct descriptor *)yypvt[-0].mark.rptr;
-	_RESOLVE(yyval.mark);
+      if (tdiyyval.mark.rptr == 0)
+	tdiyyval.mark = tdiyypvt[-0].mark;
+      else if (tdiyyval.mark.rptr->dtype == DTYPE_FUNCTION
+	       && *(unsigned short *)tdiyyval.mark.rptr->pointer == OpcConcat
+	       && tdiyyval.mark.rptr->ndesc < 250) {
+	tdiyyval.mark.rptr->dscptrs[tdiyyval.mark.rptr->ndesc++] =
+	    (struct descriptor *)tdiyypvt[-0].mark.rptr;
+	_RESOLVE(tdiyyval.mark);
       } else {
-	_FULL2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+	_FULL2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
       }
     }
     break;
   case 52:
 //#line 249 "TdiYacc.y"
     {
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 53:
 //#line 250 "TdiYacc.y"
     {
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 54:
 //#line 251 "TdiYacc.y"
     {
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 55:
 //#line 252 "TdiYacc.y"
     {
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 56:
 //#line 253 "TdiYacc.y"
     {
-      _JUST2(OpcMultiply, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(OpcMultiply, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 57:
 //#line 254 "TdiYacc.y"
     {
-      _JUST2(yypvt[-1].mark.builtin, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 59:
 //#line 256 "TdiYacc.y"
     {
-      yyval.mark = _EMPTY_MARKER;
+      tdiyyval.mark = _EMPTY_MARKER;
     }
     break;
   case 60:
 //#line 258 "TdiYacc.y"
     {
       int j;
-      if (yypvt[-1].mark.builtin == OpcAdd)
+      if (tdiyypvt[-1].mark.builtin == OpcAdd)
 	j = OpcUnaryPlus;
       else
 	j = OpcUnaryMinus;
-      _JUST1(j, yypvt[-0].mark, yyval.mark);
+      _JUST1(j, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 61:
 //#line 262 "TdiYacc.y"
     {
-      _JUST1(yypvt[-1].mark.builtin, yypvt[-0].mark, yyval.mark);
+      _JUST1(tdiyypvt[-1].mark.builtin, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 62:
 //#line 263 "TdiYacc.y"
     {
-      _JUST1(yypvt[-1].mark.builtin, yypvt[-0].mark, yyval.mark);
+      _JUST1(tdiyypvt[-1].mark.builtin, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 63:
 //#line 264 "TdiYacc.y"
     {
-      _JUST1(yypvt[-1].mark.builtin, yypvt[-0].mark, yyval.mark);
+      _JUST1(tdiyypvt[-1].mark.builtin, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 65:
 //#line 272 "TdiYacc.y"
     {
-      _FULL1(OpcVector, yypvt[-0].mark, yyval.mark);
+      _FULL1(OpcVector, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 66:
 //#line 273 "TdiYacc.y"
     {
-      _JUST0(OpcVector, yyval.mark);
+      _JUST0(OpcVector, tdiyyval.mark);
     }
     break;
   case 67:
 //#line 274 "TdiYacc.y"
     {
-      if (yyval.mark.rptr->ndesc >= 250) {
-	_RESOLVE(yypvt[-2].mark);
-	_FULL1(OpcVector, yypvt[-2].mark, yyval.mark);
+      if (tdiyyval.mark.rptr->ndesc >= 250) {
+	_RESOLVE(tdiyypvt[-2].mark);
+	_FULL1(OpcVector, tdiyypvt[-2].mark, tdiyyval.mark);
       }
-      yyval.mark.rptr->dscptrs[yyval.mark.rptr->ndesc++] = (struct descriptor *)yypvt[-0].mark.rptr;
+      tdiyyval.mark.rptr->dscptrs[tdiyyval.mark.rptr->ndesc++] = (struct descriptor *)tdiyypvt[-0].mark.rptr;
     } break;
   case 68:
 //#line 281 "TdiYacc.y"
     {
-      if (yyval.mark.rptr	/*comma is left-to-right weakest */
-	  && yyval.mark.builtin != -2
-	  && yyval.mark.rptr->dtype == DTYPE_FUNCTION
-	  && *(unsigned short *)yyval.mark.rptr->pointer == OpcComma
-	  && yyval.mark.rptr->ndesc < 250)
-	yyval.mark.rptr->dscptrs[yyval.mark.rptr->ndesc++] =
-	    (struct descriptor *)yypvt[-0].mark.rptr;
+      if (tdiyyval.mark.rptr	/*comma is left-to-right weakest */
+	  && tdiyyval.mark.builtin != -2
+	  && tdiyyval.mark.rptr->dtype == DTYPE_FUNCTION
+	  && *(unsigned short *)tdiyyval.mark.rptr->pointer == OpcComma
+	  && tdiyyval.mark.rptr->ndesc < 250)
+	tdiyyval.mark.rptr->dscptrs[tdiyyval.mark.rptr->ndesc++] =
+	    (struct descriptor *)tdiyypvt[-0].mark.rptr;
       else
-	_FULL2(OpcComma, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);	/*first comma */
+	_FULL2(OpcComma, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);	/*first comma */
     }
     break;
   case 70:
 //#line 291 "TdiYacc.y"
     {
-      if (yyval.mark.rptr
-	  && yyval.mark.builtin != -2
-	  && yyval.mark.rptr->dtype == DTYPE_FUNCTION
-	  && *(unsigned short *)yyval.mark.rptr->pointer == OpcComma) ;
+      if (tdiyyval.mark.rptr
+	  && tdiyyval.mark.builtin != -2
+	  && tdiyyval.mark.rptr->dtype == DTYPE_FUNCTION
+	  && *(unsigned short *)tdiyyval.mark.rptr->pointer == OpcComma) ;
       else
-	_JUST1(OpcAbort, yypvt[-0].mark, yyval.mark);
+	_JUST1(OpcAbort, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 71:
 //#line 296 "TdiYacc.y"
     {
-      _JUST0(OpcAbort, yyval.mark);
+      _JUST0(OpcAbort, tdiyyval.mark);
     }
     break;
   case 72:
 //#line 298 "TdiYacc.y"
     {
-      yyval.mark = yypvt[-1].mark;
-      yyval.mark.builtin = -2;
+      tdiyyval.mark = tdiyypvt[-1].mark;
+      tdiyyval.mark.builtin = -2;
     }
     break;
   case 73:
 //#line 299 "TdiYacc.y"
     {
-      yyval.mark = yypvt[-1].mark;
-      yyval.mark.builtin = -2;
+      tdiyyval.mark = tdiyypvt[-1].mark;
+      tdiyyval.mark.builtin = -2;
     }
     break;
   case 74:
@@ -1471,327 +1392,327 @@ int yyparse()
   case 75:
 //#line 303 "TdiYacc.y"
     {
-      _FULL2(OpcAbort, yypvt[-3].mark, yypvt[-1].mark, yyval.mark);
+      _FULL2(OpcAbort, tdiyypvt[-3].mark, tdiyypvt[-1].mark, tdiyyval.mark);
       --TdiRefZone.l_rel_path;
     }
     break;
   case 76:
 //#line 304 "TdiYacc.y"
     {
-      _FULL2(OpcAbort, yypvt[-2].mark, _EMPTY_MARKER, yyval.mark);
+      _FULL2(OpcAbort, tdiyypvt[-2].mark, _EMPTY_MARKER, tdiyyval.mark);
       --TdiRefZone.l_rel_path;
     }
     break;
   case 78:
 //#line 307 "TdiYacc.y"
     {
-      yyval.mark = _EMPTY_MARKER;
+      tdiyyval.mark = _EMPTY_MARKER;
     }
     break;
   case 80:
 //#line 313 "TdiYacc.y"
     {
       int j;
-      yyval.mark = yypvt[-1].mark;
-      yyval.mark.rptr->pointer = (unsigned char *)&OpcSubscript;
-      for (j = yyval.mark.rptr->ndesc; --j >= 0;)
-	yyval.mark.rptr->dscptrs[j + 1] = yyval.mark.rptr->dscptrs[j];
-      yyval.mark.rptr->dscptrs[0] = (struct descriptor *)yypvt[-3].mark.rptr;
-      yyval.mark.rptr->ndesc++;
-      _RESOLVE(yyval.mark);
+      tdiyyval.mark = tdiyypvt[-1].mark;
+      tdiyyval.mark.rptr->pointer = (unsigned char *)&OpcSubscript;
+      for (j = tdiyyval.mark.rptr->ndesc; --j >= 0;)
+	tdiyyval.mark.rptr->dscptrs[j + 1] = tdiyyval.mark.rptr->dscptrs[j];
+      tdiyyval.mark.rptr->dscptrs[0] = (struct descriptor *)tdiyypvt[-3].mark.rptr;
+      tdiyyval.mark.rptr->ndesc++;
+      _RESOLVE(tdiyyval.mark);
     } break;
   case 81:
 //#line 322 "TdiYacc.y"
     {
-      int j = yypvt[-0].mark.builtin == OpcPreInc ? OpcPostInc : OpcPostDec;
-      _JUST1(j, yypvt[-1].mark, yyval.mark);
+      int j = tdiyypvt[-0].mark.builtin == OpcPreInc ? OpcPostInc : OpcPostDec;
+      _JUST1(j, tdiyypvt[-1].mark, tdiyyval.mark);
     } break;
   case 82:
 //#line 324 "TdiYacc.y"
     {
-      yyval.mark = yypvt[-1].mark;
-      if (yypvt[-3].mark.builtin < 0) {
+      tdiyyval.mark = tdiyypvt[-1].mark;
+      if (tdiyypvt[-3].mark.builtin < 0) {
 	int j;			/*unknown today */
-	yyval.mark.rptr->pointer = (unsigned char *)&OpcExtFunction;
-	for (j = yyval.mark.rptr->ndesc; --j >= 0;)
-	  yyval.mark.rptr->dscptrs[j + 2] = yyval.mark.rptr->dscptrs[j];
-	yyval.mark.rptr->dscptrs[0] = 0;
-	yyval.mark.rptr->dscptrs[1] = (struct descriptor *)yypvt[-3].mark.rptr;
-	yyval.mark.rptr->ndesc += 2;
+	tdiyyval.mark.rptr->pointer = (unsigned char *)&OpcExtFunction;
+	for (j = tdiyyval.mark.rptr->ndesc; --j >= 0;)
+	  tdiyyval.mark.rptr->dscptrs[j + 2] = tdiyyval.mark.rptr->dscptrs[j];
+	tdiyyval.mark.rptr->dscptrs[0] = 0;
+	tdiyyval.mark.rptr->dscptrs[1] = (struct descriptor *)tdiyypvt[-3].mark.rptr;
+	tdiyyval.mark.rptr->ndesc += 2;
       } else {			/*intrinsic */
-	*(unsigned short *)yyval.mark.rptr->pointer = yypvt[-3].mark.builtin;
-	_RESOLVE(yyval.mark);
+	*(unsigned short *)tdiyyval.mark.rptr->pointer = tdiyypvt[-3].mark.builtin;
+	_RESOLVE(tdiyyval.mark);
       }
     } break;
   case 83:
 //#line 337 "TdiYacc.y"
     {
       int j;
-      yyval.mark = yypvt[-1].mark;	/*external */
-      yyval.mark.rptr->dtype = DTYPE_CALL;
-      yyval.mark.rptr->length = 0;
-      yyval.mark.rptr->pointer = 0;
-      for (j = yyval.mark.rptr->ndesc; --j >= 0;)
-	yyval.mark.rptr->dscptrs[j + 2] = yyval.mark.rptr->dscptrs[j];
-      yyval.mark.rptr->dscptrs[0] = (struct descriptor *)yypvt[-4].mark.rptr;
-      yyval.mark.rptr->dscptrs[1] = (struct descriptor *)yypvt[-3].mark.rptr;
-      yyval.mark.rptr->ndesc += 2;
+      tdiyyval.mark = tdiyypvt[-1].mark;	/*external */
+      tdiyyval.mark.rptr->dtype = DTYPE_CALL;
+      tdiyyval.mark.rptr->length = 0;
+      tdiyyval.mark.rptr->pointer = 0;
+      for (j = tdiyyval.mark.rptr->ndesc; --j >= 0;)
+	tdiyyval.mark.rptr->dscptrs[j + 2] = tdiyyval.mark.rptr->dscptrs[j];
+      tdiyyval.mark.rptr->dscptrs[0] = (struct descriptor *)tdiyypvt[-4].mark.rptr;
+      tdiyyval.mark.rptr->dscptrs[1] = (struct descriptor *)tdiyypvt[-3].mark.rptr;
+      tdiyyval.mark.rptr->ndesc += 2;
     } break;
   case 84:
 //#line 348 "TdiYacc.y"
     {
       int j;
-      yyval.mark = yypvt[-1].mark;	/*typed external */
-      StrUpcase((struct descriptor *)yypvt[-3].mark.rptr, (struct descriptor *)yypvt[-3].mark.rptr);
+      tdiyyval.mark = tdiyypvt[-1].mark;	/*typed external */
+      StrUpcase((struct descriptor *)tdiyypvt[-3].mark.rptr, (struct descriptor *)tdiyypvt[-3].mark.rptr);
       for (j = TdiCAT_MAX; --j >= 0;)
 	if (strncmp
-	    (TdiREF_CAT[j].name, (char *)yypvt[-3].mark.rptr->pointer,
-	     yypvt[-3].mark.rptr->length) == 0
-	    && strlen(TdiREF_CAT[j].name) == yypvt[-3].mark.rptr->length)
+	    (TdiREF_CAT[j].name, (char *)tdiyypvt[-3].mark.rptr->pointer,
+	     tdiyypvt[-3].mark.rptr->length) == 0
+	    && strlen(TdiREF_CAT[j].name) == tdiyypvt[-3].mark.rptr->length)
 	  break;
       if (j < 0) {
 	TdiRefZone.l_status = TdiINVDTYDSC;
-	return (1);
+	return MDSplusERROR;
       }
-      yyval.mark.rptr->dtype = DTYPE_CALL;
-      yyval.mark.rptr->length = 1;
-      *(unsigned char *)yyval.mark.rptr->pointer = (unsigned char)j;
-      for (j = yyval.mark.rptr->ndesc; --j >= 0;)
-	yyval.mark.rptr->dscptrs[j + 2] = yyval.mark.rptr->dscptrs[j];
-      yyval.mark.rptr->dscptrs[0] = (struct descriptor *)yypvt[-5].mark.rptr;
-      yyval.mark.rptr->dscptrs[1] = (struct descriptor *)yypvt[-4].mark.rptr;
-      yyval.mark.rptr->ndesc += 2;
+      tdiyyval.mark.rptr->dtype = DTYPE_CALL;
+      tdiyyval.mark.rptr->length = 1;
+      *(unsigned char *)tdiyyval.mark.rptr->pointer = (unsigned char)j;
+      for (j = tdiyyval.mark.rptr->ndesc; --j >= 0;)
+	tdiyyval.mark.rptr->dscptrs[j + 2] = tdiyyval.mark.rptr->dscptrs[j];
+      tdiyyval.mark.rptr->dscptrs[0] = (struct descriptor *)tdiyypvt[-5].mark.rptr;
+      tdiyyval.mark.rptr->dscptrs[1] = (struct descriptor *)tdiyypvt[-4].mark.rptr;
+      tdiyyval.mark.rptr->ndesc += 2;
     } break;
   case 85:
 //#line 364 "TdiYacc.y"
     {
       int j;			/*USING(expr,[default],[shotid],[expt]) */
-      yyval.mark.rptr->pointer = (unsigned char *)&OpcUsing;
-      for (j = 0; j < yypvt[-1].mark.rptr->ndesc; ++j)
-	yyval.mark.rptr->dscptrs[yyval.mark.rptr->ndesc++] = yypvt[-1].mark.rptr->dscptrs[j];
+      tdiyyval.mark.rptr->pointer = (unsigned char *)&OpcUsing;
+      for (j = 0; j < tdiyypvt[-1].mark.rptr->ndesc; ++j)
+	tdiyyval.mark.rptr->dscptrs[tdiyyval.mark.rptr->ndesc++] = tdiyypvt[-1].mark.rptr->dscptrs[j];
     }
     break;
   case 86:
 //#line 369 "TdiYacc.y"
     {
-      _JUST2(OpcUsing, yypvt[-3].mark, yypvt[-1].mark, yyval.mark);
+      _JUST2(OpcUsing, tdiyypvt[-3].mark, tdiyypvt[-1].mark, tdiyyval.mark);
       --TdiRefZone.l_rel_path;
     }
     break;
   case 88:
 //#line 375 "TdiYacc.y"
     {
-      MAKE_S(DTYPE_T, yypvt[-1].mark.rptr->length + yypvt[-0].mark.rptr->length, yyval.mark.rptr);
-      StrConcat((struct descriptor *)yyval.mark.rptr,
-		(struct descriptor *)yypvt[-1].mark.rptr, yypvt[-0].mark.rptr MDS_END_ARG);
+      MAKE_S(DTYPE_T, tdiyypvt[-1].mark.rptr->length + tdiyypvt[-0].mark.rptr->length, tdiyyval.mark.rptr);
+      StrConcat((struct descriptor *)tdiyyval.mark.rptr,
+		(struct descriptor *)tdiyypvt[-1].mark.rptr, tdiyypvt[-0].mark.rptr MDS_END_ARG);
     } break;
   case 89:
 //#line 384 "TdiYacc.y"
     {
-      _JUST1(yypvt[-1].mark.builtin, yypvt[-0].mark, yyval.mark);
+      _JUST1(tdiyypvt[-1].mark.builtin, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 90:
 //#line 385 "TdiYacc.y"
     {
       struct marker tmp;	/*OPTIONAL IN/INOUT/OUT */
-      _JUST1(yypvt[-1].mark.builtin, yypvt[-0].mark, tmp);
-      _JUST1(yypvt[-2].mark.builtin, tmp, yyval.mark);
+      _JUST1(tdiyypvt[-1].mark.builtin, tdiyypvt[-0].mark, tmp);
+      _JUST1(tdiyypvt[-2].mark.builtin, tmp, tdiyyval.mark);
     } break;
   case 91:
 //#line 388 "TdiYacc.y"
     {
-      if (*yyval.mark.rptr->pointer == '$') {
-	if (yyval.mark.builtin < 0) {
-	  yyval.mark.rptr->dtype = DTYPE_IDENT;
+      if (*tdiyyval.mark.rptr->pointer == '$') {
+	if (tdiyyval.mark.builtin < 0) {
+	  tdiyyval.mark.rptr->dtype = DTYPE_IDENT;
 	} else {
-	  if ((TdiRefFunction[yyval.mark.builtin].token & LEX_M_TOKEN) == (unsigned int)LEX_ARG) {
-	    if (!((TdiRefZone.l_status = TdiYacc_ARG(&yyval.mark)) & 1)) {
-	      yyerror(0);
+	  if ((TdiRefFunction[tdiyyval.mark.builtin].token & LEX_M_TOKEN) == (unsigned int)LEX_ARG) {
+	    if (!((TdiRefZone.l_status = TdiYacc_ARG(&tdiyyval.mark)) & 1)) {
+	      tdiyyerror(0);
 	    }
 	  } else {
-	    if ((TdiRefFunction[yyval.mark.builtin].token & LEX_M_TOKEN) == (unsigned int)LEX_CONST)
-	      _JUST0(yypvt[-0].mark.builtin, yyval.mark);
+	    if ((TdiRefFunction[tdiyyval.mark.builtin].token & LEX_M_TOKEN) == (unsigned int)LEX_CONST)
+	      _JUST0(tdiyypvt[-0].mark.builtin, tdiyyval.mark);
 	  }
 	}
-      } else if (*yyval.mark.rptr->pointer == '_')
-	yyval.mark.rptr->dtype = DTYPE_IDENT;
+      } else if (*tdiyyval.mark.rptr->pointer == '_')
+	tdiyyval.mark.rptr->dtype = DTYPE_IDENT;
       else if (TdiLexPath
-	       (yypvt[-0].mark.rptr->length, yypvt[-0].mark.rptr->pointer, &yyval.mark) == ERROR) {
-	yyerror(0);
+	       (tdiyypvt[-0].mark.rptr->length, tdiyypvt[-0].mark.rptr->pointer, &tdiyyval.mark) == ERROR) {
+	tdiyyerror(0);
       }
     }
     break;
   case 95:
 //#line 403 "TdiYacc.y"
     {
-      _RESOLVE(yyval.mark);
+      _RESOLVE(tdiyyval.mark);
     }
     break;
   case 96:
 //#line 410 "TdiYacc.y"
     {
-      yyval.mark = yypvt[-0].mark;
+      tdiyyval.mark = tdiyypvt[-0].mark;
     }
     break;
   case 97:
 //#line 411 "TdiYacc.y"
     {
-      _JUST1(yypvt[-1].mark.builtin, yypvt[-0].mark, yyval.mark);
+      _JUST1(tdiyypvt[-1].mark.builtin, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 98:
 //#line 412 "TdiYacc.y"
     {
-      _JUST1(yypvt[-2].mark.builtin, yypvt[-0].mark, yyval.mark);
+      _JUST1(tdiyypvt[-2].mark.builtin, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 99:
 //#line 414 "TdiYacc.y"
     {
       int j;
-      yyval.mark = yypvt[-1].mark;
-      yyval.mark.rptr->pointer = (unsigned char *)&OpcFun;
-      for (j = yyval.mark.rptr->ndesc; --j >= 0;)
-	yyval.mark.rptr->dscptrs[j + 2] = yyval.mark.rptr->dscptrs[j];
-      yyval.mark.rptr->dscptrs[0] = (struct descriptor *)yypvt[-3].mark.rptr;
-      yyval.mark.rptr->ndesc += 2;
+      tdiyyval.mark = tdiyypvt[-1].mark;
+      tdiyyval.mark.rptr->pointer = (unsigned char *)&OpcFun;
+      for (j = tdiyyval.mark.rptr->ndesc; --j >= 0;)
+	tdiyyval.mark.rptr->dscptrs[j + 2] = tdiyyval.mark.rptr->dscptrs[j];
+      tdiyyval.mark.rptr->dscptrs[0] = (struct descriptor *)tdiyypvt[-3].mark.rptr;
+      tdiyyval.mark.rptr->ndesc += 2;
       /*++TdiRefZone.l_rel_path; */
     } break;
   case 100:
 //#line 423 "TdiYacc.y"
     {
-      _JUST0(yypvt[-1].mark.builtin, yyval.mark);
+      _JUST0(tdiyypvt[-1].mark.builtin, tdiyyval.mark);
     }
     break;
   case 101:
 //#line 424 "TdiYacc.y"
     {
-      _FULL2(yypvt[-2].mark.builtin, yypvt[-1].mark, yypvt[-0].mark, yyval.mark);
+      _FULL2(tdiyypvt[-2].mark.builtin, tdiyypvt[-1].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 102:
 //#line 425 "TdiYacc.y"
     {
-      _FULL1(yypvt[-1].mark.builtin, yypvt[-0].mark, yyval.mark);
+      _FULL1(tdiyypvt[-1].mark.builtin, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 103:
 //#line 426 "TdiYacc.y"
     {
-      _JUST2(yypvt[-6].mark.builtin, yypvt[-1].mark, yypvt[-4].mark, yyval.mark);
+      _JUST2(tdiyypvt[-6].mark.builtin, tdiyypvt[-1].mark, tdiyypvt[-4].mark, tdiyyval.mark);
     }
     break;
   case 104:
 //#line 427 "TdiYacc.y"
     {
-      _JUST4(yypvt[-8].mark.builtin, yypvt[-6].mark, yypvt[-4].mark,
-	     yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST4(tdiyypvt[-8].mark.builtin, tdiyypvt[-6].mark, tdiyypvt[-4].mark,
+	     tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 105:
 //#line 428 "TdiYacc.y"
     {
-      _JUST1(yypvt[-2].mark.builtin, yypvt[-1].mark, yyval.mark);
+      _JUST1(tdiyypvt[-2].mark.builtin, tdiyypvt[-1].mark, tdiyyval.mark);
     }
     break;
   case 106:
 //#line 429 "TdiYacc.y"
     {
-      _JUST3(yypvt[-4].mark.builtin, yypvt[-3].mark, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST3(tdiyypvt[-4].mark.builtin, tdiyypvt[-3].mark, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 107:
 //#line 430 "TdiYacc.y"
     {
-      _JUST2(yypvt[-2].mark.builtin, yypvt[-1].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-2].mark.builtin, tdiyypvt[-1].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 108:
 //#line 431 "TdiYacc.y"
     {
-      _FULL2(OpcLabel, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _FULL2(OpcLabel, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 109:
 //#line 434 "TdiYacc.y"
     {
-      _JUST2(yypvt[-2].mark.builtin, yypvt[-1].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-2].mark.builtin, tdiyypvt[-1].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 110:
 //#line 435 "TdiYacc.y"
     {
-      _JUST3(yypvt[-4].mark.builtin, yypvt[-3].mark, yypvt[-2].mark, yypvt[-0].mark, yyval.mark);
+      _JUST3(tdiyypvt[-4].mark.builtin, tdiyypvt[-3].mark, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 111:
 //#line 436 "TdiYacc.y"
     {
-      _JUST2(yypvt[-2].mark.builtin, yypvt[-1].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-2].mark.builtin, tdiyypvt[-1].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 112:
 //#line 437 "TdiYacc.y"
     {
-      _JUST2(yypvt[-2].mark.builtin, yypvt[-1].mark, yypvt[-0].mark, yyval.mark);
+      _JUST2(tdiyypvt[-2].mark.builtin, tdiyypvt[-1].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 113:
 //#line 438 "TdiYacc.y"
     {				/*TdiRefZone.l_rel_path--; */
-      yyval.mark.rptr->dscptrs[1] = (struct descriptor *)yypvt[-0].mark.rptr;
+      tdiyyval.mark.rptr->dscptrs[1] = (struct descriptor *)tdiyypvt[-0].mark.rptr;
     } break;
   case 114:
 //#line 440 "TdiYacc.y"
     {
-      yyval.mark.rptr = yypvt[-0].mark.rptr;
-      yyval.mark.builtin = -2;
-      TdiRefZone.l_status = TdiYacc_IMMEDIATE(&yyval.mark.rptr);
+      tdiyyval.mark.rptr = tdiyypvt[-0].mark.rptr;
+      tdiyyval.mark.builtin = -2;
+      TdiRefZone.l_status = TdiYacc_IMMEDIATE(&tdiyyval.mark.rptr);
       if (!(TdiRefZone.l_status & 1)) {
-	yyerror(0);
+	tdiyyerror(0);
       }
     }
     break;
   case 115:
 //#line 444 "TdiYacc.y"
     {
-      yyval.mark = yypvt[-1].mark;
-      _RESOLVE(yyval.mark);
+      tdiyyval.mark = tdiyypvt[-1].mark;
+      _RESOLVE(tdiyyval.mark);
     }
     break;
   case 118:
 //#line 448 "TdiYacc.y"
     {
       short opcode;
-      if (yyval.mark.rptr == 0) {
-	yyval.mark = yypvt[-0].mark;
+      if (tdiyyval.mark.rptr == 0) {
+	tdiyyval.mark = tdiyypvt[-0].mark;
       } /* initial null statement   */
-      else if (yypvt[-0].mark.rptr == 0) {
+      else if (tdiyypvt[-0].mark.rptr == 0) {
       } /* trailing null statement  */
-      else if (yyval.mark.rptr->dtype == DTYPE_FUNCTION
-	       && yyval.mark.rptr->ndesc < 250
-	       && ((opcode = *(unsigned short *)yyval.mark.rptr->pointer)
+      else if (tdiyyval.mark.rptr->dtype == DTYPE_FUNCTION
+	       && tdiyyval.mark.rptr->ndesc < 250
+	       && ((opcode = *(unsigned short *)tdiyyval.mark.rptr->pointer)
 		   == OpcStatement || opcode == OpcCase
 		   || opcode == OpcDefault || opcode == OpcLabel)) {
-	yyval.mark.rptr->dscptrs[yyval.mark.rptr->ndesc++] =
-	    (struct descriptor *)yypvt[-0].mark.rptr;
+	tdiyyval.mark.rptr->dscptrs[tdiyyval.mark.rptr->ndesc++] =
+	    (struct descriptor *)tdiyypvt[-0].mark.rptr;
       } else {
-	_FULL2(OpcStatement, yypvt[-1].mark, yypvt[-0].mark, yyval.mark);
+	_FULL2(OpcStatement, tdiyypvt[-1].mark, tdiyypvt[-0].mark, tdiyyval.mark);
       }
     }
     break;
   case 119:
 //#line 461 "TdiYacc.y"
     {
-      _RESOLVE(yyval.mark);	/*statements */
-      TdiRefZone.a_result = (struct descriptor_d *)yyval.mark.rptr;
+      _RESOLVE(tdiyyval.mark);	/*statements */
+      TdiRefZone.a_result = (struct descriptor_d *)tdiyyval.mark.rptr;
       TdiRefZone.l_status = 1;
     } break;
   case 120:
 //#line 464 "TdiYacc.y"
     {
-      yyval.mark = _EMPTY_MARKER;
+      tdiyyval.mark = _EMPTY_MARKER;
     }
     break;
   case 121:
@@ -1806,31 +1727,32 @@ int yyparse()
     }
     break;
   }
-  goto yystack;			/* reset registers in driver code */
+  goto tdiyystack;			/* reset registers in driver code */
 }
 
 #ifdef __RUNTIME_YYMAXDEPTH
 
 STATIC_ROUTINE int allocate_stacks()
 {
-  /* allocate the yys and yyv stacks */
-  yys = (int *)malloc(yymaxdepth * sizeof(int));
-  yyv = (YYSTYPE *) malloc(yymaxdepth * sizeof(YYSTYPE));
+  GET_THREADSTATIC_P;
+  /* allocate the tdiyys and tdiyyv stacks */
+  tdiyys = (int *)malloc(tdiyymaxdepth * sizeof(int));
+  tdiyyv = (YYSTYPE *) malloc(tdiyymaxdepth * sizeof(YYSTYPE));
 
-  if (yys == 0 || yyv == 0) {
-    yyerror((nl_msg(30004, "unable to allocate space for yacc stacks")));
-    return (1);
+  if (tdiyys == 0 || tdiyyv == 0) {
+    tdiyyerror((nl_msg(30004, "unable to allocate space for yacc stacks")));
+    return MDSplusERROR;
   } else
-    return (0);
+    return MDSplusSUCCESS;
 
 }
 
 STATIC_ROUTINE void free_stacks()
 {
-  if (yys != 0)
-    free((char *)yys);
-  if (yyv != 0)
-    free((char *)yyv);
+  if (tdiyys != 0)
+    free((char *)tdiyys);
+  if (tdiyyv != 0)
+    free((char *)tdiyyv);
 }
 
 #endif				/* defined(__RUNTIME_YYMAXDEPTH) */

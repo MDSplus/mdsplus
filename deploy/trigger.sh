@@ -14,12 +14,11 @@ NAME
                  build jobs used to test pull requests and generate new MDSplus releases.
 
 SYNOPSIS
-    ./trigger.sh [--test[=skip]] [--testrelease] [--valgrind=skip] [--sanitize=skip] [--test_format=tap|log] 
-                 [--release] [--releasedir=directory] 
+    ./trigger.sh [--test[=skip]] [--testrelease] [--valgrind=skip] [--sanitize=skip] [--test_format=tap|log]
+                 [--release] [--releasedir=directory]
                  [--publish] [--publishdir=directory]
                  [--keys=dir] [--dockerpull] [--color]
                  [--pypi]
-                 
 
 DESCRIPTION
     The trigger.sh script is used in conjunction with platform build jobs
@@ -49,10 +48,16 @@ OPTIONS
        Use for pull request tests so kits will be built and checked but
        release tags won't be used to compute release number.
 
+    --valgrind
+       Enable valgrind testing for this build
+
     --valgrind=test-list|skip
        Normally the build jobs will perform valgrind tests when testing
        using the test suite that the platform supports. If this is set
        to skip then no valgrind tests will be performed by the build jobs.
+
+    --sanitize
+       Enable sanitize testing for this build
 
     --sanitize=test-list|skip
        Similar to the --valgrind=skip option this can be used to prevent
@@ -89,8 +94,8 @@ OPTIONS
 
     --publish
        This will tag the commit used for the release build with the
-       version and adds a --publish=version option to trigger.opts to 
-       instruct the build jobs to publish the released version. 
+       version and adds a --publish=version option to trigger.opts to
+       instruct the build jobs to publish the released version.
        Both the --releasedir and --publishdir options must be provided
        when triggering a publish operation.
 
@@ -148,7 +153,13 @@ parsecmd() {
 	    --publish)
 		PUBLISH=yes
 		;;
+	    --valgrind)
+		opts="${opts} ${i}"
+		;;
 	    --valgrind=*)
+		opts="${opts} ${i}"
+		;;
+	    --sanitize)
 		opts="${opts} ${i}"
 		;;
 	    --sanitize=*)
@@ -238,6 +249,23 @@ fi
 BRANCH=${GIT_BRANCH##*/}
 opts="$opts --branch=$BRANCH"
 
+if [ "$BUILD_CAUSE" = "GHPRBCAUSE" ]
+then
+  if [ $(${SRCDIR}/deploy/commit_type_check.sh origin/$ghprbTargetBranch ${SRCDIR}/deploy/inv_commit_title.msg) = "BADCOMMIT" ]
+  then
+      RED $COLOR
+      cat <<EOF >&2
+=========================================================
+
+WARNING: Pull request contains an invalid commit title.
+
+=========================================================
+EOF
+      NORMAL $COLOR
+#      exit 1
+  fi
+fi
+
 #
 # Make sure submodules have been updated
 #
@@ -257,21 +285,91 @@ then
     MAJOR=$(echo $RELEASE_TAG | cut -f2 -d-);
     MINOR=$(echo $RELEASE_TAG | cut -f3 -d-);
     RELEASEV=$(echo $RELEASE_TAG | cut -f4 -d-);
-    if [ "$BRANCH" = "stable" ]
-    then
-	BNAME=""
-    else
-	BNAME="-${BRANCH}"
-    fi
     LAST_RELEASE_COMMIT=$(git rev-list -n 1 $RELEASE_TAG)
     if [ "${LAST_RELEASE_COMMIT}" != "${GIT_COMMIT}" ]
     then
-	NEW_RELEASE=yes
-	let RELEASEV=$RELEASEV+1;
-	RELEASE_TAG=${BRANCH}_release-${MAJOR}-${MINOR}-${RELEASEV};
+	version_inc=$(${SRCDIR}/deploy/commit_type_check.sh "${LAST_RELEASE_COMMIT}" ${SRCDIR}/deploy/inv_commit_title.msg)
+	case "$version_inc" in
+	    BADCOMMIT)
+		RED $COLOR
+		cat <<EOF >&2
+=========================================================
+
+WARNING: Commit contains an invalid commit title.
+
+=========================================================
+EOF
+		NORMAL $COLOR
+		#exit 1
+		NEW_RELEASE=yes
+		let RELEASEV=$RELEASEV+1
+		;;
+	    SAME)
+		GREEN $COLOR
+		cat <<EOF >&2
+=========================================================
+
+INFO: All commits are of category Build, Docs or Tests.
+      No new release generated.
+
+=========================================================
+
+EOF
+		NORMAL $COLOR
+		NEW_RELEASE=no
+		;;
+	    MINOR)
+		GREEN $COLOR
+		cat <<EOF >&2
+=========================================================
+
+INFO: New features added. New release will be a minor
+      version increase.
+
+=========================================================
+
+EOF
+		NORMAL $COLOR
+		NEW_RELEASE=yes
+		let MINOR=$MINOR+1
+		let RELEASEV=0
+		;;
+	    PATCH)
+		GREEN $COLOR
+		cat <<EOF >&2
+=========================================================
+
+INFO: No new features added. Fix commits added so
+      new release will be generated with patch version
+      incremented.
+
+=========================================================
+
+EOF
+		NORMAL $COLOR
+		NEW_RELEASE=yes
+		let RELEASEV=$RELEASEV+1
+		;;
+	    *)
+		GREEN $RED
+		cat <<EOF >&2
+=========================================================
+
+INFO: Unknown release check return of $version_inc
+      A patch releases will be created.
+
+=========================================================
+
+EOF
+		NORMAL $COLOR
+	    	NEW_RELEASE=yes
+		let RELEASEV=$RELEASEV+1
+		;;
+	esac
     fi
+    RELEASE_TAG=${BRANCH}_release-${MAJOR}-${MINOR}-${RELEASEV};
     RELEASE_VERSION=${MAJOR}.${MINOR}.${RELEASEV}
-    git log --decorate=full > ${SRCDIR}/ChangeLog
+    git log --decorate=full --no-merges > ${SRCDIR}/ChangeLog
     opts="$opts --release=${RELEASE_VERSION} --gitcommit=${GIT_COMMIT}"
     cat <<EOF > ${SRCDIR}/trigger.version
 NEW_RELEASE=${NEW_RELEASE}
@@ -326,25 +424,41 @@ then
 	. ${SRCDIR}/trigger.version
 	if [ "$NEW_RELEASE" = "yes" ]
 	then
-	   curl --data @- "https://api.github.com/repos/MDSplus/mdsplus/releases?access_token=$(cat $KEYS/.git_token)" >/dev/null <<EOF
+	   curl --data @- "https://api.github.com/repos/MDSplus/mdsplus/releases?access_token=$(cat $KEYS/.git_token)" > ${WORKSPACE}/tag_release.log 2>&1 <<EOF
 {
   "tag_name":"${RELEASE_TAG}",
   "target_commitish":"${BRANCH}",
   "name":"${RELEASE_TAG}",
-  "body":"Commits since last release:\n\n 
-$(git log --decorate=full ${LAST_RELEASE_COMMIT}..HEAD | awk '{print $0"\\n"}')"
+  "body":"Commits since last release:\n\n
+$(git log --decorate=full --no-merges ${LAST_RELEASE_COMMIT}..HEAD | awk '{gsub("\"","\\\"");print $0"\\n"}')"
 }
 EOF
+	   if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
+	   then
+	       RED $COLOR
+	       cat <<EOF >&2
+=========================================================
+
+Failed to tag a new release on github. Response/error
+content follows.
+FAILURE
+
+=========================================================
+EOF
+	       cat ${WORKSPACE}/tag_release.log
+	       NORMAL $COLOR
+	       exit 1
+	   fi
 	fi
     else
 	RED $COLOR
 	cat <<EOF >&2
 =========================================================
-                                                        
-Attempt to tag a new release without first triggering   
-a release build with the --release option.              
-FAILURE                                                  
-                                                         
+
+Attempt to tag a new release without first triggering
+a release build with the --release option.
+FAILURE
+
 =========================================================
 EOF
 	NORMAL $COLOR
@@ -366,7 +480,7 @@ EOF
 	    ${WORKSPACE}/configure --disable-java >/dev/null 2>&1
 	    rsync -a ${WORKSPACE}/mdsobjects/python mdsobjects/
 	    cd mdsobjects/python
-	    python setup.py sdist upload
+	    HOME=${KEYS} python setup.py sdist upload
 	    cd $WORKSPACE
 	    rm -Rf $tmpdir
 	fi

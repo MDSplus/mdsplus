@@ -1,7 +1,7 @@
-from MDSplus import Data, Tree, Device
-from MDSplus.mdsExceptions import DevPYDEVICE_NOT_FOUND,MDSplusException
+from MDSplus import Data, Tree, Device, Ident, Int32
+from MDSplus import DevPYDEVICE_NOT_FOUND,MDSplusException,MDSplusERROR,TreeSUCCESS
 import sys
-def DevAddPythonDevice(path, model):
+def DevAddPythonDevice(path, model, nidout=None):
     """Add a python device to the tree by:
     1) finding the model in the list defined by
        the tdi function, MdsDevices.
@@ -12,43 +12,15 @@ def DevAddPythonDevice(path, model):
     containing blank filled values containing an \0 character embedded.
     These Strings have to be manipulated to produce simple str() values.
     """
-    model = model.data().upper().rstrip()
-    mod = Device.importPyDeviceModule(model)
-    path = str(path.data())
-    if mod is not None and model in mod.__dict__:
-        try:
-            mod.__dict__[model].Add(Tree(), path)
-            return 1
-        except:
-            e=sys.exc_info()[1]
-            if isinstance(e,MDSplusException):
-                return e.status
-            else:
-                print ("Error adding device instance of %s: %s" % (model, sys.exc_info()[1]))
-                return 0
-        
-    models = Data.execute('MdsDevices()')
-    cls = None
-
-    for idx in range(0, len(models), 2):
-        try:
-            modname = models[idx].data().upper().rstrip()
-            package = models[idx+1].data().rstrip()
-            if model == modname:
-                cls = __import__(package).__dict__[model]
-                break
-        except Exception,e:
-            pass
-    if cls is not None:
-        try:
-            cls.Add(Tree(), path)
-            return 1
-        except:
-            e=sys.exc_info()[1]
-            if isinstance(e,MDSplusException):
-                return e.status
-            else:
-                print ("Error adding device instance of %s: %s" % (model, sys.exc_info()[1]))
-                return 0
-    return DevPYDEVICE_NOT_FOUND.status
-    
+    model = str(model.data()).strip()
+    path  = str(path.data()).strip()
+    try:
+        node = Device.PyDevice(model).Add(Tree(),path)
+        if isinstance(nidout,(Ident,)):
+            Data.execute("$=$",nidout,Int32(node.nid))
+        return TreeSUCCESS.status
+    except MDSplusException:
+        return sys.exc_info()[1].status
+    except:
+        print ("Error adding device instance of %s: %s" % (model, sys.exc_info()[1]))
+        return MDSplusERROR.status

@@ -446,6 +446,9 @@ class Data(object):
         @rtype: Data"""
         return Data.execute('$^$',self,y)
 
+    def __round__(self,*args):
+        return round(self.data(),*args)
+
     def _getDescriptor(self):
         """Return descriptor for passing data to MDSplus library routines.
         @rtype: descriptor

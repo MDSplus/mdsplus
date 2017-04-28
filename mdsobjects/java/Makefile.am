@@ -1,4 +1,4 @@
-CLEANFILES = $(java_DATA)
+CLEANFILES = $(java_DATA) MDSplus/*.class
 AM_JAVACFLAGS = $(JAVAVERSION)
 JAVAROOT = $(builddir)
 CLASSPATH_ENV = CLASSPATH=.:$(top_builddir)/javascope/jScope.jar

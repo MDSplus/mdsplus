@@ -17,6 +17,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #include <process.h>
+#define setenv(name,value,overwrite) _putenv_s(name,value)
 #else
 #include <sys/wait.h>
 #endif
@@ -87,7 +88,7 @@ EXPORT int LibWait(const float *secs)
 ///
 EXPORT void *LibCallg(void **arglist, void *(*routine) ())
 {
-  switch (*(long *)arglist & 0xff) {
+  switch (*(int*)&arglist[0] & 0xff) {
   case 0:
     return (*routine) ();
   case 1:
@@ -235,7 +236,7 @@ EXPORT void *LibCallg(void **arglist, void *(*routine) ())
 
 #ifdef _WIN32
 
-STATIC_ROUTINE char *GetRegistry(HKEY where, char *pathname)
+STATIC_ROUTINE char *GetRegistry(HKEY where, const char *pathname)
 {
   HKEY regkey;
   unsigned char *path = NULL;
@@ -253,9 +254,7 @@ STATIC_ROUTINE char *GetRegistry(HKEY where, char *pathname)
 }
 
 
-EXPORT int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag)
-{
-
+EXPORT int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag __attribute__ ((unused))){
   char *cmd_c = MdsDescrToCstring(cmd);
   int status;
   void *arglist[255];
@@ -371,20 +370,15 @@ EXPORT int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
 
 EXPORT char *TranslateLogical(char const *pathname)
 {
-  char *path = NULL;
   char *tpath = getenv(pathname);
-  if (tpath)
-    path = strdup(tpath);
+  if (tpath) return strdup(tpath);
 #ifdef _WIN32
-  if (!path) {
-    path = GetRegistry(HKEY_CURRENT_USER, pathname);
-    if (!path)
-      path = GetRegistry(HKEY_LOCAL_MACHINE, pathname);
-    if (path)
-      path = strdup(path);
-  }
+  tpath = GetRegistry(HKEY_CURRENT_USER, pathname);
+  if (tpath) return strdup(tpath);
+  tpath = GetRegistry(HKEY_LOCAL_MACHINE, pathname);
+  if (tpath) return strdup(tpath);
 #endif
-  return path;
+  return NULL;
 }
 
 #ifndef va_count
@@ -554,7 +548,7 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
     status = 1;
   dlopen_unlock();
   return status;
-}  
+}
 
 EXPORT int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
 {
@@ -572,12 +566,12 @@ EXPORT int StrConcat(struct descriptor *out, struct descriptor *first, ...)
   int narg;
   va_list incrmtr;
   int status = StrCopyDx(out, first);
-  if (status & 1) {
+  if STATUS_OK {
     va_count(narg);
     va_start(incrmtr, first);
     if (out->class == CLASS_D) {
       struct descriptor *arg = va_arg(incrmtr, struct descriptor *);
-      for (i = 1; i < narg && (status & 1) && arg; i++) {
+      for (i = 1; i < narg && STATUS_OK && arg; i++) {
 	StrAppend((struct descriptor_d *)out, arg);
 	arg = va_arg(incrmtr, struct descriptor *);
       }
@@ -587,7 +581,7 @@ EXPORT int StrConcat(struct descriptor *out, struct descriptor *first, ...)
       for (i = 1,
 	   temp.length = (unsigned short)(out->length - first->length),
 	   temp.pointer = out->pointer + first->length;
-	   i < narg && (status & 1) && temp.length > 0;
+	   i < narg && STATUS_OK && temp.length > 0;
 	   i++,
 	   temp.length = (unsigned short)(temp.length - next->length),
 	   temp.pointer += next->length) {
@@ -599,7 +593,7 @@ EXPORT int StrConcat(struct descriptor *out, struct descriptor *first, ...)
 	}
       }
     } else
-      status = 0;
+      status = MDSplusERROR;
   }
   return status;
 }
@@ -644,12 +638,12 @@ EXPORT int StrGet1Dx(unsigned short *len, struct descriptor_d *out)
   if (out->class != CLASS_D)
     return LibINVSTRDES;
   if (out->length == *len)
-    return 1;
+    return MDSplusSUCCESS;
   if (out->length && (out->pointer != NULL))
     free(out->pointer);
   out->length = *len;
   out->pointer = *len ? malloc(*len) : NULL;
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 //int LibEmul(int *m1, int *m2, int *add, int64_t * prod)
@@ -698,7 +692,7 @@ EXPORT int StrCopyDx(struct descriptor *out, struct descriptor *in)
     if (outlength > inlength)
       memset(out->pointer + inlength, 32, outlength - inlength);
   }
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 EXPORT int StrCompare(struct descriptor *str1, struct descriptor *str2)
@@ -720,7 +714,7 @@ EXPORT int StrUpcase(struct descriptor *out, struct descriptor *in)
   outlength = (out->class == CLASS_A) ? ((struct descriptor_a *)out)->arsize : out->length;
   for (i = 0; i < outlength; i++)
     out->pointer[i] = (char)toupper(out->pointer[i]);
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 EXPORT int StrRight(struct descriptor *out, struct descriptor *in, unsigned short *start)
@@ -787,7 +781,7 @@ EXPORT int LibResetVmZone(ZoneList ** zone)
   while ((list = zone ? (*zone ? (*zone)->vm : NULL) : NULL) != NULL)
     LibFreeVm(&len, &list->ptr, zone);
   UnlockMdsShrMutex(&VmMutex);
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 EXPORT int LibFreeVm(unsigned int *len, void **vm, ZoneList ** zone)
@@ -810,7 +804,7 @@ EXPORT int LibFreeVm(unsigned int *len, void **vm, ZoneList ** zone)
     free(*vm);
   if (list)
     free(list);
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 EXPORT int libfreevm_(unsigned int *len, void **vm, ZoneList ** zone)
@@ -965,14 +959,14 @@ EXPORT int LibTimeToVMSTime(const time_t * time_in, int64_t * time_out)
     tv.tv_usec = 0;
   else
     gettimeofday(&tv,0);
-  
+
 #ifdef USE_TM_GMTOFF
   tz_offset = tmval->tm_gmtoff;
 #else
   tz_offset = - timezone + daylight * (tmval->tm_isdst ? 3600 : 0);
 #endif
   *time_out = (int64_t) (time_to_use + tz_offset) * (int64_t) 10000000 + tv.tv_usec * 10 + VMS_TIME_OFFSET;
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 EXPORT time_t LibCvtTim(int *time_in, double *t)
@@ -1043,7 +1037,7 @@ EXPORT int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_i
   StrCopyR(str, &slen, time_out);
   if (len)
     *len = slen;
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 //int LibGetDvi(int *code, void *dummy1, struct descriptor *device, int *ans,
@@ -1056,11 +1050,12 @@ EXPORT int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_i
 EXPORT int StrAppend(struct descriptor_d *out, struct descriptor *tail)
 {
   if (tail->length != 0 && tail->pointer != NULL) {
-    struct descriptor_d new = { 0, DTYPE_T, CLASS_D, 0 };
-    unsigned short len = (unsigned short)(out->length + tail->length);
-    if (((unsigned int)out->length + (unsigned int)tail->length) > 0xffff)
+    int len = (int)out->length + (int)tail->length;
+    if (len > 0xffff)
       return StrSTRTOOLON;
-    StrGet1Dx(&len, &new);
+    struct descriptor_d new = { 0, DTYPE_T, CLASS_D, 0 };
+    unsigned short us_len = (unsigned short)len;
+    StrGet1Dx(&us_len, &new);
     if (out->pointer) {
       memcpy(new.pointer, out->pointer, out->length);
     }
@@ -1068,7 +1063,7 @@ EXPORT int StrAppend(struct descriptor_d *out, struct descriptor *tail)
     StrFree1Dx(out);
     *out = new;
   }
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 EXPORT int StrFree1Dx(struct descriptor_d *out)
@@ -1079,7 +1074,7 @@ EXPORT int StrFree1Dx(struct descriptor_d *out)
     out->pointer = NULL;
     out->length = 0;
   }
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 EXPORT int StrFindFirstNotInSet(struct descriptor *source, struct descriptor *set)
@@ -1162,14 +1157,14 @@ STATIC_ROUTINE int MdsInsertTree(struct bbtree_info *bbtree_ptr)
 
   if (currentNode == 0) {
     if (!(ALLOCATE(bbtree_ptr->keyname, &save_current, bbtree_ptr->user_context) & 1))
-      return 0;
+      return MDSplusERROR;
     currentNode = save_current;
     currentNode->left = 0;
     currentNode->right = 0;
     currentNode->bal = 0;
     bbtree_ptr->new_node = save_current;
     bbtree_ptr->foundintree = 1;
-    return 0;
+    return MDSplusERROR;
   }
   save_current = currentNode;
   if ((in_balance =
@@ -1178,24 +1173,24 @@ STATIC_ROUTINE int MdsInsertTree(struct bbtree_info *bbtree_ptr)
     if ((in_balance == 0) && (!(bbtree_ptr->controlflags & 1))) {
       bbtree_ptr->new_node = save_current;
       bbtree_ptr->foundintree = 3;
-      return 1;
+      return MDSplusSUCCESS;
     }
     currentNode = left_of(currentNode);
     in_balance = MdsInsertTree(bbtree_ptr);
     if ((bbtree_ptr->foundintree == 3) || (bbtree_ptr->foundintree == 0))
-      return 1;
+      return MDSplusSUCCESS;
     down_left = currentNode;
     currentNode = save_current;
     currentNode->left = offset_of(currentNode, down_left);
     if (in_balance)
-      return 1;
+      return MDSplusSUCCESS;
     else {
       currentNode->bal--;
       if (currentNode->bal == 0)
-	return 1;
+	return MDSplusSUCCESS;
       else {
 	if (currentNode->bal & 1)
-	  return 0;
+	  return MDSplusERROR;
 	down_left = left_of(currentNode);
 	if (down_left->bal < 0) {
 	  currentNode->left = offset_of(currentNode, right_of(down_left));
@@ -1203,7 +1198,7 @@ STATIC_ROUTINE int MdsInsertTree(struct bbtree_info *bbtree_ptr)
 	  currentNode->bal = 0;
 	  currentNode = down_left;
 	  currentNode->bal = 0;
-	  return 1;
+	  return MDSplusSUCCESS;
 	} else {
 	  down_right = right_of(down_left);
 	  down_left->right = offset_of(down_left, left_of(down_right));
@@ -1218,7 +1213,7 @@ STATIC_ROUTINE int MdsInsertTree(struct bbtree_info *bbtree_ptr)
 	    currentNode->bal = 1;
 	  currentNode = down_right;
 	  currentNode->bal = 0;
-	  return 1;
+	  return MDSplusSUCCESS;
 	}
       }
     }
@@ -1226,19 +1221,19 @@ STATIC_ROUTINE int MdsInsertTree(struct bbtree_info *bbtree_ptr)
     currentNode = right_of(currentNode);
     in_balance = MdsInsertTree(bbtree_ptr);
     if ((bbtree_ptr->foundintree == 3) || (bbtree_ptr->foundintree == 0))
-      return 1;
+      return MDSplusSUCCESS;
     down_right = currentNode;
     currentNode = save_current;
     currentNode->right = offset_of(currentNode, down_right);
     if (in_balance)
-      return 1;
+      return MDSplusSUCCESS;
     else {
       currentNode->bal++;
       if (currentNode->bal == 0)
-	return 1;
+	return MDSplusSUCCESS;
       else {
 	if (currentNode->bal & 1)
-	  return 0;
+	  return MDSplusERROR;
 	down_right = right_of(currentNode);
 	if (down_right->bal > 0) {
 	  currentNode->right = offset_of(currentNode, left_of(down_right));
@@ -1246,7 +1241,7 @@ STATIC_ROUTINE int MdsInsertTree(struct bbtree_info *bbtree_ptr)
 	  currentNode->bal = 0;
 	  currentNode = down_right;
 	  currentNode->bal = 0;
-	  return 1;
+	  return MDSplusSUCCESS;
 	} else {
 	  down_left = left_of(down_right);
 	  down_right->left = offset_of(down_right, right_of(down_left));
@@ -1261,7 +1256,7 @@ STATIC_ROUTINE int MdsInsertTree(struct bbtree_info *bbtree_ptr)
 	    currentNode->bal = -1;
 	  currentNode = down_left;
 	  currentNode->bal = 0;
-	  return 1;
+	  return MDSplusSUCCESS;
 	}
       }
     }
@@ -1278,7 +1273,7 @@ EXPORT int LibLookupTree(LibTreeNode **treehead, void *symbolstring, int (*compa
   while (currentnode != 0) {
     if ((ch_result = (*compare_rtn) (symbolstring, currentnode)) == 0) {
       *blockaddr = currentnode;
-      return 1;
+      return MDSplusSUCCESS;
     } else if (ch_result < 0)
       currentnode = left_of(currentnode);
     else
@@ -1299,7 +1294,7 @@ STATIC_ROUTINE int MdsTraverseTree(int (*user_rtn) (), void *user_data, struct n
   struct node *right_subtree;
   int status;
   if (currentnode == 0)
-    return 1;
+    return MDSplusSUCCESS;
   if (left_of(currentnode)) {
     status = MdsTraverseTree(user_rtn, user_data, left_of(currentnode));
     if (!(status & 1))
@@ -1314,7 +1309,7 @@ STATIC_ROUTINE int MdsTraverseTree(int (*user_rtn) (), void *user_data, struct n
     if (!(status & 1))
       return status;
   }
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 EXPORT int StrCaseBlindCompare(struct descriptor *one, struct descriptor *two)
@@ -1547,7 +1542,7 @@ STATIC_ROUTINE int FindFileEnd(FindFileCtx * ctx)
       free(ctx->env_strs);
     free(ctx);
   }
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 #define CSTRING_FROM_DESCRIPTOR(cstring, descr)\
@@ -1736,13 +1731,19 @@ unsigned short Crc(unsigned int len, unsigned char *bufptr)
 
 EXPORT int MdsPutEnv(char const *cmd)
 {
-  int status;
-  if (strstr(cmd, "MDSPLUS_SPAWN_WRAPPER") || strstr(cmd, "MDSPLUS_LIBCALL_WRAPPER"))
-    status = 0;
-  else {
-    char *tmp = strcpy(malloc(strlen(cmd) + 1), cmd);
-    putenv(tmp);
-    status = 1;
+  int status = 0;
+  if (cmd != NULL) {
+    if (strstr(cmd, "MDSPLUS_SPAWN_WRAPPER") || strstr(cmd, "MDSPLUS_LIBCALL_WRAPPER"))
+      status = 0;
+    else {
+      char *tmp = strdup(cmd);
+      char *saveptr = NULL;
+      char *name = strtok_r(tmp,"=",&saveptr);
+      char *value = strtok_r(NULL,"=",&saveptr);
+      if (name != NULL && value != NULL)
+        status = setenv(name,value,1) == 0;
+      free(tmp);
+    }
   }
   return status;
 }

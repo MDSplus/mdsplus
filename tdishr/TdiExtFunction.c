@@ -24,6 +24,9 @@
         Ken Klare, LANL P-4     (c)1989,1990,1991
         NEED we chase logical names if not in first image?
 */
+#define DEF_FREED
+#define DEF_FREEXD
+#include <pthread_port.h>
 #include <stdio.h>
 #include "tdirefstandard.h"
 #include <libroutines.h>
@@ -74,23 +77,28 @@ int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
 		    struct descriptor *list[],
 		    struct descriptor_xd *out_ptr)
 {
-  int status = 1;
-  FILE *unit;
-  int j, ntmp = 0, (*routine) ();
-  struct descriptor_function *pfun, *pfun2;
+  INIT_STATUS;
   struct descriptor_d image = EMPTY_D, entry = EMPTY_D;
   struct descriptor_xd tmp[253];
-  struct descriptor *new[256];
-  unsigned short code;
+  struct descriptor_d file = { 0, DTYPE_T, CLASS_D, 0 };
+  FREED_ON_EXIT(&image);
+  FREED_ON_EXIT(&entry);
+  FREED_ON_EXIT(&file);
+  FREEXD_ON_EXIT(&tmp[0]);
+  struct descriptor_function *pfun, *pfun2;
+  FILE *unit;
   int geterror = 0;
+  struct descriptor *new[256];
+  int j, ntmp = 0, (*routine) ();
+  unsigned short code;
 
   if (list[0])
     status = TdiData(list[0], &image MDS_END_ARG);
-  if (status & 1)
+  if STATUS_OK
     status = TdiData(list[1], &entry MDS_END_ARG);
-  if (status & 1)
+  if STATUS_OK
     status = StrUpcase((struct descriptor *)&entry, (struct descriptor *)&entry);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     goto done;
 
 	/**************************
@@ -102,17 +110,17 @@ int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
       goto done;
   } else {
     status = TdiFindImageSymbol(&image, &entry, &routine);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       geterror = 1;
   }
 
 	/**********************************************
         Requires: image found and routine symbol found.
         **********************************************/
-  if (status & 1) {
-    new[0] = (struct descriptor *)(long)(narg - 1);
+  if STATUS_OK {
+    *(int*)&new[0] = narg - 1;
     new[narg - 1] = (struct descriptor *)out_ptr;
-    for (j = 2; j < narg && status & 1; ++j) {
+    for (j = 2; j < narg && STATUS_OK; ++j) {
       pfun = (struct descriptor_function *)(new[j - 1] = list[j]);
       if (pfun) {
 	if (pfun->dtype == DTYPE_FUNCTION) {
@@ -127,7 +135,7 @@ int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
 	  } else if (code == OpcRef) {
 	    tmp[ntmp] = EMPTY_XD;
 	    status = TdiData(pfun->arguments[0], &tmp[ntmp] MDS_END_ARG);
-	    if (status & 1)
+	    if STATUS_OK
 	      new[j - 1] = (struct descriptor *)tmp[ntmp].pointer->pointer;
 	    ++ntmp;
 	  } else if (code == OpcVal)
@@ -158,22 +166,21 @@ int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
          Same form as system calls.
          Watch, may not be XD.
          *************************/
-    if (status & 1) {
-      status = (long)LibCallg(&new[0], routine);
+    if STATUS_OK {
+      struct descriptor_s out = { sizeof(void *) , DTYPE_POINTER, CLASS_S , LibCallg(&new[0], routine) };
+      MdsCopyDxXd((struct descriptor*)&out, out_ptr);
     }
     for (; --ntmp >= 0;)
       MdsFree1Dx(&tmp[ntmp], NULL);
-  }
-	/***************
-     Gather, compile.
-        ***************/
-  else {
-    struct descriptor_d file = { 0, DTYPE_T, CLASS_D, 0 };
+  } else {
+    /***************
+    Gather, compile.
+    ***************/
     status =
       StrConcat((struct descriptor *)&file,
 		  list[0] ? (struct descriptor *)&image : (struct descriptor
 							   *)&def_path, &entry, &dfun MDS_END_ARG);
-    if (status & 1) {
+    if STATUS_OK {
       void *ctx = 0;
       struct descriptor dcs = { 0, DTYPE_T, CLASS_S, 0 };
       LibFindFileRecurseCaseBlind((struct descriptor *)&file, (struct descriptor *)&file, &ctx);
@@ -200,7 +207,7 @@ int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
          If it is a FUN then define it and do it with arguments.
          Otherwise, just do it if does not have arguments.
          ******************************************************/
-    if (status & 1 && out_ptr) {
+    if (STATUS_OK && out_ptr) {
       pfun = (struct descriptor_function *)out_ptr->pointer;
       if (pfun->dtype == DTYPE_FUNCTION) {
 	code = *(unsigned short *)pfun->pointer;
@@ -215,11 +222,11 @@ int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
 	  if (StrCompare((struct descriptor *)&entry, (struct descriptor *)pfun2) == 0) {
 	    tmp[0] = EMPTY_XD;
 	    status = MdsCopyDxXd(pfun->arguments[0], &tmp[0]);
-	    if (status & 1)
+	    if STATUS_OK
 	      status = TdiEvaluate(out_ptr, out_ptr MDS_END_ARG);
-	    if (status & 1)
+	    if STATUS_OK
 	      status = TdiDoFun(tmp[0].pointer, narg - 2, &list[2], out_ptr);
-	    MdsFree1Dx(&tmp[0], NULL);
+            MdsFree1Dx(&tmp[0],NULL);
 	    goto done;
 	  }
 	}
@@ -231,9 +238,11 @@ int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
     }
   }
  done:
-  StrFree1Dx(&entry);
-  StrFree1Dx(&image);
   if (geterror)
     printf("%s\n", LibFindImageSymbolErrString());
+  FREE_CANCEL(&tmp[0]);
+  FREE_CANCEL(&file);
+  FREED_NOW(&entry);
+  FREED_NOW(&image);
   return status;
 }

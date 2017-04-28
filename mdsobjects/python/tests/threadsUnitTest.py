@@ -1,57 +1,104 @@
-from unittest import TestCase,TestSuite,TextTestRunner,TestResult
-from threading import Thread,enumerate
-from tree import Tree
-import tests.treeUnitTest as treeUnitTest
-import tests.dataUnitTest as dataUnitTest
-from _mdsshr import getenv
+from unittest import TestCase,TestSuite,TextTestRunner
+from threading import Thread
+if __import__('sys').version_info<(3,):
+    from io import BytesIO as StringIO
+else:
+    from io import StringIO
 
-treeUnitTest.tearDownModule=None
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
 
-def tearDownMOdule():
-    import shutil
-    shutil.rmtree(treeUnitTest._tmpdir)
+from MDSplus import Tree
 
 class threadJob(Thread):
+    def __init__(self,testclass,test,idx):
+        super(threadJob,self).__init__()
+        self.test = testclass(test)
+        self.test.index = idx
     """Thread to execute the treeTests"""
     def run(self):
         """Run test1.test() function"""
         Tree.usePrivateCtx()
-#        self.result = TextTestRunner(verbosity=0).run(treeUnitTest.treeTests())
-        self.result=TestResult()
-        self.test.suite().run(self.result)
+        stream = StringIO()
+        try:
+            self.result = TextTestRunner(stream=stream,verbosity=2).run(self.test)
+        finally:
+            stream.seek(0)
+            self.stream = stream.read()
+            stream.close()
 
-class threadTest(TestCase):
-
-    def threadTests(self):
-        numsuccessful=0
-        threads=list()
-        if getenv("do_threads") is not None:
-          for i in range(10):
-            t=threadJob()
-            t.shot=i*2+3
-            t.test=treeUnitTest
-            threads.append(t)
-            d=threadJob()
-            d.test=dataUnitTest
-            threads.append(d)
-          for t in threads:
+class threadsTest(TestCase):
+    def doThreadsTestCase(self,testclass,test,numthreads):
+        numsuccess= 0
+        threads = [ threadJob(testclass,test,i) for i in range(numthreads) ]
+        for t in threads:
             t.start()
-          for t in threads:
+        for i,t in enumerate(threads):
             t.join()
             if t.result.wasSuccessful():
-                numsuccessful=numsuccessful+1                
+                numsuccess += 1
             else:
-                print( t.result )
-        print("successful: ")
-        print(numsuccessful)
-        self.assertEqual(numsuccessful,len(threads))
-        return
+                print('### begin thread %2d: %s##################'%(i,test))
+                print(t.stream)
+                print('### end   thread %2d: %s##################'%(i,test))
+        self.assertEqual(numsuccess,numthreads,test)
+
+    def dataThreadsTests(self):
+        dataUnitTest = _mimport('dataUnitTest')
+        numthreads = 3
+        for test in dataUnitTest.dataTests.getTests():
+            self.doThreadsTestCase(dataUnitTest.dataTests,test,numthreads)
+
+    def dclThreadsTests(self):
+        dclUnitTest = _mimport('dclUnitTest')
+        numthreads = 3
+        dclUnitTest.dclTests.setUpClass()
+        try:
+            self.doThreadsTestCase(dclUnitTest.dclTests,'dclInterface',numthreads)
+        finally:
+            while dclUnitTest.dclTests.instances>0:
+                dclUnitTest.dclTests.tearDownClass()
+
+    def treeThreadsTests(self):
+        treeUnitTest = _mimport('treeUnitTest')
+        numthreads = 3
+        treeUnitTest.treeTests.inThread = True
+        treeUnitTest.treeTests.setUpClass()
+        try:
+            for test in treeUnitTest.treeTests.getTests():
+                self.doThreadsTestCase(treeUnitTest.treeTests,test,numthreads)
+        finally:
+            treeUnitTest.treeTests.inThread = False
+            while treeUnitTest.treeTests.instances>0:
+                treeUnitTest.treeTests.tearDownClass()
 
     def runTest(self):
-        self.threadTests()
-        return
-            
+        for test in self.getTests():
+            self.__getattribute__(test)()
+    @staticmethod
+    def getTests():
+        return ['dataThreadsTests']#,'dclThreadsTests','treeThreadsTests']
+    @classmethod
+    def getTestCases(cls):
+        return map(cls,cls.getTests())
 
 def suite():
-    tests = ['threadTests']
-    return TestSuite(map(threadTest, tests))
+    return TestSuite(threadsTest.getTestCases())
+
+def run():
+    from unittest import TextTestRunner
+    TextTestRunner().run(suite())
+
+if __name__=='__main__':
+    import sys
+    if len(sys.argv)>1 and sys.argv[1].lower()=="objgraph":
+        import objgraph
+    else:      objgraph = None
+    import gc;gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
+    run()
+    if objgraph:
+         gc.collect()
+         objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])

@@ -25,12 +25,13 @@ STATIC_CONSTANT struct descriptor false_dsc = { 1, DTYPE_T, CLASS_S, (char *)&fa
 */
 int Tdi3Adjustl(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   char *ps1 = in_ptr->pointer, *pe1 = ps1;
   char *ps2 = out_ptr->pointer, *pe2 = ps2;
-  int step = out_ptr->length, status = 1, n;
+  int step = out_ptr->length, n;
 
   N_ELEMENTS(out_ptr, n);
-  if (status & 1)
+  if STATUS_OK
     for (; --n >= 0;) {
       pe1 += step;
       pe2 += step;
@@ -50,12 +51,13 @@ int Tdi3Adjustl(struct descriptor *in_ptr, struct descriptor *out_ptr)
 */
 int Tdi3Adjustr(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   char *ps1 = in_ptr->pointer, *pe1;
   char *ps2 = out_ptr->pointer, *pe2;
-  int step = out_ptr->length, status = 1, n, last;
+  int step = out_ptr->length, n, last;
 
   N_ELEMENTS(out_ptr, n);
-  if (status & 1)
+  if STATUS_OK
     for (last = n * step - 1, pe1 = ps1 += last, pe2 = ps2 += last; --n >= 0;) {
       ps1 -= step;
       ps2 -= step;
@@ -76,9 +78,10 @@ int Tdi3Adjustr(struct descriptor *in_ptr, struct descriptor *out_ptr)
 int Tdi3Char(struct descriptor *in_ptr, struct descriptor *kind_ptr __attribute__ ((unused)),
 	     struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   char *p1 = in_ptr->pointer;
   char *p2 = out_ptr->pointer;
-  int step = in_ptr->length, n, status = 1;
+  int step = in_ptr->length, n;
 
   N_ELEMENTS(out_ptr, n);
 #ifdef WORDS_BIGENDIAN
@@ -103,10 +106,10 @@ int Tdi3Concat(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct de
   char *p3 = out_ptr->pointer;
   int size1 = in1_ptr->length, step1 = (in1_ptr->class == CLASS_A ? size1 : 0), j1;
   int size2 = in2_ptr->length, step2 = (in2_ptr->class == CLASS_A ? size2 : 0), j2;
-  int status = 1, n;
+  int status = MDSplusSUCCESS, n;
 
   N_ELEMENTS(out_ptr, n);
-  if (status & 1)
+  if STATUS_OK
     for (; --n >= 0; p1 += step1, p2 += step2) {
       for (j1 = size1, pt1 = p1; --j1 >= 0;)
 	*p3++ = *pt1++;
@@ -126,8 +129,9 @@ int Tdi3Element(struct descriptor *number_ptr,
 		struct descriptor *delim_ptr,
 		struct descriptor *source_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   char *pnumber = number_ptr->pointer;
-  int number, n, status = 1;
+  int number, n;
   struct descriptor source_dsc = *source_ptr;
   struct descriptor delim_dsc = *delim_ptr;
   struct descriptor out_dsc = *out_ptr;
@@ -139,11 +143,11 @@ int Tdi3Element(struct descriptor *number_ptr,
   source_dsc.class = CLASS_S;
   delim_dsc.class = CLASS_S;
   out_dsc.class = CLASS_S;
-  for (; status & 1 && --n >= 0;) {
+  for (; STATUS_OK && --n >= 0;) {
     STATIC_CONSTANT unsigned short zero = 0;
     number = *(int *)pnumber, pnumber += number_step;
     status = StrElement(&out_dsc, &number, &delim_dsc, &source_dsc);
-    if (!(status & 1))
+    if STATUS_NOT_OK
       status = StrCopyR(&out_dsc, &zero, "");
     source_dsc.pointer += source_step;
     delim_dsc.pointer += delim_step;
@@ -161,8 +165,9 @@ int Tdi3Extract(struct descriptor *start_ptr,
 		struct descriptor *length_ptr,
 		struct descriptor *source_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   char *pstart = start_ptr->pointer, *plength = length_ptr->pointer;
-  int start, length, n, status = 1;
+  int start, length, n;
   struct descriptor source_dsc = *source_ptr;
   struct descriptor out_dsc = *out_ptr;
   int start_step = (start_ptr->class == CLASS_A) ? start_ptr->length : 0;
@@ -172,7 +177,7 @@ int Tdi3Extract(struct descriptor *start_ptr,
   N_ELEMENTS(out_ptr, n);
   source_dsc.class = CLASS_S;
   out_dsc.class = CLASS_S;
-  for (; status & 1 && --n >= 0;) {
+  for (; STATUS_OK && --n >= 0;) {
     start = *(int *)pstart + 1, pstart += start_step;
     length = *(int *)plength, plength += length_step;
     status = StrLenExtr(&out_dsc, &source_dsc, &start, &length);
@@ -189,18 +194,19 @@ int Tdi3Extract(struct descriptor *start_ptr,
 */
 int Tdi3Ichar(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   int step = in_ptr->length;
   char *p1 = in_ptr->pointer;
   char *p2 = out_ptr->pointer;
-  int n, status = 1;
+  int n;
 
   N_ELEMENTS(out_ptr, n);
 #ifdef WORDS_BIGENDIAN
-  if (status & 1)
+  if STATUS_OK
     for (; --n >= 0; p1 += step)
       *p2++ = *(p1 + step - 1);
 #else
-  if (status & 1)
+  if STATUS_OK
     for (; --n >= 0; p1 += step)
       *p2++ = *(p1);
 #endif
@@ -217,13 +223,14 @@ int Tdi3Ichar(struct descriptor *in_ptr, struct descriptor *out_ptr)
 int Tdi3Index(struct descriptor *str_ptr,
 	      struct descriptor *sub_ptr, struct descriptor *bac_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   struct descriptor str_dsc = *str_ptr;
   struct descriptor sub_dsc = *sub_ptr;
   struct descriptor bac_dsc = bac_ptr ? *bac_ptr : false_dsc;
   int str_step = (str_dsc.class == CLASS_A) ? str_dsc.length : 0;
   int sub_step = (sub_dsc.class == CLASS_A) ? sub_dsc.length : 0;
   int bac_step = (bac_dsc.class == CLASS_A) ? bac_dsc.length : 0;
-  int n, j, status = 1;
+  int n, j;
   int *out_point = (int *)out_ptr->pointer;
 
   N_ELEMENTS(out_ptr, n);
@@ -251,9 +258,10 @@ int Tdi3Index(struct descriptor *str_ptr,
 */
 int Tdi3LenTrim(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   char *p1 = in_ptr->pointer, *pe1;
   int *p2 = (int *)out_ptr->pointer;
-  int step = in_ptr->length, n, status = 1;
+  int step = in_ptr->length, n;
 
   N_ELEMENTS(out_ptr, n);
   for (; --n >= 0; p1 += step) {
@@ -274,7 +282,8 @@ int Tdi3LenTrim(struct descriptor *in_ptr, struct descriptor *out_ptr)
 int Tdi3Repeat(struct descriptor *in1_ptr, struct descriptor *in2_ptr __attribute__ ((unused)),
 	       struct descriptor *out_ptr)
 {
-  int n, j, status = 1, size = in1_ptr->length, ncopies = (int)out_ptr->length / size;
+  INIT_STATUS;
+  int n, j, size = in1_ptr->length, ncopies = (int)out_ptr->length / size;
   char *p1 = in1_ptr->pointer, *p3 = out_ptr->pointer;
 
   N_ELEMENTS(out_ptr, n);
@@ -294,6 +303,7 @@ int Tdi3Repeat(struct descriptor *in1_ptr, struct descriptor *in2_ptr __attribut
 int Tdi3Scan(struct descriptor *str_ptr,
 	     struct descriptor *set_ptr, struct descriptor *bac_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   struct descriptor str_dsc = *str_ptr;
   struct descriptor set_dsc = *set_ptr;
   struct descriptor bac_dsc = bac_ptr ? *bac_ptr : false_dsc;
@@ -302,7 +312,7 @@ int Tdi3Scan(struct descriptor *str_ptr,
   int str_step = (str_dsc.class == CLASS_A) ? str_dsc.length : 0;
   int set_step = (set_dsc.class == CLASS_A) ? set_dsc.length : 0;
   int bac_step = (bac_dsc.class == CLASS_A) ? bac_dsc.length : 0;
-  int n, j, status = 1;
+  int n, j;
   int *out_point = (int *)out_ptr->pointer;
 
   N_ELEMENTS(out_ptr, n);
@@ -334,7 +344,8 @@ int Tdi3Scan(struct descriptor *str_ptr,
 */
 int Tdi3StringOpcode(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-  int len, n, status = 1;
+  INIT_STATUS;
+  int len, n;
   unsigned short step = in_ptr->length;
   char *str_ptr;
   short *code_ptr = (short *)out_ptr->pointer;
@@ -348,9 +359,9 @@ int Tdi3StringOpcode(struct descriptor *in_ptr, struct descriptor *out_ptr)
                 Case insensitive and ignore trailing blanks and tabs.
                 ****************************************************/
     status = StrUpcase((struct descriptor *)&one_dsc, (struct descriptor *)&tmp_dsc);
-    if (status & 1)
+    if STATUS_OK
       status = StrTrim((struct descriptor *)&one_dsc, (struct descriptor *)&one_dsc, 0);
-    if (!(status & 1))
+    if STATUS_NOT_OK
       break;
 		/******************************
                 Ignore leading Opc designator.
@@ -375,7 +386,7 @@ int Tdi3Translate(struct descriptor *str_ptr,
 		  struct descriptor *tra_ptr,
 		  struct descriptor *mat_ptr, struct descriptor *out_ptr)
 {
-  int status;
+  INIT_STATUS;
 
   status = StrTranslate(out_ptr, str_ptr, tra_ptr, mat_ptr);
   return status;
@@ -387,7 +398,7 @@ int Tdi3Translate(struct descriptor *str_ptr,
 */
 int Tdi3Upcase(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-  int status;
+  INIT_STATUS;
 
   status = StrUpcase(out_ptr, in_ptr);
   return status;
@@ -404,6 +415,7 @@ int Tdi3Upcase(struct descriptor *in_ptr, struct descriptor *out_ptr)
 int Tdi3Verify(struct descriptor *str_ptr,
 	       struct descriptor *set_ptr, struct descriptor *bac_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   struct descriptor str_dsc = *str_ptr;
   struct descriptor set_dsc = *set_ptr;
   struct descriptor bac_dsc = bac_ptr ? *bac_ptr : false_dsc;
@@ -412,7 +424,7 @@ int Tdi3Verify(struct descriptor *str_ptr,
   int step_str = (str_dsc.class == CLASS_A) ? str_dsc.length : 0;
   int step_set = (set_dsc.class == CLASS_A) ? set_dsc.length : 0;
   int step_bac = (bac_dsc.class == CLASS_A) ? bac_dsc.length : 0;
-  int n, j, status = 1;
+  int n, j;
   int *out_point = (int *)out_ptr->pointer;
 
   N_ELEMENTS(out_ptr, n);

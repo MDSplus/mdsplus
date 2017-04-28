@@ -46,12 +46,13 @@ extern int IsRoprand();
 */
 int Tdi3Exponent(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-  int n, status = 1, step = in_ptr->length;
+  INIT_STATUS;
+  int n, step = in_ptr->length;
   char *pi = in_ptr->pointer;
   int *po = (int *)out_ptr->pointer;
 
   N_ELEMENTS(out_ptr, n);
-  if (status & 1)
+  if STATUS_OK
     switch (in_ptr->dtype) {
     case DTYPE_FC:
     case DTYPE_FSC:
@@ -84,10 +85,11 @@ int Tdi3Exponent(struct descriptor *in_ptr, struct descriptor *out_ptr)
 */
 int Tdi3Finite(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   char *pin = in_ptr->pointer;
   char *pout = out_ptr->pointer;
   int step = in_ptr->length;
-  int n, status = 1;
+  int n;
 
   N_ELEMENTS(out_ptr, n);
   switch (in_ptr->dtype) {
@@ -170,13 +172,14 @@ int Tdi3Finite(struct descriptor *in_ptr, struct descriptor *out_ptr)
 int Tdi3FixRoprand(struct descriptor *old_ptr,
 		   struct descriptor *rep_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   char *inp = old_ptr->pointer;
   char *rep = rep_ptr->pointer;
   char *outp = out_ptr->pointer;
   int inp_inc = (old_ptr->class == CLASS_A) ? old_ptr->length : 0;
   int rep_inc = (rep_ptr->class == CLASS_A) ? rep_ptr->length : 0;
   int out_inc = (out_ptr->class == CLASS_A) ? out_ptr->length : 0;
-  int n, cmplx, status = 1;
+  int n, cmplx;
 
   N_ELEMENTS(out_ptr, n);
   switch (rep_ptr->dtype) {
@@ -191,7 +194,7 @@ int Tdi3FixRoprand(struct descriptor *old_ptr,
     cmplx = 1;
     break;
   }
-  if (status & 1)
+  if STATUS_OK
     switch (out_ptr->dtype) {
       do_fix(float, _F) do_fix(float, _FS) do_fix(double, _D) do_fix(double, _G) do_fix(double, _FT)
       default:break;
@@ -217,12 +220,13 @@ int Tdi3FixRoprand(struct descriptor *old_ptr,
 */
 int Tdi3Fraction(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   char *inp = in_ptr->pointer;
   char *outp = out_ptr->pointer;
-  int inc = out_ptr->length, n, status = 1;
+  int inc = out_ptr->length, n;
 
   N_ELEMENTS(out_ptr, n);
-  if (status & 1)
+  if STATUS_OK
     switch (out_ptr->dtype) {
       do_fraction(F,;)
 	  do_fraction(FS,;)
@@ -254,13 +258,14 @@ int Tdi3Fraction(struct descriptor *in_ptr, struct descriptor *out_ptr)
 */
 int Tdi3RrSpacing(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-  int n, status = 1;
+  INIT_STATUS;
+  int n;
   int inc = out_ptr->length;
   char *inp = in_ptr->pointer;
   char *outp = out_ptr->pointer;
 
   N_ELEMENTS(out_ptr, n);
-  if (status & 1)
+  if STATUS_OK
     switch (in_ptr->dtype) {
       do_rrspacing(F,;)
 	  do_rrspacing(FS,;)
@@ -292,7 +297,8 @@ int Tdi3RrSpacing(struct descriptor *in_ptr, struct descriptor *out_ptr)
 */
 int Tdi3Scale(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
-  int n, status = 1;
+  INIT_STATUS;
+  int n;
   int inp_inc = (in1_ptr->class == CLASS_A) ? in1_ptr->length : 0;
   int inp2_inc = (in2_ptr->class == CLASS_A) ? in2_ptr->length : 0;
   int outp_inc = out_ptr->length;
@@ -305,7 +311,7 @@ int Tdi3Scale(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct des
     inp_inc = 0;
   if (in2_ptr->class != CLASS_A)
     inp2_inc = 0;
-  if (status & 1)
+  if STATUS_OK
     switch (in1_ptr->dtype) {
       do_scale(F,;)
 	  do_scale(FS,;)
@@ -338,7 +344,8 @@ int Tdi3Scale(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct des
 int Tdi3SetExponent(struct descriptor *in1_ptr,
 		    struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
-  int n, status = 1;
+  INIT_STATUS;
+  int n;
   int inp_inc = (in1_ptr->class == CLASS_A) ? in1_ptr->length : 0;
   int inp2_inc = (in2_ptr->class == CLASS_A) ? in2_ptr->length : 0;
   int outp_inc = out_ptr->length;
@@ -347,7 +354,7 @@ int Tdi3SetExponent(struct descriptor *in1_ptr,
   char *outp = out_ptr->pointer;
 
   N_ELEMENTS(out_ptr, n);
-  if (status & 1)
+  if STATUS_OK
     switch (in1_ptr->dtype) {
       do_setexponent(F,;)
 	  do_setexponent(FS,;)
@@ -382,13 +389,14 @@ int Tdi3SetExponent(struct descriptor *in1_ptr,
 */
 int Tdi3Spacing(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-  int n, test, status = 1;
+  INIT_STATUS;
+  int n, test;
   int inc = out_ptr->length;
   char *inp = in_ptr->pointer;
   char *outp = out_ptr->pointer;
 
   N_ELEMENTS(out_ptr, n);
-  if (status & 1)
+  if STATUS_OK
     switch (in_ptr->dtype) {
       do_spacing(F,;)
 	  do_spacing(FS,;)

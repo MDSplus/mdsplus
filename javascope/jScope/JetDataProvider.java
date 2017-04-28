@@ -36,7 +36,7 @@ class JetDataProvider implements DataProvider
     private boolean evaluate_url = false;
     private String url_source = "http://data.jet.uk/";
 
-    private   Vector    connection_listener = new Vector();
+    private   Vector<ConnectionListener> connection_listener = new Vector<>();
 
     JTextField user_text;
     JPasswordField passwd_text;
@@ -64,7 +64,7 @@ class JetDataProvider implements DataProvider
     public void    SetEnvironment(String s) {}
     public void    Dispose(){}
     public String  GetString(String in) {return in; }
-    public double   GetFloat(String in){ return new Double(in).doubleValue(); }
+    public double  GetFloat(String in) { return Double.parseDouble(in); }
     public String  ErrorString() { return error_string; }
     public void    AddUpdateEventListener(UpdateEventListener l, String event){}
     public void    RemoveUpdateEventListener(UpdateEventListener l, String event){}
@@ -73,7 +73,6 @@ class JetDataProvider implements DataProvider
     public boolean SupportsFastNetwork(){return false;}
     public void    SetArgument(String arg){};
     public boolean SupportsTunneling() {return false; }
-    public void setContinuousUpdate(){}
 
     class SimpleWaveData implements WaveData
     {
@@ -89,7 +88,6 @@ class JetDataProvider implements DataProvider
             this.in_x = in_x;
         }
 
-        public void setContinuousUpdate(boolean continuopusUpdate){}
         public int getNumDimension()throws IOException
         {
             GetFloatArray(in_y, DATA);
@@ -328,9 +326,6 @@ class JetDataProvider implements DataProvider
 
     public float[] GetFloatArray(String in, int type) throws IOException
     {
-        float out[] = null;
-        String in_expr = new String(in);
-
         error_string = null;
         boolean is_time = (type == X);
         boolean is_y = (type == Y);
@@ -353,16 +348,10 @@ class JetDataProvider implements DataProvider
                 url_name = experiment + "/" + shot + "/" + in;
         }
 
-        out = null;
-
         ConnectionEvent e = new ConnectionEvent(this, "Network");
         DispatchConnectionEvent(e);
 
-        if((last_url_name != null && url_name.equals(last_url_name)) || out!= null)
-        {
-            if(out != null)
-                return out;
-
+        if (last_url_name != null && url_name.equals(last_url_name)) {
             if(is_time)
                 return last_x;
             else
@@ -370,9 +359,7 @@ class JetDataProvider implements DataProvider
                     return last_y;
                 else
                     return last_data;
-        }
-        else
-        {
+        } else {
             last_x = last_data = last_y = null;
             try
             {
@@ -407,7 +394,6 @@ class JetDataProvider implements DataProvider
                 JiDim jdimTime = jvarData.getDims()[ndims-1];
                 JiVar jvarTime = jns.getVar(jdimTime.mName);
 
-
                 JiDim jdimXData = null;
                 JiVar jvarXData = null;
                 if (ndims >= 2){
@@ -422,7 +408,6 @@ class JetDataProvider implements DataProvider
                 last_x = new float[time.length];
                 for(int i = 0; i < time.length; i++)
                     last_x[i] = (float)time[i];
-                time = null;
 
                 dims = jvarData.getDims();
                 last_data = jvarData.readFloat(dims);
@@ -442,7 +427,6 @@ class JetDataProvider implements DataProvider
                 throw(new IOException(error_string));
             }
 
-
             if(is_time)
                 return last_x;
              else
@@ -450,7 +434,6 @@ class JetDataProvider implements DataProvider
                     return last_y;
                 else
                     return last_data;
-
         }
     }
 
@@ -506,7 +489,6 @@ class JetDataProvider implements DataProvider
         throw(new IOException(error_string));
     }
 
-
     public void AddConnectionListener(ConnectionListener l)
     {
 	    if (l == null) {
@@ -526,15 +508,9 @@ class JetDataProvider implements DataProvider
     protected void DispatchConnectionEvent(ConnectionEvent e)
     {
         if (connection_listener != null)
-        {
             for(int i = 0; i < connection_listener.size(); i++)
-            {
-                ((ConnectionListener)connection_listener.elementAt(i)).processConnectionEvent(e);
-            }
-        }
+                connection_listener.elementAt(i).processConnectionEvent(e);
     }
-
-
 
 public static void main(String args[])
 {
@@ -554,6 +530,5 @@ public static void main(String args[])
     System.out.println("Num. points: "+data.length);
     } catch (IOException exc){}
  }
-
 }
 

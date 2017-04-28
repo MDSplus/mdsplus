@@ -7,6 +7,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <signal.h>
+#include "mdsdclthreadsafe.h"
 
 extern int mdsdcl_do_command(char const *command);
 
@@ -40,14 +41,14 @@ void handle_signals(int signo __attribute__ ((unused)))
 
 int main(int argc, char const *argv[])
 {
-  char *history_file = 0;
-  char *command = 0;
+  char *history_file = NULL;
+  char *command = NULL;
   int notDone = 1;
   int status = 0;
   int i;
-  char *output = 0;
-  char *error = 0;
-  char *prompt = 0;
+  char *output = NULL;
+  char *error = NULL;
+  char *prompt = NULL;
 
   /* See if a -prep option is provided as the first command option. */
 
@@ -140,7 +141,6 @@ int main(int argc, char const *argv[])
 
       /* If command continued from previous line or command need more input,
          append line to previous command portion */
-
       if (command) {
 	if (strlen(cmd) > 0) {
 	  command = (char *)realloc(command, strlen(command) + strlen(cmd) + 1);
@@ -158,8 +158,7 @@ int main(int argc, char const *argv[])
 	command = cmd;
 
       /* If line ends in hyphen it is a continuation. Go get rest of line */
-
-      if (command[strlen(command) - 1] == '-') {
+      if ( strlen(command)>1 ) if (command[strlen(command) - 1] == '-') {
 	command[strlen(command) - 1] = '\0';
 	if (prompt)
 	  free(prompt);

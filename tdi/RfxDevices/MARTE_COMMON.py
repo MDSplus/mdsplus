@@ -36,11 +36,11 @@ class MARTE_COMMON(Device):
 
 #init method will send a SETUP event with the required information to allow MDSInterface service retrieving parameter and signal information
     def init(self):
-      eventStr = "SETUP " + Tree.getActiveTree().name + " "  + self.control.data() + " " + str(Tree.getActiveTree().shot) + " " + str(self.id.data()) + " "
+      eventStr = "SETUP " + self.tree.name + " "  + self.control.data() + " " + str(self.tree.shot) + " " + str(self.id.data()) + " "
 
-      eventStr = eventStr + " " + str(self.params.getNid())
-      eventStr = eventStr + " " + str(self.wave_params.getNid())
-      eventStr = eventStr + " " + str(self.signals.getNid())
+      eventStr = eventStr + " " + str(self.params.nid)
+      eventStr = eventStr + " " + str(self.wave_params.nid)
+      eventStr = eventStr + " " + str(self.signals.nid)
       print(eventStr)
       Event.setevent(self.getEventName(), eventStr)
       sleep(3)

@@ -13,6 +13,9 @@
 #ifdef HAVE_GETPWUID
 #undef HAVE_GETPWUID
 #endif
+#ifdef SIZEOF_LONG
+#undef SIZEOF_LONG
+#endif
 
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>

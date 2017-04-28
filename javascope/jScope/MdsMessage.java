@@ -224,8 +224,6 @@ public class MdsMessage extends Object
     public synchronized void Receive(InputStream dis)throws IOException
     {
         byte header_b[] = new byte[16 + Descriptor.MAX_DIM*4];
-        byte b4[] = new byte[4];
-        byte b2[] = new byte[2];
         int c_type = 0;
         int idx = 0;
 

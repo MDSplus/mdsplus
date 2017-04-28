@@ -34,12 +34,10 @@ static void CompressString(struct descriptor *in, int upcase)
 }
 
 #ifdef _WIN32
-static int BecomeUser(char *remuser, struct descriptor *local_user)
-{
+static int BecomeUser(char *remuser __attribute__ ((unused)), struct descriptor *local_user __attribute__ ((unused))){
   return 1;
 }
 #else
-
 static int BecomeUser(char *remuser, struct descriptor *local_user)
 {
   int ok = 1;

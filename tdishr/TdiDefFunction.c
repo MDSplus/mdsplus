@@ -48,4 +48,4 @@ extern EXPORT int Tdi##name ( struct descriptor *first, ... ) \
   else \
     return TdiNO_OUTPTR; \
 }
-#include "opcbuiltins.h"
+#include <opcbuiltins.h>

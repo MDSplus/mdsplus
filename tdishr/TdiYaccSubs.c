@@ -36,10 +36,11 @@ int TdiYacc_RESOLVE();
 */
 int TdiYacc_ARG(struct marker *mark_ptr)
 {
+  INIT_STATUS;
+  GET_TDITHREADSTATIC_P;
   struct descriptor *ptr;
   struct descriptor_xd junk = EMPTY_XD;
   unsigned int len = mark_ptr->rptr->length;
-  int status;
   unsigned char *c_ptr;
 
   if (len == 1)
@@ -77,14 +78,15 @@ int TdiYacc_BUILD(int ndesc,
 		  struct marker *arg1,
 		  struct marker *arg2, struct marker *arg3, struct marker *arg4)
 {
+  GET_TDITHREADSTATIC_P;
   struct descriptor_function *tmp;
   int dsc_size = sizeof(struct descriptor_function) + sizeof(struct descriptor *) * (ndesc - 1);
   unsigned int vm_size = dsc_size + sizeof(unsigned short);
   struct TdiFunctionStruct *this_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
 
   TdiRefZone.l_status = LibGetVm(&vm_size, (void **)&tmp, &TdiRefZone.l_zone);
-  if (!(TdiRefZone.l_status & 1))
-    return 1;
+  if IS_NOT_OK(TdiRefZone.l_status)
+    return MDSplusERROR;
   out->builtin = -1;
   out->rptr = (struct descriptor_r *)tmp;
 
@@ -95,7 +97,7 @@ int TdiYacc_BUILD(int ndesc,
   switch (nused) {
   default:
     TdiRefZone.l_status = TdiEXTRA_ARG;
-    return 1;
+    return MDSplusERROR;
   case 4:
     tmp->arguments[3] = (struct descriptor *)arg4->rptr;
   case 3:
@@ -115,13 +117,13 @@ int TdiYacc_BUILD(int ndesc,
         *******************************************/
   if (nused > this_ptr->m2) {
     TdiRefZone.l_status = TdiYacc_IMMEDIATE(&out->rptr);
-    return 1;
+    return MDSplusERROR;
   }				/*Force an error */
   if (ndesc >= 254)
-    return 0;
+    return MDSplusSUCCESS;
   if (nused < this_ptr->m1) {
     TdiRefZone.l_status = TdiYacc_IMMEDIATE(&out->rptr);
-    return 1;
+    return MDSplusERROR;
   }				/*Force an error */
   return TdiYacc_RESOLVE(&out->rptr);
 }
@@ -133,6 +135,7 @@ int TdiYacc_BUILD(int ndesc,
 */
 int TdiYacc_IMMEDIATE(struct descriptor_xd **dsc_ptr_ptr)
 {
+  GET_TDITHREADSTATIC_P;
   struct descriptor_xd xd = EMPTY_XD, junk = EMPTY_XD, *ptr = *dsc_ptr_ptr;
   int status;
 
@@ -147,9 +150,9 @@ int TdiYacc_IMMEDIATE(struct descriptor_xd **dsc_ptr_ptr)
 	/*******************
         Copy it to our zone.
         *******************/
-  if (status & 1)
+  if STATUS_OK
     status = MdsCopyDxXdZ(xd.pointer, &junk, &TdiRefZone.l_zone, NULL, NULL, NULL, NULL);
-  if (status & 1)
+  if STATUS_OK
     *dsc_ptr_ptr = (struct descriptor_xd *)junk.pointer;
   MdsFree1Dx(&xd, NULL);
   return status;
@@ -185,19 +188,20 @@ int TdiYacc_IMMEDIATE(struct descriptor_xd **dsc_ptr_ptr)
 
 int TdiYacc_RESOLVE(struct descriptor_function **out_ptr_ptr)
 {
+  GET_TDITHREADSTATIC_P;
   struct descriptor_function *out_ptr = *out_ptr_ptr;
   struct TdiFunctionStruct *this_ptr;
   int j, ndesc, opcode;
 
   if (out_ptr == 0 || out_ptr->dtype != DTYPE_FUNCTION)
-    return 0;
+    return MDSplusSUCCESS;
   ndesc = out_ptr->ndesc;
   opcode = *(unsigned short *)out_ptr->pointer;
   this_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   if (ndesc < this_ptr->m1 || ndesc > this_ptr->m2)
     goto doit;			/*force an error */
   if ((this_ptr->token & LEX_K_IMMED) == 0)
-    return 0;
+    return MDSplusSUCCESS;
 	/******************
         Test for VMS types.
         BUILD_xxx always.
@@ -214,13 +218,13 @@ int TdiYacc_RESOLVE(struct descriptor_function **out_ptr_ptr)
 	  if (tst == 0 || tst->dtype == DTYPE_RANGE)
 	    continue;
 	} else if (tst && tst->class != CLASS_A)
-	  return 0;		/*decide at runtime */
+	  return MDSplusSUCCESS;		/*decide at runtime */
       }
       if (tst && tst->dtype >= TdiCAT_MAX)
-	return 0;
+	return MDSplusSUCCESS;
     }
  doit:
-  if ((TdiRefZone.l_status = TdiYacc_IMMEDIATE((struct descriptor_xd **)out_ptr_ptr)) & 1)
-    return 0;
-  return 1;
+  if IS_OK(TdiRefZone.l_status = TdiYacc_IMMEDIATE((struct descriptor_xd **)out_ptr_ptr))
+    return MDSplusSUCCESS;
+  return MDSplusERROR;
 }

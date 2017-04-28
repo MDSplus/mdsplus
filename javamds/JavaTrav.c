@@ -1289,7 +1289,7 @@ JNIEXPORT void JNICALL Java_Database_doDeviceMethod
 JNIEXPORT jlong JNICALL Java_Database_saveContext(JNIEnv * env __attribute__ ((unused)), jobject obj __attribute__ ((unused))) {
   void *context = TreeSaveContext();
 /*//	printf("Saved context: %x\n", context);*/
-  return (long)context;
+  return *(jlong*)&context;
 }
 
 JNIEXPORT void JNICALL Java_Database_restoreContext(JNIEnv * env __attribute__ ((unused)), jobject obj __attribute__ ((unused)), void *context) {

@@ -35,7 +35,7 @@ class TwuDataProvider
     private   String experiment;
     protected long   shot;
     private String error_string;
-    private transient Vector   connection_listener = new Vector();
+    private transient Vector<ConnectionListener> connection_listener = new Vector<>();
     private String user_agent;
     private TwuWaveData lastWaveData = null ;
 
@@ -46,7 +46,7 @@ class TwuDataProvider
     public void    SetEnvironment(String s) {}
     public void    Dispose(){}
     public String  GetString(String in) {return in; }
-    public double   GetFloat(String in){ return new Double(in).doubleValue(); }
+    public double  GetFloat(String in) { return Double.parseDouble(in); }
     public String  ErrorString() { return error_string; }
     public void    AddUpdateEventListener   (UpdateEventListener l, String event){}
     public void    RemoveUpdateEventListener(UpdateEventListener l, String event){}
@@ -56,7 +56,6 @@ class TwuDataProvider
     public boolean SupportsFastNetwork(){return true;}
     public void    SetArgument(String arg){}
     public boolean SupportsTunneling() {return false;}
-    public void setContinuousUpdate(){}
 
     //  --------------------------------------------------------------------------------------------
     //     interface methods for getting *Data objects
@@ -251,10 +250,8 @@ class TwuDataProvider
     protected void DispatchConnectionEvent(ConnectionEvent e)
     {
         if (connection_listener != null)
-        {
             for(int i = 0; i < connection_listener.size(); i++)
-              ((ConnectionListener)connection_listener.elementAt(i)).processConnectionEvent(e);
-        }
+              connection_listener.elementAt(i).processConnectionEvent(e);
     }
 
     //  -------------------------------------------

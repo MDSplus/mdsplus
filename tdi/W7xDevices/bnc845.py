@@ -1,7 +1,6 @@
 
 import sys
 import socket
-import pytz
 import datetime
 
 import MDSplus
@@ -101,7 +100,7 @@ class BNC845 (MDSplus.Device) :
 
 		#### program BNC ####
 
-		log = str(datetime.datetime.now(pytz.UTC)) + '\n' # first line of INIT_LOG
+		log = str(datetime.datetime.utcnow()) + '\n' # first line of INIT_LOG
 
 		(sock, remote_ip) = bnc_connect(host, port)
 		log += 'Connected to %s (%s)\n' % (host, remote_ip)

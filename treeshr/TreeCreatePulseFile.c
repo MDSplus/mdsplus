@@ -64,8 +64,7 @@ int TreeCreatePulseFile(int shotid, int numnids_in, int *nids_in)
 int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
-  int status = 1;
-  int retstatus;
+  INIT_STATUS, retstatus = MDSplusERROR;
   int num;
   int nids[256];
   int i;
@@ -82,11 +81,13 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
   if (numnids_in == 0) {
     void *ctx = 0;
     nids[0] = 0;
-    for (num = 1;
+    for (num = 0; num < 256 && _TreeFindTagWild(dbid, "TOP", &nids[num], &ctx); num++);
+    /* for (num = 1;
 	 num < 256
 	 && (_TreeFindNodeWild(dbid, "***", &nids[num], &ctx, (1 << TreeUSAGE_SUBTREE)) & 1);
 	 num++) ;
     TreeFindNodeEnd(&ctx);
+    */
   } else {
     num = 0;
     for (i = 0; i < numnids_in; i++) {
@@ -105,7 +106,7 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
     shot = TreeGetCurrentShotId(dblist->experiment);
 
   retstatus = status;
-  if (status & 1) {
+  if STATUS_OK {
     for (i = 0; i < num && (retstatus & 1); i++) {
       int skip = 0;
       char name[13];
@@ -126,9 +127,9 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
       } else {
 	strcpy(name, dblist->experiment);
       }
-      if (status & 1 && !(skip))
+      if (STATUS_OK && !(skip))
 	status = TreeCreateTreeFiles(name, shot, source_shot);
-      if (!(status & 1) && (i == 0))
+      if (STATUS_NOT_OK && (i == 0))
 	retstatus = status;
     }
   }
@@ -137,6 +138,7 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
 
 int TreeCreateTreeFiles(char *tree, int shot, int source_shot)
 {
+  INIT_STATUS;
   size_t len = strlen(tree);
   char tree_lower[13];
   char pathname[32];
@@ -145,7 +147,6 @@ int TreeCreateTreeFiles(char *tree, int shot, int source_shot)
   size_t pathlen;
   char name[32];
   size_t i;
-  int status = 1;
   int itype;
   char *types[] = { ".tree", ".characteristics", ".datafile" };
   for (i = 0; i < len && i < 12; i++)
@@ -156,7 +157,7 @@ int TreeCreateTreeFiles(char *tree, int shot, int source_shot)
   pathin = TranslateLogical(pathname);
   if (pathin) {
     pathlen = strlen(pathin);
-    for (itype = 0; itype < 3 && (status & 1); itype++) {
+    for (itype = 0; itype < 3 && STATUS_OK; itype++) {
       char *srcfile = 0;
       char *dstfile = 0;
       char *type = types[itype];
@@ -263,8 +264,7 @@ int TreeCreateTreeFiles(char *tree, int shot, int source_shot)
 
 STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it)
 {
-  int status;
-
+  INIT_STATUS_ERROR;
   int src_fd = MDS_IO_OPEN(src, O_RDONLY | O_BINARY | O_RANDOM, 0);
   if (src_fd != -1) {
     ssize_t src_len = MDS_IO_LSEEK(src_fd, 0, SEEK_END);

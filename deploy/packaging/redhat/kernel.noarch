@@ -47,6 +47,9 @@
 ./usr/local/mdsplus/tdi/cacheshr
 ./usr/local/mdsplus/tdi/cacheshr/GetCheckedSegment.fun
 ./usr/local/mdsplus/tdi/cvttime.fun
+./usr/local/mdsplus/tdi/dev_data_support
+./usr/local/mdsplus/tdi/dev_data_support/a14_adjust.fun
+./usr/local/mdsplus/tdi/dev_data_support/a14_clock_divide.fun
 ./usr/local/mdsplus/tdi/dev_support
 ./usr/local/mdsplus/tdi/dev_support/DevAddAction.fun
 ./usr/local/mdsplus/tdi/dev_support/DevAddDevice.fun
@@ -154,7 +157,7 @@
 ./usr/local/mdsplus/tdi/python/Py.py
 ./usr/local/mdsplus/tdi/python/getShotDB.py
 ./usr/local/mdsplus/tdi/python/intersect1d.fun
-./usr/local/mdsplus/tdi/python/pyfun.fun
+./usr/local/mdsplus/tdi/python/pyfun.py
 ./usr/local/mdsplus/tdi/python/setdiff1d.fun
 ./usr/local/mdsplus/tdi/remote
 ./usr/local/mdsplus/tdi/remote/GetDefaultNid.fun

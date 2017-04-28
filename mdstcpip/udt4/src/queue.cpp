@@ -783,6 +783,7 @@ void CRendezvousQueue::insert(const UDTSOCKET& id, CUDT* u, int ipv, const socka
 
    CRL r;
    r.m_iID = id;
+   u->m_llLastReqTime = CTimer::getTime();
    r.m_pUDT = u;
    r.m_iIPversion = ipv;
    r.m_pPeerAddr = (AF_INET == ipv) ? (sockaddr*)new sockaddr_in : (sockaddr*)new sockaddr_in6;
@@ -1150,7 +1151,7 @@ int CRcvQueue::recvfrom(int32_t id, CPacket& packet)
    delete [] newpkt->m_pcData;
    delete newpkt;
 
-   // remove this message from queue, 
+   // remove this message from queue,
    // if no more messages left for this socket, release its data structure
    i->second.pop();
    if (i->second.empty())
@@ -1228,7 +1229,7 @@ CUDT* CRcvQueue::getNewEntry()
 
 void CRcvQueue::storePkt(int32_t id, CPacket* pkt)
 {
-   CGuard bufferlock(m_PassLock);   
+   CGuard bufferlock(m_PassLock);
 
    map<int32_t, std::queue<CPacket*> >::iterator i = m_mBuffer.find(id);
 

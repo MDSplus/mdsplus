@@ -218,9 +218,9 @@ SectionEnd
 
 Section "PYTHON"
 SetOutPath "$INSTDIR\mdsobjects"
-File /r /source/mdsobjects/python
+File /r /x MDSplus /source/mdsobjects/python
 SetOutPath "$INSTDIR\mdsobjects\python"
-File /workspace/64/mdsobjects/python/_version.py
+File /workspace/releasebld/64/mdsobjects/python/_version.py
 SetOutPath "$INSTDIR\mdsobjects\python"
 Exec "python setup.py install version=${MAJOR}.${MINOR}-${RELEASE}"
 SectionEnd

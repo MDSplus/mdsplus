@@ -25,8 +25,9 @@ int TdiGetShape(int narg,
 		unsigned short length,
 		unsigned char dtype, int *cmode_ptr, struct descriptor_xd *out_ptr)
 {
+  INIT_STATUS;
   unsigned short ulen;
-  int cmode = -1, status = 1, count = 0x7fffffff, j, len, nelem;
+  int cmode = -1, count = 0x7fffffff, j, len, nelem;
   struct descriptor_a *aptr;
 
 	/*******************************
@@ -55,7 +56,7 @@ int TdiGetShape(int narg,
 	/*****************************
         Get array or scalar as needed.
         *****************************/
-  if (status & 1) {
+  if STATUS_OK {
     if ((len = length) == 0 && dtype < TdiCAT_MAX)
       len = TdiREF_CAT[dtype].length;
     ulen = (unsigned short)len;

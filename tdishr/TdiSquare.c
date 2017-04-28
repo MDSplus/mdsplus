@@ -4,6 +4,7 @@
         Ken Klare, LANL CTR-7   (c)1989,1990
 */
 #include <mdsdescrip.h>
+#include <status.h>
 #include <STATICdef.h>
 
 
@@ -35,12 +36,12 @@ int Tdi3Cmplx(struct descriptor *x_ptr,
 */
 int Tdi3Ceiling(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-  int status;
+  INIT_STATUS;
 
   status = Tdi3UnaryMinus(in_ptr, out_ptr);
-  if (status & 1)
+  if STATUS_OK
     status = Tdi3Floor(out_ptr, out_ptr);
-  if (status & 1)
+  if STATUS_OK
     status = Tdi3UnaryMinus(out_ptr, out_ptr);
   return status;
 }

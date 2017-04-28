@@ -32,7 +32,7 @@ DESCRIPTION
      deployment scripts in the mdsplus-deploy git package.
 
     The build.sh script will only build MDSplus for one target operating
-    system per invocation of the script. One must specify whether you 
+    system per invocation of the script. One must specify whether you
     want to perform the standard tests on the MDSplus software, build
     the installers, or publish the installers to a public repository
     using the --test, --release=version and/or --publish=version command
@@ -60,7 +60,7 @@ DESCRIPTION
 
     If you have changed the packaging, for example adding a new library, header,
     tdi function or any other file that would be included in an installer the
-    above test will fail. You will need to issue the following commands to 
+    above test will fail. You will need to issue the following commands to
     update the package contents checking files to refleact the changes.
     issue the following commands:
 
@@ -203,6 +203,9 @@ OPTIONS WITH OS SPECIFIC DEFAULT
        operation. The default --distname option will be set if using a
        supported operating system.
 
+    --valgrind
+       Enable valgrind testing for this build.
+
     --valgrind=tests
        Select a set of valgrind tests to perform on the MDSplus code if
        the --test option is included. This is a comma delimited list of
@@ -211,6 +214,9 @@ OPTIONS WITH OS SPECIFIC DEFAULT
        supported operating system a default list of tests supported for
        that operating system will be used unless overriden in the
        command line.
+
+    --sanitize
+       Enable sanitize testing for this build.
 
     --sanitize=tests
        Select a set of sanitize tests to perform on the MDSplus code if
@@ -232,6 +238,7 @@ OPTIONS WITH OS SPECIFIC DEFAULT
 EOF
 }
 parsecmd() {
+    unset INTERACTIVE
     for i in $1
     do
 	case $i in
@@ -279,14 +286,20 @@ parsecmd() {
 	    --platform=*)
 		PLATFORM="${i#*=}"
 		;;
+	    --valgrind)
+		ENABLE_VALGRIND=yes
+		;;
 	    --valgrind=*)
-		if [ -z "$VALGRIND_TOOLS" ]
+		if [ "${ENABLE_VALGRIND}" = "yes" ]
 		then
 		    VALGRIND_TOOLS="${i#*=}"
 		fi
 		;;
+	    --sanitize)
+		ENABLE_SANITIZE=yes
+		;;
 	    --sanitize=*)
-		if [ -z "$SANITIZE" ]
+		if [ "$ENABLE_SANITIZE" = "yes" ]
 		then
 		    SANITIZE="${i#*=}"
 		fi
@@ -327,6 +340,9 @@ parsecmd() {
 	    --color)
 		COLOR=yes
 		;;
+	    -i)
+		INTERACTIVE="1"
+		;;
 	    --winhost=*)
 		WINHOST="${i#*=}"
 		;;
@@ -358,7 +374,7 @@ opts="$@"
 parsecmd "$opts"
 
 SRCDIR=$(realpath $(dirname ${0})/..)
-    
+
 #
 # Get the default options for the OS specified.
 #
@@ -407,15 +423,15 @@ NORMAL() {
 
 if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
 then
-    if [ -r $PUBLISHDIR/${DISTNAME}/${BRANCH}_${RELEASE_VERSION} ]
+    if [ -r $PUBLISHDIR/${DISTNAME}/${BRANCH}_${RELEASE_VERSION}_${OS} ]
     then
 	GREEN $COLOR
 	cat <<EOF
 ==================================================================
-                                                                  
-A ${RELEASE_VERSION} ${BRANCH} release already exists for ${OS}.  
-The build will be skipped.                                        
-                                                                  
+
+A ${RELEASE_VERSION} ${BRANCH} release already exists for ${OS}.
+The build will be skipped.
+
 ==================================================================
 EOF
 	NORMAL $COLOR
@@ -435,11 +451,15 @@ fi
 # Make sure one of --test --release=version
 # --publish=version options were provided.
 #
-if [ "${TEST}" != "yes"  \
-	       -a  "${RELEASE}" != "yes" \
-	       -a  "${PUBLISH}" != "yes" ]
+echo "${ENABLE_SANITIZE}"
+echo "${SANITIZE}"
+if [ "${TEST}"            != "yes"  \
+ -a  "${RELEASE}"         != "yes"  \
+ -a  "${PUBLISH}"         != "yes"  \
+ -a  "${ENABLE_SANITIZE}" != "yes"  \
+ -a  "${ENABLE_VALGRIND}" != "yes"  ]
 then
-    >&2 echo "None of --test --release=version --publish=version options specified on the command. Nothing to do!"
+    >&2 echo "None of --test --sanitize --valgrind --release=version --publish=version options specified on the command. Nothing to do!"
     exit 0
 fi
 #
@@ -455,7 +475,7 @@ then
     >&2 echo "Attempting to publish without a --distname=name option."
     exit 1
 fi
-if [ ! -r "${SRCDIR}/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh" ]
+if [ ! -d "${SRCDIR}/deploy/platform/${PLATFORM}" ]
 then
     >&2 echo "Plaform ${PLATFORM} is not supported."
     exit 1
@@ -511,7 +531,7 @@ spacedelim() {
     fi
     echo $ans
 }
-    
+
 DOCKERFILE="$(spacedelim $DOCKERFILE)"
 DOCKERIMAGE="$(spacedelim $DOCKERIMAGE)"
 #
@@ -600,15 +620,16 @@ OS=${OS} \
   WINBLD="${WINBLD}" \
   WINREMBLD="${WINREMBLD}" \
   GIT_COMMIT="${GIT_COMMIT}" \
-  ${SRCDIR}/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh
+  INTERACTIVE="$INTERACTIVE" \
+  ${SRCDIR}/deploy/platform/platform_build.sh
 if [ "$?" != "0" ]
 then
     RED $COLOR
     cat <<EOF >&2
 ============================================
-                                            
-Failure: The build was unsuccessful!        
-                                            
+
+Failure: The build was unsuccessful!
+
 ============================================
 EOF
     NORMAL $COLOR
@@ -617,14 +638,14 @@ else
     GREEN $COLOR
     cat <<EOF
 ============================================
-                                            
-Success!                                    
-                                            
+
+Success!
+
 ============================================
 EOF
     NORMAL $COLOR
     if [ "$PUBLISH" = "yes" ]
     then
-	touch $PUBLISHDIR/${BRANCH}_${RELEASE_VERSION}
+	touch $PUBLISHDIR/${BRANCH}_${RELEASE_VERSION}_${OS}
     fi
 fi

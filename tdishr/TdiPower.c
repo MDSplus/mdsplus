@@ -26,7 +26,7 @@ extern int Tdi3Divide();
 
 int Tdi3Power(struct descriptor *x, struct descriptor *y, struct descriptor_a *z)
 {
-  int status = 1;
+  INIT_STATUS;
   int yy;
   char uno[32];
   struct descriptor duno;
@@ -41,9 +41,9 @@ int Tdi3Power(struct descriptor *x, struct descriptor *y, struct descriptor_a *z
       status = Tdi3Log(z, z);
     } else
       status = Tdi3Log(x, z);
-    if (status & 1)
+    if STATUS_OK
       status = Tdi3Multiply(y, z, z);
-    if (status & 1)
+    if STATUS_OK
       status = Tdi3Exp(z, z);
   }
 	/******************************************
@@ -58,18 +58,18 @@ int Tdi3Power(struct descriptor *x, struct descriptor *y, struct descriptor_a *z
       duno = *x;
       duno.pointer = uno;
       status = TdiConvert(&one_dsc, &duno);
-      if (status & 1)
+      if STATUS_OK
 	status = Tdi3Divide(&duno, x, x);
     }
-    for (; !(yy & 1) && status & 1; yy >>= 1)
+    for (; !(yy & 1) && STATUS_OK; yy >>= 1)
       status = Tdi3Multiply(x, x, x);
     if (x->class != CLASS_A)
       _MOVC3(z->length, x->pointer, z->pointer);
     else
       _MOVC3(z->arsize, x->pointer, z->pointer);
-    for (; (yy >>= 1) > 0 && status & 1;) {
+    for (; (yy >>= 1) > 0 && STATUS_OK;) {
       status = Tdi3Multiply(x, x, x);
-      if (yy & 1 && status & 1)
+      if (yy & 1 && STATUS_OK)
 	status = Tdi3Multiply(x, z, z);
     }
   }
@@ -94,9 +94,9 @@ int Tdi3Power(struct descriptor *x, struct descriptor *y, struct descriptor_a *z
     dz.class = CLASS_S;
     duno = dx;
     duno.pointer = uno;
-    if (status & 1)
+    if STATUS_OK
       status = TdiConvert(&one_dsc, &duno);
-    for (; --n >= 0 && status & 1; px += incx, dz.pointer += incz) {
+    for (; --n >= 0 && STATUS_OK; px += incx, dz.pointer += incz) {
       _MOVC3(dx.length, px, xx);
       if ((int)(yy = *py++) <= 0) {
 	if (yy == 0) {
@@ -106,12 +106,12 @@ int Tdi3Power(struct descriptor *x, struct descriptor *y, struct descriptor_a *z
 	yy = -yy;
 	status = Tdi3Divide(&duno, &dx, &dx);
       }
-      for (; !(yy & 1) && status & 1; yy >>= 1)
+      for (; !(yy & 1) && STATUS_OK; yy >>= 1)
 	status = Tdi3Multiply(&dx, &dx, &dx);
       _MOVC3(dz.length, dx.pointer, dz.pointer);
-      for (; (yy >>= 1) > 0 && status & 1;) {
+      for (; (yy >>= 1) > 0 && STATUS_OK;) {
 	status = Tdi3Multiply(&dx, &dx, &dx);
-	if (yy & 1 && status & 1)
+	if (yy & 1 && STATUS_OK)
 	  status = Tdi3Multiply(&dx, &dz, &dz);
       }
     }
@@ -130,9 +130,10 @@ typedef struct {
 int Tdi3Merge(struct descriptor_a *pdtrue, struct descriptor_a *pdfalse,
 	      struct descriptor_a *pdmask, struct descriptor_a *pdout)
 {
+  INIT_STATUS;
   int len = pdout->length;
   char *po = pdout->pointer;
-  int n = 0, status = 1;
+  int n = 0;
 
   int stept = pdtrue->class == CLASS_A ? len : 0;
   char *pt = pdtrue->pointer;
@@ -151,7 +152,7 @@ int Tdi3Merge(struct descriptor_a *pdtrue, struct descriptor_a *pdfalse,
   lquad *pq;
 
   N_ELEMENTS(pdout, n);
-  if (status & 1)
+  if STATUS_OK
     switch (len) {
     case 1:
       for (pc = (char *)po; --n >= 0; pm += stepm, pt += stept, pf += stepf)

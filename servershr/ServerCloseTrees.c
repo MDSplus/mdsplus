@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$CLOSE_TREES   
+		Name:   SERVER$CLOSE_TREES
 
 		Type:   C function
 
@@ -8,11 +8,11 @@
 
 		Date:   17-APR-1992
 
-    		Purpose: Tell server to close all trees that are open 
+    		Purpose: Tell server to close all trees that are open
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 int SERVER$CLOSE_TREES( struct dsc$descriptor *server )
 
@@ -32,7 +32,6 @@ int SERVER$CLOSE_TREES( struct dsc$descriptor *server )
 #include <servershr.h>
 #include "servershrp.h"
 
-EXPORT int ServerCloseTrees(char *server)
-{
-  return ServerSendMessage(0, server, SrvClose, 0, 0, 0, 0, 0, 0);
+EXPORT int ServerCloseTrees(char *server){
+  return ServerSendMessage(0, server, SrvClose, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL);
 }

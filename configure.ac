@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl @(#)$RCSfile$ $Revision$
 AC_PREREQ([2.69])
-AC_INIT([MDSplus], [6.0a], [mdsplus@lists.psfc.mit.edu])
+AC_INIT([MDSplus], [7a], [mdsplus@lists.psfc.mit.edu])
 AC_CONFIG_AUX_DIR([conf])
 AC_CONFIG_SRCDIR([include/mdsdescrip.h])
 
@@ -16,7 +16,7 @@ AM_MAINTAINER_MODE
 
 dnl AS_IS_RELEASE //////////////////////////////////////////////////////////////
 dnl see: http://www.gnu.org/software/autoconf-archive/ax_is_release.html
-dnl 
+dnl
 dnl * git-directory:  ax_is_release will be 'no' if a '.git' directory exists
 dnl * minor-version:  ax_is_release will be 'no' if the minor version number
 dnl                   in $PACKAGE_VERSION is odd; this assumes
@@ -26,25 +26,29 @@ dnl                   in $PACKAGE_VERSION is odd; this assumes
 dnl                   $PACKAGE_VERSION follows the 'major.minor.micro' scheme
 dnl * always:         ax_is_release will always be 'yes'
 dnl * never:          ax_is_release will always be 'no'
-dnl 
+dnl
 AX_IS_RELEASE([always])
 
 
 dnl AX_CHECK_ENABLE_DEBUG //////////////////////////////////////////////////////
 dnl see: www.gnu.org/software/autoconf-archive/ax_check_enable_debug.html
 dnl
-dnl Check for the presence of an --enable-debug option to configure, with the 
-dnl specified default value used when the option is not present. Return the 
+dnl Check for the presence of an --enable-debug option to configure, with the
+dnl specified default value used when the option is not present. Return the
 dnl value in the variable $ax_enable_debug.
-dnl Specifying "yes" adds "-g -O0" to the compilation flags for all languages. 
-dnl Specifying "info" adds "-g" to the compilation flags. Specifying "profile" 
-dnl adds "-g -pg" to the compilation flags, and "-pg" to the linker flags. 
+dnl Specifying "yes" adds "-g -O0" to the compilation flags for all languages.
+dnl Specifying "info" adds "-g" to the compilation flags. Specifying "profile"
+dnl adds "-g -pg" to the compilation flags, and "-pg" to the linker flags.
 dnl Otherwise, nothing is added.
 dnl
-dnl AX_CHECK_ENABLE_DEBUG([enable by default=yes/info/profile/no], 
-dnl   [ENABLE DEBUG VARIABLES ...], [DISABLE DEBUG VARIABLES NDEBUG ...], 
+dnl AX_CHECK_ENABLE_DEBUG([enable by default=yes/info/profile/no],
+dnl   [ENABLE DEBUG VARIABLES ...], [DISABLE DEBUG VARIABLES NDEBUG ...],
 dnl   [IS-RELEASE],[DEFAULT_RELEASE_FLAGS])
-AX_CHECK_ENABLE_DEBUG([no],,,,[-g -O2])
+AX_CHECK_ENABLE_DEBUG([no],,,,[-g -O3])
+
+
+dnl AX_TARGET_SELFHELP /////////////////////////////////////////////////////////
+AX_TARGET_SELFHELP
 
 
 # Checks for programs.
@@ -81,7 +85,7 @@ AC_SYS_LARGEFILE
 
 JAVACFLAGS="-encoding UTF-8"
 FOR_LINKSHARED=""
- 
+
 AC_MSG_CHECKING([whether to build shared libraries])
 AC_ARG_ENABLE([shared],
               [AS_HELP_STRING([--disable-shared],
@@ -129,34 +133,34 @@ AC_ARG_ENABLE([java],
               [],
               [AS_VAR_SET([enable_java], [yes])])
 
-# Add address sanitizer options to flags, if requested. Only useful for GCC
-# version 4.8 and later.
-AC_ARG_ENABLE([sanitize-address],
-  [AS_HELP_STRING(
-    [--enable-sanitize-address],
-    [Enable memory error detection using address sanitizer @<:@default=no@:>@]
-  )],
-  [enable_san_a="$enableval"],
-  [enable_san_a="no"]
-)
+dnl # Add address sanitizer options to flags, if requested. Only useful for GCC
+dnl # version 4.8 and later.
+dnl AC_ARG_ENABLE([sanitize-address],
+dnl  [AS_HELP_STRING(
+dnl    [--enable-sanitize-address],
+dnl    [Enable memory error detection using address sanitizer @<:@default=no@:>@]
+dnl  )],
+dnl  [enable_san_a="$enableval"],
+dnl  [enable_san_a="no"]
+dnl )
 
-AC_ARG_ENABLE([sanitize-undefined],
-  [AS_HELP_STRING(
-    [--enable-sanitize-undefined],
-    [Enable undefined behavior detection using undefined sanitizer @<:@default=no@:>@]
-  )],
-  [enable_san_u="$enableval"],
-  [enable_san_u="no"]
-)
+dnl AC_ARG_ENABLE([sanitize-undefined],
+dnl  [AS_HELP_STRING(
+dnl    [--enable-sanitize-undefined],
+dnl    [Enable undefined behavior detection using undefined sanitizer @<:@default=no@:>@]
+dnl  )],
+dnl  [enable_san_u="$enableval"],
+dnl  [enable_san_u="no"]
+dnl )
 
-AC_ARG_ENABLE([sanitize-thread],
-  [AS_HELP_STRING(
-    [--enable-sanitize-address],
-    [Enable race condition detection using thread sanitizer @<:@default=no@:>@]
-  )],
-  [enable_san_t="$enableval"],
-  [enable_san_t="no"]
-)
+dnl AC_ARG_ENABLE([sanitize-thread],
+dnl  [AS_HELP_STRING(
+dnl    [--enable-sanitize-address],
+dnl    [Enable race condition detection using thread sanitizer @<:@default=no@:>@]
+dnl  )],
+dnl  [enable_san_t="$enableval"],
+dnl  [enable_san_t="no"]
+dnl )
 
 dnl AC_ARG_ENABLE([universal],
 dnl              [AS_HELP_STRING([--enable-universal],
@@ -170,7 +174,7 @@ dnl AS_CASE([$host_vendor],
 dnl        [apple], dnl the java section breaks with macos x due to different structure
 dnl                 dnl this disables it for now..  is there a AC_PROG_JAVA?
 dnl                 [AS_VAR_SET([enable_java], [no])]
-dnl                 [AS_VAR_IF([enable_universal], [yes], [CFLAGS="-O2 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"]
+dnl                 [AS_VAR_IF([enable_universal], [yes], [CFLAGS="-O3 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"]
 dnl                                                       [LDFLAGS="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"]
 dnl                                                       [F77=fort77])])
 dnl AC_MSG_RESULT([$enable_java])
@@ -238,7 +242,7 @@ AS_CASE([$with_gsi],
         [MDSTCPIP="mdstcpip roam"
          GLOBUS_LOCATION=`echo $withval | awk -F: '{print $1}'`
          GLOBUS_FLAVOR=`echo $withval | awk -F: '{print $2}'`
-         AS_VAR_IF([GLOBUS_FLAVOR], [], 
+         AS_VAR_IF([GLOBUS_FLAVOR], [],
                    [AC_MSG_WARN([YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-gsi option])
                     AC_MSG_WARN([Format:   --with-gsi=globus-install-directory:flavor])
                     AC_MSG_WARN([Example:  --with-gsi=/usr/local/gt3:gcc32dbg])
@@ -540,20 +544,6 @@ case "$host" in
        X_EXTRA_LIBS="-lXmu";;
 esac
 
-dnl see if we have libdc1394 libraries and what version
-AC_CHECK_LIB(dc1394,dc1394_new ,dc1394_v2=yes)
-AC_CHECK_LIB(dc1394,dc1394_get_camera_info ,dc1394_v1=yes)
-AC_CHECK_LIB(raw1394,raw1394_get_libversion ,raw1394=yes)
-if test "$dc1394_v2" = "yes" -a "$raw1394"="yes"; then
-  DC1394_SUPPORT2="${MAKESHLIBDIR}libdc1394_support2$SHARETYPE"
-else
-  DC1394_SUPPORT2=""
-fi
-if test "$dc1394_v1" = "yes" -a "$raw1394"="yes"; then
-  DC1394_SUPPORT="${MAKESHLIBDIR}libdc1394_support$SHARETYPE"
-else
-  DC1394_SUPPORT=""
-fi
 
 AC_CHECK_SIZEOF(long)
 
@@ -569,7 +559,7 @@ AC_TRY_COMPILE(,int gub(){return((int)0x1ll);}
 AC_LANG_RESTORE
 
 AC_MSG_CHECKING(if JNI libraries are different)
-if test "$LINKJNI" 
+if test "$LINKJNI"
 then
 	AC_MSG_RESULT(yes)
 else
@@ -579,7 +569,7 @@ else
 fi
 
 AC_MSG_CHECKING(if IDL plugins are different)
-if test "$LINKMODULE" 
+if test "$LINKMODULE"
 then
 	AC_MSG_RESULT(yes)
 else
@@ -591,46 +581,58 @@ fi
 
 dnl Checks for libraries.
 
+AC_DEFUN([MDS_SEARCH_LIBS],[
+  old_LIBS="$LIBS"
+  AC_SEARCH_LIBS([$1],[$2],[$3],[$4],[$5])
+  LIBS="$old_LIBS"
+  ])
+
+#
+# Add TARGET_ARCH to CFLAGS so that all library searches will look for libraries of the correct arch
+#
+CFLAGS_lib_check_save="$CFLAGS"
+AS_VAR_SET_IF([TARGET_ARCH],[CFLAGS="$CFLAGS $TARGET_ARCH"])
+#
+
+dnl see if we have libdc1394 libraries and what version
+
+MDS_SEARCH_LIBS([raw1394_get_libversion],[raw1394],
+[
+  MDS_SEARCH_LIBS([dc1394_new],[dc1394],[DC1394_SUPPORT2="${MAKESHLIBDIR}libdc1394_support2$SHARETYPE"])
+  MDS_SEARCH_LIBS([dc1394_get_camera_info],[dc1394],[DC1394_SUPPORT="${MAKESHLIBDIR}libdc1394_support$SHARETYPE"])
+])
+
 AC_SEARCH_LIBS([gethostbyname], [nsl socket],
                [AS_VAR_IF([ac_cv_search_gethostbyname], ["none required"], [], [LIBSOCKET=$ac_cv_search_gethostbyname])],
-               [dnl Can't search ws2_32 for gethostbyname using AC_SEARCH_LIBS, because 
-                dnl it requires #include <winsocks2.h> to work. 
-                AC_MSG_CHECKING([for gethostbyname in ws2_32]) 
+               [dnl Can't search ws2_32 for gethostbyname using AC_SEARCH_LIBS, because
+                dnl it requires #include <winsocks2.h> to work.
+                AC_MSG_CHECKING([for gethostbyname in ws2_32])
                 LIBSOCKET="-lws2_32"
                 mds_old_LIBS="$LIBS"
-                LIBS="$LIBSOCKET $LIBS" 
-                AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <winsock2.h>]], 
-                                                [[gethostbyname ("");]])], 
+                LIBS="$LIBSOCKET $LIBS"
+                AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <winsock2.h>]],
+                                                [[gethostbyname ("");]])],
                                [AC_MSG_RESULT([yes])],
                                [AC_MSG_RESULT([no]); AS_UNSET([LIBSOCKET])])
                 LIBS=$mds_old_LIBS])
 AC_SUBST([LIBSOCKET])
-AC_CHECK_LIB([m], [pow], [LIBM="-lm"], [LIBM=""])
-AC_CHECK_LIB(resolv,__dn_skipname,LIBRESOLV="-lresolv",LIBRESOLV="")
-AC_CHECK_LIB(dl,dlopen,LIBDL="-ldl",LIBDL="")
-AC_CHECK_LIB(c,getgrgid,AC_DEFINE(HAVE_GETGRGID,[],"Define if you have getgrgid to get group name."))
-AC_CHECK_LIB(c,getpwuid,AC_DEFINE(HAVE_GETPWUID,[],"Define if you have getpwuid."))
-AC_CHECK_LIB(dnet_stub,gethostbyname,DNET_STUB="-ldnet_stub",DNET_STUB="")
-OLDLIBS="$LIBS"
-AC_SEARCH_LIBS([clock_gettime],[rt],,,)
-LIBS="$OLDLIBS"
-CLOCK_GETTIME_LIB=""
-if test "$ac_cv_search_clock_gettime" != "no"
-then
-  if test "$ac_cv_search_clock_gettime" != "none required"
-  then
-    CLOCK_GETTIME_LIB="$ac_cv_search_clock_gettime"
-  fi
-  AC_DEFINE(HAVE_CLOCK_GETTIME,[],"Define if you have the clock_gettime function.")
-fi
 
+MDS_SEARCH_LIBS([pow],[m],[AS_VAR_IF([ac_cv_search_pow],["none required"],[],[AS_VAR_SET([LIBM],[$ac_cv_search_pow])])])
+MDS_SEARCH_LIBS([__dn_skipname],[resolv],[AS_VAR_IF([ac_cv_search___dn_skipname],["none required"],[],[AS_VAR_SET([LIBRESOLV],[$ac_cv_search___dn_skipname])])])
+MDS_SEARCH_LIBS([dlopen],[dl],[AS_VAR_IF([ac_cv_search_dlopen],["none required"],[],[AS_VAR_SET([LIBDL],[$ac_cv_search_dlopen])])])
+MDS_SEARCH_LIBS([getgrgid],[],[AC_DEFINE([HAVE_GETGRGID],[],["Define if you have getgrgid to get group name."])])
+MDS_SEARCH_LIBS([getpwuid],[],[AC_DEFINE([HAVE_GETPWUID],[],["Define if you have getpwuid."])])
+MDS_SEARCH_LIBS([gethostbyname],[dnet_stub],[AS_VAR_IF([ac_cv_search_gethostbyname],["none required"],[],[AS_VAR_SET([DNET_STUB],[$ac_cv_search_gethostbyname])])])
+MDS_SEARCH_LIBS([clock_gettime],[rt],
+  [
+    AC_DEFINE([HAVE_CLOCK_GETTIME],[],["Define if you have the clock_gettime function."])
+    AS_VAR_IF([ac_cv_search_clock_gettime],["none required"],[],[AS_VAR_SET([CLOCK_GETTIME_LIB],["$ac_cv_search_clock_gettime"])])
+  ])
+MDS_SEARCH_LIBS([gettimeofday],[],[AC_DEFINE([HAVE_GETTIMEOFDAY],[],["Define if you have the gettimeofday function."])])
+MDS_SEARCH_LIBS([getaddrinfo],[],[AC_DEFINE([HAVE_GETADDRINFO],[],["Define if you have the getaddrinfo routine"])])
+MDS_SEARCH_LIBS([strsep],[],[AC_DEFINE([HAVE_GETADDRINFO],[],["Define if you have the getaddrinfo routine"])])
+MDS_SEARCH_LIBS([getrusage],[],[AC_DEFINE(HAVE_GETRUSAGE,,"Define if you have the getrusage routine")])
 
-
-
-AC_CHECK_LIB(c,gettimeofday,AC_DEFINE(HAVE_GETTIMEOFDAY,,"Define if you have the gettimeofday function."))
-AC_CHECK_LIB(c,getaddrinfo,AC_DEFINE(HAVE_GETADDRINFO,,"Define if you have the getaddrinfo routine"))
-AC_CHECK_LIB(c,strsep,AC_DEFINE(HAVE_STRSEP,,"Define if you have the strsep routine"))
-AC_CHECK_LIB(c,getrusage,AC_DEFINE(HAVE_GETRUSAGE,,"Define if you have the getrusage routine"))
 AC_ARG_ENABLE(d3d,
 	[  --enable-d3d            build d3d ptdata access library ],
 	if test "$enableval" = yes; then
@@ -662,15 +664,16 @@ if test x"$have_readline" = x"yes"; then
   LIBREADLINE="${READLINE_LIBS}"
   TDIC="tdic"
 
-  CPPFLAGS_save="${CPPFLAGS}"
+  dnl  CPPFLAGS_save="${CPPFLAGS}"
   CPPFLAGS="${READLINE_CPPFLAGS} ${CPPFLAGS}"
+  LDFLAGS="${READLINE_LDFLAGS} ${LDFLAGS}"
   AC_CHECK_HEADERS(readline/readline.h readline/history.h
-     ,,AC_MSG_ERROR("libreadline headers was not found"))     
+     ,,AC_MSG_ERROR("libreadline headers was not found"))
   dnl this appears to be used so I add it here also.
   AC_CHECK_FUNCS(rl_set_signals)
-  CPPFLAGS=$CPPFLAGS_save
-else
-  AC_MSG_ERROR(readline library was not found and must be installed.)
+  dnl  CPPFLAGS=$CPPFLAGS_save
+  dnl else
+  dnl  AC_MSG_ERROR(readline library was not found and must be installed.)
 fi
 
 dnl //// discontinued implementation ////
@@ -679,7 +682,7 @@ dnl   AC_SEARCH_LIBS([readline],[readline 'readline -lcurses'])
 dnl LIBS="$LIBS_save"
 dnl if test "$ac_cv_search_readline" = "no"
 dnl then
-dnl   AC_MSG_RESULT("libreadline is not available so the build of tdic will be skipped") 
+dnl   AC_MSG_RESULT("libreadline is not available so the build of tdic will be skipped")
 dnl   TDIC=""
 dnl   LIBREADLINE=""
 dnl else
@@ -708,7 +711,7 @@ AM_CONDITIONAL(XML, test x"$have_xml" = x"yes")
 if test "x$have_xml" = "xyes"; then
  dnl test also for headers usability required by mdsdcl
  CPPFLAGS_save="$CPPFLAGS"
- CPPFLAGS="$XML_CPPFLAGS $CPPFLAGS"
+ CPPFLAGS="$XML_CPPFLAGS $CPPFLAGS $TARGET_ARCH"
  AC_CHECK_HEADERS(libxml/tree.h libxml/parser.h libxml/xpath.h libxml/xpathInternals.h
   ,,AC_MSG_ERROR(libxml2 development files was not found and must be installed.))
  CPPFLAGS="$CPPFLAGS_save"
@@ -749,24 +752,26 @@ fi
 
 AC_CHECK_HEADERS([stdint.h])
 
-dnl Check for default hdf5 header and library
-HDF5_APS=""
-AC_CHECK_HEADERS(hdf5.h,DO_HDF5="yes")
-if test "$DO_HDF5" = yes; then
-  AC_CHECK_LIB(hdf5,H5Fopen,DO_HDF5="yes",DO_HDF5="no")
-  if test "$DO_HDF5" = yes; then
-    HDF5_APS="\$(HDF5_APS)"
-    HDF5_INCS=""
-    HDF5_LIBS=""
-  fi
-
 dnl Check for user specified  hdf5 header and library
 if test -n "$HDF5_DIR" -a -r "$HDF5_DIR"
 then
       HDF5_APS="\$(HDF5_APS)"
       HDF5_INCS="-I$HDF5_DIR/include"
       HDF5_LIBS="$HDF5_LIBS -L$HDF5_DIR/lib"
-fi	
+else
+
+dnl Check for default hdf5 header and library
+HDF5_APS=""
+AC_CHECK_HEADERS(hdf5.h,
+[
+  MDS_SEARCH_LIBS([H5Fopen],[hdf5],
+  [
+    HDF5_APS="\$(HDF5_APS)"
+    HDF5_INCS=""
+    HDF5_LIBS=""
+  ])
+])
+
 fi
 
 dnl Check for jdk files
@@ -797,8 +802,8 @@ if test "$mdsplus_ok" = yes; then
     fi
 fi
 
-#AC_CACHE_CHECK([for timezone and daylight externals], mdsplus_cv_have_timezone, 
-#    AC_TRY_LINK([#include <time.h>], [long z2 = timezone - daylight*3600;], 
+#AC_CACHE_CHECK([for timezone and daylight externals], mdsplus_cv_have_timezone,
+#    AC_TRY_LINK([#include <time.h>], [long z2 = timezone - daylight*3600;],
 #        mdsplus_cv_have_timezone=yes, mdsplus_cv_have_timezone=no))
 #    if test "$mdsplus_cv_have_timezone" = yes; then
 #        AC_DEFINE(HAVE_TIMEZONE,[],["define HAVE_TIMEZONE"])
@@ -860,7 +865,7 @@ then
     SYBASE_INC=""
     SYBASE_LIB=""
     OLDLIBS="$LIBS"
-    AC_SEARCH_LIBS([dbsqlexec],[sybdb],SYBASE_LIB="-lsybdb";SYBASE_INC="-DSYBASE";SYBASE="SYBASE",SYBASE_LIB="",)
+    AC_SEARCH_LIBS([dbsqlexec],[sybdb],[SYBASE_LIB="-lsybdb";SYBASE_INC="-DSYBASE";SYBASE="SYBASE",SYBASE_LIB=""],)
     LIBS="$OLDLIBS"
     if test "$SYBASE_LIB" = ""
     then
@@ -944,8 +949,8 @@ fi
 
 
 XM_LIBS="-lMrm -lXm"
-AC_CHECK_LIB(Xext,XextAddDisplay,LIBXEXT="-lXext",LIBXEXT="")
-AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
+MDS_SEARCH_LIBS([XextAddDisplay],[Xext],[AS_VAR_SET([LIBXEXT],[$ac_cv_search_XextAddDisplay])])
+MDS_SEARCH_LIBS([XpGetDocumentData],[Xp],[AS_VAR_SET([LIBXP],[$ac_cv_search_XpGetDocumentData])])
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  PYTHON   ///////////////////////////////////////////////////////////// ##
@@ -956,7 +961,7 @@ AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
 dnl Find a Python2 interpreter.  Python versions prior to 2.0 are not
 dnl supported. (2.0 was released on October 16, 2000).
 m4_define([_AM_PYTHON_INTERPRETER_LIST],
-          [python2.7 python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 python2.0 python2])
+	  [python2.7 python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 python2.0 python2])
 AM_PATH_PYTHON([2],,[:])
 AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
 
@@ -971,7 +976,8 @@ AC_SUBST(PYTHON_ARCHITECTURE)
 ## MdsTestShr CHECK backend related ##
 AC_CHECK_FUNCS(mkstemp)
 AC_CHECK_FUNCS(fork)
-AC_CHECK_LIB([rt],  [clock_gettime, timer_create, timer_settime, timer_delete], 
+### maybe needs to be changed. Not sure how to deal with the multiple routines and ac_cv_search_xxxx
+AC_CHECK_LIB([rt],  [clock_gettime, timer_create, timer_settime, timer_delete],
              [LIBRT="-lrt"],[LIBRT=""])
 
 
@@ -1012,7 +1018,7 @@ AX_PERL_MODULE_VERSION(TAP::Parser 0 TAP::Parser::Aggregator 0,
 AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
 
  # check for valgrind
- AX_VALGRIND_CHECK
+ AX_VALGRIND_CHECK([ENABLE_VALGRIND])
 
  # check for sanitizer
  AX_ENABLE_SANITIZE([ENABLE_SANITIZE],
@@ -1020,17 +1026,17 @@ AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
                      AS_VAR_SET([LIBS],["${sanitize_libs} $LIBS"])],
                     [echo "sanitizer not available."; exit 111;])
 
- 
+
  # selects particular envs for build:host
  TS_SELECT
- 
- ## test chain substitution ## 
+
+ ## test chain substitution ##
  AC_SUBST(TESTS_ENVIRONMENT)
  AC_SUBST(LOG_COMPILER)
  AC_SUBST(LOG_DRIVER)
  AC_SUBST(PY_LOG_COMPILER)
  AC_SUBST(PY_LOG_FLAGS)
- 
+
  AC_SUBST(VALGRIND_FLAGS)
  AC_SUBST(VALGRIND_memcheck_FLAGS)
 
@@ -1057,15 +1063,15 @@ AC_CHECK_PROGS([DOXYGEN], [doxygen])
 if test -z "$DOXYGEN";
   then AC_MSG_WARN([Doxygen not found - continuing without Doxygen support])
   AM_CONDITIONAL([HAVE_CUTE_DOXYGEN], [false])
-else  
-  AM_CONDITIONAL([HAVE_CUTE_DOXYGEN], 
+else
+  AM_CONDITIONAL([HAVE_CUTE_DOXYGEN],
     [_ver_higher $DOXYGEN_VERSION_REQUIRED `$DOXYGEN --version`])
-  AM_COND_IF([HAVE_CUTE_DOXYGEN], 
-    [ echo "Doxygen version is cute!" ], 
+  AM_COND_IF([HAVE_CUTE_DOXYGEN],
+    [ echo "Doxygen version is cute!" ],
     [ AC_MSG_WARN(["Doxygen version outdated, very limited documentation support"]) ])
 fi
 
-## DEFAULT ACTIVE FEATURES 
+## DEFAULT ACTIVE FEATURES
 DX_HTML_FEATURE(ON)
 DX_CHM_FEATURE(OFF)
 DX_CHI_FEATURE(OFF)
@@ -1075,8 +1081,16 @@ DX_XML_FEATURE(OFF)
 DX_PDF_FEATURE(ON)
 DX_PS_FEATURE(OFF)
 
-## refers to ax_prog_doxygen.m4 macro expansion 
+## refers to ax_prog_doxygen.m4 macro expansion
 DX_INIT_DOXYGEN(mdsplus, doxygen.cfg)
+
+#
+# All library searches should be done at this point so remove first
+# TARGET_ARCH from CFLAGS as the Make macros will insert TARGET_ARCH later
+# as needed.
+#
+CFLAGS="$CFLAGS_lib_check_save"
+#
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ////// RELEASE INFO //////////////////////////////////////////////////////// #
@@ -1118,7 +1132,7 @@ AC_MSG_RESULT([$enable_werror])
 # ///  CONFIG_H  ///////////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-dnl Here we define all custom autoheader adds to config.h.in 
+dnl Here we define all custom autoheader adds to config.h.in
 
 dnl add here what goes on tom of config.h
 AH_TOP()
@@ -1252,28 +1266,28 @@ AC_OUTPUT(Makefile.inc
           envsyms
           actions/Makefile
           camshr/Makefile
-          ccl/Makefile 
-          d3dshr/Makefile 
-          dwscope/Makefile 
+          ccl/Makefile
+          d3dshr/Makefile
+          dwscope/Makefile
           hdf5/Makefile
           idlmdsevent/Makefile
           idlmdswidgets/Makefile
           javaclient/Makefile
           javadispatcher/Makefile
-          javamds/Makefile 
+          javamds/Makefile
           javascope/Makefile
           javatraverser/Makefile
           javadevices/Makefile
           LabView/Makefile
           manpages/Makefile
           macosx/Makefile
-          math/Makefile 
+          math/Makefile
           mdsdcl/Makefile
 	  mdsdcl/mdsdcl_show_version.c
           mdslib/Makefile
           mdslib/docs/Makefile
-          mdslib/testing/Makefile 
-          mdslibidl/Makefile 
+          mdslib/testing/Makefile
+          mdslibidl/Makefile
           mdsobjects/cpp/Makefile
           mdsobjects/cpp/docs/Makefile
           mdsobjects/cpp/testing/Makefile
@@ -1289,35 +1303,35 @@ AC_OUTPUT(Makefile.inc
           mdsshr/testing/Makefile
 	  mdsshr/docs/Makefile
           mdssql/Makefile
-          mdstcpip/Makefile 
+          mdstcpip/Makefile
           mdstcpip/zlib/Makefile
           mdstcpip/docs/Makefile
           mdstcpip/docs/img/Makefile
           mdsvme/Makefile
-          mitdevices/Makefile 
-          remcam/Makefile 
+          mitdevices/Makefile
+          remcam/Makefile
           roam/Makefile
           rpm/Makefile
           rpm/envsyms
           rpm/post_install_script
           scripts/Makefile
-          servershr/Makefile 
+          servershr/Makefile
           setevent/Makefile
           tcl/Makefile
 	  tdi/MitDevices/_version.py
 	  tdi/RfxDevices/_version.py
 	  tdi/W7xDevices/_version.py
-          tdishr/Makefile 
-          tdishr/testing/Makefile 
+          tdishr/Makefile
+          tdishr/testing/Makefile
           tdic/Makefile
-          tditest/Makefile 
+          tditest/Makefile
           testing/Makefile
           testing/backends/check/Makefile
           testing/selftest/Makefile
-          traverser/Makefile 
-          treeshr/Makefile 
-          treeshr/testing/Makefile 
-          wfevent/Makefile 
+          traverser/Makefile
+          treeshr/Makefile
+          treeshr/testing/Makefile
+          wfevent/Makefile
           xmdsshr/Makefile
           xtreeshr/Makefile
           icons/Makefile
@@ -1382,4 +1396,3 @@ then
   AC_MSG_WARN()
   AC_MSG_WARN()
 fi
-

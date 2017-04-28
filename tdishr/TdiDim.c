@@ -6,10 +6,10 @@
 
                 Author: MARK LONDON
 
-                Date:   5-OCT-1993 
+                Date:   5-OCT-1993
 
                 Purpose:
- 
+
         Routines for bit change of data. in2 is ASSUMED long.
         any     = IBCLR(any,L)
         any     = IBSET(any,L)
@@ -34,7 +34,7 @@
 
 ------------------------------------------------------------------------------
 
-        Call sequence: 
+        Call sequence:
 
 int Tdi3xxxxx(struct descriptor *in1, struct descriptor *in2,
                struct descriptor *out)
@@ -49,7 +49,7 @@ int Tdi3xxxxx(struct descriptor *in1, struct descriptor *in2,
 
         Description:
 
- 
+
 ------------------------------------------------------------------------------*/
 
 #include <stdlib.h>
@@ -537,12 +537,11 @@ int Tdi3Min(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 
 int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 {
-  int status;
+  INIT_STATUS;
   typedef struct {
     double l[2];
   } octaword_aligned;
   STATIC_CONSTANT octaword_aligned zero = { {0} };
-  STATIC_CONSTANT struct descriptor dzero = { 0, 0, CLASS_S, (void *)&zero };
 
   switch (in1->dtype) {
   case DTYPE_FC:
@@ -555,12 +554,8 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
     return TdiINVDTYDSC;
   }
   status = Tdi3Subtract(in1, in2, out);
-  if (!(status & 1))
+  if STATUS_NOT_OK
     return status;
-
-  dzero.length = in1->length;
-  dzero.dtype = in1->dtype;
-
   switch (in1->dtype) {
   case DTYPE_BU:
     out->dtype = DTYPE_B;
@@ -578,6 +573,9 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
     out->dtype = DTYPE_O;
     break;
   }
+  struct descriptor dzero = { 0, 0, CLASS_S, (void *)&zero };
+  dzero.length = in1->length;
+  dzero.dtype = in1->dtype;
   status = Tdi3Max(out, &dzero, out);
   out->dtype = in1->dtype;
   return status;

@@ -22,9 +22,9 @@ using namespace testing;
 
 int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 {
-    
-    Connection cnx((char*)"udt://localhost:8000",0);    
+
+    Connection cnx((char*)"udt://localhost:8000",0);
     cnx.openTree((char*)"test_tree",-1);
     cnx.closeAllTrees();
-    
+
 }

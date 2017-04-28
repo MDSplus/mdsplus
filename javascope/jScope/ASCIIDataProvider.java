@@ -13,7 +13,6 @@ class ASCIIDataProvider implements DataProvider
     String error = null;
     String path_exp = null;
     long   curr_shot = -1;
-    float time[];
     float y[];
     float x[];
 
@@ -36,7 +35,6 @@ class ASCIIDataProvider implements DataProvider
         int    dimension;
         Properties x_prop = new Properties();
         Properties y_prop = new Properties();
-        public void setContinuousUpdate(boolean continuopusUpdate){}
         public SimpleWaveData(String in_y)
         {
             file_y = getPathValue(in_y);
@@ -415,10 +413,8 @@ class ASCIIDataProvider implements DataProvider
     public double GetFloat(String in)
     {
         error = null;
-        Double f = new Double(in);
-        return f.doubleValue();
+        return Double.parseDouble(in);
     }
-
 
     public long[] GetShots(String in) throws IOException
     {
@@ -567,7 +563,6 @@ class ASCIIDataProvider implements DataProvider
     }
     public void enableAsyncUpdate(boolean enable){}
     public void getDataAsync(double lowerBound, double upperBound, double resolution){}
-    public void setContinuousUpdate(boolean continuousUpdate){}
     public static void main(String args[])
     {      
         ASCIIDataProvider p = new ASCIIDataProvider();

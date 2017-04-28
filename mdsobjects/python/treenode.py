@@ -46,27 +46,24 @@ class TreeNode(_data.Data):
     @ivar tree: Tree instance that this node belongs to.
     @type tree: Tree
     """
-
-    def __new__(cls,nid,tree=None):
+    def __new__(cls,nid,tree=None,head=None):
         """Create class instance. Initialize part_dict class attribute if necessary.
         @param node: Node of device
         @type node: TreeNode
         @return: Instance of the device subclass
         @rtype: Device subclass instance
         """
-        _mdsdevice=_mimport('mdsdevice')
         node = super(TreeNode,cls).__new__(cls)
-        if not isinstance(node,_mdsdevice.Device):
+        if head is None and not isinstance(node,(_mdsdevice.Device,TreePath)):
+            TreeNode.__init__(node,nid,tree)
             try:
-                TreeNode.__init__(node,nid,tree=tree)
                 if node.usage == "DEVICE":
-                    model=str(node.record.model)
-                    return _mdsdevice.Device.importPyDeviceModule(model).__dict__[model.upper()](node)
-            except:
-                pass
+                    node._head = 0
+                    return node.record.getDevice(node)
+            except: pass
         return node
 
-    def __init__(self,n,tree=None):
+    def __init__(self,n,tree=None,head=None):
         """Initialze TreeNode
         @param n: Index of the node in the tree.
         @type n: int
@@ -74,10 +71,37 @@ class TreeNode(_data.Data):
         @type tree: Tree
         """
         self.__dict__['nid']=int(n);
-        if tree is None:
-            self.tree=_tree.Tree()
-        else:
-            self.tree=tree
+        self._head = head
+        self.tree=_tree.Tree() if tree is None else tree
+
+    _head = None
+    @property
+    def head(self):
+        if self._head is None:
+            if self.conglomerate_elt>0:
+                nids=self.conglomerate_nids.nid_number
+                head_nid=int(nids[0])
+                if head_nid==self.nid: self._head = 0
+                else: self._head = TreeNode(head_nid,self.tree,0)
+            else: self._head = -1
+        if isinstance(self._head,(TreeNode,)):
+            return self._head
+        return self
+
+    _original_part_name = None
+    def ORIGINAL_PART_NAME(self):
+        """Method to return the original part name.
+        Will return blank string if part_name class attribute not defined or node used to create instance is the head node or past the end of part_names tuple.
+        @return: Part name of this node
+        @rtype: str
+        """
+        if self.head is self:
+            return ""
+        if self._original_part_name is None:
+            device = self.head.record.getDevice()
+            self._original_part_name = device.parts[self.nid-self.head.nid-1]['path']
+        return self._original_part_name
+    PART_NAME=ORIGINAL_PART_NAME
 
     def __hasBadTreeReferences__(self,tree):
        return self.tree != tree
@@ -163,13 +187,15 @@ class TreeNode(_data.Data):
          @type name: str
          @return: Value of attribute
          @rtype: various
-         """
-
-        if name.upper() == name:
-            try:
-                return self.getNode(name)
-            except:
-                pass
+        """
+        if name.startswith('_'):
+            namesplit = name.split('__',1)
+            if len(namesplit)==2 and namesplit[1]==namesplit[1].upper():
+                return self.getNode('\\%s::%s'%tuple(namesplit[1].split('__',1)+['TOP'])[:2])
+            if name.upper() == name:
+                return self.getNode('\\%s'%name[1:])
+        elif name.upper() == name:
+            return self.getNode(name)
         name = name.lower()
         if name in self.__dict__.keys():
             return self.__dict__[name]
@@ -290,7 +316,7 @@ class TreeNode(_data.Data):
         try:
             self.restoreContext()
             cmd='set node %s%s%s'% (self.fullpath,switch,qualifier)
-            _mdsdcl.tcl(cmd,raise_exception=True)
+            _mdsdcl.tcl(cmd,raise_exception=True,ctx=self.tree.ctx)
         finally:
             _tree.Tree.unlock()
 
@@ -1175,21 +1201,20 @@ class TreeNode(_data.Data):
 
 class TreePath(TreeNode):
     """Class to represent an MDSplus node reference (path)."""
-    def __init__(self,path,tree=None):
-        self.tree_path=_data.makeData(str(path));
+    def __init__(self,path,tree=None,head=None):
+        self.tree_path=_data.makeData(_ver.tostr(path));
         if tree is None:
             self.tree=_tree.Tree()
         else:
             self.tree=tree
-        return
+        self._head = head
 
     def __hasBadTreeReferences__(self,tree):
        return False
 
-
     def __str__(self):
         """Convert path to string."""
-        return self.tree_path.value
+        return str(self.tree_path)
 
 class TreeNodeArray(_data.Data):
     def __init__(self,nids,tree=None):
@@ -1359,3 +1384,5 @@ class TreeNodeArray(_data.Data):
         finally:
             _tree.Tree.unlock()
         return ans
+
+_mdsdevice=_mimport('mdsdevice')

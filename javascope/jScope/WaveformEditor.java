@@ -13,7 +13,7 @@ public class WaveformEditor
     float minY, maxY;
     int closestIdx = -1;
     public static final float MIN_STEP = 1E-6F;
-    Vector listeners = new Vector();
+    Vector<WaveformEditorListener> listeners = new Vector<>();
     protected boolean editable = false;
 
     static float[] copyX, copyY;
@@ -273,9 +273,8 @@ public class WaveformEditor
     public synchronized void notifyUpdate(float[] waveX, float[] waveY,
                                           int newIdx)
     {
-        for (int i = 0; i < listeners.size(); i++)
-            ( (WaveformEditorListener) listeners.elementAt(i)).waveformUpdated(
-                waveX, waveY, newIdx);
+        for (WaveformEditorListener l : listeners)
+            l.waveformUpdated(waveX, waveY, newIdx);
     }
 
     public void setEditable(boolean editable)

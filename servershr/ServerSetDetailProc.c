@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$SET_DETAIL_PROC   
+		Name:   SERVER$SET_DETAIL_PROC
 
 		Type:   C function
 
@@ -8,11 +8,11 @@
 
 		Date:   16-NOV-1993
 
-    		Purpose: Set/Get detail procedure used during show server 
+    		Purpose: Set/Get detail procedure used during show server
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 void SERVER$SET_DETAIL_PROC( void (*)(struct dsc$descriptor *) )
 void (*)(struct dsc$descriptor *)SERVER$GET_DETAIL_PROC()
@@ -32,8 +32,7 @@ void (*)(struct dsc$descriptor *)SERVER$GET_DETAIL_PROC()
 #include <config.h>
 
 static char *(*DetailProc) () = 0;
-EXPORT void ServerSetDetailProc(char *(*detail_proc) ())
-{
+EXPORT void ServerSetDetailProc(char *(*detail_proc) ()){
   DetailProc = detail_proc;
 }
 

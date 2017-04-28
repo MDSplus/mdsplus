@@ -48,7 +48,6 @@ class UniversalDataProvider implements DataProvider
         }catch(Exception exc){asd = null;}
     }
 
-    public void setContinuousUpdate(){}
 
     public void enableAsyncUpdate(boolean enable){}
     protected DataProvider SelectProvider(String spec)
@@ -154,13 +153,12 @@ class UniversalDataProvider implements DataProvider
         error = null;
         return new String(in);
     }
+
     public double GetFloat(String in)
     {
         error = null;
-        Double f = new Double(in);
-        return f.doubleValue();
+        return Double.parseDouble(in);
     }
-
 
     public long[] GetShots(String in)
     {

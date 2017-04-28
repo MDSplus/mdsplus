@@ -5,6 +5,7 @@
         Ken Klare, LANL CTR-7   (c)1989,1990
 */
 #include <STATICdef.h>
+#include <status.h>
 #include "tdirefstandard.h"
 #include <stdlib.h>
 #include <mdsshr.h>
@@ -18,13 +19,13 @@ extern int TdiGetLong();
 
 int Tdi1MinMax(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   struct descriptor_xd tmp, *newlist[2];
   int j;
 
   newlist[0] = &tmp;
   status = TdiEvaluate(list[0], out_ptr MDS_END_ARG);
-  for (j = 1; status & 1 && j < narg; j++) {
+  for (j = 1; STATUS_OK && j < narg; j++) {
     tmp = *out_ptr;
     *out_ptr = EMPTY_XD;
     newlist[1] = (struct descriptor_xd *)list[j];
@@ -44,10 +45,10 @@ int Tdi1MinMax(int opcode, int narg, struct descriptor *list[], struct descripto
 */
 int Tdi1Conditional(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
 
   status = TdiData(list[2], out_ptr MDS_END_ARG);
-  if (status & 1) {
+  if STATUS_OK {
     if (out_ptr->pointer && out_ptr->pointer->class == CLASS_A) {
       struct descriptor_xd tmp = *out_ptr;
       struct descriptor *new[3];
@@ -60,7 +61,7 @@ int Tdi1Conditional(int opcode, int narg, struct descriptor *list[], struct desc
     } else {
       int truth;
       status = TdiGetLong(out_ptr, &truth);
-      if (status & 1) {
+      if STATUS_OK {
 	if (truth & 1)
 	  status = TdiEvaluate(list[0], out_ptr MDS_END_ARG);
 	else

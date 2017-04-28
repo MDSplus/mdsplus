@@ -270,8 +270,9 @@ void test_Complex32Array() {
     TEST1( sizeof(Cf) == sizeof(float)*2 );
     std::vector<Cf> array;
     array << Cf(1.,2.), Cf(3, 4), Cf(5,6);
+    float data_array[6] = {1.,2.,3.,4.,5.,6.};
 
-    Data * data = new Complex32Array(&array.at(0).real(),3);
+    Data * data = new Complex32Array(data_array,3);
     MdsDataTest::test_data_numerics(data,array);
     MdsDataTest::test_data_string(data,"[Cmplx(1.,2.),Cmplx(3.,4.),Cmplx(5.,6.)]");
 
@@ -293,8 +294,9 @@ void test_Complex64Array() {
     TEST1( sizeof(Cf) == sizeof(double)*2 );
     std::vector<Cf> array;
     array << Cf(1.,2.), Cf(3, 4), Cf(5,6);
+    double data_array[6] = {1.,2.,3.,4.,5.,6.};
 
-    Data * data = new Complex64Array(&array.at(0).real(),3);
+    Data * data = new Complex64Array(data_array,3);
     MdsDataTest::test_data_numerics(data,array);
     MdsDataTest::test_data_string(data,"[Cmplx(1.,2.),Cmplx(3.,4.),Cmplx(5.,6.)]");
 

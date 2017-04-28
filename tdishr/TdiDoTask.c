@@ -12,11 +12,8 @@
 
         Ken Klare, LANL P-4     (c)1992
 */
-typedef struct {
-  int lo;
-  unsigned int hi;
-} quadw;
-
+#define DEF_FREED
+#define DEF_FREEXD
 #include <STATICdef.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
@@ -24,8 +21,14 @@ typedef struct {
 #include <libroutines.h>
 #include <strroutines.h>
 #include <tdishr_messages.h>
+#include <pthread_port.h>
+#include <errno.h>
 #ifdef __VMS
 #include <starlet.h>
+typedef struct {
+  int lo;
+  unsigned int hi;
+} quadw;
 #endif
 #include <mdsshr.h>
 #include <treeshr.h>
@@ -34,6 +37,7 @@ typedef struct {
 
 extern int TdiTaskOf();
 extern int TdiGetFloat();
+extern int TdiGetLong();
 extern int TdiConvert();
 extern int TdiSubtract();
 extern int TdiData();
@@ -60,8 +64,9 @@ STATIC_ROUTINE void TASK_AST(int astpar, int r0, int r1, int *pc, int psl)
 
 STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *out_ptr)
 {
-  int dtype, ndesc, j, status;
-  int *arglist[256];
+  INIT_STATUS;
+  int dtype, ndesc, j;
+  void **arglist[256];
   ndesc = ptask->ndesc;
   while (ndesc > 3 && ptask->arguments[ndesc - 4] == 0)
     ndesc--;
@@ -69,29 +74,25 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
   switch (ptask->dtype) {
   case DTYPE_METHOD:{
       struct descriptor_method *pmethod = (struct descriptor_method *)ptask;
-      int nid;
-      DESCRIPTOR_NID(nid_dsc, 0);
-      struct descriptor_d method_d = { 0, DTYPE_T, CLASS_D, 0 };
-      nid_dsc.pointer = (char *)&nid;
-      status = TdiData(pmethod->method, &method_d MDS_END_ARG);
-      if (status & 1)
-	status = TdiGetNid(pmethod->object, &nid);
-      arglist[0] = (int *)(long)ndesc + 1;
-      arglist[1] = (int *)&nid_dsc;
-      arglist[2] = (int *)&method_d;
-
+      *(int*)&arglist[0] = ndesc + 1;
       /*** skip timeout,method,object ***/
       for (j = 3; j < ndesc; ++j)
-	arglist[j] = (int *)pmethod->arguments[j - 3];
-      arglist[ndesc] = (int *)out_ptr;
+	arglist[j] = (void *)pmethod->arguments[j - 3];
+      arglist[ndesc] = (void *)out_ptr;
       arglist[ndesc + 1] = MdsEND_ARG;
-      if (status & 1) {
-	status = (long)LibCallg(arglist, TreeDoMethod);
-	if (!(status & 1)) {
-	  status = TdiPutLong(&status, out_ptr);
-	}
-      }
-      StrFree1Dx(&method_d);
+      int nid;
+      DESCRIPTOR_NID(nid_dsc, 0);
+      nid_dsc.pointer = (char *)&nid;
+      arglist[1] = (void*)&nid_dsc;
+      struct descriptor_d method_d = { 0, DTYPE_T, CLASS_D, 0 };
+      FREED_ON_EXIT(&method_d);
+      arglist[2] = (void*)&method_d;
+      status = TdiData(pmethod->method, &method_d MDS_END_ARG);
+      if STATUS_OK
+	status = TdiGetNid(pmethod->object, &nid);
+      status = (int)((char *)LibCallg(arglist, TreeDoMethod) - (char *)0);
+      FREED_NOW(&method_d);
+      status = TdiPutLong(&status, out_ptr);
       break;
     }
     /*case DTYPE_PROCEDURE :    break; */
@@ -99,10 +100,8 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
     {
       struct descriptor_program *prog_task = (struct descriptor_program *)ptask;
       if (prog_task->program && prog_task->program->dtype == DTYPE_T)
-	status = LibSpawn(prog_task->program, 1, 0) == 0;
-
+        status = LibSpawn(prog_task->program, 1, 0) ? MDSplusERROR : MDSplusSUCCESS;
       status = TdiPutLong(&status, out_ptr);
-
     }
     break;
   case DTYPE_ROUTINE:
@@ -115,20 +114,80 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
   return status;
 }
 
+#if !defined(__VMS) && !defined(_WIN32)
+static pthread_t Worker;
+static Condition WorkerRunning = CONDITION_INITIALIZER;
+typedef struct _wargs{
+  int *status_p;
+  struct descriptor_routine *ptask;
+} wargs;
+
+static void WorkerExit(void *status_p){
+  _CONDITION_LOCK(&WorkerRunning);
+  _CONDITION_SIGNAL(&WorkerRunning);
+  if (WorkerRunning.value) {
+    _CONDITION_WAIT_1SEC(&WorkerRunning,);
+    WorkerRunning.value = B_FALSE;
+  }
+  free((int*)status_p);
+  _CONDITION_UNLOCK(&WorkerRunning);
+}
+
+static void WorkerThread(void *args){
+  int *status_p;status_p = ((wargs*)args)->status_p;
+  struct descriptor_routine *ptask;ptask = (struct descriptor_routine *)((wargs*)args)->ptask;
+  pthread_cleanup_push(WorkerExit, (void*)((wargs*)args)->status_p);
+  CONDITION_SET(&WorkerRunning);
+  EMPTYXD(out_xd);
+  FREEXD_ON_EXIT(&out_xd);
+  int status = Doit(ptask,&out_xd);
+  *status_p = STATUS_OK ? *(int*)out_xd.pointer->pointer : status;
+  FREEXD_NOW(&out_xd);
+  pthread_cleanup_pop(1);
+  pthread_exit(0);
+}
+
+STATIC_ROUTINE int StartWorker(struct descriptor_routine *ptask, struct descriptor_xd *out_ptr, const float timeout){
+  INIT_STATUS;
+  _CONDITION_LOCK(&WorkerRunning);
+  wargs args = { calloc(1,sizeof(int)), ptask };
+  if (!WorkerRunning.value) {
+    CREATE_DETACHED_THREAD(Worker, *8, WorkerThread,(void*)&args);
+    if (c_status) {
+      perror("Error creating pthread");
+      status = MDSplusERROR;
+    } else {
+      _CONDITION_WAIT_SET(&WorkerRunning);
+      status = MDSplusSUCCESS;
+    }
+  }
+  struct timespec tp;
+  clock_gettime(CLOCK_REALTIME, &tp);
+  uint64_t ns = tp.tv_nsec + (uint64_t)(timeout*1E9);
+  tp.tv_nsec = ns % 1000000000;
+  tp.tv_sec += (time_t)(ns/1000000000);
+  int err = pthread_cond_timedwait(&WorkerRunning.cond,&WorkerRunning.mutex,&tp);
+  if (err) {
+    pthread_cancel(Worker);
+    status = err==ETIMEDOUT ? TdiTIMEOUT : MDSplusERROR;
+  } else
+    status = *args.status_p;
+  WorkerRunning.value = B_FALSE;
+  _CONDITION_SIGNAL(&WorkerRunning);
+  _CONDITION_UNLOCK(&WorkerRunning);
+  return TdiPutLong(&status, out_ptr);
+}
+#endif
+
 int Tdi1DoTask(int opcode __attribute__ ((unused)),
 	       int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
-  quadw dt = { 0, 0 };
-  float timeout = (float)0.;
-  DESCRIPTOR_FLOAT(timeout_dsc, 0);
-  struct descriptor dt_dsc = { sizeof(dt), DTYPE_Q, CLASS_S, 0 };
-  struct descriptor_xd task_xd = EMPTY_XD;
+  INIT_STATUS;
+  EMPTYXD(task_xd);
+  FREEXD_ON_EXIT(&task_xd);
   struct descriptor_routine *ptask;
-  timeout_dsc.pointer = (char *)&timeout;
-  dt_dsc.pointer = (char *)&dt;
   status = TdiTaskOf(list[0], &task_xd MDS_END_ARG);
-  if (!(status & 1))
+  if STATUS_NOT_OK
     goto cleanup;
   ptask = (struct descriptor_routine *)task_xd.pointer;
   if (!ptask)
@@ -165,37 +224,45 @@ int Tdi1DoTask(int opcode __attribute__ ((unused)),
     goto cleanup;
   }
 
-	/***** get timeout *****/
-  if (status & 1)
+  float timeout = (float)0.;
+  if STATUS_OK
     status = TdiGetFloat(ptask->time_out, &timeout);
+#ifdef __VMS
+  /***** get timeout *****/
+  quadw dt = { 0, 0 };
+  DESCRIPTOR_FLOAT(timeout_dsc, 0);
+  struct descriptor dt_dsc = { sizeof(dt), DTYPE_Q, CLASS_S, 0 };
+  timeout_dsc.pointer = (char *)&timeout;
+  dt_dsc.pointer = (char *)&dt;
   if (timeout > 0.) {
     STATIC_CONSTANT int zero = 0;
     STATIC_CONSTANT DESCRIPTOR_LONG(zero_dsc, &zero);
     timeout = (float)(1.E7 * timeout);			/*** 100 ns steps ***/
-    if (status & 1)
+    if STATUS_OK
       status = TdiConvert(&timeout_dsc, &dt_dsc MDS_END_ARG);
-    if (status & 1)
+    if STATUS_OK
       status = TdiSubtract(&zero_dsc, &dt_dsc, &dt_dsc MDS_END_ARG);
   }
-
-  if (!(status & 1))
+  if STATUS_NOT_OK
     goto cleanup;
-#ifdef __VMS
   if (dt.lo || dt.hi)
     status = sys$setimr(0, &dt, TASK_AST, &dt, 0);
-#endif
-  if (!(status & 1))
+  if STATUS_NOT_OK
     goto cleanup;
   status = Doit(ptask, out_ptr);
-#ifdef __VMS
   if (dt.lo || dt.hi) {
     sys$cantim(&dt, 0);
     sys$canwak(0, 0);			/*** just in case LIB$WAIT called ***/
   }
+#else
+ #ifndef _WIN32
+  if (timeout > 0.) {
+    StartWorker(ptask, out_ptr, timeout);
+  } else
+ #endif
+    status = Doit(ptask, out_ptr);
 #endif
-
- cleanup:
-
-  MdsFree1Dx(&task_xd, NULL);
+ cleanup: ;
+  FREEXD_NOW(&task_xd);
   return status;
 }

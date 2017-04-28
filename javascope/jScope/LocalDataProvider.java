@@ -11,8 +11,8 @@ import java.text.DateFormat;
 
 public class LocalDataProvider extends MdsDataProvider /* implements DataProvider */
 {
-    Vector listeners = new Vector();
-    Vector eventNames = new Vector();
+    Vector<EventDescriptor> listeners = new Vector<>();
+    Vector<String> eventNames = new Vector<>();
 
     static class EventDescriptor
     {
@@ -291,7 +291,7 @@ public class LocalDataProvider extends MdsDataProvider /* implements DataProvide
         int idx = listeners.indexOf(new EventDescriptor(l, event, 0));
         if(idx != -1)
         {
-            int evId = ((EventDescriptor)listeners.elementAt(idx)).getEvId();
+            int evId = listeners.elementAt(idx).getEvId();
             listeners.removeElementAt(idx);
             try {
                 int id = getEventId(event);
@@ -328,24 +328,18 @@ public class LocalDataProvider extends MdsDataProvider /* implements DataProvide
 
     int getEventId(String event) throws Exception
     {
-        for(int idx = 0; idx < listeners.size(); idx++)
-        {
-            EventDescriptor evDescr = (EventDescriptor)listeners.elementAt(idx);
+        for(EventDescriptor evDescr : listeners)
             if(event.equals(evDescr.getEvent()))
                 return evDescr.getEvId();
-        }
         throw(new Exception());
     }
 
     public void fireEvent(int nameIdx)
     {
-        String event = (String)eventNames.elementAt(nameIdx);
-        for(int idx = 0; idx < listeners.size(); idx++)
-        {
-            EventDescriptor evDescr = (EventDescriptor)listeners.elementAt(idx);
+        String event = eventNames.elementAt(nameIdx);
+        for(EventDescriptor evDescr : listeners)
             if(evDescr.getEvent().equals(event))
                 evDescr.getListener().processUpdateEvent(new UpdateEvent(this, event));
-        }
     }
 
     native public int registerEvent(String event, int idx);

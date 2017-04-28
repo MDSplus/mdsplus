@@ -125,6 +125,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/m4/ax_compare_version.m4 \
 	$(top_srcdir)/m4/ax_compiler_vendor.m4 \
 	$(top_srcdir)/m4/ax_compiler_version.m4 \
+	$(top_srcdir)/m4/ax_target_selfhelp.m4 \
 	$(top_srcdir)/m4/m4_ac_search_readline.m4 \
 	$(top_srcdir)/m4/m4_am_path_xml2.m4 \
 	$(top_srcdir)/m4/m4_ax_check_enable_debug.m4 \
@@ -233,6 +234,7 @@ EGREP = @EGREP@
 ENABLE_SANITIZE = @ENABLE_SANITIZE@
 ENABLE_SANITIZE_LIBPATH = @ENABLE_SANITIZE_LIBPATH@
 ENABLE_SANITIZE_OPTIONS = @ENABLE_SANITIZE_OPTIONS@
+ENABLE_VALGRIND = @ENABLE_VALGRIND@
 EXEEXT = @EXEEXT@
 EXPORTS_FILE = @EXPORTS_FILE@
 FC = @FC@
@@ -321,7 +323,6 @@ MOTIF_LDSHARE = @MOTIF_LDSHARE@
 MOTIF_LD_LDARC = @MOTIF_LD_LDARC@
 MOTIF_LD_LDSHARE = @MOTIF_LD_LDSHARE@
 NEED_SEMUN = @NEED_SEMUN@
-NOSETESTS = @NOSETESTS@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -380,7 +381,6 @@ UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
 VALGRIND = @VALGRIND@
-VALGRIND_ENABLED = @VALGRIND_ENABLED@
 VALGRIND_FLAGS = @VALGRIND_FLAGS@
 VALGRIND_HAVE_TOOL_drd = @VALGRIND_HAVE_TOOL_drd@
 VALGRIND_HAVE_TOOL_exp_sgcheck = @VALGRIND_HAVE_TOOL_exp_sgcheck@
@@ -474,7 +474,6 @@ uiddir = @uiddir@
 @DX_COND_doc_TRUE@DX_TAGDIR = ${DX_INSTALLDIR}/docs/dtags
 @DX_COND_doc_TRUE@DX_DESTTAG = ${DX_TAGDIR}/${DX_PACKAGE_NAME}.tag
 @DX_COND_doc_TRUE@DX_SEARCHFILE = ${DX_TAGDIR}/${DX_PACKAGE_NAME}.xml
-@DX_COND_doc_TRUE@DX_LAYOUT = ${top_srcdir}/docs/config/general_layout.xml
 @DX_COND_doc_TRUE@DX_PARENT_TAG = docs.tag
 @DX_COND_doc_TRUE@@HAVE_CUTE_DOXYGEN_TRUE@DX_HTML_HEADER = ${top_srcdir}/docs/config/style/header.html
 @DX_COND_doc_TRUE@@HAVE_CUTE_DOXYGEN_TRUE@DX_HTML_FOOTER = ${top_srcdir}/docs/config/style/footer.html
@@ -484,16 +483,20 @@ uiddir = @uiddir@
 @DX_COND_doc_TRUE@                 ${DX_HTML_STYLESHEET}
 
 @DX_COND_doc_TRUE@DX_ENVCOMMON = \
-@DX_COND_doc_TRUE@               DX_PACKAGE_NAME='${DX_PACKAGE_NAME}'\
-@DX_COND_doc_TRUE@               DX_PAGES='${DX_PAGES}' \
+@DX_COND_doc_TRUE@	       srcdir='${srcdir}' \
+@DX_COND_doc_TRUE@	       top_srcdir='${top_srcdir}' \
+@DX_COND_doc_TRUE@	       DX_PACKAGE_NAME='${DX_PACKAGE_NAME}' \
+@DX_COND_doc_TRUE@	       DX_PAGES='${addprefix $(srcdir)/,${DX_PAGES}}' \
+@DX_COND_doc_TRUE@	       DX_EXCLUDE_PAGES='${addprefix $(srcdir)/,${DX_EXCLUDE_PAGES}}' \
+@DX_COND_doc_TRUE@	       DX_IMAGE_PATH='${addprefix $(srcdir)/,${DX_IMAGE_PATH}}' \
 @DX_COND_doc_TRUE@               DX_INSTALLDIR='${DX_INSTALLDIR}' \
-@DX_COND_doc_TRUE@               DX_EXCLUDE_PAGES='${DX_EXCLUDE_PAGES}' \
 @DX_COND_doc_TRUE@               DX_TITLE='${DX_TITLE}' \
 @DX_COND_doc_TRUE@               DX_BRIEF='${DX_BRIEF}' \
 @DX_COND_doc_TRUE@               DX_HTML_HEADER='${DX_HTML_HEADER}' \
 @DX_COND_doc_TRUE@               DX_HTML_FOOTER='${DX_HTML_FOOTER}' \
 @DX_COND_doc_TRUE@               DX_HTML_STYLESHEET='${DX_HTML_STYLESHEET}' \
-@DX_COND_doc_TRUE@               DX_LAYOUT='${DX_LAYOUT}'
+@DX_COND_doc_TRUE@	       DX_LAYOUT='${DX_LAYOUT}' \
+@DX_COND_doc_TRUE@	       DX_LOGO='${DX_LOGO}'
 
 @DX_COND_doc_TRUE@DX_DESTENV = ${DX_ENV} \
 @DX_COND_doc_TRUE@             ${DX_ENVCOMMON} \
@@ -711,6 +714,8 @@ uninstall-am:
 .PRECIOUS: Makefile
 
 
+include @top_builddir@/Makefile.inc
+
 @DX_COND_doc_TRUE@@DX_COND_pdf_TRUE@doxygen-pdf: doxygen-run ${DX_DESTDIR}/${DX_PACKAGE_NAME}.pdf
 
 @DX_COND_doc_TRUE@@DX_COND_pdf_TRUE@${DX_DESTDIR}/${DX_PACKAGE_NAME}.pdf: ${DX_DESTTAG}
@@ -727,12 +732,15 @@ uninstall-am:
 @DX_COND_doc_TRUE@@DX_COND_pdf_TRUE@	    countdown=`expr $$countdown - 1`; \
 @DX_COND_doc_TRUE@@DX_COND_pdf_TRUE@	done; \
 @DX_COND_doc_TRUE@@DX_COND_pdf_TRUE@	mv refman.pdf ../${DX_PACKAGE_NAME}.pdf
+@DX_COND_doc_TRUE@DX_LAYOUT     ?= ${top_srcdir}/docs/config/general_layout.xml
+@DX_COND_doc_TRUE@DX_LOGO       ?= ${top_srcdir}/docs/config/style/logo.jpg
+@DX_COND_doc_TRUE@DX_IMAGE_PATH ?= img
 
 ### TARGETS: ###################################################################
 
+@DX_COND_doc_TRUE@.ONESHELL:
 @DX_COND_doc_TRUE@.PHONY: doxygen-run doxygen-doc build_tag install_tag test_nav $(DX_PS_GOAL) $(DX_PDF_GOAL)
 @DX_COND_doc_TRUE@.INTERMEDIATE: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
-@DX_COND_doc_TRUE@.ONESHELL:
 
 @DX_COND_doc_TRUE@test_nav:
 @DX_COND_doc_TRUE@	if [ -a ${DX_DESTDIR}/html/nav.html ] ; then rm ${DX_DESTDIR}/html/nav.html; fi
@@ -758,7 +766,6 @@ uninstall-am:
 @DX_COND_doc_TRUE@	cat ${DX_DESTDIR}/html/nav.html >> ${DX_DESTDIR}/html/nav.xml; \
 @DX_COND_doc_TRUE@	echo "</project_nav>" >> ${DX_DESTDIR}/html/nav.xml;
 
-@DX_COND_doc_TRUE@.ONESHELL:
 @DX_COND_doc_TRUE@${DX_DESTTAG}: ${DX_PAGES}
 @DX_COND_doc_TRUE@	$(MKDIR_P) ${DX_DESTDIR}
 @DX_COND_doc_TRUE@	${MKDIR_P} ${DX_TAGDIR}
@@ -771,7 +778,6 @@ uninstall-am:
 @DX_COND_doc_TRUE@	DX_TAGFILES= \
 @DX_COND_doc_TRUE@	$(DX_DOXYGEN) $(DX_CONFIG) 2>&1 > /dev/null;
 
-@DX_COND_doc_TRUE@.ONESHELL:
 @DX_COND_doc_TRUE@${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG} 
 @DX_COND_doc_TRUE@	touch $@; \
 @DX_COND_doc_TRUE@	if grep -q ${DX_DESTTAG} ${DX_TAGDIR}/taglist.txt; then \
@@ -786,7 +792,6 @@ uninstall-am:
 @DX_COND_doc_TRUE@install_tag: DX_INSTALLDIR=${DESTDIR}${datadir}/doc/@PACKAGE@
 @DX_COND_doc_TRUE@install_tag: ${DX_TAGDIR}/taglist.txt test_nav
 
-@DX_COND_doc_TRUE@.ONESHELL:
 @DX_COND_doc_TRUE@${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt ${DX_STYLE_FILES} 
 @DX_COND_doc_TRUE@	$(MKDIR_P) ${DX_DESTDIR} 
 

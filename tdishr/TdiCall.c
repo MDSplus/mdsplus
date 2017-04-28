@@ -116,10 +116,10 @@ STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
 
 int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   struct descriptor_function *pfun;
   struct descriptor_xd image = EMPTY_XD, entry = EMPTY_XD, tmp[255];
-  int j, max, ntmp = 0, (*routine) ();
+  int j, max = 0, ntmp = 0, (*routine) ();
   struct descriptor *result[2] = { 0, 0 };
   unsigned short code;
   struct descriptor *newdsc[256];
@@ -132,17 +132,16 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
     status = TdiNDIM_OVER;
   else
     status = TdiData(list[0], &image MDS_END_ARG);
-  if (status & 1)
+  if STATUS_OK
     status = TdiData(list[1], &entry MDS_END_ARG);
-  if (status & 1)
+  if STATUS_OK
     status = TdiFindImageSymbol(image.pointer, entry.pointer, &routine);
-  if (!(status & 1))
+  if STATUS_NOT_OK
     printf("%s\n", LibFindImageSymbolErrString());
   MdsFree1Dx(&entry, NULL);
   MdsFree1Dx(&image, NULL);
-
-  newdsc[0] = (struct descriptor *)(long)(narg - 2);
-  for (j = 2; j < narg && status & 1; ++j) {
+  *(int *)&newdsc[0] = narg - 2;
+  for (j = 2; j < narg && STATUS_OK; ++j) {
     for (pfun = (struct descriptor_function *)list[j]; pfun && pfun->dtype == DTYPE_DSC;)
       pfun = (struct descriptor_function *)pfun->pointer;
     if (pfun && pfun->dtype == DTYPE_FUNCTION) {
@@ -167,7 +166,7 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
 	int ans;
 	EMPTYXD(xd);
 	status = TdiData(pfun->arguments[0], &xd MDS_END_ARG);
-	if (status & 1 && xd.pointer && xd.pointer->dtype == DTYPE_POINTER) {
+	if (STATUS_OK && xd.pointer && xd.pointer->dtype == DTYPE_POINTER) {
 	  *(void **)&newdsc[j - 1] = *(void **)xd.pointer->pointer;
 	} else {
 	  status = TdiGetLong(pfun->arguments[0], &ans);
@@ -202,11 +201,11 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
       origin[ntmp++] = (unsigned char)j;
     }
   }
-  if (status & 1)
+  if STATUS_OK
     status = TdiInterlude(opcode, newdsc, routine, (void *)LibCallg, (void **)result, &max);
   if (!out_ptr)
     goto skip;
-  if (status & 1)
+  if STATUS_OK
     switch (opcode) {
     case DTYPE_DSC:
       dx.pointer = (char *)result[0];
@@ -251,7 +250,7 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
       } else
 	status = TdiINVDTYDSC;
     }
-  if (status & 1)
+  if STATUS_OK
     status = MdsCopyDxXd(&dx, out_ptr);
  skip:
   for (j = 0; j < ntmp; ++j) {
