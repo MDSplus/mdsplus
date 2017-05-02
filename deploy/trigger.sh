@@ -185,6 +185,9 @@ parsecmd() {
 	    --pypi)
 		PUSH_TO_PYPI=yes
 		;;
+	    --promote_to=*)
+		PROMOTE_TO=${i#*=}
+		;;
 	    *)
 		unknownopts="${unknownopts} $i"
 		;;
@@ -266,6 +269,28 @@ EOF
   fi
 fi
 
+if [ ! -z "${PROMOTE_TO}" ]
+then
+    if ( ${SRCDIR}/deploy/promote.sh ${BRANCH} ${PROMOTE_TO} )
+    then
+	PROMOTE_RELEASE_TAG=$(git tag | grep ${PROMOTE_TO}_release | sort -V | awk '{line=$0} END{print line}')
+	MAJOR=$(echo $PROMOTE_RELEASE_TAG | cut -f2 -d-)
+	MINOR=$(echo $PROMOTE_RELEASE_TAG | cut -f3 -d-)
+	RELEASEV=$(echo $PROMOTE_RELEASE_TAG | cut -f4 -d-)
+    else
+      RED $COLOR
+      cat <<EOF >&2
+=========================================================
+
+ERROR: Problem promoting ${BRANCH} to ${PROMOTE_TO}
+
+=========================================================
+EOF
+      NORMAL $COLOR
+      exit 1
+    fi
+fi
+
 #
 # Make sure submodules have been updated
 #
@@ -277,19 +302,33 @@ fi
 if [ "$RELEASE" = "yes" ]
 then
     NEW_RELEASE=no
-    RELEASE_TAG=$(git tag | grep ${BRANCH}_release | sort -V | awk '{line=$0} END{print line}');
+    if [ -z ${RELEASE_TAG} ]
+    then
+	RELEASE_TAG=$(git tag | grep ${BRANCH}_release | sort -V | awk '{line=$0} END{print line}');
+    fi
     if [ -z ${RELEASE_TAG} ]
     then
 	RELEASE_TAG="${BRANCH}_release-1-0-0"
     fi
-    MAJOR=$(echo $RELEASE_TAG | cut -f2 -d-);
-    MINOR=$(echo $RELEASE_TAG | cut -f3 -d-);
-    RELEASEV=$(echo $RELEASE_TAG | cut -f4 -d-);
+    if [ -z "${PROMOTE_TO}" ]
+    then
+	MAJOR=$(echo $RELEASE_TAG | cut -f2 -d-);
+	MINOR=$(echo $RELEASE_TAG | cut -f3 -d-);
+	RELEASEV=$(echo $RELEASE_TAG | cut -f4 -d-);
+    fi
     LAST_RELEASE_COMMIT=$(git rev-list -n 1 $RELEASE_TAG)
     if [ "${LAST_RELEASE_COMMIT}" != "${GIT_COMMIT}" ]
     then
-	version_inc=$(${SRCDIR}/deploy/commit_type_check.sh "${LAST_RELEASE_COMMIT}" ${SRCDIR}/deploy/inv_commit_title.msg)
+	if [ -z "${PROMOTE_TO}" ]
+	then
+	    version_inc=$(${SRCDIR}/deploy/commit_type_check.sh "${LAST_RELEASE_COMMIT}" ${SRCDIR}/deploy/inv_commit_title.msg)
+	else
+	    version_inc=PROMOTE
+	fi
 	case "$version_inc" in
+	    PROMOTE)
+		NEW_RELEASE=yes
+		;;
 	    BADCOMMIT)
 		RED $COLOR
 		cat <<EOF >&2
