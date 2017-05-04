@@ -17,13 +17,13 @@ extern void **TreeCtx();
 
 /*** Segmented Record Support  ************************
 
-Segmented records use a special extended attributes record stored at the file offset (nci rfa field)
+Segmented records use a special extended attr record stored at the file offset (nci rfa field)
 which describes the location of segment index and segment information metadata stored in the
 datafile. There is an EXTENDED_NCI bit in the nci flags2 field which indicates that the node contains
 extended nci information. The EXTENDED_NCI capability supports different types of "facilities" of which
 3 are currently supported: STANDARD_RECORD, SEGMENTED_RECORD, NAMED_ATTRIBUTES. The NAMED_ATTRIBUTE
 facility provides a means for adding extra node characteristics by defining name/value pairs. The use
-of the STANDARD_RECORD facility is currently only used if the node also has named attributes.
+of the STANDARD_RECORD facility is currently only used if the node also has named attr->
 
 When writing a segment in a node for the first time, an extended attribute record is stored for the node
 which contains a file offset where the segment header information is stored. The segment header contains
@@ -72,53 +72,53 @@ const int saved_uic = 0;
 #endif
 
 #ifdef WORDS_BIGENDIAN
-
-#define ALLOCATE_BUFFER(SIZE,BUFFER) \
-char *BUFFER = malloc(SIZE);
-#define _CHECK_ENDIAN_TRANFER(BUFFER_IN,SIZE,LENGTH,DTYPE,BUFFER_OUT,COPY) {\
-if (LENGTH > 1 && DTYPE+0 != DTYPE_T && DTYPE+0 != DTYPE_IDENT && DTYPE+0 != DTYPE_PATH) { \
-  char *bptr; \
-  int i; \
-  switch (LENGTH) { \
-  case 2: \
-    for (i = 0, bptr = (char*)BUFFER_OUT; i < (int)SIZE / LENGTH; i++, bptr += sizeof(short)) \
-      LoadShort(((short *)BUFFER_IN)[i], bptr); \
-    break; \
-  case 4: \
-    for (i = 0, bptr = (char*)BUFFER_OUT; i < (int)SIZE / LENGTH; i++, bptr += sizeof(int)) \
-      LoadInt(((int *)BUFFER_IN)[i], bptr); \
-    break; \
-  case 8: \
-    for (i = 0, bptr = (char*)BUFFER_OUT; i < (int)SIZE / LENGTH; i++, bptr += sizeof(int64_t)) \
-      LoadQuad(((int64_t *) BUFFER_IN)[i], bptr); \
-    break; \
-  } \
-} else {COPY;}}
-#define CHECK_ENDIAN_TRANSFER(BUFFER_IN,SIZE,LENGTH,DTYPE,BUFFER_OUT) _CHECK_ENDIAN_TRANFER(BUFFER_IN,SIZE,LENGTH,DTYPE,BUFFER_OUT,memcpy(BUFFER_OUT,BUFFER_IN,SIZE))
-#define CHECK_ENDIAN(BUFFER,SIZE,LENGTH,DTYPE) _CHECK_ENDIAN_TRANFER(BUFFER,SIZE,LENGTH,DTYPE,BUFFER,)
-#define FREE_BUFFER(BUFFER) free(BUFFER);
-
+ #define ALLOCATE_BUFFER(SIZE,BUFFER) char *BUFFER = malloc(SIZE);
+ inline static void endianTransfer(char* buffer_in,size_t size,int length,char* buffer_out) {
+    char *bptr;
+    int i;
+    switch (length) {
+    case 2:
+      for (i = 0, bptr = (char*)buffer_out; i < (int)size / length; i++, bptr += sizeof(short))
+        LoadShort(((short *)buffer_in)[i], bptr);
+      break;
+    case 4:
+      for (i = 0, bptr = (char*)buffer_out; i < (int)size / length; i++, bptr += sizeof(int))
+        LoadInt(((int *)buffer_in)[i], bptr);
+      break;
+    case 8:
+      for (i = 0, bptr = (char*)buffer_out; i < (int)size / length; i++, bptr += sizeof(int64_t))
+        LoadQuad(((int64_t *) buffer_in)[i], bptr);
+      break;
+    }
+ }
+ #define CHECK_ENDIAN(POINTER,SIZE,LENGTH,DTYPE){
+  if (LENGTH > 1 && DTYPE+0 != DTYPE_T && DTYPE+0 != DTYPE_IDENT && DTYPE+0 != DTYPE_PATH)
+    endianTransfer((char*)BUFFER,SIZE,LENGTH,(char*)BUFFER);
+ }
+ #define CHECK_ENDIAN_TRANSFER(BUFFER_IN,SIZE,LENGTH,DTYPE,BUFFER_OUT){
+  if (LENGTH > 1 && DTYPE+0 != DTYPE_T && DTYPE+0 != DTYPE_IDENT && DTYPE+0 != DTYPE_PATH)
+    endianTransfer((char*)BUFFER_IN,SIZE,LENGTH,BUFFER_OUT);
+  else memcpy(BUFFER_OUT,BUFFER_IN,SIZE);
+ }
+ #define FREE_BUFFER(BUFFER) free(BUFFER);
 #else
-
-#define ALLOCATE_BUFFER(SIZE,BUFFER) char *BUFFER;
-#define CHECK_ENDIAN(POINTER,SIZE,LENGTH,DTYPE) {}
-#define CHECK_ENDIAN_TRANSFER(BUFFER_IN,SIZE,LENGTH,DTYPE,BUFFER_OUT) BUFFER_OUT = (char*)BUFFER_IN;
-#define FREE_BUFFER(BUFFER) {}
-
+ #define ALLOCATE_BUFFER(SIZE,BUFFER) char *BUFFER;
+ #define CHECK_ENDIAN(POINTER,SIZE,LENGTH,DTYPE) {}
+ #define CHECK_ENDIAN_TRANSFER(BUFFER_IN,SIZE,LENGTH,DTYPE,BUFFER_OUT) BUFFER_OUT = (char*)BUFFER_IN;
+ #define FREE_BUFFER(BUFFER) {}
 #endif
 
 
 
-
 typedef ARRAY_COEFF(char, 8) A_COEFF_TYPE;
-static int PutNamedAttributesIndex(TREE_INFO * info_ptr, NAMED_ATTRIBUTES_INDEX * index, int64_t * offset);
-static int PutSegmentHeader(TREE_INFO * info_ptr, SEGMENT_HEADER * hdr, int64_t * offset);
-static int PutSegmentIndex(TREE_INFO * info_ptr, SEGMENT_INDEX * idx, int64_t * offset);
-static int PutInitialValue(TREE_INFO * info_ptr, int *dims, struct descriptor_a *array, int64_t * offset);
-static int PutDimensionValue(TREE_INFO * info_ptr, int64_t * timestamps, int rows_filled, int ndims, int *dims, int64_t * offset);
-static int GetSegmentHeader(TREE_INFO * info_ptr, int64_t offset, SEGMENT_HEADER * hdr);
-static int GetSegmentIndex(TREE_INFO * info_ptr, int64_t offset, SEGMENT_INDEX * idx);
-static int GetNamedAttributesIndex(TREE_INFO * info_ptr, int64_t offset, NAMED_ATTRIBUTES_INDEX * index);
+static int PutNamedAttributesIndex(TREE_INFO * tinfo, NAMED_ATTRIBUTES_INDEX * index, int64_t * offset);
+static int PutSegmentHeader(TREE_INFO * tinfo, SEGMENT_HEADER * hdr, int64_t * offset);
+static int PutSegmentIndex(TREE_INFO * tinfo, SEGMENT_INDEX * idx, int64_t * offset);
+static int PutInitialValue(TREE_INFO * tinfo, int *dims, struct descriptor_a *array, int64_t * offset);
+static int PutDimensionValue(TREE_INFO * tinfo, int64_t * timestamps, int rows_filled, int ndims, int *dims, int64_t * offset);
+static int GetSegmentHeader(TREE_INFO * tinfo, int64_t offset, SEGMENT_HEADER * hdr);
+static int GetSegmentIndex(TREE_INFO * tinfo, int64_t offset, SEGMENT_INDEX * idx);
+static int GetNamedAttributesIndex(TREE_INFO * tinfo, int64_t offset, NAMED_ATTRIBUTES_INDEX * index);
 
 static int __TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end,
                               struct descriptor *dimension,
@@ -246,6 +246,21 @@ int TreePutTimestampedSegment(int nid, int64_t * timestamp, struct descriptor_a 
 }
 
 
+static inline int getFilledRowsTS(SEGMENT_HEADER*shead,SEGMENT_INFO*sinfo,int idx,int64_t *buffer){
+  if (shead->idx==idx)
+    return shead->next_row<0 ? sinfo->rows : shead->next_row;
+  else {
+    /* Removes trailing null timestamps from dimension and data
+     * if at least more than one zero timestamps
+     * or last timestamp does not continue monotonic increase of time vector
+     */
+    int filled_rows = sinfo->rows;
+    if (filled_rows>1 && swapquad(&buffer[filled_rows-2])>=0)// if second last is not <0
+      for ( ; filled_rows>0 && 0==buffer[filled_rows-1] ; filled_rows--);
+    return filled_rows;
+  }
+}
+
 #define NODE_PTR \
 node_ptr = nid_to_node(dblist, nid_ptr); \
 if (!node_ptr) \
@@ -260,11 +275,11 @@ if (dblist->remote) { \
 }
 //"
 #define INFO_PTR \
-nid_to_tree_nidx(dblist, nid_ptr, info_ptr, nidx); \
-if (!info_ptr) \
+nid_to_tree_nidx(dblist, nid_ptr, tinfo, nidx); \
+if (!tinfo) \
   return TreeNNF;
 
-#define OPEN_DATAFILE_WRITE(CHECKINPUT) \
+#define OPEN_DATAFILE_WRITE0() \
 OPEN_TREE_READ; \
 if (dblist->open_readonly) \
   return TreeREADONLY; \
@@ -272,145 +287,160 @@ int shot_open = (dblist->shotid != -1); \
 NODE_PTR; \
 SEGMENTREMOTE; \
 int stv; \
-NCI local_nci; \
-EXTENDED_ATTRIBUTES attributes; \
+NCI _local_nci,*local_nci;local_nci=&_local_nci; \
+EXTENDED_ATTRIBUTES _attr, *attr;attr=&_attr; \
 INFO_PTR; \
-status = TreeCallHook(PutData, info_ptr, nid); \
+status = TreeCallHook(PutData, tinfo, nid); \
 if (status && STATUS_NOT_OK) \
   return status; \
 int64_t saved_viewdate; \
 TreeGetViewDate(&saved_viewdate); \
-status = TreeGetNciLw(info_ptr, nidx, &local_nci); \
+status = TreeGetNciLw(tinfo, nidx, local_nci); \
 if STATUS_NOT_OK return status; \
-if (STATUS_OK && (shot_open && (local_nci.flags & NciM_NO_WRITE_SHOT))) \
+if (STATUS_OK && (shot_open && (local_nci->flags & NciM_NO_WRITE_SHOT))) \
   RETURN(UNLOCK_NCI,TreeNOWRITESHOT); \
-if (STATUS_OK && (!shot_open && (local_nci.flags & NciM_NO_WRITE_MODEL))) \
-  RETURN(UNLOCK_NCI,TreeNOWRITEMODEL); \
-CHECKINPUT; \
-if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1){ \
-  status = TreeOpenDatafileW(info_ptr, &stv, 0); \
-  if STATUS_NOT_OK \
-    RETURN(UNLOCK_NCI,status) \
+if (STATUS_OK && (!shot_open && (local_nci->flags & NciM_NO_WRITE_MODEL))) \
+  RETURN(UNLOCK_NCI,TreeNOWRITEMODEL);
+
+#define OPEN_DATAFILE_WRITE1() status = OpenDatafileWrite1(status,tinfo,&stv)
+inline static int OpenDatafileWrite1(int status,TREE_INFO *tinfo, int *stv_ptr){
+  if (tinfo->data_file ? (!tinfo->data_file->open_for_write) : 1)
+    return TreeOpenDatafileW(tinfo, stv_ptr, 0);
+  return status;
 }
 
-#define UNLOCK_NCI TreeUnLockNci(info_ptr, 0, nidx);
-#define RETURN(UNLOCK,STATUS) {\
-UNLOCK; \
-return STATUS; \
+#define UNLOCK_NCI TreeUnLockNci(tinfo, 0, nidx);
+#define RETURN(UNLOCK,STATUS) {UNLOCK;return STATUS;}
+
+#define UPDATE_FINISH status = PutSegmentIndex(tinfo, sindex, &index_offset);
+
+#define BEGIN_FINISH status = BeginFinish(local_nci, tinfo, sindex, shead, nidx,\
+                                          attr, attr_offset, attr_update, add_length);
+inline static int BeginFinish(NCI *local_nci,TREE_INFO *tinfo, SEGMENT_INDEX *sindex, SEGMENT_HEADER *shead, int nidx,
+                              EXTENDED_ATTRIBUTES *attr, int64_t *attr_offset, int *attr_update, int add_length){
+  int status = PutSegmentIndex(tinfo,sindex,&shead->index_offset);
+  if STATUS_NOT_OK return status;
+  status = PutSegmentHeader(tinfo, shead, &attr->facility_offset[SEGMENTED_RECORD_FACILITY]);
+  if (attr_update) {
+    status = TreePutExtendedAttributes(tinfo, attr, attr_offset);
+    SeekToRfa(*attr_offset, local_nci->DATA_INFO.DATA_LOCATION.rfa);
+    local_nci->flags2 |= NciM_EXTENDED_NCI;
+  }
+  if (((int64_t) local_nci->length + (int64_t) add_length) < (2 ^ 31))
+    local_nci->length += add_length;
+  else
+    local_nci->length = (2 ^ 31);
+  local_nci->flags=local_nci->flags | NciM_SEGMENTED;
+  TreePutNci(tinfo, nidx, local_nci, 0);
+  return status;
 }
 
-#define UPDATE_FINISH status = PutSegmentIndex(info_ptr, &segment_index, &index_offset);
+#define BEGIN_LOCAL_NCI BeginLocalNci(local_nci, initialValue)
+inline static void BeginLocalNci(NCI *local_nci, const struct descriptor_a *initialValue){
+  local_nci->flags2 &= ~NciM_DATA_IN_ATT_BLOCK;
+  local_nci->dtype = initialValue->dtype;
+  local_nci->class = CLASS_R;
+  local_nci->time_inserted = TreeTimeInserted();
+  SAVED_UIC;
+  local_nci->owner_identifier = saved_uic;
+}
 
-#define BEGIN_FINISH \
-status = PutSegmentIndex(info_ptr, &segment_index, &segment_header.index_offset); \
-status = PutSegmentHeader(info_ptr, &segment_header, &attributes.facility_offset[SEGMENTED_RECORD_FACILITY]); \
-if (update_attributes) { \
-  status = TreePutExtendedAttributes(info_ptr, &attributes, &attributes_offset); \
-  SeekToRfa(attributes_offset, local_nci.DATA_INFO.DATA_LOCATION.rfa); \
-  local_nci.flags2 |= NciM_EXTENDED_NCI; \
-} \
-if (((int64_t) local_nci.length + (int64_t) add_length) < (2 ^ 31)) \
-  local_nci.length += add_length; \
-else \
-  local_nci.length = (2 ^ 31); \
-local_nci.flags=local_nci.flags | NciM_SEGMENTED; \
-TreePutNci(info_ptr, nidx, &local_nci, 0);
-
-#define BEGIN_LOCAL_NCI \
-local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK; \
-local_nci.dtype = initialValue->dtype; \
-local_nci.class = CLASS_R; \
-local_nci.time_inserted = TreeTimeInserted(); \
-SAVED_UIC \
-local_nci.owner_identifier = saved_uic;
-
-/* See if node is currently using the Extended Nci feature and if so get the current contents of the attributes
+/* See if node is currently using the Extended Nci feature and if so get the current contents of the attr
  * index. If not, make an empty index and flag that a new index needs to be written.
  */
 #define IF_NO_EXTENDED_NCI \
-if (!(local_nci.flags2 & NciM_EXTENDED_NCI) \
- || IS_NOT_OK(TreeGetExtendedAttributes(info_ptr, RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa), &attributes)))
+if (!(local_nci->flags2 & NciM_EXTENDED_NCI) \
+ || IS_NOT_OK(TreeGetExtendedAttributes(tinfo, RfaToSeek(local_nci->DATA_INFO.DATA_LOCATION.rfa), attr)))
 
-#define CHECK_EXTENDED_NCI(UNLOCK) IF_NO_EXTENDED_NCI RETURN(UNLOCK,TreeFAILURE);
+#define CHECK_EXTENDED_NCI(UNLOCK) IF_NO_EXTENDED_NCI RETURN(UNLOCK,TreeNOSEGMENTS);
 
 #define BEGIN_EXTENDED_NCI \
-int update_attributes = 0; \
-int64_t attributes_offset = -1; \
-IF_NO_EXTENDED_NCI { \
-  memset(&attributes, -1, sizeof(attributes)); \
-  update_attributes = 1; \
-} else { \
-  attributes_offset = RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa); \
-  if (attributes.facility_offset[STANDARD_RECORD_FACILITY] != -1) { \
-    attributes.facility_offset[STANDARD_RECORD_FACILITY] = -1; \
-    attributes.facility_length[STANDARD_RECORD_FACILITY] = 0; \
-    update_attributes = 1; \
-  } \
+int _attr_update = 0, *attr_update;attr_update=&_attr_update; \
+int64_t _attr_offset = -1, *attr_offset;attr_offset=&_attr_offset; \
+beginExtendedNci(tinfo,local_nci,attr,attr_update,attr_offset);
+static inline void beginExtendedNci(TREE_INFO *tinfo,NCI *local_nci,EXTENDED_ATTRIBUTES *attr,int *attr_update,int64_t *attr_offset){
+  IF_NO_EXTENDED_NCI {
+    memset(attr, -1, sizeof(*attr));
+    *attr_update = 1;
+  } else {
+    *attr_offset = RfaToSeek(local_nci->DATA_INFO.DATA_LOCATION.rfa);
+    if (attr->facility_offset[STANDARD_RECORD_FACILITY] != -1) {
+      attr->facility_offset[STANDARD_RECORD_FACILITY] = -1;
+      attr->facility_length[STANDARD_RECORD_FACILITY] = 0;
+      *attr_update = 1;
+    }
+  }
 }
 
 /* See if the node currently has an segment header record.
  * If not, make an empty segment header and flag that a new one needs to be written.
  */
 #define IF_NO_SEGMENT_HEADER \
-SEGMENT_HEADER segment_header; \
-if (attributes.facility_offset[SEGMENTED_RECORD_FACILITY] == -1 \
- || IS_NOT_OK(GetSegmentHeader(info_ptr, attributes.facility_offset[SEGMENTED_RECORD_FACILITY],&segment_header)))
+if (attr->facility_offset[SEGMENTED_RECORD_FACILITY] == -1 \
+ || IS_NOT_OK(GetSegmentHeader(tinfo, attr->facility_offset[SEGMENTED_RECORD_FACILITY],shead)))
 
-#define CHECK_SEGMENT_HEADER(UNLOCK) IF_NO_SEGMENT_HEADER RETURN(UNLOCK,TreeFAILURE)
+#define CHECK_SEGMENT_HEADER(UNLOCK) \
+SEGMENT_HEADER _shead,*shead;shead=&_shead;\
+IF_NO_SEGMENT_HEADER RETURN(UNLOCK,TreeNOSEGMENTS)
 
 #define BEGIN_SEGMENT_HEADER \
-IF_NO_SEGMENT_HEADER { \
-  memset(&segment_header, 0, sizeof(segment_header)); \
-  attributes.facility_offset[SEGMENTED_RECORD_FACILITY] = -1; \
-  segment_header.index_offset = -1; \
-  segment_header.idx = -1; \
-  update_attributes = 1; \
-} else if (initialValue->dtype != segment_header.dtype || \
-          (initialValue->class == CLASS_A && \
-          (initialValue->dimct != segment_header.dimct || \
-          (initialValue->dimct > 1 \
-           && memcmp(segment_header.dims, a_coeff->m, (initialValue->dimct - 1) * sizeof(int)))))) \
-  RETURN(UNLOCK_NCI,TreeFAILURE);
+SEGMENT_HEADER _shead,*shead;shead=&_shead;\
+RETURN_IF_NOT_OK(BeginSegmentHeader(tinfo,nidx,shead,attr,attr_update,initialValue));
+static inline int BeginSegmentHeader(TREE_INFO *tinfo,int nidx,SEGMENT_HEADER *shead,EXTENDED_ATTRIBUTES *attr,int *attr_update,struct descriptor_a *initialValue){
+  IF_NO_SEGMENT_HEADER {
+    memset(shead, 0, sizeof(*shead));
+    attr->facility_offset[SEGMENTED_RECORD_FACILITY] = -1;
+    shead->index_offset = -1;
+    shead->idx = -1;
+    *attr_update = 1;
+  } else if (initialValue->dtype != shead->dtype ||
+            (initialValue->class == CLASS_A &&
+            (initialValue->dimct != shead->dimct ||
+            (initialValue->dimct > 1
+             && memcmp(shead->dims, ((A_COEFF_TYPE *)initialValue)->m, (initialValue->dimct - 1) * sizeof(int))))))
+    RETURN(UNLOCK_NCI,TreeFAILURE);
+  return TreeSUCCESS;
+}
 
 
-/* See if the node currently has an segment_index record.
+/* See if the node currently has an *sindex record.
  * If not, make an empty segment index and flag that a new one needs to be written.
  */
  #define IF_NO_SEGMENT_INDEX \
-SEGMENT_INDEX segment_index; \
-if ((segment_header.index_offset == -1) \
- || IS_NOT_OK(GetSegmentIndex(info_ptr, segment_header.index_offset, &segment_index)))
+SEGMENT_INDEX _sindex,*sindex;sindex=&_sindex; \
+if ((shead->index_offset == -1) \
+ || IS_NOT_OK(GetSegmentIndex(tinfo, shead->index_offset, sindex)))
 
 #define CHECK_SEGMENT_INDEX(UNLOCK) IF_NO_SEGMENT_INDEX RETURN(UNLOCK,TreeFAILURE)
 
 #define BEGIN_SEGMENT_INDEX \
 IF_NO_SEGMENT_INDEX { \
-  segment_header.index_offset = -1; \
-  memset(&segment_index, -1, sizeof(segment_index)); \
-  segment_index.first_idx = 0; \
+  shead->index_offset = -1; \
+  memset(sindex, -1, sizeof(*sindex)); \
+  sindex->first_idx = 0; \
 }
 
 #define CHECK_SINFO(UNLOCK) \
 SEGMENT_INFO *sinfo; \
-if (idx < 0 || idx > segment_header.idx) \
+if (idx < 0 || idx > shead->idx) \
   RETURN(UNLOCK,TreeFAILURE); \
 int64_t index_offset; \
-for (index_offset = segment_header.index_offset; \
-     STATUS_OK && idx < segment_index.first_idx && segment_index.previous_offset > 0; \
-     index_offset = segment_index.previous_offset) \
-  status = GetSegmentIndex(info_ptr, segment_index.previous_offset, &segment_index); \
-if (STATUS_NOT_OK || (idx < segment_index.first_idx)) \
+for (index_offset = shead->index_offset; \
+     STATUS_OK && idx < sindex->first_idx && sindex->previous_offset > 0; \
+     index_offset = sindex->previous_offset) \
+  status = GetSegmentIndex(tinfo, sindex->previous_offset, sindex); \
+if (STATUS_NOT_OK || (idx < sindex->first_idx)) \
   RETURN(UNLOCK,TreeFAILURE); \
-sinfo = &segment_index.segment[idx % SEGMENTS_PER_INDEX];
+sinfo = &sindex->segment[idx % SEGMENTS_PER_INDEX];
 
 #define BEGIN_SINFO(CHECKCOMPRESS) \
 SEGMENT_INFO *sinfo; \
 int add_length = 0; \
 if (idx == -1) { \
-  segment_header.idx++; \
-  idx = segment_header.idx; \
+  shead->idx++; \
+  idx = shead->idx; \
   add_length = (initialValue->class == CLASS_A) ? initialValue->arsize : 0; \
-} else if (idx < -1 || idx > segment_header.idx) \
+} else if (idx < -1 || idx > shead->idx) \
   RETURN(UNLOCK_NCI,TreeBUFFEROVF) \
 else { \
   /* TODO: Add support for updating an existing segment. add_length=new_length-old_length. */ \
@@ -418,64 +448,64 @@ else { \
   printf("this is not yet supported\n"); \
   RETURN(UNLOCK_NCI,TreeFAILURE); \
 } \
-segment_header.data_offset = -1; \
-segment_header.dim_offset = -1; \
-segment_header.dtype = initialValue->dtype; \
-segment_header.dimct = (initialValue->class == CLASS_A) ? initialValue->dimct : 0; \
-segment_header.length = (initialValue->class == CLASS_A) ? initialValue->length : 0; \
+shead->data_offset = -1; \
+shead->dim_offset = -1; \
+shead->dtype = initialValue->dtype; \
+shead->dimct = (initialValue->class == CLASS_A) ? initialValue->dimct : 0; \
+shead->length = (initialValue->class == CLASS_A) ? initialValue->length : 0; \
 int previous_length = -1; \
-if (segment_header.idx > 0 && segment_header.length != 0) { \
+if (shead->idx > 0 && shead->length != 0) { \
   int d; \
-  previous_length = segment_header.length; \
-  for (d = 0; d < segment_header.dimct; d++) \
-  previous_length *= segment_header.dims[d]; \
+  previous_length = shead->length; \
+  for (d = 0; d < shead->dimct; d++) \
+  previous_length *= shead->dims[d]; \
 } else previous_length = -1; \
 if (initialValue->class == CLASS_A) { \
   if (initialValue->dimct == 1) \
-    segment_header.dims[0] = initialValue->arsize / initialValue->length; \
+    shead->dims[0] = initialValue->arsize / initialValue->length; \
   else \
-    memcpy(segment_header.dims, a_coeff->m, initialValue->dimct * sizeof(int)); \
+    memcpy(shead->dims, ((A_COEFF_TYPE *)initialValue)->m, initialValue->dimct * sizeof(int)); \
 } \
-segment_header.next_row = rows_filled; \
+shead->next_row = rows_filled; \
 /* If not the first segment, see if we can reuse the previous segment storage space and compress the previous segment. */ \
-if (((segment_header.idx % SEGMENTS_PER_INDEX) > 0) && \
+if (((shead->idx % SEGMENTS_PER_INDEX) > 0) && \
     (previous_length == add_length) && compress) { \
   int deleted; \
   EMPTYXD(xd_data); \
   EMPTYXD(xd_dim); \
-  sinfo = &segment_index.segment[(idx % SEGMENTS_PER_INDEX) - 1]; \
-  TreeUnLockNci(info_ptr, 0, nidx); \
+  sinfo = &sindex->segment[(idx % SEGMENTS_PER_INDEX) - 1]; \
+  TreeUnLockNci(tinfo, 0, nidx); \
   status = _TreeGetSegment(dbid, nid, idx - 1, &xd_data, &xd_dim); \
-  TreeLockNci(info_ptr, 0, nidx, &deleted); \
+  TreeLockNci(tinfo, 0, nidx, &deleted); \
   if STATUS_OK \
     CHECKCOMPRESS; \
   MdsFree1Dx(&xd_data, 0); \
   MdsFree1Dx(&xd_dim, 0); \
 } \
-if (idx >= segment_index.first_idx + SEGMENTS_PER_INDEX) { \
-  memset(&segment_index, -1, sizeof(segment_index)); \
-  segment_index.previous_offset = segment_header.index_offset; \
-  segment_header.index_offset = -1; \
-  segment_index.first_idx = idx; \
+if (idx >= sindex->first_idx + SEGMENTS_PER_INDEX) { \
+  memset(sindex, -1, sizeof(*sindex)); \
+  sindex->previous_offset = shead->index_offset; \
+  shead->index_offset = -1; \
+  sindex->first_idx = idx; \
 } \
-sinfo = &segment_index.segment[idx % SEGMENTS_PER_INDEX];
-
+sinfo = &sindex->segment[idx % SEGMENTS_PER_INDEX];
+//"
 #define PUTDATA \
-sinfo->data_offset = segment_header.data_offset; \
-sinfo->rows = segment_header.dims[segment_header.dimct - 1];
+sinfo->data_offset = shead->data_offset; \
+sinfo->rows = shead->dims[shead->dimct - 1];
 
 #define PUTDATA_INITVALUE \
 if (initialValue->dtype == DTYPE_OPAQUE) { \
   int length; \
-  status = TreePutDsc(info_ptr, nid, (struct descriptor *)initialValue, &sinfo->data_offset, &length, compress); \
-  segment_header.data_offset = sinfo->data_offset; \
+  status = TreePutDsc(tinfo, nid, (struct descriptor *)initialValue, &sinfo->data_offset, &length, compress); \
+  shead->data_offset = sinfo->data_offset; \
   add_length = length; \
   sinfo->rows = length | 0x80000000; \
 } else \
-  status = PutInitialValue(info_ptr, segment_header.dims, initialValue, &segment_header.data_offset); \
+  status = PutInitialValue(tinfo, shead->dims, initialValue, &shead->data_offset); \
 if (initialValue->dtype != DTYPE_OPAQUE) { \
-  sinfo->data_offset = segment_header.data_offset; \
-  sinfo->rows = segment_header.dims[segment_header.dimct - 1]; \
+  sinfo->data_offset = shead->data_offset; \
+  sinfo->rows = shead->dims[shead->dimct - 1]; \
 }
 
 
@@ -488,93 +518,106 @@ if (dsc && dsc->pointer && (dsc->dtype == DTYPE_Q || dsc->dtype == DTYPE_QU)) { 
   sinfo_limit_length = 0; \
 } else if (limit) { \
   sinfo_limit = -1; \
-  status = TreePutDsc(info_ptr, nid, limit, &sinfo_limit_offset, &sinfo_limit_length, compress); \
+  status = TreePutDsc(tinfo, nid, limit, &sinfo_limit_offset, &sinfo_limit_length, compress); \
 }
 #define PUTDIM_DIM \
 struct descriptor *dsc; \
 PUTLIMITBYDSC(start,sinfo->start,sinfo->start_offset,sinfo->start_length); \
 PUTLIMITBYDSC(end  ,sinfo->end  ,sinfo->end_offset  ,sinfo->end_length  ); \
 if (dimension) \
-  status = TreePutDsc(info_ptr, nid, dimension, &sinfo->dimension_offset, &sinfo->dimension_length, compress);
+  status = TreePutDsc(tinfo, nid, dimension, &sinfo->dimension_offset, &sinfo->dimension_length, compress);
 
 #define PUTDIM_TS \
-status = PutDimensionValue(info_ptr, timestamps, rows_filled, initialValue->dimct, segment_header.dims, &segment_header.dim_offset); \
+status = PutDimensionValue(tinfo, timestamps, rows_filled, initialValue->dimct, shead->dims, &shead->dim_offset); \
 sinfo->start = rows_filled > 0 ? timestamps[0] : 0; \
 sinfo->end = rows_filled > 0 ? timestamps[rows_filled - 1] : 0; \
-sinfo->dimension_offset = segment_header.dim_offset; \
+sinfo->dimension_offset = shead->dim_offset; \
 sinfo->dimension_length = 0;
 
-#define CHECKCOMPRESS_DIM { \
-int length; \
-segment_header.data_offset = sinfo->data_offset; \
-status = TreePutDsc(info_ptr, nid, xd_data.pointer, &sinfo->data_offset, &length, compress); \
-/*** flag compressed segment by setting high bit in the rows field. ***/ \
-sinfo->rows = length | 0x80000000; \
+#define CHECKCOMPRESS_DIM status = CheckCompressDim(tinfo,shead,sinfo,nid,compress,&xd_data,&xd_dim,initialValue)
+inline static int CheckCompressDim(TREE_INFO *tinfo,SEGMENT_HEADER *shead,SEGMENT_INFO *sinfo,int nid,int compress,
+          struct descriptor_xd *xd_data_ptr,struct descriptor_xd *xd_dim_ptr __attribute__((unused)),struct descriptor_a *initialValue __attribute__((unused))) {
+  int length;
+  shead->data_offset = sinfo->data_offset;
+  int status = TreePutDsc(tinfo, nid, xd_data_ptr->pointer, &sinfo->data_offset, &length, compress);
+  /*** flag compressed segment by setting high bit in the rows field. ***/
+  sinfo->rows = length | 0x80000000;
+  return status;
 }
 
-#define CHECKCOMPRESS_TS { \
-  int length; \
-  A_COEFF_TYPE *data_a = (A_COEFF_TYPE *) xd_data.pointer; \
-  A_COEFF_TYPE *dim_a = (A_COEFF_TYPE *) xd_dim.pointer; \
-  int rows = (initialValue->dimct == 1) ? \
-             initialValue->arsize / initialValue->length : \
-             ((A_COEFF_TYPE *) initialValue)->m[initialValue->dimct - 1]; \
-  if (data_a && data_a->class == CLASS_A && data_a->pointer \
-      && data_a->arsize >= initialValue->arsize && dim_a && dim_a->class == CLASS_A \
-      && dim_a->pointer && dim_a->arsize >= (rows * sizeof(int64_t)) && dim_a->dimct == 1 \
-      && dim_a->length == sizeof(int64_t) && dim_a->dtype == DTYPE_Q) { \
-    segment_header.data_offset = sinfo->data_offset; \
-    segment_header.dim_offset = sinfo->dimension_offset; \
-    status = TreePutDsc(info_ptr, nid, xd_data.pointer, &sinfo->data_offset, &length, compress); \
-    status = TreePutDsc(info_ptr, nid, xd_dim.pointer, &sinfo->dimension_offset,&sinfo->dimension_length, compress); \
-    sinfo->start = ((int64_t *) dim_a->pointer)[0]; \
-    sinfo->end = ((int64_t *) dim_a->pointer)[(dim_a->arsize / dim_a->length) - 1]; \
-     /*** flag compressed segment by setting high bit in the rows field. ***/ \
-    sinfo->rows = length | 0x80000000; \
-  } else { \
-    if (!data_a) \
-      printf("data_a null\n"); \
-    else if (data_a->class != CLASS_A) \
-      printf("data_a is not CLASS_A, class=%d\n", data_a->class); \
-    else if (!data_a->pointer) \
-      printf("data_a's pointer is null\n"); \
-    else if (data_a->arsize < initialValue->arsize) \
-      printf("data_a->arsize (%d) < initialValue->arsize (%d)\n", data_a->arsize, \
-           initialValue->arsize); \
-    else if (!dim_a) \
-      printf("dim_a null\n"); \
-    else if (dim_a->class != CLASS_A) \
-      printf("dim_a is not CLASS_A, class=%d\n", dim_a->class); \
-    else if (!dim_a->pointer) \
-      printf("dim_a's pointer is null\n"); \
-    else if (dim_a->arsize < (rows * sizeof(int64_t))) \
-      printf("dim_a->arsize (%d) < (rows (%d) * sizeof(int64_t))", dim_a->arsize, rows); \
-    else if (dim_a->dimct != 1) \
-      printf("dim_a->dimct (%d) != 1\n", dim_a->dimct); \
-    else if (dim_a->length != sizeof(int64_t)) \
-      printf("dim_a->length (%d) != sizeof(int64_t)\n", dim_a->length); \
-    else if (dim_a->dtype != DTYPE_Q) \
-      printf("dim_a->dtype (%d) != DTYPE_Q\n", dim_a->dtype); \
-  } \
+#define CHECKCOMPRESS_TS status = CheckCompressTS(tinfo,shead,sinfo,nid,compress,&xd_data,&xd_dim,initialValue)
+inline static int CheckCompressTS(TREE_INFO *tinfo,SEGMENT_HEADER *shead,SEGMENT_INFO *sinfo,int nid,int compress,
+         struct descriptor_xd *xd_data_ptr,struct descriptor_xd *xd_dim_ptr,struct descriptor_a *initialValue) {
+  int length;
+  A_COEFF_TYPE *data_a = (A_COEFF_TYPE *) xd_data_ptr->pointer;
+  A_COEFF_TYPE *dim_a = (A_COEFF_TYPE *) xd_dim_ptr->pointer;
+  int rows = (initialValue->dimct == 1) ?
+             initialValue->arsize / initialValue->length :
+             ((A_COEFF_TYPE *) initialValue)->m[initialValue->dimct - 1];
+  if (data_a && data_a->class == CLASS_A && data_a->pointer
+      && data_a->arsize >= initialValue->arsize && dim_a && dim_a->class == CLASS_A
+      && dim_a->pointer && dim_a->arsize >= (rows * sizeof(int64_t)) && dim_a->dimct == 1
+      && dim_a->length == sizeof(int64_t) && dim_a->dtype == DTYPE_Q) {
+    shead->data_offset = sinfo->data_offset;
+    shead->dim_offset = sinfo->dimension_offset;
+    int status = TreePutDsc(tinfo, nid, xd_data_ptr->pointer, &sinfo->data_offset, &length, compress);
+    int statdim= TreePutDsc(tinfo, nid, xd_dim_ptr->pointer, &sinfo->dimension_offset,&sinfo->dimension_length, compress);
+    sinfo->start = ((int64_t *) dim_a->pointer)[0];
+    sinfo->end = ((int64_t *) dim_a->pointer)[(dim_a->arsize / dim_a->length) - 1];
+     /*** flag compressed segment by setting high bit in the rows field. ***/
+    sinfo->rows = length | 0x80000000;
+    return STATUS_OK ? statdim : status;
+  } else {
+    if (!data_a)
+      printf("data_a null\n");
+    else if (data_a->class != CLASS_A)
+      printf("data_a is not CLASS_A, class=%d\n", data_a->class);
+    else if (!data_a->pointer)
+      printf("data_a's pointer is null\n");
+    else if (data_a->arsize < initialValue->arsize)
+      printf("data_a->arsize (%d) < initialValue->arsize (%d)\n", data_a->arsize,
+           initialValue->arsize);
+    else if (!dim_a)
+      printf("dim_a null\n");
+    else if (dim_a->class != CLASS_A)
+      printf("dim_a is not CLASS_A, class=%d\n", dim_a->class);
+    else if (!dim_a->pointer)
+      printf("dim_a's pointer is null\n");
+    else if (dim_a->arsize < (rows * sizeof(int64_t)))
+      printf("dim_a->arsize (%d) < (rows (%d) * sizeof(int64_t))", dim_a->arsize, rows);
+    else if (dim_a->dimct != 1)
+      printf("dim_a->dimct (%d) != 1\n", dim_a->dimct);
+    else if (dim_a->length != sizeof(int64_t))
+      printf("dim_a->length (%d) != sizeof(int64_t)\n", dim_a->length);
+    else if (dim_a->dtype != DTYPE_Q)
+      printf("dim_a->dtype (%d) != DTYPE_Q\n", dim_a->dtype);
+    return TreeFAILURE;
+  }
 }
-//"
 
-#define COMPRESS \
-int compress = (local_nci.flags & NciM_COMPRESS_ON_PUT) \
-            && (local_nci.flags & NciM_COMPRESS_SEGMENTS) \
-            &&!(local_nci.flags & NciM_DO_NOT_COMPRESS);
 
-#define BEGIN_CHECKINPUT \
-A_COEFF_TYPE *a_coeff = (A_COEFF_TYPE *) initialValue; \
-while (initialValue && initialValue->dtype == DTYPE_DSC) \
-initialValue = (struct descriptor_a *)initialValue->pointer; \
-if (initialValue == NULL || \
-   !((initialValue->class == CLASS_R && initialValue->dtype == DTYPE_OPAQUE) || \
-    (initialValue->class == CLASS_A && (initialValue->dimct > 0 || initialValue->dimct <= 8))) ) \
-  return TreeINVDTPUSG;
+inline static int doCompress(const NCI *local_nci) {
+return (local_nci->flags & NciM_COMPRESS_ON_PUT)
+    && (local_nci->flags & NciM_COMPRESS_SEGMENTS)
+    &&!(local_nci->flags & NciM_DO_NOT_COMPRESS);
+}
+#define COMPRESS int compress = doCompress(local_nci);
 
-#define WRITESEGMENT(CHECKINPUT,SETUP_LOCAL_NCI,SETUP_EXTENDED_NCI,SETUP_SEGMENT_HEADER,SETUP_SEGMENT_INDEX,SETUP_SINFO,PUTDATA,PUTDIM,FINISH) \
-OPEN_DATAFILE_WRITE(CHECKINPUT); \
+inline static int begin_CheckInput(struct descriptor_a **data_p){
+  while (*data_p && (*data_p)->dtype == DTYPE_DSC)
+    *data_p = (struct descriptor_a *)(*data_p)->pointer;
+  if (*data_p == NULL
+   || !(((*data_p)->class == CLASS_R && (*data_p)->dtype == DTYPE_OPAQUE)
+     || ((*data_p)->class == CLASS_A && ((*data_p)->dimct > 0 || (*data_p)->dimct <= 8))) )
+    return TreeINVDTPUSG;
+  return TreeSUCCESS;
+}
+
+#define WRITESEGMENT0() OPEN_DATAFILE_WRITE0();
+
+#define WRITESEGMENT1(SETUP_LOCAL_NCI,SETUP_EXTENDED_NCI,SETUP_SEGMENT_HEADER,SETUP_SEGMENT_INDEX,SETUP_SINFO,PUTDATA,PUTDIM,FINISH)\
+OPEN_DATAFILE_WRITE1();\
+if STATUS_NOT_OK RETURN(UNLOCK_NCI,status);\
 COMPRESS; \
 SETUP_LOCAL_NCI; \
 SETUP_EXTENDED_NCI; \
@@ -586,42 +629,25 @@ PUTDIM; \
 FINISH; \
 RETURN(UNLOCK_NCI,status);
 
-#define PUTSEG_CHECKDATA \
-DESCRIPTOR_A(data_a, 0, 0, 0, 0); \
-while (data && data->dtype == DTYPE_DSC) \
-  data = (struct descriptor_a *)data->pointer; \
-if (data->class == CLASS_S) { \
-  data_a.pointer = data->pointer; \
-  data_a.length = data->length; \
-  data_a.class = CLASS_A; \
-  data_a.dtype = data->dtype; \
-  data_a.arsize = data->length; \
-  data_a.dimct = 1; \
-  data = (struct descriptor_a *)&data_a; \
-} \
-A_COEFF_TYPE *a_coeff = (A_COEFF_TYPE *) data; \
-if (data == NULL || data->class != CLASS_A || data->dimct < 1 || data->dimct > 8) \
-  return TreeINVDTPUSG;
-
 #define PUTSEG_PUTDATA \
 ALLOCATE_BUFFER(bytes_to_insert,buffer) \
-CHECK_ENDIAN_TRANSFER(data->pointer,bytes_to_insert,segment_header.length,data->dtype,buffer) \
-TreeLockDatafile(info_ptr, 0, offset); \
-MDS_IO_LSEEK(info_ptr->data_file->put, offset, SEEK_SET); \
-status = (MDS_IO_WRITE(info_ptr->data_file->put, buffer, bytes_to_insert) == (ssize_t)bytes_to_insert) ? TreeSUCCESS : TreeFAILURE; \
+CHECK_ENDIAN_TRANSFER(data->pointer,bytes_to_insert,shead->length,data->dtype,buffer); \
+TreeLockDatafile(tinfo, 0, offset); \
+MDS_IO_LSEEK(tinfo->data_file->put, offset, SEEK_SET); \
+status = (MDS_IO_WRITE(tinfo->data_file->put, buffer, bytes_to_insert) == (ssize_t)bytes_to_insert) ? TreeSUCCESS : TreeFAILURE; \
 FREE_BUFFER(buffer); \
-TreeUnLockDatafile(info_ptr, 0, offset);
+TreeUnLockDatafile(tinfo, 0, offset);
 
 #define CHECK_DATA_DIMCT(UNLOCK) \
-if (data->dtype != segment_header.dtype \
-|| (data->dimct != segment_header.dimct && data->dimct != segment_header.dimct - 1) \
-|| (data->dimct > 1 && memcmp(segment_header.dims, a_coeff->m, (data->dimct - 1) * sizeof(int)))) \
+if (data->dtype != shead->dtype \
+|| (data->dimct != shead->dimct && data->dimct != shead->dimct - 1) \
+|| (data->dimct > 1 && memcmp(shead->dims, a_coeff->m, (data->dimct - 1) * sizeof(int)))) \
   RETURN(UNLOCK,TreeFAILURE)
 
 #define CHECK_STARTIDX(UNLOCK) \
 if (startIdx == -1) \
-  startIdx = segment_header.next_row; \
-else if (startIdx < -1 || startIdx > segment_header.dims[segment_header.dimct - 1]) { \
+  startIdx = shead->next_row; \
+else if (startIdx < -1 || startIdx > shead->dims[shead->dimct - 1]) { \
   UNLOCK; \
   return TreeBUFFEROVF; \
 }
@@ -630,7 +656,7 @@ else if (startIdx < -1 || startIdx > segment_header.dims[segment_header.dimct - 
 INIT_TREESUCCESS; \
 PINO_DATABASE *dblist = (PINO_DATABASE *) dbid; \
 NID *nid_ptr = (NID *) & nid; \
-TREE_INFO *info_ptr; \
+TREE_INFO *tinfo; \
 int nidx; \
 NODE *node_ptr; \
 if (!(IS_OPEN(dblist))) \
@@ -641,71 +667,71 @@ OPEN_TREE_READ; \
 NODE_PTR; \
 SEGMENTREMOTE; \
 INFO_PTR; \
-NCI local_nci; \
+NCI _local_nci,*local_nci;local_nci=&_local_nci; \
 int64_t saved_viewdate; \
-EXTENDED_ATTRIBUTES attributes; \
+EXTENDED_ATTRIBUTES _attr, *attr;attr=&_attr; \
 TreeGetViewDate(&saved_viewdate); \
-status = TreeGetNciW(info_ptr, nidx, &local_nci, 0); \
+status = TreeGetNciW(tinfo, nidx, local_nci, 0); \
 if STATUS_NOT_OK \
   return status; \
-if (info_ptr->data_file == 0){ \
-  status = TreeOpenDatafileR(info_ptr); \
+if (tinfo->data_file == 0){ \
+  status = TreeOpenDatafileR(tinfo); \
   if STATUS_NOT_OK \
     return status; \
 }
 
 #define OPEN_HEADER_READ \
 OPEN_DATAFILE_READ \
-IF_NO_EXTENDED_NCI   return TreeFAILURE; \
-IF_NO_SEGMENT_HEADER return TreeFAILURE;
+CHECK_EXTENDED_NCI(); \
+CHECK_SEGMENT_HEADER();
 
 #define OPEN_INDEX_READ \
 OPEN_HEADER_READ; \
-IF_NO_SEGMENT_INDEX return TreeFAILURE;
+CHECK_SEGMENT_INDEX();
 
 #define GETSEGMENTTIMES \
 OPEN_INDEX_READ \
-int numsegs = segment_header.idx + 1; \
+int numsegs = shead->idx + 1; \
 int idx; \
 SEGMENT_INFO *sinfo; \
 *nsegs = numsegs;
 
-#define READPROPERTY(OFFSET,BUFFER,LENGTH) \
-int deleted = B_TRUE; \
-while STATUS_OK { \
-  status = (MDS_IO_READ_X(info_ptr->data_file->get,OFFSET,BUFFER,LENGTH, &deleted) == LENGTH) ? TreeSUCCESS : TreeFAILURE; \
-  if (STATUS_OK && deleted) \
-    status = TreeReopenDatafile(info_ptr); \
-  else break; \
+inline static int ReadProperty(TREE_INFO *tinfo, int64_t offset,char *buffer,int length){
+  INIT_TREESUCCESS;
+  int deleted = B_TRUE; \
+  while STATUS_OK { \
+    status = (MDS_IO_READ_X(tinfo->data_file->get,offset,buffer,length, &deleted) == length) ? TreeSUCCESS : TreeFAILURE; \
+    if (STATUS_OK && deleted) \
+      status = TreeReopenDatafile(tinfo); \
+    else break; \
+  }
+  return status;
 }
 
-#define READPROPERTY_SAFE(OFFSET,BUFFER,LENGTH) \
-if (offset > -1) { \
-  status = 1; \
-  READPROPERTY(OFFSET,BUFFER,LENGTH) \
-} else \
-  status = TreeFAILURE
+inline static int ReadProperty_safe(TREE_INFO *tinfo, int64_t offset,char *buffer,int length) {
+  if (offset > -1) return ReadProperty(tinfo,offset,buffer,length);
+  return TreeFAILURE;
+}
 
 #define GETSEGMENTTIME_LOOP(startval,endval,GETLIMIT,start_xd,COPYSTART,end_xd,COPYEND) {\
   int index_idx = idx % SEGMENTS_PER_INDEX; \
-  sinfo = &segment_index.segment[index_idx]; \
+  sinfo = &sindex->segment[index_idx]; \
   if (sinfo->dimension_offset != -1 && sinfo->dimension_length == 0) { \
     /* It's a timestamped segment */ \
     if (sinfo->rows < 0 || !(sinfo->start == 0 && sinfo->end == 0)) { \
-      /* Valid start and end in segment info */ \
+      /* Valid start and end in segment tinfo */ \
       startval = sinfo->start; \
       endval = sinfo->end; \
     } else { \
-      /* Current segment so use timestmps in segment */ \
+      /* Current segment so use timestamps in segment */ \
       int length = sizeof(int64_t) * sinfo->rows; \
-      char *buffer = malloc(length), *bptr; \
-      int64_t timestamp; \
-      READPROPERTY(sinfo->dimension_offset, buffer, length); \
-      if STATUS_OK { \
-        startval = swapquad(buffer); \
-        for (bptr = buffer + length - sizeof(int64_t) ; (bptr > buffer) && (timestamp = swapquad(bptr))==0 ; bptr -= sizeof(int64_t)) ;\
-        endval = bptr > buffer ? timestamp : 0; \
-      } else { \
+      char *buffer = malloc(length); \
+      status = ReadProperty(tinfo,sinfo->dimension_offset, buffer, length); \
+      if STATUS_OK {\
+        startval = swapquad(buffer);\
+        int rows_filled = getFilledRowsTS(shead,sinfo,idx,(int64_t*)buffer);\
+        endval = rows_filled ? swapquad(buffer+(rows_filled-1)*sizeof(int64_t)) : 0;\
+      } else {\
         startval = 0; \
         endval = 0; \
       } \
@@ -718,7 +744,7 @@ if (offset > -1) { \
     GETLIMIT(endval  ,sinfo->end,  sinfo->end_offset,  sinfo->end_length,   end_xd  , COPYEND  ) \
   } \
   if (index_idx == 0 && idx > 0) \
-    status = GetSegmentIndex(info_ptr, segment_index.previous_offset, &segment_index); \
+    status = GetSegmentIndex(tinfo, sindex->previous_offset, sindex); \
 }
 
 #define GETLIMIT_ARRAY(limitval,sinfo_limit,sinfo_limit_offset,sinfo_limit_length,limit_xd,COPYLIMIT) \
@@ -726,7 +752,7 @@ if (sinfo_limit != -1) \
   limitval = sinfo_limit; \
 else if (sinfo_limit_offset > 0 && sinfo_limit_length > 0) { \
   EMPTYXD(xd); \
-  status = TreeGetDsc(info_ptr, nid, sinfo_limit_offset, sinfo_limit_length, &xd); \
+  status = TreeGetDsc(tinfo, nid, sinfo_limit_offset, sinfo_limit_length, &xd); \
   if (STATUS_OK && xd.pointer && xd.pointer->length == 8) \
     limitval = *(uint64_t *) xd.pointer->pointer; \
   else \
@@ -740,14 +766,15 @@ if (sinfo_limit != -1) { \
   limitval = sinfo_limit; \
   COPYLIMIT; \
 } else if (sinfo_limit_offset > 0 && sinfo_limit_length > 0) \
-  status = TreeGetDsc(info_ptr, nid, sinfo_limit_offset, sinfo_limit_length, limit_xd);
+  status = TreeGetDsc(tinfo, nid, sinfo_limit_offset, sinfo_limit_length, limit_xd);
 
 static int __TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end,
                               struct descriptor *dimension,
                               struct descriptor_a *initialValue, int idx, int rows_filled){
 //WRITESEGMENT(CHECKINPUT,SETUP_LOCAL_NCI,SETUP_EXTENDED_NCI,SETUP_SEGMENT_HEADER,SETUP_SEGMENT_INDEX,SETUP_SINFO,PUTDATA,FINISH)
-  WRITESEGMENT(BEGIN_CHECKINPUT,
-               BEGIN_LOCAL_NCI,
+  WRITESEGMENT0();
+  RETURN_IF_NOT_OK(begin_CheckInput(&initialValue));
+  WRITESEGMENT1(BEGIN_LOCAL_NCI,
                BEGIN_EXTENDED_NCI,
                BEGIN_SEGMENT_HEADER,
                BEGIN_SEGMENT_INDEX,
@@ -761,8 +788,9 @@ static int __TreeBeginTimestampedSegment(void *dbid, int nid, int64_t * timestam
                                          struct descriptor_a *initialValue, int idx,
                                          int rows_filled){
 //WRITESEGMENT(CHECKINPUT,SETUP_LOCAL_NCI,SETUP_EXTENDED_NCI,SETUP_SEGMENT_HEADER,SETUP_SEGMENT_INDEX,SETUP_SINFO,PUTDATA,PUTDIM,FINISH)
-  WRITESEGMENT(BEGIN_CHECKINPUT,
-               BEGIN_LOCAL_NCI,
+  WRITESEGMENT0();
+  RETURN_IF_NOT_OK(begin_CheckInput(&initialValue));
+  WRITESEGMENT1(BEGIN_LOCAL_NCI,
                BEGIN_EXTENDED_NCI,
                BEGIN_SEGMENT_HEADER,
                BEGIN_SEGMENT_INDEX,
@@ -776,8 +804,8 @@ int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct des
                        struct descriptor *dimension, int idx)
 {
 //WRITESEGMENT(CHECKINPUT,SETUP_LOCAL_NCI,SETUP_EXTENDED_NCI,SETUP_SEGMENT_HEADER,SETUP_SEGMENT_INDEX,SETUP_SINFO,PUTDATA,FINISH)
-  WRITESEGMENT(,
-               ,
+  WRITESEGMENT0();
+  WRITESEGMENT1(,
                CHECK_EXTENDED_NCI(UNLOCK_NCI),
                CHECK_SEGMENT_HEADER(UNLOCK_NCI),
                CHECK_SEGMENT_INDEX(UNLOCK_NCI),
@@ -789,30 +817,47 @@ int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct des
 
 int _TreePutSegment(void *dbid, int nid, int startIdx, struct descriptor_a *data)
 {
-  OPEN_DATAFILE_WRITE(PUTSEG_CHECKDATA);
+  OPEN_DATAFILE_WRITE0();
+  DESCRIPTOR_A(data_a, 0, 0, 0, 0);
+  while (data && data->dtype == DTYPE_DSC)
+    data = (struct descriptor_a *)data->pointer;
+  if (data->class == CLASS_S) {
+    data_a.pointer = data->pointer;
+    data_a.length = data->length;
+    data_a.class = CLASS_A;
+    data_a.dtype = data->dtype;
+    data_a.arsize = data->length;
+    data_a.dimct = 1;
+    data = (struct descriptor_a *)&data_a;
+  }
+  A_COEFF_TYPE *a_coeff = (A_COEFF_TYPE *) data;
+  if (data == NULL || data->class != CLASS_A || data->dimct < 1 || data->dimct > 8)
+    return TreeINVDTPUSG;
+  OPEN_DATAFILE_WRITE1();
+  if STATUS_NOT_OK RETURN(UNLOCK_NCI,status);\
   CHECK_EXTENDED_NCI(UNLOCK_NCI);
   CHECK_SEGMENT_HEADER(UNLOCK_NCI);
   CHECK_DATA_DIMCT(UNLOCK_NCI);
   CHECK_STARTIDX(UNLOCK_NCI);
   int rows_to_insert;
   int bytes_per_row,i;
-  for (bytes_per_row = segment_header.length, i = 0; i < segment_header.dimct - 1;
-       bytes_per_row *= segment_header.dims[i], i++) ;
-  if (data->dimct < segment_header.dimct) {
+  for (bytes_per_row = shead->length, i = 0; i < shead->dimct - 1;
+       bytes_per_row *= shead->dims[i], i++) ;
+  if (data->dimct < shead->dimct) {
     rows_to_insert = 1;
   } else {
     rows_to_insert = (data->dimct == 1) ? data->arsize / data->length : a_coeff->m[a_coeff->dimct - 1];
   }
-  int rows_in_segment = segment_header.dims[segment_header.dimct - 1];
+  int rows_in_segment = shead->dims[shead->dimct - 1];
   unsigned int bytes_to_insert = ((rows_to_insert > (rows_in_segment - startIdx)) ? (rows_in_segment - startIdx) : rows_to_insert) * bytes_per_row;
   if (bytes_to_insert < data->arsize)
     RETURN(UNLOCK_NCI,TreeBUFFEROVF);
-  int64_t offset = segment_header.data_offset + startIdx * bytes_per_row;
+  int64_t offset = shead->data_offset + startIdx * bytes_per_row;
   PUTSEG_PUTDATA;
-  if (startIdx == segment_header.next_row)
-    segment_header.next_row += bytes_to_insert / bytes_per_row;
+  if (startIdx == shead->next_row)
+    shead->next_row += bytes_to_insert / bytes_per_row;
   if STATUS_OK
-    status = PutSegmentHeader(info_ptr, &segment_header, &attributes.facility_offset[SEGMENTED_RECORD_FACILITY]);
+    status = PutSegmentHeader(tinfo, shead, &attr->facility_offset[SEGMENTED_RECORD_FACILITY]);
   RETURN(UNLOCK_NCI,status);
 }
 
@@ -862,68 +907,68 @@ int _TreeGetNumSegments(void *dbid, int nid, int *num){
   *num = 0;
   OPEN_DATAFILE_READ;
   IF_NO_EXTENDED_NCI   return status;
+  SEGMENT_HEADER _shead,*shead;shead=&_shead;\
   IF_NO_SEGMENT_HEADER return status;
-  *num = segment_header.idx + 1;
+  *num = shead->idx + 1;
   return status;
 }
 
-static int ReadSegment(TREE_INFO * info_ptr, int nid, SEGMENT_HEADER * segment_header,
-                       SEGMENT_INFO * sinfo, struct descriptor_xd *segment,
-                       struct descriptor_xd *dim)
-{
+static int ReadSegment(TREE_INFO * tinfo, int nid, SEGMENT_HEADER * shead,
+                       SEGMENT_INFO * sinfo, int idx, struct descriptor_xd *segment,
+                       struct descriptor_xd *dim){
   INIT_TREESUCCESS;
   if (sinfo->data_offset != -1) {
     int compressed_segment = 0;
     DESCRIPTOR_A(dim2, 8, DTYPE_Q, 0, 0);
     DESCRIPTOR_A_COEFF(ans, 0, 0, 0, 8, 0);
     ans.pointer = 0;
-    ans.dtype = segment_header->dtype;
-    ans.length = segment_header->length;
-    ans.dimct = segment_header->dimct;
-    memcpy(ans.m, segment_header->dims, sizeof(segment_header->dims));
-    ans.m[segment_header->dimct - 1] = sinfo->rows;
+    ans.dtype = shead->dtype;
+    ans.length = shead->length;
+    ans.dimct = shead->dimct;
+    memcpy(ans.m, shead->dims, sizeof(shead->dims));
+    ans.m[shead->dimct - 1] = sinfo->rows;
     ans.arsize = ans.length;
     int i;
     for (i = 0; i < ans.dimct; i++)
       ans.arsize *= ans.m[i];
+    void *ans_ptr, *dim_ptr;
     if (sinfo->rows < 0) {
       EMPTYXD(compressed_segment_xd);
       int data_length = sinfo->rows & 0x7fffffff;
       compressed_segment = 1;
-      status = TreeGetDsc(info_ptr, nid, sinfo->data_offset, data_length, &compressed_segment_xd);
+      status = TreeGetDsc(tinfo, nid, sinfo->data_offset, data_length, &compressed_segment_xd);
       if STATUS_OK {
         status = MdsDecompress((struct descriptor_r *)compressed_segment_xd.pointer, segment);
         MdsFree1Dx(&compressed_segment_xd, 0);
       }
     } else {
-      ans.pointer = malloc(ans.arsize);
-      READPROPERTY(sinfo->data_offset, ans.pointer, (ssize_t)ans.arsize)
+      ans_ptr = ans.pointer = malloc(ans.arsize);
+      status = ReadProperty(tinfo,sinfo->data_offset, ans.pointer, (ssize_t)ans.arsize);
     }
     if STATUS_OK {
       if (!compressed_segment)
         CHECK_ENDIAN(ans.pointer,ans.arsize,ans.length,ans.dtype);
       if (sinfo->dimension_offset != -1 && sinfo->dimension_length == 0) {
-        int64_t *tp;
         dim2.arsize = sinfo->rows * sizeof(int64_t);
-        dim2.pointer = malloc(dim2.arsize);
-        READPROPERTY(sinfo->dimension_offset, dim2.pointer, (ssize_t)dim2.arsize);
+        dim_ptr = dim2.pointer = malloc(dim2.arsize);
+        status = ReadProperty(tinfo,sinfo->dimension_offset, dim2.pointer, (ssize_t)dim2.arsize);
         CHECK_ENDIAN(dim2.pointer,dim2.arsize,8,);
         if (!compressed_segment) {
-          /**** Remove trailing null timestamps from dimension and data ****/
-          for (tp = (int64_t *) (dim2.pointer + dim2.arsize - dim2.length);
-               (tp >= (int64_t *) dim2.pointer) && (*tp == 0); tp--) {
-            ans.m[segment_header->dimct - 1]--;
-            dim2.arsize -= sizeof(int64_t);
-          }
+          int filled_rows = getFilledRowsTS(shead,sinfo,idx,(int64_t*)dim2.pointer);
+          dim2.arsize = filled_rows * sizeof(int64_t);
+          ans.m[shead->dimct - 1] = filled_rows;
           ans.arsize = ans.length;
           for (i = 0; i < ans.dimct; i++)
             ans.arsize *= ans.m[i];
-          /**** end remove null timestamps ***/
+        }
+        if (dim2.arsize==0){
+          ans.pointer  = NULL;
+          dim2.pointer = NULL;
         }
         MdsCopyDxXd((struct descriptor *)&dim2, dim);
-        free(dim2.pointer);
+        free(dim_ptr);
       } else {
-        TreeGetDsc(info_ptr, nid, sinfo->dimension_offset, sinfo->dimension_length, dim);
+        TreeGetDsc(tinfo, nid, sinfo->dimension_offset, sinfo->dimension_length, dim);
       }
       if (!compressed_segment) {
         MdsCopyDxXd((struct descriptor *)&ans, segment);
@@ -932,15 +977,15 @@ static int ReadSegment(TREE_INFO * info_ptr, int nid, SEGMENT_HEADER * segment_h
       status = TreeFAILURE;
     }
     if (!compressed_segment)
-      free(ans.pointer);
+      free(ans_ptr);
   } else {
     status = TreeFAILURE;
   }
   return status;
 }
 
-static int getSegmentLimits(TREE_INFO * info_ptr, int nid,
-                            SEGMENT_INFO * sinfo,
+static int getSegmentLimits(TREE_INFO * tinfo, int nid,
+                            SEGMENT_HEADER * shead, SEGMENT_INFO * sinfo, int idx,
                             struct descriptor_xd *retStart, struct descriptor_xd *retEnd){
   INIT_TREESUCCESS;
   struct descriptor q_d = { 8, DTYPE_Q, CLASS_S, 0 };
@@ -955,15 +1000,14 @@ static int getSegmentLimits(TREE_INFO * info_ptr, int nid,
       int length = sizeof(int64_t) * sinfo->rows;
       char *buffer = malloc(length);
       int64_t timestamp;
-      char *bptr;
-      READPROPERTY(sinfo->dimension_offset, buffer, length);
+      status = ReadProperty(tinfo,sinfo->dimension_offset, buffer, length);
       if STATUS_OK {
         q_d.pointer = (char *)&timestamp;
         timestamp = swapquad(buffer);
         MdsCopyDxXd(&q_d, retStart);
-        for (bptr = buffer + length - sizeof(int64_t);
-             bptr > buffer && ((timestamp = swapquad(bptr)) == 0); bptr -= sizeof(int64_t)) ;
-        if (bptr > buffer) {
+        int rows_filled = getFilledRowsTS(shead,sinfo,idx,(int64_t*)buffer);
+        if (rows_filled > 0) {
+          timestamp = swapquad(buffer + (rows_filled-1) * sizeof(int64_t));
           MdsCopyDxXd(&q_d, retEnd);
         } else {
           MdsFree1Dx(retEnd, 0);
@@ -979,14 +1023,14 @@ static int getSegmentLimits(TREE_INFO * info_ptr, int nid,
       q_d.pointer = (char *)&sinfo->start;
       MdsCopyDxXd(&q_d, retStart);
     } else if (sinfo->start_length > 0 && sinfo->start_offset > 0) {
-      status = TreeGetDsc(info_ptr, nid, sinfo->start_offset, sinfo->start_length, retStart);
+      status = TreeGetDsc(tinfo, nid, sinfo->start_offset, sinfo->start_length, retStart);
     } else
       status = MdsFree1Dx(retStart, 0);
     if (sinfo->end != -1) {
       q_d.pointer = (char *)&sinfo->end;
       MdsCopyDxXd(&q_d, retEnd);
     } else if (sinfo->end_length > 0 && sinfo->end_offset > 0) {
-      status = TreeGetDsc(info_ptr, nid, sinfo->end_offset, sinfo->end_length, retEnd);
+      status = TreeGetDsc(tinfo, nid, sinfo->end_offset, sinfo->end_length, retEnd);
     } else
       status = MdsFree1Dx(retEnd, 0);
   }
@@ -994,37 +1038,40 @@ static int getSegmentLimits(TREE_INFO * info_ptr, int nid,
 }
 
 int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *value){
-  OPEN_DATAFILE_WRITE(if (!xnciname || strlen(xnciname) < 1 || strlen(xnciname) > NAMED_ATTRIBUTE_NAME_SIZE)return TreeFAILURE;);
+  OPEN_DATAFILE_WRITE0();
+  if (!xnciname || strlen(xnciname) < 1 || strlen(xnciname) > NAMED_ATTRIBUTE_NAME_SIZE) return TreeFAILURE;
+  OPEN_DATAFILE_WRITE1();
+  if STATUS_NOT_OK RETURN(UNLOCK_NCI,status);
   COMPRESS;
-  int64_t attributes_offset = -1;
-  int update_attributes = 0;
+  int64_t _attr_offset = -1, *attr_offset;attr_offset=&_attr_offset;
+  int _attr_update = 0, *attr_update;attr_update=&_attr_update;
   int found_index = -1;
   int64_t index_offset = -1;
   int value_length;
   int64_t value_offset;
   NAMED_ATTRIBUTES_INDEX index, current_index;
-  status = TreePutDsc(info_ptr, nid, value, &value_offset, &value_length, compress);
+  status = TreePutDsc(tinfo, nid, value, &value_offset, &value_length, compress);
   if STATUS_NOT_OK
     return status;
-  /*** See if node is currently using the Extended Nci feature and if so get the current contents of the attributes
+  /*** See if node is currently using the Extended Nci feature and if so get the current contents of the attr
        index. If not, make an empty index and flag that a new index needs to be written.***/
   IF_NO_EXTENDED_NCI {
-    memset(&attributes, -1, sizeof(attributes));
-    update_attributes = 1;
-    if (((local_nci.flags2 & NciM_EXTENDED_NCI) == 0) && local_nci.length > 0) {
-      if (local_nci.flags2 & NciM_DATA_IN_ATT_BLOCK) {
+    memset(attr, -1, sizeof(*attr));
+    *attr_update = 1;
+    if (((local_nci->flags2 & NciM_EXTENDED_NCI) == 0) && local_nci->length > 0) {
+      if (local_nci->flags2 & NciM_DATA_IN_ATT_BLOCK) {
         EMPTYXD(dsc);
         struct descriptor *dptr;
         unsigned char dsc_dtype = DTYPE_DSC;
-        int dlen = local_nci.length - 8;
+        int dlen = local_nci->length - 8;
         unsigned int ddlen = dlen + sizeof(struct descriptor);
         status = MdsGet1Dx(&ddlen, &dsc_dtype, &dsc, 0);
         dptr = dsc.pointer;
         dptr->length = dlen;
-        dptr->dtype = local_nci.dtype;
+        dptr->dtype = local_nci->dtype;
         dptr->class = CLASS_S;
         dptr->pointer = (char *)dptr + sizeof(struct descriptor);
-        memcpy(dptr->pointer, local_nci.DATA_INFO.DATA_IN_RECORD.data, dptr->length);
+        memcpy(dptr->pointer, local_nci->DATA_INFO.DATA_IN_RECORD.data, dptr->length);
         if (dptr->dtype != DTYPE_T) {
           switch (dptr->length) {
           case 2:
@@ -1038,22 +1085,22 @@ int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *v
             break;
           }
         }
-        TreePutDsc(info_ptr, nid, dptr, &attributes.facility_offset[STANDARD_RECORD_FACILITY],
-                   &attributes.facility_length[STANDARD_RECORD_FACILITY], compress);
-        local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK;
+        TreePutDsc(tinfo, nid, dptr, &attr->facility_offset[STANDARD_RECORD_FACILITY],
+                   &attr->facility_length[STANDARD_RECORD_FACILITY], compress);
+        local_nci->flags2 &= ~NciM_DATA_IN_ATT_BLOCK;
       } else {
         EMPTYXD(xd);
         int retsize;
         int nodenum;
-        int length = local_nci.DATA_INFO.DATA_LOCATION.record_length;
+        int length = local_nci->DATA_INFO.DATA_LOCATION.record_length;
         if (length > 0) {
           char *data = malloc(length);
           status =
-              TreeGetDatafile(info_ptr, local_nci.DATA_INFO.DATA_LOCATION.rfa, &length, data,
-                              &retsize, &nodenum, local_nci.flags2);
+              TreeGetDatafile(tinfo, local_nci->DATA_INFO.DATA_LOCATION.rfa, &length, data,
+                              &retsize, &nodenum, local_nci->flags2);
           if STATUS_NOT_OK
             status = TreeBADRECORD;
-          else if (!(local_nci.flags2 & NciM_NON_VMS)
+          else if (!(local_nci->flags2 & NciM_NON_VMS)
                    && ((retsize != length) || (nodenum != nidx)))
             status = TreeBADRECORD;
           else
@@ -1061,34 +1108,34 @@ int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *v
           free(data);
           if STATUS_OK {
             status =
-                TreePutDsc(info_ptr, nid, (struct descriptor *)&xd,
-                           &attributes.facility_offset[STANDARD_RECORD_FACILITY],
-                           &attributes.facility_length[STANDARD_RECORD_FACILITY], compress);
+                TreePutDsc(tinfo, nid, (struct descriptor *)&xd,
+                           &attr->facility_offset[STANDARD_RECORD_FACILITY],
+                           &attr->facility_length[STANDARD_RECORD_FACILITY], compress);
           }
           MdsFree1Dx(&xd, 0);
         }
         if (length <= 0 || STATUS_NOT_OK) {
-          attributes.facility_offset[STANDARD_RECORD_FACILITY] = 0;
-          attributes.facility_length[STANDARD_RECORD_FACILITY] = 0;
-          local_nci.length = 0;
-          local_nci.DATA_INFO.DATA_LOCATION.record_length = 0;
+          attr->facility_offset[STANDARD_RECORD_FACILITY] = 0;
+          attr->facility_length[STANDARD_RECORD_FACILITY] = 0;
+          local_nci->length = 0;
+          local_nci->DATA_INFO.DATA_LOCATION.record_length = 0;
         }
       }
     }
   } else
-    attributes_offset = RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa);
-  /* See if the node currently has an named attributes header record.
-   * If not, make an empty named attributes header and flag that a new one needs to be written.
+    *attr_offset = RfaToSeek(local_nci->DATA_INFO.DATA_LOCATION.rfa);
+  /* See if the node currently has an named attr header record.
+   * If not, make an empty named attr header and flag that a new one needs to be written.
    */
-  if (attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY] == -1
-   || IS_NOT_OK(GetNamedAttributesIndex(info_ptr, attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY], &index))) {
+  if (attr->facility_offset[NAMED_ATTRIBUTES_FACILITY] == -1
+   || IS_NOT_OK(GetNamedAttributesIndex(tinfo, attr->facility_offset[NAMED_ATTRIBUTES_FACILITY], &index))) {
     memset(&index, 0, sizeof(index));
-    attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY] = -1;
+    attr->facility_offset[NAMED_ATTRIBUTES_FACILITY] = -1;
     index_offset = -1;
     index.previous_offset = -1;
-    update_attributes = 1;
+    *attr_update = 1;
   } else
-    index_offset = attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY];
+    index_offset = attr->facility_offset[NAMED_ATTRIBUTES_FACILITY];
   current_index = index;
   /*** See if the node currently has a value for this attribute. ***/
   while (index_offset != -1 && found_index == -1) {
@@ -1106,7 +1153,7 @@ int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *v
       found_index = i;
     else if (index.previous_offset != -1) {
       int64_t new_offset = index.previous_offset;
-      if ((GetNamedAttributesIndex(info_ptr, index.previous_offset, &index) & 1) == 0)
+      if ((GetNamedAttributesIndex(tinfo, index.previous_offset, &index) & 1) == 0)
         break;
       index_offset = new_offset;
     } else
@@ -1124,27 +1171,27 @@ int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *v
         strcpy(index.attribute[i].name, xnciname);
         index.attribute[i].offset = value_offset;
         index.attribute[i].length = value_length;
-        index_offset = attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY];
+        index_offset = attr->facility_offset[NAMED_ATTRIBUTES_FACILITY];
         break;
       }
     }
     if (i == NAMED_ATTRIBUTES_PER_INDEX) {
       memset(&index, 0, sizeof(index));
-      index.previous_offset = attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY];
-      update_attributes = 1;
+      index.previous_offset = attr->facility_offset[NAMED_ATTRIBUTES_FACILITY];
+      *attr_update = 1;
       strcpy(index.attribute[0].name, xnciname);
       index.attribute[0].offset = value_offset;
       index.attribute[0].length = value_length;
       index_offset = -1;
     }
   }
-  status = PutNamedAttributesIndex(info_ptr, &index, &index_offset);
-  if (STATUS_OK && update_attributes) {
-    attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY] = index_offset;
-    status = TreePutExtendedAttributes(info_ptr, &attributes, &attributes_offset);
-    SeekToRfa(attributes_offset, local_nci.DATA_INFO.DATA_LOCATION.rfa);
-    local_nci.flags2 |= NciM_EXTENDED_NCI;
-    TreePutNci(info_ptr, nidx, &local_nci, 0);
+  status = PutNamedAttributesIndex(tinfo, &index, &index_offset);
+  if (STATUS_OK && attr_update) {
+    attr->facility_offset[NAMED_ATTRIBUTES_FACILITY] = index_offset;
+    status = TreePutExtendedAttributes(tinfo, attr, attr_offset);
+    SeekToRfa(*attr_offset, local_nci->DATA_INFO.DATA_LOCATION.rfa);
+    local_nci->flags2 |= NciM_EXTENDED_NCI;
+    TreePutNci(tinfo, nidx, local_nci, 0);
   }
   RETURN(UNLOCK_NCI,status);
 }
@@ -1153,7 +1200,7 @@ int _TreeGetXNci(void *dbid, int nid, const char *xnciname, struct descriptor_xd
 {
   if (!xnciname || strlen(xnciname) < 1 || strlen(xnciname) > NAMED_ATTRIBUTE_NAME_SIZE)
     return TreeFAILURE;
-OPEN_DATAFILE_READ;
+  OPEN_DATAFILE_READ;
     NAMED_ATTRIBUTES_INDEX index;
     char *attnames = "attributenames";
     int getnames = 0;
@@ -1173,12 +1220,12 @@ OPEN_DATAFILE_READ;
       if (i == len)
         getnames = 1;
     }
-    if (((local_nci.flags2 & NciM_EXTENDED_NCI) == 0) ||
+    if (((local_nci->flags2 & NciM_EXTENDED_NCI) == 0) ||
         ((TreeGetExtendedAttributes
-          (info_ptr, RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa), &attributes) & 1) == 0)) {
+          (tinfo, RfaToSeek(local_nci->DATA_INFO.DATA_LOCATION.rfa), attr) & 1) == 0)) {
       status = TreeFAILURE;
-    } else if (attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY] == -1
-           ||  IS_NOT_OK(GetNamedAttributesIndex(info_ptr, attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY],&index))) {
+    } else if (attr->facility_offset[NAMED_ATTRIBUTES_FACILITY] == -1
+           ||  IS_NOT_OK(GetNamedAttributesIndex(tinfo, attr->facility_offset[NAMED_ATTRIBUTES_FACILITY],&index))) {
       status = TreeFAILURE;
     } else {
       int found_index = -1;
@@ -1207,7 +1254,7 @@ OPEN_DATAFILE_READ;
         if (i < NAMED_ATTRIBUTES_PER_INDEX)
           found_index = i;
         else if (index.previous_offset != -1) {
-          if ((GetNamedAttributesIndex(info_ptr, index.previous_offset, &index) & 1) == 0) {
+          if ((GetNamedAttributesIndex(tinfo, index.previous_offset, &index) & 1) == 0) {
             break;
           }
         } else
@@ -1215,7 +1262,7 @@ OPEN_DATAFILE_READ;
       }
       if (found_index != -1) {
         status =
-            TreeGetDsc(info_ptr, nid, index.attribute[found_index].offset,
+            TreeGetDsc(tinfo, nid, index.attribute[found_index].offset,
                        index.attribute[found_index].length, value);
       } else if (getnames == 1) {
         if (namelist == 0) {
@@ -1252,7 +1299,7 @@ int TreeSetRetrievalQuota(int quota __attribute__ ((unused)))
 
 extern int TreeFixupNid();
 
-int TreePutDsc(TREE_INFO * info_ptr, int nid_in, struct descriptor *dsc, int64_t * offset, int *length, int compress)
+int TreePutDsc(TREE_INFO * tinfo, int nid_in, struct descriptor *dsc, int64_t * offset, int *length, int compress)
 {
   EMPTYXD(xd);
   int compressible;
@@ -1267,21 +1314,21 @@ int TreePutDsc(TREE_INFO * info_ptr, int nid_in, struct descriptor *dsc, int64_t
                                    &data_in_altbuf);
   if (STATUS_OK && xd.pointer && xd.pointer->class == CLASS_A && xd.pointer->pointer) {
     struct descriptor_a *ap = (struct descriptor_a *)xd.pointer;
-    TreeLockDatafile(info_ptr, 0, 0);
-    *offset = MDS_IO_LSEEK(info_ptr->data_file->put, 0, SEEK_END);
-    status = MDS_IO_WRITE(info_ptr->data_file->put, ap->pointer, ap->arsize)
+    TreeLockDatafile(tinfo, 0, 0);
+    *offset = MDS_IO_LSEEK(tinfo->data_file->put, 0, SEEK_END);
+    status = MDS_IO_WRITE(tinfo->data_file->put, ap->pointer, ap->arsize)
           == (ssize_t)ap->arsize ? TreeSUCCESS : TreeFAILURE;
-    TreeUnLockDatafile(info_ptr, 0, 0);
+    TreeUnLockDatafile(tinfo, 0, 0);
     *length = ap->arsize;
     MdsFree1Dx(&xd, 0);
   }
   return status;
 }
 
-int TreeGetDsc(TREE_INFO * info_ptr, int nid, int64_t offset, int length, struct descriptor_xd *dsc){
+int TreeGetDsc(TREE_INFO * tinfo, int nid, int64_t offset, int length, struct descriptor_xd *dsc){
   INIT_TREESUCCESS;
   char *buffer = malloc(length);
-  READPROPERTY_SAFE(offset, buffer, length);
+  status = ReadProperty_safe(tinfo,offset, buffer, length);
   if STATUS_OK
     status = MdsSerializeDscIn(buffer, dsc);
   if (dsc->pointer)
@@ -1290,14 +1337,14 @@ int TreeGetDsc(TREE_INFO * info_ptr, int nid, int64_t offset, int length, struct
   return status;
 }
 
-static int GetCompressedSegmentRows(TREE_INFO * info_ptr, int64_t offset, int *rows){
+static int GetCompressedSegmentRows(TREE_INFO * tinfo, int64_t offset, int *rows){
   INIT_TREESUCCESS;
   int length = 60;
-  unsigned char buffer[60];
-  READPROPERTY_SAFE(offset, buffer, length);
+  char buffer[60];
+  status = ReadProperty_safe(tinfo,offset, buffer, length);
   if STATUS_OK {
-    if (buffer[3] == CLASS_CA || buffer[3] == CLASS_A) {
-      unsigned char dimct = buffer[11];
+    if ((unsigned char)buffer[3] == CLASS_CA || (unsigned char)buffer[3] == CLASS_A) {
+      char dimct = buffer[11];
       if (dimct == 1) {
         int arsize = swapint(buffer + 12);
         *rows = arsize / swapshort(buffer);
@@ -1310,7 +1357,7 @@ static int GetCompressedSegmentRows(TREE_INFO * info_ptr, int64_t offset, int *r
   return status;
 }
 
-static int PutSegmentHeader(TREE_INFO * info_ptr, SEGMENT_HEADER * hdr, int64_t * offset){
+static int PutSegmentHeader(TREE_INFO * tinfo, SEGMENT_HEADER * hdr, int64_t * offset){
   INIT_TREESUCCESS;
   int64_t loffset;
   int j;
@@ -1318,13 +1365,13 @@ static int PutSegmentHeader(TREE_INFO * info_ptr, SEGMENT_HEADER * hdr, int64_t 
   char buffer[2 * sizeof(char) + 1 * sizeof(short) + 10 * sizeof(int) +
                        3 * sizeof(int64_t)], *bptr = buffer;
   if (*offset == -1) {
-    TreeLockDatafile(info_ptr, 0, 0);
-    *offset = MDS_IO_LSEEK(info_ptr->data_file->put, 0, SEEK_END);
+    TreeLockDatafile(tinfo, 0, 0);
+    *offset = MDS_IO_LSEEK(tinfo->data_file->put, 0, SEEK_END);
     loffset = 0;
   } else {
-    TreeLockDatafile(info_ptr, 0, *offset);
+    TreeLockDatafile(tinfo, 0, *offset);
     loffset = *offset;
-    MDS_IO_LSEEK(info_ptr->data_file->put, *offset, SEEK_SET);
+    MDS_IO_LSEEK(tinfo->data_file->put, *offset, SEEK_SET);
   }
   *bptr = hdr->dtype;
   bptr++;
@@ -1356,13 +1403,13 @@ static int PutSegmentHeader(TREE_INFO * info_ptr, SEGMENT_HEADER * hdr, int64_t 
   bptr += sizeof(int64_t);
   LoadQuad(hdr->dim_offset, bptr);
   bptr += sizeof(int64_t);
-  status = MDS_IO_WRITE(info_ptr->data_file->put, buffer, sizeof(buffer))
+  status = MDS_IO_WRITE(tinfo->data_file->put, buffer, sizeof(buffer))
         == sizeof(buffer) ? TreeSUCCESS : TreeFAILURE;
-  TreeUnLockDatafile(info_ptr, 0, loffset);
+  TreeUnLockDatafile(tinfo, 0, loffset);
   return status;
 }
 
-static int PutSegmentIndex(TREE_INFO * info_ptr, SEGMENT_INDEX * idx, int64_t * offset){
+static int PutSegmentIndex(TREE_INFO * tinfo, SEGMENT_INDEX * idx, int64_t * offset){
   INIT_TREESUCCESS;
   int i;
   int64_t loffset;
@@ -1370,13 +1417,13 @@ static int PutSegmentIndex(TREE_INFO * info_ptr, SEGMENT_INDEX * idx, int64_t * 
                        SEGMENTS_PER_INDEX * (6 * sizeof(int64_t) + 4 * sizeof(int))], *bptr =
       buffer;
   if (*offset == -1) {
-    TreeLockDatafile(info_ptr, 0, 0);
+    TreeLockDatafile(tinfo, 0, 0);
     loffset = 0;
-    *offset = MDS_IO_LSEEK(info_ptr->data_file->put, 0, SEEK_END);
+    *offset = MDS_IO_LSEEK(tinfo->data_file->put, 0, SEEK_END);
   } else {
-    TreeLockDatafile(info_ptr, 0, *offset);
+    TreeLockDatafile(tinfo, 0, *offset);
     loffset = *offset;
-    MDS_IO_LSEEK(info_ptr->data_file->put, *offset, SEEK_SET);
+    MDS_IO_LSEEK(tinfo->data_file->put, *offset, SEEK_SET);
   }
   LoadQuad(idx->previous_offset, bptr);
   bptr += sizeof(int64_t);
@@ -1404,26 +1451,26 @@ static int PutSegmentIndex(TREE_INFO * info_ptr, SEGMENT_INDEX * idx, int64_t * 
     LoadInt(idx->segment[i].rows, bptr);
     bptr += sizeof(int);
   }
-  status = MDS_IO_WRITE(info_ptr->data_file->put, buffer, sizeof(buffer))
+  status = MDS_IO_WRITE(tinfo->data_file->put, buffer, sizeof(buffer))
         == sizeof(buffer) ? TreeSUCCESS : TreeFAILURE;
-  TreeUnLockDatafile(info_ptr, 0, loffset);
+  TreeUnLockDatafile(tinfo, 0, loffset);
   return status;
 }
 
-int TreePutExtendedAttributes(TREE_INFO * info_ptr, EXTENDED_ATTRIBUTES * att, int64_t * offset){
+int TreePutExtendedAttributes(TREE_INFO * tinfo, EXTENDED_ATTRIBUTES * att, int64_t * offset){
   INIT_TREESUCCESS;
   int i;
   int64_t loffset;
   char buffer[sizeof(int64_t) + FACILITIES_PER_EA * (sizeof(int64_t) + sizeof(int))],
       *bptr = buffer;
   if (*offset == -1) {
-    TreeLockDatafile(info_ptr, 0, 0);
+    TreeLockDatafile(tinfo, 0, 0);
     loffset = 0;
-    *offset = MDS_IO_LSEEK(info_ptr->data_file->put, 0, SEEK_END);
+    *offset = MDS_IO_LSEEK(tinfo->data_file->put, 0, SEEK_END);
   } else {
-    TreeLockDatafile(info_ptr, 0, *offset);
+    TreeLockDatafile(tinfo, 0, *offset);
     loffset = *offset;
-    MDS_IO_LSEEK(info_ptr->data_file->put, *offset, SEEK_SET);
+    MDS_IO_LSEEK(tinfo->data_file->put, *offset, SEEK_SET);
   }
   LoadQuad(att->next_ea_offset, bptr);
   bptr += sizeof(int64_t);
@@ -1435,26 +1482,26 @@ int TreePutExtendedAttributes(TREE_INFO * info_ptr, EXTENDED_ATTRIBUTES * att, i
     LoadInt(att->facility_length[i], bptr);
     bptr += sizeof(int);
   }
-  status = MDS_IO_WRITE(info_ptr->data_file->put, buffer, sizeof(buffer))
+  status = MDS_IO_WRITE(tinfo->data_file->put, buffer, sizeof(buffer))
         == sizeof(buffer) ? TreeSUCCESS : TreeFAILURE;
-  TreeUnLockDatafile(info_ptr, 0, loffset);
+  TreeUnLockDatafile(tinfo, 0, loffset);
   return status;
 }
 
-static int PutNamedAttributesIndex(TREE_INFO * info_ptr, NAMED_ATTRIBUTES_INDEX * index,
+static int PutNamedAttributesIndex(TREE_INFO * tinfo, NAMED_ATTRIBUTES_INDEX * index,
                                    int64_t * offset){
   INIT_TREESUCCESS;
   int i;
   int64_t loffset;
   char buffer[sizeof(int64_t) + NAMED_ATTRIBUTES_PER_INDEX * (NAMED_ATTRIBUTE_NAME_SIZE + sizeof(int64_t) + sizeof(int))], *bptr = buffer;
   if (*offset == -1) {
-    TreeLockDatafile(info_ptr, 0, 0);
+    TreeLockDatafile(tinfo, 0, 0);
     loffset = 0;
-    *offset = MDS_IO_LSEEK(info_ptr->data_file->put, 0, SEEK_END);
+    *offset = MDS_IO_LSEEK(tinfo->data_file->put, 0, SEEK_END);
   } else {
-    TreeLockDatafile(info_ptr, 0, *offset);
+    TreeLockDatafile(tinfo, 0, *offset);
     loffset = *offset;
-    MDS_IO_LSEEK(info_ptr->data_file->put, *offset, SEEK_SET);
+    MDS_IO_LSEEK(tinfo->data_file->put, *offset, SEEK_SET);
   }
   LoadQuad(index->previous_offset, bptr);
   bptr += sizeof(int64_t);
@@ -1466,13 +1513,13 @@ static int PutNamedAttributesIndex(TREE_INFO * info_ptr, NAMED_ATTRIBUTES_INDEX 
     LoadInt(index->attribute[i].length, bptr);
     bptr += sizeof(int);
   }
-  status = MDS_IO_WRITE(info_ptr->data_file->put, buffer, sizeof(buffer))
+  status = MDS_IO_WRITE(tinfo->data_file->put, buffer, sizeof(buffer))
         == sizeof(buffer) ? TreeSUCCESS : TreeFAILURE;
-  TreeUnLockDatafile(info_ptr, 0, loffset);
+  TreeUnLockDatafile(tinfo, 0, loffset);
   return status;
 }
 
-static int PutInitialValue(TREE_INFO * info_ptr, int *dims, struct descriptor_a *array,
+static int PutInitialValue(TREE_INFO * tinfo, int *dims, struct descriptor_a *array,
                            int64_t * offset)
 {
   int status;
@@ -1480,25 +1527,25 @@ static int PutInitialValue(TREE_INFO * info_ptr, int *dims, struct descriptor_a 
   int i;
   int64_t loffset;
   if (*offset == -1) {
-    TreeLockDatafile(info_ptr, 0, 0);
+    TreeLockDatafile(tinfo, 0, 0);
     loffset = 0;
-    *offset = MDS_IO_LSEEK(info_ptr->data_file->put, 0, SEEK_END);
+    *offset = MDS_IO_LSEEK(tinfo->data_file->put, 0, SEEK_END);
   } else {
-    TreeLockDatafile(info_ptr, 0, *offset);
+    TreeLockDatafile(tinfo, 0, *offset);
     loffset = *offset;
-    MDS_IO_LSEEK(info_ptr->data_file->put, *offset, SEEK_SET);
+    MDS_IO_LSEEK(tinfo->data_file->put, *offset, SEEK_SET);
   }
   for (i = 0; i < array->dimct; i++)
     length = length * dims[i];
   ALLOCATE_BUFFER(length,buffer)
   CHECK_ENDIAN_TRANSFER(array->pointer,length,array->length,array->dtype,buffer)
-  status = (MDS_IO_WRITE(info_ptr->data_file->put, buffer, length) == length) ? TreeSUCCESS : TreeFAILURE;
+  status = (MDS_IO_WRITE(tinfo->data_file->put, buffer, length) == length) ? TreeSUCCESS : TreeFAILURE;
   FREE_BUFFER(buffer);
-  TreeUnLockDatafile(info_ptr, 0, loffset);
+  TreeUnLockDatafile(tinfo, 0, loffset);
   return status;
 }
 
-static int PutDimensionValue(TREE_INFO * info_ptr, int64_t * timestamps, int rows_filled, int ndims,
+static int PutDimensionValue(TREE_INFO * tinfo, int64_t * timestamps, int rows_filled, int ndims,
                              int *dims, int64_t * offset)
 {
   INIT_TREESUCCESS;
@@ -1506,13 +1553,13 @@ static int PutDimensionValue(TREE_INFO * info_ptr, int64_t * timestamps, int row
   int64_t loffset;
   unsigned char *buffer = 0;
   if (*offset == -1) {
-    TreeLockDatafile(info_ptr, 0, 0);
+    TreeLockDatafile(tinfo, 0, 0);
     loffset = 0;
-    *offset = MDS_IO_LSEEK(info_ptr->data_file->put, 0, SEEK_END);
+    *offset = MDS_IO_LSEEK(tinfo->data_file->put, 0, SEEK_END);
   } else {
-    TreeLockDatafile(info_ptr, 0, *offset);
+    TreeLockDatafile(tinfo, 0, *offset);
     loffset = *offset;
-    MDS_IO_LSEEK(info_ptr->data_file->put, *offset, SEEK_SET);
+    MDS_IO_LSEEK(tinfo->data_file->put, *offset, SEEK_SET);
   }
   length = length * dims[ndims - 1] - (sizeof(int64_t) * rows_filled);
   if (length > 0) {
@@ -1520,20 +1567,20 @@ static int PutDimensionValue(TREE_INFO * info_ptr, int64_t * timestamps, int row
     memset(buffer, 0, length);
   }
   if (rows_filled > 0)
-    status = MDS_IO_WRITE(info_ptr->data_file->put, timestamps, rows_filled * sizeof(int64_t))
+    status = MDS_IO_WRITE(tinfo->data_file->put, timestamps, rows_filled * sizeof(int64_t))
           == (int)(rows_filled * sizeof(int64_t)) ? TreeSUCCESS : TreeFAILURE;
   if (STATUS_OK && length > 0)
-    status = MDS_IO_WRITE(info_ptr->data_file->put, buffer, length) == length ? TreeSUCCESS : TreeFAILURE;
+    status = MDS_IO_WRITE(tinfo->data_file->put, buffer, length) == length ? TreeSUCCESS : TreeFAILURE;
   if (buffer)
     free(buffer);
-  TreeUnLockDatafile(info_ptr, 0, loffset);
+  TreeUnLockDatafile(tinfo, 0, loffset);
   return status;
 }
 
-static int GetSegmentHeader(TREE_INFO * info_ptr, int64_t offset, SEGMENT_HEADER * hdr){
+static int GetSegmentHeader(TREE_INFO * tinfo, int64_t offset, SEGMENT_HEADER * hdr){
   INIT_TREESUCCESS;
   char buffer[2 * sizeof(char) + 1 * sizeof(short) + 10 * sizeof(int) + 3 * sizeof(int64_t)], *bptr;
-  READPROPERTY_SAFE(offset, buffer, sizeof(buffer));
+  status = ReadProperty_safe(tinfo,offset, buffer, sizeof(buffer));
   if (status == TreeSUCCESS) {
     bptr = buffer;
     hdr->dtype = *bptr++;
@@ -1557,10 +1604,10 @@ static int GetSegmentHeader(TREE_INFO * info_ptr, int64_t offset, SEGMENT_HEADER
   return status;
 }
 
-static int GetSegmentIndex(TREE_INFO * info_ptr, int64_t offset, SEGMENT_INDEX * idx){
+static int GetSegmentIndex(TREE_INFO * tinfo, int64_t offset, SEGMENT_INDEX * idx){
   INIT_TREESUCCESS;
   char buffer[sizeof(int64_t) + sizeof(int) + SEGMENTS_PER_INDEX * (6 * sizeof(int64_t) + 4 * sizeof(int))], *bptr;
-  READPROPERTY_SAFE(offset, buffer, sizeof(buffer));
+  status = ReadProperty_safe(tinfo,offset, buffer, sizeof(buffer));
   if (status == TreeSUCCESS) {
     bptr = buffer;
     idx->previous_offset = swapquad(bptr);
@@ -1594,10 +1641,10 @@ static int GetSegmentIndex(TREE_INFO * info_ptr, int64_t offset, SEGMENT_INDEX *
   return status;
 }
 
-int TreeGetExtendedAttributes(TREE_INFO * info_ptr, int64_t offset, EXTENDED_ATTRIBUTES * att){
+int TreeGetExtendedAttributes(TREE_INFO * tinfo, int64_t offset, EXTENDED_ATTRIBUTES * att){
   INIT_TREESUCCESS;
   char buffer[sizeof(int64_t) + FACILITIES_PER_EA * (sizeof(int64_t) + sizeof(int))], *bptr;
-  READPROPERTY_SAFE(offset, buffer, sizeof(buffer));
+  status = ReadProperty_safe(tinfo,offset, buffer, sizeof(buffer));
   if (status == TreeSUCCESS) {
     bptr = buffer;
     att->next_ea_offset = swapquad(bptr);
@@ -1615,10 +1662,10 @@ int TreeGetExtendedAttributes(TREE_INFO * info_ptr, int64_t offset, EXTENDED_ATT
   return status;
 }
 
-static int GetNamedAttributesIndex(TREE_INFO * info_ptr, int64_t offset, NAMED_ATTRIBUTES_INDEX * index){
+static int GetNamedAttributesIndex(TREE_INFO * tinfo, int64_t offset, NAMED_ATTRIBUTES_INDEX * index){
   INIT_TREESUCCESS;
   char buffer[sizeof(int64_t) + NAMED_ATTRIBUTES_PER_INDEX * (sizeof(int64_t) + sizeof(int) + NAMED_ATTRIBUTE_NAME_SIZE)], *bptr;
-  READPROPERTY_SAFE(offset, buffer, sizeof(buffer));
+  status = ReadProperty_safe(tinfo,offset, buffer, sizeof(buffer));
   if (status == TreeSUCCESS) {
     bptr = buffer;
     index->previous_offset = swapquad(bptr);
@@ -1636,25 +1683,25 @@ static int GetNamedAttributesIndex(TREE_INFO * info_ptr, int64_t offset, NAMED_A
   return status;
 }
 
-#define PUTTSEG_CHECKDATA \
-  DESCRIPTOR_A(data_a, 0, 0, 0, 0); \
-  while (data && data->dtype == DTYPE_DSC) \
-    data = (struct descriptor_a *)data->pointer; \
-  if (data && data->class == CLASS_S) { \
-    data_a.pointer = data->pointer; \
-    data_a.length = data->length; \
-    data_a.class = CLASS_A; \
-    data_a.dtype = data->dtype; \
-    data_a.arsize = data->length; \
-    data_a.dimct = 1; \
-    data = (struct descriptor_a *)&data_a; \
-  } \
-  A_COEFF_TYPE *a_coeff = (A_COEFF_TYPE *) data; \
-  if (data == NULL || data->class != CLASS_A || data->dimct < 1 || data->dimct > 8) \
-    return TreeINVDTPUSG;
-
 int _TreePutTimestampedSegment(void *dbid, int nid, int64_t * timestamp, struct descriptor_a *data){
-  OPEN_DATAFILE_WRITE(PUTTSEG_CHECKDATA);
+  OPEN_DATAFILE_WRITE0();
+  DESCRIPTOR_A(data_a, 0, 0, 0, 0);
+  while (data && data->dtype == DTYPE_DSC)
+    data = (struct descriptor_a *)data->pointer;
+  if (data && data->class == CLASS_S) {
+    data_a.pointer = data->pointer;
+    data_a.length = data->length;
+    data_a.class = CLASS_A;
+    data_a.dtype = data->dtype;
+    data_a.arsize = data->length;
+    data_a.dimct = 1;
+    data = (struct descriptor_a *)&data_a;
+  }
+  A_COEFF_TYPE *a_coeff = (A_COEFF_TYPE *) data;
+  if (data == NULL || data->class != CLASS_A || data->dimct < 1 || data->dimct > 8)
+    return TreeINVDTPUSG;
+  OPEN_DATAFILE_WRITE1();
+  if STATUS_NOT_OK RETURN(UNLOCK_NCI,status)
   int startIdx;
   int rows_to_insert = -1;
   int bytes_per_row;
@@ -1662,58 +1709,58 @@ int _TreePutTimestampedSegment(void *dbid, int nid, int64_t * timestamp, struct 
   int bytes_to_insert;
   int64_t offset;
   int i;
-  IF_NO_EXTENDED_NCI   RETURN(UNLOCK_NCI,TreeNOSEGMENTS);
-  IF_NO_SEGMENT_HEADER RETURN(UNLOCK_NCI,TreeNOSEGMENTS);
-  if (data->dtype != segment_header.dtype)
+  CHECK_EXTENDED_NCI(UNLOCK_NCI);
+  CHECK_SEGMENT_HEADER(UNLOCK_NCI);
+  if (data->dtype != shead->dtype)
     RETURN(UNLOCK_NCI,TreeINVDTYPE);
   if ((a_coeff->dimct == 1)
-   &&!(a_coeff->dimct == segment_header.dimct)
-   &&!(a_coeff->dimct == segment_header.dimct - 1))
+   &&!(a_coeff->dimct == shead->dimct)
+   &&!(a_coeff->dimct == shead->dimct - 1))
     RETURN(UNLOCK_NCI,TreeINVSHAPE);
-  if (a_coeff->dimct > 1 && memcmp(segment_header.dims, a_coeff->m,(segment_header.dimct - 1) * sizeof(int)))
+  if (a_coeff->dimct > 1 && memcmp(shead->dims, a_coeff->m,(shead->dimct - 1) * sizeof(int)))
     RETURN(UNLOCK_NCI,TreeINVSHAPE);
   if (a_coeff->dimct == 1 && a_coeff->arsize / a_coeff->length != 1
-   && (unsigned int)segment_header.dims[0] < a_coeff->arsize / a_coeff->length)
+   && (unsigned int)shead->dims[0] < a_coeff->arsize / a_coeff->length)
     RETURN(UNLOCK_NCI,TreeINVSHAPE);
-  startIdx = segment_header.next_row;
-  for (bytes_per_row = segment_header.length, i = 0; i < segment_header.dimct - 1;
-       bytes_per_row *= segment_header.dims[i], i++) ;
-  if (data->dimct < segment_header.dimct)
+  startIdx = shead->next_row;
+  for (bytes_per_row = shead->length, i = 0; i < shead->dimct - 1;
+       bytes_per_row *= shead->dims[i], i++) ;
+  if (data->dimct < shead->dimct)
     rows_to_insert = 1;
   else
     rows_to_insert = (data->dimct == 1) ? data->arsize / data->length : a_coeff->m[a_coeff->dimct - 1];
   if (rows_to_insert <= 0)
     RETURN(UNLOCK_NCI,TreeINVSHAPE)
-  rows_in_segment = segment_header.dims[segment_header.dimct - 1];
+  rows_in_segment = shead->dims[shead->dimct - 1];
   bytes_to_insert = ((rows_to_insert > (rows_in_segment - startIdx)) ? (rows_in_segment - startIdx) : rows_to_insert) * bytes_per_row;
   if (bytes_to_insert < 1)
     RETURN(UNLOCK_NCI,TreeBUFFEROVF)
-  offset = segment_header.data_offset + startIdx * bytes_per_row;
+  offset = shead->data_offset + startIdx * bytes_per_row;
   ALLOCATE_BUFFER(bytes_to_insert,buffer);
-  CHECK_ENDIAN_TRANSFER(data->pointer,bytes_to_insert,segment_header.length,data->dtype,buffer);
-  TreeLockDatafile(info_ptr, 0, offset);
-  MDS_IO_LSEEK(info_ptr->data_file->put, offset, SEEK_SET);
-  status =(MDS_IO_WRITE(info_ptr->data_file->put, buffer, bytes_to_insert) == bytes_to_insert) ? TreeSUCCESS : TreeFAILURE;
+  CHECK_ENDIAN_TRANSFER(data->pointer,bytes_to_insert,shead->length,data->dtype,buffer);
+  TreeLockDatafile(tinfo, 0, offset);
+  MDS_IO_LSEEK(tinfo->data_file->put, offset, SEEK_SET);
+  status =(MDS_IO_WRITE(tinfo->data_file->put, buffer, bytes_to_insert) == bytes_to_insert) ? TreeSUCCESS : TreeFAILURE;
   FREE_BUFFER(buffer);
-  MDS_IO_LSEEK(info_ptr->data_file->put, segment_header.dim_offset + startIdx * sizeof(int64_t), SEEK_SET);
+  MDS_IO_LSEEK(tinfo->data_file->put, shead->dim_offset + startIdx * sizeof(int64_t), SEEK_SET);
   ALLOCATE_BUFFER(rows_to_insert,times);
   CHECK_ENDIAN_TRANSFER(timestamp,rows_to_insert,8,,times);
-  status = (MDS_IO_WRITE(info_ptr->data_file->put, times, sizeof(int64_t) * rows_to_insert) == (int)(sizeof(int64_t) * rows_to_insert)) ? TreeSUCCESS : TreeFAILURE;
+  status = (MDS_IO_WRITE(tinfo->data_file->put, times, sizeof(int64_t) * rows_to_insert) == (int)(sizeof(int64_t) * rows_to_insert)) ? TreeSUCCESS : TreeFAILURE;
   FREE_BUFFER(times);
-  TreeUnLockDatafile(info_ptr, 0, offset);
-  segment_header.next_row = startIdx + bytes_to_insert / bytes_per_row;
+  TreeUnLockDatafile(tinfo, 0, offset);
+  shead->next_row = startIdx + bytes_to_insert / bytes_per_row;
   if STATUS_OK
-    status = PutSegmentHeader(info_ptr, &segment_header, &attributes.facility_offset[SEGMENTED_RECORD_FACILITY]);
+    status = PutSegmentHeader(tinfo, shead, &attr->facility_offset[SEGMENTED_RECORD_FACILITY]);
   RETURN(UNLOCK_NCI,status);
 }
 
-static int CopyStandardRecord(TREE_INFO * info_in, TREE_INFO * info_out, int nid, int64_t * offset,
+static int CopyStandardRecord(TREE_INFO * tinfo_in, TREE_INFO * tinfo_out, int nid, int64_t * offset,
                               int *length, int compress){
   EMPTYXD(xd);
   int status;
-  status = TreeGetDsc(info_in, nid, *offset, *length, &xd);
+  status = TreeGetDsc(tinfo_in, nid, *offset, *length, &xd);
   if STATUS_OK
-    status = TreePutDsc(info_out, nid, (struct descriptor *)&xd, offset, length, compress);
+    status = TreePutDsc(tinfo_out, nid, (struct descriptor *)&xd, offset, length, compress);
   MdsFree1Dx(&xd, 0);
   if STATUS_NOT_OK {
     *offset = -1;
@@ -1722,21 +1769,21 @@ static int CopyStandardRecord(TREE_INFO * info_in, TREE_INFO * info_out, int nid
   return status;
 }
 
-static int CopyNamedAttributes(TREE_INFO * info_in, TREE_INFO * info_out, int nid, int64_t * offset,
+static int CopyNamedAttributes(TREE_INFO * tinfo_in, TREE_INFO * tinfo_out, int nid, int64_t * offset,
                                int *length, int compress){
   EMPTYXD(xd);
   NAMED_ATTRIBUTES_INDEX index;
-  int status = GetNamedAttributesIndex(info_in, *offset, &index);
+  int status = GetNamedAttributesIndex(tinfo_in, *offset, &index);
   if STATUS_OK {
     int i;
     *length=0;
     if (index.previous_offset != -1)
-      CopyNamedAttributes(info_in, info_out, nid, &index.previous_offset, 0, compress);
+      CopyNamedAttributes(tinfo_in, tinfo_out, nid, &index.previous_offset, 0, compress);
     for (i = 0; i < NAMED_ATTRIBUTES_PER_INDEX; i++) {
       if (index.attribute[i].name[0] != '\0' && index.attribute[i].offset != -1) {
-        status = TreeGetDsc(info_in, nid, index.attribute[i].offset, index.attribute[i].length, &xd);
+        status = TreeGetDsc(tinfo_in, nid, index.attribute[i].offset, index.attribute[i].length, &xd);
         if STATUS_OK {
-          status = TreePutDsc(info_out, nid, (struct descriptor *)&xd,
+          status = TreePutDsc(tinfo_out, nid, (struct descriptor *)&xd,
                               &index.attribute[i].offset, &index.attribute[i].length, compress);
           if STATUS_NOT_OK {
             memset(index.attribute[i].name, 0, sizeof(index.attribute[i].name));
@@ -1747,22 +1794,21 @@ static int CopyNamedAttributes(TREE_INFO * info_in, TREE_INFO * info_out, int ni
       }
     }
     *offset = -1;
-    status = PutNamedAttributesIndex(info_out, &index, offset);
+    status = PutNamedAttributesIndex(tinfo_out, &index, offset);
   } else
     *offset = -1;
   return status;
 }
 
-static int DataCopy(TREE_INFO * info_ptr, TREE_INFO * info_out, int64_t offset_in, int length_in,
-                    int64_t * offset_out)
-{
+static int DataCopy(TREE_INFO * tinfo, TREE_INFO * tinfo_out, int64_t offset_in, int length_in,
+                    int64_t * offset_out){
   INIT_TREESUCCESS;
   if (offset_in != -1 && length_in >= 0) {
     char *data = malloc(length_in);
-    READPROPERTY(offset_in, data, length_in)
+    status = ReadProperty(tinfo,offset_in, data, length_in);
     if (STATUS_OK) {
-      *offset_out = MDS_IO_LSEEK(info_out->data_file->put, 0, SEEK_END);
-      status = MDS_IO_WRITE(info_out->data_file->put, data, length_in) == length_in;
+      *offset_out = MDS_IO_LSEEK(tinfo_out->data_file->put, 0, SEEK_END);
+      status = MDS_IO_WRITE(tinfo_out->data_file->put, data, length_in) == length_in;
     }
     free(data);
     if STATUS_NOT_OK
@@ -1772,18 +1818,18 @@ static int DataCopy(TREE_INFO * info_ptr, TREE_INFO * info_out, int64_t offset_i
   return status;
 }
 
-static int CopySegment(TREE_INFO *info_in, TREE_INFO *info_out, int nid, SEGMENT_HEADER *header, SEGMENT_INFO *sinfo, int compress) {
+static int CopySegment(TREE_INFO *tinfo_in, TREE_INFO *tinfo_out, int nid, SEGMENT_HEADER *header, SEGMENT_INFO *sinfo, int idx, int compress) {
   INIT_TREESUCCESS;
   if (compress) {
     int length;
     EMPTYXD(data_xd);
     EMPTYXD(dim_xd);
-    status = ReadSegment(info_in, nid, header, sinfo, &data_xd, &dim_xd);
+    status = ReadSegment(tinfo_in, nid, header, sinfo, idx, &data_xd, &dim_xd);
     if STATUS_OK {
-      status = TreePutDsc(info_out, nid, data_xd.pointer, &sinfo->data_offset, &length, compress);
+      status = TreePutDsc(tinfo_out, nid, data_xd.pointer, &sinfo->data_offset, &length, compress);
       if STATUS_OK {
-        sinfo->rows = length + 0x80000000;
-        status = TreePutDsc(info_out, nid, dim_xd.pointer, &sinfo->dimension_offset, &sinfo->dimension_length, compress);
+        sinfo->rows = length | 0x80000000;
+        status = TreePutDsc(tinfo_out, nid, dim_xd.pointer, &sinfo->dimension_offset, &sinfo->dimension_length, compress);
         MdsFree1Dx(&dim_xd,0);
       }
       MdsFree1Dx(&data_xd,0);
@@ -1792,9 +1838,9 @@ static int CopySegment(TREE_INFO *info_in, TREE_INFO *info_out, int nid, SEGMENT
     int length;
     if (sinfo->data_offset != -1 && sinfo->rows < 0) {
       length = sinfo->rows & 0x7fffffff;
-      status = DataCopy(info_in, info_out, sinfo->data_offset, length, &sinfo->data_offset);
+      status = DataCopy(tinfo_in, tinfo_out, sinfo->data_offset, length, &sinfo->data_offset);
       if STATUS_OK
-        status = DataCopy(info_in, info_out, sinfo->dimension_offset, sinfo->dimension_length,
+        status = DataCopy(tinfo_in, tinfo_out, sinfo->dimension_offset, sinfo->dimension_length,
                           &sinfo->dimension_offset);
     } else {
       int rowlen = header->length, i;
@@ -1804,80 +1850,80 @@ static int CopySegment(TREE_INFO *info_in, TREE_INFO *info_out, int nid, SEGMENT
         length = sinfo->rows * sizeof(int64_t);
       else
         length = sinfo->dimension_length;
-      status = DataCopy(info_in, info_out, sinfo->dimension_offset, length, &sinfo->dimension_offset);
+      status = DataCopy(tinfo_in, tinfo_out, sinfo->dimension_offset, length, &sinfo->dimension_offset);
       if STATUS_OK {
         length = rowlen * sinfo->rows;
-        status = DataCopy(info_in, info_out, sinfo->data_offset, length, &sinfo->data_offset);
+        status = DataCopy(tinfo_in, tinfo_out, sinfo->data_offset, length, &sinfo->data_offset);
       }
     }
   }
   if (STATUS_OK && (sinfo->start_offset > 0)) {
-    status = DataCopy(info_in, info_out, sinfo->start_offset, sinfo->start_length, &sinfo->start_offset);
+    status = DataCopy(tinfo_in, tinfo_out, sinfo->start_offset, sinfo->start_length, &sinfo->start_offset);
     if(STATUS_OK && sinfo->end_offset > 0)
-        status = DataCopy(info_in, info_out, sinfo->end_offset, sinfo->end_length, &sinfo->end_offset);
+        status = DataCopy(tinfo_in, tinfo_out, sinfo->end_offset, sinfo->end_length, &sinfo->end_offset);
   }
   return status;
 }
 
-static int CopySegmentIndex(TREE_INFO * info_in, TREE_INFO * info_out, int nid, SEGMENT_HEADER * header,
+static int CopySegmentIndex(TREE_INFO * tinfo_in, TREE_INFO * tinfo_out, int nid, SEGMENT_HEADER * header,
                             int64_t * index_offset, int64_t * data_offset, int64_t * dim_offset, int compress){
-  SEGMENT_INDEX segment_index;
+  SEGMENT_INDEX _sindex,*sindex;sindex=&_sindex;
   int i;
-  int status = GetSegmentIndex(info_in, *index_offset, &segment_index);
+  int status = GetSegmentIndex(tinfo_in, *index_offset, sindex);
   if STATUS_OK {
-    if (segment_index.previous_offset != -1) {
+    if (sindex->previous_offset != -1) {
       status =
-          CopySegmentIndex(info_in, info_out, nid, header, &segment_index.previous_offset, data_offset,
+          CopySegmentIndex(tinfo_in, tinfo_out, nid, header, &sindex->previous_offset, data_offset,
                            dim_offset, compress);
     }
     for (i = 0; (i < SEGMENTS_PER_INDEX) && STATUS_OK; i++) {
-      SEGMENT_INFO *sinfo = &segment_index.segment[i];
-      status = CopySegment(info_in, info_out, nid, header, sinfo, compress);
+      SEGMENT_INFO *sinfo = &sindex->segment[i];
+      status = CopySegment(tinfo_in, tinfo_out, nid, header, sinfo, i,compress);
     }
     *index_offset = -1;
-    status = PutSegmentIndex(info_out, &segment_index, index_offset);
+    status = PutSegmentIndex(tinfo_out, sindex, index_offset);
   }
   return status;
 }
 
-static int CopySegmentedRecords(TREE_INFO * info_in, TREE_INFO * info_out, int nid, int64_t * offset,
+static int CopySegmentedRecords(TREE_INFO * tinfo_in, TREE_INFO * tinfo_out, int nid, int64_t * offset,
                                 int *length, int compress){
   SEGMENT_HEADER header;
-  INIT_STATUS_AS GetSegmentHeader(info_in, *offset, &header);
+  INIT_STATUS_AS GetSegmentHeader(tinfo_in, *offset, &header);
   if STATUS_OK {
     *length=0;
     status =
-        CopySegmentIndex(info_in, info_out, nid, &header, &header.index_offset, &header.data_offset,
+        CopySegmentIndex(tinfo_in, tinfo_out, nid, &header, &header.index_offset, &header.data_offset,
                          &header.dim_offset, compress);
     *offset = -1;
-    status = PutSegmentHeader(info_out, &header, offset);
+    status = PutSegmentHeader(tinfo_out, &header, offset);
   }
   return status;
 }
 
 int TreeCopyExtended(PINO_DATABASE * dbid_in, PINO_DATABASE * dbid_out, int nid, NCI * nci, int compress){
-  EXTENDED_ATTRIBUTES attributes;
-  TREE_INFO *info_in = dbid_in->tree_info, *info_out = dbid_out->tree_info;
+  EXTENDED_ATTRIBUTES _attr, *attr;attr=&_attr;
+  TREE_INFO *tinfo_in = dbid_in->tree_info, *tinfo_out = dbid_out->tree_info;
   int64_t now = -1;
   int64_t offset = -1;
-  INIT_STATUS_AS TreeGetExtendedAttributes(info_in, RfaToSeek(nci->DATA_INFO.DATA_LOCATION.rfa), &attributes);
+  INIT_STATUS_AS TreeGetExtendedAttributes(tinfo_in, RfaToSeek(nci->DATA_INFO.DATA_LOCATION.rfa), attr);
   if STATUS_OK {
-    if (attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY] != -1)
-      CopyNamedAttributes(info_in, info_out, nid,
-                          &attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY],
-                          &attributes.facility_length[NAMED_ATTRIBUTES_FACILITY], compress);
-    if (attributes.facility_offset[SEGMENTED_RECORD_FACILITY] != -1)
-      CopySegmentedRecords(info_in, info_out, nid,
-                           &attributes.facility_offset[SEGMENTED_RECORD_FACILITY],
-                           &attributes.facility_length[SEGMENTED_RECORD_FACILITY], compress);
-    if (attributes.facility_offset[STANDARD_RECORD_FACILITY] != -1)
-      CopyStandardRecord(info_in, info_out, nid,
-                         &attributes.facility_offset[STANDARD_RECORD_FACILITY],
-                         &attributes.facility_length[STANDARD_RECORD_FACILITY], compress);
-    status = TreePutExtendedAttributes(info_out, &attributes, &offset);
+    if (attr->facility_offset[NAMED_ATTRIBUTES_FACILITY] != -1)
+      CopyNamedAttributes(tinfo_in, tinfo_out, nid,
+                          &attr->facility_offset[NAMED_ATTRIBUTES_FACILITY],
+                          &attr->facility_length[NAMED_ATTRIBUTES_FACILITY], compress);
+    if (attr->facility_offset[SEGMENTED_RECORD_FACILITY] != -1)
+      CopySegmentedRecords(tinfo_in, tinfo_out, nid,
+                           &attr->facility_offset[SEGMENTED_RECORD_FACILITY],
+                           &attr->facility_length[SEGMENTED_RECORD_FACILITY], compress);
+    if (attr->facility_offset[STANDARD_RECORD_FACILITY] != -1)
+      CopyStandardRecord(tinfo_in, tinfo_out, nid,
+                         &attr->facility_offset[STANDARD_RECORD_FACILITY],
+                         &attr->facility_length[STANDARD_RECORD_FACILITY], compress);
+    status = TreePutExtendedAttributes(tinfo_out, attr, &offset);
     if STATUS_OK {
       SeekToRfa(offset, nci->DATA_INFO.DATA_LOCATION.rfa);
-      status = TreePutNci(info_out, nid, nci, 0);
+      status = TreePutNci(tinfo_out, nid, nci, 0);
     }
     TreeSetViewDate(&now);
   }
@@ -1982,47 +2028,47 @@ int _TreePutRow(void *dbid, int nid, int bufsize, int64_t * timestamp, struct de
  */
 #define GETFROMSEGMENT \
 OPEN_INDEX_READ; \
-if (idx == -1) idx = segment_header.idx; \
-while (STATUS_OK && idx < segment_index.first_idx && segment_index.previous_offset > 0) \
-  status = GetSegmentIndex(info_ptr, segment_index.previous_offset, &segment_index); \
+if (idx == -1) idx = shead->idx; \
+while (STATUS_OK && idx < sindex->first_idx && sindex->previous_offset > 0) \
+  status = GetSegmentIndex(tinfo, sindex->previous_offset, sindex); \
 if STATUS_NOT_OK \
   return status; \
-if (idx < segment_index.first_idx || idx > segment_index.first_idx + SEGMENTS_PER_INDEX) \
+if (idx < sindex->first_idx || idx > sindex->first_idx + SEGMENTS_PER_INDEX) \
   return TreeFAILURE; \
-SEGMENT_INFO *sinfo = &segment_index.segment[idx % SEGMENTS_PER_INDEX];
+SEGMENT_INFO *sinfo = &sindex->segment[idx % SEGMENTS_PER_INDEX];
 
 int _TreeGetSegmentLimits(void *dbid, int nid, int idx, struct descriptor_xd *retStart,
                           struct descriptor_xd *retEnd){
   GETFROMSEGMENT;
-  return getSegmentLimits(info_ptr, nid, sinfo, retStart, retEnd);
+  return getSegmentLimits(tinfo, nid, shead, sinfo, idx, retStart, retEnd);
 }
 
 int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
                     struct descriptor_xd *dim){
   GETFROMSEGMENT;
-  return ReadSegment(info_ptr, nid, &segment_header, sinfo, segment, dim);
+  return ReadSegment(tinfo, nid, shead, sinfo, idx, segment, dim);
 }
 
 int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, int *dims, int *next_row){
   GETFROMSEGMENT;
   if (sinfo->data_offset == -1)
     return TreeFAILURE;
-  *dtype = segment_header.dtype;
-  *dimct = segment_header.dimct;
-  memcpy(dims, segment_header.dims, sizeof(segment_header.dims));
-  if (idx == segment_header.idx)
-    *next_row = segment_header.next_row;
+  *dtype = shead->dtype;
+  *dimct = shead->dimct;
+  memcpy(dims, shead->dims, sizeof(shead->dims));
+  if (idx == shead->idx)
+    *next_row = shead->next_row;
   else if (sinfo->rows < 1)
-    return GetCompressedSegmentRows(info_ptr, sinfo->data_offset, next_row);
+    return GetCompressedSegmentRows(tinfo, sinfo->data_offset, next_row);
   else
     *next_row = sinfo->rows;
   return status;
 }
 
-static int isSegmentInRange(TREE_INFO * info_ptr, int nid,
+static int isSegmentInRange(TREE_INFO * tinfo, int nid,
                           struct descriptor *start,
                           struct descriptor *end,
-                          SEGMENT_INFO * sinfo){
+                          SEGMENT_HEADER * shead,  SEGMENT_INFO * sinfo, int idx){
   int ans = B_FALSE;
   if ((start && start->pointer) || (end && end->pointer)) {
     INIT_TREESUCCESS;
@@ -2035,7 +2081,7 @@ static int isSegmentInRange(TREE_INFO * info_ptr, int nid,
       EMPTYXD(segstart);
       EMPTYXD(segend);
       DESCRIPTOR_LONG(ans_d, &ans);
-      status = getSegmentLimits(info_ptr, nid, sinfo, &segstart, &segend);
+      status = getSegmentLimits(tinfo, nid, shead, sinfo, idx, &segstart, &segend);
       if STATUS_OK {
         if ((start && start->pointer) && (end && end->pointer)) {
           STATIC_CONSTANT DESCRIPTOR(expression, "($ <= $) && ($ >= $)");
@@ -2083,28 +2129,28 @@ int _TreeGetSegments(void *dbid, int nid, struct descriptor *start, struct descr
   /* Get all the segments in an apd which contain data between the start and end times specified
    */
   OPEN_HEADER_READ;
-  SEGMENT_INDEX segment_index;
-  int numsegs = segment_header.idx + 1;
+  SEGMENT_INDEX _sindex,*sindex;sindex=&_sindex;
+  int numsegs = shead->idx + 1;
   int segfound = B_FALSE;
   int apd_idx = 0;
   struct descriptor **dptr = malloc(sizeof(struct descriptor *) * numsegs * 2);
   DESCRIPTOR_APD(apd, DTYPE_LIST, dptr, numsegs * 2);
   memset(dptr, 0, sizeof(struct descriptor *) * numsegs * 2);
-  status = GetSegmentIndex(info_ptr, segment_header.index_offset, &segment_index);
+  status = GetSegmentIndex(tinfo, shead->index_offset, sindex);
   int idx;
   for (idx = numsegs; STATUS_OK && idx > 0; idx--) {
     int segidx = idx - 1;
-    while (STATUS_OK && segidx < segment_index.first_idx && segment_index.previous_offset > 0)
-      status = GetSegmentIndex(info_ptr, segment_index.previous_offset, &segment_index);
+    while (STATUS_OK && segidx < sindex->first_idx && sindex->previous_offset > 0)
+      status = GetSegmentIndex(tinfo, sindex->previous_offset, sindex);
     if STATUS_NOT_OK
       break;
     else {
-      SEGMENT_INFO *sinfo = &segment_index.segment[segidx % SEGMENTS_PER_INDEX];
-      if (isSegmentInRange(info_ptr, nid, start, end, sinfo)) {
+      SEGMENT_INFO *sinfo = &sindex->segment[segidx % SEGMENTS_PER_INDEX];
+      if (isSegmentInRange(tinfo, nid, start, end, shead, sinfo, idx)) {
         EMPTYXD(segment);
         EMPTYXD(dim);
         segfound = B_TRUE;
-        status = ReadSegment(info_ptr, nid, &segment_header, sinfo, &segment, &dim);
+        status = ReadSegment(tinfo, nid, shead, sinfo, idx, &segment, &dim);
         if STATUS_OK {
           apd.pointer[apd_idx] = malloc(sizeof(struct descriptor_xd));
           memcpy(apd.pointer[apd_idx++], &segment, sizeof(struct descriptor_xd));

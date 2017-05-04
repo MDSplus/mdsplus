@@ -17,7 +17,7 @@ JAVA_APS = javamds \
 	   javadispatcher \
 	   javadevices \
 	   javaclient \
-	   mdsobjects/java 
+	   mdsobjects/java
 
 MOTIF_APS = xmdsshr \
 	    actions \
@@ -110,7 +110,7 @@ distclean: ##@build make source directory look like original sources
 	fi; \
 	cd $$cpwd
 
-# Testing 
+# Testing
 
 .PHONY: tests
 tests: ##@tests recursively perform tests in submodules
@@ -173,6 +173,21 @@ install: $(install_DIRS)
 	$(INSTALL) ${top_srcdir}/MDSplus-License.txt ${top_srcdir}/MDSplus-License.rtf $(exec_prefix)
 	(cd $(exec_prefix); chmod -R 755 $(MISC_PARTS))
 
+.PHONY: tests-envdump
+tests-envdump:
+	cd mdsobjects/python/tests&&(\
+	make test-envdump;\
+	cd ../../..;)
+
+test-env:
+	cd mdsobjects/python/tests&&(\
+	make test-env;\
+	cd ../../..;)
+
+@HAVE_WINE_TRUE@wineconsole:
+@HAVE_WINE_TRUE@	cd mdsobjects/python/tests&&(\
+@HAVE_WINE_TRUE@	make wineconsole;\
+@HAVE_WINE_TRUE@	cd ../../..;)
 
 # Interdependent directories:
 actions: mdsshr tdishr treeshr xmdsshr mdstcpip servershr
@@ -182,14 +197,14 @@ tcl: mdsshr treeshr tdishr mdstcpip servershr mdsdcl
 dwscope: xmdsshr
 javadevices: javatraverser
 javadispatcher: javascope javatraverser
-javamds: mdstcpip 
+javamds: mdstcpip
 javatraverser: javascope
 math: mdsshr
 mdsdcl: mdsshr
 mdslib: mdstcpip
 mdslibidl: tdishr
 mdsmisc: tdishr xtreeshr
-mdsobjects/cpp: mdstcpip 
+mdsobjects/cpp: mdstcpip
 mdsobjects/java: javascope
 mdstcpip: tdishr
 mitdevices: mdsshr tdishr treeshr xmdsshr

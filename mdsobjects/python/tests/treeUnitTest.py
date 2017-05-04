@@ -2,7 +2,7 @@ from unittest import TestCase,TestSuite
 import os
 from threading import Lock
 
-from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,DateToQuad,Device
+from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,DateToQuad,Device,Int32Array
 from MDSplus import getenv,setenv
 
 class treeTests(TestCase):
@@ -272,6 +272,21 @@ class treeTests(TestCase):
         pytree3 = Tree('pytree',self.shot+2)
         pytree3.compressDatafile()
         self.assertEqual((signal.record==pytree3.SIG01.record).all(),True)
+        signal.deleteData()
+        # beginning a block set next_row to 0
+        signal.beginTimestampedSegment(Int32Array([0,7]))
+        self.assertEqual(str(signal.record),       "Build_Signal([], *, [])")
+        self.assertEqual(str(signal.getSegment(0)),"Build_Signal([], *, [])")
+        # beginning adding row increments next_row to 1
+        signal.putRow(1,Int32Array([1]),-1)
+        self.assertEqual(str(signal.record),       "Build_Signal([1], *, [-1Q])")
+        self.assertEqual(str(signal.getSegment(0)),"Build_Signal([1], *, [-1Q])")
+        # beginning a new block set next_row back to 0 of the new block
+        # the previous block is assumed to be full as the tailing zero could be valid data
+        signal.beginTimestampedSegment(Int32Array([0]))
+        self.assertEqual(str(signal.record),       "Build_Signal([1,7], *, [-1Q,0Q])")
+        self.assertEqual(str(signal.getSegment(0)),"Build_Signal([1,7], *, [-1Q,0Q])")
+
 
     def runTest(self):
         for test in self.getTests():

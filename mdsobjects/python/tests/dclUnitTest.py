@@ -97,10 +97,18 @@ class dclTests(TestCase):
         self._doTCLTest('add node TCL_PY_DEV/model=TESTDEVICE')
         self._doTCLTest('do TESTDEVICE:TASK_TEST')
         self._doExceptionTest('do TESTDEVICE:TASK_ERROR',Exc.DevUNKOWN_STATE)
+        if not sys.platform.startswith('win'): # Windows does not support timeout yet
+            self._doExceptionTest('do TESTDEVICE:TASK_TIMEOUT',Exc.TdiTIMEOUT)
         self._doExceptionTest('close',Exc.TreeWRITEFIRST)
         self._doTCLTest('write')
         self._doTCLTest('close')
         self._doTCLTest('show db','\n')
+        """ context """
+        self._doTCLTest('set tree pytree')
+        pytree = Tree()
+        self.assertEqual(str(pytree),'Tree("PYTREE",-1,"Normal")')
+        self._doTCLTest('close pytree')
+        self.assertEqual(str(pytree),'Tree("PYTREE",-1,"Closed")')
         """ tcl exceptions """
         self._doExceptionTest('close',Exc.TreeNOT_OPEN)
         self._doExceptionTest('dispatch/command/server=xXxXxXx type test',Exc.ServerPATH_DOWN)
@@ -137,7 +145,7 @@ class dclTests(TestCase):
                     testDispatchCommand(server,'env %s=%s'%envpair)
             return None,None
         monitor,monitor_port = setup_mdsip('ACTION_MONITOR','MONITOR_PORT',4400,False)
-        monitor_opt = "/monitor=%s"%monitor if monitor_port>0 else "" 
+        monitor_opt = "/monitor=%s"%monitor if monitor_port>0 else ""
         server ,server_port  = setup_mdsip('ACTION_SERVER', 'ACTION_PORT',8800,True)
         shot = self.shot+1
         Tree('pytree',-1,'ReadOnly').createPulse(shot)

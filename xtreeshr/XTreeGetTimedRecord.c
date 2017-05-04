@@ -87,10 +87,10 @@ static int checkResampledVersion(void *dbid, int nid, struct descriptor *deltaD)
 	if(deltaD == 0)
 	    return nid;
 	status = XTreeConvertToLongDelta(deltaD, &deltaNs);
-	if(!(status & 1)) 
+	if STATUS_NOT_OK
 		return nid;
 	status = (dbid) ? _TreeGetXNci(dbid, nid, "ResampleFactor", &xd) : TreeGetXNci(nid, "ResampleFactor", &xd);
-	if(!(status & 1)) 
+	if STATUS_NOT_OK
 		return nid;
 	status = TdiGetLong((struct descriptor *)&xd,&resampleFactor);
 	/*	status = TdiData(&xd, &xd MDS_END_ARG);
@@ -106,26 +106,26 @@ static int checkResampledVersion(void *dbid, int nid, struct descriptor *deltaD)
 	MdsFree1Dx(&xd, 0);
 
 	status = (dbid)?_TreeGetSegmentLimits(dbid, nid, 0, &startXd, &endXd):TreeGetSegmentLimits(nid, 0, &startXd, &endXd);
-	if(!(status & 1))
+	if STATUS_NOT_OK
 		return nid;
 	status = XTreeConvertToLongTime(startXd.pointer, &startNs);
-	if(status) status = XTreeConvertToLongTime(endXd.pointer, &endNs);	
+	if STATUS_OK status = XTreeConvertToLongTime(endXd.pointer, &endNs);
 	MdsFree1Dx(&startXd, 0);
-	MdsFree1Dx(&endXd, 0); 
-	if(!(status & 1))
+	MdsFree1Dx(&endXd, 0);
+	if STATUS_NOT_OK
 		return nid;
 
 	status = (dbid)?_TreeGetSegmentInfo(dbid, nid, 0, &dtype, &dimct, dims, &nextRow):TreeGetSegmentInfo(nid, 0, &dtype, &dimct, dims, &nextRow);
-	if(!(status & 1))
+	if STATUS_NOT_OK
 		return nid;
 	numRows = dims[dimct-1];
 	actDeltaNs = (endNs - startNs)/numRows;
 	if(actDeltaNs <= 0)
-		return nid;
+                return nid;
 	if((int)(deltaNs / actDeltaNs) < resampleFactor)
 		return nid;
 	status = (dbid) ? _TreeGetXNci(dbid, nid, "ResampleNid", &xd) : TreeGetXNci(nid, "ResampleNid", &xd);
-  	if (!status & 1 || !xd.pointer ||xd.pointer->class != CLASS_S || xd.pointer->dtype != DTYPE_NID)
+  	if (STATUS_NOT_OK || !xd.pointer ||xd.pointer->class != CLASS_S || xd.pointer->dtype != DTYPE_NID)
   	{
 		MdsFree1Dx(&xd, 0);
 		return nid;
@@ -175,7 +175,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
   //Get names for (possible) user defined  resample and squish funs
   status =
       (dbid) ? _TreeGetXNci(dbid, nid, "ResampleFun", &xd) : TreeGetXNci(nid, "ResampleFun", &xd);
-  if (status & 1 && xd.pointer)	//If a user defined fun exists
+  if (STATUS_OK && xd.pointer)	//If a user defined fun exists
   {
     nameLen = xd.pointer->length;
     if (nameLen >= MAX_FUN_NAMELEN)
@@ -187,7 +187,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
     resampleFunName[0] = 0;
 
   status = (dbid) ? _TreeGetXNci(dbid, nid, "SquishFun", &xd) : TreeGetXNci(nid, "SquishFun", &xd);
-  if (status & 1 && xd.pointer)	//If a user defined fun exists
+  if (STATUS_OK & 1 && xd.pointer)	//If a user defined fun exists
   {
     nameLen = xd.pointer->length;
     if (nameLen >= MAX_FUN_NAMELEN)
@@ -200,7 +200,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 
 	status =
 		(dbid) ? _TreeGetXNci(dbid, nid, "ResampleMode", &xd) : TreeGetXNci(nid, "ResampleMode", &xd);
-	if (status & 1 && xd.pointer)	//If a user defined fun exists
+	if (STATUS_OK && xd.pointer)	//If a user defined fun exists
 	{
 		nameLen = xd.pointer->length;
 		if (nameLen >= MAX_FUN_NAMELEN)
@@ -215,18 +215,18 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 	if(startD)
 	{
 		status = XTreeConvertToLongTime(startD, &start);
-		if(!(status & 1)) return status;
+		if STATUS_NOT_OK return status;
 	}
 	if(endD)
 	{
 		status = XTreeConvertToLongTime(endD, &end);
-		if(!(status & 1)) return status;
+		if STATUS_NOT_OK return status;
 	}
 
 //Get segment limits. If not evaluated to 64 bit int, make the required conversion.
 // New management based on TreeGetSegmentLimits()
 	status = (dbid)?_TreeGetSegmentTimesXd(dbid, nid, &numSegments, &startTimesXd, &endTimesXd):TreeGetSegmentTimesXd(nid, &numSegments, &startTimesXd, &endTimesXd);
-	if(!(status & 1)) return status;
+	if STATUS_NOT_OK return status;
 //Convert read times into 64 bit representation
 	if(startTimesXd.pointer == 0 || endTimesXd.pointer == 0)
 		return 0; //Internal error
@@ -241,9 +241,9 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 	for(currSegIdx = 0; currSegIdx < numSegments; currSegIdx++)
 	{
 		status = XTreeConvertToLongTime(((struct descriptor **)(startTimesApd->pointer))[currSegIdx], &startTimes[currSegIdx]);
-		if(!(status & 1)) return status;
+		if STATUS_NOT_OK return status;
 		status = XTreeConvertToLongTime(((struct descriptor **)(endTimesApd->pointer))[currSegIdx], &endTimes[currSegIdx]);
-		if(!(status & 1)) return status;
+		if STATUS_NOT_OK return status;
 	}
 	MdsFree1Dx(&startTimesXd, 0);
 	MdsFree1Dx(&endTimesXd, 0);
@@ -301,7 +301,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 
 	signals = (struct descriptor_signal **)malloc(actNumSegments * sizeof(struct descriptor_signal *));
 	signalsApd.pointer = (struct descriptor **)signals;
-	signalsApd.arsize = actNumSegments * sizeof(struct descriptor_signal *);	
+	signalsApd.arsize = actNumSegments * sizeof(struct descriptor_signal *);
 	resampledXds = (struct descriptor_xd *)malloc(actNumSegments * sizeof(struct descriptor_xd));
 	dataXds = (struct descriptor_xd *)malloc(actNumSegments * sizeof(struct descriptor_xd));
 	dimensionXds = (struct descriptor_xd *)malloc(actNumSegments * sizeof(struct descriptor_xd));
@@ -318,7 +318,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 
 //printf("Read Segment %d\n", currSegIdx);
 
-		if(!(status & 1))
+		if STATUS_NOT_OK
 		{
 			free((char *)signals);
 			for(i = 0; i < actNumSegments; i++)
@@ -373,7 +373,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 			{
 				status = MdsCopyDxXd((const struct descriptor *)&currSignalD, &resampledXds[currSegIdx]);
 			}
-			else  
+			else
 			{
 				if(!strcmp(resampleMode, "MinMax")){
 	      			        status = XTreeMinMaxResample((struct descriptor_signal *)&currSignalD, startD, endD,
@@ -388,8 +388,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 //printDecompiled(resampledXds[currSegIdx].pointer);
 //scanf("%d", &i);
 
-		
-		if(!(status & 1))
+		if STATUS_NOT_OK
 		{
 			free((char *)signals);
 			for(i = 0; i < actNumSegments; i++)

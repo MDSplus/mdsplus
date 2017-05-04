@@ -110,7 +110,7 @@ sanitize() {
         for test in ${SANITIZE}; do
             echo Doing sanitize ${test}
             MDSPLUS_DIR=/workspace/tests/${1}-san-${test}/buildroot;
-            config_test $@ --enable-sanitize=${test}
+            config_test $@ --enable-sanitize=${test} --disable-java
             if [ "$status" = "111" ]; then
                 echo "Sanitizer ${test} not supported. Skipping."
             elif [ "$status" = "0" ]; then
@@ -131,6 +131,8 @@ sanitize() {
     fi
 }
 normaltest() {
+  if [ "$TEST" = "yes" ] || [ ! -z "$VALGRIND_TOOLS" ]
+  then
     gettimeout() {
         declare -i n=1800*$#
         echo $n
@@ -143,9 +145,12 @@ normaltest() {
     checkstatus abort "Failure compiling $1-bit." $?
     $MAKE install
     checkstatus abort "Failure installing $1-bit." $?
-    ### Run standard tests
-    :&& tio 600 $MAKE -k tests 2>&1
-    checkstatus tests_$1 "Failure testing $1-bit." $?
+    if [ "$TEST" = "yes" ]
+    then
+        ### Run standard tests
+        :&& tio 600 $MAKE -k tests 2>&1
+        checkstatus tests_$1 "Failure testing $1-bit." $?
+    fi
     if [ ! -z "$VALGRIND_TOOLS" ]
     then
         ### Test with valgrind
@@ -155,6 +160,7 @@ normaltest() {
     fi
    fi
     popd
+  fi
 }
 RED() {
     if [ "$1" = "yes" ]
@@ -175,14 +181,14 @@ NORMAL() {
     fi
 }
 export PYTHONDONTWRITEBYTECODE=no
-export PyLib=$(python -V | awk '{print $2}' | awk -F. '{print "python"$1"."$2}')
+export PyLib=$(ldd $(which python) | grep libpython | awk '{print $3}')
 main(){
     MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
     if [ -r /source/deploy/os/${OS}.env ]
     then
         source /source/deploy/os/${OS}.env
     fi
-    if [ "$TEST" = "yes" ]
+    if [ "$TEST" = "yes" ] || [ ! -z "$SANITIZE" ] || [ ! -z "$VALGRIND_TOOLS" ]
     then
         set +e
         runtests

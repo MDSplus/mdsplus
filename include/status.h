@@ -13,3 +13,5 @@
 #define INIT_STATUS_ERROR INIT_STATUS_AS MDSplusERROR
 #define TO_CODE(status)   (status & (-8))
 #define STATUS_TO_CODE    TO_CODE(status)
+#define RETURN_IF_STATUS_NOT_OK  if STATUS_NOT_OK return status;
+#define RETURN_IF_NOT_OK(CHECK)  do {status = CHECK; RETURN_IF_STATUS_NOT_OK;} while(0)
