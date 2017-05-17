@@ -16,6 +16,7 @@ _data=_mimport('mdsdata')
 _scalar=_mimport('mdsscalar')
 _treenode=_mimport('treenode')
 _tdishr=_mimport('_tdishr')
+_mdsdcl=_mimport('mdsdcl')
 
 class _ThreadData(_threading.local):
     def __init__(self):
@@ -674,6 +675,9 @@ class Tree(object):
         finally:
             Tree.unlock()
 
+    def tcl(self,*args,**kwargs):
+        kwargs['ctx'] = self.ctx
+        return _mdsdcl.tcl(*args,**kwargs)
     def tdiCompile(self,*args,**kwargs):
         """Compile a TDI expression. Format: tdiCompile('expression-string',(arg1,...))"""
         kwargs['ctx'] = self.ctx
@@ -698,3 +702,4 @@ class Tree(object):
         """Return primitive data type. Format: tdiData(value)"""
         kwargs['ctx'] = self.ctx
         return _tdishr.TdiData(*args,**kwargs)
+

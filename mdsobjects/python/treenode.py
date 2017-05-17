@@ -14,6 +14,7 @@ _Exceptions=_mimport('mdsExceptions')
 _scalar=_mimport('mdsscalar')
 _tree=_mimport('tree')
 _treeshr=_mimport('_treeshr')
+_tdishr=_mimport('_tdishr')
 _mdsdcl=_mimport('mdsdcl')
 _ver=_mimport('version')
 
@@ -227,7 +228,7 @@ class TreeNode(_data.Data):
             try:
                 self.restoreContext()
                 try:
-                    ans = _data.Data.execute('getnci($,$)',self,name)
+                    ans = _tdishr.TdiExecute('getnci($,$)',(self,name),ctx=self.tree.ctx)
                     if isinstance(ans,_scalar.Uint8):
                         if name not in ('class','dtype'):
                             ans = bool(ans)
