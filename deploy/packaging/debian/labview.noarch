@@ -1435,19 +1435,10 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2012/Sample VIs/PutRowExample.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2012/Sample VIs/SetEventDataExample.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2012/Sample VIs/WaitEventDataExamplevi.vi
-./usr/local/mdsplus/LabView/MDSplus_LV2015
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/MDSplus.aliases
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/MDSplus.lvlps
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/MDSplus.lvproj
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Sample VIs
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Classes.mnu
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Connection_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Event_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/TreeNodeArray_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Tree_Class
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Connection_Class/Close Tree.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Connection_Class/Connection.lvclass
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Connection_Class/Create.vi
@@ -1459,10 +1450,8 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Connection_Class/Open Tree.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Connection_Class/Put  Data.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Connection_Class/Set Object Pointer.vi
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Compile (Tree).vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Compile.vi
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Compound_Class
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Data.lvclass
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Data.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Decompile.vi
@@ -1499,7 +1488,6 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Get Validation.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/New Data DVR.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Plot.vi
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Serialize.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Set Error.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Set Help.vi
@@ -1509,7 +1497,6 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Shared Downcast Object.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Shared Get Object Pointer.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Shared Set Object Pointer.vi
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/TreeNode_Class
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Array.lvclass
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Delete Array DVR.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Destroy.vi
@@ -1528,18 +1515,9 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Get Short Array.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Get Size.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Get String Array.vi
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Int16Array_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Int32Array_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Int64Array_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Int8Array_Class
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/New Array DVR.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Set Element At (Dimensions).vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Set Element At.vi
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/StringArray_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Uint16Array_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Uint32Array_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Uint64Array_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Uint8Array_Class
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Float32Array_Class/Create (Dimensions).vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Float32Array_Class/Create.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Float32Array_Class/Delete Float32Array DVR.vi
@@ -1613,8 +1591,6 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Compound_Class/Delete Compound DVR.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Compound_Class/Destroy.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Compound_Class/New Compound DVR.vi
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Compound_Class/Range_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Compound_Class/Signal_Class
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Compound_Class/Range_Class/Create.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Compound_Class/Range_Class/Delete Range DVR.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Compound_Class/Range_Class/Destroy.vi
@@ -1641,20 +1617,9 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/Delete Scalar DVR.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/Destroy.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/dir.mnu
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/Float32_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/Float64_Class
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/Get Info.vi
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/Int16_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/Int32_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/Int64_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/Int8_Class
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/New Scalar DVR.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/Scalar.lvclass
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/String_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/Uint16_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/Uint32_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/Uint64_Class
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/Uint8_Class
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/Float32_Class/Create.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/Float32_Class/Delete Float32 DVR.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Scalar_Class/Float32_Class/Destroy.vi
@@ -1814,7 +1779,6 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/TreeNode_Class/Put Segment.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/TreeNode_Class/Put Timestamped Segment.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/TreeNode_Class/TreeNode.lvclass
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/TreeNode_Class/TreePath_Class
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/TreeNode_Class/TreePath_Class/Delete TreePath DVR.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/TreeNode_Class/TreePath_Class/Destroy.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/TreeNode_Class/TreePath_Class/New TreePath DVR.vi
@@ -1886,13 +1850,8 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Tree_Class/Versions In Model Enabled.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Tree_Class/Versions In Pulse Enabled.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Tree_Class/Write.vi
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Connection
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Event
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Library.mnu
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/MDSplus.lvlib
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Tree
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/TreeNodeArray
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Connection/Connection Close Tree.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Connection/Connection Create.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Connection/Connection Destroy.vi
@@ -1900,8 +1859,6 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Connection/Connection Open Tree.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Connection/Connection Put Data.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/.DS_Store
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Compound
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Data Compile (Tree).vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Data Compile.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Data Data.vi
@@ -1946,8 +1903,6 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Data Set Units.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Data Set Validation.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/dir.mnu
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/TreeNode
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Array Create.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Array Destroy.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Array Get Byte Array.vi
@@ -1965,17 +1920,6 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Array Set Element At (Dimension).vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Array Set Element At.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/dir.mnu
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Float32Array
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Float64Array
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Int16Array
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Int32Array
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Int64Array
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Int8Array
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/StringArray
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Uint16Array
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Uint32Array
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Uint64Array
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Uint8Array
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Float32Array/dir.mnu
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Float32Array/Float32Array Create (Dimensions).vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Float32Array/Float32Array Create.vi
@@ -2014,8 +1958,6 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Uint8Array/Uint8Array Destroy.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Compound/.DS_Store
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Compound/Compound Destroy.vi
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Compound/Range
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Compound/Signal
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Compound/Range/Range Create.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Compound/Range/Range Destroy.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Compound/Range/Range Get Begin.vi
@@ -2033,21 +1975,10 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Compound/Signal/Signal Set Dimension.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Compound/Signal/Signal Set Raw.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar/dir.mnu
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar/Float32
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar/Float64
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar/Int16
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar/Int32
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar/Int64
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar/Int8
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar/Scalar Create.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar/Scalar Destroy (Polymorphic).vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar/Scalar Destroy.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar/Scalar Get Info.vi
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar/String
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar/Uint16
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar/Uint32
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar/Uint64
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar/Uint8
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar/Float32/dir.mnu
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar/Float32/Float32 Create.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Scalar/Float32/Float32 Destroy.vi
@@ -2173,7 +2104,6 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/TreeNode/TreeNode Put Segment.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/TreeNode/TreeNode Put Timestamped Segment.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/TreeNode/TreeNode Types.ctl
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/TreeNode/TreePath
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/TreeNode/TreePath/TreePath Destroy.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Event/Event Create.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Event/Event Destroy.vi
