@@ -204,6 +204,7 @@ File LabView/*.vi
 SetOutPath "$INSTDIR\mdsobjects\LabView"
 File /r LabView/MDSplus
 File /r LabView/MDSplus_LV2012
+File /r LabView/MDSplus_LV2015
 SectionEnd
 
 Section EPICS
