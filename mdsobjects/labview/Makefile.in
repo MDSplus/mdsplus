@@ -37,6 +37,8 @@ install: $(libdir)
 	$(MKDIR_P) $(exec_prefix)/LabView
 	tar -C ${top_srcdir}/mdsobjects/labview -cf - MDSplus | tar -C ${exec_prefix}/LabView -xf -
 	tar -C ${top_srcdir}/mdsobjects/labview -cf - MDSplus_LV2012 | tar -C ${exec_prefix}/LabView -xf -
+        tar -C ${top_srcdir}/mdsobjects/labview -cf - MDSplus_LV2015 | tar -C ${exec_prefix}/LabView -x
+f -
 	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr@SHARETYPE@ @libdir@
 @MINGW_FALSE@	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr @libdir@
 @MINGW_FALSE@	$(INSTALL) -m 755  @MAKESHLIBDIR@MDSobjectsLVShr @libdir@
