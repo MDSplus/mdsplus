@@ -9,7 +9,7 @@
 ./usr/local/mdsplus/lib32/libMdsShr.a
 ./usr/local/mdsplus/lib32/libMdsSql.a
 ./usr/local/mdsplus/lib32/libMitDevices.a
-./usr/local/mdsplus/lib32/libRoam_gcc64.a
+./usr/local/mdsplus/lib32/libRoam_gcc32.a
 ./usr/local/mdsplus/lib32/libTdiShr.a
 ./usr/local/mdsplus/lib32/libTdiShrExt.a
 ./usr/local/mdsplus/lib32/libTreeShr.a
