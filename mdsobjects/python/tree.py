@@ -16,6 +16,7 @@ _data=_mimport('mdsdata')
 _scalar=_mimport('mdsscalar')
 _treenode=_mimport('treenode')
 _tdishr=_mimport('_tdishr')
+_mdsdcl=_mimport('mdsdcl')
 
 class _ThreadData(_threading.local):
     def __init__(self):
@@ -93,9 +94,9 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
         default to its own context. One may also provide a context ctx,
         as done by _tree.Tree.tcl()
         """
-        if ctx:
-            _TreeCtx.local.tctx = _TreeCtx(_treeshr.switchDbid(ctx),None)
-            return None
+        if ctx: return _treeshr.switchDbid(ctx)
+        tctx = _TreeCtx.gettctx()
+        if tctx: return _treeshr.switchDbid(tctx.ctx)
         dbid = _treeshr.switchDbid()
         if dbid:
             _treeshr.switchDbid(dbid)
@@ -104,7 +105,8 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
 
     @staticmethod
     def restoreCtx(ctx,opened):
-        if not ctx:
+        if ctx: _treeshr.switchDbid(opened)
+        else:
             dbid =_treeshr.switchDbid()
             if dbid: _treeshr.switchDbid(dbid)
             _TreeCtx.local.tctx = _TreeCtx(dbid,opened)
@@ -114,6 +116,8 @@ class Tree(object):
 
     _lock=_threading.RLock()
     _id=0
+    tctx = None
+    ctx  = None
 
     def _checkCtx(self,*args):
         if len(args) == 0:
@@ -130,7 +134,7 @@ class Tree(object):
     def __enter__(self):
     	return self
     def __del__(self):
-        if self.ctx and _TreeCtx.canClose(self.ctx.value):
+        if self.tctx and self.ctx and _TreeCtx.canClose(self.ctx.value):
             self.__exit__()
     def __exit__(self, *args):
         """ Cleanup for with statement. If tree is open for edit close it. """
@@ -141,7 +145,8 @@ class Tree(object):
                  self.close()
         except _Exceptions.TreeNOT_OPEN:
             pass
-
+        if self.tctx:
+            del(self.tctx,self.ctx)
     def __getattr__(self,name):
         """
         Implements value=tree.attribute
@@ -230,7 +235,8 @@ class Tree(object):
             self.tctx = _TreeCtx(self.ctx.value,opened)
             self.tree = self.name
             self.shot = self.shotid
-            _TreeCtx.local.tctx = _TreeCtx(_treeshr.switchDbid(self.ctx.value),None)
+            dbid = _treeshr.switchDbid(self.ctx.value)
+            #_TreeCtx.local.tctx = _TreeCtx(_treeshr.switchDbid(self.ctx.value),None)
         finally:
             _hard_lock.release()
 
@@ -669,6 +675,9 @@ class Tree(object):
         finally:
             Tree.unlock()
 
+    def tcl(self,*args,**kwargs):
+        kwargs['ctx'] = self.ctx
+        return _mdsdcl.tcl(*args,**kwargs)
     def tdiCompile(self,*args,**kwargs):
         """Compile a TDI expression. Format: tdiCompile('expression-string',(arg1,...))"""
         kwargs['ctx'] = self.ctx
@@ -693,3 +702,4 @@ class Tree(object):
         """Return primitive data type. Format: tdiData(value)"""
         kwargs['ctx'] = self.ctx
         return _tdishr.TdiData(*args,**kwargs)
+
