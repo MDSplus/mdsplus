@@ -11,27 +11,32 @@
 # /publish/repo   -> repository
 # /publish/$branch/DEBS/$arch/*.deb
 #
-test64="64 x86_64-linux bin lib --with-gsi=/usr:gcc64"
-test32="32 i686-linux   bin lib --with-gsi=/usr:gcc32"
-if [ "$ARCH" = "amd64" ]
+
+# configure based on ARCH
+case "${ARCH}" in
+  "amd64")
+    host=x86_64-linux
+    gsi_param="--with-gsi=/usr:gcc64"
+    bits=64
+    ;;
+  "armhf")
+    host=arm-linux-gnueabihf
+    gsi_param="--with-gsi=/usr:gcc32"
+    bits=32
+    ;;
+  *)
+    host=i686-linux
+    gsi_param="--with-gsi=/usr:gcc32"
+    bits=32
+    ;;
+esac
+if [[ x$OS == xdebian* ]]
 then
-    if [ -z "$host" ]
-    then
-	host=x86_64-linux
-    fi
-else
-    if [ -z "$host" ]
-    then
-	host=i686-linux
-    fi
+  export JDK_DIR=/usr/lib/jvm/java-7-openjdk-${ARCH}
 fi
+config_param="${bits} ${host} bin lib ${gsi_param}"
 runtests() {
-  if [ "${ARCH}" = "amd64" ]
-  then
-      testarch ${test64}
-  else
-      testarch ${test32}
-  fi
+  testarch ${config_param}
   checktests
 }
 makelist(){
@@ -60,30 +65,16 @@ buildrelease() {
     set -e
     mkdir -p /release/${BRANCH}/DEBS/${ARCH}
     rm -Rf /workspace/releasebld/* /release/${BRANCH}/DEBS/${ARCH}/*
-    if [ "${ARCH}" = "amd64" ]
-    then
-	MDSPLUS_DIR=/workspace/releasebld/buildroot/usr/local/mdsplus
-	mkdir -p ${MDSPLUS_DIR};
-	mkdir -p /workspace/releasebld/64;
-	pushd /workspace/releasebld/64;
-	config ${test64}
-	if [ -z "$NOMAKE" ]; then
-	  $MAKE
-	  $MAKE install
-	fi
-	popd;
-    else
-	MDSPLUS_DIR=/workspace/releasebld/buildroot/usr/local/mdsplus
-	mkdir -p ${MDSPLUS_DIR};
-	mkdir -p /workspace/releasebld/32;
-	pushd /workspace/releasebld/32;
-	config 32 i686-linux bin lib --with-gsi=/usr:gcc64
-	if [ -z "$NOMAKE" ]; then
-	  $MAKE
-	  $MAKE install
-	fi
-	popd
+    MDSPLUS_DIR=/workspace/releasebld/buildroot/usr/local/mdsplus
+    mkdir -p ${MDSPLUS_DIR};
+    mkdir -p /workspace/releasebld/${bits};
+    pushd /workspace/releasebld/${bits};
+    config ${config_param}
+    if [ -z "$NOMAKE" ]; then
+      $MAKE
+      $MAKE install
     fi
+    popd;
   if [ -z "$NOMAKE" ]; then
     BUILDROOT=/workspace/releasebld/buildroot \
 	     BRANCH=${BRANCH} \
@@ -100,7 +91,12 @@ buildrelease() {
 	then
 	   continue
 	fi
-	checkfile=/source/deploy/packaging/${PLATFORM}/$pkg.noarch
+        if [[ x${pkg} == x*_bin ]]
+        then
+          checkfile=/source/deploy/packaging/${PLATFORM}/$pkg.$ARCH
+        else
+          checkfile=/source/deploy/packaging/${PLATFORM}/$pkg.noarch
+        fi
 	if [ "$UPDATEPKG" = "yes" ]
 	then
 	    mkdir -p /source/deploy/packaging/${PLATFORM}

@@ -2,4 +2,4 @@
 ./usr/local/mdsplus/bin32/roam_check_access
 ./usr/local/mdsplus/lib32/libMdsIpGSI.so
 ./usr/local/mdsplus/lib32/libRoam.so
-./usr/local/mdsplus/lib32/libRoam_gcc64.so
+./usr/local/mdsplus/lib32/libRoam_gcc32.so
