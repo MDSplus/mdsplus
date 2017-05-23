@@ -260,7 +260,9 @@ def TreeOpenNew(tree,shot):
         raise _Exceptions.statusToException(status)
     return ctx
 
-def TreeOpenEdit(tree,shot,ctx=_C.c_void_p(0)):
+def TreeOpenEdit(tree,shot,ctx=None):
+    if ctx is None:
+      ctx=_C.c_void_p(0)
     status = __TreeOpenEdit(_C.byref(ctx),_ver.tobytes(tree),shot)
     if not (status & 1):
         raise _Exceptions.statusToException(status)
