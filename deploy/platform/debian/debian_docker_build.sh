@@ -30,7 +30,11 @@ case "${ARCH}" in
     bits=32
     ;;
 esac
-export JDK_DIR=/usr/lib/jvm/java-7-openjdk-${ARCH}
+
+if [[ "$OS" == "debian_wheezy" ]]
+then
+  export JDK_DIR=/usr/lib/jvm/java-7-openjdk-${ARCH}
+fi
 config_param="${bits} ${host} bin lib ${gsi_param}"
 runtests() {
   testarch ${config_param}
