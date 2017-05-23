@@ -43,7 +43,7 @@ buildrelease(){
     popd;
     mkdir -p /workspace/releasebld/32;
     pushd /workspace/releasebld/32;
-    config 32 i686-linux   bin32 lib32 --with-gsi=/usr:gcc64
+    config ${test32}
     if [ -z "$NOMAKE" ]; then
       $MAKE
       $MAKE install
