@@ -200,12 +200,14 @@
 ./usr/local/mdsplus/tdi/treeshr/TreeOpenNew.fun
 ./usr/local/mdsplus/tdi/treeshr/TreePut.fun
 ./usr/local/mdsplus/tdi/treeshr/TreePutRecord.fun
+./usr/local/mdsplus/tdi/treeshr/TreeQuit.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeSetCurrentShot.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeSetDbiItm.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeSetDefault.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeSetNciItm.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeTurnOff.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeTurnOn.fun
+./usr/local/mdsplus/tdi/treeshr/TreeWrite.fun
 ./usr/local/mdsplus/tdi/TutorialDevices/DEMOADC.py
 ./usr/local/mdsplus/tdi/TutorialDevices/__init__.py
 ./usr/local/mdsplus/tdi/TutorialDevices/setup.py
