@@ -15,7 +15,7 @@
 #
 # See Misc/README.valgrind for more information.
 
-# all tool names: Addrcheck,Memcheck,cachegrind,helgrind,massif
+# all tool names: Addrcheck,Memcheck,cachegrind,Helgrind,massif
 {
    ADDRESS_IN_RANGE/Invalid read of size 4
    Memcheck:Addr4
@@ -414,4 +414,17 @@
    Memcheck:Leak
    fun:calloc
    obj:*/libpython?.?.so*
+}
+
+{
+   python race between PyObject_Free
+   Helgrind:Race
+   fun:PyObject_Free
+}
+{
+   python race on allocate_stack pthread_create
+   Helgrind:Race
+   fun:mempcpy
+   ...
+   fun:PyThread_start_new_thread
 }
