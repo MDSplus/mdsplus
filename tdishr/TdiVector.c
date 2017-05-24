@@ -97,8 +97,8 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
         Shape: [[3,1],[3,4]] is [3,5].
         Shape: [[3],[3,4]] is [3,5].
         ********************************/
-  if (STATUS_NOT_OK) ;
-  else if (mind > 0 && mind >= maxd - 1 && mind < MAXDIM && nmiss == 0) {
+ if (STATUS_OK) {
+  if (mind > 0 && mind >= maxd - 1 && mind < MAXDIM && nmiss == 0) {
     n = 0;
     for (j = 0; j < narg; ++j) {
       array_coeff *pnew = (array_coeff *) (*pdat)[j].pointer;
@@ -132,7 +132,7 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
  simple:arr.dimct = 1;
     arr.aflags.coeff = 0;
   }
-
+ }
   if STATUS_OK
     status = Tdi2Vector(narg, (*puni), (*pdat), (*pcats), 0);
 
