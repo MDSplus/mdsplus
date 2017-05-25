@@ -633,7 +633,7 @@ EXPORT int ReuseCheck(char *hostin, char *unique, size_t buflen);
 /// succesfully sent or false otherwise.
 ///
 EXPORT int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs,
-                   short length, char ndims, int *dims, char *bytes);
+                   unsigned short length, char ndims, int *dims, char *bytes);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///

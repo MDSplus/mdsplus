@@ -4,7 +4,7 @@
 
 
 
-int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, short length, char ndims,
+int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned short length, char ndims,
 	    int *dims, char *bytes)
 {
   int status;
