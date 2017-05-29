@@ -87,7 +87,15 @@ static public final int  TreeUSAGE_ANY  = 0,
             open = false;
         }
 
-        
+        protected void finalize() throws Throwable {
+            try{
+                if (this.isOpen())
+                    this.close();
+            }finally{
+                super.finalize();
+            }
+        }
+
         public boolean isOpen() { return open;}
         public java.lang.String toString()
         {
