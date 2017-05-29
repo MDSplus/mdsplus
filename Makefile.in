@@ -156,9 +156,9 @@ $(install_DIRS):
 .PHONY: install
 install: ##@build build and install active modules to prefix directory
 install: $(install_DIRS)
-	- find $(prefix)/java -name '*.class' -delete #### No need to include class files
 	$(MKDIR_P) $(prefix)/local/tdi
 	$(MKDIR_P) $(prefix)/java
+	- find $(prefix)/java -name '*.class' -delete #### No need to include class files
 	tar -C ${top_srcdir} \
 		--exclude='.gitignore' \
 		--exclude='*.pyc' \
