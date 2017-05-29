@@ -487,8 +487,8 @@ int _TreeStartConglomerate(void *dbid, int size)
   int i;
   TREE_INFO *info_ptr;
   TREE_HEADER *header_ptr;
-  NODE *next_node_ptr;
-  NODE *starting_node_ptr;
+  NODE *next_node_ptr = NULL;
+  NODE *starting_node_ptr = NULL;
   NODE *this_node_ptr;
 /*****************************************************
   Make sure that the tree is open and OK and editable
@@ -537,7 +537,7 @@ int _TreeStartConglomerate(void *dbid, int size)
   nessesary move the pointers around to  make it so.
 ****************************************************/
   if STATUS_OK {
-    if (starting_node_ptr->child != 0) {
+    if (starting_node_ptr && starting_node_ptr->child != 0) {
       if (parent_of(0, this_node_ptr)) {
 	set_parent(child_of(0, starting_node_ptr), parent_of(0, this_node_ptr));
 	set_child(parent_of(0, this_node_ptr), child_of(0, starting_node_ptr));
