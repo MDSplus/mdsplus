@@ -131,7 +131,7 @@ sanitize() {
     fi
 }
 normaltest() {
-  if [ "$TEST" = "yes" ] || [ ! -z "$VALGRIND_TOOLS" ]
+  if [ "$TEST" = "yes" ]
   then
     gettimeout() {
         declare -i n=1800*$#
@@ -140,17 +140,14 @@ normaltest() {
     ### Build with debug to run regular and valgrind tests
     MDSPLUS_DIR=/workspace/tests/$1/buildroot;
     config_test $@
-   if [ -z "$NOMAKE" ]; then
+    if [ -z "$NOMAKE" ]; then
     $MAKE
     checkstatus abort "Failure compiling $1-bit." $?
     $MAKE install
     checkstatus abort "Failure installing $1-bit." $?
-    if [ "$TEST" = "yes" ]
-    then
-        ### Run standard tests
-        :&& tio 600 $MAKE -k tests 2>&1
-        checkstatus tests_$1 "Failure testing $1-bit." $?
-    fi
+    ### Run standard tests
+    :&& tio 600 $MAKE -k tests 2>&1
+    checkstatus tests_$1 "Failure testing $1-bit." $?
     if [ ! -z "$VALGRIND_TOOLS" ]
     then
         ### Test with valgrind
