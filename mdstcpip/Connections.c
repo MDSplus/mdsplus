@@ -52,7 +52,7 @@ int FlushConnection(int id){
 }
 
 #ifdef _WIN32
-static void exitHandler(void){}
+static void registerHandler(){}
 #else
 static void exitHandler(void){
   int id;
@@ -62,20 +62,22 @@ static void exitHandler(void){
     ctx = 0;
   }
 }
+static void registerHandler(){
+  atexit(exitHandler);
+}
 #endif
 
 
 ////////////////////////////////////////////////////////////////////////////////
 //  NewConnection  /////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-
 int NewConnection(char *protocol){
   Connection *oldhead, *connection;
   IoRoutines *io = LoadIo(protocol);
   static int id = 1;
-  static int registerExitHandler = 1;
+  static pthread_once_t registerExitHandler = PTHREAD_ONCE_INIT;
   if (io) {
-    registerExitHandler = registerExitHandler ? atexit(exitHandler) : 0;
+    (void) pthread_once(&registerExitHandler,registerHandler);
     connection = memset(malloc(sizeof(Connection)), 0, sizeof(Connection));
     connection->io = io;
     connection->readfd = -1;
