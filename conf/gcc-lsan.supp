@@ -4,6 +4,7 @@ leak:MdsShrGetThreadStatic
 leak:mdsdclGetThreadStatic
 leak:mdsdclSetPrompt
 leak:mdsdclSetDefFile
+leak:mdsdclAllocDocDef
 leak:TreeGetThreadStatic
 leak:TdiGetThreadStatic
 leak:TRACE
