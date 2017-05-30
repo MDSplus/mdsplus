@@ -395,33 +395,27 @@ STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g, int first_c
 STATIC_ROUTINE char *DetailProc(int full)
 {
   int i;
-  int first = 1;
   int doing;
   char msg1[1024];
   char *msg = NULL;
-  unsigned int msglen;
+  unsigned int msglen = 4096;
   ActionInfo *actions = table->actions;
   for (doing = 1; doing > (full ? -1 : 0); doing--) {
     for (i = 0; i < table->num; i++) {
       RDLOCK_ACTION(i);
       if (actions[i].dispatched && !actions[i].done && ((int)actions[i].doing == doing)) {
 	char server[33];
-	if (first) {
-	  msglen = 4096;
-	  msg = (char *)malloc(4096);
-	  strcpy(msg, "\nWaiting on:\n");
-	  first = 0;
-	}
 	sprintf(msg1, "	%s %s %s for shot %d\n",
                 actions[i].path,
 		actions[i].doing ? "in progress on" : "dispatched to", Server(server,actions[i].server),
 		table->shot);
         UNLOCK_ACTION(i);
+	if (!msg)
+	  msg = strcpy((char *)malloc(msglen), "\nWaiting on:\n");
 	if (msglen < (strlen(msg) + strlen(msg1) + 1)) {
 	  char *oldmsg = msg;
-	  msg = (char *)malloc(msglen + 4096);
 	  msglen += 4096;
-	  strcpy(msg, oldmsg);
+	  msg = strcpy((char *)malloc(msglen), oldmsg);
 	  free(oldmsg);
 	}
 	strcat(msg, msg1);
