@@ -200,7 +200,7 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
       } else {
 	char *msg = MdsGetMsg(status);
 	*error = malloc(strlen(msg) + dsc_path.length + 100);
-	sprintf(*output, "Error problem modifying node %.*s\n"
+	sprintf(*error, "Error problem modifying node %.*s\n"
 		"Error message was: %s\n", dsc_path.length, dsc_path.pointer, msg);
 	StrFree1Dx(&dsc_path);
 	goto error;
