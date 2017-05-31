@@ -179,8 +179,9 @@ static inline int16_t swapshort(void *buf) {
                            (outp)[6] = ((char *)&in)[6]; (outp)[7] = ((char *)&in)[7]
 #endif
 
-#define bitassign(bool,value,mask) value = (bool) ? (value) | (mask) : (value) & ~(mask)
-#define bitassign_c(bool,value,mask) value = (char)((bool) ? (value) | (mask) : (value) & ~(mask))
+#define bitassign(bool,value,mask)   value = (bool) ? (value) | (unsigned)(mask) : (value) & ~(unsigned)(mask)
+#define bitassign_c(bool,value,mask) value = (unsigned char)(( (bool) ? (value) |  (unsigned)(mask) : (value) & ~(unsigned)(mask) )&0xFF)
+
 
 /*****************************************
   NID
@@ -193,13 +194,13 @@ can be passed between processes.
 
 #ifdef WORDS_BIGENDIAN
 typedef struct nid {
-  unsigned tree:8;
-  unsigned node:24;
+  unsigned int tree:8;
+  unsigned int  node:24;
 } NID;
 #else
 typedef struct nid {
-  unsigned node:24;		/* Node offset of root node of tree this node belongs to */
-  unsigned tree:8;		/* Level of tree in chained tree_info blocks 0=main tree */
+  unsigned int node:24;		/* Node offset of root node of tree this node belongs to */
+  unsigned int tree:8;		/* Level of tree in chained tree_info blocks 0=main tree */
 } NID;
 #endif
 
@@ -227,7 +228,7 @@ PACK_START
  -sizeof(NODE). To connect to the following
  node it should be set to sizeof(NODE) etc.
 *********************************************/
-    typedef struct node {
+typedef struct node {
   NODE_NAME name;
   int parent;
   int member;
@@ -236,7 +237,7 @@ PACK_START
   unsigned char usage;
   unsigned short conglomerate_elt PACK_ATTR;
   char fill;
-  unsigned int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
+  int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
 } NODE;
 
 #ifdef EMPTY_NODE
@@ -248,8 +249,8 @@ static inline int node_offset(NODE * a, NODE * b)
 {
   /* Returns byte offset of two nodes if both pointers are not NULL otherwise 0 */
   int ans = 0;
-  if ((a != 0) && (b != 0)) {
-    ans = (char *)a - (char *)b;
+  if (a && b) {
+    ans = (int)((char *)a - (char *)b);
     ans = swapint((char *)&ans);
   }
   return ans;
@@ -416,7 +417,7 @@ Contains definitions of all structures used
 in doing I/O to the tree files.
 ********************************************/
 
-#define DATAF_C_MAX_RECORD_SIZE 32765 - sizeof(RECORD_HEADER)
+#define DATAF_C_MAX_RECORD_SIZE (32765u - sizeof(RECORD_HEADER))
 
 #define TREE_DATAFILE_TYPE ".datafile"
 #define TREE_NCIFILE_TYPE  ".characteristics"
@@ -625,7 +626,7 @@ static inline int node_to_nid(PINO_DATABASE * dbid, NODE * node, NID * nid_out)
       break;
   }
   if (info)
-    nid.node = (int)(node - info->node);
+    nid.node = (unsigned int)((node - info->node)&0xFFFFFF);
   else
     nid.tree = 0;
   if (nid_out)

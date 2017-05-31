@@ -121,7 +121,7 @@ int TreeGetCurrentShotId(char const *experiment)
   int i;
   size_t slen;
   for (i = 0; exp[i] != '\0'; i++)
-    exp[i] = tolower(exp[i]);
+    exp[i] = (char)tolower(exp[i]);
   strcat(exp, "_path");
   path = TranslateLogical(exp);
   exp[strlen(experiment)] = '\0';
@@ -159,7 +159,7 @@ int TreeSetCurrentShotId(char const *experiment, int shot)
   size_t slen;
   int i;
   for (i = 0; exp[i] != '\0'; i++)
-    exp[i] = tolower(exp[i]);
+    exp[i] = (char)tolower(exp[i]);
   strcat(exp, "_path");
   path = TranslateLogical(exp);
   exp[strlen(experiment)] = '\0';

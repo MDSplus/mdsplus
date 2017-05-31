@@ -60,7 +60,7 @@ EXPORT int UdpEventGetPort(unsigned short *port) {
   if (settings[PORT]) {
     struct servent *srv = getservbyname(settings[PORT], "UDP");
     if (srv) {
-      *port = srv->s_port;
+      *port = (unsigned short)srv->s_port;
       status = 1;
     } else {
       char *endptr;
@@ -75,7 +75,7 @@ EXPORT int UdpEventGetPort(unsigned short *port) {
   }
   if (status == 0) {
     struct servent *srv = getservbyname("mdsevent_port","udp");
-    *port = srv ? srv->s_port : 4000;
+    *port = srv ? (unsigned short)srv->s_port : 4000u;
     status = 1;
   }
   return status;
@@ -112,7 +112,8 @@ EXPORT int UdpEventGetInterface(struct in_addr **interface_addr) {
 #endif
 
 EXPORT int UdpEventGetAddress(char **address, unsigned char *arange) {
-  unsigned int num, p1 = 224, p2 = 0, p3 = 0, p4 = 175, p5 = 255;
+  int num;
+  unsigned int p1 = 224, p2 = 0, p3 = 0, p4 = 175, p5 = 255;
   *address = (char *)malloc(50);
   arange[0]=0;
   arange[1]=255;
@@ -125,7 +126,7 @@ EXPORT int UdpEventGetAddress(char **address, unsigned char *arange) {
 	       && (p1 < 256) && (p2 < 256) && (p3 < 256) && (p4 < 256) && (p5 >= p4) && (p5 < 256)){
       sprintf(*address, "%d.%d.%d.%%d", p1, p2, p3);
       arange[0] = (unsigned char)p4;
-      arange[1] = num < 5 ? (unsigned char)p4 : (unsigned char)p5;
+      arange[1] = (unsigned char)(num < 5 ? p4 : p5);
     } else {
       fprintf(stderr,
 	      "Invalid address format specified. Specify either n.n.n.n or n.n.n.n-n format.\nDefaulting to 224.0.0.175");
@@ -155,7 +156,6 @@ static const char *getProperty(xmlDocPtr doc, const char *settings, const char *
   }
   return ans;
 }
-    
 
 void InitializeEventSettings()
 {

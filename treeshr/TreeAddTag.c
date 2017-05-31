@@ -84,7 +84,7 @@ the tag name specified does not already exist.
     return TreeTAGNAMLEN;
 
   for (i = 0; i < len; i++)
-    tag[i] = toupper(tagnam[i]);
+    tag[i] = (char)toupper(tagnam[i]);
   for (i = len; i < 24; i++)
     tag[i] = ' ';
 
@@ -147,13 +147,13 @@ the tag name specified does not already exist.
    to the end of the existing tag information blocks.
   ********************************************************/
 
-    new_tags_ptr = memset(malloc(pages_needed * 512), 0, pages_needed * 512);
+    new_tags_ptr = calloc(512,(size_t)pages_needed);
     if (!(new_tags_ptr)) {
       return TreeMEMERR;
     }
-    memcpy(new_tags_ptr, old_tags_ptr, newtag_idx * sizeof(int));
+    memcpy(new_tags_ptr, old_tags_ptr, (size_t)newtag_idx * sizeof(int));
     memcpy(new_tags_ptr + newtag_idx + 1, old_tags_ptr + newtag_idx,
-	   (tags - newtag_idx) * sizeof(int));
+	   (size_t)(tags - newtag_idx) * sizeof(int));
     *(new_tags_ptr + newtag_idx) = swapint((char *)&tags);
     if (dblist->tree_info->edit->tags_pages > 0)
       free(old_tags_ptr);
@@ -171,7 +171,7 @@ the tag name specified does not already exist.
   ********************************************************/
 
     memmove(old_tags_ptr + newtag_idx + 1, old_tags_ptr + newtag_idx,
-	    (tags - newtag_idx) * sizeof(int));
+	    (size_t)(tags - newtag_idx) * sizeof(int));
     *(old_tags_ptr + newtag_idx) = swapint((char *)&tags);	/* Load new */
   }
 
@@ -191,8 +191,8 @@ the tag name specified does not already exist.
  is allocated in multiples of 512 byte chunks.
 ********************************************************/
 
-  pages_needed = ((tags + 1) * sizeof(TAG_INFO) + 511) / 512;
-  pages_allocated = max((int)(tags * sizeof(TAG_INFO) + 511) / 512,
+  pages_needed = ((tags + 1) * (int)sizeof(TAG_INFO) + 511) / 512;
+  pages_allocated = max((tags * (int)sizeof(TAG_INFO) + 511) / 512,
 			dblist->tree_info->edit->tag_info_pages);
   if (pages_needed > pages_allocated) {
 
@@ -206,11 +206,11 @@ the tag name specified does not already exist.
   *******************************************************/
 
     pages_needed = pages_needed + 31;
-    new_tag_info_ptr = memset(malloc(pages_needed * 512), 0, pages_needed * 512);
+    new_tag_info_ptr = calloc(512,(size_t)pages_needed);
     if (!new_tag_info_ptr)
       return TreeMEMERR;
 
-    memcpy(new_tag_info_ptr, dblist->tree_info->tag_info, tags * sizeof(TAG_INFO));
+    memcpy(new_tag_info_ptr, dblist->tree_info->tag_info, (size_t)tags * sizeof(TAG_INFO));
     *(new_tag_info_ptr + tags) = tag_info;	/* Load new */
     if (dblist->tree_info->edit->tag_info_pages > 0)
       free(dblist->tree_info->tag_info);

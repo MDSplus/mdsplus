@@ -68,7 +68,7 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
    Convert to upper case.
 ***************************/
   for (i = 0; i < (int)strlen(newname); i++) {
-    upcase_name[i] = toupper(newname[i]);
+    upcase_name[i] = (char)toupper(newname[i]);
   }
   upcase_name[i] = 0;
 /****************************************************
@@ -184,9 +184,9 @@ static int FixParentState(PINO_DATABASE * dblist, NODE * parent_ptr, NODE * chil
   NID child_nid;
   int parent_state;
   int child_parent_state;
-  static int retlen;
-  static unsigned int child_flags;
-  static NCI_ITM child_itm_list[] =
+  int retlen;
+  unsigned int child_flags;
+  NCI_ITM child_itm_list[] =
       { {sizeof(unsigned int), NciGET_FLAGS, (unsigned char *)&child_flags, &retlen},
 	{0, NciEND_OF_LIST, 0, 0}
   };

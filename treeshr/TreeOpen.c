@@ -118,7 +118,7 @@ static char *TreePath(char *tree, char *tree_lower_out)
   char pathname[32];
   char *path;
   for (i = 0; i < len && i < 12; ++i)
-    tree_lower[i] = tolower(tree[i]);
+    tree_lower[i] = (char)tolower(tree[i]);
   strcpy(pathname, tree_lower);
   strcat(pathname, TREE_PATH_SUFFIX);
   if (tree_lower_out)
@@ -158,7 +158,7 @@ static char *ReplaceAliasTrees(char *tree_in)
   }
   free(tree_in);
   for (i = 0; i < buflen; ++i)
-    ans[i] = toupper(ans[i]);
+    ans[i] = (char)toupper(ans[i]);
   return ans;
 }
 
@@ -201,7 +201,7 @@ EXPORT int _TreeOpen(void **dbid, char const *tree_in, int shot_in, int read_onl
 	  if (db_slot_status == TreeNORMAL)
 	    (*dblist)->default_node = (*dblist)->tree_info->root;
 	  (*dblist)->open = 1;
-	  (*dblist)->open_readonly = read_only_flag;
+	  (*dblist)->open_readonly = read_only_flag!=0;
 	} else {
 	  PINO_DATABASE *db;
 	  for (db = *dblist; db->next; db = db->next) ;
@@ -230,7 +230,7 @@ static void RemoveBlanksAndUpcase(char *out, char const *in)
   while (*in) {
     char c = *in++;
     if (!isspace(c))
-      *out++ = toupper(c);
+      *out++ = (char)toupper(c);
   }
   *out = 0;
 }
@@ -250,7 +250,7 @@ int _TreeClose(void **dbid, char const *tree, int shot)
       char uptree[13] = { 0 };
       size_t len = strlen(tree);
       for (i = 0; i < 12 && i < len; ++i)
-	uptree[i] = toupper(tree[i]);
+	uptree[i] = (char)toupper(tree[i]);
       status = TreeNOT_OPEN;
       if (!shot)
 	shot = TreeGetCurrentShotId(tree);
@@ -357,7 +357,7 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
 	    if (local_info->section_addr[0]) {
 #ifndef _WIN32
 	      if (local_info->mapped)
-		munmap(local_info->section_addr[0], local_info->alq * 512);
+		munmap(local_info->section_addr[0], (size_t)local_info->alq * 512);
 #endif
 	      if (local_info->vm_addr)
 		free(local_info->vm_addr);
@@ -692,7 +692,7 @@ static char *GetFname(char *tree, int shot)
     free(ans);
     ans = 0;
   }
-  expression_d.length = sprintf(expression, "%s_tree_filename(%d)", tree, shot);
+  expression_d.length = (unsigned short)sprintf(expression, "%s_tree_filename(%d)", tree, shot);
   expression_d.pointer = expression;
   arglist[0] = (void *)3;
   arglist[1] = &expression_d;
@@ -706,7 +706,7 @@ static char *GetFname(char *tree, int shot)
   if STATUS_OK
     status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
   if (status & 1) {
-    ans = strncpy(malloc(fname.length + 2), fname.pointer, fname.length);
+    ans = strncpy(malloc((size_t)fname.length + 2), fname.pointer, fname.length);
     ans[fname.length] = '+';
     ans[fname.length + 1] = 0;
   } else {
@@ -997,7 +997,7 @@ static int MapFile(int fd, TREE_INFO * info, int nomap)
   if (status == TreeNORMAL) {
     if (nomap) {
       status =
-	  (MDS_IO_READ(fd, (void *)info->section_addr[0], 512 * info->alq) ==
+	  (MDS_IO_READ(fd, (void *)info->section_addr[0], (size_t)info->alq * 512) ==
 	   (512 * info->alq)) ? TreeNORMAL : TreeTREEFILEREADERR;
     }
 #if (!defined (_WIN32))
@@ -1006,7 +1006,7 @@ static int MapFile(int fd, TREE_INFO * info, int nomap)
 #define MAP_FILE 0
 #endif
       info->section_addr[0] =
-	  mmap(0, info->alq * 512, PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE,
+	  mmap(0, (size_t)info->alq * 512, PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE,
 	       MDS_IO_FD(info->channel), 0);
       status = info->section_addr[0] != (void *)-1;
       if (!status) {
@@ -1029,14 +1029,14 @@ static int MapFile(int fd, TREE_INFO * info, int nomap)
       info->blockid = TreeBLOCKID;
       info->header = (TREE_HEADER *) info->section_addr[0];
       FixupHeader(info->header);
-      info->node = (NODE *) (info->section_addr[0] + ((sizeof(TREE_HEADER) + 511) / 512) * 512);
+      info->node = (NODE *) (info->section_addr[0] + (((int)sizeof(TREE_HEADER) + 511) / 512) * 512);
       info->tags =
-	  (int *)(((char *)info->node) + ((info->header->nodes * sizeof(NODE) + 511) / 512) * 512);
+	  (int *)(((char *)info->node) + ((info->header->nodes * (int)sizeof(NODE) + 511) / 512) * 512);
       info->tag_info =
 	  (TAG_INFO *) (((char *)info->tags) + ((info->header->tags * 4 + 511) / 512) * 512);
       info->external =
 	  (int *)(((char *)info->tag_info) +
-		  ((info->header->tags * sizeof(TAG_INFO) + 511) / 512) * 512);
+		  ((info->header->tags * (int)sizeof(TAG_INFO) + 511) / 512) * 512);
       TreeEstablishRundownEvent(info);
       status = TreeNORMAL;
     } else if (info->vm_addr)
@@ -1050,7 +1050,7 @@ static int GetVmForTree(TREE_INFO * info, int nomap)
   int status = TreeNORMAL;
   info->vm_pages = info->alq;
   if (nomap) {
-    info->vm_addr = memset(malloc(info->vm_pages * 512), 0, info->vm_pages * 512);
+    info->vm_addr = calloc(512,(size_t)info->vm_pages);
     if (info->vm_addr)
       info->section_addr[0] = info->vm_addr;
     else

@@ -170,11 +170,11 @@ static void _RemoveTagIdx(PINO_DATABASE * dblist, int tagidx)
   ********************************************/
   if (this_tags_ptr) {
     size_t bytes;
-    if ((bytes =
-	 (dblist->tree_info->header->tags -
+    if ((bytes = (unsigned)(dblist->tree_info->header->tags -
 	  (this_tags_ptr - dblist->tree_info->tags)) * sizeof(int)) > 0)
       memcpy(this_tags_ptr, this_tags_ptr + 1, bytes);
-    if ((bytes = (dblist->tree_info->header->tags - tagidx) * sizeof(TAG_INFO)) > 0)
+    if ((bytes = (unsigned)(dblist->tree_info->header->tags -
+           tagidx) * sizeof(TAG_INFO)) > 0)
       memcpy(&dblist->tree_info->tag_info[tagidx - 1], &dblist->tree_info->tag_info[tagidx], bytes);
   }
   dblist->tree_info->header->tags--;

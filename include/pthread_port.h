@@ -192,7 +192,7 @@ _CONDITION_UNLOCK(input);\
 #define FREE_HP
 #else
 #define _ALLOC_HP \
-int memlen = 1024;\
+size_t memlen = 1024;\
 struct hostent hostbuf, *hp;\
 int herr;\
 char *hp_mem = (char*)malloc(memlen)
@@ -219,7 +219,7 @@ _GETHOST(_GETHOSTBYNAME(name))
 #define GETHOSTBYNAMEORADDR(name,addr) \
 GETHOSTBYNAME(name);\
 if (!hp){\
-   addr = inet_addr(name);\
+   addr = (int)inet_addr(name);\
    if (addr != -1)  _GETHOST(_GETHOSTBYADDR(addr,AF_INET));\
 }
 
