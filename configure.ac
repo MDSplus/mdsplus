@@ -340,7 +340,7 @@ LD_LDSHARE=""
 IDL_LD=""
 LIBPRE="lib"
 
-CFLAGS="$CFLAGS $GCCPROF -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
+CFLAGS="$CFLAGS $GCCPROF -Wno-clobbered -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
 CPPFLAGS="-I\${top_srcdir}/include -I\${top_builddir}/include $CPPFLAGS"
 
 if test "$exec_prefix" = "NONE" -a "$prefix" = "NONE"
