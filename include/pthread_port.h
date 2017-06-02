@@ -5,6 +5,7 @@
 #include <status.h>
 #include <STATICdef.h>
 #ifdef _WIN32
+ #include <mdsshr.h>
  #ifndef NO_WINDOWS_H
   #include <windows.h>
  #endif
@@ -70,7 +71,7 @@ typedef struct _Condition_p {
 } Condition_p;
 
 #ifdef DEF_FREEBEGIN
- static void __attribute__((unused)) freebegin(void* ptr){
+ __attribute__((unused)) static void freebegin(void* ptr){
    if (((struct TdiZoneStruct*)ptr)->a_begin) {
      free(((struct TdiZoneStruct*)ptr)->a_begin);
      ((struct TdiZoneStruct*)ptr)->a_begin=NULL;
@@ -86,7 +87,7 @@ typedef struct _Condition_p {
 #endif
 #ifdef DEF_FREED
  #include <strroutines.h>
- static void __attribute__((unused)) freed(void *ptr){
+ __attribute__((unused)) static void freed(void *ptr){
    StrFree1Dx((struct descriptor_d*)ptr);
  }
  #ifdef _WIN32
@@ -99,7 +100,7 @@ typedef struct _Condition_p {
 #endif
 #ifdef DEF_FREEXD
  #include <mdsshr.h>
- static void __attribute__((unused)) freexd(void *ptr){
+ __attribute__((unused)) static void freexd(void *ptr){
    MdsFree1Dx((struct descriptor_xd*)ptr, NULL);
  }
  #ifdef _WIN32
@@ -122,6 +123,24 @@ typedef struct _Condition_p {
 
 #define CONDITION_INITIALIZER {PTHREAD_COND_INITIALIZER,PTHREAD_MUTEX_INITIALIZER,B_FALSE}
 
+// macros to securely lock and unlock upon cancelation
+__attribute__((unused)) static void _mutex_unlock(void *mutex_p){
+  pthread_mutex_unlock((pthread_mutex_t*)mutex_p);
+}
+#ifdef DEF_RWLOCK_C
+__attribute__((unused)) static void _rwlock_unlock(void *rwlock_p){
+  pthread_rwlock_unlock((pthread_rwlock_t*)rwlock_p);
+}
+#define RWLOCK_WRLOCK_C(input)     pthread_rwlock_wrlock(input);pthread_cleanup_push(_rwlock_unlock,input)
+#define RWLOCK_RDLOCK_C(input)     pthread_wrlock_rdlock(input);pthread_cleanup_push(_rwlock_unlock,input)
+#define RWLOCK_UNLOCK_C(input)     pthread_cleanup_pop(1)
+#endif
+#define MUTEX_LOCK_C(input)        pthread_mutex_lock(input);pthread_cleanup_push(_mutex_unlock,input)
+#define MUTEX_UNLOCK_C(input)      pthread_cleanup_pop(1)
+#define _CONDITION_LOCK_C(input)   MUTEX_LOCK_C(&(input)->mutex)
+#define _CONDITION_UNLOCK_C(input) MUTEX_UNLOCK_C(&(input)->mutex)
+
+// macros to handle locks singels and waits of conditionals
 #define CONDITION_INIT(input){\
 (input)->value = 0;\
 pthread_cond_init(&(input)->cond, pthread_condattr_default);\
@@ -130,7 +149,10 @@ pthread_mutex_init(&(input)->mutex, pthread_mutexattr_default);\
 #define _CONDITION_LOCK(input)   pthread_mutex_lock(&(input)->mutex)
 #define _CONDITION_UNLOCK(input) pthread_mutex_unlock(&(input)->mutex)
 #define _CONDITION_SIGNAL(input) pthread_cond_signal(&(input)->cond)
-#define _CONDITION_WAIT_SET(input) while (!(input)->value) {pthread_cond_wait(&(input)->cond,&(input)->mutex);}
+#define _CONDITION_WAIT(input)   pthread_cond_wait(&(input)->cond,&(input)->mutex)
+
+#define _CONDITION_WAIT_SET(input)   while (!(input)->value) _CONDITION_WAIT(input);
+#define _CONDITION_WAIT_RESET(input) while ( (input)->value) _CONDITION_WAIT(input);
 #define _CONDITION_WAIT_1SEC(input,status){\
 struct timespec tp;\
 clock_gettime(CLOCK_REALTIME, &tp);\
@@ -146,14 +168,19 @@ _CONDITION_UNLOCK(input);\
 #define CONDITION_SET(input)   CONDITION_SET_TO(input,B_TRUE)
 #define CONDITION_RESET(input) CONDITION_SET_TO(input,0)
 #define CONDITION_WAIT_SET(input){\
-_CONDITION_LOCK(input);\
+_CONDITION_LOCK_C(input);\
 _CONDITION_WAIT_SET(input);\
-_CONDITION_UNLOCK(input);\
+_CONDITION_UNLOCK_C(input);\
+}
+#define CONDITION_WAIT_RESET(input){\
+_CONDITION_LOCK_C(input);\
+_CONDITION_WAIT_RESET(input);\
+_CONDITION_UNLOCK_C(input);\
 }
 #define CONDITION_WAIT_1SEC(input){\
-_CONDITION_LOCK(input);\
+_CONDITION_LOCK_C(input);\
 _CONDITION_WAIT_1SEC(input,);\
-_CONDITION_UNLOCK(input);\
+_CONDITION_UNLOCK_C(input);\
 }
 #define CONDITION_DESTROY(input){\
 _CONDITION_LOCK(input);\
