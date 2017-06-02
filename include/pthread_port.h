@@ -130,7 +130,9 @@ pthread_mutex_init(&(input)->mutex, pthread_mutexattr_default);\
 #define _CONDITION_LOCK(input)   pthread_mutex_lock(&(input)->mutex)
 #define _CONDITION_UNLOCK(input) pthread_mutex_unlock(&(input)->mutex)
 #define _CONDITION_SIGNAL(input) pthread_cond_signal(&(input)->cond)
-#define _CONDITION_WAIT_SET(input) while (!(input)->value) {pthread_cond_wait(&(input)->cond,&(input)->mutex);}
+#define _CONDITION_WAIT(input)   pthread_cond_wait(&(input)->cond,&(input)->mutex)
+#define _CONDITION_WAIT_SET(input)   while (!(input)->value) _CONDITION_WAIT(input)
+#define _CONDITION_WAIT_RESET(input) while ( (input)->value) _CONDITION_WAIT(input)
 #define _CONDITION_WAIT_1SEC(input,status){\
 struct timespec tp;\
 clock_gettime(CLOCK_REALTIME, &tp);\
