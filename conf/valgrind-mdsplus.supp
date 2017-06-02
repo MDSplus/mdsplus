@@ -9,7 +9,5 @@
 {
    race in threadsafe posix gethostbyname_r
    Helgrind:Race
-   fun:_nss_files_gethostbyname3_r
-   fun:_nss_files_gethostbyname_r
-   fun:gethostbyname_r*
+   fun:_nss_files_gethostbyname*_r
 }

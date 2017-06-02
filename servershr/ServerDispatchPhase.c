@@ -108,6 +108,11 @@ STATIC_THREADSAFE pthread_cond_t wake_completed_cond = PTHREAD_COND_INITIALIZER;
 STATIC_THREADSAFE pthread_mutex_t send_monitor_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
 STATIC_THREADSAFE pthread_mutex_t completed_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+STATIC_THREADSAFE pthread_rwlock_t table_lock = PTHREAD_RWLOCK_INITIALIZER;
+#define WRLOCK_TABLE pthread_rwlock_wrlock(&table_lock)
+#define RDLOCK_TABLE pthread_rwlock_rdlock(&table_lock)
+#define UNLOCK_TABLE pthread_rwlock_unlock(&table_lock)
+
 #define WRLOCK_ACTION(idx) pthread_rwlock_wrlock(&table->actions[idx].lock)
 #define RDLOCK_ACTION(idx) pthread_rwlock_rdlock(&table->actions[idx].lock)
 #define UNLOCK_ACTION(idx) pthread_rwlock_unlock(&table->actions[idx].lock)
@@ -140,6 +145,7 @@ void SendMonitor(int mode, int idx){
     char tree[13];
     char *cptr;
     int i;
+    RDLOCK_TABLE;{
     for (i = 0, cptr = table->tree; i < 12; i++)
       if (cptr[i] == (char)32)
 	break;
@@ -156,6 +162,7 @@ void SendMonitor(int mode, int idx){
     MonitorOn = ServerSendMonitor(Monitor, tree, table->shot, actions[idx].phase,
 				  actions[idx].nid, on, mode, server, actions[idx].status);
     UNLOCK_ACTION(idx);
+    }UNLOCK_TABLE;
   }
 }
 
@@ -174,6 +181,7 @@ STATIC_ROUTINE void ActionDone(int idx){
   int i;
   char logmsg[1024];
   if (idx >= 0) {
+    RDLOCK_TABLE;{
     RDLOCK_ACTION(idx);
     ActionInfo *actions = table->actions;
     if (actions[idx].event)
@@ -223,10 +231,11 @@ STATIC_ROUTINE void ActionDone(int idx){
         }
       }
     }UNLOCK_ACTION(idx);
-    WRLOCK_ACTION(idx);
+    WRLOCK_ACTION(idx);{
     actions[idx].done = 1;
     actions[idx].recorded = 0;
-    UNLOCK_ACTION(idx);
+    }UNLOCK_ACTION(idx);
+    }UNLOCK_TABLE;
   }
   pthread_mutex_lock(&JobWaitMutex);
   pthread_cond_signal(&JobWaitCondition);
@@ -234,6 +243,7 @@ STATIC_ROUTINE void ActionDone(int idx){
 }
 
 STATIC_ROUTINE void Before(int idx){
+  RDLOCK_TABLE;{
   WRLOCK_ACTION(idx);{
   ActionInfo *actions = table->actions;
   char logmsg[1024];
@@ -246,6 +256,7 @@ STATIC_ROUTINE void Before(int idx){
     (*Output) (logmsg);
   }
   }UNLOCK_ACTION(idx);
+  }UNLOCK_TABLE;
 }
 
 /* FIND_NEXT_ACTION(START,END,CONDITION)
@@ -265,6 +276,7 @@ UNLOCK_ACTION(i);\
 
 STATIC_ROUTINE void SetActionRanges(int phase, int *first_c, int *last_c){
   int i;
+  RDLOCK_TABLE;{
   ActionInfo *actions = table->actions;
 #ifdef DEBUG
   PRINT_ACTIONS;
@@ -292,6 +304,7 @@ STATIC_ROUTINE void SetActionRanges(int phase, int *first_c, int *last_c){
     first_s = table->num;
     last_s = table->num;
   }
+  }UNLOCK_TABLE;
 #ifdef DEBUG
   fprintf(stderr,"ActionRange: %d,%d,%d,%d\n",*first_c, *last_c, first_s, last_s);
 #endif
@@ -300,6 +313,7 @@ STATIC_ROUTINE void SetActionRanges(int phase, int *first_c, int *last_c){
 STATIC_ROUTINE void AbortRange(int s, int e)
 {
   int i;
+  RDLOCK_TABLE;{
   ActionInfo *actions = table->actions;
   for (i = s; i < e; i++) {
     RDLOCK_ACTION(i);
@@ -310,6 +324,7 @@ STATIC_ROUTINE void AbortRange(int s, int e)
     }
     UNLOCK_ACTION(i);
   }
+  }UNLOCK_TABLE;
 }
 
 STATIC_ROUTINE void SetGroup(int sync, int first_g, int *last_g){
@@ -319,6 +334,7 @@ STATIC_ROUTINE void SetGroup(int sync, int first_g, int *last_g){
   }
   int i;
   int group;
+  RDLOCK_TABLE;{
   ActionInfo *actions = table->actions;
   sync = (sync < 1) ? 1 : sync;
   RDLOCK_ACTION(first_g);
@@ -326,6 +342,7 @@ STATIC_ROUTINE void SetGroup(int sync, int first_g, int *last_g){
   UNLOCK_ACTION(first_g);
   FIND_NEXT_ACTION(first_g+1, last_s, (actions[i].sequence / sync) != group);
   FIND_NEXT_ACTION_END(last_s);
+  }UNLOCK_TABLE;
   *last_g = i;
 }
 
@@ -343,6 +360,7 @@ STATIC_ROUTINE int NoOutstandingActions(const int s, const int e){
 STATIC_ROUTINE void RecordStatus(int s, int e)
 {
   int i;
+  RDLOCK_TABLE;{
   ActionInfo *actions = table->actions;
   for (i = s; i < e; i++) {
     WRLOCK_ACTION(i);
@@ -365,10 +383,10 @@ STATIC_ROUTINE void RecordStatus(int s, int e)
     }
     UNLOCK_ACTION(i);
   }
+  }UNLOCK_TABLE;
 }
 
-STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g, int first_c, int last_c)
-{
+STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g, int first_c, int last_c){
   int c_status = C_OK;
   pthread_mutex_lock(&JobWaitMutex);
   struct timespec tp;
@@ -392,13 +410,13 @@ STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g, int first_c
   pthread_mutex_unlock(&JobWaitMutex);
 }
 
-STATIC_ROUTINE char *DetailProc(int full)
-{
+STATIC_ROUTINE char *DetailProc(int full){
   int i;
   int doing;
   char msg1[1024];
   char *msg = NULL;
   unsigned int msglen = 4096;
+  RDLOCK_TABLE;{
   ActionInfo *actions = table->actions;
   for (doing = 1; doing > (full ? -1 : 0); doing--) {
     for (i = 0; i < table->num; i++) {
@@ -422,12 +440,12 @@ STATIC_ROUTINE char *DetailProc(int full)
       }
     }
   }
+  }UNLOCK_TABLE;
   return msg;
 }
 
 EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, char *phasenam, char noact_in,
-			int sync, void (*output_rtn) (), char *monitor)
-{
+			int sync, void (*output_rtn) (), char *monitor){
   int i;
   int status;
   int phase;
@@ -436,11 +454,13 @@ EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, c
   STATIC_CONSTANT DESCRIPTOR(phase_lookup, "PHASE_NUMBER_LOOKUP($)");
   struct descriptor phasenam_d = { 0, DTYPE_T, CLASS_S, 0 };
   phase_d.pointer = (char *)&phase;
+  WRLOCK_TABLE;{
   table = vtable;
+  table->failed_essential = 0;
+  }UNLOCK_TABLE;
   Output = output_rtn;
   noact = noact_in;
   AbortInProgress = 0;
-  table->failed_essential = 0;
   phasenam_d.length = strlen(phasenam);
   phasenam_d.pointer = phasenam;
   ProgLoc = 6005;
@@ -487,6 +507,7 @@ EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, c
     WaitForActions(1, first_g, last_g, first_c, last_c);
     ProgLoc = 6015;
     AbortInProgress = 1;
+    RDLOCK_TABLE;{
     ActionInfo *actions = table->actions;
     for (i = first_c; i < last_c; i++) {
       RDLOCK_ACTION(i);
@@ -498,6 +519,7 @@ EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, c
       }
       UNLOCK_ACTION(i);
     }
+    }UNLOCK_TABLE;
     ProgLoc = 6015;
     WaitForActions(1, first_g, last_g, first_c, last_c);
     ProgLoc = 6016;
@@ -512,12 +534,14 @@ EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, c
   return status;
 }
 
-EXPORT int ServerFailedEssential(void *vtable, int reset)
-{
+EXPORT int ServerFailedEssential(void *vtable, int reset){
+  int failed;
+  WRLOCK_TABLE;{
   DispatchTable *table = vtable;
-  int failed = table ? table->failed_essential : 0;
+  failed = table ? table->failed_essential : 0;
   if (table && reset)
     table->failed_essential = 0;
+  }UNLOCK_TABLE;
   return failed;
 }
 
@@ -525,6 +549,7 @@ STATIC_ROUTINE void Dispatch(int i){
   INIT_STATUS;
   char logmsg[1024];
   char server[33];
+  RDLOCK_TABLE;{
   WRLOCK_ACTION(i);{
     ActionInfo *actions = table->actions;
     actions[i].done = 0;
@@ -559,6 +584,7 @@ STATIC_ROUTINE void Dispatch(int i){
     }
     ProgLoc = 7005;
   }UNLOCK_ACTION(i);
+  }UNLOCK_TABLE;
 }
 
 STATIC_ROUTINE void WakeCompletedActionQueue(){
