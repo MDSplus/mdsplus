@@ -13,7 +13,8 @@ HELP_DESCRIPTION = This is MDSplus build system, documented targets follow:
 
 JAVA_APS = javamds \
 	   javascope \
-           javatraverser \
+	   javatraverser \
+	   javatraverser2/java/mds/mdslib \
 	   javadispatcher \
 	   javadevices \
 	   javaclient \
