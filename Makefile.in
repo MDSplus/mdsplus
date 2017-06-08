@@ -11,7 +11,8 @@ VPATH=@srcdir@
 @TARGET_SELFHELP@
 HELP_DESCRIPTION = This is MDSplus build system, documented targets follow:
 
-JAVA_APS = javamds \
+JAVA_APS = \
+           javamds \
 	   javascope \
 	   javatraverser \
 	   javatraverser2/java/mds/mdslib \
@@ -31,8 +32,17 @@ HDF5_APS = hdf5
 
 D3D_PACKAGE = d3dshr
 
+ifeq "@JAVA_ONLY@" "yes"
+PARTS = javascope \
+        javatraverser \
+	javatraverser2 \
+	javadispatcher \
+	javadevices \
+	javaclient \
+	mdsobjects/java
+else
 PARTS = \
-mdsshr \
+        mdsshr \
         treeshr \
         tdishr \
         tditest \
@@ -67,7 +77,7 @@ mdsshr \
 
 @MINGW_TRUE@ PARTS += icons
 @ENABLE_TESTS_TRUE@ PARTS += testing
-
+endif
 
 .PHONY: all $(PARTS)
 all: ##@build build all active submodules

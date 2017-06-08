@@ -1,6 +1,6 @@
 EXTRA_DIST = servlet-2_3-fcs-classfiles.zip
 CLEANFILES = $(java_DATA)
-
+dist_java_DATA = jTraverser.jar DeviceBeans.jar
 JAVAROOT = $(builddir)
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
@@ -19,22 +19,6 @@ endif
 #$(INSTALL) -D $< $@
 # Build the class files
 CLASSPATH_ENV = CLASSPATH=$(top_builddir)/javascope/jScope.jar
-java_JAVA = $(SOURCES)
-
-# Build the final jar
-java_DATA = jTraverser.jar DeviceBeans.jar 
-
-
-jTraverser.jar: $(GIFS) classjava.stamp
-	@ echo "Creating JAR: $@ ..."; \
-	  $(JAR) c0f $@ $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
-
-DeviceBeans.jar: classjava.stamp $(GIFS) DeviceBeansManifest.mf
-	@ echo "Creating JAR: $@ ..."; \
-	  $(JAR) c0fm $@ ${srcdir}/DeviceBeansManifest.mf \
-	  $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
-
-# Giant list of source files follow
 
 SOURCES = \
 	ActionData.java\
@@ -211,3 +195,29 @@ GIFS = \
 	text.gif           \
 	window.gif
 
+if USE_JARS_DIR
+
+jTraverser.jar : @JARS_DIR@/javatraverser/jTraverser.jar
+	cp $< $@
+
+DeviceBeans.jar : @JARS_DIR@/javatraverser/DeviceBeans.jar
+	cp $< $@
+
+else
+
+java_JAVA = $(SOURCES)
+
+# Build the final jar
+java_DATA = jTraverser.jar DeviceBeans.jar 
+
+
+jTraverser.jar: $(GIFS) classjava.stamp
+	@ echo "Creating JAR: $@ ..."; \
+	  $(JAR) c0f $@ $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
+
+DeviceBeans.jar: classjava.stamp $(GIFS) DeviceBeansManifest.mf
+	@ echo "Creating JAR: $@ ..."; \
+	  $(JAR) c0fm $@ ${srcdir}/DeviceBeansManifest.mf \
+	  $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
+
+endif

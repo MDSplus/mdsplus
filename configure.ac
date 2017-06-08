@@ -50,6 +50,18 @@ AX_CHECK_ENABLE_DEBUG([no],,,,[-g -O3])
 dnl AX_TARGET_SELFHELP /////////////////////////////////////////////////////////
 AX_TARGET_SELFHELP
 
+AC_ARG_ENABLE([java_only],
+              [AS_HELP_STRING([--enable-java_only],
+                              [Only build java jar files])],
+              [AS_VAR_SET([JAVA_ONLY],[yes])])
+
+AC_ARG_WITH([jars],
+	    [AS_HELP_STRING([--with-jars=directory],
+                            [specify directory tree to find java jars])],
+	    [AS_VAR_SET([JARS_DIR],[$withval])],
+	    [AS_VAR_SET([JARS_DIR],[])])
+
+AM_CONDITIONAL([USE_JARS_DIR],[test x"$JARS_DIR" != x])
 
 # Checks for programs.
 AC_PROG_AWK
@@ -1201,6 +1213,8 @@ AC_SUBST(IDL_INC)
 AC_SUBST(IDL_LIB)
 AC_SUBST(IDLMDSEVENT)
 AC_SUBST(IDLMDSWIDGETS)
+AC_SUBST(JARS_DIR)
+AC_SUBST(JAVA_ONLY)
 AC_SUBST(JAVA_APS)
 AC_SUBST(JAVACFLAGS)
 AC_SUBST(JDK_CFLAGS)

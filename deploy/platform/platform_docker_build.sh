@@ -28,14 +28,19 @@ testarch(){
     normaltest $@;
 }
 config() {
+    if [ -z "$JARS_DIR" ]
+    then
+	JAVA_OPTS="--with-java_target=6 --with-java_bootclasspath=/source/rt.jar"
+    else
+	JAVA_OPTS="--with-jars=${JARS_DIR}"
+    fi
     :&& /source/configure \
         --prefix=${MDSPLUS_DIR} \
         --exec_prefix=${MDSPLUS_DIR} \
         --host=$2 \
         --bindir=${MDSPLUS_DIR}/$3 \
         --libdir=${MDSPLUS_DIR}/$4 \
-        --with-java_target=6 \
-        --with-java_bootclasspath=/source/rt.jar \
+        ${JAVA_OPTS} \
         $5 $6 $7 $8 $9;
     status=$?
 }
