@@ -1290,6 +1290,8 @@ AC_OUTPUT(Makefile.inc
           javamds/Makefile
           javascope/Makefile
           javatraverser/Makefile
+          javatraverser2/Makefile
+          javatraverser2/java/mds/mdslib/Makefile
           javadevices/Makefile
           LabView/Makefile
           manpages/Makefile
