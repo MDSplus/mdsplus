@@ -18,7 +18,7 @@ SYNOPSIS
                  [--release] [--releasedir=directory]
                  [--publish] [--publishdir=directory]
                  [--keys=dir] [--dockerpull] [--color]
-                 [--pypi]
+                 [--pypi] [--make_jars ]
 
 DESCRIPTION
     The trigger.sh script is used in conjunction with platform build jobs
@@ -36,6 +36,14 @@ DESCRIPTION
     can publish the new releases they just built.
 
 OPTIONS
+
+   --make_jars
+       Build the java jars file in a build_jars subdirectory. This will make
+       the directory if necessary, cd to that directory and run 
+       configure --enable-java_only and build the java jars in that directory
+       tree. This is used to build the jar files once and then trigger the 
+       platform builds with a --jars_dir=directory option so platform builds
+       can just cp the jar files from the trigger directory location.
 
    --test[=skip]
        Build and test the mdsplus sources. The type of tests attempted
@@ -123,6 +131,9 @@ OPTIONS
 
 EOF
 }
+
+SRCDIR=$(realpath $(dirname ${0})/..)
+
 opts=""
 parsecmd() {
     for i in $1
@@ -131,6 +142,10 @@ parsecmd() {
 	    --help|-h|-\?)
 		printhelp
 		exit
+		;;
+	    --make_jars)
+		JARS_DIR=${SRCDIR}/build_jars
+		opts="${opts} --jars_dir=${JARS_DIR}"
 		;;
 	    --test)
 		opts="${opts} ${i}"
@@ -228,7 +243,38 @@ NORMAL() {
     fi
 }
 
-SRCDIR=$(realpath $(dirname ${0})/..)
+if [ ! -z "${JARS_DIR}" ]
+then
+    if ( mkdir -p ${JARS_DIR} )
+    then
+	pushd ${JARS_DIR}
+	if (! (${SRCDIR}/configure --enable-java_only --with-java_target=6 \
+               --with-java_bootclasspath=${SRCDIR}/rt.jar && make) )
+	then
+	    RED $COLOR
+	    cat <<EOF >&2
+===============================================
+
+Error creating java jar files. Trigger failed.
+
+===============================================
+EOF
+	    NORMAL $COLOR
+	    exit 1
+	fi
+	popd
+    else
+	RED $COLOR
+	cat <<EOF >&2
+===============================================
+
+Error creating java directory
+
+===============================================
+EOF
+	NORMAL $COLOR
+    fi
+fi
 
 if [ "$RELEASE" = "yes" -a "$PUBLISH" = "yes" ]
 then

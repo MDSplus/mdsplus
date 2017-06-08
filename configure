@@ -693,6 +693,8 @@ JDK_DIR
 JDK_CFLAGS
 JAVACFLAGS
 JAVA_APS
+JAVA_ONLY
+JARS_DIR
 IDLMDSWIDGETS
 IDLMDSEVENT
 IDL_LIB
@@ -889,6 +891,8 @@ CPPFLAGS
 LDFLAGS
 CXXFLAGS
 CXX
+USE_JARS_DIR_FALSE
+USE_JARS_DIR_TRUE
 TARGET_SELFHELP
 MAINT
 MAINTAINER_MODE_FALSE
@@ -981,6 +985,8 @@ with_docker_url
 enable_silent_rules
 enable_maintainer_mode
 enable_debug
+enable_java_only
+with_jars
 enable_dependency_tracking
 enable_largefile
 enable_shared
@@ -1669,6 +1675,7 @@ Optional Features:
                           sometimes confusing) to the casual installer
   --enable-debug=[yes/info/profile/no]
                           compile with debugging
+  --enable-java_only      Only build java jar files
   --enable-dependency-tracking
                           do not reject slow dependency extractors
   --disable-dependency-tracking
@@ -1703,6 +1710,7 @@ Optional Packages:
   --with-docker-image     specify docker images
   --with-docker-container specify docker container
   --with-docker-url       specify docker url
+  --with-jars=directory   specify directory tree to find java jars
   --with-jdk=JDKDIR       specify location of java jdk
   --with-java_target=version
                           specify version of compiled mdsobjects classes (i.e.
@@ -4647,6 +4655,29 @@ _as_read_EOF
 
 
 
+
+# Check whether --enable-java_only was given.
+if test "${enable_java_only+set}" = set; then :
+  enableval=$enable_java_only; JAVA_ONLY=yes
+fi
+
+
+
+# Check whether --with-jars was given.
+if test "${with_jars+set}" = set; then :
+  withval=$with_jars; JARS_DIR=$withval
+else
+  JARS_DIR=
+fi
+
+
+ if test x"$JARS_DIR" != x; then
+  USE_JARS_DIR_TRUE=
+  USE_JARS_DIR_FALSE='#'
+else
+  USE_JARS_DIR_TRUE='#'
+  USE_JARS_DIR_FALSE=
+fi
 
 
 # Checks for programs.
@@ -17199,6 +17230,8 @@ fi
 
 
 
+
+
 ac_config_headers="$ac_config_headers include/config.h"
 
 
@@ -17332,6 +17365,10 @@ fi
 
 if test -z "${MAINTAINER_MODE_TRUE}" && test -z "${MAINTAINER_MODE_FALSE}"; then
   as_fn_error $? "conditional \"MAINTAINER_MODE\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${USE_JARS_DIR_TRUE}" && test -z "${USE_JARS_DIR_FALSE}"; then
+  as_fn_error $? "conditional \"USE_JARS_DIR\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${AMDEP_TRUE}" && test -z "${AMDEP_FALSE}"; then

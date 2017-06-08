@@ -100,6 +100,7 @@ rundocker(){
            -e "TESTFORMAT" \
            -e "UPDATEPKG" \
            -e "VALGRIND_TOOLS" \
+	   -e "JARS_DIR" \
            -e "mdsevent_port=$EVENT_PORT" \
            -e "HOME=/workspace" \
            -v $(realpath ${SRCDIR}):/source \
