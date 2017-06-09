@@ -25,11 +25,9 @@ CLASSPATH_ENV = CLASSPATH=$(JSCH):$(JAVAROOT)
 
 # Build the final jar
 JTRAVERSER_JAR = $(abs_builddir)/jTraverser.jar
-java_DATA = $(JTRAVERSER_JAR)
 TRAV_GIFS = $(addprefix ${srcdir}/java/,$(TRAV_GIF))
 
 java_SRC = $(TRAV_SRC) $(TOOLS_SRC) $(MDS_SRC)
-java_JAVA = $(addprefix ${srcdir}/java/,$(java_SRC) debug/DEBUG.java)
 java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
 java_JAR = $(java_SRC:.java=*.class) $(TRAV_GIF)
 
@@ -46,12 +44,26 @@ $(MANIFEST): $(srcdir)/JTMANIFEST.mf
 	cp -f $< $@ &&\
 	date -u "+Built-Date: %Y-%m-%d %H:%M:%S">>$@
 
+
+if USE_JARS_DIR
+
+JTRAVERSER_JAR : @JARS_DIR@/javatraverser2/jTraverser.jar
+	cp $< $@
+
+else
+
+java_DATA = $(JTRAVERSER_JAR)
+java_JAVA = $(addprefix ${srcdir}/java/,$(java_SRC) debug/DEBUG.java)
+
+# Build the final jar
 $(JTRAVERSER_JAR): $(JSCH) $(MANIFEST) $(java_CLS)
 	cp -f $(TRAV_GIFS) -t $(JAVAROOT)/jtraverser &&\
 	cp -f $(JSCH) "$@" &&\
 	pushd $(JAVAROOT) &&\
 	$(JAR) u0fm "$@" $(abs_builddir)/JTMANIFEST.mf $(java_JAR) $(TRAV_GIF) &&\
 	popd
+
+endif
 
 # Giant list of source files follow
 TRAV_SRC = \
