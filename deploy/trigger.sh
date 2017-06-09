@@ -37,11 +37,11 @@ DESCRIPTION
 
 OPTIONS
 
-   --make_jars
-       Build the java jars file in a build_jars subdirectory. This will make
-       the directory if necessary, cd to that directory and run 
+   --make_jars=fc25
+       Build the java jars file in a build_jars subdirectory of the specified os.
+       This will make the directory if necessary, cd to that directory and run
        configure --enable-java_only and build the java jars in that directory
-       tree. This is used to build the jar files once and then trigger the 
+       tree. This is used to build the jar files once and then trigger the
        platform builds with a --jars_dir=directory option so platform builds
        can just cp the jar files from the trigger directory location.
 
@@ -143,8 +143,8 @@ parsecmd() {
 		printhelp
 		exit
 		;;
-	    --make_jars)
-		JARS_DIR=${SRCDIR}/build_jars
+	    --make_jars=*)
+		MAKE_JARS=${i#*=}
 		opts="${opts} --jars_dir=${JARS_DIR}"
 		;;
 	    --test)
@@ -243,36 +243,25 @@ NORMAL() {
     fi
 }
 
-if [ ! -z "${JARS_DIR}" ]
+if [ ! -z "${MAKE_JARS}" ]
 then
-    if ( mkdir -p ${JARS_DIR} )
+    JARS_DIR=${SRCDIR}/build_jars
+    if ( ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} )
     then
-	pushd ${JARS_DIR}
-	if (! (${SRCDIR}/configure --enable-java_only --with-java_target=6 \
-               --with-java_bootclasspath=${SRCDIR}/rt.jar && make) )
-	then
-	    RED $COLOR
-	    cat <<EOF >&2
+        rm -Rf ${JARS_DIR}
+        mkdir -p ${JARS_DIR}
+        rsync -avm --include='*.jar' -f 'hide,! */' ${SRCDIR}/build/${MAKE_JARS}/jars/* ${JARS_DIR}
+    else
+	RED $COLOR
+	cat <<EOF >&2
 ===============================================
 
 Error creating java jar files. Trigger failed.
 
 ===============================================
 EOF
-	    NORMAL $COLOR
-	    exit 1
-	fi
-	popd
-    else
-	RED $COLOR
-	cat <<EOF >&2
-===============================================
-
-Error creating java directory
-
-===============================================
-EOF
 	NORMAL $COLOR
+	exit 1
     fi
 fi
 
