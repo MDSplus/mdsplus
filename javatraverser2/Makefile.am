@@ -24,7 +24,7 @@ endif
 CLASSPATH_ENV = CLASSPATH=$(JSCH):$(JAVAROOT)
 
 # Build the final jar
-JTRAVERSER_JAR = $(abs_srcdir)/jTraverser.jar
+JTRAVERSER_JAR = $(abs_builddir)/jTraverser.jar
 java_DATA = $(JTRAVERSER_JAR)
 TRAV_GIFS = $(addprefix ${srcdir}/java/,$(TRAV_GIF))
 
