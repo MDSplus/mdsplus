@@ -15,6 +15,7 @@ JAVA_APS = \
            javamds \
 	   javascope \
 	   javatraverser \
+	   javatraverser2 \
 	   javatraverser2/java/mds/mdslib \
 	   javadispatcher \
 	   javadevices \

@@ -7,6 +7,7 @@ CLASSPATH_ENV = CLASSPATH=$(JSCOPEJAR):$(JTRAVERSERJAR)
 
 javadir = $(exec_prefix)/java/classes
 java_DATA = jDispatcher.jar
+dist_java_DATA = jDispatcher.properties
 
 if USE_JARS_DIR
 
@@ -43,7 +44,6 @@ java_JAVA += ServerListener.java
 java_JAVA += ServerShowDialog.java
 java_JAVA += ServersInfoPanel.java
 
-dist_java_DATA = jDispatcher.properties
 jDispatcher.jar: classjava.stamp
 	@ echo "Creating JAR: $@ ..."; \
 	  $(JAR) c0f $@ $(CLASSES)

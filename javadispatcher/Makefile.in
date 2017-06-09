@@ -116,7 +116,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-DIST_COMMON = $(srcdir)/Makefile.am $(am__dist_java_DATA_DIST) \
+DIST_COMMON = $(srcdir)/Makefile.am $(dist_java_DATA) \
 	$(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/config.h
@@ -172,7 +172,6 @@ am__can_run_installinfo = \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
 am__java_sources = $(java_JAVA)
-am__dist_java_DATA_DIST = jDispatcher.properties
 DATA = $(dist_java_DATA) $(java_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 am__DIST_COMMON = $(srcdir)/Makefile.in
@@ -475,6 +474,7 @@ JTRAVERSERJAR = $(top_builddir)/javatraverser/jTraverser.jar
 CLASSPATH_ENV = CLASSPATH=$(JSCOPEJAR):$(JTRAVERSERJAR)
 javadir = $(exec_prefix)/java/classes
 java_DATA = jDispatcher.jar
+dist_java_DATA = jDispatcher.properties
 @USE_JARS_DIR_FALSE@java_JAVA = Action.java ActionServer.java \
 @USE_JARS_DIR_FALSE@	Balancer.java InfoServer.java \
 @USE_JARS_DIR_FALSE@	jDispatcherIp.java jDispatcher.java \
@@ -489,7 +489,6 @@ java_DATA = jDispatcher.jar
 @USE_JARS_DIR_FALSE@	ServerInfo.java Server.java \
 @USE_JARS_DIR_FALSE@	ServerListener.java ServerShowDialog.java \
 @USE_JARS_DIR_FALSE@	ServersInfoPanel.java
-@USE_JARS_DIR_FALSE@dist_java_DATA = jDispatcher.properties
 @MINGW_FALSE@bin_SCRIPTS = jDispatcherIp jDispatchMonitor jServer
 @MINGW_TRUE@bin_SCRIPTS = jDispatcherIp.bat jDispatchMonitor.bat jServer.bat
 @MINGW_FALSE@EXTRA_DIST = jDispatcherIp.template jDispatchMonitor.template jServer.template
@@ -796,6 +795,7 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_javaDATA \
 
 @USE_JARS_DIR_TRUE@jDispatcher.jar : @JARS_DIR@/javadispatcher/jDispatcher.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
+
 @USE_JARS_DIR_FALSE@jDispatcher.jar: classjava.stamp
 @USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ..."; \
 @USE_JARS_DIR_FALSE@	  $(JAR) c0f $@ $(CLASSES)

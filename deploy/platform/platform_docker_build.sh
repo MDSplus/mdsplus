@@ -18,7 +18,12 @@ getenv() {
 runtests() {
     # run tests with the platform specific params read from test32 and test64
     testarch ${test64};
-    testarch ${test32};
+    if [ -f /usr/bin/python-i686 ]
+    then
+      PYTHON=/usr/bin/python-i686 testarch ${test32};
+    else
+      testarch ${test32};
+    fi
     checktests;
 }
 testarch(){
@@ -135,6 +140,17 @@ sanitize() {
         done
     fi
 }
+make_jars() {
+  rm -Rf /workspace/jars
+  mkdir -p /workspace/jars
+  pushd /workspace/jars
+  /source/configure --enable-java_only --with-java_target=6 --with-java_bootclasspath=/source/rt.jar
+  if [ -z "$NOMAKE" ]; then
+    $MAKE
+  fi
+  popd
+}
+
 normaltest() {
     gettimeout() {
         declare -i n=1800*$#
@@ -192,6 +208,11 @@ main(){
         set +e
         runtests
     fi
+    if [ "$MAKE_JARS" = "yes" ]
+    then
+      set +e
+      make_jars
+    fi
     case "$BRANCH" in
      stable) export BNAME="";;
       alpha) export BNAME="-alpha";;
@@ -211,5 +232,6 @@ main(){
 source /source/deploy/platform/${PLATFORM}/${PLATFORM}_docker_build.sh
 if [ ! -z "$0" ] && [ ${0:0:1} != "-" ] && [ "$( basename $0 )" = "platform_docker_build.sh" ]
 then
+    env
     main
 fi

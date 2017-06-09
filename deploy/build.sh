@@ -23,7 +23,7 @@ SYNOPSIS
                [--distname=name] [--updatepkg] [--eventport=number]
                [--arch=name] [--color] [--winhost=hostname]
                [--winbld=dir] [--winrembld=dir] [--gitcommit=commit]
-               [--jars_dir=dir]
+               [--jars-dir=dir] [--make-jars]
 
 DESCRIPTION
     The build.sh script is used for building, testing and deploy MDSplus
@@ -186,9 +186,12 @@ OPTIONS
     --gitcommit=commit
        Set by trigger jenkins job representing the commit hash of the sources.
 
-    --jars_dir=dir
+    --jars-dir=dir
        Set by trigger job to indicate that build job should get the java jar
        files from the trigger source directory instead of building them.
+
+    --make-jars
+       Triggers the generation of the java programs (.jar files)
 
 OPTIONS WITH OS SPECIFIC DEFAULT
 
@@ -360,8 +363,11 @@ parsecmd() {
 	    --gitcommit=*)
 		GIT_COMMIT="${i#*=}"
 		;;
-	    --jars_dir=*)
-		JARS_DIR="${i#*=}"
+	    --jars-dir=*)
+		JARS_DIR="$(realpath ${i#*=})"
+		;;
+	    --make-jars)
+		MAKE_JARS="yes"
 		;;
 	    *)
 		unknownopts="${unknownopts} $i"
@@ -462,10 +468,11 @@ fi
 echo "${ENABLE_SANITIZE}"
 echo "${SANITIZE}"
 if [ "${TEST}"            != "yes"  \
+ -a  "${MAKE_JARS}"       != "yes"  \
  -a  "${RELEASE}"         != "yes"  \
  -a  "${PUBLISH}"         != "yes"  ]
 then
-    >&2 echo "None of --test --release=version --publish=version options specified on the command. Nothing to do!"
+    >&2 echo "None of --test --make-jars --release=version --publish=version options specified on the command. Nothing to do!"
     exit 0
 fi
 #
@@ -604,6 +611,7 @@ OS=${OS} \
   TEST=${TEST} \
   TEST_FORMAT=${TEST_FORMAT} \
   EVENT_PORT=${EVENT_PORT} \
+  MAKE_JARS=${MAKE_JARS} \
   RELEASE=${RELEASE} \
   PUBLISH=${PUBLISH} \
   RELEASE_VERSION=${RELEASE_VERSION} \

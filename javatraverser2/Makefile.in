@@ -486,15 +486,15 @@ docsdir = $(exec_prefix)/java/classes/docs
 CLASSPATH_ENV = CLASSPATH=$(JSCH):$(JAVAROOT)
 
 # Build the final jar
-JTRAVERSER_JAR = $(abs_srcdir)/jTraverser.jar
-java_DATA = $(JTRAVERSER_JAR)
+JTRAVERSER_JAR = $(abs_builddir)/jTraverser.jar
 TRAV_GIFS = $(addprefix ${srcdir}/java/,$(TRAV_GIF))
 java_SRC = $(TRAV_SRC) $(TOOLS_SRC) $(MDS_SRC)
-java_JAVA = $(addprefix ${srcdir}/java/,$(java_SRC) debug/DEBUG.java)
 java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
 java_JAR = $(java_SRC:.java=*.class) $(TRAV_GIF)
 JSCH = $(abs_srcdir)/jsch-0.1.54.jar
 MANIFEST = $(abs_builddir)/JTMANIFEST.mf
+@USE_JARS_DIR_FALSE@java_DATA = $(JTRAVERSER_JAR)
+@USE_JARS_DIR_FALSE@java_JAVA = $(addprefix ${srcdir}/java/,$(java_SRC) debug/DEBUG.java)
 
 # Giant list of source files follow
 TRAV_SRC = \
@@ -959,12 +959,16 @@ $(MANIFEST): $(srcdir)/JTMANIFEST.mf
 	cp -f $< $@ &&\
 	date -u "+Built-Date: %Y-%m-%d %H:%M:%S">>$@
 
-$(JTRAVERSER_JAR): $(JSCH) $(MANIFEST) $(java_CLS)
-	cp -f $(TRAV_GIFS) -t $(JAVAROOT)/jtraverser &&\
-	cp -f $(JSCH) "$@" &&\
-	pushd $(JAVAROOT) &&\
-	$(JAR) u0fm "$@" $(abs_builddir)/JTMANIFEST.mf $(java_JAR) $(TRAV_GIF) &&\
-	popd
+@USE_JARS_DIR_TRUE@JTRAVERSER_JAR : @JARS_DIR@/javatraverser2/jTraverser.jar
+@USE_JARS_DIR_TRUE@	cp $< $@
+
+# Build the final jar
+@USE_JARS_DIR_FALSE@$(JTRAVERSER_JAR): $(JSCH) $(MANIFEST) $(java_CLS)
+@USE_JARS_DIR_FALSE@	cp -f $(TRAV_GIFS) -t $(JAVAROOT)/jtraverser &&\
+@USE_JARS_DIR_FALSE@	cp -f $(JSCH) "$@" &&\
+@USE_JARS_DIR_FALSE@	pushd $(JAVAROOT) &&\
+@USE_JARS_DIR_FALSE@	$(JAR) u0fm "$@" $(abs_builddir)/JTMANIFEST.mf $(java_JAR) $(TRAV_GIF) &&\
+@USE_JARS_DIR_FALSE@	popd
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
