@@ -364,7 +364,7 @@ parsecmd() {
 		GIT_COMMIT="${i#*=}"
 		;;
 	    --jars-dir=*)
-		JARS_DIR="${i#*=}"
+		JARS_DIR="$(realpath ${i#*=})"
 		;;
 	    --make-jars)
 		MAKE_JARS="yes"
