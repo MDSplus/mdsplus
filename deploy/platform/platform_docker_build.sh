@@ -18,7 +18,12 @@ getenv() {
 runtests() {
     # run tests with the platform specific params read from test32 and test64
     testarch ${test64};
-    PYTHON=/usr/bin/python-i686 testarch ${test32};
+    if [ -f /usr/bin/python-i686 ]
+    then
+      PYTHON=/usr/bin/python-i686 testarch ${test32};
+    else
+      testarch ${test32};
+    fi
     checktests;
 }
 testarch(){
