@@ -145,7 +145,7 @@ parsecmd() {
 		;;
 	    --make_jars=*)
 		MAKE_JARS=${i#*=}
-		opts="${opts} --jars-dir=${SRCDIR}/build/${MAKE_JARS}/jars"
+		opts="${opts} --jars-dir=${SRCDIR}/jars"
 		;;
 	    --test)
 		opts="${opts} ${i}"
@@ -245,7 +245,7 @@ NORMAL() {
 
 if [ ! -z "${MAKE_JARS}" ]
 then
-    if ( ! ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} )
+    if ( ! ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} --workspace=${SRCDIR} )
     then
 	RED $COLOR
 	cat <<EOF >&2
