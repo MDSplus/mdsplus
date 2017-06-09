@@ -145,7 +145,7 @@ parsecmd() {
 		;;
 	    --make_jars=*)
 		MAKE_JARS=${i#*=}
-		opts="${opts} --jars_dir=${JARS_DIR}"
+		opts="${opts} --jars_dir=${SRCDIR}/build/${MAKE_JARS}/jars"
 		;;
 	    --test)
 		opts="${opts} ${i}"
@@ -245,13 +245,8 @@ NORMAL() {
 
 if [ ! -z "${MAKE_JARS}" ]
 then
-    JARS_DIR=${SRCDIR}/build_jars
-    if ( ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} )
+    if ( ! ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} )
     then
-        rm -Rf ${JARS_DIR}
-        mkdir -p ${JARS_DIR}
-        rsync -avm --include='*.jar' -f 'hide,! */' ${SRCDIR}/build/${MAKE_JARS}/jars/* ${JARS_DIR}
-    else
 	RED $COLOR
 	cat <<EOF >&2
 ===============================================
