@@ -136,8 +136,6 @@ sanitize() {
     fi
 }
 normaltest() {
-  if [ "$TEST" = "yes" ]
-  then
     gettimeout() {
         declare -i n=1800*$#
         echo $n
@@ -162,7 +160,6 @@ normaltest() {
     fi
    fi
     popd
-  fi
 }
 RED() {
     if [ "$1" = "yes" ]
@@ -190,7 +187,7 @@ main(){
     then
         source /source/deploy/os/${OS}.env
     fi
-    if [ "$TEST" = "yes" ] || [ ! -z "$SANITIZE" ] || [ ! -z "$VALGRIND_TOOLS" ]
+    if [ "$TEST" = "yes" ]
     then
         set +e
         runtests

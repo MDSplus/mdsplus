@@ -463,11 +463,9 @@ echo "${ENABLE_SANITIZE}"
 echo "${SANITIZE}"
 if [ "${TEST}"            != "yes"  \
  -a  "${RELEASE}"         != "yes"  \
- -a  "${PUBLISH}"         != "yes"  \
- -a  "${ENABLE_SANITIZE}" != "yes"  \
- -a  "${ENABLE_VALGRIND}" != "yes"  ]
+ -a  "${PUBLISH}"         != "yes"  ]
 then
-    >&2 echo "None of --test --sanitize --valgrind --release=version --publish=version options specified on the command. Nothing to do!"
+    >&2 echo "None of --test --release=version --publish=version options specified on the command. Nothing to do!"
     exit 0
 fi
 #
