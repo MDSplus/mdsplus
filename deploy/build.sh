@@ -23,7 +23,7 @@ SYNOPSIS
                [--distname=name] [--updatepkg] [--eventport=number]
                [--arch=name] [--color] [--winhost=hostname]
                [--winbld=dir] [--winrembld=dir] [--gitcommit=commit]
-               [--jars_dir=dir] [--make-jars]
+               [--jars-dir=dir] [--make-jars]
 
 DESCRIPTION
     The build.sh script is used for building, testing and deploy MDSplus
@@ -186,7 +186,7 @@ OPTIONS
     --gitcommit=commit
        Set by trigger jenkins job representing the commit hash of the sources.
 
-    --jars_dir=dir
+    --jars-dir=dir
        Set by trigger job to indicate that build job should get the java jar
        files from the trigger source directory instead of building them.
 
@@ -363,7 +363,7 @@ parsecmd() {
 	    --gitcommit=*)
 		GIT_COMMIT="${i#*=}"
 		;;
-	    --jars_dir=*)
+	    --jars-dir=*)
 		JARS_DIR="${i#*=}"
 		;;
 	    --make-jars)

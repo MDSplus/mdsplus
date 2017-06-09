@@ -145,7 +145,7 @@ parsecmd() {
 		;;
 	    --make_jars=*)
 		MAKE_JARS=${i#*=}
-		opts="${opts} --jars_dir=${SRCDIR}/build/${MAKE_JARS}/jars"
+		opts="${opts} --jars-dir=${SRCDIR}/build/${MAKE_JARS}/jars"
 		;;
 	    --test)
 		opts="${opts} ${i}"
