@@ -609,7 +609,7 @@ static void WorkerThread(void *arg __attribute__ ((unused)) ){
   ProgLoc = 1;
   CONDITION_SET(&WorkerRunning);
   while ((job = NextJob(1))) {
-    fprintf(stderr,"job started.\n");
+    if (Debug) fprintf(stderr,"job started.\n");
     char *save_text;
     ProgLoc = 2;
     ServerSetDetailProc(0);
@@ -648,7 +648,7 @@ static void WorkerThread(void *arg __attribute__ ((unused)) ){
     if (save_text)
       free(save_text);
     ProgLoc = 10;
-    fprintf(stderr,"job done.\n");
+    if (Debug) fprintf(stderr,"job done.\n");
   }
   LeftWorkerLoop++;
   pthread_cleanup_pop(1);
