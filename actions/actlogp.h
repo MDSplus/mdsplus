@@ -235,7 +235,7 @@ inline static void _Doing(LinkedEvent * event){
 }
 
 inline static void _Done(LinkedEvent * event){
-  PutLog(event->time, "DONE", IS_NOT_OK(event->status) ? " " : event->status_text, event->server, event->fullpath);
+  PutLog(event->time, "DONE", IS_OK(event->status) ? " " : event->status_text, event->server, event->fullpath);
   if IS_NOT_OK(event->status)
     PutError(event->time, "DONE", event->status_text, event->server, event->fullpath);
 }
