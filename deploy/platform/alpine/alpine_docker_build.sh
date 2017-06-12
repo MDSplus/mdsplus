@@ -17,7 +17,7 @@ gethost() {
 }
 
 getjava() {
-    if [ "$ARCH" = "armhf" ]; then echo "--disable-java"; fi
+    if [ "$ARCH" = "armhfxxxxx" ]; then echo "--disable-java"; fi
 }
 
 if [ -z "$host" ]
