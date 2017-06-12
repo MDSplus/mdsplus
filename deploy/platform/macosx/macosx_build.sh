@@ -33,6 +33,12 @@ then
 fi
 
 MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
+if [ -z "$JARS_DIR" ]
+then
+    JAVA_OPTS="--with-java_target=6 --with-java_bootclasspath=/source/rt.jar"
+else
+    JAVA_OPTS="--with-jars=${JARS_DIR}"
+fi
 
 export PYTHONDONTWRITEBYTECODE=no
 if [ "$TEST" = "yes" ]
@@ -42,12 +48,6 @@ then
     MDSPLUS_DIR=${WORKSPACE}/test/buildroot/usr/local/mdsplus
     mkdir -p ${MDSPLUS_DIR}
     pushd ${WORKSPACE}/test/
-    if [ -z "$JARS_DIR" ]
-    then
-        JAVA_OPTS="--with-java_target=6 --with-java_bootclasspath=/source/rt.jar"
-    else
-        JAVA_OPTS="--with-jars=${JARS_DIR}"
-    fi
     ${SRCDIR}/configure \
 	    --prefix=${MDSPLUS_DIR} \
 	    --exec_prefix=${MDSPLUS_DIR} \
@@ -88,8 +88,7 @@ then
     ${SRCDIR}/configure \
 	    --prefix=${MDSPLUS_DIR} \
 	    --exec_prefix=${MDSPLUS_DIR} \
-	    --with-java_target=6 \
-	    --with-java_bootclasspath=${SRCDIR}/rt.jar
+	    ${JAVA_OPTS} \
     $MAKE
     $MAKE install
     popd
