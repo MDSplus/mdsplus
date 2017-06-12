@@ -88,7 +88,7 @@ then
     ${SRCDIR}/configure \
 	    --prefix=${MDSPLUS_DIR} \
 	    --exec_prefix=${MDSPLUS_DIR} \
-	    ${JAVA_OPTS} \
+	    ${JAVA_OPTS}
     $MAKE
     $MAKE install
     popd
