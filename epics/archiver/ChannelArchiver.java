@@ -9,10 +9,11 @@ import MDSplus.*;
 
 public class ChannelArchiver 
 {
-    static int SEGMENT_SIZE = 300;
+    static int SEGMENT_SIZE;
     static int MAX_QUEUE_LEN  = 10000;
     static boolean debug = false;
     static Hashtable monitorInfo = new Hashtable();
+    static Hashtable bufferH = new Hashtable(); //Indexed by path name
     static Data DBR2Data(DBR dbr) throws Exception
     {
         Data data = null;
@@ -119,53 +120,6 @@ public class ChannelArchiver
 	return 0;
     }
     
-    static class GroupHandler
-    {
-        java.lang.String groupName;
-        Vector disableVect = new Vector();
-        Data checkExpr;
-        boolean disabled;
-        GroupHandler(java.lang.String groupName, java.lang.String checkExprStr)
-        {            
-            this.groupName = groupName;
-            try {
-                checkExpr = Data.compile(checkExprStr);
-                disabled = false;
-            }catch(Exception exc)
-            {
-                System.err.println("Error compiling check expression "+checkExprStr+" for group " + groupName + ": " + exc);
-                disabled = false;
-            }
-        }
-        GroupHandler()
-        {
-            disabled = false;
-        }
-        void addCheckChan(java.lang.String chanName)
-        {
-            disableVect.add(chanName);
-        }
-        boolean isCheckChan(java.lang.String chanName)
-        {
-            return disableVect.contains(chanName);
-        }
-        void updateCheckData(java.lang.String chanName, Data data)
-        {
-            try {
-                Data setVar = Data.compile("_"+chanName+"=$1", new Data[]{data});
-                setVar.data();
-                int ris = checkExpr.data().getInt();
-                if(ris != 0)
-                    disabled = true;
-                else
-                    disabled = false;
-             } catch(Exception exc){System.err.println("Error setting TDI variable _" + chanName);}
-        }
-        boolean isDisabled()
-        {
-            return disabled;
-        }
-    }
             
     static class TreeDataDescriptor
     {
@@ -180,24 +134,26 @@ public class ChannelArchiver
     	long []times;
     	int idx;
         int type;
+	int segmentSize;
         boolean isArray;
         Array array;
-     	TreeDataDescriptor(java.lang.String nodeName)
+     	TreeDataDescriptor(java.lang.String nodeName, int segmentSize)
     	{
-	    doubleVals = new double[SEGMENT_SIZE];
-	    floatVals = new float[SEGMENT_SIZE];
-	    intVals = new int[SEGMENT_SIZE];
-	    longVals = new long[SEGMENT_SIZE];
-	    shortVals = new short[SEGMENT_SIZE];
-	    byteVals = new byte[SEGMENT_SIZE];
-	    times = new long[SEGMENT_SIZE];
+	    this.segmentSize = segmentSize;
+	    doubleVals = new double[segmentSize];
+	    floatVals = new float[segmentSize];
+	    intVals = new int[segmentSize];
+	    longVals = new long[segmentSize];
+	    shortVals = new short[segmentSize];
+	    byteVals = new byte[segmentSize];
+	    times = new long[segmentSize];
 	    idx = 0;
 	    this.nodeName = nodeName;
     	}
 	java.lang.String getNodeName(){return nodeName;}
     	boolean addRow(Data val, long time)
     	{
- 	    if(idx < SEGMENT_SIZE)
+ 	    if(idx < segmentSize)
 	    {
                
                 try {
@@ -250,7 +206,7 @@ public class ChannelArchiver
                    idx++;
                }catch(Exception exc) {System.err.println("Internal error in data management");}
             }
-            return idx == SEGMENT_SIZE;
+            return idx == segmentSize;
     	}
 	Array getVals() 
         {
@@ -361,6 +317,7 @@ public class ChannelArchiver
                     descr = queue.take();
 		} catch(Exception exc){System.err.println("Error dequeuing request: "+exc); System.exit(0);}
 		java.lang.String nodeName = descr.getNodeName();
+System.out.println("Node name "+ nodeName +" mod");
 		TreeNode node = (TreeNode)treeNodeHash.get(nodeName);
 		if(node == null)
 		{
@@ -376,7 +333,10 @@ public class ChannelArchiver
 		    if(descr.getDim() >1)
 	   	    	node.makeTimestampedSegment(descr.getVals(), descr.getTimes());
 		    else
+		    {
+			System.out.println("FACCIO PUT ROW: "+descr.getVal()+"  "+descr.getTimes()[0]);
 			node.putRow(descr.getVal(), descr.getTimes()[0]);
+		    }
 	   	}catch(Exception exc){ System.err.println("Error in putTimestampedSegment: " + exc);}
             	if(currSize > switchSize)
             	{
@@ -410,13 +370,13 @@ public class ChannelArchiver
 	    this.model = model;
             (new Thread(treeH)).start();
         }
-        synchronized void putRow(java.lang.String treeNodeName, Data data, long time)
+        synchronized void putRow(java.lang.String treeNodeName, Data data, long time, int segmentSize)
         {
 	    TreeDataDescriptor descr = (TreeDataDescriptor)nodeHash.get(treeNodeName);
             if(descr == null)
             {
                 try {
-                    nodeHash.put(treeNodeName, descr = new TreeDataDescriptor(treeNodeName));
+                    nodeHash.put(treeNodeName, descr = new TreeDataDescriptor(treeNodeName, segmentSize));
                 }catch(Exception exc)
                 {
                     System.err.println("INTERNAL ERROR: Cannot get node for "+treeNodeName + ": " + exc);
@@ -426,7 +386,7 @@ public class ChannelArchiver
             try {
               	if(descr.addRow(data, time))
 	    	{
-                    nodeHash.put(descr.getNodeName(), new TreeDataDescriptor(descr.getNodeName()));
+                    nodeHash.put(descr.getNodeName(), new TreeDataDescriptor(descr.getNodeName(), segmentSize));
                     if(queue.remainingCapacity() > 0)
                     {
                         queue.put(descr);
@@ -459,9 +419,6 @@ public class ChannelArchiver
         TreeManager treeManager;
         java.lang.String treeNodeName;
         java.lang.String severityNodeName;
-        java.lang.String chanName;
-        boolean isCheckChan;
-        GroupHandler gh;
         boolean saveTree;
         Data currData = null;
         long currTime;
@@ -469,18 +426,17 @@ public class ChannelArchiver
         long prevTime = 0;
         int ignFuture;
 	int prevSeverity = -1;
+	int segmentSize;
 
-        public DataMonitor(TreeManager treeManager, java.lang.String treeNodeName, java.lang.String severityNodeName, int ignFuture, 
-              java.lang.String chanName, boolean isCheckChan, GroupHandler gh)
+        public DataMonitor(TreeManager treeManager, java.lang.String treeNodeName, int segmentSize, java.lang.String severityNodeName, int ignFuture)
         {
             this.treeManager = treeManager;
             this.treeNodeName = treeNodeName;
+	    this.segmentSize = segmentSize;
             this.severityNodeName = severityNodeName;
             saveTree = true;
             this.ignFuture = ignFuture;
-            this.chanName = chanName;
-            this.isCheckChan = isCheckChan;
-            this.gh = gh;
+
         }
         public DataMonitor(int ignFuture)
         {
@@ -508,26 +464,26 @@ public class ChannelArchiver
                 Data data = DBR2Data(dbr);
                 long time = DBR2Time(dbr);
 		int severity = CAStatus2Severity(e.getStatus());
-                if(isCheckChan && gh != null)
-                    gh.updateCheckData(chanName, data);
+		//System.out.println("Monitor: "+treeNodeName+ "  " +  saveTree);
                 if(time <= prevTime)  //A previous sample has been received
                 {
-                    System.out.println("PREVIOUS SAMPLE!!! Time: "+time + " Previous time: " + prevTime);
+                    System.out.println("---PREVIOUS SAMPLE!!! Time: "+time + " Previous time: " + prevTime);
                     return;
                 }
-                if(prevTime > 0 && ((time - prevTime)/1E9 > ignFuture)) //Too far in future
+                System.out.println("Time " + time + " prevTime " + prevTime + "(time - prevTime)" + (time - prevTime)/1e12 );
+                if(prevTime > 0 && ((time - prevTime)/1E12 > ignFuture)) //Too far in future
+		{
+                    System.out.println("Too far in future ignFuture " +ignFuture + "(time - prevTime)" + (time - prevTime) );
                     return; 
+		}
                 prevTime = time;
                  if(saveTree)
                  {
-                    if (isCheckChan || gh == null || !gh.isDisabled()) 
-                    {
-                        treeManager.putRow(treeNodeName, data, time);
-			if(severity != prevSeverity)
-			{
-			    treeManager.putRow(severityNodeName, new Int8((byte)severity), time);
-			    prevSeverity = severity;
-			}
+                    treeManager.putRow(treeNodeName, data, time, segmentSize);
+		    if(severity != prevSeverity)
+		    {
+		        treeManager.putRow(severityNodeName, new Int8((byte)severity), time, segmentSize);
+	        	prevSeverity = severity;
                    }
                 }
                 else
@@ -539,7 +495,7 @@ public class ChannelArchiver
             }catch(Exception exc)
             {
                 System.err.println("Error writing sample: " + exc);
-            }
+            }	
         }
         public synchronized DataAndTime getDataAndTime()
         {
@@ -562,42 +518,36 @@ public class ChannelArchiver
         long prevTime = 0;
         int ignFuture;
         DataMonitor monitor;
-        java.lang.String chanName;
-        boolean isCheckChan;
-        GroupHandler gh;
         DBRType dataType = null;
         int nItems;
 	int prevSeverity;
+	int segmentSize;
         
-        public DataScanner(TreeManager treeManager, java.lang.String treeNodeName, java.lang.String severityNodeName, Channel chan, Context ctxt, 
-                long period, int ignFuture, java.lang.String chanName, boolean isCheckChan, GroupHandler gh)
+        public DataScanner(TreeManager treeManager, java.lang.String treeNodeName, int segmentSize, java.lang.String severityNodeName, Channel chan, Context ctxt, 
+                long period, int ignFutur)
         {
             this.treeManager = treeManager;
             this.treeNodeName = treeNodeName;
+	    this.segmentSize = segmentSize;
 	    this.severityNodeName = severityNodeName;
             this.chan = chan;
             this.ctxt = ctxt;
             this.period = period;
-            this.chanName = chanName;
-            this.isCheckChan = isCheckChan;
-            this.gh = gh;
             this.ignFuture = ignFuture;
             mode = SCAN;
             
         }
         public DataScanner(TreeManager treeManager, DataMonitor monitor, java.lang.String treeNodeName, java.lang.String severityNodeName, Channel chan, 
-                Context ctxt, long period, int ignFuture, java.lang.String chanName, boolean isCheckChan, GroupHandler gh)
+                Context ctxt, long period, int ignFutur)
         {
             this.treeManager = treeManager;
             this.treeNodeName = treeNodeName;
+	    this.segmentSize = segmentSize;
 	    this.severityNodeName = severityNodeName;
             this.monitor = monitor;
             this.chan = chan;
             this.ctxt = ctxt;
             this.period = period;
-            this.chanName = chanName;
-            this.isCheckChan = isCheckChan;
-            this.gh = gh;
             this.ignFuture = ignFuture;
             mode = MONITOR;
 	    int prevSeverity = -1;
@@ -612,9 +562,6 @@ public class ChannelArchiver
                 try {
                     Thread.currentThread().sleep(period);
                 } catch(InterruptedException exc){return;}
-                if (!isCheckChan && gh != null && gh.isDisabled()) 
-                    continue;
-
                 try {
                     if(mode == SCAN)
                     {
@@ -638,23 +585,18 @@ public class ChannelArchiver
                         time = dataTime.getTime();
 			severity = monitor.getSeverity();
                     }
-                    if(isCheckChan && gh != null)
-                        gh.updateCheckData(chanName, data);
-                   if(time <= prevTime)  //A previous sample has been received
+                    if(time <= prevTime)  //A previous sample has been received
                         continue;
                     if(prevTime > 0 && ((time - prevTime)/1E9 > ignFuture)) //Too far in future
                         continue; 
                     prevTime = time;
                     
-                    if (isCheckChan || gh == null || !gh.isDisabled()) 
+                    treeManager.putRow(treeNodeName, data, time, segmentSize);
+                    System.out.println("Severities: " + severity + " " + prevSeverity);
+		    if(severity != prevSeverity)
 		    {
-                        treeManager.putRow(treeNodeName, data, time);
-                        System.out.println("Severities: " + severity + " " + prevSeverity);
-			if(severity != prevSeverity)
-			{
-			    treeManager.putRow(severityNodeName, new Int8((byte)severity), time);
-			    prevSeverity = severity;
-			}
+		       treeManager.putRow(severityNodeName, new Int8((byte)severity), time, segmentSize);
+		       prevSeverity = severity;
 		    }
                 }catch(Exception exc)
                 {
@@ -664,13 +606,60 @@ public class ChannelArchiver
         }
     }
 
+    static java.lang.String  getPVname(MDSplus.Tree tree, MDSplus.TreeNode node)
+    {
+	try {
+	    int nid = node.getNid();
+	    MDSplus.TreeNode currNode = node;
+	    while(nid != 0)
+	    {
+	    	currNode = currNode.getParent();
+	    	nid = currNode.getNid();
+	    	try {
+		    MDSplus.TreeNode bufSizeNode = tree.getNode(currNode.getFullPath()+":REC_NAME");
+		    java.lang.String  pvName = bufSizeNode.getData().getString();
+		    return pvName;
+	    	} catch(Exception exc){}
+	     }
+	}catch(Exception exc)
+	{
+	    System.out.println("INTERNAL ERROR in getBPVname(): " + exc);
+	}
+	return "";
+    }
+
+    static int getBufSize(MDSplus.Tree tree, MDSplus.TreeNode node)
+    {
+	try {
+	    int nid = node.getNid();
+	    MDSplus.TreeNode currNode = node;
+	    while(nid != 0)
+	    {
+	    	currNode = currNode.getParent();
+	    	nid = currNode.getNid();
+	    	try {
+		    MDSplus.TreeNode bufSizeNode = tree.getNode(currNode.getFullPath()+":BUF_SIZE");
+		    int bufSize = bufSizeNode.getInt();
+		    return bufSize;
+	    	} catch(Exception exc){}
+	     }
+	}catch(Exception exc)
+	{
+	    System.out.println("INTERNAL ERROR in getBufferSize(): " + exc);
+	}
+	return SEGMENT_SIZE;
+    }
+
     public static void main(java.lang.String[] args)
     {
         //Global Parameters
         float getThreshold; //treshold above which use real scan instead of monitor scan
         int ignFuture; //Number of seconds above which skip recording
         long fileSize; //DImension above which create a new pulse;
+        Tree tree = null;
         Hashtable groupH = new Hashtable();
+
+
         if(args.length != 2 && args.length != 3)
         {
             System.out.println("Usage:java ChannelArchiver <experiment> <shot> [segment_size]");
@@ -680,12 +669,14 @@ public class ChannelArchiver
         int shot = Integer.parseInt(args[1]);
 	if(args.length == 3)
 	    SEGMENT_SIZE = Integer.parseInt(args[2]);
+	else
+	    SEGMENT_SIZE = 1;
 	System.out.println("SEGMENT SIZE: " + SEGMENT_SIZE);
 
         try {
             JCALibrary jca = JCALibrary.getInstance();
             Context ctxt = jca.createContext(JCALibrary.CHANNEL_ACCESS_JAVA);
-            Tree tree = new Tree(experiment, -1);
+            tree = new Tree(experiment, -1);
 //Get Global Parameters            
             try {
              TreeNode node = tree.getNode(":GET_TRESH");
@@ -721,7 +712,6 @@ public class ChannelArchiver
                 {
                     java.lang.String nodeName = nodeNames[i].substring(0, nodeNames[i].length() - 9);
                     java.lang.String recName  = "";
-                    boolean isDisable;
                     
                     try {
                         recName = new TreeNode(nids[i], tree).getData().getString();
@@ -732,8 +722,9 @@ public class ChannelArchiver
                         ctxt.pendIO(5.);
                         DBR valDbr = valChan.get();
                         ctxt.pendIO(5.);
-			System.out.println("Monitoring Channel created ...");
-                        //valDbr.printInfo(System.out);
+			System.out.println("Monitoring Channel created.");
+        //valDbr.printInfo(System.out);
+	//valChan.printInfo();
                         if(!valDbr.isENUM() && !valDbr.isCTRL()&&! valDbr.isINT())
                         {
                             //EGU
@@ -743,6 +734,7 @@ public class ChannelArchiver
                                 DBR dbr = eguChan.get();
                                 ctxt.pendIO(5.);
                                 TreeNode eguNode = tree.getNode(nodeName+":EGU");
+				Data dd = DBR2Data(dbr);
                                 eguNode.putData(DBR2Data(dbr));
                                 eguChan.destroy();
                              }catch(Exception exc)
@@ -779,50 +771,22 @@ public class ChannelArchiver
                         }
                         
                         
-                        try {
-                             TreeNode node = tree.getNode(nodeName+":IS_DISABLE");
-                             isDisable = node.getString().toUpperCase().equals("YES");
-                        }catch(Exception exc)
-                        {
-                            isDisable = false;
-                        }
-                        java.lang.String chanName;
-                        GroupHandler gh;
-                        try {
-                            chanName = tree.getNode(nodeName).findTags()[0];
-                            java.lang.String groupName = tree.getNode(nodeName).getParent().getNodeName().toUpperCase().trim();
-                            gh = (GroupHandler)groupH.get(groupName);
-                            if(gh == null)
-                            {
-                                TreeNode prevDef = tree.getDefault();
-                                tree.setDefault(tree.getNode(nodeName).getParent());
-                                java.lang.String checkExpr = tree.getNode(":DISABLE").getData().decompile();
-                                tree.setDefault(prevDef);
-                                gh = new GroupHandler(groupName, checkExpr);
-                                groupH.put(groupName, gh);
-                            }
-                        }catch(Exception exc)
-                        {
-                            //System.err.println("No gropup management for var " + recName);
-                            chanName = "";
-                            gh = null;
-                        }    
-                        
                         //Get SCAN mode for this channel
                         TreeNode valNode = tree.getNode(nodeName+":VAL");
                         TreeNode scanNode = tree.getNode(nodeName+":SCAN_MODE");
                         TreeNode severityNode = tree.getNode(nodeName+":ALARM");
                         java.lang.String scanMode = scanNode.getString().toUpperCase();
-			System.out.println("Monitoring channel started...");
+			int segmentSize = getBufSize(tree, valNode);
+			System.out.println("Monitoring channel started. Segment size: "+segmentSize);
                         if(scanMode.equals("MONITOR"))
                         {
                             if(valDbr.isENUM() || valDbr.isCTRL() || valDbr.isINT())
                                valChan.addMonitor(DBRType.TIME_INT, 1, Monitor.VALUE, 
-                                       new DataMonitor(treeManager, valNode.getFullPath(), severityNode.getFullPath(), ignFuture, chanName, isDisable, gh));
+                               	new DataMonitor(treeManager, valNode.getFullPath(), segmentSize, severityNode.getFullPath(), ignFuture));
                             else
-                                valChan.addMonitor(DBRType.TIME_DOUBLE, 1, Monitor.VALUE, 
-                                       new DataMonitor(treeManager, valNode.getFullPath(), severityNode.getFullPath(), ignFuture, chanName, isDisable, gh));
-                               ctxt.pendIO(5.);
+                               valChan.addMonitor(DBRType.TIME_DOUBLE, 1, Monitor.VALUE, 
+                                new DataMonitor(treeManager, valNode.getFullPath(), segmentSize, severityNode.getFullPath(), ignFuture));
+                            ctxt.pendIO(5.);
                         }
                         else //Periodic
                         {
@@ -830,18 +794,8 @@ public class ChannelArchiver
                             float period = periodNode.getFloat();
                             long periodMs = (long)(period*1000);
                             if(period > getThreshold)
-                                (new Thread(new DataScanner(treeManager, valNode.getFullPath(), severityNode.getFullPath(), valChan, ctxt, periodMs, 
-                                        ignFuture, chanName, isDisable, gh))).start();
-                            else
-                            {
-                                //Use SCAN-MONITOR
-                                DataMonitor monitor = new DataMonitor(ignFuture);
-                                valChan.addMonitor(DBRType.TIME_DOUBLE, 1, Monitor.VALUE, monitor);
-                                ctxt.pendIO(5.);
-                                (new Thread(new DataScanner(treeManager, monitor, valNode.getFullPath(), severityNode.getFullPath(), valChan, ctxt, periodMs, 
-                                        ignFuture, chanName, isDisable, gh))).start();
-
-                            }
+                                (new Thread(new DataScanner(treeManager, valNode.getFullPath(),  segmentSize, severityNode.getFullPath(), valChan, ctxt, periodMs, 
+                                        ignFuture))).start();
                         }
                     }catch(Exception exc)
                     {
@@ -854,21 +808,31 @@ public class ChannelArchiver
             System.err.println("Generic error: "+ exc);
 	    System.exit(0);
         }
+
+	System.out.println("All PV Added");
+
+
 	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	while(true)
 	{
+	    System.out.println("MDSplus pulse file "+ experiment + " shot " + shot);
+	    System.out.println("(q) quit (i) PV list");
 	    try {
 	    	java.lang.String cmd = br.readLine();
 	    	if(cmd.equals("q"))
 		    System.exit(0);
 	    	if(cmd.equals("i"))
 	    	{
+		    int index = 0;
 		    Enumeration vars = monitorInfo.keys();
 		    while(vars.hasMoreElements())
 		    {
-		    	java.lang.String var = (java.lang.String)vars.nextElement();
+			index++;		    
+			java.lang.String var = (java.lang.String)vars.nextElement();
 		    	int count = ((Integer)monitorInfo.get(var)).intValue();
-		    	System.out.println(var+ "\t" + count);
+			int buffSize = getBufSize(tree, tree.getNode(var));
+			java.lang.String pvName = getPVname(tree, tree.getNode(var));
+		    	System.out.println("["+ index +"]--" + var + "\tPV " + pvName + "\t Mon. count " + count +" Buff. size " + buffSize);
 		    }
 		}
 	    }catch(Exception exc){}	
