@@ -61,7 +61,6 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
     closes and frees tree contexts when no longer being used. """
     lock = _threading.Lock()
     ctxs={}
-    order=[]
     def __new__(cls,ctx,opened):
         if not ctx or (opened is None and ctx in _TreeCtx.ctxs):
             return None
@@ -82,8 +81,6 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
                 _TreeCtx.ctxs[self.ctx]+=1
             else:
                 _TreeCtx.ctxs[self.ctx] = 1 if opened else 2
-            # generate ordered set
-            _TreeCtx.order = [self.ctx]+[c for c in _TreeCtx.order if c!=self.ctx]
     def __del__(self):
         if not self.open: return
         self.open = False
@@ -93,13 +90,10 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
                 self._closeDbid()
     def _closeDbid(self):
         del(_TreeCtx.ctxs[self.ctx])
-        _TreeCtx.order = [c for c in _TreeCtx.order if c!=self.ctx]
         # make sure current Dbid is not active - tdishr
         ctx = _TreeCtx.switchDbid()
         if ctx != 0 and ctx!=self.ctx:
             _TreeCtx.switchDbid(ctx)
-        elif len(_TreeCtx.order):
-            _TreeCtx.switchDbid(_TreeCtx.order[0])
         # apparently this was opened by python - so close all trees
         while _TreeShr._TreeClose(_C.pointer(_C.c_void_p(self.ctx)),_C.c_void_p(0),_C.c_int32(0)) & 1:
             print("An unexpectedly open tree has been closed!!")
