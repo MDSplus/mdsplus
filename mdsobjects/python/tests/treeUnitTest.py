@@ -2,7 +2,7 @@ from unittest import TestCase,TestSuite
 import os
 from threading import Lock
 
-from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,DateToQuad,Device,Int32Array,tree,tcl
+from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,DateToQuad,Device,Int32Array
 from MDSplus import getenv,setenv
 
 class treeTests(TestCase):
@@ -45,41 +45,6 @@ class treeTests(TestCase):
         cls.envx[name] = value
         setenv(name,value)
 
-    @classmethod
-    def tearDownClass(cls):
-        import gc,shutil
-        gc.collect()
-        with cls.lock:
-            cls.instances -= 1
-            if not cls.instances>0:
-                shutil.rmtree(cls.tmpdir)
-
-    def treeCtx(self):
-        def check(n):
-            self.assertEqual((tree._TreeCtx.gettctx().ctx,n),tree._TreeCtx.ctxs.items()[0])
-        self.assertEqual(tree._TreeCtx.ctxs,{})  # neither tcl nor tdi has been called yet
-        tcl('edit pytree/shot=%d/new'%self.shot);check(1)
-        Data.execute('$EXPT'); check(1)
-        t = Tree();            check(2)
-        Data.execute('tcl("dir", _out)'); check(2)
-        del(t);                check(1)
-        Data.execute('_out');check(1)
-        t = Tree('pytree',self.shot+1,'NEW');
-        self.assertEqual(tree._TreeCtx.ctxs[tree._TreeCtx.gettctx().ctx],1)
-        self.assertEqual(tree._TreeCtx.ctxs[t.ctx.value],1)
-        Data.execute('tcl("close")');
-        self.assertEqual(tree._TreeCtx.ctxs[tree._TreeCtx.gettctx().ctx],1)
-        self.assertEqual(tree._TreeCtx.ctxs[t.ctx.value],1)
-        self.assertEqual(str(t),'Tree("PYTREE",%d,"Edit")'%(self.shot+1,))
-        self.assertEqual(str(Data.execute('tcl("show db", _out);_out')),"\n")
-        del(t)
-        check(1)  # tcl/tdi context remains until end of session
-        t = Tree('pytree',self.shot+1,'NEW');
-        self.assertEqual(tree._TreeCtx.ctxs[tree._TreeCtx.gettctx().ctx],1)
-        self.assertEqual(tree._TreeCtx.ctxs[t.ctx.value],1)
-        del(t)
-        check(1)
-
     def buildTrees(self):
         with Tree('pytree',self.shot,'new') as pytree:
             if pytree.shot != self.shot:
@@ -115,7 +80,7 @@ class treeTests(TestCase):
             node.compress_on_put=True
             node.record=Signal(Range(2.,2000.,2.),None,Range(1.,1000.))
             ip=pytreesub_top.addNode('ip','signal')
-            rec=pytreesub.tdiCompile("Build_Signal(Build_With_Units(\\MAG_ROGOWSKI.SIGNALS:ROG_FG + 2100. * \\BTOR, 'ampere'), *, DIM_OF(\\BTOR))")
+            rec=Data.compile("Build_Signal(Build_With_Units(\\MAG_ROGOWSKI.SIGNALS:ROG_FG + 2100. * \\BTOR, 'ampere'), *, DIM_OF(\\BTOR))")
             ip.record=rec
             ip.tag='MAG_PLASMA_CURRENT'
             ip.tag='MAGNETICS_PLASMA_CURRENT'
@@ -126,6 +91,15 @@ class treeTests(TestCase):
                 node=pytreesub_top.addNode('child%02d' % (i,),'structure')
                 node.addDevice('dt200_%02d' % (i,),'dt200').on=False
             pytreesub.write()
+
+    @classmethod
+    def tearDownClass(cls):
+        import gc,shutil
+        gc.collect()
+        with cls.lock:
+            cls.instances -= 1
+            if not cls.instances>0:
+                shutil.rmtree(cls.tmpdir)
 
     def openTrees(self):
         pytree = Tree('pytree',self.shot)
@@ -319,7 +293,7 @@ class treeTests(TestCase):
             self.__getattribute__(test)()
     @staticmethod
     def getTests():
-        return ['treeCtx','buildTrees','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','segments','getCompression']
+        return ['buildTrees','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','segments','getCompression']
     @classmethod
     def getTestCases(cls):
         return map(cls,cls.getTests())
