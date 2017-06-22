@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 import sys
 import os
+try:
+    from setuptools import setup
+except:
+    from distutils.core import setup
 
 def getRelease():
     name='mdsplus'
@@ -30,98 +34,52 @@ def getRelease():
         release=parts[1]
     return (release,name.lower())
 
-branch = None
+
 try:
     exec(open('_version.py').read())
+    if branch == "stable":
+        name="mdsplus"
+    else:
+        name="mdsplus_%s" % branch
 except:
-    pass
-if branch is None:
     version,name=getRelease()
-elif branch == "stable":
-    name="mdsplus"
-else:
-    name="mdsplus_%s" % branch
-
+    if "BRANCH" in os.environ and os.environ["BRANCH"] != "stable":
+        branch=" (%s)" % os.environ["BRANCH"]
+    else:
+        branch=""
 pname='MDSplus'
-
-
-setupkw = {
-      'name'         : name,
-      'version'      : version,
-      'description'  : 'MDSplus Python Objects',
-      'long_description': """
+setup(name=name,
+      version=version,
+      description='MDSplus Python Objects',
+      long_description = """
       This module provides all of the functionality of MDSplus TDI natively in python.
       All of the MDSplus data types such as signal are represented as python classes.
       """,
-      'author'       : 'Tom Fredian,Josh Stillerman,Gabriele Manduchi',
-      'author_email' : 'twf@www.mdsplus.org',
-      'url'          : 'http://www.mdsplus.org/',
-      'download_url' : 'http://www.mdsplus.org/mdsplus_download/python',
-      'package_dir'  : {pname:'.',
+      author='Tom Fredian,Josh Stillerman,Gabriele Manduchi',
+      author_email='twf@www.mdsplus.org',
+      url='http://www.mdsplus.org/',
+      download_url = 'http://www.mdsplus.org/mdsplus_download/python',
+      package_dir = {pname:'.',
+                     pname+'.tdibuiltins':'./tdibuiltins',
                      pname+'.tests':'./tests',
                      pname+'.widgets':'./widgets',
                      pname+'.wsgi':'./wsgi',
                      },
-      'packages'     : [pname,
+      packages = [pname,
+                  pname+'.tdibuiltins',
                   pname+'.tests',
                   pname+'.widgets',
-                  pname+'.wsgi',
-                  ],
-      'package_data' : {'':['doc/*.*','widgets/*.glade','js/*.js','html/*.html','wsgi/*.tbl']},
-      'classifiers'  : [
+                  pname+'.wsgi'],
+      package_data = {'':['doc/*.*','widgets/*.glade','js/*.js','html/*.html','wsgi/*.tbl']},
+      include_package_data = True,
+      classifiers = [
       'Programming Language :: Python',
       'Intended Audience :: Science/Research',
       'Environment :: Console',
       'Topic :: Scientific/Engineering',
       ],
-      'keywords'     : ('physics','mdsplus',),
+      keywords = ('physics','mdsplus',),
 #       install_requires=['numpy','ctypes'],
-    }
-def remove():
-    "Remove installed MDSplus package"
-    def _findPackageDir():
-        _f=__file__.split(os.sep)
-        while len(_f) > 1 and _f[-1] != 'MDSplus':
-            _f=_f[:-1]
-        if _f[-1] != 'MDSplus':
-            return None
-        if 'egg' in _f[-2]:
-            _f=_f[:-1]
-        return os.sep.join(_f)      
-    packagedir=_findPackageDir()
-    try:
-        import shutil
-        shutil.rmtree(packagedir)
-    except Exception as exc:
-        print("Error removing %s: %s" % (packagedir,exc))
-
-try:
-    from setuptools import setup
-    setupkw['include_package_data'] = True
-    setupkw['test_suite'] = 'tests.test_all'
-    setupkw['zip_safe']   = False
-except:
-    from distutils.core import setup
-    from distutils.cmd import Command
-    class TestCommand(Command):
-        user_options = []
-        def initialize_options(self):
-            pass
-        def finalize_options(self):
-            pass
-        def run(self):
-            import sys, subprocess
-            raise SystemExit(
-                subprocess.call([sys.executable,
-                                 '-m',
-                                 'tests.__init__']))
-    class RemoveCommand(Command):
-        user_options = []
-        def initialize_options(self):
-            pass
-        def finalize_options(self):
-            pass
-        def run(self):
-            remove()
-    setupkw['cmdclass'] = {'test': TestCommand,'remove': RemoveCommand}
-setup(**setupkw)
+      test_suite='tests.test_all',
+      zip_safe = False,
+    )

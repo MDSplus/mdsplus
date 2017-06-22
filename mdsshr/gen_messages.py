@@ -133,10 +133,10 @@ class MDSplusUnknown(MDSplusException):
 def statusToException(status):
     return MDSplusException(status)
 
-def checkStatus(status,ignore=tuple()):
+def checkStatus(status,ignore=[]):
     if (status & 1)==0:
         exception = MDSplusException(status)
-        if isinstance(exception, ignore):
+        if exception in ignore:
             print(exception.message)
         else:
             raise MDSplusException(status)
