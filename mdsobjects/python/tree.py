@@ -2312,15 +2312,15 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         @type array: Array
         @rtype: None
         """
-        timestampArray=_arr.Int64Array(timestampArray)
+        timestampArray=_arr.Uint64Array(timestampArray)
         array=_arr.Array(array)
         _exc.checkStatus(
            _TreeShr._TreePutTimestampedSegment(self.tree.ctx,
                                                self._nid,
-                                               timestampArray.value.ctypes,
+                                               _dat.Data.byref(timestampArray),
                                                _dat.Data.byref(array)))
 
-    def makeTimestampedSegment(self,timestampArray,array,idx=None,rows_filled=None):
+    def makeTimestampedSegment(self,timestampArray,array,idx,rows_filled):
         """Load a timestamped segment
         @param timestampArray: Array of time stamps
         @type timestampArray: Uint64Array
@@ -2332,14 +2332,12 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         @type rows_filled: int
         @rtype: None
         """
-        if idx is None: idx=-1
-        timestampArray=_arr.Int64Array(timestampArray)
+        timestampArray=_arr.Uint64Array(timestampArray)
         array=_arr.Array(array)
-        if rows_filled is None: rows_filled = int(timestampArray.size)
         _exc.checkStatus(
                 _TreeShr._TreeMakeTimestampedSegment(self.tree.ctx,
                                                      self._nid,
-                                                     timestampArray.value.ctypes,
+                                                     _dat.Data.byref(timestampArray),
                                                      _dat.Data.byref(array),
                                                      _C.c_int32(idx),
                                                      _C.c_int32(rows_filled)))
