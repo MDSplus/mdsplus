@@ -13,7 +13,7 @@ def pyfun(fun,module=None,*args):
             fun = module.__dict__[fun]
         except:
             raise MDSplus.TdiUNKNOWN_VAR(fun)
-    args = tuple(map(MDSplus.Data.evaluate,args))
+    args = tuple(MDSplus.makeData(a).evaluate() for a in args)
 
     try:
         return fun(*args)
