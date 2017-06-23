@@ -178,9 +178,15 @@ class Scalar(_dat.Data):
     def fromDescriptor(cls,d):
         value=_C.cast(d.pointer,_C.POINTER(cls._ctype)).contents
         if isinstance(value,_C.Array):
-            ans = cls(complex(value[0],value[1]))
+            if d.dtype in (12,14,29):
+                ans = cls(complex(_CvtFloat(d.dtype-2,value[0]),_CvtFloat(d.dtype-2,value[1])))
+            else:
+                ans = cls(complex(value[0],value[1]))
         else:
-            ans = cls(value.value)
+            if d.dtype in (10,11,27):
+                ans = cls(_CvtFLOAT(d.dtype,value.value))
+            else:
+                ans = cls(value.value)
         return ans
 
 makeScalar=Scalar
@@ -401,4 +407,25 @@ _dsc.dtypeToClass[String.dtype_id]=String
 _dsc.dtypeToClass[Pointer.dtype_id]=Pointer
 _dsc.dtypeToClass[Ident.dtype_id]=Ident
 
+_dsc.dtypeToClass[10]=Float32
+_dsc.dtypeToClass[11]=Float64
+_dsc.dtypeToClass[12]=Complex64
+_dsc.dtypeToClass[13]=Complex64
+_dsc.dtypeToClass[27]=Float64
+_dsc.dtypeToClass[29]=Complex128
+
+def _CvtFLOAT(dtype,value):
+    _TdiShr=_ver.load_library('TdiShr')
+    _CvtConvertFloat=_TdiShr.CvtConvertFloat
+    if dtype == 10:
+        ans=_C.c_float(0)
+        value=_C.c_float(value)
+        _CvtConvertFloat(_C.pointer(value),_C.c_int32(dtype),_C.pointer(ans),_C.c_int32(Float32.dtype_id))
+    else:
+        _CvtConvertFloat.argtypes=[_C.POINTER(_C.c_double),_C.c_int32,_C.POINTER(_C.c_double),_C.c_int32]
+        ans=_C.c_double(0)
+        value=_C.c_double(value)
+        _CvtConvertFloat(_C.pointer(value),dtype,_C.pointer(ans),Float64.dtype_id)
+    return ans.value
+        
 _cmp=_mimport('compound')
