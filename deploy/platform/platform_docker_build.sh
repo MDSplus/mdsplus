@@ -45,6 +45,7 @@ config() {
         --host=$2 \
         --bindir=${MDSPLUS_DIR}/$3 \
         --libdir=${MDSPLUS_DIR}/$4 \
+        ${CONFIGURE_PARAMS} \
         ${JAVA_OPTS} \
         $5 $6 $7 $8 $9;
     status=$?
