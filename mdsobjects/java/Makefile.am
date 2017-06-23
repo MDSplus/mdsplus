@@ -3,16 +3,8 @@ AM_JAVACFLAGS = $(JAVAVERSION)
 JAVAROOT = $(builddir)
 CLASSPATH_ENV = CLASSPATH=.:$(top_builddir)/javascope/jScope.jar
 javadir = $(exec_prefix)/java/classes
-java_JAVA = $(SOURCES)
-
-# Build the final jar
-java_DATA = mdsobjects.jar
-
-mdsobjects.jar: classjava.stamp
-	$(JAR) c0f $@ $(java_JAVA:.java=*.class)
-
-
 # Giant list of source files follow
+
 SOURCES = MDSplus/Action.java\
 MDSplus/Apd.java\
 MDSplus/Array.java\
@@ -73,3 +65,20 @@ MDSplus/Uint8Array.java\
 MDSplus/Window.java \
 MDSplus/Scope.java
 
+
+# Build the final jar
+java_DATA = mdsobjects.jar
+
+if USE_JARS_DIR
+
+mdsobjects.jar : @JARS_DIR@/mdsobjects/java/mdsobjects.jar
+	cp $< $@
+
+else
+
+java_JAVA = $(SOURCES)
+
+mdsobjects.jar: classjava.stamp
+	$(JAR) c0f $@ $(java_JAVA:.java=*.class)
+
+endif

@@ -271,11 +271,13 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 JAR = @JAR@
+JARS_DIR = @JARS_DIR@
 JAVAC = @JAVAC@
 JAVACFLAGS = @JAVACFLAGS@
 JAVAC_PATH_NAME = @JAVAC_PATH_NAME@
 JAVAVERSION = @JAVAVERSION@
 JAVA_APS = @JAVA_APS@
+JAVA_ONLY = @JAVA_ONLY@
 JDK_CFLAGS = @JDK_CFLAGS@
 JDK_DIR = @JDK_DIR@
 JDK_LIVECONNECT = @JDK_LIVECONNECT@
@@ -471,18 +473,22 @@ JSCOPEJAR = $(top_builddir)/javascope/jScope.jar
 JTRAVERSERJAR = $(top_builddir)/javatraverser/jTraverser.jar
 CLASSPATH_ENV = CLASSPATH=$(JSCOPEJAR):$(JTRAVERSERJAR)
 javadir = $(exec_prefix)/java/classes
-java_JAVA = Action.java ActionServer.java Balancer.java \
-	InfoServer.java jDispatcherIp.java jDispatcher.java \
-	jDispatchMonitor.java jServer.java KillServer.java \
-	MdsActionsMonitor.java MdsHelper.java MdsIp.java \
-	MdsMonitorEvent.java MdsMonitor.java MdsServerEvent.java \
-	MdsServer.java MdsServerListener.java MonitorEvent.java \
-	MonitorListener.java NetworkEvent.java NetworkListener.java \
-	ServerEvent.java ServerInfo.java Server.java \
-	ServerListener.java ServerShowDialog.java \
-	ServersInfoPanel.java
-dist_java_DATA = jDispatcher.properties
 java_DATA = jDispatcher.jar
+dist_java_DATA = jDispatcher.properties
+@USE_JARS_DIR_FALSE@java_JAVA = Action.java ActionServer.java \
+@USE_JARS_DIR_FALSE@	Balancer.java InfoServer.java \
+@USE_JARS_DIR_FALSE@	jDispatcherIp.java jDispatcher.java \
+@USE_JARS_DIR_FALSE@	jDispatchMonitor.java jServer.java \
+@USE_JARS_DIR_FALSE@	KillServer.java MdsActionsMonitor.java \
+@USE_JARS_DIR_FALSE@	MdsHelper.java MdsIp.java \
+@USE_JARS_DIR_FALSE@	MdsMonitorEvent.java MdsMonitor.java \
+@USE_JARS_DIR_FALSE@	MdsServerEvent.java MdsServer.java \
+@USE_JARS_DIR_FALSE@	MdsServerListener.java MonitorEvent.java \
+@USE_JARS_DIR_FALSE@	MonitorListener.java NetworkEvent.java \
+@USE_JARS_DIR_FALSE@	NetworkListener.java ServerEvent.java \
+@USE_JARS_DIR_FALSE@	ServerInfo.java Server.java \
+@USE_JARS_DIR_FALSE@	ServerListener.java ServerShowDialog.java \
+@USE_JARS_DIR_FALSE@	ServersInfoPanel.java
 @MINGW_FALSE@bin_SCRIPTS = jDispatcherIp jDispatchMonitor jServer
 @MINGW_TRUE@bin_SCRIPTS = jDispatcherIp.bat jDispatchMonitor.bat jServer.bat
 @MINGW_FALSE@EXTRA_DIST = jDispatcherIp.template jDispatchMonitor.template jServer.template
@@ -786,9 +792,13 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_javaDATA \
 
 .PRECIOUS: Makefile
 
-jDispatcher.jar: classjava.stamp
-	@ echo "Creating JAR: $@ ..."; \
-	  $(JAR) c0f $@ $(CLASSES)
+
+@USE_JARS_DIR_TRUE@jDispatcher.jar : @JARS_DIR@/javadispatcher/jDispatcher.jar
+@USE_JARS_DIR_TRUE@	cp $< $@
+
+@USE_JARS_DIR_FALSE@jDispatcher.jar: classjava.stamp
+@USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ..."; \
+@USE_JARS_DIR_FALSE@	  $(JAR) c0f $@ $(CLASSES)
 
 jDispatcherIp jDispatchMonitor jServer: %: %.template
 	cp $^ $@
