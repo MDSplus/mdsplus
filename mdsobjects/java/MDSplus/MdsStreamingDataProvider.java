@@ -50,6 +50,24 @@ public class MdsStreamingDataProvider extends MdsDataProvider
                 else
                 {
                     double x[] = times.getDoubleArray();
+                    //Handle possible differences in X and Y array dimensions
+                    int dataLen = x.length;
+                    if(dataLen > y.length)
+                        dataLen = y.length;
+                    if(dataLen != x.length)
+                    {
+                        double newX[] = new double[dataLen];
+                        System.arraycopy(x, 0, newX, 0, dataLen);
+                        x = newX;
+                    }
+                    if(dataLen != y.length)
+                    {
+                        float newY[] = new float[dataLen];
+                        System.arraycopy(y, 0, newY, 0, dataLen);
+                        y = newY;
+                    }
+                    /////////////////////////////////////////
+                    
                     for(int j = 0; j < listeners.size(); j++)
                         listeners.elementAt(j).dataRegionUpdated(x, y, Double.MAX_VALUE);
                 }
