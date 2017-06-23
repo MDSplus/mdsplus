@@ -5,9 +5,12 @@ apdadd(idx,list,*arguments)    inserts arguments at position idx
 apdadd(dict,key0,value0, ... ) adds key-value pairs
 """
 def apdadd(*args):
-    from MDSplus import List, Dictionary, TdiEvaluate, Ident
+    from MDSplus.apd import List, Dictionary
+    from MDSplus.mdsdata import Data
+    from MDSplus.ident import Ident
     def add_apd(apd,args,idx):
-        args = list(map(TdiEvaluate,args))
+        for i in range(len(args)):
+            if isinstance(args[i],Data): args[i] = args[i].evaluate()
         if isinstance(apd, (List,)):
             if idx<0:
                 idx += len(apd)+1
