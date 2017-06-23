@@ -12,22 +12,9 @@ Information about the B{I{MDSplus Data System}} can be found at U{the MDSplus Ho
 """
 def _mimport(name, level=1):
     try:
-        if not __package__:
-            return __import__(name, globals())
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
-try:
-    @property
-    def gub(self):
-        return 42
-    @gub.setter
-    def gub(self,value):
-        self._gub=value
-    del gub
-except:
-    raise Exception("Python version 2.6 or higher is now required to use the MDSplus python package.")
-
 
 try:
     _mvers=_mimport('_version')
@@ -45,26 +32,43 @@ except:
     __version__='Unknown'
 
 
-def load(gbls=globals()):
-    def loadmod_full(name,gbls):
-        mod=_mimport(name)
-        for key in mod.__dict__:
-            if not key.startswith('_'):
-                gbls[key]=mod.__dict__[key]
-    for mod in ('mdsdata','mdsscalar','mdsarray','compound','descriptor',
-                'apd','event','tree','scope','_mdsshr',
-                'connection','mdsdcl','mdsExceptions'):
-        loadmod_full(mod,gbls)
-    return gbls
 
-if __name__==__package__:
-    load()
-    def getPyLib():
-        from ctypes.util import find_library
+#try:
+_mimport('_loadglobals').load(globals())
+#except Exception:
+#    import sys
+#    print('Error importing MDSplus package: %s' % (sys.exc_info()[1],))
+
+def getPyLib():
+    from ctypes.util import find_library
+    import sys
+    libname = ('python%d%d' if sys.platform.startswith('win') else 'python%d.%d')%sys.version_info[0:2]
+    return find_library(libname)
+
+if not "PyLib" in globals():
+   globals()['PyLib'] = getPyLib()
+   if   PyLib:setenv("PyLib",PyLib)
+   else:PyLib=getenv("PyLib")
+
+def _remove():
+    "Remove installed MDSplus package"
+    import os
+
+    def _findPackageDir():
+        _f=__file__.split(os.sep)
+        while len(_f) > 1 and _f[-1] != 'MDSplus':
+            _f=_f[:-1]
+        if _f[-1] != 'MDSplus':
+            return None
+        if 'egg' in _f[-2]:
+            _f=_f[:-1]
+        return os.sep.join(_f)
+    _f=__file__.split(os.sep)
+
+    packagedir=_findPackageDir()
+    try:
+        import shutil
+        shutil.rmtree(packagedir)
+    except Exception:
         import sys
-        libname = ('python%d%d' if sys.platform.startswith('win') else 'python%d.%d')%sys.version_info[0:2]
-        return find_library(libname)
-    if not "PyLib" in globals():
-        globals()['PyLib'] = getPyLib()
-        if   PyLib:setenv("PyLib",PyLib)
-        else:PyLib=getenv("PyLib")
+        print("Error removing %s: %s" % (packagedir,sys.exc_info()[1]))
