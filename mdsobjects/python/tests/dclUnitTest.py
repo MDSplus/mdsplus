@@ -17,7 +17,7 @@ class dclTests(TestCase):
     @property
     def shot(self):
         return self.index*dclTests.shotinc+1
-    def _doTCLTest(self,expr,out=None,err=None,re=False,tcl=tcl):
+    def _doTCLTest(self,expr,out=None,err=None,re=False):
         def checkre(pattern,string):
             if pattern is None:
                 self.assertEqual(string is None,True)
@@ -166,7 +166,6 @@ class dclTests(TestCase):
                 self._doTCLTest('show server %s'%server,out=show_server,re=True)
                 testDispatchCommand(server,'set verify')
                 testDispatchCommand(server,'type test')
-                self._doTCLTest('set tree pytree/shot=%d'%shot)
                 self._doTCLTest('dispatch/build%s'%monitor_opt)
                 self._doTCLTest('dispatch/phase%s INIT'%monitor_opt)
                 sleep(1)
@@ -217,6 +216,7 @@ def run():
     TextTestRunner().run(suite())
 
 if __name__=='__main__':
+    import sys
     if len(sys.argv)>1 and sys.argv[1].lower()=="objgraph":
         import objgraph
     else:      objgraph = None
