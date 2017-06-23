@@ -6,7 +6,6 @@ def _mimport(name, level=1):
 import ctypes as _C
 import numpy as _N
 import threading as _threading
-import gc
 
 #### Load other python modules referenced ###
 #
@@ -56,27 +55,6 @@ def _getActiveTree(thread=None):
     _TreeCtx.switchDbid(ctx)
     return ctx
 
-class _TreeCtxDelThread(_threading.Thread):
-    def __init__(self,ctx):
-        super(_TreeCtxDelThread,self).__init__()
-        self.ctx=ctx
-    def run(self):
-        with _TreeCtx.lock:
-            _TreeCtx.ctxs[self.ctx]-=1
-            if _TreeCtx.ctxs[self.ctx]==0:
-                self._closeDbid();
-    def _closeDbid(self):
-        del(_TreeCtx.ctxs[self.ctx])
-        # make sure current Dbid is not active - tdishr
-        ctx = _TreeCtx.switchDbid()
-        if ctx != 0 and ctx!=self.ctx:
-            _TreeCtx.switchDbid(ctx)
-        # apparently this was opened by python - so close all trees
-        while _TreeShr._TreeClose(_C.pointer(_C.c_void_p(self.ctx)),_C.c_void_p(0),_C.c_int32(0)) & 1:
-            print("An unexpectedly open tree has been closed!!")
-        # now free current Dbid
-        _TreeShr.TreeFreeDbid(_C.c_void_p(self.ctx))
- 
 class _TreeCtx(object): # HINT: _TreeCtx begin
     """ The TreeCtx class is used to manage proper garbage collection
     of open trees. It retains reference counts of tree contexts and
@@ -106,10 +84,21 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
     def __del__(self):
         if not self.open: return
         self.open = False
-        dt=_TreeCtxDelThread(self.ctx)
-        dt.start()
-        dt.join(1.)
- 
+        with self.lock:
+            _TreeCtx.ctxs[self.ctx]-=1
+            if _TreeCtx.ctxs[self.ctx]==0:
+                self._closeDbid()
+    def _closeDbid(self):
+        del(_TreeCtx.ctxs[self.ctx])
+        # make sure current Dbid is not active - tdishr
+        ctx = _TreeCtx.switchDbid()
+        if ctx != 0 and ctx!=self.ctx:
+            _TreeCtx.switchDbid(ctx)
+        # apparently this was opened by python - so close all trees
+        while _TreeShr._TreeClose(_C.pointer(_C.c_void_p(self.ctx)),_C.c_void_p(0),_C.c_int32(0)) & 1:
+            print("An unexpectedly open tree has been closed!!")
+        # now free current Dbid
+        _TreeShr.TreeFreeDbid(_C.c_void_p(self.ctx))
     @staticmethod
     def switchDbid(ctx=0):
         if not ctx:
