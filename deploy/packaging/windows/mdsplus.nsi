@@ -223,7 +223,7 @@ File /r /x MDSplus /source/mdsobjects/python
 SetOutPath "$INSTDIR\mdsobjects\python"
 File /workspace/releasebld/64/mdsobjects/python/_version.py
 SetOutPath "$INSTDIR\mdsobjects\python"
-Exec "python setup.py install 
+Exec "python setup.py install" 
 SectionEnd
 
 Section "DEVEL"
