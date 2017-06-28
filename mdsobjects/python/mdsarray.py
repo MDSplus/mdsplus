@@ -228,7 +228,17 @@ class Array(_data.Data):
         if d.dtype in _descriptor.dtypeToArrayClass:
             cls = _descriptor.dtypeToArrayClass[d.dtype]
             if cls.ctype is not None:
-                return Array(getNumpy(cls.ctype,cls.ctype,int(d.arsize/d.length)))
+                numpy_a = getNumpy(cls.ctype,cls.ctype,int(d.arsize/d.length))
+                numpy_a.flags.writeable=True
+                if d.dtype in (12,14,29):
+                    ctype_a = _N.ctypeslib.as_ctypes(numpy_a)
+                    for idx in range(len(ctype_a)*2):    
+                        ctype_a[idx]=_scalar._CvtFLOAT(d.dtype-2,ctype_a[idx])
+                elif d.dtype in (10,11,27):
+                    ctype_a = _N.ctypeslib.as_ctypes(numpy_a)
+                    for idx in range(len(ctype_a)):
+                        ctype_a[idx]=_scalar._CvtFLOAT(d.dtype,ctype_a[idx])
+                return Array(numpy_a)
         raise TypeError('Arrays of dtype %d are unsupported.' % d.dtype)
 
 makeArray = Array
@@ -290,7 +300,7 @@ class Float32Array(Array):
     ctype=_C.c_float
 
 class FloatFArray(Float32Array):
-    """64-bit floating point number"""
+    """32-bit VMS floating point number"""
     dtype_id=10
 
 class Complex64Array(Array):
@@ -303,11 +313,11 @@ class Float64Array(Array):
     ctype=_C.c_double
 
 class FloatDArray(Float64Array):
-    """64-bit floating point number"""
+    """64-bit VMS floating point number"""
     dtype_id=11
 
 class FloatGArray(Float64Array):
-    """64-bit floating point number"""
+    """64-bit VMS floating point number"""
     dtype_id=27
 
 class Complex128Array(Array):
@@ -376,4 +386,3 @@ _descriptor.dtypeToArrayClass[FloatGArray.dtype_id]=Float64Array
 _descriptor.dtypeToArrayClass[Complex64Array.dtype_id]=Complex64Array
 _descriptor.dtypeToArrayClass[Complex128Array.dtype_id]=Complex128Array
 _descriptor.dtypeToArrayClass[StringArray.dtype_id]=StringArray
-
