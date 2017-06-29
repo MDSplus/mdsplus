@@ -79,7 +79,6 @@ rundocker(){
         then jars_dir=
         else jars_dir=/jars_dir
         fi
-        env
         if [ -z $FORWARD_PORT ]
         then port_forwarding=
         else port_forwarding="-p ${FORWARD_PORT}:${FORWARD_PORT}"
