@@ -106,6 +106,7 @@ rundocker(){
            -e "UPDATEPKG" \
            -e "VALGRIND_TOOLS" \
 	   -e "MAKE_JARS" \
+           -e "CONFIGURE_PARAMS" \
            -e "mdsevent_port=$EVENT_PORT" \
            -e "HOME=/workspace" \
            -e "JARS_DIR=$jars_dir" \

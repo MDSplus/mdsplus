@@ -463,7 +463,7 @@ class descriptor(_C.Structure):
                     descr.arsize=descr.arsize*dim
                     shape.append(dim)
             else:
-                shape=[descr.arsize/descr.length if descr.length != 0 else 0,]
+                shape=[int(descr.arsize/descr.length) if descr.length != 0 else 0,]
             if self.dtype == _dtypes.DTYPE_T:
                 return _array.StringArray(_N.ndarray(shape=shape,dtype=_N.dtype(('S',descr.length)),buffer=_ver.buffer(_C.cast(self.pointer,_C.POINTER(_C.c_byte*descr.arsize)).contents)))
 #                return StringArray(_N.chararray(shape,itemsize=descr.length,buffer=buffer(_C.cast(self.pointer,_C.POINTER(_C.c_char*descr.arsize)).contents.value)))

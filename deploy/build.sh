@@ -193,6 +193,9 @@ OPTIONS
     --make-jars
        Triggers the generation of the java programs (.jar files)
 
+    --disable-java
+       Do not compile java programs (passes --disable-java to configure)
+
 OPTIONS WITH OS SPECIFIC DEFAULT
 
    --platform=name
@@ -368,6 +371,9 @@ parsecmd() {
 		;;
 	    --make-jars)
 		MAKE_JARS="yes"
+		;;
+	    --disable-java)
+		CONFIGURE_PARAMS="$CONFIGURE_PARAMS --disable-java"
 		;;
 	    *)
 		unknownopts="${unknownopts} $i"
@@ -636,6 +642,7 @@ OS=${OS} \
   GIT_COMMIT="${GIT_COMMIT}" \
   INTERACTIVE="$INTERACTIVE" \
   JARS_DIR="$JARS_DIR" \
+  CONFIGURE_PARAMS="$CONFIGURE_PARAMS" \
   ${SRCDIR}/deploy/platform/platform_build.sh
 if [ "$?" != "0" ]
 then
