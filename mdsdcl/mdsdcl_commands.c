@@ -233,22 +233,29 @@ EXPORT int mdsdcl_define_symbol(void *ctx, char **error, char **output __attribu
   return (status);
 }
 
-EXPORT int mdsdcl_env(void *ctx, char **error, char **output __attribute__ ((unused)))
-{
-  int status;
+EXPORT int mdsdcl_env(void *ctx, char **error, char **output __attribute__ ((unused))){
   char *name, *value;
-  status = cli_get_value(ctx, "P1", &name);
+  int status = cli_get_value(ctx, "P1", &name);
   for (value=name ; value[0] && value[0]!='=' ; value++ );
-  value[0] = '\0'; value++;
-  fprintf(stderr, "'%s'='%s'\n",name,value);
-  status = setenv(name,value,1);
-  if (status) {
-    *error = malloc(100);
-    perror("error from putenv");
-    sprintf(*error, "Attempting putenv(\"%s\")\n", value);
-    status = MdsdclERROR;
-  } else
-    status = MdsdclSUCCESS;
+  if (value[0]=='\0') {
+      value = getenv(name);
+      if (value){
+         fprintf(stderr, "'%s'='%s'\n",name,value);
+         //free(value);
+      } else
+         fprintf(stderr, "'%s'= not defined\n",name);
+  } else {
+    value[0] = '\0'; value++;
+    fprintf(stderr, "'%s'='%s'\n",name,value);
+    status = setenv(name,value,1);
+    if (status) {
+      *error = malloc(100);
+      perror("error from putenv");
+      sprintf(*error, "Attempting putenv(\"%s\")\n", value);
+      status = MdsdclERROR;
+    } else
+      status = MdsdclSUCCESS;
+  }
   if (name)
     free(name);
   return (status);
