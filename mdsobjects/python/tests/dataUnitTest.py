@@ -5,7 +5,9 @@ from math import log10
 import MDSplus as m
 
 
-class dataTests(TestCase):
+class Tests(TestCase):
+    inThread = False
+    index = 0
     def _doThreeTest(self,tdiexpr,pyexpr,ans,**kwargs):
         """ tests Scalars tdi expression vs. python Expression vs. expected result """
         almost = kwargs.get('almost',False)
@@ -335,7 +337,7 @@ class dataTests(TestCase):
         return map(cls,cls.getTests())
 
 def suite():
-    return TestSuite(dataTests.getTestCases())
+    return TestSuite(Tests.getTestCases())
 
 def run():
     from unittest import TextTestRunner
