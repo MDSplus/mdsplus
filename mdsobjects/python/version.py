@@ -23,7 +23,7 @@ has_xrange    = 'xrange'     in __builtins__
 has_mapclass  = isinstance(map,(type,))
 
 def load_library(name):
-    import ctypes as C,platform
+    import ctypes as C
     if os.sys.platform.startswith('darwin') and not os.getenv('DYLD_LIBRARY_PATH'):
         if os.getenv('MDSPLUS_DIR'):
             os.environ['DYLD_LIBRARY_PATH'] = os.path.join(os.getenv('MDSPLUS_DIR'),'lib')
