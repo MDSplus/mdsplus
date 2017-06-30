@@ -62,17 +62,17 @@ class dataTests(TestCase):
             test('_a-_b',    a- b,   res.pop(),**kwargs)
             test('_a*_b',    a* b,   res.pop(),**kwargs)
             test('_a/_b',    a/ b,   res.pop(),**kwargs)
-            #test('_a**_b',   a**b,   res.pop(),**kwargs)
-            #test('_a|_b',    a| b,   res.pop(),**kwargs)
-            #test('_a&_b',    a& b,   res.pop(),**kwargs)
-            #test('_a==_b',   a==b,   res.pop())
-            #test('_a!=_b',   a!=b,   res.pop())
-            #test('_a<<_b',   a<<b,   res.pop(),**kwargs)
-            #test('_a>>_b',   a>>b,   res.pop(),**kwargs)
-            #test('-_a',      -a,     res.pop(),**kwargs)
-            #test('abs(-_a)', abs(-a),res.pop(),**kwargs)
-            #test('abs1(-_a)',m.ABS1(-a),res.pop(),**kwargs)
-            #test('abssq(-_a)',m.ABSSQ(-a),res.pop(),**kwargs)
+            test('_a**_b',   a**b,   res.pop(),**kwargs)
+            test('_a|_b',    a| b,   res.pop(),**kwargs)
+            test('_a&_b',    a& b,   res.pop(),**kwargs)
+            test('_a==_b',   a==b,   res.pop())
+            test('_a!=_b',   a!=b,   res.pop())
+            test('_a<<_b',   a<<b,   res.pop(),**kwargs)
+            test('_a>>_b',   a>>b,   res.pop(),**kwargs)
+            test('-_a',      -a,     res.pop(),**kwargs)
+            test('abs(-_a)', abs(-a),res.pop(),**kwargs)
+            test('abs1(-_a)',m.ABS1(-a),res.pop(),**kwargs)
+            test('abssq(-_a)',m.ABSSQ(-a),res.pop(),**kwargs)
             rcount = 11
             acount = 4+rcount
             if almost:  # some operations only make sence on floating point
@@ -97,22 +97,21 @@ class dataTests(TestCase):
             else:  # strip results of floating operations
                 res = res[:-acount]
             if real:  # some binary operations are only defined for real numbers
-                pass
-                #test('_a mod _b',   a% b,   res.pop(),**kwargs)
-                #test('_a>_b',       a> b,   res.pop())
-                #test('_a>=_b',      a>=b,   res.pop())
-                #test('_a<_b',       a< b,   res.pop())
-                #test('_a<=_b',      a<=b,   res.pop())
+                test('_a mod _b',   a% b,   res.pop(),**kwargs)
+                test('_a>_b',       a> b,   res.pop())
+                test('_a>=_b',      a>=b,   res.pop())
+                test('_a<_b',       a< b,   res.pop())
+                test('_a<=_b',      a<=b,   res.pop())
 
         def testScalars():
             """ test scalars """
             def doTest(suffix,cl,scl,ucl,**kw):
                 """ test scalar """
                 import warnings
-                results = [cl(13),cl(7),cl(30),cl(10./3),#cl(1000),
-                    #ucl(11),ucl(2),
-                    #False,True,
-                    #cl(80),cl(1),scl(-10),scl(10),scl(10),scl(100),
+                results = [cl(13),cl(7),cl(30),cl(10./3),cl(1000),
+                    ucl(11),ucl(2),
+                    False,True,
+                    cl(80),cl(1),scl(-10),scl(10),scl(10),scl(100),
                     cl(22026.4658), cl(2.30258509),
                     cl(-0.54402111), cl(-0.83907153), cl(0.64836083),
                     cl(1.57079633), cl(0.), cl(1.47112767), cl(1.47112767),
@@ -125,12 +124,12 @@ class dataTests(TestCase):
                 a,b = cl(10),cl(3)
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore")
-                    if kw.get('real',True):
-                        self.assertEqual(int(cl(10)),10)
-                        self.assertAlmostEqual(float(cl(10)),10.)
+                    self.assertEqual(int(cl(10)),10)
+                    self.assertAlmostEqual(float(cl(10)),10.)
                 warnings.resetwarnings()
                 self._doTdiTest('[_a]',m.makeArray(a))
                 executeTests(self._doThreeTest,a,b,results,**kw)
+
             doTest('BU',m.Uint8,  m.Int8,   m.Uint8)
             doTest('WU',m.Uint16, m.Int16,  m.Uint16)
             doTest('LU',m.Uint32, m.Int32,  m.Uint32)
@@ -140,22 +139,22 @@ class dataTests(TestCase):
             doTest('',  m.Int32,  m.Int16,  m.Uint32)
             doTest('Q', m.Int64,  m.Int16,  m.Uint64)
             doTest('.', m.Float32,m.Float32,m.Uint32,almost=5)
-            doTest('D0',m.Float64,m.Float64,m.Uint64,almost=4)
+            doTest('D0',m.Float64,m.Float64,m.Uint64,almost=7)
             doTest('*cmplx(1.,0.)',  m.Complex64, m.Complex64, m.Uint64,almost=5,real=False)
-            doTest('*cmplx(1D0,0D0)',m.Complex128,m.Complex128,m.Uint64,almost=4,real=False)
+            doTest('*cmplx(1D0,0D0)',m.Complex128,m.Complex128,m.Uint64,almost=7,real=False)
 
         def testArrays():
             """ test arrays and signals """
             def doTest(suffix,cl,scl,ucl,**kw):
                 """ test array and signal """
                 def results(cl,scl,ucl):
-                    #from numpy import array
+                    from numpy import array
                     return [
-                        cl([13,8,7]),cl([7,0,-3]),cl([30,16,10]),cl([10./3,1,.4]),#cl([1000,256,32]),  # +,-,*,/,**
-                        #cl([11,4,7]),ucl([2,4,0]), # |,&
-                        #array([False,True,False]),  # ==
-                        #array([True,False,True]),   # !=
-                        #cl([80,64,64]),cl([1,0,0]),scl([-10,-4,-2]),scl([10,4,2]),scl([10,4,2]),scl([100,16,4]),  # <<,>>,-,abs
+                        cl([13,8,7]),cl([7,0,-3]),cl([30,16,10]),cl([10./3,1,.4]),cl([1000,256,32]),  # +,-,*,/,**
+                        ucl([11,4,7]),ucl([2,4,0]), # |,&
+                        array([False,True,False]),  # ==
+                        array([True,False,True]),   # !=
+                        cl([80,64,64]),cl([1,0,0]),scl([-10,-4,-2]),scl([10,4,2]),scl([10,4,2]),scl([100,16,4]),  # <<,>>,-,abs
                         cl([ 22026.4658,  54.5981500,  7.38905610]),  # exp
                         cl([ 2.30258509,  1.38629436,  0.69314718]),  # log
                         cl([-0.54402111, -0.7568025 ,  0.90929743]),  # sin
@@ -172,15 +171,15 @@ class dataTests(TestCase):
                         cl([ 0.17632698,  0.06992681,  0.03492077]),  # tand
                         cl([3,1,1]),  # anint
                         cl([1,0,2]),  # %
-                        #array([True,False,False]),  # >
-                        #array([True,True,False]),   # >=
-                        #array([False,False,True]),  # <
-                        #array([False,True,True]),   # <=
+                        array([True,False,False]),  # >
+                        array([True,True,False]),   # >=
+                        array([False,False,True]),  # <
+                        array([False,True,True]),   # <=
                         ]
                 """ test array """
                 m.Data.execute('_a=[10%s,4%s,2%s],_b=[3%s,4%s,5%s]'%tuple([suffix]*6))
                 a,b = cl([10,4,2]),cl([3,4,5])
-                self._doThreeTestArray('_a',m.makeArray(a),m.makeData(a))
+                self._doThreeTestArray('_a',m.Array(a),m.Data(a))
                 executeTests(self._doThreeTestArray,a,b,results(cl,scl,ucl),**kw)
                 """ test signal """
                 Scl  = lambda v: m.Signal(cl(v))
@@ -199,12 +198,12 @@ class dataTests(TestCase):
             doTest('',  m.Int32Array,  m.Int32Array,  m.Uint32Array)
             doTest('Q', m.Int64Array,  m.Int64Array,  m.Uint64Array)
             doTest('.', m.Float32Array,m.Float32Array,m.Uint32Array,almost=5)
-            doTest('D0',m.Float64Array,m.Float64Array,m.Uint64Array,almost=4)
+            doTest('D0',m.Float64Array,m.Float64Array,m.Uint64Array,almost=7)
             doTest('*cmplx(1.,0.)',  m.Complex64Array,m.Complex64Array,  m.Uint64Array,almost=5,real=False)
-            doTest('*cmplx(1D0,0D0)',m.Complex128Array,m.Complex128Array,m.Uint64Array,almost=4,real=False)
+            doTest('*cmplx(1D0,0D0)',m.Complex128Array,m.Complex128Array,m.Uint64Array,almost=7,real=False)
 
         testScalars()
-        #testArrays()
+        testArrays()
 
     def _doExceptionTest(self,expr,exc):
         try:
@@ -217,8 +216,6 @@ class dataTests(TestCase):
     def _doTdiTest(self,expr,res):
         self.assertEqual(m.Data.execute(expr),res)
     def tdiFunctions(self):
-        m.dTRUE = m.__dict__['$TRUE']
-        m.dFALSE = m.__dict__['$FALSE']
         from MDSplus import mdsExceptions as Exc
         """Test Exceptions"""
         self._doExceptionTest('abort()',Exc.TdiABORT)
@@ -254,13 +251,13 @@ class dataTests(TestCase):
         self._doThreeTest('aint(2.783)',m.AINT(2.783),m.Float32(2.0))
         self._doThreeTest('aint(-2.783)',m.AINT(-2.783),m.Float32(-2.0))
         """Test NE (operates on flattened array, i.e. first 3 values are compared)"""
-        A,B = m.makeArray([1,3,5]),m.makeArray([[0,3,5],[0,0,0],[0,4,8]])
+        A,B = [1,3,5],[[0,3,5],[0,0,0],[0,4,8]]
         self._doThreeTestArray('_A=[1,3,5],_B=[[0,3,5],[0,0,0],[0,4,8]],_A ne _B',m.NE(A,B),m.Uint8Array([1,0,0]))
         """Test NE (operates on flattened array, i.e. first 3 values are compared)"""
         self._doThreeTestArray('_A eq _B',m.EQ(A,B),m.Uint8Array([0,1,1]))
         """Test ALL and ANY"""
-        self._doThreeTest('all([$TRUE,$FALSE,$TRUE])',m.ALL(m.makeArray([1,0,1])),m.Uint8(0))
-        self._doThreeTest('any([$TRUE,$FALSE,$TRUE])',m.ANY(m.makeArray([1,0,1])),m.Uint8(1))
+        self._doThreeTest('all([$TRUE,$FALSE,$TRUE])',m.ALL([m.dTRUE(),m.dFALSE(),m.dTRUE()]),m.Uint8(0))
+        self._doThreeTest('any([$TRUE,$FALSE,$TRUE])',m.ANY([m.dTRUE(),m.dFALSE(),m.dTRUE()]),m.Uint8(1))
         A = 0
         self._doThreeTest('_A=0,all(_A eq _B)',m.ALL(m.EQ(A,B)),False)
         self._doThreeTest('any(_A ne _B)',m.ANY(m.NE(A,B)),True)
@@ -276,7 +273,7 @@ class dataTests(TestCase):
         self.assertEqual(m.DEALLOCATE('*'),m.Uint8(1))
         self.assertEqual(m.ALLOCATED('_xyz'),m.Uint8(0))
         """Test AND"""
-        A,B=m.makeArray([0,0,1,1]),m.makeArray([0,1,0,1])
+        A,B=[0,0,1,1],[0,1,0,1]
         self._doThreeTestArray('_A=[0,0,1,1],_B=[0,1,0,1],_A && _B',m.AND(A,B),m.Uint8Array([0,0,0,1]))
         """Test AND_NOT"""
         self._doThreeTestArray('_A AND_NOT _B',m.AND_NOT(A,B),m.Uint8Array([0,0,1,0]))
@@ -287,8 +284,8 @@ class dataTests(TestCase):
         """Test ARGD"""
         self._doTdiTest('execute("abs(argd(cmplx(3.0,4.0)) - 53.1301) < .000001")',m.Uint8(1))
         """Test arg_of"""
-        self._doThreeTest('arg_of(pub->foo(42,43))',m.ARG_OF(m.Call('pub','foo',42,43)),m.Int32(42))
-        self._doThreeTest('arg_of(pub->foo(42,43),1)',m.ARG_OF(m.Call('pub','foo',42,43),1),m.Int32(43))
+        self._doThreeTest('arg_of(pub->foo:B(42,43))',m.ARG_OF(m.Call('pub','foo',42,43).setRType(m.Uint8)),m.Int32(42))
+        self._doThreeTest('arg_of(pub->foo:P(42,43),1)',m.ARG_OF(m.Call('pub','foo',42,43).setRType(m.Pointer),1),m.Int32(43))
         self._doThreeTest('arg_of(1+3,1)',m.ARG_OF(m.ADD(1,3),1),m.Int32(3))
         """Test Array"""
         self._doThreeTestArray('array(10)',    m.ARRAY(10),  m.Float32Array([0]*10))
@@ -297,7 +294,7 @@ class dataTests(TestCase):
         self._doThreeTestArray('zero(100)',    m.ZERO(100),m.Float32Array([0]*100))
 
     def tdiPythonInterface(self):
-        #self._doTdiTest("Py('a=None')",1)
+        self._doTdiTest("Py('a=None')",1)
         self._doTdiTest("Py('a=None','a')",None)
         self._doTdiTest("Py('a=123','a')",123)
         self._doTdiTest("Py('import MDSplus;a=MDSplus.Uint8(-1)','a')",m.Uint8(255))
@@ -320,9 +317,9 @@ class dataTests(TestCase):
         self.assertEqual(str(m.Int16(123)),'123W')
         self.assertEqual(str(m.Int32(123)),'123')
         self.assertEqual(str(m.Int64(123)),'123Q')
+        self.assertEqual(str(m.Float32(1.2E-3)),'.0012')
+        self.assertEqual(str(m.Float64(1.2E-3)),'.0012D0')
         self.assertEqual(str(m.Signal(m.ZERO(100000,0).evaluate(),None,0)),"Build_Signal(Set_Range(100000,0 /*** etc. ***/), *, 0)")
-        #self.assertEqual(str(m.Float32(1.2E-3)),'.0012')
-        #self.assertEqual(str(m.Float64(1.2E-3)),'.0012D0')
 
     def runTest(self):
         for test in self.getTests():
