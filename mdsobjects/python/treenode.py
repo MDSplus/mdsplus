@@ -768,6 +768,18 @@ class TreeNode(_data.Data):
         else:
             return None
 
+    def getSegmentLimits(self,idx):
+        """return start and end of segment
+        @param idx: segment index to query
+        @type idx: int
+        @rtype: Data
+        """
+        num=self.getNumSegments()
+        if num > 0 and idx < num:
+            limits=_treeshr.TreeGetSegmentLimits(self,idx)
+            if limits is not None:
+                return limits
+
     def getSegmentEnd(self,idx):
         """return end of segment
         @param idx: segment index to query
@@ -779,10 +791,6 @@ class TreeNode(_data.Data):
             limits=_treeshr.TreeGetSegmentLimits(self,idx)
             if limits is not None:
                 return limits[1]
-            else:
-                return None
-        else:
-            return None
 
     def getSegmentStart(self,idx):
         """return start of segment
@@ -795,10 +803,6 @@ class TreeNode(_data.Data):
             limits=_treeshr.TreeGetSegmentLimits(self,idx)
             if limits is not None:
                 return limits[0]
-            else:
-                return None
-        else:
-            return None
 
     def getStatus(self):
         """Return action completion status
