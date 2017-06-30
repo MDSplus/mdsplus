@@ -69,7 +69,7 @@ class segmentsTests(TestCase):
         length,width = 16,7
         dim = [2*i+2 for i in range(length)]        # shape (16)
         dat = [[i*width+j+1 for j in range(width)] for i in range(length)]  # shape (16,7)
-        ndim,ndat = array(dim),array(dat)
+        ndim,ndat = array(dim,int32),array(dat,int32)
         ### makeSegment ###
         node = ptree.MS
         seglen = 1
