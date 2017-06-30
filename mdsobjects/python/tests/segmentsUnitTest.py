@@ -150,7 +150,7 @@ def suite():
 
 def run():
     from unittest import TextTestRunner
-    TextTestRunner(verbosity=10).run(suite())
+    TextTestRunner(verbosity=2).run(suite())
 
 if __name__=='__main__':
     import sys
