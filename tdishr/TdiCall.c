@@ -237,6 +237,7 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
       break;
     case DTYPE_POINTER:
       dx.length = sizeof(void *);
+      dx.pointer = (char *)result;
       //      if (sizeof(void *) == 8)
       //  dx.dtype = DTYPE_QU;
       //else
