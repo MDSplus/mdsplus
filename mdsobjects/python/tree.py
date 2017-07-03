@@ -560,7 +560,8 @@ class Tree(object):
     __str__=__repr__
     def addDevice(self,nodename,model):
         """Add a device to the tree of the specified device model type.
-        @param nodename: Absolute or relative path specification of the head node of the device. All ancestors of node must exist.
+        @param nodename: Absolute or relative path specification of the head node of the device.
+                         All ancestors of node must exist.
         @type nodename: str
         @param model: Model name of the device being added.
         @type model: str
@@ -2822,10 +2823,9 @@ class Device(TreeNode): # HINT: Device begin
                 if not (isinstance(dev,(type,)) and issubclass(dev,(Device,))):
                     return dev
                 from types import FunctionType
-                def dummy(self,*args,**kvargs):
-                    return 1
+                def dummy(self,*args,**kvargs): pass
                 db = {}
-                for d in dev.mro()[-4::-1]: #mro[-3] is Device
+                for d in dev.mro()[-5::-1]: #mro[-4] is Device
                     for k,v in d.__dict__.items():
                         if isinstance(v,(FunctionType,)):
                             db[k] = dummy
