@@ -2,7 +2,7 @@ from unittest import TestCase, TestSuite
 from MDSplus import Tree, Device, Data, setenv
 from threading import Lock
 
-class devicesTest(TestCase):
+class Tests(TestCase):
     _lock      = Lock()
     _instances = 0
     _tmpdir    = None
@@ -69,7 +69,7 @@ class devicesTest(TestCase):
         return map(cls,cls.getTests())
 
 def suite():
-    return TestSuite(devicesTest.getTestCases())
+    return TestSuite(Tests.getTestCases())
 
 def run():
     from unittest import TextTestRunner

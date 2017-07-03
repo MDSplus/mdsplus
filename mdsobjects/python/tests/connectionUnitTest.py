@@ -1,7 +1,7 @@
 from unittest import TestCase,TestSuite
 from MDSplus import Connection
 
-class connectionTests(TestCase):
+class Tests(TestCase):
 
     def connectionWithThreads(self):
         from threading import Thread
@@ -32,7 +32,7 @@ class connectionTests(TestCase):
         return map(cls,cls.getTests())
 
 def suite():
-    return TestSuite(connectionTests.getTestCases())
+    return TestSuite(Tests.getTestCases())
 
 def run():
     from unittest import TextTestRunner

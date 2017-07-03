@@ -1,41 +1,46 @@
 from unittest import TestCase,TestSuite
-from MDSplus import Tree,Float32,Float32Array,Int16Array,setenv,makeArray
-from threading import Lock
+from MDSplus import Tree,Float32,Float32Array,Int16Array,setenv,DateToQuad,Int32Array,Range
+from threading import RLock
 
-class segmentsTests(TestCase):
-    _lock      = Lock()
-    _instances = 0
-    _tmpdir    = None
+class Tests(TestCase):
+    inThread = False
+    lock = RLock()
+    shotinc = 2
+    instances = 0
+    index = 0
+    @property
+    def shot(self):
+        return self.index*Tests.shotinc+1
 
     @classmethod
     def setUpClass(cls):
-        with cls._lock:
-            if cls._instances == 0:
+        with cls.lock:
+            if cls.instances == 0:
                 import tempfile
-                cls._tmpdir=tempfile.mkdtemp()
-            setenv("seg_tree_path",cls._tmpdir)
-            cls._instances+=1
+                cls.tmpdir=tempfile.mkdtemp()
+            setenv("seg_tree_path",cls.tmpdir)
+            cls.instances+=1
     @classmethod
     def tearDownClass(cls):
         import gc,shutil
         gc.collect()
-        with cls._lock:
-            cls._instances -= 1
-            if not cls._instances>0:
-                shutil.rmtree(cls._tmpdir)
+        with cls.lock:
+            cls.instances -= 1
+            if not cls.instances>0:
+                shutil.rmtree(cls.tmpdir)
 
     def arrayDimensionOrder(self):
         from numpy import int16,zeros
         from random import randint
-        ptree=Tree('seg_tree',-1,'NEW')
+        ptree=Tree('seg_tree',self.shot,'NEW')
         ptree.addNode('IMM')
         ptree.write()
-        ptree=Tree('seg_tree',-1)
-        ptree.createPulse(1)
-        ptree=Tree('seg_tree',1)
+        ptree=Tree('seg_tree',self.shot)
+        ptree.createPulse(self.shot+1)
+        ptree=Tree('seg_tree',self.shot+1)
         node=ptree.getNode('IMM')
-        WIDTH = 640
-        HEIGHT= 480;
+        WIDTH = 64
+        HEIGHT= 48;
         currFrame=zeros(WIDTH*HEIGHT, dtype = int16);
         currTime=float(0);
         for i in range(0,WIDTH):
@@ -56,16 +61,32 @@ class segmentsTests(TestCase):
 
     def writeSegments(self):
         from numpy import array,zeros,int32
-        ptree = Tree('seg_tree',-1,'NEW')
-        ptree.addNode('MS')
-        ptree.addNode('MS_MD')
-        ptree.addNode('MTS')
-        ptree.addNode('MTS_MD')
-        ptree.addNode('PS')
-        ptree.addNode('PR')
-        ptree.addNode('PTS')
-        ptree.write()
-        ptree = Tree('seg_tree',-1)
+        with Tree('seg_tree',self.shot,'NEW') as ptree:
+            ptree.addNode('S')
+            ptree.addNode('MS')
+            ptree.addNode('MS_MD')
+            ptree.addNode('MTS')
+            ptree.addNode('MTS_MD')
+            ptree.addNode('PS')
+            ptree.addNode('PR')
+            ptree.addNode('PTS')
+            ptree.write()
+        ptree = Tree('seg_tree',self.shot)
+        node = ptree.S
+        # beginning a block set next_row to 0
+        node.beginTimestampedSegment(Int32Array([0,7]))
+        self.assertEqual(str(node.record),       "Build_Signal([], *, [])")
+        self.assertEqual(str(node.getSegment(0)),"Build_Signal([], *, [])")
+        # beginning adding row increments next_row to 1
+        node.putRow(1,Int32Array([1]),-1)
+        self.assertEqual(str(node.record),       "Build_Signal([1], *, [-1Q])")
+        self.assertEqual(str(node.getSegment(0)),"Build_Signal([1], *, [-1Q])")
+        # beginning a new block set next_row back to 0 of the new block
+        # the previous block is assumed to be full as the tailing zero could be valid data
+        node.beginTimestampedSegment(Int32Array([0]))
+        self.assertEqual(str(node.record),       "Build_Signal([1,7], *, [-1Q,0Q])")
+        self.assertEqual(str(node.getSegment(0)),"Build_Signal([1,7], *, [-1Q,0Q])")
+        # # # write Segments using different methods # # #
         length,width = 16,7
         dim = [2*i+2 for i in range(length)]        # shape (16)
         dat = [[i*width+j+1 for j in range(width)] for i in range(length)]  # shape (16,7)
@@ -135,18 +156,32 @@ class segmentsTests(TestCase):
         self.assertEqual(node.record.dim_of().tolist(),dim)
         self.assertEqual(node.record.data().tolist(),dat)
 
+    def compressSegments(self):
+        with Tree('seg_tree',self.shot,'NEW') as ptree:
+            ptree.addNode('S').compress_on_put = False
+            ptree.write()
+        ptree = Tree('seg_tree',self.shot)
+        node = ptree.S
+        for i in range(200):
+            node.putRow(100,Range(1,100).data(),DateToQuad("now"))
+        ptree.createPulse(self.shot+1)
+        node.compress_segments=True
+        ptree1 = Tree('seg_tree',self.shot+1)
+        ptree1.compressDatafile()
+        self.assertEqual((node.record==ptree1.S.record).all(),True)
+
     def runTest(self):
         for test in self.getTests():
             self.__getattribute__(test)()
     @staticmethod
     def getTests():
-        return ['arrayDimensionOrder','writeSegments']
+        return ['arrayDimensionOrder','writeSegments','compressSegments']
     @classmethod
     def getTestCases(cls):
         return map(cls,cls.getTests())
 
 def suite():
-    return TestSuite(segmentsTests.getTestCases())
+    return TestSuite(Tests.getTestCases())
 
 def run():
     from unittest import TextTestRunner

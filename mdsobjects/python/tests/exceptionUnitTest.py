@@ -3,7 +3,7 @@ from unittest import TestCase, TestSuite
 from MDSplus import DevNOT_TRIGGERED, TclNORMAL
 
 
-class exceptionTests(TestCase):
+class Tests(TestCase):
 
     def defaultErrorValues(self):
         err = DevNOT_TRIGGERED()
@@ -38,7 +38,7 @@ class exceptionTests(TestCase):
         return map(cls,cls.getTests())
 
 def suite():
-    return TestSuite(exceptionTests.getTestCases())
+    return TestSuite(Tests.getTestCases())
 
 def run():
     from unittest import TextTestRunner

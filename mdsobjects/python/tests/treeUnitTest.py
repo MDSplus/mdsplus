@@ -1,19 +1,19 @@
 from unittest import TestCase,TestSuite
 import os
-from threading import Lock
+from threading import RLock
 
-from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,DateToQuad,Device,Int32Array
+from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,Device,tree,tcl
 from MDSplus import getenv,setenv
 
-class treeTests(TestCase):
-    lock = Lock()
+class Tests(TestCase):
+    inThread = False
+    lock = RLock()
     shotinc = 3
     instances = 0
-    inThread = False
     index = 0
     @property
     def shot(self):
-        return self.index*treeTests.shotinc+1
+        return self.index*Tests.shotinc+1
 
     @classmethod
     def setUpClass(cls):
@@ -35,8 +35,6 @@ class treeTests(TestCase):
                 if getenv("testing_path") is None:
                     cls._setenv("testing_path","%s/trees"%cls.root)
             cls.instances += 1
-            if cls.inThread:
-                print('threads up: %d'%(cls.instances,))
 
     @classmethod
     def _setenv(cls,name,value):
@@ -44,6 +42,15 @@ class treeTests(TestCase):
         cls.env[name]  = value
         cls.envx[name] = value
         setenv(name,value)
+
+    @classmethod
+    def tearDownClass(cls):
+        import gc,shutil
+        gc.collect()
+        with cls.lock:
+            cls.instances -= 1
+            if not cls.instances>0:
+                shutil.rmtree(cls.tmpdir)
 
     def buildTrees(self):
         with Tree('pytree',self.shot,'new') as pytree:
@@ -80,7 +87,7 @@ class treeTests(TestCase):
             node.compress_on_put=True
             node.record=Signal(Range(2.,2000.,2.),None,Range(1.,1000.))
             ip=pytreesub_top.addNode('ip','signal')
-            rec=Data.compile("Build_Signal(Build_With_Units(\\MAG_ROGOWSKI.SIGNALS:ROG_FG + 2100. * \\BTOR, 'ampere'), *, DIM_OF(\\BTOR))")
+            rec=pytreesub.tdiCompile("Build_Signal(Build_With_Units(\\MAG_ROGOWSKI.SIGNALS:ROG_FG + 2100. * \\BTOR, 'ampere'), *, DIM_OF(\\BTOR))")
             ip.record=rec
             ip.tag='MAG_PLASMA_CURRENT'
             ip.tag='MAGNETICS_PLASMA_CURRENT'
@@ -92,20 +99,11 @@ class treeTests(TestCase):
                 node.addDevice('dt200_%02d' % (i,),'dt200').on=False
             pytreesub.write()
 
-    @classmethod
-    def tearDownClass(cls):
-        import gc,shutil
-        gc.collect()
-        with cls.lock:
-            cls.instances -= 1
-            if not cls.instances>0:
-                shutil.rmtree(cls.tmpdir)
-
     def openTrees(self):
         pytree = Tree('pytree',self.shot)
         self.assertEqual(str(pytree),'Tree("PYTREE",%d,"Normal")'%(self.shot,))
         pytree.createPulse(self.shot+1)
-        if not treeTests.inThread:
+        if not Tests.inThread:
             Tree.setCurrent('pytree',self.shot+1)
             pytree2=Tree('pytree',0)
             self.assertEqual(str(pytree2),'Tree("PYTREE",%d,"Normal")'%(self.shot+1,))
@@ -260,46 +258,19 @@ class treeTests(TestCase):
             self.assertTrue((pytree.SIG_CMPRS.record == node.record).all(),
                              msg="Error writing compressed signal%s"%node)
 
-    def segments(self):
-        pytree = Tree('pytree',self.shot)
-        signal=pytree.SIG01
-        signal.record=None
-        signal.compress_on_put=False
-        for i in range(2000):
-            signal.putRow(100,Range(1,1000).data(),DateToQuad("now"))
-        pytree.createPulse(self.shot+2)
-        signal.compress_segments=True
-        pytree3 = Tree('pytree',self.shot+2)
-        pytree3.compressDatafile()
-        self.assertEqual((signal.record==pytree3.SIG01.record).all(),True)
-        signal.deleteData()
-        # beginning a block set next_row to 0
-        signal.beginTimestampedSegment(Int32Array([0,7]))
-        self.assertEqual(str(signal.record),       "Build_Signal([], *, [])")
-        self.assertEqual(str(signal.getSegment(0)),"Build_Signal([], *, [])")
-        # beginning adding row increments next_row to 1
-        signal.putRow(1,Int32Array([1]),-1)
-        self.assertEqual(str(signal.record),       "Build_Signal([1], *, [-1Q])")
-        self.assertEqual(str(signal.getSegment(0)),"Build_Signal([1], *, [-1Q])")
-        # beginning a new block set next_row back to 0 of the new block
-        # the previous block is assumed to be full as the tailing zero could be valid data
-        signal.beginTimestampedSegment(Int32Array([0]))
-        self.assertEqual(str(signal.record),       "Build_Signal([1,7], *, [-1Q,0Q])")
-        self.assertEqual(str(signal.getSegment(0)),"Build_Signal([1,7], *, [-1Q,0Q])")
-
-
     def runTest(self):
         for test in self.getTests():
             self.__getattribute__(test)()
     @staticmethod
     def getTests():
-        return ['buildTrees','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','segments','getCompression']
+        return ['buildTrees','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','getCompression']
+
     @classmethod
     def getTestCases(cls):
         return map(cls,cls.getTests())
 
 def suite():
-    return TestSuite(treeTests.getTestCases())
+    return TestSuite(Tests.getTestCases())
 
 def run():
     from unittest import TextTestRunner
