@@ -137,11 +137,9 @@ class Tests(TestCase):
         ### putRow ###
         node = ptree.PR
         seglen = 4
-        segbuf = zeros((int(length/seglen),width),int32)
         for i in range(0,length,seglen):
-            node.beginTimestampedSegment(segbuf)
             for j in range(seglen):
-                node.putRow(64,ndat[i+j:i+j+1],dim[i+j])
+                node.putRow(seglen,ndat[i+j],dim[i+j])
         self.assertEqual(node.getSegmentLimits(1),(10,16))
         self.assertEqual(node.record.dim_of().tolist(),dim)
         self.assertEqual(node.record.data().tolist(),dat)
