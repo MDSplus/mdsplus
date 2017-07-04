@@ -2260,23 +2260,23 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
                                         _dat.Data.byref(data),
                                         0))
 
-    def putRow(self,bufsize,array,timestamp):
+    def putRow(self,bufsize,data,timestamp):
         """Load a timestamped segment row
         @param bufsize: number of rows in segment
         @type bufsize: int
-        @param array: data for this row
-        @type array: Array or Scalar
+        @param data: data for this row
+        @type data: Array or Scalar
         @param timestamp: Timestamp of this row
         @type timestamp: Uint64
         @rtype: None
         """
-        array = _arr.Array(array)
+        data = _dat.Data(data)
         _exc.checkStatus(
                 _TreeShr._TreePutRow(self.tree.ctx,
                                      self._nid,
                                      _C.c_int32(bufsize),
                                      _C.byref(_C.c_int64(int(timestamp))),
-                                     _dat.Data.byref(array)))
+                                     _dat.Data.byref(data)))
 
     def putSegment(self,data,idx):
         """Load a segment in a node
