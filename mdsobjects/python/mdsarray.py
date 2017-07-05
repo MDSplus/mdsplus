@@ -8,12 +8,12 @@ import numpy as _N
 import ctypes as _C
 
 _ver=_mimport('version')
-_descriptor=_mimport('descriptor')
-_data=_mimport('mdsdata')
-_scalar=_mimport('mdsscalar')
-_compound=_mimport('compound')
+_dsc=_mimport('descriptor')
+_dat=_mimport('mdsdata')
+_scr=_mimport('mdsscalar')
+_cmd=_mimport('compound')
 
-class Array(_data.Data):
+class Array(_dat.Data):
     ctype = None
     __MAX_DIM = 8
     @property  # used by numpy.array
@@ -41,7 +41,7 @@ class Array(_data.Data):
         value=value[0]
         if isinstance(value,(Array,)):
             return value
-        if isinstance(value,_data.Data):
+        if isinstance(value,_dat.Data):
             value = _N.array(value.data())
         elif isinstance(value,_C.Array):
             try: value = _N.ctypeslib.as_array(value)
@@ -56,7 +56,7 @@ class Array(_data.Data):
             except (ValueError,TypeError):
                 newlist=list()
                 for i in value:
-                    newlist.append(_data.Data(i).data())
+                    newlist.append(_dat.Data(i).data())
                 value = _N.array(newlist)
         if isinstance(value,(_N.ndarray,_N.generic)):
             if   str(value.dtype)[1] in 'SU':
@@ -75,7 +75,7 @@ class Array(_data.Data):
         if value is self: return
         if self.__class__ is Array:
             raise TypeError("cannot instantiate 'Array'")
-        if isinstance(value,_data.Data):
+        if isinstance(value,_dat.Data):
             value = value.data()
         elif isinstance(value,_C.Array):
             try:
@@ -104,16 +104,16 @@ class Array(_data.Data):
         return self._value
 
     def _unop(self,op):
-        return _data.Data(getattr(self._value,op)())
+        return _dat.Data(getattr(self._value,op)())
 
     def _binop(self,op,y):
         if hasattr(y,'_value'): y=y._value
-        return _data.Data(getattr(self._value,op)(y))
+        return _dat.Data(getattr(self._value,op)(y))
 
     def _triop(self,op,y,z):
         if hasattr(y,'_value'): y=y._value
         if hasattr(z,'_value'): z=z._value
-        return _data.Data(getattr(self._value,op)(y,z))
+        return _dat.Data(getattr(self._value,op)(y,z))
 
     def __array__(self):
         return self.value
@@ -134,7 +134,7 @@ class Array(_data.Data):
         self._value[index]=value
 
     def __getitem__(self,index):
-        return _data.Data(self._value[index])
+        return _dat.Data(self._value[index])
 
     def getElementAt(self,index):
         return self[index]
@@ -159,10 +159,10 @@ class Array(_data.Data):
         return self._unop('argmin')
 
     def argsort(self,axis=-1,kind='quicksort',order=None):
-        return _data.Data(self._value.argsort(axis,kind,order))
+        return _dat.Data(self._value.argsort(axis,kind,order))
 
     def astype(self,type):
-        return _data.Data(self._value.astype(type))
+        return _dat.Data(self._value.astype(type))
 
     def byteswap(self):
         return self._unop('byteswap')
@@ -181,7 +181,7 @@ class Array(_data.Data):
         value = value.T
         if not value.flags.f_contiguous:
             value=value.copy('F')
-        d=_descriptor.Descriptor_a()
+        d=_dsc.Descriptor_a()
         d.scale=0
         d.digits=0
         d.dtype=self.dtype_id
@@ -195,7 +195,7 @@ class Array(_data.Data):
             d.coeff=True
             for i in range(d.dimct):
                 d.coeff_and_bounds[i]=_N.shape(value)[i]
-        return _compound.Compound._descriptorWithProps(self,d)
+        return _cmd.Compound._descriptorWithProps(self,d)
 
 
     @classmethod
@@ -225,19 +225,19 @@ class Array(_data.Data):
             return Array(getNumpy(_N.complex64,_C.c_float,int(d.arsize*2/d.length)))
         if d.dtype == Complex128Array.dtype_id:
             return Array(getNumpy(_N.complex128,_C.c_double,int(d.arsize*2/d.length)))
-        if d.dtype in _descriptor.dtypeToArrayClass:
-            cls = _descriptor.dtypeToArrayClass[d.dtype]
+        if d.dtype in _dsc.dtypeToArrayClass:
+            cls = _dsc.dtypeToArrayClass[d.dtype]
             if cls.ctype is not None:
                 numpy_a = getNumpy(cls.ctype,cls.ctype,int(d.arsize/d.length))
                 numpy_a.flags.writeable=True
                 if d.dtype in (12,14,29):
                     ctype_a = _N.ctypeslib.as_ctypes(numpy_a)
-                    for idx in range(len(ctype_a)*2):    
-                        ctype_a[idx]=_scalar._CvtFLOAT(d.dtype-2,ctype_a[idx])
+                    for idx in range(len(ctype_a)*2):
+                        ctype_a[idx]=_scr._CvtFLOAT(d.dtype-2,ctype_a[idx])
                 elif d.dtype in (10,11,27):
                     ctype_a = _N.ctypeslib.as_ctypes(numpy_a)
                     for idx in range(len(ctype_a)):
-                        ctype_a[idx]=_scalar._CvtFLOAT(d.dtype,ctype_a[idx])
+                        ctype_a[idx]=_scr._CvtFLOAT(d.dtype,ctype_a[idx])
                 return Array(numpy_a)
         raise TypeError('Arrays of dtype %d are unsupported.' % d.dtype)
 
@@ -252,7 +252,7 @@ class Int8Array(Array):
         """Return data item if this array was returned from serialize.
         @rtype: Data
         """
-        return _data.Data.deserialize(self)
+        return _dat.Data.deserialize(self)
 
 class Int16Array(Array):
     """16-bit signed number"""
@@ -277,7 +277,7 @@ class Uint8Array(Array):
         """Return data item if this array was returned from serialize.
         @rtype: Data
         """
-        return _data.Data.deserialize(self)
+        return _dat.Data.deserialize(self)
 
 class Uint16Array(Array):
     """16-bit unsigned number"""
@@ -368,21 +368,21 @@ class Uint128Array(Array):
 
 _apd=_mimport('apd')
 _tree=_mimport('tree')
-_descriptor.dtypeToArrayClass[Uint8Array.dtype_id]=Uint8Array
-_descriptor.dtypeToArrayClass[Uint16Array.dtype_id]=Uint16Array
-_descriptor.dtypeToArrayClass[Uint32Array.dtype_id]=Uint32Array
-_descriptor.dtypeToArrayClass[Uint64Array.dtype_id]=Uint64Array
-_descriptor.dtypeToArrayClass[Uint128Array.dtype_id]=Uint128Array
-_descriptor.dtypeToArrayClass[Int8Array.dtype_id]=Int8Array
-_descriptor.dtypeToArrayClass[Int16Array.dtype_id]=Int16Array
-_descriptor.dtypeToArrayClass[Int32Array.dtype_id]=Int32Array
-_descriptor.dtypeToArrayClass[Int64Array.dtype_id]=Int64Array
-_descriptor.dtypeToArrayClass[Int128Array.dtype_id]=Int128Array
-_descriptor.dtypeToArrayClass[Float32Array.dtype_id]=Float32Array
-_descriptor.dtypeToArrayClass[FloatFArray.dtype_id]=Float32Array
-_descriptor.dtypeToArrayClass[Float64Array.dtype_id]=Float64Array
-_descriptor.dtypeToArrayClass[FloatDArray.dtype_id]=Float64Array
-_descriptor.dtypeToArrayClass[FloatGArray.dtype_id]=Float64Array
-_descriptor.dtypeToArrayClass[Complex64Array.dtype_id]=Complex64Array
-_descriptor.dtypeToArrayClass[Complex128Array.dtype_id]=Complex128Array
-_descriptor.dtypeToArrayClass[StringArray.dtype_id]=StringArray
+_dsc.dtypeToArrayClass[Uint8Array.dtype_id]=Uint8Array
+_dsc.dtypeToArrayClass[Uint16Array.dtype_id]=Uint16Array
+_dsc.dtypeToArrayClass[Uint32Array.dtype_id]=Uint32Array
+_dsc.dtypeToArrayClass[Uint64Array.dtype_id]=Uint64Array
+_dsc.dtypeToArrayClass[Uint128Array.dtype_id]=Uint128Array
+_dsc.dtypeToArrayClass[Int8Array.dtype_id]=Int8Array
+_dsc.dtypeToArrayClass[Int16Array.dtype_id]=Int16Array
+_dsc.dtypeToArrayClass[Int32Array.dtype_id]=Int32Array
+_dsc.dtypeToArrayClass[Int64Array.dtype_id]=Int64Array
+_dsc.dtypeToArrayClass[Int128Array.dtype_id]=Int128Array
+_dsc.dtypeToArrayClass[Float32Array.dtype_id]=Float32Array
+_dsc.dtypeToArrayClass[FloatFArray.dtype_id]=Float32Array
+_dsc.dtypeToArrayClass[Float64Array.dtype_id]=Float64Array
+_dsc.dtypeToArrayClass[FloatDArray.dtype_id]=Float64Array
+_dsc.dtypeToArrayClass[FloatGArray.dtype_id]=Float64Array
+_dsc.dtypeToArrayClass[Complex64Array.dtype_id]=Complex64Array
+_dsc.dtypeToArrayClass[Complex128Array.dtype_id]=Complex128Array
+_dsc.dtypeToArrayClass[StringArray.dtype_id]=StringArray
