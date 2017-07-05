@@ -37,7 +37,7 @@ class Connection(object):
     def __enter__(self):
         """ Used for with statement. """
         return self
-    
+
     def __exit__(self, type, value, traceback):
         """ Cleanup for with statement. """
         _DisconnectFromMds(self.socket)
@@ -63,14 +63,10 @@ class Connection(object):
             dims=_N.array(0,dtype=_N.uint32)
             dimct=0
             pointer=d.pointer
-        if dtype == 52:
-            dtype = 10
-        elif dtype == 53:
-            dtype = 11
-        elif dtype == 54:
-            dtype = 12
-        elif dtype == 55:
-            dtype = 13
+        if   dtype == 52: dtype = 10
+        elif dtype == 53: dtype = 11
+        elif dtype == 54: dtype = 12
+        elif dtype == 55: dtype = 13
         return {'dtype':dtype,'length':length,'dimct':dimct,'dims':dims,'address':pointer}
 
     def __getAnswer__(self):
@@ -81,23 +77,19 @@ class Connection(object):
         numbytes=_C.c_ulong(0)
         ans=_C.c_void_p(0)
         mem=_C.c_void_p(0)
-        status=_GetAnswerInfoTS(self.socket,dtype,length,ndims,dims.ctypes.data,numbytes,_C.pointer(ans),_C.pointer(mem))
-        dtype=dtype.value
-        if dtype == 10:
-            dtype = 52
-        elif dtype == 11:
-            dtype = 53
-        elif dtype == 12:
-            dtype = 54 
-        elif dtype == 13:
-            dtype = 55
-        if ndims.value == 0:
-            d=_dsc.Descriptor_s()
-            d.dtype=dtype
-            d.length=length.value
-            d.pointer=ans
-            ans=d.value
-        else:
+        try:
+            _exc.checkStatus(_GetAnswerInfoTS(self.socket,dtype,length,ndims,dims.ctypes.data,numbytes,_C.byref(ans),_C.byref(mem)))
+            dtype=dtype.value
+            if   dtype == 10: dtype = 52
+            elif dtype == 11: dtype = 53
+            elif dtype == 12: dtype = 54
+            elif dtype == 13: dtype = 55
+            if ndims.value == 0:
+                d=_dsc.Descriptor_s()
+                d.dtype=dtype
+                d.length=length.value
+                d.pointer=ans
+                return d.value
             val=_dsc.Descriptor_a()
             val.dtype=dtype
             val.dclass=4
@@ -113,30 +105,29 @@ class Connection(object):
                 val.coeff=1
                 for i in range(val.dimct):
                     val.coeff_and_bounds[i]=int(dims[i])
-            ans=val.value
-        if not ((status & 1) == 1):
+            return val.value
+        except _exc.MDSplusException:
+            if ndims.value == 0 and dtype == _sca.String.dtype_id:
+                d=_dsc.Descriptor_s()
+                d.dtype=dtype
+                d.length=length.value
+                d.pointer=ans
+                raise MdsIpException(str(d.value))
+            raise
+        finally:
             if mem.value is not None:
                 _MdsIpFree(mem)
-            if isinstance(ans,_sca.String):
-                raise MdsIpException(str(ans))
-            else:
-                raise _exc.MDSplusException(status)
-        if mem.value is not None:
-            _MdsIpFree(mem)
-        return ans
 
     def __init__(self,hostspec):
-      self.socket=_ConnectToMds(_ver.tobytes(hostspec))
-      if self.socket == -1:
-        raise MdsIpException("Error connecting to %s" % (hostspec,))
-      self.hostspec=hostspec
-      self.lock=_RLock()
+        self.socket=_ConnectToMds(_ver.tobytes(hostspec))
+        if self.socket == -1:
+            raise MdsIpException("Error connecting to %s" % (hostspec,))
+        self.hostspec=hostspec
+        self.lock=_RLock()
 
     def __del__(self):
-        try:
-            _DisconnectFromMds(self.socket)
-        except:
-            pass
+        try:    _DisconnectFromMds(self.socket)
+        except: pass
 
     def __sendArg__(self,value,idx,num):
         """Internal routine to send argument to mdsip server"""
@@ -144,17 +135,21 @@ class Connection(object):
         if not isinstance(val,_sca.Scalar) and not isinstance(val,_arr.Array):
             val=_dat.Data(val.data())
         valInfo=self.__inspect__(val)
-        status=_SendArg(self.socket,idx,valInfo['dtype'],num,valInfo['length'],valInfo['dimct'],valInfo['dims'].ctypes.data,valInfo['address'])
-        if not ((status & 1)==1):
-            raise _exc.MDSplusException(status)
+        _exc.checkStatus(
+            _SendArg(self.socket,
+                     idx,
+                     valInfo['dtype'],
+                     num,
+                     valInfo['length'],
+                     valInfo['dimct'],
+                     valInfo['dims'].ctypes.data,
+                     valInfo['address']))
 
     def closeAllTrees(self):
         """Close all open MDSplus trees
-        @rtype: None
+        @rtype: number of closed trees
         """
-        status=self.get("TreeClose()")
-        if not ((status & 1)==1):
-            raise _exc.MDSplusException(status)
+        self.get("_i=0;WHILE(IAND(TreeClose(),1)) _i++;_i")
 
     def closeTree(self,tree,shot):
         """Close an MDSplus tree on the remote server
@@ -164,9 +159,7 @@ class Connection(object):
         @type shot: int
         @rtype: None
         """
-        status=self.get("TreeClose($,$)",arglist=(tree,shot))
-        if not ((status & 1)==1):
-            raise _exc.MDSplusException(status)
+        _exc.checkStatus(self.get("TreeClose($,$)",arglist=(tree,shot)))
 
     def getMany(self, value=None):
         """Return instance of a connection.GetMany class. See the connection.GetMany documentation for further information."""
@@ -180,9 +173,7 @@ class Connection(object):
         @type shot: int
         @rtype: None
         """
-        status=self.get("TreeOpen($,$)",tree,shot)
-        if not ((status & 1)==1):
-            raise _exc.MDSplusException(status)
+        _exc.checkStatus(self.get("TreeOpen($,$)",tree,shot))
 
     def put(self,node,exp,*args):
         """Put data into a node in an MDSplus tree
@@ -194,15 +185,9 @@ class Connection(object):
         @type args: Data
         @rtype: None
         """
-        pargs=[node,exp]
-        putexp="TreePut($,$"
-        for i in range(len(args)):
-            putexp=putexp+",$"
-            pargs.append(args[i])
-        putexp=putexp+")"
-        status=self.get(putexp,arglist=pargs)
-        if not ((status & 1)==1):
-            raise _exc.MDSplusException(status)
+        pexp  = 'TreePut($,$%s)'%(',$'*len(args),)
+        pargs = [node,exp]+args
+        _exc.checkStatus(self.get(pexp,arglist=pargs))
 
     def putMany(self, value=None):
         """Return an instance of a connection.PutMany class. See the connection.PutMany documentation for further information."""
@@ -218,24 +203,15 @@ class Connection(object):
         @return: result of evaluating the expression on the remote server
         @rtype: Scalar or Array
         """
-        try:
-            self.lock.acquire()
+        with self.lock:
             if 'arglist' in kwargs:
                 args=kwargs['arglist']
             num=len(args)+1
             idx=0
-            status=_SendArg(self.socket,idx,14,num,len(exp),0,0,_C.c_char_p(_ver.tobytes(exp)))
-            if not ((status & 1)==1):
-                raise _exc.MDSplusException(status)
-            #self.__sendArg__(exp,idx,num)
-            for arg in args:
-                idx=idx+1
-                self.__sendArg__(arg,idx,num)
-            ans = self.__getAnswer__()
-        finally:
-            self.lock.release()
-        return ans
-
+            _exc.checkStatus(_SendArg(self.socket,idx,14,num,len(exp),0,0,_C.c_char_p(_ver.tobytes(exp))))
+            for i,arg in enumerate(args):
+                self.__sendArg__(arg,idx+1,num)
+            return self.__getAnswer__()
 
     def setDefault(self,path):
         """Change the current default tree location on the remote server
@@ -243,11 +219,9 @@ class Connection(object):
         @type path: str
         @rtype: None
         """
-        status=self.get("TreeSetDefault($)",path)
-        if not ((status & 1)==1):
-            raise _exc.MDSplusException(status)
+        _exc.checkStatus(self.get("TreeSetDefault($)",path))
 
-    # depreciated
+    # depricated
     def GetMany(self,*arg):
         raise(MdsIpException('\nThe subclass "Connection.GetMany" is now a class of it own.\nUse "GetMany" instead.'))
     def PutMany(self,*arg):
@@ -406,29 +380,24 @@ class PutMany(_apd.List):
         @return: dict instance with status of each put. The key of the result will be the node name.
         """
         if self.connection is None:
-            self.result=_apd.Dictionary()
+            self.result = _apd.Dictionary()
             for val in self:
-                node=val['node']
+                node = val['node']
                 try:
-                    exp='TreePut($,$'
-                    args=[node,val['exp']]
-                    for i in range(len(val['args'])):
-                        exp=exp+',$'
-                        args.append(val['args'][i])
-                    exp=exp+')'
-                    status=_dat.Data.execute(exp,tuple(args))
-                    if (status & 1) == 1:
-                        self.result[node]='Success'
-                    else:
-                        self.result[node]=_statToEx(status).message
+                    exp  = 'TreePut($,$%s)'%(',$'*len(val['args']),)
+                    args = [node,val['exp']]+val['args']
+                    _exc.checkStatus(_dat.Data.execute(exp,tuple(args)))
+                    self.result[node] = 'Success'
+                except MDSplusException as exc:
+                    self.result[node] = exc.message
                 except Exception as exc:
-                    self.result[node]=str(exc)
+                    self.result[node] = str(exc)
             return self.result
         else:
-            ans=self.connection.get("PutManyExecute($)",self.serialize())
+            ans = self.connection.get("PutManyExecute($)",self.serialize())
         if isinstance(ans,str):
             raise MdsIpException("Error putting any data: "+ans)
-        self.result=ans.deserialize()
+        self.result = ans.deserialize()
         return self.result
 
     def insert(self,beforenode, node,exp,*args):
@@ -450,7 +419,7 @@ class PutMany(_apd.List):
                 super(PutMany,self).insert(n,d)
                 return
             else:
-                n=n+1
+                n += 1
         raise MdsIpException("Node %s not found in list" % (str(beforenode),))
 
     def remove(self,node):

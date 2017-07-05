@@ -94,7 +94,7 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
     @classmethod
     def headCtx(cls,ctx):
         with cls.lock: cls._headCtx(ctx)
-
+    delthreads = []
     def __del__(self):
         def _del_(ctx):
             from sys import stderr
@@ -117,7 +117,10 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
                 _TreeShr.TreeFreeDbid(_C.c_void_p(ctx))
         if not self.open: return
         self.open = False
-        t=_threading.Thread(target=_del_,args=(self.ctx,));t.start();t.join(.01)
+        _TreeCtx.delthreads = [t for t in _TreeCtx.delthreads if not t._Thread_stopped]
+        t=_threading.Thread(target=_del_,args=(self.ctx,))
+        _TreeCtx.delthreads.append(t);
+        t.daemon=True;t.start();
 
     @staticmethod
     def getDbid(ctx=0):
