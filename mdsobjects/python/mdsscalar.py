@@ -179,7 +179,7 @@ class Scalar(_dat.Data):
         value=_C.cast(d.pointer,_C.POINTER(cls._ctype)).contents
         if isinstance(value,_C.Array):
             if d.dtype in (12,14,29):
-                ans = cls(complex(_CvtFloat(d.dtype-2,value[0]),_CvtFloat(d.dtype-2,value[1])))
+                ans = cls(complex(_CvtFLOAT(d.dtype-2,value[0]),_CvtFLOAT(d.dtype-2,value[1])))
             else:
                 ans = cls(complex(value[0],value[1]))
         else:
@@ -427,5 +427,5 @@ def _CvtFLOAT(dtype,value):
         value=_C.c_double(value)
         _CvtConvertFloat(_C.pointer(value),dtype,_C.pointer(ans),Float64.dtype_id)
     return ans.value
-        
+
 _cmp=_mimport('compound')
