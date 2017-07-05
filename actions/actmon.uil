@@ -427,7 +427,7 @@ object toggleButtonGadget : XmToggleButtonGadget widget {
 object toggleButtonGadget1 : XmToggleButtonGadget widget {
     arguments {
         XmNlabelString = compound_string("Action Outline Off");
-        XmNset = true;
+        XmNset = false;
     };
     controls {
     };
@@ -450,7 +450,7 @@ object toggleButtonGadget2 : XmToggleButtonGadget widget {
 object toggleButtonGadget3 : XmToggleButtonGadget widget {
     arguments {
         XmNlabelString = compound_string("Action Log Off");
-        XmNset = true;
+        XmNset = false;
     };
     controls {
     };

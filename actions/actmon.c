@@ -68,7 +68,7 @@ static Widget LogWidget;
 static Widget kill_target_w;
 static Boolean ErrorWidgetOff = FALSE;
 static Boolean CurrentWidgetOff = FALSE;
-static Boolean LogWidgetOff = TRUE;
+static Boolean LogWidgetOff = FALSE;
 
 #define MaxLogLines 4000
 #define EventEfn 1
