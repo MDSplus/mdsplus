@@ -7,7 +7,7 @@ def _mimport(name, level=1):
 import threading as _threading
 import ctypes as _C
 import numpy as _N
-
+import gc as _gc
 _ver=_mimport('version')
 _Exceptions=_mimport('mdsExceptions')
 _mdsshr=_mimport('_mdsshr')
@@ -22,13 +22,12 @@ class _ThreadData(_threading.local):
         self.private=False
 _thread_data=_ThreadData()
 
-_hard_lock=_threading.Lock()
 
 class _TreeCtx(object): # HINT: _TreeCtx begin
     """ The TreeCtx class is used to manage proper garbage collection
     of open trees. It retains reference counts of tree contexts and
     closes and frees tree contexts when no longer being used. """
-    lock = _threading.Lock()
+    lock = _threading.RLock()
     ctxs={}
     order=[]
     def __new__(cls,ctx,opened):
@@ -39,10 +38,17 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
         self.ctx = ctx
         self.register(opened)
         self.open = True
-    @staticmethod
-    def canClose(ctx):
-        return ctx not in _TreeCtx.ctxs or _TreeCtx.ctxs[ctx] == 1
+    @classmethod
+    def canClose(cls,ctx):
+        _gc.disable()
+        cls.lock.acquire()
+        try:
+            return ctx not in _TreeCtx.ctxs or _TreeCtx.ctxs[ctx] == 1
+        finally:
+            cls.lock.release()
+            _gc.enable()
     def register(self,opened):
+        _gc.disable()
         self.lock.acquire()
         try:
             if self.ctx in _TreeCtx.ctxs:
@@ -53,6 +59,7 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
             _TreeCtx.order = [self.ctx]+[c for c in _TreeCtx.order if c!=self.ctx]
         finally:
             self.lock.release()
+            _gc.enable()
     def __del__(self):
         if not self.open: return
         self.open = False
@@ -201,7 +208,8 @@ class Tree(object):
         @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
         @type mode: str
         """
-        _hard_lock.acquire()
+        _gc.disable()
+        _TreeCtx.lock.acquire()
         self.ctx = None
         try:
             if tree is None:
@@ -232,7 +240,8 @@ class Tree(object):
             self.shot = self.shotid
             _TreeCtx.local.tctx = _TreeCtx(_treeshr.switchDbid(self.ctx.value),None)
         finally:
-            _hard_lock.release()
+            _TreeCtx.lock.release()
+            _gc.enable()
 
     def __deepcopy__(self,memo):
         return self
@@ -534,12 +543,14 @@ class Tree(object):
 
     def restoreContext(self):
         """Internal use only. Use internal context associated with this tree."""
-        _hard_lock.acquire()
+        _gc.disable()
+        _TreeCtx.lock.acquire()
         try:
             if isinstance(self.ctx,_C.c_void_p) and self.ctx.value is not None:
                 _treeshr.TreeRestoreContext(self.ctx)
         finally:
-            _hard_lock.release()
+            _TreeCtx.lock.release()
+            _gc.enable()
 
     def setCurrent(treename,shot):
         """Set current shot for specified treename
