@@ -16,7 +16,7 @@ class TestDevice(Device):
         {'path': ':TASK_TEST',                  'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(None,"test",head)'},
         {'path': ':TASK_ERROR1',                'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(None,"error",head)'},
         {'path': ':TASK_TIMEOUT',               'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(1.,"timeout",head)'},
-        {'path': ':TASK_ERROR2',                'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(3.,"error",head)'},
+        {'path': ':TASK_ERROR2',                'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(10.,"error",head)'},
         {'path': ':INIT1_DONE',                 'type': 'NUMERIC', 'options':('no_write_model','write_once')},
         {'path': ':INIT2_DONE',                 'type': 'NUMERIC', 'options':('no_write_model','write_once')},
         {'path': ':PULSE_DONE',                 'type': 'NUMERIC', 'options':('no_write_model','write_once')},
@@ -35,4 +35,4 @@ class TestDevice(Device):
     def error(self):
         raise DevUNKOWN_STATE
     def timeout(self):
-        time.sleep(3)
+        time.sleep(10)

@@ -115,67 +115,56 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
 }
 
 #if !defined(__VMS) && !defined(_WIN32)
-static pthread_t Worker;
-static Condition WorkerRunning = CONDITION_INITIALIZER;
-typedef struct _wargs{
-  int *status_p;
+typedef struct _WorkerArgs{
+  Condition                 *pcond;
+  int                       *pstatus;
   struct descriptor_routine *ptask;
-} wargs;
+} WorkerArgs;
 
-static void WorkerExit(void *status_p){
-  _CONDITION_LOCK(&WorkerRunning);
-  _CONDITION_SIGNAL(&WorkerRunning);
-  if (WorkerRunning.value) {
-    _CONDITION_WAIT_1SEC(&WorkerRunning,);
-    WorkerRunning.value = B_FALSE;
-  }
-  free((int*)status_p);
-  _CONDITION_UNLOCK(&WorkerRunning);
+static void WorkerExit(void *WorkerRunning){
+  CONDITION_RESET(((Condition*)WorkerRunning));
 }
 
 static void WorkerThread(void *args){
-  int *status_p;status_p = ((wargs*)args)->status_p;
-  struct descriptor_routine *ptask;ptask = (struct descriptor_routine *)((wargs*)args)->ptask;
-  pthread_cleanup_push(WorkerExit, (void*)((wargs*)args)->status_p);
-  CONDITION_SET(&WorkerRunning);
+  pthread_cleanup_push(WorkerExit, (void*)((WorkerArgs*)args)->pcond);
+  CONDITION_SET(((WorkerArgs*)args)->pcond);
   EMPTYXD(out_xd);
   FREEXD_ON_EXIT(&out_xd);
-  int status = Doit(ptask,&out_xd);
-  *status_p = STATUS_OK ? *(int*)out_xd.pointer->pointer : status;
+  int status = Doit(((WorkerArgs*)args)->ptask,&out_xd);
+  *((WorkerArgs*)args)->pstatus = STATUS_OK ? *(int*)out_xd.pointer->pointer : status;
   FREEXD_NOW(&out_xd);
   pthread_cleanup_pop(1);
   pthread_exit(0);
 }
 
 STATIC_ROUTINE int StartWorker(struct descriptor_routine *ptask, struct descriptor_xd *out_ptr, const float timeout){
-  INIT_STATUS;
+  INIT_STATUS, t_status = MDSplusERROR;
+  pthread_t Worker;
+  Condition WorkerRunning = CONDITION_INITIALIZER;
+  WorkerArgs args = { &WorkerRunning, &t_status, ptask };
   _CONDITION_LOCK(&WorkerRunning);
-  wargs args = { calloc(1,sizeof(int)), ptask };
-  if (!WorkerRunning.value) {
-    CREATE_DETACHED_THREAD(Worker, *8, WorkerThread,(void*)&args);
-    if (c_status) {
-      perror("Error creating pthread");
-      status = MDSplusERROR;
-    } else {
-      _CONDITION_WAIT_SET(&WorkerRunning);
-      status = MDSplusSUCCESS;
-    }
+  CREATE_DETACHED_THREAD(Worker, *8, WorkerThread,(void*)&args);
+  if (c_status) {
+    perror("Error creating pthread");
+    status = MDSplusFATAL;
+  } else {
+    _CONDITION_WAIT_SET(&WorkerRunning);
+    struct timespec tp;
+    clock_gettime(CLOCK_REALTIME, &tp);
+    uint64_t ns = tp.tv_nsec + (uint64_t)(timeout*1E9);
+    tp.tv_nsec = ns % 1000000000;
+    tp.tv_sec += (time_t)(ns/1000000000);
+    int err = pthread_cond_timedwait(&WorkerRunning.cond,&WorkerRunning.mutex,&tp);
+    if (err) {
+      pthread_cancel(Worker);
+      status = err==ETIMEDOUT ? TdiTIMEOUT : MDSplusERROR;
+    } else // only populate out_ptr if task finished in time
+      status = TdiPutLong(&t_status, out_ptr);
+    if (WorkerRunning.value)
+      _CONDITION_WAIT(&WorkerRunning);
   }
-  struct timespec tp;
-  clock_gettime(CLOCK_REALTIME, &tp);
-  uint64_t ns = tp.tv_nsec + (uint64_t)(timeout*1E9);
-  tp.tv_nsec = ns % 1000000000;
-  tp.tv_sec += (time_t)(ns/1000000000);
-  int err = pthread_cond_timedwait(&WorkerRunning.cond,&WorkerRunning.mutex,&tp);
-  if (err) {
-    pthread_cancel(Worker);
-    status = err==ETIMEDOUT ? TdiTIMEOUT : MDSplusERROR;
-  } else
-    status = *args.status_p;
-  WorkerRunning.value = B_FALSE;
-  _CONDITION_SIGNAL(&WorkerRunning);
   _CONDITION_UNLOCK(&WorkerRunning);
-  return TdiPutLong(&status, out_ptr);
+  return status;
 }
 #endif
 
@@ -227,6 +216,7 @@ int Tdi1DoTask(int opcode __attribute__ ((unused)),
   float timeout = (float)0.;
   if STATUS_OK
     status = TdiGetFloat(ptask->time_out, &timeout);
+  if STATUS_NOT_OK goto cleanup;
 #ifdef __VMS
   /***** get timeout *****/
   quadw dt = { 0, 0 };
@@ -243,12 +233,10 @@ int Tdi1DoTask(int opcode __attribute__ ((unused)),
     if STATUS_OK
       status = TdiSubtract(&zero_dsc, &dt_dsc, &dt_dsc MDS_END_ARG);
   }
-  if STATUS_NOT_OK
-    goto cleanup;
+  if STATUS_NOT_OK goto cleanup;
   if (dt.lo || dt.hi)
     status = sys$setimr(0, &dt, TASK_AST, &dt, 0);
-  if STATUS_NOT_OK
-    goto cleanup;
+  if STATUS_NOT_OK goto cleanup;
   status = Doit(ptask, out_ptr);
   if (dt.lo || dt.hi) {
     sys$cantim(&dt, 0);
@@ -257,7 +245,7 @@ int Tdi1DoTask(int opcode __attribute__ ((unused)),
 #else
  #ifndef _WIN32
   if (timeout > 0.) {
-    StartWorker(ptask, out_ptr, timeout);
+    status = StartWorker(ptask, out_ptr, timeout);
   } else
  #endif
     status = Doit(ptask, out_ptr);
