@@ -52,6 +52,33 @@ class Tests(TestCase):
             if not cls.instances>0:
                 shutil.rmtree(cls.tmpdir)
 
+    def treeCtx(self):
+        from gc import collect
+        from time import sleep
+        def check(n):
+            self.assertEqual((tree._TreeCtx.gettctx().ctx,n),tree._TreeCtx.ctxs.items()[0])
+        self.assertEqual(tree._TreeCtx.ctxs,{})  # neither tcl nor tdi has been called yet
+        tcl('edit pytree/shot=%d/new'%self.shot);check(1)
+        Data.execute('$EXPT'); check(1)
+        t = Tree();            check(2)
+        Data.execute('tcl("dir", _out)'); check(2)
+        del(t);collect(2);sleep(.1);check(1)
+        Data.execute('_out');check(1)
+        t = Tree('pytree',self.shot+1,'NEW');
+        self.assertEqual(tree._TreeCtx.ctxs[tree._TreeCtx.gettctx().ctx],1)
+        self.assertEqual(tree._TreeCtx.ctxs[t.ctx.value],1)
+        Data.execute('tcl("close")');
+        self.assertEqual(tree._TreeCtx.ctxs[tree._TreeCtx.gettctx().ctx],1)
+        self.assertEqual(tree._TreeCtx.ctxs[t.ctx.value],1)
+        self.assertEqual(str(t),'Tree("PYTREE",%d,"Edit")'%(self.shot+1,))
+        self.assertEqual(str(Data.execute('tcl("show db", _out);_out')),"\n")
+        del(t);collect(2);sleep(.01);check(1)
+        # tcl/tdi context remains until end of session
+        t = Tree('pytree',self.shot+1,'NEW');
+        self.assertEqual(tree._TreeCtx.ctxs[tree._TreeCtx.gettctx().ctx],1)
+        self.assertEqual(tree._TreeCtx.ctxs[t.ctx.value],1)
+        del(t);collect(2);sleep(.01);check(1)
+
     def buildTrees(self):
         with Tree('pytree',self.shot,'new') as pytree:
             if pytree.shot != self.shot:
@@ -263,8 +290,9 @@ class Tests(TestCase):
             self.__getattribute__(test)()
     @staticmethod
     def getTests():
-        return ['buildTrees','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','getCompression']
-
+        lst = ['buildTrees','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','getCompression']
+        if Tests.inThread: return lst
+        return ['treeCtx']+lst
     @classmethod
     def getTestCases(cls):
         return map(cls,cls.getTests())
