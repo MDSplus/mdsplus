@@ -68,7 +68,6 @@ typedef struct _Condition_p {
   pthread_mutex_t mutex;
   void*           value;
 } Condition_p;
-
 #ifdef DEF_FREEBEGIN
  static void __attribute__((unused)) freebegin(void* ptr){
    if (((struct TdiZoneStruct*)ptr)->a_begin) {
@@ -84,6 +83,7 @@ typedef struct _Condition_p {
   #define FREEBEGIN_NOW()     pthread_cleanup_pop(1)
  #endif
 #endif
+
 #ifdef DEF_FREED
  #include <strroutines.h>
  static void __attribute__((unused)) freed(void *ptr){
@@ -96,6 +96,8 @@ typedef struct _Condition_p {
   #define FREED_ON_EXIT(ptr) pthread_cleanup_push(freed, ptr)
   #define FREED_NOW(ptr)     pthread_cleanup_pop(1)
  #endif
+ #define INIT_AS_AND_FREED_ON_EXIT(var,value) struct descriptor_d var = value;FREED_ON_EXIT(&var)
+ #define INIT_AND_FREED_ON_EXIT(dtype,var)    INIT_AS_AND_FREED_ON_EXIT(var, ((struct descriptor_d){ 0, dtype, CLASS_D, 0 }))
 #endif
 #ifdef DEF_FREEXD
  #include <mdsshr.h>
@@ -109,16 +111,22 @@ typedef struct _Condition_p {
   #define FREEXD_ON_EXIT(ptr) pthread_cleanup_push(freexd, ptr)
   #define FREEXD_NOW(ptr)     pthread_cleanup_pop(1)
  #endif
+ #define INIT_AND_FREEXD_ON_EXIT(ptr) EMPTYXD(xd);FREEXD_ON_EXIT(&xd);
 #endif
+static void __attribute__((unused)) free_if(void *ptr){
+  if (*(void**)ptr) free(*(void**)ptr);
+}
 #ifdef _WIN32
  #define FREE_ON_EXIT(ptr)   {
- #define FREE_NOW(ptr)       };free(ptr)
+ #define FREE_NOW(ptr)       };free_if((void*)&ptr)
  #define FREE_CANCEL(ptr)    }
 #else
- #define FREE_ON_EXIT(ptr)   pthread_cleanup_push(free, ptr)
+ #define FREE_ON_EXIT(ptr)   pthread_cleanup_push(free_if, (void*)&ptr)
  #define FREE_NOW(ptr)       pthread_cleanup_pop(1)
  #define FREE_CANCEL(ptr)    pthread_cleanup_pop(0)
 #endif
+#define INIT_AS_AND_FREE_ON_EXIT(type,ptr,value) type ptr = value;FREE_ON_EXIT(ptr)
+#define INIT_AND_FREE_ON_EXIT(type,ptr) INIT_AS_AND_FREE_ON_EXIT(type,ptr,NULL)
 
 #define CONDITION_INITIALIZER {PTHREAD_COND_INITIALIZER,PTHREAD_MUTEX_INITIALIZER,B_FALSE}
 
