@@ -83,8 +83,13 @@ typedef struct _Job {
   struct _Job *next;
 } Job;
 static pthread_mutex_t jobs_mutex = PTHREAD_MUTEX_INITIALIZER;
-#define LOCK_JOBS   pthread_mutex_lock(&jobs_mutex)
-#define UNLOCK_JOBS pthread_mutex_unlock(&jobs_mutex)
+#ifdef _WIN32
+ #define LOCK_JOBS   pthread_mutex_lock(&jobs_mutex);{
+ #define UNLOCK_JOBS };pthread_mutex_unlock(&jobs_mutex)
+#else
+ #define LOCK_JOBS   pthread_mutex_lock(&jobs_mutex);pthread_cleanup_push((void (*)())pthread_mutex_unlock, (void*)&jobs_mutex)
+ #define UNLOCK_JOBS pthread_cleanup_pop(1)
+#endif
 static Job *Jobs = 0;
 
 
@@ -294,15 +299,17 @@ void ServerWait(int jobid)
 static void DoBeforeAst(int jobid)
 {
   Job *j;
+  void *astparam = NULL;
+  void (*before_ast) ();
   LOCK_JOBS;
   for (j = Jobs; j && (j->jobid != jobid); j = j->next) ;
-  if (j && j->before_ast) {
-    void *astparam        = j->astparam;
-    void (*before_ast) () = j->before_ast;
-    UNLOCK_JOBS;
+  if (j) {
+    astparam   = j->astparam;
+    before_ast = j->before_ast;
+  }
+  UNLOCK_JOBS;
+  if (before_ast)
     before_ast(astparam);
-  } else
-    UNLOCK_JOBS;
 }
 
 static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void (*ast) (), void *astparam,
@@ -429,8 +436,7 @@ static void ReceiverExit(void *arg __attribute__ ((unused))){
   CONDITION_RESET(&ReceiverRunning);
 }
 
-static void ResetFdactive(int rep, SOCKET sock, fd_set * active)
-{
+static void ResetFdactive(int rep, SOCKET sock, fd_set * active){
   Client *c;
   if (rep > 0) {
     LOCK_CLIENTS;
