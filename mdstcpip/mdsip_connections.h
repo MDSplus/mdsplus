@@ -145,6 +145,7 @@ typedef struct _io_routines {
   int (*authorize)(int conid, char *username);
   int (*reuseCheck)(char *connectString, char *uniqueString, size_t buflen);
   int (*disconnect)(int conid);
+  int (*settimeout)(int conid, int sec, int usec);
 } IoRoutines;
 
 #define EVENTASTREQUEST "---EVENTAST---REQUEST---"
@@ -360,7 +361,7 @@ EXPORT int GetAnswerInfo(int id, char *dtype, short *length, char *ndims,
 /// \return the function returns the status held by the answered descriptor
 ///
 EXPORT int GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims,
-                           int *dims, int *numbytes, void **dptr, void **m);
+                           int *dims, int *numbytes, void **dptr, void **m, float timeout);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -429,6 +430,7 @@ EXPORT Message *GetMdsMsg(int id, int *status);
 /// \param status writes out the exit status to the pointed instace
 /// \return returns a \ref Message structure filled by content of the response
 ///
+EXPORT Message *GetMdsMsgTO(int id, int *status, float timeout);
 EXPORT Message *GetMdsMsgOOB(int id, int *status);
 
 EXPORT unsigned char GetMode();

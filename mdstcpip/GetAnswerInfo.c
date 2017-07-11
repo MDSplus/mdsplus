@@ -1,21 +1,20 @@
 
 #include "mdsip_connections.h"
 #include <stdlib.h>
-
+#include <status.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 //  GetAnswerInfo  /////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
 int GetAnswerInfo(int id, char *dtype, short *length, char *ndims, int *dims, int *numbytes,
-		  void * *dptr)
-{
+		  void **dptr){
   static void *m = 0;
   if (m) {
     free(m);
     m = 0;
   }
-  return GetAnswerInfoTS(id, dtype, length, ndims, dims, numbytes, dptr, &m);
+  return GetAnswerInfoTS(id, dtype, length, ndims, dims, numbytes, dptr, &m, -1.f);
 }
 
 
@@ -24,15 +23,14 @@ int GetAnswerInfo(int id, char *dtype, short *length, char *ndims, int *dims, in
 ////////////////////////////////////////////////////////////////////////////////
 
 int GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims, int *dims, int *numbytes,
-		    void * *dptr, void **mout)
-{
-  int status;
+		    void **dptr, void **mout, float timeout_sec){
+  INIT_STATUS;
   int i;
   Message *m;
   *mout = 0;
   *numbytes = 0;
-  m = GetMdsMsg(id, &status);
-  if (status != 1) {
+  m = GetMdsMsgTO(id, &status,timeout_sec);
+  if STATUS_NOT_OK {
     *dtype = 0;
     *length = 0;
     *ndims = 0;
@@ -42,7 +40,7 @@ int GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims, int *dims, 
       free(m);
       *mout = 0;
     }
-    return 0;
+    return MDSplusERROR;
   }
   if (m->h.ndims) {
     *numbytes = m->h.length;
@@ -70,7 +68,7 @@ int GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims, int *dims, 
       free(m);
       *mout = 0;
     }
-    return 0;
+    return MDSplusERROR;
   }
   *dtype = m->h.dtype;
   *length = m->h.length;

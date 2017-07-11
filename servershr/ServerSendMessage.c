@@ -229,7 +229,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
       CleanupJob(status, jobid);
       return status;
   }
-  status = GetAnswerInfoTS(conid, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem);
+  status = GetAnswerInfoTS(conid, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem, -1.f);
   if STATUS_NOT_OK {
     perror("Error: no response from server");
       CleanupJob(status, jobid);
@@ -359,7 +359,7 @@ static SOCKET CreatePort(short starting_port, short *port_out)
   static struct sockaddr_in sin;
   long sendbuf = 6000, recvbuf = 6000;
   SOCKET s;
-  int c_status = -1;
+  int c_status = C_ERROR;
   int tries = 0;
   int one = 1;
   InitializeSockets();
@@ -455,7 +455,6 @@ static void ResetFdactive(int rep, SOCKET sock, fd_set * active)
   }
   UNLOCK_CLIENTS;
   printf("reset fdactive in ResetFdactive\n");
-  return;
 }
 
 static void ReceiverThread(void *sockptr){

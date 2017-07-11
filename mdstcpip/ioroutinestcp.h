@@ -45,12 +45,12 @@ static void SetSocketOptions(SOCKET s, int reuse){
 static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *host){
   struct SOCKADDR_IN sin;
   SOCKET sock;
-  if IS_OK(getHostAndPort(host, &sin)) {
+  if IS_OK(GetHostAndPort(host, &sin)) {
     INITIALIZESOCKETS;
     sock = socket(AF_T, SOCK_STREAM, 0);
     if (sock == INVALID_SOCKET) {
       PERROR("Error creating socket");
-      return -1;
+      return C_ERROR;
     }
     struct timeval connectTimer = { 0, 0 };
     connectTimer.tv_sec = GetMdsConnectTimeout();
@@ -76,7 +76,7 @@ static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *
           shutdown(sock, 2);
           close(sock);
           fflush(stderr);
-          return -1;
+          return C_ERROR;
         }
       }
 #ifndef _WIN32
@@ -90,20 +90,20 @@ static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *
       shutdown(sock, 2);
       sock = INVALID_SOCKET;
       PERROR("Error in connect to service");
-      return -1;
+      return C_ERROR;
     }
     if (sock == INVALID_SOCKET) {
       fprintf(stderr,"Error in connect to service\n");
       fflush(stderr);
-      return -1;
+      return C_ERROR;
     }
     SetSocketOptions(sock, 0);
     SetConnectionInfo(conid, PROT, sock, NULL, 0);
-    return 0;
+    return C_OK;
   } else {
     fprintf(stderr, "Connect failed to host: %s\n",host);
     fflush(stderr);
-    return -1;
+    return C_ERROR;
   }
 }
 
@@ -144,7 +144,7 @@ static int io_flush(int conid){
     }
   }
 #endif
-  return 0;
+  return C_OK;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -297,5 +297,19 @@ static int io_listen(int argc, char **argv){
     }// end LISTEN LOOP //
   } else
     runServerMode(&options[1]);
-  return 1;
+  return C_ERROR;
+}
+
+static int io_settimeout(int conid, int sec, int usec) {
+  SOCKET sock = getSocket(conid);
+  if (sock != INVALID_SOCKET) {
+    if (sec>0 || (sec==0 && usec >0)){
+      struct timeval tv;
+      tv.tv_sec  = sec;  /* 30 Secs Timeout */
+      tv.tv_usec = usec;  // Not init'ing this can cause strange errors
+      return setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv,sizeof(struct timeval));
+    } else
+      return setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, NULL, 0);
+  } else
+    return C_ERROR;
 }

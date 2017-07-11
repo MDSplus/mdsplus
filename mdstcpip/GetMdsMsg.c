@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <status.h>
 
 #include "zlib/zlib.h"
 #include "mdsip_connections.h"
 
-static int GetBytes(int id, void *buffer, size_t bytes_to_recv)
-{
+static int GetBytes(int id, void *buffer, size_t bytes_to_recv){
   char *bptr = (char *)buffer;
   IoRoutines *io = GetConnectionIo(id);
   if (io) {
@@ -17,7 +17,7 @@ static int GetBytes(int id, void *buffer, size_t bytes_to_recv)
       bytes_recv = io->recv(id, bptr, bytes_to_recv);
       if (bytes_recv <= 0) {
 	if (errno != EINTR)
-	  return 0;
+	  return MDSplusERROR;
 	tries++;
       } else {
 	tries = 0;
@@ -28,11 +28,11 @@ static int GetBytes(int id, void *buffer, size_t bytes_to_recv)
     if (tries >= 10) {
       DisconnectConnection(id);
       fprintf(stderr, "\rrecv failed for connection %d: too many EINTR's", id);
-      return 0;
+      return MDSplusERROR;
     }
-    return 1;
+    return MDSplusSUCCESS;
   }
-  return 0;
+  return MDSplusERROR;
 }
 
 
@@ -40,16 +40,13 @@ static int GetBytes(int id, void *buffer, size_t bytes_to_recv)
 //  GetMdsMsg  /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-
-Message *GetMdsMsg(int id, int *status)
-{
+Message *GetMdsMsgTO(int id, int *status, float fsec __attribute__((unused))){
   MsgHdr header;
   Message *msg = 0;
   int msglen = 0;
   //MdsSetClientAddr(0);
-  *status = 0;
   *status = GetBytes(id, (void *)&header, sizeof(MsgHdr));
-  if (*status & 1) {
+  if IS_OK(*status) {
     if (Endian(header.client_type) != Endian(ClientType()))
       FlipHeader(&header);
 #ifdef DEBUG
@@ -64,14 +61,17 @@ Message *GetMdsMsg(int id, int *status)
       fprintf(stderr,
 	      "\rGetMdsMsg shutdown connection %d: bad msg header, header.ndims=%d, client_type=%d\n",
 	      id, header.ndims, CType(header.client_type));
-      *status = 0;
-      return 0;
+      *status = MDSplusERROR;
+      return NULL;
     }
     msglen = header.msglen;
     msg = malloc(header.msglen);
     msg->h = header;
+    //int sec  = (int)(fsec);
+    //int usec = (int)(fsec*1E6f) % 1000000;
+    //GetConnectionIo(id)->settimeout(id,sec,usec);
     *status = GetBytes(id, msg->bytes, msglen - sizeof(MsgHdr));
-    if (*status & 1 && IsCompressed(header.client_type)) {
+    if (IS_OK(*status) && IsCompressed(header.client_type)) {
       Message *m;
       unsigned long dlen;
       memcpy(&msglen, msg->bytes, 4);
@@ -83,25 +83,27 @@ Message *GetMdsMsg(int id, int *status)
       *status =
 	  uncompress((unsigned char *)m->bytes, &dlen, (unsigned char *)msg->bytes + 4,
 		     header.msglen - sizeof(MsgHdr) - 4) == 0;
-      if (*status & 1) {
+      if IS_OK(*status) {
 	m->h.msglen = msglen;
 	free(msg);
 	msg = m;
       } else
 	free(m);
     }
-    if (*status & 1 && (Endian(header.client_type) != Endian(ClientType())))
+    if (IS_OK(*status) && (Endian(header.client_type) != Endian(ClientType())))
       FlipData(msg);
   }
   return msg;
 }
 
+Message *GetMdsMsg(int id, int *status){
+  return GetMdsMsgTO(id, status, -1.f);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //  GetMdsMsgOOB  //////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-Message *GetMdsMsgOOB(int id, int *status)
-{
+Message *GetMdsMsgOOB(int id, int *status){
   return GetMdsMsg(id, status);
 }

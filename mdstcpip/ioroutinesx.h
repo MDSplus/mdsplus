@@ -76,7 +76,7 @@ static void ABORT(int sigval __attribute__ ((unused))){
   UNLOCK_SOCKET_LIST;
 }
 
-static int getHostAndPort(char *hostin, struct SOCKADDR_IN *sin){
+static int GetHostAndPort(char *hostin, struct SOCKADDR_IN *sin){
   INIT_STATUS_ERROR;
   INITIALIZESOCKETS;
   char *host = strcpy((char *)malloc(strlen(hostin) + 1), hostin);
@@ -211,7 +211,7 @@ static int io_authorize(int conid, char *username){
   SOCKET sock = getSocket(conid);
   time_t tim = time(0);
   char *timestr = ctime(&tim);
-  int ans = 0;
+  int ans = C_OK;
   char *hoststr = 0;
   char *iphost = 0;
   char *info = getHostInfo(sock, &iphost, &hoststr);
@@ -287,7 +287,7 @@ static ssize_t io_recv(int conid, void *bptr, size_t num){
 
 static int io_disconnect(int conid){
   SOCKET sock = getSocket(conid);
-  int err = 0;
+  int err = C_OK;
   time_t tim = time(0);
   char *timestr = ctime(&tim);
   if (sock != INVALID_SOCKET) {
