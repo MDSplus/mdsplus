@@ -94,6 +94,7 @@ void *getManyObj(char *serializedIn)
 		AutoData<Dictionary> answDict(new Dictionary());
 		try {
 			Data *currAnsw;
+			
 			if(argsData.get() && argsData->len() > 0)
 			{
 				MDSplus::Data **args = argsData->getDscs();
@@ -103,62 +104,62 @@ void *getManyObj(char *serializedIn)
 				      currAnsw = executeWithArgs(expr.get(), 1, args[0]);
 				      break;
 				  case 2: 
-				      currAnsw = executeWithArgs(expr.get(), 1, args[0], args[1]);
+				      currAnsw = executeWithArgs(expr.get(), 2, args[0], args[1]);
 				      break;
 				  case 3: 
-				      currAnsw = executeWithArgs(expr.get(), 1, args[0], args[1], args[2]);
+				      currAnsw = executeWithArgs(expr.get(), 3, args[0], args[1], args[2]);
 				      break;
 				  case 4: 
-				      currAnsw = executeWithArgs(expr.get(), 1, args[0], args[1], args[2], args[3]);
+				      currAnsw = executeWithArgs(expr.get(), 4, args[0], args[1], args[2], args[3]);
 				      break;
 				  case 5: 
-				      currAnsw = executeWithArgs(expr.get(), 1, args[0], args[1], args[2], args[3], args[4]);
+				      currAnsw = executeWithArgs(expr.get(), 5, args[0], args[1], args[2], args[3], args[4]);
 				      break;
 				  case 6: 
-				      currAnsw = executeWithArgs(expr.get(), 1, args[0], args[1], args[2], args[3], args[4], 
+				      currAnsw = executeWithArgs(expr.get(), 6, args[0], args[1], args[2], args[3], args[4], 
 						  args[5]);
 				      break;
 				  case 7: 
-				      currAnsw = executeWithArgs(expr.get(), 1, args[0], args[1], args[2], args[3], args[4], 
+				      currAnsw = executeWithArgs(expr.get(), 7, args[0], args[1], args[2], args[3], args[4], 
 						  args[5], args[6]);
 				      break;
 				  case 8: 
-				      currAnsw = executeWithArgs(expr.get(), 1, args[0], args[1], args[2], args[3], args[4], 
+				      currAnsw = executeWithArgs(expr.get(), 8, args[0], args[1], args[2], args[3], args[4], 
 						  args[5], args[6], args[7]);
 				      break;
 				  case 9: 
-				      currAnsw = executeWithArgs(expr.get(), 1, args[0], args[1], args[2], args[3], args[4], 
+				      currAnsw = executeWithArgs(expr.get(), 9, args[0], args[1], args[2], args[3], args[4], 
 						  args[5], args[6], args[7], args[8]);
 				      break;
 				  case 10: 
-				      currAnsw = executeWithArgs(expr.get(), 1, args[0], args[1], args[2], args[3], args[4], 
+				      currAnsw = executeWithArgs(expr.get(), 10, args[0], args[1], args[2], args[3], args[4], 
 						  args[5], args[6], args[7], args[8], args[9]);
 				      break;
 				  case 11: 
-				      currAnsw = executeWithArgs(expr.get(), 1, args[0], args[1], args[2], args[3], args[4], 
+				      currAnsw = executeWithArgs(expr.get(), 11, args[0], args[1], args[2], args[3], args[4], 
 						  args[5], args[6], args[7], args[8], args[9], args[10]);
 				      break;
 				  case 12: 
-				      currAnsw = executeWithArgs(expr.get(), 1, args[0], args[1], args[2], args[3], args[4], 
+				      currAnsw = executeWithArgs(expr.get(), 12, args[0], args[1], args[2], args[3], args[4], 
 						  args[5], args[6], args[7], args[8], args[9], args[10], args[11]);
 				      break;
 				  case 13: 
-				      currAnsw = executeWithArgs(expr.get(), 1, args[0], args[1], args[2], args[3], args[4], 
+				      currAnsw = executeWithArgs(expr.get(), 13, args[0], args[1], args[2], args[3], args[4], 
 						  args[5], args[6], args[7], args[8], args[9], args[10], args[11],
 						  args[12]);
 				      break;
 				  case 14: 
-				      currAnsw = executeWithArgs(expr.get(), 1, args[0], args[1], args[2], args[3], args[4], 
+				      currAnsw = executeWithArgs(expr.get(), 14, args[0], args[1], args[2], args[3], args[4], 
 						  args[5], args[6], args[7], args[8], args[9], args[10], args[11],
 						  args[12], args[13]);
 				      break;
 				  case 15: 
-				      currAnsw = executeWithArgs(expr.get(), 1, args[0], args[2], args[3], args[4], 
+				      currAnsw = executeWithArgs(expr.get(), 15, args[0], args[2], args[3], args[4], 
 						  args[5], args[6], args[7], args[8], args[9], args[10], args[11],
 						  args[12], args[13], args[14]);
 				      break;
 				  default: 
-				      currAnsw = executeWithArgs(expr.get(), 1, args[0], args[2], args[3], args[4], 
+				      currAnsw = executeWithArgs(expr.get(), 16, args[0], args[2], args[3], args[4], 
 						  args[5], args[6], args[7], args[8], args[9], args[10], args[11],
 						  args[12], args[13], args[14], args[15]);
 				      break;
