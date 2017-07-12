@@ -176,62 +176,77 @@ class Scalar(_dat.Data):
 
     @classmethod
     def fromDescriptor(cls,d):
+        if d.dtype == FloatF.dtype_id:
+            return _cmp.FS_FLOAT(d).evaluate()
+        if d.dtype == FloatD.dtype_id:
+            return _cmp.FT_FLOAT(d).evaluate()
+        if d.dtype == FloatG.dtype_id:
+            return _cmp.FT_FLOAT(d).evaluate()
+        if d.dtype == ComplexF.dtype_id:
+            return _cmp.FS_COMPLEX(d).evaluate()
+        if d.dtype == ComplexD.dtype_id:
+            return _cmp.FT_COMPLEX(d).evaluate()
+        if d.dtype == ComplexG.dtype_id:
+            return _cmp.FT_COMPLEX(d).evaluate()
         value=_C.cast(d.pointer,_C.POINTER(cls._ctype)).contents
         if isinstance(value,_C.Array):
-            if d.dtype in (12,14,29):
-                ans = cls(complex(_CvtFLOAT(d.dtype-2,value[0]),_CvtFLOAT(d.dtype-2,value[1])))
-            else:
-                ans = cls(complex(value[0],value[1]))
+            return cls(complex(value[0],value[1]))
         else:
-            if d.dtype in (10,11,27):
-                ans = cls(_CvtFLOAT(d.dtype,value.value))
-            else:
-                ans = cls(value.value)
-        return ans
+            return cls(value.value)
 
 makeScalar=Scalar
 
-class Int8(Scalar):
-    """8-bit signed number"""
-    dtype_id=6
-    _ctype=_C.c_int8
-    _ntype=_N.int8
+class Float32(Scalar):
+    """32-bit floating point number"""
+    dtype_id=52
+    _ctype=_C.c_float
+    _ntype=_N.float32
+_dsc.addDtypeToClass(Float32)
 
-class Int16(Scalar):
-    """16-bit signed number"""
-    dtype_id=7
-    _ctype=_C.c_int16
-    _ntype=_N.int16
+class Float64(Scalar):
+    """64-bit floating point number"""
+    dtype_id=53
+    _ctype=_C.c_double
+    _ntype=_N.float64
+    #def decompile(self):        return ("%E" % self._value).replace("E","D")
+_dsc.addDtypeToClass(Float64)
 
-class Int32(Scalar):
-    """32-bit signed number"""
-    dtype_id=8
-    _ctype=_C.c_int32
-    _ntype=_N.int32
+class Complex64(Scalar):
+    """32-bit complex number"""
+    dtype_id=54
+    _ctype=_C.c_float*2
+    _ntype=_N.complex64
+    #def decompile(self):        return "Cmplx(%g,%g)" % (self._value.real,self._value.imag)
+_dsc.addDtypeToClass(Complex64)
 
-class Int64(Scalar):
-    """64-bit signed number"""
-    dtype_id=9
-    _ctype=_C.c_int64
-    _ntype=_N.int64
+class Complex128(Scalar):
+    """128-bit complex number"""
+    dtype_id=55
+    _ctype=_C.c_double*2
+    _ntype=_N.complex128
+    #def decompile(self):        return "Cmplx(%s,%s)" % (str(Float64(self._value.real)),str(Float64(self._value.imag)))
+_dsc.addDtypeToClass(Complex128)
 
 class Uint8(Scalar):
     """8-bit unsigned number"""
     dtype_id=2
     _ctype=_C.c_uint8
     _ntype=_N.uint8
+_dsc.addDtypeToClass(Uint8)
 
 class Uint16(Scalar):
     """16-bit unsigned number"""
     dtype_id=3
     _ctype=_C.c_uint16
     _ntype=_N.uint16
+_dsc.addDtypeToClass(Uint16)
 
 class Uint32(Scalar):
     """32-bit unsigned number"""
     dtype_id=4
     _ctype=_C.c_uint32
     _ntype=_N.uint32
+_dsc.addDtypeToClass(Uint32)
 
 class Uint64(Scalar):
     """64-bit unsigned number"""
@@ -259,33 +274,55 @@ class Uint64(Scalar):
         """returns date in seconds since 01-JAN-1970 00:00:00.00"""
         return float(self.value - Uint64._utc0) / Uint64._utc1
     time=property(_getTime)
+_dsc.addDtypeToClass(Uint64)
 
-class Float32(Scalar):
-    """32-bit floating point number"""
-    dtype_id=52
-    _ctype=_C.c_float
-    _ntype=_N.float32
+class Int8(Scalar):
+    """8-bit signed number"""
+    dtype_id=6
+    _ctype=_C.c_int8
+    _ntype=_N.int8
+_dsc.addDtypeToClass(Int8)
 
-class Complex64(Scalar):
-    """32-bit complex number"""
-    dtype_id=54
-    _ctype=_C.c_float*2
-    _ntype=_N.complex64
-    #def decompile(self):        return "Cmplx(%g,%g)" % (self._value.real,self._value.imag)
+class Int16(Scalar):
+    """16-bit signed number"""
+    dtype_id=7
+    _ctype=_C.c_int16
+    _ntype=_N.int16
+_dsc.addDtypeToClass(Int16)
 
-class Float64(Scalar):
-    """64-bit floating point number"""
-    dtype_id=53
-    _ctype=_C.c_double
-    _ntype=_N.float64
-    #def decompile(self):        return ("%E" % self._value).replace("E","D")
+class Int32(Scalar):
+    """32-bit signed number"""
+    dtype_id=8
+    _ctype=_C.c_int32
+    _ntype=_N.int32
+_dsc.addDtypeToClass(Int32)
 
-class Complex128(Scalar):
-    """64-bit complex number"""
-    dtype_id=55
-    _ctype=_C.c_double*2
-    _ntype=_N.complex128
-    #def decompile(self):        return "Cmplx(%s,%s)" % (str(Float64(self._value.real)),str(Float64(self._value.imag)))
+class Int64(Scalar):
+    """64-bit signed number"""
+    dtype_id=9
+    _ctype=_C.c_int64
+    _ntype=_N.int64
+_dsc.addDtypeToClass(Int64)
+
+class FloatF(Float32):
+    """32-bit VMS floating point number"""
+    dtype_id=10
+_dsc.addDtypeToClass(FloatF)
+
+class FloatD(Float64):
+    """64-bit VMS floating point number"""
+    dtype_id=11
+_dsc.addDtypeToClass(FloatD)
+
+class ComplexF(Complex64):
+    """128-bit VMS complex number"""
+    dtype_id=12
+_dsc.addDtypeToClass(ComplexF)
+
+class ComplexD(Complex128):
+    """128-bit VMS complex number"""
+    dtype_id=13
+_dsc.addDtypeToClass(ComplexD)
 
 class String(Scalar):
     """String"""
@@ -328,18 +365,31 @@ class String(Scalar):
         return _ver.tostr(self._value)
     def __repr__(self):
         return repr(_ver.tostr(self._value))
-
-class Int128(Scalar):
-    """128-bit number"""
-    dtype_id=26
-    def __init__(self):
-        raise TypeError("Int128 is not yet supported")
+_dsc.addDtypeToClass(String)
 
 class Uint128(Scalar):
     """128-bit unsigned number"""
     dtype_id=25
     def __init__(self):
         raise TypeError("Uint128 is not yet supported")
+_dsc.addDtypeToClass(Uint128)
+
+class Int128(Scalar):
+    """128-bit number"""
+    dtype_id=26
+    def __init__(self):
+        raise TypeError("Int128 is not yet supported")
+_dsc.addDtypeToClass(Int128)
+
+class FloatG(Float64):
+    """64-bit VMS floating point number"""
+    dtype_id=27
+_dsc.addDtypeToClass(FloatG)
+
+class ComplexG(Complex128):
+    """128-bit VMS complex number"""
+    dtype_id=29
+_dsc.addDtypeToClass(ComplexG)
 
 class Pointer(Scalar):
     """32/64bit pointer"""
@@ -360,6 +410,7 @@ class Pointer(Scalar):
         ctype = _C.c_uint64 if is64 else _C.c_uint32
         value=_C.cast(d.pointer,_C.POINTER(ctype)).contents
         return Pointer(value.value,is64)
+_dsc.addDtypeToClass(Pointer)
 
 class Ident(_dat.Data):
     """Reference to MDSplus Ken Variable"""
@@ -388,44 +439,6 @@ class Ident(_dat.Data):
         return cls(
             _ver.tostr(
                 _C.cast(d.pointer,_C.POINTER(_C.c_char*d.length)).contents.value))
-
-_dsc.dtypeToClass[Uint8.dtype_id]=Uint8
-_dsc.dtypeToClass[Uint16.dtype_id]=Uint16
-_dsc.dtypeToClass[Uint32.dtype_id]=Uint32
-_dsc.dtypeToClass[Uint64.dtype_id]=Uint64
-_dsc.dtypeToClass[Uint128.dtype_id]=Uint128
-_dsc.dtypeToClass[Int8.dtype_id]=Int8
-_dsc.dtypeToClass[Int16.dtype_id]=Int16
-_dsc.dtypeToClass[Int32.dtype_id]=Int32
-_dsc.dtypeToClass[Int64.dtype_id]=Int64
-_dsc.dtypeToClass[Int128.dtype_id]=Int128
-_dsc.dtypeToClass[Float32.dtype_id]=Float32
-_dsc.dtypeToClass[Float64.dtype_id]=Float64
-_dsc.dtypeToClass[Complex64.dtype_id]=Complex64
-_dsc.dtypeToClass[Complex128.dtype_id]=Complex128
-_dsc.dtypeToClass[String.dtype_id]=String
-_dsc.dtypeToClass[Pointer.dtype_id]=Pointer
-_dsc.dtypeToClass[Ident.dtype_id]=Ident
-
-_dsc.dtypeToClass[10]=Float32
-_dsc.dtypeToClass[11]=Float64
-_dsc.dtypeToClass[12]=Complex64
-_dsc.dtypeToClass[13]=Complex64
-_dsc.dtypeToClass[27]=Float64
-_dsc.dtypeToClass[29]=Complex128
-
-def _CvtFLOAT(dtype,value):
-    _TdiShr=_ver.load_library('TdiShr')
-    _CvtConvertFloat=_TdiShr.CvtConvertFloat
-    if dtype == 10:
-        ans=_C.c_float(0)
-        value=_C.c_float(value)
-        _CvtConvertFloat(_C.pointer(value),_C.c_int32(dtype),_C.pointer(ans),_C.c_int32(Float32.dtype_id))
-    else:
-        _CvtConvertFloat.argtypes=[_C.POINTER(_C.c_double),_C.c_int32,_C.POINTER(_C.c_double),_C.c_int32]
-        ans=_C.c_double(0)
-        value=_C.c_double(value)
-        _CvtConvertFloat(_C.pointer(value),dtype,_C.pointer(ans),Float64.dtype_id)
-    return ans.value
+_dsc.addDtypeToClass(Ident)
 
 _cmp=_mimport('compound')
