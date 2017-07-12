@@ -106,7 +106,7 @@ class Data(object):
         value = value[0]
         if value is None:
             return EmptyData
-        if isinstance(value,Data):
+        if isinstance(value,(Data,_dsc.Descriptor)):
             return value
         if isinstance(value,(_N.ScalarType,_C._SimpleCData)):
             cls = _sca.Scalar
@@ -502,6 +502,8 @@ class Data(object):
 
     @staticmethod
     def byref(data):
+        if isinstance(data,_dsc.Descriptor):
+            return data.byref
         data = Data(data)
         if data is None:
             return _dsc.Descriptor.null
@@ -509,6 +511,8 @@ class Data(object):
 
     @staticmethod
     def pointer(data):
+        if isinstance(data,_dsc.Descriptor):
+            return data.ptr_
         data = Data(data)
         if data is None:
             return _dsc.Descriptor.null
