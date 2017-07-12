@@ -1364,8 +1364,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
             pass
         if name=='length':
             raise AttributeError
-        if self.length>0:
-            return self.record.__getattribute__(name)
+        #if self.length>0:
+        #    return self.record.__getattribute__(name)
         raise AttributeError('No such attribute: '+name)
 
     def __str__(self):
