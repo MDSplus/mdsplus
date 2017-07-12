@@ -1360,8 +1360,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
             pass
         try:
             return super(TreeNode,self).__getattribute__(name)
-        except AttributeError as ae:
-            print(ae)
+        except AttributeError:
+            pass
         if name=='length':
             raise AttributeError
         if self.length>0:
