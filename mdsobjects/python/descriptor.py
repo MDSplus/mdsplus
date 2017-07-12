@@ -239,4 +239,6 @@ dclassToClass={Descriptor_s.dclass_id : Descriptor_s,
                Descriptor_apd.dclass_id : Descriptor_apd}
 
 dtypeToClass={}
+def addDtypeToClass(Class):       dtypeToClass[Class.dtype_id]=Class
 dtypeToArrayClass={}
+def addDtypeToArrayClass(Class):  dtypeToArrayClass[Class.dtype_id]=Class

@@ -215,6 +215,7 @@ class Action(Compound):
     """
     fields=('dispatch','task','errorLog','completionMessage','performance')
     dtype_id=202
+_dsc.addDtypeToClass(Action)
 
 class Call(Compound):
     """
@@ -228,6 +229,7 @@ class Call(Compound):
         else:
             self.opcode = int(data)
         return self
+_dsc.addDtypeToClass(Call)
 
 class Conglom(Compound):
     """A Conglom is used at the head of an MDSplus conglomerate. A conglomerate is a set of tree nodes used
@@ -255,6 +257,7 @@ class Conglom(Compound):
         if issubclass(cls,(_tre.Device,)):
             return cls if len(args)+len(kwargs)==0 else cls(*args,**kwargs)
         raise _exc.DevPYDEVICE_NOT_FOUND
+_dsc.addDtypeToClass(Conglom)
 
 class Dependency(Compound):
     """A Dependency object is used to describe action dependencies. This is a legacy class and may not be recognized by
@@ -262,6 +265,7 @@ class Dependency(Compound):
     """
     fields=('arg1','arg2')
     dtype_id=208
+_dsc.addDtypeToClass(Dependency)
 
 class Dimension(Compound):
     """A dimension object is used to describe a signal dimension, typically a time axis. It provides a compact description
@@ -271,6 +275,7 @@ class Dimension(Compound):
     """
     fields=('window','axis')
     dtype_id=196
+_dsc.addDtypeToClass(Dimension)
 
 class Dispatch(Compound):
     """A Dispatch object is used to describe when an where an action should be dispatched to an MDSplus action server.
@@ -285,6 +290,7 @@ class Dispatch(Compound):
         else:
             self.opcode=2
         super(Dispatch,self).__init__(*args,**kwargs)
+_dsc.addDtypeToClass(Dispatch)
 
 class Function(Compound):
     """A Function object is used to reference builtin MDSplus functions. For example the expression 1+2
@@ -316,23 +322,27 @@ class Function(Compound):
         if cls.__name__.startswith('d'):
             return '$%s'%cls.__name__[1:]
         return cls.__name__
+_dsc.addDtypeToClass(Function)
 
 class Method(Compound):
     """A Method object is used to describe an operation to be performed on an MDSplus conglomerate/device
     """
     fields=('timeout','method','object')
     dtype_id=207
+_dsc.addDtypeToClass(Method)
 
 class Procedure(Compound):
     """A Procedure is a deprecated object
     """
     fields=('timeout','language','procedure')
     dtype_id=206
+_dsc.addDtypeToClass(Procedure)
 
 class Program(Compound):
     """A Program is a deprecated object"""
     fields=('timeout','program')
     dtype_id=204
+_dsc.addDtypeToClass(Program)
 
 class Range(Compound):
     """A Range describes a ramp. When used as an axis in a Dimension object along with a Window object it can be
@@ -344,11 +354,13 @@ class Range(Compound):
     @property
     def slice(self):
         return slice(self.begin.data(),self.ending.data(),self.delta.data())
+_dsc.addDtypeToClass(Range)
 
 class Routine(Compound):
     """A Routine is a deprecated object"""
     fields=('timeout','image','routine')
     dtype_id=205
+_dsc.addDtypeToClass(Routine)
 
 class Signal(Compound):
     """A Signal is used to describe a measurement, usually time dependent, and associated the data with its independent
@@ -406,6 +418,7 @@ class Signal(Compound):
         @rtype: None
         """
         return self.setArguments(value)
+_dsc.addDtypeToClass(Signal)
 
 class Window(Compound):
     """A Window object can be used to construct a Dimension object. It brackets the axis information stored in the
@@ -413,6 +426,7 @@ class Window(Compound):
     """
     fields=('startIdx','endIdx','timeAt0')
     dtype_id=197
+_dsc.addDtypeToClass(Window)
 
 class Opaque(Compound):
     """An Opaque object containing a binary uint8 array and a string identifying the type.
@@ -443,43 +457,28 @@ class Opaque(Compound):
       finally:
         f.close()
       return opq
+_dsc.addDtypeToClass(Opaque)
 
 class WithUnits(Compound):
     """Specifies a units for any kind of data.
     """
     fields=('data','units')
     dtype_id=211
+_dsc.addDtypeToClass(WithUnits)
 
 class WithError(Compound):
     """Specifies error information for any kind of data.
     """
     fields=('data','error')
     dtype_id=211
+_dsc.addDtypeToClass(WithError)
 
 class Parameter(Compound):
     """Specifies a help text and validation information for any kind of data.
     """
     fields=('data','help','validation')
     dtype_id=194
-
-_dsc.dtypeToClass[Action.dtype_id]=Action
-_dsc.dtypeToClass[Call.dtype_id]=Call
-_dsc.dtypeToClass[Conglom.dtype_id]=Conglom
-_dsc.dtypeToClass[Dependency.dtype_id]=Dependency
-_dsc.dtypeToClass[Dimension.dtype_id]=Dimension
-_dsc.dtypeToClass[Dispatch.dtype_id]=Dispatch
-_dsc.dtypeToClass[Function.dtype_id]=Function
-_dsc.dtypeToClass[Method.dtype_id]=Method
-_dsc.dtypeToClass[Procedure.dtype_id]=Procedure
-_dsc.dtypeToClass[Program.dtype_id]=Program
-_dsc.dtypeToClass[Range.dtype_id]=Range
-_dsc.dtypeToClass[Routine.dtype_id]=Routine
-_dsc.dtypeToClass[Signal.dtype_id]=Signal
-_dsc.dtypeToClass[Window.dtype_id]=Window
-_dsc.dtypeToClass[Opaque.dtype_id]=Opaque
-_dsc.dtypeToClass[WithError.dtype_id]=WithError
-_dsc.dtypeToClass[WithUnits.dtype_id]=WithUnits
-_dsc.dtypeToClass[Parameter.dtype_id]=Parameter
+_dsc.addDtypeToClass(Parameter)
 
 class dPLACEHOLDER(Function):
     max_args=0

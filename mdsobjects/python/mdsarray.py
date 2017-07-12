@@ -203,7 +203,6 @@ class Array(_dat.Data):
         def getNumpy(ntype,ctype,length):
             buffer = _ver.buffer(_C.cast(d.pointer,_C.POINTER(ctype*length)).contents)
             return _N.ndarray(shape,ntype,buffer)
-        _tree=_mimport('tree')
         if d.dtype == 0:
             d.dtype = Int32Array.dtype_id
         if d.coeff:
@@ -217,31 +216,84 @@ class Array(_dat.Data):
             shape=[int(d.arsize/d.length),]
         if d.dtype == StringArray.dtype_id:
             return StringArray(getNumpy(_N.dtype(('S',d.length)),_C.c_byte,d.arsize))
-        if d.dtype == _tree.TreeNode.dtype_id:
+        if d.dtype == _tre.TreeNode.dtype_id:
             d.dtype=Int32Array.dtype_id
             nids=getNumpy(_N.int32,_C.c_int32,int(d.arsize/d.length))
-            return _tree.TreeNodeArray(list(nids))
+            return _tre.TreeNodeArray(list(nids))
         if d.dtype == Complex64Array.dtype_id:
             return Array(getNumpy(_N.complex64,_C.c_float,int(d.arsize*2/d.length)))
         if d.dtype == Complex128Array.dtype_id:
             return Array(getNumpy(_N.complex128,_C.c_double,int(d.arsize*2/d.length)))
+        if d.dtype == FloatFArray.dtype_id:
+            return _cmp.FS_FLOAT(d).evaluate()
+        if d.dtype == FloatDArray.dtype_id:
+            return _cmp.FT_FLOAT(d).evaluate()
+        if d.dtype == FloatGArray.dtype_id:
+            return _cmp.FT_FLOAT(d).evaluate()
+        if d.dtype == ComplexFArray.dtype_id:
+            return _cmp.FS_COMPLEX(d).evaluate()
+        if d.dtype == ComplexDArray.dtype_id:
+            return _cmp.FT_COMPLEX(d).evaluate()
+        if d.dtype == ComplexGArray.dtype_id:
+            return _cmp.FT_COMPLEX(d).evaluate()
         if d.dtype in _dsc.dtypeToArrayClass:
             cls = _dsc.dtypeToArrayClass[d.dtype]
             if cls.ctype is not None:
-                numpy_a = getNumpy(cls.ctype,cls.ctype,int(d.arsize/d.length))
-                numpy_a.flags.writeable=True
-                if d.dtype in (12,14,29):
-                    ctype_a = _N.ctypeslib.as_ctypes(numpy_a)
-                    for idx in range(len(ctype_a)*2):
-                        ctype_a[idx]=_scr._CvtFLOAT(d.dtype-2,ctype_a[idx])
-                elif d.dtype in (10,11,27):
-                    ctype_a = _N.ctypeslib.as_ctypes(numpy_a)
-                    for idx in range(len(ctype_a)):
-                        ctype_a[idx]=_scr._CvtFLOAT(d.dtype,ctype_a[idx])
-                return Array(numpy_a)
+                return Array(getNumpy(cls.ctype,cls.ctype,int(d.arsize/d.length)))
         raise TypeError('Arrays of dtype %d are unsupported.' % d.dtype)
 
 makeArray = Array
+
+class Float32Array(Array):
+    """32-bit floating point number"""
+    dtype_id=52
+    ctype=_C.c_float
+_dsc.addDtypeToArrayClass(Float32Array)
+
+class Float64Array(Array):
+    """64-bit floating point number"""
+    dtype_id=53
+    ctype=_C.c_double
+_dsc.addDtypeToArrayClass(Float64Array)
+
+class Complex64Array(Array):
+    """32-bit complex number"""
+    dtype_id=54
+_dsc.addDtypeToArrayClass(Complex64Array)
+
+class Complex128Array(Array):
+    """64-bit complex number"""
+    dtype_id=55
+_dsc.addDtypeToArrayClass(Complex128Array)
+
+class Uint8Array(Array):
+    """8-bit unsigned number"""
+    dtype_id=2
+    ctype=_C.c_uint8
+    def deserialize(self):
+        """Return data item if this array was returned from serialize.
+        @rtype: Data
+        """
+        return _dat.Data.deserialize(self)
+_dsc.addDtypeToArrayClass(Uint8Array)
+
+class Uint16Array(Array):
+    """16-bit unsigned number"""
+    dtype_id=3
+    ctype=_C.c_uint16
+_dsc.addDtypeToArrayClass(Uint16Array)
+
+class Uint32Array(Array):
+    """32-bit unsigned number"""
+    dtype_id=4
+    ctype=_C.c_uint32
+_dsc.addDtypeToArrayClass(Uint32Array)
+
+class Uint64Array(Array):
+    """64-bit unsigned number"""
+    dtype_id=5
+    ctype=_C.c_uint64
+_dsc.addDtypeToArrayClass(Uint64Array)
 
 class Int8Array(Array):
     """8-bit signed number"""
@@ -253,76 +305,45 @@ class Int8Array(Array):
         @rtype: Data
         """
         return _dat.Data.deserialize(self)
+_dsc.addDtypeToArrayClass(Int8Array)
 
 class Int16Array(Array):
     """16-bit signed number"""
     dtype_id=7
     ctype=_C.c_int16
+_dsc.addDtypeToArrayClass(Int16Array)
 
 class Int32Array(Array):
     """32-bit signed number"""
     dtype_id=8
     ctype=_C.c_int32
+_dsc.addDtypeToArrayClass(Int32Array)
 
 class Int64Array(Array):
     """64-bit signed number"""
     dtype_id=9
     ctype=_C.c_int64
-
-class Uint8Array(Array):
-    """8-bit unsigned number"""
-    dtype_id=2
-    ctype=_C.c_uint8
-    def deserialize(self):
-        """Return data item if this array was returned from serialize.
-        @rtype: Data
-        """
-        return _dat.Data.deserialize(self)
-
-class Uint16Array(Array):
-    """16-bit unsigned number"""
-    dtype_id=3
-    ctype=_C.c_uint16
-
-class Uint32Array(Array):
-    """32-bit unsigned number"""
-    dtype_id=4
-    ctype=_C.c_uint32
-
-class Uint64Array(Array):
-    """64-bit unsigned number"""
-    dtype_id=5
-    ctype=_C.c_uint64
-
-class Float32Array(Array):
-    """32-bit floating point number"""
-    dtype_id=52
-    ctype=_C.c_float
+_dsc.addDtypeToArrayClass(Int64Array)
 
 class FloatFArray(Float32Array):
     """32-bit VMS floating point number"""
     dtype_id=10
-
-class Complex64Array(Array):
-    """32-bit complex number"""
-    dtype_id=54
-
-class Float64Array(Array):
-    """64-bit floating point number"""
-    dtype_id=53
-    ctype=_C.c_double
+_dsc.addDtypeToArrayClass(FloatFArray)
 
 class FloatDArray(Float64Array):
     """64-bit VMS floating point number"""
     dtype_id=11
+_dsc.addDtypeToArrayClass(FloatDArray)
 
-class FloatGArray(Float64Array):
-    """64-bit VMS floating point number"""
-    dtype_id=27
+class ComplexFArray(Complex64Array):
+    """64-bit VMS complex number"""
+    dtype_id=12
+_dsc.addDtypeToArrayClass(ComplexFArray)
 
-class Complex128Array(Array):
-    """64-bit complex number"""
-    dtype_id=55
+class ComplexDArray(Complex128Array):
+    """128-bit VMS complex number"""
+    dtype_id=13
+_dsc.addDtypeToArrayClass(ComplexDArray)
 
 class StringArray(Array):
     """String"""
@@ -344,7 +365,6 @@ class StringArray(Array):
         for i in _ver.xrange(len(value.flat)):
             value.flat[i]=value.flat[i].ljust(value.itemsize)
         self._value = value
-
     def __radd__(self,y):
         """Reverse add: x.__radd__(y) <==> y+x
         @rtype: Data"""
@@ -353,36 +373,32 @@ class StringArray(Array):
         """Add: x.__add__(y) <==> x+y
         @rtype: Data"""
         return self.execute('$//$',self,y)
-
-class Int128Array(Array):
-    """128-bit signed number"""
-    dtype_id=26
-    def __init__(self):
-        raise TypeError("Int128Array is not yet supported")
+_dsc.addDtypeToArrayClass(StringArray)
 
 class Uint128Array(Array):
     """128-bit unsigned number"""
     dtype_id=25
     def __init__(self):
         raise TypeError("Uint128Array is not yet supported")
+_dsc.addDtypeToArrayClass(Uint128Array)
+
+class Int128Array(Array):
+    """128-bit signed number"""
+    dtype_id=26
+    def __init__(self):
+        raise TypeError("Int128Array is not yet supported")
+_dsc.addDtypeToArrayClass(Int128Array)
+
+class FloatGArray(Float64Array):
+    """64-bit VMS floating point number"""
+    dtype_id=27
+_dsc.addDtypeToArrayClass(FloatGArray)
+
+class ComplexGArray(Complex128Array):
+    """128-bit VMS complex number"""
+    dtype_id=29
+_dsc.addDtypeToArrayClass(ComplexGArray)
 
 _apd=_mimport('apd')
-_tree=_mimport('tree')
-_dsc.dtypeToArrayClass[Uint8Array.dtype_id]=Uint8Array
-_dsc.dtypeToArrayClass[Uint16Array.dtype_id]=Uint16Array
-_dsc.dtypeToArrayClass[Uint32Array.dtype_id]=Uint32Array
-_dsc.dtypeToArrayClass[Uint64Array.dtype_id]=Uint64Array
-_dsc.dtypeToArrayClass[Uint128Array.dtype_id]=Uint128Array
-_dsc.dtypeToArrayClass[Int8Array.dtype_id]=Int8Array
-_dsc.dtypeToArrayClass[Int16Array.dtype_id]=Int16Array
-_dsc.dtypeToArrayClass[Int32Array.dtype_id]=Int32Array
-_dsc.dtypeToArrayClass[Int64Array.dtype_id]=Int64Array
-_dsc.dtypeToArrayClass[Int128Array.dtype_id]=Int128Array
-_dsc.dtypeToArrayClass[Float32Array.dtype_id]=Float32Array
-_dsc.dtypeToArrayClass[FloatFArray.dtype_id]=Float32Array
-_dsc.dtypeToArrayClass[Float64Array.dtype_id]=Float64Array
-_dsc.dtypeToArrayClass[FloatDArray.dtype_id]=Float64Array
-_dsc.dtypeToArrayClass[FloatGArray.dtype_id]=Float64Array
-_dsc.dtypeToArrayClass[Complex64Array.dtype_id]=Complex64Array
-_dsc.dtypeToArrayClass[Complex128Array.dtype_id]=Complex128Array
-_dsc.dtypeToArrayClass[StringArray.dtype_id]=StringArray
+_cmp=_mimport('compound')
+_tre=_mimport('tree')
