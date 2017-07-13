@@ -831,7 +831,7 @@ class Tree(object):
 
     def restoreContext(self):
         """Internal use only. Use internal context associated with this tree."""
-        with _TreeShr.lock:
+        with _TreeCtx.lock:
             if isinstance(self.ctx,_C.c_void_p) and self.ctx.value is not None:
                 _TreeShr.TreeSwitchDbid(self.ctx)
 
