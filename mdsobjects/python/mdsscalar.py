@@ -357,7 +357,8 @@ class String(Scalar):
         """Contains: x.__contains__(y) <==> y in x
         @rtype: Bool"""
         return self.find(str(y)) != -1
-
+    def data(self):
+        return _ver.np2npstr(self._value)
     def __len__(self):
         return len(self._value)
 

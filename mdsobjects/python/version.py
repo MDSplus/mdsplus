@@ -13,6 +13,8 @@ ispy3 = pyver>(3,)
 ispy2 = pyver<(3,)
 isNt = os.name=='nt'
 npstr = npunicode if ispy3 else npbytes
+def np2npstr(s):
+    return s.astype('U' if ispy3 else 'S')
 # __builtins__ is dict
 has_long      = 'long'       in __builtins__
 has_unicode   = 'unicode'    in __builtins__
