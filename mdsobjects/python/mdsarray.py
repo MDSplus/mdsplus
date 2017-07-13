@@ -365,6 +365,8 @@ class StringArray(Array):
         for i in _ver.xrange(len(value.flat)):
             value.flat[i]=value.flat[i].ljust(value.itemsize)
         self._value = value
+    def data(self):
+        return _ver.np2npstr(self._value)
     def __radd__(self,y):
         """Reverse add: x.__radd__(y) <==> y+x
         @rtype: Data"""
