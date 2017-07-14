@@ -1,27 +1,27 @@
 #include "mdsip_connections.h"
 #include <stdlib.h>
 #include <string.h>
+#include <status.h>
 
 
 
 int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned short length, char ndims,
-	    int *dims, char *bytes)
-{
-  int status;
+	    int *dims, char *bytes){
+  INIT_STATUS_AS MDSplusERROR;
   int msglen;
   int i;
   int nbytes = length;
   Message *m;
-  
+
   // MESSAGE ID //
   // * if this is the first argument sent, increments connection message id   //
   // * get the connection message_id and store it inside message              //
-  
+
   int msgid = (idx == 0 || nargs == 0) ?
               IncrementConnectionMessageId(id) : GetConnectionMessageId(id);
   if (msgid < 1)
-    return 0;
-  
+    return status;
+
   if (idx > nargs) {
     /**** Special I/O message ****/
     nbytes = dims[0];
@@ -29,7 +29,6 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned
     for (i = 0; i < ndims; i++)
       nbytes *= dims[i];
   }
-  
   msglen = sizeof(MsgHdr) + nbytes;
   m = memset(malloc(msglen), 0, msglen);
   m->h.client_type = 0;
