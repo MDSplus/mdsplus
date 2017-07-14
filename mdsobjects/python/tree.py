@@ -2902,6 +2902,7 @@ class Device(TreeNode): # HINT: Device begin
         else:
             super(Device,self).__init__(node,tree,head)
 
+    @property
     def deref(self):
         return self
 
