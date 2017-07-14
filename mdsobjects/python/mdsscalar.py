@@ -70,13 +70,13 @@ class Scalar(_dat.Data):
         if self is Scalar:
             raise TypeError("cannot create 'Scalar' instances")
         if isinstance(value,self.__class__):
-            self._value=value._value
-        else:
-            if isinstance(value,_dat.Data):
-                value = value.data()
-            elif isinstance(value,_C._SimpleCData):
-                value = value.value
-            self._value = self._ntype(value)
+            self._value = value._value.copy()
+            return
+        if isinstance(value,_dat.Data):
+            value = value.data()
+        elif isinstance(value,_C._SimpleCData):
+            value = value.value
+        self._value = self._ntype(value)
 
     def _str_bad_ref(self):
         return _ver.tostr(self._value)
@@ -98,7 +98,7 @@ class Scalar(_dat.Data):
     def __getattr__(self,name):
         if name.startswith("__array"):
           raise AttributeError
-        return self._value.__getattribute__(name)
+        return self.value.__getattribute__(name)
 
     @property
     def value(self):
@@ -115,12 +115,12 @@ class Scalar(_dat.Data):
     def __int__(self):
         """Integer: x.__int__() <==> int(x)
         @rtype: int"""
-        return int(self._value)
+        return int(self.value)
 
     def __long__(self):
         """Long: x.__long__() <==> long(x)
         @rtype: int"""
-        return _ver.long(self._value)
+        return _ver.long(self.value)
 
     def _unop(self,op):
         return _dat.Data(getattr(self.value,op)())
@@ -208,7 +208,6 @@ class Float64(Scalar):
     dtype_id=53
     _ctype=_C.c_double
     _ntype=_N.float64
-    #def decompile(self):        return ("%E" % self._value).replace("E","D")
 _dsc.addDtypeToClass(Float64)
 
 class Complex64(Scalar):
@@ -216,7 +215,6 @@ class Complex64(Scalar):
     dtype_id=54
     _ctype=_C.c_float*2
     _ntype=_N.complex64
-    #def decompile(self):        return "Cmplx(%g,%g)" % (self._value.real,self._value.imag)
 _dsc.addDtypeToClass(Complex64)
 
 class Complex128(Scalar):
@@ -224,7 +222,6 @@ class Complex128(Scalar):
     dtype_id=55
     _ctype=_C.c_double*2
     _ntype=_N.complex128
-    #def decompile(self):        return "Cmplx(%s,%s)" % (str(Float64(self._value.real)),str(Float64(self._value.imag)))
 _dsc.addDtypeToClass(Complex128)
 
 class Uint8(Scalar):
@@ -255,8 +252,8 @@ class Uint64(Scalar):
     _ntype=_N.uint64
     _utc0 = _N.uint64("35067168000000000")
     _utc1 = 1E7
-    @staticmethod
-    def fromTime(value):
+    @classmethod
+    def fromTime(cls,value):
         """converts from seconds since 01-JAN-1970 00:00:00.00
         For example:
            import MDSplus
@@ -264,7 +261,7 @@ class Uint64(Scalar):
            mdstime=MDSplus.Uint64.fromTime(time.time()-time.altzone)
            print(mdstime.date)
         """
-        return Uint64(int(value * Uint64._utc1) + Uint64._utc0)
+        return cls(int(value * cls._utc1) + cls_utc0)
 
     def _getDate(self):
         return _dat.Data.execute('date_time($)',self)
@@ -329,7 +326,9 @@ class String(Scalar):
     dtype_id=14
     _ntype=_ver.npbytes
     def __init__(self,value):
-        super(String,self).__init__(_ver.tobytes(value))
+        super(String,self).__init__(value)
+        if not isinstance(self._value,_N.str):
+            self._value = _ver.np2npstr(self._value)
 
     @property
     def _descriptor(self):
@@ -357,15 +356,13 @@ class String(Scalar):
         """Contains: x.__contains__(y) <==> y in x
         @rtype: Bool"""
         return self.find(str(y)) != -1
-    def data(self):
-        return _ver.np2npstr(self._value)
     def __len__(self):
         return len(self._value)
-
     def __str__(self):
         return _ver.tostr(self._value)
     def __repr__(self):
         return repr(_ver.tostr(self._value))
+
 _dsc.addDtypeToClass(String)
 
 class Uint128(Scalar):
@@ -410,7 +407,7 @@ class Pointer(Scalar):
         is64 = d.length>4
         ctype = _C.c_uint64 if is64 else _C.c_uint32
         value=_C.cast(d.pointer,_C.POINTER(ctype)).contents
-        return Pointer(value.value,is64)
+        return cls(value.value,is64)
 _dsc.addDtypeToClass(Pointer)
 
 class Ident(_dat.Data):
@@ -434,12 +431,9 @@ class Ident(_dat.Data):
         d.length=len(self.name)
         d.pointer=_C.cast(_C.c_char_p(_ver.tobytes(self.name)),_C.c_void_p)
         return _cmp.Compound._descriptorWithProps(self,d)
-
     @classmethod
     def fromDescriptor(cls,d):
-        return cls(
-            _ver.tostr(
-                _C.cast(d.pointer,_C.POINTER(_C.c_char*d.length)).contents.value))
+        return cls(_ver.tostr(_C.cast(d.pointer,_C.POINTER(_C.c_char*d.length)).contents.value))
 _dsc.addDtypeToClass(Ident)
 
 _cmp=_mimport('compound')

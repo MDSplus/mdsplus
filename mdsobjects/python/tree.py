@@ -156,57 +156,55 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
         return _TreeShr.TreeSwitchDbid(ctx)
 
     local = _threading.local()
-    @staticmethod
-    def gettctx():
-        return getattr(_TreeCtx.local,'tctx',None)
+    @classmethod
+    def gettctx(cls):
+        return getattr(cls.local,'tctx',None)
 
-    @staticmethod
-    def popTree():
-        _TreeCtx.local.trees.pop()
-    @staticmethod
-    def getTree():
-        try:    return _TreeCtx.local.trees[-1]
+    @classmethod
+    def popTree(cls):
+        cls.local.trees.pop()
+    @classmethod
+    def getTree(cls):
+        try:    return cls.local.trees[-1]
         except: return None
-    @staticmethod
-    def getCtx():
-        try:        return _TreeCtx.local.ctxs[-1][0]
+    @classmethod
+    def getCtx(cls):
+        try:        return cls.local.ctxs[-1][0]
         except:
-            try:    _TreeCtx.local.trees[-1].ctx.value
+            try:    cls.local.trees[-1].ctx.value
             except: return None
-    @staticmethod
-    def pushCtx(ctx):
-      with _TreeCtx.lock:
-        _TreeCtx.lock.acquire()
+    @classmethod
+    def pushCtx(cls,ctx):
+        cls.lock.acquire()
         try:
             if isinstance(ctx,_C.c_void_p): ctx = ctx.value
             def push_ctx(*entry):
-                dbid = _TreeCtx.switchDbid(entry[0])
+                dbid = cls.switchDbid(entry[0])
                 if len(entry)==1: entry = (entry[0],dbid)
-                if not hasattr(_TreeCtx.local,'ctxs'):
-                    _TreeCtx.local.ctxs = [entry]
+                if not hasattr(cls.local,'ctxs'):
+                    cls.local.ctxs = [entry]
                 else:
-                    _TreeCtx.local.ctxs.append(entry)
+                    cls.local.ctxs.append(entry)
             if ctx is not None:  return push_ctx(ctx)
-            ctx = _TreeCtx.getCtx()
+            ctx = cls.getCtx()
             if ctx:              return push_ctx(ctx)
-            tree = _TreeCtx.getTree()
+            tree = cls.getTree()
             if tree is not None: return push_ctx(tree.ctx.value)
-            tctx = _TreeCtx.gettctx()
+            tctx = cls.gettctx()
             if tctx is not None: return push_ctx(tctx.ctx)
-            dbid = _TreeCtx.switchDbid()
+            dbid = cls.switchDbid()
             push_ctx(dbid, dbid)
         except:
-            _TreeCtx.lock.release()
-    @staticmethod
-    def popCtx():
-      with _TreeCtx.lock:
+            cls.lock.release()
+    @classmethod
+    def popCtx(cls):
         try:
-            ctx,val = _TreeCtx.local.ctxs.pop()
-            dbid    = _TreeCtx.switchDbid(val)
+            ctx,val = cls.local.ctxs.pop()
+            dbid    = cls.switchDbid(val)
             if ctx == val and not val == dbid:
-                _TreeCtx.local.tctx = _TreeCtx(dbid,opened=(not ctx))
+                cls.local.tctx = cls(dbid,opened=(not ctx))
         finally:
-            _TreeCtx.lock.release()
+            cls.lock.release()
 
 class _DBI_ITM_INT(_C.Structure): # HINT: _DBI_ITM_INT begin
 
@@ -523,8 +521,8 @@ class Tree(object):
         except _exc.TreeNNF:
             raise AttributeError('No such attribute: '+name)
 
-    @classmethod
-    def usePrivateCtx(cls,on=True):
+    @staticmethod
+    def usePrivateCtx(on=True):
         _thread_data.private=on
         if on:
             val=_C.c_int32(1)
@@ -3041,7 +3039,7 @@ class Device(TreeNode): # HINT: Device begin
 
     @classmethod
     def waitForSetups(cls):
-        Device.gtkThread.join()
+        cls.gtkThread.join()
 
     @staticmethod
     def __cached():
