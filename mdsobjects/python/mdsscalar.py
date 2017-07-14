@@ -252,8 +252,8 @@ class Uint64(Scalar):
     _ntype=_N.uint64
     _utc0 = _N.uint64("35067168000000000")
     _utc1 = 1E7
-    @staticmethod
-    def fromTime(value):
+    @classmethod
+    def fromTime(cls,value):
         """converts from seconds since 01-JAN-1970 00:00:00.00
         For example:
            import MDSplus
@@ -261,7 +261,7 @@ class Uint64(Scalar):
            mdstime=MDSplus.Uint64.fromTime(time.time()-time.altzone)
            print(mdstime.date)
         """
-        return Uint64(int(value * Uint64._utc1) + Uint64._utc0)
+        return cls(int(value * cls._utc1) + cls_utc0)
 
     def _getDate(self):
         return _dat.Data.execute('date_time($)',self)
@@ -358,7 +358,6 @@ class String(Scalar):
         return self.find(str(y)) != -1
     def __len__(self):
         return len(self._value)
-
     def __str__(self):
         return _ver.tostr(self._value)
     def __repr__(self):
@@ -408,7 +407,7 @@ class Pointer(Scalar):
         is64 = d.length>4
         ctype = _C.c_uint64 if is64 else _C.c_uint32
         value=_C.cast(d.pointer,_C.POINTER(ctype)).contents
-        return Pointer(value.value,is64)
+        return cls(value.value,is64)
 _dsc.addDtypeToClass(Pointer)
 
 class Ident(_dat.Data):
@@ -432,12 +431,9 @@ class Ident(_dat.Data):
         d.length=len(self.name)
         d.pointer=_C.cast(_C.c_char_p(_ver.tobytes(self.name)),_C.c_void_p)
         return _cmp.Compound._descriptorWithProps(self,d)
-
     @classmethod
     def fromDescriptor(cls,d):
-        return cls(
-            _ver.tostr(
-                _C.cast(d.pointer,_C.POINTER(_C.c_char*d.length)).contents.value))
+        return cls(_ver.tostr(_C.cast(d.pointer,_C.POINTER(_C.c_char*d.length)).contents.value))
 _dsc.addDtypeToClass(Ident)
 
 _cmp=_mimport('compound')

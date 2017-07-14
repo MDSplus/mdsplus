@@ -436,27 +436,26 @@ class Opaque(Compound):
 
 
     def getImage(self):
-      try: from PIL import Image
-      except:       import Image
-      from StringIO import StringIO
-      return Image.open(StringIO(_dat.Data(self.getData()).data().data))
+        try: from PIL import Image
+        except:       import Image
+        from StringIO import StringIO
+        return Image.open(StringIO(_dat.Data(self.getData()).data().data))
 
-    @staticmethod
-    def fromFile(filename,typestring):
-      """Read a file and return an Opaque object
-         @param filename: Name of file to read in
-         @type filename: str
-         @param typestring: String to denote the type of file being stored
-         @type typestring: str
-         @rtype: Opaque instance
-      """
-      import numpy as _N
-      f = open(filename,'rb')
-      try:
-        opq=Opaque(_dat.Data(_N.fromstring(f.read(),dtype="uint8")),typestring)
-      finally:
-        f.close()
-      return opq
+    @classmethod
+    def fromFile(cls,filename,typestring):
+        """Read a file and return an Opaque object
+        @param filename: Name of file to read in
+        @type filename: str
+        @param typestring: String to denote the type of file being stored
+        @type typestring: str
+        @rtype: Opaque instance
+        """
+        f = open(filename,'rb')
+        try:
+            opq=cls(_dat.Data(_N.fromstring(f.read(),dtype="uint8")),typestring)
+        finally:
+            f.close()
+        return opq
 _dsc.addDtypeToClass(Opaque)
 
 class WithUnits(Compound):

@@ -500,20 +500,20 @@ class Data(object):
                 return altvalue[0]
             raise
 
-    @staticmethod
-    def byref(data):
+    @classmethod
+    def byref(cls,data):
         if isinstance(data,_dsc.Descriptor):
             return data.byref
-        data = Data(data)
+        data = cls(data)
         if data is None:
             return _dsc.Descriptor.null
         return data.descriptor.byref
 
-    @staticmethod
-    def pointer(data):
+    @classmethod
+    def pointer(cls,data):
         if isinstance(data,_dsc.Descriptor):
             return data.ptr_
-        data = Data(data)
+        data = cls(data)
         if data is None:
             return _dsc.Descriptor.null
         try:
@@ -744,8 +744,8 @@ class EmptyData(Data):
     def data(self):
         return None
 
-    @classmethod
-    def fromDescriptor(cls,d):
+    @staticmethod
+    def fromDescriptor(d):
         return EmptyData
 EmptyData = EmptyData()
 
@@ -753,8 +753,8 @@ class Missing(EmptyData):
     """No Value aka $Missing"""
     def decompile(self):
         return "$Missing"
-    @classmethod
-    def fromDescriptor(cls,d):
+    @staticmethod
+    def fromDescriptor(d):
         return Missing
 
 _dsc.dtypeToClass[0]=Missing
