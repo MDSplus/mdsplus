@@ -75,6 +75,8 @@ class Array(_dat.Data):
         if value is self: return
         if self.__class__ is Array:
             raise TypeError("cannot instantiate 'Array'")
+        if isinstance(value,self.__class__):
+            self._value = value._value.copy()
         if isinstance(value,_dat.Data):
             value = value.data()
         elif isinstance(value,_C.Array):
@@ -352,20 +354,20 @@ class StringArray(Array):
     def __init__(self,value):
         if value is self: return
         if isinstance(value, (StringArray,)):
-            self._value = value._value
+            self._value = value._value.copy()
             return
         if not isinstance(value,(_N.ndarray,)):
             value = _N.array(value)
-        if not value.dtype.type is _ver.npbytes:
-            try: value = value.astype(_ver.npbytes)
-            except:
-                value = _N.array(_ver.tobytes(value.tolist()))
-        if not value.flags.writeable:
-            value = _N.array(list(value.tolist()))
+        if not value.dtype.type is _ver.npstr:
+            try:    value = _ver.np2npstr(value)
+            except: value = _N.array(_ver.tostr(value.tolist()))
+        elif not value.flags.writeable:
+            value = value.copy()
         for i in _ver.xrange(len(value.flat)):
             value.flat[i]=value.flat[i].ljust(value.itemsize)
         self._value = value
-    def data(self):
+    @property
+    def value(self):
         return _ver.np2npstr(self._value)
     def __radd__(self,y):
         """Reverse add: x.__radd__(y) <==> y+x
