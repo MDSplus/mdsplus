@@ -170,7 +170,7 @@ EXPORT int TclDispatch_abort_server(void *ctx, char **error, char **output __att
     }
     FREE_NOW(ident);
   }
-  return status;
+  return status ? status : TclNORMAL;
 }
 
 EXPORT int TclDispatch_stop_server(void *ctx, char **error, char **output __attribute__ ((unused))){
@@ -186,7 +186,7 @@ EXPORT int TclDispatch_stop_server(void *ctx, char **error, char **output __attr
     }
     FREE_NOW(ident);
   }
-  return status;
+  return status ? status : TclNORMAL;
 }
 
 EXPORT int TclDispatch_start_server(void *ctx, char **error, char **output __attribute__ ((unused))){
@@ -202,7 +202,7 @@ EXPORT int TclDispatch_start_server(void *ctx, char **error, char **output __att
     }
     FREE_NOW(ident);
   }
-  return status;
+  return status ? status : TclNORMAL;
 }
 
 /***************************************************************
@@ -340,7 +340,6 @@ static void CommandDone(DispatchedCommand * command){
   }
   free(command->command);
   free(command);
-  return;
 }
 
 EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribute__ ((unused))){

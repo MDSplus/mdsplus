@@ -23,6 +23,7 @@
 
 #include <STATICdef.h>
 #include <signal.h>
+#include <status.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,9 +41,10 @@ static int gsi_listen(int argc, char **argv);
 static int gsi_authorize(int conid, char *username);
 static int gsi_connect(int conid, char *protocol, char *host);
 static int gsi_reuseCheck(char *host, char *unique, size_t buflen);
-static IoRoutines gsi_routines =
-    { gsi_connect, gsi_send, gsi_recv, 0, gsi_listen, gsi_authorize, gsi_reuseCheck,
-gsi_disconnect };
+static int gsi_settimeout(int conid, int sec, int usec);
+static IoRoutines gsi_routines = {
+  gsi_connect, gsi_send, gsi_recv, 0, gsi_listen, gsi_authorize, gsi_reuseCheck, gsi_disconnect, gsi_settimeout
+};
 
 static int MDSIP_SNDBUF = 32768;
 static int MDSIP_RCVBUF = 32768;
@@ -57,8 +59,7 @@ typedef struct _gsi_info {
   char *connection_name;
 } GSI_INFO;
 
-EXPORT IoRoutines *Io()
-{
+EXPORT IoRoutines *Io(){
   return &gsi_routines;
 }
 
@@ -121,7 +122,7 @@ static int gsi_authorize(int conid, char *username)
     doit(res,
 	 globus_xio_handle_cntl(info->xio_handle, info->tcp_driver,
 				GLOBUS_XIO_TCP_GET_REMOTE_CONTACT, &hostname), "Get Remote Contact",
-	 return 0);
+	 return C_ERROR);
     doit(res,
 	 globus_xio_handle_cntl(info->xio_handle, info->tcp_driver,
 				GLOBUS_XIO_TCP_GET_REMOTE_NUMERIC_CONTACT, &hostip),
@@ -133,7 +134,7 @@ static int gsi_authorize(int conid, char *username)
     //gss_release_name(&mstatus,&peer);
     if (status != GSS_S_COMPLETE) {
       fprintf(stderr, "Error getting display name\n");
-      return 0;
+      return C_ERROR;
     }
     match_string[0] = (char *)malloc(strlen(hostname) + strlen((char *)peer_name_buffer.value) + 2);
     match_string[1] = (char *)malloc(strlen(hostip) + strlen((char *)peer_name_buffer.value) + 2);
@@ -216,7 +217,6 @@ static ssize_t gsi_recv(int conid, void *bptr, size_t num)
 
 static int gsi_disconnect(int conid)
 {
-  int status = -1;
   GSI_INFO *info = getGsiInfo(conid);
   if (info) {
     if (info->connection_name) {
@@ -228,9 +228,9 @@ static int gsi_disconnect(int conid)
       free(info->connection_name);
     }
     globus_result_t result = globus_xio_close(info->xio_handle, NULL);
-    status = (result == GLOBUS_SUCCESS) ? 0 : -1;
+    return (result == GLOBUS_SUCCESS) ? C_OK : C_ERROR;
   }
-  return status;
+  return C_ERROR;
 }
 
 static int gsi_reuseCheck(char *host, char *unique, size_t buflen)
@@ -264,7 +264,7 @@ static int gsi_connect(int conid, char *protocol __attribute__ ((unused)), char 
   char *host = host_in ? strcpy((char *)malloc(strlen(host_in) + 1), host_in) : 0;
   GSI_INFO info;
   if (!host)
-    return -1;
+    return C_ERROR;
   info.connection_name = 0;
   if ((colon = strchr(host, ':')) != 0) {
     *colon = 0;
@@ -277,36 +277,40 @@ static int gsi_connect(int conid, char *protocol __attribute__ ((unused)), char 
   free(host);
 
   if (activated == 0) {
-    doit(result, globus_module_activate(GLOBUS_XIO_MODULE), "GSI XIO Activate", return -1);
+    doit(result, globus_module_activate(GLOBUS_XIO_MODULE),
+       "GSI XIO Activate", return C_ERROR);
     activated = 1;
   }
-  doit(result, globus_xio_driver_load("tcp", &info.tcp_driver), "GSI Load TCP", return -1);
-  doit(result, globus_xio_driver_load("gsi", &info.gsi_driver), "GSI Load GSI", return -1);
-  doit(result, globus_xio_stack_init(&stack_gsi, NULL), "GSI Init stack", return -1);
-  doit(result, globus_xio_stack_push_driver(stack_gsi, info.tcp_driver), "GSI Push TCP", return -1);
-  doit(result, globus_xio_stack_push_driver(stack_gsi, info.gsi_driver), "GSI Push GSI", return -1);
-  doit(result, globus_xio_handle_create(&info.xio_handle, stack_gsi), "GSI Create Handle",
-       return -1);
-  doit(result, globus_xio_attr_init(&attr), "GSI Init Attr", return 1);
-  doit(result, globus_xio_attr_cntl(attr, info.gsi_driver, GLOBUS_XIO_GSI_SET_DELEGATION_MODE,
-				    GLOBUS_XIO_GSI_DELEGATION_MODE_FULL), "GSI Set Delegation",
-       return -1);
-  doit(result,
-       globus_xio_attr_cntl(attr, info.gsi_driver, GLOBUS_XIO_GSI_SET_AUTHORIZATION_MODE,
-			    GLOBUS_XIO_GSI_HOST_AUTHORIZATION), "GSI Set Authorization", return -1);
+  doit(result, globus_xio_driver_load("tcp", &info.tcp_driver),
+       "GSI Load TCP", return C_ERROR);
+  doit(result, globus_xio_driver_load("gsi", &info.gsi_driver),
+       "GSI Load GSI", return C_ERROR);
+  doit(result, globus_xio_stack_init(&stack_gsi, NULL),
+       "GSI Init stack", return C_ERROR);
+  doit(result, globus_xio_stack_push_driver(stack_gsi, info.tcp_driver),
+       "GSI Push TCP", return C_ERROR);
+  doit(result, globus_xio_stack_push_driver(stack_gsi, info.gsi_driver),
+       "GSI Push GSI", return C_ERROR);
+  doit(result, globus_xio_handle_create(&info.xio_handle, stack_gsi),
+       "GSI Create Handle", return C_ERROR);
+  doit(result, globus_xio_attr_init(&attr),
+       "GSI Init Attr", return C_ERROR);
+  doit(result, globus_xio_attr_cntl(attr, info.gsi_driver, GLOBUS_XIO_GSI_SET_DELEGATION_MODE, GLOBUS_XIO_GSI_DELEGATION_MODE_FULL),
+       "GSI Set Delegation", return C_ERROR);
+  doit(result, globus_xio_attr_cntl(attr, info.gsi_driver, GLOBUS_XIO_GSI_SET_AUTHORIZATION_MODE, GLOBUS_XIO_GSI_HOST_AUTHORIZATION),
+       "GSI Set Authorization", return -1);
   doit(result, globus_xio_attr_cntl(attr, info.tcp_driver, GLOBUS_XIO_TCP_SET_SNDBUF, MDSIP_SNDBUF),
-       "GSI Set SNDBUF", return -1);
+       "GSI Set SNDBUF", return C_ERROR);
   doit(result, globus_xio_attr_cntl(attr, info.tcp_driver, GLOBUS_XIO_TCP_SET_RCVBUF, MDSIP_RCVBUF),
-       "GSI Set RCVBUF", return -1);
+       "GSI Set RCVBUF", return C_ERROR);
   doit(result, globus_xio_attr_cntl(attr, info.tcp_driver, GLOBUS_XIO_TCP_SET_NODELAY, GLOBUS_TRUE),
-       "GSI Set NODELAY", return -1);
-  doit(result,
-       globus_xio_attr_cntl(attr, info.tcp_driver, GLOBUS_XIO_TCP_SET_KEEPALIVE, GLOBUS_TRUE),
-       "GSI Set KEEPALIVE", return -1);
-  doit(result, globus_xio_open(info.xio_handle, contact_string, attr), "Error connecting",
-       return -1);
+       "GSI Set NODELAY", return C_ERROR);
+  doit(result, globus_xio_attr_cntl(attr, info.tcp_driver, GLOBUS_XIO_TCP_SET_KEEPALIVE, GLOBUS_TRUE),
+       "GSI Set KEEPALIVE", return C_ERROR);
+  doit(result, globus_xio_open(info.xio_handle, contact_string, attr),
+       "Error connecting",  return C_ERROR);
   SetConnectionInfo(conid, "gsi", 0, &info, sizeof(info));
-  return 0;
+  return C_OK;
 }
 
 static void readCallback(globus_xio_handle_t xio_handle __attribute__ ((unused)),
@@ -323,7 +327,7 @@ static void readCallback(globus_xio_handle_t xio_handle __attribute__ ((unused))
       globus_result_t res __attribute__ ((unused));
       globus_byte_t buff[1];
       int status = DoMessage(id);
-      if (status & 1)
+      if STATUS_OK
 	res = globus_xio_register_read(info->xio_handle, buff, 0, 0, 0, readCallback, userarg);
     }
   }
@@ -347,7 +351,7 @@ static void acceptCallback(globus_xio_server_t server,
     testStatus(res, "mdsip_accept_cp, open");
     if (res == GLOBUS_SUCCESS) {
       status = AcceptConnection("gsi", "gsi", 0, &info, sizeof(info), &id, &username);
-      if (status & 1) {
+      if STATUS_OK {
 	globus_byte_t buff[1];
 	doit(res,
 	     globus_xio_register_read(xio_handle, buff, 0, 0, 0, readCallback,
@@ -389,7 +393,7 @@ static int gsi_listen(int argc, char **argv)
     sl = GLOBUS_XIO_GSI_PROTECTION_LEVEL_PRIVACY;
   else {
     fprintf(stderr, "Invalid security level specified, must be one of none,integrity or private\n");
-    exit(1);
+    exit(C_ERROR);
   }
   info.connection_name = 0;
   globus_mutex_init(&globus_l_mutex, NULL);
@@ -430,7 +434,7 @@ static int gsi_listen(int argc, char **argv)
 	  globus_xio_server_register_accept((globus_xio_server_t) info.xio_handle, acceptCallback,
 					    &info);
       if (res != GLOBUS_SUCCESS)
-	exit(1);
+	exit(C_ERROR);
       else {
 	while (1) {
 	  res = globus_mutex_lock(&globus_l_mutex);
@@ -449,9 +453,13 @@ static int gsi_listen(int argc, char **argv)
     res = globus_xio_open(info.xio_handle, NULL, server_attr);
     testStatus(res, "get handle to connection");
     status = AcceptConnection("gsi", "gsi", 0, &info, sizeof(info), &id, &username);
-    while (status & 1) {
+    while STATUS_OK {
       status = DoMessage(id);
     }
   }
-  return 0;
+  return C_OK;
+}
+
+static int gsi_settimeout(int id __attribute__ ((unused)), int sec __attribute__ ((unused)), int usec __attribute__ ((unused))){
+  return C_ERROR;
 }

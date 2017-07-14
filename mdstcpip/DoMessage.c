@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <status.h>
 #include <libroutines.h>
 
 #include "mdsip_connections.h"
@@ -10,8 +11,8 @@
 
 int DoMessage(int id)
 {
-  int status = 0;
-  static Message *(*processMessage) (Connection *, Message *) = 0;
+  INIT_STATUS_AS MDSplusERROR;
+  Message *(*processMessage) (Connection *, Message *) = 0;
   Connection *c = FindConnection(id, 0);
   if (processMessage == 0) {
     DESCRIPTOR(MdsIpSrvShr, "MdsIpSrvShr");
@@ -21,7 +22,7 @@ int DoMessage(int id)
   if (c && processMessage) {
     Message *msgptr = GetMdsMsg(id, &status);
     Message *ans = 0;
-    if (status & 1) {
+    if STATUS_OK {
       ans = (*processMessage) (c, msgptr);
       if (ans) {
           // NOTE: [Andrea] this status is not actually tested for errors //
