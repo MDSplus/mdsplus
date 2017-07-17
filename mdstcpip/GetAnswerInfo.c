@@ -1,4 +1,3 @@
-
 #include "mdsip_connections.h"
 #include <stdlib.h>
 #include <status.h>
@@ -7,14 +6,15 @@
 //  GetAnswerInfo  /////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+__attribute__((deprecated))
 int GetAnswerInfo(int id, char *dtype, short *length, char *ndims, int *dims, int *numbytes,
-		  void **dptr){
+		  void **dptr, int timeout_sec){
   static void *m = 0;
   if (m) {
     free(m);
-    m = 0;
+    m=NULL;
   }
-  return GetAnswerInfoTS(id, dtype, length, ndims, dims, numbytes, dptr, &m, -1.f);
+  return GetAnswerInfoTS(id, dtype, length, ndims, dims, numbytes, dptr, &m, timeout_sec);
 }
 
 
@@ -23,7 +23,7 @@ int GetAnswerInfo(int id, char *dtype, short *length, char *ndims, int *dims, in
 ////////////////////////////////////////////////////////////////////////////////
 
 int GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims, int *dims, int *numbytes,
-		    void **dptr, void **mout, float timeout_sec){
+		    void **dptr, void **mout, int timeout_sec){
   INIT_STATUS;
   int i;
   Message *m;

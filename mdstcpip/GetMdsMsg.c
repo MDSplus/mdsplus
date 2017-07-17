@@ -3,7 +3,7 @@
 #include <string.h>
 #include <errno.h>
 #include <status.h>
-
+#include <pthread_port.h>
 #include "zlib/zlib.h"
 #include "mdsip_connections.h"
 
@@ -40,11 +40,17 @@ static int GetBytes(int id, void *buffer, size_t bytes_to_recv){
 //  GetMdsMsg  /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-Message *GetMdsMsgTO(int id, int *status, float fsec __attribute__((unused))){
+static void resettimeout(void* id){
+  GetConnectionIo(*(int*)id)->settimeout(*(int*)id,0,0);
+}
+
+Message *GetMdsMsgTO(int id, int *status, int sec){
   MsgHdr header;
   Message *msg = 0;
   int msglen = 0;
   //MdsSetClientAddr(0);
+  GetConnectionIo(id)->settimeout(id,sec,0);
+  pthread_cleanup_push(resettimeout,(void*)&id);
   *status = GetBytes(id, (void *)&header, sizeof(MsgHdr));
   if IS_OK(*status) {
     if (Endian(header.client_type) != Endian(ClientType()))
@@ -67,9 +73,6 @@ Message *GetMdsMsgTO(int id, int *status, float fsec __attribute__((unused))){
     msglen = header.msglen;
     msg = malloc(header.msglen);
     msg->h = header;
-    //int sec  = (int)(fsec);
-    //int usec = (int)(fsec*1E6f) % 1000000;
-    //GetConnectionIo(id)->settimeout(id,sec,usec);
     *status = GetBytes(id, msg->bytes, msglen - sizeof(MsgHdr));
     if (IS_OK(*status) && IsCompressed(header.client_type)) {
       Message *m;
@@ -93,6 +96,7 @@ Message *GetMdsMsgTO(int id, int *status, float fsec __attribute__((unused))){
     if (IS_OK(*status) && (Endian(header.client_type) != Endian(ClientType())))
       FlipData(msg);
   }
+  pthread_cleanup_pop(1);
   return msg;
 }
 

@@ -55,7 +55,7 @@ EXPORT char *ServerGetInfo(int full __attribute__ ((unused)), char *server){
       int dims[8];
       int numbytes;
       char *reply;
-      status = GetAnswerInfoTS(sock, &dtype, &len, &ndims, dims, &numbytes, (void **)&reply, &mem);
+      status = GetAnswerInfoTS(sock, &dtype, &len, &ndims, dims, &numbytes, (void **)&reply, &mem, 10);
       if (STATUS_OK && (dtype == DTYPE_CSTRING))
 	ans = reply;
       else {
