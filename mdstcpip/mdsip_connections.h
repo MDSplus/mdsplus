@@ -339,7 +339,7 @@ EXPORT void FreeMessage(void *message);
 /// \return the function returns the status held by the answered descriptor.
 ///
 EXPORT int GetAnswerInfo(int id, char *dtype, short *length, char *ndims,
-                         int *dims, int *numbytes, void **dptr);
+                         int *dims, int *numbytes, void **dptr, int timeout);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -361,7 +361,7 @@ EXPORT int GetAnswerInfo(int id, char *dtype, short *length, char *ndims,
 /// \return the function returns the status held by the answered descriptor
 ///
 EXPORT int GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims,
-                           int *dims, int *numbytes, void **dptr, void **m, float timeout);
+                           int *dims, int *numbytes, void **dptr, void **m, int timeout);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -430,7 +430,7 @@ EXPORT Message *GetMdsMsg(int id, int *status);
 /// \param status writes out the exit status to the pointed instace
 /// \return returns a \ref Message structure filled by content of the response
 ///
-EXPORT Message *GetMdsMsgTO(int id, int *status, float timeout);
+EXPORT Message *GetMdsMsgTO(int id, int *status, int timeout);
 EXPORT Message *GetMdsMsgOOB(int id, int *status);
 
 EXPORT unsigned char GetMode();

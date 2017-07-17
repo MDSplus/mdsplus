@@ -304,12 +304,11 @@ static int io_settimeout(int conid, int sec, int usec) {
   SOCKET sock = getSocket(conid);
   if (sock != INVALID_SOCKET) {
     if (sec>0 || (sec==0 && usec >0)){
-      struct timeval tv;
-      tv.tv_sec  = sec;  /* 30 Secs Timeout */
-      tv.tv_usec = usec;  // Not init'ing this can cause strange errors
+      struct timeval tv = {sec, usec};
       return setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv,sizeof(struct timeval));
-    } else
-      return setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, NULL, 0);
-  } else
-    return C_ERROR;
+    }
+    // disable timeout
+    return setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, NULL, 0);
+  }
+  return C_ERROR;
 }
