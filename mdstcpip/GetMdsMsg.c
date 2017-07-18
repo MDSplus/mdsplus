@@ -3,9 +3,9 @@
 #include <string.h>
 #include <errno.h>
 #include <status.h>
-#include <pthread_port.h>
 #include "zlib/zlib.h"
 #include "mdsip_connections.h"
+#include <pthread_port.h>
 
 static int GetBytes(int id, void *buffer, size_t bytes_to_recv){
   char *bptr = (char *)buffer;
