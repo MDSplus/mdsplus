@@ -209,7 +209,6 @@ class Connection(object):
             num=len(args)+1
             _exc.checkStatus(_SendArg(self.socket,0,14,num,len(exp),0,0,_C.c_char_p(_ver.tobytes(exp))))
             for i,arg in enumerate(args):
-                print('sending: %d'%(i+1))
                 self.__sendArg__(arg,i+1,num)
             return self.__getAnswer__()
 
