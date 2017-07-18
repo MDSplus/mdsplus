@@ -207,10 +207,10 @@ class Connection(object):
             if 'arglist' in kwargs:
                 args=kwargs['arglist']
             num=len(args)+1
-            idx=0
-            _exc.checkStatus(_SendArg(self.socket,idx,14,num,len(exp),0,0,_C.c_char_p(_ver.tobytes(exp))))
+            _exc.checkStatus(_SendArg(self.socket,0,14,num,len(exp),0,0,_C.c_char_p(_ver.tobytes(exp))))
             for i,arg in enumerate(args):
-                self.__sendArg__(arg,idx+1,num)
+                print('sending: %d'%(i+1))
+                self.__sendArg__(arg,i+1,num)
             return self.__getAnswer__()
 
     def setDefault(self,path):
@@ -221,10 +221,11 @@ class Connection(object):
         """
         _exc.checkStatus(self.get("TreeSetDefault($)",path))
 
-    # depricated
     def GetMany(self,*arg):
+        """ deprecated """
         raise(MdsIpException('\nThe subclass "Connection.GetMany" is now a class of it own.\nUse "GetMany" instead.'))
     def PutMany(self,*arg):
+        """ deprecated """
         raise(MdsIpException('\nThe subclass "Connection.PutMany" is now a class of it own.\nUse "PutMany" instead.'))
 
 class GetMany(_apd.List):
