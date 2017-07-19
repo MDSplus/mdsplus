@@ -135,6 +135,25 @@ public abstract class CheckBoxList extends JDialog{
         this.pack();
     }
 
+    private void addCheckBox(final Nid nid, final String fullpath) {
+        final JCheckBox cb = new JCheckBox(fullpath);
+        cb.putClientProperty(CheckBoxList.PROP_NID, nid);
+        cb.putClientProperty(CheckBoxList.PROP_FULLPATH, fullpath);
+        cb.addActionListener(new CheckBoxListener());
+        cb.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseEntered(final MouseEvent e) {
+                cb.setText(cb.getToolTipText());
+            }
+
+            @Override
+            public void mouseExited(final MouseEvent e) {
+                cb.setText(cb.getName());
+            }
+        });
+        this.checkboxes.addElement(cb);
+    }
+
     protected abstract void apply();
 
     protected void checkReadOnly() {
@@ -178,12 +197,7 @@ public abstract class CheckBoxList extends JDialog{
                         while((ref = tree.treeshr.treeFindNodeWild(null, "***", usage_mask, ref)).ok()){
                             final Nid nid = new Nid(ref.data, tree);
                             try{
-                                final String fullpath = nid.getNciFullPath();
-                                final JCheckBox cb = new JCheckBox(nid.toString());
-                                cb.putClientProperty("nid", nid);
-                                cb.putClientProperty("fullpath", fullpath);
-                                cb.addActionListener(new CheckBoxListener());
-                                this.checkboxes.addElement(cb);
+                                this.addCheckBox(nid, nid.getNciFullPath());
                             }catch(final MdsException e){
                                 System.err.println(nid.decompile());
                             }
@@ -195,13 +209,8 @@ public abstract class CheckBoxList extends JDialog{
                 else{
                     final Nid[] nid = tree.findNodesWild(usage);
                     final String[] fp = tree.mds.getStringArray(tree.ctx, "GETNCI($,'FULLPATH')", new NidArray(nid));
-                    for(int i = 0; i < nid.length; i++){
-                        final JCheckBox cb = new JCheckBox(fp[i]);
-                        cb.putClientProperty(CheckBoxList.PROP_NID, nid[i]);
-                        cb.putClientProperty(CheckBoxList.PROP_FULLPATH, fp[i]);
-                        cb.addActionListener(new CheckBoxListener());
-                        this.checkboxes.addElement(cb);
-                    }
+                    for(int i = 0; i < nid.length; i++)
+                        this.addCheckBox(nid[i], fp[i]);
                 }
             }catch(final MdsException e){
                 this.checklist.removeAll();
