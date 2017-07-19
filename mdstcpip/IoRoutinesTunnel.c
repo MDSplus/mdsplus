@@ -22,9 +22,8 @@ static ssize_t tunnel_recv(int id, void *buffer, size_t len);
 static int tunnel_disconnect(int id);
 static int tunnel_connect(int id, char *protocol, char *host);
 static int tunnel_listen(int argc, char **argv);
-static int tunnel_settimeout(int id, int sec, int usec);
 static IoRoutines tunnel_routines =
-    { tunnel_connect, tunnel_send, tunnel_recv, 0, tunnel_listen, 0, 0, tunnel_disconnect, tunnel_settimeout};
+    { tunnel_connect, tunnel_send, tunnel_recv, NULL, tunnel_listen, NULL, NULL, tunnel_disconnect, NULL};
 
 EXPORT IoRoutines *Io()
 {
@@ -251,8 +250,4 @@ static int tunnel_listen(int argc __attribute__ ((unused)), char **argv __attrib
   while (DoMessage(id) != 0) ;
   return C_ERROR;
 #endif
-}
-
-static int tunnel_settimeout(int id __attribute__ ((unused)), int sec __attribute__ ((unused)), int usec __attribute__ ((unused))){
-  return C_ERROR;
 }

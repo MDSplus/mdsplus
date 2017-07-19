@@ -86,14 +86,16 @@ typedef struct _Condition_p {
 
 #ifdef DEF_FREED
  #include <strroutines.h>
- static void __attribute__((unused)) freed(void *ptr){
+ static void __attribute__((unused)) free_d(void *ptr){
    StrFree1Dx((struct descriptor_d*)ptr);
  }
  #ifdef _WIN32
   #define FREED_ON_EXIT(ptr) {
-  #define FREED_NOW(ptr)     };freed(ptr)
+  #define FREED_IF(ptr,c)    };if (c) free_d(ptr)
+  #define FREED_NOW(ptr)     };free_d(ptr)
  #else
-  #define FREED_ON_EXIT(ptr) pthread_cleanup_push(freed, ptr)
+  #define FREED_ON_EXIT(ptr) pthread_cleanup_push(free_d, ptr)
+  #define FREED_IF(ptr,c)    pthread_cleanup_pop(c)
   #define FREED_NOW(ptr)     pthread_cleanup_pop(1)
  #endif
  #define INIT_AS_AND_FREED_ON_EXIT(var,value) struct descriptor_d var = value;FREED_ON_EXIT(&var)
@@ -101,14 +103,16 @@ typedef struct _Condition_p {
 #endif
 #ifdef DEF_FREEXD
  #include <mdsshr.h>
- static void __attribute__((unused)) freexd(void *ptr){
+ static void __attribute__((unused)) free_xd(void *ptr){
    MdsFree1Dx((struct descriptor_xd*)ptr, NULL);
  }
  #ifdef _WIN32
   #define FREEXD_ON_EXIT(ptr) {
-  #define FREEXD_NOW(ptr)     };freexd(ptr)
+  #define FREEXD_IF(ptr,c)    };if (c) free_xd((void*)&ptr)
+  #define FREEXD_NOW(ptr)     };free_xd(ptr)
  #else
-  #define FREEXD_ON_EXIT(ptr) pthread_cleanup_push(freexd, ptr)
+  #define FREEXD_ON_EXIT(ptr) pthread_cleanup_push(free_xd, ptr)
+  #define FREEXD_IF(ptr,c)    pthread_cleanup_pop(c)
   #define FREEXD_NOW(ptr)     pthread_cleanup_pop(1)
  #endif
  #define INIT_AND_FREEXD_ON_EXIT(ptr) EMPTYXD(xd);FREEXD_ON_EXIT(&xd);
@@ -118,10 +122,12 @@ static void __attribute__((unused)) free_if(void *ptr){
 }
 #ifdef _WIN32
  #define FREE_ON_EXIT(ptr)   {
+ #define FREE_IF(ptr,c)      };if (c) free_if((void*)&ptr)
  #define FREE_NOW(ptr)       };free_if((void*)&ptr)
  #define FREE_CANCEL(ptr)    }
 #else
  #define FREE_ON_EXIT(ptr)   pthread_cleanup_push(free_if, (void*)&ptr)
+ #define FREE_IF(ptr,c)      pthread_cleanup_pop(c)
  #define FREE_NOW(ptr)       pthread_cleanup_pop(1)
  #define FREE_CANCEL(ptr)    pthread_cleanup_pop(0)
 #endif

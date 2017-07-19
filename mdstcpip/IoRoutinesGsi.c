@@ -41,9 +41,8 @@ static int gsi_listen(int argc, char **argv);
 static int gsi_authorize(int conid, char *username);
 static int gsi_connect(int conid, char *protocol, char *host);
 static int gsi_reuseCheck(char *host, char *unique, size_t buflen);
-static int gsi_settimeout(int conid, int sec, int usec);
 static IoRoutines gsi_routines = {
-  gsi_connect, gsi_send, gsi_recv, 0, gsi_listen, gsi_authorize, gsi_reuseCheck, gsi_disconnect, gsi_settimeout
+  gsi_connect, gsi_send, gsi_recv, NULL, gsi_listen, gsi_authorize, gsi_reuseCheck, gsi_disconnect, NULL
 };
 
 static int MDSIP_SNDBUF = 32768;
@@ -458,8 +457,4 @@ static int gsi_listen(int argc, char **argv)
     }
   }
   return C_OK;
-}
-
-static int gsi_settimeout(int id __attribute__ ((unused)), int sec __attribute__ ((unused)), int usec __attribute__ ((unused))){
-  return C_ERROR;
 }

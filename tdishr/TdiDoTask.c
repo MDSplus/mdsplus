@@ -164,6 +164,7 @@ STATIC_ROUTINE int StartWorker(struct descriptor_routine *ptask, struct descript
       _CONDITION_WAIT(&WorkerRunning);
   }
   _CONDITION_UNLOCK(&WorkerRunning);
+  CONDITION_DESTROY(&WorkerRunning);
   return status;
 }
 #endif

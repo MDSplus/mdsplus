@@ -41,7 +41,8 @@ static int GetBytes(int id, void *buffer, size_t bytes_to_recv){
 ////////////////////////////////////////////////////////////////////////////////
 
 static void resettimeout(void* id){
-  GetConnectionIo(*(int*)id)->settimeout(*(int*)id,0,0);
+  IoRoutines *ior = GetConnectionIo(*(int*)id);
+  if (ior && ior->settimeout) ior->settimeout(*(int*)id,0,0);
 }
 
 Message *GetMdsMsgTO(int id, int *status, int sec){
@@ -49,7 +50,8 @@ Message *GetMdsMsgTO(int id, int *status, int sec){
   Message *msg = 0;
   int msglen = 0;
   //MdsSetClientAddr(0);
-  GetConnectionIo(id)->settimeout(id,sec,0);
+  IoRoutines *ior = GetConnectionIo(id);
+  if (ior && ior->settimeout) ior->settimeout(id,sec,0);
   pthread_cleanup_push(resettimeout,(void*)&id);
   *status = GetBytes(id, (void *)&header, sizeof(MsgHdr));
   if IS_OK(*status) {
