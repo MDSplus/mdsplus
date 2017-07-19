@@ -69,6 +69,7 @@ import mds.mdslib.MdsLib;
 
 @SuppressWarnings("serial")
 public class TreeManager extends JPanel{
+    // XXX: AddNodeMenu
     public static final class AddNodeMenu extends Menu{
         private final class AddDevice implements ActionListener{
             @Override
@@ -135,6 +136,7 @@ public class TreeManager extends JPanel{
             }
         }
     }
+    // XXX: ContextMenuML
     public final class ContextMenuML extends MouseAdapter{
         private static final int CtrlClick = InputEvent.CTRL_DOWN_MASK | InputEvent.BUTTON1_DOWN_MASK;
 
@@ -187,6 +189,7 @@ public class TreeManager extends JPanel{
             this.mouseClicked(e);
         }
     }
+    // XXX: DisplayMenu
     public static final class DisplayMenu extends Menu{
         public final class DisplayDataMenu extends Menu{
             private class EvalActionListener implements ActionListener{
@@ -322,6 +325,7 @@ public class TreeManager extends JPanel{
                 this.items.get(i).setEnabled(mask[i]);
         }
     }
+    // XXX: EditMenu
     public static final class EditMenu extends Menu{
         private final class CopyNode implements ActionListener{
             @Override
@@ -385,6 +389,7 @@ public class TreeManager extends JPanel{
                 this.items.get(i).setEnabled(mask[i]);
         }
     }
+    // XXX: ExtraMenu
     public static final class ExtrasMenu extends Menu{
         public final class AlwaysOnTop implements ActionListener{
             @Override
@@ -512,6 +517,7 @@ public class TreeManager extends JPanel{
                 item.setEnabled(open);
         }
     }
+    // XXX: FileMenu
     public static final class FileMenu extends Menu{
         private final class CloseMds implements ActionListener{
             @Override
@@ -609,6 +615,7 @@ public class TreeManager extends JPanel{
     public interface Job{
         public void program();
     }
+    // XXX: Menu
     public static class Menu{
         protected final class DataPanelAL implements ActionListener{
             private final boolean editable;
@@ -670,6 +677,7 @@ public class TreeManager extends JPanel{
 
         public void checkSupport() {/*stub*/}
     }
+    // XXX: ModifyMenu
     public static final class ModifyMenu extends Menu{
         public final class DoAction implements ActionListener{
             @Override
@@ -748,6 +756,7 @@ public class TreeManager extends JPanel{
     }
     static{
         ToolTipManager.sharedInstance().setDismissDelay(60000);
+        ToolTipManager.sharedInstance().setLightWeightPopupEnabled(true);
     }
     private final JProgressBar     progress = new JProgressBar();
     private final JLabel           status   = new JLabel();

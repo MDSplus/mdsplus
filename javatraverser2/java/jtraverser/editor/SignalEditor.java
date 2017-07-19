@@ -38,6 +38,11 @@ public class SignalEditor extends Editor{
     @Override
     public final void setData(final Descriptor<?> data) {
         this.data = data;
-        this.setDescR();
+        if(SignalEditor.checkData(data)) this.setDescR();
+        else{
+            this.edit[0].setData(data);
+            this.edit[1].data = null;
+            this.edit[2].data = null;
+        }
     }
 }
