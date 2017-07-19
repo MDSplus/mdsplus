@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import mds.MdsException;
 import mds.data.DATA;
 import mds.data.OPC;
+import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_r.Action;
 import mds.data.descriptor_r.Call;
 import mds.data.descriptor_r.Condition;
@@ -29,7 +30,7 @@ import mds.data.descriptor_s.Missing;
 import mds.data.descriptor_s.Path;
 
 @SuppressWarnings("deprecation")
-public abstract class BUILD extends Function{
+public class BUILD extends Function{
     public static final boolean coversOpCode(final short opcode) {
         switch(opcode){
             case OPC.OpcBuildPath:
@@ -77,6 +78,13 @@ public abstract class BUILD extends Function{
                 return true;
         }
         return false;
+    }
+
+    public static final BUILD deserialize(final ByteBuffer b) {
+        switch(b.getShort(b.getInt(Descriptor._ptrI))){
+            default:
+                return new BUILD(b);
+        }
     }
 
     protected BUILD(final ByteBuffer b){
