@@ -112,7 +112,7 @@ static char *mdsplus_translate_status(int socket, int status)
   struct descrip ans;
   int tmpstat;
   sprintf(expression, "getmsg(%d)", status);
-  tmpstat = MdsValue(socket, expression, &ans, 0);
+  tmpstat = MdsValue(socket, expression, &ans, NULL);
   if (tmpstat & 1 && ans.ptr)
     return (char *)ans.ptr;
   else {
@@ -409,7 +409,7 @@ PHP_FUNCTION(mdsplus_value)
   expression_len = (int)zexpression_len;
   mdsplus_replace_error(0, 1);
   if (num_args == 2)
-    status = MdsValue(socket, expression, &ans, 0);
+    status = MdsValue(socket, expression, &ans, NULL);
   else {
     int dims[7] = { 0, 0, 0, 0, 0, 0, 0 };
     if (zend_get_parameters_array_ex(num_args, args) != SUCCESS)
@@ -589,7 +589,7 @@ PHP_FUNCTION(mdsplus_put)
   expression_len = (int)zexpression_len;
   mdsplus_replace_error(0, 1);
   if (num_args == 3)
-    status = MdsPut(socket, node, expression, &ans, 0);
+    status = MdsPut(socket, node, expression, &ans, NULL);
   else {
     int dims[7] = { 0, 0, 0, 0, 0, 0, 0 };
     char putexp[512];

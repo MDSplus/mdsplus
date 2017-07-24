@@ -700,13 +700,13 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean * event,
   int status;
   long sock = Connect();
   ival = row;
-  status = MdsValue(sock, "_ROW=$", &id, &ans, 0);
+  status = MdsValue(sock, "_ROW=$", &id, &ans, NULL);
   FreeDescrip(ans)
       ival = col;
-  status = MdsValue(sock, "_COLUMN=$", &id, &ans, 0);
+  status = MdsValue(sock, "_COLUMN=$", &id, &ans, NULL);
   FreeDescrip(ans)
       ival = idx;
-  status = MdsValue(sock, "_INDEX=$", &id, &ans, 0);
+  status = MdsValue(sock, "_INDEX=$", &id, &ans, NULL);
   FreeDescrip(ans)
       if (strlen(database)) {
     if (strlen(shot)) {
@@ -715,7 +715,7 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean * event,
       if (!
 	  (MdsValue
 	   (sock, "long(execute($))", MakeDescrip(&tmp, DTYPE_CSTRING, 0, NULL, shot), &ans,
-	    0) & 1))
+	    NULL) & 1))
 	return Error(brief, "Error evaluating shot number", error, ans.ptr, &ans);
       shotnum = *(int *)ans.ptr;
       if (event) {
@@ -734,29 +734,29 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean * event,
       return Error(1, "Error opening database", error, NULL, NULL);
   }
   if (strlen(default_node)) {
-    MdsValue(sock, "TreeShr->TreeSetDefaultNid(val(0))", &ans, 0);
+    MdsValue(sock, "TreeShr->TreeSetDefaultNid(val(0))", &ans, NULL);
     FreeDescrip(ans);
     if (!(MdsSetDefault(sock, default_node) & 1))
       return Error(1, "Default node not found", error, NULL, NULL);
   } else {
-    MdsValue(sock, "TreeShr->TreeSetDefaultNid(val(0))", &ans, 0);
+    MdsValue(sock, "TreeShr->TreeSetDefaultNid(val(0))", &ans, NULL);
     FreeDescrip(ans);
   }
   if (strlen(y)) {
     Descrip(yans, 0, NULL);
     String yexp = XtMalloc(strlen(y) + 100);
     sprintf(yexp, "_y$$dwscope = (%s),f_float(data(_y$$dwscope))", y);
-    if (MdsValue(sock, yexp, &yans, 0) & 1) {
+    if (MdsValue(sock, yexp, &yans, NULL) & 1) {
       int count = Nelements(&yans);
       if (count >= 1) {
 	Descrip(xans, 0, NULL);
 	if (strlen(x)) {
 	  String xexp = XtMalloc(strlen(x) + 100);
 	  sprintf(xexp, "f_float(data(%s))", x);
-	  status = MdsValue(sock, xexp, &xans, 0);
+	  status = MdsValue(sock, xexp, &xans, NULL);
 	  XtFree(xexp);
 	} else
-	  status = MdsValue(sock, "f_float(data(dim_of(_y$$dwscope)))", &xans, 0);
+	  status = MdsValue(sock, "f_float(data(dim_of(_y$$dwscope)))", &xans, NULL);
 	if (status & 1) {
 	  int xcount = Nelements(&xans);
 	  if (xcount < count)
@@ -799,7 +799,7 @@ Boolean EvaluateText(String text, String error_prefix, String * text_ret, String
     Descrip(tmp, 0, NULL);
     if (MdsValue
 	(sock, "trim(adjustl(execute($)))", MakeDescrip(&tmp, DTYPE_CSTRING, 0, NULL, text), &ans,
-	 0) & 1) {
+	 NULL) & 1) {
       *text_ret = XtNewString(ans.ptr);
       FreeDescrip(ans);
     } else {
