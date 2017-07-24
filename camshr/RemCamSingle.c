@@ -44,7 +44,7 @@ static void getiosb(int serverid, short *iosb)
 {
   int status;
   struct descrip ans_d = { 0, 0, {0}, 0, 0};
-  status = MdsValue(serverid, "_iosb", &ans_d, 0);
+  status = MdsValue(serverid, "_iosb", &ans_d, NULL);
   if (status & 1 && ans_d.dtype == DTYPE_USHORT && ans_d.ndims == 1 && ans_d.dims[0] == 4) {
     memcpy(RemCamLastIosb, ans_d.ptr, 8);
     if (iosb)
@@ -58,7 +58,7 @@ static void getdata(int serverid, void *data)
 {
   int status;
   struct descrip ans_d = { 0, 0, {0}, 0, 0};
-  status = MdsValue(serverid, "_data", &ans_d, 0);
+  status = MdsValue(serverid, "_data", &ans_d, NULL);
   if (status & 1 && (ans_d.dtype == DTYPE_USHORT || ans_d.dtype == DTYPE_LONG) && ans_d.ptr)
     memcpy(data, ans_d.ptr, (ans_d.dtype == DTYPE_USHORT) ? 2 : 4);
   if (ans_d.ptr)
@@ -81,9 +81,9 @@ static int CamSingle(char *routine, char *name, int a, int f, void *data, int me
     if (writeData) {
       data_d.dtype = mem < 24 ? DTYPE_SHORT : DTYPE_LONG;
       data_d.ptr = data;
-      status = MdsValue(serverid, cmd, &data_d, &ans_d, 0);
+      status = MdsValue(serverid, cmd, &data_d, &ans_d, NULL);
     } else {
-      status = MdsValue(serverid, cmd, &ans_d, 0);
+      status = MdsValue(serverid, cmd, &ans_d, NULL);
     }
     if (status & 1 && ans_d.dtype == DTYPE_LONG && ans_d.ptr) {
       memcpy(&status, ans_d.ptr, 4);
