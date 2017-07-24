@@ -303,7 +303,7 @@ public class Connection
     public static void main(java.lang.String args[])
     {
         try {
-            Connection conn = new Connection("eprobe.igi.cnr.it");
+            Connection conn = new Connection("rat2.rfx.local");
             DataStreamListener l1 = new DataStreamListener()
             {
                 public void dataReceived(Data samples, Data times)
@@ -311,7 +311,7 @@ public class Connection
                     System.out.println("Listener 1 received data:\nSamples: "+samples+"\nTimes: "+times);
                 }
             };
-            conn.registerStreamListener(l1, "stream_1", "stream", 1);
+            conn.registerStreamListener(l1, "ADC0.SLOW", "falcon_fast", 1);
             conn.startStreaming();
  //           conn.resetConnection();
         }catch(Exception e){System.out.println(e); }
