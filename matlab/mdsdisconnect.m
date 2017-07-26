@@ -4,10 +4,6 @@ function [ status ] = mdsdisconnect( )
 %      mdsdisconnect will destroy this connection, reverting the above
 %      described routines to their local behaviors
 %
-    global MDSplus_Connection_Host
-    global MDSplus_Connection_Obj
-    MDSplus_Connection_Host='LOCAL';
-    clearvars -global MDSplus_Connection_Obj
-    status=1; 
+  status = mdsconnect('local');
 end
 
