@@ -79,7 +79,6 @@ class _GCLock(object):
         with _GCLock._lock:
             _gc.disable()
             _GCLock._cnt+=1
-            ctx = _TreeCtx.getDbid()
     def release(self):
         with _GCLock._lock:
             _GCLock._cnt-=1
@@ -2836,8 +2835,7 @@ class Device(TreeNode): # HINT: Device begin
                 return device
         @staticmethod
         def _debug(s,p=tuple()):
-            from sys import stdout as _stdout
-            _stdout.write(s % p)
+            _sys._stdout.write(s % p)
     else:
         @staticmethod
         def _debug(s,p=tuple()):
@@ -2975,17 +2973,21 @@ class Device(TreeNode): # HINT: Device begin
         for elt in cls.parts:  # first add all nodes
             node=head.addNode(elt['path'],elt['type'])
         for elt in cls.parts:  # then you can reference them in valueExpr
-            node=head.getNode(elt['path'])
-            if 'value' in elt:
-                if Device.debug: print(node,node.usage,elt['value'])
-                node.record = elt['value']
-            elif 'valueExpr' in elt:
-                glob['node'] = node
-                if Device.debug: print(node,node.usage,elt['valueExpr'])
-                node.record = eval(elt['valueExpr'], glob)
-            if 'options' in elt:
-                for option in elt['options']:
-                    node.__setattr__(option,True)
+            try:
+                node=head.getNode(elt['path'])
+                if 'value' in elt:
+                    if Device.debug: print(node,node.usage,elt['value'])
+                    node.record = elt['value']
+                elif 'valueExpr' in elt:
+                    glob['node'] = node
+                    if Device.debug: print(node,node.usage,elt['valueExpr'])
+                    node.record = eval(elt['valueExpr'], glob)
+                if 'options' in elt:
+                    for option in elt['options']:
+                        node.__setattr__(option,True)
+            except:
+                _sys.stderr.write('ERROR: %s\n'%str(elt))
+                raise
         _TreeShr._TreeEndConglomerate(tree.ctx)
         return head
 
