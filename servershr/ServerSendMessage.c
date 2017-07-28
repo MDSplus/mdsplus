@@ -308,7 +308,7 @@ static void DoBeforeAst(int jobid)
 {
   Job *j;
   void *astparam = NULL;
-  void (*before_ast) ();
+  void (*before_ast) () = NULL;
   LOCK_JOBS;
   for (j = Jobs; j && (j->jobid != jobid); j = j->next) ;
   if (j) {

@@ -35,7 +35,7 @@ fi
 MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
 if [ -z "$JARS_DIR" ]
 then
-    JAVA_OPTS="--with-java_target=6 --with-java_bootclasspath=/source/rt.jar"
+    JAVA_OPTS="--with-java_target=6 --with-java_bootclasspath=${SRCDIR}/rt.jar"
 else
     JAVA_OPTS="--with-jars=${JARS_DIR}"
 fi
