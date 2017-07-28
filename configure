@@ -635,6 +635,7 @@ USE_TM_GMTOFF
 USE_PIPED_MESSAGING
 uiddir
 XM_LIBS
+THREAD
 TDIC
 TAR_EXCLUDE
 TARGET_ARCH
@@ -840,7 +841,6 @@ READLINE_LDFLAGS
 READLINE_CPPFLAGS
 LIBSOCKET
 MAKEETCDIR
-THREAD
 VS_FALSE
 VS_TRUE
 MINGW_FALSE
@@ -8020,7 +8020,6 @@ FOR_LDFLAGS=""
 SHARETYPE=".so"
 
 THREAD="-pthread"
-
 MITDEVICESIO_TARGETS=""
 case "$host" in
 *mingw*)
@@ -8162,8 +8161,9 @@ case "$host" in
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X";
+       THREAD=""
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic";
+       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic -Wno-error=unused-command-line-argument -Wno-missing-field-initializers -Wno-parentheses-equality";
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="gfortran"
        FOR_LDFLAGS="-shared"
@@ -17132,6 +17132,7 @@ fi
 if test "x$mandir" = x"\${datarootdir}/man"; then :
   mandir="${datarootdir}/man"
 fi
+
 
 
 

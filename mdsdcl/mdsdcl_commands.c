@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <mdsdcl_messages.h>
 #include <sys/time.h>
 #ifdef HAVE_SYS_RESOURCE_H
@@ -204,7 +205,7 @@ EXPORT int mdsdcl_set_verify(void *ctx, char **error __attribute__ ((unused)), c
 	 ****************************************************************/
 EXPORT int mdsdcl_define_symbol(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
-  char *name, *value;
+  char *name=NULL, *value=NULL;
   int status = cli_get_value(ctx, "SYMBOL", &name);
   if STATUS_NOT_OK {
     *error = malloc(100);
