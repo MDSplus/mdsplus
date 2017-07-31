@@ -40,7 +40,9 @@
 #  define NOEXCEPT noexcept
 # else
 #  define NOEXCEPT throw()
-#  define nullptr NULL
+#  ifndef nullptr
+#    define nullptr NULL
+#  endif
 # endif
 
 ///@}

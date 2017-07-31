@@ -182,7 +182,7 @@ int main(int argc, char const *argv[])
 	  hist = remove_history(where_history());
 	  if (hist) {
 	    if (hist->line)
-	      free(hist->line);
+	      free((void *)hist->line);
 	    free(hist);
 	  }
 
