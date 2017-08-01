@@ -103,7 +103,7 @@ then
     /usr/local/bin/packagesbuild  -v -F ${SRCDIR} ${WORKSPACE}/releasebld/MDSplus.pkgproj
     if [ "$?" == "0" ]
     then
-        mv ${WORKSPACE}releasebld/buildroot/MDSplus.pkg ${RELEASEDIR}/${BRANCH}/MDSplus${BNAME}-${VERS[0]}-${VERS[1]}-${VERS[2]}-osx.pkg 
+        mv ${WORKSPACE}/releasebld/buildroot/MDSplus.pkg ${RELEASEDIR}/${BRANCH}/MDSplus${BNAME}-${VERS[0]}-${VERS[1]}-${VERS[2]}-osx.pkg 
     fi
 #    /Developer/usr/bin/packagemaker \
 #	--title "MDSplus%(pkgflavor)s" \
