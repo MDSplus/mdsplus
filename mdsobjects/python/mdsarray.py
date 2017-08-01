@@ -217,7 +217,15 @@ class Array(_dat.Data):
         else:
             shape=[int(d.arsize/d.length),]
         if d.dtype == StringArray.dtype_id:
-            return StringArray(getNumpy(_N.dtype(('S',d.length)),_C.c_byte,d.arsize))
+            if d.length == 0:
+                strarr=''
+                for dim in shape:
+                    if dim > 0:
+                        strarr=[strarr]*dim
+                ans = StringArray(_N.array(strarr))
+            else:
+                ans = StringArray(getNumpy(_N.dtype(('S',d.length)),_C.c_byte,d.arsize))
+            return ans
         if d.dtype == _tre.TreeNode.dtype_id:
             d.dtype=Int32Array.dtype_id
             nids=getNumpy(_N.int32,_C.c_int32,int(d.arsize/d.length))
@@ -364,7 +372,8 @@ class StringArray(Array):
         elif not value.flags.writeable:
             value = value.copy()
         for i in _ver.xrange(len(value.flat)):
-            value.flat[i]=value.flat[i].ljust(value.itemsize)
+            vlen=len(value.flat[i])
+            value.flat[i]=value.flat[i].ljust(vlen)
         self._value = value
     @property
     def value(self):
