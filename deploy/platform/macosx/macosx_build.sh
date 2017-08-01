@@ -84,6 +84,7 @@ then
     ###
     MDSPLUS_DIR=${WORKSPACE}/releasebld/buildroot/usr/local/mdsplus
     mkdir -p ${MDSPLUS_DIR}
+    cp ${SRCDIR}/deploy/platform/macosx/MDSplus.pkgproj ${WORKSPACE}/releasebld/
     pushd ${WORKSPACE}/releasebld/
     ${SRCDIR}/configure \
 	    --prefix=${MDSPLUS_DIR} \
@@ -99,14 +100,19 @@ then
 	BNAME="-${BRANCH}"
     fi
     IFS='.' read -ra VERS <<< "${RELEASE_VERSION}"
-    /Developer/usr/bin/packagemaker \
-	--title "MDSplus%(pkgflavor)s" \
-	--version "%(major)d.%(minor)d.%(release)d" \
-	--scripts ${SRCDIR}/macosx/scripts \
-	--install-to "/" \
-	--target "10.5" \
-	-r ${WORKSPACE}/releasebld/buildroot -v -i "MDSplus${BNAME}" \
-	-o ${RELEASEDIR}/${BRANCH}/MDSplus${BNAME}-${VERS[0]}-${VERS[1]}-${VERS[2]}-osx.pkg
+    /usr/local/bin/packagesbuild  -v -F ${SRCDIR} ${WORKSPACE}/releasebld/MDSplus.pkgproj
+    if [ "$?" == "0" ]
+    then
+        mv ${WORKSPACE}/releasebld/buildroot/MDSplus.pkg ${RELEASEDIR}/${BRANCH}/MDSplus${BNAME}-${VERS[0]}-${VERS[1]}-${VERS[2]}-osx.pkg 
+    fi
+#    /Developer/usr/bin/packagemaker \
+#	--title "MDSplus%(pkgflavor)s" \
+#	--version "%(major)d.%(minor)d.%(release)d" \
+#	--scripts ${SRCDIR}/macosx/scripts \
+#	--install-to "/" \
+#	--target "10.5" \
+#	-r ${WORKSPACE}/releasebld/buildroot -v -i "MDSplus${BNAME}" \
+#	-o ${RELEASEDIR}/${BRANCH}/MDSplus${BNAME}-${VERS[0]}-${VERS[1]}-${VERS[2]}-osx.pkg
     if [ "$?" != "0" ]
     then
 	RED $COLOR
