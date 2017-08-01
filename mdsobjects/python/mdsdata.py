@@ -61,7 +61,7 @@ def TdiCompile(expression,*args,**kwargs):
 def TdiExecute(expression,*args,**kwargs):
     """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
     return _TdiShrFun(_TdiShr.TdiExecute,"Error executing",expression,*args,**kwargs)
-
+tdi=TdiExecute
 def TdiDecompile(expression,**kwargs):
     """Decompile a TDI expression. Format: TdiDecompile(tdi_expression)"""
     return _ver.tostr(_TdiShrFun(_TdiShr.TdiDecompile,"Error decompiling",expression,**kwargs))
