@@ -14563,6 +14563,52 @@ fi
 
  # selects particular envs for build:host
 
+  # Extract the first word of "winepath", so it can be a program name with args.
+set dummy winepath; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_HAVE_WINEPATH+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$HAVE_WINEPATH"; then
+  ac_cv_prog_HAVE_WINEPATH="$HAVE_WINEPATH" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_HAVE_WINEPATH="yes"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_HAVE_WINEPATH" && ac_cv_prog_HAVE_WINEPATH="no"
+fi
+fi
+HAVE_WINEPATH=$ac_cv_prog_HAVE_WINEPATH
+if test -n "$HAVE_WINEPATH"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_WINEPATH" >&5
+$as_echo "$HAVE_WINEPATH" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  if test "x$HAVE_WINEPATH" = xno; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: winepath command not found" >&5
+$as_echo "$as_me: WARNING: winepath command not found" >&2;}
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: winepath is required by wine to properly set the tests path" >&5
+$as_echo "$as_me: WARNING: winepath is required by wine to properly set the tests path" >&2;}
+fi
+
+
  LOG_DRIVER="\$(SHELL) \$(top_srcdir)/conf/test-driver"
  abs_srcdir=$(cd ${srcdir}; pwd)
 
@@ -14634,14 +14680,17 @@ esac
 
 # Check whether --with-winebottle was given.
 if test "${with_winebottle+set}" = set; then :
-  withval=$with_winebottle;
+  withval=$with_winebottle; { $as_echo "$as_me:${as_lineno-$LINENO}: using wine bottle: ${with_winebottle}" >&5
+$as_echo "$as_me: using wine bottle: ${with_winebottle}" >&6;}
 else
-  if ${winebottle+:} false; then :
+  if ${WINEPREFIX+:} false; then :
   with_winebottle="${WINEPREFIX}"
 else
   with_winebottle="\$(top_builddir)/${winebottle_name}"
 fi
 fi
+
+  WINEPREFIX=${with_winebottle}
 
 
     if ${HAVE_WINEBOOT+:} false; then :
@@ -14687,249 +14736,84 @@ fi
 
 fi
   if test "x$HAVE_WINEBOOT" = xyes; then :
-  if ${WINEPREFIX+:} false; then :
-  $(eval "WINEPREFIX=${WINEPREFIX}             WINEARCH=${WINEARCH}" wineboot -f -r)
+  # Creating bottle using wineboot
+	  # WINEDLLOVERRIDES prevents asking to install mono and geko here
+	  if test -d ${WINEPREFIX}; then :
+  $(eval WINEDLLOVERRIDES="mscoree,mshtml=" WINEPREFIX=${WINEPREFIX} WINEARCH=${WINEARCH} wineboot -f -r)
 else
-  $(eval "WINEPREFIX=$(pwd)/${winebottle_name} WINEARCH=${WINEARCH}" wineboot -f -i)
+  $(eval WINEDLLOVERRIDES="mscoree,mshtml=" WINEPREFIX=${WINEPREFIX} WINEARCH=${WINEARCH} wineboot -f -u)
 fi
-
-fi
-  WINEPREFIX=${with_winebottle}
-
-
-
-         { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
-$as_echo_n "checking for a sed that does not truncate output... " >&6; }
-if ${ac_cv_path_SED+:} false; then :
-  $as_echo_n "(cached) " >&6
 else
-            ac_script=s/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/
-     for ac_i in 1 2 3 4 5 6 7; do
-       ac_script="$ac_script$as_nl$ac_script"
-     done
-     echo "$ac_script" 2>/dev/null | sed 99q >conftest.sed
-     { ac_script=; unset ac_script;}
-     if test -z "$SED"; then
-  ac_path_SED_found=false
-  # Loop through the user's path and test for each of PROGNAME-LIST
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_prog in sed gsed; do
-    for ac_exec_ext in '' $ac_executable_extensions; do
-      ac_path_SED="$as_dir/$ac_prog$ac_exec_ext"
-      as_fn_executable_p "$ac_path_SED" || continue
-# Check for GNU ac_path_SED and select it if it is found.
-  # Check for GNU $ac_path_SED
-case `"$ac_path_SED" --version 2>&1` in
-*GNU*)
-  ac_cv_path_SED="$ac_path_SED" ac_path_SED_found=:;;
-*)
-  ac_count=0
-  $as_echo_n 0123456789 >"conftest.in"
-  while :
-  do
-    cat "conftest.in" "conftest.in" >"conftest.tmp"
-    mv "conftest.tmp" "conftest.in"
-    cp "conftest.in" "conftest.nl"
-    $as_echo '' >> "conftest.nl"
-    "$ac_path_SED" -f conftest.sed < "conftest.nl" >"conftest.out" 2>/dev/null || break
-    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
-    as_fn_arith $ac_count + 1 && ac_count=$as_val
-    if test $ac_count -gt ${ac_path_SED_max-0}; then
-      # Best one so far, save it but keep looking for a better one
-      ac_cv_path_SED="$ac_path_SED"
-      ac_path_SED_max=$ac_count
-    fi
-    # 10*(2^10) chars as input seems more than enough
-    test $ac_count -gt 10 && break
-  done
-  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
-esac
-
-      $ac_path_SED_found && break 3
-    done
-  done
-  done
-IFS=$as_save_IFS
-  if test -z "$ac_cv_path_SED"; then
-    as_fn_error $? "no acceptable sed could be found in \$PATH" "$LINENO" 5
-  fi
+  if test -d ${WINEPREFIX}; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: unable to update winebottle" >&5
+$as_echo "$as_me: WARNING: unable to update winebottle" >&2;}
 else
-  ac_cv_path_SED=$SED
+  as_fn_error $? "unable to create or find winebottle" "$LINENO" 5
 fi
 
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_SED" >&5
-$as_echo "$ac_cv_path_SED" >&6; }
- SED="$ac_cv_path_SED"
-  rm -f conftest.sed
-
-         { $as_echo "$as_me:${as_lineno-$LINENO}: checking for grep that handles long lines and -e" >&5
-$as_echo_n "checking for grep that handles long lines and -e... " >&6; }
-if ${ac_cv_path_GREP+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -z "$GREP"; then
-  ac_path_GREP_found=false
-  # Loop through the user's path and test for each of PROGNAME-LIST
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH$PATH_SEPARATOR/usr/xpg4/bin
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_prog in grep ggrep; do
-    for ac_exec_ext in '' $ac_executable_extensions; do
-      ac_path_GREP="$as_dir/$ac_prog$ac_exec_ext"
-      as_fn_executable_p "$ac_path_GREP" || continue
-# Check for GNU ac_path_GREP and select it if it is found.
-  # Check for GNU $ac_path_GREP
-case `"$ac_path_GREP" --version 2>&1` in
-*GNU*)
-  ac_cv_path_GREP="$ac_path_GREP" ac_path_GREP_found=:;;
-*)
-  ac_count=0
-  $as_echo_n 0123456789 >"conftest.in"
-  while :
-  do
-    cat "conftest.in" "conftest.in" >"conftest.tmp"
-    mv "conftest.tmp" "conftest.in"
-    cp "conftest.in" "conftest.nl"
-    $as_echo 'GREP' >> "conftest.nl"
-    "$ac_path_GREP" -e 'GREP$' -e '-(cannot match)-' < "conftest.nl" >"conftest.out" 2>/dev/null || break
-    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
-    as_fn_arith $ac_count + 1 && ac_count=$as_val
-    if test $ac_count -gt ${ac_path_GREP_max-0}; then
-      # Best one so far, save it but keep looking for a better one
-      ac_cv_path_GREP="$ac_path_GREP"
-      ac_path_GREP_max=$ac_count
-    fi
-    # 10*(2^10) chars as input seems more than enough
-    test $ac_count -gt 10 && break
-  done
-  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
-esac
-
-      $ac_path_GREP_found && break 3
-    done
-  done
-  done
-IFS=$as_save_IFS
-  if test -z "$ac_cv_path_GREP"; then
-    as_fn_error $? "no acceptable grep could be found in $PATH$PATH_SEPARATOR/usr/xpg4/bin" "$LINENO" 5
-  fi
-else
-  ac_cv_path_GREP=$GREP
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_GREP" >&5
-$as_echo "$ac_cv_path_GREP" >&6; }
- GREP="$ac_cv_path_GREP"
 
 
-         _libs=$(${CC} --print-search-dir | \
-           ${GREP} "libraries:" | \
-           ${SED} 's/^libraries: =//' | \
-           ${SED} 's/:/ /g')
-         as_fn_append _libs " "
 
-         _prog=$(${CC} --print-search-dir | \
-           ${GREP} "programs:" | \
-           ${SED} 's/^programs: =//' | \
-           ${SED} 's/:/ /g')
-         as_fn_append _libs "${_prog} "
 
-                  _sysroot=$(${CC} --print-sysroot)
+
+		 _libs=$(${CC} --print-search-dir | \
+		   ${GREP} "libraries:" | \
+		   ${SED} 's/^libraries: =//' | \
+		   ${SED} 's/:/ /g')
+		 as_fn_append _libs " "
+
+		 _prog=$(${CC} --print-search-dir | \
+		   ${GREP} "programs:" | \
+		   ${SED} 's/^programs: =//' | \
+		   ${SED} 's/:/ /g')
+		 as_fn_append _libs "${_prog} "
+
+		          _sysroot=$(${CC} --print-sysroot)
          as_fn_append _libs "${_sysroot}/mingw/bin "
          as_fn_append _libs "${_sysroot}/mingw/lib "
          as_fn_append _libs ${MAKESHLIBDIR}
 
-         WINEPATH=
-                  if ${HAVE_WINEPATH+:} false; then :
+		 WINEPATH=
+
+
+ # reset variable WINEPATH
+ if ${WINEPATH+:} false; then :
 
 else
-  # Extract the first word of "winepath", so it can be a program name with args.
-set dummy winepath; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_HAVE_WINEPATH+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$HAVE_WINEPATH"; then
-  ac_cv_prog_HAVE_WINEPATH="$HAVE_WINEPATH" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_HAVE_WINEPATH="yes"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_prog_HAVE_WINEPATH" && ac_cv_prog_HAVE_WINEPATH="no"
+  WINEPATH=
 fi
-fi
-HAVE_WINEPATH=$ac_cv_prog_HAVE_WINEPATH
-if test -n "$HAVE_WINEPATH"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_WINEPATH" >&5
-$as_echo "$HAVE_WINEPATH" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
+ if test "x$HAVE_WINEPATH" = xyes; then :
+  for _i in ${_libs}; do
+   # AS_VAR_SET([_dir],[$(eval cd $_i; pwd)])
+   # AS_VAR_APPEND([WINEPATH],["$(eval winepath -w $_i 2>/dev/null);"]);
+   as_fn_append WINEPATH "\$(shell winepath -w $_i 2>/dev/null);";
+   done
 fi
 
 
-fi
 
-         case ${HAVE_WINEPATH} in #(
-  yes|Yes|YES|Y|y) :
-    for _i in $_libs; do
-          as_fn_append WINEPATH "\$(shell winepath -w $_i 2>/dev/null);";
-         done
-          ;; #(
-  no|No|NO|N|n) :
-     ;; #(
-  *) :
-     ;; #(
-  *) :
-     ;;
-esac
-
-
-
-      PYTHONHOME="\$(shell winepath -w /python27 2>/dev/null)"
-      as_fn_append TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
-      as_fn_append TESTS_ENVIRONMENT "WINEDEBUG=-all "
-      as_fn_append TESTS_ENVIRONMENT "MDS_PATH='\$(shell winepath -w \$(abs_top_srcdir)/tdi 2>/dev/null)' "
-      as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR='\$(shell winepath -w \$(abs_top_srcdir) 2>/dev/null)' "
+      PYTHONHOME="$(eval winepath -w /python27 2>/dev/null)"
+	  as_fn_append TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
+	  as_fn_append TESTS_ENVIRONMENT "WINEDEBUG=-all "
+	  as_fn_append TESTS_ENVIRONMENT "MDS_PATH='$(eval winepath -w ${srcdir}/tdi 2>/dev/null)' "
+	  as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR='$(eval winepath -w ${srcdir} 2>/dev/null)' "
       if test "x$WINEARCH" = xwin64; then :
-
-         as_fn_append WINEPATH "${PYTHONHOME}"
-         as_fn_append TESTS_ENVIRONMENT "PYTHONHOME='${PYTHONHOME}' "
-         as_fn_append TESTS_ENVIRONMENT "PYTHONPATH='%PYTHONHOME%\\Lib;%PYTHONHOME%\\Lib\\site-packages;\$(shell winepath -w \$(abs_top_srcdir)/testing 2>/dev/null)' "
-         as_fn_append TESTS_ENVIRONMENT "PyLib='python27' "
-         PYTHON="\$(abs_top_srcdir)/testing/winpython python"
-         as_fn_append PY_LOG_COMPILER "\${PYTHON} -B \$(abs_top_srcdir)/testing/testing.py"
-
+  # WINEARCH win64
+		 as_fn_append WINEPATH "${PYTHONHOME}"
+		 as_fn_append TESTS_ENVIRONMENT "PYTHONHOME='${PYTHONHOME}' "
+		 as_fn_append TESTS_ENVIRONMENT "PYTHONPATH='%PYTHONHOME%\\Lib;%PYTHONHOME%\\Lib\\site-packages;$(eval winepath -w ${srcdir}/testing 2>/dev/null)' "
+		 as_fn_append TESTS_ENVIRONMENT "PyLib='python27' "
+		 PYTHON="\$(abs_top_srcdir)/testing/winpython python"
+		 as_fn_append PY_LOG_COMPILER "\${PYTHON} -B \$(abs_top_srcdir)/testing/testing.py"
 else
-
+  # WINEARCH win32
 
  PY_LOG_COMPILER="sh -c \"exit 77\"; :"
 
-
-
 fi
-         as_fn_append TESTS_ENVIRONMENT "WINEPATH='${WINEPATH}' "
+	  # any wine flavor
+	  as_fn_append TESTS_ENVIRONMENT "WINEPATH='${WINEPATH}' "
       as_fn_append LOG_COMPILER "wine "
       # WINE Valgrind tuning ..
       # see: http://wiki.winehq.org/WineAndValgrind
@@ -14972,8 +14856,7 @@ fi
  # OTHER
  #
  *) :
-
-   # in all other platform tests are disabled for now
+     # in all other platform tests are disabled for now
    ENABLE_TESTS=no
   ;; #(
   *) :
@@ -14981,7 +14864,6 @@ fi
 esac
 
 # MACOS: add --dsymutil=yes to valgrind
-
 
 # Set ENABLE_TESTS
 
@@ -14992,7 +14874,6 @@ else
   ENABLE_TESTS_TRUE='#'
   ENABLE_TESTS_FALSE=
 fi
-
 
 
 

@@ -5,7 +5,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 {
     BEGIN_TESTING(fork success);
 #   ifdef _WIN32
-    SKIP_TEST;
+    SKIP_TEST("Skipping fork tests under wine");
 #   endif    
     TEST0(0);
     TEST1(1);
