@@ -79,7 +79,6 @@ class _GCLock(object):
         with _GCLock._lock:
             _gc.disable()
             _GCLock._cnt+=1
-            ctx = _TreeCtx.getDbid()
     def release(self):
         with _GCLock._lock:
             _GCLock._cnt-=1
@@ -979,7 +978,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
     def ctx(self,ctx):
         if self.tree is None: self.tree = Tree(ctx)
 
-    def __new__(cls,nid,tree=None,head=None):
+    def __new__(cls,nid,tree=None,head=None,*a,**kw):
         """Create class instance. Initialize part_dict class attribute if necessary.
         @param node: Node of device
         @type node: TreeNode
@@ -1000,7 +999,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
                 pass
         return node
 
-    def __init__(self,nid,tree=None,head=None):
+    def __init__(self,nid,tree=None,head=None,*a,**kw):
         """Initialze TreeNode
         @param n: Index of the node in the tree.
         @type n: int
@@ -2547,7 +2546,7 @@ class TreePath(TreeNode): # HINT: TreePath begin
     """Class to represent an MDSplus node reference (path)."""
     dtype_id = 193
 
-    def __init__(self,path,*tree):
+    def __init__(self,path,*tree,**kw):
         if self is path: return
         self.tree_path=str(path);
         if len(tree)<1 or not isinstance(tree[0],(Tree,)):
@@ -2583,7 +2582,7 @@ class TreePath(TreeNode): # HINT: TreePath begin
 
 
 class TreeNodeArray(_arr.Int32Array): # HINT: TreeNodeArray begin
-    def __init__(self,nids,*tree):
+    def __init__(self,nids,*tree,**kw):
         if self is nids: return
         if isinstance(nids,_C.Array):
             try:
@@ -2836,8 +2835,7 @@ class Device(TreeNode): # HINT: Device begin
                 return device
         @staticmethod
         def _debug(s,p=tuple()):
-            from sys import stdout as _stdout
-            _stdout.write(s % p)
+            _sys._stdout.write(s % p)
     else:
         @staticmethod
         def _debug(s,p=tuple()):
@@ -2864,10 +2862,10 @@ class Device(TreeNode): # HINT: Device begin
             Device._debug(' failed: %s\n'%exc)
     """ /debug safe import """
     parts = []
-    par_names = tuple()
+    part_names = tuple()
     part_dict = {}
-    __initialized = False
-    def __new__(cls,node,tree=None,head=0):
+    __initialized = set()
+    def __new__(cls,node,tree=None,head=0,*a,**kw):
         """Create class instance. Initialize part_dict class attribute if necessary.
         @param node: Node of device
         @type node: TreeNode
@@ -2880,17 +2878,17 @@ class Device(TreeNode): # HINT: Device begin
                 return head.getDevice(head)
             except:
                 raise TypeError("Cannot create instances of Device class")
-        elif not cls.__initialized:
+        elif not cls in cls.__initialized:
             cls.part_names = tuple(elt['path'] for elt in cls.parts)
             cls.part_dict = {} # we need to reinit dict to get a private one
             for i,partname in enumerate(cls.part_names):
                 try:
                     cls.part_dict[partname[1:].lower().replace(':','_').replace('.','_')]=i+1
                 except Exception as ex: print(ex)
-            cls.__initialized = True
+            cls.__initialized.add(cls)
         return super(Device,cls).__new__(cls,node,tree,head)
 
-    def __init__(self,node,tree=None,head=0):
+    def __init__(self,node,tree=None,head=0,*a,**kw):
         """Initialize a Device instance
         @param node: Conglomerate node of this device
         @type node: TreeNode
@@ -2975,17 +2973,21 @@ class Device(TreeNode): # HINT: Device begin
         for elt in cls.parts:  # first add all nodes
             node=head.addNode(elt['path'],elt['type'])
         for elt in cls.parts:  # then you can reference them in valueExpr
-            node=head.getNode(elt['path'])
-            if 'value' in elt:
-                if Device.debug: print(node,node.usage,elt['value'])
-                node.record = elt['value']
-            elif 'valueExpr' in elt:
-                glob['node'] = node
-                if Device.debug: print(node,node.usage,elt['valueExpr'])
-                node.record = eval(elt['valueExpr'], glob)
-            if 'options' in elt:
-                for option in elt['options']:
-                    node.__setattr__(option,True)
+            try:
+                node=head.getNode(elt['path'])
+                if 'value' in elt:
+                    if Device.debug: print(node,node.usage,elt['value'])
+                    node.record = elt['value']
+                elif 'valueExpr' in elt:
+                    glob['node'] = node
+                    if Device.debug: print(node,node.usage,elt['valueExpr'])
+                    node.record = eval(elt['valueExpr'], glob)
+                if 'options' in elt:
+                    for option in elt['options']:
+                        node.__setattr__(option,True)
+            except:
+                _sys.stderr.write('ERROR: %s\n'%str(elt))
+                raise
         _TreeShr._TreeEndConglomerate(tree.ctx)
         return head
 

@@ -2691,7 +2691,7 @@ JNIEXPORT jint JNICALL Java_MDSplus_TreeNode_addDevice
     (JNIEnv * env, jclass cls __attribute__ ((unused)), jint nid, jint ctx1, jint ctx2, jstring jname, jstring jtype) {
   const char *name;
   const char *type;
-  int status, newNid, defNid = -1;
+  int status, newNid=-1, defNid = -1;
   void *ctx = getCtx(ctx1, ctx2);
 
   name = (*env)->GetStringUTFChars(env, jname, 0);
