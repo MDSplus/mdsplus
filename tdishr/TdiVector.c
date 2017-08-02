@@ -166,6 +166,11 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
       status = TdiConvert((*pdat)[j].pointer, &arr MDS_END_ARG);
       arr.pointer += arr.arsize;
     }
+    if (arr.length == 0 && arr.dtype == DTYPE_T && arr.dimct == 1) {
+      arr.aflags.coeff = 1;
+      arr.m[0] = narg;
+      status = MdsCopyDxXd((struct descriptor *)&arr, out_ptr);
+    }
   }
 
 	/*************************

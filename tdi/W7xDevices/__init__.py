@@ -27,11 +27,12 @@ try:
 except:
     __version__='Unknown'
 
-def _mimport(filename,name=None,local=locals()):
+def _mimport(filename,names=[],local=locals()):
     from MDSplus import Device
-    Device._mimport(globals(),local,filename,name)
+    for name in names:
+        Device._mimport(globals(),local,filename,name)
 
-_mimport('acq425','ACQ425')
-_mimport('acq480','ACQ480')
-_mimport('bnc845','BNC845')
-_mimport('qc9200','QC9200')
+_mimport('acq4xx',['ACQ1001','ACQ1002','ACQ2006'])
+_mimport('acq4xx',['ACQ425'])
+_mimport('bnc845',['BNC845'])
+_mimport('qc9200',['QC9200'])

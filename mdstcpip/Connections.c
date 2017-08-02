@@ -9,8 +9,9 @@
 
 static Connection *ConnectionList = 0;
 static pthread_mutex_t connection_mutex = PTHREAD_MUTEX_INITIALIZER;
-#define CONNECTIONLIST_LOCK pthread_mutex_lock(&connection_mutex)
-#define CONNECTIONLIST_UNLOCK pthread_mutex_unlock(&connection_mutex)
+static void UnlockConnection(){  pthread_mutex_unlock(&connection_mutex); }
+#define CONNECTIONLIST_LOCK   pthread_mutex_lock(&connection_mutex);pthread_cleanup_push(UnlockConnection, NULL);
+#define CONNECTIONLIST_UNLOCK pthread_cleanup_pop(1);
 
 Connection *FindConnection(int id, Connection ** prev){
   Connection *c = 0, *p;

@@ -6,7 +6,7 @@ from unittest import TestCase,TestSuite
 from MDSplus import Data
 
 
-class simulateSegfault(TestCase):
+class Tests(TestCase):
 
     def generateSegFault(self):
         try:
@@ -27,11 +27,11 @@ class simulateSegfault(TestCase):
         return map(cls,cls.getTests())
 
 def suite():
-    return TestSuite(dclTests.getTestCases())
+    return TestSuite(Tests.getTestCases())
 
 def run():
     from unittest import TextTestRunner
-    TextTestRunner().run(suite())
+    TextTestRunner(verbosity=2).run(suite())
 
 if __name__=='__main__':
     import sys

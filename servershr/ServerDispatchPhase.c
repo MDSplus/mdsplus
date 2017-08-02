@@ -99,12 +99,11 @@ STATIC_THREADSAFE char *Monitor = 0;
 STATIC_THREADSAFE int first_s;
 STATIC_THREADSAFE int last_s;
 
-STATIC_THREADSAFE pthread_cond_t JobWaitCondition = PTHREAD_COND_INITIALIZER;
-STATIC_THREADSAFE pthread_mutex_t JobWaitMutex = PTHREAD_MUTEX_INITIALIZER;
-STATIC_THREADSAFE pthread_mutex_t wake_send_monitor_mutex = PTHREAD_MUTEX_INITIALIZER;
-STATIC_THREADSAFE pthread_cond_t wake_send_monitor_cond = PTHREAD_COND_INITIALIZER;
-STATIC_THREADSAFE pthread_mutex_t wake_completed_mutex = PTHREAD_MUTEX_INITIALIZER;
-STATIC_THREADSAFE pthread_cond_t wake_completed_cond = PTHREAD_COND_INITIALIZER;
+
+STATIC_THREADSAFE Condition JobWaitC = CONDITION_INITIALIZER;
+STATIC_THREADSAFE Condition SendMonitorC = CONDITION_INITIALIZER;
+STATIC_THREADSAFE Condition CompletedC = CONDITION_INITIALIZER;
+
 STATIC_THREADSAFE pthread_mutex_t send_monitor_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
 STATIC_THREADSAFE pthread_mutex_t completed_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -237,9 +236,7 @@ STATIC_ROUTINE void ActionDone(int idx){
     }UNLOCK_ACTION(idx);
     }UNLOCK_TABLE;
   }
-  pthread_mutex_lock(&JobWaitMutex);
-  pthread_cond_signal(&JobWaitCondition);
-  pthread_mutex_unlock(&JobWaitMutex);
+  CONDITION_SET(&JobWaitC);
 }
 
 STATIC_ROUTINE void Before(int idx){
@@ -388,7 +385,7 @@ STATIC_ROUTINE void RecordStatus(int s, int e)
 
 STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g, int first_c, int last_c){
   int c_status = C_OK;
-  pthread_mutex_lock(&JobWaitMutex);
+  _CONDITION_LOCK(&JobWaitC);
   struct timespec tp;
   clock_gettime(CLOCK_REALTIME, &tp);
   int g,c = 1;
@@ -401,13 +398,13 @@ STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g, int first_c
     PRINT_ACTIONS;
 #endif
     tp.tv_sec++;
-    c_status = pthread_cond_timedwait(&JobWaitCondition, &JobWaitMutex, &tp);
+    c_status = pthread_cond_timedwait(&JobWaitC.cond, &JobWaitC.mutex, &tp);
 #if defined(_DECTHREADS_) && (_DECTHREADS_ == 1)
     if (c_status == -1 && errno == 11)
       c_status = ETIMEDOUT;
 #endif
   }
-  pthread_mutex_unlock(&JobWaitMutex);
+  _CONDITION_UNLOCK(&JobWaitC);
 }
 
 STATIC_ROUTINE char *DetailProc(int full){
@@ -588,20 +585,11 @@ STATIC_ROUTINE void Dispatch(int i){
 }
 
 STATIC_ROUTINE void WakeCompletedActionQueue(){
-  pthread_mutex_lock(&wake_completed_mutex);
-  pthread_cond_signal(&wake_completed_cond);
-  pthread_mutex_unlock(&wake_completed_mutex);
+  CONDITION_SET(&CompletedC);
 }
 
 STATIC_ROUTINE void WaitForActionDoneQueue(){
-  pthread_mutex_lock(&wake_completed_mutex);
-  {
-    struct timespec tp;
-    clock_gettime(CLOCK_REALTIME, &tp);
-    tp.tv_sec++;
-    pthread_cond_timedwait(&wake_completed_cond, &wake_completed_mutex, &tp);
-  }
-  pthread_mutex_unlock(&wake_completed_mutex);
+  CONDITION_WAIT_1SEC(&CompletedC);
 }
 
 STATIC_ROUTINE void QueueCompletedAction(int i)
@@ -638,20 +626,20 @@ STATIC_ROUTINE int DequeueCompletedAction(int *i)
     }
   }
   *i = doneAction;
-  return 1;
+  return B_TRUE;
 }
 
 
-STATIC_THREADSAFE Condition ActionDoneRunning = CONDITION_INITIALIZER;
+STATIC_THREADSAFE Condition ActionDoneRunningC = CONDITION_INITIALIZER;
 
 STATIC_ROUTINE void ActionDoneExit(){
-  CONDITION_RESET(&ActionDoneRunning);
+  CONDITION_RESET(&ActionDoneRunningC);
 }
 
 STATIC_ROUTINE void ActionDoneThread(){
   int i;
   pthread_cleanup_push(ActionDoneExit, 0);
-  CONDITION_SET(&ActionDoneRunning);
+  CONDITION_SET(&ActionDoneRunningC);
   while (DequeueCompletedAction(&i))
     ActionDone(i);
   pthread_cleanup_pop(1);
@@ -662,25 +650,18 @@ STATIC_ROUTINE void DoActionDone(int i){
   INIT_STATUS;
   pthread_t thread;
   QueueCompletedAction(i); /***** must be done before starting thread ****/
-  CONDITION_START_THREAD(&ActionDoneRunning, thread, , ActionDoneThread, NULL);
+  CONDITION_START_THREAD(&ActionDoneRunningC, thread, , ActionDoneThread, NULL);
   if STATUS_NOT_OK perror("DoActionDone: pthread creation failed");
 }
 
-STATIC_THREADSAFE Condition SendMonitorRunning = CONDITION_INITIALIZER;
+STATIC_THREADSAFE Condition SendMonitorRunningC = CONDITION_INITIALIZER;
 
 STATIC_ROUTINE void WakeSendMonitorQueue(){
-  pthread_mutex_lock(&wake_send_monitor_mutex);
-  pthread_cond_signal(&wake_send_monitor_cond);
-  pthread_mutex_unlock(&wake_send_monitor_mutex);
+  CONDITION_SET(&SendMonitorC);
 }
 
 STATIC_ROUTINE void WaitForSendMonitorQueue(){
-  pthread_mutex_lock(&wake_send_monitor_mutex);
-  struct timespec tp;
-  clock_gettime(CLOCK_REALTIME, &tp);
-  tp.tv_sec++;
-  pthread_cond_timedwait(&wake_send_monitor_cond, &wake_send_monitor_mutex, &tp);
-  pthread_mutex_unlock(&wake_send_monitor_mutex);
+  CONDITION_WAIT_1SEC(&SendMonitorC);
 }
 
 STATIC_ROUTINE void QueueSendMonitor(int mode, int i){
@@ -720,18 +701,18 @@ STATIC_ROUTINE int DequeueSendMonitor(int *mode_out, int *i)
   }
   *i = idx;
   *mode_out = mode;
-  return MDSplusSUCCESS;
+  return B_TRUE;
 }
 
 STATIC_ROUTINE void SendMonitorExit(){
-  CONDITION_RESET(&SendMonitorRunning);
+  CONDITION_RESET(&SendMonitorRunningC);
 }
 
 STATIC_ROUTINE void SendMonitorThread(){
   int i;
   int mode;
   pthread_cleanup_push(SendMonitorExit, NULL);
-  CONDITION_SET(&SendMonitorRunning);
+  CONDITION_SET(&SendMonitorRunningC);
   while (DequeueSendMonitor(&mode, &i))
     SendMonitor(mode, i);
   pthread_cleanup_pop(1);
@@ -742,6 +723,6 @@ STATIC_ROUTINE void DoSendMonitor(int mode, int idx){
   INIT_STATUS;
   pthread_t thread;
   QueueSendMonitor(mode, idx);/***** must be done before starting thread ****/
-  CONDITION_START_THREAD(&SendMonitorRunning, thread, , SendMonitorThread,NULL);
+  CONDITION_START_THREAD(&SendMonitorRunningC, thread, , SendMonitorThread,NULL);
   if STATUS_NOT_OK perror("DoSendMonitor: pthread creation failed");
 }

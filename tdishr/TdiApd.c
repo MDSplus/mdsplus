@@ -55,8 +55,8 @@ int UnwrapComma(int narg, struct descriptor *list[], int *nout_p, struct descrip
   return status;
 }
 
-int Tdi1Apd(char dtype, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
-  struct descriptor_a arr = { sizeof(void*), dtype, CLASS_APD, (void*)0, 0, 0, {0}, 1, 0};
+int Tdi1Apd(int dtype, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+  struct descriptor_a arr = { sizeof(void*), (unsigned char)(dtype & 0xff), CLASS_APD, (void*)0, 0, 0, {0}, 1, 0};
   if (narg==0) return MdsCopyDxXd((struct descriptor*)&arr, out_ptr);
   struct descriptor **alist, **olist;
   int osize, asize, alen;

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <mdsdcl_messages.h>
 #include <sys/time.h>
 #ifdef HAVE_SYS_RESOURCE_H
@@ -204,7 +205,7 @@ EXPORT int mdsdcl_set_verify(void *ctx, char **error __attribute__ ((unused)), c
 	 ****************************************************************/
 EXPORT int mdsdcl_define_symbol(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
-  char *name, *value;
+  char *name=NULL, *value=NULL;
   int status = cli_get_value(ctx, "SYMBOL", &name);
   if STATUS_NOT_OK {
     *error = malloc(100);
@@ -233,22 +234,29 @@ EXPORT int mdsdcl_define_symbol(void *ctx, char **error, char **output __attribu
   return (status);
 }
 
-EXPORT int mdsdcl_env(void *ctx, char **error, char **output __attribute__ ((unused)))
-{
-  int status;
+EXPORT int mdsdcl_env(void *ctx, char **error, char **output __attribute__ ((unused))){
   char *name, *value;
-  status = cli_get_value(ctx, "P1", &name);
+  int status = cli_get_value(ctx, "P1", &name);
   for (value=name ; value[0] && value[0]!='=' ; value++ );
-  value[0] = '\0'; value++;
-  fprintf(stderr, "'%s'='%s'\n",name,value);
-  status = setenv(name,value,1);
-  if (status) {
-    *error = malloc(100);
-    perror("error from putenv");
-    sprintf(*error, "Attempting putenv(\"%s\")\n", value);
-    status = MdsdclERROR;
-  } else
-    status = MdsdclSUCCESS;
+  if (value[0]=='\0') {
+      value = getenv(name);
+      if (value){
+         fprintf(stderr, "'%s'='%s'\n",name,value);
+         //free(value);
+      } else
+         fprintf(stderr, "'%s'= not defined\n",name);
+  } else {
+    value[0] = '\0'; value++;
+    fprintf(stderr, "'%s'='%s'\n",name,value);
+    status = setenv(name,value,1);
+    if (status) {
+      *error = malloc(100);
+      perror("error from putenv");
+      sprintf(*error, "Attempting putenv(\"%s\")\n", value);
+      status = MdsdclERROR;
+    } else
+      status = MdsdclSUCCESS;
+  }
   if (name)
     free(name);
   return (status);

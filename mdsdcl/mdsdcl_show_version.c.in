@@ -2,7 +2,6 @@
 #include <config.h>
 #include <string.h>
 #include <stdio.h>
-#include <malloc.h>
 
 EXPORT int mdsdcl_show_version(void *ctx __attribute__ ((unused)), char **error __attribute__ ((unused)), char **output)
 {

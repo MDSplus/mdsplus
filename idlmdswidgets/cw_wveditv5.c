@@ -11,7 +11,6 @@
 #include <X11/Xatom.h>
 #include <X11/cursorfont.h>
 #include <Xm/Text.h>
-#include <malloc.h>
 #include "export.h"
 
 enum callback_id { CB_UNKNOWN, CB_AUTOSCALE, CB_CROSSHAIRS, CB_LIMITS, CB_MOVE, CB_STRETCH,

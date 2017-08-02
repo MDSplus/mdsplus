@@ -3,7 +3,7 @@
 #define B_TRUE  1
 #define B_FALSE 0
 #define C_OK    0
-#define C_ERROR 1
+#define C_ERROR -1
 #define IS_OK(status)     ((status) & 1)
 #define STATUS_OK         IS_OK(status)
 #define IS_NOT_OK(status) (!IS_OK(status))

@@ -6,6 +6,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
+#include <status.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -22,7 +23,7 @@ static int tunnel_disconnect(int id);
 static int tunnel_connect(int id, char *protocol, char *host);
 static int tunnel_listen(int argc, char **argv);
 static IoRoutines tunnel_routines =
-    { tunnel_connect, tunnel_send, tunnel_recv, 0, tunnel_listen, 0, 0, tunnel_disconnect };
+    { tunnel_connect, tunnel_send, tunnel_recv, NULL, tunnel_listen, NULL, NULL, tunnel_disconnect, NULL};
 
 EXPORT IoRoutines *Io()
 {
@@ -60,7 +61,7 @@ static int tunnel_disconnect(int id)
     CloseHandle(p->stdin_pipe);
     CloseHandle(p->stdout_pipe);
   }
-  return 0;
+  return C_OK;
 }
 #else
 static int tunnel_disconnect(int id)
@@ -72,7 +73,7 @@ static int tunnel_disconnect(int id)
     close(p->stdin_pipe);
     close(p->stdout_pipe);
   }
-  return 0;
+  return C_OK;
 }
 #endif
 
@@ -182,11 +183,11 @@ static int tunnel_connect(int id, char *protocol, char *host){
     CloseHandle(piProcInfo.hProcess);
     CloseHandle(piProcInfo.hThread);
     SetConnectionInfo(id, "tunnel", 0, &p, sizeof(p));
-    status = 1;
+    status = C_OK;
   } else {
     DWORD errstatus = GetLastError();
     fprintf(stderr,"Error in CreateProcees, error: %lu\n",errstatus);
-    status = 0;
+    status = C_ERROR;
   }
   return status;
 #else
@@ -209,14 +210,14 @@ static int tunnel_connect(int id, char *protocol, char *host){
     dup2(pipe_fd1[1], 1);
     close(pipe_fd1[1]);
     execvp(arglist[0], arglist);
-    exit(1);
+    exit(C_ERROR);
   } else if (pid == -1) {
     fprintf(stderr, "Error %d from fork()\n", errno);
     close(pipe_fd1[0]);
     close(pipe_fd1[1]);
     close(pipe_fd2[0]);
     close(pipe_fd2[1]);
-    return (-1);
+    return C_ERROR;
   } else {
     struct TUNNEL_PIPES p;
     p.stdin_pipe = pipe_fd2[1];
@@ -227,13 +228,13 @@ static int tunnel_connect(int id, char *protocol, char *host){
     signal(SIGCHLD, ChildSignalHandler);
     SetConnectionInfo(id, "tunnel", p.stdout_pipe, &p, sizeof(p));
   }
-  return 0;
+  return C_OK;
 #endif
 }
 
 static int tunnel_listen(int argc __attribute__ ((unused)), char **argv __attribute__ ((unused))){
 #ifdef _WIN32
-  return 0;
+  return C_OK;
 #else
   struct TUNNEL_PIPES p = { 1, 0, 0 };
   int id;
@@ -247,6 +248,6 @@ static int tunnel_listen(int argc __attribute__ ((unused)), char **argv __attrib
   if (username)
     free(username);
   while (DoMessage(id) != 0) ;
-  return 1;
+  return C_ERROR;
 #endif
 }

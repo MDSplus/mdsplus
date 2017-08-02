@@ -352,7 +352,7 @@ LD_LDSHARE=""
 IDL_LD=""
 LIBPRE="lib"
 
-CFLAGS="$CFLAGS $GCCPROF -Wno-clobbered -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
+CFLAGS="$CFLAGS $GCCPROF -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
 CPPFLAGS="-I\${top_srcdir}/include -I\${top_builddir}/include $CPPFLAGS"
 
 if test "$exec_prefix" = "NONE" -a "$prefix" = "NONE"
@@ -378,13 +378,12 @@ FOR_LDFLAGS=""
 SHARETYPE=".so"
 
 THREAD="-pthread"
-AC_SUBST([THREAD])
 MITDEVICESIO_TARGETS=""
 case "$host" in
 *mingw*)
        IDLMDSEVENT=""
        LIBPRE=""
-       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields";
+       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields -Wno-clobbered ";
        LD="$CXX -static-libgcc"
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="$FC"
@@ -418,7 +417,7 @@ case "$host" in
        jni_md_inc_dir="$with_jdk/include/linux";;
 
 *86*linux*)
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing -Wno-clobbered ";
        FORLD="$FC";
        LD="gcc"
        if ( echo $host| grep 64 > /dev/null )
@@ -479,7 +478,7 @@ case "$host" in
        SIZEOF_LONG=4;
        SIZEOF_LONG_LONG=8;
        D64="";
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing -Wno-clobbered";
        if (test "$FC" = "gfortran"); then
          FCFLAGS="$FCFLAGS -fno-range-check";
          FORLD="$FC"
@@ -500,7 +499,7 @@ case "$host" in
        jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
-*linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing";
+*linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing -Wno-clobbered";
        FCFLAGS="$FCFLAGS -fno-range-check";
        FORLD="$FC"
        FOR_LDFLAGS="-lg2c"
@@ -520,8 +519,9 @@ case "$host" in
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X";
+       THREAD=""
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic";
+       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic -Wno-error=unused-command-line-argument -Wno-missing-field-initializers -Wno-parentheses-equality";
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="gfortran"
        FOR_LDFLAGS="-shared"
@@ -531,9 +531,9 @@ case "$host" in
        LD_LDSHARE="";
        LDARC="";
        LD_LDARC="";
-       UILPATH=/usr/OpenMotif/bin;
-       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L/usr/OpenMotif/lib"
-       MOTIF_LD_LDARC="-multiply_defined suppress -L/usr/OpenMotif/lib"
+       UILPATH=${OPENMOTIF}/bin;
+       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L${OPENMOTIF}/lib"
+       MOTIF_LD_LDARC="-multiply_defined suppress -L${OPENMOTIF}/lib"
        dnl LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -prebind \
 	   dnl -seg_addr_table_filename \$(@F) -seg_addr_table ../macosx/bindtable -Wl,-single_module";
 	   LINKSHARED="$LDFLAGS -shared -arch i386 -arch x86_64 -install_name @loader_path/../lib/\$(@F) -headerpad_max_install_names";
@@ -931,8 +931,8 @@ AC_C_BIGENDIAN
 
 AC_PATH_XTRA
 AS_CASE([$host],
-        [*darwin*|*apple*], [X_CFLAGS+=" -I/usr/OpenMotif/include"
-                             X_LIBS+=" -L/usr/OpenMotif/lib"])
+        [*darwin*|*apple*], [X_CFLAGS+=" -I${OPENMOTIF}/include"
+                             X_LIBS+=" -L${OPENMOTIF}/lib"])
 AS_CASE([$host],[arm*gnueabihf],[X_CFLAGS=""])
 #FIXME: Change the above to AS_VAR_APPEND with a new autoconf version (2.64+?)
 
@@ -1274,6 +1274,7 @@ AC_SUBST(SYBASE_LIB)
 AC_SUBST([TARGET_ARCH])
 AC_SUBST(TAR_EXCLUDE)
 AC_SUBST(TDIC)
+AC_SUBST([THREAD])
 AC_SUBST(UIL)
 AC_SUBST(XM_LIBS)
 AC_SUBST(uiddir)

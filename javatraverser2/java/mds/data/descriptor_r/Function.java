@@ -95,7 +95,7 @@ public class Function extends Descriptor_R<Short>{
 
     public static Function deserialize(final ByteBuffer b) throws MdsException {
         final short opcode = b.getShort(b.getInt(Descriptor._ptrI));
-        if(BUILD.coversOpCode(opcode)) return MODIFIER.deserialize(b);
+        if(BUILD.coversOpCode(opcode)) return BUILD.deserialize(b);
         if(CAST.coversOpCode(opcode)) return CAST.deserialize(b);
         if(COMPRESSION.coversOpCode(opcode)) return COMPRESSION.deserialize(b);
         if(CONST.coversOpCode(opcode)) return CONST.deserialize(b);
@@ -105,7 +105,6 @@ public class Function extends Descriptor_R<Short>{
         switch(opcode){
             default:
                 return new Function(b);
-            case OPC.OpcBuildWindow:
             case OPC.OpcFun:
                 return new Fun(b);
         }

@@ -68,7 +68,7 @@ static Widget LogWidget;
 static Widget kill_target_w;
 static Boolean ErrorWidgetOff = FALSE;
 static Boolean CurrentWidgetOff = FALSE;
-static Boolean LogWidgetOff = TRUE;
+static Boolean LogWidgetOff = FALSE;
 
 #define MaxLogLines 4000
 #define EventEfn 1
@@ -339,15 +339,15 @@ static void PutLog(char *time, char *mode, char *status, char *server, char *pat
   if ((LogWidgetOff && CurrentWidgetOff) || (LogWidget == 0))
     return;
   sprintf(text, "%s %12d %-10.10s %-44.44s %-20.20s %s", time, current_shot, mode, status, server, path);
-  item = XmStringCreateSimple(text);
   if (!LogWidgetOff) {
+    item = XmStringCreateSimple(text);
     XmListAddItemUnselected(LogWidget, item, 0);
     XmStringFree(item);
     XtVaGetValues(LogWidget, XmNitemCount, &items, NULL);
     if (items > MaxLogLines) {
       DoingListItem *doing;
       for (doing = DoingList; doing; doing = doing->next)
-	doing->pos--;
+        doing->pos--;
       XmListDeletePos(LogWidget, 1);
     }
     XmListSetBottomPos(LogWidget, 0);
@@ -363,10 +363,10 @@ static void PutLog(char *time, char *mode, char *status, char *server, char *pat
     } else if (strcmp(mode, "DONE") == 0) {
       int idx = FindServer(server, &srv);
       if (strcmp(srv->path, path) == 0) {
-	strcpy(srv->path, "");
-	item = XmStringCreateSimple(server);
-	XmListReplaceItemsPos(CurrentWidget, &item, 1, idx);
-	XmStringFree(item);
+        strcpy(srv->path, "");
+        item = XmStringCreateSimple(server);
+        XmListReplaceItemsPos(CurrentWidget, &item, 1, idx);
+        XmStringFree(item);
       }
     }
   }
@@ -438,6 +438,7 @@ static void Done(LinkedEvent * event){
   int *items;
   int num;
   XmListGetSelectedPos(LogWidget, &items, &num);
+  if (items) free(items);
   for (prev = 0, doing = DoingList; doing && (doing->nid != event->nid);
        prev = doing, doing = doing->next) ;
   if (doing) {

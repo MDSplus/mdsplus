@@ -297,7 +297,7 @@ public final class Message extends Object{
         try{
             return Descriptor.readMessage(this).toString();
         }catch(final Exception e){
-            return DTYPE.getName(this.dtype) + "(" + this.length + "Bytes)";
+            return DTYPE.getName(this.dtype) + "(" + this.msglen + "Bytes)";
         }
     }
 

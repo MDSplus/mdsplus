@@ -66,24 +66,25 @@ static int io_listen(int argc, char **argv);
 static int io_authorize(int conid, char *username);
 static int io_connect(int conid, char *protocol, char *host);
 static int io_reuseCheck(char *host, char *unique, size_t buflen);
+static int io_settimeout(int conid, int sec, int usec);
 static IoRoutines io_routines = {
-  io_connect, io_send, io_recv, io_flush, io_listen, io_authorize, io_reuseCheck, io_disconnect
+  io_connect, io_send, io_recv, io_flush, io_listen, io_authorize, io_reuseCheck, io_disconnect, io_settimeout
 };
 
-static int getHostAndPort(char *hostin, struct sockaddr_in6 *sin);
+static int GetHostAndPort(char *hostin, struct sockaddr_in6 *sin);
 
 static int io_reuseCheck(char *host, char *unique, size_t buflen){
   struct sockaddr_in6 sin;
-  if IS_OK(getHostAndPort(host, &sin)) {
+  if IS_OK(GetHostAndPort(host, &sin)) {
     unsigned short *addr = (unsigned short *)&sin.sin6_addr;
     snprintf(unique, buflen, "%s://%x:%x:%x:%x:%x:%x:%x:%x#%d", PROT,
 
              addr[0], addr[1], addr[2], addr[3],
              addr[4], addr[5], addr[6], addr[7], ntohs(sin.sin6_port));
-    return 0;
+    return C_OK;
   } else {
     *unique = 0;
-    return -1;
+    return C_ERROR;
   }
 }
 

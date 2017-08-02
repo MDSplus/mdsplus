@@ -72,7 +72,7 @@ static int DoLogin(int id)
   status = SendMdsMsg(id, m, 0);
   free(m);
   if STATUS_OK {
-    m = GetMdsMsg(id, &status);
+    m = GetMdsMsgTO(id, &status, 10.f);
     if (m == 0 || STATUS_NOT_OK) {
       printf("Error in connect\n");
       return MDSplusERROR;

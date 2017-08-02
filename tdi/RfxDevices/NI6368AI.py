@@ -8,7 +8,6 @@ from ctypes import *
 import traceback
 
 class NI6368AI(Device):
-    print 'NI6368AI'
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     """NI PXI-6368 X-series multi functional data acquisition card"""
 

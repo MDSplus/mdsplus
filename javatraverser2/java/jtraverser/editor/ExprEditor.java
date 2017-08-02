@@ -166,7 +166,7 @@ public class ExprEditor extends Editor{
         }else if(Editor.isNoData(this.data)){
             this.expr = null;
             this.quotes_added = this.default_to_string;
-        }else this.expr = this.data.decompileX();
+        }else this.expr = this.data.getSize() > 0x80000 ? this.data.toString() : this.data.decompileX();
         this.text_edit.setText(this.expr);
         if(this.scroll_pane == null) this.add(this.text_edit, BorderLayout.CENTER);
         else this.add(this.scroll_pane, BorderLayout.CENTER);
