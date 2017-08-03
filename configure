@@ -8163,7 +8163,7 @@ case "$host" in
 *apple-darwin*) echo "Configuring for MacOS X";
        THREAD=""
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic -Wno-error=unused-command-line-argument -Wno-missing-field-initializers -Wno-parentheses-equality";
+       CFLAGS="$CFLAGS -arch x86_64 -dynamic -Wno-error=unused-command-line-argument -Wno-missing-field-initializers -Wno-parentheses-equality";
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="gfortran"
        FOR_LDFLAGS="-shared"
@@ -8176,7 +8176,7 @@ case "$host" in
        UILPATH=${OPENMOTIF}/bin;
        MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L${OPENMOTIF}/lib"
        MOTIF_LD_LDARC="-multiply_defined suppress -L${OPENMOTIF}/lib"
-       	   	   LINKSHARED="$LDFLAGS -shared -arch i386 -arch x86_64 -install_name @loader_path/../lib/\$(@F) -headerpad_max_install_names";
+       	   	   LINKSHARED="$LDFLAGS -shared -arch x86_64 -install_name @loader_path/../lib/\$(@F) -headerpad_max_install_names";
            FOR_LINKSHARED="$LDFLAGS -shared";
 	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
        IDL_LD="";
