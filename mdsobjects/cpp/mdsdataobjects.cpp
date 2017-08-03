@@ -749,7 +749,7 @@ Data * MDSplus::executeWithArgs(const char *expr, int nArgs ...) {
 		for(int i = 0; i < nArgs; i++)
 		    freeDsc(args[i]);
 		if(actTree)
-			delete(actTree);
+		    delete(actTree);
 
 		return evalData;
 }

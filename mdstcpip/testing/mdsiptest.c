@@ -16,7 +16,7 @@ int main(int argc, char **argv)
   if (sock != -1) {
     printf("status from MdsOpen = %d\n", MdsOpen(sock, "main", -1));
     ans.ptr = 0;
-    if (MdsValue(sock, "f_float(member)", &ans, 0) & 1) {
+    if (MdsValue(sock, "f_float(member)", &ans, NULL) & 1) {
       printf("%g\n", *(float *)ans.ptr);
       val = *(float *)ans.ptr;
       val = val + (float)1.;
@@ -27,10 +27,10 @@ int main(int argc, char **argv)
       ans.ptr = 0;
     }
     vald.ptr = (void *)&val;
-    status = MdsPut(sock, "member", "$", &vald, 0);
+    status = MdsPut(sock, "member", "$", &vald, NULL);
     if (!(status & 1))
       printf("Error during put %d\n", status);
-    if (MdsValue(sock, "42.0", &ans, 0) & 1)
+    if (MdsValue(sock, "42.0", &ans, NULL) & 1)
       printf("%g\n", *(float *)ans.ptr);
     else
       printf("%s\n", (char *)ans.ptr);

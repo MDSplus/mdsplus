@@ -378,7 +378,6 @@ FOR_LDFLAGS=""
 SHARETYPE=".so"
 
 THREAD="-pthread"
-AC_SUBST([THREAD])
 MITDEVICESIO_TARGETS=""
 case "$host" in
 *mingw*)
@@ -520,8 +519,9 @@ case "$host" in
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X";
+       THREAD=""
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic";
+       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic -Wno-error=unused-command-line-argument -Wno-missing-field-initializers -Wno-parentheses-equality";
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="gfortran"
        FOR_LDFLAGS="-shared"
@@ -1274,6 +1274,7 @@ AC_SUBST(SYBASE_LIB)
 AC_SUBST([TARGET_ARCH])
 AC_SUBST(TAR_EXCLUDE)
 AC_SUBST(TDIC)
+AC_SUBST([THREAD])
 AC_SUBST(UIL)
 AC_SUBST(XM_LIBS)
 AC_SUBST(uiddir)
