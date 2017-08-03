@@ -1653,7 +1653,6 @@ Tree *MDSplus::getActiveTree()
 	int status = TreeGetDbi(dbiItems);
 	if(!(status & 1))
 	{
-		std::cout << MdsGetMsg(status) << std::endl;
 		throw MdsException(status);
 	}
 	return new Tree(name, shot, TreeDbid());
