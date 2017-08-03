@@ -3347,11 +3347,11 @@ class EXPORT Tree
     friend Tree *getActiveTree();
 
 protected:
-    Tree(){}
 
     std::string name;
     int shot;
     void *ctx;
+    bool fromActiveTree;
 
 public:
 
@@ -3361,6 +3361,7 @@ public:
     /// to.
     ///
     Tree(char const * name, int shot);
+    Tree(char const * name, int shot, void *ctx); 
 
 
     /// Builds a new Tree object instance creating or attaching to the named
