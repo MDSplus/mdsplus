@@ -72,6 +72,8 @@ extern "C" {
 	int getTreeSegmentInfo(void *dbid, int nid, int segIdx, char *dtype, char *dimct, int *dims, int *nextRow);
 	// From TreeFindTagWild.c
 	char * _TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout);
+	char *MdsGetMsg(int status);
+	void *TreeDbid();
 
 }
 
@@ -111,7 +113,7 @@ static int convertUsage(std::string const & usage)
 
 static Mutex treeMutex;
 
-Tree::Tree(char const *name, int shot): name(name), shot(shot), ctx(nullptr)
+Tree::Tree(char const *name, int shot): name(name), shot(shot), ctx(nullptr), fromActiveTree(false)
 {
 	int status = _TreeOpen(&ctx, name, shot, 0);
 	if(!(status & 1))
@@ -119,8 +121,12 @@ Tree::Tree(char const *name, int shot): name(name), shot(shot), ctx(nullptr)
 	//setActiveTree(this);
 }
 
+Tree::Tree(char const *name, int shot, void *ctx): name(name), shot(shot), ctx(ctx), fromActiveTree(true)
+{
+}
 
-Tree::Tree(char const *name, int shot, char const *mode): name(name), shot(shot), ctx(nullptr)
+
+Tree::Tree(char const *name, int shot, char const *mode): name(name), shot(shot), ctx(nullptr), fromActiveTree(false)
 {
 	std::string upMode(mode);
 	std::transform(upMode.begin(), upMode.end(), upMode.begin(), static_cast<int(*)(int)>(&std::toupper));
@@ -143,6 +149,7 @@ Tree::Tree(char const *name, int shot, char const *mode): name(name), shot(shot)
 
 Tree::~Tree()
 {
+    if(fromActiveTree) return;
     if( isModified() ) {
         int status = _TreeQuitTree(&ctx, name.c_str(), shot);
         (void)status;
@@ -150,7 +157,7 @@ Tree::~Tree()
 //            throw MdsException(status);
     } else {
         int status = _TreeClose(&ctx, name.c_str(), shot);
-        (void)status;
+       (void)status;
 //        if(!(status & 1))
 //            throw MdsException(status);
     }
@@ -1639,15 +1646,17 @@ Tree *MDSplus::getActiveTree()
 	char name[1024];
 	int shot;
 	int retNameLen, retShotLen;
-
 	DBI_ITM dbiItems[] = {
 		{1024, DbiNAME, name, &retNameLen},
 		{sizeof(int), DbiSHOTID, &shot, &retShotLen},
 		{0, DbiEND_OF_LIST, 0, 0}};
 	int status = TreeGetDbi(dbiItems);
 	if(!(status & 1))
+	{
+		std::cout << MdsGetMsg(status) << std::endl;
 		throw MdsException(status);
-	return new Tree(name, shot);
+	}
+	return new Tree(name, shot, TreeDbid());
 }
 
 ostream &operator<<(ostream &stream, TreeNode *treeNode)

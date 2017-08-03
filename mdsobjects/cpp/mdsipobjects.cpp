@@ -94,7 +94,6 @@ void *getManyObj(char *serializedIn)
 		AutoData<Dictionary> answDict(new Dictionary());
 		try {
 			Data *currAnsw;
-			
 			if(argsData.get() && argsData->len() > 0)
 			{
 				MDSplus::Data **args = argsData->getDscs();
@@ -104,6 +103,10 @@ void *getManyObj(char *serializedIn)
 				      currAnsw = executeWithArgs(expr.get(), 1, args[0]);
 				      break;
 				  case 2: 
+//std::cout << "EXPR: " << expr.get() << std::endl;
+//std::cout << "Arg 1: " << args[0]->decompile() << std::endl;
+//std::cout << "Arg 2: " << args[1]->decompile() << std::endl << std::endl;
+
 				      currAnsw = executeWithArgs(expr.get(), 2, args[0], args[1]);
 				      break;
 				  case 3: 
