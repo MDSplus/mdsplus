@@ -984,10 +984,10 @@ public class Signal implements WaveDataListener
 
     public float getY(int idx)
     {
-       if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_YZ || mode2D == Signal.MODE_XZ))
+      try {
+        if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_YZ || mode2D == Signal.MODE_XZ))
             return sliceY[idx];
-       try {
-            return y[idx];
+        return y[idx];
        }catch(Exception exc){return 0;}
     }
     public float getZ(int idx)
@@ -1072,7 +1072,7 @@ public class Signal implements WaveDataListener
 
     public int getNumPoints()
     {
-        if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_YZ || mode2D == Signal.MODE_XZ))
+        if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_YZ || mode2D == Signal.MODE_XZ)&& sliceX != null)
             return sliceX.length;
         if(data != null) 
         {
@@ -1394,7 +1394,8 @@ public class Signal implements WaveDataListener
                 setMode2D(mode, 0);
                 break;
             case MODE_XZ:
-                setMode2D(mode, y2D[0]);
+                if(y2D != null && y2D.length > 0) 
+                    setMode2D(mode, y2D[0]);
                 break;
             case MODE_YZ:
                 double v = x2D[0];
@@ -2178,21 +2179,35 @@ public class Signal implements WaveDataListener
                     x2D_max = x2DVal[i];
             }
                        
-            y2D_min = y2D_max = y2D[0];
-            for(int i = 0; i < y2D.length; i++)
+            if(y2D != null && y2D.length > 0)
             {
-                if(y2D[i] < y2D_min)
-                    y2D_min = y2D[i];
-                if(y2D[i] > y2D_max)
-                    y2D_max = y2D[i];
+                y2D_min = y2D_max = y2D[0];
+                for(int i = 0; i < y2D.length; i++)
+                {
+                    if(y2D[i] < y2D_min)
+                        y2D_min = y2D[i];
+                    if(y2D[i] > y2D_max)
+                        y2D_max = y2D[i];
+                }
             }
-            z2D_min = z2D_max = z[0];
-            for(int i = 0; i < z.length; i++)
+            else
             {
-                if(z[i] < z2D_min)
-                    z2D_min = z[i];
-                if(z[i] > z2D_max)
-                    z2D_max = z[i];
+                y2D_min = y2D_max = 0;
+            }
+            if(z != null && z.length > 0)
+            {
+                z2D_min = z2D_max = z[0];
+                for(int i = 0; i < z.length; i++)
+                {
+                    if(z[i] < z2D_min)
+                        z2D_min = z[i];
+                    if(z[i] > z2D_max)
+                        z2D_max = z[i];
+                }
+            }
+            else
+            {
+                z2D_min = z2D_max = 0;
             }
             
             if(xMin == -Double.MAX_VALUE)
