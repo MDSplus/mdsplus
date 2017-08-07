@@ -9,15 +9,17 @@ javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
 
 # Create the shell script that runs the program
-if MINGW
-bin_SCRIPTS = traverser.bat $(JAVAROOT)
-else
-bin_SCRIPTS = jTraverser $(JAVAROOT)
-CLEANFILES += jTraverser
-EXTRA_DIST += jTraverser.template
-jTraverser: $(srcdir)/jTraverser.template
-	cp $< $@
-endif
+#if MINGW
+#bin_SCRIPTS = traverser2.bat $(JAVAROOT)
+#else
+#bin_SCRIPTS = jTraverser2 $(JAVAROOT)
+#CLEANFILES += jTraverser2
+#EXTRA_DIST += jTraverser2.template
+#jTraverser2: $(srcdir)/jTraverser2.template
+#	cp $< $@
+#endif
+bin_SCRIPTS = $(JAVAROOT)
+
 
 #$(INSTALL) -D $< $@
 # Build the class files
