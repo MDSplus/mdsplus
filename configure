@@ -8306,6 +8306,7 @@ fi
 #
 
 
+raw_old_libs="$LIBS" #### needed because of nested call to MDS_SEARCH_LIBS
 
   old_LIBS="$LIBS"
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing raw1394_get_libversion" >&5
@@ -8487,6 +8488,7 @@ fi
 
   LIBS="$old_LIBS"
 
+LIBS="$raw_old_libs"
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing gethostbyname" >&5
 $as_echo_n "checking for library containing gethostbyname... " >&6; }
