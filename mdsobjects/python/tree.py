@@ -986,12 +986,12 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         @rtype: Device subclass instance
         """
         node = super(TreeNode,cls).__new__(cls)
+        head = nid._head if isinstance(nid,TreeNode) else head
         if not isinstance(head,(Device,)) and type(node) is TreeNode:
             TreeNode.__init__(node,nid,tree,head)
             try:
                 if str(node.usage) == "DEVICE":
                     return node.record.getDevice(node,head=0)
-
             except(_exc.TreeNODATA,_exc.DevNOT_A_PYDEVICE,_exc.DevPYDEVICE_NOT_FOUND): pass
         return node
 
@@ -2891,7 +2891,7 @@ class Device(TreeNode): # HINT: Device begin
         """
         if self is node: return
         if isinstance(node,TreeNode):
-            super(Device,self).__init__(node.nid,node.tree,head)
+            super(Device,self).__init__(node)
         else:
             super(Device,self).__init__(node,tree,head)
 
@@ -2943,7 +2943,8 @@ class Device(TreeNode): # HINT: Device begin
         @rtype: Device
         """
         if name in self.part_dict:
-            return self.__class__(TreeNode(self.part_dict[name]+self.head.nid,self.tree,self.head))
+            head = self if self._head==0 else self.head
+            return self.__class__(TreeNode(self.part_dict[name]+self.head.nid,self.tree,head))
         return super(Device,self).__getattr__(name)
 
     def __setattr__(self,name,value):
@@ -2956,7 +2957,8 @@ class Device(TreeNode): # HINT: Device begin
         @rtype: None
         """
         if name in self.part_dict:
-            TreeNode(self.part_dict[name]+self.head.nid,self.tree,self).record=value
+            head = self if self._head==0 else self.head
+            TreeNode(self.part_dict[name]+self.head.nid,self.tree,head).record=value
         else:
             super(Device,self).__setattr__(name,value)
 
