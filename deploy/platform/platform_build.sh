@@ -102,6 +102,7 @@ rundocker(){
            -e "SANITIZE" \
            -e "TEST" \
            -e "TESTFORMAT" \
+	   -e "TEST_TIMEUNIT" \
            -e "UPDATEPKG" \
            -e "VALGRIND_TOOLS" \
 	   -e "MAKE_JARS" \
