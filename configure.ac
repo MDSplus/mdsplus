@@ -521,7 +521,7 @@ case "$host" in
 *apple-darwin*) echo "Configuring for MacOS X";
        THREAD=""
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic -Wno-error=unused-command-line-argument -Wno-missing-field-initializers -Wno-parentheses-equality";
+       CFLAGS="$CFLAGS -arch x86_64 -dynamic -Wno-error=unused-command-line-argument -Wno-missing-field-initializers -Wno-parentheses-equality";
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="gfortran"
        FOR_LDFLAGS="-shared"
@@ -536,7 +536,7 @@ case "$host" in
        MOTIF_LD_LDARC="-multiply_defined suppress -L${OPENMOTIF}/lib"
        dnl LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -prebind \
 	   dnl -seg_addr_table_filename \$(@F) -seg_addr_table ../macosx/bindtable -Wl,-single_module";
-	   LINKSHARED="$LDFLAGS -shared -arch i386 -arch x86_64 -install_name @loader_path/../lib/\$(@F) -headerpad_max_install_names";
+	   LINKSHARED="$LDFLAGS -shared -arch x86_64 -install_name @loader_path/../lib/\$(@F) -headerpad_max_install_names";
            FOR_LINKSHARED="$LDFLAGS -shared";
 	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
        IDL_LD="";
@@ -608,11 +608,13 @@ AS_VAR_SET_IF([TARGET_ARCH],[CFLAGS="$CFLAGS $TARGET_ARCH"])
 
 dnl see if we have libdc1394 libraries and what version
 
+raw_old_libs="$LIBS" #### needed because of nested call to MDS_SEARCH_LIBS
 MDS_SEARCH_LIBS([raw1394_get_libversion],[raw1394],
 [
   MDS_SEARCH_LIBS([dc1394_new],[dc1394],[DC1394_SUPPORT2="${MAKESHLIBDIR}libdc1394_support2$SHARETYPE"])
   MDS_SEARCH_LIBS([dc1394_get_camera_info],[dc1394],[DC1394_SUPPORT="${MAKESHLIBDIR}libdc1394_support$SHARETYPE"])
 ])
+LIBS="$raw_old_libs"
 
 AC_SEARCH_LIBS([gethostbyname], [nsl socket],
                [AS_VAR_IF([ac_cv_search_gethostbyname], ["none required"], [], [LIBSOCKET=$ac_cv_search_gethostbyname])],

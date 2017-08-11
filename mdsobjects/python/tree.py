@@ -724,7 +724,7 @@ class Tree(object):
         @return: Node if found
         @rtype: TreeNode
         """
-        if isinstance(name,(int,_scalar.Int32)):
+        if isinstance(name,(int,_scr.Int32)):
             ans = TreeNode(name,self)
         else:
             n=_C.c_int32(0)
@@ -792,7 +792,7 @@ class Tree(object):
         status = _TreeShr._TreeGetViewDate(dt)
         if not status & 1:
             raise _exc.MDSplusException(status)
-        return _scalar.Uint64(dt.value).date
+        return _scr.Uint64(dt.value).date
 
     def isModified(self):
         """Check to see if tree is open for edit and has been modified
@@ -989,7 +989,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         if not isinstance(head,(Device,)) and type(node) is TreeNode:
             TreeNode.__init__(node,nid,tree,head)
             try:
-                if node.usage == "DEVICE":
+                if str(node.usage) == "DEVICE":
                     return node.record.getDevice(node,head=0)
             except _exc.TreeNODATA:
                 pass
@@ -1175,7 +1175,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         if self._nid is None:
             return None
         else:
-            return _scalar.Int32(self._nid.value)
+            return _scr.Int32(self._nid.value)
 
     @property
     def nid(self):
@@ -1282,7 +1282,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
     @property
     def subtree(self):
         "Is this node a subtree reference. (settable)"
-        return self.usage == "SUBTREE"
+        return str(self.usage) == "SUBTREE"
     @subtree.setter
     def subtree(self,value): self.setSubtree(value)
 
@@ -1304,7 +1304,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
     @property
     def usage(self):
         "Usage of this node."
-        return _scalar.String(str(self.usage_str)[10:])
+        return _scr.String(str(self.usage_str)[10:])
     @usage.setter
     def usage(self,usage): self.setUsage(usage)
 
@@ -1548,7 +1548,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         """ resolves as many node references as possible
             device nodes wil be conserved
         """
-        if self.usage=='DEVICE':
+        if str(self.usage) == 'DEVICE':
             return self
         try:     ans = self.record
         except:  return self
@@ -1567,7 +1567,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         self.restoreContext()
         arglist=[self.tree.ctx]
         xd=_dsc.descriptor_xd()
-        argsobj = [_scalar.Int32(self.nid),_scalar.String(method)]
+        argsobj = [_scr.Int32(self.nid),_scr.String(method)]
         argsobj+= list(map(_dat.Data,args))
         arglist+= list(map(_dat.Data.byref,argsobj))
         arglist+= [xd.byref,_C.c_void_p(0xffffffff)]
@@ -1808,10 +1808,10 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
             val=itmlst.ans[idx]
             rettype=itmlst.rettype[idx]
             retlen=itmlst.retlen[idx].value
-            if rettype == _scalar.String:
-                val=_scalar.String(val.value[0:retlen].rstrip())
-            elif issubclass(rettype,_scalar.Scalar):
-                val=_scalar.Scalar(val)
+            if rettype == _scr.String:
+                val=_scr.String(val.value[0:retlen].rstrip())
+            elif issubclass(rettype,_scr.Scalar):
+                val=_scr.Scalar(val)
             elif rettype == TreeNode:
                 if retlen == 4:
                     val=TreeNode(int(val.value),self.tree)
@@ -2066,7 +2066,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         @return: usage of this node
         @rtype: str
         """
-        return _scalar.String(str(self.usage_str)[10:])
+        return self.usage
 
     def hasNodeReferences(self):
       """Return True if this node contains data that includes references
@@ -2713,7 +2713,7 @@ class TreeNodeArray(_arr.Int32Array): # HINT: TreeNodeArray begin
         @return: Usage
         @rtype: StringArray
         """
-        self.usage
+        return self.usage
 
     def __getattr__(self,name):
         ans=[]
@@ -3156,8 +3156,6 @@ class Device(TreeNode): # HINT: Device begin
             print ("Error adding device %s: Name ambiguous (%s)"%(model,','.join(cls_list)))
         raise _exc.DevPYDEVICE_NOT_FOUND
 
-_scalar=_mimport('mdsscalar')
-
 ############### Node Characteristic Options ######
 #
 TreeNode.NciM_STATE            =0x00000001
@@ -3182,45 +3180,45 @@ TreeNode.NciK_IS_CHILD         =1
 TreeNode.NciK_IS_MEMBER        =2
 
 TreeNode.NciEND_OF_LIST        =(0,_C.c_void_p,4,None)
-TreeNode.NciSET_FLAGS          =(1,_C.c_int32,4,_scalar.Uint32)
-TreeNode.NciCLEAR_FLAGS        =(2,_C.c_int32,4,_scalar.Uint32)
-TreeNode.NciTIME_INSERTED      =(4,_C.c_uint64,8,_scalar.Uint64)
-TreeNode.NciOWNER_ID           =(5,_C.c_int32,4,_scalar.Uint8)
-TreeNode.NciCLASS              =(6,_C.c_uint8,1,_scalar.Uint8)
-TreeNode.NciDTYPE              =(7,_C.c_uint8,1,_scalar.Uint8)
-TreeNode.NciLENGTH             =(8,_C.c_int32,4,_scalar.Int32)
-TreeNode.NciSTATUS             =(9,_C.c_uint32,4,_scalar.Uint32)
-TreeNode.NciCONGLOMERATE_ELT   =(10,_C.c_uint16,2,_scalar.Uint16)
-TreeNode.NciGET_FLAGS          =(12,_C.c_uint32,4,_scalar.Uint32)
-TreeNode.NciNODE_NAME          =(13,_C.c_char_p,13,_scalar.String)
-TreeNode.NciPATH               =(14,_C.c_char_p,1024,_scalar.String)
-TreeNode.NciDEPTH              =(15,_C.c_int32,4,_scalar.Int32)
+TreeNode.NciSET_FLAGS          =(1,_C.c_int32,4,_scr.Uint32)
+TreeNode.NciCLEAR_FLAGS        =(2,_C.c_int32,4,_scr.Uint32)
+TreeNode.NciTIME_INSERTED      =(4,_C.c_uint64,8,_scr.Uint64)
+TreeNode.NciOWNER_ID           =(5,_C.c_int32,4,_scr.Uint8)
+TreeNode.NciCLASS              =(6,_C.c_uint8,1,_scr.Uint8)
+TreeNode.NciDTYPE              =(7,_C.c_uint8,1,_scr.Uint8)
+TreeNode.NciLENGTH             =(8,_C.c_int32,4,_scr.Int32)
+TreeNode.NciSTATUS             =(9,_C.c_uint32,4,_scr.Uint32)
+TreeNode.NciCONGLOMERATE_ELT   =(10,_C.c_uint16,2,_scr.Uint16)
+TreeNode.NciGET_FLAGS          =(12,_C.c_uint32,4,_scr.Uint32)
+TreeNode.NciNODE_NAME          =(13,_C.c_char_p,13,_scr.String)
+TreeNode.NciPATH               =(14,_C.c_char_p,1024,_scr.String)
+TreeNode.NciDEPTH              =(15,_C.c_int32,4,_scr.Int32)
 TreeNode.NciPARENT             =(16,_C.c_uint32,4,TreeNode)
 TreeNode.NciBROTHER            =(17,_C.c_uint32,4,TreeNode)
 TreeNode.NciMEMBER             =(18,_C.c_uint32,4,TreeNode)
 TreeNode.NciCHILD              =(19,_C.c_uint32,4,TreeNode)
-TreeNode.NciPARENT_RELATIONSHIP=(20,_C.c_uint32,4,_scalar.Uint32)
+TreeNode.NciPARENT_RELATIONSHIP=(20,_C.c_uint32,4,_scr.Uint32)
 TreeNode.NciCONGLOMERATE_NIDS  =(21,_C.c_uint32*1024,1024*4,TreeNodeArray)
-TreeNode.NciORIGINAL_PART_NAME =(22,_C.c_char_p,1024,_scalar.String)
-TreeNode.NciNUMBER_OF_MEMBERS  =(23,_C.c_uint32,4,_scalar.Uint32)
-TreeNode.NciNUMBER_OF_CHILDREN =(24,_C.c_uint32,4,_scalar.Uint32)
+TreeNode.NciORIGINAL_PART_NAME =(22,_C.c_char_p,1024,_scr.String)
+TreeNode.NciNUMBER_OF_MEMBERS  =(23,_C.c_uint32,4,_scr.Uint32)
+TreeNode.NciNUMBER_OF_CHILDREN =(24,_C.c_uint32,4,_scr.Uint32)
 TreeNode.NciMEMBER_NIDS        =(25,_C.c_uint32*4096,4096*4,TreeNodeArray)
 TreeNode.NciCHILDREN_NIDS      =(26,_C.c_uint32*4096,4096*4,TreeNodeArray)
-TreeNode.NciFULLPATH           =(27,_C.c_char_p,1024,_scalar.String)
-TreeNode.NciMINPATH            =(28,_C.c_char_p,1024,_scalar.String)
-TreeNode.NciUSAGE              =(29,_C.c_uint8,1,_scalar.Uint8)
-TreeNode.NciPARENT_TREE        =(30,_C.c_char_p,13,_scalar.String)
-TreeNode.NciRLENGTH            =(31,_C.c_int32,4,_scalar.Int32)
-TreeNode.NciNUMBER_OF_ELTS     =(32,_C.c_uint32,4,_scalar.Uint32)
+TreeNode.NciFULLPATH           =(27,_C.c_char_p,1024,_scr.String)
+TreeNode.NciMINPATH            =(28,_C.c_char_p,1024,_scr.String)
+TreeNode.NciUSAGE              =(29,_C.c_uint8,1,_scr.Uint8)
+TreeNode.NciPARENT_TREE        =(30,_C.c_char_p,13,_scr.String)
+TreeNode.NciRLENGTH            =(31,_C.c_int32,4,_scr.Int32)
+TreeNode.NciNUMBER_OF_ELTS     =(32,_C.c_uint32,4,_scr.Uint32)
 TreeNode.NciDATA_IN_NCI        =(33,_C.c_bool,4,bool)
 TreeNode.NciERROR_ON_PUT       =(34,_C.c_uint32,4,bool)
-TreeNode.NciRFA                =(35,_C.c_uint64,8,_scalar.Uint64)
-TreeNode.NciIO_STATUS          =(36,_C.c_uint32,4,_scalar.Uint32)
-TreeNode.NciIO_STV             =(37,_C.c_uint32,4,_scalar.Uint32)
-TreeNode.NciDTYPE_STR          =(38,_C.c_char_p,64,_scalar.String)
-TreeNode.NciUSAGE_STR          =(39,_C.c_char_p,64,_scalar.String)
-TreeNode.NciCLASS_STR          =(40,_C.c_char_p,64,_scalar.String)
-TreeNode.NciVERSION            =(41,_C.c_uint32,4,_scalar.Uint32)
+TreeNode.NciRFA                =(35,_C.c_uint64,8,_scr.Uint64)
+TreeNode.NciIO_STATUS          =(36,_C.c_uint32,4,_scr.Uint32)
+TreeNode.NciIO_STV             =(37,_C.c_uint32,4,_scr.Uint32)
+TreeNode.NciDTYPE_STR          =(38,_C.c_char_p,64,_scr.String)
+TreeNode.NciUSAGE_STR          =(39,_C.c_char_p,64,_scr.String)
+TreeNode.NciCLASS_STR          =(40,_C.c_char_p,64,_scr.String)
+TreeNode.NciVERSION            =(41,_C.c_uint32,4,_scr.Uint32)
 #
 #################################################################
 

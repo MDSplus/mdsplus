@@ -90,8 +90,6 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@MINGW_FALSE@am__append_1 = jTraverser
-@MINGW_FALSE@am__append_2 = jTraverser.template
 subdir = javatraverser2
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
@@ -468,18 +466,27 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-EXTRA_DIST = $(am__append_2)
-CLEANFILES = $(java_DATA) JTMANIFEST.mf $(addprefix \
-	$(JAVAROOT)/,$(TRAV_CLS)) $(addprefix \
-	$(JAVAROOT)/,$(TOOLS_CLS)) $(addprefix \
-	$(JAVAROOT)/,$(MDS_CLS)) $(am__append_1)
+EXTRA_DIST = 
+CLEANFILES = $(java_DATA) JTMANIFEST.mf \
+	$(addprefix $(JAVAROOT)/,$(TRAV_CLS)) \
+	$(addprefix $(JAVAROOT)/,$(TOOLS_CLS)) \
+	$(addprefix $(JAVAROOT)/,$(MDS_CLS))
+
 JAVAROOT = $(abs_builddir)/classes
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
-@MINGW_FALSE@bin_SCRIPTS = jTraverser $(JAVAROOT)
 
 # Create the shell script that runs the program
-@MINGW_TRUE@bin_SCRIPTS = traverser.bat $(JAVAROOT)
+#if MINGW
+#bin_SCRIPTS = traverser2.bat $(JAVAROOT)
+#else
+#bin_SCRIPTS = jTraverser2 $(JAVAROOT)
+#CLEANFILES += jTraverser2
+#EXTRA_DIST += jTraverser2.template
+#jTraverser2: $(srcdir)/jTraverser2.template
+#	cp $< $@
+#endif
+bin_SCRIPTS = $(JAVAROOT)
 
 #$(INSTALL) -D $< $@
 # Build the class files
@@ -946,8 +953,6 @@ uninstall-am: uninstall-binSCRIPTS uninstall-javaDATA \
 
 .PRECIOUS: Makefile
 
-@MINGW_FALSE@jTraverser: $(srcdir)/jTraverser.template
-@MINGW_FALSE@	cp $< $@
 
 $(JAVAROOT):
 	mkdir -p $@
