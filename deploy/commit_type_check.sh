@@ -49,7 +49,7 @@ awk -v EMAILMSG="$2" -F: '{ IGNORECASE=1
                }
             }
             END {
-              if ( FAIL == "TRUE" ) {
+              if ( FAIL == "TRUE" && VERSION == "SAME" ) {
                 print("BADCOMMIT")
               } else {
                 print(VERSION)
