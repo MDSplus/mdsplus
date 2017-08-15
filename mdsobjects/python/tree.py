@@ -36,7 +36,7 @@ class staticmethodX(object):
         self.method = method
     def static(mself,self,*args,**kwargs):
         if self is None: return None
-        return mself.method(*args,**kwargs)
+        return mself.method(self,*args,**kwargs)
 
 #### hidden module variables ################
 #
