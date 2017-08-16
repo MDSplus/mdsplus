@@ -8,10 +8,13 @@
 # publish:
 # /publish/$branch/MDSplus-*.exe
 #
-test64="64 x86_64-w64-mingw32 bin_x86_64 bin_x86_64"
-test32="32 i686-w64-mingw32   bin_x86    bin_x86"
+winebottle64=$(mktemp --tmpdir -d winebottle64.XXXXXXXX)
+test64="64 x86_64-w64-mingw32 bin_x86_64 bin_x86_64 --with-winebottle=$winebottle64"
+winebottle32=$(mktemp --tmpdir -d winebottle32.XXXXXXXX)
+test32="32 i686-w64-mingw32   bin_x86    bin_x86 --with-winebottle=$winebottle32"
 export JNI_INCLUDE_DIR=/source/3rd-party-apis/windows-jdk
 export JNI_MD_INCLUDE_DIR=/source/3rd-party-apis/windows-jdk/win32
+
 buildrelease() {
     abort=0
     ### Clean up workspace
