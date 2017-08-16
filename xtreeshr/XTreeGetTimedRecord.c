@@ -330,7 +330,12 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 		}
 
 		//Check if returned dimension is an APD for multidimensional dimensions
-		if(dimensionXds[currSegIdx].pointer->class == CLASS_APD)
+                if(!dimensionXds[currSegIdx].pointer)
+		{
+			currSignalD.ndesc = 1;
+			currSignalD.dimensions[0] = NULL;
+		}
+		else if (dimensionXds[currSegIdx].pointer->class == CLASS_APD)
 		{
 			currApd = (struct descriptor_a *)dimensionXds[currSegIdx].pointer;
 			numDimensions = currApd->arsize / currApd->length;
