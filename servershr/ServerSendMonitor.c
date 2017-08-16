@@ -17,7 +17,7 @@ int ServerSendMonitor(char *monitor, char *tree, int shot, int phase,
   now[strlen(now) - 1] = 0;
   const char*        event_str = "event:";
   const unsigned int event_len = strlen(event_str);
-  if (initialized) {
+  if (!initialized) {
     initialized = B_TRUE;
     char *mon_env = getenv(monitor);
     if (!mon_env)

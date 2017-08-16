@@ -986,17 +986,13 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         @rtype: Device subclass instance
         """
         node = super(TreeNode,cls).__new__(cls)
+        head = nid._head if isinstance(nid,TreeNode) else head
         if not isinstance(head,(Device,)) and type(node) is TreeNode:
             TreeNode.__init__(node,nid,tree,head)
             try:
                 if str(node.usage) == "DEVICE":
                     return node.record.getDevice(node,head=0)
-            except _exc.TreeNODATA:
-                pass
-            except _exc.DevNOT_A_PYDEVICE:
-                pass
-            except _exc.DevPYDEVICE_NOT_FOUND:
-                pass
+            except(_exc.TreeNODATA,_exc.DevNOT_A_PYDEVICE,_exc.DevPYDEVICE_NOT_FOUND): pass
         return node
 
     def __init__(self,nid,tree=None,head=None,*a,**kw):
@@ -1044,8 +1040,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         @return: Part name of this node
         @rtype: str
         """
-        if self.head is self:
-            return ""
+        if self.head is self: return ""
         if self._original_part_name is None:
             self._original_part_name = self.head.__class__.parts[self.nid-self.head.nid-1]['path']
         return self._original_part_name
@@ -2896,13 +2891,49 @@ class Device(TreeNode): # HINT: Device begin
         """
         if self is node: return
         if isinstance(node,TreeNode):
-            super(Device,self).__init__(node.nid,node.tree,head)
+            super(Device,self).__init__(node)
         else:
             super(Device,self).__init__(node,tree,head)
 
     @property
-    def deref(self):
-        return self
+    def fullhelp_str(self):
+        try:
+            if self is self.head: return help(self.__class__)
+            part = self.parts[int(self.conglomerate_elt)-2]
+            msg = ['%s\n'%('-'*64)]
+            msg.append('original part:     %-10s <HEAD>%s'%(part['type'].upper(),part['path'].upper()))
+            flags = FLAGS(self.get_flags)
+            if flags.no_write_model and flags.no_write_shot:
+                msg.append('node is read only.')
+            elif not flags.write_once:
+                if   flags.no_write_shot:  # not flags.no_write_model
+                      msg.append('node content can be edited in the model tree.')
+                elif flags.no_write_model: # not flags.no_write_shot
+                      msg.append('node content can be edited in the shot tree.')
+                else: msg.append('node content is editable.')
+            else:
+                if   flags.no_write_shot:  # not flags.no_write_model
+                      msg.append('node content is a static setting.')
+                elif flags.no_write_model: # not flags.no_write_shot
+                      msg.append('node content is a measurement/proces parameter.')
+            if flags.setup_information: msg.append('node contains setup information.')
+            if 'value' in part:         msg.append('default value:     %s'%repr(part['value']))
+            if 'valueExpr' in part:     msg.append('default valueExpr: %s'%part['valueExpr'])
+            if 'help' in part:          msg.append('device help:\n\n%s'%(part['help']))
+            msg.append('\n%s'%('-'*64))
+            return '\n'.join(msg)
+        except AttributeError as e: raise Exception(e.message)
+
+    def fullhelp(self): print(self.fullhelp_str)
+
+    @property
+    def help(self):
+        if self is self.head: return 'head of %s'%self.__class__.__name__
+        part = self.parts[int(self.conglomerate_elt)-2]
+        return part.get('help','%-10s <HEAD>%s'%(part['type'].upper(),part['path'].upper()))
+
+    @property
+    def deref(self): return self
 
     def __getattr__(self,name):
         """Return TreeNode of subpart if name matches mangled node name.
@@ -2912,7 +2943,8 @@ class Device(TreeNode): # HINT: Device begin
         @rtype: Device
         """
         if name in self.part_dict:
-            return self.__class__(TreeNode(self.part_dict[name]+self.head.nid,self.tree,self))
+            head = self if self._head==0 else self.head
+            return self.__class__(TreeNode(self.part_dict[name]+self.head.nid,self.tree,head))
         return super(Device,self).__getattr__(name)
 
     def __setattr__(self,name,value):
@@ -2925,7 +2957,8 @@ class Device(TreeNode): # HINT: Device begin
         @rtype: None
         """
         if name in self.part_dict:
-            TreeNode(self.part_dict[name]+self.head.nid,self.tree,self).record=value
+            head = self if self._head==0 else self.head
+            TreeNode(self.part_dict[name]+self.head.nid,self.tree,head).record=value
         else:
             super(Device,self).__setattr__(name,value)
 
@@ -3175,6 +3208,46 @@ TreeNode.NciM_PATH_REFERENCE   =0x00002000
 TreeNode.NciM_NID_REFERENCE    =0x00004000
 TreeNode.NciM_INCLUDE_IN_PULSE =0x00008000
 TreeNode.NciM_COMPRESS_SEGMENTS=0x00010000
+
+class FLAGS(object):
+    def __init__(self,flags):
+        self.flags = flags
+    @property
+    def state(self): return self.flags&TreeNode.NciM_STATE!=0
+    @property
+    def parent_state(self): return self.flags&TreeNode.NciM_PARENT_STATE!=0
+    @property
+    def essential(self): return self.flags&TreeNode.NciM_ESSENTIAL!=0
+    @property
+    def chached(self): return self.flags&TreeNode.NciM_CACHED!=0
+    @property
+    def versions(self): return self.flags&TreeNode.NciM_VERSIONS!=0
+    @property
+    def segmented(self): return self.flags&TreeNode.NciM_SEGMENTED!=0
+    @property
+    def setup_information(self): return self.flags&TreeNode.NciM_SETUP_INFORMATION!=0
+    @property
+    def write_once(self): return self.flags&TreeNode.NciM_WRITE_ONCE!=0
+    @property
+    def comressible(self): return self.flags&TreeNode.NciM_COMPRESSIBLE!=0
+    @property
+    def do_not_compress(self): return self.flags&TreeNode.NciM_DO_NOT_COMPRESS!=0
+    @property
+    def compress_on_put(self): return self.flags&TreeNode.NciM_COMPRESS_ON_PUT!=0
+    @property
+    def no_write_model(self): return self.flags&TreeNode.NciM_NO_WRITE_MODEL!=0
+    @property
+    def no_write_shot(self): return self.flags&TreeNode.NciM_NO_WRITE_SHOT!=0
+    @property
+    def path_reference(self): return self.flags&TreeNode.NciM_PATH_REFERENCE!=0
+    @property
+    def nid_reference(self): return self.flags&TreeNode.NciM_NID_REFERENCE!=0
+    @property
+    def include_in_pulse(self): return self.flags&TreeNode.NciM_INCLUDE_IN_PULSE!=0
+    @property
+    def compress_segments(self): return self.flags&TreeNode.NciM_COMPRESS_SEGMENTS!=0
+
+
 
 TreeNode.NciK_IS_CHILD         =1
 TreeNode.NciK_IS_MEMBER        =2
