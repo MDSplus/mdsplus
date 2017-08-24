@@ -1056,17 +1056,22 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
     ### Node Properties
     ###################################
 
-    def nciProp(name,doc):
+    def nciProp(name,doc=None):
         def get(self):
             return self.getNci(name,False)
-        setattr(get,'__doc__',doc)
+        if doc is not None: setattr(get,'__doc__',doc)
         return property(get)
 
     brother=nciProp("brother","brother node of this node")
 
     child=nciProp("child","child node of this node")
 
-    children_nids=nciProp("children_nids","children nodes of this node")
+    __children_nids=nciProp("children_nids")
+    @property
+    def children_nids(self):
+        """children nodes of this node"""
+        try:    return self.__children_nids
+        except _exc.TreeNNF: return TreeNodeArray([],tree=self.tree)
 
     mclass=_class=nciProp("class","class of the data stored in this node")
 
@@ -1160,7 +1165,12 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
 
     member=nciProp("member","first member immediate descendant of this node")
 
-    member_nids=nciProp("member_nids","all member immediate descendants of this node")
+    __member_nids=nciProp("member_nids")
+    @property
+    def member_nids(self):
+        """all member immediate descendants of this node"""
+        try:    return self.__member_nids
+        except _exc.TreeNNF: return TreeNodeArray([],tree=self.tree)
 
     minpath=nciProp("minpath","minimum path string for this node based on current default node")
 
@@ -1659,7 +1669,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         @return: First level descendants of this node
         @rtype: TreeNodeArray
         """
-        return self.member_nids + self.children_nids
+        return  self.children_nids + self.member_nids
 
     def getDtype(self):
         """Return the name of the data type stored in this node
@@ -2577,6 +2587,8 @@ class TreePath(TreeNode): # HINT: TreePath begin
 
 
 class TreeNodeArray(_arr.Int32Array): # HINT: TreeNodeArray begin
+    def __new__(cls,nids,*tree,**kw):
+        return super(TreeNodeArray,cls).__new__(cls,nids)
     def __init__(self,nids,*tree,**kw):
         if self is nids: return
         if isinstance(nids,_C.Array):
