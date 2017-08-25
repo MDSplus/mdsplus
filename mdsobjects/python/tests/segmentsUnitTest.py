@@ -1,6 +1,7 @@
 from unittest import TestCase,TestSuite
-from MDSplus import Tree,Float32,Float32Array,Int16Array,setenv,DateToQuad,Int32Array,Range
+from MDSplus import Tree,Float32,Float32Array,Int16Array,setenv,DateToQuad,Int32Array,Range,Opaque
 from threading import RLock
+import os
 
 class Tests(TestCase):
     inThread = False
@@ -70,6 +71,8 @@ class Tests(TestCase):
             ptree.addNode('PS')
             ptree.addNode('PR')
             ptree.addNode('PTS')
+            ptree.addNode('JPGS')
+            ptree.addNode('JPG')
             ptree.write()
         ptree = Tree('seg_tree',self.shot)
         node = ptree.S
@@ -153,6 +156,24 @@ class Tests(TestCase):
         self.assertEqual(node.getSegmentLimits(1),(10,16))
         self.assertEqual(node.record.dim_of().tolist(),dim)
         self.assertEqual(node.record.data().tolist(),dat)
+        node = ptree.JPG
+        root = os.path.dirname(os.path.realpath(__file__))
+        node.record=Opaque.fromFile(root+'/images/mdsplus_logo.jpg')
+        opq = node.record
+        try:
+            from PIL import Image
+            img=opq.image
+        except ImportError:
+            pass
+        node = ptree.JPGS
+        node.makeSegment(None,None,None,Opaque.fromFile(root+'/images/mdsplus_logo.jpg'))
+        node.makeSegment(None,None,None,Opaque.fromFile(root+'/images/test-mpeg.mpg'))
+        node.makeSegment(None,None,None,Opaque.fromFile(root+'/images/test-mpeg.gif'))
+        self.assertEqual(len(node.record),3)
+        lens=(54851,706564,77013)
+        for i in range(3):
+          seg = node.getSegment(i)
+          self.assertEqual(len(seg.value.data.data()),lens[i])                         
 
     def compressSegments(self):
         with Tree('seg_tree',self.shot,'NEW') as ptree:
