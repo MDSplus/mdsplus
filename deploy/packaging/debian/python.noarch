@@ -148,6 +148,7 @@
 ./usr/local/mdsplus/mdsobjects/python/tests/devices/TestDevice.py
 ./usr/local/mdsplus/mdsobjects/python/tests/devicesUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/exceptionUnitTest.py
+./usr/local/mdsplus/mdsobjects/python/tests/images
 ./usr/local/mdsplus/mdsobjects/python/tests/images/mdsplus_logo.jpg
 ./usr/local/mdsplus/mdsobjects/python/tests/images/test-mpeg.gif
 ./usr/local/mdsplus/mdsobjects/python/tests/images/test-mpeg.mpg
