@@ -1956,23 +1956,84 @@ int TreeResetTimeContext()
   return status;
 }
 
+static int getOpaqueList(void *dbid, int nid, struct descriptor_xd *out) {
+  INIT_TREESUCCESS;
+  int isOpList=0;
+  EMPTYXD(segdata);
+  EMPTYXD(segdim);
+  status = _TreeGetSegment(dbid, nid, 0, &segdata, &segdim);
+  isOpList = segdata.pointer && (segdata.pointer->dtype == DTYPE_OPAQUE);
+  MdsFree1Dx(&segdata, 0);
+  MdsFree1Dx(&segdim, 0);
+  if (isOpList) {
+    OPEN_HEADER_READ;
+    SEGMENT_INDEX _sindex,*sindex;sindex=&_sindex;
+    int numsegs = shead->idx + 1;
+    int apd_idx = 0;
+    struct descriptor **dptr = malloc(sizeof(struct descriptor *) * numsegs);
+    DESCRIPTOR_APD(apd, DTYPE_LIST, dptr, numsegs);
+    memset(dptr, 0, sizeof(struct descriptor *) * numsegs);
+    status = GetSegmentIndex(tinfo, shead->index_offset, sindex);
+    int idx;
+    for (idx = numsegs; STATUS_OK && idx > 0; idx--) {
+      int segidx = idx - 1;
+      while (STATUS_OK && segidx < sindex->first_idx && sindex->previous_offset > 0)
+        status = GetSegmentIndex(tinfo, sindex->previous_offset, sindex);
+      if STATUS_NOT_OK
+        break;
+      else {
+        SEGMENT_INFO *sinfo = &sindex->segment[segidx % SEGMENTS_PER_INDEX];
+        EMPTYXD(segment);
+        EMPTYXD(dim);
+        status = ReadSegment(tinfo, nid, shead, sinfo, idx, &segment, &dim);
+        if STATUS_OK {
+          apd.pointer[apd_idx] = malloc(sizeof(struct descriptor_xd));
+          memcpy(apd.pointer[apd_idx++], &segment, sizeof(struct descriptor_xd));
+        } else {
+          MdsFree1Dx(&segment, 0);
+          MdsFree1Dx(&dim, 0);
+        }
+      }
+    }
+    if STATUS_OK {
+	status = MdsCopyDxXd((struct descriptor *)&apd, out);
+    }
+    for (idx = 0; idx < apd_idx; idx++) {
+      if (apd.pointer[idx] != NULL) {
+	MdsFree1Dx((struct descriptor_xd *)apd.pointer[idx], 0);
+	free(apd.pointer[idx]);
+      }
+    }
+    if (apd.pointer)
+      free(apd.pointer);
+  } else if STATUS_OK {
+    status = 0;
+  }
+  return status;
+}      
+  
 int _TreeGetSegmentedRecord(void *dbid, int nid, struct descriptor_xd *data)
 {
   INIT_TREESUCCESS;
-  static int activated = 0;
-  static int (*addr) (void *, int, struct descriptor *, struct descriptor *, struct descriptor *, struct descriptor_xd *);
-  if (!activated) {
-    static DESCRIPTOR(library, "XTreeShr");
-    static DESCRIPTOR(routine, "_XTreeGetTimedRecord");
-    status = LibFindImageSymbol(&library, &routine, &addr);
-    if STATUS_OK
-      activated = 1;
-    else {
-      fprintf(stderr, "Error activating XTreeShr library. Cannot access segmented records.\n");
-      return status;
+  int opstatus = getOpaqueList(dbid, nid, data );
+  if (opstatus & 1) {
+    return opstatus;
+  } else {
+    static int activated = 0;
+    static int (*addr) (void *, int, struct descriptor *, struct descriptor *, struct descriptor *, struct descriptor_xd *);
+    if (!activated) {
+      static DESCRIPTOR(library, "XTreeShr");
+      static DESCRIPTOR(routine, "_XTreeGetTimedRecord");
+      status = LibFindImageSymbol(&library, &routine, &addr);
+      if STATUS_OK
+        activated = 1;
+      else {
+        fprintf(stderr, "Error activating XTreeShr library. Cannot access segmented records.\n");
+        return status;
+      }
     }
+    return (*addr) (dbid, nid, TREE_START_CONTEXT.pointer, TREE_END_CONTEXT.pointer, TREE_DELTA_CONTEXT.pointer, data);
   }
-  return (*addr) (dbid, nid, TREE_START_CONTEXT.pointer, TREE_END_CONTEXT.pointer, TREE_DELTA_CONTEXT.pointer, data);
 }
 
 int _TreePutRow(void *dbid, int nid, int bufsize, int64_t * timestamp, struct descriptor_a *data){
