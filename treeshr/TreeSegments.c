@@ -2016,24 +2016,22 @@ int _TreeGetSegmentedRecord(void *dbid, int nid, struct descriptor_xd *data)
 {
   INIT_TREESUCCESS;
   int opstatus = getOpaqueList(dbid, nid, data );
-  if (opstatus & 1) {
+  if IS_OK(opstatus)
     return opstatus;
-  } else {
-    static int activated = 0;
-    static int (*addr) (void *, int, struct descriptor *, struct descriptor *, struct descriptor *, struct descriptor_xd *);
-    if (!activated) {
-      static DESCRIPTOR(library, "XTreeShr");
-      static DESCRIPTOR(routine, "_XTreeGetTimedRecord");
-      status = LibFindImageSymbol(&library, &routine, &addr);
-      if STATUS_OK
-        activated = 1;
-      else {
-        fprintf(stderr, "Error activating XTreeShr library. Cannot access segmented records.\n");
-        return status;
-      }
+  static int activated = 0;
+  static int (*addr) (void *, int, struct descriptor *, struct descriptor *, struct descriptor *, struct descriptor_xd *);
+  if (!activated) {
+    static DESCRIPTOR(library, "XTreeShr");
+    static DESCRIPTOR(routine, "_XTreeGetTimedRecord");
+    status = LibFindImageSymbol(&library, &routine, &addr);
+    if STATUS_OK
+      activated = 1;
+    else {
+      fprintf(stderr, "Error activating XTreeShr library. Cannot access segmented records.\n");
+      return status;
     }
-    return (*addr) (dbid, nid, TREE_START_CONTEXT.pointer, TREE_END_CONTEXT.pointer, TREE_DELTA_CONTEXT.pointer, data);
   }
+  return (*addr) (dbid, nid, TREE_START_CONTEXT.pointer, TREE_END_CONTEXT.pointer, TREE_DELTA_CONTEXT.pointer, data);
 }
 
 int _TreePutRow(void *dbid, int nid, int bufsize, int64_t * timestamp, struct descriptor_a *data){
