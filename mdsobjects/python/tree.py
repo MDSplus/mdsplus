@@ -969,6 +969,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
     _error=None
     _help=None
     _validation=None
+    _nid=None
+    _path=None
 
     @property
     def ctx(self): return self.tree.ctx
@@ -1252,7 +1254,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         try:
             self._path = self.getNci("path",False)
         except _exc.TreeNOT_OPEN:
-            return '%s (tree closed)'%self._path
+            return '%s /*tree closed*/'%self._path
         return self._path
 
     path_reference=nciProp("path_reference","node data contains path references")
@@ -2968,11 +2970,18 @@ class Device(TreeNode): # HINT: Device begin
         @type value: varied
         @rtype: None
         """
+        from  inspect import stack
         if name in self.part_dict:
             head = self if self._head==0 else self.head
             TreeNode(self.part_dict[name]+self.head.nid,self.tree,head).record=value
-        else:
-            super(Device,self).__setattr__(name,value)
+        elif (hasattr(self,name)
+           or name.startswith('_')
+           or isinstance(stack()[1][0].f_locals.get('self',None),Device)):
+                super(Device,self).__setattr__(name,value)
+        else: print("""WARNING: your tried to add the attribute or write to the subnode '%s' of '%s'.
+This is a deprecated action for Device nodes outside of Device methods. You should prefix the attribute with '_'.
+If you did intend to write to a subnode of the device you should check the proper path of the node: TreeNNF.
+"""%(name, self.path))
 
     @classmethod
     def getImportString(cls):

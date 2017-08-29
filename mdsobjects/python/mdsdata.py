@@ -83,6 +83,7 @@ class Data(object):
     _error=None
     _help=None
     _validation=None
+    __descriptor=None
     ctx=None
     @property  # used by numpy.array
     def __array_interface__(self):
