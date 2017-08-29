@@ -485,7 +485,7 @@ class WithError(Compound):
     """Specifies error information for any kind of data.
     """
     fields=('data','error')
-    dtype_id=211
+    dtype_id=213
 _dsc.addDtypeToClass(WithError)
 
 class Parameter(Compound):
