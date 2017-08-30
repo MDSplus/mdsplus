@@ -32,53 +32,13 @@ $ MCR ACTMON -monitor monitor-name
 
  External functions or symbols referenced:                                    */
 
-#include <mds_stdarg.h>
-#include <mdsdescrip.h>
-#include <mdsserver.h>
-#include <ncidef.h>
-#include <usagedef.h>
-#include <treeshr.h>
-#include <mdsshr.h>
-#include <mdslib.h>
-#include <stdlib.h>
+#include "actlogp.h"
 #include <Xm/Xm.h>
 #include <Mrm/MrmPublic.h>
-
 #include <Xm/ToggleB.h>
 #include <Xm/List.h>
 #include <Xm/MessageB.h>
 #include <Xm/Text.h>
-#include <stdio.h>
-#include <time.h>
-#include <pthread.h>
-#include <libroutines.h>
-#include <strroutines.h>
-#include <unistd.h>
-
-extern int ServerMonitorCheckin();
-extern int str_element();
-
-static pthread_mutex_t eventqueue_mutex = PTHREAD_MUTEX_INITIALIZER;
-#define   LOCK_EVENTQUEUE pthread_mutex_lock  (&eventqueue_mutex)
-#define UNLOCK_EVENTQUEUE pthread_mutex_unlock(&eventqueue_mutex)
-
-extern int TdiExecute();
-
-typedef struct _LinkedEvent {
-  char *msg;
-  char *tree;
-  int shot;
-  int phase;
-  int nid;
-  int on;
-  int mode;
-  char *server;
-  int status;
-  char *fullpath;
-  char *time;
-  char *status_text;
-  struct _LinkedEvent *next;
-} LinkedEvent;
 
 static void Exit(Widget w, int *tag, XtPointer callback_data);
 static void MessageAst();
@@ -87,18 +47,13 @@ static void Phase(LinkedEvent * event);
 static void Dispatched(LinkedEvent * event);
 static void Doing(LinkedEvent * event);
 static void Done(LinkedEvent * event);
-static void CheckIn(String monitor);
+static void CheckIn(char* monitor);
 static void DoOpenTree(LinkedEvent * event);
-//static void ActivateImage(struct descriptor *image);
-//static void ActivateImages(String images);
 static void Disable(Widget w, int *tag, XmToggleButtonCallbackStruct * cb);
 static void SetKillTarget(Widget w, int *tag, XmListCallbackStruct * cb);
 static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb);
 static void ConfirmServerAbort(Widget w, void *tag, void *cb);
 static void SetKillSensitive(Widget top);
-
-#define min(a,b) ( ((a)<(b)) ? (a) : (b) )
-#define max(a,b) ( ((a)>(b)) ? (a) : (b) )
 
 typedef struct _doingListItem {
   int nid;
@@ -113,32 +68,25 @@ static Widget LogWidget;
 static Widget kill_target_w;
 static Boolean ErrorWidgetOff = FALSE;
 static Boolean CurrentWidgetOff = FALSE;
-static Boolean LogWidgetOff = TRUE;
-static char *current_tree = NULL;
-static int current_shot = -9999;
-static int current_phase = -9999;
-static int current_node_entry;
-static int current_on;
-static const char *asterisks = "********************************************";
+static Boolean LogWidgetOff = FALSE;
+
 #define MaxLogLines 4000
 #define EventEfn 1
 #define DOING 1
 #define DONE 2
-static LinkedEvent *EventQueueHead = 0;
-static LinkedEvent *EventQueueTail = 0;
+
 int unique_tag_seed = 0;
 static XmString done_label;
 static XmString doing_label;
 static XmString dispatched_label;
 static XmString error_label;
 static XtAppContext app_ctx;
-static void DoTimer();
 
 #define TimeString(tm) ctime(&tm)
 
-int main(int argc, String * argv)
+int main(int argc, char** argv)
 {
-  static String hierarchy_name[] = { "actmon.uid" };
+  static char* hierarchy_name[] = { "actmon.uid" };
   static MrmRegisterArg callbacks[] = { {"Exit", (char *)Exit},
   {"Disable", (char *)Disable},
   {"ConfirmAbort", (char *)ConfirmAbort},
@@ -148,13 +96,13 @@ int main(int argc, String * argv)
   MrmType class;
   static XrmOptionDescRec options[] = { {"-monitor", "*monitor", XrmoptionSepArg, NULL} };
   static XtResource resources[] = {
-    {"monitor", "Monitor", XtRString, sizeof(String), 0, XtRString, "ACTION_MONITOR"},
-    {"images",  "Images",  XtRString, sizeof(String), sizeof(String), XtRString, ""}
+    {"monitor", "Monitor", XtRString, sizeof(char*), 0, XtRString, "ACTION_MONITOR"},
+    {"images",  "Images",  XtRString, sizeof(char*), sizeof(char*), XtRString, ""}
   };
   MrmHierarchy drm_hierarchy;
   struct {
-    String monitor;
-    String images;
+    char* monitor;
+    char* images;
   } resource_list;
   Widget top;
   Widget mainWidget;
@@ -347,128 +295,17 @@ static void Disable(Widget w __attribute__ ((unused)), int *tag, XmToggleButtonC
   }
 }
 
-static void ParseTime(LinkedEvent * event)
-{
-  event->time = strtok(event->time, " ");
-  while (event->time && strchr(event->time, ':') == 0)
-    event->time = strtok(0, " ");
-}
-
-static int parseMsg(char *msg, LinkedEvent * event)
-{
-  char *tmp;
-  if (!msg) return C_ERROR;
-  event->msg = strcpy(malloc(strlen(msg) + 1), msg);
-  event->tree = strtok(event->msg, " ");
-  if (!event->tree) return C_ERROR;
-  tmp = strtok(0, " ");
-  if (!tmp) return C_ERROR;
-  event->shot = atoi(tmp);
-  if (event->shot <= 0) return C_ERROR;
-  tmp = strtok(0, " ");
-  if (!tmp) return C_ERROR;
-  event->phase = atoi(tmp);
-  tmp = strtok(0, " ");
-  if (!tmp) return C_ERROR;
-  event->nid = atoi(tmp);
-  tmp = strtok(0, " ");
-  if (!tmp) return C_ERROR;
-  event->on = atoi(tmp);
-  if (event->on != 0 && event->on != 1) return C_ERROR;
-  tmp = strtok(0, " ");
-  if (!tmp) return C_ERROR;
-  event->mode = atoi(tmp);
-  event->server = strtok(0, " ");
-  if (!event->server) return C_ERROR;
-  tmp = strtok(0, " ");
-  if (!tmp) return C_ERROR;
-  event->status = atoi(tmp);
-  event->fullpath = strtok(0, " ");
-  if (!event->fullpath) return C_ERROR;
-  event->time = strtok(0, ";");
-  if (!event->time) return C_ERROR;
-  event->status_text = strtok(0, ";");
-  if (!event->status_text) return C_ERROR;
-  ParseTime(event);
- return C_OK;
-}
-
-static LinkedEvent *GetQEvent()
-{
-  LinkedEvent *ans = 0;
-  LOCK_EVENTQUEUE;
-  ans = EventQueueHead;
-  if (EventQueueHead)
-    EventQueueHead = EventQueueHead->next;
-  if (!EventQueueHead)
-    EventQueueTail = 0;
-  UNLOCK_EVENTQUEUE;
-  return ans;
-}
-
-static void DoTimer()
-{
-  LinkedEvent *ev;
-  while ((ev = GetQEvent()) != 0) {
-    EventUpdate(ev);
-    if (ev->msg)
-      free(ev->msg);
-    free(ev);
-  }
+static void DoTimer(){
+  _DoTimer();
   XtAppAddTimeOut(app_ctx, 100, DoTimer, 0);
 }
 
-static void QEvent(LinkedEvent * ev)
-{
-  ev->next = 0;
-  LOCK_EVENTQUEUE;
-  if (EventQueueTail)
-    EventQueueTail->next = ev;
-  else {
-    EventQueueHead = ev;
-  }
-  EventQueueTail = ev;
-  UNLOCK_EVENTQUEUE;
-}
-
-static void MessageAst(void* dummy __attribute__ ((unused)), char *reply)
-{
-  LinkedEvent *event = malloc(sizeof(LinkedEvent));
-  event->msg = NULL;
-  if (!parseMsg(reply, event)) {
-    QEvent(event);
-    return;
-  }
-  if (event->msg)
-    free(event->msg);
-  free(event);
-  CheckIn(0);
-}
-
-static void EventUpdate(LinkedEvent * event)
-{
-  switch (event->mode) {
-  case build_table_begin:
-    DoOpenTree(event);
-  case build_table:
-    break;
-  case build_table_end:
-    break;
-  case dispatched:
-    Dispatched(event);
-    break;
-  case doing:
-    Doing(event);
-    break;
-  case done:
-    Done(event);
-    break;
-  }
+static void EventUpdate(LinkedEvent * event){
+  _EventUpdate(event);
   XmTextSetString(kill_target_w, "");
 }
 
-static int FindServer(char *name, ServerList ** srv)
-{
+static int FindServer(char *name, ServerList ** srv){
   ServerList *prev, *ptr, *newPtr;
   int idx;
   int match = 1;
@@ -494,8 +331,7 @@ static int FindServer(char *name, ServerList ** srv)
   return idx;
 }
 
-static void PutLog(char *time, char *mode, char *status, char *server, char *path)
-{
+static void PutLog(char *time, char *mode, char *status, char *server, char *path){
   ServerList *srv;
   char text[2048];
   XmString item;
@@ -503,15 +339,15 @@ static void PutLog(char *time, char *mode, char *status, char *server, char *pat
   if ((LogWidgetOff && CurrentWidgetOff) || (LogWidget == 0))
     return;
   sprintf(text, "%s %12d %-10.10s %-44.44s %-20.20s %s", time, current_shot, mode, status, server, path);
-  item = XmStringCreateSimple(text);
   if (!LogWidgetOff) {
+    item = XmStringCreateSimple(text);
     XmListAddItemUnselected(LogWidget, item, 0);
     XmStringFree(item);
     XtVaGetValues(LogWidget, XmNitemCount, &items, NULL);
     if (items > MaxLogLines) {
       DoingListItem *doing;
       for (doing = DoingList; doing; doing = doing->next)
-	doing->pos--;
+        doing->pos--;
       XmListDeletePos(LogWidget, 1);
     }
     XmListSetBottomPos(LogWidget, 0);
@@ -527,16 +363,16 @@ static void PutLog(char *time, char *mode, char *status, char *server, char *pat
     } else if (strcmp(mode, "DONE") == 0) {
       int idx = FindServer(server, &srv);
       if (strcmp(srv->path, path) == 0) {
-	strcpy(srv->path, "");
-	item = XmStringCreateSimple(server);
-	XmListReplaceItemsPos(CurrentWidget, &item, 1, idx);
-	XmStringFree(item);
+        strcpy(srv->path, "");
+        item = XmStringCreateSimple(server);
+        XmListReplaceItemsPos(CurrentWidget, &item, 1, idx);
+        XmStringFree(item);
       }
     }
   }
 }
 
-static void PutError(char *time, String mode, char *status, char *server, char *path)
+static void PutError(char *time, char* mode, char *status, char *server, char *path)
 {
 
   char text[2048];
@@ -563,49 +399,18 @@ static void PutError(char *time, String mode, char *status, char *server, char *
 
 }
 
-static void DoOpenTree(LinkedEvent * event)
-{
+static void DoOpenTree(LinkedEvent * event){
   DoingListItem *doing;
   DoingListItem *next;
   XmListDeleteAllItems(ErrorWidget);
-  current_node_entry = 0;
-  current_on = -1;
-  current_phase = 9999;
   XmListDeselectAllItems(LogWidget);
   for (doing = DoingList; doing; doing = next) {
     next = doing->next;
     free(doing);
   }
   DoingList = 0;
-  if ((event->shot != current_shot) || strcmp(event->tree, current_tree)) {
-    current_shot = event->shot;
-    current_tree = realloc(current_tree, strlen(event->tree) + 1);
-    strcpy(current_tree, event->tree);
-    PutLog(event->time, "NEW SHOT", (char *)asterisks, (char *)asterisks, current_tree);
-  }
+  _DoOpenTree(event);
   unique_tag_seed = 0;
-}
-
-static void Phase(LinkedEvent * event)
-{
-  static DESCRIPTOR(const unknown, "UNKNOWN");
-  static struct descriptor phase = { 0, DTYPE_T, CLASS_D, 0 };
-  static DESCRIPTOR(const phase_lookup, "PHASE_NAME_LOOKUP($)");
-  static struct descriptor phase_d = { sizeof(int), DTYPE_L, CLASS_S, 0 };
-  phase_d.length = sizeof(int);
-  phase_d.pointer = (char *)&event->phase;
-  if (current_phase != event->phase) {
-    if (!(TdiExecute(&phase_lookup, &phase_d, &phase MDS_END_ARG) & 1))
-      StrCopyDx((struct descriptor *)&phase, (struct descriptor *)&unknown);
-    PutLog(event->time, "PHASE", (char *)asterisks, (char *)asterisks, phase.pointer);
-    current_phase = event->phase;
-  }
-}
-
-static void Dispatched(LinkedEvent * event)
-{
-  Phase(event);
-  PutLog(event->time, "DISPATCHED", " ", event->server, event->fullpath);
 }
 
 static void Doing(LinkedEvent * event)
@@ -613,9 +418,8 @@ static void Doing(LinkedEvent * event)
   DoingListItem *doing = malloc(sizeof(DoingListItem));
   DoingListItem *prev;
   DoingListItem *d;
+  _Doing(event);
   int items;
-  Phase(event);
-  PutLog(event->time, "DOING", " ", event->server, event->fullpath);
   XtVaGetValues(LogWidget, XmNitemCount, &items, NULL);
   XmListSelectPos(LogWidget, 0, 0);
   for (prev = 0, d = DoingList; d; prev = d, d = d->next) ;
@@ -628,13 +432,13 @@ static void Doing(LinkedEvent * event)
   doing->next = 0;
 }
 
-static void Done(LinkedEvent * event)
-{
+static void Done(LinkedEvent * event){
   DoingListItem *doing;
   DoingListItem *prev;
   int *items;
   int num;
   XmListGetSelectedPos(LogWidget, &items, &num);
+  if (items) free(items);
   for (prev = 0, doing = DoingList; doing && (doing->nid != event->nid);
        prev = doing, doing = doing->next) ;
   if (doing) {
@@ -645,27 +449,11 @@ static void Done(LinkedEvent * event)
       DoingList = doing->next;
     free(doing);
   }
-  PutLog(event->time, "DONE", (event->status & 1) ? " " : event->status_text, event->server,
-	 event->fullpath);
-  if (!(event->status & 1))
-    PutError(event->time, "DONE", event->status_text, event->server, event->fullpath);
+  _Done(event);
 }
 
-static void CheckIn(String monitor_in)
-{
-  static String monitor;
-  INIT_STATUS_ERROR;
-  if (monitor_in)
-    monitor = monitor_in;
-  for (;;) {
-    status = ServerMonitorCheckin(monitor, MessageAst, 0);
-    if STATUS_OK return;
-    printf("Error connecting to monitor: %s, will try again shortly\n", monitor);
-    sleep(2);
-  }
-}
 /*
-static void ActivateImages(String images)
+static void ActivateImages(char* images)
 {
   struct descriptor list = { 0, DTYPE_T, CLASS_S, 0 };
   struct descriptor image = { 0, DTYPE_T, CLASS_D, 0 };

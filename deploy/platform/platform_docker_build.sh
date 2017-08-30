@@ -18,7 +18,12 @@ getenv() {
 runtests() {
     # run tests with the platform specific params read from test32 and test64
     testarch ${test64};
-    testarch ${test32};
+    if [ -f /usr/bin/python-i686 ]
+    then
+      PYTHON=/usr/bin/python-i686 testarch ${test32};
+    else
+      testarch ${test32};
+    fi
     checktests;
 }
 testarch(){
@@ -28,14 +33,20 @@ testarch(){
     normaltest $@;
 }
 config() {
+    if [ -z "$JARS_DIR" ]
+    then
+	JAVA_OPTS="--with-java_target=6 --with-java_bootclasspath=/source/rt.jar"
+    else
+	JAVA_OPTS="--with-jars=${JARS_DIR}"
+    fi
     :&& /source/configure \
         --prefix=${MDSPLUS_DIR} \
         --exec_prefix=${MDSPLUS_DIR} \
         --host=$2 \
         --bindir=${MDSPLUS_DIR}/$3 \
         --libdir=${MDSPLUS_DIR}/$4 \
-        --with-java_target=6 \
-        --with-java_bootclasspath=/source/rt.jar \
+        ${CONFIGURE_PARAMS} \
+        ${JAVA_OPTS} \
         $5 $6 $7 $8 $9;
     status=$?
 }
@@ -130,9 +141,18 @@ sanitize() {
         done
     fi
 }
+make_jars() {
+  rm -Rf /workspace/jars
+  mkdir -p /workspace/jars
+  pushd /workspace/jars
+  /source/configure --enable-java_only --with-java_target=6 --with-java_bootclasspath=/source/rt.jar
+  if [ -z "$NOMAKE" ]; then
+    $MAKE
+  fi
+  popd
+}
+
 normaltest() {
-  if [ "$TEST" = "yes" ] || [ ! -z "$VALGRIND_TOOLS" ]
-  then
     gettimeout() {
         declare -i n=1800*$#
         echo $n
@@ -140,17 +160,14 @@ normaltest() {
     ### Build with debug to run regular and valgrind tests
     MDSPLUS_DIR=/workspace/tests/$1/buildroot;
     config_test $@
-   if [ -z "$NOMAKE" ]; then
+    if [ -z "$NOMAKE" ]; then
     $MAKE
     checkstatus abort "Failure compiling $1-bit." $?
     $MAKE install
     checkstatus abort "Failure installing $1-bit." $?
-    if [ "$TEST" = "yes" ]
-    then
-        ### Run standard tests
-        :&& tio 600 $MAKE -k tests 2>&1
-        checkstatus tests_$1 "Failure testing $1-bit." $?
-    fi
+    ### Run standard tests
+    :&& tio 600 $MAKE -k tests 2>&1
+    checkstatus tests_$1 "Failure testing $1-bit." $?
     if [ ! -z "$VALGRIND_TOOLS" ]
     then
         ### Test with valgrind
@@ -160,7 +177,6 @@ normaltest() {
     fi
    fi
     popd
-  fi
 }
 RED() {
     if [ "$1" = "yes" ]
@@ -188,10 +204,15 @@ main(){
     then
         source /source/deploy/os/${OS}.env
     fi
-    if [ "$TEST" = "yes" ] || [ ! -z "$SANITIZE" ] || [ ! -z "$VALGRIND_TOOLS" ]
+    if [ "$TEST" = "yes" ]
     then
         set +e
         runtests
+    fi
+    if [ "$MAKE_JARS" = "yes" ]
+    then
+      set +e
+      make_jars
     fi
     case "$BRANCH" in
      stable) export BNAME="";;
@@ -212,5 +233,6 @@ main(){
 source /source/deploy/platform/${PLATFORM}/${PLATFORM}_docker_build.sh
 if [ ! -z "$0" ] && [ ${0:0:1} != "-" ] && [ "$( basename $0 )" = "platform_docker_build.sh" ]
 then
+    env
     main
 fi

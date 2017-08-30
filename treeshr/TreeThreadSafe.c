@@ -8,28 +8,29 @@
 #include <strroutines.h>
 #include <string.h>
 
+/* Key for the thread-specific buffer */
+STATIC_THREADSAFE pthread_key_t buffer_key;
+/* Once-only initialisation of the key */
+STATIC_THREADSAFE pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
+/* lock pthread_once */
+STATIC_THREADSAFE pthread_mutex_t buffer_key_mutex = PTHREAD_MUTEX_INITIALIZER;
 /* Free the thread-specific buffer */
 STATIC_ROUTINE void buffer_destroy(void *buf){
-  if (buf) free(buf);
+  free(buf);
 }
-
+STATIC_ROUTINE void buffer_key_alloc(){
+  pthread_key_create(&buffer_key, buffer_destroy);
+}
 /* Return the thread-specific buffer */
 TreeThreadStatic *TreeGetThreadStatic(){
-  static pthread_key_t buffer_key;
-  static int is_init = B_FALSE;
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-  TreeThreadStatic *p;
-  pthread_mutex_lock(&mutex);
-  if (!is_init) {
-    pthread_key_create(&buffer_key, buffer_destroy);
-    is_init = B_TRUE;
+  pthread_mutex_lock(&buffer_key_mutex);
+  pthread_once(&buffer_key_once, buffer_key_alloc);
+  pthread_mutex_unlock(&buffer_key_mutex);
+  void* p = pthread_getspecific(buffer_key);
+  if (!p) {
+    p = calloc(1,sizeof(TreeThreadStatic));
+    pthread_setspecific(buffer_key, p);
   }
-  p = (TreeThreadStatic *) pthread_getspecific(buffer_key);
-  if (p == NULL) {
-    p = (TreeThreadStatic *) memset(malloc(sizeof(TreeThreadStatic)), 0, sizeof(TreeThreadStatic));
-    pthread_setspecific(buffer_key, (void *)p);
-  }
-  pthread_mutex_unlock(&mutex);
   return p;
 }
 

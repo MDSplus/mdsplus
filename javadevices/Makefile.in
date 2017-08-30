@@ -284,11 +284,13 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 JAR = @JAR@
+JARS_DIR = @JARS_DIR@
 JAVAC = @JAVAC@
 JAVACFLAGS = @JAVACFLAGS@
 JAVAC_PATH_NAME = @JAVAC_PATH_NAME@
 JAVAVERSION = @JAVAVERSION@
 JAVA_APS = @JAVA_APS@
+JAVA_ONLY = @JAVA_ONLY@
 JDK_CFLAGS = @JDK_CFLAGS@
 JDK_DIR = @JDK_DIR@
 JDK_LIVECONNECT = @JDK_LIVECONNECT@
@@ -483,10 +485,6 @@ CLEANFILES = $(java_DATA)
 JAVAROOT = $(builddir)
 CLASSPATH_ENV = CLASSPATH=$(top_builddir)/javatraverser/jTraverser.jar
 javadir = $(exec_prefix)/java/classes
-java_JAVA = $(SOURCES)
-
-# Build the final jar
-java_DATA = jDevices.jar
 
 # Giant list of source files follow
 SOURCES = \
@@ -644,6 +642,8 @@ JRG_ADC32ASetup.java \
 A3248Setup.java \
 MARTE_DUTY_CYCLESetup.java
 
+java_DATA = jDevices.jar
+@USE_JARS_DIR_FALSE@java_JAVA = $(SOURCES)
 all: all-am
 
 .SUFFIXES:
@@ -931,8 +931,13 @@ uninstall-am: uninstall-javaDATA uninstall-javaJAVA
 .PRECIOUS: Makefile
 
 
-jDevices.jar: classjava.stamp
-	$(JAR) c0f $@ $(java_JAVA:.java=*.class)
+@USE_JARS_DIR_TRUE@jDevices.jar: @JARS_DIR@/javadevices/jDevices.jar
+@USE_JARS_DIR_TRUE@	cp $< $@
+
+# Build the final jar
+
+@USE_JARS_DIR_FALSE@jDevices.jar: classjava.stamp
+@USE_JARS_DIR_FALSE@	$(JAR) c0f $@ $(java_JAVA:.java=*.class)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

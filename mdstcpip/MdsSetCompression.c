@@ -20,7 +20,7 @@ int MdsSetCompression(int id, int level)
     char expression[128];
     struct descrip ans = {0};
     sprintf(expression, "MdsSetCompression(%d)", level);
-    MdsValue(id, expression, &ans, 0);
+    MdsValue(id, expression, &ans, NULL);
     if (ans.ptr != 0)
       free(ans.ptr);
   }

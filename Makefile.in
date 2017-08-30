@@ -11,9 +11,12 @@ VPATH=@srcdir@
 @TARGET_SELFHELP@
 HELP_DESCRIPTION = This is MDSplus build system, documented targets follow:
 
-JAVA_APS = javamds \
+JAVA_APS = \
+           javamds \
 	   javascope \
-           javatraverser \
+	   javatraverser \
+	   javatraverser2 \
+	   javatraverser2/java/mds/mdslib \
 	   javadispatcher \
 	   javadevices \
 	   javaclient \
@@ -30,8 +33,17 @@ HDF5_APS = hdf5
 
 D3D_PACKAGE = d3dshr
 
+ifeq "@JAVA_ONLY@" "yes"
+PARTS = javascope \
+        javatraverser \
+	javatraverser2 \
+	javadispatcher \
+	javadevices \
+	javaclient \
+	mdsobjects/java
+else
 PARTS = \
-mdsshr \
+        mdsshr \
         treeshr \
         tdishr \
         tditest \
@@ -64,7 +76,7 @@ mdsshr \
 
 @MINGW_TRUE@ PARTS += icons
 @ENABLE_TESTS_TRUE@ PARTS += testing
-
+endif
 
 .PHONY: all $(PARTS)
 all: ##@build build all active submodules
@@ -154,9 +166,9 @@ $(install_DIRS):
 .PHONY: install
 install: ##@build build and install active modules to prefix directory
 install: $(install_DIRS)
-	- find $(prefix)/java -name '*.class' -delete #### No need to include class files
 	$(MKDIR_P) $(prefix)/local/tdi
 	$(MKDIR_P) $(prefix)/java
+	- find $(prefix)/java -name '*.class' -delete #### No need to include class files
 	tar -C ${top_srcdir} \
 		--exclude='.gitignore' \
 		--exclude='*.pyc' \
@@ -166,7 +178,7 @@ install: $(install_DIRS)
 		--exclude='*egg-info' \
 		--exclude='*\.in' \
 		--exclude='Makefile\.*' \
-		-cf  - $(MISC_PARTS) | (cd $(exec_prefix); tar -xvf -)
+		-cf  - $(MISC_PARTS) | (cd $(exec_prefix); tar -xf -)
 	find . -name '_version\.py' -not -path "./$(realpath --relative-to=$(pwd) $(exec_prefix))/*" -exec cp {} $(exec_prefix)/{} \;
 	tar -C ${top_builddir} -cf - include/config.h | (cd $(exec_prefix); tar -xf -) ## TODO: remove this and config.h from headers ...
 	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > $(exec_prefix)/mdsobjects/python/mdsplus_version.py; fi

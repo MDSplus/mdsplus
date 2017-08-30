@@ -6,42 +6,41 @@
 #include <stdlib.h>
 #include <string.h>
 /* Key for the thread-specific buffer */
-STATIC_THREADSAFE int is_init = B_FALSE;
 STATIC_THREADSAFE pthread_key_t buffer_key;
 /* Once-only initialisation of the key */
-STATIC_THREADSAFE pthread_rwlock_t buffer_lock   = PTHREAD_RWLOCK_INITIALIZER;
-#define WRLOCK_BUFFER pthread_rwlock_wrlock(&buffer_lock);
-#define RDLOCK_BUFFER pthread_rwlock_rdlock(&buffer_lock);
-#define UNLOCK_BUFFER pthread_rwlock_unlock(&buffer_lock);
-
+STATIC_THREADSAFE pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
+/* lock pthread_once */
+STATIC_THREADSAFE pthread_mutex_t buffer_key_mutex = PTHREAD_MUTEX_INITIALIZER;
 /* Free the thread-specific buffer */
 STATIC_ROUTINE void buffer_destroy(void *buf){
-  if (buf) {
-    ThreadStatic *ThreadStatic_p = (ThreadStatic *)buf;
-    if (ThreadStatic_p) {
-      if (PROMPT) free(PROMPT);
-      if (DEF_FILE) free(DEF_FILE);
+  ThreadStatic *ThreadStatic_p = (ThreadStatic *)buf;
+  if (ThreadStatic_p) {
+    if (PROMPT) free(PROMPT);
+    if (DEF_FILE) free(DEF_FILE);
+    dclDocListPtr next,dcl = DCLDOCS;
+    for (;dcl;) {
+      next = dcl->next;
+      free(dcl);
+      dcl=next;
     }
-    free(buf);
   }
+  free(buf);
 }
+STATIC_ROUTINE void buffer_key_alloc(){
+  pthread_key_create(&buffer_key, buffer_destroy);
+}
+
 /* Return the thread-specific buffer */
 ThreadStatic *mdsdclGetThreadStatic(){
-  ThreadStatic *p;
-  RDLOCK_BUFFER;
-  if (!is_init) {
-    UNLOCK_BUFFER;
-    WRLOCK_BUFFER;
-    pthread_key_create(&buffer_key, buffer_destroy);
-    is_init = B_TRUE;
+  pthread_mutex_lock(&buffer_key_mutex);
+  pthread_once(&buffer_key_once, buffer_key_alloc);
+  pthread_mutex_unlock(&buffer_key_mutex);
+  void* p = pthread_getspecific(buffer_key);
+  if (!p) {
+    p = calloc(1, sizeof(ThreadStatic));
+    pthread_setspecific(buffer_key, p);
   }
-  p = (ThreadStatic *) pthread_getspecific(buffer_key);
-  if (p == NULL) {
-    p = (ThreadStatic *) memset(calloc(1, sizeof(ThreadStatic)), 0, sizeof(ThreadStatic));
-    pthread_setspecific(buffer_key, (void *)p);
-  }
-  UNLOCK_BUFFER;
-  return p;
+  return (ThreadStatic *)p;
 }
 
 void mdsdclSetPrompt(const char *prompt){
@@ -66,6 +65,15 @@ void mdsdclSetDefFile(const char *deffile){
     DEF_FILE = strdup(deffile + 1);
   else
     DEF_FILE = strdup(deffile);
+}
+
+void mdsdclAllocDocDef(dclDocListPtr doc_l){
+  GET_THREADSTATIC_P;
+  dclDocListPtr doc_p = malloc(sizeof(dclDocList));
+  doc_p->name = doc_l->name;
+  doc_p->doc  = doc_l->doc;
+  doc_p->next = DCLDOCS;
+  DCLDOCS = doc_p;
 }
 
 #ifdef PTHREAD_RECURSIVE_MUTEX_INITIALIZER

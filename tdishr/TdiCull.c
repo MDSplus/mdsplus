@@ -23,7 +23,7 @@
 
 
 
-#define _MOVC3(a,b,c) memmove(c,b,a)
+#define _MOVC3(a,b,c) memmove(c,b,(size_t)a)
 
 extern unsigned short OpcValue;
 
@@ -170,7 +170,7 @@ STATIC_ROUTINE int rcull(struct descriptor *pnew __attribute__ ((unused)),
                 Scalars must be nulled elsewhere.
                 ********************************/
     if (px->class == CLASS_A) {
-      px->arsize = (char *)po - px->pointer;
+      px->arsize = (unsigned int)((char *)po - px->pointer);
       px->dimct = 1;
       px->aflags.coeff = 0;
       px->aflags.bounds = 0;

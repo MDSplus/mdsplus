@@ -162,7 +162,7 @@ EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name, void **t
   int *nids;
   int *nidptr;
   char tree[12];
-  int shot;
+  int shot = -1;
   char *cptr;
   static DBI_ITM itmlst[] = {
     {sizeof(tree), DbiNAME, 0, 0},

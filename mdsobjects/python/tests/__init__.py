@@ -22,7 +22,6 @@ def test_all(*arg):
       print("Hit return after gdb is connected\n")
       sys.stdin.readline()
     testSuites = [
-        'connectionUnitTest',
         'dataUnitTest',
         'dclUnitTest',
         'devicesUnitTest',
@@ -31,6 +30,7 @@ def test_all(*arg):
         'treeUnitTest',
         'threadsUnitTest',
     ]
+    #testSuites += ['connectionUnitTest']
     tests=[]
     for suite in testSuites:
         try:

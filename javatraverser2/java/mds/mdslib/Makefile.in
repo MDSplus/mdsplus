@@ -1,0 +1,28 @@
+include @top_builddir@/Makefile.inc
+
+srcdir=@srcdir@
+builddir=@builddir@
+VPATH = @srcdir@
+@MINGW_TRUE@ DEF=${srcdir}/JavaMdsLib.def
+
+CFLAGS += -I $(THREAD) @JDK_CFLAGS@
+
+SOURCES = JavaMdsLib.c
+OBJECTS = $(SOURCES:.c=.o)
+EXPORTS = JavaMdsLib.export
+
+all: 	@MAKELIBDIR@ @MAKELIBDIR@@LIBPRE@JavaMdsLib@SHARETYPEJNI@
+
+depend:
+	@makedepend -- $(CFLAGS) -- $(SOURCES)
+
+clean:
+	@ $(RM) $(OBJECTS)
+	@ $(RM) @MAKELIBDIR@@LIBPRE@JavaMdsLib@SHARETYPEJNI@
+
+install: $(libdir)
+	$(INSTALL) -m 755  @MAKELIBDIR@@LIBPRE@JavaMdsLib@SHARETYPEJNI@ @libdir@
+
+@MAKELIBDIR@@LIBPRE@JavaMdsLib@SHARETYPEJNI@ : $(OBJECTS) $(DEF)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKJNI@ $(THREAD) $^ -L@MAKELIBDIR@ -lMdsShr -lTdiShr $(LIBS)
+

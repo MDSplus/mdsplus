@@ -77,7 +77,7 @@ int TreeDoFun(struct descriptor *funname, int nargs, struct descriptor **args,
   STATIC_CONSTANT DESCRIPTOR(tdievaluate, "TdiEvaluate");
   DESCRIPTOR_FUNCTION(fun, &OpcExtFunction, 255);
   void *call_arglist[] = { (void *)3, (void *)&fun, (void *)out_ptr, MdsEND_ARG };
-  fun.ndesc = nargs + 2;
+  fun.ndesc = nargs>253 ? 255 : (unsigned char)(nargs + 2);
   fun.arguments[0] = 0;
   fun.arguments[1] = funname;
   for (i = 0; i < nargs; i++)
@@ -171,7 +171,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     }
     StrConcat((struct descriptor *)&method, conglom_ptr->model, (struct descriptor *)&underunder, method_ptr MDS_END_ARG);
     for (i = 0; i < method.length; i++)
-      method.pointer[i] = tolower(method.pointer[i]);
+      method.pointer[i] = (char)tolower(method.pointer[i]);
     if (conglom_ptr->image && conglom_ptr->image->dtype == DTYPE_T)
       status = LibFindImageSymbol(conglom_ptr->image, &method, &addr);
     else

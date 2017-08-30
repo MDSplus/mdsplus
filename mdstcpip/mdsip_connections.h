@@ -145,6 +145,7 @@ typedef struct _io_routines {
   int (*authorize)(int conid, char *username);
   int (*reuseCheck)(char *connectString, char *uniqueString, size_t buflen);
   int (*disconnect)(int conid);
+  int (*settimeout)(int conid, int sec, int usec);
 } IoRoutines;
 
 #define EVENTASTREQUEST "---EVENTAST---REQUEST---"
@@ -338,7 +339,7 @@ EXPORT void FreeMessage(void *message);
 /// \return the function returns the status held by the answered descriptor.
 ///
 EXPORT int GetAnswerInfo(int id, char *dtype, short *length, char *ndims,
-                         int *dims, int *numbytes, void **dptr);
+                         int *dims, int *numbytes, void **dptr, int timeout);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -360,7 +361,7 @@ EXPORT int GetAnswerInfo(int id, char *dtype, short *length, char *ndims,
 /// \return the function returns the status held by the answered descriptor
 ///
 EXPORT int GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims,
-                           int *dims, int *numbytes, void **dptr, void **m);
+                           int *dims, int *numbytes, void **dptr, void **m, int timeout);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -429,6 +430,7 @@ EXPORT Message *GetMdsMsg(int id, int *status);
 /// \param status writes out the exit status to the pointed instace
 /// \return returns a \ref Message structure filled by content of the response
 ///
+EXPORT Message *GetMdsMsgTO(int id, int *status, int timeout);
 EXPORT Message *GetMdsMsgOOB(int id, int *status);
 
 EXPORT unsigned char GetMode();
@@ -633,7 +635,7 @@ EXPORT int ReuseCheck(char *hostin, char *unique, size_t buflen);
 /// succesfully sent or false otherwise.
 ///
 EXPORT int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs,
-                   short length, char ndims, int *dims, char *bytes);
+                   unsigned short length, char ndims, int *dims, char *bytes);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///

@@ -1,30 +1,31 @@
 from unittest import TestCase,TestSuite
 import os,sys
 from re import match
-from threading import Lock
+from threading import RLock
 
 from MDSplus import Tree,Device
 from MDSplus import getenv,setenv,dcl,ccl,tcl,cts
 from MDSplus import mdsExceptions as Exc
 
-class dclTests(TestCase):
+class Tests(TestCase):
     debug = False
-    lock = Lock()
-    shotinc = 2
-    instances = 0
     inThread = False
+    lock = RLock()
+    shotinc = 1
+    instances = 0
     index = 0
     @property
     def shot(self):
-        return self.index*dclTests.shotinc+1
-    def _doTCLTest(self,expr,out=None,err=None,re=False):
+        return self.index*Tests.shotinc+1
+
+    def _doTCLTest(self,expr,out=None,err=None,re=False,tcl=tcl):
         def checkre(pattern,string):
             if pattern is None:
                 self.assertEqual(string is None,True)
             else:
                 self.assertEqual(string is None,False)
                 self.assertEqual(match(pattern,str(string)) is None,False,'"%s"\nnot matched by\n"%s"'%(string,pattern))
-        if dclTests.debug: sys.stderr.write("TCL(%s)\n"%(expr,));
+        if Tests.debug: sys.stderr.write("TCL(%s)\n"%(expr,));
         outerr = tcl(expr,True,True,True)
         if not re:
             self.assertEqual(outerr,(out,err))
@@ -33,7 +34,7 @@ class dclTests(TestCase):
             checkre(err,outerr[1])
 
     def _doExceptionTest(self,expr,exc):
-        if dclTests.debug: sys.stderr.write("TCL(%s) # expected exception: %s\n"%(expr,exc.__name__));
+        if Tests.debug: sys.stderr.write("TCL(%s) # expected exception: %s\n"%(expr,exc.__name__));
         try:
             tcl(expr,True,True,True)
         except Exception as e:
@@ -61,8 +62,6 @@ class dclTests(TestCase):
                      Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE')
                      pytree.write()
             cls.instances += 1
-            if cls.inThread:
-                print('threads up: %d'%(cls.instances,))
 
     @classmethod
     def _setenv(cls,name,value):
@@ -96,9 +95,10 @@ class dclTests(TestCase):
         self._doTCLTest('add node TCL_NUM/usage=numeric')
         self._doTCLTest('add node TCL_PY_DEV/model=TESTDEVICE')
         self._doTCLTest('do TESTDEVICE:TASK_TEST')
-        self._doExceptionTest('do TESTDEVICE:TASK_ERROR',Exc.DevUNKOWN_STATE)
+        self._doExceptionTest('do TESTDEVICE:TASK_ERROR1',Exc.DevUNKOWN_STATE)
         if not sys.platform.startswith('win'): # Windows does not support timeout yet
             self._doExceptionTest('do TESTDEVICE:TASK_TIMEOUT',Exc.TdiTIMEOUT)
+            self._doExceptionTest('do TESTDEVICE:TASK_ERROR2',Exc.DevUNKOWN_STATE)
         self._doExceptionTest('close',Exc.TreeWRITEFIRST)
         self._doTCLTest('write')
         self._doTCLTest('close')
@@ -144,9 +144,9 @@ class dclTests(TestCase):
                 for envpair in self.envx.items():
                     testDispatchCommand(server,'env %s=%s'%envpair)
             return None,None
-        monitor,monitor_port = setup_mdsip('ACTION_MONITOR','MONITOR_PORT',4400,False)
+        monitor,monitor_port = setup_mdsip('ACTION_MONITOR','MONITOR_PORT',4400+self.index,False)
         monitor_opt = "/monitor=%s"%monitor if monitor_port>0 else ""
-        server ,server_port  = setup_mdsip('ACTION_SERVER', 'ACTION_PORT',8800,True)
+        server ,server_port  = setup_mdsip('ACTION_SERVER', 'ACTION_PORT',8800+self.index,True)
         shot = self.shot+1
         Tree('pytree',-1,'ReadOnly').createPulse(shot)
         show_server = "Checking server: %s\n[^,]+, [^,]+, logging enabled, Inactive\n"%server
@@ -166,6 +166,7 @@ class dclTests(TestCase):
                 self._doTCLTest('show server %s'%server,out=show_server,re=True)
                 testDispatchCommand(server,'set verify')
                 testDispatchCommand(server,'type test')
+                self._doTCLTest('set tree pytree/shot=%d'%shot)
                 self._doTCLTest('dispatch/build%s'%monitor_opt)
                 self._doTCLTest('dispatch/phase%s INIT'%monitor_opt)
                 sleep(1)
@@ -203,20 +204,21 @@ class dclTests(TestCase):
             self.__getattribute__(test)()
     @staticmethod
     def getTests():
-        return ['dclInterface','dispatcher']
+        lst = ['dclInterface']
+        if Tests.inThread: return lst
+        return lst + ['dispatcher']
     @classmethod
     def getTestCases(cls):
         return map(cls,cls.getTests())
 
 def suite():
-    return TestSuite(dclTests.getTestCases())
+    return TestSuite(Tests.getTestCases())
 
 def run():
     from unittest import TextTestRunner
-    TextTestRunner().run(suite())
+    TextTestRunner(verbosity=2).run(suite())
 
 if __name__=='__main__':
-    import sys
     if len(sys.argv)>1 and sys.argv[1].lower()=="objgraph":
         import objgraph
     else:      objgraph = None

@@ -68,7 +68,6 @@ typedef struct _Condition_p {
   pthread_mutex_t mutex;
   void*           value;
 } Condition_p;
-
 #ifdef DEF_FREEBEGIN
  static void __attribute__((unused)) freebegin(void* ptr){
    if (((struct TdiZoneStruct*)ptr)->a_begin) {
@@ -84,41 +83,56 @@ typedef struct _Condition_p {
   #define FREEBEGIN_NOW()     pthread_cleanup_pop(1)
  #endif
 #endif
+
 #ifdef DEF_FREED
  #include <strroutines.h>
- static void __attribute__((unused)) freed(void *ptr){
+ static void __attribute__((unused)) free_d(void *ptr){
    StrFree1Dx((struct descriptor_d*)ptr);
  }
  #ifdef _WIN32
   #define FREED_ON_EXIT(ptr) {
-  #define FREED_NOW(ptr)     };freed(ptr)
+  #define FREED_IF(ptr,c)    };if (c) free_d(ptr)
+  #define FREED_NOW(ptr)     };free_d(ptr)
  #else
-  #define FREED_ON_EXIT(ptr) pthread_cleanup_push(freed, ptr)
+  #define FREED_ON_EXIT(ptr) pthread_cleanup_push(free_d, ptr)
+  #define FREED_IF(ptr,c)    pthread_cleanup_pop(c)
   #define FREED_NOW(ptr)     pthread_cleanup_pop(1)
  #endif
+ #define INIT_AS_AND_FREED_ON_EXIT(var,value) struct descriptor_d var = value;FREED_ON_EXIT(&var)
+ #define INIT_AND_FREED_ON_EXIT(dtype,var)    INIT_AS_AND_FREED_ON_EXIT(var, ((struct descriptor_d){ 0, dtype, CLASS_D, 0 }))
 #endif
 #ifdef DEF_FREEXD
  #include <mdsshr.h>
- static void __attribute__((unused)) freexd(void *ptr){
+ static void __attribute__((unused)) free_xd(void *ptr){
    MdsFree1Dx((struct descriptor_xd*)ptr, NULL);
  }
  #ifdef _WIN32
   #define FREEXD_ON_EXIT(ptr) {
-  #define FREEXD_NOW(ptr)     };freexd(ptr)
+  #define FREEXD_IF(ptr,c)    };if (c) free_xd((void*)&ptr)
+  #define FREEXD_NOW(ptr)     };free_xd(ptr)
  #else
-  #define FREEXD_ON_EXIT(ptr) pthread_cleanup_push(freexd, ptr)
+  #define FREEXD_ON_EXIT(ptr) pthread_cleanup_push(free_xd, ptr)
+  #define FREEXD_IF(ptr,c)    pthread_cleanup_pop(c)
   #define FREEXD_NOW(ptr)     pthread_cleanup_pop(1)
  #endif
+ #define INIT_AND_FREEXD_ON_EXIT(ptr) EMPTYXD(xd);FREEXD_ON_EXIT(&xd);
 #endif
+static void __attribute__((unused)) free_if(void *ptr){
+  if (*(void**)ptr) free(*(void**)ptr);
+}
 #ifdef _WIN32
  #define FREE_ON_EXIT(ptr)   {
- #define FREE_NOW(ptr)       };free(ptr)
+ #define FREE_IF(ptr,c)      };if (c) free_if((void*)&ptr)
+ #define FREE_NOW(ptr)       };free_if((void*)&ptr)
  #define FREE_CANCEL(ptr)    }
 #else
- #define FREE_ON_EXIT(ptr)   pthread_cleanup_push(free, ptr)
+ #define FREE_ON_EXIT(ptr)   pthread_cleanup_push(free_if, (void*)&ptr)
+ #define FREE_IF(ptr,c)      pthread_cleanup_pop(c)
  #define FREE_NOW(ptr)       pthread_cleanup_pop(1)
  #define FREE_CANCEL(ptr)    pthread_cleanup_pop(0)
 #endif
+#define INIT_AS_AND_FREE_ON_EXIT(type,ptr,value) type ptr = value;FREE_ON_EXIT(ptr)
+#define INIT_AND_FREE_ON_EXIT(type,ptr) INIT_AS_AND_FREE_ON_EXIT(type,ptr,NULL)
 
 #define CONDITION_INITIALIZER {PTHREAD_COND_INITIALIZER,PTHREAD_MUTEX_INITIALIZER,B_FALSE}
 
@@ -130,7 +144,9 @@ pthread_mutex_init(&(input)->mutex, pthread_mutexattr_default);\
 #define _CONDITION_LOCK(input)   pthread_mutex_lock(&(input)->mutex)
 #define _CONDITION_UNLOCK(input) pthread_mutex_unlock(&(input)->mutex)
 #define _CONDITION_SIGNAL(input) pthread_cond_signal(&(input)->cond)
-#define _CONDITION_WAIT_SET(input) while (!(input)->value) {pthread_cond_wait(&(input)->cond,&(input)->mutex);}
+#define _CONDITION_WAIT(input)   pthread_cond_wait(&(input)->cond,&(input)->mutex)
+#define _CONDITION_WAIT_SET(input)   while (!(input)->value) _CONDITION_WAIT(input)
+#define _CONDITION_WAIT_RESET(input) while ( (input)->value) _CONDITION_WAIT(input)
 #define _CONDITION_WAIT_1SEC(input,status){\
 struct timespec tp;\
 clock_gettime(CLOCK_REALTIME, &tp);\
@@ -192,7 +208,7 @@ _CONDITION_UNLOCK(input);\
 #define FREE_HP
 #else
 #define _ALLOC_HP \
-int memlen = 1024;\
+size_t memlen = 1024;\
 struct hostent hostbuf, *hp;\
 int herr;\
 char *hp_mem = (char*)malloc(memlen)
@@ -219,7 +235,7 @@ _GETHOST(_GETHOSTBYNAME(name))
 #define GETHOSTBYNAMEORADDR(name,addr) \
 GETHOSTBYNAME(name);\
 if (!hp){\
-   addr = inet_addr(name);\
+   addr = (int)inet_addr(name);\
    if (addr != -1)  _GETHOST(_GETHOSTBYADDR(addr,AF_INET));\
 }
 

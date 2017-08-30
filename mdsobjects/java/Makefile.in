@@ -284,11 +284,13 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 JAR = @JAR@
+JARS_DIR = @JARS_DIR@
 JAVAC = @JAVAC@
 JAVACFLAGS = @JAVACFLAGS@
 JAVAC_PATH_NAME = @JAVAC_PATH_NAME@
 JAVAVERSION = @JAVAVERSION@
 JAVA_APS = @JAVA_APS@
+JAVA_ONLY = @JAVA_ONLY@
 JDK_CFLAGS = @JDK_CFLAGS@
 JDK_DIR = @JDK_DIR@
 JDK_LIVECONNECT = @JDK_LIVECONNECT@
@@ -483,11 +485,6 @@ AM_JAVACFLAGS = $(JAVAVERSION)
 JAVAROOT = $(builddir)
 CLASSPATH_ENV = CLASSPATH=.:$(top_builddir)/javascope/jScope.jar
 javadir = $(exec_prefix)/java/classes
-java_JAVA = $(SOURCES)
-
-# Build the final jar
-java_DATA = mdsobjects.jar
-
 # Giant list of source files follow
 SOURCES = MDSplus/Action.java\
 MDSplus/Apd.java\
@@ -549,6 +546,10 @@ MDSplus/Uint8Array.java\
 MDSplus/Window.java \
 MDSplus/Scope.java
 
+
+# Build the final jar
+java_DATA = mdsobjects.jar
+@USE_JARS_DIR_FALSE@java_JAVA = $(SOURCES)
 all: all-am
 
 .SUFFIXES:
@@ -836,8 +837,11 @@ uninstall-am: uninstall-javaDATA uninstall-javaJAVA
 .PRECIOUS: Makefile
 
 
-mdsobjects.jar: classjava.stamp
-	$(JAR) c0f $@ $(java_JAVA:.java=*.class)
+@USE_JARS_DIR_TRUE@mdsobjects.jar : @JARS_DIR@/mdsobjects/java/mdsobjects.jar
+@USE_JARS_DIR_TRUE@	cp $< $@
+
+@USE_JARS_DIR_FALSE@mdsobjects.jar: classjava.stamp
+@USE_JARS_DIR_FALSE@	$(JAR) c0f $@ $(java_JAVA:.java=*.class)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

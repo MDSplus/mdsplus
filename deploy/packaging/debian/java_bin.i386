@@ -1,0 +1,7 @@
+./usr/local/mdsplus/bin/jDispatchMonitor
+./usr/local/mdsplus/bin/jDispatcherIp
+./usr/local/mdsplus/bin/jScope
+./usr/local/mdsplus/bin/jServer
+./usr/local/mdsplus/bin/jTraverser
+./usr/local/mdsplus/lib/libJavaMds.so
+./usr/local/mdsplus/lib/libJavaMdsLib.so

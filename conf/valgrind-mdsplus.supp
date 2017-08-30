@@ -5,3 +5,9 @@
    fun:timer_create@@GLIBC_2.3.3
    fun:timer_create@GLIBC_2.2.5
 }
+
+{
+   race in threadsafe posix gethostbyname_r
+   Helgrind:Race
+   fun:_nss_files_gethostbyname*_r
+}

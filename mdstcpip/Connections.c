@@ -9,8 +9,9 @@
 
 static Connection *ConnectionList = 0;
 static pthread_mutex_t connection_mutex = PTHREAD_MUTEX_INITIALIZER;
-#define CONNECTIONLIST_LOCK pthread_mutex_lock(&connection_mutex)
-#define CONNECTIONLIST_UNLOCK pthread_mutex_unlock(&connection_mutex)
+static void UnlockConnection(){  pthread_mutex_unlock(&connection_mutex); }
+#define CONNECTIONLIST_LOCK   pthread_mutex_lock(&connection_mutex);pthread_cleanup_push(UnlockConnection, NULL);
+#define CONNECTIONLIST_UNLOCK pthread_cleanup_pop(1);
 
 Connection *FindConnection(int id, Connection ** prev){
   Connection *c = 0, *p;
@@ -52,7 +53,7 @@ int FlushConnection(int id){
 }
 
 #ifdef _WIN32
-static void exitHandler(void){}
+static void registerHandler(){}
 #else
 static void exitHandler(void){
   int id;
@@ -62,20 +63,22 @@ static void exitHandler(void){
     ctx = 0;
   }
 }
+static void registerHandler(){
+  atexit(exitHandler);
+}
 #endif
 
 
 ////////////////////////////////////////////////////////////////////////////////
 //  NewConnection  /////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-
 int NewConnection(char *protocol){
   Connection *oldhead, *connection;
   IoRoutines *io = LoadIo(protocol);
   static int id = 1;
-  static int registerExitHandler = 1;
+  static pthread_once_t registerExitHandler = PTHREAD_ONCE_INIT;
   if (io) {
-    registerExitHandler = registerExitHandler ? atexit(exitHandler) : 0;
+    (void) pthread_once(&registerExitHandler,registerHandler);
     connection = memset(malloc(sizeof(Connection)), 0, sizeof(Connection));
     connection->io = io;
     connection->readfd = -1;

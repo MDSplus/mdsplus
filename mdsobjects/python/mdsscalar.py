@@ -5,96 +5,125 @@ def _mimport(name, level=1):
         return __import__(name, globals())
 
 import numpy as _N
+import ctypes as _C
 
-_dtypes=_mimport('_mdsdtypes')
-_data=_mimport('mdsdata')
-_array=_mimport('mdsarray')
+_dat=_mimport('mdsdata')
+_arr=_mimport('mdsarray')
 _ver=_mimport('version')
+_dsc=_mimport('descriptor')
+_exc=_mimport('mdsExceptions')
 
-def makeScalar(value):
-    if isinstance(value,_ver.basestring):
-        return String(value)
-    if isinstance(value,Scalar):
-        from copy import deepcopy
-        return deepcopy(value)
-    if isinstance(value,_N.generic):
-        if isinstance(value,(_N.string_, _N.unicode_)):  # includes _N.bytes_
-            return String(value)
-        if isinstance(value,_N.bool_):
-            return makeScalar(int(value))
-        return globals()[value.__class__.__name__.capitalize()](value)
-    if isinstance(value,_ver.long):
-        return Int64(value)
-    if isinstance(value,int):
-        return Int32(value)
-    if isinstance(value,float):
-        return Float32(value)
-    if isinstance(value,bool):
-        return Int8(int(value))
-    if isinstance(value,complex):
-        return Complex128(_N.complex128(value))
-    if isinstance(value,_N.complex64):
-        return Complex64(value)
-    if isinstance(value,_N.complex128):
-        return Complex128(value)
-    raise TypeError('Cannot make Scalar out of '+str(type(value)))
-
-class Scalar(_data.Data):
+class Scalar(_dat.Data):
     _value = None
-    def __new__(cls,value=0):
-        try:
-            if (isinstance(value,_array.Array)) or isinstance(value,list) or isinstance(value, _N.ndarray):
-               return _array.__dict__[cls.__name__+'Array'](value)
-        except:
-            pass
-        return super(Scalar,cls).__new__(cls)
+
+    def _setCtx(self,*args,**kwargs): return self
+
+    def __new__(cls,*value):
+        if cls is not Scalar or len(value)==0:
+            return object.__new__(cls)
+        value = value[0]
+        if isinstance(value,(Scalar,)):
+            return value
+        if isinstance(value,_dat.Data):
+            value = value.data()
+        if (isinstance(value,_arr.Array)) or isinstance(value,list) or isinstance(value, _ver.nparray):
+            key = cls.__name__+'Array'
+            if key in _arr.__dict__:
+                cls = _arr.__dict__[key]
+                return cls.__new__(cls,value)
+        if isinstance(value,(_ver.npbytes, _ver.npunicode,_ver.basestring)):
+            cls = String
+        elif isinstance(value,(_N.bool_,)):
+            cls = Uint8
+        elif isinstance(value,(_N.generic,)):
+            cls = globals()[value.__class__.__name__.capitalize()]
+        elif isinstance(value,(_C.c_double)):
+            cls = Float64
+        elif isinstance(value,(_C.c_float,float)):
+            cls = Float32
+        elif isinstance(value,(_C.c_int64,_ver.long)):
+            cls = Int64
+        elif isinstance(value,(_C.c_uint64,)):
+            cls = Uint64
+        elif isinstance(value,(_C.c_int32,int)):
+            cls = Int32
+        elif isinstance(value,(_C.c_uint32,)):
+            cls = Uint32
+        elif isinstance(value,(_C.c_int16,)):
+            cls = Int16
+        elif isinstance(value,(_C.c_uint16,)):
+            cls = Uint16
+        elif isinstance(value,(_C.c_int8,)):
+            cls = Int8
+        elif isinstance(value,(_C.c_uint8,_C.c_bool,bool,_N.bool_)):
+            cls = Uint8
+        elif isinstance(value,_N.complex64):
+            cls = Complex64
+        elif isinstance(value,(_N.complex128,complex)):
+            cls = Complex128
+        else:
+            raise TypeError('Cannot make Scalar out of '+str(type(value)))
+        return cls.__new__(cls,value)
 
     def __init__(self,value=0):
-        if self.__class__.__name__ == 'Scalar':
+        if value is self: return
+        if self is Scalar:
             raise TypeError("cannot create 'Scalar' instances")
-        if self.__class__.__name__ == 'String':
-            self._value = _N.str_(_ver.tostr(value))
+        if isinstance(value,self.__class__):
+            self._value = value._value.copy()
             return
-        if isinstance(value,(_data.Data)):
+        if isinstance(value,_dat.Data):
             value = value.data()
-        self._value = _N.__dict__[self.__class__.__name__.lower()](value)
+        elif isinstance(value,_C._SimpleCData):
+            value = value.value
+        self._value = self._ntype(value)
+
+    def _str_bad_ref(self):
+        return _ver.tostr(self._value)
+
+    @property
+    def mdsdtype(self):
+        return self.dtype_id
+
+    @property
+    def _descriptor(self):
+        d=_dsc.Descriptor_s()
+        d.length=self._value.nbytes
+        d.dtype=self.dtype_id
+        array=_N.array(self._value)
+        d.pointer=_C.c_void_p(array.ctypes.data)
+        d.array=array
+        return _cmp.Compound._descriptorWithProps(self,d)
 
     def __getattr__(self,name):
         if name.startswith("__array"):
           raise AttributeError
-        return self._value.__getattribute__(name)
+        return self.value.__getattribute__(name)
 
-    def _getValue(self):
+    @property
+    def value(self):
         """Return the numpy scalar representation of the scalar"""
         return self._value
-    value=property(_getValue)
-
-    def __str__(self):
-        formats={Int8:'%dB',Int16:'%dW',Int32:'%d',Int64:'%dQ',
-                 Uint8:'%uBU',Uint16:'%uWU',Uint32:'%uLU',Uint64:'%uQU',
-                 Float32:'%g'}
-        ans=formats[self.__class__] % (self._value,)
-        if ans=='nan':
-            ans="$ROPRAND"
-        elif isinstance(self,Float32) and ans.find('.')==-1:
-            ans=ans+"."
-        return ans
 
     def decompile(self):
-        return _ver.tostr(self)
+        formats={ Int8:'%dB' , Int16:'%dW' , Int32:'%d'  , Int64:'%dQ',
+                 Uint8:'%uBU',Uint16:'%uWU',Uint32:'%uLU',Uint64:'%uQU'}
+        if self.__class__ in formats:
+            return formats[self.__class__] % (self._value,)
+        return super(Scalar,self).decompile()
 
     def __int__(self):
         """Integer: x.__int__() <==> int(x)
         @rtype: int"""
-        return self._value.__int__()
+        return int(self.value)
 
     def __long__(self):
         """Long: x.__long__() <==> long(x)
         @rtype: int"""
-        return self.__value.__long__()
+        return _ver.long(self.value)
 
     def _unop(self,op):
-        return _data.makeData(getattr(self.value,op)())
+        return _dat.Data(getattr(self.value,op)())
 
     def _binop(self,op,y):
         try:
@@ -102,7 +131,7 @@ class Scalar(_data.Data):
         except AttributeError:
             pass
         ans=getattr(self.value,op)(y)
-        return _data.makeData(ans)
+        return _dat.Data(ans)
 
     def _triop(self,op,y,z):
         try:
@@ -113,16 +142,7 @@ class Scalar(_data.Data):
             z=z.value
         except AttributeError:
             pass
-        return _data.makeData(getattr(self.value,op)(y,z))
-
-    def _getMdsDtypeNum(self):
-        return {'Uint8':_dtypes.DTYPE_BU,'Uint16':_dtypes.DTYPE_WU,'Uint32':_dtypes.DTYPE_LU,'Uint64':_dtypes.DTYPE_QU,
-                'Int8':_dtypes.DTYPE_B,'Int16':_dtypes.DTYPE_W,'Int32':_dtypes.DTYPE_L,'Int64':_dtypes.DTYPE_Q,
-                'String':_dtypes.DTYPE_T,
-                'Float32':_dtypes.DTYPE_FS,
-                'Float64':_dtypes.DTYPE_FT,'Complex64':_dtypes.DTYPE_FSC,'Complex128':_dtypes.DTYPE_FTC}[self.__class__.__name__]
-    mdsdtype=property(_getMdsDtypeNum)
-
+        return _dat.Data(getattr(self.value,op)(y,z))
 
     def all(self):
         return self._unop('all')
@@ -143,10 +163,10 @@ class Scalar(_data.Data):
             return self._unop('argmin')
 
     def argsort(self,axis=-1,kind='quicksort',order=None):
-        return _data.makeData(self.value.argsort(axis,kind,order))
+        return _dat.Data(self.value.argsort(axis,kind,order))
 
     def astype(self,type):
-        return _data.makeData(self.value.astype(type))
+        return _dat.Data(self.value.astype(type))
 
     def byteswap(self):
         return self._unop('byteswap')
@@ -154,34 +174,86 @@ class Scalar(_data.Data):
     def clip(self,y,z):
         return self._triop('clip',y,z)
 
+    @classmethod
+    def fromDescriptor(cls,d):
+        if d.dtype == FloatF.dtype_id:
+            return _cmp.FS_FLOAT(d).evaluate()
+        if d.dtype == FloatD.dtype_id:
+            return _cmp.FT_FLOAT(d).evaluate()
+        if d.dtype == FloatG.dtype_id:
+            return _cmp.FT_FLOAT(d).evaluate()
+        if d.dtype == ComplexF.dtype_id:
+            return _cmp.FS_COMPLEX(d).evaluate()
+        if d.dtype == ComplexD.dtype_id:
+            return _cmp.FT_COMPLEX(d).evaluate()
+        if d.dtype == ComplexG.dtype_id:
+            return _cmp.FT_COMPLEX(d).evaluate()
+        value=_C.cast(d.pointer,_C.POINTER(cls._ctype)).contents
+        if isinstance(value,_C.Array):
+            return cls(complex(value[0],value[1]))
+        else:
+            return cls(value.value)
 
-class Int8(Scalar):
-    """8-bit signed number"""
+makeScalar=Scalar
 
-class Int16(Scalar):
-    """16-bit signed number"""
+class Float32(Scalar):
+    """32-bit floating point number"""
+    dtype_id=52
+    _ctype=_C.c_float
+    _ntype=_N.float32
+_dsc.addDtypeToClass(Float32)
 
-class Int32(Scalar):
-    """32-bit signed number"""
+class Float64(Scalar):
+    """64-bit floating point number"""
+    dtype_id=53
+    _ctype=_C.c_double
+    _ntype=_N.float64
+_dsc.addDtypeToClass(Float64)
 
-class Int64(Scalar):
-    """64-bit signed number"""
+class Complex64(Scalar):
+    """32-bit complex number"""
+    dtype_id=54
+    _ctype=_C.c_float*2
+    _ntype=_N.complex64
+_dsc.addDtypeToClass(Complex64)
+
+class Complex128(Scalar):
+    """128-bit complex number"""
+    dtype_id=55
+    _ctype=_C.c_double*2
+    _ntype=_N.complex128
+_dsc.addDtypeToClass(Complex128)
 
 class Uint8(Scalar):
     """8-bit unsigned number"""
+    dtype_id=2
+    _ctype=_C.c_uint8
+    _ntype=_N.uint8
+_dsc.addDtypeToClass(Uint8)
 
 class Uint16(Scalar):
     """16-bit unsigned number"""
+    dtype_id=3
+    _ctype=_C.c_uint16
+    _ntype=_N.uint16
+_dsc.addDtypeToClass(Uint16)
 
 class Uint32(Scalar):
     """32-bit unsigned number"""
+    dtype_id=4
+    _ctype=_C.c_uint32
+    _ntype=_N.uint32
+_dsc.addDtypeToClass(Uint32)
 
 class Uint64(Scalar):
     """64-bit unsigned number"""
+    dtype_id=5
+    _ctype=_C.c_uint64
+    _ntype=_N.uint64
     _utc0 = _N.uint64("35067168000000000")
     _utc1 = 1E7
-    @staticmethod
-    def fromTime(value):
+    @classmethod
+    def fromTime(cls,value):
         """converts from seconds since 01-JAN-1970 00:00:00.00
         For example:
            import MDSplus
@@ -189,39 +261,91 @@ class Uint64(Scalar):
            mdstime=MDSplus.Uint64.fromTime(time.time()-time.altzone)
            print(mdstime.date)
         """
-        return Uint64(int(value * Uint64._utc1) + Uint64._utc0)
+        return cls(int(value * cls._utc1) + cls_utc0)
 
     def _getDate(self):
-        return _data.Data.execute('date_time($)',self)
+        return _dat.Data.execute('date_time($)',self)
     date=property(_getDate)
 
     def _getTime(self):
         """returns date in seconds since 01-JAN-1970 00:00:00.00"""
         return float(self.value - Uint64._utc0) / Uint64._utc1
     time=property(_getTime)
+_dsc.addDtypeToClass(Uint64)
 
-class Float32(Scalar):
-    """32-bit floating point number"""
+class Int8(Scalar):
+    """8-bit signed number"""
+    dtype_id=6
+    _ctype=_C.c_int8
+    _ntype=_N.int8
+_dsc.addDtypeToClass(Int8)
 
-class Complex64(Scalar):
-    """32-bit complex number"""
-    def __str__(self):
-        return "Cmplx(%g,%g)" % (self._value.real,self._value.imag)
+class Int16(Scalar):
+    """16-bit signed number"""
+    dtype_id=7
+    _ctype=_C.c_int16
+    _ntype=_N.int16
+_dsc.addDtypeToClass(Int16)
 
-class Float64(Scalar):
-    """64-bit floating point number"""
-    def __str__(self):
-        return ("%E" % self._value).replace("E","D")
+class Int32(Scalar):
+    """32-bit signed number"""
+    dtype_id=8
+    _ctype=_C.c_int32
+    _ntype=_N.int32
+_dsc.addDtypeToClass(Int32)
 
-class Complex128(Scalar):
-    """64-bit complex number"""
-    def __str__(self):
-        return "Cmplx(%s,%s)" % (str(Float64(self._value.real)),str(Float64(self._value.imag)))
+class Int64(Scalar):
+    """64-bit signed number"""
+    dtype_id=9
+    _ctype=_C.c_int64
+    _ntype=_N.int64
+_dsc.addDtypeToClass(Int64)
+
+class FloatF(Float32):
+    """32-bit VMS floating point number"""
+    dtype_id=10
+_dsc.addDtypeToClass(FloatF)
+
+class FloatD(Float64):
+    """64-bit VMS floating point number"""
+    dtype_id=11
+_dsc.addDtypeToClass(FloatD)
+
+class ComplexF(Complex64):
+    """128-bit VMS complex number"""
+    dtype_id=12
+_dsc.addDtypeToClass(ComplexF)
+
+class ComplexD(Complex128):
+    """128-bit VMS complex number"""
+    dtype_id=13
+_dsc.addDtypeToClass(ComplexD)
 
 class String(Scalar):
     """String"""
+    dtype_id=14
+    _ntype=_ver.npbytes
+    def __init__(self,value):
+        super(String,self).__init__(value)
+        if not isinstance(self._value,_N.str):
+            self._value = _ver.np2npstr(self._value)
+
+    @property
+    def _descriptor(self):
+        d=_dsc.Descriptor_s()
+        d.length=len(self)
+        d.dtype=self.dtype_id
+        d.pointer=_C.cast(_C.c_char_p(_ver.tobytes(str(self))),_C.c_void_p)
+        return _cmp.Compound._descriptorWithProps(self,d)
+
+    @classmethod
+    def fromDescriptor(cls,d):
+        if d.length == 0:
+            return cls('')
+        return cls(_N.array(_C.cast(d.pointer,_C.POINTER((_C.c_byte*d.length))).contents[:],dtype=_N.uint8).tostring())
+
     def __radd__(self,y):
-        """Reverse add: x.__radd__(y) <==> y+x
+        """radd: x.__radd__(y) <==> y+x
         @rtype: Data"""
         return self.execute('$//$',y,self)
     def __add__(self,y):
@@ -231,25 +355,85 @@ class String(Scalar):
     def __contains__(self,y):
         """Contains: x.__contains__(y) <==> y in x
         @rtype: Bool"""
-        return str(self).find(str(y)) != -1
-    def __str__(self):
-        """String: x.__str__() <==> str(x)
-        @rtype: String"""
-        if len(self._value) > 0:
-            return _ver.tostr(self._value)
-        else:
-            return ''
+        return self.find(str(y)) != -1
     def __len__(self):
-        return len(str(self))
-    def decompile(self):
-        return repr(str(self))
+        return len(self._value)
+    def __str__(self):
+        return _ver.tostr(self._value)
+    def __repr__(self):
+        return repr(_ver.tostr(self._value))
 
-class Int128(Scalar):
-    """128-bit number"""
-    def __init__(self):
-        raise TypeError("Int128 is not yet supported")
+_dsc.addDtypeToClass(String)
 
 class Uint128(Scalar):
     """128-bit unsigned number"""
+    dtype_id=25
     def __init__(self):
         raise TypeError("Uint128 is not yet supported")
+_dsc.addDtypeToClass(Uint128)
+
+class Int128(Scalar):
+    """128-bit number"""
+    dtype_id=26
+    def __init__(self):
+        raise TypeError("Int128 is not yet supported")
+_dsc.addDtypeToClass(Int128)
+
+class FloatG(Float64):
+    """64-bit VMS floating point number"""
+    dtype_id=27
+_dsc.addDtypeToClass(FloatG)
+
+class ComplexG(Complex128):
+    """128-bit VMS complex number"""
+    dtype_id=29
+_dsc.addDtypeToClass(ComplexG)
+
+class Pointer(Scalar):
+    """32/64bit pointer"""
+    dtype_id=51
+    def __init__(self, value=0, is64=True):
+        if value is self: return
+        if is64:
+            self._ctype=_C.c_uint64
+            self._ntype=_N.uint64
+        else:
+            self._ctype=_C.c_uint32
+            self._ntype=_N.uint32
+        super(Pointer,self).__init__(value)
+
+    @classmethod
+    def fromDescriptor(cls,d):
+        is64 = d.length>4
+        ctype = _C.c_uint64 if is64 else _C.c_uint32
+        value=_C.cast(d.pointer,_C.POINTER(ctype)).contents
+        return cls(value.value,is64)
+_dsc.addDtypeToClass(Pointer)
+
+class Ident(_dat.Data):
+    """Reference to MDSplus Ken Variable"""
+    dtype_id=191
+    def __init__(self,name):
+        if isinstance(name,Ident):
+            return
+        if not name.startswith('_'):
+            raise _exc.TdiUNKNOWN_VAR
+        self.name=_ver.tostr(name)
+    def decompile(self):
+        return self.name
+    def assign(self,value):
+        _cmp.EQUALS(self,value).evaluate()
+        return self
+    @property
+    def _descriptor(self):
+        d=_dsc.Descriptor_s()
+        d.dtype=self.dtype_id
+        d.length=len(self.name)
+        d.pointer=_C.cast(_C.c_char_p(_ver.tobytes(self.name)),_C.c_void_p)
+        return _cmp.Compound._descriptorWithProps(self,d)
+    @classmethod
+    def fromDescriptor(cls,d):
+        return cls(_ver.tostr(_C.cast(d.pointer,_C.POINTER(_C.c_char*d.length)).contents.value))
+_dsc.addDtypeToClass(Ident)
+
+_cmp=_mimport('compound')

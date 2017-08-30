@@ -79,7 +79,7 @@ int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
 {
   INIT_STATUS;
   struct descriptor_d image = EMPTY_D, entry = EMPTY_D;
-  struct descriptor_xd tmp[253];
+  struct descriptor_xd tmp[253];tmp[0] = EMPTY_XD;
   struct descriptor_d file = { 0, DTYPE_T, CLASS_D, 0 };
   FREED_ON_EXIT(&image);
   FREED_ON_EXIT(&entry);

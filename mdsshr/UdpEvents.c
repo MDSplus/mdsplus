@@ -80,8 +80,7 @@ static void *handleMessage(void *info_in)
   char recBuf[MAX_MSG_LEN];
   struct sockaddr clientAddr;
   int addrSize = sizeof(clientAddr);
-  size_t nameLen;
-  int bufLen;
+  unsigned int nameLen,bufLen;
   char *eventName;
   char *currPtr;
   pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
@@ -128,7 +127,7 @@ static void *handleMessage(void *info_in)
       continue;
     if (strncmp(thisEventName, eventName, nameLen))   /*** check to see if this message matches the event name ***/
       continue;
-    astadr(arg, bufLen, currPtr);
+    astadr(arg, (int)bufLen, currPtr);
   }
   return 0;
 }
@@ -190,13 +189,12 @@ static int getSendSocket()
 static void getMulticastAddr(char const *eventName, char *retIp)
 {
   char *addr_format;
-  int i;
-  int len = strlen(eventName);
+  size_t i,len = strlen(eventName);
   unsigned char arange[2];
   unsigned int hash = 0, hashnew;
   UdpEventGetAddress(&addr_format,arange);
   for (i = 0; i < len; i++)
-    hash += eventName[i];
+    hash += (unsigned int)eventName[i];
   hashnew =
       (unsigned int)((float)arange[0] +
 		     ((float)(hash % 256) / 256.) * ((float)arange[1] - (float)arange[0] + 1.));
@@ -383,15 +381,15 @@ int MDSUdpEventCan(int eventid)
   }
 }
 
-int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
+int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf)
 {
   char multiIp[64];
-  uint32_t buflen_net_order = htonl(bufLen);
+  uint32_t buflen_net_order = (uint32_t)htonl(bufLen);
   int udpSocket;
   struct sockaddr_in sin;
   char *msg=0, *currPtr;
-  int msgLen, nameLen = strlen(eventName), actBufLen;
-  uint32_t namelen_net_order = htonl(nameLen);
+  unsigned int msgLen, nameLen = (unsigned int)strlen(eventName), actBufLen;
+  uint32_t namelen_net_order = (uint32_t)htonl(nameLen);
   int status;
   unsigned short port;
   char ttl, loop;
@@ -406,16 +404,16 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
   int addr;
   GETHOSTBYNAMEORADDR(multiIp,addr);
   if (hp)
-    memcpy(&sin.sin_addr, hp->h_addr_list[0], hp->h_length);
+    memcpy(&sin.sin_addr, hp->h_addr_list[0], (size_t)hp->h_length);
   FREE_HP;
   UdpEventGetPort(&port);
   sin.sin_port = htons(port);
-  nameLen = strlen(eventName);
-  if (bufLen < MAX_MSG_LEN - (4 + 4 + nameLen))
+  nameLen = (unsigned int)strlen(eventName);
+  if (bufLen < MAX_MSG_LEN - (4u + 4u + nameLen))
     actBufLen = bufLen;
   else
-    actBufLen = MAX_MSG_LEN - (4 + 4 + nameLen);
-  msgLen = 4 + nameLen + 4 + actBufLen;
+    actBufLen = MAX_MSG_LEN - (4u + 4u + nameLen);
+  msgLen = 4u + nameLen + 4u + actBufLen;
   msg = malloc(msgLen);
   currPtr = msg;
 

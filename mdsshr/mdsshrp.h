@@ -4,7 +4,7 @@
 
 
 extern int MdsCmprs(int const *nitems, struct descriptor_a const *items, struct descriptor_a *pack,
-			     int *bit);
+			  int *bit);
 extern int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, const char **text_out);
 
 extern void MdsPk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int *bit_ptr);

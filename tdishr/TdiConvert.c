@@ -597,8 +597,8 @@ typedef union {
 #define TO_TEXT(pa,it,pb,numb,cvt) \
   {it *ip = (it*)pa; char *op = (char *)pb; int i=numb; while(i-- > 0) {\
    char text[64]; int nfill; int n=cvt;  nfill = lenb - n; \
-   strncpy((nfill <= 0) ? op : op+nfill, (nfill <= 0) ? text-nfill : text, (nfill <= 0) ? lenb : n); \
-   if (nfill > 0) memset(op,32,nfill); op += lenb;} status = MDSplusSUCCESS;}
+   strncpy((nfill <= 0) ? op : op+nfill, (nfill <= 0) ? text-nfill : text, (size_t)((nfill <= 0) ? lenb : n)); \
+   if (nfill > 0) memset(op,32,(size_t)nfill); op += lenb;} status = MDSplusSUCCESS;}
 
 /******************* CODE *********************/
 void DoubleToWideInt();
@@ -1024,7 +1024,7 @@ void DoubleToWideInt(double *in, int size, unsigned int *out)
   double tmp;
   for (i = size - 1, tmp = negative ? -1 - *in : *in, factor =
        pow(2.0, 32. * (size - 1)); i >= 0; tmp -= out[i--] * factor, factor /= TWO_32)
-    out[i] = (int)((tmp / factor) + .49999999999);
+    out[i] = (unsigned int)((tmp / factor) + .49999999999);
   if (negative)
     for (i = 0; i < size; i++)
       out[i] = ~out[i];

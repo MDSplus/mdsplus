@@ -204,6 +204,7 @@ File LabView/*.vi
 SetOutPath "$INSTDIR\mdsobjects\LabView"
 File /r LabView/MDSplus
 File /r LabView/MDSplus_LV2012
+File /r LabView/MDSplus_LV2015
 SectionEnd
 
 Section EPICS
@@ -222,7 +223,7 @@ File /r /x MDSplus /source/mdsobjects/python
 SetOutPath "$INSTDIR\mdsobjects\python"
 File /workspace/releasebld/64/mdsobjects/python/_version.py
 SetOutPath "$INSTDIR\mdsobjects\python"
-Exec "python setup.py install version=${MAJOR}.${MINOR}-${RELEASE}"
+Exec "python setup.py install" 
 SectionEnd
 
 Section "DEVEL"

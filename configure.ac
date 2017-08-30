@@ -50,6 +50,18 @@ AX_CHECK_ENABLE_DEBUG([no],,,,[-g -O3])
 dnl AX_TARGET_SELFHELP /////////////////////////////////////////////////////////
 AX_TARGET_SELFHELP
 
+AC_ARG_ENABLE([java_only],
+              [AS_HELP_STRING([--enable-java_only],
+                              [Only build java jar files])],
+              [AS_VAR_SET([JAVA_ONLY],[yes])])
+
+AC_ARG_WITH([jars],
+	    [AS_HELP_STRING([--with-jars=directory],
+                            [specify directory tree to find java jars])],
+	    [AS_VAR_SET([JARS_DIR],[$withval])],
+	    [AS_VAR_SET([JARS_DIR],[])])
+
+AM_CONDITIONAL([USE_JARS_DIR],[test x"$JARS_DIR" != x])
 
 # Checks for programs.
 AC_PROG_AWK
@@ -366,13 +378,12 @@ FOR_LDFLAGS=""
 SHARETYPE=".so"
 
 THREAD="-pthread"
-AC_SUBST([THREAD])
 MITDEVICESIO_TARGETS=""
 case "$host" in
 *mingw*)
        IDLMDSEVENT=""
        LIBPRE=""
-       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields";
+       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields -Wno-clobbered ";
        LD="$CXX -static-libgcc"
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="$FC"
@@ -406,7 +417,7 @@ case "$host" in
        jni_md_inc_dir="$with_jdk/include/linux";;
 
 *86*linux*)
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing -Wno-clobbered ";
        FORLD="$FC";
        LD="gcc"
        if ( echo $host| grep 64 > /dev/null )
@@ -467,7 +478,7 @@ case "$host" in
        SIZEOF_LONG=4;
        SIZEOF_LONG_LONG=8;
        D64="";
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing -Wno-clobbered";
        if (test "$FC" = "gfortran"); then
          FCFLAGS="$FCFLAGS -fno-range-check";
          FORLD="$FC"
@@ -488,7 +499,7 @@ case "$host" in
        jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
-*linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing";
+*linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing -Wno-clobbered";
        FCFLAGS="$FCFLAGS -fno-range-check";
        FORLD="$FC"
        FOR_LDFLAGS="-lg2c"
@@ -508,8 +519,9 @@ case "$host" in
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X";
+       THREAD=""
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic";
+       CFLAGS="$CFLAGS -arch x86_64 -dynamic -Wno-error=unused-command-line-argument -Wno-missing-field-initializers -Wno-parentheses-equality";
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="gfortran"
        FOR_LDFLAGS="-shared"
@@ -519,12 +531,12 @@ case "$host" in
        LD_LDSHARE="";
        LDARC="";
        LD_LDARC="";
-       UILPATH=/usr/OpenMotif/bin;
-       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L/usr/OpenMotif/lib"
-       MOTIF_LD_LDARC="-multiply_defined suppress -L/usr/OpenMotif/lib"
+       UILPATH=${OPENMOTIF}/bin;
+       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L${OPENMOTIF}/lib"
+       MOTIF_LD_LDARC="-multiply_defined suppress -L${OPENMOTIF}/lib"
        dnl LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -prebind \
 	   dnl -seg_addr_table_filename \$(@F) -seg_addr_table ../macosx/bindtable -Wl,-single_module";
-	   LINKSHARED="$LDFLAGS -shared -arch i386 -arch x86_64 -install_name @loader_path/../lib/\$(@F) -headerpad_max_install_names";
+	   LINKSHARED="$LDFLAGS -shared -arch x86_64 -install_name @loader_path/../lib/\$(@F) -headerpad_max_install_names";
            FOR_LINKSHARED="$LDFLAGS -shared";
 	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
        IDL_LD="";
@@ -596,11 +608,13 @@ AS_VAR_SET_IF([TARGET_ARCH],[CFLAGS="$CFLAGS $TARGET_ARCH"])
 
 dnl see if we have libdc1394 libraries and what version
 
+raw_old_libs="$LIBS" #### needed because of nested call to MDS_SEARCH_LIBS
 MDS_SEARCH_LIBS([raw1394_get_libversion],[raw1394],
 [
   MDS_SEARCH_LIBS([dc1394_new],[dc1394],[DC1394_SUPPORT2="${MAKESHLIBDIR}libdc1394_support2$SHARETYPE"])
   MDS_SEARCH_LIBS([dc1394_get_camera_info],[dc1394],[DC1394_SUPPORT="${MAKESHLIBDIR}libdc1394_support$SHARETYPE"])
 ])
+LIBS="$raw_old_libs"
 
 AC_SEARCH_LIBS([gethostbyname], [nsl socket],
                [AS_VAR_IF([ac_cv_search_gethostbyname], ["none required"], [], [LIBSOCKET=$ac_cv_search_gethostbyname])],
@@ -919,8 +933,8 @@ AC_C_BIGENDIAN
 
 AC_PATH_XTRA
 AS_CASE([$host],
-        [*darwin*|*apple*], [X_CFLAGS+=" -I/usr/OpenMotif/include"
-                             X_LIBS+=" -L/usr/OpenMotif/lib"])
+        [*darwin*|*apple*], [X_CFLAGS+=" -I${OPENMOTIF}/include"
+                             X_LIBS+=" -L${OPENMOTIF}/lib"])
 AS_CASE([$host],[arm*gnueabihf],[X_CFLAGS=""])
 #FIXME: Change the above to AS_VAR_APPEND with a new autoconf version (2.64+?)
 
@@ -1128,6 +1142,19 @@ AS_CASE([$enable_werror],
 AC_SUBST([WARNFLAGS])
 AC_MSG_RESULT([$enable_werror])
 
+AC_MSG_CHECKING([whether to warn about implicit conversions])
+AC_ARG_ENABLE([wconversion],
+              [AS_HELP_STRING([--enable-wconversion],
+                              [Warn about implicit conversions])],
+              [],
+              [AS_VAR_SET([enable_wconversion], [no])])
+AS_CASE([$enable_wconversion],
+        [yes], [AS_VAR_APPEND([WARNFLAGS], [" -Wconversion"])],
+        [])
+AC_SUBST([WARNFLAGS])
+AC_MSG_RESULT([$enable_wconversion])
+
+
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  CONFIG_H  ///////////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
@@ -1188,6 +1215,8 @@ AC_SUBST(IDL_INC)
 AC_SUBST(IDL_LIB)
 AC_SUBST(IDLMDSEVENT)
 AC_SUBST(IDLMDSWIDGETS)
+AC_SUBST(JARS_DIR)
+AC_SUBST(JAVA_ONLY)
 AC_SUBST(JAVA_APS)
 AC_SUBST(JAVACFLAGS)
 AC_SUBST(JDK_CFLAGS)
@@ -1247,6 +1276,7 @@ AC_SUBST(SYBASE_LIB)
 AC_SUBST([TARGET_ARCH])
 AC_SUBST(TAR_EXCLUDE)
 AC_SUBST(TDIC)
+AC_SUBST([THREAD])
 AC_SUBST(UIL)
 AC_SUBST(XM_LIBS)
 AC_SUBST(uiddir)
@@ -1277,6 +1307,8 @@ AC_OUTPUT(Makefile.inc
           javamds/Makefile
           javascope/Makefile
           javatraverser/Makefile
+          javatraverser2/Makefile
+          javatraverser2/java/mds/mdslib/Makefile
           javadevices/Makefile
           LabView/Makefile
           manpages/Makefile

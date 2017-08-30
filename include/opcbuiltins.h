@@ -478,5 +478,8 @@ OPC (	FT_float,	FT_FLOAT ,	Same,	Keep,		undef,		FT,FT,	FT,FT,	1,1,	CAST+N+I )/*;
 OPC (	FT_complex,	FT_COMPLEX ,	Same,	Cmplx,		Complex,	FT,FT,	FTC,FTC, 1,2,	CAST+N+I )/*;%	(x,y)			*/
 OPC (   BuildOpaque, BUILD_OPAQUE ,Build, undef,         undef, XX,YY,OPAQUE,OPAQUE,2,2, OK+I    )/*;mds (data,type_string)            */
 OPC (   MakeOpaque,     MAKE_OPAQUE ,   Make,   undef,          undef, XX,YY,OPAQUE,OPAQUE,     2,2,OK+I )/*;mds (data,type_string)     */
+OPC (   Dict,    DICT ,           Dict,    undef,          undef,          XX,YY,  XX,YY,  0,254,  OK+I+S  )/*;%f9+ [a..z1:z2:dz..n@[this]]*/
+OPC (   Tuple,   TUPLE ,          Tuple,   undef,          undef,          XX,YY,  XX,YY,  0,254,  OK+I+S  )/*;%f9+ [a..z1:z2:dz..n@[this]]*/
+OPC (   List,    LIST ,           List,    undef,          undef,          XX,YY,  XX,YY,  0,254,  OK+I+S  )/*;%f9+ [a..z1:z2:dz..n@[this]]*/
 COM/*
 	.endm	;*/

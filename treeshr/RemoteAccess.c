@@ -301,7 +301,7 @@ STATIC_ROUTINE int MdsValue0(int socket, char *exp, struct descrip *ans)
       return status;
   }
   LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
-  status = (*MdsValue) (socket, exp, ans, 0);
+  status = (*MdsValue) (socket, exp, ans, NULL);
   UnlockMdsShrMutex(&IOMutex);
   return status;
 }
@@ -315,7 +315,7 @@ STATIC_ROUTINE int MdsValue1(int socket, char *exp, struct descrip *arg1, struct
       return status;
   }
   LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
-  status = (*MdsValue) (socket, exp, arg1, ans, 0);
+  status = (*MdsValue) (socket, exp, arg1, ans, NULL);
   UnlockMdsShrMutex(&IOMutex);
   return status;
 }

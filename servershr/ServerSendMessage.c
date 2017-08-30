@@ -83,8 +83,13 @@ typedef struct _Job {
   struct _Job *next;
 } Job;
 static pthread_mutex_t jobs_mutex = PTHREAD_MUTEX_INITIALIZER;
-#define LOCK_JOBS   pthread_mutex_lock(&jobs_mutex)
-#define UNLOCK_JOBS pthread_mutex_unlock(&jobs_mutex)
+#ifdef _WIN32
+ #define LOCK_JOBS   pthread_mutex_lock(&jobs_mutex);{
+ #define UNLOCK_JOBS };pthread_mutex_unlock(&jobs_mutex)
+#else
+ #define LOCK_JOBS   pthread_mutex_lock(&jobs_mutex);pthread_cleanup_push((void (*)())pthread_mutex_unlock, (void*)&jobs_mutex)
+ #define UNLOCK_JOBS pthread_cleanup_pop(1)
+#endif
 static Job *Jobs = 0;
 
 
@@ -229,11 +234,19 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
       CleanupJob(status, jobid);
       return status;
   }
-  status = GetAnswerInfoTS(conid, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem);
-  if STATUS_NOT_OK {
-    perror("Error: no response from server");
+  status = GetAnswerInfoTS(conid, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem, -1.f);
+  if (op==SrvStop) {
+    if STATUS_NOT_OK {
+      status = MDSplusSUCCESS;
+      CleanupJob(status, jobid);
+    } else
+      status = MDSplusERROR;
+  } else {
+    if STATUS_NOT_OK {
+      perror("Error: no response from server");
       CleanupJob(status, jobid);
       return status;
+    }
   }
   if (mem)
     free(mem);
@@ -294,15 +307,17 @@ void ServerWait(int jobid)
 static void DoBeforeAst(int jobid)
 {
   Job *j;
+  void *astparam = NULL;
+  void (*before_ast) () = NULL;
   LOCK_JOBS;
   for (j = Jobs; j && (j->jobid != jobid); j = j->next) ;
-  if (j && j->before_ast) {
-    void *astparam        = j->astparam;
-    void (*before_ast) () = j->before_ast;
-    UNLOCK_JOBS;
+  if (j) {
+    astparam   = j->astparam;
+    before_ast = j->before_ast;
+  }
+  UNLOCK_JOBS;
+  if (before_ast)
     before_ast(astparam);
-  } else
-    UNLOCK_JOBS;
 }
 
 static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void (*ast) (), void *astparam,
@@ -359,7 +374,7 @@ static SOCKET CreatePort(short starting_port, short *port_out)
   static struct sockaddr_in sin;
   long sendbuf = 6000, recvbuf = 6000;
   SOCKET s;
-  int c_status = -1;
+  int c_status = C_ERROR;
   int tries = 0;
   int one = 1;
   InitializeSockets();
@@ -429,8 +444,7 @@ static void ReceiverExit(void *arg __attribute__ ((unused))){
   CONDITION_RESET(&ReceiverRunning);
 }
 
-static void ResetFdactive(int rep, SOCKET sock, fd_set * active)
-{
+static void ResetFdactive(int rep, SOCKET sock, fd_set * active){
   Client *c;
   if (rep > 0) {
     LOCK_CLIENTS;
@@ -455,7 +469,6 @@ static void ResetFdactive(int rep, SOCKET sock, fd_set * active)
   }
   UNLOCK_CLIENTS;
   printf("reset fdactive in ResetFdactive\n");
-  return;
 }
 
 static void ReceiverThread(void *sockptr){

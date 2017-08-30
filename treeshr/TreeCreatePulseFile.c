@@ -150,7 +150,7 @@ int TreeCreateTreeFiles(char *tree, int shot, int source_shot)
   int itype;
   char *types[] = { ".tree", ".characteristics", ".datafile" };
   for (i = 0; i < len && i < 12; i++)
-    tree_lower[i] = tolower(tree[i]);
+    tree_lower[i] = (char)tolower(tree[i]);
   tree_lower[i] = 0;
   strcpy(pathname, tree_lower);
   strcat(pathname, TREE_PATH_SUFFIX);
@@ -272,7 +272,7 @@ STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it)
     if ((dst_fd != -1) && (src_len != -1)) {
       MDS_IO_LSEEK(src_fd, 0, SEEK_SET);
       if (lock_it)
-	MDS_IO_LOCK(src_fd, 0, (int)src_len, MDS_IO_LOCK_RD, 0);
+	MDS_IO_LOCK(src_fd, 0, (size_t)src_len, MDS_IO_LOCK_RD, 0);
       if (src_len > 0) {
 	size_t chunk_size = (size_t) (MIN(MAX_CHUNK, src_len));
 	void *buff = malloc(chunk_size);
@@ -294,7 +294,7 @@ STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it)
       } else
 	status = TreeSUCCESS;
       if (lock_it)
-	MDS_IO_LOCK(src_fd, 0, (int)src_len, MDS_IO_LOCK_NONE, 0);
+	MDS_IO_LOCK(src_fd, 0, (size_t)src_len, MDS_IO_LOCK_NONE, 0);
       MDS_IO_CLOSE(dst_fd);
     } else
       status = TreeFCREATE;

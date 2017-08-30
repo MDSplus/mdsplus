@@ -23,6 +23,7 @@ SYNOPSIS
                [--distname=name] [--updatepkg] [--eventport=number]
                [--arch=name] [--color] [--winhost=hostname]
                [--winbld=dir] [--winrembld=dir] [--gitcommit=commit]
+               [--jars-dir=dir] [--make-jars]
 
 DESCRIPTION
     The build.sh script is used for building, testing and deploy MDSplus
@@ -102,6 +103,13 @@ OPTIONS
        output of the tests use the log option. The tap option will publish
        the results in a standard tap format which only gives pass or fail
        information.
+
+    --test_timeunit=float-point-number
+       Multiplier to apply to tests timeouts. If this option is used the
+       timeout time for a test will be set to this value times the normal
+       timeout for the test. For example, --test_timeunit=2.5 would
+       allow the tests to run 2.5 as long as the normally do before being
+       stopped with a timeout error. 
 
    --eventport=number
        Select a port number to use for udp event tests. If running
@@ -185,6 +193,16 @@ OPTIONS
     --gitcommit=commit
        Set by trigger jenkins job representing the commit hash of the sources.
 
+    --jars-dir=dir
+       Set by trigger job to indicate that build job should get the java jar
+       files from the trigger source directory instead of building them.
+
+    --make-jars
+       Triggers the generation of the java programs (.jar files)
+
+    --disable-java
+       Do not compile java programs (passes --disable-java to configure)
+
 OPTIONS WITH OS SPECIFIC DEFAULT
 
    --platform=name
@@ -263,6 +281,9 @@ parsecmd() {
 		;;
 	    --test_format=*)
 		TEST_FORMAT="${i#*=}"
+		;;
+	    --test_timeunit=*)
+		TEST_TIMEUNIT="${i#*=}"
 		;;
 	    --eventport=*)
 		EVENT_PORT="${i#*=}"
@@ -354,6 +375,15 @@ parsecmd() {
 		;;
 	    --gitcommit=*)
 		GIT_COMMIT="${i#*=}"
+		;;
+	    --jars-dir=*)
+		JARS_DIR="$(realpath ${i#*=})"
+		;;
+	    --make-jars)
+		MAKE_JARS="yes"
+		;;
+	    --disable-java)
+		CONFIGURE_PARAMS="$CONFIGURE_PARAMS --disable-java"
 		;;
 	    *)
 		unknownopts="${unknownopts} $i"
@@ -454,12 +484,11 @@ fi
 echo "${ENABLE_SANITIZE}"
 echo "${SANITIZE}"
 if [ "${TEST}"            != "yes"  \
+ -a  "${MAKE_JARS}"       != "yes"  \
  -a  "${RELEASE}"         != "yes"  \
- -a  "${PUBLISH}"         != "yes"  \
- -a  "${ENABLE_SANITIZE}" != "yes"  \
- -a  "${ENABLE_VALGRIND}" != "yes"  ]
+ -a  "${PUBLISH}"         != "yes"  ]
 then
-    >&2 echo "None of --test --sanitize --valgrind --release=version --publish=version options specified on the command. Nothing to do!"
+    >&2 echo "None of --test --make-jars --release=version --publish=version options specified on the command. Nothing to do!"
     exit 0
 fi
 #
@@ -597,7 +626,9 @@ fi
 OS=${OS} \
   TEST=${TEST} \
   TEST_FORMAT=${TEST_FORMAT} \
+  TEST_TIMEUNIT=${TEST_TIMEUNIT} \
   EVENT_PORT=${EVENT_PORT} \
+  MAKE_JARS=${MAKE_JARS} \
   RELEASE=${RELEASE} \
   PUBLISH=${PUBLISH} \
   RELEASE_VERSION=${RELEASE_VERSION} \
@@ -621,6 +652,8 @@ OS=${OS} \
   WINREMBLD="${WINREMBLD}" \
   GIT_COMMIT="${GIT_COMMIT}" \
   INTERACTIVE="$INTERACTIVE" \
+  JARS_DIR="$JARS_DIR" \
+  CONFIGURE_PARAMS="$CONFIGURE_PARAMS" \
   ${SRCDIR}/deploy/platform/platform_build.sh
 if [ "$?" != "0" ]
 then

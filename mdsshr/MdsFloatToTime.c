@@ -20,15 +20,15 @@ EXPORT void MdsFloatToTime(double floatTime, uint64_t * outTime)
 
 EXPORT void MdsFloatToDelta(double floatTime, uint64_t * outTime)
 {
-  int64_t currTime;
+  uint64_t currTime;
 
-  currTime = (int64_t) (floatTime / 1E-9);
+  currTime = (uint64_t) (floatTime / 1E-9);
   *outTime = currTime;
 }
 
 EXPORT void MdsTimeToFloat(uint64_t inTime, float *outFloat)
 {
-  int64_t baseTime, currTime;
+  uint64_t baseTime, currTime;
 
   baseTime = 1000000000;
   baseTime *= (24 * 3600);
@@ -38,7 +38,7 @@ EXPORT void MdsTimeToFloat(uint64_t inTime, float *outFloat)
 
 EXPORT void MdsTimeToDouble(uint64_t inTime, double *outFloat)
 {
-  int64_t baseTime, currTime;
+  uint64_t baseTime, currTime;
 
   baseTime = 1000000000;
   baseTime *= (24 * 3600);

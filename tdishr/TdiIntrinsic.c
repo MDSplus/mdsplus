@@ -195,16 +195,14 @@ STATIC_ROUTINE int interlude(int (*f1) (), int opcode, int narg,
   return status;
 }
 
-STATIC_CONSTANT EMPTYXD(emptyxd);
-
 int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS, stat1 = MDSplusSUCCESS;
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   GET_TDITHREADSTATIC_P;
-  struct descriptor_xd tmp = emptyxd;
+  EMPTYXD(tmp);
   FREEXD_ON_EXIT(&tmp);
-  FREEXD_ON_EXIT(&out_ptr);
+  FREEXD_ON_EXIT(out_ptr);
   FREEBEGIN_ON_EXIT();
   struct descriptor *dsc_ptr;
   struct descriptor_d *message = &(TdiThreadStatic_p->TdiIntrinsic_message);
@@ -362,7 +360,7 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
   TdiThreadStatic_p->TdiIntrinsic_mess_stat = status;
   if (!TdiThreadStatic_p->TdiIntrinsic_recursion_count)
     freebegin(&TdiRefZone);
-  FREE_CANCEL(tmp);
+  FREE_CANCEL(&tmp);
   FREE_CANCEL(out_ptr);
   FREE_CANCEL(a_begin);
   return status;

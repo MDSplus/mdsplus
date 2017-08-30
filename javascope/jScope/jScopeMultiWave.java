@@ -309,7 +309,7 @@ public class jScopeMultiWave
             "";
         
         //If the legend is defined in the signal, override it
-        if (signals.size() > i && signals.elementAt(i).getLegend() != null)
+        if (signals.size() > i && signals.elementAt(i) != null && signals.elementAt(i).getLegend() != null)
             return signals.elementAt(i).getLegend();
         
         if (wi.shots != null)
@@ -321,7 +321,7 @@ public class jScopeMultiWave
             s = name + er;
         }
 
-        if (signals.size() > i)
+        if (signals.size() > i && signals.elementAt(i) != null)
         {
             s += signals.elementAt(i).getName();
             Signal sign = signals.elementAt(i);
@@ -350,15 +350,7 @@ public class jScopeMultiWave
             }
         }
 
-        // TWU Signal URLs
-        // If the signal is a TWU URL, we would like it to be displayed as a URL.
-        // I hope that this does not clash with other jScope codes.  If so, tell me!
-        // J.G.Krom (Textor, Juelich, Germany) <J.Krom@fz-juelich.de>
-
-        if (TwuNameServices.catersFor(wi.dp))
-            s = TwuNameServices.legendString(wi, name,
-                                             wi.shots == null ? 0 : wi.shots[i]);
-
+     
         return s;
     }
 

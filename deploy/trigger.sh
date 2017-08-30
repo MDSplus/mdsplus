@@ -14,11 +14,11 @@ NAME
                  build jobs used to test pull requests and generate new MDSplus releases.
 
 SYNOPSIS
-    ./trigger.sh [--test[=skip]] [--testrelease] [--valgrind=skip] [--sanitize=skip] [--test_format=tap|log]
+    ./trigger.sh [--test[=skip]] [--test_timeunit=factor] [--testrelease] [--valgrind=skip] [--sanitize=skip] [--test_format=tap|log]
                  [--release] [--releasedir=directory]
                  [--publish] [--publishdir=directory]
                  [--keys=dir] [--dockerpull] [--color]
-                 [--pypi]
+                 [--pypi] [--make_jars ]
 
 DESCRIPTION
     The trigger.sh script is used in conjunction with platform build jobs
@@ -37,12 +37,23 @@ DESCRIPTION
 
 OPTIONS
 
+   --make_jars=fc25
+       Build the java jars file in a build_jars subdirectory of the specified os.
+       This will make the directory if necessary, cd to that directory and run
+       configure --enable-java_only and build the java jars in that directory
+       tree. This is used to build the jar files once and then trigger the
+       platform builds with a --jars_dir=directory option so platform builds
+       can just cp the jar files from the trigger directory location.
+
    --test[=skip]
        Build and test the mdsplus sources. The type of tests attempted
        can be controlled by the --valgrind and --sanitize options. Some
        cross-compiled platforms cannot be tested so the os.opt file will
        contain a --test=skip which supercedes a --test option on the
        command line.
+
+    --test_timeunit=factor
+       Multiply timeout limits by factor to extend or shorten timeout limits
 
     --testrelease
        Use for pull request tests so kits will be built and checked but
@@ -123,6 +134,9 @@ OPTIONS
 
 EOF
 }
+
+SRCDIR=$(realpath $(dirname ${0})/..)
+
 opts=""
 parsecmd() {
     for i in $1
@@ -132,6 +146,10 @@ parsecmd() {
 		printhelp
 		exit
 		;;
+	    --make_jars=*)
+		MAKE_JARS=${i#*=}
+		opts="${opts} --jars-dir=${SRCDIR}/jars"
+		;;
 	    --test)
 		opts="${opts} ${i}"
                 ;;
@@ -140,6 +158,9 @@ parsecmd() {
 		;;
 	    --test=skip)
 		opts="${opts} ${i}"
+		;;
+	    --test_timeunit=*)
+		opts="${opts} --test_timeunit=${i#*=}"
 		;;
 	    --test_format=*)
 		opts="${opts} ${i}"
@@ -228,7 +249,22 @@ NORMAL() {
     fi
 }
 
-SRCDIR=$(realpath $(dirname ${0})/..)
+if [ ! -z "${MAKE_JARS}" ]
+then
+    if ( ! ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} --workspace=${SRCDIR} )
+    then
+	RED $COLOR
+	cat <<EOF >&2
+===============================================
+
+Error creating java jar files. Trigger failed.
+
+===============================================
+EOF
+	NORMAL $COLOR
+	exit 1
+    fi
+fi
 
 if [ "$RELEASE" = "yes" -a "$PUBLISH" = "yes" ]
 then

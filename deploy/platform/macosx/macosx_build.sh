@@ -33,6 +33,12 @@ then
 fi
 
 MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
+if [ -z "$JARS_DIR" ]
+then
+    JAVA_OPTS="--with-java_target=6 --with-java_bootclasspath=${SRCDIR}/rt.jar"
+else
+    JAVA_OPTS="--with-jars=${JARS_DIR}"
+fi
 
 export PYTHONDONTWRITEBYTECODE=no
 if [ "$TEST" = "yes" ]
@@ -45,9 +51,8 @@ then
     ${SRCDIR}/configure \
 	    --prefix=${MDSPLUS_DIR} \
 	    --exec_prefix=${MDSPLUS_DIR} \
-	    --with-java_target=6 \
-	    --with-java_bootclasspath=${SRCDIR}/rt.jar \
-            --enable-debug
+	    ${JAVA_OPTS} \
+	    --enable-debug
     $MAKE
     $MAKE install
     if ( ! $MAKE -k tests 2>&1 )
@@ -79,12 +84,12 @@ then
     ###
     MDSPLUS_DIR=${WORKSPACE}/releasebld/buildroot/usr/local/mdsplus
     mkdir -p ${MDSPLUS_DIR}
+    cp ${SRCDIR}/deploy/platform/macosx/MDSplus.pkgproj ${WORKSPACE}/releasebld/
     pushd ${WORKSPACE}/releasebld/
     ${SRCDIR}/configure \
 	    --prefix=${MDSPLUS_DIR} \
 	    --exec_prefix=${MDSPLUS_DIR} \
-	    --with-java_target=6 \
-	    --with-java_bootclasspath=${SRCDIR}/rt.jar
+	    ${JAVA_OPTS}
     $MAKE
     $MAKE install
     popd
@@ -95,14 +100,19 @@ then
 	BNAME="-${BRANCH}"
     fi
     IFS='.' read -ra VERS <<< "${RELEASE_VERSION}"
-    /Developer/usr/bin/packagemaker \
-	--title "MDSplus%(pkgflavor)s" \
-	--version "%(major)d.%(minor)d.%(release)d" \
-	--scripts ${SRCDIR}/macosx/scripts \
-	--install-to "/" \
-	--target "10.5" \
-	-r ${WORKSPACE}/releasebld/buildroot -v -i "MDSplus${BNAME}" \
-	-o ${RELEASEDIR}/${BRANCH}/MDSplus${BNAME}-${VERS[0]}-${VERS[1]}-${VERS[2]}-osx.pkg
+    /usr/local/bin/packagesbuild  -v -F ${SRCDIR} ${WORKSPACE}/releasebld/MDSplus.pkgproj
+    if [ "$?" == "0" ]
+    then
+        mv ${WORKSPACE}/releasebld/buildroot/MDSplus.pkg ${RELEASEDIR}/${BRANCH}/MDSplus${BNAME}-${VERS[0]}-${VERS[1]}-${VERS[2]}-osx.pkg 
+    fi
+#    /Developer/usr/bin/packagemaker \
+#	--title "MDSplus%(pkgflavor)s" \
+#	--version "%(major)d.%(minor)d.%(release)d" \
+#	--scripts ${SRCDIR}/macosx/scripts \
+#	--install-to "/" \
+#	--target "10.5" \
+#	-r ${WORKSPACE}/releasebld/buildroot -v -i "MDSplus${BNAME}" \
+#	-o ${RELEASEDIR}/${BRANCH}/MDSplus${BNAME}-${VERS[0]}-${VERS[1]}-${VERS[2]}-osx.pkg
     if [ "$?" != "0" ]
     then
 	RED $COLOR

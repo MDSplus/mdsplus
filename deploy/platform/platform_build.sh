@@ -75,6 +75,10 @@ rundocker(){
         # only build the deb's after both 32-bit and 64-bit builds are
         # complete. Likewise only publish the release once.
         #
+        if [ -z $JARS_DIR ]
+        then jars_dir=
+        else jars_dir=/jars_dir
+        fi
         if [ -z $FORWARD_PORT ]
         then port_forwarding=
         else port_forwarding="-p ${FORWARD_PORT}:${FORWARD_PORT}"
@@ -100,14 +104,18 @@ rundocker(){
            -e "TESTFORMAT" \
            -e "UPDATEPKG" \
            -e "VALGRIND_TOOLS" \
+	   -e "MAKE_JARS" \
+           -e "CONFIGURE_PARAMS" \
            -e "mdsevent_port=$EVENT_PORT" \
            -e "HOME=/workspace" \
+           -e "JARS_DIR=$jars_dir" \
            -v $(realpath ${SRCDIR}):/source \
            -v ${WORKSPACE}:/workspace \
            $port_forwarding \
+           $(volume "${JARS_DIR}" /jars_dir) \
            $(volume "${RELEASEDIR}" /release) \
            $(volume "${PUBLISHDIR}" /publish) \
-           $(volume "$KEYS" /sign_keys) \
+           $(volume "${KEYS}" /sign_keys) \
            ${image} $program
         status=$?
         if [ -r ${WORKSPACE}/${OS}_docker-cid ]

@@ -8,37 +8,30 @@
 #include <strroutines.h>
 #include <string.h>
 /* Key for the thread-specific buffer */
-STATIC_THREADSAFE int is_init = B_FALSE;
 STATIC_THREADSAFE pthread_key_t buffer_key;
-STATIC_THREADSAFE pthread_rwlock_t buffer_lock   = PTHREAD_RWLOCK_INITIALIZER;
-#define WRLOCK_BUFFER pthread_rwlock_wrlock(&buffer_lock);
-#define RDLOCK_BUFFER pthread_rwlock_rdlock(&buffer_lock);
-#define UNLOCK_BUFFER pthread_rwlock_unlock(&buffer_lock);
-
+/* Once-only initialisation of the key */
+STATIC_THREADSAFE pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
+/* lock pthread_once */
+STATIC_THREADSAFE pthread_mutex_t buffer_key_mutex = PTHREAD_MUTEX_INITIALIZER;
 /* Free the thread-specific buffer */
 STATIC_ROUTINE void buffer_destroy(void *buf){
-  if (buf != NULL) {
-    ThreadStatic *ts = (ThreadStatic *) buf;
-    StrFree1Dx(&ts->TdiIntrinsic_message);
-    LibResetVmZone(&ts->TdiVar_private.head_zone);
-    LibResetVmZone(&ts->TdiVar_private.data_zone);
-    free(buf);
-  }
+  ThreadStatic *ts = (ThreadStatic *) buf;
+  StrFree1Dx(&ts->TdiIntrinsic_message);
+  LibResetVmZone(&ts->TdiVar_private.head_zone);
+  LibResetVmZone(&ts->TdiVar_private.data_zone);
+  free(buf);
 }
-
+STATIC_ROUTINE void buffer_key_alloc(){
+  pthread_key_create(&buffer_key, buffer_destroy);
+}
 /* Return the thread-specific buffer */
 ThreadStatic *TdiGetThreadStatic(){
-  ThreadStatic *p;
-  RDLOCK_BUFFER;
-  if (!is_init) {
-    UNLOCK_BUFFER;
-    WRLOCK_BUFFER;
-    pthread_key_create(&buffer_key, buffer_destroy);
-    is_init = B_TRUE;
-  }
-  p = (ThreadStatic *) pthread_getspecific(buffer_key);
-  if (p == NULL) {
-    p = (ThreadStatic *) memset(malloc(sizeof(ThreadStatic)), 0, sizeof(ThreadStatic));
+  pthread_mutex_lock(&buffer_key_mutex);
+  pthread_once(&buffer_key_once, buffer_key_alloc);
+  pthread_mutex_unlock(&buffer_key_mutex);
+  ThreadStatic *p = (ThreadStatic *) pthread_getspecific(buffer_key);
+  if (!p) {
+    p = (ThreadStatic *) calloc(1,sizeof(ThreadStatic));
     p->TdiGetData_recursion_count = 0;
     p->TdiIntrinsic_mess_stat = -1;
     p->TdiIntrinsic_recursion_count = 0;
@@ -60,7 +53,6 @@ ThreadStatic *TdiGetThreadStatic(){
     p->TdiIndent = 1;
     p->TdiDecompile_max = 0xffff;
   }
-  UNLOCK_BUFFER;
   return p;
 }
 

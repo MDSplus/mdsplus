@@ -66,23 +66,23 @@ int _TreeDeleteNodeInitialize(void *dbid, int nidin, int *count, int reset)
   vm_needed = dblist->tree_info->header->nodes / 8 + 4;
   if (vm_needed != list_vm) {
     unsigned char *old_list = TREE_DELETE_LIST;
-    TREE_DELETE_LIST = malloc(vm_needed);
+    TREE_DELETE_LIST = malloc((size_t)vm_needed);
     if (!TREE_DELETE_LIST)
       return TreeMEMERR;
     if (reset) {
-      memset(TREE_DELETE_LIST, 0, vm_needed);
+      memset(TREE_DELETE_LIST, 0, (size_t)vm_needed);
       if (count)
 	*count = 0;
     } else {
-      memcpy(TREE_DELETE_LIST, old_list, (list_vm < vm_needed) ? list_vm : vm_needed);
+      memcpy(TREE_DELETE_LIST, old_list, (size_t)((list_vm < vm_needed) ? list_vm : vm_needed));
       if (vm_needed > list_vm)
-	memset(TREE_DELETE_LIST + list_vm, 0, vm_needed - list_vm);
+	memset(TREE_DELETE_LIST + list_vm, 0, (size_t)(vm_needed - list_vm));
     }
     if (list_vm)
       free(old_list);
     list_vm = vm_needed;
   } else if (reset) {
-    memset(TREE_DELETE_LIST, 0, list_vm);
+    memset(TREE_DELETE_LIST, 0, (size_t)list_vm);
     if (count)
       *count = 0;
   }
@@ -98,7 +98,7 @@ STATIC_ROUTINE int getbit(int bitnum)
 
 STATIC_ROUTINE void setbit(int bitnum)
 {
-  TREE_DELETE_LIST[bitnum / 8] |= (1 << (bitnum % 8));
+  TREE_DELETE_LIST[bitnum / 8] = (unsigned char)(TREE_DELETE_LIST[bitnum / 8] | (1 << bitnum % 8));
 }
 
 STATIC_ROUTINE void check_nid(PINO_DATABASE * dblist, NID * nid, int *count)
@@ -125,7 +125,7 @@ STATIC_ROUTINE void check_nid(PINO_DATABASE * dblist, NID * nid, int *count)
       NID elt_nid;
       NODE *elt_node;
       unsigned short elt_num = 1;
-      elt_nid.node = nid->node - swapshort((char *)&node->conglomerate_elt) + 1;
+      elt_nid.node = (unsigned)(nid->node - swapshort((char *)&node->conglomerate_elt) + 1)&0xFFFFFF;
       elt_nid.tree = nid->tree;
       elt_node = nid_to_node(dblist, &elt_nid);
       for (; swapshort((char *)&elt_node->conglomerate_elt) == elt_num;
@@ -337,7 +337,7 @@ int _TreeDeleteNodeGetNid(void *dbid, int *innid)
     for (i = nid->node + 1; i < dblist->tree_info->header->nodes && ((found = getbit(i)) == 0);
 	 i++) ;
   if (found)
-    nid->node = i;
+    nid->node = (unsigned)i&0xFFFFFF;
   else
     status = TreeNMN;
   return status;
