@@ -435,21 +435,37 @@ class Opaque(Compound):
     dtype_id=217
 
 
+    @property
+    def data(self):
+        "Data portion of Opaque object"
+        return self.getDescAt(0)
+    @data.setter
+    def data(self,value):
+        self.setDescAt(0,value)
+
+    @property
+    def image(self):
+        "Return image from contents of data portion"
+        return self.getImage()
+
     def getImage(self):
         try: from PIL import Image
         except:       import Image
         from StringIO import StringIO
-        return Image.open(StringIO(_dat.Data(self.getData()).data().data))
+        return Image.open(StringIO(self.data.data().tostring()))
 
     @classmethod
-    def fromFile(cls,filename,typestring):
+    def fromFile(cls,filename,typestring=None):
         """Read a file and return an Opaque object
         @param filename: Name of file to read in
         @type filename: str
-        @param typestring: String to denote the type of file being stored
+        @param typestring: String to denote the type of file being stored. Defaults to file type.
         @type typestring: str
         @rtype: Opaque instance
         """
+        import os
+        if typestring is None:
+            fn, typestring = os.path.splitext(filename)
         f = open(filename,'rb')
         try:
             opq=cls(_dat.Data(_N.fromstring(f.read(),dtype="uint8")),typestring)
@@ -469,7 +485,7 @@ class WithError(Compound):
     """Specifies error information for any kind of data.
     """
     fields=('data','error')
-    dtype_id=211
+    dtype_id=213
 _dsc.addDtypeToClass(WithError)
 
 class Parameter(Compound):

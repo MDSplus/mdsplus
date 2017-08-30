@@ -623,9 +623,18 @@ void __test_init(const char *test_name, const char *file, const int line) {
     // create tcase //
     tcase  = tcase_create(test_name);
 
-    // SET TIMEOUT //
-    __test_timeout(default_timeout);
+    // SET tcase TIMEOUT //
+    tcase_set_timeout(tcase,default_timeout);
+    char *time_unit = getenv("TEST_TIMEUNIT");
+    if(time_unit != NULL) {
+        char *endptr = NULL;
+        double tu = strtod(time_unit, &endptr);
+        if(tu >= 0 && endptr != time_unit && (*endptr) == '\0') {
+            tcase_set_timeout(tcase,default_timeout*tu);
+        }
+    }
 
+    // ADD TCASE //
     suite_add_tcase(suite,tcase);
 
     #ifdef HAVE_FORK
@@ -659,19 +668,8 @@ void __test_init(const char *test_name, const char *file, const int line) {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-void __test_timeout(double seconds) {
+void __test_timeout(double seconds) {    
     default_timeout = seconds;
-    if(tcase) {
-        char *time_unit = getenv("TEST_TIMEUNIT");
-        if(time_unit != NULL) {
-            char *endptr = NULL;
-            double tmp = strtod(time_unit, &endptr);
-            if(tmp >= 0 && endptr != time_unit && (*endptr) == '\0')
-                tcase_set_timeout(tcase,seconds*tmp);
-        }
-        else
-            tcase_set_timeout(tcase,seconds);
-    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
