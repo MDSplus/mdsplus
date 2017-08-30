@@ -32,6 +32,7 @@ def _mimport(filename,name=None,local=locals()):
     Device._mimport(globals(),local,filename,name)
 
 _mimport('ACQIPPSETUP')
+_mimport('BASLERACA')
 _mimport('CAENDT5720')
 _mimport('CAENDT5724')
 _mimport('CAENV1740')

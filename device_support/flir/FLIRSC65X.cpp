@@ -1636,7 +1636,7 @@ int FLIR_SC65X::startFramesAcquisition()
 	{
            if( tcpStreamHandle == -1) 
 	   {
-            	rstatus = camOpenTcpConnectionNew(streamingServer, streamingPort, &tcpStreamHandle, width, height);
+            	rstatus = camOpenTcpConnection(streamingServer, streamingPort, &tcpStreamHandle, width, height, CSU_PIX_FMT_GRAY16);
             	if( rstatus !=-1 )
                 {
             	  printf( "Connected to FFMPEG on %s : %d\n", streamingServer, streamingPort);
@@ -1647,16 +1647,16 @@ int FLIR_SC65X::startFramesAcquisition()
 		  streamingEnabled = 0;
 		}
 	    }
-
 	    //if ( (streamingSkipFrameNumber - 1 <= 0) || (frameCounter % ( streamingSkipFrameNumber - 1)) == 0 )  //20170327 - ORIGINAL
-            if((this->frameRate<10) || (frameCounter % int(this->frameRate/10.0))==0)  //send frame @ 10Hz. Reduce CPU usage when radiometric conversion must be performed.
+            else if((this->frameRate<10) || (frameCounter % int(this->frameRate/10.0))==0)  //send frame @ 10Hz. Reduce CPU usage when radiometric conversion must be performed.
 	    {
                 if( irFrameFormat == radiometric ) 
                 {
                   flirRadiometricConv(frameBuffer, width, height, metaData);   //radiometric conversion in Celsius using metadata
                 }
-
- 	        camStreamingFrame( tcpStreamHandle, frameBuffer, metaData, width, height, 14, irFrameFormat, autoAdjustLimit, &lowLim, &highLim, minLim, maxLim, this->deviceName, streamingList);
+ 	       // camStreamingFrame( tcpStreamHandle, frameBuffer, metaData, width, height, 14, irFrameFormat, autoAdjustLimit, &lowLim, &highLim, minLim, maxLim, this->deviceName, streamingList);
+//printf("frame counter: %d\n",frameCounter);
+	        camStreamingFrame( tcpStreamHandle, frameBuffer, metaData, width, height, CSU_PIX_FMT_GRAY16, irFrameFormat, autoAdjustLimit, &lowLim, &highLim, minLim, maxLim, this->deviceName, streamingList);
 	    }             
 	} // if( streamingEnabled )
 

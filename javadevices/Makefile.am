@@ -158,6 +158,7 @@ AWG2021Setup.java\
 RFXWAVESETUPSetup.java\
 RFX_PROTECTIONSSetup.java\
 FLIRSC65XSetup.java\
+BASLERACASetup.java\
 NI6368AISetup.java\
 ACQIPPSETUPSetup.java\
 DIO2_ENCDECSetup.java\

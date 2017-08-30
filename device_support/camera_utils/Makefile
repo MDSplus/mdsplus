@@ -11,8 +11,8 @@ LDFLAGSmdsutils = -shared -lrt -pthread -L$(MDSPLUS_DIR)/lib -lMdsObjectsCppShr 
 SOURCESstreamutils=camstreamutils.cpp 
 SOURCESmdsutils=cammdsutils.cpp 
 
-INCstreamutils=libcamstreamutils.h 
-INCmdsutils=libcammdsutils.h
+INCstreamutils=camstreamutils.h 
+INCmdsutils=cammdsutils.h
 
 OBJstreamutils=camstreamutils.o
 OBJmdsutils=cammdsutils.o

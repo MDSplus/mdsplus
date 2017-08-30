@@ -129,7 +129,7 @@ class FLIRSC65X(Device):
         else:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot restore worker!!')
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        return
+        return 1
 
 ###restore info###
     def restoreInfo(self):
@@ -179,7 +179,7 @@ class FLIRSC65X(Device):
           Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot open device '+ name +'('+self.error.raw+')')
           raise mdsExceptions.TclFAILED_ESSENTIAL
 
-      return
+      return 1
 
 ###remove info###
     def removeInfo(self):
@@ -193,7 +193,6 @@ class FLIRSC65X(Device):
     def init(self):
       if self.restoreInfo() == 0:
           raise mdsExceptions.TclFAILED_ESSENTIAL
-
       self.saveInfo()
 
       try:
@@ -536,7 +535,8 @@ class FLIRSC65X(Device):
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
       print('Init action completed.')
-      return
+      print('Fede')
+      return 1
 
 ####################MANUAL CALIBRATION ACTION
     def calib(self):
@@ -550,7 +550,7 @@ class FLIRSC65X(Device):
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
       #self.saveInfo()
-      return
+      return 1
 
 
 ####################MANUAL AUTOFOCUS ACTION
@@ -565,7 +565,7 @@ class FLIRSC65X(Device):
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
       self.saveInfo()
-      return
+      return 1
 
 
 ####################READ FOCUS POSITION
@@ -584,7 +584,7 @@ class FLIRSC65X(Device):
       self.cam_setup_focus_pos.putData(focPos.value)   #write data in mdsplus
 
       self.saveInfo()
-      return
+      return 1
 
 
 ####################WRITE FOCUS POSITION
@@ -599,7 +599,7 @@ class FLIRSC65X(Device):
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
       self.saveInfo()
-      return
+      return 1
 
 
 ##########start acquisition############################################################################
@@ -624,14 +624,14 @@ class FLIRSC65X(Device):
       self.worker.configure(self)
       self.saveWorker()
       self.worker.start()
-      return
+      return 1
 
 
 ##########stop acquisition############################################################################
     def stopAcquisition(self):
       if self.restoreWorker() :
       	self.worker.stop()
-      return
+      return 1
 ##########software trigger (start saving in mdsplus)############################################
     def swTrigger(self):
       if self.restoreInfo() == 0:
@@ -646,4 +646,4 @@ class FLIRSC65X(Device):
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
       self.saveInfo()
-      return
+      return 1

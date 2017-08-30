@@ -76,6 +76,7 @@ class FLIR_SC65X
 		int 	 y;
 		int	 width;
 		int 	 height;
+		int      pixelFormat;           //all pixelFormat supported are in camstreamutils.h
 		double	 frameRate;
 
 		int 	 storeEnabled;

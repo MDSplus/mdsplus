@@ -110,7 +110,7 @@ if(argv[4]!=NULL)
 
   while(canStream==-1 && i<=5) //try 5 times to open the connection
   { 
-    canStream=camOpenTcpConnection( atoi( argv[4] ), &kSockHandle, 640, 480);
+    canStream=camOpenTcpConnection((const char *)"127.0.0.1", atoi(argv[4]), &kSockHandle, 640, 480, CSU_PIX_FMT_GRAY16);
 	sleep(1);
 	i++;
   }
@@ -227,7 +227,8 @@ if(argv[4]!=NULL)
 		   //It must be changed to prevent strange image transmission!
 		   unsigned int lowLim = 0;
 		   unsigned int highLim = 32000;
-		   camFrameTo8bit((unsigned short *)frame, 640, 480, (unsigned char *)frame8bit, 1, &lowLim, &highLim, 2000, 62000);
+
+		   camFrameTo8bit((unsigned short *)frame, 640, 480, CSU_PIX_FMT_GRAY16, (unsigned char *)frame8bit, 1, &lowLim, &highLim, 2000, 62000);
 	//	   printf("LowLim:%d HighLim:%d\n",lowLim, highLim);
 		   camSendFrameOnTcp(&kSockHandle, width, height, frame8bit);
      	 }      		 

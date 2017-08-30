@@ -33,6 +33,7 @@ fun public MdsDevices() {
     'SPIDER_SM', 'RfxDevices',
     'FAKECAMERA', 'RfxDevices',
     'FLIRSC65X', 'RfxDevices',
+    'BASLERACA', 'RfxDevices',
     'NI6368AI', 'RfxDevices',
     'RFX_PROTECTIONS', 'RfxDevices',
     'DIO2_ENCDEC', 'RfxDevices',
