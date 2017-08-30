@@ -166,7 +166,7 @@ void openTree(char *name, int shot, void **treePtr)
 //Support class for enqueueing storage requests
 class SaveItem {
     void *buffer;
-	char dataType;
+    char dataType;
     int bufSize;
     int sampleToRead;
     int segmentSize;
@@ -179,137 +179,130 @@ class SaveItem {
  public:
     SaveItem(void *buffer, int bufSize, int sampleToRead, char dataType, int segmentSize, int counter, int dataNid, int clockNid, float timeIdx0, void *treePtr)
     {
-		this->buffer = buffer;
-		this->dataType = dataType;
-		this->bufSize = bufSize;
-		this->sampleToRead = sampleToRead;
-		this->segmentSize = segmentSize;
-		this->counter = counter;
-		this->dataNid = dataNid;
-		this->clockNid = clockNid;
-		this->timeIdx0 = timeIdx0;
-		this->treePtr = treePtr;
-		nxt = 0;
+	this->buffer = buffer;
+	this->dataType = dataType;
+	this->bufSize = bufSize;
+	this->sampleToRead = sampleToRead;
+	this->segmentSize = segmentSize;
+	this->counter = counter;
+	this->dataNid = dataNid;
+	this->clockNid = clockNid;
+	this->timeIdx0 = timeIdx0;
+	this->treePtr = treePtr;
+	nxt = 0;
     }
 
     void setNext(SaveItem *itm)
     {
-		nxt = itm;
+	nxt = itm;
     }
 
     SaveItem *getNext()
     {
-		return nxt;
+	return nxt;
     }
 
     void save()
     {
-		TreeNode *dataNode = new TreeNode(dataNid, (Tree *)treePtr);
-		TreeNode *clockNode = new TreeNode(clockNid, (Tree *)treePtr);
+	TreeNode *dataNode = new TreeNode(dataNid, (Tree *)treePtr);
+	TreeNode *clockNode = new TreeNode(clockNid, (Tree *)treePtr);
 
-    		//printf("Counter = %d Sample to read = %d\n", counter, sampleToRead );	
+	//printf("Counter = %d Sample to read = %d\n", counter, sampleToRead );	
 
-		//if((counter % segmentSize) == 0 || ((int)(counter / segmentSize) * segmentSize) < counter + bufSize )
-		if( (counter % segmentSize) == 0 )
-		{
-	        //Create Segment
-			Data *startIdx = new Int32(counter);
-			Data *endIdx;
+	//if((counter % segmentSize) == 0 || ((int)(counter / segmentSize) * segmentSize) < counter + bufSize )
+	if( (counter % segmentSize) == 0 )
+	{
+           //Create Segment
+	    Data *startIdx = new Int32(counter);
+	    Data *endIdx;
             //In Transient Record acquisition mode must set
             //the last segment with the correct size
-            if( sampleToRead > 0 && sampleToRead < segmentSize )
-                endIdx = new Int32(counter + sampleToRead - 1);
-            else
-                endIdx = new Int32(counter + segmentSize);
+	    if( sampleToRead > 0 && sampleToRead < segmentSize )
+	        endIdx = new Int32(counter + sampleToRead - 1);
+	    else
+	        endIdx = new Int32(counter + segmentSize);
                    
-	 /*	    
-            Data *startTime = compileWithArgs("$[$]", (Tree *)treePtr, 2, clockNode, startIdx);
-			Data *endTime = compileWithArgs("$[$]", (Tree *)treePtr, 2, clockNode, endIdx);
-			Data *dim = compileWithArgs("$[$ : $]", (Tree *)treePtr, 3, clockNode, startIdx, endIdx);
-	 */
-            Data *startTime;
-			Data *endTime;
-			Data *dim;
+	    Data *startTime;
+	    Data *endTime;
+	    Data *dim;
 
-            if( timeIdx0 != timeIdx0 ) //is a NaN float
-            {
-                //printf("Configuration for gclock\n");
-                //printf("---------------- time at idx 0 NAN\n");
+	    if( timeIdx0 != timeIdx0 ) //is a NaN float
+	    {
+		//printf("Configuration for gclock\n");
+		//printf("---------------- time at idx 0 NAN\n");
+		startTime = compileWithArgs("begin_of($)+slope_of($)*$",(Tree *)treePtr, 3, clockNode, clockNode,startIdx);
+	    	endTime = compileWithArgs("begin_of($)+slope_of($)*$",(Tree *)treePtr, 3, clockNode,  clockNode,endIdx);
 
-			    startTime = compileWithArgs("begin_of($)+slope_of($)*$",(Tree *)treePtr, 3, clockNode, clockNode,startIdx);
-			    endTime = compileWithArgs("begin_of($)+slope_of($)*$",(Tree *)treePtr, 3, clockNode,  clockNode,endIdx);
+	  	//dim = compileWithArgs("$", (Tree *)treePtr, 1, clockNode);
+	    	dim = compileWithArgs("build_range(begin_of($)+slope_of($)*$, begin_of($)+slope_of($)*$, slope_of($))", 
+	       				(Tree *)treePtr, 7, clockNode, clockNode, startIdx, clockNode, clockNode, endIdx, clockNode);
+	    }
+	    else
+	    {    
+	    	Data *timeAtIdx0 = new Float32(timeIdx0);
+	    	startTime = compileWithArgs("$+slope_of($)*$",(Tree *)treePtr, 3, timeAtIdx0, clockNode, startIdx);
+	    	endTime = compileWithArgs("$+slope_of($)*$",(Tree *)treePtr, 3,timeAtIdx0,  clockNode, endIdx);
+	    	dim = compileWithArgs("build_range($+slope_of($)*$, $+slope_of($)*$, slope_of($))", (Tree *)treePtr, 
+		                     7, timeAtIdx0, clockNode, startIdx, timeAtIdx0, clockNode, endIdx, clockNode);
+	    }
 
-            //    dim = compileWithArgs("$", (Tree *)treePtr, 1, clockNode);
-			    dim = compileWithArgs("build_range(begin_of($)+slope_of($)*$, begin_of($)+slope_of($)*$, slope_of($))", 
-                               (Tree *)treePtr, 7, clockNode, clockNode, startIdx, clockNode, clockNode, endIdx, clockNode);
-            }
-            else
-            {    
-                Data *timeAtIdx0 = new Float32(timeIdx0);
- 			    startTime = compileWithArgs("$+slope_of($)*$",(Tree *)treePtr, 3, timeAtIdx0, clockNode, startIdx);
- 			    endTime = compileWithArgs("$+slope_of($)*$",(Tree *)treePtr, 3,timeAtIdx0,  clockNode, endIdx);
- 			    dim = compileWithArgs("build_range($+slope_of($)*$, $+slope_of($)*$, slope_of($))", (Tree *)treePtr, 
-                                             7, timeAtIdx0, clockNode, startIdx, timeAtIdx0, clockNode, endIdx, clockNode);
-            }
+	    switch( dataType )
+	    {
+		case SHORT:
+		{
+		    short *fBuf = new short[segmentSize];
+		    memset(fBuf, 0, sizeof(short) * segmentSize);
+		    Int16Array *fData = new Int16Array((short *)fBuf, segmentSize);
+		    dataNode->beginSegment(startTime, endTime, dim, fData);
+		    delete [] fBuf;
+		    deleteData(fData);
+		}
+		break;
+		case FLOAT:
+		{
+		    float *fBuf = new float[segmentSize];
+		    memset(fBuf, 0, sizeof(float) * segmentSize);
+		    Float32Array *fData = new Float32Array((float *)fBuf, segmentSize);
+		    dataNode->beginSegment(startTime, endTime, dim, fData);
+		    delete [] fBuf;
+		    deleteData(fData);
+		}
+		break;
+	    }
+	    deleteData(startIdx);
+	    deleteData(endIdx);
+	    deleteData(startTime);
+	    deleteData(endTime);
+       	}	
 
-
-			switch( dataType )
-			{
-				case SHORT:
-				{
-					short *fBuf = new short[segmentSize];
-					memset(fBuf, 0, sizeof(short) * segmentSize);
-					Int16Array *fData = new Int16Array((short *)fBuf, segmentSize);
-					dataNode->beginSegment(startTime, endTime, dim, fData);
-					delete [] fBuf;
-					deleteData(fData);
-				}
-				break;
-				case FLOAT:
-				{
-					float *fBuf = new float[segmentSize];
-					memset(fBuf, 0, sizeof(float) * segmentSize);
-					Float32Array *fData = new Float32Array((float *)fBuf, segmentSize);
-					dataNode->beginSegment(startTime, endTime, dim, fData);
-					delete [] fBuf;
-					deleteData(fData);
-				}
-				break;
-			}
-			deleteData(startIdx);
-			deleteData(endIdx);
-			deleteData(startTime);
-			deleteData(endTime);
-		 }
-
-		 try 
-		 {
-			switch( dataType )
-			{
-				case SHORT:
-				{
-					Int16Array *data = new Int16Array((short *)buffer, bufSize);
-					dataNode->putSegment(data, -1);
-					deleteData(data);
-		 			delete[] (short *)buffer;
-				}
-				break;
-				case FLOAT:
-				{
-					Float32Array *data = new Float32Array((float *)buffer, bufSize);
-					dataNode->putSegment(data, -1);
-					deleteData(data);
-		 			delete[] (float *)buffer;
-				}
-				break;
-			}
- 		 }
-		 catch(MdsException *exc) 
-		 {
-			printf("Cannot put segment: %s\n", exc->what());
-		 }
-		 delete dataNode;
-		 delete clockNode;
+	try 
+	{
+	    switch( dataType )
+	    {
+		case SHORT:
+		{
+			Int16Array *data = new Int16Array((short *)buffer, bufSize);
+			dataNode->putSegment(data, -1);
+			deleteData(data);
+ 			delete[] (short *)buffer;
+		}
+		break;
+		case FLOAT:
+		{
+			Float32Array *data = new Float32Array((float *)buffer, bufSize);
+			dataNode->putSegment(data, -1);
+			deleteData(data);
+ 			delete[] (float *)buffer;
+		}
+		break;
+	    }
+	 }
+	 catch(MdsException *exc) 
+	 {
+		printf("Cannot put segment: %s\n", exc->what());
+	 }
+	 delete dataNode;
+	 delete clockNode;
     }
 
 };

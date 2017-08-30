@@ -2,6 +2,7 @@ from MDSplus import mdsExceptions, Device, Data, Range, Dimension, Window, Int32
 from threading import Thread
 from ctypes import CDLL, byref, c_int, c_void_p, c_byte, c_float, c_char_p
 import os
+import time
 import sys, traceback
 
 class NI6259AI(Device):
@@ -261,6 +262,7 @@ class NI6259AI(Device):
             chanFd_c = (c_int * len(chanFd) )(*chanFd)
 
             #timeAt0 = trigSource + startTime
+            #print("PXI 6259 TIME AT0 ", numSamples)            
             timeAt0 = startTime
 
             while not self.stopReq:
@@ -312,6 +314,10 @@ class NI6259AI(Device):
 
         activeChan = 0;
         for chan in range(0, numChannels):
+                    
+            #Empy the node which will contain  the segmented data   
+            getattr(self, 'channel_%d_data'%(chan+1)).deleteData()
+
             getattr(self, 'channel_%d_data'%(chan+1)).setCompressOnPut(False)
             try:
                 enabled = self.enableDict[getattr(self, 'channel_%d_state'%(chan+1)).data()]
@@ -640,6 +646,9 @@ class NI6259AI(Device):
             self.worker.configure(self, self.fd, chanMap, self.nonDiffChanMap, treePtr, stopAcq)
         self.saveWorker()
         self.worker.start()
+
+        time.sleep(2)
+
         return 1
 
     def stop_store(self):
@@ -660,8 +669,6 @@ class NI6259AI(Device):
       return 1
 
     def trigger(self):
-      #global niLib
-      #global niInterfaceLib
       self.restoreInfo()
       try:
             status = NI6259AI.niLib.pxi6259_start_ai(c_int(self.fd))
