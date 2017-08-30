@@ -30,7 +30,7 @@ class MdsHelper
                     propFileName = path+"jDispatcher.properties";
 
 
-	    //System.out.println("Configuration file " + propFileName);
+	    System.out.println("Configuration file " + propFileName);
 	
             try
             {

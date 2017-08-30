@@ -49,7 +49,7 @@ class NI6368AI(Device):
 
     
 #File descriptor
-    ai_fd = 0
+    #ai_fd = 0
     boardId = 0
     ni6368AiFds = {}
     ni6368DevFds = {}
@@ -461,7 +461,6 @@ class NI6368AI(Device):
                 if( frequency > 2000000.  ):
                     print('Frequency out of limits')
                     frequency = 2000000.
-                    self.clock_source.putData(frequency)
 
                 clockSource = Range(None,None, Float64(1./frequency))
                 self.clock_source.putData(clockSource)
@@ -653,6 +652,9 @@ class NI6368AI(Device):
         activeChan = 0;
         for chan in range(1, numChannels+1):
             try:
+                #Empy the node which will contain  the segmented data   
+                getattr(self, 'channel_%d_data_raw'%(chan)).deleteData()
+
                 getattr(self, 'channel_%d_data_raw'%(chan)).setCompressOnPut(False)
                 enabled = self.enableDict[getattr(self, 'channel_%d_state'%(chan)).data()]
                 gain = self.gainDict[getattr(self, 'channel_%d_range'%(chan)).data()]
@@ -660,7 +662,7 @@ class NI6368AI(Device):
                 data.setUnits("Volts")
                 getattr(self, 'channel_%d_data'%(chan)).putData(data)
             except:
-                print(sys.exc_info()[0])
+                #print(sys.exc_info()[0])
                 print(traceback.format_exc())
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Configuration for channel '+str(chan))
                 raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -741,6 +743,8 @@ class NI6368AI(Device):
 
         self.saveWorker()
         self.worker.start()
+
+        time.sleep(2)
 
         return 1
 
