@@ -11,10 +11,6 @@
 
 git log $1..HEAD --no-merges --decorate=short --pretty=format:"%<(80,trunc)%s%n%ce" |
 awk -v EMAILMSG="$2" -F: '{ IGNORECASE=1
-               if ( VERSION == "" ) {
-                 VERSION="SAME"
-                 FAIL="FALSE"
-               }
                TITLE=$0
                switch ($1) {
                case "Feature":
@@ -35,6 +31,7 @@ awk -v EMAILMSG="$2" -F: '{ IGNORECASE=1
 	       case "Revert \"Docs":
                case "Build":
 	       case "Revert \"Build":
+                 
                  OK="1"
                  break
                default:
@@ -49,6 +46,7 @@ awk -v EMAILMSG="$2" -F: '{ IGNORECASE=1
                }
             }
             END {
+              if ( VERSION == "" ) VERSION="SAME";
               if ( FAIL == "TRUE" && VERSION == "SAME" ) {
                 print("BADCOMMIT")
               } else {
