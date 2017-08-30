@@ -31,12 +31,16 @@ def _mimport(filename,name=None,local=locals()):
     from MDSplus import Device
     Device._mimport(globals(),local,filename,name)
 
+
 _mimport('ACQIPPSETUP')
 _mimport('CAENDT5720')
 _mimport('CAENDT5724')
 _mimport('CAENV1740')
 _mimport('CONTIPPSETUP')
 _mimport('CYGNET4K')
+
+_mimport('SPIDER_TIMING')
+_mimport('CRIO_FAU')
 # DIO
 _mimport('DIO4')
 _mimport('DIO2_ENCDEC')
@@ -80,4 +84,4 @@ _mimport('SIS3820')
 _mimport('SPIDER')
 _mimport('SPIDER_SM')
 _mimport('ZELOS2150GV')
-#print('RfxDevices loaded.')
+
