@@ -1522,7 +1522,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         @rtype: None
         """
         self.putData(None)
-        return
 
     def setDoNotCompress(self,flag):
         """Set do not compress state of this node
@@ -2255,13 +2254,17 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         @type data: Data
         @rtype: None
         """
-        data = _dat.Data(value)
-        if isinstance(value,_dat.Data) and value.__hasBadTreeReferences__(self.tree):
-            value=value.__fixTreeReferences__(self.tree)
+        if value is None:
+            ref = _C.c_void_p(0)
+        else:
+            data = _dat.Data(value)
+            if data.__hasBadTreeReferences__(self.tree):
+                data = data.__fixTreeReferences__(self.tree)
+            ref = _dat.Data.byref(data)
         _exc.checkStatus(
                 _TreeShr._TreePutRecord(self.tree.ctx,
                                         self._nid,
-                                        _dat.Data.byref(data),
+                                        ref,
                                         0))
 
     def putRow(self,bufsize,data,timestamp):
