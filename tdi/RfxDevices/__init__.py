@@ -84,4 +84,5 @@ _mimport('SIS3820')
 _mimport('SPIDER')
 _mimport('SPIDER_SM')
 _mimport('ZELOS2150GV')
+#print('RfxDevices loaded.')
 

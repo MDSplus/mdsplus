@@ -142,6 +142,7 @@
 ./usr/local/mdsplus/mdsobjects/python/ident.py
 ./usr/local/mdsplus/mdsobjects/python/js
 ./usr/local/mdsplus/mdsobjects/python/js/mdsScope.js
+./usr/local/mdsplus/mdsobjects/python/magic.py
 ./usr/local/mdsplus/mdsobjects/python/makedoc.sh
 ./usr/local/mdsplus/mdsobjects/python/mdsExceptions.py
 ./usr/local/mdsplus/mdsobjects/python/mdsarray.py

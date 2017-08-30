@@ -12,14 +12,10 @@ def _mimportSuite(name, level=1):
         return __import__(name, globals()).suite
 
 from unittest import TestSuite,TextTestRunner
-import os,sys
+import sys
 import gc;gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
 
-from MDSplus import setenv,getenv
-if os.name=='nt':
-    setenv("PyLib","python%d%d"  % sys.version_info[0:2])
-else:
-    setenv("PyLib","python%d.%d" % sys.version_info[0:2])
+from MDSplus import getenv
 
 def test_all(*arg):
     if getenv('waitdbg') is not None:

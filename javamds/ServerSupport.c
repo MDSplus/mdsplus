@@ -506,8 +506,8 @@ static int traverseExprMinMax(struct descriptor *dsc, float *xMin, float *xMax)
     }
   default:
     printf("JavaGetMinMax: Unsupported class: %d\n", dsc->class);
-    return 0;
   }
+  return 0;
 }
 
 static int traverseNodeMinMax(int nid, float *xMin, float *xMax)
@@ -559,7 +559,7 @@ static int traverseNodeMinMax(int nid, float *xMin, float *xMax)
   return 1;
 }
 
-//Find minimum and maximum time for an expression involving signals 
+//Find minimum and maximum time for an expression involving signals
 EXPORT int JavaGetMinMax(char *sigExpr, float *xMin, float *xMax)
 {
   EMPTYXD(xd);

@@ -100,22 +100,33 @@ class CRIO_FAU(Device):
             self.tsmpFreq = tsmpFreq
             self.treePtr = treePtr
             self.stopReq = False
+<<<<<<< HEAD
             self.stopFlag = c_byte(0);
 
         def run(self):
 
             bufSize = self.device.buf_size.data()
             """
+=======
+ 
+        def run(self):
+
+            bufSize = self.device.buf_size.data()
+>>>>>>> cc863e6d38c71d6f77d1d898a0cfc78dd768650e
             byteArrayType  = c_byte * (bufSize * self.device.NUM_DIO)
             data = byteArrayType()
             doubleArrayType = c_double * bufSize
             time = doubleArrayType()
+<<<<<<< HEAD
             """
 
             trigSource = self.device.trig_source.data() 
             print 'AsynchStore trigget time', trigSource
 
          
+=======
+
+>>>>>>> cc863e6d38c71d6f77d1d898a0cfc78dd768650e
             chanNid = []
             for mod in range(1,5):
                for chan in range(0,8):
@@ -123,20 +134,31 @@ class CRIO_FAU(Device):
 
             chanNid_c = (c_int * len(chanNid) )(*chanNid)
 
+<<<<<<< HEAD
             self.stopFlag.value = 0;        
 
             while not self.stopReq:
                currElem = CRIO_FAU.niInterfaceLib.fauSaveAcqData(self.device.session, c_double(1./self.tsmpFreq), c_double(trigSource), c_int(bufSize),  self.device.NUM_DIO, self.treePtr, chanNid_c, byref(self.stopFlag) );
                if self.stopFlag:
                   self.stopReq = True
+=======
+
+            while not self.stopReq:
+               currElem = CRIO_FAU.niInterfaceLib.fauSaveAcqData(self.device.session, c_double(1./self.tsmpFreq), c_int(bufSize),  self.device.NUM_DIO, self.treePtr, chanNid_c);
+>>>>>>> cc863e6d38c71d6f77d1d898a0cfc78dd768650e
                 
             print 'AsynchStore stop'
 
             return
 
         def stop(self):
+<<<<<<< HEAD
             #self.stopReq = True
             self.stopFlag.value = 1
+=======
+            self.stopReq = True
+
+>>>>>>> cc863e6d38c71d6f77d1d898a0cfc78dd768650e
       
 #############End Inner class AsynchStore
 
@@ -164,7 +186,10 @@ class CRIO_FAU(Device):
 
         try:
             trigMode = self.trig_mode.data()
+<<<<<<< HEAD
             print "Trigger Node = ", trigMode
+=======
+>>>>>>> cc863e6d38c71d6f77d1d898a0cfc78dd768650e
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Read FAU trigger mode error. Set to INTERNAL')
             trigMode = 'INTERNAL'
@@ -187,9 +212,14 @@ class CRIO_FAU(Device):
                 raise mdsExceptions.TclFAILED_ESSENTIAL
             else:
                 trigSource = 0.
+<<<<<<< HEAD
                 self.trig_source.putData( Float32(trigSource) )
 
         print "Trigger Source = ", trigSource
+=======
+                #self.trig_source.putData( Float32(trigSource) )
+
+>>>>>>> cc863e6d38c71d6f77d1d898a0cfc78dd768650e
 
         status = CRIO_FAU.niInterfaceLib.setFauAcqParam(self.session, c_short(pteMask), c_int(pteFreq), c_short(tickFreqCode) )
 

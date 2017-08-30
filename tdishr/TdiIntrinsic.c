@@ -24,7 +24,8 @@
 #define MAXLINE 120
 #define MAXFRAC 40
 #define MINMAX(min, test, max) ((min) >= (test) ? (min) : (test) < (max) ? (test) : (max))
-
+#define DEF_FREEXD
+#define DEF_FREEBEGIN
 #if defined(_WIN32)
 #include <windows.h>
 #endif
@@ -200,11 +201,13 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
 {
   INIT_STATUS, stat1 = MDSplusSUCCESS;
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
-  struct descriptor_xd tmp;
-  struct descriptor *dsc_ptr;
   GET_TDITHREADSTATIC_P;
+  struct descriptor_xd tmp = emptyxd;
+  FREEXD_ON_EXIT(&tmp);
+  FREEXD_ON_EXIT(&out_ptr);
+  FREEBEGIN_ON_EXIT();
+  struct descriptor *dsc_ptr;
   struct descriptor_d *message = &(TdiThreadStatic_p->TdiIntrinsic_message);
-  tmp = emptyxd;
   TdiThreadStatic_p->TdiIntrinsic_recursion_count++;
   if (narg < fun_ptr->m1)
     status = TdiMISS_ARG;
@@ -276,7 +279,7 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
 	  if (out_ptr->length != dsc_ptr->length) {
 	    stat1 = StrGet1Dx(&dsc_ptr->length, (struct descriptor_d *)out_ptr);
 	  }
-	  if (stat1 & 1) {
+	  if IS_OK(stat1) {
 	    out_ptr->dtype = dsc_ptr->dtype;
 	    if ((out_ptr->length > 0) && (dsc_ptr != NULL))
 	      _MOVC3(out_ptr->length, dsc_ptr->pointer, (char *)out_ptr->pointer);
@@ -350,20 +353,18 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
     StrConcat((struct descriptor *)message,
               (struct descriptor *)message, &compile_err, &pre, &hilite,
               &body, &hilite, &post, &newline MDS_END_ARG);
-    if (TdiRefZone.a_begin) {
-       free(TdiRefZone.a_begin);
-       TdiRefZone.a_begin = NULL;
-    }
+    freebegin(&TdiRefZone);
   }
   if (out_ptr)
     MdsFree1Dx(out_ptr, NULL);
  notmp:MdsFree1Dx(&tmp, NULL);
  done:TdiThreadStatic_p->TdiIntrinsic_recursion_count--;
   TdiThreadStatic_p->TdiIntrinsic_mess_stat = status;
-  if (!TdiThreadStatic_p->TdiIntrinsic_recursion_count && TdiRefZone.a_begin) {
-      free(TdiRefZone.a_begin);
-      TdiRefZone.a_begin = NULL;
-  }
+  if (!TdiThreadStatic_p->TdiIntrinsic_recursion_count)
+    freebegin(&TdiRefZone);
+  FREE_CANCEL(tmp);
+  FREE_CANCEL(out_ptr);
+  FREE_CANCEL(a_begin);
   return status;
 }
 

@@ -39,10 +39,21 @@ _mimport('_loadglobals').load(globals())
 #    import sys
 #    print('Error importing MDSplus package: %s' % (sys.exc_info()[1],))
 
+def getPyLib():
+    from ctypes.util import find_library
+    import sys
+    libname = ('python%d%d' if sys.platform.startswith('win') else 'python%d.%d')%sys.version_info[0:2]
+    return find_library(libname)
+
+if not "PyLib" in globals():
+   globals()['PyLib'] = getPyLib()
+   if   PyLib:setenv("PyLib",PyLib)
+   else:PyLib=getenv("PyLib")
+
 def _remove():
     "Remove installed MDSplus package"
     import os
-    
+
     def _findPackageDir():
         _f=__file__.split(os.sep)
         while len(_f) > 1 and _f[-1] != 'MDSplus':
@@ -61,6 +72,3 @@ def _remove():
     except Exception:
         import sys
         print("Error removing %s: %s" % (packagedir,sys.exc_info()[1]))
-        
-
-            

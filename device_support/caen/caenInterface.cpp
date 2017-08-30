@@ -158,8 +158,8 @@ class SaveItem {
 
   	startTime = compileWithArgs("$[$]+slope_of($)*$",(Tree *)treePtr, 4, triggerNode, segCount, clockNode, startIdx);
  	endTime =   compileWithArgs("$[$]+slope_of($)*$",(Tree *)treePtr, 4, triggerNode, segCount, clockNode, endIdx);
- 	dim = compileWithArgs("build_range($[$]+slope_of($)*$, $[$]+slope_of($)*$, slope_of($))", (Tree *)treePtr, 
-                                       9, triggerNode, segCount, clockNode, startIdx, triggerNode, segCount, clockNode, endIdx, clockNode);
+ 	dim = compileWithArgs("build_dim(build_window($, $, $[$]), build_slope( slope_of($) ) )", (Tree *)treePtr, 5, startIdx, endIdx, triggerNode, segCount, clockNode);
+
 
         try 
         {
@@ -168,23 +168,17 @@ class SaveItem {
 	     {
 		case DTYPE_W:
         	{
-	        	short *fBuf = new short[segmentSize];
-			memset(fBuf, 0, sizeof(short) * segmentSize);
-			Int16Array *fData = new Int16Array((short *)segment, segmentSize);
-            		if( caenLibDebug ) printf("Save short data segment idx %d endIdx_c %d\n", segmentCount, endIdx_c );
-			dataNode->makeSegment(startTime, endTime, dim, fData);
-			delete [] fBuf;
-			deleteData(fData);
+			Int16Array *sData = new Int16Array((short *)segment, segmentSize);
+            		printf("Save short data segment idx %d endIdx_c %d\n", segmentCount, endIdx_c );
+			dataNode->makeSegment(startTime, endTime, dim, sData);
+			deleteData(sData);
 		}
 		break;
 		case DTYPE_F:
 		{
-			float *fBuf = new float[segmentSize];
-			memset(fBuf, 0, sizeof(float) * segmentSize);
 			Float32Array *fData = new Float32Array((float *)segment, segmentSize);
-            		if( caenLibDebug ) printf("Save flat data segment idx %d endIdx_c %d\n", segmentCount, endIdx_c );
+            		printf("Save flat data segment idx %d endIdx_c %d\n", segmentCount, endIdx_c );
 			dataNode->makeSegment(startTime, endTime, dim, fData);
-			delete [] fBuf;
 			deleteData(fData);
 		}
 		break;
@@ -397,9 +391,6 @@ extern "C" int readAndSaveSegments(int32_t handle, int32_t vmeAddress, int numCh
 	    int currEndIdx      = segmentSamples - pts + endIdx;
 	    int currChanSamples = currEndIdx - currStartIdx;
            
-
-	    printf("readAndSaveSegments \n" );
-
 
 	 // Read number of buffers 
 	    status = CAENVME_ReadCycle(handle, (vmeAddress + 0x812C), &actSegments, cvA32_S_DATA, cvD32);

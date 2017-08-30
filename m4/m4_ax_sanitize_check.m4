@@ -19,7 +19,7 @@ AC_DEFUN([AX_SANITIZER_CHECK],[
      m4_pushdef([_XSAN],m4_toupper($1))
 
      LDD=ldd
-     AC_CHECK_LIB(_xsan,[_init],[have_[]_xsan=yes])     
+     AC_CHECK_LIB(_xsan,[_init],[have_[]_xsan=yes])
      AS_VAR_IF([have_[]_xsan],[yes],
                [AS_VAR_SET([CPPFLAGS_save],[$CPPFLAGS])
                 AS_VAR_SET([LIBS_save],[$LIBS])
@@ -57,11 +57,11 @@ AC_DEFUN([AX_ENABLE_SANITIZE],[
     [AS_VAR_SET_IF(ax_enable_sanitize,
                    [AS_VAR_SET([enable_sanitize],${ax_enable_sanitize})],
                    [AS_VAR_SET([enable_sanitize],[no])])])
-  
+
   # by default yes is the address sanitizer
   AS_VAR_IF([enable_sanitize],[yes],
             [AS_VAR_SET([enable_sanitize],[address])])
-               
+
   if [ test x"$enable_sanitize" != x"no" -a "$GCC" = "yes" ]; then
      AX_COMPILER_VERSION
      AC_MSG_CHECKING([for Sanitize-able gcc version])
@@ -70,21 +70,20 @@ AC_DEFUN([AX_ENABLE_SANITIZE],[
 		     [AC_MSG_RESULT([no, gcc 4.8.0 or higher required])
 		      AS_VAR_SET([enable_sanitize],[no])])
 
-     AS_CASE([${enable_sanitize}],    
+     AS_CASE([${enable_sanitize}],
      # address sanitizer
      [address],
-     [AX_SANITIZER_CHECK([asan],["-fsanitize=address -fno-omit-frame-pointer"],
-                         [],[AS_VAR_SET([enable_sanitize],[no])])],
+     [AX_SANITIZER_CHECK([asan],["-fsanitize=address -fno-omit-frame-pointer -O3"],,
+     [AS_VAR_SET([enable_sanitize],[no])])],
      # thread sanitizer
-     [thread],     
-     [AX_SANITIZER_CHECK([tsan],["-fsanitize=thread -fno-omit-frame-pointer"],,
-                         [AX_SANITIZER_CHECK([tsan],["-fsanitize=thread -fno-omit-frame-pointer -fPIE"],,
-                                                [AS_VAR_SET([enable_sanitize],[no])])])],
+     [thread],
+     [AX_SANITIZER_CHECK([tsan],["-fsanitize=thread -fno-omit-frame-pointer -O3"],,
+     [AX_SANITIZER_CHECK([tsan],["-fsanitize=thread -fno-omit-frame-pointer -fPIE -O3"],,
+     [AS_VAR_SET([enable_sanitize],[no])])])],
      # undefined sanitizer
      [undefined],
-     [AX_SANITIZER_CHECK([ubsan],["-fsanitize=undefined -fno-omit-frame-pointer"],
-                         [],[AS_VAR_SET([enable_sanitize],[no])])],
-
+     [AX_SANITIZER_CHECK([ubsan],["-fsanitize=undefined -fno-omit-frame-pointer -O3"],,
+     [AS_VAR_SET([enable_sanitize],[no])])],
      # default
      [no],,
      [AC_MSG_WARN([sanitizer flavor ${enable_sanitize} not found])
@@ -98,10 +97,10 @@ AC_DEFUN([AX_ENABLE_SANITIZE],[
              AS_VAR_SET(ax_enable_sanitize[]_OPTIONS,[SAN_OPTIONS])
              AS_VAR_SET(ax_enable_sanitize[]_LIBPATH)],
             [AS_VAR_SET(ax_enable_sanitize,[${enable_sanitize}])
-             AS_VAR_SET(ax_enable_sanitize[]_OPTIONS,[${sanitize_env}])  
+             AS_VAR_SET(ax_enable_sanitize[]_OPTIONS,[${sanitize_env}])
              AS_VAR_SET(ax_enable_sanitize[]_LIBPATH,[${sanitize_libpath}])
              $2 ])
-  
+
   AM_CONDITIONAL(ax_enable_sanitize, [test "${enable_sanitize}" != "no"] )
   AC_SUBST(ax_enable_sanitize)
   AC_SUBST(ax_enable_sanitize[]_OPTIONS)
