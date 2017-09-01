@@ -397,7 +397,7 @@ public class jScopeMultiWave
         super.removeNotify();
     }
 
-    protected void DrawImage(Graphics g, Object img, Dimension dim, int type)
+    protected void DrawImage(Graphics g, Image img, Dimension dim, int type)
     {
         if ( type != FrameData.JAI_IMAGE )
         {

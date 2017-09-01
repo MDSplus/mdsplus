@@ -6,6 +6,7 @@ import java.io.*;
 import java.awt.image.*;
 import java.awt.color.*;
 import java.util.*;
+import javax.imageio.ImageIO;
 
 class Frames extends Canvas
 {
@@ -216,7 +217,8 @@ class Frames extends Canvas
                     break;
                 }
                 case FrameData.AWT_IMAGE :
-                    img = Toolkit.getDefaultToolkit().createImage(buf);
+                    pixelSize = 0; //pixelSize == 0 means that the image is not a bitmap (jpg, gif...)
+                    img = ImageIO.read(new ByteArrayInputStream(buf));
                     break;
                 default:
                     return;
@@ -255,52 +257,58 @@ class Frames extends Canvas
             if(fDesc.updateCount == updateCount) //fDesc.updatedImage  is still ok
                 return fDesc.updatedImage;
             //Othewise it is necessary to update it
-            ColorModel colorModel = colorMap.getIndexColorModel( (pixelSize < 32 ? pixelSize : 16) );
-            Image img = new BufferedImage(colorModel, ((BufferedImage)fDesc.image).getRaster(), false, null);
-            if(bitShift != 0)
+            Image img ;
+            if(pixelSize > 0)
             {
-                BufferedImage bi = (BufferedImage)img;
-                ByteArrayInputStream b = new ByteArrayInputStream(fDesc.buffer);
-                DataInputStream din = new DataInputStream(b);
-
-                WritableRaster wr = bi.getRaster();
-                DataBuffer db = wr.getDataBuffer();
-                int nPixels = db.getSize()/bytesPerPixel;
-                if(nPixels != frameDim.width * frameDim.height)
+                ColorModel colorModel = colorMap.getIndexColorModel( (pixelSize < 32 ? pixelSize : 16) );
+                img = new BufferedImage(colorModel, ((BufferedImage)fDesc.image).getRaster(), false, null);
+                if(bitShift != 0)
                 {
-                    System.out.println("INTERNAL ERRROR: Inconsistend frame dimension when getting frame");
-                    return null;
-                }
+                    BufferedImage bi = (BufferedImage)img;
+                    ByteArrayInputStream b = new ByteArrayInputStream(fDesc.buffer);
+                    DataInputStream din = new DataInputStream(b);
 
-                int val;
-                int absBitShift = Math.abs(bitShift);
-                for(int j = 0; j < nPixels; j++)
-                {
-                    if(frameType == FrameData.BITMAP_IMAGE_8)
-                        val = din.readByte();
-                    else if(frameType == FrameData.BITMAP_IMAGE_16)
-                        val = din.readShort();
-                    else
-                        val = din.readInt();
-
-                    if(bitShift > 0)
+                    WritableRaster wr = bi.getRaster();
+                    DataBuffer db = wr.getDataBuffer();
+                    int nPixels = db.getSize()/bytesPerPixel;
+                    if(nPixels != frameDim.width * frameDim.height)
                     {
-                        val = val << bitShift ;
-                        if(bitClip)
-                            db.setElem(j, val > 255 ? 255 : val);
-                        else
-                            db.setElem(j, val);
+                        System.out.println("INTERNAL ERRROR: Inconsistend frame dimension when getting frame");
+                        return null;
                     }
-                    else
+
+                    int val;
+                    int absBitShift = Math.abs(bitShift);
+                    for(int j = 0; j < nPixels; j++)
                     {
-                         val = val >> absBitShift ;
-                       if(bitClip)
-                            db.setElem(j, val > 255 ? 255 : val);
+                        if(frameType == FrameData.BITMAP_IMAGE_8)
+                            val = din.readByte();
+                        else if(frameType == FrameData.BITMAP_IMAGE_16)
+                            val = din.readShort();
                         else
-                            db.setElem(j, val);
+                            val = din.readInt();
+
+                        if(bitShift > 0)
+                        {
+                            val = val << bitShift ;
+                            if(bitClip)
+                                db.setElem(j, val > 255 ? 255 : val);
+                            else
+                                db.setElem(j, val);
+                        }
+                        else
+                        {
+                             val = val >> absBitShift ;
+                           if(bitClip)
+                                db.setElem(j, val > 255 ? 255 : val);
+                            else
+                                db.setElem(j, val);
+                        }
                     }
                 }
             }
+            else //Non bitmap image (j[pg,  gif...)
+                img = fDesc.image;
             tracker = new MediaTracker(Frames.this);
             tracker.addImage(img, idx);
             try {
@@ -929,8 +937,10 @@ class Frames extends Canvas
          
         Point p = getImageBufferPoint(x,y);
         
-        if(imgBuf != null)
-            return (int)imgBuf[(p.y * img_width) + p.x];
+        try {
+            if(imgBuf != null)
+                return (int)imgBuf[(p.y * img_width) + p.x];
+        }catch(Exception exc) {return -1;}
         return -1;
     }
 
@@ -1549,12 +1559,12 @@ class Frames extends Canvas
        return curr_frame_idx;
     }
 
-    public Object GetFrame(int idx, Dimension d)
+    public Image GetFrame(int idx, Dimension d)
     {
         return GetFrame(idx);
     }
 
-    public Object GetFrame(int idx)
+    public Image GetFrame(int idx)
     {
 
 

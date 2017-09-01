@@ -974,10 +974,9 @@ public class Signal implements WaveDataListener
     public int[] getNaNs(){return nans;}
     public double getX(int idx)
     {
- 
-        if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_YZ || mode2D == Signal.MODE_XZ))
-            return sliceX[idx];
-       try {
+        try {
+            if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_YZ || mode2D == Signal.MODE_XZ))
+                return sliceX[idx];
             return x[idx];
        }catch(Exception exc){return 0;}
      }
