@@ -30,23 +30,23 @@ class ACQ132(acq.Acq):
     """
     D-Tacq ACQ132  32 channel transient recorder
 
-    device support for d-tacq acq132 http://www.d-tacq.com/acq132cpci.shtml 
+    device support for d-tacq acq132 http://www.d-tacq.com/acq132cpci.shtml
     """
     from copy import copy
     parts=copy(acq.Acq.acq_parts)
 
     for i in range(32):
-        parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',)})
+        parts.append({'path':':INPUT_%2.2d'%(i+1,),         'type':'signal',  'options':('no_write_model','write_once',)})
         parts.append({'path':':INPUT_%2.2d:STARTIDX'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
-        parts.append({'path':':INPUT_%2.2d:ENDIDX'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
-        parts.append({'path':':INPUT_%2.2d:INC'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
+        parts.append({'path':':INPUT_%2.2d:ENDIDX'%(i+1,),  'type':'NUMERIC', 'options':('no_write_shot')})
+        parts.append({'path':':INPUT_%2.2d:INC'%(i+1,),     'type':'NUMERIC', 'options':('no_write_shot')})
     del i
     parts.extend(acq.Acq.action_parts)
-    for part in parts:                
+    for part in parts:
         if part['path'] == ':ACTIVE_CHAN' :
-            part['value']=32                 
+            part['value']=32
     del part
-    
+
     def initftp(self, auto_store=None):
         """
         Initialize the device
@@ -55,12 +55,7 @@ class ACQ132(acq.Acq):
         """
         import tempfile
         import time
-        from MDSplus.mdsExceptions import DevBAD_ACTIVE_CHAN
-        from MDSplus.mdsExceptions import DevBAD_TRIG_SRC
-        from MDSplus.mdsExceptions import DevBAD_CLOCK_SRC
-        from MDSplus.mdsExceptions import DevBAD_PRE_TRIG
-        from MDSplus.mdsExceptions import DevBAD_POST_TRIG
-        from MDSplus.mdsExceptions import DevBAD_CLOCK_FREQ
+        from MDSplus import DevBAD_ACTIVE_CHAN,DevBAD_TRIG_SRC,DevBAD_CLOCK_SRC,DevBAD_PRE_TRIG,DevBAD_POST_TRIG,DevBAD_CLOCK_FREQ
 
         start=time.time()
         if self.debugging():
@@ -95,20 +90,20 @@ class ACQ132(acq.Acq):
             clock_out=self.clock_out.record.getOriginalPartName().getString()[1:]
         except:
             clock_out=None
-
-        pre_trig = self.getInteger(self.pre_trig, DevBAD_PRE_TRIG)*1024
+        # pre and post have to be multiple of 1024 ?
+        pre_trig = int((self.getInteger(self.pre_trig, DevBAD_PRE_TRIG)-1)/1024+1)*1024
         if self.debugging():
             print("have pre trig")
 
-        post_trig = self.getInteger(self.post_trig, DevBAD_POST_TRIG)*1024
+        post_trig = int((self.getInteger(self.post_trig, DevBAD_POST_TRIG)-1)/1024+1)*1024
         if self.debugging():
             print("have post trig")
 
         clock_freq = self.getInteger(self.clock_freq,DevBAD_CLOCK_FREQ)
-        try:
-            clock_div = int(self.clock_div)
-        except:
-            clock_div = 1
+#        try:
+#            clock_div = int(self.clock_div)
+#        except:
+#            clock_div = 1
 
         if self.debugging():
             print("have the settings")
@@ -123,12 +118,12 @@ class ACQ132(acq.Acq):
             chan_mask = "11111111000000001111111100000000"
         else :
             chan_mask = "11111111111111111111111111111111"
-        fd.write("acqcmd  setChannelMask %s\n"% (chan_mask,))
+        fd.write("acqcmd setChannelMask %s\n"% (chan_mask,))
         if clock_src == 'INT_CLOCK':
             if clock_out == None:
                 if self.debugging():
                     print("internal clock no clock out")
-                fd.write("acqcmd setInternalClock %d" % clock_freq)
+                fd.write("acqcmd setInternalClock %d\n" % clock_freq)
             else:
                 clock_out_num_str = clock_out[-1]
                 clock_out_num = int(clock_out_num_str)
@@ -136,12 +131,20 @@ class ACQ132(acq.Acq):
                 if self.debugging():
                     print("internal clock clock out is %s setDIOcmd = %s" % (clock_out, setDIOcmd))
                 fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
-                fd.write(setDIOcmd)         
+                fd.write(setDIOcmd)
         else:
-            fd.write("acqcmd -- setExternalClock --fin %d --fout %d %s\n" % (clock_freq/1000, clock_freq/1000*clock_div, clock_src,))
-
+            _clock_fin   = self.clock_src
+            while not isinstance(_clock_fin,MDSplus.Range):
+                _clock_fin = _clock_fin.record
+            clock_fin = int(1.0/_clock_fin[2])
+            decim,shift = self.getDecim(clock_freq)
+            if self.debugging():
+                print('Freq = '+str(int(clock_freq))+' | mClk = '+str(decim*int(clock_freq))+' | dec = '+str(decim)+' | shift = '+str(shift))
+            fd.write("acqcmd -- setExternalClock --fin %d --fout %d %s\n" % (clock_fin/1000, (decim*int(clock_freq))/1000, clock_src,))
+            fd.write("set.all.acq132.accumulate %d %d\n"%(decim, shift))
+                
         fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',))
-            
+
         self.addGenericJSON(fd)
 
         fd.write("add_cmd 'get.vin 1:32'>> $settingsf\n")
@@ -156,6 +159,19 @@ class ACQ132(acq.Acq):
         return  1
 
     INITFTP=initftp
+    
+    def getDecim(self,clk):
+        from numpy import log2,arange
+        minClk  = 4e6; extClk = 1e7; df = 10e3
+        mClk    = arange(minClk,extClk+df,df)
+        dec     = 2**log2(mClk/clk)
+        decVals = []
+        for i in range(len(dec)):
+            if log2(dec[i])%1 == 0: decVals.append(int(dec[i]))
+        decim = max(decVals)
+        if decim == 32: decim = decVals[-2]
+        shift = int(log2(decim))-2 # to adjust for 14 bit in a 16 bit register
+        return decim,shift
 
     def store(self, arg1='checks', arg2='noauto'):
         if self.debugging():
@@ -190,7 +206,7 @@ class ACQ132(acq.Acq):
             delta=1./float(intClock)
             self.clock.record = MDSplus.Range(None, None, delta)
         else:
-            self.clock.record = self.clock_src
+            self.clock.record = MDSplus.Range(None,None,1.0/self.clock_freq)
 
         clock = self.clock.record
 

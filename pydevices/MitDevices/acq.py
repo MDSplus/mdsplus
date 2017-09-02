@@ -455,7 +455,7 @@ add_cmd get.trig >> $settingsf
                 dat = MDSplus.Data.compile(
                         'build_signal(build_with_units((($1+ ($2-$1)*($value - -32768)/(32767 - -32768 ))), "V") ,build_with_units($3,"Counts"),$4)',
                         vins[chan*2], vins[chan*2+1], buf,dim)
-                exec('c=self.input_'+'%02d'%(chan+1,)+'.record=dat')
+                self.__setattr__('input_%02d'%(chan+1,), dat)
 
     def startInitializationFile(self, fd, trig_src, pre_trig, post_trig):
         if self.debugging():
