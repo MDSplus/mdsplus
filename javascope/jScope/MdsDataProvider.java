@@ -1424,9 +1424,12 @@ public class MdsDataProvider
           this.experiment = ((experiment != null) && (experiment.trim().length() > 0) ? experiment : null);
           this.shot = shot;
           this.open = false;
+          resetPrevious();
         }
     }
 
+    public void resetPrevious()  //Will be used by subclass MdsSreaminDataProvider to close previous  connections
+    {}
     public synchronized String GetString(String in) throws IOException
     {
         if (in == null)

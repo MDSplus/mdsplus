@@ -1323,6 +1323,8 @@ public class MultiWaveform
         waveform_signal.setMode1D(signals.elementAt(i).getMode1D());
         waveform_signal.setMode2D(signals.elementAt(i).getMode2D());
 
+        waveform_signal.unblock();
+            
         boolean firstHit = true;
         for (i = 0; i < signals.size(); i++)
         {
@@ -1414,11 +1416,15 @@ public class MultiWaveform
 
         }
         waveform_signal.setXLimits(w.waveform_signal.getXmin(), w.waveform_signal.getXmax(), Signal.SIMPLE);
+        waveform_signal.setFreezeMode(w.waveform_signal.getFreezeMode());
         for (int i = 0; i < signals.size(); i++)
         {
             Signal s = signals.elementAt(i);
             if(s != null)
+            {
                 s.setXLimits(w.waveform_signal.getXmin(), w.waveform_signal.getXmax(), Signal.SIMPLE);
+                s.setFreezeMode(w.waveform_signal.getFreezeMode());
+            }
         }
         AutoscaleY();
 
