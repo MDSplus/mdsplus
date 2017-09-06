@@ -1232,7 +1232,10 @@ TreeNode *TreeNode::getNode(char const * relPath)
 	if(status & 1) status = _TreeFindNode(tree->getCtx(), relPath, &newNid);
 	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), defNid);
 	if(!(status & 1))
+	{
+		status = _TreeSetDefaultNid(tree->getCtx(), defNid);
 		throw MdsException(status);
+	}
 	return new TreeNode(newNid, tree);
 }
 
