@@ -2230,6 +2230,7 @@ public class Signal implements WaveDataListener
      */
     public void Autoscale()
     {
+        freezeMode = NOT_FREEZED;
         setAxis();
         AutoscaleX();
         AutoscaleY();
@@ -3338,7 +3339,10 @@ public class Signal implements WaveDataListener
         freezedXMin = xmin;
         freezedXMax = xmax;
     }
-
+    void unblock()
+    {
+        freezeMode = NOT_FREEZED;
+    }
     void unfreeze()
     {
         freezeMode = NOT_FREEZED;
@@ -3371,4 +3375,6 @@ public class Signal implements WaveDataListener
         for(int i = 0; i < signalListeners.size(); i++)
             signalListeners.elementAt(i).signalUpdated(changeLimits);
     }
+    int getFreezeMode() { return freezeMode;}
+    void setFreezeMode(int freezeMode) { this.freezeMode = freezeMode;}
 }
