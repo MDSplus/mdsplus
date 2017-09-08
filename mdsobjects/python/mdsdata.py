@@ -495,7 +495,8 @@ class Data(object):
         @rtype: numpy or native type
         """
         try:
-            return _cmp.DATA(self).evaluate().value
+            data = _cmp.DATA(self).evaluate()
+            return data.value if isinstance(data,Data) else data
         except _exc.TreeNODATA:
             if len(altvalue):
                 return altvalue[0]
