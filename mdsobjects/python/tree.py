@@ -1267,8 +1267,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
     def record(self,value):
         self.putData(value)
 
-    def data(self):
-        return self.record.data()
+    def data(self,*altvalue):
+        return self.record.data(*altvalue)
 
     rfa=nciProp("rfa","data offset in datafile")
 
