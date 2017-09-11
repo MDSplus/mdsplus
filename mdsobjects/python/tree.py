@@ -2847,7 +2847,7 @@ class Device(TreeNode): # HINT: Device begin
                 return device
         @staticmethod
         def _debug(s,p=tuple()):
-            _sys._stdout.write(s % p)
+            _sys.stdout.write(s % p)
     else:
         @staticmethod
         def _debug(s,p=tuple()):
