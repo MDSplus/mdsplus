@@ -385,7 +385,7 @@ class Data(object):
     def __int__(self):
         """Integer: x.__int__() <==> int(x)
         @rtype: int"""
-        return int(self.getInt().value)
+        return int(self.getLong()._value)
     __index__ = __int__
 
     def __len__(self):
@@ -402,7 +402,7 @@ class Data(object):
     def __float__(self):
         """Float: x.__float__() <==> float(x)
         @rtype: float"""
-        return float(self.getInt().value)
+        return float(self.getDouble()._value)
 
     def __round__(self,*arg):
         """Round value to next integer: x.__round__() <==> round(x)
