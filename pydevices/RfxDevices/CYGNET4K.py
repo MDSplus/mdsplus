@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,7 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-__version__=(2016,10,26,16,00)
+__version__=(2017,9,29,4,50)
 from MDSplus import mdsExceptions, Device, Tree, Dimension
 from MDSplus import Int16Array, Uint16Array, Uint64Array, Float32Array
 from numpy import array
@@ -62,7 +62,7 @@ class CYGNET4K(Device):
       {'path':':ACTIONSERVER', 'type':'text','options':('no_write_shot','write_once')},
       {'path':':ACTIONSERVER:INIT', 'type':'action','valueExpr':"Action(Dispatch(head.actionserver,'INIT',20,None),Method(None,'init',head))",'options':('no_write_shot','write_once')},
       {'path':':ACTIONSERVER:START','type':'action','valueExpr':"Action(Dispatch(head.actionserver,'INIT',50,None),Method(None,'start',head))",'options':('no_write_shot','write_once')},
-      {'path':':ACTIONSERVER:STOP', 'type':'action','valueExpr':"Action(Dispatch(head.actionserver,'DEINIT',20,None),Method(None,'stop',head))",'options':('no_write_shot','write_once')},
+      {'path':':ACTIONSERVER:STOP', 'type':'action','valueExpr':"Action(Dispatch(head.actionserver,'STORE',20,None),Method(None,'stop',head))",'options':('no_write_shot','write_once')},
       {'path':':ACTIONSERVER:STORE','type':'action','valueExpr':"Action(Dispatch(head.actionserver,'STORE',90,None),Method(None,'store',head))",'options':('no_write_shot','write_once')},
       {'path':':BINNING', 'type':'text','options':('no_write_model','write_once')},
       {'path':':ROI_RECT', 'type':'numeric','options':('no_write_model','write_once')},
@@ -743,7 +743,7 @@ class CYGNET4K(Device):
             """start capturing frames"""
             CYGNET4K.xclib.startVideoCapture(self.device.frames)
             self.running = True
-            while (not self.stopReq) and (self.duration < 0 or self.currTime < self.duration):
+            while (not self.stopReq) and (self.duration < 0 or CYGNET4K.xclib.currTime < self.duration):
                 if not CYGNET4K.xclib.captureFrame(self.triggerTime):
                     sleep(0.002)
             """Finished storing frames, stop camera integration and store measured frame times"""
@@ -761,8 +761,8 @@ class CYGNET4K(Device):
 
         def store(self):
             """transfer data to tree"""
-            self.device.temp_pcb.record  = Float32Array(self.pcbTemp)
-            self.device.temp_cmos.record = Int16Array(self.cmosTemp)
+            self.device.temp_pcb  = Float32Array(self.pcbTemp)
+            self.device.temp_cmos = Int16Array(self.cmosTemp)
             CYGNET4K.xclib.storeFrames(self.device.frames)
 
     class AsynchTrend(Thread):
