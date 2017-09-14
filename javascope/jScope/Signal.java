@@ -974,10 +974,9 @@ public class Signal implements WaveDataListener
     public int[] getNaNs(){return nans;}
     public double getX(int idx)
     {
- 
-        if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_YZ || mode2D == Signal.MODE_XZ))
-            return sliceX[idx];
-       try {
+        try {
+            if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_YZ || mode2D == Signal.MODE_XZ))
+                return sliceX[idx];
             return x[idx];
        }catch(Exception exc){return 0;}
      }
@@ -2231,6 +2230,7 @@ public class Signal implements WaveDataListener
      */
     public void Autoscale()
     {
+        freezeMode = NOT_FREEZED;
         setAxis();
         AutoscaleX();
         AutoscaleY();
@@ -3339,7 +3339,10 @@ public class Signal implements WaveDataListener
         freezedXMin = xmin;
         freezedXMax = xmax;
     }
-
+    void unblock()
+    {
+        freezeMode = NOT_FREEZED;
+    }
     void unfreeze()
     {
         freezeMode = NOT_FREEZED;
@@ -3372,4 +3375,6 @@ public class Signal implements WaveDataListener
         for(int i = 0; i < signalListeners.size(); i++)
             signalListeners.elementAt(i).signalUpdated(changeLimits);
     }
+    int getFreezeMode() { return freezeMode;}
+    void setFreezeMode(int freezeMode) { this.freezeMode = freezeMode;}
 }

@@ -12,18 +12,24 @@ import java.util.*;
  */
 public class MdsStreamingDataProvider extends MdsDataProvider
 {
-    Vector<Data> samplesV = new Vector<Data>();
-    Vector<Data> timesV = new Vector<Data>();
+    
+    Vector<Connection> activeConnections = new Vector<Connection>();
+    
+    
     //Inner class MdsStreamingDataProvider handles data streaming in jScope
     Connection conn = null;
     class AsynchWaveData implements AsynchDataSource, DataStreamListener
     {
+        boolean listenerReady = false;
+        Vector<Data> samplesV = new Vector<Data>();
+        Vector<Data> timesV = new Vector<Data>();
         double sinePeriod = 1;
         Vector<WaveDataListener> listeners = new Vector<WaveDataListener>();
         public void startGeneration(java.lang.String expression)
         {
             try {
                 Connection conn = new Connection(getProvider());
+                activeConnections.addElement(conn);
                 conn.registerStreamListener(this, expression, experiment, (int)shot);
                 conn.startStreaming();
             }catch(Exception exc)
@@ -33,8 +39,11 @@ public class MdsStreamingDataProvider extends MdsDataProvider
         }
         public void dataReceived(Data samples, Data times)
         {
-            samplesV.addElement(samples);
-            timesV.addElement(times);
+            if(!listenerReady)
+            {
+                samplesV.addElement(samples);
+                timesV.addElement(times);
+            }
             handleDataReceived(samples, times);
         }
         public void handleDataReceived(Data samples, Data times)
@@ -81,6 +90,7 @@ public class MdsStreamingDataProvider extends MdsDataProvider
             listeners.addElement(listener);
             for(int i = 0; i < samplesV.size(); i++)
                 handleDataReceived(samplesV.elementAt(i), timesV.elementAt(i));
+            listenerReady = true;
         }
     } //End inner class AsynchWaveData
   
@@ -89,5 +99,16 @@ public class MdsStreamingDataProvider extends MdsDataProvider
         return new AsynchWaveData();
     }
     
+    public void resetConnections()
+    {
+        for(int i = 0; i < activeConnections.size(); i++)
+            activeConnections.elementAt(i).disconnect();
+        activeConnections.clear();
+    }
+    
+    public void resetPrevious()
+    {
+        resetConnections();
+    }
  }
 

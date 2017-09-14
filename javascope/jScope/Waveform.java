@@ -2,6 +2,7 @@ package jScope;
 
 /* $Id$ */
 import java.awt.*;
+import java.awt.image.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.border.*;
@@ -1936,7 +1937,7 @@ public class Waveform
 
   protected boolean DrawFrame(Graphics g, Dimension d, int frame_idx) {
     wave_error = null;
-    Object img;
+    Image img;
 
     if (mode == MODE_ZOOM && curr_rect != null) {
 
@@ -1963,12 +1964,12 @@ public class Waveform
 
   }
 
-  protected void DrawImage(Graphics g, Object img, Dimension dim, int type) {
+  protected void DrawImage(Graphics g, Image img, Dimension dim, int type) {
 
     Rectangle r = frames.GetZoomRect();
     Graphics2D g2 = (Graphics2D)g;
-    Dimension imgDim = new Dimension(((BufferedImage)img).getWidth(),((BufferedImage)img).getHeight()); 
-    
+    Dimension imgDim;
+    imgDim = new Dimension(((BufferedImage)img).getWidth(),((BufferedImage)img).getHeight()); 
     
     // Turn on antialiasing.
     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
