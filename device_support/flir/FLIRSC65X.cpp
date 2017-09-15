@@ -1656,7 +1656,7 @@ int FLIR_SC65X::startFramesAcquisition()
                 }
  	       // camStreamingFrame( tcpStreamHandle, frameBuffer, metaData, width, height, 14, irFrameFormat, autoAdjustLimit, &lowLim, &highLim, minLim, maxLim, this->deviceName, streamingList);
 //printf("frame counter: %d\n",frameCounter);
-	        camStreamingFrame( tcpStreamHandle, frameBuffer, metaData, width, height, CSU_PIX_FMT_GRAY16, irFrameFormat, autoAdjustLimit, &lowLim, &highLim, minLim, maxLim, this->deviceName, streamingList);
+	        camStreamingFrame( tcpStreamHandle, frameBuffer, width, height, CSU_PIX_FMT_GRAY16, irFrameFormat, autoAdjustLimit, &lowLim, &highLim, minLim, maxLim, this->deviceName, streamingList);
 	    }             
 	} // if( streamingEnabled )
 

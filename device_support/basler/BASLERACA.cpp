@@ -91,6 +91,10 @@ int checkLastOp(int camHandle)
 	return camPtr[camHandle]->checkLastOp();
 }
 
+int readInternalTemperature(int camHandle)
+{
+	return camPtr[camHandle]->readInternalTemperature();
+}
 
 int setExposure(int camHandle, double exposure)
 {
@@ -313,6 +317,20 @@ int BASLER_ACA::checkLastOp()
 }
 
 
+int BASLER_ACA::readInternalTemperature()
+{  
+    // Select the kind of internal temperature as the device temperature
+    pCamera->TemperatureSelector.SetValue(TemperatureSelector_Coreboard);
+    // Read the device temperature
+    double t = pCamera->TemperatureAbs.GetValue();
+    printf("Camera Temperature is now %3.2f°C\n", t); 
+    this->internalTemperature=t;
+
+   return SUCCESS;
+}
+
+
+
 int BASLER_ACA::setExposure(double exposure)
 {  
    if (IsWritable(pCamera->ExposureTimeAbs))
@@ -321,6 +339,7 @@ int BASLER_ACA::setExposure(double exposure)
      //pCamera->ExposureTimeRaw.SetValue(exposure);  //not to use!
      cout << "Exposure set to: " << exposure << endl;  
    }    
+   this->exposure=exposure;
 
    return SUCCESS;
 }
@@ -364,6 +383,7 @@ int BASLER_ACA::setGain(int gain)
      pCamera->GainRaw.SetValue(gain);
      cout << "Gain set to: " << gain << endl;
     }   
+    this->gain = gain;
 
    return SUCCESS;
 }
@@ -553,7 +573,7 @@ int BASLER_ACA::startAcquisition(int *width, int *height, int *payloadSize)
 
    //fede new 30/06/2017 due to incomplete grabbed frame error. The error advice to change iter-packed delay
    pCamera->GevStreamChannelSelector.SetValue(GevStreamChannelSelector_StreamChannel0);
-   pCamera->GevSCPD.SetValue(1000);  //1 tick should be 8ns from manual. So inter packed delay is now 8us.
+   pCamera->GevSCPD.SetValue(10000);  //1 tick should be 8ns from manual. So inter packed delay is now 80us.
    //int64_t i = camera.GevSCPD.GetValue();
 
    // Enable chunks in general.
@@ -611,13 +631,6 @@ int BASLER_ACA::stopAcquisition()
 {
     pCamera->StopGrabbing();
     printf("Stop Acquisition\n");
-
-    // Select the kind of internal temperature as the device temperature
-    pCamera->TemperatureSelector.SetValue(TemperatureSelector_Coreboard);
-    // Read the device temperature
-    double t = pCamera->TemperatureAbs.GetValue();
-    printf("INFO: Camera Temperature is now %3.2f°C\n", t);
-
     return SUCCESS;
 }
 
@@ -648,21 +661,9 @@ int BASLER_ACA::getFrame(int *status, void *frame, void *metaData)
           *status=1; //complete
 	  unsigned int width = ptrGrabResult->GetWidth();
  	  unsigned int height = ptrGrabResult->GetHeight();
-	  const uint8_t *dataPtr = (uint8_t *) ptrGrabResult->GetBuffer();
+	  const uint8_t *dataPtr = (uint8_t *) ptrGrabResult->GetBuffer();     //use always char* also 4 bigger images
           memcpy( frame , (unsigned char *)dataPtr, width*height*this->Bpp );
-/* NON SERVE DIFFERENZIARE: COPIO SEMPRE CON CHAR*
-          void *dataPtr = NULL; 
-          if(this->Bpp==1)
-          {
-            dataPtr = (uint8_t *) ptrGrabResult->GetBuffer();
-            memcpy( frame , (unsigned char *)dataPtr, width*height*1 );
-          }
-          if(this->Bpp==2)
-          {
-            dataPtr = (uint16_t *) ptrGrabResult->GetBuffer();
-      	    memcpy( frame , (unsigned short *)dataPtr, width*height );  
-          }
-*/
+
          // cout << "Gray value of first pixel: " << (uint32_t) dataPtr[0] << endl << endl;
 
 //Pylon::GrabResultData
@@ -690,12 +691,22 @@ int BASLER_ACA::getFrame(int *status, void *frame, void *metaData)
   //              cout << "TimeStamp (Result): " << ptrGrabResult->ChunkTimestamp.GetValue() << endl;
 
            //fede sembra ok
+           int64_t ts;
            if(ptrGrabResult->IsChunkDataAvailable())
            {
              INodeMap& nodeMap = ptrGrabResult->GetChunkDataNodeMap();
-             int64_t ts = CIntegerPtr(nodeMap.GetNode("ChunkTimestamp"))->GetValue();
+             ts = CIntegerPtr(nodeMap.GetNode("ChunkTimestamp"))->GetValue();
              // printf("%I64d\n", ts);
            }
+
+        //printf("metadata size: %d\n", sizeof(BASLERMETADATA));
+        BASLERMETADATA bMeta;
+        bMeta.gain=this->gain;
+        bMeta.exposure=this->exposure;
+        bMeta.internalTemperature=this->internalTemperature;
+        bMeta.timestamp=ts;
+        memcpy( metaData , (unsigned char *)&bMeta, sizeof(BASLERMETADATA));
+
        }// if (ptrGrabResult->GrabSucceeded()
        else
        {
@@ -823,7 +834,7 @@ int BASLER_ACA::startFramesAcquisition()
 	//short *frameBuffer;
         //char *frameBuffer;
         void *frameBuffer;
-	short *metaData;
+	unsigned char *metaData;
 	unsigned char *frame8bit;
 
         struct timeval tv;  //manage frame timestamp in internal mode
@@ -851,8 +862,9 @@ int BASLER_ACA::startFramesAcquisition()
         }
 	frame8bit = (unsigned char *) calloc(1, width * height * sizeof(char));
 
-	metaSize = width * 3 * sizeof(short);
-	metaData = (short *)calloc(1, metaSize);
+//	metaSize = width * 3 * sizeof(short);
+        metaSize = sizeof(BASLERMETADATA);
+	metaData = (unsigned char *)calloc(1, metaSize);
  
         camStartSave(&saveList); //  # Initialize save frame Linked list reference
    	camStartStreaming(&streamingList); //  # Initialize streaming frame Linked list reference
@@ -887,11 +899,6 @@ int BASLER_ACA::startFramesAcquisition()
     
                   printf("ACQUIRED ALL FRAMES %d FOR TRIGGER : %d\n", frameTriggerCounter,  NtriggerCount );	
                   frameTriggerCounter = 0;
-
-                  if ( autoCalibration )    //execute calibration action @ every burst of frames (only if NO auto calibration)
-                  {  
-			//executeAutoCalib();
-		  }
 
 	          if ( NtriggerCount == numTrigger ) //stop store when all trigger will be received
 		  { 
@@ -930,7 +937,7 @@ int BASLER_ACA::startFramesAcquisition()
                    startStoreTrg   = 0;   //disable storing   
                    frameTriggerCounter = 0;
                    NtriggerCount++; 
-            	   printf("Stop Internal trigger acquisition %f %f %f\n", frameTime, burstDuration, frameRate);
+            	   printf("Stop Internal trigger acquisition time:%f dur:%f fps:%f\n", frameTime, burstDuration, frameRate);
                    //storeEnabled=0;  //infinite trigger until stop acquisition
 		   //break;
               }
@@ -976,7 +983,7 @@ int BASLER_ACA::startFramesAcquisition()
             else if((this->frameRate<10) || (frameCounter % int(this->frameRate/10.0))==0)  //send frame @ 10Hz. Reduce CPU usage when radiometric conversion must be performed.
 	    {
 		//camStreamingFrame( tcpStreamHandle, frameBuffer, metaData, width, height, 14, irFrameFormat, autoAdjustLimit, &lowLim, &highLim, minLim, maxLim, this->deviceName, streamingList);
- 	        camStreamingFrame( tcpStreamHandle, frameBuffer, metaData, width, height, pixelFormat, 0, autoAdjustLimit, &lowLim, &highLim, minLim, maxLim, this->deviceName, streamingList);
+ 	        camStreamingFrame( tcpStreamHandle, frameBuffer, width, height, pixelFormat, 0, autoAdjustLimit, &lowLim, &highLim, minLim, maxLim, this->deviceName, streamingList);
 	    }             
 	} // if( streamingEnabled )
         frameCounter++;   //never resetted, used for frame timestamp     

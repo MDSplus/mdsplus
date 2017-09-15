@@ -43,7 +43,6 @@ int getPixelSize(int pixelFormat)    //return the number of bit used for the for
 class StreamingFrame {
 
     void *frame;
-    void *frameMetadata;
     int width;
     int height;
     int pixelSize;
@@ -60,11 +59,10 @@ class StreamingFrame {
     StreamingFrame *nxt;
 
  public:
-    StreamingFrame(int tcpStreamHandle, void *frame, void *frameMetadata, int width, int height, int pixelFormat, int irFrameFormat, bool adjLimit, unsigned int *lowLim, unsigned int *highLim, unsigned int minLim, unsigned int maxLim, const char *deviceName)
+    StreamingFrame(int tcpStreamHandle, void *frame, int width, int height, int pixelFormat, int irFrameFormat, bool adjLimit, unsigned int *lowLim, unsigned int *highLim, unsigned int minLim, unsigned int maxLim, const char *deviceName)
     {
 		this->tcpStreamHandle = tcpStreamHandle; 
 		this->frame = frame;
-		this->frameMetadata = frameMetadata;
 		this->width = width;
 		this->height = height;
                 this->pixelSize = getPixelSize(pixelFormat);
@@ -151,10 +149,10 @@ class StreamingFrameList
 		threadCreated = false;
     }
 
-    void addStreamingFrame(int tcpStreamHandle, void *frame, void *frameMetadata, int width, int height, int pixelFormat, int irFrameFormat, bool adjLimit, unsigned int *lowLim, unsigned int *highLim, unsigned int minLim, unsigned int maxLim, const char *deviceName)
+    void addStreamingFrame(int tcpStreamHandle, void *frame, int width, int height, int pixelFormat, int irFrameFormat, bool adjLimit, unsigned int *lowLim, unsigned int *highLim, unsigned int minLim, unsigned int maxLim, const char *deviceName)
     {
                 //printf("add streaming frame\n");
-		StreamingFrame *newItem = new StreamingFrame(tcpStreamHandle, frame, frameMetadata, width, height, pixelFormat, irFrameFormat, adjLimit, lowLim, highLim, minLim,  maxLim, deviceName);
+		StreamingFrame *newItem = new StreamingFrame(tcpStreamHandle, frame, width, height, pixelFormat, irFrameFormat, adjLimit, lowLim, highLim, minLim,  maxLim, deviceName);
 		pthread_mutex_lock(&mutex);
 		if(streamingHead == NULL)
 		{
@@ -259,14 +257,12 @@ void camStopStreaming(void *listPtr)
     }
 }
 
-void camStreamingFrame(int tcpStreamHandle, void *frame, void *frameMetadata, int width, int height, int pixelFormat, int irFrameFormat, bool adjLimit, unsigned int *lowLim, unsigned int *highLim, unsigned int minLim, unsigned int maxLim, const char *deviceName, void *streamingListPtr)
+void camStreamingFrame(int tcpStreamHandle, void *frame, int width, int height, int pixelFormat, int irFrameFormat, bool adjLimit, unsigned int *lowLim, unsigned int *highLim, unsigned int minLim, unsigned int maxLim, const char *deviceName, void *streamingListPtr)
 {
     void *bufFrame;
-    void *bufMdata;
 
     int pixelSize = getPixelSize(pixelFormat);
     int frameSize = width * height;
-    int metaSize = 3 * width;
 
     if(pixelSize<=8)
     {
@@ -285,9 +281,7 @@ void camStreamingFrame(int tcpStreamHandle, void *frame, void *frameMetadata, in
     }
 
     StreamingFrameList *streamingList = (StreamingFrameList *)streamingListPtr;
-    bufMdata = new char[metaSize];  
-    memcpy(bufMdata, frameMetadata, metaSize);
-    streamingList->addStreamingFrame(tcpStreamHandle, bufFrame, bufMdata,  width, height, pixelFormat, irFrameFormat,  adjLimit, lowLim, highLim, minLim, maxLim, deviceName);    
+    streamingList->addStreamingFrame(tcpStreamHandle, bufFrame, width, height, pixelFormat, irFrameFormat,  adjLimit, lowLim, highLim, minLim, maxLim, deviceName);    
 }
 
 

@@ -254,6 +254,15 @@ class BASLERACA(Device):
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Set Exposure : ' + self.error.raw)
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
+
+###READ CAMERA TEMPERATURE
+      status = BASLERACA.baslerLib.readInternalTemperature(self.handle)
+      if status < 0:
+        BASLERACA.baslerLib.getLastError(self.handle, self.error)
+        Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Read Internal Temperature : ' + self.error.raw)
+        raise mdsExceptions.TclFAILED_ESSENTIAL
+
+
 ###Pixel Format
       try:
          pixelFormat = self.frame_pixel_format.data()
@@ -452,65 +461,47 @@ class BASLERACA(Device):
       print('Init action completed.')
       return 1
 
-####################MANUAL CALIBRATION ACTION
 
-    def calib(self):
+
+####################CHANGE GAIN
+    def changeGain(self):
       if self.restoreInfo() == 0:
           raise mdsExceptions.TclFAILED_ESSENTIAL
 
-      status = BASLERACA.baslerLib.executeAutoCalib(self.handle)
+      status = BASLERACA.baslerLib.setGain(self.handle, c_int(self.cam_setup_gain.data()))
       if status < 0:
         BASLERACA.baslerLib.getLastError(self.handle, self.error)
-        Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Execute Auto Calibration '+ self.error.raw)
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-
-      #self.saveInfo()
-      return 1
-
-
-####################MANUAL AUTOFOCUS ACTION
-    def autofocus(self):
-      if self.restoreInfo() == 0:
-          raise mdsExceptions.TclFAILED_ESSENTIAL
-
-      status = BASLERACA.baslerLib.executeAutoFocus(self.handle)
-      if status < 0:
-        BASLERACA.baslerLib.getLastError(self.handle, self.error)
-        Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Execute Auto Focus : ' + self.error.raw)
+        Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot change Gain value : ' + self.error.raw)
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
       self.saveInfo()
       return 1
 
 
-####################READ FOCUS POSITION
-    def readFocusPos(self):
+####################CHANGE EXPOSURE
+    def changeExposure(self):
       if self.restoreInfo() == 0:
           raise mdsExceptions.TclFAILED_ESSENTIAL
 
-      focPos=c_int(0)
-      status = BASLERACA.baslerLib.getFocusAbsPosition(self.handle, byref(focPos))
-      print('Focus Position Read: ', focPos)
+      status = BASLERACA.baslerLib.setExposure(self.handle, c_double(self.cam_setup_exposure.data()))
       if status < 0:
         BASLERACA.baslerLib.getLastError(self.handle, self.error)
-        Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Read Focus Position : '+ self.error.raw)
+        Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot change Exposure Value : ' + self.error.raw)
         raise mdsExceptions.TclFAILED_ESSENTIAL
-
-      self.cam_setup_focus_pos.putData(focPos.value)   #write data in mdsplus
 
       self.saveInfo()
       return 1
 
 
-####################WRITE FOCUS POSITION
-    def writeFocusPos(self):
+####################READ INTERNAL TEMPERATURE
+    def readTemperature(self):
       if self.restoreInfo() == 0:
           raise mdsExceptions.TclFAILED_ESSENTIAL
 
-      status = BASLERACA.baslerLib.setFocusAbsPosition(self.handle, c_int(self.cam_setup_focus_pos.data()))
+      status = BASLERACA.baslerLib.readInternalTemperature(self.handle)
       if status < 0:
         BASLERACA.baslerLib.getLastError(self.handle, self.error)
-        Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Write Focus Position : ' + self.error.raw)
+        Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Read Internal Temperature : ' + self.error.raw)
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
       self.saveInfo()

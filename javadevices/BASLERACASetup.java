@@ -311,7 +311,7 @@ public class BASLERACASetup extends DeviceSetup {
 
         deviceButtons1.setCheckExpressions(new String[] {});
         deviceButtons1.setCheckMessages(new String[] {});
-        deviceButtons1.setMethods(new String[] {"init", "startAcquisition", "swTrigger", "stopAcquisition", "changeExposure"});
+        deviceButtons1.setMethods(new String[] {"init", "startAcquisition", "swTrigger", "stopAcquisition", "changeGain", "changeExposure", "readTemperature"});
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables

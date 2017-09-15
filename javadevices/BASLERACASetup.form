@@ -595,12 +595,14 @@
           <StringArray count="0"/>
         </Property>
         <Property name="methods" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-          <StringArray count="5">
+          <StringArray count="7">
             <StringItem index="0" value="init"/>
             <StringItem index="1" value="startAcquisition"/>
             <StringItem index="2" value="swTrigger"/>
             <StringItem index="3" value="stopAcquisition"/>
-            <StringItem index="4" value="changeExposure"/>
+            <StringItem index="4" value="changeGain"/>
+            <StringItem index="5" value="changeExposure"/>
+            <StringItem index="6" value="readTemperature"/>
           </StringArray>
         </Property>
       </Properties>
