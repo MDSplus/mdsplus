@@ -1,5 +1,5 @@
 EXTRA_DIST = 
-CLEANFILES = $(java_DATA) JTMANIFEST.mf \
+CLEANFILES = $(java_DATA) \
 	$(addprefix $(JAVAROOT)/,$(TRAV_CLS)) \
 	$(addprefix $(JAVAROOT)/,$(TOOLS_CLS)) \
 	$(addprefix $(JAVAROOT)/,$(MDS_CLS))
