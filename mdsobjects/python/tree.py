@@ -1998,7 +1998,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         """
         num=self.getNumSegments()
         if num > 0 and idx < num:
-            limits=self.GetSegmentLimits(idx)
+            limits=self.getSegmentLimits(idx)
             if limits is not None:
                 return limits[1]
             else:
@@ -2014,7 +2014,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         """
         num=self.getNumSegments()
         if num > 0 and idx < num:
-            limits=self.GetSegmentLimits(idx)
+            limits=self.getSegmentLimits(idx)
             if limits is not None:
                 return limits[0]
             else:
