@@ -969,6 +969,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
     _error=None
     _help=None
     _validation=None
+    _nid=None
+    _path=None
 
     @property
     def ctx(self): return self.tree.ctx
@@ -1056,17 +1058,22 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
     ### Node Properties
     ###################################
 
-    def nciProp(name,doc):
+    def nciProp(name,doc=None):
         def get(self):
             return self.getNci(name,False)
-        setattr(get,'__doc__',doc)
+        if doc is not None: setattr(get,'__doc__',doc)
         return property(get)
 
     brother=nciProp("brother","brother node of this node")
 
     child=nciProp("child","child node of this node")
 
-    children_nids=nciProp("children_nids","children nodes of this node")
+    __children_nids=nciProp("children_nids")
+    @property
+    def children_nids(self):
+        """children nodes of this node"""
+        try:    return self.__children_nids
+        except _exc.TreeNNF: return TreeNodeArray([],tree=self.tree)
 
     mclass=_class=nciProp("class","class of the data stored in this node")
 
@@ -1160,7 +1167,12 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
 
     member=nciProp("member","first member immediate descendant of this node")
 
-    member_nids=nciProp("member_nids","all member immediate descendants of this node")
+    __member_nids=nciProp("member_nids")
+    @property
+    def member_nids(self):
+        """all member immediate descendants of this node"""
+        try:    return self.__member_nids
+        except _exc.TreeNNF: return TreeNodeArray([],tree=self.tree)
 
     minpath=nciProp("minpath","minimum path string for this node based on current default node")
 
@@ -1242,7 +1254,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         try:
             self._path = self.getNci("path",False)
         except _exc.TreeNOT_OPEN:
-            return '%s (tree closed)'%self._path
+            return '%s /*tree closed*/'%self._path
         return self._path
 
     path_reference=nciProp("path_reference","node data contains path references")
@@ -1255,8 +1267,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
     def record(self,value):
         self.putData(value)
 
-    def data(self):
-        return self.record.data()
+    def data(self,*altvalue):
+        return self.record.data(*altvalue)
 
     rfa=nciProp("rfa","data offset in datafile")
 
@@ -1510,7 +1522,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         @rtype: None
         """
         self.putData(None)
-        return
 
     def setDoNotCompress(self,flag):
         """Set do not compress state of this node
@@ -1659,7 +1670,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         @return: First level descendants of this node
         @rtype: TreeNodeArray
         """
-        return self.member_nids + self.children_nids
+        return  self.children_nids + self.member_nids
 
     def getDtype(self):
         """Return the name of the data type stored in this node
@@ -1987,7 +1998,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         """
         num=self.getNumSegments()
         if num > 0 and idx < num:
-            limits=self.GetSegmentLimits(idx)
+            limits=self.getSegmentLimits(idx)
             if limits is not None:
                 return limits[1]
             else:
@@ -2003,7 +2014,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         """
         num=self.getNumSegments()
         if num > 0 and idx < num:
-            limits=self.GetSegmentLimits(idx)
+            limits=self.getSegmentLimits(idx)
             if limits is not None:
                 return limits[0]
             else:
@@ -2243,13 +2254,17 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         @type data: Data
         @rtype: None
         """
-        data = _dat.Data(value)
-        if isinstance(value,_dat.Data) and value.__hasBadTreeReferences__(self.tree):
-            value=value.__fixTreeReferences__(self.tree)
+        if value is None:
+            ref = _C.c_void_p(0)
+        else:
+            data = _dat.Data(value)
+            if data.__hasBadTreeReferences__(self.tree):
+                data = data.__fixTreeReferences__(self.tree)
+            ref = _dat.Data.byref(data)
         _exc.checkStatus(
                 _TreeShr._TreePutRecord(self.tree.ctx,
                                         self._nid,
-                                        _dat.Data.byref(data),
+                                        ref,
                                         0))
 
     def putRow(self,bufsize,data,timestamp):
@@ -2577,6 +2592,8 @@ class TreePath(TreeNode): # HINT: TreePath begin
 
 
 class TreeNodeArray(_arr.Int32Array): # HINT: TreeNodeArray begin
+    def __new__(cls,nids,*tree,**kw):
+        return super(TreeNodeArray,cls).__new__(cls,nids)
     def __init__(self,nids,*tree,**kw):
         if self is nids: return
         if isinstance(nids,_C.Array):
@@ -2830,7 +2847,7 @@ class Device(TreeNode): # HINT: Device begin
                 return device
         @staticmethod
         def _debug(s,p=tuple()):
-            _sys._stdout.write(s % p)
+            _sys.stdout.write(s % p)
     else:
         @staticmethod
         def _debug(s,p=tuple()):
@@ -2956,11 +2973,18 @@ class Device(TreeNode): # HINT: Device begin
         @type value: varied
         @rtype: None
         """
+        from  inspect import stack
         if name in self.part_dict:
             head = self if self._head==0 else self.head
             TreeNode(self.part_dict[name]+self.head.nid,self.tree,head).record=value
-        else:
-            super(Device,self).__setattr__(name,value)
+        elif (hasattr(self,name)
+           or name.startswith('_')
+           or isinstance(stack()[1][0].f_locals.get('self',None),Device)):
+                super(Device,self).__setattr__(name,value)
+        else: print("""WARNING: your tried to add the attribute or write to the subnode '%s' of '%s'.
+This is a deprecated action for Device nodes outside of Device methods. You should prefix the attribute with '_'.
+If you did intend to write to a subnode of the device you should check the proper path of the node: TreeNNF.
+"""%(name, self.path))
 
     @classmethod
     def getImportString(cls):

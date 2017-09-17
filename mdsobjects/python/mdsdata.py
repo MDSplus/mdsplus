@@ -83,6 +83,7 @@ class Data(object):
     _error=None
     _help=None
     _validation=None
+    __descriptor=None
     ctx=None
     @property  # used by numpy.array
     def __array_interface__(self):
@@ -384,7 +385,7 @@ class Data(object):
     def __int__(self):
         """Integer: x.__int__() <==> int(x)
         @rtype: int"""
-        return int(self.getInt().value)
+        return int(self.getLong()._value)
     __index__ = __int__
 
     def __len__(self):
@@ -401,7 +402,7 @@ class Data(object):
     def __float__(self):
         """Float: x.__float__() <==> float(x)
         @rtype: float"""
-        return float(self.getInt().value)
+        return float(self.getDouble()._value)
 
     def __round__(self,*arg):
         """Round value to next integer: x.__round__() <==> round(x)
@@ -494,7 +495,8 @@ class Data(object):
         @rtype: numpy or native type
         """
         try:
-            return _cmp.DATA(self).evaluate().value
+            data = _cmp.DATA(self).evaluate()
+            return data.value if isinstance(data,Data) else data
         except _exc.TreeNODATA:
             if len(altvalue):
                 return altvalue[0]
