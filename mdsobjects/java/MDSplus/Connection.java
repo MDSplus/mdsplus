@@ -3,6 +3,7 @@ import java.util.*;
 
 public class Connection 
 {
+    boolean isConnected = false;
     static {
         try {
           System.loadLibrary("JavaMds");
@@ -36,6 +37,7 @@ public class Connection
         sockId = connectToMds(mdsipAddr);
         if(sockId < 0)
             throw new MdsException("Cannot connect to "+ mdsipAddr);
+        isConnected = true;
     }
            
     
@@ -44,6 +46,7 @@ public class Connection
     {
         if(sockId >= 0)
             disconnectFromMds(sockId);
+        isConnected = false;
     }
     
     public void openTree(java.lang.String name, int shot) throws MdsException
@@ -275,25 +278,32 @@ public class Connection
         sockId = connectToMds(mdsipAddr);
     }
     
+    public void disconnect()
+    {
+        disconnectFromMds(sockId);
+        isConnected = false;
+    }
     
     void checkDataAvailability()
     {
        while(true)
        {
             try {
-                  Data serData = get("MdsObjectsCppShr->getNewSamplesSerializedXd:DSC()");
-                 Apd apdData = (Apd)Data.deserialize(serData.getByteArray());
-                 Data [] descs = apdData.getDescs();
-                 for(int i = 0; i < descs.length/2; i++)
-                 {
-                     int id = descs[2*i].getInt();
-                     Signal sig = (Signal)descs[2*i+1];
-                     DataStreamListener listener = (DataStreamListener)listenerH.get(new Integer(id));
-                     if(listener != null)
-                         listener.dataReceived(sig.getData(), sig.getDimensionAt(0));
-                 }
+                Data serData = get("MdsObjectsCppShr->getNewSamplesSerializedXd:DSC()");
+                if(!isConnected) return;  
+                Apd apdData = (Apd)Data.deserialize(serData.getByteArray());
+                Data [] descs = apdData.getDescs();
+                for(int i = 0; i < descs.length/2; i++)
+                {
+                    int id = descs[2*i].getInt();
+                    Signal sig = (Signal)descs[2*i+1];
+                    DataStreamListener listener = (DataStreamListener)listenerH.get(new Integer(id));
+                    if(listener != null)
+                        listener.dataReceived(sig.getData(), sig.getDimensionAt(0));
+                }
             }catch(MdsException exc)
             {
+                if(!isConnected) return;
                 System.out.println("Error in data stream management: " + exc);
             }
        }
