@@ -25,7 +25,7 @@ static const char *environ_var[NUM_SETTINGS] = {"mdsevent_loop", "mdsevent_ttl",
 static const char *xml_setting[NUM_SETTINGS] = {"IP_MULTICAST_LOOP", "IP_MULTICAST_TTL", "IP_MULTICAST_IF", "PORT", "ADDRESS"};
 static const char *fname = "eventsConfig.xml";
 
-int UdpEventGetLoop(unsigned char *loop) {
+EXPORT int UdpEventGetLoop(unsigned char *loop) {
   int status = 0;
   if (settings[LOOP]) {
     if (strcmp("0", settings[LOOP]) == 0) {
@@ -157,7 +157,7 @@ static const char *getProperty(xmlDocPtr doc, const char *settings, const char *
   return ans;
 }
 
-void InitializeEventSettings()
+EXPORT void InitializeEventSettings()
 {
   int i, missing=0;
   xmlInitParser();
