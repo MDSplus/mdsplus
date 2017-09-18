@@ -195,7 +195,7 @@ STATIC_ROUTINE int interlude(int (*f1) (), int opcode, int narg,
   return status;
 }
 
-int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS, stat1 = MDSplusSUCCESS;
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
