@@ -13,7 +13,7 @@ EXPORT int bwfilter(float *w_cut_in, int *order_in, int *num, float *in, float *
   int M, N;
   int p, q, order = *order_in;
   double num_coeff, den_coeff, c[max_order + 1], d[max_order + 1];
-  double coeff[2][max_order + 1];
+  double coeff[2][max_order + 1] = {{0},{0}};
   double w_cut = (double)*w_cut_in, omega_cut;
   int upto, i, j, k;
   int in_idx = 0, out_idx;

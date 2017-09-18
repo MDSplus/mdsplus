@@ -31,7 +31,6 @@ static pthread_mutex_t libpython_mutex = PTHREAD_MUTEX_INITIALIZER;
 typedef void* PyThreadState;
 static PyThreadState *(*PyGILState_Ensure)() = NULL;
 static void (*PyGILState_Release)(PyThreadState *) = NULL;
-extern int MdsGetStdMsg();
 
 typedef void* PyObject;
 typedef ssize_t Py_ssize_t;
@@ -360,7 +359,7 @@ int TdiExtPython(struct descriptor *modname_d,
               if STATUS_NOT_OK {
                 char *fac_out=NULL, *msgnam_out=NULL, *text_out=NULL;
                 const char *f = "WSEIF???";
-                MdsGetStdMsg(status,&fac_out,&msgnam_out,&text_out);
+                MdsGetStdMsg(status,(const char **)&fac_out,(const char **)&msgnam_out,(const char **)&text_out);
                 printf("%%%s-%c-%s: %s\n",fac_out,f[status&7],msgnam_out,text_out);
                }
             } else {
