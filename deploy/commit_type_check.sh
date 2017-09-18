@@ -9,7 +9,7 @@
 # email to be sent to the person who created a commit with an invalid title.
 #
 
-git log $1..HEAD --no-merges --decorate=short --pretty=format:"%<(80,trunc)%s%n%ce" |
+git log $1..HEAD --no-merges --decorate=short --pretty=format:"%<(80,trunc)%s%n%ae" |
 awk -v EMAILMSG="$2" -F: '{ IGNORECASE=1
                TITLE=$0
                switch ($1) {
