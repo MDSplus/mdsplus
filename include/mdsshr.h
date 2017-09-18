@@ -86,6 +86,7 @@ extern int MdsGet1DxS(const unsigned short *len, const unsigned char *dtype,
 			       struct descriptor_xd *out);
 extern char *MdsGetMsg(int sts);
 extern void MdsGetMsgDsc(int status, struct descriptor *out);
+extern int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, const char **text_out);
 extern int MdsFree1Dx(struct descriptor_xd *dsc, void **zone);
 extern int MdsMsg(int sts, const char *fmt, ...);
 extern int MDSQueueEvent(const char *event, int *eventid);

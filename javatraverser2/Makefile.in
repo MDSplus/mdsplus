@@ -467,7 +467,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 EXTRA_DIST = 
-CLEANFILES = $(java_DATA)  \
+CLEANFILES = $(java_DATA) \
 	$(addprefix $(JAVAROOT)/,$(TRAV_CLS)) \
 	$(addprefix $(JAVAROOT)/,$(TOOLS_CLS)) \
 	$(addprefix $(JAVAROOT)/,$(MDS_CLS))

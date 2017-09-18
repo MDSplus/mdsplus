@@ -1,3 +1,5 @@
+#include <config.h>
+
 static const char *FAC_DEV = "DEV";
 static const char *FAC_RETICON = "RETICON";
 static const char *FAC_J221 = "J221";
@@ -40,7 +42,7 @@ static const char *FAC_CAM = "CAM";
 static const char *FAC_TCL = "TCL";
 
 
-int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, const char **text_out) {
+EXPORT int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, const char **text_out) {
     int sts;
     switch (status & (-8)) {
 
@@ -1746,7 +1748,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
 
 /* PyUNHANDLED_EXCEPTION */
       case 0x277ca538:
-        {static const char *text="Python device raised and exception, see log files for more details";
+        {static const char *text="Python device raised an exception, see log files for more details";
         static const char *msgnam="UNHANDLED_EXCEPTION";
         *fac_out = FAC_PY;
         *msgnam_out = msgnam;

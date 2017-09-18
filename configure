@@ -6672,6 +6672,7 @@ _ACEOF
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: **********VISIBILITY*********$CFLAG_VISIBILITY*******************" >&5
 $as_echo "**********VISIBILITY*********$CFLAG_VISIBILITY*******************" >&6; }
+CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
 #if test -n "$CFLAG_VISIBILITY" && test "$is_w32" != yes; then
 #	CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
 #fi
