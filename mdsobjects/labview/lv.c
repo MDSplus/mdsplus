@@ -9,6 +9,7 @@
  *
  *   Josh Stillerman 10/19/12
  */
+#include <config.h>
 #include <stdint.h>
 #include  <platdefines.h>
 #include <extcode.h>
@@ -33,7 +34,7 @@ void (*LVMoveBlock) () = 0;
 UHandle(*LVDSNewHandle) () = 0;
 MgErr(*LVNumericArrayResize) () = 0;
 
-extern void MoveBlock(const void *src, void *dest, size_t siz)
+EXPORT extern void MoveBlock(const void *src, void *dest, size_t siz)
 {
   if (!LVMoveBlock)
     Initialize();
@@ -41,7 +42,7 @@ extern void MoveBlock(const void *src, void *dest, size_t siz)
     LVMoveBlock(src, dest, siz);
 }
 
-extern UHandle DSNewHandle(size_t siz)
+EXPORT extern UHandle DSNewHandle(size_t siz)
 {
   if (!LVDSNewHandle)
     Initialize();
@@ -51,7 +52,7 @@ extern UHandle DSNewHandle(size_t siz)
     return (UHandle) - 1;
 }
 
-MgErr NumericArrayResizeCACCA(int32 a, int32 b, UHandle * h, size_t siz)
+EXPORT MgErr NumericArrayResizeCACCA(int32 a, int32 b, UHandle * h, size_t siz)
 {
   printf("CIAO SONO NUMERIC ARRAY RESIZE CACCA\n");
   printf("\n\n\n\n");
@@ -63,7 +64,7 @@ MgErr NumericArrayResizeCACCA(int32 a, int32 b, UHandle * h, size_t siz)
     return -1;
 }
 
-MgErr NumericArrayResize(int32 a, int32 b, UHandle * h, size_t siz)
+EXPORT MgErr NumericArrayResize(int32 a, int32 b, UHandle * h, size_t siz)
 {
   printf("CIAO SONO NUMERIC ARRAY RESIZE\n");
   printf("\n\n\n\n");
