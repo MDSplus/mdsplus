@@ -1385,22 +1385,22 @@ int FLIR_SC65X::setStreamingMode( IRFMT_ENUM irFormat, int streamingEnabled,  bo
 		switch(irFormat)
 		{
 			case radiometric:
-				this->lowLim = lowLim;
-				this->highLim = highLim;
+				this->lowLim = lowLim * 10;   //20170918: streaming is already converted in temperature. Radiometric frames are never send.
+				this->highLim = highLim * 10;
           		        minLim= 0;            
-          		        maxLim= 32767; 
+          		        maxLim= 62000-27315; //32767; 
 				break;
 			case linear100mK:
 				this->lowLim = lowLim * 10;
 				this->highLim = highLim * 10;
           		        minLim= 0;            
-          		        maxLim= 62000-27315;  //346.85°C
+          		        maxLim= 62000-27315;  //3468.5°C 
 				break;
 			case linear10mK:
 				this->lowLim = lowLim * 100;
 				this->highLim = highLim * 100;
           		        minLim= 0;            
-          		        maxLim= 62000-27315; //3468.5°C
+          		        maxLim= 62000-27315; //346.85°C
 				break;
 		}
    }
