@@ -161,12 +161,12 @@ for filename,filepath in xmllist.items():
 
 f_getmsg=open('%s/mdsshr/MdsGetStdMsg.c'%sourcedir,'w')
 exceptionDict=[]
-
+f_getmsg.write("#include <config.h>\n\n");
 for facu in faclist:
     f_getmsg.write("static const char *FAC_%s = \"%s\";\n" % (facu,facu))
 f_getmsg.write("""
 
-int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, const char **text_out) {
+EXPORT int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, const char **text_out) {
     int sts;
     switch (status & (-8)) {
 """)

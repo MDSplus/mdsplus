@@ -1,3 +1,4 @@
+
 ########################################################
 # This module was generated using mdsshr/gen_device.py
 # To add new status messages modify one of the
@@ -1541,7 +1542,7 @@ class _PyException(MDSplusException):
 
 class PyUNHANDLED_EXCEPTION(_PyException):
   status=662480186
-  message="Python device raised and exception, see log files for more details"
+  message="Python device raised an exception, see log files for more details"
   msgnam="UNHANDLED_EXCEPTION"
 
 MDSplusException.statusDict[662480184] = PyUNHANDLED_EXCEPTION

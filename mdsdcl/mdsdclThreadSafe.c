@@ -43,13 +43,13 @@ ThreadStatic *mdsdclGetThreadStatic(){
   return (ThreadStatic *)p;
 }
 
-void mdsdclSetPrompt(const char *prompt){
+EXPORT void mdsdclSetPrompt(const char *prompt){
   GET_THREADSTATIC_P;
   if (PROMPT) free(PROMPT);
   PROMPT = strdup(prompt);
 }
 
-char *mdsdclGetPrompt(){
+EXPORT char *mdsdclGetPrompt(){
   char *ans;
   GET_THREADSTATIC_P;
   if (!PROMPT)

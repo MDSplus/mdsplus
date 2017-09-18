@@ -79,6 +79,7 @@ AC_CHECK_TOOL([WINDRES], [windres], [:])
 AC_MSG_RESULT([before VISIBILITY])
 gl_VISIBILITY
 AC_MSG_RESULT([**********VISIBILITY*********$CFLAG_VISIBILITY*******************])
+CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
 #if test -n "$CFLAG_VISIBILITY" && test "$is_w32" != yes; then
 #	CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
 #fi
