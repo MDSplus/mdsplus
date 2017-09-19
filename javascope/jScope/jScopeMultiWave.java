@@ -323,7 +323,7 @@ public class jScopeMultiWave
 
         if (signals.size() > i && signals.elementAt(i) != null)
         {
-            s += signals.elementAt(i).getName();
+//            s += signals.elementAt(i).getName();
             Signal sign = signals.elementAt(i);
             if (sign != null && sign.getType() == Signal.TYPE_2D)
             {
