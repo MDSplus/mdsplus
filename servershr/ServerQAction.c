@@ -538,6 +538,8 @@ static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in){
   DESCRIPTOR_NID(niddsc, 0);
   char *status_text = MdsGetMsg(job->status);
   status = TreeOpen(job->tree, job->shot, 0);
+  if STATUS_NOT_OK // try to open model instead
+      status = TreeOpen(job->tree, -1, 0);
   if STATUS_OK {
     niddsc.pointer = (char *)&job->nid;
     status = TdiGetNci(&niddsc, &fullpath_d, &fullpath MDS_END_ARG);
