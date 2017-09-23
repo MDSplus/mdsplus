@@ -40,7 +40,7 @@ public class MdsMessage extends Object
     protected   boolean swap = false;
     protected   boolean compressed = false;
 
-    private     Vector  connection_listener = null;
+    private     Vector<ConnectionListener> connectionListeners = null;
 
     public MdsMessage()
     {
@@ -58,15 +58,15 @@ public class MdsMessage extends Object
         this(c, null);
     }
 
-    public MdsMessage(String s, Vector v)
+    public MdsMessage(String s, Vector<ConnectionListener> v)
     {
-        connection_listener = v;
+        connectionListeners = v;
         BuildMdsMessage((byte)0, Descriptor.DTYPE_CSTRING, (byte)1, null, s.getBytes());
     }
 
-    public MdsMessage(byte c, Vector v)
+    public MdsMessage(byte c, Vector<ConnectionListener> v)
     {
-        connection_listener = v;
+        connectionListeners = v;
         byte buf[] = new byte[1];
         buf[0] = c;
         BuildMdsMessage((byte)0, Descriptor.DTYPE_CSTRING, (byte)1, null, buf);
@@ -416,11 +416,11 @@ public class MdsMessage extends Object
 
     synchronized protected void dispatchConnectionEvent(ConnectionEvent e)
     {
-        if (connection_listener != null)
+        if (connectionListeners != null)
         {
-            for(int i = 0; i < connection_listener.size(); i++)
+            for(int i = 0; i < connectionListeners.size(); i++)
             {
-                ((ConnectionListener)connection_listener.elementAt(i)).processConnectionEvent(e);
+                ((ConnectionListener)connectionListeners.elementAt(i)).processConnectionEvent(e);
             }
         }
     }

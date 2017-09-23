@@ -427,11 +427,10 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
     public void setEnabledMode(boolean state)
     {
-        Enumeration e = pointer_mode.getElements();
+        Enumeration<AbstractButton> e = pointer_mode.getElements();
         while(e.hasMoreElements())
-            ((JRadioButton)e.nextElement()).setEnabled(state);
+            e.nextElement().setEnabled(state);
     }
-
 
     JCheckBox liveUpdate;
 

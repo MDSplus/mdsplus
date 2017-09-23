@@ -10,7 +10,7 @@ class UniversalDataProvider implements DataProvider
 {
     String error;
     MdsDataProvider defaultProvider;
-    Hashtable dataProviderH = new Hashtable();
+    Hashtable<String, MdsDataProvider> dataProviderH = new Hashtable<>();
     MdsDataProvider getProvider(String ip)
     {
         if(!ip.startsWith("//"))
@@ -65,9 +65,9 @@ class UniversalDataProvider implements DataProvider
 
     public void enableAsyncUpdate(boolean enable)
     {
-        Enumeration en = dataProviderH.elements();
+        Enumeration<MdsDataProvider> en = dataProviderH.elements();
         while(en.hasMoreElements())
-            ((MdsDataProvider)en.nextElement()).enableAsyncUpdate(enable);
+            en.nextElement().enableAsyncUpdate(enable);
     }
  
     String getExpr(String spec)

@@ -593,10 +593,9 @@ public class MdsDataClient extends MdsConnection
 	    }
     }
 
-    public Object evaluate(String expr, Vector args) throws MdsIOException
+    public Object evaluate(String expr, Vector<Descriptor> args) throws MdsIOException
     {
 	    Descriptor desc = MdsValue(expr, args);
-            //return desc;
 
 	    switch (desc.dtype)
 	    {
@@ -619,10 +618,6 @@ public class MdsDataClient extends MdsConnection
 	    }
 
     }
-
-
-
-
 
     public static void main(String arg[])
     {

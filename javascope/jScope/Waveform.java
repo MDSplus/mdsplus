@@ -2053,16 +2053,14 @@ public class Waveform
 
   protected void drawSignalContour(Signal s, Graphics g, Dimension d)
   {
-    Vector cs = s.getContourSignals();
-    Vector ls = s.getContourLevelValues();
-    int numLevel = cs.size();
-    Vector cOnLevel;
+    Vector<Vector> cs = s.getContourSignals();
+    Vector<Float> ls = s.getContourLevelValues();
     float level;
 
-    for (int l = 0; l < numLevel; l++)
+    for (int l = 0; l < cs.size(); l++)
     {
-      cOnLevel = (Vector) cs.elementAt(l);
-      level = ( (Float) ls.elementAt(l)).floatValue();
+      Vector<Vector> cOnLevel = cs.elementAt(l);
+      level = ls.elementAt(l).floatValue();
       float z[] = s.getZ();
       float zMin, zMax;
       zMin = zMax = z[0];
@@ -2078,19 +2076,17 @@ public class Waveform
     }
   }
 
-  public void drawContourLevel(Vector cOnLevel, Graphics g, Dimension d)
+  public void drawContourLevel(Vector<Vector> cOnLevel, Graphics g, Dimension d)
   {
-    Vector c;
-    Point2D.Float p;
     wm.ComputeFactors(d);
     for (int i = 0; i < cOnLevel.size(); i++)
     {
-      c = (Vector) cOnLevel.elementAt(i);
+      Vector<Point2D.Float> c = cOnLevel.elementAt(i);
       int cx[] = new int[c.size()];
       int cy[] = new int[c.size()];
       for (int j = 0; j < c.size(); j++)
       {
-        p = (Point2D.Float) c.elementAt(j);
+    	  Point2D.Float p = c.elementAt(j);
         cx[j] = wm.XPixel(p.x);
         cy[j] = wm.YPixel(p.y);
       }
@@ -2166,7 +2162,7 @@ public class Waveform
   {
     if (s.getMarker() != Signal.NONE)
     {
-      Vector segments = wm.ToPolygons(s, d, appendDrawMode);
+    	Vector<Polygon> segments = wm.ToPolygons(s, d, appendDrawMode);
       drawMarkers(g, segments, s.getMarker(), s.getMarkerStep(), s.getMode1D());
     }
   }
@@ -2295,11 +2291,9 @@ public class Waveform
       }
     }
 
-  }
+}
 
-
-protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
-                           int mode)
+protected void drawMarkers(Graphics g, Vector<Polygon> segments, int marker, int step, int mode)
 {
   Polygon currPolygon;
   int pntX[];
@@ -2307,7 +2301,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
 
   for (int k = 0; k < segments.size(); k++)
   {
-    currPolygon = (Polygon) segments.elementAt(k);
+    currPolygon = segments.elementAt(k);
     pntX = currPolygon.xpoints;
     pntY = currPolygon.ypoints;
     for (int i = 0; i < currPolygon.npoints; i += step)
