@@ -863,7 +863,7 @@ public class MultiWaveform
         int num_marker = Signal.markerList.length - 1;
         int i, j, x[], y[];
         Point curr_points[];
-        Vector segments = null;
+        Vector<Polygon> segments = null;
         float step;
         int num_steps, marker_step = 1;
 
@@ -981,31 +981,29 @@ public class MultiWaveform
         segments = null;
     }
 
-    protected void drawMarkers(Graphics g, Vector segments, Signal s)
+    protected void drawMarkers(Graphics g, Vector<Polygon> segments, Signal s)
     {
         drawMarkers(g, segments, s.getMarker(), s.getMarkerStep(), s.getMode1D());
     }
 
-    protected void drawMarkers(Graphics g, Vector segments, int mark_type,
-                               int step, int mode)
+    protected void drawMarkers(Graphics g, Vector<Polygon> segments, int mark_type, int step, int mode)
     {
         int num_points, num_segments = 0;
         int i;
         Point points[];
-        Polygon curr_polygon;
 
         if(segments != null)
             num_segments = segments.size();
 
         for (i = num_points = 0; i < num_segments; i++)
-            num_points += ( (Polygon) segments.elementAt(i)).npoints;
+            num_points += segments.elementAt(i).npoints;
 
         points = new Point[num_points];
         for (i = 0; i < num_points; i++)
             points[i] = new Point();
         for (i = num_points = 0; i < num_segments; i++)
         {
-            curr_polygon = (Polygon) segments.elementAt(i);
+            Polygon curr_polygon = segments.elementAt(i);
             for (int j = 0; j < curr_polygon.npoints; j += step)
             {
 //                if(mode == Signal.MODE_STEP && i%2 == 1)

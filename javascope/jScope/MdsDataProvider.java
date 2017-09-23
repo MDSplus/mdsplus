@@ -1340,7 +1340,7 @@ public class MdsDataProvider
         return GetByteArray(in, null);
     }
 
-    public  synchronized  byte[] GetByteArray(String in, Vector args) throws IOException
+    public  synchronized  byte[] GetByteArray(String in, Vector<Descriptor> args) throws IOException
     {
         byte out_byte[] = null;
         ByteArrayOutputStream dosb = new ByteArrayOutputStream();

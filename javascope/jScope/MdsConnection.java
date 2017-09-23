@@ -304,17 +304,17 @@ public class MdsConnection
         return out;
     }
 
-    public Descriptor MdsValue(String expr, Vector args)
+    public Descriptor MdsValue(String expr, Vector<Descriptor> args)
     {
         return MdsValue(expr, args, true);
     }
 
-    public Descriptor MdsValueStraight(String expr, Vector args)
+    public Descriptor MdsValueStraight(String expr, Vector<Descriptor> args)
     {
         return MdsValue(expr, args, false);
     }
 
-    public synchronized Descriptor MdsValue(String expr, Vector args, boolean wait)
+    public synchronized Descriptor MdsValue(String expr, Vector<Descriptor> args, boolean wait)
     {
         StringBuffer cmd = new StringBuffer(expr);
         int n_args = args.size();

@@ -3,6 +3,7 @@ package jScope;
 /* $Id$ */
 import jScope.ContourSignal;
 import java.awt.Color;
+import java.awt.geom.Point2D;
 import java.text.*;
 
 import java.util.*;
@@ -289,15 +290,15 @@ public class Signal implements WaveDataListener
     private long xMinLong, xMaxLong;
     ContourSignal cs;
     private double contourLevels[];
-    Vector<Vector> contourSignals = new Vector<Vector>();
-    Vector<Float> contourLevelValues = new Vector<Float>();
+    Vector<Vector> contourSignals = new Vector<>();
+    Vector<Float> contourLevelValues = new Vector<>();
 
     final int NOT_FREEZED = 0, FREEZED_BLOCK = 1, FREEZED_SCROLL = 2;
     int freezeMode = NOT_FREEZED;
     double freezedXMin, freezedXMax;
     
-    Vector<XYData> pendingUpdatesV = new Vector<XYData>();
-    Vector<SignalListener> signalListeners = new Vector<SignalListener>();
+    Vector<XYData> pendingUpdatesV = new Vector<>();
+    Vector<SignalListener> signalListeners = new Vector<>();
 /** Private caches of the signal (only for 1D Signals)
  * 
  */
@@ -1030,10 +1031,8 @@ public class Signal implements WaveDataListener
         return y2D; 
     }
 
-    
-    Vector<Vector>getContourSignals() { return contourSignals; }
+    Vector<Vector> getContourSignals() { return contourSignals; }
     Vector<Float> getContourLevelValues() { return contourLevelValues;}
-
 
     public boolean isFullLoad()
     {
@@ -1504,16 +1503,14 @@ public class Signal implements WaveDataListener
       }
     }
 
-    public Vector addContourLevel(double level)
+    public Vector<Vector<Point2D.Double>> addContourLevel(double level)
     {
-      Vector v;
-
       if (cs == null)
       {
         cs = new ContourSignal(this);
       }
 
-      v = cs.contour(level);
+      Vector<Vector<Point2D.Double>> v = cs.contour(level);
       if (v.size() != 0)
       {
         contourSignals.addElement(v);

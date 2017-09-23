@@ -98,11 +98,11 @@ class Frames extends Canvas
             bitClip = false;
             colorMap = new ColorMap();
             recentFrames = new Hashtable<>();
-            Enumeration fds = fc.recentFrames.keys();
+            Enumeration<Integer> fds = fc.recentFrames.keys();
             while(fds.hasMoreElements())
             {
-                Integer idx = (Integer)fds.nextElement();
-                FrameDescriptor fDescr = (FrameDescriptor)fc.recentFrames.get(idx);
+                Integer idx = fds.nextElement();
+                FrameDescriptor fDescr = fc.recentFrames.get(idx);
                 recentFrames.put(idx, fDescr);
             }
 

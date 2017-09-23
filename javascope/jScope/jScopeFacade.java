@@ -3634,10 +3634,10 @@ class ServerDialog
     private DataServerItem findServer(DataServerItem dsi)
     {
         DataServerItem found_dsi = null;
-        Enumeration e = list_model.elements();
+        Enumeration<DataServerItem> e = list_model.elements();
         while (e.hasMoreElements())
         {
-            found_dsi = (DataServerItem) e.nextElement();
+            found_dsi = e.nextElement();
             if (found_dsi.equals(dsi))
             {
                 return found_dsi;
@@ -3724,15 +3724,12 @@ class ServerDialog
 
     public DataServerItem[] getServerIpList()
     {
-
-        Enumeration e = list_model.elements();
+        Enumeration<DataServerItem> e = list_model.elements();
         DataServerItem out[] = new DataServerItem[list_model.size()];
         for (int i = 0; e.hasMoreElements(); i++)
-            out[i] = ( (DataServerItem) e.nextElement());
+            out[i] = e.nextElement();
         return out;
-
     }
-
 
     public void actionPerformed(ActionEvent event)
     {
