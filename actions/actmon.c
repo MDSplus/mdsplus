@@ -33,6 +33,7 @@ $ MCR ACTMON -monitor monitor-name
  External functions or symbols referenced:                                    */
 
 #include "actlogp.h"
+#include <ctype.h>
 #include <Xm/Xm.h>
 #include <Mrm/MrmPublic.h>
 #include <Xm/ToggleB.h>
@@ -81,8 +82,11 @@ static XmString doing_label;
 static XmString dispatched_label;
 static XmString error_label;
 static XtAppContext app_ctx;
+static char* expt  = NULL;
 
 #define TimeString(tm) ctime(&tm)
+#define offset(strc,field) (int)((void*)&(strc).field-(void*)&(strc))
+
 
 int main(int argc, char** argv)
 {
@@ -94,16 +98,21 @@ int main(int argc, char** argv)
   };
 
   MrmType class;
-  static XrmOptionDescRec options[] = { {"-monitor", "*monitor", XrmoptionSepArg, NULL} };
-  static XtResource resources[] = {
-    {"monitor", "Monitor", XtRString, sizeof(char*), 0, XtRString, "ACTION_MONITOR"},
-    {"images",  "Images",  XtRString, sizeof(char*), sizeof(char*), XtRString, ""}
+  static XrmOptionDescRec options[] = {
+     {"-monitor", "*monitor", XrmoptionSepArg, NULL},
+     {"-expt",    "*expt",    XrmoptionSepArg, NULL},
   };
-  MrmHierarchy drm_hierarchy;
   struct {
     char* monitor;
     char* images;
+    char* expt;
   } resource_list;
+  static XtResource resources[] = {
+    {"monitor", "Monitor", XtRString, sizeof(char*), offset(resource_list,monitor), XtRString, "ACTION_MONITOR"},
+    {"images",  "Images",  XtRString, sizeof(char*), offset(resource_list,images ), XtRString, ""},
+    {"expt",    "Expt",    XtRString, sizeof(char*), offset(resource_list,expt   ), XtRString, NULL},
+  };
+  MrmHierarchy drm_hierarchy;
   Widget top;
   Widget mainWidget;
   XInitThreads();
@@ -112,6 +121,15 @@ int main(int argc, char** argv)
   top = XtVaAppInitialize(&app_ctx, "ActMon", options, XtNumber(options), &argc, argv, NULL,
 			  XmNallowShellResize, 1, NULL);
   XtGetApplicationResources(top, &resource_list, resources, XtNumber(resources), (Arg *) NULL, 0);
+  fprintf(stderr,"MONITOR: '%s'\n",resource_list.monitor);
+  if (resource_list.expt) {
+    int len = strlen(resource_list.expt);
+    expt = malloc(sizeof(char)*(len+1));
+    expt[len] = 0;
+    while (len-->0)
+      expt[len] = toupper(resource_list.expt[len]);
+    fprintf(stderr,"EXPT:    '%s'\n",expt);
+  }
   MrmOpenHierarchy(XtNumber(hierarchy_name), hierarchy_name, 0, &drm_hierarchy);
   MrmFetchWidget(drm_hierarchy, "main", top, &mainWidget, &class);
   MrmCloseHierarchy(drm_hierarchy);
@@ -273,16 +291,19 @@ static void Disable(Widget w __attribute__ ((unused)), int *tag, XmToggleButtonC
   switch (*tag) {
   case 4:
     LogWidgetOff = cb->set;
+    //__attribute__((fallthrough));
   case 1:
     dw = XtParent(LogWidget);
     break;
   case 5:
     ErrorWidgetOff = cb->set;
+    //__attribute__((fallthrough));
   case 2:
     dw = XtParent(ErrorWidget);
     break;
   case 6:
     CurrentWidgetOff = cb->set;
+    //__attribute__((fallthrough));
   case 7:
     dw = XtParent(CurrentWidget);
     break;
@@ -400,6 +421,7 @@ static void PutError(char *time, char* mode, char *status, char *server, char *p
 }
 
 static void DoOpenTree(LinkedEvent * event){
+  if (expt && strcmp(event->tree,expt)) return;
   DoingListItem *doing;
   DoingListItem *next;
   XmListDeleteAllItems(ErrorWidget);
