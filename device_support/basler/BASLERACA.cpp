@@ -606,6 +606,24 @@ int BASLER_ACA::startAcquisition(int *width, int *height, int *payloadSize)
    node = nodeMap.GetNode("ChunkEnable");
    CBooleanPtr(node)->SetValue(true);
 
+
+   //new fede 20170918
+   if(IsAvailable(ChunkSelector->GetEntryByName("ExposureTime")))
+   {
+     ChunkSelector->FromString("ExposureTime");
+     cout << "New ChunkSelector_ExposureTime: " << ChunkSelector->ToString() << endl;
+   }
+   node = nodeMap.GetNode("ChunkEnable");
+   CBooleanPtr(node)->SetValue(true);
+
+   if(IsAvailable(ChunkSelector->GetEntryByName("GainAll")))
+   {
+     ChunkSelector->FromString("GainAll");
+     cout << "New ChunkSelector_GainAll: " << ChunkSelector->ToString() << endl;
+   }
+   node = nodeMap.GetNode("ChunkEnable");
+   CBooleanPtr(node)->SetValue(true);
+
    //  CInstantCamera camera( device );
    //  static const uint32_t c_countOfImagesToGrab = 100;
 
@@ -699,10 +717,30 @@ int BASLER_ACA::getFrame(int *status, void *frame, void *metaData)
              // printf("%I64d\n", ts);
            }
 
+           //new fede 20170918
+           int gain=0;
+           if(ptrGrabResult->IsChunkDataAvailable())
+           {
+             INodeMap& nodeMap = ptrGrabResult->GetChunkDataNodeMap();
+             gain = CIntegerPtr(nodeMap.GetNode("ChunkGainAll"))->GetValue();
+             //printf("fede gainall chunk:%d\n", gain);
+           }
+           double exp=0;
+           if(ptrGrabResult->IsChunkDataAvailable())
+           {
+             INodeMap& nodeMap = ptrGrabResult->GetChunkDataNodeMap();
+             exp = CFloatPtr(nodeMap.GetNode("ChunkExposureTime"))->GetValue();
+             //printf("fede exp chunk:%f\n", exp);
+           }
+
+
+
         //printf("metadata size: %d\n", sizeof(BASLERMETADATA));
         BASLERMETADATA bMeta;
-        bMeta.gain=this->gain;
-        bMeta.exposure=this->exposure;
+        //bMeta.gain=this->gain;
+        //bMeta.exposure=this->exposure;
+        bMeta.gain=gain;
+        bMeta.exposure=exp;
         bMeta.internalTemperature=this->internalTemperature;
         bMeta.timestamp=ts;
         memcpy( metaData , (unsigned char *)&bMeta, sizeof(BASLERMETADATA));
