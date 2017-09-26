@@ -109,7 +109,7 @@ int compare_str(const void *key1, const void *key2)
 //-------------------------------------------------------------------------
 static int strncmp_nocase(const char *s, const char *t, int n)
 {
-  int i;
+  int i=0;
 
   if (MSGLVL(11))
     printf("string sizes: *s(%d)  *t(%d)  n(%d)\n", (int)strlen(s),(int)strlen(t), n);
