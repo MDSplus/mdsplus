@@ -115,6 +115,7 @@ int map_data_file(int dbType)
       *FileIsMapped = FALSE;
       goto MapData_Exit;
     }
+    break;
 
   default:
     return 0;
