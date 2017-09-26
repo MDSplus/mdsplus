@@ -1,3 +1,4 @@
+#!/bin/env python
 # 
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
@@ -22,9 +23,6 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-
-#!/bin/env python
-
 import subprocess,os,sys,pexpect,xml.etree.ElementTree as ET,fnmatch,tempfile
 
 def externalPackage(info, root, package):
