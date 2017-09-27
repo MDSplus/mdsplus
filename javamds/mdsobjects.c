@@ -3169,7 +3169,6 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Connection_get
     status = SendArg(sockId, i + 1, dtype, nArgs + 1, length, nDims, dims, ptr);
     FreeDescrip(dscs[i]);
     if STATUS_NOT_OK {
-printf("FALLITA SendArg\n");
       free((char *)dscs);
       exc = (*env)->FindClass(env, "MDSplus/MdsException");
       (*env)->ThrowNew(env, exc, MdsGetMsg(status));
