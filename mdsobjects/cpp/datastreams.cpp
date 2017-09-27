@@ -319,7 +319,8 @@ MDSplus::Data *getNewSamplesSerialized()
 	if(!dataAvailable) 
 	{
 		struct timespec waitTime = {0,0};
-		waitTime.tv_sec = time(NULL)+5;
+		int waitSeconds = 5;  //Exit from wait every 5 seconds. This gives a chance to processes created by xinetd to exit
+		waitTime.tv_sec = time(NULL)+waitSeconds;
 		//pthread_cond_wait(&availCond, &mutex);
 		pthread_cond_timedwait(&availCond, &mutex, &waitTime);
 	}
