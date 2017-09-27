@@ -50,7 +50,7 @@ _ConnectToMds=__MdsIpShr.ConnectToMds
 _DisconnectFromMds=__MdsIpShr.DisconnectFromMds
 _GetAnswerInfoTS=__MdsIpShr.GetAnswerInfoTS
 _GetAnswerInfoTS.argtypes=[_C.c_int32,_C.POINTER(_C.c_ubyte),_C.POINTER(_C.c_ushort),_C.POINTER(_C.c_ubyte),
-                            _C.c_void_p,_C.POINTER(_C.c_ulong),_C.POINTER(_C.c_void_p),_C.POINTER(_C.c_void_p)]
+                            _C.c_void_p,_C.POINTER(_C.c_ulong),_C.POINTER(_C.c_void_p),_C.POINTER(_C.c_void_p), _C.c_int32]
 _MdsIpFree=__MdsIpShr.MdsIpFree
 _MdsIpFree.argtypes=[_C.c_void_p]
 _SendArg=__MdsIpShr.SendArg
@@ -103,7 +103,7 @@ class Connection(object):
         ans=_C.c_void_p(0)
         mem=_C.c_void_p(0)
         try:
-            _exc.checkStatus(_GetAnswerInfoTS(self.socket,dtype,length,ndims,dims.ctypes.data,numbytes,_C.byref(ans),_C.byref(mem)))
+            _exc.checkStatus(_GetAnswerInfoTS(self.socket,dtype,length,ndims,dims.ctypes.data,numbytes,_C.byref(ans),_C.byref(mem)),0)
             dtype=dtype.value
             if   dtype == 10: dtype = 52
             elif dtype == 11: dtype = 53

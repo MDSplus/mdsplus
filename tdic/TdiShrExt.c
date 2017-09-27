@@ -386,7 +386,7 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
   va_end(incrmtr);
 /* Get the reply ================================================== */
   if (status & 1) {
-    status = GetAnswerInfoTS(sock, &dtype, &len, &ndims, dims, &numbytes, &dptr, &mem);
+    status = GetAnswerInfoTS(sock, &dtype, &len, &ndims, dims, &numbytes, &dptr, &mem, 0);
 #ifdef DEBUG
     printf("Reply status[%d],dtype[%d],len[%d],ndims[%d],numbytes[%d],ans[%d]\n", status, dtype,
 	   len, ndims, numbytes, *(int *)dptr);
