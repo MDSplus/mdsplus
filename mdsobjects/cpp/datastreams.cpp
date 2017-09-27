@@ -302,6 +302,7 @@ EXPORT void unregisterListener(int listenerId)
 ///The passed id may refer to any data item sharing the same context (condition variable)
 MDSplus::Data *getNewSamplesSerialized()
 {
+
 	//First loop: check whether any data is available
 	pthread_mutex_lock(&mutex);
 	bool dataAvailable = false;
@@ -316,8 +317,12 @@ MDSplus::Data *getNewSamplesSerialized()
 	}
 //If no new data available in any data item sharing the same  context, wait the associated condition variable.
 	if(!dataAvailable) 
-		pthread_cond_wait(&availCond, &mutex);
-
+	{
+		struct timespec waitTime = {0,0};
+		waitTime.tv_sec = time(NULL)+5;
+		//pthread_cond_wait(&availCond, &mutex);
+		pthread_cond_timedwait(&availCond, &mutex, &waitTime);
+	}
 	//Second loop: read available data. For sure at leas one item will contain new data
 	MDSplus::Apd *retApd = new MDSplus::Apd();
 	for(std::size_t idx = 0; idx < streamInfoV.size(); idx++)
@@ -360,7 +365,7 @@ void *monitorStreamInfo(void *par UNUSED_ARGUMENT)
 	struct timespec waitTime;
 	waitTime.tv_sec = 0;
 	waitTime.tv_nsec = 100000000; //100 ms
-	std::cout << "PARTE MONITOR\n";
+//	std::cout << "PARTE MONITOR\n";
 	while(true)
 	{
 		pthread_mutex_lock(&mutex);
