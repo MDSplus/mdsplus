@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*------------------------------------------------------------------------------
 
 		Name:   ACTMON
@@ -33,6 +57,7 @@ $ MCR ACTMON -monitor monitor-name
  External functions or symbols referenced:                                    */
 
 #include "actlogp.h"
+#include <ctype.h>
 #include <Xm/Xm.h>
 #include <Mrm/MrmPublic.h>
 #include <Xm/ToggleB.h>
@@ -81,8 +106,11 @@ static XmString doing_label;
 static XmString dispatched_label;
 static XmString error_label;
 static XtAppContext app_ctx;
+static char* expt  = NULL;
 
 #define TimeString(tm) ctime(&tm)
+#define offset(strc,field) (int)((void*)&(strc).field-(void*)&(strc))
+
 
 int main(int argc, char** argv)
 {
@@ -94,16 +122,21 @@ int main(int argc, char** argv)
   };
 
   MrmType class;
-  static XrmOptionDescRec options[] = { {"-monitor", "*monitor", XrmoptionSepArg, NULL} };
-  static XtResource resources[] = {
-    {"monitor", "Monitor", XtRString, sizeof(char*), 0, XtRString, "ACTION_MONITOR"},
-    {"images",  "Images",  XtRString, sizeof(char*), sizeof(char*), XtRString, ""}
+  static XrmOptionDescRec options[] = {
+     {"-monitor", "*monitor", XrmoptionSepArg, NULL},
+     {"-expt",    "*expt",    XrmoptionSepArg, NULL},
   };
-  MrmHierarchy drm_hierarchy;
   struct {
     char* monitor;
     char* images;
+    char* expt;
   } resource_list;
+  static XtResource resources[] = {
+    {"monitor", "Monitor", XtRString, sizeof(char*), offset(resource_list,monitor), XtRString, "ACTION_MONITOR"},
+    {"images",  "Images",  XtRString, sizeof(char*), offset(resource_list,images ), XtRString, ""},
+    {"expt",    "Expt",    XtRString, sizeof(char*), offset(resource_list,expt   ), XtRString, NULL},
+  };
+  MrmHierarchy drm_hierarchy;
   Widget top;
   Widget mainWidget;
   XInitThreads();
@@ -112,6 +145,15 @@ int main(int argc, char** argv)
   top = XtVaAppInitialize(&app_ctx, "ActMon", options, XtNumber(options), &argc, argv, NULL,
 			  XmNallowShellResize, 1, NULL);
   XtGetApplicationResources(top, &resource_list, resources, XtNumber(resources), (Arg *) NULL, 0);
+  fprintf(stderr,"MONITOR: '%s'\n",resource_list.monitor);
+  if (resource_list.expt) {
+    int len = strlen(resource_list.expt);
+    expt = malloc(sizeof(char)*(len+1));
+    expt[len] = 0;
+    while (len-->0)
+      expt[len] = toupper(resource_list.expt[len]);
+    fprintf(stderr,"EXPT:    '%s'\n",expt);
+  }
   MrmOpenHierarchy(XtNumber(hierarchy_name), hierarchy_name, 0, &drm_hierarchy);
   MrmFetchWidget(drm_hierarchy, "main", top, &mainWidget, &class);
   MrmCloseHierarchy(drm_hierarchy);
@@ -273,16 +315,19 @@ static void Disable(Widget w __attribute__ ((unused)), int *tag, XmToggleButtonC
   switch (*tag) {
   case 4:
     LogWidgetOff = cb->set;
+    //__attribute__((fallthrough));
   case 1:
     dw = XtParent(LogWidget);
     break;
   case 5:
     ErrorWidgetOff = cb->set;
+    //__attribute__((fallthrough));
   case 2:
     dw = XtParent(ErrorWidget);
     break;
   case 6:
     CurrentWidgetOff = cb->set;
+    //__attribute__((fallthrough));
   case 7:
     dw = XtParent(CurrentWidget);
     break;
@@ -400,6 +445,7 @@ static void PutError(char *time, char* mode, char *status, char *server, char *p
 }
 
 static void DoOpenTree(LinkedEvent * event){
+  if (expt && strcmp(event->tree,expt)) return;
   DoingListItem *doing;
   DoingListItem *next;
   XmListDeleteAllItems(ErrorWidget);

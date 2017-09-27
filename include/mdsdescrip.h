@@ -723,9 +723,9 @@ struct descriptor_opaque {
  */
 
 #define MAXDIM 8
-typedef ARRAY_COEFF(char, MAXDIM) array_coeff;
-typedef ARRAY_BOUNDS(char, MAXDIM) array_bounds;
-typedef ARRAY_BOUNDS(struct descriptor *, MAXDIM) array_bounds_desc;
+typedef ARRAY_COEFF(char, MAXDIM * 10) array_coeff;
+typedef ARRAY_BOUNDS(char, MAXDIM * 10) array_bounds;
+typedef ARRAY_BOUNDS(struct descriptor *, MAXDIM * 10) array_bounds_desc;
 typedef ARRAY(char) array;
 typedef ARRAY(int) array_int;
 typedef ARRAY(struct descriptor *) array_desc;

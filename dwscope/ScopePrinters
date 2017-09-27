@@ -16,7 +16,7 @@ else
   then
 	cat $MDSPLUS_DIR/local/scope_printers
   else
-    $awkcmd -F\| '{\
+    $awkcmd  -F\| '{\
       if (match($0,/^#/) != 0 || match($0,/^[:blank:]*$/) != 0) \
         next; \
       while (match($0,/\\[:blank:]*$/) != 0) \
@@ -35,6 +35,6 @@ else
       }\
       else\
         print $1;\
-    }' /etc/printcap | $awkcmd -F: '{print $1;}' -
+    }' /etc/printcap 2>/dev/null | $awkcmd -F: '{print $1;}' - 
   fi
 fi

@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 #include "MDSplus_Data.h"
 #include "MDSplus_Tree.h"
 #include "MDSplus_TreeNode.h"
@@ -62,10 +86,13 @@ static jintArray getDimensions(JNIEnv * env, void *dsc)
   jintArray jdims;
   int dim = (arrD->length > 0) ? arrD->arsize / arrD->length : 0;
   jdims = (*env)->NewIntArray(env, arrD->dimct);
-  if (arrD->dimct == 1)
-    (*env)->SetIntArrayRegion(env, jdims, 0, 1, (const jint *)&dim);
-  else
-    (*env)->SetIntArrayRegion(env, jdims, 0, arrD->dimct, (const jint *)arrD->m);
+  if(jdims)
+  {
+    if (arrD->dimct == 1)
+      (*env)->SetIntArrayRegion(env, jdims, 0, 1, (const jint *)&dim);
+    else
+      (*env)->SetIntArrayRegion(env, jdims, 0, arrD->dimct, (const jint *)arrD->m);
+  }
   return jdims;
 }
 
@@ -182,7 +209,8 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	  (*env)->GetStaticMethodID(env, cls, "getData",
 				    "([JLMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
       jlongs = (*env)->NewLongArray(env, 2);
-      (*env)->SetLongArrayRegion(env, jlongs, 0, 2, (jlong *) desc->pointer);
+      if(jlongs)
+	(*env)->SetLongArrayRegion(env, jlongs, 0, 2, (jlong *) desc->pointer);
       args[0].l = jlongs;
       return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
     case DTYPE_O:
@@ -191,7 +219,8 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	  (*env)->GetStaticMethodID(env, cls, "getData",
 				    "([JLMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
       jlongs = (*env)->NewLongArray(env, 2);
-      (*env)->SetLongArrayRegion(env, jlongs, 0, 2, (jlong *) desc->pointer);
+      if(jlongs)
+	(*env)->SetLongArrayRegion(env, jlongs, 0, 2, (jlong *) desc->pointer);
       args[0].l = jlongs;
       return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
     case DTYPE_FS:
@@ -292,7 +321,8 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	  (*env)->GetStaticMethodID(env, cls, "getData",
 				    "([B[ILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
       jbytes = (*env)->NewByteArray(env, length);
-      (*env)->SetByteArrayRegion(env, jbytes, 0, length, (jbyte *) array_d->pointer);
+      if(jbytes)
+	(*env)->SetByteArrayRegion(env, jbytes, 0, length, (jbyte *) array_d->pointer);
       args[0].l = jbytes;
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
@@ -303,7 +333,8 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	  (*env)->GetStaticMethodID(env, cls, "getData",
 				    "([B[ILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
       jbytes = (*env)->NewByteArray(env, length);
-      (*env)->SetByteArrayRegion(env, jbytes, 0, length, (jbyte *) array_d->pointer);
+      if(jbytes)
+	(*env)->SetByteArrayRegion(env, jbytes, 0, length, (jbyte *) array_d->pointer);
       args[0].l = jbytes;
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
@@ -314,7 +345,8 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	  (*env)->GetStaticMethodID(env, cls, "getData",
 				    "([S[ILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
       jshorts = (*env)->NewShortArray(env, length);
-      (*env)->SetShortArrayRegion(env, jshorts, 0, length, (jshort *) array_d->pointer);
+      if(jshorts)
+	(*env)->SetShortArrayRegion(env, jshorts, 0, length, (jshort *) array_d->pointer);
       args[0].l = jshorts;
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
@@ -325,7 +357,8 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	  (*env)->GetStaticMethodID(env, cls, "getData",
 				    "([S[ILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
       jshorts = (*env)->NewShortArray(env, length);
-      (*env)->SetShortArrayRegion(env, jshorts, 0, length, (jshort *) array_d->pointer);
+      if(jshorts)
+	(*env)->SetShortArrayRegion(env, jshorts, 0, length, (jshort *) array_d->pointer);
       args[0].l = jshorts;
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
@@ -336,7 +369,8 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	  (*env)->GetStaticMethodID(env, cls, "getData",
 				    "([I[ILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
       jints = (*env)->NewIntArray(env, length);
-      (*env)->SetIntArrayRegion(env, jints, 0, length, (jint *) array_d->pointer);
+      if(jints)
+	(*env)->SetIntArrayRegion(env, jints, 0, length, (jint *) array_d->pointer);
       args[0].l = jints;
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
@@ -347,7 +381,8 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	  (*env)->GetStaticMethodID(env, cls, "getData",
 				    "([I[ILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
       jints = (*env)->NewIntArray(env, length);
-      (*env)->SetIntArrayRegion(env, jints, 0, length, (jint *) array_d->pointer);
+      if(jints)
+	(*env)->SetIntArrayRegion(env, jints, 0, length, (jint *) array_d->pointer);
       args[0].l = jints;
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
@@ -358,7 +393,8 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	  (*env)->GetStaticMethodID(env, cls, "getData",
 				    "([J[ILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
       jlongs = (*env)->NewLongArray(env, length);
-      (*env)->SetLongArrayRegion(env, jlongs, 0, length, (jlong *) array_d->pointer);
+      if(jlongs)
+	(*env)->SetLongArrayRegion(env, jlongs, 0, length, (jlong *) array_d->pointer);
       args[0].l = jlongs;
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
@@ -369,7 +405,8 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	  (*env)->GetStaticMethodID(env, cls, "getData",
 				    "([J[ILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
       jlongs = (*env)->NewLongArray(env, length);
-      (*env)->SetLongArrayRegion(env, jlongs, 0, length, (jlong *) array_d->pointer);
+      if(jlongs)
+	(*env)->SetLongArrayRegion(env, jlongs, 0, length, (jlong *) array_d->pointer);
       args[0].l = jlongs;
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
@@ -380,7 +417,8 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	  (*env)->GetStaticMethodID(env, cls, "getData",
 				    "([J[ILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
       jlongs = (*env)->NewLongArray(env, 2 * length);
-      (*env)->SetLongArrayRegion(env, jlongs, 0, 2 * length, (jlong *) array_d->pointer);
+      if(jlongs)
+	(*env)->SetLongArrayRegion(env, jlongs, 0, 2 * length, (jlong *) array_d->pointer);
       args[0].l = jlongs;
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
@@ -391,7 +429,8 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	  (*env)->GetStaticMethodID(env, cls, "getData",
 				    "([J[ILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
       jlongs = (*env)->NewLongArray(env, 2 * length);
-      (*env)->SetLongArrayRegion(env, jlongs, 0, 2 * length, (jlong *) array_d->pointer);
+      if(jlongs)
+	(*env)->SetLongArrayRegion(env, jlongs, 0, 2 * length, (jlong *) array_d->pointer);
       args[0].l = jlongs;
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
@@ -411,7 +450,8 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	  (*env)->GetStaticMethodID(env, cls, "getData",
 				    "([F[ILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
       jfloats = (*env)->NewFloatArray(env, length);
-      (*env)->SetFloatArrayRegion(env, jfloats, 0, length, (jfloat *) float_buf);
+      if(jfloats)
+	(*env)->SetFloatArrayRegion(env, jfloats, 0, length, (jfloat *) float_buf);
       free((char *)float_buf);
       args[0].l = jfloats;
       if (is_ca)
@@ -431,7 +471,8 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	  (*env)->GetStaticMethodID(env, cls, "getData",
 				    "([D[ILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
       jdoubles = (*env)->NewDoubleArray(env, length);
-      (*env)->SetDoubleArrayRegion(env, jdoubles, 0, length, (jdouble *) double_buf);
+      if(jdoubles)
+	(*env)->SetDoubleArrayRegion(env, jdoubles, 0, length, (jdouble *) double_buf);
       free((char *)double_buf);
       args[0].l = jdoubles;
       if (is_ca)
@@ -445,13 +486,16 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 				    "([Ljava/lang/String;[ILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
       data_cls = (*env)->FindClass(env, "java/lang/String");
       jobjects = (*env)->NewObjectArray(env, length, data_cls, 0);
-      buf = malloc(array_d->length + 1);
-      buf[array_d->length] = 0;
-      for (i = 0; i < length; i++) {
-	memcpy(buf, &array_d->pointer[i * array_d->length], array_d->length);
-	(*env)->SetObjectArrayElement(env, jobjects, i, (jobject) (*env)->NewStringUTF(env, buf));
+      if(jobjects)
+      {
+	buf = malloc(array_d->length + 1);
+	buf[array_d->length] = 0;
+	for (i = 0; i < length; i++) {
+	  memcpy(buf, &array_d->pointer[i * array_d->length], array_d->length);
+	  (*env)->SetObjectArrayElement(env, jobjects, i, (jobject) (*env)->NewStringUTF(env, buf));
+	}
+	free(buf);
       }
-      free(buf);
       args[0].l = jobjects;
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
@@ -575,9 +619,12 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
       obj = (*env)->CallStaticObjectMethodA(env, cls, constr, args);
       data_cls = (*env)->FindClass(env, "MDSplus/Data");
       jobjects = (*env)->NewObjectArray(env, record_d->ndesc, data_cls, 0);
-      for (i = count = 0; count < record_d->ndesc; i++, count++) {
-	(*env)->SetObjectArrayElement(env, jobjects, i,
-				      DescripToObject(env, record_d->dscptrs[i], 0, 0, 0, 0));
+      if(jobjects)
+      {
+	for (i = count = 0; count < record_d->ndesc; i++, count++) {
+	  (*env)->SetObjectArrayElement(env, jobjects, i,
+					DescripToObject(env, record_d->dscptrs[i], 0, 0, 0, 0));
+	}
       }
       data_fid = (*env)->GetFieldID(env, cls, "descs", "[LMDSplus/Data;");
       (*env)->SetObjectField(env, obj, data_fid, jobjects);
@@ -642,10 +689,13 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	(*env)->GetStaticMethodID(env, cls, "getData",
 				  "([LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
     jobjects = (*env)->NewObjectArray(env, length, data_cls, 0);
-    for (i = 0; i < length; i++) {
-      if ((curr_obj =
-	   DescripToObject(env, ((struct descriptor **)array_d->pointer)[i], 0, 0, 0, 0)))
-	(*env)->SetObjectArrayElement(env, jobjects, i, curr_obj);
+    if(jobjects)
+    {
+      for (i = 0; i < length; i++) {
+	if ((curr_obj =
+	    DescripToObject(env, ((struct descriptor **)array_d->pointer)[i], 0, 0, 0, 0)))
+	  (*env)->SetObjectArrayElement(env, jobjects, i, curr_obj);
+      }
     }
     args[0].l = jobjects;
     return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
@@ -1128,7 +1178,8 @@ JNIEXPORT jbyteArray JNICALL Java_MDSplus_Data_serialize(JNIEnv * env, jobject o
     exit(0);
   }
   jserialized = (*env)->NewByteArray(env, arrPtr->arsize);
-  (*env)->SetByteArrayRegion(env, jserialized, 0, arrPtr->arsize, (const jbyte *)arrPtr->pointer);
+  if(jserialized)
+    (*env)->SetByteArrayRegion(env, jserialized, 0, arrPtr->arsize, (const jbyte *)arrPtr->pointer);
   MdsFree1Dx(&xd, 0);
   FreeDescrip(dscPtr);
   return jserialized;
@@ -1649,7 +1700,8 @@ JNIEXPORT jintArray JNICALL Java_MDSplus_Tree_getWild
 
   (*env)->ReleaseStringUTFChars(env, jpath, path);
   jnids = (*env)->NewIntArray(env, numNids);
-  (*env)->SetIntArrayRegion(env, jnids, 0, numNids, (const jint *)nids);
+  if(jnids)
+    (*env)->SetIntArrayRegion(env, jnids, 0, numNids, (const jint *)nids);
   free((char *)nids);
   return jnids;
 }
@@ -1858,8 +1910,11 @@ JNIEXPORT jobjectArray JNICALL Java_MDSplus_Tree_findTreeTags
   stringCls = (*env)->FindClass(env, "java/lang/String");
 
   jtags = (*env)->NewObjectArray(env, nTags, stringCls, 0);
-  for (i = 0; i < nTags; i++) {
-    (*env)->SetObjectArrayElement(env, jtags, i, (jobject) (*env)->NewStringUTF(env, tagNames[i]));
+  if(jtags)
+  {
+    for (i = 0; i < nTags; i++) {
+      (*env)->SetObjectArrayElement(env, jtags, i, (jobject) (*env)->NewStringUTF(env, tagNames[i]));
+    }
   }
 
   return jtags;
@@ -2118,7 +2173,8 @@ JNIEXPORT jintArray JNICALL Java_MDSplus_TreeNode_getNciNids
   if STATUS_NOT_OK
     throwMdsException(env, status);
   jnids = (*env)->NewIntArray(env, nNids);
-  (*env)->SetIntArrayRegion(env, jnids, 0, nNids, (const jint *)nids);
+  if(jnids)
+    (*env)->SetIntArrayRegion(env, jnids, 0, nNids, (const jint *)nids);
   free((char *)nids);
   return jnids;
 
@@ -2255,9 +2311,12 @@ JNIEXPORT jobjectArray JNICALL Java_MDSplus_TreeNode_getTags
 
   stringCls = (*env)->FindClass(env, "java/lang/String");
   jtags = (*env)->NewObjectArray(env, nTags, stringCls, 0);
-  for (i = 0; i < nTags; i++) {
-    (*env)->SetObjectArrayElement(env, jtags, i, (jobject) (*env)->NewStringUTF(env, tagNames[i]));
-    TreeFree(tagNames[i]);
+  if(jtags)
+  {
+    for (i = 0; i < nTags; i++) {
+      (*env)->SetObjectArrayElement(env, jtags, i, (jobject) (*env)->NewStringUTF(env, tagNames[i]));
+      TreeFree(tagNames[i]);
+    }
   }
   return jtags;
 }
@@ -2691,7 +2750,7 @@ JNIEXPORT jint JNICALL Java_MDSplus_TreeNode_addDevice
     (JNIEnv * env, jclass cls __attribute__ ((unused)), jint nid, jint ctx1, jint ctx2, jstring jname, jstring jtype) {
   const char *name;
   const char *type;
-  int status, newNid, defNid = -1;
+  int status, newNid=-1, defNid = -1;
   void *ctx = getCtx(ctx1, ctx2);
 
   name = (*env)->GetStringUTFChars(env, jname, 0);
@@ -2785,7 +2844,8 @@ static void handleEvent(void *objPtr, int dim, char *buf)
   if (!mid)
     printf("Error getting method intRun for MDSplus.Event\n");
   jbuf = (*env)->NewByteArray(env, dim);
-  (*env)->SetByteArrayRegion(env, jbuf, 0, dim, (const jbyte *)buf);
+  if(jbuf)
+    (*env)->SetByteArrayRegion(env, jbuf, 0, dim, (const jbyte *)buf);
   args[0].l = jbuf;
   LibConvertDateString("now", &time);
   args[1].j = time;

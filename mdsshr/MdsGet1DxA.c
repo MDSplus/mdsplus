@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*  CMS REPLACEMENT HISTORY, Element MdsGet1DxA.C */
 /*  *13    5-AUG-1996 14:38:14 TWF "Fix copy_dx for unpacked descriptors" */
 /*  *12    2-AUG-1996 12:28:46 TWF "fix alignment" */
@@ -68,7 +92,7 @@ EXPORT int MdsGet1DxA(struct descriptor_a const *in_ptr, unsigned short const *l
     new_arsize = 0;
   else
     new_arsize = (in_dsc->arsize / in_dsc->length) * (*length_ptr);
-  dsc_size = (unsigned int)(sizeof(struct descriptor_a) + (in_dsc->aflags.coeff ? sizeof(char *) +
+  dsc_size = (unsigned int)(sizeof(struct descriptor_a) + ((in_dsc->aflags.coeff || (new_arsize == 0))? sizeof(char *) +
 					    sizeof(int) * in_dsc->dimct : 0) +
       (in_dsc->aflags.bounds ? sizeof(int) * (size_t)(in_dsc->dimct * 2)
        : 0));
@@ -83,7 +107,7 @@ EXPORT int MdsGet1DxA(struct descriptor_a const *in_ptr, unsigned short const *l
     out_dsc->dtype = *dtype_ptr;
     out_dsc->pointer = (char *)out_dsc + align(dsc_size, align_size);
     out_dsc->arsize = new_arsize;
-    if (out_dsc->aflags.coeff) {
+    if (out_dsc->aflags.coeff || (new_arsize == 0)) {
       if (out_dsc->class == CLASS_CA) {
 	int64_t offset =
 	    ((int64_t) out_dsc->length) * ((in_dsc->a0 - (char *)0) /
@@ -91,11 +115,15 @@ EXPORT int MdsGet1DxA(struct descriptor_a const *in_ptr, unsigned short const *l
 	out_dsc->a0 = out_dsc->pointer + offset;
       } else {
 	int64_t offset = ((int64_t) out_dsc->length) *
-	    ((in_dsc->a0 - in_dsc->pointer) / ((int64_t) in_dsc->length));
+	  ((in_dsc->a0 - in_dsc->pointer) / ((int64_t) (in_dsc->length > 0 ? in_dsc ->length : 1)));
 	out_dsc->a0 = out_dsc->pointer + offset;
       }
       for (i = 0; i < out_dsc->dimct; i++)
 	out_dsc->m[i] = in_dsc->m[i];
+      if (new_arsize == 0 && out_dsc->dimct == 0) {
+	out_dsc->dimct = 1;
+	out_dsc->m[0]=in_dsc->arsize;
+      }
       if (in_dsc->aflags.bounds) {
 	struct bound {
 	  int l;

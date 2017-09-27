@@ -1,3 +1,28 @@
+# 
+# Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright notice, this
+# list of conditions and the following disclaimer in the documentation and/or
+# other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
@@ -435,21 +460,37 @@ class Opaque(Compound):
     dtype_id=217
 
 
+    @property
+    def data(self):
+        "Data portion of Opaque object"
+        return self.getDescAt(0)
+    @data.setter
+    def data(self,value):
+        self.setDescAt(0,value)
+
+    @property
+    def image(self):
+        "Return image from contents of data portion"
+        return self.getImage()
+
     def getImage(self):
         try: from PIL import Image
         except:       import Image
         from StringIO import StringIO
-        return Image.open(StringIO(_dat.Data(self.getData()).data().data))
+        return Image.open(StringIO(self.data.data().tostring()))
 
     @classmethod
-    def fromFile(cls,filename,typestring):
+    def fromFile(cls,filename,typestring=None):
         """Read a file and return an Opaque object
         @param filename: Name of file to read in
         @type filename: str
-        @param typestring: String to denote the type of file being stored
+        @param typestring: String to denote the type of file being stored. Defaults to file type.
         @type typestring: str
         @rtype: Opaque instance
         """
+        import os
+        if typestring is None:
+            fn, typestring = os.path.splitext(filename)
         f = open(filename,'rb')
         try:
             opq=cls(_dat.Data(_N.fromstring(f.read(),dtype="uint8")),typestring)
@@ -469,7 +510,7 @@ class WithError(Compound):
     """Specifies error information for any kind of data.
     """
     fields=('data','error')
-    dtype_id=211
+    dtype_id=213
 _dsc.addDtypeToClass(WithError)
 
 class Parameter(Compound):

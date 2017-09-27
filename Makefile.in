@@ -180,7 +180,7 @@ install: $(install_DIRS)
 		--exclude='*egg-info' \
 		--exclude='*\.in' \
 		--exclude='Makefile\.*' \
-		-cf  - $(MISC_PARTS) | (cd $(exec_prefix); tar -xvf -)
+		-cf  - $(MISC_PARTS) | (cd $(exec_prefix); tar -xf -)
 	find . -name '_version\.py' -not -path "./$(realpath --relative-to=$(pwd) $(exec_prefix))/*" -exec cp {} $(exec_prefix)/{} \;
 	tar -C ${top_builddir} -cf - include/config.h | (cd $(exec_prefix); tar -xf -) ## TODO: remove this and config.h from headers ...
 	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > $(exec_prefix)/mdsobjects/python/mdsplus_version.py; fi

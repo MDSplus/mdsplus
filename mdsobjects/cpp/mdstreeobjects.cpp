@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 #include <mdsobjects.h>
 #include <mdsplus/mdsplus.h>
 #include <mdsplus/AutoPointer.hpp>
@@ -72,6 +96,8 @@ extern "C" {
 	int getTreeSegmentInfo(void *dbid, int nid, int segIdx, char *dtype, char *dimct, int *dims, int *nextRow);
 	// From TreeFindTagWild.c
 	char * _TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout);
+	char *MdsGetMsg(int status);
+	void *TreeDbid();
 
 }
 
@@ -111,7 +137,7 @@ static int convertUsage(std::string const & usage)
 
 static Mutex treeMutex;
 
-Tree::Tree(char const *name, int shot): name(name), shot(shot), ctx(nullptr)
+Tree::Tree(char const *name, int shot): name(name), shot(shot), ctx(nullptr), fromActiveTree(false)
 {
 	int status = _TreeOpen(&ctx, name, shot, 0);
 	if(!(status & 1))
@@ -119,8 +145,12 @@ Tree::Tree(char const *name, int shot): name(name), shot(shot), ctx(nullptr)
 	//setActiveTree(this);
 }
 
+Tree::Tree(char const *name, int shot, void *ctx): name(name), shot(shot), ctx(ctx), fromActiveTree(true)
+{
+}
 
-Tree::Tree(char const *name, int shot, char const *mode): name(name), shot(shot), ctx(nullptr)
+
+Tree::Tree(char const *name, int shot, char const *mode): name(name), shot(shot), ctx(nullptr), fromActiveTree(false)
 {
 	std::string upMode(mode);
 	std::transform(upMode.begin(), upMode.end(), upMode.begin(), static_cast<int(*)(int)>(&std::toupper));
@@ -143,6 +173,7 @@ Tree::Tree(char const *name, int shot, char const *mode): name(name), shot(shot)
 
 Tree::~Tree()
 {
+    if(fromActiveTree) return;
     if( isModified() ) {
         int status = _TreeQuitTree(&ctx, name.c_str(), shot);
         (void)status;
@@ -150,7 +181,7 @@ Tree::~Tree()
 //            throw MdsException(status);
     } else {
         int status = _TreeClose(&ctx, name.c_str(), shot);
-        (void)status;
+       (void)status;
 //        if(!(status & 1))
 //            throw MdsException(status);
     }
@@ -1225,7 +1256,10 @@ TreeNode *TreeNode::getNode(char const * relPath)
 	if(status & 1) status = _TreeFindNode(tree->getCtx(), relPath, &newNid);
 	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), defNid);
 	if(!(status & 1))
+	{
+		status = _TreeSetDefaultNid(tree->getCtx(), defNid);
 		throw MdsException(status);
+	}
 	return new TreeNode(newNid, tree);
 }
 
@@ -1639,15 +1673,16 @@ Tree *MDSplus::getActiveTree()
 	char name[1024];
 	int shot;
 	int retNameLen, retShotLen;
-
 	DBI_ITM dbiItems[] = {
 		{1024, DbiNAME, name, &retNameLen},
 		{sizeof(int), DbiSHOTID, &shot, &retShotLen},
 		{0, DbiEND_OF_LIST, 0, 0}};
 	int status = TreeGetDbi(dbiItems);
 	if(!(status & 1))
+	{
 		throw MdsException(status);
-	return new Tree(name, shot);
+	}
+	return new Tree(name, shot, TreeDbid());
 }
 
 ostream &operator<<(ostream &stream, TreeNode *treeNode)

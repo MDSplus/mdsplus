@@ -1,3 +1,28 @@
+# 
+# Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright notice, this
+# list of conditions and the following disclaimer in the documentation and/or
+# other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
@@ -61,7 +86,7 @@ def TdiCompile(expression,*args,**kwargs):
 def TdiExecute(expression,*args,**kwargs):
     """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
     return _TdiShrFun(_TdiShr.TdiExecute,"Error executing",expression,*args,**kwargs)
-
+tdi=TdiExecute
 def TdiDecompile(expression,**kwargs):
     """Decompile a TDI expression. Format: TdiDecompile(tdi_expression)"""
     return _ver.tostr(_TdiShrFun(_TdiShr.TdiDecompile,"Error decompiling",expression,**kwargs))
@@ -83,6 +108,7 @@ class Data(object):
     _error=None
     _help=None
     _validation=None
+    __descriptor=None
     ctx=None
     @property  # used by numpy.array
     def __array_interface__(self):
@@ -384,7 +410,7 @@ class Data(object):
     def __int__(self):
         """Integer: x.__int__() <==> int(x)
         @rtype: int"""
-        return int(self.getInt().value)
+        return int(self.getLong()._value)
     __index__ = __int__
 
     def __len__(self):
@@ -401,7 +427,7 @@ class Data(object):
     def __float__(self):
         """Float: x.__float__() <==> float(x)
         @rtype: float"""
-        return float(self.getInt().value)
+        return float(self.getDouble()._value)
 
     def __round__(self,*arg):
         """Round value to next integer: x.__round__() <==> round(x)
@@ -494,7 +520,8 @@ class Data(object):
         @rtype: numpy or native type
         """
         try:
-            return _cmp.DATA(self).evaluate().value
+            data = _cmp.DATA(self).evaluate()
+            return data.value if isinstance(data,Data) else data
         except _exc.TreeNODATA:
             if len(altvalue):
                 return altvalue[0]

@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
 #include <config.h>
 #include <dlfcn.h>
@@ -31,7 +55,6 @@ static pthread_mutex_t libpython_mutex = PTHREAD_MUTEX_INITIALIZER;
 typedef void* PyThreadState;
 static PyThreadState *(*PyGILState_Ensure)() = NULL;
 static void (*PyGILState_Release)(PyThreadState *) = NULL;
-extern int MdsGetStdMsg();
 
 typedef void* PyObject;
 typedef ssize_t Py_ssize_t;
@@ -360,7 +383,7 @@ int TdiExtPython(struct descriptor *modname_d,
               if STATUS_NOT_OK {
                 char *fac_out=NULL, *msgnam_out=NULL, *text_out=NULL;
                 const char *f = "WSEIF???";
-                MdsGetStdMsg(status,&fac_out,&msgnam_out,&text_out);
+                MdsGetStdMsg(status,(const char **)&fac_out,(const char **)&msgnam_out,(const char **)&text_out);
                 printf("%%%s-%c-%s: %s\n",fac_out,f[status&7],msgnam_out,text_out);
                }
             } else {

@@ -323,7 +323,7 @@ public class jScopeMultiWave
 
         if (signals.size() > i && signals.elementAt(i) != null)
         {
-            s += signals.elementAt(i).getName();
+//            s += signals.elementAt(i).getName();
             Signal sign = signals.elementAt(i);
             if (sign != null && sign.getType() == Signal.TYPE_2D)
             {
@@ -397,7 +397,7 @@ public class jScopeMultiWave
         super.removeNotify();
     }
 
-    protected void DrawImage(Graphics g, Object img, Dimension dim, int type)
+    protected void DrawImage(Graphics g, Image img, Dimension dim, int type)
     {
         if ( type != FrameData.JAI_IMAGE )
         {

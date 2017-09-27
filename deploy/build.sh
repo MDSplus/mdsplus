@@ -104,6 +104,13 @@ OPTIONS
        the results in a standard tap format which only gives pass or fail
        information.
 
+    --test_timeunit=float-point-number
+       Multiplier to apply to tests timeouts. If this option is used the
+       timeout time for a test will be set to this value times the normal
+       timeout for the test. For example, --test_timeunit=2.5 would
+       allow the tests to run 2.5 as long as the normally do before being
+       stopped with a timeout error. 
+
    --eventport=number
        Select a port number to use for udp event tests. If running
        multiple docker containers concurrently doing tests you should
@@ -274,6 +281,9 @@ parsecmd() {
 		;;
 	    --test_format=*)
 		TEST_FORMAT="${i#*=}"
+		;;
+	    --test_timeunit=*)
+		TEST_TIMEUNIT="${i#*=}"
 		;;
 	    --eventport=*)
 		EVENT_PORT="${i#*=}"
@@ -616,6 +626,7 @@ fi
 OS=${OS} \
   TEST=${TEST} \
   TEST_FORMAT=${TEST_FORMAT} \
+  TEST_TIMEUNIT=${TEST_TIMEUNIT} \
   EVENT_PORT=${EVENT_PORT} \
   MAKE_JARS=${MAKE_JARS} \
   RELEASE=${RELEASE} \

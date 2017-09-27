@@ -1,3 +1,28 @@
+# 
+# Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright notice, this
+# list of conditions and the following disclaimer in the documentation and/or
+# other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
 __version__=(2016,10,26,16,00)
 from MDSplus import mdsExceptions, Device, Tree, Dimension
 from MDSplus import Int16Array, Uint16Array, Uint64Array, Float32Array
@@ -11,7 +36,9 @@ if version_info[0]<3:
     from Queue import Queue
 else:
     from queue import Queue
-
+def error(msg):
+    from sys import stderr
+    stderr.write('ERROR: %s\n'%msg)
 
 class CYGNET4K(Device):
     """Cygnet 4K sCMOS Camera"""
@@ -88,14 +115,14 @@ class CYGNET4K(Device):
                 super(CYGNET4K._xclib,self).__init__(name)
                 self.pxd_mesgErrorCode.restype = c_char_p
             except OSError:
-                print('xclib: '+ str(exc_info()[1]))
+                error('xclib: '+ str(exc_info()[1]))
 
         def __del__(self):
             if self.isOpen:
                 self.pxd_PIXCIclose()
 
         def printErrorMsg(self,status):
-            print(self.pxd_mesgErrorCode(status))
+            error(self.pxd_mesgErrorCode(status))
             self.pxd_mesgFault(0xFF)
 
         def closeDevice(self):
@@ -143,8 +170,8 @@ class CYGNET4K(Device):
 
         def startVideoCapture(self,node):
             if self.goneLive:
-                print('Cannot go live again. Re-init first!')
-                raise mdsExceptions.DevException
+                error('Cannot go live again. Re-init first!')
+                raise mdsExceptions.DevERROR_DOING_INIT
             if CYGNET4K.xclib.STREAM:
                 self.queue = Queue()
                 self.stream = self._streamer(node)
@@ -154,7 +181,7 @@ class CYGNET4K(Device):
             status = self.pxd_goLivePair(1, c_long(1), c_long(2))
             if status<0:
                 self.printErrorMsg(status)
-                raise mdsExceptions.DevException
+                raise mdsExceptions.DevERROR_DOING_INIT
             self.lastCaptured = self.pxd_buffersFieldCount(1,self.pxd_capturedBuffer(1))
             self.currTime = 0
             self.Frames = 0
@@ -164,8 +191,8 @@ class CYGNET4K(Device):
             if self.goneLive:
                 if Device.debug: print("Video capture started.")
             else:
-                print('Timeout!')
-                raise mdsExceptions.DevException
+                error('Timeout!')
+                raise mdsExceptions.DevERROR_DOING_INIT
 
         def _goneLive(self):
             return not self.pxd_goneLive(1,0)==0
@@ -184,9 +211,9 @@ class CYGNET4K(Device):
                 usFrame = (c_ushort*self.PixelsToRead)()  # allocate frame
                 PixelsRead = self.pxd_readushort(1, c_long(currBuffer), 0, 0, self.PixelsX, self.PixelsY, byref(usFrame), self.PixelsToRead, c_char_p("Grey"))  # get frame
                 if PixelsRead != self.PixelsToRead:
-                    print('ERROR READ USHORT')
+                    error('ERROR READ USHORT')
                     if PixelsRead < 0: self.printErrorMsg(PixelsRead)
-                    else: print("pxd_readushort error: %d != %d" % (PixelsRead, self.PixelsToRead))
+                    else: error("pxd_readushort error: %d != %d" % (PixelsRead, self.PixelsToRead))
                     return False
                 if Device.debug: print("FRAME %d READ AT TIME %f" % (self.Frames,currTime))
                 if isinstance(self.queue,Queue):
@@ -225,18 +252,18 @@ class CYGNET4K(Device):
             if not self.isInitSerial:
                 status = self.pxd_serialConfigure(1, 0, c_double(115200.), 8, 0, 1, 0, 0, 0)
                 if status<0:
-                    print("ERROR CONFIGURING SERIAL CAMERALINK PORT")
+                    error("ERROR CONFIGURING SERIAL CAMERALINK PORT")
                     self.printErrorMsg(status)
-                    raise mdsExceptions.DevDEVICE_CONNECTION_FAILED
+                    raise mdsExceptions.DevCOMM_ERROR
                 self.isInitSerial = True
                 sleep(0.02)
             if Device.debug>3: print('serial write: '+' '.join(['%02x' % ord(c) for c  in writeBuf]),BytesToRead)
             while self.pxd_serialRead(1, 0, create_string_buffer(1), 1): pass
             BytesRead = self.pxd_serialWrite(1, 0, c_char_p(writeBuf), BytesToWrite+1)
             if BytesRead < 0:
-                print("ERROR IN SERIAL WRITE");
+                error("ERROR IN SERIAL WRITE");
                 self.printErrorMsg(BytesRead)
-                raise mdsExceptions.DevException  # error
+                raise mdsExceptions.DevCOMM_ERROR
             if BytesToRead is None: return  # no response e.g. for resetMicro
             EOC = int(self.serialUseAck)+int(self.serialUseChk)  # ETX and optional check sum
             expected = BytesToRead+EOC
@@ -245,9 +272,9 @@ class CYGNET4K(Device):
             while timeout>time() and expected>0:
                 BytesRead = self.pxd_serialRead(1, 0, cReadBuf, expected)
                 if BytesRead < 0:
-                    print("ERROR IN SERIAL READ\n");
+                    error("ERROR IN SERIAL READ\n");
                     self.printErrorMsg(BytesRead)
-                    raise mdsExceptions.DevDEVICE_CONNECTION_FAILED
+                    raise mdsExceptions.DevCOMM_ERROR
                 out+= cReadBuf.raw[0:BytesRead]
                 expected-= BytesRead
             if Device.debug: print("SERIAL READ: %d of %d" % (len(out)-EOC, BytesToRead))
@@ -545,14 +572,14 @@ class CYGNET4K(Device):
 
         dev_id = int(self.device_id.data())
         if dev_id<=0:
-            print('Wrong value for DEVICE_ID, must be a positive integer.')
+            error('Wrong value for DEVICE_ID, must be a positive integer.')
             raise mdsExceptions.DevINV_SETUP
         CYGNET4K.loadLibrary()
         CYGNET4K.xclib.closeDevice()  # as config file might have changed we re-open
         CYGNET4K.xclib.openDevice(dev_id,self.conf_file.data(""))  # use config file if defined else ""
         if not CYGNET4K.isOpen:
-            print('Could not open camera. No camera connected?.')
-            raise mdsExceptions.DevDEVICE_CONNECTION_FAILED
+            error('Could not open camera. No camera connected?.')
+            raise mdsExceptions.DevCOMM_ERROR
         exposure = self.exposure.data()
         frameRate = self.frame_rate.data()
         trigMode = self.frame_mode.data()
@@ -577,17 +604,17 @@ class CYGNET4K(Device):
             validate(self.frame_rate,CYGNET4K.xclib.frameRate)
         except mdsExceptions.TreeNOOVERWRITE:
             if not (self.binning.data() == binning) and all(self.roi_rect.data() == roiRect):
-                print('Re-initialization error: Parameter mismatch!')
+                error('Re-initialization error: Parameter mismatch!')
                 raise mdsExceptions.DevINV_SETUP
 
     def start(self,stream=None):
         dev_id = int(self.device_id.data())
         if dev_id < 0:
-            print('Wrong value of DEVICE_ID, must be greater than 0.')
+            error('Wrong value of DEVICE_ID, must be greater than 0.')
             raise mdsExceptions.DevINV_SETUP
         if not CYGNET4K.isInitialized.get(dev_id,False):
-            print("Device not initialized: Run 'init' first.")
-            raise mdsExceptions.DevException
+            error("Device not initialized: Run 'init' first.")
+            raise mdsExceptions.DevINV_SETUP
         if stream is not None:
             CYGNET4K.xclib.STREAM = bool(int(stream))
         self.frames.deleteData()  # check if we can write
@@ -597,38 +624,42 @@ class CYGNET4K(Device):
         for i in range(10):
             if self.worker.running: return
             else:                   sleep(.3)
-        raise mdsExceptions.DevException
+        raise mdsExceptions.MDSplusERROR
 
     def stop(self):
         if not self.restoreWorker():
-            raise mdsExceptions.DevException
+            error('stop - cannot restore worker')
+            raise mdsExceptions.MDSplusERROR
         self.worker.stop()
         for i in range(10):
             if self.worker.running: sleep(.3)
             else:                   return
-        raise mdsExceptions.DevException
+        error('stop - worker stopping time out!')
+        raise mdsExceptions.MDSplusERROR
 
     def store(self,timeout=None):
         if not self.restoreWorker():
-            raise mdsExceptions.DevException
+            error('store - cannot restore worker')
+            raise mdsExceptions.MDSplusERROR
         if (timeout is None):
             self.worker.join() # wait w/o timeout
         else:
             self.worker.join(float(timeout))  # wait for it to complete
             if self.worker.isAlive():  # error on timeout
-                raise mdsExceptions.DevException
+                error('store - worker join time out!')
+                raise mdsExceptions.MDSplusERROR
 
     def trend_start(self,ns=0):
         dev_id = int(self.device_id.data())
         if dev_id < 0:
-            print('Wrong value for DEVICE_ID, must be greater than 0')
+            error('Wrong value for DEVICE_ID, must be greater than 0')
             raise mdsExceptions.DevINV_SETUP
         CYGNET4K.loadLibrary()
         if not CYGNET4K.isOpen:
             CYGNET4K.xclib.openDevice(dev_id)
             if not CYGNET4K.isOpen:
-                print('Could not open camera. No camera connected?.')
-                raise mdsExceptions.DevDEVICE_CONNECTION_FAILED
+                error('Could not open camera. No camera connected?.')
+                raise mdsExceptions.DevCOMM_ERROR
             CYGNET4K.xclib.setID(dev_id)
         try:  # test open Nodes
             trendTree = str(self.trend_tree.data())
@@ -642,7 +673,7 @@ class CYGNET4K(Device):
             except:
                 trendCmos = None
         except:
-            print('Check TREND_TREE and TREND_SHOT.')
+            error('Check TREND_TREE and TREND_SHOT.')
             raise mdsExceptions.TreeNODATA
         try:    ns = bool(int(ns))
         except: ns = False
@@ -652,15 +683,15 @@ class CYGNET4K(Device):
         for i in range(10):
             if self.trendWorker.running: return
             else:                        sleep(.3)
-        raise mdsExceptions.DevException
+        raise mdsExceptions.MDSplusERROR
 
     def trend_stop(self):
         if not self.restoreTrendWorker():
-            raise mdsExceptions.DevException
+            raise mdsExceptions.MDSplusERROR
         self.trendWorker.stop()
         self.trendWorker.join(3)  # wait for it to complete
         if self.trendWorker.isAlive():  # error on timeout
-            raise mdsExceptions.DevException
+            raise mdsExceptions.MDSplusERROR
 
     """worker related methods and classes"""
 
@@ -676,7 +707,7 @@ class CYGNET4K(Device):
         if self.nid in CYGNET4K.workers.keys():
             self.worker = CYGNET4K.workers[self.nid]
             return True
-        print('Cannot restore worker!!\nMaybe no worker has been started.')
+        error('Cannot restore worker!!\nMaybe no worker has been started.')
         return False
 
     def saveTrendWorker(self):
@@ -691,7 +722,7 @@ class CYGNET4K(Device):
         if self.nid in CYGNET4K.trendworkers.keys():
             self.trendworker = CYGNET4K.trendworkers[self.nid]
             return True
-        print('Cannot restore worker!!\nMaybe no worker has been started.')
+        error('Cannot restore worker!!\nMaybe no worker has been started.')
         return False
 
 
@@ -755,24 +786,24 @@ class CYGNET4K(Device):
                 try:
                     tree.getNode(self.pcb)
                 except Exception as exc:
-                    print(exc)
+                    error(exc)
                     self.pcb = None
                 try:
                     tree.getNode(self.cmos)
                 except Exception as exc:
-                    print(exc)
+                    error(exc)
                     self.cmos = None
             except Exception as exc:
-                print(exc)
-                print('Cannot access trend tree. Check TREND:TREE and TREND_SHOT.')
+                error(exc)
+                error('Cannot access trend tree. Check TREND:TREE and TREND_SHOT.')
                 raise mdsExceptions.TreeTNF
             if self.pcb is None and self.cmos is None:
-                print('Cannot access any node for trend. Check TREND:PCB, TREND:CMOS on. Nodes must exist on %s.' % repr(tree))
+                error('Cannot access any node for trend. Check TREND:PCB, TREND:CMOS on. Nodes must exist on %s.' % repr(tree))
                 raise mdsExceptions.TreeNNF
             if self.pcb is None:
-                print('Cannot access node for pcb trend. Check TREND:PCB. Continue with cmos trend.')
+                error('Cannot access node for pcb trend. Check TREND:PCB. Continue with cmos trend.')
             elif self.cmos is None:
-                print('Cannot access node for cmos trend. Check TREND:CMOS. Continue with pcb trend.')
+                error('Cannot access node for cmos trend. Check TREND:CMOS. Continue with pcb trend.')
             print('started trend writing to %s - %s and %s every %fs' % (self.tree,self.pcb,self.cmos,self.period))
             self.running = True
             while (not self.stopReq):
@@ -795,8 +826,8 @@ class CYGNET4K(Device):
                             tree.getNode(self.cmos).makeSegment(currTime,currTime,Dimension(None,Uint64Array(currTime)),Uint16Array(cmosTemp),-1)
                         if Device.debug: print(tree.tree,tree.shot,currTime,pcbTemp,cmosTemp)
                     except Exception:
-                        print(exc_info()[1])
-                        print('failure during temperature readout')
+                        error(exc_info()[1])
+                        error('failure during temperature readout')
                     sleep(0.01)
             self.running = False
             print('done')

@@ -126,9 +126,9 @@ class ASCIIDataProvider implements DataProvider
                     y = resizeBuffer(y, count );                  
                 }
             }
+            bufR.close();
             if( x == null || y == null )
                 throw(new Exception("No data in file or file syntax error"));
-            bufR.close();
         }
         
         private boolean setPropValues(String in, Properties prop)

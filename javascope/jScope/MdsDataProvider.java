@@ -5,9 +5,11 @@ import jScope.ConnectionListener;
 import java.io.*;
 import java.net.*;
 import java.awt.*;
+import java.awt.image.*;
 import java.util.*;
 import java.lang.OutOfMemoryError;
 import java.lang.InterruptedException;
+import javax.imageio.*;
 import javax.swing.*;
 import java.text.*;
 import java.util.logging.Level;
@@ -103,27 +105,39 @@ public class MdsDataProvider
             actSegments = endSegment - startSegment;
 //Get Frame Dimension and frames per segment
             int dims[] = GetIntArray("shape(GetSegment("+inY+", 0))");
-            if(dims.length != 3)
+            if(dims.length != 3 && dims.length != 1)  //The former refers to usual raster image, the latter to AWT images (jpg, gif...)
                 throw new IOException("Invalid number of segment dimensions: "+ dims.length);
-            dim = new Dimension(dims[0], dims[1]);
-            framesPerSegment = dims[2];
-//Get Frame element length in bytes
-            int len[] = GetIntArray("len(GetSegment("+inY+", 0))");
-            bytesPerPixel = len[0];
-            switch (len[0])
+            if(dims.length == 3)
             {
-                case 1:
-                    mode = BITMAP_IMAGE_8;
-                    break;
-                case 2:
-                    mode = BITMAP_IMAGE_16;
-                    break;
-                case 4:
-                    mode = BITMAP_IMAGE_32;
-                    break;
-                default:
-                    throw new IOException("Unexpected length for frame data: "+ len[0]);
-             }
+                dim = new Dimension(dims[0], dims[1]);
+                framesPerSegment = dims[2];
+//Get Frame element length in bytes
+                int len[] = GetIntArray("len(GetSegment("+inY+", 0))");
+                bytesPerPixel = len[0];
+                switch (len[0])
+                {
+                    case 1:
+                        mode = BITMAP_IMAGE_8;
+                        break;
+                    case 2:
+                        mode = BITMAP_IMAGE_16;
+                        break;
+                    case 4:
+                        mode = BITMAP_IMAGE_32;
+                        break;
+                    default:
+                        throw new IOException("Unexpected length for frame data: "+ len[0]);
+                }
+            }
+            else // The degment contains a 1D char buffer, i.e. the binary format of the image (jpg,gif, ...O)
+            {
+                framesPerSegment = 1;
+                mode = AWT_IMAGE;
+                bytesPerPixel = 1;
+                byte[] firstSegment = GetByteArray("GetSegment("+ inY+",0)");
+                BufferedImage img = ImageIO.read(new ByteArrayInputStream(firstSegment));
+                dim = new Dimension(img.getWidth(), img.getHeight());
+            }
 //Get Frame times
              if(framesPerSegment == 1) //We assume in this case that start time is the same of the frame time
              {
@@ -1410,9 +1424,12 @@ public class MdsDataProvider
           this.experiment = ((experiment != null) && (experiment.trim().length() > 0) ? experiment : null);
           this.shot = shot;
           this.open = false;
+          resetPrevious();
         }
     }
 
+    public void resetPrevious()  //Will be used by subclass MdsSreaminDataProvider to close previous  connections
+    {}
     public synchronized String GetString(String in) throws IOException
     {
         if (in == null)
