@@ -20,7 +20,7 @@ awk -v EMAILMSG="$2" -F: '{ IGNORECASE=1
                  break
                case "Fix":
 	       case "Revert \"Fix":
-                 if ( VERSION == "SAME" ) {
+                 if ( VERSION == "" ) {
                    VERSION="PATCH"
                  }
                  OK="1"
@@ -46,9 +46,10 @@ awk -v EMAILMSG="$2" -F: '{ IGNORECASE=1
                }
             }
             END {
-              if ( VERSION == "" ) VERSION="SAME";
-              if ( FAIL == "TRUE" && VERSION == "SAME" ) {
+              if ( FAIL == "TRUE" && VERSION == "" ) {
                 print("BADCOMMIT")
+              } else if ( VERSION == "" ) {
+                print("SAME")
               } else {
                 print(VERSION)
               }
