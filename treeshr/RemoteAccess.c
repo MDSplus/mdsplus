@@ -1070,14 +1070,14 @@ STATIC_ROUTINE int SendArg(int socket, unsigned char idx, char dtype, unsigned c
 STATIC_THREADSAFE int (*MDS_GET_ANSWER_INFO_TS) () = 0;
 
 STATIC_ROUTINE int GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims,
-				   int *numbytes, void **dptr, void **m)
+				   int *numbytes, void **dptr, void **m, int timeout)
 {
   if (MDS_GET_ANSWER_INFO_TS == 0) {
     int status = FindImageSymbol("GetAnswerInfoTS", (void **)&MDS_GET_ANSWER_INFO_TS);
     if (!(status & 1))
       return status;
   }
-  return (*MDS_GET_ANSWER_INFO_TS) (sock, dtype, length, ndims, dims, numbytes, dptr, m);
+  return (*MDS_GET_ANSWER_INFO_TS) (sock, dtype, length, ndims, dims, numbytes, dptr, m, timeout);
 }
 
 #define MDS_IO_OPEN_K   1
@@ -1135,7 +1135,7 @@ STATIC_ROUTINE int io_open_remote(char *host, char *filename, int options, mode_
 	void *msg = 0;
 	int sts;
 	if (((sts =
-	      GetAnswerInfoTS(*sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg)) & 1)
+	      GetAnswerInfoTS(*sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg, 0)) & 1)
 	    && (length == sizeof(fd))) {
 	  *enhanced = sts == 3;
 	  memcpy(&fd, dptr, sizeof(fd));
@@ -1215,7 +1215,7 @@ STATIC_ROUTINE int io_close_remote(int fd)
     int numbytes;
     void *dptr;
     void *msg = 0;
-    if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)
+    if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg, 0) & 1)
 	&& (length == sizeof(ret)))
       memcpy(&ret, dptr, sizeof(ret));
     if (msg)
@@ -1269,7 +1269,7 @@ STATIC_ROUTINE off_t io_lseek_remote(int fd, off_t offset, int whence)
     int numbytes;
     void *dptr;
     void *msg = 0;
-    if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)
+    if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg, 0) & 1)
 	&& ((size_t)length >= sizeof(int))) {
       ret = 0;
       memcpy(&ret, dptr, ((size_t)length > sizeof(ret)) ? sizeof(ret) : (size_t)length);
@@ -1321,7 +1321,7 @@ STATIC_ROUTINE ssize_t io_write_remote(int fd, void *buff, size_t count)
     int nbytes;
     void *dptr;
     void *msg = 0;
-    if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &nbytes, &dptr, &msg) & 1)
+    if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &nbytes, &dptr, &msg, 0) & 1)
 	&& (nbytes == sizeof(int)))
       ret = (ssize_t) * (int *)dptr;
     if (msg)
@@ -1372,7 +1372,7 @@ STATIC_ROUTINE ssize_t io_read_remote(int fd, void *buff, size_t count)
     int dims[7];
     void *dptr;
     void *msg = 0;
-    if (GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &ret_i, &dptr, &msg) & 1) {
+    if (GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &ret_i, &dptr, &msg, 0) & 1) {
       ret = (ssize_t) ret_i;
       if (ret)
 	memcpy(buff, dptr, (size_t) ret);
@@ -1411,7 +1411,7 @@ STATIC_ROUTINE ssize_t io_read_x_remote(int fd, off_t offset, void *buff, size_t
     int ret_i;
     void *msg = 0;
     int sts;
-    if ((sts = GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &ret_i, &dptr, &msg)) & 1) {
+    if ((sts = GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &ret_i, &dptr, &msg, 0)) & 1) {
       if (deleted)
 	*deleted = sts == 3;
       ret = (ssize_t) ret_i;
@@ -1509,7 +1509,7 @@ STATIC_ROUTINE int io_lock_remote(int fd, off_t offset, size_t size, int mode, i
     void *dptr;
     void *msg = 0;
     int sts;
-    if ((sts = GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &nbytes, &dptr, &msg)) & 1) {
+    if ((sts = GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &nbytes, &dptr, &msg, 0)) & 1) {
       if (deleted)
 	*deleted = sts == 3;
       memcpy(&ret, dptr, sizeof(ret));
@@ -1600,7 +1600,7 @@ STATIC_ROUTINE int io_exists_remote(char *host, char *filename)
       int numbytes;
       void *dptr;
       void *msg = 0;
-      if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)
+      if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg, 0) & 1)
 	  && (length == sizeof(ans)))
 	memcpy(&ans, dptr, sizeof(ans));
       if (msg)
@@ -1648,7 +1648,7 @@ STATIC_ROUTINE int io_remove_remote(char *host, char *filename)
       int numbytes;
       void *dptr;
       void *msg = 0;
-      if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)
+      if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg, 0) & 1)
 	  && (length == sizeof(ans)))
 	memcpy(&ans, dptr, sizeof(ans));
       if (msg)
@@ -1698,7 +1698,7 @@ STATIC_ROUTINE int io_rename_remote(char *host, char *filename_old, char *filena
       int numbytes;
       void *dptr;
       void *msg = 0;
-      if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)
+      if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg, 0) & 1)
 	  && (length == sizeof(ans)))
 	memcpy(&ans, dptr, sizeof(ans));
       if (msg)

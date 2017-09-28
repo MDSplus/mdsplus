@@ -476,7 +476,7 @@ PHP_FUNCTION(mdsplus_value)
       void *dptr;
       void *mem = 0;
       status =
-	  GetAnswerInfoTS(socket, &ans.dtype, &len, &ans.ndims, &ans.dims, &numbytes, &dptr, &mem);
+		  GetAnswerInfoTS(socket, &ans.dtype, &len, &ans.ndims, &ans.dims, &numbytes, &dptr, &mem, 0);
       ans.length = len;
       if (numbytes) {
 	if (ans.dtype == DTYPE_CSTRING) {
@@ -663,7 +663,7 @@ PHP_FUNCTION(mdsplus_put)
       void *dptr;
       void *mem = 0;
       status =
-	  GetAnswerInfoTS(socket, &ans.dtype, &len, &ans.ndims, &ans.dims, &numbytes, &dptr, &mem);
+		  GetAnswerInfoTS(socket, &ans.dtype, &len, &ans.ndims, &ans.dims, &numbytes, &dptr, &mem, 0);
       ans.length = len;
       if (numbytes) {
 	if (ans.dtype == DTYPE_CSTRING) {

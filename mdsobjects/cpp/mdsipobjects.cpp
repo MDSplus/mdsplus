@@ -50,7 +50,7 @@ extern "C"  void *putManyObj(char *serializedIn);
 extern "C" void *compileFromExprWithArgs(char *expr, int nArgs, void *args, void *tree);
 extern "C" int  SendArg(int sock, unsigned char idx, char dtype, unsigned char nargs, short length, char ndims,
 int *dims, char *bytes);
-extern "C" int GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr, void **m);
+extern "C" int GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr, void **m, int timeout);
 extern "C" int MdsOpen(int sock, char *tree, int shot);
 extern "C" int MdsSetDefault(int sock, char *node);
 extern "C" int MdsClose(int sock);
@@ -339,7 +339,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 		}
 	}
     //	unlockGlobal();	
-    status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
+    status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem, 0);
 	unlockLocal();
 	if(!(status & 1))
 		throw MdsException(status);
@@ -470,7 +470,7 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 
 	int retDims[MAX_DIMS];
 	int numBytes;
-    status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
+    status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem, 0);
 	unlockLocal();
     if ((status & 1) && dtype == DTYPE_LONG_IP && nDims == 0 && numBytes == sizeof(int))
     	status = *(reinterpret_cast<int *>(ptr));

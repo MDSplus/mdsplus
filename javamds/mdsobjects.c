@@ -62,7 +62,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 extern int GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims,
-			   int *numbytes, void * *dptr, void **m);
+			   int *numbytes, void * *dptr, void **m, int timeout);
 
 static void printDecompiled(struct descriptor *dsc)
 {
@@ -3177,7 +3177,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Connection_get
   }
 
   free((char *)dscs);
-  status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, dims, &numBytes, &ptr, &mem);
+  status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, dims, &numBytes, &ptr, &mem, 0);
   if STATUS_NOT_OK {
     exc = (*env)->FindClass(env, "MDSplus/MdsException");
     (*env)->ThrowNew(env, exc, MdsGetMsg(status));
@@ -3351,7 +3351,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Connection_put
     }
   }
   free((char *)dscs);
-  status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, dims, &numBytes, &ptr, &mem);
+  status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, dims, &numBytes, &ptr, &mem, 0);
   if STATUS_NOT_OK {
     exc = (*env)->FindClass(env, "MDSplus/MdsException");
     (*env)->ThrowNew(env, exc, MdsGetMsg(status));

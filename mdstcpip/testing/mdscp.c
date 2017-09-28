@@ -123,7 +123,7 @@ static int doOpen(int streams, char *name, int options, int mode, struct mdsfile
       int sts;
       if (((sts =
 	    GetAnswerInfoTS(mfile->socket, &dtype, &length, &ndims, dims, &numbytes, &dptr,
-			    &msg)) & 1) && (length == sizeof(mfile->fd))) {
+			    &msg, 0)) & 1) && (length == sizeof(mfile->fd))) {
 	memcpy(&mfile->fd, dptr, sizeof(mfile->fd));
 	status = 0;
       } else {
