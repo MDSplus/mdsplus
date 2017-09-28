@@ -258,7 +258,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
       CleanupJob(status, jobid);
       return status;
   }
-  status = GetAnswerInfoTS(conid, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem, 0);
+  status = GetAnswerInfoTS(conid, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem);
   if (op==SrvStop) {
     if STATUS_NOT_OK {
       status = MDSplusSUCCESS;

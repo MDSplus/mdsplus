@@ -1,3 +1,4 @@
+#include <poll.h>
 #ifdef _WIN32
  #define close closesocket
 #endif
@@ -264,7 +265,7 @@ static ssize_t io_send(int conid, const void *bptr, size_t num, int nowait){
 //  RECEIVE  ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static ssize_t io_recv(int conid, void *bptr, size_t num){
+static ssize_t io_recv_to(int conid, void *bptr, size_t num, int to_msec){
   SOCKET sock = getSocket(conid);
   ssize_t recved = -1;
   if (sock != INVALID_SOCKET) {
@@ -274,8 +275,21 @@ static ssize_t io_recv(int conid, void *bptr, size_t num){
     SOCKLEN_T len = sizeof(sin);
     if (GETPEERNAME(sock, (struct sockaddr *)&sin, &len))
       PERROR("Error getting peer name from socket");
-    else
+    else if (to_msec<0)
       recved = RECV(sock, bptr, num, MSG_NOSIGNAL);
+    else {
+      struct pollfd fd;
+      fd.fd = sock; // your socket handler
+      fd.events = POLLIN;
+      recved = poll(&fd, 1, to_msec); // 1 second for timeout
+      switch (recved) {
+      case -1: break; // Error
+      case  0: break; // Timeout
+      default:
+        recved = RECV(sock, bptr, num, MSG_NOSIGNAL); // get your data
+        break;
+      }
+    }
     PopSocket(sock);
   }
   return recved;

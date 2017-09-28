@@ -59,16 +59,18 @@ inet_ntop(AF_INET6, &sin.sin6_addr, iphost, INET6_ADDRSTRLEN)
 #define LOAD_INITIALIZESOCKETS
 #include <pthread_port.h>
 static ssize_t io_send(int conid, const void *buffer, size_t buflen, int nowait);
-static ssize_t io_recv(int conid, void *buffer, size_t len);
 static int io_disconnect(int conid);
 static int io_flush(int conid);
 static int io_listen(int argc, char **argv);
 static int io_authorize(int conid, char *username);
 static int io_connect(int conid, char *protocol, char *host);
 static int io_reuseCheck(char *host, char *unique, size_t buflen);
-static int io_settimeout(int conid, int sec, int usec);
+static ssize_t io_recv_to(int conid, void *buffer, size_t len, int to_msec);
+inline static ssize_t io_recv(int conid, void *buffer, size_t len){
+  return io_recv_to(conid, buffer,len, -1);
+}
 static IoRoutines io_routines = {
-  io_connect, io_send, io_recv, io_flush, io_listen, io_authorize, io_reuseCheck, io_disconnect, io_settimeout
+  io_connect, io_send, io_recv, io_flush, io_listen, io_authorize, io_reuseCheck, io_disconnect, io_recv_to
 };
 
 static int GetHostAndPort(char *hostin, struct sockaddr_in6 *sin);

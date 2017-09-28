@@ -39,7 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   | Author:                                                              |
   +----------------------------------------------------------------------+
 
-  $Id$ 
+  $Id$
 */
 
 #ifdef HAVE_CONFIG_H
@@ -476,7 +476,7 @@ PHP_FUNCTION(mdsplus_value)
       void *dptr;
       void *mem = 0;
       status =
-		  GetAnswerInfoTS(socket, &ans.dtype, &len, &ans.ndims, &ans.dims, &numbytes, &dptr, &mem, 0);
+		  GetAnswerInfoTS(socket, &ans.dtype, &len, &ans.ndims, &ans.dims, &numbytes, &dptr, &mem);
       ans.length = len;
       if (numbytes) {
 	if (ans.dtype == DTYPE_CSTRING) {
@@ -663,7 +663,7 @@ PHP_FUNCTION(mdsplus_put)
       void *dptr;
       void *mem = 0;
       status =
-		  GetAnswerInfoTS(socket, &ans.dtype, &len, &ans.ndims, &ans.dims, &numbytes, &dptr, &mem, 0);
+		  GetAnswerInfoTS(socket, &ans.dtype, &len, &ans.ndims, &ans.dims, &numbytes, &dptr, &mem);
       ans.length = len;
       if (numbytes) {
 	if (ans.dtype == DTYPE_CSTRING) {
