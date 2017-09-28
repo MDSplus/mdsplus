@@ -303,8 +303,9 @@ static int io_listen(int argc, char **argv){
 static int io_settimeout(int conid, int sec, int usec) {
   SOCKET sock = getSocket(conid);
   if (sock != INVALID_SOCKET) {
-      struct timeval tv = {sec, usec};
-      return setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv,sizeof(struct timeval));
+    //      struct timeval tv = {sec, usec};
+    //  return setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv,sizeof(struct timeval));
+    return 0;
   }
   return C_ERROR;
 }
