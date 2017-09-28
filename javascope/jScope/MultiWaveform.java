@@ -1423,7 +1423,7 @@ public class MultiWaveform
             if(s != null)
             {
                 s.setXLimits(w.waveform_signal.getXmin(), w.waveform_signal.getXmax(), Signal.SIMPLE);
-                s.setFreezeMode(w.waveform_signal.getFreezeMode());
+                //s.setFreezeMode(w.waveform_signal.getFreezeMode());
             }
         }
         AutoscaleY();
