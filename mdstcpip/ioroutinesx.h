@@ -1,6 +1,7 @@
-#include <poll.h>
 #ifdef _WIN32
  #define close closesocket
+#else
+ #include <poll.h>
 #endif
 // Connected client definition for client list
 typedef struct _client {
@@ -265,7 +266,11 @@ static ssize_t io_send(int conid, const void *bptr, size_t num, int nowait){
 //  RECEIVE  ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifdef _WIN32
+static ssize_t io_recv_to(int conid, void *bptr, size_t num, int to_msec __attribute__((unused))){
+#else
 static ssize_t io_recv_to(int conid, void *bptr, size_t num, int to_msec){
+#endif
   SOCKET sock = getSocket(conid);
   ssize_t recved = -1;
   if (sock != INVALID_SOCKET) {
@@ -275,7 +280,11 @@ static ssize_t io_recv_to(int conid, void *bptr, size_t num, int to_msec){
     SOCKLEN_T len = sizeof(sin);
     if (GETPEERNAME(sock, (struct sockaddr *)&sin, &len))
       PERROR("Error getting peer name from socket");
-    else if (to_msec<0)
+    else
+#ifdef _WIN32
+      recved = RECV(sock, bptr, num, MSG_NOSIGNAL);
+#else
+    if (to_msec<0)
       recved = RECV(sock, bptr, num, MSG_NOSIGNAL);
     else {
       struct pollfd fd;
@@ -290,6 +299,7 @@ static ssize_t io_recv_to(int conid, void *bptr, size_t num, int to_msec){
         break;
       }
     }
+#endif
     PopSocket(sock);
   }
   return recved;
