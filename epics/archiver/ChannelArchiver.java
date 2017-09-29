@@ -246,7 +246,9 @@ public class ChannelArchiver
 	//int getDim() { return vals.length;}
         int getDim() { return idx;}
      } //End static inner class TreeDataDescriptor
-    
+ 
+
+   
     //TreeHandler Manages insertion of data into MDSplus tree
     static class TreeHandler implements Runnable
     {
@@ -269,8 +271,8 @@ public class ChannelArchiver
                 {
                     try {
                         currSize = tree.getDatafileSize();
-			System.out.println("QUEUE SIZE: " + queue.size());
-			System.out.println("FILE SIZE: " + currSize);
+			if(debug) System.out.println("QUEUE SIZE: " + queue.size());
+			if(debug) System.out.println("FILE SIZE: " + currSize);
 			if(currSize > 1000000000 && currSize == prevSize)
 			    ChannelArchiver.debug = true;
 			prevSize = currSize;
@@ -317,7 +319,6 @@ public class ChannelArchiver
                     descr = queue.take();
 		} catch(Exception exc){System.err.println("Error dequeuing request: "+exc); System.exit(0);}
 		java.lang.String nodeName = descr.getNodeName();
-System.out.println("Node name "+ nodeName +" mod");
 		TreeNode node = (TreeNode)treeNodeHash.get(nodeName);
 		if(node == null)
 		{
@@ -334,13 +335,12 @@ System.out.println("Node name "+ nodeName +" mod");
 	   	    	node.makeTimestampedSegment(descr.getVals(), descr.getTimes());
 		    else
 		    {
-			System.out.println("FACCIO PUT ROW: "+descr.getVal()+"  "+descr.getTimes()[0]);
 			node.putRow(descr.getVal(), descr.getTimes()[0]);
 		    }
-	   	}catch(Exception exc){ System.err.println("Error in putTimestampedSegment: " + exc);}
+	   	}catch(Exception exc){ System.err.println("Error in TimestampedSegment: " + exc);}
             	if(currSize > switchSize)
             	{
- 		    System.out.println("REACHED FILE SIZE LIMIT: " + currSize + " " + switchSize);
+ 		    if(debug) System.out.println("REACHED FILE SIZE LIMIT: " + currSize + " " + switchSize);
                	    currShot++;
 		    try {
                     	model.createPulse(currShot);
@@ -357,6 +357,81 @@ System.out.println("Node name "+ nodeName +" mod");
         
     } //End static inner  class TreeHandler
     
+
+    //TreeHandlerConnection Manages insertion of data into MDSplus tree using thin client and GetMany
+    static class TreeHandlerConnection implements Runnable
+    {
+	Connection connection;
+        java.lang.String expName;
+        LinkedBlockingQueue<TreeDataDescriptor> queue;
+        TreeHandlerConnection(java.lang.String ipAddress, java.lang.String expName, int shot,  LinkedBlockingQueue<TreeDataDescriptor> queue) throws Exception
+        {
+            this.queue = queue;
+	    connection = new Connection(ipAddress);
+	    connection.openTree(expName, shot);
+        }
+        
+        public void run()
+        {
+	    long startTime, endTime;
+            while(true)
+            {
+		GetMany getMany = null;
+		int count = 0;
+		startTime = System.currentTimeMillis();
+		while (queue.size() > 0)
+		{
+		    if(getMany == null)
+			getMany = connection.getMany();
+			TreeDataDescriptor descr = null;
+                    try {
+                        descr = queue.take();
+		    } catch(Exception exc){System.err.println("Error dequeuing request: "+exc); System.exit(0);}
+		   
+		    if(descr.getDim() > 1)
+		    {
+		    	Data args[] = new Data[2];
+			args[0] = new Int64Array(descr.getTimes());
+			args[1] = descr.getVals();
+			getMany.append("put_"+count, "MakeTimestampedSegment("+descr.getNodeName()+",$1,$2)", args);
+		    }
+		    else
+		    {
+			getMany.append("put_"+count, "PutRow("+descr.getNodeName()+",1000,"+descr.getTimes()[0]+"Q,"+descr.getVal().decompile()+")", new Data[0]);
+		    }
+		    count++;
+		    if(count > 10000)
+		    {
+			System.out.println("Warning: more than 10000 pending write operations");
+			break;
+		    }
+		}
+		if(getMany != null)
+		{
+		    try {
+			if(debug)
+			    System.out.println("Writing "+count+ " data items");
+			 getMany.execute();
+		    } catch(Exception exc){System.err.println("Error in GetMany.execute(): " + exc);}
+             	}
+		endTime = System.currentTimeMillis();
+		long interval = endTime - startTime;
+		if(debug)
+		    System.out.println("Pending Write queue length: " + queue.size());
+		if(interval < 1000)
+		{
+		    try {
+		    	Thread.currentThread().sleep(1000-interval); 
+		    }catch(InterruptedException exc){}
+		}
+            }
+        }
+        
+    } //End static inner  class TreeHandlerConnection
+
+
+
+
     static class TreeManager
     {
         TreeHandler treeH;
@@ -370,6 +445,7 @@ System.out.println("Node name "+ nodeName +" mod");
 	    this.model = model;
             (new Thread(treeH)).start();
         }
+	TreeManager(){}
         synchronized void putRow(java.lang.String treeNodeName, Data data, long time, int segmentSize)
         {
 	    TreeDataDescriptor descr = (TreeDataDescriptor)nodeHash.get(treeNodeName);
@@ -398,6 +474,45 @@ System.out.println("Node name "+ nodeName +" mod");
         }
         
     }//End inner class TreeManager
+    
+    static class TreeManagerConnection extends TreeManager
+    {
+	TreeHandlerConnection treeHC;
+	java.lang.String ipAddress;
+        TreeManagerConnection(java.lang.String ipAddress, java.lang.String expName, int shot) throws Exception
+        {
+            queue = new LinkedBlockingQueue<TreeDataDescriptor>(MAX_QUEUE_LEN);
+            treeHC = new TreeHandlerConnection(ipAddress, expName,shot, queue);
+            (new Thread(treeHC)).start();
+        }
+        synchronized void putRow(java.lang.String treeNodeName, Data data, long time, int segmentSize)
+        {
+	    TreeDataDescriptor descr = (TreeDataDescriptor)nodeHash.get(treeNodeName);
+            if(descr == null)
+            {
+                try {
+                    nodeHash.put(treeNodeName, descr = new TreeDataDescriptor(treeNodeName, segmentSize));
+                }catch(Exception exc)
+                {
+                    System.err.println("INTERNAL ERROR: Cannot get node for "+treeNodeName + ": " + exc);
+                    return;
+                }
+            }
+            try {
+              	if(descr.addRow(data, time))
+	    	{
+                    nodeHash.put(descr.getNodeName(), new TreeDataDescriptor(descr.getNodeName(), segmentSize));
+                    if(queue.remainingCapacity() > 0)
+                    {
+                        queue.put(descr);
+                    }
+                    else
+                    	System.out.println("WARNING: discarded block for " + descr.getNodeName()); 
+	    	}
+            }catch(Exception exc){System.err.println("Error enqueuing putRow request");}
+        }
+        
+    }//End inner class TreeManagerConnection
     
    
     
@@ -464,13 +579,11 @@ System.out.println("Node name "+ nodeName +" mod");
                 Data data = DBR2Data(dbr);
                 long time = DBR2Time(dbr);
 		int severity = CAStatus2Severity(e.getStatus());
-		//System.out.println("Monitor: "+treeNodeName+ "  " +  saveTree);
                 if(time <= prevTime)  //A previous sample has been received
                 {
-                    System.out.println("---PREVIOUS SAMPLE!!! Time: "+time + " Previous time: " + prevTime);
+                    //System.out.println("---PREVIOUS SAMPLE!!! Time: "+time + " Previous time: " + prevTime);
                     return;
                 }
-                System.out.println("Time " + time + " prevTime " + prevTime + "(time - prevTime)" + (time - prevTime)/1e12 );
                 if(prevTime > 0 && ((time - prevTime)/1E12 > ignFuture)) //Too far in future
 		{
                     System.out.println("Too far in future ignFuture " +ignFuture + "(time - prevTime)" + (time - prevTime) );
@@ -592,7 +705,6 @@ System.out.println("Node name "+ nodeName +" mod");
                     prevTime = time;
                     
                     treeManager.putRow(treeNodeName, data, time, segmentSize);
-                    System.out.println("Severities: " + severity + " " + prevSeverity);
 		    if(severity != prevSeverity)
 		    {
 		       treeManager.putRow(severityNodeName, new Int8((byte)severity), time, segmentSize);
@@ -652,13 +764,24 @@ System.out.println("Node name "+ nodeName +" mod");
 
     public static void main(java.lang.String[] args)
     {
+
         //Global Parameters
         float getThreshold; //treshold above which use real scan instead of monitor scan
         int ignFuture; //Number of seconds above which skip recording
         long fileSize; //DImension above which create a new pulse;
         Tree tree = null;
         Hashtable groupH = new Hashtable();
+	boolean createPulse;
 
+	java.lang.String mdsipAddress = System.getProperty("mdsip");
+	java.lang.String debugTxt = System.getProperty("debug");
+	debug = (debugTxt != null && debugTxt.equals("yes"));
+	java.lang.String createPulseTxt = System.getProperty("create-pulse");
+	createPulse = (createPulseTxt != null && createPulseTxt.equals("yes"));
+
+
+//testMdsAccess();
+//if(true) return;
 
         if(args.length != 2 && args.length != 3)
         {
@@ -671,12 +794,13 @@ System.out.println("Node name "+ nodeName +" mod");
 	    SEGMENT_SIZE = Integer.parseInt(args[2]);
 	else
 	    SEGMENT_SIZE = 1;
-	System.out.println("SEGMENT SIZE: " + SEGMENT_SIZE);
 
         try {
             JCALibrary jca = JCALibrary.getInstance();
             Context ctxt = jca.createContext(JCALibrary.CHANNEL_ACCESS_JAVA);
             tree = new Tree(experiment, -1);
+	    if(createPulse)
+		tree.createPulse(shot);
 //Get Global Parameters            
             try {
              TreeNode node = tree.getNode(":GET_TRESH");
@@ -702,7 +826,11 @@ System.out.println("Node name "+ nodeName +" mod");
             }
             
 
-            TreeManager treeManager = new TreeManager(experiment, tree, shot, fileSize);
+            TreeManager treeManager;
+	    if(mdsipAddress == null)
+		treeManager = new TreeManager(experiment, tree, shot, fileSize);
+	    else
+		treeManager = new TreeManagerConnection(mdsipAddress, experiment, shot);
             TreeNodeArray treeNodeArr = tree.getNodeWild("***");
             java.lang.String []nodeNames = treeNodeArr.getPath();
             int[] nids = treeNodeArr.getNid();
@@ -716,15 +844,13 @@ System.out.println("Node name "+ nodeName +" mod");
                     try {
                         recName = new TreeNode(nids[i], tree).getData().getString();
 			recName = recName.trim();
-                        System.out.println("Scanning...."+recName);
+                        if(debug) System.out.println("Scanning...."+recName);
                         //Get VAL channel. It will remain open thorough the whole program execution
                         Channel valChan = ctxt.createChannel(recName+".VAL");
                         ctxt.pendIO(5.);
                         DBR valDbr = valChan.get();
                         ctxt.pendIO(5.);
-			System.out.println("Monitoring Channel created.");
-        //valDbr.printInfo(System.out);
-	//valChan.printInfo();
+			if(debug) System.out.println("Monitoring Channel created.");
                         if(!valDbr.isENUM() && !valDbr.isCTRL()&&! valDbr.isINT())
                         {
                             //EGU
@@ -777,7 +903,7 @@ System.out.println("Node name "+ nodeName +" mod");
                         TreeNode severityNode = tree.getNode(nodeName+":ALARM");
                         java.lang.String scanMode = scanNode.getString().toUpperCase();
 			int segmentSize = getBufSize(tree, valNode);
-			System.out.println("Monitoring channel started. Segment size: "+segmentSize);
+			if(debug) System.out.println("Monitoring channel started. Segment size: "+segmentSize);
                         if(scanMode.equals("MONITOR"))
                         {
                             if(valDbr.isENUM() || valDbr.isCTRL() || valDbr.isINT())
@@ -809,7 +935,7 @@ System.out.println("Node name "+ nodeName +" mod");
 	    System.exit(0);
         }
 
-	System.out.println("All PV Added");
+	if(debug) System.out.println("All PV Added");
 
 
 	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -838,4 +964,34 @@ System.out.println("Node name "+ nodeName +" mod");
 	    }catch(Exception exc){}	
 	}
     }
+
+
+///////////////ONLY FOR TEST
+
+    static void testMdsAccess()
+    {
+	TreeManager treeManager = null;
+	try {
+	    treeManager = new TreeManagerConnection("spilds.rfx.local:8001", "prova", 1);
+	}catch(Exception exc)
+	{
+	    System.out.println("Error creating TreeManagerConnection: " + exc);
+	    System.exit(0);
+	}
+	for(int idx = 0; idx < 200; idx++)
+	{
+	    for(int i = 0; i < 999; i++)
+	    {
+		treeManager.putRow("NODO"+(i+1), new Float32(idx), (long)idx, 20);
+	    }
+	    if(idx%20 == 0)
+	    {
+	        try {
+	        Thread.currentThread().sleep(1000);
+	        }catch(InterruptedException exc){}
+	    }
+	}
+	System.out.println("FINITO");
+    }
+
 }
