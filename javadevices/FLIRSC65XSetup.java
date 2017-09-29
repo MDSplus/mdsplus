@@ -74,9 +74,15 @@ public class FLIRSC65XSetup extends DeviceSetup {
         jPanel21 = new javax.swing.JPanel();
         deviceField21 = new DeviceField();
         jPanel20 = new javax.swing.JPanel();
+        jPanel7 = new javax.swing.JPanel();
         deviceChoice8 = new DeviceChoice();
         deviceField19 = new DeviceField();
         deviceField20 = new DeviceField();
+        jPanel24 = new javax.swing.JPanel();
+        deviceField6 = new DeviceField();
+        deviceField7 = new DeviceField();
+        deviceField9 = new DeviceField();
+        deviceField10 = new DeviceField();
         jPanel22 = new javax.swing.JPanel();
         jPanel23 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -343,19 +349,43 @@ public class FLIRSC65XSetup extends DeviceSetup {
         deviceChoice8.setLabelString("Auto Adjustment:");
         deviceChoice8.setOffsetNid(35);
         deviceChoice8.setUpdateIdentifier("");
-        jPanel20.add(deviceChoice8);
+        jPanel7.add(deviceChoice8);
 
         deviceField19.setIdentifier("");
         deviceField19.setLabelString("Manual Low Limit [°C]:");
         deviceField19.setNumCols(4);
         deviceField19.setOffsetNid(36);
-        jPanel20.add(deviceField19);
+        jPanel7.add(deviceField19);
 
         deviceField20.setIdentifier("");
         deviceField20.setLabelString("Manual High Limit [°C]:");
         deviceField20.setNumCols(4);
         deviceField20.setOffsetNid(37);
-        jPanel20.add(deviceField20);
+        jPanel7.add(deviceField20);
+
+        jPanel20.add(jPanel7);
+
+        deviceField6.setLabelString("AutoAdj.ROI x:");
+        deviceField6.setNumCols(4);
+        deviceField6.setOffsetNid(38);
+        jPanel24.add(deviceField6);
+
+        deviceField7.setLabelString("AutoAdj.ROI y:");
+        deviceField7.setNumCols(4);
+        deviceField7.setOffsetNid(39);
+        jPanel24.add(deviceField7);
+
+        deviceField9.setLabelString("AutoAdj.ROI w:");
+        deviceField9.setNumCols(4);
+        deviceField9.setOffsetNid(40);
+        jPanel24.add(deviceField9);
+
+        deviceField10.setLabelString("AutoAdj.ROI h:");
+        deviceField10.setNumCols(4);
+        deviceField10.setOffsetNid(41);
+        jPanel24.add(deviceField10);
+
+        jPanel20.add(jPanel24);
 
         jPanel9.add(jPanel20);
 
@@ -407,6 +437,7 @@ public class FLIRSC65XSetup extends DeviceSetup {
     private DeviceChoice deviceChoice8;
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
+    private DeviceField deviceField10;
     private DeviceField deviceField16;
     private DeviceField deviceField17;
     private DeviceField deviceField18;
@@ -427,7 +458,10 @@ public class FLIRSC65XSetup extends DeviceSetup {
     private DeviceField deviceField32;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
+    private DeviceField deviceField6;
+    private DeviceField deviceField7;
     private DeviceField deviceField8;
+    private DeviceField deviceField9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
@@ -444,10 +478,12 @@ public class FLIRSC65XSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel21;
     private javax.swing.JPanel jPanel22;
     private javax.swing.JPanel jPanel23;
+    private javax.swing.JPanel jPanel24;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;

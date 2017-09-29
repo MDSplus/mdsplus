@@ -143,14 +143,6 @@ int setFrameRate(int camHandle, double frameRate)
 	return ERROR;
 }
 
-/*
-int getReadoutArea(int camHandle, int *x, int *y, int *width, int *height)
-{
-	if( baslerIsConnected( camHandle ) == SUCCESS )
-		return camPtr[camHandle]->getReadoutArea(x, y, width, height);
-	return ERROR;
-}
-*/
 
 int setReadoutArea(int camHandle, int x, int y, int width, int height)
 {
@@ -220,10 +212,10 @@ int setTreeInfo( int camHandle,  void *treePtr, int framesNid, int timebaseNid, 
 }
 
 int setStreamingMode(int camHandle, int streamingEnabled, bool autoAdjustLimit, 
-						const char *streamingServer, int streamingPort, int lowLim, int highLim, const char *deviceName)
+						const char *streamingServer, int streamingPort, int lowLim, int highLim, int adjRoiX, int adjRoiY, int adjRoiW, int adjRoiH, const char *deviceName)
 {
 	if( baslerIsConnected( camHandle ) == SUCCESS )
-		return camPtr[camHandle]->setStreamingMode( streamingEnabled,  autoAdjustLimit, streamingServer, streamingPort, lowLim, highLim, deviceName);
+		return camPtr[camHandle]->setStreamingMode( streamingEnabled,  autoAdjustLimit, streamingServer, streamingPort, lowLim, highLim, adjRoiX, adjRoiY, adjRoiW, adjRoiH, deviceName);
 	return ERROR;
 
 }
@@ -270,13 +262,8 @@ BASLER_ACA::BASLER_ACA(const char *ipAddress)
      CBaslerGigEDeviceInfo di;
      di.SetIpAddress(ipAddress);
      this->pDevice = TlFactory.CreateDevice( di);       
-//     di.SetDeviceClass( Camera_t::DeviceClass());
-//     Camera_t camera(this->pDevice);
      this->pCamera = new Pylon::CBaslerGigEInstantCamera::CBaslerGigEInstantCamera(this->pDevice); 		
-
-   //  pCamera = new CInstantCamera( pDevice ); // Create an instant camera object for the camera device found first.  
-
-     pCamera->Open(); // Open the camera device.
+     pCamera->Open();
      printf("Device Connected.\n"); 
      lastOpRes=SUCCESS;
    }
@@ -298,10 +285,8 @@ BASLER_ACA::BASLER_ACA()  //new 25/07/2013: let to use the device without the ca
 
 BASLER_ACA::~BASLER_ACA()
 {
-
    PylonTerminate();
    printf("Device Disconnected.\n");
-
 }
 
 
@@ -358,7 +343,6 @@ int BASLER_ACA::setExposureAuto(char *exposureAuto)
   }
  
   return SUCCESS;
-  // pCamera->ExposureAuto.SetValue(ExposureAuto_Off); //Continuous - Once
 }
 
 
@@ -411,42 +395,6 @@ int BASLER_ACA::setFrameRate(double frameRate)
     this->frameRate = frameRate;
     return SUCCESS;
 }
-/*
-int FLIR_SC65X::getReadoutArea(int *x, int *y, int *width, int *height)
-{
-    PvGenParameterArray *lDeviceParams = lDevice->GetParameters();
-	PvGenInteger *lWidth = dynamic_cast<PvGenInteger *>( lDeviceParams->Get( "Width" ) );
-	PvGenInteger *lHeight = dynamic_cast<PvGenInteger *>( lDeviceParams->Get( "Height" ) );
-	PvGenInteger *lOffsetX = dynamic_cast<PvGenInteger *>( lDeviceParams->Get( "OffsetX" ) );
-	PvGenInteger *lOffsetY = dynamic_cast<PvGenInteger *>( lDeviceParams->Get( "OffsetY" ) );
-
-	int64_t ox = 0;
-	int64_t oy = 0;
-	int64_t w = 0;
-	int64_t h = 0;
-
-
-	this->lResult = lWidth->GetValue( w );
-	if ( !this->lResult.IsOK() ) {printLastError("Error getting Width in getReadoutArea\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
-usleep(3000);
-	this->lResult = lHeight->GetValue( h );
-	if ( !this->lResult.IsOK() ) {printLastError("Error getting Height in getReadoutArea\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
-usleep(3000);
-	this->lResult = lOffsetX->GetValue( ox );
-	if ( !this->lResult.IsOK() ) {printLastError("Error getting OffsetX in getReadoutArea\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
-usleep(3000);
-	this->lResult = lOffsetY->GetValue( oy );
-	if ( !this->lResult.IsOK() ) {printLastError("Error getting OffsetY in getReadoutArea\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
-
-	this->x = *x=(int)ox;
-	this->y = *y=(int)oy;  
-	this->width = *width=(int)w;
-	this->height = *height=(int)h-3;	//remove 3 lines of metadata  
-
-
-    return SUCCESS;
-}
-*/
 
 
 int BASLER_ACA::setReadoutArea(int x, int y, int width, int height)
@@ -487,12 +435,6 @@ int BASLER_ACA::setReadoutArea(int x, int y, int width, int height)
      lastOpRes=ERROR;
      return ERROR;
     }
-
-    // Some properties have restrictions. Use GetInc/GetMin/GetMax to make sure you set a valid value.
-    //int64_t newWidth = width;
-    //newWidth = Adjust(newWidth, widthCI->GetMin(), widthCI->GetMax(), widthCI->GetInc());
-    //int64_t newHeight = height;
-    //newHeight = Adjust(newHeight, heightCI->GetMin(), heightCI->GetMax(), heightCI->GetInc());
 
     widthCI->SetValue(width);
     heightCI->SetValue(height);
@@ -558,14 +500,13 @@ int BASLER_ACA::setPixelFormat(char *pixelFormat)
 
 int BASLER_ACA::startAcquisition(int *width, int *height, int *payloadSize)
 {
-   //GenApi::CIntegerPtr width(camera.GetNodeMap().GetNode("Width"));
    INodeMap& nodeMap = pCamera->GetNodeMap();
    INode *node;
 
    //get width & height
    this->width = *width = CIntegerPtr(nodeMap.GetNode("Width"))->GetValue();   this->height = *height= CIntegerPtr(nodeMap.GetNode("Height"))->GetValue();  
 			
-   *payloadSize=this->width*this->height*this->Bpp;  //no metadata  ?
+   *payloadSize=this->width*this->height*this->Bpp;  //no metadata
 
    printf("width=%d.", this->width); 
    printf("height=%d.", this->height);
@@ -588,12 +529,9 @@ int BASLER_ACA::startAcquisition(int *width, int *height, int *payloadSize)
    }
    // Enable time stamp chunks.
    CEnumerationPtr ChunkSelector(nodeMap.GetNode("ChunkSelector"));
-   //String_t sChunkSelector = ChunkSelector->ToString(); 
-   //cout << "ChunkSelector: " << ChunkSelector->ToString() << endl;
    if(IsAvailable(ChunkSelector->GetEntryByName("Timestamp")))
    {
      ChunkSelector->FromString("Timestamp");
-   //  cout << "New ChunkSelector_Timestamp: " << ChunkSelector->ToString() << endl;
    }
    node = nodeMap.GetNode("ChunkEnable");
    CBooleanPtr(node)->SetValue(true);
@@ -601,11 +539,9 @@ int BASLER_ACA::startAcquisition(int *width, int *height, int *payloadSize)
    if(IsAvailable(ChunkSelector->GetEntryByName("PayloadCRC16")))
    {
      ChunkSelector->FromString("PayloadCRC16");
-   //  cout << "New ChunkSelector_Timestamp: " << ChunkSelector->ToString() << endl;
    }
    node = nodeMap.GetNode("ChunkEnable");
    CBooleanPtr(node)->SetValue(true);
-
 
    //new fede 20170918
    if(IsAvailable(ChunkSelector->GetEntryByName("ExposureTime")))
@@ -637,9 +573,6 @@ int BASLER_ACA::startAcquisition(int *width, int *height, int *payloadSize)
    // pCamera->StartGrabbing( c_countOfImagesToGrab);
    pCamera->StartGrabbing();
 
-   // This smart pointer will receive the grab result data.
-   CGrabResultPtr ptrGrabResult;
-
    return SUCCESS;	
 }
   
@@ -657,9 +590,7 @@ int BASLER_ACA::getFrame(int *status, void *frame, void *metaData)
 {
    // This smart pointer will receive the grab result data.
    CGrabResultPtr ptrGrabResult;
- //  CInstantCamera camera( device );
-        // Camera.StopGrabbing() is called automatically by the RetrieveResult() method
-        // when c_countOfImagesToGrab images have been retrieved.
+
    if(pCamera->IsGrabbing())
    {
       //printf("getframe is grabbing\n");
@@ -684,8 +615,6 @@ int BASLER_ACA::getFrame(int *status, void *frame, void *metaData)
 
          // cout << "Gray value of first pixel: " << (uint32_t) dataPtr[0] << endl << endl;
 
-//Pylon::GrabResultData
-//new for metadata
             // Check to see if a buffer containing chunk data has been received.
             if (PayloadType_ChunkData != ptrGrabResult->GetPayloadType())
             {
@@ -699,16 +628,7 @@ int BASLER_ACA::getFrame(int *status, void *frame, void *metaData)
             {
                 throw RUNTIME_EXCEPTION( "Image was damaged!");
             }
-            // Access the chunk data attached to the result.
-            // Before accessing the chunk data, you should check to see
-            // if the chunk is readable. When it is readable, the buffer
-            // contains the requested chunk data.
 
-//fede: codice copiato ma non va niente!!!!!!!!!!!!!
-  //          if (IsReadable(ptrGrabResult->ChunkTimestamp))
-  //              cout << "TimeStamp (Result): " << ptrGrabResult->ChunkTimestamp.GetValue() << endl;
-
-           //fede sembra ok
            int64_t ts;
            if(ptrGrabResult->IsChunkDataAvailable())
            {
@@ -717,7 +637,6 @@ int BASLER_ACA::getFrame(int *status, void *frame, void *metaData)
              // printf("%I64d\n", ts);
            }
 
-           //new fede 20170918
            int gain=0;
            if(ptrGrabResult->IsChunkDataAvailable())
            {
@@ -733,12 +652,8 @@ int BASLER_ACA::getFrame(int *status, void *frame, void *metaData)
              //printf("fede exp chunk:%f\n", exp);
            }
 
-
-
         //printf("metadata size: %d\n", sizeof(BASLERMETADATA));
         BASLERMETADATA bMeta;
-        //bMeta.gain=this->gain;
-        //bMeta.exposure=this->exposure;
         bMeta.gain=gain;
         bMeta.exposure=exp;
         bMeta.internalTemperature=this->internalTemperature;
@@ -754,7 +669,7 @@ int BASLER_ACA::getFrame(int *status, void *frame, void *metaData)
 }
 
 
-int BASLER_ACA::setStreamingMode( int streamingEnabled,  bool autoAdjustLimit, const char *streamingServer, int streamingPort, unsigned int lowLim, unsigned int highLim, const char *deviceName)
+int BASLER_ACA::setStreamingMode( int streamingEnabled,  bool autoAdjustLimit, const char *streamingServer, int streamingPort, unsigned int lowLim, unsigned int highLim, int adjRoiX, int adjRoiY, int adjRoiW, int adjRoiH, const char *deviceName)
 {
    this->streamingEnabled = streamingEnabled;
 	
@@ -767,6 +682,11 @@ int BASLER_ACA::setStreamingMode( int streamingEnabled,  bool autoAdjustLimit, c
 
 	this->lowLim = lowLim;
 	this->highLim = highLim;
+
+	this->adjRoiX = adjRoiX;
+	this->adjRoiY = adjRoiY;
+	this->adjRoiW = adjRoiW;
+	this->adjRoiH = adjRoiH;
           		        
         this->minLim= 0;            
         this->maxLim= 4096; //max value for 12bit resolution of BASLER
@@ -790,8 +710,7 @@ int BASLER_ACA::setTriggerMode( int triggerMode, double burstDuration, int numTr
 	this->burstDuration = burstDuration;
 	this->numTrigger = numTrigger;
 
-	//return setExposureMode((EXPMODE_ENUM) triggerMode);
-         return SUCCESS; //fede x basler
+        return SUCCESS; 
 }
 
 int BASLER_ACA::softwareTrigger()
@@ -869,8 +788,6 @@ int BASLER_ACA::startFramesAcquisition()
 	void *saveList;
 	void *streamingList;
 
-	//short *frameBuffer;
-        //char *frameBuffer;
         void *frameBuffer;
 	unsigned char *metaData;
 	unsigned char *frame8bit;
@@ -888,8 +805,6 @@ int BASLER_ACA::startFramesAcquisition()
             printf("Error getting frame0 time\n");
          }
 
-	//frameBuffer = (short *) calloc(1, width * height * sizeof(short));
-        //frameBuffer = (char *) calloc(1, width * height * sizeof(char));
         if(this->Bpp==1)
         {
           frameBuffer = (char *) calloc(1, width * height * sizeof(char));
@@ -900,7 +815,6 @@ int BASLER_ACA::startFramesAcquisition()
         }
 	frame8bit = (unsigned char *) calloc(1, width * height * sizeof(char));
 
-//	metaSize = width * 3 * sizeof(short);
         metaSize = sizeof(BASLERMETADATA);
 	metaData = (unsigned char *)calloc(1, metaSize);
  
@@ -1020,12 +934,11 @@ int BASLER_ACA::startFramesAcquisition()
 	    //if ( (streamingSkipFrameNumber - 1 <= 0) || (frameCounter % ( streamingSkipFrameNumber - 1)) == 0 )  //20170327 - ORIGINAL
             else if((this->frameRate<10) || (frameCounter % int(this->frameRate/10.0))==0)  //send frame @ 10Hz. Reduce CPU usage when radiometric conversion must be performed.
 	    {
-		//camStreamingFrame( tcpStreamHandle, frameBuffer, metaData, width, height, 14, irFrameFormat, autoAdjustLimit, &lowLim, &highLim, minLim, maxLim, this->deviceName, streamingList);
- 	        camStreamingFrame( tcpStreamHandle, frameBuffer, width, height, pixelFormat, 0, autoAdjustLimit, &lowLim, &highLim, minLim, maxLim, this->deviceName, streamingList);
+ 	        camStreamingFrame( tcpStreamHandle, frameBuffer, width, height, pixelFormat, 0, autoAdjustLimit, &lowLim, &highLim, minLim, maxLim, adjRoiX, adjRoiY, adjRoiW, adjRoiH, this->deviceName, streamingList);
 	    }             
 	} // if( streamingEnabled )
-        frameCounter++;   //never resetted, used for frame timestamp     
-        if ( startStoreTrg == 1 ) //CT incremento l'indice dei frame salvato solo se l'acquisizione e' stata triggerata 
+        frameCounter++;           //never resetted, used for frame timestamp     
+        if ( startStoreTrg == 1 ) //increment saved frame index only if acquisition has been triggered
         {
           frameTriggerCounter++;     
         }

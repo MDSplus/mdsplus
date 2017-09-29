@@ -228,7 +228,7 @@ if(argv[4]!=NULL)
 		   unsigned int lowLim = 0;
 		   unsigned int highLim = 32000;
 
-		   camFrameTo8bit((unsigned short *)frame, 640, 480, CSU_PIX_FMT_GRAY16, (unsigned char *)frame8bit, 1, &lowLim, &highLim, 2000, 62000);
+		   camFrameTo8bit((unsigned short *)frame, 640, 480, CSU_PIX_FMT_GRAY16, (unsigned char *)frame8bit, 1, &lowLim, &highLim, 2000, 62000, 0, 0, 640, 480);
 	//	   printf("LowLim:%d HighLim:%d\n",lowLim, highLim);
 		   camSendFrameOnTcp(&kSockHandle, width, height, frame8bit);
      	 }      		 

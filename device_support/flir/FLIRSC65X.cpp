@@ -268,10 +268,10 @@ int setTreeInfo( int camHandle,  void *treePtr, int framesNid, int timebaseNid, 
 }
 
 int setStreamingMode(int camHandle, IRFMT_ENUM irFormat, int streamingEnabled, bool autoAdjustLimit, 
-						const char *streamingServer, int streamingPort, int lowLim, int highLim, const char *deviceName)
+						const char *streamingServer, int streamingPort, int lowLim, int highLim, int adjRoiX, int adjRoiY, int adjRoiW, int adjRoiH, const char *deviceName)
 {
 	if( flirIsConnected( camHandle ) == SUCCESS )
-		return camPtr[camHandle]->setStreamingMode( irFormat, streamingEnabled,  autoAdjustLimit, streamingServer, streamingPort, lowLim, highLim, deviceName);
+		return camPtr[camHandle]->setStreamingMode( irFormat, streamingEnabled,  autoAdjustLimit, streamingServer, streamingPort, lowLim, highLim, adjRoiX, adjRoiY, adjRoiW, adjRoiH, deviceName);
 	return ERROR;
 
 }
@@ -1001,7 +1001,7 @@ int FLIR_SC65X::startAcquisition(int *width, int *height, int *payloadSize)
     PvGenCommand *lResetTimestamp = dynamic_cast<PvGenCommand *>( lDeviceParams->Get( "GevTimestampControlReset" ) );
     PvGenCommand *lStart = dynamic_cast<PvGenCommand *>( lDeviceParams->Get( "AcquisitionStart" ) );
     // Get stream parameters/stats
-//comment out 17-10-2016. segmentation fault with SDK4. to check!
+//17-10-2016: segmentation fault with SDK4. to check!
 /* 
     PvGenParameterArray *lStreamParams = lStream->GetParameters();   
     PvGenInteger *lCount = dynamic_cast<PvGenInteger *>( lStreamParams->Get( "ImagesCount" ) );
@@ -1367,7 +1367,7 @@ int FLIR_SC65X::frameConv(unsigned short *frame, int width, int height)
 
 }
 
-int FLIR_SC65X::setStreamingMode( IRFMT_ENUM irFormat, int streamingEnabled,  bool autoAdjustLimit, const char *streamingServer, int streamingPort, unsigned int lowLim, unsigned int highLim, const char *deviceName)
+int FLIR_SC65X::setStreamingMode( IRFMT_ENUM irFormat, int streamingEnabled,  bool autoAdjustLimit, const char *streamingServer, int streamingPort, unsigned int lowLim, unsigned int highLim, int adjRoiX, int adjRoiY, int adjRoiW, int adjRoiH, const char *deviceName)
 {
    this->streamingEnabled = streamingEnabled;
 	
@@ -1388,7 +1388,7 @@ int FLIR_SC65X::setStreamingMode( IRFMT_ENUM irFormat, int streamingEnabled,  bo
 				this->lowLim = lowLim * 10;   //20170918: streaming is already converted in temperature. Radiometric frames are never send.
 				this->highLim = highLim * 10;
           		        minLim= 0;            
-          		        maxLim= 62000-27315; //32767; 
+          		        maxLim= 62000-27315; //3468.5°C 
 				break;
 			case linear100mK:
 				this->lowLim = lowLim * 10;
@@ -1403,6 +1403,12 @@ int FLIR_SC65X::setStreamingMode( IRFMT_ENUM irFormat, int streamingEnabled,  bo
           		        maxLim= 62000-27315; //346.85°C
 				break;
 		}
+
+	this->adjRoiX = adjRoiX;
+	this->adjRoiY = adjRoiY;
+	this->adjRoiW = adjRoiW;
+	this->adjRoiH = adjRoiH;
+
    }
    return SUCCESS;
 } 
@@ -1654,9 +1660,7 @@ int FLIR_SC65X::startFramesAcquisition()
                 {
                   flirRadiometricConv(frameBuffer, width, height, metaData);   //radiometric conversion in Celsius using metadata
                 }
- 	       // camStreamingFrame( tcpStreamHandle, frameBuffer, metaData, width, height, 14, irFrameFormat, autoAdjustLimit, &lowLim, &highLim, minLim, maxLim, this->deviceName, streamingList);
-//printf("frame counter: %d\n",frameCounter);
-	        camStreamingFrame( tcpStreamHandle, frameBuffer, width, height, CSU_PIX_FMT_GRAY16, irFrameFormat, autoAdjustLimit, &lowLim, &highLim, minLim, maxLim, this->deviceName, streamingList);
+	        camStreamingFrame( tcpStreamHandle, frameBuffer, width, height, CSU_PIX_FMT_GRAY16, irFrameFormat, autoAdjustLimit, &lowLim, &highLim, minLim, maxLim, adjRoiX, adjRoiY, adjRoiW, adjRoiH, this->deviceName, streamingList);
 	    }             
 	} // if( streamingEnabled )
 

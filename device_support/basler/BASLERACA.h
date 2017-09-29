@@ -38,7 +38,6 @@ int setGainAuto(int camHandle, char *gainAuto);
 int setGammaEnable(int camHandle, char *gammaEnable);
 int setGain(int camHandle, int gain);
 int setFrameRate(int camHandle, double frameRate);
-//int getReadoutArea(int camHandle, int *x, int *y, int *width, int *height);
 int setReadoutArea(int camHandle, int x, int y, int width, int height);
 int setPixelFormat(int camHandle, char *pixelFormat);
 int setAcquisitionMode(int camHandle, int storeEnabled, int acqSkipFrameNumber );
@@ -50,7 +49,7 @@ int getFrame(int camHandle, int *status, void *frame, void *metaData);
 int startFramesAcquisition(int camHandle);
 int stopFramesAcquisition(int camHandle);
 
-int setStreamingMode(int camHandle, int streamingEnabled, bool autoAdjustLimit, const char *streamingServer, int streamingPort, int lowLim, int highLim, const char *deviceName);
+int setStreamingMode(int camHandle, int streamingEnabled, bool autoAdjustLimit, const char *streamingServer, int streamingPort, int lowLim, int highLim, int adjRoiX, int adjRoiY, int adjRoiW, int adjRoiH, const char *deviceName);
 
 int setTriggerMode(int camHandle, int triggerMode, double burstDuration, int numTrigger );
 int softwareTrigger(int camHandle);
@@ -74,8 +73,7 @@ class BASLER_ACA
 {
 	private:
                 IPylonDevice *pDevice;		//device handle
-               // CInstantCamera *pCamera;        //camera handle
-                Camera_t *pCamera;
+                Camera_t *pCamera;              //camera handle
 		const char *ipAddress;
 
 		int	 x;
@@ -104,6 +102,10 @@ class BASLER_ACA
 		unsigned int minLim; 
 		unsigned int maxLim;
 		bool     autoAdjustLimit;
+		int      adjRoiX;
+		int      adjRoiY;
+		int      adjRoiW;
+		int      adjRoiH;
 		char     deviceName[64];
 
 		int	 imageMode; 	
@@ -140,8 +142,7 @@ class BASLER_ACA
                 int baslerIsConnected();
                 int checkLastOp();
                 int readInternalTemperature();
- /*               int printAllParameters();
-*/
+                //int printAllParameters();
 		//settings
                 int setExposure(double exposure);
                 int setExposureAuto(char *exposureAuto);
@@ -149,29 +150,23 @@ class BASLER_ACA
                 int setGain(int gain);
                 int setGammaEnable(char *gammaEnable);
                 int setFrameRate(double frameRate);
-/*
-                int getReadoutArea(int *x, int *y, int *width, int *height);
-*/
                 int setReadoutArea(int x, int y, int width, int height);
                 int setPixelFormat(char *pixelFormat);
 		int setAcquisitionMode( int storeEnabled, int acqSkipFrameNumber );
-		int setStreamingMode( int streamingEnabled, bool autoAdjustLimit, const char *streamingServer, int streamingPort, unsigned int lowLim, unsigned int highLim, const char *deviceName);
+		int setStreamingMode( int streamingEnabled, bool autoAdjustLimit, const char *streamingServer, int streamingPort, unsigned int lowLim, unsigned int highLim, int adjRoiX, int adjRoiY, int adjRoiW, int adjRoiH, const char *deviceName);
 		int setTriggerMode( int triggerMode, double burstDuration, int numTrigger );
 		int setTreeInfo( void *treePtr, int frameNid, int timebaseNid, int framesMetadNid, int frame0TimeNid);
 		void getLastError(char *msg);
-/*		void printLastError(const char *format, const char *msg);
+		//void printLastError(const char *format, const char *msg);
 			
 		//acquisition
-*/
                 int startAcquisition(int *width, int *height, int *payloadSize);	
                 int stopAcquisition();
                 int softwareTrigger();
 
                 int getFrame(int *status, void *frame, void *metaData);
-
 		int startFramesAcquisition();
 		int stopFramesAcquisition();
-
 
 	protected:
 

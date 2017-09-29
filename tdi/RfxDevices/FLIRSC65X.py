@@ -6,11 +6,11 @@ import traceback
 
 class FLIRSC65X(Device):
     """FLIR655 NEW Camera"""
-    parts=[
-      {'path':':NAME', 'type':'text'},
+    parts=[								#offset nid
+      {'path':':NAME', 'type':'text'},					#1
       {'path':':COMMENT', 'type':'text'},
 
-      {'path':'.OBJECT', 'type':'structure'},
+      {'path':'.OBJECT', 'type':'structure'},				#3
       {'path':'.OBJECT:EMISSIVITY', 'type':'numeric', 'value':920E-3},
       {'path':'.OBJECT:DISTANCE', 'type':'numeric', 'value':2},
       {'path':'.OBJECT:REFL_TEMP', 'type':'numeric', 'value':20},
@@ -20,36 +20,39 @@ class FLIRSC65X(Device):
       {'path':'.OBJECT:ATM_HUM', 'type':'numeric', 'value':0.50},
       {'path':'.OBJECT:ATM_TRANS', 'type':'numeric', 'value':99E-2},
 
-      {'path':'.FRAME', 'type':'structure'},
+      {'path':'.FRAME', 'type':'structure'},				#12
       {'path':'.FRAME:X', 'type':'numeric', 'value':0},
       {'path':'.FRAME:Y', 'type':'numeric', 'value':0},
       {'path':'.FRAME:WIDTH', 'type':'numeric', 'value':640},
       {'path':'.FRAME:HEIGHT', 'type':'numeric', 'value':480},
-      {'path':'.FRAME:TEMP_UNIT', 'type':'text', 'value':'LinearTemperature10mK'},
+      {'path':'.FRAME:TEMP_UNIT', 'type':'text', 'value':'Radiometric'},
 
-      {'path':'.CAM_SETUP', 'type':'structure'},
+      {'path':'.CAM_SETUP', 'type':'structure'},				#18
       {'path':'.CAM_SETUP:FOCAL_LENGTH', 'type':'text', 'value':'25'},
       {'path':'.CAM_SETUP:MEAS_RANGE', 'type':'text', 'value':'100...650'},
       {'path':'.CAM_SETUP:FOCUS_POS', 'type':'numeric', 'value':0},
       {'path':'.CAM_SETUP:CALIB_AUTO', 'type':'text', 'value':'NO'},
       {'path':'.CAM_SETUP:CALIB_TIME', 'type':'numeric', 'value':4},
 
-      {'path':'.TIMING', 'type':'structure'},
+      {'path':'.TIMING', 'type':'structure'},					#24
       {'path':'.TIMING:TRIG_MODE', 'type':'text', 'value':'INTERNAL'},
       {'path':'.TIMING:TRIG_SOURCE', 'type':'numeric'},
       {'path':'.TIMING:TIME_BASE', 'type':'numeric'},
-      {'path':'.TIMING:FRAME_RATE', 'type':'numeric', 'value':50},
+      {'path':'.TIMING:FRAME_RATE', 'type':'numeric', 'value':25},
       {'path':'.TIMING:BURST_DUR', 'type':'numeric', 'value':5},
       {'path':'.TIMING:SKIP_FRAME', 'type':'numeric', 'value':0},
 
-      {'path':'.STREAMING', 'type':'structure'},
+      {'path':'.STREAMING', 'type':'structure'},				#31
       {'path':'.STREAMING:MODE', 'type':'text', 'value':'Stream and Store'},
       {'path':'.STREAMING:SERVER', 'type':'text', 'value':'localhost'},
       {'path':'.STREAMING:PORT', 'type':'numeric', 'value':8888},
-      {'path':'.STREAMING:AUTOSCALE', 'type':'text', 'value':'YES'},
+      {'path':'.STREAMING:AUTOSCALE', 'type':'text', 'value':'NO'},
       {'path':'.STREAMING:LOLIM', 'type':'numeric', 'value':15},
       {'path':'.STREAMING:HILIM', 'type':'numeric', 'value':50},
-
+      {'path':'.STREAMING:ADJROIX', 'type':'numeric', 'value':0},
+      {'path':'.STREAMING:ADJROIY', 'type':'numeric', 'value':0},
+      {'path':'.STREAMING:ADJROIW', 'type':'numeric', 'value':640},
+      {'path':'.STREAMING:ADJROIH', 'type':'numeric', 'value':480},
 
       {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},
       {'path':':FRAMES_METAD', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},
@@ -465,26 +468,46 @@ class FLIRSC65X(Device):
              Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming server parameter value')
              raise mdsExceptions.TclFAILED_ESSENTIAL
 
-#fede 20161012
-#      else:
-#          autoAdjustLimit = c_int(0)
-#          streamingPort = c_int(8888)
-#          lowLim = c_int(0)
-#          highLim = c_int(36)
-#          streamingServer = "localhost"
+          try:
+             adjRoiX = c_int(self.streaming_adjroix.data())
+          except:
+             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming ROI x value')
+             raise mdsExceptions.TclFAILED_ESSENTIAL
+
+          try:
+             adjRoiY = c_int(self.streaming_adjroiy.data())
+          except:
+             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming ROI y value')
+             raise mdsExceptions.TclFAILED_ESSENTIAL
+
+          try:
+             adjRoiW = c_int(self.streaming_adjroiw.data())
+          except:
+             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming ROI width value')
+             raise mdsExceptions.TclFAILED_ESSENTIAL
+
+          try:
+             adjRoiH = c_int(self.streaming_adjroih.data())
+          except:
+             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming ROI height value')
+             raise mdsExceptions.TclFAILED_ESSENTIAL
 
           print("lowLim ", lowLim)
           print("highLim ", highLim)
           print("frameTempUnitCode ", frameTempUnitCode)
           print("streamingPort ", streamingPort)
           print("streamingServer ", streamingServer)
+          print("streaming adj ROI x ", adjRoiX)
+          print("streaming adj ROI y  ", adjRoiY)
+          print("streaming adj ROI w  ", adjRoiW)
+          print("streaming adj ROI h  ", adjRoiH)
           deviceName = str(self).rsplit(":",1)
           deviceName = deviceName[1]
           print("Device Name ", deviceName)     
       
 #fede: recover device name and pass it to set streaming to overlay text on frame!!!
 
-          status = FLIRSC65X.flirLib.setStreamingMode(self.handle, frameTempUnitCode, streamingEnabled,  autoAdjustLimit, c_char_p(streamingServer), streamingPort,  lowLim,  highLim, c_char_p(deviceName));
+          status = FLIRSC65X.flirLib.setStreamingMode(self.handle, frameTempUnitCode, streamingEnabled,  autoAdjustLimit, c_char_p(streamingServer), streamingPort,  lowLim,  highLim, adjRoiX, adjRoiY, adjRoiW, adjRoiH, c_char_p(deviceName));
           if status < 0:
             FLIRSC65X.flirLib.getLastError(self.handle, self.error)
             Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot execute streaming setup mode : ' + self.error.raw)

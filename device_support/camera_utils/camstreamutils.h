@@ -15,10 +15,10 @@ extern "C" {
 int camOpenTcpConnection(const char *streamingServer, int StreamingPort, int *kSockHandle, int width, int height, int pixelFormat);  
 int camCloseTcpConnection(int *kSockHandle);
 int camSendFrameOnTcp(int *kSockHandle, int width, int height, void *frame8bit);
-int camFrameTo8bit(void *frame, int width, int height, int pixelFormat, unsigned char *frame8bit, bool adjLimits, unsigned int *lowLim, unsigned int *highLim, unsigned int minLim, unsigned int maxLim);
+int camFrameTo8bit(void *frame, int width, int height, int pixelFormat, unsigned char *frame8bit, bool adjLimits, unsigned int *lowLim, unsigned int *highLim, unsigned int minLim, unsigned int maxLim, int adjRoiX, int adjRoiY, int adjRoiW, int adjRoiH);
 int camFFMPEGoverlay(const char *filename, const char *textString);
 
-void camStreamingFrame(int tcpStreamHandle, void *frame, int width, int height, int pixelFormat, int irFrameFormat, bool adjLimit, unsigned int *lowLim, unsigned int *highLim, unsigned int minLim, unsigned int maxLim, const char *deviceName, void *streamingListPtr);
+void camStreamingFrame(int tcpStreamHandle, void *frame, int width, int height, int pixelFormat, int irFrameFormat, bool adjLimit, unsigned int *lowLim, unsigned int *highLim, unsigned int minLim, unsigned int maxLim, int adjRoiX, int adjRoiY, int adjRoiW, int adjRoiH, const char *deviceName, void *streamingListPtr);
 
 static void *handleStreaming(void *listPtr);
 void camStartStreaming(void **retList);

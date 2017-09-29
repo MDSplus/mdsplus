@@ -49,7 +49,7 @@ int startFramesAcquisition(int camHandle);
 int stopFramesAcquisition(int camHandle);
 
 
-int setStreamingMode(int camHandle, IRFMT_ENUM irFormat, int streamingEnabled, bool autoAdjustLimit, const char *streamingServer, int streamingPort, int lowLim, int highLim, const char *deviceName);
+int setStreamingMode(int camHandle, IRFMT_ENUM irFormat, int streamingEnabled, bool autoAdjustLimit, const char *streamingServer, int streamingPort, int lowLim, int highLim, int adjRoiX, int adjRoiY, int adjRoiW, int adjRoiH, const char *deviceName);
 
 int setTriggerMode(int camHandle, int triggerMode, double burstDuration, int numTrigger );
 int softwareTrigger(int camHandle);
@@ -95,6 +95,10 @@ class FLIR_SC65X
 		unsigned int minLim; 
 		unsigned int maxLim;
 		bool     autoAdjustLimit;
+		int      adjRoiX;
+		int      adjRoiY;
+		int      adjRoiW;
+		int      adjRoiH;
 		char     deviceName[64];
 
 		int	 imageMode; 	
@@ -145,7 +149,7 @@ class FLIR_SC65X
                 int setCalibMode(int calibMode);
 
 		int setAcquisitionMode( int storeEnabled, int acqSkipFrameNumber );
-		int setStreamingMode( IRFMT_ENUM irFormat, int streamingEnabled, bool autoAdjustLimit, const char *streamingServer, int streamingPort, unsigned int lowLim, unsigned int highLim, const char *deviceName);
+		int setStreamingMode( IRFMT_ENUM irFormat, int streamingEnabled, bool autoAdjustLimit, const char *streamingServer, int streamingPort, unsigned int lowLim, unsigned int highLim, int adjRoiX, int adjRoiY, int adjRoiW, int adjRoiH,  const char *deviceName);
 
 		int setTriggerMode( int triggerMode, double burstDuration, int numTrigger );
 		int setTreeInfo( void *treePtr, int frameNid, int timebaseNid, int framesMetadNid, int frame0TimeNid);

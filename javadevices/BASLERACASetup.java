@@ -61,9 +61,15 @@ public class BASLERACASetup extends DeviceSetup {
         jPanel21 = new javax.swing.JPanel();
         deviceField21 = new DeviceField();
         jPanel20 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
         deviceChoice8 = new DeviceChoice();
         deviceField19 = new DeviceField();
         deviceField20 = new DeviceField();
+        jPanel24 = new javax.swing.JPanel();
+        deviceField7 = new DeviceField();
+        deviceField10 = new DeviceField();
+        deviceField11 = new DeviceField();
+        deviceField12 = new DeviceField();
         jPanel22 = new javax.swing.JPanel();
         jPanel23 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -262,19 +268,43 @@ public class BASLERACASetup extends DeviceSetup {
         deviceChoice8.setLabelString("Auto Adjustment:");
         deviceChoice8.setOffsetNid(26);
         deviceChoice8.setUpdateIdentifier("");
-        jPanel20.add(deviceChoice8);
+        jPanel2.add(deviceChoice8);
 
         deviceField19.setIdentifier("");
-        deviceField19.setLabelString("Manual Low Limit [°C]:");
+        deviceField19.setLabelString("Manual Low Limit [0..2^(n-1)]:");
         deviceField19.setNumCols(4);
         deviceField19.setOffsetNid(27);
-        jPanel20.add(deviceField19);
+        jPanel2.add(deviceField19);
 
         deviceField20.setIdentifier("");
-        deviceField20.setLabelString("Manual High Limit [°C]:");
+        deviceField20.setLabelString("Manual High Limit [0..2^(n-1)]:");
         deviceField20.setNumCols(4);
         deviceField20.setOffsetNid(28);
-        jPanel20.add(deviceField20);
+        jPanel2.add(deviceField20);
+
+        jPanel20.add(jPanel2);
+
+        deviceField7.setLabelString("AutoAdj.ROI x:");
+        deviceField7.setNumCols(4);
+        deviceField7.setOffsetNid(29);
+        jPanel24.add(deviceField7);
+
+        deviceField10.setLabelString("AutoAdj.ROI y:");
+        deviceField10.setNumCols(4);
+        deviceField10.setOffsetNid(30);
+        jPanel24.add(deviceField10);
+
+        deviceField11.setLabelString("AutoAdj.ROI w:");
+        deviceField11.setNumCols(4);
+        deviceField11.setOffsetNid(31);
+        jPanel24.add(deviceField11);
+
+        deviceField12.setLabelString("AutoAdj.ROI h:");
+        deviceField12.setNumCols(4);
+        deviceField12.setOffsetNid(32);
+        jPanel24.add(deviceField12);
+
+        jPanel20.add(jPanel24);
 
         jPanel9.add(jPanel20);
 
@@ -324,6 +354,9 @@ public class BASLERACASetup extends DeviceSetup {
     private DeviceChoice deviceChoice8;
     private DeviceChoice deviceChoice9;
     private DeviceDispatch deviceDispatch1;
+    private DeviceField deviceField10;
+    private DeviceField deviceField11;
+    private DeviceField deviceField12;
     private DeviceField deviceField16;
     private DeviceField deviceField17;
     private DeviceField deviceField18;
@@ -337,6 +370,7 @@ public class BASLERACASetup extends DeviceSetup {
     private DeviceField deviceField4;
     private DeviceField deviceField5;
     private DeviceField deviceField6;
+    private DeviceField deviceField7;
     private DeviceField deviceField8;
     private DeviceField deviceField9;
     private javax.swing.JPanel jPanel1;
@@ -347,10 +381,12 @@ public class BASLERACASetup extends DeviceSetup {
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
     private javax.swing.JPanel jPanel18;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel20;
     private javax.swing.JPanel jPanel21;
     private javax.swing.JPanel jPanel22;
     private javax.swing.JPanel jPanel23;
+    private javax.swing.JPanel jPanel24;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;

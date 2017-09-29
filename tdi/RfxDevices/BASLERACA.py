@@ -15,20 +15,20 @@ class BASLERACA(Device):
       {'path':'.FRAME:Y', 'type':'numeric', 'value':8},                  
       {'path':'.FRAME:WIDTH', 'type':'numeric', 'value':1920},            
       {'path':'.FRAME:HEIGHT', 'type':'numeric', 'value':1200},           
-      {'path':'.FRAME:PIXEL_FORMAT', 'type':'text', 'value':'Mono8'}, 
+      {'path':'.FRAME:PIXEL_FORMAT', 'type':'text', 'value':'Mono12'}, 
 
       {'path':'.CAM_SETUP', 'type':'structure'},                         #9
-      {'path':'.CAM_SETUP:GAIN_AUTO', 'type':'text', 'value':'OFF'}, 
+      {'path':'.CAM_SETUP:GAIN_AUTO', 'type':'text', 'value':'Off'}, 
       {'path':'.CAM_SETUP:GAIN', 'type':'numeric', 'value':0},        
-      {'path':'.CAM_SETUP:GAMMA_EN', 'type':'text', 'value':'OFF'},
-      {'path':'.CAM_SETUP:EXP_AUTO', 'type':'text', 'value':'Continuous'}, 
-      {'path':'.CAM_SETUP:EXPOSURE', 'type':'numeric', 'value':10000}, 
+      {'path':'.CAM_SETUP:GAMMA_EN', 'type':'text', 'value':'Off'},
+      {'path':'.CAM_SETUP:EXP_AUTO', 'type':'text', 'value':'Off'}, 
+      {'path':'.CAM_SETUP:EXPOSURE', 'type':'numeric', 'value':800E3}, 
 
       {'path':'.TIMING', 'type':'structure'},                             #15
       {'path':'.TIMING:TRIG_MODE', 'type':'text', 'value':'INTERNAL'},    
       {'path':'.TIMING:TRIG_SOURCE', 'type':'numeric'},                   
       {'path':'.TIMING:TIME_BASE', 'type':'numeric'},                     
-      {'path':'.TIMING:FRAME_RATE', 'type':'numeric', 'value':5},         
+      {'path':'.TIMING:FRAME_RATE', 'type':'numeric', 'value':1},         
       {'path':'.TIMING:BURST_DUR', 'type':'numeric', 'value':5},          
       {'path':'.TIMING:SKIP_FRAME', 'type':'numeric', 'value':0},         
 
@@ -36,10 +36,13 @@ class BASLERACA(Device):
       {'path':'.STREAMING:MODE', 'type':'text', 'value':'Stream and Store'},  
       {'path':'.STREAMING:SERVER', 'type':'text', 'value':'localhost'},
       {'path':'.STREAMING:PORT', 'type':'numeric', 'value':8888},
-      {'path':'.STREAMING:AUTOSCALE', 'type':'text', 'value':'YES'},
-      {'path':'.STREAMING:LOLIM', 'type':'numeric', 'value':15},
-      {'path':'.STREAMING:HILIM', 'type':'numeric', 'value':50},
-
+      {'path':'.STREAMING:AUTOSCALE', 'type':'text', 'value':'NO'},
+      {'path':'.STREAMING:LOLIM', 'type':'numeric', 'value':0},
+      {'path':'.STREAMING:HILIM', 'type':'numeric', 'value':4095},
+      {'path':'.STREAMING:ADJROIX', 'type':'numeric', 'value':0},
+      {'path':'.STREAMING:ADJROIY', 'type':'numeric', 'value':0},
+      {'path':'.STREAMING:ADJROIW', 'type':'numeric', 'value':1920},
+      {'path':'.STREAMING:ADJROIH', 'type':'numeric', 'value':1200},
 
       {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},
       {'path':':FRAMES_METAD', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},
@@ -405,18 +408,43 @@ class BASLERACA(Device):
              Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming server parameter value')
              raise mdsExceptions.TclFAILED_ESSENTIAL
 
+          try:
+             adjRoiX = c_int(self.streaming_adjroix.data())
+          except:
+             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming ROI x value')
+             raise mdsExceptions.TclFAILED_ESSENTIAL
+
+          try:
+             adjRoiY = c_int(self.streaming_adjroiy.data())
+          except:
+             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming ROI y value')
+             raise mdsExceptions.TclFAILED_ESSENTIAL
+
+          try:
+             adjRoiW = c_int(self.streaming_adjroiw.data())
+          except:
+             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming ROI width value')
+             raise mdsExceptions.TclFAILED_ESSENTIAL
+
+          try:
+             adjRoiH = c_int(self.streaming_adjroih.data())
+          except:
+             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming ROI height value')
+             raise mdsExceptions.TclFAILED_ESSENTIAL
 
           print("lowLim ", lowLim)
           print("highLim ", highLim)
           print("streamingPort ", streamingPort)
           print("streamingServer ", streamingServer)
-          deviceName = str(self).rsplit(":",1)
+          print("streaming adj ROI x ", adjRoiX)
+          print("streaming adj ROI y  ", adjRoiY)
+          print("streaming adj ROI w  ", adjRoiW)
+          print("streaming adj ROI h  ", adjRoiH)
+          deviceName = str(self).rsplit(":",1)        #Recover device name to overlay it as text on frame
           deviceName = deviceName[1]
           print("Device Name ", deviceName)     
       
-#fede: recover device name and pass it to set streaming to overlay text on frame!!!
-
-          status = BASLERACA.baslerLib.setStreamingMode(self.handle, streamingEnabled,  autoAdjustLimit, c_char_p(streamingServer), streamingPort,  lowLim,  highLim, c_char_p(deviceName));
+          status = BASLERACA.baslerLib.setStreamingMode(self.handle, streamingEnabled,  autoAdjustLimit, c_char_p(streamingServer), streamingPort,  lowLim,  highLim, adjRoiX, adjRoiY, adjRoiW, adjRoiH, c_char_p(deviceName));
           if status < 0:
             BASLERACA.baslerLib.getLastError(self.handle, self.error)
             Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot execute streaming setup mode : ' + self.error.raw)
