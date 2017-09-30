@@ -111,16 +111,10 @@ class TwuDataProvider
 
     public synchronized float[] GetFloatArray(String in)
     {
-        boolean is_time;
         resetErrorstring(null);
 
         if(in.startsWith("TIME:", 0))
-        {
-            is_time = true;
             in = in.substring(5);
-        }
-        else
-          is_time = false;
 
         TwuWaveData wd   = (TwuWaveData)GetWaveData  (in) ;
         float [] data = null ;

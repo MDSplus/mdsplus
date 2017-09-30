@@ -112,7 +112,6 @@ public class jScopeFacade
 
     public static final int MAX_NUM_SHOT = 30;
     public static final int MAX_VARIABLE = 10;
-    private static int spos_x = 100, spos_y = 100;
     static  long refreshPeriod = -1;
 
     JWindow aboutScreen;
@@ -137,19 +136,19 @@ public class jScopeFacade
     /**Menu item on menu autoscale_m */
     private JMenuItem all_i, allY_i;
 
-    private JMenuItem print_i, page_i, properties_i;
+    private JMenuItem print_i, properties_i;
     private String propertiesFilePath = null;
  
     private JPanel panel, panel1;
     private ButtonGroup pointer_mode = new ButtonGroup();
     private JRadioButton zoom, point, copy, pan;
-    private JLabel shot_l, lab;
+    private JLabel shot_l;
     private JTextField shot_t, signal_expr;
     private JButton apply_b;
     private JFileChooser file_diag;
     protected String curr_directory;
     protected String last_directory;
-    private JLabel point_pos, print_icon;
+    private JLabel point_pos;
     private JTextField info_text, net_text;
     private WindowDialog win_diag;
     public ColorDialog color_dialog;
@@ -164,7 +163,6 @@ public class jScopeFacade
     ServerDialog server_diag;
     static boolean not_sup_local = false;
     private boolean executing_update = false;
-    private JFrame main_scope;
 
     private static jScopeFacade win;
     public static boolean busy(){return win.executing_update;}
@@ -478,7 +476,7 @@ public class jScopeFacade
 
         private void SavePubVar()
         {
-            String txt1, txt2, str;
+            String txt1, txt2;
 
             if (name_list.size() != 0)
                 name_list.removeAllElements();
@@ -709,8 +707,6 @@ public class jScopeFacade
         }
         catch (Exception e)
         {}
-
-        main_scope = this;
 
         setBounds(spos_x, spos_y, 750, 550);
 
@@ -1586,7 +1582,6 @@ public class jScopeFacade
                     File jScopeUserDir = new File(curr_directory);
                     if (!jScopeUserDir.exists())
                     {
-                        String s;
                         byte b[] = new byte[1024];
 
                         jScopeUserDir.mkdirs();
@@ -1870,7 +1865,6 @@ public class jScopeFacade
     private void ToFile(PrintWriter out) throws IOException
     {
         Rectangle r = getBounds();
-        Dimension d = getSize();
         setChange(false);
         SetWindowTitle("");
         out.println("Scope.geometry: " + r.width + "x" + r.height + "+" + r.x +
@@ -1931,7 +1925,6 @@ public class jScopeFacade
 
         maxIdx++;
 
-        String ppp = f.getAbsolutePath();
         if( maxIdx  > maxHistory)
         {
             File fd = new File(f.getAbsolutePath() + ";" + (maxIdx - maxHistory));
@@ -2046,12 +2039,6 @@ public class jScopeFacade
         if (curr_directory != null && curr_directory.trim().length() != 0)
             file_diag.setCurrentDirectory(new File(curr_directory));
 
-//       javax.swing.Timer tim = new javax.swing.Timer(20, new ActionListener()
-//       {
-        ByteArrayOutputStream image;
-
-//            public void actionPerformed(ActionEvent ae) {
-
         int returnVal = JFileChooser.CANCEL_OPTION;
         boolean done = false;
 
@@ -2165,8 +2152,6 @@ public class jScopeFacade
 
     public boolean SetDataServer(DataServerItem new_srv_item)
     {
-        String error = null;
-
         try
         {
             wave_panel.SetDataServer(new_srv_item, this);
@@ -2449,7 +2434,7 @@ public class jScopeFacade
 
         if (ob == signal_expr)
         {
-            String error = null, sig = signal_expr.getText().trim();
+            String sig = signal_expr.getText().trim();
 
             if (sig != null && sig.length() != 0)
             {
@@ -2461,8 +2446,6 @@ public class jScopeFacade
 
         if (ob == apply_b || ob == shot_t)
         {
-            String sh =  shot_t.getText();
-
             incShotValue = 0;
 
             if (executing_update)
@@ -3665,11 +3648,8 @@ class ServerDialog
 
     public DataServerItem addServerIp(DataServerItem dsi)
     {
-        int i;
         JMenuItem new_ip;
         DataServerItem found_dsi = null;
-        boolean found = false;
-
         /*
         23-05-2005
         found = ( (found_dsi = findServer(dsi)) != null);
@@ -3756,9 +3736,7 @@ class ServerDialog
 
     public void actionPerformed(ActionEvent event)
     {
-
         Object ob = event.getSource();
-        String arg;
 
         if (ob == exit_b)
             setVisible(false);

@@ -19,8 +19,6 @@ abstract class JiNcVarImp
 	  {
 	  if (bytes.length % 8 != 0)
 	    throw new IOException();
-	  int length = bytes.length / 8;
-
 	  
 	  // Lack of unsigned types make this a real pain...
 	  int count = 0;
@@ -60,7 +58,6 @@ abstract class JiNcVarImp
 	  {
 	  if (bytes.length % 4 != 0)
 	    throw new IOException();
-	  int length = bytes.length / 4;
 
 	  // Lack of unsigned types make this a real pain...
 	  int count = 0;
@@ -87,7 +84,6 @@ abstract class JiNcVarImp
 	  {
 	  if (bytes.length % 4 != 0)
 	    throw new IOException();
-	  int length = bytes.length / 4;
 
 	  // Lack of unsigned types make this a real pain...
 	  int count = 0;
@@ -103,7 +99,6 @@ abstract class JiNcVarImp
 	  {
 	  if (bytes.length % 2 != 0)
 	    throw new IOException();
-	  int length = bytes.length / 2;
 
 	  // Lack of unsigned types make this a real pain...
 	  int count = 0;

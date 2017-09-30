@@ -102,7 +102,7 @@ public class RowColumnContainer extends JComponent
                                Component c[])
     {
 
-      int i, j, k;
+      int i;
       int num_component;
 
       setName("RowColumnContainer");

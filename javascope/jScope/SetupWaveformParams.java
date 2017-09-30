@@ -36,7 +36,6 @@ public class SetupWaveformParams extends JDialog implements ActionListener
    private JCheckBox     reversed_b;
    int	   x_curr_lines_grid = 3,
            y_curr_lines_grid = 3;
-   private boolean is_changed = false;
 
    public SetupWaveformParams(Frame fw, String frame_title)
    {

@@ -673,8 +673,6 @@ public class WavePopup
 
     protected void SetSignalMenu()
     {
-        int sig_idx;
-
         SetMenuItem(false);
         if (wave.GetShowSignalCount() != 0)
         {
@@ -689,7 +687,6 @@ public class WavePopup
         }
         //undo_zoom.setEnabled(wave.undoZoomPendig());
         undo_zoom.setEnabled(wave.undoZoomPendig());
-
     }
 
     protected void InitOptionMenu()

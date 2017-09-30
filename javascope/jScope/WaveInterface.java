@@ -628,7 +628,7 @@ public class WaveInterface
 
     public boolean UpdateShot(long curr_shots[]) throws IOException
     {
-        int l = 0, curr_num_shot;
+        int curr_num_shot;
 
         if (curr_shots == null)
         {
@@ -1072,10 +1072,7 @@ public class WaveInterface
 
     private void InitializeFrames()
     {
-        float f_time[];
-        int j = 0, i = 0;
         curr_error = null;
-        byte buf[];
         WaveformEvent we;
         int mode = this.wave.GetMode();
 
@@ -1376,9 +1373,7 @@ public class WaveInterface
             if(xwd.getNumDimension() == 1)
                 xwd = null; //xwd is different from null ONLY for bidimensional X axis 
         }
-        
-        
-        boolean hasErrors = up_err != null || low_err != null;
+
         if( xDimension == 1)
         {
             if(xLimitsLong)

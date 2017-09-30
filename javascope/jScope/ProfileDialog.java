@@ -16,7 +16,6 @@ public class ProfileDialog extends JDialog implements WaveformListener
     int row[] = {2};
     Waveform wave[] = new Waveform[2];
     Waveform w_profile_line = null;
-    private String name;
     private Waveform source_profile = null;
 
     ProfileDialog(JFrame parent, Waveform source_profile)
@@ -110,9 +109,6 @@ public class ProfileDialog extends JDialog implements WaveformListener
                                             int pixels_y[], int start_pixel_y)
                                             //int pixels_signal[], float frames_time[])
     {
-        float x_null[] = {0.0F, 0.1F};
-        float y_null[] = {0.0F, 0.0F};
-
         //if(!name.equals(this.name))
         {
             //this.name = new String(name);
@@ -164,9 +160,6 @@ public class ProfileDialog extends JDialog implements WaveformListener
                                             float values_y[], int start_pixel_y)
                                            // float values_signal[], float frames_time[])
     {
-        float x_null[] = {0.0F, 0.1F};
-        float y_null[] = {0.0F, 0.0F};
-
         //if(!name.equals(this.name))
         {
             //this.name = new String(name);
@@ -200,11 +193,7 @@ public class ProfileDialog extends JDialog implements WaveformListener
 
     public void processWaveformEvent(WaveformEvent e)
     {
-        String s = null;
-
 	    WaveformEvent we = e;
-	    MultiWaveform w = (MultiWaveform)we.getSource();
-	    WaveInterface  wi = w.getWaveInterface();
 	    int we_id = we.getID();
 
 	    switch(we_id)
