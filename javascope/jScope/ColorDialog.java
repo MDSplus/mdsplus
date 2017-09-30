@@ -593,7 +593,6 @@ class ColorDialog
     {
 
         Object ob = e.getSource();
-        int i;
 
         if (ob == ok)
         {

@@ -48,10 +48,9 @@ public class TextorBrowseSignals extends jScopeBrowseSignals
                 
                 if(sig_path != null)
                 {
-                    String dummy;
                     String group;
                     StringTokenizer st = new StringTokenizer(sig_path, "/");
-                    dummy = st.nextToken();
+                    st.nextToken();
                     server_url = st.nextToken();
                     tree  = st.nextToken();
                     group = st.nextToken();

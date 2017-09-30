@@ -226,7 +226,7 @@ public class Waveform
     }
 
   static String ConvertToString(double f, boolean is_log) {
-    double curr_f, curr_f1;
+    double curr_f;
     double abs_f;
     int exp;
     String out;
@@ -537,16 +537,12 @@ public class Waveform
   }
 
   protected float convertX(int x) {
-    Insets i = getInsets();
     Dimension d = getWaveSize();
-    //return (float)wm.XValue(x - i.right, d);
     return (float) wm.XValue(x, d);
   }
 
   protected float convertY(int y) {
-    Insets i = getInsets();
     Dimension d = getWaveSize();
-    //return (float)wm.YValue(y - i.top, d);
     return (float) wm.YValue(y, d);
   }
 
@@ -554,8 +550,6 @@ public class Waveform
     Dimension d = getWaveSize();
     double curr_x = wm.XValue(end_x, d);
     double curr_y = wm.YValue(end_y, d);
-
-    Point p = FindPoint(curr_x, curr_y, false);
 
     curr_x = wave_point_x;
     curr_y = wave_point_y;
@@ -587,7 +581,6 @@ public class Waveform
   }
 
   protected void setKeys() {
-      final Waveform w = this;
       addKeyListener( new KeyAdapter() {
           public void keyPressed(KeyEvent e)
           {
@@ -638,7 +631,6 @@ public class Waveform
   
 
   protected void setMouse() {
-    final Waveform w = this;
 
     addMouseListener(new MouseAdapter() {
       public void mousePressed(MouseEvent e) {
@@ -648,7 +640,6 @@ public class Waveform
 
         Insets i = getInsets();
         just_deselected = false;
-        Dimension d = getWaveSize();
 
         requestFocus();
 
@@ -769,7 +760,6 @@ public class Waveform
         }
 
         Insets i = getInsets();
-        int idx;
         Dimension d = getWaveSize();
 
         dragging = false;
@@ -853,7 +843,6 @@ public class Waveform
         Insets i = getInsets();
         Dimension d = getWaveSize();
 
-        int curr_width, curr_height;
         int x = e.getX() - i.right;
         int y = e.getY() - i.top;
 
@@ -1501,9 +1490,6 @@ public class Waveform
   }
 
   private void ImageActions(Graphics g, Dimension d) {
-    double curr_x, curr_y;
-    int plot_y;
-
     if (frames != null && frames.getNumFrame() != 0 &&
         (mode == MODE_POINT || mode == MODE_ZOOM)
         && !not_drawn && !is_min_size
@@ -1534,7 +1520,6 @@ public class Waveform
 
   private void SignalActions(Graphics g, Dimension d) {
     double curr_x, curr_y;
-    int plot_y, plot_x;
 
     if (waveform_signal != null && mode == MODE_POINT
         && !not_drawn && !is_min_size && wm != null) {
@@ -1600,21 +1585,16 @@ public class Waveform
       return;
     }
     
-    Insets i = this.getInsets();
-    
     Dimension d = getSize();
     paint(g, d, NO_PRINT);
     
     if (mode == MODE_POINT && send_profile) 
         sendProfileEvent();
-
   }
-
 
   boolean appendPaintFlag = false;
   synchronized public void appendPaint(Graphics g, Dimension d)
   {
-      Insets i = this.getInsets();
       setFont(g);
       g.setColor(Color.black);
       if (!is_image)
@@ -1628,14 +1608,10 @@ public class Waveform
           }
           else
               PaintSignal(g, d, NO_PRINT);
-
       }
       else
           PaintImage(g, d, NO_PRINT);
-
-
   }
-
 
   synchronized public void paint(Graphics g, Dimension d, int print_mode)
   {
@@ -1644,8 +1620,6 @@ public class Waveform
       setFont(g);
       Dimension dim;
 
-      Graphics2D g2D = (Graphics2D) g;
-
       if (   not_drawn
           || prev_width != d.width
           || prev_height != d.height
@@ -1653,7 +1627,6 @@ public class Waveform
           || (is_image && prev_frame != frame)
           || appendPaintFlag)
       {
-
           appendPaintFlag = false;
           not_drawn = false;
           if (print_mode == NO_PRINT)
@@ -2388,7 +2361,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
         return;
       }
 
-      int up, low, x, y;
+      int up, low, x;
       float up_error[] = sig.getUpError();
       float low_error[] = sig.getLowError();
 
@@ -2420,7 +2393,6 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
 
   public synchronized void UpdatePoint(double curr_x, double curr_y) {
     Dimension d = getWaveSize();
-    Insets i = getInsets();
 
     if (curr_x == curr_point && !dragging) {
       return;
@@ -2510,7 +2482,6 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
   }
 
   public void SetScale(Waveform w) {
-    double ymin, ymax, xmin, xmax;
     if (waveform_signal == null) {
       return;
     }

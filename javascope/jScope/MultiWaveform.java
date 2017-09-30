@@ -695,7 +695,6 @@ public class MultiWaveform
         Font f = g.getFont();
         int h = f.getSize() + 2;
         FontMetrics fm = getFontMetrics(f);
-        Signal sign;
 
         if (getSignalCount() == 0)
             return dim;
@@ -797,7 +796,6 @@ public class MultiWaveform
         FontMetrics fm = getFontMetrics(g.getFont());
         String s;
         pts[0] = new Point();
-        Signal sign;
         int curr_width = 0, sum_width = p.x;
         int curr_marker = 0;
 
@@ -1030,8 +1028,8 @@ public class MultiWaveform
     protected Point FindPoint(double curr_x, double curr_y, Dimension d, boolean is_first)
     {
         Signal curr_signal;
-        int curr_idx = -1, i, img_idx = -1, min_idx = 0;
-        double curr_dist = 0, img_dist = Double.MAX_VALUE,  min_dist = Double.MAX_VALUE;
+        int curr_idx = -1, i, img_idx = -1;
+        double curr_dist = 0, min_dist = Double.MAX_VALUE;
 
         if (signals == null || signals.size() == 0)
             return null;
@@ -1056,13 +1054,8 @@ public class MultiWaveform
                 double x2D[] = curr_signal.getX2D();
                 int inc = (int)(x2D.length / 10.) + 1;
                 inc = (curr_idx + inc > x2D.length) ? x2D.length - curr_idx - 1 : inc;
-                if(curr_idx >= 0 && curr_idx < x2D.length)
-                    img_dist = (x2D[curr_idx] - x2D[curr_idx + inc]) *
-                               (x2D[curr_idx] - x2D[curr_idx + inc]);
-                    img_idx = i;
-            }
-            else
-            {
+                img_idx = i;
+            } else {
                 if (curr_signal.hasX())
                     curr_dist = (curr_signal.getY(curr_idx) - curr_y) *
                         (curr_signal.getY(curr_idx) - curr_y) + (curr_signal.getX(curr_idx) - curr_x) *
@@ -1071,7 +1064,6 @@ public class MultiWaveform
                 if (i == 0 || curr_dist < min_dist)
                 {
                     min_dist = curr_dist;
-                    min_idx = curr_idx;
                     curr_point_sig_idx = i;
                 }
                 //System.out.println("cx "+curr_x+"cy "+curr_y+" dist "+curr_dist + " img dist "+ img_dist);
@@ -1466,7 +1458,6 @@ public class MultiWaveform
                               double end_ys,
                               int timestamp)
     {
-        double x_range = end_xs - start_xs;
         if (orig_signals == null)
         {
             orig_signals = new Vector<>();
@@ -1475,7 +1466,6 @@ public class MultiWaveform
             orig_xmin = waveform_signal.getXmin();
             orig_xmax = waveform_signal.getXmax();
         }
-
     }
 
     protected void HandleCopy()

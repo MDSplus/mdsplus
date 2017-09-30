@@ -25,7 +25,6 @@ class TwuSimpleFrameData
     private int st_idx = -1, end_idx = -1;
     private int n_frames = 0;
     private float times[] = null;
-    private int header_size = 0;
     private TwuDataProvider provider = null;
 
     public TwuSimpleFrameData (TwuDataProvider dp,
@@ -35,7 +34,6 @@ class TwuSimpleFrameData
         int i;
         float t;
         float all_times[] = null;
-        int n_all_frames = 0;
 
         this.provider = dp;
         

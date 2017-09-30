@@ -254,7 +254,6 @@ public class MdsConnection
     public synchronized Descriptor getAnswer() throws IOException
     {
         Descriptor out = new Descriptor();
-        int i;
 
         //wait();//!!!!!!!!!!
 
@@ -379,7 +378,6 @@ public class MdsConnection
     // Read either a string or a float array
     public synchronized Descriptor MdsValue(String expr)
     {
-	int i, status;
 	Descriptor out;
         MdsMessage message = new MdsMessage(expr);
 
@@ -507,7 +505,7 @@ public class MdsConnection
 
     public synchronized int AddEvent(UpdateEventListener l, String eventName)
     {
-       int i, eventid = -1;
+       int eventid = -1;
        EventItem eventItem;
 
        if( hashEventName.containsKey(eventName) )
@@ -528,7 +526,7 @@ public class MdsConnection
 
     public synchronized int RemoveEvent(UpdateEventListener l, String eventName)
     {
-        int i, eventid = -1;
+        int eventid = -1;
         EventItem eventItem;
 
         if( hashEventName.containsKey(eventName) )

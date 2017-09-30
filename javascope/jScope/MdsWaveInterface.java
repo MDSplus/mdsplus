@@ -979,7 +979,7 @@ Fix bug : shot expression must be always evaluated.
     public void FromFile(Properties pr, String prompt, ColorMapDialog cmd) throws IOException
     {
         String prop = null;
-        int len, pos, num_expr = 0;
+        int num_expr = 0;
 
         Erase();
 

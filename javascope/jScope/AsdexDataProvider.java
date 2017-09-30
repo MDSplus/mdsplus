@@ -118,7 +118,6 @@ class AsdexDataProvider extends MdsDataProvider
         {
             try
             {
-                double t0 = GetFloat("dscptr(window_of(dim_of(" + expr + ")),2)");
                 int startIdx[] = GetIntArray("begin_of(window_of(dim_of(" +
                                              expr + ")))");
                 int endIdx[] = GetIntArray("end_of(window_of(dim_of(" + expr +
@@ -236,7 +235,6 @@ class AsdexDataProvider extends MdsDataProvider
         RealArray GetXRealData() throws IOException
         {
             String expr = null;
-            boolean isCoded = false;
             double tBaseOut[] = null;
 
             if (in_x == null)

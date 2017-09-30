@@ -147,10 +147,8 @@ public class MultiWavePopup
         if (s_name != null)
         {
 
-            int ccc = signalList.getItemCount();
             if (signalList.getItemCount() != 0)
                 signalList.removeAll();
-            ccc = signalList.getItemCount();
             signalList.setEnabled(s_name.length != 0);
             legend.setEnabled(s_name.length != 0);
 
@@ -171,7 +169,6 @@ public class MultiWavePopup
                     }
                 });
             }
-            ccc = signalList.getItemCount();
         }
 
         if (wave.isFixedLegend())

@@ -151,8 +151,6 @@ public class jScopeMultiWave
 
     public synchronized void jScopeWaveUpdate()
     {
-        String out_error;
-
         if (wi.isAddSignal())
         {
             //reset to previous configuration if signal/s are not added
@@ -287,7 +285,6 @@ public class jScopeMultiWave
 
     public void SetSignalState(String label, boolean state)
     {
-        Signal sig;
         wi.setSignalState(label, state);
         super.SetSignalState(label, state);
     }

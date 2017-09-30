@@ -42,8 +42,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
                           x_grid_lines = 5, y_grid_lines = 5;
    protected boolean      reversed = false;
    private   static Waveform     copy_waveform = null;
-   private static Object  copy_ob = null;
-   private boolean        show_measure = false;
    protected Font         font = new Font("Helvetica", Font.PLAIN, 12);
    protected WavePopup    wave_popup;
 
@@ -366,7 +364,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	                w.show_measure = false;
 	        }
         }
-        show_measure = state;
     }
 
     /*synchronized */public void UpdatePoints(double x, Waveform curr_w)
@@ -737,7 +734,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
             if(i == getGridComponentCount())
             {
                Component c[] = this.CreateWaveComponents(1);
-               int idx = splitContainer(c[0]);
                w = (Waveform)c[0];
             } else {
                w = GetWavePanel(i);
@@ -1092,8 +1088,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
             if (txtsig_file != null)
             {
                 save_as_txt_directory = new String(txtsig_file);
-                String s = "", s1 = "", s2 = "";
-                boolean g_more_point, new_line;
+                String s1 = "", s2 = "";
                 StringBuffer space = new StringBuffer();
 
                 try

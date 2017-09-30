@@ -12,7 +12,7 @@ public class MdsPlusBrowseSignals extends jScopeBrowseSignals
     
     protected String getSignal(String url_name)
     {
-        String sig_path = null, curr_line;
+        String sig_path = null;
         try
         {            
             if(url_name != null)

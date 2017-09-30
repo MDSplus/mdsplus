@@ -18,7 +18,6 @@ import java.awt.print.PageFormat;
 import java.awt.print.PrinterJob;
 import java.io.IOException;
 import java.security.AccessControlException;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -55,9 +54,8 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
         synchronized public Object[] dequeue() throws InterruptedException
         {
-            int numObj;
             Object objects[] = null;
-            while( ( numObj = data.size() ) == 0 )
+            while (data.size() == 0 )
               this.wait();
             objects = data.toArray();
             Object o;
@@ -72,18 +70,14 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         }
     }
 
-
     static public final int CMND_STOP          = -1;
     static public final int CMND_CLEAR         = 0;
     static public final int CMND_ADD           = 1;
-
 
     private WaveformContainer wave_container;
     private boolean           automatic_color = false;
     private boolean           isApplet = true;
     private JLabel            point_pos;
-    private int               print_scaling = 100;
-    private boolean           fixed_legend = false;
 
     static  private JFrame    f = null;
     PrinterJob                prnJob;
@@ -96,7 +90,6 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
     myQueue updSignalDataQeue = new  myQueue();
     AppendThread appendThread;
     ButtonGroup  pointer_mode;
-
 
     private class UpdSignalData
     {
@@ -182,21 +175,12 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
         public void run()
         {
-            float x[];
-            float y[];
-            int numElem, numMsg = 0;
             UpdSignalData usd;
 
             while(true)
             {
                 try {
-                    Date d;
-                    long start, end, end1;
-
                     Object obj[] = updSignalDataQeue.dequeue();
-                    numMsg += obj.length;
-                    d = new Date();
-                    start = d.getTime();
                     for (int j = 0; j < obj.length; j++) {
                         usd = (UpdSignalData) obj[j];
                         if (usd == null)break;
@@ -204,16 +188,11 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
                             return;
                         processPacket(usd);
                     }
-                    d = new Date();
-                    end = d.getTime();
 
                     for (Signal s : signals2DVector)
                         s.setMode2D(Signal.MODE_PROFILE);
 
                     wave_container.appendUpdateWaveforms();
-
-                    d = new Date();
-                    end1 = d.getTime();
 
                     synchronized (this) {
                         if (suspend) {
@@ -645,18 +624,15 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
         global_autentication = getParameter("AUTENTICATION");
 
-        param = getParameter("PRINT_SCALING");
-        if(param != null)
-        {
-            try {
-                print_scaling = Integer.parseInt(param);
-            } catch (NumberFormatException e){}
-        }
+        //param = getParameter("PRINT_SCALING");
+        //if(param != null)
+        //    try {
+        //        print_scaling = Integer.parseInt(param);
+        //    } catch (NumberFormatException e){}
 
         param = getParameter("FIXED_LEGEND");
         if(param != null)
         {
-            fixed_legend = translateToBoolean(param);
             wave_container.setLegendMode(MultiWaveform.LEGEND_BOTTOM);
         }
 
@@ -748,7 +724,6 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
     private String getParameterValue(String context, String param)
     {
-        boolean found = false;
         String value = null;
 
         StringTokenizer st = new StringTokenizer(context);
@@ -919,10 +894,6 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
     public String addSignal(String paramString1, int paramInt1, int paramInt2, String paramString2, String paramString3, boolean paramBoolean, int paramInt3, String paramString4)
   {
     String str1 = null;
-    Object localObject1 = null;
-    Object localObject2 = null;
-    Object localObject3 = null;
-    Object localObject4 = null;
 
     Signal localSignal = null;
     String str2 = null;
@@ -987,7 +958,6 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         MultiWaveform w = null;
         WaveInterface wi = null;
         DataAccess da = null;
-        Signal s;
 
         if(DataAccessURL.getNumProtocols() == 0)
             setDataAccess();

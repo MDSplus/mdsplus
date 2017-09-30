@@ -108,7 +108,6 @@ public class MdsAccess implements DataAccess
                 return;
           }
 
-          String pp = np.GetString("getenv('dico28_path')");
           this.np.Update(this.experiment, shot, true);
         }
         this.signal = st1.nextToken();

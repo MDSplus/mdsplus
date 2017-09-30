@@ -75,7 +75,6 @@ public class ContourSignal
 
   private boolean xflag[][];
   private boolean equalZ2;
-  private boolean edge = false;
 
   ContourSignal(Signal s)
   {
@@ -195,7 +194,6 @@ public class ContourSignal
           {
             try
             {
-              edge = false;
               //System.out.println("Riferimento ["+(ri)+","+(rj)+"]");
               switch (edgeCase)
               {
@@ -295,8 +293,6 @@ public class ContourSignal
                 boolean found = false;
                 int xi, yj;
                 int border;
-
-                edge = true;
 
                 for(border = 0; border < 4 && !found; border++)
                 {

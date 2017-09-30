@@ -202,7 +202,6 @@ public class MdsDataProvider
         private int st_idx = -1, end_idx = -1;
         private int n_frames = 0;
         private float times[] = null;
-        private long  long_times[] = null; 
         private Dimension dim = null;
         private int header_size = 0;
 
@@ -212,7 +211,6 @@ public class MdsDataProvider
             int i;
             float t;
             float all_times[] = null;
-            int n_all_frames = 0;
 
             this.in_y = in_y;
             this.in_x = in_x;
@@ -693,7 +691,6 @@ public class MdsDataProvider
         {
              String xExpr, yExpr;
              XYData res = null;
-             double maxX = 0;
              
              if (!CheckOpen(this.wd_experiment, this.wd_shot))
                 return null;
@@ -804,10 +801,6 @@ public class MdsDataProvider
                             longX[i] = dis.readLong();
                         isXLong = true;
                         res = new XYData(longX, y, dRes);
-                        if(longX.length > 0)
-                            maxX = longX[longX.length - 1];
-                        else 
-                            maxX = 0;
                    }
                     else if(type == 2) //double X
                     {
@@ -815,10 +808,6 @@ public class MdsDataProvider
                         for(int i = 0; i < nSamples; i++)
                             x[i] = dis.readDouble();
                         res = new XYData(x, y, dRes);
-                        if(x.length > 0)
-                            maxX = x[x.length - 1];
-                        else 
-                            maxX = 0;
                     }
                     else //float X
                     {
@@ -826,10 +815,6 @@ public class MdsDataProvider
                         for(int i = 0; i < nSamples; i++)
                             x[i] = dis.readFloat();
                         res = new XYData(x, y, dRes);
-                        if(x.length > 0)
-                            maxX = x[x.length - 1];
-                        else 
-                            maxX = 0;
                    }
                     //Get title, xLabel and yLabel
                    int titleLen = dis.readInt();
