@@ -7,21 +7,7 @@ package jScope;
 // $Id$
 // 
 // -------------------------------------------------------------------------------------------------
-
-import jScope.TWUProperties;
-import jScope.TWUSignal;
-import jScope.TWUFetchOptions;
-import jScope.FakeTWUProperties;
-import jScope.ConnectionEvent;
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.awt.*;
-import javax.swing.*;
-import java.awt.event.*;
-import java.lang.InterruptedException;
-
-// -------------------------------------------------------------------------------------------------
+import java.io.IOException;
 
 public class TwuSingleSignal
 {

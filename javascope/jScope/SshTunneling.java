@@ -1,26 +1,32 @@
 package jScope;
 
-import jScope.DataProvider;
-import java.lang.*;
-import java.io.*;
-import java.awt.*;
-import javax.swing.*;
-import java.awt.event.*;
-
-import java.util.Properties;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.net.Socket;
 
-import com.mindbright.jca.security.SecureRandom;
-import com.mindbright.util.SecureRandomAndPad;
-import com.mindbright.util.RandomSeed;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
-import com.mindbright.ssh2.SSH2Transport;
-import com.mindbright.ssh2.SSH2Connection;
-import com.mindbright.ssh2.SSH2Interactor;
-import com.mindbright.ssh2.SSH2SimpleClient;
-import com.mindbright.ssh2.SSH2Listener;
-import com.mindbright.ssh2.SSH2ConnectionEventAdapter;
+import com.mindbright.jca.security.SecureRandom;
 import com.mindbright.ssh2.SSH2Channel;
+import com.mindbright.ssh2.SSH2Connection;
+import com.mindbright.ssh2.SSH2ConnectionEventAdapter;
+import com.mindbright.ssh2.SSH2Listener;
+import com.mindbright.ssh2.SSH2SimpleClient;
+import com.mindbright.ssh2.SSH2Transport;
+import com.mindbright.util.RandomSeed;
+import com.mindbright.util.SecureRandomAndPad;
 
 public class SshTunneling
     extends Thread

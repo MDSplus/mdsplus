@@ -4,7 +4,6 @@ package jScope;
 import jScope.Waveform;
 import java.awt.*;
 import java.awt.event.*;
-import java.lang.*;
 import java.util.*;
 import java.io.*;
 import javax.swing.*;

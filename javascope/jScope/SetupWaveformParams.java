@@ -1,16 +1,22 @@
 package jScope;
 
-/* $Id$ */
-import jScope.MultiWaveform;
-import jScope.Grid;
-import java.io.*;
-import java.awt.*;
-import java.util.*;
-import java.awt.event.*;
-import java.net.*;
-import java.lang.Integer;
-import javax.swing.*;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class SetupWaveformParams extends JDialog implements ActionListener
 {

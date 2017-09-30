@@ -1,12 +1,15 @@
 package jScope;
 
 /* $Id$ */
-import java.io.*;
-import java.nio.*;
-import java.net.*;
-import java.awt.*;
-import java.util.*;
-import java.util.zip.*;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Vector;
+import java.util.zip.InflaterInputStream;
 
 
 public class MdsMessage extends Object

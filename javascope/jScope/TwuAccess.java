@@ -1,13 +1,7 @@
 package jScope;
 
-/* $Id$ */
-import jScope.Signal;
-import jScope.DataProvider;
-import jScope.FrameData;
-import jScope.DataAccess;
-import java.util.*;
-import java.awt.*;
 import java.io.IOException;
+import java.util.StringTokenizer;
 
 public class TwuAccess implements DataAccess
 {

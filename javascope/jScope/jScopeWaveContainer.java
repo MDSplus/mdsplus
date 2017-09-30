@@ -17,17 +17,14 @@ import java.awt.Graphics;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.TextField;
 import java.util.*;
 import java.io.*;
 import java.net.*;
 import javax.swing.*;
 import javax.print.*;
 import javax.print.attribute.*;
-import javax.print.attribute.standard.*;
 import java.awt.print.*;
 import java.awt.*;
-import java.awt.event.*;
 
 class jScopeWaveContainer
     extends WaveformContainer

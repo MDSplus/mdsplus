@@ -1,10 +1,13 @@
 package jScope;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Toolkit;
+
 /* $Id$ */
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.IOException;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
 
 public class AboutWindow extends JLabel  {
