@@ -1,25 +1,29 @@
 package jScope;
 
-/* $Id$ */
-import jScope.WaveContainerEvent;
-import jScope.WaveContainerListener;
-import jScope.RowColumnContainer;
-import jScope.RowColumnLayout;
-import jScope.MultiWaveform;
-import jScope.Grid;
-import java.io.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.*;
-import java.util.Vector;
-import java.awt.print.*;
-import java.awt.geom.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Properties;
+import java.util.Vector;
+
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.RepaintManager;
-import java.awt.datatransfer.*;
-import javax.swing.*;
 
 /**
  * A MultiWaveform container

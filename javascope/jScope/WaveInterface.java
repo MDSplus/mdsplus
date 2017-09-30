@@ -1,21 +1,11 @@
 package jScope;
 
-/* $Id$ */
-import jScope.WaveData;
-import jScope.SignalBox;
-import jScope.Signal;
-import jScope.MultiWaveform;
-import jScope.DataProvider;
-import jScope.Frames;
-import jScope.FrameData;
-import java.awt.*;
-import java.io.*;
-import java.awt.image.*;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Vector;
 
 public class WaveInterface
 {

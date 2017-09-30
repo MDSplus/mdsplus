@@ -1,8 +1,7 @@
 package jScope;
 
-/* $Id$ */
-import java.util.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintStream;
 
 public class JiNcSource implements JiDataSource 
 {

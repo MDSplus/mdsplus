@@ -1,13 +1,14 @@
 package jScope;
 
-/* $Id$ */
-import jScope.Frames;
-import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.util.*;
-import java.io.*;
-import java.lang.String;
-import javax.swing.TransferHandler;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Polygon;
+import java.util.Vector;
 
 /**
  Class MultiWaveform extends the capability of class Waveform to deal with multiple

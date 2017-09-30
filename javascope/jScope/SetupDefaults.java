@@ -2,11 +2,9 @@ package jScope;
 
 /* $Id$ */
 import jScope.Grid;
-import java.io.*;
 import java.awt.*;
 import java.util.*;
 import java.awt.event.*;
-import java.net.*;
 import java.lang.Integer;
 import javax.swing.*;
 

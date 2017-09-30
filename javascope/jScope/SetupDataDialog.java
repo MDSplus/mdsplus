@@ -5,7 +5,6 @@ import jScope.MdsWaveInterface;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.net.*;
 import java.lang.Integer;
 import java.util.*;
 import javax.swing.*;

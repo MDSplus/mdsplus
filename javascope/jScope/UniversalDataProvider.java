@@ -1,19 +1,10 @@
 package jScope;
 
-/* $Id$ */
-import jScope.TSDataProvider;
-import jScope.DataProvider;
-import jScope.JetMdsDataProvider;
-import jScope.FrameData;
-import jScope.DataServerItem;
-import jScope.MdsDataProvider;
-import jScope.FtuDataProvider;
-import jScope.JetDataProvider;
-import jScope.ConnectionListener;
-import jScope.AsdexDataProvider;
-import java.io.*;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 import javax.swing.JFrame;
-import java.util.*;
 
 class UniversalDataProvider implements DataProvider
 {

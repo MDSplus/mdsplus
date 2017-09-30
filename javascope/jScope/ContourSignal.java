@@ -1,12 +1,8 @@
 package jScope;
 
-import java.io.*;
-import java.awt.*;
-import java.awt.geom.*;
-import java.awt.geom.Point2D.Double;
-import java.text.*;
-import java.util.*;
-import javax.swing.*;
+import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.util.Vector;
 
 public class ContourSignal
 {

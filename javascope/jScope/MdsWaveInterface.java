@@ -1,10 +1,9 @@
 package jScope;
 
-/* $Id$ */
-import jScope.ColorMapDialog;
-import java.io.*;
-import java.awt.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 class MdsWaveInterface
     extends WaveInterface

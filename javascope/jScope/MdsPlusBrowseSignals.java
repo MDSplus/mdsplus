@@ -1,10 +1,7 @@
 package jScope;
 
-/* $Id$ */
-import java.net.*; 
-import java.io.*;
-import java.util.*;
-import javax.swing.JOptionPane;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 public class MdsPlusBrowseSignals extends jScopeBrowseSignals
 {   

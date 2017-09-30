@@ -1,15 +1,14 @@
 package jScope;
 
-/* $Id$ */
-import jScope.ConnectionEvent;
-import jScope.ConnectionListener;
-import java.io.*;
-import java.net.*;
-import java.nio.ByteBuffer;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Hashtable;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 public class MdsConnection

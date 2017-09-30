@@ -17,17 +17,11 @@ package jScope;
 //
 // -------------------------------------------------------------------------------------------------
 
-import jScope.DataProvider;
-import jScope.FrameData;
-import jScope.DataServerItem;
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.awt.*;
-import javax.swing.*;
-import java.awt.event.*;
-import java.lang.InterruptedException;
+import java.io.IOException;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
+import javax.swing.JFrame;
 
 class TwuDataProvider
     implements DataProvider

@@ -1,11 +1,10 @@
 package jScope;
 
-/* $Id$ */
-import java.net.*; 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.StringTokenizer;
+
 import javax.swing.JOptionPane;
-import javax.swing.JEditorPane;
 
 public class TextorBrowseSignals extends jScopeBrowseSignals
 {   

@@ -3,17 +3,13 @@ package jScope;
 import jScope.ConnectionEvent;
 import jScope.ConnectionListener;
 import java.io.*;
-import java.net.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.util.*;
-import java.lang.OutOfMemoryError;
 import java.lang.InterruptedException;
 import javax.imageio.*;
 import javax.swing.*;
 import java.text.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class MdsDataProvider
     implements DataProvider

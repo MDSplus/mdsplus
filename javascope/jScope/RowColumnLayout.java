@@ -1,10 +1,12 @@
 package jScope;
 
-/* $Id$ */
-import jScope.MultiWaveform;
-import java.awt.*;
-import java.util.Vector;
-import java.awt.image.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.LayoutManager;
+import java.awt.Rectangle;
 
 
 /**
