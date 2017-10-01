@@ -1893,7 +1893,7 @@ public class Signal implements WaveDataListener
      */
     public void AutoscaleX()
     {
-        if (type == this.TYPE_2D  && (mode2D == Signal.MODE_IMAGE || mode2D == Signal.MODE_CONTOUR))
+        if (type == TYPE_2D  && (mode2D == Signal.MODE_IMAGE || mode2D == Signal.MODE_CONTOUR))
         {
             xmax = this.x2D_max;
             xmin = this.x2D_min;
@@ -1901,7 +1901,7 @@ public class Signal implements WaveDataListener
         }
 
         double currX[];
-        if(type == this.TYPE_2D && (mode2D == MODE_XZ || mode2D == MODE_YZ))
+        if(type == TYPE_2D && (mode2D == MODE_XZ || mode2D == MODE_YZ))
             currX = sliceX;
         else
             currX = x;
@@ -1923,7 +1923,7 @@ public class Signal implements WaveDataListener
      */
     public void AutoscaleY()
     {
-        if (type == this.TYPE_2D)
+        if (type == TYPE_2D)
         {
             if(mode2D == Signal.MODE_IMAGE || mode2D == Signal.MODE_CONTOUR)
             {
@@ -1948,7 +1948,7 @@ public class Signal implements WaveDataListener
         }
 
         float currY[];
-         if(type == this.TYPE_2D && (mode2D == MODE_XZ || mode2D == MODE_YZ))
+         if(type == TYPE_2D && (mode2D == MODE_XZ || mode2D == MODE_YZ))
             currY = sliceY;
         else
             currY = y;
@@ -1977,7 +1977,7 @@ public class Signal implements WaveDataListener
      */
     public void AutoscaleY(double min, double max)
     {
-        if (type == this.TYPE_2D && (mode2D == Signal.MODE_IMAGE || mode2D == Signal.MODE_CONTOUR))
+        if (type == TYPE_2D && (mode2D == Signal.MODE_IMAGE || mode2D == Signal.MODE_CONTOUR))
         {
             ymin = this.y2D_min;
             ymax = this.y2D_max;
@@ -1986,7 +1986,7 @@ public class Signal implements WaveDataListener
 
         float currY[];
         double currX[];
-        if(type == this.TYPE_2D && (mode2D == MODE_XZ || mode2D == MODE_YZ))
+        if(type == TYPE_2D && (mode2D == MODE_XZ || mode2D == MODE_YZ))
         {
             currY = sliceY;
             currX = sliceX;

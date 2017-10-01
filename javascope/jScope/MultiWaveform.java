@@ -213,7 +213,7 @@ public class MultiWaveform
     public void setLegendMode(int legend_mode)
     {
         this.legend_mode = legend_mode;
-        if (legend_mode != this.LEGEND_IN_GRAPHICS)
+        if (legend_mode != LEGEND_IN_GRAPHICS)
             fixed_legend = true;
         else
             fixed_legend = false;
