@@ -1,6 +1,6 @@
-import javax.swing.*;
-import java.awt.*;
-import java.util.*;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 public  class  DeviceWaveParameters extends DeviceParameters
 {
      public DeviceWaveParameters(){}

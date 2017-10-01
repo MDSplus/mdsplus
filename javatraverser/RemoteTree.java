@@ -1,5 +1,5 @@
-import java.rmi.*;
-import java.rmi.RemoteException.*;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 public interface RemoteTree extends Remote {
     public void setTree(String experiment, int shot) throws RemoteException;

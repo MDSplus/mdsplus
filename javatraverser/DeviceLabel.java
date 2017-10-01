@@ -1,11 +1,13 @@
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.FontMetrics;
 
-public class DeviceLabel
-    extends DeviceComponent
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+public class DeviceLabel extends DeviceComponent
 {
   Data data;
   public boolean textOnly = false;
