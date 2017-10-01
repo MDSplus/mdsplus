@@ -1,6 +1,7 @@
-import java.beans.*;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Image;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.beans.SimpleBeanInfo;
 
 public class DeviceParametersBeanInfo extends SimpleBeanInfo
 {

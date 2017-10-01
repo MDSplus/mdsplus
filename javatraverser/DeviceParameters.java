@@ -1,6 +1,7 @@
-import javax.swing.*;
-import java.awt.*;
-import java.util.*;
+import java.util.Vector;
+
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 public class  DeviceParameters extends DeviceMultiComponent
 {
 

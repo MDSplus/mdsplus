@@ -1,8 +1,9 @@
-import java.awt.*;
-import javax.swing.*;
-import java.util.*;
-import java.io.*;
-import jScope.*;
+import java.awt.Panel;
+import java.util.StringTokenizer;
+
+import javax.swing.JOptionPane;
+
+import jScope.MdsDataProvider;
 public class DeviceCustomizer extends Panel
 {
 
