@@ -3238,6 +3238,7 @@ If you did intend to write to a subnode of the device you should check the prope
                                 try:
                                     devnam=fname[:-3].upper()
                                     __import__(fname[:-3]).__dict__[devnam]
+                                    ans.append(devnam)                                   
                                 except:
                                     pass
                     finally:
