@@ -1351,9 +1351,6 @@ AC_OUTPUT(Makefile.inc
           servershr/Makefile
           setevent/Makefile
           tcl/Makefile
-	  tdi/MitDevices/_version.py
-	  tdi/RfxDevices/_version.py
-	  tdi/W7xDevices/_version.py
           tdishr/Makefile
           tdishr/testing/Makefile
           tdic/Makefile

@@ -51,10 +51,11 @@ class Tests(TestCase):
                     treepath="%s"
                 cls.tmpdir = mkdtemp()
                 cls.root = os.path.dirname(os.path.realpath(__file__))
+                cls.topsrc = os.path.realpath(cls.root+"%s..%s..%s.."%tuple([os.sep]*3))
                 cls.env = dict((k,str(v)) for k,v in os.environ.items())
                 cls.envx= {}
                 cls._setenv('PyLib',getenv('PyLib'))
-                cls._setenv("MDS_PYDEVICE_PATH",'%s/devices'%cls.root)
+                cls._setenv("MDS_PYDEVICE_PATH",'%s/pydevices;%s/devices'%(cls.topsrc,cls.root))
                 cls._setenv("pytree_path",treepath%cls.tmpdir)
                 cls._setenv("pytreesub_path",treepath%cls.tmpdir)
                 if getenv("testing_path") is None:
