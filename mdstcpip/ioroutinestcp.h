@@ -300,15 +300,12 @@ static int io_listen(int argc, char **argv){
   return C_ERROR;
 }
 
-static int io_settimeout(int conid, int sec, int usec) {
+static int io_settimeout(int conid, int sec __attribute__ ((unused)), int usec __attribute__ ((unused))) {
   SOCKET sock = getSocket(conid);
   if (sock != INVALID_SOCKET) {
-    if (sec>0 || (sec==0 && usec >0)){
-      struct timeval tv = {sec, usec};
-      return setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv,sizeof(struct timeval));
-    }
-    // disable timeout
-    return setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, NULL, 0);
+    //      struct timeval tv = {sec, usec};
+    //  return setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv,sizeof(struct timeval));
+    return 0;
   }
   return C_ERROR;
 }
