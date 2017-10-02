@@ -84,7 +84,7 @@ rundocker(){
         else port_forwarding="-p ${FORWARD_PORT}:${FORWARD_PORT}"
              echo $port_forwarding
         fi
-        docker run -t $stdio --cidfile=${WORKSPACE}/${OS}_docker-cid \
+        docker run --cap-add=SYS_PTRACE -t $stdio --cidfile=${WORKSPACE}/${OS}_docker-cid \
            -u $(id -u):$(id -g) \
            -h $DISTNAME \
            -e "ARCH=${arch}" \
