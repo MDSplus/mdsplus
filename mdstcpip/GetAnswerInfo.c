@@ -31,14 +31,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////
 
 __attribute__((deprecated))
-int GetAnswerInfo(int id, char *dtype, short *length, char *ndims, int *dims, int *numbytes,
-		  void **dptr, int timeout_sec){
+int GetAnswerInfo(int id, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void **dptr){
   static void *m = 0;
   if (m) {
     free(m);
     m=NULL;
   }
-  return GetAnswerInfoTS(id, dtype, length, ndims, dims, numbytes, dptr, &m, timeout_sec);
+  return GetAnswerInfoTS(id, dtype, length, ndims, dims, numbytes, dptr, &m);
 }
 
 
@@ -46,14 +45,19 @@ int GetAnswerInfo(int id, char *dtype, short *length, char *ndims, int *dims, in
 //  GetAnswerInfoTS  ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims, int *dims, int *numbytes,
-		    void **dptr, void **mout, int timeout_sec){
+inline int GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void **dptr, void **mout){
+  return GetAnswerInfoTO(id, dtype, length, ndims, dims, numbytes, dptr, mout, -1);
+}
+
+
+int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims, int *dims, int *numbytes,
+		    void **dptr, void **mout, int timeout_msec){
   INIT_STATUS;
   int i;
   Message *m;
   *mout = 0;
   *numbytes = 0;
-  m = GetMdsMsgTO(id, &status,timeout_sec);
+  m = GetMdsMsgTO(id, &status, timeout_msec);
   if STATUS_NOT_OK {
     *dtype = 0;
     *length = 0;
