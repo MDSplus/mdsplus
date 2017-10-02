@@ -83,15 +83,12 @@ fi
     <requires package="mitdevices_bin"/>
     <include dir="/usr/local/mdsplus/tdi/MitDevices"/>
     <include dir="/usr/local/mdsplus/pydevices/MitDevices"/>
-    <prerm>
+    <postinst>
 
-if [ "$1" == "0" ]
-then
 rm -Rf %{python_sitelib}/MitDevices*
 rm -Rf %{python_sitelib}/*mitdevices*
-fi
 
-    </prerm>
+    </postinst>
   </package>
 
   <package name="mitdevices_bin" arch="bin" summary="Libraries used for mitdevices" description="Libraries used for mitdevices">
@@ -522,29 +519,23 @@ fi
     <include dir="/usr/local/mdsplus/tdi/RfxDevices"/>
     <include dir="/usr/local/mdsplus/pydevices/RfxDevices"/>
     <include file="/usr/local/mdsplus/java/classes/jDevices.jar"/>
-    <prerm>
+    <postinst>
 
-if [ "$1" == "0" ]
-then
 rm -Rf %{python_sitelib}/RfxDevices*
 rm -Rf %{python_sitelib}/*rfxdevices*
-fi
 
-    </prerm>
+    </postinst>
 
   </package>
   <package name="w7xdevices" arch="noarch" summary="Support for W7x data acquisition devices" description="Support for W7x data acquisition devices">
     <requires package="python"/>
     <include dir="/usr/local/mdsplus/pydevices/W7xDevices"/>
-    <prerm>
+    <postinst>
 
-if [ "$1" == "0" ]
-then
 rm -Rf %{python_sitelib}/W7xDevices*
 rm -Rf %{python_sitelib}/*w7xdevices*
-fi
 
-    </prerm>
+    </postinst>
 
   </package>
 
