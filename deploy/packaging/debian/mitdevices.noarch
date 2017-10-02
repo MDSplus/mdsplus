@@ -34,15 +34,6 @@
 ./usr/local/mdsplus/pydevices/MitDevices/raspicam.py
 ./usr/local/mdsplus/pydevices/MitDevices/timeSignature.py
 ./usr/local/mdsplus/pydevices/MitDevices/transport.py
-./usr/local/mdsplus/tdi/MitDevices/ACQ132.glade
-./usr/local/mdsplus/tdi/MitDevices/ACQ196.glade
-./usr/local/mdsplus/tdi/MitDevices/ACQ196_FTP.glade
-./usr/local/mdsplus/tdi/MitDevices/ACQ216.glade
-./usr/local/mdsplus/tdi/MitDevices/ACQ216_FTP.glade
-./usr/local/mdsplus/tdi/MitDevices/CP7452.glade
-./usr/local/mdsplus/tdi/MitDevices/DT132.glade
-./usr/local/mdsplus/tdi/MitDevices/DT196B.glade
-./usr/local/mdsplus/tdi/MitDevices/DT216B.glade
 ./usr/local/mdsplus/tdi/MitDevices/Dt196AOSendFiles.fun
 ./usr/local/mdsplus/tdi/MitDevices/Dt196AOWriteOutput.fun
 ./usr/local/mdsplus/tdi/MitDevices/Dt196GetPostSamples.fun
