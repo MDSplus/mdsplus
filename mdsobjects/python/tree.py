@@ -3272,6 +3272,7 @@ If you did intend to write to a subnode of the device you should check the prope
                     try:
                         return __import__(package).__dict__[modname]
                     except ImportError: pass
+                    except KeyError: pass
             module = Device.importPyDeviceModule(model)
         else:
             MODEL = model.upper()
