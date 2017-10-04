@@ -40,9 +40,13 @@ _MdsShr=_ver.load_library('MdsShr')
 #
 #############################################
 
-def pointerToObject(pointer):
+def pointerToObject(pointer,tree=None):
     if not pointer: return None
-    return Descriptor(pointer).value
+    d=Descriptor(pointer)
+    if tree is None:
+        raise Exception
+    d.tree=tree
+    return d.value
 
 class Descriptor(object):
     tree=None
@@ -58,7 +62,12 @@ class Descriptor(object):
     @property
     def value(self):
         if self.dclass:
-            return self.desc_class(self._structure,self.__dict__)._setCtx(self.ctx).value
+            d=self.desc_class(self._structure,self.__dict__)._setCtx(self.ctx)
+            try:
+                d.tree=self.tree
+            except:
+                pass
+            return d.value
     def _setCtx(self,ctx):
         self.ctx=ctx
         return self
@@ -154,7 +163,12 @@ class Descriptor_xs(Descriptor_s):
     @property
     def value(self):
         if self.l_length and self.pointer:
-            return Descriptor(self.pointer,self.__dict__)._setCtx(self.ctx).value
+            d = Descriptor(self.pointer,self.__dict__)._setCtx(self.ctx)
+            try:
+                d.tree = self.tree
+            except:
+                pass
+            return d.value
 
 class Descriptor_xd(Descriptor_xs):
     dclass_id = 192

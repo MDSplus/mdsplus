@@ -67,12 +67,25 @@ class Apd(_array.Array):
             d.pointer=_C.cast(_C.pointer(descs_ptrs),_C.c_void_p)
         d.a0=d.pointer
         return _compound.Compound._descriptorWithProps(self,d)
+    @property
+    def tree(self):
+        for desc in self.descs:
+            if isinstance(desc,_data.Data):
+                tree=desc.tree
+                if tree is not None:
+                    return tree
+        return None
+    @tree.setter
+    def tree(self,tree):
+        for desc in self.descs:
+            if isinstance(desc,_data.Data):
+                desc.tree=tree
 
     @classmethod
     def fromDescriptor(cls,d):
         num   = int(d.arsize/d.length)
         dptrs = _C.cast(d.pointer,_C.POINTER(_C.c_void_p*num)).contents
-        descs = [_descriptor.pointerToObject(dptr) for dptr in dptrs]
+        descs = [_descriptor.pointerToObject(dptr,d.tree) for dptr in dptrs]
         return cls(descs)._setCtx(d.ctx)
 
 
