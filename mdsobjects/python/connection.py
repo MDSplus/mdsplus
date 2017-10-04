@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,6 @@ _sca=_mimport('mdsscalar')
 _arr=_mimport('mdsarray')
 _dat=_mimport('mdsdata')
 _ver=_mimport('version')
-_statToEx=_exc.MDSplusException
 
 class MdsIpException(_exc.MDSplusException):
   pass
@@ -103,7 +102,7 @@ class Connection(object):
         ans=_C.c_void_p(0)
         mem=_C.c_void_p(0)
         try:
-            _exc.checkStatus(_GetAnswerInfoTO(self.socket,dtype,length,ndims,dims.ctypes.data,numbytes,_C.byref(ans),_C.byref(mem)),int(to_msec))
+            _exc.checkStatus(_GetAnswerInfoTO(self.socket,dtype,length,ndims,dims.ctypes.data,numbytes,_C.byref(ans),_C.byref(mem),int(to_msec)))
             dtype=dtype.value
             if   dtype == 10: dtype = 52
             elif dtype == 11: dtype = 53
@@ -233,7 +232,8 @@ class Connection(object):
                 args=kwargs['arglist']
             timeout = kwargs.get('timeout',-1)
             num=len(args)+1
-            _exc.checkStatus(_SendArg(self.socket,0,14,num,len(exp),0,0,_C.c_char_p(_ver.tobytes(exp))))
+            exp = _ver.tobytes(exp)
+            _exc.checkStatus(_SendArg(self.socket,0,14,num,len(exp),0,0,_C.c_char_p(exp)))
             for i,arg in enumerate(args):
                 self.__sendArg__(arg,i+1,num)
             return self.__getAnswer__(timeout)
@@ -253,7 +253,7 @@ class Connection(object):
         """ deprecated """
         raise(MdsIpException('\nThe subclass "Connection.PutMany" is now a class of it own.\nUse "PutMany" instead.'))
 
-class GetMany(_apd.List):
+class GetMany(_apd.Dictionary):
     """Build a list of expressions to evaluate
 
     To reduce the number of network transactions between you and the remote system you can
@@ -281,7 +281,7 @@ class GetMany(_apd.List):
     def __init__(self,value=None,connection=None):
         """GetMany instance initialization."""
         if value is not None:
-            _apd.List.__init__(self,value)
+            super(GetMany,self).__init__(value)
         self.connection=connection
         self.result=None
 
@@ -364,13 +364,13 @@ class GetMany(_apd.List):
         raise MdsIpException("Item %s not found in list" % (name,))
 
 
-class PutMany(_apd.List):
+class PutMany(_apd.Dictionary):
     """Build list of put instructions."""
 
     def __init__(self,value=None,connection=None):
         """Instance initialization"""
         if value is not None:
-            _apd.List.__init__(self,value)
+            super(PutMany,self).__init__(value)
         self.connection=connection
         self.result=None
 
@@ -414,7 +414,7 @@ class PutMany(_apd.List):
                     args = [node,val['exp']]+val['args']
                     _exc.checkStatus(_dat.Data.execute(exp,tuple(args)))
                     self.result[node] = 'Success'
-                except MDSplusException as exc:
+                except _exc.MDSplusException as exc:
                     self.result[node] = exc.message
                 except Exception as exc:
                     self.result[node] = str(exc)
