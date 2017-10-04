@@ -959,27 +959,27 @@ class Tree(object):
 
     def tcl(self,cmd,*args,**kwargs):
         """tree ctx specific tcl command"""
-        kwargs['ctx'] = self.ctx
+        kwargs['tree'] = self
         return _dcl.tcl(cmd,*args,**kwargs)
 
     def tdiCompile(self,*args,**kwargs):
         """Compile a TDI expression. Format: tdiCompile('expression-string',(arg1,...))"""
-        kwargs['ctx'] = self.ctx
+        kwargs['tree']=self
         return _dat.TdiCompile(*args,**kwargs)
 
     def tdiExecute(self,*args,**kwargs):
         """Compile and execute a TDI expression. Format: tdiExecute('expression-string',(arg1,...))"""
-        kwargs['ctx'] = self.ctx
+        kwargs['tree'] = self
         return _dat.TdiExecute(*args,**kwargs)
 
     def tdiEvaluate(self,arg,**kwargs):
         """Evaluate and functions. Format: tdiEvaluate(data)"""
-        kwargs['ctx'] = self.ctx
+        kwargs['tree'] = self
         return _dat.TdiEvaluate(arg,**kwargs)
 
     def tdiData(self,arg,**kwargs):
         """Return primitive data type. Format: tdiData(value)"""
-        kwargs['ctx'] = self.ctx
+        kwargs['tree'] = self.tree
         return _dat.TdiData(arg,**kwargs)
 
 class TreeNode(_dat.Data): # HINT: TreeNode begin
@@ -2624,6 +2624,11 @@ class TreePath(TreeNode): # HINT: TreePath begin
 
 
 class TreeNodeArray(_arr.Int32Array): # HINT: TreeNodeArray begin
+    @property
+    def tree(self): return self._tree
+    @tree.setter
+    def tree(self,tree):
+        self._tree=tree
     def __new__(cls,nids,*tree,**kw):
         return super(TreeNodeArray,cls).__new__(cls,nids)
     def __init__(self,nids,*tree,**kw):

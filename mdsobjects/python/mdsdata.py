@@ -68,12 +68,15 @@ def _TdiShrFun(function,errormessage,expression,*args,**kwargs):
             tree=arg.tree
             if tree is not None:
                 break
+    if tree is None:
+        try:
+            tree=Tree();
+        except:
+            pass
     if tree is not None:
         ctx=tree.ctx
     elif "ctx" in kwargs:
         ctx = kwargs["ctx"]
-    elif "tree" in kwargs:
-        ctx = kwargs["tree"].ctx
     else:
         ctx = None
         for arg in dargs:
@@ -89,7 +92,10 @@ def _TdiShrFun(function,errormessage,expression,*args,**kwargs):
         _tre._TreeCtx.popCtx()
     xd.tree=tree
     ans = xd.value
-    ans.tree = tree
+    try:
+        ans.tree = tree
+    except:
+        pass
     return ans
 
 def TdiCompile(expression,*args,**kwargs):

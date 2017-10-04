@@ -203,16 +203,19 @@ class Compound(_dat.Data):
             dunits=WithUnits(None,value._units).descriptor
             dunits.dscptrs[0]=dsc.ptr_
             dunits.array[0]  =dsc
+            dunits.tree=value.tree
             dsc = dunits
         if value._error is not None:
             derror=WithError(None,value._error).descriptor
             derror.dscptrs[0]=dsc.ptr_
             derror.array[0]  =dsc
+            derror.tree=value.tree
             dsc = derror
         if value._help is not None or value._validation is not None:
             dparam=Parameter(None,value._help,value._validation).descriptor
             dparam.dscptrs[0]=dsc.ptr_
             dparam.array[0]  =dsc
+            dparam.tree=value.tree
             dsc = dparam
         return dsc
 
@@ -243,6 +246,7 @@ class Compound(_dat.Data):
             else:
                 opcptr=_C.cast(d.pointer,_C.POINTER(_C.c_uint32))
             ans.opcode = opcptr.contents.value
+        ans.tree=d.tree
         return ans
 
 class Action(Compound):
