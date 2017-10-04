@@ -733,8 +733,8 @@ class Data(object):
         """
         xd=_dsc.Descriptor_xd()
         _exc.checkStatus(
-            _MdsShr.MdsSerializeDscOut(self.descrPtr,
-                                       xd.ptr))
+            _MdsShr.MdsSerializeDscOut(self.ref,
+                                       xd.byref))
         return xd.value
 
     @staticmethod
@@ -749,7 +749,7 @@ class Data(object):
         xd=_dsc.Descriptor_xd()
         _exc.checkStatus(
             _MdsShr.MdsSerializeDscIn(_C.c_void_p(bytes.ctypes.data),
-                                      xd.ptr))
+                                      xd.byref))
         return xd.value
 
 makeData=Data
