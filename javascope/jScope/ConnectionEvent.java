@@ -2,7 +2,7 @@ package jScope;
 
 /* $Id$ */
 import java.awt.AWTEvent;
-import java.awt.Event;
+import java.sql.Connection;
 
 /**
  * ConnectionEvent instances describe the current status of the data transfer and are passed by the DataProvider

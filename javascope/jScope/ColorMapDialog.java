@@ -152,7 +152,6 @@ public class ColorMapDialog
         int r[] = new int[256];
         int g[] = new int[256];
         int b[] = new int[256];
-        int colorMapIdx = 0;
         for (int i = 0; i < nameColorTables.length; i++)
         {
             for (int j = 0; j < 256; j++)

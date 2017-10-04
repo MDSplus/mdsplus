@@ -7,18 +7,7 @@ package jScope;
 // $Id$
 //
 // ---------------------------------------------------------------------------------------------
-
-import jScope.TWUProperties;
-import jScope.TWUFetchOptions;
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.awt.*;
-import javax.swing.*;
-import java.awt.event.*;
-import java.lang.InterruptedException;
-
-// ---------------------------------------------------------------------------------------------
+import java.io.IOException;
 
 class TwuWaveData
     implements WaveData

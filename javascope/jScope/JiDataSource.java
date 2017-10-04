@@ -1,8 +1,7 @@
 package jScope;
 
 /* $Id$ */
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
 
 /**
  * Interface for reading scientific data sets

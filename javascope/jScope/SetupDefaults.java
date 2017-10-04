@@ -2,11 +2,9 @@ package jScope;
 
 /* $Id$ */
 import jScope.Grid;
-import java.io.*;
 import java.awt.*;
 import java.util.*;
 import java.awt.event.*;
-import java.net.*;
 import java.lang.Integer;
 import javax.swing.*;
 
@@ -37,11 +35,9 @@ public class SetupDefaults extends JDialog implements ActionListener
            x_curr_lines_grid = 3,
            y_curr_lines_grid = 3,
            curr_legend_mode = 0;
-   private boolean is_changed = false;
 
    public SetupDefaults(Frame fw, String frame_title, jScopeDefaultValues def_vals)
    {
-
       super(fw, frame_title, true);
       setModal(true);
 

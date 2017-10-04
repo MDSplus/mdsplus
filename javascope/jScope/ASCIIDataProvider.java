@@ -133,7 +133,6 @@ class ASCIIDataProvider implements DataProvider
         
         private boolean setPropValues(String in, Properties prop)
         {
-            String str, p1, p2;
             boolean propertiesFile = false;
             
             try
@@ -248,7 +247,6 @@ class ASCIIDataProvider implements DataProvider
             StringTokenizer st = new StringTokenizer(val,",");
             int num = st.countTokens();
             float out[] = new float[num];
-            float d;
             String d_st;
             int i = 0;
             try
@@ -520,8 +518,6 @@ class ASCIIDataProvider implements DataProvider
         String n;
         byte buf[] = null;
         long size = 0;
-        long new_size;
-        String l[] = null;
         int i = frame_idx;
 
         String in , ext;

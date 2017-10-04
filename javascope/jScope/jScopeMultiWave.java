@@ -1,25 +1,18 @@
 package jScope;
 
-/* $Id$ */
-import jScope.WaveformEvent;
-import jScope.WaveInterface;
-import jScope.Waveform;
-import jScope.UpdateEvent;
-import jScope.UpdateEventListener;
-import jScope.TwuNameServices;
-import jScope.Signal;
-import jScope.MultiWaveform;
-import jScope.DataProvider;
-import jScope.FrameData;
-import jScope.MdsWaveInterface;
-import jScope.ColorMap;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
-import java.util.*;
-import java.io.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.RenderedImage;
+import java.io.IOException;
+import java.util.StringTokenizer;
+
 import javax.swing.SwingUtilities;
-import java.awt.image.*;
-import java.awt.geom.*;
 import javax.swing.TransferHandler;
 
 /**
@@ -158,8 +151,6 @@ public class jScopeMultiWave
 
     public synchronized void jScopeWaveUpdate()
     {
-        String out_error;
-
         if (wi.isAddSignal())
         {
             //reset to previous configuration if signal/s are not added
@@ -294,7 +285,6 @@ public class jScopeMultiWave
 
     public void SetSignalState(String label, boolean state)
     {
-        Signal sig;
         wi.setSignalState(label, state);
         super.SetSignalState(label, state);
     }

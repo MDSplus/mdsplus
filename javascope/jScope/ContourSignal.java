@@ -1,12 +1,8 @@
 package jScope;
 
-import java.io.*;
-import java.awt.*;
-import java.awt.geom.*;
-import java.awt.geom.Point2D.Double;
-import java.text.*;
-import java.util.*;
-import javax.swing.*;
+import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.util.Vector;
 
 public class ContourSignal
 {
@@ -79,7 +75,6 @@ public class ContourSignal
 
   private boolean xflag[][];
   private boolean equalZ2;
-  private boolean edge = false;
 
   ContourSignal(Signal s)
   {
@@ -119,10 +114,10 @@ public class ContourSignal
     return out;
   }
 
-  public Vector<Vector> contour(double level)
+  public Vector<Vector<Point2D.Double>> contour(double level)
   {
-    Vector<Vector> contours = new Vector<Vector>();
-    Vector<Point2D.Double> contour = new Vector<Point2D.Double>();
+    Vector<Vector<Point2D.Double>> contours = new Vector<>();
+    Vector<Point2D.Double> contour = new Vector<>();
 
     double x1, y1, z1;
     double x2, y2, z2;
@@ -199,7 +194,6 @@ public class ContourSignal
           {
             try
             {
-              edge = false;
               //System.out.println("Riferimento ["+(ri)+","+(rj)+"]");
               switch (edgeCase)
               {
@@ -299,8 +293,6 @@ public class ContourSignal
                 boolean found = false;
                 int xi, yj;
                 int border;
-
-                edge = true;
 
                 for(border = 0; border < 4 && !found; border++)
                 {

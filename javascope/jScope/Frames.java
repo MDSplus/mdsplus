@@ -1,11 +1,27 @@
 package jScope;
 
 /* $Id$ */
-import java.awt.*;
-import java.io.*;
-import java.awt.image.*;
-import java.awt.color.*;
-import java.util.*;
+import java.awt.Canvas;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferUShort;
+import java.awt.image.PixelGrabber;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
+
 import javax.imageio.ImageIO;
 
 class Frames extends Canvas
@@ -82,11 +98,11 @@ class Frames extends Canvas
             bitClip = false;
             colorMap = new ColorMap();
             recentFrames = new Hashtable<>();
-            Enumeration fds = fc.recentFrames.keys();
+            Enumeration<Integer> fds = fc.recentFrames.keys();
             while(fds.hasMoreElements())
             {
-                Integer idx = (Integer)fds.nextElement();
-                FrameDescriptor fDescr = (FrameDescriptor)fc.recentFrames.get(idx);
+                Integer idx = fds.nextElement();
+                FrameDescriptor fDescr = fc.recentFrames.get(idx);
                 recentFrames.put(idx, fDescr);
             }
 
@@ -431,14 +447,11 @@ class Frames extends Canvas
     Frames(Frames frames)
     {
         this();
-        Image img;
-
         cache = new FrameCache(frames.cache);
 
         if(frame_time.size() != 0)
             frame_time.removeAllElements();
 
-        float buf_values[] = null;
         if(frames.zoom_rect != null)
             zoom_rect = new Rectangle(frames.zoom_rect);
         if(frames.view_rect != null)
@@ -685,10 +698,6 @@ class Frames extends Canvas
 */
     public void shiftImagePixel(int bitShift, boolean bitClip)
     {
-        BufferedImage bi;
-        float values[] = null; 
-        boolean right = false;
- 
         cache.shiftImagePixel(bitShift, bitClip);
     }
 /*
@@ -787,7 +796,7 @@ class Frames extends Canvas
 
         int img_size = d.height*d.width * num_byte_pixel;
         byte tmp[] = new byte[img_size];
-        int i, j , k , l, ofs;
+        int j , k , l;
 
         int h = vertical_flip ? d.height - 1: 0;
         int w = horizontal_flip ? d.width - 1: 0;
@@ -977,7 +986,7 @@ class Frames extends Canvas
     {
         Point p;
         int n_point = (int) (Math.sqrt( Math.pow((double)(st_x - end_x), 2.0) + Math.pow((double)(st_y - end_y), 2.0)) + 0.5);
-        int e_x, s_x, x, y;
+        int x, y;
         int pixels_line[] = {pixel_array[(st_y * img_width) + st_x], pixel_array[(st_y * img_width) + st_x]};
 
         grabFrame();
@@ -1006,7 +1015,7 @@ class Frames extends Canvas
     {
         Point p;
         int n_point = (int) (Math.sqrt( Math.pow((double)(st_x - end_x), 2.0) + Math.pow((double)(st_y - end_y), 2.0)) + 0.5);
-        int e_x, s_x, x, y;
+        int x, y;
         //float values_line[] = {values_array[(st_y * img_width) + st_x], values_array[(st_y * img_width) + st_x]};
         float values_line[]; 
             
