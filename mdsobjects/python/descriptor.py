@@ -43,8 +43,6 @@ _MdsShr=_ver.load_library('MdsShr')
 def pointerToObject(pointer,tree=None):
     if not pointer: return None
     d=Descriptor(pointer)
-    if tree is None:
-        raise Exception
     d.tree=tree
     return d.value
 
