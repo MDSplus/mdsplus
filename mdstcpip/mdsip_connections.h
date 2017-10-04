@@ -135,6 +135,7 @@ typedef struct _mds_message {
 /// | authorize  | authorize client with username    |
 /// | reuseCheck |                                   |
 /// | disconnect | clear connection instance         |
+/// | recv_to    | receive buffer from cocnection with time out |
 ///
 typedef struct _io_routines {
   int (*connect)(int conid, char *protocol, char *connectString);
@@ -145,7 +146,7 @@ typedef struct _io_routines {
   int (*authorize)(int conid, char *username);
   int (*reuseCheck)(char *connectString, char *uniqueString, size_t buflen);
   int (*disconnect)(int conid);
-  int (*settimeout)(int conid, int sec, int usec);
+  ssize_t (*recv_to)(int conid, void *buffer, size_t len, int to_msec);
 } IoRoutines;
 
 #define EVENTASTREQUEST "---EVENTAST---REQUEST---"
@@ -339,7 +340,7 @@ EXPORT void FreeMessage(void *message);
 /// \return the function returns the status held by the answered descriptor.
 ///
 EXPORT int GetAnswerInfo(int id, char *dtype, short *length, char *ndims,
-                         int *dims, int *numbytes, void **dptr, int timeout);
+                         int *dims, int *numbytes, void **dptr);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -361,6 +362,8 @@ EXPORT int GetAnswerInfo(int id, char *dtype, short *length, char *ndims,
 /// \return the function returns the status held by the answered descriptor
 ///
 EXPORT int GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims,
+                           int *dims, int *numbytes, void **dptr, void **m);
+EXPORT int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims,
                            int *dims, int *numbytes, void **dptr, void **m, int timeout);
 
 ////////////////////////////////////////////////////////////////////////////////

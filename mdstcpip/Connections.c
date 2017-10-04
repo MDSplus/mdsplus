@@ -31,26 +31,45 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "mdsip_connections.h"
 
-static Connection *ConnectionList = 0;
+static Connection *ConnectionList = NULL;
 static pthread_mutex_t connection_mutex = PTHREAD_MUTEX_INITIALIZER;
-static void UnlockConnection(){  pthread_mutex_unlock(&connection_mutex); }
-#define CONNECTIONLIST_LOCK   pthread_mutex_lock(&connection_mutex);pthread_cleanup_push(UnlockConnection, NULL);
+inline static void LockConnection() {
+#ifdef DEBUG
+fprintf(stderr,"connection->lock");
+#endif
+pthread_mutex_lock(&connection_mutex);
+#ifdef DEBUG
+fprintf(stderr,"ed\n");
+#endif
+}
+static void UnlockConnection(){
+pthread_mutex_unlock(&connection_mutex);
+#ifdef DEBUG
+fprintf(stderr,"connection->unlocked\n");
+#endif
+}
+#define CONNECTIONLIST_LOCK   LockConnection();pthread_cleanup_push(UnlockConnection, NULL);
 #define CONNECTIONLIST_UNLOCK pthread_cleanup_pop(1);
 
-Connection *FindConnection(int id, Connection ** prev){
-  Connection *c = 0, *p;
-  CONNECTIONLIST_LOCK;
+Connection *_FindConnection(int id, Connection ** prev){
+  Connection *c, *p;
   for (p = 0, c = ConnectionList; c && c->id != id; p = c, c = c->next);
   if (prev) *prev = p;
-  CONNECTIONLIST_UNLOCK;
   return c;
 }
 
+Connection *FindConnection(int id, Connection ** prev){
+  Connection *c;
+  CONNECTIONLIST_LOCK;
+  c = _FindConnection(id, prev);
+  CONNECTIONLIST_UNLOCK
+  return c;
+}
 
-int NextConnection(void **ctx, char **info_name, void **info, size_t * info_len){
-  Connection *c, *next;
+int NextConnection(void **ctx, char **info_name, void **info, size_t * info_len){//check
   int ans;
   CONNECTIONLIST_LOCK;
+  Connection *c, *next;
   next = (*ctx != (void *)-1) ? (Connection *) * ctx : ConnectionList;
   for (c = ConnectionList; c && c != next; c = c->next) ;
   if (c) {
@@ -97,7 +116,7 @@ static void registerHandler(){
 //  NewConnection  /////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 int NewConnection(char *protocol){
-  Connection *oldhead, *connection;
+  Connection *connection;
   IoRoutines *io = LoadIo(protocol);
   static int id = 1;
   static pthread_once_t registerExitHandler = PTHREAD_ONCE_INIT;
@@ -106,13 +125,12 @@ int NewConnection(char *protocol){
     connection = memset(malloc(sizeof(Connection)), 0, sizeof(Connection));
     connection->io = io;
     connection->readfd = -1;
-    CONNECTIONLIST_LOCK;
-    oldhead = ConnectionList;
-    ConnectionList = connection;
-    connection->id = id++;
     connection->message_id = -1;
-    connection->next = oldhead;
     connection->protocol = strcpy(malloc(strlen(protocol) + 1), protocol);
+    CONNECTIONLIST_LOCK;
+    connection->id = id++;
+    connection->next = ConnectionList;
+    ConnectionList = connection;
     CONNECTIONLIST_UNLOCK;
     return connection->id;
   } else
@@ -120,14 +138,18 @@ int NewConnection(char *protocol){
 }
 
 
-///
+////////////////////////////////////////////////////////////////////////////////
+//  AuthorizeClient  ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 /// Authorize client by username calling protocol IoRoutine.
 /// \param id of the connection to use
 /// \param username of the user to be authorized for access
 /// \return true if authorized user found, false otherwise
 static int AuthorizeClient(int id, char *username){
   Connection *c = FindConnection(id, 0);
-  return c && c->io ? (c->io->authorize ? c->io->authorize(id, username) : 1) : 0;
+  if (c && c->io) return c->io->authorize ? c->io->authorize(id, username) : 1;
+  return 0;
 }
 
 
@@ -212,11 +234,16 @@ void FreeDescriptors(Connection * c){
 ////////////////////////////////////////////////////////////////////////////////
 
 int DisconnectConnection(int conid){
-  int status = MDSplusERROR;
+  INIT_STATUS_AS MDSplusERROR;
   Connection *p, *c;
-  c = FindConnection(conid, &p);
-  if (c && c->deleted == 0) {
-    c->deleted = 1;
+  CONNECTIONLIST_LOCK;
+  c = _FindConnection(conid, &p);
+  if (c && c->deleted == B_FALSE)
+    c->deleted = B_TRUE;
+  else c = NULL;
+  // mark for deletion but do not lock for entire disconnect procedure
+  CONNECTIONLIST_UNLOCK;
+  if (c) {
     if (c->io && c->io->disconnect)
       c->io->disconnect(conid);
     CONNECTIONLIST_LOCK;
@@ -224,6 +251,7 @@ int DisconnectConnection(int conid){
       ConnectionList = c->next;
     else
       p->next = c->next;
+    CONNECTIONLIST_UNLOCK;
     if (c->info)
       free(c->info);
     FreeDescriptors(c);
@@ -231,7 +259,6 @@ int DisconnectConnection(int conid){
     free(c->info_name);
     free(c);
     status = MDSplusSUCCESS;
-    CONNECTIONLIST_UNLOCK;
   }
   return status;
 }
@@ -241,8 +268,12 @@ int DisconnectConnection(int conid){
 ////////////////////////////////////////////////////////////////////////////////
 
 IoRoutines *GetConnectionIo(int conid){
-  Connection *c = FindConnection(conid, 0);
-  return (c != 0) ? c->io : 0;
+  IoRoutines *io = NULL;
+  CONNECTIONLIST_LOCK;
+  Connection *c = _FindConnection(conid, 0);
+  if (c) io = c->io;
+  CONNECTIONLIST_UNLOCK;
+  return io;
 }
 
 
@@ -252,8 +283,9 @@ IoRoutines *GetConnectionIo(int conid){
 ////////////////////////////////////////////////////////////////////////////////
 
 void *GetConnectionInfo(int conid, char **info_name, int *readfd, size_t * len){
-  Connection *c = FindConnection(conid, 0);
-  void *ans = 0;
+  void *ans = NULL;
+  CONNECTIONLIST_LOCK;
+  Connection *c = _FindConnection(conid, 0);
   if (c) {
     if (len)
       *len = c->info_len;
@@ -263,6 +295,7 @@ void *GetConnectionInfo(int conid, char **info_name, int *readfd, size_t * len){
       *readfd = c->readfd;
     ans = c->info;
   }
+  CONNECTIONLIST_UNLOCK;
   return ans;
 }
 
@@ -271,7 +304,8 @@ void *GetConnectionInfo(int conid, char **info_name, int *readfd, size_t * len){
 ////////////////////////////////////////////////////////////////////////////////
 
 void SetConnectionInfo(int conid, char *info_name, int readfd, void *info, size_t len){
-  Connection *c = FindConnection(conid, 0);
+  CONNECTIONLIST_LOCK;
+  Connection *c = _FindConnection(conid, 0);
   if (c) {
     c->info_name = strcpy(malloc(strlen(info_name) + 1), info_name);
     if (info) {
@@ -283,6 +317,7 @@ void SetConnectionInfo(int conid, char *info_name, int readfd, void *info, size_
     }
     c->readfd = readfd;
   }
+  CONNECTIONLIST_UNLOCK;
 }
 
 
@@ -291,14 +326,19 @@ void SetConnectionInfo(int conid, char *info_name, int readfd, void *info, size_
 ////////////////////////////////////////////////////////////////////////////////
 
 void SetConnectionCompression(int conid, int compression){
-  Connection *c = FindConnection(conid, 0);
+  CONNECTIONLIST_LOCK;
+  Connection *c = _FindConnection(conid, 0);
   if (c) c->compression_level = compression;
+  CONNECTIONLIST_UNLOCK;
 }
 
 int GetConnectionCompression(int conid){
-  Connection *c = FindConnection(conid, 0);
-  if (c) return c->compression_level;
-  return 0;
+  int complv = 0;
+  CONNECTIONLIST_LOCK;
+  Connection *c = _FindConnection(conid, 0);
+  if (c) complv = c->compression_level;
+  CONNECTIONLIST_UNLOCK;
+  return complv;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -306,13 +346,16 @@ int GetConnectionCompression(int conid){
 ////////////////////////////////////////////////////////////////////////////////
 
 unsigned char IncrementConnectionMessageId(int conid){
-  Connection *c = FindConnection(conid, 0);
+  unsigned char id = 0;
+  CONNECTIONLIST_LOCK;
+  Connection *c = _FindConnection(conid, 0);
   if (c) {
     c->message_id++;
     if (!c->message_id) c->message_id = 1;
-    return  c->message_id;
+    id = c->message_id;
   }
-  return 0;
+  CONNECTIONLIST_UNLOCK;
+  return id;
 }
 
 
@@ -322,9 +365,12 @@ unsigned char IncrementConnectionMessageId(int conid){
 ////////////////////////////////////////////////////////////////////////////////
 
 unsigned char GetConnectionMessageId(int conid){
-  Connection *c = FindConnection(conid, 0);
-  if (c) return c->message_id;
-  return 0;
+  unsigned char id = 0;
+  CONNECTIONLIST_LOCK;
+  Connection *c = _FindConnection(conid, 0);
+  if (c) id = c->message_id;
+  CONNECTIONLIST_UNLOCK;
+  return id;
 }
 
 ///
@@ -335,8 +381,10 @@ unsigned char GetConnectionMessageId(int conid){
 /// \param client_type the type of connection to be set
 ///
 void SetConnectionClientType(int conid, int client_type){
-  Connection *c = FindConnection(conid, 0);
+  CONNECTIONLIST_LOCK;
+  Connection *c = _FindConnection(conid, 0);
   if (c) c->client_type = client_type;
+  CONNECTIONLIST_UNLOCK;
 }
 
 ///
@@ -347,7 +395,10 @@ void SetConnectionClientType(int conid, int client_type){
 /// \return client_type value stored in connection structure
 ///
 int GetConnectionClientType(int conid){
-  Connection *c = FindConnection(conid, 0);
-  if (c) return c->client_type;
-  return 0;
+  int type = 0;
+  CONNECTIONLIST_LOCK;
+  Connection *c = _FindConnection(conid, 0);
+  if (c) type = c->client_type;
+  CONNECTIONLIST_UNLOCK;
+  return type;
 }
