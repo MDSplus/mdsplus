@@ -2,7 +2,6 @@ package jScope;
 
 /* $Id$ */
 import java.io.IOException;
-import java.util.*;
 
 class JiNcVarInt extends JiNcVarImp
 {

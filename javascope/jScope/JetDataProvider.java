@@ -1,16 +1,27 @@
 package jScope;
 
-/* $Id$ */
-import jScope.ConnectionEvent;
-import jScope.ConnectionListener;
-import jScope.Base64;
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.awt.*;
-import javax.swing.*;
-import java.awt.event.*;
-import java.lang.InterruptedException;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 class JetDataProvider implements DataProvider
 {

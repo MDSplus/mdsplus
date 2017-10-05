@@ -2,7 +2,6 @@ package jScope;
 
 /* $Id$ */
 import java.io.*;
-import java.util.*;
 
 class JiNcVarDouble extends JiNcVarImp 
 {

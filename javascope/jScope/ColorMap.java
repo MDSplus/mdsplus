@@ -1,9 +1,7 @@
 package jScope;
 
-import java.awt.*;
-import java.awt.image.*;
-import java.util.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.image.IndexColorModel;
 
 public class ColorMap
 {

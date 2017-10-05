@@ -5,10 +5,6 @@ import java.util.Vector;
 
 public class MdsDataClient extends MdsConnection
 {
-    private String  experiment;
-    private int     shot;
-
-
     /**
      * This class allows to read the data from an mdsip data server.
      *
@@ -62,9 +58,7 @@ public class MdsDataClient extends MdsConnection
         if(!connected)
             throw new MdsIOException("Mds data client not connected to "+provider);
 
-        this.experiment = experiment;
-        this.shot = shot;
-	    Descriptor descr = MdsValue("JavaOpen(\""+experiment+"\"," + shot + ","+ readOnly +")");
+        Descriptor descr = MdsValue("JavaOpen(\""+experiment+"\"," + shot + ","+ readOnly +")");
 	    if(!(descr.dtype != Descriptor.DTYPE_CSTRING
 		   && descr.dtype == Descriptor.DTYPE_LONG && descr.int_data != null
 		   && descr.int_data.length > 0 && (descr.int_data[0]%2 == 1)))
@@ -311,7 +305,6 @@ public class MdsDataClient extends MdsConnection
     public int[] getIntArray(String expr) throws MdsIOException
     {
         Descriptor desc = MdsValue(expr);
-        int out[] = null;
         int out_data[] = null;
 
         switch(desc.dtype)
@@ -600,10 +593,9 @@ public class MdsDataClient extends MdsConnection
 	    }
     }
 
-    public Object evaluate(String expr, Vector args) throws MdsIOException
+    public Object evaluate(String expr, Vector<Descriptor> args) throws MdsIOException
     {
 	    Descriptor desc = MdsValue(expr, args);
-            //return desc;
 
 	    switch (desc.dtype)
 	    {
@@ -626,10 +618,6 @@ public class MdsDataClient extends MdsConnection
 	    }
 
     }
-
-
-
-
 
     public static void main(String arg[])
     {

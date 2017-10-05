@@ -170,7 +170,6 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
 
     public Font StringToFont(String f)
     {
-        String s;
         String style;
         int pos, i;
 
@@ -252,7 +251,6 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
     public void actionPerformed(ActionEvent e)
     {
 	    Object ob = e.getSource();
-	    int i;
 
 	    if (ob == ok || ob == apply)
 	    {

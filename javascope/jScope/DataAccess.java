@@ -1,9 +1,6 @@
 package jScope;
 
-/* $Id$ */
-import java.net.*;
 import java.io.IOException;
-
 
 /**
  * Interface DataAccess is used by classes WaveDisplay and CompositeWaveDisplay
