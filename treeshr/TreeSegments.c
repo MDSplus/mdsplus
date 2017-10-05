@@ -326,7 +326,7 @@ if (STATUS_OK && (shot_open && (local_nci->flags & NciM_NO_WRITE_SHOT))) \
 if (STATUS_OK && (!shot_open && (local_nci->flags & NciM_NO_WRITE_MODEL))) \
   RETURN(UNLOCK_NCI,TreeNOWRITEMODEL); \
 if (STATUS_OK && (local_nci->flags & NciM_WRITE_ONCE) && local_nci->length) \
-    return TreeNOOVERWRITE;
+    RETURN(UNLOCK_NCI,TreeNOOVERWRITE);
 
 
 #define OPEN_DATAFILE_WRITE1() status = OpenDatafileWrite1(status,tinfo,&stv)
