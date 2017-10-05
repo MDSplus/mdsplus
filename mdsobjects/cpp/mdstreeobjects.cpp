@@ -556,6 +556,26 @@ EXPORT void TreeNode::operator delete(void *p)
     ::operator delete(p);
 }
 
+std::string  TreeNode::getNciString(int itm)
+{
+    return getNci<std::string>(tree->getCtx(), nid, itm);
+}
+
+char TreeNode::getNciChar(int itm)
+{
+    return getNci<char>(tree->getCtx(), nid, itm);
+}
+   
+int TreeNode::getNciInt(int itm)
+{
+    return getNci<int>(tree->getCtx(), nid, itm);
+}
+
+int64_t TreeNode::getNciInt64(int itm)
+{
+    return getNci<int64_t>(tree->getCtx(), nid, itm);
+}
+
 char *TreeNode::getPath()
 {
 	resolveNid();
@@ -574,7 +594,7 @@ std::string TreeNode::getPathStr()
 
 char *TreeNode::getMinPath() {
 	resolveNid();
-	std::string path = getNci<std::string>(tree->getCtx(), nid, NciMINPATH);
+	std::string path = getNciString(NciMINPATH);
 	char *retPath = new char[path.length() + 1];
 	strcpy(retPath, path.c_str());
 	return retPath;
@@ -586,7 +606,7 @@ std::string TreeNode::getMinPathStr() {
 
 char *TreeNode::getFullPath() {
 	resolveNid();
-	std::string path = getNci<std::string>(tree->getCtx(), nid, NciFULLPATH);
+	std::string path = getNciString(NciFULLPATH);
 	char *retPath = new char[path.length() + 1];
 	strcpy(retPath, path.c_str());
 	return retPath;
@@ -598,7 +618,7 @@ std::string TreeNode::getFullPathStr() {
 
 char *TreeNode::getOriginalPartName() {
 	resolveNid();
-	std::string path = getNci<std::string>(tree->getCtx(), nid, NciORIGINAL_PART_NAME);
+	std::string path = getNciString(NciORIGINAL_PART_NAME);
 	char *retPath = new char[path.length() + 1];
 	strcpy(retPath, path.c_str());
 	return retPath;
@@ -610,7 +630,7 @@ std::string TreeNode::getOriginalPartNameStr() {
 
 char *TreeNode::getNodeName() {
 	resolveNid();
-	std::string path = getNci<std::string>(tree->getCtx(), nid, NciNODE_NAME);
+	std::string path = getNciString(NciNODE_NAME);
 	char *retPath = new char[path.length() + 1];
 	strcpy(retPath, path.c_str());
 
@@ -672,27 +692,27 @@ void TreeNode::setOn(bool on)
 
 int TreeNode::getLength() {
 	resolveNid();
-	return getNci<int>(tree->getCtx(), nid, NciLENGTH);
+	return getNciInt(NciLENGTH);
 }
 
 int TreeNode::getCompressedLength() {
 	resolveNid();
-	return getNci<int>(tree->getCtx(), nid, NciRLENGTH);
+	return getNciInt(NciRLENGTH);
 }
 
 int TreeNode::getStatus() {
 	resolveNid();
-	return getNci<int>(tree->getCtx(), nid, NciSTATUS);
+	return getNciInt(NciSTATUS);
 }
 
 int TreeNode::getOwnerId() {
 	resolveNid();
-	return getNci<int>(tree->getCtx(), nid, NciOWNER_ID);
+	return getNciInt(NciOWNER_ID);
 }
 
 int64_t TreeNode::getTimeInserted() {
 	resolveNid();
-	return getNci<int64_t>(tree->getCtx(), nid, NciTIME_INSERTED);
+	return getNciInt64(NciTIME_INSERTED);
 }
 
 void TreeNode::doMethod(char *method)
@@ -705,7 +725,7 @@ void TreeNode::doMethod(char *method)
 
 bool TreeNode::getFlag(int flagOfs) {
 	resolveNid();
-	int nciFlags = getNci<int>(tree->getCtx(), nid, NciGET_FLAGS);
+	int nciFlags = getNciInt(NciGET_FLAGS);
 	return (nciFlags & flagOfs) ? true : false;
 }
 
@@ -766,13 +786,13 @@ bool TreeNode::containsVersions() {
 
 bool TreeNode::isMember() {
 	resolveNid();
-	int par = getNci<int>(tree->getCtx(), nid, NciPARENT_RELATIONSHIP);
+	int par = getNciInt(NciPARENT_RELATIONSHIP);
 	return (par & NciK_IS_MEMBER) ? true : false;
 }
 
 bool TreeNode::isChild() {
 	resolveNid();
-	int par = getNci<int>(tree->getCtx(), nid, NciPARENT_RELATIONSHIP);
+	int par = getNciInt(NciPARENT_RELATIONSHIP);
 	return (par & NciK_IS_CHILD) ? true : false;
 }
 
@@ -785,42 +805,42 @@ void TreeNode::setIncludeInPulse(bool flag) {
 
 TreeNode *TreeNode::getParent() {
 	resolveNid();
-	int nodeId = getNci<int>(tree->getCtx(), nid, NciPARENT);
+	int nodeId = getNciInt(NciPARENT);
 	return new TreeNode(nodeId, tree);
 }
 
 TreeNode *TreeNode::getBrother() {
 	resolveNid();
-	int nodeId = getNci<int>(tree->getCtx(), nid, NciBROTHER);
+	int nodeId = getNciInt(NciBROTHER);
 	return new TreeNode(nodeId, tree);
 }
 
 TreeNode *TreeNode::getChild() {
 	resolveNid();
-	int nodeId = getNci<int>(tree->getCtx(), nid, NciCHILD);
+	int nodeId = getNciInt(NciCHILD);
 	return new TreeNode(nodeId, tree);
 }
 
 TreeNode *TreeNode::getMember() {
 	resolveNid();
-	int nodeId = getNci<int>(tree->getCtx(), nid, NciMEMBER);
+	int nodeId = getNciInt(NciMEMBER);
 	return new TreeNode(nodeId, tree);
 }
 
 int TreeNode::getNumChildren() {
 	resolveNid();
-	return getNci<int>(tree->getCtx(), nid, NciNUMBER_OF_CHILDREN);
+	return getNciInt(NciNUMBER_OF_CHILDREN);
 }
 
 int TreeNode::getNumMembers() {
 	resolveNid();
-	return getNci<int>(tree->getCtx(), nid, NciNUMBER_OF_MEMBERS);
+	return getNciInt(NciNUMBER_OF_MEMBERS);
 }
 
 int TreeNode::getNumDescendants() {
 	resolveNid();
-	int members = getNci<int>(tree->getCtx(), nid, NciNUMBER_OF_MEMBERS);
-	int children = getNci<int>(tree->getCtx(), nid, NciNUMBER_OF_CHILDREN);
+	int members = getNciInt(NciNUMBER_OF_MEMBERS);
+	int children = getNciInt(NciNUMBER_OF_CHILDREN);
 	return members + children;
 }
 
@@ -895,19 +915,19 @@ TreeNode **TreeNode::getMembers(int *numMembers)
 
 const char *TreeNode::getClass() {
 	resolveNid();
-	char type = getNci<char>(tree->getCtx(), nid, NciCLASS);
+	char type = getNciChar(NciCLASS);
 	return MdsClassString(type);
 }
 
 const char *TreeNode::getDType() {
 	resolveNid();
-	char type = getNci<char>(tree->getCtx(), nid, NciDTYPE);
+	char type = getNciChar(NciDTYPE);
 	return MdsDtypeString(type);
 }
 
 const char *TreeNode::getUsage() {
 	resolveNid();
-	int usage = getNci<int>(tree->getCtx(), nid, NciUSAGE);
+	int usage = getNciInt(NciUSAGE);
 
 	switch(usage)  {
 		case TreeUSAGE_ACTION: return "ACTION";
@@ -929,12 +949,12 @@ const char *TreeNode::getUsage() {
 
 int TreeNode::getConglomerateElt() {
 	resolveNid();
-	return getNci<char>(tree->getCtx(), nid, NciCONGLOMERATE_ELT);
+	return getNciChar(NciCONGLOMERATE_ELT);
 }
 
 int TreeNode::getNumElts() {
 	resolveNid();
-	return getNci<int>(tree->getCtx(), nid, NciNUMBER_OF_ELTS);
+	return getNciInt(NciNUMBER_OF_ELTS);
 }
 
 TreeNodeArray *TreeNode::getConglomerateNodes()
@@ -966,7 +986,7 @@ TreeNodeArray *TreeNode::getConglomerateNodes()
 
 int TreeNode::getDepth() {
 	resolveNid();
-	return getNci<int>(tree->getCtx(), nid, NciDEPTH);
+	return getNciInt(NciDEPTH);
 }
 
 #ifdef _WIN32
@@ -1661,7 +1681,361 @@ StringArray *TreeNodeArray::getUsage()
 
 
 ////////////////End TreeNodeArray methods/////////////////////
+////////////////TreeNodeThinClient methods ///////////////////
 
+static const char *convertNciItm(int nciItm)
+{
+    switch(nciItm) {
+      case NciTIME_INSERTED: 		return "\'TIME_INSERTED\'";
+      case NciOWNER_ID: 		return "\'OWNER_ID\'"; 
+      case NciCLASS:			return "\'CLASS\'";
+      case NciDTYPE:			return "\'DTYPE\'";
+      case NciLENGTH:			return "\'LENGTH\'";
+      case NciSTATUS:			return "\'STATUS\'";
+      case NciCONGLOMERATE_ELT:		return "\'CONGLOMERATE_ELT\'";
+      case NciGET_FLAGS:		return "\'GET_FLAGS\'";
+      case NciNODE_NAME:		return "\'NODE_NAME\'";
+      case NciPATH:			return "\'PATH\'";
+      case NciDEPTH:			return "\'DEPTH\'";
+      case NciPARENT:			return "\'PARENT\'";
+      case NciBROTHER:			return "\'BROTHER\'";
+      case NciMEMBER:			return "\'MEMBER\'";
+      case NciCHILD:			return "\'CHILD\'";
+      case NciPARENT_RELATIONSHIP:	return "\'PARENT_RELATIONSHIP\'";
+      case NciK_IS_CHILD:		return "\'IS_CHILD\'";
+      case NciK_IS_MEMBER:		return "\'IS_MEMBER\'";
+      case NciCONGLOMERATE_NIDS:	return "\'CONGLOMERATE_NIDS\'";
+      case NciORIGINAL_PART_NAME:	return "\'ORIGINAL_PART_NAME\'";
+      case NciNUMBER_OF_MEMBERS:	return "\'NUMBER_OF_MEMBERS\'";
+      case NciNUMBER_OF_CHILDREN :	return "\'NUMBER_OF_CHILDREN\'";
+      case NciMEMBER_NIDS:		return "\'MEMBER_NIDS\'";
+      case NciCHILDREN_NIDS:		return "\'CHILDREN_NIDS\'";
+      case NciFULLPATH:			return "\'FULLPATH\'";
+      case NciMINPATH:			return "\'MINPATH\'";
+      case NciUSAGE:			return "\'USAGE\'";
+      default:				std::cout << "Unecpected NCI item in TreeNodeThinClient" << std::endl; return "\'\'";
+    }
+}
+					
+
+
+TreeNodeThinClient::TreeNodeThinClient(int nid, Connection *connection, Data *units, Data *error, Data *help, Data *validation)
+{
+    this->tree = 0;
+    this->nid = nid;
+    this->connection = connection;
+    clazz = CLASS_S;
+    dtype = DTYPE_NID;
+    setAccessory(units, error, help, validation);
+}
+EXPORT void *TreeNodeThinClient::operator new(size_t sz)
+{
+    return ::operator new(sz);
+}
+
+EXPORT void TreeNodeThinClient::operator delete(void *p)
+{
+    ::operator delete(p);
+}
+
+std::string  TreeNodeThinClient::getNciString(int itm)
+{
+    char expr[64];
+    sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
+    Data *retStringData = connection->get(expr);
+    if(!retStringData)
+	throw (MdsException("Error in Remote evaluation of getnci"));
+    char *retStringPtr = retStringData->getString();
+    std::string retString(retStringPtr);
+    delete [] retStringPtr;
+    MDSplus::deleteData(retStringData);
+    return retString;
+}
+
+char TreeNodeThinClient::getNciChar(int itm)
+{
+    char expr[64];
+    sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
+    Data *retData = connection->get(expr);
+     if(!retData)
+	throw (MdsException("Error in Remote evaluation of getnci"));
+    char retChar = retData->getByte();
+    MDSplus::deleteData(retData);
+    return retChar;
+}
+   
+int TreeNodeThinClient::getNciInt(int itm)
+{
+    char expr[64];
+    sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
+    Data *retData = connection->get(expr);
+    if(!retData)
+	throw (MdsException("Error in Remote evaluation of getnci"));
+    int retInt = retData->getInt();
+    MDSplus::deleteData(retData);
+    return retInt;
+}
+
+int64_t TreeNodeThinClient::getNciInt64(int itm)
+{
+    char expr[64];
+    sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
+    Data *retData = connection->get(expr);
+    if(!retData)
+	throw (MdsException("Error in Remote evaluation of getnci"));
+    int64_t retLong = retData->getLong();
+    MDSplus::deleteData(retData);
+    return retLong;
+}
+
+char *TreeNodeThinClient::getPath()
+{
+    char expr[64];
+    sprintf(expr, "GETNCI(%d,\'PATH\')", nid);
+    Data *retData = connection->get(expr);
+    if(!retData)
+	throw (MdsException("Error in Remote evaluation of getnci(path)"));
+    char *retPath = retData->getString();
+    MDSplus::deleteData(retData);
+    return retPath;
+}
+    
+EXPORT Data *TreeNodeThinClient::getData()
+{
+    char expr[64];
+    sprintf(expr, "GETNCI(%d,\'RECORD\')", nid);
+    Data *retData = connection->get(expr);
+    if(!retData)
+	throw (MdsException("Error in Remote evaluation of getnci(record)"));
+    return retData;
+}
+  
+EXPORT void TreeNodeThinClient::putData(Data *data)
+{
+    char *path = getPath();
+    Data *args[1];
+    args[0] = data->data();
+    connection->put((const char *)path, "$", args, 1);
+    MDSplus::deleteData(args[0]);
+    delete [] path;
+  
+}
+
+EXPORT void TreeNodeThinClient::deleteData()
+{
+    char *path = getFullPath();
+    Data *args[1];
+    args[1] = 0;
+    connection->put((const char *)path, "*", args, 0);
+    delete [] path;
+}
+
+EXPORT bool TreeNodeThinClient::isOn()
+{
+    char expr[64];
+    sprintf(expr, "GETNCI(%d,\'STATE\')", nid);
+    Data *retData = connection->get(expr);
+    if(!retData)
+	throw (MdsException("Error in Remote evaluation of getnci(state)"));
+    
+    char onData = retData->getByte();
+    MDSplus::deleteData(retData);
+    return (onData)?false:true;
+}
+
+EXPORT void TreeNodeThinClient::setOn(bool on)
+{
+    char expr[64];
+    if(on)
+      sprintf(expr, "TreeTurnOn(%d)", nid);
+    else
+      sprintf(expr, "TreeTurnOff(%d)", nid);
+    Data *retData = connection->get(expr);
+    if(retData)
+	MDSplus::deleteData(retData);
+}
+
+
+      
+EXPORT void TreeNodeThinClient::beginSegment(Data *start, Data *end, Data *time, Array *initialData)
+{
+    char expr[256];
+    Data *args[4];
+    args[0] = start->data();
+    args[1] = end->data();
+    args[2] = time->data();
+    args[3] = initialData->data();
+    sprintf(expr, "BeginSegment(%d, $1, $2, $3, $4, -1)", nid);
+    Data *retData = connection->get(expr, args, 4);
+    if(retData)
+	MDSplus::deleteData(retData);
+    MDSplus::deleteData(args[0]);
+    MDSplus::deleteData(args[1]);
+    MDSplus::deleteData(args[2]);
+    MDSplus::deleteData(args[3]);
+
+}
+
+EXPORT void TreeNodeThinClient::makeSegment(Data *start, Data *end, Data *time, Array *initialData)
+{
+    char expr[256];
+    Data *args[4];
+    args[0] = start->data();
+    args[1] = end->data();
+    args[2] = time->data();
+    args[3] = initialData->data();
+    sprintf(expr, "MakeSegment(%d, $1, $2, $3, $4, -1, size($4))", nid);
+    Data *retData = connection->get(expr, args, 4);
+    if(retData)
+	MDSplus::deleteData(retData);
+    MDSplus::deleteData(args[0]);
+    MDSplus::deleteData(args[1]);
+    MDSplus::deleteData(args[2]);
+    MDSplus::deleteData(args[3]);
+}
+
+EXPORT void TreeNodeThinClient::putSegment(Array *data, int ofs)
+{
+    char expr[256];
+    Data *args[1];
+    args[0] = data->data();
+    sprintf(expr, "PutSegment(%d, %d, $1)", nid, ofs);
+    Data *retData = connection->get(expr, args, 1);
+    if(retData)
+	MDSplus::deleteData(retData);
+    MDSplus::deleteData(args[0]);
+}
+
+EXPORT int TreeNodeThinClient::getNumSegments()
+{
+    char expr[64];
+    sprintf(expr, "GetNumSegments(%d)", nid);
+    Data *data  = connection->get(expr);
+    if(!data)
+	throw (MdsException("Error in Remote evaluation of GetNumSegmentss"));
+    int numSegments = data->getInt();
+    MDSplus::deleteData(data);
+    return numSegments;
+}
+
+
+EXPORT void TreeNodeThinClient::getSegmentLimits(int segmentIdx, Data **start, Data **end)
+{
+    char expr[64];
+    sprintf(expr, "GetSegmentLimits(%d, %d)", nid, segmentIdx);
+    Array *limitsArr = (Array *)connection->get(expr);
+    if(!limitsArr)
+	throw (MdsException("Error in Remote evaluation of GetSegmentLimits"));
+    int startIdx = 0, endIdx = 1;
+    *start = limitsArr->getElementAt(&startIdx, 1);
+    *end = limitsArr->getElementAt(&endIdx, 1);
+    MDSplus::deleteData(limitsArr);
+}
+
+EXPORT Array *TreeNodeThinClient::getSegment(int segIdx)
+{
+    char expr[64];
+    sprintf(expr, "GetSegment(%d, %d)", nid, segIdx);
+    Array *retSegment = (Array *)connection->get(expr);
+    if(!retSegment)
+	throw (MdsException("Error in Remote evaluation of GetSegment"));
+    return retSegment;
+}
+  
+EXPORT Data *TreeNodeThinClient::getSegmentDim(int segIdx)
+{
+    char expr[64];
+    sprintf(expr, "DIM_OF(GetSegment(%d, %d))", nid, segIdx);
+    Array *retDim = (Array *)connection->get(expr);
+    if(!retDim)
+	throw (MdsException("Error in Remote evaluation of dim_of(GetSegment)"));
+    return retDim;
+}
+    
+EXPORT void TreeNodeThinClient::getSegmentAndDimension(int segIdx, Array *&segment, Data *&dimension)
+{
+    char expr[64];
+    sprintf(expr, "GetSegment(%d, %d)", nid, segIdx);
+    segment = (Array *)connection->get(expr);
+    sprintf(expr, "DIM_OF(GetSegment(%d, %d))", nid, segIdx);
+    dimension = connection->get(expr);
+    if(!segment || !dimension)
+	throw (MdsException("Error in Remote evaluation of GetSegment"));
+
+}
+EXPORT void TreeNodeThinClient::beginTimestampedSegment(Array *initData)
+{
+    char expr[64];
+    Data *args[1];
+    args[0] = initData->data();
+    sprintf(expr, "BeginTimestampedSegment(%d, $1, -1)", nid);
+    Data *retData = connection->get(expr, args, 1);
+    if(retData)
+	MDSplus::deleteData(retData);
+    MDSplus::deleteData(args[0]);
+}
+
+EXPORT void TreeNodeThinClient::putTimestampedSegment(Array *data, int64_t *times)
+{
+    char expr[64];
+    Data *args[2];
+    int len = data->getSize();
+    args[0] = new Int64Array(times, len);
+    args[1] = data->data();
+    sprintf(expr, "PutTimestampedSegment(%d, $1, $2)", nid);
+    Data *retData = connection->get(expr, args, 2);
+    if(retData)
+	MDSplus::deleteData(retData);
+    MDSplus::deleteData(args[0]);
+    MDSplus::deleteData(args[1]);
+}
+   
+
+EXPORT void TreeNodeThinClient::makeTimestampedSegment(Array *data, int64_t *times)
+{
+    beginTimestampedSegment(data);
+    putTimestampedSegment(data, times);
+}
+EXPORT void TreeNodeThinClient::putRow(Data *data, int64_t *time, int size)
+{
+    Int64 timeData(*time);
+    char expr[64];
+    Data *args[2];
+    int len = data->getSize();
+    args[0] = &timeData;
+    args[1] = data->data();
+    sprintf(expr, "PutRow(%d, %d, $1, $2)", nid, size);
+    Data *retData = connection->get(expr, args, 2);
+    if(retData)
+	MDSplus::deleteData(retData);
+    MDSplus::deleteData(args[1]);
+}
+
+EXPORT StringArray *TreeNodeThinClient::findTags()
+{
+    char expr[64];
+    sprintf(expr, "TreeFindNodeTags(%d)", nid);
+    Data *retData = connection->get(expr);
+    if(!retData)
+	throw (MdsException("Error in Remote evaluation of TreeFindNodeTags"));
+
+    int numTags;
+    char **tags = retData->getStringArray(&numTags);
+    StringArray *tagsArray = new StringArray(tags, numTags);
+    for(int i = 0; i < numTags; i++)
+	delete[] tags[i];
+    delete [] tags;
+    MDSplus::deleteData(retData);
+    return tagsArray;
+}
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////
 
 void MDSplus::setActiveTree(Tree *tree)
 {
