@@ -339,10 +339,12 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 		}
 	}
     //	unlockGlobal();
-    status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
+	status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
 	unlockLocal();
 	if(!(status & 1))
+	{
 		throw MdsException(status);
+	}
 
 	if(nDims == 0) {
 		switch(dtype) {
@@ -438,6 +440,7 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		if(!ptr)
 			throw MdsException("Invalid argument passed to Connection::put(). Can only be Scalar or Array");
+		if(nDims > 0) delete []dims;
 	}
 
 	//Double backslashes!!
@@ -466,6 +469,7 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 			unlockLocal();
 			throw MdsException(status);
 		}
+		if(nDims > 0) delete []dims;
 	}
 
 	int retDims[MAX_DIMS];
@@ -484,6 +488,18 @@ void Connection::setDefault(char *path)
 	int status = MdsSetDefault(sockId, path);
 	if(!(status & 1))
 		throw MdsException(status);
+}
+
+TreeNodeThinClient *Connection::getNode(char *path)
+{
+	char expr[256];
+	sprintf(expr, "GETNCI(%s, \'NID_NUMBER\')", path);
+	Data *nidData = get(expr);
+	if(!nidData)
+	    throw MdsException("Cannot get remote nid in Connection::getNode");
+	int nid = nidData->getInt();
+	MDSplus::deleteData(nidData);
+	return new TreeNodeThinClient(nid, this);
 }
 
 #ifndef _MSC_VER
