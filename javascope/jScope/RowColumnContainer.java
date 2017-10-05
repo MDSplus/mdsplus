@@ -1,21 +1,17 @@
 package jScope;
 
-/* $Id$ */
-import java.awt.Panel;
-import java.awt.Component;
-import java.awt.Point;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.Container;
 import java.awt.Point;
-import java.util.Vector;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.*;
-import java.lang.reflect.InvocationTargetException;
+import java.awt.event.MouseMotionAdapter;
+import java.util.Vector;
+
+import javax.swing.JComponent;
 
 /**
  * RowColumnContainer object is a component that can contain other AWT
@@ -106,7 +102,7 @@ public class RowColumnContainer extends JComponent
                                Component c[])
     {
 
-      int i, j, k;
+      int i;
       int num_component;
 
       setName("RowColumnContainer");

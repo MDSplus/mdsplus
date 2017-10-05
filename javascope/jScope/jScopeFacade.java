@@ -1,52 +1,102 @@
 package jScope;
 
-import jScope.WaveformEvent;
-import jScope.Waveform;
-import jScope.WaveInterface;
-import jScope.UpdateEvent;
-import jScope.WaveContainerEvent;
-import jScope.WaveContainerListener;
-import jScope.UpdateEventListener;
-import jScope.SetupDefaults;
-import jScope.SetupDataDialog;
-import jScope.SignalsBoxDialog;
-import jScope.ProfileDialog;
-import jScope.PropertiesEditor;
-import jScope.DataProvider;
-import jScope.DataServerItem;
-import jScope.FontSelection;
-import jScope.ImageTransferable;
-import jScope.MdsWaveInterface;
-import jScope.ConnectionEvent;
-import jScope.ColorMapDialog;
-import jScope.ConnectionListener;
-import jScope.ColorDialog;
-import jScope.AboutWindow;
-import java.io.*;
-import java.net.*;
-import java.awt.List;
-import java.awt.event.*;
-import java.lang.*;
-import java.util.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.plaf.*;
-import javax.swing.table.*;
-import java.awt.*;
-import java.lang.reflect.InvocationTargetException;
-import java.awt.print.*;
-import javax.print.*;
-import javax.print.attribute.*;
-import javax.print.attribute.standard.*;
-import java.awt.datatransfer.*;
-import java.awt.image.*;
-import java.awt.geom.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.awt.image.BufferedImage;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
-
+import javax.print.DocPrintJob;
+import javax.print.PrintException;
+import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
+import javax.print.ServiceUI;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.standard.MediaPrintableArea;
+import javax.print.attribute.standard.MediaSize;
+import javax.print.attribute.standard.MediaSizeName;
+import javax.print.attribute.standard.OrientationRequested;
+import javax.print.attribute.standard.PrinterResolution;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JRadioButton;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JSlider;
+import javax.swing.JTextField;
+import javax.swing.JWindow;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
+import javax.swing.LookAndFeel;
+import javax.swing.RepaintManager;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.basic.BasicArrowButton;
-
-import java.lang.reflect.Array;
 
 
         
@@ -62,7 +112,6 @@ public class jScopeFacade
 
     public static final int MAX_NUM_SHOT = 30;
     public static final int MAX_VARIABLE = 10;
-    private static int spos_x = 100, spos_y = 100;
     static  long refreshPeriod = -1;
 
     JWindow aboutScreen;
@@ -87,19 +136,19 @@ public class jScopeFacade
     /**Menu item on menu autoscale_m */
     private JMenuItem all_i, allY_i;
 
-    private JMenuItem print_i, page_i, properties_i;
+    private JMenuItem print_i, properties_i;
     private String propertiesFilePath = null;
  
     private JPanel panel, panel1;
     private ButtonGroup pointer_mode = new ButtonGroup();
     private JRadioButton zoom, point, copy, pan;
-    private JLabel shot_l, lab;
+    private JLabel shot_l;
     private JTextField shot_t, signal_expr;
     private JButton apply_b;
     private JFileChooser file_diag;
     protected String curr_directory;
     protected String last_directory;
-    private JLabel point_pos, print_icon;
+    private JLabel point_pos;
     private JTextField info_text, net_text;
     private WindowDialog win_diag;
     public ColorDialog color_dialog;
@@ -114,7 +163,6 @@ public class jScopeFacade
     ServerDialog server_diag;
     static boolean not_sup_local = false;
     private boolean executing_update = false;
-    private JFrame main_scope;
 
     private static jScopeFacade win;
     public static boolean busy(){return win.executing_update;}
@@ -428,7 +476,7 @@ public class jScopeFacade
 
         private void SavePubVar()
         {
-            String txt1, txt2, str;
+            String txt1, txt2;
 
             if (name_list.size() != 0)
                 name_list.removeAllElements();
@@ -659,8 +707,6 @@ public class jScopeFacade
         }
         catch (Exception e)
         {}
-
-        main_scope = this;
 
         setBounds(spos_x, spos_y, 750, 550);
 
@@ -1536,7 +1582,6 @@ public class jScopeFacade
                     File jScopeUserDir = new File(curr_directory);
                     if (!jScopeUserDir.exists())
                     {
-                        String s;
                         byte b[] = new byte[1024];
 
                         jScopeUserDir.mkdirs();
@@ -1820,7 +1865,6 @@ public class jScopeFacade
     private void ToFile(PrintWriter out) throws IOException
     {
         Rectangle r = getBounds();
-        Dimension d = getSize();
         setChange(false);
         SetWindowTitle("");
         out.println("Scope.geometry: " + r.width + "x" + r.height + "+" + r.x +
@@ -1881,7 +1925,6 @@ public class jScopeFacade
 
         maxIdx++;
 
-        String ppp = f.getAbsolutePath();
         if( maxIdx  > maxHistory)
         {
             File fd = new File(f.getAbsolutePath() + ";" + (maxIdx - maxHistory));
@@ -1996,12 +2039,6 @@ public class jScopeFacade
         if (curr_directory != null && curr_directory.trim().length() != 0)
             file_diag.setCurrentDirectory(new File(curr_directory));
 
-//       javax.swing.Timer tim = new javax.swing.Timer(20, new ActionListener()
-//       {
-        ByteArrayOutputStream image;
-
-//            public void actionPerformed(ActionEvent ae) {
-
         int returnVal = JFileChooser.CANCEL_OPTION;
         boolean done = false;
 
@@ -2115,8 +2152,6 @@ public class jScopeFacade
 
     public boolean SetDataServer(DataServerItem new_srv_item)
     {
-        String error = null;
-
         try
         {
             wave_panel.SetDataServer(new_srv_item, this);
@@ -2399,7 +2434,7 @@ public class jScopeFacade
 
         if (ob == signal_expr)
         {
-            String error = null, sig = signal_expr.getText().trim();
+            String sig = signal_expr.getText().trim();
 
             if (sig != null && sig.length() != 0)
             {
@@ -2411,8 +2446,6 @@ public class jScopeFacade
 
         if (ob == apply_b || ob == shot_t)
         {
-            String sh =  shot_t.getText();
-
             incShotValue = 0;
 
             if (executing_update)
@@ -3601,10 +3634,10 @@ class ServerDialog
     private DataServerItem findServer(DataServerItem dsi)
     {
         DataServerItem found_dsi = null;
-        Enumeration e = list_model.elements();
+        Enumeration<DataServerItem> e = list_model.elements();
         while (e.hasMoreElements())
         {
-            found_dsi = (DataServerItem) e.nextElement();
+            found_dsi = e.nextElement();
             if (found_dsi.equals(dsi))
             {
                 return found_dsi;
@@ -3615,11 +3648,8 @@ class ServerDialog
 
     public DataServerItem addServerIp(DataServerItem dsi)
     {
-        int i;
         JMenuItem new_ip;
         DataServerItem found_dsi = null;
-        boolean found = false;
-
         /*
         23-05-2005
         found = ( (found_dsi = findServer(dsi)) != null);
@@ -3694,21 +3724,16 @@ class ServerDialog
 
     public DataServerItem[] getServerIpList()
     {
-
-        Enumeration e = list_model.elements();
+        Enumeration<DataServerItem> e = list_model.elements();
         DataServerItem out[] = new DataServerItem[list_model.size()];
         for (int i = 0; e.hasMoreElements(); i++)
-            out[i] = ( (DataServerItem) e.nextElement());
+            out[i] = e.nextElement();
         return out;
-
     }
-
 
     public void actionPerformed(ActionEvent event)
     {
-
         Object ob = event.getSource();
-        String arg;
 
         if (ob == exit_b)
             setVisible(false);
