@@ -272,7 +272,7 @@ class List(list,Apd):
         if value is not None:
             if isinstance(value,(Apd,tuple,list,_ver.mapclass,_ver.generator,_N.ndarray)):
                 for val in value:
-                    self.append(_data.Data(val))
+                    List.append(self,_data.Data(val))
             else:
                 raise TypeError('Cannot create List from type: '+str(type(value)))
 
