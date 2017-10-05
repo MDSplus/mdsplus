@@ -324,7 +324,10 @@ if STATUS_NOT_OK return status; \
 if (STATUS_OK && (shot_open && (local_nci->flags & NciM_NO_WRITE_SHOT))) \
   RETURN(UNLOCK_NCI,TreeNOWRITESHOT); \
 if (STATUS_OK && (!shot_open && (local_nci->flags & NciM_NO_WRITE_MODEL))) \
-  RETURN(UNLOCK_NCI,TreeNOWRITEMODEL);
+  RETURN(UNLOCK_NCI,TreeNOWRITEMODEL); \
+if (STATUS_OK && (local_nci->flags & NciM_WRITE_ONCE) && local_nci->length) \
+    return TreeNOOVERWRITE;
+
 
 #define OPEN_DATAFILE_WRITE1() status = OpenDatafileWrite1(status,tinfo,&stv)
 inline static int OpenDatafileWrite1(int status,TREE_INFO *tinfo, int *stv_ptr){
@@ -341,7 +344,7 @@ inline static int OpenDatafileWrite1(int status,TREE_INFO *tinfo, int *stv_ptr){
 #define BEGIN_FINISH status = BeginFinish(local_nci, tinfo, sindex, shead, nidx,\
                                           attr, attr_offset, attr_update, add_length);
 inline static int BeginFinish(NCI *local_nci,TREE_INFO *tinfo, SEGMENT_INDEX *sindex, SEGMENT_HEADER *shead, int nidx,
-                              EXTENDED_ATTRIBUTES *attr, int64_t *attr_offset, int *attr_update, int add_length){
+                              EXTENDED_ATTRIBUTES *attr, int64_t *attr_offset, int *attr_update, uint32_t add_length){
   int status = PutSegmentIndex(tinfo,sindex,&shead->index_offset);
   if STATUS_NOT_OK return status;
   status = PutSegmentHeader(tinfo, shead, &attr->facility_offset[SEGMENTED_RECORD_FACILITY]);
@@ -350,10 +353,10 @@ inline static int BeginFinish(NCI *local_nci,TREE_INFO *tinfo, SEGMENT_INDEX *si
     SeekToRfa(*attr_offset, local_nci->DATA_INFO.DATA_LOCATION.rfa);
     local_nci->flags2 |= NciM_EXTENDED_NCI;
   }
-  if (((int64_t) local_nci->length + (int64_t) add_length) < (2 ^ 31))
+  if (((int64_t) local_nci->length + (int64_t) add_length) < (((int64_t)2) << 31))
     local_nci->length += add_length;
   else
-    local_nci->length = (2 ^ 31);
+    local_nci->length = (uint32_t)(((int64_t)2) << 31);
   local_nci->flags=local_nci->flags | NciM_SEGMENTED;
   TreePutNci(tinfo, nidx, local_nci, 0);
   return status;
