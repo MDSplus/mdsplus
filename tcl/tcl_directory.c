@@ -288,7 +288,7 @@ static int doFull(char **output, int nid, unsigned char nodeUsage, int version)
   unsigned int owner;
   char class;
   char dtype;
-  int dataLen;
+  uint32_t dataLen;
   unsigned short conglomerate_elt;
   int vers;
   NCI_ITM full_list[] = {
@@ -370,7 +370,7 @@ static int doFull(char **output, int nid, unsigned char nodeUsage, int version)
     sprintf(msg, "      Data inserted: %s    Owner: %s\n", MdsDatime(time), MdsOwner(owner));
     tclAppend(output, msg);
     if (dataLen) {
-      sprintf(msg, "      Dtype: %-20s  Class: %-18s  Length: %d bytes\n",
+      sprintf(msg, "      Dtype: %-20s  Class: %-18s  Length: %u bytes\n",
 	      MdsDtypeString((int)dtype), MdsClassString((int)class), dataLen);
       tclAppend(output, msg);
     } else
