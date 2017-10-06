@@ -190,10 +190,14 @@ class Tests(TestCase):
                 """ mdsconnect """
                 c = Connection(server)
                 self.assertEqual(c.get('1').tolist(),1)
-                #g = GetMany({'a':'1','b':'2','c':'3'},c);g.execute()
-                #self.assertEqual(g.get('a'),1)
-                #self.assertEqual(g.get('b'),2)
-                #self.assertEqual(g.get('c'),3)
+                g = GetMany(c);
+                g.append('a','1')
+                g.append('b','$',2)
+                g.append('c','$+$',1,2)
+                g.execute()
+                self.assertEqual(g.get('a'),1)
+                self.assertEqual(g.get('b'),2)
+                self.assertEqual(g.get('c'),3)
                 """ tcl dispatch """
                 self._doTCLTest('show server %s'%server,out=show_server,re=True)
                 testDispatchCommand(server,'set verify')

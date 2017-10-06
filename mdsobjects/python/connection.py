@@ -246,14 +246,11 @@ class Connection(object):
         """
         _exc.checkStatus(self.get("TreeSetDefault($)",path))
 
-    def GetMany(self,*arg):
-        """ deprecated """
-        raise(MdsIpException('\nThe subclass "Connection.GetMany" is now a class of it own.\nUse "GetMany" instead.'))
-    def PutMany(self,*arg):
-        """ deprecated """
-        raise(MdsIpException('\nThe subclass "Connection.PutMany" is now a class of it own.\nUse "PutMany" instead.'))
+    def GetMany(self): return GetMany(self)
+    def PutMany(self): return PutMany(self)
 
-class GetMany(_apd.Dictionary):
+
+class GetMany(_apd.List):
     """Build a list of expressions to evaluate
 
     To reduce the number of network transactions between you and the remote system you can
@@ -278,11 +275,13 @@ class GetMany(_apd.Dictionary):
     maximum size of the expression list with arguments and the result dictionary is approximately 4 gigatypes.
     """
 
-    def __init__(self,value=None,connection=None):
-        """GetMany instance initialization."""
-        if value is not None:
-            super(GetMany,self).__init__(value)
-        self.connection=connection
+    def __init__(self,connection):
+        """Instance initialization"""
+        super(GetMany,self).__init__()
+        if isinstance(connection,Connection):
+            self.connection=connection
+        else:
+            self.connection=Connection(connection)
         self.result=None
 
     def append(self,name,exp,*args):
@@ -364,14 +363,15 @@ class GetMany(_apd.Dictionary):
         raise MdsIpException("Item %s not found in list" % (name,))
 
 
-class PutMany(_apd.Dictionary):
+class PutMany(_apd.List):
     """Build list of put instructions."""
-
-    def __init__(self,value=None,connection=None):
+    def __init__(self,connection):
         """Instance initialization"""
-        if value is not None:
-            super(PutMany,self).__init__(value)
-        self.connection=connection
+        super(PutMany,self).__init__()
+        if isinstance(connection,Connection):
+            self.connection=connection
+        else:
+            self.connection=Connection(connection)
         self.result=None
 
     def append(self,node,exp,*args):
