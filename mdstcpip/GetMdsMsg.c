@@ -38,7 +38,10 @@ static int GetBytesTO(int id, void *buffer, size_t bytes_to_recv, int to_msec){
     int tries = 0;
     while (bytes_to_recv > 0 && (tries < 10)) {
       ssize_t bytes_recv;
-      bytes_recv = io->recv_to(id, bptr, bytes_to_recv, to_msec);
+      if (io->recv_to && to_msec>=0) // don't use timeout if not available or requested
+        bytes_recv = io->recv_to(id, bptr, bytes_to_recv, to_msec);
+      else
+        bytes_recv = io->recv(id, bptr, bytes_to_recv);
       if (bytes_recv <= 0) {
 	if (errno != EINTR)
 	  return MDSplusERROR;
