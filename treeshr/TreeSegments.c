@@ -353,10 +353,10 @@ inline static int BeginFinish(NCI *local_nci,TREE_INFO *tinfo, SEGMENT_INDEX *si
     SeekToRfa(*attr_offset, local_nci->DATA_INFO.DATA_LOCATION.rfa);
     local_nci->flags2 |= NciM_EXTENDED_NCI;
   }
-  if (((int64_t) local_nci->length + (int64_t) add_length) < (((int64_t)2) << 31))
+  if (((int64_t) local_nci->length + (int64_t) add_length) < (int64_t)0xffffffffU)
     local_nci->length += add_length;
   else
-    local_nci->length = (uint32_t)(((int64_t)2) << 31);
+    local_nci->length = 0xffffffffU;
   local_nci->flags=local_nci->flags | NciM_SEGMENTED;
   TreePutNci(tinfo, nidx, local_nci, 0);
   return status;
@@ -462,7 +462,7 @@ sinfo = &sindex->segment[idx % SEGMENTS_PER_INDEX];
 
 #define BEGIN_SINFO(CHECKCOMPRESS) \
 SEGMENT_INFO *sinfo; \
-int add_length = 0; \
+uint32_t add_length = 0; \
 if (idx == -1) { \
   shead->idx++; \
   idx = shead->idx; \
@@ -496,7 +496,7 @@ if (initialValue->class == CLASS_A) { \
 shead->next_row = rows_filled; \
 /* If not the first segment, see if we can reuse the previous segment storage space and compress the previous segment. */ \
 if (((shead->idx % SEGMENTS_PER_INDEX) > 0) && \
-    (previous_length == add_length) && compress) { \
+    (previous_length == (int64_t)add_length) && compress) {	\
   int deleted; \
   EMPTYXD(xd_data); \
   EMPTYXD(xd_dim); \
