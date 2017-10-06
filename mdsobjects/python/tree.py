@@ -78,6 +78,9 @@ _usage_table={'ANY':0,'NONE':1,'STRUCTURE':1,'ACTION':2,      # Usage name to co
               'DEVICE':3,'DISPATCH':4,'NUMERIC':5,'SIGNAL':6,
               'TASK':7,'TEXT':8,'WINDOW':9,'AXIS':10,
               'SUBTREE':11,'COMPOUND_DATA':12}
+class UsageError(KeyError):
+    def __init__(self,usage):
+        super(UsageError,self).__init__('Invalid usage "%s". Must be one of: %s' % (str(usage), ', '.join(_usage_table.keys())))
 
 #
 ###################################################
@@ -613,7 +616,7 @@ class Tree(object):
         try:
             usage_idx=_usage_table[usage.upper()]
         except KeyError:
-            raise KeyError('Invalid usage must be one of: %s' % _usage_table.keys())
+            raise UsageError(usage)
         usagenum = 1 if usage_idx==11 else usage_idx
         with self._lock:
             _exc.checkStatus(
@@ -770,7 +773,7 @@ class Tree(object):
                 for u in usage:
                     usage_mask |= 1 << _usage_table[u.upper()]
             except KeyError:
-                raise KeyError('Invalid usage must be one of: %s' % list(_usage_table.keys()))
+                raise UsageError(u)
 
         nid=_C.c_int32(0)
         ctx=_C.c_void_p(0)
@@ -1439,7 +1442,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         try:
             usagenum=_usage_table[usage.upper()]
         except KeyError:
-            raise KeyError('Invalid usage specified. Use one of %s' % (str(_usage_table.keys()),))
+            raise UsageError(usage)
         name=str(name).upper()
         if name[0]==':' or name[0]=='.':
             name=str(self.fullpath)+name
@@ -2565,7 +2568,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         try:
             usagenum=_usage_table[usage.upper()]
         except KeyError:
-            raise KeyError('Invalid usage specified. Use one of %s' % (str(_usage_table.keys()),))
+            raise UsageError(usage)
         _exc.checkStatus(
                 _TreeShr._TreeSetUsage(self.tree.ctx,
                                        self._nid,
