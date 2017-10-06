@@ -43,11 +43,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait);
 static ssize_t tunnel_recv(int id, void *buffer, size_t len);
+static ssize_t tunnel_recv_to(int id, void *buffer, size_t len, int to_msec);
 static int tunnel_disconnect(int id);
 static int tunnel_connect(int id, char *protocol, char *host);
 static int tunnel_listen(int argc, char **argv);
 static IoRoutines tunnel_routines =
-    { tunnel_connect, tunnel_send, tunnel_recv, NULL, tunnel_listen, NULL, NULL, tunnel_disconnect, NULL};
+    { tunnel_connect, tunnel_send, tunnel_recv, NULL, tunnel_listen, NULL, NULL, tunnel_disconnect, tunnel_recv_to};
 
 EXPORT IoRoutines *Io()
 {
@@ -118,6 +119,25 @@ static ssize_t tunnel_recv(int id, void *buffer, size_t buflen){
   return (p && ReadFile(p->stdout_pipe, buffer, buflen, (DWORD *)&num, NULL)) ? num : -1;
 #else
   return p ? read(p->stdout_pipe, buffer, buflen) : -1;
+#endif
+}
+
+static ssize_t tunnel_recv_to(int id, void *buffer, size_t buflen, int to_msec){
+  struct TUNNEL_PIPES *p = getTunnelPipes(id);
+  if (!p) return -1;
+#ifdef _WIN32
+  ssize_t num = 0;
+  return ReadFile(p->stdout_pipe, buffer, buflen, (DWORD *)&num, NULL) ? num : -1;
+#else
+  struct timeval timeout;
+  timeout.tv_sec = (to_msec/1000);
+  timeout.tv_usec = to_msec % 1000;
+  fd_set set;
+  FD_ZERO(&set); /* clear the set */
+  FD_SET(p->stdout_pipe, &set); /* add our file descriptor to the set */
+  int rv = select(p->stdout_pipe + 1, &set, NULL, NULL, &timeout);
+  if (rv>0) return read(p->stdout_pipe, buffer, buflen);
+  return rv;
 #endif
 }
 
