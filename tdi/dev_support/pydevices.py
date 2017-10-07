@@ -31,7 +31,7 @@ def pydevices():
       if ds is not None:
           nds=list()
           for d in ds:
-              nds += [str(d),""]
+              nds += [str(d),"pydevice"]
           return StringArray(_N.array(nds))
       else:
         return None
