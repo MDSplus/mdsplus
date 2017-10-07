@@ -3270,6 +3270,8 @@ If you did intend to write to a subnode of the device you should check the prope
                 MODNAME = modname.upper()
                 if MODEL == MODNAME:
                     package = models[idx+1].rstrip()
+                    if package == "pydevice":
+                        break
                     try:
                         return __import__(package).__dict__[modname]
                     except ImportError: pass
