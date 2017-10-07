@@ -2,7 +2,6 @@ FUN PUBLIC MitCamacDevices() {
   return([
 	'A14',		 'MitDevices',		
 	'A3204',	 'MitDevices',		
-        'A3248',         'MitDevices',
 	'B5910A',	 'MitDevices',
 	'HV1440',	 'MitDevices',		
 	'HV1443',	 'MitDevices',		
