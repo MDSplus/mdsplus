@@ -1533,22 +1533,23 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                                                       _dat.Data.byref(array),
                                                       _C.c_int32(idx)))
 
-    def compare(self,value):
+    def compare(self,value,contents=True):
         """Returns True if this node contains the same data as specified in the value argument
         @param value: Value to compare contents of the node with
         @type value: Data
         @rtype: Bool
         """
-        if isinstance(value,TreePath) and isinstance(self,TreePath):
-          ans=str(self)==str(value)
-        elif type(self)==TreeNode and type(value)==TreeNode:
-          ans=self._nid==value._nid and self.tree==value.tree
+        if contents:
+            try:
+                r=self.record
+                if isinstance(r,TreeNode):
+                  return r.compare(value,contents=False)
+                else:
+                  return r.compare(value)
+            except _exc.TreeNODATA:
+                return (value is None) or (value == _dat.EmptyData)
         else:
-          try:
-            ans=value.compare(self.record)
-          except _exc.TreeNODATA:
-            ans=value is None
-        return ans
+            return isinstance(value,TreeNode) and (str(self)==str(value)) and (self.tree==value.tree)
 
     def containsVersions(self):
         """Return true if this node contains data versions

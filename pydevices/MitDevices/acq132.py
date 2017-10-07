@@ -26,14 +26,14 @@
 import MDSplus
 import acq
 
-class ACQ132(acq.ACQ):
+class ACQ132(acq.Acq):
     """
     D-Tacq ACQ132  32 channel transient recorder
 
     device support for d-tacq acq132 http://www.d-tacq.com/acq132cpci.shtml 
     """
     from copy import copy
-    parts=copy(acq.ACQ.acq_parts)
+    parts=copy(acq.Acq.acq_parts)
 
     for i in range(32):
         parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',)})
@@ -41,7 +41,7 @@ class ACQ132(acq.ACQ):
         parts.append({'path':':INPUT_%2.2d:ENDIDX'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
         parts.append({'path':':INPUT_%2.2d:INC'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
     del i
-    parts.extend(acq.ACQ.action_parts)
+    parts.extend(acq.Acq.action_parts)
     for part in parts:                
         if part['path'] == ':ACTIVE_CHAN' :
             part['value']=32                 
