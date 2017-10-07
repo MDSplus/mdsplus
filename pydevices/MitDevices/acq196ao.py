@@ -23,9 +23,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from acq import ACQ
+from acq import Acq
 
-class ACQ196AO(ACQ):
+class ACQ196AO(Acq):
     """
     D-Tacq ACQ196  16 channel arbitrary waveform generator piggyback function
     
