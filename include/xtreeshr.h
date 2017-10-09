@@ -3,7 +3,7 @@
 #include <mdsshr.h>
 #include <mdstypes.h>
 
-EXPORT int XTreeConvertToLongTime(struct descriptor *timeD, uint64_t * retTime);
+EXPORT int XTreeConvertToLongTime(struct descriptor *timeD, int64_t * retTime);
 EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descriptor *endD,
 			       struct descriptor *minDeltaD, struct descriptor_xd *outSignal);
 EXPORT int XTreeDefaultResample(struct descriptor_signal *currSignal, struct descriptor *startD,

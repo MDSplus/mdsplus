@@ -43,8 +43,8 @@ extern int TdiCompile();
 extern int TdiData();
 extern int TdiFloat();
 extern int TdiEvaluate();
-extern int XTreeConvertToLongTime(struct descriptor *timeD, uint64_t * converted);
-extern int XTreeConvertToLongDelta(struct descriptor *deltaD, uint64_t * converted);
+extern int XTreeConvertToLongTime(struct descriptor *timeD, int64_t * converted);
+extern int XTreeConvertToLongDelta(struct descriptor *deltaD, int64_t * converted);
 
 static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct descriptor *startD,
 				    struct descriptor *endD, struct descriptor *deltaD, char mode,
@@ -75,34 +75,34 @@ static void printDecompiled(struct descriptor *inD)
 //64 bit time-based resampling function. It is assumed here that the 64 bit representation of time is the count
 //of a given, fixed amount of time, starting from a given time in the past
 //The closest point is selected as representative for a given time
-static void resample(uint64_t start, uint64_t end, uint64_t delta, uint64_t * inTimebase,
+static void resample(int64_t start, int64_t end, int64_t delta, int64_t * inTimebase,
 		     int inTimebaseSamples, int numDims, int *dims, char *inData, int dataSize,
-		     char dataType, int mode, char *outData, uint64_t * outDim, int *retSamples)
+		     char dataType, int mode, char *outData, int64_t * outDim, int *retSamples)
 {
 	int i, j, timebaseIdx, outIdx, itemSize, outSamples, startIdx, timebaseSamples;
-	uint64_t refTime, delta1, delta2;
-	uint64_t *timebase;
+	int64_t refTime, delta1, delta2;
+	int64_t *timebase;
 	char *data;
 	int numDataItems;
 	int prevTimebaseIdx;
-	
+
 	double prevData, nextData, currData;
-	
+
 	itemSize = dataSize;
 	for (i = 0; i < numDims - 1; i++)
 		itemSize *= dims[i];
-	
+
 	numDataItems = itemSize / dataSize;
-	
+
 	if (start < inTimebase[0])
 		start = inTimebase[0];
 	if (end > inTimebase[inTimebaseSamples - 1])
 		end = inTimebase[inTimebaseSamples - 1];
-	
+
 	timebaseIdx = outIdx = outSamples = 0;
-	
+
 	for (startIdx = 0; startIdx < inTimebaseSamples && inTimebase[startIdx] < start; startIdx++) ;
-	
+
 	if (startIdx == inTimebaseSamples)	//Not possible in any case
 	{
     	*retSamples = 0;
@@ -116,7 +116,7 @@ static void resample(uint64_t start, uint64_t end, uint64_t delta, uint64_t * in
   	refTime = start+delta;
 	if (delta) {
 		prevTimebaseIdx = timebaseIdx;
-		while (refTime <= end) 
+		while (refTime <= end)
 		{
 			while (timebaseIdx < timebaseSamples && timebase[timebaseIdx] < refTime)
 				timebaseIdx++;
@@ -128,7 +128,7 @@ static void resample(uint64_t start, uint64_t end, uint64_t delta, uint64_t * in
 						delta2 = refTime - timebase[timebaseIdx - 1];
 						if (delta2 < delta1)
 							timebaseIdx--;
-					}		
+					}
 					memcpy(&outData[outSamples * itemSize], &data[timebaseIdx * itemSize], itemSize);
 					break;
 				case PREVIOUS_SAMPLE:
@@ -205,11 +205,11 @@ static void resample(uint64_t start, uint64_t end, uint64_t delta, uint64_t * in
 							break;
 						case DTYPE_Q:
 							for (i = 0; i < numDataItems; i++) {
-								prevData = ((uint64_t *) (&data[(timebaseIdx - 1) * itemSize]))[i];
-								nextData = ((uint64_t *) (&data[timebaseIdx * itemSize]))[i];
+								prevData = ((int64_t *) (&data[(timebaseIdx - 1) * itemSize]))[i];
+								nextData = ((int64_t *) (&data[timebaseIdx * itemSize]))[i];
 								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
 								/ (timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
-								((uint64_t *) (&outData[outSamples * itemSize]))[i] = currData;
+								((int64_t *) (&outData[outSamples * itemSize]))[i] = currData;
 							}
 							break;
 						case DTYPE_FLOAT:
@@ -332,18 +332,18 @@ static void resample(uint64_t start, uint64_t end, uint64_t delta, uint64_t * in
 							break;
 						case DTYPE_QU:
 							for (i = 0; i < numDataItems; i++) {
-								uint64_t currData, minData, maxData;
-								minData = maxData = ((uint64_t *)(&data[(prevTimebaseIdx) * itemSize]))[i];
+								int64_t currData, minData, maxData;
+								minData = maxData = ((int64_t *)(&data[(prevTimebaseIdx) * itemSize]))[i];
 								for(j = prevTimebaseIdx + 1; j < timebaseIdx; j++)
 								{
-									currData = ((uint64_t *)(&data[j * itemSize]))[i];
+									currData = ((int64_t *)(&data[j * itemSize]))[i];
 									if(currData > maxData)
 										maxData = currData;
 									if(currData < minData)
 										minData = currData;
 								}
-								((uint64_t *)(&outData[2*outSamples * itemSize]))[i] = minData;
-								((uint64_t *)(&outData[(2*outSamples+1) * itemSize]))[i] = maxData;
+								((int64_t *)(&outData[2*outSamples * itemSize]))[i] = minData;
+								((int64_t *)(&outData[(2*outSamples+1) * itemSize]))[i] = maxData;
 							}
 							break;
 						case DTYPE_Q:
@@ -411,33 +411,33 @@ static void resample(uint64_t start, uint64_t end, uint64_t delta, uint64_t * in
    				outDim[outSamples] = refTime;
 			outSamples++;
     		refTime += delta;
-			prevTimebaseIdx = timebaseIdx;  
+			prevTimebaseIdx = timebaseIdx;
   		}
 		if(mode == MINMAX)
  			*retSamples = 2*outSamples;
 		else
  			*retSamples = outSamples;
-	} 
-	else  //delta == NULL 
+	}
+	else  //delta == NULL
 	{
-    	while (timebaseIdx < *retSamples && timebase[timebaseIdx] <= end) 
+    	while (timebaseIdx < *retSamples && timebase[timebaseIdx] <= end)
 		{
       		memcpy(&outData[timebaseIdx * itemSize], &data[timebaseIdx * itemSize], itemSize);
       		outDim[timebaseIdx] = timebase[timebaseIdx];
       		timebaseIdx++;
-    	}	
+    	}
     	*retSamples = timebaseIdx;
   	}
 }
 
 //The default resample handles int64 timebases
 //return 0 if the conversion is  not possible
-static uint64_t *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int *outSamples)
+static int64_t *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int *outSamples)
 {
   struct descriptor_a *currDim;
   double *doublePtr;
   float *floatPtr;
-  uint64_t *outPtr;
+  int64_t *outPtr;
   int numSamples, i, status;
   EMPTYXD(currXd);
 
@@ -447,7 +447,7 @@ static uint64_t *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int
     outPtr = malloc(currDim->arsize);
     numSamples = currDim->arsize / currDim->length;
     for (i = 0; i < numSamples; i++)
-      outPtr[i] = ((uint64_t *) currDim->pointer)[i];
+      outPtr[i] = ((int64_t *) currDim->pointer)[i];
     *outSamples = numSamples;
     return outPtr;
   }
@@ -459,7 +459,7 @@ static uint64_t *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int
       outPtr = malloc(currDim->arsize);
       numSamples = currDim->arsize / currDim->length;
       for (i = 0; i < numSamples; i++)
-	outPtr[i] = ((uint64_t *) currDim->pointer)[i];
+	outPtr[i] = ((int64_t *) currDim->pointer)[i];
       *outSamples = numSamples;
       MdsFree1Dx(&currXd, 0);
       return outPtr;
@@ -552,7 +552,7 @@ static int getShape(struct descriptor *dataD, int *dims, int *numDims)
     }
     return 1;
 }
-    
+
 
 static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct descriptor *startD,
 				    struct descriptor *endD, struct descriptor *inDeltaD, char mode,
@@ -564,7 +564,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   //char *shapeExpr = "SHAPE(DATA($1))";
   //struct descriptor shapeExprD = { strlen(shapeExpr), DTYPE_T, CLASS_S, shapeExpr };
 
-  uint64_t start64, end64, delta64, *timebase64, *outDim;
+  int64_t start64, end64, delta64, *timebase64, *outDim;
 //      float *timebaseFloat;
   double *timebaseDouble;
   int dims[64];
@@ -632,8 +632,8 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
       return status;
   }
   numYSamples = dataD->arsize/dataD->length;
-  
-  
+
+
   status = getShape((struct descriptor *)dataD, dims, &numDims);
   if (!(status & 1)) {
     MdsFree1Dx(&dataXd, 0);
@@ -654,9 +654,9 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   arrayD = (struct descriptor_a *)shapeXd.pointer;
   numDims = arrayD->arsize / arrayD->length;
   dims = (int *)arrayD->pointer;
- 
+
 */
-  
+
   itemSize = dataD->length;
   for (i = 0; i < numDims - 1; i++)
     itemSize *= dims[i];

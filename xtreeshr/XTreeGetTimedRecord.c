@@ -49,9 +49,9 @@ static int timedAccessFlag = 0;
 #define EXPORT __declspec(dllexport)
 #endif
 extern int XTreeConvertToLongTime(struct descriptor *timeD,
-				  uint64_t * converted);
+				  int64_t * converted);
 extern int XTreeConvertToLongDelta(struct descriptor *deltaD,
-				   uint64_t * converted);
+				   int64_t * converted);
 extern int XTreeMinMaxResample(struct descriptor_signal *inSignalD,
 			       struct descriptor *startD,
 			       struct descriptor *endD,
@@ -101,7 +101,7 @@ static int checkResampledVersion(void *dbid, int nid, struct descriptor *deltaD)
 	int status, outNid;
 	int resampleFactor;
 	int64_t actDeltaNs;
-	uint64_t deltaNs, startNs, endNs;
+	int64_t deltaNs, startNs, endNs;
 	char dtype, dimct;
 	int dims[16];
 	int nextRow;
@@ -170,7 +170,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
   char resampleMode[MAX_FUN_NAMELEN];
   EMPTYXD(startTimesXd);
   EMPTYXD(endTimesXd);
-  uint64_t *startTimes, *endTimes, start, end;
+  int64_t *startTimes, *endTimes, start, end;
 
   struct descriptor resampleFunNameD = { 0, DTYPE_T, CLASS_S, resampleFunName };
   struct descriptor squishFunNameD = { 0, DTYPE_T, CLASS_S, squishFunName };
@@ -260,8 +260,8 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 		return 0; //Internal error
 	if((int)(endTimesApd->arsize/endTimesApd->length) != numSegments)
 		return 0; //Internal error
-	startTimes = (uint64_t *)malloc(numSegments * sizeof(int64_t));
-	endTimes = (uint64_t *)malloc(numSegments * sizeof(int64_t));
+	startTimes = (int64_t *)malloc(numSegments * sizeof(int64_t));
+	endTimes = (int64_t *)malloc(numSegments * sizeof(int64_t));
 	for(currSegIdx = 0; currSegIdx < numSegments; currSegIdx++)
 	{
 		status = XTreeConvertToLongTime(((struct descriptor **)(startTimesApd->pointer))[currSegIdx], &startTimes[currSegIdx]);
