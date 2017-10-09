@@ -90,8 +90,9 @@ class Compound(_dat.Data):
         return False
 
     def __fixTreeReferences__(self,tree):
-        from copy import deepcopy
-        ans = deepcopy(self)
+#        from copy import deepcopy
+#        ans = deepcopy(self)
+        ans=type(self)(*self._args)
         for arg in ans._args:
             if isinstance(arg,_dat.Data) and arg.__hasBadTreeReferences__(tree):
                 arg.__fixTreeReferences__(tree)
