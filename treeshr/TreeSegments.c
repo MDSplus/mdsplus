@@ -208,8 +208,8 @@ int TreeGetSegmentTimesXd(int nid, int *nsegs, struct descriptor_xd *start_list,
   return _TreeGetSegmentTimesXd(*TreeCtx(), nid, nsegs, start_list, end_list);
 }
 
-int _TreeGetSegmentTimes(void *dbid, int nid, int *nsegs, uint64_t ** times);
-int TreeGetSegmentTimes(int nid, int *nsegs, uint64_t ** times){
+int _TreeGetSegmentTimes(void *dbid, int nid, int *nsegs, int64_t ** times);
+int TreeGetSegmentTimes(int nid, int *nsegs, int64_t ** times){
   return _TreeGetSegmentTimes(*TreeCtx(), nid, nsegs, times);
 }
 
@@ -781,7 +781,7 @@ else if (sinfo_limit_offset > 0 && sinfo_limit_length > 0) { \
   EMPTYXD(xd); \
   status = TreeGetDsc(tinfo, nid, sinfo_limit_offset, sinfo_limit_length, &xd); \
   if (STATUS_OK && xd.pointer && xd.pointer->length == 8) \
-    limitval = *(uint64_t *) xd.pointer->pointer; \
+    limitval = *(int64_t *) xd.pointer->pointer; \
   else \
     limitval = 0; \
   MdsFree1Dx(&xd, 0); \
@@ -919,12 +919,12 @@ int _TreeGetSegmentTimesXd(void *dbid, int nid, int *nsegs, struct descriptor_xd
   return status;
 }
 
-int _TreeGetSegmentTimes(void *dbid, int nid, int *nsegs, uint64_t ** times){
+int _TreeGetSegmentTimes(void *dbid, int nid, int *nsegs, int64_t ** times){
   *times = NULL;
   GETSEGMENTTIMES;
-  uint64_t *ans = (uint64_t *) malloc(numsegs * 2 * sizeof(uint64_t));
+  int64_t *ans = (int64_t *) malloc(numsegs * 2 * sizeof(int64_t));
   *times = ans;
-  memset(ans, 0, numsegs * 2 * sizeof(uint64_t));
+  memset(ans, 0, numsegs * 2 * sizeof(int64_t));
   for (idx = numsegs - 1; STATUS_OK && idx >= 0; idx--)
     GETSEGMENTTIME_LOOP(ans[idx * 2],ans[idx * 2 + 1],GETLIMIT_ARRAY,,,,);
   return status;
