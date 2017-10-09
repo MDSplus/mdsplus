@@ -90,6 +90,6 @@ if __name__==__package__:
         libname = ('python%d%d' if sys.platform.startswith('win') else 'python%d.%d')%sys.version_info[0:2]
         return find_library(libname)
     if not "PyLib" in globals():
-        globals()['PyLib'] = getPyLib()
-        if   PyLib:setenv("PyLib",PyLib)
-        else:PyLib=getenv("PyLib")
+        PyLib = getPyLib()
+        if   PyLib:globals()['setenv']("PyLib",PyLib)
+        else:PyLib=globals()['getenv']("PyLib")
