@@ -113,7 +113,7 @@ static void resample(int64_t start, int64_t end, int64_t delta, int64_t * inTime
   	timebaseSamples = inTimebaseSamples - startIdx;
   	data = &inData[startIdx * itemSize];
 
-  	refTime = start+delta;
+  	refTime = start;
 	if (delta) {
 		prevTimebaseIdx = timebaseIdx;
 		while (refTime <= end)

@@ -194,10 +194,7 @@ EXPORT int _XTreeGetSegmentList(void *dbid, int nid, struct descriptor *startDsc
 	  return status;
 	}
 	//if(currStart > end) //all the segment lies outside the specifid range, it has to be excluded
-	if (isGreater && segmentIdx > startIdx) {
-	  segmentIdx--;
-	  break;
-	}
+	if (isGreater && segmentIdx > startIdx)  segmentIdx--;
 	break;
       }
       segmentIdx++;
