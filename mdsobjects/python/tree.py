@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,7 @@ _mds=_mimport('_mdsshr')
 #### Load Shared Libraries Referenced #######
 #
 _TreeShr=_ver.load_library('TreeShr')
+_XTreeShr=_ver.load_library('XTreeShr')
 #############################################
 
 class staticmethodX(object):
@@ -890,7 +891,7 @@ class Tree(object):
         return old
 
     @staticmethod
-    def setTimeContext(begin,end,delta):
+    def setTimeContext(begin=None,end=None,delta=None):
         """Set time context for retrieving segmented records
         @param begin: Time value for beginning of segment.
         @type begin: str, Uint64, Float32 or Float64
@@ -900,11 +901,13 @@ class Tree(object):
         @type delta: Uint64, Float32 or Float64
         @rtype: None
         """
-        begin,end,delta = map(_dat.Data,(begin,end,delta))
+        begin = None if begin is None else _dat.Data(begin)
+        end   = None if end   is None else _dat.Data(end)
+        delta = None if delta is None else _dat.Data(delta)
         _exc.checkStatus(
-            _TreeShr.TreeSetTimeContext(_dat.Data.byref(begin),
-                                        _dat.Data.byref(end),
-                                        _dat.Data.byref(delta)))
+            _TreeShr.TreeSetTimeContext(_C.c_void_p(0) if begin is None else _dat.Data.byref(begin),
+                                        _C.c_void_p(0) if end   is None else _dat.Data.byref(end),
+                                        _C.c_void_p(0) if delta is None else _dat.Data.byref(delta)))
 
     @staticmethod
     def setVersionDate(date):
@@ -2021,6 +2024,29 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         start,end = start.value,end.value
         if start is not None or end is not None:
             return (start,end)
+
+    def getSegmentList(self,start,end):
+        start,end = map(_dat.Data,(start,end))
+        xd=_dsc.Descriptor_xd()
+        _exc.checkStatus(
+            _XTreeShr._XTreeGetSegmentList(self.tree.ctx,
+                                           self._nid,
+                                           _dat.Data.byref(start),
+                                           _dat.Data.byref(end),
+                                           xd.byref))
+        return xd.value
+
+    def getSegmentTimes(self):
+        num = _C.c_int32(0)
+        start=_dsc.Descriptor_xd()
+        end=_dsc.Descriptor_xd()
+        _exc.checkStatus(
+            _TreeShr._TreeGetSegmentTimesXd(self.tree.ctx,
+                                           self._nid,
+                                           _C.byref(num),
+                                           start.byref,
+                                           end.byref))
+        return num.value,start.value,end.value
 
     def getSegmentEnd(self,idx):
         """return end of segment
