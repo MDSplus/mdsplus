@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -68,13 +68,8 @@ def _TdiShrFun(function,errormessage,expression,*args,**kwargs):
             tree=arg.tree
             if tree is not None:
                 break
-    if tree is None:
-        try:
-            tree=Tree();
-        except:
-            pass
     if tree is not None:
-        ctx=tree.ctx
+        ctx = tree.ctx
     elif "ctx" in kwargs:
         ctx = kwargs["ctx"]
     else:
@@ -90,12 +85,9 @@ def _TdiShrFun(function,errormessage,expression,*args,**kwargs):
         _exc.checkStatus(function(*rargs))
     finally:
         _tre._TreeCtx.popCtx()
-    xd.tree=tree
-    ans = xd.value
-    try:
+    ans = xd._setCtx(ctx).value
+    if tree is not None:
         ans.tree = tree
-    except:
-        pass
     return ans
 
 def TdiCompile(expression,*args,**kwargs):
@@ -146,7 +138,7 @@ class Data(object):
     @tree.setter
     def tree(self,tree):
         pass
-    
+
     def __new__(cls,*value):
         """Convert a python object to a MDSobject Data object
         @param value: Any value
