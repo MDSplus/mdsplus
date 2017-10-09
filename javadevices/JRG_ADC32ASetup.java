@@ -733,14 +733,14 @@ public class JRG_ADC32ASetup extends DeviceSetup {
 
         deviceField57.setIdentifier("");
         deviceField57.setLabelString("End Idx: ");
-        deviceField57.setOffsetNid(10);
+        deviceField57.setOffsetNid(110);
         jPanel30.add(deviceField57);
 
         deviceChoice27.setChoiceIntValues(new int[] {1, 2, 4, 8});
         deviceChoice27.setChoiceItems(new String[] {"1", "2", "4", "8"});
         deviceChoice27.setIdentifier("");
         deviceChoice27.setLabelString("Gain: ");
-        deviceChoice27.setOffsetNid(11);
+        deviceChoice27.setOffsetNid(111);
         deviceChoice27.setUpdateIdentifier("");
         jPanel30.add(deviceChoice27);
 
