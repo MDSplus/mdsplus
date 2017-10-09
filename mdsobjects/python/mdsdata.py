@@ -60,10 +60,23 @@ def _TdiShrFun(function,errormessage,expression,*args,**kwargs):
                 return parseArguments(args[0])
         return list(map(Data,args))
     dargs = [Data(expression)]+parseArguments(args)
-    if "ctx" in kwargs:
+    tree=None
+    if "tree" in kwargs:
+        tree=kwargs["tree"]
+    else:
+        for arg in dargs:
+            tree=arg.tree
+            if tree is not None:
+                break
+    if tree is None:
+        try:
+            tree=Tree();
+        except:
+            pass
+    if tree is not None:
+        ctx=tree.ctx
+    elif "ctx" in kwargs:
         ctx = kwargs["ctx"]
-    elif "tree" in kwargs:
-        ctx = kwargs["tree"].ctx
     else:
         ctx = None
         for arg in dargs:
@@ -77,7 +90,13 @@ def _TdiShrFun(function,errormessage,expression,*args,**kwargs):
         _exc.checkStatus(function(*rargs))
     finally:
         _tre._TreeCtx.popCtx()
-    return xd.value
+    xd.tree=tree
+    ans = xd.value
+    try:
+        ans.tree = tree
+    except:
+        pass
+    return ans
 
 def TdiCompile(expression,*args,**kwargs):
     """Compile a TDI expression. Format: TdiCompile('expression-string')"""
@@ -121,6 +140,13 @@ class Data(object):
             'data':data,
             'version':3,
         }
+    @property
+    def tree(self):
+        return None
+    @tree.setter
+    def tree(self,tree):
+        pass
+    
     def __new__(cls,*value):
         """Convert a python object to a MDSobject Data object
         @param value: Any value
@@ -733,8 +759,8 @@ class Data(object):
         """
         xd=_dsc.Descriptor_xd()
         _exc.checkStatus(
-            _MdsShr.MdsSerializeDscOut(self.descrPtr,
-                                       xd.ptr))
+            _MdsShr.MdsSerializeDscOut(self.ref,
+                                       xd.byref))
         return xd.value
 
     @staticmethod
@@ -749,7 +775,7 @@ class Data(object):
         xd=_dsc.Descriptor_xd()
         _exc.checkStatus(
             _MdsShr.MdsSerializeDscIn(_C.c_void_p(bytes.ctypes.data),
-                                      xd.ptr))
+                                      xd.byref))
         return xd.value
 
 makeData=Data

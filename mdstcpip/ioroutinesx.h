@@ -42,31 +42,31 @@ static SOCKET getSocket(int conid){
   return (info_name && strcmp(info_name, PROT) == 0) ? (SOCKET)readfd : (SOCKET)-1;
 }
 
-static pthread_mutex_t socket_mutex = PTHREAD_MUTEX_INITIALIZER;
-#define LOCK_SOCKET_LIST   pthread_mutex_lock(&socket_mutex)
-#define UNLOCK_SOCKET_LIST pthread_mutex_unlock(&socket_mutex)
+static pthread_mutex_t socket_list_mutex = PTHREAD_MUTEX_INITIALIZER;
+static void unlock_socket_list() {  pthread_mutex_unlock(&socket_list_mutex); }
+#define LOCK_SOCKET_LIST   pthread_mutex_lock(&socket_list_mutex);pthread_cleanup_push(unlock_socket_list, NULL);
+#define UNLOCK_SOCKET_LIST pthread_cleanup_pop(1);
 
 static void PushSocket(SOCKET socket){
-  Socket *oldhead;
   LOCK_SOCKET_LIST;
-  oldhead = SocketList;
-  SocketList = malloc(sizeof(Socket));
-  SocketList->socket = socket;
-  SocketList->next = oldhead;
+  Socket *new = malloc(sizeof(Socket));
+  new->socket = socket;
+  new->next = SocketList;
+  SocketList = new;
   UNLOCK_SOCKET_LIST;
 }
 
 static void PopSocket(SOCKET socket){
-  Socket *p, *s;
   LOCK_SOCKET_LIST;
+  Socket *p, *s;
   for (s = SocketList, p = 0; s && s->socket != socket; p = s, s = s->next) ;
   if (s) {
-      if (p)
-        p->next = s->next;
-      else
-        SocketList = s->next;
-      free(s);
-    }
+    if (p)
+      p->next = s->next;
+    else
+      SocketList = s->next;
+    free(s);
+  }
   UNLOCK_SOCKET_LIST;
 }
 
@@ -267,7 +267,7 @@ static ssize_t io_send(int conid, const void *bptr, size_t num, int nowait){
 ////////////////////////////////////////////////////////////////////////////////
 
 #ifdef _WIN32
-static ssize_t io_recv_to(int conid, void *bptr, size_t num, int to_msec __attribute__((unused))){
+static ssize_t io_recv(int conid, void *bptr, size_t num){
 #else
 static ssize_t io_recv_to(int conid, void *bptr, size_t num, int to_msec){
 #endif

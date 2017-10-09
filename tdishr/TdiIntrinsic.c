@@ -352,7 +352,7 @@ EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct 
   /********************************
   Compiler errors get special help.
   ********************************/
-  if (opcode == OpcCompile && message->length < MAXMESS) {
+  if (opcode == OpcCompile && message->length < MAXMESS && TdiRefZone.a_begin) {
     struct descriptor pre = { 0, DTYPE_T, CLASS_S, 0 };
     struct descriptor body = { 0, DTYPE_T, CLASS_S, 0 };
     struct descriptor post = { 0, DTYPE_T, CLASS_S, 0 };

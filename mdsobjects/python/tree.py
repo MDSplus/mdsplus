@@ -959,27 +959,27 @@ class Tree(object):
 
     def tcl(self,cmd,*args,**kwargs):
         """tree ctx specific tcl command"""
-        kwargs['ctx'] = self.ctx
+        kwargs['tree'] = self
         return _dcl.tcl(cmd,*args,**kwargs)
 
     def tdiCompile(self,*args,**kwargs):
         """Compile a TDI expression. Format: tdiCompile('expression-string',(arg1,...))"""
-        kwargs['ctx'] = self.ctx
+        kwargs['tree']=self
         return _dat.TdiCompile(*args,**kwargs)
 
     def tdiExecute(self,*args,**kwargs):
         """Compile and execute a TDI expression. Format: tdiExecute('expression-string',(arg1,...))"""
-        kwargs['ctx'] = self.ctx
+        kwargs['tree'] = self
         return _dat.TdiExecute(*args,**kwargs)
 
     def tdiEvaluate(self,arg,**kwargs):
         """Evaluate and functions. Format: tdiEvaluate(data)"""
-        kwargs['ctx'] = self.ctx
+        kwargs['tree'] = self
         return _dat.TdiEvaluate(arg,**kwargs)
 
     def tdiData(self,arg,**kwargs):
         """Return primitive data type. Format: tdiData(value)"""
-        kwargs['ctx'] = self.ctx
+        kwargs['tree'] = self.tree
         return _dat.TdiData(arg,**kwargs)
 
 class TreeNode(_dat.Data): # HINT: TreeNode begin
@@ -1004,6 +1004,11 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
     @ctx.setter
     def ctx(self,ctx):
         if self.tree is None: self.tree = Tree(ctx)
+    @property
+    def tree(self): return self._tree
+    @tree.setter
+    def tree(self,tree):
+        self._tree=tree
 
     def __new__(cls,nid,tree=None,head=None,*a,**kw):
         """Create class instance. Initialize part_dict class attribute if necessary.
@@ -1607,7 +1612,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
 
     @classmethod
     def fromDescriptor(cls,d):
-        return cls(_C.cast(d.pointer,_C.POINTER(_C.c_int32)).contents.value)
+        return cls(_C.cast(d.pointer,_C.POINTER(_C.c_int32)).contents.value,d.tree)
 
     def getBrother(self):
         """Return sibling of this node
@@ -1664,12 +1669,14 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         @rtype: Data
         """
         xd=_dsc.Descriptor_xd()
-        xd.tree=self.tree
         status=_TreeShr._TreeGetRecord(self.tree.ctx,
                                        self._nid,
                                        xd.byref)
         if (status & 1):
-            return xd._setCtx(self.ctx).value
+            xd.tree=self.tree
+            ans = xd._setCtx(self.ctx).value
+            ans.tree = self.tree
+            return ans
         elif len(altvalue)==1 and status == _exc.TreeNODATA.status:
             return altvalue[0]
         else:
@@ -1833,8 +1840,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
             if not isinstance(self.tree.ctx,_C.c_void_p):
                 raise TypeError("tree ctx is type %s, must be a c_void_p" % str(type(self.tree.ctx)))
             _exc.checkStatus(_TreeShr._TreeGetNci(self.tree.ctx,
-                                            self._nid,
-                                            _C.byref(itmlst)))
+                                                  self._nid,
+                                                  _C.byref(itmlst)))
         for idx in range(len(items)):
             val=itmlst.ans[idx]
             rettype=itmlst.rettype[idx]
@@ -2617,6 +2624,11 @@ class TreePath(TreeNode): # HINT: TreePath begin
 
 
 class TreeNodeArray(_arr.Int32Array): # HINT: TreeNodeArray begin
+    @property
+    def tree(self): return self._tree
+    @tree.setter
+    def tree(self,tree):
+        self._tree=tree
     def __new__(cls,nids,*tree,**kw):
         return super(TreeNodeArray,cls).__new__(cls,nids)
     def __init__(self,nids,*tree,**kw):
