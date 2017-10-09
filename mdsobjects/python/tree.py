@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,7 @@ _mds=_mimport('_mdsshr')
 #### Load Shared Libraries Referenced #######
 #
 _TreeShr=_ver.load_library('TreeShr')
+_XTreeShr=_ver.load_library('XTreeShr')
 #############################################
 
 class staticmethodX(object):
@@ -77,6 +78,9 @@ _usage_table={'ANY':0,'NONE':1,'STRUCTURE':1,'ACTION':2,      # Usage name to co
               'DEVICE':3,'DISPATCH':4,'NUMERIC':5,'SIGNAL':6,
               'TASK':7,'TEXT':8,'WINDOW':9,'AXIS':10,
               'SUBTREE':11,'COMPOUND_DATA':12}
+class UsageError(KeyError):
+    def __init__(self,usage):
+        super(UsageError,self).__init__('Invalid usage "%s". Must be one of: %s' % (str(usage), ', '.join(_usage_table.keys())))
 
 #
 ###################################################
@@ -612,7 +616,7 @@ class Tree(object):
         try:
             usage_idx=_usage_table[usage.upper()]
         except KeyError:
-            raise KeyError('Invalid usage must be one of: %s' % _usage_table.keys())
+            raise UsageError(usage)
         usagenum = 1 if usage_idx==11 else usage_idx
         with self._lock:
             _exc.checkStatus(
@@ -769,7 +773,7 @@ class Tree(object):
                 for u in usage:
                     usage_mask |= 1 << _usage_table[u.upper()]
             except KeyError:
-                raise KeyError('Invalid usage must be one of: %s' % list(_usage_table.keys()))
+                raise UsageError(u)
 
         nid=_C.c_int32(0)
         ctx=_C.c_void_p(0)
@@ -890,7 +894,7 @@ class Tree(object):
         return old
 
     @staticmethod
-    def setTimeContext(begin,end,delta):
+    def setTimeContext(begin=None,end=None,delta=None):
         """Set time context for retrieving segmented records
         @param begin: Time value for beginning of segment.
         @type begin: str, Uint64, Float32 or Float64
@@ -900,11 +904,13 @@ class Tree(object):
         @type delta: Uint64, Float32 or Float64
         @rtype: None
         """
-        begin,end,delta = map(_dat.Data,(begin,end,delta))
+        begin = None if begin is None else _dat.Data(begin)
+        end   = None if end   is None else _dat.Data(end)
+        delta = None if delta is None else _dat.Data(delta)
         _exc.checkStatus(
-            _TreeShr.TreeSetTimeContext(_dat.Data.byref(begin),
-                                        _dat.Data.byref(end),
-                                        _dat.Data.byref(delta)))
+            _TreeShr.TreeSetTimeContext(_C.c_void_p(0) if begin is None else _dat.Data.byref(begin),
+                                        _C.c_void_p(0) if end   is None else _dat.Data.byref(end),
+                                        _C.c_void_p(0) if delta is None else _dat.Data.byref(delta)))
 
     @staticmethod
     def setVersionDate(date):
@@ -1436,7 +1442,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         try:
             usagenum=_usage_table[usage.upper()]
         except KeyError:
-            raise KeyError('Invalid usage specified. Use one of %s' % (str(_usage_table.keys()),))
+            raise UsageError(usage)
         name=str(name).upper()
         if name[0]==':' or name[0]=='.':
             name=str(self.fullpath)+name
@@ -2022,6 +2028,29 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         if start is not None or end is not None:
             return (start,end)
 
+    def getSegmentList(self,start,end):
+        start,end = map(_dat.Data,(start,end))
+        xd=_dsc.Descriptor_xd()
+        _exc.checkStatus(
+            _XTreeShr._XTreeGetSegmentList(self.tree.ctx,
+                                           self._nid,
+                                           _dat.Data.byref(start),
+                                           _dat.Data.byref(end),
+                                           xd.byref))
+        return xd.value
+
+    def getSegmentTimes(self):
+        num = _C.c_int32(0)
+        start=_dsc.Descriptor_xd()
+        end=_dsc.Descriptor_xd()
+        _exc.checkStatus(
+            _TreeShr._TreeGetSegmentTimesXd(self.tree.ctx,
+                                           self._nid,
+                                           _C.byref(num),
+                                           start.byref,
+                                           end.byref))
+        return num.value,start.value,end.value
+
     def getSegmentEnd(self,idx):
         """return end of segment
         @param idx: segment index to query
@@ -2539,7 +2568,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         try:
             usagenum=_usage_table[usage.upper()]
         except KeyError:
-            raise KeyError('Invalid usage specified. Use one of %s' % (str(_usage_table.keys()),))
+            raise UsageError(usage)
         _exc.checkStatus(
                 _TreeShr._TreeSetUsage(self.tree.ctx,
                                        self._nid,

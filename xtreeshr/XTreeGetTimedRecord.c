@@ -49,9 +49,9 @@ static int timedAccessFlag = 0;
 #define EXPORT __declspec(dllexport)
 #endif
 extern int XTreeConvertToLongTime(struct descriptor *timeD,
-				  uint64_t * converted);
+				  int64_t * converted);
 extern int XTreeConvertToLongDelta(struct descriptor *deltaD,
-				   uint64_t * converted);
+				   int64_t * converted);
 extern int XTreeMinMaxResample(struct descriptor_signal *inSignalD,
 			       struct descriptor *startD,
 			       struct descriptor *endD,
@@ -101,7 +101,7 @@ static int checkResampledVersion(void *dbid, int nid, struct descriptor *deltaD)
 	int status, outNid;
 	int resampleFactor;
 	int64_t actDeltaNs;
-	uint64_t deltaNs, startNs, endNs;
+	int64_t deltaNs, startNs, endNs;
 	char dtype, dimct;
 	int dims[16];
 	int nextRow;
@@ -149,7 +149,7 @@ static int checkResampledVersion(void *dbid, int nid, struct descriptor *deltaD)
 	if((int)(deltaNs / actDeltaNs) < resampleFactor)
 		return nid;
 	status = (dbid) ? _TreeGetXNci(dbid, nid, "ResampleNid", &xd) : TreeGetXNci(nid, "ResampleNid", &xd);
-  	if (STATUS_NOT_OK || !xd.pointer ||xd.pointer->class != CLASS_S || xd.pointer->dtype != DTYPE_NID)
+  	if (STATUS_NOT_OK || !xd.pointer || xd.pointer->class != CLASS_S || xd.pointer->dtype != DTYPE_NID)
   	{
 		MdsFree1Dx(&xd, 0);
 		return nid;
@@ -170,7 +170,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
   char resampleMode[MAX_FUN_NAMELEN];
   EMPTYXD(startTimesXd);
   EMPTYXD(endTimesXd);
-  uint64_t *startTimes, *endTimes, start, end;
+  int64_t *startTimes, *endTimes, start, end;
 
   struct descriptor resampleFunNameD = { 0, DTYPE_T, CLASS_S, resampleFunName };
   struct descriptor squishFunNameD = { 0, DTYPE_T, CLASS_S, squishFunName };
@@ -251,7 +251,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 // New management based on TreeGetSegmentLimits()
 	status = (dbid)?_TreeGetSegmentTimesXd(dbid, nid, &numSegments, &startTimesXd, &endTimesXd):TreeGetSegmentTimesXd(nid, &numSegments, &startTimesXd, &endTimesXd);
 	if STATUS_NOT_OK return status;
-//Convert read times into 64 bit representation
+	// Convert read times into 64 bit representation
 	if(startTimesXd.pointer == 0 || endTimesXd.pointer == 0)
 		return 0; //Internal error
 	startTimesApd = (struct descriptor_a *)startTimesXd.pointer;
@@ -260,8 +260,8 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 		return 0; //Internal error
 	if((int)(endTimesApd->arsize/endTimesApd->length) != numSegments)
 		return 0; //Internal error
-	startTimes = (uint64_t *)malloc(numSegments * sizeof(int64_t));
-	endTimes = (uint64_t *)malloc(numSegments * sizeof(int64_t));
+	startTimes = (int64_t *)malloc(numSegments * sizeof(int64_t));
+	endTimes = (int64_t *)malloc(numSegments * sizeof(int64_t));
 	for(currSegIdx = 0; currSegIdx < numSegments; currSegIdx++)
 	{
 		status = XTreeConvertToLongTime(((struct descriptor **)(startTimesApd->pointer))[currSegIdx], &startTimes[currSegIdx]);
@@ -272,51 +272,24 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 	MdsFree1Dx(&startTimesXd, 0);
 	MdsFree1Dx(&endTimesXd, 0);
 
-	startIdx = 0;
 	if(!startD)     //If no start time specified, take all initial segments
 		startIdx = 0;
-	else
-	{
-		while(startIdx < numSegments)
-		{
-			if(endTimes[startIdx] > start) //First overlapping segment
-			{
-			  //				if(startTimes[startIdx] < start)
-			  //		firstSegmentTruncated = 1;
-				break;
-			}
-			startIdx++;
-		}
-	}
-	if(startIdx == numSegments) //All segments antecedent to start time
-	{
+	else // find first overlapping segment
+	    for(startIdx = 0 ; startIdx < numSegments && endTimes[startIdx] < start ; startIdx++);
+	if(startIdx == numSegments) {
 		MdsCopyDxXd((struct descriptor *)&emptyXd, outSignal);	//return an empty XD
 		return 1;
 	}
 	if(!endD)
 		endIdx = numSegments - 1;
-	else
-	{
-		currSegIdx = startIdx;
-		while(currSegIdx < numSegments)
-		{
-			if(endTimes[currSegIdx] >= end) //Last overlapping segment
-			{
-				if(startTimes[currSegIdx] > end) //all the segment lies outside the specifid range, it has to be excluded
-				{
-					currSegIdx--;
-					break;
-				}
-				//				if(startTimes[currSegIdx] < end)
-				//	lastSegmentTruncated = 1;
+	else {
+		for (currSegIdx = startIdx; currSegIdx < numSegments ; currSegIdx++) {
+			if(endTimes[currSegIdx] >= end) { // Last overlapping segment
+				if(startTimes[currSegIdx] > end && currSegIdx > startIdx) currSegIdx--;
 				break;
 			}
-			currSegIdx++;
 		}
-		if(currSegIdx == numSegments) //No segment (section) after end
-			endIdx = numSegments - 1;
-		else
-			endIdx = currSegIdx;
+		endIdx = currSegIdx == numSegments ? currSegIdx-1 : currSegIdx; //No segment (section) after end
 	}
 	actNumSegments = endIdx - startIdx +1;
 
@@ -329,8 +302,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 	resampledXds = (struct descriptor_xd *)malloc(actNumSegments * sizeof(struct descriptor_xd));
 	dataXds = (struct descriptor_xd *)malloc(actNumSegments * sizeof(struct descriptor_xd));
 	dimensionXds = (struct descriptor_xd *)malloc(actNumSegments * sizeof(struct descriptor_xd));
-	for(i = 0; i < actNumSegments; i++)
-	{
+	for(i = 0; i < actNumSegments; i++) {
 		resampledXds[i] = emptyXd;
 		dataXds[i] = emptyXd;
 		dimensionXds[i] = emptyXd;
@@ -376,8 +348,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 //If defined, call User Provided resampling function, oterwise use default one (XTreeDefaultResample())
 		if(resampleFunName[0])
 		{
-//			unsigned short funCode = OpcExtFunction;
-			unsigned short funCode = 162;
+			unsigned short funCode = 162; // OpcExtFunction
 			resampleFunD.length = sizeof(unsigned short);
 			resampleFunD.pointer = (unsigned char *)&funCode;
 			resampleFunNameD.length = strlen(resampleFunName);

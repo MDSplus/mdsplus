@@ -31,7 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 //MDSplus specific time conversion. It is the number of nanoseconds 1 day before time 0.
 
-EXPORT void MdsFloatToTime(double floatTime, uint64_t * outTime)
+EXPORT void MdsFloatToTime(double floatTime, int64_t * outTime)
 {
   int64_t baseTime;
   int64_t currTime;
@@ -39,20 +39,20 @@ EXPORT void MdsFloatToTime(double floatTime, uint64_t * outTime)
   baseTime = 1000000000;
   baseTime *= (24 * 3600);
   currTime = (int64_t) (floatTime / 1E-9);
-  *outTime = (uint64_t) (baseTime + currTime);
+  *outTime = baseTime + currTime;
 }
 
-EXPORT void MdsFloatToDelta(double floatTime, uint64_t * outTime)
+EXPORT void MdsFloatToDelta(double floatTime, int64_t * outTime)
 {
-  uint64_t currTime;
+  int64_t currTime;
 
-  currTime = (uint64_t) (floatTime / 1E-9);
+  currTime = (int64_t) (floatTime / 1E-9);
   *outTime = currTime;
 }
 
-EXPORT void MdsTimeToFloat(uint64_t inTime, float *outFloat)
+EXPORT void MdsTimeToFloat(int64_t inTime, float *outFloat)
 {
-  uint64_t baseTime, currTime;
+  int64_t baseTime, currTime;
 
   baseTime = 1000000000;
   baseTime *= (24 * 3600);
@@ -60,12 +60,12 @@ EXPORT void MdsTimeToFloat(uint64_t inTime, float *outFloat)
   *outFloat = (float)((double)currTime * 1E-9);
 }
 
-EXPORT void MdsTimeToDouble(uint64_t inTime, double *outFloat)
+EXPORT void MdsTimeToDouble(int64_t inTime, double *outFloat)
 {
-  uint64_t baseTime, currTime;
+  int64_t baseTime, currTime;
 
   baseTime = 1000000000;
   baseTime *= (24 * 3600);
   currTime = inTime - baseTime;
-  *outFloat = (double)currTime *1E-9;
+  *outFloat = (double)currTime * 1E-9;
 }
