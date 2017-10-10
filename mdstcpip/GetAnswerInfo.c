@@ -68,7 +68,7 @@ int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims, int *dims, 
       free(m);
       *mout = 0;
     }
-    return MDSplusERROR;
+    return status;
   }
   if (m->h.ndims) {
     *numbytes = m->h.length;
