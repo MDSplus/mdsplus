@@ -3277,7 +3277,7 @@ public:
     virtual Tree *getTree() {throw MdsException("getTree() not supported for TreeNodeThinClient object"); return NULL; }
 
     /// Set the associated Tree instance
-    virtual void setTree(Tree *tree) {throw MdsException("setTree() not supported for TreeNodeThinClient object"); }
+    virtual void setTree(Tree *tree) {(void)tree; throw MdsException("setTree() not supported for TreeNodeThinClient object"); }
 
     /// Get the path name for this node
      virtual char *getPath();
@@ -3317,11 +3317,13 @@ public:
     /// Retrieve node from this tree by its realPath string
     virtual TreeNode *getNode(char const * relPath)
     {
+	(void)relPath;
 	throw MdsException("getNode() not supported for TreeNodeThinClient object"); return NULL; 
     }
     /// Retrieve node from this tree by its realPath string
     virtual TreeNode *getNode(String *relPathStr)
     {
+        (void)relPathStr;
 	throw MdsException("getNode() not supported for TreeNodeThinClient object"); return NULL; 
     }
 
@@ -3360,7 +3362,7 @@ public:
     // virtual int64_t getTimeInserted();   Use superclass implementation
 
     /// Do specified method for this node (valid only if it belongs to a conglomerate)
-    virtual void doMethod(char *method){throw MdsException("doMethod() not supported for TreeNodeThinClient object");}
+    virtual void doMethod(char *method){(void)method; throw MdsException("doMethod() not supported for TreeNodeThinClient object");}
 
     ///  Return true if this is setup data (i.e. present in the the model)
     // virtual bool isSetup();  Use superclass implementation
@@ -3416,13 +3418,13 @@ public:
 
     // NOTE: [andrea] java implementation discrepancy (java uses TreeNodeArray instance)
     /// Get all che child nodes for this node.
-    virtual TreeNode **getChildren(int *numChildren){throw MdsException("getChildren() not supported for TreeNodeThinClient object");}
+    virtual TreeNode **getChildren(int *numChildren){(void)numChildren; throw MdsException("getChildren() not supported for TreeNodeThinClient object");}
 
     /// Return  all the members of this node
-    virtual TreeNode **getMembers(int *numChildren){throw MdsException("getMembers() not supported for TreeNodeThinClient object");}
+    virtual TreeNode **getMembers(int *numChildren){(void)numChildren; throw MdsException("getMembers() not supported for TreeNodeThinClient object");}
 
     /// Get all the descendant (members + children)for this node
-    virtual TreeNode **getDescendants(int *numChildren){throw MdsException("getDescendants() not supported for TreeNodeThinClient object");}
+    virtual TreeNode **getDescendants(int *numChildren){(void)numChildren;throw MdsException("getDescendants() not supported for TreeNodeThinClient object");}
 
 
 
@@ -3469,11 +3471,22 @@ public:
 	//Begin and fill a new data segment. At the same time make a resampled minmax version (two samples (min and max) every 100 original samples)
     virtual void makeSegmentMinMax(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor = 100)
     {
-      throw MdsException("makeSegmentMinMax() not supported for TreeNodeThinClient object");
+      (void)start;
+      (void)end;
+      (void)time;
+      (void)initialData;
+      (void)resampledNode;
+      (void)resFactor;
+       throw MdsException("makeSegmentMinMax() not supported for TreeNodeThinClient object");
     }
  	//Begin and fill a new data segment. At the same time make a resampled version
     virtual void makeSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode)
     {
+      (void)start;
+      (void)end;
+      (void)initialData;
+      (void)time;
+      (void)resampledNode;
       throw MdsException("makeSegmentResampled() not supported for TreeNodeThinClient object");
     }
 
@@ -3483,12 +3496,19 @@ public:
     /// Update start, end time and dimension for the last segment
     virtual void updateSegment(Data *start, Data *end, Data *time)
     {
+      (void)start;
+      (void)end;
+      (void)time;
       throw MdsException("updateSegment() not supported for TreeNodeThinClient object");
     }
 
     /// Update start, end time and dimension for the specified segment
     virtual void updateSegment(int idx, Data *start, Data *end, Data *time)
     {
+      (void)idx;
+      (void)start;
+      (void)end;
+      (void)time;
       throw MdsException("updateSegment() not supported for TreeNodeThinClient object");
     }
 
@@ -3535,6 +3555,11 @@ public:
     ///
     virtual void getSegmentInfo(int segIdx, char *dtype, char *dimct, int *dims, int *nextRow)
     {
+      (void)segIdx;
+      (void)dtype;
+      (void)dimct;
+      (void)dims;
+      (void)nextRow;
       throw MdsException("getSegmentInfo() not supported for TreeNodeThinClient object");
     }
 
@@ -3551,6 +3576,8 @@ public:
     ///
     virtual TreeNode *addNode(char const * name, char const * usage)
     {
+      (void)name;
+      (void)usage;
       throw MdsException("edit operations not supported for TreeNodeThinClient object");
     }
 
@@ -3560,6 +3587,7 @@ public:
     ///
     virtual void remove(char const * name)
     {
+      (void)name;
       throw MdsException("edit operations not supported for TreeNodeThinClient object");
     }
 
@@ -3568,6 +3596,7 @@ public:
     /// the newName argument that must be in form of an absolute path string.
     virtual void rename(std::string const & newName)
     {
+      (void)newName;
       throw MdsException("edit operations not supported for TreeNodeThinClient object");
     }
 
@@ -3575,6 +3604,8 @@ public:
     /// Move the node setting a new parent and changing the node name
     virtual void move(TreeNode *parent, std::string const & newName)
     {
+      (void)parent;
+      (void)newName;
       throw MdsException("edit operations not supported for TreeNodeThinClient object");
     }
 
@@ -3582,6 +3613,7 @@ public:
     /// Move the node setting a new parent.
     virtual void move(TreeNode *parent)
     {
+      (void)parent;
       throw MdsException("edit operations not supported for TreeNodeThinClient object");
     }
 
@@ -3592,7 +3624,9 @@ public:
     ///
     virtual TreeNode *addDevice(char const * name, char const * type)
     {
-      throw MdsException("edit operations not supported for TreeNodeThinClient object");
+      (void)name;
+      (void)type;
+     throw MdsException("edit operations not supported for TreeNodeThinClient object");
     }
 
 
@@ -3601,6 +3635,7 @@ public:
     ///
     virtual void addTag(std::string const & tagName)
     {
+      (void)tagName;
       throw MdsException("edit operations not supported for TreeNodeThinClient object");
     }
 
@@ -3608,6 +3643,7 @@ public:
     /// Removes a tag added to the current tree and indentified by tagName.
     virtual void removeTag(std::string const & tagName)
     {
+      (void)tagName;
       throw MdsException("edit operations not supported for TreeNodeThinClient object");
     }
 
@@ -3615,6 +3651,7 @@ public:
     /// Set this node to be a subtree of the tree that holds it.
     virtual void setSubtree(bool isSubtree)
     {
+      (void)isSubtree;
       throw MdsException("edit operations not supported for TreeNodeThinClient object");
     }
     
