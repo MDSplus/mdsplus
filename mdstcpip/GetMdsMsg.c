@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "zlib/zlib.h"
 #include "mdsip_connections.h"
 #include <pthread_port.h>
+#include <tdishr_messages.h>
 
 static int GetBytesTO(int id, void *buffer, size_t bytes_to_recv, int to_msec){
   char *bptr = (char *)buffer;
@@ -42,7 +43,9 @@ static int GetBytesTO(int id, void *buffer, size_t bytes_to_recv, int to_msec){
         bytes_recv = io->recv_to(id, bptr, bytes_to_recv, to_msec);
       else
         bytes_recv = io->recv(id, bptr, bytes_to_recv);
-      if (bytes_recv <= 0) {
+      if (bytes_recv == 0)
+	return TdiTIMEOUT;
+      if (bytes_recv < 0) {
 	if (errno != EINTR)
 	  return MDSplusERROR;
 	tries++;
