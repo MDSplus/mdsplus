@@ -1812,10 +1812,10 @@ EXPORT Data *TreeNodeThinClient::getData()
   
 EXPORT void TreeNodeThinClient::putData(Data *data)
 {
-    char *path = getPath();
+    const char *path = (const char *)getPath();
     Data *args[1];
     args[0] = data->data();
-    connection->put((const char *)path, "$", args, 1);
+    connection->put(path, (char *)"$", args, 1);
     MDSplus::deleteData(args[0]);
     delete [] path;
   
@@ -1825,8 +1825,8 @@ EXPORT void TreeNodeThinClient::deleteData()
 {
     char *path = getFullPath();
     Data *args[1];
-    args[1] = 0;
-    connection->put((const char *)path, "*", args, 0);
+    args[0] = 0;
+    connection->put((const char *)path, (char *)"*", args, 0);
     delete [] path;
 }
 
@@ -2001,7 +2001,6 @@ EXPORT void TreeNodeThinClient::putRow(Data *data, int64_t *time, int size)
     Int64 timeData(*time);
     char expr[64];
     Data *args[2];
-    int len = data->getSize();
     args[0] = &timeData;
     args[1] = data->data();
     sprintf(expr, "PutRow(%d, %d, $1, $2)", nid, size);
