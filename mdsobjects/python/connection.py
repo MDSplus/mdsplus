@@ -238,6 +238,9 @@ class Connection(object):
                 self.__sendArg__(arg,i+1,num)
             return self.__getAnswer__(timeout)
 
+    def getObject(self,exp,*args,**kwargs):
+        return self.get('serializeout(`(%s;))'%exp,*args,**kwargs).deserialize()
+
     def setDefault(self,path):
         """Change the current default tree location on the remote server
         @param path: Tree node path to be the new default location.
