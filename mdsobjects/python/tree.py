@@ -965,7 +965,7 @@ class Tree(object):
 
     def tcl(self,cmd,*args,**kwargs):
         """tree ctx specific tcl command"""
-        kwargs['tree'] = self
+        kwargs['ctx'] = self.ctx
         return _dcl.tcl(cmd,*args,**kwargs)
 
     def tdiCompile(self,*args,**kwargs):
@@ -1374,8 +1374,10 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
        return self
 
     def __fixTreeReferences__(self,tree):
+        if self.tree == None:
+            self.tree=tree
         if (self.nid >> 24) != 0:
-            return TreePath(str(self))
+            return TreePath(str(self),tree)
         else:
             relpath=str(self.fullpath)
             relpath=relpath[relpath.find('::TOP')+5:]
