@@ -328,7 +328,7 @@ if (STATUS_OK && (!shot_open && (local_nci->flags & NciM_NO_WRITE_MODEL))) \
 if (STATUS_OK && (local_nci->flags & NciM_WRITE_ONCE)) { \
   if (local_nci->length) {\
     RETURN(UNLOCK_NCI,TreeNOOVERWRITE); \
-  }
+  } \
   local_nci->flags &= ~NciM_WRITE_ONCE; \
 }
 
