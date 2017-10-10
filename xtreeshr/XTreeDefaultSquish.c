@@ -77,7 +77,7 @@ static int getShape(struct descriptor *dataD, int *dims, int *numDims)
     }
     return 1;
 }
-    
+
 
 
 

@@ -34,9 +34,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define EXPORT __declspec(dllexport)
 #endif
 
-//Convert a time expression to 64 bit integer 
+//Convert a time expression to 64 bit integer
 
-EXPORT int XTreeConvertToLongTime(struct descriptor *timeD, uint64_t * retTime)
+EXPORT int XTreeConvertToLongTime(struct descriptor *timeD, int64_t * retTime)
 {
 
   int status;
@@ -72,7 +72,7 @@ EXPORT int XTreeConvertToLongTime(struct descriptor *timeD, uint64_t * retTime)
   return status;
 }
 
-EXPORT int XTreeConvertToLongDelta(struct descriptor *timeD, uint64_t * retTime)
+EXPORT int XTreeConvertToLongDelta(struct descriptor *timeD, int64_t * retTime)
 {
 
   int status;

@@ -74,9 +74,8 @@ static void printDecompiled(struct descriptor *inD)
 }
 */
 
-static int checkGreater(struct descriptor *time1Dsc, struct descriptor *time2Dsc, char *answ)
+static int check(char *compExpr, struct descriptor *time1Dsc, struct descriptor *time2Dsc, char *answ)
 {
-  static char *compExpr = "$ >= $";
   struct descriptor compExprDsc = { strlen(compExpr), DTYPE_T, CLASS_S, compExpr };
   int status;
   EMPTYXD(ansXd);
@@ -86,6 +85,12 @@ static int checkGreater(struct descriptor *time1Dsc, struct descriptor *time2Dsc
   *answ = *ansXd.pointer->pointer;
   MdsFree1Dx(&ansXd, 0);
   return 1;
+}
+static int checkGreaterOrEqual(struct descriptor *time1Dsc, struct descriptor *time2Dsc, char *answ){
+  return check("$ >= $",time1Dsc,time2Dsc,answ);
+}
+static int checkGreater(struct descriptor *time1Dsc, struct descriptor *time2Dsc, char *answ){
+  return check("$ > $",time1Dsc,time2Dsc,answ);
 }
 
 static void freeResources(struct descriptor_xd *startTimeXds, struct descriptor_xd *endTimeXds,
@@ -124,7 +129,7 @@ EXPORT int _XTreeGetSegmentList(void *dbid, int nid, struct descriptor *startDsc
 
   status =
       (dbid) ? _TreeGetNumSegments(dbid, nid, &numSegments) : TreeGetNumSegments(nid, &numSegments);
-  if (!(status & 1))
+  if STATUS_NOT_OK
     return status;
 
   startTimeXds = (struct descriptor_xd *)malloc(numSegments * sizeof(struct descriptor_xd));
@@ -141,7 +146,7 @@ EXPORT int _XTreeGetSegmentList(void *dbid, int nid, struct descriptor *startDsc
 										    [currIdx],
 										    &endTimeXds
 										    [currIdx]);
-    if (!(status & 1)) {
+    if STATUS_NOT_OK {
       freeResources(startTimeXds, endTimeXds, numSegments);
       return status;
     }
@@ -154,8 +159,8 @@ EXPORT int _XTreeGetSegmentList(void *dbid, int nid, struct descriptor *startDsc
   else {
     while (startIdx < numSegments) {
       //if(currEnd > start) //First overlapping segment
-      status = checkGreater((struct descriptor *)&endTimeXds[startIdx], startDsc, &isGreater);
-      if (!(status & 1)) {
+      status = checkGreaterOrEqual((struct descriptor *)&endTimeXds[startIdx], startDsc, &isGreater);
+      if STATUS_NOT_OK {
 	freeResources(startTimeXds, endTimeXds, numSegments);
 	return status;
       }
@@ -176,23 +181,20 @@ EXPORT int _XTreeGetSegmentList(void *dbid, int nid, struct descriptor *startDsc
   else {
     segmentIdx = startIdx;
     while (segmentIdx < numSegments) {
-      status = checkGreater((struct descriptor *)&endTimeXds[segmentIdx], endDsc, &isGreater);
-      if (!(status & 1)) {
+      status = checkGreaterOrEqual((struct descriptor *)&endTimeXds[segmentIdx], endDsc, &isGreater);
+      if STATUS_NOT_OK {
 	freeResources(startTimeXds, endTimeXds, numSegments);
 	return status;
       }
       //if(currEnd >= end) //Last overlapping segment
       if (isGreater) {
 	status = checkGreater((struct descriptor *)&startTimeXds[segmentIdx], endDsc, &isGreater);
-	if (!(status & 1)) {
+	if STATUS_NOT_OK {
 	  freeResources(startTimeXds, endTimeXds, numSegments);
 	  return status;
 	}
 	//if(currStart > end) //all the segment lies outside the specifid range, it has to be excluded
-	if (isGreater && segmentIdx > startIdx) {
-	  segmentIdx--;
-	  break;
-	}
+	if (isGreater && segmentIdx > startIdx)  segmentIdx--;
 	break;
       }
       segmentIdx++;
@@ -202,7 +204,6 @@ EXPORT int _XTreeGetSegmentList(void *dbid, int nid, struct descriptor *startDsc
     else
       endIdx = segmentIdx;
   }
-
   //startIdx and endIdx contain now start and end indexes for valid segments
 
   //Check if startTimes  are of the same CLASS_S type. If yes, convert them to an array

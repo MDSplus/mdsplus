@@ -257,6 +257,9 @@ class Tests(TestCase):
         self._doExceptionTest('"',Exc.TdiUNBALANCE)
         """Test $Missing/NoData/None"""
         self._doTdiTest('',None)
+        """ comparison """
+        self._doTdiTest('-1O >  1O',False)
+        self._doTdiTest('-1O > -2O',True)
         """Test abs"""
         self._doThreeTest('abs(cmplx(3.0,4.0))',m.ABS(m.Complex64(3.+4.j)),m.Float32(5.))
         """Test abs1"""

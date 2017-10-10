@@ -170,7 +170,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
       read_nci;
       set_retlen(sizeof(nci.length));
       *(unsigned int *)itm->pointer =
-	  (nci.flags2 & NciM_DATA_IN_ATT_BLOCK) ? nci.length :
+	((nci.flags & NciM_SEGMENTED) || (nci.flags2 & NciM_DATA_IN_ATT_BLOCK)) ? nci.length :
 	  nci.DATA_INFO.DATA_LOCATION.record_length;
       break;
     case NciSTATUS:
