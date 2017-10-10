@@ -26,7 +26,8 @@ Who Uses MDSplus
 This map shows world fusion sites with MDSplus users marked in Blue.  To update
 edit the file sites.csv and put in a pull request.
 
-[A Full screen Map (new tab)](https://batchgeo.com/map/4cb145f00105157a242b5acafa8e646b){:target="_blank"}
+<a href="https://batchgeo.com/map/4cb145f00105157a242b5acafa8e646b" _target="_blank">
+A Full screen Map </a> of MDSplus sites.  Opens in a new tab.
 
 ---------------------------------------------------------------------------
 Special Notes
