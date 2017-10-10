@@ -432,7 +432,7 @@ static void resample(int64_t start, int64_t end, int64_t delta, int64_t * inTime
 
 //The default resample handles int64 timebases
 //return 0 if the conversion is  not possible
-static int64_t *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int *outSamples)
+static int64_t *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int *outSamples, int *isFloat)
 {
   struct descriptor_a *currDim;
   double *doublePtr;
@@ -464,7 +464,7 @@ static int64_t *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int 
       MdsFree1Dx(&currXd, 0);
       return outPtr;
     }
-
+    *isFloat = 1;
     status = TdiFloat(&currXd, &currXd MDS_END_ARG);
   }
   currDim = (struct descriptor_a *)currXd.pointer;
@@ -604,10 +604,8 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   }
 
 //This version handles only 64 bit time format
-  if (inSignalD->dimensions[0]->dtype != DTYPE_Q && inSignalD->dimensions[0]->dtype != DTYPE_QU)
-    isFloat = 1;
 
-  timebase64 = convertTimebaseToInt64(inSignalD, &numTimebaseSamples);
+  timebase64 = convertTimebaseToInt64(inSignalD, &numTimebaseSamples, &isFloat);
   if (!timebase64)
     return 0;			//Cannot convert timebase to 64 bit int
 
@@ -705,7 +703,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   else {
     outDimArray.length = 8;
     outDimArray.arsize = 8 * outSamples;
-    outDimArray.dtype = DTYPE_QU;
+    outDimArray.dtype = DTYPE_Q;
     outDimArray.pointer = (char *)outDim;
   }
 
