@@ -25,11 +25,13 @@ To build the software do the following (See special notes below):
 Who Uses MDSplus
 This map shows world fusion sites with MDSplus users marked in Blue.  To update
 edit the file sites.csv and put in a pull request.
+
 <div class="iframe_container">
 <iframe src="https://batchgeo.com/map/4cb145f00105157a242b5acafa8e646b" frameborder="0" width="100%" height="550" style="border:1px solid #aaa;"></iframe>
 </div>
 <p>
 <small>View <a href="https://batchgeo.com/map/4cb145f00105157a242b5acafa8e646b">MDSplus sites 2017</a> in a full screen map</small>
+
 ---------------------------------------------------------------------------
 Special Notes
 
