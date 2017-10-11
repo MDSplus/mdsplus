@@ -112,8 +112,7 @@ class Array(_dat.Data):
         value = _N.array(value)
         if len(value.shape) == 0 or len(value.shape) > Array.__MAX_DIM:  # happens if value has been a scalar, e.g. int
             value = value.flatten()
-        self._value = value.__array__(_N.__dict__[self.__class__.__name__[0:-5].lower()])
-        return
+        self._value = value.__array__(self.ntype)
 
     def _str_bad_ref(self):
         return _ver.tostr(self._value)
@@ -276,35 +275,39 @@ class Array(_dat.Data):
             if cls.ctype is not None:
                 return Array(getNumpy(cls.ctype,cls.ctype,int(d.arsize/d.length)))
         raise TypeError('Arrays of dtype %d are unsupported.' % d.dtype)
-
 makeArray = Array
 
 class Float32Array(Array):
     """32-bit floating point number"""
     dtype_id=52
     ctype=_C.c_float
+    ntype=_N.float32
 _dsc.addDtypeToArrayClass(Float32Array)
 
 class Float64Array(Array):
     """64-bit floating point number"""
     dtype_id=53
     ctype=_C.c_double
+    ntype=_N.float64
 _dsc.addDtypeToArrayClass(Float64Array)
 
 class Complex64Array(Array):
     """32-bit complex number"""
     dtype_id=54
+    ntype=_N.complex64
 _dsc.addDtypeToArrayClass(Complex64Array)
 
 class Complex128Array(Array):
     """64-bit complex number"""
     dtype_id=55
+    ntype=_N.complex128
 _dsc.addDtypeToArrayClass(Complex128Array)
 
 class Uint8Array(Array):
     """8-bit unsigned number"""
     dtype_id=2
     ctype=_C.c_uint8
+    ntype=_N.uint8
     def deserialize(self):
         """Return data item if this array was returned from serialize.
         @rtype: Data
@@ -316,25 +319,28 @@ class Uint16Array(Array):
     """16-bit unsigned number"""
     dtype_id=3
     ctype=_C.c_uint16
+    ntype=_N.uint16
 _dsc.addDtypeToArrayClass(Uint16Array)
 
 class Uint32Array(Array):
     """32-bit unsigned number"""
     dtype_id=4
     ctype=_C.c_uint32
+    ntype=_N.uint32
 _dsc.addDtypeToArrayClass(Uint32Array)
 
 class Uint64Array(Array):
     """64-bit unsigned number"""
     dtype_id=5
     ctype=_C.c_uint64
+    ntype=_N.uint64
 _dsc.addDtypeToArrayClass(Uint64Array)
 
 class Int8Array(Array):
     """8-bit signed number"""
     dtype_id=6
     ctype=_C.c_int8
-
+    ntype=_N.int8
     def deserialize(self):
         """Return data item if this array was returned from serialize.
         @rtype: Data
@@ -346,18 +352,21 @@ class Int16Array(Array):
     """16-bit signed number"""
     dtype_id=7
     ctype=_C.c_int16
+    ntype=_N.int16
 _dsc.addDtypeToArrayClass(Int16Array)
 
 class Int32Array(Array):
     """32-bit signed number"""
     dtype_id=8
     ctype=_C.c_int32
+    ntype=_N.int32
 _dsc.addDtypeToArrayClass(Int32Array)
 
 class Int64Array(Array):
     """64-bit signed number"""
     dtype_id=9
     ctype=_C.c_int64
+    ntype=_N.int64
 _dsc.addDtypeToArrayClass(Int64Array)
 
 class FloatFArray(Float32Array):
