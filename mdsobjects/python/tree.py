@@ -1026,7 +1026,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         node = super(TreeNode,cls).__new__(cls)
         head = nid._head if isinstance(nid,TreeNode) else head
         if not isinstance(head,(Device,)) and type(node) is TreeNode:
-            TreeNode.__init__(node,nid,tree,head)
+            TreeNode.__init__(node,nid,tree,head,*a,**kw)
             try:
                 if str(node.usage) == "DEVICE":
                     return node.record.getDevice(node,head=0)

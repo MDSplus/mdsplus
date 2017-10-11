@@ -69,6 +69,7 @@ def _TdiShrFun(function,errormessage,expression,*args,**kwargs):
             tree=arg.tree
             if tree is not None:
                 break
+    xd = _dsc.Descriptor_xd()
     if tree is not None:
         ctx = tree.ctx
         xd.tree=tree
