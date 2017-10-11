@@ -274,7 +274,8 @@ class Tests(TestCase):
         pydev = pytree.TESTDEVICE
         part = pydev.conglomerate_nids[1]
         self.assertEqual(part.PART_NAME(),':ACTIONSERVER')
-        self.assertEqual(part.original_part_name,str(Data.execute('GETNCI($,"ORIGINAL_PART_NAME")',part)))
+        self.assertEqual(part.original_part_name,':ACTIONSERVER')
+        self.assertEqual(str(Data.execute('GETNCI($,"ORIGINAL_PART_NAME")',part)),':ACTIONSERVER')
         self.assertEqual(pydev.__class__,Device.PyDevice('TestDevice'))
         devs = pytree.getNodeWild('\\PYTREESUB::TOP.***','DEVICE')
         part = devs[0].conglomerate_nids[3]

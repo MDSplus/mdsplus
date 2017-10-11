@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -42,9 +42,7 @@ _MdsShr=_ver.load_library('MdsShr')
 
 def pointerToObject(pointer,tree=None):
     if not pointer: return None
-    d=Descriptor(pointer)
-    d.tree=tree
-    return d.value
+    return Descriptor(pointer)._setTree(tree).value
 
 class Descriptor(object):
     tree=None

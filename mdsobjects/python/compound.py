@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -77,7 +77,8 @@ class Compound(_dat.Data):
     def tree(self,tree):
         for arg in self._args:
             if isinstance(arg,_dat.Data):
-                arg.tree=tree
+                try: arg._setTree(tree)
+                except: print(arg)
 
     def __hasBadTreeReferences__(self,tree):
         for arg in self._args:
@@ -241,8 +242,7 @@ class Compound(_dat.Data):
             else:
                 opcptr=_C.cast(d.pointer,_C.POINTER(_C.c_uint32))
             ans.opcode = opcptr.contents.value
-        ans.tree=d.tree
-        return ans
+        return ans._setTree(d.tree)
 
 class Action(Compound):
     """

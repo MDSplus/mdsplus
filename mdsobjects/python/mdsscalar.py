@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,8 +40,7 @@ _exc=_mimport('mdsExceptions')
 
 class Scalar(_dat.Data):
     _value = None
-
-    def _setCtx(self,*args,**kwargs): return self
+    def _setTree(self,*a,**kw): return self;
 
     def __new__(cls,*value):
         if cls is not Scalar or len(value)==0:

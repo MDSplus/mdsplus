@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -79,7 +79,7 @@ class Apd(_array.Array):
     def tree(self,tree):
         for desc in self.descs:
             if isinstance(desc,_data.Data):
-                desc.tree=tree
+                desc._setTree(tree)
 
     @classmethod
     def fromDescriptor(cls,d):

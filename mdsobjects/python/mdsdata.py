@@ -57,24 +57,20 @@ class staticmethodX(object):
 def _TdiShrFun(function,errormessage,expression,*args,**kwargs):
     def parseArguments(args):
         if len(args)==1 and isinstance(args[0],tuple):
-                return parseArguments(args[0])
+            return parseArguments(args[0])
         return list(map(Data,args))
     dargs = [Data(expression)]+parseArguments(args)
-    tree=None
-    xd = _dsc.Descriptor_xd()
     if "tree" in kwargs:
-        tree=kwargs["tree"]
+        tree = kwargs["tree"]
+    elif isinstance(expression,Data) and not expression.tree is None:
+        tree = expression.tree
     else:
-        for arg in dargs:
-            tree=arg.tree
-            if tree is not None:
-                break
-    if tree is None:
-        for arg in dargs:
-            if arg.tree is None: continue
+        tree = None
+        for arg in args:
+            if not isinstance(arg,Data) or arg.tree is None: continue
             tree = arg.tree
             if isinstance(arg,_tre.TreeNode): break
-    xd = _dsc.Descriptor_xd()   
+    xd = _dsc.Descriptor_xd()
     rargs = list(map(Data.byref,dargs))+[xd.byref,_C.c_void_p(-1)]
     _tre._TreeCtx.pushTree(tree)
     try:
@@ -148,7 +144,7 @@ class Data(object):
         elif isinstance(value,dict):
             cls = _apd.Dictionary
         elif isinstance(value,slice):
-            return _cmp.BUILD_RANGE.__new__(_cmp.BUILD_RANGE,value)._setTree(self.tree).evaluate()
+            return _cmp.BUILD_RANGE.__new__(_cmp.BUILD_RANGE,value).evaluate()
         else:
             raise TypeError('Cannot make MDSplus data type from type: %s' % (value.__class__,))
         return cls.__new__(cls,value)
@@ -502,7 +498,7 @@ class Data(object):
         @type tdivarname: string
         @rtype: Data"""
         try:
-            return _cmp.PUBLIC(_sca.Ident(varname))._setTree(self.tree).evaluate()
+            return _cmp.PUBLIC(_sca.Ident(varname)).evaluate()
         except _exc.MDSplusException:
             return None
 
@@ -763,31 +759,25 @@ class EmptyData(Data):
     _descriptor=_dsc.DescriptorNULL
     dtype_id=24
     """No Value aka *"""
-    def __init__(self,*value):
-        pass
-
-    def decompile(self):
-        return "*"
-
+    def __init__(self,*value): pass
+    def _setTree(self,*a,**kw): return self
+    def decompile(self): return "*"
     @property
-    def value(self):
-        return None
-
-    def data(self):
-        return None
-
+    def tree(self): return None
+    @tree.setter
+    def tree(self,value): return
+    @property
+    def value(self): return None
+    def data(self): return None
     @staticmethod
-    def fromDescriptor(d):
-        return EmptyData
+    def fromDescriptor(d): return EmptyData
 EmptyData = EmptyData()
 
 class Missing(EmptyData):
     """No Value aka $Missing"""
-    def decompile(self):
-        return "$Missing"
+    def decompile(self): return "$Missing"
     @staticmethod
-    def fromDescriptor(d):
-        return Missing
+    def fromDescriptor(d): return Missing
 
 _dsc.dtypeToClass[0]=Missing
 _dsc.dtypeToArrayClass[0]=Missing
