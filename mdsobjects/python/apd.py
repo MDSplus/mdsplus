@@ -97,9 +97,10 @@ class Apd(_array.Array):
 
 
     def __fixTreeReferences__(self,tree):
-        for idx in range(len(self._escs)):
-            if isinstance(self.descs[idx],_data.Data) and self.descs[idx].__hasBadTreeReferences__(tree):
-                self.descs[idx]=self.descs[idx].__fixTreeReferences__(tree)
+        for idx in range(len(self.descs)):
+            d=self.descs[idx]
+            if isinstance(d,_data.Data) and d.__hasBadTreeReferences__(tree):
+                self.descs[idx]=d.__fixTreeReferences__(tree)
         return self
 
     def __init__(self,value,dtype=0):
