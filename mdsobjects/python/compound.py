@@ -54,10 +54,6 @@ class Compound(_dat.Data):
             if k in self.fields:
                 self.setDescAt(self._fields[k],v)
 
-    def _setCtx(self,ctx):
-        self.ctx = ctx
-        return self
-
     def _str_bad_ref(self):
         return '%s(%s)'%(self.__class__.__name__,','.join([str(d) for d in self.getDescs()]))
 

@@ -175,62 +175,44 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
         return _TreeShr.TreeCtx().contents.value
 
     @staticmethod
-    def switchDbid(ctx=0):
-        if not ctx:
+    def switchDbid(tree=None):
+        if   isinstance(tree,(Tree,_TreeCtx)):
+            ctx = _C.c_void_p(tree.ctx)
+        elif isinstance(tree,_C.c_void_p):
+            ctx = tree
+        elif isinstance(tree,(int,_ver.long)):
+            ctx = _C.c_void_p(tree)
+        else:
             ctx = _C.c_void_p(0)
-        if not isinstance(ctx,_C.c_void_p):
-            ctx = _C.c_void_p(ctx)
         _TreeShr.TreeSwitchDbid.restype=_C.c_void_p
-        return _TreeShr.TreeSwitchDbid(ctx)
+        r = _TreeShr.TreeSwitchDbid(ctx)
+        print("%s -> %s"%(ctx.value,r))
+        return r
 
     local = _threading.local()
-    @classmethod
-    def gettctx(cls):
-        return getattr(cls.local,'tctx',None)
 
     @classmethod
-    def popTree(cls):
-        cls.local.trees.pop()
-    @classmethod
-    def getTree(cls):
-        try:    return cls.local.trees[-1]
-        except: return None
-    @classmethod
-    def getCtx(cls):
-        try:        return cls.local.ctxs[-1][0]
-        except:
-            try:    cls.local.trees[-1].ctx.value
-            except: return None
-    @classmethod
-    def pushCtx(cls,ctx):
+    def pushTree(cls,tree):
         cls.lock.acquire()
         try:
-            if isinstance(ctx,_C.c_void_p): ctx = ctx.value
-            def push_ctx(*entry):
-                dbid = cls.switchDbid(entry[0])
-                if len(entry)==1: entry = (entry[0],dbid)
-                if not hasattr(cls.local,'ctxs'):
-                    cls.local.ctxs = [entry]
-                else:
-                    cls.local.ctxs.append(entry)
-            if ctx is not None:  return push_ctx(ctx)
-            ctx = cls.getCtx()
-            if ctx:              return push_ctx(ctx)
-            tree = cls.getTree()
-            if tree is not None: return push_ctx(tree.ctx.value)
-            tctx = cls.gettctx()
-            if tctx is not None: return push_ctx(tctx.ctx)
-            dbid = cls.switchDbid()
-            push_ctx(dbid, dbid)
+            dbid = cls.switchDbid(tree)
+            if not hasattr(cls.local,'trees'):
+                cls.local.trees = [(tree,dbid)]
+            else:
+                cls.local.trees.append((tree,dbid))
+            if tree is None: cls.switchDbid(dbid)
         except:
             cls.lock.release()
+            raise
     @classmethod
-    def popCtx(cls):
+    def popTree(cls):
         try:
-            ctx,val = cls.local.ctxs.pop()
-            dbid    = cls.switchDbid(val)
-            if ctx == val and not val == dbid:
-                cls.local.tctx = cls(dbid,opened=(not ctx))
+            tree,odbid = cls.local.trees.pop()
+            dbid = cls.switchDbid(odbid)
+            if tree is None:
+                 cls.switchDbid(dbid)
+                 if not dbid==odbid:
+                     cls.local.tctx = cls(dbid,opened=(odbid is None))
         finally:
             cls.lock.release()
 
@@ -964,8 +946,8 @@ class Tree(object):
                                         _C.c_int32(int(self.shot))))
 
     def tcl(self,cmd,*args,**kwargs):
-        """tree ctx specific tcl command"""
-        kwargs['ctx'] = self.ctx
+        """tree specific tcl command"""
+        kwargs['tree'] = self
         return _dcl.tcl(cmd,*args,**kwargs)
 
     def tdiCompile(self,*args,**kwargs):
@@ -1007,14 +989,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
     def ctx(self): return self.tree.ctx
     @property
     def _lock(self): return self.tree._lock
-    @ctx.setter
-    def ctx(self,ctx):
-        if self.tree is None: self.tree = Tree(ctx)
-    @property
-    def tree(self): return self._tree
-    @tree.setter
-    def tree(self,tree):
-        self._tree=tree
 
     def __new__(cls,nid,tree=None,head=None,*a,**kw):
         """Create class instance. Initialize part_dict class attribute if necessary.
@@ -1681,10 +1655,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
                                        self._nid,
                                        xd.byref)
         if (status & 1):
-            xd.tree=self.tree
-            ans = xd._setCtx(self.ctx).value
-            ans.tree = self.tree
-            return ans
+            return xd._setTree(self.tree).value
         elif len(altvalue)==1 and status == _exc.TreeNODATA.status:
             return altvalue[0]
         else:
@@ -2655,11 +2626,6 @@ class TreePath(TreeNode): # HINT: TreePath begin
 
 
 class TreeNodeArray(_arr.Int32Array): # HINT: TreeNodeArray begin
-    @property
-    def tree(self): return self._tree
-    @tree.setter
-    def tree(self,tree):
-        self._tree=tree
     def __new__(cls,nids,*tree,**kw):
         return super(TreeNodeArray,cls).__new__(cls,nids)
     def __init__(self,nids,*tree,**kw):

@@ -40,6 +40,10 @@ _exc=_mimport('mdsExceptions')
 
 class Scalar(_dat.Data):
     _value = None
+    @property
+    def tree(self):      return None
+    @tree.setter
+    def tree(self,tree): pass
 
     def _setCtx(self,*args,**kwargs): return self
 
