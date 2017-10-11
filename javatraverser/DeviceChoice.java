@@ -80,8 +80,6 @@ public class DeviceChoice extends DeviceComponent
     protected void initializeData(Data data, boolean is_on)
     {
         initial_state = is_on;
-        String data_string;
-        int data_value;
         initializing = true;
         displayData(data, is_on);
         comboB.addActionListener(new ActionListener()

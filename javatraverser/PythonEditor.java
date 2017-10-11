@@ -114,7 +114,6 @@ public class PythonEditor extends JPanel implements Editor {
         }
         StringArray stArr = new StringArray(lines);
         String retVarTxt = text_field.getText();
-        FunctionData retData;
         Data retArgs[];
         if(retVarTxt == null || retVarTxt.equals(""))
         {

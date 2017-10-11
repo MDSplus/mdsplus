@@ -443,12 +443,11 @@ public class Node
 
     public void executeDelete()
     {
-        NidData[] nids = {nid};
-        try
-        {
+        try {
             experiment.executeDelete(Tree.context);
+        } catch (Exception exc) {
+        	jTraverser.stderr("Error executing delete", exc);
         }
-        catch (Exception exc){jTraverser.stderr("Error executing delete", exc);}
     }
 
 

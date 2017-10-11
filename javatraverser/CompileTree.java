@@ -179,7 +179,6 @@ public class CompileTree extends Thread
     {
         String type = node.getNodeName();
         String name = node.getAttribute("NAME");
-        String state = node.getAttribute("STATE");
         String usageStr = node.getAttribute("USAGE");
         NidData nid = null;
         boolean success;
@@ -190,7 +189,6 @@ public class CompileTree extends Thread
             success = false;
             if(type.equals("data"))
             {
-                Element parentNode = (Element)node.getParentNode();
                 boolean isDeviceField = node.getNodeName().equals("field");
                 Text dataNode = (Text)node.getFirstChild();
                 if(dataNode != null)
@@ -292,7 +290,6 @@ public class CompileTree extends Thread
             if(type.equals("device"))
             {
                 String model = node.getAttribute("MODEL");
-                NodeInfo info = tree.getInfo(parentNid, 0);
 
                 try {
                     Thread.currentThread().sleep(100);

@@ -15,7 +15,6 @@ public class DeviceLabel extends DeviceComponent
   public boolean displayEvaluated = false;
   public String labelString = "<empty>";
   public int numCols = 10;
-  private boolean initial_state;
   protected boolean initializing = false;
 //  GridBagLayout gridbag;
   protected int preferredWidth = -1;
@@ -133,7 +132,6 @@ public class DeviceLabel extends DeviceComponent
   protected void initializeData(Data data, boolean is_on)
   {
     initializing = true;
-    initial_state = is_on;
 
     //initialField =  Tree.dataToString(data);
 
@@ -267,7 +265,6 @@ public class DeviceLabel extends DeviceComponent
   protected void displayData(Data data, boolean is_on)
   {
     this.data = data;
-    initial_state = is_on;
     /*
     if (showState)
       checkB.setSelected(is_on);
