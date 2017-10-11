@@ -461,8 +461,8 @@ class Data(object):
         @rtype: Bool
         """
         return bool(
-            _MdsShr.MdsCompareXd(self.byref,
-                                 Data(value).byref))
+            _MdsShr.MdsCompareXd(self.ref,
+                                 Data.byref(value)))
     @property
     def descriptor(self):  # keep ref of descriptor with instance
         self.__descriptor = self._descriptor
