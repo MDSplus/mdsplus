@@ -78,7 +78,6 @@ public class TreeNode extends JLabel
 	    if(currnode == null) return;
 	    try {
             Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-            String []tags = currnode.getTags();
             StringSelection content;
             String path = currnode.getFullPath();
             content = new StringSelection(path);

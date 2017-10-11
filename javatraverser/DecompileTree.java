@@ -77,7 +77,6 @@ public class DecompileTree
         {
             Element docSon = (Element) document.createElement("node");
             tree.appendChild(docSon);
-            NidData prevNid = null;
             recDecompile(sons[i], docSon, false, isFull);
          }
         NidData [] members;
@@ -98,8 +97,7 @@ public class DecompileTree
                     docMember = (Element) document.createElement("member");
             }catch(Exception exc){System.err.println(exc);}
             tree.appendChild(docMember);
-            NidData prevNid = null;
-             recDecompile(members[i], docMember, false, isFull);
+            recDecompile(members[i], docMember, false, isFull);
         }
         TransformerFactory transFactory = TransformerFactory.newInstance();
         try {
