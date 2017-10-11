@@ -69,22 +69,19 @@ def _TdiShrFun(function,errormessage,expression,*args,**kwargs):
             tree=arg.tree
             if tree is not None:
                 break
-    xd = _dsc.Descriptor_xd()
     if tree is None:
         for arg in dargs:
             if arg.tree is None: continue
             tree = arg.tree
             if isinstance(arg,_tre.TreeNode): break
+    xd = _dsc.Descriptor_xd()   
     rargs = list(map(Data.byref,dargs))+[xd.byref,_C.c_void_p(-1)]
     _tre._TreeCtx.pushTree(tree)
     try:
         _exc.checkStatus(function(*rargs))
     finally:
         _tre._TreeCtx.popTree()
-    ans = xd._setTree(tree).value
-    if tree is not None:
-        ans.tree = tree
-    return ans
+    return xd._setTree(tree).value
 
 def TdiCompile(expression,*args,**kwargs):
     """Compile a TDI expression. Format: TdiCompile('expression-string')"""

@@ -41,10 +41,6 @@ _cmd=_mimport('compound')
 class Array(_dat.Data):
     ctype = None
     __MAX_DIM = 8
-    @property
-    def tree(self):      return None
-    @tree.setter
-    def tree(self,tree): pass
     @property  # used by numpy.array
     def __array_interface__(self):
         data = self.value

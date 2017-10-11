@@ -81,26 +81,26 @@ class Tests(TestCase):
         from gc import collect
         from time import sleep
         def check(n):
-            self.assertEqual((tree._TreeCtx.gettctx().ctx,n),tree._TreeCtx.ctxs.items()[0])
+            self.assertEqual(n,tree._TreeCtx.ctxs.items()[0][1])
         self.assertEqual(tree._TreeCtx.ctxs,{})  # neither tcl nor tdi has been called yet
         tcl('edit pytree/shot=%d/new'%self.shot);check(1)
         Data.execute('$EXPT'); check(1)
         t = Tree();            check(2)
-        Data.execute('tcl("dir", _out)'); check(2)
+        Data.execute('tcl("dir", _out)');check(2)
         del(t);collect(2);sleep(.1);check(1)
         Data.execute('_out');check(1)
         t = Tree('pytree',self.shot+1,'NEW');
-        self.assertEqual(tree._TreeCtx.ctxs[tree._TreeCtx.gettctx().ctx],1)
+        self.assertEqual(tree._TreeCtx.ctxs[tree._TreeCtx.local.tctx.ctx],1)
         self.assertEqual(tree._TreeCtx.ctxs[t.ctx.value],1)
         Data.execute('tcl("close")');
-        self.assertEqual(tree._TreeCtx.ctxs[tree._TreeCtx.gettctx().ctx],1)
+        self.assertEqual(tree._TreeCtx.ctxs[tree._TreeCtx.local.tctx.ctx],1)
         self.assertEqual(tree._TreeCtx.ctxs[t.ctx.value],1)
         self.assertEqual(str(t),'Tree("PYTREE",%d,"Edit")'%(self.shot+1,))
         self.assertEqual(str(Data.execute('tcl("show db", _out);_out')),"\n")
         del(t);collect(2);sleep(.01);check(1)
         # tcl/tdi context remains until end of session
         t = Tree('pytree',self.shot+1,'NEW');
-        self.assertEqual(tree._TreeCtx.ctxs[tree._TreeCtx.gettctx().ctx],1)
+        self.assertEqual(tree._TreeCtx.ctxs[tree._TreeCtx.local.tctx.ctx],1)
         self.assertEqual(tree._TreeCtx.ctxs[t.ctx.value],1)
         del(t);collect(2);sleep(.01);check(1)
 

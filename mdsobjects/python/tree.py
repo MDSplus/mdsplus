@@ -137,37 +137,33 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
                 _TreeCtx.ctxs[self.ctx]+= 1
             else:
                 _TreeCtx.ctxs[self.ctx] = 1 if opened else 2
-            _TreeCtx.headCtx(self.ctx)
     @classmethod
     def canClose(cls,ctx):
         with cls.lock:
             return cls.ctxs[ctx] == 1
-    @classmethod
-    def headCtx(cls,ctx):
-        with cls.lock:
-            cls.order = [ctx]+[c for c in cls.order if c!=ctx]
-            _TreeShr.TreeSwitchDbid(_C.c_void_p(ctx))
+
     def __del__(self):
-        if not self.open: return
-        self.open = False
-        with _TreeCtx.lock.lock:
+        try:
+          if not self.open: return
+          self.open = False
+          with self.lock.lock:
             ctx = self.ctx
-            _TreeCtx.ctxs[ctx]-= 1
-            if _TreeCtx.ctxs[ctx]>0:
-                return # some context is still open
-            _TreeCtx.ctxs.pop(ctx)
-            _TreeCtx.order = [c for c in _TreeCtx.order if c!=ctx]
-            # make sure current Dbid is not active - tdishr
-            if ctx == _TreeCtx.getDbid(): _TreeCtx.switchDbid()
+            self.ctxs[ctx]-= 1
+            if self.ctxs[ctx]>0: return # some context is still open
+            self.ctxs.pop(ctx)
+            self.__class__.order = [c for c in self.order if c!=ctx]
             # apparently this was opened by python - so close all trees
             try:
                 while True:
-                    expt,shot = _dat.TdiExecute('$EXPT',ctx=ctx),_dat.TdiExecute('$SHOT',ctx=ctx)
-                    if not _TreeShr._TreeClose(_C.byref(_C.c_void_p(ctx)),_C.c_void_p(0),_C.c_int32(0)) & 1: break
-                    _sys.stderr.write("Tree(%s,%d) has been forcefully closed!!\n"%(expt,shot))
+                    try:    expt,shot = _dat.TdiExecute('$EXPT',ctx=ctx),_dat.TdiExecute('$SHOT',ctx=ctx)
+                    except: expt,shot = '?',0
+                    if not _TreeShr._TreeClose(_C.c_void_p(0),_C.c_void_p(0)) & 1: break
+                    if (_sys.stderr.write):
+                        _sys.stderr.write("Tree(%s,%d) has been forcefully closed!!"%(expt,shot))
             except _exc.TreeNOT_OPEN: pass
             # now free current Dbid
             _TreeShr.TreeFreeDbid(_C.c_void_p(ctx))
+        except: pass
 
     @staticmethod
     def getDbid(ctx=0):
@@ -177,7 +173,7 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
     @staticmethod
     def switchDbid(tree=None):
         if   isinstance(tree,(Tree,_TreeCtx)):
-            ctx = _C.c_void_p(tree.ctx)
+            ctx = tree.ctx
         elif isinstance(tree,_C.c_void_p):
             ctx = tree
         elif isinstance(tree,(int,_ver.long)):
@@ -185,9 +181,7 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
         else:
             ctx = _C.c_void_p(0)
         _TreeShr.TreeSwitchDbid.restype=_C.c_void_p
-        r = _TreeShr.TreeSwitchDbid(ctx)
-        print("%s -> %s"%(ctx.value,r))
-        return r
+        return _TreeShr.TreeSwitchDbid(ctx)
 
     local = _threading.local()
 
@@ -358,8 +352,8 @@ class Tree(object):
         return self
 
     def __del__(self):
-        if self.tctx and self.ctx and _TreeCtx.canClose(self.ctx.value):
-            self.__exit__()
+        try: self.__exit__()
+        except: pass
 
     def __exit__(self, *args):
         """ Cleanup for with statement. If tree is open for edit close it. """
@@ -461,7 +455,6 @@ class Tree(object):
         self.setDbi("versions_in_pulse",value)
 
     def getDbi(self,itemname):
-
         """
         Get tree information such as:
 
@@ -514,7 +507,6 @@ class Tree(object):
         "Tree root"
         return TreeNode(0,self)
     def __getattr__(self,name):
-
         """Support for referencing an immediate child or
         member of current default node of the tree by
         specifying an uppercase property. For example:
@@ -837,12 +829,6 @@ class Tree(object):
                 _TreeShr._TreeRemoveTag(self.ctx,
                                         _C.c_char_p(_ver.tobytes(tag))))
 
-    def restoreContext(self):
-        """Internal use only. Use internal context associated with this tree."""
-        with _TreeCtx.lock:
-            if isinstance(self.ctx,_C.c_void_p) and self.ctx.value is not None:
-                _TreeShr.TreeSwitchDbid(self.ctx)
-
     @staticmethod
     def setCurrent(treename,shot):
         """Set current shot for specified treename
@@ -865,7 +851,7 @@ class Tree(object):
         """
         old=self.default
         if isinstance(node,TreeNode):
-            if node.tree.ctx == self.ctx:
+            if node.ctx == self.ctx:
                 _exc.checkStatus(
                     _TreeShr._TreeSetDefaultNid(self.ctx,
                                                 node._nid))
@@ -986,7 +972,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
     _path=None
 
     @property
-    def ctx(self): return self.tree.ctx
+    def ctx(self): return _C.c_void_p(_TreeCtx.getDbid()) if self.tree is None else self.tree.ctx
     @property
     def _lock(self): return self.tree._lock
 
@@ -1001,6 +987,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         head = nid._head if isinstance(nid,TreeNode) else head
         if not isinstance(head,(Device,)) and type(node) is TreeNode:
             TreeNode.__init__(node,nid,tree,head,*a,**kw)
+            if node.tree is None: return node
             try:
                 if str(node.usage) == "DEVICE":
                     return node.record.getDevice(node,head=0)
@@ -1083,7 +1070,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
     def children_nids(self):
         """children nodes of this node"""
         try:    return self.__children_nids
-        except _exc.TreeNNF: return TreeNodeArray([],tree=self.tree)
+        except _exc.TreeNNF: return TreeNodeArray([],self.tree)
 
     mclass=_class=nciProp("class","class of the data stored in this node")
 
@@ -1368,21 +1355,21 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
             matches the name of an immediate
             ancester to the node.
         """
-        if name=='tree':
-            return Tree()
+        #if name=='tree':
+        #    return Tree()
         try:
             return _getNodeByAttr(self,name)
         except _exc.TreeNNF:
             pass
-        try:
-            return super(TreeNode,self).__getattribute__(name)
-        except AttributeError:
-            pass
-        if name=='length':
-            raise AttributeError
+        #try:
+        return super(TreeNode,self).__getattribute__(name)
+        #except AttributeError as e:
+        #    print(e)
+        #if name=='length':
+        #    raise AttributeError
         #if self.length>0:
         #    return self.record.__getattribute__(name)
-        raise AttributeError('No such attribute: '+name)
+        #raise AttributeError('No such attribute: '+name)
 
     def __str__(self):
       """Convert TreeNode to string."""
@@ -1458,7 +1445,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         @rtype: None
         """
         _exc.checkStatus(
-                _TreeShr._TreeAddTag(self.tree.ctx,
+                _TreeShr._TreeAddTag(self.ctx,
                                      self._nid,
                                      _C.c_char_p(str.encode(tag))))
 
@@ -1476,7 +1463,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         """
         start,end,dim,array = map(_dat.Data,(start,end,dim,array))
         _exc.checkStatus(
-                _TreeShr._TreeBeginSegment(self.tree.ctx,
+                _TreeShr._TreeBeginSegment(self.ctx,
                                            self._nid,
                                            _dat.Data.byref(start),
                                            _dat.Data.byref(end),
@@ -1494,7 +1481,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         """
         array = _dat.Data(array)
         _exc.checkStatus(
-                _TreeShr._TreeBeginTimestampedSegment(self.tree.ctx,
+                _TreeShr._TreeBeginTimestampedSegment(self.ctx,
                                                       self._nid,
                                                       _dat.Data.byref(array),
                                                       _C.c_int32(idx)))
@@ -1583,14 +1570,14 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         @rtype: None
         """
         self.restoreContext()
-        arglist=[self.tree.ctx]
+        arglist=[self.ctx]
         xd=_dsc.descriptor_xd()
         argsobj = [_scr.Int32(self.nid),_scr.String(method)]
         argsobj+= list(map(_dat.Data,args))
         arglist+= list(map(_dat.Data.byref,argsobj))
         arglist+= [xd.byref,_C.c_void_p(0xffffffff)]
         _exc.checkStatus(_TreeShr._TreeDoMethod(*arglist))
-        return xd._setCtx(self.ctx).value
+        return xd._setTree(self.tree).value
 
     @classmethod
     def fromDescriptor(cls,d):
@@ -1651,7 +1638,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         @rtype: Data
         """
         xd=_dsc.Descriptor_xd()
-        status=_TreeShr._TreeGetRecord(self.tree.ctx,
+        status=_TreeShr._TreeGetRecord(self.ctx,
                                        self._nid,
                                        xd.byref)
         if (status & 1):
@@ -1814,32 +1801,32 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
             items.remove(item)
         itmlst=self.NCI_ITEMS(items)
         if len(items) > 0:
-            if self.tree.ctx is None:
+            if self.ctx is None:
                 raise _exc.TreeNOT_OPEN
-            if not isinstance(self.tree.ctx,_C.c_void_p):
-                raise TypeError("tree ctx is type %s, must be a c_void_p" % str(type(self.tree.ctx)))
-            _exc.checkStatus(_TreeShr._TreeGetNci(self.tree.ctx,
+            if not isinstance(self.ctx,_C.c_void_p):
+                raise TypeError("tree ctx is type %s, must be a c_void_p" % str(type(self.ctx)))
+            _exc.checkStatus(_TreeShr._TreeGetNci(self.ctx,
                                                   self._nid,
                                                   _C.byref(itmlst)))
         for idx in range(len(items)):
             val=itmlst.ans[idx]
             rettype=itmlst.rettype[idx]
             retlen=itmlst.retlen[idx].value
-            if rettype == _scr.String:
+            if  rettype is _scr.String:
                 val=_scr.String(val.value[0:retlen].rstrip())
             elif issubclass(rettype,_scr.Scalar):
                 val=_scr.Scalar(val)
-            elif rettype == TreeNode:
+            elif rettype is TreeNode:
                 if retlen == 4:
                     val=TreeNode(int(val.value),self.tree)
                 else:
                     val=None
-            elif rettype == TreeNodeArray:
+            elif rettype is TreeNodeArray:
                 nids=list()
                 for n in range(retlen//4):
                     nids.append(int(val[n]))
                 val=TreeNodeArray(nids,self.tree)
-            elif rettype == bool:
+            elif rettype is bool:
                 val=val.value != 0
             ans[items[idx]]=val
         if not returnDict and len(ans) == 1:
@@ -1923,7 +1910,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         """
         num=_C.c_int32(0)
         _exc.checkStatus(
-            _TreeShr._TreeGetNumSegments(self.tree.ctx,
+            _TreeShr._TreeGetNumSegments(self.ctx,
                                          self._nid,
                                          _C.byref(num)))
         return num.value
@@ -1968,7 +1955,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         val=_dsc.Descriptor_xd()
         dim=_dsc.Descriptor_xd()
         _exc.checkStatus(
-            _TreeShr._TreeGetSegment(self.tree.ctx,
+            _TreeShr._TreeGetSegment(self.ctx,
                                      self._nid,
                                      _C.c_int32(idx),
                                      val.byref,
@@ -1992,7 +1979,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         start=_dsc.Descriptor_xd()
         end=_dsc.Descriptor_xd()
         _exc.checkStatus(
-            _TreeShr._TreeGetSegmentLimits(self.tree.ctx,
+            _TreeShr._TreeGetSegmentLimits(self.ctx,
                                            self._nid,
                                            _C.c_int32(idx),
                                            start.byref,
@@ -2005,7 +1992,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         start,end = map(_dat.Data,(start,end))
         xd=_dsc.Descriptor_xd()
         _exc.checkStatus(
-            _XTreeShr._XTreeGetSegmentList(self.tree.ctx,
+            _XTreeShr._XTreeGetSegmentList(self.ctx,
                                            self._nid,
                                            _dat.Data.byref(start),
                                            _dat.Data.byref(end),
@@ -2017,7 +2004,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         start=_dsc.Descriptor_xd()
         end=_dsc.Descriptor_xd()
         _exc.checkStatus(
-            _TreeShr._TreeGetSegmentTimesXd(self.tree.ctx,
+            _TreeShr._TreeGetSegmentTimesXd(self.ctx,
                                            self._nid,
                                            _C.byref(num),
                                            start.byref,
@@ -2081,7 +2068,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
             fnt=_TreeShr._TreeFindNodeTags
             fnt.restype=_C.c_void_p
             while True:
-                tag_ptr=_TreeShr._TreeFindNodeTags(self.tree.ctx,
+                tag_ptr=_TreeShr._TreeFindNodeTags(self.ctx,
                                                    self._nid,
                                                    _C.byref(ctx))
                 if not tag_ptr:
@@ -2255,7 +2242,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         start,end,dim,array = map(_dat.Data,(start,end,dim,array))
         shape = 1 if isinstance(array,_cmp.Compound) else array.shape[0]
         _exc.checkStatus(
-                _TreeShr._TreeMakeSegment(self.tree.ctx,
+                _TreeShr._TreeMakeSegment(self.ctx,
                                           self._nid,
                                           _dat.Data.byref(start),
                                           _dat.Data.byref(end),
@@ -2278,7 +2265,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         newpath+= "." if self.isChild() else ":"
         newpath+= newname
         _exc.checkStatus(
-                _TreeShr._TreeRenameNode(self.tree.ctx,
+                _TreeShr._TreeRenameNode(self.ctx,
                                          self._nid,
                                          _ver.tobytes(newpath)))
 
@@ -2296,7 +2283,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
                 data = data.__fixTreeReferences__(self.tree)
             ref = _dat.Data.byref(data)
         _exc.checkStatus(
-                _TreeShr._TreePutRecord(self.tree.ctx,
+                _TreeShr._TreePutRecord(self.ctx,
                                         self._nid,
                                         ref,
                                         0))
@@ -2313,7 +2300,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         """
         data = _dat.Data(data)
         _exc.checkStatus(
-                _TreeShr._TreePutRow(self.tree.ctx,
+                _TreeShr._TreePutRow(self.ctx,
                                      self._nid,
                                      _C.c_int32(bufsize),
                                      _C.byref(_C.c_int64(int(timestamp))),
@@ -2329,7 +2316,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         """
         data = _dat.Data(data)
         _exc.checkStatus(
-                _TreeShr._TreePutSegment(self.tree.ctx,
+                _TreeShr._TreePutSegment(self.ctx,
                                          self._nid,
                                          _C.c_int32(idx),
                                          _dat.Data.byref(data)))
@@ -2345,7 +2332,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         timestampArray=_arr.Int64Array(timestampArray)
         array=_arr.Array(array)
         _exc.checkStatus(
-           _TreeShr._TreePutTimestampedSegment(self.tree.ctx,
+           _TreeShr._TreePutTimestampedSegment(self.ctx,
                                                self._nid,
                                                timestampArray.value.ctypes,
                                                _dat.Data.byref(array)))
@@ -2367,7 +2354,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         array=_arr.Array(array)
         if rows_filled is None: rows_filled = int(timestampArray.size)
         _exc.checkStatus(
-                _TreeShr._TreeMakeTimestampedSegment(self.tree.ctx,
+                _TreeShr._TreeMakeTimestampedSegment(self.ctx,
                                                      self._nid,
                                                      timestampArray.value.ctypes,
                                                      _dat.Data.byref(array),
@@ -2405,7 +2392,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
             if self.isChild():
                 newname="."+_ver.tostr(newname)
             _exc.checkStatus(
-                _TreeShr._TreeRenameNode(self.tree.ctx,
+                _TreeShr._TreeRenameNode(self.ctx,
                                          self._nid,
                                          _C.c_char_p(_ver.tobytes(newname))))
           finally:
@@ -2437,7 +2424,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         itmlst.pointer_e=0
         itmlst.retlen_e=0
         _exc.checkStatus(
-                   _TreeShr._TreeSetNci(self.tree.ctx,
+                   _TreeShr._TreeSetNci(self.ctx,
                                         self._nid,
                                         _C.pointer(itmlst)))
 
@@ -2511,7 +2498,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         method = _TreeShr._TreeTurnOn if flag else _TreeShr._TreeTurnOff
         try:
             _exc.checkStatus(
-                method(self.tree.ctx,
+                method(self.ctx,
                        self._nid))
         except _exc.TreeLOCK_FAILURE:
             if not _ver.isNt: raise
@@ -2527,7 +2514,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         """
         method = _TreeShr._TreeSetSubtree if flag else _TreeShr._TreeSetNoSubtree
         _exc.checkStatus(
-                method(self.tree.ctx,
+                method(self.ctx,
                        self._nid),
                 ignore=(_exc.TreeLOCK_FAILURE,))
         return self
@@ -2543,7 +2530,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         except KeyError:
             raise UsageError(usage)
         _exc.checkStatus(
-                _TreeShr._TreeSetUsage(self.tree.ctx,
+                _TreeShr._TreeSetUsage(self.ctx,
                                        self._nid,
                                        _C.c_int32(usagenum)))
         return self
@@ -2579,7 +2566,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         """
         start,end,dim = map(_dat.Data,(start,end,dim))
         _exc.checkStatus(
-                _TreeShr._TreeUpdateSegment(self.tree.ctx,
+                _TreeShr._TreeUpdateSegment(self.ctx,
                                             self._nid,
                                             _dat.Data.byref(start),
                                             _dat.Data.byref(end),
@@ -2639,10 +2626,12 @@ class TreeNodeArray(_arr.Int32Array): # HINT: TreeNodeArray begin
         if len(nids.shape) == 0:  # happens if value has been a scalar, e.g. int
             nids = nids.reshape(1)
         self._value = nids.__array__(_N.int32)
-        if len(tree)<1 or not isinstance(tree[0],(Tree,)):
-            self.tree=Tree(*tree)
-        else:
+        if 'tree' in kw:
+            self.tree = tree
+        elif isinstance(tree[0],(Tree,)):
             self.tree=tree[0]
+        else:
+            self.tree=Tree(*tree)
 
     def __eq__(self,obj):
         if isinstance(obj,(TreeNodeArray,)):
