@@ -1713,11 +1713,9 @@ static const char *convertNciItm(int nciItm)
       case NciFULLPATH:			return "\'FULLPATH\'";
       case NciMINPATH:			return "\'MINPATH\'";
       case NciUSAGE:			return "\'USAGE\'";
-      default:				std::cout << "Unecpected NCI item in TreeNodeThinClient" << std::endl; return "\'\'";
+      default:				throw MdsException("Unexpected NCI item in TreeNodeThinClient");
     }
 }
-					
-
 
 TreeNodeThinClient::TreeNodeThinClient(int nid, Connection *connection, Data *units, Data *error, Data *help, Data *validation)
 {
@@ -1728,15 +1726,6 @@ TreeNodeThinClient::TreeNodeThinClient(int nid, Connection *connection, Data *un
     dtype = DTYPE_NID;
     setAccessory(units, error, help, validation);
 }
-EXPORT void *TreeNodeThinClient::operator new(size_t sz)
-{
-    return ::operator new(sz);
-}
-
-EXPORT void TreeNodeThinClient::operator delete(void *p)
-{
-    ::operator delete(p);
-}
 
 std::string  TreeNodeThinClient::getNciString(int itm)
 {
@@ -1744,12 +1733,14 @@ std::string  TreeNodeThinClient::getNciString(int itm)
     sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
     Data *retStringData = connection->get(expr);
     if(!retStringData)
-	throw (MdsException("Error in Remote evaluation of getnci"));
-    char *retStringPtr = retStringData->getString();
-    std::string retString(retStringPtr);
-    delete [] retStringPtr;
+	throw MdsException("Error in Remote evaluation of getnci");
+    
+    AutoString as(retStringData->getString());
+//    char *retStringPtr = retStringData->getString();
+//    std::string retString(retStringPtr);
+//    delete [] retStringPtr;
     MDSplus::deleteData(retStringData);
-    return retString;
+    return as.string;
 }
 
 char TreeNodeThinClient::getNciChar(int itm)
@@ -1758,7 +1749,7 @@ char TreeNodeThinClient::getNciChar(int itm)
     sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
     Data *retData = connection->get(expr);
      if(!retData)
-	throw (MdsException("Error in Remote evaluation of getnci"));
+	throw MdsException("Error in Remote evaluation of getnci");
     char retChar = retData->getByte();
     MDSplus::deleteData(retData);
     return retChar;
@@ -1770,7 +1761,7 @@ int TreeNodeThinClient::getNciInt(int itm)
     sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
     Data *retData = connection->get(expr);
     if(!retData)
-	throw (MdsException("Error in Remote evaluation of getnci"));
+	throw MdsException("Error in Remote evaluation of getnci");
     int retInt = retData->getInt();
     MDSplus::deleteData(retData);
     return retInt;
@@ -1782,7 +1773,7 @@ int64_t TreeNodeThinClient::getNciInt64(int itm)
     sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
     Data *retData = connection->get(expr);
     if(!retData)
-	throw (MdsException("Error in Remote evaluation of getnci"));
+	throw MdsException("Error in Remote evaluation of getnci");
     int64_t retLong = retData->getLong();
     MDSplus::deleteData(retData);
     return retLong;
@@ -1794,7 +1785,7 @@ char *TreeNodeThinClient::getPath()
     sprintf(expr, "GETNCI(%d,\'PATH\')", nid);
     Data *retData = connection->get(expr);
     if(!retData)
-	throw (MdsException("Error in Remote evaluation of getnci(path)"));
+	throw MdsException("Error in Remote evaluation of getnci(path)");
     char *retPath = retData->getString();
     MDSplus::deleteData(retData);
     return retPath;
@@ -1806,7 +1797,7 @@ EXPORT Data *TreeNodeThinClient::getData()
     sprintf(expr, "GETNCI(%d,\'RECORD\')", nid);
     Data *retData = connection->get(expr);
     if(!retData)
-	throw (MdsException("Error in Remote evaluation of getnci(record)"));
+	throw MdsException("Error in Remote evaluation of getnci(record)");
     return retData;
 }
   
@@ -1826,7 +1817,7 @@ EXPORT void TreeNodeThinClient::deleteData()
     char *path = getFullPath();
     Data *args[1];
     args[0] = 0;
-    connection->put((const char *)path, (char *)"*", args, 0);
+    connection->put(path, (char *)"*", args, 0);
     delete [] path;
 }
 
@@ -1836,7 +1827,7 @@ EXPORT bool TreeNodeThinClient::isOn()
     sprintf(expr, "GETNCI(%d,\'STATE\')", nid);
     Data *retData = connection->get(expr);
     if(!retData)
-	throw (MdsException("Error in Remote evaluation of getnci(state)"));
+	throw MdsException("Error in Remote evaluation of getnci(state)");
     
     char onData = retData->getByte();
     MDSplus::deleteData(retData);
@@ -1855,8 +1846,6 @@ EXPORT void TreeNodeThinClient::setOn(bool on)
 	MDSplus::deleteData(retData);
 }
 
-
-      
 EXPORT void TreeNodeThinClient::beginSegment(Data *start, Data *end, Data *time, Array *initialData)
 {
     char expr[256];
@@ -1869,11 +1858,8 @@ EXPORT void TreeNodeThinClient::beginSegment(Data *start, Data *end, Data *time,
     Data *retData = connection->get(expr, args, 4);
     if(retData)
 	MDSplus::deleteData(retData);
-    MDSplus::deleteData(args[0]);
-    MDSplus::deleteData(args[1]);
-    MDSplus::deleteData(args[2]);
-    MDSplus::deleteData(args[3]);
-
+    for(int i = 0; i < 4; i++)
+      MDSplus::deleteData(args[i]);
 }
 
 EXPORT void TreeNodeThinClient::makeSegment(Data *start, Data *end, Data *time, Array *initialData)
@@ -1888,10 +1874,8 @@ EXPORT void TreeNodeThinClient::makeSegment(Data *start, Data *end, Data *time, 
     Data *retData = connection->get(expr, args, 4);
     if(retData)
 	MDSplus::deleteData(retData);
-    MDSplus::deleteData(args[0]);
-    MDSplus::deleteData(args[1]);
-    MDSplus::deleteData(args[2]);
-    MDSplus::deleteData(args[3]);
+    for(int i = 0; i < 4; i++)
+      MDSplus::deleteData(args[i]);
 }
 
 EXPORT void TreeNodeThinClient::putSegment(Array *data, int ofs)
@@ -1912,12 +1896,11 @@ EXPORT int TreeNodeThinClient::getNumSegments()
     sprintf(expr, "GetNumSegments(%d)", nid);
     Data *data  = connection->get(expr);
     if(!data)
-	throw (MdsException("Error in Remote evaluation of GetNumSegmentss"));
+	throw MdsException("Error in Remote evaluation of GetNumSegmentss");
     int numSegments = data->getInt();
     MDSplus::deleteData(data);
     return numSegments;
 }
-
 
 EXPORT void TreeNodeThinClient::getSegmentLimits(int segmentIdx, Data **start, Data **end)
 {
@@ -1925,7 +1908,7 @@ EXPORT void TreeNodeThinClient::getSegmentLimits(int segmentIdx, Data **start, D
     sprintf(expr, "GetSegmentLimits(%d, %d)", nid, segmentIdx);
     Array *limitsArr = (Array *)connection->get(expr);
     if(!limitsArr)
-	throw (MdsException("Error in Remote evaluation of GetSegmentLimits"));
+	throw MdsException("Error in Remote evaluation of GetSegmentLimits");
     int startIdx = 0, endIdx = 1;
     *start = limitsArr->getElementAt(&startIdx, 1);
     *end = limitsArr->getElementAt(&endIdx, 1);
@@ -1938,7 +1921,7 @@ EXPORT Array *TreeNodeThinClient::getSegment(int segIdx)
     sprintf(expr, "GetSegment(%d, %d)", nid, segIdx);
     Array *retSegment = (Array *)connection->get(expr);
     if(!retSegment)
-	throw (MdsException("Error in Remote evaluation of GetSegment"));
+	throw MdsException("Error in Remote evaluation of GetSegment");
     return retSegment;
 }
   
@@ -1946,9 +1929,9 @@ EXPORT Data *TreeNodeThinClient::getSegmentDim(int segIdx)
 {
     char expr[64];
     sprintf(expr, "DIM_OF(GetSegment(%d, %d))", nid, segIdx);
-    Array *retDim = (Array *)connection->get(expr);
+    Data *retDim = connection->get(expr);
     if(!retDim)
-	throw (MdsException("Error in Remote evaluation of dim_of(GetSegment)"));
+	throw MdsException("Error in Remote evaluation of dim_of(GetSegment)");
     return retDim;
 }
     
@@ -1960,9 +1943,10 @@ EXPORT void TreeNodeThinClient::getSegmentAndDimension(int segIdx, Array *&segme
     sprintf(expr, "DIM_OF(GetSegment(%d, %d))", nid, segIdx);
     dimension = connection->get(expr);
     if(!segment || !dimension)
-	throw (MdsException("Error in Remote evaluation of GetSegment"));
+	throw MdsException("Error in Remote evaluation of GetSegment");
 
 }
+
 EXPORT void TreeNodeThinClient::beginTimestampedSegment(Array *initData)
 {
     char expr[64];
@@ -1990,12 +1974,12 @@ EXPORT void TreeNodeThinClient::putTimestampedSegment(Array *data, int64_t *time
     MDSplus::deleteData(args[1]);
 }
    
-
 EXPORT void TreeNodeThinClient::makeTimestampedSegment(Array *data, int64_t *times)
 {
     beginTimestampedSegment(data);
     putTimestampedSegment(data, times);
 }
+
 EXPORT void TreeNodeThinClient::putRow(Data *data, int64_t *time, int size)
 {
     Int64 timeData(*time);
@@ -2016,7 +2000,7 @@ EXPORT StringArray *TreeNodeThinClient::findTags()
     sprintf(expr, "TreeFindNodeTags(%d)", nid);
     Data *retData = connection->get(expr);
     if(!retData)
-	throw (MdsException("Error in Remote evaluation of TreeFindNodeTags"));
+	throw MdsException("Error in Remote evaluation of TreeFindNodeTags");
 
     int numTags;
     char **tags = retData->getStringArray(&numTags);
@@ -2027,13 +2011,6 @@ EXPORT StringArray *TreeNodeThinClient::findTags()
     MDSplus::deleteData(retData);
     return tagsArray;
 }
-
-
-
-
-
-
-
 //////////////////////////////////////////////////////////////
 
 void MDSplus::setActiveTree(Tree *tree)
