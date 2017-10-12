@@ -998,7 +998,9 @@ static int ReadSegment(TREE_INFO * tinfo, int nid, SEGMENT_HEADER * shead,
         MdsCopyDxXd((struct descriptor *)&dim2, dim);
         free(dim_ptr);
       } else {
-        TreeGetDsc(tinfo, nid, sinfo->dimension_offset, sinfo->dimension_length, dim);
+	if (sinfo->dimension_length != -1) {
+          TreeGetDsc(tinfo, nid, sinfo->dimension_offset, sinfo->dimension_length, dim);
+	}
       }
       if (!compressed_segment) {
         MdsCopyDxXd((struct descriptor *)&ans, segment);
