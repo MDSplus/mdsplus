@@ -3269,10 +3269,6 @@ public:
     ///
     TreeNodeThinClient(int nid, Connection *connection, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
 
-    //Force new and delete in dll for windows
-    void *operator new(size_t sz);
-    void operator delete(void *p);
-
     /// Get the associated tree instance
     virtual Tree *getTree() {throw MdsException("getTree() not supported for TreeNodeThinClient object"); return NULL; }
 
