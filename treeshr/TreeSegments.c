@@ -325,9 +325,12 @@ if (STATUS_OK && (shot_open && (local_nci->flags & NciM_NO_WRITE_SHOT))) \
   RETURN(UNLOCK_NCI,TreeNOWRITESHOT); \
 if (STATUS_OK && (!shot_open && (local_nci->flags & NciM_NO_WRITE_MODEL))) \
   RETURN(UNLOCK_NCI,TreeNOWRITEMODEL); \
-if (STATUS_OK && (local_nci->flags & NciM_WRITE_ONCE) && local_nci->length) \
-    RETURN(UNLOCK_NCI,TreeNOOVERWRITE);
-
+if (STATUS_OK && (local_nci->flags & NciM_WRITE_ONCE)) { \
+  if (local_nci->length) {\
+    RETURN(UNLOCK_NCI,TreeNOOVERWRITE); \
+  } \
+  local_nci->flags &= ~NciM_WRITE_ONCE; \
+}
 
 #define OPEN_DATAFILE_WRITE1() status = OpenDatafileWrite1(status,tinfo,&stv)
 inline static int OpenDatafileWrite1(int status,TREE_INFO *tinfo, int *stv_ptr){
@@ -995,7 +998,9 @@ static int ReadSegment(TREE_INFO * tinfo, int nid, SEGMENT_HEADER * shead,
         MdsCopyDxXd((struct descriptor *)&dim2, dim);
         free(dim_ptr);
       } else {
-        TreeGetDsc(tinfo, nid, sinfo->dimension_offset, sinfo->dimension_length, dim);
+	if (sinfo->dimension_length != -1) {
+          TreeGetDsc(tinfo, nid, sinfo->dimension_offset, sinfo->dimension_length, dim);
+	}
       }
       if (!compressed_segment) {
         MdsCopyDxXd((struct descriptor *)&ans, segment);
