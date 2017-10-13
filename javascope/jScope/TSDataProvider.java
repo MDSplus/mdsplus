@@ -1,12 +1,7 @@
 package jScope;
 
-/* $Id$ */
-import jScope.DataProvider;
-import jScope.MdsplusParser;
-import jScope.DataServerItem;
-import jScope.MdsDataProvider;
-import java.util.*;
 import java.io.IOException;
+
 import javax.swing.JFrame;
 
 class TSDataProvider extends MdsDataProvider

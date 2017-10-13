@@ -43,11 +43,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait);
 static ssize_t tunnel_recv(int id, void *buffer, size_t len);
+#ifdef _WIN32
+#define tunnel_recv_to NULL
+#else
+static ssize_t tunnel_recv_to(int id, void *buffer, size_t len, int to_msec);
+#endif
 static int tunnel_disconnect(int id);
 static int tunnel_connect(int id, char *protocol, char *host);
 static int tunnel_listen(int argc, char **argv);
 static IoRoutines tunnel_routines =
-    { tunnel_connect, tunnel_send, tunnel_recv, NULL, tunnel_listen, NULL, NULL, tunnel_disconnect, NULL};
+    { tunnel_connect, tunnel_send, tunnel_recv, NULL, tunnel_listen, NULL, NULL, tunnel_disconnect, tunnel_recv_to};
 
 EXPORT IoRoutines *Io()
 {
@@ -120,6 +125,24 @@ static ssize_t tunnel_recv(int id, void *buffer, size_t buflen){
   return p ? read(p->stdout_pipe, buffer, buflen) : -1;
 #endif
 }
+
+#ifndef _WIN32
+static ssize_t tunnel_recv_to(int id, void *buffer, size_t buflen, int to_msec){
+  struct TUNNEL_PIPES *p = getTunnelPipes(id);
+  if (!p) return -1;
+  if (to_msec>=0) { // don't tiime out if to_msec < 0
+    struct timeval timeout;
+    timeout.tv_sec = (to_msec/1000);
+    timeout.tv_usec = to_msec % 1000;
+    fd_set set;
+    FD_ZERO(&set); /* clear the set */
+    FD_SET(p->stdout_pipe, &set); /* add our file descriptor to the set */
+    int rv = select(p->stdout_pipe + 1, &set, NULL, NULL, &timeout);
+    if (rv<=0) return rv;
+  }
+  return read(p->stdout_pipe, buffer, buflen);
+}
+#endif
 
 #ifndef _WIN32
 static void ChildSignalHandler(int num __attribute__ ((unused)))

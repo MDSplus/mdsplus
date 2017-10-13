@@ -1,8 +1,7 @@
 package jScope;
 
 /* $Id$ */
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
 
 public class JiNcVar extends JiVarImpl 
 {
@@ -12,9 +11,6 @@ public class JiNcVar extends JiVarImpl
 	private JiNcVarImp mFactory = null; // Factory for variable implementation
 	private JiSlabIterator mIterator = null;
 	private boolean mIsRecord;
-
-	private static boolean TIMEIT = true;
-
 
 	public static final int NcByte = 1;
 	public static final int NcChar = 2;
@@ -78,7 +74,6 @@ public class JiNcVar extends JiVarImpl
 	  {
 	  JiVar rval = null;
 	  for (int i=0; i < mAtts.length; ++i){
-	      JiVar var = mAtts[i];
 	      if (name.equals(mAtts[i].getName())){
 		  rval = mAtts[i];
 		  break;

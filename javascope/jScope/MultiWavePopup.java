@@ -1,19 +1,14 @@
 package jScope;
 
-/* $Id$ */
-import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
-import javax.swing.JMenuItem;
-import javax.swing.JMenu;
+import java.awt.event.ItemListener;
+
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JScrollPane;
-import javax.swing.JPanel;
-import javax.swing.BoxLayout;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 public class MultiWavePopup
     extends WavePopup
@@ -152,10 +147,8 @@ public class MultiWavePopup
         if (s_name != null)
         {
 
-            int ccc = signalList.getItemCount();
             if (signalList.getItemCount() != 0)
                 signalList.removeAll();
-            ccc = signalList.getItemCount();
             signalList.setEnabled(s_name.length != 0);
             legend.setEnabled(s_name.length != 0);
 
@@ -176,7 +169,6 @@ public class MultiWavePopup
                     }
                 });
             }
-            ccc = signalList.getItemCount();
         }
 
         if (wave.isFixedLegend())

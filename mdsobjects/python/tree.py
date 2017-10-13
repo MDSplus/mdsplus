@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,7 @@ _mds=_mimport('_mdsshr')
 #### Load Shared Libraries Referenced #######
 #
 _TreeShr=_ver.load_library('TreeShr')
+_XTreeShr=_ver.load_library('XTreeShr')
 #############################################
 
 class staticmethodX(object):
@@ -77,6 +78,9 @@ _usage_table={'ANY':0,'NONE':1,'STRUCTURE':1,'ACTION':2,      # Usage name to co
               'DEVICE':3,'DISPATCH':4,'NUMERIC':5,'SIGNAL':6,
               'TASK':7,'TEXT':8,'WINDOW':9,'AXIS':10,
               'SUBTREE':11,'COMPOUND_DATA':12}
+class UsageError(KeyError):
+    def __init__(self,usage):
+        super(UsageError,self).__init__('Invalid usage "%s". Must be one of: %s' % (str(usage), ', '.join(_usage_table.keys())))
 
 #
 ###################################################
@@ -612,7 +616,7 @@ class Tree(object):
         try:
             usage_idx=_usage_table[usage.upper()]
         except KeyError:
-            raise KeyError('Invalid usage must be one of: %s' % _usage_table.keys())
+            raise UsageError(usage)
         usagenum = 1 if usage_idx==11 else usage_idx
         with self._lock:
             _exc.checkStatus(
@@ -769,7 +773,7 @@ class Tree(object):
                 for u in usage:
                     usage_mask |= 1 << _usage_table[u.upper()]
             except KeyError:
-                raise KeyError('Invalid usage must be one of: %s' % list(_usage_table.keys()))
+                raise UsageError(u)
 
         nid=_C.c_int32(0)
         ctx=_C.c_void_p(0)
@@ -890,7 +894,7 @@ class Tree(object):
         return old
 
     @staticmethod
-    def setTimeContext(begin,end,delta):
+    def setTimeContext(begin=None,end=None,delta=None):
         """Set time context for retrieving segmented records
         @param begin: Time value for beginning of segment.
         @type begin: str, Uint64, Float32 or Float64
@@ -900,11 +904,13 @@ class Tree(object):
         @type delta: Uint64, Float32 or Float64
         @rtype: None
         """
-        begin,end,delta = map(_dat.Data,(begin,end,delta))
+        begin = None if begin is None else _dat.Data(begin)
+        end   = None if end   is None else _dat.Data(end)
+        delta = None if delta is None else _dat.Data(delta)
         _exc.checkStatus(
-            _TreeShr.TreeSetTimeContext(_dat.Data.byref(begin),
-                                        _dat.Data.byref(end),
-                                        _dat.Data.byref(delta)))
+            _TreeShr.TreeSetTimeContext(_C.c_void_p(0) if begin is None else _dat.Data.byref(begin),
+                                        _C.c_void_p(0) if end   is None else _dat.Data.byref(end),
+                                        _C.c_void_p(0) if delta is None else _dat.Data.byref(delta)))
 
     @staticmethod
     def setVersionDate(date):
@@ -964,22 +970,22 @@ class Tree(object):
 
     def tdiCompile(self,*args,**kwargs):
         """Compile a TDI expression. Format: tdiCompile('expression-string',(arg1,...))"""
-        kwargs['ctx'] = self.ctx
+        kwargs['tree']=self
         return _dat.TdiCompile(*args,**kwargs)
 
     def tdiExecute(self,*args,**kwargs):
         """Compile and execute a TDI expression. Format: tdiExecute('expression-string',(arg1,...))"""
-        kwargs['ctx'] = self.ctx
+        kwargs['tree'] = self
         return _dat.TdiExecute(*args,**kwargs)
 
     def tdiEvaluate(self,arg,**kwargs):
         """Evaluate and functions. Format: tdiEvaluate(data)"""
-        kwargs['ctx'] = self.ctx
+        kwargs['tree'] = self
         return _dat.TdiEvaluate(arg,**kwargs)
 
     def tdiData(self,arg,**kwargs):
         """Return primitive data type. Format: tdiData(value)"""
-        kwargs['ctx'] = self.ctx
+        kwargs['tree'] = self.tree
         return _dat.TdiData(arg,**kwargs)
 
 class TreeNode(_dat.Data): # HINT: TreeNode begin
@@ -1004,6 +1010,11 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
     @ctx.setter
     def ctx(self,ctx):
         if self.tree is None: self.tree = Tree(ctx)
+    @property
+    def tree(self): return self._tree
+    @tree.setter
+    def tree(self,tree):
+        self._tree=tree
 
     def __new__(cls,nid,tree=None,head=None,*a,**kw):
         """Create class instance. Initialize part_dict class attribute if necessary.
@@ -1363,8 +1374,10 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
        return self
 
     def __fixTreeReferences__(self,tree):
+        if self.tree == None:
+            self.tree=tree
         if (self.nid >> 24) != 0:
-            return TreePath(str(self))
+            return TreePath(str(self),tree)
         else:
             relpath=str(self.fullpath)
             relpath=relpath[relpath.find('::TOP')+5:]
@@ -1431,7 +1444,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         try:
             usagenum=_usage_table[usage.upper()]
         except KeyError:
-            raise KeyError('Invalid usage specified. Use one of %s' % (str(_usage_table.keys()),))
+            raise UsageError(usage)
         name=str(name).upper()
         if name[0]==':' or name[0]=='.':
             name=str(self.fullpath)+name
@@ -1607,7 +1620,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
 
     @classmethod
     def fromDescriptor(cls,d):
-        return cls(_C.cast(d.pointer,_C.POINTER(_C.c_int32)).contents.value)
+        return cls(_C.cast(d.pointer,_C.POINTER(_C.c_int32)).contents.value,d.tree)
 
     def getBrother(self):
         """Return sibling of this node
@@ -1664,12 +1677,14 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         @rtype: Data
         """
         xd=_dsc.Descriptor_xd()
-        xd.tree=self.tree
         status=_TreeShr._TreeGetRecord(self.tree.ctx,
                                        self._nid,
                                        xd.byref)
         if (status & 1):
-            return xd._setCtx(self.ctx).value
+            xd.tree=self.tree
+            ans = xd._setCtx(self.ctx).value
+            ans.tree = self.tree
+            return ans
         elif len(altvalue)==1 and status == _exc.TreeNODATA.status:
             return altvalue[0]
         else:
@@ -1833,8 +1848,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
             if not isinstance(self.tree.ctx,_C.c_void_p):
                 raise TypeError("tree ctx is type %s, must be a c_void_p" % str(type(self.tree.ctx)))
             _exc.checkStatus(_TreeShr._TreeGetNci(self.tree.ctx,
-                                            self._nid,
-                                            _C.byref(itmlst)))
+                                                  self._nid,
+                                                  _C.byref(itmlst)))
         for idx in range(len(items)):
             val=itmlst.ans[idx]
             rettype=itmlst.rettype[idx]
@@ -2014,6 +2029,29 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         start,end = start.value,end.value
         if start is not None or end is not None:
             return (start,end)
+
+    def getSegmentList(self,start,end):
+        start,end = map(_dat.Data,(start,end))
+        xd=_dsc.Descriptor_xd()
+        _exc.checkStatus(
+            _XTreeShr._XTreeGetSegmentList(self.tree.ctx,
+                                           self._nid,
+                                           _dat.Data.byref(start),
+                                           _dat.Data.byref(end),
+                                           xd.byref))
+        return xd.value
+
+    def getSegmentTimes(self):
+        num = _C.c_int32(0)
+        start=_dsc.Descriptor_xd()
+        end=_dsc.Descriptor_xd()
+        _exc.checkStatus(
+            _TreeShr._TreeGetSegmentTimesXd(self.tree.ctx,
+                                           self._nid,
+                                           _C.byref(num),
+                                           start.byref,
+                                           end.byref))
+        return num.value,start.value,end.value
 
     def getSegmentEnd(self,idx):
         """return end of segment
@@ -2532,7 +2570,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin
         try:
             usagenum=_usage_table[usage.upper()]
         except KeyError:
-            raise KeyError('Invalid usage specified. Use one of %s' % (str(_usage_table.keys()),))
+            raise UsageError(usage)
         _exc.checkStatus(
                 _TreeShr._TreeSetUsage(self.tree.ctx,
                                        self._nid,
@@ -2617,6 +2655,11 @@ class TreePath(TreeNode): # HINT: TreePath begin
 
 
 class TreeNodeArray(_arr.Int32Array): # HINT: TreeNodeArray begin
+    @property
+    def tree(self): return self._tree
+    @tree.setter
+    def tree(self,tree):
+        self._tree=tree
     def __new__(cls,nids,*tree,**kw):
         return super(TreeNodeArray,cls).__new__(cls,nids)
     def __init__(self,nids,*tree,**kw):

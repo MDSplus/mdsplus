@@ -1,13 +1,14 @@
 package jScope;
 
-/* $Id$ */
-import jScope.Frames;
-import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.util.*;
-import java.io.*;
-import java.lang.String;
-import javax.swing.TransferHandler;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Polygon;
+import java.util.Vector;
 
 /**
  Class MultiWaveform extends the capability of class Waveform to deal with multiple
@@ -212,7 +213,7 @@ public class MultiWaveform
     public void setLegendMode(int legend_mode)
     {
         this.legend_mode = legend_mode;
-        if (legend_mode != this.LEGEND_IN_GRAPHICS)
+        if (legend_mode != LEGEND_IN_GRAPHICS)
             fixed_legend = true;
         else
             fixed_legend = false;
@@ -694,7 +695,6 @@ public class MultiWaveform
         Font f = g.getFont();
         int h = f.getSize() + 2;
         FontMetrics fm = getFontMetrics(f);
-        Signal sign;
 
         if (getSignalCount() == 0)
             return dim;
@@ -796,7 +796,6 @@ public class MultiWaveform
         FontMetrics fm = getFontMetrics(g.getFont());
         String s;
         pts[0] = new Point();
-        Signal sign;
         int curr_width = 0, sum_width = p.x;
         int curr_marker = 0;
 
@@ -864,7 +863,7 @@ public class MultiWaveform
         int num_marker = Signal.markerList.length - 1;
         int i, j, x[], y[];
         Point curr_points[];
-        Vector segments = null;
+        Vector<Polygon> segments = null;
         float step;
         int num_steps, marker_step = 1;
 
@@ -982,31 +981,29 @@ public class MultiWaveform
         segments = null;
     }
 
-    protected void drawMarkers(Graphics g, Vector segments, Signal s)
+    protected void drawMarkers(Graphics g, Vector<Polygon> segments, Signal s)
     {
         drawMarkers(g, segments, s.getMarker(), s.getMarkerStep(), s.getMode1D());
     }
 
-    protected void drawMarkers(Graphics g, Vector segments, int mark_type,
-                               int step, int mode)
+    protected void drawMarkers(Graphics g, Vector<Polygon> segments, int mark_type, int step, int mode)
     {
         int num_points, num_segments = 0;
         int i;
         Point points[];
-        Polygon curr_polygon;
 
         if(segments != null)
             num_segments = segments.size();
 
         for (i = num_points = 0; i < num_segments; i++)
-            num_points += ( (Polygon) segments.elementAt(i)).npoints;
+            num_points += segments.elementAt(i).npoints;
 
         points = new Point[num_points];
         for (i = 0; i < num_points; i++)
             points[i] = new Point();
         for (i = num_points = 0; i < num_segments; i++)
         {
-            curr_polygon = (Polygon) segments.elementAt(i);
+            Polygon curr_polygon = segments.elementAt(i);
             for (int j = 0; j < curr_polygon.npoints; j += step)
             {
 //                if(mode == Signal.MODE_STEP && i%2 == 1)
@@ -1029,8 +1026,8 @@ public class MultiWaveform
     protected Point FindPoint(double curr_x, double curr_y, Dimension d, boolean is_first)
     {
         Signal curr_signal;
-        int curr_idx = -1, i, img_idx = -1, min_idx = 0;
-        double curr_dist = 0, img_dist = Double.MAX_VALUE,  min_dist = Double.MAX_VALUE;
+        int curr_idx = -1, i, img_idx = -1;
+        double curr_dist = 0, min_dist = Double.MAX_VALUE;
 
         if (signals == null || signals.size() == 0)
             return null;
@@ -1055,13 +1052,8 @@ public class MultiWaveform
                 double x2D[] = curr_signal.getX2D();
                 int inc = (int)(x2D.length / 10.) + 1;
                 inc = (curr_idx + inc > x2D.length) ? x2D.length - curr_idx - 1 : inc;
-                if(curr_idx >= 0 && curr_idx < x2D.length)
-                    img_dist = (x2D[curr_idx] - x2D[curr_idx + inc]) *
-                               (x2D[curr_idx] - x2D[curr_idx + inc]);
-                    img_idx = i;
-            }
-            else
-            {
+                img_idx = i;
+            } else {
                 if (curr_signal.hasX())
                     curr_dist = (curr_signal.getY(curr_idx) - curr_y) *
                         (curr_signal.getY(curr_idx) - curr_y) + (curr_signal.getX(curr_idx) - curr_x) *
@@ -1070,7 +1062,6 @@ public class MultiWaveform
                 if (i == 0 || curr_dist < min_dist)
                 {
                     min_dist = curr_dist;
-                    min_idx = curr_idx;
                     curr_point_sig_idx = i;
                 }
                 //System.out.println("cx "+curr_x+"cy "+curr_y+" dist "+curr_dist + " img dist "+ img_dist);
@@ -1423,7 +1414,7 @@ public class MultiWaveform
             if(s != null)
             {
                 s.setXLimits(w.waveform_signal.getXmin(), w.waveform_signal.getXmax(), Signal.SIMPLE);
-                s.setFreezeMode(w.waveform_signal.getFreezeMode());
+                //s.setFreezeMode(w.waveform_signal.getFreezeMode());
             }
         }
         AutoscaleY();
@@ -1465,7 +1456,6 @@ public class MultiWaveform
                               double end_ys,
                               int timestamp)
     {
-        double x_range = end_xs - start_xs;
         if (orig_signals == null)
         {
             orig_signals = new Vector<>();
@@ -1474,7 +1464,6 @@ public class MultiWaveform
             orig_xmin = waveform_signal.getXmin();
             orig_xmax = waveform_signal.getXmax();
         }
-
     }
 
     protected void HandleCopy()

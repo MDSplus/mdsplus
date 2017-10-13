@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@ import os,sys
 from re import match
 from threading import RLock
 
-from MDSplus import Tree,Device
+from MDSplus import Tree,Device,Connection,GetMany,Range
 from MDSplus import getenv,setenv,dcl,ccl,tcl,cts
 from MDSplus import mdsExceptions as Exc
 
@@ -187,6 +187,24 @@ class Tests(TestCase):
                 sleep(3)
                 if mon: self.assertEqual(mon.poll(),None)
                 if svr: self.assertEqual(svr.poll(),None)
+                """ mdsconnect """
+                c = Connection(server)
+                self.assertEqual(c.get('1').tolist(),1)
+                self.assertEqual(c.getObject('1:3:1').__class__,Range)
+                if not sys.platform.startswith('win'): # Windows does not support timeout yet
+                    try: #  currently the connection needs to be closed after a timeout
+                        Connection(server).get("wait(1)",timeout=100)
+                        self.fail("Connection.get(wait(1)) should have timed out.")
+                    except Exc.MDSplusException as e:
+                        self.assertEqual(e.__class__,Exc.TdiTIMEOUT)
+                g = GetMany(c);
+                g.append('a','1')
+                g.append('b','$',2)
+                g.append('c','$+$',1,2)
+                g.execute()
+                self.assertEqual(g.get('a'),1)
+                self.assertEqual(g.get('b'),2)
+                self.assertEqual(g.get('c'),3)
                 """ tcl dispatch """
                 self._doTCLTest('show server %s'%server,out=show_server,re=True)
                 testDispatchCommand(server,'set verify')

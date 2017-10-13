@@ -1061,8 +1061,7 @@ STATIC_ROUTINE int SendArg(int socket, unsigned char idx, char dtype, unsigned c
 {
   if (MDS_SEND_ARG == 0) {
     int status = FindImageSymbol("SendArg", (void **)&MDS_SEND_ARG);
-    if (!(status & 1))
-      return status;
+    if STATUS_NOT_OK  return status;
   }
   return (*MDS_SEND_ARG) (socket, idx, dtype, nargs, length, ndims, dims, bytes);
 }
@@ -1074,11 +1073,25 @@ STATIC_ROUTINE int GetAnswerInfoTS(int sock, char *dtype, short *length, char *n
 {
   if (MDS_GET_ANSWER_INFO_TS == 0) {
     int status = FindImageSymbol("GetAnswerInfoTS", (void **)&MDS_GET_ANSWER_INFO_TS);
-    if (!(status & 1))
-      return status;
+    if STATUS_NOT_OK  return status;
   }
   return (*MDS_GET_ANSWER_INFO_TS) (sock, dtype, length, ndims, dims, numbytes, dptr, m);
 }
+
+/*
+STATIC_THREADSAFE int (*MDS_GET_ANSWER_INFO_TO) () = 0;
+
+STATIC_ROUTINE int GetAnswerInfoTO(int sock, char *dtype, short *length, char *ndims, int *dims,
+				   int *numbytes, void **dptr, void **m, int timeout)
+{
+  if (MDS_GET_ANSWER_INFO_TO == 0) {
+    int status = FindImageSymbol("GetAnswerInfoTO", (void **)&MDS_GET_ANSWER_INFO_TO);
+    if STATUS_NOT_OK  return status;
+  }
+  return (*MDS_GET_ANSWER_INFO_TO) (sock, dtype, length, ndims, dims, numbytes, dptr, m, timeout);
+}
+*/
+
 
 #define MDS_IO_OPEN_K   1
 #define MDS_IO_CLOSE_K  2

@@ -286,7 +286,7 @@ class Uint64(Scalar):
            mdstime=MDSplus.Uint64.fromTime(time.time()-time.altzone)
            print(mdstime.date)
         """
-        return cls(int(value * cls._utc1) + cls_utc0)
+        return cls(int(value * cls._utc1) + cls._utc0)
 
     def _getDate(self):
         return _dat.Data.execute('date_time($)',self)
@@ -298,28 +298,28 @@ class Uint64(Scalar):
     time=property(_getTime)
 _dsc.addDtypeToClass(Uint64)
 
-class Int8(Scalar):
+class Int8(Uint8):
     """8-bit signed number"""
     dtype_id=6
     _ctype=_C.c_int8
     _ntype=_N.int8
 _dsc.addDtypeToClass(Int8)
 
-class Int16(Scalar):
+class Int16(Uint16):
     """16-bit signed number"""
     dtype_id=7
     _ctype=_C.c_int16
     _ntype=_N.int16
 _dsc.addDtypeToClass(Int16)
 
-class Int32(Scalar):
+class Int32(Uint32):
     """32-bit signed number"""
     dtype_id=8
     _ctype=_C.c_int32
     _ntype=_N.int32
 _dsc.addDtypeToClass(Int32)
 
-class Int64(Scalar):
+class Int64(Uint64):
     """64-bit signed number"""
     dtype_id=9
     _ctype=_C.c_int64
@@ -397,7 +397,7 @@ class Uint128(Scalar):
         raise TypeError("Uint128 is not yet supported")
 _dsc.addDtypeToClass(Uint128)
 
-class Int128(Scalar):
+class Int128(Uint128):
     """128-bit number"""
     dtype_id=26
     def __init__(self):

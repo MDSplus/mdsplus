@@ -802,7 +802,7 @@ void convertToIEEEFloat(int dtype, int length, void *ptr)
 }
 
 ///////////////mdsip support for Connection class///////////
-struct descriptor_xd *GetManyExecute(char *serializedIn)
+struct descriptor_xd EXPORT *GetManyExecute(char *serializedIn)
 {
   static EMPTYXD(xd);
   struct descriptor_xd *serResult;

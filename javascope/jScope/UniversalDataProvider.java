@@ -1,25 +1,16 @@
 package jScope;
 
-/* $Id$ */
-import jScope.TSDataProvider;
-import jScope.DataProvider;
-import jScope.JetMdsDataProvider;
-import jScope.FrameData;
-import jScope.DataServerItem;
-import jScope.MdsDataProvider;
-import jScope.FtuDataProvider;
-import jScope.JetDataProvider;
-import jScope.ConnectionListener;
-import jScope.AsdexDataProvider;
-import java.io.*;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 import javax.swing.JFrame;
-import java.util.*;
 
 class UniversalDataProvider implements DataProvider
 {
     String error;
     MdsDataProvider defaultProvider;
-    Hashtable dataProviderH = new Hashtable();
+    Hashtable<String, MdsDataProvider> dataProviderH = new Hashtable<>();
     MdsDataProvider getProvider(String ip)
     {
         if(!ip.startsWith("//"))
@@ -74,9 +65,9 @@ class UniversalDataProvider implements DataProvider
 
     public void enableAsyncUpdate(boolean enable)
     {
-        Enumeration en = dataProviderH.elements();
+        Enumeration<MdsDataProvider> en = dataProviderH.elements();
         while(en.hasMoreElements())
-            ((MdsDataProvider)en.nextElement()).enableAsyncUpdate(enable);
+            en.nextElement().enableAsyncUpdate(enable);
     }
  
     String getExpr(String spec)

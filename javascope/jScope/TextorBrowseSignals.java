@@ -1,11 +1,10 @@
 package jScope;
 
-/* $Id$ */
-import java.net.*; 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.StringTokenizer;
+
 import javax.swing.JOptionPane;
-import javax.swing.JEditorPane;
 
 public class TextorBrowseSignals extends jScopeBrowseSignals
 {   
@@ -49,10 +48,9 @@ public class TextorBrowseSignals extends jScopeBrowseSignals
                 
                 if(sig_path != null)
                 {
-                    String dummy;
                     String group;
                     StringTokenizer st = new StringTokenizer(sig_path, "/");
-                    dummy = st.nextToken();
+                    st.nextToken();
                     server_url = st.nextToken();
                     tree  = st.nextToken();
                     group = st.nextToken();

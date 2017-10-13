@@ -182,7 +182,3 @@ static int io_listen(int argc, char **argv){
     runServerMode(&options[1]);
   return C_ERROR;
 }
-
-static int io_settimeout(int id __attribute__ ((unused)), int sec __attribute__ ((unused)), int usec __attribute__ ((unused))){
-  return C_ERROR;
-}

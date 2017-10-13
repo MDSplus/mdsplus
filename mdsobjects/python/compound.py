@@ -69,6 +69,19 @@ class Compound(_dat.Data):
                 self.setDescAt(i,ans.deref)
         return self
 
+    @property
+    def tree(self):
+        for arg in self._args:
+            if isinstance(arg,_dat.Data):
+                tree=arg.tree
+                if tree is not None:
+                    return tree
+        return None
+    @tree.setter
+    def tree(self,tree):
+        for arg in self._args:
+            if isinstance(arg,_dat.Data):
+                arg.tree=tree
 
     def __hasBadTreeReferences__(self,tree):
         for arg in self._args:
@@ -77,12 +90,11 @@ class Compound(_dat.Data):
         return False
 
     def __fixTreeReferences__(self,tree):
-        from copy import deepcopy
-        ans = deepcopy(self)
-        for arg in ans._args:
-            if isinstance(arg,_dat.Data) and arg.__hasBadTreeReferences__(tree):
-                arg.__fixTreeReferences__(tree)
-        return ans
+        for idx in range(len(self._args)):
+          arg=self._args[idx]
+          if isinstance(arg,_dat.Data) and arg.__hasBadTreeReferences__(tree):
+              self._args[idx]=arg.__fixTreeReferences__(tree)
+        return self
 
     def __getattr__(self,name):
         if name == '_fields':
@@ -190,16 +202,19 @@ class Compound(_dat.Data):
             dunits=WithUnits(None,value._units).descriptor
             dunits.dscptrs[0]=dsc.ptr_
             dunits.array[0]  =dsc
+            dunits.tree=value.tree
             dsc = dunits
         if value._error is not None:
             derror=WithError(None,value._error).descriptor
             derror.dscptrs[0]=dsc.ptr_
             derror.array[0]  =dsc
+            derror.tree=value.tree
             dsc = derror
         if value._help is not None or value._validation is not None:
             dparam=Parameter(None,value._help,value._validation).descriptor
             dparam.dscptrs[0]=dsc.ptr_
             dparam.array[0]  =dsc
+            dparam.tree=value.tree
             dsc = dparam
         return dsc
 
@@ -220,7 +235,7 @@ class Compound(_dat.Data):
 
     @classmethod
     def fromDescriptor(cls,d):
-        args = [_dsc.pointerToObject(d.dscptrs[i]) for i in _ver.xrange(d.ndesc)]
+        args = [_dsc.pointerToObject(d.dscptrs[i],d.tree) for i in _ver.xrange(d.ndesc)]
         ans=cls(*args)
         if d.length>0:
             if d.length == 1:
@@ -230,6 +245,7 @@ class Compound(_dat.Data):
             else:
                 opcptr=_C.cast(d.pointer,_C.POINTER(_C.c_uint32))
             ans.opcode = opcptr.contents.value
+        ans.tree=d.tree
         return ans
 
 class Action(Compound):
@@ -328,7 +344,7 @@ class Function(Compound):
     @classmethod
     def fromDescriptor(cls,d):
         opc  = _C.cast(d.pointer,_C.POINTER(_C.c_uint16)).contents.value
-        args = [_dsc.pointerToObject(d.dscptrs[i]) for i in _ver.xrange(d.ndesc)]
+        args = [_dsc.pointerToObject(d.dscptrs[i],d.tree) for i in _ver.xrange(d.ndesc)]
         return cls.opcodeToClass[opc](*args)
 
     def __init__(self,*args):

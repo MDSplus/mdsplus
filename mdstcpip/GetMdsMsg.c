@@ -30,16 +30,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "zlib/zlib.h"
 #include "mdsip_connections.h"
 #include <pthread_port.h>
+#include <tdishr_messages.h>
 
-static int GetBytes(int id, void *buffer, size_t bytes_to_recv){
+static int GetBytesTO(int id, void *buffer, size_t bytes_to_recv, int to_msec){
   char *bptr = (char *)buffer;
   IoRoutines *io = GetConnectionIo(id);
   if (io) {
     int tries = 0;
     while (bytes_to_recv > 0 && (tries < 10)) {
       ssize_t bytes_recv;
-      bytes_recv = io->recv(id, bptr, bytes_to_recv);
-      if (bytes_recv <= 0) {
+      if (io->recv_to && to_msec>=0) // don't use timeout if not available or requested
+        bytes_recv = io->recv_to(id, bptr, bytes_to_recv, to_msec);
+      else
+        bytes_recv = io->recv(id, bptr, bytes_to_recv);
+      if (bytes_recv == 0)
+	return TdiTIMEOUT;
+      if (bytes_recv < 0) {
 	if (errno != EINTR)
 	  return MDSplusERROR;
 	tries++;
@@ -59,25 +65,20 @@ static int GetBytes(int id, void *buffer, size_t bytes_to_recv){
   return MDSplusERROR;
 }
 
+static int GetBytes(int id, void* buffer, size_t bytes_to_recv){
+  return GetBytesTO(id, buffer, bytes_to_recv, -1);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //  GetMdsMsg  /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static void resettimeout(void* id){
-  IoRoutines *ior = GetConnectionIo(*(int*)id);
-  if (ior && ior->settimeout) ior->settimeout(*(int*)id,0,0);
-}
-
-Message *GetMdsMsgTO(int id, int *status, int sec){
+Message *GetMdsMsgTO(int id, int *status, int to_msec){
   MsgHdr header;
   Message *msg = 0;
   int msglen = 0;
   //MdsSetClientAddr(0);
-  IoRoutines *ior = GetConnectionIo(id);
-  if (ior && ior->settimeout) ior->settimeout(id,sec,0);
-  pthread_cleanup_push(resettimeout,(void*)&id);
-  *status = GetBytes(id, (void *)&header, sizeof(MsgHdr));
+  *status = GetBytesTO(id, (void *)&header, sizeof(MsgHdr), to_msec);
   if IS_OK(*status) {
     if (Endian(header.client_type) != Endian(ClientType()))
       FlipHeader(&header);
@@ -122,12 +123,11 @@ Message *GetMdsMsgTO(int id, int *status, int sec){
     if (IS_OK(*status) && (Endian(header.client_type) != Endian(ClientType())))
       FlipData(msg);
   }
-  pthread_cleanup_pop(1);
   return msg;
 }
 
 Message *GetMdsMsg(int id, int *status){
-  return GetMdsMsgTO(id, status, -1.f);
+  return GetMdsMsgTO(id, status, -1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

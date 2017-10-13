@@ -208,8 +208,8 @@ int TreeGetSegmentTimesXd(int nid, int *nsegs, struct descriptor_xd *start_list,
   return _TreeGetSegmentTimesXd(*TreeCtx(), nid, nsegs, start_list, end_list);
 }
 
-int _TreeGetSegmentTimes(void *dbid, int nid, int *nsegs, uint64_t ** times);
-int TreeGetSegmentTimes(int nid, int *nsegs, uint64_t ** times){
+int _TreeGetSegmentTimes(void *dbid, int nid, int *nsegs, int64_t ** times);
+int TreeGetSegmentTimes(int nid, int *nsegs, int64_t ** times){
   return _TreeGetSegmentTimes(*TreeCtx(), nid, nsegs, times);
 }
 
@@ -324,7 +324,13 @@ if STATUS_NOT_OK return status; \
 if (STATUS_OK && (shot_open && (local_nci->flags & NciM_NO_WRITE_SHOT))) \
   RETURN(UNLOCK_NCI,TreeNOWRITESHOT); \
 if (STATUS_OK && (!shot_open && (local_nci->flags & NciM_NO_WRITE_MODEL))) \
-  RETURN(UNLOCK_NCI,TreeNOWRITEMODEL);
+  RETURN(UNLOCK_NCI,TreeNOWRITEMODEL); \
+if (STATUS_OK && (local_nci->flags & NciM_WRITE_ONCE)) { \
+  if (local_nci->length) {\
+    RETURN(UNLOCK_NCI,TreeNOOVERWRITE); \
+  } \
+  local_nci->flags &= ~NciM_WRITE_ONCE; \
+}
 
 #define OPEN_DATAFILE_WRITE1() status = OpenDatafileWrite1(status,tinfo,&stv)
 inline static int OpenDatafileWrite1(int status,TREE_INFO *tinfo, int *stv_ptr){
@@ -341,7 +347,7 @@ inline static int OpenDatafileWrite1(int status,TREE_INFO *tinfo, int *stv_ptr){
 #define BEGIN_FINISH status = BeginFinish(local_nci, tinfo, sindex, shead, nidx,\
                                           attr, attr_offset, attr_update, add_length);
 inline static int BeginFinish(NCI *local_nci,TREE_INFO *tinfo, SEGMENT_INDEX *sindex, SEGMENT_HEADER *shead, int nidx,
-                              EXTENDED_ATTRIBUTES *attr, int64_t *attr_offset, int *attr_update, int add_length){
+                              EXTENDED_ATTRIBUTES *attr, int64_t *attr_offset, int *attr_update, uint32_t add_length){
   int status = PutSegmentIndex(tinfo,sindex,&shead->index_offset);
   if STATUS_NOT_OK return status;
   status = PutSegmentHeader(tinfo, shead, &attr->facility_offset[SEGMENTED_RECORD_FACILITY]);
@@ -350,10 +356,10 @@ inline static int BeginFinish(NCI *local_nci,TREE_INFO *tinfo, SEGMENT_INDEX *si
     SeekToRfa(*attr_offset, local_nci->DATA_INFO.DATA_LOCATION.rfa);
     local_nci->flags2 |= NciM_EXTENDED_NCI;
   }
-  if (((int64_t) local_nci->length + (int64_t) add_length) < (2 ^ 31))
+  if (((int64_t) local_nci->length + (int64_t) add_length) < (int64_t)0xffffffffU)
     local_nci->length += add_length;
   else
-    local_nci->length = (2 ^ 31);
+    local_nci->length = 0xffffffffU;
   local_nci->flags=local_nci->flags | NciM_SEGMENTED;
   TreePutNci(tinfo, nidx, local_nci, 0);
   return status;
@@ -459,7 +465,7 @@ sinfo = &sindex->segment[idx % SEGMENTS_PER_INDEX];
 
 #define BEGIN_SINFO(CHECKCOMPRESS) \
 SEGMENT_INFO *sinfo; \
-int add_length = 0; \
+uint32_t add_length = 0; \
 if (idx == -1) { \
   shead->idx++; \
   idx = shead->idx; \
@@ -493,7 +499,7 @@ if (initialValue->class == CLASS_A) { \
 shead->next_row = rows_filled; \
 /* If not the first segment, see if we can reuse the previous segment storage space and compress the previous segment. */ \
 if (((shead->idx % SEGMENTS_PER_INDEX) > 0) && \
-    (previous_length == add_length) && compress) { \
+    (previous_length == (int64_t)add_length) && compress) {	\
   int deleted; \
   EMPTYXD(xd_data); \
   EMPTYXD(xd_dim); \
@@ -778,7 +784,7 @@ else if (sinfo_limit_offset > 0 && sinfo_limit_length > 0) { \
   EMPTYXD(xd); \
   status = TreeGetDsc(tinfo, nid, sinfo_limit_offset, sinfo_limit_length, &xd); \
   if (STATUS_OK && xd.pointer && xd.pointer->length == 8) \
-    limitval = *(uint64_t *) xd.pointer->pointer; \
+    limitval = *(int64_t *) xd.pointer->pointer; \
   else \
     limitval = 0; \
   MdsFree1Dx(&xd, 0); \
@@ -916,12 +922,12 @@ int _TreeGetSegmentTimesXd(void *dbid, int nid, int *nsegs, struct descriptor_xd
   return status;
 }
 
-int _TreeGetSegmentTimes(void *dbid, int nid, int *nsegs, uint64_t ** times){
+int _TreeGetSegmentTimes(void *dbid, int nid, int *nsegs, int64_t ** times){
   *times = NULL;
   GETSEGMENTTIMES;
-  uint64_t *ans = (uint64_t *) malloc(numsegs * 2 * sizeof(uint64_t));
+  int64_t *ans = (int64_t *) malloc(numsegs * 2 * sizeof(int64_t));
   *times = ans;
-  memset(ans, 0, numsegs * 2 * sizeof(uint64_t));
+  memset(ans, 0, numsegs * 2 * sizeof(int64_t));
   for (idx = numsegs - 1; STATUS_OK && idx >= 0; idx--)
     GETSEGMENTTIME_LOOP(ans[idx * 2],ans[idx * 2 + 1],GETLIMIT_ARRAY,,,,);
   return status;
@@ -992,7 +998,9 @@ static int ReadSegment(TREE_INFO * tinfo, int nid, SEGMENT_HEADER * shead,
         MdsCopyDxXd((struct descriptor *)&dim2, dim);
         free(dim_ptr);
       } else {
-        TreeGetDsc(tinfo, nid, sinfo->dimension_offset, sinfo->dimension_length, dim);
+	if (sinfo->dimension_length != -1) {
+          TreeGetDsc(tinfo, nid, sinfo->dimension_offset, sinfo->dimension_length, dim);
+	}
       }
       if (!compressed_segment) {
         MdsCopyDxXd((struct descriptor *)&ans, segment);

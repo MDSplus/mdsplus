@@ -24,7 +24,6 @@
 #
 
 from unittest import TestCase,TestSuite
-from MDSplus import Tree,Float32,Float32Array,Int16Array,setenv,DateToQuad,Int32Array,Range,Opaque
 from threading import RLock
 import os
 
@@ -40,6 +39,7 @@ class Tests(TestCase):
 
     @classmethod
     def setUpClass(cls):
+        from MDSplus import setenv
         with cls.lock:
             if cls.instances == 0:
                 import tempfile
@@ -56,6 +56,7 @@ class Tests(TestCase):
                 shutil.rmtree(cls.tmpdir)
 
     def arrayDimensionOrder(self):
+        from MDSplus import Tree,Float32,Float32Array,Int16Array
         from numpy import int16,zeros
         from random import randint
         ptree=Tree('seg_tree',self.shot,'NEW')
@@ -86,6 +87,7 @@ class Tests(TestCase):
         self.assertEqual(shape[2],retShape[2])
 
     def writeSegments(self):
+        from MDSplus import Tree,Int32Array,Opaque
         from numpy import array,zeros,int32
         with Tree('seg_tree',self.shot,'NEW') as ptree:
             ptree.addNode('S')
@@ -186,8 +188,7 @@ class Tests(TestCase):
         node.record=Opaque.fromFile(root+'/images/mdsplus_logo.jpg')
         opq = node.record
         try:
-            from PIL import Image
-            img=opq.image
+            opq.image
         except ImportError:
             pass
         node = ptree.JPGS
@@ -198,9 +199,29 @@ class Tests(TestCase):
         lens=(54851,706564,77013)
         for i in range(3):
           seg = node.getSegment(i)
-          self.assertEqual(len(seg.value.data.data()),lens[i])                         
+          self.assertEqual(len(seg.value.data.data()),lens[i])
+
+    def TimeContext(self):
+        from MDSplus import Tree,Int64,Int64Array,Int32Array
+        with Tree('seg_tree',self.shot,'NEW') as ptree:
+            node = ptree.addNode('S')
+            ptree.write()
+        node.tree = Tree('seg_tree',self.shot)
+        for i in range(-9,9,3):
+            d = Int64Array(range(3))*10+i*10
+            v = Int32Array(range(3))+i
+            node.beginSegment(d[0],d[2],d,v)
+        self.assertEqual(node.getSegmentList(20,59).dim_of(0).tolist(),[0,30])
+        self.assertEqual(node.getSegmentList(20,60).dim_of(0).tolist(),[0,30,60])
+        self.assertEqual(node.getSegmentList(21,60).dim_of(0).tolist(),[30,60])
+        self.assertEqual(node.record.data().tolist(),list(range(-9,9)))
+        node.tree.setTimeContext(Int64(30),Int64(70),Int64(20))
+        self.assertEqual(node.record.data().tolist(),[3,5]+[6])  # delta is applied per segment
+        node.tree.setTimeContext()
+        self.assertEqual(node.record.data().tolist(),list(range(-9,9)))
 
     def compressSegments(self):
+        from MDSplus import Tree,DateToQuad,Range
         with Tree('seg_tree',self.shot,'NEW') as ptree:
             ptree.addNode('S').compress_on_put = False
             ptree.write()
@@ -219,7 +240,7 @@ class Tests(TestCase):
             self.__getattribute__(test)()
     @staticmethod
     def getTests():
-        return ['arrayDimensionOrder','writeSegments','compressSegments']
+        return ['arrayDimensionOrder','writeSegments','compressSegments','TimeContext']
     @classmethod
     def getTestCases(cls):
         return map(cls,cls.getTests())

@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,6 @@ _sca=_mimport('mdsscalar')
 _arr=_mimport('mdsarray')
 _dat=_mimport('mdsdata')
 _ver=_mimport('version')
-_statToEx=_exc.MDSplusException
 
 class MdsIpException(_exc.MDSplusException):
   pass
@@ -48,9 +47,9 @@ class MdsIpException(_exc.MDSplusException):
 __MdsIpShr=_ver.load_library('MdsIpShr')
 _ConnectToMds=__MdsIpShr.ConnectToMds
 _DisconnectFromMds=__MdsIpShr.DisconnectFromMds
-_GetAnswerInfoTS=__MdsIpShr.GetAnswerInfoTS
-_GetAnswerInfoTS.argtypes=[_C.c_int32,_C.POINTER(_C.c_ubyte),_C.POINTER(_C.c_ushort),_C.POINTER(_C.c_ubyte),
-                            _C.c_void_p,_C.POINTER(_C.c_ulong),_C.POINTER(_C.c_void_p),_C.POINTER(_C.c_void_p)]
+_GetAnswerInfoTO=__MdsIpShr.GetAnswerInfoTO
+_GetAnswerInfoTO.argtypes=[_C.c_int32,_C.POINTER(_C.c_ubyte),_C.POINTER(_C.c_ushort),_C.POINTER(_C.c_ubyte),
+                            _C.c_void_p,_C.POINTER(_C.c_ulong),_C.POINTER(_C.c_void_p),_C.POINTER(_C.c_void_p), _C.c_int32]
 _MdsIpFree=__MdsIpShr.MdsIpFree
 _MdsIpFree.argtypes=[_C.c_void_p]
 _SendArg=__MdsIpShr.SendArg
@@ -94,7 +93,7 @@ class Connection(object):
         elif dtype == 55: dtype = 13
         return {'dtype':dtype,'length':length,'dimct':dimct,'dims':dims,'address':pointer}
 
-    def __getAnswer__(self):
+    def __getAnswer__(self,to_msec=-1):
         dtype=_C.c_ubyte(0)
         length=_C.c_ushort(0)
         ndims=_C.c_ubyte(0)
@@ -103,7 +102,7 @@ class Connection(object):
         ans=_C.c_void_p(0)
         mem=_C.c_void_p(0)
         try:
-            _exc.checkStatus(_GetAnswerInfoTS(self.socket,dtype,length,ndims,dims.ctypes.data,numbytes,_C.byref(ans),_C.byref(mem)))
+            _exc.checkStatus(_GetAnswerInfoTO(self.socket,dtype,length,ndims,dims.ctypes.data,numbytes,_C.byref(ans),_C.byref(mem),int(to_msec)))
             dtype=dtype.value
             if   dtype == 10: dtype = 52
             elif dtype == 11: dtype = 53
@@ -231,11 +230,16 @@ class Connection(object):
         with self.lock:
             if 'arglist' in kwargs:
                 args=kwargs['arglist']
+            timeout = kwargs.get('timeout',-1)
             num=len(args)+1
-            _exc.checkStatus(_SendArg(self.socket,0,14,num,len(exp),0,0,_C.c_char_p(_ver.tobytes(exp))))
+            exp = _ver.tobytes(exp)
+            _exc.checkStatus(_SendArg(self.socket,0,14,num,len(exp),0,0,_C.c_char_p(exp)))
             for i,arg in enumerate(args):
                 self.__sendArg__(arg,i+1,num)
-            return self.__getAnswer__()
+            return self.__getAnswer__(timeout)
+
+    def getObject(self,exp,*args,**kwargs):
+        return self.get('serializeout(`(%s;))'%exp,*args,**kwargs).deserialize()
 
     def setDefault(self,path):
         """Change the current default tree location on the remote server
@@ -245,12 +249,9 @@ class Connection(object):
         """
         _exc.checkStatus(self.get("TreeSetDefault($)",path))
 
-    def GetMany(self,*arg):
-        """ deprecated """
-        raise(MdsIpException('\nThe subclass "Connection.GetMany" is now a class of it own.\nUse "GetMany" instead.'))
-    def PutMany(self,*arg):
-        """ deprecated """
-        raise(MdsIpException('\nThe subclass "Connection.PutMany" is now a class of it own.\nUse "PutMany" instead.'))
+    def GetMany(self): return GetMany(self)
+    def PutMany(self): return PutMany(self)
+
 
 class GetMany(_apd.List):
     """Build a list of expressions to evaluate
@@ -277,11 +278,13 @@ class GetMany(_apd.List):
     maximum size of the expression list with arguments and the result dictionary is approximately 4 gigatypes.
     """
 
-    def __init__(self,value=None,connection=None):
-        """GetMany instance initialization."""
-        if value is not None:
-            _apd.List.__init__(self,value)
-        self.connection=connection
+    def __init__(self,connection):
+        """Instance initialization"""
+        super(GetMany,self).__init__()
+        if isinstance(connection,Connection):
+            self.connection=connection
+        else:
+            self.connection=Connection(connection)
         self.result=None
 
     def append(self,name,exp,*args):
@@ -365,12 +368,13 @@ class GetMany(_apd.List):
 
 class PutMany(_apd.List):
     """Build list of put instructions."""
-
-    def __init__(self,value=None,connection=None):
+    def __init__(self,connection):
         """Instance initialization"""
-        if value is not None:
-            _apd.List.__init__(self,value)
-        self.connection=connection
+        super(PutMany,self).__init__()
+        if isinstance(connection,Connection):
+            self.connection=connection
+        else:
+            self.connection=Connection(connection)
         self.result=None
 
     def append(self,node,exp,*args):
@@ -413,7 +417,7 @@ class PutMany(_apd.List):
                     args = [node,val['exp']]+val['args']
                     _exc.checkStatus(_dat.Data.execute(exp,tuple(args)))
                     self.result[node] = 'Success'
-                except MDSplusException as exc:
+                except _exc.MDSplusException as exc:
                     self.result[node] = exc.message
                 except Exception as exc:
                     self.result[node] = str(exc)

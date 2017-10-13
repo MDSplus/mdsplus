@@ -230,8 +230,8 @@ extern int TREE_BLOCKID;
 				    struct descriptor_xd *out);
   extern EXPORT int _TreeGetSegments(void *dbid, int nid, struct descriptor *start,
 				     struct descriptor *end, struct descriptor_xd *out);
-  extern EXPORT int TreeGetSegmentTimes(int nid, int *numsegs, uint64_t ** times);
-  extern EXPORT int _TreeGetSegmentTimes(void *dbid, int nid, int *numsegs, uint64_t ** times);
+  extern EXPORT int TreeGetSegmentTimes(int nid, int *numsegs, int64_t ** times);
+  extern EXPORT int _TreeGetSegmentTimes(void *dbid, int nid, int *numsegs, int64_t ** times);
   extern EXPORT int TreeGetSegmentTimesXd(int nid, int *numsegs, struct descriptor_xd *start_list,
 					  struct descriptor_xd *end_list);
   extern EXPORT int _TreeGetSegmentTimesXd(void *dbid, int nid, int *numsegs,

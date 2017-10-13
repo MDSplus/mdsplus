@@ -1,17 +1,36 @@
 package jScope;
 
 /* $Id$ */
-import java.awt.*;
-import java.awt.image.*;
-import java.awt.event.*;
-import java.util.*;
-import javax.swing.border.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Event;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Insets;
-import java.awt.image.*;
-import java.awt.geom.*;
+import java.awt.Point;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.util.Vector;
 
-
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 
 public class Waveform 
     extends JComponent implements SignalListener{
@@ -207,7 +226,7 @@ public class Waveform
     }
 
   static String ConvertToString(double f, boolean is_log) {
-    double curr_f, curr_f1;
+    double curr_f;
     double abs_f;
     int exp;
     String out;
@@ -518,16 +537,12 @@ public class Waveform
   }
 
   protected float convertX(int x) {
-    Insets i = getInsets();
     Dimension d = getWaveSize();
-    //return (float)wm.XValue(x - i.right, d);
     return (float) wm.XValue(x, d);
   }
 
   protected float convertY(int y) {
-    Insets i = getInsets();
     Dimension d = getWaveSize();
-    //return (float)wm.YValue(y - i.top, d);
     return (float) wm.YValue(y, d);
   }
 
@@ -535,8 +550,6 @@ public class Waveform
     Dimension d = getWaveSize();
     double curr_x = wm.XValue(end_x, d);
     double curr_y = wm.YValue(end_y, d);
-
-    Point p = FindPoint(curr_x, curr_y, false);
 
     curr_x = wave_point_x;
     curr_y = wave_point_y;
@@ -568,7 +581,6 @@ public class Waveform
   }
 
   protected void setKeys() {
-      final Waveform w = this;
       addKeyListener( new KeyAdapter() {
           public void keyPressed(KeyEvent e)
           {
@@ -619,7 +631,6 @@ public class Waveform
   
 
   protected void setMouse() {
-    final Waveform w = this;
 
     addMouseListener(new MouseAdapter() {
       public void mousePressed(MouseEvent e) {
@@ -629,7 +640,6 @@ public class Waveform
 
         Insets i = getInsets();
         just_deselected = false;
-        Dimension d = getWaveSize();
 
         requestFocus();
 
@@ -750,7 +760,6 @@ public class Waveform
         }
 
         Insets i = getInsets();
-        int idx;
         Dimension d = getWaveSize();
 
         dragging = false;
@@ -834,7 +843,6 @@ public class Waveform
         Insets i = getInsets();
         Dimension d = getWaveSize();
 
-        int curr_width, curr_height;
         int x = e.getX() - i.right;
         int y = e.getY() - i.top;
 
@@ -1482,9 +1490,6 @@ public class Waveform
   }
 
   private void ImageActions(Graphics g, Dimension d) {
-    double curr_x, curr_y;
-    int plot_y;
-
     if (frames != null && frames.getNumFrame() != 0 &&
         (mode == MODE_POINT || mode == MODE_ZOOM)
         && !not_drawn && !is_min_size
@@ -1515,7 +1520,6 @@ public class Waveform
 
   private void SignalActions(Graphics g, Dimension d) {
     double curr_x, curr_y;
-    int plot_y, plot_x;
 
     if (waveform_signal != null && mode == MODE_POINT
         && !not_drawn && !is_min_size && wm != null) {
@@ -1581,21 +1585,16 @@ public class Waveform
       return;
     }
     
-    Insets i = this.getInsets();
-    
     Dimension d = getSize();
     paint(g, d, NO_PRINT);
     
     if (mode == MODE_POINT && send_profile) 
         sendProfileEvent();
-
   }
-
 
   boolean appendPaintFlag = false;
   synchronized public void appendPaint(Graphics g, Dimension d)
   {
-      Insets i = this.getInsets();
       setFont(g);
       g.setColor(Color.black);
       if (!is_image)
@@ -1609,14 +1608,10 @@ public class Waveform
           }
           else
               PaintSignal(g, d, NO_PRINT);
-
       }
       else
           PaintImage(g, d, NO_PRINT);
-
-
   }
-
 
   synchronized public void paint(Graphics g, Dimension d, int print_mode)
   {
@@ -1625,8 +1620,6 @@ public class Waveform
       setFont(g);
       Dimension dim;
 
-      Graphics2D g2D = (Graphics2D) g;
-
       if (   not_drawn
           || prev_width != d.width
           || prev_height != d.height
@@ -1634,7 +1627,6 @@ public class Waveform
           || (is_image && prev_frame != frame)
           || appendPaintFlag)
       {
-
           appendPaintFlag = false;
           not_drawn = false;
           if (print_mode == NO_PRINT)
@@ -2061,16 +2053,14 @@ public class Waveform
 
   protected void drawSignalContour(Signal s, Graphics g, Dimension d)
   {
-    Vector cs = s.getContourSignals();
-    Vector ls = s.getContourLevelValues();
-    int numLevel = cs.size();
-    Vector cOnLevel;
+    Vector<Vector> cs = s.getContourSignals();
+    Vector<Float> ls = s.getContourLevelValues();
     float level;
 
-    for (int l = 0; l < numLevel; l++)
+    for (int l = 0; l < cs.size(); l++)
     {
-      cOnLevel = (Vector) cs.elementAt(l);
-      level = ( (Float) ls.elementAt(l)).floatValue();
+      Vector<Vector> cOnLevel = cs.elementAt(l);
+      level = ls.elementAt(l).floatValue();
       float z[] = s.getZ();
       float zMin, zMax;
       zMin = zMax = z[0];
@@ -2086,19 +2076,17 @@ public class Waveform
     }
   }
 
-  public void drawContourLevel(Vector cOnLevel, Graphics g, Dimension d)
+  public void drawContourLevel(Vector<Vector> cOnLevel, Graphics g, Dimension d)
   {
-    Vector c;
-    Point2D.Float p;
     wm.ComputeFactors(d);
     for (int i = 0; i < cOnLevel.size(); i++)
     {
-      c = (Vector) cOnLevel.elementAt(i);
+      Vector<Point2D.Float> c = cOnLevel.elementAt(i);
       int cx[] = new int[c.size()];
       int cy[] = new int[c.size()];
       for (int j = 0; j < c.size(); j++)
       {
-        p = (Point2D.Float) c.elementAt(j);
+    	  Point2D.Float p = c.elementAt(j);
         cx[j] = wm.XPixel(p.x);
         cy[j] = wm.YPixel(p.y);
       }
@@ -2174,7 +2162,7 @@ public class Waveform
   {
     if (s.getMarker() != Signal.NONE)
     {
-      Vector segments = wm.ToPolygons(s, d, appendDrawMode);
+    	Vector<Polygon> segments = wm.ToPolygons(s, d, appendDrawMode);
       drawMarkers(g, segments, s.getMarker(), s.getMarkerStep(), s.getMode1D());
     }
   }
@@ -2303,11 +2291,9 @@ public class Waveform
       }
     }
 
-  }
+}
 
-
-protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
-                           int mode)
+protected void drawMarkers(Graphics g, Vector<Polygon> segments, int marker, int step, int mode)
 {
   Polygon currPolygon;
   int pntX[];
@@ -2315,7 +2301,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
 
   for (int k = 0; k < segments.size(); k++)
   {
-    currPolygon = (Polygon) segments.elementAt(k);
+    currPolygon = segments.elementAt(k);
     pntX = currPolygon.xpoints;
     pntY = currPolygon.ypoints;
     for (int i = 0; i < currPolygon.npoints; i += step)
@@ -2369,7 +2355,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
         return;
       }
 
-      int up, low, x, y;
+      int up, low, x;
       float up_error[] = sig.getUpError();
       float low_error[] = sig.getLowError();
 
@@ -2401,7 +2387,6 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
 
   public synchronized void UpdatePoint(double curr_x, double curr_y) {
     Dimension d = getWaveSize();
-    Insets i = getInsets();
 
     if (curr_x == curr_point && !dragging) {
       return;
@@ -2491,7 +2476,6 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
   }
 
   public void SetScale(Waveform w) {
-    double ymin, ymax, xmin, xmax;
     if (waveform_signal == null) {
       return;
     }

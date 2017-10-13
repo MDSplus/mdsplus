@@ -101,7 +101,7 @@ int MdsPut(int id, char *node, char *expression, ...)
     int numbytes;
     void *dptr;
     void *mem = 0;
-    status = GetAnswerInfoTS(id, &dtype, &len, &ndims, dims, &numbytes, &dptr, &mem, -1.f);
+    status = GetAnswerInfoTS(id, &dtype, &len, &ndims, dims, &numbytes, &dptr, &mem);
     if (status & 1 && dtype == DTYPE_LONG && ndims == 0 && numbytes == sizeof(int))
       memcpy(&status, dptr, numbytes);
     if (mem)

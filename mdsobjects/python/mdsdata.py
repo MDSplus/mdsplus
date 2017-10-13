@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -60,24 +60,36 @@ def _TdiShrFun(function,errormessage,expression,*args,**kwargs):
                 return parseArguments(args[0])
         return list(map(Data,args))
     dargs = [Data(expression)]+parseArguments(args)
-    if "ctx" in kwargs:
+    tree=None
+    xd = _dsc.Descriptor_xd()
+    if "tree" in kwargs:
+        tree=kwargs["tree"]
+    else:
+        for arg in dargs:
+            tree=arg.tree
+            if tree is not None:
+                break
+    if tree is not None:
+        ctx = tree.ctx
+        xd.tree=tree
+    elif "ctx" in kwargs:
         ctx = kwargs["ctx"]
-    elif "tree" in kwargs:
-        ctx = kwargs["tree"].ctx
     else:
         ctx = None
         for arg in dargs:
             if arg.ctx is None: continue
             ctx = arg.ctx
             if isinstance(arg,_tre.TreeNode): break
-    xd = _dsc.Descriptor_xd()
     rargs = list(map(Data.byref,dargs))+[xd.byref,_C.c_void_p(-1)]
     _tre._TreeCtx.pushCtx(ctx)
     try:
         _exc.checkStatus(function(*rargs))
     finally:
         _tre._TreeCtx.popCtx()
-    return xd.value
+    ans = xd._setCtx(ctx).value
+    if tree is not None:
+        ans.tree = tree
+    return ans
 
 def TdiCompile(expression,*args,**kwargs):
     """Compile a TDI expression. Format: TdiCompile('expression-string')"""
@@ -121,6 +133,13 @@ class Data(object):
             'data':data,
             'version':3,
         }
+    @property
+    def tree(self):
+        return None
+    @tree.setter
+    def tree(self,tree):
+        pass
+
     def __new__(cls,*value):
         """Convert a python object to a MDSobject Data object
         @param value: Any value
@@ -442,7 +461,7 @@ class Data(object):
         @rtype: Bool
         """
         return bool(
-            _MdsShr.MdsCompareXd(self.descrPtr,
+            _MdsShr.MdsCompareXd(self.byref,
                                  Data(value).byref))
     @property
     def descriptor(self):  # keep ref of descriptor with instance
@@ -733,8 +752,8 @@ class Data(object):
         """
         xd=_dsc.Descriptor_xd()
         _exc.checkStatus(
-            _MdsShr.MdsSerializeDscOut(self.descrPtr,
-                                       xd.ptr))
+            _MdsShr.MdsSerializeDscOut(self.ref,
+                                       xd.byref))
         return xd.value
 
     @staticmethod
@@ -749,7 +768,7 @@ class Data(object):
         xd=_dsc.Descriptor_xd()
         _exc.checkStatus(
             _MdsShr.MdsSerializeDscIn(_C.c_void_p(bytes.ctypes.data),
-                                      xd.ptr))
+                                      xd.byref))
         return xd.value
 
 makeData=Data

@@ -67,12 +67,25 @@ class Apd(_array.Array):
             d.pointer=_C.cast(_C.pointer(descs_ptrs),_C.c_void_p)
         d.a0=d.pointer
         return _compound.Compound._descriptorWithProps(self,d)
+    @property
+    def tree(self):
+        for desc in self.descs:
+            if isinstance(desc,_data.Data):
+                tree=desc.tree
+                if tree is not None:
+                    return tree
+        return None
+    @tree.setter
+    def tree(self,tree):
+        for desc in self.descs:
+            if isinstance(desc,_data.Data):
+                desc.tree=tree
 
     @classmethod
     def fromDescriptor(cls,d):
         num   = int(d.arsize/d.length)
         dptrs = _C.cast(d.pointer,_C.POINTER(_C.c_void_p*num)).contents
-        descs = [_descriptor.pointerToObject(dptr) for dptr in dptrs]
+        descs = [_descriptor.pointerToObject(dptr,d.tree) for dptr in dptrs]
         return cls(descs)._setCtx(d.ctx)
 
 
@@ -84,9 +97,10 @@ class Apd(_array.Array):
 
 
     def __fixTreeReferences__(self,tree):
-        for idx in range(len(self._escs)):
-            if isinstance(self.descs[idx],_data.Data) and self.descs[idx].__hasBadTreeReferences__(tree):
-                self.descs[idx]=self.descs[idx].__fixTreeReferences__(tree)
+        for idx in range(len(self.descs)):
+            d=self.descs[idx]
+            if isinstance(d,_data.Data) and d.__hasBadTreeReferences__(tree):
+                self.descs[idx]=d.__fixTreeReferences__(tree)
         return self
 
     def __init__(self,value,dtype=0):
@@ -259,7 +273,7 @@ class List(list,Apd):
         if value is not None:
             if isinstance(value,(Apd,tuple,list,_ver.mapclass,_ver.generator,_N.ndarray)):
                 for val in value:
-                    self.append(_data.Data(val))
+                    List.append(self,_data.Data(val))
             else:
                 raise TypeError('Cannot create List from type: '+str(type(value)))
 

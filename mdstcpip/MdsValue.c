@@ -75,8 +75,7 @@ int MdsValue(int id, char *expression, ...)
     void *dptr;
     void *mem = 0;
     status =
-	GetAnswerInfoTS(id, &ans_arg->dtype, &len, &ans_arg->ndims, ans_arg->dims, &numbytes, &dptr,
-			&mem, -1.f);
+	GetAnswerInfoTS(id, &ans_arg->dtype, &len, &ans_arg->ndims, ans_arg->dims, &numbytes, &dptr, &mem);
     ans_arg->length = len;
     if (numbytes) {
       if (ans_arg->dtype == DTYPE_CSTRING) {
