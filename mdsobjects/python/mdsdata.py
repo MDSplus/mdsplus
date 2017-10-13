@@ -61,6 +61,7 @@ def _TdiShrFun(function,errormessage,expression,*args,**kwargs):
         return list(map(Data,args))
     dargs = [Data(expression)]+parseArguments(args)
     tree=None
+    xd = _dsc.Descriptor_xd()
     if "tree" in kwargs:
         tree=kwargs["tree"]
     else:
@@ -70,6 +71,7 @@ def _TdiShrFun(function,errormessage,expression,*args,**kwargs):
                 break
     if tree is not None:
         ctx = tree.ctx
+        xd.tree=tree
     elif "ctx" in kwargs:
         ctx = kwargs["ctx"]
     else:
@@ -78,7 +80,6 @@ def _TdiShrFun(function,errormessage,expression,*args,**kwargs):
             if arg.ctx is None: continue
             ctx = arg.ctx
             if isinstance(arg,_tre.TreeNode): break
-    xd = _dsc.Descriptor_xd()
     rargs = list(map(Data.byref,dargs))+[xd.byref,_C.c_void_p(-1)]
     _tre._TreeCtx.pushCtx(ctx)
     try:
