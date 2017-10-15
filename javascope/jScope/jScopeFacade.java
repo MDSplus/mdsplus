@@ -3161,11 +3161,11 @@ class WindowDialog
         row_1.setPaintTicks(true);
         row_1.setPaintLabels(true);
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
-        labelTable.put(new Integer(1), new JLabel("1"));
-        labelTable.put(new Integer(4), new JLabel("4"));
-        labelTable.put(new Integer(8), new JLabel("8"));
-        labelTable.put(new Integer(12), new JLabel("12"));
-        labelTable.put(new Integer(16), new JLabel("16"));
+        labelTable.put(Integer.valueOf(1), new JLabel("1"));
+        labelTable.put(Integer.valueOf(4), new JLabel("4"));
+        labelTable.put(Integer.valueOf(8), new JLabel("8"));
+        labelTable.put(Integer.valueOf(12), new JLabel("12"));
+        labelTable.put(Integer.valueOf(16), new JLabel("16"));
         row_1.setLabelTable(labelTable);
 
         row_1.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
@@ -3272,12 +3272,10 @@ class WindowDialog
 
     public void actionPerformed(ActionEvent e)
     {
-
         Object ob = e.getSource();
 
         try
         {
-
             if (ob == ok || ob == apply)
             {
                 parent.wave_panel.SetTitle(new String(titleText.getText()));

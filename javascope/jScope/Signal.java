@@ -1955,11 +1955,11 @@ public class Signal implements WaveDataListener
         int startIdx;
          //Check for initial NaN Y values
         if(currY == null || y == null) return; //To avoid nullpointer exceptions in any condition
-        for(startIdx = 0; startIdx < currY.length && new Float(y[startIdx]).isNaN(); startIdx++);
+        for(startIdx = 0; startIdx < currY.length && Float.isNaN(y[startIdx]); startIdx++);
         ymin = ymax = y[startIdx];
         for(int i = startIdx; i < currY.length; i++)
         {
-            if (new Float(y[startIdx]).isNaN()) continue;
+            if (Float.isNaN(y[startIdx])) continue;
             if(currY[i] < ymin)
                 ymin = currY[i];
             if(currY[i] > ymax)

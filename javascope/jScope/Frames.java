@@ -513,7 +513,7 @@ class Frames extends Canvas
         curr_frame_idx = 0;
         float t[] = fd.GetFrameTimes();
         for(int i = 0; i < t.length; i++)
-            frame_time.addElement(new Float(t[i]));
+            frame_time.addElement(Float.valueOf(t[i]));
 /*      int n_frames = fd.GetNumFrames();
         float t[] = fd.GetFrameTimes();
         byte[] buf;
