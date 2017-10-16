@@ -621,7 +621,7 @@ public class Waveform
           }
           public void keyReleased(KeyEvent e)
           {}
-          public void keyTyyped(KeyEvent e)
+          public void keyTyped(KeyEvent e)
           {}
 
       });
