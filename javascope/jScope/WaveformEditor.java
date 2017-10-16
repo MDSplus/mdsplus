@@ -66,7 +66,7 @@ public class WaveformEditor
         {
             public void keyPressed(KeyEvent ke)
             {
-                if ( (ke.getModifiers() & KeyEvent.CTRL_MASK) != 0 &&
+                if ( (ke.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0 &&
                     (ke.getKeyCode() == KeyEvent.VK_C))
                 {
                     copyX = new float[currentX.length];
@@ -78,7 +78,7 @@ public class WaveformEditor
                         copyY[i] = currentY[i];
                     }
                 }
-                if ( (ke.getModifiers() & KeyEvent.CTRL_MASK) != 0 &&
+                if ( (ke.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0 &&
                     (ke.getKeyCode() == KeyEvent.VK_V))
                 {
                     if (copyX == null)return;
@@ -145,9 +145,9 @@ public class WaveformEditor
                 }
                  notifyUpdate(currentX, currentY, closestIdx);
                 if (!editable)return;
-                if ( (e.getModifiers() & Event.META_MASK) != 0) //If MB3
+                if ( (e.getModifiersEx() & MouseEvent.BUTTON3_DOWN_MASK) != 0) //If MB3
                 {
-                    if ( (e.getModifiers() & Event.SHIFT_MASK) != 0) //Pont deletion
+                    if ( (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) != 0) //Pont deletion
                     {
                         if (closestIdx != 0 &&
                             closestIdx != currentX.length - 1)

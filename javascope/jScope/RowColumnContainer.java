@@ -145,38 +145,28 @@ public class RowColumnContainer extends JComponent
 
 	   b.addMouseListener(new MouseAdapter()
 	   {
-                public  void mouseReleased(MouseEvent e)
+                public void mouseReleased(MouseEvent e)
                 {
                     Component ob = e.getComponent();
-                    int	 m_button = e.getModifiers();
-
                     if(ob instanceof Btm)
-	                    if(!((m_button & MouseEvent.BUTTON2_MASK) == MouseEvent.BUTTON2_MASK))
+	                    if(!((e.getModifiersEx() & MouseEvent.BUTTON2_DOWN_MASK) == MouseEvent.BUTTON2_DOWN_MASK))
 	                        row_col_layout.ResizeRowColumn(ob, e.getPoint().x, e.getPoint().y);
                 }
 
-                public  void mouseClicked(MouseEvent e)
+                public void mouseClicked(MouseEvent e)
                 {
                     Component ob = e.getComponent();
-                    int	 m_button = e.getModifiers();
-
                     if(ob instanceof Btm)
-                    {
-	                    if((m_button & MouseEvent.BUTTON2_MASK) == MouseEvent.BUTTON2_MASK)
-	                    {
+	                    if((e.getModifiersEx() & MouseEvent.BUTTON2_DOWN_MASK) == MouseEvent.BUTTON2_DOWN_MASK)
 	                        row_col_layout.ResizeRowColumn(ob);
-	                    }
-                    }
                 }
 	   });
 	   b.addMouseMotionListener(new MouseMotionAdapter()
 	   {
-                public  void mouseDragged(MouseEvent e)
+                public void mouseDragged(MouseEvent e)
                 {
                     Component ob = e.getComponent();
-                    int	 m_button = e.getModifiers();
-
-	                if(!((m_button & MouseEvent.BUTTON2_MASK) == MouseEvent.BUTTON2_MASK))
+	                if(!((e.getModifiersEx() & MouseEvent.BUTTON2_DOWN_MASK) == MouseEvent.BUTTON2_DOWN_MASK))
                         row_col_layout.DrawResize(ob, e.getPoint().x, e.getPoint().y);
                 }
 	   });
