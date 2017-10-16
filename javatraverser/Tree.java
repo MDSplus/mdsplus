@@ -1,15 +1,56 @@
 //package jTraverser;
-import java.io.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.tree.*;
-import javax.swing.event.*;
-import java.util.*;
-import java.beans.*;
-import java.rmi.*;
-import java.rmi.RemoteException.*;
-import java.awt.datatransfer.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.beans.MethodDescriptor;
+import java.beans.PropertyDescriptor;
+import java.beans.PropertyEditor;
+import java.io.FileDescriptor;
+import java.rmi.Naming;
+import java.rmi.RMISecurityManager;
+import java.util.Vector;
+
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.JTree;
+import javax.swing.ToolTipManager;
+import javax.swing.TransferHandler;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 public class Tree extends JScrollPane implements TreeSelectionListener,
     MouseListener, ActionListener, KeyListener, DataChangeListener
@@ -25,14 +66,11 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     private DefaultMutableTreeNode top;
     private JMenuItem menu_items[];
     private JPopupMenu pop;
-    private MethodDescriptor curr_method_descr;
-    private PropertyDescriptor curr_property_descr;
     private DialogSet dialog_sets[];
     private java.util.Stack trees, experiments;
     private JDialog open_dialog, add_node_dialog, add_subtree_dialog;
     private JTextField open_exp, open_shot;
     private JRadioButton open_readonly, open_edit, open_normal;
-    private JCheckBox open_realtime;
     private JTextField add_node_name, add_node_tag, add_subtree_name;
     private int add_node_usage;
     private JDialog modify_tags_dialog;
@@ -214,7 +252,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        curr_tree = null;
 	        curr_experiment = null;
 	        curr_node = null;
-                JPanel jp = new JPanel();
 	        setViewportView(new JPanel());
 	        frame.reportChange(null, 0, false, false);
 	    }
@@ -334,7 +371,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     public void open(String exp, int shot, boolean editable, boolean readonly, boolean realtime)
     {
 	    Node top_node = null;
-	    JTree prev_tree = curr_tree;
             topExperiment = exp;
         // first we need to check if the tree is already open
 	    RemoteTree loop_exp = null;
