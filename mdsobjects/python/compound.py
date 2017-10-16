@@ -77,8 +77,7 @@ class Compound(_dat.Data):
     def tree(self,tree):
         for arg in self._args:
             if isinstance(arg,_dat.Data):
-                try: arg._setTree(tree)
-                except: print(arg)
+                arg._setTree(tree)
 
     def __hasBadTreeReferences__(self,tree):
         for arg in self._args:
