@@ -29,7 +29,7 @@ function [ result, status ] = mdsvalue( expression, varargin)
     end
   end
 
-%  try
+  try
     if info.isConnected
       if n > 0
         if info.usePython
@@ -47,11 +47,11 @@ function [ result, status ] = mdsvalue( expression, varargin)
         dobj=javaObject('MDSplus.Data');
         result = dobj.execute(expression, args);
       end
-      status=1;
     end
-%  catch err
-%    status=0;
-%    result=err.message;
-%  end
+    status=1;
+  catch err
+    status=0;
+    result=err.message;
+  end
   result=mdsToMatlab(result);
 end
