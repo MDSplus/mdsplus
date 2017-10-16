@@ -97,7 +97,7 @@ const int saved_uic = 0;
 
 #ifdef WORDS_BIGENDIAN
  #define ALLOCATE_BUFFER(SIZE,BUFFER) char *BUFFER = malloc(SIZE);
- inline static void endianTransfer(char* buffer_in,size_t size,int length,char* buffer_out) {
+ inline static void endianTransfer(const char* buffer_in, const size_t size, const int length, char* buffer_out) {
     char *bptr;
     int i;
     switch (length) {
@@ -270,7 +270,7 @@ int TreePutTimestampedSegment(int nid, int64_t * timestamp, struct descriptor_a 
 }
 
 
-static inline int getFilledRowsTS(SEGMENT_HEADER*shead,SEGMENT_INFO*sinfo,int idx,int64_t *buffer){
+inline static int getFilledRowsTS(SEGMENT_HEADER*shead,SEGMENT_INFO*sinfo, const int idx, const int64_t *buffer){
   if (shead->idx==idx)
     return shead->next_row<0 ? sinfo->rows : shead->next_row;
   else {
@@ -332,11 +332,10 @@ if (STATUS_OK && (local_nci->flags & NciM_WRITE_ONCE)) { \
   local_nci->flags &= ~NciM_WRITE_ONCE; \
 }
 
-#define OPEN_DATAFILE_WRITE1() status = OpenDatafileWrite1(status,tinfo,&stv)
-inline static int OpenDatafileWrite1(int status,TREE_INFO *tinfo, int *stv_ptr){
+#define OPEN_DATAFILE_WRITE1() OpenDatafileWrite1(&status,tinfo,&stv)
+inline static void OpenDatafileWrite1(int* status_p, TREE_INFO *tinfo, int *stv_ptr){
   if (tinfo->data_file ? (!tinfo->data_file->open_for_write) : 1)
-    return TreeOpenDatafileW(tinfo, stv_ptr, 0);
-  return status;
+     *status_p = TreeOpenDatafileW(tinfo, stv_ptr, 0);
 }
 
 #define UNLOCK_NCI TreeUnLockNci(tinfo, 0, nidx);
@@ -388,7 +387,7 @@ if (!(local_nci->flags2 & NciM_EXTENDED_NCI) \
 int _attr_update = 0, *attr_update;attr_update=&_attr_update; \
 int64_t _attr_offset = -1, *attr_offset;attr_offset=&_attr_offset; \
 beginExtendedNci(tinfo,local_nci,attr,attr_update,attr_offset);
-static inline void beginExtendedNci(TREE_INFO *tinfo,NCI *local_nci,EXTENDED_ATTRIBUTES *attr,int *attr_update,int64_t *attr_offset){
+inline static void beginExtendedNci(TREE_INFO *tinfo,NCI *local_nci,EXTENDED_ATTRIBUTES *attr,int *attr_update,int64_t *attr_offset){
   IF_NO_EXTENDED_NCI {
     memset(attr, -1, sizeof(*attr));
     *attr_update = 1;
@@ -416,7 +415,7 @@ IF_NO_SEGMENT_HEADER RETURN(UNLOCK,TreeNOSEGMENTS)
 #define BEGIN_SEGMENT_HEADER \
 SEGMENT_HEADER _shead,*shead;shead=&_shead;\
 RETURN_IF_NOT_OK(BeginSegmentHeader(tinfo,nidx,shead,attr,attr_update,initialValue));
-static inline int BeginSegmentHeader(TREE_INFO *tinfo,int nidx,SEGMENT_HEADER *shead,EXTENDED_ATTRIBUTES *attr,int *attr_update,struct descriptor_a *initialValue){
+inline static int BeginSegmentHeader(TREE_INFO *tinfo,int nidx,SEGMENT_HEADER *shead,EXTENDED_ATTRIBUTES *attr,int *attr_update,struct descriptor_a *initialValue){
   IF_NO_SEGMENT_HEADER {
     memset(shead, 0, sizeof(*shead));
     attr->facility_offset[SEGMENTED_RECORD_FACILITY] = -1;
@@ -726,7 +725,7 @@ int idx; \
 SEGMENT_INFO *sinfo; \
 *nsegs = numsegs;
 
-inline static int ReadProperty(TREE_INFO *tinfo, int64_t offset,char *buffer,int length){
+inline static int ReadProperty(TREE_INFO *tinfo, const int64_t offset, char *buffer, const int length){
   INIT_TREESUCCESS;
   int deleted = B_TRUE; \
   while STATUS_OK { \
@@ -738,7 +737,7 @@ inline static int ReadProperty(TREE_INFO *tinfo, int64_t offset,char *buffer,int
   return status;
 }
 
-inline static int ReadProperty_safe(TREE_INFO *tinfo, int64_t offset,char *buffer,int length) {
+inline static int ReadProperty_safe(TREE_INFO *tinfo, const int64_t offset,char *buffer,const int length) {
   if (offset > -1) return ReadProperty(tinfo,offset,buffer,length);
   return TreeFAILURE;
 }
@@ -778,18 +777,20 @@ inline static int ReadProperty_safe(TREE_INFO *tinfo, int64_t offset,char *buffe
 }
 
 #define GETLIMIT_ARRAY(limitval,sinfo_limit,sinfo_limit_offset,sinfo_limit_length,limit_xd,COPYLIMIT) \
-if (sinfo_limit != -1) \
-  limitval = sinfo_limit; \
-else if (sinfo_limit_offset > 0 && sinfo_limit_length > 0) { \
-  EMPTYXD(xd); \
-  status = TreeGetDsc(tinfo, nid, sinfo_limit_offset, sinfo_limit_length, &xd); \
-  if (STATUS_OK && xd.pointer && xd.pointer->length == 8) \
-    limitval = *(int64_t *) xd.pointer->pointer; \
-  else \
-    limitval = 0; \
-  MdsFree1Dx(&xd, 0); \
-} else \
-  limitval = 0;
+GetLimit_Array(tinfo, nid, &limitval, sinfo_limit, sinfo_limit_offset, sinfo_limit_length);
+inline static void GetLimit_Array(TREE_INFO* tinfo, const int nid, int64_t* limitval_p, const int64_t sinfo_limit, const int64_t sinfo_limit_offset, const int sinfo_limit_length) {
+  if (sinfo_limit != -1)
+    *limitval_p = sinfo_limit;
+  else if (sinfo_limit_offset > 0 && sinfo_limit_length > 0) {
+    EMPTYXD(xd);
+    if (TreeGetDsc(tinfo, nid, sinfo_limit_offset, sinfo_limit_length, &xd)&1 && xd.pointer && xd.pointer->length == 8)
+      *limitval_p = *(int64_t *) xd.pointer->pointer;
+    else
+      *limitval_p = 0;
+    MdsFree1Dx(&xd, 0);
+  } else
+    *limitval_p = 0;
+}
 
 #define GETLIMIT_XD(limitval,sinfo_limit,sinfo_limit_offset,sinfo_limit_length,limit_xd,COPYLIMIT) \
 if (sinfo_limit != -1) { \
@@ -1016,7 +1017,7 @@ static int ReadSegment(TREE_INFO * tinfo, int nid, SEGMENT_HEADER * shead,
   return status;
 }
 
-static int getSegmentLimits(TREE_INFO * tinfo, int nid,
+static int getSegmentLimits(TREE_INFO * tinfo, const int nid,
                             SEGMENT_HEADER * shead, SEGMENT_INFO * sinfo, int idx,
                             struct descriptor_xd *retStart, struct descriptor_xd *retEnd){
   INIT_TREESUCCESS;
@@ -1357,7 +1358,7 @@ int TreePutDsc(TREE_INFO * tinfo, int nid_in, struct descriptor *dsc, int64_t * 
   return status;
 }
 
-int TreeGetDsc(TREE_INFO * tinfo, int nid, int64_t offset, int length, struct descriptor_xd *dsc){
+int TreeGetDsc(TREE_INFO * tinfo, const int nid, int64_t offset, int length, struct descriptor_xd *dsc){
   INIT_TREESUCCESS;
   char *buffer = malloc(length);
   status = ReadProperty_safe(tinfo,offset, buffer, length);
@@ -1369,7 +1370,7 @@ int TreeGetDsc(TREE_INFO * tinfo, int nid, int64_t offset, int length, struct de
   return status;
 }
 
-static int GetCompressedSegmentRows(TREE_INFO * tinfo, int64_t offset, int *rows){
+static int GetCompressedSegmentRows(TREE_INFO * tinfo, const int64_t offset, int *rows){
   INIT_TREESUCCESS;
   int length = 60;
   char buffer[60];
@@ -1609,7 +1610,7 @@ static int PutDimensionValue(TREE_INFO * tinfo, int64_t * timestamps, int rows_f
   return status;
 }
 
-static int GetSegmentHeader(TREE_INFO * tinfo, int64_t offset, SEGMENT_HEADER * hdr){
+static int GetSegmentHeader(TREE_INFO * tinfo, const int64_t offset, SEGMENT_HEADER * hdr){
   INIT_TREESUCCESS;
   char buffer[2 * sizeof(char) + 1 * sizeof(short) + 10 * sizeof(int) + 3 * sizeof(int64_t)], *bptr;
   status = ReadProperty_safe(tinfo,offset, buffer, sizeof(buffer));
@@ -1636,7 +1637,7 @@ static int GetSegmentHeader(TREE_INFO * tinfo, int64_t offset, SEGMENT_HEADER * 
   return status;
 }
 
-static int GetSegmentIndex(TREE_INFO * tinfo, int64_t offset, SEGMENT_INDEX * idx){
+static int GetSegmentIndex(TREE_INFO * tinfo, const int64_t offset, SEGMENT_INDEX * idx){
   INIT_TREESUCCESS;
   char buffer[sizeof(int64_t) + sizeof(int) + SEGMENTS_PER_INDEX * (6 * sizeof(int64_t) + 4 * sizeof(int))], *bptr;
   status = ReadProperty_safe(tinfo,offset, buffer, sizeof(buffer));
@@ -1673,7 +1674,7 @@ static int GetSegmentIndex(TREE_INFO * tinfo, int64_t offset, SEGMENT_INDEX * id
   return status;
 }
 
-int TreeGetExtendedAttributes(TREE_INFO * tinfo, int64_t offset, EXTENDED_ATTRIBUTES * att){
+int TreeGetExtendedAttributes(TREE_INFO * tinfo, const int64_t offset, EXTENDED_ATTRIBUTES * att){
   INIT_TREESUCCESS;
   char buffer[sizeof(int64_t) + FACILITIES_PER_EA * (sizeof(int64_t) + sizeof(int))], *bptr;
   status = ReadProperty_safe(tinfo,offset, buffer, sizeof(buffer));
@@ -1694,7 +1695,7 @@ int TreeGetExtendedAttributes(TREE_INFO * tinfo, int64_t offset, EXTENDED_ATTRIB
   return status;
 }
 
-static int GetNamedAttributesIndex(TREE_INFO * tinfo, int64_t offset, NAMED_ATTRIBUTES_INDEX * index){
+static int GetNamedAttributesIndex(TREE_INFO * tinfo, const int64_t offset, NAMED_ATTRIBUTES_INDEX * index){
   INIT_TREESUCCESS;
   char buffer[sizeof(int64_t) + NAMED_ATTRIBUTES_PER_INDEX * (sizeof(int64_t) + sizeof(int) + NAMED_ATTRIBUTE_NAME_SIZE)], *bptr;
   status = ReadProperty_safe(tinfo,offset, buffer, sizeof(buffer));

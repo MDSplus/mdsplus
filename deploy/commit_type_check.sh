@@ -4,7 +4,7 @@
 #
 # The original commit is passed in as an argument ("origin" for pull requests and
 # the last release tag for release builds.
-# 
+#
 # The second argument to this script should be the filespec of the contents of an
 # email to be sent to the person who created a commit with an invalid title.
 #
@@ -24,16 +24,16 @@ awk -v EMAILMSG="$2" -F: '{ IGNORECASE=1
                    VERSION="PATCH"
                  }
                  OK="1"
-                 break 
+                 break
                case "Tests":
 	       case "Revert \"Tests":
-               case "Docs": 
+               case "Docs":
 	       case "Revert \"Docs":
                case "Build":
 	       case "Revert \"Build":
                  if ( VERSION == "" ) {
                    VERSION="SAME"
-                 }                 
+                 }
                  OK="1"
                  break
                default:

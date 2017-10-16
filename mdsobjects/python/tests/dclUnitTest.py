@@ -104,7 +104,13 @@ class Tests(TestCase):
             if not cls.instances>0:
                 shutil.rmtree(cls.tmpdir)
 
+    @classmethod
+    def tearDown(cls):
+        import gc
+        gc.collect()
+
     def dclInterface(self):
+      def test():
         Tree('pytree',-1,'ReadOnly').createPulse(self.shot)
         self.assertEqual(dcl('help set verify',1,1,0)[1],None)
         self.assertEqual(tcl('help set tree',1,1,0)[1],None)
@@ -138,8 +144,15 @@ class Tests(TestCase):
         self._doExceptionTest('close',Exc.TreeNOT_OPEN)
         self._doExceptionTest('dispatch/command/server=xXxXxXx type test',Exc.ServerPATH_DOWN)
         self._doExceptionTest('dispatch/command/server type test',Exc.MdsdclIVVERB)
+      test()
+
+      import MDSplus,gc;gc.collect()
+      refs = 0 if sys.platform.startswith('win') else 1
+      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)][refs:],[])
+
 
     def dispatcher(self):
+      def test():
         from time import sleep
         hosts = '%s/mdsip.hosts'%self.root
         def testDispatchCommand(mdsip,command,stdout=None,stderr=None):
@@ -241,6 +254,9 @@ class Tests(TestCase):
             self._doTCLTest('close/all')
         pytree = Tree('pytree',shot,'ReadOnly')
         self.assertTrue(pytree.TESTDEVICE.INIT1_DONE.record <= pytree.TESTDEVICE.INIT2_DONE.record)
+      test()
+      import MDSplus,gc;gc.collect()
+      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)],[])
 
     def runTest(self):
         for test in self.getTests():
@@ -249,7 +265,7 @@ class Tests(TestCase):
     def getTests():
         lst = ['dclInterface']
         if Tests.inThread: return lst
-        return lst + ['dispatcher']
+        return ['dispatcher'] + lst
     @classmethod
     def getTestCases(cls):
         return map(cls,cls.getTests())

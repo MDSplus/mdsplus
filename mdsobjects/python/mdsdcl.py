@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ _mdsdcl=_ver.load_library('Mdsdcl')
 _mdsdcl_do_command_dsc=_mdsdcl.mdsdcl_do_command_dsc
 _mdsdcl_do_command_dsc.argtypes=[_C.c_char_p, _dsc.Descriptor_xd.PTR, _dsc.Descriptor_xd.PTR]
 
-def dcl(command,return_out=False,return_error=False,raise_exception=False,ctx=None,setcommand='mdsdcl'):
+def dcl(command,return_out=False,return_error=False,raise_exception=False,tree=None,setcommand='mdsdcl'):
     """Execute a dcl command
     @param command: command expression to execute
     @type command: str
@@ -65,11 +65,11 @@ def dcl(command,return_out=False,return_error=False,raise_exception=False,ctx=No
     else:
         out_p=_dsc.Descriptor_xd.null
     _exc.checkStatus(_mdsdcl_do_command_dsc(_ver.tobytes('set command %s'%(setcommand,)), error_p, out_p))
-    _tre._TreeCtx.pushCtx(ctx)
+    _tre._TreeCtx.pushTree(tree)
     try:
         status = _mdsdcl_do_command_dsc(_ver.tobytes(command), error_p, out_p)
     finally:
-        _tre._TreeCtx.popCtx()
+        _tre._TreeCtx.popTree()
     if raise_exception: _exc.checkStatus(status)
     if return_out and return_error:
         return (xd_output.value,xd_error.value)

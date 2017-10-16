@@ -48,6 +48,7 @@ class Tests(TestCase):
             cls._instances -= 1
             if not cls._instances>0:
                 shutil.rmtree(cls._tmpdir)
+
     def DevicesTests(self,devices):
         with Tree('devtree',-1,'new') as t:
             for name in sorted(devices.__dict__.keys()):

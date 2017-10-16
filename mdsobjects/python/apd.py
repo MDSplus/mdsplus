@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -79,14 +79,14 @@ class Apd(_array.Array):
     def tree(self,tree):
         for desc in self.descs:
             if isinstance(desc,_data.Data):
-                desc.tree=tree
+                desc._setTree(tree)
 
     @classmethod
     def fromDescriptor(cls,d):
         num   = int(d.arsize/d.length)
         dptrs = _C.cast(d.pointer,_C.POINTER(_C.c_void_p*num)).contents
         descs = [_descriptor.pointerToObject(dptr,d.tree) for dptr in dptrs]
-        return cls(descs)._setCtx(d.ctx)
+        return cls(descs)._setTree(d.tree)
 
 
     def __hasBadTreeReferences__(self,tree):
@@ -122,7 +122,7 @@ class Apd(_array.Array):
         @rtype: Data|tuple
         """
         try:
-            return self.descs[idx]._setCtx(self.ctx)
+            return self.descs[idx]._setTree(self.tree)
         except:
             return
 
@@ -145,7 +145,7 @@ class Apd(_array.Array):
         """Return the descriptor indexed by idx. (indexes start at 0).
         @rtype: Data
         """
-        return self[idx]._setCtx(self.ctx)
+        return self[idx]._setTree(self.tree)
 
     def setDescs(self,descs):
         """Set the descriptors of the Apd.

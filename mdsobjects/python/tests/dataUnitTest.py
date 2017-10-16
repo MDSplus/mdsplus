@@ -130,6 +130,10 @@ class Tests(TestCase):
             test('_a<_b',       a< b,   res.pop())
             test('_a<=_b',      a<=b,   res.pop())
 
+    def testData(self):
+        self.assertEqual(m.Data(2).compare(2),True)
+        self.assertEqual(m.Data(2).compare(1),False)
+
     def testScalars(self):
         def doTest(suffix,cl,scl,ucl,**kw):
             """ test scalar """
@@ -359,7 +363,7 @@ class Tests(TestCase):
             self.__getattribute__(test)()
     @staticmethod
     def getTests():
-        return ['testScalars','testArrays','vmsSupport','tdiFunctions','decompile','tdiPythonInterface']
+        return ['testData','testScalars','testArrays','vmsSupport','tdiFunctions','decompile','tdiPythonInterface']
     @classmethod
     def getTestCases(cls):
         return map(cls,cls.getTests())
