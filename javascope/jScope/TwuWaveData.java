@@ -194,7 +194,7 @@ class TwuWaveData
             }
             catch (Exception   e)
             {
-                mainSignal.handleException(e);
+                TwuSingleSignal.handleException(e);
                 throw new IOException(e.toString());
             }
         }
