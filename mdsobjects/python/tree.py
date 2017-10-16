@@ -1000,7 +1000,7 @@ class Tree(object):
         kwargs['tree'] = self.tree
         return _dat.TdiData(arg,**kwargs)
 
-class TreeNode(_scr.Int32): # HINT: TreeNode begin
+class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32 some day)
     """Class to represent an MDSplus node reference (nid).
     @ivar nid: node index of this node.
     @type nid: int
@@ -1241,7 +1241,6 @@ class TreeNode(_scr.Int32): # HINT: TreeNode begin
             self._nid=None
         else:
             self._nid=_C.c_int32(int(value))
-
     nid_reference=nciProp("nid_reference","node data contains nid references")
 
     node_name=name=nciProp("node_name","node name")
