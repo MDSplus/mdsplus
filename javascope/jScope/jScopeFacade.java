@@ -3010,7 +3010,7 @@ remove 28/06/2005
      * is supported. Returns false if the LookAndFeel is not supported
      * and/or if there is any kind of error checking if the LookAndFeel
      * is supported.
-     * The L&F menu will use this method to detemine whether the various
+     * The L&F menu will use this method to determine whether the various
      * L&F options should be active or inactive.
      *
      */
