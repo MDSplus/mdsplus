@@ -55,7 +55,7 @@ public fun jrg_adc32a__store(as_is _nid, optional _method) {
   if (_debug) write(*, "_active_mem = "//_active_mem//" , _active_chans = "//_active_chans//" , _chan_size = "//_chan_size);
   _status_reg     = _status_reg >> 5;
   _burst_mode     = _status_reg & 1;
-  _status_reg     = _status_reg << 1;
+  _status_reg     = _status_reg >> 1;
   _mulit_burst    = _status_reg & 1;
   _status_reg     = _status_reg >> 1;
   _ext_clock      = _status_reg & 1;

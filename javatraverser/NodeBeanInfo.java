@@ -1,7 +1,10 @@
 //package jTraverser;
-import java.beans.*;
-import java.lang.reflect.*;
-import java.awt.*;
+import java.beans.BeanDescriptor;
+import java.beans.IntrospectionException;
+import java.beans.MethodDescriptor;
+import java.beans.PropertyDescriptor;
+import java.beans.SimpleBeanInfo;
+import java.lang.reflect.Method;
 
 public class NodeBeanInfo extends SimpleBeanInfo
 {

@@ -79,7 +79,6 @@ public class DataEditor
       case 0:
         return;
       case 1:
-        boolean default_to_string = (data != null && data.dtype == Data.DTYPE_T);
         panel.add(expr_edit = new LabeledExprEditor(data));
         break;
       case 2:

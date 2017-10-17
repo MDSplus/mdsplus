@@ -1,6 +1,5 @@
 //package jTraverser;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
 
 public class NodeEditor extends JPanel
 {

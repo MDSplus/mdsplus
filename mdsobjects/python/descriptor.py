@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -42,13 +42,10 @@ _MdsShr=_ver.load_library('MdsShr')
 
 def pointerToObject(pointer,tree=None):
     if not pointer: return None
-    d=Descriptor(pointer)
-    d.tree=tree
-    return d.value
+    return Descriptor(pointer)._setTree(tree).value
 
 class Descriptor(object):
     tree=None
-    ctx=None
     dclass_id = 0
     class _structure_class(_C.Structure):
         _fields_=[("length",_C.c_ushort),
@@ -60,14 +57,10 @@ class Descriptor(object):
     @property
     def value(self):
         if self.dclass:
-            d=self.desc_class(self._structure,self.__dict__)._setCtx(self.ctx)
-            try:
-                d.tree=self.tree
-            except:
-                pass
-            return d.value
-    def _setCtx(self,ctx):
-        self.ctx=ctx
+            return self.desc_class(self._structure,self.__dict__)._setTree(self.tree).value
+    def _setTree(self,tree):
+        _tre = _mimport('tree')
+        if isinstance(tree,_tre.Tree): self.tree=tree
         return self
 
     @property
@@ -141,7 +134,7 @@ class Descriptor_s(Descriptor):
     @property
     def value(self):
         if self.dtype:
-            return dtypeToClass[self.dtype].fromDescriptor(self)._setCtx(self.ctx)
+            return dtypeToClass[self.dtype].fromDescriptor(self)._setTree(self.tree)
 
 class Descriptor_d(Descriptor_s):
     dclass_id = 2
@@ -161,12 +154,7 @@ class Descriptor_xs(Descriptor_s):
     @property
     def value(self):
         if self.l_length and self.pointer:
-            d = Descriptor(self.pointer,self.__dict__)._setCtx(self.ctx)
-            try:
-                d.tree = self.tree
-            except:
-                pass
-            return d.value
+            return Descriptor(self.pointer,self.__dict__)._setTree(self.tree).value
 
 class Descriptor_xd(Descriptor_xs):
     dclass_id = 192
@@ -207,7 +195,7 @@ class Descriptor_a(Descriptor):
     @property
     def value(self):
         if self.dtype:
-            return dtypeToArrayClass[self.dtype].fromDescriptor(self)._setCtx(self.ctx)
+            return dtypeToArrayClass[self.dtype].fromDescriptor(self)._setTree(self.tree)
     @property
     def binscale(self):
         return bool(self.aflags & 8)
@@ -260,7 +248,7 @@ class Descriptor_ca(Descriptor_a):
     def value(self):
         xd = Descriptor_xd()
         _exc.checkStatus(_MdsShr.MdsDecompress(self.ptr,xd.ptr))
-        return xd._setCtx(self.ctx).value
+        return xd._setTree(self.tree).value
 
 class Descriptor_apd(Descriptor_a):
     dclass_id = 196

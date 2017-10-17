@@ -55,7 +55,8 @@ class Tests(TestCase):
             if not cls.instances>0:
                 shutil.rmtree(cls.tmpdir)
 
-    def arrayDimensionOrder(self):
+    def ArrayDimensionOrder(self):
+      def test():
         from MDSplus import Tree,Float32,Float32Array,Int16Array
         from numpy import int16,zeros
         from random import randint
@@ -85,8 +86,12 @@ class Tests(TestCase):
         self.assertEqual(shape[0],retShape[0])
         self.assertEqual(shape[1],retShape[1])
         self.assertEqual(shape[2],retShape[2])
+      test()
+      import MDSplus,gc;gc.collect()
+      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)],[])
 
-    def writeSegments(self):
+    def WriteSegments(self):
+      def test():
         from MDSplus import Tree,Int32Array,Opaque
         from numpy import array,zeros,int32
         with Tree('seg_tree',self.shot,'NEW') as ptree:
@@ -198,10 +203,15 @@ class Tests(TestCase):
         self.assertEqual(len(node.record),3)
         lens=(54851,706564,77013)
         for i in range(3):
-          seg = node.getSegment(i)
-          self.assertEqual(len(seg.value.data.data()),lens[i])
+            seg = node.getSegment(i)
+            self.assertEqual(len(seg.value.data.data()),lens[i])
+      test()
+      import MDSplus,gc;gc.collect()
+      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)],[])
+        
 
     def TimeContext(self):
+      def test():
         from MDSplus import Tree,Int64,Int64Array,Int32Array
         with Tree('seg_tree',self.shot,'NEW') as ptree:
             node = ptree.addNode('S')
@@ -219,9 +229,17 @@ class Tests(TestCase):
         self.assertEqual(node.record.data().tolist(),[3,5]+[6])  # delta is applied per segment
         node.tree.setTimeContext()
         self.assertEqual(node.record.data().tolist(),list(range(-9,9)))
+      test()
+      import MDSplus,gc;gc.collect()
+      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)],[])
 
-    def compressSegments(self):
+    def CompressSegments(self):
+      def test():
         from MDSplus import Tree,DateToQuad,Range
+        import gc
+        for a in gc.garbage:
+            if isinstance(a,Tree):
+                print(a)
         with Tree('seg_tree',self.shot,'NEW') as ptree:
             ptree.addNode('S').compress_on_put = False
             ptree.write()
@@ -234,13 +252,16 @@ class Tests(TestCase):
         ptree1 = Tree('seg_tree',self.shot+1)
         ptree1.compressDatafile()
         self.assertEqual((node.record==ptree1.S.record).all(),True)
+      test()
+      import MDSplus,gc;gc.collect()
+      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)],[])
 
     def runTest(self):
         for test in self.getTests():
             self.__getattribute__(test)()
     @staticmethod
     def getTests():
-        return ['arrayDimensionOrder','writeSegments','compressSegments','TimeContext']
+        return ['ArrayDimensionOrder','WriteSegments','TimeContext','CompressSegments']
     @classmethod
     def getTestCases(cls):
         return map(cls,cls.getTests())

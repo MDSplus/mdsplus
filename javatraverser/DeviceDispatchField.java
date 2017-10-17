@@ -1,6 +1,7 @@
-import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.*;
+import java.awt.GridLayout;
+
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
 
 public class DeviceDispatchField extends DeviceComponent
 {

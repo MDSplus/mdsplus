@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@ _cmd=_mimport('compound')
 class Array(_dat.Data):
     ctype = None
     __MAX_DIM = 8
+    def _setTree(self,*a,**kw): return self;
     @property  # used by numpy.array
     def __array_interface__(self):
         data = self.value
@@ -52,8 +53,6 @@ class Array(_dat.Data):
             'data':data,
             'version':3,
         }
-
-    def _setCtx(self,*args,**kwargs): return self
 
     def __new__(cls,*value):
         """Convert a python object to a MDSobject Data array
