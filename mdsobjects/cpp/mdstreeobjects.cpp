@@ -1030,26 +1030,22 @@ void TreeNode::makeSegmentMinMax(Data *start, Data *end, Data *time, Array *init
 		resSamples[2*i/resFactor] = minVal;
 		resSamples[2*i/resFactor+1] = maxVal;
 	}
-	Array *resData = new Float32Array(resSamples, 2* numRows/resFactor);
+	AutoData<Array> resData(new Float32Array(resSamples, 2* numRows/resFactor));
 	char dimExpr[64];
 	sprintf(dimExpr,"BUILD_RANGE($1,$2,%d*($3-$4)/%d)", resFactor/2,numRows);
-	Data *resDim = compileWithArgs(dimExpr, getTree(), 4, start, end, end, start);
+	AutoData<Data> resDim(compileWithArgs(dimExpr, getTree(), 4, start, end, end, start));
 	resampledNode->makeSegment(start, end, resDim, resData);
-	MDSplus::deleteData(resDim);
-	MDSplus::deleteData(resData);
 	delete[] arrSamples;
 	delete[] resSamples;
 
 	int numSegments = getNumSegments();
 	if(numSegments == 0)  //Set XNCI only when writing the first segment
 	{
-		String *resModeD = new String("MinMax");
+		AutoData<Data> resModeD(new String("MinMax"));
 		setTreeXNci(tree->getCtx(), nid, "ResampleMode", resModeD->convertToDsc());
-		MDSplus::deleteData(resModeD);
-		Data *resSamplesD = new Int32(resFactor/2);
+		AutoData<Data> resSamplesD(new Int32(resFactor/2));
 		setTreeXNci(tree->getCtx(), nid, "ResampleFactor", resSamplesD->convertToDsc());
 		setTreeXNci(tree->getCtx(), nid, "ResampleNid", resampledNode->convertToDsc());
-		MDSplus::deleteData(resSamplesD);
 	}
 	makeSegment(start, end, time, initialData);
 }
@@ -1071,25 +1067,22 @@ void TreeNode::makeSegmentResampled(Data *start, Data *end, Data *time, Array *i
 		avgVal /= RES_FACTOR;
 		resSamples[i/RES_FACTOR] = avgVal;
 	}
-	Array *resData = new Float32Array(resSamples, numRows/RES_FACTOR);
+	AutoData<Array> resData(new Float32Array(resSamples, numRows/RES_FACTOR));
 	char dimExpr[64];
 	sprintf(dimExpr,"BUILD_RANGE($1,$2,%d*($3-$4)/%d)", RES_FACTOR,numRows);
-	Data *resDim = compileWithArgs(dimExpr, getTree(), 4, start, end, end, start);
+	AutoData<Data> resDim(compileWithArgs(dimExpr, getTree(), 4, start, end, end, start));
 	resampledNode->makeSegment(start, end, resDim, resData);
-	MDSplus::deleteData(resDim);
-	MDSplus::deleteData(resData);
 	delete[] arrSamples;
 	delete[] resSamples;
 
 	int numSegments = getNumSegments();
 	if(numSegments == 0)  //Set XNCI only when writing the first segment
 	{
-		String *resModeD = new String("Resample");
+		AutoData<Data> resModeD(new String("Resample"));
 		setTreeXNci(tree->getCtx(), nid, "ResampleMode", resModeD->convertToDsc());
-		Data *resSamplesD = new Int32(RES_FACTOR);
+		AutoData<Data> resSamplesD(new Int32(RES_FACTOR));
 		setTreeXNci(tree->getCtx(), nid, "ResampleFactor", resSamplesD->convertToDsc());
 		setTreeXNci(tree->getCtx(), nid, "ResampleNid", resampledNode->convertToDsc());
-		MDSplus::deleteData(resSamplesD);
 	}
 	makeSegment(start, end, time, initialData);
 }
