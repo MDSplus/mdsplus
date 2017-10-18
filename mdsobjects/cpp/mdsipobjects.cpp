@@ -494,11 +494,10 @@ TreeNodeThinClient *Connection::getNode(char *path)
 {
 	char expr[256];
 	sprintf(expr, "GETNCI(%s, \'NID_NUMBER\')", path);
-	Data *nidData = get(expr);
+	AutoData<Data> nidData(get(expr));
 	if(!nidData)
 	    throw MdsException("Cannot get remote nid in Connection::getNode");
 	int nid = nidData->getInt();
-	MDSplus::deleteData(nidData);
 	return new TreeNodeThinClient(nid, this);
 }
 
@@ -508,9 +507,8 @@ void Connection::registerStreamListener(DataStreamListener *listener, char *expr
 	char regExpr[64 + strlen(expr) + strlen(tree)];
 	sprintf(regExpr, "MdsObjectsCppShr->registerListener(\"%s\",\"%s\",val(%d))", expr, tree, shot);
 
-	Data *idData = get(regExpr, NULL, 0);
+	AutoData<Data> idData(get(regExpr, NULL, 0));
 	int id = idData->getInt();
-	deleteData(idData);
 	listenerV.push_back(listener);
 	listenerIdV.push_back(id);
 }
@@ -538,10 +536,9 @@ void Connection::checkDataAvailability()
 	{
 		while(true)
 		{
-			Data *serData = get("MdsObjectsCppShr->getNewSamplesSerializedXd:DSC()");
+			AutoData<Data> serData(get("MdsObjectsCppShr->getNewSamplesSerializedXd:DSC()"));
 			int numBytes;
 			char *serialized = serData->getByteArray(&numBytes);
-			deleteData(serData);
 			Apd *apdData = (Apd *)deserialize(serialized);
 			delete [] serialized;
 			int numDescs =  apdData->getDimension();
@@ -558,12 +555,10 @@ void Connection::checkDataAvailability()
 				}
 				if(idx < (int)listenerV.size())
 				{
-					Data *sigData = sig->getData();
-					Data *sigDim = sig->getDimension();
-					if(((Array *)sigData)->getSize() > 0)
+					AutoData<Data> sigData(sig->getData());
+					AutoData<Data> sigDim(sig->getDimension());
+					if(((Array *)sigData.get())->getSize() > 0)
 						listenerV[idx]->dataReceived(sigData, sigDim);
-					deleteData(sigData);
-					deleteData(sigDim);
 				}
 			}
 			deleteData(apdData);
