@@ -27,7 +27,7 @@ from MDSplus import Device
 
 class A3248(Device):
     """
-    D-Tacq ACQ216  16 channel transient recorder
+    AEON 3248  4 channel transient recorder
     
     Methods:
     Add() - add a DT216B device to the tree open for edit
@@ -214,8 +214,8 @@ class A3248(Device):
             except:
                 pass
             if self.debug:
-                print "about to aeon_getchannel(%s, %d, %d %d)" % (name, addr, chan, end,)
-            buf = MDSplus.Data.execute('aeon_getchannel("%s", %d, %d, %d)' % (name, addr, chan, end,)) 
+                print "about to aeon_getchannel(%s, %d, %d %d)" % (name, addr, chan, end+1,)
+            buf = MDSplus.Data.execute('aeon_getchannel("%s", %d, %d, %d)' % (name, addr, chan, end+1,)) 
             dim = MDSplus.Dimension(MDSplus.Window(start, end, self.trigger ), self.clock)
             if self.debug:
                 print "about to make dat"
