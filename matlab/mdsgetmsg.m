@@ -11,9 +11,12 @@
 
 function msg = mdsgetmsg(id,throwerror,except)
 narginchk(1,3)
-if nargin<3, except     = [];
-if nargin<2, throwerror = false;
-end,end
+if nargin<3
+  except     = [];
+  if nargin<2
+    throwerror = false;
+  end
+end
 
 if ischar(id)
     error(id);
