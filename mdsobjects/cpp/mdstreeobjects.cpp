@@ -1793,10 +1793,9 @@ EXPORT Data *TreeNodeThinClient::getData()
 EXPORT void TreeNodeThinClient::putData(Data *data)
 {
     const char *path = (const char *)getPath();
-    Data *args[1];
-    args[0] = data->data();
+    AutoData<Data> argsD[] = {data->data()};
+    Data *args[] = {argsD[0].get()};
     connection->put(path, (char *)"$", args, 1);
-    MDSplus::deleteData(args[0]);
     delete [] path;
   
 }
@@ -1835,39 +1834,28 @@ EXPORT void TreeNodeThinClient::setOn(bool on)
 EXPORT void TreeNodeThinClient::beginSegment(Data *start, Data *end, Data *time, Array *initialData)
 {
     char expr[256];
-    Data *args[4];
-    args[0] = start->data();
-    args[1] = end->data();
-    args[2] = time->data();
-    args[3] = initialData->data();
+    AutoData<Data> argsD[] = { start->data(), end->data(), time->data(), initialData->data()};
+    Data *args[] = {argsD[0].get(), argsD[1].get(), argsD[2].get(), argsD[3].get()}; 
     sprintf(expr, "BeginSegment(%d, $1, $2, $3, $4, -1)", nid);
     AutoData<Data> retData(connection->get(expr, args, 4));
-    for(int i = 0; i < 4; i++)
-      MDSplus::deleteData(args[i]);
 }
 
 EXPORT void TreeNodeThinClient::makeSegment(Data *start, Data *end, Data *time, Array *initialData)
 {
     char expr[256];
-    Data *args[4];
-    args[0] = start->data();
-    args[1] = end->data();
-    args[2] = time->data();
-    args[3] = initialData->data();
+    AutoData<Data> argsD[] = { start->data(), end->data(), time->data(), initialData->data()};
+    Data *args[] = {argsD[0].get(), argsD[1].get(), argsD[2].get(), argsD[3].get()}; 
     sprintf(expr, "MakeSegment(%d, $1, $2, $3, $4, -1, size($4))", nid);
     AutoData<Data> retData(connection->get(expr, args, 4));
-    for(int i = 0; i < 4; i++)
-      MDSplus::deleteData(args[i]);
 }
 
 EXPORT void TreeNodeThinClient::putSegment(Array *data, int ofs)
 {
     char expr[256];
-    Data *args[1];
-    args[0] = data->data();
+    AutoData<Data> argsD[] = {data->data()};
+    Data *args[] = {argsD[0].get()};
     sprintf(expr, "PutSegment(%d, %d, $1)", nid, ofs);
     AutoData<Data> retData(connection->get(expr, args, 1));
-    MDSplus::deleteData(args[0]);
 }
 
 EXPORT int TreeNodeThinClient::getNumSegments()
@@ -1927,24 +1915,20 @@ EXPORT void TreeNodeThinClient::getSegmentAndDimension(int segIdx, Array *&segme
 EXPORT void TreeNodeThinClient::beginTimestampedSegment(Array *initData)
 {
     char expr[64];
-    Data *args[1];
-    args[0] = initData->data();
+    AutoData<Data> argsD[] = {initData->data()};
+    Data *args[] = {argsD[0].get()};
     sprintf(expr, "BeginTimestampedSegment(%d, $1, -1)", nid);
     AutoData<Data> retData(connection->get(expr, args, 1));
-    MDSplus::deleteData(args[0]);
 }
 
 EXPORT void TreeNodeThinClient::putTimestampedSegment(Array *data, int64_t *times)
 {
     char expr[64];
-    Data *args[2];
     int len = data->getSize();
-    args[0] = new Int64Array(times, len);
-    args[1] = data->data();
+    AutoData<Data> argsD[] = {new Int64Array(times, len), data->data()};
+    Data *args[] = {argsD[0].get(), argsD[1].get()};
     sprintf(expr, "PutTimestampedSegment(%d, $1, $2)", nid);
     AutoData<Data> retData(connection->get(expr, args, 2));
-    MDSplus::deleteData(args[0]);
-    MDSplus::deleteData(args[1]);
 }
    
 EXPORT void TreeNodeThinClient::makeTimestampedSegment(Array *data, int64_t *times)
@@ -1955,14 +1939,11 @@ EXPORT void TreeNodeThinClient::makeTimestampedSegment(Array *data, int64_t *tim
 
 EXPORT void TreeNodeThinClient::putRow(Data *data, int64_t *time, int size)
 {
-    Int64 timeData(*time);
+    AutoData<Data> argsD[] = {new Int64(*time), data->data()};
+    Data *args[] = {argsD[0].get(), argsD[1].get()};
     char expr[64];
-    Data *args[2];
-    args[0] = &timeData;
-    args[1] = data->data();
     sprintf(expr, "PutRow(%d, %d, $1, $2)", nid, size);
     AutoData<Data> retData(connection->get(expr, args, 2));
-    MDSplus::deleteData(args[1]);
 }
 
 EXPORT StringArray *TreeNodeThinClient::findTags()
