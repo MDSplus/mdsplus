@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -54,10 +54,6 @@ class Compound(_dat.Data):
             if k in self.fields:
                 self.setDescAt(self._fields[k],v)
 
-    def _setCtx(self,ctx):
-        self.ctx = ctx
-        return self
-
     def _str_bad_ref(self):
         return '%s(%s)'%(self.__class__.__name__,','.join([str(d) for d in self.getDescs()]))
 
@@ -81,7 +77,7 @@ class Compound(_dat.Data):
     def tree(self,tree):
         for arg in self._args:
             if isinstance(arg,_dat.Data):
-                arg.tree=tree
+                arg._setTree(tree)
 
     def __hasBadTreeReferences__(self,tree):
         for arg in self._args:
@@ -245,8 +241,7 @@ class Compound(_dat.Data):
             else:
                 opcptr=_C.cast(d.pointer,_C.POINTER(_C.c_uint32))
             ans.opcode = opcptr.contents.value
-        ans.tree=d.tree
-        return ans
+        return ans._setTree(d.tree)
 
 class Action(Compound):
     """

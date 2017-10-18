@@ -154,17 +154,17 @@ typedef struct named_attributes_index {
                            (outp)[6] = ((char *)&in)[1]; (outp)[7] = ((char *)&in)[0]
 #else
 
-static inline int64_t swapquad(void *buf) {
+static inline int64_t swapquad(const void *buf) {
   int64_t ans;
   memcpy(&ans,buf,sizeof(ans));
   return ans;
 }
-static inline int32_t swapint(void *buf) {
+static inline int32_t swapint(const void *buf) {
   int32_t ans;
   memcpy(&ans,buf,sizeof(ans));
   return ans;
 }
-static inline int16_t swapshort(void *buf) {
+static inline int16_t swapshort(const void *buf) {
   int16_t ans;
   memcpy(&ans,buf,sizeof(ans));
   return ans;
@@ -732,7 +732,7 @@ extern void _TreeDeleteNodesDiscard(void *dbid);
 extern int TreeGetDatafile(TREE_INFO * info_ptr, unsigned char *rfa, int *buffer_size, char *record,
 			   int *retsize, int *nodenum, unsigned char flags);
 extern int TreeEstablishRundownEvent(TREE_INFO * info);
-extern int TreeGetDsc(TREE_INFO * info, int nid, int64_t offset, int length,
+extern int TreeGetDsc(TREE_INFO * info, const int nid, const int64_t offset, const int length,
 		      struct descriptor_xd *dsc);
 extern int TreeGetExtendedAttributes(TREE_INFO * info_ptr, int64_t offset,
 				     EXTENDED_ATTRIBUTES * att);
