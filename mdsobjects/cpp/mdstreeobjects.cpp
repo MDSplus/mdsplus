@@ -1737,7 +1737,7 @@ char TreeNodeThinClient::getNciChar(int itm)
     char expr[64];
     sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
     AutoData<Data> retData(connection->get(expr));
-     if(!retData)
+     if(!retData.get())
 	throw MdsException("Error in Remote evaluation of getnci");
      char retChar = retData->getByte();
      return retChar;
@@ -1748,7 +1748,7 @@ int TreeNodeThinClient::getNciInt(int itm)
     char expr[64];
     sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
     AutoData<Data> retData(connection->get(expr));
-    if(!retData)
+    if(!retData.get())
 	throw MdsException("Error in Remote evaluation of getnci");
     return retData->getInt();
 }
@@ -1758,7 +1758,7 @@ int64_t TreeNodeThinClient::getNciInt64(int itm)
     char expr[64];
     sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
     AutoData<Data> retData(connection->get(expr));
-    if(!retData)
+    if(!retData.get())
 	throw MdsException("Error in Remote evaluation of getnci");
     return retData->getLong();
 }
@@ -1768,7 +1768,7 @@ char *TreeNodeThinClient::getPath()
     char expr[64];
     sprintf(expr, "GETNCI(%d,\'PATH\')", nid);
     AutoData<Data> retData(connection->get(expr));
-    if(!retData)
+    if(!retData.get())
 	throw MdsException("Error in Remote evaluation of getnci(path)");
     return retData->getString();
 }
@@ -1785,21 +1785,17 @@ EXPORT Data *TreeNodeThinClient::getData()
   
 EXPORT void TreeNodeThinClient::putData(Data *data)
 {
-    const char *path = (const char *)getPath();
+    AutoArray<char> path(getPath());
     AutoData<Data> argsD[] = {data->data()};
     Data *args[] = {argsD[0].get()};
     connection->put(path, (char *)"$", args, 1);
-    delete [] path;
-  
 }
 
 EXPORT void TreeNodeThinClient::deleteData()
 {
-    char *path = getFullPath();
-    Data *args[1];
-    args[0] = 0;
+    AutoArray<char> path = getFullPath();
+    Data *args[1] = {0};
     connection->put(path, (char *)"*", args, 0);
-    delete [] path;
 }
 
 EXPORT bool TreeNodeThinClient::isOn()
@@ -1807,7 +1803,7 @@ EXPORT bool TreeNodeThinClient::isOn()
     char expr[64];
     sprintf(expr, "GETNCI(%d,\'STATE\')", nid);
     AutoData<Data> retData(connection->get(expr));
-    if(!retData)
+    if(!retData.get())
 	throw MdsException("Error in Remote evaluation of getnci(state)");
     
     char onData = retData->getByte();
@@ -1856,7 +1852,7 @@ EXPORT int TreeNodeThinClient::getNumSegments()
     char expr[64];
     sprintf(expr, "GetNumSegments(%d)", nid);
     AutoData<Data> data(connection->get(expr));
-    if(!data)
+    if(!data.get())
 	throw MdsException("Error in Remote evaluation of GetNumSegmentss");
     return data->getInt();
 }
@@ -1944,7 +1940,7 @@ EXPORT StringArray *TreeNodeThinClient::findTags()
     char expr[64];
     sprintf(expr, "TreeFindNodeTags(%d)", nid);
     AutoData<Data> retData(connection->get(expr));
-    if(!retData)
+    if(!retData.get())
 	throw MdsException("Error in Remote evaluation of TreeFindNodeTags");
 
     int numTags;
