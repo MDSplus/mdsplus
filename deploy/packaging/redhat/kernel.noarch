@@ -181,7 +181,6 @@
 ./usr/local/mdsplus/tdi/segments
 ./usr/local/mdsplus/tdi/segments/BeginSegment.fun
 ./usr/local/mdsplus/tdi/segments/BeginTimestampedSegment.fun
-./usr/local/mdsplus/tdi/segments/GetExtendedAttribute.fun
 ./usr/local/mdsplus/tdi/segments/GetNumSegments.fun
 ./usr/local/mdsplus/tdi/segments/GetSegment.fun
 ./usr/local/mdsplus/tdi/segments/GetSegmentInfo.fun
@@ -191,7 +190,6 @@
 ./usr/local/mdsplus/tdi/segments/PutRow.fun
 ./usr/local/mdsplus/tdi/segments/PutSegment.fun
 ./usr/local/mdsplus/tdi/segments/PutTimestampedSegment.fun
-./usr/local/mdsplus/tdi/segments/SetExtendedAttribute.fun
 ./usr/local/mdsplus/tdi/segments/SetTimeContext.fun
 ./usr/local/mdsplus/tdi/segments/testsegments.fun
 ./usr/local/mdsplus/tdi/shot_date.fun
@@ -210,7 +208,9 @@
 ./usr/local/mdsplus/tdi/treeshr
 ./usr/local/mdsplus/tdi/treeshr/current_shot.fun
 ./usr/local/mdsplus/tdi/treeshr/GetDefaultNid.fun
+./usr/local/mdsplus/tdi/treeshr/GetExtendedAttribute.fun
 ./usr/local/mdsplus/tdi/treeshr/SetDefaultNid.fun
+./usr/local/mdsplus/tdi/treeshr/SetExtendedAttribute.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeAbsPath.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeAddNode.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeAddTag.fun
