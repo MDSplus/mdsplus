@@ -3044,14 +3044,20 @@ class Device(TreeNode): # HINT: Device begin
         @type value: varied
         @rtype: None
         """
+        def isInDicts(name,cls):
+            for c in cls.mro()[:-1]:
+                if name in c.__dict__:
+                    return True
+            return False
         from  inspect import stack
         if name in self.part_dict:
             head = self if self._head==0 else self.head
             TreeNode(self.part_dict[name]+self.head.nid,self.tree,head).record=value
         elif (hasattr(self,name)
            or name.startswith('_')
+           or isInDicts(name,self.__class__)
            or isinstance(stack()[1][0].f_locals.get('self',None),Device)):
-                super(Device,self).__setattr__(name,value)
+              super(Device,self).__setattr__(name,value)
         else: print("""WARNING: your tried to add the attribute or write to the subnode '%s' of '%s'.
 This is a deprecated action for Device nodes outside of Device methods. You should prefix the attribute with '_'.
 If you did intend to write to a subnode of the device you should check the proper path of the node: TreeNNF.
