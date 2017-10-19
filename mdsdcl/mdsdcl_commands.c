@@ -291,7 +291,7 @@ extern int LibSpawn();
 	/**************************************************************
 	 * mdsdcl_spawn:
 	 **************************************************************/
-int mdsdcl_spawn(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int mdsdcl_spawn(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int notifyFlag;
   int waitFlag;
