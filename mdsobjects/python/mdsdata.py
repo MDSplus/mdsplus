@@ -71,7 +71,7 @@ def _TdiShrFun(function,errormessage,expression,*args,**kwargs):
             tree = arg.tree
             if isinstance(arg,_tre.TreeNode): break
     xd = _dsc.Descriptor_xd()
-    rargs = list(map(Data.byref,dargs))+[xd.byref,_C.c_void_p(-1)]
+    rargs = list(map(Data.byref,dargs))+[xd.ref,_C.c_void_p(-1)]
     _tre._TreeCtx.pushTree(tree)
     try:
         _exc.checkStatus(function(*rargs))
@@ -530,12 +530,11 @@ class Data(object):
 
     @classmethod
     def byref(cls,data):
-        if isinstance(data,_dsc.Descriptor):
-            return data.byref
-        data = cls(data)
+        if isinstance(data,(Data,_dsc.Descriptor)):
+            return data.ref
         if data is None:
             return _dsc.Descriptor.null
-        return data.descriptor.byref
+        return cls(data).ref
 
     @classmethod
     def pointer(cls,data):
@@ -551,7 +550,7 @@ class Data(object):
 
     @property
     def ref(self):
-        return self.descriptor.byref
+        return self.descriptor.ref
 
     @staticmethod
     def _isScalar(x):
@@ -735,7 +734,7 @@ class Data(object):
         xd=_dsc.Descriptor_xd()
         _exc.checkStatus(
             _MdsShr.MdsSerializeDscOut(self.ref,
-                                       xd.byref))
+                                       xd.ref))
         return xd.value
 
     @staticmethod
@@ -750,7 +749,7 @@ class Data(object):
         xd=_dsc.Descriptor_xd()
         _exc.checkStatus(
             _MdsShr.MdsSerializeDscIn(_C.c_void_p(bytes.ctypes.data),
-                                      xd.byref))
+                                      xd.ref))
         return xd.value
 
 makeData=Data
