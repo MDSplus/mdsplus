@@ -2,26 +2,38 @@ function info = mdsInfo()
 %mdsInfo - used internally by other functions to retrieve configuration info
 %   
 %
-  global MDSINFO
+ global MDSINFO
   global MDSplus_legacy_behavior
   if isempty(MDSINFO)
+    isOctave = (exist ("OCTAVE_VERSION", "builtin") > 0);
     usePython=false;
     try
       MDSPLUS_DIR=getenv('MDSPLUS_DIR');
       if ismac
-        java.lang.System.setProperty('JavaMdsLib',strcat(MDSPLUS_DIR,'/lib/libJavaMds.dylib'));
+        lib=strcat(MDSPLUS_DIR,'/lib/libJavaMds.dylib');
       elseif isunix
-        java.lang.System.setProperty('JavaMdsLib',strcat(MDSPLUS_DIR,'/lib/libJavaMds.so'));
+        lib=strcat(MDSPLUS_DIR,'/lib/libJavaMds.so');
       elseif ispc
-        java.lang.System.setProperty('JavaMdsLib','C:\WINDOWS\SYSTEM32\JavaMds.dll');
+        lib='C:\WINDOWS\SYSTEM32\JavaMds.dll';
+      end
+      if not(isOctave)
+        java.lang.System.setProperty('JavaMdsLib',lib);
       end
       p=javaclasspath('-all');
       matches = strfind(p,'mdsobjects.jar');
       if not(any(vertcat(matches{:})))
         javaaddpath(strcat(MDSPLUS_DIR,'/java/classes/mdsobjects.jar'))
       end
-      x=MDSplus.Data.execute('1',javaArray('MDSplus.Data',1));
+      if isOctave
+        x=javaObject("MDSplus.Int32",1);
+      else
+        x=MDSplus.Data.execute('1',javaArray('MDSplus.Data',1));
+      end
     catch javaerror
+      if isOctave
+        disp('Unable to connect to MDSplus using the java bridge')
+	return
+      end
       usePython=true;
     end
     if ~islogical(MDSplus_legacy_behavior)
