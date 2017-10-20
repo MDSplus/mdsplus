@@ -17,7 +17,7 @@ function [ result, status ] = mdsvalue( expression, varargin)
       extra=1;
     end
     n = size(varargin,2);
-    args = javaArray('MDSplus.Data',n+extra);
+    args = javaArray('MDSplus.Data',max(1,n+extra));
     for k = 1: n
       argin=varargin(k);
       try
