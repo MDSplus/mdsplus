@@ -120,12 +120,12 @@ class Descriptor(object):
     def addressof(self):
         return _C.addressof(self._structure)
     @property
-    def byref(self):
+    def ref(self):
         return _C.byref(self._structure)
 
 class DescriptorNULL(Descriptor):
     dclass = length = dtype = addressof = pointer = 0
-    byref=ptr_=ptr=Descriptor.null
+    ref=ptr_=ptr=Descriptor.null
     def __init__(self):pass
 DescriptorNULL=DescriptorNULL()
 
