@@ -58,8 +58,9 @@ def _TdiShrFun(function,errormessage,expression,*args,**kwargs):
     def parseArguments(args):
         if len(args)==1 and isinstance(args[0],tuple):
             return parseArguments(args[0])
-        return list(map(Data,args))
-    dargs = [Data(expression)]+parseArguments(args)
+        return args
+    args  = parseArguments(args) #  unwrap tuple style arg list
+    dargs = [Data(expression)]+list(map(Data,args))  # cast to Data type
     if "tree" in kwargs:
         tree = kwargs["tree"]
     elif isinstance(expression,Data) and not expression.tree is None:
