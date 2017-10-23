@@ -60,7 +60,9 @@ using namespace testing;
 void test_tree_open(const char *prot)
 {
     MdsIpInstancer mdsip(prot);
-    usleep(500000);
+    bool server_started =  mdsip.waitForServer(20,2E5); // try 20 times x 0.2s
+    TEST1(server_started);
+
 
     // get address form instancer for the specified protocol //
     std::string addr = mdsip.getAddress();
