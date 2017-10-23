@@ -1,0 +1,5 @@
+version="@RELEASE_MAJOR@.@RELEASE_MINOR@.@RELEASE_RELEASE@"
+branch="@RELEASE_BRANCH@"
+commit="@RELEASE_COMMIT@"
+release_tag="@RELEASE_TAG@"
+release_date="@RELEASE_DATE@"

@@ -35,6 +35,8 @@
 ./usr/local/mdsplus/pydevices/MitDevices/raspicam.py
 ./usr/local/mdsplus/pydevices/MitDevices/timeSignature.py
 ./usr/local/mdsplus/pydevices/MitDevices/transport.py
+./usr/local/mdsplus/pydevices/MitDevices/__init__.py
+./usr/local/mdsplus/pydevices/MitDevices/_version.py
 ./usr/local/mdsplus/tdi/MitDevices
 ./usr/local/mdsplus/tdi/MitDevices/Dt196AOSendFiles.fun
 ./usr/local/mdsplus/tdi/MitDevices/Dt196AOWriteOutput.fun
