@@ -1622,7 +1622,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         argsobj = [_scr.Int32(self.nid),_scr.String(method)]
         argsobj+= list(map(_dat.Data,args))
         arglist+= list(map(_dat.Data.byref,argsobj))
-        arglist+= [xd.byref,_C.c_void_p(0xffffffff)]
+        arglist+= [xd.ref,_C.c_void_p(0xffffffff)]
         _exc.checkStatus(_TreeShr._TreeDoMethod(*arglist))
         return xd._setTree(self.tree).value
 
@@ -1687,7 +1687,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         xd=_dsc.Descriptor_xd()
         status=_TreeShr._TreeGetRecord(self.ctx,
                                        self._nid,
-                                       xd.byref)
+                                       xd.ref)
         if (status & 1):
             return xd._setTree(self.tree).value
         elif len(altvalue)==1 and status == _exc.TreeNODATA.status:
@@ -2005,8 +2005,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
             _TreeShr._TreeGetSegment(self.ctx,
                                      self._nid,
                                      _C.c_int32(idx),
-                                     val.byref,
-                                     dim.byref))
+                                     val.ref,
+                                     dim.ref))
         return _cmp.Signal(val.value,None,dim.value)
 
     def getSegmentDim(self,idx):
@@ -2029,8 +2029,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
             _TreeShr._TreeGetSegmentLimits(self.ctx,
                                            self._nid,
                                            _C.c_int32(idx),
-                                           start.byref,
-                                           end.byref))
+                                           start.ref,
+                                           end.ref))
         start,end = start.value,end.value
         if start is not None or end is not None:
             return (start,end)
@@ -2043,7 +2043,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                                            self._nid,
                                            _dat.Data.byref(start),
                                            _dat.Data.byref(end),
-                                           xd.byref))
+                                           xd.ref))
         return xd.value
 
     def getSegmentTimes(self):
@@ -2054,8 +2054,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
             _TreeShr._TreeGetSegmentTimesXd(self.ctx,
                                            self._nid,
                                            _C.byref(num),
-                                           start.byref,
-                                           end.byref))
+                                           start.ref,
+                                           end.ref))
         return num.value,start.value,end.value
 
     def getSegmentEnd(self,idx):
@@ -3044,14 +3044,20 @@ class Device(TreeNode): # HINT: Device begin
         @type value: varied
         @rtype: None
         """
+        def isInDicts(name,cls):
+            for c in cls.mro()[:-1]:
+                if name in c.__dict__:
+                    return True
+            return False
         from  inspect import stack
         if name in self.part_dict:
             head = self if self._head==0 else self.head
             TreeNode(self.part_dict[name]+self.head.nid,self.tree,head).record=value
         elif (hasattr(self,name)
            or name.startswith('_')
+           or isInDicts(name,self.__class__)
            or isinstance(stack()[1][0].f_locals.get('self',None),Device)):
-                super(Device,self).__setattr__(name,value)
+              super(Device,self).__setattr__(name,value)
         else: print("""WARNING: your tried to add the attribute or write to the subnode '%s' of '%s'.
 This is a deprecated action for Device nodes outside of Device methods. You should prefix the attribute with '_'.
 If you did intend to write to a subnode of the device you should check the proper path of the node: TreeNNF.
