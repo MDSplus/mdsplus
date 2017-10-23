@@ -44,6 +44,8 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/SPIDER.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SPIDER_SM.py
 ./usr/local/mdsplus/pydevices/RfxDevices/ZELOS2150GV.py
+./usr/local/mdsplus/pydevices/RfxDevices/__init__.py
+./usr/local/mdsplus/pydevices/RfxDevices/_version.py
 ./usr/local/mdsplus/tdi/RfxDevices
 ./usr/local/mdsplus/tdi/RfxDevices/AAGain.fun
 ./usr/local/mdsplus/tdi/RfxDevices/AAMaxValue.fun

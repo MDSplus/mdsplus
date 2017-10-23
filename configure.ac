@@ -1342,6 +1342,9 @@ AC_OUTPUT(Makefile.inc
           mdstcpip/docs/img/Makefile
           mdsvme/Makefile
           mitdevices/Makefile
+	  pydevices/MitDevices/_version.py
+	  pydevices/RfxDevices/_version.py
+	  pydevices/W7xDevices/_version.py
           remcam/Makefile
           roam/Makefile
           rpm/Makefile
