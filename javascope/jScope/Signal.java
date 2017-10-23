@@ -291,7 +291,7 @@ public class Signal implements WaveDataListener
     ContourSignal cs;
     private double contourLevels[];
     Vector<Vector> contourSignals = new Vector<>();
-    Vector<Float> contourLevelValues = new Vector<>();
+    Vector<Double> contourLevelValues = new Vector<>();
 
     final int NOT_FREEZED = 0, FREEZED_BLOCK = 1, FREEZED_SCROLL = 2;
     int freezeMode = NOT_FREEZED;
@@ -1032,7 +1032,7 @@ public class Signal implements WaveDataListener
     }
 
     Vector<Vector> getContourSignals() { return contourSignals; }
-    Vector<Float> getContourLevelValues() { return contourLevelValues;}
+    Vector<Double> getContourLevelValues() { return contourLevelValues;}
 
     public boolean isFullLoad()
     {
@@ -1514,7 +1514,7 @@ public class Signal implements WaveDataListener
       if (v.size() != 0)
       {
         contourSignals.addElement(v);
-        contourLevelValues.addElement(new Float(level));
+        contourLevelValues.addElement(new Double(level));
       }
       return v;
     }
