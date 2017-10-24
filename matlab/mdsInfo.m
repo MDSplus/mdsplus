@@ -5,7 +5,7 @@ function info = mdsInfo()
  global MDSINFO
   global MDSplus_legacy_behavior
   if isempty(MDSINFO)
-    isOctave = (exist ("OCTAVE_VERSION", "builtin") > 0);
+    isOctave = (exist ('OCTAVE_VERSION', 'builtin') > 0);
     usePython=false;
     try
       MDSPLUS_DIR=getenv('MDSPLUS_DIR');
@@ -25,7 +25,7 @@ function info = mdsInfo()
         javaaddpath(strcat(MDSPLUS_DIR,'/java/classes/mdsobjects.jar'))
       end
       if isOctave
-        x=javaObject("MDSplus.Int32",1);
+        x=javaObject('MDSplus.Int32',1);
       else
         x=MDSplus.Data.execute('1',javaArray('MDSplus.Data',1));
       end
