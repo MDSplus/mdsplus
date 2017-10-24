@@ -85,15 +85,15 @@ fi
     <include dir="/usr/local/mdsplus/pydevices/MitDevices"/>
     <postinst>
       
-python -m compileall  __INSTALL_PREFIX__/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
+python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
 rm -Rf %{python_sitelib}/MitDevices*
 rm -Rf %{python_sitelib}/*mitdevices*
 
     </postinst>
-    <postrm> rm -Rf __INSTALL_PREFIX__/pydevices/MitDevices </postrm>
+    <postrm> rm -Rf __INSTALL_PREFIX__/mdsplus/pydevices/MitDevices </postrm>
     <post-install>
 
-python -m compileall  __INSTALL_PREFIX__/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
+python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
 rm -Rf %{python_sitelib}/MitDevices*
 rm -Rf %{python_sitelib}/*mitdevices*
 
@@ -531,15 +531,15 @@ fi
     <include file="/usr/local/mdsplus/java/classes/jDevices.jar"/>
     <postinst>
 
-python -m compileall  __INSTALL_PREFIX__/usr/local/mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1
+python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1
 rm -Rf %{python_sitelib}/RfxDevices*
 rm -Rf %{python_sitelib}/*rfxdevices*
 
     </postinst>
-    <postrm> rm -Rf __INSTALL_PREFIX__/pydevices/RfxDevices </postrm>
+    <postrm> rm -Rf __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices </postrm>
     <post-install>
 
-python -m compileall  __INSTALL_PREFIX__/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1
+python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1
 rm -Rf %{python_sitelib}/RfxDevices*
 rm -Rf %{python_sitelib}/*rfxdevices*
 
@@ -552,15 +552,15 @@ rm -Rf %{python_sitelib}/*rfxdevices*
     <include dir="/usr/local/mdsplus/pydevices/W7xDevices"/>
     <postinst>
 
-python -m compileall  __INSTALL_PREFIX__/usr/local/mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1
+python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1
 rm -Rf %{python_sitelib}/W7xDevices*
 rm -Rf %{python_sitelib}/*w7xdevices*
 
     </postinst>
-    <postrm> rm -Rf __INSTALL_PREFIX__/pydevices/W7xDevices </postrm>
+    <postrm> rm -Rf __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices </postrm>
     <post-install>
 
-python -m compileall  __INSTALL_PREFIX__/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1
+python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1
 rm -Rf %{python_sitelib}/W7xDevices*
 rm -Rf %{python_sitelib}/*w7xdevices*
 
