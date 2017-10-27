@@ -193,7 +193,7 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
         try:
             ctx = self.ctx
             self.__class__.order = [id for id in self.order if id!=self.id]
-            kw = self.ctxs[ctx].pop(self.id)
+            kw = self.ctxs[ctx].pop(self.id) # analysis:ignore
             #print('delete',self.id,{kv for kv in kw.items() if kv[0]!='trace'})
             if len(self.ctxs[ctx])>0: return # some context is still open
             self.ctxs.pop(ctx)
@@ -1403,15 +1403,10 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         """
         #if name=='tree':
         #    return Tree()
-        try:
-            return _getNodeByAttr(self,name)
-        except _exc.TreeNNF:
-            pass
-        print(name,hasattr(self,name))
-        try:
-            return super(TreeNode,self).__getattribute__(name)
-        except AttributeError as e:
-            print(e)
+        try:   return _getNodeByAttr(self,name)
+        except _exc.TreeNNF: pass
+        try:   return super(TreeNode,self).__getattribute__(name)
+        except AttributeError: pass
         #if name=='length':
         #    raise AttributeError
         #if self.length>0:
@@ -1617,7 +1612,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @type arg: Data
         @rtype: None
         """
-        self.restoreContext()
         arglist=[self.ctx]
         xd=_dsc.descriptor_xd()
         argsobj = [_scr.Int32(self.nid),_scr.String(method)]
@@ -2447,13 +2441,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
             self.tree.setDefault(olddefault)
         return self
 
-    def restoreContext(self):
-        """Restore tree context. Used by internal functions.
-        @rtype: None
-        """
-        if self.tree is not None:
-            self.tree.restoreContext()
-
     def _setNciFlag(self,mask,setting):
         class NCI_ITEMS(_C.Structure):
           _fields_=[("buflen",_C.c_ushort),("code",_C.c_ushort),
@@ -2707,9 +2694,6 @@ class TreeNodeArray(_arr.Int32Array): # HINT: TreeNodeArray begin
     @property
     def nid_number(self):
         return _arr.Array(self._value)
-
-    def restoreContext(self):
-        self.tree.restoreContext()
 
     def getPath(self):
         """Return tuple of node names"
