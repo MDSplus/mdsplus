@@ -1680,9 +1680,11 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @rtype: Data
         """
         xd=_dsc.Descriptor_xd()
-        status=_TreeShr._TreeGetRecord(self.ctx,
-                                       self._nid,
-                                       xd.ref)
+        _TreeCtx.pushTree(self.tree)
+        try:
+            status=_TreeShr.TreeGetRecord(self._nid,xd.ref)
+        finally:
+            _TreeCtx.popTree()
         if (status & 1):
             return xd._setTree(self.tree).value
         elif len(altvalue)==1 and status == _exc.TreeNODATA.status:
@@ -3223,7 +3225,7 @@ If you did intend to write to a subnode of the device you should check the prope
                                 try:
                                     devnam=fname[:-3].upper()
                                     __import__(fname[:-3]).__dict__[devnam]
-                                    ans.append(devnam)                                   
+                                    ans.append(devnam)
                                 except:
                                     pass
                     finally:
