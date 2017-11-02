@@ -1,4 +1,5 @@
 ./usr/local/mdsplus/bin/SetMdsplusFileProtection
+./usr/local/mdsplus/bin/actlog
 ./usr/local/mdsplus/bin/build_test
 ./usr/local/mdsplus/bin/job_finish
 ./usr/local/mdsplus/bin/job_functions
