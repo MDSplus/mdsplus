@@ -22,13 +22,16 @@ JAVA_APS = \
 	   javaclient \
 	   mdsobjects/java
 
+ifeq "@HAVE_MOTIF@" "yes"
 MOTIF_APS = xmdsshr \
 	    actions \
 	    dwscope \
 	    @IDLMDSWIDGETS@ \
             mitdevices \
             traverser
-
+else
+MOTIF_APS = actions
+endif
 HDF5_APS = hdf5
 
 D3D_PACKAGE = d3dshr
@@ -68,7 +71,7 @@ PARTS = \
         manpages \
         @D3D_PACKAGE@ \
         @JAVA_APS@ \
-	@MOTIF_APS@ \
+        @MOTIF_APS@ \
 	@MDSSQL@ \
 	@IDLMDSEVENT@ \
 	@HDF5_APS@ \

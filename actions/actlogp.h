@@ -78,8 +78,10 @@ static void Done(LinkedEvent * event);
 static void CheckIn(char* monitor);
 static void DoOpenTree(LinkedEvent * event);
 
-#define min(a,b) ( ((a)<(b)) ? (a) : (b) )
-#define max(a,b) ( ((a)>(b)) ? (a) : (b) )
+#define min(a, b) (((a) < (b)) ? (a) : (b))
+#define max(a, b) (((a) > (b)) ? (a) : (b))
+//#define min(a,b) ( ((a)<(b)) ? (a) : (b) )
+//#define max(a,b) ( ((a)>(b)) ? (a) : (b) )
 
 static char *current_tree = NULL;
 static int current_shot = -9999;
