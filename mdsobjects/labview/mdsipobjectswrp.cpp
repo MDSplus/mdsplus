@@ -127,5 +127,27 @@ EXPORT void mdsplus_connection_closeTree(const void *lvConnectionPtr,  ErrorClus
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
+  
+EXPORT void mdsplus_connection_getNode(const void *lvConnectionPtr, void **lvTreeNodePtrOut,
+				      const char *pathIn, ErrorCluster * error)
+{
+	MDSplus::TreeNode *treeNodePtrOut = NULL;
+	MgErr errorCode = noErr;
+	const char *errorSource = __FUNCTION__;
+	char const * errorMessage = "";
+	try
+	{
+		MDSplus::Connection * connectionPtr = reinterpret_cast<MDSplus::Connection *>(const_cast<void *>(lvConnectionPtr));
+		treeNodePtrOut = connectionPtr->getNode(const_cast<char *>(pathIn));
+		*lvTreeNodePtrOut = reinterpret_cast<void *>(treeNodePtrOut);
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+	}
+	catch (const MDSplus::MdsException &mdsE)
+	{
+		errorCode = bogusError;
+		*lvTreeNodePtrOut = 0;
+		fillErrorCluster(errorCode, errorSource, const_cast<char *>(mdsE.what()), error);
+	}
+}
 
 
