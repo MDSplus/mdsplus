@@ -418,7 +418,8 @@ rm -f /etc/profile.d/mdsplus.csh
     <include dir="/usr/local/mdsplus/bin"/>
     <exclude file="/usr/local/mdsplus/bin/ScopePrinters"/>
     <exclude file="/usr/local/mdsplus/bin/dw*"/>
-    <exclude file="/usr/local/mdsplus/bin/act*"/>
+    <exclude file="/usr/local/mdsplus/bin/actmon"/>
+    <exclude file="/usr/local/mdsplus/bin/actions"/>
     <exclude file="/usr/local/mdsplus/bin/traverser*"/>
     <exclude file="/usr/local/mdsplus/bin/jScope"/>
     <exclude file="/usr/local/mdsplus/bin/jServer"/>
