@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include <status.h>
+#include <mdsplus/mdsplus.h>
 #include <STATICdef.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -356,6 +357,7 @@ int Tdi1Write(int opcode __attribute__ ((unused)),
 	    pd = (struct descriptor *)&dBAD;
 	    break;
 	  }
+	  MDS_ATTR_FALLTHROUGH
 	case DTYPE_T:
 	  ptmp = tmp.pointer;
 	  len = ptmp->length;

@@ -26,6 +26,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <config.h>
 #include <stdlib.h>
 #include <string.h>
+#include <mdsplus/mdsplus.h>
 #include <strroutines.h>
 #include <treeshr.h>
 #include "treeshrp.h"
@@ -578,12 +579,14 @@ STATIC_ROUTINE int Parse(SEARCH_CONTEXT * ctx, int wild)
 	case MEMBER_START:
 	  tokencnt = 0;
 	  tokenptr = char_ptr;
+	  MDS_ATTR_FALLTHROUGH
 	case MEMBER_TYPE_NOWILD:
 	  state = MEMBER_TYPE;
 	  break;
 	case BROTHER_START:
 	  tokencnt = 0;
 	  tokenptr = char_ptr;
+	  MDS_ATTR_FALLTHROUGH
 	case BROTHER_TYPE_NOWILD:
 	  state = BROTHER_TYPE;
 	  break;
@@ -591,6 +594,7 @@ STATIC_ROUTINE int Parse(SEARCH_CONTEXT * ctx, int wild)
 	case ASTASTAST_TYPE:
 	  tokencnt = 0;
 	  tokenptr = char_ptr;
+	  MDS_ATTR_FALLTHROUGH
 	case SON_MEMBER_TYPE_NOWILD:
 	  state = SON_MEMBER_TYPE;
 	  break;
@@ -622,18 +626,21 @@ STATIC_ROUTINE int Parse(SEARCH_CONTEXT * ctx, int wild)
       case MEMBER_START:
 	tokencnt = 0;
 	tokenptr = char_ptr;
+	MDS_ATTR_FALLTHROUGH
       case MEMBER_TYPE_NOWILD:
 	state = MEMBER_TYPE;
 	break;
       case BROTHER_START:
 	tokencnt = 0;
 	tokenptr = char_ptr;
+	MDS_ATTR_FALLTHROUGH
       case BROTHER_TYPE_NOWILD:
 	state = BROTHER_TYPE;
 	break;
       case ASTASTAST_TYPE:
 	tokencnt = 0;
 	tokenptr = char_ptr;
+	MDS_ATTR_FALLTHROUGH
       case SON_MEMBER_TYPE_NOWILD:
 	state = SON_MEMBER_TYPE;
 	break;

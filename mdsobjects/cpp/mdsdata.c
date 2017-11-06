@@ -26,6 +26,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 #include <config.h>
+#include <mdsplus/mdsplus.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
@@ -276,6 +277,7 @@ void *convertFromDsc(void *ptr, void *tree)
       return NULL;
     }
     isCa = 1;
+    MDS_ATTR_FALLTHROUGH
 
   case CLASS_A:
     {

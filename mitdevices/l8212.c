@@ -23,6 +23,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <stdio.h>
+#include <mdsplus/mdsplus.h>
 #include <mdsdescrip.h>
 #include <mds_gendevice.h>
 #include <mitdevices_msg.h>
@@ -659,8 +660,10 @@ static void chans_changed_proc(Widget w, int *tag __attribute__ ((unused)), XmRo
   switch (*(int *)&reason->data) {
   case 3:
     XtSetSensitive(buttons[num_buttons - 5], 0);
+    MDS_ATTR_FALLTHROUGH
   case 2:
     XtSetSensitive(buttons[num_buttons - 4], 0);
+    MDS_ATTR_FALLTHROUGH
   case 1:
     XtSetSensitive(buttons[num_buttons - 3], 0);
     break;
@@ -796,8 +799,10 @@ static void clock_initialize_proc(Widget parent, Widget clock_menu)
   switch (idx) {
   case 3:
     XtSetSensitive(buttons[num_buttons - 5], 0);
+    MDS_ATTR_FALLTHROUGH
   case 2:
     XtSetSensitive(buttons[num_buttons - 4], 0);
+    MDS_ATTR_FALLTHROUGH
   case 1:
     XtSetSensitive(buttons[num_buttons - 3], 0);
     break;

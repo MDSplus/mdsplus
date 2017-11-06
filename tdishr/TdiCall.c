@@ -44,6 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <mdsplus/mdsplus.h>
 #include <mdsdescrip.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
@@ -101,6 +102,7 @@ STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
       *result_g = (*called_g) (newdsc, routine);
       break;
     }
+    MDS_ATTR_FALLTHROUGH
   case DTYPE_T:
   case DTYPE_POINTER:
     if (f_regs) {
@@ -108,7 +110,6 @@ STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
       void **result_p = (void *)result;
       *max = sizeof(void *);
       *result_p = (*called_p) (newdsc, routine);
-      break;
     }
 #if  defined(__ALPHA) && defined(__VMS)
     else {
@@ -116,9 +117,9 @@ STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
       _int64_t *result_g = (_int64_t *) result;
       *max = sizeof(double);
       *result_g = (*called_g) (newdsc, routine);
-      break;
     }
 #endif
+    break;
   case DTYPE_DSC:
     {
       void *(*called_dsc) () = (void *(*)())called;

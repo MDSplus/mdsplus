@@ -92,6 +92,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Xm/RowColumnP.h>
 #include <Xmds/XmdsWaveform.h>
 #include "dwscope.h"
+#include <mdsplus/mdsplus.h>
 
 extern int XmdsManageWindow();
 Boolean ConvertSelectionToWave(Widget w, Atom result_type, unsigned long length, CutHeader * header,
@@ -252,6 +253,7 @@ String WaveToText(String prefix, WaveInfo * wave, Dimension height, int *ctx)
 	answer = XtMalloc(prefix_length + sizeof(".height: \n") + 16);
 	sprintf(answer, "%s.%s: %d\n", prefix, "height", height);
       }
+      MDS_ATTR_FALLTHROUGH
     case 1:
       if (!wave->update) {
 	answer = XtMalloc(prefix_length + sizeof(".update: 0\n") + 1);

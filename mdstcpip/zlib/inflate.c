@@ -26,7 +26,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Copyright (C) 1995-1998 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
-
+#include <mdsplus/mdsplus.h>
 #include "zutil.h"
 #include "infblock.h"
 
@@ -189,6 +189,7 @@ int f;
 	break;
       }
       z->state->mode = FLAG;
+      MDS_ATTR_FALLTHROUGH
     case FLAG:
       NEEDBYTE b = NEXTBYTE;
       if (((z->state->sub.method << 8) + b) % 31) {
@@ -203,15 +204,19 @@ int f;
 	break;
       }
       z->state->mode = DICT4;
+      MDS_ATTR_FALLTHROUGH
     case DICT4:
       NEEDBYTE z->state->sub.check.need = (uLong) NEXTBYTE << 24;
       z->state->mode = DICT3;
+      MDS_ATTR_FALLTHROUGH
     case DICT3:
       NEEDBYTE z->state->sub.check.need += (uLong) NEXTBYTE << 16;
       z->state->mode = DICT2;
+      MDS_ATTR_FALLTHROUGH
     case DICT2:
       NEEDBYTE z->state->sub.check.need += (uLong) NEXTBYTE << 8;
       z->state->mode = DICT1;
+      MDS_ATTR_FALLTHROUGH
     case DICT1:
       NEEDBYTE z->state->sub.check.need += (uLong) NEXTBYTE;
       z->adler = z->state->sub.check.need;
@@ -240,15 +245,19 @@ int f;
 	break;
       }
       z->state->mode = CHECK4;
+      MDS_ATTR_FALLTHROUGH
     case CHECK4:
       NEEDBYTE z->state->sub.check.need = (uLong) NEXTBYTE << 24;
       z->state->mode = CHECK3;
+      MDS_ATTR_FALLTHROUGH
     case CHECK3:
       NEEDBYTE z->state->sub.check.need += (uLong) NEXTBYTE << 16;
       z->state->mode = CHECK2;
+      MDS_ATTR_FALLTHROUGH
     case CHECK2:
       NEEDBYTE z->state->sub.check.need += (uLong) NEXTBYTE << 8;
       z->state->mode = CHECK1;
+      MDS_ATTR_FALLTHROUGH
     case CHECK1:
       NEEDBYTE z->state->sub.check.need += (uLong) NEXTBYTE;
 
@@ -260,6 +269,7 @@ int f;
       }
       Tracev((stderr, "inflate: zlib check ok\n"));
       z->state->mode = DONE;
+      MDS_ATTR_FALLTHROUGH
     case DONE:
       return Z_STREAM_END;
     case BAD:

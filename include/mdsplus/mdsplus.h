@@ -34,6 +34,11 @@
 #define MDS_API_EXPORT
 #define MDS_API_HIDDEN
 #endif
+#if __GNUC__ >= 7
+#define MDS_ATTR_FALLTHROUGH __attribute__((fallthrough));
+#else
+#define MDS_ATTR_FALLTHROUGH
+#endif
 #endif
 
 #ifdef MDS_SHARED		// defined if MDS is compiled as a shared library
