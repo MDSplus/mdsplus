@@ -10,7 +10,6 @@
 ./usr/local/mdsplus/LabView/MDSplus/Classes/Connection_Class/Open Tree.vi
 ./usr/local/mdsplus/LabView/MDSplus/Classes/Connection_Class/Put Data.vi
 ./usr/local/mdsplus/LabView/MDSplus/Classes/Connection_Class/Set Object Pointer.vi
-./usr/local/mdsplus/LabView/MDSplus/Classes/Connection_Class/Get Node.vi
 ./usr/local/mdsplus/LabView/MDSplus/Classes/Data_Class/Array_Class/Array.lvclass
 ./usr/local/mdsplus/LabView/MDSplus/Classes/Data_Class/Array_Class/Delete Array DVR.vi
 ./usr/local/mdsplus/LabView/MDSplus/Classes/Data_Class/Array_Class/Destroy.vi
@@ -411,7 +410,6 @@
 ./usr/local/mdsplus/LabView/MDSplus/Library/Connection/Connection Get Data.vi
 ./usr/local/mdsplus/LabView/MDSplus/Library/Connection/Connection Open Tree.vi
 ./usr/local/mdsplus/LabView/MDSplus/Library/Connection/Connection Put Data.vi
-./usr/local/mdsplus/LabView/MDSplus/Library/Connection/Connection Get Node.vi
 ./usr/local/mdsplus/LabView/MDSplus/Library/Data/.DS_Store
 ./usr/local/mdsplus/LabView/MDSplus/Library/Data/Array/Array Create.vi
 ./usr/local/mdsplus/LabView/MDSplus/Library/Data/Array/Array Destroy.vi
@@ -711,7 +709,6 @@
 ./usr/local/mdsplus/LabView/MDSplus/MDSplus.mnu
 ./usr/local/mdsplus/LabView/MDSplus/Sample VIs/CompileDecompile.vi
 ./usr/local/mdsplus/LabView/MDSplus/Sample VIs/MakeSegmentExample.vi
-./usr/local/mdsplus/LabView/MDSplus/Sample VIs/MakeSegmentThinClientExample.vi
 ./usr/local/mdsplus/LabView/MDSplus/Sample VIs/MakeSegmentUtility.vi
 ./usr/local/mdsplus/LabView/MDSplus/Sample VIs/Put Get over Mdsip Connection.vi
 ./usr/local/mdsplus/LabView/MDSplus/Sample VIs/PutGetTreeNodeExample.vi
@@ -1450,6 +1447,7 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Connection_Class/Open Tree.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Connection_Class/Put Data.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Connection_Class/Set Object Pointer.vi
+./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Connection_Class/Get Node.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Array.lvclass
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Delete Array DVR.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class/Destroy.vi
@@ -1854,6 +1852,7 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Connection/Connection Get Data.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Connection/Connection Open Tree.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Connection/Connection Put Data.vi
+./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Connection/Connection Get Node.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/.DS_Store
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Array Create.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/Array/Array Destroy.vi
@@ -2156,6 +2155,7 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/MDSplus.lvproj
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Sample VIs/CompileDecompile.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Sample VIs/MakeSegmentExample.vi
+./usr/local/mdsplus/LabView/MDSplus_LV2015/Sample VIs/MakeSegmentThinClientExample.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Sample VIs/MakeSegmentUtility.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Sample VIs/MakeTimestampedSegmentExample.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Sample VIs/Put Get over Mdsip Connection.vi
