@@ -662,6 +662,7 @@ MOTIF_LD_LDSHARE
 MOTIF_LDARC
 MOTIF_LDSHARE
 MOTIF_APS
+HAVE_MOTIF
 MITDEVICESIO_TARGETS
 MDSTCPIP
 MDSSQL
@@ -819,6 +820,8 @@ PYTHON_EXEC_PREFIX
 PYTHON_PREFIX
 PYTHON_VERSION
 PYTHON
+HAVE_MOTIF_FALSE
+HAVE_MOTIF_TRUE
 UIL
 X_EXTRA_LIBS
 X_LIBS
@@ -7987,8 +7990,6 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_visual_studio" >&5
 $as_echo "$with_visual_studio" >&6; }
 
-
-
 FORLD=ld
 LD=ld LD_LDARC=""
 LD_LDSHARE=""
@@ -11855,25 +11856,35 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for uil command" >&5
 $as_echo_n "checking for uil command... " >&6; }
-if ( which $UIL 2>/dev/null )
+if  ! "$MINGW" = "yes"  && ( which $UIL 2>/dev/null )
 then
   UIL="env LANG=en_US $UIL"
-  MOTIF_APS="\$(MOTIF_APS)"
+  HAVE_MOTIF="yes"
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: have uil so openmotif apps will be built." >&5
 $as_echo "have uil so openmotif apps will be built." >&6; }
 else
-  MOTIF_APS=""
 # IDLMDSEVENT and IDLMDSWIDGETS need MOTIF to build
   IDLMDSEVENT=""
   IDLMDSWIDGETS=""
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no uil so skipping openmotif apps.openmotif-devel not installed." >&5
 $as_echo "no uil so skipping openmotif apps.openmotif-devel not installed." >&6; }
 fi
-if [ "$MINGW" = "yes" ]
-then
-  MOTIF_APS=""
+MOTIF_APS="\$(MOTIF_APS)"
+ if ${HAVE_MOTIF+:} false; then
+  HAVE_MOTIF_TRUE=
+  HAVE_MOTIF_FALSE='#'
+else
+  HAVE_MOTIF_TRUE='#'
+  HAVE_MOTIF_FALSE=
 fi
 
+if test -z "$HAVE_MOTIF_TRUE"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
 
 XM_LIBS="-lMrm -lXm"
 
@@ -17117,6 +17128,7 @@ fi
 
 
 
+
 ac_config_headers="$ac_config_headers include/config.h"
 
 
@@ -17293,6 +17305,10 @@ if test -z "${XML_TRUE}" && test -z "${XML_FALSE}"; then
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
+if test -z "${HAVE_MOTIF_TRUE}" && test -z "${HAVE_MOTIF_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_MOTIF\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 if test -z "${HAVE_PYTHON_TRUE}" && test -z "${HAVE_PYTHON_FALSE}"; then
   as_fn_error $? "conditional \"HAVE_PYTHON\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
@@ -18823,7 +18839,7 @@ $as_echo "$as_me: WARNING: " >&2;}
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: " >&5
 $as_echo "$as_me: WARNING: " >&2;}
 fi
-if test "$MOTIF_APS" = "" -a "$MINGW" = ""
+if test "$HAVE_MOTIF" = "" -a "$MINGW" = "" -a ! "$OS" = "windows"
 then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: " >&5
 $as_echo "$as_me: WARNING: " >&2;}

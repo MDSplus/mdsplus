@@ -12,7 +12,7 @@ VPATH=@srcdir@
 HELP_DESCRIPTION = This is MDSplus build system, documented targets follow:
 
 JAVA_APS = \
-           javamds \
+	   javamds \
 	   javascope \
 	   javatraverser \
 	   javatraverser2 \
@@ -22,20 +22,23 @@ JAVA_APS = \
 	   javaclient \
 	   mdsobjects/java
 
+ifeq "@HAVE_MOTIF@" "yes"
 MOTIF_APS = xmdsshr \
 	    actions \
 	    dwscope \
 	    @IDLMDSWIDGETS@ \
-            mitdevices \
-            traverser
-
+	    mitdevices \
+	    traverser
+else
+MOTIF_APS = actions
+endif
 HDF5_APS = hdf5
 
 D3D_PACKAGE = d3dshr
 
 ifeq "@JAVA_ONLY@" "yes"
 PARTS = javascope \
-        javatraverser \
+	javatraverser \
 	javatraverser2 \
 	javadispatcher \
 	javadevices \
@@ -43,31 +46,31 @@ PARTS = javascope \
 	mdsobjects/java
 else
 PARTS = \
-        mdsshr \
-        treeshr \
-        tdishr \
-        tditest \
+	mdsshr \
+	treeshr \
+	tdishr \
+	tditest \
 	xtreeshr \
-        @MDSTCPIP@ \
-        mdslibidl \
-        mdsdcl  \
+	@MDSTCPIP@ \
+	mdslibidl \
+	mdsdcl  \
 	@CAMSHR@ \
-        @REMCAM@ \
-        ccl \
+	@REMCAM@ \
+	ccl \
 	servershr \
-        tcl \
-        @TDIC@ \
-        mdslib \
-        math \
-        wfevent \
-        setevent \
-        mdsmisc \
+	tcl \
+	@TDIC@ \
+	mdslib \
+	math \
+	wfevent \
+	setevent \
+	mdsmisc \
 	scripts \
 	rpm \
 	mdsobjects/cpp \
-        manpages \
-        @D3D_PACKAGE@ \
-        @JAVA_APS@ \
+	manpages \
+	@D3D_PACKAGE@ \
+	@JAVA_APS@ \
 	@MOTIF_APS@ \
 	@MDSSQL@ \
 	@IDLMDSEVENT@ \
