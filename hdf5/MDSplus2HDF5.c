@@ -39,6 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <mdsplus/mdsplus.h>
 #include "mds_stdarg.h"
 #include "mdsdescrip.h"
 #include "mdsshr.h"
@@ -374,6 +375,7 @@ static void PutScalar(hid_t parent, char *name, struct descriptor *dsc)
       H5Sclose(ds_id);
       break;
     }
+    MDS_ATTR_FALLTHROUGH
   default:
     PutNumeric(parent, name, dsc);
     break;

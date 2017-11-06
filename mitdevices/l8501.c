@@ -22,6 +22,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <mdsplus/mdsplus.h>
 #include <mdsdescrip.h>
 #include <mds_gendevice.h>
 #include <mitdevices_msg.h>
@@ -92,6 +93,7 @@ EXPORT int l8501___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
     pio(0, 16, &count);
     return_on_error(DevLong(&f3_count_nid, &count), status);
     pio(1, 16, &count);
+    MDS_ATTR_FALLTHROUGH
   case 1:
     GET_FREQ_IDX(0, L8501_N_FREQ1);
     GET_FREQ_IDX(1, L8501_N_FREQ2);

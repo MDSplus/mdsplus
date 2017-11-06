@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern unsigned short OpcSetRange;
 
+#include <mdsplus/mdsplus.h>
 #include "STATICdef.h"
 #include <stdlib.h>
 #include <mdsdescrip.h>
@@ -124,12 +125,16 @@ int TdiYacc_BUILD(int ndesc,
     return MDSplusERROR;
   case 4:
     tmp->arguments[3] = (struct descriptor *)arg4->rptr;
+    MDS_ATTR_FALLTHROUGH
   case 3:
     tmp->arguments[2] = (struct descriptor *)arg3->rptr;
+    MDS_ATTR_FALLTHROUGH
   case 2:
     tmp->arguments[1] = (struct descriptor *)arg2->rptr;
+    MDS_ATTR_FALLTHROUGH
   case 1:
     tmp->arguments[0] = (struct descriptor *)arg1->rptr;
+    MDS_ATTR_FALLTHROUGH
   case 0:
     break;
   }

@@ -46,6 +46,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         NEED to think, should "TdiImpose" convert data type?
         ASSUMES VECTOR works for any size.
 */
+#include <mdsplus/mdsplus.h>
 #include <STATICdef.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
@@ -358,6 +359,7 @@ extern EXPORT int TdiGetFloat(struct descriptor *in_ptr, float *val_ptr)
 	/*********************
         WARNING falls through.
         *********************/
+      MDS_ATTR_FALLTHROUGH
     case CLASS_S:
     case CLASS_D:
       switch (in_ptr->dtype) {
@@ -427,6 +429,7 @@ extern EXPORT int TdiGetLong(struct descriptor *in_ptr, int *val_ptr)
 	/*********************
         WARNING falls through.
         *********************/
+      MDS_ATTR_FALLTHROUGH
     case CLASS_S:
     case CLASS_D:
       switch (in_ptr->dtype) {
