@@ -9,6 +9,8 @@
 ./usr/local/mdsplus/pydevices/MitDevices/DT196B.glade
 ./usr/local/mdsplus/pydevices/MitDevices/DT216B.glade
 ./usr/local/mdsplus/pydevices/MitDevices/Dt200WriteMaster.py
+./usr/local/mdsplus/pydevices/MitDevices/__init__.py
+./usr/local/mdsplus/pydevices/MitDevices/_version.py
 ./usr/local/mdsplus/pydevices/MitDevices/a3248.py
 ./usr/local/mdsplus/pydevices/MitDevices/acq.py
 ./usr/local/mdsplus/pydevices/MitDevices/acq132.py
@@ -35,8 +37,6 @@
 ./usr/local/mdsplus/pydevices/MitDevices/raspicam.py
 ./usr/local/mdsplus/pydevices/MitDevices/timeSignature.py
 ./usr/local/mdsplus/pydevices/MitDevices/transport.py
-./usr/local/mdsplus/pydevices/MitDevices/__init__.py
-./usr/local/mdsplus/pydevices/MitDevices/_version.py
 ./usr/local/mdsplus/tdi/MitDevices
 ./usr/local/mdsplus/tdi/MitDevices/Dt196AOSendFiles.fun
 ./usr/local/mdsplus/tdi/MitDevices/Dt196AOWriteOutput.fun
