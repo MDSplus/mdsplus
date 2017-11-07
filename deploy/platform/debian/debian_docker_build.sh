@@ -12,7 +12,7 @@
 # /publish/$branch/DEBS/$arch/*.deb
 #
 
-srcdir=$(realpath $(dirname ${0})/../..)
+srcdir=$(readlink -e $(dirname ${0})/../..)
 
 # configure based on ARCH
 case "${ARCH}" in

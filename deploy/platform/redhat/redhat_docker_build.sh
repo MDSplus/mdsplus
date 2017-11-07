@@ -13,7 +13,7 @@
 # /publish/$branch/cache/$arch/*.rpm-*
 #
 
-srcdir=$(realpath $(dirname ${0})/../..)
+srcdir=$(readlink -e $(dirname ${0})/../..)
 
 test64="64 x86_64-linux bin64 lib64 --with-gsi=/usr:gcc64"
 test32="32 i686-linux   bin32 lib32 --with-gsi=/usr:gcc32"

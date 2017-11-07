@@ -7,7 +7,7 @@
 testx86_64="64 x86_64-linux bin lib"
 testx86="32 i686-linux   bin lib --with-gsi=/usr:gcc32"
 testarmhf="arm armv6-alpine-linux-muslgnueabihf bin lib"
-srcdir=$(realpath $(dirname ${0})/../..)
+srcdir=$(readlink -e $(dirname ${0})/../..)
 
 gethost() {
     case $1 in
