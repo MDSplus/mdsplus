@@ -7,7 +7,7 @@
 # Build script from within a docker image
 #
 export HOME=/tmp/home
-srcdir=$(readlink -e $(dirname ${0})/../..)
+srcdir=$(readlink -f $(dirname ${0})/../..)
 mkdir -p $HOME
 tio(){
     :&& ${srcdir}/deploy/platform/timeout.sh "$@";
