@@ -134,9 +134,11 @@ tests: ##@tests recursively perform tests in submodules
 @ENABLE_TESTS_TRUE@	$(MAKE) $(AM_MAKEFLAGS) -C testing all tests
 @ENABLE_TESTS_FALSE@	@echo "Tests disabled"
 
-.PHONY: tests-valgrind
-tests-valgrind: ##@tests recursively perform tests using valgrind tool
-@ENABLE_TESTS_TRUE@	$(MAKE) $(AM_MAKEFLAGS) -C testing all tests-valgrind
+.PHONY: tests-valgrind rebuild-tests
+tests-valgrind: ##@tests perform tests using valgrind tool
+rebuild-tests:  ##@tests rebuild all tests binaries
+tests-valgrind rebuild-tests:
+@ENABLE_TESTS_TRUE@	$(MAKE) $(AM_MAKEFLAGS) -C testing all $@
 @ENABLE_TESTS_FALSE@	@echo "Tests disabled"
 
 .PHONY: $(clean_TESTS)
