@@ -41,6 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <config.h>
 #include <stdlib.h>
+#include <mdsplus/mdsplus.h>
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
 #include <mdsshr.h>
@@ -260,9 +261,11 @@ int Tdi3Random(struct descriptor_a *out_ptr)
   case DTYPE_O:
   case DTYPE_OU:
     n += n;
+    MDS_ATTR_FALLTHROUGH
   case DTYPE_Q:
   case DTYPE_QU:
     n += n;
+    MDS_ATTR_FALLTHROUGH
   case DTYPE_L:
   case DTYPE_LU:
     LoadRandom(int, 0);
@@ -279,30 +282,35 @@ int Tdi3Random(struct descriptor_a *out_ptr)
         *********************/
   case DTYPE_FC:
     n += n;
+    MDS_ATTR_FALLTHROUGH
   case DTYPE_F:
     LoadRandomFloat(DTYPE_F, float, Tdi_RandomSeed * norm + half);
     break;
 
   case DTYPE_FSC:
     n += n;
+    MDS_ATTR_FALLTHROUGH
   case DTYPE_FS:
     LoadRandomFloat(DTYPE_FS, float, Tdi_RandomSeed * norm + half);
     break;
 
   case DTYPE_DC:
     n += n;
+    MDS_ATTR_FALLTHROUGH
   case DTYPE_D:
     LoadRandomFloat(DTYPE_D, double, (Tdi_RandomSeed * norm + Tdi_RandomSeed) * norm + half);
     break;
 
   case DTYPE_GC:
     n += n;
+    MDS_ATTR_FALLTHROUGH
   case DTYPE_G:
     LoadRandomFloat(DTYPE_G, double, (Tdi_RandomSeed * norm + Tdi_RandomSeed) * norm + half);
     break;
 
   case DTYPE_FTC:
     n += n;
+    MDS_ATTR_FALLTHROUGH
   case DTYPE_FT:
     LoadRandomFloat(DTYPE_FT, double, (Tdi_RandomSeed * norm + Tdi_RandomSeed) * norm + half);
     break;

@@ -64,7 +64,7 @@ $ MCR ACTMON -monitor monitor-name
 #include <Xm/List.h>
 #include <Xm/MessageB.h>
 #include <Xm/Text.h>
-
+#include <mdsplus/mdsplus.h>
 static void Exit(Widget w, int *tag, XtPointer callback_data);
 static void MessageAst();
 static void EventUpdate();
@@ -315,19 +315,19 @@ static void Disable(Widget w __attribute__ ((unused)), int *tag, XmToggleButtonC
   switch (*tag) {
   case 4:
     LogWidgetOff = cb->set;
-    //__attribute__((fallthrough));
+    MDS_ATTR_FALLTHROUGH
   case 1:
     dw = XtParent(LogWidget);
     break;
   case 5:
     ErrorWidgetOff = cb->set;
-    //__attribute__((fallthrough));
+    MDS_ATTR_FALLTHROUGH
   case 2:
     dw = XtParent(ErrorWidget);
     break;
   case 6:
     CurrentWidgetOff = cb->set;
-    //__attribute__((fallthrough));
+    MDS_ATTR_FALLTHROUGH
   case 7:
     dw = XtParent(CurrentWidget);
     break;

@@ -34,7 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 extern unsigned short OpcDotProduct;
-
+#include <mdsplus/mdsplus.h>
 #include <STATICdef.h>
 #include "tdirefcat.h"
 #include "tdireffunction.h"
@@ -692,6 +692,7 @@ int Tdi3DotProduct(struct descriptor_a *in1_ptr,
     status = Tdi3Conjg(in1_ptr, in1_ptr);
     if (STATUS_NOT_OK)
       break;
+    MDS_ATTR_FALLTHROUGH
   default:
     if (inc1) {
       status = Tdi3Multiply(in1_ptr, in2_ptr, in1_ptr);
