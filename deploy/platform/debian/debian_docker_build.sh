@@ -12,6 +12,8 @@
 # /publish/$branch/DEBS/$arch/*.deb
 #
 
+srcdir=$(readlink -e $(dirname ${0})/../..)
+
 # configure based on ARCH
 case "${ARCH}" in
   "amd64")
@@ -83,7 +85,7 @@ buildrelease() {
 	     ARCH=${ARCH} \
 	     DISTNAME=${DISTNAME} \
 	     PLATFORM=${PLATFORM} \
-	     /source/deploy/platform/debian/debian_build_debs.py
+	     ${srcdir}/deploy/platform/debian/debian_build_debs.py
     baddeb=0
     for deb in $(find /release/${BRANCH}/DEBS/${ARCH} -name "*\.deb")
     do
@@ -94,13 +96,13 @@ buildrelease() {
 	fi
         if [[ x${pkg} == x*_bin ]]
         then
-          checkfile=/source/deploy/packaging/${PLATFORM}/$pkg.$ARCH
+          checkfile=${srcdir}/deploy/packaging/${PLATFORM}/$pkg.$ARCH
         else
-          checkfile=/source/deploy/packaging/${PLATFORM}/$pkg.noarch
+          checkfile=${srcdir}/deploy/packaging/${PLATFORM}/$pkg.noarch
         fi
 	if [ "$UPDATEPKG" = "yes" ]
 	then
-	    mkdir -p /source/deploy/packaging/${PLATFORM}
+	    mkdir -p ${srcdir}/deploy/packaging/${PLATFORM}
 	    makelist $deb > ${checkfile}
 	else
 	    set +e

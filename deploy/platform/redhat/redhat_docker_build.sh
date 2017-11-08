@@ -12,6 +12,9 @@
 # /publish/$branch/RPMS/$arch/*.rpm
 # /publish/$branch/cache/$arch/*.rpm-*
 #
+
+srcdir=$(readlink -e $(dirname ${0})/../..)
+
 test64="64 x86_64-linux bin64 lib64 --with-gsi=/usr:gcc64"
 test32="32 i686-linux   bin32 lib32 --with-gsi=/usr:gcc32"
 makelist(){
@@ -57,7 +60,7 @@ buildrelease(){
     ###
     mkdir -p ${BUILDROOT}/etc/yum.repos.d;
     mkdir -p ${BUILDROOT}/etc/pki/rpm-gpg/;
-    cp /source/deploy/platform/redhat/RPM-GPG-KEY-MDSplus ${BUILDROOT}/etc/pki/rpm-gpg/;
+    cp ${srcdir}/deploy/platform/redhat/RPM-GPG-KEY-MDSplus ${BUILDROOT}/etc/pki/rpm-gpg/;
     if [ -d /sign_keys/.gnupg ]
     then
         GPGCHECK="1"
@@ -86,7 +89,7 @@ EOF
           DISTNAME=${DISTNAME} \
           BUILDROOT=${BUILDROOT} \
           PLATFORM=${PLATFORM} \
-          /source/deploy/platform/${PLATFORM}/${PLATFORM}_build_rpms.py;
+          ${srcdir}/deploy/platform/${PLATFORM}/${PLATFORM}_build_rpms.py;
     createrepo -q /release/${BRANCH}/RPMS
     badrpm=0
     for rpm in $(find /release/${BRANCH}/RPMS -name '*\.rpm')
@@ -101,10 +104,10 @@ EOF
             continue
         fi
         pkg=${pkg}.$(echo $(basename $rpm) | cut -f5 -d- | cut -f3 -d.)
-        checkfile=/source/deploy/packaging/${PLATFORM}/$pkg
+        checkfile=${srcdir}/deploy/packaging/${PLATFORM}/$pkg
         if [ "$UPDATEPKG" = "yes" ]
         then
-            mkdir -p /source/deploy/packaging/${PLATFORM}/
+            mkdir -p ${srcdir}/deploy/packaging/${PLATFORM}/
             makelist $rpm > ${checkfile}
         else
             echo "Checking contents of $(basename $rpm)"
