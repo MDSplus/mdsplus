@@ -170,9 +170,11 @@ normaltest() {
     checkstatus tests_$1 "Failure testing $1-bit." $?
     if [ ! -z "$VALGRIND_TOOLS" ]
     then
-        ### Test with valgrind
+        ### Test with valgrind		
         to=$( gettimeout $VALGRIND_TOOLS )
-        :&& tio $to  $MAKE -k tests-valgrind 2>&1
+		:&& tio $to  $MAKE -k rebuild-tests VALGRIND_BUILD=yes 2>&1
+		checkstatus tests_${1}_val "Failure building tests $1-bit with valgrind." $?
+		:&& tio $to  $MAKE -k tests-valgrind 2>&1
         checkstatus tests_${1}_val "Failure testing $1-bit with valgrind." $?
     fi
    fi
