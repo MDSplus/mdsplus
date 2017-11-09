@@ -211,7 +211,7 @@ static int FixParentState(PINO_DATABASE * dblist, NODE * parent_ptr, NODE * chil
   int retlen;
   unsigned int child_flags;
   NCI_ITM child_itm_list[] =
-      { {sizeof(unsigned int), NciGET_FLAGS, (unsigned char *)&child_flags, &retlen},
+      { {sizeof(unsigned int), NciGET_FLAGS, &child_flags, &retlen},
 	{0, NciEND_OF_LIST, 0, 0}
   };
   node_to_nid(dblist, parent_ptr, (&parent_nid));
