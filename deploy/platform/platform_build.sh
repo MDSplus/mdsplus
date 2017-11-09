@@ -55,7 +55,7 @@ rundocker(){
     if [ -z "$INTERACTIVE" ]
     then
         stdio="-a stdout -a stderr"
-        program="${SRCDIR}/deploy/platform/platform_docker_build.sh"
+        program="${DOCKER_SRCDIR}/deploy/platform/platform_docker_build.sh"
     else
         stdio="-i"
         program="/bin/bash"
