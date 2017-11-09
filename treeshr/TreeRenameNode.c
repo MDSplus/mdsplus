@@ -98,7 +98,7 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
 /****************************************************
   make sure that the new node is not already there
 ***************************************************/
-  status = TreeFindNode(upcase_name, &i);
+  status = _TreeFindNode(dbid, upcase_name, &i);
   if (status & 1) {
     status = TreeALREADY_THERE;
     goto cleanup;
@@ -211,7 +211,7 @@ static int FixParentState(PINO_DATABASE * dblist, NODE * parent_ptr, NODE * chil
   int retlen;
   unsigned int child_flags;
   NCI_ITM child_itm_list[] =
-      { {sizeof(unsigned int), NciGET_FLAGS, (unsigned char *)&child_flags, &retlen},
+      { {sizeof(unsigned int), NciGET_FLAGS, &child_flags, &retlen},
 	{0, NciEND_OF_LIST, 0, 0}
   };
   node_to_nid(dblist, parent_ptr, (&parent_nid));
@@ -224,10 +224,12 @@ static int FixParentState(PINO_DATABASE * dblist, NODE * parent_ptr, NODE * chil
   to SET_PARENT_STATE are negative boolean logic.
 ****************************************************/
   parent_state = _TreeIsOn(dblist, *(int *)&parent_nid) & 1;
-  TreeGetNci(*(int *)&child_nid, child_itm_list);
-  child_parent_state = ((child_flags & NciM_PARENT_STATE) == 0);
-  if (child_parent_state != parent_state)
-    status = SetParentState(dblist, child_ptr, !parent_state);
+  status = _TreeGetNci(dblist, *(int *)&child_nid, child_itm_list);
+  if (status & 1) {
+    child_parent_state = ((child_flags & NciM_PARENT_STATE) == 0);
+    if (child_parent_state != parent_state)
+      status = SetParentState(dblist, child_ptr, !parent_state);
+  }
 
   return status;
 }
