@@ -95,21 +95,20 @@ int FlushConnection(int id){
   return -1;
 }
 
-#ifdef _WIN32
-static void registerHandler(){}
-#else
 static void exitHandler(void){
+  static pthread_mutex_t exit_mutex = PTHREAD_MUTEX_INITIALIZER;
   int id;
   void *ctx = (void *)-1;
+  pthread_mutex_lock(&exit_mutex);
   while ((id = NextConnection(&ctx, 0, 0, 0)) != -1) {
     DisconnectConnection(id);
     ctx = 0;
   }
+  pthread_mutex_unlock(&exit_mutex);
 }
 static void registerHandler(){
   atexit(exitHandler);
 }
-#endif
 
 
 ////////////////////////////////////////////////////////////////////////////////
