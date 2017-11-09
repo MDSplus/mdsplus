@@ -43,10 +43,7 @@ VALGRIND_SUPPRESSIONS_FILES_PY = \
 # Skipping child programs that are launched inside python classes
 #
 VALGRIND_FLAGS = \
-                 --trace-children-skip=*/ld \
-                 --trace-children-skip=*/collect2 \
-                 --trace-children-skip=*/ldconfig \
-                 --trace-children-skip=*/sh
+                 --trace-children-skip=*/ld,*/collect2,*/ldconfig,*/sh
                  
 
 # Files produced by tests that must be purged
