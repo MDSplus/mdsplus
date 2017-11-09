@@ -23,7 +23,7 @@ SYNOPSIS
                [--distname=name] [--updatepkg] [--eventport=number]
                [--arch=name] [--color] [--winhost=hostname]
                [--winbld=dir] [--winrembld=dir] [--gitcommit=commit]
-               [--jars-dir=dir] [--make-jars]
+               [--jars-dir=dir] [--make-jars] [--docker-srcdir=dir]
 
 DESCRIPTION
     The build.sh script is used for building, testing and deploy MDSplus
@@ -202,6 +202,12 @@ OPTIONS
 
     --disable-java
        Do not compile java programs (passes --disable-java to configure)
+
+    --docker-srcdir=dir
+       Specify the directory to use inside the docker containers used to build
+       the code. If not specified the docker containers will use the
+       full directory spec of the parent directory of the build.sh
+       on the host.
 
 OPTIONS WITH OS SPECIFIC DEFAULT
 
@@ -385,6 +391,9 @@ parsecmd() {
 	    --disable-java)
 		CONFIGURE_PARAMS="$CONFIGURE_PARAMS --disable-java"
 		;;
+	    --docker-srcdir=*)
+		DOCKER_SRCDIR="${i#*=}"
+		;;
 	    *)
 		unknownopts="${unknownopts} $i"
 		;;
@@ -404,6 +413,10 @@ opts="$@"
 parsecmd "$opts"
 
 SRCDIR=$(realpath $(dirname ${0})/..)
+if [ -z "${DOCKER_SRCDIR}" ]
+then
+   DOCKER_SRCDIR="${SRCDIR}"
+fi
 
 #
 # Get the default options for the OS specified.
@@ -636,6 +649,7 @@ OS=${OS} \
   VALGRIND_TOOLS=${VALGRIND_TOOLS} \
   SANITIZE=${SANITIZE} \
   SRCDIR=${SRCDIR} \
+  DOCKER_SRCDIR="$DOCKER_SRCDIR" \
   BRANCH=${BRANCH} \
   WORKSPACE=${WORKSPACE} \
   RELEASEDIR=${RELEASEDIR} \

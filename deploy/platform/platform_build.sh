@@ -55,7 +55,7 @@ rundocker(){
     if [ -z "$INTERACTIVE" ]
     then
         stdio="-a stdout -a stderr"
-        program="/source/deploy/platform/platform_docker_build.sh"
+        program="${DOCKER_SRCDIR}/deploy/platform/platform_docker_build.sh"
     else
         stdio="-i"
         program="/bin/bash"
@@ -67,8 +67,8 @@ rundocker(){
         echo "Building installers for ${arch} using ${image}"
         if [ ! -z "$INTERACTIVE" ]
         then
-            echo "run /source/deploy/platform/platform_docker_build.sh"
-            echo "or  NOMAKE=1 /source/deploy/platform/platform_docker_build.sh"
+            echo "run ${SRCDIR}/deploy/platform/platform_docker_build.sh"
+            echo "or  NOMAKE=1 ${SRCDIR}/deploy/platform/platform_docker_build.sh"
         fi
         #
         # If there are both 32-bit and 64-bit packages for the platform
@@ -109,7 +109,7 @@ rundocker(){
            -e "mdsevent_port=$EVENT_PORT" \
            -e "HOME=/workspace" \
            -e "JARS_DIR=$jars_dir" \
-           -v $(realpath ${SRCDIR}):/source \
+           -v ${SRCDIR}:${DOCKER_SRCDIR} \
            -v ${WORKSPACE}:/workspace \
            $port_forwarding \
            $(volume "${JARS_DIR}" /jars_dir) \
