@@ -66,7 +66,7 @@ Connection *FindConnection(int id, Connection ** prev){
   return c;
 }
 
-int NextConnection(void **ctx, char **info_name, void **info, size_t * info_len){//check
+int NextConnection(void **ctx, char **info_name, void **info, size_t * info_len){
   int ans;
   CONNECTIONLIST_LOCK;
   Connection *c, *next;
@@ -95,21 +95,35 @@ int FlushConnection(int id){
   return -1;
 }
 
-#ifdef _WIN32
-static void registerHandler(){}
-#else
 static void exitHandler(void){
-  int id;
-  void *ctx = (void *)-1;
-  while ((id = NextConnection(&ctx, 0, 0, 0)) != -1) {
-    DisconnectConnection(id);
-    ctx = 0;
+  // unsure if pthread_cleanup_push would be good here as we are already cleaning up
+  LockConnection();
+  Connection *c,*p = NULL;
+  for (c = ConnectionList; c ; c = c->next) {
+    if (c->deleted) {
+      // is handled by DisconnectConnection: build new list out of those
+      if (p)
+        p->next = c;
+      else
+        ConnectionList = p = c;
+      continue;
+    }
+    c->deleted = B_TRUE;
+    if (c->io && c->io->disconnect)
+      c->io->disconnect(c->id);
+    if (c->info)
+      free(c->info);
+    FreeDescriptors(c);
+    free(c->protocol);
+    free(c->info_name);
+    free(c);
   }
+  UnlockConnection();
 }
+
 static void registerHandler(){
   atexit(exitHandler);
 }
-#endif
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -226,8 +240,6 @@ void FreeDescriptors(Connection * c){
     }
   }
 }
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //  DisconnectConnection  //////////////////////////////////////////////////////
@@ -402,3 +414,4 @@ int GetConnectionClientType(int conid){
   CONNECTIONLIST_UNLOCK;
   return type;
 }
+
