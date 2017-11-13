@@ -51,6 +51,8 @@ fprintf(stderr,"connection->unlocked\n");
 #define CONNECTIONLIST_LOCK   LockConnection();pthread_cleanup_push(UnlockConnection, NULL);
 #define CONNECTIONLIST_UNLOCK pthread_cleanup_pop(1);
 
+static int _DisconnectConnection(int conid);
+
 Connection *_FindConnection(int id, Connection ** prev){
   Connection *c, *p;
   for (p = 0, c = ConnectionList; c && c->id != id; p = c, c = c->next);
@@ -68,7 +70,6 @@ Connection *FindConnection(int id, Connection ** prev){
 
 int NextConnection(void **ctx, char **info_name, void **info, size_t * info_len){//check
   int ans;
-  CONNECTIONLIST_LOCK;
   Connection *c, *next;
   next = (*ctx != (void *)-1) ? (Connection *) * ctx : ConnectionList;
   for (c = ConnectionList; c && c != next; c = c->next) ;
@@ -85,7 +86,6 @@ int NextConnection(void **ctx, char **info_name, void **info, size_t * info_len)
     *ctx = 0;
     ans = -1;
   }
-  CONNECTIONLIST_UNLOCK;
   return ans;
 }
 
@@ -101,10 +101,12 @@ static void registerHandler(){}
 static void exitHandler(void){
   int id;
   void *ctx = (void *)-1;
+  CONNECTIONLIST_LOCK;
   while ((id = NextConnection(&ctx, 0, 0, 0)) != -1) {
-    DisconnectConnection(id);
+    _DisconnectConnection(id);
     ctx = 0;
   }
+  CONNECTIONLIST_UNLOCK;
 }
 static void registerHandler(){
   atexit(exitHandler);
@@ -232,26 +234,30 @@ void FreeDescriptors(Connection * c){
 ////////////////////////////////////////////////////////////////////////////////
 //  DisconnectConnection  //////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+int DisconnectConnection(int conid) {
+  int status;
+  CONNECTIONLIST_LOCK;
+  status = _DisconnectConnection(conid);
+  CONNECTIONLIST_UNLOCK;
+  return status;
+}
 
-int DisconnectConnection(int conid){
+
+static int _DisconnectConnection(int conid){
   INIT_STATUS_AS MDSplusERROR;
   Connection *p, *c;
-  CONNECTIONLIST_LOCK;
   c = _FindConnection(conid, &p);
   if (c && c->deleted == B_FALSE)
     c->deleted = B_TRUE;
   else c = NULL;
   // mark for deletion but do not lock for entire disconnect procedure
-  CONNECTIONLIST_UNLOCK;
   if (c) {
     if (c->io && c->io->disconnect)
       c->io->disconnect(conid);
-    CONNECTIONLIST_LOCK;
     if (p == 0)
       ConnectionList = c->next;
     else
       p->next = c->next;
-    CONNECTIONLIST_UNLOCK;
     if (c->info)
       free(c->info);
     FreeDescriptors(c);
