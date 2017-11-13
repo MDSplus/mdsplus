@@ -96,15 +96,15 @@ int FlushConnection(int id){
 }
 
 static void exitHandler(void){
-  static pthread_mutex_t exit_mutex = PTHREAD_MUTEX_INITIALIZER;
   int id;
   void *ctx = (void *)-1;
-  pthread_mutex_lock(&exit_mutex);
+  // unsure if pthread_cleanup_push would be good here as we are already cleaning up
+  LockConnection(); 
   while ((id = NextConnection(&ctx, 0, 0, 0)) != -1) {
     DisconnectConnection(id);
     ctx = 0;
   }
-  pthread_mutex_unlock(&exit_mutex);
+  UnlockConnection();
 }
 static void registerHandler(){
   atexit(exitHandler);
