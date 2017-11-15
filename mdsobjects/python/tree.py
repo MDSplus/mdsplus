@@ -366,22 +366,22 @@ class Tree(object):
                 if mode == 'NORMAL':
                     _exc.checkStatus(_TreeShr._TreeOpen(_C.byref(self.ctx),
                                           _C.c_char_p(_ver.tobytes(tree)),
-                                          _C.c_int32(shot),
+                                          _C.c_int32(int(shot)),
                                           _C.c_int32(0)))
                 elif mode == 'EDIT':
                     _exc.checkStatus(_TreeShr._TreeOpenEdit(_C.byref(self.ctx),
                                               _C.c_char_p(_ver.tobytes(tree)),
-                                              _C.c_int32(shot),
+                                              _C.c_int32(int(shot)),
                                               _C.c_int32(0)))
                 elif mode == 'READONLY':
                     _exc.checkStatus(_TreeShr._TreeOpen(_C.byref(self.ctx),
                                           _C.c_char_p(_ver.tobytes(tree)),
-                                          _C.c_int32(shot),
+                                          _C.c_int32(int(shot)),
                                           _C.c_int32(1)))
                 elif mode == 'NEW':
                     _exc.checkStatus(_TreeShr._TreeOpenNew(_C.byref(self.ctx),
                                              _C.c_char_p(_ver.tobytes(tree)),
-                                             _C.c_int32(shot)))
+                                             _C.c_int32(int(shot))))
                 else:
                     raise TypeError('Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".')
             if not isinstance(self.ctx,_C.c_void_p) or self.ctx.value is None:
@@ -655,7 +655,7 @@ class Tree(object):
         """
         _exc.checkStatus(
                 _TreeShr._TreeCreatePulseFile(self.ctx,
-                                              _C.c_int32(shot),
+                                              _C.c_int32(int(shot)),
                                               _C.c_int32(0),
                                               _C.c_void_p(0)))
 
@@ -884,7 +884,7 @@ class Tree(object):
         """
         _exc.checkStatus(
                 _TreeShr.TreeSetCurrentShotId(_C.c_char_p(_ver.tobytes(treename)),
-                                              _C.c_int32(shot)))
+                                              _C.c_int32(int(shot))))
 
     def setDefault(self,node):
         """Set current default TreeNode.
@@ -1511,7 +1511,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                                            _dat.Data.byref(end),
                                            _dat.Data.byref(dim),
                                            _dat.Data.byref(array),
-                                           _C.c_int32(idx)))
+                                           _C.c_int32(int(idx))))
 
     def beginTimestampedSegment(self,array,idx=-1):
         """Allocate space for a timestamped segment
@@ -1526,7 +1526,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                 _TreeShr._TreeBeginTimestampedSegment(self.ctx,
                                                       self._nid,
                                                       _dat.Data.byref(array),
-                                                      _C.c_int32(idx)))
+                                                      _C.c_int32(int(idx))))
 
     def compare(self,value,contents=True):
         """Returns True if this node contains the same data as specified in the value argument
@@ -2001,7 +2001,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         _exc.checkStatus(
             _TreeShr._TreeGetSegment(self.ctx,
                                      self._nid,
-                                     _C.c_int32(idx),
+                                     _C.c_int32(int(idx)),
                                      val.ref,
                                      dim.ref))
         return _cmp.Signal(val.value,None,dim.value)
@@ -2025,7 +2025,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         _exc.checkStatus(
             _TreeShr._TreeGetSegmentLimits(self.ctx,
                                            self._nid,
-                                           _C.c_int32(idx),
+                                           _C.c_int32(int(idx)),
                                            start.ref,
                                            end.ref))
         start,end = start.value,end.value
@@ -2292,7 +2292,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                                           _dat.Data.byref(end),
                                           _dat.Data.byref(dim),
                                           _dat.Data.byref(array),
-                                          _C.c_int32(idx),
+                                          _C.c_int32(int(idx)),
                                           _C.c_int32(shape)))
 
     def move(self,parent,newname=None):
@@ -2346,7 +2346,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         _exc.checkStatus(
                 _TreeShr._TreePutRow(self.ctx,
                                      self._nid,
-                                     _C.c_int32(bufsize),
+                                     _C.c_int32(int(bufsize)),
                                      _C.byref(_C.c_int64(int(timestamp))),
                                      _dat.Data.byref(data)))
 
@@ -2362,7 +2362,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         _exc.checkStatus(
                 _TreeShr._TreePutSegment(self.ctx,
                                          self._nid,
-                                         _C.c_int32(idx),
+                                         _C.c_int32(int(idx)),
                                          _dat.Data.byref(data)))
 
     def putTimestampedSegment(self,timestampArray,array):
@@ -2402,8 +2402,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                                                      self._nid,
                                                      timestampArray.value.ctypes,
                                                      _dat.Data.byref(array),
-                                                     _C.c_int32(idx),
-                                                     _C.c_int32(rows_filled)))
+                                                     _C.c_int32(int(idx)),
+                                                     _C.c_int32(int(rows_filled))))
 
     def removeTag(self,tag):
         """Remove a tagname from this node
@@ -2608,7 +2608,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                                             _dat.Data.byref(start),
                                             _dat.Data.byref(end),
                                             _dat.Data.byref(dim),
-                                            _C.c_int32(idx)))
+                                            _C.c_int32(int(idx))))
 
 class TreePath(TreeNode): # HINT: TreePath begin
     """Class to represent an MDSplus node reference (path)."""
