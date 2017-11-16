@@ -33,6 +33,7 @@
 ########################################################
 
 class MDSplusException(Exception):
+  fac="MDSplus"
   statusDict={}
   severities=["W", "S", "E", "I", "F", "?", "?", "?"]
   def __new__(cls,*argv):
@@ -2465,10 +2466,6 @@ class StrSTRTOOLON(StrException):
   msgnam="STRTOOLON"
 
 MDSplusException.statusDict[2392176] = StrSTRTOOLON
-
-
-class MDSplusException(MDSplusException):
-  fac="MDSplus"
 
 
 class MDSplusWARNING(MDSplusException):

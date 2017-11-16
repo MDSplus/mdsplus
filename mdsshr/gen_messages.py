@@ -34,7 +34,7 @@ msglist = []
 
 
 def gen_include(root,filename,faclist,msglistm,f_test):
-    pfaclist = []
+    pfaclist = ["MDSplus"]
     print filename
     f_inc=open("%s/include/%sh" % (sourcedir,filename[0:-3]),'w')
     f_inc.write(
@@ -139,6 +139,7 @@ f_py.write("""#
 ########################################################
 
 class MDSplusException(Exception):
+  fac="MDSplus"
   statusDict={}
   severities=["W", "S", "E", "I", "F", "?", "?", "?"]
   def __new__(cls,*argv):
