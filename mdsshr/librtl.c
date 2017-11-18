@@ -86,7 +86,15 @@ typedef struct node {
 } LibTreeNode;
 
 #include <libroutines.h>
-
+#ifdef _WIN32
+static void localtime_r(time_t* time, struct tm* tval){
+  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_lock(&lock);
+  struct tm* ttval = localtime(time);
+  tval = memcpy(ttval,tval,sizeof(struct tm));
+  pthread_mutex_unlock(&lock);
+}
+#endif
 STATIC_CONSTANT int64_t VMS_TIME_OFFSET = LONG_LONG_CONSTANT(0x7c95674beb4000);
 
 ///
