@@ -975,7 +975,8 @@ EXPORT int LibConvertDateString(const char *asc_time, int64_t * qtime)
 EXPORT int LibTimeToVMSTime(const time_t * time_in, int64_t * time_out)
 {
   time_t time_to_use = time_in ? *time_in : time(NULL);
-  struct tm *tmval = localtime(&time_to_use);
+  struct tm tmval;
+  localtime_r(&time_to_use,&tmval);
   time_t tz_offset;
   struct timeval tv;
   if (time_in)
@@ -984,9 +985,9 @@ EXPORT int LibTimeToVMSTime(const time_t * time_in, int64_t * time_out)
     gettimeofday(&tv,0);
 
 #ifdef USE_TM_GMTOFF
-  tz_offset = tmval->tm_gmtoff;
+  tz_offset = tmval.tm_gmtoff;
 #else
-  tz_offset = - timezone + daylight * (tmval->tm_isdst ? 3600 : 0);
+  tz_offset = - timezone + daylight * (tmval.tm_isdst ? 3600 : 0);
 #endif
   *time_out = (int64_t) (time_to_use + tz_offset) * (int64_t) 10000000 + tv.tv_usec * 10 + VMS_TIME_OFFSET;
   return MDSplusSUCCESS;
@@ -999,7 +1000,7 @@ EXPORT time_t LibCvtTim(int *time_in, double *t)
   if (time_in) {
     int64_t time_local;
     double time_d;
-    struct tm *tmval;
+    struct tm tmval;
     time_t tz_offset;
     memcpy(&time_local, time_in, sizeof(time_local));
     time_local = (*(int64_t *) time_in - VMS_TIME_OFFSET);
@@ -1007,11 +1008,11 @@ EXPORT time_t LibCvtTim(int *time_in, double *t)
       time_local = 0;
     bintim = time_local / LONG_LONG_CONSTANT(10000000);
     time_d = (double)bintim + (double)(time_local % LONG_LONG_CONSTANT(10000000)) * 1E-7;
-    tmval = localtime(&bintim);
+    localtime_r(&bintim,&tmval);
 #ifdef USE_TM_GMTOFF
-    tz_offset = tmval->tm_gmtoff;
+    tz_offset = tmval.tm_gmtoff;
 #else
-    tz_offset = - timezone + daylight * (tmval->tm_isdst ? 3600 : 0);
+    tz_offset = - timezone + daylight * (tmval.tm_isdst ? 3600 : 0);
 #endif
     t_out = (time_d > 0 ? time_d : 0.0) - (double)tz_offset;
     bintim -= tz_offset;
