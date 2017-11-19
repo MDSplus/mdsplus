@@ -87,14 +87,32 @@ typedef struct node {
 
 #include <libroutines.h>
 #ifdef _WIN32
-static void localtime_r(time_t* time, struct tm* tval){
-  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-  pthread_mutex_lock(&lock);
-  struct tm* ttval = localtime(time);
-  tval = memcpy(ttval,tval,sizeof(struct tm));
-  pthread_mutex_unlock(&lock);
-}
+  static time_t get_tz_offset(time_t* time){
+    time_t tz_offset;
+    static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_lock(&lock);
+    struct tm* tmval = localtime(time);
+  #ifdef USE_TM_GMTOFF
+    tz_offset = tmval->tm_gmtoff;
+  #else
+    tz_offset = - timezone + daylight * (tmval->tm_isdst ? 3600 : 0);
+  #endif
+    pthread_mutex_unlock(&lock);
+    return tz_offset;
+  }
+#else
+  static time_t get_tz_offset(time_t* time){
+    struct tm tmval;
+    tzset();
+    localtime_r(time, &tmval);
+  #ifdef USE_TM_GMTOFF
+    return tmval.tm_gmtoff;
+  #else
+    return - timezone + daylight * (tmval.tm_isdst ? 3600 : 0);
+  #endif
+  }
 #endif
+
 STATIC_CONSTANT int64_t VMS_TIME_OFFSET = LONG_LONG_CONSTANT(0x7c95674beb4000);
 
 ///
@@ -983,20 +1001,12 @@ EXPORT int LibConvertDateString(const char *asc_time, int64_t * qtime)
 EXPORT int LibTimeToVMSTime(const time_t * time_in, int64_t * time_out)
 {
   time_t time_to_use = time_in ? *time_in : time(NULL);
-  struct tm tmval;
-  localtime_r(&time_to_use,&tmval);
-  time_t tz_offset;
   struct timeval tv;
   if (time_in)
     tv.tv_usec = 0;
   else
     gettimeofday(&tv,0);
-
-#ifdef USE_TM_GMTOFF
-  tz_offset = tmval.tm_gmtoff;
-#else
-  tz_offset = - timezone + daylight * (tmval.tm_isdst ? 3600 : 0);
-#endif
+  time_t tz_offset = get_tz_offset(&time_to_use);
   *time_out = (int64_t) (time_to_use + tz_offset) * (int64_t) 10000000 + tv.tv_usec * 10 + VMS_TIME_OFFSET;
   return MDSplusSUCCESS;
 }
@@ -1008,20 +1018,13 @@ EXPORT time_t LibCvtTim(int *time_in, double *t)
   if (time_in) {
     int64_t time_local;
     double time_d;
-    struct tm tmval;
-    time_t tz_offset;
     memcpy(&time_local, time_in, sizeof(time_local));
     time_local = (*(int64_t *) time_in - VMS_TIME_OFFSET);
     if (time_local < 0)
       time_local = 0;
     bintim = time_local / LONG_LONG_CONSTANT(10000000);
     time_d = (double)bintim + (double)(time_local % LONG_LONG_CONSTANT(10000000)) * 1E-7;
-    localtime_r(&bintim,&tmval);
-#ifdef USE_TM_GMTOFF
-    tz_offset = tmval.tm_gmtoff;
-#else
-    tz_offset = - timezone + daylight * (tmval.tm_isdst ? 3600 : 0);
-#endif
+    time_t tz_offset = get_tz_offset(&bintim);
     t_out = (time_d > 0 ? time_d : 0.0) - (double)tz_offset;
     bintim -= tz_offset;
   } else
