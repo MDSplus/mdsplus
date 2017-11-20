@@ -125,7 +125,7 @@ public abstract class CONST extends Function{
         @Override
         public final CString evaluate() {
             try{
-                return this.mds.getDescriptor(this.tree.ctx, "$DEFAULT", CString.class);
+                return this.mds.getDescriptor(this.tree, "$DEFAULT", CString.class);
             }catch(final MdsException e){
                 return new CString(this.tree.getDefaultC().decompile());
             }

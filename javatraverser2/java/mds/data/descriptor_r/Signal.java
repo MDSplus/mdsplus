@@ -16,10 +16,6 @@ public final class Signal extends Descriptor_R<Number>{
         super(DTYPE.SIGNAL, null, arguments);
     }
 
-    public Signal(final Descriptor<?> value, final Descriptor<?> raw, final Descriptor<?> dim, final Descriptor<?>[] dims){
-        super(DTYPE.SIGNAL, null, dims, value, raw, dim);
-    }
-
     @Override
     public StringBuilder decompile(final int prec, final StringBuilder pout, final int mode) {
         return Descriptor_R.decompile_build(this, prec, pout, mode);
@@ -30,7 +26,7 @@ public final class Signal extends Descriptor_R<Number>{
         try{
             return this.getValue().getData();
         }catch(final MdsException e){
-            return this.mds.getDescriptor(this.tree == null ? null : this.tree.ctx, "DATA($)", this).getData();
+            return this.mds.getDescriptor(this.tree, "DATA($)", this).getData();
         }
     }
 
@@ -43,11 +39,13 @@ public final class Signal extends Descriptor_R<Number>{
     }
 
     @Override
-    public Signal getLocal_() {
-        final Descriptor<?>[] dims = new Descriptor<?>[this.ndesc() - 3];
-        for(int i = 1; i <= dims.length; i++)
-            dims[i] = this.getDimension(i).getLocal();
-        return (Signal)new Signal(this.getValue().getLocal(), this.getRaw().getLocal(), this.getDimension().getLocal(), dims).setLocal();
+    public Signal getLocal_(final FLAG local) {
+        final FLAG mylocal = new FLAG();
+        final Descriptor<?>[] dscs = new Descriptor<?>[this.ndesc()];
+        for(int i = 0; i < dscs.length; i++)
+            dscs[i] = Descriptor.getLocal(mylocal, this.getDescriptor(i));
+        if(FLAG.and(local, mylocal.flag)) return (Signal)this.setLocal();
+        return (Signal)new Signal(dscs).setLocal();
     }
 
     public final Descriptor<?> getRaw() {

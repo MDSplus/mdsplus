@@ -2,13 +2,14 @@ package mds.data.descriptor_s;
 
 import java.nio.ByteBuffer;
 import mds.MdsException;
+import mds.data.CTX;
 import mds.data.DATA;
 import mds.data.DTYPE;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_S;
 import mds.data.descriptor_s.Uint16.UShort;
 
-public final class Pointer extends Descriptor_S<Number> implements DATA<Number>{
+public final class Pointer extends Descriptor_S<Number> implements DATA<Number>, CTX{
     public static final UShort fromBuffer(final ByteBuffer b, final int idx) {
         return new UShort(b.getShort(idx));
     }
@@ -72,7 +73,12 @@ public final class Pointer extends Descriptor_S<Number> implements DATA<Number>{
     }
 
     @Override
-    public Descriptor<?> getLocal_() {
+    public final Pointer getDbid() {
+        return this;
+    }
+
+    @Override
+    public Descriptor<?> getLocal_(final FLAG local) {
         return this;
     }
 

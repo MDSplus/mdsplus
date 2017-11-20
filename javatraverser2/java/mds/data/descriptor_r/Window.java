@@ -28,8 +28,13 @@ public final class Window extends Descriptor_R<Number>{
     }
 
     @Override
-    public final Window getLocal_() {
-        return (Window)new Window(this.getStartingIdx().getLocal(), this.getEndingIdx().getLocal(), this.getValueAtIdx0().getLocal()).setLocal();
+    public final Window getLocal_(final FLAG local) {
+        final FLAG mylocal = new FLAG();
+        final Descriptor<?> start = Descriptor.getLocal(mylocal, this.getStartingIdx());
+        final Descriptor<?> end = Descriptor.getLocal(mylocal, this.getEndingIdx());
+        final Descriptor<?> valat = Descriptor.getLocal(mylocal, this.getValueAtIdx0());
+        if(FLAG.and(local, mylocal.flag)) return (Window)this.setLocal();
+        return (Window)new Window(start, end, valat).setLocal();
     }
 
     @Override

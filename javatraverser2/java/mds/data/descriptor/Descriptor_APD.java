@@ -100,10 +100,12 @@ public class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
     }
 
     @Override
-    public final Descriptor_APD getLocal_() {
+    public final Descriptor_APD getLocal_(final FLAG local) {
+        final FLAG mylocal = new FLAG();
         final Descriptor<?>[] apd = new Descriptor<?>[this.arsize() / this.length()];
         for(int i = 0; i < apd.length; i++)
-            apd[i] = this.getScalar(i).getLocal();
+            apd[i] = this.getScalar(i).getLocal(mylocal);
+        if(FLAG.and(local, mylocal.flag)) return (Descriptor_APD)this.setLocal();
         return (Descriptor_APD)new Descriptor_APD(this.dtype(), apd, this.getShape()).setLocal();
     }
 

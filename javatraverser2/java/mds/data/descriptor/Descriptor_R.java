@@ -195,7 +195,7 @@ public abstract class Descriptor_R<T extends Number>extends Descriptor<T>{
     }
 
     public final Descriptor<?> getDescriptor(final int idx) {
-        return (this.getNArgs() <= idx) ? Missing.NEW : this.dscptrs(idx);
+        return (this.getNArgs() <= idx) ? null : this.dscptrs(idx);
     }
 
     public final Descriptor<?>[] getDescriptors(final int from, int upto) {

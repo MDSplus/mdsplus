@@ -29,7 +29,6 @@ import mds.Mds;
 import mds.MdsException;
 import mds.data.TREE;
 import mds.data.descriptor_s.CString;
-import mds.mdslib.MdsLib;
 
 @SuppressWarnings("serial")
 public class OpenTreeDialog extends JDialog{
@@ -252,8 +251,9 @@ public class OpenTreeDialog extends JDialog{
             final TREE tree = TREE.getActiveTree();
             if(tree != null) this.setFields(tree.expt, tree.shot);
         }
-        final Mds mds = this.treeman == null ? null : this.treeman.getMds();
-        this.expt_path.setEnabled(mds instanceof MdsLib);
+        // * seems like it might also work on remotes
+        // final Mds mds = this.treeman == null ? null : this.treeman.getMds();
+        // this.expt_path.setEnabled(mds instanceof MdsLib);
         this.setVisible(true);
     }
 
