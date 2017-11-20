@@ -23,9 +23,11 @@
 
 #include <testutils/Singleton.h>
 
+#include <mdsobjects.h>
+
 extern "C" int mdsip_main(int argc, char **argv);
 
-
+namespace mds = MDSplus;
 
 namespace testing {
 class MdsIpInstancer {
@@ -112,6 +114,22 @@ public:
         return ss.str();
     }
     
+    bool waitForServer(int retries = 5, int usec = 500000) const {
+        if(m_pid > 0) { // only parent can wait //
+            for(int retry = 0; retry<retries; ++retry) {
+                try {
+                    mds::Connection cnx((char *)this->getAddress().c_str());
+                    (void)cnx;
+                    return true; }
+                catch (mds::MdsException &e) {
+                    (void)e;
+                    usleep(usec);
+                }
+            }
+        }
+        return false;
+    }
+
 private:
     
     

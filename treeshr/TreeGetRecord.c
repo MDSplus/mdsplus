@@ -25,6 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "treeshrp.h"		/* must be first or off_t wrong */
 #include <string.h>
 #include <stdlib.h>
+#include <mdsplus/mdsplus.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <ncidef.h>
@@ -85,6 +86,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 	      status = TreeINVDFFCLASS;
 	      break;
 	    }
+	    MDS_ATTR_FALLTHROUGH
 	  case CLASS_S:
 	  case CLASS_XS:
 	    if STATUS_OK {

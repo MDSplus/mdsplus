@@ -82,26 +82,23 @@ fi
     <requires package="motif"/>
     <requires package="mitdevices_bin"/>
     <include dir="/usr/local/mdsplus/tdi/MitDevices"/>
+    <include dir="/usr/local/mdsplus/pydevices/MitDevices"/>
     <postinst>
-
-pushd __INSTALL_PREFIX__/mdsplus/tdi/MitDevices &gt;/dev/null 2&gt;&amp;1
+      
+python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
 rm -Rf %{python_sitelib}/MitDevices*
 rm -Rf %{python_sitelib}/*mitdevices*
-rm -Rf build dist
-python setup.py -q install
-rm -Rf build dist MitDevices.egg-info
-popd &gt;/dev/null 2&gt;&amp;1
 
     </postinst>
-    <prerm>
+    <postrm> rm -Rf __INSTALL_PREFIX__/mdsplus/pydevices/MitDevices </postrm>
+    <post-install>
 
-if [ "$1" == "0" ]
-then
+python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
 rm -Rf %{python_sitelib}/MitDevices*
 rm -Rf %{python_sitelib}/*mitdevices*
-fi
 
-    </prerm>
+    </post-install>
+    <post-deinstall> rm -Rf /usr/local/mdsplus/pydevices/MitDevices</post-deinstall>
   </package>
 
   <package name="mitdevices_bin" arch="bin" summary="Libraries used for mitdevices" description="Libraries used for mitdevices">
@@ -327,8 +324,8 @@ fi
     <include file="/usr/local/mdsplus/pixmaps/dwscope.png"/>
     <include file="/usr/local/mdsplus/pixmaps/traverser.png"/>
     <exclude dir="/usr/local/mdsplus/tdi/MitDevices"/>
+    <exclude dir="/usr/local/mdsplus/pydevices"/>
     <exclude dir="/usr/local/mdsplus/tdi/RfxDevices"/>
-    <exclude dir="/usr/local/mdsplus/tdi/W7xDevices"/>
     <exclude dir="/usr/local/mdsplus/tdi/KbsiDevices"/>
     <exclude dir="/usr/local/mdsplus/tdi/camac"/>
     <exclude dir="/usr/local/mdsplus/tdi/d3d"/>
@@ -421,7 +418,8 @@ rm -f /etc/profile.d/mdsplus.csh
     <include dir="/usr/local/mdsplus/bin"/>
     <exclude file="/usr/local/mdsplus/bin/ScopePrinters"/>
     <exclude file="/usr/local/mdsplus/bin/dw*"/>
-    <exclude file="/usr/local/mdsplus/bin/act*"/>
+    <exclude file="/usr/local/mdsplus/bin/actmon"/>
+    <exclude file="/usr/local/mdsplus/bin/actions"/>
     <exclude file="/usr/local/mdsplus/bin/traverser*"/>
     <exclude file="/usr/local/mdsplus/bin/jScope"/>
     <exclude file="/usr/local/mdsplus/bin/jServer"/>
@@ -530,52 +528,45 @@ fi
     <requires package="java"/>
     <requires package="python"/>
     <include dir="/usr/local/mdsplus/tdi/RfxDevices"/>
+    <include dir="/usr/local/mdsplus/pydevices/RfxDevices"/>
     <include file="/usr/local/mdsplus/java/classes/jDevices.jar"/>
     <postinst>
 
-pushd __INSTALL_PREFIX__/mdsplus/tdi/RfxDevices &gt;/dev/null 2&gt;&amp;1
+python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1
 rm -Rf %{python_sitelib}/RfxDevices*
 rm -Rf %{python_sitelib}/*rfxdevices*
-rm -Rf build dist
-python setup.py -q install
-rm -Rf build dist RfxDevices.egg-info
-popd &gt;/dev/null 2&gt;&amp;1
 
     </postinst>
-    <prerm>
+    <postrm> rm -Rf __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices </postrm>
+    <post-install>
 
-if [ "$1" == "0" ]
-then
+python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1
 rm -Rf %{python_sitelib}/RfxDevices*
 rm -Rf %{python_sitelib}/*rfxdevices*
-fi
 
-    </prerm>
+    </post-install>
+    <post-deinstall> rm -Rf /usr/local/mdsplus/pydevices/RfxDevices</post-deinstall>
 
   </package>
   <package name="w7xdevices" arch="noarch" summary="Support for W7x data acquisition devices" description="Support for W7x data acquisition devices">
     <requires package="python"/>
-    <include dir="/usr/local/mdsplus/tdi/W7xDevices"/>
+    <include dir="/usr/local/mdsplus/pydevices/W7xDevices"/>
     <postinst>
 
-pushd __INSTALL_PREFIX__/mdsplus/tdi/W7xDevices &gt;/dev/null 2&gt;&amp;1
+python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1
 rm -Rf %{python_sitelib}/W7xDevices*
 rm -Rf %{python_sitelib}/*w7xdevices*
-rm -Rf build dist
-python setup.py -q install
-rm -Rf build dist W7xDevices.egg-info
-popd &gt;/dev/null 2&gt;&amp;1
 
     </postinst>
-    <prerm>
+    <postrm> rm -Rf __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices </postrm>
+    <post-install>
 
-if [ "$1" == "0" ]
-then
+python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1
 rm -Rf %{python_sitelib}/W7xDevices*
 rm -Rf %{python_sitelib}/*w7xdevices*
-fi
 
-    </prerm>
+    </post-install>
+    <post-deinstall> rm -Rf /usr/local/mdsplus/pydevices/W7xDevices</post-deinstall>
 
   </package>
 

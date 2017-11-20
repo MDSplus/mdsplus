@@ -44,11 +44,11 @@ clean-local:
 
 
 TEST_DIRS ?= \
-               mdsobjects/python/tests \
-               mdsshr/testing \
-               mdslib/testing \
-               mdsobjects/cpp/testing
-#              testing/selftest
+			   mdsobjects/python/tests \
+			   mdsshr/testing \
+			   mdslib/testing \
+			   mdsobjects/cpp/testing
+#               testing/selftest
 
 TEST_OUTDIR  ?= ${top_builddir}/testing
 
@@ -58,12 +58,16 @@ print:
 
 .PHONY: $(tests_DIRS) $(clean_DIRS) $(tests_valgrind_DIRS) $(tests_valgrind_suppressions_DIRS)
 tests_DIRS  = $(addprefix tests__$(top_builddir)/, $(TEST_DIRS))
+rebuild_tests_DIRS  = $(addprefix rebuild_tests__$(top_builddir)/, $(TEST_DIRS))
 clean_DIRS  = $(addprefix clean__$(top_builddir)/, $(TEST_DIRS))
 tests_valgrind_DIRS = $(addprefix tests_valgrind__$(top_builddir)/, $(TEST_DIRS))
 tests_valgrind_suppressions_DIRS = $(addprefix tests_valgrind_suppressions__$(top_builddir)/, $(TEST_DIRS))
 $(tests_DIRS):
 	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:tests__%=%) tests
 	
+$(rebuild_tests_DIRS):
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:rebuild_tests__%=%) rebuild-tests
+
 $(clean_DIRS):
 	@-$(MAKE) $(AM_MAKEFLAGS) -C $(@:clean__%=%) clean
 
@@ -77,6 +81,8 @@ $(tests_valgrind_suppressions_DIRS):
 
 .PHONY: tests tests-valgrind tests-valgrind-suppressions tests-clean
 tests: $(tests_DIRS)
+
+rebuild-tests: $(rebuild_tests_DIRS)
 
 tests-valgrind: $(tests_valgrind_DIRS)
 

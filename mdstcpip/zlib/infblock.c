@@ -27,6 +27,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
+#include <mdsplus/mdsplus.h>
 #include "zutil.h"
 #include "infblock.h"
 #include "inftrees.h"
@@ -321,6 +322,7 @@ int r;
 	s->sub.decode.codes = c;
       }
       s->mode = CODES;
+      MDS_ATTR_FALLTHROUGH
     case CODES:
       UPDATE if ((r = inflate_codes(s, z, r)) != Z_STREAM_END)
 	return inflate_flush(s, z, r);
@@ -334,9 +336,11 @@ int r;
 	break;
       }
       s->mode = DRY;
+      MDS_ATTR_FALLTHROUGH
     case DRY:
       FLUSH if (s->read != s->write)
 	LEAVE s->mode = DONE;
+      MDS_ATTR_FALLTHROUGH
     case DONE:
       r = Z_STREAM_END;
     LEAVE case BAD:

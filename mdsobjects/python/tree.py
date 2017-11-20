@@ -193,7 +193,7 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
         try:
             ctx = self.ctx
             self.__class__.order = [id for id in self.order if id!=self.id]
-            kw = self.ctxs[ctx].pop(self.id)
+            kw = self.ctxs[ctx].pop(self.id) # analysis:ignore
             #print('delete',self.id,{kv for kv in kw.items() if kv[0]!='trace'})
             if len(self.ctxs[ctx])>0: return # some context is still open
             self.ctxs.pop(ctx)
@@ -366,22 +366,22 @@ class Tree(object):
                 if mode == 'NORMAL':
                     _exc.checkStatus(_TreeShr._TreeOpen(_C.byref(self.ctx),
                                           _C.c_char_p(_ver.tobytes(tree)),
-                                          _C.c_int32(shot),
+                                          _C.c_int32(int(shot)),
                                           _C.c_int32(0)))
                 elif mode == 'EDIT':
                     _exc.checkStatus(_TreeShr._TreeOpenEdit(_C.byref(self.ctx),
                                               _C.c_char_p(_ver.tobytes(tree)),
-                                              _C.c_int32(shot),
+                                              _C.c_int32(int(shot)),
                                               _C.c_int32(0)))
                 elif mode == 'READONLY':
                     _exc.checkStatus(_TreeShr._TreeOpen(_C.byref(self.ctx),
                                           _C.c_char_p(_ver.tobytes(tree)),
-                                          _C.c_int32(shot),
+                                          _C.c_int32(int(shot)),
                                           _C.c_int32(1)))
                 elif mode == 'NEW':
                     _exc.checkStatus(_TreeShr._TreeOpenNew(_C.byref(self.ctx),
                                              _C.c_char_p(_ver.tobytes(tree)),
-                                             _C.c_int32(shot)))
+                                             _C.c_int32(int(shot))))
                 else:
                     raise TypeError('Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".')
             if not isinstance(self.ctx,_C.c_void_p) or self.ctx.value is None:
@@ -655,7 +655,7 @@ class Tree(object):
         """
         _exc.checkStatus(
                 _TreeShr._TreeCreatePulseFile(self.ctx,
-                                              _C.c_int32(shot),
+                                              _C.c_int32(int(shot)),
                                               _C.c_int32(0),
                                               _C.c_void_p(0)))
 
@@ -884,7 +884,7 @@ class Tree(object):
         """
         _exc.checkStatus(
                 _TreeShr.TreeSetCurrentShotId(_C.c_char_p(_ver.tobytes(treename)),
-                                              _C.c_int32(shot)))
+                                              _C.c_int32(int(shot))))
 
     def setDefault(self,node):
         """Set current default TreeNode.
@@ -1403,15 +1403,10 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         """
         #if name=='tree':
         #    return Tree()
-        try:
-            return _getNodeByAttr(self,name)
-        except _exc.TreeNNF:
-            pass
-        print(name,hasattr(self,name))
-        try:
-            return super(TreeNode,self).__getattribute__(name)
-        except AttributeError as e:
-            print(e)
+        try:   return _getNodeByAttr(self,name)
+        except _exc.TreeNNF: pass
+        try:   return super(TreeNode,self).__getattribute__(name)
+        except AttributeError: pass
         #if name=='length':
         #    raise AttributeError
         #if self.length>0:
@@ -1516,7 +1511,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                                            _dat.Data.byref(end),
                                            _dat.Data.byref(dim),
                                            _dat.Data.byref(array),
-                                           _C.c_int32(idx)))
+                                           _C.c_int32(int(idx))))
 
     def beginTimestampedSegment(self,array,idx=-1):
         """Allocate space for a timestamped segment
@@ -1531,24 +1526,25 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                 _TreeShr._TreeBeginTimestampedSegment(self.ctx,
                                                       self._nid,
                                                       _dat.Data.byref(array),
-                                                      _C.c_int32(idx)))
+                                                      _C.c_int32(int(idx))))
 
-    def compare(self,value):
+    def compare(self,value,contents=True):
         """Returns True if this node contains the same data as specified in the value argument
         @param value: Value to compare contents of the node with
         @type value: Data
         @rtype: Bool
         """
-        if isinstance(value,TreePath) and isinstance(self,TreePath):
-          ans=str(self)==str(value)
-        elif type(self)==TreeNode and type(value)==TreeNode:
-          ans=self._nid==value._nid and self.tree==value.tree
+        if contents:
+            try:
+                r=self.record
+                if isinstance(r,TreeNode):
+                  return r.compare(value,contents=False)
+                else:
+                  return r.compare(value)
+            except _exc.TreeNODATA:
+                return (value is None) or (value == _dat.EmptyData)
         else:
-          try:
-            ans=value.compare(self.record)
-          except _exc.TreeNODATA:
-            ans=value is None
-        return ans
+            return isinstance(value,TreeNode) and (str(self)==str(value)) and (self.tree==value.tree)
 
     def containsVersions(self):
         """Return true if this node contains data versions
@@ -1616,13 +1612,12 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @type arg: Data
         @rtype: None
         """
-        self.restoreContext()
         arglist=[self.ctx]
         xd=_dsc.descriptor_xd()
         argsobj = [_scr.Int32(self.nid),_scr.String(method)]
         argsobj+= list(map(_dat.Data,args))
         arglist+= list(map(_dat.Data.byref,argsobj))
-        arglist+= [xd.byref,_C.c_void_p(0xffffffff)]
+        arglist+= [xd.ref,_C.c_void_p(0xffffffff)]
         _exc.checkStatus(_TreeShr._TreeDoMethod(*arglist))
         return xd._setTree(self.tree).value
 
@@ -1685,9 +1680,11 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @rtype: Data
         """
         xd=_dsc.Descriptor_xd()
-        status=_TreeShr._TreeGetRecord(self.ctx,
-                                       self._nid,
-                                       xd.byref)
+        _TreeCtx.pushTree(self.tree)
+        try:
+            status=_TreeShr.TreeGetRecord(self._nid,xd.ref)
+        finally:
+            _TreeCtx.popTree()
         if (status & 1):
             return xd._setTree(self.tree).value
         elif len(altvalue)==1 and status == _exc.TreeNODATA.status:
@@ -2004,9 +2001,9 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         _exc.checkStatus(
             _TreeShr._TreeGetSegment(self.ctx,
                                      self._nid,
-                                     _C.c_int32(idx),
-                                     val.byref,
-                                     dim.byref))
+                                     _C.c_int32(int(idx)),
+                                     val.ref,
+                                     dim.ref))
         return _cmp.Signal(val.value,None,dim.value)
 
     def getSegmentDim(self,idx):
@@ -2028,9 +2025,9 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         _exc.checkStatus(
             _TreeShr._TreeGetSegmentLimits(self.ctx,
                                            self._nid,
-                                           _C.c_int32(idx),
-                                           start.byref,
-                                           end.byref))
+                                           _C.c_int32(int(idx)),
+                                           start.ref,
+                                           end.ref))
         start,end = start.value,end.value
         if start is not None or end is not None:
             return (start,end)
@@ -2043,7 +2040,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                                            self._nid,
                                            _dat.Data.byref(start),
                                            _dat.Data.byref(end),
-                                           xd.byref))
+                                           xd.ref))
         return xd.value
 
     def getSegmentTimes(self):
@@ -2054,8 +2051,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
             _TreeShr._TreeGetSegmentTimesXd(self.ctx,
                                            self._nid,
                                            _C.byref(num),
-                                           start.byref,
-                                           end.byref))
+                                           start.ref,
+                                           end.ref))
         return num.value,start.value,end.value
 
     def getSegmentEnd(self,idx):
@@ -2295,7 +2292,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                                           _dat.Data.byref(end),
                                           _dat.Data.byref(dim),
                                           _dat.Data.byref(array),
-                                          _C.c_int32(idx),
+                                          _C.c_int32(int(idx)),
                                           _C.c_int32(shape)))
 
     def move(self,parent,newname=None):
@@ -2349,7 +2346,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         _exc.checkStatus(
                 _TreeShr._TreePutRow(self.ctx,
                                      self._nid,
-                                     _C.c_int32(bufsize),
+                                     _C.c_int32(int(bufsize)),
                                      _C.byref(_C.c_int64(int(timestamp))),
                                      _dat.Data.byref(data)))
 
@@ -2365,7 +2362,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         _exc.checkStatus(
                 _TreeShr._TreePutSegment(self.ctx,
                                          self._nid,
-                                         _C.c_int32(idx),
+                                         _C.c_int32(int(idx)),
                                          _dat.Data.byref(data)))
 
     def putTimestampedSegment(self,timestampArray,array):
@@ -2405,8 +2402,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                                                      self._nid,
                                                      timestampArray.value.ctypes,
                                                      _dat.Data.byref(array),
-                                                     _C.c_int32(idx),
-                                                     _C.c_int32(rows_filled)))
+                                                     _C.c_int32(int(idx)),
+                                                     _C.c_int32(int(rows_filled))))
 
     def removeTag(self,tag):
         """Remove a tagname from this node
@@ -2445,13 +2442,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
           finally:
             self.tree.setDefault(olddefault)
         return self
-
-    def restoreContext(self):
-        """Restore tree context. Used by internal functions.
-        @rtype: None
-        """
-        if self.tree is not None:
-            self.tree.restoreContext()
 
     def _setNciFlag(self,mask,setting):
         class NCI_ITEMS(_C.Structure):
@@ -2618,7 +2608,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                                             _dat.Data.byref(start),
                                             _dat.Data.byref(end),
                                             _dat.Data.byref(dim),
-                                            _C.c_int32(idx)))
+                                            _C.c_int32(int(idx))))
 
 class TreePath(TreeNode): # HINT: TreePath begin
     """Class to represent an MDSplus node reference (path)."""
@@ -2706,9 +2696,6 @@ class TreeNodeArray(_arr.Int32Array): # HINT: TreeNodeArray begin
     @property
     def nid_number(self):
         return _arr.Array(self._value)
-
-    def restoreContext(self):
-        self.tree.restoreContext()
 
     def getPath(self):
         """Return tuple of node names"
@@ -3044,14 +3031,20 @@ class Device(TreeNode): # HINT: Device begin
         @type value: varied
         @rtype: None
         """
+        def isInDicts(name,cls):
+            for c in cls.mro()[:-1]:
+                if name in c.__dict__:
+                    return True
+            return False
         from  inspect import stack
         if name in self.part_dict:
             head = self if self._head==0 else self.head
             TreeNode(self.part_dict[name]+self.head.nid,self.tree,head).record=value
         elif (hasattr(self,name)
            or name.startswith('_')
+           or isInDicts(name,self.__class__)
            or isinstance(stack()[1][0].f_locals.get('self',None),Device)):
-                super(Device,self).__setattr__(name,value)
+              super(Device,self).__setattr__(name,value)
         else: print("""WARNING: your tried to add the attribute or write to the subnode '%s' of '%s'.
 This is a deprecated action for Device nodes outside of Device methods. You should prefix the attribute with '_'.
 If you did intend to write to a subnode of the device you should check the proper path of the node: TreeNNF.
@@ -3232,6 +3225,7 @@ If you did intend to write to a subnode of the device you should check the prope
                                 try:
                                     devnam=fname[:-3].upper()
                                     __import__(fname[:-3]).__dict__[devnam]
+                                    ans.append(devnam)
                                 except:
                                     pass
                     finally:
@@ -3262,9 +3256,12 @@ If you did intend to write to a subnode of the device you should check the prope
                 MODNAME = modname.upper()
                 if MODEL == MODNAME:
                     package = models[idx+1].rstrip()
+                    if package == "pydevice":
+                        break
                     try:
                         return __import__(package).__dict__[modname]
                     except ImportError: pass
+                    except KeyError: pass
             module = Device.importPyDeviceModule(model)
         else:
             MODEL = model.upper()

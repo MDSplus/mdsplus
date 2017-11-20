@@ -33,7 +33,7 @@ import json
 import MDSplus
 import acq200, transport
 
-class ACQ(MDSplus.Device):
+class Acq(MDSplus.Device):
     """
     Abstract class to subclass the d-tacq acqxxx device types.  Contains
     members and methods that all of the acqxxx  devices share:

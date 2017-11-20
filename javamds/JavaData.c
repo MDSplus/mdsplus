@@ -25,6 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <jni.h>
 #include "Data.h"
 #include <stdio.h>
+#include <mdsplus/mdsplus.h>
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
 #include <mdstypes.h>
@@ -155,6 +156,7 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
     switch (desc->dtype) {
     case DTYPE_BU:
       is_unsigned = 1;
+      MDS_ATTR_FALLTHROUGH
     case DTYPE_B:
       cls = (*env)->FindClass(env, "ByteData");
       constr = (*env)->GetStaticMethodID(env, cls, "getData", "(BZ)LData;");
@@ -163,6 +165,7 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
       return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
     case DTYPE_WU:
       is_unsigned = 1;
+      MDS_ATTR_FALLTHROUGH
     case DTYPE_W:
       cls = (*env)->FindClass(env, "ShortData");
       constr = (*env)->GetStaticMethodID(env, cls, "getData", "(SZ)LData;");
@@ -171,6 +174,7 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
       return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
     case DTYPE_LU:
       is_unsigned = 1;
+      MDS_ATTR_FALLTHROUGH
     case DTYPE_L:
       cls = (*env)->FindClass(env, "IntData");
       constr = (*env)->GetStaticMethodID(env, cls, "getData", "(IZ)LData;");
@@ -184,6 +188,7 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
       return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
     case DTYPE_QU:
       is_unsigned = 1;
+      MDS_ATTR_FALLTHROUGH
     case DTYPE_Q:
       cls = (*env)->FindClass(env, "QuadData");
       constr = (*env)->GetStaticMethodID(env, cls, "getData", "(JZ)LData;");
@@ -192,6 +197,7 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
       return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
     case DTYPE_OU:
       is_unsigned = 1;
+      MDS_ATTR_FALLTHROUGH
     case DTYPE_O:
       cls = (*env)->FindClass(env, "OctaData");
       constr = (*env)->GetStaticMethodID(env, cls, "getData", "([JZ)LData;");
@@ -287,6 +293,7 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
       exc = (*env)->FindClass(env, "UnsupportedDataException");
       (*env)->ThrowNew(env, exc, message);
     }
+    MDS_ATTR_FALLTHROUGH
   case CLASS_CA:
     status = TdiData(desc, &ca_xd MDS_END_ARG);
     if (!(status & 1)) {
@@ -294,6 +301,7 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
       return NULL;
     }
     is_ca = 1;
+    MDS_ATTR_FALLTHROUGH
   case CLASS_A:
     if (is_ca)
       array_d = (struct descriptor_a *)ca_xd.pointer;
@@ -315,6 +323,7 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
       return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
     case DTYPE_BU:
       is_unsigned = 1;
+      MDS_ATTR_FALLTHROUGH
     case DTYPE_B:
       cls = (*env)->FindClass(env, "ByteArray");
       constr = (*env)->GetStaticMethodID(env, cls, "getData", "([BZ)LData;");
@@ -327,6 +336,7 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
       return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
     case DTYPE_WU:
       is_unsigned = 1;
+      MDS_ATTR_FALLTHROUGH
     case DTYPE_W:
       cls = (*env)->FindClass(env, "ShortArray");
       constr = (*env)->GetStaticMethodID(env, cls, "getData", "([SZ)LData;");
@@ -339,6 +349,7 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
       return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
     case DTYPE_LU:
       is_unsigned = 1;
+      MDS_ATTR_FALLTHROUGH
     case DTYPE_L:
       cls = (*env)->FindClass(env, "IntArray");
       constr = (*env)->GetStaticMethodID(env, cls, "getData", "([IZ)LData;");
@@ -351,6 +362,7 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
       return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
     case DTYPE_QU:
       is_unsigned = 1;
+      MDS_ATTR_FALLTHROUGH
     case DTYPE_Q:
       cls = (*env)->FindClass(env, "QuadArray");
       constr = (*env)->GetStaticMethodID(env, cls, "getData", "([JZ)LData;");
@@ -363,6 +375,7 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
       return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
     case DTYPE_OU:
       is_unsigned = 1;
+      MDS_ATTR_FALLTHROUGH
     case DTYPE_O:
       cls = (*env)->FindClass(env, "OctaArray");
       constr = (*env)->GetStaticMethodID(env, cls, "getData", "([JZ)LData;");

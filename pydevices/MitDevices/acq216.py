@@ -28,25 +28,26 @@ import array
 import MDSplus
 import acq
 
-class ACQ196(acq.ACQ):
+class ACQ216(acq.Acq):
     """
-    D-Tacq ACQ196  96 channel transient recorder
-
-    device support for d-tacq acq196 http://www.d-tacq.com/acq196cpci.shtml     
+    D-Tacq ACQ216  16 channel transient recorder
+    
+    device support for d-tacq acq216 http://www.d-tacq.com/acq216cpci.shtml
     """
     from copy import copy
-    parts=copy(acq.ACQ.acq_parts)
+    parts=copy(acq.Acq.acq_parts)
 
-    for i in range(96):
+    for i in range(16):
         parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',)})
         parts.append({'path':':INPUT_%2.2d:STARTIDX'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
         parts.append({'path':':INPUT_%2.2d:ENDIDX'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
         parts.append({'path':':INPUT_%2.2d:INC'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
+        parts.append({'path':':INPUT_%2.2d:VIN'%(i+1,),'type':'NUMERIC', 'value':10, 'options':('no_write_shot')})
     del i
-    parts.extend(acq.ACQ.action_parts)
+    parts.extend(acq.Acq.action_parts)
     for part in parts:                
         if part['path'] == ':ACTIVE_CHAN' :
-            part['value']=96                 
+            part['value']=16                 
     del part
     
     def initftp(self, auto_store=None):
@@ -57,7 +58,6 @@ class ACQ196(acq.ACQ):
         """
         import tempfile
         import time
-
         from MDSplus.mdsExceptions import DevBAD_ACTIVE_CHAN
         from MDSplus.mdsExceptions import DevBAD_TRIG_SRC
         from MDSplus.mdsExceptions import DevBAD_CLOCK_SRC
@@ -66,16 +66,15 @@ class ACQ196(acq.ACQ):
         from MDSplus.mdsExceptions import DevBAD_CLOCK_FREQ
 
         start=time.time()
+
         if self.debugging():
             print "starting init\n";
         path = self.local_path
         tree = self.local_tree
         shot = self.tree.shot
-        if self.debugging():
-            print 'ACQ196 initftp path = %s tree = %s shot = %d\n' % (path, tree, shot)
 
         active_chan = self.getInteger(self.active_chan, DevBAD_ACTIVE_CHAN)
-        if active_chan not in (32,64,96) :
+        if active_chan not in (4,8,16) :
             raise DevBAD_ACTIVE_CHAN()
         if self.debugging():
             print "have active chan\n";
@@ -109,10 +108,12 @@ class ACQ196(acq.ACQ):
 
         if clock_src == "INT_CLOCK":
             clock_freq = self.getInteger(self.clock_freq,DevBAD_CLOCK_FREQ)
-        try:
-            clock_div = int(self.clock_div)
-        except:
             clock_div = 1
+        else :
+            try:
+                clock_div = int(self.clock_div)
+            except:
+                clock_div = 1
         if self.debugging():
             print "have the settings\n";
 
@@ -120,60 +121,85 @@ class ACQ196(acq.ACQ):
 #
 # now create the post_shot ftp command file
 #
-#            fd = tempfile.TemporaryFile()
-        fd = tempfile.NamedTemporaryFile(mode='w+b', bufsize=-1, suffix='.tmp', prefix='tmp', dir='/tmp', delete= not self.debugging())
-        if self.debugging():
-            print 'opened temporary file %s\n'% fd.name
-        self.startInitializationFile(fd, trig_src, pre_trig, post_trig)
-        fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
-        if clock_src == 'INT_CLOCK':
-            if clock_out == None:
-                if self.debugging():
-                    print "internal clock no clock out\n"
-                fd.write("acqcmd setInternalClock %d\n" % clock_freq)
+        try:
+            fd = tempfile.TemporaryFile()
+            self.startInitializationFile(fd, trig_src, pre_trig, post_trig)
+            fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
+            for chan in range(16):
+		vin = self.__getattr__('input_%2.2d_vin' % (chan+1,))
+		if (vin == 2.5) :
+		    vin_str = "2.5"
+		elif (vin == 4) :
+		    vin_str = "4"
+		elif (vin == 6) :
+		    vin_str = "6"
+		elif (vin == 10) :
+		    vin_str = "10"
+		else :
+		    vin_str = "10"		
+                fd.write("set.vin %d %s\n" % (chan+1, vin_str))
+            if clock_src == 'INT_CLOCK':
+                if clock_out == None:
+                    if self.debugging():
+                        print "internal clock no clock out\n"
+                    fd.write("acqcmd setInternalClock %d\n" % clock_freq)
+                else:
+                    clock_out_num_str = clock_out[-1]
+                    clock_out_num = int(clock_out_num_str)
+                    setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
+#    force the routing for this clock output
+#    regardless of the settings for this line 
+#    above
+		    setRoutecmd = 'set.route d%1.1d in fpga out pxi\n' % (clock_out_num,)
+                    if self.debugging():
+                        print "internal clock clock out is %s setDIOcmd = %s\n" % (clock_out, setDIOcmd,)
+                    fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
+                    fd.write(setDIOcmd)
+		    fd.write(setRoutecmd)         
             else:
-                clock_out_num_str = clock_out[-1]
-                clock_out_num = int(clock_out_num_str)
-                setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
-                if self.debugging():
-                    print "internal clock clock out is %s setDIOcmd = %s\n" % (clock_out, setDIOcmd,)
-                fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
-                fd.write(setDIOcmd)         
-        else:
-            if (clock_out != None) :
-                clock_out_num_str = clock_out[-1]
-                clock_out_num = int(clock_out_num_str)
-                setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
-                fd.write("acqcmd setExternalClock %s %d DO%s\n" % (clock_src, clock_div,clock_out_num_str))
-                fd.write(setDIOcmd)
-            else:
-                fd.write("acqcmd setExternalClock %s %d\n" % (clock_src, clock_div,))
+                if (clock_out != None) :
+                    clock_out_num_str = clock_out[-1]
+                    clock_out_num = int(clock_out_num_str)
+                    setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
+                    fd.write("acqcmd setExternalClock %s %d DO%s\n" % (clock_src, clock_div,clock_out_num_str))
+                    fd.write(setDIOcmd)
+                else:
+                    fd.write("acqcmd setExternalClock %s\n" % clock_src)
 #
-# set the channel mask 2 times
+# set the channel mask twice as per Peter Milne
 #
-        fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
-        fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
-#
-#  set the pre_post mode last
-#
-        fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',))
-            
-        self.addGenericJSON(fd)
+            fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")            
+            if self.debugging():
+                print "routes all set now move on to pre-post\n"
+                print "pre trig = %d\n" % (pre_trig,)
+                print "post trig = %d\n" % (post_trig,)
+                print "trig_src = %s\n" % (trig_src,)
+            fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',))
+            if self.debugging():
+                print "pre-post all set now the JSON and commands\n"
 
-        fd.write("add_cmd 'get.vin 1:32'>> $settingsf\n")
-        fd.write("add_cmd 'get.vin 33:64'>> $settingsf\n")
-        fd.write("add_cmd 'get.vin 65:96'>> $settingsf\n")
-        self.finishJSON(fd, auto_store)
+            self.addGenericJSON(fd)
 
-        print "Time to make init file = %g\n" % (time.time()-start)
-        start=time.time()
-        self.doInit(fd)
+            fd.write("add_cmd 'get.vin'>> $settingsf\n")
+            self.finishJSON(fd, auto_store)
+
+            print "Time to make init file = %g\n" % (time.time()-start)
+            start=time.time()
+
+            self.doInit(fd)
+
+        except Exception,e:
+            try:
+                fd.close()
+            except:
+                pass 
+
+            raise
 
         fd.close()
-
+       
         print "Time for board to init = %g\n" % (time.time()-start)
         return  1
-
 
     INITFTP=initftp
         
@@ -191,17 +217,9 @@ class ACQ196(acq.ACQ):
         if self.debugging():
             print "got preTrig %d and postTrig %d\n" % (preTrig, postTrig,)
 
-        vin1 = self.settings['get.vin 1:32']
-        vin2 = self.settings['get.vin 33:64']
-        vin3 = self.settings['get.vin 65:96']
-        active_chan = int(self.active_chan.record)
-	if active_chan == 96 :
-            vins = eval('MDSplus.makeArray([%s, %s, %s])' % (vin1, vin2, vin3,))
-	else :
-	    if active_chan == 64 :
-	        vins = eval('MDSplus.makeArray([%s, %s])' % (vin1, vin2,))
-	    else :
-                vins = eval('MDSplus.makeArray([%s])' % (vin1,))
+        vin1 = self.settings['get.vin']
+        vins = eval('MDSplus.makeArray([%s,])' % (vin1,))
+
         if self.debugging():
             print "got the vins "
             print vins
@@ -212,16 +230,18 @@ class ACQ196(acq.ACQ):
 
         self.storeClock()
         clock = self.clock
+
 #
 # now store each channel
 #
         last_error=None
-        for chan in range(96):
+        for chan in range(16):
             try:
                 self.storeChannel(chan, chanMask, preTrig, postTrig, clock, vins)
             except e:
                 print "Error storing channel %d\n%s" % (chan, e,)
                 last_error = e
+
         self.dataSocketDone()
         if last_error:
             raise last_error

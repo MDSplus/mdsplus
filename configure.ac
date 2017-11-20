@@ -345,8 +345,6 @@ AC_ARG_WITH([visual_studio],
 AM_CONDITIONAL([VS],[AS_VAR_TEST_SET([VS_DIR])])
 AC_MSG_RESULT([$with_visual_studio])
 
-
-
 FORLD=ld
 LD=ld LD_LDARC=""
 LD_LDSHARE=""
@@ -945,23 +943,20 @@ then
 fi
 AC_PATH_PROG(UIL,$UILCMD,$UILCMD,$UILPATH:/usr/bin/X11:$PATH:/usr/dt/bin)
 AC_MSG_CHECKING(for uil command)
-if ( which $UIL 2>/dev/null )
+if [ ! "$MINGW" = "yes" ] && ( which $UIL 2>/dev/null )
 then
   UIL="env LANG=en_US $UIL"
-  MOTIF_APS="\$(MOTIF_APS)"
+  HAVE_MOTIF="yes"
   AC_MSG_RESULT(have uil so openmotif apps will be built.)
 else
-  MOTIF_APS=""
 # IDLMDSEVENT and IDLMDSWIDGETS need MOTIF to build
   IDLMDSEVENT=""
   IDLMDSWIDGETS=""
   AC_MSG_RESULT(no uil so skipping openmotif apps.openmotif-devel not installed.)
 fi
-if [[ "$MINGW" = "yes" ]]
-then
-  MOTIF_APS=""
-fi
-
+MOTIF_APS="\$(MOTIF_APS)"
+AM_CONDITIONAL([HAVE_MOTIF], [AS_VAR_TEST_SET([HAVE_MOTIF])])
+AM_COND_IF([HAVE_MOTIF], [AC_MSG_RESULT([yes])], [AC_MSG_RESULT([no])])
 
 XM_LIBS="-lMrm -lXm"
 MDS_SEARCH_LIBS([XextAddDisplay],[Xext],[AS_VAR_SET([LIBXEXT],[$ac_cv_search_XextAddDisplay])])
@@ -1250,6 +1245,7 @@ AC_SUBST(MAKEUIDDIR)
 AC_SUBST(MDSSQL)
 AC_SUBST(MDSTCPIP)
 AC_SUBST(MITDEVICESIO_TARGETS)
+AC_SUBST(HAVE_MOTIF)
 AC_SUBST(MOTIF_APS)
 AC_SUBST(MOTIF_LDSHARE)
 AC_SUBST(MOTIF_LDARC)
@@ -1342,6 +1338,9 @@ AC_OUTPUT(Makefile.inc
           mdstcpip/docs/img/Makefile
           mdsvme/Makefile
           mitdevices/Makefile
+	  pydevices/MitDevices/_version.py
+	  pydevices/RfxDevices/_version.py
+	  pydevices/W7xDevices/_version.py
           remcam/Makefile
           roam/Makefile
           rpm/Makefile
@@ -1351,9 +1350,6 @@ AC_OUTPUT(Makefile.inc
           servershr/Makefile
           setevent/Makefile
           tcl/Makefile
-	  tdi/MitDevices/_version.py
-	  tdi/RfxDevices/_version.py
-	  tdi/W7xDevices/_version.py
           tdishr/Makefile
           tdishr/testing/Makefile
           tdic/Makefile
@@ -1402,7 +1398,7 @@ then
   AC_MSG_WARN()
   AC_MSG_WARN()
 fi
-if test "$MOTIF_APS" = "" -a "$MINGW" = ""
+if test "$HAVE_MOTIF" = "" -a "$MINGW" = "" -a ! "$OS" = "windows"
 then
   AC_MSG_WARN()
   AC_MSG_WARN()

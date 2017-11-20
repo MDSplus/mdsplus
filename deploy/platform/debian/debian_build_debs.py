@@ -25,6 +25,8 @@
 #
 import subprocess,os,sys,xml.etree.ElementTree as ET,fnmatch,tempfile,shutil
 
+srcdir=os.path.realpath(os.path.dirname(os.path.realpath(__file__))+'/../../..')
+
 def getPackageFiles(buildroot,includes,excludes):
     files=list()
     for f in includes:
@@ -103,7 +105,7 @@ def buildDebs():
     info['release']=int(version[2])
     info['BNAME']=os.environ['BNAME']
     info['rflavor']=info['BNAME']
-    tree=ET.parse('/source/deploy/packaging/linux.xml')
+    tree=ET.parse(srcdir+'/deploy/packaging/linux.xml')
     root=tree.getroot()
     debs=list()
     for package in root.getiterator('package'):

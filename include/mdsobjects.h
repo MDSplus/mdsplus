@@ -149,6 +149,7 @@ namespace MDSplus  {
 // in Debug configuration
 // MUST revert to old version. Winodws VS crashes otherwise!! The code MUST be moved from include
 
+class Connection;
 class Tree;
 
 EXPORT void setActiveTree(Tree *tree);
@@ -420,7 +421,7 @@ private:
     ///
     /// @{
     /// Accessory information added on this data
-    friend void MDSplus::deleteData(Data *data);
+    friend void deleteData(Data *data);
     Data * units;
     Data * error;
     Data * help;
@@ -1190,7 +1191,7 @@ public:
 ///
 class EXPORT Uint8Array: public Array
 {
-    friend Data *MDSplus::deserialize(Data *serializedData);
+    friend Data *deserialize(Data *serializedData);
 public:
     Uint8Array(unsigned char const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {
@@ -2912,13 +2913,16 @@ protected:
     Tree *tree;
     int   nid;
 
-    virtual bool isCached() {return false;}
-    virtual int getCachePolicy() { return 0;}
     //From Data
     virtual bool isImmutable() {return false;}
     virtual void *convertToDsc();
-    bool getFlag(int flagOfs);
-    void setFlag(int flagOfs, bool val);
+    virtual bool getFlag(int flagOfs);
+    virtual void setFlag(int flagOfs, bool val);
+    
+    virtual char getNciChar(int itm);
+    virtual int getNciInt(int itm);
+    virtual int64_t getNciInt64(int itm);
+    virtual std::string getNciString(int itm);
 
 public:
     virtual Data *data();
@@ -2929,57 +2933,57 @@ public:
     /// \param tree the tree that this node belongs to
     ///
     TreeNode(int nid, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
-
+    TreeNode() {tree = 0;}
     //Force new and delete in dll for windows
     void *operator new(size_t sz);
     void operator delete(void *p);
 
     /// Get the associated tree instance
-    Tree *getTree() { return tree; }
+    virtual Tree *getTree() { return tree; }
 
     /// Set the associated Tree instance
-    void setTree(Tree *tree) {this->tree = tree;}
+    virtual void setTree(Tree *tree) {this->tree = tree;}
 
     /// Get the path name for this node
-    char *getPath();
+    virtual char *getPath();
 
     /// Get the minimum path name for this node
     /// \ref getNci() with Nci code NciMINPATH
-    char *getMinPath();
+    virtual char *getMinPath();
 
     /// Get the full path name for this node
     /// \ref getNci() with code NciFULLPATH
-    char *getFullPath();
+    virtual char *getFullPath();
 
     /// Get the name of this node
     /// \ref getNci() with code NciNODE_NAME
-    char *getNodeName();
+    virtual char *getNodeName();
 
     /// Get the original path within the conglomerate to which the node belongs
     /// \ref getNci() with code NciORIGINAL_PART_NAME
-    char *getOriginalPartName();
+    virtual char *getOriginalPartName();
 
     /// %String output version of getPath()
-    std::string getPathStr();
+    virtual std::string getPathStr();
 
     /// %String output version of getMinPath()
-    std::string getMinPathStr();
+    virtual std::string getMinPathStr();
 
     /// %String output version of getFullPath()
-    std::string getFullPathStr();
+    virtual std::string getFullPathStr();
 
     /// %String output version of getNodeName()
-    std::string getNodeNameStr();
+    virtual std::string getNodeNameStr();
 
     /// %String output version of getOriginalPartName()
-    std::string getOriginalPartNameStr();
+    virtual std::string getOriginalPartNameStr();
 
 
     /// Retrieve node from this tree by its realPath string
-    TreeNode *getNode(char const * relPath);
+    virtual TreeNode *getNode(char const * relPath);
 
     /// Retrieve node from this tree by its realPath string
-    TreeNode *getNode(String *relPathStr);
+    virtual TreeNode *getNode(String *relPathStr);
 
     virtual Data *getData();
     virtual void putData(Data *data);
@@ -2989,13 +2993,13 @@ public:
     /// This is called each time a path to nid conversion is needed.
     virtual void resolveNid() {}
 
-    int getNid() { return nid;}
+    virtual int getNid() { return nid;}
 
     /// Returns true if the node is On
-    bool isOn();
+    virtual bool isOn();
 
     /// Set on/off for that node
-    void setOn(bool on);
+    virtual void setOn(bool on);
 
     /// Return the length in bytes of the contained data.
     /// \ref getNci() with code NciLENGTH
@@ -3007,164 +3011,164 @@ public:
 
     /// Return the Group/Id of the last writer for that node.
     /// \ref getNci() with code NciOWNER_ID
-    int getOwnerId();
+    virtual int getOwnerId();
 
     /// Return the status of the completed action (if the node contains ActionData).
     /// \ref getNci() with code NciSTATUSNciSTATUS
-    int getStatus();
+    virtual int getStatus();
 
     /// Get the time of the last data insertion
     /// \ref getNci() with code NciTIME_INSERTED
     virtual int64_t getTimeInserted();
 
     /// Do specified method for this node (valid only if it belongs to a conglomerate)
-    void doMethod(char *method);
+    virtual void doMethod(char *method);
 
     ///  Return true if this is setup data (i.e. present in the the model)
-    bool isSetup();
+    virtual bool isSetup();
 
 
     ///@{
     ///  Nci Flags access
-    bool isWriteOnce();
-    void setWriteOnce(bool flag);
-    bool isCompressOnPut();
-    void setCompressOnPut(bool flag);
-    bool isNoWriteModel();
-    void setNoWriteModel(bool flag);
-    bool isNoWriteShot();
-    void setNoWriteShot(bool flag);
-    bool isEssential();
-    void setEssential(bool flag);
-    bool isIncludedInPulse();
-    void setIncludedInPulse(bool flag);
-    bool isIncludeInPulse();
-    void setIncludeInPulse(bool flag);
-    bool isMember();
-    bool isChild();
+    virtual bool isWriteOnce();
+    virtual void setWriteOnce(bool flag);
+    virtual bool isCompressOnPut();
+    virtual void setCompressOnPut(bool flag);
+    virtual bool isNoWriteModel();
+    virtual void setNoWriteModel(bool flag);
+    virtual bool isNoWriteShot();
+    virtual void setNoWriteShot(bool flag);
+    virtual bool isEssential();
+    virtual void setEssential(bool flag);
+    virtual bool isIncludedInPulse();
+    virtual void setIncludedInPulse(bool flag);
+    virtual bool isIncludeInPulse();
+    virtual void setIncludeInPulse(bool flag);
+    virtual bool isMember();
+    virtual bool isChild();
     ///@}
 
     /// Get the parent of this node.
     /// Ref to \ref getNci() with code NciPARENT
-    TreeNode *getParent();
+    virtual TreeNode *getParent();
 
     /// Return next sibling.
     /// Ref to \ref getNci() with code NciBROTHER
-    TreeNode *getBrother();
+    virtual TreeNode *getBrother();
 
     /// Get the first child of this node.
     /// Ref to \ref getNci() with code NciCHILD
-    TreeNode *getChild();
+    virtual TreeNode *getChild();
 
     /// Get the first member of this node.
     /// Ref to \ref getNci() with code NciMEMBER
-    TreeNode *getMember();
+    virtual TreeNode *getMember();
 
     /// Get the number of members for this node.
     /// Ref to \ref getNci() with code NciNUMBER_OF_MEMBERS
-    int getNumMembers();
+    virtual int getNumMembers();
 
     /// Get the number of children for this node.
     /// Ref to \ref getNci() with code NciNUMBER_OF_CHILDREN
-    int getNumChildren();
+    virtual int getNumChildren();
 
     /// Get the number of all descendants (members + children)fir this node.
     /// Ref to \ref getNci with codes NciNUMBER_OF_MEMBERS and NciNUMBER_OF_MEMBERS
-    int getNumDescendants();
+    virtual int getNumDescendants();
 
     // NOTE: [andrea] java implementation discrepancy (java uses TreeNodeArray instance)
     /// Get all che child nodes for this node.
-    TreeNode **getChildren(int *numChildren);
+    virtual TreeNode **getChildren(int *numChildren);
 
     /// Return  all the members of this node
-    TreeNode **getMembers(int *numChildren);
+    virtual TreeNode **getMembers(int *numChildren);
 
     /// Get all the descendant (members + children)for this node
-    TreeNode **getDescendants(int *numChildren);
+    virtual TreeNode **getDescendants(int *numChildren);
 
 
 
 
     /// Return Nci class name (NciCLASS) as c string
-    const char *getClass();
+    virtual const char *getClass();
 
     /// Return Nci descriptor type (NciDTYPE) as c string
-    const char *getDType();
+    virtual const char *getDType();
 
     /// Return Nci node usage (NciUSAGE) as c string
-    const char *getUsage();
+    virtual const char *getUsage();
 
 
 
 
     /// Get index of the node in the corresponding conglomerate.
     /// Ref to \ref getNci() with code NciCONGLOMERATE_ELT
-    int getConglomerateElt();
+    virtual int getConglomerateElt();
 
     /// Return the number of the elements for the conglomerate to which the node
     ///  belongs
-    int getNumElts();
+    virtual int getNumElts();
 
     /// Return the array of nodes corresponding to the elements of the
     /// conglomeate to which the node belongs
-    TreeNodeArray *getConglomerateNodes();
+    virtual TreeNodeArray *getConglomerateNodes();
 
     /// Return the depth of the node in the tree.
     /// Ref to \ref getNci() with code NciDEPTH
-    int getDepth();
+    virtual int getDepth();
 
     /// Return true if the node contains versions (Nci flags)
-    bool containsVersions();
+    virtual bool containsVersions();
 
     // SEGMENTS //
 
     // NOTE: [andrea] there are missed members ( vs java impl )
     /// Begin a new data segment
-    void beginSegment(Data *start, Data *end, Data *time, Array *initialData);
+    virtual void beginSegment(Data *start, Data *end, Data *time, Array *initialData);
 	/// Begin and fill a new data segment
-    void makeSegment(Data *start, Data *end, Data *time, Array *initialData);
+    virtual void makeSegment(Data *start, Data *end, Data *time, Array *initialData);
 
 	//Begin and fill a new data segment. At the same time make a resampled minmax version (two samples (min and max) every 100 original samples)
-    void makeSegmentMinMax(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor = 100);
+    virtual void makeSegmentMinMax(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor = 100);
 
 	//Begin and fill a new data segment. At the same time make a resampled version
-    void makeSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode);
+    virtual void makeSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode);
 
     /// Write (part of) data segment
-    void putSegment(Array *data, int ofs);
+    virtual void putSegment(Array *data, int ofs);
 
     /// Update start, end time and dimension for the last segment
-    void updateSegment(Data *start, Data *end, Data *time);
+    virtual void updateSegment(Data *start, Data *end, Data *time);
 
     /// Update start, end time and dimension for the specified segment
-    void updateSegment(int idx, Data *start, Data *end, Data *time);
+    virtual void updateSegment(int idx, Data *start, Data *end, Data *time);
 
     /// Get the number of segments
-    int getNumSegments();
+    virtual int getNumSegments();
 
     /// Instantiate two arrays with Segments starts and ends
-    void getSegmentLimits(int segmentIdx, Data **start, Data **end);
+    virtual void getSegmentLimits(int segmentIdx, Data **start, Data **end);
 
     /// Get data form the selected segment
-    Array *getSegment(int segIdx);
+    virtual Array *getSegment(int segIdx);
 
     /// Get the selected segment dimension
-    Data *getSegmentDim(int segIdx);
+    virtual Data *getSegmentDim(int segIdx);
 
     /// Get both segment and segment dimension
-    void getSegmentAndDimension(int segIdx, Array *&segment, Data *&dimension);
+    virtual void getSegmentAndDimension(int segIdx, Array *&segment, Data *&dimension);
 
     /// Begin a timestamted segment
-    void beginTimestampedSegment(Array *initData);
+    virtual void beginTimestampedSegment(Array *initData);
 
     /// Make a timestamped segment
-    void makeTimestampedSegment(Array *data, int64_t *times);
+    virtual void makeTimestampedSegment(Array *data, int64_t *times);
 
     /// Write (part of) data in a timestamped segment
-    void putTimestampedSegment(Array *data, int64_t *times);
+    virtual void putTimestampedSegment(Array *data, int64_t *times);
 
     /// Writre a single row of timestamped data
-    void putRow(Data *data, int64_t *time, int size = 1024);
+    virtual void putRow(Data *data, int64_t *time, int size = 1024);
 
     /// Get info for the node identified by sefIdx, or the last node if -1 is
     /// passed as segIdx argument. The function returns dtype of the contained
@@ -3180,10 +3184,10 @@ public:
     /// reverse order for a mismatch in the row/column order within the treeshr
     /// library
     ///
-    void getSegmentInfo(int segIdx, char *dtype, char *dimct, int *dims, int *nextRow);
+    virtual void getSegmentInfo(int segIdx, char *dtype, char *dimct, int *dims, int *nextRow);
 
     /// Retrieve node tags as array of strings
-    StringArray *findTags();
+    virtual StringArray *findTags();
 
     // EDIT METHODS //
 
@@ -3193,42 +3197,473 @@ public:
     /// Tree::addNode for reference. If the relative path is chosen the new
     /// node will be set as child/member of the current.
     ///
-    TreeNode *addNode(char const * name, char const * usage);
+    virtual TreeNode *addNode(char const * name, char const * usage);
 
     /// This removes a node indentified by its path from the tree that holds the
     /// current node instance. See \ref Tree::remove() for reference.
     ///
-    void remove(char const * name);
+    virtual void remove(char const * name);
 
     /// Rename current node instance in tree setting a new path indentified by
     /// the newName argument that must be in form of an absolute path string.
-    void rename(std::string const & newName);
+    virtual void rename(std::string const & newName);
 
     /// Move the node setting a new parent and changing the node name
-    void move(TreeNode *parent, std::string const & newName);
+    virtual void move(TreeNode *parent, std::string const & newName);
 
     /// Move the node setting a new parent.
-    void move(TreeNode *parent);
+    virtual void move(TreeNode *parent);
 
     /// Add a device to the tree that holds current node instance. The argument
     /// name will be the name of the new created device and the type will be
     /// serched within the device library. See \ref Tree::addDevice for details.
     ///
-    TreeNode *addDevice(char const * name, char const * type);
+    virtual TreeNode *addDevice(char const * name, char const * type);
 
     /// Add a tag to the current tree that hold this instance pointing to this
     /// node. See \ref Tree::addTag() for reference.
     ///
-    void addTag(std::string const & tagName);
+    virtual void addTag(std::string const & tagName);
 
     /// Removes a tag added to the current tree and indentified by tagName.
-    void removeTag(std::string const & tagName);
+    virtual void removeTag(std::string const & tagName);
 
     /// Set this node to be a subtree of the tree that holds it.
-    void setSubtree(bool isSubtree);
+    virtual void setSubtree(bool isSubtree);
 };
 
 /////////////////End Class TreeTreeNode///////////////
+
+///
+/// \brief The TreeNodeThinClient class provides (a subset of) TreeNode functionality using thin client mddip connection
+///
+
+class  EXPORT TreeNodeThinClient: public TreeNode
+{
+    friend	EXPORT std::ostream &operator<<(std::ostream &stream, TreeNodeThinClient *treeNode)
+    {
+        stream << treeNode->getFullPathStr();
+        return stream;
+    }
+protected:
+
+    Connection *connection;
+ 
+    //From Data
+    virtual bool isImmutable() {return false;}
+    // virtual void *convertToDsc();  Use superclass implementation
+    // bool getFlag(int flagOfs); Use superclass implementation
+    // void setFlag(int flagOfs, bool val);  Use superclass implementation
+    virtual char getNciChar(int itm);
+    virtual int getNciInt(int itm);
+    virtual int64_t getNciInt64(int itm);
+    virtual std::string getNciString(int itm);
+
+public:
+    // virtual Data *data();  Use superclass implementation
+
+    ///
+    /// \brief TreeNodeThinClient constructor
+    /// \param nid node id (required)
+    /// \param Connection the Connection object used to communicate to mdsip server
+    ///
+    TreeNodeThinClient(int nid, Connection *connection, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
+
+    /// Get the associated tree instance
+    virtual Tree *getTree() {throw MdsException("getTree() not supported for TreeNodeThinClient object"); return NULL; }
+
+    /// Set the associated Tree instance
+    virtual void setTree(Tree *tree) {(void)tree; throw MdsException("setTree() not supported for TreeNodeThinClient object"); }
+
+    /// Get the path name for this node
+     virtual char *getPath();
+
+    /// Get the minimum path name for this node
+    /// \ref getNci() with Nci code NciMINPATH
+    // virtual char *getMinPath();   Use superclass implementation
+
+    /// Get the full path name for this node
+    /// \ref getNci() with code NciFULLPATH
+    // virtual char *getFullPath();   Use superclass implementation
+
+    /// Get the name of this node
+    /// \ref getNci() with code NciNODE_NAME
+    // virtual char *getNodeName();   Use superclass implementation
+
+    /// Get the original path within the conglomerate to which the node belongs
+    /// \ref getNci() with code NciORIGINAL_PART_NAME
+    // virtual char *getOriginalPartName();   Use superclass implementation
+
+    /// %String output version of getPath()
+    // virtual std::string getPathStr();   Use superclass implementation
+
+    /// %String output version of getMinPath()
+    // virtual std::string getMinPathStr();   Use superclass implementation
+
+    /// %String output version of getFullPath()
+    // virtual std::string getFullPathStr();   Use superclass implementation
+
+    /// %String output version of getNodeName()
+    // virtual std::string getNodeNameStr();   Use superclass implementation
+
+    /// %String output version of getOriginalPartName()
+    // virtual std::string getOriginalPartNameStr();   Use superclass implementation
+
+
+    /// Retrieve node from this tree by its realPath string
+    virtual TreeNode *getNode(char const * relPath)
+    {
+	(void)relPath;
+	throw MdsException("getNode() not supported for TreeNodeThinClient object"); return NULL; 
+    }
+    /// Retrieve node from this tree by its realPath string
+    virtual TreeNode *getNode(String *relPathStr)
+    {
+        (void)relPathStr;
+	throw MdsException("getNode() not supported for TreeNodeThinClient object"); return NULL; 
+    }
+
+    virtual Data *getData();
+    virtual void putData(Data *data);
+    virtual void deleteData();
+
+    /// virtual function to resolve node id in the active tree.
+    /// This is called each time a path to nid conversion is needed.
+    virtual void resolveNid() {}
+
+    virtual int getNid() { return nid;}
+
+    /// Returns true if the node is On
+    virtual bool isOn();
+
+    /// Set on/off for that node
+    virtual void setOn(bool on);
+
+    /// Return the length in bytes of the contained data.
+    /// \ref getNci() with code NciLENGTH
+    // virtual int getLength();   Use superclass implementation
+
+    virtual int getCompressedLength(){throw MdsException("getCompressedLength() not supported for TreeNodeThinClient object");}
+
+    /// Return the Group/Id of the last writer for that node.
+    /// \ref getNci() with code NciOWNER_ID
+    // virtual int getOwnerId();   Use superclass implementation
+
+    /// Return the status of the completed action (if the node contains ActionData).
+    /// \ref getNci() with code NciSTATUSNciSTATUS
+    // virtual int getStatus();   Use superclass implementation
+
+    /// Get the time of the last data insertion
+    /// \ref getNci() with code NciTIME_INSERTED
+    // virtual int64_t getTimeInserted();   Use superclass implementation
+
+    /// Do specified method for this node (valid only if it belongs to a conglomerate)
+    virtual void doMethod(char *method){(void)method; throw MdsException("doMethod() not supported for TreeNodeThinClient object");}
+
+    ///  Return true if this is setup data (i.e. present in the the model)
+    // virtual bool isSetup();  Use superclass implementation
+
+
+    ///@{
+    ///  Nci Flags access
+    // virtual bool isWriteOnce();  Use superclass implementation
+    //virtual void setWriteOnce(bool flag);  Use superclass implementation
+    //virtual bool isCompressOnPut();  Use superclass implementation
+    //virtual void setCompressOnPut(bool flag);  Use superclass implementation
+    //virtual bool isNoWriteModel();  Use superclass implementation
+    //virtual void setNoWriteModel(bool flag);  Use superclass implementation
+    //virtual bool isNoWriteShot();  Use superclass implementation
+    //virtual void setNoWriteShot(bool flag);  Use superclass implementation
+    //virtual bool isEssential();  Use superclass implementation
+    //virtual void setEssential(bool flag);
+    //virtual bool isIncludedInPulse();  Use superclass implementation
+    //virtual void setIncludedInPulse(bool flag);  Use superclass implementation
+    //virtual bool isIncludeInPulse();  Use superclass implementation
+    //virtual void setIncludeInPulse(bool flag);  Use superclass implementation
+    //virtual bool isMember();  Use superclass implementation
+    //virtual bool isChild();  Use superclass implementation
+    ///@}
+
+    /// Get the parent of this node.
+    /// Ref to \ref getNci() with code NciPARENT
+    virtual TreeNode *getParent(){throw MdsException("getParent() not supported for TreeNodeThinClient object");}
+
+    /// Return next sibling.
+    /// Ref to \ref getNci() with code NciBROTHER
+    virtual TreeNode *getBrother(){throw MdsException("getBrother() not supported for TreeNodeThinClient object");}
+
+    /// Get the first child of this node.
+    /// Ref to \ref getNci() with code NciCHILD
+    virtual TreeNode *getChild(){throw MdsException("getChild() not supported for TreeNodeThinClient object");}
+
+    /// Get the first member of this node.
+    /// Ref to \ref getNci() with code NciMEMBER
+    virtual TreeNode *getMember(){throw MdsException("getMember() not supported for TreeNodeThinClient object");}
+
+    /// Get the number of members for this node.
+    /// Ref to \ref getNci() with code NciNUMBER_OF_MEMBERS
+    //virtual int getNumMembers();  Use superclass implementation
+
+    /// Get the number of children for this node.
+    /// Ref to \ref getNci() with code NciNUMBER_OF_CHILDREN
+    //virtual int getNumChildren();  Use superclass implementation
+
+    /// Get the number of all descendants (members + children)fir this node.
+    /// Ref to \ref getNci with codes NciNUMBER_OF_MEMBERS and NciNUMBER_OF_MEMBERS
+    //virtual int getNumDescendants();  Use superclass implementation
+
+    // NOTE: [andrea] java implementation discrepancy (java uses TreeNodeArray instance)
+    /// Get all che child nodes for this node.
+    virtual TreeNode **getChildren(int *numChildren){(void)numChildren; throw MdsException("getChildren() not supported for TreeNodeThinClient object");}
+
+    /// Return  all the members of this node
+    virtual TreeNode **getMembers(int *numChildren){(void)numChildren; throw MdsException("getMembers() not supported for TreeNodeThinClient object");}
+
+    /// Get all the descendant (members + children)for this node
+    virtual TreeNode **getDescendants(int *numChildren){(void)numChildren;throw MdsException("getDescendants() not supported for TreeNodeThinClient object");}
+
+
+
+
+    /// Return Nci class name (NciCLASS) as c string
+    //virtual const char *getClass();  Use superclass implementation
+
+    /// Return Nci descriptor type (NciDTYPE) as c string
+    //virtual const char *getDType();  Use superclass implementation
+
+    /// Return Nci node usage (NciUSAGE) as c string
+    //virtual const char *getUsage();  Use superclass implementation
+
+
+
+
+    /// Get index of the node in the corresponding conglomerate.
+    /// Ref to \ref getNci() with code NciCONGLOMERATE_ELT
+    //virtual int getConglomerateElt();  Use superclass implementation
+
+    /// Return the number of the elements for the conglomerate to which the node
+    ///  belongs
+    //virtual int getNumElts();  Use superclass implementation
+
+    /// Return the array of nodes corresponding to the elements of the
+    /// conglomeate to which the node belongs
+    virtual TreeNodeArray *getConglomerateNodes(){throw MdsException("getConglomerateNodes() not supported for TreeNodeThinClient object");}
+
+    /// Return the depth of the node in the tree.
+    /// Ref to \ref getNci() with code NciDEPTH
+    // virtual int getDepth();  Use superclass implementation
+
+    /// Return true if the node contains versions (Nci flags)
+    // virtual bool containsVersions();  Use superclass implementation
+
+    // SEGMENTS //
+
+    // NOTE: [andrea] there are missed members ( vs java impl )
+    /// Begin a new data segment
+    virtual void beginSegment(Data *start, Data *end, Data *time, Array *initialData);
+	/// Begin and fill a new data segment
+    virtual void makeSegment(Data *start, Data *end, Data *time, Array *initialData);
+
+	//Begin and fill a new data segment. At the same time make a resampled minmax version (two samples (min and max) every 100 original samples)
+    virtual void makeSegmentMinMax(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor = 100)
+    {
+      (void)start;
+      (void)end;
+      (void)time;
+      (void)initialData;
+      (void)resampledNode;
+      (void)resFactor;
+       throw MdsException("makeSegmentMinMax() not supported for TreeNodeThinClient object");
+    }
+ 	//Begin and fill a new data segment. At the same time make a resampled version
+    virtual void makeSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode)
+    {
+      (void)start;
+      (void)end;
+      (void)initialData;
+      (void)time;
+      (void)resampledNode;
+      throw MdsException("makeSegmentResampled() not supported for TreeNodeThinClient object");
+    }
+
+    /// Write (part of) data segment
+    virtual void putSegment(Array *data, int ofs);
+
+    /// Update start, end time and dimension for the last segment
+    virtual void updateSegment(Data *start, Data *end, Data *time)
+    {
+      (void)start;
+      (void)end;
+      (void)time;
+      throw MdsException("updateSegment() not supported for TreeNodeThinClient object");
+    }
+
+    /// Update start, end time and dimension for the specified segment
+    virtual void updateSegment(int idx, Data *start, Data *end, Data *time)
+    {
+      (void)idx;
+      (void)start;
+      (void)end;
+      (void)time;
+      throw MdsException("updateSegment() not supported for TreeNodeThinClient object");
+    }
+
+    /// Get the number of segments
+    virtual int getNumSegments();
+
+    /// Instantiate two arrays with Segments starts and ends
+    virtual void getSegmentLimits(int segmentIdx, Data **start, Data **end);
+
+    /// Get data form the selected segment
+    virtual Array *getSegment(int segIdx);
+
+    /// Get the selected segment dimension
+    virtual Data *getSegmentDim(int segIdx);
+
+    /// Get both segment and segment dimension
+    virtual void getSegmentAndDimension(int segIdx, Array *&segment, Data *&dimension);
+
+    /// Begin a timestamted segment
+    virtual void beginTimestampedSegment(Array *initData);
+
+    /// Make a timestamped segment
+    virtual void makeTimestampedSegment(Array *data, int64_t *times);
+
+    /// Write (part of) data in a timestamped segment
+    virtual void putTimestampedSegment(Array *data, int64_t *times);
+
+    /// Writre a single row of timestamped data
+    virtual void putRow(Data *data, int64_t *time, int size = 1024);
+
+    /// Get info for the node identified by sefIdx, or the last node if -1 is
+    /// passed as segIdx argument. The function returns dtype of the contained
+    /// data and the row dimensions. The function provides: In dimct the number
+    /// of dimensions is stored, in dims the array of dimensions, in nextRow
+    /// the position of the next free row. The dims always reflects the segment
+    /// dimension passed by beginSegment while the next will get the current
+    /// position reached in this segment by the putSegment function.
+    ///
+    /// \note dtype, dimct and nextRow are pointer of size 1 array, while the
+    /// dims dimension must be allocated array of size 8 integers! Furthermore,
+    /// at the time of writing the returned dims are actually written int
+    /// reverse order for a mismatch in the row/column order within the treeshr
+    /// library
+    ///
+    virtual void getSegmentInfo(int segIdx, char *dtype, char *dimct, int *dims, int *nextRow)
+    {
+      (void)segIdx;
+      (void)dtype;
+      (void)dimct;
+      (void)dims;
+      (void)nextRow;
+      throw MdsException("getSegmentInfo() not supported for TreeNodeThinClient object");
+    }
+
+    /// Retrieve node tags as array of strings
+    virtual StringArray *findTags();
+
+    // EDIT METHODS //
+
+    /// This method adds a new node to the tree that this instance belongs to.
+    /// The name specifies the relative or the full path of the new node and
+    /// the usage is a string that defines the type of the new node. See \ref
+    /// Tree::addNode for reference. If the relative path is chosen the new
+    /// node will be set as child/member of the current.
+    ///
+    virtual TreeNode *addNode(char const * name, char const * usage)
+    {
+      (void)name;
+      (void)usage;
+      throw MdsException("edit operations not supported for TreeNodeThinClient object");
+    }
+
+
+    /// This removes a node indentified by its path from the tree that holds the
+    /// current node instance. See \ref Tree::remove() for reference.
+    ///
+    virtual void remove(char const * name)
+    {
+      (void)name;
+      throw MdsException("edit operations not supported for TreeNodeThinClient object");
+    }
+
+
+    /// Rename current node instance in tree setting a new path indentified by
+    /// the newName argument that must be in form of an absolute path string.
+    virtual void rename(std::string const & newName)
+    {
+      (void)newName;
+      throw MdsException("edit operations not supported for TreeNodeThinClient object");
+    }
+
+
+    /// Move the node setting a new parent and changing the node name
+    virtual void move(TreeNode *parent, std::string const & newName)
+    {
+      (void)parent;
+      (void)newName;
+      throw MdsException("edit operations not supported for TreeNodeThinClient object");
+    }
+
+
+    /// Move the node setting a new parent.
+    virtual void move(TreeNode *parent)
+    {
+      (void)parent;
+      throw MdsException("edit operations not supported for TreeNodeThinClient object");
+    }
+
+
+    /// Add a device to the tree that holds current node instance. The argument
+    /// name will be the name of the new created device and the type will be
+    /// serched within the device library. See \ref Tree::addDevice for details.
+    ///
+    virtual TreeNode *addDevice(char const * name, char const * type)
+    {
+      (void)name;
+      (void)type;
+     throw MdsException("edit operations not supported for TreeNodeThinClient object");
+    }
+
+
+    /// Add a tag to the current tree that hold this instance pointing to this
+    /// node. See \ref Tree::addTag() for reference.
+    ///
+    virtual void addTag(std::string const & tagName)
+    {
+      (void)tagName;
+      throw MdsException("edit operations not supported for TreeNodeThinClient object");
+    }
+
+
+    /// Removes a tag added to the current tree and indentified by tagName.
+    virtual void removeTag(std::string const & tagName)
+    {
+      (void)tagName;
+      throw MdsException("edit operations not supported for TreeNodeThinClient object");
+    }
+
+
+    /// Set this node to be a subtree of the tree that holds it.
+    virtual void setSubtree(bool isSubtree)
+    {
+      (void)isSubtree;
+      throw MdsException("edit operations not supported for TreeNodeThinClient object");
+    }
+    
+};
+
+/////////////////End Class TreeNodeThinClient///////////////
+
+
+
+
+
+
+
+
+
+
 
 class EXPORT TreePath: public TreeNode
 {
@@ -3241,28 +3676,6 @@ public:
 private:
     std::string path;
 };
-
-#ifdef CACHEDTREES
-/////////////////CachedTreeNode/////////////////////////////
-#define MDS_WRITE_THROUGH 1
-#define MDS_WRITE_BACK 2
-#define MDS_WRITE_BUFFER 3
-#define MDS_WRITE_LAST 4
-class EXPORT CachedTreeNode: public TreeNode
-{
-protected:
-    int cachePolicy;
-    virtual bool isCached() { return true;}
-    virtual int getCachePolicy() { return cachePolicy;}
-public:
-    CachedTreeNode(int nid, Tree *tree):TreeNode(nid, tree){cachePolicy = MDS_WRITE_BUFFER;}
-    void setCachePolicy(int cachePolicy) {this->cachePolicy = cachePolicy;}
-    void flush();
-    void putLastRow(Data *data, int64_t *time);
-    void terminateSegment();
-};
-#endif
-
 
 ////////////////Class TreeNodeArray///////////////////////
 class EXPORT TreeNodeArray
@@ -3830,12 +4243,14 @@ public:
     {
         return new GetMany(this);
     }
-
-	void registerStreamListener(DataStreamListener *listener, char *expr, char *tree, int shot);
+// Get TreeNode instance for (a subset of) TreeNode functionality in thin client configuration 
+    TreeNodeThinClient *getNode(char *path);
+//Streaming stuff     
+    void registerStreamListener(DataStreamListener *listener, char *expr, char *tree, int shot);
     void unregisterStreamListener(DataStreamListener *listener);
-	void startStreaming();
-	void resetConnection();
- 	void checkDataAvailability();
+    void startStreaming();
+    void resetConnection();
+    void checkDataAvailability();
 
 private:
     MDS_DEBUG_ACCESS

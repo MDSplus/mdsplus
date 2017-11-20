@@ -23,7 +23,16 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import Device
+from MDSplus import Device,StringArray,Data
+import numpy as _N
 
 def pydevices():
-    return Device.findPyDevices()
+      ds=Device.findPyDevices()
+      if ds is not None:
+            ans=None
+            for d in ds:
+                  ans=Data.execute('[$,$,$]',ans,str(d),'pydevice')
+            return ans
+      else:
+        return None
+        

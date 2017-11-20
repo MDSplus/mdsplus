@@ -431,6 +431,7 @@ GLOBUS_LIBS = @GLOBUS_LIBS@
 GLOBUS_LOCATION = @GLOBUS_LOCATION@
 GREP = @GREP@
 HAVE_DOCKER = @HAVE_DOCKER@
+HAVE_MOTIF = @HAVE_MOTIF@
 HAVE_VISIBILITY = @HAVE_VISIBILITY@
 HAVE_WINE = @HAVE_WINE@
 HAVE_WINEBOOT = @HAVE_WINEBOOT@
@@ -568,10 +569,7 @@ VALGRIND = @VALGRIND@
 # Skipping child programs that are launched inside python classes
 #
 VALGRIND_FLAGS = \
-                 --trace-children-skip=*/ld \
-                 --trace-children-skip=*/collect2 \
-                 --trace-children-skip=*/ldconfig \
-                 --trace-children-skip=*/sh
+                 --trace-children-skip=*/ld,*/collect2,*/ldconfig,*/sh
 
 VALGRIND_HAVE_TOOL_drd = @VALGRIND_HAVE_TOOL_drd@
 VALGRIND_HAVE_TOOL_exp_sgcheck = @VALGRIND_HAVE_TOOL_exp_sgcheck@

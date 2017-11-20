@@ -782,6 +782,7 @@ int Tdi1MethodOf(int opcode __attribute__ ((unused)), int narg __attribute__ ((u
       break;
     case DTYPE_OPAQUE:
       status = MdsCopyDxXd(((struct descriptor_opaque *)tmp.pointer)->opaque_type, out_ptr);
+      break;
     default:
       status = TdiINVDTYDSC;
       break;
@@ -1361,6 +1362,7 @@ int Tdi1ValueOf(int opcode __attribute__ ((unused)), int narg __attribute__ ((un
       break;
     case DTYPE_OPAQUE:
       status = MdsCopyDxXd(((struct descriptor_opaque *)tmp.pointer)->data, out_ptr);
+      break;
     default:
       MdsFree1Dx(out_ptr, NULL);
       *out_ptr = tmp;

@@ -22,6 +22,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <mdsplus/mdsplus.h>
 #include <mdsdescrip.h>
 #include <treeshr.h>
 #include <mdsshr.h>
@@ -394,6 +395,7 @@ EXPORT int IdlMdsValue(int argc, void **argv)
 	switch (mdsValueAnswer.pointer->dtype) {
 	case DTYPE_B:
 	  strcpy((char *)argv[2], "if answer gt 127 then answer = fix(answer)-256");
+	  MDS_ATTR_FALLTHROUGH
 	case DTYPE_BU:
 	  strcpy((char *)argv[1], "answer = 0b");
 	  break;
@@ -450,6 +452,7 @@ EXPORT int IdlMdsValue(int argc, void **argv)
 	switch (mdsValueAnswer.pointer->dtype) {
 	case DTYPE_B:
 	  strcpy((char *)argv[2], "if max(answer) gt 127 then answer = fix(answer)-256");
+	  MDS_ATTR_FALLTHROUGH
 	case DTYPE_BU:
 	  strcpy((char *)argv[1], "answer = bytarr");
 	  strcat((char *)argv[1], dims);

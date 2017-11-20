@@ -12,8 +12,12 @@ winebottle64=$(mktemp --tmpdir -d winebottle64.XXXXXXXX)
 test64="64 x86_64-w64-mingw32 bin_x86_64 bin_x86_64 --with-winebottle=$winebottle64"
 winebottle32=$(mktemp --tmpdir -d winebottle32.XXXXXXXX)
 test32="32 i686-w64-mingw32   bin_x86    bin_x86 --with-winebottle=$winebottle32"
-export JNI_INCLUDE_DIR=/source/3rd-party-apis/windows-jdk
-export JNI_MD_INCLUDE_DIR=/source/3rd-party-apis/windows-jdk/win32
+
+srcdir=$(readlink -e $(dirname ${0})/../..)
+
+export JNI_INCLUDE_DIR=${srcdir}/3rd-party-apis/windows-jdk
+export JNI_MD_INCLUDE_DIR=${srcdir}/3rd-party-apis/windows-jdk/win32
+
 
 buildrelease() {
     abort=0
@@ -62,10 +66,10 @@ buildrelease() {
         trap windows_cleanup EXIT
         topsrcdir=${WINREMBLD}/${tmpdir}
         cd ${tmpdir}
-        rsync -am --include="*/" --include="*.h*" --include="*.def" --exclude="*" /source/ ./
+        rsync -am --include="*/" --include="*.h*" --include="*.def" --exclude="*" ${srcdir}/ ./
         rsync -am /workspace/releasebld/64/include/config.h ./include/
-        rsync -a /source/mdsobjects/cpp /source/mdsobjects/MdsObjects* /source/mdsobjects/VS-* ./mdsobjects/
-        rsync -a /source/deploy/platform/windows/winbld.bat ./deploy/
+        rsync -a ${srcdir}/mdsobjects/cpp ${srcdir}/mdsobjects/MdsObjects* ${srcdir}/mdsobjects/VS-* ./mdsobjects/
+        rsync -a ${srcdir}/deploy/platform/windows/winbld.bat ./deploy/
         rsync -a ${MDSPLUS_DIR}/bin_* ./
         curl http://${WINHOST}:8080${topsrcdir}/deploy/winbld.bat
         # see if files are there
@@ -76,8 +80,8 @@ buildrelease() {
         popd
     fi
     pushd $MDSPLUS_DIR
-    makensis -DMAJOR=${major} -DMINOR=${minor} -DRELEASE=${release} -DFLAVOR=${bname} -NOCD \
-         -DOUTDIR=/release/${BRANCH} ${vs} /source/deploy/packaging/${PLATFORM}/mdsplus.nsi
+    makensis -DMAJOR=${major} -DMINOR=${minor} -DRELEASE=${release} -DFLAVOR=${bname} -NOCD -DBRANCH=${BRANCH} \
+         -DOUTDIR=/release/${BRANCH} -Dsrcdir=${srcdir} ${vs} ${srcdir}/deploy/packaging/${PLATFORM}/mdsplus.nsi
     popd
     if [ -d /sign_keys ]
     then

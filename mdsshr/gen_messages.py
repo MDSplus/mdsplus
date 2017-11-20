@@ -34,7 +34,7 @@ msglist = []
 
 
 def gen_include(root,filename,faclist,msglistm,f_test):
-    pfaclist = []
+    pfaclist = ["MDSplus"]
     print filename
     f_inc=open("%s/include/%sh" % (sourcedir,filename[0:-3]),'w')
     f_inc.write(
@@ -88,13 +88,13 @@ def gen_include(root,filename,faclist,msglistm,f_test):
                 pfaclist.append(facnam)
                 f_py.write("""
 
-class _%(fac)sException(MDSplusException):
+class %(fac)sException(MDSplusException):
   fac="%(fac)s"
 """ % {'fac':facnam})
             msglist.append(msg)
             f_py.write("""
 
-class %(fac)s%(msgnam)s(_%(fac)sException):
+class %(fac)s%(msgnam)s(%(fac)sException):
   status=%(status)d
   message="%(message)s"
   msgnam="%(msgnam)s"
@@ -104,7 +104,32 @@ MDSplusException.statusDict[%(msgn_nosev)d] = %(fac)s%(msgnam)s
     f_inc.close()
 
 f_py=open("%s/mdsobjects/python/mdsExceptions.py"%sourcedir,'w')
-f_py.write("""
+f_py.write("""# 
+# Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright notice, this
+# list of conditions and the following disclaimer in the documentation and/or
+# other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+
 ########################################################
 # This module was generated using mdsshr/gen_device.py
 # To add new status messages modify one of the
@@ -114,6 +139,7 @@ f_py.write("""
 ########################################################
 
 class MDSplusException(Exception):
+  fac="MDSplus"
   statusDict={}
   severities=["W", "S", "E", "I", "F", "?", "?", "?"]
   def __new__(cls,*argv):
@@ -186,7 +212,33 @@ for filename,filepath in xmllist.items():
 
 f_getmsg=open('%s/mdsshr/MdsGetStdMsg.c'%sourcedir,'w')
 exceptionDict=[]
-f_getmsg.write("#include <config.h>\n\n");
+f_getmsg.write("""/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+#include <config.h>
+
+""");
 for facu in faclist:
     f_getmsg.write("static const char *FAC_%s = \"%s\";\n" % (facu,facu))
 f_getmsg.write("""
