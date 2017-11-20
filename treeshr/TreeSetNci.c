@@ -58,12 +58,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef _WIN32
 #include <windows.h>
 #include <io.h>
-#ifdef HAVE_PTHREAD_H
-#include <pthread.h>
 #endif
-#else
 #include <pthread.h>
-#endif
 #include <string.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -720,19 +716,8 @@ static int SetNodeParentState(PINO_DATABASE * db, NODE * node, NCI * nci, unsign
   return status;
 }
 
-#if defined _WIN32 && !defined HAVE_PTHREAD_H
-#define pthread_mutex_t int
-static void LockMdsShrMutex()
-{
-}
-
-static void UnlockMdsShrMutex()
-{
-}
-#else
 extern void LockMdsShrMutex(pthread_mutex_t *, int *);
 extern void UnlockMdsShrMutex(pthread_mutex_t *);
-#endif
 
 STATIC_THREADSAFE pthread_mutex_t NCIMutex;
 STATIC_THREADSAFE int NCIMutex_initialized;
