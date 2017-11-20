@@ -50,9 +50,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MINMAX(min, test, max) ((min) >= (test) ? (min) : (test) < (max) ? (test) : (max))
 #define DEF_FREEXD
 #define DEF_FREEBEGIN
-#if defined(_WIN32)
-#include <windows.h>
-#endif
 
 #include <STATICdef.h>
 #include "tdithreadsafe.h"
@@ -205,18 +202,7 @@ Useful for access violation errors.
 STATIC_ROUTINE int interlude(int (*f1) (), int opcode, int narg,
                              struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  INIT_STATUS;
-#if defined(_WIN32) && !defined(HAVE_PTHREAD_H)
-  __try {
-#endif
-    status = (*f1) (opcode, narg, list, out_ptr);
-#if defined(_WIN32) && !defined(HAVE_PTHREAD_H)
-  }
-  __except(EXCEPTION_EXECUTE_HANDLER) {
-    status = TdiBOMB;
-  }
-#endif
-  return status;
+  return (*f1) (opcode, narg, list, out_ptr);
 }
 
 EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
