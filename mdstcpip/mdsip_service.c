@@ -22,6 +22,8 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#define LOAD_INITIALIZESOCKETS
+#include <pthread_port.h>
 #include <stdlib.h>
 #include <config.h>
 #include <process.h>
@@ -206,20 +208,6 @@ static int InstallService()
   return status;
 }
 
-static void InitializeSockets()
-{
-#ifdef _WIN32
-  static int initialized = 0;
-  if (!initialized) {
-    WSADATA wsaData;
-    WORD wVersionRequested;
-    wVersionRequested = MAKEWORD(1, 1);
-    WSAStartup(wVersionRequested, &wsaData);
-    initialized = 1;
-  }
-#endif
-}
-
 static short GetPort()
 {
   short port;
@@ -344,7 +332,7 @@ int main(int argc, char **argv)
     SERVICE_TABLE_ENTRY srvcTable[] = { {ServiceName(1), (LPSERVICE_MAIN_FUNCTION) ServiceMain}
     , {NULL, NULL}
     };
-    InitializeSockets();
+    INITIALIZESOCKETS;
     StartServiceCtrlDispatcher(srvcTable);
   }
   return 1;

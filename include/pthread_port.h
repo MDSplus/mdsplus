@@ -4,8 +4,13 @@
 #include <stdlib.h>
 #include <status.h>
 #include <STATICdef.h>
-#ifndef NO_WINDOWS_H
- #include <windows.h>
+#ifdef _WIN32
+ #ifndef NO_WINDOWS_H
+  #ifdef LOAD_INITIALIZESOCKETS
+   #include <winsock2.h>
+  #endif
+  #include <windows.h>
+ #endif
 #endif
 #include <pthread.h>
 
@@ -198,23 +203,18 @@ if (!hp){\
 }
 
 #ifdef LOAD_INITIALIZESOCKETS
-#ifndef _WIN32
-#define INITIALIZESOCKETS
-#else
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-static int sockets_initialized = B_FALSE;
-#define INITIALIZESOCKETS {\
-  pthread_mutex_lock(&mutex);\
-  if (!sockets_initialized) {\
-    WSADATA wsaData;\
-    WORD wVersionRequested;\
-    wVersionRequested = MAKEWORD(1, 1);\
-    WSAStartup(wVersionRequested, &wsaData);\
-    sockets_initialized = B_TRUE;\
-  }\
-  pthread_mutex_unlock(&mutex);\
-}
-#endif
+ #ifndef _WIN32
+  #define INITIALIZESOCKETS
+ #else
+  static pthread_once_t InitializeSockets_once = PTHREAD_ONCE_INIT;
+  static void InitializeSockets() {
+    WSADATA wsaData;
+    WORD wVersionRequested;
+    wVersionRequested = MAKEWORD(1, 1);
+    WSAStartup(wVersionRequested, &wsaData);
+  }
+  #define INITIALIZESOCKETS pthread_once(&InitializeSockets_once,InitializeSockets)
+ #endif
 #endif
 
 #ifdef LOAD_GETUSERNAME

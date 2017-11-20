@@ -95,9 +95,6 @@ int FlushConnection(int id){
   return -1;
 }
 
-#ifdef _WIN32
-static void registerHandler(){}
-#else
 static void exitHandler(void){
   int id;
   void *ctx = (void *)-1;
@@ -109,7 +106,6 @@ static void exitHandler(void){
 static void registerHandler(){
   atexit(exitHandler);
 }
-#endif
 
 
 ////////////////////////////////////////////////////////////////////////////////
