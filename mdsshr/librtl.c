@@ -42,6 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <windows.h>
 #include <process.h>
 #define setenv(name,value,overwrite) _putenv_s(name,value)
+#define localtime_r(time,tm)         localtime_s(tm,time)
 #else
 #include <sys/wait.h>
 #endif
@@ -86,32 +87,17 @@ typedef struct node {
 } LibTreeNode;
 
 #include <libroutines.h>
-#ifdef _WIN32
-  static time_t get_tz_offset(time_t* time){
-    time_t tz_offset;
-    static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-    pthread_mutex_lock(&lock);
-    struct tm* tmval = localtime(time);
-  #ifdef USE_TM_GMTOFF
-    tz_offset = tmval->tm_gmtoff;
-  #else
-    tz_offset = - timezone + daylight * (tmval->tm_isdst ? 3600 : 0);
-  #endif
-    pthread_mutex_unlock(&lock);
-    return tz_offset;
-  }
+
+static time_t get_tz_offset(time_t* time){
+  struct tm tmval;
+  tzset();
+  localtime_r(time, &tmval);
+#ifdef USE_TM_GMTOFF
+  return tmval.tm_gmtoff;
 #else
-  static time_t get_tz_offset(time_t* time){
-    struct tm tmval;
-    tzset();
-    localtime_r(time, &tmval);
-  #ifdef USE_TM_GMTOFF
-    return tmval.tm_gmtoff;
-  #else
-    return - timezone + daylight * (tmval.tm_isdst ? 3600 : 0);
-  #endif
-  }
+  return - timezone + daylight * (tmval.tm_isdst ? 3600 : 0);
 #endif
+}
 
 STATIC_CONSTANT int64_t VMS_TIME_OFFSET = LONG_LONG_CONSTANT(0x7c95674beb4000);
 
