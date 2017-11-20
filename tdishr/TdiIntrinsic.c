@@ -77,9 +77,6 @@ extern int TdiFaultHandlerNoFixup();
 extern int Tdi0Decompile();
 extern int TdiConvert();
 extern int TdiGetLong();
-#ifdef __VMS
-#define SysGetMsg sys##$##getmsg
-#endif
 extern int SysGetMsg();
 STATIC_ROUTINE struct descriptor *FixedArray();
 
