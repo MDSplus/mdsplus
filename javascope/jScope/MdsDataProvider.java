@@ -992,12 +992,6 @@ public class MdsDataProvider
         boolean enabled = true;
         Vector<UpdateDescriptor>requestsV = new Vector<>();
         void updateInfo(double updateLowerBound, double updateUpperBound, int updatePoints,
-                Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong, long delay)
-        {
-            intUpdateInfo(updateLowerBound, updateUpperBound, updatePoints, waveDataListenersV, simpleWaveData, isXLong,
-                   Calendar.getInstance().getTimeInMillis()+delay);
-        }
-       void updateInfo(double updateLowerBound, double updateUpperBound, int updatePoints,
                 Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong)
         {
  //           intUpdateInfo(updateLowerBound, updateUpperBound, updatePoints, waveDataListenersV, simpleWaveData, isXLong,
@@ -1054,59 +1048,43 @@ public class MdsDataProvider
                     catch(InterruptedException exc) {}
                 }
                 if(!enabled) continue;
-                long currTime = Calendar.getInstance().getTimeInMillis();
-                long nextTime = -1;
-                int i = 0;
-                while(i < requestsV.size())
+                while(requestsV.size() > 0)
                 {
                     if(!enabled) break;
-                    UpdateDescriptor currUpdate = requestsV.elementAt(i);
-                    if(currUpdate.updateTime < currTime)
+                    //Take most recent request
+                    UpdateDescriptor currUpdate = requestsV.elementAt(requestsV.size() - 1);
+                    try 
                     {
-                         try 
-                        {
-                            
-                            requestsV.removeElementAt(i);
-                            XYData currData = currUpdate.simpleWaveData.getData(currUpdate.updateLowerBound, currUpdate.updateUpperBound, currUpdate.updatePoints, currUpdate.isXLong);
-                            
-                            if( currData == null || currData.nSamples == 0 )
-                                continue;
-                            for(int j = 0; j < currUpdate.waveDataListenersV.size(); j++)
-                            {
-                                if(currUpdate.isXLong)
-                                    currUpdate.waveDataListenersV.elementAt(j).dataRegionUpdated(currData.xLong, currData.y, currData.resolution);
-                                else
-                                    currUpdate.waveDataListenersV.elementAt(j).dataRegionUpdated(currData.x, currData.y, currData.resolution);
+                       requestsV.removeElementAt(requestsV.size() - 1);
+                       int k = 0;
+                       //remove older requests for the same waveform
+                       while(k < requestsV.size())
+                       {
+                           if(requestsV.elementAt(k).simpleWaveData == currUpdate.simpleWaveData)
+                               requestsV.removeElementAt(k);
+                           else
+                               k++;
+                       } 
+                           
+                       XYData currData = currUpdate.simpleWaveData.getData(currUpdate.updateLowerBound, currUpdate.updateUpperBound, currUpdate.updatePoints, currUpdate.isXLong);
 
-                            }
-                        }catch(Exception exc)
-                        {
-                            Date d = new Date();
-                            System.out.println(d+" Error in asynchUpdate: "+exc);
-                        }
-                    }
-                    else
-                    {
-                        if(nextTime == -1 || nextTime > currUpdate.updateTime) //It will alway be nextTime != -1
-                            nextTime = currUpdate.updateTime;
-                        i++;
-                    }
+                       if( currData == null || currData.nSamples == 0 )
+                           continue;
+                       for(int j = 0; j < currUpdate.waveDataListenersV.size(); j++)
+                       {
+                           if(currUpdate.isXLong)
+                               currUpdate.waveDataListenersV.elementAt(j).dataRegionUpdated(currData.xLong, currData.y, currData.resolution);
+                           else
+                               currUpdate.waveDataListenersV.elementAt(j).dataRegionUpdated(currData.x, currData.y, currData.resolution);
+
+                       }
+                   }catch(Exception exc)
+                   {
+                       Date d = new Date();
+                       System.out.println(d+" Error in asynchUpdate: "+exc);
+                   }
                 }
-                if(nextTime != -1) //If a pending request for which time did not expire, schedure a new notification NOTE NOT USED
-                {
-                    currTime = Calendar.getInstance().getTimeInMillis();
-                    java.util.Timer timer = new java.util.Timer();
-                    timer.schedule(new TimerTask() {
-                        public void run()
-                        {
-                            synchronized(UpdateWorker.this)
-                            {
-                                UpdateWorker.this.notify();
-                            }
-                        }
-                    }, (nextTime < currTime + 50)?50:(nextTime - currTime + 1));
-                }
-            }
+             }
         }
     } //End Inner class UpdateWorker
 

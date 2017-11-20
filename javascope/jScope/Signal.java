@@ -1863,8 +1863,8 @@ public class Signal implements WaveDataListener
      */
     public void ResetXScale()
     {
-        xmax = saved_xmax;
-        xmin = saved_xmin;
+        xmax = freezedXMax = curr_xmax = saved_xmax;
+        xmin = freezedXMin = curr_xmin = saved_xmin;
     }
 
     /**
@@ -1881,8 +1881,8 @@ public class Signal implements WaveDataListener
      */
     public void ResetScales()
     {
-        xmax = saved_xmax;
-        xmin = saved_xmin;
+        xmax = freezedXMax = curr_xmax = saved_xmax;
+        xmin = freezedXMin = curr_xmin = saved_xmin;
         ymax = saved_ymax;
         ymin = saved_ymin;
         unfreeze();
