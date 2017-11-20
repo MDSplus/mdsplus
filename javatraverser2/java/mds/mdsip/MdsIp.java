@@ -29,6 +29,7 @@ import mds.MdsException;
 import mds.MdsException.MdsAbortException;
 import mds.MdsListener;
 import mds.UpdateEventListener;
+import mds.data.CTX;
 import mds.data.DTYPE;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_s.Missing;
@@ -526,9 +527,9 @@ public class MdsIp extends Mds{
 
     @Override
     @SuppressWarnings({"rawtypes"})
-    protected final <T extends Descriptor> T _getDescriptor(final Pointer ctx, final Request<T> req) throws MdsException {
+    protected final <T extends Descriptor> T _getDescriptor(final CTX ctx, final Request<T> req) throws MdsException {
         final boolean serialize = (req.props & Request.PROP_ATOMIC_RESULT) == 0;
-        final Message msg = this.getMessage(ctx, req, serialize);
+        final Message msg = this.getMessage(ctx == null ? null : ctx.getDbid(), req, serialize);
         if(msg.dtype == DTYPE.T) throw new MdsException(msg.toString());
         if(serialize) return Mds.bufferToClass(msg.body, req.cls);
         return null; // TODO: deserialize from msg Discriptor_A.readMessage()

@@ -31,8 +31,12 @@ public final class Opaque extends Descriptor_R<Number> implements PARAMETER{
     }
 
     @Override
-    public final Opaque getLocal_() {
-        return (Opaque)new Opaque(this.getValue().getLocal(), this.getOpaqueType().getLocal()).setLocal();
+    public final Opaque getLocal_(final FLAG local) {
+        final FLAG mylocal = new FLAG();
+        final Descriptor<?> value = Descriptor.getLocal(mylocal, this.getValue());
+        final Descriptor<?> type = Descriptor.getLocal(mylocal, this.getOpaqueType());
+        if(FLAG.and(local, mylocal.flag)) return (Opaque)this.setLocal();
+        return (Opaque)new Opaque(value, type).setLocal();
     }
 
     public final Descriptor<?> getOpaqueType() {

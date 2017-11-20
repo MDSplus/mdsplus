@@ -10,8 +10,8 @@ import java.util.Arrays;
 import debug.DEBUG;
 import mds.Mds;
 import mds.MdsException;
+import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
-import mds.data.descriptor_s.Pointer;
 
 public final class MdsLib extends Mds{
     public static final String lib_loaded = MdsLib.loadLibraryFromJar("JavaMdsLib");
@@ -85,12 +85,12 @@ public final class MdsLib extends Mds{
 
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
-    protected final <T extends Descriptor> T _getDescriptor(final Pointer ctx, final Request<T> request) throws MdsException {
+    protected final <T extends Descriptor> T _getDescriptor(final CTX ctx, final Request<T> request) throws MdsException {
         final byte[] buffer;
         synchronized(this){
             byte[] tmpctx = null;
             if(ctx != null) //
-                tmpctx = MdsLib.evaluate("TreeShr->TreeSwitchDbid:P(val($))", ctx.serializeArray());
+                tmpctx = MdsLib.evaluate("TreeShr->TreeSwitchDbid:P(val($))", ctx.getDbid().serializeArray());
             final byte[][] args = new byte[request.args.length][];
             for(int i = 0; i < args.length; i++)
                 args[i] = request.args[i].serializeArray();
@@ -100,7 +100,7 @@ public final class MdsLib extends Mds{
             }finally{
                 if(ctx != null){
                     tmpctx = MdsLib.evaluate("TreeShr->TreeSwitchDbid:P(val($))", tmpctx);
-                    ctx.setAddress(((ByteBuffer)ByteBuffer.wrap(tmpctx).position(8)).slice().order(Descriptor.BYTEORDER));
+                    ctx.getDbid().setAddress(((ByteBuffer)ByteBuffer.wrap(tmpctx).position(8)).slice().order(Descriptor.BYTEORDER));
                 }
             }
         }

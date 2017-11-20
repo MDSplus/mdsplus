@@ -18,6 +18,30 @@ import mds.mdslib.MdsLib;
 
 /** DSC (24) **/
 public abstract class Descriptor<T>{
+    static protected class FLAG{
+        public static final boolean and(final FLAG flag, final boolean in) {
+            if(flag != null) flag.flag = flag.flag && in;
+            return in;
+        }
+
+        public static final boolean or(final FLAG flag, final boolean in) {
+            if(flag != null) flag.flag = flag.flag || in;
+            return in;
+        }
+
+        public static final boolean set(final FLAG flag, final boolean in) {
+            if(flag != null) flag.flag = in;
+            return in;
+        }
+
+        public static final boolean xor(final FLAG flag, final boolean in) {
+            if(flag != null) flag.flag = flag.flag ^ in;
+            return in;
+        }
+        public boolean flag = true;
+
+        public FLAG(){}
+    }
     protected static final int    _lenS     = 0;
     protected static final int    _typB     = 2;
     protected static final int    _clsB     = 3;
@@ -89,7 +113,7 @@ public abstract class Descriptor<T>{
         return t == null ? "*" : t.toString();
     }
 
-    protected final static DATA<?>[] getDATA(final Descriptor<?>... args) throws MdsException {
+    protected final static DATA<?>[] getDATAs(final Descriptor<?>... args) throws MdsException {
         final DATA<?>[] data_args = new DATA[args.length];
         for(int i = 0; i < args.length; i++)
             data_args[i] = args[i].getData();
@@ -155,11 +179,26 @@ public abstract class Descriptor<T>{
         }
     }
 
-    protected final static Descriptor<?>[] getLOCAL(final Descriptor<?>... args) {
+    public static final Descriptor<?> getLocal(final FLAG local, final Descriptor<?> dsc) {
+        if(dsc == null || dsc.isLocal()) return dsc;
+        final Descriptor<?> ldsc = dsc.getLocal(local);
+        return ldsc.setLocal();
+    }
+
+    protected final static Descriptor<?>[] getLocals(final FLAG local, final Descriptor<?>... args) {
         final Descriptor<?>[] local_args = new Descriptor<?>[args.length];
         for(int i = 0; i < args.length; i++)
-            local_args[i] = args[i].getLocal();
+            local_args[i] = Descriptor.getLocal(local, args[i]);
         return local_args;
+    }
+
+    public static final boolean isLocal(final Descriptor<?> dsc) {
+        if(dsc == null) return true;
+        return dsc.isLocal();
+    }
+
+    public static final boolean isMissing(final Descriptor<?> dsc) {
+        return dsc == null || dsc == Missing.NEW;
     }
 
     public static final Descriptor<?> NEW(final Object obj) throws MdsException {
@@ -259,7 +298,7 @@ public abstract class Descriptor<T>{
 
     public Descriptor<?> evaluate_lib() throws MdsException {
         if(this instanceof DATA) return this;
-        if(MdsLib.lib_loaded == null) return Descriptor.mdslib.getDescriptor("EVALUATE($)", this.getLocal());
+        if(MdsLib.lib_loaded == null) return Descriptor.mdslib.getDescriptor(this.tree, "EVALUATE($)", this.getLocal());
         return new TdiShr(this.mds).tdiEvaluate(this);
     }
 
@@ -278,7 +317,7 @@ public abstract class Descriptor<T>{
      **/
     public DATA<?> getData() throws MdsException {
         if(this instanceof DATA) return (DATA<?>)this;
-        if(MdsLib.lib_loaded == null) return (DATA<?>)Descriptor.mdslib.getDescriptor("DATA($)", this.getLocal());
+        if(MdsLib.lib_loaded == null) return (DATA<?>)Descriptor.mdslib.getDescriptor(this.tree, "DATA($)", this.getLocal());
         return this.getData_();
     }
 
@@ -314,18 +353,24 @@ public abstract class Descriptor<T>{
         return DTYPE.getName(this.dtype());
     }
 
+    final public Descriptor<?> getLocal() {
+        if(this.isLocal()) return this;
+        return this.getLocal(null);
+    }
+
     /**
      * Returns the local version of the Descriptor, i.e. it will download all required data
      *
      * @throws MdsException
      **/
-    public Descriptor<?> getLocal() {
+    public Descriptor<?> getLocal(final FLAG local) {
         if(this.isLocal()) return this;
-        final Descriptor<?> local = this.getLocal_();
-        return local.setLocal();
+        final Descriptor<?> ldsc = this.getLocal_(local);
+        return ldsc.setLocal();
     }
 
-    public Descriptor<?> getLocal_() {
+    public Descriptor<?> getLocal_(final FLAG local) {
+        FLAG.set(local, false);
         return this.evaluate().getLocal();
     }
 

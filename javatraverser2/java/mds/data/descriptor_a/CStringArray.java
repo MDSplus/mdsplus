@@ -85,7 +85,7 @@ public final class CStringArray extends Descriptor_A<String> implements DATA<Str
     }
 
     @Override
-    public final CStringArray getLocal_() {
+    public final CStringArray getLocal_(final FLAG local) {
         return this;
     }
 

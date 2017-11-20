@@ -223,8 +223,10 @@ public abstract class UNARY extends Function{
     protected abstract Descriptor<?> evaluate(final DATA<?> data) throws MdsException;
 
     @Override
-    public Descriptor<?> getLocal_() {
-        final Descriptor<?> X = this.getArgument(0).getLocal();
+    public Descriptor<?> getLocal_(final FLAG local) {
+        final FLAG mylocal = new FLAG();
+        final Descriptor<?> X = Descriptor.getLocal(mylocal, this.getArgument(0));
+        if(FLAG.and(local, mylocal.flag)) return this.setLocal();
         try{
             return this.getClass().getConstructor(Descriptor.class).newInstance(X).setLocal();
         }catch(final Exception e){

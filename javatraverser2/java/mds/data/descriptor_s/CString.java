@@ -86,7 +86,7 @@ public final class CString extends Descriptor_S<String> implements DATA<String>{
     }
 
     @Override
-    public final CString getLocal_() {
+    public final CString getLocal_(final FLAG local) {
         return this;
     }
 
