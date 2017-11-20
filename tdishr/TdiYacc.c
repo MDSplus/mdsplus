@@ -24,9 +24,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 //#line 2 "TdiYacc.y"
-#ifdef __VMS
-#pragma module TdiYacc TdiYacc
-#endif
 /*      TdiYacc.Y
         YACC converts this to TdiYacc.C to compile TDI statements.
         Each YACC-LEX symbol has a returned token and a tdiyylval value.

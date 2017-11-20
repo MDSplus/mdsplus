@@ -47,13 +47,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 #include <pthread_port.h>
 #include <errno.h>
-#ifdef __VMS
-#include <starlet.h>
-typedef struct {
-  int lo;
-  unsigned int hi;
-} quadw;
-#endif
 #include <mdsshr.h>
 #include <treeshr.h>
 
@@ -78,13 +71,6 @@ extern int TdiCall();
         flags   1 for CPU time
         acmode  access mode
 ****/
-
-#ifdef __VMS
-STATIC_ROUTINE void TASK_AST(int astpar, int r0, int r1, int *pc, int psl)
-{
-  lib$signal(TdiTIMEOUT, 0);
-}
-#endif
 
 STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *out_ptr)
 {

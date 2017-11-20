@@ -40,30 +40,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <STATICdef.h>
 #include "tdirefcat.h"
 
-
-
-#ifdef __VMS
-
-#define F_SYM   "E"
-#define FS_SYM  "S"
-#define FT_SYM  "T"
-#if __G_FLOAT
-#define G_SYM "D"
-#define D_SYM "V"
-#else
-#define G_SYM "G"
-#define D_SYM "D"
-#endif
-
-#else
-
 #define F_SYM   "F"
 #define FS_SYM  "E"
 #define FT_SYM  "D"
 #define G_SYM   "G"
 #define D_SYM   "V"
-
-#endif
 
 const struct TdiCatStruct_table TdiREF_CAT[] = {
   {"MISSING", 0, 0, 0, 0},	/*0 Z=unsecified */
