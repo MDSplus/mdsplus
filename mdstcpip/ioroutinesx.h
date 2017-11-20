@@ -110,9 +110,9 @@ static int GetHostAndPort(char *hostin, struct SOCKADDR_IN *sin){
     fprintf(stderr,"Error connecting to host: %s, port %s error=%s\n", host, service, gai_strerror(n));
   else {
     memcpy(sin, info->ai_addr, sizeof(*sin) < info->ai_addrlen ? sizeof(*sin) : info->ai_addrlen);
-    freeaddrinfo(info);
     status = MDSplusSUCCESS;
   }
+  freeaddrinfo(info);
   free(host);
   return status;
 }
