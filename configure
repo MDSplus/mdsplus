@@ -7993,7 +7993,7 @@ case "$host" in
 *mingw*)
        IDLMDSEVENT=""
        LIBPRE=""
-       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields";
+       CFLAGS="$CFLAGS -Wno-implicit-fallthrough -fno-strict-aliasing -mno-ms-bitfields";
        LD="$CXX -static-libgcc"
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="$FC"
