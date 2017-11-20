@@ -29,7 +29,7 @@ import mds.data.descriptor_s.Path;
 import mds.data.descriptor_s.Pointer;
 import mds.mdsip.MdsIp;
 
-public final class TREE implements MdsListener{
+public final class TREE implements MdsListener, CTX{
     public final static class NodeInfo{
         public static final Request<List> getRequest(final NODE<?> node) {
             return new Request<List>(List.class, "_n=GETNCI($,'NID_NUMBER');" + NodeInfo.request(), node);
@@ -396,6 +396,11 @@ public final class TREE implements MdsListener{
 
     public final int getCurrentShot() throws MdsException {
         return this.setActive().treeshr.treeGetCurrentShotId(null, this.expt);
+    }
+
+    @Override
+    public final Pointer getDbid() {
+        return this.ctx;
     }
 
     public final Nid getDefaultC() {

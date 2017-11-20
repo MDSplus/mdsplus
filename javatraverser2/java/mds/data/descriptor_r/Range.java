@@ -107,10 +107,13 @@ public final class Range extends Descriptor_R<Number>{
 
     @Override
     public final DATA<?> getData_() throws MdsException {
-        if(this.getBegin() == Missing.NEW || this.getEnding() == Missing.NEW) MdsException.handleStatus(MdsException.TdiBOMB);
-        if(this.getBegin() instanceof FLOAT || this.getEnding() instanceof FLOAT || this.getDelta() instanceof FLOAT) return new Float64Array(Range.range(this.getBegin().toDouble(), this.getEnding().toDouble(), this.getDelta() == Missing.NEW ? 1d : this.getDelta().toDouble()));
-        if(this.getBegin() instanceof Int64 || this.getEnding() instanceof Int64 || this.getDelta() instanceof Int64) return new Int64Array(Range.range(this.getBegin().toLong(), this.getEnding().toLong(), this.getDelta() == Missing.NEW ? 1l : this.getDelta().toLong()));
-        return new Int32Array(Range.range(this.getBegin().toInt(), this.getEnding().toInt(), this.getDelta() == Missing.NEW ? 1 : this.getDelta().toInt()));
+        final Descriptor<?> begin = Descriptor.getLocal(null, this.getBegin());
+        final Descriptor<?> end = Descriptor.getLocal(null, this.getEnding());
+        final Descriptor<?> delta = Descriptor.getLocal(null, this.getDelta());
+        if(Descriptor.isMissing(begin) || Descriptor.isMissing(end)) MdsException.handleStatus(MdsException.TdiBOMB);
+        if(begin instanceof FLOAT || end instanceof FLOAT || delta instanceof FLOAT) return new Float64Array(Range.range(begin.toDouble(), end.toDouble(), Descriptor.isMissing(delta) ? 1d : delta.toDouble()));
+        if(begin instanceof Int64 || end instanceof Int64 || delta instanceof Int64) return new Int64Array(Range.range(begin.toLong(), end.toLong(), Descriptor.isMissing(delta) ? 1l : delta.toLong()));
+        return new Int32Array(Range.range(begin.toInt(), end.toInt(), Descriptor.isMissing(delta) ? 1 : delta.toInt()));
     }
 
     public final Descriptor<?> getDelta() {
@@ -122,8 +125,13 @@ public final class Range extends Descriptor_R<Number>{
     }
 
     @Override
-    public final Range getLocal_() {
-        return (Range)new Range(this.getBegin().getLocal(), this.getEnding().getLocal(), this.getDelta().getLocal()).setLocal();
+    public final Range getLocal_(final FLAG local) {
+        final FLAG mylocal = new FLAG();
+        final Descriptor<?> begin = Descriptor.getLocal(mylocal, this.getBegin());
+        final Descriptor<?> end = Descriptor.getLocal(mylocal, this.getEnding());
+        final Descriptor<?> delta = Descriptor.getLocal(mylocal, this.getDelta());
+        if(FLAG.and(local, mylocal.flag)) return (Range)this.setLocal();
+        return (Range)new Range(begin, end, delta).setLocal();
     }
 
     @Override

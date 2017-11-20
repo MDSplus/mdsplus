@@ -333,8 +333,13 @@ public class Function extends Descriptor_R<Short>{
     }
 
     @Override
-    public Descriptor<?> getLocal_() {
-        return new Function(this.getOpCode(), Descriptor.getLOCAL(this.getArguments())).setLocal();
+    public Descriptor<?> getLocal_(final FLAG local) {
+        final short opc = this.getOpCode();
+        if(!FLAG.and(local, opc != OPC.OpcExtFunction && opc != OPC.OpcDefault && opc != OPC.OpcShot && opc != OPC.OpcExpt)) return this.evaluate().setLocal();
+        final FLAG mylocal = new FLAG();
+        final Descriptor<?>[] args = Descriptor.getLocals(mylocal, this.getArguments());
+        if(FLAG.and(local, mylocal.flag)) return this.setLocal();
+        return new Function(opc, args).setLocal();
     }
 
     protected final String getName() {

@@ -40,8 +40,13 @@ public final class Param extends Descriptor_R<Number> implements PARAMETER{
     }
 
     @Override
-    public final Param getLocal_() {
-        return (Param)new Param(this.getValue().getLocal(), this.getHelp().getLocal(), this.getValidation().getLocal()).setLocal();
+    public final Param getLocal_(final FLAG local) {
+        final FLAG mylocal = new FLAG();
+        final Descriptor<?> value = Descriptor.getLocal(mylocal, this.getValue());
+        final Descriptor<?> help = Descriptor.getLocal(mylocal, this.getHelp());
+        final Descriptor<?> valid = Descriptor.getLocal(mylocal, this.getValidation());
+        if(FLAG.and(local, mylocal.flag)) return (Param)this.setLocal();
+        return (Param)new Param(value, help, valid).setLocal();
     }
 
     @Override

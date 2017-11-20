@@ -38,7 +38,7 @@ public class Fun extends Function{
     @Override
     public final Descriptor<?> evaluate() {
         try{
-            final DATA<?>[] args = Descriptor.getDATA(this.getArguments());
+            final DATA<?>[] args = Descriptor.getDATAs(this.getArguments());
             return BINARY.getCommon(args).add(args[0].toDescriptor(), args[1].toDescriptor());
         }catch(final MdsException e){
             System.err.println(e.getMessage());
