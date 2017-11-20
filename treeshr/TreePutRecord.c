@@ -125,7 +125,7 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
   int64_t extended_offset;
   int compress_utility = utility_update == 2;
   int unlock_nci_needed = 0;
-#if !defined(_WIN32)
+#ifndef _WIN32
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif
