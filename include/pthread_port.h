@@ -108,7 +108,7 @@ typedef struct _Condition_p {
  }
  #ifdef _WIN32
   #define FREEXD_ON_EXIT(ptr) {
-  #define FREEXD_IF(ptr,c)    };if (c) free_xd((void*)&ptr)
+  #define FREEXD_IF(ptr,c)    };if (c) free_xd(ptr)
   #define FREEXD_NOW(ptr)     };free_xd(ptr)
  #else
   #define FREEXD_ON_EXIT(ptr) pthread_cleanup_push(free_xd, ptr)

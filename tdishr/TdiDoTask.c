@@ -138,34 +138,36 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
   return status;
 }
 
-#if !defined(__VMS) && !defined(_WIN32)
+#if !defined(__VMS) && !defined(_WIN32) // #ifndef _WIN32
 typedef struct _WorkerArgs{
   Condition                 *pcond;
   int                       *pstatus;
-  struct descriptor_routine *ptask;
+  struct descriptor_xd      *task_xd;
 } WorkerArgs;
 
-static void WorkerExit(void *WorkerRunning){
-  CONDITION_RESET(((Condition*)WorkerRunning));
+static void WorkerExit(void *args){
+  free_xd(((WorkerArgs*)args)->task_xd);
+  CONDITION_RESET(((WorkerArgs*)args)->pcond);
 }
 
 static void WorkerThread(void *args){
-  pthread_cleanup_push(WorkerExit, (void*)((WorkerArgs*)args)->pcond);
+  pthread_cleanup_push(WorkerExit, (void*)((WorkerArgs*)args));
   CONDITION_SET(((WorkerArgs*)args)->pcond);
   EMPTYXD(out_xd);
   FREEXD_ON_EXIT(&out_xd);
-  int status = Doit(((WorkerArgs*)args)->ptask,&out_xd);
+  struct descriptor_routine* ptask = (struct descriptor_routine *)((WorkerArgs*)args)->task_xd->pointer;
+  int status = Doit(ptask,&out_xd);
   *((WorkerArgs*)args)->pstatus = STATUS_OK ? *(int*)out_xd.pointer->pointer : status;
   FREEXD_NOW(&out_xd);
   pthread_cleanup_pop(1);
   pthread_exit(0);
 }
 
-STATIC_ROUTINE int StartWorker(struct descriptor_routine *ptask, struct descriptor_xd *out_ptr, const float timeout){
+STATIC_ROUTINE int StartWorker(struct descriptor_xd *task_xd, struct descriptor_xd *out_ptr, const float timeout){
   INIT_STATUS, t_status = MDSplusERROR;
   pthread_t Worker;
   Condition WorkerRunning = CONDITION_INITIALIZER;
-  WorkerArgs args = { &WorkerRunning, &t_status, ptask };
+  WorkerArgs args = { &WorkerRunning, &t_status, task_xd };
   _CONDITION_LOCK(&WorkerRunning);
   CREATE_DETACHED_THREAD(Worker, *8, WorkerThread,(void*)&args);
   if (c_status) {
@@ -198,14 +200,17 @@ int Tdi1DoTask(int opcode __attribute__ ((unused)),
 {
   INIT_STATUS;
   EMPTYXD(task_xd);
+  int freetask = 1;
   FREEXD_ON_EXIT(&task_xd);
   struct descriptor_routine *ptask;
   status = TdiTaskOf(list[0], &task_xd MDS_END_ARG);
   if STATUS_NOT_OK
     goto cleanup;
   ptask = (struct descriptor_routine *)task_xd.pointer;
-  if (!ptask)
-    return TdiNULL_PTR;
+  if (!ptask) {
+    status = TdiNULL_PTR;
+    goto cleanup;
+  }
   switch (ptask->dtype) {
   case DTYPE_L:
   case DTYPE_LU:
@@ -270,12 +275,13 @@ int Tdi1DoTask(int opcode __attribute__ ((unused)),
 #else
  #ifndef _WIN32
   if (timeout > 0.) {
-    status = StartWorker(ptask, out_ptr, timeout);
+    freetask = 0;
+    status = StartWorker(&task_xd, out_ptr, timeout);
   } else
  #endif
     status = Doit(ptask, out_ptr);
 #endif
  cleanup: ;
-  FREEXD_NOW(&task_xd);
+  FREEXD_IF(&task_xd,freetask);
   return status;
 }
