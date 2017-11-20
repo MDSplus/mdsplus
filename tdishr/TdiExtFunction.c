@@ -82,13 +82,7 @@ extern int TdiEvaluate();
 
 STATIC_CONSTANT DESCRIPTOR(dnul, "\0");
 STATIC_CONSTANT DESCRIPTOR(dfun, ".fun\0");
-#if defined(__VMS)
-STATIC_CONSTANT DESCRIPTOR(def_path, "MDS$PATH:");
-#elif defined(WIN32)
 STATIC_CONSTANT DESCRIPTOR(def_path, "MDS_PATH:");
-#else
-STATIC_CONSTANT DESCRIPTOR(def_path, "MDS_PATH:");
-#endif
 STATIC_CONSTANT struct descriptor_d EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
 
 int TdiFindImageSymbol(struct descriptor_d *image, struct descriptor_d *entry, int (**symbol) ())

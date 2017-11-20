@@ -138,7 +138,6 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
   return status;
 }
 
-#if !defined(__VMS) && !defined(_WIN32) // #ifndef _WIN32
 typedef struct _WorkerArgs{
   Condition                 *pcond;
   int                       *pstatus;
@@ -193,7 +192,6 @@ STATIC_ROUTINE int StartWorker(struct descriptor_xd *task_xd, struct descriptor_
   CONDITION_DESTROY(&WorkerRunning);
   return status;
 }
-#endif
 
 int Tdi1DoTask(int opcode __attribute__ ((unused)),
 	       int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
@@ -247,40 +245,11 @@ int Tdi1DoTask(int opcode __attribute__ ((unused)),
   if STATUS_OK
     status = TdiGetFloat(ptask->time_out, &timeout);
   if STATUS_NOT_OK goto cleanup;
-#ifdef __VMS
-  /***** get timeout *****/
-  quadw dt = { 0, 0 };
-  DESCRIPTOR_FLOAT(timeout_dsc, 0);
-  struct descriptor dt_dsc = { sizeof(dt), DTYPE_Q, CLASS_S, 0 };
-  timeout_dsc.pointer = (char *)&timeout;
-  dt_dsc.pointer = (char *)&dt;
-  if (timeout > 0.) {
-    STATIC_CONSTANT int zero = 0;
-    STATIC_CONSTANT DESCRIPTOR_LONG(zero_dsc, &zero);
-    timeout = (float)(1.E7 * timeout);			/*** 100 ns steps ***/
-    if STATUS_OK
-      status = TdiConvert(&timeout_dsc, &dt_dsc MDS_END_ARG);
-    if STATUS_OK
-      status = TdiSubtract(&zero_dsc, &dt_dsc, &dt_dsc MDS_END_ARG);
-  }
-  if STATUS_NOT_OK goto cleanup;
-  if (dt.lo || dt.hi)
-    status = sys$setimr(0, &dt, TASK_AST, &dt, 0);
-  if STATUS_NOT_OK goto cleanup;
-  status = Doit(ptask, out_ptr);
-  if (dt.lo || dt.hi) {
-    sys$cantim(&dt, 0);
-    sys$canwak(0, 0);			/*** just in case LIB$WAIT called ***/
-  }
-#else
- #ifndef _WIN32
   if (timeout > 0.) {
     freetask = 0;
     status = StartWorker(&task_xd, out_ptr, timeout);
   } else
- #endif
     status = Doit(ptask, out_ptr);
-#endif
  cleanup: ;
   FREEXD_IF(&task_xd,freetask);
   return status;
