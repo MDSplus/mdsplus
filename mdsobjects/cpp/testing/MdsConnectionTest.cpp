@@ -60,15 +60,13 @@ using namespace testing;
 void test_tree_open(const char *prot)
 {
     MdsIpInstancer mdsip(prot);
-    bool server_started =  mdsip.waitForServer(20,2E5); // try 20 times x 0.2s
-    TEST1(server_started);
-
 
     // get address form instancer for the specified protocol //
     std::string addr = mdsip.getAddress();
 
     std::cout << "attempt to connect to: " << addr << "\n";
-    Connection cnx(const_cast<char*>(addr.c_str()),0);
+    usleep(1000000);
+    Connection cnx(const_cast<char*>(addr.c_str()));
 
     // test client-server communication //
     unique_ptr<Data> data = cnx.get("ZERO(10)");
@@ -108,10 +106,9 @@ void test_tree_open(const char *prot)
 
 int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 {
-    TEST_TIMEOUT(15);
-    BEGIN_TESTING(Connection);
-
+    TEST_TIMEOUT(30);
     setenv("test_tree_path",".",1);
+
 
     ////////////////////////////////////////////////////////////////////////////////
     //  Generate Tree  /////////////////////////////////////////////////////////////
@@ -146,15 +143,18 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
     ////////////////////////////////////////////////////////////////////////////////
 
     // tcp //
+    BEGIN_TESTING(Connection tcp);
     test_tree_open("tcp");
+    END_TESTING;
 
     // udt //
-    
+
 #ifndef __ARM_ARCH
+    BEGIN_TESTING(Connection udt);
     test_tree_open("udt");
+    END_TESTING;
 #endif
 
-    END_TESTING;
 }
 
 #endif

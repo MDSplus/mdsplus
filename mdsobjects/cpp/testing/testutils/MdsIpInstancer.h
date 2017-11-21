@@ -31,14 +31,14 @@ namespace mds = MDSplus;
 
 namespace testing {
 class MdsIpInstancer {
-        
-    struct HostFile {        
+
+    struct HostFile {
         HostFile() {
-            std::string hosts_default = 
+            std::string hosts_default =
                     "/O=Grid/O=National Fusion Collaboratory/OU=MIT/CN=Thomas W. Fredian/Email=twf@psfc.mit.edu | twf \n"
                     "* | MAP_TO_LOCAL \n"
                     "* | nobody \n";
-            
+
             std::ofstream hosts_file;
             hosts_file.open("testing.hosts");
             hosts_file << hosts_default << "\n";
@@ -48,15 +48,15 @@ class MdsIpInstancer {
             remove("testing.hosts");
         }
         const char *name() const { return "testing.hosts"; }
-    };    
-    
+    };
+
     Singleton<HostFile> m_host_file;
     pid_t m_pid;
     int m_port;
     std::string m_protocol;
-    
+
 public:
-    
+
     MdsIpInstancer(const char *protocol) :
         m_port(8000),
         m_protocol(protocol)
@@ -64,26 +64,24 @@ public:
         // build lazy singleton instance //
         m_host_file.get_instance();
 
-        // get first available port //        
-        m_port += getpid()%1000;
+        // get first available port //
         int offset = 0;
-        while(!available(m_port,m_protocol) && offset<10 ) {
-            m_port += offset++ * 1000;
+        while(!available(m_port,m_protocol) && offset<100 ) {
+            m_port += offset++;
         }
-        if(offset==10) 
-            throw std::out_of_range("any port found within 10 tries");
-        
-        
+        if(offset==100)
+            throw std::out_of_range("any port found within 100 tries");
+
         m_pid = fork();
         if(m_pid<0) {
             perror("unable to fork process\n");
             exit(1);
         }
-        
+
         // child //
-        if(m_pid == 0) {                          
+        if(m_pid == 0) {
             char port_str[20];
-            sprintf(port_str,"%i",m_port);            
+            sprintf(port_str,"%i",m_port);
             int _argc = 8;
             char *_argv[] = {(char *)"mdsip",
                              (char *)"-m",
@@ -92,28 +90,27 @@ public:
                              (char *)"-h",(char *)m_host_file->name() };
             int status __attribute__ ((unused)) = mdsip_main(_argc,_argv);
             exit(1);
-        }
-        else {
+        }  else {
             std::cout << "started mdsip server on port: " << m_port << " pid: " << m_pid << "\n" << std::flush;
         }
-            
+
     }
-    
+
     ~MdsIpInstancer() {
         if(m_pid>0) {
             std::cout << "removing mdsip for " << m_protocol << "\n" << std::flush;
             kill(m_pid,SIGKILL);
         }
     }
-    
+
     int getPort() const { return m_port; }
-    
+
     std::string getAddress() const {
         std::stringstream ss;
         ss << m_protocol << "://" << "localhost" << ":" << m_port;
         return ss.str();
     }
-    
+
     bool waitForServer(int retries = 5, int usec = 500000) const {
         if(m_pid > 0) { // only parent can wait //
             for(int retry = 0; retry<retries; ++retry) {
@@ -131,13 +128,13 @@ public:
     }
 
 private:
-    
-    
+
+
     // Allocate a new TCP server socket, and return
     // its handler
     int allocate(const std::string &protocol) {
         int sock = -1;
-        
+
         if(protocol == "tcp")
             sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         else if(protocol == "udt")
@@ -155,7 +152,7 @@ private:
         setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
         return sock;
     }
-    
+
     // Check whether the provided TCP port is available
     // at the moment and return 1 if it's avaiable, zero otherwise
     int available(int port, const std::string protocol) {
@@ -172,8 +169,7 @@ private:
         }
         return error == 0;
     }
-    
- 
+
 };
 } // testing
 
