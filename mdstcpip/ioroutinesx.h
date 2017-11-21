@@ -82,6 +82,7 @@ static int GetHostAndPort(char *hostin, struct SOCKADDR_IN *sin){
   INIT_STATUS_ERROR;
   INITIALIZESOCKETS;
   char *host = strcpy((char *)malloc(strlen(hostin) + 1), hostin);
+  FREE_ON_EXIT(host);
   char *service = NULL;
   size_t i;
   for (i = 0 ; i < strlen(host) && host[i] != PORTDELIM ; i++);
@@ -105,15 +106,15 @@ static int GetHostAndPort(char *hostin, struct SOCKADDR_IN *sin){
   }
   struct addrinfo *info;
   static const struct addrinfo hints = { 0, AF_T, SOCK_STREAM, 0, 0, 0, 0, 0 };
-  int n = getaddrinfo(host, service, &hints, &info);
-  if (n)
-    fprintf(stderr,"Error connecting to host: %s, port %s error=%s\n", host, service, gai_strerror(n));
+  int err = getaddrinfo(host, service, &hints, &info);
+  if (err)
+    fprintf(stderr,"Error connecting to host: %s, port %s error=%s\n", host, service, gai_strerror(err));
   else {
     memcpy(sin, info->ai_addr, sizeof(*sin) < info->ai_addrlen ? sizeof(*sin) : info->ai_addrlen);
     freeaddrinfo(info);
     status = MDSplusSUCCESS;
   }
-  free(host);
+  FREE_NOW(host);
   return status;
 }
 
@@ -140,7 +141,7 @@ static char *getHostInfo(SOCKET sock, char **iphostptr, char **hostnameptr){
         *hostnameptr = (char *)malloc(strlen(hp->h_name) + 1);
         strcpy(*hostnameptr, hp->h_name);
       } else
-        *hostnameptr = 0;
+        *hostnameptr = NULL;
     }
     FREE_HP;
   }
@@ -154,23 +155,27 @@ VOID CALLBACK ShutdownEvent(PVOID arg __attribute__ ((unused)), BOOLEAN fired __
 }
 
 static int getSocketHandle(char *name){
-  char *logdir = GetLogDir();
-  char *portnam = GetPortname();
-  char *logfile = malloc(strlen(logdir)+strlen(portnam)+50);
+  HANDLE shutdownEvent, waitHandle;
   HANDLE h;
   int ppid;
   SOCKET psock;
   char shutdownEventName[120];
-  HANDLE shutdownEvent, waitHandle;
+  char *logdir = GetLogDir();
+  FREE_ON_EXIT(logdir);
+  char *portnam = GetPortname();
+  char *logfile = malloc(strlen(logdir)+strlen(portnam)+50);
+  FREE_ON_EXIT(logfile);
   if (name == 0 || sscanf(name, "%d:%d", &ppid, (int*)&psock) != 2) {
     fprintf(stderr, "Mdsip single connection server can only be started from windows service\n");
+    free(logfile);
+    free(logdir);
     exit(EXIT_FAILURE);
   }
   sprintf(logfile, "%s\\MDSIP_%s_%d.log", logdir, portnam, _getpid());
   freopen(logfile, "a", stdout);
   freopen(logfile, "a", stderr);
-  free(logdir);
-  free(logfile);
+  FREE_NOW(logfile);
+  FREE_NOW(logdir);
   if (!DuplicateHandle(OpenProcess(PROCESS_ALL_ACCESS, TRUE, ppid),
                        (HANDLE) psock, GetCurrentProcess(), (HANDLE *) & h,
                        PROCESS_ALL_ACCESS, TRUE, DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS)) {
@@ -214,11 +219,16 @@ static int io_authorize(int conid, char *username){
   time_t tim = time(0);
   char *timestr = ctime(&tim);
   int ans = C_OK;
-  char *hoststr = 0;
-  char *iphost = 0;
+  char *iphost = NULL;
+  FREE_ON_EXIT(iphost);
+  char *hoststr = NULL;
+  FREE_ON_EXIT(hoststr);
   char *info = getHostInfo(sock, &iphost, &hoststr);
+  FREE_ON_EXIT(info);
   if (info) {
-    char *matchString[2] = { 0, 0 };
+    char *matchString[2] = { NULL, NULL };
+    FREE_ON_EXIT(matchString[0]);
+    FREE_ON_EXIT(matchString[1]);
     int num = 1;
     timestr[strlen(timestr) - 1] = 0;
     printf("%s (%d) (pid %d) Connection received from %s@%s\r\n",
@@ -233,17 +243,12 @@ static int io_authorize(int conid, char *username){
       num = 2;
     }
     ans = CheckClient(username, num, matchString);
-    if (matchString[0])
-      free(matchString[0]);
-    if (matchString[1])
-      free(matchString[1]);
+    FREE_NOW(matchString[1]);
+    FREE_NOW(matchString[0]);
   }
-  if (info)
-    free(info);
-  if (iphost)
-    free(iphost);
-  if (hoststr)
-    free(hoststr);
+  FREE_NOW(info);
+  FREE_NOW(iphost);
+  FREE_NOW(hoststr);
   fflush(stdout);
   fflush(stderr);
   return ans;

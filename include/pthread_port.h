@@ -164,7 +164,7 @@ _CONDITION_UNLOCK(input);\
 }
 //"
 #if defined(__MACH__) || defined(_WIN32)
-#define _ALLOC_HP struct hostent *hp;
+#define _ALLOC_HP struct hostent *hp = NULL;
 #define _GETHOSTBYADDR(addr,type) gethostbyaddr(((void *)&addr),sizeof(addr),type)
 #define _GETHOSTBYNAME(name)      gethostbyname(name)
 #define _GETHOST(gethost) hp = gethost
@@ -172,9 +172,10 @@ _CONDITION_UNLOCK(input);\
 #else
 #define _ALLOC_HP \
 size_t memlen = 1024;\
-struct hostent hostbuf, *hp;\
+struct hostent hostbuf, *hp = NULL;\
 int herr;\
-char *hp_mem = (char*)malloc(memlen)
+char *hp_mem = (char*)malloc(memlen);\
+FREE_ON_EXIT(hp_mem)
 
 #define _GETHOST(gethost_r) \
 while ( hp_mem && (gethost_r == ERANGE) ) {\
@@ -184,7 +185,7 @@ while ( hp_mem && (gethost_r == ERANGE) ) {\
 }
 #define _GETHOSTBYADDR(addr,type) gethostbyaddr_r(((void *)&addr),sizeof(addr),type,&hostbuf,hp_mem,memlen,&hp,&herr)
 #define _GETHOSTBYNAME(name)      gethostbyname_r(name,&hostbuf,hp_mem,memlen,&hp,&herr)
-#define FREE_HP if (hp_mem) free(hp_mem)
+#define FREE_HP FREE_NOW(hp_mem)
 #endif
 
 #define GETHOSTBYADDR(addr,type) \
