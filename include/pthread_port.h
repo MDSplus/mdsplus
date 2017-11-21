@@ -6,26 +6,13 @@
 #include <STATICdef.h>
 #ifdef _WIN32
  #ifndef NO_WINDOWS_H
+  #ifdef LOAD_INITIALIZESOCKETS
+   #include <winsock2.h>
+  #endif
   #include <windows.h>
  #endif
- #ifdef HAVE_PTHREAD_H
-  #include <pthread.h>
- #else//HAVE_PTHREAD_H
-  #define pthread_mutex_t HANDLE
-  #define pthread_cond_t HANDLE
-  #define pthread_once_t int
-  typedef void *pthread_t;
-  #define PTHREAD_ONCE_INIT 0
-  #ifndef PTHREAD_MUTEX_RECURSIVE
-   #define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
-  #endif
-  //#ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
-  //#define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP {0x4000}
-  //#endif
- #endif//HAVE_PTHREAD_H
-#else//_WIN32
- #include <pthread.h>
-#endif//_WIN32
+#endif
+#include <pthread.h>
 
 #define DEFAULT_STACKSIZE 0x800000
 
@@ -75,13 +62,8 @@ typedef struct _Condition_p {
      ((struct TdiZoneStruct*)ptr)->a_begin=NULL;
    }
  }
- #ifdef _WIN32
-  #define FREEBEGIN_ON_EXIT(ptr) {
-  #define FREEBEGIN_NOW(ptr)     };freebegin(&TdiRefZone)
- #else
   #define FREEBEGIN_ON_EXIT() pthread_cleanup_push(freebegin,&TdiRefZone)
   #define FREEBEGIN_NOW()     pthread_cleanup_pop(1)
- #endif
 #endif
 
 #ifdef DEF_FREED
@@ -89,15 +71,9 @@ typedef struct _Condition_p {
  static void __attribute__((unused)) free_d(void *ptr){
    StrFree1Dx((struct descriptor_d*)ptr);
  }
- #ifdef _WIN32
-  #define FREED_ON_EXIT(ptr) {
-  #define FREED_IF(ptr,c)    };if (c) free_d(ptr)
-  #define FREED_NOW(ptr)     };free_d(ptr)
- #else
   #define FREED_ON_EXIT(ptr) pthread_cleanup_push(free_d, ptr)
   #define FREED_IF(ptr,c)    pthread_cleanup_pop(c)
   #define FREED_NOW(ptr)     pthread_cleanup_pop(1)
- #endif
  #define INIT_AS_AND_FREED_ON_EXIT(var,value) struct descriptor_d var = value;FREED_ON_EXIT(&var)
  #define INIT_AND_FREED_ON_EXIT(dtype,var)    INIT_AS_AND_FREED_ON_EXIT(var, ((struct descriptor_d){ 0, dtype, CLASS_D, 0 }))
 #endif
@@ -106,31 +82,18 @@ typedef struct _Condition_p {
  static void __attribute__((unused)) free_xd(void *ptr){
    MdsFree1Dx((struct descriptor_xd*)ptr, NULL);
  }
- #ifdef _WIN32
-  #define FREEXD_ON_EXIT(ptr) {
-  #define FREEXD_IF(ptr,c)    };if (c) free_xd(ptr)
-  #define FREEXD_NOW(ptr)     };free_xd(ptr)
- #else
   #define FREEXD_ON_EXIT(ptr) pthread_cleanup_push(free_xd, ptr)
   #define FREEXD_IF(ptr,c)    pthread_cleanup_pop(c)
   #define FREEXD_NOW(ptr)     pthread_cleanup_pop(1)
- #endif
  #define INIT_AND_FREEXD_ON_EXIT(ptr) EMPTYXD(xd);FREEXD_ON_EXIT(&xd);
 #endif
 static void __attribute__((unused)) free_if(void *ptr){
   if (*(void**)ptr) free(*(void**)ptr);
 }
-#ifdef _WIN32
- #define FREE_ON_EXIT(ptr)   {
- #define FREE_IF(ptr,c)      };if (c) free_if((void*)&ptr)
- #define FREE_NOW(ptr)       };free_if((void*)&ptr)
- #define FREE_CANCEL(ptr)    }
-#else
  #define FREE_ON_EXIT(ptr)   pthread_cleanup_push(free_if, (void*)&ptr)
  #define FREE_IF(ptr,c)      pthread_cleanup_pop(c)
  #define FREE_NOW(ptr)       pthread_cleanup_pop(1)
  #define FREE_CANCEL(ptr)    pthread_cleanup_pop(0)
-#endif
 #define INIT_AS_AND_FREE_ON_EXIT(type,ptr,value) type ptr = value;FREE_ON_EXIT(ptr)
 #define INIT_AND_FREE_ON_EXIT(type,ptr) INIT_AS_AND_FREE_ON_EXIT(type,ptr,NULL)
 
@@ -240,23 +203,18 @@ if (!hp){\
 }
 
 #ifdef LOAD_INITIALIZESOCKETS
-#ifndef _WIN32
-#define INITIALIZESOCKETS
-#else
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-static int sockets_initialized = B_FALSE;
-#define INITIALIZESOCKETS {\
-  pthread_mutex_lock(&mutex);\
-  if (!sockets_initialized) {\
-    WSADATA wsaData;\
-    WORD wVersionRequested;\
-    wVersionRequested = MAKEWORD(1, 1);\
-    WSAStartup(wVersionRequested, &wsaData);\
-    sockets_initialized = B_TRUE;\
-  }\
-  pthread_mutex_unlock(&mutex);\
-}
-#endif
+ #ifndef _WIN32
+  #define INITIALIZESOCKETS
+ #else
+  static pthread_once_t InitializeSockets_once = PTHREAD_ONCE_INIT;
+  static void InitializeSockets() {
+    WSADATA wsaData;
+    WORD wVersionRequested;
+    wVersionRequested = MAKEWORD(1, 1);
+    WSAStartup(wVersionRequested, &wsaData);
+  }
+  #define INITIALIZESOCKETS pthread_once(&InitializeSockets_once,InitializeSockets)
+ #endif
 #endif
 
 #ifdef LOAD_GETUSERNAME

@@ -27,13 +27,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "cvtdef.h"
 #ifdef _WIN32
 #include <io.h>
-#define read _read
-#define write _write
-#define open _open
-#define close _close
-#ifndef HAVE_PTHREAD_H
-typedef int mode_t;
-#endif
 #else
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -87,7 +80,7 @@ static int lock_file(int fd, int64_t offset, int size, int mode_in, int *deleted
   int status;
   int mode = mode_in & MDS_IO_LOCK_MASK;
   int nowait = mode_in & MDS_IO_LOCK_NOWAIT;
-#if defined (_WIN32)
+#ifdef _WIN32
   OVERLAPPED overlapped;
   int flags;
   *deleted = 0;

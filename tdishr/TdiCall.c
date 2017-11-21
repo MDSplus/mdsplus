@@ -73,7 +73,7 @@ STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
 				int (*routine) (), unsigned int *(*called) (),
 				void **result, int *max)
 {
-#if  defined(__ALPHA) && defined(__VMS)
+#ifdef __ALPHA
   int f_regs = (*(int *)routine == 0x23FF0000) ? 0 : 1;
 #else
   int f_regs = 1;		/*(opcode == 0) */
@@ -111,7 +111,7 @@ STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
       *max = sizeof(void *);
       *result_p = (*called_p) (newdsc, routine);
     }
-#if  defined(__ALPHA) && defined(__VMS)
+#ifdef __ALPHA
     else {
       _int64_t(*called_g) () = (_int64_t(*)())called;
       _int64_t *result_g = (_int64_t *) result;

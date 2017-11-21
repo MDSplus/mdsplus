@@ -1024,7 +1024,7 @@ static int MapFile(int fd, TREE_INFO * info, int nomap)
 	  (MDS_IO_READ(fd, (void *)info->section_addr[0], (size_t)info->alq * 512) ==
 	   (512 * info->alq)) ? TreeNORMAL : TreeTREEFILEREADERR;
     }
-#if (!defined (_WIN32))
+#ifndef _WIN32
     else {
 #ifndef MAP_FILE
 #define MAP_FILE 0

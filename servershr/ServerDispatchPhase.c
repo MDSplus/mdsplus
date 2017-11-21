@@ -191,11 +191,7 @@ void SendMonitor(int mode, int idx){
 
 STATIC_ROUTINE char *now(char *buf){
   time_t tim = time(0);
-#ifdef _WIN32
-  buf = ctime(&tim);
-#else
   ctime_r(&tim, buf);
-#endif
   buf[strlen(buf) - 1] = 0;
   return buf;
 }

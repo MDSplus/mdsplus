@@ -25,7 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <STATICdef.h>
 #include <config.h>
 #include <ipdesc.h>
-#if defined(__VMS) || defined(WIN32)
+#ifdef WIN32
 #define BlockSig(arg)
 #define UnBlockSig(arg)
 #else
