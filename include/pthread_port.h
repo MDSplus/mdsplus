@@ -162,47 +162,6 @@ if (!(input)->value) {\
 }\
 _CONDITION_UNLOCK(input);\
 }
-//"
-#if defined(__MACH__) || defined(_WIN32)
-#define _ALLOC_HP struct hostent *hp = NULL;
-#define _GETHOSTBYADDR(addr,type) gethostbyaddr(((void *)&addr),sizeof(addr),type)
-#define _GETHOSTBYNAME(name)      gethostbyname(name)
-#define _GETHOST(gethost) hp = gethost
-#define FREE_HP
-#else
-#define _ALLOC_HP \
-size_t memlen = 1024;\
-struct hostent hostbuf, *hp = NULL;\
-int herr;\
-char *hp_mem = (char*)malloc(memlen);\
-FREE_ON_EXIT(hp_mem)
-
-#define _GETHOST(gethost_r) \
-while ( hp_mem && (gethost_r == ERANGE) ) {\
-  memlen *=2;\
-  free(hp_mem);\
-  hp_mem = (char*)malloc(memlen);\
-}
-#define _GETHOSTBYADDR(addr,type) gethostbyaddr_r(((void *)&addr),sizeof(addr),type,&hostbuf,hp_mem,memlen,&hp,&herr)
-#define _GETHOSTBYNAME(name)      gethostbyname_r(name,&hostbuf,hp_mem,memlen,&hp,&herr)
-#define FREE_HP FREE_NOW(hp_mem)
-#endif
-
-#define GETHOSTBYADDR(addr,type) \
-_ALLOC_HP;\
-_GETHOST(_GETHOSTBYADDR(addr,type))
-
-#define GETHOSTBYNAME(name) \
-_ALLOC_HP;\
-_GETHOST(_GETHOSTBYNAME(name))
-
-#define GETHOSTBYNAMEORADDR(name,addr) \
-GETHOSTBYNAME(name);\
-if (!hp){\
-   addr = (int)inet_addr(name);\
-   if (addr != -1)  _GETHOST(_GETHOSTBYADDR(addr,AF_INET));\
-}
-
 #ifdef LOAD_INITIALIZESOCKETS
  #ifndef _WIN32
   #define INITIALIZESOCKETS

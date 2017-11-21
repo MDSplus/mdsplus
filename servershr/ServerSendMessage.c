@@ -723,13 +723,27 @@ static void RemoveClient(Client * c, fd_set * fdactive)
   }
 }
 
-static int GetHostAddr(char *host)
+static int GetHostAddr(char *name)
 {
   INITIALIZESOCKETS;
   int addr = 0;
-  GETHOSTBYNAMEORADDR(host,addr);
-  if (hp) addr = *(int *)hp->h_addr_list[0];
-  FREE_HP;
+#if defined(__MACH__) || defined(_WIN32)
+  struct hostent* hp = gethostbyname(name);
+  addr = hp ? *(int *)hp->h_addr_list[0] : (int)inet_addr(name);
+#else
+  size_t memlen = 1024;
+  struct hostent hostbuf, *hp = NULL;
+  int herr;
+  char *hp_mem = (char*)malloc(memlen);
+  FREE_ON_EXIT(hp_mem);
+  while ( hp_mem && (gethostbyname_r(name,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE) ) {
+    memlen *=2;
+    free(hp_mem);
+    hp_mem = (char*)malloc(memlen);
+  }
+  addr = hp ? *(int *)hp->h_addr_list[0] : (int)inet_addr(name);
+  FREE_NOW(hp_mem);
+#endif
   return addr == -1 ? 0 : addr;
 }
 
