@@ -436,3 +436,21 @@
    fun:realloc
    fun:PyObject_Realloc
 }
+
+{
+   python 32bit problem during thread creation
+   Helgrind:Race
+   ...
+   fun:blas_memory_*
+   fun:blas_thread_server
+   fun:mythread_wrapper
+   fun:start_thread
+   fun:clone
+}
+
+{
+   python 32bit problem during thread shutdown via fork
+   Helgrind:Race
+   fun:blas_thread_shutdown_
+   fun:fork
+}
