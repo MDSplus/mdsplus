@@ -428,3 +428,11 @@
    ...
    fun:PyThread_start_new_thread
 }
+
+{
+   python 32bit problem in PyObject_Realloc
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:realloc
+   fun:PyObject_Realloc
+}
