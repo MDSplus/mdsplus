@@ -25,7 +25,7 @@ RequestExecutionLevel admin
 !define GCC_STDCPP_LIB libstdc++-6.dll
 !define GCC_S_SW2_LIB libgcc-s_dw2-1.dll
 !define GCC_S_SEH_LIB libgcc_s_seh-1.dll
-!define GFORTRAN_LIB libgfortran-3.dll
+!define GFORTRAN_LIB libgfortran-4.dll
 !define QUADMATH_LIB libquadmath-0.dll
 !define LIBXML2_LIB libxml2-2.dll
 !define ICONV_LIB iconv.dll
