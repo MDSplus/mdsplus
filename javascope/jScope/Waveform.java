@@ -296,7 +296,7 @@ public class Waveform
       is_image = true;
     }
     else {
-      this.font = wave.font;
+//      this.font = wave.font;
       is_image = false;
     }
     not_drawn = true;
@@ -2054,7 +2054,7 @@ public class Waveform
   protected void drawSignalContour(Signal s, Graphics g, Dimension d)
   {
     Vector<Vector> cs = s.getContourSignals();
-    Vector<Float> ls = s.getContourLevelValues();
+    Vector<Double> ls = s.getContourLevelValues();
     float level;
 
     for (int l = 0; l < cs.size(); l++)
