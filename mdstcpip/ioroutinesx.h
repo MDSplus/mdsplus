@@ -118,13 +118,38 @@ static int GetHostAndPort(char *hostin, struct SOCKADDR_IN *sin){
   return status;
 }
 
+#if defined(__MACH__) || defined(_WIN32)
+static inline struct hostent* getHostByAddr(void* addr, size_t sofaddr, short family) {
+  struct hostent* hp = gethostbyaddr(addr,sofaddr,family);
+  if (hp) hp = memcpy(malloc(sizeof(struct hostent)),hp,sizeof(struct hostent));
+  return hp;
+}
+#else
+static inline struct hostent* getHostByAddr(void* addr, size_t sofaddr, short family) {
+  size_t memlen = 1024;
+  struct hostent hostbuf, *hp = NULL;
+  int herr;
+  char *hp_mem = (char*)malloc(memlen);
+  FREE_ON_EXIT(hp_mem);
+  while ( hp_mem && (gethostbyaddr_r(((void *)&addr),sofaddr,family,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE) ) {
+    memlen *=2;
+    free(hp_mem);
+    hp_mem = (char*)malloc(memlen);
+  }
+  if (hp) hp = memcpy(malloc(sizeof(struct hostent)),hp,sizeof(struct hostent));
+  FREE_NOW(hp_mem);
+  return hp;
+}
+#endif
+
 static char *getHostInfo(SOCKET sock, char **iphostptr, char **hostnameptr){
   char *ans = NULL;
   struct SOCKADDR_IN sin;
   SOCKLEN_T len = sizeof(sin);
   if (!GETPEERNAME(sock, (struct sockaddr *)&sin, &len)) {
     GET_IPHOST(sin);
-    GETHOSTBYADDR(sin.SIN_ADDR,sin.SIN_FAMILY);
+    struct hostent *hp = getHostByAddr((void*)&sin.SIN_ADDR,sizeof(sin.SIN_ADDR),sin.SIN_FAMILY);
+    FREE_ON_EXIT(hp);
     if (hp && hp->h_name) {
       ans = (char *)malloc(strlen(iphost) + strlen(hp->h_name) + 10);
       sprintf(ans, "%s [%s]", hp->h_name, iphost);
@@ -143,7 +168,7 @@ static char *getHostInfo(SOCKET sock, char **iphostptr, char **hostnameptr){
       } else
         *hostnameptr = NULL;
     }
-    FREE_HP;
+    FREE_NOW(hp);
   }
   return ans;
 }
