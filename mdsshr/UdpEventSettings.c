@@ -201,24 +201,26 @@ EXPORT void InitializeEventSettings()
 #else
     home_dir = getenv("HOME");
 #endif
-    if (home_dir != NULL) {
+    if (home_dir) {
       xmlDocPtr doc=NULL;
       static const char *home_xml_dir = "/.mdsplus.conf/";
-      char *xmlfname = malloc(strlen(home_dir) + strlen(home_xml_dir) + strlen(fname) + 10);
-      sprintf(xmlfname, "%s%s%s", home_dir, home_xml_dir, fname);
-      if (access(xmlfname,R_OK) == 0)
-	doc = xmlParseFile(xmlfname);
-      free(xmlfname);
-      if (doc) {
-	missing = 0;
-	for (i=0;i<NUM_SETTINGS;i++) {
-	  if (settings[i] == NULL) {
-	    settings[i] = getProperty(doc, "UdpEvents", xml_setting[i]);
-	    if (settings[i] == NULL)
-	      missing = 1;
+      char* xmlfname = malloc(strlen(home_dir) + strlen(home_xml_dir) + strlen(fname) + 1);
+      if (xmlfname) {
+	sprintf(xmlfname, "%s%s%s", home_dir, home_xml_dir, fname);
+	if (access(xmlfname,R_OK) == 0)
+	  doc = xmlParseFile(xmlfname);
+	free(xmlfname);
+	if (doc) {
+	  missing = 0;
+	  for (i=0;i<NUM_SETTINGS;i++) {
+	    if (settings[i] == NULL) {
+	      settings[i] = getProperty(doc, "UdpEvents", xml_setting[i]);
+	      if (settings[i] == NULL)
+	        missing = 1;
+	    }
 	  }
+	  xmlFreeDoc(doc);
 	}
-	xmlFreeDoc(doc);
       }
     }
   }
@@ -226,19 +228,21 @@ EXPORT void InitializeEventSettings()
     xmlDocPtr doc=NULL;
     char *mdsplus_dir = getenv("MDSPLUS_DIR");
     static const char *local_xml_dir = "/local/";
-    if (mdsplus_dir != NULL) {
-      char *xmlfname = malloc(strlen(mdsplus_dir) + strlen(local_xml_dir) + strlen(fname) + 10);
-      sprintf(xmlfname,"%s%s%s",mdsplus_dir,local_xml_dir,fname);
-      if (access(xmlfname,R_OK) == 0)
-	doc = xmlParseFile(xmlfname);
-      free(xmlfname);
-      if (doc) {
-	for (i=0;i<NUM_SETTINGS;i++) {
-	  if (settings[i] == NULL) {
-	    settings[i] = getProperty(doc, "UdpEvents", xml_setting[i]);
+    if (mdsplus_dir) {
+      char *xmlfname = malloc(strlen(mdsplus_dir) + strlen(local_xml_dir) + strlen(fname) + 1);
+      if (xmlfname) {
+	sprintf(xmlfname,"%s%s%s",mdsplus_dir,local_xml_dir,fname);
+	if (access(xmlfname,R_OK) == 0)
+	  doc = xmlParseFile(xmlfname);
+	free(xmlfname);
+	if (doc) {
+	  for (i=0;i<NUM_SETTINGS;i++) {
+	    if (settings[i] == NULL) {
+	      settings[i] = getProperty(doc, "UdpEvents", xml_setting[i]);
+	    }
 	  }
+	  xmlFreeDoc(doc);
 	}
-	xmlFreeDoc(doc);
       }
     }
   }

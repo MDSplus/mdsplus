@@ -1185,12 +1185,14 @@ int MDS_IO_OPEN(char *filename, int options, mode_t mode)
 #ifndef _WIN32
     if ((fd != -1) && ((options & O_CREAT) != 0)) {
       struct descriptor cmd_d = { 0, DTYPE_T, CLASS_S, 0 };
-      char *cmd = (char *)malloc(64 + strlen(filename));
-      sprintf(cmd, "SetMdsplusFileProtection %s 2> /dev/null", filename);
-      cmd_d.length = strlen(cmd);
-      cmd_d.pointer = cmd;
-      LibSpawn(&cmd_d, 1, 0);
-      free(cmd);
+      char *cmd = (char *)malloc(39 + strlen(filename));
+      if (cmd) {
+        sprintf(cmd, "SetMdsplusFileProtection %s 2> /dev/null", filename);
+        cmd_d.length = strlen(cmd);
+        cmd_d.pointer = cmd;
+        LibSpawn(&cmd_d, 1, 0);
+        free(cmd);
+      }
     }
 #endif
   }
