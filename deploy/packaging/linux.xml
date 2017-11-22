@@ -86,16 +86,25 @@ fi
     <postinst>
       
 python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
-rm -Rf %{python_sitelib}/MitDevices*
-rm -Rf %{python_sitelib}/*mitdevices*
+if [ -d %{python_sitelib} ]
+then 
+  if [ "$1" == "0" ]
+  then
+    rm -Rf %{python_sitelib}/MitDevices*
+    rm -Rf %{python_sitelib}/*mitdevices*
+  fi
+else
+  easy_install -q pip &gt;/dev/null 2&gt;&amp;1
+  while (pip uninstall -q MitDevices 2&gt;/dev/null);do :;done
+fi
 
     </postinst>
     <postrm> rm -Rf __INSTALL_PREFIX__/mdsplus/pydevices/MitDevices </postrm>
     <post-install>
 
 python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
-rm -Rf %{python_sitelib}/MitDevices*
-rm -Rf %{python_sitelib}/*mitdevices*
+easy_install -q pip &gt;/dev/null 2&gt;&amp;1
+while (pip uninstall -q MitDevices 2&gt;/dev/null);do :;done
 
     </post-install>
     <post-deinstall> rm -Rf /usr/local/mdsplus/pydevices/MitDevices</post-deinstall>
@@ -533,16 +542,25 @@ fi
     <postinst>
 
 python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1
-rm -Rf %{python_sitelib}/RfxDevices*
-rm -Rf %{python_sitelib}/*rfxdevices*
+if [ -d %{python_sitelib} ]
+then 
+  if [ "$1" == "0" ]
+  then
+    rm -Rf %{python_sitelib}/RfxDevices*
+    rm -Rf %{python_sitelib}/*rfxdevices*
+  fi
+else
+  easy_install -q pip &gt;/dev/null 2&gt;&amp;1
+  while (pip uninstall -q RfxDevices 2&gt;/dev/null);do :;done
+fi
 
     </postinst>
     <postrm> rm -Rf __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices </postrm>
     <post-install>
 
 python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1
-rm -Rf %{python_sitelib}/RfxDevices*
-rm -Rf %{python_sitelib}/*rfxdevices*
+easy_install -q pip &gt;/dev/null 2&gt;&amp;1
+while (pip uninstall -q RfxDevices 2&gt;/dev/null);do :;done
 
     </post-install>
     <post-deinstall> rm -Rf /usr/local/mdsplus/pydevices/RfxDevices</post-deinstall>
@@ -554,16 +572,25 @@ rm -Rf %{python_sitelib}/*rfxdevices*
     <postinst>
 
 python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1
-rm -Rf %{python_sitelib}/W7xDevices*
-rm -Rf %{python_sitelib}/*w7xdevices*
+if [ -d %{python_sitelib} ]
+then 
+  if [ "$1" == "0" ]
+  then
+    rm -Rf %{python_sitelib}/W7xDevices*
+    rm -Rf %{python_sitelib}/*W7xdevices*
+  fi
+else
+  easy_install -q pip &gt;/dev/null 2&gt;&amp;1
+  while (pip uninstall -q W7xDevices 2&gt;/dev/null);do :;done
+fi
 
     </postinst>
     <postrm> rm -Rf __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices </postrm>
     <post-install>
 
 python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1
-rm -Rf %{python_sitelib}/W7xDevices*
-rm -Rf %{python_sitelib}/*w7xdevices*
+easy_install -q pip &gt;/dev/null 2&gt;&amp;1
+while (pip uninstall -q W7xDevices 2&gt;/dev/null);do :;done
 
     </post-install>
     <post-deinstall> rm -Rf /usr/local/mdsplus/pydevices/W7xDevices</post-deinstall>
@@ -586,11 +613,15 @@ rm -Rf %{python_sitelib}/*w7xdevices*
     <requires external="true" package="numpy"/>
     <include dir="/usr/local/mdsplus/mdsobjects/python"/>
     <postinst>
-      packages=$(find %{python_sitelib} -maxdepth 1 -name 'mdsplus*' | grep -iv devices)
-      rm -Rf $packages %{python_sitelib}/MDSplus
+      if [ -d %{python_sitelib} ]
+      then
+        packages=$(find %{python_sitelib} -maxdepth 1 -name 'mdsplus*' | grep -iv devices)
+        rm -Rf $packages %{python_sitelib}/MDSplus
+      fi
       pushd __INSTALL_PREFIX__/mdsplus/mdsobjects/python &gt;/dev/null 2&gt;&amp;1
       python setup.py -q install
       rm -Rf build dist MDSplus.egg-info
+      find . -name '*\.pyc' --delete
       popd &gt;/dev/null 2&gt;&amp;1
 
     </postinst>
@@ -599,6 +630,7 @@ rm -Rf %{python_sitelib}/*w7xdevices*
       cd /mdsplus/mdsobjects/python
       python setup.py -q install
       rm -Rf build dist MDSplus.egg-info
+      find . -name '*\.pyc' --delete
       cd "$oldpwd"
     </post-install>
     <pre-deinstall>
@@ -610,10 +642,16 @@ rm -Rf %{python_sitelib}/*w7xdevices*
       
     <prerm>
 
-      if [ "$1" == "0" ]
+      if [ -d %{python_sitelib} ]
       then
+        if [ "$1" == "0" ]
+        then
           packages=$(find %{python_sitelib} -maxdepth 1 -name 'mdsplus*' | grep -iv devices)
-         rm -Rf $packages %{python_sitelib}/MDSplus
+          rm -Rf $packages %{python_sitelib}/MDSplus
+        fi
+      else
+        easy_install -q pip &gt;/dev/null 2&gt;&amp;1
+        while (pip uninstall -q MDSplus 2&gt;/dev/null);do :;done
       fi
 
     </prerm>
