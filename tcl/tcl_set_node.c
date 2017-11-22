@@ -215,7 +215,7 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
 	    *output = realloc(*output, strlen(*output) + dsc_path.length + 100);
 	    nout = *output + strlen(*output);
 	  } else {
-	    *output = malloc(strlen(*output) + dsc_path.length + 100);
+	    *output = malloc(dsc_path.length + 100);
 	    nout = *output;
 	  }
 	  sprintf(nout, "Node: %.*s modified\n", dsc_path.length, dsc_path.pointer);

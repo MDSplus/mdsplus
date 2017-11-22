@@ -1292,6 +1292,7 @@ static void MdsValueMove(int source_length, char *source_array, char fill, int d
 			 char *dest_array)
 {
   int i;
+  if (!source_array) return;
   memcpy(dest_array, source_array, MIN(source_length, dest_length));
   for (i = 0; i < dest_length - source_length; i++) {
     dest_array[source_length + i] = fill;
