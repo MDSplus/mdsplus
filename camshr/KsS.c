@@ -41,7 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static int KsSingleIo(CamKey Key, BYTE A, BYTE F, BYTE * Data, BYTE Mem, TranslatedIosb * iosb,	// to be returned to caller
 		      int dmode)
 {
-  char dev_name[8];
+  char dev_name[12];
   BYTE Command[COMMAND_SIZE(OpCodeSingleCAMAC)];
   int scsiDevice;
   int status = SUCCESS;		// optimistic -- function status, eg SUCCESS(=1) or FAILURE(=0)

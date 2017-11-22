@@ -49,7 +49,7 @@ static int KsMultiIo(CamKey Key,	// module info
 		     int Enhanced	// enhanced
     )
 {
-  char dev_name[8];
+  char dev_name[12];
   BYTE Command[COMMAND_SIZE(OpCodeBlockCAMAC)];
   int scsiDevice, status;
 

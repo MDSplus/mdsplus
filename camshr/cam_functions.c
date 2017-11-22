@@ -492,7 +492,7 @@ CallSingleIo(Piow, QIgnore)	// yields: int = CamPiow( ... )
 static int SingleIo(CamKey Key,
 		    BYTE A, BYTE F, BYTE * Data, BYTE Mem, TranslatedIosb * iosb, int dmode)
 {
-  char tmp[7];
+  char tmp[9];
   int highwayType, status;
 
   if (MSGLVL(FUNCTION_NAME))
@@ -576,7 +576,7 @@ static int MultiIo(CamKey Key,
 		   BYTE F,
 		   int Count, BYTE * Data, BYTE Mem, TranslatedIosb * iosb, int dmode, int Enhanced)
 {
-  char tmp[7];
+  char tmp[10];
   int highwayType, mode, status;
 
   if (MSGLVL(FUNCTION_NAME))
@@ -669,7 +669,7 @@ static int JorwayDoIo(CamKey Key,
 		      int Count,
 		      BYTE * Data, BYTE Mem, TranslatedIosb * iosb, int dmode, int Enhanced)
 {
-  char dev_name[7];
+  char dev_name[12];
   int IsDataCommand, scsiDevice;
   int status;
   unsigned char *cmd = 0;
@@ -781,7 +781,7 @@ static int Jorway73ADoIo(CamKey Key,
 			 int Count,
 			 BYTE * Data, BYTE Mem, TranslatedIosb * iosb, int dmode, int Enhanced __attribute__ ((unused)))
 {
-  char dev_name[7];
+  char dev_name[12];
   int IsDataCommand, scsiDevice;
   int status;
   unsigned char *cmd = 0;
@@ -1279,7 +1279,7 @@ EXPORT int CamSetMAXBUF(char *Name, int new)
     CamKey Key;
     int status = CamAssign(Name, &Key);
     if (status & 1) {
-      char dev_name[7];
+      char dev_name[12];
       sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address, Key.crate);
       if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0) {
 	return -1;
@@ -1301,7 +1301,7 @@ EXPORT int CamGetMAXBUF(char *Name)
     CamKey Key;
     int status = CamAssign(Name, &Key);
     if (status & 1) {
-      char dev_name[7];
+      char dev_name[12];
     sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address, Key.crate);
     if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0) {
       return -1;
