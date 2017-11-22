@@ -657,7 +657,7 @@ fi
         fi
       else
         easy_install -q pip &gt;/dev/null 2&gt;&amp;1
-        while (pip uninstall -q MitDevices 2&gt;/dev/null);do :;done
+        while (pip uninstall -q MDSplus 2&gt;/dev/null);do :;done
       fi
 	
     </prerm>
