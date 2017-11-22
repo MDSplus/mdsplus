@@ -60,21 +60,37 @@ fi
     <include dir="/usr/local/mdsplus/tdi/MitDevices"/>
     <postinst>
 
+if [ -d %{python_sitelib} ]
+then 
+  if [ "$1" == "0" ]
+  then
+    rm -Rf %{python_sitelib}/MitDevices*
+    rm -Rf %{python_sitelib}/*mitdevices*
+  fi
+else
+  easy_install -q pip &gt;/dev/null 2&gt;&amp;1
+  while (pip uninstall -q MitDevices 2&gt;/dev/null);do :;done
+fi
 pushd __INSTALL_PREFIX__/mdsplus/tdi/MitDevices &gt;/dev/null 2&gt;&amp;1
-rm -Rf %{python_sitelib}/MitDevices*
-rm -Rf %{python_sitelib}/*mitdevices*
 rm -Rf build dist
 python setup.py -q install
-rm -Rf build dist MitDevices.egg-info
+rm -Rf build dist *.egg-info
+find . -name '*\.pyc' -delete
 popd &gt;/dev/null 2&gt;&amp;1
 
     </postinst>
     <prerm>
 
-if [ "$1" == "0" ]
-then
-rm -Rf %{python_sitelib}/MitDevices*
-rm -Rf %{python_sitelib}/*mitdevices*
+if [ -d %{python_sitelib} ]
+then 
+  if [ "$1" == "0" ]
+  then
+    rm -Rf %{python_sitelib}/MitDevices*
+    rm -Rf %{python_sitelib}/*mitdevices*
+  fi
+else
+  easy_install -q pip &gt;/dev/null 2&gt;&amp;1
+  while (pip uninstall -q MitDevices 2&gt;/dev/null);do :;done
 fi
 
     </prerm>
@@ -509,21 +525,37 @@ fi
     <include file="/usr/local/mdsplus/java/classes/jDevices.jar"/>
     <postinst>
 
+if [ -d %{python_sitelib} ]
+then 
+  if [ "$1" == "0" ]
+  then
+    rm -Rf %{python_sitelib}/RfxDevices*
+    rm -Rf %{python_sitelib}/*rfxdevices*
+  fi
+else
+  easy_install -q pip &gt;/dev/null 2&gt;&amp;1
+  while (pip uninstall -q RfxDevices 2&gt;/dev/null);do :;done
+fi
 pushd __INSTALL_PREFIX__/mdsplus/tdi/RfxDevices &gt;/dev/null 2&gt;&amp;1
-rm -Rf %{python_sitelib}/RfxDevices*
-rm -Rf %{python_sitelib}/*rfxdevices*
 rm -Rf build dist
 python setup.py -q install
-rm -Rf build dist RfxDevices.egg-info
+rm -Rf build dist *.egg-info
+find . -name '*\.pyc' -delete
 popd &gt;/dev/null 2&gt;&amp;1
 
     </postinst>
     <prerm>
 
-if [ "$1" == "0" ]
-then
-rm -Rf %{python_sitelib}/RfxDevices*
-rm -Rf %{python_sitelib}/*rfxdevices*
+if [ -d %{python_sitelib} ]
+then 
+  if [ "$1" == "0" ]
+  then
+    rm -Rf %{python_sitelib}/RfxDevices*
+    rm -Rf %{python_sitelib}/*rfxdevices*
+  fi
+else
+  easy_install -q pip &gt;/dev/null 2&gt;&amp;1
+  while (pip uninstall -q RfxDevices 2&gt;/dev/null);do :;done
 fi
 
     </prerm>
@@ -534,21 +566,38 @@ fi
     <include dir="/usr/local/mdsplus/tdi/W7xDevices"/>
     <postinst>
 
+if [ -d %{python_sitelib} ]
+then 
+  if [ "$1" == "0" ]
+  then
+    rm -Rf %{python_sitelib}/W7xDevices*
+    rm -Rf %{python_sitelib}/*wfxdevices*
+  fi
+else
+  easy_install -q pip &gt;/dev/null 2&gt;&amp;1
+  while (pip uninstall -q W7xDevices 2&gt;/dev/null);do :;done
+fi
 pushd __INSTALL_PREFIX__/mdsplus/tdi/W7xDevices &gt;/dev/null 2&gt;&amp;1
-rm -Rf %{python_sitelib}/W7xDevices*
-rm -Rf %{python_sitelib}/*w7xdevices*
 rm -Rf build dist
 python setup.py -q install
-rm -Rf build dist W7xDevices.egg-info
+rm -Rf build dist *.egg-info
+find . -name '*\.pyc' -delete
 popd &gt;/dev/null 2&gt;&amp;1
+
 
     </postinst>
     <prerm>
 
-if [ "$1" == "0" ]
-then
-rm -Rf %{python_sitelib}/W7xDevices*
-rm -Rf %{python_sitelib}/*w7xdevices*
+if [ -d %{python_sitelib} ]
+then 
+  if [ "$1" == "0" ]
+  then
+    rm -Rf %{python_sitelib}/W7xDevices*
+    rm -Rf %{python_sitelib}/*w7xdevices*
+  fi
+else
+  easy_install -q pip &gt;/dev/null 2&gt;&amp;1
+  while (pip uninstall -q W7xDevices 2&gt;/dev/null);do :;done
 fi
 
     </prerm>
@@ -571,11 +620,15 @@ fi
     <requires external="true" package="numpy"/>
     <include dir="/usr/local/mdsplus/mdsobjects/python"/>
     <postinst>
-      packages=$(find %{python_sitelib} -maxdepth 1 -name 'mdsplus*' | grep -iv devices)
-      rm -Rf $packages %{python_sitelib}/MDSplus
+      if [ -d %{python_sitelib} ]
+      then
+        packages=$(find %{python_sitelib} -maxdepth 1 -name 'mdsplus*' | grep -iv devices)
+        rm -Rf $packages %{python_sitelib}/MDSplus
+      fi
       pushd __INSTALL_PREFIX__/mdsplus/mdsobjects/python &gt;/dev/null 2&gt;&amp;1
       python setup.py -q install
-      rm -Rf build dist MDSplus.egg-info
+      rm -Rf build dist *.egg-info
+      find . -name '*\.pyc' -delete
       popd &gt;/dev/null 2&gt;&amp;1
 
     </postinst>
@@ -583,7 +636,7 @@ fi
       oldpwd="$(pwd)"
       cd /mdsplus/mdsobjects/python
       python setup.py -q install
-      rm -Rf build dist MDSplus.egg-info
+      rm -Rf build dist *.egg-info
       cd "$oldpwd"
     </post-install>
     <pre-deinstall>
@@ -595,12 +648,18 @@ fi
       
     <prerm>
 
-      if [ "$1" == "0" ]
+      if [ -d %{python_sitelib} ]
       then
+        if [ "$1" == "0" ]
+        then
           packages=$(find %{python_sitelib} -maxdepth 1 -name 'mdsplus*' | grep -iv devices)
-         rm -Rf $packages %{python_sitelib}/MDSplus
+          rm -Rf $packages %{python_sitelib}/MDSplus
+        fi
+      else
+        easy_install -q pip &gt;/dev/null 2&gt;&amp;1
+        while (pip uninstall -q MDSplus 2&gt;/dev/null);do :;done
       fi
-
+	
     </prerm>
   </package>
 
