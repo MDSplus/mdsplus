@@ -104,16 +104,16 @@ static int GetHostAndPort(char *hostin, struct SOCKADDR_IN *sin){
       }
     }
   }
-  struct addrinfo *info;
+  struct addrinfo *info = NULL;
   static const struct addrinfo hints = { 0, AF_T, SOCK_STREAM, 0, 0, 0, 0, 0 };
   int err = getaddrinfo(host, service, &hints, &info);
   if (err)
     fprintf(stderr,"Error connecting to host: %s, port %s error=%s\n", host, service, gai_strerror(err));
   else {
     memcpy(sin, info->ai_addr, sizeof(*sin) < info->ai_addrlen ? sizeof(*sin) : info->ai_addrlen);
-    freeaddrinfo(info);
     status = MDSplusSUCCESS;
   }
+  if (info) freeaddrinfo(info);
   FREE_NOW(host);
   return status;
 }
