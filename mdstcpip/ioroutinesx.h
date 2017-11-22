@@ -133,6 +133,9 @@ static inline struct hostent* getHostByAddr(void* addr, size_t sofaddr, short fa
   FREE_ON_EXIT(hp_mem);
   while ( hp_mem && (gethostbyaddr_r(((void *)&addr),sofaddr,family,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE) ) {
     memlen *=2;
+#ifdef DEBUG
+    fprintf(stderr,"hp_mem too small-> %d\n",(int)memlen);
+#endif
     free(hp_mem);
     hp_mem = (char*)malloc(memlen);
   }
@@ -151,22 +154,21 @@ static char *getHostInfo(SOCKET sock, char **iphostptr, char **hostnameptr){
     struct hostent *hp = getHostByAddr((void*)&sin.SIN_ADDR,sizeof(sin.SIN_ADDR),sin.SIN_FAMILY);
     FREE_ON_EXIT(hp);
     if (hp && hp->h_name) {
-      ans = (char *)malloc(strlen(iphost) + strlen(hp->h_name) + 10);
+      ans = (char *)malloc(strlen(iphost) + strlen(hp->h_name) + 4);
       sprintf(ans, "%s [%s]", hp->h_name, iphost);
+      if (hostnameptr) {
+        *hostnameptr = (char *)malloc(strlen(hp->h_name) + 1);
+        strcpy(*hostnameptr, hp->h_name);
+      }
     } else {
+      if (hostnameptr)
+        *hostnameptr = NULL;
       ans = (char *)malloc(strlen(iphost) + 1);
       strcpy(ans, iphost);
     }
     if (iphostptr) {
       *iphostptr = (char *)malloc(strlen(iphost) + 1);
       strcpy(*iphostptr, iphost);
-    }
-    if (hostnameptr) {
-      if (hp && hp->h_name) {
-        *hostnameptr = (char *)malloc(strlen(hp->h_name) + 1);
-        strcpy(*hostnameptr, hp->h_name);
-      } else
-        *hostnameptr = NULL;
     }
     FREE_NOW(hp);
   }
@@ -270,7 +272,8 @@ static int io_authorize(int conid, char *username){
     ans = CheckClient(username, num, matchString);
     FREE_NOW(matchString[1]);
     FREE_NOW(matchString[0]);
-  }
+  } else
+    fprintf(stderr,"error getting hostinfo");
   FREE_NOW(info);
   FREE_NOW(iphost);
   FREE_NOW(hoststr);
