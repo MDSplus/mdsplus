@@ -439,7 +439,7 @@ static void WriteData(hid_t parent, char *name, struct descriptor *dsc)
 	    WriteData(g_id, "data", r_ptr->dscptrs[0]);
 	    WriteData(g_id, "raw", r_ptr->dscptrs[1]);
 	    for (i = 2; i < r_ptr->ndesc; i++) {
-	      char name[5];
+	      char name[8];
 	      sprintf(name, "dim%1.1d", i - 2);
 	      WriteData(g_id, name, r_ptr->dscptrs[i]);
 	    }
