@@ -141,6 +141,18 @@ extern void InitializeEventSettings();
 - buf (buf len chars)
 
 ***********************/
+static void EventExit(void *socket) {
+/*
+ifdef _WIN32
+  // For some reason shutdown does not abort the recvfrom and hangs the process joining
+  // the handleMessage thread. closesocket seems to work though.
+  closesocket(*(int*)socket);
+#else
+*/
+  shutdown(*(int*)socket, SHUT_RDWR);
+  close(*(int*)socket);
+//#endif
+}
 
 static void *handleMessage(void *info_in)
 {
@@ -158,12 +170,10 @@ static void *handleMessage(void *info_in)
   unsigned int nameLen,bufLen;
   char *eventName;
   char *currPtr;
-  pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
-  pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,0);
   free(info->eventName);
   free(info);
   pthread_mutex_unlock(&eventIdMutex);
-
+  pthread_cleanup_push(EventExit,(void*)&socket);
   while (1) {
 #ifdef _WIN32
     if ((recBytes = recvfrom(socket, (char *)recBuf, MAX_MSG_LEN, 0,
@@ -173,7 +183,6 @@ static void *handleMessage(void *info_in)
 	break;
       } else {
 	fprintf(stderr,"Error getting data - %d\n", error);
-
       }
       continue;
     }
@@ -204,6 +213,7 @@ static void *handleMessage(void *info_in)
       continue;
     astadr(arg, (int)bufLen, currPtr);
   }
+  pthread_cleanup_pop(1);
   return 0;
 }
 
@@ -340,15 +350,7 @@ int MDSUdpEventCan(int eventid)
 {
   EventList *ev = popEvent(eventid);
   if (ev) {
-#ifdef _WIN32
-    // For some reason shutdown does not abort the recvfrom and hangs the process joining
-    // the handleMessage thread. closesocket seems to work though.
-    closesocket(ev->socket);
-#else
-    shutdown(ev->socket, SHUT_RDWR);
-    close(ev->socket);
-#endif
-//    pthread_cancel(ev->thread);
+    pthread_cancel(ev->thread);
     pthread_join(ev->thread,0);
     free(ev);
     return 1;
