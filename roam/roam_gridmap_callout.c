@@ -162,11 +162,11 @@ EXPORT globus_result_t roam_gridmap_callout(va_list ap)
   gss_release_name(&minor_status, &peer);
 
   if (desired_identity == NULL) {
-    char *expression = (char *)malloc(strlen(service) + strlen(peer_name_buffer.value) + 128);
     struct descriptor expression_d = { 0, DTYPE_T, CLASS_S, 0 };
     struct descriptor local_user_d = { 0, DTYPE_T, CLASS_D, 0 };
     int status;
-    sprintf(expression, "_who=check_access_%s(\"%s\")", service, (char *)peer_name_buffer.value);
+    char *expression = malloc(strlen(service) + strlen(peer_name_buffer.value) + 23);
+    if (expression) sprintf(expression, "_who=check_access_%s(\"%s\")", service, (char *)peer_name_buffer.value);
     expression_d.length = strlen(expression);
     expression_d.pointer = expression;
     status = TdiExecute(&expression_d, &local_user_d MDS_END_ARG);
