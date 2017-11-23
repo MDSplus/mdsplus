@@ -219,7 +219,7 @@ SectionEnd
 
 Section "PYTHON"
 SetOutPath "$INSTDIR\mdsobjects"
-File /r /x MDSplus ${srcdir}/mdsobjects/python
+File /r /x MDSplus /x .gitignore ${srcdir}/mdsobjects/python
 SetOutPath "$INSTDIR\mdsobjects\python"
 File /workspace/releasebld/64/mdsobjects/python/_version.py
 SetOutPath "$INSTDIR\mdsobjects\python"
