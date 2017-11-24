@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,8 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import Device,StringArray,Data
-import numpy as _N
+from MDSplus import Device,Data
 
 def pydevices():
       ds=Device.findPyDevices()
@@ -35,4 +34,4 @@ def pydevices():
             return ans
       else:
         return None
-        
+
