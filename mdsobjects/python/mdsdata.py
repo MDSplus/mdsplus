@@ -547,7 +547,7 @@ class Data(object):
         try:
             return data.descriptor.ptr_
         except Exception as exc:
-            print(exc,data)
+            print(exc,data.__class__.__name__)
 
     @property
     def ref(self):
