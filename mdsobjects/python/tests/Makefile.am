@@ -36,7 +36,9 @@ VALGRIND_TESTS = \
 # times slower to run)
 #
 VALGRIND_SUPPRESSIONS_FILES_PY = \
-         ${top_srcdir}/conf/valgrind-python-disableleak.supp
+	$(top_srcdir)/conf/valgrind-mdsplus.supp \
+	${top_srcdir}/conf/valgrind-python.supp \
+	${top_srcdir}/conf/valgrind-python-disableleak.supp
 
 
 
