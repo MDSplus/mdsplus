@@ -1,5 +1,4 @@
 from MDSplus import Data,StringArray
-from numpy import array
 
 def MdsDevices(show_dups=False):
     devices=Data.execute("""
@@ -7,11 +6,9 @@ def MdsDevices(show_dups=False):
     if_error(MitDevices(),*),
     if_error(RfxDevices(),*),
     if_error(W7xDevices(),*)]""")
-    skip=False
-    dup=False
     ans=list()
     ds=list()
-    for i in range(len(devices)/2):
+    for i in range(int(len(devices)/2)):
         if str(devices[i*2]).upper() not in ds:
             ans.append(str(devices[i*2]))
             ans.append(str(devices[i*2+1]))
