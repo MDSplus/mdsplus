@@ -61,7 +61,6 @@
 ./usr/local/mdsplus/tdi/dev_support/DevPutSignal.fun
 ./usr/local/mdsplus/tdi/dev_support/DevPutSignalNoBounds.fun
 ./usr/local/mdsplus/tdi/dev_support/DevPutValue.fun
-./usr/local/mdsplus/tdi/dev_support/MdsDevices.fun-old
 ./usr/local/mdsplus/tdi/dev_support/MdsDevices.py
 ./usr/local/mdsplus/tdi/dev_support/PyDoMethod.py
 ./usr/local/mdsplus/tdi/dev_support/pydevices.py
