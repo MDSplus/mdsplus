@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -65,7 +65,7 @@ def test_all(*arg):
     return TestSuite(tests)
 
 def run():
-    TextTestRunner().run(test_all())
+    TextTestRunner(verbosity=2).run(test_all())
 
 if __name__=='__main__':
     run()
