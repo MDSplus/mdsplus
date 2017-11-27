@@ -6,7 +6,7 @@ FUN PUBLIC MitObsoleteDevices() {
 	'DT200',	 'MitDevices',		
 	'DT200DA',	 'MitDevices',
         'DT_ACQ16',	 'MitDevices',		
-        'MATROX',      '',
+        'MATROX',        'MitDevices',
 	'PARAGON_HIST',	 'MitDevices',		
 	'PARAGON_RPT',	 'MitDevices',		
 	'PREAMP',	 'MitDevices',
