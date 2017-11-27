@@ -296,7 +296,7 @@ class CYGNET4K(Device):
         def resetMicro(self):
             """Will trap Micro causing watchdog and reset of firmware."""
             # The camera will give no response to this command
-            self.serialIO(b'\x55\x99\x66\x11\x50\EB', None)
+            self.serialIO(b'\x55\x99\x66\x11\x50\xEB', None)
             return self
 
         def setSystemState(self,byte):
@@ -380,7 +380,7 @@ class CYGNET4K(Device):
 
         def setRoiXOffset(self, value):
             """set ROI X offset as 12-bit value"""
-            return self.setValue(b'\81\x82',min(0xFFF,value),True)
+            return self.setValue(b'\x81\x82',min(0xFFF,value),True)
 
         def setRoiYSize(self, value):
             """set ROI Y size as 12-bit value"""

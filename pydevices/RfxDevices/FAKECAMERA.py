@@ -36,7 +36,7 @@ class FAKECAMERA(Device):
       {'path':':COMMENT', 'type':'text'},
       {'path':':EXP_NAME', 'type':'text', 'value':'cameratest'},
       {'path':':EXP_SHOT', 'type':'text', 'value':'84'},
-      {'path':':EXP_NODE', 'type':'text', 'value':'\CAMERATEST::FLIR:FRAMES'},
+      {'path':':EXP_NODE', 'type':'text', 'value':'\\CAMERATEST::FLIR:FRAMES'},
       {'path':':FRAME_RATE', 'type':'numeric', 'value':25},
       {'path':':READ_LOOP', 'type':'text','value':'NO'},
       {'path':':STREAMING', 'type':'text', 'value':'Stream and Store'},
