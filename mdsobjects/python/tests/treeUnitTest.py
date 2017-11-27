@@ -82,7 +82,7 @@ class Tests(TestCase):
         from gc import collect,get_objects
         from time import sleep
         def check(n):
-            self.assertEqual(n,len(tree._TreeCtx.ctxs.items()[0][1]))
+            self.assertEqual(n,len(list(tree._TreeCtx.ctxs.items())[0][1]))
         self.assertEqual(tree._TreeCtx.ctxs,{})  # neither tcl nor tdi has been called yet
         tcl('edit pytree/shot=%d/new'%self.shot);check(1)
         Data.execute('$EXPT'); check(1)
