@@ -111,13 +111,6 @@
 #define EVENTASTREQUEST     "---EVENTAST---REQUEST---"
 #define EVENTCANREQUEST     "---EVENTCAN---REQUEST---"
 
-#define LOGINREQUEST        "---LOGIN------REQUEST___"
-#define LOGINUSER           "---LOGIN------USER------"
-#define LOGINGETP1          "---LOGIN------GETP1-----"
-#define LOGINGETP2          "---LOGIN------GETP2-----"
-#define LOGINPWD            "---LOGIN------PWD-------"
-#define LOGINVMS            "---LOGIN------VMS-------"
-
 #define SEND_BUF_SIZE 32768
 #define RECV_BUF_SIZE 32768
 

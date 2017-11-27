@@ -61,15 +61,9 @@ extern int TdiData();
 
 #define IS_WILD(T)   (strcspn(T,"*%") < strlen(T))
 
-#ifdef vms
-#define SYNCINIT
-#define SYNCPASS NULL
-#define SYNCWAIT ServerWait(0)
-#else
 #define SYNCINIT int SyncId = 0
 #define SYNCPASS &SyncId
 #define SYNCWAIT ServerWait(SyncId)
-#endif
 
 #define INIT_TCLSTATUS INIT_STATUS_AS TclNORMAL
 
