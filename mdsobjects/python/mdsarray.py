@@ -101,27 +101,28 @@ class Array(_dat.Data):
             raise TypeError("cannot instantiate 'Array'")
         if isinstance(value,self.__class__):
             self._value = value._value.copy()
+            return
         if isinstance(value,_dat.Data):
             value = value.data()
         elif isinstance(value,_C.Array):
-            try:
-                value=_N.ctypeslib.as_array(value)
-            except Exception:
-                pass
-        value = _N.array(value)
+            try:   value=_N.ctypeslib.as_array(value)
+            except Exception: pass
+        else:
+            value = _N.array(value)
         if len(value.shape) == 0 or len(value.shape) > Array.__MAX_DIM:  # happens if value has been a scalar, e.g. int
             value = value.flatten()
-        self._value = value.__array__(self.ntype)
+        self._value = value.__array__(self.ntype).copy('C')
 
     def _str_bad_ref(self):
         return _ver.tostr(self._value)
 
     def __getattr__(self,name):
+        try: return super(Array,self).__getattribute__(name)
+        except AttributeError: pass
         if name=='_value': raise Exception('_value undefined')
-        try:
-            return self._value.__getattribute__(name)
-        except:
-            raise AttributeError
+        try: return self._value.__getattribute__(name)
+        except AttributeError:  pass
+        raise AttributeError
 
     @property
     def value(self):
@@ -197,21 +198,19 @@ class Array(_dat.Data):
 
     @property
     def _descriptor(self):
-        value=self._value
-        dti = str(value.dtype)[1]
-        if dti in 'SU' and not dti=='S':
-            value = value.astype('S')
-        if not value.flags['CONTIGUOUS']:
-            value=_N.ascontiguousarray(value)
-        value = value.T
-        if not value.flags.f_contiguous:
-            value=value.copy('F')
+        if not self._value.flags.c_contiguous:
+            self._value=self._value.copy('C')
+        value = self._value.T
         d=_dsc.Descriptor_a()
         d.scale=0
         d.digits=0
         d.dtype=self.dtype_id
         d.length=value.itemsize
-        d.pointer=_C.c_void_p(value.ctypes.data)
+        d._value = value
+        if _ver.ispy3:
+            d.pointer=_C.cast(value.data.tobytes(), _C.c_void_p)
+        else:
+            d.pointer=_C.cast(value.ctypes.data,_C.c_void_p)
         d.dimct=value.ndim
         d.aflags=48
         d.arsize=value.nbytes
@@ -391,26 +390,27 @@ _dsc.addDtypeToArrayClass(ComplexDArray)
 class StringArray(Array):
     """String"""
     dtype_id=14
-
     def __init__(self,value):
         if value is self: return
         if isinstance(value, (StringArray,)):
-            self._value = value._value.copy()
+            self._value = value._value.copy('C')
             return
         if not isinstance(value,(_N.ndarray,)):
             value = _N.array(value)
-        if not value.dtype.type is _ver.npstr:
-            try:    value = _ver.np2npstr(value)
-            except: value = _N.array(_ver.tostr(value.tolist()))
-        elif not value.flags.writeable:
-            value = value.copy()
-        for i in _ver.xrange(len(value.flat)):
-            vlen=len(value.flat[i])
-            value.flat[i]=value.flat[i].ljust(vlen)
+        if not value.dtype.type is _ver.npbytes:
+            value = _N.array(_ver.tobytes(value.tolist()))
+        elif _ver.ispy3 or not value.flags.writeable or not value.flags.c_contiguous:
+            value = value.copy('C')
+        length = value.itemsize
+        if length>0:
+            for i in _ver.xrange(len(value.flat)):
+                val = value.flat[i]
+                if len(val)<length or val[-1] == 0:
+                    value.flat[i]=val.ljust(length)
         self._value = value
     @property
     def value(self):
-        return _ver.np2npstr(self._value)
+        return self._value
     def __radd__(self,y):
         """Reverse add: x.__radd__(y) <==> y+x
         @rtype: Data"""

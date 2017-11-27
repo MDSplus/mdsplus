@@ -100,7 +100,10 @@ class Scalar(_dat.Data):
             value = value.data()
         elif isinstance(value,_C._SimpleCData):
             value = value.value
-        self._value = self._ntype(value)
+        if _ver.ispy3 and self._ntype is _N.bytes_:
+            self._value = self._ntype(_ver.tobytes(value))
+        else:   
+            self._value = self._ntype(value)
 
     def _str_bad_ref(self):
         return _ver.tostr(self._value)
@@ -352,8 +355,7 @@ class String(Scalar):
     def __init__(self,value):
         super(String,self).__init__(value)
         if not isinstance(self._value,_N.str):
-            self._value = _ver.np2npstr(self._value)
-
+            self._value = _ver.npstr(_ver.tostr(self._value))
     @property
     def _descriptor(self):
         d=_dsc.Descriptor_s()

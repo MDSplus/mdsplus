@@ -544,10 +544,7 @@ class Data(object):
         data = cls(data)
         if data is None:
             return _dsc.Descriptor.null
-        try:
-            return data.descriptor.ptr_
-        except Exception as exc:
-            print(exc,data.__class__.__name__)
+        return data.descriptor.ptr_
 
     @property
     def ref(self):
