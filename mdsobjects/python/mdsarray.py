@@ -207,10 +207,7 @@ class Array(_dat.Data):
         d.dtype=self.dtype_id
         d.length=value.itemsize
         d._value = value
-        if _ver.ispy3:
-            d.pointer=_C.cast(value.data.tobytes(), _C.c_void_p)
-        else:
-            d.pointer=_C.cast(value.ctypes.data,_C.c_void_p)
+        d.pointer=_C.c_void_p(value.__array_interface__["data"][0])
         d.dimct=value.ndim
         d.aflags=48
         d.arsize=value.nbytes
