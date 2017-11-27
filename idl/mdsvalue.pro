@@ -143,14 +143,6 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
   endif else begin
     old_except=!except
     !except=0
-    if (!VERSION.OS eq 'vms') then begin
-
-      cmd = 'answer = mds$value(expression'
-      for i=1,n_params()-1 do cmd=cmd+',arg'+strtrim(i,2)
-      cmd = cmd+',quiet=quiet,status=status)'
-      dummy = execute(cmd)
-
-    endif else begin
       anscreate_pre = bytarr(512)
       anscreate_post = bytarr(512)
       answer = '*'
@@ -224,7 +216,6 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
         else $
             message,msg,/continue
       endif
-    endelse
     dummy=check_math()
     !except=old_except
   endelse

@@ -16,15 +16,6 @@ public fun DevPutValue(in _nid, in _value, optional in _units )
   else
     _val_build = compile( 'build_with_units( `_value, `_units )' );
   
-/*
- * The is_vms() function seems to no longer be in the Linux distribution
- *	so this is commented out for Linux.
- *
-  if (is_vms())
-    return( TreeShr->Tree$Put_Record( _nid, xd(_val_build) ) );
-  else
- */
-
   return( TreeShr->TreePutRecord(val(_nid),xd(_val_build),val(0)) );
 
 }

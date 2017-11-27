@@ -152,13 +152,6 @@ typedef struct _io_routines {
 #define EVENTASTREQUEST "---EVENTAST---REQUEST---"
 #define EVENTCANREQUEST "---EVENTCAN---REQUEST---"
 
-#define LOGINREQUEST "---LOGIN------REQUEST___"
-#define LOGINUSER "---LOGIN------USER------"
-#define LOGINGETP1 "---LOGIN------GETP1-----"
-#define LOGINGETP2 "---LOGIN------GETP2-----"
-#define LOGINPWD "---LOGIN------PWD-------"
-#define LOGINVMS "---LOGIN------VMS-------"
-
 #define SENDCAPABILITIES 0xf
 
 #define BigEndian 0x80

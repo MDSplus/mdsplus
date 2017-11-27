@@ -71,10 +71,6 @@ dele *.exe;
 #endif
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
-#ifdef VMS
-#include <ctype.h>
-#define TdiCvt TDI$CVT
-#endif
 extern int MdsOpen(int sock, char *tree, int shot);
 extern int MdsClose(int sock);
 extern int TdiCvt();
