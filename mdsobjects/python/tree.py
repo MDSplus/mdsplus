@@ -3212,7 +3212,7 @@ If you did intend to write to a subnode of the device you should check the prope
         """Find all device support modules in the MDS_PYDEVICE_PATH environment variable search list."""
         sys,os,path = Device.__cached()
         if Device.__cached_py_devices is not None:
-            return _dat.Data.compile(str(Device.__cached_py_devices))
+            return Device.__cached_py_devices
         ans=list()
         if path is not None:
             parts=path.split(';')
@@ -3230,11 +3230,8 @@ If you did intend to write to a subnode of the device you should check the prope
                                     pass
                     finally:
                         sys.path.remove(dp)
-        if len(ans) == 0:
-            return None
-        else:
-            Device.__cached_py_devices = ans
-            return _dat.Data.compile(str(ans))
+        Device.__cached_py_devices = ans
+        return ans
 
     @staticmethod
     def PyDevice(module,model=None):
