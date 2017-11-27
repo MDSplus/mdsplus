@@ -108,6 +108,12 @@ class Tests(TestCase):
     def tearDown(cls):
         import gc
         gc.collect()
+    def cleanup(self,refs=0):
+        import MDSplus,gc;gc.collect()
+        def isTree(o):
+            try:    return isinstance(o,MDSplus.Tree)
+            except: return False
+        self.assertEqual([o for o in gc.get_objects() if isTree(o)][refs:],[])
 
     def dclInterface(self):
       def test():
@@ -144,10 +150,7 @@ class Tests(TestCase):
         self._doExceptionTest('dispatch/command/server=xXxXxXx type test',Exc.ServerPATH_DOWN)
         self._doExceptionTest('dispatch/command/server type test',Exc.MdsdclIVVERB)
       test()
-
-      import MDSplus,gc;gc.collect()
-      refs = 0 if sys.platform.startswith('win') else 1
-      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)][refs:],[])
+      self.cleanup(0 if sys.platform.startswith('win') else 1)
 
 
     def dispatcher(self):
@@ -254,8 +257,7 @@ class Tests(TestCase):
         pytree = Tree('pytree',shot,'ReadOnly')
         self.assertTrue(pytree.TESTDEVICE.INIT1_DONE.record <= pytree.TESTDEVICE.INIT2_DONE.record)
       test()
-      import MDSplus,gc;gc.collect()
-      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)],[])
+      self.cleanup()
 
     def runTest(self):
         for test in self.getTests():
