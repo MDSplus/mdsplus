@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -25,8 +25,12 @@
 
 from MDSplus import Device,Data,Action,Dispatch,Method, makeArray, Range, Signal, Window, Dimension
 from tempfile import *
-from . import acq200
-from . import transport
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+acq200,transport=_mimport('acq200'),_mimport('transport')
 
 import os
 

@@ -26,7 +26,12 @@
 from MDSplus import Device,Data,Action,Dispatch,Method, makeArray, Range, Signal, Window, Dimension
 
 from tempfile import *
-from .Dt200WriteMaster import Dt200WriteMaster
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+Dt200WriteMaster=_mimport('Dt200WriteMaster').Dt200WriteMaster
 
 from time import sleep, time
 import os

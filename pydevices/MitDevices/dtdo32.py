@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,12 @@
 #
 
 from MDSplus import Device
-from .Dt200WriteMaster import Dt200WriteMaster
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+Dt200WriteMaster=_mimport('Dt200WriteMaster').Dt200WriteMaster
 from os import popen
 import numpy
 

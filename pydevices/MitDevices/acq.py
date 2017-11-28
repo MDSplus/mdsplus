@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,12 @@ import socket
 import json
 
 import MDSplus
-from . import acq200, transport
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+acq200,transport=_mimport('acq200'),_mimport('transport')
 
 class Acq(MDSplus.Device):
     """

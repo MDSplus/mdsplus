@@ -25,7 +25,12 @@
 #
 import pexpect
 import re
-from . import transport
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+transport=_mimport('transport')
 import array
 import os
 

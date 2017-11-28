@@ -23,7 +23,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from .acq_ftp import ACQ_FTP
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+ACQ_FTP=_mimport('acq_ftp').ACQ_FTP
 
 from tempfile import *
 import time

@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,19 +24,21 @@
 #
 
 class Transport:
-        def connectMaster(self):
-                pass
-
-        def connectShell(self):
-                pass
-
-        def acqcmd(self, command):
-                pass
-
-        def acq2sh(self,  command):
-                pass
+    def connectMaster(self):
+        pass
+    def connectShell(self):
+        pass
+    def acqcmd(self, command):
+        pass
+    def acq2sh(self,  command):
+        pass
 
 def factory(uut):
-    from . import dt100
+    def _mimport(name, level=1):
+        try:
+            return __import__(name, globals(), level=level)
+        except:
+	         return __import__(name, globals())
+    dt100=_mimport('dt100')
     # if uut is a single number -> local file transport
     return dt100.DT100(uut)

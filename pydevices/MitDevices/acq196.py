@@ -26,7 +26,12 @@
 import numpy
 import array
 import MDSplus
-from . import acq
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+acq=_mimport('acq')
 
 class ACQ196(acq.Acq):
     """

@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,12 @@
 #
 
 import MDSplus
-from . import acq
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+acq=_mimport('acq')
 
 class ACQ132(acq.Acq):
     """

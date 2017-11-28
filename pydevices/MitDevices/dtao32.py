@@ -24,7 +24,12 @@
 #
 
 from MDSplus import Device,Data,Action,Dispatch,Method
-from .Dt200WriteMaster import Dt200WriteMaster
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+Dt200WriteMaster=_mimport('Dt200WriteMaster').Dt200WriteMaster
 import os
 import numpy
 
