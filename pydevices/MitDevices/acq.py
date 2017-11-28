@@ -127,7 +127,6 @@ class Acq(MDSplus.Device):
 
     def getBoardIp(self):
         from MDSplus.mdsExceptions import DevNO_NAME_SPECIFIED
-        from MDSplus.mdsExceptions import TreeNODATA
         try:
             boardip=str(self.node.record)
         except Exception as e:
@@ -152,7 +151,7 @@ class Acq(MDSplus.Device):
         if len(rr) > 0 :
             if self.debugging():
                 print("flushing old data from socket")
-            dummy = self.data_socket.recv(99999, socket.MSG_DONTWAIT)
+            self.data_socket.recv(99999, socket.MSG_DONTWAIT)
 #            self.data_socket.close()
 #            self.data_socket = -1
             time.sleep(.05)
@@ -203,7 +202,7 @@ class Acq(MDSplus.Device):
             try:
                 tries = tries + 1
                 self.settings = self.readSettings()
-                complete=1
+                #complete=1
             except Exception as e:
                 last_error=e
                 if self.debugging():
@@ -506,12 +505,11 @@ add_cmd get.trig >> $settingsf
         ftp.login('dt100', 'dt100')
         ftp.retrlines("RETR /tmp/settings.json", lambda s, w=settingsfd.write: w(s+"\n"))
         settingsfd.seek(0,0)
-        if self.debugging():
-            print("got the settings")
-
         try :
+            if self.debugging():
+                print("got the settings")
             settings = json.load(settingsfd)
-        except Exception as e:
+        finally:
             settingsfd.close()
             raise
         settingsfd.close()
@@ -548,9 +546,11 @@ add_cmd get.trig >> $settingsf
             s.close()
             print(("Error sending doInit: %s" % (str(e),)))
             raise DevERROR_DOING_INIT(str(e))
-        s.close()
+        finally:
+            s.close()
         if self.debugging():
             print("finishing doInit")
+        return status
 
     def storeClock(self):
         clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]

@@ -23,7 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import Device,Data,Action,Dispatch,Method, makeArray, Range, Signal, Window, Dimension
+from MDSplus import Device,Data,makeArray, Range, Signal, Window, Dimension
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
@@ -350,10 +350,10 @@ class DT132(Device):
                                 pass
                             if delta :
                                 axis = Range(begin, ending, delta/inc)
-                                window = Window(start/inc, end/inc, trigger)
+                                window = Window(start/inc, end/inc, self.trig_src)
                                 dim = Dimension(window, axis)
                             else:
-                                dim = Data.Compile('Map($,$)', Dimension(Window(start/inc, end/inc, trigger), clock), Range(start, end, inc))
+                                dim = Data.Compile('Map($,$)', Dimension(Window(start/inc, end/inc, self.trig_src), clock), Range(start, end, inc))
                                 raw = Data.compile('data($)', chan_raw_node)
                                 chan_node.record = Signal(raw, None, dim)
                         else:

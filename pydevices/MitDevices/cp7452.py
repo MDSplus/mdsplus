@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,7 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import Device,Data,Action,Dispatch,Method
+from MDSplus import Device,Data
 
 class CP7452(Device):
     """Adlink CP7452 DIO"""

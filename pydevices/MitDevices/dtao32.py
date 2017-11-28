@@ -23,7 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import Device,Data,Action,Dispatch,Method
+from MDSplus import Device,Data
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
@@ -147,7 +147,6 @@ class DTAO32(Device):
         An arm operation must also be done to activate the device
         """
 
-        debug=os.getenv("DEBUG_DEVICES")
         try:
             complaint = "Must specify host board number"
             hostboard=int(self.hostboard.record)

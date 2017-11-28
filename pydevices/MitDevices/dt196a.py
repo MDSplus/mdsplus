@@ -23,9 +23,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import Device,Data,Action,Dispatch,Method, makeArray, Range, Signal, Window, Dimension
+from MDSplus import Device,Data,makeArray, Range, Signal, Window, Dimension
 
-from tempfile import *
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
@@ -131,7 +130,7 @@ class DT196A(Device):
             binValues.read(f,end-start+1)
             ans = numpy.array(binValues, dtype=numpy.int16)
             if inc > 1 :
-                asns = ans[::inc]
+                ans = ans[::inc]
             f.close()
         except Exception as e :
            print("readRawData - %s" % e)
@@ -406,7 +405,7 @@ class DT196A(Device):
                         dim = Data.compile('Map($,$)', Dimension(Window(start/inc, end/inc, trig_src), axis), Range(start, end, inc))
 #                    dat = Data.compile('build_signal(build_with_units( $*(0. + $value), "V") ,build_with_units($,"Counts"),$)', coefficent, buf,dim)
                     dat = Data.compile('_v0=$, _v1=$, build_signal(build_with_units(( _v0+ (_v1-_v0)*($value - -32768)/(32767 - -32768 )), "V") ,build_with_units($,"Counts"),$)', vins[chan*2], vins[chan*2+1], buf,dim)
-                    exec('c=self.input_'+'%02d'%(chan+1,)+'.record=dat')
+                    self.__setattr__('input_%02d'%(chan+1,),dat)
         return 1
 
     STOREFTP=storeftp

@@ -23,8 +23,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import Device,Data,Action,Dispatch,Method, makeArray, Range, Signal, Window, Dimension
-from tempfile import *
+from MDSplus import Device,Data,makeArray, Range, Signal, Window, Dimension
+from tempfile import mkstemp
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
@@ -220,7 +220,7 @@ class DT196B(Device):
                     UUT.uut.acqcmd("setExternalClock %s" % clock_src)
 
             UUT.setPrePostMode(pre_trig, post_trig, trig_src, trig_edge)
-            mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
+            UUT.uut.acqcmd('getChannelMask').split('=')[-1]
             UUT.set_arm()
             return  1
 
@@ -270,8 +270,8 @@ class DT196B(Device):
             except Exception as e:
                 pass
 
-            complete = 0
-            tries = 0
+            #complete = 0
+            #tries = 0
             if UUT.get_state().split()[-1] == "ST_RUN" :
                 raise Exception("Device not Triggered \n device returned -%s-" % UUT.get_state().split()[-1])
             if debug:
@@ -349,9 +349,9 @@ class DT196B(Device):
                                 window = Window(start/inc, end/inc, self.trig_src)
                                 dim = Dimension(window, axis)
                             else:
-                                dim = Data.compile('Map($,$)', Dimension(Window(start/inc, end/inc, trig_src), clock), Range(start, end, inc))
+                                dim = Data.compile('Map($,$)', Dimension(Window(start/inc, end/inc, self.trig_src), clock), Range(start, end, inc))
                             raw = Data.compile('data($)', chan_raw_node)
-                            chan_node.record = eval('Signal(raw, "", dim)')
+                            chan_node.record = Signal(raw, None, dim)
                         else:
                             raw = Data.compile('data($)', chan_raw_node)
                             chan_node.record = Signal(raw, "", Dimension(Window(start, end-1, self.trig_src), clock))

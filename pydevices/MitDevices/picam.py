@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -155,9 +155,9 @@ class PICAM(MDSplus.Device):
                 print("PICAM got the rois ", rois)
         except Exception as e:
             if self.debugging:
-                print("PICAM could not read the ROIS")
+                print("PICAM could not read the ROIS - %s"%str(e))
             rois = None
-        
+
         print("Acquire  - debugging is ", self.debugging)
 
         # initialize the library
@@ -190,9 +190,9 @@ class PICAM(MDSplus.Device):
                 found = True
         if not found:
             raise DevBAD_PARAMETER("PiCam - Could not find camera %d"%serial_no)
- 
+
 #        Picam_OpenCamera(ctypes.addressof(camera))
-        PicamID = pfp.PicamCameraID()  
+        PicamID = pfp.PicamCameraID()
 
         pfp.Picam_GetCameraID(camera,  pointer(PicamID))
         self.model.record = str(PicamID.model)
@@ -255,12 +255,12 @@ class PICAM(MDSplus.Device):
                     width = rois[i,1]
                 if self.debugging:
                     print("PICAM The Rois are: ", Rois)
-                status = pfp.Picam_SetParameterRoisValue(camera, pfp.PicamParameter_Rois, pointer(Rois)) 
+                status = pfp.Picam_SetParameterRoisValue(camera, pfp.PicamParameter_Rois, pointer(Rois))
                 if not status == "PicamError_None":
                     raise DevCOMM_ERROR("PiCam - error setting ROI- %s"% status)
                 failCount = pfp.piint()
                 paramsFailed = pfp.piint()
-                status = pfp.Picam_CommitParameters(camera, pointer(paramsFailed), ctypes.byref(failCount)) 
+                status = pfp.Picam_CommitParameters(camera, pointer(paramsFailed), ctypes.byref(failCount))
                 if not status == "PicamError_None":
                     raise DevCOMM_ERROR("PiCam - error committing ROI Parameter Change %s" % status)
                 if not failCount.value == 0:
@@ -276,7 +276,7 @@ class PICAM(MDSplus.Device):
 
         if self.debugging:
             print("about to call Picam_Acquire")
-        status = pfp.Picam_Acquire(camera, readout_count, readout_time_out, ctypes.byref(available), ctypes.byref(errors)) 
+        status = pfp.Picam_Acquire(camera, readout_count, readout_time_out, ctypes.byref(available), ctypes.byref(errors))
         if not status == "PicamError_None":
             print("Picam_Acquire returned ",status)
             raise DevCOMM_ERROR("PiCam - non zero return from Picam_Acquire - %s" % status)
@@ -306,10 +306,10 @@ class PICAM(MDSplus.Device):
         status = pfp.Picam_GetParameterIntegerValue( camera, ctypes.c_int(pfp.PicamParameter_ReadoutStride), ctypes.byref(readoutstride) )
         if self.debugging:
             print("Picam_GetParameterIntegerValue( camera, ctypes.c_int(PicamParameter_ReadoutStride),",readoutstride," )", status)
-            
+
         if  not status == "PicamError_None" :
             raise DevCOMM_ERROR("PiCam - could not read readout stride - %s"% status)
-            
+
         sz = readout_count.value*readoutstride.value/2
         if self.debugging:
             print("sz is ",sz, " num_frames is ", num_frames, "readout_count is ", readout_count, " readoutstride is ", readoutstride)
@@ -317,7 +317,7 @@ class PICAM(MDSplus.Device):
         DataArrayType = pfp.pi16u*sz
 
         """ Create pointer type for the above array type """
-        DataArrayPointerType = ctypes.POINTER(pfp.pi16u*sz)
+        DataArrayPointerType = ctypes.POINTER(DataArrayType)
 
         if self.debugging:
             print("PICAM - cast the read data into the pointer type")

@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,17 +28,17 @@ from MDSplus import Device
 class A3248(Device):
     """
     AEON 3248  4 channel transient recorder
-    
+
     Methods:
     Add() - add a DT216B device to the tree open for edit
-    Init() - initialize the AEON 3248 device - implimented in TDI 
+    Init() - initialize the AEON 3248 device - implimented in TDI
                 write setup parameters and waveforms to the device
     Store() - store the data acquired by the device - implimented in TDI
     Trigger() - trigger the device - implimented in TDI
     Help() - Print this message
-    
+
     Nodes:
-    
+
     :NAME - CTS name of device
     :COMMENT - user comment string
     :EXT_CLOCK
@@ -56,7 +56,7 @@ class A3248(Device):
     :INIT_ACTION - dispatching information for INIT
     :STORE_ACTION - dispatching information for STORE
     """
-    
+
     parts=[
         {'path':':NAME','type':'text','value':'a3248_1','options':('no_write_shot',)},
         {'path':':COMMENT','type':'text'},
@@ -99,11 +99,7 @@ class A3248(Device):
     def init(self):
         import math
         from MDSplus import Data
-        from MDSplus.mdsExceptions import DevBAD_GAIN
-        from MDSplus.mdsExceptions import DevBAD_NAME
-        from MDSplus.mdsExceptions import DevBAD_OFFSET
-        from MDSplus.mdsExceptions import DevBAD_PRE_TRIG
-        from MDSplus.mdsExceptions import DevBAD_CLOCK_FREQ
+        from MDSplus import DevBAD_GAIN, DevBAD_NAME,DevBAD_OFFSET,DevBAD_PRE_TRIG,DevBAD_CLOCK_FREQ,DevCAMACERR
 
         if self.debug:
             print("A3248 INIT starting")
@@ -117,7 +113,7 @@ class A3248(Device):
         gain_offset_reg = (gain_code<<8) | offset
 
         pretrig = max(min(self.getInteger(self.pretrig, DevBAD_PRE_TRIG),32768),0)
-        
+
         posttrig_code = (32768 - pretrig) << 7
         clock = self.getInteger(self.frequency, DevBAD_CLOCK_FREQ)
         if not clock in self.clock_freqs:
@@ -135,24 +131,20 @@ class A3248(Device):
             status_reg = status_reg | posttrig_code | (1 << 12)
         status = Data.execute('AEON_ARM("%s", %d, %d)' % (name, gain_offset_reg, status_reg,))
         if (status & 1) == 0:
-            raise DevCAMAC_ERROR('AEON 3248 Arming %s status %d'%(name, status,))        
+            raise DevCAMACERR('AEON 3248 Arming %s status %d'%(name, status,))
     INIT=init
 
     def trig(self):
-        from MDSplus import Data
-        from MDSplus.mdsExceptions import DevBAD_NAME
+        from MDSplus import Data,DevBAD_NAME,DevCAMACERR
         name = self.getString(self.name, DevBAD_NAME)
         status = Data.execute('AEON_TRIGGER("%s")' % (name,))
         if (status & 1) == 0:
-            raise DevCAMAC_ERROR('AEON 3248 Triggering %s status %d'%(name, status,))        
+            raise DevCAMACERR('AEON 3248 Triggering %s status %d'%(name, status,))
     TRIGGER=trig
 
     def store(self):
         """ Store method for the aeon 3248 digitizer  """
-        from MDSplus import Data
-        from MDSplus import Range
-        from MDSplus.mdsExceptions import DevBAD_NAME
-        from MDSplus.mdsExceptions import DevNOT_TRIGGERED
+        from MDSplus import Data,Range,DevBAD_NAME,DevNOT_TRIGGERED
 
         if self.debug:
             print("starting A3248 store")
@@ -163,10 +155,10 @@ class A3248(Device):
         setup_vector = Data.execute('AEON_GETSETUP("%s")' % (name,))
         status_reg = int(setup_vector[0])
         gain_reg = int(setup_vector[1])
-        addr = int(setup_vector[2])       
+        addr = int(setup_vector[2])
         if self.debug:
             print("get dt")
-        dt = self.dts[int((status_reg >> 8)&0xF)]   
+        dt = self.dts[int((status_reg >> 8)&0xF)]
         pts = 32768
         if status_reg & 0x00F1 :
             pts = (status_reg&0xFF)*128
@@ -198,7 +190,7 @@ class A3248(Device):
 
     def storeChannel(self, name, chan, addr, pts, gain, offset):
         import MDSplus
-        
+
         chan_node = self.__getattr__('input_%1.1d' % (chan+1,))
         if chan_node.on :
             if self.debug:
@@ -215,7 +207,7 @@ class A3248(Device):
                 pass
             if self.debug:
                 print("about to aeon_getchannel(%s, %d, %d %d)" % (name, addr, chan, end+1,))
-            buf = MDSplus.Data.execute('aeon_getchannel("%s", %d, %d, %d)' % (name, addr, chan, end+1,)) 
+            buf = MDSplus.Data.execute('aeon_getchannel("%s", %d, %d, %d)' % (name, addr, chan, end+1,))
             dim = MDSplus.Dimension(MDSplus.Window(start, end, self.trigger ), self.clock)
             if self.debug:
                 print("about to make dat")
@@ -225,8 +217,8 @@ class A3248(Device):
                 print("start is %d end is %d"%(start, end,))
             dat = MDSplus.Data.compile(
                         'build_signal(build_with_units(($value - $2)*.02/$1, "V") ,build_with_units($3,"Counts"),$4)',
-                        gain, offset, buf[start : end], dim) 
-            exec('c=self.input_'+'%1d'%(chan+1,)+'.record=dat')
+                        gain, offset, buf[start : end], dim)
+            self.__setattr__('input_%1d'%(chan+1,),dat)
 
     def help(self):
         """ Help method to describe the methods and nodes of the AEON_3248 module type """

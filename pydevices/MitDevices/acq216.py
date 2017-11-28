@@ -23,9 +23,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-import numpy
-import array
-import MDSplus
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
@@ -243,7 +240,7 @@ class ACQ216(acq.Acq):
         for chan in range(16):
             try:
                 self.storeChannel(chan, chanMask, preTrig, postTrig, clock, vins)
-            except e:
+            except Exception as e:
                 print("Error storing channel %d\n%s" % (chan, e,))
                 last_error = e
 

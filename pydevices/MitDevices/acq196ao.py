@@ -23,7 +23,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from .acq import Acq
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+Acq=_mimport('acq').Acq
 
 class ACQ196AO(Acq):
     """
@@ -80,7 +85,6 @@ class ACQ196AO(Acq):
         import ftplib
         if self.debugging():
             print("starting doInit")
-        status=1
         try:
             ftp = ftplib.FTP(self.getBoardIp())
             ftp.login('dt100','dt100')
@@ -104,9 +108,7 @@ class ACQ196AO(Acq):
     def init(self, auto_store=None):
         import tempfile
         import time
-        import uu
         import MDSplus
-        import io
         import subprocess
         import numpy
         """
@@ -251,13 +253,15 @@ class ACQ196AO(Acq):
             s.setimeout=(15)
             s.connect((self.getBoardIp(),54548))
             s.send("zero")
+            status = 1
         except Exception as e:
-            status=0
             print("Error sending doZero: %s" % (str(e),))
-        s.close()
+            status = 0
+        finally:
+            s.close()
         if self.debugging():
             print("finishing zero\n")
-        return 0
+        return status
     ZERO=zero
 
     def setvoltage(self, arg) :
@@ -282,7 +286,7 @@ class ACQ196AO(Acq):
                print("setvoltage method 1st arg must be XX or [1-16]\n")
                return 0
         try:
-            v = float(args[1])
+            float(args[1])
         except:
             print("setvoltage method 2nd argument must be a floating point voltage\n")
             return 0

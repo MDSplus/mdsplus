@@ -30,11 +30,9 @@ def _mimport(name, level=1):
         return __import__(name, globals())
 ACQ_FTP=_mimport('acq_ftp').ACQ_FTP
 
-from tempfile import *
 import time
 import os
 import numpy
-import array
 
 import MDSplus
 
