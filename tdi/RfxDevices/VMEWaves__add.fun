@@ -1,6 +1,6 @@
 public fun VMEWaves__add(in _path, out _nidout)
 {
-  DevAddStart(_path,'VMEWaves',164,_nidout);
+  DevAddStart(_path,'VMEWaves',165,_nidout);
   DevAddNode(_path//':COMMENT','TEXT',*,*,_nid);
   DevAddNode(_path//':VME_IP','TEXT',*,*,_nid);
   DevAddNode(_path//':BASE_FREQ', 'NUMERIC', 5000., '/noshot_write', _nid);
