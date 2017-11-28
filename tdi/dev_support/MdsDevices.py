@@ -9,7 +9,8 @@ def MdsDevices():
         except ImportError: ans = []
         tdidev = tdi("if_error(%s(),*)"%name)
         if tdidev is None: return ans
-        return tdidev.value.reshape((int(tdidev.value.size/2),2)).tolist()+ans
+        tdidev = [[k.rstrip(), v.rstrip()] for k,v in tdidev.value.reshape((int(tdidev.value.size/2),2)).tolist()]
+        return tdidev+ans
     ans = [[version.tobytes(d),b'pydevice'] for d in Device.findPyDevices()]
     for module in ["KbsiDevices","MitDevices","RfxDevices","W7xDevices"]:
         ans += importDevices(module)
