@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,12 @@ class Tests(TestCase):
             cls.instances -= 1
             if not cls.instances>0:
                 shutil.rmtree(cls.tmpdir)
+    def cleanup(self,refs=0):
+        import MDSplus,gc;gc.collect()
+        def isTree(o):
+            try:    return isinstance(o,MDSplus.Tree)
+            except: return False
+        self.assertEqual([o for o in gc.get_objects() if isTree(o)][refs:],[])
 
     def ArrayDimensionOrder(self):
       def test():
@@ -87,8 +93,7 @@ class Tests(TestCase):
         self.assertEqual(shape[1],retShape[1])
         self.assertEqual(shape[2],retShape[2])
       test()
-      import MDSplus,gc;gc.collect()
-      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)],[])
+      self.cleanup()
 
     def WriteSegments(self):
       def test():
@@ -206,9 +211,8 @@ class Tests(TestCase):
             seg = node.getSegment(i)
             self.assertEqual(len(seg.value.data.data()),lens[i])
       test()
-      import MDSplus,gc;gc.collect()
-      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)],[])
-        
+      self.cleanup()
+
 
     def TimeContext(self):
       def test():
@@ -230,8 +234,7 @@ class Tests(TestCase):
         node.tree.setTimeContext()
         self.assertEqual(node.record.data().tolist(),list(range(-9,9)))
       test()
-      import MDSplus,gc;gc.collect()
-      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)],[])
+      self.cleanup()
 
     def CompressSegments(self):
       def test():
@@ -253,8 +256,7 @@ class Tests(TestCase):
         ptree1.compressDatafile()
         self.assertEqual((node.record==ptree1.S.record).all(),True)
       test()
-      import MDSplus,gc;gc.collect()
-      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)],[])
+      self.cleanup()
 
     def runTest(self):
         for test in self.getTests():

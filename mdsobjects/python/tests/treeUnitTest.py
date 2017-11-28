@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -44,6 +44,7 @@ class Tests(TestCase):
     def setUpClass(cls):
         with cls.lock:
             if cls.instances==0:
+                import gc;gc.collect()
                 from tempfile import mkdtemp
                 if getenv("TEST_DISTRIBUTED_TREES") is not None:
                     treepath="localhost::%s"
@@ -77,9 +78,15 @@ class Tests(TestCase):
             cls.instances -= 1
             if not cls.instances>0:
                 shutil.rmtree(cls.tmpdir)
+    def cleanup(self,refs=0):
+        import MDSplus,gc;gc.collect()
+        def isTree(o):
+            try:    return isinstance(o,MDSplus.Tree)
+            except: return False
+        self.assertEqual([o for o in gc.get_objects() if isTree(o)][refs:],[])
 
     def treeCtx(self):
-        from gc import collect,get_objects
+        from gc import collect
         from time import sleep
         def check(n):
             self.assertEqual(n,len(list(tree._TreeCtx.ctxs.items())[0][1]))
@@ -104,7 +111,7 @@ class Tests(TestCase):
         self.assertEqual(len(tree._TreeCtx.ctxs[tree._TreeCtx.local.tctx.ctx]),1)
         self.assertEqual(len(tree._TreeCtx.ctxs[t.ctx.value]),1)
         del(t);collect(2);sleep(.01);check(1)
-        self.assertEqual([o for o in get_objects() if isinstance(o,Tree)],[])
+        self.cleanup()
 
     def buildTrees(self):
       def test():
@@ -154,8 +161,7 @@ class Tests(TestCase):
                 node.addDevice('dt200_%02d' % (i,),'dt200').on=False
             pytreesub.write()
       test()
-      import MDSplus,gc;gc.collect()
-      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)],[])
+      self.cleanup()
 
     def openTrees(self):
       def test():
@@ -167,8 +173,7 @@ class Tests(TestCase):
             pytree2=Tree('pytree',0)
             self.assertEqual(str(pytree2),'Tree("PYTREE",%d,"Normal")'%(self.shot+1,))
       test()
-      import MDSplus,gc;gc.collect()
-      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)],[])
+      self.cleanup()
 
     def getNode(self):
       def test():
@@ -181,8 +186,7 @@ class Tests(TestCase):
         self.assertEqual(pytree.TESTDEVICE.__class__,Device.PyDevice('TESTDEVICE'))
         self.assertEqual(pytree.CYGNET4K.__class__,Device.PyDevice('CYGNET4K'))
       test()
-      import MDSplus,gc;gc.collect()
-      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)],[])
+      self.cleanup()
 
     def setDefault(self):
       def test():
@@ -192,8 +196,7 @@ class Tests(TestCase):
         self.assertEqual(str(pytree.getDefault()),'\\PYTREESUB::IP')
         self.assertEqual(str(pytree2.getDefault()),'\\PYTREE::TOP')
       test()
-      import MDSplus,gc;gc.collect()
-      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)],[])
+      self.cleanup()
 
     def nodeLinkage(self):
       def test():
@@ -254,8 +257,7 @@ class Tests(TestCase):
         self.assertEqual(ip.path,"\\PYTREESUB::IP")
         self.assertEqual(ip.path,ip.getPath())
       test()
-      import MDSplus,gc;gc.collect()
-      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)],[])
+      self.cleanup()
 
     def nciInfo(self):
       def test():
@@ -315,8 +317,7 @@ class Tests(TestCase):
         self.assertEqual((ip.tags==ip.getTags()).all(),True)
         self.assertEqual(ip.time_inserted,ip.getTimeInserted())
       test()
-      import MDSplus,gc;gc.collect()
-      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)],[])
+      self.cleanup()
 
     def getData(self):
       def test():
@@ -330,8 +331,7 @@ class Tests(TestCase):
         self.assertEqual(ip.getNumSegments(),0)
         self.assertEqual(ip.getSegment(0),None)
       test()
-      import MDSplus,gc;gc.collect()
-      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)],[])
+      self.cleanup()
 
     def getCompression(self):
       def test():
@@ -342,8 +342,7 @@ class Tests(TestCase):
             self.assertTrue((pytree.SIG_CMPRS.record == node.record).all(),
                              msg="Error writing compressed signal%s"%node)
       test()
-      import MDSplus,gc;gc.collect()
-      self.assertEqual([o for o in gc.get_objects() if isinstance(o,MDSplus.Tree)],[])
+      self.cleanup()
 
     def runTest(self):
         for test in self.getTests():

@@ -71,6 +71,7 @@ class Tests(TestCase):
     def setUpClass(cls):
         with cls.lock:
             if cls.instances==0:
+                import gc;gc.collect()
                 from tempfile import mkdtemp
                 if getenv("TEST_DISTRIBUTED_TREES") is not None:
                     treepath="localhost::%s"
