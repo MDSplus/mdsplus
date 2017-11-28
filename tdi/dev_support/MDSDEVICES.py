@@ -1,4 +1,4 @@
-def MdsDevices():
+def MDSDEVICES():
     from MDSplus import Device,tdi,version
     from numpy import array
     def importDevices(name):
