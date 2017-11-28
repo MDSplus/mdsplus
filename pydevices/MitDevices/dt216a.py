@@ -26,7 +26,7 @@
 from MDSplus import Device,Data,Action,Dispatch,Method, makeArray, Range, Signal, Window, Dimension
 
 from tempfile import *
-from Dt200WriteMaster import Dt200WriteMaster
+from .Dt200WriteMaster import Dt200WriteMaster
 
 from time import sleep, time
 import os
@@ -116,8 +116,8 @@ class DT216A(Device):
             if inc > 1 :
                 asns = ans[::inc]
             f.close()
-        except Exception,e :
-            print "readRawData - %s" % e
+        except Exception as e :
+            print("readRawData - %s" % e)
             raise e
         return ans
 
@@ -126,19 +126,19 @@ class DT216A(Device):
             ans = eval(expression)
             return ans
         except:
-            raise Exception, message
+            raise Exception(message)
 
     def getBoardIp(self):
         try:
             boardip=str(self.node.record)
             if len(boardip) == 0 :
-                raise Exception, "boardid record empty"
+                raise Exception("boardid record empty")
         except:
             try:
-                print "trying to use the hub to get the ip"
+                print("trying to use the hub to get the ip")
                 boardip=Dt200WriteMaster(int(self.board), "/sbin/ifconfig eth0 | grep 'inet addr'", 1)[0].split(':')[1].split()[0]
             except:
-                raise Exception, "could not get board ip from either tree or hub"
+                raise Exception("could not get board ip from either tree or hub")
         return boardip
 
     def timeoutHandler(self,sig,stack):
@@ -154,8 +154,8 @@ class DT216A(Device):
             signal.alarm(60)
             s.connect((self.getBoardIp(),54545))
             state=s.recv(100)[0:-1]
-        except Exception,e:
-            print "Error getting board state: %s" % (str(e),)
+        except Exception as e:
+            print("Error getting board state: %s" % (str(e),))
         signal.alarm(0)
         s.close()
         return state
@@ -170,9 +170,9 @@ class DT216A(Device):
             signal.alarm(15)
             s.connect((self.getBoardIp(),54546))
             s.send("%s %d %s" % (tree,shot,path))
-        except Exception,e:
+        except Exception as e:
             status=0
-            print "Error sending doInit: %s" % (str(e),)
+            print("Error sending doInit: %s" % (str(e),))
         signal.alarm(0)
         s.close()
         return status
@@ -196,20 +196,20 @@ class DT216A(Device):
             active_chan = int(self.active_chan)
             msg=None
             if active_chan not in (2,4,8,16) :
-                print "active chans must be in (2, 4, 8, 16 )"
+                print("active chans must be in (2, 4, 8, 16 )")
                 active_chan = 16
             msg="Could not read trigger source"
             #trig_src=self.check("str(self.trig_src.record)", "Could not read trigger source")
             trig_src=str(self.trig_src.record)
             msg=None
             if not trig_src in self.trig_sources:
-                raise Exception, "Trig_src must be in %s" % str(self.trig_sources)
+                raise Exception("Trig_src must be in %s" % str(self.trig_sources))
             msg="Could not read clock source"
             #clock_src=self.check("str(self.clock_src.record)", "Could not read clock source")
             clock_src=str(self.clock_src.record)
             msg=None
             if not clock_src in self.clock_sources:
-                raise Exception, "clock_src must be in %s" % str(self.clock_sources)
+                raise Exception("clock_src must be in %s" % str(self.clock_sources))
             msg="Must specify pre trigger samples"
             #pre_trig=self.check('int(self.pre_trig.data()*1024)', "Must specify pre trigger samples")
             pre_trig=int(self.pre_trig.data()*1024)
@@ -239,7 +239,7 @@ class DT216A(Device):
                     #wire = eval('str(self.di%1.1d_wire.record)' %i)
                     wire = str(self.__getattr__('di%1.1d_wire' %i).record)
                     if wire not in self.wires :
-                        print "DI%d:wire must be in %s" % (i, str(self.wires), )
+                        print("DI%d:wire must be in %s" % (i, str(self.wires), ))
                         wire = 'fpga'
                 except:
                     wire = 'fpga'
@@ -247,7 +247,7 @@ class DT216A(Device):
                     #bus = eval('str(self.di%1.1d_bus.record)' % i)
                     bus = str(self.__getattr__('di%1.1d_bus' % i).record)
                     if bus not in self.wires :
-                        print "DI%d:bus must be in %s" % (i, str(self.wires),)
+                        print("DI%d:bus must be in %s" % (i, str(self.wires),))
                         bus = ''
                 except:
                     bus = ''
@@ -286,21 +286,21 @@ class DT216A(Device):
             for cmd in cmds:
                 cmd = cmd.strip()
                 if debug:
-                    print 'adding /xmlcmd "%s" >> $settingsf/ to the file.\n'%(cmd,)
+                    print('adding /xmlcmd "%s" >> $settingsf/ to the file.\n'%(cmd,))
                 fd.write('xmlcmd "%s" >> $settingsf\n'%(cmd,))
 
             fd.flush()
             fd.close()
 
-            print "Time to make init file = %g\n" % (time()-start)
+            print("Time to make init file = %g\n" % (time()-start))
             start=time()
 
             self.doInit(tree,shot,path)
-            print "Time for board to init = %g\n" % (time()-start)
+            print("Time for board to init = %g\n" % (time()-start))
             return  1
 
-        except Exception,e:
-            print "%s\n" % (str(e),)
+        except Exception as e:
+            print("%s\n" % (str(e),))
             return 0
 
     INITFTP=initftp
@@ -310,7 +310,7 @@ class DT216A(Device):
         try:
             from xml.marshal.generic import dumps, loads, load
         except:
-            print "you must install PyXML to use this deprecated device.  Please switch to acq216 device type"
+            print("you must install PyXML to use this deprecated device.  Please switch to acq216 device type")
 
         debug=os.getenv("DEBUG_DEVICES")
 
@@ -324,27 +324,27 @@ class DT216A(Device):
         try :
             settingsf = open("%s/settings.xml"%(dataDir,), "r")
         except :
-            raise Exception,"Could not open Settings file %s/settings.xml"%(dataDir,)
+            raise Exception("Could not open Settings file %s/settings.xml"%(dataDir,))
         try :
             settings = load(settingsf)
         except:
             settingsf.close()
-            raise Exception, "Could not parse XML settings"
+            raise Exception("Could not parse XML settings")
         settingsf.close()
         if debug :
-            print "xml is loaded\n"
+            print("xml is loaded\n")
         status = []
         cmds = self.status_cmds.record
         for cmd in cmds:
             cmd = cmd.strip()
             if debug:
-                print "about to append answer for /%s/\n" % (cmd,)
-                print "   which is /%s/\n" %(settings[cmd],)
+                print("about to append answer for /%s/\n" % (cmd,))
+                print("   which is /%s/\n" %(settings[cmd],))
             status.append(settings[cmd])
             if debug:
-                print "%s returned %s\n" % (cmd, settings[cmd],)
+                print("%s returned %s\n" % (cmd, settings[cmd],))
         if debug:
-            print "about to write board_status signal"
+            print("about to write board_status signal")
         self.board_status.record = Signal(cmds, None, status)
 
         numSampsStr = settings['getNumSamples']
@@ -367,12 +367,12 @@ class DT216A(Device):
 #
         for chan in range(16):
             if debug:
-                print "working on channel %d" % chan
+                print("working on channel %d" % chan)
             #chan_node = eval('self.input_%2.2d' % (chan+1,))
             chan_node = self.__getattr__('input_%2.2d' % (chan+1,))
             if chan_node.on :
                 if debug:
-                    print "it is on so ..."
+                    print("it is on so ...")
                 if chanMask[chan:chan+1] == '1' :
                     try:
                         start = max(int(self.__getattr__('input_%2.2d_startidx'%(chan+1,))),-preTrig)
@@ -415,7 +415,7 @@ class DT216A(Device):
         state = self.getState()
         if state == 'ARMED' or state == 'RUN':
             return 662470754
-            raise Exception, "device Not triggered"
+            raise Exception("device Not triggered")
         for chan in range(int(self.active_chan), 0, -1):
             chan_node = self.__getattr__('input_%2.2d' % (chan,))
             if chan_node.on :
@@ -428,7 +428,7 @@ class DT216A(Device):
             sleep(3)
             tries = tries+1
         if tries == 60:
-            print "Triggered, but data not stored !"
+            print("Triggered, but data not stored !")
             return 0
 
         return 1

@@ -24,7 +24,7 @@
 #
 
 import MDSplus
-import acq
+from . import acq
 
 class ACQ132(acq.Acq):
     """
@@ -64,7 +64,7 @@ class ACQ132(acq.Acq):
         tree = self.local_tree
         shot = self.tree.shot
         if self.debugging():
-            print('ACQ132 initftp path = %s tree = %s shot = %d' % (path, tree, shot))
+            print(('ACQ132 initftp path = %s tree = %s shot = %d' % (path, tree, shot)))
 
         active_chan = self.getInteger(self.active_chan, DevBAD_ACTIVE_CHAN)
         if active_chan not in (8,16,32) :
@@ -129,7 +129,7 @@ class ACQ132(acq.Acq):
                 clock_out_num = int(clock_out_num_str)
                 setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
                 if self.debugging():
-                    print("internal clock clock out is %s setDIOcmd = %s" % (clock_out, setDIOcmd))
+                    print(("internal clock clock out is %s setDIOcmd = %s" % (clock_out, setDIOcmd)))
                 fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
                 fd.write(setDIOcmd)
         else:
@@ -139,7 +139,7 @@ class ACQ132(acq.Acq):
             clock_fin = int(1.0/_clock_fin[2])
             decim,shift = self.getDecim(clock_freq)
             if self.debugging():
-                print('Freq = '+str(int(clock_freq))+' | mClk = '+str(decim*int(clock_freq))+' | dec = '+str(decim)+' | shift = '+str(shift))
+                print(('Freq = '+str(int(clock_freq))+' | mClk = '+str(decim*int(clock_freq))+' | dec = '+str(decim)+' | shift = '+str(shift)))
             fd.write("acqcmd -- setExternalClock --fin %d --fout %d %s\n" % (clock_fin/1000, (decim*int(clock_freq))/1000, clock_src,))
             fd.write("set.all.acq132.accumulate %d %d\n"%(decim, shift))
                 
@@ -150,12 +150,12 @@ class ACQ132(acq.Acq):
         fd.write("add_cmd 'get.vin 1:32'>> $settingsf\n")
         self.finishJSON(fd, auto_store)
 
-        print("Time to make init file = %g" % (time.time()-start))
+        print(("Time to make init file = %g" % (time.time()-start)))
         start=time.time()
         self.doInit(fd)
         fd.close()
 
-        print("Time for board to init = %g" % (time.time()-start))
+        print(("Time for board to init = %g" % (time.time()-start)))
         return  1
 
     INITFTP=initftp
@@ -185,20 +185,20 @@ class ACQ132(acq.Acq):
         preTrig = self.getPreTrig()
         postTrig = self.getPostTrig()
         if self.debugging():
-            print("got preTrig %d and postTrig %d" % (preTrig, postTrig,))
+            print(("got preTrig %d and postTrig %d" % (preTrig, postTrig,)))
 
         vin1 = self.settings['get.vin 1:32']
         vins = eval('MDSplus.makeArray([%s])' % (vin1,))
 
         if self.debugging():
-            print("got the vins %s"%str(vins))
+            print(("got the vins %s"%str(vins)))
         self.ranges.record = vins
         chanMask = self.settings['getChannelMask'].split('=')[-1]
         if self.debugging():
-            print("chan_mask = %s" % (chanMask,))
+            print(("chan_mask = %s" % (chanMask,)))
         clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
         if self.debugging():
-            print("clock_src = %s" % (clock_src,))
+            print(("clock_src = %s" % (clock_src,)))
         if clock_src == 'INT_CLOCK' :
             intClock = float(self.settings['getInternalClock'].split()[1])
             if intClock > 16000000:
@@ -218,7 +218,7 @@ class ACQ132(acq.Acq):
             try:
                 self.storeChannel(chan, chanMask, preTrig, postTrig, clock, vins)
             except Exception as e:
-                print("Error storing channel %d\n%s" % (chan, e,))
+                print(("Error storing channel %d\n%s" % (chan, e,)))
                 last_error = e
         self.dataSocketDone()
         if last_error:

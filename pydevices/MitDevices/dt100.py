@@ -25,7 +25,7 @@
 #
 import pexpect
 import re
-import transport
+from . import transport
 import array
 import os
 
@@ -38,11 +38,11 @@ else:
 
 def lprint(s):
         if logcmd:
-                print s
+                print(s)
 
 def dprint(s):
         if debug:
-                print s
+                print(s)
 
 class Connection:
         def __init__(self, _p):
@@ -55,12 +55,12 @@ class DT100(transport.Transport):
         def logtx(self, s):
                 global logcmd
                 if logcmd > 0:
-                        print "%s => \"%s\"" % (self.host, s)
+                        print("%s => \"%s\"" % (self.host, s))
 
         def logrx(self, s):
                 global logcmd
                 if logcmd > 0:
-                        print "%s <= \"%s\"" % (self.host, s)
+                        print("%s <= \"%s\"" % (self.host, s))
 
         def _connect(self):
                 hp = self.host.split(":")
@@ -81,7 +81,7 @@ class DT100(transport.Transport):
                 if i==0:
                         dprint("OK")
                 else:
-                        print "Timeout"
+                        print("Timeout")
 
         def connectShell(self):
                 dprint("connectShell( " + self.host + " )")
@@ -92,7 +92,7 @@ class DT100(transport.Transport):
                 if i==0:
                         dprint("OK")
                 else:
-                        print "Timeout"
+                        print("Timeout")
 
         def connectStatemon(self):
                 hp = self.host.split(":")
@@ -122,7 +122,7 @@ class DT100(transport.Transport):
                 if i==0:
                         dprint("OK")
                 else:
-                        print "Timeout"
+                        print("Timeout")
                 return ch
 
         def acqcmd(self, command):
@@ -135,7 +135,7 @@ class DT100(transport.Transport):
                         self.logrx(self.acq.p.match.group(0))
                         return self.acq.p.match.group(1)
                 else:
-                        print "Timeout"
+                        print("Timeout")
                         return 0
 
         def acq2sh(self, command):
@@ -147,7 +147,7 @@ class DT100(transport.Transport):
                         dprint("OK")
                         return self.sh.p.match.group(1)
                 else:
-                        print "Timeout"
+                        print("Timeout")
                         return 0
 
         def waitState(self, state):

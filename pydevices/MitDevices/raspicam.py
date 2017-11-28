@@ -72,7 +72,7 @@ class RASPICAM(MDSplus.Device):
         if dir[-1] == '/':
             dir = dir[:-1]
         if self.debugging:
-            print "raspicam:  dir is %s"%dir
+            print("raspicam:  dir is %s"%dir)
         return "%s/%s_%d_%s"%(dir,self.local_tree,self.tree.shot,self.local_path.replace('.', '_').replace(':', '_').replace('\\', '_'),)
 
     def init(self):
@@ -115,7 +115,7 @@ class RASPICAM(MDSplus.Device):
             cmds = [
                 "sudo /usr/local/bin/trig.py\n", 
                 "raspivid -w %d -h %d -fps %d -t %d -ss %d -br %d -co %d %s -o %s.h264\n" % (width, height, fps, int(float(num_frames)/fps*1000), exposure, brightness, contrast, extra_raspivid, self.fileName())]
-            print cmds
+            print(cmds)
         else:
             cmds = [
                 "v4l2-ctl --set-fmt-video=width=%d,height=%d,pixelformat=2 --set-ctrl=exposure_time_absolute=%d,brightness=%d,contrast=%d,auto_exposure=1,white_balance_auto_preset=3\n"%(width, height, exposure, brightness, contrast,),
@@ -125,7 +125,7 @@ class RASPICAM(MDSplus.Device):
         RASPICAM.subproc = subprocess.Popen(['/bin/sh'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE,shell=False)
         for cmd in cmds:
             if self.debugging:
-                print cmd
+                print(cmd)
             RASPICAM.subproc.stdin.write(cmd)
         RASPICAM.subproc.stdin.flush()
         return 1
@@ -148,7 +148,7 @@ class RASPICAM(MDSplus.Device):
         compressed=int(self.compressed)
         filename = "%s.%s"%(self.fileName(), ('h264' if compressed else 'rgb'), )
         if self.debugging:
-            print "raspicam: reading %s"%filename
+            print("raspicam: reading %s"%filename)
         self.times.record = MDSplus.Data.compile('$1 : $1+($2-1)/float($3) : 1./$3', self.trigger, self.num_frames, self.fps)
         self.intensity.record = MDSplus.Data.compile("MAKE_SIGNAL($*$+$*$+$*$,*,$)",self.r_frames, self.r_coeff, self.g_frames, self.g_coeff, self.b_frames, self.b_coeff, self.times)
         if not compressed:
@@ -167,23 +167,23 @@ class RASPICAM(MDSplus.Device):
                 for i in range(num_frames):
                     im = vid.get_data(i)
                     ans[i,:,:,:] = im
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
             if self.debugging:
-                print "chop the answer to the number of frames"
+                print("chop the answer to the number of frames")
             ans = ans[0:i-1,:,:,:]
             if self.debugging:
-                print "shape is ", ans.shape
-                print ans[:,:,:,0][0]
+                print("shape is ", ans.shape)
+                print(ans[:,:,:,0][0])
             self.r_frames.record=ans[:,:,:,0]
             if self.debugging:
-                print "write g"
+                print("write g")
             self.g_frames.record=ans[:,:,:,1]
             if self.debugging:
-                print "write b"
+                print("write b")
             self.b_frames.record=ans[:,:,:,2]
             if self.debugging:
-                print "write frames record"
+                print("write frames record")
         self.frames.record = MDSplus.Data.compile("MAKE_SIGNAL(RASPI_RGB($,$,$), *, $)", self.r_frames, self.g_frames, self.b_frames, self.times)
         if self.keep.record == 0:
             os.remove(filename)

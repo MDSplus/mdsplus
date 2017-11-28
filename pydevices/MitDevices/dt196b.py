@@ -25,8 +25,8 @@
 
 from MDSplus import Device,Data,Action,Dispatch,Method, makeArray, Range, Signal, Window, Dimension
 from tempfile import *
-import acq200
-import transport
+from . import acq200
+from . import transport
 
 import os
 
@@ -141,7 +141,7 @@ class DT196B(Device):
             ans = eval(expression)
             return ans
         except:
-            raise Exception, message
+            raise Exception(message)
 
     def init(self, arg):
         """
@@ -156,18 +156,18 @@ class DT196B(Device):
             UUT = acq200.Acq200(transport.factory(boardip))
             active_chans = self.check("int(self.active_chans)", "Must specify active chans as int in (32,64,96)")
             if active_chans not in (32,64,96) :
-                print "active chans must be in (32, 64, 96 )"
+                print("active chans must be in (32, 64, 96 )")
                 active_chans = 96
             trig_src=self.check('self.trig_src.record.getOriginalPartName().getString()[1:]', "Trig source must be a string")
-            print "trig_src is %s\n" % trig_src
+            print("trig_src is %s\n" % trig_src)
             if not trig_src in self.trig_sources:
-                raise Exception, "Trig_src must be in %s" % str(self.trig_sources)
+                raise Exception("Trig_src must be in %s" % str(self.trig_sources))
             trig_edge=self.check('self.trig_edge.record.getString()', 'Trig edge must be a string')
             clock_src=self.check('self.clock_src.record.getOriginalPartName().getString()[1:]', "Clock source must be a string")
             if debug:
-                print "clock_src is %s\n" % clock_src
+                print("clock_src is %s\n" % clock_src)
             if not clock_src in self.clock_sources:
-                raise Exception, "Clock_src must be in %s" % str(self.clock_sources)
+                raise Exception("Clock_src must be in %s" % str(self.clock_sources))
             if clock_src == 'INT_CLOCK' or clock_src == 'MASTER':
                 clock_freq = self.check('int(self.clock_freq)', "Must specify a frequency for internal clock")
             else:
@@ -183,14 +183,14 @@ class DT196B(Device):
                 try:
                     wire = eval('str(self.di%1.1d_wire.record)' %i)
                     if wire not in self.wires :
-                        print "DI%d:wire must be in %s" % (i, str(self.wires), )
+                        print("DI%d:wire must be in %s" % (i, str(self.wires), ))
                         wire = 'fpga'
                 except:
                     wire = 'fpga'
                 try:
                     bus = eval('str(self.di%1.1d_bus.record)' % i)
                     if bus not in self.wires :
-                        print "DI%d:bus must be in %s" % (i, str(self.wires),)
+                        print("DI%d:bus must be in %s" % (i, str(self.wires),))
                         bus = ''
                 except:
                     bus = ''
@@ -220,8 +220,8 @@ class DT196B(Device):
             UUT.set_arm()
             return  1
 
-        except Exception,e:
-            print "%s\n" % (str(e),)
+        except Exception as e:
+            print("%s\n" % (str(e),))
             return 0
 
     INIT=init
@@ -236,7 +236,7 @@ class DT196B(Device):
 
     def getInternalClock(self, UUT):
         clock_str = UUT.uut.acqcmd('getInternalClock').split()[0].split('=')[1]
-        print "clock_str is -%s-" % clock_str
+        print("clock_str is -%s-" % clock_str)
         return eval('int(%s)' % clock_str)
 
     def store(self, arg):
@@ -259,19 +259,19 @@ class DT196B(Device):
                 ans = []
                 cmds = self.status_cmds.record
                 for cmd in cmds:
-                    print cmd
+                    print(cmd)
                     a = UUT.uut.acq2sh(cmd)
                     ans.append(a)
                 self.board_status.record = Data.compile('build_signal($,*, $)', ans, cmds)
-            except Exception, e:
+            except Exception as e:
                 pass
 
             complete = 0
             tries = 0
             if UUT.get_state().split()[-1] == "ST_RUN" :
-                raise Exception, "Device not Triggered \n device returned -%s-" % UUT.get_state().split()[-1]
+                raise Exception("Device not Triggered \n device returned -%s-" % UUT.get_state().split()[-1])
             if debug:
-                print "about to get the vins\n"
+                print("about to get the vins\n")
             vins = self.getVins(UUT)
             self.ranges.record = vins
             (tot, pre, post, run) = UUT.get_numSamples()
@@ -281,7 +281,7 @@ class DT196B(Device):
                 return 662480266  # DT196B$_NO_SAMPLES
             mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
             if debug:
-                print "pre = %d, post = %d" % (pre, post, )
+                print("pre = %d, post = %d" % (pre, post, ))
             clock_src=self.check('self.clock_src.record.getOriginalPartName().getString()[1:]', "Clock source must be a string")
             if clock_src == 'INT_CLOCK' :
                 self.clock.record = Range(delta=1./self.getInternalClock(UUT))
@@ -290,7 +290,7 @@ class DT196B(Device):
 
             clock = self.clock.record
             if debug:
-                print "about to start the script"
+                print("about to start the script")
 
             (fd,fname) = mkstemp('.sh')
             f=open(fname, 'w')
@@ -307,7 +307,7 @@ class DT196B(Device):
                 chan_raw_node = eval('self.input_%2.2d_raw' % (chan+1,))
                 if chan_node.on :
                     if debug:
-                        print "it is on so ..."
+                        print("it is on so ...")
                     if mask[chan:chan+1] == '1' :
                         try:
                             start =  eval("int(self.input_%2.2d_start_idx)"%(chan+1))
@@ -322,11 +322,11 @@ class DT196B(Device):
                         except:
                             inc = 1
                         if debug:
-                            print "build the command"
+                            print("build the command")
                         command = "mdsPutCh --field %s:raw --expr %%calsig --timebase %d,%d,%d %d\n" % (chan_node.getFullPath(), int(start), int(end), int(inc), chan+1)
                         command = command.replace('\\','\\\\')
                         if debug:
-                            print "about to execute %s" % command
+                            print("about to execute %s" % command)
                         f.write(command)
                         if inc > 1 :
                             clk=None
@@ -363,8 +363,8 @@ class DT196B(Device):
             pipe.close()
             UUT.uut.acq2sh("chmod a+rx /home/ftp/post_shot.sh")
             UUT.uut.acq2sh("/home/ftp/post_shot.sh&")
-        except Exception,e :
-            print "Error storing DT196B Device\n%s" % ( str(e), )
+        except Exception as e :
+            print("Error storing DT196B Device\n%s" % ( str(e), ))
             return 0
 
         return 1

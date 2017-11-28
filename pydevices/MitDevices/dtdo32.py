@@ -24,7 +24,7 @@
 #
 
 from MDSplus import Device
-from Dt200WriteMaster import Dt200WriteMaster
+from .Dt200WriteMaster import Dt200WriteMaster
 from os import popen
 import numpy
 
@@ -110,14 +110,14 @@ class DTDO32(Device):
                         raise Exception("at least 2 times must be specified for channel %d" % (i+1))
                     self.WriteWaveform(hostname, self.board, i, times)
                 except:
-                    print "Zeroing DO waveform channel %d" % (i+1)
+                    print("Zeroing DO waveform channel %d" % (i+1))
         try:
             self.SendFiles(hostname, self.hostboard, self.board)
             Dt200WriteMaster(self.hostboard, 'set.ao32 %d DO_CLK  %s %d %s' % (self.board, clock_src, clock_div, clock_edge), 1)
             Dt200WriteMaster(self.hostboard, 'set.ao32 %d DO_TRG %s %s' % (self.board, trig_src, trig_edge), 1)
             Dt200WriteMaster(self.hostboard, 'set.ao32 %d DO_MODE %s' % (self.board, mode), 1)
         except:
-            raise Exception, "error sending commands to board"
+            raise Exception("error sending commands to board")
 
         return 1
 
@@ -131,21 +131,21 @@ class DTDO32(Device):
 
     def WriteWaveform(self, host, board, chan, wave):
         if chan == 0:
-            print "comand is mkdir -p /tmp/%s/do32cpci.%d\n" % (host, board)
+            print("comand is mkdir -p /tmp/%s/do32cpci.%d\n" % (host, board))
             pipe = popen('mkdir -p /tmp/%s/do32cpci.%d' % (host, board));
             pipe.close()
         file = '/tmp/%s/do32cpci.%d/d%2.2d' % (host, board, chan)
         f = open(file, 'w')
         if min(wave) < 0:
-            print "Channel %d contains negative times - disabling\n" % chan
+            print("Channel %d contains negative times - disabling\n" % chan)
             raise Exception("Channel %d contains negative times - disabling\n" % chan)
         if min(wave[1:] -wave[:-1]) < 0 :
-            print "Channel %d is not strictly increasing - disabling\n" % chan
+            print("Channel %d is not strictly increasing - disabling\n" % chan)
             raise Exception("Channel %d is not strictly increasing - disabling\n" % chan)
 
         num = len(wave)/2
         if num*2 != len(wave) :
-            print "Channel %d has odd number of times, ignoring last value\n" % chan
+            print("Channel %d has odd number of times, ignoring last value\n" % chan)
 
         if chan == 1:
             pipe = popen('mkdir -p /tmp/%s/do32cpci.%d' % (host, board));
@@ -159,17 +159,17 @@ class DTDO32(Device):
         f.close()
 
     def SendFiles(self, host, hostboard, board):
-        print "sending files\n"
+        print("sending files\n")
         cmd = '(cd /tmp/%s; tar -czf /tmp/%s.%d.tgz do32cpci.%d)' % (host, host, board, board,)
-        print cmd
+        print(cmd)
         pipe = popen(cmd)
         pipe.close()
         cmd = 'curl -s -T /tmp/%s.%d.tgz -u ftp: ftp://%s/' %(host, board, host)
-        print cmd
+        print(cmd)
         pipe = popen(cmd)
         pipe.close()
         cmd = 'rm -rf /tmp/%s.%d.tgz; rm -rf /tmp/%s/do32cpci.%d/' % (host, board, host, board,)
-        print cmd
+        print(cmd)
         pipe = popen(cmd)
         pipe.close()
         Dt200WriteMaster(hostboard, '/ffs/unpack_d_waves %s %d' %(host, board), 1)

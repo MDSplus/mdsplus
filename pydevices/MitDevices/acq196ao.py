@@ -23,7 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from acq import Acq
+from .acq import Acq
 
 class ACQ196AO(Acq):
     """
@@ -79,14 +79,14 @@ class ACQ196AO(Acq):
         """Tell the board to arm"""
         import ftplib
         if self.debugging():
-            print "starting doInit"
+            print("starting doInit")
         status=1
         try:
             ftp = ftplib.FTP(self.getBoardIp())
             ftp.login('dt100','dt100')
             ftp.storlines("STOR /tmp/AOinitialize",fd)
-        except Exception,e:
-            print "Error sending arm commands via ftp to %s\n%s\n" % (self.getBoardIp(), e,)
+        except Exception as e:
+            print("Error sending arm commands via ftp to %s\n%s\n" % (self.getBoardIp(), e,))
             return
 
     def doFit(self, x, y, newx, type):
@@ -106,7 +106,7 @@ class ACQ196AO(Acq):
         import time
         import uu
         import MDSplus
-        import StringIO
+        import io
         import subprocess
         import numpy
         """
@@ -119,7 +119,7 @@ class ACQ196AO(Acq):
 
         try:
             if self.debugging():
-                print "starting init\n";
+                print("starting init\n");
             path = self.local_path
             tree = self.local_tree
             shot = self.tree.shot
@@ -133,7 +133,7 @@ class ACQ196AO(Acq):
             msg="Clock must be filled in with valid Range value"
             clock = self.__getattr__(clock_src.lower())
             if self.debugging():
-                print "clock source is %s clock is %s\n"%(clock_src, clock,)
+                print("clock source is %s clock is %s\n"%(clock_src, clock,))
             msg="Could not read trigger source"
             trig_src=self.ao_trig.record.getOriginalPartName().getString()[1:]
             msg="Trigger time must be defined  at init time"
@@ -173,11 +173,11 @@ class ACQ196AO(Acq):
 
             for chan in range(16):
                 if self.debugging():
-                    print "working on channel %d" % chan
+                    print("working on channel %d" % chan)
                 chan_node = self.__getattr__('output_%2.2d' % (chan+1,))
                 if chan_node.on :
                     if self.debugging():
-                        print "it is on so ..."
+                        print("it is on so ...")
                     try:
                         sig = chan_node.record
                         knots_x = sig.dim_of().data()
@@ -185,22 +185,22 @@ class ACQ196AO(Acq):
                         fit_type = str(chan_node.getNode('fit').record)
                         if  fit_type not in self.fits:
                             raise Exception( "Error reading Fit for channel %d\n" %(chan+1,))
-                    except Exception,e:
-                        print "Error on channel %d - ZEROING\n%s\n" %(chan+1, e,)
+                    except Exception as e:
+                        print("Error on channel %d - ZEROING\n%s\n" %(chan+1, e,))
                         knots_x = [0.0, 1.0]
                         knots_y = [0.0, 0.0]
                         fit_type='LINEAR'
                 else:
                     if self.debugging():
-                        print "   it is off so Zeroing\n"
+                        print("   it is off so Zeroing\n")
                     knots_x = [0.0, 1.0]
                     knots_y = [0.0, 0.0]
                     fit_type='LINEAR'
                 if self.debugging():
-                    print "  call the fit\n"
+                    print("  call the fit\n")
                 wave=self.doFit(knots_x, knots_y, dim, fit_type)
                 if self.debugging():
-                    print "  have the fit now subscript and scale"
+                    print("  have the fit now subscript and scale")
                 if len(wave) > max_samples:
                     wave = wave[0:max_samples-1]
                 wave = wave/10.*2**15
@@ -210,7 +210,7 @@ class ACQ196AO(Acq):
                 fd.write("cat - <<EOF | uudecode  -o %s" % (outname,))
                 fd.flush()
                 if self.debugging():
-                    print "   ready to uuencode"
+                    print("   ready to uuencode")
                 p = subprocess.Popen(["uuencode", "-m", "%s"%(outname,)], stdout=fd, stdin=subprocess.PIPE)
                 p.communicate(wave.tostring())
                 fd.flush()
@@ -225,19 +225,19 @@ class ACQ196AO(Acq):
 
             fd.flush()
             fd.seek(0,0)
-            print "Time to make init file = %g\n" % (time.time()-start)
+            print("Time to make init file = %g\n" % (time.time()-start))
             start=time.time()
             self.doAOInit(fd)
             fd.close()
 
-            print "Time for board to init = %g\n" % (time.time()-start)
+            print("Time for board to init = %g\n" % (time.time()-start))
             return  1
 
-        except Exception,e:
+        except Exception as e:
             if msg != None:
-                print 'error = %s\nmsg = %s\n' %(msg, str(e),)
+                print('error = %s\nmsg = %s\n' %(msg, str(e),))
             else:
-                print "%s\n" % (str(e),)
+                print("%s\n" % (str(e),))
             return 0
     INIT=init
 
@@ -245,32 +245,32 @@ class ACQ196AO(Acq):
         import socket
 
         if self.debugging():
-            print "starting zero\n"
+            print("starting zero\n")
         s=socket.socket()
         try:
             s.setimeout=(15)
             s.connect((self.getBoardIp(),54548))
             s.send("zero")
-        except Exception,e:
+        except Exception as e:
             status=0
-            print "Error sending doZero: %s" % (str(e),)
+            print("Error sending doZero: %s" % (str(e),))
         s.close()
         if self.debugging():
-            print "finishing zero\n"
+            print("finishing zero\n")
         return 0
     ZERO=zero
 
     def setvoltage(self, arg) :
         import socket
         if self.debugging():
-            print "starting setvoltage /%s/\n" %(arg,)
+            print("starting setvoltage /%s/\n" %(arg,))
         if arg == None:
-            print "setvoltage method requires an argument string 'N V'\n"
+            print("setvoltage method requires an argument string 'N V'\n")
             return 0
 
         args = arg.split()
         if len(args) != 2 :
-            print "setvoltage method takes exactly 2 arguments\n"
+            print("setvoltage method takes exactly 2 arguments\n")
             return 0
 
         if args[0] != "XX" :
@@ -279,20 +279,20 @@ class ACQ196AO(Acq):
                 if  chan < 0 or chan > 16 :
                     raise Exception("out of range")
             except:
-               print "setvoltage method 1st arg must be XX or [1-16]\n"
+               print("setvoltage method 1st arg must be XX or [1-16]\n")
                return 0
         try:
             v = float(args[1])
         except:
-            print "setvoltage method 2nd argument must be a floating point voltage\n"
+            print("setvoltage method 2nd argument must be a floating point voltage\n")
             return 0
 
         s = socket.socket()
         try :
             s.connect((self.getBoardIp(),54549))
             s.send(str(arg))
-        except Exception,e:
-            print "setvoltage failed to set voltage %s\ntype of arg is %s\n%s\n" % (arg,type(arg),e,)
+        except Exception as e:
+            print("setvoltage failed to set voltage %s\ntype of arg is %s\n%s\n" % (arg,type(arg),e,))
             return 0
         return 1
     SETVOLTAGE=setvoltage

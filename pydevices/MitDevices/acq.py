@@ -31,7 +31,7 @@ import socket
 import json
 
 import MDSplus
-import acq200, transport
+from . import acq200, transport
 
 class Acq(MDSplus.Device):
     """
@@ -106,7 +106,7 @@ class Acq(MDSplus.Device):
         try:
             ans = int(node.record)
         except Exception as e:
-            print("ACQ error reading %s erro is\n%s" %(node, e,))
+            print(("ACQ error reading %s erro is\n%s" %(node, e,)))
             raise cls()
         return ans
 
@@ -156,7 +156,7 @@ class Acq(MDSplus.Device):
     def readRawData(self, chan, pre, start, end, inc, retrying) :
         from MDSplus.mdsExceptions import DevERROR_READING_CHANNEL
         if self.debugging():
-            print("starting readRawData(chan=%d, pre=%d. start=%d, end=%d, inc=%d)" %(chan,pre, start, end, inc,))
+            print(("starting readRawData(chan=%d, pre=%d. start=%d, end=%d, inc=%d)" %(chan,pre, start, end, inc,)))
         try:
             self.connectAndFlushData()
             self.data_socket.settimeout(10.)
@@ -183,10 +183,10 @@ class Acq(MDSplus.Device):
             else:
                  raise
         except Exception as e:
-            print("ACQ error reading channel %d\n, %s" % (chan, e,))
+            print(("ACQ error reading channel %d\n, %s" % (chan, e,)))
             raise DevERROR_READING_CHANNEL(str(e))
         if self.debugging():
-            print("Read Raw data pre=%d start=%d end = %d inc=%d returning len = %d" % (pre, start, end, inc, len(ans),))
+            print(("Read Raw data pre=%d start=%d end = %d inc=%d returning len = %d" % (pre, start, end, inc, len(ans),)))
         return ans
 
     def loadSettings(self):
@@ -202,9 +202,9 @@ class Acq(MDSplus.Device):
             except Exception as e:
                 last_error=e
                 if self.debugging():
-                    print("ACQ196 Error loading settings%s" % str(e))
+                    print(("ACQ196 Error loading settings%s" % str(e)))
         if self.settings == None :
-            print("after %d tries could not load settings" % (tries,))
+            print(("after %d tries could not load settings" % (tries,)))
             raise DevCANNOT_LOAD_SETTINGS(str(last_error))
 
     def checkTreeAndShot(self, arg1='checks', arg2='checks'):
@@ -219,13 +219,13 @@ class Acq(MDSplus.Device):
             if self.debugging() :
                 print("json is loaded")
             if tree != self.settings['tree'] :
-                print("ACQ Device open tree is %s board armed with tree %s" % (tree, self.settings["tree"],))
+                print(("ACQ Device open tree is %s board armed with tree %s" % (tree, self.settings["tree"],)))
                 raise DevWRONG_TREE()
             if path != self.settings['path'] :
-                print("ACQ device tree path %s, board armed with path %s" % (path, self.settings["path"],))
+                print(("ACQ device tree path %s, board armed with path %s" % (path, self.settings["path"],)))
                 raise DevWRONG_PATH()
             if shot != int(self.settings['shot']) :
-                print("ACQ open shot is %d, board armed with shot %d" % (shot, int(self.settings["shot"]),))
+                print(("ACQ open shot is %d, board armed with shot %d" % (shot, int(self.settings["shot"]),)))
                 raise DevWRONG_SHOT()
 
     def storeStatusCommands(self):
@@ -234,10 +234,10 @@ class Acq(MDSplus.Device):
         for cmd in cmds:
             cmd = cmd.strip()
             if self.debugging():
-                print("about to append answer for /%s/\n   which is /%s/" % (cmd,str(self.settings[cmd],)))
+                print(("about to append answer for /%s/\n   which is /%s/" % (cmd,str(self.settings[cmd],))))
             status.append(self.settings[cmd])
             if self.debugging():
-                print("%s returned %s\n" % (cmd, self.settings[cmd],))
+                print(("%s returned %s\n" % (cmd, self.settings[cmd],)))
         if self.debugging():
             print("about to write board_status signal")
         self.board_status.record = MDSplus.Signal(cmds, None, status)
@@ -264,7 +264,7 @@ class Acq(MDSplus.Device):
         while not complete and tries < 120 :
             state = self.getBoardState()
             if self.debugging():
-                print("get state returned %s" % (state,))
+                print(("get state returned %s" % (state,)))
             if state == "ACQ32:4 ST_POSTPROCESS" :
                 tries +=1
                 time.sleep(1)
@@ -272,9 +272,9 @@ class Acq(MDSplus.Device):
                 complete=1
         state = self.getBoardState()
         if self.debugging():
-            print("get state after loop returned %s" % (state,))
+            print(("get state after loop returned %s" % (state,)))
         if state != "ACQ32:0 ST_STOP" :
-            print("ACQ196 device not triggered /%s/"% (self.getBoardState(),))
+            print(("ACQ196 device not triggered /%s/"% (self.getBoardState(),)))
             return 0
         return 1
 
@@ -286,14 +286,14 @@ class Acq(MDSplus.Device):
             try:
                 UUT = acq200.ACQ200(transport.factory(boardip))
             except Exception as e:
-                print("could not connect to the board %s"% (boardip,))
+                print(("could not connect to the board %s"% (boardip,)))
                 last_error=e
             try:
                 if not UUT == None:
                     a = UUT.uut.acqcmd('getState')
                     return "ACQ32:%s"%a
             except Exception as e:
-                print("could not send getState to the board try %d"%t)
+                print(("could not send getState to the board try %d"%t))
                 last_error = e
         if not last_error == None:
             raise DevCANNOT_GET_BOARD_STATE(str(last_error))
@@ -338,7 +338,7 @@ class Acq(MDSplus.Device):
             hostip = s.getsockname()[0]
             state=s.recv(100)[0:-1]
             if self.debugging():
-                print("getMyIp  read /%s/\n" % (state,))
+                print(("getMyIp  read /%s/\n" % (state,)))
             s.close()
         except Exception as e:
             raise DevOFFLINE(str(e))
@@ -363,7 +363,7 @@ add_term path $path >> $settingsf
         for cmd in cmds:
             cmd = cmd.strip()
             if self.debugging():
-                print("adding cmd '%s' >> $settingsf/ to the file."%(cmd,))
+                print(("adding cmd '%s' >> $settingsf/ to the file."%(cmd,)))
             fd.write("add_cmd '%s' >> $settingsf\n"%(cmd,))
         fd.write(r"""
 cat - > /etc/postshot.d/postshot.sh <<EOF
@@ -421,7 +421,7 @@ add_cmd get.trig >> $settingsf
 #
     def storeChannel(self, chan, chanMask, preTrig, postTrig, clock, vins):
         if self.debugging():
-            print("working on channel %d" % chan)
+            print(("working on channel %d" % chan))
         chan_node = self.__getattr__('input_%2.2d' % (chan+1,))
         if chan_node.on :
             if self.debugging():
@@ -444,10 +444,10 @@ add_cmd get.trig >> $settingsf
 #
 
                 if self.debugging():
-                    print("about to readRawData(%d, preTrig=%d, start=%d, end=%d, inc=%d)" % (chan+1, preTrig, start, end, inc))
+                    print(("about to readRawData(%d, preTrig=%d, start=%d, end=%d, inc=%d)" % (chan+1, preTrig, start, end, inc)))
                 buf = self.readRawData(chan+1, preTrig, start, end, inc, False)
                 if self.debugging():
-                    print("readRawData returned %s" % (type(buf),))
+                    print(("readRawData returned %s" % (type(buf),)))
                 if inc == 1:
                     dim = MDSplus.Dimension(MDSplus.Window(start, end, self.trig_src ), clock)
                 else:
@@ -472,28 +472,28 @@ add_cmd get.trig >> $settingsf
             try:
                 wire = str(self.__getattr__('di%1.1d_wire' %i).record)
                 if self.debugging():
-                    print("wire is %s" % (wire,))
+                    print(("wire is %s" % (wire,)))
                 if wire not in self.wires :
                     wire = 'fpga'
             except Exception as e:
                 if self.debugging():
-                    print("error retrieving wire %s" %str(e))
+                    print(("error retrieving wire %s" %str(e)))
                 wire = 'fpga'
             try:
                 bus = str(self.__getattr__('di%1.1d_bus' % i).record)
                 if self.debugging():
-                    print("bus is %s" % (bus,))
+                    print(("bus is %s" % (bus,)))
                 if bus not in self.wires :
-                    print("DI%d:bus must be in %s" % (i, str(self.wires)))
+                    print(("DI%d:bus must be in %s" % (i, str(self.wires))))
                     bus = ''
             except Exception as e:
                 if self.debugging():
-                    print("error retrieving bus %s" %(e,))
+                    print(("error retrieving bus %s" %(e,)))
                 bus = ''
             if bus != '' :
                 fd.write("set.route %s in %s out %s\n" %(line, wire, bus,))
                 if self.debugging():
-                    print("set.route %s in %s out %s" %(line, wire, bus,))
+                    print(("set.route %s in %s out %s" %(line, wire, bus,)))
 
     def readSettings(self):
         settingsfd = tempfile.TemporaryFile()
@@ -531,7 +531,7 @@ add_cmd get.trig >> $settingsf
             ftp.login('dt100','dt100')
             ftp.storlines("STOR /tmp/initialize",fd)
         except Exception as e:
-            print("Error sending arm commands via ftp to %s\n%s" % (self.getBoardIp(), e,))
+            print(("Error sending arm commands via ftp to %s\n%s" % (self.getBoardIp(), e,)))
             raise DevERROR_DOING_INIT(str(e))
         s=socket.socket()
         try:
@@ -541,7 +541,7 @@ add_cmd get.trig >> $settingsf
         except Exception as e:
             status=0
             s.close()
-            print("Error sending doInit: %s" % (str(e),))
+            print(("Error sending doInit: %s" % (str(e),)))
             raise DevERROR_DOING_INIT(str(e))
         s.close()
         if self.debugging():
@@ -550,13 +550,13 @@ add_cmd get.trig >> $settingsf
     def storeClock(self):
         clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
         if self.debugging():
-            print("clock_src = %s" % (clock_src,))
+            print(("clock_src = %s" % (clock_src,)))
         try:
             clock_div = int(self.clock_div)
         except:
             clock_div = 1
         if self.debugging():
-           print("clock div is %d" % (clock_div,))
+           print(("clock div is %d" % (clock_div,)))
 
         if clock_src == 'INT_CLOCK' :
             intClock = float(self.settings['getInternalClock'].split()[1])
@@ -569,7 +569,7 @@ add_cmd get.trig >> $settingsf
                 self.clock.record = self.clock_src
             else:
                 if self.debugging():
-                    print("external clock with divider %d  clock source is %s" % ( clock_div, clock_src,))
+                    print(("external clock with divider %d  clock source is %s" % ( clock_div, clock_src,)))
                 clk = self.clock_src
                 try :
                     while type(clk) != MDSplus.compound.Range :
@@ -618,7 +618,7 @@ add_cmd get.trig >> $settingsf
                 print("Triggered, but data not stored !")
                 raise DevTRIGGERED_NOT_STORED()
         else:
-            print("ACQxxx UNKNOWN BOARD state /%s/" % (state,))
+            print(("ACQxxx UNKNOWN BOARD state /%s/" % (state,)))
             raise DevUNKOWN_STATE()
 
     WAITFTP=waitftp
@@ -632,7 +632,7 @@ add_cmd get.trig >> $settingsf
             boardip = self.getBoardIp()
             trig_src=self.trig_src.record.getOriginalPartName().getString()[1:]
             if self.debugging() :
-                print("executing trigger on board %s, trig_src is %s."% (boardip, trig_src,))
+                print(("executing trigger on board %s, trig_src is %s."% (boardip, trig_src,)))
             trig_src = trig_src[2:]
 
             UUT = acq200.ACQ200(transport.factory(boardip))
@@ -644,11 +644,11 @@ add_cmd get.trig >> $settingsf
             d4 = UUT.uut.acq2sh('set.dtacq dio_bit %s -'%(trig_src,))
 
             if self.debugging():
-                print("got back: %s" % (route,))
-                print("     and: %s" % (d1,))
-                print("     and: %s" % (d2,))
-                print("     and: %s" % (d3,))
-                print("     and: %s" % (d4,))
+                print(("got back: %s" % (route,)))
+                print(("     and: %s" % (d1,)))
+                print(("     and: %s" % (d2,)))
+                print(("     and: %s" % (d3,)))
+                print(("     and: %s" % (d4,)))
         except Exception as e:
             print("Error doing Trigger method")
             raise DevTRIGGER_FAILED(str(e))
@@ -664,9 +664,9 @@ add_cmd get.trig >> $settingsf
             UUT = acq200.ACQ200(transport.factory(boardip))
             a = UUT.uut.acqcmd(str(arg))
         except Exception as e:
-            print("could not send %s to the board" %(str(arg),))
+            print(("could not send %s to the board" %(str(arg),)))
             raise DevACQCMD_FAILED(str(e))
-        print("%s  %s -> %s"%(boardip, arg, a,))
+        print(("%s  %s -> %s"%(boardip, arg, a,)))
         return 1
     ACQCMD=acqcmd
 
@@ -678,9 +678,9 @@ add_cmd get.trig >> $settingsf
             UUT = acq200.ACQ200(transport.factory(boardip))
             a = UUT.uut.acq2sh(str(arg))
         except Exception as e:
-            print("could not connect to the board %s"% (boardip,))
+            print(("could not connect to the board %s"% (boardip,)))
             raise DevACQ2SH_FAILED(str(e))
-        print("%s  %s -> %s"%(boardip, arg, a,))
+        print(("%s  %s -> %s"%(boardip, arg, a,)))
         return 1
     ACQ2SH=acq2sh
 

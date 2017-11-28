@@ -37,6 +37,6 @@ class Transport:
                 pass
 
 def factory(uut):
-    import dt100
+    from . import dt100
     # if uut is a single number -> local file transport
     return dt100.DT100(uut)

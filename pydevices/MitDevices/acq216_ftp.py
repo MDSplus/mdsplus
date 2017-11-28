@@ -23,7 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from acq_ftp import ACQ_FTP
+from .acq_ftp import ACQ_FTP
 
 from tempfile import *
 import time
@@ -69,7 +69,7 @@ class ACQ216_FTP(ACQ_FTP):
             active_chan = int(self.active_chan)
             msg=None
             if active_chan not in (2,4,8,16) :
-                print "active chans must be in (2, 4, 8, 16 )"
+                print("active chans must be in (2, 4, 8, 16 )")
                 active_chan = 16
             msg="Could not read trigger source"
             trig_src=self.trig_src.record.getOriginalPartName().getString()[1:]
@@ -103,14 +103,14 @@ class ACQ216_FTP(ACQ_FTP):
                 try:
                     wire = str(self.__getattr__('di%1.1d_wire' %i).record)
                     if wire not in self.wires :
-                        print "DI%d:wire must be in %s" % (i, str(self.wires), )
+                        print("DI%d:wire must be in %s" % (i, str(self.wires), ))
                         wire = 'fpga'
                 except:
                     wire = 'fpga'
                 try:
                     bus = str(self.__getattr__('di%1.1d_bus' % i).record)
                     if bus not in self.wires :
-                        print "DI%d:bus must be in %s" % (i, str(self.wires),)
+                        print("DI%d:bus must be in %s" % (i, str(self.wires),))
                         bus = ''
                 except:
                     bus = ''
@@ -120,14 +120,14 @@ class ACQ216_FTP(ACQ_FTP):
             if clock_src == 'INT_CLOCK':
                 if clock_out == None:
                     if self.debugging:
-                        print "internal clock no clock out\n"
+                        print("internal clock no clock out\n")
                     fd.write("acqcmd setInternalClock %d\n" % clock_freq)
                 else:
                     clock_out_num_str = clock_out[-1]
                     clock_out_num = int(clock_out_num_str)
                     setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
                     if self.debugging:
-                        print "internal clock clock out is %s setDIOcmd = %s\n" % (clock_out, setDIOcmd,)
+                        print("internal clock clock out is %s setDIOcmd = %s\n" % (clock_out, setDIOcmd,))
                     fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
                     fd.write(setDIOcmd)
             else:
@@ -147,20 +147,20 @@ class ACQ216_FTP(ACQ_FTP):
             for cmd in cmds:
                 cmd = cmd.strip()
                 if self.debugging():
-                    print 'adding /xmlcmd "%s" >> $settingsf/ to the file.\n'%(cmd,)
+                    print('adding /xmlcmd "%s" >> $settingsf/ to the file.\n'%(cmd,))
                 fd.write('xmlcmd "%s" >> $settingsf\n'%(cmd,))
 
             fd.flush()
             fd.close()
 
-            print "Time to make init file = %g\n" % (time.time()-start)
+            print("Time to make init file = %g\n" % (time.time()-start))
             start=time.time()
             self.doInit(tree,shot,path)
-            print "Time for board to init = %g\n" % (time.time()-start)
+            print("Time for board to init = %g\n" % (time.time()-start))
             return  1
 
-        except Exception,e:
-            print "%s\n" % (str(e),)
+        except Exception as e:
+            print("%s\n" % (str(e),))
             return 0
 
     INITFTP=initftp
@@ -170,7 +170,7 @@ class ACQ216_FTP(ACQ_FTP):
         try:
             from xml.marshal.generic import load
         except:
-            print "you must install PyXML to use this deprecated device.  Please switch to acq216 device type"
+            print("you must install PyXML to use this deprecated device.  Please switch to acq216 device type")
 
         path = self.local_path
         tree = self.local_tree
@@ -182,45 +182,45 @@ class ACQ216_FTP(ACQ_FTP):
         try :
             settingsf = open("%s/settings.xml"%(dataDir,), "r")
         except :
-            raise Exception,"Could not open Settings file %s/settings.xml"%(dataDir,)
+            raise Exception("Could not open Settings file %s/settings.xml"%(dataDir,))
         try :
             settings = load(settingsf)
         except:
             settingsf.close()
-            raise Exception, "Could not parse XML settings"
+            raise Exception("Could not parse XML settings")
         settingsf.close()
         if self.debugging() :
-            print "xml is loaded\n"
+            print("xml is loaded\n")
         status = []
         cmds = self.status_cmds.record
         for cmd in cmds:
             cmd = cmd.strip()
             if self.debugging():
-                print "about to append answer for /%s/\n" % (cmd,)
-                print "   which is /%s/\n" %(settings[cmd],)
+                print("about to append answer for /%s/\n" % (cmd,))
+                print("   which is /%s/\n" %(settings[cmd],))
             status.append(settings[cmd])
             if self.debugging():
-                print "%s returned %s\n" % (cmd, settings[cmd],)
+                print("%s returned %s\n" % (cmd, settings[cmd],))
         if self.debugging():
-            print "about to write board_status signal"
+            print("about to write board_status signal")
         self.board_status.record = MDSplus.Signal(cmds, None, status)
 
         numSampsStr = settings['getNumSamples']
         preTrig = self.getPreTrig(numSampsStr)
         postTrig = self.getPostTrig(numSampsStr)
         if self.debugging():
-            print "got preTrig %d and postTrig %d\n" % (preTrig, postTrig,)
+            print("got preTrig %d and postTrig %d\n" % (preTrig, postTrig,))
         vins = MDSplus.makeArray(numpy.array(settings['get.vin'].split(',')).astype('float'))
         if self.debugging:
-            print "got the vins "
-            print vins
+            print("got the vins ")
+            print(vins)
         self.ranges.record = MDSplus.makeArray(numpy.array(settings['get.vin'].split(',')).astype('float'))
         chanMask = settings['getChannelMask'].split('=')[-1]
         if self.debugging():
-            print "chan_mask = %s\n" % (chanMask,)
+            print("chan_mask = %s\n" % (chanMask,))
         clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
         if self.debugging():
-            print "clock_src = %s\n" % (clock_src,)
+            print("clock_src = %s\n" % (clock_src,))
         if clock_src == 'INT_CLOCK' :
             intClock = float(settings['getInternalClock'].split()[1])
             delta=1./float(intClock)
@@ -234,11 +234,11 @@ class ACQ216_FTP(ACQ_FTP):
 #
         for chan in range(16):
             if self.debugging():
-                print "working on channel %d" % chan
+                print("working on channel %d" % chan)
             chan_node = self.__getattr__('input_%2.2d' % (chan+1,))
             if chan_node.on :
                 if self.debugging():
-                    print "it is on so ..."
+                    print("it is on so ...")
                 if chanMask[chan:chan+1] == '1' :
                     try:
                         start = max(int(self.__getattr__('input_%2.2d_startidx'%(chan+1,))),-preTrig)
@@ -257,7 +257,7 @@ class ACQ216_FTP(ACQ_FTP):
 #
                     chanFileName="%s/%2.2d"%(dataDir, chan+1,)
                     if self.debugging():
-                        print "about to readRawData(%s, preTrig=%d, start=%d, end=%d, inc=%d)" % (chanFileName, preTrig, start, end, inc)
+                        print("about to readRawData(%s, preTrig=%d, start=%d, end=%d, inc=%d)" % (chanFileName, preTrig, start, end, inc))
                     buf = self.readRawData(chanFileName, preTrig, start, end, inc)
                     if inc == 1:
                         dim = MDSplus.Dimension(MDSplus.Window(start, end, self.trig_src ), clock)

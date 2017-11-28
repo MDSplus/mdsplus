@@ -58,7 +58,7 @@ class CP7452(Device):
         except:
             host='local'
         if Data.execute('mdsconnect($)',host) == 0:
-            raise Exception,"Error connecting to host: "+host
+            raise Exception("Error connecting to host: "+host)
         board=int(self.board.record)
         for i in range(4):
             do_nid=self.__getattr__('digital_outs_do%d'%(i,))
@@ -67,10 +67,10 @@ class CP7452(Device):
                     exp='MdsValue("_lun=fopen(\\\"/sys/module/cp7452_drv/parameters/format\\\",\\\"r+\\"); write(_lun,\\\"1\\\"); fclose(_lun);'
                     exp=exp+'_lun=fopen(\\\"/dev/cp7452.%d/DO%d\\\",\\\"r+\\\"); write(_lun,\\\"%x\\\"); fclose(_lun)")' % (board,i,int(Uint32(do_nid.record.data()).data()))
                     if debug:
-                        print exp
+                        print(exp)
                     Data.execute(exp)
-                except Exception,e:
-                    print "Error outputing to DO%d\n\t%s" % (i,str(e),)
+                except Exception as e:
+                    print("Error outputing to DO%d\n\t%s" % (i,str(e),))
         return 1
     INIT=init
 
@@ -85,7 +85,7 @@ class CP7452(Device):
         except:
             host='local'
         if Data.execute('mdsconnect($)',host) == 0:
-            raise Exception,"Error connecting to host: "+host
+            raise Exception("Error connecting to host: "+host)
         board=int(self.board.record)
         for i in range(4):
             di_nid=self.__getattr__('digital_ins_di%d'%(i,1))
@@ -94,10 +94,10 @@ class CP7452(Device):
                     exp='MdsValue("_lun=fopen(\\\"/sys/module/cp7452_drv/parameters/format\\\",\\\"r+\\\"); write(_lun,\\\"1\\\"); fclose(_lun);'
                     exp=exp+'_lun=fopen(\\\"/dev/cp7452.%d/DI%d\\\",\\\"r\\\"); _ans=read(_lun); fclose(_lun),_ans")' % (board,i)
                     if debug:
-                        print exp
+                        print(exp)
                     value=eval('0x'+str(Data.execute(exp)))
                     di_nid.record=value
-                except Exception,e:
-                    print "Error inputting from DI%d\n\t%s" % (i,str(e),)
+                except Exception as e:
+                    print("Error inputting from DI%d\n\t%s" % (i,str(e),))
         return 1
     STORE=store

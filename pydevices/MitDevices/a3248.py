@@ -83,16 +83,16 @@ class A3248(Device):
     def getInteger(self, node, cls):
         try:
             ans = int(node.record)
-        except Exception, e:
-            print "AEON 3248 error reading %s erro is\n%s" %(node, e,)
+        except Exception as e:
+            print("AEON 3248 error reading %s erro is\n%s" %(node, e,))
             raise cls()
         return ans
 
     def getString(self, node, cls):
         try:
             ans = str(node.record)
-        except Exception, e:
-            print "AEON 3248 error reading %s erro is\n%s" %(node, e,)
+        except Exception as e:
+            print("AEON 3248 error reading %s erro is\n%s" %(node, e,))
             raise cls()
         return ans
 
@@ -106,11 +106,11 @@ class A3248(Device):
         from MDSplus.mdsExceptions import DevBAD_CLOCK_FREQ
 
         if self.debug:
-            print "A3248 INIT starting"
+            print("A3248 INIT starting")
         name = self.getString(self.name, DevBAD_NAME)
         gain = self.getInteger(self.gain, DevBAD_GAIN)
         if not gain in (1,2,4,8):
-            raise(DevBAD_GAIN, "Gain must be one of 1,r or 8")
+            raise DevBAD_GAIN
         gain_code = int(math.log(gain, 2))
         offset = self.getInteger(self.offset, DevBAD_OFFSET)
         offset = max(min(offset, 255), 0)
@@ -121,7 +121,7 @@ class A3248(Device):
         posttrig_code = (32768 - pretrig) << 7
         clock = self.getInteger(self.frequency, DevBAD_CLOCK_FREQ)
         if not clock in self.clock_freqs:
-          raise(DevBAD_CLOCK_FREQ, "Clock must be in ".self.clock_freqs)
+          raise DevBAD_CLOCK_FREQ
         if self.ext_clock.length > 0 :
             clock_code = 7
         else :
@@ -155,7 +155,7 @@ class A3248(Device):
         from MDSplus.mdsExceptions import DevNOT_TRIGGERED
 
         if self.debug:
-            print "starting A3248 store"
+            print("starting A3248 store")
         name = self.getString(self.name, DevBAD_NAME)
         status = Data.execute('AEON_CHECKTRIGGER("%s")' % (name,))
         if not (status & 1) :
@@ -165,21 +165,21 @@ class A3248(Device):
         gain_reg = int(setup_vector[1])
         addr = int(setup_vector[2])       
         if self.debug:
-            print "get dt"
+            print("get dt")
         dt = self.dts[int((status_reg >> 8)&0xF)]   
         pts = 32768
         if status_reg & 0x00F1 :
             pts = (status_reg&0xFF)*128
         if self.debug:
-            print "gain reg is %d"%gain_reg
+            print("gain reg is %d"%gain_reg)
         gain_code = ((gain_reg >> 8) & 3)
         gain =  (1 << gain_code)
         if self.debug:
-            print "gain is %d"%gain
+            print("gain is %d"%gain)
         offset = gain_reg &0xFF
         offset = int(offset)
         if self.debug:
-            print "store clock record"
+            print("store clock record")
         if dt == 0 :
             self.clock.record=self.ext_clock
         else :
@@ -202,7 +202,7 @@ class A3248(Device):
         chan_node = self.__getattr__('input_%1.1d' % (chan+1,))
         if chan_node.on :
             if self.debug:
-                print "it is on so ..."
+                print("it is on so ...")
             start=0
             end=pts-1
             try:
@@ -214,15 +214,15 @@ class A3248(Device):
             except:
                 pass
             if self.debug:
-                print "about to aeon_getchannel(%s, %d, %d %d)" % (name, addr, chan, end+1,)
+                print("about to aeon_getchannel(%s, %d, %d %d)" % (name, addr, chan, end+1,))
             buf = MDSplus.Data.execute('aeon_getchannel("%s", %d, %d, %d)' % (name, addr, chan, end+1,)) 
             dim = MDSplus.Dimension(MDSplus.Window(start, end, self.trigger ), self.clock)
             if self.debug:
-                print "about to make dat"
-                print "gain = %d"%gain
-                print "offset =%d"%offset
-                print "dim is %s"% str(dim)
-                print "start is %d end is %d"%(start, end,)
+                print("about to make dat")
+                print("gain = %d"%gain)
+                print("offset =%d"%offset)
+                print("dim is %s"% str(dim))
+                print("start is %d end is %d"%(start, end,))
             dat = MDSplus.Data.compile(
                         'build_signal(build_with_units(($value - $2)*.02/$1, "V") ,build_with_units($3,"Counts"),$4)',
                         gain, offset, buf[start : end], dim) 

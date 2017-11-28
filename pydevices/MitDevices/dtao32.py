@@ -24,7 +24,7 @@
 #
 
 from MDSplus import Device,Data,Action,Dispatch,Method
-from Dt200WriteMaster import Dt200WriteMaster
+from .Dt200WriteMaster import Dt200WriteMaster
 import os
 import numpy
 
@@ -153,36 +153,36 @@ class DTAO32(Device):
             complaint = "invalid clock source"
             clock_src=str(self.clock_src.data())
             if not clock_src in self.clock_sources:
-                raise Exception, complaint
+                raise Exception(complaint)
             complaint = "clock edge must be RISING or FALLING"
             clock_edge=str(self.clock_edge.data())
             if not clock_edge in self.clock_edges:
-                raise Exception, complaint
+                raise Exception(complaint)
             complaint = 'invalid trigger source'
             trig_src=str(self.trig_src.data())
             if not trig_src in self.trig_sources:
-                raise Exception, complaint
+                raise Exception(complaint)
             complaint = "trig edge must be RISING, FALLING or NONE"
             trig_edge=str(self.trig_edge.data())
             if not trig_edge in self.trigger_edges:
-                raise Exception, complaint
+                raise Exception(complaint)
             complaint = "invalid mode string"
             mode=str(self.mode.data())
             if not mode in self.modes:
-                raise Exception, complaint
+                raise Exception(complaint)
             complaint = 'Error reading dimension information'
             dim=self.dim.data()
             complaint = 'Error reading max_samples'
             max_samples=int(self.max_samples)
-        except Exception,e:
-            print "%s\n%s" % (complaint, str(e),)
+        except Exception as e:
+            print("%s\n%s" % (complaint, str(e),))
             return 0
 
         try:
             pipe = os.popen('acqcmd -b %d setAbort' % (hostboard));
             pipe.close()
-        except Exception, e:
-            print "error sending abort to host board\n%s" %(str(e),)
+        except Exception as e:
+            print("error sending abort to host board\n%s" %(str(e),))
             return 0
 
         hostname = Dt200WriteMaster(hostboard, "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)
@@ -203,10 +203,10 @@ class DTAO32(Device):
                 try:
                     knots_y = ao_nid.record.data()
                     knots_x = ao_nid.record.getDimensionAt(0).data()
-                except Exception,e:
+                except Exception as e:
                     knots_y = numpy.array([ 0.,  0.])
                     knots_x = numpy.array([ 0.,  1.])
-                    print "Error reading data for channel %d - ZEROING ZEROING\n" % i
+                    print("Error reading data for channel %d - ZEROING ZEROING\n" % i)
                 if fit == 'SPLINE':
                     wave = Data.execute('SplineFit($,$,$)', knots_x, knots_y, dim)
                 else:
@@ -218,14 +218,14 @@ class DTAO32(Device):
         if not self.first:
             self.SendFiles(hostname, hostboard, board)
         else:
-            raise Exception, 'No channels defined aborting'
+            raise Exception('No channels defined aborting')
 
         try:
             Dt200WriteMaster(hostboard, 'set.ao32 %d AO_MODE %s' % (board, mode), 1)
             Dt200WriteMaster(hostboard, 'set.ao32 %d AO_CLK  %s %d %s' % (board, clock_src, clock_div, clock_edge), 1)
             Dt200WriteMaster(hostboard, 'set.ao32 %d AO_TRG %s %s' % (board, trig_src, trig_edge), 1)
-        except Exception, e:
-            print "Error sending commands to AO32 board\n%s" % (str(e),)
+        except Exception as e:
+            print("Error sending commands to AO32 board\n%s" % (str(e),))
         return 1
 
     def arm(self, arg):
@@ -236,17 +236,17 @@ class DTAO32(Device):
             hostboard=int(self.hostboard.record)
             complaint = "board must be an integer"
             board=int(self.board)
-        except Exception,e:
-            print "%s\n%s", (complaint, str(e),)
+        except Exception as e:
+            print("%s\n%s", (complaint, str(e),))
         try:
             if (continuous):
               commit = '0x02'
             else :
               commit = '0x22'
-            print "set.ao32.data %d commit %s" % (board, commit)
+            print("set.ao32.data %d commit %s" % (board, commit))
             Dt200WriteMaster(hostboard, 'set.ao32.data %d commit %s' % (board, commit), 1)
         except:
-            raise Exception, 'error sending commands to AO32 board'
+            raise Exception('error sending commands to AO32 board')
         return 1
 
     def help(self, arg):
@@ -273,8 +273,8 @@ class DTAO32(Device):
             complaint, "error sending files to card"
             self.SendFiles(hostname, hostboard, board);
 
-        except Exception, e:
-            print "%s\n%s" % (complaint, str(e),)
+        except Exception as e:
+            print("%s\n%s" % (complaint, str(e),))
             return 0
         return 1
 
@@ -294,15 +294,15 @@ class DTAO32(Device):
 
     def SendFiles(self, host, hostboard, board):
         cmd = '(cd /tmp/%s; tar -czf /tmp/%s.%d.tgz *)' % (host, host, board,)
-        print cmd
+        print(cmd)
         pipe = os.popen(cmd)
         pipe.close()
         cmd = 'curl -s -T /tmp/%s.%d.tgz -u ftp: ftp://%s/' %(host, board, host)
-        print cmd
+        print(cmd)
         pipe = os.popen(cmd)
         pipe.close()
         cmd = 'rm -rf /tmp/%s.%d.tgz; rm -rf /tmp/%s/' % (host, board, host,)
-        print cmd
+        print(cmd)
         pipe = os.popen(cmd)
         pipe.close()
         Dt200WriteMaster(hostboard, '/ffs/unpack_waves %s %d' %(host, board), 1)
