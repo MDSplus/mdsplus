@@ -102,14 +102,14 @@ class MILL3(Device):
         try:
             ip = str(self.ip.data())
             ip = ip.strip()
-            print(' IP: ' + ip)
+            print((' IP: ' + ip))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid IP')
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
             longTranslationSetPoint = self.long_trn_sp.data()
-            print(' LONG_TRN_SP: ' + str(longTranslationSetPoint))
+            print((' LONG_TRN_SP: ' + str(longTranslationSetPoint)))
             if longTranslationSetPoint < 0 or longTranslationSetPoint > LONG_TRANSLATION_SET_POINT_MAX_VALUE:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid LONG_TRN_SP')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -119,7 +119,7 @@ class MILL3(Device):
 
         try:
             shortTranslationSetPoint = self.short_trn_sp.data()
-            print(' SHORT_TRN_SP: ' + str(shortTranslationSetPoint))
+            print((' SHORT_TRN_SP: ' + str(shortTranslationSetPoint)))
             if shortTranslationSetPoint < 0 or shortTranslationSetPoint > SHORT_TRANSLATION_SET_POINT_MAX_VALUE:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid SHORT_TRN_SP')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -130,7 +130,7 @@ class MILL3(Device):
         try:
             moxaCom1 = str(self.moxa_com1.data())
             moxaCom1 = moxaCom1.strip()
-            print(' MOXA_COM1: ' + moxaCom1)
+            print((' MOXA_COM1: ' + moxaCom1))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM1')
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -138,7 +138,7 @@ class MILL3(Device):
         try:
             moxaCom2 = str(self.moxa_com2.data())
             moxaCom2 = moxaCom2.strip()
-            print(' MOXA_COM2: ' + moxaCom2)
+            print((' MOXA_COM2: ' + moxaCom2))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM2')
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -146,7 +146,7 @@ class MILL3(Device):
         try:
             moxaCom3 = str(self.moxa_com3.data())
             moxaCom3 = moxaCom3.strip()
-            print(' MOXA_COM3: ' + moxaCom3)
+            print((' MOXA_COM3: ' + moxaCom3))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM3')
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -154,7 +154,7 @@ class MILL3(Device):
         try:
             moxaCom4 = str(self.moxa_com4.data())
             moxaCom4 = moxaCom4.strip()
-            print(' MOXA_COM4: ' + moxaCom4)
+            print((' MOXA_COM4: ' + moxaCom4))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM4')
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -211,12 +211,12 @@ class MILL3(Device):
             decimals = self.sendCmd("\x7C\x00\x54\x44\x45\x43\x00\x00\x00\x00\x00\x01\x9C\x04")
             preset = self.sendCmd("\x7C\x00\x54\x52\x45\x46\x00\x00\x00\x00\x00\x01\xAD\x04")
             offset = self.sendCmd("\x7C\x00\x54\x45\x49\x4E\x00\x00\x00\x00\x00\x01\xAC\x04")
-            print("raw position: " + str(position))
-            print("decimals: " + str(decimals))
-            print("preset: " + str(preset))
-            print("offset: " + str(offset))
+            print(("raw position: " + str(position)))
+            print(("decimals: " + str(decimals)))
+            print(("preset: " + str(preset)))
+            print(("offset: " + str(offset)))
             longPosition=position / (10.0 ** decimals)
-            print("long position: " + str(longPosition))
+            print(("long position: " + str(longPosition)))
             setattr(self,'long_trn',longPosition)
 
             port=moxaCom2
@@ -239,12 +239,12 @@ class MILL3(Device):
             decimals = self.sendCmd("\x7C\x00\x54\x44\x45\x43\x00\x00\x00\x00\x00\x01\x9C\x04")
             preset = self.sendCmd("\x7C\x00\x54\x52\x45\x46\x00\x00\x00\x00\x00\x01\xAD\x04")
             offset = self.sendCmd("\x7C\x00\x54\x45\x49\x4E\x00\x00\x00\x00\x00\x01\xAC\x04")
-            print("raw position: " + str(position))
-            print("decimals: " + str(decimals))
-            print("preset: " + str(preset))
-            print("offset: " + str(offset))
+            print(("raw position: " + str(position)))
+            print(("decimals: " + str(decimals)))
+            print(("preset: " + str(preset)))
+            print(("offset: " + str(offset)))
             shortPosition=position / (10.0 ** decimals)
-            print("short position: " + str(shortPosition))
+            print(("short position: " + str(shortPosition)))
             setattr(self,'short_trn',shortPosition)
 
 
@@ -269,12 +269,12 @@ class MILL3(Device):
             decimals = self.sendCmd("\x7C\x00\x54\x44\x45\x43\x00\x00\x00\x00\x00\x01\x9C\x04")
             preset = self.sendCmd("\x7C\x00\x54\x52\x45\x46\x00\x00\x00\x00\x00\x01\xAD\x04")
             offset = self.sendCmd("\x7C\x00\x54\x45\x49\x4E\x00\x00\x00\x00\x00\x01\xAC\x04")
-            print("raw position: " + str(position))
-            print("decimals: " + str(decimals))
-            print("preset: " + str(preset))
-            print("offset: " + str(offset))
+            print(("raw position: " + str(position)))
+            print(("decimals: " + str(decimals)))
+            print(("preset: " + str(preset)))
+            print(("offset: " + str(offset)))
             rotation=position / (10.0 ** decimals)
-            print("rotation: " + str(rotation))
+            print(("rotation: " + str(rotation)))
             setattr(self,'rotation',rotation)
 
 
@@ -311,10 +311,10 @@ class MILL3(Device):
             setattr(self,'pressure',float(data))
             """
         except modbus_tk.modbus.ModbusError as e:
-            print("Modbus error ", e.get_exception_code())
+            print(("Modbus error ", e.get_exception_code()))
             bad = 0
         except Exception as e2:
-            print("Error ", str(e2))
+            print(("Error ", str(e2)))
             bad = 0
 #        except ModbusException as e:
 #            print(e
@@ -329,7 +329,7 @@ class MILL3(Device):
             print("Bad message")
             bad = 0
         except serial.SerialException:
-            print("Could not open port " + port)
+            print(("Could not open port " + port))
             bad = 0
         finally:
             if self.ser is not None: self.ser.close()
@@ -338,7 +338,7 @@ class MILL3(Device):
             #time.sleep(1.0)
             #self.c.close()
             #if self.c is not None: self.c.close()
-            print("status: " + str(bad))
+            print(("status: " + str(bad)))
         return bad
 
 
@@ -364,14 +364,14 @@ class MILL3(Device):
         try:
             ip = str(self.ip.data())
             ip = ip.strip()
-            print(' IP: ' + ip)
+            print((' IP: ' + ip))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid IP')
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
             longTranslationSetPoint = self.long_trn_sp.data()
-            print(' LONG_TRN_SP: ' + str(longTranslationSetPoint))
+            print((' LONG_TRN_SP: ' + str(longTranslationSetPoint)))
             if longTranslationSetPoint < 0 or longTranslationSetPoint > LONG_TRANSLATION_SET_POINT_MAX_VALUE:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid LONG_TRN_SP')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -381,7 +381,7 @@ class MILL3(Device):
 
         try:
             shortTranslationSetPoint = self.short_trn_sp.data()
-            print(' SHORT_TRN_SP: ' + str(shortTranslationSetPoint))
+            print((' SHORT_TRN_SP: ' + str(shortTranslationSetPoint)))
             if shortTranslationSetPoint < 0 or shortTranslationSetPoint > SHORT_TRANSLATION_SET_POINT_MAX_VALUE:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid SHORT_TRN_SP')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -392,7 +392,7 @@ class MILL3(Device):
         try:
             moxaCom1 = str(self.moxa_com1.data())
             moxaCom1 = moxaCom1.strip()
-            print(' MOXA_COM1: ' + moxaCom1)
+            print((' MOXA_COM1: ' + moxaCom1))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM1')
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -400,7 +400,7 @@ class MILL3(Device):
         try:
             moxaCom2 = str(self.moxa_com2.data())
             moxaCom2 = moxaCom2.strip()
-            print(' MOXA_COM2: ' + moxaCom2)
+            print((' MOXA_COM2: ' + moxaCom2))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM2')
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -408,7 +408,7 @@ class MILL3(Device):
         try:
             moxaCom3 = str(self.moxa_com3.data())
             moxaCom3 = moxaCom3.strip()
-            print(' MOXA_COM3: ' + moxaCom3)
+            print((' MOXA_COM3: ' + moxaCom3))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM3')
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -416,7 +416,7 @@ class MILL3(Device):
         try:
             moxaCom4 = str(self.moxa_com4.data())
             moxaCom4 = moxaCom4.strip()
-            print(' MOXA_COM4: ' + moxaCom4)
+            print((' MOXA_COM4: ' + moxaCom4))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM4')
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -472,22 +472,22 @@ class MILL3(Device):
             self.ser.write("\x50\x52\x31\x0D")
             time.sleep(0.2)
             ack = self.ser.read(3)
-            print(ack.encode("hex"))
+            print((ack.encode("hex")))
             self.ser.write("\x05")
             time.sleep(0.2)
 
             data = self.ser.readline()
-            print(data.encode("hex"))
+            print((data.encode("hex")))
             if data[0] != '\x30': raise SerialBadMessageException
             data=data[2:13]
             data=data.strip()
-            print("pressure: " + data)
+            print(("pressure: " + data))
             setattr(self,'pressure',float(data))
         except modbus_tk.modbus.ModbusError as e:
-            print("Modbus error ", e.get_exception_code())
+            print(("Modbus error ", e.get_exception_code()))
             bad = 0
         except Exception as e2:
-            print("Error ", str(e2))
+            print(("Error ", str(e2)))
             bad = 0
 #        except ModbusException as e:
 #            print(e
@@ -502,7 +502,7 @@ class MILL3(Device):
             print("Bad message")
             bad = 0
         except serial.SerialException:
-            print("Could not open port " + port)
+            print(("Could not open port " + port))
             bad = 0
         finally:
             if self.ser is not None: self.ser.close()
@@ -511,5 +511,5 @@ class MILL3(Device):
             #time.sleep(1.0)
             #self.c.close()
             #if self.c is not None: self.c.close()
-            print("status: " + str(bad))
+            print(("status: " + str(bad)))
         return bad

@@ -117,12 +117,12 @@ class ACQIPPSETUP(Device):
             level  = ( maxValue - minValue ) /2.;
             offset = ( maxValue + minValue ) / 2.;
 
-            print("Offset  ", offset, " Vpp level ", level * 2)
+            print(("Offset  ", offset, " Vpp level ", level * 2))
 
             offset = offset / 10.;
             level = level / 10.;
 
-            print("Reference Offset  ", offset, " Vpp level ", level * 2)
+            print(("Reference Offset  ", offset, " Vpp level ", level * 2))
 
             if(trigMode == 'EXTERNAL'):
                  softwareTrigger = 0;

@@ -109,14 +109,14 @@ class DIO2_ENCDEC(Device):
 # Board ID
         try:
             boardId = self.board_id.data()
-            print('BOARD_ID: ' + str(boardId))
+            print(('BOARD_ID: ' + str(boardId)))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
             raise mdsExceptions.TclFAILED_ESSENTIAL
 # Software Mode
         try:
             swMode = self.sw_mode.data()
-            print('swMode: ' + str(swMode))
+            print(('swMode: ' + str(swMode)))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid SW_MODE')
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -126,7 +126,7 @@ class DIO2_ENCDEC(Device):
             except:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid IP_ADDR')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
-            print('IP_ADDR: ' + ipAddr)
+            print(('IP_ADDR: ' + ipAddr))
 # Clock Source
         #clockSourceDict = {'INTERNAL':0, 'HIGHWAY':1, 'EXTERNAL':2}
         clockSourceDict = {'INTERNAL':0, 'HIGHWAY':1}
@@ -135,7 +135,7 @@ class DIO2_ENCDEC(Device):
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid CLOCK_SOURCE')
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        print('CLOCK_SOURCE: ' + self.clock_source.data() + ' - ID: ' + str(clockSource))
+        print(('CLOCK_SOURCE: ' + self.clock_source.data() + ' - ID: ' + str(clockSource)))
 # Recorder Event
         recStartEv = 0
         if getattr(self, 'rec_start_ev').isOn():
@@ -144,17 +144,17 @@ class DIO2_ENCDEC(Device):
             except:
                 #recStartEv = -1
                 recStartEv = 0
-        print('REC_START_EV: ' + str(recStartEv))
+        print(('REC_START_EV: ' + str(recStartEv)))
 # Synch events
         synchEvents = []
         try:
             synch = self.synch.data()
-            print('synch: ' + synch)
+            print(('synch: ' + synch))
             if synch == 'YES':
                 synchFlag = 1
                 synchEvent = self.synch_event.data()
                 synchEvSize =Data.execute('size($1)', synchEvent)
-                print('synch event size: ' + str(synchEvSize))
+                print(('synch event size: ' + str(synchEvSize)))
                 if synchEvSize == 1:
                     synchEvents.append(Data.execute('TimingDecodeEvent($1)', synchEvent))
                 else:
@@ -210,10 +210,10 @@ class DIO2_ENCDEC(Device):
 
             try:
                 nodePath = getattr(self, 'out_ev_sw_time').getFullPath()
-                print('Leggo evTime: ' , nodePath)
+                print(('Leggo evTime: ' , nodePath))
                 #evTime = getattr(self, 'out_ev_sw_time').data()
                 evTime = float( self.out_ev_sw_time.data() )
-                print('evTime: ', evTime)
+                print(('evTime: ', evTime))
             except:
                 print('Perche va in exception')
                 evTime = huge
@@ -235,13 +235,13 @@ class DIO2_ENCDEC(Device):
         channelMask = 0
         for c in range(8):
             if getattr(self, 'channel_%d'%(c+1)).isOn():
-                print('Channel %d ON'%(c+1))
+                print(('Channel %d ON'%(c+1)))
                 try:
                     function = getattr(self, 'channel_%d_function'%(c+1)).data()
                 except:
                     Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid FUNCTION')
                     raise mdsExceptions.TclFAILED_ESSENTIAL
-                print('FUNCTION: ' + function)
+                print(('FUNCTION: ' + function))
 
                 if function != 'ENCODER':
                     channelMask = channelMask | (1 << c)
@@ -309,7 +309,7 @@ class DIO2_ENCDEC(Device):
                         if trigMode == 'EVENT':
                             try:
                                 event = getattr(self,'channel_%d_event'%(c+1)).data()
-                                print('PULSE event: ', event)
+                                print(('PULSE event: ', event))
                                 eA = array(event)
                                 l = len(event)
                                 if l == 0:
@@ -332,7 +332,7 @@ class DIO2_ENCDEC(Device):
                                         Data.execute('DevLogErr($1, $2)', self.getNid(), 'Cannot associate a time to event ' + str(event) + ' for channel %d'%(c+1))
                                         raise mdsExceptions.TclFAILED_ESSENTIAL
 
-                                print('PULSE eventCodes: ' + str(eventCodes))
+                                print(('PULSE eventCodes: ' + str(eventCodes)))
                                 getattr(self,'channel_%d_trigger'%(c+1)).data()
                             except:
                                 Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid event for pulse channel %d'%(c+1))
@@ -422,8 +422,8 @@ class DIO2_ENCDEC(Device):
                                 if l == 0:
                                     raise
                                 eventSize = eA.size
-                                print('event: ' + str(event))
-                                print('event size: ' + str(eventSize))
+                                print(('event: ' + str(event)))
+                                print(('event size: ' + str(eventSize)))
                                 if eventSize == 1:
                                     eventCodes.append(Data.execute('TimingDecodeEvent($1)', event))
 
@@ -455,7 +455,7 @@ class DIO2_ENCDEC(Device):
                             raise mdsExceptions.TclFAILED_ESSENTIAL
 
                         duration = getattr(self,'channel_%d_duration'%(c+1)).data()
-                        print('duration: ', duration)
+                        print(('duration: ', duration))
                         if duration < 0 :
                             Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid gated clock duration parameter for channel %d'%(c+1))
                             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -484,7 +484,7 @@ class DIO2_ENCDEC(Device):
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Gated Clock parameters for channel %d'%(c+1))
                         raise mdsExceptions.TclFAILED_ESSENTIAL
 
-                    print(boardId, c, trigModeCode, frequency, delay, duration, eventCodes[0])
+                    print((boardId, c, trigModeCode, frequency, delay, duration, eventCodes[0]))
 
                     if swMode == 'REMOTE':
                         #status = Data.execute('MdsValue("DIO2HWSetGClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8)", $1,$2,$3,$4,$5,$6,$7,$8)', boardId, c, trigModeCode, frequency, delay, duration, makeArray(eventCodes), dutyCycle)
@@ -618,7 +618,7 @@ class DIO2_ENCDEC(Device):
                                 evCode = Data.execute('TimingDecodeEvent($1)', evName)
                             else:
                                 evCode = 0
-                            print('evCode: ' + str(evCode))
+                            print(('evCode: ' + str(evCode)))
                             if evCode != 0:
                                 nodePath = getattr(self, 'channel_%d_out_ev%d_code'%(c+1, e+1)).getFullPath()
                                 setattr(self,'channel_%d_out_ev%d_code'%(c+1, e+1), evCode)
@@ -635,14 +635,14 @@ class DIO2_ENCDEC(Device):
                                 evTime = float(getattr(self, 'channel_%d_out_ev%d_time'%(c+1, e+1)).data())
                             except:
                                 evTime = float(huge)
-                            print(" 1 event time ", evTime)
-                            print(" 2 huge ", huge)
+                            print((" 1 event time ", evTime))
+                            print((" 2 huge ", huge))
                             if evTime == huge:
                                 print("3 Perche entra qui")
                                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid event time specification for channel %d'%(c+1+e))
                                 raise mdsExceptions.TclFAILED_ESSENTIAL
                             nodePath = getattr(self, 'channel_%d_out_ev%d_time'%(c+1, e+1)).getFullPath()
-                            print('evName: ', evName)
+                            print(('evName: ', evName))
                             status = eventTime = Data.execute('TimingRegisterEventTime($1, $2)', evName, nodePath)
                             if status == -1:
                                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot register event time')
@@ -667,13 +667,13 @@ class DIO2_ENCDEC(Device):
                             #    raise mdsExceptions.TclFAILED_ESSENTIAL
                         else:
                             #Also if channel is off channel input configuration must be done
-                            print('Event channel %d OFF'%(2*c+1+e))
+                            print(('Event channel %d OFF'%(2*c+1+e)))
                             terminationCode = 0
                             evCode = 0;
-                        print('Event channel: ' + str(c))
+                        print(('Event channel: ' + str(c)))
                         realChannel = 2*c+1+e
-                        print('Event real channel: ' + str(realChannel))
-                        print('Event code: ' + str(evCode))
+                        print(('Event real channel: ' + str(realChannel)))
+                        print(('Event code: ' + str(evCode)))
                         if swMode == 'REMOTE':
                             status = Data.execute('MdsValue("DIO2_ENCDECHWInitChan(0, $1, $2, $3, $4, $5)", $1,$2,$3,$4,$5)', boardId, clockSource, realChannel, evCode, terminationCode)
                             if status == 0:
@@ -699,7 +699,7 @@ class DIO2_ENCDEC(Device):
                     if status == 0:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW IO chanel setup')
                         raise mdsExceptions.TclFAILED_ESSENTIAL
-                print('Channel %d OFF'%(c+1))
+                print(('Channel %d OFF'%(c+1)))
             """
                 External clock source sytnchronization not yet implemented in DIO2 Module
                 elif function == 'CLOCK SOURCE + CLOCK':
@@ -851,15 +851,15 @@ class DIO2_ENCDEC(Device):
                     recEventNum  = Data.execute("size(_DIO2_rec_times)")
                 except:
                     recEventNum  = 0
-                print("NUM   ", recEventNum)
-                print("EVENTS ",recEvents)
+                print(("NUM   ", recEventNum))
+                print(("EVENTS ",recEvents))
                 recTimes = Data.execute("_DIO2_rec_times")
-                print("TIMES ", recTimes)
+                print(("TIMES ", recTimes))
             except:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute DIO2HWGetRecEvents')
                 raise mdsExceptions.TclFAILED_ESSENTIAL;
 
-        print("recEventNum ", recEventNum)
+        print(("recEventNum ", recEventNum))
 
         if recEventNum > 0 :
             self.rec_events.putData(recEvents)
@@ -872,7 +872,7 @@ class DIO2_ENCDEC(Device):
                 recStartTime = Data.execute('TimingGetEventTime($1)', recStartEv)
             else:
                 recStartTime = 0
-            print("rec_times ", recStartTime + recStartTime)
+            print(("rec_times ", recStartTime + recStartTime))
             self.rec_times.putData(recTimes + recStartTime)
 
         channelMask = 0
@@ -1000,7 +1000,7 @@ class DIO2_ENCDEC(Device):
                 raise mdsExceptions.TclFAILED_ESSENTIAL
             try:
                 evTime = getattr(self, 'out_ev_sw_time').data()
-                print("evTime: ",evTime)
+                print(("evTime: ",evTime))
             except:
                 evTime = huge
             if evTime == huge:
@@ -1057,7 +1057,7 @@ class DIO2_ENCDEC(Device):
             DIO4.mainLib = CDLL("libDIO4.so")
             print('carico la libreria')
 
-        if self.nid in DIO4.handles.keys():
+        if self.nid in list(DIO4.handles.keys()):
             self.handle = DIO4.handles[self.nid]
             print('RESTORE INFO HANDLE TROVATO')
         else:
@@ -1072,7 +1072,7 @@ class DIO2_ENCDEC(Device):
                 DIO4.mainLib.DIO4_InitLibrary()
                 status = DIO4.mainLib.DIO4_Open(c_int(boardId), byref(c_int(self.handle)))
                 print(status)
-                print(self.handle)
+                print((self.handle))
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -1118,7 +1118,7 @@ class DIO2_ENCDEC(Device):
         DIO4.workers[self.nid] = self.worker
 
     def restoreWorker(self):
-        if self.nid in DIO4.workers.keys():
+        if self.nid in list(DIO4.workers.keys()):
             self.worker = DIO4.workers[self.nid]
         else:
             print('Cannot restore worker!!')

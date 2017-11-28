@@ -138,12 +138,12 @@ class CONTIPPSETUP(Device):
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
         print("Start new thread")
-        print("ai_chan_list ",ai_chan_list)
-        print("ai_fdch_idx ",ai_fdch_idx)
-        print("clock_freq ", clock_freq)
-        print("aoch_id ",aoch_id)
-        print("doch_id ", doch_id)
-        print("temp_ref",temp_ref)
+        print(("ai_chan_list ",ai_chan_list))
+        print(("ai_fdch_idx ",ai_fdch_idx))
+        print(("clock_freq ", clock_freq))
+        print(("aoch_id ",aoch_id))
+        print(("doch_id ", doch_id))
+        print(("temp_ref",temp_ref))
         self.worker.configure(self, board_id, ai_chan_list, ai_fdch_idx, clock_freq, aoch_id, doch_id, temp_ref);
         self.worker.start()
         print("End Initialization")

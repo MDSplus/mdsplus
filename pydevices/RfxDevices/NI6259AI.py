@@ -124,7 +124,7 @@ class NI6259AI(Device):
         if NI6259AI.niInterfaceLib is None:
             NI6259AI.niInterfaceLib = CDLL("libNiInterface.so")
 
-        if self.nid in NI6259AI.ni6259Fds.keys():
+        if self.nid in list(NI6259AI.ni6259Fds.keys()):
             self.fd = NI6259AI.ni6259Fds[self.nid]
         else:
             try:
@@ -150,7 +150,7 @@ class NI6259AI(Device):
         return
 
     def closeInfo(self):
-        if self.nid in NI6259AI.ni6259Fds.keys():
+        if self.nid in list(NI6259AI.ni6259Fds.keys()):
             self.fd = NI6259AI.ni6259Fds[self.nid]
             del(NI6259AI.ni6259Fds[self.nid])
             try:
@@ -168,7 +168,7 @@ class NI6259AI(Device):
         NI6259AI.workers[self.nid] = self.worker
 
     def restoreWorker(self):
-        if self.nid in NI6259AI.workers.keys():
+        if self.nid in list(NI6259AI.workers.keys()):
             self.worker = NI6259AI.workers[self.nid]
         else:
             print( 'Cannot restore worker!!')
@@ -252,7 +252,7 @@ class NI6259AI(Device):
                     segmentSize = c*bufSize
 
                 numSamples  = -1
-                print("PXI 6259 CONTINUOUS ", numSamples)
+                print(("PXI 6259 CONTINUOUS ", numSamples))
 
             else:
                 self.niInterfaceLib.setStopAcqFlag(self.stopAcq);
@@ -262,7 +262,7 @@ class NI6259AI(Device):
                 except:
                     numSamples = 0
 
-                    print("PXI 6259 NUM SAMPLES ", numSamples)
+                    print(("PXI 6259 NUM SAMPLES ", numSamples))
 
 
             status = NI6259AI.niLib.pxi6259_start_ai(c_int(self.fd))
@@ -349,7 +349,7 @@ class NI6259AI(Device):
                 if(status != 0):
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot add channel '+str(currChan + 1))
                     raise mdsExceptions.TclFAILED_ESSENTIAL
-                print('PXI 6259 CHAN '+ str(currChan+1) + ' CONFIGURED')
+                print(('PXI 6259 CHAN '+ str(currChan+1) + ' CONFIGURED'))
                 activeChan = activeChan + 1
         #endfor
 
@@ -456,7 +456,7 @@ class NI6259AI(Device):
                 trigSource = self.trig_source.data()
             else:
                 trigSource = 0
-            print('PXI 6259 Trigger source: ', trigSource)
+            print(('PXI 6259 Trigger source: ', trigSource))
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve Trigger source')
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -487,7 +487,7 @@ class NI6259AI(Device):
                     clockSource = Range(Float64(0), Float64(3600), Float64(divisions/20000000.))
                 """
                 clockSource = Range(None, None, Float64(divisions/20000000.))
-                print('PXI 6259 CLOCK: ', clockSource)
+                print(('PXI 6259 CLOCK: ', clockSource))
                 self.clock_source.putData(clockSource)
             else:
                 clockSource = self.clock_source.evaluate()
@@ -518,9 +518,9 @@ class NI6259AI(Device):
                     startTime = self.start_time.data()
                     endTime = self.end_time.data()
 
-                    print('PXI 6259 startTime = ', startTime)
-                    print('PXI 6259 endTime   = ', endTime)
-                    print('PXI 6259 trigSource   = ', trigSource)
+                    print(('PXI 6259 startTime = ', startTime))
+                    print(('PXI 6259 endTime   = ', endTime))
+                    print(('PXI 6259 trigSource   = ', trigSource))
 
 
                 except:
@@ -547,10 +547,10 @@ class NI6259AI(Device):
                 else:
                     startIdx = -Data.execute('x_to_i($1,$2)', Dimension(Window(0, None, trigSource + startTime), clockSource), trigSource)
                 """
-                print('PXI 6259 startIdx = ', Int32(int(startIdx + 0.5)))
+                print(('PXI 6259 startIdx = ', Int32(int(startIdx + 0.5))))
                 self.start_idx.putData(Int32(int(startIdx + 0.5)))
 
-                print('PXI 6259 endIdx   = ', Int32(int(endIdx + 0.5)))
+                print(('PXI 6259 endIdx   = ', Int32(int(endIdx + 0.5))))
                 self.end_idx.putData(Int32(int(endIdx + 0.5)))
 
 
@@ -593,7 +593,7 @@ class NI6259AI(Device):
             postTrigger = nSamples + startIdx
             preTrigger = nSamples - endIdx
             """
-            print('PXI 6259 nSamples   = ', Int32(int(nSamples)))
+            print(('PXI 6259 nSamples   = ', Int32(int(nSamples))))
             self.seg_length.putData(Int32(int(nSamples)))
 
 #           status = NI6259AI.niLib.pxi6259_set_ai_number_of_samples(aiConf, c_int(postTrigger), c_int(preTrigger), 0)

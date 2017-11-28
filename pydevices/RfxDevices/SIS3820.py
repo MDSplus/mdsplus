@@ -61,14 +61,14 @@ class SIS3820(Device):
     # Get IP Address
         try:
             ipAddr = self.ip_addr.data()
-            print('IP Addr=',ipAddr)
+            print(('IP Addr=',ipAddr))
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid Remote IP Address')
             raise mdsExceptions.TclFAILED_ESSENTIAL
     # Get Base Address
         try:
             baseAddr = self.base_addr.data()
-            print('Base Addr =',baseAddr)
+            print(('Base Addr =',baseAddr))
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid Base Address specification')
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -79,7 +79,7 @@ class SIS3820(Device):
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid OP Mode')
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        print('OP Mode=',opMode)
+        print(('OP Mode=',opMode))
     # Get LNE Mode
         lneModeDict = {'VME':0, 'CONTROL SIGNAL':1, 'INTERNAL 10MHZ':2, 'CHANNEL N':3, 'PRESET':4}
         try:
@@ -87,34 +87,34 @@ class SIS3820(Device):
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid LNE Mode')
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        print('LNE Mode=',lneMode)
+        print(('LNE Mode=',lneMode))
     # Get LNE Source
         try:
             lneSource = self.lne_source.data()
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid LNE Source')
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        print('LNE Source=',lneSource)
+        print(('LNE Source=',lneSource))
     # Get Scan Count
         try:
             scanCount = self.scan_count.data()
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid Scan Count')
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        print('Scan Count=',scanCount)
+        print(('Scan Count=',scanCount))
     # Get Channels Setup
         channelMask = 0
         for a in range(0, 32):
             if a < 10:
                 if getattr(self, 'channel_0%d'%(a)).isOn():
-                    print('Channel_0' + str(a) + ' IS ON')
+                    print(('Channel_0' + str(a) + ' IS ON'))
                     channelMask = channelMask | (1 << a)
             else:
                 if getattr(self, 'channel_%d'%(a)).isOn():
-                    print('Channel_' + str(a) + ' IS ON')
+                    print(('Channel_' + str(a) + ' IS ON'))
                     channelMask = channelMask | (1 << a)
         del a
-        print('Channel Mask= ', channelMask)
+        print(('Channel Mask= ', channelMask))
     # Connect to SIS3820 via MdsIP
         status = Data.execute('MdsConnect("'+ ipAddr +'")')
         if status == 0:
@@ -186,7 +186,7 @@ class SIS3820(Device):
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid Scan Count')
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        print('Scan Count=',scanCount)
+        print(('Scan Count=',scanCount))
     # Get LNE Mode
         lneModeDict = {'VME':0, 'CONTROL SIGNAL':1, 'INTERNAL 10MHZ':2, 'CHANNEL N':3, 'PRESET':4}
         try:
@@ -194,27 +194,27 @@ class SIS3820(Device):
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid LNE Mode')
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        print('LNE Mode=',lneMode)
+        print(('LNE Mode=',lneMode))
     # Get LNE Source
         try:
             lneSource = self.lne_source.data()
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid LNE Source')
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        print('LNE Source=',lneSource)
+        print(('LNE Source=',lneSource))
     # Get Channels Setup
         channelMask = 0
         for a in range(0, 32):
             if a < 10:
                 if getattr(self, 'channel_0%d'%(a)).isOn():
-                    print('Channel_0' + str(a) + ' IS ON')
+                    print(('Channel_0' + str(a) + ' IS ON'))
                     channelMask = channelMask | (1 << a)
             else:
                 if getattr(self, 'channel_%d'%(a)).isOn():
-                    print('Channel_' + str(a) + ' IS ON')
+                    print(('Channel_' + str(a) + ' IS ON'))
                     channelMask = channelMask | (1 << a)
         del a
-        print('Channel Mask= ', channelMask)
+        print(('Channel Mask= ', channelMask))
     # Connect to SIS3820 via MDS IP
         status = Data.execute('MdsConnect("'+ ipAddr +'")')
         if status == 0:

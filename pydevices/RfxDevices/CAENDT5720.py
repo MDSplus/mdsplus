@@ -217,7 +217,7 @@ class CAENDT5720(Device):
     #end class AsynchStore
 
     def saveInfo(self):
-      if self.getNid() in CAENDT5720.workers.keys():
+      if self.getNid() in list(CAENDT5720.workers.keys()):
         oldworker = CAENDT5720.workers[self.nid][0]
         if oldworker != 0:
           oldworker.stop()
@@ -227,7 +227,7 @@ class CAENDT5720(Device):
     def restoreInfo(self):
       if CAENDT5720.caenLib is None:
         CAENDT5720.caenLib = CDLL("libCAENVME.so")
-      if self.getNid() in CAENDT5720.workers.keys():
+      if self.getNid() in list(CAENDT5720.workers.keys()):
         self.worker,self.handle,self.cvself.readCv = CAENDT5720.workers[self.nid]
       else:
         try:
@@ -361,7 +361,7 @@ class CAENDT5720(Device):
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing group configuration')
         raise mdsExceptions.TclFAILED_ESSENTIAL
       numChannels = devType.value >> 16
-      print('NUM CHANNELS: ', numChannels)
+      print(('NUM CHANNELS: ', numChannels))
       self.num_channels.putData(numChannels)
 
 #number of segments

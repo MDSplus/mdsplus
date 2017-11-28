@@ -121,7 +121,7 @@ class FAKECAMERA(Device):
 
         #framePeriod = int(self.device.frame_rate.data()*1000)
         skipFrameStream=int(float(self.device.frame_rate.data())/25.0)-1
-        print('skipFrameStream:',skipFrameStream)
+        print(('skipFrameStream:',skipFrameStream))
         if(skipFrameStream<0):
           skipFrameStream=0
         frameStreamCounter = skipFrameStream
@@ -154,14 +154,14 @@ class FAKECAMERA(Device):
           if( (isStorage==1) and ((status.value==1) or (status.value==2)) ):    #frame complete or incomplete
             FAKECAMERA.cammdsutils.camSaveFrame(frameBuffer, self.width, self.height, c_float(float(totFrameTime)/1000.0), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(frameTotalCounter-1), 0, 0, 0)
             self.idx = self.idx + 1
-            print('saved frame idx:', self.idx)
+            print(('saved frame idx:', self.idx))
 
 
           if(isStreaming==1):
             if(tcpStreamHandle.value==-1):
               fede=FAKECAMERA.camstreamutils.camOpenTcpConnection(streamPort, byref(tcpStreamHandle), self.width, self.height)
               if(fede!=-1):
-                print('\nConnected to FFMPEG on localhost:',streamPort.value)
+                print(('\nConnected to FFMPEG on localhost:',streamPort.value))
             if(frameStreamCounter == skipFrameStream+1):
               frameStreamCounter=0
             if(frameStreamCounter == 0 and tcpStreamHandle.value!=-1):
@@ -197,7 +197,7 @@ class FAKECAMERA(Device):
 
 ###restore worker###
     def restoreWorker(self):
-      if self.getNid() in FAKECAMERA.handles.keys():
+      if self.getNid() in list(FAKECAMERA.handles.keys()):
         self.worker = FAKECAMERA.workers[self.getNid()]
       else:
         print('Cannot restore worker!!')
@@ -210,7 +210,7 @@ class FAKECAMERA(Device):
         FAKECAMERA.cammdsutils = CDLL("libcammdsutils.so")
       if FAKECAMERA.camstreamutils is None:
         FAKECAMERA.camstreamutils = CDLL("libcamstreamutils.so")
-      if self.getNid() in FAKECAMERA.handles.keys():
+      if self.getNid() in list(FAKECAMERA.handles.keys()):
         self.handle = FAKECAMERA.handles[self.getNid()]
         if Device.debug: print('RESTORE INFO HANDLE TROVATO')
       else:

@@ -27,7 +27,7 @@ from MDSplus import mdsExceptions, Device, Data, Float32, Float32Array, version
 if version.ispy3:
     import http as httplib
 else:
-    import httplib
+    import http.client
 import json
 from  time import sleep
 
@@ -51,11 +51,11 @@ class REDPYTADC(Device):
 
   def init(self):
     try:
-      hConn = httplib.HTTPConnection(self.ip_addr.data())
+      hConn = http.client.HTTPConnection(self.ip_addr.data())
       hConn.request("GET", "/bazaar?start=scope+gen")
       hConn.getresponse()
     except:
-      print('Cannot connect to '+self.ip_addr.data())
+      print(('Cannot connect to '+self.ip_addr.data()))
       raise mdsExceptions.TclFAILED_ESSENTIAL
     trigSource = self.trig_source.data()
     trigEdge = self.trig_edge.data()
@@ -111,9 +111,9 @@ class REDPYTADC(Device):
 
   def trigger(self):
     try:
-      hConn = httplib.HTTPConnection(self.ip_addr.data())
+      hConn = http.client.HTTPConnection(self.ip_addr.data())
     except:
-      print('Cannot connect to '+self.ip_addr.data())
+      print(('Cannot connect to '+self.ip_addr.data()))
       raise mdsExceptions.TclFAILED_ESSENTIAL
     jsonStr = {'datasets':{'params':{'single_btn': 1}}}
     try:
@@ -126,9 +126,9 @@ class REDPYTADC(Device):
 
   def store(self):
     try:
-      hConn = httplib.HTTPConnection(self.ip_addr.data())
+      hConn = http.client.HTTPConnection(self.ip_addr.data())
     except:
-      print('Cannot connect to '+self.ip_addr.data())
+      print(('Cannot connect to '+self.ip_addr.data()))
       raise mdsExceptions.TclFAILED_ESSENTIAL
     try:
       hConn.request("GET", "/data")

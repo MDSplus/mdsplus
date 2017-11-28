@@ -139,16 +139,16 @@ class NI6682(Device):
 
         try:
             boardId = self.board_id.data()
-            print('BOARD_ID: ' + str(boardId))
+            print(('BOARD_ID: ' + str(boardId)))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
         res = NI6682.libts.NI6682_Create(c_int(boardId));
-        print('NI6682_Create(): ', res)
+        print(('NI6682_Create(): ', res))
 
         res = NI6682.libts.NI6682_Initialise(c_int(boardId));
-        print('NI6682_Initialise(): ', res)
+        print(('NI6682_Initialise(): ', res))
 
 
         for i in range(3):
@@ -161,7 +161,7 @@ class NI6682(Device):
             except:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid TRIG_MODE')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
-            print('CHANNEL_PFI%d.TRIG_MODE: '%(i), tm)
+            print(('CHANNEL_PFI%d.TRIG_MODE: '%(i), tm))
 
             try:
                 decimation = getattr(self, 'channel_pfi%d_decimation'%(i)).data();
@@ -171,7 +171,7 @@ class NI6682(Device):
             except:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid TRIG_MODE')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
-            print('CHANNEL_PFI%d.DECIMATION: '%(i), decimation)
+            print(('CHANNEL_PFI%d.DECIMATION: '%(i), decimation))
 
         # If executed for the first time
 
@@ -187,17 +187,17 @@ class NI6682(Device):
         #self.restoreInfo();
         try:
             boardId = self.board_id.data()
-            print('BOARD_ID: ' + str(boardId))
+            print(('BOARD_ID: ' + str(boardId)))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
         res = NI6682.libts.NI6682_Finalise(c_int(boardId));
-        print('NI6682_Finalise(): ', res)
+        print(('NI6682_Finalise(): ', res))
 
         res = NI6682.libts.NI6682_Destroy(c_int(boardId));
-        print('NI6682_Destroy(): ', res)
+        print(('NI6682_Destroy(): ', res))
 
         return;
 
@@ -211,7 +211,7 @@ class NI6682(Device):
             self.ni6682Obj = ni6682Obj;
             self.keepWorking = True;
 
-            print("Storeman::__init__():", self.ni6682Obj)
+            print(("Storeman::__init__():", self.ni6682Obj))
 
         def run(self):
 
@@ -224,7 +224,7 @@ class NI6682(Device):
                 tm = self.ni6682Obj.triggerModeDict[getattr(self.ni6682Obj, 'channel_pfi%d_trig_mode'%(i)).data()];
                 decimation = getattr(self.ni6682Obj, 'channel_pfi%d_decimation'%(i)).data();
 
-                print("Storeman::run(): boardId: ", boardId, "channel PFI%d,"%(i), " tm: ", tm, " decimation: ", decimation)
+                print(("Storeman::run(): boardId: ", boardId, "channel PFI%d,"%(i), " tm: ", tm, " decimation: ", decimation))
 
                 self.ni6682Obj.libts.NI6682_ArmChannel(c_int(boardId), c_int(i), c_int(tm), c_int(decimation));
 

@@ -33,7 +33,7 @@ from time import sleep, time
 from sys import exc_info, version_info
 from platform import uname
 if version_info[0]<3:
-    from Queue import Queue
+    from queue import Queue
 else:
     from queue import Queue
 def error(msg):
@@ -135,7 +135,7 @@ class CYGNET4K(Device):
             self.device_id = int(dev_id)
             DRIVERPARMS = self.DRIVERPARMS % (1<<(dev_id-1))
             if Device.debug:
-                print("Opening EPIX(R) PIXCI(R) Frame Grabber\nDevice parameters: '%s'" % (DRIVERPARMS,))
+                print(("Opening EPIX(R) PIXCI(R) Frame Grabber\nDevice parameters: '%s'" % (DRIVERPARMS,)))
             status = self.pxd_PIXCIopen(c_char_p(DRIVERPARMS), c_char_p(self.FORMAT), c_char_p(formatFile))
             if status<0:
                 self.printErrorMsg(status)
@@ -156,16 +156,16 @@ class CYGNET4K(Device):
             self.ColorBits = self.pxd_imageBdim()
             self.PixelsToRead = self.PixelsX * self.PixelsY
             if Device.debug:
-                print("number of boards:   %d" % self.nUnits)
-                print("buffer memory size: %.1f MB" % (self.memSize[0]/1048576.))
-                print("frame buffers:      %d" % self.nBuffer)
-                print("image resolution:   %d x %d" % (self.PixelsX, self.PixelsY))
-                print("colors:             %d" % self.Colors)
-                print("bits per pixel:     %d" % (self.Colors*self.ColorBits))
+                print(("number of boards:   %d" % self.nUnits))
+                print(("buffer memory size: %.1f MB" % (self.memSize[0]/1048576.)))
+                print(("frame buffers:      %d" % self.nBuffer))
+                print(("image resolution:   %d x %d" % (self.PixelsX, self.PixelsY)))
+                print(("colors:             %d" % self.Colors))
+                print(("bits per pixel:     %d" % (self.Colors*self.ColorBits)))
             ticku = (c_uint32*2)()
             if self.pxd_infoSysTicksUnits(ticku) == 0:
                 self.secPerTick = ticku[0] / ticku[1] * 1E-6;
-                if Device.debug: print("Microseconds per tick: %.1f" % (self.secPerTick * 1E6))
+                if Device.debug: print(("Microseconds per tick: %.1f" % (self.secPerTick * 1E6)))
             return True
 
         def startVideoCapture(self,node):
@@ -203,7 +203,7 @@ class CYGNET4K(Device):
             currCaptured = self.pxd_buffersFieldCount(1,currBuffer)
             if currCaptured != self.lastCaptured:  # A new frame arrived
                 currTicks = self.pxd_buffersSysTicks(1, currBuffer)  # get internal clock of that buffer
-                if Device.debug>3: print("%d -> %d @ %d" % (self.lastCaptured, currCaptured, currTicks))
+                if Device.debug>3: print(("%d -> %d @ %d" % (self.lastCaptured, currCaptured, currTicks)))
                 if self.Frames == 0:  # first frame
                     self.baseTicks = currTicks;
                 currTime = (currTicks - (self.baseTicks)) * self.secPerTick + TriggerTime;
@@ -215,7 +215,7 @@ class CYGNET4K(Device):
                     if PixelsRead < 0: self.printErrorMsg(PixelsRead)
                     else: error("pxd_readushort error: %d != %d" % (PixelsRead, self.PixelsToRead))
                     return False
-                if Device.debug: print("FRAME %d READ AT TIME %f" % (self.Frames,currTime))
+                if Device.debug: print(("FRAME %d READ AT TIME %f" % (self.Frames,currTime)))
                 if isinstance(self.queue,Queue):
                     self.queue.put((currTime,usFrame))
                 else:
@@ -235,7 +235,7 @@ class CYGNET4K(Device):
         def storeFrame(self,node,dim,frame):
             dims = Float32Array([dim]).setUnits('s')
             data = Int16Array(array(frame,'int16').reshape([1,self.PixelsX,self.PixelsY]))
-            if Device.debug: print('storeFrame',node.minpath,dim,data.shape)
+            if Device.debug: print(('storeFrame',node.minpath,dim,data.shape))
             node.makeSegment(dim,dim,dims,data)
 
         def stopVideoCapture(self):
@@ -257,7 +257,7 @@ class CYGNET4K(Device):
                     raise mdsExceptions.DevCOMM_ERROR
                 self.isInitSerial = True
                 sleep(0.02)
-            if Device.debug>3: print('serial write: '+' '.join(['%02x' % ord(c) for c  in writeBuf]),BytesToRead)
+            if Device.debug>3: print(('serial write: '+' '.join(['%02x' % ord(c) for c  in writeBuf]),BytesToRead))
             while self.pxd_serialRead(1, 0, create_string_buffer(1), 1): pass
             BytesRead = self.pxd_serialWrite(1, 0, c_char_p(writeBuf), BytesToWrite+1)
             if BytesRead < 0:
@@ -277,7 +277,7 @@ class CYGNET4K(Device):
                     raise mdsExceptions.DevCOMM_ERROR
                 out+= cReadBuf.raw[0:BytesRead]
                 expected-= BytesRead
-            if Device.debug: print("SERIAL READ: %d of %d" % (len(out)-EOC, BytesToRead))
+            if Device.debug: print(("SERIAL READ: %d of %d" % (len(out)-EOC, BytesToRead)))
             return out[0:BytesToRead]
 
         '''Set Commands'''
@@ -583,7 +583,7 @@ class CYGNET4K(Device):
         exposure = self.exposure.data()
         frameRate = self.frame_rate.data()
         trigMode = self.frame_mode.data()
-        if Device.debug: print('TriggerMode: %s' % trigMode)
+        if Device.debug: print(('TriggerMode: %s' % trigMode))
         try:    trigMode = CYGNET4K.trigModes[trigMode.upper()]
         except: raise mdsExceptions.DevBAD_MODE
         CYGNET4K.xclib.setConfiguration(exposure,frameRate,trigMode)
@@ -592,10 +592,10 @@ class CYGNET4K(Device):
         roiRect = (CYGNET4K.xclib.roiXOffset,CYGNET4K.xclib.roiYOffset,CYGNET4K.xclib.roiXSize,CYGNET4K.xclib.roiYSize)
         binning = '%dx%d' % (CYGNET4K.xclib.binning,CYGNET4K.xclib.binning)
         if Device.debug:
-            print('binning:    %s' % binning)
-            print('ROI:        [%d, %d, %d, %d]' % roiRect)
-            print('exposure:   %f ms' % CYGNET4K.xclib.exposure)
-            print('int. clock: %f Hz' % CYGNET4K.xclib.frameRate)
+            print(('binning:    %s' % binning))
+            print(('ROI:        [%d, %d, %d, %d]' % roiRect))
+            print(('exposure:   %f ms' % CYGNET4K.xclib.exposure))
+            print(('int. clock: %f Hz' % CYGNET4K.xclib.frameRate))
         roiRect = Uint16Array(roiRect).setHelp('[x,y,width,height]')
         try:
             self.binning.record = binning
@@ -696,7 +696,7 @@ class CYGNET4K(Device):
     """worker related methods and classes"""
 
     def saveWorker(self):
-        if self.nid in CYGNET4K.workers.keys():
+        if self.nid in list(CYGNET4K.workers.keys()):
             try:
                 CYGNET4K.workers[self.nid].stop()
             except:
@@ -704,14 +704,14 @@ class CYGNET4K(Device):
         CYGNET4K.workers[self.nid] = self.worker
 
     def restoreWorker(self):
-        if self.nid in CYGNET4K.workers.keys():
+        if self.nid in list(CYGNET4K.workers.keys()):
             self.worker = CYGNET4K.workers[self.nid]
             return True
         error('Cannot restore worker!!\nMaybe no worker has been started.')
         return False
 
     def saveTrendWorker(self):
-        if self.nid in CYGNET4K.trendworkers.keys():
+        if self.nid in list(CYGNET4K.trendworkers.keys()):
             try:
                 CYGNET4K.trendworkers[self.nid].stop()
             except:
@@ -719,7 +719,7 @@ class CYGNET4K(Device):
         CYGNET4K.trendworkers[self.nid] = self.trendworker
 
     def restoreTrendWorker(self):
-        if self.nid in CYGNET4K.trendworkers.keys():
+        if self.nid in list(CYGNET4K.trendworkers.keys()):
             self.trendworker = CYGNET4K.trendworkers[self.nid]
             return True
         error('Cannot restore worker!!\nMaybe no worker has been started.')
@@ -804,7 +804,7 @@ class CYGNET4K(Device):
                 error('Cannot access node for pcb trend. Check TREND:PCB. Continue with cmos trend.')
             elif self.cmos is None:
                 error('Cannot access node for cmos trend. Check TREND:CMOS. Continue with pcb trend.')
-            print('started trend writing to %s - %s and %s every %fs' % (self.tree,self.pcb,self.cmos,self.period))
+            print(('started trend writing to %s - %s and %s every %fs' % (self.tree,self.pcb,self.cmos,self.period)))
             self.running = True
             while (not self.stopReq):
                 timeTillNextMeasurement = self.period-(time() % self.period)
@@ -824,7 +824,7 @@ class CYGNET4K(Device):
                         if self.cmos is not None:
                             cmosTemp = CYGNET4K.xclib.getCmosTemp()
                             tree.getNode(self.cmos).makeSegment(currTime,currTime,Dimension(None,Uint64Array(currTime)),Uint16Array(cmosTemp),-1)
-                        if Device.debug: print(tree.tree,tree.shot,currTime,pcbTemp,cmosTemp)
+                        if Device.debug: print((tree.tree,tree.shot,currTime,pcbTemp,cmosTemp))
                     except Exception:
                         error(exc_info()[1])
                         error('failure during temperature readout')

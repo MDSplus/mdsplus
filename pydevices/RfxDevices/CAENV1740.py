@@ -83,9 +83,9 @@ class CAENV1740(Device):
 
       try:
           boardId = self.board_id.data()
-          print('BOARD ID: ', boardId)
+          print(('BOARD ID: ', boardId))
           vmeAddress = self.vme_address.data()
-          print('VME ADDRESS: ', vmeAddress)
+          print(('VME ADDRESS: ', vmeAddress))
 #Module Reset
           data = c_int(0)
           status = CAENV1740.caenLib.CAENVME_WriteCycle(handle, c_int(vmeAddress + 0xEF24), byref(data), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
@@ -172,7 +172,7 @@ class CAENV1740(Device):
                   trigSource = self.trig_source.data()
 
 #if trigger is expressed as an array, consider only the first element
-                  print('Trigger source: ', trigSource)
+                  print(('Trigger source: ', trigSource))
                   if len(self.trig_source.getShape()) > 0:
                       trigSource = trigSource[0]
               except:
@@ -185,7 +185,7 @@ class CAENV1740(Device):
               if clockMode == 'EXTERNAL':
                   try:
                       clockSource = self.clock_source.getData()
-                      if Device.debug: print('Clock source: ', clockSource)
+                      if Device.debug: print(('Clock source: ', clockSource))
                   except:
                       print('Cannot resolve Clock source')
                       CAENV1740.caenLib.CAENVME_End(handle)
@@ -251,9 +251,9 @@ class CAENV1740(Device):
           raise mdsExceptions.TclFAILED_ESSENTIAL
       try:
           boardId = self.board_id.data()
-          if Device.debug: print('BOARD ID: ', boardId)
+          if Device.debug: print(('BOARD ID: ', boardId))
           vmeAddress = self.n_vme_address.data()
-          if Device.debug: print('VME ADDRESS: ', vmeAddress)
+          if Device.debug: print(('VME ADDRESS: ', vmeAddress))
   #Module Reset
           status = CAENV1740.caenLib.CAENVME_WriteCycle(handle, c_int(vmeAddress + 0x8108), byref(c_int(0)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
           if status != 0:
@@ -279,9 +279,9 @@ class CAENV1740(Device):
             raise mdsExceptions.TclFAILED_ESSENTIAL
         try:  # except line 508
             boardId =self.board_id.data()
-            if Device.debug: print('BOARD ID: ', boardId)
+            if Device.debug: print(('BOARD ID: ', boardId))
             vmeAddress = self.vme_address.data()
-            if Device.debug: print('VME ADDRESS: ', vmeAddress)
+            if Device.debug: print(('VME ADDRESS: ', vmeAddress))
             try:
                 clock = self.clock_source.evaluate()
                 dt = clock.getDelta().data()
@@ -328,7 +328,7 @@ class CAENV1740(Device):
                 CAENV1740.caenLib.CAENVME_End(handle)
                 raise mdsExceptions.TclFAILED_ESSENTIAL
 
-            if Device.debug: print('Acquired segments: ', actSegments.value)
+            if Device.debug: print(('Acquired segments: ', actSegments.value))
             if actSegments.value == 0:
                 CAENV1740.caenLib.CAENVME_End(handle)
                 return
@@ -338,7 +338,7 @@ class CAENV1740(Device):
             try:
                 nSegments = self.num_segments.data()
                 segmentSamples = 196608/nSegments
-                print('Segment samples: ', segmentSamples)
+                print(('Segment samples: ', segmentSamples))
             except:
                 print('Error reading max number of segments')
                 CAENV1740.caenLib.CAENVME_End(handle)
@@ -496,7 +496,7 @@ class CAENV1740(Device):
             else:
                 dim = Dimension(Window(startIdx,endIdx+(actSegments - 1) * (endIdx - startIdx), trig),Range(Float64Array(triggers) - Float64(triggers[0]) + Float64(trig) + Float64(startIdx * dt),  Float64Array(triggers) - Float64(triggers[0]) + Float64(trig) + Float64(endIdx * dt), Float64Array(deltas)))
 
-            print('DIM: ', dim)
+            print(('DIM: ', dim))
             dim.setUnits("s");
             for group in range(0,8):
                 if groupMask & (1 << group):

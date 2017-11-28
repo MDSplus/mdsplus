@@ -135,7 +135,7 @@ class ZELOS2150GV(Device):
         totFrameTime=0
         framePeriod = int(self.device.frame_period.data()*1000)
         skipFrameStream=int(float(1/self.device.frame_period.data())/25.0)-1
-        print('skipFrameStream:',skipFrameStream)
+        print(('skipFrameStream:',skipFrameStream))
         if(skipFrameStream<0):
           skipFrameStream=0
         frameStreamCounter = skipFrameStream
@@ -171,13 +171,13 @@ class ZELOS2150GV(Device):
           if( (isStorage==1) and (status.value==1)  ):  #frame complete
             ZELOS2150GV.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, c_float(float(totFrameTime)/1000.0), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(frameTotalCounter-1), 0, 0, 0)
             self.idx = self.idx + 1
-            print('saved frame idx:', self.idx)
+            print(('saved frame idx:', self.idx))
 
           if(isStreaming==1):
             if(tcpStreamHandle.value==-1):
               fede=ZELOS2150GV.streamLib.camOpenTcpConnection(streamPort, byref(tcpStreamHandle), self.width, self.height)
               if(fede!=-1):
-                print('\nConnected to FFMPEG on localhost:',streamPort.value)
+                print(('\nConnected to FFMPEG on localhost:',streamPort.value))
             if(frameStreamCounter == skipFrameStream+1):
               frameStreamCounter=0
             if(frameStreamCounter == 0 and tcpStreamHandle.value!=-1):
@@ -217,7 +217,7 @@ class ZELOS2150GV(Device):
 
 ###restore worker###
     def restoreWorker(self):
-      if self.nid in ZELOS2150GV.workers.keys():
+      if self.nid in list(ZELOS2150GV.workers.keys()):
         self.worker = ZELOS2150GV.workers[self.nid]
       else:
         print('Cannot restore worker!!')
@@ -230,7 +230,7 @@ class ZELOS2150GV(Device):
         ZELOS2150GV.mdsLib = CDLL("libcammdsutils.so")
       if ZELOS2150GV.streamLib is None:
         ZELOS2150GV.streamLib = CDLL("libcamstreamutils.so")
-      if self.nid in ZELOS2150GV.handels.keys():
+      if self.nid in list(ZELOS2150GV.handels.keys()):
         self.handel = ZELOS2150GV.handels[self.nid]
       else:
         print('RESTORE INFO HANDLE NON TROVATO')

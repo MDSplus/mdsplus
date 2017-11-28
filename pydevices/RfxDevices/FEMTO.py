@@ -49,7 +49,7 @@ class FEMTO(Device):
         # Get Name
         try:
             name = self.name.data()
-            print('Name=',name)
+            print(('Name=',name))
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'WARNING: device with no name')
             #raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -57,7 +57,7 @@ class FEMTO(Device):
         # Get IP Address
         try:
             ipAddr = self.ip_addr.data()
-            print('Remote Mode: IP address = ',ipAddr, ';note: empty for Local Mode.')
+            print(('Remote Mode: IP address = ',ipAddr, ';note: empty for Local Mode.'))
         except:
             ipAddr = ""
             Data.execute('DevLogErr($1,$2)', self.nid, 'WARNING: Local Mode. Put a valid IP address.')
@@ -66,7 +66,7 @@ class FEMTO(Device):
         # Get ComPort
         try:
             comPort = self.com_port.data()
-            print('COM port = ',comPort)
+            print(('COM port = ',comPort))
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'ERROR: No COM port. Put COMx in traverser.')
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -148,7 +148,7 @@ class FEMTO(Device):
             # init
             status = Data.execute('MdsValue("RS232Lib->Femto232Write($1,$2)",$1,$2)', comPort, Int8Array(femto))
             for i in range(0,65):
-                print('Femto %02d-> '%(i+1),'%02x'%(femto[i]))
+                print(('Femto %02d-> '%(i+1),'%02x'%(femto[i])))
             del i
             if status == 0:
                 Data.execute('MdsDisconnect()')

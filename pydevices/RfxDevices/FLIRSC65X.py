@@ -148,7 +148,7 @@ class FLIRSC65X(Device):
 
 ###restore worker###
     def restoreWorker(self):
-        if self.nid in FLIRSC65X.workers.keys():
+        if self.nid in list(FLIRSC65X.workers.keys()):
             self.worker = FLIRSC65X.workers[self.nid]
             return 1
         else:
@@ -163,15 +163,15 @@ class FLIRSC65X(Device):
         if FLIRSC65X.flirLib is None:
            libName = "libflirsc65x.so"
            FLIRSC65X.flirLib = CDLL(libName)
-           print(FLIRSC65X.flirLib)
+           print((FLIRSC65X.flirLib))
         if FLIRSC65X.mdsLib is None:
            libName = "libcammdsutils.so"
            FLIRSC65X.mdsLib = CDLL(libName)
-           print(FLIRSC65X.mdsLib)
+           print((FLIRSC65X.mdsLib))
         if FLIRSC65X.streamLib is None:
            libName = "libcamstreamutils.so"
            FLIRSC65X.streamLib = CDLL(libName)
-           print(FLIRSC65X.streamLib)
+           print((FLIRSC65X.streamLib))
         """
         if FLIRSC65X.flirUtilsLib is None:
            libName = "libflirutils.so"
@@ -181,7 +181,7 @@ class FLIRSC65X(Device):
       except:
            Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot load library : ' + libName )
            raise mdsExceptions.TclFAILED_ESSENTIAL
-      if self.nid in FLIRSC65X.handles.keys():
+      if self.nid in list(FLIRSC65X.handles.keys()):
         self.handle = FLIRSC65X.handles[self.nid]
         print('RESTORE INFO HANDLE TROVATO')
       else:
@@ -197,7 +197,7 @@ class FLIRSC65X(Device):
         self.handle = c_int(-1)
         status = FLIRSC65X.flirLib.flirOpen(c_char_p(name), byref(self.handle))
 
-        print("Opened ", status)
+        print(("Opened ", status))
 
         if status < 0:
           FLIRSC65X.flirLib.getLastError(self.handle, self.error)
@@ -389,7 +389,7 @@ class FLIRSC65X(Device):
         else:
            trigSource = array([0.])
 
-      print("OK " + triggerMode )
+      print(("OK " + triggerMode ))
       if triggerMode == 'EXTERNAL':   #0=internal  1=external trigger
         trigModeCode=c_int(1)
       else:
@@ -397,13 +397,13 @@ class FLIRSC65X(Device):
         trigModeCode=c_int(0)
 
       numTrigger = trigSource.size
-      print("OK - NUM TRIGGER ", numTrigger)
-      print("OK - Trigger Source ", trigSource)
+      print(("OK - NUM TRIGGER ", numTrigger))
+      print(("OK - Trigger Source ", trigSource))
 
 
       timeBase = Data.compile(" $ : $ + $ :(zero( size( $ ), 0.) + 1.) * 1./$", trigSource, trigSource, burstDuration, trigSource, frameRate)
 
-      print("Data = " + Data.decompile(timeBase))
+      print(("Data = " + Data.decompile(timeBase)))
 
       self.timing_time_base.putData(timeBase)
       status = FLIRSC65X.flirLib.setTriggerMode(self.handle, trigModeCode, c_double(burstDuration), numTrigger)
@@ -499,14 +499,14 @@ class FLIRSC65X(Device):
 #          highLim = c_int(36)
 #          streamingServer = "localhost"
 
-          print("lowLim ", lowLim)
-          print("highLim ", highLim)
-          print("frameTempUnitCode ", frameTempUnitCode)
-          print("streamingPort ", streamingPort)
-          print("streamingServer ", streamingServer)
+          print(("lowLim ", lowLim))
+          print(("highLim ", highLim))
+          print(("frameTempUnitCode ", frameTempUnitCode))
+          print(("streamingPort ", streamingPort))
+          print(("streamingServer ", streamingServer))
           deviceName = str(self).rsplit(":",1)
           deviceName = deviceName[1]
-          print("Device Name ", deviceName)     
+          print(("Device Name ", deviceName))     
       
 #fede: recover device name and pass it to set streaming to overlay text on frame!!!
 
@@ -600,7 +600,7 @@ class FLIRSC65X(Device):
 
       focPos=c_int(0)
       status = FLIRSC65X.flirLib.getFocusAbsPosition(self.handle, byref(focPos))
-      print('Focus Position Read: ', focPos)
+      print(('Focus Position Read: ', focPos))
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Read Focus Position : '+ self.error.raw)
