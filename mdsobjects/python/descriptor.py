@@ -45,8 +45,9 @@ def pointerToObject(pointer,tree=None):
     return Descriptor(pointer)._setTree(tree).value
 
 class Descriptor(object):
-    tree=None
+    tree = None
     dclass_id = 0
+    _value = None
     class _structure_class(_C.Structure):
         _fields_=[("length",_C.c_ushort),
                   ("dtype",_C.c_ubyte),

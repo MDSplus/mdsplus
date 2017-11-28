@@ -1,19 +1,18 @@
-from MDSplus import Data,StringArray
-
-def MdsDevices(show_dups=False):
-    devices=Data.execute("""
-    [pydevices(),
-    if_error(MitDevices(),*),
-    if_error(RfxDevices(),*),
-    if_error(W7xDevices(),*)]""")
-    ans=list()
-    ds=list()
-    for i in range(int(len(devices)/2)):
-        if str(devices[i*2]).upper() not in ds:
-            ans.append(str(devices[i*2]))
-            ans.append(str(devices[i*2+1]))
-            ds.append(str(devices[i*2]).upper())
-        else:
-            if show_dups:
-                print("Duplicate: %s %s"%(str(devices[i*2]),str(devices[i*2+1])))
-    return StringArray(ans)
+def MdsDevices():
+    from MDSplus import Device,tdi,version
+    from numpy import array
+    def importDevices(name):
+        bname = version.tobytes(name)
+        try:
+            module = __import__(name)
+            ans = [[version.tobytes(k),bname] for k,v in module.__dict__.items() if isinstance(v,int.__class__) and issubclass(v,Device)]
+        except ImportError: ans = []
+        tdidev = tdi("if_error(%s(),*)"%name)
+        if tdidev is None: return ans
+        return tdidev.value.reshape((int(tdidev.value.size/2),2)).tolist()+ans
+    ans = [[version.tobytes(d),b'pydevice'] for d in Device.findPyDevices()]
+    for module in ["KbsiDevices","MitDevices","RfxDevices","W7xDevices"]:
+        ans += importDevices(module)
+    ans = array(list(dict(ans).items()))
+    ans.view('%s,%s'%(ans.dtype,ans.dtype)).sort(order=['f0'], axis=0)
+    return ans

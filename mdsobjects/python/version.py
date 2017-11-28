@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -38,8 +38,6 @@ ispy3 = pyver>(3,)
 ispy2 = pyver<(3,)
 isNt = os.name=='nt'
 npstr = npunicode if ispy3 else npbytes
-def np2npstr(s):
-    return s.astype('U' if ispy3 else 'S')
 # __builtins__ is dict
 has_long      = 'long'       in __builtins__
 has_unicode   = 'unicode'    in __builtins__
@@ -131,10 +129,7 @@ def _tostring(string, targ, nptarg, conv, lstres):
     if isinstance(string, targ):  # short cut
         return targ(string)
     if isinstance(string, npscalar):
-        try:
-            return targ(string.astype(nptarg))
-        except:  # might happen on non ansii chars
-            return targ(conv(str(string)))
+        return targ(conv(string))
     if isinstance(string, basestring):
         return targ(conv(string))
     if isinstance(string, nparray):

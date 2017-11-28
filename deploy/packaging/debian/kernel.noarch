@@ -49,7 +49,6 @@
 ./usr/local/mdsplus/tdi/dev_support/DevPutValue.fun
 ./usr/local/mdsplus/tdi/dev_support/MdsDevices.py
 ./usr/local/mdsplus/tdi/dev_support/PyDoMethod.py
-./usr/local/mdsplus/tdi/dev_support/pydevices.py
 ./usr/local/mdsplus/tdi/dispatch/ServerGetInfo.fun
 ./usr/local/mdsplus/tdi/dispatch/ServerQAction.fun
 ./usr/local/mdsplus/tdi/dispatch/phases/load_phases.fun
