@@ -132,8 +132,8 @@ class ACQIPPSETUP(Device):
             ACQIPPSETUP.niInterfaceLib.generateWaveformOnOneChannel_6368(c_int(board_id), c_int(channel), c_double(offset), c_double(level), c_int(waverate), c_int(softwareTrigger) );
 
             """
-    	      count = 0
-    	      delay = 2;
+                  count = 0
+                  delay = 2;
             while count < 5:
                 time.sleep(delay)
                 count += 1

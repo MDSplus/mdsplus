@@ -93,7 +93,7 @@ class NI6682(Device):
         #super(NI6682, self).__init__(node);
 
         #print "self.nid = ", self.nid, " self.getNid() = ", self.getNid()
-	#try:
+        #try:
             #NI6682.ni6682Storemen[self.getNid()];
         #except:
 

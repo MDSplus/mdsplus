@@ -42,11 +42,11 @@ class REDPYTADC(Device):
   {'path':':CHANNEL_2', 'type':'signal'}]
 
   parts.append({'path':':INIT_ACTION','type':'action',
-	'valueExpr':"Action(Dispatch('SERVER','INIT',50,None),Method(None,'init',head))",
-	'options':('no_write_shot',)})
+        'valueExpr':"Action(Dispatch('SERVER','INIT',50,None),Method(None,'init',head))",
+        'options':('no_write_shot',)})
   parts.append({'path':':STORE_ACTION','type':'action',
-	'valueExpr':"Action(Dispatch('SERVER','STORE',50,None),Method(None,'store',head))",
-	'options':('no_write_shot',)})
+        'valueExpr':"Action(Dispatch('SERVER','STORE',50,None),Method(None,'store',head))",
+        'options':('no_write_shot',)})
 
 
   def init(self):
@@ -152,7 +152,7 @@ class REDPYTADC(Device):
        y2.append(chan2[i][1])
 
     try :
-	    triggerTime = self.trig_time.data()
+            triggerTime = self.trig_time.data()
     except:
         triggerTime = 0
 

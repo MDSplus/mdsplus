@@ -76,11 +76,11 @@ class MARTE_GENERIC(Device):
       parts.append({'path':'.SIGNALS.USER.USER_%03d:DESCRIPTION'%(i+1), 'type':'text'})
       parts.append({'path':'.SIGNALS.USER.USER_%03d:DATA'%(i+1), 'type':'signal'})
     parts.append({'path':':INIT_ACTION','type':'action',
-	  'valueExpr':"Action(Dispatch('CPCI_SERVER','SEQ_INIT',50,None),Method(None,'init',head))",
-	  'options':('no_write_shot',)})
+          'valueExpr':"Action(Dispatch('CPCI_SERVER','SEQ_INIT',50,None),Method(None,'init',head))",
+          'options':('no_write_shot',)})
     parts.append({'path':':STORE_ACTION','type':'action',
-	  'valueExpr':"Action(Dispatch('MARTE_SERVER','SEQ_STORE',50,None),Method(None,'store',head))",
-	  'options':('no_write_shot',)})
+          'valueExpr':"Action(Dispatch('MARTE_SERVER','SEQ_STORE',50,None),Method(None,'store',head))",
+          'options':('no_write_shot',)})
     del(i)
 
     def getEventName(self):

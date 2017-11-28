@@ -655,7 +655,7 @@ class FLIRSC65X(Device):
 ##########stop acquisition############################################################################
     def stopAcquisition(self):
       if self.restoreWorker() :
-      	self.worker.stop()
+              self.worker.stop()
       return
 ##########software trigger (start saving in mdsplus)############################################
     def swTrigger(self):

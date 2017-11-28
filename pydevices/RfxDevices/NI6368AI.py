@@ -254,9 +254,9 @@ class NI6368AI(Device):
             transientRec = False
             startTime = float( self.device.start_time.data() )
             trigSource = self.device.trig_source.data()
-	    clockSource = self.device.clock_source.evaluate()
+            clockSource = self.device.clock_source.evaluate()
 
-	    frequency = float( clockSource.getDelta() )
+            frequency = float( clockSource.getDelta() )
  
             try:
                 #In multi trigger acquisition acquired data from trigger_time[i]+start_time up to trigger_time[i] + end_time
@@ -343,8 +343,8 @@ class NI6368AI(Device):
                 Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot Start Acquisition ')
                 return
            
-	    #timeAt0 = timesIdx0[trigCount] + startTime;
-	    timeAt0 = startTime;
+            #timeAt0 = timesIdx0[trigCount] + startTime;
+            timeAt0 = startTime;
         
             while not self.stopReq:
                 status = self.niInterfaceLib.xseriesReadAndSaveAllChannels(c_int(len(self.chanMap)), chanFd_c, c_int(bufSize), c_int(segmentSize), c_int(sampleToSkip), c_int(numSamples), c_float( timeAt0 ), c_float(frequency), chanNid_c, self.device.clock_source.getNid(), self.treePtr, saveList, self.stopAcq)
@@ -532,12 +532,12 @@ class NI6368AI(Device):
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Read Start or End time')          
                     return 0
 
-		
+                
 #Originale
                 startIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, None, trigTime), clockSource), startTime)
                 #print "Originale startIdx ", startIdx
                 endIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, None, trigTime), clockSource), endTime)
-                #print "Originale endIdx ", endIdx	 
+                #print "Originale endIdx ", endIdx         
                 
                 """   
                 if endTime > 0:
@@ -550,7 +550,7 @@ class NI6368AI(Device):
                     startIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, None, trigTime), clockSource), startTime + trigTime)
                 else:
                     startIdx = -Data.execute('x_to_i($1,$2)', Dimension(Window(0, None, trigTime + startTime), clockSource), trigTime)
-		"""
+                """
 
                 print 'PXI 6368 startIdx = ', Int32(int(startIdx))
                 self.start_idx.putData(Int32(int(startIdx)))
@@ -587,7 +587,7 @@ class NI6368AI(Device):
                 startIdx = self.start_idx.data()
             nSamples = -1
 
-		
+                
         if acqMode == 'TRANSIENT REC.':
             if startIdx >= 0 :
                 niInterfaceLib.xseries_create_ai_conf_ptr(byref(aiConf), c_int(0), c_int(startIdx + nSamples), (numTrigger))
@@ -596,7 +596,7 @@ class NI6368AI(Device):
             else:
                 print 'preTrigger    = ', Int32(int(preTrigger))
                 print 'postTrigger   = ', Int32(int(postTrigger))
-		if  trigTime > startTime or trigMode == 'INTERNAL' : 
+                if  trigTime > startTime or trigMode == 'INTERNAL' : 
                    print 'PXI 6368 Acquire only post trigger when triger time > start Time or trigger mode internal' 
                    nSamples = postTrigger
                    startIdx = 0
@@ -812,8 +812,8 @@ class NI6368AI(Device):
       print "=============== PXI 6368 trigger  ==========="
 
       if self.restoreInfo() == 0 :
-	    Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device')
-	    return 0
+            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device')
+            return 0
 
       try:
             status = niLib.xseries_start_ai(c_int(self.ai_fd))

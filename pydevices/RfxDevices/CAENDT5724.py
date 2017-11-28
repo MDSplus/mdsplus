@@ -62,14 +62,14 @@ class CAENDT5724(Device):
         parts.append({'path':'.CHANNEL_%d:SEG_RAW'%(i+1), 'type':'signal'})
     del i
     parts.append({'path':':INIT_ACTION','type':'action',
-	  'valueExpr':"Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'init',head))",
-	  'options':('no_write_shot',)})
+          'valueExpr':"Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'init',head))",
+          'options':('no_write_shot',)})
     parts.append({'path':':START_ACTION','type':'action',
-	  'valueExpr':"Action(Dispatch('PXI_SERVER','STORE',50,None),Method(None,'start_store',head))",
-	  'options':('no_write_shot',)})
+          'valueExpr':"Action(Dispatch('PXI_SERVER','STORE',50,None),Method(None,'start_store',head))",
+          'options':('no_write_shot',)})
     parts.append({'path':':STOP_ACTION','type':'action',
-	  'valueExpr':"Action(Dispatch('PXI_SERVER','STORE',50,None),Method(None,'stop_store',head))",
-	  'options':('no_write_shot',)})
+          'valueExpr':"Action(Dispatch('PXI_SERVER','STORE',50,None),Method(None,'stop_store',head))",
+          'options':('no_write_shot',)})
     parts.append({'path':':NUM_CHANNELS', 'type':'numeric','value':0})
 
     cvV1718 = 0L                    # CAEN V1718 USB-VME bridge    
@@ -77,7 +77,7 @@ class CAENDT5724(Device):
     cvA2818 = 2L                    # PCI board with optical link                  
     cvA2719 = 3L                    # Optical link piggy-back                      
     cvA32_S_DATA = 0x0D             # A32 supervisory data access                  */
-    cvD32 = 0x04		    # D32
+    cvD32 = 0x04                    # D32
     cvD64 = 0x08
     IRQw = 0
     cv = 0
@@ -132,7 +132,7 @@ class CAENDT5724(Device):
       cvA2818 = 2L                    # PCI board with optical link                  
       cvA2719 = 3L                    # Optical link piggy-back                      
       cvA32_S_DATA = 0x0D             # A32 supervisory data access                 
-      cvD32 = 0x04		      # D32
+      cvD32 = 0x04                      # D32
       cvD64 = 0x08
 
 
@@ -195,7 +195,7 @@ class CAENDT5724(Device):
 
         if self.acqMode == "TRANSIENT RECORDER":
            numTrigger = len(self.device.trig_source.getData())
-	else:
+        else:
            #continuous
            numTrigger = -1
         
@@ -207,7 +207,7 @@ class CAENDT5724(Device):
 
         currSegmentIdx = 0
         segmentCounter = 0
-        self.dtArray = []	
+        self.dtArray = []        
 
         while not self.stopReq:
           self.readCv.acquire()
@@ -219,11 +219,11 @@ class CAENDT5724(Device):
           self.cv.release()
           print 'CONDITION ISSUED'
 
-	  # Read number of buffers 
-	  actSegments = c_int(0)
-	  status = caenLib.CAENVME_ReadCycle(self.handle, c_int(vmeAddress + 0x812C), byref(actSegments), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
-	  if status != 0:
-	     print 'Error reading number of acquired segments' 
+          # Read number of buffers 
+          actSegments = c_int(0)
+          status = caenLib.CAENVME_ReadCycle(self.handle, c_int(vmeAddress + 0x812C), byref(actSegments), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+          if status != 0:
+             print 'Error reading number of acquired segments' 
              continue
 
 
@@ -270,7 +270,7 @@ class CAENDT5724(Device):
       try:
         caenHandles
       except:
-	caenHandles = []
+        caenHandles = []
         caenCvs     = []
         caenReadCvs = []
         caenWorkers = []
@@ -379,7 +379,7 @@ class CAENDT5724(Device):
       if status != 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error resetting DT5724 Device' )
         return 0
-	
+        
       #give some time
       time.sleep(0.1)
 
@@ -412,7 +412,7 @@ class CAENDT5724(Device):
       self.num_channels.putData(numChannels)
 
       """      
-      print "write decimation factor. Not Yet implemented"  	
+      print "write decimation factor. Not Yet implemented"          
       status = caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8044), byref(c_int(0x2)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
       if status != 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing decimation' )
@@ -477,12 +477,12 @@ class CAENDT5724(Device):
         
         dac_offset = getattr(self, 'channel_%d_dac_offset'%(chan+1)).data()
 
-	#Channel offset compensation
+        #Channel offset compensation
         try:        
-          offset = getattr(self, 'channel_%d_offset'%(chan+1)).data()	  
+          offset = getattr(self, 'channel_%d_offset'%(chan+1)).data()          
         except:
           offset = 0;
-	
+        
         #Set offset
         offset = offset + dac_offset
         print 'Offset V ',offset
@@ -742,9 +742,9 @@ class CAENDT5724(Device):
       for chan in range(0,numChannels):
         if (chanMask & (1 << chan)) != 0:
           try:        
-            dac_offset = getattr(self, 'channel_%d_dac_offset'%(chan+1)).data()	  
+            dac_offset = getattr(self, 'channel_%d_dac_offset'%(chan+1)).data()          
           except:
-            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading channel DAC offset')		  
+            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading channel DAC offset')                  
             return 0
           if acqMode == 'CONTINUOUS WITH COUNTER':
             useCounter = True
@@ -794,7 +794,7 @@ class CAENDT5724(Device):
              trigSource = self.trig_source.data()
              t0 = trigSource[0]
              time.sleep(t0)
-	     print "SW Trigger ", trigSource[0]
+             print "SW Trigger ", trigSource[0]
              status = caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8108), byref(c_int(0L)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
              if status != 0:
                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error in sofware trigger DT5724 Device'  )
@@ -810,7 +810,7 @@ class CAENDT5724(Device):
              for delay in trigSource[1 : ] :
                time.sleep( delay - t0 )
                t0 = delay
-	       print "SW Trigger ", delay
+               print "SW Trigger ", delay
                status = caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8108), byref(c_int(0L)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
                if status != 0:
                  Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error in sofware trigger DT5724 Device'  )

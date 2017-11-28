@@ -72,7 +72,7 @@ class CAENDT5720(Device):
     cvA2818 = 2          # PCI board with optical link
     cvA2719 = 3          # Optical link piggy-back
     cvA32_S_DATA = 0x0D  # A32 supervisory data access
-    cvD32 = 0x04		  # D32
+    cvD32 = 0x04                  # D32
     cvD64 = 0x08
     IRQw = 0
     cv = 0
@@ -113,7 +113,7 @@ class CAENDT5720(Device):
       cvA2818 = 2          # PCI board with optical link
       cvA2719 = 3          # Optical link piggy-back
       cvA32_S_DATA = 0x0D  # A32 supervisory data access
-      cvD32 = 0x04	    # D32
+      cvD32 = 0x04            # D32
       cvD64 = 0x08
 
       def configure(self, handle, startIdx, endIdx, pts, actChans, nActChans, dt, trigTime, segmentSamples, segmentSize, chanMask, nid, device, cv, readCv, useCounter, irqEvents):

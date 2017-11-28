@@ -30,7 +30,7 @@ except:
 
 class MARTE_BREAKDOWN(MARTE_GENERIC):
     parNames = ['breakdownTrigIdx','breakdownDeadTime','breakdownRiseTime','breakdownDeadOut1',
-	'breakdownDeadOut2','breakdownDeadOut3','breakdownDeadOut4']
+        'breakdownDeadOut2','breakdownDeadOut3','breakdownDeadOut4']
     parValues = [1, 10E-3, 20E-3, 0, 0, 0, 0]
     parts = list(MARTE_GENERIC.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})

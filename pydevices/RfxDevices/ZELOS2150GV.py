@@ -266,7 +266,7 @@ class ZELOS2150GV(Device):
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Color Coding')
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
-###Exposure	Mode
+###Exposure        Mode
       if self.frame_sync.data() == 'EXTERNAL':
         status = ZELOS2150GV.kappaLib.kappaSetExposureMode(self.handle, c_int(3)) #3 = ZELOS_ENUM_EXPOSUREMODE_RESETRESTART
       else:
