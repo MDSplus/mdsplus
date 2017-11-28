@@ -33,7 +33,7 @@ from time import sleep, time
 from sys import exc_info, version_info
 from platform import uname
 if version_info[0]<3:
-    from queue import Queue
+    from Queue import Queue
 else:
     from queue import Queue
 def error(msg):

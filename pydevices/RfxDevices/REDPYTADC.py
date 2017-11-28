@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@ from MDSplus import mdsExceptions, Device, Data, Float32, Float32Array, version
 if version.ispy3:
     import http as httplib
 else:
-    import http.client
+    import httplib
 import json
 from  time import sleep
 
@@ -51,7 +51,7 @@ class REDPYTADC(Device):
 
   def init(self):
     try:
-      hConn = http.client.HTTPConnection(self.ip_addr.data())
+      hConn = httplib.HTTPConnection(self.ip_addr.data())
       hConn.request("GET", "/bazaar?start=scope+gen")
       hConn.getresponse()
     except:
@@ -111,7 +111,7 @@ class REDPYTADC(Device):
 
   def trigger(self):
     try:
-      hConn = http.client.HTTPConnection(self.ip_addr.data())
+      hConn = httplib.HTTPConnection(self.ip_addr.data())
     except:
       print(('Cannot connect to '+self.ip_addr.data()))
       raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -126,7 +126,7 @@ class REDPYTADC(Device):
 
   def store(self):
     try:
-      hConn = http.client.HTTPConnection(self.ip_addr.data())
+      hConn = httplib.HTTPConnection(self.ip_addr.data())
     except:
       print(('Cannot connect to '+self.ip_addr.data()))
       raise mdsExceptions.TclFAILED_ESSENTIAL

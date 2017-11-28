@@ -657,7 +657,8 @@ class FLIRSC65X(Device):
       if self.restoreWorker() :
               self.worker.stop()
       return
-##########software trigger (start saving in mdsplus)############################################
+
+##########software trigger (start saving in mdsplus)############################################
     def swTrigger(self):
       if self.restoreInfo() == 0:
           raise mdsExceptions.TclFAILED_ESSENTIAL
