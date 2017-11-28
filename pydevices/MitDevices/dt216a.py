@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -117,8 +117,8 @@ class DT216A(Device):
                 asns = ans[::inc]
             f.close()
         except Exception,e :
-           print "readRawData - %s" % e
-           raise e
+            print "readRawData - %s" % e
+            raise e
         return ans
 
     def check(self, expression, message):
@@ -314,12 +314,12 @@ class DT216A(Device):
 
         debug=os.getenv("DEBUG_DEVICES")
 
-         path = self.local_path
+        path = self.local_path
         tree = self.local_tree
         shot = self.tree.shot
         CPCIDataDir = os.getenv('CPCI_DATA_DIR')
         if not CPCIDataDir:
-            raise 'CPCI_DATA_DIR environment variable must be defined'
+            raise Exception('CPCI_DATA_DIR environment variable must be defined')
         dataDir="%s/%s/%s/%s"%(CPCIDataDir, tree, shot, path,)
         try :
             settingsf = open("%s/settings.xml"%(dataDir,), "r")

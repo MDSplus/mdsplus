@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,12 +34,12 @@ class DTAO32(Device):
 
         Methods:
                 Add() - add a DTAO32 device to the tree open for edit
-                Init(arg) - initialize the DTAO32 device 
+                Init(arg) - initialize the DTAO32 device
                             write setup parameters and waveforms to the device
                 Arm(arg)  - Send Commit to the device to arm it
                 Help(arg) - Print this message
 
-                
+
         Nodes:
                 HOSTBOARD - the board number of the DT196 host card
                 BOARD - the slot number in the crate of the AO32 card
@@ -74,7 +74,7 @@ class DTAO32(Device):
                 INIT_ACTION - default initialization action
                 STORE_ACTION - default store action
 
-        Note:  In order to accomidate the shared commit operation for DTAO32 and DTDO32 the commit (arm) is a separate 
+        Note:  In order to accomidate the shared commit operation for DTAO32 and DTDO32 the commit (arm) is a separate
                device method
     """
 
@@ -131,7 +131,7 @@ class DTAO32(Device):
            'M_AWGT',
            'M_LLI',
            'M_LLC',
-           ]       
+           ]
 
     del i
 
@@ -187,14 +187,14 @@ class DTAO32(Device):
 
         hostname = Dt200WriteMaster(hostboard, "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)
         hostname = hostname[0].strip()
-        
+
         self.first = True
         for i in range(32):
             ao_nid=self.__getattr__('output_%2.2d'%(i+1))
             fit='LINEAR'
             knots_y = [0.,0.]
             knots_x = [0., 1.]
-           
+
             if ao_nid.on:
                 try:
                     fit = str(self.__getattr__('ouput_%2.2d_fit'))
@@ -222,7 +222,7 @@ class DTAO32(Device):
 
         try:
             Dt200WriteMaster(hostboard, 'set.ao32 %d AO_MODE %s' % (board, mode), 1)
-            Dt200WriteMaster(hostboard, 'set.ao32 %d AO_CLK  %s %d %s' % (board, clock_src, clock_div, clock_edge), 1) 
+            Dt200WriteMaster(hostboard, 'set.ao32 %d AO_CLK  %s %d %s' % (board, clock_src, clock_div, clock_edge), 1)
             Dt200WriteMaster(hostboard, 'set.ao32 %d AO_TRG %s %s' % (board, trig_src, trig_edge), 1)
         except Exception, e:
             print "Error sending commands to AO32 board\n%s" % (str(e),)
@@ -250,7 +250,7 @@ class DTAO32(Device):
         return 1
 
     def help(self, arg):
-         """ Help method to describe the methods and nodes of the DTAO32 module type """
+        """ Help method to describe the methods and nodes of the DTAO32 module type """
         help(DTAO32)
         return 1
 
@@ -268,7 +268,7 @@ class DTAO32(Device):
             complaint = "error putting board in immediate mode"
             Dt200WriteMaster(hostboard, 'set.ao32 %d AO_MODE M_RIM' % (board,), 1)
             for i in range(32):
-                complaint = "error writing zero for channel %d to card" % (i+1,)  
+                complaint = "error writing zero for channel %d to card" % (i+1,)
                 self.WriteWaveform(hostname, board, i+1, numpy.int16(numpy.array([ 0])))
             complaint, "error sending files to card"
             self.SendFiles(hostname, hostboard, board);
@@ -304,7 +304,7 @@ class DTAO32(Device):
         cmd = 'rm -rf /tmp/%s.%d.tgz; rm -rf /tmp/%s/' % (host, board, host,)
         print cmd
         pipe = os.popen(cmd)
-        pipe.close()        
+        pipe.close()
         Dt200WriteMaster(hostboard, '/ffs/unpack_waves %s %d' %(host, board), 1)
     INIT=init
     ARM=arm

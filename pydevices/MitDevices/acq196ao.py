@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@ from acq import Acq
 class ACQ196AO(Acq):
     """
     D-Tacq ACQ196  16 channel arbitrary waveform generator piggyback function
-    
+
     """
     parts=[
         {'path':':NODE','type':'text','value':'192.168.0.254'},
@@ -91,16 +91,16 @@ class ACQ196AO(Acq):
 
     def doFit(self, x, y, newx, type):
         import scipy.interpolate
-        fitfun = scipy.interpolate.interp1d(x,y, bounds_error=False, fill_value=0.0, kind=type.lower()) 
+        fitfun = scipy.interpolate.interp1d(x,y, bounds_error=False, fill_value=0.0, kind=type.lower())
         return fitfun(newx)
-    
+
     def getDelta(self, thing):
         import MDSplus
         if isinstance(thing, MDSplus.TreeNode) :
             return self.getDelta(thing.record)
         else :
             return thing.delta
- 
+
     def init(self, auto_store=None):
         import tempfile
         import time
@@ -243,7 +243,7 @@ class ACQ196AO(Acq):
 
     def zero(self) :
         import socket
-        
+
         if self.debugging():
             print "starting zero\n"
         s=socket.socket()
@@ -259,7 +259,7 @@ class ACQ196AO(Acq):
             print "finishing zero\n"
         return 0
     ZERO=zero
-        
+
     def setvoltage(self, arg) :
         import socket
         if self.debugging():
@@ -292,8 +292,8 @@ class ACQ196AO(Acq):
             s.connect((self.getBoardIp(),54549))
             s.send(str(arg))
         except Exception,e:
-             print "setvoltage failed to set voltage %s\ntype of arg is %s\n%s\n" % (arg,type(arg),e,)
+            print "setvoltage failed to set voltage %s\ntype of arg is %s\n%s\n" % (arg,type(arg),e,)
             return 0
         return 1
     SETVOLTAGE=setvoltage
-            
+

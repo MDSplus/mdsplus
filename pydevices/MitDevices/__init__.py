@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,10 +40,8 @@ def _mimport(name, level=1):
 try:
     _mvers=_mimport('_version')
     __version__=_mvers.version
-    __doc__=__doc__+"Version: %s\nBranch: %s\nCommit: %s\nRelease tag: %s\n" % (_mvers.version,
-                                                                              _mvers.branch,
-                                                                              _mvers.commit,
-                                                                              _mvers.release_tag)
+    __doc__=__doc__+"Version: %s\nBranch: %s\nCommit: %s\nRelease tag: %s\n" % (
+	     _mvers.version,_mvers.branch,_mvers.commit,_mvers.release_tag)
     __doc__=__doc__+"Release: %s\n" % _mvers.release_date
     branch=_mvers.branch
     commit=_mvers.commit
