@@ -30,52 +30,52 @@ import numpy
 
 class DTAO32(Device):
     """
-	D-Tacq AO32 Analog output module
+        D-Tacq AO32 Analog output module
 
         Methods:
-		Add() - add a DTAO32 device to the tree open for edit
-		Init(arg) - initialize the DTAO32 device 
-			    write setup parameters and waveforms to the device
-		Arm(arg)  - Send Commit to the device to arm it
-		Help(arg) - Print this message
+                Add() - add a DTAO32 device to the tree open for edit
+                Init(arg) - initialize the DTAO32 device 
+                            write setup parameters and waveforms to the device
+                Arm(arg)  - Send Commit to the device to arm it
+                Help(arg) - Print this message
 
                 
-	Nodes:
-		HOSTBOARD - the board number of the DT196 host card
-		BOARD - the slot number in the crate of the AO32 card
-		COMMENT - a comment
-		TRIG_SRC : Where the AO32 will get its trigger -
-		    trig_sources=[ 'S_PXI_0',
-                		   'S_PXI_1',
-              			   'S_LEMO_CLK_DIRECT',
-                   		   'S_LEMO_CLK_OPTO',
-                   		   'S_PXI_3',
-                   		   'S_PXI_4',
-                   		   'S_LEMO_TRG_DIRECT',
-                   		   'S_LEMO_TRG_OPTO',
+        Nodes:
+                HOSTBOARD - the board number of the DT196 host card
+                BOARD - the slot number in the crate of the AO32 card
+                COMMENT - a comment
+                TRIG_SRC : Where the AO32 will get its trigger -
+                    trig_sources=[ 'S_PXI_0',
+                                   'S_PXI_1',
+                                         'S_LEMO_CLK_DIRECT',
+                                      'S_LEMO_CLK_OPTO',
+                                      'S_PXI_3',
+                                      'S_PXI_4',
+                                      'S_LEMO_TRG_DIRECT',
+                                      'S_LEMO_TRG_OPTO',
                      ]
-		TRIG_EDGE - Trigger on 'RISING' or 'FALLING' edge
-		CLOCK_SRC - Where the AO32 will get its clock See TRIG_SRC or 'S_INTERNAL'
+                TRIG_EDGE - Trigger on 'RISING' or 'FALLING' edge
+                CLOCK_SRC - Where the AO32 will get its clock See TRIG_SRC or 'S_INTERNAL'
                 CLOCK_EDGE - See TRIG_EDGE
-		CLOCK_DIV - decimation of clock for output
-		MODE - operation mode  one of :
-			'M_RIM',
-           		'M_RTU',
-			'M_AWGI',
-			'M_AWGT',
-			'M_LLI',
-			'M_LLC'
-		MAX_SAMPLES - the maximum number of samples to output
-		CONTINUOUS - oneshot (0) or continuous (1)
-		TRIGGER - Time the moudule was triggered (user provided)
-		CLOCK - Source of clock edges (user provided)  - SHOULD BE STORED FOR INTERNAL !
-		DIM   - TIMEBASE for output signals - do not change filled in at ADD time
-		OUTPUT_01-OUTPUT_32 - Signal of voltage vs time for each channel (BUILD_SIGNAL(...) )
-		INIT_ACTION - default initialization action
-		STORE_ACTION - default store action
+                CLOCK_DIV - decimation of clock for output
+                MODE - operation mode  one of :
+                        'M_RIM',
+                           'M_RTU',
+                        'M_AWGI',
+                        'M_AWGT',
+                        'M_LLI',
+                        'M_LLC'
+                MAX_SAMPLES - the maximum number of samples to output
+                CONTINUOUS - oneshot (0) or continuous (1)
+                TRIGGER - Time the moudule was triggered (user provided)
+                CLOCK - Source of clock edges (user provided)  - SHOULD BE STORED FOR INTERNAL !
+                DIM   - TIMEBASE for output signals - do not change filled in at ADD time
+                OUTPUT_01-OUTPUT_32 - Signal of voltage vs time for each channel (BUILD_SIGNAL(...) )
+                INIT_ACTION - default initialization action
+                STORE_ACTION - default store action
 
-	Note:  In order to accomidate the shared commit operation for DTAO32 and DTDO32 the commit (arm) is a separate 
-	       device method
+        Note:  In order to accomidate the shared commit operation for DTAO32 and DTDO32 the commit (arm) is a separate 
+               device method
     """
 
     parts=[
@@ -179,13 +179,13 @@ class DTAO32(Device):
             return 0
 
         try:
-	    pipe = os.popen('acqcmd -b %d setAbort' % (hostboard));
+            pipe = os.popen('acqcmd -b %d setAbort' % (hostboard));
             pipe.close()
-	except Exception, e:
-	    print "error sending abort to host board\n%s" %(str(e),)
+        except Exception, e:
+            print "error sending abort to host board\n%s" %(str(e),)
             return 0
 
-	hostname = Dt200WriteMaster(hostboard, "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)
+        hostname = Dt200WriteMaster(hostboard, "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)
         hostname = hostname[0].strip()
         
         self.first = True
@@ -250,12 +250,12 @@ class DTAO32(Device):
         return 1
 
     def help(self, arg):
- 	""" Help method to describe the methods and nodes of the DTAO32 module type """
-	help(DTAO32)
+         """ Help method to describe the methods and nodes of the DTAO32 module type """
+        help(DTAO32)
         return 1
 
     def zero(self, arg):
-	""" zero method sets all of the outputs of the DTAO32  module to zero """
+        """ zero method sets all of the outputs of the DTAO32  module to zero """
         self.first = True
         try:
             complaint = "host board must be an integer"
@@ -284,8 +284,8 @@ class DTAO32(Device):
                 pipe = os.popen('mkdir -p /tmp/%s/ao32cpci.%d; chmod a+rwx /tmp/%s/ao32cpci.%d' % (host, board, host, board));
                 pipe.close()
             except:
-		pass
-	    self.first=False
+                pass
+            self.first=False
 
         file = '/tmp/%s/ao32cpci.%d/f.%2.2d' % (host, board, chan)
         f = open(file, 'wb')

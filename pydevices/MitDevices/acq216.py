@@ -126,17 +126,17 @@ class ACQ216(acq.Acq):
             self.startInitializationFile(fd, trig_src, pre_trig, post_trig)
             fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
             for chan in range(16):
-		vin = self.__getattr__('input_%2.2d_vin' % (chan+1,))
-		if (vin == 2.5) :
-		    vin_str = "2.5"
-		elif (vin == 4) :
-		    vin_str = "4"
-		elif (vin == 6) :
-		    vin_str = "6"
-		elif (vin == 10) :
-		    vin_str = "10"
-		else :
-		    vin_str = "10"		
+                vin = self.__getattr__('input_%2.2d_vin' % (chan+1,))
+                if (vin == 2.5) :
+                    vin_str = "2.5"
+                elif (vin == 4) :
+                    vin_str = "4"
+                elif (vin == 6) :
+                    vin_str = "6"
+                elif (vin == 10) :
+                    vin_str = "10"
+                else :
+                    vin_str = "10"                
                 fd.write("set.vin %d %s\n" % (chan+1, vin_str))
             if clock_src == 'INT_CLOCK':
                 if clock_out == None:
@@ -150,12 +150,12 @@ class ACQ216(acq.Acq):
 #    force the routing for this clock output
 #    regardless of the settings for this line 
 #    above
-		    setRoutecmd = 'set.route d%1.1d in fpga out pxi\n' % (clock_out_num,)
+                    setRoutecmd = 'set.route d%1.1d in fpga out pxi\n' % (clock_out_num,)
                     if self.debugging():
                         print "internal clock clock out is %s setDIOcmd = %s\n" % (clock_out, setDIOcmd,)
                     fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
                     fd.write(setDIOcmd)
-		    fd.write(setRoutecmd)         
+                    fd.write(setRoutecmd)         
             else:
                 if (clock_out != None) :
                     clock_out_num_str = clock_out[-1]

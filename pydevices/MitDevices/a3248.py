@@ -219,7 +219,7 @@ class A3248(Device):
             dim = MDSplus.Dimension(MDSplus.Window(start, end, self.trigger ), self.clock)
             if self.debug:
                 print "about to make dat"
-	        print "gain = %d"%gain
+                print "gain = %d"%gain
                 print "offset =%d"%offset
                 print "dim is %s"% str(dim)
                 print "start is %d end is %d"%(start, end,)

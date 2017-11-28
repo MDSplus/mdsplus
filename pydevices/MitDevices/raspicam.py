@@ -122,7 +122,7 @@ class RASPICAM(MDSplus.Device):
                 "sudo usr/local/bin/trig.py\n", 
                 "v4l2-ctl --stream-mmap=%d --stream-count=%d %s --stream-to=%s.rgb\n" % (num_frames, num_frames, extra_v4l2_ctl, self.fileName())]
 
-	RASPICAM.subproc = subprocess.Popen(['/bin/sh'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE,shell=False)
+        RASPICAM.subproc = subprocess.Popen(['/bin/sh'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE,shell=False)
         for cmd in cmds:
             if self.debugging:
                 print cmd

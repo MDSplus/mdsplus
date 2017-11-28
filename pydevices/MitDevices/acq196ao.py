@@ -54,7 +54,7 @@ class ACQ196AO(Acq):
 
     for i in range(16):
         parts.append({'path':':OUTPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_shot',)})
-	parts.append({'path':':OUTPUT_%2.2d:FIT'%(i+1,),'type':'TEXT', 'value':'LINEAR','options':('no_write_shot')})
+        parts.append({'path':':OUTPUT_%2.2d:FIT'%(i+1,),'type':'TEXT', 'value':'LINEAR','options':('no_write_shot')})
     del i
 
     parts.append({'path':':INIT_ACTION','type':'action',
@@ -79,7 +79,7 @@ class ACQ196AO(Acq):
         """Tell the board to arm"""
         import ftplib
         if self.debugging():
-	    print "starting doInit"
+            print "starting doInit"
         status=1
         try:
             ftp = ftplib.FTP(self.getBoardIp())
@@ -97,9 +97,9 @@ class ACQ196AO(Acq):
     def getDelta(self, thing):
         import MDSplus
         if isinstance(thing, MDSplus.TreeNode) :
-	    return self.getDelta(thing.record)
+            return self.getDelta(thing.record)
         else :
-	    return thing.delta
+            return thing.delta
  
     def init(self, auto_store=None):
         import tempfile
@@ -117,10 +117,10 @@ class ACQ196AO(Acq):
         start=time.time()
         msg=None
 
-	try:
+        try:
             if self.debugging():
                 print "starting init\n";
-	    path = self.local_path
+            path = self.local_path
             tree = self.local_tree
             shot = self.tree.shot
 
@@ -166,7 +166,7 @@ class ACQ196AO(Acq):
             fd = tempfile.TemporaryFile()
             host = self.getMyIp()
             fd.write("acqcmd setAbort\n")
-	    fd.write("host=%s\n"%(host,))
+            fd.write("host=%s\n"%(host,))
             fd.write("tree=%s\n"%(tree,))
             fd.write("shot=%s\n"%(shot,))
             fd.write("path='%s'\n"%(path,))
@@ -225,12 +225,12 @@ class ACQ196AO(Acq):
 
             fd.flush()
             fd.seek(0,0)
-	    print "Time to make init file = %g\n" % (time.time()-start)
-	    start=time.time()
+            print "Time to make init file = %g\n" % (time.time()-start)
+            start=time.time()
             self.doAOInit(fd)
-	    fd.close()
+            fd.close()
 
-	    print "Time for board to init = %g\n" % (time.time()-start)
+            print "Time for board to init = %g\n" % (time.time()-start)
             return  1
 
         except Exception,e:
@@ -279,11 +279,11 @@ class ACQ196AO(Acq):
                 if  chan < 0 or chan > 16 :
                     raise Exception("out of range")
             except:
-	       print "setvoltage method 1st arg must be XX or [1-16]\n"
+               print "setvoltage method 1st arg must be XX or [1-16]\n"
                return 0
-	try:
+        try:
             v = float(args[1])
-	except:
+        except:
             print "setvoltage method 2nd argument must be a floating point voltage\n"
             return 0
 
@@ -291,9 +291,9 @@ class ACQ196AO(Acq):
         try :
             s.connect((self.getBoardIp(),54549))
             s.send(str(arg))
-	except Exception,e:
- 	    print "setvoltage failed to set voltage %s\ntype of arg is %s\n%s\n" % (arg,type(arg),e,)
+        except Exception,e:
+             print "setvoltage failed to set voltage %s\ntype of arg is %s\n%s\n" % (arg,type(arg),e,)
             return 0
         return 1
     SETVOLTAGE=setvoltage
-	    
+            

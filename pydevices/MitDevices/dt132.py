@@ -234,9 +234,9 @@ class DT132(Device):
     def getInternalClock(self, UUT):
         clock_str = UUT.uut.acqcmd('getInternalClock').split()[0].split('=')[1]
         print "clock_str is -%s-" % clock_str
-	freq = int(clock_str)
-	if freq > 16000000 :
-	    freq = 2000000
+        freq = int(clock_str)
+        if freq > 16000000 :
+            freq = 2000000
         return freq
 
     def store(self, arg):
@@ -353,7 +353,7 @@ class DT132(Device):
                                 raw = Data.compile('data($)', chan_raw_node)
                                 chan_node.record = Signal(raw, None, dim)
                         else:
-			    raw = Data.compile('data($)', chan_raw_node)
+                            raw = Data.compile('data($)', chan_raw_node)
                             chan_node.record = Signal(raw, None, Dimension(Window(start, end, self.trig_src), clock))
 
             UUT.uut.acq2sh('mdsClose %s' % (self.boardip.tree.name,))

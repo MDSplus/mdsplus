@@ -195,12 +195,12 @@ class ACQ196(acq.Acq):
         vin2 = self.settings['get.vin 33:64']
         vin3 = self.settings['get.vin 65:96']
         active_chan = int(self.active_chan.record)
-	if active_chan == 96 :
+        if active_chan == 96 :
             vins = eval('MDSplus.makeArray([%s, %s, %s])' % (vin1, vin2, vin3,))
-	else :
-	    if active_chan == 64 :
-	        vins = eval('MDSplus.makeArray([%s, %s])' % (vin1, vin2,))
-	    else :
+        else :
+            if active_chan == 64 :
+                vins = eval('MDSplus.makeArray([%s, %s])' % (vin1, vin2,))
+            else :
                 vins = eval('MDSplus.makeArray([%s])' % (vin1,))
         if self.debugging():
             print "got the vins "

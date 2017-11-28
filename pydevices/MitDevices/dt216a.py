@@ -96,9 +96,9 @@ class DT216A(Device):
 
     del i
     def getPreTrig(self,str) :
-	parts = str.split('=')
+        parts = str.split('=')
         pre_trig = int(parts[2].split(' ')[0])
-	return pre_trig
+        return pre_trig
 
     def getPostTrig(self,str) :
         parts = str.split('=')
@@ -111,13 +111,13 @@ class DT216A(Device):
         try:
             f.seek((pre+start)*2)
             binValues = array.array('H')
-	    binValues.read(f,end-start+1)
+            binValues.read(f,end-start+1)
             ans = numpy.array(binValues, dtype=numpy.int16)
-	    if inc > 1 :
-		asns = ans[::inc]
+            if inc > 1 :
+                asns = ans[::inc]
             f.close()
         except Exception,e :
-	   print "readRawData - %s" % e
+           print "readRawData - %s" % e
            raise e
         return ans
 
@@ -187,8 +187,8 @@ class DT216A(Device):
         msg=None
         debug=os.getenv("DEBUG_DEVICES")
 
-	try:
-	    path = self.local_path
+        try:
+            path = self.local_path
             tree = self.local_tree
             shot = self.tree.shot
             msg="Must specify active chans as int in (2,4,8,16)"
@@ -219,14 +219,14 @@ class DT216A(Device):
             msg=None
             if clock_src == "INT" or clock_src == "MASTER":
                 msg="Must specify clock frequency in clock_div node for internal clock"
-		#clock_freq = self.check('int(self.clock_div)', "Must specify clock frequency in clock_div node for internal clock")
+                #clock_freq = self.check('int(self.clock_div)', "Must specify clock frequency in clock_div node for internal clock")
                 clock_freq = int(self.clock_div)
                 msg=None
             else :
-		try:
-		    clock_div = int(self.clock_div)
-		except:
-		    clock_div = 1
+                try:
+                    clock_div = int(self.clock_div)
+                except:
+                    clock_div = 1
 
 #
 # now create the post_shot ftp command file
@@ -237,7 +237,7 @@ class DT216A(Device):
                 line = 'd%1.1d' % i
                 try:
                     #wire = eval('str(self.di%1.1d_wire.record)' %i)
-		    wire = str(self.__getattr__('di%1.1d_wire' %i).record)
+                    wire = str(self.__getattr__('di%1.1d_wire' %i).record)
                     if wire not in self.wires :
                         print "DI%d:wire must be in %s" % (i, str(self.wires), )
                         wire = 'fpga'
@@ -275,28 +275,28 @@ class DT216A(Device):
             else :
                 fd.write("acqcmd setExternalClock %s\n" % clock_src)
 
-	    for chan in range(16):
-		fd.write("set.vin %d %d\n" % (chan+1, int(self.__getattr__('input_%2.2d_vin' % (chan+1,)))))
+            for chan in range(16):
+                fd.write("set.vin %d %d\n" % (chan+1, int(self.__getattr__('input_%2.2d_vin' % (chan+1,)))))
 
             fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig,post_trig,trig_src,'rising',))
             fd.write(". /usr/local/bin/xmlfunctions.sh\n")
             fd.write("settingsf=/tmp/%s_%s_%s.xml\n"%(tree, shot, path,))
 
-	    cmds = self.status_cmds.record
-	    for cmd in cmds:
-		cmd = cmd.strip()
-		if debug:
-		    print 'adding /xmlcmd "%s" >> $settingsf/ to the file.\n'%(cmd,)
-		fd.write('xmlcmd "%s" >> $settingsf\n'%(cmd,))
+            cmds = self.status_cmds.record
+            for cmd in cmds:
+                cmd = cmd.strip()
+                if debug:
+                    print 'adding /xmlcmd "%s" >> $settingsf/ to the file.\n'%(cmd,)
+                fd.write('xmlcmd "%s" >> $settingsf\n'%(cmd,))
 
             fd.flush()
-	    fd.close()
+            fd.close()
 
-	    print "Time to make init file = %g\n" % (time()-start)
-	    start=time()
+            print "Time to make init file = %g\n" % (time()-start)
+            start=time()
 
             self.doInit(tree,shot,path)
-	    print "Time for board to init = %g\n" % (time()-start)
+            print "Time for board to init = %g\n" % (time()-start)
             return  1
 
         except Exception,e:
@@ -314,61 +314,61 @@ class DT216A(Device):
 
         debug=os.getenv("DEBUG_DEVICES")
 
- 	path = self.local_path
+         path = self.local_path
         tree = self.local_tree
         shot = self.tree.shot
         CPCIDataDir = os.getenv('CPCI_DATA_DIR')
-	if not CPCIDataDir:
-	    raise 'CPCI_DATA_DIR environment variable must be defined'
+        if not CPCIDataDir:
+            raise 'CPCI_DATA_DIR environment variable must be defined'
         dataDir="%s/%s/%s/%s"%(CPCIDataDir, tree, shot, path,)
         try :
-	    settingsf = open("%s/settings.xml"%(dataDir,), "r")
-	except :
-	    raise Exception,"Could not open Settings file %s/settings.xml"%(dataDir,)
+            settingsf = open("%s/settings.xml"%(dataDir,), "r")
+        except :
+            raise Exception,"Could not open Settings file %s/settings.xml"%(dataDir,)
         try :
             settings = load(settingsf)
         except:
             settingsf.close()
-	    raise Exception, "Could not parse XML settings"
+            raise Exception, "Could not parse XML settings"
         settingsf.close()
-	if debug :
-	    print "xml is loaded\n"
+        if debug :
+            print "xml is loaded\n"
         status = []
         cmds = self.status_cmds.record
         for cmd in cmds:
-	    cmd = cmd.strip()
-	    if debug:
-		print "about to append answer for /%s/\n" % (cmd,)
-		print "   which is /%s/\n" %(settings[cmd],)
-	    status.append(settings[cmd])
-	    if debug:
-		print "%s returned %s\n" % (cmd, settings[cmd],)
-	if debug:
-	    print "about to write board_status signal"
-	self.board_status.record = Signal(cmds, None, status)
+            cmd = cmd.strip()
+            if debug:
+                print "about to append answer for /%s/\n" % (cmd,)
+                print "   which is /%s/\n" %(settings[cmd],)
+            status.append(settings[cmd])
+            if debug:
+                print "%s returned %s\n" % (cmd, settings[cmd],)
+        if debug:
+            print "about to write board_status signal"
+        self.board_status.record = Signal(cmds, None, status)
 
         numSampsStr = settings['getNumSamples']
-	preTrig = self.getPreTrig(numSampsStr)
+        preTrig = self.getPreTrig(numSampsStr)
         postTrig = self.getPostTrig(numSampsStr)
         vins = makeArray(numpy.array(settings['get.vin'].split(',')).astype('float'))
-	self.ranges.record = vins
+        self.ranges.record = vins
         chanMask = settings['getChannelMask'].split('=')[-1]
-	if self.clock_src.record.lower() == 'int' or self.clock_src.record.lower() == 'master':
-	    #intClkStr=settings['getInternalClock'].split()[0].split('=')[1]
+        if self.clock_src.record.lower() == 'int' or self.clock_src.record.lower() == 'master':
+            #intClkStr=settings['getInternalClock'].split()[0].split('=')[1]
             #intClock=int(intClikStr)
-	    intClock = float(settings['getInternalClock'].split()[1])
+            intClock = float(settings['getInternalClock'].split()[1])
             delta=1./float(intClock)
-	else:
-	    delta = 0
+        else:
+            delta = 0
 
         trig_src = self.__getattr__(str(self.trig_src.record).lower())
 #
 # now store each channel
 #
-	for chan in range(16):
-	    if debug:
-		print "working on channel %d" % chan
-	    #chan_node = eval('self.input_%2.2d' % (chan+1,))
+        for chan in range(16):
+            if debug:
+                print "working on channel %d" % chan
+            #chan_node = eval('self.input_%2.2d' % (chan+1,))
             chan_node = self.__getattr__('input_%2.2d' % (chan+1,))
             if chan_node.on :
                 if debug:
@@ -379,7 +379,7 @@ class DT216A(Device):
                     except:
                         start = -preTrig
                     try:
-			end = min(int(self.__getattr__('input_%2.2d_endidx'%(chan+1,))),postTrig-1)
+                        end = min(int(self.__getattr__('input_%2.2d_endidx'%(chan+1,))),postTrig-1)
                     except:
                         end = postTrig-1
                     try:
@@ -389,24 +389,24 @@ class DT216A(Device):
 #
 # could do the coeffs
 #
-		    chanFileName="%s/%2.2d"%(dataDir, chan+1,)
+                    chanFileName="%s/%2.2d"%(dataDir, chan+1,)
                     buf = self.readRawData(chanFileName, preTrig, start, end, inc)
-		    if delta != 0 :
-			axis = Range(None, None, delta/inc)
-		    else:
-			#clockExpr = 'self.%s'% str(self.clock_src.record)
-			#clock_src = eval(clockExpr.lower())
+                    if delta != 0 :
+                        axis = Range(None, None, delta/inc)
+                    else:
+                        #clockExpr = 'self.%s'% str(self.clock_src.record)
+                        #clock_src = eval(clockExpr.lower())
                         clock_src = self.__getattr__(str(self.clock_src.record).lower())
                         axis = clock_src
 
-		    if inc == 1:
-			dim = Dimension(Window(start, end, trig_src ), axis)
+                    if inc == 1:
+                        dim = Dimension(Window(start, end, trig_src ), axis)
                     else:
-			dim = Data.compile('Map($,$)', Dimension(Window(start/inc, end/inc, trig_src), axis), Range(start, end, inc))
+                        dim = Data.compile('Map($,$)', Dimension(Window(start/inc, end/inc, trig_src), axis), Range(start, end, inc))
 #                    dat = Data.compile('build_signal(build_with_units( $*(0. + $value), "V") ,build_with_units($,"Counts"),$)', coefficent, buf,dim)
-		    dat = Data.compile('_v0=$, _v1=$, build_signal(build_with_units(( _v0+ (_v1-_v0)*($value - -32768)/(32767 - -32768 )), "V") ,build_with_units($,"Counts"),$)', vins[chan*2], vins[chan*2+1], buf,dim)
+                    dat = Data.compile('_v0=$, _v1=$, build_signal(build_with_units(( _v0+ (_v1-_v0)*($value - -32768)/(32767 - -32768 )), "V") ,build_with_units($,"Counts"),$)', vins[chan*2], vins[chan*2+1], buf,dim)
                     exec('c=self.input_'+'%02d'%(chan+1,)+'.record=dat')
-	return 1
+        return 1
 
     STOREFTP=storeftp
 
@@ -420,7 +420,7 @@ class DT216A(Device):
             chan_node = self.__getattr__('input_%2.2d' % (chan,))
             if chan_node.on :
                 max_chan = chan_node
-		break
+                break
         tries = 0
         while tries < 60 :
             if max_chan.rlength > 0:

@@ -199,10 +199,10 @@ class DT216B(Device):
 
             if clock_src == 'INT_CLOCK' or clock_src == 'MASTER' :
                 UUT.uut.acqcmd("setInternalClock %d DO1" % clock_freq)
-		if clock_src == 'MASTER' :
-		    UUT.uut.acqcmd('-- setDIO -1-----')
+                if clock_src == 'MASTER' :
+                    UUT.uut.acqcmd('-- setDIO -1-----')
             else:
-		UUT.uut.acqcmd("setExternalClock %s" % clock_src)
+                UUT.uut.acqcmd("setExternalClock %s" % clock_src)
             UUT.setPrePostMode(pre_trig, post_trig)
             mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
             UUT.set_arm()
@@ -254,8 +254,8 @@ class DT216B(Device):
 
             complete = 0
             tries = 0
-	    if UUT.get_state().split()[-1] == "ST_RUN" :
-		raise Exception, "Device not Triggered \n device returned -%s-" % UUT.get_state().split()[-1]
+            if UUT.get_state().split()[-1] == "ST_RUN" :
+                raise Exception, "Device not Triggered \n device returned -%s-" % UUT.get_state().split()[-1]
             if debug:
                 print "about to get the vins\n"
             vins = self.getVins(UUT)
@@ -280,11 +280,11 @@ class DT216B(Device):
             f=open(fname, 'w')
             f.write("#!/bin/sh\n")
             f.write("touch /tmp/starting_%d\n" % self.boardip.tree.shot)
-	    f.write("acqcmd --until ST_STOP\n")
+            f.write("acqcmd --until ST_STOP\n")
             f.write("mdsConnect %s\n" %str(self.hostip.record))
             cmd = "mdsValue \"job_start('%s', %d)\"" % (self.path, self.tree.shot)
             cmd = cmd.replace('\\', '\\\\\\\\\\\\\\')
-	    f.write("%s\n"%( cmd,))
+            f.write("%s\n"%( cmd,))
             f.write("mdsOpen %s %d\n" % (self.boardip.tree.name, self.boardip.tree.shot,))
             for chan in range(16) :
                 chan_node = eval('self.input_%2.2d' % (chan+1,))
@@ -294,15 +294,15 @@ class DT216B(Device):
                         print "it is on so ..."
                     if mask[chan:chan+1] == '1' :
                         try:
-			    start =  eval("int(self.input_%2.2d_start_idx)"%(chan+1))
+                            start =  eval("int(self.input_%2.2d_start_idx)"%(chan+1))
                         except:
                             start = pre
                         try:
-			    end =  eval("int(self.input_%2.2d_end_idx)"%(chan+1))
+                            end =  eval("int(self.input_%2.2d_end_idx)"%(chan+1))
                         except:
                             end = post
                         try:
-			    inc =  eval("int(self.input_%2.2d_inc)"%(chan+1))
+                            inc =  eval("int(self.input_%2.2d_inc)"%(chan+1))
                         except:
                             inc = 1
                         if debug:
@@ -311,7 +311,7 @@ class DT216B(Device):
                         command = command.replace('\\','\\\\')
                         if debug:
                             print "about to execute %s" % command
-			f.write(command)
+                        f.write(command)
                         if inc > 1 :
                             clk=None
                             delta=None
@@ -335,18 +335,18 @@ class DT216B(Device):
                         else:
                             raw = Data.compile('data($)', chan_raw_node)
                             chan_node.record = Signal(raw, "", Dimension(Window(start, end, self.trig_src), clock))
-	    f.write('mdsClose %s\n' % (self.boardip.tree.name,))
+            f.write('mdsClose %s\n' % (self.boardip.tree.name,))
             f.write("touch /tmp/finished_%d\n" % self.boardip.tree.shot)
             cmd = "mdsValue \"job_finish('%s', %d)\"" % (self.path, self.tree.shot)
             cmd = cmd.replace('\\', '\\\\\\\\\\\\\\')
             f.write("%s\n"%( cmd,))
-	    f.write("rm $0\n")
+            f.write("rm $0\n")
             f.close()
             cmd = 'curl -s -T %s ftp://%s/%s' %(fname, boardip, 'post_shot.sh')
             pipe = os.popen(cmd)
             pipe.close()
-	    UUT.uut.acq2sh("chmod a+rx /home/ftp/post_shot.sh")
-	    UUT.uut.acq2sh("/home/ftp/post_shot.sh&")
+            UUT.uut.acq2sh("chmod a+rx /home/ftp/post_shot.sh")
+            UUT.uut.acq2sh("/home/ftp/post_shot.sh&")
         except Exception,e :
             print "Error storing DT216B Device\n%s" % ( str(e), )
             return 0
@@ -363,7 +363,7 @@ class DT216B(Device):
     HELP=help
 
     def wait(self, arg):
-	"""
+        """
            Wait method for dt216b module
            wait for the device to complete
            asynchronous data acquisition tasks
@@ -372,7 +372,7 @@ class DT216B(Device):
         cmd = "job_wait %s %d" % (str(self.path).replace('\\','\\\\'), self.tree.shot,)
         pipe = os.popen(cmd)
         pipe.close()
-	return 1
+        return 1
 
     WAIT=wait
 

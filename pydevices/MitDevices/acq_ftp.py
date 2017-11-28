@@ -96,14 +96,14 @@ class ACQ_FTP(MDSplus.Device):
 
 
     def debugging(self):
-	if self.debug == None :
+        if self.debug == None :
             self.debug=os.getenv("DEBUG_DEVICES")
-	return(self.debug)
+        return(self.debug)
 
     def getPreTrig(self,str) :
-	parts = str.split('=')
+        parts = str.split('=')
         pre_trig = int(parts[2].split(' ')[0])
-	return pre_trig
+        return pre_trig
 
     def getPostTrig(self,str) :
         parts = str.split('=')
@@ -121,13 +121,13 @@ class ACQ_FTP(MDSplus.Device):
         try:
             f.seek((pre+start)*2)
             binValues = array.array('H')
-	    binValues.read(f,end-start+1)
+            binValues.read(f,end-start+1)
             ans = numpy.array(binValues, dtype=numpy.int16)
-	    if inc > 1 :
-		ans = ans[::inc]
+            if inc > 1 :
+                ans = ans[::inc]
             f.close()
         except Exception,e :
-	   print "readRawData - %s" % e
+           print "readRawData - %s" % e
            raise e
         return ans
 
@@ -154,7 +154,7 @@ class ACQ_FTP(MDSplus.Device):
         """Tell the board to arm"""
         import socket,signal
         if self.debugging():
-	    print "starting doInit"
+            print "starting doInit"
         status=1
         s=socket.socket()
         try:
@@ -182,7 +182,7 @@ class ACQ_FTP(MDSplus.Device):
             chan_node = self.__getattr__('input_%2.2d' % (chan,))
             if chan_node.on :
                 max_chan = chan_node
-		break
+                break
         tries = 0
         while tries < 60 :
             if max_chan.rlength > 0:
@@ -220,7 +220,7 @@ class ACQ_FTP(MDSplus.Device):
             print "could not send %s to the board" %(cmd,)
         if self.debugging():
             print "got back: %s\n" % (a,)
-	    print "     and: %s\n" % (b,)
+            print "     and: %s\n" % (b,)
         return 1
     TRIGGER=trigger
 

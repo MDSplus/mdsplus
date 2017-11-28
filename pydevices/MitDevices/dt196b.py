@@ -199,20 +199,20 @@ class DT196B(Device):
 
             if clock_src == 'INT_CLOCK' or clock_src == 'MASTER' :
                 UUT.uut.acqcmd("setInternalClock %d" % clock_freq)
-		if clock_src == 'MASTER' :
-		    UUT.uut.acqcmd('-- setDIO -1-----')
+                if clock_src == 'MASTER' :
+                    UUT.uut.acqcmd('-- setDIO -1-----')
             else:
-		if (clock_div != 1) :
-		    UUT.uut.acqcmd("setExternalClock %s %d D02" % (clock_src, clock_div,))
+                if (clock_div != 1) :
+                    UUT.uut.acqcmd("setExternalClock %s %d D02" % (clock_src, clock_div,))
 #
 # the following is not generic
 # the clock is output on d2 and comes from DI0
 #
-		    UUT.set_route('d2', 'in fpga out pxi')
-		    UUT.uut.acqcmd('-- setDIO --1-----')
+                    UUT.set_route('d2', 'in fpga out pxi')
+                    UUT.uut.acqcmd('-- setDIO --1-----')
                     UUT.uut.acq2sh('set.ext_clk DI0')
 
-		else :
+                else :
                     UUT.uut.acqcmd("setExternalClock %s" % clock_src)
 
             UUT.setPrePostMode(pre_trig, post_trig, trig_src, trig_edge)
@@ -268,8 +268,8 @@ class DT196B(Device):
 
             complete = 0
             tries = 0
-	    if UUT.get_state().split()[-1] == "ST_RUN" :
-		raise Exception, "Device not Triggered \n device returned -%s-" % UUT.get_state().split()[-1]
+            if UUT.get_state().split()[-1] == "ST_RUN" :
+                raise Exception, "Device not Triggered \n device returned -%s-" % UUT.get_state().split()[-1]
             if debug:
                 print "about to get the vins\n"
             vins = self.getVins(UUT)
@@ -277,8 +277,8 @@ class DT196B(Device):
             (tot, pre, post, run) = UUT.get_numSamples()
             pre = int(pre)
             post = int(post)
-	    if pre == 0 and post == 0 :
-		return 662480266  # DT196B$_NO_SAMPLES
+            if pre == 0 and post == 0 :
+                return 662480266  # DT196B$_NO_SAMPLES
             mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
             if debug:
                 print "pre = %d, post = %d" % (pre, post, )
@@ -296,11 +296,11 @@ class DT196B(Device):
             f=open(fname, 'w')
             f.write("#!/bin/sh\n")
             f.write("touch /tmp/starting_%d\n" % self.boardip.tree.shot)
-	    f.write("acqcmd --until ST_STOP\n")
+            f.write("acqcmd --until ST_STOP\n")
             f.write("mdsConnect %s\n" %str(self.hostip.record))
             cmd = "mdsValue \"job_start('%s', %d)\"" % (self.path, self.tree.shot)
             cmd = cmd.replace('\\', '\\\\\\\\\\\\\\')
-	    f.write("%s\n"%( cmd,))
+            f.write("%s\n"%( cmd,))
             f.write("mdsOpen %s %d\n" % (self.boardip.tree.name, self.boardip.tree.shot,))
             for chan in range(96) :
                 chan_node = eval('self.input_%2.2d' % (chan+1,))
@@ -310,15 +310,15 @@ class DT196B(Device):
                         print "it is on so ..."
                     if mask[chan:chan+1] == '1' :
                         try:
-			    start =  eval("int(self.input_%2.2d_start_idx)"%(chan+1))
+                            start =  eval("int(self.input_%2.2d_start_idx)"%(chan+1))
                         except:
                             start = pre
                         try:
-			    end =  eval("int(self.input_%2.2d_end_idx"%(chan+1))
+                            end =  eval("int(self.input_%2.2d_end_idx"%(chan+1))
                         except:
                             end = post-1
                         try:
-			    inc =  eval("int(self.input_%2.2d_inc)"%(chan+1))
+                            inc =  eval("int(self.input_%2.2d_inc)"%(chan+1))
                         except:
                             inc = 1
                         if debug:
@@ -327,7 +327,7 @@ class DT196B(Device):
                         command = command.replace('\\','\\\\')
                         if debug:
                             print "about to execute %s" % command
-			f.write(command)
+                        f.write(command)
                         if inc > 1 :
                             clk=None
                             delta=None
@@ -351,18 +351,18 @@ class DT196B(Device):
                         else:
                             raw = Data.compile('data($)', chan_raw_node)
                             chan_node.record = Signal(raw, "", Dimension(Window(start, end-1, self.trig_src), clock))
-	    f.write('mdsClose %s\n' % (self.boardip.tree.name,))
+            f.write('mdsClose %s\n' % (self.boardip.tree.name,))
             f.write("touch /tmp/finished_%d\n" % self.boardip.tree.shot)
             cmd = "mdsValue \"job_finish('%s', %d)\"" % (self.path, self.tree.shot)
             cmd = cmd.replace('\\', '\\\\\\\\\\\\\\')
             f.write("%s\n"%( cmd,))
-	    f.write("rm $0\n")
+            f.write("rm $0\n")
             f.close()
             cmd = 'curl -s -T %s ftp://%s/%s' %(fname, boardip, 'post_shot.sh')
             pipe = os.popen(cmd)
             pipe.close()
-	    UUT.uut.acq2sh("chmod a+rx /home/ftp/post_shot.sh")
-	    UUT.uut.acq2sh("/home/ftp/post_shot.sh&")
+            UUT.uut.acq2sh("chmod a+rx /home/ftp/post_shot.sh")
+            UUT.uut.acq2sh("/home/ftp/post_shot.sh&")
         except Exception,e :
             print "Error storing DT196B Device\n%s" % ( str(e), )
             return 0
