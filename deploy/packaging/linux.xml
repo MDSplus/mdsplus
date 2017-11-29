@@ -83,9 +83,7 @@ fi
     <requires package="mitdevices_bin"/>
     <include dir="/usr/local/mdsplus/tdi/MitDevices"/>
     <include dir="/usr/local/mdsplus/pydevices/MitDevices"/>
-    <postinst>
-      
-python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
+    <preinst>
 if [ -d %{python_sitelib} ]
 then 
   if [ "$1" == "0" ]
@@ -97,14 +95,22 @@ else
   easy_install -q pip &gt;/dev/null 2&gt;&amp;1
   while (pip uninstall -q MitDevices 2&gt;/dev/null);do :;done
 fi
+    </preinst>
+    <postinst>
+      
+python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
 
     </postinst>
     <postrm> rm -Rf __INSTALL_PREFIX__/mdsplus/pydevices/MitDevices </postrm>
+    <pre-install>
+
+easy_install -q pip &gt;/dev/null 2&gt;&amp;1
+while (pip uninstall -q MitDevices 2&gt;/dev/null);do :;done
+
+    </pre-install>
     <post-install>
 
 python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
-easy_install -q pip &gt;/dev/null 2&gt;&amp;1
-while (pip uninstall -q MitDevices 2&gt;/dev/null);do :;done
 
     </post-install>
     <post-deinstall> rm -Rf /usr/local/mdsplus/pydevices/MitDevices</post-deinstall>
@@ -539,9 +545,7 @@ fi
     <include dir="/usr/local/mdsplus/tdi/RfxDevices"/>
     <include dir="/usr/local/mdsplus/pydevices/RfxDevices"/>
     <include file="/usr/local/mdsplus/java/classes/jDevices.jar"/>
-    <postinst>
-
-python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1
+    <preinst>
 if [ -d %{python_sitelib} ]
 then 
   if [ "$1" == "0" ]
@@ -553,14 +557,22 @@ else
   easy_install -q pip &gt;/dev/null 2&gt;&amp;1
   while (pip uninstall -q RfxDevices 2&gt;/dev/null);do :;done
 fi
+    </preinst>
+    <postinst>
+
+python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1
 
     </postinst>
     <postrm> rm -Rf __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices </postrm>
+    <pre-install>
+
+easy_install -q pip &gt;/dev/null 2&gt;&amp;1
+while (pip uninstall -q RfxDevices 2&gt;/dev/null);do :;done
+
+    </pre-install>
     <post-install>
 
 python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1
-easy_install -q pip &gt;/dev/null 2&gt;&amp;1
-while (pip uninstall -q RfxDevices 2&gt;/dev/null);do :;done
 
     </post-install>
     <post-deinstall> rm -Rf /usr/local/mdsplus/pydevices/RfxDevices</post-deinstall>
@@ -569,9 +581,8 @@ while (pip uninstall -q RfxDevices 2&gt;/dev/null);do :;done
   <package name="w7xdevices" arch="noarch" summary="Support for W7x data acquisition devices" description="Support for W7x data acquisition devices">
     <requires package="python"/>
     <include dir="/usr/local/mdsplus/pydevices/W7xDevices"/>
-    <postinst>
+    <preinst>
 
-python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1
 if [ -d %{python_sitelib} ]
 then 
   if [ "$1" == "0" ]
@@ -584,13 +595,22 @@ else
   while (pip uninstall -q W7xDevices 2&gt;/dev/null);do :;done
 fi
 
+    </preinst>
+    <postinst>
+
+python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1
+
     </postinst>
     <postrm> rm -Rf __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices </postrm>
+    <pre-install>
+
+easy_install -q pip &gt;/dev/null 2&gt;&amp;1
+while (pip uninstall -q W7xDevices 2&gt;/dev/null);do :;done
+
+    </pre-install>
     <post-install>
 
 python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1
-easy_install -q pip &gt;/dev/null 2&gt;&amp;1
-while (pip uninstall -q W7xDevices 2&gt;/dev/null);do :;done
 
     </post-install>
     <post-deinstall> rm -Rf /usr/local/mdsplus/pydevices/W7xDevices</post-deinstall>
