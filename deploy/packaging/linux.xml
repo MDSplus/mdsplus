@@ -84,14 +84,12 @@ fi
     <include dir="/usr/local/mdsplus/tdi/MitDevices"/>
     <include dir="/usr/local/mdsplus/pydevices/MitDevices"/>
     <preinst>
-if [ -d %{python_sitelib} ]
+if [ -d "%{python_sitelib}" ]
 then 
-  if [ "$1" == "0" ]
-  then
-    rm -Rf %{python_sitelib}/MitDevices*
-    rm -Rf %{python_sitelib}/*mitdevices*
-  fi
+  rm -Rf %{python_sitelib}/MitDevices*
+  rm -Rf %{python_sitelib}/*mitdevices*
 else
+  export PYTHONPATH=""
   easy_install -q pip &gt;/dev/null 2&gt;&amp;1
   while (pip uninstall -q MitDevices 2&gt;/dev/null);do :;done
 fi
@@ -101,7 +99,12 @@ fi
 python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
 
     </postinst>
-    <postrm> rm -Rf __INSTALL_PREFIX__/mdsplus/pydevices/MitDevices </postrm>
+    <postrm>
+      if [ -d "__INSTALL_PREFIX__" -a "$1" == "0" -o ! -d "__INSTALL_PREFIX__" ]
+      then
+        rm -Rf __INSTALL_PREFIX__/mdsplus/pydevices/MitDevices
+      fi
+    </postrm>
     <pre-install>
 
 easy_install -q pip &gt;/dev/null 2&gt;&amp;1
@@ -546,24 +549,27 @@ fi
     <include dir="/usr/local/mdsplus/pydevices/RfxDevices"/>
     <include file="/usr/local/mdsplus/java/classes/jDevices.jar"/>
     <preinst>
-if [ -d %{python_sitelib} ]
+if [ -d "%{python_sitelib}" ]
 then 
-  if [ "$1" == "0" ]
-  then
-    rm -Rf %{python_sitelib}/RfxDevices*
-    rm -Rf %{python_sitelib}/*rfxdevices*
-  fi
+  rm -Rf %{python_sitelib}/RfxDevices*
+  rm -Rf %{python_sitelib}/*mitdevices*
 else
+  export PYTHONPATH=""
   easy_install -q pip &gt;/dev/null 2&gt;&amp;1
   while (pip uninstall -q RfxDevices 2&gt;/dev/null);do :;done
 fi
     </preinst>
     <postinst>
-
+      
 python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1
 
     </postinst>
-    <postrm> rm -Rf __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices </postrm>
+    <postrm>
+      if [ -d "__INSTALL_PREFIX__" -a "$1" == "0" -o ! -d "__INSTALL_PREFIX__" ]
+      then
+        rm -Rf __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices
+      fi
+    </postrm>
     <pre-install>
 
 easy_install -q pip &gt;/dev/null 2&gt;&amp;1
@@ -582,26 +588,27 @@ python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices &gt;/dev/n
     <requires package="python"/>
     <include dir="/usr/local/mdsplus/pydevices/W7xDevices"/>
     <preinst>
-
-if [ -d %{python_sitelib} ]
+if [ -d "%{python_sitelib}" ]
 then 
-  if [ "$1" == "0" ]
-  then
-    rm -Rf %{python_sitelib}/W7xDevices*
-    rm -Rf %{python_sitelib}/*W7xdevices*
-  fi
+  rm -Rf %{python_sitelib}/W7xDevices*
+  rm -Rf %{python_sitelib}/*mitdevices*
 else
+  export PYTHONPATH=""
   easy_install -q pip &gt;/dev/null 2&gt;&amp;1
   while (pip uninstall -q W7xDevices 2&gt;/dev/null);do :;done
 fi
-
     </preinst>
     <postinst>
-
+      
 python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1
 
     </postinst>
-    <postrm> rm -Rf __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices </postrm>
+    <postrm>
+      if [ -d "__INSTALL_PREFIX__" -a "$1" == "0" -o ! -d "__INSTALL_PREFIX__" ]
+      then
+        rm -Rf __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices
+      fi
+    </postrm>
     <pre-install>
 
 easy_install -q pip &gt;/dev/null 2&gt;&amp;1
@@ -614,7 +621,6 @@ python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/n
 
     </post-install>
     <post-deinstall> rm -Rf /usr/local/mdsplus/pydevices/W7xDevices</post-deinstall>
-
   </package>
 
   <package name="kbsidevices" arch="noarch" summary="Support for KBSI data acquisition devices" description="Support for KBSI data acquisition devices">
@@ -641,7 +647,7 @@ python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/n
       pushd __INSTALL_PREFIX__/mdsplus/mdsobjects/python &gt;/dev/null 2&gt;&amp;1
       python setup.py -q install
       rm -Rf build dist MDSplus.egg-info
-      find . -name '*\.pyc' --delete
+      find . -name '*\.pyc' -delete
       popd &gt;/dev/null 2&gt;&amp;1
 
     </postinst>
@@ -650,7 +656,7 @@ python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/n
       cd /mdsplus/mdsobjects/python
       python setup.py -q install
       rm -Rf build dist MDSplus.egg-info
-      find . -name '*\.pyc' --delete
+      find . -name '*\.pyc' -delete
       cd "$oldpwd"
     </post-install>
     <pre-deinstall>
