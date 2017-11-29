@@ -1124,8 +1124,8 @@ RELEASE_DATE="$(date)"
 RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 
 # Determine common warning options to apply to C, C++, and Fortran languages
-AS_VAR_SET([WARNFLAGS], ["-Wall -Wextra"])
-
+AS_VAR_SET([WARNFLAGS], ["-Wall"])
+AS_VAR_SET([NOWARNFLAGS],[])
 AC_MSG_CHECKING([whether to treat warnings as errors])
 AC_ARG_ENABLE([werror],
               [AS_HELP_STRING([--enable-werror],
@@ -1133,9 +1133,15 @@ AC_ARG_ENABLE([werror],
               [],
               [AS_VAR_SET([enable_werror], [no])])
 AS_CASE([$enable_werror],
-        [yes], [AS_VAR_APPEND([WARNFLAGS], [" -Werror"])],
+        [yes], [AS_VAR_APPEND([WARNFLAGS], [" -Werror "])],
         [])
+AC_ARG_ENABLE([wreturns],
+              [AS_HELP_STRING([--disable-wreturns],
+                              [Disable warnings about unused return value from functions])],
+              [AS_CASE([$enableval],[no], [AS_VAR_APPEND([NOWARNFLAGS],[" -Wno-unused-result "])])],
+	      [])
 AC_SUBST([WARNFLAGS])
+AC_SUBST([NOWARNFLAGS])
 AC_MSG_RESULT([$enable_werror])
 
 AC_MSG_CHECKING([whether to warn about implicit conversions])

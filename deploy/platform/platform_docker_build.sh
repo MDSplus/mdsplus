@@ -41,6 +41,8 @@ config() {
 	JAVA_OPTS="--with-jars=${JARS_DIR}"
     fi
     :&& ${srcdir}/configure \
+	--enable-werror \
+	--disable-wreturns \
         --prefix=${MDSPLUS_DIR} \
         --exec_prefix=${MDSPLUS_DIR} \
         --host=$2 \
@@ -59,7 +61,7 @@ config_test(){
     cp -rf ${srcdir}/xml ${MDSPLUS_DIR}/xml;
     MDS_PATH=${MDSPLUS_DIR}/tdi;
     pushd ${MDSPLUS_DIR}/..;
-    config $@ --enable-debug --enable-werror;
+    config $@ --enable-debug;
 }
 checkstatus(){
 # checkstatus flagname "error message" $?

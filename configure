@@ -722,6 +722,7 @@ D3DLIB
 D3D_PACKAGE
 CLOCK_GETTIME_LIB
 CAMSHR
+NOWARNFLAGS
 WARNFLAGS
 DOXYGEN_PAPER_SIZE
 DX_COND_latex_FALSE
@@ -1024,6 +1025,7 @@ enable_doxygen_html
 enable_doxygen_ps
 enable_doxygen_pdf
 enable_werror
+enable_wreturns
 enable_wconversion
 '
       ac_precious_vars='build_alias
@@ -1705,6 +1707,8 @@ Optional Features:
   --enable-doxygen-ps     generate doxygen PostScript documentation
   --disable-doxygen-pdf   don't generate doxygen PDF documentation
   --enable-werror         Treat all warnings as errors
+  --disable-wreturns      Disable warnings about unused return value from
+                          functions
   --enable-wconversion    Warn about implicit conversions
 
 Optional Packages:
@@ -16915,8 +16919,8 @@ RELEASE_DATE="$(date)"
 RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 
 # Determine common warning options to apply to C, C++, and Fortran languages
-WARNFLAGS="-Wall -Wextra"
-
+WARNFLAGS="-Wall"
+NOWARNFLAGS=
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to treat warnings as errors" >&5
 $as_echo_n "checking whether to treat warnings as errors... " >&6; }
 # Check whether --enable-werror was given.
@@ -16928,10 +16932,21 @@ fi
 
 case $enable_werror in #(
   yes) :
-    as_fn_append WARNFLAGS " -Werror" ;; #(
+    as_fn_append WARNFLAGS " -Werror " ;; #(
   *) :
      ;;
 esac
+# Check whether --enable-wreturns was given.
+if test "${enable_wreturns+set}" = set; then :
+  enableval=$enable_wreturns; case $enableval in #(
+  no) :
+    as_fn_append NOWARNFLAGS " -Wno-unused-result " ;; #(
+  *) :
+     ;;
+esac
+fi
+
+
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_werror" >&5
 $as_echo "$enable_werror" >&6; }
