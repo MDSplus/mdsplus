@@ -107,6 +107,7 @@ python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/MitDevices &gt;/dev/n
     </postrm>
     <pre-install>
 
+export PYTHONPATH=""
 easy_install -q pip &gt;/dev/null 2&gt;&amp;1
 while (pip uninstall -q MitDevices 2&gt;/dev/null);do :;done
 
@@ -572,6 +573,7 @@ python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices &gt;/dev/n
     </postrm>
     <pre-install>
 
+export PYTHONPATH=""
 easy_install -q pip &gt;/dev/null 2&gt;&amp;1
 while (pip uninstall -q RfxDevices 2&gt;/dev/null);do :;done
 
@@ -611,6 +613,7 @@ python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/n
     </postrm>
     <pre-install>
 
+export PYTHONPATH=""
 easy_install -q pip &gt;/dev/null 2&gt;&amp;1
 while (pip uninstall -q W7xDevices 2&gt;/dev/null);do :;done
 
@@ -676,6 +679,7 @@ python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/n
           rm -Rf $packages %{python_sitelib}/MDSplus
         fi
       else
+	export PYTHONPATH=""
         easy_install -q pip &gt;/dev/null 2&gt;&amp;1
         while (pip uninstall -q MDSplus 2&gt;/dev/null);do :;done
       fi
