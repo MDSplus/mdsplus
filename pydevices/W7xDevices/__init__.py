@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,10 +40,8 @@ def _mimport(name, level=1):
 try:
     _mvers=_mimport('_version')
     __version__=_mvers.version
-    __doc__=__doc__+"Version: %s\nBranch: %s\nCommit: %s\nRelease tag: %s\n" % (_mvers.version,
-                                                                              _mvers.branch,
-                                                                              _mvers.commit,
-                                                                              _mvers.release_tag)
+    __doc__=__doc__+"Version: %s\nBranch: %s\nCommit: %s\nRelease tag: %s\n" % (
+	     _mvers.version,_mvers.branch,_mvers.commit,_mvers.release_tag)
     __doc__=__doc__+"Release: %s\n" % _mvers.release_date
     branch=_mvers.branch
     commit=_mvers.commit
@@ -57,7 +55,7 @@ def _mimport(filename,names=[],local=locals()):
     for name in names:
         Device._mimport(globals(),local,filename,name)
 
-_mimport('acq4xx',['ACQ1001','ACQ1002','ACQ2006'])
-_mimport('acq4xx',['ACQ425'])
+_mimport('acq480',['ACQ480'])
+_mimport('acq425',['ACQ425'])
 _mimport('bnc845',['BNC845'])
 _mimport('qc9200',['QC9200'])
