@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ALIAS(aname,name) EXPORT int aname() __attribute__((weak,alias(name)));
 #else
 #define ALIAS(aname,name) EXPORT int aname() __attribute__((alias(name)));
-#fi
+#endif
 #if defined(__hpux) || defined(__osf__) || defined(__sgi) || defined(__sun) || defined(__linux) || defined(__APPLE__) || defined (_WIN32)
 #define FortranDescr ALIAS(descr_,"descr")
 #define FortranDescr2 ALIAS(descr2_,"descr2")
