@@ -22,26 +22,39 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef FORTRAN_ENTRY_POINTS
 
-
-/*************************************************************************
-Note: This file gets loaded twice during compilation. Once to compile
-the C entry points and a second time to generate the Fortran specific
-entry points for the target platform.  The first part of the file
-enclosed by the ifndef FORTRAN_ENTRY_POINTS loads the header files and
-defines some utility routines.  Since MdsConnect, MdsDisconnect,
-MdsOpen, MdsClose, and MdsSetDefault do not need to handle variable
-argument lists, we can just have fortran entry points that calls these
-C functions directly. The functions descr, MdsValue and MdsPut have
-variable argument lists so a second compilation of these routines is
-necessary to create the fortran entry points.  See more notes at
-bottom of this file for configuring fortran entry points.
-**************************************************************************/
 #include <mdsdescrip.h>
 #define MDSLIB_NO_PROTOS
 #include "mdslib.h"
-SOCKET mdsSocket = INVALID_SOCKET;
+#define ALIAS(aname,name) EXPORT int aname() __attribute__((alias(name)));
+#if defined(__hpux) || defined(__osf__) || defined(__sgi) || defined(__sun) || defined(__linux) || defined(__APPLE__) || defined (_WIN32)
+#define FortranDescr ALIAS(descr_,"descr")
+#define FortranDescr2 ALIAS(descr2_,"descr2")
+#define FortranMdsConnect ALIAS(mdsconnect_,"MdsConnect")
+#define FortranMdsClose ALIAS(mdsclose_,"MdsClose")
+#define FortranMdsDisconnect ALIAS(mdsdisconnect_,"MdsDisconnect")
+#define FortranMdsOpen ALIAS(mdsopen_,"MdsOpen")
+#define FortranMdsSetDefault ALIAS(mdssetdefault_,"MdsSetDefault")
+#define FortranMdsSetSocket ALIAS(mdssetsocket_,"MdsSetSocket")
+#define FortranMdsPut ALIAS(mdsput_,"MdsPut")
+#define FortranMdsValue ALIAS(mdsvalue_,"MdsValue")
+#define FortranMdsPut2 ALIAS(mdsput2_,"MdsPut2")
+#define FortranMdsValue2 ALIAS(mdsvalue2_,"MdsValue2")
+#elif defined(__hpux) || defined(_AIX)
+#define FortranDescr
+#define FortranDescr2
+#define FortranMdsConnect ALIAS(mdsconnect,"MdsConnect")
+#define FortranMdsClose ALIAS(mdsclose,"MdsClose")
+#define FortranMdsDisconnect ALIAS(mdsdisconnect,"MdsDisconnect")
+#define FortranMdsOpen ALIAS(mdsopen,"MdsOpen")
+#define FortranMdsSetDefault ALIAS(mdssetdefault,"MdsSetDefault")
+#define FortranMdsSetSocket  ALIAS(mdssetsocket,"MdsSetSocket")
+#define FortranMdsPut ALIAS(mdsput,"MdsPut")
+#define FortranMdsValue ALIAS(mdsvalue,"MdsValue")
+#define FortranMdsPut2 ALIAS(mdsput2,"MdsPut2")
+#define FortranMdsValue2 ALIAS(mdsvalue2,"MdsValue2")
+#endif
+int mdsSocket = -1;
 #define NDESCRIP_CACHE 1024
 static struct descriptor *descrs[NDESCRIP_CACHE];
 #ifndef _CLIENT_ONLY
@@ -70,7 +83,7 @@ static struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc
 static int dtype_length(struct descriptor *d);
 static void MdsValueSet(struct descriptor *outdsc, struct descriptor *indsc, int *length);
 
-static int va_descr(int *dtype, void *data, int *dim1, ...)
+extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
 {
 
   /* variable length argument list:
@@ -117,7 +130,7 @@ static int va_descr(int *dtype, void *data, int *dim1, ...)
    *  save having to support DTYPE_NATIVE_FLOAT etc. in dtype_length().
    */
 
-  if (mdsSocket == INVALID_SOCKET) {
+  if (mdsSocket == -1) {
     switch (dsc->dtype) {
     case DTYPE_FLOAT:
       dsc->dtype = DTYPE_NATIVE_FLOAT;
@@ -221,8 +234,8 @@ static int va_descr(int *dtype, void *data, int *dim1, ...)
     next = 0;
   return retval;
 }
-
-static int va_descr2(int *dtype, int *dim1, ...)
+FortranDescr
+EXPORT int descr2(int *dtype, int *dim1, ...)
 {
 
   /* variable length argument list: 
@@ -265,7 +278,7 @@ static int va_descr2(int *dtype, int *dim1, ...)
    *  save having to support DTYPE_NATIVE_FLOAT etc. in dtype_length().
    */
 
-  if (mdsSocket == INVALID_SOCKET) {
+  if (mdsSocket == -1) {
     switch (dsc->dtype) {
     case DTYPE_FLOAT:
       dsc->dtype = DTYPE_NATIVE_FLOAT;
@@ -366,8 +379,9 @@ static int va_descr2(int *dtype, int *dim1, ...)
     next = 0;
   return retval;
 }
+FortranDescr2
 
-static int va_MdsValue(char *expression, ...)
+EXPORT int MdsValue(char *expression, ...) 
 {
   va_list incrmtr;
   int a_count;
@@ -394,7 +408,7 @@ static int va_MdsValue(char *expression, ...)
     *length = 0;
   }
 
-  if (mdsSocket != INVALID_SOCKET) {	/* CLIENT/SERVER */
+  if (mdsSocket != -1) {	/* CLIENT/SERVER */
     struct descriptor *dscAnswer;
     struct descrip exparg;
     struct descrip *arg = &exparg;
@@ -480,33 +494,33 @@ static int va_MdsValue(char *expression, ...)
 
 	switch (arg->ndims) {
 	case 0:
-	  ansdescr = va_descr(&dtype, dptr, &null, &dlen);
+	  ansdescr = descr(&dtype, dptr, &null, &dlen);
 	  break;
 	case 1:
-	  ansdescr = va_descr(&dtype, dptr, &dims[0], &null, &dlen);
+	  ansdescr = descr(&dtype, dptr, &dims[0], &null, &dlen);
 	  break;
 	case 2:
-	  ansdescr = va_descr(&dtype, dptr, &dims[0], &dims[1], &null, &dlen);
+	  ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &null, &dlen);
 	  break;
 	case 3:
-	  ansdescr = va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &null, &dlen);
+	  ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &null, &dlen);
 	  break;
 	case 4:
-	  ansdescr = va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &null, &dlen);
+	  ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &null, &dlen);
 	  break;
 	case 5:
 	  ansdescr =
-	      va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &null,
+	      descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &null,
 		       &dlen);
 	  break;
 	case 6:
 	  ansdescr =
-	      va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5],
+	      descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5],
 		       &null, &dlen);
 	  break;
 	case 7:
 	  ansdescr =
-	      va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5],
+	      descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5],
 		       &dims[6], &null, &dlen);
 	  break;
 	default:
@@ -583,8 +597,9 @@ static int va_MdsValue(char *expression, ...)
   return (status);
 
 }
+FortranMdsValue
 
-static int va_MdsValue2(char *expression, ...)
+EXPORT int MdsValue2(char *expression, ...)
 {
   va_list incrmtr;
   int a_count;
@@ -608,7 +623,7 @@ static int va_MdsValue2(char *expression, ...)
     *length = 0;
   }
 
-  if (mdsSocket != INVALID_SOCKET) {	/* CLIENT/SERVER */
+  if (mdsSocket != -1) {	/* CLIENT/SERVER */
     struct descriptor *dscAnswer;
     struct descrip exparg;
     struct descrip *arg = &exparg;
@@ -695,33 +710,33 @@ static int va_MdsValue2(char *expression, ...)
 
 	switch (arg->ndims) {
 	case 0:
-	  ansdescr = va_descr(&dtype, dptr, &null, &dlen);
+	  ansdescr = descr(&dtype, dptr, &null, &dlen);
 	  break;
 	case 1:
-	  ansdescr = va_descr(&dtype, dptr, &dims[0], &null, &dlen);
+	  ansdescr = descr(&dtype, dptr, &dims[0], &null, &dlen);
 	  break;
 	case 2:
-	  ansdescr = va_descr(&dtype, dptr, &dims[0], &dims[1], &null, &dlen);
+	  ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &null, &dlen);
 	  break;
 	case 3:
-	  ansdescr = va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &null, &dlen);
+	  ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &null, &dlen);
 	  break;
 	case 4:
-	  ansdescr = va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &null, &dlen);
+	  ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &null, &dlen);
 	  break;
 	case 5:
 	  ansdescr =
-	      va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &null,
+	      descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &null,
 		       &dlen);
 	  break;
 	case 6:
 	  ansdescr =
-	      va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5],
+	      descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5],
 		       &null, &dlen);
 	  break;
 	case 7:
 	  ansdescr =
-	      va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5],
+	      descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5],
 		       &dims[6], &null, &dlen);
 	  break;
 	default:
@@ -798,8 +813,9 @@ static int va_MdsValue2(char *expression, ...)
   return (status);
 
 }
+FortranMdsValue2
 
-static int va_MdsPut(char *pathname, char *expression, ...)
+EXPORT int MdsPut(char *pathname, char *expression, ...)
 {
   va_list incrmtr;
   int a_count;
@@ -816,7 +832,7 @@ static int va_MdsPut(char *pathname, char *expression, ...)
   }
   a_count--;			/* subtract one for terminator of argument list */
 
-  if (mdsSocket != INVALID_SOCKET) {	/* CLIENT/SERVER */
+  if (mdsSocket != -1) {	/* CLIENT/SERVER */
     static char *putexpprefix = "TreePut(";
     static char *argplace = "$,";
     char *putexp;
@@ -909,8 +925,9 @@ static int va_MdsPut(char *pathname, char *expression, ...)
 #endif
   return (status);
 }
+FortranMdsPut
 
-static int va_MdsPut2(char *pathname, char *expression, ...)
+EXPORT int MdsPut2(char *pathname, char *expression, ...)
 {
   va_list incrmtr;
   int a_count;
@@ -928,7 +945,7 @@ static int va_MdsPut2(char *pathname, char *expression, ...)
   }
   a_count--;			/* subtract one for terminator of argument list */
 
-  if (mdsSocket != INVALID_SOCKET) {	/* CLIENT/SERVER */
+  if (mdsSocket != -1) {	/* CLIENT/SERVER */
     static char *putexpprefix = "TreePut(";
     static char *argplace = "$,";
     char *putexp;
@@ -1023,6 +1040,7 @@ static int va_MdsPut2(char *pathname, char *expression, ...)
 #endif
   return (status);
 }
+FortranMdsPut2
 
 static int dtype_length(struct descriptor *d)
 {
@@ -1111,7 +1129,7 @@ extern EXPORT int *cdescr(int dtype, void *data, ...)
   }
   arglist[argidx++] = MdsEND_ARG;
   *(int *)&arglist[0] = argidx - 1;
-  status = LibCallg(arglist, va_descr);
+  status = LibCallg(arglist, descr);
   return (&status);
 }
 #endif
@@ -1355,16 +1373,11 @@ static void MdsValueSet(struct descriptor *outdsc, struct descriptor *indsc, int
     }
   }
 }
-#else				/* FORTRAN_ENTRY_POINTS */
-extern EXPORT int MdsOpen(char *tree, int *shot)
-{
-  return ___MdsOpen(tree, shot);
-}
 
-static int ___MdsOpen(char *tree, int *shot)
+EXPORT int MdsOpen(char *tree, int *shot)
 {
   int status = 0;
-  if (mdsSocket != INVALID_SOCKET) {
+  if (mdsSocket != -1) {
 
     long answer;
     int length;
@@ -1376,9 +1389,9 @@ static int ___MdsOpen(char *tree, int *shot)
     static char *expression = "TreeOpen($,$)";
 
     length = strlen(tree);
-    d1 = va_descr(&dtype_cstring, tree, &null, &length);
-    d2 = va_descr(&dtype_long, shot, &null);
-    d3 = va_descr(&dtype_long, &answer, &null);
+    d1 = descr(&dtype_cstring, tree, &null, &length);
+    d2 = descr(&dtype_long, shot, &null);
+    d3 = descr(&dtype_long, &answer, &null);
 
     status = MdsValue(expression, &d1, &d2, &d3, &null, &length);
     if ((status & 1)) {
@@ -1398,28 +1411,20 @@ static int ___MdsOpen(char *tree, int *shot)
 #endif
   return status;
 }
+FortranMdsOpen
 
-static SOCKET ___MdsSetSocket(SOCKET *newsocket)
+extern EXPORT int MdsSetSocket(int *newsocket)
 {
-  SOCKET oldsocket = mdsSocket;
+  int oldsocket = mdsSocket;
   mdsSocket = *newsocket;
   return oldsocket;
 }
-
-extern EXPORT int MdsSetSocket(SOCKET * newsocket)
-{
-  return ___MdsSetSocket(newsocket);
-}
+FortranMdsSetSocket
 
 extern EXPORT int MdsClose(char *tree, int *shot)
 {
-  return ___MdsClose(tree, shot);
-}
-
-static int ___MdsClose(char *tree, int *shot)
-{
   int status = 0;
-  if (mdsSocket != INVALID_SOCKET) {
+  if (mdsSocket != -1) {
 
     long answer;
     int length;
@@ -1431,9 +1436,9 @@ static int ___MdsClose(char *tree, int *shot)
     static char *expression = "TreeClose($,$)";
 
     length = strlen(tree);
-    d1 = va_descr(&dtype_cstring, tree, &null, &length);
-    d2 = va_descr(&dtype_long, shot, &null);
-    d3 = va_descr(&dtype_long, &answer, &null);
+    d1 = descr(&dtype_cstring, tree, &null, &length);
+    d2 = descr(&dtype_long, shot, &null);
+    d3 = descr(&dtype_long, &answer, &null);
 
     status = MdsValue(expression, &d1, &d2, &d3, &null, &length);
 
@@ -1454,23 +1459,19 @@ static int ___MdsClose(char *tree, int *shot)
 #endif
   return status;
 }
+FortranMdsClose
 
-extern EXPORT int MdsSetDefault(char *node)
-{
-  return ___MdsSetDefault(node);
-}
-
-static int ___MdsSetDefault(char *node)
+EXPORT int MdsSetDefault(char *node)
 {
   int status;
 
-  if (mdsSocket != INVALID_SOCKET) {
+  if (mdsSocket != -1) {
     char *expression = strcpy((char *)malloc(strlen(node) + 20), "TreeSetDefault('");
     long answer;
     int length = strlen(node);
     int null = 0;
     int dtype_long = DTYPE_LONG;
-    int d1 = va_descr(&dtype_long, &answer, &null);
+    int d1 = descr(&dtype_long, &answer, &null);
     if (node[0] == '\\')
       strcat(expression, "\\");
     strcat(expression, node);
@@ -1499,422 +1500,173 @@ static int ___MdsSetDefault(char *node)
 #endif
   return status;
 }
+FortranMdsSetDefault
 
-extern EXPORT void MdsDisconnect()
-{
-  ___MdsDisconnect();
-}
-
-static void ___MdsDisconnect()
+EXPORT void MdsDisconnect()
 {
   DisconnectFromMds(mdsSocket);
-  mdsSocket = INVALID_SOCKET;	   /*** SETS GLOBAL VARIABLE mdsSOCKET ***/
+  mdsSocket = -1;	   /*** SETS GLOBAL VARIABLE mdsSOCKET ***/
 }
+FortranMdsDisconnect
 
-extern EXPORT SOCKET MdsConnect(char *host)
+EXPORT int MdsConnect(char *host)
 {
-  return ___MdsConnect(host);
-}
-
-static SOCKET ___MdsConnect(char *host)
-{
-  if (mdsSocket != INVALID_SOCKET) {
+  if (mdsSocket != -1) {
     MdsDisconnect();
   }
   mdsSocket = ConnectToMds(host);  /*** SETS GLOBAL VARIABLE mdsSOCKET ***/
   return (mdsSocket);
 }
-
-/* end FORTRAN_ENTRY_POINTS */
-#endif
-
-#if !defined(FORTRAN_ENTRY_POINTS) || defined(descr)
-extern EXPORT int descr(int *dtype, void *data, int *dim1, int *dim2, int *dim3, int *dim4, int *dim5, int *dim6,
-	  int *dim7, int *dim8, int *dim9)
-{
-  return va_descr(dtype, data, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
-}
-
-extern EXPORT int descr2(int *dtype, int *dim1, int *dim2, int *dim3, int *dim4, int *dim5, int *dim6, int *dim7,
-	   int *dim8, int *dim9)
-{
-  return va_descr2(dtype, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
-}
-#endif
-
-#if !defined(FORTRAN_ENTRY_POINTS) || defined(MdsValue)
-extern EXPORT int MdsValue(char *expression,
-	     int *a00, int *a01, int *a02, int *a03, int *a04, int *a05, int *a06, int *a07,
-	     int *a08, int *a09, int *a10, int *a11, int *a12, int *a13, int *a14, int *a15,
-	     int *a16, int *a17, int *a18, int *a19, int *a20, int *a21, int *a22, int *a23,
-	     int *a24, int *a25, int *a26, int *a27, int *a28, int *a29, int *a30, int *a31,
-	     int *a32, int *a33, int *a34, int *a35, int *a36, int *a37, int *a38, int *a39,
-	     int *a40, int *a41, int *a42, int *a43, int *a44, int *a45, int *a46, int *a47,
-	     int *a48, int *a49, int *a50, int *a51, int *a52, int *a53, int *a54, int *a55,
-	     int *a56, int *a57, int *a58, int *a59, int *a60, int *a61, int *a62, int *a63,
-	     int *a64, int *a65, int *a66, int *a67, int *a68, int *a69, int *a70, int *a71,
-	     int *a72, int *a73, int *a74, int *a75, int *a76, int *a77, int *a78, int *a79,
-	     int *a80, int *a81, int *a82, int *a83, int *a84, int *a85, int *a86, int *a87,
-	     int *a88, int *a89, int *a90, int *a91, int *a92, int *a93, int *a94, int *a95,
-	     int *a96, int *a97, int *a98, int *a99)
-{
-  return va_MdsValue(expression,
-		     a00, a01, a02, a03, a04, a05, a06, a07, a08, a09,
-		     a10, a11, a12, a13, a14, a15, a16, a17, a18, a19,
-		     a20, a21, a22, a23, a24, a25, a26, a27, a28, a29,
-		     a30, a31, a32, a33, a34, a35, a36, a37, a38, a39,
-		     a40, a41, a42, a43, a44, a45, a46, a47, a48, a49,
-		     a50, a51, a52, a53, a54, a55, a56, a57, a58, a59,
-		     a60, a61, a62, a63, a64, a65, a66, a67, a68, a69,
-		     a70, a71, a72, a73, a74, a75, a76, a77, a78, a79,
-		     a80, a81, a82, a83, a84, a85, a86, a87, a88, a89,
-		     a90, a91, a92, a93, a94, a95, a96, a97, a98, a99);
-}
-
-extern EXPORT int MdsValue2(char *expression,
-	      int *a00, int *a01, int *a02, int *a03, int *a04, int *a05, int *a06, int *a07,
-	      int *a08, int *a09, int *a10, int *a11, int *a12, int *a13, int *a14, int *a15,
-	      int *a16, int *a17, int *a18, int *a19, int *a20, int *a21, int *a22, int *a23,
-	      int *a24, int *a25, int *a26, int *a27, int *a28, int *a29, int *a30, int *a31,
-	      int *a32, int *a33, int *a34, int *a35, int *a36, int *a37, int *a38, int *a39,
-	      int *a40, int *a41, int *a42, int *a43, int *a44, int *a45, int *a46, int *a47,
-	      int *a48, int *a49, int *a50, int *a51, int *a52, int *a53, int *a54, int *a55,
-	      int *a56, int *a57, int *a58, int *a59, int *a60, int *a61, int *a62, int *a63,
-	      int *a64, int *a65, int *a66, int *a67, int *a68, int *a69, int *a70, int *a71,
-	      int *a72, int *a73, int *a74, int *a75, int *a76, int *a77, int *a78, int *a79,
-	      int *a80, int *a81, int *a82, int *a83, int *a84, int *a85, int *a86, int *a87,
-	      int *a88, int *a89, int *a90, int *a91, int *a92, int *a93, int *a94, int *a95,
-	      int *a96, int *a97, int *a98, int *a99)
-{
-  return va_MdsValue2(expression,
-		      a00, a01, a02, a03, a04, a05, a06, a07, a08, a09,
-		      a10, a11, a12, a13, a14, a15, a16, a17, a18, a19,
-		      a20, a21, a22, a23, a24, a25, a26, a27, a28, a29,
-		      a30, a31, a32, a33, a34, a35, a36, a37, a38, a39,
-		      a40, a41, a42, a43, a44, a45, a46, a47, a48, a49,
-		      a50, a51, a52, a53, a54, a55, a56, a57, a58, a59,
-		      a60, a61, a62, a63, a64, a65, a66, a67, a68, a69,
-		      a70, a71, a72, a73, a74, a75, a76, a77, a78, a79,
-		      a80, a81, a82, a83, a84, a85, a86, a87, a88, a89,
-		      a90, a91, a92, a93, a94, a95, a96, a97, a98, a99);
-}
-
-#endif
-#if !defined(FORTRAN_ENTRY_POINTS) || defined(MdsPut)
-extern EXPORT int MdsPut(char *node, char *expression,
-	   int *a00, int *a01, int *a02, int *a03, int *a04, int *a05, int *a06, int *a07, int *a08,
-	   int *a09, int *a10, int *a11, int *a12, int *a13, int *a14, int *a15, int *a16, int *a17,
-	   int *a18, int *a19, int *a20, int *a21, int *a22, int *a23, int *a24, int *a25, int *a26,
-	   int *a27, int *a28, int *a29, int *a30, int *a31, int *a32, int *a33, int *a34, int *a35,
-	   int *a36, int *a37, int *a38, int *a39, int *a40, int *a41, int *a42, int *a43, int *a44,
-	   int *a45, int *a46, int *a47, int *a48, int *a49, int *a50, int *a51, int *a52, int *a53,
-	   int *a54, int *a55, int *a56, int *a57, int *a58, int *a59, int *a60, int *a61, int *a62,
-	   int *a63, int *a64, int *a65, int *a66, int *a67, int *a68, int *a69, int *a70, int *a71,
-	   int *a72, int *a73, int *a74, int *a75, int *a76, int *a77, int *a78, int *a79, int *a80,
-	   int *a81, int *a82, int *a83, int *a84, int *a85, int *a86, int *a87, int *a88, int *a89,
-	   int *a90, int *a91, int *a92, int *a93, int *a94, int *a95, int *a96, int *a97, int *a98,
-	   int *a99)
-{
-  return va_MdsPut(node, expression,
-		   a00, a01, a02, a03, a04, a05, a06, a07, a08, a09,
-		   a10, a11, a12, a13, a14, a15, a16, a17, a18, a19,
-		   a20, a21, a22, a23, a24, a25, a26, a27, a28, a29,
-		   a30, a31, a32, a33, a34, a35, a36, a37, a38, a39,
-		   a40, a41, a42, a43, a44, a45, a46, a47, a48, a49,
-		   a50, a51, a52, a53, a54, a55, a56, a57, a58, a59,
-		   a60, a61, a62, a63, a64, a65, a66, a67, a68, a69,
-		   a70, a71, a72, a73, a74, a75, a76, a77, a78, a79,
-		   a80, a81, a82, a83, a84, a85, a86, a87, a88, a89,
-		   a90, a91, a92, a93, a94, a95, a96, a97, a98, a99);
-}
-
-extern EXPORT int MdsPut2(char *node, char *expression,
-	    int *a00, int *a01, int *a02, int *a03, int *a04, int *a05, int *a06, int *a07,
-	    int *a08, int *a09, int *a10, int *a11, int *a12, int *a13, int *a14, int *a15,
-	    int *a16, int *a17, int *a18, int *a19, int *a20, int *a21, int *a22, int *a23,
-	    int *a24, int *a25, int *a26, int *a27, int *a28, int *a29, int *a30, int *a31,
-	    int *a32, int *a33, int *a34, int *a35, int *a36, int *a37, int *a38, int *a39,
-	    int *a40, int *a41, int *a42, int *a43, int *a44, int *a45, int *a46, int *a47,
-	    int *a48, int *a49, int *a50, int *a51, int *a52, int *a53, int *a54, int *a55,
-	    int *a56, int *a57, int *a58, int *a59, int *a60, int *a61, int *a62, int *a63,
-	    int *a64, int *a65, int *a66, int *a67, int *a68, int *a69, int *a70, int *a71,
-	    int *a72, int *a73, int *a74, int *a75, int *a76, int *a77, int *a78, int *a79,
-	    int *a80, int *a81, int *a82, int *a83, int *a84, int *a85, int *a86, int *a87,
-	    int *a88, int *a89, int *a90, int *a91, int *a92, int *a93, int *a94, int *a95,
-	    int *a96, int *a97, int *a98, int *a99)
-{
-  return va_MdsPut2(node, expression,
-		    a00, a01, a02, a03, a04, a05, a06, a07, a08, a09,
-		    a10, a11, a12, a13, a14, a15, a16, a17, a18, a19,
-		    a20, a21, a22, a23, a24, a25, a26, a27, a28, a29,
-		    a30, a31, a32, a33, a34, a35, a36, a37, a38, a39,
-		    a40, a41, a42, a43, a44, a45, a46, a47, a48, a49,
-		    a50, a51, a52, a53, a54, a55, a56, a57, a58, a59,
-		    a60, a61, a62, a63, a64, a65, a66, a67, a68, a69,
-		    a70, a71, a72, a73, a74, a75, a76, a77, a78, a79,
-		    a80, a81, a82, a83, a84, a85, a86, a87, a88, a89,
-		    a90, a91, a92, a93, a94, a95, a96, a97, a98, a99);
-}
-
-#endif
-
-#ifndef FORTRAN_ENTRY_POINTS
-#define FORTRAN_ENTRY_POINTS
+FortranMdsConnect
 
 #ifdef _WIN32
 static int zero = 0;
-static SOCKET ___MdsConnect();
-static void ___MdsDisconnect();
-static int ___MdsClose();
-static SOCKET ___MdsSetSocket();
-static int ___MdsSetDefault();
-static int ___MdsOpen();
-SOCKET WINAPI MdsConnectVB(char *host)
+int WINAPI MdsConnectVB(char *host)
 {
-  return ___MdsConnect(host);
+  return MdsConnect(host);
 }
 
 void WINAPI MdsDisconnectVB()
 {
-  ___MdsDisconnect();
+  MdsDisconnect();
 }
 
 int WINAPI MdsCloseVB(char *tree, int *shot)
 {
-  return ___MdsClose(tree, shot);
+  return MdsClose(tree, shot);
 }
 
-SOCKET WINAPI MdsSetSocketVB(SOCKET *newsocket)
+int WINAPI MdsSetSocketVB(int *newsocket)
 {
-  return ___MdsSetSocket(newsocket);
+  return MdsSetSocket(newsocket);
 }
 
 int WINAPI MdsSetDefaultVB(char *node)
 {
-  return ___MdsSetDefault(node);
+  return MdsSetDefault(node);
 }
 
 int WINAPI MdsOpenVB(char *tree, int *shot)
 {
-  return ___MdsOpen(tree, shot);
+  return MdsOpen(tree, shot);
 }
 
 int WINAPI descr1VB(int *dtype, void *value)
 {
   if (*dtype == DTYPE_CSTRING) {
     int len = strlen(value);
-    return va_descr(dtype, value, &zero, &len);
+    return descr(dtype, value, &zero, &len);
   } else
-    return va_descr(dtype, value, &zero);
+    return descr(dtype, value, &zero);
 }
 
 int WINAPI descr1VB2(int *dtype, int *len)
 {
-  return (va_descr2(dtype, &zero, len));
+  return (descr2(dtype, &zero, len));
 }
 
 int WINAPI descr2VB(int *dtype, int *num, void *value)
 {
   if (*dtype == DTYPE_CSTRING) {
     int len = strlen(value);
-    return va_descr(dtype, value, num, &zero, &len);
+    return descr(dtype, value, num, &zero, &len);
   } else
-    return va_descr(dtype, value, num, &zero);
+    return descr(dtype, value, num, &zero);
 }
 
 int WINAPI descr2VB2(int *dtype, int *num, int *len)
 {
-  return (va_descr2(dtype, num, &zero, len));
+  return (descr2(dtype, num, &zero, len));
 }
 
 int WINAPI descr3VB(int *dtype, int *n1, int *n2, void *value)
 {
   if (*dtype == DTYPE_CSTRING) {
     int len = strlen(value);
-    return va_descr(dtype, value, n1, n2, &zero, &len);
+    return descr(dtype, value, n1, n2, &zero, &len);
   } else
-    return va_descr(dtype, value, n1, n2, &zero);
+    return descr(dtype, value, n1, n2, &zero);
 }
 
 int WINAPI descr3VB2(int *dtype, int *n1, int *n2, int *len)
 {
-  return (va_descr2(dtype, n1, n2, &zero, len));
+  return (descr2(dtype, n1, n2, &zero, len));
 }
 
 int WINAPI descr4VB(int *dtype, int *n1, int *n2, int *n3, void *value)
 {
   if (*dtype == DTYPE_CSTRING) {
     int len = strlen(value);
-    return va_descr(dtype, value, n1, n2, n3, &zero, &len);
+    return descr(dtype, value, n1, n2, n3, &zero, &len);
   } else
-    return va_descr(dtype, value, n1, n2, n3, &zero);
+    return descr(dtype, value, n1, n2, n3, &zero);
 }
 
 int WINAPI descr4VB2(int *dtype, int *n1, int *n2, int *n3, int *len)
 {
-  return (va_descr2(dtype, n1, n2, n3, &zero, len));
+  return (descr2(dtype, n1, n2, n3, &zero, len));
 }
 
 int WINAPI MdsValue1VB(char *expression, int *ansd, int *retlen)
 {
-  return va_MdsValue(expression, ansd, &zero, retlen);
+  return MdsValue(expression, ansd, &zero, retlen);
 }
 
 int WINAPI MdsValue1VB2(char *expression, int *ansd, void *value, int *retlen)
 {
-  return va_MdsValue2(expression, ansd, value, &zero, retlen);
+  return MdsValue2(expression, ansd, value, &zero, retlen);
 }
 
 int WINAPI MdsValue2VB(char *expression, int *arg1d, int *ansd, int *retlen)
 {
-  return va_MdsValue(expression, arg1d, ansd, &zero, retlen);
+  return MdsValue(expression, arg1d, ansd, &zero, retlen);
 }
 
 int WINAPI MdsValue2VB2(char *expression, int *arg1d, void *arg1v, int *ansd, void *value,
 			int *retlen)
 {
-  return va_MdsValue2(expression, arg1d, arg1v, ansd, value, &zero, retlen);
+  return MdsValue2(expression, arg1d, arg1v, ansd, value, &zero, retlen);
 }
 
 int WINAPI MdsValue3VB(char *expression, int *arg1d, int *arg2d, int *ansd, int *retlen)
 {
-  return va_MdsValue(expression, arg1d, arg2d, ansd, &zero, retlen);
+  return MdsValue(expression, arg1d, arg2d, ansd, &zero, retlen);
 }
 
 int WINAPI MdsValue3VB2(char *expression, int *arg1d, void *arg1v, int *arg2d, void *arg2v,
 			int *ansd, void *value, int *retlen)
 {
-  return va_MdsValue2(expression, arg1d, arg1v, arg2d, arg2v, ansd, value, &zero, retlen);
+  return MdsValue2(expression, arg1d, arg1v, arg2d, arg2v, ansd, value, &zero, retlen);
 }
 
 int WINAPI MdsPut1VB(char *node, char *expression, int *ansd)
 {
-  return va_MdsPut(node, expression, ansd, &zero);
+  return MdsPut(node, expression, ansd, &zero);
 }
 
 int WINAPI MdsPut1VB2(char *node, char *expression, int *ansd, void *value)
 {
-  return va_MdsPut2(node, expression, ansd, value, &zero);
+  return MdsPut2(node, expression, ansd, value, &zero);
 }
 
 int WINAPI MdsPut2VB(char *node, char *expression, int *arg1d, int *ansd)
 {
-  return va_MdsPut(node, expression, arg1d, ansd, &zero);
+  return MdsPut(node, expression, arg1d, ansd, &zero);
 }
 
 int WINAPI MdsPut2VB2(char *node, char *expression, int *arg1d, void *arg1v, int *ansd, void *value)
 {
-  return va_MdsPut2(node, expression, arg1d, arg1v, ansd, value, &zero);
+  return MdsPut2(node, expression, arg1d, arg1v, ansd, value, &zero);
 }
 
 int WINAPI MdsPut3VB(char *node, char *expression, int *arg1d, int *arg2d, int *ansd)
 {
-  return va_MdsPut(node, expression, arg1d, arg2d, ansd, &zero);
+  return MdsPut(node, expression, arg1d, arg2d, ansd, &zero);
 }
 
 int WINAPI MdsPut3VB2(char *node, char *expression, int *arg1d, void *arg1v, int *arg2d,
 		      void *arg2v, int *ansd, void *value)
 {
-  return va_MdsPut2(node, expression, arg1d, arg1v, arg2d, arg2v, ansd, value, &zero);
+  return MdsPut2(node, expression, arg1d, arg1v, arg2d, arg2v, ansd, value, &zero);
 }
-#endif
-
-/************************************************************
-For each platform, you can define the following macros to
-determine the names of the corresponding fortran entry point:
-
-       descr
-       FortranMdsConnect
-       FortranMdsClose
-       FortranMdsDisconnect
-       FortranMdsOpen
-       FortranMdsSetDefault
-       MdsPut
-       MdsValue
-
-If any of these entry points share the same name for fortran
-and c then donot define the macro.
-*************************************************************/
-
-#if defined(__hpux) || defined(__osf__) || defined(__sgi) || defined(__sun) || defined(__linux) || defined(__APPLE__) || defined (_WIN32)
-#define descr descr_
-#define descr2 descr2_
-#define FortranMdsConnect mdsconnect_
-#define FortranMdsClose mdsclose_
-#define FortranMdsDisconnect mdsdisconnect_
-#define FortranMdsOpen mdsopen_
-#define FortranMdsSetDefault mdssetdefault_
-#define FortranMdsSetSocket mdssetsocket_
-#define MdsPut mdsput_
-#define MdsValue mdsvalue_
-#define MdsPut2 mdsput2_
-#define MdsValue2 mdsvalue2_
-#elif defined(__hpux) || defined(_AIX)
-#define FortranMdsConnect mdsconnect
-#define FortranMdsClose mdsclose
-#define FortranMdsDisconnect mdsdisconnect
-#define FortranMdsOpen mdsopen
-#define FortranMdsSetDefault mdssetdefault
-#define FortranMdsSetSocket  mdssetsocket
-#define MdsPut mdsput
-#define MdsValue mdsvalue
-#define MdsPut2 mdsput2
-#define MdsValue2 mdsvalue2
-#endif
-int MdsValue();
-static SOCKET ___MdsConnect(char *host);
-int descr();
-static int ___MdsClose(char *tree, int *shot);
-static void ___MdsDisconnect();
-static int ___MdsOpen(char *tree, int *shot);
-static int ___MdsSetDefault(char *node);
-static SOCKET ___MdsSetSocket(SOCKET *newsocket);
-
-#ifdef FortranMdsConnect
-extern EXPORT SOCKET FortranMdsConnect(char *host)
-{
-  return ___MdsConnect(host);
-}
-#endif
-
-#ifdef FortranMdsDisconnect
-extern EXPORT void FortranMdsDisconnect()
-{
-  ___MdsDisconnect();
-}
-#endif
-
-#ifdef FortranMdsSetSocket
-extern EXPORT int FortranMdsSetSocket(int *newsocket)
-{
-  return (int)___MdsSetSocket((SOCKET*)newsocket);
-}
-#endif
-
-#ifdef FortranMdsClose
-extern EXPORT int FortranMdsClose(char *tree, int *shot)
-{
-  return ___MdsClose(tree, shot);
-}
-#endif
-
-#ifdef FortranMdsSetDefault
-extern EXPORT int FortranMdsSetDefault(char *node)
-{
-  return ___MdsSetDefault(node);
-}
-#endif
-
-#ifdef FortranMdsOpen
-extern EXPORT int FortranMdsOpen(char *tree, int *shot)
-{
-  return ___MdsOpen(tree, shot);
-}
-#endif
-
-// #include __FILE__
-#define _STRINGIZE(s) __STRINGIZE(s)
-#define __STRINGIZE(s) #s
-#include _STRINGIZE(FILENAME)
-
 #endif
