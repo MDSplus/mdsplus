@@ -469,6 +469,7 @@
 ./usr/local/mdsplus/tdi/RfxDevices/RFXControl__store.fun
 ./usr/local/mdsplus/tdi/RfxDevices/RFXDClock__add.fun
 ./usr/local/mdsplus/tdi/RfxDevices/RFXDClock__init.fun
+./usr/local/mdsplus/tdi/RfxDevices/RFXDEVICES.py
 ./usr/local/mdsplus/tdi/RfxDevices/RFXDiagTimesV1__add.fun
 ./usr/local/mdsplus/tdi/RfxDevices/RFXDiagTimesV1__dtsr_init.fun
 ./usr/local/mdsplus/tdi/RfxDevices/RFXDiagTimes__add.fun
