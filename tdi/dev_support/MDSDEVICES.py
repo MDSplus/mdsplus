@@ -1,4 +1,4 @@
-def MdsDevices():
+def MDSDEVICES():
     from MDSplus import Device,tdi,version
     from numpy import array
     def importDevices(name):
@@ -6,10 +6,11 @@ def MdsDevices():
         try:
             module = __import__(name)
             ans = [[version.tobytes(k),bname] for k,v in module.__dict__.items() if isinstance(v,int.__class__) and issubclass(v,Device)]
-        except ImportError: ans = []
+        except (ImportError, ImportWarning): ans = []
         tdidev = tdi("if_error(%s(),*)"%name)
         if tdidev is None: return ans
-        return tdidev.value.reshape((int(tdidev.value.size/2),2)).tolist()+ans
+        tdidev = [[k.rstrip(), v.rstrip()] for k,v in tdidev.value.reshape((int(tdidev.value.size/2),2)).tolist()]
+        return tdidev+ans
     ans = [[version.tobytes(d),b'pydevice'] for d in Device.findPyDevices()]
     for module in ["KbsiDevices","MitDevices","RfxDevices","W7xDevices"]:
         ans += importDevices(module)

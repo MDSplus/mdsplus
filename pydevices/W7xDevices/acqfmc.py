@@ -31,7 +31,12 @@ import array
 import numpy
 
 import MDSplus
-import acqsuper
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+acqsuper=_mimport('acqsuper')
 
 class UUT:
     def __init__(self, addr, port, debug=None):
@@ -44,9 +49,9 @@ class UUT:
         self.child.sendline(str(cmd))
         try:
             echo = self.child.readline().strip('\r\n')
-            if self.debug : print('%s port %d echo: %s' % (self.addr, self.port, echo))
+            if self.debug : print(('%s port %d echo: %s' % (self.addr, self.port, echo)))
             reply = self.child.readline().strip('\r\n') if not no_reply else '(none expected)'
-            if self.debug : print('%s port %d reply: %s' % (self.addr, self.port, reply))
+            if self.debug : print(('%s port %d reply: %s' % (self.addr, self.port, reply)))
         except pexpect.TIMEOUT as e:
             raise MDSplus.mdsExceptions.DevINV_SETUP(str(e))
         return reply
@@ -98,13 +103,13 @@ class ACQFMC(acqsuper.ACQSUPER):
     _sys_cmds      = ['fpga_version', 'software_version']
     _store_retries = 5
 
-    def syscmd(self, cmd): print(self._uutcmd(0,                      cmd))
-    def modcmd(self, cmd): print(self._uutcmd(self._get_board_site(), cmd))
+    def syscmd(self, cmd): print((self._uutcmd(0,                      cmd)))
+    def modcmd(self, cmd): print((self._uutcmd(self._get_board_site(), cmd)))
 
     def getstate(self):
         nums = self._uutcmd(0, 'state').split(' ')
         state = int(nums[0])
-        print('state = %d:%s, pre/post/elapsed = %s/%s/%s' % (state, self._state_table[state], nums[1], nums[2], nums[3]))
+        print(('state = %d:%s, pre/post/elapsed = %s/%s/%s' % (state, self._state_table[state], nums[1], nums[2], nums[3])))
 
     def disarm(self): self._uutcmd(0, 'set_abort')
 
@@ -118,7 +123,7 @@ class ACQFMC(acqsuper.ACQSUPER):
 
         state = int(uut_sys.send('state').split(' ')[0])
         if state != 1 and state != 2 :
-            print('warning: not armed after %d seconds' % self._arm_delay)
+            print(('warning: not armed after %d seconds' % self._arm_delay))
 
     SYSCMD   = syscmd
     MODCMD   = modcmd
@@ -146,7 +151,7 @@ class ACQFMC(acqsuper.ACQSUPER):
         clkdiv = int(math.ceil(mbclk_min/freq))
         mbclk  = int(freq * clkdiv)
 
-        if self._debugging() : print('zclk(): mbclk = %d, clkdiv = %d' % (mbclk, clkdiv))
+        if self._debugging() : print(('zclk(): mbclk = %d, clkdiv = %d' % (mbclk, clkdiv)))
         return (mbclk, clkdiv)
 
     def _do_init(self, sys_cmds, mod_cmds):
@@ -222,12 +227,12 @@ class ACQFMC(acqsuper.ACQSUPER):
         offset = 0
         for i in range(1, board_site) :
             offset += int(uut_sys.send('get.site %d NCHAN' % i))
-        if self._debugging() : print('pre_store(): channel offset = %d' % offset)
+        if self._debugging() : print(('pre_store(): channel offset = %d' % offset))
 
         return (pre_trig, post_trig, offset)
 
     def _store_channel(self, chan, chan_offset, pre_trig, post_trig, clock_node, vin):
-        if self._debugging() : print('store_channel(): working on channel %d (+%d)' % (chan, chan_offset))
+        if self._debugging() : print(('store_channel(): working on channel %d (+%d)' % (chan, chan_offset)))
 
         chan_node = self.__getattr__('input_%02d' % chan)
         if chan_node.on :
@@ -251,10 +256,10 @@ class ACQFMC(acqsuper.ACQSUPER):
                 raise MDSplus.mdsExceptions.DevNOT_TRIGGERED('channel %d (+%d)\n%s' % (chan, chan_offset, str(ex)))
 
     def _read_raw_data(self, chan, chan_offset, pre_trig, start_idx, end_idx, inc):
-        if self._debugging() : print('read_raw_data(): called with chan=%d (+%d), pre_trig=%d, start_idx=%d, end_idx=%d, inc=%d' % (chan, chan_offset, pre_trig, start_idx, end_idx, inc))
+        if self._debugging() : print(('read_raw_data(): called with chan=%d (+%d), pre_trig=%d, start_idx=%d, end_idx=%d, inc=%d' % (chan, chan_offset, pre_trig, start_idx, end_idx, inc)))
 
         bytes_to_read = (end_idx + pre_trig + 1) * 2
-        if self._debugging() : print('read_raw_data(): want %d bytes' % bytes_to_read)
+        if self._debugging() : print(('read_raw_data(): want %d bytes' % bytes_to_read))
 
         sock = socket.create_connection((self._get_board_addr(), self._data_port + chan_offset + chan), timeout=10)
         sock.settimeout(None)
@@ -264,8 +269,8 @@ class ACQFMC(acqsuper.ACQSUPER):
         sock.close()
 
         bytes_actually_read = len(buf)
-        if self._debugging() : print('read_raw_data(): read %d bytes' % len(buf))
-        if bytes_actually_read != bytes_to_read : print('warning: read fewer bytes than expected for channel %d (+%d)' % (chan, chan_offset))
+        if self._debugging() : print(('read_raw_data(): read %d bytes' % len(buf)))
+        if bytes_actually_read != bytes_to_read : print(('warning: read fewer bytes than expected for channel %d (+%d)' % (chan, chan_offset)))
 
         raw = array.array('h')
         raw.fromstring(buf)
