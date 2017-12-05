@@ -155,8 +155,10 @@ struct _buf {
   char *ptr;
 };
 
-static int callback(char *ptr, size_t size, size_t nmemb, struct _buf *buf)
+static size_t callback(void *contents, size_t size, size_t nmemb, void *userp)
 {
+  char *ptr = (char *)contents;
+  struct _buf *buf = (struct _buf *)userp;
   if (buf->size == 0) {
     buf->ptr = malloc(size * nmemb + 1);
     memcpy(buf->ptr, ptr, size * nmemb);

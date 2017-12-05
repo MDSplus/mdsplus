@@ -1447,7 +1447,7 @@ EXPORT int addSignalWithParam(int obj_idx, float *x, float *y, int xType, int nu
   jstring jname, jcolour;
   jobject jobj = jobjects[obj_idx];
   jfloatArray jx, jy;
-  jdoubleArray jxDouble;
+  jdoubleArray jxDouble = NULL;
   jclass cls;
   jmethodID mid;
   jboolean jinter;

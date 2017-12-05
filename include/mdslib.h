@@ -3,10 +3,6 @@
 
 #include <ipdesc.h>
 
-#ifndef _WIN32
-#define INVALID_SOCKET -1
-#endif
-
 #include <stdio.h>
 #include <mds_stdarg.h>
 #include <string.h>
@@ -24,12 +20,12 @@ extern "C" {
   int MdsSetDefault(char *node);
   int MdsValue(char *expression, ...);
   int MdsPut(char *node, char *expression, ...);
-  SOCKET MdsSetSocket(SOCKET * socket);
+  SOCKET MdsSetSocket(int * socket);
   void MdsDisconnect();
 #endif
 #ifdef __cplusplus
 }				// extern "C"
 #endif
-extern SOCKET mdsSocket;
+extern int mdsSocket;
 
 #endif
