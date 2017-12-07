@@ -311,6 +311,7 @@ class Tree(object):
 
     _lock=_threading.RLock()
     _id=0
+    path = None
     tctx = None
     ctx  = None
 
@@ -338,7 +339,7 @@ class Tree(object):
                                                _C.c_char_p(_ver.tobytes(tree)),
                                                _C.c_int32(int(shot))))
 
-    def __init__(self, tree=None, shot=-1, mode='NORMAL'):
+    def __init__(self, tree=None, shot=-1, mode='NORMAL', path=None):
         """Create a Tree instance. Specify a tree and shot and optionally a mode.
         If providing the mode argument it should be one of the following strings:
         'Normal','Edit','New','ReadOnly'.
@@ -359,8 +360,13 @@ class Tree(object):
         else:
             self.opened = True
             _TreeCtx.lock.acquire()
+            env_name = '%s_path'%tree.lower()
+            if not path is None:
+                old_path = _mds.getenv(env_name)
+                _mds.setenv(env_name,path)
         try:
             if self.opened:
+                self.path = _mds.getenv(env_name)
                 self.ctx = _C.c_void_p(0)
                 mode=mode.upper()
                 if mode == 'NORMAL':
@@ -390,7 +396,11 @@ class Tree(object):
             self.tree = self.name
             self.shot = self.shotid
         finally:
-            if self.opened: _TreeCtx.lock.release()
+            if self.opened:
+                if not path is None:
+                    _mds.setenv(env_name,old_path)
+                _TreeCtx.lock.release()
+
     # support for the with-structure
     def __enter__(self):
         """ referenced if using "with Tree() ... " block"""
