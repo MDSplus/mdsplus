@@ -109,6 +109,7 @@ rundocker(){
            -e "mdsevent_port=$EVENT_PORT" \
            -e "HOME=/workspace" \
            -e "JARS_DIR=$jars_dir" \
+	   -e "TEST_TIMEUNIT" \
            -v ${SRCDIR}:${DOCKER_SRCDIR} \
            -v ${WORKSPACE}:/workspace \
            $port_forwarding \
