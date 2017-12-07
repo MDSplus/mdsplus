@@ -2006,8 +2006,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         """
         num=self.getNumSegments()
         if num <= 0 or idx >= num: return
-        val=_dsc.Descriptor_xd()
-        dim=_dsc.Descriptor_xd()
+        val=_dsc.Descriptor_xd()._setTree(self.tree)
+        dim=_dsc.Descriptor_xd()._setTree(self.tree)
         _exc.checkStatus(
             _TreeShr._TreeGetSegment(self.ctx,
                                      self._nid,
@@ -2030,8 +2030,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
             return None
 
     def getSegmentLimits(self,idx):
-        start=_dsc.Descriptor_xd()
-        end=_dsc.Descriptor_xd()
+        start=_dsc.Descriptor_xd()._setTree(self.tree)
+        end=_dsc.Descriptor_xd()._setTree(self.tree)
         _exc.checkStatus(
             _TreeShr._TreeGetSegmentLimits(self.ctx,
                                            self._nid,
@@ -2044,7 +2044,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
 
     def getSegmentList(self,start,end):
         start,end = map(_dat.Data,(start,end))
-        xd=_dsc.Descriptor_xd()
+        xd=_dsc.Descriptor_xd()._setTree(self.tree)
         _exc.checkStatus(
             _XTreeShr._XTreeGetSegmentList(self.ctx,
                                            self._nid,
@@ -2055,8 +2055,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
 
     def getSegmentTimes(self):
         num = _C.c_int32(0)
-        start=_dsc.Descriptor_xd()
-        end=_dsc.Descriptor_xd()
+        start=_dsc.Descriptor_xd()._setTree(self.tree)
+        end=_dsc.Descriptor_xd()._setTree(self.tree)
         _exc.checkStatus(
             _TreeShr._TreeGetSegmentTimesXd(self.ctx,
                                            self._nid,
