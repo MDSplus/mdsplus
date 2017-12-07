@@ -398,6 +398,12 @@
 }
 
 {
+   manually added: python-c-interface (twf)
+   Helgrind:Race
+   fun:PyThreadState_DeleteCurrent
+}
+
+{
    manually added: pyhon-c-interface (zack-vii)
    Helgrind:Race
    fun:PyThreadState_Swap
