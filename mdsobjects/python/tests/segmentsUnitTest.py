@@ -199,8 +199,8 @@ class Tests(TestCase):
         opq = node.record
         try:
             opq.image
-        except ImportError:
-            pass
+        except ImportError as e:
+            print(e)  # Image module not found
         node = ptree.JPGS
         node.makeSegment(None,None,None,Opaque.fromFile(root+'/images/mdsplus_logo.jpg'))
         node.makeSegment(None,None,None,Opaque.fromFile(root+'/images/test-mpeg.mpg'))
@@ -209,7 +209,7 @@ class Tests(TestCase):
         lens=(54851,706564,77013)
         for i in range(3):
             seg = node.getSegment(i)
-            self.assertEqual(len(seg.value.data.data()),lens[i])
+            self.assertEqual(len(seg.value.value.data()),lens[i])
       test()
       self.cleanup()
 
