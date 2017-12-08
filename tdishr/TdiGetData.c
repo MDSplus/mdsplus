@@ -318,6 +318,10 @@ int TdiGetData(unsigned char omits[], struct descriptor *their_ptr, struct descr
 	  status = TdiGetData(omits, (struct descriptor *)((struct descriptor_with_error *)
 							   pin)->data, &hold);
 	  break;
+	case DTYPE_OPAQUE:
+	  status = TdiGetData(omits, (struct descriptor *)((struct descriptor_opaque *)
+							   pin)->data, &hold);
+	  break;
 	default:
 	  status = TdiINVCLADTY;
 	  break;
