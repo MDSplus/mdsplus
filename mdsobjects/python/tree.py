@@ -310,7 +310,8 @@ class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
 
     _lock=_threading.RLock()
-    _id=0
+    opened = False
+    _id  = 0
     path = None
     tctx = None
     ctx  = None
@@ -339,6 +340,55 @@ class Tree(object):
                                                _C.c_char_p(_ver.tobytes(tree)),
                                                _C.c_int32(int(shot))))
 
+    def readonly(self):
+        self.open('READONLY')
+    def edit(self):
+        self.open('EDIT')
+    def normal(self):
+        self.open('NORMAL')
+    def open(self, mode='NORMAL'):
+        _TreeCtx.lock.acquire()
+        try:
+            env_name = '%s_path'%self.tree.lower()
+            if not self.path is None:
+                old_path = _mds.getenv(env_name)
+                _mds.setenv(env_name,self.path)
+            self.ctx = _C.c_void_p(0)
+            mode=mode.upper()
+            if mode == 'NORMAL':
+                status = _TreeShr._TreeOpen(_C.byref(self.ctx),
+                                      _C.c_char_p(_ver.tobytes(self.tree)),
+                                      _C.c_int32(self.shot),
+                                      _C.c_int32(0))
+            elif mode == 'EDIT':
+                status = _TreeShr._TreeOpenEdit(_C.byref(self.ctx),
+                                          _C.c_char_p(_ver.tobytes(self.tree)),
+                                          _C.c_int32(self.shot),
+                                          _C.c_int32(0))
+            elif mode == 'READONLY':
+                status = _TreeShr._TreeOpen(_C.byref(self.ctx),
+                                      _C.c_char_p(_ver.tobytes(self.tree)),
+                                      _C.c_int32(self.shot),
+                                      _C.c_int32(1))
+            elif mode == 'NEW':
+                status = _TreeShr._TreeOpenNew(_C.byref(self.ctx),
+                                         _C.c_char_p(_ver.tobytes(self.tree)),
+                                         _C.c_int32(self.shot))
+            else:
+                raise TypeError('Invalid mode specificed, use "normal","edit","new" or "readonly".')
+            _exc.checkStatus(status)
+            if status!=_exc.TreeALREADY_OPEN.status:
+                self.opened = True # only update if tree was not open before
+            if not isinstance(self.ctx,_C.c_void_p) or self.ctx.value is None:
+                raise _exc.MDSplusERROR
+            self.tctx = _TreeCtx(self.ctx.value,self.opened,tree=self.tree,shot=self.shot,mode=mode)
+            self.tree = self.name
+            self.shot = self.shotid
+        finally:
+                if not self.path is None:
+                    _mds.setenv(env_name,old_path)
+                _TreeCtx.lock.release()
+
     def __init__(self, tree=None, shot=-1, mode='NORMAL', path=None):
         """Create a Tree instance. Specify a tree and shot and optionally a mode.
         If providing the mode argument it should be one of the following strings:
@@ -356,50 +406,18 @@ class Tree(object):
             if ctx is None:
                 raise _exc.TreeNOT_OPEN
             self.ctx=_C.c_void_p(ctx)
-            self.opened = False
-        else:
-            self.opened = True
-            _TreeCtx.lock.acquire()
-            env_name = '%s_path'%tree.lower()
-            if not path is None:
-                old_path = _mds.getenv(env_name)
-                _mds.setenv(env_name,path)
-        try:
-            if self.opened:
-                self.path = _mds.getenv(env_name)
-                self.ctx = _C.c_void_p(0)
-                mode=mode.upper()
-                if mode == 'NORMAL':
-                    _exc.checkStatus(_TreeShr._TreeOpen(_C.byref(self.ctx),
-                                          _C.c_char_p(_ver.tobytes(tree)),
-                                          _C.c_int32(int(shot)),
-                                          _C.c_int32(0)))
-                elif mode == 'EDIT':
-                    _exc.checkStatus(_TreeShr._TreeOpenEdit(_C.byref(self.ctx),
-                                              _C.c_char_p(_ver.tobytes(tree)),
-                                              _C.c_int32(int(shot)),
-                                              _C.c_int32(0)))
-                elif mode == 'READONLY':
-                    _exc.checkStatus(_TreeShr._TreeOpen(_C.byref(self.ctx),
-                                          _C.c_char_p(_ver.tobytes(tree)),
-                                          _C.c_int32(int(shot)),
-                                          _C.c_int32(1)))
-                elif mode == 'NEW':
-                    _exc.checkStatus(_TreeShr._TreeOpenNew(_C.byref(self.ctx),
-                                             _C.c_char_p(_ver.tobytes(tree)),
-                                             _C.c_int32(int(shot))))
-                else:
-                    raise TypeError('Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".')
             if not isinstance(self.ctx,_C.c_void_p) or self.ctx.value is None:
                 raise _exc.MDSplusERROR
+            self.opened = False
             self.tctx = _TreeCtx(self.ctx.value,self.opened,tree=str(tree),shot=shot,mode=mode)
             self.tree = self.name
             self.shot = self.shotid
-        finally:
-            if self.opened:
-                if not path is None:
-                    _mds.setenv(env_name,old_path)
-                _TreeCtx.lock.release()
+        else:
+            if path is not None: self.path = path
+            self.tree = tree
+            self.shot = shot
+            self.opened = True
+            self.open(mode)
 
     # support for the with-structure
     def __enter__(self):
@@ -708,15 +726,6 @@ class Tree(object):
     def dir(self):
         """list descendants of top"""
         self.top.dir()
-
-    def edit(self):
-        """Open tree for editing.
-        @rtype: None"""
-        with self._lock:
-            _exc.checkStatus(
-                _TreeShr._TreeOpenEdit(self.ctx,
-                                       _C.c_char_p(_ver.tobytes(self.tree)),
-                                       _C.c_int32(int(self.shot))))
 
     def findTagsIter(self, wild):
         """An iterator for the tagnames from a tree given a wildcard specification.
