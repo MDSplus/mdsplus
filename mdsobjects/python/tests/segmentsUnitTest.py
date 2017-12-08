@@ -229,8 +229,8 @@ class Tests(TestCase):
 
     def UpdateSegments(self):
       def test():
-        from MDSplus import Tree,Int64,Int32,Dimension,Range,Window,DIVIDE,ADD,MULTIPLY
-        from numpy import arange
+        from MDSplus import Tree,Int32,Int64,Dimension,Range,Window,DIVIDE,ADD,MULTIPLY
+        from numpy import arange,ones,int16,int64
         slp = 3.3
         off = 1.1
         trg = -1000000
@@ -244,32 +244,35 @@ class Tests(TestCase):
         trig = ptree.TRG
         raw = ptree.RAW
         sig = ptree.SIG
-        dt  = DIVIDE(1e9,ptree.CLK)
+        dt  = DIVIDE(Int64(1e9),ptree.CLK)
         rng = Range(None,None,dt)
         wnd = Window(None,None,trig)
         ptree.SLP.record = slp
         ptree.OFF.record = off
         length,seglen = 100,10
-        dat  = arange(0,seglen,dtype='int16')
+        dat  = ones(seglen,dtype=int16)
         for i0 in range(0,length,seglen):
             i1 = i0+seglen-1
-            wnd[0],wnd[1] = i0,i1
+            wnd[0],wnd[1] = Int64(i0),Int64(i1)
             dim = Dimension(wnd,rng)
             d0=Int64(i0*dt+trig)
             d1=Int64(i1*dt+trig)
             self.assertEqual(dim.data()[0],d0.data())
             self.assertEqual(dim.data()[-1],d1.data())
             raw.makeSegment(d0,d1,dim,dat)
-        self.assertEqual(str(raw.getSegment(0)),"Build_Signal(Word([0,1,2,3,4,5,6,7,8,9]), *, Build_Dim(Build_Window(0Q, 9Q, TRG), * : * : 1000E6 / CLK))")
+        self.assertEqual(str(raw.getSegment(0)),"Build_Signal(Word([1,1,1,1,1,1,1,1,1,1]), *, Build_Dim(Build_Window(0Q, 9Q, TRG), * : * : 1000000000Q / CLK))")
         self.assertEqual(str(sig.record),"RAW * SLP + OFF")
-        self.assertTrue((abs(sig.dim_of()-(arange(0,length)*int(1e9/clk)+trg))<1e-5).all(),"Stored dim_of does not match expected array")
-        self.assertTrue((abs(sig.data()-((arange(0,length)%seglen)*slp+off))<1e-5).all(),"Stored data does not match expected array")
+        self.assertTrue(sig.dim_of().tolist(),(arange(0,length,dtype=int64)*int(1e9/clk)+trg).tolist())
+        self.assertTrue((abs(sig.data()-(ones(length,dtype=int16)*slp+off))<1e-5).all(),"Stored data does not match expected array")
+#        ptree.close()
+#        ptree.compressDatafile() # this will break the functionality of updateSegment
+#        ptree.open()
         trig.record = 0
         for i in range(int(length/seglen)):
             dim = raw.getSegmentDim(i)
             raw.updateSegment(dim.data()[0],dim.data()[-1],dim,i)
-        self.assertEqual(str(raw.getSegment(0)),"Build_Signal(Word([0,1,2,3,4,5,6,7,8,9]), *, Build_Dim(Build_Window(0Q, 9Q, TRG), * : * : 1000E6 / CLK))")
-        self.assertTrue((abs(sig.dim_of()-(arange(0,length)*int(1e9/clk)))<1e-5).all(),"Stored dim_of does not match expected array after updating")
+        self.assertEqual(str(raw.getSegment(0)),"Build_Signal(Word([1,1,1,1,1,1,1,1,1,1]), *, Build_Dim(Build_Window(0Q, 9Q, TRG), * : * : 1000000000Q / CLK))")
+        self.assertTrue(sig.dim_of().tolist(),(arange(0,length,dtype=int64)*int(1e9/clk)).tolist())
       test()
       self.cleanup()
 
@@ -298,10 +301,6 @@ class Tests(TestCase):
     def CompressSegments(self):
       def test():
         from MDSplus import Tree,DateToQuad,Range
-        import gc
-        for a in gc.garbage:
-            if isinstance(a,Tree):
-                print(a)
         with Tree('seg_tree',self.shot,'NEW') as ptree:
             ptree.addNode('S').compress_on_put = False
             ptree.write()
