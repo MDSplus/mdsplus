@@ -467,16 +467,16 @@ _dsc.addDtypeToClass(Window)
 class Opaque(Compound):
     """An Opaque object containing a binary uint8 array and a string identifying the type.
     """
-    fields=('data','otype')
+    fields=('value','otype')
     dtype_id=217
 
 
     @property
-    def data(self):
+    def value(self):
         "Data portion of Opaque object"
         return self.getDescAt(0)
-    @data.setter
-    def data(self,value):
+    @value.setter
+    def value(self,value):
         self.setDescAt(0,value)
 
     @property
@@ -487,8 +487,11 @@ class Opaque(Compound):
     def getImage(self):
         try: from PIL import Image
         except:       import Image
-        from StringIO import StringIO
-        return Image.open(StringIO(self.data.data().tostring()))
+        if _ver.ispy3:
+            from io import BytesIO as io
+        else:
+            from StringIO import StringIO as io
+        return Image.open(io(self.value.data().tostring()))
 
     @classmethod
     def fromFile(cls,filename,typestring=None):
