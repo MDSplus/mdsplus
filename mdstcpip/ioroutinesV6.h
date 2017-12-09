@@ -59,7 +59,7 @@ inet_ntop(AF_INET6, &sin.sin6_addr, iphost, INET6_ADDRSTRLEN)
 #define LOAD_INITIALIZESOCKETS
 #include <pthread_port.h>
 static ssize_t io_send(int conid, const void *buffer, size_t buflen, int nowait);
-static int io_disconnect(int conid);
+static int io_disconnect(Connection* c);
 static int io_flush(int conid);
 static int io_listen(int argc, char **argv);
 static int io_authorize(int conid, char *username);

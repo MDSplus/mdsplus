@@ -145,7 +145,7 @@ typedef struct _io_routines {
   int (*listen)(int argc, char **argv);
   int (*authorize)(int conid, char *username);
   int (*reuseCheck)(char *connectString, char *uniqueString, size_t buflen);
-  int (*disconnect)(int conid);
+  int (*disconnect)(Connection* c);
   ssize_t (*recv_to)(int conid, void *buffer, size_t len, int to_msec);
 } IoRoutines;
 
@@ -367,6 +367,8 @@ EXPORT int GetCompressionLevel();
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
+EXPORT void *GetConnectionInfoC(Connection* c, char **info_name, int *readfd,
+                               size_t *len);
 EXPORT void *GetConnectionInfo(int id, char **info_name, int *readfd,
                                size_t *len);
 

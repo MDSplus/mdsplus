@@ -234,19 +234,17 @@ int DisconnectConnection(int conid){
   Connection *p, *c;
   CONNECTIONLIST_LOCK;
   c = _FindConnection(conid, &p);
-  if (c && c->deleted == B_FALSE)
-    c->deleted = B_TRUE;
-  else c = NULL;
-  // mark for deletion but do not lock for entire disconnect procedure
-  CONNECTIONLIST_UNLOCK;
   if (c) {
-    if (c->io && c->io->disconnect)
-      c->io->disconnect(conid);
-    CONNECTIONLIST_LOCK;
     if (p == 0)
       ConnectionList = c->next;
     else
       p->next = c->next;
+  }
+  CONNECTIONLIST_UNLOCK;
+  if (c) {
+    if (c->io && c->io->disconnect)
+      c->io->disconnect(c);
+    CONNECTIONLIST_LOCK;
     CONNECTIONLIST_UNLOCK;
     if (c->info)
       free(c->info);
@@ -278,10 +276,8 @@ IoRoutines *GetConnectionIo(int conid){
 //  GetConnectionInfo  /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void *GetConnectionInfo(int conid, char **info_name, int *readfd, size_t * len){
+void *GetConnectionInfo_(Connection* c, char **info_name, int *readfd, size_t * len){
   void *ans = NULL;
-  CONNECTIONLIST_LOCK;
-  Connection *c = _FindConnection(conid, 0);
   if (c) {
     if (len)
       *len = c->info_len;
@@ -291,6 +287,14 @@ void *GetConnectionInfo(int conid, char **info_name, int *readfd, size_t * len){
       *readfd = c->readfd;
     ans = c->info;
   }
+  return ans;
+}
+
+void *GetConnectionInfo(int conid, char **info_name, int *readfd, size_t * len){
+  void *ans;
+  CONNECTIONLIST_LOCK;
+  Connection *c = _FindConnection(conid, 0);
+  ans = GetConnectionInfo_(c, info_name, readfd, len);
   CONNECTIONLIST_UNLOCK;
   return ans;
 }
