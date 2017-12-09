@@ -60,7 +60,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static ssize_t gsi_send(int conid, const void *buffer, size_t buflen, int nowait);
 static ssize_t gsi_recv(int conid, void *buffer, size_t len);
-static int gsi_disconnect(int conid);
+static int gsi_disconnect(Connection* c);
 static int gsi_listen(int argc, char **argv);
 static int gsi_authorize(int conid, char *username);
 static int gsi_connect(int conid, char *protocol, char *host);
@@ -113,6 +113,14 @@ static void testStatus(globus_result_t res, char *msg)
   }
 }
 
+static GSI_INFO *getGsiInfoC(Connection* c)
+{
+  size_t len;
+  char *info_name;
+  int readfd;
+  GSI_INFO *info = (GSI_INFO *) GetConnectionInfoC(c, &info_name, &readfd, &len);
+  return (info_name && strcmp(info_name, "gsi") == 0) && len == sizeof(GSI_INFO) ? info : 0;
+}
 static GSI_INFO *getGsiInfo(int conid)
 {
   size_t len;
@@ -238,9 +246,8 @@ static ssize_t gsi_recv(int conid, void *bptr, size_t num)
   return recved;
 }
 
-static int gsi_disconnect(int conid)
-{
-  GSI_INFO *info = getGsiInfo(conid);
+static int gsi_disconnect(Connection* c){
+  GSI_INFO *info = getGsiInfoC(c);
   if (info) {
     if (info->connection_name) {
       time_t tim = time(0);

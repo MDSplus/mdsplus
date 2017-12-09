@@ -66,7 +66,7 @@ inline static ssize_t io_recv(int conid, void *buffer, size_t len){
   return io_recv_to(conid,buffer,len,-1);
 }
 #endif
-static int io_disconnect(int conid);
+static int io_disconnect(Connection* c);
 static int io_flush(int conid);
 static int io_listen(int argc, char **argv);
 static int io_authorize(int conid, char *username);

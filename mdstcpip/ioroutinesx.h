@@ -42,6 +42,14 @@ static SOCKET getSocket(int conid){
   return (info_name && strcmp(info_name, PROT) == 0) ? (SOCKET)readfd : (SOCKET)-1;
 }
 
+static SOCKET getSocketC(Connection* c){
+  size_t len;
+  char *info_name;
+  int readfd;
+  GetConnectionInfoC(c, &info_name, &readfd, &len);
+  return (info_name && strcmp(info_name, PROT) == 0) ? (SOCKET)readfd : (SOCKET)-1;
+}
+
 static pthread_mutex_t socket_list_mutex = PTHREAD_MUTEX_INITIALIZER;
 static void unlock_socket_list() {  pthread_mutex_unlock(&socket_list_mutex); }
 #define LOCK_SOCKET_LIST   pthread_mutex_lock(&socket_list_mutex);pthread_cleanup_push(unlock_socket_list, NULL);
@@ -332,14 +340,14 @@ static ssize_t io_recv_to(int conid, void *bptr, size_t num, int to_msec){
 //  DISCONNECT  ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static int io_disconnect(int conid){
-  SOCKET sock = getSocket(conid);
+static int io_disconnect(Connection* con){
+  SOCKET sock = getSocketC(con);
   int err = C_OK;
   time_t tim = time(0);
   char *timestr = ctime(&tim);
   if (sock != INVALID_SOCKET) {
     Client *c, **p;
-    for (p = &ClientList, c = ClientList; c && c->id != conid; p = &c->next, c = c->next) ;
+    for (p = &ClientList, c = ClientList; c && c->id != con->id; p = &c->next, c = c->next) ;
     if (c) {
       *p = c->next;
 #ifdef _TCP

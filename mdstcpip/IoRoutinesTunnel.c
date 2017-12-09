@@ -48,7 +48,7 @@ static ssize_t tunnel_recv(int id, void *buffer, size_t len);
 #else
 static ssize_t tunnel_recv_to(int id, void *buffer, size_t len, int to_msec);
 #endif
-static int tunnel_disconnect(int id);
+static int tunnel_disconnect(Connection* c);
 static int tunnel_connect(int id, char *protocol, char *host);
 static int tunnel_listen(int argc, char **argv);
 static IoRoutines tunnel_routines =
@@ -72,6 +72,15 @@ struct TUNNEL_PIPES {
 };
 #endif
 
+static struct TUNNEL_PIPES *getTunnelPipesC(Connection* c)
+{
+  size_t len;
+  char *info_name;
+  struct TUNNEL_PIPES *p = (struct TUNNEL_PIPES *)GetConnectionInfoC(c, &info_name, 0, &len);
+
+  return (info_name && strcmp("tunnel", info_name) == 0
+	  && len == sizeof(struct TUNNEL_PIPES)) ? p : 0;
+}
 static struct TUNNEL_PIPES *getTunnelPipes(int id)
 {
   size_t len;
@@ -83,9 +92,9 @@ static struct TUNNEL_PIPES *getTunnelPipes(int id)
 }
 
 #ifdef _WIN32
-static int tunnel_disconnect(int id)
+static int tunnel_disconnect(Connection* c)
 {
-  struct TUNNEL_PIPES *p = getTunnelPipes(id);
+  struct TUNNEL_PIPES *p = getTunnelPipesC(c);
   if (p) {
     CloseHandle(p->stdin_pipe);
     CloseHandle(p->stdout_pipe);
@@ -93,9 +102,9 @@ static int tunnel_disconnect(int id)
   return C_OK;
 }
 #else
-static int tunnel_disconnect(int id)
+static int tunnel_disconnect(Connection* c)
 {
-  struct TUNNEL_PIPES *p = getTunnelPipes(id);
+  struct TUNNEL_PIPES *p = getTunnelPipesC(c);
   if (p) {
     kill(p->pid, SIGTERM);
     waitpid(p->pid, NULL, WNOHANG);
