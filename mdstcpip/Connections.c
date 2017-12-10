@@ -144,7 +144,7 @@ int NewConnection(char *protocol){
 /// \return true if authorized user found, false otherwise
 static int AuthorizeClient(int id, char *username){
   Connection *c = FindConnection(id, 0);
-  if (c && c->io) return c->io->authorize ? c->io->authorize(id, username) : 1;
+  if (c && c->io) return c->io->authorize ? c->io->authorize(c, username) : 1;
   return 0;
 }
 
@@ -276,7 +276,7 @@ IoRoutines *GetConnectionIo(int conid){
 //  GetConnectionInfo  /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void *GetConnectionInfo_(Connection* c, char **info_name, int *readfd, size_t * len){
+void *GetConnectionInfoC(Connection* c, char **info_name, int *readfd, size_t * len){
   void *ans = NULL;
   if (c) {
     if (len)
@@ -294,7 +294,7 @@ void *GetConnectionInfo(int conid, char **info_name, int *readfd, size_t * len){
   void *ans;
   CONNECTIONLIST_LOCK;
   Connection *c = _FindConnection(conid, 0);
-  ans = GetConnectionInfo_(c, info_name, readfd, len);
+  ans = GetConnectionInfoC(c, info_name, readfd, len);
   CONNECTIONLIST_UNLOCK;
   return ans;
 }

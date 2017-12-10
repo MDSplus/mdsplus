@@ -62,7 +62,7 @@ static ssize_t gsi_send(int conid, const void *buffer, size_t buflen, int nowait
 static ssize_t gsi_recv(int conid, void *buffer, size_t len);
 static int gsi_disconnect(Connection* c);
 static int gsi_listen(int argc, char **argv);
-static int gsi_authorize(int conid, char *username);
+static int gsi_authorize(Connection* c, char *username);
 static int gsi_connect(int conid, char *protocol, char *host);
 static int gsi_reuseCheck(char *host, char *unique, size_t buflen);
 static IoRoutines gsi_routines = {
@@ -135,9 +135,9 @@ static GSI_INFO *getGsiInfo(int conid)
   testStatus(statvar,msg);\
   if (statvar!=GLOBUS_SUCCESS) fail_action
 
-static int gsi_authorize(int conid, char *username)
+static int gsi_authorize(Connection* c, char *username)
 {
-  GSI_INFO *info = getGsiInfo(conid);
+  GSI_INFO *info = getGsiInfoC(c);
   int ans = 0;
   if (info) {
     char *hostname;
