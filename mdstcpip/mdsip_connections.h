@@ -140,13 +140,13 @@ typedef struct _mds_message {
 typedef struct _io_routines {
   int (*connect)(int conid, char *protocol, char *connectString);
   ssize_t (*send)(Connection* c, const void *buffer, size_t buflen, int nowait);
-  ssize_t (*recv)(int conid, void *buffer, size_t len);
+  ssize_t (*recv)(Connection* c, void *buffer, size_t len);
   int (*flush)(Connection* c);
   int (*listen)(int argc, char **argv);
   int (*authorize)(Connection* c, char *username);
   int (*reuseCheck)(char *connectString, char *uniqueString, size_t buflen);
   int (*disconnect)(Connection* c);
-  ssize_t (*recv_to)(int conid, void *buffer, size_t len, int to_msec);
+  ssize_t (*recv_to)(Connection* c, void *buffer, size_t len, int to_msec);
 } IoRoutines;
 
 #define EVENTASTREQUEST "---EVENTAST---REQUEST---"

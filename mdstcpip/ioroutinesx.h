@@ -3,9 +3,9 @@ static int io_disconnect(Connection* c);
 static int io_listen(int argc, char **argv);
 static int io_authorize(Connection* c, char *username);
 static int io_connect(int conid, char *protocol, char *host);
-static ssize_t io_recv_to(int conid, void *buffer, size_t len, int to_msec);
-inline static ssize_t io_recv(int conid, void *buffer, size_t len){
-  return io_recv_to(conid, buffer,len, -1);
+static ssize_t io_recv_to(Connection* c, void *buffer, size_t len, int to_msec);
+inline static ssize_t io_recv(Connection* c, void *buffer, size_t len){
+  return io_recv_to(c, buffer,len, -1);
 }
 static IoRoutines io_routines = {
   io_connect, io_send, io_recv, io_flush, io_listen, io_authorize, io_reuseCheck, io_disconnect, io_recv_to
@@ -47,15 +47,7 @@ EXPORT IoRoutines *Io(){
   return &io_routines;
 }
 
-static SOCKET getSocket(int conid){
-  size_t len;
-  char *info_name;
-  int readfd;
-  GetConnectionInfo(conid, &info_name, &readfd, &len);
-  return (info_name && strcmp(info_name, PROT) == 0) ? (SOCKET)readfd : (SOCKET)-1;
-}
-
-static SOCKET getSocketC(Connection* c){
+static SOCKET getSocket(Connection* c){
   size_t len;
   char *info_name;
   int readfd;
@@ -253,7 +245,7 @@ static void ChildSignalHandler(int num __attribute__ ((unused))){
 ////////////////////////////////////////////////////////////////////////////////
 
 static int io_authorize(Connection* c, char *username){
-  SOCKET sock = getSocketC(c);
+  SOCKET sock = getSocket(c);
   time_t tim = time(0);
   char *timestr = ctime(&tim);
   int ans = C_OK;
@@ -298,7 +290,7 @@ static int io_authorize(Connection* c, char *username){
 ////////////////////////////////////////////////////////////////////////////////
 
 static ssize_t io_send(Connection* c, const void *bptr, size_t num, int nowait){
-  SOCKET sock = getSocketC(c);
+  SOCKET sock = getSocket(c);
   int options = nowait ? MSG_DONTWAIT : 0;
   if (sock != INVALID_SOCKET)
     return SEND(sock, bptr, num, options | MSG_NOSIGNAL);
@@ -311,11 +303,11 @@ static ssize_t io_send(Connection* c, const void *bptr, size_t num, int nowait){
 ////////////////////////////////////////////////////////////////////////////////
 
 #ifdef _WIN32
-static ssize_t io_recv(int conid, void *bptr, size_t num){
+static ssize_t io_recv(Connection* c, void *bptr, size_t num){
 #else
-static ssize_t io_recv_to(int conid, void *bptr, size_t num, int to_msec){
+static ssize_t io_recv_to(Connection* c, void *bptr, size_t num, int to_msec){
 #endif
-  SOCKET sock = getSocket(conid);
+  SOCKET sock = getSocket(c);
   ssize_t recved = -1;
   if (sock != INVALID_SOCKET) {
     PushSocket(sock);
@@ -354,7 +346,7 @@ static ssize_t io_recv_to(int conid, void *bptr, size_t num, int to_msec){
 ////////////////////////////////////////////////////////////////////////////////
 
 static int io_disconnect(Connection* con){
-  SOCKET sock = getSocketC(con);
+  SOCKET sock = getSocket(con);
   int err = C_OK;
   time_t tim = time(0);
   char *timestr = ctime(&tim);
