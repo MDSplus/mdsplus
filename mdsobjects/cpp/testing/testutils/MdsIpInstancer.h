@@ -52,26 +52,25 @@ class MdsIpInstancer {
 
     Singleton<HostFile> m_host_file;
     pid_t m_pid;
-    int m_port;
+    unsigned short m_port;
     std::string m_protocol;
 
 public:
 
-    MdsIpInstancer(const char *protocol) :
-        m_port(8000),
+    MdsIpInstancer(const char *protocol,unsigned short port) :
+        m_port(port),
         m_protocol(protocol)
     {
         // build lazy singleton instance //
         m_host_file.get_instance();
-
-        // get first available port //
-        int offset = 0;
-        while(!available(m_port,m_protocol) && offset<100 ) {
+        if (m_port>0) {
+          // get first available port //
+          int offset = 0;
+          while(!available(m_port,m_protocol) && offset<100 )
             m_port += offset++;
-        }
-        if(offset==100)
+          if(offset==100)
             throw std::out_of_range("any port found within 100 tries");
-
+        }
         m_pid = fork();
         if(m_pid<0) {
             perror("unable to fork process\n");
@@ -81,17 +80,19 @@ public:
         // child //
         if(m_pid == 0) {
             char port_str[20];
-            sprintf(port_str,"%i",m_port);
-            int _argc = 8;
             char *_argv[] = {(char *)"mdsip",
-                             (char *)"-m",
                              (char *)"-P",(char *)m_protocol.c_str(),
-                             (char *)"-p",(char *)port_str,
-                             (char *)"-h",(char *)m_host_file->name() };
+                             (char *)"-h",(char *)m_host_file->name(),
+                             (char *)"-p",port_str,(char *)"-m"};
+            int _argc = 5;
+            if (m_port>0) {
+              sprintf(port_str,"%i",m_port);
+              _argc += 3;
+            }
             int status __attribute__ ((unused)) = mdsip_main(_argc,_argv);
             exit(1);
         }  else {
-            std::cout << "started mdsip server on port: " << m_port << " pid: " << m_pid << "\n" << std::flush;
+            std::cout << "started mdsip server for " << m_protocol << " on port: " << m_port << " pid: " << m_pid << "\n" << std::flush;
         }
 
     }
@@ -107,7 +108,15 @@ public:
 
     std::string getAddress() const {
         std::stringstream ss;
-        ss << m_protocol << "://" << "localhost" << ":" << m_port;
+        //ss << "::1#" << m_port; TODO: test ip6 addresses
+        if (m_protocol=="tcp" || m_protocol=="tcpv6")
+          ss << "tcp://localhost:" << m_port;
+        else if (m_protocol=="udt" || m_protocol=="udtv6")
+          ss << "udt://localhost:" << m_port;
+        else if (m_protocol=="gsi")
+          ss << "gsi://localhost:" << m_port;
+        else
+          ss << m_protocol << "://localhost";
         return ss.str();
     }
 
@@ -135,11 +144,10 @@ private:
     int allocate(const std::string &protocol) {
         int sock = -1;
 
-        if(protocol == "tcp")
+        if(protocol == "tcp" || protocol == "tcpv6" || protocol == "gsi")
             sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-        else if(protocol == "udt")
+        else if(protocol == "udt" || protocol == "udtv6")
             sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-
         if (sock < 0) {
             if (errno == EMFILE) {
                 /* too many open files */
