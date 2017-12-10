@@ -114,7 +114,7 @@ static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *
 
 static int io_flush(Connection* c){
 #if !defined(__sparc__)
-  SOCKET sock = getSocketC(c);
+  SOCKET sock = getSocket(c);
   if (sock != INVALID_SOCKET) {
     struct timeval timout = { 0, 1 };
     int err;

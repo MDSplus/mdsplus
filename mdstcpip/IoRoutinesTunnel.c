@@ -42,11 +42,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 static ssize_t tunnel_send(Connection* c, const void *buffer, size_t buflen, int nowait);
-static ssize_t tunnel_recv(int id, void *buffer, size_t len);
+static ssize_t tunnel_recv(Connection* c, void *buffer, size_t len);
 #ifdef _WIN32
 #define tunnel_recv_to NULL
 #else
-static ssize_t tunnel_recv_to(int id, void *buffer, size_t len, int to_msec);
+static ssize_t tunnel_recv_to(Connection* c, void *buffer, size_t len, int to_msec);
 #endif
 static int tunnel_disconnect(Connection* c);
 static int tunnel_connect(int id, char *protocol, char *host);
@@ -72,7 +72,7 @@ struct TUNNEL_PIPES {
 };
 #endif
 
-static struct TUNNEL_PIPES *getTunnelPipesC(Connection* c)
+static struct TUNNEL_PIPES *getTunnelPipes(Connection* c)
 {
   size_t len;
   char *info_name;
@@ -81,20 +81,11 @@ static struct TUNNEL_PIPES *getTunnelPipesC(Connection* c)
   return (info_name && strcmp("tunnel", info_name) == 0
 	  && len == sizeof(struct TUNNEL_PIPES)) ? p : 0;
 }
-static struct TUNNEL_PIPES *getTunnelPipes(int id)
-{
-  size_t len;
-  char *info_name;
-  struct TUNNEL_PIPES *p = (struct TUNNEL_PIPES *)GetConnectionInfo(id, &info_name, 0, &len);
-
-  return (info_name && strcmp("tunnel", info_name) == 0
-	  && len == sizeof(struct TUNNEL_PIPES)) ? p : 0;
-}
 
 #ifdef _WIN32
 static int tunnel_disconnect(Connection* c)
 {
-  struct TUNNEL_PIPES *p = getTunnelPipesC(c);
+  struct TUNNEL_PIPES *p = getTunnelPipes(c);
   if (p) {
     CloseHandle(p->stdin_pipe);
     CloseHandle(p->stdout_pipe);
@@ -104,7 +95,7 @@ static int tunnel_disconnect(Connection* c)
 #else
 static int tunnel_disconnect(Connection* c)
 {
-  struct TUNNEL_PIPES *p = getTunnelPipesC(c);
+  struct TUNNEL_PIPES *p = getTunnelPipes(c);
   if (p) {
     kill(p->pid, SIGTERM);
     waitpid(p->pid, NULL, WNOHANG);
@@ -116,7 +107,7 @@ static int tunnel_disconnect(Connection* c)
 #endif
 
 static ssize_t tunnel_send(Connection* c, const void *buffer, size_t buflen, int nowait __attribute__ ((unused))){
-  struct TUNNEL_PIPES *p = getTunnelPipesC(c);
+  struct TUNNEL_PIPES *p = getTunnelPipes(c);
 #ifdef _WIN32
   ssize_t num = 0;
   return (p && WriteFile(p->stdin_pipe, buffer, buflen, (DWORD *)&num, NULL)) ? num : -1;
@@ -125,8 +116,8 @@ static ssize_t tunnel_send(Connection* c, const void *buffer, size_t buflen, int
 #endif
 }
 
-static ssize_t tunnel_recv(int id, void *buffer, size_t buflen){
-  struct TUNNEL_PIPES *p = getTunnelPipes(id);
+static ssize_t tunnel_recv(Connection* c, void *buffer, size_t buflen){
+  struct TUNNEL_PIPES *p = getTunnelPipes(c);
 #ifdef _WIN32
   ssize_t num = 0;
   return (p && ReadFile(p->stdout_pipe, buffer, buflen, (DWORD *)&num, NULL)) ? num : -1;
@@ -136,8 +127,8 @@ static ssize_t tunnel_recv(int id, void *buffer, size_t buflen){
 }
 
 #ifndef _WIN32
-static ssize_t tunnel_recv_to(int id, void *buffer, size_t buflen, int to_msec){
-  struct TUNNEL_PIPES *p = getTunnelPipes(id);
+static ssize_t tunnel_recv_to(Connection* c, void *buffer, size_t buflen, int to_msec){
+  struct TUNNEL_PIPES *p = getTunnelPipes(c);
   if (!p) return -1;
   if (to_msec>=0) { // don't tiime out if to_msec < 0
     struct timeval timeout;
