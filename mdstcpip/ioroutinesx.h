@@ -239,8 +239,8 @@ static void ChildSignalHandler(int num __attribute__ ((unused))){
 //  AUTHORIZE  /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static int io_authorize(int conid, char *username){
-  SOCKET sock = getSocket(conid);
+static int io_authorize(Connection* c, char *username){
+  SOCKET sock = getSocketC(c);
   time_t tim = time(0);
   char *timestr = ctime(&tim);
   int ans = C_OK;

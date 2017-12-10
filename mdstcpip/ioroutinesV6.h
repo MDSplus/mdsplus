@@ -62,7 +62,7 @@ static ssize_t io_send(int conid, const void *buffer, size_t buflen, int nowait)
 static int io_disconnect(Connection* c);
 static int io_flush(int conid);
 static int io_listen(int argc, char **argv);
-static int io_authorize(int conid, char *username);
+static int io_authorize(Connection* c, char *username);
 static int io_connect(int conid, char *protocol, char *host);
 static int io_reuseCheck(char *host, char *unique, size_t buflen);
 static ssize_t io_recv_to(int conid, void *buffer, size_t len, int to_msec);

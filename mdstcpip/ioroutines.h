@@ -69,7 +69,7 @@ inline static ssize_t io_recv(int conid, void *buffer, size_t len){
 static int io_disconnect(Connection* c);
 static int io_flush(int conid);
 static int io_listen(int argc, char **argv);
-static int io_authorize(int conid, char *username);
+static int io_authorize(Connection* c, char *username);
 static int io_connect(int conid, char *protocol, char *host);
 static int io_reuseCheck(char *host, char *unique, size_t buflen);
 static IoRoutines io_routines = {
