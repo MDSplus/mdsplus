@@ -23,7 +23,6 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "mdsip_connections.h"
-#include <status.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -43,14 +42,11 @@ IoRoutines *LoadIo(char *protocol_in){
   size_t i;
   for (i = 0; i < strlen(protocol) ; i++)
     protocol[i] = toupper(protocol[i]);
-  struct descriptor image_dsc = { 0, DTYPE_T, CLASS_S, 0 };
-  image_dsc.pointer = strcpy((char *)malloc(strlen(protocol) + 36), "MdsIp");
-  strcat(image_dsc.pointer, protocol);
-  image_dsc.length = (unsigned short)strlen(image_dsc.pointer);
-  const DESCRIPTOR(symbol_dsc, "Io");
-  int status = LibFindImageSymbol(&image_dsc, &symbol_dsc, &rtn);
-  free(image_dsc.pointer);
-  if (STATUS_OK && rtn) {
+  char* image = strcpy((char *)malloc(strlen(protocol) + 36), "MdsIp");
+  strcat(image, protocol);
+  int ok = LibFindImageSymbol_C(image, "Io", (void**)&rtn);
+  free(image);
+  if (ok && rtn) {
     free(protocol);
     return rtn();
   } else {

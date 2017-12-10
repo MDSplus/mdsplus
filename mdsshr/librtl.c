@@ -469,31 +469,6 @@ EXPORT char *LibFindImageSymbolErrString()
   return FIS_Error;
 }
 
-STATIC_THREADSAFE int dlopen_mutex_initialized = 0;
-STATIC_THREADSAFE pthread_mutex_t dlopen_mutex;
-
-STATIC_ROUTINE void dlopen_lock()
-{
-
-  if (!dlopen_mutex_initialized) {
-    dlopen_mutex_initialized = 1;
-    pthread_mutex_init(&dlopen_mutex, NULL);
-  }
-
-  pthread_mutex_lock(&dlopen_mutex);
-}
-
-STATIC_ROUTINE void dlopen_unlock()
-{
-
-  if (!dlopen_mutex_initialized) {
-    dlopen_mutex_initialized = 1;
-    pthread_mutex_init(&dlopen_mutex, NULL);
-  }
-
-  pthread_mutex_unlock(&dlopen_mutex);
-}
-
 static void *loadLib(const char *dirspec, const char *filename, char *errorstr) {
   void *handle = NULL;
   char *full_filename = alloca( strlen(dirspec) + strlen(filename) + 10);
@@ -537,7 +512,9 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
   if (strcmp(filename+strlen(filename)-strlen(SHARELIB_TYPE),SHARELIB_TYPE)) {
     strcat(filename,SHARELIB_TYPE);
   }
-  dlopen_lock();
+  static pthread_mutex_t dlopen_mutex = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_lock(&dlopen_mutex);
+  pthread_cleanup_push((void*)pthread_mutex_unlock,(void*)&dlopen_mutex);
   handle = loadLib("", filename, errorstr);
   if (handle == NULL &&
       (strchr(filename, '/') == 0) &&
@@ -582,7 +559,7 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
   }
   else
     status = 1;
-  dlopen_unlock();
+  pthread_cleanup_pop(1);
   return status;
 }
 
