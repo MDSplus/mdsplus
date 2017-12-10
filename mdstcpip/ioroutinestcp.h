@@ -11,6 +11,7 @@
 #define RECV        recv
 // active select file descriptor
 static fd_set fdactive;
+static int io_flush(Connection* c);
 #include "ioroutinesx.h"
 ////////////////////////////////////////////////////////////////////////////////
 //  CONNECT  ///////////////////////////////////////////////////////////////////
@@ -111,9 +112,9 @@ static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *
 //  FLUSH  /////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static int io_flush(int conid){
+static int io_flush(Connection* c){
 #if !defined(__sparc__)
-  SOCKET sock = getSocket(conid);
+  SOCKET sock = getSocketC(c);
   if (sock != INVALID_SOCKET) {
     struct timeval timout = { 0, 1 };
     int err;

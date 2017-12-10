@@ -58,7 +58,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "mdsip_connections.h"
 
-static ssize_t gsi_send(int conid, const void *buffer, size_t buflen, int nowait);
+static ssize_t gsi_send(Connection* c, const void *buffer, size_t buflen, int nowait);
 static ssize_t gsi_recv(int conid, void *buffer, size_t len);
 static int gsi_disconnect(Connection* c);
 static int gsi_listen(int argc, char **argv);
@@ -216,11 +216,11 @@ static int gsi_authorize(Connection* c, char *username)
   return ans;
 }
 
-static ssize_t gsi_send(int conid, const void *bptr, size_t num, int options __attribute__ ((unused)))
+static ssize_t gsi_send(Connection* c, const void *bptr, size_t num, int options __attribute__ ((unused)))
 {
   globus_size_t nbytes;
   globus_result_t result;
-  GSI_INFO *info = getGsiInfo(conid);
+  GSI_INFO *info = getGsiInfoC(c);
   ssize_t sent = -1;
   if (info != 0) {
     doit(result,
