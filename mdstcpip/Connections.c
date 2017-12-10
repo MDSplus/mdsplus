@@ -90,8 +90,8 @@ int NextConnection(void **ctx, char **info_name, void **info, size_t * info_len)
 }
 
 int FlushConnection(int id){
-  IoRoutines *io = GetConnectionIo(id);
-  if (io) return io->flush ? io->flush(id) : 0;
+  Connection* c = FindConnection(id,NULL);
+  if (c && c->io) return c->io->flush ? c->io->flush(c) : 0;
   return -1;
 }
 

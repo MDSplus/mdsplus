@@ -1,3 +1,16 @@
+static ssize_t io_send(Connection* c, const void *buffer, size_t buflen, int nowait);
+static int io_disconnect(Connection* c);
+static int io_listen(int argc, char **argv);
+static int io_authorize(Connection* c, char *username);
+static int io_connect(int conid, char *protocol, char *host);
+static ssize_t io_recv_to(int conid, void *buffer, size_t len, int to_msec);
+inline static ssize_t io_recv(int conid, void *buffer, size_t len){
+  return io_recv_to(conid, buffer,len, -1);
+}
+static IoRoutines io_routines = {
+  io_connect, io_send, io_recv, io_flush, io_listen, io_authorize, io_reuseCheck, io_disconnect, io_recv_to
+};
+
 #ifdef _WIN32
  #define close closesocket
 #else
@@ -284,8 +297,8 @@ static int io_authorize(Connection* c, char *username){
 //  SEND  //////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static ssize_t io_send(int conid, const void *bptr, size_t num, int nowait){
-  SOCKET sock = getSocket(conid);
+static ssize_t io_send(Connection* c, const void *bptr, size_t num, int nowait){
+  SOCKET sock = getSocketC(c);
   int options = nowait ? MSG_DONTWAIT : 0;
   if (sock != INVALID_SOCKET)
     return SEND(sock, bptr, num, options | MSG_NOSIGNAL);

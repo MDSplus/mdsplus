@@ -41,7 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/wait.h>
 #endif
 
-static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait);
+static ssize_t tunnel_send(Connection* c, const void *buffer, size_t buflen, int nowait);
 static ssize_t tunnel_recv(int id, void *buffer, size_t len);
 #ifdef _WIN32
 #define tunnel_recv_to NULL
@@ -115,8 +115,8 @@ static int tunnel_disconnect(Connection* c)
 }
 #endif
 
-static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait __attribute__ ((unused))){
-  struct TUNNEL_PIPES *p = getTunnelPipes(id);
+static ssize_t tunnel_send(Connection* c, const void *buffer, size_t buflen, int nowait __attribute__ ((unused))){
+  struct TUNNEL_PIPES *p = getTunnelPipesC(c);
 #ifdef _WIN32
   ssize_t num = 0;
   return (p && WriteFile(p->stdin_pipe, buffer, buflen, (DWORD *)&num, NULL)) ? num : -1;
