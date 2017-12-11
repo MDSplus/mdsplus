@@ -14,6 +14,7 @@
 #endif
 #include <ipdesc.h>
 #include <mds_stdarg.h>
+#include <pthread.h>
 
 #define MDSIP_MAX_ARGS 256
 #define MDSIP_MAX_COMPRESS 9
@@ -63,7 +64,10 @@ typedef struct _options {
 } Options;
 
 typedef struct _connection {
-  int id; /* unique connection id */
+  int id; // unique connection id
+  struct _connection *next;
+  pthread_cond_t cond;
+  char state;
   char *protocol;
   char *info_name;
   void *info;
@@ -72,17 +76,23 @@ typedef struct _connection {
   unsigned char message_id;
   int client_type;
   int nargs;
-  struct descriptor *descrip[MDSIP_MAX_ARGS]; ///< list of descriptors for the
-  /// message arguments
+  struct descriptor *descrip[MDSIP_MAX_ARGS]; // list of descriptors for the message arguments
   struct _eventlist *event;
   void *tdicontext[6];
   int addr;
   int compression_level;
   int readfd;
   struct _io_routines *io;
-  char deleted;
-  struct _connection *next;
 } Connection;
+
+#define CON_IDLE       0x00
+#define CON_CONNECT    0x01
+#define CON_AUTHORIZE  0x02
+#define CON_SEND       0x04
+#define CON_FLUSH      0x08
+#define CON_RECV       0x10
+#define CON_UNDEFINED  0x40
+#define CON_DISCONNECT 0x80
 
 #if defined(__CRAY) || defined(CRAY)
 int errno = 0;
@@ -140,7 +150,7 @@ typedef struct _mds_message {
 typedef struct _io_routines {
   int (*connect)(int conid, char *protocol, char *connectString);
   ssize_t (*send)(Connection* c, const void *buffer, size_t buflen, int nowait);
-  ssize_t (*recv)(Connection* c, void *buffer, size_t len);
+  ssize_t (*recv)(Connection* c, void *buffer, size_t buflen);
   int (*flush)(Connection* c);
   int (*listen)(int argc, char **argv);
   int (*authorize)(Connection* c, char *username);
@@ -185,6 +195,10 @@ typedef struct _io_routines {
 #else
 typedef void *pthread_mutex_t;
 #endif
+
+int SendToConnection(int id, const void *buffer, size_t buflen, int nowait);
+int ReceiveFromConnection(int id, void *buffer, size_t buflen);
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -430,6 +444,7 @@ EXPORT Message *GetMdsMsg(int id, int *status);
 ///
 EXPORT Message *GetMdsMsgTO(int id, int *status, int timeout);
 EXPORT Message *GetMdsMsgOOB(int id, int *status);
+Message *GetMdsMsgTOC(Connection* c, int *status, int to_msec);
 
 EXPORT unsigned char GetMode();
 
@@ -660,6 +675,7 @@ EXPORT int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs,
 /// \return true if the message was succesfully sent or false otherwise.
 ///
 EXPORT int SendMdsMsg(int id, Message *m, int msg_options);
+int SendMdsMsgC(Connection* c, Message *m, int msg_options);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
