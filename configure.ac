@@ -943,16 +943,16 @@ then
 fi
 AC_PATH_PROG(UIL,$UILCMD,$UILCMD,$UILPATH:/usr/bin/X11:$PATH:/usr/dt/bin)
 AC_MSG_CHECKING(for uil command)
-if [ ! "$MINGW" = "yes" ] && ( which $UIL 2>/dev/null )
+if test ! "$MINGW" = "yes" && ( which $UIL &>/dev/null )
 then
   UIL="env LANG=en_US $UIL"
   HAVE_MOTIF="yes"
-  AC_MSG_RESULT(have uil so openmotif apps will be built.)
+  #AC_MSG_RESULT(have uil so openmotif apps will be built.)
 else
 # IDLMDSEVENT and IDLMDSWIDGETS need MOTIF to build
   IDLMDSEVENT=""
   IDLMDSWIDGETS=""
-  AC_MSG_RESULT(no uil so skipping openmotif apps.openmotif-devel not installed.)
+  #AC_MSG_RESULT(no uil so skipping openmotif apps.openmotif-devel not installed.)
 fi
 MOTIF_APS="\$(MOTIF_APS)"
 AM_CONDITIONAL([HAVE_MOTIF], [AS_VAR_TEST_SET([HAVE_MOTIF])])
