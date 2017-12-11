@@ -11860,18 +11860,16 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for uil command" >&5
 $as_echo_n "checking for uil command... " >&6; }
-if  ! "$MINGW" = "yes"  && ( which $UIL 2>/dev/null )
+if test ! "$MINGW" = "yes" && ( which $UIL &>/dev/null )
 then
   UIL="env LANG=en_US $UIL"
   HAVE_MOTIF="yes"
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: have uil so openmotif apps will be built." >&5
-$as_echo "have uil so openmotif apps will be built." >&6; }
+  #AC_MSG_RESULT(have uil so openmotif apps will be built.)
 else
 # IDLMDSEVENT and IDLMDSWIDGETS need MOTIF to build
   IDLMDSEVENT=""
   IDLMDSWIDGETS=""
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no uil so skipping openmotif apps.openmotif-devel not installed." >&5
-$as_echo "no uil so skipping openmotif apps.openmotif-devel not installed." >&6; }
+  #AC_MSG_RESULT(no uil so skipping openmotif apps.openmotif-devel not installed.)
 fi
 MOTIF_APS="\$(MOTIF_APS)"
  if ${HAVE_MOTIF+:} false; then
