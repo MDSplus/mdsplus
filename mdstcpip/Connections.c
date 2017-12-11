@@ -99,7 +99,7 @@ int NextConnection(void **ctx, char **info_name, void **info, size_t * info_len)
     ans = c->id;
   } else {
     *ctx = 0;
-    ans = -1;
+    ans = INVALID_CONNECTION_ID;
   }
   CONNECTIONLIST_UNLOCK;
   return ans;
@@ -138,7 +138,7 @@ int ReceiveFromConnection(int id, void *buffer, size_t buflen){
 static void exitHandler(void){
   int id;
   void *ctx = (void *)-1;
-  while ((id = NextConnection(&ctx, 0, 0, 0)) != -1) {
+  while ((id = NextConnection(&ctx, 0, 0, 0)) != INVALID_CONNECTION_ID) {
     DisconnectConnection(id);
     ctx = 0;
   }
@@ -151,7 +151,8 @@ static void registerHandler(){
 //  DisconnectConnection  //////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static void connectionDestroy(Connection *c){
+void DisconnectConnectionC(Connection *c){
+  c->io->disconnect(c);
   if (c->info)
     free(c->info);
   FreeDescriptors(c);
@@ -161,10 +162,6 @@ static void connectionDestroy(Connection *c){
   free(c);
 }
 
-inline static void disconnectConnectionC(Connection *c){
-      c->io->disconnect(c);
-    connectionDestroy(c);
-}
 int DisconnectConnection(int conid){
   INIT_STATUS_AS MDSplusERROR;
   Connection *p, *c;
@@ -183,7 +180,7 @@ int DisconnectConnection(int conid){
   }
   CONNECTIONLIST_UNLOCK;
   if (c) {
-    disconnectConnectionC(c);
+    DisconnectConnectionC(c);
     status = MDSplusSUCCESS;
   }
   return status;
@@ -193,10 +190,9 @@ int DisconnectConnection(int conid){
 //  NewConnection  /////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-Connection* NewConnectionC(char *protocol, int add){
+Connection* NewConnectionC(char *protocol){
   Connection *connection;
   IoRoutines *io = LoadIo(protocol);
-  static int id = 1;
   static pthread_once_t registerExitHandler = PTHREAD_ONCE_INIT;
   if (io) {
     (void) pthread_once(&registerExitHandler,registerHandler);
@@ -205,23 +201,12 @@ Connection* NewConnectionC(char *protocol, int add){
     connection->readfd = -1;
     connection->message_id = -1;
     connection->protocol = strcpy(malloc(strlen(protocol) + 1), protocol);
+    connection->id = INVALID_CONNECTION_ID;
     connection->state = CON_IDLE;
     pthread_cond_init(&connection->cond,NULL);
-    CONNECTIONLIST_LOCK;
-    connection->id = id++;
-    if (add) {
-      connection->next = ConnectionList;
-      ConnectionList = connection;
-    }
-    CONNECTIONLIST_UNLOCK;
     return connection;
   } else
     return NULL;
-}
-
-int NewConnection(char *protocol){
-  Connection *c = NewConnectionC(protocol,1);
-  return c ? c->id : -1;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -289,7 +274,7 @@ void *GetConnectionInfo(int conid, char **info_name, int *readfd, size_t * len){
 //  SetConnectionInfo  /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static inline void SetConnectionInfoC(Connection* c, char *info_name, int readfd, void *info, size_t len){
+void SetConnectionInfoC(Connection* c, char *info_name, int readfd, void *info, size_t len){
   if (c) {
     c->info_name = strcpy(malloc(strlen(info_name) + 1), info_name);
     if (info) {
@@ -422,9 +407,21 @@ static inline int authorizeClient(Connection* c, char *username){
 ////////////////////////////////////////////////////////////////////////////////
 //  AcceptConnection  //////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+int AddConnection(Connection* c) {
+  static int id = 1;
+  CONNECTIONLIST_LOCK;
+  if (id==INVALID_CONNECTION_ID)
+    while (_FindConnection(++id, 0)); //find next free id
+  c->id   = id++;
+  c->next = ConnectionList;
+  ConnectionList = c;
+  CONNECTIONLIST_UNLOCK;
+  return c->id;
+}
+
 
 int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, size_t info_len, int *id, char **usr){
-  Connection* c = NewConnectionC(protocol,0);
+  Connection* c = NewConnectionC(protocol);
   INIT_STATUS_ERROR;
   if (c) {
     static Message m;
@@ -437,7 +434,7 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
       if (m_user)
 	free(m_user);
       if (usr) *usr = NULL;
-      connectionDestroy(c);
+      DisconnectConnectionC(c);
       return MDSplusERROR;
     }
     m.h.msglen = sizeof(MsgHdr);
@@ -467,14 +464,10 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
     // reply to client //
     SendMdsMsgC(c, &m, 0);
     if STATUS_OK {
-      *id = c->id;
       // all good add connection
-      CONNECTIONLIST_LOCK;
-      c->next = ConnectionList;
-      ConnectionList = c;
-      CONNECTIONLIST_UNLOCK;
+      *id = AddConnection(c);
     } else
-      disconnectConnectionC(c);
+      DisconnectConnectionC(c);
     fflush(stderr);
   }
   return status;

@@ -85,6 +85,8 @@ typedef struct _connection {
   struct _io_routines *io;
 } Connection;
 
+#define INVALID_CONNECTION_ID 0
+
 #define CON_IDLE       0x00
 #define CON_CONNECT    0x01
 #define CON_AUTHORIZE  0x02
@@ -148,7 +150,7 @@ typedef struct _mds_message {
 /// | recv_to    | receive buffer from cocnection with time out |
 ///
 typedef struct _io_routines {
-  int (*connect)(int conid, char *protocol, char *connectString);
+  int (*connect)(Connection* c, char *protocol, char *connectString);
   ssize_t (*send)(Connection* c, const void *buffer, size_t buflen, int nowait);
   ssize_t (*recv)(Connection* c, void *buffer, size_t buflen);
   int (*flush)(Connection* c);
@@ -195,10 +197,6 @@ typedef struct _io_routines {
 #else
 typedef void *pthread_mutex_t;
 #endif
-
-int SendToConnection(int id, const void *buffer, size_t buflen, int nowait);
-int ReceiveFromConnection(int id, void *buffer, size_t buflen);
-
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -689,8 +687,8 @@ int SendMdsMsgC(Connection* c, Message *m, int msg_options);
 /// \param info accessory info descriptor
 /// \param len length of accessory info descriptor
 ///
-EXPORT void SetConnectionInfo(int conid, char *info_name, int readfd,
-                              void *info, size_t len);
+EXPORT void SetConnectionInfo(int conid, char *info_name, int readfd, void *info, size_t len);
+EXPORT void SetConnectionInfoC(Connection* c, char *info_name, int readfd, void *info, size_t len);
 
 EXPORT int SetCompressionLevel(int setting);
 
@@ -757,7 +755,15 @@ EXPORT int GetConnectionCompression(int conid);
 /// \param protocol the protocol to be used for this Connection
 /// \return The new instanced connection id or -1 if error occurred.
 ///
-extern int NewConnection(char *protocol);
+
+Connection* NewConnectionC(char *protocol);
+int AddConnection(Connection* c);
+int SendToConnection(int id, const void *buffer, size_t buflen, int nowait);
+int ReceiveFromConnection(int id, void *buffer, size_t buflen);
+void DisconnectConnectionC(Connection* c);
+
+
+
 
 // Deprecated ipaddr routines
 EXPORT int MdsGetClientAddr();
