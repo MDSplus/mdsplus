@@ -41,7 +41,6 @@ config() {
 	JAVA_OPTS="--with-jars=${JARS_DIR}"
     fi
     :&& ${srcdir}/configure \
-	--enable-werror \
 	--disable-wreturns \
         --prefix=${MDSPLUS_DIR} \
         --exec_prefix=${MDSPLUS_DIR} \
