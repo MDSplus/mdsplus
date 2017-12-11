@@ -49,7 +49,7 @@ static ssize_t tunnel_recv(Connection* c, void *buffer, size_t len);
 static ssize_t tunnel_recv_to(Connection* c, void *buffer, size_t len, int to_msec);
 #endif
 static int tunnel_disconnect(Connection* c);
-static int tunnel_connect(int id, char *protocol, char *host);
+static int tunnel_connect(Connection* c, char *protocol, char *host);
 static int tunnel_listen(int argc, char **argv);
 static IoRoutines tunnel_routines =
     { tunnel_connect, tunnel_send, tunnel_recv, NULL, tunnel_listen, NULL, NULL, tunnel_disconnect, tunnel_recv_to};
@@ -160,8 +160,8 @@ static void ChildSignalHandler(int num __attribute__ ((unused)))
     int id;
     char *info_name;
     void *info;
-    size_t info_len;
-    while ((id = NextConnection(&ctx, &info_name, &info, &info_len)) != -1) {
+    size_t info_len = 0;
+    while ((id = NextConnection(&ctx, &info_name, &info, &info_len)) != INVALID_CONNECTION_ID) {
       if (info_name && strcmp(info_name, "tunnel") == 0
 	  && ((struct TUNNEL_PIPES *)info)->pid == pid) {
 	DisconnectConnection(id);
@@ -178,7 +178,7 @@ static void ChildSignalHandler(int num __attribute__ ((unused)))
 }
 #endif
 
-static int tunnel_connect(int id, char *protocol, char *host){
+static int tunnel_connect(Connection* c, char *protocol, char *host){
 #ifdef _WIN32
   SECURITY_ATTRIBUTES saAttr;
   size_t len = strlen(protocol) * 2 + strlen(host) + 512;
@@ -229,7 +229,7 @@ static int tunnel_connect(int id, char *protocol, char *host){
     CloseHandle(g_hChildStd_OUT_Wr);
     CloseHandle(piProcInfo.hProcess);
     CloseHandle(piProcInfo.hThread);
-    SetConnectionInfo(id, "tunnel", 0, &p, sizeof(p));
+    SetConnectionInfoC(c, "tunnel", 0, &p, sizeof(p));
     status = C_OK;
   } else {
     DWORD errstatus = GetLastError();
@@ -273,7 +273,7 @@ static int tunnel_connect(int id, char *protocol, char *host){
     close(pipe_fd1[1]);
     close(pipe_fd2[0]);
     signal(SIGCHLD, ChildSignalHandler);
-    SetConnectionInfo(id, "tunnel", p.stdout_pipe, &p, sizeof(p));
+    SetConnectionInfoC(c, "tunnel", p.stdout_pipe, &p, sizeof(p));
   }
   return C_OK;
 #endif

@@ -20,7 +20,7 @@ int server_epoll = -1;
 //  CONNECT  ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *host){
+static int io_connect(Connection* c, char *protocol __attribute__ ((unused)), char *host){
   struct SOCKADDR_IN sin;
   UDTSOCKET sock;
   if IS_OK(GetHostAndPort(host, &sin)) {
@@ -33,7 +33,7 @@ static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *
       PERROR("Error in connect to service");
       return C_ERROR;
     }
-    SetConnectionInfo(conid, PROT, sock, NULL, 0);
+    SetConnectionInfoC(c, PROT, sock, NULL, 0);
     return C_OK;
   } else {
     fprintf(stderr,"Connect failed to host: %s\n",host);

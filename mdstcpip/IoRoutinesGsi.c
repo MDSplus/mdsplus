@@ -63,7 +63,7 @@ static ssize_t gsi_recv(Connection* c, void *buffer, size_t len);
 static int gsi_disconnect(Connection* c);
 static int gsi_listen(int argc, char **argv);
 static int gsi_authorize(Connection* c, char *username);
-static int gsi_connect(int conid, char *protocol, char *host);
+static int gsi_connect(Connection* c, char *protocol, char *host);
 static int gsi_reuseCheck(char *host, char *unique, size_t buflen);
 static IoRoutines gsi_routines = {
   gsi_connect, gsi_send, gsi_recv, NULL, gsi_listen, gsi_authorize, gsi_reuseCheck, gsi_disconnect, NULL
@@ -282,7 +282,7 @@ static int gsi_reuseCheck(char *host, char *unique, size_t buflen)
   return ans;
 }
 
-static int gsi_connect(int conid, char *protocol __attribute__ ((unused)), char *host_in)
+static int gsi_connect(Connection* c, char *protocol __attribute__ ((unused)), char *host_in)
 {
   static int activated = 0;
   static globus_xio_stack_t stack_gsi;
@@ -339,7 +339,7 @@ static int gsi_connect(int conid, char *protocol __attribute__ ((unused)), char 
        "GSI Set KEEPALIVE", return C_ERROR);
   doit(result, globus_xio_open(info.xio_handle, contact_string, attr),
        "Error connecting",  return C_ERROR);
-  SetConnectionInfo(conid, "gsi", 0, &info, sizeof(info));
+  SetConnectionInfoC(c, "gsi", 0, &info, sizeof(info));
   return C_OK;
 }
 
@@ -458,8 +458,6 @@ static int gsi_listen(int argc, char **argv)
     res = globus_xio_server_create((globus_xio_server_t *) & info.xio_handle, server_attr, stack);
     testStatus(res, "gsi_listen,server_create");
     if (res == GLOBUS_SUCCESS) {
-      //      int id = NewConnection("gsi");
-      // SetConnectionInfo(id, "gsi", 0, &info, sizeof(info));
       res =
 	  globus_xio_server_register_accept((globus_xio_server_t) info.xio_handle, acceptCallback,
 					    &info);

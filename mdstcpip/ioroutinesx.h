@@ -2,7 +2,7 @@ static ssize_t io_send(Connection* c, const void *buffer, size_t buflen, int now
 static int io_disconnect(Connection* c);
 static int io_listen(int argc, char **argv);
 static int io_authorize(Connection* c, char *username);
-static int io_connect(int conid, char *protocol, char *host);
+static int io_connect(Connection* c, char *protocol, char *host);
 static ssize_t io_recv_to(Connection* c, void *buffer, size_t len, int to_msec);
 inline static ssize_t io_recv(Connection* c, void *buffer, size_t len){
   return io_recv_to(c, buffer,len, -1);

@@ -43,7 +43,7 @@ static void SetSocketOptions(SOCKET s, int reuse){
   setsockopt(s, SOL_SOCKET, SO_OOBINLINE, (void *)&one, sizeof(one));
 }
 
-static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *host){
+static int io_connect(Connection* c, char *protocol __attribute__ ((unused)), char *host){
   struct SOCKADDR_IN sin;
   SOCKET sock;
   if IS_OK(GetHostAndPort(host, &sin)) {
@@ -99,7 +99,7 @@ static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *
       return C_ERROR;
     }
     SetSocketOptions(sock, 0);
-    SetConnectionInfo(conid, PROT, sock, NULL, 0);
+    SetConnectionInfoC(c, PROT, sock, NULL, 0);
     return C_OK;
   } else {
     fprintf(stderr, "Connect failed to host: %s\n",host);
