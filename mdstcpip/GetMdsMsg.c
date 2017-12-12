@@ -31,7 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "mdsip_connections.h"
 #include <pthread_port.h>
 #include <tdishr_messages.h>
-
+#include <unistd.h>
 static int GetBytesTO(Connection* c, void *buffer, size_t bytes_to_recv, int to_msec){
   char *bptr = (char *)buffer;
   if (c && c->io) {
@@ -42,15 +42,18 @@ static int GetBytesTO(Connection* c, void *buffer, size_t bytes_to_recv, int to_
         bytes_recv = c->io->recv_to(c, bptr, bytes_to_recv, to_msec);
       else
         bytes_recv = c->io->recv(c, bptr, bytes_to_recv);
-      if (bytes_recv <= 0) {
-        if (errno != ETIMEDOUT) return TdiTIMEOUT;
-	if (errno != EINTR)     return MDSplusERROR;
-	tries++;
-      } else {
+      if (bytes_recv > 0) {
 	tries = 0;
 	bytes_to_recv -= bytes_recv;
 	bptr += bytes_recv;
+        continue;
       }
+      if (bytes_recv==0 || errno==ETIMEDOUT) return TdiTIMEOUT;
+      if (errno != EINTR) {
+          fprintf(stderr,"Connection %02d error: %d\n",c->id,errno);
+          return MDSplusERROR;
+      }
+      tries++;
     }
     if (tries >= 10) {
       fprintf(stderr, "\rrecv failed for connection %d: too many EINTR's", c->id);
