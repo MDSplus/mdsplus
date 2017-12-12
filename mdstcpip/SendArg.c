@@ -73,7 +73,9 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned
     m->h.dims[i] = i < ndims ? dims[i] : 0;
 #endif
   memcpy(m->bytes, bytes, nbytes);
-  status = SendMdsMsg(id, m, 0);
+  Connection* c = idx==0 ? FindConnectionWithLock(id, CON_SENDARG) : FindConnection(id, NULL);
+  status = SendMdsMsgC(c, m, 0);
   free(m);
+  if STATUS_NOT_OK UnlockConnection(c);
   return status;
 }
