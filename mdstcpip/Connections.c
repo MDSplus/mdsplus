@@ -69,7 +69,7 @@ Connection *FindConnectionWithLock(int id, char state){
   return c;
 }
 
-static void UnlockConnection(Connection* c) {
+void UnlockConnection(Connection* c) {
   if (c) {
     CONNECTIONLIST_LOCK;
     c->state &= CON_DISCONNECT; // preserve CON_DISCONNECT

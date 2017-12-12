@@ -87,14 +87,15 @@ typedef struct _connection {
 
 #define INVALID_CONNECTION_ID 0
 
-#define CON_IDLE       0x00
-#define CON_CONNECT    0x01
-#define CON_AUTHORIZE  0x02
-#define CON_SEND       0x04
-#define CON_FLUSH      0x08
-#define CON_RECV       0x10
-#define CON_UNDEFINED  0x40
-#define CON_DISCONNECT 0x80
+#define CON_IDLE	0x00
+#define CON_CONNECT	0x01
+#define CON_AUTHORIZE	0x02
+#define CON_SEND	0x04
+#define CON_FLUSH	0x08
+#define CON_RECV	0x10
+#define CON_SENDARG	0x20
+#define CON_USER	0x40
+#define CON_DISCONNECT	0x80
 
 #if defined(__CRAY) || defined(CRAY)
 int errno = 0;
@@ -758,6 +759,9 @@ EXPORT int GetConnectionCompression(int conid);
 Connection* NewConnectionC(char *protocol);
 void DisconnectConnectionC(Connection* c);
 int AddConnection(Connection* c);
+
+Connection *FindConnectionWithLock(int id, char state);
+void UnlockConnection(Connection* c);
 
 EXPORT int SendToConnection(int id, const void *buffer, size_t buflen, int nowait);
 EXPORT int FlushConnection(int id);
