@@ -1,1 +1,1 @@
---platform=debian --valgrind=memcheck,helgrind --dockerimage=mdsplus/docker:debian_wheezy-32 --distname=DebianWheezy --arch=i386
+--platform=debian --valgrind=memcheck,helgrind --dockerimage=mdsplus/docker:debian_wheezy-32 --distname=DebianWheezy --arch=i386 --disable-java
