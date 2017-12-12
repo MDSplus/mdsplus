@@ -14,6 +14,7 @@ TEST_EXTENSIONS = .py
 TESTS = \
         dataUnitTest.py \
         dclUnitTest.py \
+        mdsipUnitTest.py \
         segmentsUnitTest.py \
         treeUnitTest.py \
         threadsUnitTest.py
@@ -25,6 +26,7 @@ TESTS = \
 VALGRIND_TESTS = \
         dataUnitTest.py \
         dclUnitTest.py \
+        mdsipUnitTest.py \
         segmentsUnitTest.py \
         treeUnitTest.py \
         threadsUnitTest.py
