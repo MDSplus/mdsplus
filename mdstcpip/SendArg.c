@@ -41,11 +41,6 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned
   // * if this is the first argument sent, increments connection message id   //
   // * get the connection message_id and store it inside message              //
 
-  int msgid = (idx == 0 || nargs == 0) ?
-              IncrementConnectionMessageId(id) : GetConnectionMessageId(id);
-  if (msgid < 1)
-    return status;
-
   if (idx > nargs) {
     /**** Special I/O message ****/
     nbytes = dims[0];
@@ -57,7 +52,6 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned
   m = memset(malloc(msglen), 0, msglen);
   m->h.client_type = 0;
   m->h.msglen = msglen;
-  m->h.message_id = msgid;
   m->h.descriptor_idx = idx;
   m->h.dtype = dtype;
   m->h.nargs = nargs;
@@ -74,7 +68,10 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned
 #endif
   memcpy(m->bytes, bytes, nbytes);
   Connection* c = idx==0 ? FindConnectionWithLock(id, CON_SENDARG) : FindConnection(id, NULL);
-  status = SendMdsMsgC(c, m, 0);
+  m->h.message_id = (idx == 0 || nargs == 0)
+            ? IncrementConnectionMessageIdC(c)
+            : c->message_id;
+  status = m->h.message_id ? SendMdsMsgC(c, m, 0) : MDSplusERROR;
   free(m);
   if STATUS_NOT_OK UnlockConnection(c);
   return status;
