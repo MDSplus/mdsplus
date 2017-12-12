@@ -758,6 +758,7 @@ EXPORT int GetConnectionCompression(int conid);
 
 Connection* NewConnectionC(char *protocol);
 void DisconnectConnectionC(Connection* c);
+unsigned char IncrementConnectionMessageIdC(Connection* c);
 int AddConnection(Connection* c);
 
 Connection *FindConnectionWithLock(int id, char state);

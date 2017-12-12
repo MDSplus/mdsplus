@@ -336,7 +336,7 @@ int GetConnectionCompression(int conid){
 //  IncrementConnectionMessageId  //////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static inline unsigned char IncrementConnectionMessageIdC(Connection* c){
+unsigned char IncrementConnectionMessageIdC(Connection* c){
   if (c) {
     c->message_id++;
     if (c->message_id==0) c->message_id = 1;
