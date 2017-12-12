@@ -3,10 +3,15 @@ static int io_disconnect(Connection* c);
 static int io_listen(int argc, char **argv);
 static int io_authorize(Connection* c, char *username);
 static int io_connect(Connection* c, char *protocol, char *host);
+#ifdef _WIN32
+#define io_recv_to NULL
+static ssize_t io_recv(Connection* c, void *buffer, size_t len);
+#else
 static ssize_t io_recv_to(Connection* c, void *buffer, size_t len, int to_msec);
 inline static ssize_t io_recv(Connection* c, void *buffer, size_t len){
   return io_recv_to(c, buffer,len, -1);
 }
+#endif
 static IoRoutines io_routines = {
   io_connect, io_send, io_recv, io_flush, io_listen, io_authorize, io_reuseCheck, io_disconnect, io_recv_to
 };
