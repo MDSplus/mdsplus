@@ -96,6 +96,7 @@ struct dsc$descriptor_xd *XmdsNidOptionMenuIdxGetXd(Widget w, int selected);
 #include <Xmds/XmdsXdBoxDialogButton.h>
 #include <Xmds/XmdsNidOptionMenu.h>
 #include <Mrm/MrmPublic.h>
+#include <Xm/Xm.h>
 #include <xmdsshr.h>
 #include <mds_stdarg.h>
 
@@ -146,7 +147,7 @@ EXPORT Widget XmdsCreateNidOptionMenu(Widget parent, String name, ArgList args, 
   XtAddCallback(info->pulldown, XmNentryCallback, (XtCallbackProc) MenuChanged, info);
   for (idx = 0, s = info->labels, v = info->values; s && *s && v && *v; s++, v++, idx++) {
     String expression = "";
-    expression = XmStringUnparse(*v, NULL, 0, XmCHARSET_TEXT, XmCHARSET_TEXT, 0, XmOUTPUT_ALL);
+    expression = XmStringUnparse(*v, NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
     {
       static EMPTYXD(empty_xd);
       struct descriptor_xd *xd = (struct descriptor_xd *)XtMalloc(sizeof(empty_xd));
