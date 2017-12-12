@@ -530,9 +530,9 @@ case "$host" in
        LD_LDSHARE="";
        LDARC="";
        LD_LDARC="";
-       UILPATH=${OPENMOTIF}/bin;
-       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L${OPENMOTIF}/lib"
-       MOTIF_LD_LDARC="-multiply_defined suppress -L${OPENMOTIF}/lib"
+       UILPATH=${OPENMOTIF-/usr}/bin;
+       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L${OPENMOTIF-/usr}/lib"
+       MOTIF_LD_LDARC="-multiply_defined suppress -L${OPENMOTIF-/usr}/lib"
        dnl LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -prebind \
 	   dnl -seg_addr_table_filename \$(@F) -seg_addr_table ../macosx/bindtable -Wl,-single_module";
 	   LINKSHARED="$LDFLAGS -shared -arch x86_64 -install_name @loader_path/../lib/\$(@F) -headerpad_max_install_names";
@@ -932,8 +932,8 @@ AC_C_BIGENDIAN
 
 AC_PATH_XTRA
 AS_CASE([$host],
-        [*darwin*|*apple*], [X_CFLAGS+=" -I${OPENMOTIF}/include"
-                             X_LIBS+=" -L${OPENMOTIF}/lib"])
+        [*darwin*|*apple*], [X_CFLAGS+=" -I${OPENMOTIF-/usr}/include"
+                             X_LIBS+=" -L${OPENMOTIF-/usr}/lib"])
 AS_CASE([$host],[arm*gnueabihf],[X_CFLAGS=""])
 #FIXME: Change the above to AS_VAR_APPEND with a new autoconf version (2.64+?)
 
