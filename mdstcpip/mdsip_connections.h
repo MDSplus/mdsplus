@@ -309,7 +309,6 @@ EXPORT Connection *FindConnection(int id, Connection **prev);
 
 extern void FlipData(Message *m);
 extern void FlipHeader(MsgHdr *header);
-extern int FlushConnection(int id);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -757,13 +756,12 @@ EXPORT int GetConnectionCompression(int conid);
 ///
 
 Connection* NewConnectionC(char *protocol);
-int AddConnection(Connection* c);
-int SendToConnection(int id, const void *buffer, size_t buflen, int nowait);
-int ReceiveFromConnection(int id, void *buffer, size_t buflen);
 void DisconnectConnectionC(Connection* c);
+int AddConnection(Connection* c);
 
-
-
+EXPORT int SendToConnection(int id, const void *buffer, size_t buflen, int nowait);
+EXPORT int FlushConnection(int id);
+EXPORT int ReceiveFromConnection(int id, void *buffer, size_t buflen);
 
 // Deprecated ipaddr routines
 EXPORT int MdsGetClientAddr();
