@@ -35,6 +35,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <X11/Xatom.h>
 #include <X11/cursorfont.h>
 #include <Xm/Text.h>
+#ifdef strlcpy
+#undef strlcpy
+#endif
+#ifdef strlcat
+#undef strlcat
+#endif
 #include "export.h"
 
 enum callback_id { CB_UNKNOWN, CB_AUTOSCALE, CB_CROSSHAIRS, CB_LIMITS, CB_MOVE, CB_STRETCH,

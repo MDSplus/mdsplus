@@ -6,7 +6,7 @@
 ! The knots must be strictly ascending, so they are sorted.
 !-----------------------------------------------------------------------
       Subroutine CSINT(ndata,xdata,fdata,break,cscoef)
-      ENTRY CSINT_(ndata,xdata,fdata,break,cscoef)
+!     ENTRY CSINT_(ndata,xdata,fdata,break,cscoef)
       Integer      ndata            !input, number of data points
       Real      xdata(*)      !input, [ndata] abscissae
       Real      fdata(*)      !input, [ndata] ordinates
@@ -118,7 +118,7 @@
       End
 !-----------------------------------------------------------------------
       Subroutine CSAKM(ndata,xdata,fdata,break,c)
-      ENTRY CSAKM_(ndata,xdata,fdata,break,c)
+!     ENTRY CSAKM_(ndata,xdata,fdata,break,c)
       Integer      ndata      !input, number of data points
       Real      xdata(ndata)!input, [ndata] abscissae
       Real      fdata(ndata)!input, [ndata] ordinates
