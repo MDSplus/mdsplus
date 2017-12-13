@@ -68,6 +68,10 @@ buildrelease(){
         echo "WARNING: Signing Keys Unavailable. Building unsigned RPMS"
         GPGCHECK="0"
     fi
+    if [ -r /sign_keys/RPM-GPG-KEY-MDSplus ]
+    then
+	cp /sign_keys/RPM-GPG-KEY-MDSplus ${BUILDROOT}/etc/pki/rpm-gpg/;
+    fi
     cat - > ${BUILDROOT}/etc/yum.repos.d/mdsplus${BNAME}.repo <<EOF
 [MDSplus${BNAME}]
 name=MDSplus${BNAME}
