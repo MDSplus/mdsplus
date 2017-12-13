@@ -89,8 +89,9 @@ typedef struct node {
 #include <libroutines.h>
 
 static time_t get_tz_offset(time_t* time){
+  static pthread_once_t once = PTHREAD_ONCE_INIT;
+  pthread_once(&once,tzset);
   struct tm tmval;
-  tzset();
   localtime_r(time, &tmval);
 #ifdef USE_TM_GMTOFF
   return tmval.tm_gmtoff;
