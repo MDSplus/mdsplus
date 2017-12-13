@@ -99,8 +99,8 @@ EXPORT int bwfilter(float *w_cut_in, int *order_in, int *num, float *in, float *
     for (i = M; i >= 1; i--) {
       x_current[i] = x_current[i - 1];
     }
-    for (j = N; j > 0; j--) {
-      y_filtered[j] = y_filtered[j - 1];
+    for (j = N-1; j > 1; j--) {
+      y_filtered[j+1] = y_filtered[j];
     }
 
     x_current[0] = in[in_idx++];
