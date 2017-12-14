@@ -8,6 +8,7 @@ JSCOPE_JAR = $(top_builddir)/java/jscope/jScope.jar
 JAVAROOT = $(builddir)/classes
 bin_SCRIPTS = $(JAVAROOT)
 MANIFEST = $(builddir)/MANIFEST.MF
+
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
 CLEANFILES = -r $(bin_SCRIPTS) $(java_DATA)

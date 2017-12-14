@@ -18,6 +18,10 @@
 # ///  TESTS SECTION   /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
+
+# common makefile for java packages
+
+
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -102,8 +106,7 @@ target_triplet = @target@
 @ENABLE_SANITIZE_TRUE@	echo --skip;) $(shell test \
 @ENABLE_SANITIZE_TRUE@	x"${ENABLE_SANITIZE}" != x"thread" || \
 @ENABLE_SANITIZE_TRUE@	echo --skip;)
-check_PROGRAMS =
-subdir = tditest/testing
+subdir = java/mdsplus-api/tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/m4/ax_check_java_home.m4 \
@@ -138,48 +141,6 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/mdsplus/mdsconfig.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-AM_V_P = $(am__v_P_@AM_V@)
-am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
-am__v_P_0 = false
-am__v_P_1 = :
-AM_V_GEN = $(am__v_GEN_@AM_V@)
-am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
-am__v_GEN_0 = @echo "  GEN     " $@;
-am__v_GEN_1 = 
-AM_V_at = $(am__v_at_@AM_V@)
-am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
-am__v_at_0 = @
-am__v_at_1 = 
-SOURCES =
-DIST_SOURCES =
-am__can_run_installinfo = \
-  case $$AM_UPDATE_INFO_DIR in \
-    n|no|NO) false;; \
-    *) (install-info --version) >/dev/null 2>&1;; \
-  esac
-am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
-am__tty_colors_dummy = \
-  mgn= red= grn= lgn= blu= brg= std=; \
-  am__color_tests=no
-am__tty_colors = { \
-  $(am__tty_colors_dummy); \
-  if test "X$(AM_COLOR_TESTS)" = Xno; then \
-    am__color_tests=no; \
-  elif test "X$(AM_COLOR_TESTS)" = Xalways; then \
-    am__color_tests=yes; \
-  elif test "X$$TERM" != Xdumb && { test -t 1; } 2>/dev/null; then \
-    am__color_tests=yes; \
-  fi; \
-  if test $$am__color_tests = yes; then \
-    red='[0;31m'; \
-    grn='[0;32m'; \
-    lgn='[1;32m'; \
-    blu='[1;34m'; \
-    mgn='[0;35m'; \
-    brg='[1m'; \
-    std='[m'; \
-  fi; \
-}
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -207,6 +168,53 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(javadir)" \
+	"$(DESTDIR)$(javadir)"
+SCRIPTS = $(bin_SCRIPTS)
+AM_V_P = $(am__v_P_@AM_V@)
+am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
+am__v_P_0 = false
+am__v_P_1 = :
+AM_V_GEN = $(am__v_GEN_@AM_V@)
+am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
+am__v_GEN_0 = @echo "  GEN     " $@;
+am__v_GEN_1 = 
+AM_V_at = $(am__v_at_@AM_V@)
+am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
+am__v_at_0 = @
+am__v_at_1 = 
+SOURCES =
+DIST_SOURCES =
+am__can_run_installinfo = \
+  case $$AM_UPDATE_INFO_DIR in \
+    n|no|NO) false;; \
+    *) (install-info --version) >/dev/null 2>&1;; \
+  esac
+am__java_sources = $(java_JAVA)
+DATA = $(java_DATA)
+am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
+am__tty_colors_dummy = \
+  mgn= red= grn= lgn= blu= brg= std=; \
+  am__color_tests=no
+am__tty_colors = { \
+  $(am__tty_colors_dummy); \
+  if test "X$(AM_COLOR_TESTS)" = Xno; then \
+    am__color_tests=no; \
+  elif test "X$(AM_COLOR_TESTS)" = Xalways; then \
+    am__color_tests=yes; \
+  elif test "X$$TERM" != Xdumb && { test -t 1; } 2>/dev/null; then \
+    am__color_tests=yes; \
+  fi; \
+  if test $$am__color_tests = yes; then \
+    red='[0;31m'; \
+    grn='[0;32m'; \
+    lgn='[1;32m'; \
+    blu='[1;34m'; \
+    mgn='[0;35m'; \
+    brg='[1m'; \
+    std='[m'; \
+  fi; \
+}
 am__recheck_rx = ^[ 	]*:recheck:[ 	]*
 am__global_test_result_rx = ^[ 	]*:global-test-result:[ 	]*
 am__copy_in_global_log_rx = ^[ 	]*:copy-in-global-log:[ 	]*
@@ -343,12 +351,8 @@ am__set_TESTS_bases = \
 RECHECK_LOGS = $(TEST_LOGS)
 AM_RECURSIVE_TARGETS = check recheck
 TEST_SUITE_LOG = test-suite.log
-am__test_logs1 = $(TESTS:=.log)
-am__test_logs2 = $(am__test_logs1:@EXEEXT@.log=.log)
-TEST_LOGS = $(am__test_logs2:.tdi.log=.log)
-TDI_LOG_DRIVER = $(SHELL) $(top_srcdir)/conf/test-driver
-TDI_LOG_COMPILE = $(TDI_LOG_COMPILER) $(AM_TDI_LOG_FLAGS) \
-	$(TDI_LOG_FLAGS)
+TEST_EXTENSIONS = @EXEEXT@ .test
+LOG_COMPILE = $(LOG_COMPILER) $(AM_LOG_FLAGS) $(LOG_FLAGS)
 am__set_b = \
   case '$@' in \
     */*) \
@@ -359,8 +363,16 @@ am__set_b = \
     *) \
       b='$*';; \
   esac
-am__DIST_COMMON = $(srcdir)/../../testing/testing.am \
-	$(srcdir)/Makefile.in $(top_srcdir)/conf/test-driver
+am__test_logs1 = $(TESTS:=.log)
+am__test_logs2 = $(am__test_logs1:@EXEEXT@.log=.log)
+TEST_LOGS = $(am__test_logs2:.test.log=.log)
+TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/conf/test-driver
+TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
+	$(TEST_LOG_FLAGS)
+am__DIST_COMMON = $(srcdir)/../../Makefile.tests.am \
+	$(srcdir)/Makefile.in $(top_srcdir)/conf/test-driver \
+	$(top_srcdir)/java/Makefile.inc.am \
+	$(top_srcdir)/testing/testing.am
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -580,29 +592,14 @@ TARGET_ARCH = @TARGET_ARCH@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
 TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@ MDSPLUS_VERSION_CHECK=off \
-	$(am__append_1)
+	$(am__append_1) $(CLASSPATH_ENV) hostfile="$(hostfile)" \
+	test_mdsip=1
 THREAD = @THREAD@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
 VALGRIND = @VALGRIND@
-
-# DISABLE PYTHON LEAK DETECTION: This suppression file shall be removed when
-# python will finally introduce the patch to detect if valgrind is running ..
-# take a look at the file for details. You can also disable this if you are
-# using a Python compiled with --without-pymalloc (only for valgrind as it is 5
-# times slower to run)
-#
-#VALGRIND_SUPPRESSIONS_FILES_PY = \
-#	$(top_srcdir)/conf/valgrind-mdsplus.supp \
-#	${top_srcdir}/conf/valgrind-python.supp \
-#	${top_srcdir}/conf/valgrind-python-disableleak.supp
-
-# Skipping child programs that are launched inside python classes
-#
-VALGRIND_FLAGS = \
-                 --trace-children-skip=*/diff
-
+VALGRIND_FLAGS = @VALGRIND_FLAGS@
 VALGRIND_HAVE_TOOL_drd = @VALGRIND_HAVE_TOOL_drd@
 VALGRIND_HAVE_TOOL_exp_sgcheck = @VALGRIND_HAVE_TOOL_exp_sgcheck@
 VALGRIND_HAVE_TOOL_helgrind = @VALGRIND_HAVE_TOOL_helgrind@
@@ -706,43 +703,63 @@ SUFFIXES = .log .tap .xml
 # .PHONY: $(TEST_SUITE_TAP)
 TEST_BUILD_TAP = test-build.tap
 TEST_SUITE_TAP = test-suite.tap
-TEST_EXTENSIONS = .tdi
-TDI_LOG_COMPILER = $(abs_top_srcdir)/tditest/testing/do_tditests.sh
-TEST_FLAGS = @MAKEFLAG_J@
+MDSPLUS_API_JAR = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
+JTRAVERSER_JAR = $(top_builddir)/java/jtraverser/jTraverser.jar
+JTRAVERSER2_JAR = $(top_builddir)/java/jtraverser2/jTraverser2.jar
+JSCOPE_JAR = $(top_builddir)/java/jscope/jScope.jar
+JAVAROOT = $(builddir)/classes
+bin_SCRIPTS = $(JAVAROOT)
+MANIFEST = $(builddir)/MANIFEST.MF
+javadir = $(exec_prefix)/java/classes
+docsdir = $(exec_prefix)/java/classes/docs
+CLEANFILES = -r $(bin_SCRIPTS) $(java_DATA) *.log *.tap *.trs *.xml
+JAVA_RES = $(wildcard $(addprefix $(java_resdir)/,$(RESOURCES)))
+java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
+@USE_JARS_DIR_FALSE@java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
+@USE_JARS_DIR_TRUE@java_JAVA = 
+java_srcdir = ${srcdir}/../src/test/java
+java_DATA = tests.jar
+main_JARS = $(addprefix ../, $(MAIN_JARS))
+null := 
+space := $(null) #
+column := :
+CLASSPATH_ENV = CLASSPATH=$(subst $(space),$(column),$(strip tests.jar $(main_JARS) $(JUNIT)))
+JUNIT = $(top_srcdir)/java/junit.jar
+VALGRIND_SUPPRESSIONS_FILES_PY = \
+ $(top_srcdir)/conf/valgrind-java.supp \
+ $(top_srcdir)/conf/valgrind-mdsplus.supp
+
+@SKIP_JUNIT_TRUE@LOG_COMPILER = /bin/sh -c "exit 77"
+@SKIP_JUNIT_FALSE@LOG_COMPILER = $(abs_top_srcdir)/java/junittest $(srcdir)
+MAIN_JARS = mdsplus-api.jar
+SOURCE = \
+ mds/*.java \
+ mds/data/*.java \
+ mds/data/descriptor/*.java \
+ mds/data/descriptor_r/*.java
+
 TESTS = \
-	test-tcl.tdi \
-	test-tdishr.tdi \
-	test-treeshr.tdi \
-	test-mdsip.tdi \
-	test-dev-py.tdi \
-	test-tab.tdi
+ mds.Mds_Test\
+ mds.MdsShr_Test\
+ mds.TdiShr_Test\
+ mds.TreeShr_Test\
+ mds.data.CONST_Test\
+ mds.data.TREE_Test\
+ mds.data.descriptor.Descriptor_A_Test\
+ mds.data.descriptor.Descriptor_CA_Test\
+ mds.data.descriptor.Descriptor_S_Test\
+ mds.data.descriptor_r.Function_Test
 
-
-# if VALGRIND_TESTS is defined this list is executed with valgrind
-
-#	threadsUnitTest.py
 VALGRIND_TESTS = \
-	test-tcl.tdi \
-	test-tdishr.tdi \
-	test-treeshr.tdi \
-	test-mdsip.tdi \
-	test-dev-py.tdi \
-	test-tab.tdi
+ mds.MdsShr_Test
 
-
-# Files produced by tests that must be purged
-#
-MOSTLYCLEANFILES = \
-	./*.log ./*.tap \
-	tditst.tmp shotid.sys \
-	main_*.characteristics* main_*.datafile* main_*.tree*
-
-check_SCRIPTS = $(TESTS)
+test_path = $(abs_builddir)/trees
+hostfile = $(abs_top_srcdir)/testing/multi.hosts
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .log .tap .xml .tdi .tdi$(EXEEXT) .trs
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../../testing/testing.am $(am__configure_deps)
+.SUFFIXES: .log .tap .xml .test .test$(EXEEXT) .trs
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../../Makefile.tests.am $(top_srcdir)/testing/testing.am $(top_srcdir)/java/Makefile.inc.am $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -751,9 +768,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/..
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign tditest/testing/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign java/mdsplus-api/tests/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign tditest/testing/Makefile
+	  $(AUTOMAKE) --foreign java/mdsplus-api/tests/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -762,7 +779,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
-$(srcdir)/../../testing/testing.am $(am__empty):
+$(srcdir)/../../Makefile.tests.am $(top_srcdir)/testing/testing.am $(top_srcdir)/java/Makefile.inc.am $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -772,9 +789,76 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+install-binSCRIPTS: $(bin_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  if test -f "$$d$$p"; then echo "$$d$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n' \
+	    -e 'h;s|.*|.|' \
+	    -e 'p;x;s,.*/,,;$(transform)' | sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1; } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) { files[d] = files[d] " " $$1; \
+	      if (++n[d] == $(am__install_max)) { \
+		print "f", d, files[d]; n[d] = 0; files[d] = "" } } \
+	    else { print "f", d "/" $$4, $$1 } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	     if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	     test -z "$$files" || { \
+	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	     } \
+	; done
 
-clean-checkPROGRAMS:
-	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
+uninstall-binSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
+	files=`for p in $$list; do echo "$$p"; done | \
+	       sed -e 's,.*/,,;$(transform)'`; \
+	dir='$(DESTDIR)$(bindir)'; $(am__uninstall_files_from_dir)
+
+classjava.stamp: $(am__java_sources)
+	@list1='$?'; list2=; if test -n "$$list1"; then \
+	  for p in $$list1; do \
+	    if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
+	    list2="$$list2 $$d$$p"; \
+	  done; \
+	  echo '$(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) $(AM_JAVACFLAGS) $(JAVACFLAGS) '"$$list2"; \
+	  $(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) $(AM_JAVACFLAGS) $(JAVACFLAGS) $$list2; \
+	else :; fi
+	echo timestamp > $@
+install-javaJAVA: classjava.stamp
+	@$(NORMAL_INSTALL)
+	@test -n "$(java_JAVA)" && test -n "$(javadir)" || exit 0; \
+	echo " $(MKDIR_P) '$(DESTDIR)$(javadir)'"; \
+	$(MKDIR_P) "$(DESTDIR)$(javadir)"; \
+	set x *.class; shift; test "$$1" != "*.class" || exit 0; \
+	echo " $(INSTALL_DATA)" "$$@" "'$(DESTDIR)$(javadir)/$$p'"; \
+	$(INSTALL_DATA) "$$@" "$(DESTDIR)$(javadir)"
+
+uninstall-javaJAVA:
+	@$(NORMAL_UNINSTALL)
+	@test -n "$(java_JAVA)" && test -n "$(javadir)" || exit 0; \
+	set x *.class; shift; test "$$1" != "*.class" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(javadir)' && rm -f" "$$@" ")"; \
+	cd "$(DESTDIR)$(javadir)" && rm -f "$$@"
+
+clean-javaJAVA:
+	-rm -f *.class classjava.stamp
+
+uninstall-javaDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(java_DATA)'; test -n "$(javadir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(javadir)'; $(am__uninstall_files_from_dir)
 tags TAGS:
 
 ctags CTAGS:
@@ -912,7 +996,7 @@ check-TESTS:
 	log_list=`echo $$log_list`; trs_list=`echo $$trs_list`; \
 	$(MAKE) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) TEST_LOGS="$$log_list"; \
 	exit $$?;
-recheck: all $(check_PROGRAMS) $(check_SCRIPTS)
+recheck: all 
 	@test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
 	@set +e; $(am__set_TESTS_bases); \
 	bases=`for i in $$bases; do echo $$i; done \
@@ -923,19 +1007,89 @@ recheck: all $(check_PROGRAMS) $(check_SCRIPTS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-.tdi.log:
+mds.Mds_Test.log: mds.Mds_Test
+	@p='mds.Mds_Test'; \
+	b='mds.Mds_Test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+mds.MdsShr_Test.log: mds.MdsShr_Test
+	@p='mds.MdsShr_Test'; \
+	b='mds.MdsShr_Test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+mds.TdiShr_Test.log: mds.TdiShr_Test
+	@p='mds.TdiShr_Test'; \
+	b='mds.TdiShr_Test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+mds.TreeShr_Test.log: mds.TreeShr_Test
+	@p='mds.TreeShr_Test'; \
+	b='mds.TreeShr_Test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+mds.data.CONST_Test.log: mds.data.CONST_Test
+	@p='mds.data.CONST_Test'; \
+	b='mds.data.CONST_Test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+mds.data.TREE_Test.log: mds.data.TREE_Test
+	@p='mds.data.TREE_Test'; \
+	b='mds.data.TREE_Test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+mds.data.descriptor.Descriptor_A_Test.log: mds.data.descriptor.Descriptor_A_Test
+	@p='mds.data.descriptor.Descriptor_A_Test'; \
+	b='mds.data.descriptor.Descriptor_A_Test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+mds.data.descriptor.Descriptor_CA_Test.log: mds.data.descriptor.Descriptor_CA_Test
+	@p='mds.data.descriptor.Descriptor_CA_Test'; \
+	b='mds.data.descriptor.Descriptor_CA_Test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+mds.data.descriptor.Descriptor_S_Test.log: mds.data.descriptor.Descriptor_S_Test
+	@p='mds.data.descriptor.Descriptor_S_Test'; \
+	b='mds.data.descriptor.Descriptor_S_Test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+mds.data.descriptor_r.Function_Test.log: mds.data.descriptor_r.Function_Test
+	@p='mds.data.descriptor_r.Function_Test'; \
+	b='mds.data.descriptor_r.Function_Test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+.test.log:
 	@p='$<'; \
 	$(am__set_b); \
-	$(am__check_pre) $(TDI_LOG_DRIVER) --test-name "$$f" \
+	$(am__check_pre) $(TEST_LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_TDI_LOG_DRIVER_FLAGS) $(TDI_LOG_DRIVER_FLAGS) -- $(TDI_LOG_COMPILE) \
+	$(am__common_driver_flags) $(AM_TEST_LOG_DRIVER_FLAGS) $(TEST_LOG_DRIVER_FLAGS) -- $(TEST_LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-@am__EXEEXT_TRUE@.tdi$(EXEEXT).log:
+@am__EXEEXT_TRUE@.test$(EXEEXT).log:
 @am__EXEEXT_TRUE@	@p='$<'; \
 @am__EXEEXT_TRUE@	$(am__set_b); \
-@am__EXEEXT_TRUE@	$(am__check_pre) $(TDI_LOG_DRIVER) --test-name "$$f" \
+@am__EXEEXT_TRUE@	$(am__check_pre) $(TEST_LOG_DRIVER) --test-name "$$f" \
 @am__EXEEXT_TRUE@	--log-file $$b.log --trs-file $$b.trs \
-@am__EXEEXT_TRUE@	$(am__common_driver_flags) $(AM_TDI_LOG_DRIVER_FLAGS) $(TDI_LOG_DRIVER_FLAGS) -- $(TDI_LOG_COMPILE) \
+@am__EXEEXT_TRUE@	$(am__common_driver_flags) $(AM_TEST_LOG_DRIVER_FLAGS) $(TEST_LOG_DRIVER_FLAGS) -- $(TEST_LOG_COMPILE) \
 @am__EXEEXT_TRUE@	"$$tst" $(AM_TESTS_FD_REDIRECT)
 
 distdir: $(DISTFILES)
@@ -969,11 +1123,13 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
-	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS) $(check_SCRIPTS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
-all-am: Makefile
+all-am: Makefile $(SCRIPTS) classjava.stamp $(DATA)
 installdirs:
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(javadir)" "$(DESTDIR)$(javadir)"; do \
+	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -994,12 +1150,12 @@ install-strip:
 	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
 	fi
 mostlyclean-generic:
-	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
 	-test -z "$(TEST_LOGS)" || rm -f $(TEST_LOGS)
 	-test -z "$(TEST_LOGS:.log=.trs)" || rm -f $(TEST_LOGS:.log=.trs)
 	-test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -1010,7 +1166,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-checkPROGRAMS clean-generic mostlyclean-am
+clean-am: clean-generic clean-javaJAVA mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
@@ -1028,13 +1184,13 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-javaDATA install-javaJAVA
 
 install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am:
+install-exec-am: install-binSCRIPTS
 
 install-html: install-html-am
 
@@ -1072,24 +1228,26 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am:
+uninstall-am: uninstall-binSCRIPTS uninstall-javaDATA \
+	uninstall-javaJAVA
 
 .MAKE: check-am install-am install-strip
 
-.PHONY: all all-am check check-TESTS check-am clean \
-	clean-checkPROGRAMS clean-generic cscopelist-am ctags-am \
-	distclean distclean-generic distdir dvi dvi-am html html-am \
-	info info-am install install-am install-data install-data-am \
-	install-dvi install-dvi-am install-exec install-exec-am \
-	install-html install-html-am install-info install-info-am \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am recheck \
-	tags-am uninstall uninstall-am
+.PHONY: all all-am check check-TESTS check-am clean clean-generic \
+	clean-javaJAVA cscopelist-am ctags-am distclean \
+	distclean-generic distdir dvi dvi-am html html-am info info-am \
+	install install-am install-binSCRIPTS install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-javaDATA install-javaJAVA install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic pdf pdf-am ps ps-am recheck tags-am \
+	uninstall uninstall-am uninstall-binSCRIPTS uninstall-javaDATA \
+	uninstall-javaJAVA
 
 .PRECIOUS: Makefile
-
 
 include @top_builddir@/Makefile.inc
 TEST_FORMAT     ?= log,tap
@@ -1263,6 +1421,29 @@ test-env:
 @HAVE_WINE_TRUE@	echo "%PATH% = $(shell $${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' 2>/dev/null)"; \
 @HAVE_WINE_TRUE@	echo "--------------------------------------------------------------"; \
 @HAVE_WINE_TRUE@	${TESTS_ENVIRONMENT} wineconsole
+
+$(JAVAROOT):
+	mkdir -p $@
+
+$(MANIFEST):
+	echo "Specification-Version: $(RELEASE_VERSION)"	 >$@
+	echo "Implementation-Version: $(RELEASE_VERSION)"	>>$@
+	echo "Implementation-Vendor-Id: org.mdsplus"		>>$@
+
+$(main_JARS):
+	@ $(MAKE) $(AM_MAKEFLAGS) -C ..
+
+@USE_JARS_DIR_TRUE@tests.jar : @JARS_DIR@/java/mdsplus-api/tests/tests.jar
+@USE_JARS_DIR_TRUE@	cp $< $@
+
+@USE_JARS_DIR_FALSE@tests.jar: $(main_JARS) $(JAVAROOT) classjava.stamp
+@USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ...";\
+@USE_JARS_DIR_FALSE@	$(JAR) cf $@ -C $(JAVAROOT) .
+
+install-javaDATA: $(java_DATA)
+
+@SKIP_JUNIT_TRUE@$(TESTS):
+@SKIP_JUNIT_FALSE@$(TESTS): $(main_JARS) tests.jar
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -22,12 +22,28 @@ JAVA_DIRS = mdsplus mdsplus-api jscope jtraverser jtraverser2 mdsobjects jdevice
 
 .PHONY: $(all_DIRS) $(clean_DIRS)
 
-all_DIRS = $(addprefix all__, $(JAVA_DIRS)) 
+all_DIRS = $(addprefix all__, $(JAVA_DIRS))
 $(all_DIRS):
 	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:all__%=%) all
 all: $(all_DIRS)
 
-clean_DIRS = $(addprefix clean__, $(JAVA_DIRS)) 
+clean_DIRS = $(addprefix clean__, $(JAVA_DIRS))
 $(clean_DIRS):
 	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:clean__%=%) clean
 clean: $(clean_DIRS)
+
+
+TEST_DIRS = mdsplus-api/tests
+
+.PHONY: $(tests_DIRS) $(clean_tests_DIRS)
+
+tests_DIRS = $(addprefix tests__, $(TEST_DIRS))
+$(tests_DIRS):
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:tests__%=%) tests
+tests: $(tests_DIRS)
+
+clean_tests_DIRS = $(addprefix clean__, $(TEST_DIRS))
+$(clean_tests_DIRS):
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:tests__%=%) clean
+clean_TESTS: $(clean_tests_DIRS)
+clean_tests: $(clean_tests_DIRS)

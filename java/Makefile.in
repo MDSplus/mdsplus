@@ -101,6 +101,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/m4/m4_ac_search_readline.m4 \
 	$(top_srcdir)/m4/m4_am_path_xml2.m4 \
 	$(top_srcdir)/m4/m4_ax_check_enable_debug.m4 \
+	$(top_srcdir)/m4/m4_ax_check_java_version.m4 \
 	$(top_srcdir)/m4/m4_ax_configure_args.m4 \
 	$(top_srcdir)/m4/m4_ax_docker_build.m4 \
 	$(top_srcdir)/m4/m4_ax_is_release.m4 \
@@ -452,8 +453,11 @@ top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 MVN = mvn -Dmaven.repo.local=/workspace/.m2/repository -DsourceDirectory=$(top_srcdir)/java
 JAVA_DIRS = mdsplus mdsplus-api jscope jtraverser jtraverser2 mdsobjects jdevices jdispatcher
-all_DIRS = $(addprefix all__, $(JAVA_DIRS)) 
-clean_DIRS = $(addprefix clean__, $(JAVA_DIRS)) 
+all_DIRS = $(addprefix all__, $(JAVA_DIRS))
+clean_DIRS = $(addprefix clean__, $(JAVA_DIRS))
+TEST_DIRS = mdsplus-api/tests
+tests_DIRS = $(addprefix tests__, $(TEST_DIRS))
+clean_tests_DIRS = $(addprefix clean__, $(TEST_DIRS))
 all: all-am
 
 .SUFFIXES:
@@ -660,6 +664,15 @@ all: $(all_DIRS)
 $(clean_DIRS):
 	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:clean__%=%) clean
 clean: $(clean_DIRS)
+
+.PHONY: $(tests_DIRS) $(clean_tests_DIRS)
+$(tests_DIRS):
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:tests__%=%) tests
+tests: $(tests_DIRS)
+$(clean_tests_DIRS):
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:tests__%=%) clean
+clean_TESTS: $(clean_tests_DIRS)
+clean_tests: $(clean_tests_DIRS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

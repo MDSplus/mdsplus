@@ -24,7 +24,6 @@ jTraverser.jar: classjava.stamp $(srcdir)/DeviceBeansManifest.mf
 	cp -f $(JAVA_RES) $(JAVAROOT)/ &&\
 	$(JAR) cfm $@ $(srcdir)/DeviceBeansManifest.mf -C $(JAVAROOT) .
 
-
 DeviceBeans.jar: jTraverser.jar DeviceBeansManifest.mf
 	@ echo "Creating JAR: $@ ...";\
 	ln -rsfT ./jTraverser.jar $@

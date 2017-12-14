@@ -170,48 +170,21 @@ AS_CASE([$enable_perf],
         [yes], [AC_DEFINE([USE_PERF], [], [Define if you want to collect performance statistics -- linux only])])
 AC_MSG_RESULT([$enable_perf])
 
-AC_MSG_CHECKING([whether to build the java components])
-AC_ARG_ENABLE([java],
-              [AS_HELP_STRING([--disable-java],
-                              [Do not build java libraries and applications])],
-              [],
-              [AS_VAR_SET([enable_java], [yes])])
-
-dnl # Add address sanitizer options to flags, if requested. Only useful for GCC
-dnl # version 4.8 and later.
-dnl AC_ARG_ENABLE([sanitize-address],
-dnl  [AS_HELP_STRING(
-dnl    [--enable-sanitize-address],
-dnl    [Enable memory error detection using address sanitizer @<:@default=no@:>@]
-dnl  )],
-dnl  [enable_san_a="$enableval"],
-dnl  [enable_san_a="no"]
-dnl )
-
-dnl AC_ARG_ENABLE([sanitize-undefined],
-dnl  [AS_HELP_STRING(
-dnl    [--enable-sanitize-undefined],
-dnl    [Enable undefined behavior detection using undefined sanitizer @<:@default=no@:>@]
-dnl  )],
-dnl  [enable_san_u="$enableval"],
-dnl  [enable_san_u="no"]
-dnl )
-
-dnl AC_ARG_ENABLE([sanitize-thread],
-dnl  [AS_HELP_STRING(
-dnl    [--enable-sanitize-address],
-dnl    [Enable race condition detection using thread sanitizer @<:@default=no@:>@]
-dnl  )],
-dnl  [enable_san_t="$enableval"],
-dnl  [enable_san_t="no"]
-dnl )
-
 dnl AC_ARG_ENABLE([universal],
 dnl              [AS_HELP_STRING([--enable-universal],
 dnl                              [Build MacOSX Universal Binary])],
 dnl              [],
 dnl              [AS_VAR_SET([enable_universal], [no])])
 dnl
+
+AC_MSG_CHECKING([whether to build the java components])
+AC_ARG_ENABLE([java],
+              [AS_HELP_STRING([--disable-java],
+                              [Do not build java libraries and applications])],
+              [],
+              [AS_VAR_SET([enable_java], [yes])])
+AM_CONDITIONAL([ENABLE_JAVA],[AS_VAR_TEST_SET([enable_java])])
+
 dnl this new java section hoses macos x... why not use the autoconf java macros?
 dnl I'm faking a disable so I can enable by hand later...
 dnl AS_CASE([$host_vendor],
@@ -222,7 +195,6 @@ dnl                 [AS_VAR_IF([enable_universal], [yes], [CFLAGS="-O3 -g -isysr
 dnl                                                       [LDFLAGS="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"]
 dnl                                                       [F77=fort77])])
 dnl AC_MSG_RESULT([$enable_java])
-
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  JDK   ///////////////////////////////////////////////////////////////// #
@@ -269,10 +241,9 @@ AS_CASE([$enable_java],
                 AC_MSG_RESULT([$with_jdk])
                 AC_PATH_PROG([JAVAC], [javac], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])
                 AC_PATH_PROG([JAR], [jar], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])
-                AC_PATH_PROG([RMIC], [rmic], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])])
+                AC_PATH_PROG([RMIC], [rmic], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])]) 
 
-
-
+AX_CHECK_JAVA_VERSION([1.8],[AS_VAR_IF([enable_sanitize], [address], [skip_junit=yes])],[skip_junit=yes])
 
 AM_CONDITIONAL([GLOBUSLICENSE], [test -r $exec_prefix/GLOBUS_LICENSE])
 
@@ -366,6 +337,8 @@ AS_CASE([$host],
         [*mingw*],[AS_VAR_SET([MINGW])])
 AM_CONDITIONAL([MINGW], [AS_VAR_TEST_SET([MINGW])])
 AM_COND_IF([MINGW], [AC_MSG_RESULT([yes])], [AC_MSG_RESULT([no])])
+
+AM_CONDITIONAL([SKIP_JUNIT],[AS_VAR_TEST_SET([skip_junit])||AS_VAR_TEST_SET([MINGW])])
 
 AC_MSG_CHECKING([for visual studio])
 AC_ARG_WITH([visual_studio],
@@ -1373,6 +1346,7 @@ AC_OUTPUT(Makefile.inc
           java/mdsplus/Makefile
           java/mdsplus-api/Makefile
           java/mdsplus-api/src/main/jni/mds/mdslib/Makefile
+          java/mdsplus-api/tests/Makefile
           java/mdsobjects/Makefile
           java/mdsobjects/docs/Makefile
           java/jdispatcher/Makefile

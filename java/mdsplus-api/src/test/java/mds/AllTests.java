@@ -18,9 +18,9 @@ import mds.mdslib.MdsLib;
 @SuiteClasses({TREE_Test.class, CONST_Test.class, Mds_Test.class, TreeShr_Test.class, MdsShr_Test.class, Function_Test.class, Descriptor_S_Test.class, Descriptor_A_Test.class, Descriptor_CA_Test.class}) // , Editors_Test.class})
 public class AllTests{
 	private static boolean			mdslib		= true;
-	private static boolean			mdsip		= true;
+	private static boolean			mdsip		= System.getenv("test_mdsip")==null ? false : Integer.parseInt(System.getenv("test_mdsip"))!=0;
 	private static boolean			local		= true;
-	private static final boolean		ssh		= true;
+	private static final boolean		ssh		= false;
 	private static final boolean		remote_win	= false;
 	private static final boolean		local_win	= System.getProperty("os.name").startsWith("Win");
 	private static final int		port		= 8000;
@@ -50,10 +50,11 @@ public class AllTests{
 			if(tmds.isConnected()) mds = tmds;
 			else if(AllTests.local){
 				System.out.println("Started new local mdsip server");
-				final ProcessBuilder pb = new ProcessBuilder("mdsip", "-h", System.getenv("userprofile") + "/mdsip.hosts", "-m", "-p", String.valueOf(AllTests.port)).inheritIO();// , "-P", "ssh"
+				final ProcessBuilder pb = new ProcessBuilder("mdsip", "-h", System.getenv("hostfile"), "-m", "-p", String.valueOf(AllTests.port)).inheritIO();// , "-P", "ssh"
 				// final Map<String, String> env = pb.environment();
 				// env.put(AllTests.tree + "_path", AllTests.treepath);
 				pb.start();
+				Thread.sleep(300);
 				tmds = MdsIp.sharedConnection(provider);
 				if(tmds.isConnected()) mds = tmds;
 			}
