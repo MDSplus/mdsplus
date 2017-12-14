@@ -1,3 +1,8 @@
+include @top_builddir@/Makefile.inc
+include ../testing/testing.am
+
+JAVA_LOG_COMPILER = java org.junit.runner.JUnitCore
+TEST_EXTENSIONS = $(test_SRC)
 EXTRA_DIST = 
 CLEANFILES = $(java_DATA) \
 	$(addprefix $(JAVAROOT)/,$(TRAV_CLS)) \
@@ -23,7 +28,7 @@ bin_SCRIPTS = $(JAVAROOT)
 
 #$(INSTALL) -D $< $@
 # Build the class files
-CLASSPATH_ENV = CLASSPATH=$(JSCH):$(JAVAROOT)
+CLASSPATH_ENV = CLASSPATH=$(JSCH):$(JAVAROOT):$(JUNIT)
 
 # Build the final jar
 JTRAVERSER_JAR = $(abs_builddir)/jTraverser.jar
@@ -33,7 +38,12 @@ java_SRC = $(TRAV_SRC) $(TOOLS_SRC) $(MDS_SRC)
 java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
 java_JAR = $(java_SRC:.java=*.class) $(TRAV_GIF)
 
+test_SRC = $(addprefix ${srcdir}/junit/,$(TEST_SRC))
+test_CLS = $(addprefix $(JAVAROOT)/,$(TEST_SRC:.java=.class))
+TEST_LOGS = $(test_CLS:.class=.log)
+
 JSCH = $(abs_srcdir)/jsch-0.1.54.jar
+JUNIT = $(top_srcdir)/testing/junit.jar
 MANIFEST = $(abs_builddir)/JTMANIFEST.mf
 
 $(JAVAROOT):
@@ -55,7 +65,7 @@ JTRAVERSER_JAR : @JARS_DIR@/javatraverser2/jTraverser.jar
 else
 
 java_DATA = $(JTRAVERSER_JAR)
-java_JAVA = $(addprefix ${srcdir}/java/,$(java_SRC) debug/DEBUG.java)
+java_JAVA = $(addprefix ${srcdir}/java/,$(java_SRC) debug/DEBUG.java) $(test_SRC)
 
 # Build the final jar
 $(JTRAVERSER_JAR): $(JSCH) $(MANIFEST) $(java_CLS)
@@ -242,3 +252,22 @@ TRAV_GIF = \
 	jtraverser/task.gif \
 	jtraverser/text.gif \
 	jtraverser/window.gif
+
+TEST_SRC = \
+        mds/AllTests.java \
+        mds/MdsShr_Test.java \
+        mds/TreeShr_Test.java \
+        mds/data/CONST_Test.java \
+        mds/data/TREE_Test.java \
+        mds/data/descriptor/Descriptor_A_Test.java \
+        mds/data/descriptor/Descriptor_S_Test.java \
+        mds/data/descriptor_r/Function_Test.java
+
+
+test_path = $(abs_builddir)/trees
+hostfile = $(top_srcdir)/mdsobjects/python/tests/mdsip.hosts
+log: $(test_CLS)
+	mkdir $(test_path) && \
+	trap "$(RM) -r $(test_path)" EXIT && \
+	$(TEST_ENVIRONMENT) $(CLASSPATH_ENV) test_path=$(test_path) hostfile=$(hostfile) test_mdsip=0 $(JAVA_LOG_COMPILER)  mds.AllTests; \
+	$(TEST_ENVIRONMENT) $(CLASSPATH_ENV) test_path=$(test_path) hostfile=$(hostfile) test_mdsip=1 $(JAVA_LOG_COMPILER)  mds.AllTests;

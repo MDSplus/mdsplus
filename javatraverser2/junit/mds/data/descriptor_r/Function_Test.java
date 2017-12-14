@@ -174,16 +174,12 @@ public final class Function_Test{
 
     private final Descriptor<?> testdeco(final String expr) throws MdsException {
         final Descriptor<?> dsc = Function_Test.tdi.tdiCompile(expr);
-        String deco;
-        Assert.assertEquals(Function_Test.tdi.tdiDecompile(dsc), deco = dsc.decompile());
-        System.out.println(deco);
+        Assert.assertEquals(Function_Test.tdi.tdiDecompile(dsc), dsc.decompile());
         return dsc;
     }
 
     private final void testdecoeval(final String expr) throws MdsException {
         final Descriptor<?> dsc = this.testdeco(expr);
-        String deco;
-        Assert.assertEquals(Function_Test.tdi.tdiEvaluate(dsc).decompile(), deco = dsc.evaluate().decompile());
-        System.out.println(deco);
+        Assert.assertEquals(Function_Test.tdi.tdiEvaluate(dsc).decompile(), dsc.evaluate().decompile());
     }
 }

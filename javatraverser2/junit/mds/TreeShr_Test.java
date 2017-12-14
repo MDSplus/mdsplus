@@ -144,13 +144,13 @@ public class TreeShr_Test{
         Assert.assertArrayEquals(save.serializeArray(), TreeShr_Test.mds.getByteArray("_b=*;_s=MdsShr->MdsSerializeDscOut(xd($),xd(_b));_b", save));
         Assert.assertArrayEquals(TreeShr_Test.mds.getDescriptor("$", Descriptor.class, save).serializeArray(), save.serializeArray());
         String line0, line1;
-        System.out.println(line0 = TreeShr_Test.mds.getString("_t='';_s=TCL('show db',_t);_t"));
+        line0 = TreeShr_Test.mds.getString("_t='';_s=TCL('show db',_t);_t");
         Assert.assertEquals(MdsException.TreeNORMAL, TreeShr_Test.treeshr.treeOpen(null, AllTests.tree, TreeShr_Test.shot, true));
-        System.out.println(line1 = TreeShr_Test.mds.getString("_t='';_s=TCL('show db',_t);_t"));
+        line1 = TreeShr_Test.mds.getString("_t='';_s=TCL('show db',_t);_t");
         final String line2 = line1.split("\n")[1], line3 = "001" + line0.substring(3, line0.length());
         Assert.assertTrue(line1, line3.startsWith(line2));
         Assert.assertTrue(0 != TreeShr_Test.treeshr.treeRestoreContext(null, save));
-        System.out.println(line1 = TreeShr_Test.mds.getString(null, "_t='';_s=TCL('show db',_t);_t"));
+        line1 = TreeShr_Test.mds.getString(null, "_t='';_s=TCL('show db',_t);_t");
         Assert.assertTrue(line1, line0.startsWith(line0));
     }
 
@@ -163,18 +163,10 @@ public class TreeShr_Test{
     }
 
     @Test
-    public final void test121TreeDeleteNodeInitialize() throws MdsException {
+    public final void test120TreeDeleteNodeInitialize() throws MdsException {
         Assert.assertEquals(MdsException.TreeNORMAL, TreeShr_Test.treeshr.treeOpenEdit(TreeShr_Test.ctx, TreeShr_Test.expt, TreeShr_Test.model));
         Assert.assertEquals(37, TreeShr_Test.treeshr.treeDeleteNodeInitialize(TreeShr_Test.ctx, 3).data);
-    }
-
-    @Test
-    public final void test122TreeDeleteNodeGetNid() throws MdsException {
         Assert.assertEquals(3, TreeShr_Test.treeshr.treeDeleteNodeGetNid(TreeShr_Test.ctx, 0).data);
-    }
-
-    @Test
-    public final void test123TreeDeleteNodeExecute() throws MdsException {
         Assert.assertEquals(MdsException.TreeNORMAL, TreeShr_Test.treeshr.treeDeleteNodeExecute(TreeShr_Test.ctx));
     }
 
@@ -283,7 +275,7 @@ public class TreeShr_Test{
     @Test
     public final void test170TreeSetTimeContext_TreeGetRecord() throws MdsException {
         Assert.assertEquals(1, TreeShr_Test.treeshr.treeSetTimeContext(TreeShr_Test.ctx, new Long(1000001000000l), new Long(1000007000000l), new Long(2000000l)));
-        Assert.assertArrayEquals(new float[]{.3f, .5f, .7f}, TreeShr_Test.treeshr.treeGetRecord(TreeShr_Test.ctx, 1).toFloatArray(), 1e-9f);
+        Assert.assertArrayEquals(new float[]{.1f, .3f, .5f, .7f}, TreeShr_Test.treeshr.treeGetRecord(TreeShr_Test.ctx, 1).toFloatArray(), 1e-9f);
         Assert.assertEquals(1, TreeShr_Test.treeshr.treeSetTimeContext(TreeShr_Test.ctx));
         Assert.assertArrayEquals(new float[]{.0f, .1f, .2f, .3f, .4f, .5f, .6f, .7f, .8f, .9f}, TreeShr_Test.treeshr.treeGetSegment(TreeShr_Test.ctx, 1, 0).toFloatArray(), 1e-9f);
     }
