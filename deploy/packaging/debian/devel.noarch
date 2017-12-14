@@ -1,6 +1,4 @@
 ./usr/local/mdsplus/include/STATICdef.h
-./usr/local/mdsplus/include/SystemSpecific.h
-./usr/local/mdsplus/include/Timeout.h
 ./usr/local/mdsplus/include/WindowsUnnamedSemaphore.h
 ./usr/local/mdsplus/include/Xmds/ListTree.h
 ./usr/local/mdsplus/include/Xmds/ListTreeP.h
