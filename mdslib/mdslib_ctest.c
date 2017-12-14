@@ -211,7 +211,7 @@ void TestTreeOpenClose(int ttype, int conid)
 
 void TestTdi(int ttype, int conid)
 {
-  long status;
+  long status=0;
   float result[10], result1;
   int dsc_1, dsc2_1, dsc_2, dsc2_2, i, dsc_r, dsc2_r;
   float arg1 = 1.234567;

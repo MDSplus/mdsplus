@@ -203,7 +203,7 @@ NORMAL() {
 export PYTHONDONTWRITEBYTECODE=no
 export PyLib=$(ldd $(which python) | grep libpython | awk '{print $3}')
 main(){
-    MAKE=${MAKE:="env LANG=C.UTF-8 make"}
+    MAKE=${MAKE:="make"}
     if [ -r ${srcdir}/deploy/os/${OS}.env ]
     then
         source ${srcdir}/deploy/os/${OS}.env
