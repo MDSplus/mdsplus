@@ -14,7 +14,10 @@
 
 @SET_MAKE@
 
-
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  TESTS SECTION   /////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -90,7 +93,16 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = javatraverser2
+@ENABLE_SANITIZE_TRUE@am__append_1 = ${ENABLE_SANITIZE_OPTIONS}=${${ENABLE_SANITIZE_OPTIONS}_SUPP}:${SAN_OPTIONS}:${${ENABLE_SANITIZE_OPTIONS}}:start_deactivated=1:exitcode=1 \
+@ENABLE_SANITIZE_TRUE@	LSAN_OPTIONS=${LSAN_OPTIONS_SUPP}:${LSAN_OPTIONS}:G_SLICE=always-malloc \
+@ENABLE_SANITIZE_TRUE@	TEST_LD_PRELOAD=${TEST_LD_PRELOAD} \
+@ENABLE_SANITIZE_TRUE@	TEST_TIMEUNIT=$$(($${TEST_TIMEUNIT:-1} * \
+@ENABLE_SANITIZE_TRUE@	5))
+@ENABLE_SANITIZE_TRUE@am__append_2 = $(shell ${_check_sanitize_ldd} || \
+@ENABLE_SANITIZE_TRUE@	echo --skip;) $(shell test \
+@ENABLE_SANITIZE_TRUE@	x"${ENABLE_SANITIZE}" != x"thread" || \
+@ENABLE_SANITIZE_TRUE@	echo --skip;)
+subdir = javatraverser2/tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/m4/ax_check_java_home.m4 \
@@ -121,36 +133,6 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
-am__install_max = 40
-am__nobase_strip_setup = \
-  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
-am__nobase_strip = \
-  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
-am__nobase_list = $(am__nobase_strip_setup); \
-  for p in $$list; do echo "$$p $$p"; done | \
-  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
-  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
-    if (++n[$$2] == $(am__install_max)) \
-      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
-    END { for (dir in files) print dir, files[dir] }'
-am__base_list = \
-  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
-  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-am__uninstall_files_from_dir = { \
-  test -z "$$files" \
-    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
-    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
-         $(am__cd) "$$dir" && rm -f $$files; }; \
-  }
-am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(javadir)" \
-	"$(DESTDIR)$(javadir)"
-SCRIPTS = $(bin_SCRIPTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -170,10 +152,11 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+am__installdirs = "$(DESTDIR)$(javadir)"
 am__java_sources = $(java_JAVA)
-DATA = $(java_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
-am__DIST_COMMON = $(srcdir)/Makefile.in
+am__DIST_COMMON = $(srcdir)/../../testing/testing.am \
+	$(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -348,7 +331,7 @@ PYTHON_PLATFORM = @PYTHON_PLATFORM@
 PYTHON_PREFIX = @PYTHON_PREFIX@
 PYTHON_VERSION = @PYTHON_VERSION@
 PY_LOG_COMPILER = @PY_LOG_COMPILER@
-PY_LOG_FLAGS = @PY_LOG_FLAGS@
+PY_LOG_FLAGS = @PY_LOG_FLAGS@ $(am__append_2)
 RANLIB = @RANLIB@
 READLINE_CPPFLAGS = @READLINE_CPPFLAGS@
 READLINE_LDFLAGS = @READLINE_LDFLAGS@
@@ -379,7 +362,7 @@ SYBASE_LIB = @SYBASE_LIB@
 TARGET_ARCH = @TARGET_ARCH@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
-TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@
+TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@ $(am__append_1)
 THREAD = @THREAD@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
@@ -468,222 +451,60 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
+TEST_CFLAGS = -I${top_srcdir}/testing
+TEST_LIBS = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
+
+# ///  select test form env variable  //////////////////////////////////////// #
+TEST_BUILDTYPE = local
+SUFFIXES = .log .tap .xml
+.PRECIUS = %.log %.tap %.xml
+
+# // check if libpath is correct or skip python tests
+@ENABLE_SANITIZE_TRUE@_check_sanitize_ldd = \
+@ENABLE_SANITIZE_TRUE@   ( test "${ENABLE_SANITIZE}" != "no" -a -n "${ENABLE_SANITIZE_LIBPATH}" && \
+@ENABLE_SANITIZE_TRUE@     ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep ${ENABLE_SANITIZE_LIBPATH}  > /dev/null; )
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  TAP TARGET   ////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+# .PHONY: $(TEST_SUITE_TAP)
+TEST_BUILD_TAP = test-build.tap
+TEST_SUITE_TAP = test-suite.tap
+JAVA_LOG_COMPILER = java org.junit.runner.JUnitCore
 EXTRA_DIST = 
 CLEANFILES = $(java_DATA) \
-	$(addprefix $(JAVAROOT)/,$(TRAV_CLS)) \
-	$(addprefix $(JAVAROOT)/,$(TOOLS_CLS)) \
-	$(addprefix $(JAVAROOT)/,$(MDS_CLS))
+	$(java_CLS) \
+	$(java_LOGS)
 
 JAVAROOT = $(abs_builddir)/classes
+CLASSPATH_ENV = CLASSPATH=$(JTRAVERSER_JAR):$(JAVAROOT):$(JUNIT)
+java_SRC = $(addprefix ${srcdir}/,$(TEST_SRC))
+java_CLS = $(addprefix $(JAVAROOT)/,$(TEST_SRC:.java=.class))
+java_LOGS = javamdslib.log mdsip.log
+JUNIT = $(top_srcdir)/testing/junit.jar
+JTRAVERSER_JAR = $(abs_builddir)/../jTraverser.jar
 javadir = $(exec_prefix)/java/classes
-docsdir = $(exec_prefix)/java/classes/docs
+java_JAVA = $(java_SRC)
+TEST_SRC = \
+        mds/AllTests.java \
+        mds/Mds_Test.java \
+        mds/MdsShr_Test.java \
+        mds/TreeShr_Test.java \
+        mds/data/CONST_Test.java \
+        mds/data/TREE_Test.java \
+        mds/data/descriptor/Descriptor_A_Test.java \
+        mds/data/descriptor/Descriptor_S_Test.java \
+        mds/data/descriptor_r/Function_Test.java
 
-# Create the shell script that runs the program
-#if MINGW
-#bin_SCRIPTS = traverser2.bat $(JAVAROOT)
-#else
-#bin_SCRIPTS = jTraverser2 $(JAVAROOT)
-#CLEANFILES += jTraverser2
-#EXTRA_DIST += jTraverser2.template
-#jTraverser2: $(srcdir)/jTraverser2.template
-#	cp $< $@
-#endif
-bin_SCRIPTS = $(JAVAROOT)
-
-#$(INSTALL) -D $< $@
-# Build the class files
-CLASSPATH_ENV = CLASSPATH=$(JSCH):$(JAVAROOT)
-
-# Build the final jar
-JTRAVERSER_JAR = $(abs_builddir)/jTraverser.jar
-TRAV_GIFS = $(addprefix ${srcdir}/java/,$(TRAV_GIF))
-java_SRC = $(TRAV_SRC) $(TOOLS_SRC) $(MDS_SRC)
-java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
-java_JAR = $(java_SRC:.java=*.class) $(TRAV_GIF)
-JSCH = $(abs_srcdir)/jsch-0.1.54.jar
-MANIFEST = $(abs_builddir)/JTMANIFEST.mf
-@USE_JARS_DIR_FALSE@java_DATA = $(JTRAVERSER_JAR)
-@USE_JARS_DIR_FALSE@java_JAVA = $(addprefix ${srcdir}/java/,$(java_SRC) debug/DEBUG.java)
-
-# Giant list of source files follow
-TRAV_SRC = \
-	jtraverser/DataChangeEvent.java \
-	jtraverser/DataChangeListener.java \
-	jtraverser/MdsView.java \
-	jtraverser/Node.java \
-	jtraverser/TreeView.java \
-	jtraverser/TreeManager.java \
-	jtraverser/dialogs/ActionList.java \
-	jtraverser/dialogs/AddNodeDialog.java \
-	jtraverser/dialogs/CheckBoxList.java \
-	jtraverser/dialogs/DataDialog.java \
-	jtraverser/dialogs/Dialogs.java \
-	jtraverser/dialogs/FlagsDialog.java \
-	jtraverser/dialogs/GraphPanel.java \
-	jtraverser/dialogs/OpenTreeDialog.java \
-	jtraverser/dialogs/SubTreeList.java \
-	jtraverser/dialogs/TagsDialog.java \
-	jtraverser/editor/ActionEditor.java \
-	jtraverser/editor/ArgEditor.java \
-	jtraverser/editor/ArrayEditor.java \
-	jtraverser/editor/Editor.java \
-	jtraverser/editor/ExprEditor.java \
-	jtraverser/editor/MethodEditor.java \
-	jtraverser/editor/ParameterEditor.java \
-	jtraverser/editor/ProcedureEditor.java \
-	jtraverser/editor/ProgramEditor.java \
-	jtraverser/editor/PythonEditor.java \
-	jtraverser/editor/RangeEditor.java \
-	jtraverser/editor/RoutineEditor.java \
-	jtraverser/editor/SegmentEditor.java \
-	jtraverser/editor/SignalEditor.java \
-	jtraverser/editor/WindowEditor.java \
-	jtraverser/editor/usage/ActionEditor.java \
-	jtraverser/editor/usage/AnyEditor.java \
-	jtraverser/editor/usage/AxisEditor.java \
-	jtraverser/editor/usage/DispatchEditor.java \
-	jtraverser/editor/usage/NumericEditor.java \
-	jtraverser/editor/usage/SignalEditor.java \
-	jtraverser/editor/usage/TaskEditor.java \
-	jtraverser/editor/usage/TextEditor.java \
-	jtraverser/editor/usage/WindowEditor.java \
-	jtraverser/jTraverserFacade.java \
-	jTraverser.java
-
-TOOLS_SRC = \
-	jtraverser/tools/CompileTree.java \
-	jtraverser/tools/DecompileTree.java
-
-MDS_SRC = \
-	mds/Mds.java \
-	mds/MdsEvent.java \
-	mds/MdsListener.java \
-	mds/MdsException.java \
-	mds/MdsShr.java \
-	mds/Shr.java \
-	mds/TCL.java \
-	mds/TdiShr.java \
-	mds/TreeShr.java \
-	mds/UpdateEvent.java \
-	mds/UpdateEventListener.java \
-	mds/data/CTX.java \
-	mds/data/DATA.java \
-	mds/data/DTYPE.java \
-	mds/data/OPC.java \
-	mds/data/TREE.java \
-	mds/data/descriptor/ARRAY.java \
-	mds/data/descriptor/Descriptor.java \
-	mds/data/descriptor/Descriptor_A.java \
-	mds/data/descriptor/Descriptor_APD.java \
-	mds/data/descriptor/Descriptor_CA.java \
-	mds/data/descriptor/Descriptor_D.java \
-	mds/data/descriptor/Descriptor_R.java \
-	mds/data/descriptor/Descriptor_S.java \
-	mds/data/descriptor/Descriptor_XD.java \
-	mds/data/descriptor/Descriptor_XS.java \
-	mds/data/descriptor_apd/Dictionary.java \
-	mds/data/descriptor_apd/List.java \
-	mds/data/descriptor_a/COMPLEXArray.java \
-	mds/data/descriptor_a/CStringArray.java \
-	mds/data/descriptor_a/Complex32Array.java \
-	mds/data/descriptor_a/Complex64Array.java \
-	mds/data/descriptor_a/EmptyArray.java \
-	mds/data/descriptor_a/FLOATArray.java \
-	mds/data/descriptor_a/Float32Array.java \
-	mds/data/descriptor_a/Float64Array.java \
-	mds/data/descriptor_a/Int128Array.java \
-	mds/data/descriptor_a/Int16Array.java \
-	mds/data/descriptor_a/Int32Array.java \
-	mds/data/descriptor_a/Int64Array.java \
-	mds/data/descriptor_a/Int8Array.java \
-	mds/data/descriptor_a/INTEGER_UNSIGNEDArray.java \
-	mds/data/descriptor_a/INTEGERArray.java \
-	mds/data/descriptor_a/NUMBERArray.java \
-	mds/data/descriptor_a/NidArray.java \
-	mds/data/descriptor_a/Uint128Array.java \
-	mds/data/descriptor_a/Uint16Array.java \
-	mds/data/descriptor_a/Uint32Array.java \
-	mds/data/descriptor_a/Uint64Array.java \
-	mds/data/descriptor_a/Uint8Array.java \
-	mds/data/descriptor_r/Action.java \
-	mds/data/descriptor_r/Call.java \
-	mds/data/descriptor_r/Condition.java \
-	mds/data/descriptor_r/Conglom.java \
-	mds/data/descriptor_r/Dependency.java \
-	mds/data/descriptor_r/Dim.java \
-	mds/data/descriptor_r/Dispatch.java \
-	mds/data/descriptor_r/Function.java \
-	mds/data/descriptor_r/Method.java \
-	mds/data/descriptor_r/Opaque.java \
-	mds/data/descriptor_r/PARAMETER.java \
-	mds/data/descriptor_r/Param.java \
-	mds/data/descriptor_r/Procedure.java \
-	mds/data/descriptor_r/Program.java \
-	mds/data/descriptor_r/Range.java \
-	mds/data/descriptor_r/Routine.java \
-	mds/data/descriptor_r/Signal.java \
-	mds/data/descriptor_r/Slope.java \
-	mds/data/descriptor_r/Window.java \
-	mds/data/descriptor_r/With_Error.java \
-	mds/data/descriptor_r/With_Units.java \
-	mds/data/descriptor_r/function/BINARY.java \
-	mds/data/descriptor_r/function/BUILD.java \
-	mds/data/descriptor_r/function/CAST.java \
-	mds/data/descriptor_r/function/COMPRESSION.java \
-	mds/data/descriptor_r/function/CONST.java \
-	mds/data/descriptor_r/function/Fun.java \
-	mds/data/descriptor_r/function/MODIFIER.java \
-	mds/data/descriptor_r/function/UNARY.java \
-	mds/data/descriptor_s/COMPLEX.java \
-	mds/data/descriptor_s/CString.java \
-	mds/data/descriptor_s/Complex32.java \
-	mds/data/descriptor_s/Complex64.java \
-	mds/data/descriptor_s/Event.java \
-	mds/data/descriptor_s/FLOAT.java \
-	mds/data/descriptor_s/Float32.java \
-	mds/data/descriptor_s/Float64.java \
-	mds/data/descriptor_s/Ident.java \
-	mds/data/descriptor_s/Int128.java \
-	mds/data/descriptor_s/Int16.java \
-	mds/data/descriptor_s/Int32.java \
-	mds/data/descriptor_s/Int64.java \
-	mds/data/descriptor_s/Int8.java \
-	mds/data/descriptor_s/INTEGER_UNSIGNED.java \
-	mds/data/descriptor_s/INTEGER.java \
-	mds/data/descriptor_s/Missing.java \
-	mds/data/descriptor_s/NUMBER.java \
-	mds/data/descriptor_s/Nid.java \
-	mds/data/descriptor_s/NODE.java \
-	mds/data/descriptor_s/Path.java \
-	mds/data/descriptor_s/Pointer.java \
-	mds/data/descriptor_s/Uint128.java \
-	mds/data/descriptor_s/Uint16.java \
-	mds/data/descriptor_s/Uint32.java \
-	mds/data/descriptor_s/Uint64.java \
-	mds/data/descriptor_s/Uint8.java \
-	mds/mdsip/MdsIp.java \
-	mds/mdsip/Message.java \
-	mds/mdslib/MdsLib.java
-
-TRAV_GIF = \
-	jtraverser/action.gif \
-	jtraverser/any.gif \
-	jtraverser/axis.gif \
-	jtraverser/compound.gif \
-	jtraverser/device.gif \
-	jtraverser/dispatch.gif \
-	jtraverser/numeric.gif \
-	jtraverser/signal.gif \
-	jtraverser/structure.gif \
-	jtraverser/subtree.gif \
-	jtraverser/task.gif \
-	jtraverser/text.gif \
-	jtraverser/window.gif
-
+test_path = $(abs_builddir)/trees
+hostfile = $(top_srcdir)/mdsobjects/python/tests/mdsip.hosts
 all: all-am
 
 .SUFFIXES:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+.SUFFIXES: .log .tap .xml
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../../testing/testing.am $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -692,9 +513,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign javatraverser2/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign javatraverser2/tests/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign javatraverser2/Makefile
+	  $(AUTOMAKE) --foreign javatraverser2/tests/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -703,6 +524,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
+$(srcdir)/../../testing/testing.am $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -712,41 +534,6 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-install-binSCRIPTS: $(bin_SCRIPTS)
-	@$(NORMAL_INSTALL)
-	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  if test -f "$$d$$p"; then echo "$$d$$p"; echo "$$p"; else :; fi; \
-	done | \
-	sed -e 'p;s,.*/,,;n' \
-	    -e 'h;s|.*|.|' \
-	    -e 'p;x;s,.*/,,;$(transform)' | sed 'N;N;N;s,\n, ,g' | \
-	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1; } \
-	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
-	    if ($$2 == $$4) { files[d] = files[d] " " $$1; \
-	      if (++n[d] == $(am__install_max)) { \
-		print "f", d, files[d]; n[d] = 0; files[d] = "" } } \
-	    else { print "f", d "/" $$4, $$1 } } \
-	  END { for (d in files) print "f", d, files[d] }' | \
-	while read type dir files; do \
-	     if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
-	     test -z "$$files" || { \
-	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(bindir)$$dir'"; \
-	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
-	     } \
-	; done
-
-uninstall-binSCRIPTS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
-	files=`for p in $$list; do echo "$$p"; done | \
-	       sed -e 's,.*/,,;$(transform)'`; \
-	dir='$(DESTDIR)$(bindir)'; $(am__uninstall_files_from_dir)
 
 classjava.stamp: $(am__java_sources)
 	@list1='$?'; list2=; if test -n "$$list1"; then \
@@ -776,27 +563,6 @@ uninstall-javaJAVA:
 
 clean-javaJAVA:
 	-rm -f *.class classjava.stamp
-install-javaDATA: $(java_DATA)
-	@$(NORMAL_INSTALL)
-	@list='$(java_DATA)'; test -n "$(javadir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(javadir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(javadir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(javadir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(javadir)" || exit $$?; \
-	done
-
-uninstall-javaDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(java_DATA)'; test -n "$(javadir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(javadir)'; $(am__uninstall_files_from_dir)
 tags TAGS:
 
 ctags CTAGS:
@@ -836,9 +602,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(SCRIPTS) classjava.stamp $(DATA)
+all-am: Makefile classjava.stamp
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(javadir)" "$(DESTDIR)$(javadir)"; do \
+	for dir in "$(DESTDIR)$(javadir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -892,13 +658,13 @@ info: info-am
 
 info-am:
 
-install-data-am: install-javaDATA install-javaJAVA
+install-data-am: install-javaJAVA
 
 install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-binSCRIPTS
+install-exec-am:
 
 install-html: install-html-am
 
@@ -936,48 +702,208 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binSCRIPTS uninstall-javaDATA \
-	uninstall-javaJAVA
+uninstall-am: uninstall-javaJAVA
 
 .MAKE: install-am install-strip
 
 .PHONY: all all-am check check-am clean clean-generic clean-javaJAVA \
 	cscopelist-am ctags-am distclean distclean-generic distdir dvi \
 	dvi-am html html-am info info-am install install-am \
-	install-binSCRIPTS install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-javaDATA \
-	install-javaJAVA install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
-	pdf-am ps ps-am tags-am uninstall uninstall-am \
-	uninstall-binSCRIPTS uninstall-javaDATA uninstall-javaJAVA
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-javaJAVA install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic pdf pdf-am ps ps-am tags-am uninstall \
+	uninstall-am uninstall-javaJAVA
 
 .PRECIOUS: Makefile
 
 
+include @top_builddir@/Makefile.inc
+TEST_FORMAT     ?= log,tap
+AM_MAKEFLAGS    ?= V=0
+
+.PHONY: tap xml log
+tap: $(TEST_SUITE_TAP)
+xml: $(TEST_SUITE_XML)
+log: $(TEST_SUITE_LOG)
+
+.PHONY: rebuild-tests
+rebuild-tests:
+	@ \
+	if [ -n "$(check_PROGRAMS)" ]; then \
+	 echo "//// Rebuilding tests ////"; \
+	 rm -f *.$(OBJEXT); \
+	 rm -f $(check_PROGRAMS); \
+	 if [ -n "$${VALGRIND_BUILD}" ]; then \
+	  $(MAKE) -k $(AM_MAKEFLAGS) all ||:; \
+	 else \
+	  $(MAKE) -k $(AM_MAKEFLAGS) all \
+	  CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING" ||:; \
+	 fi; \
+	fi
+
+.PHONY: tests
+tests: rebuild-tests
+	@ \
+	echo "//// Performing tests /////"; \
+	export TEST_FORMAT=${TEST_FORMAT}; \
+	status=0; \
+	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) || status=$$?;\
+	$(MAKE) -k $(AM_MAKEFLAGS) $${TEST_FORMAT//,/ } || status=$$?; \
+	exit $$status
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  VALGRIND RULES  /////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+@VALGRIND_CHECK_RULES@
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  SANITIZE RULES  /////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+@ENABLE_SANITIZE_TRUE@  # // sanitizer options specific (overload this in your Makefile.am) //
+@ENABLE_SANITIZE_TRUE@  LSAN_OPTIONS       ?=
+@ENABLE_SANITIZE_TRUE@  ASAN_OPTIONS       ?=
+@ENABLE_SANITIZE_TRUE@  TSAN_OPTIONS       ?=
+@ENABLE_SANITIZE_TRUE@  UBSAN_OPTIONS      ?=
+
+@ENABLE_SANITIZE_TRUE@  # // suppressions files (overload this in your Makefile.am) //
+@ENABLE_SANITIZE_TRUE@  LSAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/gcc-lsan.supp
+@ENABLE_SANITIZE_TRUE@  ASAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/gcc-asan.supp
+@ENABLE_SANITIZE_TRUE@  TSAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/gcc-tsan.supp
+@ENABLE_SANITIZE_TRUE@  UBSAN_OPTIONS_SUPP ?= suppressions=$(top_srcdir)/conf/gcc-ubsan.supp
+
+@ENABLE_SANITIZE_TRUE@  # Preloaded libraries to be exported within the test-driver script. This was
+@ENABLE_SANITIZE_TRUE@  # done to avoid having libraries for 32bit preloaded when we trigger the
+@ENABLE_SANITIZE_TRUE@  # shell executable to run script. NOTE: This could harm a possible preload
+@ENABLE_SANITIZE_TRUE@  # order that we would add in the future ... maybe an AM_LD_PRELOAD should be
+@ENABLE_SANITIZE_TRUE@  # foreseen.
+@ENABLE_SANITIZE_TRUE@  #
+@ENABLE_SANITIZE_TRUE@  TEST_LD_PRELOAD    ?= ${ENABLE_SANITIZE_LIBPATH}
+
+@ENABLE_SANITIZE_TRUE@  # // NOTE:
+@ENABLE_SANITIZE_TRUE@  # somtimes thread sanitizer does not work with python... probably because of
+@ENABLE_SANITIZE_TRUE@  # the -fpie flag for now we will disable it at all.
+@ENABLE_SANITIZE_TRUE@  #
+
+# Single tap output
+# ^^^^^^^^^^^^^^^^^
+# Tap target to generate single tap result beside the normal log file. This
+# should make use of the TEST_TAPFILE env that generate multiple logger
+# instances.
+
+$(TEST_LOGS:.log=.tap):
+	@ \
+	f=$(@:.tap=.log); rm -f $$f; \
+	$(MAKE) $(AM_MAKEFLAGS) $$f TEST_TAPFILE=$@ ||:
+
+# Tap Test Build Suite
+# ^^^^^^^^^^^^^^^^^^^^
+# Collects the tap result of possible test build failures prior to make the
+# actual tests
+
+$(TEST_BUILD_TAP):
+	@ \
+	if [ -n "$(check_PROGRAMS)" ]; then \
+	 echo "Try to build targets one by one"; \
+	 echo "TAP version 13" > $@; \
+	 count=0; \
+	 for i in $(check_PROGRAMS); do \
+	  if ! $(MAKE) -q $$i; then \
+	    $(MAKE) -k $(AM_MAKEFLAGS) $$i || \
+	    { ((count++)); \
+	      echo "not ok $${count} - Build of $${i} failed." >> $@; \
+	    }; \
+	  fi; \
+	 done; \
+	fi; \
+	echo "1..$${count}" >> $@;
+
+# Tap Test Suite
+# ^^^^^^^^^^^^^^
+# The results are collected here using a perl script collate_tap.pl that is
+# using the perl tap parser from cpan. If it is not actually available
+# configure should have diabled HAVE_PL_TAP_PARSER.
+#
+# TODO: fix this in the case the only tap is provided as TEST_FORMAT and the
+# test taps are streamed into the .log file directly ... for now a workaround
+# was added: both TEST_LOGS and TEST_LOGS.tap are added to ${suite} so in both
+# cases it is able to collect results. remember to add $(TEST_LOGS:.log=.tap)
+# to prerequisites in the future when fix will be done.
+#
+
+$(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
+@HAVE_PL_TAP_PARSER_TRUE@	@ ## collate test-build.tap \
+@HAVE_PL_TAP_PARSER_TRUE@	if [ -n "$(VALGRIND_TOOL)" ]; then suite="$@.$(VALGRIND_TOOL)"; \
+@HAVE_PL_TAP_PARSER_TRUE@	else suite="$@"; \
+@HAVE_PL_TAP_PARSER_TRUE@	fi; \
+@HAVE_PL_TAP_PARSER_TRUE@	perl $(top_srcdir)/testing/collate_tap.pl $(TEST_BUILD_TAP) \
+@HAVE_PL_TAP_PARSER_TRUE@	     $(TEST_LOGS) $(TEST_LOGS:.log=.tap) > $${suite} \
+@HAVE_PL_TAP_PARSER_TRUE@	     || exit 1
+@HAVE_PL_TAP_PARSER_FALSE@	@ ## test parser not available \
+@HAVE_PL_TAP_PARSER_FALSE@	echo "Can not collate tap results" >2;
+
+$(TEST_SUITE_XML):
+
+$(TEST_LOGS:.log=.xml): 
+	@ \
+	f=$(@:.xml=.log); rm -f $$f; \
+	$(MAKE) $(AM_MAKEFLAGS) $$f TEST_XMLFILE=$@ ||:s
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  clean  //////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+.PHONY: clean-local-tests
+clean-local-tests:
+	-$(RM) -rf $(TEST_BUILD_TAP)
+	-$(RM) -rf $(TEST_SUITE_TAP)
+	-$(RM) -rf $(TEST_LOGS:.log=.tap)
+	-$(RM) -rf $(TEST_SUITE_XML)
+	-$(RM) -rf $(TEST_LOGS:.log=.xml)
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  utils  //////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+.PHONY: tests-envdump
+tests-envdump:
+	@echo; \
+	echo ----------------------------------------------------------------; \
+	echo TESTS_ENVIRONMENT = ;\
+	for _i in ${TESTS_ENVIRONMENT}; do \
+	 echo "     $${_i}"; \
+	done;
+
+test-env:
+	for _i in ${TESTS_ENVIRONMENT}; do \
+	  export $${_i}; \
+	done; \
+	bash -i
+
+@HAVE_WINE_TRUE@wineconsole:
+@HAVE_WINE_TRUE@	@ \
+@HAVE_WINE_TRUE@	echo "--------------------------------------------------------------"; \
+@HAVE_WINE_TRUE@	echo "%PATH% = $(shell $${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' 2>/dev/null)"; \
+@HAVE_WINE_TRUE@	echo "--------------------------------------------------------------"; \
+@HAVE_WINE_TRUE@	${TESTS_ENVIRONMENT} wineconsole
+
 $(JAVAROOT):
 	mkdir -p $@
 
-$(JSCH):
-	wget -O $(JSCH) http://sourceforge.net/projects/jsch/files/jsch.jar/0.1.54/jsch-0.1.54.jar/download
-
-$(MANIFEST): $(srcdir)/JTMANIFEST.mf
-	cp -f $< $@ &&\
-	date -u "+Built-Date: %Y-%m-%d %H:%M:%S">>$@
-
-@USE_JARS_DIR_TRUE@JTRAVERSER_JAR : @JARS_DIR@/javatraverser2/jTraverser.jar
-@USE_JARS_DIR_TRUE@	cp $< $@
-
-# Build the final jar
-@USE_JARS_DIR_FALSE@$(JTRAVERSER_JAR): $(JSCH) $(MANIFEST) $(java_CLS)
-@USE_JARS_DIR_FALSE@	mkdir -p $(JAVAROOT)/jtraverser &&\
-@USE_JARS_DIR_FALSE@	cp -f $(TRAV_GIFS) $(JAVAROOT)/jtraverser &&\
-@USE_JARS_DIR_FALSE@	cp -f $(JSCH) "$@" &&\
-@USE_JARS_DIR_FALSE@	pushd $(JAVAROOT) &&\
-@USE_JARS_DIR_FALSE@	$(JAR) u0fm "$@" $(MANIFEST) $(java_JAR) $(TRAV_GIF) &&\
-@USE_JARS_DIR_FALSE@	popd
+javamdslib.log: $(java_CLS) $(JAVAROOT)
+	mkdir $(test_path) && \
+	trap "$(RM) -r $(test_path)" EXIT && \
+	$(TEST_ENVIRONMENT) $(CLASSPATH_ENV) test_path=$(test_path) hostfile=$(hostfile) test_mdsip=0 $(JAVA_LOG_COMPILER)  mds.AllTests &> javamdslib.log;
+mdsip.log: $(test_CLS) $(JAVAROOT)
+	mkdir $(test_path) && \
+	trap "$(RM) -r $(test_path)" EXIT && \
+	$(TEST_ENVIRONMENT) $(CLASSPATH_ENV) test_path=$(test_path) hostfile=$(hostfile) test_mdsip=1 $(JAVA_LOG_COMPILER)  mds.AllTests &> mdsip.log;
+log: javamdslib.log mdsip.log
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

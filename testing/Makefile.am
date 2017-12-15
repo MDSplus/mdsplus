@@ -48,7 +48,7 @@ TEST_DIRS ?= \
 	mdsshr/testing \
 	mdslib/testing \
 	mdsobjects/cpp/testing \
-	javatraverser2
+	javatraverser2/tests
 #	testing/selftest
 
 TEST_OUTDIR  ?= ${top_builddir}/testing

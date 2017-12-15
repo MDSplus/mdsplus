@@ -1312,6 +1312,7 @@ AC_OUTPUT(Makefile.inc
           javatraverser/Makefile
           javatraverser2/Makefile
           javatraverser2/java/mds/mdslib/Makefile
+          javatraverser2/tests/Makefile
           javadevices/Makefile
           LabView/Makefile
           manpages/Makefile
