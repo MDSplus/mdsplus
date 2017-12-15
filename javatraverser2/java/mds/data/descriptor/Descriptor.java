@@ -181,8 +181,7 @@ public abstract class Descriptor<T>{
 
     public static final Descriptor<?> getLocal(final FLAG local, final Descriptor<?> dsc) {
         if(dsc == null || dsc.isLocal()) return dsc;
-        final Descriptor<?> ldsc = dsc.getLocal(local);
-        return ldsc.setLocal();
+        return dsc.getLocal(local);
     }
 
     protected final static Descriptor<?>[] getLocals(final FLAG local, final Descriptor<?>... args) {
@@ -354,7 +353,7 @@ public abstract class Descriptor<T>{
     }
 
     final public Descriptor<?> getLocal() {
-        if(this.isLocal()) return this;
+        if(this.islocal) return this;
         return this.getLocal(null);
     }
 
@@ -364,9 +363,8 @@ public abstract class Descriptor<T>{
      * @throws MdsException
      **/
     public Descriptor<?> getLocal(final FLAG local) {
-        if(this.isLocal()) return this;
-        final Descriptor<?> ldsc = this.getLocal_(local);
-        return ldsc.setLocal();
+        if(this.islocal) return this;
+        return this.getLocal_(local);
     }
 
     public Descriptor<?> getLocal_(final FLAG local) {
