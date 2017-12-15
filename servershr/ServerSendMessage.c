@@ -308,9 +308,11 @@ void ServerWait(int jobid)
 static void DoBeforeAst(int jobid)
 {
   Job *j;
-  void *astparam = NULL;
-  void (*before_ast) () = NULL;
+  void *astparam;
+  void (*before_ast) ();
   LOCK_JOBS;
+  astparam = NULL;
+  before_ast = NULL;
   for (j = Jobs; j && (j->jobid != jobid); j = j->next) ;
   if (j) {
     astparam   = j->astparam;
@@ -685,7 +687,7 @@ static void DoMessage(Client * c, fd_set * fdactive)
 static void RemoveClient(Client * c, fd_set * fdactive)
 {
   int client_found = 0;
-  int conid = -1;
+  int conid;
   LOCK_CLIENTS;
   if (Clients == c) {
     client_found = 1;
@@ -710,7 +712,8 @@ static void RemoveClient(Client * c, fd_set * fdactive)
     if (c->conid >= 0)
       DisconnectFromMds(c->conid);
     free(c);
-  }
+  } else
+    conid = -1;
   Job *j;
   for (;;) {
     LOCK_JOBS;
@@ -731,7 +734,7 @@ static int GetHostAddr(char *name)
   struct hostent* hp = gethostbyname(name);
   addr = hp ? *(int *)hp->h_addr_list[0] : (int)inet_addr(name);
 #else
-  size_t memlen = 1024;
+  static size_t memlen = 1024;
   struct hostent hostbuf, *hp = NULL;
   int herr;
   char *hp_mem = (char*)malloc(memlen);

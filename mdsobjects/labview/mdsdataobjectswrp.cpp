@@ -899,7 +899,7 @@ EXPORT void mdsplus_array_getStringArray(const void *lvArrayPtr, LStrArrHdl lvSt
 	}
 
 	// free memory
-	for (std::size_t i = 0; i < stringArrLen; ++i)
+	for (int i = 0; i < stringArrLen; ++i)
 		deleteNativeArray(stringArrOut[i]);
 	deleteNativeArray(stringArrOut);
 

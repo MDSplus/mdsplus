@@ -27,5 +27,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <facility name="Tcl" value="42">
     <status name="NORMAL" value="1" severity="Success" text="Normal successful completion"/>
     <status name="FAILED_ESSENTIAL" value="2" severity="Warning" text="Essential action failed"/>
+    <status name="NO_DISPATCH_TABLE" value="3" severity="Warning" text="No dispatch table found. Forgot to do DISPATCH/BUILD?"/>
   </facility>
 </messages>
