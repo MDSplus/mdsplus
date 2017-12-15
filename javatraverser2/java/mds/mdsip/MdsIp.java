@@ -573,7 +573,7 @@ public class MdsIp extends Mds{
             if(this.userinfo == null) this.userinfo = new SSHSocket.SshUserInfo();
             this.sock = MdsIp.newSSHSocket(this.userinfo, this.provider);
         }else this.sock = new Socket(this.provider.host, this.provider.port);
-        System.out.println(this.sock.toString());
+        if(DEBUG.D) System.out.println(this.sock.toString());
         this.sock.setTcpNoDelay(true);
         this.dis = this.sock.getInputStream();
         this.dos = this.sock.getOutputStream();
@@ -600,16 +600,21 @@ public class MdsIp extends Mds{
 
     private final void disconnectFromServer() {
         try{
-            try{
-                if(this.dos != null) this.dos.close();
-            }finally{
-                if(this.dis != null) this.dis.close();
-            }
-            if(this.sock != null) this.sock.close();
-            if(this.receiveThread != null) this.receiveThread.waitExited();
+            if(this.dos != null) this.dos.close();
         }catch(final IOException e){
-            System.err.println("The closing of sockets failed:\n" + e.getMessage());
+            System.err.println("The closing of data output stream failed:\n" + e.getMessage());
         }
+        try{
+            if(this.dis != null) this.dis.close();
+        }catch(final IOException e){
+            System.err.println("The closing of data input stream failed:\n" + e.getMessage());
+        }
+        try{
+            if(this.sock != null) this.sock.close();
+        }catch(final IOException e){
+            System.err.println("The closing of socket failed:\n" + e.getMessage());
+        }
+        if(this.receiveThread != null) this.receiveThread.waitExited();
         this.connected = false;
     }
 
