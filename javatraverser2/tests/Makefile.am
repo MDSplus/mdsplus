@@ -39,11 +39,11 @@ TEST_SRC = \
 test_path = $(abs_builddir)/trees
 hostfile = $(top_srcdir)/mdsobjects/python/tests/mdsip.hosts
 
-javamdslib.log: $(java_CLS) $(JAVAROOT)
+javamdslib.log: classjava.stamp $(java_CLS) $(JAVAROOT)
 	mkdir $(test_path) && \
 	trap "$(RM) -r $(test_path)" EXIT && \
 	$(TEST_ENVIRONMENT) $(CLASSPATH_ENV) test_path=$(test_path) hostfile=$(hostfile) test_mdsip=0 $(JAVA_LOG_COMPILER)  mds.AllTests &> javamdslib.log;
-mdsip.log: $(test_CLS) $(JAVAROOT)
+mdsip.log: classjava.stamp $(test_CLS) $(JAVAROOT)
 	mkdir $(test_path) && \
 	trap "$(RM) -r $(test_path)" EXIT && \
 	$(TEST_ENVIRONMENT) $(CLASSPATH_ENV) test_path=$(test_path) hostfile=$(hostfile) test_mdsip=1 $(JAVA_LOG_COMPILER)  mds.AllTests &> mdsip.log;

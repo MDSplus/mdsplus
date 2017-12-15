@@ -58,7 +58,7 @@ java_DATA = $(JTRAVERSER_JAR)
 java_JAVA = $(addprefix ${srcdir}/java/,$(java_SRC) debug/DEBUG.java)
 
 # Build the final jar
-$(JTRAVERSER_JAR): $(JSCH) $(MANIFEST) $(java_CLS)
+$(JTRAVERSER_JAR): classjava.stamp $(JSCH) $(MANIFEST) $(java_CLS)
 	mkdir -p $(JAVAROOT)/jtraverser &&\
 	cp -f $(TRAV_GIFS) $(JAVAROOT)/jtraverser &&\
 	cp -f $(JSCH) "$@" &&\

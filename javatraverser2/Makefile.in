@@ -971,7 +971,7 @@ $(MANIFEST): $(srcdir)/JTMANIFEST.mf
 @USE_JARS_DIR_TRUE@	cp $< $@
 
 # Build the final jar
-@USE_JARS_DIR_FALSE@$(JTRAVERSER_JAR): $(JSCH) $(MANIFEST) $(java_CLS)
+@USE_JARS_DIR_FALSE@$(JTRAVERSER_JAR): classjava.stamp $(JSCH) $(MANIFEST) $(java_CLS)
 @USE_JARS_DIR_FALSE@	mkdir -p $(JAVAROOT)/jtraverser &&\
 @USE_JARS_DIR_FALSE@	cp -f $(TRAV_GIFS) $(JAVAROOT)/jtraverser &&\
 @USE_JARS_DIR_FALSE@	cp -f $(JSCH) "$@" &&\
