@@ -96,7 +96,7 @@ long testScalarString(int ttype, int conid, char *expression, char *expected, in
 long testSetDefault(int ttype, int conid, char *node)
 {
   printf("Setting default to %s", node);
-  if (ttype << 3)
+  if (ttype < 3)
     return (MdsSetDefault(node));
   else
     return (MdsSetDefaultR(&conid, node));

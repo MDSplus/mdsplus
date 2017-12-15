@@ -382,7 +382,7 @@ case "$host" in
 *mingw*)
        IDLMDSEVENT=""
        LIBPRE=""
-       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields -Wno-clobbered ";
+       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields ";
        LD="$CXX -static-libgcc"
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="$FC"
@@ -416,7 +416,7 @@ case "$host" in
        jni_md_inc_dir="$with_jdk/include/linux";;
 
 *86*linux*)
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing -Wno-clobbered ";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing ";
        FORLD="$FC";
        LD="gcc"
        if ( echo $host| grep 64 > /dev/null )
@@ -477,7 +477,7 @@ case "$host" in
        SIZEOF_LONG=4;
        SIZEOF_LONG_LONG=8;
        D64="";
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing -Wno-clobbered";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
        if (test "$FC" = "gfortran"); then
          FCFLAGS="$FCFLAGS -fno-range-check";
          FORLD="$FC"
@@ -498,7 +498,7 @@ case "$host" in
        jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
-*linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing -Wno-clobbered";
+*linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing";
        FCFLAGS="$FCFLAGS -fno-range-check";
        FORLD="$FC"
        FOR_LDFLAGS="-lg2c"
@@ -1124,7 +1124,7 @@ RELEASE_DATE="$(date)"
 RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 
 # Determine common warning options to apply to C, C++, and Fortran languages
-AS_VAR_SET([WARNFLAGS], ["-Wall"])
+AS_VAR_SET([WARNFLAGS], ["-Wall -Wextra"])
 AS_VAR_SET([NOWARNFLAGS],[])
 AC_MSG_CHECKING([whether to treat warnings as errors])
 AC_ARG_ENABLE([werror],

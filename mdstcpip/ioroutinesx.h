@@ -97,7 +97,7 @@ static void ABORT(int sigval __attribute__ ((unused))){
 }
 
 static int GetHostAndPort(char *hostin, struct SOCKADDR_IN *sin){
-  INIT_STATUS_ERROR;
+  int status;
   INITIALIZESOCKETS;
   char *host = strcpy((char *)malloc(strlen(hostin) + 1), hostin);
   FREE_ON_EXIT(host);
@@ -125,9 +125,10 @@ static int GetHostAndPort(char *hostin, struct SOCKADDR_IN *sin){
   struct addrinfo *info = NULL;
   static const struct addrinfo hints = { 0, AF_T, SOCK_STREAM, 0, 0, 0, 0, 0 };
   int err = getaddrinfo(host, service, &hints, &info);
-  if (err)
+  if (err) {
+    status = MDSplusERROR;
     fprintf(stderr,"Error connecting to host: %s, port %s error=%s\n", host, service, gai_strerror(err));
-  else {
+  } else {
     memcpy(sin, info->ai_addr, sizeof(*sin) < info->ai_addrlen ? sizeof(*sin) : info->ai_addrlen);
     status = MDSplusSUCCESS;
   }
@@ -145,7 +146,7 @@ static char *getHostInfo(SOCKET sock, char **iphostptr, char **hostnameptr){
 #if defined(__MACH__) || defined(_WIN32)
     struct hostent* hp = gethostbyaddr((void*)&sin.SIN_ADDR,sizeof(sin.SIN_ADDR),sin.SIN_FAMILY);
 #else
-    size_t memlen = 1024;
+    volatile size_t memlen = 1024;
     struct hostent hostbuf, *hp = NULL;
     int herr;
     char *hp_mem = (char*)malloc(memlen);

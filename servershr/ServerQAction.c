@@ -346,7 +346,7 @@ static int ShowCurrentJob(struct descriptor_xd *ans){
 }
 // main
 static int RemoveLast(){
-  INIT_STATUS_ERROR;
+  int status;
   SrvJob *job;
   QUEUE_LOCK;
   job = JobQueueNext;
@@ -359,15 +359,16 @@ static int RemoveLast(){
     FreeJob(job);
     printf("Removed pending action");
     status = MDSplusSUCCESS;
-  }
+  } else
+    status = MDSplusERROR;
   QUEUE_UNLOCK;
   return status;
 }
 // thread
 static SrvJob *NextJob(int wait){
   SrvJob *job;
-  int done = 0;
-  while (!done) {
+  //  int done = 0;
+  while (1) {
     QUEUE_LOCK;
     job = JobQueue;
     if (job) {
@@ -377,11 +378,11 @@ static SrvJob *NextJob(int wait){
       else
 	JobQueueNext = 0;
     }
-    if (job || (!wait))
-      done = 1;
-    else
+    if (job == NULL && wait)
       _CONDITION_WAIT(&JobQueueCond);
     QUEUE_UNLOCK;
+    if (job || (!wait))
+      break;
   }
   return job;
 }
