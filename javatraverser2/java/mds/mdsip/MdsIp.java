@@ -398,6 +398,7 @@ public class MdsIp extends Mds{
     public static final int          LOGIN_OK         = 1, LOGIN_ERROR = 2, LOGIN_CANCEL = 3;
     private static final String      NOT_CONNECTED    = "Not Connected.";
     private static final byte        MAX_MSGS         = 8;
+    private static final Pattern     dollar           = Pattern.compile("\\$");
 
     public static final boolean addSharedConnection(final MdsIp con) {
         synchronized(MdsIp.open_connections){
@@ -431,7 +432,7 @@ public class MdsIp extends Mds{
                     if(notatomic[i]) args[i] = req.args[i].serializeDsc();
                     else args[i] = req.args[i];
                 }
-            final Matcher m = Pattern.compile("\\$").matcher(req.expr);
+            final Matcher m = MdsIp.dollar.matcher(req.expr);
             int pos = 0;
             for(int i = 0; i < args.length && m.find(); i++){
                 cmd.append(req.expr.substring(pos, m.start())).append(notatomic[i] ? Mds.serialStr : "$");

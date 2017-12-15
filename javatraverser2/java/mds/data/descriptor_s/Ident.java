@@ -5,6 +5,7 @@ import mds.MdsException;
 import mds.data.DATA;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_S;
+import mds.mdsip.Message;
 
 public final class Ident extends Descriptor_S<String>{
     public Ident(final ByteBuffer b){
@@ -48,5 +49,10 @@ public final class Ident extends Descriptor_S<String>{
 
     public final Descriptor<?> inc() throws MdsException {
         return this.mds.getDescriptor("`++$", this);
+    }
+
+    @Override
+    public Message toMessage(final byte descr_idx, final byte n_args, final byte mid) throws MdsException {
+        return new Message(descr_idx, this.dtype(), n_args, this.getShape(), this.getBuffer(), mid);
     }
 }
