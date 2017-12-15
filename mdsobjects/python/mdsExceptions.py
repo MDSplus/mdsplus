@@ -3057,3 +3057,11 @@ class TclFAILED_ESSENTIAL(TclException):
   msgnam="FAILED_ESSENTIAL"
 
 MDSplusException.statusDict[2752528] = TclFAILED_ESSENTIAL
+
+
+class TclNO_DISPATCH_TABLE(TclException):
+  status=2752536
+  message="No dispatch table found. Forgot to do DISPATCH/BUILD?"
+  msgnam="NO_DISPATCH_TABLE"
+
+MDSplusException.statusDict[2752536] = TclNO_DISPATCH_TABLE
