@@ -951,11 +951,12 @@ clean-local:
 # //////////////////////////////////////////////////////////////////////////// #
 
 TEST_DIRS ?= \
-			   mdsobjects/python/tests \
-			   mdsshr/testing \
-			   mdslib/testing \
-			   mdsobjects/cpp/testing
-#               testing/selftest
+	mdsobjects/python/tests \
+	mdsshr/testing \
+	mdslib/testing \
+	mdsobjects/cpp/testing \
+	javatraverser2
+#	testing/selftest
 
 TEST_OUTDIR  ?= ${top_builddir}/testing
 
