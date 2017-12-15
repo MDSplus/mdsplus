@@ -298,11 +298,11 @@ EXPORT int TclDispatch_show_server(void *ctx, char **error __attribute__ ((unuse
       tclAppend(output, "\n");
       mdsdclFlushOutput(*output);
       FREE_ON_EXIT(info);
+      info = ServerGetInfo(full, ident); 
       if (dooutput) {
-	tclAppend(output, info = ServerGetInfo(full, ident));
+	tclAppend(output, info); 
 	tclAppend(output, "\n");
-      } else
-	info = ServerGetInfo(full, ident);
+      }
       FREE_NOW(info);
     }
     FREE_NOW(ident);

@@ -88,9 +88,9 @@ typedef struct _Condition_p {
  #define INIT_AND_FREEXD_ON_EXIT(ptr) EMPTYXD(xd);FREEXD_ON_EXIT(&xd);
 #endif
 static void __attribute__((unused)) free_if(void *ptr){
-  if (ptr) free(ptr);
+  if (*(void**)ptr) free(*(void**)ptr);
 }
- #define FREE_ON_EXIT(ptr)   pthread_cleanup_push(free_if, (void*)ptr)
+ #define FREE_ON_EXIT(ptr)   pthread_cleanup_push(free_if, (void*)&ptr)
  #define FREE_IF(ptr,c)      pthread_cleanup_pop(c)
  #define FREE_NOW(ptr)       pthread_cleanup_pop(1)
  #define FREE_CANCEL(ptr)    pthread_cleanup_pop(0)
