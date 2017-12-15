@@ -209,7 +209,7 @@ public class TreeShr_Test{
 
     @Test
     public final void test155TreeRenameNode() throws MdsException {
-        Assert.assertEquals(1, TreeShr_Test.treeshr.treeRenameNode(TreeShr_Test.ctx, 2, "newB"));
+        Assert.assertEquals(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeRenameNode(TreeShr_Test.ctx, 2, "newB"));
     }
 
     @Test
