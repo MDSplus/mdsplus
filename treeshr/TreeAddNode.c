@@ -106,7 +106,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
   INIT_STATUS_AS TreeNORMAL;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NODE *parent;
-  NODE *new_ptr;
+  NODE *new_ptr = NULL;
   char *node_name;
   SEARCH_TYPE node_type;
   int nid;
