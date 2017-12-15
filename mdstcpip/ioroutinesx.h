@@ -146,7 +146,7 @@ static char *getHostInfo(SOCKET sock, char **iphostptr, char **hostnameptr){
 #if defined(__MACH__) || defined(_WIN32)
     struct hostent* hp = gethostbyaddr((void*)&sin.SIN_ADDR,sizeof(sin.SIN_ADDR),sin.SIN_FAMILY);
 #else
-    volatile size_t memlen = 1024;
+    size_t memlen = 1024;
     struct hostent hostbuf, *hp = NULL;
     int herr;
     char *hp_mem = (char*)malloc(memlen);
