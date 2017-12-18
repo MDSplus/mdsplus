@@ -857,6 +857,8 @@ JAVAC
 JAVAVERSION
 READLINK
 JAVAC_PATH_NAME
+ENABLE_JAVA_FALSE
+ENABLE_JAVA_TRUE
 RPATHLINK
 RPATHLINK_FALSE
 RPATHLINK_TRUE
@@ -7431,6 +7433,14 @@ if test "${enable_java+set}" = set; then :
   enableval=$enable_java;
 else
   enable_java=yes
+fi
+
+ if ${enable_java+:} false; then
+  ENABLE_JAVA_TRUE=
+  ENABLE_JAVA_FALSE='#'
+else
+  ENABLE_JAVA_TRUE='#'
+  ENABLE_JAVA_FALSE=
 fi
 
 
@@ -17295,6 +17305,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${RPATHLINK_TRUE}" && test -z "${RPATHLINK_FALSE}"; then
   as_fn_error $? "conditional \"RPATHLINK\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${ENABLE_JAVA_TRUE}" && test -z "${ENABLE_JAVA_FALSE}"; then
+  as_fn_error $? "conditional \"ENABLE_JAVA\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${GLOBUSLICENSE_TRUE}" && test -z "${GLOBUSLICENSE_FALSE}"; then

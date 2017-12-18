@@ -548,6 +548,19 @@ libMdsTest_a_SOURCES = base_backend.c
 libMdsTestBackend_a_CFLAGS = -D_TESTING -I${srcdir}/backends/check $(AM_CFLAGS)
 libMdsTestBackend_a_SOURCES = check_backend.c
 MdsTestShr = @MAKESHLIBDIR@@LIBPRE@MdsTestShr@SHARETYPE@
+@ENABLE_JAVA_FALSE@JAVA_TEST_DIRS = 
+
+# //////////////////////////////////////////////////////////////////////////// #
+# //  COLLECT TESTS IN SUBDIRECTORIES  /////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+@ENABLE_JAVA_TRUE@JAVA_TEST_DIRS = javatraverser2/tests
+PYTHON_TEST_DIRS = mdsobjects/python/tests
+C_TEST_DIRS = \
+	mdsobjects/python/tests \
+	mdsshr/testing \
+	mdslib/testing \
+	mdsobjects/cpp/testing
+
 tests_DIRS = $(addprefix tests__$(top_builddir)/, $(TEST_DIRS))
 rebuild_tests_DIRS = $(addprefix rebuild_tests__$(top_builddir)/, $(TEST_DIRS))
 clean_DIRS = $(addprefix clean__$(top_builddir)/, $(TEST_DIRS))
@@ -945,18 +958,12 @@ all-local: $(MdsTestShr)
 
 clean-local:
 	-$(RM) $(MdsTestShr)
-
-# //////////////////////////////////////////////////////////////////////////// #
-# //  COLLECT TESTS IN SUBDIRECTORIES  /////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
+#	testing/selftest
 
 TEST_DIRS ?= \
-	mdsobjects/python/tests \
-	mdsshr/testing \
-	mdslib/testing \
-	mdsobjects/cpp/testing \
-	javatraverser2/tests
-#	testing/selftest
+	$(PYTHON_TEST_DIRS) \
+	$(C_TEST_DIRS) \
+	$(JAVA_TEST_DIRS)
 
 TEST_OUTDIR  ?= ${top_builddir}/testing
 

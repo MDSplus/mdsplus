@@ -42,14 +42,25 @@ clean-local:
 # //  COLLECT TESTS IN SUBDIRECTORIES  /////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
+if ENABLE_JAVA
+JAVA_TEST_DIRS = javatraverser2/tests
+else
+JAVA_TEST_DIRS = 
+endif
 
-TEST_DIRS ?= \
+PYTHON_TEST_DIRS = mdsobjects/python/tests
+
+C_TEST_DIRS = \
 	mdsobjects/python/tests \
 	mdsshr/testing \
 	mdslib/testing \
-	mdsobjects/cpp/testing \
-	javatraverser2/tests
+	mdsobjects/cpp/testing
 #	testing/selftest
+
+TEST_DIRS ?= \
+	$(PYTHON_TEST_DIRS) \
+	$(C_TEST_DIRS) \
+	$(JAVA_TEST_DIRS)
 
 TEST_OUTDIR  ?= ${top_builddir}/testing
 

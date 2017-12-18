@@ -145,6 +145,7 @@ AC_ARG_ENABLE([java],
                               [Do not build java libraries and applications])],
               [],
               [AS_VAR_SET([enable_java], [yes])])
+AM_CONDITIONAL([ENABLE_JAVA],[AS_VAR_TEST_SET([enable_java])])
 
 dnl # Add address sanitizer options to flags, if requested. Only useful for GCC
 dnl # version 4.8 and later.
