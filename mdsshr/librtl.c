@@ -88,22 +88,26 @@ typedef struct node {
 
 #include <libroutines.h>
 
-STATIC_THREADSAFE pthread_mutex_t tzMutex;
-int tzMutex_initialized = 0;
+#ifndef USE_TM_GMTOFF
+time_t ntimezone_;
+int daylight_;
+static void tzset_(){
+  tzset();
+  ntimezone_ = - timezone;
+  daylight_ = daylight;
+}
+#endif
 
 static time_t get_tz_offset(time_t* time){
-  time_t ans=0;
-  LockMdsShrMutex(&tzMutex, &tzMutex_initialized);
-  tzset();
   struct tm tmval;
   localtime_r(time, &tmval);
 #ifdef USE_TM_GMTOFF
-  ans = tmval.tm_gmtoff;
+  return tmval.tm_gmtoff;
 #else
-  ans = - timezone + daylight * (tmval.tm_isdst ? 3600 : 0);
+  static pthread_once_t once = PTHREAD_ONCE_INIT;
+  pthread_once(&once,tzset_);
+  return (daylight_ && tmval.tm_isdst) ? ntimezone_ + 3600 : ntimezone_;
 #endif
-  UnlockMdsShrMutex(&tzMutex);
-  return ans;
 }
 
 STATIC_CONSTANT int64_t VMS_TIME_OFFSET = LONG_LONG_CONSTANT(0x7c95674beb4000);
