@@ -89,6 +89,12 @@ typedef struct node {
 #include <libroutines.h>
 
 #ifndef USE_TM_GMTOFF
+/* tzset() sets the global statics daylight and timezone.
+ * However, this is not threadsafe as we cannot prevent third party code from calling tzset.
+ * Therefore, we make our private copies of timezone and daylight.
+ * timezone: constant offset of the local standard time to gmt.
+ * daylight: constant flag if region implements daylight saving at all. (seasonal flag is tmval.tm_isdst)
+ */
 time_t ntimezone_;
 int daylight_;
 static void tzset_(){

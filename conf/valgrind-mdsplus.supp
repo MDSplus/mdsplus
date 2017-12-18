@@ -21,3 +21,9 @@
    fun:__nss_hosts_lookup2
    fun:gethostbyaddr_r@@GLIBC_2.2.5
 }
+
+{
+   race condition on daylight due to tzset
+   Helgrind:Race
+   fun:tzset_
+}
