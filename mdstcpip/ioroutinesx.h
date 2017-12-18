@@ -146,12 +146,12 @@ static char *getHostInfo(SOCKET sock, char **iphostptr, char **hostnameptr){
 #if defined(__MACH__) || defined(_WIN32)
     struct hostent* hp = gethostbyaddr((void*)&sin.SIN_ADDR,sizeof(sin.SIN_ADDR),sin.SIN_FAMILY);
 #else
-    size_t memlen = 1024;
     struct hostent hostbuf, *hp = NULL;
     int herr;
-    char *hp_mem = (char*)malloc(memlen);
+    char *hp_mem = NULL;
     FREE_ON_EXIT(hp_mem);
-    while ( hp_mem && (gethostbyaddr_r((void*)&sin.SIN_ADDR,sizeof(sin.SIN_ADDR),sin.SIN_FAMILY,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE) ) {
+    size_t memlen;
+    for ( memlen=1024,hp_mem=malloc(memlen); hp_mem && (gethostbyaddr_r((void*)&sin.SIN_ADDR,sizeof(sin.SIN_ADDR),sin.SIN_FAMILY,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE); ) {
       memlen *=2;
 #ifdef DEBUG
       fprintf(stderr,"hp_mem too small-> %d\n",(int)memlen);
