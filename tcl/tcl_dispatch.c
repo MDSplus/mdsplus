@@ -226,22 +226,10 @@ EXPORT int TclDispatch_start_server(void *ctx, char **error, char **output __att
 /***************************************************************
  * TclDispatch_set_server:
  ***************************************************************/
-EXPORT int TclDispatch_set_server(void *ctx, char **error, char **output __attribute__ ((unused))){
-  int status;
-  char logging;
+
+static inline int setLogging(void *ctx, int logging, char **error) {
   char *ident;
-  if (cli_present(ctx, "LOG") == MdsdclPRESENT) {
-    INIT_AND_FREE_ON_EXIT(char*,log_type);
-    int log=0;
-     cli_get_value(ctx, "LOG", &log_type);
-    if (strncasecmp(log_type, "statistics", strlen(log_type)) == 0)
-      log = 2;
-    else if (strncasecmp(log_type, "actions", strlen(log_type)) == 0)
-      logging = 1;
-    else  log = 0;
-    logging=log;
-    FREE_NOW(log_type);
-  }
+  int status;
   status = TclNORMAL;
   while (STATUS_OK && IS_OK(cli_get_value(ctx, "SERVER", &ident))) {
     FREE_ON_EXIT(ident);
@@ -257,6 +245,26 @@ EXPORT int TclDispatch_set_server(void *ctx, char **error, char **output __attri
     }
     FREE_NOW(ident);
   }
+  return status;
+}
+
+EXPORT int TclDispatch_set_server(void *ctx, char **error, char **output __attribute__ ((unused))){
+  int status;
+  if (cli_present(ctx, "LOG") == MdsdclPRESENT) {
+    INIT_AND_FREE_ON_EXIT(char*,log_type);
+    int logging;
+    cli_get_value(ctx, "LOG", &log_type);
+    if (strncasecmp(log_type, "statistics", strlen(log_type)) == 0)
+      logging = 2;
+    else if (strncasecmp(log_type, "actions", strlen(log_type)) == 0)
+      logging = 1;
+    else
+      logging = 0;
+    status = setLogging(ctx, logging, error);
+    FREE_NOW(log_type);
+  }
+  else
+    status=setLogging(ctx, 0, error);
   return status;
 }
 
