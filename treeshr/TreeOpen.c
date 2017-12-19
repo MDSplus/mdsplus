@@ -114,16 +114,6 @@ void *TreeSaveContext()
   return _TreeSaveContext(*TreeCtx());
 }
 
-void *TreeDbid()
-{
-  return *TreeCtx();
-}
-
-void *_TreeDbid(void **dbid)
-{
-  return *dbid;
-}
-
 int TreeOpenEdit(char const *tree, int shot)
 {
   return _TreeOpenEdit(TreeCtx(), tree, shot);

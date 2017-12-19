@@ -69,6 +69,14 @@ EXPORT void **TreeCtx(){
   return old_dbid;
 }
 
+EXPORT void *TreeDbid(){
+  return *TreeCtx();
+}
+
+EXPORT void *_TreeDbid(void **dbid){
+  return *dbid;
+}
+
 EXPORT void *TreeSwitchDbid(void *dbid){
   TreeThreadStatic *p = TreeGetThreadStatic();
   pthread_rwlock_wrlock(&treectx_lock);
