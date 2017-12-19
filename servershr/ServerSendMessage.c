@@ -734,7 +734,7 @@ static int GetHostAddr(char *name)
   struct hostent* hp = gethostbyname(name);
   addr = hp ? *(int *)hp->h_addr_list[0] : (int)inet_addr(name);
 #else
-  static size_t memlen;
+  size_t memlen;
   struct hostent hostbuf, *hp = NULL;
   int herr;
   char *hp_mem = NULL;
