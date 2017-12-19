@@ -98,3 +98,37 @@ EXPORT int TreeUsingPrivateCtx(){
   TreeThreadStatic *p = TreeGetThreadStatic();
   return p->privateCtx;
 }
+
+struct private_ctx{
+  void *dbid;
+  int  upc;
+} PRIVATE_CTX;
+
+EXPORT void* TreeSavePrivateCtx(void** ctx){
+  struct private_ctx* pctx = (struct private_ctx*)malloc(sizeof(struct private_ctx));
+  pctx->dbid = TreeDbid();
+  pctx->upc  = TreeUsePrivateCtx(1);
+  TreeSwitchDbid(*ctx);
+  return pctx;
+}
+
+EXPORT void TreeRestorePrivateCtx(void* _pctx){
+  struct private_ctx* pctx = (struct private_ctx*)_pctx;
+  TreeSwitchDbid(pctx->dbid);
+  TreeUsePrivateCtx(pctx->upc);
+  free(pctx);
+}
+
+/*
+EXPORT int _Call(void** ctx, struct descriptor* dsc){
+  if (!dsc) return TreeNormal;
+  void* pctx = TreeSavePrivateCtx(ctx);
+  pthread_cleanup_push(RestorePrivateCtx,pctx);
+  // do stuff that requires ctx but does not accept ctx as input
+  pthread_cleanup_pop(1);
+}
+
+EXPORT int TreeDeRef(struct descript* dsc){
+  return _TreeDeRef(TreeCtx(), dsc);
+}
+*/
