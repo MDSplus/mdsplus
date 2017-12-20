@@ -127,9 +127,9 @@
 ./usr/local/mdsplus/tdi/output_name.fun
 ./usr/local/mdsplus/tdi/python/Py.py
 ./usr/local/mdsplus/tdi/python/getShotDB.py
-./usr/local/mdsplus/tdi/python/intersect1d.fun
+./usr/local/mdsplus/tdi/python/intersect1d.py
 ./usr/local/mdsplus/tdi/python/pyfun.py
-./usr/local/mdsplus/tdi/python/setdiff1d.fun
+./usr/local/mdsplus/tdi/python/setdiff1d.py
 ./usr/local/mdsplus/tdi/remote/GetManyExecute.fun
 ./usr/local/mdsplus/tdi/remote/ListConnections.fun
 ./usr/local/mdsplus/tdi/remote/MdsConnect.fun
