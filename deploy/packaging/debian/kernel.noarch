@@ -170,7 +170,6 @@
 ./usr/local/mdsplus/tdi/tcl/Tcl.fun
 ./usr/local/mdsplus/tdi/tcl/submit.fun
 ./usr/local/mdsplus/tdi/tcl/unix_submit.fun
-./usr/local/mdsplus/tdi/tdishr/TdiGetRecord.fun
 ./usr/local/mdsplus/tdi/time_union.fun
 ./usr/local/mdsplus/tdi/times.fun
 ./usr/local/mdsplus/tdi/timtest.fun
@@ -195,6 +194,7 @@
 ./usr/local/mdsplus/tdi/treeshr/TreeFlushOff.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeFlushReset.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeGetCurrentShot.fun
+./usr/local/mdsplus/tdi/treeshr/TreeGetRecord.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeHook.example
 ./usr/local/mdsplus/tdi/treeshr/TreeOpen.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeOpenEdit.fun
