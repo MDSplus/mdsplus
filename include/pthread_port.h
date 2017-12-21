@@ -74,7 +74,7 @@ typedef struct _Condition_p {
   #define FREED_ON_EXIT(ptr) pthread_cleanup_push(free_d, ptr)
   #define FREED_IF(ptr,c)    pthread_cleanup_pop(c)
   #define FREED_NOW(ptr)     pthread_cleanup_pop(1)
- #define INIT_AS_AND_FREED_ON_EXIT(var,value) struct descriptor_d var = value;FREED_ON_EXIT(&var)
+ #define INIT_AS_AND_FREED_ON_EXIT(var,value) struct descriptor_d var=value;FREED_ON_EXIT(&var);
  #define INIT_AND_FREED_ON_EXIT(dtype,var)    INIT_AS_AND_FREED_ON_EXIT(var, ((struct descriptor_d){ 0, dtype, CLASS_D, 0 }))
 #endif
 #ifdef DEF_FREEXD
@@ -85,7 +85,7 @@ typedef struct _Condition_p {
   #define FREEXD_ON_EXIT(ptr) pthread_cleanup_push(free_xd, ptr)
   #define FREEXD_IF(ptr,c)    pthread_cleanup_pop(c)
   #define FREEXD_NOW(ptr)     pthread_cleanup_pop(1)
- #define INIT_AND_FREEXD_ON_EXIT(ptr) EMPTYXD(xd);FREEXD_ON_EXIT(&xd);
+ #define INIT_AND_FREEXD_ON_EXIT(xd) EMPTYXD(xd);FREEXD_ON_EXIT(&xd);
 #endif
 static void __attribute__((unused)) free_if(void *ptr){
   if (*(void**)ptr) free(*(void**)ptr);
