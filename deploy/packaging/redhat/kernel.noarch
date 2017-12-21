@@ -131,6 +131,7 @@
 ./usr/local/mdsplus/tdi/mdsshr/compare.fun
 ./usr/local/mdsplus/tdi/mdsshr/days_since.fun
 ./usr/local/mdsplus/tdi/mdsshr/findfile.fun
+./usr/local/mdsplus/tdi/mdsshr/getenv.fun
 ./usr/local/mdsplus/tdi/mdsshr/getmsg.fun
 ./usr/local/mdsplus/tdi/mdsshr/help.fun
 ./usr/local/mdsplus/tdi/mdsshr/hours_since.fun

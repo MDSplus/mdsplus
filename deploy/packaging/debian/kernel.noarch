@@ -55,7 +55,6 @@
 ./usr/local/mdsplus/tdi/dispatch/phases/phase_name_lookup.fun
 ./usr/local/mdsplus/tdi/dispatch/phases/phase_number_lookup.fun
 ./usr/local/mdsplus/tdi/dispatch/phases/phase_table.fun
-./usr/local/mdsplus/tdi/getenv.fun
 ./usr/local/mdsplus/tdi/helloworld.fun
 ./usr/local/mdsplus/tdi/java/EndWave.fun
 ./usr/local/mdsplus/tdi/java/JavaAddSignal.fun
@@ -109,6 +108,7 @@
 ./usr/local/mdsplus/tdi/mdsshr/compare.fun
 ./usr/local/mdsplus/tdi/mdsshr/days_since.fun
 ./usr/local/mdsplus/tdi/mdsshr/findfile.fun
+./usr/local/mdsplus/tdi/mdsshr/getenv.fun
 ./usr/local/mdsplus/tdi/mdsshr/getmsg.fun
 ./usr/local/mdsplus/tdi/mdsshr/help.fun
 ./usr/local/mdsplus/tdi/mdsshr/hours_since.fun
