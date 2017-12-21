@@ -58,9 +58,9 @@ MdsShrThreadStatic *MdsShrGetThreadStatic(){
   return p;
 }
 
-STATIC_THREADSAFE pthread_mutex_t initMutex = PTHREAD_MUTEX_INITIALIZER;
 void LockMdsShrMutex(pthread_mutex_t * mutex, int *initialized)
 {
+  static pthread_mutex_t initMutex = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_lock(&initMutex);
   if (!*initialized) {
     pthread_mutexattr_t m_attr;
