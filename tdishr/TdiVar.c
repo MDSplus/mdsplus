@@ -62,6 +62,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsplus/mdsconfig.h>
 #include "STATICdef.h"
+#define DEF_FREEXD
 #include "tdithreadsafe.h"
 #include "tdirefstandard.h"
 #include "tdishrp.h"
@@ -837,8 +838,7 @@ int Tdi1Public(int opcode __attribute__ ((unused)), int narg __attribute__((unus
 int Tdi1Var(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  struct descriptor_xd tmp = EMPTY_XD;
-
+  INIT_AND_FREEXD_ON_EXIT(tmp);
   status = TdiData(list[0], &tmp MDS_END_ARG);
   if STATUS_OK {
     if (narg < 2 || list[1] == 0)
@@ -846,7 +846,7 @@ int Tdi1Var(int opcode __attribute__ ((unused)), int narg, struct descriptor *li
     else
       status = TdiEquals(tmp.pointer, list[1], out_ptr MDS_END_ARG);
   }
-  MdsFree1Dx(&tmp, NULL);
+  FREEXD_NOW(tmp);
   return status;
 }
 
