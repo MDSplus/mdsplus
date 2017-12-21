@@ -71,7 +71,6 @@
 ./usr/local/mdsplus/tdi/dispatch/phases/phase_name_lookup.fun
 ./usr/local/mdsplus/tdi/dispatch/phases/phase_number_lookup.fun
 ./usr/local/mdsplus/tdi/dispatch/phases/phase_table.fun
-./usr/local/mdsplus/tdi/getenv.fun
 ./usr/local/mdsplus/tdi/helloworld.fun
 ./usr/local/mdsplus/tdi/java
 ./usr/local/mdsplus/tdi/java/EndWave.fun
