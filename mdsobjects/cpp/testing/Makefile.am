@@ -21,6 +21,7 @@ AM_DEFAULT_SOURCE_EXT = .cpp
 #
 TESTS = \
         buildtest \
+        MdsExpressionCompileTest \
         MdsExceptionTest \
         MdsDataTest \
         MdsScalarTest_NumericConversion \
@@ -42,8 +43,7 @@ TESTS = \
         MdsTreeNodeTest \
         MdsEventSuppression \
         MdsEventTest \
-        MdsConnectionTest \
-        MdsExpressionCompileTest        
+        MdsConnectionTest
 
 # set VALGRIND_TESTS to select a subset of tests performed under valgrind if
 # the variable is unset all TESTS are added.
