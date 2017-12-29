@@ -1,5 +1,6 @@
 %{
-  #include <mdsdclthreadsafe.h>
+  #include "mdsdclthreadsafe.h"
+  #include <config.h>
   #include <stdio.h>
   #include <stdlib.h>
   int yydebug=0;
@@ -135,7 +136,7 @@ VALUE {
 
 pvalue_list:
 PVALUE_ {
-  dclValuePtr dclvalue=$PVALUE;
+  dclValuePtr dclvalue=$PVALUE_;
   char *value=dclvalue->value;
   $$=malloc(sizeof(dclValueList));
   $$->restOfLine=dclvalue->restOfLine;
@@ -148,9 +149,8 @@ PVALUE_ {
     dq=nval=strdup(value+1);
     free(value);
     while((dq=strstr(dq,"\"\""))) {
-      dq[1]='\0';
-      dq=dq+1;
-      strcat(nval,dq+1);      
+      memmove(dq, dq+1, strlen(dq+1)+1);
+      dq++;
     }
     value=nval;
   }
@@ -158,7 +158,7 @@ PVALUE_ {
   $$->values[0]=value;
 }
 | pvalue_list COMMA PVALUE_ {
-  dclValuePtr dclvalue=$PVALUE;
+  dclValuePtr dclvalue=$PVALUE_;
   free(dclvalue->restOfLine);
   $$->values=realloc($$->values,sizeof(char *)*($$->count+1));
   $$->values[$$->count]=dclvalue->value;
