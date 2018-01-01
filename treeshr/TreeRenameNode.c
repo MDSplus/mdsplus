@@ -53,7 +53,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   move the node from its location in the tree.
 +-----------------------------------------------------------------------------*/
 
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <string.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>

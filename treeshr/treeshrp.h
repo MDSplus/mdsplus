@@ -1,7 +1,7 @@
 #ifndef _TREESHRP_H
 #define _TREESHRP_H
 
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

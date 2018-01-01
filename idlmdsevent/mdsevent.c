@@ -56,7 +56,7 @@ Invoked from MDSEVENT.PRO
 #include <ipdesc.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdsshr.h>
 
 typedef struct _event_struct {

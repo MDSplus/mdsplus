@@ -60,7 +60,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Ken Klare, LANL P-4     (c)1989,1990,1991,1992
         NEED subscripted assignment.
 */
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include "STATICdef.h"
 #include "tdithreadsafe.h"
 #include "tdirefstandard.h"

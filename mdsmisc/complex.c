@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 #include "complex.h"
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 
 EXPORT Complex AddC(Complex c1, Complex c2)
 {

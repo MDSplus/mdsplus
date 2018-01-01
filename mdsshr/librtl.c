@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #define _XOPEN_SOURCE_EXTENDED
 #define _GNU_SOURCE		/* glibc2 needs this */
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <sys/time.h>
 #include <time.h>
 #include <string.h>

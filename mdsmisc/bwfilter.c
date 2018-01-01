@@ -27,7 +27,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  CMS REPLACEMENT HISTORY, Element BWFILTER.C */
 #include <stdio.h>
 #include	<math.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 
 #define	PI 3.14159265359
 #define	max_order 10

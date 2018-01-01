@@ -34,7 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libroutines.h>
 #include <strroutines.h>
 
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif

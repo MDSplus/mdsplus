@@ -52,7 +52,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Description:
 
 +-----------------------------------------------------------------------------*/
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #ifdef _WIN32
 #include <windows.h>
 #include <io.h>

@@ -27,7 +27,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "testutils.h"
 
 // TODO: remove config.h from header .. here needed for EXPORT
-#include "config.h"
+#include "mdsplus/mdsconfig.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Dummy Test Funtions  ///////////////////////////////////////////////////////

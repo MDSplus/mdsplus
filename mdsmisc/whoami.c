@@ -22,9 +22,9 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdsdescrip.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <string.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>

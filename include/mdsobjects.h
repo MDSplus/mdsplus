@@ -20,7 +20,7 @@
  //#include <semaphore.h>
 #endif
 
-#include <config.h> // should be removed from here //
+#include <mdsplus/mdsconfig.h> // should be removed from here //
 #include <dbidef.h>
 #include <ncidef.h>
 #include <mdstypes.h>

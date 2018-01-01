@@ -187,7 +187,7 @@ install: $(install_DIRS)
 		--exclude='Makefile\.*' \
 		-cf  - $(MISC_PARTS) | (cd $(exec_prefix); tar -xf -)
 	find . -name '_version\.py' -not -path "./$(realpath --relative-to=$(pwd) $(exec_prefix))/*" -exec cp {} $(exec_prefix)/{} \;
-	tar -C ${top_builddir} -cf - include/config.h | (cd $(exec_prefix); tar -xf -) ## TODO: remove this and config.h from headers ...
+	tar -C ${top_builddir} -cf - include/mdsplus/mdsconfig.h | (cd $(exec_prefix); tar -xf -) ## TODO: remove this and config.h from headers ...
 	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > $(exec_prefix)/mdsobjects/python/mdsplus_version.py; fi
 	$(INSTALL) ${top_srcdir}/MDSplus-License.txt ${top_srcdir}/MDSplus-License.rtf $(exec_prefix)
 	(cd $(exec_prefix); chmod -R 755 $(MISC_PARTS))

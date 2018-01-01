@@ -27,7 +27,7 @@ then
   topsrcdir=${WINREMBLD}/${tmpdir}
   cd ${tmpdir}
   rsync -am --include="*/" --include="*.h*" --include="*.def" --exclude="*" ${srcdir}/ ./
-  rsync -am /workspace/releasebld/64/include/config.h ./include/
+  rsync -am /workspace/releasebld/64/include/mdsplus/mdsconfig.h ./include/
   rsync -a ${srcdir}/mdsobjects/cpp ${srcdir}/mdsobjects/MdsObjects* ${srcdir}/mdsobjects/VS-* ./mdsobjects/
   rsync -a ${srcdir}/deploy/platform/windows/winbld.bat ./deploy/
   rsync -a ${MDSPLUS_DIR}/bin_* ./

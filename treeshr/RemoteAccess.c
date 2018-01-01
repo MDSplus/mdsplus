@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <wspiapi.h>
 #endif
 #include "treeshrp.h"
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdstypes.h>
 #include <pthread.h>
 #ifdef _WIN32
