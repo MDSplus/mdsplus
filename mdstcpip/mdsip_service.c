@@ -25,7 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define LOAD_INITIALIZESOCKETS
 #include <pthread_port.h>
 #include <stdlib.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <process.h>
 #include <stdio.h>
 #include <io.h>

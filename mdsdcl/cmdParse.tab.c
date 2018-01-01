@@ -71,7 +71,7 @@
   #define yylex dcl_lex
   #include "dcl_p.h"
   #include <mdsdcl_messages.h>
-  #include <config.h>
+  #include <mdsplus/mdsconfig.h>
   #include "dcllex.h"
   #include "mdsdclthreadsafe.h"
   static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, char *s);

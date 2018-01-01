@@ -53,7 +53,7 @@ int ServerSendMessage();
 ------------------------------------------------------------------------------*/
 #define LOAD_INITIALIZESOCKETS
 #include <pthread_port.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <ipdesc.h>
 #include <stdlib.h>
 #include <stdio.h>

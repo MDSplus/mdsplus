@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdstypes.h>
 
 #define TreeBLOCKID 0x3ade68b1

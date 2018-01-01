@@ -2,7 +2,7 @@
 #define LIBCOMPAT_H
 
 #if HAVE_CONFIG_H
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #endif
 
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
@@ -192,7 +192,7 @@ CK_DLL_EXP int timer_delete(timer_t timerid);
  * the C99 compliant version in libcompat.
  */
 #if HAVE_CONFIG_H
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #endif
 
 //#if HAVE_STDARG_H

@@ -74,7 +74,7 @@ void      XmdsPopupMenuPosition(XmRowColumnWidget w, XButtonEvent *event)
  Global variables:                                                            */
 
 #include <Xm/RowColumnP.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 
 /*------------------------------------------------------------------------------
 

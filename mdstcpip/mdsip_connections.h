@@ -2,7 +2,7 @@
 #define __MDSIP_H__
 #define MdsLib_H
 #define _GNU_SOURCE /* glibc2 needs this */
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdsdescrip.h>
 #ifdef _WIN32
  #ifndef __SIZE_TYPE__

@@ -83,7 +83,7 @@ which actually perform digital filtering.
 #include <stdio.h>
 #include "complex.h"
 #include "filter.h"
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 
 EXPORT Complex *FindFactors(Complex * poles, double fc, int n, double gain __attribute__ ((unused)))
 {

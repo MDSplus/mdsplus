@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *   Josh Stillerman 10/19/12
  */
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <stdint.h>
 #include  <platdefines.h>
 #include <extcode.h>

@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <stdio.h>
 #include <signal.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <signal.h>
 #include <unistd.h>
 #include <ctype.h>

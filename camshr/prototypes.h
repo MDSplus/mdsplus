@@ -12,7 +12,7 @@
 #include "ScsiCamac.h"
 #include "module.h"
 #include "crate.h"
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 
 // SCSI CAMAC funtion prototypes
 int CamPiow(char *Name,		// CAMAC module name

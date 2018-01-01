@@ -1,7 +1,7 @@
 #ifndef MDSDESCRIP_H_DEFINED
 #define MDSDESCRIP_H_DEFINED 1
 
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 
 #ifdef _WIN32
 #define __char_align__ char

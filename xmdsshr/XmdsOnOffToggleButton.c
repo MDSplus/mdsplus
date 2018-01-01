@@ -70,7 +70,7 @@ int XmdsOnOffToggleButtonApply(Widget w);
 	Description:
 
 ------------------------------------------------------------------------------*/
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdsdescrip.h>
 #include <strroutines.h>
 #include <ncidef.h>

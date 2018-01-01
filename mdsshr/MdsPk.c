@@ -51,7 +51,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Pack Macro timings				3.25	3.50		3.40
 	Unpack Macro timings				3.01	3.07		3.02
 */
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <STATICdef.h>
 STATIC_CONSTANT unsigned int masks[33] = { 0,
   0x1, 0x3, 0x7, 0xf, 0x1f, 0x3f, 0x7f, 0xff,

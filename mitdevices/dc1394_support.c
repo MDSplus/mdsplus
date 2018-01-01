@@ -29,7 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/timeb.h>
 #include <signal.h>
 #include <pthread.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 
 #define MAX_CAMERAS 8
 #define FLAG_VALUE 0xDEADBEEF

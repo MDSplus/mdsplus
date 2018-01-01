@@ -39,7 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Limitation: product of dimensions must not exceed virtual-memory paging space.
         Ken Klare, LANL CTR-7   (c)1989,1990
 */
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <stdlib.h>
 #include <mdsplus/mdsplus.h>
 #include <mdsdescrip.h>
