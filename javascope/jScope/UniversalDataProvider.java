@@ -134,9 +134,9 @@ class UniversalDataProvider implements DataProvider
 
     public void    Dispose()
     {
-        Enumeration en = dataProviderH.elements();
+        Enumeration<MdsDataProvider> en = dataProviderH.elements();
         while(en.hasMoreElements())
-            ((MdsDataProvider)en.nextElement()).Dispose();
+            en.nextElement().Dispose();
     }
     public int     InquireCredentials(JFrame f, DataServerItem server_item)
     {
@@ -146,11 +146,11 @@ class UniversalDataProvider implements DataProvider
 
     public void SetEnvironment(String exp)
     {
-        Enumeration en = dataProviderH.elements();
+        Enumeration<MdsDataProvider> en = dataProviderH.elements();
         while(en.hasMoreElements())
         {
             try {
-                ((MdsDataProvider)en.nextElement()).SetEnvironment(exp);
+                en.nextElement().SetEnvironment(exp);
             }catch(Exception exc){}
         }
     }

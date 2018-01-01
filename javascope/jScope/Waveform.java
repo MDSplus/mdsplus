@@ -2132,8 +2132,7 @@ public class Waveform
 
   void drawWave(Signal s, Graphics g, Dimension d)
   {
-    Vector segments = wm.ToPolygons(s, d, appendDrawMode);
-    Polygon curr_polygon;
+    Vector<Polygon> segments = wm.ToPolygons(s, d, appendDrawMode);
 
     if (s.getColor() != null)
     {
@@ -2146,7 +2145,7 @@ public class Waveform
     }
     for (int k = 0; k < segments.size(); k++)
     {
-      curr_polygon = (Polygon) segments.elementAt(k);
+      Polygon curr_polygon = segments.elementAt(k);
       if (s.getInterpolate())
       {
         g.drawPolyline(curr_polygon.xpoints, curr_polygon.ypoints,
