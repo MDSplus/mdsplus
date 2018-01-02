@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -54,10 +54,6 @@ class Compound(_dat.Data):
             if k in self.fields:
                 self.setDescAt(self._fields[k],v)
 
-    def _setCtx(self,ctx):
-        self.ctx = ctx
-        return self
-
     def _str_bad_ref(self):
         return '%s(%s)'%(self.__class__.__name__,','.join([str(d) for d in self.getDescs()]))
 
@@ -81,7 +77,7 @@ class Compound(_dat.Data):
     def tree(self,tree):
         for arg in self._args:
             if isinstance(arg,_dat.Data):
-                arg.tree=tree
+                arg._setTree(tree)
 
     def __hasBadTreeReferences__(self,tree):
         for arg in self._args:
@@ -245,8 +241,7 @@ class Compound(_dat.Data):
             else:
                 opcptr=_C.cast(d.pointer,_C.POINTER(_C.c_uint32))
             ans.opcode = opcptr.contents.value
-        ans.tree=d.tree
-        return ans
+        return ans._setTree(d.tree)
 
 class Action(Compound):
     """
@@ -472,16 +467,16 @@ _dsc.addDtypeToClass(Window)
 class Opaque(Compound):
     """An Opaque object containing a binary uint8 array and a string identifying the type.
     """
-    fields=('data','otype')
+    fields=('value','otype')
     dtype_id=217
 
 
     @property
-    def data(self):
+    def value(self):
         "Data portion of Opaque object"
         return self.getDescAt(0)
-    @data.setter
-    def data(self,value):
+    @value.setter
+    def value(self,value):
         self.setDescAt(0,value)
 
     @property
@@ -492,8 +487,11 @@ class Opaque(Compound):
     def getImage(self):
         try: from PIL import Image
         except:       import Image
-        from StringIO import StringIO
-        return Image.open(StringIO(self.data.data().tostring()))
+        if _ver.ispy3:
+            from io import BytesIO as io
+        else:
+            from StringIO import StringIO as io
+        return Image.open(io(self.value.data().tostring()))
 
     @classmethod
     def fromFile(cls,filename,typestring=None):

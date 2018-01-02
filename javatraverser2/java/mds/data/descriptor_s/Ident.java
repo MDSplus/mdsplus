@@ -23,7 +23,7 @@ public final class Ident extends Descriptor_S<String>{
     @Override
     public final Descriptor<?> evaluate() {
         try{
-            return this.mds.getDescriptor(this.tree.ctx, "`$", this);
+            return this.mds.getDescriptor(this.tree, "`$", this);
         }catch(final MdsException e){
             System.err.println(e);
             return Missing.NEW;

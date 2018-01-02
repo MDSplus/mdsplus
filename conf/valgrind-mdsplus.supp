@@ -11,3 +11,19 @@
    Helgrind:Race
    fun:_nss_files_gethostbyname*_r
 }
+
+{
+   leak in threadsafe posix gethostbyname_r
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:__nss_database_lookup
+   fun:__nss_hosts_lookup2
+   fun:gethostbyaddr_r@@GLIBC_2.2.5
+}
+
+{
+   race condition on daylight due to tzset
+   Helgrind:Race
+   fun:tzset_
+}

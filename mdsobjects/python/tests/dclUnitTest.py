@@ -71,6 +71,7 @@ class Tests(TestCase):
     def setUpClass(cls):
         with cls.lock:
             if cls.instances==0:
+                import gc;gc.collect()
                 from tempfile import mkdtemp
                 if getenv("TEST_DISTRIBUTED_TREES") is not None:
                     treepath="localhost::%s"
@@ -104,7 +105,19 @@ class Tests(TestCase):
             if not cls.instances>0:
                 shutil.rmtree(cls.tmpdir)
 
+    @classmethod
+    def tearDown(cls):
+        import gc
+        gc.collect()
+    def cleanup(self,refs=0):
+        import MDSplus,gc;gc.collect()
+        def isTree(o):
+            try:    return isinstance(o,MDSplus.Tree)
+            except: return False
+        self.assertEqual([o for o in gc.get_objects() if isTree(o)][refs:],[])
+
     def dclInterface(self):
+      def test():
         Tree('pytree',-1,'ReadOnly').createPulse(self.shot)
         self.assertEqual(dcl('help set verify',1,1,0)[1],None)
         self.assertEqual(tcl('help set tree',1,1,0)[1],None)
@@ -121,9 +134,8 @@ class Tests(TestCase):
         self._doTCLTest('add node TCL_PY_DEV/model=TESTDEVICE')
         self._doTCLTest('do TESTDEVICE:TASK_TEST')
         self._doExceptionTest('do TESTDEVICE:TASK_ERROR1',Exc.DevUNKOWN_STATE)
-        if not sys.platform.startswith('win'): # Windows does not support timeout yet
-            self._doExceptionTest('do TESTDEVICE:TASK_TIMEOUT',Exc.TdiTIMEOUT)
-            self._doExceptionTest('do TESTDEVICE:TASK_ERROR2',Exc.DevUNKOWN_STATE)
+        self._doExceptionTest('do TESTDEVICE:TASK_TIMEOUT',Exc.TdiTIMEOUT)
+        self._doExceptionTest('do TESTDEVICE:TASK_ERROR2',Exc.DevUNKOWN_STATE)
         self._doExceptionTest('close',Exc.TreeWRITEFIRST)
         self._doTCLTest('write')
         self._doTCLTest('close')
@@ -138,8 +150,12 @@ class Tests(TestCase):
         self._doExceptionTest('close',Exc.TreeNOT_OPEN)
         self._doExceptionTest('dispatch/command/server=xXxXxXx type test',Exc.ServerPATH_DOWN)
         self._doExceptionTest('dispatch/command/server type test',Exc.MdsdclIVVERB)
+      test()
+      self.cleanup(0 if sys.platform.startswith('win') else 1)
+
 
     def dispatcher(self):
+      def test():
         from time import sleep
         hosts = '%s/mdsip.hosts'%self.root
         def testDispatchCommand(mdsip,command,stdout=None,stderr=None):
@@ -241,6 +257,8 @@ class Tests(TestCase):
             self._doTCLTest('close/all')
         pytree = Tree('pytree',shot,'ReadOnly')
         self.assertTrue(pytree.TESTDEVICE.INIT1_DONE.record <= pytree.TESTDEVICE.INIT2_DONE.record)
+      test()
+      self.cleanup()
 
     def runTest(self):
         for test in self.getTests():
@@ -249,7 +267,7 @@ class Tests(TestCase):
     def getTests():
         lst = ['dclInterface']
         if Tests.inThread: return lst
-        return lst + ['dispatcher']
+        return ['dispatcher'] + lst
     @classmethod
     def getTestCases(cls):
         return map(cls,cls.getTests())

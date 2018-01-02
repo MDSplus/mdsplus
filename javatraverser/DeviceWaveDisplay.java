@@ -1,11 +1,8 @@
-import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.table.*;
-import java.util.*;
-import java.text.*;
-import jScope.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Graphics;
+
+import jScope.Waveform;
 
 public class DeviceWaveDisplay extends DeviceComponent
 {

@@ -3,9 +3,6 @@ public fun tr_put(in _name, in _idim, in _rdim, in _units, in _label, optional i
 
   private fun tr_put_record(in _nodename, in _data)
   {
-    if (vms())
-      Return(TreeShr->TREE$PUT_RECORD(getnci(_nodename,'nid_number'),xd(_data),val(0)));
-    else
       Return(TreeShr->TreePutRecord(val(getnci(_nodename,'nid_number')),xd(_data),val(0)));
   }
 
@@ -14,9 +11,6 @@ public fun tr_put(in _name, in _idim, in _rdim, in _units, in _label, optional i
 
     private fun tr_put_record(in _nodename, in _data)
     {
-      if (vms())
-        Return(TreeShr->TREE$PUT_RECORD(getnci(_nodename,'nid_number'),xd(_data),val(0)));
-      else
        Return(TreeShr->TreePutRecord(val(getnci(_nodename,'nid_number')),xd(_data),val(0)));
     }
 

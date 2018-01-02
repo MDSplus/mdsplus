@@ -3560,6 +3560,16 @@ EXPORT int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_ou
         sts = 1;}
         break;
 
+/* TclNO_DISPATCH_TABLE */
+      case 0x2a0018:
+        {static const char *text="No dispatch table found. Forgot to do DISPATCH/BUILD?";
+        static const char *msgnam="NO_DISPATCH_TABLE";
+        *fac_out = FAC_TCL;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
     default: sts = 0;
   }
   if (sts == 0) {

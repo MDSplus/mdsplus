@@ -121,7 +121,6 @@ function read_options, file, status=status
     custom_options={custom_options,query:'', inc_voided:1, inc_run:0, inc_user:0, inc_topic:0}
     status = 0L
     case !version.os of
-    'vms' : default_path = 'SYS$LOGIN:'
     'Win32' : default_path = getenv('HOME')+'\'
     else: default_path=getenv('HOME')+'/'
     endcase
@@ -1461,10 +1460,7 @@ done:
     widget_control, ctx.ok_b, sensitive=0
     widget_control, ctx.apply_b, sensitive=0
     widget_control, ctx.status_w, set_value = string(ctx.status_txt, format='(a132)')
-    if !version.os eq 'vms' then $
-      dummy = execute("mds$setevent, 'LOGBOOK_ENTRY'") $
-    else $
-      dummy = execute("mdssetevent, 'LOGBOOK_ENTRY")
+    dummy = execute("mdssetevent, 'LOGBOOK_ENTRY")
     make_entry_reset, ctx
     return, 1
   endif else begin
@@ -1746,10 +1742,7 @@ pro edit_event, ev
                    dummy = dsql("insert into entries (run, shot, topic, text) values (?,?,?,?)", new_run, new_shot, topic(0), new_text, /quiet, status = status)
                 if status then begin
                   if status then begin
-                  	if !version.os eq 'vms' then $
-      					DUMMY=EXECUTE("mds$setevent, 'LOGBOOK_ENTRY'") $
-    				else $
-      					DUMMY = EXECUTE("mdssetevent, 'LOGBOOK_ENTRY")
+      		    DUMMY = EXECUTE("mdssetevent, 'LOGBOOK_ENTRY")
                   endif else begin
                     X_Complain, "Could not commit new entry, changes not entered", group_leader=ev.top
                   endelse
@@ -1774,10 +1767,7 @@ pro edit_event, ev
            dummy = dsql("update entries set voided = getdate() where dbkey = ?", ctx.key, status = status, error =error)
            if (status) then begin
              if (status) then begin
-    			if !version.os eq 'vms' then $
-      				dummy = EXECUTE("mds$setevent, 'LOGBOOK_ENTRY'") $
-    			else $
-      				dummy = EXECUTE("mdssetevent, 'LOGBOOK_ENTRY")
+      		dummy = EXECUTE("mdssetevent, 'LOGBOOK_ENTRY")
              endif else begin
                X_Complain, "Could not void entry, changes not commited", group_leader=ev.top
              endelse
@@ -2018,7 +2008,6 @@ common widget_common, base
   wdelete
   if (not keyword_set(default)) then begin
     case !version.os of
-    'vms' : defaults_file = 'SYS$LOGIN:ENTRY_DISPLAY.DAT'
     'Win32' : defaults_file = getenv('HOME')+'\EntryDisplay.dat'
     else: defaults_file=getenv('HOME')+'/EntryDisplay.dat'
     endcase

@@ -43,6 +43,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Ken Klare, LANL P-4     (c)1990,1991,1992
         KK      21-Oct-1992     Text requires exact match.
  */
+#include <mdsplus/mdsplus.h>
 #include <STATICdef.h>
 #define beg     0
 #define end     1
@@ -228,8 +229,10 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
       switch (pslope->ndesc) {
       case 3:
 	fake.ending = pslope->segment[0].ending;
+	MDS_ATTR_FALLTHROUGH
       case 2:
 	fake.begin = pslope->segment[0].begin;
+	MDS_ATTR_FALLTHROUGH
       case 1:
 	fake.deltaval = pslope->segment[0].slope;
 	break;
@@ -261,6 +264,7 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
 			/*********************
                 WARNING falls through.
 			 *********************/
+      MDS_ATTR_FALLTHROUGH
     case DTYPE_RANGE:
       status = TdiGetArgs(opcode, nran = paxis->ndesc, &paxis->begin, sig, uni, dat, cats);
       nseg = HUGE;

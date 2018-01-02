@@ -41,7 +41,8 @@ public final class Path extends NODE<String>{
     }
 
     @Override
-    public Descriptor<?> getLocal_() {
+    public Descriptor<?> getLocal_(final FLAG local) {
+        FLAG.set(local, false);
         return this.evaluate().setLocal();
     }
 

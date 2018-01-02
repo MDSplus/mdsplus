@@ -25,6 +25,8 @@
 #
 import subprocess,os,sys,pexpect,xml.etree.ElementTree as ET,fnmatch,tempfile
 
+srcdir=os.path.realpath(os.path.dirname(os.path.realpath(__file__))+'/../../..')
+
 def externalPackage(info, root, package):
     ans = None
     for extpackages in root.getiterator('external_packages'):
@@ -78,7 +80,7 @@ def buildRpms():
     info['buildroot']=os.environ['BUILDROOT']
     info['bname']=os.environ['BNAME']
     info['platform']=os.environ['PLATFORM']
-    tree=ET.parse('/source/deploy/packaging/linux.xml')
+    tree=ET.parse(srcdir+'/deploy/packaging/linux.xml')
     root=tree.getroot()
     rpmspec=root.find('rpm').find('spec_start').text
     s=rpmspec.split('\n')

@@ -44,6 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <mdsplus/mdsplus.h>
 #include <mdsdescrip.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
@@ -72,7 +73,7 @@ STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
 				int (*routine) (), unsigned int *(*called) (),
 				void **result, int *max)
 {
-#if  defined(__ALPHA) && defined(__VMS)
+#ifdef __ALPHA
   int f_regs = (*(int *)routine == 0x23FF0000) ? 0 : 1;
 #else
   int f_regs = 1;		/*(opcode == 0) */
@@ -101,6 +102,7 @@ STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
       *result_g = (*called_g) (newdsc, routine);
       break;
     }
+    MDS_ATTR_FALLTHROUGH
   case DTYPE_T:
   case DTYPE_POINTER:
     if (f_regs) {
@@ -108,17 +110,16 @@ STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
       void **result_p = (void *)result;
       *max = sizeof(void *);
       *result_p = (*called_p) (newdsc, routine);
-      break;
     }
-#if  defined(__ALPHA) && defined(__VMS)
+#ifdef __ALPHA
     else {
       _int64_t(*called_g) () = (_int64_t(*)())called;
       _int64_t *result_g = (_int64_t *) result;
       *max = sizeof(double);
       *result_g = (*called_g) (newdsc, routine);
-      break;
     }
 #endif
+    break;
   case DTYPE_DSC:
     {
       void *(*called_dsc) () = (void *(*)())called;

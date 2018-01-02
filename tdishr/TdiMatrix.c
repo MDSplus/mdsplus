@@ -85,7 +85,7 @@ int Tdi1Diagonal(int opcode, int narg, struct descriptor *list[], struct descrip
   INIT_STATUS;
   int cmode = -1, nside = 0;
   struct descriptor_xd fill = EMPTY_XD;
-  struct descriptor *fillptr;
+  struct descriptor *fillptr = NULL;
   struct descriptor_a *pv, *po;
   DESCRIPTOR_A_COEFF(proto, 1, DTYPE_BU, 0, 2, 0);
   struct descriptor_xd sig[1], uni[1], dat[1];

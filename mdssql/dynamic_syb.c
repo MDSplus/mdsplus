@@ -220,10 +220,6 @@ EXPORT int Login_Sybase(char *host, char *user, char *pass)
    */
 
 #ifdef RETRY_CONNECTS
-#ifdef  __VMS
-  extern void decc$sleep();
-#define Sleep decc$sleep()
-#endif
   for (try = 0; ((dbproc == 0) && (try < 10)); try++) {
     DBMSGTEXT[0] = 0;
     SetMsgLen();

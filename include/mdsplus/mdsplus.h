@@ -24,6 +24,13 @@
 #define MDS_API_IMPORT __declspec(dllimport)
 #define MDS_API_EXPORT __declspec(dllexport)
 #define MDS_API_HIDDEN
+#ifdef __GNUC__
+#if __GNUC__ >= 7
+#define MDS_ATTR_FALLTHROUGH __attribute__((fallthrough));
+#else
+#define MDS_ATTR_FALLTHROUGH
+#endif
+#endif
 #else
 #if __GNUC__ >= 4
 #define MDS_API_IMPORT __attribute__ ((visibility ("default")))
@@ -33,6 +40,11 @@
 #define MDS_API_IMPORT
 #define MDS_API_EXPORT
 #define MDS_API_HIDDEN
+#endif
+#if __GNUC__ >= 7
+#define MDS_ATTR_FALLTHROUGH __attribute__((fallthrough));
+#else
+#define MDS_ATTR_FALLTHROUGH
 #endif
 #endif
 

@@ -12,7 +12,7 @@ VPATH=@srcdir@
 HELP_DESCRIPTION = This is MDSplus build system, documented targets follow:
 
 JAVA_APS = \
-           javamds \
+	   javamds \
 	   javascope \
 	   javatraverser \
 	   javatraverser2 \
@@ -22,20 +22,23 @@ JAVA_APS = \
 	   javaclient \
 	   mdsobjects/java
 
+ifeq "@HAVE_MOTIF@" "yes"
 MOTIF_APS = xmdsshr \
 	    actions \
 	    dwscope \
 	    @IDLMDSWIDGETS@ \
-            mitdevices \
-            traverser
-
+	    mitdevices \
+	    traverser
+else
+MOTIF_APS = actions
+endif
 HDF5_APS = hdf5
 
 D3D_PACKAGE = d3dshr
 
 ifeq "@JAVA_ONLY@" "yes"
 PARTS = javascope \
-        javatraverser \
+	javatraverser \
 	javatraverser2 \
 	javadispatcher \
 	javadevices \
@@ -43,31 +46,31 @@ PARTS = javascope \
 	mdsobjects/java
 else
 PARTS = \
-        mdsshr \
-        treeshr \
-        tdishr \
-        tditest \
+	mdsshr \
+	treeshr \
+	tdishr \
+	tditest \
 	xtreeshr \
-        @MDSTCPIP@ \
-        mdslibidl \
-        mdsdcl  \
+	@MDSTCPIP@ \
+	mdslibidl \
+	mdsdcl  \
 	@CAMSHR@ \
-        @REMCAM@ \
-        ccl \
+	@REMCAM@ \
+	ccl \
 	servershr \
-        tcl \
-        @TDIC@ \
-        mdslib \
-        math \
-        wfevent \
-        setevent \
-        mdsmisc \
+	tcl \
+	@TDIC@ \
+	mdslib \
+	math \
+	wfevent \
+	setevent \
+	mdsmisc \
 	scripts \
 	rpm \
 	mdsobjects/cpp \
-        manpages \
-        @D3D_PACKAGE@ \
-        @JAVA_APS@ \
+	manpages \
+	@D3D_PACKAGE@ \
+	@JAVA_APS@ \
 	@MOTIF_APS@ \
 	@MDSSQL@ \
 	@IDLMDSEVENT@ \
@@ -131,9 +134,11 @@ tests: ##@tests recursively perform tests in submodules
 @ENABLE_TESTS_TRUE@	$(MAKE) $(AM_MAKEFLAGS) -C testing all tests
 @ENABLE_TESTS_FALSE@	@echo "Tests disabled"
 
-.PHONY: tests-valgrind
-tests-valgrind: ##@tests recursively perform tests using valgrind tool
-@ENABLE_TESTS_TRUE@	$(MAKE) $(AM_MAKEFLAGS) -C testing all tests-valgrind
+.PHONY: tests-valgrind rebuild-tests
+tests-valgrind: ##@tests perform tests using valgrind tool
+rebuild-tests:  ##@tests rebuild all tests binaries
+tests-valgrind rebuild-tests:
+@ENABLE_TESTS_TRUE@	$(MAKE) $(AM_MAKEFLAGS) -C testing all $@
 @ENABLE_TESTS_FALSE@	@echo "Tests disabled"
 
 .PHONY: $(clean_TESTS)
@@ -159,7 +164,7 @@ depend:
 	  cd $${dir}; $${MAKE:=make} depend > /dev/null 2> /dev/null; cd $$cdir;\
 	done
 
-MISC_PARTS = tdi idl trees setup.sh setup.csh ChangeLog mdsplus.ico include mdsobjects/python desktop pixmaps matlab php epics xml
+MISC_PARTS = tdi pydevices idl trees setup.sh setup.csh ChangeLog mdsplus.ico include mdsobjects/python desktop pixmaps matlab php epics xml
 
 install_DIRS = $(addprefix install_, $(PARTS))
 $(install_DIRS):

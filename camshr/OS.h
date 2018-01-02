@@ -3,7 +3,6 @@
 #define __OS_H
 
 // possible OS'es
-#define VMS		0
 #define LINUX	1
 
 // what operating system are we using ...

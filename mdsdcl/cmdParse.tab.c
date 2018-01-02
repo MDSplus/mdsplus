@@ -1,27 +1,3 @@
-/*
-Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.
-
-Redistributions in binary form must reproduce the above copyright notice, this
-list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
 /* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Bison implementation for Yacc-like parsers in C
@@ -88,18 +64,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Copy the first part of user declarations.  */
 #line 1 "cmdParse.y" /* yacc.c:339  */
 
-  #include "mdsdclthreadsafe.h"
   #include <stdio.h>
   #include <stdlib.h>
   int yydebug=0;
   #define YYLTYPE void *
   #define yylex dcl_lex
-  #include <dcl.h>
+  #include "dcl_p.h"
   #include <mdsdcl_messages.h>
+  #include <config.h>
   #include "dcllex.h"
+  #include "mdsdclthreadsafe.h"
   static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, char *s);
 
-#line 79 "cmdParse.tab.c" /* yacc.c:339  */
+#line 80 "cmdParse.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -161,7 +138,7 @@ int yyparse (YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, 
 
 /* Copy the second part of user declarations.  */
 
-#line 141 "cmdParse.tab.c" /* yacc.c:358  */
+#line 142 "cmdParse.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -459,8 +436,8 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    46,    46,    61,    65,    66,    75,    88,    94,    98,
-     105,   130,   137,   160
+       0,    47,    47,    62,    66,    67,    76,    89,    95,    99,
+     106,   131,   138,   160
 };
 #endif
 
@@ -470,7 +447,7 @@ static const yytype_uint8 yyrline[] =
 static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "CMDFILE", "VERB", "QUALIFIER", "EQUALS",
-  "VALUE", "PVALUE", "COMMA", "END", "COMMENT", "$accept", "command",
+  "VALUE", "PVALUE_", "COMMA", "END", "COMMENT", "$accept", "command",
   "qualifier", "value_list", "pvalue_list", YY_NULLPTR
 };
 #endif
@@ -1247,7 +1224,7 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 46 "cmdParse.y" /* yacc.c:1646  */
+#line 47 "cmdParse.y" /* yacc.c:1646  */
     {
   (yyval.cmd)=memset(malloc(sizeof(dclCommand)),0,sizeof(dclCommand));
   (yyval.cmd)->verb=strdup("DO");
@@ -1263,26 +1240,26 @@ yyreduce:
   (yyval.cmd)->parameters[0]->values[0]=strdup((yyvsp[0].str)+1);
   free((yyvsp[0].str));
 }
-#line 1243 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1244 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 61 "cmdParse.y" /* yacc.c:1646  */
+#line 62 "cmdParse.y" /* yacc.c:1646  */
     {
   (yyval.cmd)=memset(malloc(sizeof(dclCommand)),0,sizeof(dclCommand));
   (yyval.cmd)->verb=(yyvsp[0].str);
 }
-#line 1252 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1253 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 65 "cmdParse.y" /* yacc.c:1646  */
+#line 66 "cmdParse.y" /* yacc.c:1646  */
     {YYACCEPT;}
-#line 1258 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1259 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 66 "cmdParse.y" /* yacc.c:1646  */
+#line 67 "cmdParse.y" /* yacc.c:1646  */
     {
   (yyvsp[0].qualifier)->position=(yyval.cmd)->parameter_count;
   if ((yyval.cmd)->qualifier_count == 0)
@@ -1292,11 +1269,11 @@ yyreduce:
   (yyval.cmd)->qualifiers[(yyval.cmd)->qualifier_count]=(yyvsp[0].qualifier);
   (yyval.cmd)->qualifier_count++;
 }
-#line 1272 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1273 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 75 "cmdParse.y" /* yacc.c:1646  */
+#line 76 "cmdParse.y" /* yacc.c:1646  */
     {
   dclParameterPtr param=memset(malloc(sizeof(dclParameter)),0,sizeof(dclParameter));
   param->value_count=(yyvsp[0].value_list)->count;
@@ -1310,39 +1287,39 @@ yyreduce:
   (yyval.cmd)->parameters[(yyval.cmd)->parameter_count]=param;
   (yyval.cmd)->parameter_count++;
 }
-#line 1290 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1291 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 88 "cmdParse.y" /* yacc.c:1646  */
+#line 89 "cmdParse.y" /* yacc.c:1646  */
     {
   *dclcmd=(yyval.cmd);
   YYACCEPT;
 }
-#line 1299 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1300 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 94 "cmdParse.y" /* yacc.c:1646  */
+#line 95 "cmdParse.y" /* yacc.c:1646  */
     {
   (yyval.qualifier)=memset(malloc(sizeof(dclQualifier)),0,sizeof(dclQualifier));
   (yyval.qualifier)->name=(yyvsp[0].str);
 }
-#line 1308 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1309 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 98 "cmdParse.y" /* yacc.c:1646  */
+#line 99 "cmdParse.y" /* yacc.c:1646  */
     {
   (yyval.qualifier)->value_count=(yyvsp[0].value_list)->count;
   (yyval.qualifier)->values=(yyvsp[0].value_list)->values;
   free((yyvsp[0].value_list));
 }
-#line 1318 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1319 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 105 "cmdParse.y" /* yacc.c:1646  */
+#line 106 "cmdParse.y" /* yacc.c:1646  */
     {
   char *value=(yyvsp[0].str);
   (yyval.value_list)=malloc(sizeof(dclValueList));
@@ -1368,21 +1345,21 @@ yyreduce:
   }
   (yyval.value_list)->values[0]=value;
 }
-#line 1348 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1349 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 130 "cmdParse.y" /* yacc.c:1646  */
+#line 131 "cmdParse.y" /* yacc.c:1646  */
     {
   (yyval.value_list)->values=realloc((yyval.value_list)->values,sizeof(char *)*((yyval.value_list)->count+1));
   (yyval.value_list)->values[(yyval.value_list)->count]=(yyvsp[0].str);
   (yyval.value_list)->count++;
 }
-#line 1358 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1359 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 137 "cmdParse.y" /* yacc.c:1646  */
+#line 138 "cmdParse.y" /* yacc.c:1646  */
     {
   dclValuePtr dclvalue=(yyvsp[0].pvalue);
   char *value=dclvalue->value;
@@ -1397,9 +1374,8 @@ yyreduce:
     dq=nval=strdup(value+1);
     free(value);
     while((dq=strstr(dq,"\"\""))) {
-      dq[1]='\0';
-      dq=dq+1;
-      strcat(nval,dq+1);
+      memmove(dq, dq+1, strlen(dq+1)+1);
+      dq++;
     }
     value=nval;
   }
@@ -1689,4 +1665,4 @@ EXPORT int mdsdcl_do_command_extra_args(char const* command, char **prompt, char
   }
   return status;
 }
-
+  

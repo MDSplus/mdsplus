@@ -57,16 +57,16 @@ using namespace testing;
 
 
 
-void test_tree_open(const char *prot)
+void test_tree_open(const char *prot, const unsigned short port)
 {
-    MdsIpInstancer mdsip(prot);
-    usleep(500000);
+    MdsIpInstancer mdsip(prot,port);
 
     // get address form instancer for the specified protocol //
     std::string addr = mdsip.getAddress();
 
     std::cout << "attempt to connect to: " << addr << "\n";
-    Connection cnx(const_cast<char*>(addr.c_str()),0);
+    usleep(1000000);
+    Connection cnx(const_cast<char*>(addr.c_str()));
 
     // test client-server communication //
     unique_ptr<Data> data = cnx.get("ZERO(10)");
@@ -94,10 +94,6 @@ void test_tree_open(const char *prot)
 }
 
 
-
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //  main  //////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -106,10 +102,9 @@ void test_tree_open(const char *prot)
 
 int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 {
-    TEST_TIMEOUT(15);
-    BEGIN_TESTING(Connection);
-
+    TEST_TIMEOUT(30);
     setenv("test_tree_path",".",1);
+
 
     ////////////////////////////////////////////////////////////////////////////////
     //  Generate Tree  /////////////////////////////////////////////////////////////
@@ -143,16 +138,65 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
     //  TEST CONNECTION TO REMOTE TREE  ////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
 
+    // local //
+    BEGIN_TESTING(Connection local);
+    test_tree_open("local",0);
+    END_TESTING;
+
+/*
+// TODO: http test does not work
+// http server requires setup
+
+    // http //
+    BEGIN_TESTING(Connection http);
+    test_tree_open("http",0);
+    END_TESTING;
+*/
+
+/*
+// TODO: ssh test does not work (unknown user)
+// ssh requires some setup for executing user
+// $HOME/.ssh/{authorized_keys,id_rsa,id_rsa.pub,known_hosts}
+
+    // ssh //
+    BEGIN_TESTING(Connection ssh);
+    test_tree_open("ssh",0);
+    END_TESTING;
+*/
+
     // tcp //
-    test_tree_open("tcp");
+    BEGIN_TESTING(Connection tcp);
+    test_tree_open("tcp",8000);
+    END_TESTING;
 
     // udt //
-    
-#ifndef __ARM_ARCH
-    test_tree_open("udt");
-#endif
-
+    BEGIN_TESTING(Connection udt);
+    test_tree_open("udt",8000);
     END_TESTING;
+
+    // tcpv6 //
+    BEGIN_TESTING(Connection tcpv6);
+    test_tree_open("tcpv6",8000);
+    END_TESTING;
+
+    // udtv6 //
+    BEGIN_TESTING(Connection udtv6);
+    test_tree_open("udtv6",8000);
+    END_TESTING;
+
+/*
+// TODO: gsi test does not work (gsi setup?)
+// ERROR:Error connecting ---
+//       globus_xio_gsi: gss_init_sec_context failed.
+//
+// ERROR:mdsip_accept_cp, open ---
+//       globus_xio: The GSI XIO driver failed to establish a secure connection. The failure occured during a handshake read.
+
+    // gsi //
+    BEGIN_TESTING(Connection gsi);
+    test_tree_open("gsi",8000);
+    END_TESTING;
+*/
 }
 
 #endif

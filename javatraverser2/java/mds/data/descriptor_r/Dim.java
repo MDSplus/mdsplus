@@ -54,8 +54,12 @@ public final class Dim extends Descriptor_R<Number>{
     }
 
     @Override
-    public final Dim getLocal_() {
-        return (Dim)new Dim(this.getWindow().getLocal(), this.getAxis().getLocal()).setLocal();
+    public final Dim getLocal_(final FLAG local) {
+        final FLAG mylocal = new FLAG();
+        final Descriptor<?> win = this.getWindow().getLocal(mylocal);
+        final Descriptor<?> axis = this.getAxis().getLocal(mylocal);
+        if(FLAG.and(local, mylocal.flag)) return this;
+        return (Dim)new Dim(win, axis).setLocal();
     }
 
     public final Descriptor<?> getWindow() {

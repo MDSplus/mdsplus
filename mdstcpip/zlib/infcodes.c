@@ -27,6 +27,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
+#include <mdsplus/mdsplus.h>
 #include "zutil.h"
 #include "inftrees.h"
 #include "infblock.h"
@@ -134,6 +135,7 @@ int r;
       c->sub.code.need = c->lbits;
       c->sub.code.tree = c->ltree;
       c->mode = LEN;
+      MDS_ATTR_FALLTHROUGH
     case LEN:			/* i: get length/literal/eob next */
       j = c->sub.code.need;
       NEEDBITS(j)
@@ -175,6 +177,7 @@ int r;
       c->sub.code.tree = c->dtree;
       Tracevv((stderr, "inflate:         length %u\n", c->len));
       c->mode = DIST;
+      MDS_ATTR_FALLTHROUGH
     case DIST:			/* i: get distance next */
       j = c->sub.code.need;
       NEEDBITS(j)
@@ -202,6 +205,7 @@ int r;
       DUMPBITS(j)
 	  Tracevv((stderr, "inflate:         distance %u\n", c->sub.copy.dist));
       c->mode = COPY;
+      MDS_ATTR_FALLTHROUGH
     case COPY:			/* o: copying bytes in window, waiting for space */
 #ifndef __TURBOC__		/* Turbo C bug for following expression */
       f = (uInt) (q - s->window) < c->sub.copy.dist ?
@@ -232,6 +236,7 @@ int r;
       }
       FLUSH if (s->read != s->write)
 	LEAVE c->mode = END;
+      MDS_ATTR_FALLTHROUGH
     case END:
       r = Z_STREAM_END;
     LEAVE case BADCODE:	/* x: got error */

@@ -31,7 +31,6 @@ def _mimport(name, level=1):
 
 import ctypes as _C
 import numpy as _N
-from threading import RLock as _RLock
 
 _dsc=_mimport('descriptor')
 _exc=_mimport('mdsExceptions')
@@ -147,7 +146,6 @@ class Connection(object):
         if self.socket == -1:
             raise MdsIpException("Error connecting to %s" % (hostspec,))
         self.hostspec=hostspec
-        self.lock=_RLock()
 
     def __del__(self):
         try:    _DisconnectFromMds(self.socket)
@@ -227,16 +225,15 @@ class Connection(object):
         @return: result of evaluating the expression on the remote server
         @rtype: Scalar or Array
         """
-        with self.lock:
-            if 'arglist' in kwargs:
-                args=kwargs['arglist']
-            timeout = kwargs.get('timeout',-1)
-            num=len(args)+1
-            exp = _ver.tobytes(exp)
-            _exc.checkStatus(_SendArg(self.socket,0,14,num,len(exp),0,0,_C.c_char_p(exp)))
-            for i,arg in enumerate(args):
-                self.__sendArg__(arg,i+1,num)
-            return self.__getAnswer__(timeout)
+        if 'arglist' in kwargs:
+            args=kwargs['arglist']
+        timeout = kwargs.get('timeout',-1)
+        num=len(args)+1
+        exp = _ver.tobytes(exp)
+        _exc.checkStatus(_SendArg(self.socket,0,14,num,len(exp),0,0,_C.c_char_p(exp)))
+        for i,arg in enumerate(args):
+            self.__sendArg__(arg,i+1,num)
+        return self.__getAnswer__(timeout)
 
     def getObject(self,exp,*args,**kwargs):
         return self.get('serializeout(`(%s;))'%exp,*args,**kwargs).deserialize()

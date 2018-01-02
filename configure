@@ -662,6 +662,7 @@ MOTIF_LD_LDSHARE
 MOTIF_LDARC
 MOTIF_LDSHARE
 MOTIF_APS
+HAVE_MOTIF
 MITDEVICESIO_TARGETS
 MDSTCPIP
 MDSSQL
@@ -721,6 +722,7 @@ D3DLIB
 D3D_PACKAGE
 CLOCK_GETTIME_LIB
 CAMSHR
+NOWARNFLAGS
 WARNFLAGS
 DOXYGEN_PAPER_SIZE
 DX_COND_latex_FALSE
@@ -819,6 +821,8 @@ PYTHON_EXEC_PREFIX
 PYTHON_PREFIX
 PYTHON_VERSION
 PYTHON
+HAVE_MOTIF_FALSE
+HAVE_MOTIF_TRUE
 UIL
 X_EXTRA_LIBS
 X_LIBS
@@ -1021,6 +1025,7 @@ enable_doxygen_html
 enable_doxygen_ps
 enable_doxygen_pdf
 enable_werror
+enable_wreturns
 enable_wconversion
 '
       ac_precious_vars='build_alias
@@ -1702,6 +1707,8 @@ Optional Features:
   --enable-doxygen-ps     generate doxygen PostScript documentation
   --disable-doxygen-pdf   don't generate doxygen PDF documentation
   --enable-werror         Treat all warnings as errors
+  --disable-wreturns      Disable warnings about unused return value from
+                          functions
   --enable-wconversion    Warn about implicit conversions
 
 Optional Packages:
@@ -7987,8 +7994,6 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_visual_studio" >&5
 $as_echo "$with_visual_studio" >&6; }
 
-
-
 FORLD=ld
 LD=ld LD_LDARC=""
 LD_LDSHARE=""
@@ -8026,7 +8031,7 @@ case "$host" in
 *mingw*)
        IDLMDSEVENT=""
        LIBPRE=""
-       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields -Wno-clobbered ";
+       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields ";
        LD="$CXX -static-libgcc"
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="$FC"
@@ -8060,7 +8065,7 @@ case "$host" in
        jni_md_inc_dir="$with_jdk/include/linux";;
 
 *86*linux*)
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing -Wno-clobbered ";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing ";
        FORLD="$FC";
        LD="gcc"
        if ( echo $host| grep 64 > /dev/null )
@@ -8121,7 +8126,7 @@ case "$host" in
        SIZEOF_LONG=4;
        SIZEOF_LONG_LONG=8;
        D64="";
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing -Wno-clobbered";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
        if (test "$FC" = "gfortran"); then
          FCFLAGS="$FCFLAGS -fno-range-check";
          FORLD="$FC"
@@ -8142,7 +8147,7 @@ case "$host" in
        jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
-*linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing -Wno-clobbered";
+*linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing";
        FCFLAGS="$FCFLAGS -fno-range-check";
        FORLD="$FC"
        FOR_LDFLAGS="-lg2c"
@@ -8174,9 +8179,9 @@ case "$host" in
        LD_LDSHARE="";
        LDARC="";
        LD_LDARC="";
-       UILPATH=${OPENMOTIF}/bin;
-       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L${OPENMOTIF}/lib"
-       MOTIF_LD_LDARC="-multiply_defined suppress -L${OPENMOTIF}/lib"
+       UILPATH=${OPENMOTIF-/usr}/bin;
+       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L${OPENMOTIF-/usr}/lib"
+       MOTIF_LD_LDARC="-multiply_defined suppress -L${OPENMOTIF-/usr}/lib"
        	   	   LINKSHARED="$LDFLAGS -shared -arch x86_64 -install_name @loader_path/../lib/\$(@F) -headerpad_max_install_names";
            FOR_LINKSHARED="$LDFLAGS -shared";
 	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
@@ -11794,8 +11799,8 @@ fi
 
 case $host in #(
   *darwin*|*apple*) :
-    X_CFLAGS+=" -I${OPENMOTIF}/include"
-                             X_LIBS+=" -L${OPENMOTIF}/lib" ;; #(
+    X_CFLAGS+=" -I${OPENMOTIF-/usr}/include"
+                             X_LIBS+=" -L${OPENMOTIF-/usr}/lib" ;; #(
   *) :
      ;;
 esac
@@ -11855,25 +11860,33 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for uil command" >&5
 $as_echo_n "checking for uil command... " >&6; }
-if ( which $UIL 2>/dev/null )
+if test ! "$MINGW" = "yes" && ( which $UIL &>/dev/null )
 then
   UIL="env LANG=en_US $UIL"
-  MOTIF_APS="\$(MOTIF_APS)"
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: have uil so openmotif apps will be built." >&5
-$as_echo "have uil so openmotif apps will be built." >&6; }
+  HAVE_MOTIF="yes"
+  #AC_MSG_RESULT(have uil so openmotif apps will be built.)
 else
-  MOTIF_APS=""
 # IDLMDSEVENT and IDLMDSWIDGETS need MOTIF to build
   IDLMDSEVENT=""
   IDLMDSWIDGETS=""
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no uil so skipping openmotif apps.openmotif-devel not installed." >&5
-$as_echo "no uil so skipping openmotif apps.openmotif-devel not installed." >&6; }
+  #AC_MSG_RESULT(no uil so skipping openmotif apps.openmotif-devel not installed.)
 fi
-if [ "$MINGW" = "yes" ]
-then
-  MOTIF_APS=""
+MOTIF_APS="\$(MOTIF_APS)"
+ if ${HAVE_MOTIF+:} false; then
+  HAVE_MOTIF_TRUE=
+  HAVE_MOTIF_FALSE='#'
+else
+  HAVE_MOTIF_TRUE='#'
+  HAVE_MOTIF_FALSE=
 fi
 
+if test -z "$HAVE_MOTIF_TRUE"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
 
 XM_LIBS="-lMrm -lXm"
 
@@ -16905,7 +16918,7 @@ RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEA
 
 # Determine common warning options to apply to C, C++, and Fortran languages
 WARNFLAGS="-Wall -Wextra"
-
+NOWARNFLAGS=
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to treat warnings as errors" >&5
 $as_echo_n "checking whether to treat warnings as errors... " >&6; }
 # Check whether --enable-werror was given.
@@ -16917,10 +16930,21 @@ fi
 
 case $enable_werror in #(
   yes) :
-    as_fn_append WARNFLAGS " -Werror" ;; #(
+    as_fn_append WARNFLAGS " -Werror " ;; #(
   *) :
      ;;
 esac
+# Check whether --enable-wreturns was given.
+if test "${enable_wreturns+set}" = set; then :
+  enableval=$enable_wreturns; case $enableval in #(
+  no) :
+    as_fn_append NOWARNFLAGS " -Wno-unused-result " ;; #(
+  *) :
+     ;;
+esac
+fi
+
+
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_werror" >&5
 $as_echo "$enable_werror" >&6; }
@@ -17117,11 +17141,12 @@ fi
 
 
 
+
 ac_config_headers="$ac_config_headers include/config.h"
 
 
 
-ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javatraverser2/Makefile javatraverser2/java/mds/mdslib/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdsdcl/mdsdcl_show_version.c mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/_version.py mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/testing/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdi/MitDevices/_version.py tdi/RfxDevices/_version.py tdi/W7xDevices/_version.py tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile treeshr/testing/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
+ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javatraverser2/Makefile javatraverser2/java/mds/mdslib/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdsdcl/mdsdcl_show_version.c mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/_version.py mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/testing/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile pydevices/MitDevices/_version.py pydevices/RfxDevices/_version.py pydevices/W7xDevices/_version.py remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile treeshr/testing/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -17293,6 +17318,10 @@ if test -z "${XML_TRUE}" && test -z "${XML_FALSE}"; then
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
+if test -z "${HAVE_MOTIF_TRUE}" && test -z "${HAVE_MOTIF_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_MOTIF\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 if test -z "${HAVE_PYTHON_TRUE}" && test -z "${HAVE_PYTHON_FALSE}"; then
   as_fn_error $? "conditional \"HAVE_PYTHON\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
@@ -18018,6 +18047,9 @@ do
     "mdstcpip/docs/img/Makefile") CONFIG_FILES="$CONFIG_FILES mdstcpip/docs/img/Makefile" ;;
     "mdsvme/Makefile") CONFIG_FILES="$CONFIG_FILES mdsvme/Makefile" ;;
     "mitdevices/Makefile") CONFIG_FILES="$CONFIG_FILES mitdevices/Makefile" ;;
+    "pydevices/MitDevices/_version.py") CONFIG_FILES="$CONFIG_FILES pydevices/MitDevices/_version.py" ;;
+    "pydevices/RfxDevices/_version.py") CONFIG_FILES="$CONFIG_FILES pydevices/RfxDevices/_version.py" ;;
+    "pydevices/W7xDevices/_version.py") CONFIG_FILES="$CONFIG_FILES pydevices/W7xDevices/_version.py" ;;
     "remcam/Makefile") CONFIG_FILES="$CONFIG_FILES remcam/Makefile" ;;
     "roam/Makefile") CONFIG_FILES="$CONFIG_FILES roam/Makefile" ;;
     "rpm/Makefile") CONFIG_FILES="$CONFIG_FILES rpm/Makefile" ;;
@@ -18027,9 +18059,6 @@ do
     "servershr/Makefile") CONFIG_FILES="$CONFIG_FILES servershr/Makefile" ;;
     "setevent/Makefile") CONFIG_FILES="$CONFIG_FILES setevent/Makefile" ;;
     "tcl/Makefile") CONFIG_FILES="$CONFIG_FILES tcl/Makefile" ;;
-    "tdi/MitDevices/_version.py") CONFIG_FILES="$CONFIG_FILES tdi/MitDevices/_version.py" ;;
-    "tdi/RfxDevices/_version.py") CONFIG_FILES="$CONFIG_FILES tdi/RfxDevices/_version.py" ;;
-    "tdi/W7xDevices/_version.py") CONFIG_FILES="$CONFIG_FILES tdi/W7xDevices/_version.py" ;;
     "tdishr/Makefile") CONFIG_FILES="$CONFIG_FILES tdishr/Makefile" ;;
     "tdishr/testing/Makefile") CONFIG_FILES="$CONFIG_FILES tdishr/testing/Makefile" ;;
     "tdic/Makefile") CONFIG_FILES="$CONFIG_FILES tdic/Makefile" ;;
@@ -18823,7 +18852,7 @@ $as_echo "$as_me: WARNING: " >&2;}
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: " >&5
 $as_echo "$as_me: WARNING: " >&2;}
 fi
-if test "$MOTIF_APS" = "" -a "$MINGW" = ""
+if test "$HAVE_MOTIF" = "" -a "$MINGW" = "" -a ! "$OS" = "windows"
 then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: " >&5
 $as_echo "$as_me: WARNING: " >&2;}

@@ -46,6 +46,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         NEED to think, should "TdiImpose" convert data type?
         ASSUMES VECTOR works for any size.
 */
+#include <mdsplus/mdsplus.h>
 #include <STATICdef.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
@@ -317,6 +318,10 @@ int TdiGetData(unsigned char omits[], struct descriptor *their_ptr, struct descr
 	  status = TdiGetData(omits, (struct descriptor *)((struct descriptor_with_error *)
 							   pin)->data, &hold);
 	  break;
+	case DTYPE_OPAQUE:
+	  status = TdiGetData(omits, (struct descriptor *)((struct descriptor_opaque *)
+							   pin)->data, &hold);
+	  break;
 	default:
 	  status = TdiINVCLADTY;
 	  break;
@@ -358,6 +363,7 @@ extern EXPORT int TdiGetFloat(struct descriptor *in_ptr, float *val_ptr)
 	/*********************
         WARNING falls through.
         *********************/
+      MDS_ATTR_FALLTHROUGH
     case CLASS_S:
     case CLASS_D:
       switch (in_ptr->dtype) {
@@ -427,6 +433,7 @@ extern EXPORT int TdiGetLong(struct descriptor *in_ptr, int *val_ptr)
 	/*********************
         WARNING falls through.
         *********************/
+      MDS_ATTR_FALLTHROUGH
     case CLASS_S:
     case CLASS_D:
       switch (in_ptr->dtype) {

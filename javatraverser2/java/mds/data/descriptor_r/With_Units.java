@@ -36,8 +36,12 @@ public final class With_Units extends Descriptor_R<Number> implements PARAMETER{
     }
 
     @Override
-    public final With_Units getLocal_() {
-        return (With_Units)new With_Units(this.getValue().getLocal(), this.getUnits().getLocal()).setLocal();
+    public final With_Units getLocal_(final FLAG local) {
+        final FLAG mylocal = new FLAG();
+        final Descriptor<?> value = Descriptor.getLocal(mylocal, this.getValue());
+        final Descriptor<?> units = Descriptor.getLocal(mylocal, this.getUnits());
+        if(FLAG.and(local, mylocal.flag)) return (With_Units)this.setLocal();
+        return (With_Units)new With_Units(value, units).setLocal();
     }
 
     @Override

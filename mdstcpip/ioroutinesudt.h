@@ -14,12 +14,13 @@
 #define SEND udt_send
 #define RECV udt_recv
 int server_epoll = -1;
+#define io_flush NULL
 #include "ioroutinesx.h"
 ////////////////////////////////////////////////////////////////////////////////
 //  CONNECT  ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *host){
+static int io_connect(Connection* c, char *protocol __attribute__ ((unused)), char *host){
   struct SOCKADDR_IN sin;
   UDTSOCKET sock;
   if IS_OK(GetHostAndPort(host, &sin)) {
@@ -32,21 +33,13 @@ static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *
       PERROR("Error in connect to service");
       return C_ERROR;
     }
-    SetConnectionInfo(conid, PROT, sock, NULL, 0);
+    SetConnectionInfoC(c, PROT, sock, NULL, 0);
     return C_OK;
   } else {
     fprintf(stderr,"Connect failed to host: %s\n",host);
     fflush(stderr);
     return C_ERROR;
   }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-//  FLUSH  /////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-static int io_flush(int conid __attribute__ ((unused))){
-  return C_ERROR;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

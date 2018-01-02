@@ -177,11 +177,7 @@ static void AutoScale(int num, float *value, float *minval, float *maxval, float
 static Boolean UpdateLimit(float *old, float *req, float **new);
 static Boolean UpdateLimits(XmdsWaveformWidget old, float *xmin, float *xmax, float *ymin,
 			    float *ymax, XmdsWaveformWidget new);
-#ifdef __ALPHA
-#define FixupMissing lib$sig_to_ret
-#else
 int FixupMissing(unsigned sig_args[], unsigned mech_args[]);
-#endif
 static void Pan();
 static void PanEnd();
 static void DragZoom();
@@ -211,6 +207,10 @@ static void DrawString(XmdsWaveformWidget w, Display * display, Window win, GC g
 static void Reverse();
 static void Cut();
 static void Paste();
+
+static inline int intAbs(int val) {
+  return val < 0 ? -val : val;
+}
 
 static XtActionsRec actionlist[] = { {"WaveformPan", Pan},
 {"WaveformPanEnd", PanEnd},
@@ -2286,43 +2286,43 @@ static void Print(XmdsWaveformWidget w, FILE * filefid, int inp_total_width, int
     /* The following mess draws finds borders that intersect at the */
     /* corners and draws them in succession to obtain rounded corners. */
 
-    if (xoffset == xtest && abs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) > 5) {
+    if (xoffset == xtest && intAbs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) > 5) {
       fprintf(printfid, "%g %g moveto\n", xstart, ystart);
       fprintf(printfid, "%g %g lineto\n", xstart, yend);
       if (yoffset == ytest) {
 	fprintf(printfid, "%g %g lineto\n", xend, yend);
-	if (abs((xoffset / scale + inp_total_width) - (xorigin + XtWidth(w))) < 5)
+	if (intAbs((xoffset / scale + inp_total_width) - (xorigin + XtWidth(w))) < 5)
 	  fprintf(printfid, "%g %g lineto\n", xend, ystart);
-      } else if (abs((xoffset / scale + inp_total_width) - (xorigin + XtWidth(w))) < 5) {
+      } else if (intAbs((xoffset / scale + inp_total_width) - (xorigin + XtWidth(w))) < 5) {
 	fprintf(printfid, "stroke\n");
 	fprintf(printfid, "%g %g moveto\n", xend, yend);
 	fprintf(printfid, "%g %g lineto\n", xend, ystart);
       }
       fprintf(printfid, "stroke\n");
     } else if (yoffset == ytest && (xoffset != xtest ||
-				    abs((yoffset / scale + inp_total_height) -
+				    intAbs((yoffset / scale + inp_total_height) -
 					(yorigin + XtHeight(w))) > 5)) {
       fprintf(printfid, "%g %g moveto\n", xstart, yend);
       fprintf(printfid, "%g %g lineto\n", xend, yend);
-      if (abs((xoffset / scale + inp_total_width) - (xorigin + XtWidth(w))) < 5) {
+      if (intAbs((xoffset / scale + inp_total_width) - (xorigin + XtWidth(w))) < 5) {
 	fprintf(printfid, "%g %g lineto\n", xend, ystart);
-	if (abs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) < 5)
+	if (intAbs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) < 5)
 	  fprintf(printfid, "%g %g lineto\n", xstart, ystart);
-      } else if (abs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) < 5) {
+      } else if (intAbs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) < 5) {
 	fprintf(printfid, "stroke\n");
 	fprintf(printfid, "%g %g moveto\n", xstart, ystart);
 	fprintf(printfid, "%g %g lineto\n", xend, ystart);
       }
       fprintf(printfid, "stroke\n");
-    } else if (abs((xoffset / scale + inp_total_width) - (xorigin + XtWidth(w))) < 5) {
+    } else if (intAbs((xoffset / scale + inp_total_width) - (xorigin + XtWidth(w))) < 5) {
       fprintf(printfid, "%g %g moveto\n", xend, yend);
       fprintf(printfid, "%g %g lineto\n", xend, ystart);
-      if (abs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) < 5)
+      if (intAbs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) < 5)
 	fprintf(printfid, "%g %g lineto\n", xstart, ystart);
       if (xoffset == xtest)
 	fprintf(printfid, "%g %g lineto\n", xstart, yend);
       fprintf(printfid, "stroke\n");
-    } else if (abs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) < 5) {
+    } else if (intAbs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) < 5) {
       fprintf(printfid, "%g %g moveto\n", xend, ystart);
       fprintf(printfid, "%g %g lineto\n", xstart, ystart);
       if (xoffset == xtest)

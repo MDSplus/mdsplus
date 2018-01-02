@@ -345,8 +345,6 @@ AC_ARG_WITH([visual_studio],
 AM_CONDITIONAL([VS],[AS_VAR_TEST_SET([VS_DIR])])
 AC_MSG_RESULT([$with_visual_studio])
 
-
-
 FORLD=ld
 LD=ld LD_LDARC=""
 LD_LDSHARE=""
@@ -384,7 +382,7 @@ case "$host" in
 *mingw*)
        IDLMDSEVENT=""
        LIBPRE=""
-       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields -Wno-clobbered ";
+       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields ";
        LD="$CXX -static-libgcc"
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="$FC"
@@ -418,7 +416,7 @@ case "$host" in
        jni_md_inc_dir="$with_jdk/include/linux";;
 
 *86*linux*)
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing -Wno-clobbered ";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing ";
        FORLD="$FC";
        LD="gcc"
        if ( echo $host| grep 64 > /dev/null )
@@ -479,7 +477,7 @@ case "$host" in
        SIZEOF_LONG=4;
        SIZEOF_LONG_LONG=8;
        D64="";
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing -Wno-clobbered";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
        if (test "$FC" = "gfortran"); then
          FCFLAGS="$FCFLAGS -fno-range-check";
          FORLD="$FC"
@@ -500,7 +498,7 @@ case "$host" in
        jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
-*linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing -Wno-clobbered";
+*linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing";
        FCFLAGS="$FCFLAGS -fno-range-check";
        FORLD="$FC"
        FOR_LDFLAGS="-lg2c"
@@ -532,9 +530,9 @@ case "$host" in
        LD_LDSHARE="";
        LDARC="";
        LD_LDARC="";
-       UILPATH=${OPENMOTIF}/bin;
-       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L${OPENMOTIF}/lib"
-       MOTIF_LD_LDARC="-multiply_defined suppress -L${OPENMOTIF}/lib"
+       UILPATH=${OPENMOTIF-/usr}/bin;
+       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L${OPENMOTIF-/usr}/lib"
+       MOTIF_LD_LDARC="-multiply_defined suppress -L${OPENMOTIF-/usr}/lib"
        dnl LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -prebind \
 	   dnl -seg_addr_table_filename \$(@F) -seg_addr_table ../macosx/bindtable -Wl,-single_module";
 	   LINKSHARED="$LDFLAGS -shared -arch x86_64 -install_name @loader_path/../lib/\$(@F) -headerpad_max_install_names";
@@ -934,8 +932,8 @@ AC_C_BIGENDIAN
 
 AC_PATH_XTRA
 AS_CASE([$host],
-        [*darwin*|*apple*], [X_CFLAGS+=" -I${OPENMOTIF}/include"
-                             X_LIBS+=" -L${OPENMOTIF}/lib"])
+        [*darwin*|*apple*], [X_CFLAGS+=" -I${OPENMOTIF-/usr}/include"
+                             X_LIBS+=" -L${OPENMOTIF-/usr}/lib"])
 AS_CASE([$host],[arm*gnueabihf],[X_CFLAGS=""])
 #FIXME: Change the above to AS_VAR_APPEND with a new autoconf version (2.64+?)
 
@@ -945,23 +943,20 @@ then
 fi
 AC_PATH_PROG(UIL,$UILCMD,$UILCMD,$UILPATH:/usr/bin/X11:$PATH:/usr/dt/bin)
 AC_MSG_CHECKING(for uil command)
-if ( which $UIL 2>/dev/null )
+if test ! "$MINGW" = "yes" && ( which $UIL &>/dev/null )
 then
   UIL="env LANG=en_US $UIL"
-  MOTIF_APS="\$(MOTIF_APS)"
-  AC_MSG_RESULT(have uil so openmotif apps will be built.)
+  HAVE_MOTIF="yes"
+  #AC_MSG_RESULT(have uil so openmotif apps will be built.)
 else
-  MOTIF_APS=""
 # IDLMDSEVENT and IDLMDSWIDGETS need MOTIF to build
   IDLMDSEVENT=""
   IDLMDSWIDGETS=""
-  AC_MSG_RESULT(no uil so skipping openmotif apps.openmotif-devel not installed.)
+  #AC_MSG_RESULT(no uil so skipping openmotif apps.openmotif-devel not installed.)
 fi
-if [[ "$MINGW" = "yes" ]]
-then
-  MOTIF_APS=""
-fi
-
+MOTIF_APS="\$(MOTIF_APS)"
+AM_CONDITIONAL([HAVE_MOTIF], [AS_VAR_TEST_SET([HAVE_MOTIF])])
+AM_COND_IF([HAVE_MOTIF], [AC_MSG_RESULT([yes])], [AC_MSG_RESULT([no])])
 
 XM_LIBS="-lMrm -lXm"
 MDS_SEARCH_LIBS([XextAddDisplay],[Xext],[AS_VAR_SET([LIBXEXT],[$ac_cv_search_XextAddDisplay])])
@@ -1130,7 +1125,7 @@ RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEA
 
 # Determine common warning options to apply to C, C++, and Fortran languages
 AS_VAR_SET([WARNFLAGS], ["-Wall -Wextra"])
-
+AS_VAR_SET([NOWARNFLAGS],[])
 AC_MSG_CHECKING([whether to treat warnings as errors])
 AC_ARG_ENABLE([werror],
               [AS_HELP_STRING([--enable-werror],
@@ -1138,9 +1133,15 @@ AC_ARG_ENABLE([werror],
               [],
               [AS_VAR_SET([enable_werror], [no])])
 AS_CASE([$enable_werror],
-        [yes], [AS_VAR_APPEND([WARNFLAGS], [" -Werror"])],
+        [yes], [AS_VAR_APPEND([WARNFLAGS], [" -Werror "])],
         [])
+AC_ARG_ENABLE([wreturns],
+              [AS_HELP_STRING([--disable-wreturns],
+                              [Disable warnings about unused return value from functions])],
+              [AS_CASE([$enableval],[no], [AS_VAR_APPEND([NOWARNFLAGS],[" -Wno-unused-result "])])],
+	      [])
 AC_SUBST([WARNFLAGS])
+AC_SUBST([NOWARNFLAGS])
 AC_MSG_RESULT([$enable_werror])
 
 AC_MSG_CHECKING([whether to warn about implicit conversions])
@@ -1250,6 +1251,7 @@ AC_SUBST(MAKEUIDDIR)
 AC_SUBST(MDSSQL)
 AC_SUBST(MDSTCPIP)
 AC_SUBST(MITDEVICESIO_TARGETS)
+AC_SUBST(HAVE_MOTIF)
 AC_SUBST(MOTIF_APS)
 AC_SUBST(MOTIF_LDSHARE)
 AC_SUBST(MOTIF_LDARC)
@@ -1342,6 +1344,9 @@ AC_OUTPUT(Makefile.inc
           mdstcpip/docs/img/Makefile
           mdsvme/Makefile
           mitdevices/Makefile
+	  pydevices/MitDevices/_version.py
+	  pydevices/RfxDevices/_version.py
+	  pydevices/W7xDevices/_version.py
           remcam/Makefile
           roam/Makefile
           rpm/Makefile
@@ -1351,9 +1356,6 @@ AC_OUTPUT(Makefile.inc
           servershr/Makefile
           setevent/Makefile
           tcl/Makefile
-	  tdi/MitDevices/_version.py
-	  tdi/RfxDevices/_version.py
-	  tdi/W7xDevices/_version.py
           tdishr/Makefile
           tdishr/testing/Makefile
           tdic/Makefile
@@ -1402,7 +1404,7 @@ then
   AC_MSG_WARN()
   AC_MSG_WARN()
 fi
-if test "$MOTIF_APS" = "" -a "$MINGW" = ""
+if test "$HAVE_MOTIF" = "" -a "$MINGW" = "" -a ! "$OS" = "windows"
 then
   AC_MSG_WARN()
   AC_MSG_WARN()

@@ -1,13 +1,15 @@
 //package jTraverser;
-import javax.swing.*; 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.util.StringTokenizer;
 
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
-import java.awt.event.*;
-import java.util.*;
-
-
-public class PythonEditor extends JPanel implements Editor{
+public class PythonEditor extends JPanel implements Editor {
     String retVar;
     String program;
     int rows = 7, columns = 20;
@@ -112,7 +114,6 @@ public class PythonEditor extends JPanel implements Editor{
         }
         StringArray stArr = new StringArray(lines);
         String retVarTxt = text_field.getText();
-        FunctionData retData;
         Data retArgs[];
         if(retVarTxt == null || retVarTxt.equals(""))
         {

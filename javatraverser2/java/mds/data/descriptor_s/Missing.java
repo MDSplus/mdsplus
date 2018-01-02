@@ -43,7 +43,7 @@ public final class Missing extends Descriptor_S<Object> implements DATA<Object>{
     }
 
     @Override
-    public Descriptor<?> getLocal_() {
+    public Descriptor<?> getLocal_(final FLAG local) {
         return this;
     }
 

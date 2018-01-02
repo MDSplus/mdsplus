@@ -42,6 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <windows.h>
 #include <process.h>
 #define setenv(name,value,overwrite) _putenv_s(name,value)
+#define localtime_r(time,tm)         localtime_s(tm,time)
 #else
 #include <sys/wait.h>
 #endif
@@ -86,6 +87,34 @@ typedef struct node {
 } LibTreeNode;
 
 #include <libroutines.h>
+
+#ifndef USE_TM_GMTOFF
+/* tzset() sets the global statics daylight and timezone.
+ * However, this is not threadsafe as we cannot prevent third party code from calling tzset.
+ * Therefore, we make our private copies of timezone and daylight.
+ * timezone: constant offset of the local standard time to gmt.
+ * daylight: constant flag if region implements daylight saving at all. (seasonal flag is tmval.tm_isdst)
+ */
+time_t ntimezone_;
+int daylight_;
+static void tzset_(){
+  tzset();
+  ntimezone_ = - timezone;
+  daylight_ = daylight;
+}
+#endif
+
+static time_t get_tz_offset(time_t* time){
+  struct tm tmval;
+  localtime_r(time, &tmval);
+#ifdef USE_TM_GMTOFF
+  return tmval.tm_gmtoff;
+#else
+  static pthread_once_t once = PTHREAD_ONCE_INIT;
+  pthread_once(&once,tzset_);
+  return (daylight_ && tmval.tm_isdst) ? ntimezone_ + 3600 : ntimezone_;
+#endif
+}
 
 STATIC_CONSTANT int64_t VMS_TIME_OFFSET = LONG_LONG_CONSTANT(0x7c95674beb4000);
 
@@ -457,31 +486,6 @@ EXPORT char *LibFindImageSymbolErrString()
   return FIS_Error;
 }
 
-STATIC_THREADSAFE int dlopen_mutex_initialized = 0;
-STATIC_THREADSAFE pthread_mutex_t dlopen_mutex;
-
-STATIC_ROUTINE void dlopen_lock()
-{
-
-  if (!dlopen_mutex_initialized) {
-    dlopen_mutex_initialized = 1;
-    pthread_mutex_init(&dlopen_mutex, NULL);
-  }
-
-  pthread_mutex_lock(&dlopen_mutex);
-}
-
-STATIC_ROUTINE void dlopen_unlock()
-{
-
-  if (!dlopen_mutex_initialized) {
-    dlopen_mutex_initialized = 1;
-    pthread_mutex_init(&dlopen_mutex, NULL);
-  }
-
-  pthread_mutex_unlock(&dlopen_mutex);
-}
-
 static void *loadLib(const char *dirspec, const char *filename, char *errorstr) {
   void *handle = NULL;
   char *full_filename = alloca( strlen(dirspec) + strlen(filename) + 10);
@@ -525,7 +529,9 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
   if (strcmp(filename+strlen(filename)-strlen(SHARELIB_TYPE),SHARELIB_TYPE)) {
     strcat(filename,SHARELIB_TYPE);
   }
-  dlopen_lock();
+  static pthread_mutex_t dlopen_mutex = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_lock(&dlopen_mutex);
+  pthread_cleanup_push((void*)pthread_mutex_unlock,(void*)&dlopen_mutex);
   handle = loadLib("", filename, errorstr);
   if (handle == NULL &&
       (strchr(filename, '/') == 0) &&
@@ -570,7 +576,7 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
   }
   else
     status = 1;
-  dlopen_unlock();
+  pthread_cleanup_pop(1);
   return status;
 }
 
@@ -975,19 +981,12 @@ EXPORT int LibConvertDateString(const char *asc_time, int64_t * qtime)
 EXPORT int LibTimeToVMSTime(const time_t * time_in, int64_t * time_out)
 {
   time_t time_to_use = time_in ? *time_in : time(NULL);
-  struct tm *tmval = localtime(&time_to_use);
-  time_t tz_offset;
   struct timeval tv;
   if (time_in)
     tv.tv_usec = 0;
   else
     gettimeofday(&tv,0);
-
-#ifdef USE_TM_GMTOFF
-  tz_offset = tmval->tm_gmtoff;
-#else
-  tz_offset = - timezone + daylight * (tmval->tm_isdst ? 3600 : 0);
-#endif
+  time_t tz_offset = get_tz_offset(&time_to_use);
   *time_out = (int64_t) (time_to_use + tz_offset) * (int64_t) 10000000 + tv.tv_usec * 10 + VMS_TIME_OFFSET;
   return MDSplusSUCCESS;
 }
@@ -999,20 +998,13 @@ EXPORT time_t LibCvtTim(int *time_in, double *t)
   if (time_in) {
     int64_t time_local;
     double time_d;
-    struct tm *tmval;
-    time_t tz_offset;
     memcpy(&time_local, time_in, sizeof(time_local));
     time_local = (*(int64_t *) time_in - VMS_TIME_OFFSET);
     if (time_local < 0)
       time_local = 0;
     bintim = time_local / LONG_LONG_CONSTANT(10000000);
     time_d = (double)bintim + (double)(time_local % LONG_LONG_CONSTANT(10000000)) * 1E-7;
-    tmval = localtime(&bintim);
-#ifdef USE_TM_GMTOFF
-    tz_offset = tmval->tm_gmtoff;
-#else
-    tz_offset = - timezone + daylight * (tmval->tm_isdst ? 3600 : 0);
-#endif
+    time_t tz_offset = get_tz_offset(&bintim);
     t_out = (time_d > 0 ? time_d : 0.0) - (double)tz_offset;
     bintim -= tz_offset;
   } else

@@ -85,6 +85,12 @@ extern void MdsDispatchEvent();
 static EventStruct *EventList = (EventStruct *) 0;
 static int EventCount = 1;
 static void EventAst(void * e, int eventid, char *data);
+#ifdef strlcpy
+#undef strlcpy
+#endif
+#ifdef strlcat
+#undef strlcat
+#endif
 #include <export.h>
 #ifdef _WIN32
 #define BlockSig(arg)

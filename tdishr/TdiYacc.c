@@ -24,9 +24,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 //#line 2 "TdiYacc.y"
-#ifdef __VMS
-#pragma module TdiYacc TdiYacc
-#endif
 /*      TdiYacc.Y
         YACC converts this to TdiYacc.C to compile TDI statements.
         Each YACC-LEX symbol has a returned token and a tdiyylval value.
@@ -58,6 +55,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         path[b] subscripts whatever is at node. Same problem.
         NOT and INOT of AND OR etc., form NAND or AND_NOT etc. See KNOT1 and KNOT2. Not after 9/25/89.
 */
+#include <mdsplus/mdsplus.h>
 #include <STATICdef.h>
 #include <stdio.h>
 #include <string.h>
@@ -982,6 +980,7 @@ int tdiyyparse()
 	tdiyy_state = tdiyystate;
 	 */
 	tdiyynerrs++;
+	MDS_ATTR_FALLTHROUGH
       case 1:
       case 2:			/* incompletely recovered error */
 	/* try again... */

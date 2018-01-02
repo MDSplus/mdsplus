@@ -49,7 +49,7 @@ public abstract class NUMBER<T extends Number>extends Descriptor_S<T> implements
     }
 
     @Override
-    public Descriptor<?> getLocal_() {
+    public Descriptor<?> getLocal_(final FLAG local) {
         return this;
     }
 

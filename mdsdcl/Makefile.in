@@ -50,7 +50,7 @@ cmdHelp.o: cmdHelp.c
 	$(COMPILE.c) $(CFLAGS) -c -I/usr/include/libxml2 $^
 
 cmdParseLex.o: cmdParseLex.c
-	$(COMPILE.c) $(CFLAGS) -Wno-unused-parameter -c $^
+	$(COMPILE.c) $(CFLAGS) -Wno-sign-compare -Wno-unused-parameter -c $^
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
 @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB): $(OBJECTS) $(DEF)

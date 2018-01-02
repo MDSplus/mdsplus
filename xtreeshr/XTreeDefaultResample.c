@@ -139,6 +139,8 @@ static void resample(int64_t start, int64_t end, int64_t delta, int64_t * inTime
 					memcpy(&outData[outSamples * itemSize], &data[timebaseIdx * itemSize], itemSize);
 					break;
 				case INTERPOLATION:
+                                        if(timebaseIdx <= 0)
+						timebaseIdx = 1;  //Avoid referring to negative indexes
 					switch (dataType) {
 						case DTYPE_BU:
 							for (i = 0; i < numDataItems; i++) {

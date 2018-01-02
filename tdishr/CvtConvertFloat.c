@@ -24,6 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <string.h>
 #include <mdsdescrip.h>
+#include <mdsplus/mdsplus.h>
 #include <STATICdef.h>
 
 /** Adapted from VMS V7.0 sources CvtConvertFloat.lis                      **/
@@ -3110,6 +3111,7 @@ STATIC_ROUTINE void _round(UNPACKED_REAL intermediate_value,
       case 0:
 	if (options & CVT_M_ROUND_TO_NEAREST)
 	  break;
+	MDS_ATTR_FALLTHROUGH
 
 	/*
 	 ** Otherwise, make note of wheather there are any bits set after the
@@ -3121,10 +3123,13 @@ STATIC_ROUTINE void _round(UNPACKED_REAL intermediate_value,
 	  switch (i) {
 	  case 1:
 	    more_bits = intermediate_value[2];
+	    MDS_ATTR_FALLTHROUGH
 	  case 2:
 	    more_bits |= intermediate_value[3];
+	    MDS_ATTR_FALLTHROUGH
 	  case 3:
 	    more_bits |= intermediate_value[4];
+	    break;
 	  default:
 	    break;
 	  }

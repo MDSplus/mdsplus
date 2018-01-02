@@ -51,6 +51,8 @@ int ServerSendMessage();
  	Description:
 
 ------------------------------------------------------------------------------*/
+#define LOAD_INITIALIZESOCKETS
+#include <pthread_port.h>
 #include <config.h>
 #include <ipdesc.h>
 #include <stdlib.h>
@@ -68,12 +70,9 @@ int ServerSendMessage();
 #include <errno.h>
 #ifdef _WIN32
  typedef int socklen_t;
- #include <windows.h>
  #define random rand
  #define close closesocket
 #else
- #define INVALID_SOCKET -1
- #include <sys/socket.h>
  #include <netinet/in.h>
  #include <netdb.h>
  #include <arpa/inet.h>
@@ -107,13 +106,8 @@ typedef struct _Job {
   struct _Job *next;
 } Job;
 static pthread_mutex_t jobs_mutex = PTHREAD_MUTEX_INITIALIZER;
-#ifdef _WIN32
- #define LOCK_JOBS   pthread_mutex_lock(&jobs_mutex);{
- #define UNLOCK_JOBS };pthread_mutex_unlock(&jobs_mutex)
-#else
- #define LOCK_JOBS   pthread_mutex_lock(&jobs_mutex);pthread_cleanup_push((void (*)())pthread_mutex_unlock, (void*)&jobs_mutex)
- #define UNLOCK_JOBS pthread_cleanup_pop(1)
-#endif
+#define LOCK_JOBS   pthread_mutex_lock(&jobs_mutex);pthread_cleanup_push((void (*)())pthread_mutex_unlock, (void*)&jobs_mutex)
+#define UNLOCK_JOBS pthread_cleanup_pop(1)
 static Job *Jobs = 0;
 
 
@@ -148,23 +142,6 @@ static void RemoveClient(Client * c, fd_set * fdactive);
 static int GetHostAddr(char *host);
 static void AddClient(unsigned int addr, short port, int send_sock);
 static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fdactive);
-
-static void InitializeSockets()
-{
-#ifdef _WIN32
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-  pthread_mutex_lock(&mutex);
-  static int initialized = B_FALSE;
-  if (!initialized) {
-    WSADATA wsaData;
-    WORD wVersionRequested;
-    wVersionRequested = MAKEWORD(1, 1);
-    WSAStartup(wVersionRequested, &wsaData);
-    initialized = B_TRUE;
-  }
-  pthread_mutex_unlock(&mutex);
-#endif
-}
 
 extern void *GetConnectionInfo();
 static SOCKET getSocket(int conid)
@@ -331,9 +308,11 @@ void ServerWait(int jobid)
 static void DoBeforeAst(int jobid)
 {
   Job *j;
-  void *astparam = NULL;
-  void (*before_ast) () = NULL;
+  void *astparam;
+  void (*before_ast) ();
   LOCK_JOBS;
+  astparam = NULL;
+  before_ast = NULL;
   for (j = Jobs; j && (j->jobid != jobid); j = j->next) ;
   if (j) {
     astparam   = j->astparam;
@@ -401,7 +380,7 @@ static SOCKET CreatePort(short starting_port, short *port_out)
   int c_status = C_ERROR;
   int tries = 0;
   int one = 1;
-  InitializeSockets();
+  INITIALIZESOCKETS;
   s = socket(AF_INET, SOCK_STREAM, 0);
   if (s == INVALID_SOCKET) {
     perror("Error getting Connection Socket\n");
@@ -708,7 +687,7 @@ static void DoMessage(Client * c, fd_set * fdactive)
 static void RemoveClient(Client * c, fd_set * fdactive)
 {
   int client_found = 0;
-  int conid = -1;
+  int conid;
   LOCK_CLIENTS;
   if (Clients == c) {
     client_found = 1;
@@ -733,7 +712,8 @@ static void RemoveClient(Client * c, fd_set * fdactive)
     if (c->conid >= 0)
       DisconnectFromMds(c->conid);
     free(c);
-  }
+  } else
+    conid = -1;
   Job *j;
   for (;;) {
     LOCK_JOBS;
@@ -746,13 +726,25 @@ static void RemoveClient(Client * c, fd_set * fdactive)
   }
 }
 
-static int GetHostAddr(char *host)
+static int GetHostAddr(char *name)
 {
-  InitializeSockets();
+  INITIALIZESOCKETS;
   int addr = 0;
-  GETHOSTBYNAMEORADDR(host,addr);
-  if (hp) addr = *(int *)hp->h_addr_list[0];
-  FREE_HP;
+#if defined(__MACH__) || defined(_WIN32)
+  struct hostent* hp = gethostbyname(name);
+  addr = hp ? *(int *)hp->h_addr_list[0] : (int)inet_addr(name);
+#else
+  size_t memlen;
+  struct hostent hostbuf, *hp = NULL;
+  int herr;
+  char *hp_mem = NULL;
+  FREE_ON_EXIT(hp_mem);
+  for ( memlen=1024, hp_mem=malloc(memlen);
+	hp_mem && (gethostbyname_r(name,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE);
+	memlen *= 2, free(hp_mem), hp_mem = malloc(memlen));
+  addr = hp ? *(int *)hp->h_addr_list[0] : (int)inet_addr(name);
+  FREE_NOW(hp_mem);
+#endif
   return addr == -1 ? 0 : addr;
 }
 

@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -129,6 +129,10 @@ class Tests(TestCase):
             test('_a>=_b',      a>=b,   res.pop())
             test('_a<_b',       a< b,   res.pop())
             test('_a<=_b',      a<=b,   res.pop())
+
+    def testData(self):
+        self.assertEqual(m.Data(2).compare(2),True)
+        self.assertEqual(m.Data(2).compare(1),False)
 
     def testScalars(self):
         def doTest(suffix,cl,scl,ucl,**kw):
@@ -333,7 +337,7 @@ class Tests(TestCase):
         self._doTdiTest("Py('import MDSplus;a=MDSplus.Uint8(-1)','a')",m.Uint8(255))
         self._doTdiTest("pyfun('Uint8','MDSplus',-1)",m.Uint8(255))
         self._doTdiTest("pyfun('Uint8',*,-1)",m.Uint8(255))
-        self._doTdiTest("pyfun('str',*,123)",m.String(123))
+        self._doTdiTest("pyfun('str',*,123)",m.String("123"))
         self._doTdiTest('_l=list(*,1,2,3)', m.List([1,2,3]))
         self._doTdiTest('_l=list(_l,4,5)', m.List([1,2,3,4,5]))
         self._doTdiTest('apdrm(_l,1,3)',  m.List([1,3,5]))
@@ -352,14 +356,14 @@ class Tests(TestCase):
         self.assertEqual(str(m.Int64(123)),'123Q')
         self.assertEqual(str(m.Float32(1.2E-3)),'.0012')
         self.assertEqual(str(m.Float64(1.2E-3)),'.0012D0')
-        self.assertEqual(str(m.Signal(m.ZERO(100000,0).evaluate(),None,0)),"Build_Signal(Set_Range(100000,0 /*** etc. ***/), *, 0)")
+        self.assertEqual(str(m.Signal(m.ZERO(100000,0.).evaluate(),None,0.)),"Build_Signal(Set_Range(100000,0. /*** etc. ***/), *, 0.)")
 
     def runTest(self):
         for test in self.getTests():
             self.__getattribute__(test)()
     @staticmethod
     def getTests():
-        return ['testScalars','testArrays','vmsSupport','tdiFunctions','decompile','tdiPythonInterface']
+        return ['testData','testScalars','testArrays','vmsSupport','tdiFunctions','decompile','tdiPythonInterface']
     @classmethod
     def getTestCases(cls):
         return map(cls,cls.getTests())

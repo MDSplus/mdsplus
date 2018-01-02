@@ -55,6 +55,57 @@ extern int UdpEventGetInterface(struct in_addr **interface_addr);
 #define MAX_MSG_LEN 4096
 #define MAX_EVENTS 1000000	/*Maximum number of events handled by a single process */
 
+
+#ifdef _WIN32
+static void print_error(char* message) {
+  int error = WSAGetLastError();
+  char *errorstr;
+  switch (error) {
+    case WSANOTINITIALISED:
+      errorstr = "WSANOTINITIALISED";
+      break;
+    case WSAENETDOWN:
+      errorstr = "WSAENETDOWN";
+      break;
+    case WSAEADDRINUSE:
+      errorstr = "WSAEADDRINUSE";
+      break;
+    case WSAEINTR:
+      errorstr = "WSAEINTR";
+      break;
+    case WSAEINPROGRESS:
+      errorstr = "WSAEINPROGRESS";
+      break;
+    case WSAEALREADY:
+      errorstr = "WSAEALREADY";
+      break;
+    case WSAEADDRNOTAVAIL:
+      errorstr = "WSAEADDRNOTAVAIL";
+      break;
+    case WSAEAFNOSUPPORT:
+      errorstr = "WSAEAFNOSUPPORT";
+      break;
+    case WSAECONNREFUSED:
+      errorstr = "WSAECONNREFUSED";
+      break;
+    case WSAENOPROTOOPT:
+      errorstr = "WSAENOPROTOOPT";
+      break;
+    case WSAEFAULT:
+      errorstr = "WSAEFAULT";
+      break;
+    default:
+      errorstr = 0;
+    }
+  if (errorstr)
+    fprintf(stderr, "%s - %s\n", message,errorstr);
+  else
+    fprintf(stderr, "%s - error code %d\n", message,error);
+}
+#else
+#define print_error(message)  fprintf(stderr,"%s\n",message)
+#endif
+
 typedef struct _EventList {
   int eventid;
   pthread_t thread;
@@ -90,6 +141,18 @@ extern void InitializeEventSettings();
 - buf (buf len chars)
 
 ***********************/
+static void EventExit(void *socket) {
+/*
+ifdef _WIN32
+  // For some reason shutdown does not abort the recvfrom and hangs the process joining
+  // the handleMessage thread. closesocket seems to work though.
+  closesocket(*(int*)socket);
+#else
+*/
+  shutdown(*(int*)socket, SHUT_RDWR);
+  close(*(int*)socket);
+//#endif
+}
 
 static void *handleMessage(void *info_in)
 {
@@ -107,12 +170,10 @@ static void *handleMessage(void *info_in)
   unsigned int nameLen,bufLen;
   char *eventName;
   char *currPtr;
-  pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
-  pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,0);
   free(info->eventName);
   free(info);
   pthread_mutex_unlock(&eventIdMutex);
-
+  pthread_cleanup_push(EventExit,(void*)&socket);
   while (1) {
 #ifdef _WIN32
     if ((recBytes = recvfrom(socket, (char *)recBuf, MAX_MSG_LEN, 0,
@@ -122,7 +183,6 @@ static void *handleMessage(void *info_in)
 	break;
       } else {
 	fprintf(stderr,"Error getting data - %d\n", error);
-
       }
       continue;
     }
@@ -153,6 +213,7 @@ static void *handleMessage(void *info_in)
       continue;
     astadr(arg, (int)bufLen, currPtr);
   }
+  pthread_cleanup_pop(1);
   return 0;
 }
 
@@ -196,12 +257,7 @@ static int getSendSocket()
   pthread_mutex_lock(&getSocketMutex);
   if (!sendSocket) {
     if ((sendSocket = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
-#ifdef _WIN32
-      int error = WSAGetLastError();
-      fprintf(stderr, "Error creating socket - errcode=%d\n", error);
-#else
-      perror("Error creating socket\n");
-#endif
+      print_error("Error creating socket");
       sendSocket = -1;
     }
   }
@@ -248,12 +304,7 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
   initialize();
 
   if ((udpSocket = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
-#ifdef _WIN32
-    int error = WSAGetLastError();
-    fprintf(stderr, "Error creating socket - errcode=%d\n", error);
-#else
-    perror("Error creating socket\n");
-#endif
+    print_error("Error creating socket");
     return 0;
   }
   //    serverAddr.sin_len = sizeof(serverAddr);
@@ -264,45 +315,7 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
 
   // Allow multiple connections
   if (setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) == SOCKET_ERROR) {
-    printf("Cannot set REUSEADDR option\n");
-#ifdef _WIN32
-    switch (WSAGetLastError()) {
-    case WSANOTINITIALISED:
-      printf("WSAENETDOWN\n");
-      break;
-    case WSAENETDOWN:
-      printf("WSAENETDOWN\n");
-      break;
-    case WSAEADDRINUSE:
-      printf("WSAEADDRINUSE\n");
-      break;
-    case WSAEINTR:
-      printf("WSAEINTR\n");
-      break;
-    case WSAEINPROGRESS:
-      printf("WSAEINPROGRESS\n");
-      break;
-    case WSAEALREADY:
-      printf("WSAEALREADY\n");
-      break;
-    case WSAEADDRNOTAVAIL:
-      printf("WSAEADDRNOTAVAIL\n");
-      break;
-    case WSAEAFNOSUPPORT:
-      printf("WSAEAFNOSUPPORT\n");
-      break;
-    case WSAECONNREFUSED:
-      printf("WSAECONNREFUSED\n");
-      break;
-    case WSAEFAULT:
-      printf("WSAEFAULT\n");
-      break;
-    default:
-      printf("BOH\n");
-    }
-#else
-    perror("\n");
-#endif
+    print_error("Cannot set REUSEADDR option");
     return 0;
   }
 #ifdef _WIN32
@@ -319,59 +332,9 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
   ipMreq.imr_multiaddr.s_addr = inet_addr(ipAddress);
   ipMreq.imr_interface.s_addr = INADDR_ANY;
   if (setsockopt(udpSocket, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&ipMreq, sizeof(ipMreq)) < 0) {
-#ifdef _WIN32
-    int error = WSAGetLastError();
-    char *errorstr = 0;
-    switch (error) {
-    case WSANOTINITIALISED:
-      errorstr = "WSAENETDOWN";
-      break;
-    case WSAENETDOWN:
-      errorstr = "WSAENETDOWN";
-      break;
-    case WSAEADDRINUSE:
-      errorstr = "WSAEADDRINUSE";
-      break;
-    case WSAEINTR:
-      errorstr = "WSAEINTR";
-      break;
-    case WSAEINPROGRESS:
-      errorstr = "WSAEINPROGRESS";
-      break;
-    case WSAEALREADY:
-      errorstr = "WSAEALREADY";
-      break;
-    case WSAEADDRNOTAVAIL:
-      errorstr = "WSAEADDRNOTAVAIL";
-      break;
-    case WSAEAFNOSUPPORT:
-      errorstr = "WSAEAFNOSUPPORT";
-      break;
-    case WSAECONNREFUSED:
-      errorstr = "WSAECONNREFUSED";
-      break;
-    case WSAENOPROTOOPT:
-      errorstr = "WSAENOPROTOOPT";
-      break;
-    case WSAEFAULT:
-      errorstr = "WSAEFAULT";
-      break;
-    default:
-      errorstr = 0;
-    }
-    if (errorstr)
-      fprintf(stderr, "Error setting socket options IP_ADD_MEMBERSHIP in udpStartReceiver - %s\n",
-	      errorstr);
-    else
-      fprintf(stderr,
-	      "Error setting socket options IP_ADD_MEMBERSHIP in udpStartReceiver - error code %d\n",
-	      error);
-#else
-    perror("Error setting socket options IP_ADD_MEMBERSHIP in udpStartReceiver\n");
-#endif
+    print_error("Error setting socket options IP_ADD_MEMBERSHIP in udpStartReceiver");
     return 0;
   }
-
   currInfo = (struct EventInfo *)malloc(sizeof(struct EventInfo));
   currInfo->eventName = strdup(eventName);
   currInfo->socket = udpSocket;
@@ -387,15 +350,7 @@ int MDSUdpEventCan(int eventid)
 {
   EventList *ev = popEvent(eventid);
   if (ev) {
-#ifdef _WIN32
-    // For some reason shutdown does not abort the recvfrom and hangs the process joining
-    // the handleMessage thread. closesocket seems to work though.
-    closesocket(ev->socket);
-#else
-    shutdown(ev->socket, SHUT_RDWR);
-    close(ev->socket);
-#endif
-//    pthread_cancel(ev->thread);
+    pthread_cancel(ev->thread);
     pthread_join(ev->thread,0);
     free(ev);
     return 1;
@@ -425,11 +380,35 @@ int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf)
 
   memset((char *)&sin, 0, sizeof(sin));
   sin.sin_family = AF_INET;
-  int addr;
-  GETHOSTBYNAMEORADDR(multiIp,addr);
-  if (hp)
-    memcpy(&sin.sin_addr, hp->h_addr_list[0], (size_t)hp->h_length);
-  FREE_HP;
+#if defined(__MACH__) || defined(_WIN32)
+  struct hostent* hp = gethostbyname(multiIp);
+  if (!hp) {
+    int addr = inet_addr(multiIp);
+    if (addr != -1)  hp = gethostbyaddr(((void *)&addr),sizeof(int),AF_INET);
+  }
+  if (hp) memcpy(&sin.sin_addr, hp->h_addr_list[0], (size_t)hp->h_length);
+#else
+  size_t memlen = 1024;
+  struct hostent hostbuf, *hp = NULL;
+  int herr;
+  char *hp_mem = (char*)malloc(memlen);
+  FREE_ON_EXIT(hp_mem);
+  while ( hp_mem && (gethostbyname_r(multiIp,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE) ) {
+    memlen *=2;
+    free(hp_mem);
+    hp_mem = (char*)malloc(memlen);
+  }
+  if (!hp) {
+    int addr = (int)inet_addr(multiIp);
+    while ( hp_mem && (gethostbyaddr_r(((void *)&addr),sizeof(int),AF_INET,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE) ) {
+      memlen *=2;
+      free(hp_mem);
+      hp_mem = (char*)malloc(memlen);
+    }
+  }
+  if (hp) memcpy(&sin.sin_addr, hp->h_addr_list[0], (size_t)hp->h_length);
+  FREE_NOW(hp_mem);
+#endif
   UdpEventGetPort(&port);
   sin.sin_port = htons(port);
   nameLen = (unsigned int)strlen(eventName);
@@ -463,43 +442,7 @@ int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf)
     free(interface_addr);
   }
   if (sendto(udpSocket, msg, msgLen, 0, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
-    perror("Error sending UDP message!\n");
-#ifdef _WIN32
-    switch (WSAGetLastError()) {
-    case WSANOTINITIALISED:
-      printf("WSAENETDOWN\n");
-      break;
-    case WSAENETDOWN:
-      printf("WSAENETDOWN\n");
-      break;
-    case WSAEADDRINUSE:
-      printf("WSAEADDRINUSE\n");
-      break;
-    case WSAEINTR:
-      printf("WSAEINTR\n");
-      break;
-    case WSAEINPROGRESS:
-      printf("WSAEINPROGRESS\n");
-      break;
-    case WSAEALREADY:
-      printf("WSAEALREADY\n");
-      break;
-    case WSAEADDRNOTAVAIL:
-      printf("WSAEADDRNOTAVAIL\n");
-      break;
-    case WSAEAFNOSUPPORT:
-      printf("WSAEAFNOSUPPORT\n");
-      break;
-    case WSAECONNREFUSED:
-      printf("WSAECONNREFUSED\n");
-      break;
-    case WSAEFAULT:
-      printf("WSAEFAULT\n");
-      break;
-    default:
-      printf("Unknown error occurred while sending event msg.\n");
-    }
-#endif
+    print_error("Error sending UDP message");
     status = 0;
   } else
     status = 1;

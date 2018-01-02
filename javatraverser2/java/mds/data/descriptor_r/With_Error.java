@@ -35,8 +35,12 @@ public final class With_Error extends Descriptor_R<Number> implements PARAMETER{
     }
 
     @Override
-    public final With_Error getLocal_() {
-        return (With_Error)new With_Error(this.getValue().getLocal(), this.getError().getLocal()).setLocal();
+    public final With_Error getLocal_(final FLAG local) {
+        final FLAG mylocal = new FLAG();
+        final Descriptor<?> value = Descriptor.getLocal(mylocal, this.getValue());
+        final Descriptor<?> error = Descriptor.getLocal(mylocal, this.getError());
+        if(FLAG.and(local, mylocal.flag)) return (With_Error)this.setLocal();
+        return (With_Error)new With_Error(value, error).setLocal();
     }
 
     @Override

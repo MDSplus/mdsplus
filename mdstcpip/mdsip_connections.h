@@ -14,6 +14,7 @@
 #endif
 #include <ipdesc.h>
 #include <mds_stdarg.h>
+#include <pthread.h>
 
 #define MDSIP_MAX_ARGS 256
 #define MDSIP_MAX_COMPRESS 9
@@ -63,7 +64,10 @@ typedef struct _options {
 } Options;
 
 typedef struct _connection {
-  int id; /* unique connection id */
+  int id; // unique connection id
+  struct _connection *next;
+  pthread_cond_t cond;
+  char state;
   char *protocol;
   char *info_name;
   void *info;
@@ -72,17 +76,26 @@ typedef struct _connection {
   unsigned char message_id;
   int client_type;
   int nargs;
-  struct descriptor *descrip[MDSIP_MAX_ARGS]; ///< list of descriptors for the
-  /// message arguments
+  struct descriptor *descrip[MDSIP_MAX_ARGS]; // list of descriptors for the message arguments
   struct _eventlist *event;
   void *tdicontext[6];
   int addr;
   int compression_level;
   int readfd;
   struct _io_routines *io;
-  char deleted;
-  struct _connection *next;
 } Connection;
+
+#define INVALID_CONNECTION_ID 0
+
+#define CON_IDLE	0x00
+#define CON_CONNECT	0x01
+#define CON_AUTHORIZE	0x02
+#define CON_SEND	0x04
+#define CON_FLUSH	0x08
+#define CON_RECV	0x10
+#define CON_SENDARG	0x20
+#define CON_USER	0x40
+#define CON_DISCONNECT	0x80
 
 #if defined(__CRAY) || defined(CRAY)
 int errno = 0;
@@ -138,26 +151,19 @@ typedef struct _mds_message {
 /// | recv_to    | receive buffer from cocnection with time out |
 ///
 typedef struct _io_routines {
-  int (*connect)(int conid, char *protocol, char *connectString);
-  ssize_t (*send)(int conid, const void *buffer, size_t buflen, int nowait);
-  ssize_t (*recv)(int conid, void *buffer, size_t len);
-  int (*flush)(int conid);
+  int (*connect)(Connection* c, char *protocol, char *connectString);
+  ssize_t (*send)(Connection* c, const void *buffer, size_t buflen, int nowait);
+  ssize_t (*recv)(Connection* c, void *buffer, size_t buflen);
+  int (*flush)(Connection* c);
   int (*listen)(int argc, char **argv);
-  int (*authorize)(int conid, char *username);
+  int (*authorize)(Connection* c, char *username);
   int (*reuseCheck)(char *connectString, char *uniqueString, size_t buflen);
-  int (*disconnect)(int conid);
-  ssize_t (*recv_to)(int conid, void *buffer, size_t len, int to_msec);
+  int (*disconnect)(Connection* c);
+  ssize_t (*recv_to)(Connection* c, void *buffer, size_t len, int to_msec);
 } IoRoutines;
 
 #define EVENTASTREQUEST "---EVENTAST---REQUEST---"
 #define EVENTCANREQUEST "---EVENTCAN---REQUEST---"
-
-#define LOGINREQUEST "---LOGIN------REQUEST___"
-#define LOGINUSER "---LOGIN------USER------"
-#define LOGINGETP1 "---LOGIN------GETP1-----"
-#define LOGINGETP2 "---LOGIN------GETP2-----"
-#define LOGINPWD "---LOGIN------PWD-------"
-#define LOGINVMS "---LOGIN------VMS-------"
 
 #define SENDCAPABILITIES 0xf
 
@@ -304,7 +310,6 @@ EXPORT Connection *FindConnection(int id, Connection **prev);
 
 extern void FlipData(Message *m);
 extern void FlipHeader(MsgHdr *header);
-extern int FlushConnection(int id);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -374,6 +379,8 @@ EXPORT int GetCompressionLevel();
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
+EXPORT void *GetConnectionInfoC(Connection* c, char **info_name, int *readfd,
+                               size_t *len);
 EXPORT void *GetConnectionInfo(int id, char **info_name, int *readfd,
                                size_t *len);
 
@@ -435,6 +442,7 @@ EXPORT Message *GetMdsMsg(int id, int *status);
 ///
 EXPORT Message *GetMdsMsgTO(int id, int *status, int timeout);
 EXPORT Message *GetMdsMsgOOB(int id, int *status);
+Message *GetMdsMsgTOC(Connection* c, int *status, int to_msec);
 
 EXPORT unsigned char GetMode();
 
@@ -665,6 +673,7 @@ EXPORT int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs,
 /// \return true if the message was succesfully sent or false otherwise.
 ///
 EXPORT int SendMdsMsg(int id, Message *m, int msg_options);
+int SendMdsMsgC(Connection* c, Message *m, int msg_options);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -678,8 +687,8 @@ EXPORT int SendMdsMsg(int id, Message *m, int msg_options);
 /// \param info accessory info descriptor
 /// \param len length of accessory info descriptor
 ///
-EXPORT void SetConnectionInfo(int conid, char *info_name, int readfd,
-                              void *info, size_t len);
+EXPORT void SetConnectionInfo(int conid, char *info_name, int readfd, void *info, size_t len);
+EXPORT void SetConnectionInfoC(Connection* c, char *info_name, int readfd, void *info, size_t len);
 
 EXPORT int SetCompressionLevel(int setting);
 
@@ -746,7 +755,18 @@ EXPORT int GetConnectionCompression(int conid);
 /// \param protocol the protocol to be used for this Connection
 /// \return The new instanced connection id or -1 if error occurred.
 ///
-extern int NewConnection(char *protocol);
+
+Connection* NewConnectionC(char *protocol);
+void DisconnectConnectionC(Connection* c);
+unsigned char IncrementConnectionMessageIdC(Connection* c);
+int AddConnection(Connection* c);
+
+Connection *FindConnectionWithLock(int id, char state);
+void UnlockConnection(Connection* c);
+
+EXPORT int SendToConnection(int id, const void *buffer, size_t buflen, int nowait);
+EXPORT int FlushConnection(int id);
+EXPORT int ReceiveFromConnection(int id, void *buffer, size_t buflen);
 
 // Deprecated ipaddr routines
 EXPORT int MdsGetClientAddr();

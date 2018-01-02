@@ -48,18 +48,14 @@ SOURCES = \
 all: @MAKESHLIBDIR@ $(@LIBPRE@MdsMath)
 
 OBJECTS = $(SOURCES:.f=.o) boxsmooth.o
-OBJECTS_i386 = $(SOURCES:.f=.o_i386) boxsmooth.o
-%.o_i386 : %.f
-	$(COMPILE.f) $< $(OUTPUT_OPTION)
 
 ## suppressing conversion error warning ##
-umach.o umach.o_i386: umach.f
+umach.o : umach.f
 	$(COMPILE.f) $< $(OUTPUT_OPTION) -Wno-conversion
 
 EXPORTS = MdsMath.export
 
 local@LIBPRE@MdsMath = @LIBPRE@MdsMath@SHARETYPE@
-local@LIBPRE@MdsMath32 = @LIBPRE@MdsMath@SHARETYPE@_i386
 
 FFLAGS += $(FCFLAGS)
 
@@ -67,13 +63,9 @@ ifeq "@MACOSX@" ""
 LIBRARIES = $(@LIBPRE@MdsMath)
 else
 LIBRARIES = $(local@LIBPRE@MdsMath)
-$(@LIBPRE@MdsMath): @LIBPRE@MdsMath@SHARETYPE@ @LIBPRE@MdsMath@SHARETYPE@_i386
+$(@LIBPRE@MdsMath): @LIBPRE@MdsMath@SHARETYPE@
 	lipo -create -o $@ $^
 endif
-
-$(local@LIBPRE@MdsMath32) %.o_i386: TARGET_ARCH = -m32
-$(local@LIBPRE@MdsMath32): $(OBJECTS_i386) $(DEF)
-	$(LINK.f) $(OUTPUT_OPTION) @FOR_LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBM)
 
 $(LIBRARIES): $(OBJECTS)  $(DEF)
 	$(LINK.f) $(OUTPUT_OPTION) @FOR_LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBM)
@@ -85,6 +77,5 @@ install: $(libdir)
 	$(INSTALL) -m 755 $(@LIBPRE@MdsMath) $(libdir)
 
 clean:
-	$(RM) $(OBJECTS) $(OBJECTS_i386)
-	$(RM) $(@LIBPRE@MdsMath) $(local@LIBPRE@MdsMath) $(local@LIBPRE@MdsMath32)
-
+	$(RM) $(OBJECTS)
+	$(RM) $(@LIBPRE@MdsMath) $(local@LIBPRE@MdsMath)

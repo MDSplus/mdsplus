@@ -78,6 +78,7 @@ The expansion routine "xentry":
 #include <strroutines.h>
 #include <mdsshr_messages.h>
 #include <STATICdef.h>
+#include <mdsplus/mdsplus.h>
 #include "mdsshrp.h"
 
 #define _MOVC3(a,b,c) memcpy(c,b,(size_t)(a))
@@ -271,6 +272,7 @@ EXPORT int MdsCompress(const struct descriptor *cimage_ptr,
   case CLASS_R:
     if (((struct descriptor_r *)in_ptr)->ndesc == 0)
       return MdsCopyDxXd(in_ptr, out_ptr);
+    MDS_ATTR_FALLTHROUGH
   case CLASS_A:
   case CLASS_APD:
   case CLASS_CA:

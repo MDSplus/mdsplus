@@ -125,7 +125,7 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
   int64_t extended_offset;
   int compress_utility = utility_update == 2;
   int unlock_nci_needed = 0;
-#if !defined(_WIN32)
+#ifndef _WIN32
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif
@@ -242,8 +242,10 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 		attributes.facility_length[SEGMENTED_RECORD_FACILITY] = 0;
 		status = TreePutExtendedAttributes(info_ptr, &attributes, &extended_offset);
 	      }
-	      if (status & 1)
+	      if (status & 1) {
+		bitassign(0,nci->flags,NciM_SEGMENTED);
 		TreePutNci(info_ptr, nidx, nci, 1);
+	      }
 	    } else if ((nci->DATA_INFO.DATA_LOCATION.record_length != old_record_length) ||
 		       (nci->DATA_INFO.DATA_LOCATION.record_length >= DATAF_C_MAX_RECORD_SIZE) ||
 		       utility_update ||
@@ -551,6 +553,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 	    bytes_this_time) == bytes_this_time)
 	  ? TreeNORMAL : TreeFAILURE;
       if (!bytes_to_put) {
+	bitassign(0,nci_ptr->flags,NciM_SEGMENTED);
 	if STATUS_OK {
 	  bitassign(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
 	  SeekToRfa(eof, rfa);
@@ -602,6 +605,7 @@ static int UpdateDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 	   (info->data_file->put, (void *)(((char *)data_dsc_ptr->pointer->pointer) + bytes_to_put),
 	    bytes_this_time) == bytes_this_time) ? TreeNORMAL : TreeFAILURE;
       if (!bytes_to_put) {
+	bitassign(0,nci_ptr->flags,NciM_SEGMENTED);
 	if (status & 1) {
 	  bitassign_c(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
 	} else {
