@@ -69,7 +69,7 @@ then
   fi
 else
   easy_install -q pip &gt;/dev/null 2&gt;&amp;1
-  while (pip uninstall -q MitDevices 2&gt;/dev/null);do :;done
+  while (/usr/bin/yes | pip uninstall -q MitDevices 2&gt;/dev/null);do :;done
 fi
 pushd __INSTALL_PREFIX__/mdsplus/tdi/MitDevices &gt;/dev/null 2&gt;&amp;1
 rm -Rf build dist
@@ -90,7 +90,7 @@ then
   fi
 else
   easy_install -q pip &gt;/dev/null 2&gt;&amp;1
-  while (pip uninstall -q MitDevices 2&gt;/dev/null);do :;done
+  while (/usr/bin/yes | pip uninstall -q MitDevices 2&gt;/dev/null);do :;done
 fi
 
     </prerm>
@@ -534,7 +534,7 @@ then
   fi
 else
   easy_install -q pip &gt;/dev/null 2&gt;&amp;1
-  while (pip uninstall -q RfxDevices 2&gt;/dev/null);do :;done
+  while (/usr/bin/yes | pip uninstall -q RfxDevices 2&gt;/dev/null);do :;done
 fi
 pushd __INSTALL_PREFIX__/mdsplus/tdi/RfxDevices &gt;/dev/null 2&gt;&amp;1
 rm -Rf build dist
@@ -555,7 +555,7 @@ then
   fi
 else
   easy_install -q pip &gt;/dev/null 2&gt;&amp;1
-  while (pip uninstall -q RfxDevices 2&gt;/dev/null);do :;done
+  while (/usr/bin/yes | pip uninstall -q RfxDevices 2&gt;/dev/null);do :;done
 fi
 
     </prerm>
@@ -575,7 +575,7 @@ then
   fi
 else
   easy_install -q pip &gt;/dev/null 2&gt;&amp;1
-  while (pip uninstall -q W7xDevices 2&gt;/dev/null);do :;done
+  while (/usr/bin/yes | pip uninstall -q W7xDevices 2&gt;/dev/null);do :;done
 fi
 pushd __INSTALL_PREFIX__/mdsplus/tdi/W7xDevices &gt;/dev/null 2&gt;&amp;1
 rm -Rf build dist
@@ -597,7 +597,7 @@ then
   fi
 else
   easy_install -q pip &gt;/dev/null 2&gt;&amp;1
-  while (pip uninstall -q W7xDevices 2&gt;/dev/null);do :;done
+  while (/usr/bin/yes | pip uninstall -q W7xDevices 2&gt;/dev/null);do :;done
 fi
 
     </prerm>
@@ -657,7 +657,7 @@ fi
         fi
       else
         easy_install -q pip &gt;/dev/null 2&gt;&amp;1
-        while (pip uninstall -q MDSplus 2&gt;/dev/null);do :;done
+        while (/usr/bin/yes | pip uninstall -q MDSplus 2&gt;/dev/null);do :;done
       fi
 	
     </prerm>
