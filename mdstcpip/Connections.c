@@ -119,7 +119,7 @@ int NextConnection(void **ctx, char **info_name, void **info, size_t * info_len)
 }
 
 int SendToConnection(int id, const void *buffer, size_t buflen, int nowait){
-  volatile int res = -1;
+  int res = -1;
   Connection* c = FindConnectionWithLock(id,CON_SEND);
   CONNECTION_UNLOCK_PUSH(c);
   if (c && c->io && c->io->send)
@@ -129,7 +129,7 @@ int SendToConnection(int id, const void *buffer, size_t buflen, int nowait){
 }
 
 int FlushConnection(int id){
-  volatile int res = -1;
+  int res = -1;
   Connection* c = FindConnectionWithLock(id,CON_FLUSH);
   CONNECTION_UNLOCK_PUSH(c);
   if (c && c->io)
@@ -139,7 +139,7 @@ int FlushConnection(int id){
 }
 
 int ReceiveFromConnection(int id, void *buffer, size_t buflen){
-  volatile int res = -1;
+  int res = -1;
   Connection* c = FindConnectionWithLock(id,CON_RECV);
   CONNECTION_UNLOCK_PUSH(c);
   if (c && c->io && c->io->recv)
