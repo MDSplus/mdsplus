@@ -649,7 +649,7 @@ python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/n
       fi
       pushd __INSTALL_PREFIX__/mdsplus/mdsobjects/python &gt;/dev/null 2&gt;&amp;1
       python setup.py -q install
-      rm -Rf build dist MDSplus.egg-info
+      rm -Rf build dist *.egg-info
       find . -name '*\.pyc' -delete
       popd &gt;/dev/null 2&gt;&amp;1
 
