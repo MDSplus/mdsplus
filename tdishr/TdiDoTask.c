@@ -184,7 +184,7 @@ int Tdi1DoTask(int opcode __attribute__ ((unused)),
 {
   INIT_STATUS;
   EMPTYXD(task_xd);
-  volatile int freetask = 1;
+  int freetask = 1;
   FREEXD_ON_EXIT(&task_xd);
   struct descriptor_routine *ptask;
   status = TdiTaskOf(list[0], &task_xd MDS_END_ARG);
