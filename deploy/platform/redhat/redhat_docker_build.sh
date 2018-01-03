@@ -23,6 +23,7 @@ makelist(){
         grep -v python/dist | \
         grep -v python/build | \
         grep -v egg-info | \
+	grep -v '\.build\-id' | \
         sort
 }
 buildrelease(){

@@ -1,0 +1,1 @@
+--platform=redhat --valgrind=memcheck,helgrind --sanitize=address,undefined,thread --dockerimage=mdsplus/docker:fc27 --distname=fc27
