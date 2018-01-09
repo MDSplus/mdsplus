@@ -258,7 +258,7 @@ then
 ===============================================
 
 Error creating java jar files. Trigger failed. 
-Look at make_jars.log artifact for more info.
+Look at make_jars.log artifact for more info .
 
 ===============================================
 EOF
