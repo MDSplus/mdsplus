@@ -514,7 +514,11 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
   int status;
   void *handle = NULL;
   char *errorstr = alloca(4096);
-  char *filename = alloca(strlen(filename_in) + strlen(prefix) + strlen(SHARELIB_TYPE) + 1);
+  char *filename;
+  static pthread_mutex_t dlopen_mutex = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_lock(&dlopen_mutex);
+  pthread_cleanup_push((void*)pthread_mutex_unlock,(void*)&dlopen_mutex);
+  filename = alloca(strlen(filename_in) + strlen(prefix) + strlen(SHARELIB_TYPE) + 1);
   errorstr[0]='\0';
   *symbol_value = NULL;
   strcpy(filename,filename_in);
@@ -526,9 +530,6 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
   if (strcmp(filename+strlen(filename)-strlen(SHARELIB_TYPE),SHARELIB_TYPE)) {
     strcat(filename,SHARELIB_TYPE);
   }
-  static pthread_mutex_t dlopen_mutex = PTHREAD_MUTEX_INITIALIZER;
-  pthread_mutex_lock(&dlopen_mutex);
-  pthread_cleanup_push((void*)pthread_mutex_unlock,(void*)&dlopen_mutex);
   handle = loadLib("", filename, errorstr);
   if (handle == NULL &&
       (strchr(filename, '/') == 0) &&
@@ -781,10 +782,11 @@ EXPORT int LibCreateVmZone(ZoneList ** zone)
 
 EXPORT int LibDeleteVmZone(ZoneList ** zone)
 {
-  int found = 0;
+  int found;
   ZoneList *list, *prev;
   LibResetVmZone(zone);
   LOCK_ZONES;
+  found = 0;
   if (*zone == MdsZones) {
     found = 1;
     MdsZones = (*zone)->next;
