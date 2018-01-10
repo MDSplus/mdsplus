@@ -79,6 +79,7 @@ extern int TdiAllocated();
 extern int TdiPutIdent();
 extern int TdiCompile();
 extern int TdiEvaluate();
+extern int is_known_function();
 
 STATIC_CONSTANT DESCRIPTOR(dnul, "\0");
 STATIC_CONSTANT DESCRIPTOR(dfun, ".fun\0");

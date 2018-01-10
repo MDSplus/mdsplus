@@ -65,6 +65,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsplus/mdsconfig.h>
 #include "STATICdef.h"
 #define DEF_FREEXD
+#define DEF_FREED
 #include "tdithreadsafe.h"
 #include "tdirefstandard.h"
 #include "tdishrp.h"
@@ -80,7 +81,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <mdsshr_messages.h>
 
-
+#define DEBUG
 
 extern unsigned short OpcEquals, OpcEqualsFirst;
 extern unsigned short OpcFun;
@@ -152,8 +153,8 @@ int TdiPutLogical(unsigned char data, struct descriptor_xd *out_ptr){
   INIT_STATUS;
   unsigned short len = (unsigned short)sizeof(unsigned char);
   unsigned char dtype = (unsigned char)DTYPE_BU;
-  if (out_ptr == 0)
-    return 0;
+  if (!out_ptr)
+    return TdiNULL_PTR;
   status = MdsGet1DxS(&len, &dtype, out_ptr);
   if STATUS_OK
     *(unsigned char *)out_ptr->pointer->pointer = data;
@@ -210,9 +211,7 @@ STATIC_ROUTINE int TdiFindIdent(int search,
   struct descriptor key_dsc;
   struct descriptor_d name_dsc;
   node_type *node_ptr;
-  block_type *block_ptr;
   int code;
-  block_type *private = (block_type *) & TdiThreadStatic_p->TdiVar_private;
 
   if (ident_ptr == 0)
     status = TdiNULL_PTR;
@@ -225,14 +224,14 @@ STATIC_ROUTINE int TdiFindIdent(int search,
                 The choice of default public/private is here.
                 ********************************************/
       case DTYPE_T:
-      case DTYPE_IDENT:
-        block_ptr = private;
+      case DTYPE_IDENT: {
+        block_type* block_ptr = (block_type *) & TdiThreadStatic_p->TdiVar_private;
         key_dsc = *(struct descriptor *)ident_ptr;
         key_dsc.dtype = DTYPE_T;
         key_dsc.class = CLASS_S;
         if (search & 1) {
           if (search & 4) {
-            status = LibLookupTree((void *)&private->head, (void *)&key_dsc, compare, (void **)&node_ptr);
+            status = LibLookupTree((void *)&block_ptr->head, (void *)&key_dsc, compare, (void **)&node_ptr);
             if STATUS_OK {
               if (node_ptr->xd.class != 0) {
                 if(block_ptr_ptr) *block_ptr_ptr = block_ptr;
@@ -263,7 +262,7 @@ STATIC_ROUTINE int TdiFindIdent(int search,
 	    *block_ptr_ptr = &_public;
           }
         }
-        break;
+        break;}
       default:
         status = TdiINVDTYDSC;
         break;
@@ -335,6 +334,9 @@ int TdiGetIdent(struct descriptor *ident_ptr, struct descriptor_xd *data_ptr){
   INIT_STATUS;
   UNLOCK_PUBLIC_PUSH;
   status = TdiFindIdent(7, (struct descriptor_r *)ident_ptr, 0, &node_ptr, 0);
+#ifdef DEBUG
+  fprintf(stderr,"GET: %s %s (%d)\n",block_ptr==&_public ? "public" : STATUS_OK ? "private" : "new", (char*)ident_ptr->pointer,ident_ptr->length);
+#endif
   if STATUS_OK
     status = MdsCopyDxXd(node_ptr->xd.pointer, data_ptr);
   else
@@ -362,6 +364,9 @@ int TdiPutIdent(struct descriptor_r *ident_ptr, struct descriptor_xd *data_ptr){
   UNLOCK_PUBLIC_PUSH;
   status = TdiFindIdent(3, ident_ptr, &key_dsc, 0, &block_ptr);
   StrUpcase((struct descriptor *)&upstr, &key_dsc);
+#ifdef DEBUG
+  fprintf(stderr,"PUT: %s %s (%d)\n",block_ptr==&_public ? "public" : STATUS_OK ? "private" : "new", (char*)key_dsc.pointer,key_dsc.length);
+#endif
   if STATUS_OK
     status =
       LibInsertTree((void **)&block_ptr->head, &upstr, &zero, compare, allocate, (void *)&node_ptr, block_ptr);
@@ -557,38 +562,90 @@ int Tdi1Present(int opcode __attribute__ ((unused)), int narg __attribute__ ((un
 /***************************************************************
         Execute a function. Set up the arguments.
 */
+extern int TdiCompile();
+int compile_fun(struct descriptor *entry)
+{
+  static DESCRIPTOR(dnul, "\0");
+  static DESCRIPTOR(dfun, ".fun\0");
+  static DESCRIPTOR(def_path, "MDS_PATH:");
+  /***************
+  Gather, compile.
+  ***************/
+  int status;
+  struct descriptor_d file = { 0, DTYPE_T, CLASS_D, 0 };
+  FREED_ON_EXIT(&file);
+  status = StrConcat((struct descriptor *)&file, (struct descriptor *)&def_path, entry, &dfun MDS_END_ARG);
+  if STATUS_OK {
+    void *ctx = 0;
+    struct descriptor dcs = { 0, DTYPE_T, CLASS_S, 0 };
+    LibFindFileRecurseCaseBlind((struct descriptor *)&file, (struct descriptor *)&file, &ctx);
+    LibFindFileEnd(&ctx);
+    StrAppend(&file, (struct descriptor *)&dnul);
+    FILE *unit = fopen(file.pointer, "rb");
+    if (unit) {
+	long flen;
+	fseek(unit, 0, SEEK_END);
+	flen = ftell(unit);
+	flen = (flen > 0xffff) ? 0xffff : flen;
+	fseek(unit, 0, SEEK_SET);
+	dcs.pointer = (char *)malloc(flen);
+	dcs.length = (unsigned short)flen;
+	fread(dcs.pointer, (size_t) flen, 1, unit);
+	fclose(unit);
+        struct descriptor_xd tmp = EMPTY_XD;
+        FREEXD_ON_EXIT(&tmp);
+	status = TdiCompile(&dcs, &tmp MDS_END_ARG);
+        FREEXD_NOW(&tmp);
+	free(dcs.pointer);
+    } else
+	status = TdiUNKNOWN_VAR;
+  }
+  FREED_NOW(&file);
+  return status;
+}
 
 int TdiDoFun(struct descriptor *ident_ptr,
 	     int nactual, struct descriptor_r *actual_arg_ptr[], struct descriptor_xd *out_ptr)
 {
-  GET_TDITHREADSTATIC_P;
   node_type *node_ptr;
+	/******************************************
+        Get name of function to do. Check its type.
+        ******************************************/
+  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+  int status;
+  pthread_mutex_lock(&lock);
+  pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
+  status = TdiFindIdent(7, (struct descriptor_r *)ident_ptr, 0, &node_ptr, 0);
+  if (status==TdiUNKNOWN_VAR) {
+    status = compile_fun(ident_ptr);
+    if STATUS_OK
+      status = TdiFindIdent(7, (struct descriptor_r *)ident_ptr, 0, &node_ptr, 0);
+  }
+  pthread_cleanup_pop(1);
+  if (STATUS_NOT_OK)
+    return status;
   struct descriptor_r *formal_ptr = 0, *formal_arg_ptr, *actual_ptr;
+  int code, opt, j, nformal = 0;
+  if ((formal_ptr = (struct descriptor_r *)node_ptr->xd.pointer) == 0
+     || formal_ptr->dtype != DTYPE_FUNCTION
+     || *(unsigned short *)formal_ptr->pointer != OpcFun)
+    return TdiUNKNOWN_VAR;
+  if ((nformal = formal_ptr->ndesc - 2) < nactual)
+    return TdiEXTRA_ARG;
+
+  GET_TDITHREADSTATIC_P;
   struct descriptor_xd tmp = EMPTY_XD;
   node_type *old_head, *new_head = 0;
-  int code, opt, j, nformal = 0, status;
   int *new_narg = &TdiThreadStatic_p->TdiVar_new_narg;
   int old_narg = *new_narg;
   block_type *private = (block_type *) &TdiThreadStatic_p->TdiVar_private;
 
-	/******************************************
-        Get name of function to do. Check its type.
-        ******************************************/
-
-  status = TdiFindIdent(7, (struct descriptor_r *)ident_ptr, 0, &node_ptr, 0);
-  if (STATUS_NOT_OK) ;
-  else if ((formal_ptr = (struct descriptor_r *)node_ptr->xd.pointer) == 0
-	   || formal_ptr->dtype != DTYPE_FUNCTION
-	   || *(unsigned short *)formal_ptr->pointer != OpcFun)
-    status = TdiUNKNOWN_VAR;
-  else if ((nformal = formal_ptr->ndesc - 2) < nactual)
-    status = TdiEXTRA_ARG;
 	/**************************************
-        Now copy input arguments into new head.
-        Pick up some keywords from prototype.
-        Only OPTIONAL arguments may be omitted.
-        OUT arguments are not evaluated.
-        **************************************/
+	 Now copy input arguments into new head.
+	 Pick up some keywords from prototype.
+	 Only OPTIONAL arguments may be omitted.
+	 OUT arguments are not evaluated.
+	 **************************************/
   for (j = 0; j < nformal && STATUS_OK; ++j) {
     formal_arg_ptr = (struct descriptor_r *)formal_ptr->dscptrs[j + 2];
     if (formal_arg_ptr == 0) {
@@ -707,8 +764,6 @@ int TdiDoFun(struct descriptor *ident_ptr,
   MdsFree1Dx(&tmp, NULL);
   private->head = old_head;
   *new_narg = old_narg;
-  if (status == TdiUNKNOWN_VAR)
-    status = TdiExtPython(ident_ptr, nactual, (struct descriptor **)actual_arg_ptr, out_ptr);
   return status;
 }
 
@@ -828,9 +883,9 @@ int Tdi1Private(int opcode __attribute__ ((unused)), int narg __attribute__ ((un
 */
 int Tdi1Public(int opcode __attribute__ ((unused)), int narg __attribute__((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  INIT_STATUS;
-  node_type *node_ptr;
+  int status;
   LOCK_PUBLIC_PUSH;
+  node_type *node_ptr;
   status = LibLookupTree((void **)&_public.head, (void *)list[0], compare, (void **)&node_ptr);
   if STATUS_OK
     status = MdsCopyDxXd(node_ptr->xd.pointer, out_ptr);
