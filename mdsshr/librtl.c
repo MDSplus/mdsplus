@@ -817,7 +817,7 @@ EXPORT int LibResetVmZone(ZoneList ** zone)
 EXPORT int LibFreeVm(unsigned int *len, void **vm, ZoneList ** zone)
 {
   VmList *list = NULL;
-  if (zone != NULL) {
+  if (zone) {
     LOCK_ZONE(*zone);
     VmList *prev;
     for (prev = NULL, list = (*zone)->vm;
@@ -853,7 +853,7 @@ EXPORT int LibGetVm(unsigned int *len, void **vm, ZoneList ** zone)
   if (*vm == NULL) {
     printf("Insufficient virtual memory\n");
   }
-  if (zone != NULL) {
+  if (zone) {
     VmList *list = malloc(sizeof(VmList));
     list->ptr = *vm;
     list->next = NULL;
