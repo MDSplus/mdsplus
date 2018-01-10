@@ -78,6 +78,7 @@ typedef struct _VmList {
 typedef struct _ZoneList {
   VmList *vm;
   struct _ZoneList *next;
+  pthread_mutex_t lock;
 } ZoneList;
 
 typedef struct node {
@@ -439,10 +440,6 @@ EXPORT char *TranslateLogical(char const *pathname)
                         for (narg=1; (narg < 256) && (va_arg(incrmtr, struct descriptor *) != MdsEND_ARG); narg++)
 #endif				/* va_count */
 
-
-
-ZoneList *MdsZones = NULL;
-
 EXPORT int TranslateLogicalXd(struct descriptor const *in, struct descriptor_xd *out)
 {
   struct descriptor out_dsc = { 0, DTYPE_T, CLASS_S, 0 };
@@ -757,9 +754,12 @@ EXPORT int StrRight(struct descriptor *out, struct descriptor *in, unsigned shor
   return StrFree1Dx(&tmp);
 }
 
-STATIC_THREADSAFE pthread_mutex_t VmMutex;
-
-int VmMutex_initialized = 0;
+static pthread_mutex_t zones_lock = PTHREAD_MUTEX_INITIALIZER;
+#define   LOCK_ZONES pthread_mutex_lock(&zones_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&zones_lock)
+#define UNLOCK_ZONES pthread_cleanup_pop(1);
+ZoneList *MdsZones = NULL;
+#define   LOCK_ZONE(zone) pthread_mutex_lock(&(zone)->lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&(zone)->lock)
+#define UNLOCK_ZONE(zone) pthread_cleanup_pop(1);
 
 EXPORT int LibCreateVmZone(ZoneList ** zone)
 {
@@ -767,14 +767,15 @@ EXPORT int LibCreateVmZone(ZoneList ** zone)
   *zone = malloc(sizeof(ZoneList));
   (*zone)->vm = NULL;
   (*zone)->next = NULL;
-  LockMdsShrMutex(&VmMutex, &VmMutex_initialized);
+  pthread_mutex_init(&(*zone)->lock,NULL);
+  LOCK_ZONES;
   if (MdsZones == NULL)
     MdsZones = *zone;
   else {
     for (list = MdsZones; list->next; list = list->next) ;
     list->next = *zone;
   }
-  UnlockMdsShrMutex(&VmMutex);
+  UNLOCK_ZONES;
   return (*zone != NULL);
 }
 
@@ -782,8 +783,8 @@ EXPORT int LibDeleteVmZone(ZoneList ** zone)
 {
   int found = 0;
   ZoneList *list, *prev;
-  LockMdsShrMutex(&VmMutex, &VmMutex_initialized);
   LibResetVmZone(zone);
+  LOCK_ZONES;
   if (*zone == MdsZones) {
     found = 1;
     MdsZones = (*zone)->next;
@@ -798,7 +799,7 @@ EXPORT int LibDeleteVmZone(ZoneList ** zone)
     free(*zone);
     *zone = 0;
   }
-  UnlockMdsShrMutex(&VmMutex);
+  UNLOCK_ZONES;
   return found;
 }
 
@@ -806,10 +807,10 @@ EXPORT int LibResetVmZone(ZoneList ** zone)
 {
   VmList *list;
   unsigned int len = 1;
-  LockMdsShrMutex(&VmMutex, &VmMutex_initialized);
+  LOCK_ZONES;
   while ((list = zone ? (*zone ? (*zone)->vm : NULL) : NULL) != NULL)
     LibFreeVm(&len, &list->ptr, zone);
-  UnlockMdsShrMutex(&VmMutex);
+  UNLOCK_ZONES;
   return MDSplusSUCCESS;
 }
 
@@ -817,8 +818,8 @@ EXPORT int LibFreeVm(unsigned int *len, void **vm, ZoneList ** zone)
 {
   VmList *list = NULL;
   if (zone != NULL) {
+    LOCK_ZONE(*zone);
     VmList *prev;
-    LockMdsShrMutex(&VmMutex, &VmMutex_initialized);
     for (prev = NULL, list = (*zone)->vm;
 	 list && (list->ptr != *vm); prev = list, list = list->next) ;
     if (list) {
@@ -827,7 +828,7 @@ EXPORT int LibFreeVm(unsigned int *len, void **vm, ZoneList ** zone)
       else
 	(*zone)->vm = list->next;
     }
-    UnlockMdsShrMutex(&VmMutex);
+    UNLOCK_ZONE(*zone);
   }
   if (len && *len && vm && *vm)
     free(*vm);
@@ -856,14 +857,14 @@ EXPORT int LibGetVm(unsigned int *len, void **vm, ZoneList ** zone)
     VmList *list = malloc(sizeof(VmList));
     list->ptr = *vm;
     list->next = NULL;
-    LockMdsShrMutex(&VmMutex, &VmMutex_initialized);
+    LOCK_ZONE(*zone);
     if ((*zone)->vm) {
       VmList *ptr;
       for (ptr = (*zone)->vm; ptr->next; ptr = ptr->next) ;
       ptr->next = list;
     } else
       (*zone)->vm = list;
-    UnlockMdsShrMutex(&VmMutex);
+    UNLOCK_ZONE(*zone);
   }
   return (*vm != NULL);
 }
