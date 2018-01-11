@@ -27,6 +27,4 @@ int TdiSubtractQuadword(unsigned int *a, unsigned int *b, unsigned int *ans);
 int TdiUnary(struct descriptor *in_ptr, struct descriptor *out_ptr, unsigned int *out_count);
 void UseNativeFloat(struct TdiCatStruct *cat);
 void TdiResetGetRecord();
-int TdiExtPython(struct descriptor *modname_d,
-		 int nargs, struct descriptor **args, struct descriptor_xd *out_ptr);
 #endif
