@@ -460,3 +460,9 @@
    fun:blas_thread_shutdown_
    fun:fork
 }
+
+{
+   race with PyThreadState
+   Helgrind:Race
+   fun:PyGILState_Ensure
+}
