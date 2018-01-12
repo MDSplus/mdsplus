@@ -67,10 +67,18 @@ void* PyTask(__attribute__((unused )) void* arg){
 
 void MultiThreadTest(void* (*task)(void*)) {
     pthread_t threads[NUM_THREADS];
+    pthread_attr_t attr, *attrp;
+    if (pthread_attr_init(&attr))
+      attrp = NULL;
+    else {
+      attrp = &attr;
+      pthread_attr_setstacksize(&attr, 0x80000);
+    }
     int nt,i;
     for (nt = 0 ; nt<NUM_THREADS ; nt++)
-      if (pthread_create(&threads[nt], NULL, task, NULL))
+      if (pthread_create(&threads[nt], attrp, task, NULL))
         break;
+    if (attrp) pthread_attr_destroy(attrp);
     if (nt<NUM_THREADS) fprintf(stderr,"Could not create all %d threads\n", NUM_THREADS);
     for (i = 0 ; i<nt ; i++)
       pthread_join(threads[i],NULL);
