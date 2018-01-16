@@ -25,12 +25,14 @@ typedef struct _thread_static {
   struct TdiZoneStruct TdiRefZone;
   unsigned int TdiIndent;
   unsigned short TdiDecompile_max;
+  int TdiOnError;
 } ThreadStatic;
 
 extern ThreadStatic *TdiGetThreadStatic();
 extern void LockTdiMutex(pthread_mutex_t *, int *);
 extern void UnlockTdiMutex(pthread_mutex_t *);
 
+#define TdiON_ERROR TdiThreadStatic_p->TdiOnError
 #define GET_TDITHREADSTATIC_P ThreadStatic *TdiThreadStatic_p = TdiGetThreadStatic()
 
 #endif

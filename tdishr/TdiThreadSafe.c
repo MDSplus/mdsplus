@@ -76,26 +76,23 @@ ThreadStatic *TdiGetThreadStatic(){
     pthread_setspecific(buffer_key, (void *)p);
     p->TdiIndent = 1;
     p->TdiDecompile_max = 0xffff;
+    p->TdiOnError = 0;
   }
   return p;
 }
 
-void LockTdiMutex(pthread_mutex_t * mutex, int *initialized){
-  if (!initialized || !*initialized) {
-#ifdef HAVE_PTHREAD_H
+void LockTdiMutex(pthread_mutex_t * mutex, int *initialized)
+{
+  static pthread_mutex_t initMutex = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_lock(&initMutex);
+  if (!*initialized) {
     pthread_mutexattr_t m_attr;
     pthread_mutexattr_init(&m_attr);
-#ifndef __sun
     pthread_mutexattr_settype(&m_attr, PTHREAD_MUTEX_RECURSIVE);
-#endif
     pthread_mutex_init(mutex, &m_attr);
-    pthread_mutexattr_destroy(&m_attr);
-#else
-    pthread_mutex_init(mutex);
-#endif
-    if (initialized)
-      *initialized = 1;
+    *initialized = 1;
   }
+  pthread_mutex_unlock(&initMutex);
   pthread_mutex_lock(mutex);
 }
 

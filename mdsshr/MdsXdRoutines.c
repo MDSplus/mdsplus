@@ -66,8 +66,6 @@ inline static char *_align(char *ptr, size_t offset, size_t size) {
 void MdsFixDscLength(struct descriptor *in);
 //static void _checkAlign(struct descriptor *in);
 
-STATIC_CONSTANT void *MdsVM_ZONE = 0;
-
 EXPORT int MdsGet1Dx(unsigned int const *length_ptr, unsigned char const *dtype_ptr, struct descriptor_xd *dsc_ptr,
 	      void **zone)
 {
@@ -76,13 +74,12 @@ EXPORT int MdsGet1Dx(unsigned int const *length_ptr, unsigned char const *dtype_
     if (*length_ptr != dsc_ptr->l_length) {
       if (dsc_ptr->l_length)
 	status =
-	  LibFreeVm(&dsc_ptr->l_length, (void *)&dsc_ptr->pointer,
-		      zone ? zone : (MdsVM_ZONE ? &MdsVM_ZONE : 0));
+	  LibFreeVm(&dsc_ptr->l_length, (void *)&dsc_ptr->pointer, zone);
       else
 	status = 1;
       if STATUS_OK
 	status =
-	  LibGetVm((unsigned int *)length_ptr, (void *)&dsc_ptr->pointer, zone ? zone : (MdsVM_ZONE ? &MdsVM_ZONE : 0));
+	  LibGetVm((unsigned int *)length_ptr, (void *)&dsc_ptr->pointer, zone);
     } else
       status = 1;
     if STATUS_OK {
@@ -102,8 +99,7 @@ EXPORT int MdsFree1Dx(struct descriptor_xd *dsc_ptr, void **zone)
   if (dsc_ptr->class == CLASS_XD) {
     if (dsc_ptr->pointer)
       status =
-	LibFreeVm(&dsc_ptr->l_length, (void *)&dsc_ptr->pointer,
-		    zone ? zone : (MdsVM_ZONE ? &MdsVM_ZONE : 0));
+	LibFreeVm(&dsc_ptr->l_length, (void *)&dsc_ptr->pointer, zone);
     else
       status = 1;
     if STATUS_OK {
