@@ -1,4 +1,4 @@
-# mdsplus.sh  - to be run during login from sh or derivative
+## mdsplus.sh  - to be run during login from sh or derivative
 # 
 # this script will search for the first environment variable definition file
 # it can find looking in the following order:
