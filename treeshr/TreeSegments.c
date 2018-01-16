@@ -544,10 +544,11 @@ if (idx >= vars->sindex.first_idx + SEGMENTS_PER_INDEX) { \
 } \
 vars->sinfo = &vars->sindex.segment[idx % SEGMENTS_PER_INDEX];
 //"
+/*
 #define PUTDATA \
 vars->sinfo->data_offset = vars->shead.data_offset; \
-vars->sinfo->rows = vars->shead.dims[vars->shead.dimct - 1];
-
+vars->sinfo->rows = vars->shead.dims[vars->shead.dimct - 1] | (vars->compress ? 0x80000000 : 0);
+*/
 #define PUTDATA_INITVALUE \
 if (initialValue->dtype == DTYPE_OPAQUE) { \
   int length; \
@@ -853,7 +854,7 @@ int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct des
                CHECK_SEGMENT_HEADER(UNLOCK_NCI),
                CHECK_SEGMENT_INDEX(UNLOCK_NCI),
                CHECK_SINFO(UNLOCK_NCI),
-               PUTDATA,
+               ,
                PUTDIM_DIM,
                UPDATE_FINISH);
 }
