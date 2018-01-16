@@ -33,10 +33,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "testutils/String.h"
 #include "mdsplus/AutoPointer.hpp"
 
+
+
 using namespace MDSplus;
 using namespace testing;
-
-
 
 namespace testing {
 class TestTreeNodePotected : public MDSplus::TreeNode {
@@ -622,7 +622,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
         }
 
         { // getSegment
-            unique_ptr<Array> data = node->getSegment(0);
+            unique_ptr<Array> data = node->getSegment(1);
             int num_elements;
             AutoArray<int> elements(data->getIntArray(&num_elements));
             TEST1( num_elements == 10 );
