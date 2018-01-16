@@ -139,7 +139,7 @@ Computes the surface integral for mode 0 of rebuilt emissivity
 //#include "definitions.h"
 #include "bessel.h"
 #include "filter.h"
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #define STEP_ROOT	1E-1
 #define TOLERANCE	1E-8
 

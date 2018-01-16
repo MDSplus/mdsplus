@@ -31,7 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <fcntl.h>
 #include <string.h>
 #include "acq32ioctl.h"
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #ifndef MAX
 #define MAX(a,b) ((a) > (b)) ? (a) : (b)
 #endif

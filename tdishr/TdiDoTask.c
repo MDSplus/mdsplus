@@ -51,7 +51,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 
 
-
 extern int TdiTaskOf();
 extern int TdiGetFloat();
 extern int TdiGetLong();
@@ -124,10 +123,11 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
   return status;
 }
 
-typedef struct _WorkerArgs{
+  typedef struct _WorkerArgs{
   Condition                 *pcond;
   int                       *pstatus;
   struct descriptor_xd      *task_xd;
+  void                      *dbid;
 } WorkerArgs;
 
 static void WorkerExit(void *args){
@@ -138,6 +138,8 @@ static void WorkerExit(void *args){
 static void WorkerThread(void *args){
   pthread_cleanup_push(WorkerExit, (void*)((WorkerArgs*)args));
   CONDITION_SET(((WorkerArgs*)args)->pcond);
+  TreeUsePrivateCtx(1);
+  TreeSwitchDbid(((WorkerArgs*)args)->dbid);
   EMPTYXD(out_xd);
   FREEXD_ON_EXIT(&out_xd);
   struct descriptor_routine* ptask = (struct descriptor_routine *)((WorkerArgs*)args)->task_xd->pointer;
@@ -152,7 +154,7 @@ STATIC_ROUTINE int StartWorker(struct descriptor_xd *task_xd, struct descriptor_
   INIT_STATUS, t_status = MDSplusERROR;
   pthread_t Worker;
   Condition WorkerRunning = CONDITION_INITIALIZER;
-  WorkerArgs args = { &WorkerRunning, &t_status, task_xd };
+  WorkerArgs args = { &WorkerRunning, &t_status, task_xd, TreeDbid()};
   _CONDITION_LOCK(&WorkerRunning);
   CREATE_DETACHED_THREAD(Worker, *8, WorkerThread,(void*)&args);
   if (c_status) {
@@ -184,8 +186,9 @@ int Tdi1DoTask(int opcode __attribute__ ((unused)),
 {
   INIT_STATUS;
   EMPTYXD(task_xd);
-  volatile int freetask = 1;
+  int freetask;
   FREEXD_ON_EXIT(&task_xd);
+  freetask = 1;
   struct descriptor_routine *ptask;
   status = TdiTaskOf(list[0], &task_xd MDS_END_ARG);
   if STATUS_NOT_OK

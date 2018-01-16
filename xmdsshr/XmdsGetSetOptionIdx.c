@@ -59,7 +59,7 @@ int XmdsGetOptionIdx(Widget w);
 ------------------------------------------------------------------------------*/
 
 #include <Xm/Xm.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 /*------------------------------------------------------------------------------
 
  External functions or symbols referenced:                                    */

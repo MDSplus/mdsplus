@@ -51,7 +51,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 +-----------------------------------------------------------------------------*/
 #include "treeshrp.h"		/* must be first or off_t wrong */
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <mdstypes.h>

@@ -13,7 +13,7 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 5
-#define YY_FLEX_SUBMINOR_VERSION 35
+#define YY_FLEX_SUBMINOR_VERSION 37
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -58,7 +58,6 @@ typedef int flex_int32_t;
 typedef unsigned char flex_uint8_t; 
 typedef unsigned short int flex_uint16_t;
 typedef unsigned int flex_uint32_t;
-#endif /* ! C99 */
 
 /* Limits of integral types. */
 #ifndef INT8_MIN
@@ -88,6 +87,8 @@ typedef unsigned int flex_uint32_t;
 #ifndef UINT32_MAX
 #define UINT32_MAX             (4294967295U)
 #endif
+
+#endif /* ! C99 */
 
 #endif /* ! FLEXINT_H */
 
@@ -161,7 +162,7 @@ struct yy_buffer_state
 	/* Number of characters read into yy_ch_buf, not including EOB
 	 * characters.
 	 */
-	int yy_n_chars;
+	yy_size_t yy_n_chars;
 
 	/* Whether we "own" the buffer - i.e., we know we created it,
 	 * and can realloc() it to grow it, and should free() it to
@@ -205,7 +206,7 @@ void dcl_pop_buffer_state (yyscan_t yyscanner );
 
 YY_BUFFER_STATE dcl__scan_buffer (char *base,yy_size_t size ,yyscan_t yyscanner );
 YY_BUFFER_STATE dcl__scan_string (yyconst char *yy_str ,yyscan_t yyscanner );
-YY_BUFFER_STATE dcl__scan_bytes (yyconst char *bytes,int len ,yyscan_t yyscanner );
+YY_BUFFER_STATE dcl__scan_bytes (yyconst char *bytes,yy_size_t len ,yyscan_t yyscanner );
 
 void *dcl_alloc (yy_size_t ,yyscan_t yyscanner );
 void *dcl_realloc (void *,yy_size_t ,yyscan_t yyscanner );
@@ -213,7 +214,7 @@ void dcl_free (void * ,yyscan_t yyscanner );
 
 /* Begin user sect3 */
 
-#define dcl_wrap(n) 1
+#define dcl_wrap(yyscanner) 1
 #define YY_SKIP_YYWRAP
 
 #define yytext_ptr yytext_r
@@ -269,13 +270,17 @@ FILE *dcl_get_out (yyscan_t yyscanner );
 
 void dcl_set_out  (FILE * out_str ,yyscan_t yyscanner );
 
-int dcl_get_leng (yyscan_t yyscanner );
+yy_size_t dcl_get_leng (yyscan_t yyscanner );
 
 char *dcl_get_text (yyscan_t yyscanner );
 
 int dcl_get_lineno (yyscan_t yyscanner );
 
 void dcl_set_lineno (int line_number ,yyscan_t yyscanner );
+
+int dcl_get_column  (yyscan_t yyscanner );
+
+void dcl_set_column (int column_no ,yyscan_t yyscanner );
 
 YYSTYPE * dcl_get_lval (yyscan_t yyscanner );
 
@@ -349,6 +354,6 @@ extern int dcl_lex \
 #line 134 "cmdParse.x"
 
 
-#line 353 "dcllex.h"
+#line 358 "dcllex.h"
 #undef dcl_IN_HEADER
 #endif /* dcl_HEADER_H */

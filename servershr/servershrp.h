@@ -1,6 +1,6 @@
 #ifndef SERVERSHRP_H
  #define SERVERSHRP_H
- #include <config.h>
+ #include <mdsplus/mdsconfig.h>
  #include <pthread_port.h>
  #ifdef _WIN32
   #include <time.h>

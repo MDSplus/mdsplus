@@ -23,7 +23,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #define _GNU_SOURCE
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <STATICdef.h>
 #include <mdsshr.h>
 #include "mdsshrthreadsafe.h"
@@ -58,9 +58,9 @@ MdsShrThreadStatic *MdsShrGetThreadStatic(){
   return p;
 }
 
-STATIC_THREADSAFE pthread_mutex_t initMutex = PTHREAD_MUTEX_INITIALIZER;
 void LockMdsShrMutex(pthread_mutex_t * mutex, int *initialized)
 {
+  static pthread_mutex_t initMutex = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_lock(&initMutex);
   if (!*initialized) {
     pthread_mutexattr_t m_attr;

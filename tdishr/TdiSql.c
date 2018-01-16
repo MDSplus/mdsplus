@@ -57,7 +57,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #ifdef HAVE_SYBASE
 #include <ctype.h>
 

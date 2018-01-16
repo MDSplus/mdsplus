@@ -39,7 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <inttypes.h>
 #include <sys/times.h>
 #include <pthread.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 
 static unsigned char *buf = NULL;
 static double *frame_times = NULL;

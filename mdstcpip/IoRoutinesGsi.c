@@ -52,7 +52,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <time.h>
 #include <sys/wait.h>
 

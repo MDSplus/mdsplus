@@ -62,7 +62,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include "filter.h"
 #include "complex.h"
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 
 static Filter *Fir(double fc, double s_f, int n, void (*Window) (double *, int));
 static void Rectangular(double *w, int n);

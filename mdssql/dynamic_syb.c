@@ -48,7 +48,7 @@ typedef const LPBYTE LPCBYTE;
 #pragma GCC diagnostic pop
 #define dbloginfree dbfreelogin
 #endif
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdsdescrip.h>
 #include <status.h>
 static LOGINREC *loginrec = 0;

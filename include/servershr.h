@@ -1,7 +1,7 @@
 #ifndef __SERVERSHR
 #define __SERVERSHR
 
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #ifdef _WIN32
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>

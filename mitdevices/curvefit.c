@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include <stdlib.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 extern void csakm_();
 extern float csval_();
 

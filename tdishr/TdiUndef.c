@@ -31,9 +31,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <STATICdef.h>
 
 
-
-int TdiON_ERROR = 0;
-
 #define UNDEF(x) int x() {return TdiNO_OPC;}
 /*** PERMANENT ***/
 UNDEF(Tdi1Else)

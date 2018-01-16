@@ -1,4 +1,4 @@
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdsdescrip.h>
 #include "treeshrp.h"
 #include <pthread_port.h>

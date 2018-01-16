@@ -16,7 +16,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <time.h>
 #ifdef HAVE_UNISTD_H
  #include <unistd.h>

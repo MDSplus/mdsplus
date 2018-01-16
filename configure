@@ -6695,7 +6695,7 @@ case "$host" in #(
      ;;
 esac
 
-#AC_CONFIG_HEADER(include/config.h)
+#AC_CONFIG_HEADER(include/mdsplus/mdsconfig.h)
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -12979,7 +12979,7 @@ VALGRIND_memcheck_FLAGS  ?=
 VALGRIND_memcheck_FLAGS  += --leak-check=full --show-reachable=no
 
 VALGRIND_helgrind_FLAGS  ?=
-VALGRIND_helgrind_FLAGS  += --history-level=approx
+VALGRIND_helgrind_FLAGS  += --history-level=full
 
 VALGRIND_drd_FLAGS       ?=
 VALGRIND_drd_FLAGS       +=
@@ -17142,7 +17142,7 @@ fi
 
 
 
-ac_config_headers="$ac_config_headers include/config.h"
+ac_config_headers="$ac_config_headers include/mdsplus/mdsconfig.h"
 
 
 
@@ -17995,7 +17995,7 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
-    "include/config.h") CONFIG_HEADERS="$CONFIG_HEADERS include/config.h" ;;
+    "include/mdsplus/mdsconfig.h") CONFIG_HEADERS="$CONFIG_HEADERS include/mdsplus/mdsconfig.h" ;;
     "Makefile.inc") CONFIG_FILES="$CONFIG_FILES Makefile.inc" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "docs/Makefile") CONFIG_FILES="$CONFIG_FILES docs/Makefile" ;;

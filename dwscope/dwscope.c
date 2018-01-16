@@ -52,7 +52,7 @@ $ dwcope [-default setup]
 
 ------------------------------------------------------------------------------*/
 #include <mdstypes.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
