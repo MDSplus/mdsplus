@@ -165,6 +165,7 @@
 ./usr/local/mdsplus/mdsobjects/python/tests/segmentsUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/simulateSegfault.py
 ./usr/local/mdsplus/mdsobjects/python/tests/threadsUnitTest.py
+./usr/local/mdsplus/mdsobjects/python/tests/taskUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/treeUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/trees
 ./usr/local/mdsplus/mdsobjects/python/tests/trees/testing_model.characteristics
