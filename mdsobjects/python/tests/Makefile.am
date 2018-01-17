@@ -9,7 +9,7 @@ include ../../../testing/testing.am
 
 TEST_EXTENSIONS = .py
 
-
+TEST_FLAGS = @MAKEFLAG_J@
 
 TESTS = \
 	dataUnitTest.py \

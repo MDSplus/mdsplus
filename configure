@@ -669,6 +669,8 @@ MDSSQL
 MAKEUIDDIR
 MAKESHLIBDIR
 MAKELIBDIR
+MAKEFLAG_O
+MAKEFLAG_J
 MAKEBINDIR
 MACOSX
 LV_CINTOOLS
@@ -8012,6 +8014,13 @@ then
 else
   : ${uiddir:=$exec_prefix/uid}
 fi
+if nproc&>/dev/null && perl -v&>/dev/null
+then
+  MAKEFLAG_J="-j -l $(perl -e "print $(nproc) * 0.9")"
+else
+  MAKEFLAG_J="-j -l 1"
+fi
+MAKEFLAG_O="$(if ${MAKE:=make} -v -O&>/dev/null; then echo -O; fi)"
 MAKEUIDDIR="\$(top_builddir)/uid/"
 MAKESHLIBDIR="\$(top_builddir)/lib/"
 MAKEBINDIR="\$(top_builddir)/bin/"
@@ -8029,6 +8038,8 @@ THREAD="-pthread"
 MITDEVICESIO_TARGETS=""
 case "$host" in
 *mingw*)
+       MAKEFLAG_J=""
+       MAKEFLAG_O=""
        IDLMDSEVENT=""
        LIBPRE=""
        CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields ";
@@ -13067,10 +13078,10 @@ $(VALGRIND_LOGS):
 tests-valgrind:
 	@ \
 	echo "--- VALGRIND TESTS --- enabled tools: $(foreach tool,$(VALGRIND_TOOLS), $(tool))"; \
-	$(MAKE) VALGRIND_BUILD="yes"; \
+	$(MAKE) -k $(BUILD_FLAGS) $(AM_MAKEFLAGS) all VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
-			$(MAKE) $(AM_MAKEFLAGS) -k tests-valgrind-tool VALGRIND_TOOL=$(tool); \
+			$(MAKE) -k $(TEST_FLAGS) $(AM_MAKEFLAGS) tests-valgrind-tool VALGRIND_TOOL=$(tool); \
 		) \
 	)
 
@@ -17040,6 +17051,8 @@ fi
 if test "x$mandir" = x"\${datarootdir}/man"; then :
   mandir="${datarootdir}/man"
 fi
+
+
 
 
 

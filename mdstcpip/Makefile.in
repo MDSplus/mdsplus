@@ -53,12 +53,12 @@ else #SHARETYPE
 endif #SHARETYPE
 
 ## MdsIpShr sources ##
-LIB_SOURCES = MdsValue.c MdsPut.c MdsOpen.c MdsClose.c MdsSetDefault.c MdsEventAst.c\
-	  MdsEventCan.c MdsDispatchEvent.c MdsSetCompression.c FreeMessage.c \
-	  IdlApi.c SendMdsMsg.c GetMdsMsg.c FlipData.c FlipHeader.c GetAnswerInfo.c ClientType.c\
-          MakeDescrip.c LoadIo.c ArgLen.c GetSetSettings.c DoMessage.c  \
-	  LockAsts.c Connections.c MdsIpFree.c SendArg.c ConnectToMds.c DisconnectFromMds.c CloseConnection.c \
-	 CheckClient.c ParseCommand.c
+LIB_SOURCES = MdsValue.c MdsPut.c MdsOpen.c MdsClose.c MdsSetDefault.c MdsEventAst.c \
+	MdsEventCan.c MdsDispatchEvent.c MdsSetCompression.c FreeMessage.c \
+	IdlApi.c SendMdsMsg.c GetMdsMsg.c FlipData.c FlipHeader.c GetAnswerInfo.c ClientType.c \
+	MakeDescrip.c LoadIo.c ArgLen.c GetSetSettings.c DoMessage.c  \
+	LockAsts.c Connections.c MdsIpFree.c SendArg.c ConnectToMds.c DisconnectFromMds.c CloseConnection.c \
+	CheckClient.c ParseCommand.c
 
 LIB_OBJECTS = $(LIB_SOURCES:.c=.o)
 
@@ -115,22 +115,32 @@ PROGRAMS = $(bin_SCRIPTS) $(MDSIPSD) @MAKEBINDIR@mdsip$(EXE) @MAKEBINDIR@mdsipte
 
 EXPORTS = mdsipshr.export
 
-all : $(MAKEFILE_HEADER) \
-      @MAKEBINDIR@ @MAKELIBDIR@ @MAKEETCDIR@ \
-      $(PROGRAMS) \
-      $(MdsIpShr) \
-      $(modules) \
-      $(MdsIpSrvShr) \
-      $(MdsIpTunnel) \
-      $(MdsIpTCP) \
-      $(IPV6_UDT) \
-      $(MdsIpGSI) \
-      $(MdsIpSSH) \
-      $(MdsIpHTTP) \
-      $(MdsIpLOCAL) \
-      $(MDSIPSD) \
-      @MAKEETCDIR@mdsip.hosts \
-      @MAKELIBDIR@@LIBPRE@MdsIpShr.a
+all : primary
+	$(MAKE) secundary @MAKEFLAG_J@  @MAKEFLAG_O@
+	$(MAKE) tertiary  @MAKEFLAG_J@  @MAKEFLAG_O@
+
+primary : \
+	$(MAKEFILE_HEADER) \
+	@MAKEBINDIR@ @MAKELIBDIR@ @MAKEETCDIR@ \
+	$(PROGRAMS) \
+	$(MdsIpShr) \
+	$(UDT4_DIRS)
+
+secundary : primary \
+	$(modules) \
+	$(MdsIpSrvShr) \
+	$(MdsIpTunnel) \
+	$(MdsIpTCP) \
+	$(IPV6_UDT) \
+	$(MdsIpGSI) \
+	$(MDSIPSD) \
+	@MAKEETCDIR@mdsip.hosts \
+	@MAKELIBDIR@@LIBPRE@MdsIpShr.a
+
+tertiary : secundary \
+	$(MdsIpSSH) \
+	$(MdsIpHTTP) \
+	$(MdsIpLOCAL)
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(ALL_SOURCES)
