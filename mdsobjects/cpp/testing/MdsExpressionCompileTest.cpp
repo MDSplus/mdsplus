@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace MDSplus;
 
 #define NUM_THREADS 8
-#define NUM_REPEATS 64
+#define NUM_REPEATS 8
 
 
 void* TdiTask(__attribute__((unused )) void* arg){
@@ -42,8 +42,17 @@ void* TdiTask(__attribute__((unused )) void* arg){
     AutoPointer<Data> f = MDSplus::execute("_ans=0;MdsShr->MdsSerializeDscOut(xd(1),xd(_ans));byte_unsigned(_ans)");
     AutoPointer<Data> g = MDSplus::execute("SerializeOut(1)");
     AutoPointer<Data> h = MDSplus::execute("_s=SerializeOut(`(1+SQRT(3.)*2-[1.3D0, 3.]/2));SerializeIn(_s)");
-    AutoPointer<Data> i = MDSplus::execute("fun test(){return(1);};test()");
-    AutoPointer<Data> j = MDSplus::execute("fun test(in _i){return(_i);};test(1)");
+    AutoPointer<Data> i = MDSplus::execute("fun test(){return(1);};test()");       //TEST1( i->getInt()==1 );
+    AutoPointer<Data> j = MDSplus::execute("fun test(in _i){return(_i);};test(2)");//TEST1( j->getInt()==2 );
+  }
+  return NULL;
+}
+
+void* PubTask(__attribute__((unused )) void* arg){
+  int ii;
+  for (ii = 0 ; ii<NUM_REPEATS ; ii++) {
+    AutoPointer<Data> a = MDSplus::execute("public _s=1");   //TEST1( a->getInt()==1 );
+    AutoPointer<Data> b = MDSplus::execute("public _s=1+_s");//TEST1( b->getInt()>1 );
   }
   return NULL;
 }
@@ -90,10 +99,16 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
     AutoPointer<Data> data = MDSplus::compile("[1,2,3]");
     // TODO: adds more tests .. //
     END_TESTING;
+
+    BEGIN_TESTING(GetIdentPutIdent);
+    MultiThreadTest(PubTask);
+    END_TESTING;
+
     TEST_TIMEOUT(10);
     BEGIN_TESTING(MultiThreadTdi);
     MultiThreadTest(TdiTask);
     END_TESTING;
+
     BEGIN_TESTING(MultiThreadTree);
     MultiThreadTest(TreeTask);
     END_TESTING;
