@@ -68,7 +68,7 @@ class Tests(TestCase):
             return None,None
         with cls.lock:
             if cls.instances==0:
-                cls.host,port = setup_mdsip('MDSIP_SERVER', 'MDSIP_PORT',4400,True)
+                cls.host,port = setup_mdsip('MDSIP_SERVER', 'MDSIP_PORT',8900,True)
                 cls.svr,cls.log = start_mdsip(port,'mdsip',env=None)
                 print(cls.svr,cls.log)
                 time.sleep(1)

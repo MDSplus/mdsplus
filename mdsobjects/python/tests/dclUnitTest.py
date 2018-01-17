@@ -134,7 +134,6 @@ class Tests(TestCase):
         self._doTCLTest('add node TCL_PY_DEV/model=TESTDEVICE')
         self._doTCLTest('do TESTDEVICE:TASK_TEST')
         self._doExceptionTest('do TESTDEVICE:TASK_ERROR1',Exc.DevUNKOWN_STATE)
-        self._doExceptionTest('do TESTDEVICE:TASK_TIMEOUT',Exc.TdiTIMEOUT)
         self._doExceptionTest('do TESTDEVICE:TASK_ERROR2',Exc.DevUNKOWN_STATE)
         self._doExceptionTest('close',Exc.TreeWRITEFIRST)
         self._doTCLTest('write')
@@ -185,7 +184,7 @@ class Tests(TestCase):
                 for envpair in self.envx.items():
                     testDispatchCommand(server,'env %s=%s'%envpair)
             return None,None
-        monitor,monitor_port = setup_mdsip('ACTION_MONITOR','MONITOR_PORT',4400+self.index,False)
+        monitor,monitor_port = setup_mdsip('ACTION_MONITOR','MONITOR_PORT',8700+self.index,False)
         monitor_opt = "/monitor=%s"%monitor if monitor_port>0 else ""
         server ,server_port  = setup_mdsip('ACTION_SERVER', 'ACTION_PORT',8800+self.index,True)
         shot = self.shot+1
