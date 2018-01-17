@@ -11,16 +11,18 @@ VPATH=@srcdir@
 @TARGET_SELFHELP@
 HELP_DESCRIPTION = This is MDSplus build system, documented targets follow:
 
-JAVA_APS = \
-	   javamds \
+JAVA_JAR = \
 	   javascope \
 	   javatraverser \
 	   javatraverser2 \
-	   javatraverser2/java/mds/mdslib \
 	   javadispatcher \
 	   javadevices \
 	   javaclient \
 	   mdsobjects/java
+
+JAVA_APS = $(JAVA_JAR) \
+	   javamds \
+	   javatraverser2/java/mds/mdslib
 
 ifeq "@HAVE_MOTIF@" "yes"
 MOTIF_APS = xmdsshr \
@@ -37,13 +39,7 @@ HDF5_APS = hdf5
 D3D_PACKAGE = d3dshr
 
 ifeq "@JAVA_ONLY@" "yes"
-PARTS = javascope \
-	javatraverser \
-	javatraverser2 \
-	javadispatcher \
-	javadevices \
-	javaclient \
-	mdsobjects/java
+PARTS = $(JAVA_JAR)
 else
 PARTS = \
 	mdsshr \
@@ -90,6 +86,10 @@ all: $(PARTS)
 DIRECTORIES = $(sort @MAKEBINDIR@ @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEUIDDIR@)
 
 $(PARTS): $(DIRECTORIES)
+@MINGW_FALSE@	$(MAKE) -C $@ @MAKEFLAG_J@ @MAKEFLAG_O@
+@MINGW_TRUE@	$(MAKE) -C $@
+# override parallel flags for java apps
+$(JAVA_JAR): $(DIRECTORIES)
 	$(MAKE) -C $@
 
 .PHONY: docs

@@ -15,6 +15,8 @@ LDADD = $(AM_LIBS) -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr
 
 AM_DEFAULT_SOURCE_EXT = .cpp
 
+BUILD_FLAGS = @MAKEFLAG_J@
+TEST_FLAGS = 
 
 #
 # This is the list of tests to be compiled and executed
