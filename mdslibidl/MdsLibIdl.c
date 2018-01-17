@@ -32,7 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <mds_stdarg.h>
 #include <libroutines.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif

@@ -36,9 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdithreadsafe.h"
 #define TdiHASH_MAX 991
 
-STATIC_THREADSAFE int lock_initialized = 0;
-STATIC_THREADSAFE pthread_mutex_t lock;
-STATIC_THREADSAFE short TdiREF_HASH[1024];	/*TdiHASH_MAX]; */
+STATIC_THREADSAFE short TdiREF_HASH[TdiHASH_MAX];
 #include "tdireffunction.h"
 #include <string.h>
 #include <stdio.h>
@@ -53,8 +51,6 @@ STATIC_ROUTINE int TdiHashOne(int len, char *pstring)
   char *ps = pstring;
   while (--n >= 0 && *ps) {
     hash = (int)(((uint64_t)hash) * 11 + (upcase(ps) - ' '));
-    //__builtin_smul_overflow(hash, 11, &hash);
-    //__builtin_sadd_overflow(hash, (upcase(ps) - ' '), &hash);
     ps++;
   }
   hash %= TdiHASH_MAX;
@@ -95,31 +91,22 @@ STATIC_ROUTINE int TdiHashAll()
 int TdiHash(int len, char *pstring)
 {
   int jh, jf;
-
-	/**************
-        Self-initialize
-        **************/
-  LockTdiMutex(&lock, &lock_initialized);
+  static pthread_mutex_t lock;
+  pthread_mutex_lock(&lock);
+  pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
   jh = TdiHashOne(len, pstring);
   if (TdiREF_HASH[0] == 0)
     TdiHashAll();
-
   while ((jf = TdiREF_HASH[jh]) >= 0) {
     int i;
     char *name = TdiRefFunction[jf].name;
     for (i = 0; (i < len) && (name[i] != '\0') && (upcase(pstring + i) == name[i]); i++) ;
     if (i == len && name[i] == '\0')
       break;
-/*
-                if (strncmp(pstring, TdiRefFunction[jf].name, len) == 0) {
-                        k = strlen(TdiRefFunction[jf].name);
-                        if (k == len || *(pstring+k) == '\0') break;
-                }
-*/
     if (++jh >= TdiHASH_MAX)
       jh = 0;
   }
-  UnlockTdiMutex(&lock);
+  pthread_cleanup_pop(1);
   return jf;
 }
 

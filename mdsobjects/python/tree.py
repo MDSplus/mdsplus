@@ -2628,6 +2628,24 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                                             _dat.Data.byref(end),
                                             _dat.Data.byref(dim),
                                             _C.c_int32(int(idx))))
+    def updateSegmentLimits(self,start,end,idx):
+        """Update a segment
+        @param start: index of first row of segment
+        @type start: Data
+        @param end: index of last row of segment
+        @type end: Data
+        @param idx: Index of segment
+        @type idx: int
+        @rtype: None
+        """
+        start,end = map(_dat.Data,(start,end))
+        _exc.checkStatus(
+                _TreeShr._TreeUpdateSegment(self.ctx,
+                                            self._nid,
+                                            _dat.Data.byref(start),
+                                            _dat.Data.byref(end),
+                                            None,
+                                            _C.c_int32(int(idx))))
 
 class TreePath(TreeNode): # HINT: TreePath begin
     """Class to represent an MDSplus node reference (path)."""

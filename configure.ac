@@ -92,7 +92,7 @@ dnl See if we need to use native compilers
 AS_CASE(["$host"],
         [sparc-sun-solaris2*], [${CC=cc}])
 
-#AC_CONFIG_HEADER(include/config.h)
+#AC_CONFIG_HEADER(include/mdsplus/mdsconfig.h)
 AC_CHECK_SIZEOF(int *)
 AC_SYS_LARGEFILE
 
@@ -1161,9 +1161,9 @@ AC_MSG_RESULT([$enable_wconversion])
 # ///  CONFIG_H  ///////////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-dnl Here we define all custom autoheader adds to config.h.in
+dnl Here we define all custom autoheader adds to mdsconfig.h.in
 
-dnl add here what goes on tom of config.h
+dnl add here what goes on tom of mdsconfig.h
 AH_TOP()
 
 AH_VERBATIM([_LL_CONSTANTS], [
@@ -1185,7 +1185,7 @@ AH_VERBATIM([_WIN32], [
 #endif
 ])
 
-dnl add here what goes on bottom of config.h
+dnl add here what goes on bottom of mdsconfig.h
 AH_BOTTOM()
 
 
@@ -1290,7 +1290,7 @@ AC_SUBST(DC1394_SUPPORT2)
 AC_SUBST(VS)
 AC_SUBST(VS_ARCH)
 AC_SUBST(VS_DIR)
-AC_CONFIG_HEADER(include/config.h)
+AC_CONFIG_HEADER(include/mdsplus/mdsconfig.h)
 
 
 AC_OUTPUT(Makefile.inc

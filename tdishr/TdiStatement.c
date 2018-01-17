@@ -33,7 +33,6 @@ extern unsigned short OpcCase;
 extern unsigned short OpcDefault;
 extern unsigned short OpcLabel;
 extern unsigned short OpcStatement;
-extern int TdiON_ERROR;
 
 #include <STATICdef.h>
 #include "tdirefstandard.h"
@@ -41,7 +40,7 @@ extern int TdiON_ERROR;
 #include <tdishr_messages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
-
+#include "tdithreadsafe.h"
 
 
 extern int TdiIntrinsic();
@@ -210,7 +209,7 @@ int Tdi1IfError(int opcode __attribute__ ((unused)), int narg, struct descriptor
 {
   INIT_STATUS;
   int keep, j;
-
+  GET_TDITHREADSTATIC_P;
   keep = TdiON_ERROR;
   TdiON_ERROR = 0;
   for (j = 0; j < narg; ++j) {

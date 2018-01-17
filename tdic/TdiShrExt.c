@@ -59,7 +59,7 @@ dele *.exe;
  #include <sys/socket.h>
  #define INVALID_SOCKET -1
 #endif
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>

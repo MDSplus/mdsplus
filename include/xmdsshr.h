@@ -1,5 +1,5 @@
 #pragma once
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <X11/Intrinsic.h>
 #include <Mrm/MrmPublic.h>
 #include <Xmds/XmdsWaveform.h>

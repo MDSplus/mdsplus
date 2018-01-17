@@ -34,7 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libroutines.h>
 #include <strroutines.h>
 
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
@@ -112,16 +112,6 @@ void TreeRestoreContext(void *ctx)
 void *TreeSaveContext()
 {
   return _TreeSaveContext(*TreeCtx());
-}
-
-void *TreeDbid()
-{
-  return *TreeCtx();
-}
-
-void *_TreeDbid(void **dbid)
-{
-  return *dbid;
 }
 
 int TreeOpenEdit(char const *tree, int shot)

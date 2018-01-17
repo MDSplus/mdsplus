@@ -22,7 +22,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <status.h>
 #include <libroutines.h>
 #include <STATICdef.h>
@@ -69,6 +69,14 @@ EXPORT void **TreeCtx(){
   return old_dbid;
 }
 
+EXPORT void *TreeDbid(){
+  return *TreeCtx();
+}
+
+EXPORT void *_TreeDbid(void **dbid){
+  return *dbid;
+}
+
 EXPORT void *TreeSwitchDbid(void *dbid){
   TreeThreadStatic *p = TreeGetThreadStatic();
   pthread_rwlock_wrlock(&treectx_lock);
@@ -90,3 +98,37 @@ EXPORT int TreeUsingPrivateCtx(){
   TreeThreadStatic *p = TreeGetThreadStatic();
   return p->privateCtx;
 }
+
+struct private_ctx{
+  void *dbid;
+  int  upc;
+} PRIVATE_CTX;
+
+EXPORT void* TreeSavePrivateCtx(void** ctx){
+  struct private_ctx* pctx = (struct private_ctx*)malloc(sizeof(struct private_ctx));
+  pctx->dbid = TreeDbid();
+  pctx->upc  = TreeUsePrivateCtx(1);
+  TreeSwitchDbid(*ctx);
+  return pctx;
+}
+
+EXPORT void TreeRestorePrivateCtx(void* _pctx){
+  struct private_ctx* pctx = (struct private_ctx*)_pctx;
+  TreeSwitchDbid(pctx->dbid);
+  TreeUsePrivateCtx(pctx->upc);
+  free(pctx);
+}
+
+/*
+EXPORT int _Call(void** ctx, struct descriptor* dsc){
+  if (!dsc) return TreeNormal;
+  void* pctx = TreeSavePrivateCtx(ctx);
+  pthread_cleanup_push(RestorePrivateCtx,pctx);
+  // do stuff that requires ctx but does not accept ctx as input
+  pthread_cleanup_pop(1);
+}
+
+EXPORT int TreeDeRef(struct descript* dsc){
+  return _TreeDeRef(TreeCtx(), dsc);
+}
+*/

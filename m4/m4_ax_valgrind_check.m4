@@ -174,7 +174,7 @@ VALGRIND_memcheck_FLAGS  ?=
 VALGRIND_memcheck_FLAGS  += --leak-check=full --show-reachable=no
 
 VALGRIND_helgrind_FLAGS  ?=
-VALGRIND_helgrind_FLAGS  += --history-level=approx
+VALGRIND_helgrind_FLAGS  += --history-level=full
 
 VALGRIND_drd_FLAGS       ?=
 VALGRIND_drd_FLAGS       +=

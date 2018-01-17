@@ -264,13 +264,18 @@ class Tests(TestCase):
         self.assertEqual(str(sig.record),"RAW * SLP + OFF")
         self.assertTrue(sig.dim_of().tolist(),(arange(0,length,dtype=int64)*int(1e9/clk)+trg).tolist())
         self.assertTrue((abs(sig.data()-(ones(length,dtype=int16)*slp+off))<1e-5).all(),"Stored data does not match expected array")
-#        ptree.close()
-#        ptree.compressDatafile() # this will break the functionality of updateSegment
-#        ptree.open()
         trig.record = 0
         for i in range(int(length/seglen)):
             dim = raw.getSegmentDim(i)
             raw.updateSegment(dim.data()[0],dim.data()[-1],dim,i)
+        self.assertEqual(str(raw.getSegment(0)),"Build_Signal(Word([1,1,1,1,1,1,1,1,1,1]), *, Build_Dim(Build_Window(0Q, 9Q, TRG), * : * : 1000000000Q / CLK))")
+        self.assertTrue(sig.dim_of().tolist(),(arange(0,length,dtype=int64)*int(1e9/clk)).tolist())
+        ptree.close()
+        ptree.compressDatafile() # this will break the functionality of updateSegment
+        ptree.open()
+        trig.record = 0
+        for i in range(int(length/seglen)):
+            raw.updateSegment(i*seglen,i*seglen-1,None,i)
         self.assertEqual(str(raw.getSegment(0)),"Build_Signal(Word([1,1,1,1,1,1,1,1,1,1]), *, Build_Dim(Build_Window(0Q, 9Q, TRG), * : * : 1000000000Q / CLK))")
         self.assertTrue(sig.dim_of().tolist(),(arange(0,length,dtype=int64)*int(1e9/clk)).tolist())
       test()

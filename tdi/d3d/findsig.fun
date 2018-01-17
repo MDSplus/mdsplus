@@ -1,6 +1,6 @@
 
 PUBLIC FUN FINDSIG (IN _tag, OPTIONAL OUT _tree, OPTIONAL OUT _revert,
-		    OPTIONAL IN _no_ptdata, OPTIONAL IN _closetree)
+		     OPTIONAL IN _no_ptdata, OPTIONAL IN _closetree)
 
 /* This function finds the subtree containing _tag.  It assumes:
 	- Every tag name is unique in the MDSplus tree
@@ -18,6 +18,8 @@ PUBLIC FUN FINDSIG (IN _tag, OPTIONAL OUT _tree, OPTIONAL OUT _revert,
 
    20100828 SMF - Remove FINDCER.fun call.  Use the tag names instead of
                   the old translation routine as cerprof.fun is retired.
+	
+   20140708 SMF - Added auditing to /var/log/mdsplus/findsig.log.  
 
 */
 
@@ -31,16 +33,16 @@ PUBLIC FUN FINDSIG (IN _tag, OPTIONAL OUT _tree, OPTIONAL OUT _revert,
 	_shotcheck=-1;
         if (not present(_closetree)) _closetree=0l;
 
-
 	/* check to see if tag is a special tag */
-
 	_tag=UPCASE(TRIM(_tag));
 
-	  /* check TS first, if it is a TS signal, RETURN NOW!!! */
-
+	/* check TS first, if it is a TS signal, RETURN NOW!!! */
 	_stat = FINDTS(_tag, _tree, _node, _revert);
-
 	if (_stat) {
+	  if (EQ(machine(),"D3D")) {
+	    _cmd = "echo '"//date_time()//" "//whoami()//" "//_tag//" "//_tree//"' >> /var/log/mdsplus/findsig.log &"; 
+	    spawn(_cmd); 
+          }
 	  return (_node);
 	}
 
@@ -53,15 +55,16 @@ PUBLIC FUN FINDSIG (IN _tag, OPTIONAL OUT _tree, OPTIONAL OUT _revert,
            _tree='';
            _stat=FINDSIGTAG(_tag, _tree, _node, _revert);
         }
-
         if (_closetree) {
            _dummy = TreeShr->TreeClose(ref(_close),val(_shotcheck));   /* DO NOT CLOSE TREE - performace hit!!! */
         }
-
 	if (_stat) {
-	   return (_node);
+          if (EQ(machine(),"D3D")) {
+	    _cmd = "echo '"//date_time()//" "//whoami()//" "//_tag//" "//_tree//"' >> /var/log/mdsplus/findsig.log &";
+            spawn(_cmd);
+          }
+	  return (_node);
   	}
-
 
 	/* Open D3D tree for next check */
 	_stat=TreeShr->TreeOpen(ref("D3D\0"),val(_shotcheck));
@@ -111,6 +114,10 @@ PUBLIC FUN FINDSIG (IN _tag, OPTIONAL OUT _tree, OPTIONAL OUT _revert,
 	  if ((_tree eq "PTDATA") && (_no_ptdata)) {
 	    ABORT(); 
 	  } else {
+            if (EQ(machine(),"D3D")) {
+	      _cmd = "echo '"//date_time()//" "//whoami()//" "//_tag//" "//_tree//"' >> /var/log/mdsplus/findsig.log &";
+              spawn(_cmd);
+            }
 	    RETURN(_node);
 	  }
 

@@ -62,7 +62,7 @@ int boxsmooth(int *num, float *in, int *width, float *out)
 ------------------------------------------------------------------------------*/
 
 #include <string.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 
 EXPORT int boxsmooth(int *num, float *in, int *width, float *out)
 {

@@ -106,7 +106,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 
 static Complex *FindChebPoles(double fp, double fs, double ap, double as, double fc, int *N,
 			      double *gain);

@@ -120,7 +120,7 @@ DIST_COMMON = $(srcdir)/Makefile.am $(dist_bin_SCRIPTS) \
 	$(dist_scripts_SCRIPTS) $(dist_sysconf_DATA) \
 	$(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/include/config.h
+CONFIG_HEADER = $(top_builddir)/include/mdsplus/mdsconfig.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;

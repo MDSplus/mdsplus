@@ -102,8 +102,9 @@ target_triplet = @target@
 @ENABLE_SANITIZE_TRUE@	echo --skip;) $(shell test \
 @ENABLE_SANITIZE_TRUE@	x"${ENABLE_SANITIZE}" != x"thread" || \
 @ENABLE_SANITIZE_TRUE@	echo --skip;)
-TESTS = buildtest$(EXEEXT) MdsExceptionTest$(EXEEXT) \
-	MdsDataTest$(EXEEXT) MdsScalarTest_NumericConversion$(EXEEXT) \
+TESTS = buildtest$(EXEEXT) MdsExpressionCompileTest$(EXEEXT) \
+	MdsExceptionTest$(EXEEXT) MdsDataTest$(EXEEXT) \
+	MdsScalarTest_NumericConversion$(EXEEXT) \
 	MdsScalarTest_NumericLimits$(EXEEXT) \
 	MdsScalarTest_ScalarCast$(EXEEXT) MdsStringTest$(EXEEXT) \
 	MdsCompoundTest$(EXEEXT) MdsSignalTest$(EXEEXT) \
@@ -113,8 +114,7 @@ TESTS = buildtest$(EXEEXT) MdsExceptionTest$(EXEEXT) \
 	MdsActionTest$(EXEEXT) MdsApdTest$(EXEEXT) \
 	MdsTreeSuppression$(EXEEXT) MdsTreeTest$(EXEEXT) \
 	MdsTreeNodeTest$(EXEEXT) MdsEventSuppression$(EXEEXT) \
-	MdsEventTest$(EXEEXT) MdsConnectionTest$(EXEEXT) \
-	MdsExpressionCompileTest$(EXEEXT)
+	MdsEventTest$(EXEEXT) MdsConnectionTest$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = mdsobjects/cpp/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -144,11 +144,12 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/include/config.h
+CONFIG_HEADER = $(top_builddir)/include/mdsplus/mdsconfig.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__EXEEXT_1 = buildtest$(EXEEXT) MdsExceptionTest$(EXEEXT) \
-	MdsDataTest$(EXEEXT) MdsScalarTest_NumericConversion$(EXEEXT) \
+am__EXEEXT_1 = buildtest$(EXEEXT) MdsExpressionCompileTest$(EXEEXT) \
+	MdsExceptionTest$(EXEEXT) MdsDataTest$(EXEEXT) \
+	MdsScalarTest_NumericConversion$(EXEEXT) \
 	MdsScalarTest_NumericLimits$(EXEEXT) \
 	MdsScalarTest_ScalarCast$(EXEEXT) MdsStringTest$(EXEEXT) \
 	MdsCompoundTest$(EXEEXT) MdsSignalTest$(EXEEXT) \
@@ -158,8 +159,7 @@ am__EXEEXT_1 = buildtest$(EXEEXT) MdsExceptionTest$(EXEEXT) \
 	MdsActionTest$(EXEEXT) MdsApdTest$(EXEEXT) \
 	MdsTreeSuppression$(EXEEXT) MdsTreeTest$(EXEEXT) \
 	MdsTreeNodeTest$(EXEEXT) MdsEventSuppression$(EXEEXT) \
-	MdsEventTest$(EXEEXT) MdsConnectionTest$(EXEEXT) \
-	MdsExpressionCompileTest$(EXEEXT)
+	MdsEventTest$(EXEEXT) MdsConnectionTest$(EXEEXT)
 MdsActionTest_SOURCES = MdsActionTest.cpp
 MdsActionTest_OBJECTS = MdsActionTest.$(OBJEXT)
 MdsActionTest_LDADD = $(LDADD)
@@ -274,7 +274,7 @@ AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
-DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
+DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include/mdsplus
 depcomp = $(SHELL) $(top_srcdir)/conf/depcomp
 am__depfiles_maybe = depfiles
 am__mv = mv -f
@@ -1381,6 +1381,13 @@ buildtest.log: buildtest$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MdsExpressionCompileTest.log: MdsExpressionCompileTest$(EXEEXT)
+	@p='MdsExpressionCompileTest$(EXEEXT)'; \
+	b='MdsExpressionCompileTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 MdsExceptionTest.log: MdsExceptionTest$(EXEEXT)
 	@p='MdsExceptionTest$(EXEEXT)'; \
 	b='MdsExceptionTest'; \
@@ -1531,13 +1538,6 @@ MdsEventTest.log: MdsEventTest$(EXEEXT)
 MdsConnectionTest.log: MdsConnectionTest$(EXEEXT)
 	@p='MdsConnectionTest$(EXEEXT)'; \
 	b='MdsConnectionTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsExpressionCompileTest.log: MdsExpressionCompileTest$(EXEEXT)
-	@p='MdsExpressionCompileTest$(EXEEXT)'; \
-	b='MdsExpressionCompileTest'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

@@ -202,6 +202,18 @@ STATIC_ROUTINE int interlude(int (*f1) (), int opcode, int narg,
   return (*f1) (opcode, narg, list, out_ptr);
 }
 
+struct _fixed {
+  int n;
+  char f[256];
+  struct descriptor *a[256];
+};
+void cleanup_list(void* fixed_in) {
+  struct _fixed* fixed = (struct _fixed*)fixed_in;
+    for (; --fixed->n >= 0 ;)
+      if (fixed->f[fixed->n])
+	free(fixed->a[fixed->n]);
+}
+
 EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS, stat1 = MDSplusSUCCESS;
@@ -221,21 +233,18 @@ EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct 
   else if (TdiThreadStatic_p->TdiIntrinsic_recursion_count > 1800)
     status = TdiRECURSIVE;
   else {
-    struct descriptor *fixed_list[256];
-    char fixed[256];
-    int i;
-    for (i = 0; i < narg; i++)
-      if (list[i] != NULL && list[i]->class == CLASS_NCA) {
-	fixed[i] = 1;
-	fixed_list[i] = FixedArray(list[i]);
+    struct _fixed fixed = {0};
+    pthread_cleanup_push(cleanup_list,&fixed);
+    for (fixed.n = 0; fixed.n < narg; fixed.n++)
+      if (list[fixed.n] != NULL && list[fixed.n]->class == CLASS_NCA) {
+	fixed.f[fixed.n] = 1;
+	fixed.a[fixed.n] = FixedArray(list[fixed.n]);
       } else {
-	fixed[i] = 0;
-	fixed_list[i] = list[i];
+	fixed.f[fixed.n] = 0;
+	fixed.a[fixed.n] = list[fixed.n];
       }
-    status = interlude(fun_ptr->f1, opcode, narg, fixed_list, &tmp);
-    for (i = 0; i < narg; i++)
-      if (fixed[i])
-	free(fixed_list[i]);
+    status = interlude(fun_ptr->f1, opcode, narg, fixed.a, &tmp);
+    pthread_cleanup_pop(1);
   }
   if (STATUS_OK || status == TdiBREAK || status == TdiCONTINUE || status == TdiGOTO || status == TdiRETURN) {
     if (!out_ptr)

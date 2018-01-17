@@ -71,7 +71,6 @@
 ./usr/local/mdsplus/tdi/dispatch/phases/phase_name_lookup.fun
 ./usr/local/mdsplus/tdi/dispatch/phases/phase_number_lookup.fun
 ./usr/local/mdsplus/tdi/dispatch/phases/phase_table.fun
-./usr/local/mdsplus/tdi/getenv.fun
 ./usr/local/mdsplus/tdi/helloworld.fun
 ./usr/local/mdsplus/tdi/java
 ./usr/local/mdsplus/tdi/java/EndWave.fun
@@ -131,6 +130,7 @@
 ./usr/local/mdsplus/tdi/mdsshr/compare.fun
 ./usr/local/mdsplus/tdi/mdsshr/days_since.fun
 ./usr/local/mdsplus/tdi/mdsshr/findfile.fun
+./usr/local/mdsplus/tdi/mdsshr/getenv.fun
 ./usr/local/mdsplus/tdi/mdsshr/getmsg.fun
 ./usr/local/mdsplus/tdi/mdsshr/help.fun
 ./usr/local/mdsplus/tdi/mdsshr/hours_since.fun
@@ -151,9 +151,9 @@
 ./usr/local/mdsplus/tdi/python
 ./usr/local/mdsplus/tdi/python/Py.py
 ./usr/local/mdsplus/tdi/python/getShotDB.py
-./usr/local/mdsplus/tdi/python/intersect1d.fun
+./usr/local/mdsplus/tdi/python/intersect1d.py
 ./usr/local/mdsplus/tdi/python/pyfun.py
-./usr/local/mdsplus/tdi/python/setdiff1d.fun
+./usr/local/mdsplus/tdi/python/setdiff1d.py
 ./usr/local/mdsplus/tdi/remote
 ./usr/local/mdsplus/tdi/remote/GetManyExecute.fun
 ./usr/local/mdsplus/tdi/remote/ListConnections.fun
@@ -198,8 +198,6 @@
 ./usr/local/mdsplus/tdi/tcl/Tcl.fun
 ./usr/local/mdsplus/tdi/tcl/submit.fun
 ./usr/local/mdsplus/tdi/tcl/unix_submit.fun
-./usr/local/mdsplus/tdi/tdishr
-./usr/local/mdsplus/tdi/tdishr/TdiGetRecord.fun
 ./usr/local/mdsplus/tdi/time_union.fun
 ./usr/local/mdsplus/tdi/times.fun
 ./usr/local/mdsplus/tdi/timtest.fun
@@ -226,6 +224,7 @@
 ./usr/local/mdsplus/tdi/treeshr/TreeFlushOff.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeFlushReset.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeGetCurrentShot.fun
+./usr/local/mdsplus/tdi/treeshr/TreeGetRecord.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeHook.example
 ./usr/local/mdsplus/tdi/treeshr/TreeOpen.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeOpenEdit.fun
