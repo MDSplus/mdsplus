@@ -1073,8 +1073,8 @@ int _TreeGetNumSegments(void *dbid, int nid, int *num){
   *num = 0;
   INIT_VARS;
   RETURN_IF_NOT_OK(open_datafile_read(vars));
-  IF_NO_EXTENDED_NCI   return TreeNOSEGMENTS;
-  IF_NO_SEGMENT_HEADER return TreeNOSEGMENTS;
+  IF_NO_EXTENDED_NCI   return status; //return num=0
+  IF_NO_SEGMENT_HEADER return status; //return num=0
   *num = _vars.shead.idx + 1;
   return status;
 }
