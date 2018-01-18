@@ -225,30 +225,43 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
     local = _threading.local()
     @classmethod
     def pushTree(cls,tree):
-        cls.lock.acquire()
+        private = Tree.usingPrivateCtx()
+        if not private:
+            if tree is None:       
+                cls.lock.acquire()
+            else:
+                Tree.usePrivateCtx()
         try:
             if tree is None: tree = cls.getTree()
             dbid = cls.switchDbid(tree)
             if not hasattr(cls.local,'trees'):
-                cls.local.trees = [(tree,dbid)]
+                cls.local.trees = [(tree,dbid,private)]
             else:
-                cls.local.trees.append((tree,dbid))
+                cls.local.trees.append((tree,dbid,private))
             if tree is None: cls.switchDbid(dbid)
         except:
-            cls.lock.release()
+            if not private:
+                if tree is None:
+                    cls.lock.release()
+                else:
+                    Tree.usePrivateCtx(private)
             raise
 
     @classmethod
     def popTree(cls):
+        tree,odbid,private = cls.local.trees.pop()
         try:
-            tree,odbid = cls.local.trees.pop()
             dbid = cls.switchDbid(odbid)
             if tree is None:
                  cls.switchDbid(dbid)
                  if not dbid==odbid:
                      cls.local.tctx = cls(dbid,opened=(odbid is None))
         finally:
-            cls.lock.release()
+            if not private:
+                if tree is None:
+                    cls.lock.release()
+                else:
+                    Tree.usePrivateCtx(private)
 
 class _DBI_ITM_INT(_C.Structure): # HINT: _DBI_ITM_INT begin
 
@@ -1696,7 +1709,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         """
         xd=_dsc.Descriptor_xd()
         _TreeCtx.pushTree(self.tree)
-        try:
+        try:    
             status=_TreeShr.TreeGetRecord(self._nid,xd.ref)
         finally:
             _TreeCtx.popTree()
@@ -1891,7 +1904,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         if not returnDict and len(ans) == 1:
             return list(ans.values())[0]
         return ans
-
 
     def getNid(self):
         """Return node index
