@@ -3224,59 +3224,61 @@ If you did intend to write to a subnode of the device you should check the prope
     __cached_mds_pydevice_path = ""
     __cached_py_device_not_found = []
     __cached_py_devices = None
-    @staticmethod
-    def importPyDeviceModule(name):
+    __cached_lock = _threading.Lock()
+    @classmethod
+    def importPyDeviceModule(cls,name):
         """Find a device support module with a case insensitive lookup of
         'model'.py in the MDS_PYDEVICE_PATH environment variable search list."""
-        sys,os,path = Device.__cached()
-        name = name.lower()
-        if name in Device.__cached_py_device_modules:
+        with cls.__cached_lock:
+          sys,os,path = Device.__cached()
+          name = name.lower()
+          if name in Device.__cached_py_device_modules:
             return Device.__cached_py_device_modules[name]
-        if name in Device.__cached_py_device_modules:
+          if name in Device.__cached_py_device_modules:
             raise _exc.DevPYDEVICE_NOT_FOUND
-        if path is not None:
-          check_name=name+".py"
-          parts=path.split(';')
-          for part in parts:
-            w=os.walk(part)
-            for dp,dn,fn in w:
-              for fname in fn:
-                if fname.lower() == check_name:
-                  sys.path.insert(0,dp)
-                  try:
-                    device = __import__(fname[:-3])
-                    Device.__cached_py_device_modules[name] = device
-                    return device
-                  finally:
-                    sys.path.remove(dp)
-        Device.__cached_py_device_not_found.append(name)
-        raise _exc.DevPYDEVICE_NOT_FOUND
-
-    @staticmethod
-    def findPyDevices():
-        """Find all device support modules in the MDS_PYDEVICE_PATH environment variable search list."""
-        sys,os,path = Device.__cached()
-        if Device.__cached_py_devices is not None:
-            return Device.__cached_py_devices
-        ans=list()
-        if path is not None:
+          if path is not None:
+            check_name=name+".py"
             parts=path.split(';')
             for part in parts:
-                for dp,dn,fn in os.walk(part):
+              w=os.walk(part)
+              for dp,dn,fn in w:
+                for fname in fn:
+                  if fname.lower() == check_name:
                     sys.path.insert(0,dp)
                     try:
-                        for fname in fn:
-                            if fname.endswith('.py'):
-                                try:
-                                    devnam=fname[:-3].upper()
-                                    __import__(fname[:-3]).__dict__[devnam]
-                                    ans.append(devnam)
-                                except:
-                                    pass
+                      device = __import__(fname[:-3])
+                      Device.__cached_py_device_modules[name] = device
+                      return device
                     finally:
-                        sys.path.remove(dp)
-        Device.__cached_py_devices = ans
-        return ans
+                      sys.path.remove(dp)
+          Device.__cached_py_device_not_found.append(name)
+          raise _exc.DevPYDEVICE_NOT_FOUND
+
+    @classmethod
+    def findPyDevices(cls):
+        """Find all device support modules in the MDS_PYDEVICE_PATH environment variable search list."""
+        with cls.__cached_lock:
+          sys,os,path = Device.__cached()
+          if Device.__cached_py_devices is None:
+            ans=list()
+            if path is not None:
+              parts=path.split(';')
+              for part in parts:
+                for dp,dn,fn in os.walk(part):
+                  sys.path.insert(0,dp)
+                  try:
+                    for fname in fn:
+                      if fname.endswith('.py'):
+                        try:
+                          devnam=fname[:-3].upper()
+                          __import__(fname[:-3]).__dict__[devnam]
+                          ans.append(devnam)
+                        except:
+                          pass
+                  finally:
+                    sys.path.remove(dp)
+            Device.__cached_py_devices = ans
+          return Device.__cached_py_devices
 
     @staticmethod
     def PyDevice(module,model=None):
