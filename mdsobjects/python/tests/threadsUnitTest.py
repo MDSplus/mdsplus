@@ -46,7 +46,7 @@ class threadJob(Thread):
     """Thread to execute the treeTests"""
     def run(self):
         """Run test1.test() function"""
-        Tree.usePrivateCtx()
+        #Tree.usePrivateCtx()
         stream = StringIO()
         try:
             self.result = TextTestRunner(stream=stream,verbosity=2).run(self.test)
@@ -102,7 +102,7 @@ class threadsTest(TestCase):
             self.__getattribute__(test)()
     @staticmethod
     def getTests():
-        return ['dataThreadsTests']#'treeThreadsTests','segmentsThreadTest','dclThreadsTests']
+        return ['treeThreadsTests']#'dataThreadsTests','segmentsThreadTest','dclThreadsTests']
     @classmethod
     def getTestCases(cls):
         return map(cls,cls.getTests())
