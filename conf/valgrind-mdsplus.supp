@@ -27,3 +27,20 @@
    Helgrind:Race
    fun:tzset_
 }
+
+{
+   fc27's libopenblasp is not thread safe
+   Helgrind:Race
+   fun:gotoblas_set_affinity
+   obj:/usr/lib64/libopenblasp-r0.2.20.so
+}
+
+{
+   fc27's libpthread is not compatible with helgrind
+   Helgrind:Misc
+   fun:pthread_cond_signal_WRK
+   fun:pthread_cond_signal@*
+   fun:pthread_cond_timedwait@@GLIBC_2.3.2
+   fun:pthread_cond_timedwait_WRK
+   fun:pthread_cond_timedwait@*
+}
