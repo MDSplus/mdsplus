@@ -66,13 +66,6 @@ class staticmethodX(object):
 
 #### hidden module variables ################
 #
-class _ThreadData(_threading.local):
-
-    """Contains thread specific information"""
-
-    def __init__(self):
-        self.private=False
-_thread_data=_ThreadData()
 
 _usage_table={'ANY':0,'NONE':1,'STRUCTURE':1,'ACTION':2,      # Usage name to codenum table
               'DEVICE':3,'DISPATCH':4,'NUMERIC':5,'SIGNAL':6,
@@ -596,8 +589,11 @@ class Tree(object):
             raise AttributeError('No such attribute: '+name)
 
     @staticmethod
+    def usingPrivateCtx():
+        return bool(_TreeShr.TreeUsingPrivateCtx())
+
+    @staticmethod
     def usePrivateCtx(on=True):
-        _thread_data.private=on
         if on:
             val=_C.c_int32(1)
         else:
