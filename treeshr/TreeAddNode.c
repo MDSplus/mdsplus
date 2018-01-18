@@ -112,7 +112,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
   int nid;
   short *conglom_size;
   short *conglom_index;
-  char *upcase_name;
+  char *upcase_name = NULL;
   size_t i;
   size_t len = strlen(name);
 /*****************************************************
@@ -120,6 +120,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 *****************************************************/
   if (!IS_OPEN_FOR_EDIT(dblist))
     return TreeNOEDIT;
+  FREE_ON_EXIT(upcase_name);
   upcase_name = (char *)malloc(len + 1);
   for (i = 0; i < len; i++)
     upcase_name[i] = (char)toupper(name[i]);
@@ -201,7 +202,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
   }
   if STATUS_OK
     dblist->modified = 1;
-  free(upcase_name);
+  FREE_NOW(upcase_name);
   return status;
 }
 
@@ -680,9 +681,11 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
             Close the file.
             Write out the characteristics file.
             **************************************/
+            char *nfilenam = NULL;
+            FREE_ON_EXIT(nfilenam);
             int ntreefd;
             TREE_INFO *info_ptr = (*dblist)->tree_info;
-            char *nfilenam = strcpy(malloc(strlen(info_ptr->filespec) + 2), info_ptr->filespec);
+            nfilenam = strcpy(malloc(strlen(info_ptr->filespec) + 2), info_ptr->filespec);
 	    _TreeDeleteNodesWrite(*dbid);
             trim_excess_nodes(info_ptr);
             header_pages = (sizeof(TREE_HEADER) + 511u) / 512u;
@@ -744,8 +747,7 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
                 status = TreeFCREATE;
             }
 error_exit:
-            if (nfilenam)
-                free(nfilenam);
+            FREE_NOW(nfilenam);
         }
     }
     return status;
