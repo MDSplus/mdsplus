@@ -680,28 +680,28 @@ TEST_BUILD_TAP = test-build.tap
 TEST_SUITE_TAP = test-suite.tap
 TEST_EXTENSIONS = .py
 TEST_FLAGS = @MAKEFLAG_J@
+
+#	threadsUnitTest.py
+#	simulateSegfault.py
 TESTS = \
 	dataUnitTest.py \
 	treeUnitTest.py \
 	segmentsUnitTest.py \
 	taskUnitTest.py \
 	mdsipUnitTest.py \
-	dclUnitTest.py \
-	threadsUnitTest.py
+	dclUnitTest.py
 
-
-#  threadsUnitTest.py
-#  simulateSegfault.py
 
 # if VALGRIND_TESTS is defined this list is executed with valgrind
+
+#	threadsUnitTest.py
 VALGRIND_TESTS = \
 	dataUnitTest.py \
 	treeUnitTest.py \
 	segmentsUnitTest.py \
 	taskUnitTest.py \
 	mdsipUnitTest.py \
-	dclUnitTest.py \
-	threadsUnitTest.py
+	dclUnitTest.py
 
 
 # DISABLE PYTHON LEAK DETECTION: This suppression file shall be removed when
