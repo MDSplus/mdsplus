@@ -61,9 +61,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <mdsshr.h>
 #include <stdio.h>
+#include <pthread_port.h>
 #include "tdirefstandard.h"
 #include "tdinelements.h"
-
 
 
 extern unsigned short OpcVector;
@@ -205,6 +205,30 @@ STATIC_ROUTINE int compare(struct descriptor *s1, struct item s2[1])
   return cmp;
 }
 
+inline static int treefindnodewild(char *dat_ptr, int len, int *nid, void *pctx, int usage_mask) {
+  int status;
+  char *path = NULL;
+  FREE_ON_EXIT(path);
+  path = malloc((size_t)len+1);
+  memcpy(path, dat_ptr, len);
+  path[len] = 0;
+  status = TreeFindNodeWild(path, nid, pctx, usage_mask);
+  FREE_NOW(path);
+  return status;
+}
+
+inline static int treefindnode(char *dat_ptr, int len, int *nid) {
+  int status;
+  char *path = NULL;
+  FREE_ON_EXIT(path);
+  path = malloc((size_t)len+1);
+  memcpy(path, dat_ptr, len);
+  path[len] = 0;
+  status = TreeFindNode(path, nid);
+  FREE_NOW(path);
+  return status;
+}
+
 int Tdi1GetNci(int opcode __attribute__ ((unused)),
 	       int narg,
 	       struct descriptor *list[],
@@ -242,14 +266,8 @@ int Tdi1GetNci(int opcode __attribute__ ((unused)),
 	case DTYPE_T:
 	case DTYPE_PATH:
 	  {
-	    struct descriptor path_d = { 0, DTYPE_PATH, CLASS_S, 0 };
-	    char *path;
-	    path_d.length = (unsigned char)len;
-	    path_d.pointer = dat_ptr;
-	    path = MdsDescrToCstring(&path_d);
-	    if (!(TreeFindNode(path, &nid) & 1))
+	    if IS_NOT_OK(treefindnode(dat_ptr,len,&nid))
 	      class = CLASS_A;
-	    MdsFree(path);
 	  }
 	}
     }
@@ -336,16 +354,8 @@ int Tdi1GetNci(int opcode __attribute__ ((unused)),
  more:switch (dtype) {
     case DTYPE_PATH:
     case DTYPE_T:
-      {
-	struct descriptor path_d = { 0, DTYPE_PATH, CLASS_S, 0 };
-	char *path;
-	path_d.length = (unsigned short)len;
-	path_d.pointer = dat_ptr;
-	path = MdsDescrToCstring(&path_d);
-	if STATUS_OK
-	  status = TreeFindNodeWild(path, &nid, &pctx, usage_mask);
-	MdsFree(path);
-      }
+      if STATUS_OK
+	status = treefindnodewild(dat_ptr, len, &nid, &pctx, usage_mask);
       if (status == TreeNMN || status == TreeNNF) {
 	TreeFindNodeEnd(&pctx);
 	pctx = NULL;
