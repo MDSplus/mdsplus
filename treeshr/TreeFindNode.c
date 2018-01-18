@@ -119,22 +119,21 @@ EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
     return TreeNOT_OPEN;
   if (dblist->remote)
     return FindNodeRemote(dblist, path, outnid);
-  ctx = malloc(sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
-  memset(ctx, 0, sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
+  ctx = calloc(sizeof(SEARCH_CONTEXT), MAX_SEARCH_LEVELS);
   ctx->type = EOL;
   ctx->string = strdup(path);
   for (i = 0; i < len && path[i] != ' '; i++)
     ctx->string[i] = (char)toupper(path[i]);
   ctx->string[i] = 0;
   status = Parse(ctx, 0);
-  if (status & 1) {
+  if STATUS_OK {
     node = dblist->default_node;
     ctx[0].node = node;
     for (current_level = 1; ctx[current_level].type != EOL && (status & 1); current_level++)
       status = TreeSearch(dblist, ctx, current_level, &node);
   }
   _TreeFindNodeEnd(dbid, (void **)&ctx);
-  if (status & 1)
+  if STATUS_OK
     node_to_nid(dblist, node, nid);
   return status;
 }
@@ -165,7 +164,7 @@ EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **
       size_t len = strlen(path);
       memset(ctx, 0, sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
       ctx->type = EOL;
-      ctx->string = strcpy(malloc(len + 1), path);
+      ctx->string = malloc(len + 1);
       for (i = 0; i < len && path[i] != ' '; i++)
 	ctx->string[i] = (char)toupper(path[i]);
       ctx->string[i] = 0;
@@ -956,24 +955,27 @@ EXPORT char *_TreeAbsPath(void *dbid, char const *inpath)
 
 STATIC_ROUTINE char *AbsPath(void *dbid, char const *inpath, int nid_in)
 {
-  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
-  SEARCH_CONTEXT ctx[MAX_SEARCH_LEVELS];
-  char *tmppath = NULL;
-  char const *pathptr = inpath;
   char *answer = NULL;
+  char *tmppath = NULL;
+  SEARCH_CONTEXT ctx[MAX_SEARCH_LEVELS];
+  memset(ctx, 0, sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
+  FREE_ON_EXIT(ctx->string);
+  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+  _TreeSetDefaultNid(dbid, nid_in);
+  FREE_ON_EXIT(tmppath);
+  const char *pathptr;
   size_t len;
   size_t i;
-  _TreeSetDefaultNid(dbid, nid_in);
   if (strlen(inpath)) {
     int nid;
     if (_TreeFindNode(dbid, inpath, &nid) & 1)
       pathptr = tmppath = _TreeGetPath(dbid, nid);
+    else pathptr = inpath;
   } else
     pathptr = tmppath = _TreeGetPath(dbid, nid_in);
-  memset(ctx, 0, sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
   len = strlen(pathptr);
   ctx->type = EOL;
-  ctx->string = strcpy(malloc(len + 1), pathptr);
+  ctx->string = malloc(len + 1);
   for (i = 0; i < len && pathptr[i] != ' '; i++)
     ctx->string[i] = (char)toupper(pathptr[i]);
   ctx->string[i] = 0;
@@ -1017,10 +1019,8 @@ STATIC_ROUTINE char *AbsPath(void *dbid, char const *inpath, int nid_in)
       }
     }
   }
-  if (ctx->string)
-    free(ctx->string);
-  if (tmppath)
-    free(tmppath);
+  FREE_NOW(ctx->string);
+  FREE_NOW(tmppath);
   return answer;
 }
 
