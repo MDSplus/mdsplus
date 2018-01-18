@@ -112,19 +112,18 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 
 
 #ifdef _WIN32
-    _putenv_s("test_tree_path",".");
-    _putenv_s("test_tree2_path",".");
-#else
-    setenv("test_tree_path",".",1);
-    setenv("test_tree2_path",".",1);
+#define setenv(name,val,extra) _putenv_s(name,val)
 #endif
 
+    setenv("t_treenode_path",".",1);
+    setenv("t_treenode2_path",".",1);
 
-    unique_ptr<Tree> tree = new Tree("test_tree",-1,"NEW");
-    unique_ptr<Tree> tree2 = new Tree("test_tree2",-1,"NEW");
+
+    unique_ptr<Tree> tree = new Tree("T_TREENODE",-1,"NEW");
+    unique_ptr<Tree> tree2 = new Tree("T_TREENODE2",-1,"NEW");
 
     unique_ptr<TreeNode> node2 = tree2->addNode("test_node","ANY");
-    unique_ptr<TreeNode> subtree = tree->addNode("tree2","SUBTREE");
+    unique_ptr<TreeNode> subtree = tree->addNode("T_TREENODE2","SUBTREE");
     unique_ptr<TreeNode> node = tree->addNode("test_node","ANY");
     unique_ptr<TreeNode> node_child = tree->addNode("test_node:node_child","ANY");
 
@@ -159,7 +158,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
         unique_ptr<TreeNode> node = tree->getNode("test_node");
         std::stringstream ss;
         ss << (TreeNode*)node;
-        TEST1( ss.str() == "\\TEST_TREE::TOP:TEST_NODE");
+        TEST1( ss.str() == "\\T_TREENODE::TOP:TEST_NODE");
     }
 
 
@@ -180,12 +179,12 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
         node->setTree(tree);
 
         // getPath()
-        TEST1( AutoString(node->getPath()).string ==  "\\TEST_TREE::TOP:TEST_NODE" );
-        TEST1( AutoString(node_child->getPath()).string ==  "\\TEST_TREE::TOP:TEST_NODE:NODE_CHILD" );
+        TEST1( AutoString(node->getPath()).string ==  "\\T_TREENODE::TOP:TEST_NODE" );
+        TEST1( AutoString(node_child->getPath()).string ==  "\\T_TREENODE::TOP:TEST_NODE:NODE_CHILD" );
 
         // getPathStr()
-        TEST1( node->getPathStr() ==  "\\TEST_TREE::TOP:TEST_NODE" );
-        TEST1( node_child->getPathStr() ==  "\\TEST_TREE::TOP:TEST_NODE:NODE_CHILD" );
+        TEST1( node->getPathStr() ==  "\\T_TREENODE::TOP:TEST_NODE" );
+        TEST1( node_child->getPathStr() ==  "\\T_TREENODE::TOP:TEST_NODE:NODE_CHILD" );
 
         // getMinPath()
         TEST1( AutoString(node->getMinPath()).string == "TEST_NODE" );
@@ -196,12 +195,12 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
         TEST1( node_child->getMinPathStr() == "TEST_NODE:NODE_CHILD" );
 
         // getFullPath()
-        TEST1( AutoString(node->getFullPath()).string ==  "\\TEST_TREE::TOP:TEST_NODE" );
-        TEST1( AutoString(node_child->getFullPath()).string ==  "\\TEST_TREE::TOP:TEST_NODE:NODE_CHILD" );
+        TEST1( AutoString(node->getFullPath()).string ==  "\\T_TREENODE::TOP:TEST_NODE" );
+        TEST1( AutoString(node_child->getFullPath()).string ==  "\\T_TREENODE::TOP:TEST_NODE:NODE_CHILD" );
 
         // getFullPathStr()
-        TEST1( node->getFullPathStr() ==  "\\TEST_TREE::TOP:TEST_NODE" );
-        TEST1( node_child->getFullPathStr() ==  "\\TEST_TREE::TOP:TEST_NODE:NODE_CHILD" );
+        TEST1( node->getFullPathStr() ==  "\\T_TREENODE::TOP:TEST_NODE" );
+        TEST1( node_child->getFullPathStr() ==  "\\T_TREENODE::TOP:TEST_NODE:NODE_CHILD" );
 
         // getNodeName()
         TEST1( AutoString(node->getNodeName()).string == "TEST_NODE" );
@@ -454,7 +453,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
         tree->createPulse(1);
         tree->edit(true);
 
-        unique_ptr<Tree> shot = new Tree("test_tree",1);
+        unique_ptr<Tree> shot = new Tree("T_TREENODE",1);
         unique_ptr<TreeNode> shot_node = shot->getNode("test_flags");
 
 
@@ -518,7 +517,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
         //        tree->edit(false);
         //        tree->createPulse(2);
         //        tree->edit(true);
-        //        shot = new Tree("test_tree",2);
+        //        shot = new Tree("T_TREENODE",2);
         //        TEST1( node->isIncludedInPulse() );
         //        TEST_EXCEPTION( unique_ptr<Data>(unique_ptr<TreeNode>(shot->getNode("no_in_pulse"))->getData()), MdsException );
 
@@ -822,12 +821,12 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 
         // addNode with relative path //
         unique_ptr<TreeNode> n2 = n1->addNode("n2","ANY");
-        TestNode(n2.base())("n2", "ANY", "n1", "test_tree");
+        TestNode(n2.base())("n2", "ANY", "n1", "T_TREENODE");
 
 
         // addNode with absolute path //
         unique_ptr<TreeNode> n3 = n1->addNode("\\top.test_edit:n3","ANY");
-        TestNode(n3.base())("n3", "ANY", "test_edit", "test_tree");
+        TestNode(n3.base())("n3", "ANY", "test_edit", "T_TREENODE");
 
         // remove relative path //
         n1->remove("n2");
@@ -842,7 +841,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
         TEST1(unique_ptr<TreeNode>(n1->getParent())->getNodeNameStr() == "TOP");
 
         n1->rename("\\top.test_edit:parent");
-        TestNode(n1.base())( "parent", "ANY", "test_edit", "test_tree");
+        TestNode(n1.base())( "parent", "ANY", "test_edit", "T_TREENODE");
 
         n2 = n1->addNode("subnode","ANY");
         n3 = n2->addNode("child","ANY");
