@@ -11,7 +11,6 @@ TEST_EXTENSIONS = .py
 
 TEST_FLAGS = @MAKEFLAG_J@
 
-#	threadsUnitTest.py
 #	simulateSegfault.py
 TESTS = \
 	dataUnitTest.py \
@@ -19,7 +18,8 @@ TESTS = \
 	segmentsUnitTest.py \
 	taskUnitTest.py \
 	mdsipUnitTest.py \
-	dclUnitTest.py
+	dclUnitTest.py \
+	threadsUnitTest.py
 
 # if VALGRIND_TESTS is defined this list is executed with valgrind
 
