@@ -29,21 +29,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "treeshrp.h"
 #include <mds_stdarg.h>
 
+static int (*Notify) (TreeshrHookType, char *, int, int);
+static void load_Notify_once() {
+  DESCRIPTOR(image, "TreeShrHooks");
+  DESCRIPTOR(rtnname, "Notify");
+  if IS_NOT_OK(LibFindImageSymbol(&image, &rtnname, &Notify))
+    Notify = NULL;
+}
+
 int TreeCallHook(TreeshrHookType htype, TREE_INFO * info, int nid)
 {
-  STATIC_CONSTANT DESCRIPTOR(image, "TreeShrHooks");
-  STATIC_CONSTANT DESCRIPTOR(rtnname, "Notify");
-  STATIC_THREADSAFE int (*Notify) (TreeshrHookType, char *, int, int) = 0;
-  int status = 1;
-  if (Notify != (int (*)(TreeshrHookType, char *, int, int))-1) {
-    if (Notify == 0)
-      status = LibFindImageSymbol(&image, &rtnname, &Notify);
-    if (status & 1)
-      status = (*Notify) (htype, info->treenam, info->shot, nid);
-    else {
-      Notify = (int (*)(TreeshrHookType, char *, int, int))-1;
-      status = 1;
-    }
-  }
-  return status;
+  pthread_once_t once = PTHREAD_ONCE_INIT;
+  pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_lock(&lock);
+  pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
+  pthread_once(&once,load_Notify_once);
+  pthread_cleanup_pop(1);
+  if (Notify)
+    return (*Notify) (htype, info->treenam, info->shot, nid);
+  return 1;
 }
