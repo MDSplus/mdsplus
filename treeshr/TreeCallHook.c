@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mds_stdarg.h>
 
 static int (*Notify) (TreeshrHookType, char *, int, int);
-static void load_Notify_once() {
+static void load_Notify() {
   DESCRIPTOR(image, "TreeShrHooks");
   DESCRIPTOR(rtnname, "Notify");
   if IS_NOT_OK(LibFindImageSymbol(&image, &rtnname, &Notify))
@@ -39,12 +39,7 @@ static void load_Notify_once() {
 
 int TreeCallHook(TreeshrHookType htype, TREE_INFO * info, int nid)
 {
-  pthread_once_t once = PTHREAD_ONCE_INIT;
-  pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-  pthread_mutex_lock(&lock);
-  pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
-  pthread_once(&once,load_Notify_once);
-  pthread_cleanup_pop(1);
+  RUN_FUNCTION_ONCE(load_Notify);
   if (Notify)
     return (*Notify) (htype, info->treenam, info->shot, nid);
   return 1;
