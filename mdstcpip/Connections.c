@@ -28,6 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <treeshr.h>
 #include <mdsshr.h>
+#include <pthread_port.h>
 
 #include "mdsip_connections.h"
 
@@ -209,9 +210,8 @@ int DisconnectConnection(int conid){
 Connection* NewConnectionC(char *protocol){
   Connection *connection;
   IoRoutines *io = LoadIo(protocol);
-  static pthread_once_t registerExitHandler = PTHREAD_ONCE_INIT;
   if (io) {
-    (void) pthread_once(&registerExitHandler,registerHandler);
+    RUN_FUNCTION_ONCE(registerHandler);
     connection = memset(malloc(sizeof(Connection)), 0, sizeof(Connection));
     connection->io = io;
     connection->readfd = -1;

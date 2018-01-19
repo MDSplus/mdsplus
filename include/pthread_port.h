@@ -222,4 +222,14 @@ static char* _getUserName(){
 }
 #endif
 
+#define RUN_FUNCTION_ONCE(fun) do{ \
+  static pthread_once_t RUN_FUNCTION_once = PTHREAD_ONCE_INIT; \
+  static pthread_mutex_t RUN_FUNCTION_lock = PTHREAD_MUTEX_INITIALIZER; \
+  pthread_mutex_lock(&RUN_FUNCTION_lock); \
+  pthread_cleanup_push((void*)pthread_mutex_unlock,&RUN_FUNCTION_lock); \
+  pthread_once(&RUN_FUNCTION_once,fun); \
+  pthread_cleanup_pop(1); \
+}while(0)
+
+
 #endif//nPTHREAD_PORT_H

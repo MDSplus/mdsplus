@@ -24,6 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <mdsdescrip.h>
+#include <pthread_port.h>
 #define MDSLIB_NO_PROTOS
 #include "mdslib.h"
 static int MdsCONNECTION = -1;
@@ -59,10 +60,6 @@ static void MdsValueSet(struct descriptor *outdsc, struct descriptor *indsc, int
 
 /* Key for the thread-specific buffer */
 static pthread_key_t buffer_key;
-/* Once-only initialisation of the key */
-static pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
-/* lock pthread_once */
-static pthread_mutex_t buffer_key_mutex = PTHREAD_MUTEX_INITIALIZER;
 /* Free the thread-specific buffer */
 static void buffer_destroy(void *buf){
   free(buf);
@@ -72,9 +69,7 @@ static void buffer_key_alloc(){
 }
 /* Return the thread-specific buffer */
 static struct descriptor **GetDescriptorCache(){
-  pthread_mutex_lock(&buffer_key_mutex);
-  pthread_once(&buffer_key_once, buffer_key_alloc);
-  pthread_mutex_unlock(&buffer_key_mutex);
+  RUN_FUNCTION_ONCE(buffer_key_alloc);
   struct descriptor **p = (struct descriptor **) pthread_getspecific(buffer_key);
   if (!p) {
     p = (struct descriptor **) memset(malloc(sizeof(struct descriptor *)*NDESCRIP_CACHE), \
