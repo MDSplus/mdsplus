@@ -11,6 +11,7 @@ typedef struct _thread_static {
   int nid_reference;
   int path_reference;
   NCI TemplateNci;
+  char TreeFindTagWild_answer[128];
 } TreeThreadStatic;
 
 #define TREEGETTHREADSTATIC_P TreeThreadStatic * TreeGetThreadStatic_p = TreeGetThreadStatic()
