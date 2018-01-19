@@ -140,8 +140,6 @@ STATIC_ROUTINE int Append(char *pstr, struct descriptor_d *pd)
   return StrAppend(pd, &dstr);
 }
 
-STATIC_CONSTANT DESCRIPTOR(newline, "\r\n\t\t\t\t\t\t\t");
-
 void TdiDecompileDeindent(struct descriptor_d *pout)
 {
   char *start = pout->pointer, *fin = start + pout->length - 1;
@@ -155,9 +153,16 @@ void TdiDecompileDeindent(struct descriptor_d *pout)
 }
 
 STATIC_ROUTINE int Indent(int step, struct descriptor_d *pout){
+  const char* newline= "\r\n\t\t\t\t\t\t\t";
   GET_TDITHREADSTATIC_P;
-  newline.length = (unsigned short)(((TdiThreadStatic_p->TdiIndent += step) < 8 ? TdiThreadStatic_p->TdiIndent : 8) + 1);
-  return StrAppend(pout, (struct descriptor *)&newline);
+  struct descriptor_d new = { 0, DTYPE_T, CLASS_D, 0 };
+  int identlen = ((TdiThreadStatic_p->TdiIndent += step) < 8 ? TdiThreadStatic_p->TdiIndent : 8)+1;
+  new.length = pout->length + identlen;
+  new.pointer = malloc(new.length);
+  memcpy(new.pointer,pout->pointer,pout->length);
+  memcpy(new.pointer+pout->length,newline,identlen);
+  StrFree1Dx(pout);*pout = new;
+  return MDSplusSUCCESS;
 }
 
 STATIC_ROUTINE int OneStatement(struct descriptor_r *pin, struct descriptor_d *pout)
