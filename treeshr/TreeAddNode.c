@@ -322,9 +322,17 @@ STATIC_ROUTINE int TreeNewNode(PINO_DATABASE * db_ptr, NODE ** node_ptrptr, NODE
 
 #define EXTEND_NODES 512
 
+
+
 int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
 {
-  INIT_STATUS_AS TreeNORMAL;
+  int status;
+  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+  static NODE *empty_node_array = NULL;
+  static NCI *empty_nci_array = NULL;
+  pthread_mutex_lock(&lock);
+  pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
+  status = TreeNORMAL;
   int *saved_node_numbers;
   NODE *node_ptr;
   NODE *ptr;
@@ -337,8 +345,6 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
   int vm_bytes;//TODO: 2GB limit
   int nodes;
   int ncis;
-  STATIC_THREADSAFE NODE *empty_node_array = 0;
-  STATIC_THREADSAFE NCI *empty_nci_array = 0;
   STATIC_CONSTANT size_t empty_node_size = sizeof(NODE) * EXTEND_NODES;
   STATIC_CONSTANT size_t empty_nci_size = sizeof(NCI) * EXTEND_NODES;
 
@@ -351,10 +357,10 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
     empty_node.child = -(int)sizeof(NODE);;
     empty_node_array = (NODE *) malloc(empty_node_size);
     if (empty_node_array == NULL)
-      return MDSplusERROR;
+      {status = MDSplusERROR;goto end;}
     empty_nci_array = (NCI *) malloc(empty_nci_size);
     if (empty_nci_array == NULL)
-      return MDSplusERROR;
+      {status = MDSplusERROR;goto end;}
     for (i = 0; i < EXTEND_NODES; i++) {
       empty_node_array[i] = empty_node;
       empty_nci_array[i] = empty_nci;
@@ -424,7 +430,7 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
       db_ptr->default_node = info_ptr->node + saved_node_numbers[i++];
       free(saved_node_numbers);
     } else
-      return status;
+      goto end;
   }
   memcpy(info_ptr->node + header_ptr->nodes, empty_node_array, empty_node_size);
   if (ncis) {
@@ -457,6 +463,8 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
     (info_ptr->node + header_ptr->nodes)->child = swapint((char *)&tmp);
   }
   header_ptr->nodes += EXTEND_NODES;
+end: ;
+  pthread_cleanup_pop(1);
   return status;
 }
 
@@ -746,7 +754,7 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
                 (*dblist)->modified = 0;
                 status = TreeFCREATE;
             }
-error_exit:
+error_exit: ;
             FREE_NOW(nfilenam);
         }
     }
