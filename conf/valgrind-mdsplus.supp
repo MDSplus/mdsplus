@@ -23,6 +23,15 @@
 }
 
 {
+   race conditions on fc26
+   Helgrind:Race
+   ...
+   fun:gethostbyname2_r@@GLIBC_2.2.5
+   fun:gaih_inet.constprop.7
+   fun:getaddrinfo
+}
+
+{
    race condition on daylight due to tzset
    Helgrind:Race
    fun:tzset_
