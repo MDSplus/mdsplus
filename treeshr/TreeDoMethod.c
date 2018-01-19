@@ -51,6 +51,9 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 	Description:
 
 ------------------------------------------------------------------------------*/
+#define DEF_FREED
+#define DEF_FREEXD
+
 #include <STATICdef.h>
 #include <ncidef.h>
 #include "treeshrp.h"
@@ -129,11 +132,8 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
   STATIC_CONSTANT DESCRIPTOR(close, "$)");
   STATIC_CONSTANT DESCRIPTOR(arg, "$,");
   STATIC_CONSTANT DESCRIPTOR(tdishr, "TdiShr");
-  STATIC_CONSTANT DESCRIPTOR(tdiexecute, "TdiExecute");
-  static struct descriptor_xd xd = { 0, 0, CLASS_XD, 0, 0 };
-  static DESCRIPTOR(underunder, "__");
-  static struct descriptor_d method = { 0, DTYPE_T, CLASS_D, 0 };
-  static struct descriptor_conglom *conglom_ptr;
+  const DESCRIPTOR(tdiexecute, "TdiExecute");
+  const DESCRIPTOR(underunder, "__");
   int nargs;
   void *arglist[256];
   count(nargs);
@@ -147,6 +147,11 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
   status = _TreeGetNci(dbid, *(int *)nid_dsc->pointer, itmlst);
   if STATUS_NOT_OK
     return status;
+  struct descriptor_conglom *conglom_ptr;
+  struct descriptor_xd xd = { 0, 0, CLASS_XD, 0, 0 };
+  struct descriptor_d method = { 0, DTYPE_T, CLASS_D, 0 };
+  FREEXD_ON_EXIT(&xd);
+  FREED_ON_EXIT(&method);
   if (conglomerate_elt || (data_type == DTYPE_CONGLOM)) {
     int i;
     arglist[1] = nid_dsc;
@@ -156,17 +161,17 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       arglist[i + 1] = va_arg(incrmtr, struct descriptor *);
     va_end(incrmtr);
     status = _TreeGetRecord(dbid, head_nid ? head_nid : *((int *)nid_dsc->pointer), &xd);
-    if STATUS_NOT_OK
-      return status;
+    if STATUS_NOT_OK goto end;
     conglom_ptr = (struct descriptor_conglom *)xd.pointer;
     if (conglom_ptr->dtype != DTYPE_CONGLOM)
-      return TreeNOT_CONGLOM;
+      {status = TreeNOT_CONGLOM;goto end;}
     if (conglom_ptr->image
      && conglom_ptr->image->length == strlen("__python__")
      && strncmp(conglom_ptr->image->pointer, "__python__", strlen("__python__")) == 0) {
       void *dbid = *TreeCtx();
       /**** Try python class ***/
       struct descriptor_d exp = { 0, DTYPE_T, CLASS_D, 0 };
+      FREED_ON_EXIT(&exp);
       STATIC_CONSTANT DESCRIPTOR(open, "PyDoMethod(");
       StrCopyDx((struct descriptor *)&exp, (struct descriptor *)&open);
       if (nargs == 4
@@ -178,8 +183,11 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       for (i = 1; i < nargs - 1; i++)
 	StrAppend(&exp, (struct descriptor *)&arg);
       StrAppend(&exp, (struct descriptor *)&close);
+      static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+      pthread_mutex_lock(&lock);
       if (!TdiExecute)
 	status = LibFindImageSymbol(&tdishr, &tdiexecute, &TdiExecute);
+      pthread_mutex_unlock(&lock);
       if STATUS_OK {
 	for (i = nargs; i > 0; i--)
 	  arglist[i + 1] = arglist[i];
@@ -189,9 +197,9 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	arglist[nargs] = MdsEND_ARG;
 	status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
       }
-      StrFree1Dx(&exp);
+      FREED_NOW(&exp);
       *TreeCtx() = dbid;
-      return status;
+      goto end;
     }
     StrConcat((struct descriptor *)&method, conglom_ptr->model, (struct descriptor *)&underunder, method_ptr MDS_END_ARG);
     for (i = 0; i < method.length; i++)
@@ -225,6 +233,9 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     }
   } else
     status = TreeNOMETHOD;
+end: ;
+  FREED_NOW(method);
+  FREEXD_NOW(xd);
   return status;
 }
 
