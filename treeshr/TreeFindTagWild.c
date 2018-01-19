@@ -57,6 +57,7 @@ TreeFindTagEnd(void **ctx);
 #include <string.h>
 #include <treeshr.h>
 #include "treeshrp.h"
+#include "treethreadsafe.h"
 #include <strroutines.h>
 
 extern int MdsCopyDxXd();
@@ -101,6 +102,8 @@ int TreeFindTagWildDsc(char *wild, int *nidout, void **ctx_inout, struct descrip
   return status;
 }
 
+
+#define answer TreeGetThreadStatic_p->TreeFindTagWild_answer
 char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
@@ -117,8 +120,7 @@ char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout)
     TAG_SEARCH **ctx = (TAG_SEARCH **) ctx_inout;
     int status = 1;
     unsigned char found, done;
-    static char answer[128];
-
+    TREEGETTHREADSTATIC_P;
     /**********************************
     If this is the first time then
     allocate a context block and fill
@@ -223,7 +225,7 @@ char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout)
       TreeFindTagEnd(ctx_inout);
       status = TreeNMT;
     }
-    return (status & 1) ? answer : NULL;
+    return STATUS_OK ? answer : NULL;
   }
 }
 
