@@ -478,7 +478,6 @@ int _TreeAddConglom(void *dbid, char const *path, char const *congtype, int *nid
   STATIC_CONSTANT DESCRIPTOR(tdishr, "TdiShr");
   STATIC_CONSTANT DESCRIPTOR(tdiexecute, "TdiExecute");
   DESCRIPTOR_LONG(statdsc, 0);
-  STATIC_THREADSAFE int (*addr) ();
   statdsc.pointer = (char *)&addstatus;
   if (!IS_OPEN_FOR_EDIT(dblist))
     return TreeNOEDIT;
@@ -486,23 +485,27 @@ int _TreeAddConglom(void *dbid, char const *path, char const *congtype, int *nid
     sprintf(exp, "DevAddDevice('\\%s', '%s')", path, congtype);
   else
     sprintf(exp, "DevAddDevice('%s', '%s')", path, congtype);
-  if (addr == 0)
-    status = LibFindImageSymbol(&tdishr, &tdiexecute, &addr);
+  static int (*addr) () = NULL;
+  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_lock(&lock);
+  if (!addr) status = LibFindImageSymbol(&tdishr, &tdiexecute, &addr);
+  pthread_mutex_unlock(&lock);
   if STATUS_OK {
-    void *old_dbid = *TreeCtx();
     expdsc.length = (unsigned short)strlen(exp);
     expdsc.pointer = exp;
     arglist[1] = &expdsc;
     arglist[2] = &statdsc;
     arglist[3] = MdsEND_ARG;
-    *TreeCtx() = dbid;
+    // switch to privateContext for thread safety
+    int old_pc = TreeUsePrivateCtx(1);
+    void* old_dbid = *TreeCtx();*TreeCtx() = dbid;
     status = (int)((char *)LibCallg(arglist, addr) - (char *)0);
-    *TreeCtx() = old_dbid;
+    *TreeCtx() = old_dbid;TreeUsePrivateCtx(old_pc);
+    // old context restored
     if STATUS_OK {
       status = addstatus;
-      if STATUS_OK {
+      if STATUS_OK
 	status = _TreeFindNode(dbid, path, nid);
-      }
     }
   }
   return status;
