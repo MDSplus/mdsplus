@@ -111,6 +111,7 @@ class Tests(TestCase):
         gc.collect()
     def cleanup(self,refs=0):
         import MDSplus,gc;gc.collect()
+        if self.inThread: return
         def isTree(o):
             try:    return isinstance(o,MDSplus.Tree)
             except: return False
