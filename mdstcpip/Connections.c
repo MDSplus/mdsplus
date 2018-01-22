@@ -28,9 +28,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <treeshr.h>
 #include <mdsshr.h>
+#include "mdsip_connections.h"
 #include <pthread_port.h>
 
-#include "mdsip_connections.h"
 
 //#define DEBUG
 
