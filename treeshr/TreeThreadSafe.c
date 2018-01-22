@@ -44,10 +44,10 @@ STATIC_ROUTINE void buffer_key_alloc(){
 /* Return the thread-specific buffer */
 TreeThreadStatic *TreeGetThreadStatic(){
   RUN_FUNCTION_ONCE(buffer_key_alloc);
-  void* p = pthread_getspecific(buffer_key);
+  TreeThreadStatic* p = (TreeThreadStatic*)pthread_getspecific(buffer_key);
   if (!p) {
-    p = calloc(1,sizeof(TreeThreadStatic));
-    pthread_setspecific(buffer_key, p);
+    p = (TreeThreadStatic*)calloc(1,sizeof(TreeThreadStatic));
+    pthread_setspecific(buffer_key, (void*)p);
   }
   return p;
 }
