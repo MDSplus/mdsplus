@@ -363,6 +363,13 @@ then
 else
   : ${uiddir:=$exec_prefix/uid}
 fi
+if nproc&>/dev/null && perl -v&>/dev/null
+then
+  MAKEFLAG_J="-j -l $(perl -e "print $(nproc) * 0.9")"
+else
+  MAKEFLAG_J="-j -l 1"
+fi
+MAKEFLAG_O="$(if ${MAKE:=make} -v -O&>/dev/null; then echo -O; fi)"
 MAKEUIDDIR="\$(top_builddir)/uid/"
 MAKESHLIBDIR="\$(top_builddir)/lib/"
 MAKEBINDIR="\$(top_builddir)/bin/"
@@ -380,6 +387,8 @@ THREAD="-pthread"
 MITDEVICESIO_TARGETS=""
 case "$host" in
 *mingw*)
+       MAKEFLAG_J=""
+       MAKEFLAG_O=""
        IDLMDSEVENT=""
        LIBPRE=""
        CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields ";
@@ -1245,6 +1254,8 @@ AC_SUBST(LV)
 AC_SUBST(LV_CINTOOLS)
 AC_SUBST(MACOSX)
 AC_SUBST(MAKEBINDIR)
+AC_SUBST(MAKEFLAG_J)
+AC_SUBST(MAKEFLAG_O)
 AC_SUBST(MAKELIBDIR)
 AC_SUBST(MAKESHLIBDIR)
 AC_SUBST(MAKEUIDDIR)

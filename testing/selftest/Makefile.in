@@ -619,6 +619,8 @@ MACOSX = @MACOSX@
 MAINT = @MAINT@
 MAKEBINDIR = @MAKEBINDIR@
 MAKEETCDIR = @MAKEETCDIR@
+MAKEFLAG_J = @MAKEFLAG_J@
+MAKEFLAG_O = @MAKEFLAG_O@
 MAKEINFO = @MAKEINFO@
 MAKELIBDIR = @MAKELIBDIR@
 MAKESHLIBDIR = @MAKESHLIBDIR@
@@ -1506,9 +1508,9 @@ rebuild-tests:
 	 rm -f *.$(OBJEXT); \
 	 rm -f $(check_PROGRAMS); \
 	 if [ -n "$${VALGRIND_BUILD}" ]; then \
-	  $(MAKE) -k $(AM_MAKEFLAGS) all ||:; \
+	  $(MAKE) -k $(AM_MAKEFLAGS) $(BUILD_FLAGS) all ||:; \
 	 else \
-	  $(MAKE) -k $(AM_MAKEFLAGS) all \
+	  $(MAKE) -k $(AM_MAKEFLAGS) $(BUILD_FLAGS) all \
 	  CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING" ||:; \
 	 fi; \
 	fi
@@ -1519,7 +1521,7 @@ tests: rebuild-tests
 	echo "//// Performing tests /////"; \
 	export TEST_FORMAT=${TEST_FORMAT}; \
 	status=0; \
-	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) || status=$$?;\
+	$(MAKE) -k $(TEST_FLAGS) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) || status=$$?;\
 	$(MAKE) -k $(AM_MAKEFLAGS) $${TEST_FORMAT//,/ } || status=$$?; \
 	exit $$status
 

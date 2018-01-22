@@ -74,7 +74,7 @@ void test_tree_open(const char *prot, const unsigned short port)
            == "[0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]" );
 
     // test tree opening //
-    cnx.openTree((char*)"test_tree",1);
+    cnx.openTree((char*)"t_connect",1);
 
     Data *args[] = { new Int32(5552368),
                      new Float64(111.234) };
@@ -90,7 +90,7 @@ void test_tree_open(const char *prot, const unsigned short port)
     TEST1( data->getInt() == 5552368 );
 
     // colsing tree //
-    cnx.closeTree((char*)"test_tree",1);
+    cnx.closeTree((char*)"t_connect",1);
 }
 
 
@@ -103,20 +103,20 @@ void test_tree_open(const char *prot, const unsigned short port)
 int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 {
     TEST_TIMEOUT(30);
-    setenv("test_tree_path",".",1);
+    setenv("t_connect_path",".",1);
 
 
     ////////////////////////////////////////////////////////////////////////////////
     //  Generate Tree  /////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
 
-    // this makes the test_tree in a separate process so that all static
+    // this makes the t_connect in a separate process so that all static
     // variables instanced are destroied when the child ends.
     pid_t pid = fork();
     if(pid == 0)
     {
         {
-            unique_ptr<Tree> tree = new Tree("test_tree",-1,"NEW");
+            unique_ptr<Tree> tree = new Tree("t_connect",-1,"NEW");
             unique_ptr<TreeNode>(tree->addNode("test_cnx","NUMERIC"));
             tree->write();
             tree->edit(false);
@@ -166,22 +166,22 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 
     // tcp //
     BEGIN_TESTING(Connection tcp);
-    test_tree_open("tcp",8000);
+    test_tree_open("tcp",8601);
     END_TESTING;
 
     // udt //
     BEGIN_TESTING(Connection udt);
-    test_tree_open("udt",8000);
+    test_tree_open("udt",8602);
     END_TESTING;
 
     // tcpv6 //
     BEGIN_TESTING(Connection tcpv6);
-    test_tree_open("tcpv6",8000);
+    test_tree_open("tcpv6",8603);
     END_TESTING;
 
     // udtv6 //
     BEGIN_TESTING(Connection udtv6);
-    test_tree_open("udtv6",8000);
+    test_tree_open("udtv6",8604);
     END_TESTING;
 
 /*
@@ -194,7 +194,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 
     // gsi //
     BEGIN_TESTING(Connection gsi);
-    test_tree_open("gsi",8000);
+    test_tree_open("gsi",8605);
     END_TESTING;
 */
 }

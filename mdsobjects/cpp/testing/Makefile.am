@@ -15,6 +15,9 @@ LDADD = $(AM_LIBS) -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr
 
 AM_DEFAULT_SOURCE_EXT = .cpp
 
+BUILD_FLAGS = @MAKEFLAG_J@
+# no parallel execution as this currently breaks the MdsConnectionTest "Connection local"
+TEST_FLAGS = 
 
 #
 # This is the list of tests to be compiled and executed
@@ -43,7 +46,7 @@ TESTS = \
         MdsTreeNodeTest \
         MdsEventSuppression \
         MdsEventTest \
-        MdsConnectionTest
+	MdsConnectionTest
 
 # set VALGRIND_TESTS to select a subset of tests performed under valgrind if
 # the variable is unset all TESTS are added.
@@ -62,39 +65,14 @@ VALGRIND_SUPPRESSIONS_FILES = \
                               $(top_srcdir)/mdsshr/testing/valgrind-mdsshr.supp \
                               $(srcdir)/valgrind-mdsobjects-cpp.supp
 
-
-
-
-
 #
 # Files produced by tests that must be purged
 #
 MOSTLYCLEANFILES = *.out \
                    testing.hosts \
-                   test_node_001.characteristics \
-                   test_node_001.datafile \
-                   test_node_001.tree \
-                   test_node_002.characteristics \
-                   test_node_002.datafile \
-                   test_node_002.tree \
-                   test_node_model.characteristics \
-                   test_node_model.datafile \
-                   test_node_model.tree \
-                   test_tree_001.characteristics \
-                   test_tree_001.datafile \
-                   test_tree_001.tree \
-                   test_tree_002.characteristics \
-                   test_tree_002.datafile \
-                   test_tree_002.tree \
-                   test_tree2_model.characteristics \
-                   test_tree2_model.datafile \
-                   test_tree2_model.tree \
-                   test_tree_model.characteristics \
-                   test_tree_model.datafile \
-                   test_tree_model.tree \
-                   leaktest_model.characteristics \
-                   leaktest_model.datafile \
-                   leaktest_model.tree
+                   t_*_*.characteristics \
+                   t_*_*.datafile \
+                   t_*_*.tree
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TARGETS  ////////////////////////////////////////////////////////////// ##

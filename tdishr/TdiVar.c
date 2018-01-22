@@ -132,12 +132,15 @@ STATIC_CONSTANT struct descriptor true_dsc = { sizeof(true), DTYPE_BU, CLASS_S, 
 
 
 static pthread_mutex_t public_lock = PTHREAD_MUTEX_INITIALIZER;
-#define LOCK_PUBLIC pthread_mutex_lock(&public_lock);
+#define LOCK_PUBLIC pthread_mutex_lock(&public_lock)
+//;fprintf(stderr,"public locked by %ld\n",*(long int*)pthread_self())
 #define UNLOCK_PUBLIC_PUSH pthread_cleanup_push((void*)pthread_mutex_unlock,&public_lock)
 #define LOCK_PUBLIC_PUSH LOCK_PUBLIC;UNLOCK_PUBLIC_PUSH
-#define UNLOCK_PUBLIC pthread_cleanup_pop(1);
-#define UNLOCK_IF_PUBLIC(ptr) pthread_cleanup_pop(ptr==&_public)
+#define UNLOCK_PUBLIC pthread_cleanup_pop(1)
+//;fprintf(stderr,"public unlocked by %ld\n",*(long int*)pthread_self())
 #define UNLOCK_PUBLIC_IF(cond) pthread_cleanup_pop(cond)
+//;if (cond) fprintf(stderr,"public unlocked by %ld\n",*(long int*)pthread_self())
+#define UNLOCK_IF_PUBLIC(ptr) UNLOCK_PUBLIC_IF(ptr==&_public)
 STATIC_THREADSAFE block_type _public = { 0, 0, 0, 1 };
 
 STATIC_CONSTANT DESCRIPTOR(star, "*");
@@ -345,11 +348,11 @@ int TdiGetIdent(struct descriptor *ident_ptr, struct descriptor_xd *data_ptr){
   block_type *block_ptr = NULL;
   INIT_STATUS;
   UNLOCK_PUBLIC_PUSH;
-  status = TdiFindIdent(7, (struct descriptor_r *)ident_ptr, 0, &node_ptr, 0);
+  status = TdiFindIdent(7, (struct descriptor_r *)ident_ptr, 0, &node_ptr, &block_ptr);
 #ifdef DEBUG
   char string[64];
   memcpy(string,ident_ptr->pointer,ident_ptr->length);string[ident_ptr->length] = '\0';
-  fprintf(stderr,"GET: %s %s\n",block_ptr==&_public ? "public" : STATUS_OK ? "private" : "new", string);
+  fprintf(stderr,"GET: %s %s     block=%p\n",block_ptr==&_public ? "public" : STATUS_OK ? "private" : "new", string, block_ptr);
 #endif
   if STATUS_OK
     status = MdsCopyDxXd(node_ptr->xd.pointer, data_ptr);
@@ -381,7 +384,7 @@ int TdiPutIdent(struct descriptor_r *ident_ptr, struct descriptor_xd *data_ptr){
 #ifdef DEBUG
   char string[64];
   memcpy(string,key_dsc.pointer,key_dsc.length);string[key_dsc.length] = '\0';
-  fprintf(stderr,"PUT: %s %s\n",block_ptr==&_public ? "public" : STATUS_OK ? "private" : "new", string);
+  fprintf(stderr,"PUT: %s %s     block=%p\n",block_ptr==&_public ? "public" : STATUS_OK ? "private" : "new", string, block_ptr);
 #endif
   if STATUS_OK
     status =

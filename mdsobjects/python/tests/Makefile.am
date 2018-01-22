@@ -9,27 +9,28 @@ include ../../../testing/testing.am
 
 TEST_EXTENSIONS = .py
 
+TEST_FLAGS = @MAKEFLAG_J@
 
-
+#	simulateSegfault.py
 TESTS = \
-        dataUnitTest.py \
-        dclUnitTest.py \
-        mdsipUnitTest.py \
-        segmentsUnitTest.py \
-        treeUnitTest.py \
-        threadsUnitTest.py
-
-#  threadsUnitTest.py
-#  simulateSegfault.py
+	dataUnitTest.py \
+	treeUnitTest.py \
+	segmentsUnitTest.py \
+	taskUnitTest.py \
+	mdsipUnitTest.py \
+	dclUnitTest.py \
+	threadsUnitTest.py
 
 # if VALGRIND_TESTS is defined this list is executed with valgrind
+
+#	threadsUnitTest.py
 VALGRIND_TESTS = \
-        dataUnitTest.py \
-        dclUnitTest.py \
-        mdsipUnitTest.py \
-        segmentsUnitTest.py \
-        treeUnitTest.py \
-        threadsUnitTest.py
+	dataUnitTest.py \
+	treeUnitTest.py \
+	segmentsUnitTest.py \
+	taskUnitTest.py \
+	mdsipUnitTest.py \
+	dclUnitTest.py
 
 # DISABLE PYTHON LEAK DETECTION: This suppression file shall be removed when
 # python will finally introduce the patch to detect if valgrind is running ..
