@@ -83,7 +83,8 @@ class Tests(TestCase):
         def isTree(o):
             try:    return isinstance(o,MDSplus.Tree)
             except: return False
-        self.assertEqual([o for o in gc.get_objects() if isTree(o)][refs:],[])
+        if not self.inThread:
+            self.assertEqual([o for o in gc.get_objects() if isTree(o)][refs:],[])
 
     def treeCtx(self):
         from gc import collect

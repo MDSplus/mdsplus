@@ -831,9 +831,21 @@ EXPORT char *MaskReplace(char *path_in, char *tree, int shot)
   return path;
 }
 
-static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, char **resnam_out,
-		   int edit_flag, int *fd_out)
+#ifdef HAVE_SYS_RESOURCE_H
+static void init_rlimit_once(){
+  struct rlimit rlp;
+  getrlimit(RLIMIT_NOFILE, &rlp);
+  if (rlp.rlim_cur < rlp.rlim_max){
+    rlp.rlim_cur = rlp.rlim_max;
+    setrlimit(RLIMIT_NOFILE, &rlp);
+  }
+}
+#endif
+static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, char **resnam_out, int edit_flag, int *fd_out)
 {
+#ifdef HAVE_SYS_RESOURCE_H
+  RUN_FUNCTION_ONCE(init_rlimit_once);
+#endif
   int fd = -1;
   int status = TreeNORMAL;
   char *path;
@@ -842,18 +854,6 @@ static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, 
   char tree_lower[13];
   char *resnam = 0;
   int is_tree = strcmp(type, TREE_TREEFILE_TYPE) == 0;
-#ifdef HAVE_SYS_RESOURCE_H
-  static int initialized = 0;
-  if (!initialized) {
-    struct rlimit rlp;
-    getrlimit(RLIMIT_NOFILE, &rlp);
-    if (rlp.rlim_cur < rlp.rlim_max){
-      rlp.rlim_cur = rlp.rlim_max;
-      setrlimit(RLIMIT_NOFILE, &rlp);
-    }
-    initialized = 1;
-  }
-#endif
   path = TreePath(tree, tree_lower);
   if (path) {
     char *part;

@@ -31,10 +31,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 /* Key for the thread-specific buffer */
 STATIC_THREADSAFE pthread_key_t buffer_key;
-/* Once-only initialisation of the key */
-STATIC_THREADSAFE pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
-/* lock pthread_once */
-STATIC_THREADSAFE pthread_mutex_t buffer_key_mutex = PTHREAD_MUTEX_INITIALIZER;
 /* Free the thread-specific buffer */
 STATIC_ROUTINE void buffer_destroy(void *buf){
   ThreadStatic *ThreadStatic_p = (ThreadStatic *)buf;
@@ -56,9 +52,7 @@ STATIC_ROUTINE void buffer_key_alloc(){
 
 /* Return the thread-specific buffer */
 ThreadStatic *mdsdclGetThreadStatic(){
-  pthread_mutex_lock(&buffer_key_mutex);
-  pthread_once(&buffer_key_once, buffer_key_alloc);
-  pthread_mutex_unlock(&buffer_key_mutex);
+  RUN_FUNCTION_ONCE(buffer_key_alloc);
   void* p = pthread_getspecific(buffer_key);
   if (!p) {
     p = calloc(1, sizeof(ThreadStatic));

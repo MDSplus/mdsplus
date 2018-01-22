@@ -111,8 +111,7 @@ static time_t get_tz_offset(time_t* time){
 #ifdef USE_TM_GMTOFF
   return tmval.tm_gmtoff;
 #else
-  static pthread_once_t once = PTHREAD_ONCE_INIT;
-  pthread_once(&once,tzset_);
+  RUN_FUNCTION_ONCE(tzset_);
   return (daylight_ && tmval.tm_isdst) ? ntimezone_ + 3600 : ntimezone_;
 #endif
 }

@@ -66,13 +66,6 @@ class staticmethodX(object):
 
 #### hidden module variables ################
 #
-class _ThreadData(_threading.local):
-
-    """Contains thread specific information"""
-
-    def __init__(self):
-        self.private=False
-_thread_data=_ThreadData()
 
 _usage_table={'ANY':0,'NONE':1,'STRUCTURE':1,'ACTION':2,      # Usage name to codenum table
               'DEVICE':3,'DISPATCH':4,'NUMERIC':5,'SIGNAL':6,
@@ -232,30 +225,43 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
     local = _threading.local()
     @classmethod
     def pushTree(cls,tree):
-        cls.lock.acquire()
+        private = Tree.usingPrivateCtx()
+        if not private:
+            if tree is None:       
+                cls.lock.acquire()
+            else:
+                Tree.usePrivateCtx()
         try:
             if tree is None: tree = cls.getTree()
             dbid = cls.switchDbid(tree)
             if not hasattr(cls.local,'trees'):
-                cls.local.trees = [(tree,dbid)]
+                cls.local.trees = [(tree,dbid,private)]
             else:
-                cls.local.trees.append((tree,dbid))
+                cls.local.trees.append((tree,dbid,private))
             if tree is None: cls.switchDbid(dbid)
         except:
-            cls.lock.release()
+            if not private:
+                if tree is None:
+                    cls.lock.release()
+                else:
+                    Tree.usePrivateCtx(private)
             raise
 
     @classmethod
     def popTree(cls):
+        tree,odbid,private = cls.local.trees.pop()
         try:
-            tree,odbid = cls.local.trees.pop()
             dbid = cls.switchDbid(odbid)
             if tree is None:
                  cls.switchDbid(dbid)
                  if not dbid==odbid:
                      cls.local.tctx = cls(dbid,opened=(odbid is None))
         finally:
-            cls.lock.release()
+            if not private:
+                if tree is None:
+                    cls.lock.release()
+                else:
+                    Tree.usePrivateCtx(private)
 
 class _DBI_ITM_INT(_C.Structure): # HINT: _DBI_ITM_INT begin
 
@@ -596,8 +602,11 @@ class Tree(object):
             raise AttributeError('No such attribute: '+name)
 
     @staticmethod
+    def usingPrivateCtx():
+        return bool(_TreeShr.TreeUsingPrivateCtx())
+
+    @staticmethod
     def usePrivateCtx(on=True):
-        _thread_data.private=on
         if on:
             val=_C.c_int32(1)
         else:
@@ -1700,7 +1709,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         """
         xd=_dsc.Descriptor_xd()
         _TreeCtx.pushTree(self.tree)
-        try:
+        try:    
             status=_TreeShr.TreeGetRecord(self._nid,xd.ref)
         finally:
             _TreeCtx.popTree()
@@ -1895,7 +1904,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         if not returnDict and len(ans) == 1:
             return list(ans.values())[0]
         return ans
-
 
     def getNid(self):
         """Return node index
@@ -3216,59 +3224,61 @@ If you did intend to write to a subnode of the device you should check the prope
     __cached_mds_pydevice_path = ""
     __cached_py_device_not_found = []
     __cached_py_devices = None
-    @staticmethod
-    def importPyDeviceModule(name):
+    __cached_lock = _threading.Lock()
+    @classmethod
+    def importPyDeviceModule(cls,name):
         """Find a device support module with a case insensitive lookup of
         'model'.py in the MDS_PYDEVICE_PATH environment variable search list."""
-        sys,os,path = Device.__cached()
-        name = name.lower()
-        if name in Device.__cached_py_device_modules:
+        with cls.__cached_lock:
+          sys,os,path = Device.__cached()
+          name = name.lower()
+          if name in Device.__cached_py_device_modules:
             return Device.__cached_py_device_modules[name]
-        if name in Device.__cached_py_device_modules:
+          if name in Device.__cached_py_device_modules:
             raise _exc.DevPYDEVICE_NOT_FOUND
-        if path is not None:
-          check_name=name+".py"
-          parts=path.split(';')
-          for part in parts:
-            w=os.walk(part)
-            for dp,dn,fn in w:
-              for fname in fn:
-                if fname.lower() == check_name:
-                  sys.path.insert(0,dp)
-                  try:
-                    device = __import__(fname[:-3])
-                    Device.__cached_py_device_modules[name] = device
-                    return device
-                  finally:
-                    sys.path.remove(dp)
-        Device.__cached_py_device_not_found.append(name)
-        raise _exc.DevPYDEVICE_NOT_FOUND
-
-    @staticmethod
-    def findPyDevices():
-        """Find all device support modules in the MDS_PYDEVICE_PATH environment variable search list."""
-        sys,os,path = Device.__cached()
-        if Device.__cached_py_devices is not None:
-            return Device.__cached_py_devices
-        ans=list()
-        if path is not None:
+          if path is not None:
+            check_name=name+".py"
             parts=path.split(';')
             for part in parts:
-                for dp,dn,fn in os.walk(part):
+              w=os.walk(part)
+              for dp,dn,fn in w:
+                for fname in fn:
+                  if fname.lower() == check_name:
                     sys.path.insert(0,dp)
                     try:
-                        for fname in fn:
-                            if fname.endswith('.py'):
-                                try:
-                                    devnam=fname[:-3].upper()
-                                    __import__(fname[:-3]).__dict__[devnam]
-                                    ans.append(devnam)
-                                except:
-                                    pass
+                      device = __import__(fname[:-3])
+                      Device.__cached_py_device_modules[name] = device
+                      return device
                     finally:
-                        sys.path.remove(dp)
-        Device.__cached_py_devices = ans
-        return ans
+                      sys.path.remove(dp)
+          Device.__cached_py_device_not_found.append(name)
+          raise _exc.DevPYDEVICE_NOT_FOUND
+
+    @classmethod
+    def findPyDevices(cls):
+        """Find all device support modules in the MDS_PYDEVICE_PATH environment variable search list."""
+        with cls.__cached_lock:
+          sys,os,path = Device.__cached()
+          if Device.__cached_py_devices is None:
+            ans=list()
+            if path is not None:
+              parts=path.split(';')
+              for part in parts:
+                for dp,dn,fn in os.walk(part):
+                  sys.path.insert(0,dp)
+                  try:
+                    for fname in fn:
+                      if fname.endswith('.py'):
+                        try:
+                          devnam=fname[:-3].upper()
+                          __import__(fname[:-3]).__dict__[devnam]
+                          ans.append(devnam)
+                        except:
+                          pass
+                  finally:
+                    sys.path.remove(dp)
+            Device.__cached_py_devices = ans
+          return Device.__cached_py_devices
 
     @staticmethod
     def PyDevice(module,model=None):

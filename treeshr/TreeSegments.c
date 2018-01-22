@@ -134,18 +134,6 @@ static void lock_nci(void* vars_in) {
   }
 }
 
-#ifndef _WIN32
-static int saved_uic = 0;
-static pthread_once_t once_saved_uic= PTHREAD_ONCE_INIT;
-static void init_saved_uic() {
-  saved_uic = (getgid() << 16) | getuid();
-}
-#define SAVED_UIC pthread_once(&once_saved_uic,init_saved_uic);
-#else
-const int saved_uic = 0;
-#define SAVED_UIC
-#endif
-
 #ifdef WORDS_BIGENDIAN
  #define ALLOCATE_BUFFER(SIZE,BUFFER) char *BUFFER = malloc(SIZE);
  inline static void endianTransfer(const char* buffer_in, const size_t size, const int length, char* buffer_out) {
@@ -399,12 +387,23 @@ inline static int begin_finish(vars_t* vars){
   return status;
 }
 
+#ifndef _WIN32
+static int saved_uic = 0;
+static void init_saved_uic() {
+  saved_uic = (getgid() << 16) | getuid();
+}
+#endif
+
 inline static void begin_local_nci(vars_t* vars, const struct descriptor_a *initialValue){
   vars->local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK;
   vars->local_nci.dtype = initialValue->dtype;
   vars->local_nci.class = CLASS_R;
   vars->local_nci.time_inserted = TreeTimeInserted();
-  SAVED_UIC;
+#ifndef _WIN32
+  RUN_FUNCTION_ONCE(init_saved_uic);
+#else
+  const int saved_uic = 0;
+#endif
   vars->local_nci.owner_identifier = saved_uic;
 }
 
