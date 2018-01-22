@@ -23,7 +23,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #define DEF_FREEXD
-#include "treeshrp.h"
+#include "treethreadsafe.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -133,18 +133,6 @@ static void lock_nci(void* vars_in) {
     vars->nci_locked = 1;
   }
 }
-
-#ifndef _WIN32
-static int saved_uic = 0;
-static pthread_once_t once_saved_uic= PTHREAD_ONCE_INIT;
-static void init_saved_uic() {
-  saved_uic = (getgid() << 16) | getuid();
-}
-#define SAVED_UIC pthread_once(&once_saved_uic,init_saved_uic);
-#else
-const int saved_uic = 0;
-#define SAVED_UIC
-#endif
 
 #ifdef WORDS_BIGENDIAN
  #define ALLOCATE_BUFFER(SIZE,BUFFER) char *BUFFER = malloc(SIZE);
@@ -399,12 +387,23 @@ inline static int begin_finish(vars_t* vars){
   return status;
 }
 
+#ifndef _WIN32
+static int saved_uic = 0;
+static void init_saved_uic() {
+  saved_uic = (getgid() << 16) | getuid();
+}
+#endif
+
 inline static void begin_local_nci(vars_t* vars, const struct descriptor_a *initialValue){
   vars->local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK;
   vars->local_nci.dtype = initialValue->dtype;
   vars->local_nci.class = CLASS_R;
   vars->local_nci.time_inserted = TreeTimeInserted();
-  SAVED_UIC;
+#ifndef _WIN32
+  RUN_FUNCTION_ONCE(init_saved_uic);
+#else
+  const int saved_uic = 0;
+#endif
   vars->local_nci.owner_identifier = saved_uic;
 }
 
@@ -2032,30 +2031,31 @@ int TreeCopyExtended(PINO_DATABASE * dbid_in, PINO_DATABASE * dbid_out, int nid,
   return status;
 }
 
-static EMPTYXD(TREE_START_CONTEXT);
-static EMPTYXD(TREE_END_CONTEXT);
-static EMPTYXD(TREE_DELTA_CONTEXT);
-int TreeSetTimeContext(struct descriptor *start, struct descriptor *end, struct descriptor *delta)
-{
-  INIT_STATUS_AS MdsCopyDxXd(start, &TREE_START_CONTEXT);
+int _TreeSetTimeContext(void *dbid, struct descriptor *start, struct descriptor *end, struct descriptor *delta){
+  timecontext_t* tc = &((PINO_DATABASE*)dbid)->timecontext;
+  INIT_STATUS_AS MdsCopyDxXd(start, &tc->start);
   if STATUS_OK {
-    status = MdsCopyDxXd(end, &TREE_END_CONTEXT);
+    status = MdsCopyDxXd(end, &tc->end);
     if STATUS_OK
-      status = MdsCopyDxXd(delta, &TREE_DELTA_CONTEXT);
+      status = MdsCopyDxXd(delta, &tc->delta);
   }
   return status;
 }
+int TreeSetTimeContext(struct descriptor *start, struct descriptor *end, struct descriptor *delta){
+  return _TreeSetTimeContext(*TreeCtx(), start, end, delta);
+}
 
-int TreeResetTimeContext()
-{
+int _TreeResetTimeContext(void *dbid){
+  timecontext_t* tc = &((PINO_DATABASE*)dbid)->timecontext;
+  int status;
   EMPTYXD(emptyXd);
-  INIT_STATUS_AS MdsCopyDxXd((struct descriptor *)&emptyXd, &TREE_START_CONTEXT);
-  if STATUS_OK {
-    status = MdsCopyDxXd((struct descriptor *)&emptyXd, &TREE_END_CONTEXT);
-    if STATUS_OK
-      status = MdsCopyDxXd((struct descriptor *)&emptyXd, &TREE_DELTA_CONTEXT);
-  }
+  RETURN_IF_NOT_OK(MdsCopyDxXd((struct descriptor *)&emptyXd, &tc->start));
+  RETURN_IF_NOT_OK(MdsCopyDxXd((struct descriptor *)&emptyXd, &tc->end));
+  RETURN_IF_NOT_OK(MdsCopyDxXd((struct descriptor *)&emptyXd, &tc->delta));
   return status;
+}
+int TreeResetTimeContext() {
+  return _TreeResetTimeContext(*TreeCtx());
 }
 
 static int getOpaqueList(void *dbid, int nid, struct descriptor_xd *out) {
@@ -2132,7 +2132,8 @@ int _TreeGetSegmentedRecord(void *dbid, int nid, struct descriptor_xd *data)
       return status;
     }
   }
-  return (*addr) (dbid, nid, TREE_START_CONTEXT.pointer, TREE_END_CONTEXT.pointer, TREE_DELTA_CONTEXT.pointer, data);
+  timecontext_t* tc = &((PINO_DATABASE*)dbid)->timecontext;
+  return (*addr) (dbid, nid, tc->start.pointer, tc->end.pointer, tc->delta.pointer, data);
 }
 
 int _TreePutRow(void *dbid, int nid, int bufsize, int64_t * timestamp, struct descriptor_a *data){

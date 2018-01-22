@@ -104,7 +104,6 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
     MultiThreadTest(PubTask);
     END_TESTING;
 
-    TEST_TIMEOUT(10);
     BEGIN_TESTING(MultiThreadTdi);
     MultiThreadTest(TdiTask);
     END_TESTING;

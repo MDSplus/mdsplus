@@ -512,6 +512,12 @@ always passed as an argument to tree traversal
 routines.
 *********************************************/
 
+typedef struct _timecontext_t{
+struct descriptor_xd start;
+struct descriptor_xd end;
+struct descriptor_xd delta;
+} timecontext_t;
+
 typedef struct pino_database {
   TREE_INFO *tree_info;		/* Pointer to main tree info block */
   NODE *default_node;		/* Pointer to current default node */
@@ -529,6 +535,7 @@ typedef struct pino_database {
   struct pino_database *next;	/* Link to next database in open list */
 
   int stack_size;
+  timecontext_t timecontext;
 } PINO_DATABASE;
 
 static inline NODE *nid_to_node(PINO_DATABASE * dbid, NID * nid)

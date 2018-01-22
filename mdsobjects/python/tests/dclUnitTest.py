@@ -1,4 +1,4 @@
-#
+#!/usr/bin/python
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,7 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from unittest import TestCase,TestSuite
+from unittest import TestCase,TestSuite,TextTestRunner
 import os,sys
 from re import match
 from threading import RLock
@@ -111,12 +111,13 @@ class Tests(TestCase):
         gc.collect()
     def cleanup(self,refs=0):
         import MDSplus,gc;gc.collect()
+        if self.inThread: return
         def isTree(o):
             try:    return isinstance(o,MDSplus.Tree)
             except: return False
         self.assertEqual([o for o in gc.get_objects() if isTree(o)][refs:],[])
 
-    def dclInterface(self):
+    def interface(self):
       def test():
         Tree('pytree',-1,'ReadOnly').createPulse(self.shot)
         self.assertEqual(dcl('help set verify',1,1,0)[1],None)
@@ -125,6 +126,7 @@ class Tests(TestCase):
         self.assertEqual(cts('help addcrate',1,1,0)[1],None)
         """ tcl commands """
         self._doTCLTest('type test','test\n')
+        if self.inThread: Tree.usePrivateCtx(1)
         self._doTCLTest('close/all')
         self._doTCLTest('show db','\n')
         self._doTCLTest('set tree pytree/shot=%d'%(self.shot,))
@@ -134,7 +136,6 @@ class Tests(TestCase):
         self._doTCLTest('add node TCL_PY_DEV/model=TESTDEVICE')
         self._doTCLTest('do TESTDEVICE:TASK_TEST')
         self._doExceptionTest('do TESTDEVICE:TASK_ERROR1',Exc.DevUNKOWN_STATE)
-        self._doExceptionTest('do TESTDEVICE:TASK_TIMEOUT',Exc.TdiTIMEOUT)
         self._doExceptionTest('do TESTDEVICE:TASK_ERROR2',Exc.DevUNKOWN_STATE)
         self._doExceptionTest('close',Exc.TreeWRITEFIRST)
         self._doTCLTest('write')
@@ -146,6 +147,7 @@ class Tests(TestCase):
         self.assertEqual(str(pytree),'Tree("PYTREE",-1,"Normal")')
         self._doTCLTest('close pytree')
         self.assertEqual(str(pytree),'Tree("PYTREE",-1,"Closed")')
+        if self.inThread: Tree.usePrivateCtx(0)
         """ tcl exceptions """
         self._doExceptionTest('close',Exc.TreeNOT_OPEN)
         self._doExceptionTest('dispatch/command/server=xXxXxXx type test',Exc.ServerPATH_DOWN)
@@ -185,7 +187,7 @@ class Tests(TestCase):
                 for envpair in self.envx.items():
                     testDispatchCommand(server,'env %s=%s'%envpair)
             return None,None
-        monitor,monitor_port = setup_mdsip('ACTION_MONITOR','MONITOR_PORT',4400+self.index,False)
+        monitor,monitor_port = setup_mdsip('ACTION_MONITOR','MONITOR_PORT',8700+self.index,False)
         monitor_opt = "/monitor=%s"%monitor if monitor_port>0 else ""
         server ,server_port  = setup_mdsip('ACTION_SERVER', 'ACTION_PORT',8800+self.index,True)
         shot = self.shot+1
@@ -265,26 +267,31 @@ class Tests(TestCase):
             self.__getattribute__(test)()
     @staticmethod
     def getTests():
-        lst = ['dclInterface']
+        lst = ['interface']
         if Tests.inThread: return lst
         return ['dispatcher'] + lst
     @classmethod
-    def getTestCases(cls):
-        return map(cls,cls.getTests())
+    def getTestCases(cls,tests=None):
+        if tests is None: tests = cls.getTests()
+        return map(cls,tests)
 
-def suite():
-    return TestSuite(Tests.getTestCases())
+def suite(tests=None):
+    return TestSuite(Tests.getTestCases(tests))
 
-def run():
-    from unittest import TextTestRunner
-    TextTestRunner(verbosity=2).run(suite())
+def run(tests=None):
+    TextTestRunner(verbosity=2).run(suite(tests))
+
+def objgraph():
+    import objgraph,gc
+    gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
+    run()
+    gc.collect()
+    objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
 
 if __name__=='__main__':
-    if len(sys.argv)>1 and sys.argv[1].lower()=="objgraph":
-        import objgraph
-    else:      objgraph = None
-    import gc;gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    run()
-    if objgraph:
-         gc.collect()
-         objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
+    import sys
+    if len(sys.argv)==2 and sys.argv[1]=='all':
+        run()
+    elif len(sys.argv)>1:
+        run(sys.argv[1:])
+    else: print('Available tests: %s'%(' '.join(Tests.getTests())))

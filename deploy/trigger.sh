@@ -251,13 +251,14 @@ NORMAL() {
 
 if [ ! -z "${MAKE_JARS}" ]
 then
-    if ( ! ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} --workspace=${SRCDIR} )
+    if ( ! ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} --workspace=${SRCDIR} > make_jars.log 2>&1 )
     then
 	RED $COLOR
 	cat <<EOF >&2
 ===============================================
 
-Error creating java jar files. Trigger failed.
+Error creating java jar files. Trigger failed. 
+Look at make_jars.log artifact for more info .
 
 ===============================================
 EOF

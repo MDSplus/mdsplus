@@ -22,6 +22,8 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
+#define DEF_FREEXD
 #include "treeshrp.h"		/* must be first or off_t wrong */
 #include <ctype.h>
 #include <stdlib.h>
@@ -58,7 +60,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #include <sys/resource.h>
 #endif
-#include "treeshrp.h"
 
 int treeshr_errno = 0;
 extern int MDSEventCan();
@@ -312,11 +313,10 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
   if (dblist) {
     if (dblist->remote) {
       status = CloseTreeRemote(dblist, call_hook);
-      if (status == TreeNOT_OPEN)		   /**** Remote server might have already opened the tree ****/
+      if (status == TreeNOT_OPEN)   /**** Remote server might have already closed the tree ****/
 	status = TreeNORMAL;
     } else if (local_info) {
-
- /************************************************
+    /************************************************
      We check the BLOCKID just to make sure that what
      we were passed in indeed was a tree info block.
      This is a safety check because if we just assumed
@@ -407,7 +407,7 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
 	    free(previous_info);
 	  }
 	}
-	dblist->tree_info = 0;
+	dblist->tree_info = NULL;
       } else
 	status = TreeINVTREE;
     }
@@ -650,9 +650,8 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
 	}
       } else {
 	db = *dblist;
-	*dblist = malloc(sizeof(PINO_DATABASE));
+	*dblist = calloc(1,sizeof(PINO_DATABASE));
 	if (*dblist) {
-	  memset(*dblist, 0, sizeof(PINO_DATABASE));
 	  (*dblist)->next = db;
 	  status = TreeNORMAL;
 	}
@@ -669,6 +668,12 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
       free((*dblist)->main_treenam);
     (*dblist)->main_treenam = strcpy(malloc(strlen(tree) + 1), tree);
     (*dblist)->stack_size = stack_size;
+    (*dblist)->timecontext.start.dtype = DTYPE_DSC;
+    (*dblist)->timecontext.start.class = CLASS_XD;
+    (*dblist)->timecontext.end.dtype = DTYPE_DSC;
+    (*dblist)->timecontext.end.class = CLASS_XD;
+    (*dblist)->timecontext.delta.dtype = DTYPE_DSC;
+    (*dblist)->timecontext.delta.class = CLASS_XD;
   }
   return status;
 }
@@ -831,9 +836,21 @@ EXPORT char *MaskReplace(char *path_in, char *tree, int shot)
   return path;
 }
 
-static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, char **resnam_out,
-		   int edit_flag, int *fd_out)
+#ifdef HAVE_SYS_RESOURCE_H
+static void init_rlimit_once(){
+  struct rlimit rlp;
+  getrlimit(RLIMIT_NOFILE, &rlp);
+  if (rlp.rlim_cur < rlp.rlim_max){
+    rlp.rlim_cur = rlp.rlim_max;
+    setrlimit(RLIMIT_NOFILE, &rlp);
+  }
+}
+#endif
+static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, char **resnam_out, int edit_flag, int *fd_out)
 {
+#ifdef HAVE_SYS_RESOURCE_H
+  RUN_FUNCTION_ONCE(init_rlimit_once);
+#endif
   int fd = -1;
   int status = TreeNORMAL;
   char *path;
@@ -842,18 +859,6 @@ static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, 
   char tree_lower[13];
   char *resnam = 0;
   int is_tree = strcmp(type, TREE_TREEFILE_TYPE) == 0;
-#ifdef HAVE_SYS_RESOURCE_H
-  static int initialized = 0;
-  if (!initialized) {
-    struct rlimit rlp;
-    getrlimit(RLIMIT_NOFILE, &rlp);
-    if (rlp.rlim_cur < rlp.rlim_max){
-      rlp.rlim_cur = rlp.rlim_max;
-      setrlimit(RLIMIT_NOFILE, &rlp);
-    }
-    initialized = 1;
-  }
-#endif
   path = TreePath(tree, tree_lower);
   if (path) {
     char *part;
@@ -1336,6 +1341,9 @@ void TreeFreeDbid(void *dbid)
   if (db) {
     if (db->next)
       TreeFreeDbid(db->next);
+    free_xd(&db->timecontext.start);
+    free_xd(&db->timecontext.end);
+    free_xd(&db->timecontext.delta);
     free(db);
   }
 }

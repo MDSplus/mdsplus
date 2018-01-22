@@ -112,7 +112,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
   int nid;
   short *conglom_size;
   short *conglom_index;
-  char *upcase_name;
+  char *upcase_name = NULL;
   size_t i;
   size_t len = strlen(name);
 /*****************************************************
@@ -120,6 +120,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 *****************************************************/
   if (!IS_OPEN_FOR_EDIT(dblist))
     return TreeNOEDIT;
+  FREE_ON_EXIT(upcase_name);
   upcase_name = (char *)malloc(len + 1);
   for (i = 0; i < len; i++)
     upcase_name[i] = (char)toupper(name[i]);
@@ -201,7 +202,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
   }
   if STATUS_OK
     dblist->modified = 1;
-  free(upcase_name);
+  FREE_NOW(upcase_name);
   return status;
 }
 
@@ -321,9 +322,17 @@ STATIC_ROUTINE int TreeNewNode(PINO_DATABASE * db_ptr, NODE ** node_ptrptr, NODE
 
 #define EXTEND_NODES 512
 
+
+
 int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
 {
-  INIT_STATUS_AS TreeNORMAL;
+  int status;
+  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+  static NODE *empty_node_array = NULL;
+  static NCI *empty_nci_array = NULL;
+  pthread_mutex_lock(&lock);
+  pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
+  status = TreeNORMAL;
   int *saved_node_numbers;
   NODE *node_ptr;
   NODE *ptr;
@@ -336,8 +345,6 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
   int vm_bytes;//TODO: 2GB limit
   int nodes;
   int ncis;
-  STATIC_THREADSAFE NODE *empty_node_array = 0;
-  STATIC_THREADSAFE NCI *empty_nci_array = 0;
   STATIC_CONSTANT size_t empty_node_size = sizeof(NODE) * EXTEND_NODES;
   STATIC_CONSTANT size_t empty_nci_size = sizeof(NCI) * EXTEND_NODES;
 
@@ -350,10 +357,10 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
     empty_node.child = -(int)sizeof(NODE);;
     empty_node_array = (NODE *) malloc(empty_node_size);
     if (empty_node_array == NULL)
-      return MDSplusERROR;
+      {status = MDSplusERROR;goto end;}
     empty_nci_array = (NCI *) malloc(empty_nci_size);
     if (empty_nci_array == NULL)
-      return MDSplusERROR;
+      {status = MDSplusERROR;goto end;}
     for (i = 0; i < EXTEND_NODES; i++) {
       empty_node_array[i] = empty_node;
       empty_nci_array[i] = empty_nci;
@@ -423,7 +430,7 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
       db_ptr->default_node = info_ptr->node + saved_node_numbers[i++];
       free(saved_node_numbers);
     } else
-      return status;
+      goto end;
   }
   memcpy(info_ptr->node + header_ptr->nodes, empty_node_array, empty_node_size);
   if (ncis) {
@@ -456,6 +463,8 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
     (info_ptr->node + header_ptr->nodes)->child = swapint((char *)&tmp);
   }
   header_ptr->nodes += EXTEND_NODES;
+end: ;
+  pthread_cleanup_pop(1);
   return status;
 }
 
@@ -469,7 +478,6 @@ int _TreeAddConglom(void *dbid, char const *path, char const *congtype, int *nid
   STATIC_CONSTANT DESCRIPTOR(tdishr, "TdiShr");
   STATIC_CONSTANT DESCRIPTOR(tdiexecute, "TdiExecute");
   DESCRIPTOR_LONG(statdsc, 0);
-  STATIC_THREADSAFE int (*addr) ();
   statdsc.pointer = (char *)&addstatus;
   if (!IS_OPEN_FOR_EDIT(dblist))
     return TreeNOEDIT;
@@ -477,23 +485,27 @@ int _TreeAddConglom(void *dbid, char const *path, char const *congtype, int *nid
     sprintf(exp, "DevAddDevice('\\%s', '%s')", path, congtype);
   else
     sprintf(exp, "DevAddDevice('%s', '%s')", path, congtype);
-  if (addr == 0)
-    status = LibFindImageSymbol(&tdishr, &tdiexecute, &addr);
+  static int (*addr) () = NULL;
+  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_lock(&lock);
+  if (!addr) status = LibFindImageSymbol(&tdishr, &tdiexecute, &addr);
+  pthread_mutex_unlock(&lock);
   if STATUS_OK {
-    void *old_dbid = *TreeCtx();
     expdsc.length = (unsigned short)strlen(exp);
     expdsc.pointer = exp;
     arglist[1] = &expdsc;
     arglist[2] = &statdsc;
     arglist[3] = MdsEND_ARG;
-    *TreeCtx() = dbid;
+    // switch to privateContext for thread safety
+    int old_pc = TreeUsePrivateCtx(1);
+    void* old_dbid = *TreeCtx();*TreeCtx() = dbid;
     status = (int)((char *)LibCallg(arglist, addr) - (char *)0);
-    *TreeCtx() = old_dbid;
+    *TreeCtx() = old_dbid;TreeUsePrivateCtx(old_pc);
+    // old context restored
     if STATUS_OK {
       status = addstatus;
-      if STATUS_OK {
+      if STATUS_OK
 	status = _TreeFindNode(dbid, path, nid);
-      }
     }
   }
   return status;
@@ -680,9 +692,11 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
             Close the file.
             Write out the characteristics file.
             **************************************/
+            char *nfilenam = NULL;
+            FREE_ON_EXIT(nfilenam);
             int ntreefd;
             TREE_INFO *info_ptr = (*dblist)->tree_info;
-            char *nfilenam = strcpy(malloc(strlen(info_ptr->filespec) + 2), info_ptr->filespec);
+            nfilenam = strcpy(malloc(strlen(info_ptr->filespec) + 2), info_ptr->filespec);
 	    _TreeDeleteNodesWrite(*dbid);
             trim_excess_nodes(info_ptr);
             header_pages = (sizeof(TREE_HEADER) + 511u) / 512u;
@@ -743,9 +757,8 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
                 (*dblist)->modified = 0;
                 status = TreeFCREATE;
             }
-error_exit:
-            if (nfilenam)
-                free(nfilenam);
+error_exit: ;
+            FREE_NOW(nfilenam);
         }
     }
     return status;
