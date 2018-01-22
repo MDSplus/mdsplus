@@ -53,16 +53,13 @@ _TreeShr=_ver.load_library('TreeShr')
 _XTreeShr=_ver.load_library('XTreeShr')
 #############################################
 
-class staticmethodX(object):
+class classmethodX(object):
     def __get__(self, inst, cls):
-        if inst is not None:
-            return self.method.__get__(inst)
-        return self.static
+        if inst is None:
+              return self.method.__get__(cls)
+        else: return self.method.__get__(inst)
     def __init__(self, method):
         self.method = method
-    def static(mself,self,*args,**kwargs):
-        if self is None: return None
-        return mself.method(self,*args,**kwargs)
 
 #### hidden module variables ################
 #
@@ -322,25 +319,25 @@ class Tree(object):
     tctx = None
     ctx  = None
 
-    @staticmethodX
-    def cleanDatafile(tree,shot=None):
+    @classmethodX
+    def cleanDatafile(self,tree=None,shot=None):
         """Clean up data file.
         @rtype: None
         """
-        if isinstance(tree,(Tree,)):
-            tree,shot = tree.tree,tree.shot
+        if isinstance(self,(Tree,)):
+            tree,shot = self.tree,self.shot
         _exc.checkStatus(
                 _TreeShr._TreeCleanDatafile(0,
                                             _C.c_char_p(_ver.tobytes(tree)),
                                             _C.c_int32(int(shot))))
 
-    @staticmethodX
-    def compressDatafile(tree,shot=None):
+    @classmethodX
+    def compressDatafile(self,tree=None,shot=None):
         """Compress data file.
         @rtype: None
         """
-        if isinstance(tree,(Tree,)):
-            tree,shot = tree.tree,tree.shot
+        if isinstance(self,(Tree,)):
+            tree,shot = self.tree,self.shot
         _exc.checkStatus(
                 _TreeShr._TreeCompressDatafile(0,
                                                _C.c_char_p(_ver.tobytes(tree)),
@@ -922,19 +919,17 @@ class Tree(object):
         @rtype: TreeNode
         """
         old=self.default
-        if isinstance(node,TreeNode):
-            if node.ctx == self.ctx:
-                _exc.checkStatus(
+        if not isinstance(node,TreeNode):
+            raise TypeError('default node must be a TreeNode')
+        if not node.ctx == self.ctx:
+            raise TypeError('TreeNode must be in same tree')
+        _exc.checkStatus(
                     _TreeShr._TreeSetDefaultNid(self.ctx,
                                                 node._nid))
-            else:
-                raise TypeError('TreeNode must be in same tree')
-        else:
-            raise TypeError('default node must be a TreeNode')
         return old
 
-    @staticmethod
-    def setTimeContext(begin=None,end=None,delta=None):
+    @classmethodX
+    def setTimeContext(self,begin=None,end=None,delta=None):
         """Set time context for retrieving segmented records
         @param begin: Time value for beginning of segment.
         @type begin: str, Uint64, Float32 or Float64
@@ -944,13 +939,19 @@ class Tree(object):
         @type delta: Uint64, Float32 or Float64
         @rtype: None
         """
-        begin = None if begin is None else _dat.Data(begin)
-        end   = None if end   is None else _dat.Data(end)
-        delta = None if delta is None else _dat.Data(delta)
-        _exc.checkStatus(
-            _TreeShr.TreeSetTimeContext(_C.c_void_p(0) if begin is None else _dat.Data.byref(begin),
-                                        _C.c_void_p(0) if end   is None else _dat.Data.byref(end),
-                                        _C.c_void_p(0) if delta is None else _dat.Data.byref(delta)))
+        def prepValue(value):
+            if value is None:
+                return value,_C.c_void_p(0)
+            value = _dat.Data(value)
+            return value,_dat.Data.byref(value)
+
+        begin,begin_p = prepValue(begin)
+        end,  end_p   = prepValue(end)
+        delta,delta_p = prepValue(delta)
+        if isinstance(self,(Tree,)):
+            _exc.checkStatus(_TreeShr._TreeSetTimeContext(self.ctx,begin_p,end_p,delta_p))
+        else:
+            _exc.checkStatus(_TreeShr.TreeSetTimeContext(begin_p,end_p,delta_p))
 
     @staticmethod
     def setVersionDate(date):
