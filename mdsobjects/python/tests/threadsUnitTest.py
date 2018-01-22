@@ -24,7 +24,7 @@
 #
 
 from unittest import TestCase,TestSuite,TextTestRunner
-from threading import Thread
+from threading import Thread,stack_size
 if __import__('sys').version_info<(3,):
     from io import BytesIO as StringIO
 else:
@@ -58,6 +58,7 @@ class threadJob(Thread):
 class Tests(TestCase):
     def doThreadsTestCase(self,testclass,test,numthreads):
         numsuccess= 0
+        stack_size(0x2000000)
         threads = [ threadJob(testclass,test,i) for i in range(numthreads) ]
         for i,t in enumerate(threads):
             t.start()
