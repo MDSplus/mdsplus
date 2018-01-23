@@ -44,6 +44,7 @@ TESTS = \
         MdsTreeSuppression \
         MdsTreeTest \
         MdsTreeNodeTest \
+        MdsTreeSegments \
         MdsEventSuppression \
         MdsEventTest \
 	MdsConnectionTest
