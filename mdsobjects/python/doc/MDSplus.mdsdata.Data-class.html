@@ -1,1887 +1,2734 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="ascii"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <title>MDSplus.mdsdata.Data</title>
-  <link rel="stylesheet" href="epydoc.css" type="text/css"></link>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
 </head>
+
 <body bgcolor="white" text="black" link="blue" vlink="#204080"
       alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
 
-<!-- =========== START OF NAVBAR =========== -->
-<table class="navbar" border="0" width="100%" cellpadding="0" bgcolor="#a0c0ff" cellspacing="0">
-  <tr valign="center">
-    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="trees.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
-    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="indices.html">Index</a>&nbsp;&nbsp;&nbsp;</th>
-    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
-    <th class="navbar" align="right" width="100%">
-      <table border="0" cellpadding="0" cellspacing="0">
-      <tr><th class="navbar" align="center">
-        <p class="nomargin">
-          MDSplus
-      </p></th></tr></table>
-    </th>
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >MDSplus</th>
+          </tr></table></th>
   </tr>
 </table>
 <table width="100%" cellpadding="0" cellspacing="0">
   <tr valign="top">
     <td width="100%">
-      <font size="-1"><b class="breadcrumbs">
+      <span class="breadcrumbs">
         Package&nbsp;MDSplus ::
         <a href="MDSplus.mdsdata-module.html">Module&nbsp;mdsdata</a> ::
         Class&nbsp;Data
-      </b></font></br>
+      </span>
     </td>
-    <td><table cellpadding="0" cellspacing="0">
-      <tr><td align="right"><font size="-2">[<a href="frames.html"target="_top">frames</a>&nbsp;|&nbsp;<a href="MDSplus.mdsdata.Data-class.html" target="_top">no&nbsp;frames</a>]</font></td></tr>
-    </table></td>
-</tr></table>
-
-<!-- =========== START OF CLASS DESCRIPTION =========== -->
-<h2 class="class">Type Data</h2>
-
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="MDSplus.mdsdata.Data-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== TYPE DESCRIPTION ==================== -->
+<h1 class="epydoc">type Data</h1><p class="nomargin-top"><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data">source&nbsp;code</a></span></p>
 <pre class="base-tree">
-<a href="__builtin__.object-class.html"><code>object</code></a> --+
+object --+
          |
-        <b>Data</b>
-</pre><br />
+        <strong class="uidshort">Data</strong>
+</pre>
 
-<dl><dt><b>Known Subclasses:</b></dt>
+<dl><dt>Known Subclasses:</dt>
 <dd>
-    <a href="MDSplus.apd.Apd-class.html"><code>Apd</code></a>,
-    <a href="MDSplus.mdsarray.Array-class.html"><code>Array</code></a>,
-    <a href="MDSplus.compound.Compound-class.html"><code>Compound</code></a>,
-    <a href="MDSplus.apd.Dictionary-class.html"><code>Dictionary</code></a>,
-    <a href="MDSplus.mdsdata.EmptyData-class.html"><code>EmptyData</code></a>,
-    <a href="MDSplus.ident.Ident-class.html"><code>Ident</code></a>,
-    <a href="MDSplus.apd.List-class.html"><code>List</code></a>,
-    <a href="MDSplus.mdsscalar.Scalar-class.html"><code>Scalar</code></a>,
-    <a href="MDSplus.treenode.TreeNode-class.html"><code>TreeNode</code></a>,
-    <a href="MDSplus.treenode.TreeNodeArray-class.html"><code>TreeNodeArray</code></a></dd></dl>
+      <ul class="subclass-list">
+<li><a href="MDSplus.mdsarray.Array-class.html">mdsarray.Array</a></li><li>, <a href="MDSplus.compound.Compound-class.html">compound.Compound</a></li><li>, <a href="MDSplus.mdsscalar.Scalar-class.html">mdsscalar.Scalar</a></li><li>, <a href="MDSplus.mdsscalar.Ident-class.html">mdsscalar.Ident</a></li><li>, <a href="MDSplus.tree.TreeNode-class.html">tree.TreeNode</a></li>  </ul>
+</dd></dl>
 
-<hr/>
+<hr />
+<p>Superclass used by most MDSplus objects. This provides default methods
+  if not provided by the subclasses.</p>
 
-Superclass used by most MDSplus objects. This provides default methods 
-if not provided by the subclasses.
-<hr/>
-
-
-<!-- =========== START OF METHOD SUMMARY =========== -->
-<table class="summary" border="1" cellpadding="3" cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="summary">
-  <th colspan="2">Method Summary</th></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__init__" class="summary-sig-name"><code>__init__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class="summary-sig-vararg">*value</span>)</span></code>
-<br />
-Cannot create instances of class Data objects.</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__abs__" class="summary-sig-name"><code>__abs__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Absolute value: x.__abs__() &lt;==&gt; abs(x)</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__add__" class="summary-sig-name"><code>__add__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Add: x.__add__(y) &lt;==&gt; x+y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__and__" class="summary-sig-name"><code>__and__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-And: x.__and__(y) &lt;==&gt; x&amp;y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__div__" class="summary-sig-name"><code>__div__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Divide: x.__div__(y) &lt;==&gt; x/y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Bool
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__eq__" class="summary-sig-name"><code>__eq__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Equals: x.__eq__(y) &lt;==&gt; x==y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__float__" class="summary-sig-name"><code>__float__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Float: x.__float__() &lt;==&gt; float(x)</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__floordiv__" class="summary-sig-name"><code>__floordiv__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Floordiv: x.__floordiv__(y) &lt;==&gt; x//y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Bool
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__ge__" class="summary-sig-name"><code>__ge__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Greater or equal: x.__ge__(y) &lt;==&gt; x&gt;=y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__getitem__" class="summary-sig-name"><code>__getitem__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Subscript: x.__getitem__(y) &lt;==&gt; x[y]</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Bool
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__gt__" class="summary-sig-name"><code>__gt__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Greater than: x.__gt__(y) &lt;==&gt; x&gt;y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        int
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__int__" class="summary-sig-name"><code>__int__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Integer: x.__int__() &lt;==&gt; int(x)</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__invert__" class="summary-sig-name"><code>__invert__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Binary not: x.__invert__() &lt;==&gt; ~x</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Bool
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__le__" class="summary-sig-name"><code>__le__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Less than or equal: x.__le__(y) &lt;==&gt; x&lt;=y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__len__" class="summary-sig-name"><code>__len__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Length: x.__len__() &lt;==&gt; len(x)</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        long
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__long__" class="summary-sig-name"><code>__long__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Convert this object to python long</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__lshift__" class="summary-sig-name"><code>__lshift__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Lrft binary shift: x.__lshift__(y) &lt;==&gt; x&lt;&lt;y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Bool
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__lt__" class="summary-sig-name"><code>__lt__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Less than: x.__lt__(y) &lt;==&gt; x&lt;y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__mod__" class="summary-sig-name"><code>__mod__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Modulus: x.__mod__(y) &lt;==&gt; x%y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__mul__" class="summary-sig-name"><code>__mul__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Multiply: x.__mul__(y) &lt;==&gt; x*y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__ne__" class="summary-sig-name"><code>__ne__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Not equal: x.__ne__(y) &lt;==&gt; x!=y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__neg__" class="summary-sig-name"><code>__neg__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Negation: x.__neg__() &lt;==&gt; -x</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Bool
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__nonzero__" class="summary-sig-name"><code>__nonzero__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Not equal 0: x.__nonzero__() &lt;==&gt; x != 0</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__or__" class="summary-sig-name"><code>__or__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Or: x.__or__(y) &lt;==&gt; x|y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__pos__" class="summary-sig-name"><code>__pos__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Unary plus: x.__pos__() &lt;==&gt; +x</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__radd__" class="summary-sig-name"><code>__radd__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Reverse add: x.__radd__(y) &lt;==&gt; y+x</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__rdiv__" class="summary-sig-name"><code>__rdiv__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Reverse divide: x.__rdiv__(y) &lt;==&gt; y/x</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        string
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#decompile" class="summary-sig-name"><code>__repr__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Return string representation</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__rfloordiv__" class="summary-sig-name"><code>__rfloordiv__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-x.__rfloordiv__(y) &lt;==&gt; y//x</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__rlshift__" class="summary-sig-name"><code>__rlshift__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Reverse left binary shift: x.__rlshift__(y) &lt;==&gt; y&lt;&lt;x</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__rmod__" class="summary-sig-name"><code>__rmod__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Reverse modulus: x.__rmod__(y) &lt;==&gt; y%x</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__mul__" class="summary-sig-name"><code>__rmul__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Multiply: x.__mul__(y) &lt;==&gt; x*y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__or__" class="summary-sig-name"><code>__ror__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Or: x.__or__(y) &lt;==&gt; x|y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__rrshift__" class="summary-sig-name"><code>__rrshift__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Reverse right binary shift: x.__rrshift__(y) &lt;==&gt; y&gt;&gt;x</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__rshift__" class="summary-sig-name"><code>__rshift__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Right binary shift: x.__rshift__(y) &lt;==&gt; x&gt;&gt;y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__rsub__" class="summary-sig-name"><code>__rsub__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Reverse subtract: x.__rsub__(y) &lt;==&gt; y-x</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__rxor__" class="summary-sig-name"><code>__rxor__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Reverse xor: x.__rxor__(y) &lt;==&gt; y^x</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        string
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#decompile" class="summary-sig-name"><code>__str__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Return string representation</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__sub__" class="summary-sig-name"><code>__sub__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Subtract: x.__sub__(y) &lt;==&gt; x-y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__xor__" class="summary-sig-name"><code>__xor__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Xor: x.__xor__(y) &lt;==&gt; x^y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Bool
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#bool" class="summary-sig-name"><code>bool</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Return boolean</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Bool
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#compare" class="summary-sig-name"><code>compare</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>value</span>)</span></code>
-<br />
-Compare this data with argument</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#compile" class="summary-sig-name"><code>compile</code></a>(<span class=summary-sig-arg>expr</span>,
-          <span class="summary-sig-vararg">*args</span>)</span></code>
-<br />
-Static method (routine in C++) which compiles the expression (via 
-TdiCompile()) and returns the object instance correspondind to the 
-compiled expression.    <i>(Static method)</i>
-</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Scalar,Array
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#data" class="summary-sig-name"><code>data</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Return primitimive value of the data.</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        string
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#decompile" class="summary-sig-name"><code>decompile</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Return string representation</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#deserialize" class="summary-sig-name"><code>deserialize</code></a>(<span class=summary-sig-arg>data</span>)</span></code>
-<br />
-Return Data from serialized buffer.    <i>(Static method)</i>
-</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getDimensionAt" class="summary-sig-name"><code>dim_of</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>idx</span>)</span></code>
-<br />
-Return dimension of object</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#evaluate" class="summary-sig-name"><code>evaluate</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Return the result of TDI evaluate(this).</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#execute" class="summary-sig-name"><code>execute</code></a>(<span class=summary-sig-arg>expr</span>,
-          <span class="summary-sig-vararg">*args</span>)</span></code>
-<br />
-Execute and expression inserting optional arguments into the 
-expression before evaluating    <i>(Static method)</i>
-</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Int8
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getByte" class="summary-sig-name"><code>getByte</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Convert this data into a byte.</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Int8Array
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getByteArray" class="summary-sig-name"><code>getByteArray</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Convert this data into a byte array.</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getDimensionAt" class="summary-sig-name"><code>getDimensionAt</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>idx</span>)</span></code>
-<br />
-Return dimension of object</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Float64
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getDouble" class="summary-sig-name"><code>getDouble</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Convert this data into a float64.</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getError" class="summary-sig-name"><code>getError</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Get the error field.</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Float32
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getFloat" class="summary-sig-name"><code>getFloat</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Convert this data into a float32.</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getHelp" class="summary-sig-name"><code>getHelp</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Returns the result of TDI GET_HELP(this).</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Int32
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getInt" class="summary-sig-name"><code>getInt</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Convert this data into a int.</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Int32Array
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getIntArray" class="summary-sig-name"><code>getIntArray</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Convert this data into a int array.</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Int64
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getLong" class="summary-sig-name"><code>getLong</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Convert this data into a long.</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Int64Array
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getLongArray" class="summary-sig-name"><code>getLongArray</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Convert this data into a long array.</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Int32Array
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getShape" class="summary-sig-name"><code>getShape</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Get the array dimensions as an integer array.</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Int16
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getShort" class="summary-sig-name"><code>getShort</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Convert this data into a short.</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Int16Array
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getShortArray" class="summary-sig-name"><code>getShortArray</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Convert this data into a short array.</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        String
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getString" class="summary-sig-name"><code>getString</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Convert this data into a STRING.</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getTdiVar" class="summary-sig-name"><code>getTdiVar</code></a>(<span class=summary-sig-arg>tdivarname</span>)</span></code>
-<br />
-Get value of tdi public variable    <i>(Static method)</i>
-</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getUnits" class="summary-sig-name"><code>getUnits</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Return the TDI evaluation of UNITS_OF(this).</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#makeData" class="summary-sig-name"><code>makeData</code></a>(<span class=summary-sig-arg>value</span>)</span></code>
-<br />
-Return MDSplus data class from value.    <i>(Static method)</i>
-</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Bool
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#mayHaveChanged" class="summary-sig-name"><code>mayHaveChanged</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-return true if the represented data could have been changed since the 
-last time this method has been called.</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#pop_dollar_value" class="summary-sig-name"><code>pop_dollar_value</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Pop $value for expression evaluation</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        None
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#push_dollar_value" class="summary-sig-name"><code>push_dollar_value</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Set $value for expression evaluation</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#raw_of" class="summary-sig-name"><code>raw_of</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Return raw part of object</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Uint8Array
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#serialize" class="summary-sig-name"><code>serialize</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Return Uint8Array binary representation.</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        None
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#setError" class="summary-sig-name"><code>setError</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>error</span>)</span></code>
-<br />
-Set the Error field for this Data instance.</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        None
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#setHelp" class="summary-sig-name"><code>setHelp</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>help</span>)</span></code>
-<br />
-Set the Help field for this Data instance.</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#setTdiVar" class="summary-sig-name"><code>setTdiVar</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>tdivarname</span>)</span></code>
-<br />
-Set tdi public variable with this data</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        None
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#setUnits" class="summary-sig-name"><code>setUnits</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>units</span>)</span></code>
-<br />
-Set units</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Float32Array
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#sind" class="summary-sig-name"><code>sind</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Return sin() of data assuming data is in degrees</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#units_of" class="summary-sig-name"><code>units_of</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Return units part of the object</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#value_of" class="summary-sig-name"><code>value_of</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Return value part of object</td></tr>
-<tr bgcolor="#e8f0f8" class="group">
-  <th colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;Inherited from object</th></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="__builtin__.object-class.html#__delattr__" class="summary-sig-name"><code>__delattr__</code></a>(<span class="summary-sig-vararg">...</span>)</span></code>
-<br />
-x.__delattr__('name') &lt;==&gt; del x.name</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="__builtin__.object-class.html#__getattribute__" class="summary-sig-name"><code>__getattribute__</code></a>(<span class="summary-sig-vararg">...</span>)</span></code>
-<br />
-x.__getattribute__('name') &lt;==&gt; x.name</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="__builtin__.object-class.html#__hash__" class="summary-sig-name"><code>__hash__</code></a>(<span class=summary-sig-arg>x</span>)</span></code>
-<br />
-x.__hash__() &lt;==&gt; hash(x)</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="__builtin__.object-class.html#__new__" class="summary-sig-name"><code>__new__</code></a>(<span class=summary-sig-arg>T</span>,
-          <span class=summary-sig-arg>S</span>,
-          <span class="summary-sig-vararg">...</span>)</span></code>
-<br />
-T.__new__(S, ...) -&gt; a new object with type S, a subtype of T</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="__builtin__.object-class.html#__reduce__" class="summary-sig-name"><code>__reduce__</code></a>(<span class="summary-sig-vararg">...</span>)</span></code>
-<br />
-helper for pickle</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="__builtin__.object-class.html#__reduce_ex__" class="summary-sig-name"><code>__reduce_ex__</code></a>(<span class="summary-sig-vararg">...</span>)</span></code>
-<br />
-helper for pickle</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="__builtin__.object-class.html#__setattr__" class="summary-sig-name"><code>__setattr__</code></a>(<span class="summary-sig-vararg">...</span>)</span></code>
-<br />
-x.__setattr__('name', value) &lt;==&gt; x.name = value</td></tr>
-</table><br />
-
-
-<!-- =========== START OF PROPERTY SUMMARY =========== -->
-<table class="summary" border="1" cellpadding="3" cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="summary">
-  <th colspan="2">Property Summary</th></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><a name="descriptor"></a><b><code>descriptor</code></b></td></tr><tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><a name="error"></a><b><code>error</code></b></td></tr><tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><a name="help"></a><b><code>help</code></b></td></tr><tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><a name="units"></a><b><code>units</code></b></td></tr><tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><a name="validation"></a><b><code>validation</code></b></td></tr></table><br />
-
-
-<!-- =========== START OF INSTANCE METHOD DETAILS =========== -->
-<table class="details" border="1" cellpadding="3" cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="details">
-  <th colspan="2">Instance Method Details</th></tr>
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__abs__"></a><span class="summary-sig-name">__abs__</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__abs__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__add__"></a><span class="summary-sig-name">__add__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__add__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__and__"></a><span class="summary-sig-name">__and__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__and__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__bool__"></a><span class="summary-sig-name">__bool__</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return boolean</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__bool__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__div__"></a><span class="summary-sig-name">__div__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__div__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__eq__"></a><span class="summary-sig-name">__eq__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__eq__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__fixTreeReferences__"></a><span class="summary-sig-name">__fixTreeReferences__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">tree</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__fixTreeReferences__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__float__"></a><span class="summary-sig-name">__float__</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Float: x.__float__() &lt;==&gt; float(x)</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__float__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__floordiv__"></a><span class="summary-sig-name">__floordiv__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__floordiv__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__ge__"></a><span class="summary-sig-name">__ge__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__ge__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Data</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__getitem__"></a><span class="summary-sig-name">__getitem__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span><br />
+      Subscript: x.__getitem__(y) &lt;==&gt; x[y]</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__getitem__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__gt__"></a><span class="summary-sig-name">__gt__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__gt__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__hasBadTreeReferences__"></a><span class="summary-sig-name">__hasBadTreeReferences__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">tree</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__hasBadTreeReferences__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__iadd__"></a><span class="summary-sig-name">__iadd__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__iadd__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__iand__"></a><span class="summary-sig-name">__iand__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__iand__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__idiv__"></a><span class="summary-sig-name">__idiv__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__idiv__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__ifloordiv__"></a><span class="summary-sig-name">__ifloordiv__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__ifloordiv__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__ilshift__"></a><span class="summary-sig-name">__ilshift__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__ilshift__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__imod__"></a><span class="summary-sig-name">__imod__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__imod__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__imul__"></a><span class="summary-sig-name">__imul__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__imul__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__index__"></a><span class="summary-sig-name">__index__</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Integer: x.__int__() &lt;==&gt; int(x)</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__int__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__int__"></a><span class="summary-sig-name">__int__</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Integer: x.__int__() &lt;==&gt; int(x)</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__int__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__invert__"></a><span class="summary-sig-name">__invert__</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__invert__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__ior__"></a><span class="summary-sig-name">__ior__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__ior__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__ipow__"></a><span class="summary-sig-name">__ipow__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__ipow__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__irshift__"></a><span class="summary-sig-name">__irshift__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__irshift__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__isub__"></a><span class="summary-sig-name">__isub__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__isub__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__itruediv__"></a><span class="summary-sig-name">__itruediv__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__idiv__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__ixor__"></a><span class="summary-sig-name">__ixor__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__ixor__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__le__"></a><span class="summary-sig-name">__le__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__le__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Data</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__len__"></a><span class="summary-sig-name">__len__</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Length: x.__len__() &lt;==&gt; len(x)</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__len__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">long</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__long__"></a><span class="summary-sig-name">__long__</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Convert this object to python long</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__long__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__lshift__"></a><span class="summary-sig-name">__lshift__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__lshift__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__lt__"></a><span class="summary-sig-name">__lt__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__lt__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__mod__"></a><span class="summary-sig-name">__mod__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__mod__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__mul__"></a><span class="summary-sig-name">__mul__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__mul__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__ne__"></a><span class="summary-sig-name">__ne__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__ne__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__neg__"></a><span class="summary-sig-name">__neg__</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__neg__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__nonzero__"></a><span class="summary-sig-name">__nonzero__</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__nonzero__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__or__"></a><span class="summary-sig-name">__or__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__or__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__pos__"></a><span class="summary-sig-name">__pos__</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__pos__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__pow__"></a><span class="summary-sig-name">__pow__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__pow__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__radd__"></a><span class="summary-sig-name">__radd__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__radd__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__rand__"></a><span class="summary-sig-name">__rand__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__rand__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__rdiv__"></a><span class="summary-sig-name">__rdiv__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__rdiv__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">String</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__repr__" class="summary-sig-name">__repr__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Representation</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__repr__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__req__"></a><span class="summary-sig-name">__req__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__req__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__rfloordiv__"></a><span class="summary-sig-name">__rfloordiv__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__rfloordiv__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__rge__"></a><span class="summary-sig-name">__rge__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__rge__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__rgt__"></a><span class="summary-sig-name">__rgt__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__rgt__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__rle__"></a><span class="summary-sig-name">__rle__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__rle__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__rlshift__"></a><span class="summary-sig-name">__rlshift__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__rlshift__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__rlt__"></a><span class="summary-sig-name">__rlt__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__rlt__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__rmod__"></a><span class="summary-sig-name">__rmod__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__rmod__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__rmul__"></a><span class="summary-sig-name">__rmul__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__rmul__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__rne__"></a><span class="summary-sig-name">__rne__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__rne__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__ror__"></a><span class="summary-sig-name">__ror__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__ror__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Data</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__round__"></a><span class="summary-sig-name">__round__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*arg</span>)</span><br />
+      Round value to next integer: x.__round__() &lt;==&gt; round(x)</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__round__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__rpow__"></a><span class="summary-sig-name">__rpow__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__rpow__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__rrshift__"></a><span class="summary-sig-name">__rrshift__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__rrshift__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__rshift__"></a><span class="summary-sig-name">__rshift__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__rshift__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__rsub__"></a><span class="summary-sig-name">__rsub__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__rsub__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__rtruediv__"></a><span class="summary-sig-name">__rtruediv__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__rdiv__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__rxor__"></a><span class="summary-sig-name">__rxor__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__rxor__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__str__" class="summary-sig-name">__str__</a>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__str__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__sub__"></a><span class="summary-sig-name">__sub__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__sub__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__truediv__"></a><span class="summary-sig-name">__truediv__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__div__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__xor__"></a><span class="summary-sig-name">__xor__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__xor__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Data</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#assignTo" class="summary-sig-name">assignTo</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">varname</span>)</span><br />
+      Set tdi variable with this data</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.assignTo">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="bool"></a><span class="summary-sig-name">bool</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return boolean</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__bool__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#compare" class="summary-sig-name">compare</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Compare this data with argument</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.compare">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">numpy or native type</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="data"></a><span class="summary-sig-name">data</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*altvalue</span>)</span><br />
+      Return primitimive value of the data.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.data">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="decompile"></a><span class="summary-sig-name">decompile</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return string representation</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.decompile">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Data</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#dim_of" class="summary-sig-name">dim_of</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idx</span>=<span class="summary-sig-default">0</span>)</span><br />
+      Return dimension of object</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getDimensionAt">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Data</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#evaluate" class="summary-sig-name">evaluate</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return the result of TDI evaluate(this).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.evaluate">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Int8</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getByte" class="summary-sig-name">getByte</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Convert this data into a byte.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getByte">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Int8Array</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getByteArray"></a><span class="summary-sig-name">getByteArray</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Convert this data into a byte array.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getByteArray">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Scalar,Array</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getData"></a><span class="summary-sig-name">getData</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*altvalue</span>)</span><br />
+      Return primitimive value of the data.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getData">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Data</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getDimensionAt" class="summary-sig-name">getDimensionAt</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idx</span>=<span class="summary-sig-default">0</span>)</span><br />
+      Return dimension of object</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getDimensionAt">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Float64</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getDouble" class="summary-sig-name">getDouble</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Convert this data into a float64</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getDouble">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Float64</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getDoubleArray"></a><span class="summary-sig-name">getDoubleArray</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Convert this data into a float64.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getDoubleArray">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Float32</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getFloat" class="summary-sig-name">getFloat</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Convert this data into a float32.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getFloat">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Float32</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getFloatArray"></a><span class="summary-sig-name">getFloatArray</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Convert this data into a float32.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getFloatArray">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Int32</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getInt" class="summary-sig-name">getInt</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Convert this data into a int.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getInt">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Int32Array</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getIntArray"></a><span class="summary-sig-name">getIntArray</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Convert this data into a int array.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getIntArray">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Int64</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getLong" class="summary-sig-name">getLong</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Convert this data into a long.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getLong">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Int64Array</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getLongArray"></a><span class="summary-sig-name">getLongArray</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Convert this data into a long array.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getLongArray">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Int32Array</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getShape"></a><span class="summary-sig-name">getShape</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get the array dimensions as an integer array.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getShape">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Int16</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getShort" class="summary-sig-name">getShort</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Convert this data into a short.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getShort">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Int16Array</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getShortArray"></a><span class="summary-sig-name">getShortArray</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Convert this data into a short array.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getShortArray">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">String</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getString" class="summary-sig-name">getString</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Convert this data into a STRING.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getString">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="hasNodeReference"></a><span class="summary-sig-name">hasNodeReference</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return True if data item contains a tree reference</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.hasNodeReference">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="mayHaveChanged"></a><span class="summary-sig-name">mayHaveChanged</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      return true if the represented data could have been changed since the
+      last time this method has been called.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.mayHaveChanged">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#plot" class="summary-sig-name">plot</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">title</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">scope</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">row</span>=<span class="summary-sig-default">1</span>,
+        <span class="summary-sig-arg">col</span>=<span class="summary-sig-default">1</span>)</span><br />
+      Plot this data item</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.plot">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Data</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="raw_of"></a><span class="summary-sig-name">raw_of</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return raw part of object</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.raw_of">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Uint8Array</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="serialize"></a><span class="summary-sig-name">serialize</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return Uint8Array binary representation.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.serialize">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setError"></a><span class="summary-sig-name">setError</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">error</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.setError">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setHelp"></a><span class="summary-sig-name">setHelp</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">help</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.setHelp">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Data</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#setTdiVar" class="summary-sig-name">setTdiVar</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">varname</span>)</span><br />
+      Set tdi public variable with this data</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.setTdiVar">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setUnits"></a><span class="summary-sig-name">setUnits</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">units</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.setUnits">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setValidation"></a><span class="summary-sig-name">setValidation</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">validation</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.setValidation">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Float32Array</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="sind"></a><span class="summary-sig-name">sind</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return sin() of data assuming data is in degrees</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.sind">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Data</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="units_of"></a><span class="summary-sig-name">units_of</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return units of object</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.units_of">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Data</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="value_of"></a><span class="summary-sig-name">value_of</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return value part of object</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.value_of">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
 </table>
-
-<a name="__init__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__init__</span>(<span class=sig-arg>self</span>,
-          <span class="sig-vararg">*value</span>)</span>
-    <br /><i>(Constructor)</i>
+<!-- ==================== CLASS METHODS ==================== -->
+<a name="section-ClassMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="byref"></a><span class="summary-sig-name">byref</span>(<span class="summary-sig-arg">cls</span>,
+        <span class="summary-sig-arg">data</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.byref">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="pointer"></a><span class="summary-sig-name">pointer</span>(<span class="summary-sig-arg">cls</span>,
+        <span class="summary-sig-arg">data</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.pointer">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== STATIC METHODS ==================== -->
+<a name="section-StaticMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Static Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Data</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__new__" class="summary-sig-name">__new__</a>(<span class="summary-sig-arg">cls</span>,
+        <span class="summary-sig-arg">*value</span>)</span><br />
+      Convert a python object to a MDSobject Data object</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__new__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Data</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="compile"></a><span class="summary-sig-name">compile</span>(<span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      Static method (routine in C++) which compiles the expression (via 
+      TdiCompile()) and returns the object instance correspondind to the 
+      compiled expression.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.compile">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Data</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#deserialize" class="summary-sig-name">deserialize</a>(<span class="summary-sig-arg">bytes</span>)</span><br />
+      Return Data from serialized buffer.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.deserialize">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Data</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="execute"></a><span class="summary-sig-name">execute</span>(<span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      Execute and expression inserting optional arguments into the 
+      expression before evaluating</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.execute">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Data</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getTdiVar" class="summary-sig-name">getTdiVar</a>(<span class="summary-sig-arg">varname</span>)</span><br />
+      Get value of tdi public variable</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getTdiVar">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__array_priority__"></a><span class="summary-name">__array_priority__</span> = <code title="100.0">100.0</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="tree"></a><span class="summary-name">tree</span> = <code title="None">None</code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="MDSplus.mdsdata.Data-class.html#__array_interface__" class="summary-name">__array_interface__</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="MDSplus.mdsdata.Data-class.html#deref" class="summary-name">deref</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="MDSplus.mdsdata.Data-class.html#descriptor" class="summary-name">descriptor</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="MDSplus.mdsdata.Data-class.html#error" class="summary-name">error</a><br />
+      error property of this data.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="MDSplus.mdsdata.Data-class.html#help" class="summary-name">help</a><br />
+      help property of this node.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="MDSplus.mdsdata.Data-class.html#ref" class="summary-name">ref</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="MDSplus.mdsdata.Data-class.html#units" class="summary-name">units</a><br />
+      units associated with this data.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="MDSplus.mdsdata.Data-class.html#validation" class="summary-name">validation</a><br />
+      Validation property of this node
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__new__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__new__</span>(<span class="sig-arg">cls</span>,
+        <span class="sig-arg">*value</span>)</span>
+    <br /><em class="fname">Static Method</em>
   </h3>
-  Cannot create instances of class Data objects. Use 
-  Data.makeData(initial-value) instead
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-    <dl><dt><b>Raises:</b></dt>
-      <dd><code><b>TypeError</b></code> -
-        Raised if attempting to create an instance of Data
-    </dl>
-    <dl><dt><b>Overrides:</b></dt>
-      <dd><a href="__builtin__.object-class.html#__init__"><code>__builtin__.object.__init__</code></a></dd>
-    </dl>
-  </dd></dl>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__new__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Convert a python object to a MDSobject Data object</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>value</code></strong> - Any value</li>
+    </ul></dd>
+    <dt>Returns: Data</dt>
+    <dt>Overrides:
+        object.__new__
+    </dt>
+  </dl>
 </td></tr></table>
-
-<a name="__abs__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__abs__</span>(<span class=sig-arg>self</span>)</span>
+</div>
+<a name="__repr__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__repr__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Representation operator)</em>
   </h3>
-  Absolute value: x.__abs__() &lt;==&gt; abs(x)
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__repr__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Representation</p>
+  <dl class="fields">
+    <dt>Returns: String</dt>
+    <dt>Overrides:
+        object.__repr__
+    </dt>
+  </dl>
 </td></tr></table>
-
-<a name="__add__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__add__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-    <br /><i>(Addition operator)</i>
+</div>
+<a name="__str__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__str__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Informal representation operator)</em>
   </h3>
-  Add: x.__add__(y) &lt;==&gt; x+y
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.__str__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+        object.__str__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
 </td></tr></table>
-
-<a name="__and__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__and__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-    <br /><i>(And operator)</i>
+</div>
+<a name="assignTo"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">assignTo</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">varname</span>)</span>
   </h3>
-  And: x.__and__(y) &lt;==&gt; x&amp;y
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.assignTo">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set tdi variable with this data</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>varname</code></strong> (string) - The name of the public tdi variable to create</li>
+    </ul></dd>
+    <dt>Returns: Data</dt>
+        <dd>Returns the tdi variable</dd>
+  </dl>
 </td></tr></table>
-
-<a name="__div__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__div__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-  </h3>
-  Divide: x.__div__(y) &lt;==&gt; x/y
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__eq__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__eq__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-    <br /><i>(Equality operator)</i>
-  </h3>
-  Equals: x.__eq__(y) &lt;==&gt; x==y
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Bool
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__float__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__float__</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Float: x.__float__() &lt;==&gt; float(x)
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__floordiv__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__floordiv__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-  </h3>
-  Floordiv: x.__floordiv__(y) &lt;==&gt; x//y
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__ge__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__ge__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-    <br /><i>(Greater-than-or-equals operator)</i>
-  </h3>
-  Greater or equal: x.__ge__(y) &lt;==&gt; x&gt;=y
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Bool
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__getitem__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__getitem__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-    <br /><i>(Indexing operator)</i>
-  </h3>
-  Subscript: x.__getitem__(y) &lt;==&gt; x[y]
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__gt__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__gt__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-    <br /><i>(Greater-than operator)</i>
-  </h3>
-  Greater than: x.__gt__(y) &lt;==&gt; x&gt;y
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Bool
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__int__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__int__</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Integer: x.__int__() &lt;==&gt; int(x)
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        int
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__invert__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__invert__</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Binary not: x.__invert__() &lt;==&gt; ~x
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__le__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__le__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-    <br /><i>(Less-than-or-equals operator)</i>
-  </h3>
-  Less than or equal: x.__le__(y) &lt;==&gt; x&lt;=y
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Bool
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__len__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__len__</span>(<span class=sig-arg>self</span>)</span>
-    <br /><i>(Length operator)</i>
-  </h3>
-  Length: x.__len__() &lt;==&gt; len(x)
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__long__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__long__</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Convert this object to python long
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        long
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__lshift__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__lshift__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-  </h3>
-  Lrft binary shift: x.__lshift__(y) &lt;==&gt; x&lt;&lt;y
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__lt__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__lt__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-    <br /><i>(Less-than operator)</i>
-  </h3>
-  Less than: x.__lt__(y) &lt;==&gt; x&lt;y
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Bool
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__mod__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__mod__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-  </h3>
-  Modulus: x.__mod__(y) &lt;==&gt; x%y
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__mul__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__mul__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-  </h3>
-  Multiply: x.__mul__(y) &lt;==&gt; x*y
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__ne__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__ne__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-  </h3>
-  Not equal: x.__ne__(y) &lt;==&gt; x!=y
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__neg__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__neg__</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Negation: x.__neg__() &lt;==&gt; -x
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__nonzero__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__nonzero__</span>(<span class=sig-arg>self</span>)</span>
-    <br /><i>(Boolean test operator)</i>
-  </h3>
-  Not equal 0: x.__nonzero__() &lt;==&gt; x != 0
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Bool
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__or__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__or__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-    <br /><i>(Or operator)</i>
-  </h3>
-  Or: x.__or__(y) &lt;==&gt; x|y
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__pos__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__pos__</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Unary plus: x.__pos__() &lt;==&gt; +x
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__radd__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__radd__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-    <br /><i>(Right-side addition operator)</i>
-  </h3>
-  Reverse add: x.__radd__(y) &lt;==&gt; y+x
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__rdiv__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__rdiv__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-  </h3>
-  Reverse divide: x.__rdiv__(y) &lt;==&gt; y/x
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="decompile"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__repr__</span>(<span class=sig-arg>self</span>)</span>
-    <br /><i>(Representation operator)</i>
-  </h3>
-  Return string representation
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        string
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__rfloordiv__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__rfloordiv__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-  </h3>
-  x.__rfloordiv__(y) &lt;==&gt; y//x
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__rlshift__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__rlshift__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-  </h3>
-  Reverse left binary shift: x.__rlshift__(y) &lt;==&gt; 
-  y&lt;&lt;x
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__rmod__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__rmod__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-  </h3>
-  Reverse modulus: x.__rmod__(y) &lt;==&gt; y%x
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__mul__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__rmul__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-  </h3>
-  Multiply: x.__mul__(y) &lt;==&gt; x*y
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__or__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__ror__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-  </h3>
-  Or: x.__or__(y) &lt;==&gt; x|y
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__rrshift__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__rrshift__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-  </h3>
-  Reverse right binary shift: x.__rrshift__(y) &lt;==&gt; 
-  y&gt;&gt;x
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__rshift__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__rshift__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-  </h3>
-  Right binary shift: x.__rshift__(y) &lt;==&gt; x&gt;&gt;y
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__rsub__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__rsub__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-  </h3>
-  Reverse subtract: x.__rsub__(y) &lt;==&gt; y-x
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__rxor__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__rxor__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-  </h3>
-  Reverse xor: x.__rxor__(y) &lt;==&gt; y^x
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="decompile"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__str__</span>(<span class=sig-arg>self</span>)</span>
-    <br /><i>(Informal representation operator)</i>
-  </h3>
-  Return string representation
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        string
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__sub__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__sub__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-    <br /><i>(Subtraction operator)</i>
-  </h3>
-  Subtract: x.__sub__(y) &lt;==&gt; x-y
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="__xor__"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__xor__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-  </h3>
-  Xor: x.__xor__(y) &lt;==&gt; x^y
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="bool"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">bool</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Return boolean
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Bool
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
+</div>
 <a name="compare"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">compare</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>value</span>)</span>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">compare</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">value</span>)</span>
   </h3>
-  Compare this data with argument
-  <dl><dt></dt><dd>
-    <dl><dt><b>Parameters:</b></dt>
-      <dd><code><b>value</b></code> -
-         data to compare to
-        <br /><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        (type=Data)</i>
-      </dd>
-    </dl>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Return True if the value and this Data object contain the same 
-        data
-        <br /><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        (type=Bool)</i>
-      </dd>
-    </dl>
-  </dd></dl>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.compare">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Compare this data with argument</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>value</code></strong> (Data) - data to compare to</li>
+    </ul></dd>
+    <dt>Returns: Bool</dt>
+        <dd>Return True if the value and this Data object contain the same 
+          data</dd>
+  </dl>
 </td></tr></table>
-
-<a name="data"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">data</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Return primitimive value of the data.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Scalar,Array
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="decompile"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">decompile</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Return string representation
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        string
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="getDimensionAt"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">dim_of</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>idx</span>=<span class=sig-default>0</span>)</span>
-  </h3>
-  Return dimension of object
-  <dl><dt></dt><dd>
-    <dl><dt><b>Parameters:</b></dt>
-      <dd><code><b>idx</b></code> -
-         Index of dimension
-        <br /><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        (type=int)</i>
-      </dd>
-    </dl>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="evaluate"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">evaluate</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Return the result of TDI evaluate(this).
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="getByte"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">getByte</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Convert this data into a byte. Implemented at this class level by 
-  returning TDI data(BYTE(this)). If data() fails or the returned class 
-  is not scalar, generate an exception.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Int8
-      </dd>
-    </dl>
-    <dl><dt><b>Raises:</b></dt>
-      <dd><code><b>TypeError</b></code> -
-        Raised if data is not a scalar value
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="getByteArray"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">getByteArray</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Convert this data into a byte array. Implemented at this class level 
-  by returning TDI data(BYTE(this)). If data() fails or the returned 
-  class is not array, generates an exception. In Java and C++ will return 
-  a 1 dimensional array using row-first ordering if a multidimensional 
-  array.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Int8Array
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="getDimensionAt"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">getDimensionAt</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>idx</span>=<span class=sig-default>0</span>)</span>
-  </h3>
-  Return dimension of object
-  <dl><dt></dt><dd>
-    <dl><dt><b>Parameters:</b></dt>
-      <dd><code><b>idx</b></code> -
-         Index of dimension
-        <br /><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        (type=int)</i>
-      </dd>
-    </dl>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="getDouble"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">getDouble</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Convert this data into a float64. Implemented at this class level by 
-  returning TDI data(FT_FLOAT(this)). If data() fails or the returned 
-  class is not scalar, generate an exception.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Float64
-      </dd>
-    </dl>
-    <dl><dt><b>Raises:</b></dt>
-      <dd><code><b>TypeError</b></code> -
-        Raised if data is not a scalar value
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="getError"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">getError</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Get the error field. Returns EmptyData if no error defined.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="getFloat"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">getFloat</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Convert this data into a float32. Implemented at this class level by 
-  returning TDI data(F_FLOAT(this)).If data() fails or the returned class 
-  is not scalar, generate an exception.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Float32
-      </dd>
-    </dl>
-    <dl><dt><b>Raises:</b></dt>
-      <dd><code><b>TypeError</b></code> -
-        Raised if data is not a scalar value
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="getHelp"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">getHelp</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Returns the result of TDI GET_HELP(this). Returns EmptyData if no 
-  help field defined.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="getInt"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">getInt</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Convert this data into a int. Implemented at this class level by 
-  returning TDI data(LONG(this)).If data() fails or the returned class is 
-  not scalar, generate an exception.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Int32
-      </dd>
-    </dl>
-    <dl><dt><b>Raises:</b></dt>
-      <dd><code><b>TypeError</b></code> -
-        Raised if data is not a scalar value
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="getIntArray"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">getIntArray</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Convert this data into a int array. Implemented at this class level 
-  by returning TDI data (LONG(this)). If data() fails or the returned 
-  class is not array, generates an exception. In Java and C++ will return 
-  a 1 dimensional array using row-first ordering if a multidimensional 
-  array.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Int32Array
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="getLong"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">getLong</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Convert this data into a long. Implemented at this class level by 
-  returning TDI data(QUADWORD(this)).If data() fails or the returned 
-  class is not scalar, generate an exception.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Int64
-      </dd>
-    </dl>
-    <dl><dt><b>Raises:</b></dt>
-      <dd><code><b>TypeError</b></code> -
-        if data is not a scalar value
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="getLongArray"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">getLongArray</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Convert this data into a long array. Implemented at this class level 
-  by returning TDI data(QUADWORD(this)). If data() fails or the returned 
-  class is not array, generates an exception. In Java and C++ will return 
-  a 1 dimensional array using row-first ordering if a multidimensional 
-  array.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Int64Array
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="getShape"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">getShape</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Get the array dimensions as an integer array. It is implemented at 
-  this class level by computing TDI expression SHAPE(this). If shape 
-  fails an exception is generated.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Int32Array
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="getShort"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">getShort</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Convert this data into a short. Implemented at this class level by 
-  returning TDI data(WORD(this)).If data() fails or the returned class is 
-  not scalar, generate an exception.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Int16
-      </dd>
-    </dl>
-    <dl><dt><b>Raises:</b></dt>
-      <dd><code><b>TypeError</b></code> -
-        Raised if data is not a scalar value
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="getShortArray"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">getShortArray</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Convert this data into a short array. Implemented at this class 
-  level by returning TDI data(WORD(this)). If data() fails or the 
-  returned class is not array, generates an exception. In Java and C++ 
-  will return a 1 dimensional array using row-first ordering if a 
-  multidimensional array.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Int16Array
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="getString"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">getString</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Convert this data into a STRING. Implemented at this class level by 
-  returning TDI data((this)). If data() fails or the returned class is 
-  not string, generates an exception.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        String
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="getUnits"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">getUnits</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Return the TDI evaluation of UNITS_OF(this). EmptyData is returned 
-  if no units defined.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="mayHaveChanged"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">mayHaveChanged</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  return true if the represented data could have been changed since 
-  the last time this method has been called.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Bool
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="pop_dollar_value"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">pop_dollar_value</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Pop $value for expression evaluation
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="push_dollar_value"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">push_dollar_value</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Set $value for expression evaluation
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        None
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="raw_of"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">raw_of</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Return raw part of object
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="serialize"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">serialize</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Return Uint8Array binary representation.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Uint8Array
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="setError"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">setError</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>error</span>)</span>
-  </h3>
-  Set the Error field for this Data instance.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        None
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="setHelp"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">setHelp</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>help</span>)</span>
-  </h3>
-  Set the Help field for this Data instance.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        None
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="setTdiVar"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">setTdiVar</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>tdivarname</span>)</span>
-  </h3>
-  Set tdi public variable with this data
-  <dl><dt></dt><dd>
-    <dl><dt><b>Parameters:</b></dt>
-      <dd><code><b>tdivarname</b></code> -
-         The name of the public tdi variable to create
-        <br /><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        (type=string)</i>
-      </dd>
-    </dl>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Returns new value of the tdi variable
-        <br /><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        (type=Data)</i>
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="setUnits"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">setUnits</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>units</span>)</span>
-  </h3>
-  Set units
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        None
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="sind"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">sind</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Return sin() of data assuming data is in degrees
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Float32Array
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="units_of"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">units_of</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Return units part of the object
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
-<a name="value_of"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">value_of</span>(<span class=sig-arg>self</span>)</span>
-  </h3>
-  Return value part of object
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-<br />
-
-
-<!-- =========== START OF STATIC METHOD DETAILS =========== -->
-<table class="details" border="1" cellpadding="3" cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="details">
-  <th colspan="2">Static Method Details</th></tr>
-</table>
-
-<a name="compile"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">compile</span>(<span class=sig-arg>expr</span>,
-          <span class="sig-vararg">*args</span>)</span>
-  </h3>
-  Static method (routine in C++) which compiles the expression (via 
-  TdiCompile()) and returns the object instance correspondind to the 
-  compiled expression.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
-</td></tr></table>
-
+</div>
 <a name="deserialize"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">deserialize</span>(<span class=sig-arg>data</span>)</span>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">deserialize</span>(<span class="sig-arg">bytes</span>)</span>
+    <br /><em class="fname">Static Method</em>
   </h3>
-  Return Data from serialized buffer.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Parameters:</b></dt>
-      <dd><code><b>data</b></code> -
-         Buffer returned from serialize.
-        <br /><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        (type=Uint8Array)</i>
-      </dd>
-    </dl>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.deserialize">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return Data from serialized buffer.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>bytes</code></strong> (Uint8Array) - Buffer returned from serialize.</li>
+    </ul></dd>
+    <dt>Returns: Data</dt>
+  </dl>
 </td></tr></table>
-
-<a name="execute"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">execute</span>(<span class=sig-arg>expr</span>,
-          <span class="sig-vararg">*args</span>)</span>
+</div>
+<a name="dim_of"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">dim_of</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">idx</span>=<span class="sig-default">0</span>)</span>
   </h3>
-  Execute and expression inserting optional arguments into the 
-  expression before evaluating
-  <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getDimensionAt">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return dimension of object</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>idx</code></strong> (int) - Index of dimension</li>
+    </ul></dd>
+    <dt>Returns: Data</dt>
+  </dl>
 </td></tr></table>
-
+</div>
+<a name="evaluate"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">evaluate</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.evaluate">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return the result of TDI evaluate(this).</p>
+  <dl class="fields">
+    <dt>Returns: Data</dt>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@staticmethodX</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getByte"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getByte</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getByte">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Convert this data into a byte.</p>
+  <dl class="fields">
+    <dt>Returns: Int8</dt>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>TypeError</strong></code> - Raised if data is not a scalar value</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getDimensionAt"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getDimensionAt</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">idx</span>=<span class="sig-default">0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getDimensionAt">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return dimension of object</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>idx</code></strong> (int) - Index of dimension</li>
+    </ul></dd>
+    <dt>Returns: Data</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getDouble"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getDouble</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getDouble">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Convert this data into a float64</p>
+  <dl class="fields">
+    <dt>Returns: Float64</dt>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>TypeError</strong></code> - Raised if data is not a scalar value</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getFloat"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getFloat</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getFloat">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Convert this data into a float32.</p>
+  <dl class="fields">
+    <dt>Returns: Float32</dt>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>TypeError</strong></code> - Raised if data is not a scalar value</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getInt"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getInt</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getInt">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Convert this data into a int. Implemented at this class level by 
+  returning TDI data(LONG(this)).If data() fails or the returned class is 
+  not scalar, generate an exception.</p>
+  <dl class="fields">
+    <dt>Returns: Int32</dt>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>TypeError</strong></code> - Raised if data is not a scalar value</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getLong"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getLong</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getLong">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Convert this data into a long.</p>
+  <dl class="fields">
+    <dt>Returns: Int64</dt>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>TypeError</strong></code> - if data is not a scalar value</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getShort"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getShort</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getShort">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Convert this data into a short.</p>
+  <dl class="fields">
+    <dt>Returns: Int16</dt>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>TypeError</strong></code> - Raised if data is not a scalar value</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getString"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getString</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getString">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Convert this data into a STRING. Implemented at this class level by 
+  returning TDI data((this)). If data() fails or the returned class is not 
+  string, generates an exception.</p>
+  <dl class="fields">
+    <dt>Returns: String</dt>
+  </dl>
+</td></tr></table>
+</div>
 <a name="getTdiVar"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">getTdiVar</span>(<span class=sig-arg>tdivarname</span>)</span>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getTdiVar</span>(<span class="sig-arg">varname</span>)</span>
+    <br /><em class="fname">Static Method</em>
   </h3>
-  Get value of tdi public variable
-  <dl><dt></dt><dd>
-    <dl><dt><b>Parameters:</b></dt>
-      <dd><code><b>tdivarname</b></code> -
-         The name of the publi tdi variable
-        <br /><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        (type=string)</i>
-      </dd>
-    </dl>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.getTdiVar">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get value of tdi public variable</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>varname</code></strong> (string) - The name of the public tdi variable</li>
+    </ul></dd>
+    <dt>Returns: Data</dt>
+  </dl>
 </td></tr></table>
-
-<a name="makeData"></a>
-<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">makeData</span>(<span class=sig-arg>value</span>)</span>
+</div>
+<a name="plot"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">plot</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">title</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">scope</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">row</span>=<span class="sig-default">1</span>,
+        <span class="sig-arg">col</span>=<span class="sig-default">1</span>)</span>
   </h3>
-  Return MDSplus data class from value.
-  <dl><dt></dt><dd>
-    <dl><dt><b>Parameters:</b></dt>
-      <dd><code><b>value</b></code> -
-         Any value
-      </dd>
-    </dl>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
-  </dd></dl>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.plot">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Plot this data item</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>title</code></strong> (str) - Title of Scope. Used if scope argument is not provided</li>
+        <li><strong class="pname"><code>scope</code></strong> (Scope) - Optional Scope object if adding this to an existing Scope</li>
+        <li><strong class="pname"><code>row</code></strong> (int) - Row in existing Scope to plot this data</li>
+        <li><strong class="pname"><code>col</code></strong> (int) - Column in existing Scope</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
 </td></tr></table>
+</div>
+<a name="setTdiVar"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setTdiVar</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">varname</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdata-pysrc.html#Data.setTdiVar">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set tdi public variable with this data</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>varname</code></strong> (string) - The name of the public tdi variable to create</li>
+    </ul></dd>
+    <dt>Returns: Data</dt>
+        <dd>Returns new value of the tdi variable</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@staticmethodX</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
 <br />
+<!-- ==================== PROPERTY DETAILS ==================== -->
+<a name="section-PropertyDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Property Details</span></td>
+</tr>
+</table>
+<a name="__array_interface__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__array_interface__</h3>
+  
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="deref"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">deref</h3>
+  
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="descriptor"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">descriptor</h3>
+  
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="error"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">error</h3>
+  <p>error property of this data.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="help"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">help</h3>
+  <p>help property of this node.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="ref"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">ref</h3>
+  
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="units"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">units</h3>
+  <p>units associated with this data.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="validation"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">validation</h3>
+  <p>Validation property of this node</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
 
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
 
-<!-- =========== START OF NAVBAR =========== -->
-<table class="navbar" border="0" width="100%" cellpadding="0" bgcolor="#a0c0ff" cellspacing="0">
-  <tr valign="center">
-    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="trees.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
-    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="indices.html">Index</a>&nbsp;&nbsp;&nbsp;</th>
-    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
-    <th class="navbar" align="right" width="100%">
-      <table border="0" cellpadding="0" cellspacing="0">
-      <tr><th class="navbar" align="center">
-        <p class="nomargin">
-          MDSplus
-      </p></th></tr></table>
-    </th>
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >MDSplus</th>
+          </tr></table></th>
   </tr>
 </table>
-
-<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
-    <td align="left"><font size="-2">Generated by Epydoc 2.1 on Wed Aug 18 13:35:32 2010</font></td>
-    <td align="right"><a href="http://epydoc.sourceforge.net"
-                      ><font size="-2">http://epydoc.sf.net</font></a></td>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
   </tr>
 </table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
 </body>
 </html>

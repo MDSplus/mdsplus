@@ -70,9 +70,9 @@
 ./usr/local/mdsplus/tdi/MitDevices/Dt216Init.fun
 ./usr/local/mdsplus/tdi/MitDevices/Dt216PutSignal.fun
 ./usr/local/mdsplus/tdi/MitDevices/DtAcq16Init.fun
+./usr/local/mdsplus/tdi/MitDevices/MITDEVICES.fun
 ./usr/local/mdsplus/tdi/MitDevices/MitCamacDevices.fun
 ./usr/local/mdsplus/tdi/MitDevices/MitCurrentDevices.fun
-./usr/local/mdsplus/tdi/MitDevices/MITDEVICES.fun
 ./usr/local/mdsplus/tdi/MitDevices/MitInstall.sh
 ./usr/local/mdsplus/tdi/MitDevices/MitObsoleteDevices.fun
 ./usr/local/mdsplus/tdi/MitDevices/MitUpdateBoard.sh

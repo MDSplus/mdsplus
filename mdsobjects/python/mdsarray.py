@@ -57,7 +57,6 @@ class Array(_dat.Data):
     def __new__(cls,*value):
         """Convert a python object to a MDSobject Data array
         @param value: Any value
-        @type data: any
         @rtype: Array
         """
         if cls is not Array or len(value)==0:
