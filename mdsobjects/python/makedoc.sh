@@ -9,7 +9,15 @@ fi
 mkdir /tmp/MDSplus
 cd /tmp/MDSplus
 ln -sf ${thisdir}/*.py .
-epydoc -o $dir -v --name=MDSplus --docformat=epytext --no-private --css=grayscale apd.py connection.py event.py mdsarray.py compound.py ident.py mdsdata.py mdsdevice.py mdsscalar.py tree.py treenode.py
-cd ..
+epydoc -o $dir -v --name=MDSplus --docformat=epytext --no-private --css=grayscale \
+       apd.py \
+       compound.py \
+       connection.py \
+       mdsarray.py \
+       mdsdata.py \
+       mdsdcl.py \
+       mdsExceptions.py \
+       mdsscalar.py \
+       tree.py
 rm -Rf /tmp/MDSplus
 

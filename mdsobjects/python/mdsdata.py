@@ -126,7 +126,6 @@ class Data(object):
     def __new__(cls,*value):
         """Convert a python object to a MDSobject Data object
         @param value: Any value
-        @type data: Any
         @rtype: Data
         """
         if cls is not Data or len(value)==0:
@@ -485,8 +484,8 @@ class Data(object):
     @staticmethodX
     def setTdiVar(self,varname):
         """Set tdi public variable with this data
-        @param tdivarname: The name of the public tdi variable to create
-        @type tdivarname: string
+        @param varname: The name of the public tdi variable to create
+        @type varname: string
         @rtype: Data
         @return: Returns new value of the tdi variable
         """
@@ -495,8 +494,8 @@ class Data(object):
     @staticmethod
     def getTdiVar(varname):
         """Get value of tdi public variable
-        @param tdivarname: The name of the publi tdi variable
-        @type tdivarname: string
+        @param varname: The name of the public tdi variable
+        @type varname: string
         @rtype: Data"""
         try:
             return _cmp.PUBLIC(_sca.Ident(varname)).evaluate()
@@ -514,7 +513,7 @@ class Data(object):
 
     def __repr__(self):
         """Representation
-        @type: String"""
+        @rtype: String"""
         return str(self)
 
     def data(self,*altvalue):
@@ -738,8 +737,8 @@ class Data(object):
     @staticmethod
     def deserialize(bytes):
         """Return Data from serialized buffer.
-        @param data: Buffer returned from serialize.
-        @type data: Uint8Array
+        @param bytes: Buffer returned from serialize.
+        @type bytes: Uint8Array
         @rtype: Data
         """
         if len(bytes) == 0:  # short cut if setevent did not send array

@@ -1,128 +1,2531 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="ascii"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <title>MDSplus.compound</title>
-  <link rel="stylesheet" href="epydoc.css" type="text/css"></link>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
 </head>
+
 <body bgcolor="white" text="black" link="blue" vlink="#204080"
       alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
 
-<!-- =========== START OF NAVBAR =========== -->
-<table class="navbar" border="0" width="100%" cellpadding="0" bgcolor="#a0c0ff" cellspacing="0">
-  <tr valign="center">
-    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="trees.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
-    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="indices.html">Index</a>&nbsp;&nbsp;&nbsp;</th>
-    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
-    <th class="navbar" align="right" width="100%">
-      <table border="0" cellpadding="0" cellspacing="0">
-      <tr><th class="navbar" align="center">
-        <p class="nomargin">
-          MDSplus
-      </p></th></tr></table>
-    </th>
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >MDSplus</th>
+          </tr></table></th>
   </tr>
 </table>
 <table width="100%" cellpadding="0" cellspacing="0">
   <tr valign="top">
     <td width="100%">
-      <font size="-1"><b class="breadcrumbs">
+      <span class="breadcrumbs">
         Package&nbsp;MDSplus ::
         Module&nbsp;compound
-      </b></font></br>
+      </span>
     </td>
-    <td><table cellpadding="0" cellspacing="0">
-      <tr><td align="right"><font size="-2">[<a href="frames.html"target="_top">frames</a>&nbsp;|&nbsp;<a href="MDSplus.compound-module.html" target="_top">no&nbsp;frames</a>]</font></td></tr>
-    </table></td>
-</tr></table>
-
-<!-- =========== START OF MODULE DESCRIPTION =========== -->
-<h2 class="module">Module MDSplus.compound</h2>
-
-
-<!-- =========== START OF CLASSES =========== -->
-<table class="summary" border="1" cellpadding="3" cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="summary">
-  <th colspan="2">Classes</th></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.compound.Action-class.html"><code>Action</code></a></b></td>
-  <td>An Action is used for describing an operation to be performed by an 
-MDSplus action server.</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.compound.Call-class.html"><code>Call</code></a></b></td>
-  <td>A Call is used to call routines in shared libraries.</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.compound.Compound-class.html"><code>Compound</code></a></b></td>
-  <td>&nbsp;</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.compound.Conglom-class.html"><code>Conglom</code></a></b></td>
-  <td>A Conglom is used at the head of an MDSplus conglomerate.</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.compound.Dependency-class.html"><code>Dependency</code></a></b></td>
-  <td>A Dependency object is used to describe action dependencies.</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.compound.Dimension-class.html"><code>Dimension</code></a></b></td>
-  <td>A dimension object is used to describe a signal dimension, typically a 
-time axis.</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.compound.Dispatch-class.html"><code>Dispatch</code></a></b></td>
-  <td>A Dispatch object is used to describe when an where an action should 
-be dispatched to an MDSplus action server.</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.compound.Function-class.html"><code>Function</code></a></b></td>
-  <td>A Function object is used to reference builtin MDSplus functions.</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.compound.MetaClass-class.html"><code>MetaClass</code></a></b></td>
-  <td>&nbsp;</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.compound.Method-class.html"><code>Method</code></a></b></td>
-  <td>A Method object is used to describe an operation to be performed on an 
-MDSplus conglomerate/device</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.compound.Procedure-class.html"><code>Procedure</code></a></b></td>
-  <td>A Procedure is a deprecated object</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.compound.Program-class.html"><code>Program</code></a></b></td>
-  <td>A Program is a deprecated object</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.compound.Range-class.html"><code>Range</code></a></b></td>
-  <td>A Range describes a ramp.</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.compound.Routine-class.html"><code>Routine</code></a></b></td>
-  <td>A Routine is a deprecated object</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.compound.Signal-class.html"><code>Signal</code></a></b></td>
-  <td>A Signal is used to describe a measurement, usually time dependent, 
-and associated the data with its independent axis (Dimensions).</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.compound.Window-class.html"><code>Window</code></a></b></td>
-  <td>A Window object can be used to construct a Dimension object.</td></tr>
-</table><br />
-
-
-<!-- =========== START OF NAVBAR =========== -->
-<table class="navbar" border="0" width="100%" cellpadding="0" bgcolor="#a0c0ff" cellspacing="0">
-  <tr valign="center">
-    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="trees.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
-    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="indices.html">Index</a>&nbsp;&nbsp;&nbsp;</th>
-    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
-    <th class="navbar" align="right" width="100%">
-      <table border="0" cellpadding="0" cellspacing="0">
-      <tr><th class="navbar" align="center">
-        <p class="nomargin">
-          MDSplus
-      </p></th></tr></table>
-    </th>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="MDSplus.compound-module.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
   </tr>
 </table>
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module compound</h1><p class="nomargin-top"><span class="codelink"><a href="MDSplus.compound-pysrc.html">source&nbsp;code</a></span></p>
+<!-- ==================== CLASSES ==================== -->
+<a name="section-Classes"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Classes</span></td>
+</tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.Compound-class.html" class="summary-name">Compound</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.Action-class.html" class="summary-name">Action</a><br />
+      An Action is used for describing an operation to be performed by an
+        MDSplus action server.
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.Call-class.html" class="summary-name">Call</a><br />
+      A Call is used to call routines in shared libraries.
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.Conglom-class.html" class="summary-name">Conglom</a><br />
+      A Conglom is used at the head of an MDSplus conglomerate.
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.Dependency-class.html" class="summary-name">Dependency</a><br />
+      A Dependency object is used to describe action dependencies.
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.Dimension-class.html" class="summary-name">Dimension</a><br />
+      A dimension object is used to describe a signal dimension, 
+        typically a time axis.
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.Dispatch-class.html" class="summary-name">Dispatch</a><br />
+      A Dispatch object is used to describe when an where an action 
+        should be dispatched to an MDSplus action server.
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.Function-class.html" class="summary-name">Function</a><br />
+      A Function object is used to reference builtin MDSplus functions.
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.Method-class.html" class="summary-name">Method</a><br />
+      A Method object is used to describe an operation to be performed on
+        an MDSplus conglomerate/device
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.Procedure-class.html" class="summary-name">Procedure</a><br />
+      A Procedure is a deprecated object
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.Program-class.html" class="summary-name">Program</a><br />
+      A Program is a deprecated object
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.Range-class.html" class="summary-name">Range</a><br />
+      A Range describes a ramp.
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.Routine-class.html" class="summary-name">Routine</a><br />
+      A Routine is a deprecated object
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.Signal-class.html" class="summary-name">Signal</a><br />
+      A Signal is used to describe a measurement, usually time dependent,
+        and associated the data with its independent axis (Dimensions).
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.Window-class.html" class="summary-name">Window</a><br />
+      A Window object can be used to construct a Dimension object.
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.Opaque-class.html" class="summary-name">Opaque</a><br />
+      An Opaque object containing a binary uint8 array and a string 
+        identifying the type.
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.WithUnits-class.html" class="summary-name">WithUnits</a><br />
+      Specifies a units for any kind of data.
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.WithError-class.html" class="summary-name">WithError</a><br />
+      Specifies error information for any kind of data.
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.Parameter-class.html" class="summary-name">Parameter</a><br />
+      Specifies a help text and validation information for any kind of 
+        data.
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dPLACEHOLDER-class.html" class="summary-name">dPLACEHOLDER</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dA0-class.html" class="summary-name">dA0</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dALPHA-class.html" class="summary-name">dALPHA</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dAMU-class.html" class="summary-name">dAMU</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dC-class.html" class="summary-name">dC</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dCAL-class.html" class="summary-name">dCAL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dDEGREE-class.html" class="summary-name">dDEGREE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dEV-class.html" class="summary-name">dEV</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dFALSE-class.html" class="summary-name">dFALSE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dFARADAY-class.html" class="summary-name">dFARADAY</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dG-class.html" class="summary-name">dG</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dGAS-class.html" class="summary-name">dGAS</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dH-class.html" class="summary-name">dH</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dHBAR-class.html" class="summary-name">dHBAR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dI-class.html" class="summary-name">dI</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dK-class.html" class="summary-name">dK</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dME-class.html" class="summary-name">dME</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dMISSING-class.html" class="summary-name">dMISSING</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dMP-class.html" class="summary-name">dMP</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dN0-class.html" class="summary-name">dN0</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dNA-class.html" class="summary-name">dNA</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dP0-class.html" class="summary-name">dP0</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dPI-class.html" class="summary-name">dPI</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dQE-class.html" class="summary-name">dQE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dRE-class.html" class="summary-name">dRE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dROPRAND-class.html" class="summary-name">dROPRAND</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dRYDBERG-class.html" class="summary-name">dRYDBERG</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dT0-class.html" class="summary-name">dT0</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dTORR-class.html" class="summary-name">dTORR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dTRUE-class.html" class="summary-name">dTRUE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dVALUE-class.html" class="summary-name">dVALUE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ABORT-class.html" class="summary-name">ABORT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ABS-class.html" class="summary-name">ABS</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ABS1-class.html" class="summary-name">ABS1</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ABSSQ-class.html" class="summary-name">ABSSQ</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ACHAR-class.html" class="summary-name">ACHAR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ACOS-class.html" class="summary-name">ACOS</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ACOSD-class.html" class="summary-name">ACOSD</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ADD-class.html" class="summary-name">ADD</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ADJUSTL-class.html" class="summary-name">ADJUSTL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ADJUSTR-class.html" class="summary-name">ADJUSTR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.AIMAG-class.html" class="summary-name">AIMAG</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.AINT-class.html" class="summary-name">AINT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ALL-class.html" class="summary-name">ALL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ALLOCATED-class.html" class="summary-name">ALLOCATED</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.AND-class.html" class="summary-name">AND</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.AND_NOT-class.html" class="summary-name">AND_NOT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ANINT-class.html" class="summary-name">ANINT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ANY-class.html" class="summary-name">ANY</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ARG-class.html" class="summary-name">ARG</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ARGD-class.html" class="summary-name">ARGD</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ARG_OF-class.html" class="summary-name">ARG_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ARRAY-class.html" class="summary-name">ARRAY</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ASIN-class.html" class="summary-name">ASIN</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ASIND-class.html" class="summary-name">ASIND</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.AS_IS-class.html" class="summary-name">AS_IS</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ATAN-class.html" class="summary-name">ATAN</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ATAN2-class.html" class="summary-name">ATAN2</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ATAN2D-class.html" class="summary-name">ATAN2D</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ATAND-class.html" class="summary-name">ATAND</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ATANH-class.html" class="summary-name">ATANH</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.AXIS_OF-class.html" class="summary-name">AXIS_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BACKSPACE-class.html" class="summary-name">BACKSPACE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.IBCLR-class.html" class="summary-name">IBCLR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BEGIN_OF-class.html" class="summary-name">BEGIN_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.IBITS-class.html" class="summary-name">IBITS</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BREAK-class.html" class="summary-name">BREAK</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BSEARCH-class.html" class="summary-name">BSEARCH</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.IBSET-class.html" class="summary-name">IBSET</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BTEST-class.html" class="summary-name">BTEST</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_ACTION-class.html" class="summary-name">BUILD_ACTION</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_CONDITION-class.html" class="summary-name">BUILD_CONDITION</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_CONGLOM-class.html" class="summary-name">BUILD_CONGLOM</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_DEPENDENCY-class.html" class="summary-name">BUILD_DEPENDENCY</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_DIM-class.html" class="summary-name">BUILD_DIM</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_DISPATCH-class.html" class="summary-name">BUILD_DISPATCH</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_EVENT-class.html" class="summary-name">BUILD_EVENT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_FUNCTION-class.html" class="summary-name">BUILD_FUNCTION</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_METHOD-class.html" class="summary-name">BUILD_METHOD</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_PARAM-class.html" class="summary-name">BUILD_PARAM</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_PATH-class.html" class="summary-name">BUILD_PATH</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_PROCEDURE-class.html" class="summary-name">BUILD_PROCEDURE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_PROGRAM-class.html" class="summary-name">BUILD_PROGRAM</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_RANGE-class.html" class="summary-name">BUILD_RANGE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_ROUTINE-class.html" class="summary-name">BUILD_ROUTINE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_SIGNAL-class.html" class="summary-name">BUILD_SIGNAL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_SLOPE-class.html" class="summary-name">BUILD_SLOPE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_WINDOW-class.html" class="summary-name">BUILD_WINDOW</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_WITH_UNITS-class.html" class="summary-name">BUILD_WITH_UNITS</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILTIN_OPCODE-class.html" class="summary-name">BUILTIN_OPCODE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BYTE-class.html" class="summary-name">BYTE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BYTE_UNSIGNED-class.html" class="summary-name">BYTE_UNSIGNED</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.CASE-class.html" class="summary-name">CASE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.CEILING-class.html" class="summary-name">CEILING</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.CHAR-class.html" class="summary-name">CHAR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.CLASS-class.html" class="summary-name">CLASS</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.FCLOSE-class.html" class="summary-name">FCLOSE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.CMPLX-class.html" class="summary-name">CMPLX</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.COMMA-class.html" class="summary-name">COMMA</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.COMPILE-class.html" class="summary-name">COMPILE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.COMPLETION_OF-class.html" class="summary-name">COMPLETION_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.CONCAT-class.html" class="summary-name">CONCAT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.CONDITIONAL-class.html" class="summary-name">CONDITIONAL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.CONJG-class.html" class="summary-name">CONJG</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.CONTINUE-class.html" class="summary-name">CONTINUE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.CONVOLVE-class.html" class="summary-name">CONVOLVE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.COS-class.html" class="summary-name">COS</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.COSD-class.html" class="summary-name">COSD</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.COSH-class.html" class="summary-name">COSH</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.COUNT-class.html" class="summary-name">COUNT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.CSHIFT-class.html" class="summary-name">CSHIFT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.CVT-class.html" class="summary-name">CVT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DATA-class.html" class="summary-name">DATA</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DATE_AND_TIME-class.html" class="summary-name">DATE_AND_TIME</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DATE_TIME-class.html" class="summary-name">DATE_TIME</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DBLE-class.html" class="summary-name">DBLE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DEALLOCATE-class.html" class="summary-name">DEALLOCATE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DEBUG-class.html" class="summary-name">DEBUG</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DECODE-class.html" class="summary-name">DECODE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DECOMPILE-class.html" class="summary-name">DECOMPILE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DECOMPRESS-class.html" class="summary-name">DECOMPRESS</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DEFAULT-class.html" class="summary-name">DEFAULT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DERIVATIVE-class.html" class="summary-name">DERIVATIVE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DESCR-class.html" class="summary-name">DESCR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DIAGONAL-class.html" class="summary-name">DIAGONAL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DIGITS-class.html" class="summary-name">DIGITS</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DIM-class.html" class="summary-name">DIM</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DIM_OF-class.html" class="summary-name">DIM_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DISPATCH_OF-class.html" class="summary-name">DISPATCH_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DIVIDE-class.html" class="summary-name">DIVIDE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.LBOUND-class.html" class="summary-name">LBOUND</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DO-class.html" class="summary-name">DO</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DOT_PRODUCT-class.html" class="summary-name">DOT_PRODUCT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DPROD-class.html" class="summary-name">DPROD</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DSCPTR-class.html" class="summary-name">DSCPTR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SHAPE-class.html" class="summary-name">SHAPE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SIZE-class.html" class="summary-name">SIZE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.KIND-class.html" class="summary-name">KIND</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.UBOUND-class.html" class="summary-name">UBOUND</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.D_COMPLEX-class.html" class="summary-name">D_COMPLEX</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.D_FLOAT-class.html" class="summary-name">D_FLOAT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.RANGE-class.html" class="summary-name">RANGE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.PRECISION-class.html" class="summary-name">PRECISION</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ELBOUND-class.html" class="summary-name">ELBOUND</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ELSE-class.html" class="summary-name">ELSE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ELSEWHERE-class.html" class="summary-name">ELSEWHERE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ENCODE-class.html" class="summary-name">ENCODE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ENDFILE-class.html" class="summary-name">ENDFILE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.END_OF-class.html" class="summary-name">END_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.EOSHIFT-class.html" class="summary-name">EOSHIFT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.EPSILON-class.html" class="summary-name">EPSILON</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.EQ-class.html" class="summary-name">EQ</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.EQUALS-class.html" class="summary-name">EQUALS</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.EQUALS_FIRST-class.html" class="summary-name">EQUALS_FIRST</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.EQV-class.html" class="summary-name">EQV</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ESHAPE-class.html" class="summary-name">ESHAPE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ESIZE-class.html" class="summary-name">ESIZE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.EUBOUND-class.html" class="summary-name">EUBOUND</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.EVALUATE-class.html" class="summary-name">EVALUATE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.EXECUTE-class.html" class="summary-name">EXECUTE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.EXP-class.html" class="summary-name">EXP</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.EXPONENT-class.html" class="summary-name">EXPONENT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.EXT_FUNCTION-class.html" class="summary-name">EXT_FUNCTION</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.FFT-class.html" class="summary-name">FFT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.FIRSTLOC-class.html" class="summary-name">FIRSTLOC</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.FIT-class.html" class="summary-name">FIT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.FIX_ROPRAND-class.html" class="summary-name">FIX_ROPRAND</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.FLOAT-class.html" class="summary-name">FLOAT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.FLOOR-class.html" class="summary-name">FLOOR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.FOR-class.html" class="summary-name">FOR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.FRACTION-class.html" class="summary-name">FRACTION</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.FUN-class.html" class="summary-name">FUN</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.F_COMPLEX-class.html" class="summary-name">F_COMPLEX</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.F_FLOAT-class.html" class="summary-name">F_FLOAT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.GE-class.html" class="summary-name">GE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.GETNCI-class.html" class="summary-name">GETNCI</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.GOTO-class.html" class="summary-name">GOTO</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.GT-class.html" class="summary-name">GT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.G_COMPLEX-class.html" class="summary-name">G_COMPLEX</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.G_FLOAT-class.html" class="summary-name">G_FLOAT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.HELP_OF-class.html" class="summary-name">HELP_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.HUGE-class.html" class="summary-name">HUGE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.H_COMPLEX-class.html" class="summary-name">H_COMPLEX</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.H_FLOAT-class.html" class="summary-name">H_FLOAT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.IACHAR-class.html" class="summary-name">IACHAR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.IAND-class.html" class="summary-name">IAND</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.IAND_NOT-class.html" class="summary-name">IAND_NOT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ICHAR-class.html" class="summary-name">ICHAR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.IDENT_OF-class.html" class="summary-name">IDENT_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.IF-class.html" class="summary-name">IF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.IF_ERROR-class.html" class="summary-name">IF_ERROR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.IMAGE_OF-class.html" class="summary-name">IMAGE_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.IN-class.html" class="summary-name">IN</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.INAND-class.html" class="summary-name">INAND</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.INAND_NOT-class.html" class="summary-name">INAND_NOT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.INDEX-class.html" class="summary-name">INDEX</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.INOR-class.html" class="summary-name">INOR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.INOR_NOT-class.html" class="summary-name">INOR_NOT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.INOT-class.html" class="summary-name">INOT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.INOUT-class.html" class="summary-name">INOUT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.INQUIRE-class.html" class="summary-name">INQUIRE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.INT-class.html" class="summary-name">INT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.INTEGRAL-class.html" class="summary-name">INTEGRAL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.INTERPOL-class.html" class="summary-name">INTERPOL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.INTERSECT-class.html" class="summary-name">INTERSECT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.INT_UNSIGNED-class.html" class="summary-name">INT_UNSIGNED</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.INVERSE-class.html" class="summary-name">INVERSE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.IOR-class.html" class="summary-name">IOR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.IOR_NOT-class.html" class="summary-name">IOR_NOT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.IS_IN-class.html" class="summary-name">IS_IN</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.IEOR-class.html" class="summary-name">IEOR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.IEOR_NOT-class.html" class="summary-name">IEOR_NOT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.LABEL-class.html" class="summary-name">LABEL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.LAMINATE-class.html" class="summary-name">LAMINATE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.LANGUAGE_OF-class.html" class="summary-name">LANGUAGE_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.LASTLOC-class.html" class="summary-name">LASTLOC</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.LE-class.html" class="summary-name">LE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.LEN-class.html" class="summary-name">LEN</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.LEN_TRIM-class.html" class="summary-name">LEN_TRIM</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.LGE-class.html" class="summary-name">LGE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.LGT-class.html" class="summary-name">LGT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.LLE-class.html" class="summary-name">LLE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.LLT-class.html" class="summary-name">LLT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.LOG-class.html" class="summary-name">LOG</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.LOG10-class.html" class="summary-name">LOG10</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.LOG2-class.html" class="summary-name">LOG2</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.LOGICAL-class.html" class="summary-name">LOGICAL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.LONG-class.html" class="summary-name">LONG</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.LONG_UNSIGNED-class.html" class="summary-name">LONG_UNSIGNED</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.LT-class.html" class="summary-name">LT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MATMUL-class.html" class="summary-name">MATMUL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAT_ROT-class.html" class="summary-name">MAT_ROT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAT_ROT_INT-class.html" class="summary-name">MAT_ROT_INT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAX-class.html" class="summary-name">MAX</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAXEXPONENT-class.html" class="summary-name">MAXEXPONENT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAXLOC-class.html" class="summary-name">MAXLOC</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAXVAL-class.html" class="summary-name">MAXVAL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MEAN-class.html" class="summary-name">MEAN</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MEDIAN-class.html" class="summary-name">MEDIAN</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MERGE-class.html" class="summary-name">MERGE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.METHOD_OF-class.html" class="summary-name">METHOD_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MIN-class.html" class="summary-name">MIN</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MINEXPONENT-class.html" class="summary-name">MINEXPONENT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MINLOC-class.html" class="summary-name">MINLOC</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MINVAL-class.html" class="summary-name">MINVAL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MOD-class.html" class="summary-name">MOD</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MODEL_OF-class.html" class="summary-name">MODEL_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MULTIPLY-class.html" class="summary-name">MULTIPLY</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.NAME_OF-class.html" class="summary-name">NAME_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.NAND-class.html" class="summary-name">NAND</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.NAND_NOT-class.html" class="summary-name">NAND_NOT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.NDESC-class.html" class="summary-name">NDESC</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.NE-class.html" class="summary-name">NE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.NEAREST-class.html" class="summary-name">NEAREST</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.NEQV-class.html" class="summary-name">NEQV</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.NINT-class.html" class="summary-name">NINT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.NOR-class.html" class="summary-name">NOR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.NOR_NOT-class.html" class="summary-name">NOR_NOT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.NOT-class.html" class="summary-name">NOT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.OBJECT_OF-class.html" class="summary-name">OBJECT_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.OCTAWORD-class.html" class="summary-name">OCTAWORD</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.OCTAWORD_UNSIGNED-class.html" class="summary-name">OCTAWORD_UNSIGNED</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ON_ERROR-class.html" class="summary-name">ON_ERROR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.OPCODE_BUILTIN-class.html" class="summary-name">OPCODE_BUILTIN</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.OPCODE_STRING-class.html" class="summary-name">OPCODE_STRING</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.FOPEN-class.html" class="summary-name">FOPEN</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.OPTIONAL-class.html" class="summary-name">OPTIONAL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.OR-class.html" class="summary-name">OR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.OR_NOT-class.html" class="summary-name">OR_NOT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.OUT-class.html" class="summary-name">OUT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.PACK-class.html" class="summary-name">PACK</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.PHASE_OF-class.html" class="summary-name">PHASE_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.POST_DEC-class.html" class="summary-name">POST_DEC</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.POST_INC-class.html" class="summary-name">POST_INC</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.POWER-class.html" class="summary-name">POWER</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.PRESENT-class.html" class="summary-name">PRESENT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.PRE_DEC-class.html" class="summary-name">PRE_DEC</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.PRE_INC-class.html" class="summary-name">PRE_INC</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.PRIVATE-class.html" class="summary-name">PRIVATE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.PROCEDURE_OF-class.html" class="summary-name">PROCEDURE_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.PRODUCT-class.html" class="summary-name">PRODUCT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.PROGRAM_OF-class.html" class="summary-name">PROGRAM_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.PROJECT-class.html" class="summary-name">PROJECT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.PROMOTE-class.html" class="summary-name">PROMOTE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.PUBLIC-class.html" class="summary-name">PUBLIC</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.QUADWORD-class.html" class="summary-name">QUADWORD</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.QUADWORD_UNSIGNED-class.html" class="summary-name">QUADWORD_UNSIGNED</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.QUALIFIERS_OF-class.html" class="summary-name">QUALIFIERS_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.RADIX-class.html" class="summary-name">RADIX</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.RAMP-class.html" class="summary-name">RAMP</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.RANDOM-class.html" class="summary-name">RANDOM</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.RANDOM_SEED-class.html" class="summary-name">RANDOM_SEED</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DTYPE_RANGE-class.html" class="summary-name">DTYPE_RANGE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.RANK-class.html" class="summary-name">RANK</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.RAW_OF-class.html" class="summary-name">RAW_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.READ-class.html" class="summary-name">READ</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.REAL-class.html" class="summary-name">REAL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.REBIN-class.html" class="summary-name">REBIN</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.REF-class.html" class="summary-name">REF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.REPEAT-class.html" class="summary-name">REPEAT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.REPLICATE-class.html" class="summary-name">REPLICATE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.RESHAPE-class.html" class="summary-name">RESHAPE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.RETURN-class.html" class="summary-name">RETURN</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.REWIND-class.html" class="summary-name">REWIND</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.RMS-class.html" class="summary-name">RMS</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ROUTINE_OF-class.html" class="summary-name">ROUTINE_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.RRSPACING-class.html" class="summary-name">RRSPACING</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SCALE-class.html" class="summary-name">SCALE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SCAN-class.html" class="summary-name">SCAN</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.FSEEK-class.html" class="summary-name">FSEEK</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SET_EXPONENT-class.html" class="summary-name">SET_EXPONENT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SET_RANGE-class.html" class="summary-name">SET_RANGE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ISHFT-class.html" class="summary-name">ISHFT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ISHFTC-class.html" class="summary-name">ISHFTC</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SHIFT_LEFT-class.html" class="summary-name">SHIFT_LEFT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SHIFT_RIGHT-class.html" class="summary-name">SHIFT_RIGHT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SIGN-class.html" class="summary-name">SIGN</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SIGNED-class.html" class="summary-name">SIGNED</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SIN-class.html" class="summary-name">SIN</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SIND-class.html" class="summary-name">SIND</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SINH-class.html" class="summary-name">SINH</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SIZEOF-class.html" class="summary-name">SIZEOF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SLOPE_OF-class.html" class="summary-name">SLOPE_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SMOOTH-class.html" class="summary-name">SMOOTH</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SOLVE-class.html" class="summary-name">SOLVE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SORTVAL-class.html" class="summary-name">SORTVAL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SPACING-class.html" class="summary-name">SPACING</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SPAWN-class.html" class="summary-name">SPAWN</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SPREAD-class.html" class="summary-name">SPREAD</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SQRT-class.html" class="summary-name">SQRT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SQUARE-class.html" class="summary-name">SQUARE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.STATEMENT-class.html" class="summary-name">STATEMENT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.STD_DEV-class.html" class="summary-name">STD_DEV</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.STRING-class.html" class="summary-name">STRING</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.STRING_OPCODE-class.html" class="summary-name">STRING_OPCODE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SUBSCRIPT-class.html" class="summary-name">SUBSCRIPT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SUBTRACT-class.html" class="summary-name">SUBTRACT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SUM-class.html" class="summary-name">SUM</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SWITCH-class.html" class="summary-name">SWITCH</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SYSTEM_CLOCK-class.html" class="summary-name">SYSTEM_CLOCK</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.TAN-class.html" class="summary-name">TAN</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.TAND-class.html" class="summary-name">TAND</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.TANH-class.html" class="summary-name">TANH</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.TASK_OF-class.html" class="summary-name">TASK_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.TEXT-class.html" class="summary-name">TEXT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.TIME_OUT_OF-class.html" class="summary-name">TIME_OUT_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.TINY-class.html" class="summary-name">TINY</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.TRANSFER-class.html" class="summary-name">TRANSFER</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.TRANSPOSE_-class.html" class="summary-name">TRANSPOSE_</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.TRIM-class.html" class="summary-name">TRIM</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.UNARY_MINUS-class.html" class="summary-name">UNARY_MINUS</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.UNARY_PLUS-class.html" class="summary-name">UNARY_PLUS</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.UNION-class.html" class="summary-name">UNION</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.UNITS-class.html" class="summary-name">UNITS</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.UNITS_OF-class.html" class="summary-name">UNITS_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.UNPACK-class.html" class="summary-name">UNPACK</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.UNSIGNED-class.html" class="summary-name">UNSIGNED</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.VAL-class.html" class="summary-name">VAL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.VALIDATION_OF-class.html" class="summary-name">VALIDATION_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.VALUE_OF-class.html" class="summary-name">VALUE_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.VAR-class.html" class="summary-name">VAR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.VECTOR-class.html" class="summary-name">VECTOR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.VERIFY-class.html" class="summary-name">VERIFY</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.WAIT-class.html" class="summary-name">WAIT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.WHEN_OF-class.html" class="summary-name">WHEN_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.WHERE-class.html" class="summary-name">WHERE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.WHILE-class.html" class="summary-name">WHILE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.WINDOW_OF-class.html" class="summary-name">WINDOW_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.WORD-class.html" class="summary-name">WORD</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.WORD_UNSIGNED-class.html" class="summary-name">WORD_UNSIGNED</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.WRITE-class.html" class="summary-name">WRITE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ZERO-class.html" class="summary-name">ZERO</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.d2PI-class.html" class="summary-name">d2PI</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dNARG-class.html" class="summary-name">dNARG</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ELEMENT-class.html" class="summary-name">ELEMENT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.RC_DROOP-class.html" class="summary-name">RC_DROOP</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.RESET_PRIVATE-class.html" class="summary-name">RESET_PRIVATE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.RESET_PUBLIC-class.html" class="summary-name">RESET_PUBLIC</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SHOW_PRIVATE-class.html" class="summary-name">SHOW_PRIVATE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SHOW_PUBLIC-class.html" class="summary-name">SHOW_PUBLIC</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SHOW_VM-class.html" class="summary-name">SHOW_VM</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.TRANSLATE-class.html" class="summary-name">TRANSLATE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.TRANSPOSE_MUL-class.html" class="summary-name">TRANSPOSE_MUL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.UPCASE-class.html" class="summary-name">UPCASE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.USING-class.html" class="summary-name">USING</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.VALIDATION-class.html" class="summary-name">VALIDATION</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dDEFAULT-class.html" class="summary-name">dDEFAULT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dEXPT-class.html" class="summary-name">dEXPT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dSHOT-class.html" class="summary-name">dSHOT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.GETDBI-class.html" class="summary-name">GETDBI</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.CULL-class.html" class="summary-name">CULL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.EXTEND-class.html" class="summary-name">EXTEND</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.I_TO_X-class.html" class="summary-name">I_TO_X</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.X_TO_I-class.html" class="summary-name">X_TO_I</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAP-class.html" class="summary-name">MAP</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.COMPILE_DEPENDENCY-class.html" class="summary-name">COMPILE_DEPENDENCY</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DECOMPILE_DEPENDENCY-class.html" class="summary-name">DECOMPILE_DEPENDENCY</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_CALL-class.html" class="summary-name">BUILD_CALL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ERRORLOGS_OF-class.html" class="summary-name">ERRORLOGS_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.PERFORMANCE_OF-class.html" class="summary-name">PERFORMANCE_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.XD-class.html" class="summary-name">XD</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.CONDITION_OF-class.html" class="summary-name">CONDITION_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SORT-class.html" class="summary-name">SORT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dTHIS-class.html" class="summary-name">dTHIS</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DATA_WITH_UNITS-class.html" class="summary-name">DATA_WITH_UNITS</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dATM-class.html" class="summary-name">dATM</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dEPSILON0-class.html" class="summary-name">dEPSILON0</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dGN-class.html" class="summary-name">dGN</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dMU0-class.html" class="summary-name">dMU0</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.EXTRACT-class.html" class="summary-name">EXTRACT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.FINITE-class.html" class="summary-name">FINITE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BIT_SIZE-class.html" class="summary-name">BIT_SIZE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MODULO-class.html" class="summary-name">MODULO</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SELECTED_INT_KIND-class.html" class="summary-name">SELECTED_INT_KIND</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.SELECTED_REAL_KIND-class.html" class="summary-name">SELECTED_REAL_KIND</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DSQL-class.html" class="summary-name">DSQL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ISQL-class.html" class="summary-name">ISQL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.FTELL-class.html" class="summary-name">FTELL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_ACTION-class.html" class="summary-name">MAKE_ACTION</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_CONDITION-class.html" class="summary-name">MAKE_CONDITION</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_CONGLOM-class.html" class="summary-name">MAKE_CONGLOM</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_DEPENDENCY-class.html" class="summary-name">MAKE_DEPENDENCY</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_DIM-class.html" class="summary-name">MAKE_DIM</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_DISPATCH-class.html" class="summary-name">MAKE_DISPATCH</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_FUNCTION-class.html" class="summary-name">MAKE_FUNCTION</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_METHOD-class.html" class="summary-name">MAKE_METHOD</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_PARAM-class.html" class="summary-name">MAKE_PARAM</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_PROCEDURE-class.html" class="summary-name">MAKE_PROCEDURE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_PROGRAM-class.html" class="summary-name">MAKE_PROGRAM</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_RANGE-class.html" class="summary-name">MAKE_RANGE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_ROUTINE-class.html" class="summary-name">MAKE_ROUTINE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_SIGNAL-class.html" class="summary-name">MAKE_SIGNAL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_WINDOW-class.html" class="summary-name">MAKE_WINDOW</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_WITH_UNITS-class.html" class="summary-name">MAKE_WITH_UNITS</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_CALL-class.html" class="summary-name">MAKE_CALL</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.CLASS_OF-class.html" class="summary-name">CLASS_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DSCPTR_OF-class.html" class="summary-name">DSCPTR_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.KIND_OF-class.html" class="summary-name">KIND_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.NDESC_OF-class.html" class="summary-name">NDESC_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ACCUMULATE-class.html" class="summary-name">ACCUMULATE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_SLOPE-class.html" class="summary-name">MAKE_SLOPE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.REM-class.html" class="summary-name">REM</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.COMPLETION_MESSAGE_OF-class.html" class="summary-name">COMPLETION_MESSAGE_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.INTERRUPT_OF-class.html" class="summary-name">INTERRUPT_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.dSHOTNAME-class.html" class="summary-name">dSHOTNAME</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_WITH_ERROR-class.html" class="summary-name">BUILD_WITH_ERROR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ERROR_OF-class.html" class="summary-name">ERROR_OF</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_WITH_ERROR-class.html" class="summary-name">MAKE_WITH_ERROR</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.DO_TASK-class.html" class="summary-name">DO_TASK</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.ISQL_SET-class.html" class="summary-name">ISQL_SET</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.FS_FLOAT-class.html" class="summary-name">FS_FLOAT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.FS_COMPLEX-class.html" class="summary-name">FS_COMPLEX</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.FT_FLOAT-class.html" class="summary-name">FT_FLOAT</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.FT_COMPLEX-class.html" class="summary-name">FT_COMPLEX</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.BUILD_OPAQUE-class.html" class="summary-name">BUILD_OPAQUE</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.compound.MAKE_OPAQUE-class.html" class="summary-name">MAKE_OPAQUE</a>
+    </td>
+  </tr>
+</table>
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Variables</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'MDSplus'"><code class="variable-quote">'</code><code class="variable-string">MDSplus</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
 
-<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >MDSplus</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
-    <td align="left"><font size="-2">Generated by Epydoc 2.1 on Wed Aug 18 13:35:32 2010</font></td>
-    <td align="right"><a href="http://epydoc.sourceforge.net"
-                      ><font size="-2">http://epydoc.sf.net</font></a></td>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
   </tr>
 </table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
 </body>
 </html>

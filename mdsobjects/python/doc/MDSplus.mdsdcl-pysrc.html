@@ -1,0 +1,933 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>MDSplus.mdsdcl</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >MDSplus</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;MDSplus ::
+        Module&nbsp;mdsdcl
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="MDSplus.mdsdcl-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="MDSplus.mdsdcl-module.html">Module MDSplus.mdsdcl</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment"># Redistribution and use in source and binary forms, with or without</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-comment"># modification, are permitted provided that the following conditions are met:</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-comment"># Redistributions of source code must retain the above copyright notice, this</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-comment"># list of conditions and the following disclaimer.</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-comment"># Redistributions in binary form must reproduce the above copyright notice, this</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-comment"># list of conditions and the following disclaimer in the documentation and/or</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-comment"># other materials provided with the distribution.</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt class="py-comment"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-comment"># AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"><tt class="py-comment"># IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"><tt class="py-comment"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE</tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt class="py-comment"># FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"><tt class="py-comment"># DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-comment"># SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-comment"># CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"><tt class="py-comment"># OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"><tt class="py-comment"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"> </tt>
+<a name="_mimport"></a><div id="_mimport-def"><a name="L26"></a><tt class="py-lineno">26</tt> <a class="py-toggle" href="#" id="_mimport-toggle" onclick="return toggle('_mimport');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="MDSplus.mdsdcl-module.html#_mimport">_mimport</a><tt class="py-op">(</tt><tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">level</tt><tt class="py-op">=</tt><tt class="py-number">1</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_mimport-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="_mimport-expanded"><a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line">    <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">__import__</tt><tt class="py-op">(</tt><tt id="link-0" class="py-name" targets="Class Method MDSplus.compound.Function.name()=MDSplus.compound.Function-class.html#name,Variable MDSplus.tree.Tree.name=MDSplus.tree.Tree-class.html#name,Variable MDSplus.tree.TreeNode.name=MDSplus.tree.TreeNode-class.html#name"><a title="MDSplus.compound.Function.name
+MDSplus.tree.Tree.name
+MDSplus.tree.TreeNode.name" class="py-name" href="#" onclick="return doclink('link-0', 'name', 'link-0');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">globals</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">level</tt><tt class="py-op">=</tt><tt class="py-name">level</tt><tt class="py-op">)</tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">    <tt class="py-keyword">except</tt><tt class="py-op">:</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">__import__</tt><tt class="py-op">(</tt><tt id="link-1" class="py-name"><a title="MDSplus.compound.Function.name
+MDSplus.tree.Tree.name
+MDSplus.tree.TreeNode.name" class="py-name" href="#" onclick="return doclink('link-1', 'name', 'link-0');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">globals</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line"> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">ctypes</tt> <tt class="py-keyword">as</tt> <tt class="py-name">_C</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line"> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line"><tt class="py-name">_ver</tt><tt class="py-op">=</tt><tt class="py-name">_mimport</tt><tt class="py-op">(</tt><tt class="py-string">'version'</tt><tt class="py-op">)</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line"><tt class="py-name">_exc</tt><tt class="py-op">=</tt><tt class="py-name">_mimport</tt><tt class="py-op">(</tt><tt class="py-string">'mdsExceptions'</tt><tt class="py-op">)</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line"><tt class="py-name">_dsc</tt><tt class="py-op">=</tt><tt class="py-name">_mimport</tt><tt class="py-op">(</tt><tt class="py-string">'descriptor'</tt><tt class="py-op">)</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line"><tt class="py-name">_tre</tt><tt class="py-op">=</tt><tt class="py-name">_mimport</tt><tt class="py-op">(</tt><tt class="py-string">'tree'</tt><tt class="py-op">)</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line"> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line"><tt id="link-2" class="py-name" targets="Variable MDSplus.mdsdcl._mdsdcl=MDSplus.mdsdcl-module.html#_mdsdcl"><a title="MDSplus.mdsdcl._mdsdcl" class="py-name" href="#" onclick="return doclink('link-2', '_mdsdcl', 'link-2');">_mdsdcl</a></tt><tt class="py-op">=</tt><tt class="py-name">_ver</tt><tt class="py-op">.</tt><tt class="py-name">load_library</tt><tt class="py-op">(</tt><tt class="py-string">'Mdsdcl'</tt><tt class="py-op">)</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line"><tt id="link-3" class="py-name" targets="Variable MDSplus.mdsdcl._mdsdcl_do_command_dsc=MDSplus.mdsdcl-module.html#_mdsdcl_do_command_dsc"><a title="MDSplus.mdsdcl._mdsdcl_do_command_dsc" class="py-name" href="#" onclick="return doclink('link-3', '_mdsdcl_do_command_dsc', 'link-3');">_mdsdcl_do_command_dsc</a></tt><tt class="py-op">=</tt><tt id="link-4" class="py-name"><a title="MDSplus.mdsdcl._mdsdcl" class="py-name" href="#" onclick="return doclink('link-4', '_mdsdcl', 'link-2');">_mdsdcl</a></tt><tt class="py-op">.</tt><tt class="py-name">mdsdcl_do_command_dsc</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line"><tt id="link-5" class="py-name"><a title="MDSplus.mdsdcl._mdsdcl_do_command_dsc" class="py-name" href="#" onclick="return doclink('link-5', '_mdsdcl_do_command_dsc', 'link-3');">_mdsdcl_do_command_dsc</a></tt><tt class="py-op">.</tt><tt class="py-name">argtypes</tt><tt class="py-op">=</tt><tt class="py-op">[</tt><tt class="py-name">_C</tt><tt class="py-op">.</tt><tt class="py-name">c_char_p</tt><tt class="py-op">,</tt> <tt class="py-name">_dsc</tt><tt class="py-op">.</tt><tt class="py-name">Descriptor_xd</tt><tt class="py-op">.</tt><tt class="py-name">PTR</tt><tt class="py-op">,</tt> <tt class="py-name">_dsc</tt><tt class="py-op">.</tt><tt class="py-name">Descriptor_xd</tt><tt class="py-op">.</tt><tt class="py-name">PTR</tt><tt class="py-op">]</tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line"> </tt>
+<a name="dcl"></a><div id="dcl-def"><a name="L43"></a><tt class="py-lineno">43</tt> <a class="py-toggle" href="#" id="dcl-toggle" onclick="return toggle('dcl');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="MDSplus.mdsdcl-module.html#dcl">dcl</a><tt class="py-op">(</tt><tt class="py-param">command</tt><tt class="py-op">,</tt><tt class="py-param">return_out</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">,</tt><tt class="py-param">return_error</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">,</tt><tt class="py-param">raise_exception</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">,</tt><tt class="py-param">tree</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt><tt class="py-param">setcommand</tt><tt class="py-op">=</tt><tt class="py-string">'mdsdcl'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="dcl-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="dcl-expanded"><a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">    <tt class="py-docstring">"""Execute a dcl command</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line"><tt class="py-docstring">    @param command: command expression to execute</tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line"><tt class="py-docstring">    @type command: str</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line"><tt class="py-docstring">    @param return_out: True if output should be returned in the result of the function.</tt> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line"><tt class="py-docstring">    @type return_out: bool</tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line"><tt class="py-docstring">    @param return_error: True if error should be returned in the result of the function.</tt> </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line"><tt class="py-docstring">    @type return_error: bool</tt> </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line"><tt class="py-docstring">    @param raise_exception: True if the function should raise an exception on failure.</tt> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line"><tt class="py-docstring">    @type raise_exception: bool</tt> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line"><tt class="py-docstring">    @param setcommand: invokes 'set command $' to load a command set.</tt> </tt>
+<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line"><tt class="py-docstring">    @type setcommand: str</tt> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line"><tt class="py-docstring">    @rtype: str / tuple / None</tt> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">return_error</tt><tt class="py-op">:</tt> </tt>
+<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line">        <tt class="py-name">xd_error</tt><tt class="py-op">=</tt><tt class="py-name">_dsc</tt><tt class="py-op">.</tt><tt class="py-name">Descriptor_xd</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line">        <tt class="py-name">error_p</tt><tt class="py-op">=</tt><tt class="py-name">xd_error</tt><tt class="py-op">.</tt><tt class="py-name">ptr</tt> </tt>
+<a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L61"></a><tt class="py-lineno">61</tt>  <tt class="py-line">        <tt class="py-name">error_p</tt><tt class="py-op">=</tt><tt class="py-name">_dsc</tt><tt class="py-op">.</tt><tt class="py-name">Descriptor_xd</tt><tt class="py-op">.</tt><tt class="py-name">null</tt> </tt>
+<a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">return_out</tt><tt class="py-op">:</tt> </tt>
+<a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line">        <tt class="py-name">xd_output</tt> <tt class="py-op">=</tt> <tt class="py-name">_dsc</tt><tt class="py-op">.</tt><tt class="py-name">Descriptor_xd</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L64"></a><tt class="py-lineno">64</tt>  <tt class="py-line">        <tt class="py-name">out_p</tt><tt class="py-op">=</tt><tt class="py-name">xd_output</tt><tt class="py-op">.</tt><tt class="py-name">ptr</tt> </tt>
+<a name="L65"></a><tt class="py-lineno">65</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L66"></a><tt class="py-lineno">66</tt>  <tt class="py-line">        <tt class="py-name">out_p</tt><tt class="py-op">=</tt><tt class="py-name">_dsc</tt><tt class="py-op">.</tt><tt class="py-name">Descriptor_xd</tt><tt class="py-op">.</tt><tt class="py-name">null</tt> </tt>
+<a name="L67"></a><tt class="py-lineno">67</tt>  <tt class="py-line">    <tt class="py-name">_exc</tt><tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Method MDSplus.connection.PutMany.checkStatus()=MDSplus.connection.PutMany-class.html#checkStatus,Function MDSplus.mdsExceptions.checkStatus()=MDSplus.mdsExceptions-module.html#checkStatus"><a title="MDSplus.connection.PutMany.checkStatus
+MDSplus.mdsExceptions.checkStatus" class="py-name" href="#" onclick="return doclink('link-6', 'checkStatus', 'link-6');">checkStatus</a></tt><tt class="py-op">(</tt><tt id="link-7" class="py-name"><a title="MDSplus.mdsdcl._mdsdcl_do_command_dsc" class="py-name" href="#" onclick="return doclink('link-7', '_mdsdcl_do_command_dsc', 'link-3');">_mdsdcl_do_command_dsc</a></tt><tt class="py-op">(</tt><tt class="py-name">_ver</tt><tt class="py-op">.</tt><tt class="py-name">tobytes</tt><tt class="py-op">(</tt><tt class="py-string">'set command %s'</tt><tt class="py-op">%</tt><tt class="py-op">(</tt><tt class="py-name">setcommand</tt><tt class="py-op">,</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">error_p</tt><tt class="py-op">,</tt> <tt class="py-name">out_p</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L68"></a><tt class="py-lineno">68</tt>  <tt class="py-line">    <tt class="py-name">_tre</tt><tt class="py-op">.</tt><tt class="py-name">_TreeCtx</tt><tt class="py-op">.</tt><tt class="py-name">pushTree</tt><tt class="py-op">(</tt><tt id="link-8" class="py-name" targets="Variable MDSplus.apd.Apd.tree=MDSplus.apd.Apd-class.html#tree,Variable MDSplus.compound.Compound.tree=MDSplus.compound.Compound-class.html#tree,Variable MDSplus.mdsdata.Data.tree=MDSplus.mdsdata.Data-class.html#tree,Module MDSplus.tree=MDSplus.tree-module.html"><a title="MDSplus.apd.Apd.tree
+MDSplus.compound.Compound.tree
+MDSplus.mdsdata.Data.tree
+MDSplus.tree" class="py-name" href="#" onclick="return doclink('link-8', 'tree', 'link-8');">tree</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L69"></a><tt class="py-lineno">69</tt>  <tt class="py-line">    <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L70"></a><tt class="py-lineno">70</tt>  <tt class="py-line">        <tt id="link-9" class="py-name" targets="Variable MDSplus.mdsExceptions.A14BAD_CLK_DIVIDE.status=MDSplus.mdsExceptions.A14BAD_CLK_DIVIDE-class.html#status,Variable MDSplus.mdsExceptions.A14BAD_CLK_POLARITY.status=MDSplus.mdsExceptions.A14BAD_CLK_POLARITY-class.html#status,Variable MDSplus.mdsExceptions.A14BAD_GATED.status=MDSplus.mdsExceptions.A14BAD_GATED-class.html#status,Variable MDSplus.mdsExceptions.A14BAD_MODE.status=MDSplus.mdsExceptions.A14BAD_MODE-class.html#status,Variable MDSplus.mdsExceptions.A14BAD_STP_POLARITY.status=MDSplus.mdsExceptions.A14BAD_STP_POLARITY-class.html#status,Variable MDSplus.mdsExceptions.A14BAD_STR_POLARITY.status=MDSplus.mdsExceptions.A14BAD_STR_POLARITY-class.html#status,Variable MDSplus.mdsExceptions.A14NORMAL.status=MDSplus.mdsExceptions.A14NORMAL-class.html#status,Variable MDSplus.mdsExceptions.B2408NORMAL.status=MDSplus.mdsExceptions.B2408NORMAL-class.html#status,Variable MDSplus.mdsExceptions.B2408OVERFLOW.status=MDSplus.mdsExceptions.B2408OVERFLOW-class.html#status,Variable MDSplus.mdsExceptions.B2408TRIG_LIM.status=MDSplus.mdsExceptions.B2408TRIG_LIM-class.html#status,Variable MDSplus.mdsExceptions.B5910aBAD_CHAN.status=MDSplus.mdsExceptions.B5910aBAD_CHAN-class.html#status,Variable MDSplus.mdsExceptions.B5910aBAD_CLOCK.status=MDSplus.mdsExceptions.B5910aBAD_CLOCK-class.html#status,Variable MDSplus.mdsExceptions.B5910aBAD_ITERATIONS.status=MDSplus.mdsExceptions.B5910aBAD_ITERATIONS-class.html#status,Variable MDSplus.mdsExceptions.B5910aBAD_NOC.status=MDSplus.mdsExceptions.B5910aBAD_NOC-class.html#status,Variable MDSplus.mdsExceptions.B5910aBAD_SAMPS.status=MDSplus.mdsExceptions.B5910aBAD_SAMPS-class.html#status,Variable MDSplus.mdsExceptions.CamDONE_NOQ.status=MDSplus.mdsExceptions.CamDONE_NOQ-class.html#status,Variable MDSplus.mdsExceptions.CamDONE_NOX.status=MDSplus.mdsExceptions.CamDONE_NOX-class.html#status,Variable MDSplus.mdsExceptions.CamDONE_Q.status=MDSplus.mdsExceptions.CamDONE_Q-class.html#status,Variable MDSplus.mdsExceptions.CamOFFLINE.status=MDSplus.mdsExceptions.CamOFFLINE-class.html#status,Variable MDSplus.mdsExceptions.CamSCCFAIL.status=MDSplus.mdsExceptions.CamSCCFAIL-class.html#status,Variable MDSplus.mdsExceptions.CamSERTRAERR.status=MDSplus.mdsExceptions.CamSERTRAERR-class.html#status,Variable MDSplus.mdsExceptions.DevACQ2SH_FAILED.status=MDSplus.mdsExceptions.DevACQ2SH_FAILED-class.html#status,Variable MDSplus.mdsExceptions.DevACQCMD_FAILED.status=MDSplus.mdsExceptions.DevACQCMD_FAILED-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_ACTIVE_CHAN.status=MDSplus.mdsExceptions.DevBAD_ACTIVE_CHAN-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_CLOCK_FREQ.status=MDSplus.mdsExceptions.DevBAD_CLOCK_FREQ-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_CLOCK_SRC.status=MDSplus.mdsExceptions.DevBAD_CLOCK_SRC-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_COMMANDS.status=MDSplus.mdsExceptions.DevBAD_COMMANDS-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_ENDIDX.status=MDSplus.mdsExceptions.DevBAD_ENDIDX-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_FILTER.status=MDSplus.mdsExceptions.DevBAD_FILTER-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_FREQ.status=MDSplus.mdsExceptions.DevBAD_FREQ-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_GAIN.status=MDSplus.mdsExceptions.DevBAD_GAIN-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_HEADER.status=MDSplus.mdsExceptions.DevBAD_HEADER-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_HEADER_IDX.status=MDSplus.mdsExceptions.DevBAD_HEADER_IDX-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_MEMORIES.status=MDSplus.mdsExceptions.DevBAD_MEMORIES-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_MODE.status=MDSplus.mdsExceptions.DevBAD_MODE-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_NAME.status=MDSplus.mdsExceptions.DevBAD_NAME-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_OFFSET.status=MDSplus.mdsExceptions.DevBAD_OFFSET-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_PARAMETER.status=MDSplus.mdsExceptions.DevBAD_PARAMETER-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_POST_TRIG.status=MDSplus.mdsExceptions.DevBAD_POST_TRIG-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_PRE_TRIG.status=MDSplus.mdsExceptions.DevBAD_PRE_TRIG-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_STARTIDX.status=MDSplus.mdsExceptions.DevBAD_STARTIDX-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_TRIG_SRC.status=MDSplus.mdsExceptions.DevBAD_TRIG_SRC-class.html#status,Variable MDSplus.mdsExceptions.DevBAD_VERBS.status=MDSplus.mdsExceptions.DevBAD_VERBS-class.html#status,Variable MDSplus.mdsExceptions.DevCAMACERR.status=MDSplus.mdsExceptions.DevCAMACERR-class.html#status,Variable MDSplus.mdsExceptions.DevCAMERA_NOT_FOUND.status=MDSplus.mdsExceptions.DevCAMERA_NOT_FOUND-class.html#status,Variable MDSplus.mdsExceptions.DevCAM_ADNR.status=MDSplus.mdsExceptions.DevCAM_ADNR-class.html#status,Variable MDSplus.mdsExceptions.DevCAM_DERR.status=MDSplus.mdsExceptions.DevCAM_DERR-class.html#status,Variable MDSplus.mdsExceptions.DevCAM_ERR.status=MDSplus.mdsExceptions.DevCAM_ERR-class.html#status,Variable MDSplus.mdsExceptions.DevCAM_LOSYNC.status=MDSplus.mdsExceptions.DevCAM_LOSYNC-class.html#status,Variable MDSplus.mdsExceptions.DevCAM_LPE.status=MDSplus.mdsExceptions.DevCAM_LPE-class.html#status,Variable MDSplus.mdsExceptions.DevCAM_NOSQ.status=MDSplus.mdsExceptions.DevCAM_NOSQ-class.html#status,Variable MDSplus.mdsExceptions.DevCAM_NOSX.status=MDSplus.mdsExceptions.DevCAM_NOSX-class.html#status,Variable MDSplus.mdsExceptions.DevCAM_SQ.status=MDSplus.mdsExceptions.DevCAM_SQ-class.html#status,Variable MDSplus.mdsExceptions.DevCAM_STE.status=MDSplus.mdsExceptions.DevCAM_STE-class.html#status,Variable MDSplus.mdsExceptions.DevCAM_SX.status=MDSplus.mdsExceptions.DevCAM_SX-class.html#status,Variable MDSplus.mdsExceptions.DevCAM_TMO.status=MDSplus.mdsExceptions.DevCAM_TMO-class.html#status,Variable MDSplus.mdsExceptions.DevCAM_TPE.status=MDSplus.mdsExceptions.DevCAM_TPE-class.html#status,Variable MDSplus.mdsExceptions.DevCANNOT_GET_BOARD_STATE.status=MDSplus.mdsExceptions.DevCANNOT_GET_BOARD_STATE-class.html#status,Variable MDSplus.mdsExceptions.DevCANNOT_LOAD_SETTINGS.status=MDSplus.mdsExceptions.DevCANNOT_LOAD_SETTINGS-class.html#status,Variable MDSplus.mdsExceptions.DevCOMM_ERROR.status=MDSplus.mdsExceptions.DevCOMM_ERROR-class.html#status,Variable MDSplus.mdsExceptions.DevERROR_DOING_INIT.status=MDSplus.mdsExceptions.DevERROR_DOING_INIT-class.html#status,Variable MDSplus.mdsExceptions.DevERROR_READING_CHANNEL.status=MDSplus.mdsExceptions.DevERROR_READING_CHANNEL-class.html#status,Variable MDSplus.mdsExceptions.DevFREQ_TO_HIGH.status=MDSplus.mdsExceptions.DevFREQ_TO_HIGH-class.html#status,Variable MDSplus.mdsExceptions.DevINVALID_NOC.status=MDSplus.mdsExceptions.DevINVALID_NOC-class.html#status,Variable MDSplus.mdsExceptions.DevINV_SETUP.status=MDSplus.mdsExceptions.DevINV_SETUP-class.html#status,Variable MDSplus.mdsExceptions.DevIO_STUCK.status=MDSplus.mdsExceptions.DevIO_STUCK-class.html#status,Variable MDSplus.mdsExceptions.DevNOT_A_PYDEVICE.status=MDSplus.mdsExceptions.DevNOT_A_PYDEVICE-class.html#status,Variable MDSplus.mdsExceptions.DevNOT_TRIGGERED.status=MDSplus.mdsExceptions.DevNOT_TRIGGERED-class.html#status,Variable MDSplus.mdsExceptions.DevNO_NAME_SPECIFIED.status=MDSplus.mdsExceptions.DevNO_NAME_SPECIFIED-class.html#status,Variable MDSplus.mdsExceptions.DevOFFLINE.status=MDSplus.mdsExceptions.DevOFFLINE-class.html#status,Variable MDSplus.mdsExceptions.DevPYDEVICE_NOT_FOUND.status=MDSplus.mdsExceptions.DevPYDEVICE_NOT_FOUND-class.html#status,Variable MDSplus.mdsExceptions.DevPY_INTERFACE_LIBRARY_NOT_FOUND.status=MDSplus.mdsExceptions.DevPY_INTERFACE_LIBRARY_NOT_FOUND-class.html#status,Variable MDSplus.mdsExceptions.DevRANGE_MISMATCH.status=MDSplus.mdsExceptions.DevRANGE_MISMATCH-class.html#status,Variable MDSplus.mdsExceptions.DevTRIGGERED_NOT_STORED.status=MDSplus.mdsExceptions.DevTRIGGERED_NOT_STORED-class.html#status,Variable MDSplus.mdsExceptions.DevTRIGGER_FAILED.status=MDSplus.mdsExceptions.DevTRIGGER_FAILED-class.html#status,Variable MDSplus.mdsExceptions.DevUNKOWN_STATE.status=MDSplus.mdsExceptions.DevUNKOWN_STATE-class.html#status,Variable MDSplus.mdsExceptions.DevWRONG_PATH.status=MDSplus.mdsExceptions.DevWRONG_PATH-class.html#status,Variable MDSplus.mdsExceptions.DevWRONG_SHOT.status=MDSplus.mdsExceptions.DevWRONG_SHOT-class.html#status,Variable MDSplus.mdsExceptions.DevWRONG_TREE.status=MDSplus.mdsExceptions.DevWRONG_TREE-class.html#status,Variable MDSplus.mdsExceptions.Dsp2904CHANNEL_READ_ERROR.status=MDSplus.mdsExceptions.Dsp2904CHANNEL_READ_ERROR-class.html#status,Variable MDSplus.mdsExceptions.Dt196bNO_SAMPLES.status=MDSplus.mdsExceptions.Dt196bNO_SAMPLES-class.html#status,Variable MDSplus.mdsExceptions.FeraCONFUSED.status=MDSplus.mdsExceptions.FeraCONFUSED-class.html#status,Variable MDSplus.mdsExceptions.FeraDIGNOTSTRARRAY.status=MDSplus.mdsExceptions.FeraDIGNOTSTRARRAY-class.html#status,Variable MDSplus.mdsExceptions.FeraMEMNOTSTRARRAY.status=MDSplus.mdsExceptions.FeraMEMNOTSTRARRAY-class.html#status,Variable MDSplus.mdsExceptions.FeraNODIG.status=MDSplus.mdsExceptions.FeraNODIG-class.html#status,Variable MDSplus.mdsExceptions.FeraNOMEM.status=MDSplus.mdsExceptions.FeraNOMEM-class.html#status,Variable MDSplus.mdsExceptions.FeraNORMAL.status=MDSplus.mdsExceptions.FeraNORMAL-class.html#status,Variable MDSplus.mdsExceptions.FeraOVERFLOW.status=MDSplus.mdsExceptions.FeraOVERFLOW-class.html#status,Variable MDSplus.mdsExceptions.FeraOVER_RUN.status=MDSplus.mdsExceptions.FeraOVER_RUN-class.html#status,Variable MDSplus.mdsExceptions.FeraPHASE_LOST.status=MDSplus.mdsExceptions.FeraPHASE_LOST-class.html#status,Variable MDSplus.mdsExceptions.H908BAD_ACTIVE_CHANS.status=MDSplus.mdsExceptions.H908BAD_ACTIVE_CHANS-class.html#status,Variable MDSplus.mdsExceptions.H908BAD_CLOCK.status=MDSplus.mdsExceptions.H908BAD_CLOCK-class.html#status,Variable MDSplus.mdsExceptions.H908BAD_PTS.status=MDSplus.mdsExceptions.H908BAD_PTS-class.html#status,Variable MDSplus.mdsExceptions.H912BAD_BLOCKS.status=MDSplus.mdsExceptions.H912BAD_BLOCKS-class.html#status,Variable MDSplus.mdsExceptions.H912BAD_CLOCK.status=MDSplus.mdsExceptions.H912BAD_CLOCK-class.html#status,Variable MDSplus.mdsExceptions.H912BAD_PTS.status=MDSplus.mdsExceptions.H912BAD_PTS-class.html#status,Variable MDSplus.mdsExceptions.Hm650DLYCHNG.status=MDSplus.mdsExceptions.Hm650DLYCHNG-class.html#status,Variable MDSplus.mdsExceptions.Hm650NORMAL.status=MDSplus.mdsExceptions.Hm650NORMAL-class.html#status,Variable MDSplus.mdsExceptions.Hv1440BAD_FRAME.status=MDSplus.mdsExceptions.Hv1440BAD_FRAME-class.html#status,Variable MDSplus.mdsExceptions.Hv1440BAD_RANGE.status=MDSplus.mdsExceptions.Hv1440BAD_RANGE-class.html#status,Variable MDSplus.mdsExceptions.Hv1440NORMAL.status=MDSplus.mdsExceptions.Hv1440NORMAL-class.html#status,Variable MDSplus.mdsExceptions.Hv1440OUTRNG.status=MDSplus.mdsExceptions.Hv1440OUTRNG-class.html#status,Variable MDSplus.mdsExceptions.Hv1440STUCK.status=MDSplus.mdsExceptions.Hv1440STUCK-class.html#status,Variable MDSplus.mdsExceptions.Hv1440WRONG_POD_TYPE.status=MDSplus.mdsExceptions.Hv1440WRONG_POD_TYPE-class.html#status,Variable MDSplus.mdsExceptions.Hv4032NORMAL.status=MDSplus.mdsExceptions.Hv4032NORMAL-class.html#status,Variable MDSplus.mdsExceptions.Hv4032WRONG_POD_TYPE.status=MDSplus.mdsExceptions.Hv4032WRONG_POD_TYPE-class.html#status,Variable MDSplus.mdsExceptions.IdlERROR.status=MDSplus.mdsExceptions.IdlERROR-class.html#status,Variable MDSplus.mdsExceptions.IdlNORMAL.status=MDSplus.mdsExceptions.IdlNORMAL-class.html#status,Variable MDSplus.mdsExceptions.IncaaBAD_ACTIVE_CHANS.status=MDSplus.mdsExceptions.IncaaBAD_ACTIVE_CHANS-class.html#status,Variable MDSplus.mdsExceptions.IncaaBAD_EXT_1MHZ.status=MDSplus.mdsExceptions.IncaaBAD_EXT_1MHZ-class.html#status,Variable MDSplus.mdsExceptions.IncaaBAD_MASTER.status=MDSplus.mdsExceptions.IncaaBAD_MASTER-class.html#status,Variable MDSplus.mdsExceptions.IncaaBAD_PTSC.status=MDSplus.mdsExceptions.IncaaBAD_PTSC-class.html#status,Variable MDSplus.mdsExceptions.J221INVALID_DATA.status=MDSplus.mdsExceptions.J221INVALID_DATA-class.html#status,Variable MDSplus.mdsExceptions.J221NORMAL.status=MDSplus.mdsExceptions.J221NORMAL-class.html#status,Variable MDSplus.mdsExceptions.J221NO_DATA.status=MDSplus.mdsExceptions.J221NO_DATA-class.html#status,Variable MDSplus.mdsExceptions.J412BADCYCLES.status=MDSplus.mdsExceptions.J412BADCYCLES-class.html#status,Variable MDSplus.mdsExceptions.J412NOT_SORTED.status=MDSplus.mdsExceptions.J412NOT_SORTED-class.html#status,Variable MDSplus.mdsExceptions.J412NO_DATA.status=MDSplus.mdsExceptions.J412NO_DATA-class.html#status,Variable MDSplus.mdsExceptions.J_dacOUTRNG.status=MDSplus.mdsExceptions.J_dacOUTRNG-class.html#status,Variable MDSplus.mdsExceptions.J_tr612BAD_ACTMEM.status=MDSplus.mdsExceptions.J_tr612BAD_ACTMEM-class.html#status,Variable MDSplus.mdsExceptions.J_tr612BAD_FREQUENCY.status=MDSplus.mdsExceptions.J_tr612BAD_FREQUENCY-class.html#status,Variable MDSplus.mdsExceptions.J_tr612BAD_MODE.status=MDSplus.mdsExceptions.J_tr612BAD_MODE-class.html#status,Variable MDSplus.mdsExceptions.J_tr612BAD_PRETRIG.status=MDSplus.mdsExceptions.J_tr612BAD_PRETRIG-class.html#status,Variable MDSplus.mdsExceptions.JoergerBAD_ACT_MEMORY.status=MDSplus.mdsExceptions.JoergerBAD_ACT_MEMORY-class.html#status,Variable MDSplus.mdsExceptions.JoergerBAD_GAIN.status=MDSplus.mdsExceptions.JoergerBAD_GAIN-class.html#status,Variable MDSplus.mdsExceptions.JoergerBAD_PRE_TRIGGER.status=MDSplus.mdsExceptions.JoergerBAD_PRE_TRIGGER-class.html#status,Variable MDSplus.mdsExceptions.L6810BAD_ACTIVECHAN.status=MDSplus.mdsExceptions.L6810BAD_ACTIVECHAN-class.html#status,Variable MDSplus.mdsExceptions.L6810BAD_ACTIVEMEM.status=MDSplus.mdsExceptions.L6810BAD_ACTIVEMEM-class.html#status,Variable MDSplus.mdsExceptions.L6810BAD_COUPLING.status=MDSplus.mdsExceptions.L6810BAD_COUPLING-class.html#status,Variable MDSplus.mdsExceptions.L6810BAD_FREQUENCY.status=MDSplus.mdsExceptions.L6810BAD_FREQUENCY-class.html#status,Variable MDSplus.mdsExceptions.L6810BAD_FULL_SCALE.status=MDSplus.mdsExceptions.L6810BAD_FULL_SCALE-class.html#status,Variable MDSplus.mdsExceptions.L6810BAD_MEMORIES.status=MDSplus.mdsExceptions.L6810BAD_MEMORIES-class.html#status,Variable MDSplus.mdsExceptions.L6810BAD_OFFSET.status=MDSplus.mdsExceptions.L6810BAD_OFFSET-class.html#status,Variable MDSplus.mdsExceptions.L6810BAD_SEGMENTS.status=MDSplus.mdsExceptions.L6810BAD_SEGMENTS-class.html#status,Variable MDSplus.mdsExceptions.L6810BAD_TRIG_DELAY.status=MDSplus.mdsExceptions.L6810BAD_TRIG_DELAY-class.html#status,Variable MDSplus.mdsExceptions.L6810NORMAL.status=MDSplus.mdsExceptions.L6810NORMAL-class.html#status,Variable MDSplus.mdsExceptions.L8206NODATA.status=MDSplus.mdsExceptions.L8206NODATA-class.html#status,Variable MDSplus.mdsExceptions.L8212BAD_HEADER.status=MDSplus.mdsExceptions.L8212BAD_HEADER-class.html#status,Variable MDSplus.mdsExceptions.L8212BAD_MEMORIES.status=MDSplus.mdsExceptions.L8212BAD_MEMORIES-class.html#status,Variable MDSplus.mdsExceptions.L8212BAD_NOC.status=MDSplus.mdsExceptions.L8212BAD_NOC-class.html#status,Variable MDSplus.mdsExceptions.L8212BAD_OFFSET.status=MDSplus.mdsExceptions.L8212BAD_OFFSET-class.html#status,Variable MDSplus.mdsExceptions.L8212BAD_PTS.status=MDSplus.mdsExceptions.L8212BAD_PTS-class.html#status,Variable MDSplus.mdsExceptions.L8212FREQ_TO_HIGH.status=MDSplus.mdsExceptions.L8212FREQ_TO_HIGH-class.html#status,Variable MDSplus.mdsExceptions.L8212INVALID_NOC.status=MDSplus.mdsExceptions.L8212INVALID_NOC-class.html#status,Variable MDSplus.mdsExceptions.L8818BAD_ACTIVEMEM.status=MDSplus.mdsExceptions.L8818BAD_ACTIVEMEM-class.html#status,Variable MDSplus.mdsExceptions.L8818BAD_CLOCK.status=MDSplus.mdsExceptions.L8818BAD_CLOCK-class.html#status,Variable MDSplus.mdsExceptions.L8818BAD_OFFSET.status=MDSplus.mdsExceptions.L8818BAD_OFFSET-class.html#status,Variable MDSplus.mdsExceptions.L8818BAD_PRETRIG.status=MDSplus.mdsExceptions.L8818BAD_PRETRIG-class.html#status,Variable MDSplus.mdsExceptions.L8828BAD_ACTIVEMEM.status=MDSplus.mdsExceptions.L8828BAD_ACTIVEMEM-class.html#status,Variable MDSplus.mdsExceptions.L8828BAD_CLOCK.status=MDSplus.mdsExceptions.L8828BAD_CLOCK-class.html#status,Variable MDSplus.mdsExceptions.L8828BAD_OFFSET.status=MDSplus.mdsExceptions.L8828BAD_OFFSET-class.html#status,Variable MDSplus.mdsExceptions.L8828BAD_PRETRIG.status=MDSplus.mdsExceptions.L8828BAD_PRETRIG-class.html#status,Variable MDSplus.mdsExceptions.LibINSVIRMEM.status=MDSplus.mdsExceptions.LibINSVIRMEM-class.html#status,Variable MDSplus.mdsExceptions.LibINVARG.status=MDSplus.mdsExceptions.LibINVARG-class.html#status,Variable MDSplus.mdsExceptions.LibINVSTRDES.status=MDSplus.mdsExceptions.LibINVSTRDES-class.html#status,Variable MDSplus.mdsExceptions.LibKEYNOTFOU.status=MDSplus.mdsExceptions.LibKEYNOTFOU-class.html#status,Variable MDSplus.mdsExceptions.LibNOTFOU.status=MDSplus.mdsExceptions.LibNOTFOU-class.html#status,Variable MDSplus.mdsExceptions.LibQUEWASEMP.status=MDSplus.mdsExceptions.LibQUEWASEMP-class.html#status,Variable MDSplus.mdsExceptions.LibSTRTRU.status=MDSplus.mdsExceptions.LibSTRTRU-class.html#status,Variable MDSplus.mdsExceptions.MDSplusERROR.status=MDSplus.mdsExceptions.MDSplusERROR-class.html#status,Variable MDSplus.mdsExceptions.MDSplusFATAL.status=MDSplus.mdsExceptions.MDSplusFATAL-class.html#status,Variable MDSplus.mdsExceptions.MDSplusSUCCESS.status=MDSplus.mdsExceptions.MDSplusSUCCESS-class.html#status,Variable MDSplus.mdsExceptions.MDSplusWARNING.status=MDSplus.mdsExceptions.MDSplusWARNING-class.html#status,Variable MDSplus.mdsExceptions.MdsdclABSENT.status=MDSplus.mdsExceptions.MdsdclABSENT-class.html#status,Variable MDSplus.mdsExceptions.MdsdclERROR.status=MDSplus.mdsExceptions.MdsdclERROR-class.html#status,Variable MDSplus.mdsExceptions.MdsdclEXIT.status=MDSplus.mdsExceptions.MdsdclEXIT-class.html#status,Variable MDSplus.mdsExceptions.MdsdclIVQUAL.status=MDSplus.mdsExceptions.MdsdclIVQUAL-class.html#status,Variable MDSplus.mdsExceptions.MdsdclIVVERB.status=MDSplus.mdsExceptions.MdsdclIVVERB-class.html#status,Variable MDSplus.mdsExceptions.MdsdclMISSING_VALUE.status=MDSplus.mdsExceptions.MdsdclMISSING_VALUE-class.html#status,Variable MDSplus.mdsExceptions.MdsdclNEGATED.status=MDSplus.mdsExceptions.MdsdclNEGATED-class.html#status,Variable MDSplus.mdsExceptions.MdsdclNORMAL.status=MDSplus.mdsExceptions.MdsdclNORMAL-class.html#status,Variable MDSplus.mdsExceptions.MdsdclNOTNEGATABLE.status=MDSplus.mdsExceptions.MdsdclNOTNEGATABLE-class.html#status,Variable MDSplus.mdsExceptions.MdsdclPRESENT.status=MDSplus.mdsExceptions.MdsdclPRESENT-class.html#status,Variable MDSplus.mdsExceptions.MdsdclPROMPT_MORE.status=MDSplus.mdsExceptions.MdsdclPROMPT_MORE-class.html#status,Variable MDSplus.mdsExceptions.MdsdclSUCCESS.status=MDSplus.mdsExceptions.MdsdclSUCCESS-class.html#status,Variable MDSplus.mdsExceptions.MdsdclTOO_MANY_PRMS.status=MDSplus.mdsExceptions.MdsdclTOO_MANY_PRMS-class.html#status,Variable MDSplus.mdsExceptions.MdsdclTOO_MANY_VALS.status=MDSplus.mdsExceptions.MdsdclTOO_MANY_VALS-class.html#status,Variable MDSplus.mdsExceptions.MpbBADFREQ.status=MDSplus.mdsExceptions.MpbBADFREQ-class.html#status,Variable MDSplus.mdsExceptions.MpbBADTIME.status=MDSplus.mdsExceptions.MpbBADTIME-class.html#status,Variable MDSplus.mdsExceptions.PyUNHANDLED_EXCEPTION.status=MDSplus.mdsExceptions.PyUNHANDLED_EXCEPTION-class.html#status,Variable MDSplus.mdsExceptions.ReticonBAD_FRAMES.status=MDSplus.mdsExceptions.ReticonBAD_FRAMES-class.html#status,Variable MDSplus.mdsExceptions.ReticonBAD_FRAME_SELECT.status=MDSplus.mdsExceptions.ReticonBAD_FRAME_SELECT-class.html#status,Variable MDSplus.mdsExceptions.ReticonBAD_NUM_STATES.status=MDSplus.mdsExceptions.ReticonBAD_NUM_STATES-class.html#status,Variable MDSplus.mdsExceptions.ReticonBAD_PERIOD.status=MDSplus.mdsExceptions.ReticonBAD_PERIOD-class.html#status,Variable MDSplus.mdsExceptions.ReticonBAD_PIXEL_SELECT.status=MDSplus.mdsExceptions.ReticonBAD_PIXEL_SELECT-class.html#status,Variable MDSplus.mdsExceptions.ReticonDATA_CORRUPTED.status=MDSplus.mdsExceptions.ReticonDATA_CORRUPTED-class.html#status,Variable MDSplus.mdsExceptions.ReticonNORMAL.status=MDSplus.mdsExceptions.ReticonNORMAL-class.html#status,Variable MDSplus.mdsExceptions.ReticonTOO_MANY_FRAMES.status=MDSplus.mdsExceptions.ReticonTOO_MANY_FRAMES-class.html#status,Variable MDSplus.mdsExceptions.ServerABORT.status=MDSplus.mdsExceptions.ServerABORT-class.html#status,Variable MDSplus.mdsExceptions.ServerCANT_HAPPEN.status=MDSplus.mdsExceptions.ServerCANT_HAPPEN-class.html#status,Variable MDSplus.mdsExceptions.ServerINVALID_ACTION_OPERATION.status=MDSplus.mdsExceptions.ServerINVALID_ACTION_OPERATION-class.html#status,Variable MDSplus.mdsExceptions.ServerINVALID_DEPENDENCY.status=MDSplus.mdsExceptions.ServerINVALID_DEPENDENCY-class.html#status,Variable MDSplus.mdsExceptions.ServerINVSHOT.status=MDSplus.mdsExceptions.ServerINVSHOT-class.html#status,Variable MDSplus.mdsExceptions.ServerNOT_DISPATCHED.status=MDSplus.mdsExceptions.ServerNOT_DISPATCHED-class.html#status,Variable MDSplus.mdsExceptions.ServerPATH_DOWN.status=MDSplus.mdsExceptions.ServerPATH_DOWN-class.html#status,Variable MDSplus.mdsExceptions.ServerSOCKET_ADDR_ERROR.status=MDSplus.mdsExceptions.ServerSOCKET_ADDR_ERROR-class.html#status,Variable MDSplus.mdsExceptions.SsINTERNAL.status=MDSplus.mdsExceptions.SsINTERNAL-class.html#status,Variable MDSplus.mdsExceptions.SsINTOVF.status=MDSplus.mdsExceptions.SsINTOVF-class.html#status,Variable MDSplus.mdsExceptions.SsSUCCESS.status=MDSplus.mdsExceptions.SsSUCCESS-class.html#status,Variable MDSplus.mdsExceptions.StrINVDELIM.status=MDSplus.mdsExceptions.StrINVDELIM-class.html#status,Variable MDSplus.mdsExceptions.StrMATCH.status=MDSplus.mdsExceptions.StrMATCH-class.html#status,Variable MDSplus.mdsExceptions.StrNOELEM.status=MDSplus.mdsExceptions.StrNOELEM-class.html#status,Variable MDSplus.mdsExceptions.StrNOMATCH.status=MDSplus.mdsExceptions.StrNOMATCH-class.html#status,Variable MDSplus.mdsExceptions.StrSTRTOOLON.status=MDSplus.mdsExceptions.StrSTRTOOLON-class.html#status,Variable MDSplus.mdsExceptions.TclFAILED_ESSENTIAL.status=MDSplus.mdsExceptions.TclFAILED_ESSENTIAL-class.html#status,Variable MDSplus.mdsExceptions.TclNORMAL.status=MDSplus.mdsExceptions.TclNORMAL-class.html#status,Variable MDSplus.mdsExceptions.TclNO_DISPATCH_TABLE.status=MDSplus.mdsExceptions.TclNO_DISPATCH_TABLE-class.html#status,Variable MDSplus.mdsExceptions.TdiABORT.status=MDSplus.mdsExceptions.TdiABORT-class.html#status,Variable MDSplus.mdsExceptions.TdiBAD_INDEX.status=MDSplus.mdsExceptions.TdiBAD_INDEX-class.html#status,Variable MDSplus.mdsExceptions.TdiBOMB.status=MDSplus.mdsExceptions.TdiBOMB-class.html#status,Variable MDSplus.mdsExceptions.TdiBREAK.status=MDSplus.mdsExceptions.TdiBREAK-class.html#status,Variable MDSplus.mdsExceptions.TdiCASE.status=MDSplus.mdsExceptions.TdiCASE-class.html#status,Variable MDSplus.mdsExceptions.TdiCONTINUE.status=MDSplus.mdsExceptions.TdiCONTINUE-class.html#status,Variable MDSplus.mdsExceptions.TdiEXTRANEOUS.status=MDSplus.mdsExceptions.TdiEXTRANEOUS-class.html#status,Variable MDSplus.mdsExceptions.TdiEXTRA_ARG.status=MDSplus.mdsExceptions.TdiEXTRA_ARG-class.html#status,Variable MDSplus.mdsExceptions.TdiGOTO.status=MDSplus.mdsExceptions.TdiGOTO-class.html#status,Variable MDSplus.mdsExceptions.TdiINVCLADSC.status=MDSplus.mdsExceptions.TdiINVCLADSC-class.html#status,Variable MDSplus.mdsExceptions.TdiINVCLADTY.status=MDSplus.mdsExceptions.TdiINVCLADTY-class.html#status,Variable MDSplus.mdsExceptions.TdiINVDTYDSC.status=MDSplus.mdsExceptions.TdiINVDTYDSC-class.html#status,Variable MDSplus.mdsExceptions.TdiINV_OPC.status=MDSplus.mdsExceptions.TdiINV_OPC-class.html#status,Variable MDSplus.mdsExceptions.TdiINV_SIZE.status=MDSplus.mdsExceptions.TdiINV_SIZE-class.html#status,Variable MDSplus.mdsExceptions.TdiMISMATCH.status=MDSplus.mdsExceptions.TdiMISMATCH-class.html#status,Variable MDSplus.mdsExceptions.TdiMISS_ARG.status=MDSplus.mdsExceptions.TdiMISS_ARG-class.html#status,Variable MDSplus.mdsExceptions.TdiNDIM_OVER.status=MDSplus.mdsExceptions.TdiNDIM_OVER-class.html#status,Variable MDSplus.mdsExceptions.TdiNOT_NUMBER.status=MDSplus.mdsExceptions.TdiNOT_NUMBER-class.html#status,Variable MDSplus.mdsExceptions.TdiNO_CMPLX.status=MDSplus.mdsExceptions.TdiNO_CMPLX-class.html#status,Variable MDSplus.mdsExceptions.TdiNO_OPC.status=MDSplus.mdsExceptions.TdiNO_OPC-class.html#status,Variable MDSplus.mdsExceptions.TdiNO_OUTPTR.status=MDSplus.mdsExceptions.TdiNO_OUTPTR-class.html#status,Variable MDSplus.mdsExceptions.TdiNO_SELF_PTR.status=MDSplus.mdsExceptions.TdiNO_SELF_PTR-class.html#status,Variable MDSplus.mdsExceptions.TdiNULL_PTR.status=MDSplus.mdsExceptions.TdiNULL_PTR-class.html#status,Variable MDSplus.mdsExceptions.TdiRECURSIVE.status=MDSplus.mdsExceptions.TdiRECURSIVE-class.html#status,Variable MDSplus.mdsExceptions.TdiRETURN.status=MDSplus.mdsExceptions.TdiRETURN-class.html#status,Variable MDSplus.mdsExceptions.TdiSIG_DIM.status=MDSplus.mdsExceptions.TdiSIG_DIM-class.html#status,Variable MDSplus.mdsExceptions.TdiSTRTOOLON.status=MDSplus.mdsExceptions.TdiSTRTOOLON-class.html#status,Variable MDSplus.mdsExceptions.TdiSYNTAX.status=MDSplus.mdsExceptions.TdiSYNTAX-class.html#status,Variable MDSplus.mdsExceptions.TdiTIMEOUT.status=MDSplus.mdsExceptions.TdiTIMEOUT-class.html#status,Variable MDSplus.mdsExceptions.TdiTOO_BIG.status=MDSplus.mdsExceptions.TdiTOO_BIG-class.html#status,Variable MDSplus.mdsExceptions.TdiUNBALANCE.status=MDSplus.mdsExceptions.TdiUNBALANCE-class.html#status,Variable MDSplus.mdsExceptions.TdiUNKNOWN_VAR.status=MDSplus.mdsExceptions.TdiUNKNOWN_VAR-class.html#status,Variable MDSplus.mdsExceptions.TimingINVCLKFRQ.status=MDSplus.mdsExceptions.TimingINVCLKFRQ-class.html#status,Variable MDSplus.mdsExceptions.TimingINVDELDUR.status=MDSplus.mdsExceptions.TimingINVDELDUR-class.html#status,Variable MDSplus.mdsExceptions.TimingINVOUTCTR.status=MDSplus.mdsExceptions.TimingINVOUTCTR-class.html#status,Variable MDSplus.mdsExceptions.TimingINVPSEUDODEV.status=MDSplus.mdsExceptions.TimingINVPSEUDODEV-class.html#status,Variable MDSplus.mdsExceptions.TimingINVTRGMOD.status=MDSplus.mdsExceptions.TimingINVTRGMOD-class.html#status,Variable MDSplus.mdsExceptions.TimingNOPSEUDODEV.status=MDSplus.mdsExceptions.TimingNOPSEUDODEV-class.html#status,Variable MDSplus.mdsExceptions.TimingTOO_MANY_EVENTS.status=MDSplus.mdsExceptions.TimingTOO_MANY_EVENTS-class.html#status,Variable MDSplus.mdsExceptions.Tr16BAD_ACTIVECHAN.status=MDSplus.mdsExceptions.Tr16BAD_ACTIVECHAN-class.html#status,Variable MDSplus.mdsExceptions.Tr16BAD_ACTIVEMEM.status=MDSplus.mdsExceptions.Tr16BAD_ACTIVEMEM-class.html#status,Variable MDSplus.mdsExceptions.Tr16BAD_FREQUENCY.status=MDSplus.mdsExceptions.Tr16BAD_FREQUENCY-class.html#status,Variable MDSplus.mdsExceptions.Tr16BAD_GAIN.status=MDSplus.mdsExceptions.Tr16BAD_GAIN-class.html#status,Variable MDSplus.mdsExceptions.Tr16BAD_MASTER.status=MDSplus.mdsExceptions.Tr16BAD_MASTER-class.html#status,Variable MDSplus.mdsExceptions.Tr16BAD_MEMSIZE.status=MDSplus.mdsExceptions.Tr16BAD_MEMSIZE-class.html#status,Variable MDSplus.mdsExceptions.Tr16BAD_PTS.status=MDSplus.mdsExceptions.Tr16BAD_PTS-class.html#status,Variable MDSplus.mdsExceptions.Tr16NORMAL.status=MDSplus.mdsExceptions.Tr16NORMAL-class.html#status,Variable MDSplus.mdsExceptions.TreeALREADY_OFF.status=MDSplus.mdsExceptions.TreeALREADY_OFF-class.html#status,Variable MDSplus.mdsExceptions.TreeALREADY_ON.status=MDSplus.mdsExceptions.TreeALREADY_ON-class.html#status,Variable MDSplus.mdsExceptions.TreeALREADY_OPEN.status=MDSplus.mdsExceptions.TreeALREADY_OPEN-class.html#status,Variable MDSplus.mdsExceptions.TreeALREADY_THERE.status=MDSplus.mdsExceptions.TreeALREADY_THERE-class.html#status,Variable MDSplus.mdsExceptions.TreeBADRECORD.status=MDSplus.mdsExceptions.TreeBADRECORD-class.html#status,Variable MDSplus.mdsExceptions.TreeBOTH_OFF.status=MDSplus.mdsExceptions.TreeBOTH_OFF-class.html#status,Variable MDSplus.mdsExceptions.TreeBUFFEROVF.status=MDSplus.mdsExceptions.TreeBUFFEROVF-class.html#status,Variable MDSplus.mdsExceptions.TreeCANCEL.status=MDSplus.mdsExceptions.TreeCANCEL-class.html#status,Variable MDSplus.mdsExceptions.TreeCLOSEERR.status=MDSplus.mdsExceptions.TreeCLOSEERR-class.html#status,Variable MDSplus.mdsExceptions.TreeCONGLOMFULL.status=MDSplus.mdsExceptions.TreeCONGLOMFULL-class.html#status,Variable MDSplus.mdsExceptions.TreeCONGLOM_NOT_FULL.status=MDSplus.mdsExceptions.TreeCONGLOM_NOT_FULL-class.html#status,Variable MDSplus.mdsExceptions.TreeCONNECTFAIL.status=MDSplus.mdsExceptions.TreeCONNECTFAIL-class.html#status,Variable MDSplus.mdsExceptions.TreeCONTINUING.status=MDSplus.mdsExceptions.TreeCONTINUING-class.html#status,Variable MDSplus.mdsExceptions.TreeDELFAIL.status=MDSplus.mdsExceptions.TreeDELFAIL-class.html#status,Variable MDSplus.mdsExceptions.TreeDFREAD.status=MDSplus.mdsExceptions.TreeDFREAD-class.html#status,Variable MDSplus.mdsExceptions.TreeDUPTAG.status=MDSplus.mdsExceptions.TreeDUPTAG-class.html#status,Variable MDSplus.mdsExceptions.TreeEDITTING.status=MDSplus.mdsExceptions.TreeEDITTING-class.html#status,Variable MDSplus.mdsExceptions.TreeEMPTY.status=MDSplus.mdsExceptions.TreeEMPTY-class.html#status,Variable MDSplus.mdsExceptions.TreeFAILURE.status=MDSplus.mdsExceptions.TreeFAILURE-class.html#status,Variable MDSplus.mdsExceptions.TreeFCREATE.status=MDSplus.mdsExceptions.TreeFCREATE-class.html#status,Variable MDSplus.mdsExceptions.TreeFILE_NOT_FOUND.status=MDSplus.mdsExceptions.TreeFILE_NOT_FOUND-class.html#status,Variable MDSplus.mdsExceptions.TreeFOPENR.status=MDSplus.mdsExceptions.TreeFOPENR-class.html#status,Variable MDSplus.mdsExceptions.TreeFOPENW.status=MDSplus.mdsExceptions.TreeFOPENW-class.html#status,Variable MDSplus.mdsExceptions.TreeILLEGAL_ITEM.status=MDSplus.mdsExceptions.TreeILLEGAL_ITEM-class.html#status,Variable MDSplus.mdsExceptions.TreeILLPAGCNT.status=MDSplus.mdsExceptions.TreeILLPAGCNT-class.html#status,Variable MDSplus.mdsExceptions.TreeINVDFFCLASS.status=MDSplus.mdsExceptions.TreeINVDFFCLASS-class.html#status,Variable MDSplus.mdsExceptions.TreeINVDTPUSG.status=MDSplus.mdsExceptions.TreeINVDTPUSG-class.html#status,Variable MDSplus.mdsExceptions.TreeINVDTYPE.status=MDSplus.mdsExceptions.TreeINVDTYPE-class.html#status,Variable MDSplus.mdsExceptions.TreeINVPATH.status=MDSplus.mdsExceptions.TreeINVPATH-class.html#status,Variable MDSplus.mdsExceptions.TreeINVRECTYP.status=MDSplus.mdsExceptions.TreeINVRECTYP-class.html#status,Variable MDSplus.mdsExceptions.TreeINVSHAPE.status=MDSplus.mdsExceptions.TreeINVSHAPE-class.html#status,Variable MDSplus.mdsExceptions.TreeINVSHOT.status=MDSplus.mdsExceptions.TreeINVSHOT-class.html#status,Variable MDSplus.mdsExceptions.TreeINVTAG.status=MDSplus.mdsExceptions.TreeINVTAG-class.html#status,Variable MDSplus.mdsExceptions.TreeINVTREE.status=MDSplus.mdsExceptions.TreeINVTREE-class.html#status,Variable MDSplus.mdsExceptions.TreeLOCK_FAILURE.status=MDSplus.mdsExceptions.TreeLOCK_FAILURE-class.html#status,Variable MDSplus.mdsExceptions.TreeMAXOPENEDIT.status=MDSplus.mdsExceptions.TreeMAXOPENEDIT-class.html#status,Variable MDSplus.mdsExceptions.TreeMEMERR.status=MDSplus.mdsExceptions.TreeMEMERR-class.html#status,Variable MDSplus.mdsExceptions.TreeMOVEERROR.status=MDSplus.mdsExceptions.TreeMOVEERROR-class.html#status,Variable MDSplus.mdsExceptions.TreeNCIREAD.status=MDSplus.mdsExceptions.TreeNCIREAD-class.html#status,Variable MDSplus.mdsExceptions.TreeNCIWRITE.status=MDSplus.mdsExceptions.TreeNCIWRITE-class.html#status,Variable MDSplus.mdsExceptions.TreeNEW.status=MDSplus.mdsExceptions.TreeNEW-class.html#status,Variable MDSplus.mdsExceptions.TreeNMN.status=MDSplus.mdsExceptions.TreeNMN-class.html#status,Variable MDSplus.mdsExceptions.TreeNMT.status=MDSplus.mdsExceptions.TreeNMT-class.html#status,Variable MDSplus.mdsExceptions.TreeNNF.status=MDSplus.mdsExceptions.TreeNNF-class.html#status,Variable MDSplus.mdsExceptions.TreeNOCURRENT.status=MDSplus.mdsExceptions.TreeNOCURRENT-class.html#status,Variable MDSplus.mdsExceptions.TreeNODATA.status=MDSplus.mdsExceptions.TreeNODATA-class.html#status,Variable MDSplus.mdsExceptions.TreeNODNAMLEN.status=MDSplus.mdsExceptions.TreeNODNAMLEN-class.html#status,Variable MDSplus.mdsExceptions.TreeNOEDIT.status=MDSplus.mdsExceptions.TreeNOEDIT-class.html#status,Variable MDSplus.mdsExceptions.TreeNOLOG.status=MDSplus.mdsExceptions.TreeNOLOG-class.html#status,Variable MDSplus.mdsExceptions.TreeNOMETHOD.status=MDSplus.mdsExceptions.TreeNOMETHOD-class.html#status,Variable MDSplus.mdsExceptions.TreeNOOVERWRITE.status=MDSplus.mdsExceptions.TreeNOOVERWRITE-class.html#status,Variable MDSplus.mdsExceptions.TreeNOPATH.status=MDSplus.mdsExceptions.TreeNOPATH-class.html#status,Variable MDSplus.mdsExceptions.TreeNORMAL.status=MDSplus.mdsExceptions.TreeNORMAL-class.html#status,Variable MDSplus.mdsExceptions.TreeNOSEGMENTS.status=MDSplus.mdsExceptions.TreeNOSEGMENTS-class.html#status,Variable MDSplus.mdsExceptions.TreeNOTALLSUBS.status=MDSplus.mdsExceptions.TreeNOTALLSUBS-class.html#status,Variable MDSplus.mdsExceptions.TreeNOTCHILDLESS.status=MDSplus.mdsExceptions.TreeNOTCHILDLESS-class.html#status,Variable MDSplus.mdsExceptions.TreeNOTMEMBERLESS.status=MDSplus.mdsExceptions.TreeNOTMEMBERLESS-class.html#status,Variable MDSplus.mdsExceptions.TreeNOTOPEN.status=MDSplus.mdsExceptions.TreeNOTOPEN-class.html#status,Variable MDSplus.mdsExceptions.TreeNOTSON.status=MDSplus.mdsExceptions.TreeNOTSON-class.html#status,Variable MDSplus.mdsExceptions.TreeNOT_CONGLOM.status=MDSplus.mdsExceptions.TreeNOT_CONGLOM-class.html#status,Variable MDSplus.mdsExceptions.TreeNOT_IN_LIST.status=MDSplus.mdsExceptions.TreeNOT_IN_LIST-class.html#status,Variable MDSplus.mdsExceptions.TreeNOT_OPEN.status=MDSplus.mdsExceptions.TreeNOT_OPEN-class.html#status,Variable MDSplus.mdsExceptions.TreeNOVERSION.status=MDSplus.mdsExceptions.TreeNOVERSION-class.html#status,Variable MDSplus.mdsExceptions.TreeNOWRITEMODEL.status=MDSplus.mdsExceptions.TreeNOWRITEMODEL-class.html#status,Variable MDSplus.mdsExceptions.TreeNOWRITESHOT.status=MDSplus.mdsExceptions.TreeNOWRITESHOT-class.html#status,Variable MDSplus.mdsExceptions.TreeNO_CONTEXT.status=MDSplus.mdsExceptions.TreeNO_CONTEXT-class.html#status,Variable MDSplus.mdsExceptions.TreeOFF.status=MDSplus.mdsExceptions.TreeOFF-class.html#status,Variable MDSplus.mdsExceptions.TreeON.status=MDSplus.mdsExceptions.TreeON-class.html#status,Variable MDSplus.mdsExceptions.TreeOPEN.status=MDSplus.mdsExceptions.TreeOPEN-class.html#status,Variable MDSplus.mdsExceptions.TreeOPENEDITERR.status=MDSplus.mdsExceptions.TreeOPENEDITERR-class.html#status,Variable MDSplus.mdsExceptions.TreeOPEN_EDIT.status=MDSplus.mdsExceptions.TreeOPEN_EDIT-class.html#status,Variable MDSplus.mdsExceptions.TreePARENT_OFF.status=MDSplus.mdsExceptions.TreePARENT_OFF-class.html#status,Variable MDSplus.mdsExceptions.TreePARSEERR.status=MDSplus.mdsExceptions.TreePARSEERR-class.html#status,Variable MDSplus.mdsExceptions.TreeREADERR.status=MDSplus.mdsExceptions.TreeREADERR-class.html#status,Variable MDSplus.mdsExceptions.TreeREADONLY.status=MDSplus.mdsExceptions.TreeREADONLY-class.html#status,Variable MDSplus.mdsExceptions.TreeREADONLY_TREE.status=MDSplus.mdsExceptions.TreeREADONLY_TREE-class.html#status,Variable MDSplus.mdsExceptions.TreeRENFAIL.status=MDSplus.mdsExceptions.TreeRENFAIL-class.html#status,Variable MDSplus.mdsExceptions.TreeRESOLVED.status=MDSplus.mdsExceptions.TreeRESOLVED-class.html#status,Variable MDSplus.mdsExceptions.TreeSUCCESS.status=MDSplus.mdsExceptions.TreeSUCCESS-class.html#status,Variable MDSplus.mdsExceptions.TreeTAGNAMLEN.status=MDSplus.mdsExceptions.TreeTAGNAMLEN-class.html#status,Variable MDSplus.mdsExceptions.TreeTNF.status=MDSplus.mdsExceptions.TreeTNF-class.html#status,Variable MDSplus.mdsExceptions.TreeTREEFILEREADERR.status=MDSplus.mdsExceptions.TreeTREEFILEREADERR-class.html#status,Variable MDSplus.mdsExceptions.TreeTREENF.status=MDSplus.mdsExceptions.TreeTREENF-class.html#status,Variable MDSplus.mdsExceptions.TreeUNRESOLVED.status=MDSplus.mdsExceptions.TreeUNRESOLVED-class.html#status,Variable MDSplus.mdsExceptions.TreeUNSPRTCLASS.status=MDSplus.mdsExceptions.TreeUNSPRTCLASS-class.html#status,Variable MDSplus.mdsExceptions.TreeUNSUPARRDTYPE.status=MDSplus.mdsExceptions.TreeUNSUPARRDTYPE-class.html#status,Variable MDSplus.mdsExceptions.TreeWRITEFIRST.status=MDSplus.mdsExceptions.TreeWRITEFIRST-class.html#status,Variable MDSplus.mdsExceptions.TreeWRITETREEERR.status=MDSplus.mdsExceptions.TreeWRITETREEERR-class.html#status,Variable MDSplus.mdsExceptions.U_of_mBAD_EXPOSURE.status=MDSplus.mdsExceptions.U_of_mBAD_EXPOSURE-class.html#status,Variable MDSplus.mdsExceptions.U_of_mBAD_FILTER.status=MDSplus.mdsExceptions.U_of_mBAD_FILTER-class.html#status,Variable MDSplus.mdsExceptions.U_of_mBAD_GRATING.status=MDSplus.mdsExceptions.U_of_mBAD_GRATING-class.html#status,Variable MDSplus.mdsExceptions.U_of_mBAD_NUM_SPECTRA.status=MDSplus.mdsExceptions.U_of_mBAD_NUM_SPECTRA-class.html#status,Variable MDSplus.mdsExceptions.U_of_mBAD_SLIT_WIDTH.status=MDSplus.mdsExceptions.U_of_mBAD_SLIT_WIDTH-class.html#status,Variable MDSplus.mdsExceptions.U_of_mBAD_WAVE_LENGTH.status=MDSplus.mdsExceptions.U_of_mBAD_WAVE_LENGTH-class.html#status,Variable MDSplus.mdsExceptions.U_of_mDATA_FILE_ERROR.status=MDSplus.mdsExceptions.U_of_mDATA_FILE_ERROR-class.html#status,Variable MDSplus.mdsExceptions.U_of_mGO_FILE_ERROR.status=MDSplus.mdsExceptions.U_of_mGO_FILE_ERROR-class.html#status,Variable MDSplus.tree.TreeNode.status=MDSplus.tree.TreeNode-class.html#status"><a title="MDSplus.mdsExceptions.A14BAD_CLK_DIVIDE.status
+MDSplus.mdsExceptions.A14BAD_CLK_POLARITY.status
+MDSplus.mdsExceptions.A14BAD_GATED.status
+MDSplus.mdsExceptions.A14BAD_MODE.status
+MDSplus.mdsExceptions.A14BAD_STP_POLARITY.status
+MDSplus.mdsExceptions.A14BAD_STR_POLARITY.status
+MDSplus.mdsExceptions.A14NORMAL.status
+MDSplus.mdsExceptions.B2408NORMAL.status
+MDSplus.mdsExceptions.B2408OVERFLOW.status
+MDSplus.mdsExceptions.B2408TRIG_LIM.status
+MDSplus.mdsExceptions.B5910aBAD_CHAN.status
+MDSplus.mdsExceptions.B5910aBAD_CLOCK.status
+MDSplus.mdsExceptions.B5910aBAD_ITERATIONS.status
+MDSplus.mdsExceptions.B5910aBAD_NOC.status
+MDSplus.mdsExceptions.B5910aBAD_SAMPS.status
+MDSplus.mdsExceptions.CamDONE_NOQ.status
+MDSplus.mdsExceptions.CamDONE_NOX.status
+MDSplus.mdsExceptions.CamDONE_Q.status
+MDSplus.mdsExceptions.CamOFFLINE.status
+MDSplus.mdsExceptions.CamSCCFAIL.status
+MDSplus.mdsExceptions.CamSERTRAERR.status
+MDSplus.mdsExceptions.DevACQ2SH_FAILED.status
+MDSplus.mdsExceptions.DevACQCMD_FAILED.status
+MDSplus.mdsExceptions.DevBAD_ACTIVE_CHAN.status
+MDSplus.mdsExceptions.DevBAD_CLOCK_FREQ.status
+MDSplus.mdsExceptions.DevBAD_CLOCK_SRC.status
+MDSplus.mdsExceptions.DevBAD_COMMANDS.status
+MDSplus.mdsExceptions.DevBAD_ENDIDX.status
+MDSplus.mdsExceptions.DevBAD_FILTER.status
+MDSplus.mdsExceptions.DevBAD_FREQ.status
+MDSplus.mdsExceptions.DevBAD_GAIN.status
+MDSplus.mdsExceptions.DevBAD_HEADER.status
+MDSplus.mdsExceptions.DevBAD_HEADER_IDX.status
+MDSplus.mdsExceptions.DevBAD_MEMORIES.status
+MDSplus.mdsExceptions.DevBAD_MODE.status
+MDSplus.mdsExceptions.DevBAD_NAME.status
+MDSplus.mdsExceptions.DevBAD_OFFSET.status
+MDSplus.mdsExceptions.DevBAD_PARAMETER.status
+MDSplus.mdsExceptions.DevBAD_POST_TRIG.status
+MDSplus.mdsExceptions.DevBAD_PRE_TRIG.status
+MDSplus.mdsExceptions.DevBAD_STARTIDX.status
+MDSplus.mdsExceptions.DevBAD_TRIG_SRC.status
+MDSplus.mdsExceptions.DevBAD_VERBS.status
+MDSplus.mdsExceptions.DevCAMACERR.status
+MDSplus.mdsExceptions.DevCAMERA_NOT_FOUND.status
+MDSplus.mdsExceptions.DevCAM_ADNR.status
+MDSplus.mdsExceptions.DevCAM_DERR.status
+MDSplus.mdsExceptions.DevCAM_ERR.status
+MDSplus.mdsExceptions.DevCAM_LOSYNC.status
+MDSplus.mdsExceptions.DevCAM_LPE.status
+MDSplus.mdsExceptions.DevCAM_NOSQ.status
+MDSplus.mdsExceptions.DevCAM_NOSX.status
+MDSplus.mdsExceptions.DevCAM_SQ.status
+MDSplus.mdsExceptions.DevCAM_STE.status
+MDSplus.mdsExceptions.DevCAM_SX.status
+MDSplus.mdsExceptions.DevCAM_TMO.status
+MDSplus.mdsExceptions.DevCAM_TPE.status
+MDSplus.mdsExceptions.DevCANNOT_GET_BOARD_STATE.status
+MDSplus.mdsExceptions.DevCANNOT_LOAD_SETTINGS.status
+MDSplus.mdsExceptions.DevCOMM_ERROR.status
+MDSplus.mdsExceptions.DevERROR_DOING_INIT.status
+MDSplus.mdsExceptions.DevERROR_READING_CHANNEL.status
+MDSplus.mdsExceptions.DevFREQ_TO_HIGH.status
+MDSplus.mdsExceptions.DevINVALID_NOC.status
+MDSplus.mdsExceptions.DevINV_SETUP.status
+MDSplus.mdsExceptions.DevIO_STUCK.status
+MDSplus.mdsExceptions.DevNOT_A_PYDEVICE.status
+MDSplus.mdsExceptions.DevNOT_TRIGGERED.status
+MDSplus.mdsExceptions.DevNO_NAME_SPECIFIED.status
+MDSplus.mdsExceptions.DevOFFLINE.status
+MDSplus.mdsExceptions.DevPYDEVICE_NOT_FOUND.status
+MDSplus.mdsExceptions.DevPY_INTERFACE_LIBRARY_NOT_FOUND.status
+MDSplus.mdsExceptions.DevRANGE_MISMATCH.status
+MDSplus.mdsExceptions.DevTRIGGERED_NOT_STORED.status
+MDSplus.mdsExceptions.DevTRIGGER_FAILED.status
+MDSplus.mdsExceptions.DevUNKOWN_STATE.status
+MDSplus.mdsExceptions.DevWRONG_PATH.status
+MDSplus.mdsExceptions.DevWRONG_SHOT.status
+MDSplus.mdsExceptions.DevWRONG_TREE.status
+MDSplus.mdsExceptions.Dsp2904CHANNEL_READ_ERROR.status
+MDSplus.mdsExceptions.Dt196bNO_SAMPLES.status
+MDSplus.mdsExceptions.FeraCONFUSED.status
+MDSplus.mdsExceptions.FeraDIGNOTSTRARRAY.status
+MDSplus.mdsExceptions.FeraMEMNOTSTRARRAY.status
+MDSplus.mdsExceptions.FeraNODIG.status
+MDSplus.mdsExceptions.FeraNOMEM.status
+MDSplus.mdsExceptions.FeraNORMAL.status
+MDSplus.mdsExceptions.FeraOVERFLOW.status
+MDSplus.mdsExceptions.FeraOVER_RUN.status
+MDSplus.mdsExceptions.FeraPHASE_LOST.status
+MDSplus.mdsExceptions.H908BAD_ACTIVE_CHANS.status
+MDSplus.mdsExceptions.H908BAD_CLOCK.status
+MDSplus.mdsExceptions.H908BAD_PTS.status
+MDSplus.mdsExceptions.H912BAD_BLOCKS.status
+MDSplus.mdsExceptions.H912BAD_CLOCK.status
+MDSplus.mdsExceptions.H912BAD_PTS.status
+MDSplus.mdsExceptions.Hm650DLYCHNG.status
+MDSplus.mdsExceptions.Hm650NORMAL.status
+MDSplus.mdsExceptions.Hv1440BAD_FRAME.status
+MDSplus.mdsExceptions.Hv1440BAD_RANGE.status
+MDSplus.mdsExceptions.Hv1440NORMAL.status
+MDSplus.mdsExceptions.Hv1440OUTRNG.status
+MDSplus.mdsExceptions.Hv1440STUCK.status
+MDSplus.mdsExceptions.Hv1440WRONG_POD_TYPE.status
+MDSplus.mdsExceptions.Hv4032NORMAL.status
+MDSplus.mdsExceptions.Hv4032WRONG_POD_TYPE.status
+MDSplus.mdsExceptions.IdlERROR.status
+MDSplus.mdsExceptions.IdlNORMAL.status
+MDSplus.mdsExceptions.IncaaBAD_ACTIVE_CHANS.status
+MDSplus.mdsExceptions.IncaaBAD_EXT_1MHZ.status
+MDSplus.mdsExceptions.IncaaBAD_MASTER.status
+MDSplus.mdsExceptions.IncaaBAD_PTSC.status
+MDSplus.mdsExceptions.J221INVALID_DATA.status
+MDSplus.mdsExceptions.J221NORMAL.status
+MDSplus.mdsExceptions.J221NO_DATA.status
+MDSplus.mdsExceptions.J412BADCYCLES.status
+MDSplus.mdsExceptions.J412NOT_SORTED.status
+MDSplus.mdsExceptions.J412NO_DATA.status
+MDSplus.mdsExceptions.J_dacOUTRNG.status
+MDSplus.mdsExceptions.J_tr612BAD_ACTMEM.status
+MDSplus.mdsExceptions.J_tr612BAD_FREQUENCY.status
+MDSplus.mdsExceptions.J_tr612BAD_MODE.status
+MDSplus.mdsExceptions.J_tr612BAD_PRETRIG.status
+MDSplus.mdsExceptions.JoergerBAD_ACT_MEMORY.status
+MDSplus.mdsExceptions.JoergerBAD_GAIN.status
+MDSplus.mdsExceptions.JoergerBAD_PRE_TRIGGER.status
+MDSplus.mdsExceptions.L6810BAD_ACTIVECHAN.status
+MDSplus.mdsExceptions.L6810BAD_ACTIVEMEM.status
+MDSplus.mdsExceptions.L6810BAD_COUPLING.status
+MDSplus.mdsExceptions.L6810BAD_FREQUENCY.status
+MDSplus.mdsExceptions.L6810BAD_FULL_SCALE.status
+MDSplus.mdsExceptions.L6810BAD_MEMORIES.status
+MDSplus.mdsExceptions.L6810BAD_OFFSET.status
+MDSplus.mdsExceptions.L6810BAD_SEGMENTS.status
+MDSplus.mdsExceptions.L6810BAD_TRIG_DELAY.status
+MDSplus.mdsExceptions.L6810NORMAL.status
+MDSplus.mdsExceptions.L8206NODATA.status
+MDSplus.mdsExceptions.L8212BAD_HEADER.status
+MDSplus.mdsExceptions.L8212BAD_MEMORIES.status
+MDSplus.mdsExceptions.L8212BAD_NOC.status
+MDSplus.mdsExceptions.L8212BAD_OFFSET.status
+MDSplus.mdsExceptions.L8212BAD_PTS.status
+MDSplus.mdsExceptions.L8212FREQ_TO_HIGH.status
+MDSplus.mdsExceptions.L8212INVALID_NOC.status
+MDSplus.mdsExceptions.L8818BAD_ACTIVEMEM.status
+MDSplus.mdsExceptions.L8818BAD_CLOCK.status
+MDSplus.mdsExceptions.L8818BAD_OFFSET.status
+MDSplus.mdsExceptions.L8818BAD_PRETRIG.status
+MDSplus.mdsExceptions.L8828BAD_ACTIVEMEM.status
+MDSplus.mdsExceptions.L8828BAD_CLOCK.status
+MDSplus.mdsExceptions.L8828BAD_OFFSET.status
+MDSplus.mdsExceptions.L8828BAD_PRETRIG.status
+MDSplus.mdsExceptions.LibINSVIRMEM.status
+MDSplus.mdsExceptions.LibINVARG.status
+MDSplus.mdsExceptions.LibINVSTRDES.status
+MDSplus.mdsExceptions.LibKEYNOTFOU.status
+MDSplus.mdsExceptions.LibNOTFOU.status
+MDSplus.mdsExceptions.LibQUEWASEMP.status
+MDSplus.mdsExceptions.LibSTRTRU.status
+MDSplus.mdsExceptions.MDSplusERROR.status
+MDSplus.mdsExceptions.MDSplusFATAL.status
+MDSplus.mdsExceptions.MDSplusSUCCESS.status
+MDSplus.mdsExceptions.MDSplusWARNING.status
+MDSplus.mdsExceptions.MdsdclABSENT.status
+MDSplus.mdsExceptions.MdsdclERROR.status
+MDSplus.mdsExceptions.MdsdclEXIT.status
+MDSplus.mdsExceptions.MdsdclIVQUAL.status
+MDSplus.mdsExceptions.MdsdclIVVERB.status
+MDSplus.mdsExceptions.MdsdclMISSING_VALUE.status
+MDSplus.mdsExceptions.MdsdclNEGATED.status
+MDSplus.mdsExceptions.MdsdclNORMAL.status
+MDSplus.mdsExceptions.MdsdclNOTNEGATABLE.status
+MDSplus.mdsExceptions.MdsdclPRESENT.status
+MDSplus.mdsExceptions.MdsdclPROMPT_MORE.status
+MDSplus.mdsExceptions.MdsdclSUCCESS.status
+MDSplus.mdsExceptions.MdsdclTOO_MANY_PRMS.status
+MDSplus.mdsExceptions.MdsdclTOO_MANY_VALS.status
+MDSplus.mdsExceptions.MpbBADFREQ.status
+MDSplus.mdsExceptions.MpbBADTIME.status
+MDSplus.mdsExceptions.PyUNHANDLED_EXCEPTION.status
+MDSplus.mdsExceptions.ReticonBAD_FRAMES.status
+MDSplus.mdsExceptions.ReticonBAD_FRAME_SELECT.status
+MDSplus.mdsExceptions.ReticonBAD_NUM_STATES.status
+MDSplus.mdsExceptions.ReticonBAD_PERIOD.status
+MDSplus.mdsExceptions.ReticonBAD_PIXEL_SELECT.status
+MDSplus.mdsExceptions.ReticonDATA_CORRUPTED.status
+MDSplus.mdsExceptions.ReticonNORMAL.status
+MDSplus.mdsExceptions.ReticonTOO_MANY_FRAMES.status
+MDSplus.mdsExceptions.ServerABORT.status
+MDSplus.mdsExceptions.ServerCANT_HAPPEN.status
+MDSplus.mdsExceptions.ServerINVALID_ACTION_OPERATION.status
+MDSplus.mdsExceptions.ServerINVALID_DEPENDENCY.status
+MDSplus.mdsExceptions.ServerINVSHOT.status
+MDSplus.mdsExceptions.ServerNOT_DISPATCHED.status
+MDSplus.mdsExceptions.ServerPATH_DOWN.status
+MDSplus.mdsExceptions.ServerSOCKET_ADDR_ERROR.status
+MDSplus.mdsExceptions.SsINTERNAL.status
+MDSplus.mdsExceptions.SsINTOVF.status
+MDSplus.mdsExceptions.SsSUCCESS.status
+MDSplus.mdsExceptions.StrINVDELIM.status
+MDSplus.mdsExceptions.StrMATCH.status
+MDSplus.mdsExceptions.StrNOELEM.status
+MDSplus.mdsExceptions.StrNOMATCH.status
+MDSplus.mdsExceptions.StrSTRTOOLON.status
+MDSplus.mdsExceptions.TclFAILED_ESSENTIAL.status
+MDSplus.mdsExceptions.TclNORMAL.status
+MDSplus.mdsExceptions.TclNO_DISPATCH_TABLE.status
+MDSplus.mdsExceptions.TdiABORT.status
+MDSplus.mdsExceptions.TdiBAD_INDEX.status
+MDSplus.mdsExceptions.TdiBOMB.status
+MDSplus.mdsExceptions.TdiBREAK.status
+MDSplus.mdsExceptions.TdiCASE.status
+MDSplus.mdsExceptions.TdiCONTINUE.status
+MDSplus.mdsExceptions.TdiEXTRANEOUS.status
+MDSplus.mdsExceptions.TdiEXTRA_ARG.status
+MDSplus.mdsExceptions.TdiGOTO.status
+MDSplus.mdsExceptions.TdiINVCLADSC.status
+MDSplus.mdsExceptions.TdiINVCLADTY.status
+MDSplus.mdsExceptions.TdiINVDTYDSC.status
+MDSplus.mdsExceptions.TdiINV_OPC.status
+MDSplus.mdsExceptions.TdiINV_SIZE.status
+MDSplus.mdsExceptions.TdiMISMATCH.status
+MDSplus.mdsExceptions.TdiMISS_ARG.status
+MDSplus.mdsExceptions.TdiNDIM_OVER.status
+MDSplus.mdsExceptions.TdiNOT_NUMBER.status
+MDSplus.mdsExceptions.TdiNO_CMPLX.status
+MDSplus.mdsExceptions.TdiNO_OPC.status
+MDSplus.mdsExceptions.TdiNO_OUTPTR.status
+MDSplus.mdsExceptions.TdiNO_SELF_PTR.status
+MDSplus.mdsExceptions.TdiNULL_PTR.status
+MDSplus.mdsExceptions.TdiRECURSIVE.status
+MDSplus.mdsExceptions.TdiRETURN.status
+MDSplus.mdsExceptions.TdiSIG_DIM.status
+MDSplus.mdsExceptions.TdiSTRTOOLON.status
+MDSplus.mdsExceptions.TdiSYNTAX.status
+MDSplus.mdsExceptions.TdiTIMEOUT.status
+MDSplus.mdsExceptions.TdiTOO_BIG.status
+MDSplus.mdsExceptions.TdiUNBALANCE.status
+MDSplus.mdsExceptions.TdiUNKNOWN_VAR.status
+MDSplus.mdsExceptions.TimingINVCLKFRQ.status
+MDSplus.mdsExceptions.TimingINVDELDUR.status
+MDSplus.mdsExceptions.TimingINVOUTCTR.status
+MDSplus.mdsExceptions.TimingINVPSEUDODEV.status
+MDSplus.mdsExceptions.TimingINVTRGMOD.status
+MDSplus.mdsExceptions.TimingNOPSEUDODEV.status
+MDSplus.mdsExceptions.TimingTOO_MANY_EVENTS.status
+MDSplus.mdsExceptions.Tr16BAD_ACTIVECHAN.status
+MDSplus.mdsExceptions.Tr16BAD_ACTIVEMEM.status
+MDSplus.mdsExceptions.Tr16BAD_FREQUENCY.status
+MDSplus.mdsExceptions.Tr16BAD_GAIN.status
+MDSplus.mdsExceptions.Tr16BAD_MASTER.status
+MDSplus.mdsExceptions.Tr16BAD_MEMSIZE.status
+MDSplus.mdsExceptions.Tr16BAD_PTS.status
+MDSplus.mdsExceptions.Tr16NORMAL.status
+MDSplus.mdsExceptions.TreeALREADY_OFF.status
+MDSplus.mdsExceptions.TreeALREADY_ON.status
+MDSplus.mdsExceptions.TreeALREADY_OPEN.status
+MDSplus.mdsExceptions.TreeALREADY_THERE.status
+MDSplus.mdsExceptions.TreeBADRECORD.status
+MDSplus.mdsExceptions.TreeBOTH_OFF.status
+MDSplus.mdsExceptions.TreeBUFFEROVF.status
+MDSplus.mdsExceptions.TreeCANCEL.status
+MDSplus.mdsExceptions.TreeCLOSEERR.status
+MDSplus.mdsExceptions.TreeCONGLOMFULL.status
+MDSplus.mdsExceptions.TreeCONGLOM_NOT_FULL.status
+MDSplus.mdsExceptions.TreeCONNECTFAIL.status
+MDSplus.mdsExceptions.TreeCONTINUING.status
+MDSplus.mdsExceptions.TreeDELFAIL.status
+MDSplus.mdsExceptions.TreeDFREAD.status
+MDSplus.mdsExceptions.TreeDUPTAG.status
+MDSplus.mdsExceptions.TreeEDITTING.status
+MDSplus.mdsExceptions.TreeEMPTY.status
+MDSplus.mdsExceptions.TreeFAILURE.status
+MDSplus.mdsExceptions.TreeFCREATE.status
+MDSplus.mdsExceptions.TreeFILE_NOT_FOUND.status
+MDSplus.mdsExceptions.TreeFOPENR.status
+MDSplus.mdsExceptions.TreeFOPENW.status
+MDSplus.mdsExceptions.TreeILLEGAL_ITEM.status
+MDSplus.mdsExceptions.TreeILLPAGCNT.status
+MDSplus.mdsExceptions.TreeINVDFFCLASS.status
+MDSplus.mdsExceptions.TreeINVDTPUSG.status
+MDSplus.mdsExceptions.TreeINVDTYPE.status
+MDSplus.mdsExceptions.TreeINVPATH.status
+MDSplus.mdsExceptions.TreeINVRECTYP.status
+MDSplus.mdsExceptions.TreeINVSHAPE.status
+MDSplus.mdsExceptions.TreeINVSHOT.status
+MDSplus.mdsExceptions.TreeINVTAG.status
+MDSplus.mdsExceptions.TreeINVTREE.status
+MDSplus.mdsExceptions.TreeLOCK_FAILURE.status
+MDSplus.mdsExceptions.TreeMAXOPENEDIT.status
+MDSplus.mdsExceptions.TreeMEMERR.status
+MDSplus.mdsExceptions.TreeMOVEERROR.status
+MDSplus.mdsExceptions.TreeNCIREAD.status
+MDSplus.mdsExceptions.TreeNCIWRITE.status
+MDSplus.mdsExceptions.TreeNEW.status
+MDSplus.mdsExceptions.TreeNMN.status
+MDSplus.mdsExceptions.TreeNMT.status
+MDSplus.mdsExceptions.TreeNNF.status
+MDSplus.mdsExceptions.TreeNOCURRENT.status
+MDSplus.mdsExceptions.TreeNODATA.status
+MDSplus.mdsExceptions.TreeNODNAMLEN.status
+MDSplus.mdsExceptions.TreeNOEDIT.status
+MDSplus.mdsExceptions.TreeNOLOG.status
+MDSplus.mdsExceptions.TreeNOMETHOD.status
+MDSplus.mdsExceptions.TreeNOOVERWRITE.status
+MDSplus.mdsExceptions.TreeNOPATH.status
+MDSplus.mdsExceptions.TreeNORMAL.status
+MDSplus.mdsExceptions.TreeNOSEGMENTS.status
+MDSplus.mdsExceptions.TreeNOTALLSUBS.status
+MDSplus.mdsExceptions.TreeNOTCHILDLESS.status
+MDSplus.mdsExceptions.TreeNOTMEMBERLESS.status
+MDSplus.mdsExceptions.TreeNOTOPEN.status
+MDSplus.mdsExceptions.TreeNOTSON.status
+MDSplus.mdsExceptions.TreeNOT_CONGLOM.status
+MDSplus.mdsExceptions.TreeNOT_IN_LIST.status
+MDSplus.mdsExceptions.TreeNOT_OPEN.status
+MDSplus.mdsExceptions.TreeNOVERSION.status
+MDSplus.mdsExceptions.TreeNOWRITEMODEL.status
+MDSplus.mdsExceptions.TreeNOWRITESHOT.status
+MDSplus.mdsExceptions.TreeNO_CONTEXT.status
+MDSplus.mdsExceptions.TreeOFF.status
+MDSplus.mdsExceptions.TreeON.status
+MDSplus.mdsExceptions.TreeOPEN.status
+MDSplus.mdsExceptions.TreeOPENEDITERR.status
+MDSplus.mdsExceptions.TreeOPEN_EDIT.status
+MDSplus.mdsExceptions.TreePARENT_OFF.status
+MDSplus.mdsExceptions.TreePARSEERR.status
+MDSplus.mdsExceptions.TreeREADERR.status
+MDSplus.mdsExceptions.TreeREADONLY.status
+MDSplus.mdsExceptions.TreeREADONLY_TREE.status
+MDSplus.mdsExceptions.TreeRENFAIL.status
+MDSplus.mdsExceptions.TreeRESOLVED.status
+MDSplus.mdsExceptions.TreeSUCCESS.status
+MDSplus.mdsExceptions.TreeTAGNAMLEN.status
+MDSplus.mdsExceptions.TreeTNF.status
+MDSplus.mdsExceptions.TreeTREEFILEREADERR.status
+MDSplus.mdsExceptions.TreeTREENF.status
+MDSplus.mdsExceptions.TreeUNRESOLVED.status
+MDSplus.mdsExceptions.TreeUNSPRTCLASS.status
+MDSplus.mdsExceptions.TreeUNSUPARRDTYPE.status
+MDSplus.mdsExceptions.TreeWRITEFIRST.status
+MDSplus.mdsExceptions.TreeWRITETREEERR.status
+MDSplus.mdsExceptions.U_of_mBAD_EXPOSURE.status
+MDSplus.mdsExceptions.U_of_mBAD_FILTER.status
+MDSplus.mdsExceptions.U_of_mBAD_GRATING.status
+MDSplus.mdsExceptions.U_of_mBAD_NUM_SPECTRA.status
+MDSplus.mdsExceptions.U_of_mBAD_SLIT_WIDTH.status
+MDSplus.mdsExceptions.U_of_mBAD_WAVE_LENGTH.status
+MDSplus.mdsExceptions.U_of_mDATA_FILE_ERROR.status
+MDSplus.mdsExceptions.U_of_mGO_FILE_ERROR.status
+MDSplus.tree.TreeNode.status" class="py-name" href="#" onclick="return doclink('link-9', 'status', 'link-9');">status</a></tt> <tt class="py-op">=</tt> <tt id="link-10" class="py-name"><a title="MDSplus.mdsdcl._mdsdcl_do_command_dsc" class="py-name" href="#" onclick="return doclink('link-10', '_mdsdcl_do_command_dsc', 'link-3');">_mdsdcl_do_command_dsc</a></tt><tt class="py-op">(</tt><tt class="py-name">_ver</tt><tt class="py-op">.</tt><tt class="py-name">tobytes</tt><tt class="py-op">(</tt><tt class="py-name">command</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">error_p</tt><tt class="py-op">,</tt> <tt class="py-name">out_p</tt><tt class="py-op">)</tt> </tt>
+<a name="L71"></a><tt class="py-lineno">71</tt>  <tt class="py-line">    <tt class="py-keyword">finally</tt><tt class="py-op">:</tt> </tt>
+<a name="L72"></a><tt class="py-lineno">72</tt>  <tt class="py-line">        <tt class="py-name">_tre</tt><tt class="py-op">.</tt><tt class="py-name">_TreeCtx</tt><tt class="py-op">.</tt><tt class="py-name">popTree</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">raise_exception</tt><tt class="py-op">:</tt> <tt class="py-name">_exc</tt><tt class="py-op">.</tt><tt id="link-11" class="py-name"><a title="MDSplus.connection.PutMany.checkStatus
+MDSplus.mdsExceptions.checkStatus" class="py-name" href="#" onclick="return doclink('link-11', 'checkStatus', 'link-6');">checkStatus</a></tt><tt class="py-op">(</tt><tt id="link-12" class="py-name"><a title="MDSplus.mdsExceptions.A14BAD_CLK_DIVIDE.status
+MDSplus.mdsExceptions.A14BAD_CLK_POLARITY.status
+MDSplus.mdsExceptions.A14BAD_GATED.status
+MDSplus.mdsExceptions.A14BAD_MODE.status
+MDSplus.mdsExceptions.A14BAD_STP_POLARITY.status
+MDSplus.mdsExceptions.A14BAD_STR_POLARITY.status
+MDSplus.mdsExceptions.A14NORMAL.status
+MDSplus.mdsExceptions.B2408NORMAL.status
+MDSplus.mdsExceptions.B2408OVERFLOW.status
+MDSplus.mdsExceptions.B2408TRIG_LIM.status
+MDSplus.mdsExceptions.B5910aBAD_CHAN.status
+MDSplus.mdsExceptions.B5910aBAD_CLOCK.status
+MDSplus.mdsExceptions.B5910aBAD_ITERATIONS.status
+MDSplus.mdsExceptions.B5910aBAD_NOC.status
+MDSplus.mdsExceptions.B5910aBAD_SAMPS.status
+MDSplus.mdsExceptions.CamDONE_NOQ.status
+MDSplus.mdsExceptions.CamDONE_NOX.status
+MDSplus.mdsExceptions.CamDONE_Q.status
+MDSplus.mdsExceptions.CamOFFLINE.status
+MDSplus.mdsExceptions.CamSCCFAIL.status
+MDSplus.mdsExceptions.CamSERTRAERR.status
+MDSplus.mdsExceptions.DevACQ2SH_FAILED.status
+MDSplus.mdsExceptions.DevACQCMD_FAILED.status
+MDSplus.mdsExceptions.DevBAD_ACTIVE_CHAN.status
+MDSplus.mdsExceptions.DevBAD_CLOCK_FREQ.status
+MDSplus.mdsExceptions.DevBAD_CLOCK_SRC.status
+MDSplus.mdsExceptions.DevBAD_COMMANDS.status
+MDSplus.mdsExceptions.DevBAD_ENDIDX.status
+MDSplus.mdsExceptions.DevBAD_FILTER.status
+MDSplus.mdsExceptions.DevBAD_FREQ.status
+MDSplus.mdsExceptions.DevBAD_GAIN.status
+MDSplus.mdsExceptions.DevBAD_HEADER.status
+MDSplus.mdsExceptions.DevBAD_HEADER_IDX.status
+MDSplus.mdsExceptions.DevBAD_MEMORIES.status
+MDSplus.mdsExceptions.DevBAD_MODE.status
+MDSplus.mdsExceptions.DevBAD_NAME.status
+MDSplus.mdsExceptions.DevBAD_OFFSET.status
+MDSplus.mdsExceptions.DevBAD_PARAMETER.status
+MDSplus.mdsExceptions.DevBAD_POST_TRIG.status
+MDSplus.mdsExceptions.DevBAD_PRE_TRIG.status
+MDSplus.mdsExceptions.DevBAD_STARTIDX.status
+MDSplus.mdsExceptions.DevBAD_TRIG_SRC.status
+MDSplus.mdsExceptions.DevBAD_VERBS.status
+MDSplus.mdsExceptions.DevCAMACERR.status
+MDSplus.mdsExceptions.DevCAMERA_NOT_FOUND.status
+MDSplus.mdsExceptions.DevCAM_ADNR.status
+MDSplus.mdsExceptions.DevCAM_DERR.status
+MDSplus.mdsExceptions.DevCAM_ERR.status
+MDSplus.mdsExceptions.DevCAM_LOSYNC.status
+MDSplus.mdsExceptions.DevCAM_LPE.status
+MDSplus.mdsExceptions.DevCAM_NOSQ.status
+MDSplus.mdsExceptions.DevCAM_NOSX.status
+MDSplus.mdsExceptions.DevCAM_SQ.status
+MDSplus.mdsExceptions.DevCAM_STE.status
+MDSplus.mdsExceptions.DevCAM_SX.status
+MDSplus.mdsExceptions.DevCAM_TMO.status
+MDSplus.mdsExceptions.DevCAM_TPE.status
+MDSplus.mdsExceptions.DevCANNOT_GET_BOARD_STATE.status
+MDSplus.mdsExceptions.DevCANNOT_LOAD_SETTINGS.status
+MDSplus.mdsExceptions.DevCOMM_ERROR.status
+MDSplus.mdsExceptions.DevERROR_DOING_INIT.status
+MDSplus.mdsExceptions.DevERROR_READING_CHANNEL.status
+MDSplus.mdsExceptions.DevFREQ_TO_HIGH.status
+MDSplus.mdsExceptions.DevINVALID_NOC.status
+MDSplus.mdsExceptions.DevINV_SETUP.status
+MDSplus.mdsExceptions.DevIO_STUCK.status
+MDSplus.mdsExceptions.DevNOT_A_PYDEVICE.status
+MDSplus.mdsExceptions.DevNOT_TRIGGERED.status
+MDSplus.mdsExceptions.DevNO_NAME_SPECIFIED.status
+MDSplus.mdsExceptions.DevOFFLINE.status
+MDSplus.mdsExceptions.DevPYDEVICE_NOT_FOUND.status
+MDSplus.mdsExceptions.DevPY_INTERFACE_LIBRARY_NOT_FOUND.status
+MDSplus.mdsExceptions.DevRANGE_MISMATCH.status
+MDSplus.mdsExceptions.DevTRIGGERED_NOT_STORED.status
+MDSplus.mdsExceptions.DevTRIGGER_FAILED.status
+MDSplus.mdsExceptions.DevUNKOWN_STATE.status
+MDSplus.mdsExceptions.DevWRONG_PATH.status
+MDSplus.mdsExceptions.DevWRONG_SHOT.status
+MDSplus.mdsExceptions.DevWRONG_TREE.status
+MDSplus.mdsExceptions.Dsp2904CHANNEL_READ_ERROR.status
+MDSplus.mdsExceptions.Dt196bNO_SAMPLES.status
+MDSplus.mdsExceptions.FeraCONFUSED.status
+MDSplus.mdsExceptions.FeraDIGNOTSTRARRAY.status
+MDSplus.mdsExceptions.FeraMEMNOTSTRARRAY.status
+MDSplus.mdsExceptions.FeraNODIG.status
+MDSplus.mdsExceptions.FeraNOMEM.status
+MDSplus.mdsExceptions.FeraNORMAL.status
+MDSplus.mdsExceptions.FeraOVERFLOW.status
+MDSplus.mdsExceptions.FeraOVER_RUN.status
+MDSplus.mdsExceptions.FeraPHASE_LOST.status
+MDSplus.mdsExceptions.H908BAD_ACTIVE_CHANS.status
+MDSplus.mdsExceptions.H908BAD_CLOCK.status
+MDSplus.mdsExceptions.H908BAD_PTS.status
+MDSplus.mdsExceptions.H912BAD_BLOCKS.status
+MDSplus.mdsExceptions.H912BAD_CLOCK.status
+MDSplus.mdsExceptions.H912BAD_PTS.status
+MDSplus.mdsExceptions.Hm650DLYCHNG.status
+MDSplus.mdsExceptions.Hm650NORMAL.status
+MDSplus.mdsExceptions.Hv1440BAD_FRAME.status
+MDSplus.mdsExceptions.Hv1440BAD_RANGE.status
+MDSplus.mdsExceptions.Hv1440NORMAL.status
+MDSplus.mdsExceptions.Hv1440OUTRNG.status
+MDSplus.mdsExceptions.Hv1440STUCK.status
+MDSplus.mdsExceptions.Hv1440WRONG_POD_TYPE.status
+MDSplus.mdsExceptions.Hv4032NORMAL.status
+MDSplus.mdsExceptions.Hv4032WRONG_POD_TYPE.status
+MDSplus.mdsExceptions.IdlERROR.status
+MDSplus.mdsExceptions.IdlNORMAL.status
+MDSplus.mdsExceptions.IncaaBAD_ACTIVE_CHANS.status
+MDSplus.mdsExceptions.IncaaBAD_EXT_1MHZ.status
+MDSplus.mdsExceptions.IncaaBAD_MASTER.status
+MDSplus.mdsExceptions.IncaaBAD_PTSC.status
+MDSplus.mdsExceptions.J221INVALID_DATA.status
+MDSplus.mdsExceptions.J221NORMAL.status
+MDSplus.mdsExceptions.J221NO_DATA.status
+MDSplus.mdsExceptions.J412BADCYCLES.status
+MDSplus.mdsExceptions.J412NOT_SORTED.status
+MDSplus.mdsExceptions.J412NO_DATA.status
+MDSplus.mdsExceptions.J_dacOUTRNG.status
+MDSplus.mdsExceptions.J_tr612BAD_ACTMEM.status
+MDSplus.mdsExceptions.J_tr612BAD_FREQUENCY.status
+MDSplus.mdsExceptions.J_tr612BAD_MODE.status
+MDSplus.mdsExceptions.J_tr612BAD_PRETRIG.status
+MDSplus.mdsExceptions.JoergerBAD_ACT_MEMORY.status
+MDSplus.mdsExceptions.JoergerBAD_GAIN.status
+MDSplus.mdsExceptions.JoergerBAD_PRE_TRIGGER.status
+MDSplus.mdsExceptions.L6810BAD_ACTIVECHAN.status
+MDSplus.mdsExceptions.L6810BAD_ACTIVEMEM.status
+MDSplus.mdsExceptions.L6810BAD_COUPLING.status
+MDSplus.mdsExceptions.L6810BAD_FREQUENCY.status
+MDSplus.mdsExceptions.L6810BAD_FULL_SCALE.status
+MDSplus.mdsExceptions.L6810BAD_MEMORIES.status
+MDSplus.mdsExceptions.L6810BAD_OFFSET.status
+MDSplus.mdsExceptions.L6810BAD_SEGMENTS.status
+MDSplus.mdsExceptions.L6810BAD_TRIG_DELAY.status
+MDSplus.mdsExceptions.L6810NORMAL.status
+MDSplus.mdsExceptions.L8206NODATA.status
+MDSplus.mdsExceptions.L8212BAD_HEADER.status
+MDSplus.mdsExceptions.L8212BAD_MEMORIES.status
+MDSplus.mdsExceptions.L8212BAD_NOC.status
+MDSplus.mdsExceptions.L8212BAD_OFFSET.status
+MDSplus.mdsExceptions.L8212BAD_PTS.status
+MDSplus.mdsExceptions.L8212FREQ_TO_HIGH.status
+MDSplus.mdsExceptions.L8212INVALID_NOC.status
+MDSplus.mdsExceptions.L8818BAD_ACTIVEMEM.status
+MDSplus.mdsExceptions.L8818BAD_CLOCK.status
+MDSplus.mdsExceptions.L8818BAD_OFFSET.status
+MDSplus.mdsExceptions.L8818BAD_PRETRIG.status
+MDSplus.mdsExceptions.L8828BAD_ACTIVEMEM.status
+MDSplus.mdsExceptions.L8828BAD_CLOCK.status
+MDSplus.mdsExceptions.L8828BAD_OFFSET.status
+MDSplus.mdsExceptions.L8828BAD_PRETRIG.status
+MDSplus.mdsExceptions.LibINSVIRMEM.status
+MDSplus.mdsExceptions.LibINVARG.status
+MDSplus.mdsExceptions.LibINVSTRDES.status
+MDSplus.mdsExceptions.LibKEYNOTFOU.status
+MDSplus.mdsExceptions.LibNOTFOU.status
+MDSplus.mdsExceptions.LibQUEWASEMP.status
+MDSplus.mdsExceptions.LibSTRTRU.status
+MDSplus.mdsExceptions.MDSplusERROR.status
+MDSplus.mdsExceptions.MDSplusFATAL.status
+MDSplus.mdsExceptions.MDSplusSUCCESS.status
+MDSplus.mdsExceptions.MDSplusWARNING.status
+MDSplus.mdsExceptions.MdsdclABSENT.status
+MDSplus.mdsExceptions.MdsdclERROR.status
+MDSplus.mdsExceptions.MdsdclEXIT.status
+MDSplus.mdsExceptions.MdsdclIVQUAL.status
+MDSplus.mdsExceptions.MdsdclIVVERB.status
+MDSplus.mdsExceptions.MdsdclMISSING_VALUE.status
+MDSplus.mdsExceptions.MdsdclNEGATED.status
+MDSplus.mdsExceptions.MdsdclNORMAL.status
+MDSplus.mdsExceptions.MdsdclNOTNEGATABLE.status
+MDSplus.mdsExceptions.MdsdclPRESENT.status
+MDSplus.mdsExceptions.MdsdclPROMPT_MORE.status
+MDSplus.mdsExceptions.MdsdclSUCCESS.status
+MDSplus.mdsExceptions.MdsdclTOO_MANY_PRMS.status
+MDSplus.mdsExceptions.MdsdclTOO_MANY_VALS.status
+MDSplus.mdsExceptions.MpbBADFREQ.status
+MDSplus.mdsExceptions.MpbBADTIME.status
+MDSplus.mdsExceptions.PyUNHANDLED_EXCEPTION.status
+MDSplus.mdsExceptions.ReticonBAD_FRAMES.status
+MDSplus.mdsExceptions.ReticonBAD_FRAME_SELECT.status
+MDSplus.mdsExceptions.ReticonBAD_NUM_STATES.status
+MDSplus.mdsExceptions.ReticonBAD_PERIOD.status
+MDSplus.mdsExceptions.ReticonBAD_PIXEL_SELECT.status
+MDSplus.mdsExceptions.ReticonDATA_CORRUPTED.status
+MDSplus.mdsExceptions.ReticonNORMAL.status
+MDSplus.mdsExceptions.ReticonTOO_MANY_FRAMES.status
+MDSplus.mdsExceptions.ServerABORT.status
+MDSplus.mdsExceptions.ServerCANT_HAPPEN.status
+MDSplus.mdsExceptions.ServerINVALID_ACTION_OPERATION.status
+MDSplus.mdsExceptions.ServerINVALID_DEPENDENCY.status
+MDSplus.mdsExceptions.ServerINVSHOT.status
+MDSplus.mdsExceptions.ServerNOT_DISPATCHED.status
+MDSplus.mdsExceptions.ServerPATH_DOWN.status
+MDSplus.mdsExceptions.ServerSOCKET_ADDR_ERROR.status
+MDSplus.mdsExceptions.SsINTERNAL.status
+MDSplus.mdsExceptions.SsINTOVF.status
+MDSplus.mdsExceptions.SsSUCCESS.status
+MDSplus.mdsExceptions.StrINVDELIM.status
+MDSplus.mdsExceptions.StrMATCH.status
+MDSplus.mdsExceptions.StrNOELEM.status
+MDSplus.mdsExceptions.StrNOMATCH.status
+MDSplus.mdsExceptions.StrSTRTOOLON.status
+MDSplus.mdsExceptions.TclFAILED_ESSENTIAL.status
+MDSplus.mdsExceptions.TclNORMAL.status
+MDSplus.mdsExceptions.TclNO_DISPATCH_TABLE.status
+MDSplus.mdsExceptions.TdiABORT.status
+MDSplus.mdsExceptions.TdiBAD_INDEX.status
+MDSplus.mdsExceptions.TdiBOMB.status
+MDSplus.mdsExceptions.TdiBREAK.status
+MDSplus.mdsExceptions.TdiCASE.status
+MDSplus.mdsExceptions.TdiCONTINUE.status
+MDSplus.mdsExceptions.TdiEXTRANEOUS.status
+MDSplus.mdsExceptions.TdiEXTRA_ARG.status
+MDSplus.mdsExceptions.TdiGOTO.status
+MDSplus.mdsExceptions.TdiINVCLADSC.status
+MDSplus.mdsExceptions.TdiINVCLADTY.status
+MDSplus.mdsExceptions.TdiINVDTYDSC.status
+MDSplus.mdsExceptions.TdiINV_OPC.status
+MDSplus.mdsExceptions.TdiINV_SIZE.status
+MDSplus.mdsExceptions.TdiMISMATCH.status
+MDSplus.mdsExceptions.TdiMISS_ARG.status
+MDSplus.mdsExceptions.TdiNDIM_OVER.status
+MDSplus.mdsExceptions.TdiNOT_NUMBER.status
+MDSplus.mdsExceptions.TdiNO_CMPLX.status
+MDSplus.mdsExceptions.TdiNO_OPC.status
+MDSplus.mdsExceptions.TdiNO_OUTPTR.status
+MDSplus.mdsExceptions.TdiNO_SELF_PTR.status
+MDSplus.mdsExceptions.TdiNULL_PTR.status
+MDSplus.mdsExceptions.TdiRECURSIVE.status
+MDSplus.mdsExceptions.TdiRETURN.status
+MDSplus.mdsExceptions.TdiSIG_DIM.status
+MDSplus.mdsExceptions.TdiSTRTOOLON.status
+MDSplus.mdsExceptions.TdiSYNTAX.status
+MDSplus.mdsExceptions.TdiTIMEOUT.status
+MDSplus.mdsExceptions.TdiTOO_BIG.status
+MDSplus.mdsExceptions.TdiUNBALANCE.status
+MDSplus.mdsExceptions.TdiUNKNOWN_VAR.status
+MDSplus.mdsExceptions.TimingINVCLKFRQ.status
+MDSplus.mdsExceptions.TimingINVDELDUR.status
+MDSplus.mdsExceptions.TimingINVOUTCTR.status
+MDSplus.mdsExceptions.TimingINVPSEUDODEV.status
+MDSplus.mdsExceptions.TimingINVTRGMOD.status
+MDSplus.mdsExceptions.TimingNOPSEUDODEV.status
+MDSplus.mdsExceptions.TimingTOO_MANY_EVENTS.status
+MDSplus.mdsExceptions.Tr16BAD_ACTIVECHAN.status
+MDSplus.mdsExceptions.Tr16BAD_ACTIVEMEM.status
+MDSplus.mdsExceptions.Tr16BAD_FREQUENCY.status
+MDSplus.mdsExceptions.Tr16BAD_GAIN.status
+MDSplus.mdsExceptions.Tr16BAD_MASTER.status
+MDSplus.mdsExceptions.Tr16BAD_MEMSIZE.status
+MDSplus.mdsExceptions.Tr16BAD_PTS.status
+MDSplus.mdsExceptions.Tr16NORMAL.status
+MDSplus.mdsExceptions.TreeALREADY_OFF.status
+MDSplus.mdsExceptions.TreeALREADY_ON.status
+MDSplus.mdsExceptions.TreeALREADY_OPEN.status
+MDSplus.mdsExceptions.TreeALREADY_THERE.status
+MDSplus.mdsExceptions.TreeBADRECORD.status
+MDSplus.mdsExceptions.TreeBOTH_OFF.status
+MDSplus.mdsExceptions.TreeBUFFEROVF.status
+MDSplus.mdsExceptions.TreeCANCEL.status
+MDSplus.mdsExceptions.TreeCLOSEERR.status
+MDSplus.mdsExceptions.TreeCONGLOMFULL.status
+MDSplus.mdsExceptions.TreeCONGLOM_NOT_FULL.status
+MDSplus.mdsExceptions.TreeCONNECTFAIL.status
+MDSplus.mdsExceptions.TreeCONTINUING.status
+MDSplus.mdsExceptions.TreeDELFAIL.status
+MDSplus.mdsExceptions.TreeDFREAD.status
+MDSplus.mdsExceptions.TreeDUPTAG.status
+MDSplus.mdsExceptions.TreeEDITTING.status
+MDSplus.mdsExceptions.TreeEMPTY.status
+MDSplus.mdsExceptions.TreeFAILURE.status
+MDSplus.mdsExceptions.TreeFCREATE.status
+MDSplus.mdsExceptions.TreeFILE_NOT_FOUND.status
+MDSplus.mdsExceptions.TreeFOPENR.status
+MDSplus.mdsExceptions.TreeFOPENW.status
+MDSplus.mdsExceptions.TreeILLEGAL_ITEM.status
+MDSplus.mdsExceptions.TreeILLPAGCNT.status
+MDSplus.mdsExceptions.TreeINVDFFCLASS.status
+MDSplus.mdsExceptions.TreeINVDTPUSG.status
+MDSplus.mdsExceptions.TreeINVDTYPE.status
+MDSplus.mdsExceptions.TreeINVPATH.status
+MDSplus.mdsExceptions.TreeINVRECTYP.status
+MDSplus.mdsExceptions.TreeINVSHAPE.status
+MDSplus.mdsExceptions.TreeINVSHOT.status
+MDSplus.mdsExceptions.TreeINVTAG.status
+MDSplus.mdsExceptions.TreeINVTREE.status
+MDSplus.mdsExceptions.TreeLOCK_FAILURE.status
+MDSplus.mdsExceptions.TreeMAXOPENEDIT.status
+MDSplus.mdsExceptions.TreeMEMERR.status
+MDSplus.mdsExceptions.TreeMOVEERROR.status
+MDSplus.mdsExceptions.TreeNCIREAD.status
+MDSplus.mdsExceptions.TreeNCIWRITE.status
+MDSplus.mdsExceptions.TreeNEW.status
+MDSplus.mdsExceptions.TreeNMN.status
+MDSplus.mdsExceptions.TreeNMT.status
+MDSplus.mdsExceptions.TreeNNF.status
+MDSplus.mdsExceptions.TreeNOCURRENT.status
+MDSplus.mdsExceptions.TreeNODATA.status
+MDSplus.mdsExceptions.TreeNODNAMLEN.status
+MDSplus.mdsExceptions.TreeNOEDIT.status
+MDSplus.mdsExceptions.TreeNOLOG.status
+MDSplus.mdsExceptions.TreeNOMETHOD.status
+MDSplus.mdsExceptions.TreeNOOVERWRITE.status
+MDSplus.mdsExceptions.TreeNOPATH.status
+MDSplus.mdsExceptions.TreeNORMAL.status
+MDSplus.mdsExceptions.TreeNOSEGMENTS.status
+MDSplus.mdsExceptions.TreeNOTALLSUBS.status
+MDSplus.mdsExceptions.TreeNOTCHILDLESS.status
+MDSplus.mdsExceptions.TreeNOTMEMBERLESS.status
+MDSplus.mdsExceptions.TreeNOTOPEN.status
+MDSplus.mdsExceptions.TreeNOTSON.status
+MDSplus.mdsExceptions.TreeNOT_CONGLOM.status
+MDSplus.mdsExceptions.TreeNOT_IN_LIST.status
+MDSplus.mdsExceptions.TreeNOT_OPEN.status
+MDSplus.mdsExceptions.TreeNOVERSION.status
+MDSplus.mdsExceptions.TreeNOWRITEMODEL.status
+MDSplus.mdsExceptions.TreeNOWRITESHOT.status
+MDSplus.mdsExceptions.TreeNO_CONTEXT.status
+MDSplus.mdsExceptions.TreeOFF.status
+MDSplus.mdsExceptions.TreeON.status
+MDSplus.mdsExceptions.TreeOPEN.status
+MDSplus.mdsExceptions.TreeOPENEDITERR.status
+MDSplus.mdsExceptions.TreeOPEN_EDIT.status
+MDSplus.mdsExceptions.TreePARENT_OFF.status
+MDSplus.mdsExceptions.TreePARSEERR.status
+MDSplus.mdsExceptions.TreeREADERR.status
+MDSplus.mdsExceptions.TreeREADONLY.status
+MDSplus.mdsExceptions.TreeREADONLY_TREE.status
+MDSplus.mdsExceptions.TreeRENFAIL.status
+MDSplus.mdsExceptions.TreeRESOLVED.status
+MDSplus.mdsExceptions.TreeSUCCESS.status
+MDSplus.mdsExceptions.TreeTAGNAMLEN.status
+MDSplus.mdsExceptions.TreeTNF.status
+MDSplus.mdsExceptions.TreeTREEFILEREADERR.status
+MDSplus.mdsExceptions.TreeTREENF.status
+MDSplus.mdsExceptions.TreeUNRESOLVED.status
+MDSplus.mdsExceptions.TreeUNSPRTCLASS.status
+MDSplus.mdsExceptions.TreeUNSUPARRDTYPE.status
+MDSplus.mdsExceptions.TreeWRITEFIRST.status
+MDSplus.mdsExceptions.TreeWRITETREEERR.status
+MDSplus.mdsExceptions.U_of_mBAD_EXPOSURE.status
+MDSplus.mdsExceptions.U_of_mBAD_FILTER.status
+MDSplus.mdsExceptions.U_of_mBAD_GRATING.status
+MDSplus.mdsExceptions.U_of_mBAD_NUM_SPECTRA.status
+MDSplus.mdsExceptions.U_of_mBAD_SLIT_WIDTH.status
+MDSplus.mdsExceptions.U_of_mBAD_WAVE_LENGTH.status
+MDSplus.mdsExceptions.U_of_mDATA_FILE_ERROR.status
+MDSplus.mdsExceptions.U_of_mGO_FILE_ERROR.status
+MDSplus.tree.TreeNode.status" class="py-name" href="#" onclick="return doclink('link-12', 'status', 'link-9');">status</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L74"></a><tt class="py-lineno">74</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">return_out</tt> <tt class="py-keyword">and</tt> <tt class="py-name">return_error</tt><tt class="py-op">:</tt> </tt>
+<a name="L75"></a><tt class="py-lineno">75</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-op">(</tt><tt class="py-name">xd_output</tt><tt class="py-op">.</tt><tt id="link-13" class="py-name" targets="Variable MDSplus.apd.Apd.value=MDSplus.apd.Apd-class.html#value,Variable MDSplus.apd.Dictionary.value=MDSplus.apd.Dictionary-class.html#value,Variable MDSplus.compound.Opaque.value=MDSplus.compound.Opaque-class.html#value,Variable MDSplus.mdsarray.Array.value=MDSplus.mdsarray.Array-class.html#value,Variable MDSplus.mdsarray.StringArray.value=MDSplus.mdsarray.StringArray-class.html#value,Variable MDSplus.mdsscalar.Scalar.value=MDSplus.mdsscalar.Scalar-class.html#value"><a title="MDSplus.apd.Apd.value
+MDSplus.apd.Dictionary.value
+MDSplus.compound.Opaque.value
+MDSplus.mdsarray.Array.value
+MDSplus.mdsarray.StringArray.value
+MDSplus.mdsscalar.Scalar.value" class="py-name" href="#" onclick="return doclink('link-13', 'value', 'link-13');">value</a></tt><tt class="py-op">,</tt><tt class="py-name">xd_error</tt><tt class="py-op">.</tt><tt id="link-14" class="py-name"><a title="MDSplus.apd.Apd.value
+MDSplus.apd.Dictionary.value
+MDSplus.compound.Opaque.value
+MDSplus.mdsarray.Array.value
+MDSplus.mdsarray.StringArray.value
+MDSplus.mdsscalar.Scalar.value" class="py-name" href="#" onclick="return doclink('link-14', 'value', 'link-13');">value</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno">76</tt>  <tt class="py-line">    <tt class="py-keyword">elif</tt> <tt class="py-name">return_out</tt><tt class="py-op">:</tt> </tt>
+<a name="L77"></a><tt class="py-lineno">77</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">xd_output</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name"><a title="MDSplus.apd.Apd.value
+MDSplus.apd.Dictionary.value
+MDSplus.compound.Opaque.value
+MDSplus.mdsarray.Array.value
+MDSplus.mdsarray.StringArray.value
+MDSplus.mdsscalar.Scalar.value" class="py-name" href="#" onclick="return doclink('link-15', 'value', 'link-13');">value</a></tt> </tt>
+<a name="L78"></a><tt class="py-lineno">78</tt>  <tt class="py-line">    <tt class="py-keyword">elif</tt> <tt class="py-name">return_error</tt><tt class="py-op">:</tt> </tt>
+<a name="L79"></a><tt class="py-lineno">79</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">xd_error</tt><tt class="py-op">.</tt><tt id="link-16" class="py-name"><a title="MDSplus.apd.Apd.value
+MDSplus.apd.Dictionary.value
+MDSplus.compound.Opaque.value
+MDSplus.mdsarray.Array.value
+MDSplus.mdsarray.StringArray.value
+MDSplus.mdsscalar.Scalar.value" class="py-name" href="#" onclick="return doclink('link-16', 'value', 'link-13');">value</a></tt> </tt>
+</div><a name="L80"></a><tt class="py-lineno">80</tt>  <tt class="py-line"> </tt>
+<a name="ccl"></a><div id="ccl-def"><a name="L81"></a><tt class="py-lineno">81</tt> <a class="py-toggle" href="#" id="ccl-toggle" onclick="return toggle('ccl');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="MDSplus.mdsdcl-module.html#ccl">ccl</a><tt class="py-op">(</tt><tt class="py-param">command</tt><tt class="py-op">,</tt><tt class="py-op">*</tt><tt class="py-param">args</tt><tt class="py-op">,</tt><tt class="py-op">**</tt><tt class="py-param">kwargs</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ccl-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="ccl-expanded"><a name="L82"></a><tt class="py-lineno">82</tt>  <tt class="py-line">    <tt class="py-docstring">"""Executes a ccl command (c.f. dcl)"""</tt> </tt>
+<a name="L83"></a><tt class="py-lineno">83</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-17" class="py-name" targets="Function MDSplus.mdsdcl.dcl()=MDSplus.mdsdcl-module.html#dcl"><a title="MDSplus.mdsdcl.dcl" class="py-name" href="#" onclick="return doclink('link-17', 'dcl', 'link-17');">dcl</a></tt><tt class="py-op">(</tt><tt class="py-name">command</tt><tt class="py-op">,</tt><tt class="py-op">*</tt><tt class="py-name">args</tt><tt class="py-op">,</tt><tt class="py-name">setcommand</tt><tt class="py-op">=</tt><tt class="py-string">'ccl'</tt><tt class="py-op">,</tt><tt class="py-op">**</tt><tt class="py-name">kwargs</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L84"></a><tt class="py-lineno">84</tt>  <tt class="py-line"> </tt>
+<a name="tcl"></a><div id="tcl-def"><a name="L85"></a><tt class="py-lineno">85</tt> <a class="py-toggle" href="#" id="tcl-toggle" onclick="return toggle('tcl');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="MDSplus.mdsdcl-module.html#tcl">tcl</a><tt class="py-op">(</tt><tt class="py-param">command</tt><tt class="py-op">,</tt><tt class="py-op">*</tt><tt class="py-param">args</tt><tt class="py-op">,</tt><tt class="py-op">**</tt><tt class="py-param">kwargs</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="tcl-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="tcl-expanded"><a name="L86"></a><tt class="py-lineno">86</tt>  <tt class="py-line">    <tt class="py-docstring">"""Executes a tcl command (c.f. dcl)"""</tt> </tt>
+<a name="L87"></a><tt class="py-lineno">87</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-18" class="py-name"><a title="MDSplus.mdsdcl.dcl" class="py-name" href="#" onclick="return doclink('link-18', 'dcl', 'link-17');">dcl</a></tt><tt class="py-op">(</tt><tt class="py-name">command</tt><tt class="py-op">,</tt><tt class="py-op">*</tt><tt class="py-name">args</tt><tt class="py-op">,</tt><tt class="py-name">setcommand</tt><tt class="py-op">=</tt><tt class="py-string">'tcl'</tt><tt class="py-op">,</tt><tt class="py-op">**</tt><tt class="py-name">kwargs</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L88"></a><tt class="py-lineno">88</tt>  <tt class="py-line"> </tt>
+<a name="cts"></a><div id="cts-def"><a name="L89"></a><tt class="py-lineno">89</tt> <a class="py-toggle" href="#" id="cts-toggle" onclick="return toggle('cts');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="MDSplus.mdsdcl-module.html#cts">cts</a><tt class="py-op">(</tt><tt class="py-param">command</tt><tt class="py-op">,</tt><tt class="py-op">*</tt><tt class="py-param">args</tt><tt class="py-op">,</tt><tt class="py-op">**</tt><tt class="py-param">kwargs</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="cts-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="cts-expanded"><a name="L90"></a><tt class="py-lineno">90</tt>  <tt class="py-line">    <tt class="py-docstring">"""Executes a cts command (c.f. dcl)"""</tt> </tt>
+<a name="L91"></a><tt class="py-lineno">91</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-19" class="py-name"><a title="MDSplus.mdsdcl.dcl" class="py-name" href="#" onclick="return doclink('link-19', 'dcl', 'link-17');">dcl</a></tt><tt class="py-op">(</tt><tt class="py-name">command</tt><tt class="py-op">,</tt><tt class="py-op">*</tt><tt class="py-name">args</tt><tt class="py-op">,</tt><tt class="py-name">setcommand</tt><tt class="py-op">=</tt><tt class="py-string">'cts'</tt><tt class="py-op">,</tt><tt class="py-op">**</tt><tt class="py-name">kwargs</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L92"></a><tt class="py-lineno">92</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >MDSplus</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

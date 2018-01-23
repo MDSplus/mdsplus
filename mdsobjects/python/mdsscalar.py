@@ -283,10 +283,10 @@ class Uint64(Scalar):
     def fromTime(cls,value):
         """converts from seconds since 01-JAN-1970 00:00:00.00
         For example:
-           import MDSplus
-           import time
-           mdstime=MDSplus.Uint64.fromTime(time.time()-time.altzone)
-           print(mdstime.date)
+        >>> import MDSplus
+        >>> import time
+        >>> mdstime=MDSplus.Uint64.fromTime(time.time()-time.altzone)
+        >>> print(mdstime.date)
         """
         return cls(int(value * cls._utc1) + cls._utc0)
 

@@ -1,127 +1,267 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="ascii"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <title>MDSplus.mdsarray</title>
-  <link rel="stylesheet" href="epydoc.css" type="text/css"></link>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
 </head>
+
 <body bgcolor="white" text="black" link="blue" vlink="#204080"
       alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
 
-<!-- =========== START OF NAVBAR =========== -->
-<table class="navbar" border="0" width="100%" cellpadding="0" bgcolor="#a0c0ff" cellspacing="0">
-  <tr valign="center">
-    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="trees.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
-    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="indices.html">Index</a>&nbsp;&nbsp;&nbsp;</th>
-    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
-    <th class="navbar" align="right" width="100%">
-      <table border="0" cellpadding="0" cellspacing="0">
-      <tr><th class="navbar" align="center">
-        <p class="nomargin">
-          MDSplus
-      </p></th></tr></table>
-    </th>
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >MDSplus</th>
+          </tr></table></th>
   </tr>
 </table>
 <table width="100%" cellpadding="0" cellspacing="0">
   <tr valign="top">
     <td width="100%">
-      <font size="-1"><b class="breadcrumbs">
+      <span class="breadcrumbs">
         Package&nbsp;MDSplus ::
         Module&nbsp;mdsarray
-      </b></font></br>
+      </span>
     </td>
-    <td><table cellpadding="0" cellspacing="0">
-      <tr><td align="right"><font size="-2">[<a href="frames.html"target="_top">frames</a>&nbsp;|&nbsp;<a href="MDSplus.mdsarray-module.html" target="_top">no&nbsp;frames</a>]</font></td></tr>
-    </table></td>
-</tr></table>
-
-<!-- =========== START OF MODULE DESCRIPTION =========== -->
-<h2 class="module">Module MDSplus.mdsarray</h2>
-
-
-<!-- =========== START OF CLASSES =========== -->
-<table class="summary" border="1" cellpadding="3" cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="summary">
-  <th colspan="2">Classes</th></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.mdsarray.Array-class.html"><code>Array</code></a></b></td>
-  <td>&nbsp;</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.mdsarray.Float32Array-class.html"><code>Float32Array</code></a></b></td>
-  <td>32-bit floating point number</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.mdsarray.Float64Array-class.html"><code>Float64Array</code></a></b></td>
-  <td>64-bit floating point number</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.mdsarray.Int128Array-class.html"><code>Int128Array</code></a></b></td>
-  <td>128-bit signed number</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.mdsarray.Int16Array-class.html"><code>Int16Array</code></a></b></td>
-  <td>16-bit signed number</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.mdsarray.Int32Array-class.html"><code>Int32Array</code></a></b></td>
-  <td>32-bit signed number</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.mdsarray.Int64Array-class.html"><code>Int64Array</code></a></b></td>
-  <td>64-bit signed number</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.mdsarray.Int8Array-class.html"><code>Int8Array</code></a></b></td>
-  <td>8-bit signed number</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.mdsarray.StringArray-class.html"><code>StringArray</code></a></b></td>
-  <td>String</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.mdsarray.Uint128Array-class.html"><code>Uint128Array</code></a></b></td>
-  <td>128-bit unsigned number</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.mdsarray.Uint16Array-class.html"><code>Uint16Array</code></a></b></td>
-  <td>16-bit unsigned number</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.mdsarray.Uint32Array-class.html"><code>Uint32Array</code></a></b></td>
-  <td>32-bit unsigned number</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.mdsarray.Uint64Array-class.html"><code>Uint64Array</code></a></b></td>
-  <td>64-bit unsigned number</td></tr>
-<tr><td width="15%">
-  <b><a href="MDSplus.mdsarray.Uint8Array-class.html"><code>Uint8Array</code></a></b></td>
-  <td>8-bit unsigned number</td></tr>
-</table><br />
-
-
-<!-- =========== START OF FUNCTION SUMMARY =========== -->
-<table class="summary" border="1" cellpadding="3" cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="summary">
-  <th colspan="2">Function Summary</th></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><a name="makeArray"></a><span class="summary-sig"><span class="summary-sig-name">makeArray</span>(<span class=summary-sig-arg>value</span>)</span></code>
-</td></tr>
-</table><br />
-
-
-<!-- =========== START OF NAVBAR =========== -->
-<table class="navbar" border="0" width="100%" cellpadding="0" bgcolor="#a0c0ff" cellspacing="0">
-  <tr valign="center">
-    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="trees.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
-    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="indices.html">Index</a>&nbsp;&nbsp;&nbsp;</th>
-    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
-    <th class="navbar" align="right" width="100%">
-      <table border="0" cellpadding="0" cellspacing="0">
-      <tr><th class="navbar" align="center">
-        <p class="nomargin">
-          MDSplus
-      </p></th></tr></table>
-    </th>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="MDSplus.mdsarray-module.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
   </tr>
 </table>
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module mdsarray</h1><p class="nomargin-top"><span class="codelink"><a href="MDSplus.mdsarray-pysrc.html">source&nbsp;code</a></span></p>
+<!-- ==================== CLASSES ==================== -->
+<a name="section-Classes"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Classes</span></td>
+</tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.Array-class.html" class="summary-name">Array</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.Array-class.html" class="summary-name">makeArray</a>
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.Float32Array-class.html" class="summary-name">Float32Array</a><br />
+      32-bit floating point number
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.Float64Array-class.html" class="summary-name">Float64Array</a><br />
+      64-bit floating point number
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.Complex64Array-class.html" class="summary-name">Complex64Array</a><br />
+      32-bit complex number
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.Complex128Array-class.html" class="summary-name">Complex128Array</a><br />
+      64-bit complex number
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.Uint8Array-class.html" class="summary-name">Uint8Array</a><br />
+      8-bit unsigned number
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.Uint16Array-class.html" class="summary-name">Uint16Array</a><br />
+      16-bit unsigned number
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.Uint32Array-class.html" class="summary-name">Uint32Array</a><br />
+      32-bit unsigned number
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.Uint64Array-class.html" class="summary-name">Uint64Array</a><br />
+      64-bit unsigned number
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.Int8Array-class.html" class="summary-name">Int8Array</a><br />
+      8-bit signed number
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.Int16Array-class.html" class="summary-name">Int16Array</a><br />
+      16-bit signed number
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.Int32Array-class.html" class="summary-name">Int32Array</a><br />
+      32-bit signed number
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.Int64Array-class.html" class="summary-name">Int64Array</a><br />
+      64-bit signed number
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.FloatFArray-class.html" class="summary-name">FloatFArray</a><br />
+      32-bit VMS floating point number
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.FloatDArray-class.html" class="summary-name">FloatDArray</a><br />
+      64-bit VMS floating point number
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.ComplexFArray-class.html" class="summary-name">ComplexFArray</a><br />
+      64-bit VMS complex number
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.ComplexDArray-class.html" class="summary-name">ComplexDArray</a><br />
+      128-bit VMS complex number
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.StringArray-class.html" class="summary-name">StringArray</a><br />
+      String
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.Uint128Array-class.html" class="summary-name">Uint128Array</a><br />
+      128-bit unsigned number
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.Int128Array-class.html" class="summary-name">Int128Array</a><br />
+      128-bit signed number
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.FloatGArray-class.html" class="summary-name">FloatGArray</a><br />
+      64-bit VMS floating point number
+    </td>
+  </tr>
+<tr>
+    <td class="summary" colspan="2">
+        <a href="MDSplus.mdsarray.ComplexGArray-class.html" class="summary-name">ComplexGArray</a><br />
+      128-bit VMS complex number
+    </td>
+  </tr>
+</table>
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Variables</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'MDSplus'"><code class="variable-quote">'</code><code class="variable-string">MDSplus</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
 
-<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >MDSplus</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
-    <td align="left"><font size="-2">Generated by Epydoc 2.1 on Wed Aug 18 13:35:32 2010</font></td>
-    <td align="right"><a href="http://epydoc.sourceforge.net"
-                      ><font size="-2">http://epydoc.sf.net</font></a></td>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
   </tr>
 </table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
 </body>
 </html>
