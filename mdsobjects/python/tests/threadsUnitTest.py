@@ -107,7 +107,7 @@ class Tests(TestCase):
 
     @staticmethod
     def getTests():
-        return ['data','dcl','mdsip','task','tree']#,'segments'
+        return ['data','dcl','task','tree']#,'mdsip','segments'
 
     @classmethod
     def getTestCases(cls,tests=None):
