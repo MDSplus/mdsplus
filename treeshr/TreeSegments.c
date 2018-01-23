@@ -378,13 +378,13 @@ inline static int begin_finish(vars_t* vars){
     SeekToRfa(vars->attr_offset, vars->local_nci.DATA_INFO.DATA_LOCATION.rfa);
     vars->local_nci.flags2 |= NciM_EXTENDED_NCI;
   }
+  if STATUS_NOT_OK return status;
   if (((int64_t) vars->local_nci.length + (int64_t) vars->add_length) < (int64_t)0xffffffffU)
     vars->local_nci.length += vars->add_length;
   else
     vars->local_nci.length = 0xffffffffU;
   vars->local_nci.flags=vars->local_nci.flags | NciM_SEGMENTED;
-  TreePutNci(vars->tinfo, vars->nidx, &vars->local_nci, 0);
-  return status;
+  return TreePutNci(vars->tinfo, vars->nidx, &vars->local_nci, 0);
 }
 
 #ifndef _WIN32
@@ -419,6 +419,7 @@ inline static void begin_extended_nci(vars_t* vars){
   IF_NO_EXTENDED_NCI {
     memset(&vars->attr, -1, sizeof(vars->attr));
     vars->attr_update = 1;
+    vars->attr_offset = -1;
   } else {
     vars->attr_offset = RfaToSeek(vars->local_nci.DATA_INFO.DATA_LOCATION.rfa);
     if (vars->attr.facility_offset[STANDARD_RECORD_FACILITY] != -1) {
