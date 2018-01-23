@@ -56,10 +56,11 @@ class Tests(TestCase):
 	def start_mdsip(port,logname,env=None):
             if port>0:
                 from subprocess import Popen,STDOUT
-                log = open('%s.log'%logname,'w')
+                logfile = '%s.log'%logname
+                log = open(logfile,'w')
                 try:
                     params = ['mdsip','-s','-p',str(port),'-h',hosts]
-                    print(' '.join(params+['&>',logname]))
+                    print(' '.join(params+['&>',logfile]))
                     mdsip = Popen(params,env=env,stdout=log,stderr=STDOUT)
                 except:
                     log.close()
