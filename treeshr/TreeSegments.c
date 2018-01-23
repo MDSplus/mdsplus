@@ -419,6 +419,7 @@ inline static void begin_extended_nci(vars_t* vars){
   IF_NO_EXTENDED_NCI {
     memset(&vars->attr, -1, sizeof(vars->attr));
     vars->attr_update = 1;
+    vars->attr_offset = -1;
   } else {
     vars->attr_offset = RfaToSeek(vars->local_nci.DATA_INFO.DATA_LOCATION.rfa);
     if (vars->attr.facility_offset[STANDARD_RECORD_FACILITY] != -1) {
