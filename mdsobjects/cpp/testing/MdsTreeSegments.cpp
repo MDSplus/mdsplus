@@ -104,7 +104,6 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
     setenv("t_treeseg_path",".",1);
       MDSplus::Tree *t = new MDSplus::Tree("t_treeseg",1,"NEW");
 
-      std::cout << "APERTO 1\n";
       MDSplus::TreeNode *n1 = t->addNode("SEG2","SIGNAL");
       MDSplus::TreeNode *n2 = t->addNode("SEG3","SIGNAL");
       float times[1000];
@@ -128,7 +127,9 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
         std::cout << "Writing node2 100 samples chunk " << i << std::endl;
         n2->putSegment(chunk, -1);
       }
-
+    delete n1;    delete n2;   delete t;
+    delete dim;   delete vals;
+    delete start; delete end;
+    delete chunk;
     END_TESTING;
-
 }
