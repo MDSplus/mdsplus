@@ -47,7 +47,7 @@ extern int TreeUpdateSegment(int nid, struct descriptor *start, struct descripto
 extern int TreeBeginTimestampedSegment(int nid, struct descriptor_a *initialValue, int idx);
 extern int TreePutTimestampedSegment(int nid, int64_t *timestamp, struct descriptor_a *rowdata);
 extern int TreePutRow(int nid, int bufsize, int64_t *timestamp, struct descriptor_a *rowdata);
-extern int TreeSetTimeContext( struct descriptor *start, struct descriptor *end, struct descriptor *delta);
+extern int _TreeSetTimeContext(void* dbid, struct descriptor *start, struct descriptor *end, struct descriptor *delta);
 extern int TreeGetNumSegments(int nid, int *num);
 extern int TreeGetSegmentLimits(int nid, int segidx, struct descriptor_xd *start, struct descriptor_xd *end);
 extern int TreeGetSegment(int nid, int segidx, struct descriptor_xd *data, struct descriptor_xd *dim);
@@ -67,7 +67,7 @@ int updateTreeSegment(void *dbid, int nid, int segIdx, void *startDsc, void *end
 int getTreeNumSegments(void *dbid, int nid, int *numSegments);
 int getTreeSegmentLimits(void *dbid, int nid, int idx, void **startDsc, void **endDsc);
 int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, void **timesDsc);
-int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc);
+int setTreeTimeContext(void* dbid, void *startDsc, void *endDsc, void *deltaDsc);
 int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc);
 int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times, int rowsFilled);
 int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times);
@@ -250,12 +250,12 @@ int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, void **timeD
   return _TreeGetSegment(dbid, nid, segIdx, dataXd, timeXd);
 }
 
-int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc)
+int setTreeTimeContext(void* dbid, void *startDsc, void *endDsc, void *deltaDsc)
 {
   int status;
 
   status =
-      TreeSetTimeContext((struct descriptor *)startDsc, (struct descriptor *)endDsc,
+      _TreeSetTimeContext(dbid, (struct descriptor *)startDsc, (struct descriptor *)endDsc,
 			 (struct descriptor *)deltaDsc);
   if (startDsc)
     freeDsc(startDsc);

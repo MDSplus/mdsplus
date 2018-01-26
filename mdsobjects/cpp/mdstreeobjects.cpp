@@ -87,7 +87,7 @@ extern "C" {
 	int getTreeNumSegments(void *dbid, int nid, int *numSegments);
 	int getTreeSegmentLimits(void *dbid, int nid, int idx, void **startDsc, void **endDsc);
 	int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, void **timeDsc);
-	int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc);
+	int setTreeTimeContext(void *dbid, void *startDsc, void *endDsc, void *deltaDsc);
 	int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc);
 	int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t *times);
 	int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t *times, int rowsFilled);
@@ -393,7 +393,7 @@ void Tree::setViewDate(char *date)
 
 void Tree::setTimeContext(Data *start, Data *end, Data *delta)
 {
-	int status = setTreeTimeContext((start)?start->convertToDsc():0, (end)?end->convertToDsc():0,
+	int status = setTreeTimeContext(ctx, (start)?start->convertToDsc():0, (end)?end->convertToDsc():0,
 		(delta)?delta->convertToDsc():0);
 	if(!(status & 1))
 		throw MdsException(status);
