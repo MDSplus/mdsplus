@@ -696,6 +696,7 @@ JDK_LIVECONNECT
 JDK_DIR
 JDK_CFLAGS
 JAVACFLAGS
+JAVA_JAR
 JAVA_APS
 JAVA_ONLY
 JARS_DIR
@@ -10240,7 +10241,7 @@ fi
 if ${JDK_CFLAGS+:} false; then :
   case $enable_java in #(
   yes) :
-    JAVA_APS="\$(JAVA_APS)" ;; #(
+    JAVA_APS="\$(JAVA_APS)";JAVA_JAR="\$(JAVA_JAR)" ;; #(
   *) :
      ;;
 esac
@@ -17051,6 +17052,7 @@ fi
 if test "x$mandir" = x"\${datarootdir}/man"; then :
   mandir="${datarootdir}/man"
 fi
+
 
 
 
