@@ -20,7 +20,7 @@ JAVA_JAR = \
 	   javaclient \
 	   mdsobjects/java
 
-JAVA_APS = $(JAVA_JAR) \
+JAVA_APS = \
 	   javamds \
 	   javatraverser2/java/mds/mdslib
 
@@ -39,9 +39,10 @@ HDF5_APS = hdf5
 D3D_PACKAGE = d3dshr
 
 ifeq "@JAVA_ONLY@" "yes"
+NON_JAR =
 PARTS = $(JAVA_JAR)
 else
-PARTS = \
+NON_JAR = \
 	mdsshr \
 	treeshr \
 	tdishr \
@@ -74,9 +75,10 @@ PARTS = \
 	@LV@ \
 	LabView \
 	@MACOSX@
+@MINGW_TRUE@ NON_JAR += icons
+@ENABLE_TESTS_TRUE@ NON_JAR += testing
 
-@MINGW_TRUE@ PARTS += icons
-@ENABLE_TESTS_TRUE@ PARTS += testing
+PARTS = $(NON_JAR) @JAVA_JAR@
 endif
 
 .PHONY: all $(PARTS)
@@ -85,7 +87,7 @@ all: $(PARTS)
 
 DIRECTORIES = $(sort @MAKEBINDIR@ @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEUIDDIR@)
 
-$(PARTS): $(DIRECTORIES)
+$(NON_JAR): $(DIRECTORIES)
 @MINGW_FALSE@	$(MAKE) -C $@ @MAKEFLAG_J@ @MAKEFLAG_O@
 @MINGW_TRUE@	$(MAKE) -C $@
 # override parallel flags for java apps
