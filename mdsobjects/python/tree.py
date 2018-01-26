@@ -854,6 +854,23 @@ class Tree(object):
         """
         return TreeNodeArray([nid for nid in self._getNodeWildIter(name,*usage)],self)
 
+    @classmethodX
+    def getTimeContext(self):
+        """Get time context for retrieving segmented records
+        @rtype tuple: (begin,end,delta)
+        """
+        begin=_dsc.Descriptor_xd()
+        end  =_dsc.Descriptor_xd()
+        delta=_dsc.Descriptor_xd()
+        if isinstance(self,(Tree,)):
+            begin._setTree(self)
+            end._setTree(self)
+            delta._setTree(self)
+            _exc.checkStatus(_TreeShr._TreeGetTimeContext(self.ctx,begin.ref,end.ref,delta.ref))
+        else:
+            _exc.checkStatus(_TreeShr.TreeGetTimeContext(begin.ref,end.ref,delta.ref))
+        return (begin.value,end.value,delta.value)
+
     @staticmethod
     def getVersionDate():
         """Get date used for retrieving versions
