@@ -72,25 +72,18 @@ class Tests(TestCase):
             node = ptree.addNode('IMM')
             ptree.write()
         node.tree = Tree(self.tree,self.shot)
-        WIDTH = 64
-        HEIGHT= 48;
-        currFrame=zeros(WIDTH*HEIGHT, dtype = int16);
-        currTime=float(0);
-        for i in range(0,WIDTH):
-            for j in range(0,HEIGHT):
-                currFrame[i*HEIGHT+j]=randint(0,255)
-        currTime = float(0)
+        WIDTH = 32
+        HEIGHT= 16;
+        currFrame = zeros((1,HEIGHT,WIDTH),'int16').shape
+        currTime  = float(0)
         startTime = Float32(currTime)
-        endTime = Float32(currTime)
-        dim = Float32Array(currTime)
-        segment = Int16Array(currFrame)
-        segment.resize([1,HEIGHT,WIDTH])
-        shape = segment.getShape()
+        endTime   = Float32(currTime)
+        dim       = Float32Array(currTime)
+        segment   = Int16Array(currFrame)
+        shape     = segment.getShape()
         node.makeSegment(startTime, endTime, dim, segment)
-        retShape = node.getShape()
-        self.assertEqual(shape[0],retShape[0])
-        self.assertEqual(shape[1],retShape[1])
-        self.assertEqual(shape[2],retShape[2])
+        retShape  = node.getShape()
+        self.assertEquals(shape,retShape)
       test()
       self.cleanup()
 
@@ -285,6 +278,7 @@ class Tests(TestCase):
     def TimeContext(self):
       def test():
         from MDSplus import Tree,Int64,Int64Array,Int32Array
+        Tree.setTimeContext() # test initPinoDb
         with Tree(self.tree,self.shot,'NEW') as ptree:
             node = ptree.addNode('S')
             ptree.write()
@@ -298,6 +292,7 @@ class Tests(TestCase):
         self.assertEqual(node.getSegmentList(21,60).dim_of(0).tolist(),[30,60])
         self.assertEqual(node.record.data().tolist(),list(range(-9,9)))
         node.tree.setTimeContext(Int64(30),Int64(70),Int64(20))
+        Tree.setTimeContext() # test privacy to Tree
         self.assertEqual(node.record.data().tolist(),[3,5]+[6])  # delta is applied per segment
         node.tree.setTimeContext()
         self.assertEqual(node.record.data().tolist(),list(range(-9,9)))
