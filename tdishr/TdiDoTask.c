@@ -142,13 +142,15 @@ static void WorkerThread(void *args){
   pthread_cleanup_push(WorkerExit, (void*)((WorkerArgs*)args));
   CONDITION_SET(((WorkerArgs*)args)->pcond);
   TreeUsePrivateCtx(1);
-  TreeSwitchDbid(((WorkerArgs*)args)->dbid);
+  void* old = TreeSwitchDbid(((WorkerArgs*)args)->dbid);
+  pthread_cleanup_push((void*)TreeSwitchDbid,old);
   EMPTYXD(out_xd);
   FREEXD_ON_EXIT(&out_xd);
   struct descriptor_routine* ptask = (struct descriptor_routine *)((WorkerArgs*)args)->task_xd->pointer;
   int status = Doit(ptask,&out_xd);
   *((WorkerArgs*)args)->pstatus = STATUS_OK ? *(int*)out_xd.pointer->pointer : status;
   FREEXD_NOW(&out_xd);
+  pthread_cleanup_pop(1);
   pthread_cleanup_pop(1);
   pthread_exit(0);
 }
