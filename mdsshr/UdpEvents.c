@@ -391,8 +391,9 @@ int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf)
   size_t memlen = 1024;
   struct hostent hostbuf, *hp = NULL;
   int herr;
-  char *hp_mem = (char*)malloc(memlen);
+  char *hp_mem = NULL;
   FREE_ON_EXIT(hp_mem);
+  hp_mem = (char*)malloc(memlen);
   while ( hp_mem && (gethostbyname_r(multiIp,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE) ) {
     memlen *=2;
     free(hp_mem);
