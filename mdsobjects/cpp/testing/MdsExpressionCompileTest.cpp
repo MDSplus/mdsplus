@@ -88,14 +88,14 @@ void MultiThreadTest(int ncmd, const char* cmds[]) {
       pthread_attr_setstacksize(&attr, 0x80000);
     }
     void* args[] = {&ncmd,cmds};
-    int nt,i;
+    int nt;
     for (nt = 0 ; nt<NUM_THREADS ; nt++)
       if (pthread_create(&threads[nt], attrp, Test, args))
         break;
     if (attrp) pthread_attr_destroy(attrp);
     if (nt<NUM_THREADS) fprintf(stderr,"Could not create all %d threads\n", NUM_THREADS);
-    for (i = 0 ; i<nt ; i++)
-      pthread_join(threads[i],NULL);
+    for (; nt-->0;)
+      pthread_join(threads[nt],NULL);
 }
 
 
