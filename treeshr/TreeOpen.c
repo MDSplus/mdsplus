@@ -1349,6 +1349,7 @@ void TreeFreeDbid(void *dbid)
     free_xd(&db->timecontext.start);
     free_xd(&db->timecontext.end);
     free_xd(&db->timecontext.delta);
+    if (db->delete_list) free(db->delete_list);
     free(db);
   }
 }
