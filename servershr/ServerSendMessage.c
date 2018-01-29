@@ -106,10 +106,9 @@ typedef struct _Job {
   struct _Job *next;
 } Job;
 static pthread_mutex_t jobs_mutex = PTHREAD_MUTEX_INITIALIZER;
-#define LOCK_JOBS   pthread_mutex_lock(&jobs_mutex);pthread_cleanup_push((void (*)())pthread_mutex_unlock, (void*)&jobs_mutex)
+#define LOCK_JOBS   pthread_mutex_lock(&jobs_mutex);pthread_cleanup_push((void*)pthread_mutex_unlock, &jobs_mutex)
 #define UNLOCK_JOBS pthread_cleanup_pop(1)
 static Job *Jobs = 0;
-
 
 typedef struct _client {
   SOCKET reply_sock;
@@ -119,6 +118,8 @@ typedef struct _client {
   struct _client *next;
 } Client;
 static pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
+#define LOCK_CLIENTS   pthread_mutex_lock(&clients_mutex)
+#define UNLOCK_CLIENTS pthread_mutex_unlock(&clients_mutex)
 #define LOCK_CLIENTS   pthread_mutex_lock(&clients_mutex)
 #define UNLOCK_CLIENTS pthread_mutex_unlock(&clients_mutex)
 static Client *Clients = 0;
@@ -268,6 +269,7 @@ static void RemoveJob(Job *j){
 }
 
 
+static pthread_mutex_t job_conds = PTHREAD_MUTEX_INITIALIZER;
 static void DoCompletionAst(Job *j, int status, char *msg, int removeJob){
   int has_condition = j->has_condition;
   if (j->lock) pthread_rwlock_wrlock(j->lock);
@@ -279,8 +281,11 @@ static void DoCompletionAst(Job *j, int status, char *msg, int removeJob){
   if (removeJob && j->jobid != MonJob)
     RemoveJob(j);
   /**** If job has a condition, RemoveJob will not remove it. ***/
-  if (has_condition)
+  if (has_condition){
+    pthread_mutex_lock(&job_conds);pthread_cleanup_push((void*)pthread_mutex_unlock, &job_conds);
     CONDITION_SET(j);
+    pthread_cleanup_pop(1);
+  }
 }
 
 static void DoCompletionAstId(int jobid, int status, char *msg, int removeJob){
@@ -300,7 +305,7 @@ void ServerWait(int jobid)
   UNLOCK_JOBS;
   if (j && j->has_condition) {
     CONDITION_WAIT_SET(j);
-    CONDITION_DESTROY(j);
+    CONDITION_DESTROY(j,&job_conds);
     free(j);
   }
 }
@@ -336,7 +341,7 @@ static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void 
   LOCK_JOBS;
   j->jobid = ++JobId;
   if (msgid) {
-    CONDITION_INIT(j)
+    CONDITION_INIT(j);
     j->has_condition = B_TRUE;
     *msgid = j->jobid;
   } else {

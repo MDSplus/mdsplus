@@ -467,7 +467,7 @@ STATIC_ROUTINE int free_one(node_type * node_ptr, user_type * user_ptr)
         Deallocated variables are not displayed or re-freed.
         ***************************************************/
   if (node_ptr->xd.class == 0)
-    return 1;
+    return MDSplusSUCCESS;
   if (user_ptr->match.length == 0)
     status = MDSplusSUCCESS;
   else
@@ -523,7 +523,7 @@ int Tdi1Deallocate(int opcode __attribute__ ((unused)), int narg, struct descrip
     _private.head = NULL;
     return status;
   }
-  return wild((int (*)())free_one, narg, list, &_private, out_ptr);
+  return wild((int (*)())free_one, narg, list, &_private, out_ptr); // runs on public and private, or clears private if no args
 }
 
 /*--------------------------------------------------------------

@@ -135,13 +135,13 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
 
     def register(self,opened,**kw):
         with _TreeCtx.lock:
-            _TreeCtx._id+= 1
             self.id = _TreeCtx._id
+            _TreeCtx._id+= 1
             #kw['trace'] = trace()
             if self.ctx in _TreeCtx.ctxs:
                 _TreeCtx.ctxs[self.ctx][self.id] = kw
-            else:
-                _TreeCtx.ctxs[self.ctx] = {self.id:kw} if opened else {0:{}, self.id:kw}
+            elif opened:
+                _TreeCtx.ctxs[self.ctx] = {self.id:kw}
             #print('regist',self.id, {kv for kv in kw.items() if kv[0]!='trace'})
 
     def headId(cls,id):
@@ -182,6 +182,7 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
         except: self.lock = None
         try:
             ctx = self.ctx
+            if not ctx in self.ctxs: return # was global context
             self.__class__.order = [id for id in self.order if id!=self.id]
             kw = self.ctxs[ctx].pop(self.id) # analysis:ignore
             #print('delete',self.id,{kv for kv in kw.items() if kv[0]!='trace'})
@@ -229,13 +230,11 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
             else:
                 Tree.usePrivateCtx()
         try:
-            if tree is None: tree = cls.getTree()
-            dbid = cls.switchDbid(tree)
+            dbid = None if tree is None else cls.switchDbid(tree)
             if not hasattr(cls.local,'trees'):
                 cls.local.trees = [(tree,dbid,private)]
             else:
                 cls.local.trees.append((tree,dbid,private))
-            if tree is None: cls.switchDbid(dbid)
         except:
             if not private:
                 if tree is None:
@@ -248,11 +247,8 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
     def popTree(cls):
         tree,odbid,private = cls.local.trees.pop()
         try:
-            dbid = cls.switchDbid(odbid)
-            if tree is None:
-                 cls.switchDbid(dbid)
-                 if not dbid==odbid:
-                     cls.local.tctx = cls(dbid,opened=(odbid is None))
+            if not tree is None:
+                 cls.switchDbid(odbid)
         finally:
             if not private:
                 if tree is None:
@@ -853,6 +849,23 @@ class Tree(object):
         @rtype: TreeNodeArray
         """
         return TreeNodeArray([nid for nid in self._getNodeWildIter(name,*usage)],self)
+
+    @classmethodX
+    def getTimeContext(self):
+        """Get time context for retrieving segmented records
+        @rtype tuple: (begin,end,delta)
+        """
+        begin=_dsc.Descriptor_xd()
+        end  =_dsc.Descriptor_xd()
+        delta=_dsc.Descriptor_xd()
+        if isinstance(self,(Tree,)):
+            begin._setTree(self)
+            end._setTree(self)
+            delta._setTree(self)
+            _exc.checkStatus(_TreeShr._TreeGetTimeContext(self.ctx,begin.ref,end.ref,delta.ref))
+        else:
+            _exc.checkStatus(_TreeShr.TreeGetTimeContext(begin.ref,end.ref,delta.ref))
+        return (begin.value,end.value,delta.value)
 
     @staticmethod
     def getVersionDate():

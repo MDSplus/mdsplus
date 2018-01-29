@@ -803,7 +803,7 @@ AS_VAR_SET_IF([JNI_MD_INCLUDE_DIR],[jni_md_inc_dir="$JNI_MD_INCLUDE_DIR"])
 CPPFLAGS="$CPPFLAGS -I$jni_inc_dir -I$jni_md_inc_dir"
 AC_CHECK_HEADER(jni.h,JDK_CFLAGS="-I$jni_inc_dir")
 AC_CHECK_HEADER(jni_md.h,JDK_CFLAGS="$JDK_CFLAGS -I$jni_md_inc_dir")
-AS_VAR_SET_IF([JDK_CFLAGS], [AS_CASE([$enable_java], [yes], [JAVA_APS="\$(JAVA_APS)"])])
+AS_VAR_SET_IF([JDK_CFLAGS], [AS_CASE([$enable_java], [yes], [JAVA_APS="\$(JAVA_APS)";JAVA_JAR="\$(JAVA_JAR)"])])
 CPPFLAGS="$OLD_CPPFLAGS"
 
 dnl Checks for typedefs, structures, and compiler characteristics.
@@ -1229,6 +1229,7 @@ AC_SUBST(IDLMDSWIDGETS)
 AC_SUBST(JARS_DIR)
 AC_SUBST(JAVA_ONLY)
 AC_SUBST(JAVA_APS)
+AC_SUBST(JAVA_JAR)
 AC_SUBST(JAVACFLAGS)
 AC_SUBST(JDK_CFLAGS)
 AC_SUBST(JDK_DIR)

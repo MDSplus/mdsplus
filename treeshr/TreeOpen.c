@@ -567,6 +567,24 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
             db->next = *dblist;\
             *dblist = db;}
 
+
+int initPinoDb(PINO_DATABASE ** dblist){
+  PINO_DATABASE *db = *dblist;
+  *dblist = calloc(1,sizeof(PINO_DATABASE));
+  if (*dblist) {
+    (*dblist)->next = db;
+    (*dblist)->timecontext.start.dtype = DTYPE_DSC;
+    (*dblist)->timecontext.start.class = CLASS_XD;
+    (*dblist)->timecontext.end.dtype = DTYPE_DSC;
+    (*dblist)->timecontext.end.class = CLASS_XD;
+    (*dblist)->timecontext.delta.dtype = DTYPE_DSC;
+    (*dblist)->timecontext.delta.class = CLASS_XD;
+    (*dblist)->stack_size = 8;
+    return TreeNORMAL;
+  }
+  return TreeFAILURE;
+}
+
 static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editting)
 {
   int status;
@@ -648,14 +666,8 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
 	  status = TreeMAXOPENEDIT;
 	  treeshr_errno = TreeMAXOPENEDIT;
 	}
-      } else {
-	db = *dblist;
-	*dblist = calloc(1,sizeof(PINO_DATABASE));
-	if (*dblist) {
-	  (*dblist)->next = db;
-	  status = TreeNORMAL;
-	}
-      }
+      } else
+        status = initPinoDb(dblist);
     }
   }
   if (status == TreeNORMAL) {
@@ -668,12 +680,6 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
       free((*dblist)->main_treenam);
     (*dblist)->main_treenam = strcpy(malloc(strlen(tree) + 1), tree);
     (*dblist)->stack_size = stack_size;
-    (*dblist)->timecontext.start.dtype = DTYPE_DSC;
-    (*dblist)->timecontext.start.class = CLASS_XD;
-    (*dblist)->timecontext.end.dtype = DTYPE_DSC;
-    (*dblist)->timecontext.end.class = CLASS_XD;
-    (*dblist)->timecontext.delta.dtype = DTYPE_DSC;
-    (*dblist)->timecontext.delta.class = CLASS_XD;
   }
   return status;
 }
@@ -1339,8 +1345,7 @@ void TreeFreeDbid(void *dbid)
 {
   PINO_DATABASE *db = (PINO_DATABASE *) dbid;
   if (db) {
-    if (db->next)
-      TreeFreeDbid(db->next);
+    TreeFreeDbid(db->next);
     free_xd(&db->timecontext.start);
     free_xd(&db->timecontext.end);
     free_xd(&db->timecontext.delta);

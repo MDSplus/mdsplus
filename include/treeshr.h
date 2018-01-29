@@ -209,6 +209,10 @@ extern int TREE_BLOCKID;
 				       struct descriptor *delta);
   extern EXPORT int _TreeSetTimeContext(void *dbid, struct descriptor *start,
 					struct descriptor *end, struct descriptor *delta);
+  extern EXPORT int TreeGetTimeContext(struct descriptor_xd *start, struct descriptor_xd *end,
+				       struct descriptor_xd *delta);
+  extern EXPORT int _TreeGetTimeContext(void *dbid, struct descriptor_xd *start,
+					struct descriptor_xd *end, struct descriptor_xd *delta);
   extern EXPORT int TreeGetNumSegments(int nid, int *num);
   extern EXPORT int _TreeGetNumSegments(void *dbid, int nid, int *num);
   extern EXPORT int TreeGetSegmentLimits(int nid, int segidx, struct descriptor_xd *start,

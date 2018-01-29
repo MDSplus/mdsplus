@@ -2032,6 +2032,10 @@ int TreeCopyExtended(PINO_DATABASE * dbid_in, PINO_DATABASE * dbid_out, int nid,
   return status;
 }
 
+
+/*****************************************
+ TimeContext sticks with current db (tree)
+ *****************************************/
 int _TreeSetTimeContext(void *dbid, struct descriptor *start, struct descriptor *end, struct descriptor *delta){
   timecontext_t* tc = &((PINO_DATABASE*)dbid)->timecontext;
   INIT_STATUS_AS MdsCopyDxXd(start, &tc->start);
@@ -2042,21 +2046,21 @@ int _TreeSetTimeContext(void *dbid, struct descriptor *start, struct descriptor 
   }
   return status;
 }
+
 int TreeSetTimeContext(struct descriptor *start, struct descriptor *end, struct descriptor *delta){
   return _TreeSetTimeContext(*TreeCtx(), start, end, delta);
 }
 
-int _TreeResetTimeContext(void *dbid){
+int _TreeGetTimeContext(void *dbid, struct descriptor_xd *start, struct descriptor_xd *end, struct descriptor_xd *delta){
   timecontext_t* tc = &((PINO_DATABASE*)dbid)->timecontext;
-  int status;
-  EMPTYXD(emptyXd);
-  RETURN_IF_NOT_OK(MdsCopyDxXd((struct descriptor *)&emptyXd, &tc->start));
-  RETURN_IF_NOT_OK(MdsCopyDxXd((struct descriptor *)&emptyXd, &tc->end));
-  RETURN_IF_NOT_OK(MdsCopyDxXd((struct descriptor *)&emptyXd, &tc->delta));
+  INIT_STATUS_AS 1;
+  if (start) RETURN_IF_NOT_OK(MdsCopyDxXd(tc->start.pointer,start));
+  if (end  ) RETURN_IF_NOT_OK(MdsCopyDxXd(tc->end.pointer  ,end  ));
+  if (delta) RETURN_IF_NOT_OK(MdsCopyDxXd(tc->delta.pointer,delta));
   return status;
 }
-int TreeResetTimeContext() {
-  return _TreeResetTimeContext(*TreeCtx());
+int TreeGetTimeContext(struct descriptor_xd *start, struct descriptor_xd *end, struct descriptor_xd *delta){
+  return _TreeGetTimeContext(*TreeCtx(), start, end, delta);
 }
 
 static int getOpaqueList(void *dbid, int nid, struct descriptor_xd *out) {

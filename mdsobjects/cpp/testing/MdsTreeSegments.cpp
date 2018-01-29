@@ -31,104 +31,92 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "testing.h"
 #include "testutils/unique_ptr.h"
 #include "testutils/String.h"
-#include "mdsplus/AutoPointer.hpp"
-
-
-
-using namespace MDSplus;
-using namespace testing;
-
-
-namespace testing {
-class TestNode {
-public:
-    TreeNode *node;
-
-    TestNode(TreeNode *node) :
-        node(node)
-    {}
-
-    friend std::ostream &
-    operator << (std::ostream &o, const TestNode &n) {
-        o << " -- test node -- \n"
-          << "name:   " << n.node->getNodeNameStr() << "\n"
-          << "usage:  " << n.node->getUsage() << "\n"
-          << "parent: " << unique_ptr<TreeNode>(n.node->getParent())->getNodeNameStr() << "\n"
-          << "tree:   " << n.node->getTree()->getName() << "\n";
-        return o;
-    }
-
-    bool operator == (const TestNode &other) {
-        return this->node->getNid() == other.node->getNid();
-    }
-
-    void operator()(std::string name, std::string usage, std::string parent, std::string tree) {
-        TEST1( node->getNodeNameStr() == toupper(name) );
-        TEST1( std::string(node->getUsage()) == toupper(usage) );
-        TEST1( unique_ptr<TreeNode>(node->getParent())->getNodeNameStr() == toupper(parent) );
-        TEST1( node->getTree()->getName() == tree );
-    }
-};
-
-
-
-
-void print_segment_info(TreeNode *node, int segment = -1)
-{
-    char dtype,dimct;
-    int dims[8], next;
-    std::cout << "info> " << node->getPathStr() << "  ";
-    node->getSegmentInfo(segment,&dtype, &dimct, dims, &next);
-    std::cout << "dtype: " << (int)dtype << " ";
-    std::cout << "dims:" << AutoString(unique_ptr<Array>(new Int32Array(dims,dimct))->decompile()).string;
-    if(next == dims[dimct-1]) std::cout << " fullfilled\n";
-    else std::cout << " next empty element: " << next << "\n";
-}
-} // testing
-
-
+//#include "mdsplus/AutoPointer.hpp"
 #ifdef _WIN32
 #include <windows.h>
-#endif
-
-
-int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
-{
-    BEGIN_TESTING(TreeNode);
-
-
-#ifdef _WIN32
 #define setenv(name,val,extra) _putenv_s(name,val)
 #endif
 
-    setenv("t_treeseg_path",".",1);
-      MDSplus::Tree *t = new MDSplus::Tree("t_treeseg",1,"NEW");
+using namespace testing;
+using namespace MDSplus;
 
-      std::cout << "APERTO 1\n";
-      MDSplus::TreeNode *n1 = t->addNode("SEG2","SIGNAL");
-      MDSplus::TreeNode *n2 = t->addNode("SEG3","SIGNAL");
-      float times[1000];
-      float data[1000];
-      for(int i = 0; i < 1000; i++){
-        times[i] = i*100;
-        data[i] = i*10;
+
+#define TEST_SEGMENT_FLOAT(node,seg,test) do{\
+  unique_ptr<Array> signal = node->getSegment(seg);\
+  int length = 0;\
+  float* array = signal->getFloatArray(&length);\
+  try{\
+  for (int i = 0 ; i<length ; i++)\
+    if (!(test)) TEST1(test);\
+  } catch (MDSplus::MdsException) {\
+    delete[] array;\
+    throw;\
+  }\
+  delete[] array;\
+}while(0);
+
+void putSegment(){
+    float times[1000];
+    float data[1000];
+    for(int i = 0; i < 1000; i++){
+      times[i] = i*100;
+      data[i] = i*10;
+    }
+    {
+      unique_ptr<Tree>     t   = new MDSplus::Tree("t_treeseg",1,"NEW");
+      unique_ptr<TreeNode> n[] = {t->addNode("PS0","SIGNAL"),t->addNode("PS1","SIGNAL")};
+      {
+	unique_ptr<Float32Array> dim   = new MDSplus::Float32Array(times, 1000);
+	unique_ptr<Array>        dat   = (MDSplus::Array*)MDSplus::execute("ZERO([1000],1e0)");
+	unique_ptr<Float32>      start = new MDSplus::Float32(0);
+	unique_ptr<Float32>      end   = new MDSplus::Float32(999);
+	n[0]->beginSegment(start, end, dim, dat);
+	n[1]->beginSegment(start, end, dim, dat);
       }
-      MDSplus::Float32Array *dim = new MDSplus::Float32Array(times, 1000);
-      MDSplus::Float32Array *vals = new MDSplus::Float32Array(data, 1000);
-      MDSplus::Float32 *start = new MDSplus::Float32(0);
-      MDSplus::Float32 *end = new MDSplus::Float32(999);
-
-      n1->beginSegment(start, end, dim, vals);
-      n2->beginSegment(start, end, dim, vals);
-      MDSplus::Float32Array *chunk = new MDSplus::Float32Array(data, 100);
-      //Write in chunks of 100
+      TEST_SEGMENT_FLOAT(n[0],0,array[i]==0.);
+      TEST_SEGMENT_FLOAT(n[1],0,array[i]==0.);
       for(int i = 0; i < 10; i++){
-        std::cout << "Writing node1 100 samples chunk " << i << std::endl;
-        n1->putSegment(chunk, -1);
-        std::cout << "Writing node2 100 samples chunk " << i << std::endl;
-        n2->putSegment(chunk, -1);
+        unique_ptr<Float32Array> chunk = new MDSplus::Float32Array(&data[i*100], 100);
+        n[0]->putSegment(chunk, -1);
+        n[1]->putSegment(chunk, -1);
       }
+      TEST_SEGMENT_FLOAT(n[0],0,array[i]==data[i]);
+      TEST_SEGMENT_FLOAT(n[1],0,array[i]==data[i]);
+    }
+}
 
-    END_TESTING;
+void BlockAndRows(){
+  unique_ptr<Tree>     t = new MDSplus::Tree("t_treeseg",1,"NEW");
+  unique_ptr<TreeNode> n = t->addNode("BAR","SIGNAL");
+  {
+    int d[2] = {0,7};  unique_ptr<Int32Array> s = new Int32Array(d,2);
+    n->beginTimestampedSegment(s);
+  }
+  TEST1(AutoString(unique_ptr<Data>(n->getData())->decompile()).string == "Build_Signal(0, [], *, [])");
+  // beginning adding row increments next_row to 1
+  {
+    int  d[1] = {1};    unique_ptr<Int32Array> s = new Int32Array(d,1);
+    int64_t t= -1;
+    n->putRow(s,&t,10);
+  }
+  TEST1(AutoString(unique_ptr<Data>(n->getData()    )->decompile()).string == "Build_Signal(0, [1], *, [-1Q])");
+  TEST1(AutoString(unique_ptr<Data>(n->getSegment(0))->decompile()).string == "[1]");
+  /**************************************************************
+   beginning a new block set next_row back to 0 of the new block
+   the previous block is assumed to be full as the tailing zero could be valid data
+   **************************************************************/
+  {
+    int d[2] = {0,0};  unique_ptr<Int32Array> s = new Int32Array(d,2);
+    n->beginTimestampedSegment(s);
+  }
+  TEST1(AutoString(unique_ptr<Data>(n->getData()    )->decompile()).string == "Build_Signal(0, [1,7], *, [-1Q,0Q])");
+  TEST1(AutoString(unique_ptr<Data>(n->getSegment(0))->decompile()).string == "[1,7]");
+}
 
+
+#define TEST(prcedure) do{BEGIN_TESTING(prcedure); prcedure(); END_TESTING;}while(0)
+int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT){
+    setenv("t_treeseg_path",".",1);
+    TEST(putSegment);
+    TEST(BlockAndRows);
 }

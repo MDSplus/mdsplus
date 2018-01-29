@@ -71,8 +71,7 @@ extern int TdiCall();
         acmode  access mode
 ****/
 
-STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *out_ptr)
-{
+STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *out_ptr){
   INIT_STATUS;
   int dtype, ndesc, j;
   void **arglist[256];
@@ -123,29 +122,35 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
   return status;
 }
 
-  typedef struct _WorkerArgs{
+typedef struct _WorkerArgs{
   Condition                 *pcond;
   int                       *pstatus;
   struct descriptor_xd      *task_xd;
   void                      *dbid;
 } WorkerArgs;
 
+
+pthread_mutex_t worker_destroy = PTHREAD_MUTEX_INITIALIZER;
 static void WorkerExit(void *args){
   free_xd(((WorkerArgs*)args)->task_xd);
+  pthread_mutex_lock(&worker_destroy);pthread_cleanup_push((void*)pthread_mutex_unlock, &worker_destroy);
   CONDITION_RESET(((WorkerArgs*)args)->pcond);
+  pthread_cleanup_pop(1);
 }
 
 static void WorkerThread(void *args){
   pthread_cleanup_push(WorkerExit, (void*)((WorkerArgs*)args));
   CONDITION_SET(((WorkerArgs*)args)->pcond);
   TreeUsePrivateCtx(1);
-  TreeSwitchDbid(((WorkerArgs*)args)->dbid);
+  void* old = TreeSwitchDbid(((WorkerArgs*)args)->dbid);
+  pthread_cleanup_push((void*)TreeSwitchDbid,old);
   EMPTYXD(out_xd);
   FREEXD_ON_EXIT(&out_xd);
   struct descriptor_routine* ptask = (struct descriptor_routine *)((WorkerArgs*)args)->task_xd->pointer;
   int status = Doit(ptask,&out_xd);
   *((WorkerArgs*)args)->pstatus = STATUS_OK ? *(int*)out_xd.pointer->pointer : status;
   FREEXD_NOW(&out_xd);
+  pthread_cleanup_pop(1);
   pthread_cleanup_pop(1);
   pthread_exit(0);
 }
@@ -177,7 +182,7 @@ STATIC_ROUTINE int StartWorker(struct descriptor_xd *task_xd, struct descriptor_
       _CONDITION_WAIT(&WorkerRunning);
   }
   _CONDITION_UNLOCK(&WorkerRunning);
-  CONDITION_DESTROY(&WorkerRunning);
+  CONDITION_DESTROY(&WorkerRunning,&worker_destroy);
   return status;
 }
 

@@ -883,7 +883,6 @@ EXPORT char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NID *nid = (NID *) & nid_in;
   TREE_INFO *info_ptr;
-  char *answer = NULL;
   NODE *node_ptr;
   int *ctx = (int *)ctx_ptr;
   if (!(IS_OPEN(dblist)))
@@ -926,16 +925,17 @@ EXPORT char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
       unsigned int i;
       char *name = (char *)(info_ptr->tag_info + *ctx - 1)->name;
       for (i = 0; i < sizeof(TAG_NAME) && name[i] != ' '; i++) ;
-      answer = strncpy(malloc(i + 1), name, i);
+      char *answer = strncpy(malloc(i + 1), name, i);
       answer[i] = '\0';
       *ctx = swapint((char *)&(info_ptr->tag_info + *ctx - 1)->tag_link);
       if (*ctx == 0)
 	*ctx = -1;
+      return answer;
     } else
       *ctx = 0;
   } else
     *ctx = 0;
-  return answer;
+  return NULL;
 }
 
 EXPORT char *_TreeAbsPath(void *dbid, char const *inpath)
@@ -955,7 +955,7 @@ EXPORT char *_TreeAbsPath(void *dbid, char const *inpath)
 
 STATIC_ROUTINE char *AbsPath(void *dbid, char const *inpath, int nid_in)
 {
-  char *answer = NULL;
+  char *answer;
   char *tmppath = NULL;
   SEARCH_CONTEXT ctx[MAX_SEARCH_LEVELS];
   memset(ctx, 0, sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
@@ -1018,7 +1018,7 @@ STATIC_ROUTINE char *AbsPath(void *dbid, char const *inpath, int nid_in)
 	break;
       }
     }
-  }
+  } else answer = NULL;
   FREE_NOW(ctx->string);
   FREE_NOW(tmppath);
   return answer;
