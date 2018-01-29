@@ -27,6 +27,7 @@ TESTS = \
         MdsExpressionCompileTest \
         MdsExceptionTest \
         MdsDataTest \
+        MdsTdiTest \
         MdsScalarTest_NumericConversion \
         MdsScalarTest_NumericLimits \
         MdsScalarTest_ScalarCast \
