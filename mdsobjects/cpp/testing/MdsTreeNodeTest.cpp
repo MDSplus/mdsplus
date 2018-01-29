@@ -103,21 +103,16 @@ void print_segment_info(TreeNode *node, int segment = -1)
 
 #ifdef _WIN32
 #include <windows.h>
+#define setenv(name,val,extra) _putenv_s(name,val)
 #endif
 
 
 int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 {
-    BEGIN_TESTING(TreeNode);
-
-
-#ifdef _WIN32
-#define setenv(name,val,extra) _putenv_s(name,val)
-#endif
-
     setenv("t_treenode_path",".",1);
     setenv("t_treenode2_path",".",1);
 
+    BEGIN_TESTING(TreeNode);
 
     unique_ptr<Tree> tree = new Tree("T_TREENODE",-1,"NEW");
     unique_ptr<Tree> tree2 = new Tree("T_TREENODE2",-1,"NEW");
@@ -869,23 +864,17 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 
     BEGIN_TESTING(TreeNode-Tree reference);
 
-#   ifdef _WIN32
-    _putenv_s("test_node_path",".");
-#   else
-    setenv("test_node_path",".",1);
-#   endif
-
-    Tree *tree = new Tree("test_node", -1, "NEW");
+    Tree *tree = new Tree("t_treenode", -1, "NEW");
     TreeNode *n = tree->addNode(":DATA", "NUMERIC");
     delete n;
     tree->write();
     delete tree;
-    tree = new Tree("test_node", -1);
+    tree = new Tree("t_treenode", -1);
     tree->createPulse(1);
     tree->createPulse(2);
     delete tree;
-    tree = new Tree("test_node", 1);
-    Tree *tree1 = new Tree("test_node", 2);
+    tree = new Tree("t_treenode", 1);
+    Tree *tree1 = new Tree("t_treenode", 2);
     n = tree->getNode(":DATA");
     Data *d = new Int32(1);
     Data *d1 = new Int32(2);
