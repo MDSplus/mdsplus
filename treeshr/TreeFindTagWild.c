@@ -163,7 +163,6 @@ static int findtag(PINO_DATABASE *dblist, TAG_SEARCH **ctx) {
 char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
-  *nidout = 0;
   /***************************
     check that there is a tree
     open.
