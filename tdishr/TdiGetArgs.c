@@ -178,8 +178,8 @@ int TdiGetArgs(int opcode,
       if ((cptr->digits = TdiREF_CAT[jd].digits) == 0)
 	cptr->digits = dat_ptr->length;
     }
-
-  for (j = 0; j < narg; j++) {
+  if STATUS_OK
+   for (j = 0; j < narg; j++) {
     if (fun_ptr->i1 == fun_ptr->i2) {
       cats[j].out_dtype = fun_ptr->i2;
       cats[j].out_cat = i2;
