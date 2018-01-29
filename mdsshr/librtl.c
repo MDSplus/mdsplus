@@ -637,11 +637,9 @@ EXPORT int StrPosition(struct descriptor *source, struct descriptor *substring, 
   return answer;
 }
 
-EXPORT int StrCopyR(struct descriptor *dest, unsigned short *len, char *source)
+EXPORT int StrCopyR(struct descriptor *dest, const unsigned short *len, char *source)
 {
-  struct descriptor s = { 0, DTYPE_T, CLASS_S, 0 };
-  s.length = *len;
-  s.pointer = source;
+  const struct descriptor s = { *len, DTYPE_T, CLASS_S, source };
   return StrCopyDx(dest, &s);
 }
 
@@ -660,7 +658,7 @@ EXPORT int StrLenExtr(struct descriptor *dest, struct descriptor *source, int *s
   return status;
 }
 
-EXPORT int StrGet1Dx(unsigned short *len, struct descriptor_d *out)
+EXPORT int StrGet1Dx(const unsigned short *len, struct descriptor_d *out)
 {
   if (out->class != CLASS_D)
     return LibINVSTRDES;
@@ -704,7 +702,7 @@ EXPORT int StrTrim(struct descriptor *out, struct descriptor *in, unsigned short
   return StrFree1Dx(&tmp);
 }
 
-EXPORT int StrCopyDx(struct descriptor *out, struct descriptor *in)
+EXPORT int StrCopyDx(struct descriptor *out, const struct descriptor *in)
 {
   if (out->class == CLASS_D && (in->length != out->length))
     StrGet1Dx(&in->length, (struct descriptor_d *)out);

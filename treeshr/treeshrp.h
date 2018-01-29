@@ -536,6 +536,8 @@ typedef struct pino_database {
 
   int stack_size;
   timecontext_t timecontext;
+  int delete_list_vm;
+  unsigned char* delete_list;
 } PINO_DATABASE;
 
 static inline NODE *nid_to_node(PINO_DATABASE * dbid, NID * nid)

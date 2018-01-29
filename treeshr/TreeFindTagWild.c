@@ -92,7 +92,7 @@ int TreeFindTagWildDsc(char *wild, int *nidout, void **ctx_inout, struct descrip
   int status;
   char *ans = _TreeFindTagWild(*TreeCtx(), wild, nidout, ctx_inout);
   if (ans) {
-    static struct descriptor tag = { 0, DTYPE_T, CLASS_S, 0 };
+    struct descriptor tag = { 0, DTYPE_T, CLASS_S, 0 };
     tag.length = (unsigned short)strlen(ans);
     tag.pointer = ans;
     MdsCopyDxXd(&tag, name);
@@ -163,7 +163,6 @@ static int findtag(PINO_DATABASE *dblist, TAG_SEARCH **ctx) {
 char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
-  *nidout = 0;
   /***************************
     check that there is a tree
     open.
@@ -248,27 +247,24 @@ void TreeFindTagEnd(void **ctx_inout)
 /*****************************************************
   Routine to return a new tag search data structure.
 ******************************************************/
-static TAG_SEARCH *NewTagSearch(char *tagnam_ptr)
-{
-  static DESCRIPTOR(top, "TOP");
-  TAG_SEARCH *ctx = (TAG_SEARCH *) malloc(sizeof(TAG_SEARCH));
-  static struct descriptor_d empty = { 0, DTYPE_T, CLASS_D, 0 };
-  struct descriptor tag_dsc = { 0, DTYPE_T, CLASS_S, 0 };
+static TAG_SEARCH *NewTagSearch(char *tagnam_ptr){
+  const unsigned short one = 1;
+  const DESCRIPTOR(top, "TOP");
   unsigned short tree_len;
-  char *cptr;
-  static unsigned short one = 1;
-  tag_dsc.length = (unsigned short)strlen(tagnam_ptr);
-  tag_dsc.pointer = tagnam_ptr;
-  ctx->search_tag = empty;
-  ctx->search_tree = empty;
-  ctx->next_tag = -1;
-  ctx->this_tree_info = 0;
-  ctx->remote = 0;
+  TAG_SEARCH *ctx = (TAG_SEARCH *) malloc(sizeof(TAG_SEARCH));{
+    ctx->search_tag = (struct descriptor_d){ 0, DTYPE_T, CLASS_D, 0 };
+    ctx->search_tree = (struct descriptor_d){ 0, DTYPE_T, CLASS_D, 0 };
+    ctx->next_tag = -1;
+    ctx->this_tree_info = 0;
+    ctx->remote = 0;
+  }
+  struct descriptor tag_dsc = { (unsigned short)strlen(tagnam_ptr), DTYPE_T, CLASS_S, tagnam_ptr };
   if (*(char *)tag_dsc.pointer == '\\') {
     tag_dsc.length--;
     tag_dsc.pointer++;
   }
-  if ((cptr = strstr(tagnam_ptr, "::")) != 0) {
+  char *cptr = strstr(tagnam_ptr, "::");
+  if (cptr) {
     tree_len = (unsigned short)(cptr - tagnam_ptr);
     StrCopyR((struct descriptor *)&ctx->search_tree, &tree_len, tag_dsc.pointer);
     tag_dsc.length = (unsigned short)(tag_dsc.length - tree_len - 2);

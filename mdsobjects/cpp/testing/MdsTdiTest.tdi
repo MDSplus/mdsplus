@@ -1,0 +1,64 @@
+arg_of(pub->foo:B(42,43))==42
+arg_of(pub->foo:B(42,43),1)==43
+arg_of(1+3,1)==3
+
+abs(cmplx(3.0,4.0))==5.
+abs1(cmplx(3.0,4.0))==7.
+abssq(cmplx(3.0,4.0))==25.
+abs(arg(cmplx(3.0,4.0)) - .9272952) < 1E-6
+abs(argd(cmplx(3.0,4.0)) - 53.1301) < 1E-6
+
+ALL(accumulate([1,2,3])            ==[1,3,6])
+ALL(accumulate([[1,3,5],[2,4,6]])  ==[[1,4,9],[11,15,21]])
+ALL(accumulate([[1,3,5],[2,4,6]],0)==[[1,4,9],[2,6,12]])
+#ALL(accumulate([[1,3,5],[2,4,6]],1)==[[1,3,5],[3,7,11]])
+achar(88)=="X"
+adjustl(" WORD")=="WORD "
+adjustr("WORD ")==" WORD"
+aimag(CMPLX(2.0,3.0))==3.
+aint(2.783)==2.
+aint(-2.783)==-2.
+
+_A=[1,3,5],_B=[[0,3,5],[0,0,0],[0,4,8]];1
+ALL((_A ne _B)==[1,0,0])
+ALL(_A eq _B==[0,1,1])
+_A=[0,0,1,1];_B=[0,1,0,1];1
+ALL((_A && _B)==[0,0,0,1])
+ALL((_A || _B)==[0,1,1,1])
+ALL((_A and_not _B)==[0,0,1,0])
+ALL((_A && _B)==[0,0,0,1])
+
+# list
+_A=list(*,1BU,2B,3);KIND(_A)==214
+KIND(_A[0])==2
+KIND(_A[1])==6
+KIND(_A[2])==8
+CLASS(_A=list(_A,1QU,1Q))==196
+KIND(_A[3])==5
+KIND(_A[4])==9
+
+#dict
+_A=dict(*,"s",1Q,1,"text");KIND(_A)==216
+_A["s"]==1Q
+_A[1]=="text"
+
+ANY(zero(100))==0
+SIZE(zero(100))==100
+
+# setTimeContext
+SetTimeContext(1,2,3)
+GetTimeContext(_a,_b,_c);ALL([_a,_b,_c]==[1,2,3])
+treeopennew(_EXPT,_SHOT)
+GetTimeContext(_a,_b,_c);ALL([_a,_b,_c]==[1,2,3])
+treeopennew(_EXPT,_SHOT+1)
+GetTimeContext(_a,_b,_c);ALL([_a,_b,_c]==[])
+treeclose()
+GetTimeContext(_a,_b,_c);ALL([_a,_b,_c]==[1,2,3])
+treeclose()
+
+#deallocate _A,_B,_SHOT,_EXPT
+DEALLOCATE('*')>=4
+ALLOCATED('_xyz')==0
+_xyz=0,allocated("_xyz")
+DEALLOCATE('*')==1
+ALLOCATED('_xyz')==0
