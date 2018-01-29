@@ -104,7 +104,7 @@ target_triplet = @target@
 @ENABLE_SANITIZE_TRUE@	echo --skip;)
 TESTS = buildtest$(EXEEXT) MdsExpressionCompileTest$(EXEEXT) \
 	MdsExceptionTest$(EXEEXT) MdsDataTest$(EXEEXT) \
-	MdsScalarTest_NumericConversion$(EXEEXT) \
+	MdsTdiTest$(EXEEXT) MdsScalarTest_NumericConversion$(EXEEXT) \
 	MdsScalarTest_NumericLimits$(EXEEXT) \
 	MdsScalarTest_ScalarCast$(EXEEXT) MdsStringTest$(EXEEXT) \
 	MdsCompoundTest$(EXEEXT) MdsSignalTest$(EXEEXT) \
@@ -150,7 +150,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__EXEEXT_1 = buildtest$(EXEEXT) MdsExpressionCompileTest$(EXEEXT) \
 	MdsExceptionTest$(EXEEXT) MdsDataTest$(EXEEXT) \
-	MdsScalarTest_NumericConversion$(EXEEXT) \
+	MdsTdiTest$(EXEEXT) MdsScalarTest_NumericConversion$(EXEEXT) \
 	MdsScalarTest_NumericLimits$(EXEEXT) \
 	MdsScalarTest_ScalarCast$(EXEEXT) MdsStringTest$(EXEEXT) \
 	MdsCompoundTest$(EXEEXT) MdsSignalTest$(EXEEXT) \
@@ -244,6 +244,10 @@ MdsStringTest_SOURCES = MdsStringTest.cpp
 MdsStringTest_OBJECTS = MdsStringTest.$(OBJEXT)
 MdsStringTest_LDADD = $(LDADD)
 MdsStringTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
+MdsTdiTest_SOURCES = MdsTdiTest.cpp
+MdsTdiTest_OBJECTS = MdsTdiTest.$(OBJEXT)
+MdsTdiTest_LDADD = $(LDADD)
+MdsTdiTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsTreeNodeTest_SOURCES = MdsTreeNodeTest.cpp
 MdsTreeNodeTest_OBJECTS = MdsTreeNodeTest.$(OBJEXT)
 MdsTreeNodeTest_LDADD = $(LDADD)
@@ -304,9 +308,9 @@ SOURCES = MdsActionTest.cpp MdsApdTest.cpp MdsCallTest.cpp \
 	MdsExpressionCompileTest.cpp MdsFunctionTest.cpp \
 	MdsRangeTest.cpp MdsScalarTest_NumericConversion.cpp \
 	MdsScalarTest_NumericLimits.cpp MdsScalarTest_ScalarCast.cpp \
-	MdsSignalTest.cpp MdsStringTest.cpp MdsTreeNodeTest.cpp \
-	MdsTreeSegments.cpp MdsTreeSuppression.cpp MdsTreeTest.cpp \
-	MdsWindowTest.cpp buildtest.cpp
+	MdsSignalTest.cpp MdsStringTest.cpp MdsTdiTest.cpp \
+	MdsTreeNodeTest.cpp MdsTreeSegments.cpp MdsTreeSuppression.cpp \
+	MdsTreeTest.cpp MdsWindowTest.cpp buildtest.cpp
 DIST_SOURCES = MdsActionTest.cpp MdsApdTest.cpp MdsCallTest.cpp \
 	MdsCompoundTest.cpp MdsConglomTest.cpp MdsConnectionTest.cpp \
 	MdsDataTest.cpp MdsDimensionTest.cpp MdsEventSuppression.cpp \
@@ -314,9 +318,9 @@ DIST_SOURCES = MdsActionTest.cpp MdsApdTest.cpp MdsCallTest.cpp \
 	MdsExpressionCompileTest.cpp MdsFunctionTest.cpp \
 	MdsRangeTest.cpp MdsScalarTest_NumericConversion.cpp \
 	MdsScalarTest_NumericLimits.cpp MdsScalarTest_ScalarCast.cpp \
-	MdsSignalTest.cpp MdsStringTest.cpp MdsTreeNodeTest.cpp \
-	MdsTreeSegments.cpp MdsTreeSuppression.cpp MdsTreeTest.cpp \
-	MdsWindowTest.cpp buildtest.cpp
+	MdsSignalTest.cpp MdsStringTest.cpp MdsTdiTest.cpp \
+	MdsTreeNodeTest.cpp MdsTreeSegments.cpp MdsTreeSuppression.cpp \
+	MdsTreeTest.cpp MdsWindowTest.cpp buildtest.cpp
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -1058,6 +1062,10 @@ MdsStringTest$(EXEEXT): $(MdsStringTest_OBJECTS) $(MdsStringTest_DEPENDENCIES) $
 	@rm -f MdsStringTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MdsStringTest_OBJECTS) $(MdsStringTest_LDADD) $(LIBS)
 
+MdsTdiTest$(EXEEXT): $(MdsTdiTest_OBJECTS) $(MdsTdiTest_DEPENDENCIES) $(EXTRA_MdsTdiTest_DEPENDENCIES) 
+	@rm -f MdsTdiTest$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(MdsTdiTest_OBJECTS) $(MdsTdiTest_LDADD) $(LIBS)
+
 MdsTreeNodeTest$(EXEEXT): $(MdsTreeNodeTest_OBJECTS) $(MdsTreeNodeTest_DEPENDENCIES) $(EXTRA_MdsTreeNodeTest_DEPENDENCIES) 
 	@rm -f MdsTreeNodeTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MdsTreeNodeTest_OBJECTS) $(MdsTreeNodeTest_LDADD) $(LIBS)
@@ -1107,6 +1115,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsScalarTest_ScalarCast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsSignalTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsStringTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsTdiTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsTreeNodeTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsTreeSegments.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsTreeSuppression.Po@am__quote@
@@ -1394,6 +1403,13 @@ MdsExceptionTest.log: MdsExceptionTest$(EXEEXT)
 MdsDataTest.log: MdsDataTest$(EXEEXT)
 	@p='MdsDataTest$(EXEEXT)'; \
 	b='MdsDataTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MdsTdiTest.log: MdsTdiTest$(EXEEXT)
+	@p='MdsTdiTest$(EXEEXT)'; \
+	b='MdsTdiTest'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
