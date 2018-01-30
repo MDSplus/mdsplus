@@ -732,7 +732,7 @@ class Tree(object):
     def findTagsIter(self, wild):
         """An iterator for the tagnames from a tree given a wildcard specification.
         @param wild: wildcard spec.
-        @type name: str
+        @type wild: str
         @return: iterator of tagnames (strings) that match the wildcard specification
         @rtype: iterator
         """
@@ -1066,8 +1066,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
 
     def __new__(cls,nid,tree=None,head=None,*a,**kw):
         """Create class instance. Initialize part_dict class attribute if necessary.
-        @param node: Node of device
-        @type node: TreeNode
+        @param nid: Node of device
+        @type nid: TreeNode
         @return: Instance of the device subclass
         @rtype: Device subclass instance
         """
@@ -1083,8 +1083,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
 
     def __init__(self,nid,tree=None,head=None,*a,**kw):
         """Initialze TreeNode
-        @param n: Index of the node in the tree.
-        @type n: int
+        @param nid: Index of the node in the tree.
+        @type nid: int
         @param tree: Tree associated with this node
         @type tree: Tree
         """
@@ -1539,10 +1539,10 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @type start: Data
         @param end: Index of last row of data
         @type end: Data
-        @param dimension: Dimension information of segment
-        @type dimension: Dimension
-        @param initialValueArray: Initial data array. Defines shape of segment
-        @type initialValueArray: Array
+        @param dim: Dimension information of segment
+        @type dim: Dimension
+        @param array: Initial data array. Defines shape of segment
+        @type array: Array
         @rtype: None
         """
         start,end,dim,array = map(_dat.Data,(start,end,dim,array))
@@ -1650,8 +1650,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         """Execute method on conglomerate element
         @param method: method name to perform
         @type method: str
-        @param arg: Optional argument for method
-        @type arg: Data
+        @param args: Optional arguments for method
+        @type args: Data or Tuple of Data
         @rtype: None
         """
         arglist=[self.ctx]
@@ -2318,10 +2318,10 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @type start: Data
         @param end: Index of last row of data
         @type end: Data
-        @param dimension: Dimension information of segment
-        @type dimension: Dimension
-        @param valueArray: Contents of segment
-        @type valueArray: Array
+        @param dim: Dimension information of segment
+        @type dim: Dimension
+        @param array: Contents of segment
+        @type array: Array
         @rtype: None
         """
         start,end,dim,array = map(_dat.Data,(start,end,dim,array))
@@ -2356,8 +2356,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
 
     def putData(self,value):
         """Store data
-        @param data: Data to store in this node.
-        @type data: Data
+        @param value: Data to store in this node.
+        @type value: Data
         @rtype: None
         """
         if value is None:
@@ -2600,7 +2600,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
     def setUsage(self,usage):
         """Set the usage of a node
         @param usage: Usage string.
-        @type flag: str
+        @type usage: str
         @rtype: original type
         """
         try:
@@ -3297,9 +3297,9 @@ If you did intend to write to a subnode of the device you should check the prope
     @staticmethod
     def PyDevice(module,model=None):
         """Find a python device class by:
-        1) finding the model in the list defined by
+          1. finding the model in the list defined by
            the tdi function, MdsDevices.
-        2) try importing the package for the model and calling its Add method.
+          2. try importing the package for the model and calling its Add method.
         The StringArray returned by MdsDevices() contains String instances
         containing blank filled values containing an \0 character embedded.
         These Strings have to be manipulated to produce simple str() values.

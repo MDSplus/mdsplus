@@ -21,6 +21,7 @@ makelist(){
     rpm2cpio $1 | \
         cpio --list --quiet | \
         grep -v python/dist | \
+	grep -v python/doc | \
         grep -v python/build | \
         grep -v egg-info | \
 	grep -v '\.build\-id' | \
