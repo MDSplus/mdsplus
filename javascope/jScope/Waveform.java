@@ -4,7 +4,6 @@ package jScope;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Event;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -622,7 +621,7 @@ public class Waveform
           }
           public void keyReleased(KeyEvent e)
           {}
-          public void keyTyyped(KeyEvent e)
+          public void keyTyped(KeyEvent e)
           {}
 
       });
@@ -645,14 +644,12 @@ public class Waveform
 
         is_mb2 = is_mb3 = false;
 
-        if ( (e.getModifiers() & Event.ALT_MASK) != 0) {
+        if ( (e.getModifiersEx() & MouseEvent.BUTTON2_DOWN_MASK) != 0) {
           is_mb2 = true;
-        }
-        else
-        if ( (e.getModifiers() & Event.META_MASK) != 0) { //Se e' MB3
+        } else if ( (e.getModifiersEx() & MouseEvent.BUTTON3_DOWN_MASK) != 0) { //Se e' MB3
           is_mb3 = true;
-
         }
+
         if (mode == MODE_COPY && !is_mb3) {
           if (is_mb2) {
             if (!IsCopySelected()) {
@@ -692,7 +689,7 @@ public class Waveform
             repaint();
 
           }
-          if ( (e.getModifiers() & Event.CTRL_MASK) != 0) {
+          if ( (e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) != 0) {
             if (is_image) {
               if (frames != null && frames.GetFrameIdx() > 0) {
                 frame = frames.getLastFrameIdx();
@@ -708,7 +705,7 @@ public class Waveform
             }
           }
 
-          if ( (e.getModifiers() & Event.SHIFT_MASK) != 0) {
+          if ( (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) != 0) {
             if (is_image) {
               if (frames != null) {
                 frame = frames.getNextFrameIdx();
@@ -791,7 +788,7 @@ public class Waveform
 
         if (mode == MODE_ZOOM && zoom_on_mb1 && x == orig_x && y == orig_y &&
             !is_image) {
-          if ( (e.getModifiers() & Event.ALT_MASK) != 0) {
+          if ( (e.getModifiersEx() & MouseEvent.BUTTON2_DOWN_MASK) != 0) {
             Resize(x, y, false);
           }
           else {
@@ -846,7 +843,7 @@ public class Waveform
         int x = e.getX() - i.right;
         int y = e.getY() - i.top;
 
-        if ( (e.getModifiers() & Event.META_MASK) != 0 || is_mb3 ||
+        if ( (e.getModifiersEx() & MouseEvent.BUTTON3_DOWN_MASK) != 0 || is_mb3 ||
             e.isPopupTrigger()) { //Se e' MB3
           return;
         }
@@ -2135,8 +2132,7 @@ public class Waveform
 
   void drawWave(Signal s, Graphics g, Dimension d)
   {
-    Vector segments = wm.ToPolygons(s, d, appendDrawMode);
-    Polygon curr_polygon;
+    Vector<Polygon> segments = wm.ToPolygons(s, d, appendDrawMode);
 
     if (s.getColor() != null)
     {
@@ -2149,7 +2145,7 @@ public class Waveform
     }
     for (int k = 0; k < segments.size(); k++)
     {
-      curr_polygon = (Polygon) segments.elementAt(k);
+      Polygon curr_polygon = segments.elementAt(k);
       if (s.getInterpolate())
       {
         g.drawPolyline(curr_polygon.xpoints, curr_polygon.ypoints,
