@@ -24,16 +24,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-                Name:   Tdi3MaxVal   
+                Name:   Tdi3MaxVal
 
                 Type:   C function
 
                 Author: MARK LONDON
 
-                Date:   5-OCT-1993 
+                Date:   5-OCT-1993
 
                 Purpose:
- 
+
  Scalar/vector results from simple operations on one VMS data type and class.
  Works along the dimension.
 
@@ -50,11 +50,11 @@ extern int Tdi3Sum
 extern int Tdi3Accumulate
 ------------------------------------------------------------------------------
 
-        Call sequence: 
+        Call sequence:
 
-int Tdi3xxxxx(struct descriptor *in, struct descriptor *mask, 
-               struct descriptor *out,int count0, int count1, int count2,
-               int step0, int step1, int step2)
+int Tdi3xxxxx(struct descriptor *in, struct descriptor *mask,
+               struct descriptor *out,int cnt_dim, int cnt_bef, int cnt_aft,
+               int stp_dim, int stp_bef, int stp_aft)
 
 ------------------------------------------------------------------------------
    Copyright (c) 1993
@@ -66,13 +66,14 @@ int Tdi3xxxxx(struct descriptor *in, struct descriptor *mask,
 
         Description:
 
- 
+
 ------------------------------------------------------------------------------*/
 
 extern int Tdi3Lt();
 extern int Tdi3Gt();
 extern int Tdi3Divide();
 #include <STATICdef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <string.h>
@@ -143,7 +144,6 @@ int TdiGtQ();
 
 #define SetupArgs \
   int stepm0,stepm1,stepm2,lenm;\
-  int j0, j1, j2;\
   switch (out->class)\
   {\
     case CLASS_S:\
@@ -162,20 +162,21 @@ int TdiGtQ();
   {\
     case CLASS_S:\
     case CLASS_D: stepm0 = stepm1 = stepm2 = 0; break;\
-    case CLASS_A: lenm = mask->length, stepm0 = step0*lenm,\
-                        stepm1= step1*lenm, stepm2 = step2*lenm; break;\
+    case CLASS_A: lenm = mask->length, stepm0 = stp_dim*lenm,\
+                        stepm1= stp_bef*lenm, stepm2 = stp_aft*lenm; break;\
     default:            return TdiINVCLADSC;\
   }
 
 #define Operate(type,setup,testit,doit,final) \
-{ type *outp = (type *)out->pointer;\
+{ int j0, j1, j2;\
+  type *outp = (type *)out->pointer;\
   type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
   type result=setup;\
-  for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
+  for (j2 = 0; j2++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
+    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
       result = setup;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,\
+      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,\
            pm0 += stepm0) {\
         if (*pm0 & 1 && testit) {doit}\
       }\
@@ -186,14 +187,15 @@ int TdiGtQ();
 }
 
 #define OperateL(type,setup,testit,doit,final) \
-{ int *outp = (int *)out->pointer;\
+{ int j0, j1, j2;\
+  int *outp = (int *)out->pointer;\
   type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
   type result=setup;\
-  for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
+  for (j2 = 0; j2++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
+    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
       result = setup;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
+      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,pm0 += stepm0) {\
         if (*pm0 & 1 && testit) {doit}\
       }\
       final;\
@@ -203,7 +205,8 @@ int TdiGtQ();
 }
 
 #define OperateT(testit) \
-{ int *outp = (int *)out->pointer;\
+{ int j0, j1, j2;\
+  int *outp = (int *)out->pointer;\
   char *pi0=(char *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
   char testval;\
@@ -212,10 +215,10 @@ int TdiGtQ();
   struct descriptor result={in->length,DTYPE_T,CLASS_S,0};\
   o_d.pointer=(char *)&testval;\
   result.pointer=pi0;\
-  step0=in->length;\
-  for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
-      for (count=0, j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
+  stp_dim=in->length;\
+  for (j2 = 0; j2++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
+    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
+      for (count=0, j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,pm0 += stepm0) {\
         if (*pm0 & 1) {\
            s_d.pointer=pi0;\
            testit(&s_d,&result,&o_d);\
@@ -232,13 +235,14 @@ int TdiGtQ();
 }
 
 #define OperateFloc(type,dtype,start,operator) \
-{ int *outp = (int *)out->pointer;\
+{ int j0, j1, j2;\
+  int *outp = (int *)out->pointer;\
   type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
+  for (j2 = 0; j2++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
+    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
       double result = start;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
+      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,pm0 += stepm0) {\
         if (*pm0 & 1)\
         {\
           double val;\
@@ -253,8 +257,8 @@ int TdiGtQ();
 }
 
 int Tdi3MaxLoc(struct descriptor *in, struct descriptor *mask,
-	       struct descriptor *out, int count0, int count1, int count2,
-	       int step0, int step1, int step2)
+	       struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
+	       int stp_dim, int stp_bef, int stp_aft)
 {
   int count = -1;
   SetupArgs switch (in->dtype) {
@@ -299,8 +303,8 @@ int Tdi3MaxLoc(struct descriptor *in, struct descriptor *mask,
 }
 
 int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
-	       struct descriptor *out, int count0, int count1, int count2,
-	       int step0, int step1, int step2)
+	       struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
+	       int stp_dim, int stp_bef, int stp_aft)
 {
   int count=-1;
   SetupArgs switch (in->dtype) {
@@ -345,13 +349,14 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
 }
 
 #define OperateFval(type,dtype,start,operator) \
-{ type *outp = (type *)out->pointer;\
+{ int j0, j1, j2;\
+  type *outp = (type *)out->pointer;\
   type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
+  for (j2 = 0; j2++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
+    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
       double result = start;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
+      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,pm0 += stepm0) {\
         if (*pm0 & 1)\
         {\
           double val;\
@@ -366,7 +371,8 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
 }
 
 #define OperateTval(testit) \
-{ char *outp = (char *)out->pointer;\
+{ int j0, j1, j2;\
+  char *outp = (char *)out->pointer;\
   char *pi0=(char *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
   char testval;\
@@ -375,10 +381,10 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
   struct descriptor result={in->length,DTYPE_T,CLASS_S,0};\
   o_d.pointer=(char *)&testval;\
   result.pointer=pi0;\
-  step0=in->length;\
-  for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
+  stp_dim=in->length;\
+  for (j2 = 0; j2++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
+    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
+      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,pm0 += stepm0) {\
         if (*pm0 & 1) {\
            s_d.pointer=pi0;\
            testit(&s_d,&result,&o_d);\
@@ -387,16 +393,16 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
            }\
         }\
       }\
-      memmove(outp,result.pointer,step0);\
-      outp += step0;\
+      memmove(outp,result.pointer,stp_dim);\
+      outp += stp_dim;\
     }\
   }\
   break;\
 }
 
 int Tdi3MaxVal(struct descriptor *in, struct descriptor *mask,
-	       struct descriptor *out, int count0, int count1, int count2,
-	       int step0, int step1, int step2)
+	       struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
+	       int stp_dim, int stp_bef, int stp_aft)
 {
   SetupArgs switch (in->dtype) {
   case DTYPE_T:
@@ -437,8 +443,8 @@ int Tdi3MaxVal(struct descriptor *in, struct descriptor *mask,
 }
 
 int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
-	       struct descriptor *out, int count0, int count1, int count2,
-	       int step0, int step1, int step2)
+	       struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
+	       int stp_dim, int stp_bef, int stp_aft)
 {
   SetupArgs switch (in->dtype) {
   case DTYPE_T:
@@ -475,14 +481,15 @@ int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
 }
 
 #define OperateFmean(type,dtype) \
-{ type *outp = (type *)out->pointer;\
+{ int j0, j1, j2;\
+  type *outp = (type *)out->pointer;\
   type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
+  for (j2 = 0; j2++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
+    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
       double result = 0;\
           count = 0;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
+      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,pm0 += stepm0) {\
         if (*pm0 & 1)\
         {\
           double val;\
@@ -503,15 +510,16 @@ int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
 }
 
 #define OperateFmeanc(type,dtype) \
-{ type *outp = (type *)out->pointer;\
+{ int j0, j1, j2;\
+  type *outp = (type *)out->pointer;\
   type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
+  for (j2 = 0; j2++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
+    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
       double result = 0;\
       double resulti = 0;\
           count = 0;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += (2 * step0),pm0 += stepm0) {\
+      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += (2 * stp_dim),pm0 += stepm0) {\
         if (*pm0 & 1)\
         {\
           double val;\
@@ -540,14 +548,15 @@ int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
 
 #undef Operate
 #define Operate(type,setup,testit,doit,final) \
-{ type *outp = (type *)out->pointer;\
+{ int j0, j1, j2;\
+  type *outp = (type *)out->pointer;\
   type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
   type result=setup;\
-  for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
+  for (j2 = 0; j2++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
+    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
       result = setup;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,\
+      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,\
            pm0 += stepm0) {\
         if (*pm0 & 1) {doit}\
       }\
@@ -558,8 +567,8 @@ int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
 }
 
 int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
-	     struct descriptor *out, int count0, int count1, int count2,
-	     int step0, int step1, int step2)
+	     struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
+	     int stp_dim, int stp_bef, int stp_aft)
 {
   int count;
   SetupArgs switch (in->dtype) {
@@ -614,14 +623,15 @@ int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
 }
 
 #define OperateFprod(type,dtype) \
-{ type *outp = (type *)out->pointer;\
+{ int j0, j1, j2;\
+  type *outp = (type *)out->pointer;\
   type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
+  for (j2 = 0; j2++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
+    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
       double result = 1;\
       int bad = 0;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
+      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,pm0 += stepm0) {\
         if (!bad && *pm0 & 1)\
         {\
           double val;\
@@ -638,16 +648,17 @@ int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
 }
 
 #define OperateFprodc(type,dtype) \
-{ type *outp = (type *)out->pointer;\
+{ int j0, j1, j2;\
+  type *outp = (type *)out->pointer;\
   type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
+  for (j2 = 0; j2++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
+    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
       int first = 1;\
       double result = 1;\
       double resulti = 1;\
       int bad = 0;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += (2 * step0),pm0 += stepm0) {\
+      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += (2 * stp_dim),pm0 += stepm0) {\
         if (!bad && *pm0 & 1)\
         {\
           double val;\
@@ -676,8 +687,8 @@ int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
 }
 
 int Tdi3Product(struct descriptor *in, struct descriptor *mask,
-		struct descriptor *out, int count0, int count1, int count2,
-		int step0, int step1, int step2)
+		struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
+		int stp_dim, int stp_bef, int stp_aft)
 {
   SetupArgs switch (in->dtype) {
   case DTYPE_B:
@@ -717,14 +728,15 @@ int Tdi3Product(struct descriptor *in, struct descriptor *mask,
 }
 
 #define OperateFsum(type,dtype) \
-{ type *outp = (type *)out->pointer;\
+{ int j0, j1, j2;\
+  type *outp = (type *)out->pointer;\
   type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
   int count=0;\
-  for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
+  for (j2 = 0; j2++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
+    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
       double result = 0;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
+      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,pm0 += stepm0) {\
         if (*pm0 & 1)\
         {\
           double val;\
@@ -742,15 +754,16 @@ int Tdi3Product(struct descriptor *in, struct descriptor *mask,
 }
 
 #define OperateFsumc(type,dtype) \
-{ type *outp = (type *)out->pointer;\
+{ int j0, j1, j2;\
+  type *outp = (type *)out->pointer;\
   type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
   int count = 0;\
-  for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
+  for (j2 = 0; j2++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
+    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
       double result = 0;\
       double resulti = 0;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += (2 * step0),pm0 += stepm0) {\
+      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += (2 * stp_dim),pm0 += stepm0) {\
         if (*pm0 & 1)\
         {\
           double val;\
@@ -776,8 +789,8 @@ int Tdi3Product(struct descriptor *in, struct descriptor *mask,
 }
 
 int Tdi3Sum(struct descriptor *in, struct descriptor *mask,
-	    struct descriptor *out, int count0, int count1, int count2,
-	    int step0, int step1, int step2)
+	    struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
+	    int stp_dim, int stp_bef, int stp_aft)
 {
   SetupArgs switch (in->dtype) {
   case DTYPE_B:
@@ -814,94 +827,145 @@ int Tdi3Sum(struct descriptor *in, struct descriptor *mask,
   return 1;
 }
 
-#define OperateFaccum(type,dtype) \
-{ type *outp = (type *)out->pointer;\
-  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
-  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  int count = 0;\
-  for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
-      double result = 0;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
-        if (*pm0 & 1)\
-        {\
-          double val;\
-          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_NATIVE_DOUBLE,0))\
-          { result += val; count++; CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);}\
-          else CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
+typedef struct _args_t{
+char*  inp;
+char*  outp;
+char*  maskp;
+int    stp_dim;
+int    stp_bef;
+int    stp_aft;
+int    stpm_dim;
+int    stpm_bef;
+int    stpm_aft;
+int    cnt_dim;
+int    cnt_bef;
+int    cnt_aft;
+} args_t;
+#undef SetupArgs
+#define SetupArgs \
+  switch (out->class)\
+  {\
+    case CLASS_S:\
+    case CLASS_D:\
+    case CLASS_A: break;\
+    default:            return TdiINVCLADSC;\
+  }\
+  switch (in->class)\
+  {\
+    case CLASS_S:\
+    case CLASS_D:\
+    case CLASS_A: break;\
+    default:            return TdiINVCLADSC;\
+  }\
+  args_t args = {\
+    in->pointer,out->pointer,mask->pointer,\
+    stp_dim*in->length,stp_bef*in->length,stp_aft*in->length,\
+    0,0,0,\
+    cnt_dim,cnt_bef,cnt_aft};\
+  switch (mask->class)\
+  {\
+    case CLASS_S:\
+    case CLASS_D: break;\
+    case CLASS_A: \
+	args.stpm_dim=stp_dim*mask->length,\
+	args.stpm_bef=stp_bef*mask->length,\
+	args.stpm_aft=stp_aft*mask->length;\
+	break;\
+    default:            return TdiINVCLADSC;\
+  }
+
+#define OperateIaccum(type,zero,addpid,dtype) {\
+  args_t* a = &args;\
+  int ja, jb, jd;\
+  char *poa, *pob, *pod;\
+  char *pia, *pib, *pid;\
+  char *pma, *pmb, *pmd;\
+  for (ja=0,poa=a->outp,pia=a->inp,pma=a->maskp; ja++ < a->cnt_aft; poa += a->stp_aft, pia += a->stp_aft, pma += a->stpm_aft) {\
+    for (jb=0,pob=poa,  pib=pia,   pmb=pma;      jb++ < a->cnt_bef; pob += a->stp_bef, pib += a->stp_bef, pmb += a->stpm_bef) {\
+      type result = zero;\
+      for (jd=0,pod=pob,pid=pib,   pmd=pmb;      jd++ < a->cnt_dim; pod += a->stp_dim, pid += a->stp_dim, pmd += a->stpm_dim) {\
+        if (*pmd & 1) {\
+          addpid;\
+          memcpy(pod,&result,sizeof(result));\
         }\
       }\
     }\
   }\
-  break;\
 }
 
-#define OperateFaccumc(type,dtype) \
-{ type *outp = (type *)out->pointer;\
-  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
-  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  int count = 0;\
-  for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
-      double result = 0;\
-      double resulti = 0;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += (2 * step0),pm0 += stepm0) {\
-        if (*pm0 & 1)\
-        {\
-          double val;\
-          double vali;\
-          if (CvtConvertFloat(&pi0[0],dtype,&val,DTYPE_NATIVE_DOUBLE,0) && \
-              CvtConvertFloat(&pi0[1],dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) \
-          { result += val; resulti += vali; count++; \
-            CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
-            CvtConvertFloat(&resulti,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);}\
-          else {\
-            CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
-            CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
-          }\
-        }\
-      }\
-    }\
-  }\
-  break;\
+static inline void OperateFaccum(char dtype,args_t* a){
+  int ja, jb, jd;
+  char *poa, *pob, *pod;
+  char *pia, *pib, *pid;
+  char *pma, *pmb, *pmd;
+  for (ja=0,poa=a->outp,pia=a->inp,pma=a->maskp; ja++ < a->cnt_aft; poa += a->stp_aft, pia += a->stp_aft, pma += a->stpm_aft) {
+    for (jb=0,pob=poa,  pib=pia,   pmb=pma;      jb++ < a->cnt_bef; pob += a->stp_bef, pib += a->stp_bef, pmb += a->stpm_bef) {
+      double result = 0;
+      for (jd=0,pod=pob,pid=pib,   pmd=pmb;      jd++ < a->cnt_dim; pod += a->stp_dim, pid += a->stp_dim, pmd += a->stpm_dim) {
+        if (*pmd & 1){
+          double val;
+          if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0)) {
+            result += val;
+            CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,pod,dtype,0);
+          } else CvtConvertFloat(&roprand,DTYPE_F,pod,dtype,0);
+        }
+      }
+    }
+  }
+}
+
+static inline void OperateCaccum(char dtype,args_t* a,size_t size){
+  int ja, jb, jd;
+  char *poa, *pob, *pod;
+  char *pia, *pib, *pid;
+  char *pma, *pmb, *pmd;
+  for (ja=0,poa=a->outp,pia=a->inp,pma=a->maskp; ja++ < a->cnt_aft; poa += a->stp_aft, pia += a->stp_aft, pma += a->stpm_aft) {
+    for (jb=0,pob=poa,  pib=pia,   pmb=pma;      jb++ < a->cnt_bef; pob += a->stp_bef, pib += a->stp_bef, pmb += a->stpm_bef) {
+      double result = 0, resulti = 0;
+      for (jd=0,pod=pob,pid=pib,   pmd=pmb;      jd++ < a->cnt_dim; pod += a->stp_dim, pid += a->stp_dim, pmd += a->stpm_dim) {
+        if (*pmd & 1){
+          double val, vali;
+          if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0) &&
+              CvtConvertFloat(pid+size,dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) {
+            result += val; resulti += vali;
+            CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,pod,dtype,0);
+            CvtConvertFloat(&resulti,DTYPE_NATIVE_DOUBLE,pod+size,dtype,0);
+          } else {
+            CvtConvertFloat(&roprand,DTYPE_F,pod,dtype,0);
+            CvtConvertFloat(&roprand,DTYPE_F,pod+size,dtype,0);
+          }
+        }
+      }
+    }
+  }
 }
 
 int Tdi3Accumulate(struct descriptor *in, struct descriptor *mask,
-		   struct descriptor *out, int count0, int count1, int count2,
-		   int step0, int step1, int step2)
+		   struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
+		   int stp_dim, int stp_bef, int stp_aft)
 {
-  SetupArgs switch (in->dtype) {
-  case DTYPE_B:
-    Operate(char, 0, 1, result = (char)(result + *pi0); *outp++ = result;, continue)
-  case DTYPE_BU:
-    Operate(unsigned char, 0, 1, result = (unsigned char)(result + *pi0);
-	    *outp++ = result;, continue)
-  case DTYPE_W:
-    Operate(short, 0, 1, result = (short)(result + *pi0); *outp++ = result;, continue)
-  case DTYPE_WU:
-    Operate(unsigned short, 0, 1, result = (unsigned short)(result + *pi0);
-	    *outp++ = result;, continue)
-  case DTYPE_L:
-    Operate(int, 0, 1, result += *pi0; *outp++ = result;, continue)
-  case DTYPE_LU:
-    Operate(unsigned int, 0, 1, result += *pi0; *outp++ = result;, continue)
-  case DTYPE_QU:
-  case DTYPE_Q:
-    Operate(quadword, qzero, 1, TdiAddQuadword(pi0, &result, &result); *outp++ = result;, continue)
-  case DTYPE_OU:
-  case DTYPE_O:
-    Operate(octaword, ozero, 1, TdiAddOctaword(pi0, &result, &result); *outp++ = result;, continue)
-  case DTYPE_F:
-    OperateFaccum(float, DTYPE_F)
-    case DTYPE_FS:OperateFaccum(float, DTYPE_FS)
-    case DTYPE_G:OperateFaccum(double, DTYPE_G)
-    case DTYPE_D:OperateFaccum(double, DTYPE_D)
-    case DTYPE_FT:OperateFaccum(double, DTYPE_FT)
-    case DTYPE_FC:OperateFaccumc(float, DTYPE_F)
-    case DTYPE_FSC:OperateFaccumc(float, DTYPE_FS)
-    case DTYPE_GC:OperateFaccumc(double, DTYPE_G)
-    case DTYPE_DC:OperateFaccumc(double, DTYPE_D)
-    case DTYPE_FTC:OperateFaccumc(double, DTYPE_FT)
+  SetupArgs;
+  switch (in->dtype) {
+    case DTYPE_B:  OperateIaccum(   int8_t, 0, result += *(   int8_t*)pid, DTYPE_B );break;
+    case DTYPE_BU: OperateIaccum( u_int8_t, 0, result += *( u_int8_t*)pid, DTYPE_BU);break;
+    case DTYPE_W:  OperateIaccum(  int16_t, 0, result += *(  int16_t*)pid, DTYPE_W );break;
+    case DTYPE_WU: OperateIaccum(u_int16_t, 0, result += *(u_int16_t*)pid, DTYPE_WU);break;
+    case DTYPE_L:  OperateIaccum(  int32_t, 0, result += *(  int32_t*)pid, DTYPE_L );break;
+    case DTYPE_LU: OperateIaccum(u_int32_t, 0, result += *(u_int32_t*)pid, DTYPE_LU);break;
+    case DTYPE_Q:  OperateIaccum(  int64_t, 0, result += *(  int64_t*)pid, DTYPE_Q );break;
+    case DTYPE_QU: OperateIaccum(u_int64_t, 0, result += *(u_int64_t*)pid, DTYPE_QU);break;
+    case DTYPE_O:  OperateIaccum(octaword, ozero, TdiAddOctaword((octaword*)pid, (quadword*)&result, (quadword*)&result), DTYPE_O ); break;
+    case DTYPE_OU: OperateIaccum(octaword, ozero, TdiAddOctaword((octaword*)pid, (quadword*)&result, (quadword*)&result), DTYPE_OU); break;
+    case DTYPE_F:  OperateFaccum(DTYPE_F, &args);break;
+    case DTYPE_FS: OperateFaccum(DTYPE_FS,&args);break;
+    case DTYPE_G:  OperateFaccum(DTYPE_G, &args);break;
+    case DTYPE_D:  OperateFaccum(DTYPE_D, &args);break;
+    case DTYPE_FT: OperateFaccum(DTYPE_FT,&args);break;
+    case DTYPE_FC: OperateCaccum(DTYPE_F, &args,sizeof(float)); break;
+    case DTYPE_FSC:OperateCaccum(DTYPE_FS,&args,sizeof(float)); break;
+    case DTYPE_GC: OperateCaccum(DTYPE_G, &args,sizeof(double));break;
+    case DTYPE_DC: OperateCaccum(DTYPE_D, &args,sizeof(double));break;
+    case DTYPE_FTC:OperateCaccum(DTYPE_FT,&args,sizeof(double));break;
     default:return TdiINVDTYDSC;
   }
   return 1;
@@ -982,73 +1046,3 @@ int TdiGtQ(unsigned int *in1, unsigned int *in2, int is_signed)
   return k;
 }
 
-/*  CMS REPLACEMENT HISTORY, Element Tdi3MaxVal.C */
-/*  *68   26-AUG-1996 16:07:01 TWF "Fix constant in testit" */
-/*  *67   26-AUG-1996 15:08:28 TWF "remove ints.h" */
-/*  *66   21-AUG-1996 12:23:48 TWF "Fix min int value" */
-/*  *65   13-AUG-1996 14:02:29 TWF "add ieee support" */
-/*  *64   29-JUL-1996 15:40:21 TWF "Fix addx and subx calls" */
-/*  *63   26-JUL-1996 13:36:05 TWF "Fix extern definition" */
-/*  *62   26-JUL-1996 13:29:32 TWF "Add DIVQ" */
-/*  *61   26-JUL-1996 12:27:42 TWF "Special handling for alpha and vms" */
-/*  *60    3-JUL-1996 09:16:34 TWF "Port to Windows/Unix" */
-/*  *59    3-JUL-1996 08:59:05 TWF "Port to Windows/Unix" */
-/*  *58    1-JUL-1996 11:46:16 TWF "Port to Unix/Windows" */
-/*  *57   28-JUN-1996 11:48:06 TWF "Port to Unix/Windows" */
-/*  *56   27-JUN-1996 17:02:20 TWF "Port to Unix/Windows" */
-/*  *55   27-JUN-1996 17:00:16 TWF "Port to Unix/Windows" */
-/*  *54   27-JUN-1996 16:56:10 TWF "Port to Unix/Windows" */
-/*  *53   27-JUN-1996 16:37:59 TWF "Port to Unix/Windows" */
-/*  *52   27-JUN-1996 16:35:57 TWF "Port to Unix/Windows" */
-/*  *51   27-JUN-1996 16:15:07 TWF "Port to Unix/Windows" */
-/*  *50   20-JUN-1996 15:49:24 TWF "Port to Unix/Windows" */
-/*  *49   18-OCT-1995 13:51:18 TWF "Fix array reference" */
-/*  *48   18-OCT-1995 13:50:50 TWF "Fix array reference" */
-/*  *47   18-OCT-1995 13:50:03 TWF "Fix array reference" */
-/*  *46   18-OCT-1995 13:49:27 TWF "Fix array reference" */
-/*  *45   17-OCT-1995 16:16:18 TWF "use <builtins.h> form" */
-/*  *44   19-OCT-1994 12:26:43 TWF "Use TDI$MESSAGES" */
-/*  *43   19-OCT-1994 10:36:39 TWF "No longer support VAXC" */
-/*  *42   15-NOV-1993 10:09:07 TWF "Add memory block" */
-/*  *41   15-NOV-1993 09:41:37 TWF "Add memory block" */
-/*  *40    6-NOV-1993 08:56:33 MRL "Fix octal stuff." */
-/*  *39    6-NOV-1993 08:53:55 MRL "Fix octal stuff." */
-/*  *38    6-NOV-1993 08:34:09 MRL "Fix octal stuff." */
-/*  *37    6-NOV-1993 08:20:14 MRL "Fix octal stuff." */
-/*  *36    6-NOV-1993 08:17:39 MRL "Fix octal stuff." */
-/*  *35    6-NOV-1993 08:10:02 MRL "Fix octal stuff." */
-/*  *34    6-NOV-1993 07:23:11 MRL "Fix octal stuff." */
-/*  *33    6-NOV-1993 07:18:18 MRL "Fix octal stuff." */
-/*  *32    5-NOV-1993 16:37:58 MRL "" */
-/*  *31    5-NOV-1993 15:42:47 MRL "" */
-/*  *30    5-NOV-1993 13:26:13 MRL "TYPO" */
-/*  *29    5-NOV-1993 13:22:54 MRL "TYPO" */
-/*  *28    5-NOV-1993 13:02:22 MRL "" */
-/*  *27    4-NOV-1993 16:20:17 MRL "Ignore complex." */
-/*  *26   15-OCT-1993 16:46:39 MRL "" */
-/*  *25   15-OCT-1993 13:43:00 MRL "" */
-/*  *24   15-OCT-1993 11:49:28 MRL "" */
-/*  *23   15-OCT-1993 11:46:21 MRL "" */
-/*  *22   15-OCT-1993 11:42:49 MRL "" */
-/*  *21   15-OCT-1993 11:11:44 MRL "" */
-/*  *20   15-OCT-1993 10:14:31 MRL "" */
-/*  *19   15-OCT-1993 09:47:52 MRL "" */
-/*  *18   14-OCT-1993 19:00:01 MRL "" */
-/*  *17   14-OCT-1993 18:49:42 MRL "" */
-/*  *16   14-OCT-1993 18:46:31 MRL "" */
-/*  *15   14-OCT-1993 16:20:21 MRL "" */
-/*  *14   14-OCT-1993 16:06:11 MRL "" */
-/*  *13   14-OCT-1993 14:10:10 MRL "" */
-/*  *12   14-OCT-1993 13:32:38 MRL "" */
-/*  *11   14-OCT-1993 13:22:53 MRL "" */
-/*  *10   14-OCT-1993 13:17:21 MRL "" */
-/*  *9    14-OCT-1993 13:12:26 MRL "" */
-/*  *8    14-OCT-1993 12:34:01 MRL "" */
-/*  *7    14-OCT-1993 11:28:07 MRL "" */
-/*  *6    14-OCT-1993 11:25:58 MRL "" */
-/*  *5    14-OCT-1993 10:36:35 MRL "Add tdi$divo" */
-/*  *4    14-OCT-1993 10:31:20 MRL "Add tdi$divo" */
-/*  *3    14-OCT-1993 10:26:04 MRL "Add tdi$divo" */
-/*  *2    13-OCT-1993 16:42:57 MRL "" */
-/*  *1    13-OCT-1993 15:42:41 MRL "" */
-/*  CMS REPLACEMENT HISTORY, Element Tdi3MaxVal.C */
