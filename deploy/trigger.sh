@@ -18,7 +18,7 @@ SYNOPSIS
                  [--release] [--releasedir=directory]
                  [--publish] [--publishdir=directory]
                  [--keys=dir] [--dockerpull] [--color]
-                 [--pypi] [--make_jars ]
+                 [--pypi] [--make_jars ] [--make_epydocs ]
 
 DESCRIPTION
     The trigger.sh script is used in conjunction with platform build jobs
@@ -44,6 +44,11 @@ OPTIONS
        tree. This is used to build the jar files once and then trigger the
        platform builds with a --jars_dir=directory option so platform builds
        can just cp the jar files from the trigger directory location.
+
+   --make_epydocs
+       Build the python docs using epydoc. This will replace the mdsobjects/python/doc
+       directory in the trigger sources with updated epydoc documentation. This requires
+       epydoc to be installed and usable on the system running the trigger script.
 
    --test[=skip]
        Build and test the mdsplus sources. The type of tests attempted
@@ -149,6 +154,9 @@ parsecmd() {
 	    --make_jars=*)
 		MAKE_JARS=${i#*=}
 		opts="${opts} --jars-dir=${SRCDIR}/jars"
+		;;
+	    --make_epydocs)
+		MAKE_EPYDOCS=yes
 		;;
 	    --test)
 		opts="${opts} ${i}"
@@ -259,6 +267,24 @@ then
 
 Error creating java jar files. Trigger failed. 
 Look at make_jars.log artifact for more info .
+
+===============================================
+EOF
+	NORMAL $COLOR
+	exit 1
+    fi
+fi
+
+if [ ! -z "${MAKE_EPYDOCS}" ]
+then
+    if ( ! ${SRCDIR}/mdsobjects/python/makedoc.sh ${SRCDIR}/mdsobjects/python/doc > make_epydocs.log 2>&1 )
+    then
+	RED $COLOR
+	cat <<EOF >&2
+===============================================
+
+Error creating python documentation. Trigger failed. 
+Look at make_epydocs.log artifact for more info .
 
 ===============================================
 EOF

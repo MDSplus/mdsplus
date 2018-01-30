@@ -335,7 +335,7 @@ class GetMany(_apd.List):
         @param name: Name to associate with the result of this expression
         @type name: str
         @param exp: TDI expression to be evaluated with optional placeholders for the arguments
-        @type expression: str
+        @type exp: str
         @param args: Optional arguments to replace placeholders in the expression
         @type args: Data
         @rtype: None
@@ -390,7 +390,7 @@ class PutMany(_apd.List):
         """Return the status of the put for this node. Anything other than 'Success' will raise an exception.
         @param node: Node name. Must match exactly the node name used in the append() or insert() methods.
         @type node: str
-        @result: The string 'Success' otherwise an exception is raised.
+        @return: The string 'Success' otherwise an exception is raised.
         @rtype: str
         """
         if self.result is None:
