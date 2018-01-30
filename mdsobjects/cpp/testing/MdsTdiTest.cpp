@@ -101,7 +101,7 @@ void MultiThreadTest() {
       attrp = NULL;
     else {
       attrp = &attr;
-      pthread_attr_setstacksize(&attr, 0x80000);
+      pthread_attr_setstacksize(&attr, 0x100000);
     }
     int64_t nt;
     for (nt = 0 ; nt<NUM_THREADS ; nt++){
