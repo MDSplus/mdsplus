@@ -90,7 +90,8 @@ typedef struct {
   int o1;
   int o2;
   int o3;
-} octaword;
+} int128_t;
+#define u_int128_t int128_t
 
 
 #define ozero { 0, 0, 0, 0 };
@@ -115,602 +116,56 @@ typedef struct {
 #define HUGE 1.7E308
 #endif
 
-extern int TdiMultiplyQuadword();
 extern int TdiMultiplyOctaword();
-extern int TdiAddQuadword();
 extern int TdiAddOctaword();
 
-int TdiLtO();
-int TdiGtO();
-int TdiLtQ();
-int TdiGtQ();
-
 #define TdiDivO(in1,in2,out,data_type)\
-{DESCRIPTOR_A(i1, sizeof(octaword), data_type , 0, 0);\
- DESCRIPTOR_A(i2, sizeof(octaword), data_type , 0, 0);\
- DESCRIPTOR_A(o, sizeof(octaword), data_type , 0, 0);\
- i1.arsize = i2.arsize = o.arsize = sizeof(octaword);\
+{DESCRIPTOR_A(i1, sizeof(int128_t), data_type , 0, 0);\
+ DESCRIPTOR_A(i2, sizeof(int128_t), data_type , 0, 0);\
+ DESCRIPTOR_A(o, sizeof(int128_t), data_type , 0, 0);\
+ i1.arsize = i2.arsize = o.arsize = sizeof(int128_t);\
  i1.pointer = (char *)(in1); i2.pointer = (char *)(in2);\
  o.pointer = (char *)(out);\
  Tdi3Divide(&i1,&i2,&o);}
-
-#define SetupArgs \
-  int stepm0,stepm1,stepm2,lenm;\
-  switch (out->class)\
-  {\
-    case CLASS_S:\
-    case CLASS_D:\
-    case CLASS_A: break;\
-    default:            return TdiINVCLADSC;\
-  }\
-  switch (in->class)\
-  {\
-    case CLASS_S:\
-    case CLASS_D:\
-    case CLASS_A: break;\
-    default:            return TdiINVCLADSC;\
-  }\
-  switch (mask->class)\
-  {\
-    case CLASS_S:\
-    case CLASS_D: stepm0 = stepm1 = stepm2 = 0; break;\
-    case CLASS_A: lenm = mask->length, stepm0 = stp_dim*lenm,\
-                        stepm1= stp_bef*lenm, stepm2 = stp_aft*lenm; break;\
-    default:            return TdiINVCLADSC;\
+static inline int TdiLtO(unsigned int *in1, unsigned int *in2, int is_signed){
+  int j, longwords = 4, k = 0, *i1, *i2;
+  for (j = longwords - 1; j >= 0; j--)
+    if (!j || in1[j] != in2[j]) {
+      if (!is_signed || j != longwords - 1) {
+	k = (in1[j] < in2[j]);
+	break;
+      } else {
+	i1 = (int *)(in1 + j);
+	i2 = (int *)(in2 + j);
+	k = (*i1 < *i2);
+	break;
+      }
+    }
+  return k;
+}
+static inline int TdiGtO(unsigned int *in1, unsigned int *in2, int is_signed){
+  int j, longwords = 4, k = 0, *i1, *i2;
+  for (j = longwords - 1; j >= 0; j--) {
+    if (!j || in1[j] != in2[j]) {
+      if (!is_signed || j != longwords - 1) {
+	k = (in1[j] > in2[j]);
+	break;
+      } else {
+	i1 = (int *)(in1 + j);
+	i2 = (int *)(in2 + j);
+	k = (*i1 > *i2);
+	break;
+      }
+    }
   }
-
-#define Operate(type,setup,testit,doit,final) \
-{ int j0, j1, ja;\
-  type *outp = (type *)out->pointer;\
-  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
-  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  for (ja = 0; ja++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
-      type result = setup;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,\
-           pm0 += stepm0) {\
-        if (*pm0 & 1 && testit) {doit}\
-      }\
-      final;\
-    }\
-  }\
-  break;\
-}
-
-#define OperateL(type,setup,testit,doit,final) \
-{ int j0, j1, ja;\
-  int *outp = (int *)out->pointer;\
-  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
-  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  for (ja = 0; ja++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
-      type result = setup;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,pm0 += stepm0) {\
-        if (*pm0 & 1 && testit) {doit}\
-      }\
-      final;\
-    }\
-  }\
-  break;\
-}
-
-#define OperateTloc(testit) \
-{ int j0, j1, ja;\
-  int *outp = (int *)out->pointer;\
-  char *pi0=(char *)in->pointer,*pi1=pi0,*pi2=pi0;\
-  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  char testval;\
-  struct descriptor s_d={in->length,DTYPE_T,CLASS_S,0};\
-  struct descriptor o_d={1,DTYPE_B,CLASS_S,0};\
-  struct descriptor result={in->length,DTYPE_T,CLASS_S,0};\
-  o_d.pointer=(char *)&testval;\
-  result.pointer=pi0;\
-  stp_dim=in->length;\
-  for (ja = 0; ja++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
-      for (count=0, j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,pm0 += stepm0) {\
-        if (*pm0 & 1) {\
-           s_d.pointer=pi0;\
-           testit(&s_d,&result,&o_d);\
-           if (testval) {\
-             result.pointer=pi0;\
-             count=j0;\
-           }\
-        }\
-      }\
-      *outp++ = count;\
-    }\
-  }\
-  break;\
-}
-
-#define OperateFloc(type,dtype,start,operator) \
-{ int j0, j1, ja;\
-  int *outp = (int *)out->pointer;\
-  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
-  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  for (ja = 0; ja++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
-      double result = start;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,pm0 += stepm0) {\
-        if (*pm0 & 1)\
-        {\
-          double val;\
-          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_NATIVE_DOUBLE,0) && (val operator result))\
-            {result = val; count = j0;}\
-        }\
-      }\
-      *outp++ = count;\
-    }\
-  }\
-  break;\
-}
-
-int Tdi3MaxLoc(struct descriptor *in, struct descriptor *mask,
-	       struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
-	       int stp_dim, int stp_bef, int stp_aft)
-{
-  int count = -1;
-  SetupArgs switch (in->dtype) {
-  case DTYPE_T:  OperateTloc(Tdi3Gt)
-  case DTYPE_B:  OperateL(   int8_t,       -128, *pi0 > result, result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_BU: OperateL( u_int8_t,          0, *pi0 > result, result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_W:  OperateL(  int16_t,     -32768, *pi0 > result, result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_WU: OperateL(u_int16_t,          0, *pi0 > result, result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_L:  OperateL(  int32_t, 0x80000000, *pi0 > result, result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_LU: OperateL(u_int32_t,          0, *pi0 > result, result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_Q:  OperateL(  int64_t,       qmin, *pi0 > result, result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_QU: OperateL(u_int64_t,          0, *pi0 > result, result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_O:  OperateL( octaword, omin, TdiGtO(pi0, &result, 1), result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_OU: OperateL( octaword,uomin, TdiGtO(pi0, &result, 0), result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_F:  OperateFloc(float,  DTYPE_F, -HUGE, >)
-  case DTYPE_FS: OperateFloc(float,  DTYPE_FS,-HUGE, >)
-  case DTYPE_G:  OperateFloc(double, DTYPE_G, -HUGE, >)
-  case DTYPE_D:  OperateFloc(double, DTYPE_D, -HUGE, >)
-  case DTYPE_FT: OperateFloc(double, DTYPE_FT,-HUGE, >)
-  default:return TdiINVDTYDSC;
-  }
-  return 1;
-}
-
-int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
-	       struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
-	       int stp_dim, int stp_bef, int stp_aft)
-{
-  int count=-1;
-  SetupArgs switch (in->dtype) {
-  case DTYPE_T:  OperateTloc(Tdi3Lt)
-  case DTYPE_B:  OperateL(   int8_t,            127, *pi0 < result, result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_BU: OperateL( u_int8_t,             -1, *pi0 < result, result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_W:  OperateL(  int16_t,          32767, *pi0 < result, result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_WU: OperateL(u_int16_t,             -1, *pi0 < result, result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_L:  OperateL(  int32_t,     0x7fffffff, *pi0 < result, result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_LU: OperateL(u_int32_t,             -1, *pi0 < result, result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_Q:  OperateL(  int64_t,           qmax, *pi0 < result, result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_QU: OperateL(u_int64_t,             -1, *pi0 < result, result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_O:  OperateL( octaword, omax, TdiLtO(pi0, &result, 1), result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_OU: OperateL( octaword,uomax, TdiLtO(pi0, &result, 0), result = *pi0; count = j0;, *outp++ = count)
-  case DTYPE_F:  OperateFloc(float,  DTYPE_F, -HUGE, <)
-  case DTYPE_FS: OperateFloc(float,  DTYPE_FS,-HUGE, <)
-  case DTYPE_G:  OperateFloc(double, DTYPE_G, -HUGE, <)
-  case DTYPE_D:  OperateFloc(double, DTYPE_D, -HUGE, <)
-  case DTYPE_FT: OperateFloc(double, DTYPE_FT,-HUGE, <)
-  default:return TdiINVDTYDSC;
-  }
-  return 1;
-}
-
-#define OperateFval(type,dtype,start,operator) \
-{ int j0, j1, ja;\
-  type *outp = (type *)out->pointer;\
-  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
-  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  for (ja = 0; ja++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
-      double result = start;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,pm0 += stepm0) {\
-        if (*pm0 & 1)\
-        {\
-          double val;\
-          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_NATIVE_DOUBLE,0) && (val operator result))\
-            {result = val;}						\
-        }\
-      }\
-      CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
-    }\
-  }\
-  break;\
-}
-
-#define OperateTval(testit) \
-{ int j0, j1, ja;\
-  char *outp = (char *)out->pointer;\
-  char *pi0=(char *)in->pointer,*pi1=pi0,*pi2=pi0;\
-  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  char testval;\
-  struct descriptor s_d={in->length,DTYPE_T,CLASS_S,0};\
-  struct descriptor o_d={1,DTYPE_B,CLASS_S,0};\
-  struct descriptor result={in->length,DTYPE_T,CLASS_S,0};\
-  o_d.pointer=(char *)&testval;\
-  result.pointer=pi0;\
-  stp_dim=in->length;\
-  for (ja = 0; ja++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,pm0 += stepm0) {\
-        if (*pm0 & 1) {\
-           s_d.pointer=pi0;\
-           testit(&s_d,&result,&o_d);\
-           if (testval) {\
-             result.pointer=pi0;\
-           }\
-        }\
-      }\
-      memmove(outp,result.pointer,stp_dim);\
-      outp += stp_dim;\
-    }\
-  }\
-  break;\
-}
-
-int Tdi3MaxVal(struct descriptor *in, struct descriptor *mask,
-	       struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
-	       int stp_dim, int stp_bef, int stp_aft)
-{
-  SetupArgs switch (in->dtype) {
-  case DTYPE_T:  OperateTval(Tdi3Gt)
-  case DTYPE_B:  OperateL(   int8_t,       -128, *pi0 > result, result = *pi0;, *outp++ = result)
-  case DTYPE_BU: OperateL( u_int8_t,          0, *pi0 > result, result = *pi0;, *outp++ = result)
-  case DTYPE_W:  OperateL(  int16_t,     -32768, *pi0 > result, result = *pi0;, *outp++ = result)
-  case DTYPE_WU: OperateL(u_int16_t,          0, *pi0 > result, result = *pi0;, *outp++ = result)
-  case DTYPE_L:  OperateL(  int32_t, 0x80000000, *pi0 > result, result = *pi0;, *outp++ = result)
-  case DTYPE_LU: OperateL(u_int32_t,          0, *pi0 > result, result = *pi0;, *outp++ = result)
-  case DTYPE_Q:  OperateL(  int64_t,       qmin, *pi0 > result, result = *pi0;, *outp++ = result)
-  case DTYPE_QU: OperateL(u_int64_t,          0, *pi0 > result, result = *pi0;, *outp++ = result)
-  case DTYPE_O:  OperateL( octaword, omin, TdiGtO(pi0, &result, 1), memcpy(&result, pi0, sizeof(result));, memcpy(outp++, &result, sizeof(result)))
-  case DTYPE_OU: OperateL( octaword,uomin, TdiGtO(pi0, &result, 0), memcpy(&result, pi0, sizeof(result));, memcpy(outp++, &result, sizeof(result)))
-  case DTYPE_F:  OperateFval(float,  DTYPE_F, -HUGE, >)
-  case DTYPE_FS: OperateFval(float,  DTYPE_FS,-HUGE, >)
-  case DTYPE_G:  OperateFval(double, DTYPE_G, -HUGE, >)
-  case DTYPE_D:  OperateFval(double, DTYPE_D, -HUGE, >)
-  case DTYPE_FT: OperateFval(double, DTYPE_FT,-HUGE, >)
-  default:return TdiINVDTYDSC;
-  }
-  return 1;
-}
-
-int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
-	       struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
-	       int stp_dim, int stp_bef, int stp_aft)
-{
-  SetupArgs switch (in->dtype) {
-  case DTYPE_T:  OperateTval(Tdi3Lt)
-  case DTYPE_B:  OperateL(   int8_t,            127, *pi0 < result, result = *pi0;, *outp++ = result)
-  case DTYPE_BU: OperateL( u_int8_t,             -1, *pi0 < result, result = *pi0;, *outp++ = result)
-  case DTYPE_W:  OperateL(  int16_t,          32767, *pi0 < result, result = *pi0;, *outp++ = result)
-  case DTYPE_WU: OperateL(u_int16_t,             -1, *pi0 < result, result = *pi0;, *outp++ = result)
-  case DTYPE_L:  OperateL(  int32_t,     0x7fffffff, *pi0 < result, result = *pi0;, *outp++ = result)
-  case DTYPE_LU: OperateL(u_int32_t,             -1, *pi0 < result, result = *pi0;, *outp++ = result)
-  case DTYPE_Q:  OperateL(  int64_t,           qmax, *pi0 < result, result = *pi0;, *outp++ = result)
-  case DTYPE_QU: OperateL(u_int64_t,             -1, *pi0 < result, result = *pi0;, *outp++ = result)
-  case DTYPE_O:  OperateL( octaword, omax, TdiLtO(pi0, &result, 1), memcpy(&result, pi0, sizeof(result));, memcpy(outp++, &result, sizeof(result)))
-  case DTYPE_OU: OperateL( octaword,uomax, TdiLtO(pi0, &result, 0), memcpy(&result, pi0, sizeof(result));, memcpy(outp++, &result, sizeof(result)))
-  case DTYPE_F:  OperateFval(float,  DTYPE_F, -HUGE, <)
-  case DTYPE_FS: OperateFval(float,  DTYPE_FS,-HUGE, <)
-  case DTYPE_G:  OperateFval(double, DTYPE_G, -HUGE, <)
-  case DTYPE_D:  OperateFval(double, DTYPE_D, -HUGE, <)
-  case DTYPE_FT: OperateFval(double, DTYPE_FT,-HUGE, <)
-  default:return TdiINVDTYDSC;
-  }
-  return 1;
-}
-
-#define OperateFmean(type,dtype) \
-{ int j0, j1, ja;\
-  type *outp = (type *)out->pointer;\
-  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
-  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  for (ja = 0; ja++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
-      double result = 0;\
-          count = 0;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,pm0 += stepm0) {\
-        if (*pm0 & 1)\
-        {\
-          double val;\
-          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_NATIVE_DOUBLE,0))\
-            {result += val; count++;}\
-        }\
-      }\
-      if (count)\
-      {\
-        result /= count;\
-        CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
-      }\
-      else\
-        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
-    }\
-  }\
-  break;\
-}
-
-#define OperateCmean(type,dtype) \
-{ int j0, j1, ja;\
-  type *outp = (type *)out->pointer;\
-  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
-  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  for (ja = 0; ja++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
-      double result = 0;\
-      double resulti = 0;\
-          count = 0;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += (2 * stp_dim),pm0 += stepm0) {\
-        if (*pm0 & 1)\
-        {\
-          double val;\
-          double vali;\
-          if (CvtConvertFloat(&pi0[0],dtype,&val,DTYPE_NATIVE_DOUBLE,0) && \
-              CvtConvertFloat(&pi0[1],dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) \
-            {result += val; resulti += vali; count++;}\
-        }\
-      }\
-      if (count)\
-      {\
-        result /= count;\
-        resulti /= count;\
-        CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
-        CvtConvertFloat(&resulti,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
-      }\
-      else\
-      {\
-        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
-        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
-      }\
-    }\
-  }\
-  break;\
-}
-
-#undef Operate
-#define Operate(type,setup,testit,doit,final) \
-{ int j0, j1, ja;\
-  type *outp = (type *)out->pointer;\
-  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
-  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  for (ja = 0; ja++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
-      type result = setup;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,\
-           pm0 += stepm0) {\
-        if (*pm0 & 1) {doit}\
-      }\
-      final;\
-    }\
-  }\
-  break;\
-}
-
-int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
-	     struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
-	     int stp_dim, int stp_bef, int stp_aft)
-{
-  int count;
-  SetupArgs switch (in->dtype) {
-  case DTYPE_B:  Operate(   int8_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
-  case DTYPE_BU: Operate( u_int8_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
-  case DTYPE_W:  Operate(  int16_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
-  case DTYPE_WU: Operate(u_int16_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
-  case DTYPE_L:  Operate(  int32_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
-  case DTYPE_LU: Operate(u_int32_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
-  case DTYPE_Q:  Operate(  int64_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
-  case DTYPE_QU: Operate(u_int64_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
-  case DTYPE_OU: Operate(octaword, ozero; count = 0, 1, TdiAddOctaword(pi0, &result, &result); count++;, {
-	    octaword temp = ozero; memcpy(&temp, &count, sizeof(int)); TdiDivO(&result, &temp, outp++, DTYPE_OU);})
-  case DTYPE_O:  Operate(octaword, ozero; count = 0, 1, TdiAddOctaword(pi0, &result, &result); count++;, {
-	    octaword temp = ozero; memcpy(&temp, &count, sizeof(int)); TdiDivO(&result, &temp, outp++, DTYPE_O);})
-  case DTYPE_F:  OperateFmean(float,  DTYPE_F )
-  case DTYPE_FS: OperateFmean(float,  DTYPE_FS)
-  case DTYPE_G:  OperateFmean(double, DTYPE_G )
-  case DTYPE_D:  OperateFmean(double, DTYPE_D )
-  case DTYPE_FT: OperateFmean(double, DTYPE_FT)
-  case DTYPE_FC: OperateCmean(float,  DTYPE_F )
-  case DTYPE_FSC:OperateCmean(float,  DTYPE_FS)
-  case DTYPE_GC: OperateCmean(double, DTYPE_G )
-  case DTYPE_DC: OperateCmean(double, DTYPE_D )
-  case DTYPE_FTC:OperateCmean(double, DTYPE_FT)
-  default:return TdiINVDTYDSC;
-  }
-  return 1;
-}
-
-#define OperateFprod(type,dtype) \
-{ int j0, j1, ja;\
-  type *outp = (type *)out->pointer;\
-  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
-  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  for (ja = 0; ja++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
-      double result = 1;\
-      int bad = 0;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,pm0 += stepm0) {\
-        if (!bad && *pm0 & 1)\
-        {\
-          double val;\
-          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_NATIVE_DOUBLE,0)) result *= val; else bad = 1;\
-        }\
-      }\
-      if (!bad)\
-        CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
-      else\
-        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
-    }\
-  }\
-  break;\
-}
-
-#define OperateCprod(type,dtype) \
-{ int j0, j1, ja;\
-  type *outp = (type *)out->pointer;\
-  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
-  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  for (ja = 0; ja++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
-      int first = 1;\
-      double result = 1;\
-      double resulti = 1;\
-      int bad = 0;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += (2 * stp_dim),pm0 += stepm0) {\
-        if (!bad && *pm0 & 1)\
-        {\
-          double val;\
-          double vali;\
-          if (CvtConvertFloat(&pi0[0],dtype,&val,DTYPE_NATIVE_DOUBLE,0) && \
-              CvtConvertFloat(&pi0[1],dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) \
-          {\
-            if (first) { result = val; resulti = vali; first = 0;} else \
-            {double oldresult = result; result = result * val - resulti * vali; resulti = oldresult * vali + resulti * val;}\
-          } else bad=1;\
-        }\
-      }\
-      if (!bad)\
-      {\
-        CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
-        CvtConvertFloat(&resulti,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
-      }\
-      else\
-      {\
-        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
-        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
-      }\
-    }\
-  }\
-  break;\
-}
-
-int Tdi3Product(struct descriptor *in, struct descriptor *mask,
-		struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
-		int stp_dim, int stp_bef, int stp_aft)
-{
-  SetupArgs switch (in->dtype) {
-  case DTYPE_B:  Operate(   int8_t, 1, 1, result = (char)(result * *pi0);, *outp++ = result)
-  case DTYPE_BU: Operate( u_int8_t, 1, 1, result = (unsigned char)(result * *pi0);, *outp++ = result)
-  case DTYPE_W:  Operate(  int16_t, 1, 1, result = (short)(result * *pi0);, *outp++ = result)
-  case DTYPE_WU: Operate(u_int16_t, 1, 1, result = (unsigned short)(result * *pi0);, *outp++ = result)
-  case DTYPE_L:  Operate(  int32_t, 1, 1, result *= *pi0;, *outp++ = result)
-  case DTYPE_LU: Operate(u_int32_t, 1, 1, result *= *pi0;, *outp++ = result)
-  case DTYPE_Q:  Operate(  int64_t, 1, 1, result *= *pi0;, *outp++ = result)
-  case DTYPE_QU: Operate(u_int64_t, 1, 1, result *= *pi0;, *outp++ = result)
-  case DTYPE_O:
-  case DTYPE_OU: Operate(octaword, oone, 1, TdiMultiplyOctaword(pi0, &result, &result);, *outp++ = result)
-  case DTYPE_F:  OperateFprod(float, DTYPE_F )
-  case DTYPE_FS: OperateFprod(float, DTYPE_FS)
-  case DTYPE_G:  OperateFprod(double,DTYPE_G )
-  case DTYPE_D:  OperateFprod(double,DTYPE_D )
-  case DTYPE_FT: OperateFprod(double,DTYPE_FT)
-  case DTYPE_FC: OperateCprod(float, DTYPE_F )
-  case DTYPE_FSC:OperateCprod(float, DTYPE_FS)
-  case DTYPE_GC: OperateCprod(double,DTYPE_G )
-  case DTYPE_DC: OperateCprod(double,DTYPE_D )
-  case DTYPE_FTC:OperateCprod(double,DTYPE_FT)
-  default:return TdiINVDTYDSC;
-  }
-  return 1;
-}
-
-#define OperateFsum(type,dtype) \
-{ int j0, j1, ja;\
-  type *outp = (type *)out->pointer;\
-  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
-  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  int count=0;\
-  for (ja = 0; ja++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
-      double result = 0;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += stp_dim,pm0 += stepm0) {\
-        if (*pm0 & 1)\
-        {\
-          double val;\
-          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_NATIVE_DOUBLE,0))\
-            {result += val;count++;}\
-        }\
-      }\
-      if (count)\
-        CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
-      else\
-        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
-    }\
-  }\
-  break;\
-}
-
-#define OperateCsum(type,dtype) \
-{ int j0, j1, ja;\
-  type *outp = (type *)out->pointer;\
-  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
-  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  int count = 0;\
-  for (ja = 0; ja++ < cnt_aft; pi2 += stp_aft, pm2 += stepm2) {\
-    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < cnt_bef; pi1 += stp_bef,pm1 += stepm1) {\
-      double result = 0;\
-      double resulti = 0;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < cnt_dim; j0++, pi0 += (2 * stp_dim),pm0 += stepm0) {\
-        if (*pm0 & 1)\
-        {\
-          double val;\
-          double vali;\
-          if (CvtConvertFloat(&pi0[0],dtype,&val,DTYPE_NATIVE_DOUBLE,0) && \
-              CvtConvertFloat(&pi0[1],dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) \
-            {result += val; resulti += vali; count++;}\
-        }\
-      }\
-      if (count)\
-      {\
-        CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
-        CvtConvertFloat(&resulti,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
-      }\
-      else\
-      {\
-        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
-        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
-      }\
-    }\
-  }\
-  break;\
-}
-
-int Tdi3Sum(struct descriptor *in, struct descriptor *mask,
-	    struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
-	    int stp_dim, int stp_bef, int stp_aft)
-{
-  SetupArgs switch (in->dtype) {
-  case DTYPE_B:  Operate(   int8_t, 0, 1, result+=*pi0;, *outp++ = result)
-  case DTYPE_BU: Operate( u_int8_t, 0, 1, result+=*pi0;, *outp++ = result)
-  case DTYPE_W:  Operate(  int16_t, 0, 1, result+=*pi0;, *outp++ = result)
-  case DTYPE_WU: Operate(u_int16_t, 0, 1, result+=*pi0;, *outp++ = result)
-  case DTYPE_L:  Operate(  int32_t, 0, 1, result+=*pi0;, *outp++ = result)
-  case DTYPE_LU: Operate(u_int32_t, 0, 1, result+=*pi0;, *outp++ = result)
-  case DTYPE_Q:  Operate(  int64_t, 0, 1, result+=*pi0;, *outp++ = result)
-  case DTYPE_QU: Operate(u_int64_t, 0, 1, result+=*pi0;, *outp++ = result)
-  case DTYPE_OU:
-  case DTYPE_O:  Operate(octaword, ozero, 1, TdiAddOctaword(pi0, &result, &result);, *outp++ = result)
-  case DTYPE_F:  OperateFsum(float, DTYPE_F )
-  case DTYPE_FS: OperateFsum(float, DTYPE_FS)
-  case DTYPE_G:  OperateFsum(double,DTYPE_G )
-  case DTYPE_D:  OperateFsum(double,DTYPE_D )
-  case DTYPE_FT: OperateFsum(double,DTYPE_FT)
-  case DTYPE_FC: OperateCsum(float, DTYPE_F )
-  case DTYPE_FSC:OperateCsum(float, DTYPE_FS)
-  case DTYPE_GC: OperateCsum(double,DTYPE_G )
-  case DTYPE_DC: OperateCsum(double,DTYPE_D )
-  case DTYPE_FTC:OperateCsum(double,DTYPE_FT)
-  default:return TdiINVDTYDSC;
-  }
-  return 1;
+  return k;
 }
 
 typedef struct _args_t{
 char*  inp;
 char*  outp;
 char*  maskp;
+int    length;
 int    stp_dim;
 int    stp_bef;
 int    stp_aft;
@@ -752,12 +207,604 @@ static inline int setupArgs(struct descriptor *in, struct descriptor *mask,
   return C_OK;
 }
 #define SETUP_ARGS(args)   args_t args = {\
-  in->pointer,out->pointer,mask->pointer,\
+  in->pointer,out->pointer,mask->pointer,in->length,\
   stp_dim*in->length,stp_bef*in->length,stp_aft*in->length,\
   0,0,0,\
   cnt_dim,cnt_bef,cnt_aft};\
   if (setupArgs(in,out,mask,stp_dim,stp_bef,stp_aft,&args))\
     return TdiINVCLADSC;
+
+/********************************************
+ define comparison functions:
+ int8_gt, int8_lt, u_int8_gt, u_int8_lt, ...
+ int64_gt, int64_lt, u_int64_gt, u_int64_lt, ...
+ ********************************************/
+static int gt(const double in1,const double in2){return in1>in2;}
+static int lt(const double in1,const double in2){return in1<in2;}
+#define OP(type)\
+static int type##_lt(const char* in1,const char* in2){return *(type##_t*)in1>*(type##_t*)in2;}\
+static int type##_gt(const char* in1,const char* in2){return *(type##_t*)in1<*(type##_t*)in2;}
+#define BIT(bit) OP(int##bit);OP(u_int##bit)
+BIT(8);BIT(16);BIT(32);BIT(64);
+/* missing versions for octaword */
+static int   int128_lt(const char* in1,const char* in2){return TdiLtO((unsigned int *)in1,(unsigned int *)in2,1);}
+static int u_int128_lt(const char* in1,const char* in2){return TdiLtO((unsigned int *)in1,(unsigned int *)in2,0);}
+static int   int128_gt(const char* in1,const char* in2){return TdiGtO((unsigned int *)in1,(unsigned int *)in2,1);}
+static int u_int128_gt(const char* in1,const char* in2){return TdiGtO((unsigned int *)in1,(unsigned int *)in2,0);}
+
+
+
+#define OperateTloc(testit) {\
+  args_t* a = &args;\
+  int jd, jb, ja;\
+  int *outp = (int *)out->pointer;\
+  char *pi0=(char *)in->pointer,*pi1=pi0,*pi2=pi0;\
+  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
+  char testval;\
+  struct descriptor s_d={in->length,DTYPE_T,CLASS_S,0};\
+  struct descriptor o_d={1,DTYPE_B,CLASS_S,0};\
+  struct descriptor result={in->length,DTYPE_T,CLASS_S,0};\
+  o_d.pointer=(char *)&testval;\
+  result.pointer=pi0;\
+  for (ja = 0; ja++ < a->cnt_aft; pi2 += stp_aft, pm2 += a->stpm_aft) {\
+    for (jb = 0, pi1 = pi2, pm1 = pm2; jb++ < a->cnt_bef; pi1 += stp_bef,pm1 += a->stpm_bef) {\
+      int count=0;\
+      for ( jd = 0, pi0 = pi1, pm0 = pm1; jd < a->cnt_dim; jd++, pi0 += stp_dim,pm0 += a->stpm_dim) {\
+        if (*pm0 & 1) {\
+           s_d.pointer=pi0;\
+           testit(&s_d,&result,&o_d);\
+           if (testval) {\
+             result.pointer=pi0;\
+             count=jd;\
+           }\
+        }\
+      }\
+      *outp++ = count;\
+    }\
+  }\
+  break;\
+}
+
+static inline void operateIloc(void* start,int testit(const char*,const char*),args_t*a) {
+  int jd, jb, ja;
+  int *outp = (int*)a->outp;
+  char *pi0 = a->inp,*pi1=pi0,*pi2=pi0;
+  char *pm0, *pm1, *pm2 = a->maskp;
+  char *result = malloc(a->length);
+  for (ja = 0; ja++ < a->cnt_aft; pi2 += a->stp_aft, pm2 += a->stpm_aft) {
+    for (jb = 0, pi1 = pi2, pm1 = pm2; jb++ < a->cnt_bef; pi1 += a->stp_bef,pm1 += a->stpm_bef) {
+      int count = -1;
+      memcpy(&result,start, a->length);
+      for (jd = 0, pi0 = pi1, pm0 = pm1; jd < a->cnt_dim; jd++, pi0 += a->stp_dim,pm0 += a->stpm_dim) {
+        if (*pm0 & 1 && testit(pi0,result)){
+          count = jd;
+          memcpy(&result,pi0, a->length);
+        }
+      }
+      *outp++=count;
+    }
+  }
+  free(result);
+}
+#define OperateIloc(type,start,testit) type strt=start;operateIloc(&strt,testit,&args)
+
+
+static inline void OperateFloc(char dtype, double start, int operator(const double,const double),args_t* a) {
+  int jd, jb, ja;
+  int *outp= (int*)a->outp;
+  char *pi0=a->inp,*pi1=pi0,*pi2=pi0;
+  char *pm0, *pm1, *pm2 = a->maskp;
+  for (ja = 0; ja++ < a->cnt_aft; pi2 += a->stp_aft, pm2 += a->stpm_aft) {
+    for (jb = 0, pi1 = pi2, pm1 = pm2; jb++ < a->cnt_bef; pi1 += a->stp_bef,pm1 += a->stpm_bef) {
+      int count = -1;
+      double result = start;
+      for (jd = 0, pi0 = pi1, pm0 = pm1; jd < a->cnt_dim; jd++, pi0 += a->stp_dim,pm0 += a->stpm_dim) {
+        if (*pm0 & 1) {
+          double val;
+          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_NATIVE_DOUBLE,0) && operator(val,result)) {
+            result = val;
+            count  = jd;
+          }
+        }
+      }
+      *outp++ = count;
+    }
+  }
+}
+
+int Tdi3MaxLoc(struct descriptor *in, struct descriptor *mask,
+	       struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
+	       int stp_dim, int stp_bef, int stp_aft)
+{
+  SETUP_ARGS(args);
+  switch (in->dtype) {
+  case DTYPE_T:  {OperateTloc(Tdi3Gt);break;}
+  case DTYPE_B:  {OperateIloc(    int8_t,       -128,    int8_gt);break;}
+  case DTYPE_BU: {OperateIloc(  u_int8_t,          0,  u_int8_gt);break;}
+  case DTYPE_W:  {OperateIloc(   int16_t,     -32768,   int16_gt);break;}
+  case DTYPE_WU: {OperateIloc( u_int16_t,          0, u_int16_gt);break;}
+  case DTYPE_L:  {OperateIloc(   int32_t, 0x80000000,   int32_gt);break;}
+  case DTYPE_LU: {OperateIloc( u_int32_t,          0, u_int32_gt);break;}
+  case DTYPE_Q:  {OperateIloc(   int64_t,       qmin,   int64_gt);break;}
+  case DTYPE_QU: {OperateIloc( u_int64_t,          0, u_int64_gt);break;}
+  case DTYPE_O:  {OperateIloc( int128_t,        omin,  int128_gt);break;}
+  case DTYPE_OU: {OperateIloc(u_int128_t,      uomin,u_int128_gt);break;}
+  case DTYPE_F:  {OperateFloc(DTYPE_F, -HUGE, gt,&args);break;}
+  case DTYPE_FS: {OperateFloc(DTYPE_FS,-HUGE, gt,&args);break;}
+  case DTYPE_G:  {OperateFloc(DTYPE_G, -HUGE, gt,&args);break;}
+  case DTYPE_D:  {OperateFloc(DTYPE_D, -HUGE, gt,&args);break;}
+  case DTYPE_FT: {OperateFloc(DTYPE_FT,-HUGE, gt,&args);break;}
+  default:return TdiINVDTYDSC;
+  }
+  return 1;
+}
+
+int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
+	       struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
+	       int stp_dim, int stp_bef, int stp_aft)
+{
+  SETUP_ARGS(args);
+  switch (in->dtype) {
+  case DTYPE_T:  {OperateTloc(Tdi3Lt);break;}
+  case DTYPE_B:  {OperateIloc(    int8_t,        127,    int8_lt);break;}
+  case DTYPE_BU: {OperateIloc(  u_int8_t,         -1,  u_int8_lt);break;}
+  case DTYPE_W:  {OperateIloc(   int16_t,      32767,   int16_lt);break;}
+  case DTYPE_WU: {OperateIloc( u_int16_t,         -1, u_int16_lt);break;}
+  case DTYPE_L:  {OperateIloc(   int32_t, 0x7fffffff,   int32_lt);break;}
+  case DTYPE_LU: {OperateIloc( u_int32_t,         -1, u_int32_lt);break;}
+  case DTYPE_Q:  {OperateIloc(   int64_t,       qmax,   int64_lt);break;}
+  case DTYPE_QU: {OperateIloc( u_int64_t,         -1, u_int64_lt);break;}
+  case DTYPE_O:  {OperateIloc( int128_t,        omax,  int128_lt);break;}
+  case DTYPE_OU: {OperateIloc(u_int128_t,      uomax,u_int128_lt);break;}
+  case DTYPE_F:  {OperateFloc(DTYPE_F, -HUGE, lt,&args);break;}
+  case DTYPE_FS: {OperateFloc(DTYPE_FS,-HUGE, lt,&args);break;}
+  case DTYPE_G:  {OperateFloc(DTYPE_G, -HUGE, lt,&args);break;}
+  case DTYPE_D:  {OperateFloc(DTYPE_D, -HUGE, lt,&args);break;}
+  case DTYPE_FT: {OperateFloc(DTYPE_FT,-HUGE, lt,&args);break;}
+  default:return TdiINVDTYDSC;
+  }
+  return 1;
+}
+
+static inline void operateIval(void* start,int testit(const char*,const char*),args_t*a) {
+  int jd, jb, ja;
+  char *outp = a->outp;
+  char *pi0 = a->inp,*pi1=pi0,*pi2=pi0;
+  char *pm0, *pm1, *pm2 = a->maskp;
+  char *result = malloc(a->length);
+  for (ja = 0; ja++ < a->cnt_aft; pi2 += a->stp_aft, pm2 += a->stpm_aft) {
+    for (jb = 0, pi1 = pi2, pm1 = pm2; jb++ < a->cnt_bef; pi1 += a->stp_bef,pm1 += a->stpm_bef) {
+      memcpy(&result,start, a->length);
+      for (jd = 0, pi0 = pi1, pm0 = pm1; jd < a->cnt_dim; jd++, pi0 += a->stp_dim,pm0 += a->stpm_dim) {
+        if (*pm0 & 1 && testit(pi0,result))
+          memcpy(&result,pi0, a->length);
+      }
+      memcpy(outp++, &result, a->length);
+    }
+  }
+  free(result);
+}
+#define OperateIval(type,start,testit) type strt=start;operateIval(&strt,testit,&args)
+
+static inline void OperateFval(char dtype, double start, int operator(const double,const double),args_t* a) {
+  int jd, jb, ja;
+  char *outp= a->outp;
+  char *pi0=a->inp,*pi1=pi0,*pi2=pi0;
+  char *pm0, *pm1, *pm2 = a->maskp;
+  for (ja = 0; ja++ < a->cnt_aft; pi2 += a->stp_aft, pm2 += a->stpm_aft) {
+    for (jb = 0, pi1 = pi2, pm1 = pm2; jb++ < a->cnt_bef; pi1 += a->stp_bef,pm1 += a->stpm_bef) {
+      double result = start;
+      for (jd = 0, pi0 = pi1, pm0 = pm1; jd < a->cnt_dim; jd++, pi0 += a->stp_dim,pm0 += a->stpm_dim) {
+        if (*pm0 & 1) {
+          double val;
+          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_NATIVE_DOUBLE,0) && operator(val,result))
+            result = val;
+        }
+      }
+      CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp,dtype,0);
+      outp+=a->length;
+    }
+  }
+}
+
+#define OperateTval(testit) {\
+  args_t* a = &args;\
+  int jd, jb, ja;\
+  char *outp= a->outp;\
+  char *pi0=a->inp,*pi1=pi0,*pi2=pi0;\
+  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
+  char testval;\
+  struct descriptor s_d={in->length,DTYPE_T,CLASS_S,0};\
+  struct descriptor o_d={1,DTYPE_B,CLASS_S,0};\
+  struct descriptor result={in->length,DTYPE_T,CLASS_S,0};\
+  o_d.pointer=(char *)&testval;\
+  result.pointer=pi0;\
+  a->stp_dim=in->length;\
+  for (ja = 0; ja++ < a->cnt_aft; pi2 += a->stp_aft, pm2 += a->stpm_aft) {\
+    for (jb = 0, pi1 = pi2, pm1 = pm2; jb++ < a->cnt_bef; pi1 += a->stp_bef,pm1 += a->stpm_bef) {\
+      for (jd = 0, pi0 = pi1, pm0 = pm1; jd < a->cnt_dim; jd++, pi0 += a->stp_dim,pm0 += a->stpm_dim) {\
+        if (*pm0 & 1) {\
+           s_d.pointer=pi0;\
+           testit(&s_d,&result,&o_d);\
+           if (testval) {\
+             result.pointer=pi0;\
+           }\
+        }\
+      }\
+      memmove(outp,result.pointer,stp_dim);\
+      outp += a->stp_dim;\
+    }\
+  }\
+  break;\
+}
+
+int Tdi3MaxVal(struct descriptor *in, struct descriptor *mask,
+	       struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
+	       int stp_dim, int stp_bef, int stp_aft)
+{
+  SETUP_ARGS(args);
+  switch (in->dtype) {
+  case DTYPE_T:  {OperateTval(Tdi3Gt);break;}
+  case DTYPE_B:  {OperateIval(    int8_t,       -128,    int8_gt);break;}
+  case DTYPE_BU: {OperateIval(  u_int8_t,          0,  u_int8_gt);break;}
+  case DTYPE_W:  {OperateIval(   int16_t,     -32768,   int16_gt);break;}
+  case DTYPE_WU: {OperateIval( u_int16_t,          0, u_int16_gt);break;}
+  case DTYPE_L:  {OperateIval(   int32_t, 0x80000000,   int32_gt);break;}
+  case DTYPE_LU: {OperateIval( u_int32_t,          0, u_int32_gt);break;}
+  case DTYPE_Q:  {OperateIval(   int64_t,       qmin,   int64_gt);break;}
+  case DTYPE_QU: {OperateIval( u_int64_t,          0, u_int64_gt);break;}
+  case DTYPE_O:  {OperateIval( int128_t,        omin,  int128_gt);break;}
+  case DTYPE_OU: {OperateIval(u_int128_t,      uomin,u_int128_gt);break;}
+  case DTYPE_F:  {OperateFval(DTYPE_F, -HUGE, gt,&args);break;}
+  case DTYPE_FS: {OperateFval(DTYPE_FS,-HUGE, gt,&args);break;}
+  case DTYPE_G:  {OperateFval(DTYPE_G, -HUGE, gt,&args);break;}
+  case DTYPE_D:  {OperateFval(DTYPE_D, -HUGE, gt,&args);break;}
+  case DTYPE_FT: {OperateFval(DTYPE_FT,-HUGE, gt,&args);break;}
+  default:return TdiINVDTYDSC;
+  }
+  return 1;
+}
+
+int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
+	       struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
+	       int stp_dim, int stp_bef, int stp_aft)
+{
+  SETUP_ARGS(args);
+  switch (in->dtype) {
+  case DTYPE_T:  {OperateTloc(Tdi3Lt);break;}
+  case DTYPE_B:  {OperateIval(    int8_t,        127,    int8_lt);break;}
+  case DTYPE_BU: {OperateIval(  u_int8_t,         -1,  u_int8_lt);break;}
+  case DTYPE_W:  {OperateIval(   int16_t,      32767,   int16_lt);break;}
+  case DTYPE_WU: {OperateIval( u_int16_t,         -1, u_int16_lt);break;}
+  case DTYPE_L:  {OperateIval(   int32_t, 0x7fffffff,   int32_lt);break;}
+  case DTYPE_LU: {OperateIval( u_int32_t,         -1, u_int32_lt);break;}
+  case DTYPE_Q:  {OperateIval(   int64_t,       qmax,   int64_lt);break;}
+  case DTYPE_QU: {OperateIval( u_int64_t,         -1, u_int64_lt);break;}
+  case DTYPE_O:  {OperateIval( int128_t,        omax,  int128_lt);break;}
+  case DTYPE_OU: {OperateIval(u_int128_t,      uomax,u_int128_lt);break;}
+  case DTYPE_F:  {OperateFval(DTYPE_F, -HUGE, lt,&args);break;}
+  case DTYPE_FS: {OperateFval(DTYPE_FS,-HUGE, lt,&args);break;}
+  case DTYPE_G:  {OperateFval(DTYPE_G, -HUGE, lt,&args);break;}
+  case DTYPE_D:  {OperateFval(DTYPE_D, -HUGE, lt,&args);break;}
+  case DTYPE_FT: {OperateFval(DTYPE_FT,-HUGE, lt,&args);break;}
+  default:return TdiINVDTYDSC;
+  }
+  return 1;
+}
+
+#define OperateImean(type,setup,testit,doit,final) {\
+  args_t* a = &args; \
+  int jd, jb, ja;\
+  type *outp = (type *)out->pointer;\
+  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
+  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
+  for (ja = 0; ja++ < a->cnt_aft; pi2 += a->stp_aft, pm2 += a->stpm_aft) {\
+    for (jb = 0, pi1 = pi2, pm1 = pm2; jb++ < a->cnt_bef; pi1 += a->stp_bef,pm1 += a->stpm_bef) {\
+      type result = setup;\
+      for (jd = 0, pi0 = pi1, pm0 = pm1; jd < a->cnt_dim; jd++, pi0 += a->stp_dim,\
+           pm0 += a->stpm_dim) {\
+        if (*pm0 & 1) {doit}\
+      }\
+      final;\
+    }\
+  }\
+  break;\
+}
+
+#define OperateFmean(type,dtype) {\
+  args_t* a = &args;\
+  int jd, jb, ja;\
+  type *outp = (type *)out->pointer;\
+  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
+  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
+  for (ja = 0; ja++ < a->cnt_aft; pi2 += a->stp_aft, pm2 += a->stpm_aft) {\
+    for (jb = 0, pi1 = pi2, pm1 = pm2; jb++ < a->cnt_bef; pi1 += a->stp_bef,pm1 += a->stpm_bef) {\
+      double result = 0;\
+          count = 0;\
+      for (jd = 0, pi0 = pi1, pm0 = pm1; jd < a->cnt_dim; jd++, pi0 += a->stp_dim,pm0 += a->stpm_dim) {\
+        if (*pm0 & 1)\
+        {\
+          double val;\
+          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_NATIVE_DOUBLE,0))\
+            {result += val; count++;}\
+        }\
+      }\
+      if (count)\
+      {\
+        result /= count;\
+        CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
+      }\
+      else\
+        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
+    }\
+  }\
+  break;\
+}
+
+#define OperateCmean(type,dtype) {\
+  args_t* a = &args;\
+  int jd, jb, ja;\
+  type *outp = (type *)out->pointer;\
+  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
+  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
+  for (ja = 0; ja++ < a->cnt_aft; pi2 += a->stp_aft, pm2 += a->stpm_aft) {\
+    for (jb = 0, pi1 = pi2, pm1 = pm2; jb++ < a->cnt_bef; pi1 += a->stp_bef,pm1 += a->stpm_bef) {\
+      double result = 0;\
+      double resulti = 0;\
+          count = 0;\
+      for (jd = 0, pi0 = pi1, pm0 = pm1; jd < a->cnt_dim; jd++, pi0 += (2 * a->stp_dim),pm0 += a->stpm_dim) {\
+        if (*pm0 & 1)\
+        {\
+          double val;\
+          double vali;\
+          if (CvtConvertFloat(&pi0[0],dtype,&val,DTYPE_NATIVE_DOUBLE,0) && \
+              CvtConvertFloat(&pi0[1],dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) \
+            {result += val; resulti += vali; count++;}\
+        }\
+      }\
+      if (count)\
+      {\
+        result /= count;\
+        resulti /= count;\
+        CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
+        CvtConvertFloat(&resulti,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
+      }\
+      else\
+      {\
+        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
+        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
+      }\
+    }\
+  }\
+  break;\
+}
+
+int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
+	     struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
+	     int stp_dim, int stp_bef, int stp_aft)
+{
+  int count;
+  SETUP_ARGS(args);
+  switch (in->dtype) {
+  case DTYPE_B:  OperateImean(   int8_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
+  case DTYPE_BU: OperateImean( u_int8_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
+  case DTYPE_W:  OperateImean(  int16_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
+  case DTYPE_WU: OperateImean(u_int16_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
+  case DTYPE_L:  OperateImean(  int32_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
+  case DTYPE_LU: OperateImean(u_int32_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
+  case DTYPE_Q:  OperateImean(  int64_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
+  case DTYPE_QU: OperateImean(u_int64_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
+  case DTYPE_OU: OperateImean(int128_t, ozero; count = 0, 1, TdiAddOctaword(pi0, &result, &result); count++;, {
+	    int128_t temp = ozero; memcpy(&temp, &count, sizeof(int)); TdiDivO(&result, &temp, outp++, DTYPE_OU);})
+  case DTYPE_O:  OperateImean(int128_t, ozero; count = 0, 1, TdiAddOctaword(pi0, &result, &result); count++;, {
+	    int128_t temp = ozero; memcpy(&temp, &count, sizeof(int)); TdiDivO(&result, &temp, outp++, DTYPE_O);})
+  case DTYPE_F:  OperateFmean(float,  DTYPE_F )
+  case DTYPE_FS: OperateFmean(float,  DTYPE_FS)
+  case DTYPE_G:  OperateFmean(double, DTYPE_G )
+  case DTYPE_D:  OperateFmean(double, DTYPE_D )
+  case DTYPE_FT: OperateFmean(double, DTYPE_FT)
+  case DTYPE_FC: OperateCmean(float,  DTYPE_F )
+  case DTYPE_FSC:OperateCmean(float,  DTYPE_FS)
+  case DTYPE_GC: OperateCmean(double, DTYPE_G )
+  case DTYPE_DC: OperateCmean(double, DTYPE_D )
+  case DTYPE_FTC:OperateCmean(double, DTYPE_FT)
+  default:return TdiINVDTYDSC;
+  }
+  return 1;
+}
+
+#define OperateIprod OperateImean
+#define OperateFprod(type,dtype) {\
+  args_t* a = &args; \
+  int jd, jb, ja;\
+  type *outp = (type *)out->pointer;\
+  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
+  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
+  for (ja = 0; ja++ < a->cnt_aft; pi2 += a->stp_aft, pm2 += a->stpm_aft) {\
+    for (jb = 0, pi1 = pi2, pm1 = pm2; jb++ < a->cnt_bef; pi1 += a->stp_bef,pm1 += a->stpm_bef) {\
+      double result = 1;\
+      int bad = 0;\
+      for (jd = 0, pi0 = pi1, pm0 = pm1; jd < a->cnt_dim; jd++, pi0 += a->stp_dim,pm0 += a->stpm_dim) {\
+        if (!bad && *pm0 & 1)\
+        {\
+          double val;\
+          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_NATIVE_DOUBLE,0)) result *= val; else bad = 1;\
+        }\
+      }\
+      if (!bad)\
+        CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
+      else\
+        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
+    }\
+  }\
+  break;\
+}
+
+#define OperateCprod(type,dtype) {\
+  args_t* a = &args; \
+  int jd, jb, ja;\
+  type *outp = (type *)out->pointer;\
+  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
+  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
+  for (ja = 0; ja++ < a->cnt_aft; pi2 += a->stp_aft, pm2 += a->stpm_aft) {\
+    for (jb = 0, pi1 = pi2, pm1 = pm2; jb++ < a->cnt_bef; pi1 += a->stp_bef,pm1 += a->stpm_bef) {\
+      int first = 1;\
+      double result = 1;\
+      double resulti = 1;\
+      int bad = 0;\
+      for (jd = 0, pi0 = pi1, pm0 = pm1; jd < a->cnt_dim; jd++, pi0 += (2 * a->stp_dim),pm0 += a->stpm_dim) {\
+        if (!bad && *pm0 & 1)\
+        {\
+          double val;\
+          double vali;\
+          if (CvtConvertFloat(&pi0[0],dtype,&val,DTYPE_NATIVE_DOUBLE,0) && \
+              CvtConvertFloat(&pi0[1],dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) \
+          {\
+            if (first) { result = val; resulti = vali; first = 0;} else \
+            {double oldresult = result; result = result * val - resulti * vali; resulti = oldresult * vali + resulti * val;}\
+          } else bad=1;\
+        }\
+      }\
+      if (!bad)\
+      {\
+        CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
+        CvtConvertFloat(&resulti,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
+      }\
+      else\
+      {\
+        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
+        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
+      }\
+    }\
+  }\
+  break;\
+}
+
+int Tdi3Product(struct descriptor *in, struct descriptor *mask,
+		struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
+		int stp_dim, int stp_bef, int stp_aft)
+{
+  SETUP_ARGS(args);
+  switch (in->dtype) {
+  case DTYPE_B:  OperateIprod(   int8_t, 1, 1, result = (char)(result * *pi0);, *outp++ = result)
+  case DTYPE_BU: OperateIprod( u_int8_t, 1, 1, result = (unsigned char)(result * *pi0);, *outp++ = result)
+  case DTYPE_W:  OperateIprod(  int16_t, 1, 1, result = (short)(result * *pi0);, *outp++ = result)
+  case DTYPE_WU: OperateIprod(u_int16_t, 1, 1, result = (unsigned short)(result * *pi0);, *outp++ = result)
+  case DTYPE_L:  OperateIprod(  int32_t, 1, 1, result *= *pi0;, *outp++ = result)
+  case DTYPE_LU: OperateIprod(u_int32_t, 1, 1, result *= *pi0;, *outp++ = result)
+  case DTYPE_Q:  OperateIprod(  int64_t, 1, 1, result *= *pi0;, *outp++ = result)
+  case DTYPE_QU: OperateIprod(u_int64_t, 1, 1, result *= *pi0;, *outp++ = result)
+  case DTYPE_O:
+  case DTYPE_OU: OperateIprod(int128_t, oone, 1, TdiMultiplyOctaword(pi0, &result, &result);, *outp++ = result)
+  case DTYPE_F:  OperateFprod(float, DTYPE_F )
+  case DTYPE_FS: OperateFprod(float, DTYPE_FS)
+  case DTYPE_G:  OperateFprod(double,DTYPE_G )
+  case DTYPE_D:  OperateFprod(double,DTYPE_D )
+  case DTYPE_FT: OperateFprod(double,DTYPE_FT)
+  case DTYPE_FC: OperateCprod(float, DTYPE_F )
+  case DTYPE_FSC:OperateCprod(float, DTYPE_FS)
+  case DTYPE_GC: OperateCprod(double,DTYPE_G )
+  case DTYPE_DC: OperateCprod(double,DTYPE_D )
+  case DTYPE_FTC:OperateCprod(double,DTYPE_FT)
+  default:return TdiINVDTYDSC;
+  }
+  return 1;
+}
+
+#define OperateIsum OperateImean
+#define OperateFsum(type,dtype) {\
+  args_t* a = &args; \
+  int jd, jb, ja;\
+  type *outp = (type *)out->pointer;\
+  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
+  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
+  for (ja = 0; ja++ < a->cnt_aft; pi2 += a->stp_aft, pm2 += a->stpm_aft) {\
+    for (jb = 0, pi1 = pi2, pm1 = pm2; jb++ < a->cnt_bef; pi1 += a->stp_bef,pm1 += a->stpm_bef) {\
+      int count=0;\
+      double result = 0;\
+      for (jd = 0, pi0 = pi1, pm0 = pm1; jd < a->cnt_dim; jd++, pi0 += a->stp_dim,pm0 += a->stpm_dim) {\
+        if (*pm0 & 1)\
+        {\
+          double val;\
+          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_NATIVE_DOUBLE,0))\
+            {result += val;count++;}\
+        }\
+      }\
+      if (count)\
+        CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
+      else\
+        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
+    }\
+  }\
+  break;\
+}
+
+#define OperateCsum(type,dtype) {\
+  args_t* a = &args; \
+  int jd, jb, ja;\
+  type *outp = (type *)out->pointer;\
+  type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
+  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
+  int count = 0;\
+  for (ja = 0; ja++ < a->cnt_aft; pi2 += a->stp_aft, pm2 += a->stpm_aft) {\
+    for (jb = 0, pi1 = pi2, pm1 = pm2; jb++ < a->cnt_bef; pi1 += a->stp_bef,pm1 += a->stpm_bef) {\
+      double result = 0;\
+      double resulti = 0;\
+      for (jd = 0, pi0 = pi1, pm0 = pm1; jd < a->cnt_dim; jd++, pi0 += (2 * a->stp_dim),pm0 += a->stpm_dim) {\
+        if (*pm0 & 1)\
+        {\
+          double val;\
+          double vali;\
+          if (CvtConvertFloat(&pi0[0],dtype,&val,DTYPE_NATIVE_DOUBLE,0) && \
+              CvtConvertFloat(&pi0[1],dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) \
+            {result += val; resulti += vali; count++;}\
+        }\
+      }\
+      if (count)\
+      {\
+        CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
+        CvtConvertFloat(&resulti,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
+      }\
+      else\
+      {\
+        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
+        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
+      }\
+    }\
+  }\
+  break;\
+}
+
+int Tdi3Sum(struct descriptor *in, struct descriptor *mask,
+	    struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
+	    int stp_dim, int stp_bef, int stp_aft)
+{
+  SETUP_ARGS(args);
+  switch (in->dtype) {
+  case DTYPE_B:  OperateIsum(   int8_t, 0, 1, result+=*pi0;, *outp++ = result)
+  case DTYPE_BU: OperateIsum( u_int8_t, 0, 1, result+=*pi0;, *outp++ = result)
+  case DTYPE_W:  OperateIsum(  int16_t, 0, 1, result+=*pi0;, *outp++ = result)
+  case DTYPE_WU: OperateIsum(u_int16_t, 0, 1, result+=*pi0;, *outp++ = result)
+  case DTYPE_L:  OperateIsum(  int32_t, 0, 1, result+=*pi0;, *outp++ = result)
+  case DTYPE_LU: OperateIsum(u_int32_t, 0, 1, result+=*pi0;, *outp++ = result)
+  case DTYPE_Q:  OperateIsum(  int64_t, 0, 1, result+=*pi0;, *outp++ = result)
+  case DTYPE_QU: OperateIsum(u_int64_t, 0, 1, result+=*pi0;, *outp++ = result)
+  case DTYPE_OU:
+  case DTYPE_O:  OperateIsum(int128_t, ozero, 1, TdiAddOctaword(pi0, &result, &result);, *outp++ = result)
+  case DTYPE_F:  OperateFsum(float, DTYPE_F )
+  case DTYPE_FS: OperateFsum(float, DTYPE_FS)
+  case DTYPE_G:  OperateFsum(double,DTYPE_G )
+  case DTYPE_D:  OperateFsum(double,DTYPE_D )
+  case DTYPE_FT: OperateFsum(double,DTYPE_FT)
+  case DTYPE_FC: OperateCsum(float, DTYPE_F )
+  case DTYPE_FSC:OperateCsum(float, DTYPE_FS)
+  case DTYPE_GC: OperateCsum(double,DTYPE_G )
+  case DTYPE_DC: OperateCsum(double,DTYPE_D )
+  case DTYPE_FTC:OperateCsum(double,DTYPE_FT)
+  default:return TdiINVDTYDSC;
+  }
+  return 1;
+}
 
 #define OperateIaccum(type,zero,addpid,dtype) {\
   args_t* a = &args; \
@@ -799,7 +846,7 @@ static inline void OperateFaccum(char dtype,args_t* a){
   }
 }
 
-static inline void OperateCaccum(char dtype,args_t* a,size_t size){
+static inline void OperateCaccum(char dtype,args_t* a){
   int ja, jb, jd;
   char *poa, *pob, *pod;
   char *pia, *pib, *pid;
@@ -811,13 +858,13 @@ static inline void OperateCaccum(char dtype,args_t* a,size_t size){
         if (*pmd & 1){
           double val, vali;
           if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0) &&
-              CvtConvertFloat(pid+size,dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) {
+              CvtConvertFloat(pid+a->length,dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) {
             result += val; resulti += vali;
             CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,pod,dtype,0);
-            CvtConvertFloat(&resulti,DTYPE_NATIVE_DOUBLE,pod+size,dtype,0);
+            CvtConvertFloat(&resulti,DTYPE_NATIVE_DOUBLE,pod+a->length,dtype,0);
           } else {
             CvtConvertFloat(&roprand,DTYPE_F,pod,dtype,0);
-            CvtConvertFloat(&roprand,DTYPE_F,pod+size,dtype,0);
+            CvtConvertFloat(&roprand,DTYPE_F,pod+a->length,dtype,0);
           }
         }
       }
@@ -839,95 +886,19 @@ int Tdi3Accumulate(struct descriptor *in, struct descriptor *mask,
     case DTYPE_LU: OperateIaccum(u_int32_t, 0, result += *(u_int32_t*)pid, DTYPE_LU);break;
     case DTYPE_Q:  OperateIaccum(  int64_t, 0, result += *(  int64_t*)pid, DTYPE_Q );break;
     case DTYPE_QU: OperateIaccum(u_int64_t, 0, result += *(u_int64_t*)pid, DTYPE_QU);break;
-    case DTYPE_O:  OperateIaccum(octaword, ozero, TdiAddOctaword((octaword*)pid, (octaword*)&result, (octaword*)&result), DTYPE_O ); break;
-    case DTYPE_OU: OperateIaccum(octaword, ozero, TdiAddOctaword((octaword*)pid, (octaword*)&result, (octaword*)&result), DTYPE_OU); break;
+    case DTYPE_O:  OperateIaccum(int128_t, ozero, TdiAddOctaword((int128_t*)pid, (int128_t*)&result, (int128_t*)&result), DTYPE_O ); break;
+    case DTYPE_OU: OperateIaccum(int128_t, ozero, TdiAddOctaword((int128_t*)pid, (int128_t*)&result, (int128_t*)&result), DTYPE_OU); break;
     case DTYPE_F:  OperateFaccum(DTYPE_F, &args);break;
     case DTYPE_FS: OperateFaccum(DTYPE_FS,&args);break;
     case DTYPE_G:  OperateFaccum(DTYPE_G, &args);break;
     case DTYPE_D:  OperateFaccum(DTYPE_D, &args);break;
     case DTYPE_FT: OperateFaccum(DTYPE_FT,&args);break;
-    case DTYPE_FC: OperateCaccum(DTYPE_F, &args,sizeof(float)); break;
-    case DTYPE_FSC:OperateCaccum(DTYPE_FS,&args,sizeof(float)); break;
-    case DTYPE_GC: OperateCaccum(DTYPE_G, &args,sizeof(double));break;
-    case DTYPE_DC: OperateCaccum(DTYPE_D, &args,sizeof(double));break;
-    case DTYPE_FTC:OperateCaccum(DTYPE_FT,&args,sizeof(double));break;
+    case DTYPE_FC: OperateCaccum(DTYPE_F, &args); break;
+    case DTYPE_FSC:OperateCaccum(DTYPE_FS,&args); break;
+    case DTYPE_GC: OperateCaccum(DTYPE_G, &args);break;
+    case DTYPE_DC: OperateCaccum(DTYPE_D, &args);break;
+    case DTYPE_FTC:OperateCaccum(DTYPE_FT,&args);break;
     default:return TdiINVDTYDSC;
   }
   return 1;
 }
-
-int TdiLtO(unsigned int *in1, unsigned int *in2, int is_signed)
-{
-  int j, longwords = 4, k = 0, *i1, *i2;
-  for (j = longwords - 1; j >= 0; j--)
-    if (!j || in1[j] != in2[j]) {
-      if (!is_signed || j != longwords - 1) {
-	k = (in1[j] < in2[j]);
-	break;
-      } else {
-	i1 = (int *)(in1 + j);
-	i2 = (int *)(in2 + j);
-	k = (*i1 < *i2);
-	break;
-      }
-    }
-  return k;
-}
-
-int TdiGtO(unsigned int *in1, unsigned int *in2, int is_signed)
-{
-  int j, longwords = 4, k = 0, *i1, *i2;
-  for (j = longwords - 1; j >= 0; j--) {
-    if (!j || in1[j] != in2[j]) {
-      if (!is_signed || j != longwords - 1) {
-	k = (in1[j] > in2[j]);
-	break;
-      } else {
-	i1 = (int *)(in1 + j);
-	i2 = (int *)(in2 + j);
-	k = (*i1 > *i2);
-	break;
-      }
-    }
-  }
-  return k;
-}
-
-int TdiLtQ(unsigned int *in1, unsigned int *in2, int is_signed)
-{
-  int j, longwords = 2, k = 0, *i1, *i2;
-  for (j = longwords - 1; j >= 0; j--) {
-    if (!j || in1[j] != in2[j]) {
-      if (!is_signed || j != longwords - 1) {
-	k = (in1[j] < in2[j]);
-	break;
-      } else {
-	i1 = (int *)(in1 + j);
-	i2 = (int *)(in2 + j);
-	k = (*i1 < *i2);
-	break;
-      }
-    }
-  }
-  return k;
-}
-
-int TdiGtQ(unsigned int *in1, unsigned int *in2, int is_signed)
-{
-  int j, longwords = 2, k = 0, *i1, *i2;
-  for (j = longwords - 1; j >= 0; j--) {
-    if (!j || in1[j] != in2[j]) {
-      if (!is_signed || j != longwords - 1) {
-	k = (in1[j] > in2[j]);
-	break;
-      } else {
-	i1 = (int *)(in1 + j);
-	i2 = (int *)(in2 + j);
-	k = (*i1 > *i2);
-	break;
-      }
-    }
-  }
-  return k;
-}
-
