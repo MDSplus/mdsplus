@@ -622,18 +622,12 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 
     public void SetColors(Color colors[], String colors_name[])
     {
- //     Waveform.SetColors(colors, colors_name);
-        Waveform w;
         for(int i = 0, k = 0; i < rows.length; i++)
-        {
-            for(int j = 0; j < rows[i]; j++, k++)
-            {
-                w = GetWavePanel(k);
-                if (w != null) {
-                    w.SetColors(colors, colors_name);
-                }
+            for(int j = 0; j < rows[i]; j++, k++) {
+                Waveform w = GetWavePanel(k);
+                if (w != null)
+                    Waveform.SetColors(colors, colors_name);
             }
-        }
     }
 
     public void SetParams(int mode,

@@ -564,7 +564,7 @@ class ColorDialog
         colorMapIndex = new int[newColorMap.size()];
         for (int i = 0; i < newColorMap.size(); i++)
         {
-            colorMapIndex[i] = ( (Integer) newColorMap.elementAt(i)).intValue();
+            colorMapIndex[i] = newColorMap.elementAt(i).intValue();
         }
 
         //Set default color list if is not defined color

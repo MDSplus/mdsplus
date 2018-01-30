@@ -600,15 +600,15 @@ public class MdsDataClient extends MdsConnection
 	    switch (desc.dtype)
 	    {
 		    case Descriptor.DTYPE_FLOAT:
-		        return new Float(desc.float_data[0]);
+		        return Float.valueOf(desc.float_data[0]);
 		    case Descriptor.DTYPE_LONG:
-		        return new Integer(desc.int_data[0]);
+		        return Integer.valueOf(desc.int_data[0]);
 	            case Descriptor.DTYPE_DOUBLE:
-	                return new Double(desc.double_data[0]);
+	                return Double.valueOf(desc.double_data[0]);
 		    case Descriptor.DTYPE_ULONG:
-		        return new Long(desc.long_data[0]);
+		        return Long.valueOf(desc.long_data[0]);
 		    case Descriptor.DTYPE_BYTE:
-		        return new Character((char)desc.byte_data[0]);
+		        return Character.valueOf((char)desc.byte_data[0]);
 		    case Descriptor.DTYPE_CSTRING:
 		        if((desc.status & 1) == 0)
 		            throw new MdsIOException(desc.error);
