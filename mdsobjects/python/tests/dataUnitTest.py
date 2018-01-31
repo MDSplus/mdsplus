@@ -275,8 +275,7 @@ class Tests(TestCase):
         self._doThreeTestArray('accumulate([1,2,3])',m.ACCUMULATE(m.makeArray([1,2,3])),m.Int32Array([1,3,6]))
         self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]])',m.ACCUMULATE(m.makeArray([[1,3,5],[2,4,6]])),m.Int32Array([[1,4,9], [11,15,21]]))
         self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]],0)',m.ACCUMULATE(m.makeArray([[1,3,5],[2,4,6]]),0),m.Int32Array([[1,4,9],[2,6,12]]))
-        #self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]],1)',m.ACCUMULATE([[1,3,5],[2,4,6]],1),m.Int32Array([[1,3,5],[3,7,11]]))  # tdi issue
-        self._doUnaryArray(m.Data.execute('accumulate([[1,3,5],[2,4,6]],1)'),m.ACCUMULATE(m.makeArray([[1,3,5],[2,4,6]]),1).getData())
+        self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]],1)',m.ACCUMULATE(m.makeArray([[1,3,5],[2,4,6]]),1),m.Int32Array([[1,3,5],[3,7,11]]))
         """Test achar"""
         self._doThreeTest('achar(88)',m.ACHAR(88),m.String('X'))
         """Test ADJUSTL"""
