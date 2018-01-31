@@ -24,19 +24,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-                Name:   Tdi3Divide   
+                Name:   Tdi3Divide
 
                 Type:   C function
 
                 Author: TOM FREDIAN
 
-                Date:   5-OCT-1993 
+                Date:   5-OCT-1993
 
                 Purpose: Divide two operands
 
 ------------------------------------------------------------------------------
 
-        Call sequence: 
+        Call sequence:
 
 int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 
@@ -137,10 +137,10 @@ typedef struct {
 }
 
 #define OperateWideOne(type,size,is_signed) \
-  double a = WideIntToDouble(in1p,size/sizeof(int),is_signed);	\
-  double b = WideIntToDouble(in2p,size/sizeof(int),is_signed);	\
+  double a = WideIntToDouble(in1p,size,is_signed);	\
+  double b = WideIntToDouble(in2p,size,is_signed);	\
   double ans = (b != 0) ? a/b : (double)0.0;			\
-  DoubleToWideInt(&ans,size/sizeof(int),outp++);
+  DoubleToWideInt(&ans,size,outp++);
 
 #define OperateWide(type,size,is_signed) \
 { type *in1p = (type *)in1->pointer;\
@@ -207,28 +207,24 @@ int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor
   SetupArgs switch (in1->dtype) {
   case DTYPE_B:
     Operate(char)
-    case DTYPE_BU:Operate(unsigned char)
-    case DTYPE_W:Operate(short)
-    case DTYPE_WU:Operate(unsigned short)
-    case DTYPE_L:Operate(int)
-    case DTYPE_LU:Operate(unsigned int)
-    case DTYPE_Q:Operate(int64_t);
-  case DTYPE_QU:
-    Operate(uint64_t);
-  case DTYPE_O:
-    OperateWide(octaword, 4, 1);
-  case DTYPE_OU:
-    OperateWide(octaword, 4, 0);
-  case DTYPE_F:
-    OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT)
-    case DTYPE_FS:OperateF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT)
-    case DTYPE_G:OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
-    case DTYPE_D:OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE)
-    case DTYPE_FT:OperateF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE)
-    case DTYPE_FC:OperateC(float, DTYPE_F)
+    case DTYPE_BU: Operate(unsigned char)
+    case DTYPE_W:  Operate(short)
+    case DTYPE_WU: Operate(unsigned short)
+    case DTYPE_L:  Operate(int)
+    case DTYPE_LU: Operate(unsigned int)
+    case DTYPE_Q:  Operate(int64_t);
+    case DTYPE_QU: Operate(uint64_t);
+    case DTYPE_O:  OperateWide(octaword, 4, 1);
+    case DTYPE_OU: OperateWide(octaword, 4, 0);
+    case DTYPE_F:  OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT)
+    case DTYPE_FS: OperateF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT)
+    case DTYPE_G:  OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
+    case DTYPE_D:  OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE)
+    case DTYPE_FT: OperateF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE)
+    case DTYPE_FC: OperateC(float, DTYPE_F)
     case DTYPE_FSC:OperateC(float, DTYPE_FS)
-    case DTYPE_GC:OperateC(double, DTYPE_G)
-    case DTYPE_DC:OperateC(double, DTYPE_D)
+    case DTYPE_GC: OperateC(double, DTYPE_G)
+    case DTYPE_DC: OperateC(double, DTYPE_D)
     case DTYPE_FTC:OperateC(double, DTYPE_FT)
     default:return TdiINVDTYDSC;
   }
