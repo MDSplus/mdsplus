@@ -6,7 +6,6 @@
 int CvtConvertFloat(void const *input_value, const int input_type, void *output_value,
 		    const int output_type);
 int TdiAddOctaword(unsigned const int *a, unsigned const int *b, unsigned int *ans);
-int TdiAddQuadword(unsigned const int *a, unsigned const int *b, unsigned int *ans);
 int TdiBinary(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct descriptor *out_ptr,
 	      unsigned int *out_count);
 int TdiConvert(struct descriptor *pdin, struct descriptor_a *pdout);
@@ -23,7 +22,6 @@ int TdiMasterData(int nsig, struct descriptor_xd sig[1], struct descriptor_xd un
 		  int *cmode_ptr, struct descriptor_xd *out_ptr);
 int Tdi3Multiply(struct descriptor *in1, struct descriptor *in2, struct descriptor *out);
 int TdiSubtractOctaword(unsigned int *a, unsigned int *b, unsigned int *ans);
-int TdiSubtractQuadword(unsigned int *a, unsigned int *b, unsigned int *ans);
 int TdiUnary(struct descriptor *in_ptr, struct descriptor *out_ptr, unsigned int *out_count);
 void UseNativeFloat(struct TdiCatStruct *cat);
 void TdiResetGetRecord();

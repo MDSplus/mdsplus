@@ -63,11 +63,8 @@ int Tdi3Add(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 
 extern int CvtConvertFloat();
 
-int TdiMultiplyQuadword();
 int TdiMultiplyOctaword();
-int TdiAddQuadword();
 int TdiAddOctaword();
-int TdiSubtractQuadword();
 int TdiSubtractOctaword();
 
 #define SetupArgs \
@@ -209,21 +206,20 @@ STATIC_CONSTANT const int roprand = 0x8000;
 int Tdi3Add(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 {
   SetupArgs switch (in1->dtype) {
-  case DTYPE_B:
-    Operate(char, +)
-    case DTYPE_BU:Operate(unsigned char, +)
-    case DTYPE_W:Operate(short, +)
-    case DTYPE_WU:Operate(unsigned short, +)
-    case DTYPE_L:Operate(int, +)
-    case DTYPE_LU:Operate(unsigned int, +)
-    case DTYPE_Q:OperateSpecial(8, TdiAddQuadword)
-    case DTYPE_QU:OperateSpecial(8, TdiAddQuadword)
-    case DTYPE_O:OperateSpecial(16, TdiAddOctaword)
+    case DTYPE_B: Operate(  int8_t, +)
+    case DTYPE_BU:Operate( uint8_t, +)
+    case DTYPE_W: Operate(uint16_t, +)
+    case DTYPE_WU:Operate(uint16_t, +)
+    case DTYPE_L: Operate(uint32_t, +)
+    case DTYPE_LU:Operate(uint32_t, +)
+    case DTYPE_Q: Operate( int64_t, +)
+    case DTYPE_QU:Operate(uint64_t, +)
+    case DTYPE_O: OperateSpecial(16, TdiAddOctaword)
     case DTYPE_OU:OperateSpecial(16, TdiAddOctaword)
-    case DTYPE_F:OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, +)
+    case DTYPE_F: OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, +)
     case DTYPE_FS:OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, +)
-    case DTYPE_D:OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, +)
-    case DTYPE_G:OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, +)
+    case DTYPE_D: OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, +)
+    case DTYPE_G: OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, +)
     case DTYPE_FT:OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, +)
     case DTYPE_FC:OperateComplex(float, DTYPE_F, DTYPE_NATIVE_FLOAT, +)
     case DTYPE_FSC:OperateComplex(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, +)
@@ -238,15 +234,14 @@ int Tdi3Add(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 int Tdi3Subtract(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 {
   SetupArgs switch (in1->dtype) {
-  case DTYPE_B:
-    Operate(char, -)
-    case DTYPE_BU:Operate(unsigned char, -)
-    case DTYPE_W:Operate(short, -)
-    case DTYPE_WU:Operate(unsigned short, -)
-    case DTYPE_L:Operate(int, -)
-    case DTYPE_LU:Operate(unsigned int, -)
-    case DTYPE_Q:OperateSpecial(8, TdiSubtractQuadword)
-    case DTYPE_QU:OperateSpecial(8, TdiSubtractQuadword)
+    case DTYPE_B: Operate(  int8_t, -)
+    case DTYPE_BU:Operate( uint8_t, -)
+    case DTYPE_W: Operate(uint16_t, -)
+    case DTYPE_WU:Operate(uint16_t, -)
+    case DTYPE_L: Operate(uint32_t, -)
+    case DTYPE_LU:Operate(uint32_t, -)
+    case DTYPE_Q: Operate( int64_t, -)
+    case DTYPE_QU:Operate(uint64_t, -)
     case DTYPE_O:OperateSpecial(16, TdiSubtractOctaword)
     case DTYPE_OU:OperateSpecial(16, TdiSubtractOctaword)
     case DTYPE_F:OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, -)
@@ -267,15 +262,14 @@ int Tdi3Subtract(struct descriptor *in1, struct descriptor *in2, struct descript
 int Tdi3Multiply(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 {
   SetupArgs switch (in1->dtype) {
-  case DTYPE_B:
-    Operate(char, *)
-    case DTYPE_BU:Operate(unsigned char, *)
-    case DTYPE_W:Operate(short, *)
-    case DTYPE_WU:Operate(unsigned short, *)
-    case DTYPE_L:Operate(int, *)
-    case DTYPE_LU:Operate(unsigned int, *)
-    case DTYPE_Q:OperateSpecial(8, TdiMultiplyQuadword)
-    case DTYPE_QU:OperateSpecial(8, TdiMultiplyQuadword)
+    case DTYPE_B: Operate(  int8_t, *)
+    case DTYPE_BU:Operate( uint8_t, *)
+    case DTYPE_W: Operate(uint16_t, *)
+    case DTYPE_WU:Operate(uint16_t, *)
+    case DTYPE_L: Operate(uint32_t, *)
+    case DTYPE_LU:Operate(uint32_t, *)
+    case DTYPE_Q: Operate( int64_t, *)
+    case DTYPE_QU:Operate(uint64_t, *)
     case DTYPE_O:OperateSpecial(16, TdiMultiplyOctaword)
     case DTYPE_OU:OperateSpecial(16, TdiMultiplyOctaword)
     case DTYPE_F:OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, *)
@@ -316,42 +310,16 @@ STATIC_ROUTINE int emul(int *m1, int *m2, int *add, int *out)
 }
 #endif
 
-int TdiMultiplyQuadword(int *in1, int *in2, int *out)
-{
-  int64_t *arg1 = (int64_t *) in1;
-  int64_t *arg2 = (int64_t *) in2;
-  *((int64_t *) out) = *arg1 * *arg2;
-  return 1;
-  /*
-
-     int tmp[3] = {0,0,0};
-     int in1l[2];
-     int in2l[2];
-     #ifdef WORDS_BIGENDIAN
-     in1l[0] = in1[1];
-     in1l[1] = in1[0];
-     in2l[0] = in2[1];
-     in2l[1] = in2[0];
-     #else
-     in1l[0] = in1[0];
-     in1l[1] = in1[1];
-     in2l[0] = in2[0];
-     in2l[1] = in2[1];
-     #endif
-     emul(&in2l[0],&in1l[0],zero,&tmp[0]);
-     swapquad(&tmp[0])
-     emul(&in2l[1],&in1l[0],&tmp[1],&tmp[1]);
-     swapquad(&tmp[1])
-     emul(&in2l[0],&in1l[1],&tmp[1],&tmp[1]);
-     swapquad(&tmp[1])
-     if (in1l[0] < 0)
-     tmp[1] += in2l[0];
-     if (in2l[0] < 0)
-     tmp[1] += in1l[0];
-     swapquad(&tmp[0])
-     memcpy(out,tmp,8);
-   */
-  return 1;
+int TdiAddQuadword(int *a, int *b, int *ans){
+  uint64_t *arg1 = (uint64_t *) a;
+  uint64_t *arg2 = (uint64_t *) b;
+  uint64_t *out = (uint64_t *) ans;
+  *out = *arg1 + *arg2;
+#if defined(_MSC_VER) && _MSC_VER <= 1300
+  return (*out & 0x800000000000000U i64) != 0;
+#else
+  return (*out & 0x800000000000000ULL) != 0;
+#endif
 }
 
 int TdiMultiplyOctaword(int *in1, int *in2, int *out)
@@ -410,7 +378,7 @@ int TdiMultiplyOctaword(int *in1, int *in2, int *out)
   memcpy(tmp3, &tmp[2], 8);
   swapquad(tmp2);
   swapquad(tmp3);
-  TdiAddQuadword(tmp2, tmp3, &tmp[2]);
+  TdiAddOctaword(tmp2, tmp3, &tmp[2]);
   swapquad(&tmp[2]);
   emul(&in2l[0], &in1l[3], &tmp[3], &tmp[3]);
   swapquad(&tmp[3]);
@@ -468,19 +436,6 @@ int TdiMultiplyOctaword(int *in1, int *in2, int *out)
   return 1;
 }
 
-int TdiAddQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
-{
-  uint64_t *arg1 = (uint64_t *) a;
-  uint64_t *arg2 = (uint64_t *) b;
-  uint64_t *out = (uint64_t *) ans;
-  *out = *arg1 + *arg2;
-#if defined(_MSC_VER) && _MSC_VER <= 1300
-  return (*out & 0x800000000000000U i64) != 0;
-#else
-  return (*out & 0x800000000000000ULL) != 0;
-#endif
-}
-
 int TdiAddOctaword(unsigned int *a, unsigned int *b, unsigned int *ans)
 {
   int i;
@@ -499,25 +454,6 @@ int TdiAddOctaword(unsigned int *a, unsigned int *b, unsigned int *ans)
   }
   swapocta(ans);
   return !carry;
-}
-
-int TdiSubtractQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
-{
-  int i;
-  unsigned int lb[2];
-  unsigned int sub[2];
-  lb[0] = b[0];
-  lb[1] = b[1];
-  swapquad(lb);
-  for (i = 0; i < 2; i++) {
-    sub[i] = ~lb[i];
-    if (i == 0)
-      sub[i]++;
-    else if (sub[i - 1] < (~lb[i - 1]))
-      sub[i]++;
-  }
-  swapquad(sub);
-  return TdiAddQuadword(a, sub, ans);
 }
 
 int TdiSubtractOctaword(unsigned int *a, unsigned int *b, unsigned int *ans)

@@ -73,6 +73,7 @@ extern int Tdi3Lt();
 extern int Tdi3Gt();
 extern int Tdi3Divide();
 #include <STATICdef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
@@ -91,7 +92,7 @@ typedef struct {
   int o2;
   int o3;
 } int128_t;
-#define u_int128_t int128_t
+#define uint128_t int128_t
 
 
 #define ozero { 0, 0, 0, 0 };
@@ -127,7 +128,7 @@ extern int TdiAddOctaword();
  i1.pointer = (char *)(in1); i2.pointer = (char *)(in2);\
  o.pointer = (char *)(out);\
  Tdi3Divide(&i1,&i2,&o);}
-static inline int TdiLtO(unsigned int *in1, unsigned int *in2, int is_signed){
+int TdiLtO(unsigned int *in1, unsigned int *in2, int is_signed){
   int j, longwords = 4, k = 0, *i1, *i2;
   for (j = longwords - 1; j >= 0; j--)
     if (!j || in1[j] != in2[j]) {
@@ -143,7 +144,7 @@ static inline int TdiLtO(unsigned int *in1, unsigned int *in2, int is_signed){
     }
   return k;
 }
-static inline int TdiGtO(unsigned int *in1, unsigned int *in2, int is_signed){
+int TdiGtO(unsigned int *in1, unsigned int *in2, int is_signed){
   int j, longwords = 4, k = 0, *i1, *i2;
   for (j = longwords - 1; j >= 0; j--) {
     if (!j || in1[j] != in2[j]) {
@@ -216,21 +217,21 @@ static inline int setupArgs(struct descriptor *in, struct descriptor *mask,
 
 /********************************************
  define comparison functions:
- int8_gt, int8_lt, u_int8_gt, u_int8_lt, ...
- int64_gt, int64_lt, u_int64_gt, u_int64_lt, ...
+ int8_gt, int8_lt, uint8_gt, uint8_lt, ...
+ int64_gt, int64_lt, uint64_gt, uint64_lt, ...
  ********************************************/
 static int gt(const double in1,const double in2){return in1>in2;}
 static int lt(const double in1,const double in2){return in1<in2;}
 #define OP(type)\
-static int type##_lt(const char* in1,const char* in2){return *(type##_t*)in1>*(type##_t*)in2;}\
-static int type##_gt(const char* in1,const char* in2){return *(type##_t*)in1<*(type##_t*)in2;}
-#define BIT(bit) OP(int##bit);OP(u_int##bit)
+static int type##_lt(const char* in1,const char* in2){return *(type##_t*)in1<*(type##_t*)in2;}\
+static int type##_gt(const char* in1,const char* in2){return *(type##_t*)in1>*(type##_t*)in2;}
+#define BIT(bit) OP(int##bit);OP(uint##bit)
 BIT(8);BIT(16);BIT(32);BIT(64);
 /* missing versions for octaword */
-static int   int128_lt(const char* in1,const char* in2){return TdiLtO((unsigned int *)in1,(unsigned int *)in2,1);}
-static int u_int128_lt(const char* in1,const char* in2){return TdiLtO((unsigned int *)in1,(unsigned int *)in2,0);}
-static int   int128_gt(const char* in1,const char* in2){return TdiGtO((unsigned int *)in1,(unsigned int *)in2,1);}
-static int u_int128_gt(const char* in1,const char* in2){return TdiGtO((unsigned int *)in1,(unsigned int *)in2,0);}
+static int  int128_lt(const char* in1,const char* in2){return TdiLtO((unsigned int *)in1,(unsigned int *)in2,1);}
+static int uint128_lt(const char* in1,const char* in2){return TdiLtO((unsigned int *)in1,(unsigned int *)in2,0);}
+static int  int128_gt(const char* in1,const char* in2){return TdiGtO((unsigned int *)in1,(unsigned int *)in2,1);}
+static int uint128_gt(const char* in1,const char* in2){return TdiGtO((unsigned int *)in1,(unsigned int *)in2,0);}
 
 
 
@@ -274,11 +275,11 @@ static inline void operateIloc(void* start,int testit(const char*,const char*),a
   for (ja = 0; ja++ < a->cnt_aft; pi2 += a->stp_aft, pm2 += a->stpm_aft) {
     for (jb = 0, pi1 = pi2, pm1 = pm2; jb++ < a->cnt_bef; pi1 += a->stp_bef,pm1 += a->stpm_bef) {
       int count = -1;
-      memcpy(&result,start, a->length);
+      memcpy(result,start, a->length);
       for (jd = 0, pi0 = pi1, pm0 = pm1; jd < a->cnt_dim; jd++, pi0 += a->stp_dim,pm0 += a->stpm_dim) {
         if (*pm0 & 1 && testit(pi0,result)){
           count = jd;
-          memcpy(&result,pi0, a->length);
+          memcpy(result,pi0, a->length);
         }
       }
       *outp++=count;
@@ -319,16 +320,16 @@ int Tdi3MaxLoc(struct descriptor *in, struct descriptor *mask,
   SETUP_ARGS(args);
   switch (in->dtype) {
   case DTYPE_T:  {OperateTloc(Tdi3Gt);break;}
-  case DTYPE_B:  {OperateIloc(    int8_t,       -128,    int8_gt);break;}
-  case DTYPE_BU: {OperateIloc(  u_int8_t,          0,  u_int8_gt);break;}
-  case DTYPE_W:  {OperateIloc(   int16_t,     -32768,   int16_gt);break;}
-  case DTYPE_WU: {OperateIloc( u_int16_t,          0, u_int16_gt);break;}
-  case DTYPE_L:  {OperateIloc(   int32_t, 0x80000000,   int32_gt);break;}
-  case DTYPE_LU: {OperateIloc( u_int32_t,          0, u_int32_gt);break;}
-  case DTYPE_Q:  {OperateIloc(   int64_t,       qmin,   int64_gt);break;}
-  case DTYPE_QU: {OperateIloc( u_int64_t,          0, u_int64_gt);break;}
-  case DTYPE_O:  {OperateIloc( int128_t,        omin,  int128_gt);break;}
-  case DTYPE_OU: {OperateIloc(u_int128_t,      uomin,u_int128_gt);break;}
+  case DTYPE_B:  {OperateIloc(   int8_t,       -128,   int8_gt);break;}
+  case DTYPE_BU: {OperateIloc(  uint8_t,          0,  uint8_gt);break;}
+  case DTYPE_W:  {OperateIloc(  int16_t,     -32768,  int16_gt);break;}
+  case DTYPE_WU: {OperateIloc( uint16_t,          0, uint16_gt);break;}
+  case DTYPE_L:  {OperateIloc(  int32_t, 0x80000000,  int32_gt);break;}
+  case DTYPE_LU: {OperateIloc( uint32_t,          0, uint32_gt);break;}
+  case DTYPE_Q:  {OperateIloc(  int64_t,       qmin,  int64_gt);break;}
+  case DTYPE_QU: {OperateIloc( uint64_t,          0, uint64_gt);break;}
+  case DTYPE_O:  {OperateIloc(int128_t,        omin, int128_gt);break;}
+  case DTYPE_OU: {OperateIloc(uint128_t,      uomin,uint128_gt);break;}
   case DTYPE_F:  {OperateFloc(DTYPE_F, -HUGE, gt,&args);break;}
   case DTYPE_FS: {OperateFloc(DTYPE_FS,-HUGE, gt,&args);break;}
   case DTYPE_G:  {OperateFloc(DTYPE_G, -HUGE, gt,&args);break;}
@@ -346,16 +347,16 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
   SETUP_ARGS(args);
   switch (in->dtype) {
   case DTYPE_T:  {OperateTloc(Tdi3Lt);break;}
-  case DTYPE_B:  {OperateIloc(    int8_t,        127,    int8_lt);break;}
-  case DTYPE_BU: {OperateIloc(  u_int8_t,         -1,  u_int8_lt);break;}
-  case DTYPE_W:  {OperateIloc(   int16_t,      32767,   int16_lt);break;}
-  case DTYPE_WU: {OperateIloc( u_int16_t,         -1, u_int16_lt);break;}
-  case DTYPE_L:  {OperateIloc(   int32_t, 0x7fffffff,   int32_lt);break;}
-  case DTYPE_LU: {OperateIloc( u_int32_t,         -1, u_int32_lt);break;}
-  case DTYPE_Q:  {OperateIloc(   int64_t,       qmax,   int64_lt);break;}
-  case DTYPE_QU: {OperateIloc( u_int64_t,         -1, u_int64_lt);break;}
-  case DTYPE_O:  {OperateIloc( int128_t,        omax,  int128_lt);break;}
-  case DTYPE_OU: {OperateIloc(u_int128_t,      uomax,u_int128_lt);break;}
+  case DTYPE_B:  {OperateIloc(   int8_t,        127,   int8_lt);break;}
+  case DTYPE_BU: {OperateIloc(  uint8_t,         -1,  uint8_lt);break;}
+  case DTYPE_W:  {OperateIloc(  int16_t,      32767,  int16_lt);break;}
+  case DTYPE_WU: {OperateIloc( uint16_t,         -1, uint16_lt);break;}
+  case DTYPE_L:  {OperateIloc(  int32_t, 0x7fffffff,  int32_lt);break;}
+  case DTYPE_LU: {OperateIloc( uint32_t,         -1, uint32_lt);break;}
+  case DTYPE_Q:  {OperateIloc(  int64_t,       qmax,  int64_lt);break;}
+  case DTYPE_QU: {OperateIloc( uint64_t,         -1, uint64_lt);break;}
+  case DTYPE_O:  {OperateIloc(int128_t,        omax, int128_lt);break;}
+  case DTYPE_OU: {OperateIloc(uint128_t,      uomax,uint128_lt);break;}
   case DTYPE_F:  {OperateFloc(DTYPE_F, -HUGE, lt,&args);break;}
   case DTYPE_FS: {OperateFloc(DTYPE_FS,-HUGE, lt,&args);break;}
   case DTYPE_G:  {OperateFloc(DTYPE_G, -HUGE, lt,&args);break;}
@@ -374,12 +375,12 @@ static inline void operateIval(void* start,int testit(const char*,const char*),a
   char *result = malloc(a->length);
   for (ja = 0; ja++ < a->cnt_aft; pi2 += a->stp_aft, pm2 += a->stpm_aft) {
     for (jb = 0, pi1 = pi2, pm1 = pm2; jb++ < a->cnt_bef; pi1 += a->stp_bef,pm1 += a->stpm_bef) {
-      memcpy(&result,start, a->length);
+      memcpy(result,start, a->length);
       for (jd = 0, pi0 = pi1, pm0 = pm1; jd < a->cnt_dim; jd++, pi0 += a->stp_dim,pm0 += a->stpm_dim) {
         if (*pm0 & 1 && testit(pi0,result))
-          memcpy(&result,pi0, a->length);
+          memcpy(result,pi0, a->length);
       }
-      memcpy(outp++, &result, a->length);
+      memcpy(outp++, result, a->length);
     }
   }
   free(result);
@@ -445,16 +446,16 @@ int Tdi3MaxVal(struct descriptor *in, struct descriptor *mask,
   SETUP_ARGS(args);
   switch (in->dtype) {
   case DTYPE_T:  {OperateTval(Tdi3Gt);break;}
-  case DTYPE_B:  {OperateIval(    int8_t,       -128,    int8_gt);break;}
-  case DTYPE_BU: {OperateIval(  u_int8_t,          0,  u_int8_gt);break;}
-  case DTYPE_W:  {OperateIval(   int16_t,     -32768,   int16_gt);break;}
-  case DTYPE_WU: {OperateIval( u_int16_t,          0, u_int16_gt);break;}
-  case DTYPE_L:  {OperateIval(   int32_t, 0x80000000,   int32_gt);break;}
-  case DTYPE_LU: {OperateIval( u_int32_t,          0, u_int32_gt);break;}
-  case DTYPE_Q:  {OperateIval(   int64_t,       qmin,   int64_gt);break;}
-  case DTYPE_QU: {OperateIval( u_int64_t,          0, u_int64_gt);break;}
-  case DTYPE_O:  {OperateIval( int128_t,        omin,  int128_gt);break;}
-  case DTYPE_OU: {OperateIval(u_int128_t,      uomin,u_int128_gt);break;}
+  case DTYPE_B:  {OperateIval(   int8_t,       -128,   int8_gt);break;}
+  case DTYPE_BU: {OperateIval(  uint8_t,          0,  uint8_gt);break;}
+  case DTYPE_W:  {OperateIval(  int16_t,     -32768,  int16_gt);break;}
+  case DTYPE_WU: {OperateIval( uint16_t,          0, uint16_gt);break;}
+  case DTYPE_L:  {OperateIval(  int32_t, 0x80000000,  int32_gt);break;}
+  case DTYPE_LU: {OperateIval( uint32_t,          0, uint32_gt);break;}
+  case DTYPE_Q:  {OperateIval(  int64_t,       qmin,  int64_gt);break;}
+  case DTYPE_QU: {OperateIval( uint64_t,          0, uint64_gt);break;}
+  case DTYPE_O:  {OperateIval( int128_t,       omin, int128_gt);break;}
+  case DTYPE_OU: {OperateIval(uint128_t,      uomin,uint128_gt);break;}
   case DTYPE_F:  {OperateFval(DTYPE_F, -HUGE, gt,&args);break;}
   case DTYPE_FS: {OperateFval(DTYPE_FS,-HUGE, gt,&args);break;}
   case DTYPE_G:  {OperateFval(DTYPE_G, -HUGE, gt,&args);break;}
@@ -472,16 +473,16 @@ int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
   SETUP_ARGS(args);
   switch (in->dtype) {
   case DTYPE_T:  {OperateTloc(Tdi3Lt);break;}
-  case DTYPE_B:  {OperateIval(    int8_t,        127,    int8_lt);break;}
-  case DTYPE_BU: {OperateIval(  u_int8_t,         -1,  u_int8_lt);break;}
-  case DTYPE_W:  {OperateIval(   int16_t,      32767,   int16_lt);break;}
-  case DTYPE_WU: {OperateIval( u_int16_t,         -1, u_int16_lt);break;}
-  case DTYPE_L:  {OperateIval(   int32_t, 0x7fffffff,   int32_lt);break;}
-  case DTYPE_LU: {OperateIval( u_int32_t,         -1, u_int32_lt);break;}
-  case DTYPE_Q:  {OperateIval(   int64_t,       qmax,   int64_lt);break;}
-  case DTYPE_QU: {OperateIval( u_int64_t,         -1, u_int64_lt);break;}
-  case DTYPE_O:  {OperateIval( int128_t,        omax,  int128_lt);break;}
-  case DTYPE_OU: {OperateIval(u_int128_t,      uomax,u_int128_lt);break;}
+  case DTYPE_B:  {OperateIval(   int8_t,        127,   int8_lt);break;}
+  case DTYPE_BU: {OperateIval(  uint8_t,         -1,  uint8_lt);break;}
+  case DTYPE_W:  {OperateIval(  int16_t,      32767,  int16_lt);break;}
+  case DTYPE_WU: {OperateIval( uint16_t,         -1, uint16_lt);break;}
+  case DTYPE_L:  {OperateIval(  int32_t, 0x7fffffff,  int32_lt);break;}
+  case DTYPE_LU: {OperateIval( uint32_t,         -1, uint32_lt);break;}
+  case DTYPE_Q:  {OperateIval(  int64_t,       qmax,  int64_lt);break;}
+  case DTYPE_QU: {OperateIval( uint64_t,         -1, uint64_lt);break;}
+  case DTYPE_O:  {OperateIval( int128_t,       omax, int128_lt);break;}
+  case DTYPE_OU: {OperateIval(uint128_t,      uomax,uint128_lt);break;}
   case DTYPE_F:  {OperateFval(DTYPE_F, -HUGE, lt,&args);break;}
   case DTYPE_FS: {OperateFval(DTYPE_FS,-HUGE, lt,&args);break;}
   case DTYPE_G:  {OperateFval(DTYPE_G, -HUGE, lt,&args);break;}
@@ -587,13 +588,13 @@ int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
   SETUP_ARGS(args);
   switch (in->dtype) {
   case DTYPE_B:  OperateImean(   int8_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
-  case DTYPE_BU: OperateImean( u_int8_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
+  case DTYPE_BU: OperateImean( uint8_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
   case DTYPE_W:  OperateImean(  int16_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
-  case DTYPE_WU: OperateImean(u_int16_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
+  case DTYPE_WU: OperateImean(uint16_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
   case DTYPE_L:  OperateImean(  int32_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
-  case DTYPE_LU: OperateImean(u_int32_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
+  case DTYPE_LU: OperateImean(uint32_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
   case DTYPE_Q:  OperateImean(  int64_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
-  case DTYPE_QU: OperateImean(u_int64_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
+  case DTYPE_QU: OperateImean(uint64_t,  0; count = 0, 1, result+=*pi0; count++;, *outp++ = (result / count))
   case DTYPE_OU: OperateImean(int128_t, ozero; count = 0, 1, TdiAddOctaword(pi0, &result, &result); count++;, {
 	    int128_t temp = ozero; memcpy(&temp, &count, sizeof(int)); TdiDivO(&result, &temp, outp++, DTYPE_OU);})
   case DTYPE_O:  OperateImean(int128_t, ozero; count = 0, 1, TdiAddOctaword(pi0, &result, &result); count++;, {
@@ -687,13 +688,13 @@ int Tdi3Product(struct descriptor *in, struct descriptor *mask,
   SETUP_ARGS(args);
   switch (in->dtype) {
   case DTYPE_B:  OperateIprod(   int8_t, 1, 1, result = (char)(result * *pi0);, *outp++ = result)
-  case DTYPE_BU: OperateIprod( u_int8_t, 1, 1, result = (unsigned char)(result * *pi0);, *outp++ = result)
+  case DTYPE_BU: OperateIprod( uint8_t, 1, 1, result = (unsigned char)(result * *pi0);, *outp++ = result)
   case DTYPE_W:  OperateIprod(  int16_t, 1, 1, result = (short)(result * *pi0);, *outp++ = result)
-  case DTYPE_WU: OperateIprod(u_int16_t, 1, 1, result = (unsigned short)(result * *pi0);, *outp++ = result)
+  case DTYPE_WU: OperateIprod(uint16_t, 1, 1, result = (unsigned short)(result * *pi0);, *outp++ = result)
   case DTYPE_L:  OperateIprod(  int32_t, 1, 1, result *= *pi0;, *outp++ = result)
-  case DTYPE_LU: OperateIprod(u_int32_t, 1, 1, result *= *pi0;, *outp++ = result)
+  case DTYPE_LU: OperateIprod(uint32_t, 1, 1, result *= *pi0;, *outp++ = result)
   case DTYPE_Q:  OperateIprod(  int64_t, 1, 1, result *= *pi0;, *outp++ = result)
-  case DTYPE_QU: OperateIprod(u_int64_t, 1, 1, result *= *pi0;, *outp++ = result)
+  case DTYPE_QU: OperateIprod(uint64_t, 1, 1, result *= *pi0;, *outp++ = result)
   case DTYPE_O:
   case DTYPE_OU: OperateIprod(int128_t, oone, 1, TdiMultiplyOctaword(pi0, &result, &result);, *outp++ = result)
   case DTYPE_F:  OperateFprod(float, DTYPE_F )
@@ -782,13 +783,13 @@ int Tdi3Sum(struct descriptor *in, struct descriptor *mask,
   SETUP_ARGS(args);
   switch (in->dtype) {
   case DTYPE_B:  OperateIsum(   int8_t, 0, 1, result+=*pi0;, *outp++ = result)
-  case DTYPE_BU: OperateIsum( u_int8_t, 0, 1, result+=*pi0;, *outp++ = result)
+  case DTYPE_BU: OperateIsum( uint8_t, 0, 1, result+=*pi0;, *outp++ = result)
   case DTYPE_W:  OperateIsum(  int16_t, 0, 1, result+=*pi0;, *outp++ = result)
-  case DTYPE_WU: OperateIsum(u_int16_t, 0, 1, result+=*pi0;, *outp++ = result)
+  case DTYPE_WU: OperateIsum(uint16_t, 0, 1, result+=*pi0;, *outp++ = result)
   case DTYPE_L:  OperateIsum(  int32_t, 0, 1, result+=*pi0;, *outp++ = result)
-  case DTYPE_LU: OperateIsum(u_int32_t, 0, 1, result+=*pi0;, *outp++ = result)
+  case DTYPE_LU: OperateIsum(uint32_t, 0, 1, result+=*pi0;, *outp++ = result)
   case DTYPE_Q:  OperateIsum(  int64_t, 0, 1, result+=*pi0;, *outp++ = result)
-  case DTYPE_QU: OperateIsum(u_int64_t, 0, 1, result+=*pi0;, *outp++ = result)
+  case DTYPE_QU: OperateIsum(uint64_t, 0, 1, result+=*pi0;, *outp++ = result)
   case DTYPE_OU:
   case DTYPE_O:  OperateIsum(int128_t, ozero, 1, TdiAddOctaword(pi0, &result, &result);, *outp++ = result)
   case DTYPE_F:  OperateFsum(float, DTYPE_F )
@@ -878,16 +879,16 @@ int Tdi3Accumulate(struct descriptor *in, struct descriptor *mask,
 {
   SETUP_ARGS(args);
   switch (in->dtype) {
-    case DTYPE_B:  OperateIaccum(   int8_t, 0, result += *(   int8_t*)pid, DTYPE_B );break;
-    case DTYPE_BU: OperateIaccum( u_int8_t, 0, result += *( u_int8_t*)pid, DTYPE_BU);break;
-    case DTYPE_W:  OperateIaccum(  int16_t, 0, result += *(  int16_t*)pid, DTYPE_W );break;
-    case DTYPE_WU: OperateIaccum(u_int16_t, 0, result += *(u_int16_t*)pid, DTYPE_WU);break;
-    case DTYPE_L:  OperateIaccum(  int32_t, 0, result += *(  int32_t*)pid, DTYPE_L );break;
-    case DTYPE_LU: OperateIaccum(u_int32_t, 0, result += *(u_int32_t*)pid, DTYPE_LU);break;
-    case DTYPE_Q:  OperateIaccum(  int64_t, 0, result += *(  int64_t*)pid, DTYPE_Q );break;
-    case DTYPE_QU: OperateIaccum(u_int64_t, 0, result += *(u_int64_t*)pid, DTYPE_QU);break;
-    case DTYPE_O:  OperateIaccum(int128_t, ozero, TdiAddOctaword((int128_t*)pid, (int128_t*)&result, (int128_t*)&result), DTYPE_O ); break;
-    case DTYPE_OU: OperateIaccum(int128_t, ozero, TdiAddOctaword((int128_t*)pid, (int128_t*)&result, (int128_t*)&result), DTYPE_OU); break;
+    case DTYPE_B:  OperateIaccum(   int8_t, 0, result += *(  int8_t*)pid, DTYPE_B );break;
+    case DTYPE_BU: OperateIaccum(  uint8_t, 0, result += *( uint8_t*)pid, DTYPE_BU);break;
+    case DTYPE_W:  OperateIaccum(  int16_t, 0, result += *( int16_t*)pid, DTYPE_W );break;
+    case DTYPE_WU: OperateIaccum( uint16_t, 0, result += *(uint16_t*)pid, DTYPE_WU);break;
+    case DTYPE_L:  OperateIaccum(  int32_t, 0, result += *( int32_t*)pid, DTYPE_L );break;
+    case DTYPE_LU: OperateIaccum( uint32_t, 0, result += *(uint32_t*)pid, DTYPE_LU);break;
+    case DTYPE_Q:  OperateIaccum(  int64_t, 0, result += *( int64_t*)pid, DTYPE_Q );break;
+    case DTYPE_QU: OperateIaccum( uint64_t, 0, result += *(uint64_t*)pid, DTYPE_QU);break;
+    case DTYPE_O:  OperateIaccum( int128_t, ozero, TdiAddOctaword((int128_t*)pid, (int128_t*)&result, (int128_t*)&result), DTYPE_O ); break;
+    case DTYPE_OU: OperateIaccum(uint128_t, ozero, TdiAddOctaword((int128_t*)pid, (int128_t*)&result, (int128_t*)&result), DTYPE_OU); break;
     case DTYPE_F:  OperateFaccum(DTYPE_F, &args);break;
     case DTYPE_FS: OperateFaccum(DTYPE_FS,&args);break;
     case DTYPE_G:  OperateFaccum(DTYPE_G, &args);break;
