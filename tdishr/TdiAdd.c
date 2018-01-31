@@ -206,25 +206,25 @@ STATIC_CONSTANT const int roprand = 0x8000;
 int Tdi3Add(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 {
   SetupArgs switch (in1->dtype) {
-    case DTYPE_B: Operate(  int8_t, +)
-    case DTYPE_BU:Operate( uint8_t, +)
-    case DTYPE_W: Operate(uint16_t, +)
-    case DTYPE_WU:Operate(uint16_t, +)
-    case DTYPE_L: Operate(uint32_t, +)
-    case DTYPE_LU:Operate(uint32_t, +)
-    case DTYPE_Q: Operate( int64_t, +)
-    case DTYPE_QU:Operate(uint64_t, +)
-    case DTYPE_O: OperateSpecial(16, TdiAddOctaword)
-    case DTYPE_OU:OperateSpecial(16, TdiAddOctaword)
-    case DTYPE_F: OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, +)
-    case DTYPE_FS:OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, +)
-    case DTYPE_D: OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, +)
-    case DTYPE_G: OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, +)
-    case DTYPE_FT:OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, +)
-    case DTYPE_FC:OperateComplex(float, DTYPE_F, DTYPE_NATIVE_FLOAT, +)
+    case DTYPE_B:  Operate(  int8_t, +)
+    case DTYPE_BU: Operate( uint8_t, +)
+    case DTYPE_W:  Operate(uint16_t, +)
+    case DTYPE_WU: Operate(uint16_t, +)
+    case DTYPE_L:  Operate(uint32_t, +)
+    case DTYPE_LU: Operate(uint32_t, +)
+    case DTYPE_Q:  Operate( int64_t, +)
+    case DTYPE_QU: Operate(uint64_t, +)
+    case DTYPE_O:  OperateSpecial(16, TdiAddOctaword)
+    case DTYPE_OU: OperateSpecial(16, TdiAddOctaword)
+    case DTYPE_F:  OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, +)
+    case DTYPE_FS: OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, +)
+    case DTYPE_D:  OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, +)
+    case DTYPE_G:  OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, +)
+    case DTYPE_FT: OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, +)
+    case DTYPE_FC: OperateComplex(float, DTYPE_F, DTYPE_NATIVE_FLOAT, +)
     case DTYPE_FSC:OperateComplex(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, +)
-    case DTYPE_GC:OperateComplex(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, +)
-    case DTYPE_DC:OperateComplex(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, +)
+    case DTYPE_GC: OperateComplex(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, +)
+    case DTYPE_DC: OperateComplex(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, +)
     case DTYPE_FTC:OperateComplex(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, +)
     default:return TdiINVDTYDSC;
   }
@@ -234,25 +234,25 @@ int Tdi3Add(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 int Tdi3Subtract(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 {
   SetupArgs switch (in1->dtype) {
-    case DTYPE_B: Operate(  int8_t, -)
-    case DTYPE_BU:Operate( uint8_t, -)
-    case DTYPE_W: Operate(uint16_t, -)
-    case DTYPE_WU:Operate(uint16_t, -)
-    case DTYPE_L: Operate(uint32_t, -)
-    case DTYPE_LU:Operate(uint32_t, -)
-    case DTYPE_Q: Operate( int64_t, -)
-    case DTYPE_QU:Operate(uint64_t, -)
-    case DTYPE_O:OperateSpecial(16, TdiSubtractOctaword)
-    case DTYPE_OU:OperateSpecial(16, TdiSubtractOctaword)
-    case DTYPE_F:OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, -)
-    case DTYPE_FS:OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, -)
-    case DTYPE_D:OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, -)
-    case DTYPE_G:OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, -)
-    case DTYPE_FT:OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, -)
-    case DTYPE_FC:OperateComplex(float, DTYPE_F, DTYPE_NATIVE_FLOAT, -)
+    case DTYPE_B:  Operate(  int8_t, -)
+    case DTYPE_BU: Operate( uint8_t, -)
+    case DTYPE_W:  Operate(uint16_t, -)
+    case DTYPE_WU: Operate(uint16_t, -)
+    case DTYPE_L:  Operate(uint32_t, -)
+    case DTYPE_LU: Operate(uint32_t, -)
+    case DTYPE_Q:  Operate( int64_t, -)
+    case DTYPE_QU: Operate(uint64_t, -)
+    case DTYPE_O:  OperateSpecial(16, TdiSubtractOctaword)
+    case DTYPE_OU: OperateSpecial(16, TdiSubtractOctaword)
+    case DTYPE_F:  OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, -)
+    case DTYPE_FS: OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, -)
+    case DTYPE_D:  OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, -)
+    case DTYPE_G:  OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, -)
+    case DTYPE_FT: OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, -)
+    case DTYPE_FC: OperateComplex(float, DTYPE_F, DTYPE_NATIVE_FLOAT, -)
     case DTYPE_FSC:OperateComplex(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, -)
-    case DTYPE_GC:OperateComplex(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, -)
-    case DTYPE_DC:OperateComplex(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, -)
+    case DTYPE_GC: OperateComplex(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, -)
+    case DTYPE_DC: OperateComplex(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, -)
     case DTYPE_FTC:OperateComplex(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, -)
     default:return TdiINVDTYDSC;
   }
@@ -262,177 +262,94 @@ int Tdi3Subtract(struct descriptor *in1, struct descriptor *in2, struct descript
 int Tdi3Multiply(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 {
   SetupArgs switch (in1->dtype) {
-    case DTYPE_B: Operate(  int8_t, *)
-    case DTYPE_BU:Operate( uint8_t, *)
-    case DTYPE_W: Operate(uint16_t, *)
-    case DTYPE_WU:Operate(uint16_t, *)
-    case DTYPE_L: Operate(uint32_t, *)
-    case DTYPE_LU:Operate(uint32_t, *)
-    case DTYPE_Q: Operate( int64_t, *)
-    case DTYPE_QU:Operate(uint64_t, *)
-    case DTYPE_O:OperateSpecial(16, TdiMultiplyOctaword)
-    case DTYPE_OU:OperateSpecial(16, TdiMultiplyOctaword)
-    case DTYPE_F:OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, *)
-    case DTYPE_FS:OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, *)
-    case DTYPE_D:OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, *)
-    case DTYPE_G:OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, *)
-    case DTYPE_FT:OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, *)
-    case DTYPE_FC:MultiplyComplex(float, DTYPE_F, DTYPE_NATIVE_FLOAT)
+    case DTYPE_B:  Operate(  int8_t, *)
+    case DTYPE_BU: Operate( uint8_t, *)
+    case DTYPE_W:  Operate(uint16_t, *)
+    case DTYPE_WU: Operate(uint16_t, *)
+    case DTYPE_L:  Operate(uint32_t, *)
+    case DTYPE_LU: Operate(uint32_t, *)
+    case DTYPE_Q:  Operate( int64_t, *)
+    case DTYPE_QU: Operate(uint64_t, *)
+    case DTYPE_O:  OperateSpecial(16, TdiMultiplyOctaword)
+    case DTYPE_OU: OperateSpecial(16, TdiMultiplyOctaword)
+    case DTYPE_F:  OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, *)
+    case DTYPE_FS: OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, *)
+    case DTYPE_D:  OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, *)
+    case DTYPE_G:  OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, *)
+    case DTYPE_FT: OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, *)
+    case DTYPE_FC: MultiplyComplex(float, DTYPE_F, DTYPE_NATIVE_FLOAT)
     case DTYPE_FSC:MultiplyComplex(float, DTYPE_FS, DTYPE_NATIVE_FLOAT)
-    case DTYPE_GC:MultiplyComplex(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
-    case DTYPE_DC:MultiplyComplex(double, DTYPE_D, DTYPE_NATIVE_DOUBLE)
+    case DTYPE_GC: MultiplyComplex(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
+    case DTYPE_DC: MultiplyComplex(double, DTYPE_D, DTYPE_NATIVE_DOUBLE)
     case DTYPE_FTC:MultiplyComplex(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE)
     default:return TdiINVDTYDSC;
   }
   return 1;
 }
 
-STATIC_CONSTANT int zero[] = { 0, 0 };
-
-#ifdef __VAX
-#define emul lib##$emul
-extern int emul();
-#else
-
-#ifdef WORDS_BIGENDIAN
-#define swapquad(in) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[1]; iptr[1]=stmp;}
-#define swapocta(in) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[3]; iptr[3]=stmp; \
-                                                                   stmp=iptr[1]; iptr[1]=iptr[2]; iptr[2]=stmp;}
-#else
-#define swapquad(in)
-#define swapocta(in)
+#ifndef __VAX
+ #ifdef WORDS_BIGENDIAN
+  #define swapquad(in) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[1]; iptr[1]=stmp;}
+  #define swapocta(in) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[3]; iptr[3]=stmp; \
+                                                         stmp=iptr[1]; iptr[1]=iptr[2]; iptr[2]=stmp;}
+ #else
+  #define swapquad(in)
+  #define swapocta(in)
+ #endif
 #endif
 
-STATIC_ROUTINE int emul(int *m1, int *m2, int *add, int *out)
-{
-  *(int64_t *) out = (int64_t) * m1 * (int64_t) * m2 + (int64_t) * add;
-  return 1;
-}
-#endif
+#define HI_WORD 0xFFFFFFFF00000000LL
+#define LO_WORD 0x00000000FFFFFFFFLL
+typedef struct int28_s{
+  int64_t low;
+ uint64_t high;
+} int128_t;
+int TdiMultiplyOctaword(int128_t *xi, int128_t *yi, int128_t *rv2){
+  /* as by 128-bit integer arithmetic for C++, by Robert Munafo */
+  swapocta(*xi);
+  swapocta(*yi);
 
-int TdiAddQuadword(int *a, int *b, int *ans){
-  uint64_t *arg1 = (uint64_t *) a;
-  uint64_t *arg2 = (uint64_t *) b;
-  uint64_t *out = (uint64_t *) ans;
-  *out = *arg1 + *arg2;
-#if defined(_MSC_VER) && _MSC_VER <= 1300
-  return (*out & 0x800000000000000U i64) != 0;
-#else
-  return (*out & 0x800000000000000ULL) != 0;
-#endif
-}
+  uint64_t acc, ac2, carry, o1, o2;
+  uint64_t a, b, c, d, e, f, g, h;
 
-int TdiMultiplyOctaword(int *in1, int *in2, int *out)
-{
-  int tmp[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-  int in1l[4];
-  int in2l[4];
-  int tmp2[4];
-  int tmp3[4];
+/************************
+ x      a  b  c  d
+ y      e  f  g  h
+-------------------------
+        -o2-  -o1-
+ ************************/
 
-#ifdef WORDS_BIGENDIAN
-  in1l[0] = in1[3];
-  in1l[1] = in1[2];
-  in1l[2] = in1[1];
-  in1l[3] = in1[0];
-  in2l[0] = in2[3];
-  in2l[1] = in2[2];
-  in2l[2] = in2[1];
-  in2l[3] = in2[0];
-#else
-  in1l[0] = in1[0];
-  in1l[1] = in1[1];
-  in1l[2] = in1[2];
-  in1l[3] = in1[3];
-  in2l[0] = in2[0];
-  in2l[1] = in2[1];
-  in2l[2] = in2[2];
-  in2l[3] = in2[3];
-#endif
+  d =  xi->low  & LO_WORD;
+  c = (xi->low  & HI_WORD) >> 32LL;
+  b =  xi->high & LO_WORD;
+  a = (xi->high & HI_WORD) >> 32LL;
 
-  emul(&in2l[0], in1l, zero, &tmp[0]);
-  swapquad(&tmp[0]);
-  emul(&in2l[1], in1l, &tmp[1], &tmp[1]);
-  swapquad(&tmp[1]);
-  emul(&in2l[2], in1l, &tmp[2], &tmp[2]);
-  swapquad(&tmp[2]);
-  emul(&in2l[3], in1l, &tmp[3], &tmp[3]);
-  swapquad(&tmp[3]);
-  emul(&in2l[0], &in1l[1], zero, &tmp[4]);
-  swapquad(&tmp[4]);
-  emul(&in2l[1], &in1l[1], &tmp[5], &tmp[5]);
-  swapquad(&tmp[5]);
-  emul(&in2l[2], &in1l[1], &tmp[6], &tmp[6]);
-  swapquad(&tmp[6]);
-  memcpy(tmp2, &tmp[4], 16);
-  memcpy(tmp3, &tmp[1], 16);
-  swapocta(tmp2);
-  swapocta(tmp3);
-  TdiAddOctaword(tmp2, tmp3, &tmp[1]);
-  swapocta(&tmp[1]);
-  emul(&in2l[0], &in1l[2], zero, &tmp[4]);
-  swapquad(&tmp[4]);
-  emul(&in2l[1], &in1l[2], &tmp[5], &tmp[5]);
-  swapquad(&tmp[5]);
-  memcpy(tmp2, &tmp[4], 8);
-  memcpy(tmp3, &tmp[2], 8);
-  swapquad(tmp2);
-  swapquad(tmp3);
-  TdiAddOctaword(tmp2, tmp3, &tmp[2]);
-  swapquad(&tmp[2]);
-  emul(&in2l[0], &in1l[3], &tmp[3], &tmp[3]);
-  swapquad(&tmp[3]);
-  if (in1l[0] < 0) {
-    tmp[7] = tmp[4];
-    memcpy(tmp2, &tmp[1], 16);
-    swapocta(tmp2);
-    TdiAddOctaword(in2, tmp2, &tmp[1]);
-    swapocta(&tmp[1]);
-    tmp[4] = tmp[7];
-  }
-  if (in1l[1] < 0) {
-    memcpy(tmp2, &tmp[2], 8);
-    swapquad(tmp2);
-#ifdef WORDS_BIGENDIAN
-    TdiAddQuadword(in2 + 2, tmp2, &tmp[2]);
-#else
-    TdiAddQuadword(in2, tmp2, &tmp[2]);
-#endif
-    swapquad(&tmp[2]);
-  }
-  if (in1l[2] < 0)
-    tmp[3] += in2l[0];
-  if (in2l[0] < 0) {
-    tmp[7] = tmp[4];
-    memcpy(tmp2, &tmp[1], 16);
-    swapocta(tmp2);
-    TdiAddOctaword(in1, tmp2, &tmp[1]);
-    swapocta(&tmp[1]);
-    tmp[4] = tmp[7];
-  }
-  if (in2l[1] < 0) {
-    memcpy(tmp2, &tmp[2], 8);
-    swapquad(tmp2);
-#ifdef WORDS_BIGENDIAN
-    TdiAddQuadword(in1 + 2, tmp2, &tmp[2]);
-#else
-    TdiAddQuadword(in1, tmp2, &tmp[2]);
-#endif
-    swapquad(&tmp[2]);
-  }
-  if (in2l[2] < 0)
-    tmp[3] += in1l[0];
-#ifdef WORDS_BIGENDIAN
-  out[0] = tmp[3];
-  out[1] = tmp[2];
-  out[2] = tmp[1];
-  out[3] = tmp[0];
-#else
-  out[0] = tmp[0];
-  out[1] = tmp[1];
-  out[2] = tmp[2];
-  out[3] = tmp[3];
-#endif
+  h =  yi->low  & LO_WORD;
+  g = (yi->low  & HI_WORD) >> 32LL;
+  f =  yi->high & LO_WORD;
+  e = (yi->high & HI_WORD) >> 32LL;
+
+  acc = d * h;
+  o1  = acc & LO_WORD;
+  acc >>= 32LL;
+  carry = 0;
+  ac2 = acc + c * h; if (ac2 < acc) { carry++; }
+  acc = ac2 + d * g; if (acc < ac2) { carry++; }
+  rv2->low = o1 | (acc << 32LL);
+  ac2 = (acc >> 32LL) | (carry << 32LL); carry = 0;
+
+  acc = ac2 + b * h; if (acc < ac2) { carry++; }
+  ac2 = acc + c * g; if (ac2 < acc) { carry++; }
+  acc = ac2 + d * f; if (acc < ac2) { carry++; }
+  o2  = acc & LO_WORD;
+  ac2 = (acc >> 32LL) | (carry << 32LL);
+
+  acc = ac2 + a * h;
+  ac2 = acc + b * g;
+  acc = ac2 + c * f;
+  ac2 = acc + d * e;
+  rv2->high = (ac2 << 32LL) | o2;
+  swapocta(rv2);
   return 1;
 }
 
