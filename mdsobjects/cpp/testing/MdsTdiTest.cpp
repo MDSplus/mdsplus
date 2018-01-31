@@ -38,7 +38,7 @@ using namespace testing;
 
 #define NUM_THREADS 8
 #define NUM_REPEATS 8
-#define MEM_ALLOC 1024
+#define MEM_ALLOC 1028
 
 static char** cmds;
 static int    ncmd;
@@ -50,17 +50,14 @@ void loadCmds(const char* filename){
       exit(1);
     }
     std::string str;
-    int memlen = sizeof(char*)+MEM_ALLOC;
-    cmds = (char**)malloc(memlen);
+    int memlen = MEM_ALLOC;
+    cmds = (char**)malloc(memlen*sizeof(char*));
     ncmd = 0;
     while (std::getline(file, str)){
-      if ((ncmd+1) > MEM_ALLOC) {
-        char** ocmds = cmds;
-        int omemlen = memlen;
-        memlen += sizeof(char*)+MEM_ALLOC;
-        cmds = (char**)malloc(memlen);
-        memcpy(cmds,ocmds,omemlen);
-        free(ocmds);
+      if (str[0]=='#' || str.length()==0) continue;
+      if ((ncmd+1) > memlen) {
+        memlen += MEM_ALLOC;
+        cmds = (char**)realloc(cmds,memlen*sizeof(char*));
       }
       cmds[ncmd] = (char*)malloc(str.length()+1);
       strcpy(cmds[ncmd++],str.c_str());
