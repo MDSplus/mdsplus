@@ -76,6 +76,7 @@ int Tdi3xxxxx(struct descriptor *in1, struct descriptor *in2,
 
 ------------------------------------------------------------------------------*/
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -92,16 +93,11 @@ extern int CvtConvertFloat();
 
 STATIC_CONSTANT int roprand = 0x8000;
 typedef struct {
-  int longword[2];
-} quadword;
-typedef struct {
   int longword[4];
 } octaword;
 
 extern int TdiGtO();
 extern int TdiLtO();
-extern int TdiLtQ();
-extern int TdiGtQ();
 
 #define SetupArgs \
   struct descriptor_a *ina1 = (struct descriptor_a *)in1;\
@@ -165,15 +161,15 @@ int Tdi3Ibset(struct descriptor *in1, struct descriptor *in2, struct descriptor 
     break;
   case DTYPE_W:
   case DTYPE_WU:
-    size = sizeof(short);
+    size = sizeof(int16_t);
     break;
   case DTYPE_L:
   case DTYPE_LU:
-    size = sizeof(int);
+    size = sizeof(int32_t);
     break;
   case DTYPE_Q:
   case DTYPE_QU:
-    size = sizeof(quadword);
+    size = sizeof(int64_t);
     break;
   case DTYPE_O:
   case DTYPE_OU:
@@ -241,19 +237,19 @@ int Tdi3Ibclr(struct descriptor *in1, struct descriptor *in2, struct descriptor 
     break;
   case DTYPE_W:
   case DTYPE_WU:
-    size = sizeof(short);
+    size = sizeof(int16_t);
     break;
   case DTYPE_L:
   case DTYPE_LU:
-    size = sizeof(int);
+    size = sizeof(int32_t);
     break;
   case DTYPE_Q:
   case DTYPE_QU:
-    size = sizeof(int) * 2;
+    size = sizeof(int64_t);
     break;
   case DTYPE_O:
   case DTYPE_OU:
-    size = sizeof(int) * 4;
+    size = sizeof(octaword);
     break;
   case DTYPE_F:
   case DTYPE_FS:
@@ -316,19 +312,19 @@ int Tdi3Btest(struct descriptor *in1, struct descriptor *in2, struct descriptor 
     break;
   case DTYPE_W:
   case DTYPE_WU:
-    size = sizeof(short);
+    size = sizeof(int16_t);
     break;
   case DTYPE_L:
   case DTYPE_LU:
-    size = sizeof(int);
+    size = sizeof(int32_t);
     break;
   case DTYPE_Q:
   case DTYPE_QU:
-    size = sizeof(int) * 2;
+    size = sizeof(int64_t);
     break;
   case DTYPE_O:
   case DTYPE_OU:
-    size = sizeof(int) * 4;
+    size = sizeof(octaword);
     break;
   case DTYPE_F:
   case DTYPE_FS:
@@ -510,23 +506,21 @@ int Tdi3Complex(struct descriptor *in1, struct descriptor *in2, struct descripto
 int Tdi3Max(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 {
   SetupArgs switch (in1->dtype) {
-  case DTYPE_T:
-    return TdiINVDTYDSC;
-  case DTYPE_B:
-    Operate(char, *in1p > *in2p)
-    case DTYPE_BU:Operate(unsigned char, *in1p > *in2p)
-    case DTYPE_W:Operate(short, *in1p > *in2p)
-    case DTYPE_WU:Operate(unsigned short, *in1p > *in2p)
-    case DTYPE_L:Operate(int, *in1p > *in2p)
-    case DTYPE_LU:Operate(unsigned int, *in1p > *in2p)
-    case DTYPE_QU:Operate(quadword, TdiGtQ(in1p, in2p, 0))
-    case DTYPE_Q:Operate(quadword, TdiGtQ(in1p, in2p, 1))
+    case DTYPE_T: return TdiINVDTYDSC;
+    case DTYPE_B: Operate( int8_t, *in1p > *in2p)
+    case DTYPE_BU:Operate(uint8_t, *in1p > *in2p)
+    case DTYPE_W: Operate( int16_t, *in1p > *in2p)
+    case DTYPE_WU:Operate(uint16_t, *in1p > *in2p)
+    case DTYPE_L: Operate( int32_t, *in1p > *in2p)
+    case DTYPE_LU:Operate(uint32_t, *in1p > *in2p)
+    case DTYPE_Q: Operate( int64_t, *in1p > *in2p)
+    case DTYPE_QU:Operate(uint64_t, *in1p > *in2p)
+    case DTYPE_O: Operate(octaword, TdiGtO(in1p, in2p, 1))
     case DTYPE_OU:Operate(octaword, TdiGtO(in1p, in2p, 0))
-    case DTYPE_O:Operate(octaword, TdiGtO(in1p, in2p, 1))
-    case DTYPE_F:OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT, a > b)
+    case DTYPE_F: OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT, a > b)
     case DTYPE_FS:OperateF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, a > b)
-    case DTYPE_G:OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, a > b)
-    case DTYPE_D:OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, a > b)
+    case DTYPE_G: OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, a > b)
+    case DTYPE_D: OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, a > b)
     case DTYPE_FT:OperateF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, a > b)
     default:return TdiINVDTYDSC;
   }
@@ -536,23 +530,21 @@ int Tdi3Max(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 int Tdi3Min(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 {
   SetupArgs switch (in1->dtype) {
-  case DTYPE_T:
-    return TdiINVDTYDSC;
-  case DTYPE_B:
-    Operate(char, *in1p < *in2p)
-    case DTYPE_BU:Operate(unsigned char, *in1p < *in2p)
-    case DTYPE_W:Operate(short, *in1p < *in2p)
-    case DTYPE_WU:Operate(unsigned short, *in1p < *in2p)
-    case DTYPE_L:Operate(int, *in1p < *in2p)
-    case DTYPE_LU:Operate(unsigned int, *in1p < *in2p)
-    case DTYPE_QU:Operate(quadword, TdiLtQ(in1p, in2p, 0))
-    case DTYPE_Q:Operate(quadword, TdiLtQ(in1p, in2p, 1))
+    case DTYPE_T: return TdiINVDTYDSC;
+    case DTYPE_B: Operate( int8_t, *in1p < *in2p)
+    case DTYPE_BU:Operate(uint8_t, *in1p < *in2p)
+    case DTYPE_W: Operate( int16_t, *in1p < *in2p)
+    case DTYPE_WU:Operate(uint16_t, *in1p < *in2p)
+    case DTYPE_L: Operate( int32_t, *in1p < *in2p)
+    case DTYPE_LU:Operate(uint32_t, *in1p < *in2p)
+    case DTYPE_Q: Operate( int64_t, *in1p < *in2p)
+    case DTYPE_QU:Operate(uint64_t, *in1p < *in2p)
+    case DTYPE_O: Operate(octaword, TdiLtO(in1p, in2p, 1))
     case DTYPE_OU:Operate(octaword, TdiLtO(in1p, in2p, 0))
-    case DTYPE_O:Operate(octaword, TdiLtO(in1p, in2p, 1))
-    case DTYPE_F:OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT, a < b)
+    case DTYPE_F: OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT, a < b)
     case DTYPE_FS:OperateF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, a < b)
-    case DTYPE_G:OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, a < b)
-    case DTYPE_D:OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, a < b)
+    case DTYPE_G: OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, a < b)
+    case DTYPE_D: OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, a < b)
     case DTYPE_FT:OperateF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, a < b)
     default:return TdiINVDTYDSC;
   }
@@ -605,9 +597,9 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
   return status;
 }
 
-#define char_min -128
-#define short_min -32768
-#define int_min 0x80000000
+#define int8_t_min  -128
+#define int16_t_min -32768
+#define int32_t_min 0x80000000
 #define int64_t_min LONG_LONG_CONSTANT(0x8000000000000000)
 #define min_struct(type) type##_min
 
@@ -667,15 +659,14 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 int Tdi3Ishft(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 {
   SetupArgs switch (in1->dtype) {
-  case DTYPE_B:
-    Operate(char)
-    case DTYPE_BU:OperateU(unsigned char, char)
-    case DTYPE_W:Operate(short)
-    case DTYPE_WU:OperateU(unsigned short, short)
-    case DTYPE_L:Operate(int)
-    case DTYPE_LU:OperateU(unsigned int, int)
-    case DTYPE_Q:Operate(int64_t)
+    case DTYPE_BU:OperateU( uint8_t,  int8_t)
+    case DTYPE_WU:OperateU(uint16_t, int16_t)
+    case DTYPE_LU:OperateU(uint32_t, int32_t)
     case DTYPE_QU:OperateU(uint64_t, int64_t)
+    case DTYPE_B: Operate( int8_t)
+    case DTYPE_W: Operate(int16_t)
+    case DTYPE_L: Operate(int32_t)
+    case DTYPE_Q: Operate(int64_t)
     default:return TdiINVDTYDSC;
   }
   return 1;
@@ -706,8 +697,8 @@ int Tdi3ShiftRight(struct descriptor *in1, struct descriptor *in2, struct descri
   case DTYPE_B:
     Operate(char, >>)
     case DTYPE_BU:Operate(unsigned char, >>)
-    case DTYPE_W:Operate(short, >>)
-    case DTYPE_WU:Operate(unsigned short, >>)
+    case DTYPE_W:Operate(int16_t, >>)
+    case DTYPE_WU:Operate(uint16_t, >>)
     case DTYPE_L:Operate(int, >>)
     case DTYPE_LU:Operate(unsigned int, >>)
     case DTYPE_Q:Operate(int64_t, >>)
@@ -723,8 +714,8 @@ int Tdi3ShiftLeft(struct descriptor *in1, struct descriptor *in2, struct descrip
   case DTYPE_B:
     Operate(char, <<)
     case DTYPE_BU:Operate(unsigned char, <<)
-    case DTYPE_W:Operate(short, <<)
-    case DTYPE_WU:Operate(unsigned short, <<)
+    case DTYPE_W:Operate(int16_t, <<)
+    case DTYPE_WU:Operate(uint16_t, <<)
     case DTYPE_L:Operate(int, <<)
     case DTYPE_LU:Operate(unsigned int, <<)
     case DTYPE_Q:Operate(int64_t, <<)
