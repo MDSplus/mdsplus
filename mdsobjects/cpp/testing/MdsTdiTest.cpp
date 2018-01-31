@@ -65,7 +65,7 @@ void loadCmds(const char* filename){
 }
 
 void* Test(void* args){
-  int idx = (int)*(int64_t*)&args;
+  int idx = args ? *(int*)args : 0;
   int ii = 0,ic = 0;
   setenv("t_tdi_path",".",1);
   delete MDSplus::execute("TreeShr->TreeUsePrivateCtx(1)");
@@ -100,9 +100,10 @@ void MultiThreadTest() {
       attrp = &attr;
       pthread_attr_setstacksize(&attr, 0x100000);
     }
-    int64_t nt;
+    int nt, idx[NUM_THREADS];
     for (nt = 0 ; nt<NUM_THREADS ; nt++){
-      if (pthread_create(&threads[nt], attrp, Test, *(void**)&nt))
+      idx[nt]=nt;
+      if (pthread_create(&threads[nt], attrp, Test, &idx[nt]))
         break;
     }
     if (attrp) pthread_attr_destroy(attrp);
