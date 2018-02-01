@@ -1419,7 +1419,7 @@ EXPORT int StrElement(struct descriptor *dest, int *num, struct descriptor *deli
   int status;
   if (delim->length != 1)
     return StrINVDELIM;
-  for (cnt = 0; (cnt < *num) && (src_ptr <= se_ptr); src_ptr++)
+  for (cnt = 0; (cnt < *num) && (src_ptr < se_ptr); src_ptr++)
     if (*src_ptr == *delim->pointer)
       cnt++;
   if (cnt < *num)
