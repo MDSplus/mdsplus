@@ -1919,9 +1919,12 @@ tests-envdump:
 	done;
 
 test-env:
-	for _i in ${TESTS_ENVIRONMENT}; do \
+	@for _i in ${TESTS_ENVIRONMENT}; do \
+	  echo $${_i}; \
 	  export $${_i}; \
 	done; \
+	echo srcdir=$(srcdir); \
+	export srcdir=$(srcdir); \
 	bash -i
 
 @HAVE_WINE_TRUE@wineconsole:
