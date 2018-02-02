@@ -64,8 +64,7 @@ void loadCmds(const char* filename){
     }
 }
 
-void* Test(void* args){
-  int idx = args ? *(int*)args : 0;
+int SingleThreadTest(int idx, int repeats){
   int ii = 0,ic = 0;
   setenv("t_tdi_path",".",1);
   delete MDSplus::execute("TreeShr->TreeUsePrivateCtx(1)");
@@ -73,23 +72,31 @@ void* Test(void* args){
   delete MDSplus::executeWithArgs("_SHOT=$",1,shot);
   delete shot;
   delete MDSplus::execute("_EXPT='T_TDI'");
-  try {
-    for (; ii<NUM_REPEATS ; ii++)
-      for (;ic<ncmd; ic++) {
-        if (strlen(cmds[ic])==0 || *cmds[ic] == '#') continue;
-        int status = AutoPointer<Data>(MDSplus::execute(cmds[ic]))->getInt();
-        if (!status) throw std::exception();
-        if (!(status&1)) throw MDSplus::MdsException(status);
-      }
-  } catch (MDSplus::MdsException) {
-    std::cerr << "ERROR in cycle " << ii << " >> " << cmds[ic] << "\n";
-    throw;
-  } catch (...) {
-    std::cerr << "FAILED in cycle " << ii << " >> " << cmds[ic] << "\n";
-    throw;
+  int err = 0;
+  for (; ii<repeats ; ii++) {
+    for (;ic<ncmd; ic++) try {
+      if (strlen(cmds[ic])==0 || *cmds[ic] == '#') continue;
+      int status = AutoPointer<Data>(MDSplus::execute(cmds[ic]))->getInt();
+      if (!status) throw std::exception();
+      if (!(status&1)) throw MDSplus::MdsException(status);
+    } catch (MDSplus::MdsException e) {
+      std::cerr << "ERROR in cycle " << ii << " >> " << cmds[ic] << "\n";
+      err = 1;
+    } catch (...) {
+      std::cerr << "FAILED in cycle " << ii << " >> " << cmds[ic] << "\n";
+      err = 1;
+    }
+    if (err) break;
   }
+  return err;
+}
+
+void* ThreadTest(void* args){
+  int* err = (int*)args;
+  *err = SingleThreadTest(*(int*)args,NUM_REPEATS);
   return NULL;
 }
+
 
 void MultiThreadTest() {
     pthread_t threads[NUM_THREADS];
@@ -100,16 +107,18 @@ void MultiThreadTest() {
       attrp = &attr;
       pthread_attr_setstacksize(&attr, 0x100000);
     }
-    int nt, idx[NUM_THREADS];
-    for (nt = 0 ; nt<NUM_THREADS ; nt++){
-      idx[nt]=nt;
-      if (pthread_create(&threads[nt], attrp, Test, &idx[nt]))
+    int thread_idx, results[NUM_THREADS];
+    for (thread_idx = 0 ; thread_idx<NUM_THREADS ; thread_idx++){
+      results[thread_idx]=thread_idx;
+      if (pthread_create(&threads[thread_idx], attrp, ThreadTest, &results[thread_idx]))
         break;
     }
     if (attrp) pthread_attr_destroy(attrp);
-    if (nt<NUM_THREADS) fprintf(stderr,"Could not create all %d threads\n", NUM_THREADS);
-    for (; nt-->0;)
-      pthread_join(threads[nt],NULL);
+    if (thread_idx<NUM_THREADS) fprintf(stderr,"Could not create all %d threads\n", NUM_THREADS);
+    for (thread_idx = 0 ; thread_idx<NUM_THREADS ; thread_idx++)
+      pthread_join(threads[thread_idx],NULL);
+    for (thread_idx = 0 ; thread_idx<NUM_THREADS ; thread_idx++)
+      TEST0(results[thread_idx]);
 }
 
 
@@ -127,10 +136,12 @@ int main(int argc, char *argv[]){
         free(filename);
       }
     }
+    int single;
     BEGIN_TESTING(SingleThread);
     setenv("t_tdi_path",".",1);
-    Test(NULL);
+    TEST0(single=SingleThreadTest(0,1));
     END_TESTING;
+    if (single) exit(1);
     BEGIN_TESTING(MultiThread);
     MultiThreadTest();
     END_TESTING;
