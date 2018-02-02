@@ -1,4 +1,6 @@
-if_error(ABORT(),1)
+treeopennew(_EXPT,_SHOT)
+
+if_error(ABORT(),(debug(4),1))
 ABS(cmplx(3.0,4.0))==5.
 ABS1(cmplx(3.0,-4.0))==7.
 ABSSQ(cmplx(3.0,4.0))==25.
@@ -75,27 +77,27 @@ _a=0;CLASS(3)==1 && CLASS([1])==4 && CLASS(_a)==1
 _a=0;CLASS_OF(3)==1 && CLASS_OF([1])==4 && CLASS_OF(_a)==1
 CMPLX(-3)==CMPLX(-3.0,0.0) && CMPLX(3,4,5d6)==CMPLX(3d0,4d0)
 COMMA(_A=5,_B=6,_A+_B)==11
-# COMPILE
+_a=COMPILE("1*1");qualifiers_of(_a)==247
 # COMPILE_DEPENDENCY
-# COMPLETION_OF
-# COMPLETION_MESSAGE_OF
+COMPLETION_OF(build_dispatch(1,2,3,4,5))==5
+COMPLETION_MESSAGE_OF(build_action(1,2,3,4))==4 && kind(COMPLETION_MESSAGE_OF(build_action(1,2,3)))==0
 CONCAT("ABC",'DEF')=="ABCDEF" 
-# CONDITIONAL
-# CONDITION_OF
+CONDITIONAL(1,2,1)==1 && CONDITIONAL(1,2,0)==2
+CONDITION_OF(build_condition(1,2))==2
 CONJG(cmplx(2.0,3.0))==cmplx(2.0,-3.0)
 for (_j=3; _j-->0; ) {if (_j>1) CONTINUE;break;}_j==1
-# CONVOLVE
+# convolve
 abs(COS(1.)-0.5403023)<1e-6
 abs(COSD(60.)-.5)<1e-7
 abs(COSH(1.)-1.5430806)<1e-6
 COUNT([1,0,1])==2 && all(COUNT([[1,1,0],[0,1,1]],0)==[2,2]) && all(COUNT([[1,1,0],[0,1,1]],1)==[1,2,1])
-# all(CSHIFT([1,2,3,4,5,6],2)==[3,4,5,6,1,2])
-# CULL(1..5,,0..7) is [1,2,3,4,5]
+# cshift
+# CULL(1:5,,0:7) is [1,2,3,4,5]
 CVT(123,"1234")==" 123"
 
 DATA(build_signal(42.*$value,6))==252
 units_of(DATA_WITH_UNITS(build_signal(42.*$value, build_with_units(6,'cnt'//'s'))))=='cnts'
-DATE_TIME(0)==" 1-JAN-1970 00:00:00.00"
+# DATE_TIME(0)==" 1-JAN-1970 00:00:00.00" /*windows is different*/
 (_d=DBLE(3))==3 && KIND(_d)==9 && (_d=DBLE(3.))==3 && KIND(_d)==KIND(1D0)
 DEALLOCATE("_A*")==1 && DEALLOCATE("_A*")==0
 DEBUG(7)==""
@@ -109,7 +111,7 @@ all(DIAGONAL([1,2,3])==[[1,0,0],[0,2,0],[0,0,3]])
 DIGITS(1.0)==24
 DIM(-3.1,2.)==0. && abs(DIM(3.1,2.)-1.1)<1e6
 all(DIM_OF([1,2,3])==(0:2))
-# DISPATCH_OF
+kind(DISPATCH_OF(build_action(_d=build_dispatch(,,,,),)))==kind(_d)
 DIVIDE(5,3)==1 && units_of(5/build_with_units(3,"s"))=="/s"
 _j=5;DO{_j--;} WHILE (_j>1);_j==1
 DOT_PRODUCT([1,2,3],[2,3,4])==20
@@ -129,7 +131,7 @@ EQ(2,2.)
 EQUALS(_a,3)==3 && _a==3
 EQUALS_FIRST(_a*2)==6 && _a==6
 EQV(2>3,3>4)
-# ERRORLOGS_OF
+ERRORLOGS_OF(build_action(1,2,3))==3 && kind(ERRORLOGS_OF(build_action(1,2)))==0
 all(ESHAPE(array([1,2,3]))==[1,2,3]) /* ESHAPE(3)==[] TODO _=-1 */
 ESIZE(array([1,2,3]))==6 /* ESIZE(3)==[] TODO _=-1 */
 all(EUBOUND(_a=set_range(2:3,7:10,0))==[3,10]) && EUBOUND(_a,1)==10
@@ -141,91 +143,91 @@ all(EXTEND(1:5,,0:7)==[1,1,2,3,4,5,5,5])
 EXTRACT(1,2,'A/B/C')=="/B" && EXTRACT(4,1,'12')==""
 EXT_FUNCTION(*,'whoami')==whoami()
 
-# FCLOSE(UNIT) /*later*/
+# FCLOSE(UNIT) /*tested with ftell*/
 # fft(ARRAY,[DIM],S)
-FINITE(1.) && ~(FINITE(1./0))
+FINITE(1.) && not(FINITE(1./0))
 all(FIRSTLOC(_a=[[0,1],[0,1]])==[0,1,0,0]) && all(FIRSTLOC(_a,0)==[[0,1],[0,1]]) && all(FIRSTLOC(_a,1)==[[0,1],[0,0]])
 # fit(GUESS,RESIDUALS)
 FIX_ROPRAND(1./0.,5)==5.
 abs(FLOAT(3)-3V0)<1e-6 && kind(FLOAT(3))==kind(3.)
 FLOOR(2.783)==2. && FLOOR(-2.783)==-3.
-#_u=FOPEN("t_test"//trim(_shot)//".txt","w");1
+_u=FOPEN("t_test"//decompile(`_shot)//".txt","w");1
 # FOR /*tested*/
 FRACTION(10.)==2.5 && FRACTION(20.)==2.5 /*different on VAX*/
-#write(_u,"012345")==7 && FSEEK(_u,2,0)==0
-#FTELL(_u)==2 && fclose(_u)==0
+write(_u,"012345")==7 && FSEEK(_u,2,0)==0
+FTELL(_u)==2 && fclose(_u)==0
 FUN test(in _a){return(-_a);};test(-1)==1
 abs(F_COMPLEX(3,4.1D0)-cmplx(3V0,4V1))<1e-6
 abs(F_FLOAT(3)-3V0)<1e-6 && kind(F_FLOAT(3))==kind(3.)
 
-GE(1,1) && GE(1.1,1.) && ~(GE(-1Q,1Q))
-# GETDBI (STRING,[INDEX])
-# GETNCI ([NODE],STRING,[USAGE])
-# {_j=0;GOTO _lab;_j++;label _lab:;_j+=2;}_j==3
-~GT(1,1) && GT(1.1,1.) && ~(GT(-1Q,1Q))
+GE(1,1) && GE(1.1,1.) && not(GE(-1Q,1Q))
+GETDBI("max")==8 && GETDBI("num")==1 && getnci(GETDBI("def",0),'nid_number')==0
+GETNCI(0,"USAGE_SUBTREE")==1
+# statement(_j=0,GOTO(_lab),_j++,LABEL(_lab,_j++));_j==1 /*marker can only be set in a file?*/
+not(GT(1,1)) && GT(1.1,1.) && not(GT(-1Q,1Q))
 abs(G_COMPLEX(3,4.1D0)-cmplx(3G0,4G1))<1D-9 
 abs(G_FLOAT(3)-3.)<1D-9 && kind(G_FLOAT(3))==kind(3G0)
 
-HELP_OF(build_param(42.,'test',*))=="test"
+HELP_OF(build_param(1,2,3))==2
 HUGE(1.0)>340E36 && HUGE(0)==0x7fffffff
 # abs(H_COMPLEX(3,4.1D0)-cmplx(3H0,4H1))<1D-9 /*SIGFPE*/
 # abs(H_FLOAT(3)-3.)<1H-9 && kind(H_FLOAT(3))==kind(3H0)
 
-# IACHAR (C)
-# IAND (I,J)
-# IAND_NOT (I,J)
-# IBCLR (I,POS)
-# ibits (I,POS,LEN)
-# IBSET (I,BIT)
-# ICHAR (C)
-# IDENT_OF (A)
-# IEOR (I,J)
-# IEOR_NOT (I,J)
-# IF (TEST,STMT,[ELSESTMT])
-# IF_ERROR (A,B,...)
-# IMAGE_OF (A)
-# INAND (I,J)
-# INAND_NOT (I,J)
-# INDEX (STRING,SUBSTRING,[BACK])
-# INOR (I,J)
-# INOR_NOT (I,J)
-# INOT (J)
+IACHAR('X')==88
+IAND(3,5)==1 && IAND(14w,13w)==12
+IAND_NOT(3,5)==2 && IAND_NOT(14w,13w)==2
+IBCLR(14, 1)==12 && all(IBCLR(31,[1,2,3,4])==[29,27,23,15])
+# ibits(I,POS,LEN) /*F90*/
+IBSET(12,1)==14 && all(IBSET(0,[1,2,3,4])==[2,4,8,16])
+ICHAR('X')==88
+IDENT_OF(build_dispatch(1,2,3,4,5))==2
+IEOR(1,3)==2
+IEOR_NOT(1B,3B)==253
+IF($true) _B=2; else _B=3;_B==2
+IF_ERROR(abort(),(debug(4),1))
+IMAGE_OF(build_call(1,2,3,4))==2 && IMAGE_OF(build_conglom(1,2,3,4))==1 && IMAGE_OF(build_routine(1,2,3,4))==2
+INAND(3b,5b)==254 && INAND(14w,13w)==65523
+INAND_NOT(3b,5b)==253 && INAND_NOT(14w,13w)==65533
+INDEX('mdsplus','s')==2 && INDEX('mdsplus','s',1)==6
+INOR(3b,5b)==248 && INOR(14w,13w)==65520
+INOR_NOT(3,5)==4 && INOR_NOT(14w,13w)==1
+INOT(5b)==250 && INOT(13w)==65522
 # inquire (UNIT|file,select)
-# INT (A,[KIND])
+(_a=INT(-3.1))==-3 && kind(_a)==8 && kind(INT(.1,9))==9 /*kind is passed differently in docs*/
 # integral (ARRAY,[DIM],[WIDTH])
 # interpol (ARRAY,[DIM],[WIDTH])
-# INTERRUPT_OF (A)
+INTERRUPT_OF(build_dispatch(2,'a','b','c','d'))=='c'
 # intersect (A,B)
-# INT_UNSIGNED (A)
+INT_UNSIGNED(-1w)==65535wu && INT_UNSIGNED(-1.)==0
 # inverse (MATRIX)
-# IOR (I,J)
-# IOR_NOT (I,J)
-# ISHFT (I,SHIFT)
+IOR(3,5)==7 && IOR(14w,13w)==15
+IOR_NOT(3b,5b)==251 && IOR_NOT(14w,13w)==65534
+ISHFT(3,1)==6 && all(ISHFT(3,[1,2,3])==[6,12,24])
 # ishftc (I,SHIFT,SIZE)
 # is_in (X,SET)
-# I_TO_X (DIMENSION,[I])
+all(I_TO_X(build_dim(build_window(2,7,1.1),build_range(,,3)),1:4)==set_range(1:5,[4.1,7.1,10.1,13.1]))
 
-# KIND (A)
-# KIND_OF (A)
+KIND(1)==8 && KIND(1.)==52 /* && KIND(1o)==26 */
+KIND_OF(1)==8 && KIND_OF(1.)==52 /* && KIND_OF(1o)==26 */
 
-# LABEL (NAME,STMT,...)
-# LANGUAGE_OF (A)
-# LASTLOC (MASK,[DIM])
-# LBOUND (ARRAY,[DIM])
-# LE (X,Y)
-# LEN (STRING)
-# LEN_TRIM (STRING)
-# LGE (STRING_A,STRING_B)
-# LGT (STRING_A,STRING_B)
-# LLE (STRING_A,STRING_B)
-# LLT (STRING_A,STRING_B)
-# LOG (X)
-# LOG10 (X)
-# LOG2 (X)
-# LOGICAL (A,[KIND])
-# LONG (A)
-# LONG_UNSIGNED (A)
-# LT (X,Y)
+LABEL(_lab,1) /*marker can only be set in a file?*/
+LANGUAGE_OF(build_procedure(1,2,3))==2
+all(LASTLOC(_a=[[0,1],[0,1]])==[0,0,0,1]) && all(LASTLOC(_a,0)==[[0,1],[0,1]]) && all(LASTLOC(_a,1)==[[0,0],[0,1]])
+all(LBOUND(_a=set_range(2:3,7:10,0))==[2,7]) && LBOUND(_a,1)==7
+LE(2,2.)==1 && LE(1.,2)==1
+LEN('abcdefghijk')==11
+LEN_TRIM(' A B ')==4
+LGE('oneormore','one') && LGE('one','one') && not(LGE('one','two'))
+LGT('oneormore','one') && not(LGT('one','one')) && not(LGT('one','two'))
+not(LLE('oneormore','one')) && LLE('one','one') && LLE('one','two')
+not(LLT('oneormore','one')) && not(LLT('one','one')) && LLT('one','two')
+abs(LOG(10D0)-2.3025851D0)<1e-6
+abs(LOG10(100.)-2.)<1e-6
+abs(LOG2(8.)-3.)<1e-6
+LOGICAL(-3)==1 && LOGICAL(2)==0
+LONG(-123.4)==-123 && kind(LONG(1Q))==8
+LONG_UNSIGNED(-123.4)==0 && kind(LONG_UNSIGNED(1Q))==4 && LONG_UNSIGNED(-1w)==4294967295LU
+LT(1,2.) && not(LT(2,2.)) && not(LT(3,2.)) 
 
 # MAKE_ACTION (DISPATCH,TASK,[ERRORLOGS], [COMPLETION],[PERFORMANCE])
 # MAKE_CALL ([KIND],IMAGE,ROUTINE,[ARG],...)
@@ -245,7 +247,7 @@ HUGE(1.0)>340E36 && HUGE(0)==0x7fffffff
 # MAKE_SLOPE (SLOPE,[BEGIN,[END...)]]
 # MAKE_WINDOW ([ISTART],[IEND],[X_AT_0])
 # MAKE_WITH_UNITS (DATA,UNITS)
-# MAP (A,B)
+all(MAP(1:10,[20,-1,5])==[10,1,6])
 # matmul (MATRIX_A,MATRIX_B)
 # mat_rot (MATRIX,ANGLE,MAG,X0,Y0)
 # mat_rot_int (MATRIX,ANGLE,MAG,X0,Y0)
@@ -255,166 +257,167 @@ all(MAXLOC(_a=[[0,-5,8,3],[3,4,1,2],[1,5,6,-4]],0,_a < 6)==[3,1,1]) && all(MAXLO
 all(MAXVAL(_a=[[0,-5,8,3],[3,4,1,2],[1,5,6,-4]],0,_a < 6)==[3,4,5]) && all(MAXVAL(_a,1,_a < 6)==[3,5,1,3])
 MEAN([1,2,3])==2
 # median (ARRAY,WIDTH)
-# MERGE (TSOURCE,FSOURCE,MASK)
-# METHOD_OF (A)
+all(MERGE([1,2,3],[4,5,6],[1,0,1])==[1,5,3]) && all(MERGE([[1,6,5],[2,4,6]],[[0,3,2],[7,4,8]],[[1,0,1],[0,0,1]])==[[1,3,5],[7,4,6]])
+METHOD_OF(build_method(1,2,3))==2
 MIN(-9.0,7.0,2.0)==-9.0 
 MINEXPONENT(1.0)==-127
 all(MINLOC(_a=[[0,-5,8,3],[3,4,1,2],[1,5,6,-4]],0,_a>-4)==[0,2,0]) && all(MINLOC(_a,1,_a>-4)==[0,1,1,1])
 all(MINVAL(_a=[[0,-5,8,3],[3,4,1,2],[1,5,6,-4]],0,_a>-4)==[0,1,1]) && all(MINVAL(_a,1,_a>-4)==[0,4,1,2])
-# MOD (A,P)
-# MODEL_OF (A)
+abs(MOD(3.1,2.0)-1.1)<1e-6 && MOD(8,5)==3 && /* MOD(-8,5)==2 && MOD(8,-5)==-2 && */ MOD(-8,-5)==-3
+MODEL_OF(build_conglom(1,2,3,4))==2
 # modulo (A,P)
-# MULTIPLY (X,Y)
-# NAME_OF (A)
-# NAND (L,M)
-# NAND_NOT (L,M)
-# NDESC (A)
-# NDESC_OF (A)
-# NDIMS (A)
-# NE (X,Y)
-# nearest (X,S)
-# NEQV (L,M)
-# NINT (A,[KIND])
-# NOR (L,M)
-# NOR_NOT (L,M)
-# NOT (L)
+abs(3.*2-6.)<1e-6 && build_with_units(-2,"V")*build_with_units(3,"s")==build_with_units(-6,"V*s")
 
-# OBJECT_OF (A)
-OCTAWORD(0x12345670Q)
-# OCTAWORD_UNSIGNED (A)
+NAME_OF(build_conglom(1,2,3,4))==3
+all(NAND([0,0,1,1],[0,1,0,1])==[1,1,1,0])
+all(NAND_NOT([0,0,1,1],[0,1,0,1])==[1,1,0,1])
+NDESC(as_is($value))==0 && NDESC(as_is(1+2))==2
+NDESC_OF($value)==0 && NDESC_OF(1*1)==2
+NDIMS(42)==0 && NDIMS(zero([3,3],0))==2 && NDIMS(build_signal(1,*,3,4,5))==3
+NE(1,2.) && not(NE(2,2.)) && NE(3,2.)
+# nearest (X,S)
+not(NEQV(2>3,3>4))
+NINT(2.783)==3 && NINT(-2.783)==-3 && kind(NINT(2.2,25))==25
+all(NOR([0,0,1,1],[0,1,0,1])==[1,0,0,0])
+all(NOR_NOT([0,0,1,1],[0,1,0,1])==[0,1,0,0])
+all(NOT([1,2,3])==[0,1,0])
+
+OBJECT_OF(build_method(1,2,3,4))==3
+OCTAWORD(0x12345670q)==0x12345670O
+OCTAWORD_UNSIGNED(-1)==0xffffffffffffffffffffffffffffffffOU
 # on_error ([A])
-# OPCODE_BUILTIN (I)
-# OPCODE_STRING (I)
-# OR (L,M)
-# OR_NOT (L,M)
+OPCODE_BUILTIN(0)=="$" && OPCODE_BUILTIN(22)=="$PI"
+OPCODE_STRING(0)=="OPC$$" && OPCODE_STRING(22)=="OPC$$PI"
+all(OR([0,0,1,1],[0,1,0,1])==[0,1,1,1])
+all(OR_NOT([0,0,1,1],[0,1,0,1])==[1,0,1,1])
 
 # all(PACK(_M=[[4,5],[2,0],[3,0]],_M > 0,[1,2,3,4])==[4,5,2,3]) /* last element is wrong */
-# PERFORMANCE_OF (A)
-# PHASE_OF (A)
-# POST_DEC (NAME)
-# POST_INC (NAME)
+KIND(PERFORMANCE_OF(build_action(1,2,3,4)))==0 && PERFORMANCE_OF(build_action(1,2,3,4,5))==5
+PHASE_OF(build_dispatch(1,2,3,4,5))==3
+_s=2;POST_DEC(_s)==2 && _s==1
+_s=0;POST_INC(_s)==0 && _s==1
 POWER(2,3)==8 && abs(POWER(2,.5)-sqrt(2))<1e-6
-# PRECISION (X)
-# PRESENT (A)
-# PRE_DEC (NAME)
-# PRE_INC (NAME)
-# PRIVATE (NAME)
-# PROCEDURE_OF (A)
-# PRODUCT (ARRAY,[DIM],[MASK])
-# PROGRAM_OF (A)
+PRECISION(1.)==6 && PRECISION(1D0)==15
+PRESENT(_a) && not(PRESENT(_x))
+_s=2;PRE_DEC(_s)==1 && _s==1
+_s=0;PRE_INC(_s)==1 && _s==1
+PRIVATE(_a)=1;public(_a)=0;PRIVATE(_a)
+PROCEDURE_OF(build_procedure(1,2,3,4))==3
+PRODUCT(_a=[[1,2,3],[4,5,6],[7,8,9]],*,[[0,1,0],[1,0,1],[0,1,0]])==384 && all(PRODUCT(_a,0)==[6,120,504]) && all(PRODUCT(_a,1)==[28,80,162])
+PROGRAM_OF(build_program(1,2))==2
 # project (ARRAY,MASK,FIELD,[DIM])
 # promote (NCOPIES,VALUE)
-# PUBLIC (NAME)
+PUBLIC(_a)=1;private(_a)=0;PUBLIC(_a)
 
-# QUADWORD (A)
-# QUADWORD_UNSIGNED (A)
-# QUALIFIERS_OF (A)
+kind(QUADWORD(1))==9
+kind(QUADWORD_UNSIGNED(1))==5
+QUALIFIERS_OF(build_call(1,2,3)) && QUALIFIERS_OF(build_condition(1,2)) && QUALIFIERS_OF(build_conglom(1,2,3,4))==4 && QUALIFIERS_OF(build_dependency(1,2,3))==1 && QUALIFIERS_OF(build_dispatch(1,2,3,4,5)) && QUALIFIERS_OF(build_function(1,2,3))==1
 
-# RADIX (X)
-# RAMP ([SHAPE],[MOLD])
-# RANDOM ([SHAPE],[MOLD])
+RADIX(1)==2 && RADIX(1.)==2
+_a=RAMP([2,3,4],1.)/2;all(shape(_a)==[2,3,4]) && _a[1,2,3]==11.5
+all(GE(_a=RANDOM([2,3,4],1D0),0D0)) && all(LT(_a,1D0))
 # random_seed ([PUT])
-# RANGE (X)
-# RANK (X)
-# RAW_OF (A)
+RANGE(3.)==38 && RANGE(3D0)==307
+RANK(1)==0 && RANK([1])==1 && RANK([[1]])==2
+RAW_OF(build_signal(1,2,3))==2
 # rc_droop (ARRAY,[DIM],RC)
 # read ([UNIT],fmt|*,[arg]...)
-# REAL (A,[KIND])
+REAL(cmplx(1,2))==1 && kind(REAL(1,53))==53
 # rebin (ARRAY,SIZE1,[SIZE2])
-# REF
-# REM ([COMMENT],...)
-# REPEAT (STRING,NCOPIES)
-# REPLICATE (ARRAY,DIM,NCOPIES)
-# RESET_PRIVATE ()
-# RESET_PUBLIC ()
+# REF /*pass as ref to call e.g. strings*/
+kind(REM("bla",1))==0
+REPEAT("1",3)=="111"
+all(shape(_a=REPLICATE(REPLICATE([[1]],0,2),1,3))==[2,3]) && all(_a==1)
+# RESET_PRIVATE()
+# RESET_PUBLIC()
 # reshape (SOURCE,SHAPE,[PAD],[ORDER])
-# RETURN ([X])
+fun test(){RETURN(1);};test()
 # rewind (UNIT)
 # rms (ARRAY,[DIM],[MASK])
-# ROUTINE_OF (A)
-# RRSPACING (X)
+ROUTINE_OF(build_call(1,2,3))==3 && ROUTINE_OF(build_routine(1,2,3))==3
+abs(RRSPACING(1.)/33.5544e6-1)<1e-6
 
-# SCALE (X,I)
-# SCAN (STRING,SET,[BACK])
-# SELECTED_INT_KIND (R)
-# SELECTED_REAL_KIND ([P],[R])
-# SET_EXPONENT (X,I)
-# SET_RANGE ([BOUND],...ARRAY)
-# SHAPE (SOURCE,[DIM])
-# SHIFT_LEFT (I,SHIFT)
-# SHIFT_RIGHT (I,SHIFT)
-# SHOW_PRIVATE ([STRING],...)
-# SHOW_PUBLIC ([STRING],...)
+SCALE(1,1)==2
+SCAN("mdsplus","sp")==2 && SCAN("mdsplus","sp",1)==6
+SELECTED_INT_KIND(6)==8 && SELECTED_INT_KIND(4)==7 && SELECTED_INT_KIND(99)==-1
+SELECTED_REAL_KIND(5,30)==52 && SELECTED_REAL_KIND(5,40)==53 && SELECTED_REAL_KIND(7,30)==53 /*&& SELECTED_REAL_KIND(20,20)==-1 && SELECTED_REAL_KIND(5,999)==-2 && SELECTED_REAL_KIND(99,999)==-3*/
+SET_EXPONENT(3,-1)==1.5
+all(SET_RANGE(2:3,5,1:10)[2]==[1,3,5,7,9])
+all(SHAPE(zero(1:3))==(1:3)) && SHAPE(zero(1:3),1)==2
+SHIFT_LEFT(4,2)==16
+SHIFT_RIGHT(16,2)==4
+# _a=0,SHOW_PRIVATE(_a)
+# _public _p,SHOW_PUBLIC(_p)
 # sign (A,B)
-# SIGNED (A)
-# SIN (X)
-# SIND (X)
-# SINH (X)
-# SIZE (ARRAY,[DIM])
-# SIZEOF (X)
-# SLOPE_OF (A)
+kind(SIGNED(1bu))==6 && kind(SIGNED(1wu))==7
+SIN(0)==0 && abs(SIN(1)-.841471)<1e-6
+SIND(30)==.5
+abs(SINH(1.0)-1.1752012)<1e-6
+SIZE(zero(1:3))==6 && SIZE(zero(1:3),1)==2
+SIZEOF(1)==4 && SIZEOF(1Q)==8 && SIZEOF(1.)==4 && SIZEOF(1D0)==8 && SIZEOF("123")==3
+SLOPE_OF(build_range(1,2,3))==3 && SLOPE_OF(build_range(,))==1 && SLOPE_OF(build_slope(1,2,3))==1
 # smooth (ARRAY,[DIM],WIDTH)
 # solve (VECTOR,MATRIX)
-# SORT (ARRAY)
-# SORTVAL (ARRAY)
-# SPACING (X)
-# SPAWN ([COMMAND],[INPUT],[OUTPUT])
+all(SORT(1:3)==(0:2)) && all(SORT([2,3,1])==[2,0,1])
+all(SORTVAL(1:3)==(1:3)) && all(SORTVAL([2,3,1])==(1:3))
+SPACING(1)*rrspacing(1)==2.
+# SPAWN("/bin/sh -c 'echo yo'",_in,_out) /*platform dependent*/
 # SPREAD (SOURCE,DIM,NCOPIES)
-# SQRT (X)
+SQRT(4)==2
 SQUARE(2)==4
-# STATEMENT (STMT,...)
+STATEMENT(_a=1,_a++,_a)==2
 # std_dev (ARRAY,[DIM],[MASK])
 # string (X,[Y],...[FORMAT])
-# STRING_OPCODE (STRING)
-# SUBSCRIPT (X,[SUB],...)
-# SUBTRACT (A,B)
-# SUM (ARRAY,[DIM],[MASK])
-# SWITCH (X,STMT,...)
+STRING_OPCODE('$')==0 && STRING_OPCODE('$PI')==22
+SUBSCRIPT(1:3,1)==2
+SUBTRACT(3,5)==-2
+SUM(_a=ramp([2,3,4]))==276 && all(SUM(_a,2)==[36,40,44,48,52,56]) && all(SUM(_a,2,mod(_a,2))==[0,40,0,48,0,56])
+SWITCH(2){case(1) _a=0;break;case(2) _a=1;break;case default _a=2;};_a==1
 # system_clock (STRING)
 
-# TAN (X)
-# TAND (X)
-# TANH (X)
-# TASK_OF (A)
-# TEXT (X,[LENGTH])
-# TIME_OUT_OF (A)
-# TINY (X)
+abs(TAN(1.0)-1.557408)<1e-6
+TAND(45)==1
+abs(TANH(1.0)-0.761594)<1e-6
+TASK_OF(build_action(1,2))==2
+TEXT(1,1)=="1" && TEXT(1,3)=="  1"
+TIME_OUT_OF(build_method(1,2,3))==1
+TINY(1d0)<23.3d-309 && TINY(1d0)>0 && TINY(1e0)<11.8e-39 && TINY(1e0)>0
 # transfer (SOURCE,MOLD,[SIZE])
-# TRANSLATE (STRING,TRANSLATION,MATCH)
+TRANSLATE('abcdef','135','ace')=="1b3d5f"
 # transpose (MATRIX)
 # transpose_mul (MATRIX_A,MATRIX_B)
-# TRIM (STRING)
+TRIM(' a b ')==" a b"
 
-# UBOUND (ARRAY,[DIM])
-# UNION (A,...)
-# UNITS (A)
-# UNITS_OF (A)
+all(UBOUND(_a=set_range(2:3,7:10,0))==[3,10]) && UBOUND(_a,1)==10
+all(UNION([4,5],[2,3,5])==[2,3,4,5])
+UNITS(_u=build_with_units(1,2))==2 && UNITS(build_signal(_u,3))==2
+UNITS_OF(_u=build_with_units(1,2))==2 && UNITS_OF(build_signal(_u,3))==2
 # unpack (VECTOR,MASK,FIELD)
-# UNARY_MINUS (X)
-# UNARY_PLUS (X)
-# UNSIGNED (A)
-# UPCASE (STRING)
-# USING (A,[DEFAULT],[SHOTID],[EXPT])
+UNARY_MINUS(1)==-1
+UNARY_PLUS(1)==1
+UNSIGNED(-1b)==255bu
+UPCASE("abc123")=="ABC123"
+# USING(A,[DEFAULT],[SHOTID],[EXPT])
 
-# VAL
-# VALIDATION (PARAM)
-# VALIDATION_OF (A)
-# VALUE_OF (A)
-# VAR (STRING,[REPLACE])
-# VECTOR (X,...)
-# VERIFY (STRING,SET,[BACK])
+# VAL /*to pass as value to call*/
+VALIDATION(build_param(0,,$value>0))==0 && VALIDATION(build_param(1,,$value>0))==1
+VALIDATION_OF(build_param(1,2,3))==3
+VALUE_OF(_w=build_window(1,2,3))==3 && VALUE_OF(build_dim(_w,4))==3 && VALUE_OF(build_param(1,2,3))==1 && VALUE_OF(build_signal(1,2)) && VALUE_OF(build_with_units(1,2))==1
+_a=0;VAR("_a",1)==1 /*doc sais should be old value 0*/ && _a==1
+all(VECTOR(1,2,3,4)==(1:4))
+VERIFY('abba','ab')==-1 && VERIFY('abba','a')==1 && VERIFY('abba','a',1)==2
 
-# WAIT (SECONDS)
-# WHEN_OF (A)
+WAIT(.01);1
+WHEN_OF(build_dispatch(1,2,3,4,5))==4
 # where (TEST,STMT,[ELSESTMT])
-# WHILE (TEST,STMT,...)
-# WINDOW_OF (A)
-# WORD (A)
-# WORD_UNSIGNED (A)
-# WRITE ([UNIT],[ARG]...)
+_a=0;WHILE(_a<5) {_a++;}_a==5
+WINDOW_OF(build_dim(1,2))==1
+WORD(4e4)==32767 && WORD(40000)==-25536
+WORD_UNSIGNED(-1)==65535
+# WRITE([UNIT],...) /*tested with fseek*/
 
-# X_TO_I (DIMENSION,[X])
-# XD
+all(X_TO_I(build_dim(build_window(2,7,1.1),build_range(,,3)),[4.1,7.1,10.1,13.1])==[1.,2.,3.,4.])
+# XD /*pass ext dsc to call*/
 
 any(_a=ZERO(100,1b))==0 && size(_a)==100 && kind(_a)==6
 
@@ -422,3 +425,5 @@ class(_a=LIST(*,1,"b",3b,4Q))==196 && kind(_a)==214
 (_a=LIST(_a,5W,6))[5]==6 && _a[1]=="b"
 class(_a=DICT(*,"a",1,2,"b"))==196 && kind(_a)==216
 _a["a"]==1 && _a[2]=="b"
+
+treeclose()

@@ -72,9 +72,7 @@ VALGRIND_SUPPRESSIONS_FILES = \
 #
 MOSTLYCLEANFILES = *.out \
                    testing.hosts \
-                   t_*_*.characteristics \
-                   t_*_*.datafile \
-                   t_*_*.tree
+                   t_*.*
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TARGETS  ////////////////////////////////////////////////////////////// ##
