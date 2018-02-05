@@ -85,24 +85,23 @@ extern int CvtConvertFloat();
 #define max(a,b) ((a)<(b)) ? (b) : (a)
 
 typedef struct {
-  int64_t longword[2];
+  int64_t low;
+  int64_t high;
 } Int128;
-typedef struct {
-  int64_t longword[2];
-} uInt128;
+typedef Int128 uInt128;
 
 #define negate128 TdiSubtractOctaword(&octazero,&in[i],&out[i])
 
 STATIC_CONSTANT Int128 octazero = {0};
 
-#define zero128 out[i].longword[0]=0; out[i].longword[1]=0;
-#define copy128 out[i].longword[0]=in[i].longword[0];out[i].longword[1]=in[i].longword[1];
-#define abs128 if (in[i].longword[1] < 0) TdiSubtractOctaword(&octazero,&in[i],&out[i]); else { copy128; }
-#define not128 out[i].longword[0] = ~in[i].longword[0]; out[i].longword[1] = ~in[i].longword[1]
+#define zero128 out[i].low=0; out[i].high=0;
+#define copy128 out[i].low=in[i].low;out[i].high=in[i].high;
+#define abs128 if (in[i].high < 0) TdiSubtractOctaword(&octazero,&in[i],&out[i]); else { copy128; }
+#define not128 out[i].low = ~in[i].low; out[i].high = ~in[i].high
 #ifdef WORDS_BIGENDIAN
-#define bool128 out[i]=(uint8_t)(1 & in[i].longword[0])
+#define bool128 out[i]=(uint8_t)(1 & in[i].low)
 #else
-#define bool128 out[i]=(uint8_t)(1 & in[i].longword[0])
+#define bool128 out[i]=(uint8_t)(1 & in[i].low)
 #endif
 
 STATIC_CONSTANT const int roprand = 0x8000;
