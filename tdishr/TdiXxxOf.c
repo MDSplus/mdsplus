@@ -581,7 +581,7 @@ int Tdi1ErrorOf(int opcode __attribute__ ((unused)), int narg __attribute__ ((un
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_WITH_ERROR:
-      status =  TdiGetData(omits,((struct descriptor_with_error *)tmp.pointer)->error, out_ptr);
+      status = MdsCopyDxXd(((struct descriptor_with_error *)tmp.pointer)->error, out_ptr);
       break;
     default:
       status = MdsCopyDxXd((struct descriptor *)&none, out_ptr);
