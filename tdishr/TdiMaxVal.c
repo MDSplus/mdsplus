@@ -283,11 +283,11 @@ static inline void operateIloc(void* start,int testit(const char*,const char*),a
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja=0;    pia=a->inp,pma=a->maskp,ja++ < a->cnt_aft; pia += a->stp_aft, pma += a->stpm_aft) {
-    for (jb=0,  pib= pia,  pmb= pma;    jb++ < a->cnt_bef; pib += a->stp_bef, pmb += a->stpm_bef, outp++) {
+  for (ja=0;    pia=a->inp,pma=a->maskp,ja < a->cnt_aft; ja++, pia+=a->stp_aft, pma+=a->stpm_aft) {                  // LOOP_AFTER
+    for (jb=0,  pib= pia,  pmb= pma;    jb++ < a->cnt_bef; pib += a->stp_bef, pmb += a->stpm_bef, outp++) {          // LOOP_BEFORE_LOC
       *outp = -1;
       memcpy(result,start, a->length);
-      for (jd=0,pid= pib,  pmd= pmb;    jd   < a->cnt_dim; pid += a->stp_dim, pmd += a->stpm_dim, jd++) {
+      for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
         if (*pmd & 1 && testit(pid,result)){
           *outp = jd;
           memcpy(result,pid, a->length);
@@ -303,11 +303,11 @@ static inline void OperateFloc(char dtype, double start, int operator(const doub
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja=0;    pia=a->inp,pma=a->maskp,ja++ < a->cnt_aft; pia += a->stp_aft, pma += a->stpm_aft) {
-    for (jb=0,  pib= pia,  pmb= pma;    jb++ < a->cnt_bef; pib += a->stp_bef, pmb += a->stpm_bef, outp++) {
+  for (ja=0;    pia=a->inp,pma=a->maskp,ja < a->cnt_aft; ja++, pia+=a->stp_aft, pma+=a->stpm_aft) {                  // LOOP_AFTER
+    for (jb=0,  pib= pia,  pmb= pma;    jb++ < a->cnt_bef; pib += a->stp_bef, pmb += a->stpm_bef, outp++) {          // LOOP_BEFORE_LOC
       *outp = -1;
       double result = start;
-      for (jd=0,pid= pib,  pmd= pmb;    jd   < a->cnt_dim; pid += a->stp_dim, pmd += a->stpm_dim, jd++) {
+      for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
         if (*pmd & 1) {
           double val;
           if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0) && operator(val,result)) {
@@ -327,11 +327,11 @@ static inline void OperateTloc(int testit(),args_t* a) {
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja=0;    pia=a->inp,pma=a->maskp,ja++ < a->cnt_aft; pia += a->stp_aft, pma += a->stpm_aft) {
-    for (jb=0,  pib= pia,  pmb= pma;    jb++ < a->cnt_bef; pib += a->stp_bef, pmb += a->stpm_bef, outp++) {
+  for (ja=0;    pia=a->inp,pma=a->maskp,ja < a->cnt_aft; ja++, pia+=a->stp_aft, pma+=a->stpm_aft) {                  // LOOP_AFTER
+    for (jb=0,  pib= pia,  pmb= pma;    jb++ < a->cnt_bef; pib += a->stp_bef, pmb += a->stpm_bef, outp++) {          // LOOP_BEFORE_LOC
       struct descriptor result={a->length,DTYPE_T,CLASS_S,pib};
       *outp = -1;
-      for (jd=0,pid= pib,  pmd= pmb;    jd   < a->cnt_dim; pid += a->stp_dim, pmd += a->stpm_dim, jd++) {
+      for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
         if (*pmd & 1) {
            s_d.pointer=pid;
            testit(&s_d,&result,&o_d);
@@ -403,10 +403,10 @@ static inline void operateIval(void* start,int testit(const char*,const char*),a
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja=0;    pia=a->inp,pma=a->maskp,ja++ < a->cnt_aft; pia += a->stp_aft, pma += a->stpm_aft) {
-    for (jb=0,  pib= pia,  pmb= pma;    jb++ < a->cnt_bef; pib += a->stp_bef, pmb += a->stpm_bef, outp+=a->length) {
+  for (ja=0;    pia=a->inp,pma=a->maskp,ja < a->cnt_aft; ja++, pia+=a->stp_aft, pma+=a->stpm_aft) {                  // LOOP_AFTER
+    for (jb=0,  pib= pia,  pmb= pma;    jb < a->cnt_bef; jb++, pib+=a->stp_bef, pmb+=a->stpm_bef, outp+=a->length) { // LOOP_BEFORE_VAL
       memcpy(result,start, a->length);
-      for (jd=0,pid= pib,  pmd= pmb;    jd++ < a->cnt_dim; pid += a->stp_dim, pmd += a->stpm_dim) {
+      for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
         if (*pmd & 1 && testit(pid,result))
           memcpy(result,pid, a->length);
       }
@@ -421,10 +421,10 @@ static inline void OperateFval(char dtype, double start, int operator(const doub
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja=0;    pia=a->inp,pma=a->maskp,ja++ < a->cnt_aft; pia += a->stp_aft, pma += a->stpm_aft) {
-    for (jb=0,  pib= pia,  pmb= pma;    jb++ < a->cnt_bef; pib += a->stp_bef, pmb += a->stpm_bef, outp+=a->length) {
+  for (ja=0;    pia=a->inp,pma=a->maskp,ja < a->cnt_aft; ja++, pia+=a->stp_aft, pma+=a->stpm_aft) {                  // LOOP_AFTER
+    for (jb=0,  pib= pia,  pmb= pma;    jb < a->cnt_bef; jb++, pib+=a->stp_bef, pmb+=a->stpm_bef, outp+=a->length) { // LOOP_BEFORE_VAL
       double result = start;
-      for (jd=0,pid= pib,  pmd= pmb;    jd++ < a->cnt_dim; pid += a->stp_dim, pmd += a->stpm_dim) {
+      for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
         if (*pmd & 1) {
           double val;
           if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0) && operator(val,result))
@@ -444,10 +444,10 @@ static inline void OperateTval(int testit(),args_t* a) {
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja=0;    pia=a->inp,pma=a->maskp,ja++ < a->cnt_aft; pia += a->stp_aft, pma += a->stpm_aft) {
-    for (jb=0,  pib= pia,  pmb= pma;    jb++ < a->cnt_bef; pib += a->stp_bef, pmb += a->stpm_bef, outp+=a->length) {
+  for (ja=0;    pia=a->inp,pma=a->maskp,ja < a->cnt_aft; ja++, pia+=a->stp_aft, pma+=a->stpm_aft) {                  // LOOP_AFTER
+    for (jb=0,  pib= pia,  pmb= pma;    jb < a->cnt_bef; jb++, pib+=a->stp_bef, pmb+=a->stpm_bef, outp+=a->length) { // LOOP_BEFORE_VAL
       result.pointer = pib;
-      for (jd=0,pid= pib,  pmd= pmb;    jd++ < a->cnt_dim; pid += a->stp_dim, pmd += a->stpm_dim) {
+      for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
         if (*pmd & 1) {
            s_d.pointer=pid;
            testit(&s_d,&result,&o_d);
@@ -519,11 +519,11 @@ static inline void OperateImean(size_t buflen,void avgadd(const char*, char*),vo
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
   char* buf = malloc(buflen);
-  for (ja=0;    pia=a->inp,pma=a->maskp,ja++ < a->cnt_aft; pia += a->stp_aft, pma += a->stpm_aft) {
-    for (jb=0,  pib= pia,  pmb= pma;    jb++ < a->cnt_bef; pib += a->stp_bef, pmb += a->stpm_bef, outp+=a->length) {
+  for (ja=0;    pia=a->inp,pma=a->maskp,ja < a->cnt_aft; ja++, pia+=a->stp_aft, pma+=a->stpm_aft) {                  // LOOP_AFTER
+    for (jb=0,  pib= pia,  pmb= pma;    jb < a->cnt_bef; jb++, pib+=a->stp_bef, pmb+=a->stpm_bef, outp+=a->length) { // LOOP_BEFORE_VAL
       int count = 0;
       memset(buf,0,buflen);
-      for (jd=0,pid= pib,  pmd= pmb;    jd++ < a->cnt_dim; pid += a->stp_dim, pmd += a->stpm_dim) {
+      for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
         if (*pmd & 1) {
           avgadd(pid,buf);
           count++;
@@ -542,11 +542,11 @@ static inline void OperateFmean(char dtype, args_t*a) {
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja=0;    pia=a->inp,pma=a->maskp,ja++ < a->cnt_aft; pia += a->stp_aft, pma += a->stpm_aft) {
-    for (jb=0,  pib= pia,  pmb= pma;    jb++ < a->cnt_bef; pib += a->stp_bef, pmb += a->stpm_bef, outp+=a->length) {
+  for (ja=0;    pia=a->inp,pma=a->maskp,ja < a->cnt_aft; ja++, pia+=a->stp_aft, pma+=a->stpm_aft) {                  // LOOP_AFTER
+    for (jb=0,  pib= pia,  pmb= pma;    jb < a->cnt_bef; jb++, pib+=a->stp_bef, pmb+=a->stpm_bef, outp+=a->length) { // LOOP_BEFORE_VAL
       int count = 0;
       double result = 0;
-      for (jd=0,pid= pib,  pmd= pmb;    jd++ < a->cnt_dim; pid += a->stp_dim, pmd += a->stpm_dim) {
+      for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
         if (*pmd & 1) {
           double val;
           if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0)) {
@@ -567,11 +567,11 @@ static inline void OperateCmean(char dtype, args_t*a) {
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja=0;    pia=a->inp,pma=a->maskp,ja++ < a->cnt_aft; pia += a->stp_aft, pma += a->stpm_aft) {
-    for (jb=0,  pib= pia,  pmb= pma;    jb++ < a->cnt_bef; pib += a->stp_bef, pmb += a->stpm_bef, outp+=a->length) {
+  for (ja=0;    pia=a->inp,pma=a->maskp,ja < a->cnt_aft; ja++, pia+=a->stp_aft, pma+=a->stpm_aft) {                  // LOOP_AFTER
+    for (jb=0,  pib= pia,  pmb= pma;    jb < a->cnt_bef; jb++, pib+=a->stp_bef, pmb+=a->stpm_bef, outp+=a->length) { // LOOP_BEFORE_VAL
       int count = 0;
       double resultr=0, resulti=0;
-      for (jd=0,pid= pib,  pmd= pmb;    jd++ < a->cnt_dim; pid += a->stp_dim, pmd += a->stpm_dim) {
+      for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
         if (*pmd & 1) {
           double valr,vali;
           if (CvtConvertFloat(pid            ,dtype,&valr,DTYPE_NATIVE_DOUBLE,0)&&
@@ -627,10 +627,10 @@ static inline void OperateIfun(char init, void fun(const char*, const char*, cha
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja=0;    pia=a->inp,pma=a->maskp,ja++ < a->cnt_aft; pia += a->stp_aft, pma += a->stpm_aft) {
-    for (jb=0,  pib= pia,  pmb= pma;    jb++ < a->cnt_bef; pib += a->stp_bef, pmb += a->stpm_bef, outp+=a->length) {
+  for (ja=0;    pia=a->inp,pma=a->maskp,ja < a->cnt_aft; ja++, pia+=a->stp_aft, pma+=a->stpm_aft) {                  // LOOP_AFTER
+    for (jb=0,  pib= pia,  pmb= pma;    jb < a->cnt_bef; jb++, pib+=a->stp_bef, pmb+=a->stpm_bef, outp+=a->length) { // LOOP_BEFORE_VAL
       memset(outp,0,a->length); outp[0]=init;
-      for (jd=0,pid= pib,  pmd= pmb;    jd++ < a->cnt_dim; pid += a->stp_dim, pmd += a->stpm_dim) {
+      for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
         if (*pmd & 1)
           fun(pid,outp,outp);
       }
@@ -642,10 +642,10 @@ static inline void OperateFfun(double init, char dtype, double fun(const double,
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja=0;    pia=a->inp,pma=a->maskp,ja++ < a->cnt_aft; pia += a->stp_aft, pma += a->stpm_aft) {
-    for (jb=0,  pib= pia,  pmb= pma;    jb++ < a->cnt_bef; pib += a->stp_bef, pmb += a->stpm_bef, outp+=a->length) {
+  for (ja=0;    pia=a->inp,pma=a->maskp,ja < a->cnt_aft; ja++, pia+=a->stp_aft, pma+=a->stpm_aft) {                  // LOOP_AFTER
+    for (jb=0,  pib= pia,  pmb= pma;    jb < a->cnt_bef; jb++, pib+=a->stp_bef, pmb+=a->stpm_bef, outp+=a->length) { // LOOP_BEFORE_VAL
       double result = init;
-      for (jd=0,pid= pib,  pmd= pmb;    jd++ < a->cnt_dim; pid += a->stp_dim, pmd += a->stpm_dim) {
+      for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
         if (*pmd & 1) {
           double val;
           if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0)) {
@@ -665,10 +665,10 @@ static inline void OperateCfun(double init, char dtype, double fun(const double,
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja=0;    pia=a->inp,pma=a->maskp,ja++ < a->cnt_aft; pia += a->stp_aft, pma += a->stpm_aft) {
-    for (jb=0,  pib= pia,  pmb= pma;    jb++ < a->cnt_bef; pib += a->stp_bef, pmb += a->stpm_bef, outp+=a->length) {
+  for (ja=0;    pia=a->inp,pma=a->maskp,ja < a->cnt_aft; ja++, pia+=a->stp_aft, pma+=a->stpm_aft) {                  // LOOP_AFTER
+    for (jb=0,  pib= pia,  pmb= pma;    jb < a->cnt_bef; jb++, pib+=a->stp_bef, pmb+=a->stpm_bef, outp+=a->length) { // LOOP_BEFORE_VAL
       double resultr = init,resulti = init;
-      for (jd=0,pid= pib,  pmd= pmb;    jd++ < a->cnt_dim; pid += a->stp_dim, pmd += a->stpm_dim) {
+      for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
         if (*pmd & 1) {
           double valr,vali;
           if (CvtConvertFloat(pid            ,dtype,&valr,DTYPE_NATIVE_DOUBLE,0)&&
@@ -755,10 +755,10 @@ static inline void OperateIaccum(void add(const char*,const char*, char*),args_t
   char *pia, *pib, *pid;
   char *pma, *pmb, *pmd;
   char *result = malloc(a->length);
-  for (ja=0,poa=a->outp,pia=a->inp,pma=a->maskp; ja++ < a->cnt_aft; poa += a->stp_aft, pia += a->stp_aft, pma += a->stpm_aft) {
-    for (jb=0,pob=poa,  pib=pia,   pmb=pma;      jb++ < a->cnt_bef; pob += a->stp_bef, pib += a->stp_bef, pmb += a->stpm_bef) {
+  for (ja=0,poa=a->outp,pia=a->inp,pma=a->maskp; ja++ < a->cnt_aft; poa += a->stp_aft, pia += a->stp_aft, pma += a->stpm_aft) { // LOOP_AFTER_ARRAY
+    for (jb=0,pob=poa,  pib=pia,   pmb=pma;      jb++ < a->cnt_bef; pob += a->stp_bef, pib += a->stp_bef, pmb += a->stpm_bef) { // LOOP_BEFORE_ARRAY
       memset(result,0,a->length);
-      for (jd=0,pod=pob,pid=pib,   pmd=pmb;      jd++ < a->cnt_dim; pod += a->stp_dim, pid += a->stp_dim, pmd += a->stpm_dim) {
+      for (jd=0,pod=pob,pid=pib,   pmd=pmb;      jd++ < a->cnt_dim; pod += a->stp_dim, pid += a->stp_dim, pmd += a->stpm_dim) { // LOOP_DIM_ARRAY
         if (*pmd & 1) {
           add(pid,result,result);
           memcpy(pod,result,a->length);
@@ -773,10 +773,10 @@ static inline void OperateFaccum(char dtype,args_t* a){
   char *poa, *pob, *pod;
   char *pia, *pib, *pid;
   char *pma, *pmb, *pmd;
-  for (ja=0,poa=a->outp,pia=a->inp,pma=a->maskp; ja++ < a->cnt_aft; poa += a->stp_aft, pia += a->stp_aft, pma += a->stpm_aft) {
-    for (jb=0,pob=poa,  pib=pia,   pmb=pma;      jb++ < a->cnt_bef; pob += a->stp_bef, pib += a->stp_bef, pmb += a->stpm_bef) {
+  for (ja=0,poa=a->outp,pia=a->inp,pma=a->maskp; ja++ < a->cnt_aft; poa += a->stp_aft, pia += a->stp_aft, pma += a->stpm_aft) { // LOOP_AFTER_ARRAY
+    for (jb=0,pob=poa,  pib=pia,   pmb=pma;      jb++ < a->cnt_bef; pob += a->stp_bef, pib += a->stp_bef, pmb += a->stpm_bef) { // LOOP_BEFORE_ARRAY
       double result = 0;
-      for (jd=0,pod=pob,pid=pib,   pmd=pmb;      jd++ < a->cnt_dim; pod += a->stp_dim, pid += a->stp_dim, pmd += a->stpm_dim) {
+      for (jd=0,pod=pob,pid=pib,   pmd=pmb;      jd++ < a->cnt_dim; pod += a->stp_dim, pid += a->stp_dim, pmd += a->stpm_dim) { // LOOP_DIM_ARRAY
         if (*pmd & 1){
           double val;
           if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0)) {
@@ -794,10 +794,10 @@ static inline void OperateCaccum(char dtype,args_t* a){
   char *poa, *pob, *pod;
   char *pia, *pib, *pid;
   char *pma, *pmb, *pmd;
-  for (ja=0,poa=a->outp,pia=a->inp,pma=a->maskp; ja++ < a->cnt_aft; poa += a->stp_aft, pia += a->stp_aft, pma += a->stpm_aft) {
-    for (jb=0,pob=poa,  pib=pia,   pmb=pma;      jb++ < a->cnt_bef; pob += a->stp_bef, pib += a->stp_bef, pmb += a->stpm_bef) {
+  for (ja=0,poa=a->outp,pia=a->inp,pma=a->maskp; ja++ < a->cnt_aft; poa += a->stp_aft, pia += a->stp_aft, pma += a->stpm_aft) { // LOOP_AFTER_ARRAY
+    for (jb=0,pob=poa,  pib=pia,   pmb=pma;      jb++ < a->cnt_bef; pob += a->stp_bef, pib += a->stp_bef, pmb += a->stpm_bef) { // LOOP_BEFORE_ARRAY
       double result = 0, resulti = 0;
-      for (jd=0,pod=pob,pid=pib,   pmd=pmb;      jd++ < a->cnt_dim; pod += a->stp_dim, pid += a->stp_dim, pmd += a->stpm_dim) {
+      for (jd=0,pod=pob,pid=pib,   pmd=pmb;      jd++ < a->cnt_dim; pod += a->stp_dim, pid += a->stp_dim, pmd += a->stpm_dim) { // LOOP_DIM_ARRAY
         if (*pmd & 1){
           double val, vali;
           if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0) &&
