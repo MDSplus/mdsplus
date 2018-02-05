@@ -136,7 +136,7 @@ int main(int argc, char *argv[]){
         free(filename);
       }
     }
-    int single;
+    int single = 0;
     BEGIN_TESTING(SingleThread);
     setenv("t_tdi_path",".",1);
     TEST0(single=SingleThreadTest(0,1));
