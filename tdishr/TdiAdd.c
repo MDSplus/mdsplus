@@ -289,11 +289,9 @@ int Tdi3Multiply(struct descriptor *in1, struct descriptor *in2, struct descript
 
 #ifndef __VAX
  #ifdef WORDS_BIGENDIAN
-  #define swapquad(in) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[1]; iptr[1]=stmp;}
   #define swapocta(in) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[3]; iptr[3]=stmp; \
                                                          stmp=iptr[1]; iptr[1]=iptr[2]; iptr[2]=stmp;}
  #else
-  #define swapquad(in)
   #define swapocta(in)
  #endif
 #endif
