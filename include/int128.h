@@ -30,25 +30,25 @@
 #define uint128_max {-1,-1 };
 #define uint128_min { 0, 0 };
 
-int uint128_gt(uint128_t *a, uint128_t *b){
+static inline int uint128_gt(uint128_t *a, uint128_t *b){
   if (a->high==b->high)
     return a->low > b->low;
   return a->high > b->high;
 }
 
-int uint128_lt(uint128_t *a, uint128_t *b){
+static inline int uint128_lt(uint128_t *a, uint128_t *b){
   if (a->high==b->high)
     return a->low < b->low;
   return a->high < b->high;
 }
 
-int int128_gt(int128_t *a, int128_t *b){
+static inline int int128_gt(int128_t *a, int128_t *b){
   if (a->high==b->high)
     return a->low > b->low;
   return a->high > b->high;
 }
 
-int int128_lt(int128_t *a, int128_t *b){
+static inline int int128_lt(int128_t *a, int128_t *b){
   if (a->high==b->high)
     return a->low < b->low;
   return a->high < b->high;
