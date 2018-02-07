@@ -58,14 +58,10 @@ int Tdi3Add(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 #include <tdishr_messages.h>
 #include "roprand.h"
 #include <STATICdef.h>
-
+#include <int128.h>
 
 
 extern int CvtConvertFloat();
-
-int TdiMultiplyOctaword();
-int TdiAddOctaword();
-int TdiSubtractOctaword();
 
 #define SetupArgs \
   struct descriptor_a *ina1 = (struct descriptor_a *)in1;\
@@ -189,16 +185,16 @@ STATIC_CONSTANT const int roprand = 0x8000;
   break;\
 }
 
-#define OperateSpecial(size,routine) \
-{ char *in1p = in1->pointer;\
-  char *in2p = in2->pointer;\
-  char *outp = out->pointer;\
+#define OperateFun(routine) \
+{ int128_t *in1p = (int128_t*)in1->pointer;\
+  int128_t *in2p = (int128_t*)in2->pointer;\
+  int128_t *outp = (int128_t*)out->pointer;\
   switch (scalars)\
   {\
     case 0:\
-    case 3: while (nout--) {routine(in1p, in2p, outp); in1p += size; in2p += size; outp += size; } break; \
-    case 1: while (nout--) {routine(in1p, in2p, outp);                 in2p += size; outp += size; } break; \
-    case 2: while (nout--) {routine(in1p, in2p, outp);   in1p += size;               outp += size; } break; \
+    case 3: while (nout--) routine(in1p++, in2p++, outp++); break; \
+    case 1: while (nout--) routine(in1p,   in2p++, outp++); break; \
+    case 2: while (nout--) routine(in1p++, in2p,   outp++); break; \
   }\
   break;\
 }
@@ -214,8 +210,8 @@ int Tdi3Add(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
     case DTYPE_LU: Operate(uint32_t, +)
     case DTYPE_Q:  Operate( int64_t, +)
     case DTYPE_QU: Operate(uint64_t, +)
-    case DTYPE_O:  OperateSpecial(16, TdiAddOctaword)
-    case DTYPE_OU: OperateSpecial(16, TdiAddOctaword)
+    case DTYPE_O:  OperateFun(int128_add)
+    case DTYPE_OU: OperateFun(int128_add)
     case DTYPE_F:  OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, +)
     case DTYPE_FS: OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, +)
     case DTYPE_D:  OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, +)
@@ -242,8 +238,8 @@ int Tdi3Subtract(struct descriptor *in1, struct descriptor *in2, struct descript
     case DTYPE_LU: Operate(uint32_t, -)
     case DTYPE_Q:  Operate( int64_t, -)
     case DTYPE_QU: Operate(uint64_t, -)
-    case DTYPE_O:  OperateSpecial(16, TdiSubtractOctaword)
-    case DTYPE_OU: OperateSpecial(16, TdiSubtractOctaword)
+    case DTYPE_O:  OperateFun(int128_sub)
+    case DTYPE_OU: OperateFun(int128_sub)
     case DTYPE_F:  OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, -)
     case DTYPE_FS: OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, -)
     case DTYPE_D:  OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, -)
@@ -270,8 +266,8 @@ int Tdi3Multiply(struct descriptor *in1, struct descriptor *in2, struct descript
     case DTYPE_LU: Operate(uint32_t, *)
     case DTYPE_Q:  Operate( int64_t, *)
     case DTYPE_QU: Operate(uint64_t, *)
-    case DTYPE_O:  OperateSpecial(16, TdiMultiplyOctaword)
-    case DTYPE_OU: OperateSpecial(16, TdiMultiplyOctaword)
+    case DTYPE_O:  OperateFun(int128_mul)
+    case DTYPE_OU: OperateFun(int128_mul)
     case DTYPE_F:  OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, *)
     case DTYPE_FS: OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, *)
     case DTYPE_D:  OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, *)
@@ -287,104 +283,14 @@ int Tdi3Multiply(struct descriptor *in1, struct descriptor *in2, struct descript
   return 1;
 }
 
-#ifndef __VAX
- #ifdef WORDS_BIGENDIAN
-  #define swapocta(in) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[3]; iptr[3]=stmp; \
-                                                         stmp=iptr[1]; iptr[1]=iptr[2]; iptr[2]=stmp;}
- #else
-  #define swapocta(in)
- #endif
-#endif
-
-#define HI_WORD 0xFFFFFFFF00000000LL
-#define LO_WORD 0x00000000FFFFFFFFLL
-typedef struct int28_s{
-  int64_t low;
- uint64_t high;
-} int128_t;
-int TdiMultiplyOctaword(int128_t *xi, int128_t *yi, int128_t *rv2){
-  /* as by 128-bit integer arithmetic for C++, by Robert Munafo */
-  swapocta(*xi);
-  swapocta(*yi);
-
-  uint64_t acc, ac2, carry, o1, o2;
-  uint64_t a, b, c, d, e, f, g, h;
-
-/************************
- x      a  b  c  d
- y      e  f  g  h
--------------------------
-        -o2-  -o1-
- ************************/
-
-  d =  xi->low  & LO_WORD;
-  c = (xi->low  & HI_WORD) >> 32LL;
-  b =  xi->high & LO_WORD;
-  a = (xi->high & HI_WORD) >> 32LL;
-
-  h =  yi->low  & LO_WORD;
-  g = (yi->low  & HI_WORD) >> 32LL;
-  f =  yi->high & LO_WORD;
-  e = (yi->high & HI_WORD) >> 32LL;
-
-  acc = d * h;
-  o1  = acc & LO_WORD;
-  acc >>= 32LL;
-  carry = 0;
-  ac2 = acc + c * h; if (ac2 < acc) { carry++; }
-  acc = ac2 + d * g; if (acc < ac2) { carry++; }
-  rv2->low = o1 | (acc << 32LL);
-  ac2 = (acc >> 32LL) | (carry << 32LL); carry = 0;
-
-  acc = ac2 + b * h; if (acc < ac2) { carry++; }
-  ac2 = acc + c * g; if (ac2 < acc) { carry++; }
-  acc = ac2 + d * f; if (acc < ac2) { carry++; }
-  o2  = acc & LO_WORD;
-  ac2 = (acc >> 32LL) | (carry << 32LL);
-
-  acc = ac2 + a * h;
-  ac2 = acc + b * g;
-  acc = ac2 + c * f;
-  ac2 = acc + d * e;
-  rv2->high = (ac2 << 32LL) | o2;
-  swapocta(rv2);
-  return 1;
+int TdiMultiplyOctaword(unsigned int *a, unsigned int *b, unsigned int *ans){
+  return int128_mul((int128_t*)a,(int128_t*)b,(int128_t*)ans);
 }
 
-int TdiAddOctaword(unsigned int *a, unsigned int *b, unsigned int *ans)
-{
-  int i;
-  int carry = 0;
-  unsigned int la[4];
-  unsigned int lb[4];
-  memcpy(la, a, 16);
-  memcpy(lb, b, 16);
-  swapocta(la);
-  swapocta(lb);
-  for (i = 0; i < 4; i++) {
-    unsigned int _a = la[i];
-    unsigned int _b = lb[i];
-    ans[i] = _a + _b + carry;
-    carry = (ans[i] <= _a) && ((_b != 0) || (carry != 0));
-  }
-  swapocta(ans);
-  return !carry;
+int TdiAddOctaword(unsigned int *a, unsigned int *b, unsigned int *ans){
+  return int128_add((int128_t*)a,(int128_t*)b,(int128_t*)ans);
 }
 
-int TdiSubtractOctaword(unsigned int *a, unsigned int *b, unsigned int *ans)
-{
-  int i;
-  unsigned int lb[4];
-  unsigned int sub[4];
-  memcpy(lb, b, 16);
-  swapocta(lb);
-  for (i = 0; i < 4; i++) {
-    sub[i] = ~lb[i];
-    if (i == 0)
-      sub[i]++;
-    else if (sub[i - 1] < (~lb[i - 1]))
-      sub[i]++;
-  }
-  swapocta(sub);
-  return TdiAddOctaword(a, sub, ans);
+int TdiSubtractOctaword(unsigned int *a, unsigned int *b, unsigned int *ans){
+  return int128_sub((int128_t*)a,(int128_t*)b,(int128_t*)ans);
 }
