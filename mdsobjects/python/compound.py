@@ -105,7 +105,7 @@ class Compound(_dat.Data):
             def setter(value):
                 self.__setattr__(name[3:].lower(),value)
             return setter
-        return super(Compound,self).__getattribute__(name)
+        return super(Compound,self).__getattr__(name)
         #raise AttributeError("No such attribute '%s' in %s"%(name,self.__class__.__name__))
 
     def __getitem__(self,idx):
