@@ -153,6 +153,18 @@ class Data(object):
         if isinstance(tree,_tre.Tree): self.tree=tree
         return self
 
+    def __getattr__(self,name):
+        def getXxx():
+            return self.__getattribute__(name[3:].lower())
+        if name.startswith('get'):
+            return getXxx
+        def setXxx(value):
+            self.__setattr__(name[3:].lower(),value)
+            return self
+        if name.startswith('set'):
+            return setXxx
+        raise AttributeError
+
     @property
     def deref(self):
         return self
@@ -191,9 +203,6 @@ class Data(object):
                 delattr(self,'_units')
         else:
             self._units=units
-    def setUnits(self,units):
-        self.units=units
-        return self
 
     @property
     def error(self):
@@ -206,9 +215,6 @@ class Data(object):
                 delattr(self,'_error')
         else:
             self._error=error
-    def setError(self,error):
-        self.error=error
-        return self
 
     @property
     def help(self):
@@ -221,9 +227,6 @@ class Data(object):
                 delattr(self,'_help')
         else:
             self._help=help
-    def setHelp(self,help):
-        self.help=help
-        return self
 
     @property
     def validation(self):
@@ -236,9 +239,6 @@ class Data(object):
                 delattr(self,'_validation')
         else:
             self._validation=validation
-    def setValidation(self,validation):
-        self.validation=validation
-        return self
 
     """ binary operator methods (order: https://docs.python.org/2/library/operator.html) """
     @staticmethod
