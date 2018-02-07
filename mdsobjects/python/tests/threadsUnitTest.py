@@ -36,8 +36,6 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 
-from MDSplus import Tree
-
 class threadJob(Thread):
     def __init__(self,testclass,test,idx):
         super(threadJob,self).__init__()

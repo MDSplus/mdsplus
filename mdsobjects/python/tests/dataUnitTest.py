@@ -24,7 +24,6 @@
 #
 
 from unittest import TestCase,TestSuite,TextTestRunner
-from threading import Lock
 from numpy import ndarray, array, int32
 from math import log10
 import MDSplus as m

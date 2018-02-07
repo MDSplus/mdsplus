@@ -28,8 +28,8 @@ import os,sys
 from re import match
 from threading import RLock
 
-from MDSplus import Tree,Device,Connection
-from MDSplus import getenv,setenv,dcl,ccl,tcl,cts
+from MDSplus import Tree,Device
+from MDSplus import getenv,setenv,tcl
 from MDSplus import mdsExceptions as Exc
 
 class Tests(TestCase):
@@ -118,7 +118,7 @@ class Tests(TestCase):
 
     def dotask_timeout(self):
       def test():
-          with Tree(pytree):
+          with Tree('pytree'):
               for i in range(1000):
                   self._doExceptionTest('do TESTDEVICE:TASK_TIMEOUT',Exc.TdiTIMEOUT)
       self.cleanup(0 if sys.platform.startswith('win') else 1)
