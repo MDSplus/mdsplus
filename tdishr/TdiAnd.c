@@ -67,362 +67,74 @@ int Tdi3And(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 ---------------------------------------------------------------------------
 
         Description:
+        Implementation only for unit8. cast is taken care of in TdiSame
 
 ------------------------------------------------------------------------------*/
 
 #include <string.h>
-
+#include <stdio.h>
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
 #include <STATICdef.h>
 
-
-
-typedef struct {
-  int longword[2];
-} quadword;
-typedef struct {
-  int longword[4];
-} octaword;
-
-#define SetupArgs \
-  struct descriptor_a *ina1 = (struct descriptor_a *)in1;\
-  struct descriptor_a *ina2 = (struct descriptor_a *)in2;\
-  struct descriptor_a *outa = (struct descriptor_a *)out;\
-  int scalars = 0;\
-  unsigned int nout;\
-  switch (out->class)\
-  {\
-    case CLASS_S:\
-    case CLASS_D: nout = 1; break;\
-    case CLASS_A: nout = outa->arsize/outa->length; if (nout == 0) return 1; break;\
-    default:            return TdiINVCLADSC;\
-  }\
-  switch (in1->class)\
-   {\
-    case CLASS_S:\
-    case CLASS_D: scalars |= 1; break;\
-    case CLASS_A: if (ina1->arsize/ina1->length < nout) return TdiINV_SIZE; break;\
-    default:            return TdiINVCLADSC;\
-  }\
-  switch (in2->class)\
-  {\
-    case CLASS_S:\
-    case CLASS_D: if (scalars && (nout > 1)) return TdiINV_SIZE; scalars |= 2; break;\
-    case CLASS_A: if (ina2->arsize/ina2->length < nout) return TdiINV_SIZE; break;\
-    default:            return TdiINVCLADSC;\
-  }
-
-#define Operate(type,operator) \
-{ type *in1p = (type *)in1->pointer;\
-  type *in2p = (type *)in2->pointer;\
-  char *outp = (char *)out->pointer;\
-  switch (scalars)\
-  {\
-    case 0: while (nout--) {*outp++ = (char)(1 & (*in1p++ operator *in2p++));} break; \
-    case 1: while (nout--) {*outp++ = (char)(1 & (*in1p operator *in2p++));} break; \
-    case 2: while (nout--) {*outp++ = (char)(1 & (*in1p++ operator *in2p));} break; \
-    case 3: *outp = (char)(1 & (*in1p operator *in2p)); break; \
-  }\
-  break;\
-}
-
-#define OperateN(type,operator) \
-{ type *in1p = (type *)in1->pointer;\
-  type *in2p = (type *)in2->pointer;\
-  char *outp = (char *)out->pointer;\
-  switch (scalars)\
-   {\
-    case 0: while (nout--) {*outp++ = (char)(1 & ~(*in1p++ operator *in2p++));} break; \
-    case 1: while (nout--) {*outp++ = (char)(1 & ~(*in1p operator *in2p++));} break; \
-    case 2: while (nout--) {*outp++ = (char)(1 & ~(*in1p++ operator *in2p));} break; \
-    case 3: *outp = (char)(1 & ~(*in1p operator *in2p)); break; \
-  }\
-  break;\
-}
-
-#ifdef WORDS_BIGENDIAN
-#define setPointers in1p += (size-1); in2p += (size-1);
-#else
-#define setPointers
-#endif
-
-#define OperateSpecial(type,operator) \
-{\
-  char *in1p = (char *)in1->pointer;\
-  char *in2p = (char *)in2->pointer;\
-  char *outp = (char *)out->pointer;\
-  int size = sizeof(type);\
-  setPointers\
-  switch (scalars)\
-  {\
-    case 0: while (nout--) {*outp++ = (char)(1 & (*in1p operator *in2p)); in1p += size; in2p += size;} break; \
-    case 1: while (nout--) {*outp++ = (char)(1 & (*in1p operator *in2p)); in2p += size;} break; \
-    case 2: while (nout--) {*outp++ = (char)(1 & (*in1p operator *in2p)); in1p += size;} break; \
-    case 3:                 *outp =   (char)(1 & (*in1p operator *in2p)); break; \
-  }\
-  break;\
-}
-
-#define OperateSpecialN(type,operator) \
-{\
-  char *in1p = (char *)in1->pointer;\
-  char *in2p = (char *)in2->pointer;\
-  char *outp = (char *)out->pointer;\
-  int size = sizeof(type);\
-  setPointers\
-  switch (scalars)\
-  {\
-    case 0: while (nout--) {*outp++ = (char)(1 & ~(*in1p operator *in2p)); in1p += size; in2p += size;} break; \
-    case 1: while (nout--) {*outp++ = (char)(1 & ~(*in1p operator *in2p)); in2p += size;} break; \
-    case 2: while (nout--) {*outp++ = (char)(1 & ~(*in1p operator *in2p)); in1p += size;} break; \
-    case 3:                 *outp =   (char)(1 & ~(*in1p operator *in2p)); break; \
-  }\
-  break;\
-}
-
-int Tdi3And(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
-{
-  SetupArgs switch (in1->dtype) {
-  case DTYPE_B:
-  case DTYPE_BU:
-    Operate(unsigned char, &)
-    case DTYPE_W:case DTYPE_WU:Operate(unsigned short, &)
-    case DTYPE_L:case DTYPE_LU:Operate(unsigned int, &)
-    case DTYPE_Q:OperateSpecial(quadword, &)
-    case DTYPE_QU:OperateSpecial(quadword, &)
-    case DTYPE_O:OperateSpecial(octaword, &)
-    case DTYPE_OU:OperateSpecial(octaword, &)
-    case DTYPE_F:case DTYPE_G:case DTYPE_FC:case DTYPE_GC:case DTYPE_D:case
-	DTYPE_DC:return TdiINVDTYDSC;
-  case DTYPE_H:
-  case DTYPE_HC:
-    return TdiNO_OPC;
-  default:
+static inline int Operate(struct descriptor *in1, struct descriptor *in2, struct descriptor *out,char operator(const char, const char)) {
+  if (in1->dtype!=2) {
+    fprintf(stderr,"FATAL: TdiAnd.c function called with other than DTYPE_BU (%d,%d)\n",in1->dtype,in2->dtype);
     return TdiINVDTYDSC;
+  }
+  struct descriptor_a *ina1 = (struct descriptor_a *)in1;
+  struct descriptor_a *ina2 = (struct descriptor_a *)in2;
+  struct descriptor_a *outa = (struct descriptor_a *)out;
+  int scalars = 0;
+  unsigned int nout;
+  switch (out->class) {
+    case CLASS_S:
+    case CLASS_D: nout = 1; break;
+    case CLASS_A: nout = outa->arsize/outa->length; if (nout == 0) return 1; break;
+    default:            return TdiINVCLADSC;
+  }
+  switch (in1->class) {
+    case CLASS_S:
+    case CLASS_D: scalars |= 1; break;
+    case CLASS_A: if (ina1->arsize/ina1->length < nout) return TdiINV_SIZE; break;
+    default:            return TdiINVCLADSC;
+  }
+  switch (in2->class) {
+    case CLASS_S:
+    case CLASS_D: if (scalars && (nout > 1)) return TdiINV_SIZE; scalars |= 2; break;
+    case CLASS_A: if (ina2->arsize/ina2->length < nout) return TdiINV_SIZE; break;
+    default:            return TdiINVCLADSC;
+  }
+  char *in1p = (char *)in1->pointer;
+  char *in2p = (char *)in2->pointer;
+  char *outp = (char *)out->pointer;
+  switch (scalars) {
+    case 0: while (nout--) *outp++ = operator(*in1p++,*in2p++); break;
+    case 1: while (nout--) *outp++ = operator(*in1p  ,*in2p++); break;
+    case 2: while (nout--) *outp++ = operator(*in1p++,*in2p  ); break;
+    case 3:                *outp   = operator(*in1p  ,*in2p  ); break;
   }
   return MDSplusSUCCESS;
 }
 
-int Tdi3AndNot(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
-{
-  SetupArgs switch (in1->dtype) {
-  case DTYPE_B:
-  case DTYPE_BU:
-    Operate(unsigned char, &~)
-    case DTYPE_W:case DTYPE_WU:Operate(unsigned short, &~)
-    case DTYPE_L:case DTYPE_LU:Operate(unsigned int, &~)
-    case DTYPE_Q:OperateSpecial(quadword, &~)
-    case DTYPE_QU:OperateSpecial(quadword, &~)
-    case DTYPE_O:OperateSpecial(octaword, &~)
-    case DTYPE_OU:OperateSpecial(octaword, &~)
-    case DTYPE_F:case DTYPE_G:case DTYPE_FC:case DTYPE_GC:case DTYPE_D:case
-	DTYPE_DC:return TdiINVDTYDSC;
-  case DTYPE_H:
-  case DTYPE_HC:
-    return TdiNO_OPC;
-  default:
-    return TdiINVDTYDSC;
-  }
-  return MDSplusSUCCESS;
-}
+static inline char  and    (const char a, const char b) {return (char)(1 &  (a & b));}
+static inline char nand    (const char a, const char b) {return (char)(1 & ~(a & b));}
+static inline char  and_not(const char a, const char b) {return (char)(1 &  (a &~b));}
+static inline char nand_not(const char a, const char b) {return (char)(1 & ~(a &~b));}
+static inline char   or    (const char a, const char b) {return (char)(1 &  (a | b));}
+static inline char  nor    (const char a, const char b) {return (char)(1 & ~(a | b));}
+static inline char   or_not(const char a, const char b) {return (char)(1 &  (a |~b));}
+static inline char  nor_not(const char a, const char b) {return (char)(1 & ~(a |~b));}
+static inline char  eqv    (const char a, const char b) {return (char)(1 &  (a ^~b));}
+static inline char neqv    (const char a, const char b) {return (char)(1 &  (a ^ b));}
 
-int Tdi3Nand(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
-{
-  SetupArgs switch (in1->dtype) {
-  case DTYPE_B:
-  case DTYPE_BU:
-    OperateN(unsigned char, &)
-    case DTYPE_W:case DTYPE_WU:OperateN(unsigned short, &)
-    case DTYPE_L:case DTYPE_LU:OperateN(unsigned int, &)
-    case DTYPE_Q:OperateSpecialN(quadword, &)
-    case DTYPE_QU:OperateSpecialN(quadword, &)
-    case DTYPE_O:OperateSpecialN(octaword, &)
-    case DTYPE_OU:OperateSpecialN(octaword, &)
-    case DTYPE_F:case DTYPE_G:case DTYPE_FC:case DTYPE_GC:case DTYPE_D:case
-	DTYPE_DC:return TdiINVDTYDSC;
-  case DTYPE_H:
-  case DTYPE_HC:
-    return TdiNO_OPC;
-  default:
-    return TdiINVDTYDSC;
-  }
-  return MDSplusSUCCESS;
-}
-
-int Tdi3NandNot(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
-{
-  SetupArgs switch (in1->dtype) {
-  case DTYPE_B:
-  case DTYPE_BU:
-    OperateN(unsigned char, &~)
-    case DTYPE_W:case DTYPE_WU:OperateN(unsigned short, &~)
-    case DTYPE_L:case DTYPE_LU:OperateN(unsigned int, &~)
-    case DTYPE_Q:OperateSpecialN(quadword, &~)
-    case DTYPE_QU:OperateSpecialN(quadword, &~)
-    case DTYPE_O:OperateSpecialN(octaword, &~)
-    case DTYPE_OU:OperateSpecialN(octaword, &~)
-    case DTYPE_F:case DTYPE_G:case DTYPE_FC:case DTYPE_GC:case DTYPE_D:case
-	DTYPE_DC:return TdiINVDTYDSC;
-  case DTYPE_H:
-  case DTYPE_HC:
-    return TdiNO_OPC;
-  default:
-    return TdiINVDTYDSC;
-  }
-  return MDSplusSUCCESS;
-}
-
-int Tdi3Or(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
-{
-  SetupArgs switch (in1->dtype) {
-  case DTYPE_B:
-  case DTYPE_BU:
-    Operate(unsigned char, |)
-    case DTYPE_W:case DTYPE_WU:Operate(unsigned short, |)
-    case DTYPE_L:case DTYPE_LU:Operate(unsigned int, |)
-    case DTYPE_Q:OperateSpecial(quadword, |)
-    case DTYPE_QU:OperateSpecial(quadword, |)
-    case DTYPE_O:OperateSpecial(octaword, |)
-    case DTYPE_OU:OperateSpecial(octaword, |)
-    case DTYPE_F:case DTYPE_G:case DTYPE_FC:case DTYPE_GC:case DTYPE_D:case
-	DTYPE_DC:return TdiINVDTYDSC;
-  case DTYPE_H:
-  case DTYPE_HC:
-    return TdiNO_OPC;
-  default:
-    return TdiINVDTYDSC;
-  }
-  return MDSplusSUCCESS;
-}
-
-int Tdi3Nor(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
-{
-  SetupArgs switch (in1->dtype) {
-  case DTYPE_B:
-  case DTYPE_BU:
-    OperateN(unsigned char, |)
-    case DTYPE_W:case DTYPE_WU:OperateN(unsigned short, |)
-    case DTYPE_L:case DTYPE_LU:OperateN(unsigned int, |)
-    case DTYPE_Q:OperateSpecialN(quadword, |)
-    case DTYPE_QU:OperateSpecialN(quadword, |)
-    case DTYPE_O:OperateSpecialN(octaword, |)
-    case DTYPE_OU:OperateSpecialN(octaword, |)
-    case DTYPE_F:case DTYPE_G:case DTYPE_FC:case DTYPE_GC:case DTYPE_D:case
-	DTYPE_DC:return TdiINVDTYDSC;
-  case DTYPE_H:
-  case DTYPE_HC:
-    return TdiNO_OPC;
-  default:
-    return TdiINVDTYDSC;
-  }
-  return MDSplusSUCCESS;
-}
-
-int Tdi3NorNot(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
-{
-  SetupArgs switch (in1->dtype) {
-  case DTYPE_B:
-  case DTYPE_BU:
-    OperateN(unsigned char, |~)
-    case DTYPE_W:case DTYPE_WU:OperateN(unsigned short, |~)
-    case DTYPE_L:case DTYPE_LU:OperateN(unsigned int, |~)
-    case DTYPE_Q:OperateSpecialN(quadword, |~)
-    case DTYPE_QU:OperateSpecialN(quadword, |~)
-    case DTYPE_O:OperateSpecialN(octaword, |~)
-    case DTYPE_OU:OperateSpecialN(octaword, |~)
-    case DTYPE_F:case DTYPE_G:case DTYPE_FC:case DTYPE_GC:case DTYPE_D:case
-	DTYPE_DC:return TdiINVDTYDSC;
-  case DTYPE_H:
-  case DTYPE_HC:
-    return TdiNO_OPC;
-  default:
-    return TdiINVDTYDSC;
-  }
-  return MDSplusSUCCESS;
-}
-
-int Tdi3OrNot(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
-{
-  SetupArgs switch (in1->dtype) {
-  case DTYPE_B:
-  case DTYPE_BU:
-    Operate(unsigned char, |~)
-    case DTYPE_W:case DTYPE_WU:Operate(unsigned short, |~)
-    case DTYPE_L:case DTYPE_LU:Operate(unsigned int, |~)
-    case DTYPE_Q:OperateSpecial(quadword, |~)
-    case DTYPE_QU:OperateSpecial(quadword, |~)
-    case DTYPE_O:OperateSpecial(octaword, |~)
-    case DTYPE_OU:OperateSpecial(octaword, |~)
-    case DTYPE_F:case DTYPE_G:case DTYPE_FC:case DTYPE_GC:case DTYPE_D:case
-	DTYPE_DC:return TdiINVDTYDSC;
-  case DTYPE_H:
-  case DTYPE_HC:
-    return TdiNO_OPC;
-  default:
-    return TdiINVDTYDSC;
-  }
-  return MDSplusSUCCESS;
-}
-
-int Tdi3Neqv(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
-{
-  SetupArgs switch (in1->dtype) {
-  case DTYPE_B:
-  case DTYPE_BU:
-    Operate(unsigned char, ^)
-    case DTYPE_W:case DTYPE_WU:Operate(unsigned short, ^)
-    case DTYPE_L:case DTYPE_LU:Operate(unsigned int, ^)
-    case DTYPE_Q:OperateSpecial(quadword, ^)
-    case DTYPE_QU:OperateSpecial(quadword, ^)
-    case DTYPE_O:OperateSpecial(octaword, ^)
-    case DTYPE_OU:OperateSpecial(octaword, ^)
-    case DTYPE_F:case DTYPE_G:case DTYPE_FC:case DTYPE_GC:case DTYPE_D:case
-	DTYPE_DC:return TdiINVDTYDSC;
-  case DTYPE_H:
-  case DTYPE_HC:
-    return TdiNO_OPC;
-  default:
-    return TdiINVDTYDSC;
-  }
-  return MDSplusSUCCESS;
-}
-
-int Tdi3Eqv(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
-{
-  SetupArgs switch (in1->dtype) {
-  case DTYPE_B:
-  case DTYPE_BU:
-    Operate(unsigned char, ^~)
-    case DTYPE_W:case DTYPE_WU:Operate(unsigned short, ^~)
-    case DTYPE_L:case DTYPE_LU:Operate(unsigned int, ^~)
-    case DTYPE_Q:OperateSpecial(quadword, ^~)
-    case DTYPE_QU:OperateSpecial(quadword, ^~)
-    case DTYPE_O:OperateSpecial(octaword, ^~)
-    case DTYPE_OU:OperateSpecial(octaword, ^~)
-    case DTYPE_F:case DTYPE_G:case DTYPE_FC:case DTYPE_GC:case DTYPE_D:case
-	DTYPE_DC:return TdiINVDTYDSC;
-  case DTYPE_H:
-  case DTYPE_HC:
-    return TdiNO_OPC;
-  default:
-    return TdiINVDTYDSC;
-  }
-  return MDSplusSUCCESS;
-}
-
-/*  CMS REPLACEMENT HISTORY, Element Tdi3And.C */
-/*  *13   26-AUG-1996 15:06:46 TWF "remove ints.h" */
-/*  *12   26-JUL-1996 12:23:14 TWF "Special handling for alpha and vms" */
-/*  *11    8-JUL-1996 15:10:03 TWF "Fix operatespecial" */
-/*  *10    8-JUL-1996 14:25:30 TWF "Fix octaword operations" */
-/*  *9     8-JUL-1996 13:00:49 TWF "Fix octaword bugs" */
-/*  *8    19-JUN-1996 09:46:39 TWF "Port to Unix/Windows" */
-/*  *7    17-OCT-1995 16:16:54 TWF "use <builtins.h> form" */
-/*  *6    19-OCT-1994 12:26:08 TWF "Use TDI$MESSAGES" */
-/*  *5    19-OCT-1994 10:32:31 TWF "No longer support VAXC" */
-/*  *4    15-NOV-1993 10:09:35 TWF "Add memory block" */
-/*  *3    15-NOV-1993 09:42:13 TWF "Add memory block" */
-/*  *2     9-NOV-1993 17:10:37 MRL "" */
-/*  *1     9-NOV-1993 17:02:33 MRL "Tdi3And.C" */
-/*  CMS REPLACEMENT HISTORY, Element Tdi3And.C */
+int  Tdi3And   (struct descriptor *in1, struct descriptor *in2, struct descriptor *out) { return Operate(in1,in2,out, and    );}
+int Tdi3Nand   (struct descriptor *in1, struct descriptor *in2, struct descriptor *out) { return Operate(in1,in2,out,nand    );}
+int  Tdi3AndNot(struct descriptor *in1, struct descriptor *in2, struct descriptor *out) { return Operate(in1,in2,out, and_not);}
+int Tdi3NandNot(struct descriptor *in1, struct descriptor *in2, struct descriptor *out) { return Operate(in1,in2,out,nand_not);}
+int  Tdi3Or    (struct descriptor *in1, struct descriptor *in2, struct descriptor *out) { return Operate(in1,in2,out,  or    );}
+int Tdi3Nor    (struct descriptor *in1, struct descriptor *in2, struct descriptor *out) { return Operate(in1,in2,out, nor    );}
+int  Tdi3OrNot (struct descriptor *in1, struct descriptor *in2, struct descriptor *out) { return Operate(in1,in2,out,  or_not);}
+int Tdi3NorNot (struct descriptor *in1, struct descriptor *in2, struct descriptor *out) { return Operate(in1,in2,out, nor_not);}
+int  Tdi3Eqv   (struct descriptor *in1, struct descriptor *in2, struct descriptor *out) { return Operate(in1,in2,out, eqv    );}
+int Tdi3Neqv   (struct descriptor *in1, struct descriptor *in2, struct descriptor *out) { return Operate(in1,in2,out,neqv    );}
