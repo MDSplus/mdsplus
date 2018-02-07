@@ -112,7 +112,7 @@ class Descriptor(object):
     def __getattr__(self,name):
         if name is not '_structure' and name in dict(self._structure._fields_):
             return self._structure.__getattribute__(name)
-        super(Descriptor,self).__getattribute__(name)
+        super(Descriptor,self).__getattr__(name)
     def __setattr__(self,name,value):
         if name is not '_structure' and name in dict(self._structure._fields_):
             return self._structure.__setattr__(name,value)
