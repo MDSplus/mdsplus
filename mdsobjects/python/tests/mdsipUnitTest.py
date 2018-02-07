@@ -53,7 +53,7 @@ class Tests(TestCase):
                 if fix0: port = default_port
                 else: return None,0
             return 'localhost:%d'%(port,),port
-	def start_mdsip(port,logname,env=None):
+        def start_mdsip(port,logname,env=None):
             if port>0:
                 from subprocess import Popen,STDOUT
                 logfile = '%s.log'%logname

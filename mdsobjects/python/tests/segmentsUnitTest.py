@@ -66,8 +66,7 @@ class Tests(TestCase):
     def ArrayDimensionOrder(self):
       def test():
         from MDSplus import Tree,Float32,Float32Array,Int16Array
-        from numpy import int16,zeros
-        from random import randint
+        from numpy import zeros
         with Tree(self.tree,self.shot,'NEW') as ptree:
             node = ptree.addNode('IMM')
             ptree.write()
@@ -277,7 +276,7 @@ class Tests(TestCase):
 
     def TimeContext(self):
       def test():
-        from MDSplus import Tree,Int64,Int64Array,Int32Array,tdi,tcl
+        from MDSplus import Tree,Int64,Int64Array,Int32Array,tdi
         #Tree.setTimeContext() # test initPinoDb
         #self.assertEquals(Tree.getTimeContext(),(None,None,None))
         with Tree(self.tree,self.shot,'NEW') as ptree:
