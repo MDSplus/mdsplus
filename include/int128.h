@@ -1,5 +1,7 @@
 #pragma once
+#include <string.h>
 #include <inttypes.h>
+#include <math.h>
 
 #ifdef WORDS_BIGENDIAN
  typedef struct int128_s{
@@ -30,25 +32,25 @@
 #define uint128_max {-1,-1 };
 #define uint128_min { 0, 0 };
 
-static inline int uint128_gt(uint128_t *a, uint128_t *b){
+static inline int uint128_gt(const uint128_t *a, const uint128_t *b){
   if (a->high==b->high)
     return a->low > b->low;
   return a->high > b->high;
 }
 
-static inline int uint128_lt(uint128_t *a, uint128_t *b){
+static inline int int128_gt(const int128_t *a, const int128_t *b){
+  if (a->high==b->high)
+    return a->low > b->low;
+  return a->high > b->high;
+}
+
+static inline int uint128_lt(const uint128_t *a, const uint128_t *b){
   if (a->high==b->high)
     return a->low < b->low;
   return a->high < b->high;
 }
 
-static inline int int128_gt(int128_t *a, int128_t *b){
-  if (a->high==b->high)
-    return a->low > b->low;
-  return a->high > b->high;
-}
-
-static inline int int128_lt(int128_t *a, int128_t *b){
+static inline int int128_lt(const int128_t *a, const int128_t *b){
   if (a->high==b->high)
     return a->low < b->low;
   return a->high < b->high;
@@ -62,6 +64,24 @@ static inline void int128_minus(const int128_t *a, int128_t *ans){
     ans->high++;
 }
 
+static inline int int128_abs(const int128_t* x, int128_t* r){
+  if (x->high>=0) {
+    if (x!=r) memcpy(r,x,sizeof(int128_t));
+    return 0;
+  }
+  int128_minus(x,r);
+  return 1;
+}
+
+static inline int uint128_add(const uint128_t *a, const uint128_t *b, uint128_t *ans){
+  uint128_t aa;memcpy(&aa,a,sizeof(uint128_t));
+  ans->low  = a->low  + b->low;
+  ans->high = a->high + b->high;
+  if (ans->low < aa.low)
+    ans->high++;
+  return ans->high < aa.high;
+}
+
 static inline int int128_add(const int128_t *a, const int128_t *b, int128_t *ans){
   int128_t aa;memcpy(&aa,a,sizeof(uint128_t));
   ans->low  = a->low  + b->low;
@@ -70,7 +90,15 @@ static inline int int128_add(const int128_t *a, const int128_t *b, int128_t *ans
     ans->high++;
   return ans->high < aa.high;
 }
-#define uint128_add int128_add
+
+static inline int uint128_sub(const uint128_t* a, const uint128_t* b, uint128_t *ans) {
+  uint128_t aa;memcpy(&aa,a,sizeof(uint128_t));
+  ans->low  = a->low  - b->low;
+  ans->high = a->high - b->high;
+  if (ans->low > aa.low)
+    ans->high--;
+  return ans->high > aa.high;
+}
 
 static inline int int128_sub(const int128_t* a, const int128_t* b, int128_t *ans){
   int128_t aa;memcpy(&aa,a,sizeof(int128_t));
@@ -80,9 +108,8 @@ static inline int int128_sub(const int128_t* a, const int128_t* b, int128_t *ans
     ans->high--;
   return ans->high > aa.high;
 }
-#define uint128_sub int128_sub
 
-static inline int int128_mul(const int128_t* x, const int128_t* y, int128_t *ans){
+static inline int uint128_mul(const uint128_t* x, const uint128_t* y, uint128_t *ans){
   #define HI_INT 0xFFFFFFFF00000000LL
   #define LO_INT 0x00000000FFFFFFFFLL
   /* as by 128-bit integer arithmetic for C++, by Robert Munafo */
@@ -126,72 +153,40 @@ static inline int int128_mul(const int128_t* x, const int128_t* y, int128_t *ans
   acc = ac2 + c * f;
   ac2 = acc + d * e;
   ans->high = (ac2 << 32LL) | o2;
-  return  (acc >> 32LL) | (carry << 32LL);
+  return ((acc >> 32LL) | (carry << 32LL))==0; // 1 if no overflow
 }
-#define uint128_mul int128_mul
 
-/*
-int int128_div(const int128_t x, const int128_t d, int128_t *r)
-{
-  const int128_t int128_zero = {0,0};
-#ifdef WORDS_BIGENDIAN
-  const int128_t int128_one  = {0,1};
-#else
-  const int128_t int128_one  = {1,0};
-#endif
-  int s;
-  int128_t d1, p2, rv;
-
-//printf("divide %.16llX %016llX / %.16llX %016llX\n", x.high, x.low, d.high, d.low);
-
-  // check for divide by zero
-  if ((d.low == 0) && (d.high == 0)) {
-    rv.low = x.low / d.low; // This will cause runtime error
-  }
-
-  s = 1;
-  if (x < ((s128_o) 0)) {
-    // notice that MININT will be unchanged, this is used below.
-    s = - s;
-    x = - x;
-  }
-  if (d < ((s128_o) 0)) {
-    s = - s;
-    d = - d;
-  }
-
-  if (d == ((s128_o) 1)) {
-    // This includes the overflow case MININT/-1
-    rv = x;
-    x = 0;
-  } else if (x < ((s128_o) d)) {
-    // x < d, so quotient is 0 and x is remainder
-    rv = 0;
-  } else {
-    rv = 0;
-
-    // calculate biggest power of 2 times d that's <= x
-    p2 = 1; d1 = d;
-    x = x - d1;
-    while(x >= d1) {
-      x = x - d1;
-      d1 = d1 + d1;
-      p2 = p2 + p2;
-    }
-    x = x + d1;
-
-    while(p2.low != 0 || p2.high != 0) {
-      if (x >= d1) {
-        x = x - d1;
-        rv = rv + p2;
-      }
-      p2 = s128_shr(p2);
-      d1 = s128_shr(d1);
-    }
-  }
-
-  if (s < 0) rv.high = - rv.high;
-  if (r)     *r = x;
-  retrun rv;
+static inline int int128_mul(const int128_t* x, const int128_t* d, int128_t* r){
+  uint128_t ux,ud;
+  int mns = (int128_abs(x,(int128_t*)&ux) ^ int128_abs(d,(int128_t*)&ud));
+  uint128_mul(&ux,&ud,(uint128_t*)r);
+  if (mns) int128_minus(r,r);
+  return 1;
 }
-*/
+
+static inline int uint128_div(const uint128_t* x, const uint128_t* d, uint128_t* r){
+  const double hifac = ((double)((uint64_t)-1)+1);
+  memset(r,0,sizeof(int128_t));
+  if ((d->low == 0) && (d->high == 0))
+    return 1;
+  double dd = (double)d->low + hifac*(double)d->high;
+  uint128_t t,a;
+  memcpy(&a,x,sizeof(int128_t));
+  double dr;
+  while ((dr = ((double)a.low + hifac*(double)a.high) / dd)>=1) {
+    t.low  = (uint64_t)fmod(dr,hifac);
+    t.high =  (int64_t)(dr/hifac);
+    uint128_add(&t,r,r);
+    uint128_mul(d,&t,&t);
+    uint128_sub(&a,&t,&a);
+  } // 'a' is the remainder
+  return (a.low == 0) && (a.high == 0); // 1 if no remainder
+}
+
+static inline int int128_div(const int128_t* x, const int128_t* d, int128_t* r){
+  uint128_t ux,ud;
+  int mns = (int128_abs(x,(int128_t*)&ux) ^ int128_abs(d,(int128_t*)&ud));
+  uint128_div(&ux,&ud,(uint128_t*)r);
+  if (mns) int128_minus(r,r);
+  return 1;
+}
