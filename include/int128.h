@@ -1,21 +1,58 @@
 #pragma once
+#include <inttypes.h>
 
 #ifdef WORDS_BIGENDIAN
  typedef struct int128_s{
-   uint64_t high;
+    int64_t high;
    uint64_t low;
  } int128_t;
- const int128_t int128_one = {1,0};
+ typedef struct uint128_s{
+   uint64_t high;
+   uint64_t low;
+ } uint128_t;
+ #define int128_one  { 0, 1 };
+ #define int128_max  { 0x7fffffffffffffffLL,-1 };
+ #define int128_min  { 0x8000000000000000LL, 0 };
 #else
  typedef struct int128_s{
    uint64_t low;
-   uint64_t high;
+    int64_t high;
  } int128_t;
- const int128_t int128_one = {0,1};
+ typedef struct uint128_s{
+   uint64_t low;
+   uint64_t high;
+ } uint128_t;
+ #define int128_one  { 1, 0 };
+ #define int128_max  {-1, 0x7fffffffffffffffLL };
+ #define int128_min  { 0, 0x8000000000000000LL };
 #endif
-const int128_t int128_zero = {0,0};
-#define HI_INT 0xFFFFFFFF00000000LL
-#define LO_INT 0x00000000FFFFFFFFLL
+#define int128_zero { 0, 0 };
+#define uint128_max {-1,-1 };
+#define uint128_min { 0, 0 };
+
+int uint128_gt(uint128_t *a, uint128_t *b){
+  if (a->high==b->high)
+    return a->low > b->low;
+  return a->high > b->high;
+}
+
+int uint128_lt(uint128_t *a, uint128_t *b){
+  if (a->high==b->high)
+    return a->low < b->low;
+  return a->high < b->high;
+}
+
+int int128_gt(int128_t *a, int128_t *b){
+  if (a->high==b->high)
+    return a->low > b->low;
+  return a->high > b->high;
+}
+
+int int128_lt(int128_t *a, int128_t *b){
+  if (a->high==b->high)
+    return a->low < b->low;
+  return a->high < b->high;
+}
 
 static inline void int128_minus(const int128_t *a, int128_t *ans){
   ans->high = ~(a->high);
@@ -26,13 +63,14 @@ static inline void int128_minus(const int128_t *a, int128_t *ans){
 }
 
 static inline int int128_add(const int128_t *a, const int128_t *b, int128_t *ans){
-  int128_t aa;memcpy(&aa,a,sizeof(int128_t));
+  int128_t aa;memcpy(&aa,a,sizeof(uint128_t));
   ans->low  = a->low  + b->low;
   ans->high = a->high + b->high;
   if (ans->low < aa.low)
     ans->high++;
   return ans->high < aa.high;
 }
+#define uint128_add int128_add
 
 static inline int int128_sub(const int128_t* a, const int128_t* b, int128_t *ans){
   int128_t aa;memcpy(&aa,a,sizeof(int128_t));
@@ -42,8 +80,11 @@ static inline int int128_sub(const int128_t* a, const int128_t* b, int128_t *ans
     ans->high--;
   return ans->high > aa.high;
 }
+#define uint128_sub int128_sub
 
 static inline int int128_mul(const int128_t* x, const int128_t* y, int128_t *ans){
+  #define HI_INT 0xFFFFFFFF00000000LL
+  #define LO_INT 0x00000000FFFFFFFFLL
   /* as by 128-bit integer arithmetic for C++, by Robert Munafo */
   uint64_t acc, ac2, carry, o1, o2;
   uint64_t a, b, c, d, e, f, g, h;
@@ -87,10 +128,17 @@ static inline int int128_mul(const int128_t* x, const int128_t* y, int128_t *ans
   ans->high = (ac2 << 32LL) | o2;
   return  (acc >> 32LL) | (carry << 32LL);
 }
+#define uint128_mul int128_mul
 
 /*
 int int128_div(const int128_t x, const int128_t d, int128_t *r)
 {
+  const int128_t int128_zero = {0,0};
+#ifdef WORDS_BIGENDIAN
+  const int128_t int128_one  = {0,1};
+#else
+  const int128_t int128_one  = {1,0};
+#endif
   int s;
   int128_t d1, p2, rv;
 
