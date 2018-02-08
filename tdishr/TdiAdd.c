@@ -185,16 +185,16 @@ STATIC_CONSTANT const int roprand = 0x8000;
   break;\
 }
 
-#define OperateFun(routine) \
-{ int128_t *in1p = (int128_t*)in1->pointer;\
-  int128_t *in2p = (int128_t*)in2->pointer;\
-  int128_t *outp = (int128_t*)out->pointer;\
+#define Operate128(type,routine) \
+{ type##_t *in1p = (type##_t*)in1->pointer;\
+  type##_t *in2p = (type##_t*)in2->pointer;\
+  type##_t *outp = (type##_t*)out->pointer;\
   switch (scalars)\
   {\
     case 0:\
-    case 3: while (nout--) routine(in1p++, in2p++, outp++); break; \
-    case 1: while (nout--) routine(in1p,   in2p++, outp++); break; \
-    case 2: while (nout--) routine(in1p++, in2p,   outp++); break; \
+    case 3: while (nout--) type##_##routine(in1p++, in2p++, outp++); break; \
+    case 1: while (nout--) type##_##routine(in1p,   in2p++, outp++); break; \
+    case 2: while (nout--) type##_##routine(in1p++, in2p,   outp++); break; \
   }\
   break;\
 }
@@ -210,8 +210,8 @@ int Tdi3Add(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
     case DTYPE_LU: Operate(uint32_t, +)
     case DTYPE_Q:  Operate( int64_t, +)
     case DTYPE_QU: Operate(uint64_t, +)
-    case DTYPE_O:  OperateFun(int128_add)
-    case DTYPE_OU: OperateFun(int128_add)
+    case DTYPE_O:  Operate128( int128,add)
+    case DTYPE_OU: Operate128(uint128,add)
     case DTYPE_F:  OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, +)
     case DTYPE_FS: OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, +)
     case DTYPE_D:  OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, +)
@@ -238,8 +238,8 @@ int Tdi3Subtract(struct descriptor *in1, struct descriptor *in2, struct descript
     case DTYPE_LU: Operate(uint32_t, -)
     case DTYPE_Q:  Operate( int64_t, -)
     case DTYPE_QU: Operate(uint64_t, -)
-    case DTYPE_O:  OperateFun(int128_sub)
-    case DTYPE_OU: OperateFun(int128_sub)
+    case DTYPE_O:  Operate128( int128,sub)
+    case DTYPE_OU: Operate128(uint128,sub)
     case DTYPE_F:  OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, -)
     case DTYPE_FS: OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, -)
     case DTYPE_D:  OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, -)
@@ -266,8 +266,8 @@ int Tdi3Multiply(struct descriptor *in1, struct descriptor *in2, struct descript
     case DTYPE_LU: Operate(uint32_t, *)
     case DTYPE_Q:  Operate( int64_t, *)
     case DTYPE_QU: Operate(uint64_t, *)
-    case DTYPE_O:  OperateFun(int128_mul)
-    case DTYPE_OU: OperateFun(int128_mul)
+    case DTYPE_O:  Operate128( int128,mul)
+    case DTYPE_OU: Operate128(uint128,mul)
     case DTYPE_F:  OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, *)
     case DTYPE_FS: OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, *)
     case DTYPE_D:  OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, *)

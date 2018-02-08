@@ -93,19 +93,14 @@ const int roprand = 0x8000;
 #define  int64_min 0x8000000000000000;
 
 #if DTYPE_NATIVE_DOUBLE == DTYPE_D
-#define HUGE 1.7E38
+#define DHUGE 1.7E38
 #elif DTYPE_NATIVE_DOUBLE == DTYPE_G
-#define HUGE 8.9E307
+#define DHUGE 8.9E307
 #else
-#define HUGE 1.7E308
+#define DHUGE 1.7E308
 #endif
-
-static void TdiDivO(const char *in1,const char *in2,char *out){
- //DESCRIPTOR_A(name, len, type, ptr, arsize)
- const DESCRIPTOR_A(i1, sizeof(int128_t), DTYPE_O, in1, sizeof(int128_t));
- const DESCRIPTOR_A(i2, sizeof(int128_t), DTYPE_O, in2, sizeof(int128_t));
-       DESCRIPTOR_A(o,  sizeof(int128_t), DTYPE_O, out, sizeof(int128_t));
- Tdi3Divide(&i1,&i2,&o);
+static inline void TdiDivO(const char *in1,const char *in2,char *out){
+  int128_div(( int128_t*)in1,( int128_t*)in2,( int128_t*)out);
 }
 
 int TdiLtO(unsigned int *in1, unsigned int *in2, int is_signed){
@@ -316,11 +311,11 @@ int Tdi3MaxLoc(struct descriptor *in, struct descriptor *mask,
   case DTYPE_QU: OperateIloc( uint64_t,          0, uint64_gt);break;
   case DTYPE_O:  OperateIloc( int128_t, int128_min,(void*)int128_gt);break;
   case DTYPE_OU: OperateIloc(uint128_t,uint128_min,(void*)uint128_gt);break;
-  case DTYPE_F:  OperateFloc(DTYPE_F, -HUGE, gt,&args);break;
-  case DTYPE_FS: OperateFloc(DTYPE_FS,-HUGE, gt,&args);break;
-  case DTYPE_G:  OperateFloc(DTYPE_G, -HUGE, gt,&args);break;
-  case DTYPE_D:  OperateFloc(DTYPE_D, -HUGE, gt,&args);break;
-  case DTYPE_FT: OperateFloc(DTYPE_FT,-HUGE, gt,&args);break;
+  case DTYPE_F:  OperateFloc(DTYPE_F, -DHUGE, gt,&args);break;
+  case DTYPE_FS: OperateFloc(DTYPE_FS,-DHUGE, gt,&args);break;
+  case DTYPE_G:  OperateFloc(DTYPE_G, -DHUGE, gt,&args);break;
+  case DTYPE_D:  OperateFloc(DTYPE_D, -DHUGE, gt,&args);break;
+  case DTYPE_FT: OperateFloc(DTYPE_FT,-DHUGE, gt,&args);break;
   default:return TdiINVDTYDSC;
   }
   return 1;
@@ -342,11 +337,11 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
   case DTYPE_QU: {OperateIloc( uint64_t,         -1, uint64_lt);break;}
   case DTYPE_O:  {OperateIloc( int128_t, int128_max,(void*) int128_lt);break;}
   case DTYPE_OU: {OperateIloc(uint128_t,uint128_max,(void*)uint128_lt);break;}
-  case DTYPE_F:  {OperateFloc(DTYPE_F, -HUGE, lt,&args);break;}
-  case DTYPE_FS: {OperateFloc(DTYPE_FS,-HUGE, lt,&args);break;}
-  case DTYPE_G:  {OperateFloc(DTYPE_G, -HUGE, lt,&args);break;}
-  case DTYPE_D:  {OperateFloc(DTYPE_D, -HUGE, lt,&args);break;}
-  case DTYPE_FT: {OperateFloc(DTYPE_FT,-HUGE, lt,&args);break;}
+  case DTYPE_F:  {OperateFloc(DTYPE_F,  DHUGE, lt,&args);break;}
+  case DTYPE_FS: {OperateFloc(DTYPE_FS, DHUGE, lt,&args);break;}
+  case DTYPE_G:  {OperateFloc(DTYPE_G,  DHUGE, lt,&args);break;}
+  case DTYPE_D:  {OperateFloc(DTYPE_D,  DHUGE, lt,&args);break;}
+  case DTYPE_FT: {OperateFloc(DTYPE_FT, DHUGE, lt,&args);break;}
   default:return TdiINVDTYDSC;
   }
   return 1;
@@ -431,11 +426,11 @@ int Tdi3MaxVal(struct descriptor *in, struct descriptor *mask,
   case DTYPE_QU: OperateIval( uint64_t,          0, uint64_gt);break;
   case DTYPE_O:  OperateIval( int128_t, int128_min,(void*) int128_gt);break;
   case DTYPE_OU: OperateIval(uint128_t,uint128_min,(void*)uint128_gt);break;
-  case DTYPE_F:  OperateFval(DTYPE_F, -HUGE, gt,&args);break;
-  case DTYPE_FS: OperateFval(DTYPE_FS,-HUGE, gt,&args);break;
-  case DTYPE_G:  OperateFval(DTYPE_G, -HUGE, gt,&args);break;
-  case DTYPE_D:  OperateFval(DTYPE_D, -HUGE, gt,&args);break;
-  case DTYPE_FT: OperateFval(DTYPE_FT,-HUGE, gt,&args);break;
+  case DTYPE_F:  OperateFval(DTYPE_F, -DHUGE, gt,&args);break;
+  case DTYPE_FS: OperateFval(DTYPE_FS,-DHUGE, gt,&args);break;
+  case DTYPE_G:  OperateFval(DTYPE_G, -DHUGE, gt,&args);break;
+  case DTYPE_D:  OperateFval(DTYPE_D, -DHUGE, gt,&args);break;
+  case DTYPE_FT: OperateFval(DTYPE_FT,-DHUGE, gt,&args);break;
   default:return TdiINVDTYDSC;
   }
   return 1;
@@ -457,11 +452,11 @@ int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
   case DTYPE_QU: OperateIval( uint64_t,         -1, uint64_lt);break;
   case DTYPE_O:  OperateIval( int128_t, int128_max,(void*) int128_lt);break;
   case DTYPE_OU: OperateIval(uint128_t,uint128_max,(void*)uint128_lt);break;
-  case DTYPE_F:  OperateFval(DTYPE_F, -HUGE, lt,&args);break;
-  case DTYPE_FS: OperateFval(DTYPE_FS,-HUGE, lt,&args);break;
-  case DTYPE_G:  OperateFval(DTYPE_G, -HUGE, lt,&args);break;
-  case DTYPE_D:  OperateFval(DTYPE_D, -HUGE, lt,&args);break;
-  case DTYPE_FT: OperateFval(DTYPE_FT,-HUGE, lt,&args);break;
+  case DTYPE_F:  OperateFval(DTYPE_F,  DHUGE, lt,&args);break;
+  case DTYPE_FS: OperateFval(DTYPE_FS, DHUGE, lt,&args);break;
+  case DTYPE_G:  OperateFval(DTYPE_G,  DHUGE, lt,&args);break;
+  case DTYPE_D:  OperateFval(DTYPE_D,  DHUGE, lt,&args);break;
+  case DTYPE_FT: OperateFval(DTYPE_FT, DHUGE, lt,&args);break;
   default:return TdiINVDTYDSC;
   }
   return 1;
