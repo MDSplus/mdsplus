@@ -72,18 +72,20 @@ int SingleThreadTest(int idx, int repeats){
   delete MDSplus::executeWithArgs("_SHOT=$",1,shot);
   delete shot;
   delete MDSplus::execute("_EXPT='T_TDI'");
-  int err = 0;
+  int status, err = 0;
   for (; ii<repeats ; ii++) {
     for (;ic<ncmd; ic++) try {
       if (strlen(cmds[ic])==0 || *cmds[ic] == '#') continue;
-      int status = AutoPointer<Data>(MDSplus::execute(cmds[ic]))->getInt();
-      if (!status) throw std::exception();
-      if (!(status&1)) throw MDSplus::MdsException(status);
+      status = AutoPointer<Data>(MDSplus::execute(cmds[ic]))->getInt();
+      if (!status) {
+        std::cerr << "FAILED in cycle " << ii << " >> " << cmds[ic] << "\n";
+        err = 1;
+      } else if (!(status&1)) throw MDSplus::MdsException(status);
     } catch (MDSplus::MdsException e) {
-      std::cerr << "ERROR in cycle " << ii << " >> " << cmds[ic] << "\n";
+      std::cerr << "ERROR in cycle " << ii << ":=" << status << " >> " << cmds[ic] << "\n";
       err = 1;
     } catch (...) {
-      std::cerr << "FAILED in cycle " << ii << " >> " << cmds[ic] << "\n";
+      std::cerr << "Exception in cycle " << ii << " >> " << cmds[ic] << "\n";
       err = 1;
     }
     if (err) break;
