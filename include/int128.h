@@ -3,6 +3,11 @@
 #include <inttypes.h>
 #include <math.h>
 
+
+#define uint64_max 0xffffffffffffffffLL
+#define uint64_min 0x0000000000000000LL
+#define  int64_max 0x7fffffffffffffffLL
+#define  int64_min 0x8000000000000000LL
 #ifdef WORDS_BIGENDIAN
  typedef struct int128_s{
     int64_t high;
@@ -13,8 +18,8 @@
    uint64_t low;
  } uint128_t;
  #define int128_one  { 0, 1 };
- #define int128_max  { 0x7fffffffffffffffLL,-1 };
- #define int128_min  { 0x8000000000000000LL, 0 };
+ #define int128_max  { int64_max,-1 };
+ #define int128_min  { int64_min, 0 };
 #else
  typedef struct int128_s{
    uint64_t low;
@@ -25,8 +30,8 @@
    uint64_t high;
  } uint128_t;
  #define int128_one  { 1, 0 };
- #define int128_max  {-1, 0x7fffffffffffffffLL };
- #define int128_min  { 0, 0x8000000000000000LL };
+ #define int128_max  {-1, int64_max };
+ #define int128_min  { 0, int64_min };
 #endif
 #define int128_zero { 0, 0 };
 #define uint128_max {-1,-1 };
@@ -189,4 +194,38 @@ static inline int int128_div(const int128_t* x, const int128_t* d, int128_t* r){
   uint128_div(&ux,&ud,(uint128_t*)r);
   if (mns) int128_minus(r,r);
   return 1;
+}
+
+#define INT128_BUFLEN 128/3+2
+#define INT128_BUF(buf) char buf[INT128_BUFLEN]
+static inline char* uint128_deco(const uint128_t* in, char* p){
+  uint128_t n;
+  int i;
+  memset(p, '0', INT128_BUFLEN - 1);
+  p[INT128_BUFLEN - 1] = '\0';
+  memcpy(&n, in, sizeof(n));
+  for (i = 0; i < 128; i++){
+    int j, carry;
+    carry = (n.high > int64_max);
+    // Shift n[] left, doubling it
+    n.high= (n.high << 1) + (n.low > int64_max);
+    n.low = (n.low  << 1);
+    // Add s[] to itself in decimal, doubling it
+    for (j=INT128_BUFLEN-1 ; j-->0 ;) {
+      p[j] += p[j] - '0' + carry;
+      carry = (p[j] > '9');
+      if (carry) p[j] -= 10;
+    }
+  }
+  char *max = &p[INT128_BUFLEN-2];
+  for(;(p[0] == '0') && (p < max); p++);
+  return p;
+}
+
+static inline char* int128_deco(const int128_t* in, char* p){
+ int128_t a;
+ int s = int128_abs(in,&a);
+ p = uint128_deco((uint128_t*)&a, p);
+ if (s) (--p)[0]='-';
+ return p;
 }
