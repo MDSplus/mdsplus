@@ -87,11 +87,6 @@ extern int CvtConvertFloat();
 
 const int roprand = 0x8000;
 
-#define uint64_max 0xffffffffffffffff;
-#define uint64_min 0x0000000000000000;
-#define  int64_max 0x7fffffffffffffff;
-#define  int64_min 0x8000000000000000;
-
 #if DTYPE_NATIVE_DOUBLE == DTYPE_D
 #define DHUGE 1.7E38
 #elif DTYPE_NATIVE_DOUBLE == DTYPE_G
