@@ -307,7 +307,7 @@ PRODUCT(_a=[[1,2,3],[4,5,6],[7,8,9]],*,[[0,1,0],[1,0,1],[0,1,0]])==384 && all(PR
 PROGRAM_OF(build_program(1,2))==2
 # project (ARRAY,MASK,FIELD,[DIM])
 # promote (NCOPIES,VALUE)
-PUBLIC(_a)=1;private(_a)=0;PUBLIC(_a)
+# PUBLIC(_a)=1;private(_a)=0;PUBLIC(_a) /*not thread safe, tested elsewhere*/
 
 kind(QUADWORD(1))==9
 kind(QUADWORD_UNSIGNED(1))==5
