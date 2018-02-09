@@ -46,6 +46,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 #include <mdsshr.h>
 #include <time.h>
+#include <pthread_port.h>
 #include "tdinelements.h"
 #include "tdirefcat.h"
 #include "tdireffunction.h"
@@ -57,10 +58,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-
-
-
-int Tdi_RandomSeed = 1234567;
 
 extern int TdiData();
 extern int Tdi3Add();
@@ -177,23 +174,24 @@ int Tdi3Ramp(struct descriptor *out_ptr)
 
   N_ELEMENTS(out_ptr, n);
   switch (out_ptr->dtype) {
-
-  case DTYPE_B:
-  case DTYPE_BU:
-    LoadRamp(char)
-    case DTYPE_W:case DTYPE_WU:LoadRamp(short)
-    case DTYPE_L:case DTYPE_LU:LoadRamp(int)
-    case DTYPE_F:LoadRampF(float, DTYPE_F, DTYPE_NATIVE_FLOAT)
-    case DTYPE_FS:LoadRampF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT)
-    case DTYPE_D:LoadRampF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE)
-    case DTYPE_G:LoadRampF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
+    case DTYPE_B: LoadRamp(  int8_t)
+    case DTYPE_BU:LoadRamp( uint8_t)
+    case DTYPE_W: LoadRamp( int16_t)
+    case DTYPE_WU:LoadRamp(uint16_t)
+    case DTYPE_L: LoadRamp( int32_t)
+    case DTYPE_LU:LoadRamp(uint32_t)
+    case DTYPE_Q: LoadRamp( int64_t)
+    case DTYPE_QU:LoadRamp(uint64_t)
+    case DTYPE_F: LoadRampF(float,  DTYPE_F, DTYPE_NATIVE_FLOAT)
+    case DTYPE_FS:LoadRampF(float,  DTYPE_FS, DTYPE_NATIVE_FLOAT)
+    case DTYPE_D: LoadRampF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE)
+    case DTYPE_G: LoadRampF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
     case DTYPE_FT:LoadRampF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE)
-
 	/**********************************************************
         WARNING this depends on order of operations in ADD routine.
         Make a zero and a one. Add 1 to this starter, but offset.
         **********************************************************/
-	default: {
+    default: {
       struct descriptor new = *out_ptr;
       new.class = CLASS_S;
       if (n > 0)
@@ -225,96 +223,100 @@ int Tdi3Ramp(struct descriptor *out_ptr)
         Limitation: This method is for 32-bit machine only.
         Limitation: Low-order bits are not random.
 */
-#define Randomize Tdi_RandomSeed = Tdi_RandomSeed * 69069 + 1
 
-int Tdi3Random(struct descriptor_a *out_ptr)
-{
-  INIT_STATUS;
-  double half = .5;
-  double norm = half / 2147483648.;
-  int i, n;
 
-  if (Tdi_RandomSeed == 1234567) {
-#ifdef _WIN32
-    srand((unsigned int)time(0) + _getpid());
-    Tdi_RandomSeed = rand();
-#else
-    srandom(time(0) + getpid());
-    Tdi_RandomSeed = random();
-
+/********************************
+ guarantee a 32 bit random number
+ ********************************/
+const double norm = .5/2147483648.;
+#define rand8(bit) rand()
+#if RAND_MAX==0x7fffffff // ==2147483647
+/***********************************
+ rand is only 31 bit so we use *bit
+ to add one random bit to rand32
+ ***********************************/
+#define rand16(bit) rand()
+static uint32_t rand32(uint32_t* bit) {
+  *bit = *bit<<1;
+  if ((*bit & 0x7fffffff)==0)
+    *bit = rand()<<1 | 1;
+  return ((uint32_t)rand()&0x7fffffff) | (*bit & 0x80000000);
+}
+#else // assume RAND_MAX==0x7fff==32767
+static uint32_t rand16(uint32_t* bit) {
+  *bit = *bit<<1;
+  if ((*bit & 0x7fff)==0)
+    *bit = rand()<<1 | 1;
+  return ((uint32_t)rand()&0x7fff) | (*bit & 0x8000);
+}
+#define rand32(bit) (rand16(bit)|(rand16(bit)<<16))
 #endif
-  }
+
+static pthread_once_t once = PTHREAD_ONCE_INIT;
+static void once_random(){
+  srand(time(0));
+}
+
+int Tdi3Random(struct descriptor_a *out_ptr){
+  pthread_once(&once,once_random);
+  INIT_STATUS;
+  uint32_t bit = 0;
+  int i, n;
   N_ELEMENTS(out_ptr, n);
   switch (out_ptr->dtype) {
   default:
     status = TdiINVDTYDSC;
     break;
 
-#define LoadRandom(type,shift) { type *ptr = (type *)out_ptr->pointer; int ranval; for (i=0;i<n;i++) \
-   Randomize; ranval = Tdi_RandomSeed >> shift; ptr[i] = (type)(ranval);}
-#define LoadRandomFloat(dtype,type,value) { type *ptr = (type *)out_ptr->pointer; double val; \
-                     for (i=0;i<n;i++) {Randomize; val = value; CvtConvertFloat(&val,DTYPE_NATIVE_DOUBLE,&ptr[i],dtype,0);}}
-
-	/*********************
-        WARNING falls through.
-        *********************/
+#define LoadRandom(type,randx) {type *ptr = (type *)out_ptr->pointer; for (i=0;i<n;i++) ptr[i] = (type)randx(&bit);}
+#define LoadRandomFloat(dtype,type,value) { type *ptr = (type *)out_ptr->pointer; for (i=0;i<n;i++) {double val = value; CvtConvertFloat(&val,DTYPE_NATIVE_DOUBLE,&ptr[i],dtype,0);}}
   case DTYPE_O:
   case DTYPE_OU:
-    n += n;
+    n *= 2; // use 2 random int64
     MDS_ATTR_FALLTHROUGH
   case DTYPE_Q:
   case DTYPE_QU:
-    n += n;
+    n *= 2; // use 2 random int32
     MDS_ATTR_FALLTHROUGH
   case DTYPE_L:
   case DTYPE_LU:
-    LoadRandom(int, 0);
-    break;
+    LoadRandom(uint32_t,rand32) break;
   case DTYPE_W:
   case DTYPE_WU:
-    LoadRandom(short, 16) break;
+    LoadRandom(uint16_t,rand16) break;
   case DTYPE_B:
   case DTYPE_BU:
-    LoadRandom(char, 24) break;
-
-	/*********************
-        WARNING falls through.
-        *********************/
+    LoadRandom( uint8_t, rand8) break;
   case DTYPE_FC:
-    n += n;
+    n *= 2; // use 2 random float
     MDS_ATTR_FALLTHROUGH
   case DTYPE_F:
-    LoadRandomFloat(DTYPE_F, float, Tdi_RandomSeed * norm + half);
+    LoadRandomFloat(DTYPE_F, float, rand32(&bit)*norm);
     break;
-
   case DTYPE_FSC:
-    n += n;
+    n *= 2; // use 2 random float
     MDS_ATTR_FALLTHROUGH
   case DTYPE_FS:
-    LoadRandomFloat(DTYPE_FS, float, Tdi_RandomSeed * norm + half);
+    LoadRandomFloat(DTYPE_FS, float, rand32(&bit)*norm);
     break;
-
   case DTYPE_DC:
-    n += n;
+    n *= 2; // use 2 random float
     MDS_ATTR_FALLTHROUGH
   case DTYPE_D:
-    LoadRandomFloat(DTYPE_D, double, (Tdi_RandomSeed * norm + Tdi_RandomSeed) * norm + half);
+    LoadRandomFloat(DTYPE_D, double, (rand32(&bit)*norm+rand32(&bit))*norm);
     break;
-
   case DTYPE_GC:
-    n += n;
+    n *= 2; // use 2 random double
     MDS_ATTR_FALLTHROUGH
   case DTYPE_G:
-    LoadRandomFloat(DTYPE_G, double, (Tdi_RandomSeed * norm + Tdi_RandomSeed) * norm + half);
+    LoadRandomFloat(DTYPE_G, double, (rand32(&bit)*norm+rand32(&bit))*norm);
     break;
-
   case DTYPE_FTC:
-    n += n;
+    n *= 2; // use 2 random double
     MDS_ATTR_FALLTHROUGH
   case DTYPE_FT:
-    LoadRandomFloat(DTYPE_FT, double, (Tdi_RandomSeed * norm + Tdi_RandomSeed) * norm + half);
+    LoadRandomFloat(DTYPE_FT, double, (rand32(&bit)*norm+rand32(&bit))*norm);
     break;
-
   }
   return status;
 }
@@ -322,8 +324,7 @@ int Tdi3Random(struct descriptor_a *out_ptr)
 /*---------------------------------------------------------------------
         Create an array of zeroes.
 */
-int Tdi3Zero(struct descriptor_a *out_ptr)
-{
+int Tdi3Zero(struct descriptor_a *out_ptr){
   STATIC_CONSTANT int i0 = 0;
   STATIC_CONSTANT struct descriptor con0 = { sizeof(int), DTYPE_L, CLASS_S, (char *)&i0 };
   return TdiConvert(&con0, out_ptr);
