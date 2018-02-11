@@ -195,32 +195,42 @@ static void type##_avgdiv(const char* in, const int count, char* out){\
 #define BITOP(bit)   OP(int##bit); OP(uint##bit)
 #define BITAVG(bit) AVG(int##bit);AVG(uint##bit)
 BITOP(8);BITOP(16);BITOP(32);BITOP(64);
-BITAVG(8);BITAVG(16);BITAVG(32);BITAVG(64);
-/*
-static void int64_avgadd(const char* in, char* inout){
-  int64_t  buf[2] = {*(int64_t*)in,0};
-  TdiAddOctaword(buf,inout,inout);
+BITAVG(8);BITAVG(16);BITAVG(32);
+
+static inline void int64_avgadd(const char* in, char* buf){
+  int128_t a = {.low=*(uint64_t*)in,.high=*(int64_t*)in<0 ? -1 : 0 };
+  int128_add(&a,(int128_t*)buf,(int128_t*)buf);
 }
-static void int64_avgdiv(const char* in, const int count, char* out){
-  const uint32_t cnt[4] = {count,0,0,0};
-         int64_t res[2];
-  TdiDivO(in,(char*)cnt,(char*)res);
-  memcpy(out,&res,8);
+static inline void int64_avgdiv(const char* in, const int count, char* out){
+  int128_t cnt = {.low=count,.high=0};
+  int128_div((int128_t*)in,&cnt,&cnt);
+  memcpy(out,&cnt.low,sizeof(int64_t));
 }
-#define uint64_avgadd int64_avgadd
-#define uint64_avgdiv int64_avgdiv
-*/
+static inline void uint64_avgadd(const char* in, char* buf){
+  uint128_t a = {.low=*(uint64_t*)in,.high=0};
+  uint128_add(&a,(uint128_t*)buf,(uint128_t*)buf);
+}
+static inline void uint64_avgdiv(const char* in, const int count, char* out){
+  uint128_t cnt = {.low=count,.high=0};
+  uint128_div((uint128_t*)in,&cnt,&cnt);
+  memcpy(out,&cnt.low,sizeof(uint64_t));
+}
 
 /* missing versions for octaword */
 static inline void int128_avgadd(const char* in, char* buf){
   int128_add((int128_t*)in,(int128_t*)buf,(int128_t*)buf);
 }
 static inline void int128_avgdiv(const char* in, const int count, char* out){
-  uint128_t cnt = {.low=count,.high=0};
-  TdiDivO(in,(char*)&cnt,out);
+  int128_t cnt = {.low=count,.high=0};
+  int128_div((int128_t*)in,&cnt,(int128_t*)out);
 }
-#define uint128_avgadd int128_avgadd
-#define uint128_avgdiv int128_avgdiv
+static inline void uint128_avgadd(const char* in, char* buf){
+  uint128_add((uint128_t*)in,(uint128_t*)buf,(uint128_t*)buf);
+}
+static inline void uint128_avgdiv(const char* in, const int count, char* out){
+  uint128_t cnt = {.low=count,.high=0};
+  uint128_div((uint128_t*)in,&cnt,(uint128_t*)out);
+}
 
 static inline void operateIloc(void* start,int testit(const char*,const char*),args_t*a) {
   char* result = malloc(a->length);
@@ -547,8 +557,8 @@ int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
   case DTYPE_WU: OperateImean( 8, uint16_avgadd, uint16_avgdiv,&args);break;
   case DTYPE_L:  OperateImean( 8,  int32_avgadd,  int32_avgdiv,&args);break;
   case DTYPE_LU: OperateImean( 8, uint32_avgadd, uint32_avgdiv,&args);break;
-  case DTYPE_Q:  OperateImean(8 ,  int64_avgadd,  int64_avgdiv,&args);break;//TODO: use octaword as buffer
-  case DTYPE_QU: OperateImean(8 , uint64_avgadd, uint64_avgdiv,&args);break;
+  case DTYPE_Q:  OperateImean(16,  int64_avgadd,  int64_avgdiv,&args);break;//TODO: use octaword as buffer
+  case DTYPE_QU: OperateImean(16, uint64_avgadd, uint64_avgdiv,&args);break;
   case DTYPE_O:  OperateImean(16, int128_avgadd,(void*) int128_avgdiv,&args);break;
   case DTYPE_OU: OperateImean(16,uint128_avgadd,(void*)uint128_avgdiv,&args);break;
   case DTYPE_F:  OperateFmean(DTYPE_F    ,&args);break;
