@@ -84,6 +84,7 @@ int Tdi3xxxxx(struct descriptor *in1, struct descriptor *in2,
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
 #include <STATICdef.h>
+#include <limits.h>
 #include <int128.h>
 
 
@@ -598,12 +599,6 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
   return status;
 }
 
-#define int8_t_min  -128
-#define int16_t_min -32768
-#define int32_t_min 0x80000000
-#define int64_t_min LONG_LONG_CONSTANT(0x8000000000000000)
-#define min_struct(type) type##_min
-
 #undef Operate
 #define Operate(type1,type2) \
 { type1 *in1p = (type1 *)in1->pointer;\
@@ -652,20 +647,21 @@ int Tdi3Ishft(struct descriptor *in1, struct descriptor *in2, struct descriptor 
 }
 
 #undef Operate
-#define Operate(type,operator) \
-{ type *in1p = (type *)in1->pointer;\
-  type *in2p = (type *)in2->pointer;\
-  type *outp = (type *)out->pointer;\
+#define in2p_to_n(type1,type2,in2p) type2 n = *in2p%(sizeof(type1)*CHAR_BIT); if (n<0) n+=(sizeof(type1)*CHAR_BIT)
+#define Operate(type1,type2,operator) { \
+  type1 *in1p = (type1 *)in1->pointer;\
+  type2 *in2p = (type2 *)in2->pointer;\
+  type1 *outp = (type1 *)out->pointer;\
   switch (scalars)\
   {\
-    case 0: while (nout--) {*outp++ = (type)(*in1p++ operator *in2p++); \
-            } break;\
-    case 1: while (nout--) {*outp++ = (type)(*in1p operator *in2p++); \
-            } break;\
-    case 2: while (nout--) {*outp++ = (type)(*in1p++ operator *in2p); \
-            } break;\
-    case 3: *outp = (type)(*in1p operator *in2p); \
-            break;\
+    case 0: while (nout--) {in2p_to_n(type1,type2,in2p++);\
+                            *outp++ = (type1)(*in1p++ operator n); } break;\
+    case 1: while (nout--) {in2p_to_n(type1,type2,in2p++);\
+                            *outp++ = (type1)(*in1p   operator n); } break;\
+    case 2:                {in2p_to_n(type1,type2,in2p  );\
+            while (nout--) {*outp++ = (type1)(*in1p++ operator n); }}break;\
+    case 3:                {in2p_to_n(type1,type2,in2p  );\
+                            *outp   = (type1)(*in1p   operator n); } break;\
   }\
   break;\
 }
@@ -673,14 +669,14 @@ int Tdi3Ishft(struct descriptor *in1, struct descriptor *in2, struct descriptor 
 int Tdi3ShiftRight(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 {
   SetupArgs switch (in1->dtype) {
-    case DTYPE_B: Operate(  int8_t, >>)
-    case DTYPE_BU:Operate( uint8_t, >>)
-    case DTYPE_W: Operate( int16_t, >>)
-    case DTYPE_WU:Operate(uint16_t, >>)
-    case DTYPE_L: Operate( int32_t, >>)
-    case DTYPE_LU:Operate(uint32_t, >>)
-    case DTYPE_Q: Operate( int64_t, >>)
-    case DTYPE_QU:Operate(uint64_t, >>)
+    case DTYPE_B: Operate(  int8_t, int8_t, >>)
+    case DTYPE_BU:Operate( uint8_t, int8_t, >>)
+    case DTYPE_W: Operate( int16_t,int16_t, >>)
+    case DTYPE_WU:Operate(uint16_t,int16_t, >>)
+    case DTYPE_L: Operate( int32_t,int32_t, >>)
+    case DTYPE_LU:Operate(uint32_t,int32_t, >>)
+    case DTYPE_Q: Operate( int64_t,int64_t, >>)
+    case DTYPE_QU:Operate(uint64_t,int64_t, >>)
     case DTYPE_O: Operate128( int128,rshft)
     case DTYPE_OU:Operate128(uint128,rshft)
     default:return TdiINVDTYDSC;
@@ -691,15 +687,14 @@ int Tdi3ShiftRight(struct descriptor *in1, struct descriptor *in2, struct descri
 int Tdi3ShiftLeft(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 {
   SetupArgs switch (in1->dtype) {
-  case DTYPE_B:
-    Operate(char, <<)
-    case DTYPE_BU:Operate(unsigned char, <<)
-    case DTYPE_W:Operate(int16_t, <<)
-    case DTYPE_WU:Operate(uint16_t, <<)
-    case DTYPE_L:Operate(int, <<)
-    case DTYPE_LU:Operate(unsigned int, <<)
-    case DTYPE_Q:Operate(int64_t, <<)
-    case DTYPE_QU:Operate(uint64_t, <<)
+    case DTYPE_B: Operate(  int8_t, int8_t, <<)
+    case DTYPE_BU:Operate( uint8_t, int8_t, <<)
+    case DTYPE_W: Operate( int16_t,int16_t, <<)
+    case DTYPE_WU:Operate(uint16_t,int16_t, <<)
+    case DTYPE_L: Operate( int32_t,int32_t, <<)
+    case DTYPE_LU:Operate(uint32_t,int32_t, <<)
+    case DTYPE_Q: Operate( int64_t,int64_t, <<)
+    case DTYPE_QU:Operate(uint64_t,int64_t, <<)
     case DTYPE_O: Operate128( int128,lshft)
     case DTYPE_OU:Operate128(uint128,lshft)
     default:return TdiINVDTYDSC;
