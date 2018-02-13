@@ -439,8 +439,8 @@ int Tdi3Inot(struct descriptor *in_ptr, struct descriptor *out_ptr)
     end_operate case DTYPE_B: start_operate(   int8_t) out[i] = ~in[i];
     end_operate case DTYPE_W: start_operate(  int16_t) out[i] = ~in[i];
     end_operate case DTYPE_L: start_operate(  int32_t) out[i] = ~in[i];
-    end_operate case DTYPE_O: start_operate(  int64_t) out[i] = ~in[i];
-    end_operate case DTYPE_Q: start_operate( int128_t) out[i].low=~in[i].low; out[i].high=~in[i].high;
+    end_operate case DTYPE_Q: start_operate(  int64_t) out[i] = ~in[i];
+    end_operate case DTYPE_O: start_operate( int128_t) out[i].low=~in[i].low; out[i].high=~in[i].high;
     end_operate default:status = TdiINVDTYDSC;
   }
 
