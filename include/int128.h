@@ -53,6 +53,49 @@ static inline int int128_abs(const int128_t* x, int128_t* r){
   return 1;
 }
 
+static inline void uint128_lshft(const uint128_t* x, const int n, uint128_t* r){
+  int nn = n%128; if (nn<0) nn+=128;
+  if (nn>63) {
+    r->high = x->low<<(nn-64);               r->low = 0;
+  } else {
+    r->high = x->high<<nn | x->low>>(64-nn); r->low = x->low<<nn;
+  }
+}
+
+static inline void uint128_rshft(const uint128_t* x, const int n, uint128_t* r){
+  int nn = n%128; if (nn<0) nn+=128;
+  if (nn>63) {
+    r->low = x->high>>(nn-64);              r->high = 0;
+  } else {
+    r->low = x->low>>nn | x->high<<(64-nn); r->high = x->high>>nn;
+  }
+}
+
+static inline void int128_lshft(const int128_t* x, const int n, int128_t* r){
+  int nn = n%128; if (nn<0) nn+=128;
+  if (nn>63) {
+    r->high = x->low<<(nn-64);               r->low = 0;
+  } else {
+    r->high = x->high<<nn | x->low>>(64-nn); r->low = x->low<<nn;
+  }
+}
+
+static inline void int128_rshft(const int128_t* x, const int n, int128_t* r){
+  int nn = n%128; if (nn<0) nn+=128;
+  if (nn>63) {
+    r->low = x->high>>(nn-64);              r->high = 0;
+  } else {
+    r->low = x->low>>nn | x->high<<(64-nn); r->high = x->high>>nn;
+  }
+}
+
+static inline void uint128_ishft(const uint128_t* x, const int n, uint128_t* r){
+  if (n<0)
+    return uint128_rshft(x,-n,r);
+  return uint128_lshft(x,n,r);
+}
+#define int128_ishft(x,n,r) uint128_ishft((uint128_t*)x,n,(uint128_t*)r)
+
 #define INT128_BUFLEN 128/3+2
 #define INT128_BUF(buf) char buf[INT128_BUFLEN]
 static char* uint128_deco(const uint128_t* in, char* p){

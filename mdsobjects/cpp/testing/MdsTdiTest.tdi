@@ -438,11 +438,22 @@ treeclose()
   !or(0q,2q) &&   !or_not(0q,3q)
   eqv(1q,3q) &&       eqv(0q,2q)
  neqv(0q,3q) &&      neqv(1q,2q)
+ishft(-1q,-1)==huge(1q)
+-15q >>1== -8q  && -15q >>-63== -8q
+ 15q >>1==  7q  &&  15q >>-63==  7q
+-15q <<1==-30q  && -15q <<-63==-30q
+ 15q <<1== 30q  &&  15q <<-63== 30q
+ 15qu>>1==  7qu &&  15qu>>-63==  7qu
+ 15qu<<1== 30qu &&  15qu<<-63== 30qu
+
 
 #octaword tests require execute
 execute("0x1234567012345670o*16==0x12345670123456700o")
 execute("0x12345670123456701o+0x1234567012345670q==0x13579bd713579bd71o")
 execute("0x12345670123456701o-0x1234567012345670q==0x11111109111111091o")
+0xffffffffffffffffffffffffffffffffou/0xfffffffffffffffffou==0x1000000000000000ou
+0xffffffffffffffffffffffffffffffffou/0xffffffffffffffffou==0x10000000000000001ou
+-100000000000000o/1000000000000o==-100o
 execute("(-0x2468ace02468ace0o)/2==-0x1234567012345670o")
 execute("  and(1o,3o) &&   and_not(1o,2o)")
 execute("!nand(1o,3o) && !nand_not(1o,2o)")
@@ -450,3 +461,11 @@ execute("  nor(0o,2o) &&   nor_not(0o,3o)")
 execute("  !or(0o,2o) &&   !or_not(0o,3o)")
 execute("  eqv(1o,3o) &&       eqv(0o,2o)")
 execute(" neqv(0o,3o) &&      neqv(1o,2o)")
+execute("ishft(-1o,-1)==huge(1o)")
+execute("-15o >>1== -8o  &&-15o >>-127== -8o")
+execute(" 15o >>1==  7o  && 15o >>-127==  7o")
+execute("-15o <<1==-30o  &&-15o <<-127==-30o")
+execute(" 15o <<1== 30o  && 15o <<-127== 30o")
+execute(" 15ou>>1==  7ou && 15ou>>-127==  7ou")
+execute(" 15ou<<1== 30ou && 15ou<<-127== 30ou")
+
