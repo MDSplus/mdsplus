@@ -6,6 +6,18 @@ export main_path="${tmpdir};$(realpath ${tdir}/../../trees)"
 export subtree_path="${tmpdir};$(realpath ${tdir}/../../trees/subtree)"
 export MDS_PATH="${tmpdir};$(realpath ${tdir}/../../tdi)"
 export MDS_PYDEVICE_PATH="${tmpdir};$(realpath ${tdir}/../../pydevices)"
+if [ -z "$PyLib" ]
+then
+  pyver="$(python -V 2>&1)"
+  if [ $? = 0 -a "$pyver" != "" ]
+  then
+    PyLib=$(echo $pyver | awk '{print $2}' 2>/dev/null | awk -F. '{print "python"$1"."$2}' 2>/dev/null)
+    if [ $? = 0 ]
+    then
+      export PyLib
+    fi
+  fi
+fi
 status=0
 if ( echo "if_error(py(1),0)" | tditest 2>/dev/null | grep -v if_error | grep 0 >/dev/null )
 then

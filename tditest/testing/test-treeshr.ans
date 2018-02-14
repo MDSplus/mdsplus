@@ -57,15 +57,7 @@ getnci(.subtree:a12,"minpath")
 getnci(.subtree:a12,"node_name")
 "A12         "
 getnci(.subtree:a12:name,"original_part_name")
-%TDI Error in EXT_FUNCTION(*, "a12__part_name", .SUBTREE:A12:NAME, "PART_NAME")
-%TDI Error in EVALUATE(a12__part_name(.SUBTREE:A12:NAME, "PART_NAME"))
-%TDI Error in EXT_FUNCTION(*, "a12__original_part_name", .SUBTREE:A12:NAME,
-%- "ORIGINAL_PART_NAME")
-%TDI Error in EVALUATE(a12__original_part_name(.SUBTREE:A12:NAME, "ORIGINAL_PART_NAME"))
-%TDI Error in GETNCI(.SUBTREE:A12:NAME, "original_part_name")
-%TDI Error in EVALUATE(GETNCI(.SUBTREE:A12:NAME, "original_part_name"))
-%TDI Error in EXECUTE('getnci(.subtree:a12:name,"original_part_name")')
-
+":NAME"
 getnci(.subtree:a12,"path")
 "\\SUBTREE::TOP:A12"
 getnci(.subtree:a12,"compressible")
