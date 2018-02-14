@@ -1372,6 +1372,7 @@ AC_OUTPUT(Makefile.inc
           tdishr/testing/Makefile
           tdic/Makefile
           tditest/Makefile
+          tditest/testing/Makefile
           testing/Makefile
           testing/backends/check/Makefile
           testing/selftest/Makefile

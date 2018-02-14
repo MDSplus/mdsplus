@@ -957,7 +957,8 @@ TEST_DIRS ?= \
 			   mdsobjects/python/tests \
 			   mdsshr/testing \
 			   mdslib/testing \
-			   mdsobjects/cpp/testing
+			   mdsobjects/cpp/testing \
+			   tditest/testing
 #               testing/selftest
 
 TEST_OUTDIR  ?= ${top_builddir}/testing

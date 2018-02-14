@@ -149,4 +149,5 @@ static void tdiputs(char *line)
   if (line[line_d.length - 1] == '\n')
     line_d.length--;
   TdiExecute((struct descriptor *)&write_it, &line_d, &ans MDS_END_ARG);
+  fflush(stdout);
 }

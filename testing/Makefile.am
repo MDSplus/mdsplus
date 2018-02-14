@@ -47,7 +47,8 @@ TEST_DIRS ?= \
 			   mdsobjects/python/tests \
 			   mdsshr/testing \
 			   mdslib/testing \
-			   mdsobjects/cpp/testing
+			   mdsobjects/cpp/testing \
+			   tditest/testing
 #               testing/selftest
 
 TEST_OUTDIR  ?= ${top_builddir}/testing
@@ -64,7 +65,7 @@ tests_valgrind_DIRS = $(addprefix tests_valgrind__$(top_builddir)/, $(TEST_DIRS)
 tests_valgrind_suppressions_DIRS = $(addprefix tests_valgrind_suppressions__$(top_builddir)/, $(TEST_DIRS))
 $(tests_DIRS):
 	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:tests__%=%) tests
-	
+
 $(rebuild_tests_DIRS):
 	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:rebuild_tests__%=%) rebuild-tests
 
