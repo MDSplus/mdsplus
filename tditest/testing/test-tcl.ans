@@ -91,11 +91,6 @@ Tcl('add tag any any_tag2')
 Tcl('add tag any any_tag3')
 265388041
 Tcl('add node a12/model=a12')
-
-You should defined the PyLib environment variable!
-Please define PyLib to be the name of your python library, i.e. 'python2.7' or '/usr/lib/python2.7.so.1'.
-We will try 'python2.7' as default.
-
 265388041
 Tcl('put text """This is a test"""')
 265388041
