@@ -251,16 +251,16 @@ static void ChildSignalHandler(int num __attribute__ ((unused))){
 ////////////////////////////////////////////////////////////////////////////////
 
 static int io_authorize(Connection* c, char *username){
+  int ans;
+  char *iphost = NULL,*hoststr = NULL ,*info = NULL;
+  FREE_ON_EXIT(iphost);
+  FREE_ON_EXIT(hoststr);
+  FREE_ON_EXIT(info);
+  ans = C_OK;
   SOCKET sock = getSocket(c);
   time_t tim = time(0);
   char *timestr = ctime(&tim);
-  int ans = C_OK;
-  char *iphost = NULL;
-  FREE_ON_EXIT(iphost);
-  char *hoststr = NULL;
-  FREE_ON_EXIT(hoststr);
-  char *info = getHostInfo(sock, &iphost, &hoststr);
-  FREE_ON_EXIT(info);
+  info = getHostInfo(sock, &iphost, &hoststr);
   if (info) {
     char *matchString[2] = { NULL, NULL };
     FREE_ON_EXIT(matchString[0]);
