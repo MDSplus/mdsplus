@@ -2,3 +2,5 @@ Tcl('edit/new main/shot=1')
 265388041
 Tcl('add node a12/model=a12')
 265388041
+Py('42')
+1
