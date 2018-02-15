@@ -94,9 +94,6 @@ const int roprand = 0x8000;
 #else
 #define DHUGE 1.7E308
 #endif
-static inline void TdiDivO(const char *in1,const char *in2,char *out){
-  int128_div(( int128_t*)in1,( int128_t*)in2,( int128_t*)out);
-}
 
 int TdiLtO(unsigned int *in1, unsigned int *in2, int is_signed){
   if (is_signed)
