@@ -150,7 +150,7 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
     }
     ndim = ndim - 1;		/* ndim is actually the number of dimensions specified */
 
-    /* if requested descriptor is for a DTYPE_CSTRING, then following the null terminated 
+    /* if requested descriptor is for a DTYPE_CSTRING, then following the null terminated
      * list of dimensions there will be an int * to the length of each string in the array
      */
 
@@ -215,7 +215,7 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
 EXPORT int descr2(int *dtype, int *dim1, ...)
 {
 
-  /* variable length argument list: 
+  /* variable length argument list:
    * (# elements in dim 1), (# elements in dim 2) ... 0, [length of (each) string if DTYPE_CSTRING]
    */
 
@@ -279,7 +279,7 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
     }
     ndim = ndim - 1;		/* ndim is actually the number of dimensions specified */
 
-    /* if requested descriptor is for a DTYPE_CSTRING, then following the null terminated 
+    /* if requested descriptor is for a DTYPE_CSTRING, then following the null terminated
      * list of dimensions there will be an int * to the length of each string in the array
      */
 
@@ -337,7 +337,7 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
     next = 0;
   return retval;
 }
-
+#ifndef _CLIENT_ONLY
 static inline struct descriptor *fixDtypes(struct descriptor *dsc) {
   switch (dsc->dtype) {
   case DTYPE_FLOAT:
@@ -357,8 +357,9 @@ static inline struct descriptor *fixDtypes(struct descriptor *dsc) {
   }
   return dsc;
 }
+#endif
 
-static inline int MdsValueVargs(va_list incrmtr, int connection, char *expression, ...) 
+static inline int MdsValueVargs(va_list incrmtr, int connection, char *expression, ...)
 {
   int a_count;
   int i;
@@ -398,7 +399,7 @@ static inline int MdsValueVargs(va_list incrmtr, int connection, char *expressio
       descnum = va_arg(incrmtr, int *);
     dscAnswer = GetDescriptorCache()[*descnum - 1];
 
-    /* 
+    /*
      * Send expression descriptor first.
      * MdsValueRemoteExpression wraps expression with type conversion function.
      * It malloc's space for newexpression that needs to be freed after
@@ -550,7 +551,7 @@ static inline int MdsValueVargs(va_list incrmtr, int connection, char *expressio
 	int templen = (xd2.pointer)->length;
 	status = TdiCvt(&xd2, dsc, &xd3 MDS_END_ARG);
 	  /**  get string length right if scalar string (if answer descriptor has longer
-	   **  length than returned value, then make sure the length is the length of the 
+	   **  length than returned value, then make sure the length is the length of the
            **  returned value
            **/
 	if ((xd3.pointer)->dtype == DTYPE_CSTRING && (xd3.pointer->class != CLASS_A))
@@ -623,7 +624,7 @@ static inline int MdsValue2Vargs(va_list incrmtr, int connection, char *expressi
       descnum = va_arg(incrmtr, int *);
     dscAnswer = GetDescriptorCache()[*descnum - 1];
     dscAnswer->pointer = va_arg(incrmtr, void *);
-    /* 
+    /*
      * Send expression descriptor first.
      * MdsValueRemoteExpression wraps expression with type conversion function.
      * It malloc's space for newexpression that needs to be freed after
@@ -779,7 +780,7 @@ static inline int MdsValue2Vargs(va_list incrmtr, int connection, char *expressi
 	int templen = (xd2.pointer)->length;
 	status = TdiCvt(&xd2, dsc, &xd3 MDS_END_ARG);
 	  /**  get string length right if scalar string (if answer descriptor has longer
-	   **  length than returned value, then make sure the length is the length of the 
+	   **  length than returned value, then make sure the length is the length of the
            **  returned value
            **/
 	if ((xd3.pointer)->dtype == DTYPE_CSTRING && (xd3.pointer->class != CLASS_A))
@@ -1065,7 +1066,7 @@ static int dtype_length(struct descriptor *d)
 {
   short len;
 
-  /*  This function needs to handle the DTYPE values in ipdesc.h as well 
+  /*  This function needs to handle the DTYPE values in ipdesc.h as well
    *  as the "native" DTYPEs, as it is called both for descriptors before
    *  evaluation, and for the answer descriptor, which for local access will
    *  be returned with native DTYPE.
