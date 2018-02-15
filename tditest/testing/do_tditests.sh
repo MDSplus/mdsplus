@@ -1,10 +1,10 @@
 #/bin/bash
-tdir=$(realpath $(dirname ${0}))
+tdir=$(readlink -f $(dirname ${0}))
 tmpdir=$(mktemp -d)
-export main_path="${tmpdir};$(realpath ${tdir}/../../trees)"
-export subtree_path="${tmpdir};$(realpath ${tdir}/../../trees/subtree)"
-export MDS_PATH="${tmpdir};$(realpath ${tdir}/../../tdi)"
-export MDS_PYDEVICE_PATH="${tmpdir};$(realpath ${tdir}/../../pydevices)"
+export main_path="${tmpdir};$(readlink -f ${tdir}/../../trees)"
+export subtree_path="${tmpdir};$(readlink -f ${tdir}/../../trees/subtree)"
+export MDS_PATH="${tmpdir};$(readlink -f ${tdir}/../../tdi)"
+export MDS_PYDEVICE_PATH="${tmpdir};$(readlink -f ${tdir}/../../pydevices)"
 if [ "$OS" == "windows" ]
 then
   zdrv="Z:"
