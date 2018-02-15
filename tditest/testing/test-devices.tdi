@@ -1,0 +1,2 @@
+Tcl('set tree main')
+Tcl('dir/full .subtree:a12:name')

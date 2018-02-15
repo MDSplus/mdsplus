@@ -1,0 +1,13 @@
+Tcl('set tree main')
+265388041
+Tcl('dir/full .subtree:a12:name')
+
+\SUBTREE::TOP:A12
+
+ :NAME        
+      Status: on,parent is on, usage text
+      Model element: 2
+      Original element name: \SUBTREE::TOP:A12:NAME
+
+Total of 1 node.
+1
