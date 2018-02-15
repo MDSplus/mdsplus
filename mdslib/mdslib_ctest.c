@@ -450,7 +450,7 @@ void TestArray2D(int ttype, int conid)
 
 int main(int argc, char *argv[])
 {
-  int connection=-1;
+  SOCKET connection=-1;
   int pconnection=-1;
   if (argc > 1) {
     printf("*** Connecting to: %s", argv[1]);
