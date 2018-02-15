@@ -376,7 +376,7 @@ STATIC_ROUTINE NODE *Pop(SEARCH_CONTEXT * search)
 
 /****************************************************
    Push(sctx, node) -
-     pushes a node onto the que of places that need 
+     pushes a node onto the que of places that need
    to be explored in the future of this *** search.
 *****************************************************/
 STATIC_ROUTINE void Push(SEARCH_CONTEXT * search, NODE * node)
@@ -955,25 +955,24 @@ EXPORT char *_TreeAbsPath(void *dbid, char const *inpath)
 
 STATIC_ROUTINE char *AbsPath(void *dbid, char const *inpath, int nid_in)
 {
-  char *answer;
-  char *tmppath = NULL;
+  char *answer = NULL, *pathptr = NULL;
   SEARCH_CONTEXT ctx[MAX_SEARCH_LEVELS];
   memset(ctx, 0, sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
   FREE_ON_EXIT(ctx->string);
+  FREE_ON_EXIT(pathptr);
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   _TreeSetDefaultNid(dbid, nid_in);
-  FREE_ON_EXIT(tmppath);
-  const char *pathptr;
-  size_t len;
-  size_t i;
-  if (strlen(inpath)) {
+  size_t i,len = strlen(inpath);
+  if (len) {
     int nid;
-    if (_TreeFindNode(dbid, inpath, &nid) & 1)
-      pathptr = tmppath = _TreeGetPath(dbid, nid);
-    else pathptr = inpath;
-  } else
-    pathptr = tmppath = _TreeGetPath(dbid, nid_in);
-  len = strlen(pathptr);
+    if (_TreeFindNode(dbid, inpath, &nid) & 1) {
+      pathptr = _TreeGetPath(dbid, nid);
+      len = strlen(pathptr);
+    } else pathptr = strcpy(malloc(len+1),inpath);
+  } else {
+    pathptr = _TreeGetPath(dbid, nid_in);
+    len = strlen(pathptr);
+  }
   ctx->type = EOL;
   ctx->string = malloc(len + 1);
   for (i = 0; i < len && pathptr[i] != ' '; i++)
@@ -1020,7 +1019,7 @@ STATIC_ROUTINE char *AbsPath(void *dbid, char const *inpath, int nid_in)
     }
   } else answer = NULL;
   FREE_NOW(ctx->string);
-  FREE_NOW(tmppath);
+  FREE_NOW(pathptr);
   return answer;
 }
 
