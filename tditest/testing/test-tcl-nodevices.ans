@@ -1,7 +1,7 @@
+Tcl('abort server gub')
 Error: Problem aborting server 'gub'
 Error message was: %SERVER-E-PATH_DOWN, Path to server lost
 mdsdcl: --> failed on line 'abort server gub'
-Tcl('abort server gub')
 Server 'gub' unknown
 266436674
 Tcl('set command tcl')
@@ -133,7 +133,6 @@ Tcl('dir ***')
   CHILD         SUBTREE     
 
 Total of 13 nodes.
-mdsdcl: No such command
 1
 Tcl('set tree main/shot=1')
 265388067
@@ -150,6 +149,7 @@ Tcl('compress main/shot=1/override')
 Tcl('set tree main/shot=1')
 265388067
 Tcl('defined server gub')
+mdsdcl: No such command
 134349626
 Tcl('close')
 265388041
@@ -201,7 +201,6 @@ Tag listing for *::*
 \MAIN::TOP
 \MAIN::CHILD_TAG
 Total of 2 tags
-Failed to get shotid.
 1
 Tcl('set current subtree 1
 %TDI Error in COMPILE("Tcl('set current subtree 1")
@@ -210,6 +209,7 @@ Tcl('set current subtree 1
 %TDI Error in EXECUTE("Tcl('set current subtree 1")
 
 Tcl('show current subtree')
+Failed to get shotid.
 1
 Tcl('set current subtree/increment')
 1
@@ -238,11 +238,6 @@ Tcl('show server gub')
 Server 'gub' unknown
 Checking server: gub
 Error connecting to server
-This tree has been modified. Either use the WRITE
-command before closing to save modifications or
-use CLOSE/CONFIRM to discard changes.
-
-mdsdcl: --> failed on line 'close'
 2752521
 Tcl('verify')
 Node summary:
@@ -253,6 +248,11 @@ Node summary:
 Tcl('quit')
 134348817
 Tcl('close')
+This tree has been modified. Either use the WRITE
+command before closing to save modifications or
+use CLOSE/CONFIRM to discard changes.
+
+mdsdcl: --> failed on line 'close'
 265388378
 Tcl('set tree main')
 265388041
