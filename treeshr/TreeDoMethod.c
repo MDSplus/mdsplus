@@ -172,15 +172,16 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       /**** Try python class ***/
       struct descriptor_d exp = { 0, DTYPE_T, CLASS_D, 0 };
       FREED_ON_EXIT(&exp);
+      int _nargs = nargs;
       STATIC_CONSTANT DESCRIPTOR(open, "PyDoMethod(");
       StrCopyDx((struct descriptor *)&exp, (struct descriptor *)&open);
-      if (nargs == 4
+      if (_nargs == 4
        && method_ptr->length == strlen("DW_SETUP")
        && strncmp(method_ptr->pointer, "DW_SETUP", strlen("DW_SETUP")) == 0) {
 	arglist[3] = arglist[4];
-	nargs--;
+	_nargs--;
       }
-      for (i = 1; i < nargs - 1; i++)
+      for (i = 1; i < _nargs - 1; i++)
 	StrAppend(&exp, (struct descriptor *)&arg);
       StrAppend(&exp, (struct descriptor *)&close);
       static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
@@ -189,12 +190,12 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	status = LibFindImageSymbol(&tdishr, &tdiexecute, &TdiExecute);
       pthread_mutex_unlock(&lock);
       if STATUS_OK {
-	for (i = nargs; i > 0; i--)
+	for (i = _nargs; i > 0; i--)
 	  arglist[i + 1] = arglist[i];
-	nargs += 2;
-	arglist[0] = arglist_nargs(nargs);
+	_nargs += 2;
+	arglist[0] = arglist_nargs(_nargs);
 	arglist[1] = &exp;
-	arglist[nargs] = MdsEND_ARG;
+	arglist[_nargs] = MdsEND_ARG;
 	status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
       }
       FREED_NOW(&exp);
