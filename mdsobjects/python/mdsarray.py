@@ -233,7 +233,7 @@ class Array(_dat.Data):
                 d.arsize=d.arsize*dim
                 shape.append(dim)
         else:
-            shape=[int(d.arsize/d.length),]
+            shape=[d.arsize//d.length]
         if d.dtype == StringArray.dtype_id:
             if d.length == 0:
                 strarr=''
@@ -246,12 +246,12 @@ class Array(_dat.Data):
             return ans
         if d.dtype == _tre.TreeNode.dtype_id:
             d.dtype=Int32Array.dtype_id
-            nids=getNumpy(_N.int32,_C.c_int32,int(d.arsize/d.length))
+            nids=getNumpy(_N.int32,_C.c_int32,d.arsize//d.length)
             return _tre.TreeNodeArray(list(nids))
         if d.dtype == Complex64Array.dtype_id:
-            return Array(getNumpy(_N.complex64,_C.c_float,int(d.arsize*2/d.length)))
+            return Array(getNumpy(_N.complex64,_C.c_float,(d.arsize<<1)//d.length))
         if d.dtype == Complex128Array.dtype_id:
-            return Array(getNumpy(_N.complex128,_C.c_double,int(d.arsize*2/d.length)))
+            return Array(getNumpy(_N.complex128,_C.c_double,(d.arsize<<1)//d.length))
         if d.dtype == FloatFArray.dtype_id:
             return _cmp.FS_FLOAT(d).evaluate()
         if d.dtype == FloatDArray.dtype_id:
@@ -267,7 +267,7 @@ class Array(_dat.Data):
         if d.dtype in _dsc.dtypeToArrayClass:
             cls = _dsc.dtypeToArrayClass[d.dtype]
             if cls.ctype is not None:
-                return Array(getNumpy(cls.ctype,cls.ctype,int(d.arsize/d.length)))
+                return Array(getNumpy(cls.ctype,cls.ctype,d.arsize//d.length))
         raise TypeError('Arrays of dtype %d are unsupported.' % d.dtype)
 makeArray = Array
 
