@@ -1,14 +1,25 @@
 #/bin/bash
-#
 tdir=$(realpath $(dirname ${0}))
 tmpdir=$(mktemp -d)
 export main_path="${tmpdir};$(realpath ${tdir}/../../trees)"
 export subtree_path="${tmpdir};$(realpath ${tdir}/../../trees/subtree)"
 export MDS_PATH="${tmpdir};$(realpath ${tdir}/../../tdi)"
 export MDS_PYDEVICE_PATH="${tmpdir};$(realpath ${tdir}/../../pydevices)"
+if [ "$OS" == "windows" ]
+then
+  zdrv="Z:"
+  PYTHON="wine python"
+  TDITEST="wine tditest"
+else
+  zdrv=""
+  PYTHON=python
+  TDITEST=tditest
+fi
+
+
 if [ -z "$PyLib" ]
 then
-  pyver="$(python -V 2>&1)"
+  pyver="$($PYTHON -V 2>&1)"
   if [ $? = 0 -a "$pyver" != "" ]
   then
     PyLib=$(echo $pyver | awk '{print $2}' 2>/dev/null | awk -F. '{print "python"$1"."$2}' 2>/dev/null)
@@ -19,36 +30,31 @@ then
   fi
 fi
 status=0
-if ( echo "if_error(py(1),0)" | tditest 2>/dev/null | grep -v if_error | grep 0 >/dev/null )
+
+test=$(basename "$1")
+test=${test%.tdi}
+
+if [ "$2" == "update" ]
 then
-    testlist="$(cat ${tdir}/test-nopy.list)"
+  tmpdir=$zdrv$tmpdir $TDITEST $zdrv$1 2>&1 | \
+   grep -v 'Data inserted:' | \
+   grep -v 'Length:' > ${tdir}/$test.ans
 else
-    testlist="$(cat ${tdir}/test.list)"
+  tmpdir=$zdrv$tmpdir $TDITEST $zdrv$1 2>&1 | \
+    grep -v 'Data inserted:' | \
+    grep -v 'Length:' | \
+    sed $'s/\r$//' | \
+    diff /dev/stdin $tdir/$test.ans > $test-diff.log
+  tstat=$?
+  if [ "$tstat" != "0" ]
+  then
+    echo "FAIL: $test"
+    status=$tstat
+  else
+    echo "PASS: $test"
+    rm -f $test-diff.log
+  fi
 fi
-											    
-for t in ${testlist}
-do
-    if [ "$1" == "update" ]
-    then
-	tmpdir=$tmpdir tditest ${tdir}/${t}.tdi 2>&1 | \
-	    grep -v 'Data inserted:' | \
-	    grep -v 'Length:' > ${tdir}/${t}.ans
-    else
-	tmpdir=$tmpdir tditest ${tdir}/${t}.tdi 2>&1 | \
-	    grep -v 'Data inserted:' | \
-	    grep -v 'Length:' | \
-	    diff /dev/stdin ${tdir}/${t}.ans > ${t}-diff.log
-	tstat=$?
-	if [ "$tstat" != "0" ]
-	then
-  	    echo "FAIL: ${t}"
-	    status=$tstat
-	else
-	    echo "PASS: ${t}"
-	    rm -f ${t}-diff.log
-	fi
-    fi
-done
 if [ ! -z "${tmpdir}" ]
 then
   rm -Rf ${tmpdir}

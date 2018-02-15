@@ -7,18 +7,25 @@ include ../../testing/testing.am
 ## // TESTS  //////////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
 
-TEST_EXTENSIONS = .sh
+TEST_EXTENSIONS = .tdi
+TDI_LOG_COMPILER= $(abs_top_srcdir)/tditest/testing/do_tditests.sh
 
 TEST_FLAGS = @MAKEFLAG_J@
 
 TESTS = \
-	do_tditests.sh
+	test-tcl-nopy.tdi \
+	test-tcl.tdi \
+	test-tdishr.tdi \
+	test-treeshr.tdi
 
 # if VALGRIND_TESTS is defined this list is executed with valgrind
 
 #	threadsUnitTest.py
 VALGRIND_TESTS = \
-	do_tditests.sh
+	test-tcl-nopy.tdi \
+	test-tcl.tdi \
+	test-tdishr.tdi \
+	test-treeshr.tdi
 
 # DISABLE PYTHON LEAK DETECTION: This suppression file shall be removed when
 # python will finally introduce the patch to detect if valgrind is running ..
@@ -33,6 +40,7 @@ VALGRIND_TESTS = \
 
 
 
+
 # Skipping child programs that are launched inside python classes
 #
 VALGRIND_FLAGS = \
@@ -40,7 +48,7 @@ VALGRIND_FLAGS = \
 
 # Files produced by tests that must be purged
 #
-#MOSTLYCLEANFILES = mdsip.log
+MOSTLYCLEANFILES = *.log
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TARGETS  ////////////////////////////////////////////////////////////// ##
