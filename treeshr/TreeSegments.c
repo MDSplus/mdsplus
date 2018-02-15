@@ -237,8 +237,8 @@ int TreeUpdateSegment(int nid, struct descriptor *start, struct descriptor *end,
   return _TreeUpdateSegment(*TreeCtx(), nid, start, end, dimension, idx);
 }
 
-int _TreePutSegment(void *dbid, int nid, int startIdx, struct descriptor_a *data);
-int TreePutSegment(int nid, int startIdx, struct descriptor_a *data){
+int _TreePutSegment(void *dbid, int nid, const int startIdx, struct descriptor_a *data);
+int TreePutSegment(const int nid, const int startIdx, struct descriptor_a *data){
   return _TreePutSegment(*TreeCtx(), nid, startIdx, data);
 }
 
@@ -784,11 +784,10 @@ end: ;
   return status;
 }
 
-int _TreePutSegment(void *dbid, int nid, int startIdx, struct descriptor_a *data_in) {
+int _TreePutSegment(void *dbid, int nid, const int startIdx, struct descriptor_a *data) {
+  A_COEFF_TYPE *a_coeff = (A_COEFF_TYPE *) data;
   INIT_VARS;
   CLEANUP_NCI_PUSH;
-  struct descriptor_a *data = data_in;
-  GOTO_END_ON_ERROR(open_datafile_write0(vars));
   DESCRIPTOR_A(data_a, 0, 0, 0, 0);/*CHECK_DATA*/{
     while (data && data->dtype == DTYPE_DSC)
       data = (struct descriptor_a *)data->pointer;
@@ -802,9 +801,9 @@ int _TreePutSegment(void *dbid, int nid, int startIdx, struct descriptor_a *data
       data = (struct descriptor_a *)&data_a;
     }
     if (data == NULL || data->class != CLASS_A || data->dimct < 1 || data->dimct > 8)
-      {status = TreeINVDTPUSG;goto end;}
+      {status = TreeINVDTPUSG; goto end;}
   }
-  A_COEFF_TYPE *a_coeff = (A_COEFF_TYPE *) data;
+  GOTO_END_ON_ERROR(open_datafile_write0(vars));
   GOTO_END_ON_ERROR(open_datafile_write1(vars));
   IF_NO_EXTENDED_NCI   {status = TreeNOSEGMENTS;goto end;}
   IF_NO_SEGMENT_HEADER {status = TreeNOSEGMENTS;goto end;}
