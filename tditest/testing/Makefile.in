@@ -341,9 +341,10 @@ AM_RECURSIVE_TARGETS = check recheck
 TEST_SUITE_LOG = test-suite.log
 am__test_logs1 = $(TESTS:=.log)
 am__test_logs2 = $(am__test_logs1:@EXEEXT@.log=.log)
-TEST_LOGS = $(am__test_logs2:.sh.log=.log)
-SH_LOG_DRIVER = $(SHELL) $(top_srcdir)/conf/test-driver
-SH_LOG_COMPILE = $(SH_LOG_COMPILER) $(AM_SH_LOG_FLAGS) $(SH_LOG_FLAGS)
+TEST_LOGS = $(am__test_logs2:.tdi.log=.log)
+TDI_LOG_DRIVER = $(SHELL) $(top_srcdir)/conf/test-driver
+TDI_LOG_COMPILE = $(TDI_LOG_COMPILER) $(AM_TDI_LOG_FLAGS) \
+	$(TDI_LOG_FLAGS)
 am__set_b = \
   case '$@' in \
     */*) \
@@ -690,23 +691,34 @@ SUFFIXES = .log .tap .xml
 # .PHONY: $(TEST_SUITE_TAP)
 TEST_BUILD_TAP = test-build.tap
 TEST_SUITE_TAP = test-suite.tap
-TEST_EXTENSIONS = .sh
+TEST_EXTENSIONS = .tdi
+TDI_LOG_COMPILER = $(abs_top_srcdir)/tditest/testing/do_tditests.sh
 TEST_FLAGS = @MAKEFLAG_J@
 TESTS = \
-	do_tditests.sh
+	test-tcl-nopy.tdi \
+	test-tcl.tdi \
+	test-tdishr.tdi \
+	test-treeshr.tdi
 
 
 # if VALGRIND_TESTS is defined this list is executed with valgrind
 
 #	threadsUnitTest.py
 VALGRIND_TESTS = \
-	do_tditests.sh
+	test-tcl-nopy.tdi \
+	test-tcl.tdi \
+	test-tdishr.tdi \
+	test-treeshr.tdi
 
+
+# Files produced by tests that must be purged
+#
+MOSTLYCLEANFILES = *.log
 check_SCRIPTS = $(TESTS)
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .log .tap .xml .sh .sh$(EXEEXT) .trs
+.SUFFIXES: .log .tap .xml .tdi .tdi$(EXEEXT) .trs
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../../testing/testing.am $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -888,19 +900,19 @@ recheck: all $(check_PROGRAMS) $(check_SCRIPTS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-.sh.log:
+.tdi.log:
 	@p='$<'; \
 	$(am__set_b); \
-	$(am__check_pre) $(SH_LOG_DRIVER) --test-name "$$f" \
+	$(am__check_pre) $(TDI_LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_SH_LOG_DRIVER_FLAGS) $(SH_LOG_DRIVER_FLAGS) -- $(SH_LOG_COMPILE) \
+	$(am__common_driver_flags) $(AM_TDI_LOG_DRIVER_FLAGS) $(TDI_LOG_DRIVER_FLAGS) -- $(TDI_LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-@am__EXEEXT_TRUE@.sh$(EXEEXT).log:
+@am__EXEEXT_TRUE@.tdi$(EXEEXT).log:
 @am__EXEEXT_TRUE@	@p='$<'; \
 @am__EXEEXT_TRUE@	$(am__set_b); \
-@am__EXEEXT_TRUE@	$(am__check_pre) $(SH_LOG_DRIVER) --test-name "$$f" \
+@am__EXEEXT_TRUE@	$(am__check_pre) $(TDI_LOG_DRIVER) --test-name "$$f" \
 @am__EXEEXT_TRUE@	--log-file $$b.log --trs-file $$b.trs \
-@am__EXEEXT_TRUE@	$(am__common_driver_flags) $(AM_SH_LOG_DRIVER_FLAGS) $(SH_LOG_DRIVER_FLAGS) -- $(SH_LOG_COMPILE) \
+@am__EXEEXT_TRUE@	$(am__common_driver_flags) $(AM_TDI_LOG_DRIVER_FLAGS) $(TDI_LOG_DRIVER_FLAGS) -- $(TDI_LOG_COMPILE) \
 @am__EXEEXT_TRUE@	"$$tst" $(AM_TESTS_FD_REDIRECT)
 
 distdir: $(DISTFILES)
@@ -959,6 +971,7 @@ install-strip:
 	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
 	fi
 mostlyclean-generic:
+	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
 	-test -z "$(TEST_LOGS)" || rm -f $(TEST_LOGS)
 	-test -z "$(TEST_LOGS:.log=.trs)" || rm -f $(TEST_LOGS:.log=.trs)
 	-test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
