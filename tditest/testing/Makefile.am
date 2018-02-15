@@ -13,7 +13,6 @@ TDI_LOG_COMPILER= $(abs_top_srcdir)/tditest/testing/do_tditests.sh
 TEST_FLAGS = @MAKEFLAG_J@
 
 TESTS = \
-	test-tcl-nopy.tdi \
 	test-tcl.tdi \
 	test-tdishr.tdi \
 	test-treeshr.tdi
@@ -22,7 +21,6 @@ TESTS = \
 
 #	threadsUnitTest.py
 VALGRIND_TESTS = \
-	test-tcl-nopy.tdi \
 	test-tcl.tdi \
 	test-tdishr.tdi \
 	test-treeshr.tdi

@@ -36,12 +36,22 @@ test=${test%.tdi}
 
 if [ "$2" == "update" ]
 then
-  tmpdir=$zdrv$tmpdir $TDITEST $zdrv$1 2>&1 | \
+  tmpdir=$zdrv$tmpdir $TDITEST $zdrv$test.tdi 2>&1 | \
    grep -v 'Data inserted:' | \
    grep -v 'Length:' |
    sed $'s/\r$//' > ${tdir}/$test.ans
 else
-  tmpdir=$zdrv$tmpdir $TDITEST $zdrv$1 2>&1 | \
+  if [ "$test" != "test-devices" ]
+  then
+    if ( ! $0 test-devices.tdi )
+    then
+      if [ -r ${test}-nodevices.tdi ]
+      then
+        test=${test}-nodevices
+      fi
+    fi
+  fi
+  tmpdir=$zdrv$tmpdir $TDITEST $zdrv$test.tdi 2>&1 | \
     grep -v 'Data inserted:' | \
     grep -v 'Length:' | \
     sed $'s/\r$//' | \
