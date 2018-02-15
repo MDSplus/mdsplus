@@ -38,7 +38,8 @@ if [ "$2" == "update" ]
 then
   tmpdir=$zdrv$tmpdir $TDITEST $zdrv$1 2>&1 | \
    grep -v 'Data inserted:' | \
-   grep -v 'Length:' > ${tdir}/$test.ans
+   grep -v 'Length:' |
+   sed $'s/\r$//' > ${tdir}/$test.ans
 else
   tmpdir=$zdrv$tmpdir $TDITEST $zdrv$1 2>&1 | \
     grep -v 'Data inserted:' | \
