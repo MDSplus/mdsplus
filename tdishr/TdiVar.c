@@ -650,13 +650,13 @@ int TdiDoFun(struct descriptor *ident_ptr,
         ******************************************/
   static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
   int status, ispython;
-  char *filename, *dirspec;
+  char *filename = NULL, *dirspec = NULL;
   FREE_ON_EXIT(filename);
   FREE_ON_EXIT(dirspec);
   // look up method: check cached, check python, or load
   pthread_mutex_lock(&lock);
   pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
-  dirspec = NULL; filename = NULL; ispython = B_FALSE;
+  ispython = B_FALSE;
   status = TdiFindIdent(7, (struct descriptor_r *)ident_ptr, 0, &node_ptr, 0);
   if (status==TdiUNKNOWN_VAR) {
     // check if method is python
