@@ -1,2 +1,2 @@
-Tcl('set tree main')
-Tcl('dir/full .subtree:a12:name')
+Tcl('edit/new main/shot=1')
+Tcl('add node a12/model=a12')
