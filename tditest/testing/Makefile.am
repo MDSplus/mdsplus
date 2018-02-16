@@ -46,7 +46,10 @@ VALGRIND_FLAGS = \
 
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES = *.log
+MOSTLYCLEANFILES = \
+	./*.log ./*.tap \
+	tditst.tmp shotid.sys \
+	main_*.caracteristic? main_*.datafile? main_*.tree?
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TARGETS  ////////////////////////////////////////////////////////////// ##

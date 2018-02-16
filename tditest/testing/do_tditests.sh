@@ -1,10 +1,5 @@
 #/bin/bash
-tdir=$(readlink -f $(dirname ${0}))
-tmpdir=$(mktemp -d)
-export main_path="${tmpdir};$(readlink -f ${tdir}/../../trees)"
-export subtree_path="${tmpdir};$(readlink -f ${tdir}/../../trees/subtree)"
-export MDS_PATH="${tmpdir};$(readlink -f ${tdir}/../../tdi)"
-export MDS_PYDEVICE_PATH="${tmpdir};$(readlink -f ${tdir}/../../pydevices)"
+srcdir=$(dirname $(realpath $0))
 if [ "$OS" == "windows" ]
 then
   zdrv="Z:"
@@ -17,8 +12,12 @@ else
   TDITEST=tditest
   DIFF_Z=
 fi
-
-
+if diff --help | grep side-by-side && diff --help | grep suppress-common-lines
+then
+DIFF_SIDE_BY_SIDE=--side-by-side --suppress-common-lines
+else
+DIFF_SIDE_BY_SIDE=
+fi
 if [ -z "$PyLib" ]
 then
   pyver="$($PYTHON -V 2>&1)"
@@ -36,27 +35,30 @@ status=0
 test=$(basename "$1")
 test=${test%.tdi}
 
+if [ ! -z $1 ]
+then
+
 if [ "$2" == "update" ]
 then
-  tmpdir=$zdrv$tmpdir $TDITEST $zdrv$1 2>&1 \
+  $TDITEST $zdrv$1 2>&1 \
    | grep -v 'Data inserted:' \
    | grep -v 'Length:' \
-   > ${tdir}/$test.ans
+   > ${srcdir}/$test.ans
 else
   if [ "$test" != "test-devices" ]
   then
-    if ( ! $0 $tdir/test-devices.tdi )
+    if ( ! $0 $srcdir/test-devices.tdi )
     then
-      if [ -r $tdir/${test}-nodevices.tdi ]
+      if [ -r $srcdir/${test}-nodevices.tdi ]
       then
         test=${test}-nodevices
       fi
     fi
   fi
-  tmpdir=$zdrv$tmpdir $TDITEST $zdrv$tdir/$test.tdi 2>&1 \
+  $TDITEST $zdrv$srcdir/$test.tdi 2>&1 \
    | grep -v 'Data inserted:' \
    | grep -v 'Length:' \
-   | diff $DIFF_Z /dev/stdin $tdir/$test.ans > $test-diff.log
+   | diff $DIFF_Z $DIFF_SIDE_BY_SIDE /dev/stdin $srcdir/$test.ans > $test-diff.log
   tstat=$?
   if [ "$tstat" != "0" ]
   then
@@ -67,8 +69,6 @@ else
     rm -f $test-diff.log
   fi
 fi
-if [ ! -z "${tmpdir}" ]
-then
-  rm -Rf ${tmpdir}
-fi
 exit $status
+
+fi

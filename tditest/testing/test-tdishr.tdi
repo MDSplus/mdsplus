@@ -2999,10 +2999,10 @@ showopcodes()
 !
 ! Functions implemented in TdiIo.c
 !
-kind(_u=fopen(getenv('tmpdir')//'/tditst.xxx','w'))
+kind(_u=fopen('tditst.tmp','w'))
 write(_u,"This is a test")
 fclose(_u)
-kind(_u=fopen(getenv('tmdir')//'/tditst.xxx','r'))
+kind(_u=fopen('tditst.tmp','r'))
 fseek(_u,5,0)
 ftell(_u)
 wait(.5)
