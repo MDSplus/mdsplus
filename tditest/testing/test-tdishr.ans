@@ -6164,18 +6164,18 @@ DICT   OPC$DICT
 TUPLE   OPC$TUPLE
 LIST   OPC$LIST
 *
-kind(_u=fopen(getenv('tmpdir')//'/tditst.xxx','w'))
+kind(_u=fopen('tditst.tmp','w'))
 14BU
 write(_u,"This is a test")
 15
 fclose(_u)
 0
-kind(_u=fopen(getenv('tmdir')//'/tditst.xxx','r'))
+kind(_u=fopen('tditst.tmp','r'))
 14BU
 fseek(_u,5,0)
--1
+0
 ftell(_u)
--1
+5
 wait(.5)
 *
 data(build_signal(1:10,*,*))
