@@ -188,6 +188,8 @@ void TreeDeleteNodeExecute( )
 extern void _TreeDeleteNodeExecute(void *dbid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+  if (!IS_OPEN_FOR_EDIT(dblist))
+    return;
   NID nid;
   NODE *node;
   NODE *parent;
