@@ -10,10 +10,12 @@ then
   zdrv="Z:"
   PYTHON="wine python"
   TDITEST="wine tditest"
+  DIFF_Z=-Z
 else
   zdrv=""
   PYTHON=python
   TDITEST=tditest
+  DIFF_Z=
 fi
 
 
@@ -36,10 +38,10 @@ test=${test%.tdi}
 
 if [ "$2" == "update" ]
 then
-  tmpdir=$zdrv$tmpdir $TDITEST $zdrv$1 2>&1 | \
-   grep -v 'Data inserted:' | \
-   grep -v 'Length:' |
-   sed $'s/\r$//' > ${tdir}/$test.ans
+  tmpdir=$zdrv$tmpdir $TDITEST $zdrv$1 2>&1 \
+   | grep -v 'Data inserted:' \
+   | grep -v 'Length:' \
+   > ${tdir}/$test.ans
 else
   if [ "$test" != "test-devices" ]
   then
@@ -51,11 +53,10 @@ else
       fi
     fi
   fi
-  tmpdir=$zdrv$tmpdir $TDITEST $zdrv$tdir/$test.tdi 2>&1 | \
-    grep -v 'Data inserted:' | \
-    grep -v 'Length:' | \
-    sed $'s/\r$//' | \
-    diff /dev/stdin $tdir/$test.ans > $test-diff.log
+  tmpdir=$zdrv$tmpdir $TDITEST $zdrv$tdir/$test.tdi 2>&1 \
+   | grep -v 'Data inserted:' \
+   | grep -v 'Length:' \
+   | diff $DIFF_Z /dev/stdin $tdir/$test.ans > $test-diff.log
   tstat=$?
   if [ "$tstat" != "0" ]
   then
