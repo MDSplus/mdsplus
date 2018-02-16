@@ -72,7 +72,7 @@ int SingleThreadTest(int idx, int repeats){
   delete MDSplus::executeWithArgs("_SHOT=$",1,shot);
   delete shot;
   delete MDSplus::execute("_EXPT='T_TDI'");
-  int status, err = 0;
+  int status = -1, err = 0;
   for (; ii<repeats ; ii++) {
     for (;ic<ncmd; ic++) try {
       if (strlen(cmds[ic])==0 || *cmds[ic] == '#') continue;
