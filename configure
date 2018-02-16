@@ -14822,10 +14822,13 @@ fi
 
 
       PYTHONHOME="$(eval winepath -w /python27 2>/dev/null)"
-	  as_fn_append TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
-	  as_fn_append TESTS_ENVIRONMENT "WINEDEBUG=-all "
-	  as_fn_append TESTS_ENVIRONMENT "MDS_PATH='$(eval winepath -w ${srcdir}/tdi 2>/dev/null)' "
-	  as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR='$(eval winepath -w ${srcdir} 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
+      as_fn_append TESTS_ENVIRONMENT "WINEDEBUG=-all "
+      as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR='$(eval winepath -w ${srcdir} 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "MDS_PATH='$(eval winepath -w ${srcdir}/tdi 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "MDS_PYDEVICE_PATH='$(eval winepath -w ${srcdir}/pydevices 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "main_path='.;$(eval winepath -w ${srcdir}/trees 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "subtree_path='.;$(eval winepath -w ${srcdir}/trees/subtree 2>/dev/null)' "
       if test "x$WINEARCH" = xwin64; then :
   # WINEARCH win64
 		 as_fn_append WINEPATH "${PYTHONHOME}"
@@ -14876,6 +14879,9 @@ fi
    as_fn_append TESTS_ENVIRONMENT "PATH=${MAKEBINDIR}:\${PATH} "
    as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
    as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
+   as_fn_append TESTS_ENVIRONMENT "MDS_PYDEVICE_PATH=\$(abs_top_srcdir)/pydevices "
+   as_fn_append TESTS_ENVIRONMENT "main_path='.;\$(abs_top_srcdir)/trees' "
+   as_fn_append TESTS_ENVIRONMENT "subtree_path='.;\$(abs_top_srcdir)/trees/subtree' "
    as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
    as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes"
    as_fn_append PY_LOG_COMPILER "${PYTHON} -B \$(top_srcdir)/testing/testing.py"
@@ -14890,7 +14896,6 @@ fi
   *) :
      ;;
 esac
-
 # MACOS: add --dsymutil=yes to valgrind
 
 # Set ENABLE_TESTS
