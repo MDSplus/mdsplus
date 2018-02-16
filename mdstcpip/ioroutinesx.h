@@ -262,13 +262,13 @@ static int io_authorize(Connection* c, char *username){
   char *timestr = ctime(&tim);
   info = getHostInfo(sock, &iphost, &hoststr);
   if (info) {
+    timestr[strlen(timestr) - 1] = 0;
+    printf("%s (%d) (pid %d) Connection received from %s@%s\r\n",
+           timestr, (int)sock, getpid(), username, info);
     char *matchString[2] = { NULL, NULL };
     FREE_ON_EXIT(matchString[0]);
     FREE_ON_EXIT(matchString[1]);
     int num = 1;
-    timestr[strlen(timestr) - 1] = 0;
-    printf("%s (%d) (pid %d) Connection received from %s@%s\r\n",
-           timestr, (int)sock, getpid(), username, info);
     matchString[0] = strcpy(malloc(strlen(username) + strlen(iphost) + 3), username);
     strcat(matchString[0], "@");
     strcat(matchString[0], iphost);
