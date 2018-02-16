@@ -90,8 +90,6 @@ Tcl('add tag any any_tag2')
 265388041
 Tcl('add tag any any_tag3')
 265388041
-Tcl('add node a12/model=a12')
-265388041
 Tcl('put text """This is a test"""')
 265388041
 Tcl('write')
@@ -108,60 +106,13 @@ Tcl('dir ***')
 
 \MAIN::TOP
 
- :A12          :ACTION       :ANY          :AXIS         :COMP_DATA   
- :DEVICE       :DISPATCH     :NUMERIC      :SIGNAL       :TASK        
- :TEXT         :WINDOW      
+ :ACTION       :ANY          :AXIS         :COMP_DATA    :DEVICE      
+ :DISPATCH     :NUMERIC      :SIGNAL       :TASK         :TEXT        
+ :WINDOW      
 
   CHILD         SUBTREE     
 
-Total of 14 nodes.
-
-\MAIN::TOP:A12
-
- :COMMENT      :EXT_CLOCK_IN :INIT_ACTION  :INPUT_1      :INPUT_2     
- :INPUT_3      :INPUT_4      :INPUT_5      :INPUT_6      :NAME        
- :STOP_TRIG    :STORE_ACTION
-
-Total of 12 nodes.
-
-\MAIN::TOP:A12:INPUT_1
-
- :ENDIDX       :STARTIDX    
-
-Total of 2 nodes.
-
-\MAIN::TOP:A12:INPUT_2
-
- :ENDIDX       :STARTIDX    
-
-Total of 2 nodes.
-
-\MAIN::TOP:A12:INPUT_3
-
- :ENDIDX       :STARTIDX    
-
-Total of 2 nodes.
-
-\MAIN::TOP:A12:INPUT_4
-
- :ENDIDX       :STARTIDX    
-
-Total of 2 nodes.
-
-\MAIN::TOP:A12:INPUT_5
-
- :ENDIDX       :STARTIDX    
-
-Total of 2 nodes.
-
-\MAIN::TOP:A12:INPUT_6
-
- :ENDIDX       :STARTIDX    
-
-Total of 2 nodes.
-
-
-Grand total of 38 nodes.
+Total of 13 nodes.
 1
 Tcl('close')
 265388041
@@ -175,60 +126,13 @@ Tcl('dir ***')
 
 \MAIN::TOP
 
- :A12          :ACTION       :ANY          :AXIS         :COMP_DATA   
- :DEVICE       :DISPATCH     :NUMERIC      :SIGNAL       :TASK        
- :TEXT         :WINDOW      
+ :ACTION       :ANY          :AXIS         :COMP_DATA    :DEVICE      
+ :DISPATCH     :NUMERIC      :SIGNAL       :TASK         :TEXT        
+ :WINDOW      
 
   CHILD         SUBTREE     
 
-Total of 14 nodes.
-
-\MAIN::TOP:A12
-
- :COMMENT      :EXT_CLOCK_IN :INIT_ACTION  :INPUT_1      :INPUT_2     
- :INPUT_3      :INPUT_4      :INPUT_5      :INPUT_6      :NAME        
- :STOP_TRIG    :STORE_ACTION
-
-Total of 12 nodes.
-
-\MAIN::TOP:A12:INPUT_1
-
- :ENDIDX       :STARTIDX    
-
-Total of 2 nodes.
-
-\MAIN::TOP:A12:INPUT_2
-
- :ENDIDX       :STARTIDX    
-
-Total of 2 nodes.
-
-\MAIN::TOP:A12:INPUT_3
-
- :ENDIDX       :STARTIDX    
-
-Total of 2 nodes.
-
-\MAIN::TOP:A12:INPUT_4
-
- :ENDIDX       :STARTIDX    
-
-Total of 2 nodes.
-
-\MAIN::TOP:A12:INPUT_5
-
- :ENDIDX       :STARTIDX    
-
-Total of 2 nodes.
-
-\MAIN::TOP:A12:INPUT_6
-
- :ENDIDX       :STARTIDX    
-
-Total of 2 nodes.
-
-
-Grand total of 38 nodes.
+Total of 13 nodes.
 1
 Tcl('set tree main/shot=1')
 265388067
@@ -244,9 +148,6 @@ Tcl('compress main/shot=1/override')
 265388041
 Tcl('set tree main/shot=1')
 265388067
-Tcl('decompile a12')
-Build_Conglom("MIT$DEVICES", "A12", *, *)
-1
 Tcl('defined server gub')
 mdsdcl: No such command
 134349626
@@ -260,60 +161,13 @@ Tcl('dir ***')
 
 \MAIN::TOP
 
- :A12          :ACTION       :ANY          :COMP_DATA    :DEVICE      
- :DISPATCH     :NUMERIC      :SIGNAL       :TASK         :TEXT        
- :WINDOW      
+ :ACTION       :ANY          :COMP_DATA    :DEVICE       :DISPATCH    
+ :NUMERIC      :SIGNAL       :TASK         :TEXT         :WINDOW      
+
 
   CHILD         SUBTREE     
 
-Total of 13 nodes.
-
-\MAIN::TOP:A12
-
- :COMMENT      :EXT_CLOCK_IN :INIT_ACTION  :INPUT_1      :INPUT_2     
- :INPUT_3      :INPUT_4      :INPUT_5      :INPUT_6      :NAME        
- :STOP_TRIG    :STORE_ACTION
-
 Total of 12 nodes.
-
-\MAIN::TOP:A12:INPUT_1
-
- :ENDIDX       :STARTIDX    
-
-Total of 2 nodes.
-
-\MAIN::TOP:A12:INPUT_2
-
- :ENDIDX       :STARTIDX    
-
-Total of 2 nodes.
-
-\MAIN::TOP:A12:INPUT_3
-
- :ENDIDX       :STARTIDX    
-
-Total of 2 nodes.
-
-\MAIN::TOP:A12:INPUT_4
-
- :ENDIDX       :STARTIDX    
-
-Total of 2 nodes.
-
-\MAIN::TOP:A12:INPUT_5
-
- :ENDIDX       :STARTIDX    
-
-Total of 2 nodes.
-
-\MAIN::TOP:A12:INPUT_6
-
- :ENDIDX       :STARTIDX    
-
-Total of 2 nodes.
-
-
-Grand total of 37 nodes.
 1
 Tcl('dir/tag')
 
@@ -348,22 +202,6 @@ Tag listing for *::*
 \MAIN::CHILD_TAG
 Total of 2 tags
 1
-Tcl('dir/full a12')
-
-\MAIN::TOP
-
- :A12         
-      Status: on,parent is on, usage device,readonly
-      compress on put
-      Model element: 1
-
-Total of 1 node.
-1
-Tcl('do/method a12 not_a_method')
-Error executing device method
-Error message was: %TREE-W-NOMETHOD, Method not available for this object
-mdsdcl: --> failed on line 'do/method a12 not_a_method'
-265388208
 Tcl('set current subtree 1
 %TDI Error in COMPILE("Tcl('set current subtree 1")
 %TDI Syntax error near # marked region
@@ -386,61 +224,10 @@ Current shot is 6
 Tcl('show default')
 \MAIN::TOP
 1
-Tcl('set default a12')
-265388041
-Tcl('show default')
-\MAIN::TOP:A12
-1
 Tcl('set default \\main::top')
 265388041
 Tcl('show default')
 \MAIN::TOP
-1
-Tcl('dir/full a12')
-
-\MAIN::TOP
-
- :A12         
-      Status: on,parent is on, usage device,readonly
-      compress on put
-      Model element: 1
-
-Total of 1 node.
-1
-Tcl('set node a12/nowrite_once')
-1
-Tcl('dir/full a12')
-
-\MAIN::TOP
-
- :A12         
-      Status: on,parent is on, usage device
-      compress on put
-      Model element: 1
-
-Total of 1 node.
-1
-Tcl('set node a12/shot/model/off/compress/do_not/log')
-Node:  modified
-1
-Tcl('dir/full a12')
-
-\MAIN::TOP
-
- :A12         
-      Status: off,parent is on, usage device
-      compress on put,do not compress
-      Model element: 1
-
-Total of 1 node.
-1
-Tcl('show data a12')
-\MAIN::TOP:A12
- DTYPE_CONGLOM                 : 
-     DTYPE_T                       : MIT$DEVICES
-     DTYPE_T                       : A12
-     *** EMPTY ****
-     *** EMPTY ****
 1
 Tcl('show db')
 000  MAIN          shot: 1 [\MAIN::TOP] open for edit,modified
@@ -454,9 +241,9 @@ Error connecting to server
 2752521
 Tcl('verify')
 Node summary:
-  Allocated = 37/42
-  Free      = 3/42
-  Other     = 2/42
+  Allocated = 12/14
+  Free      = 0/14
+  Other     = 2/14
 265388041
 Tcl('quit')
 134348817
