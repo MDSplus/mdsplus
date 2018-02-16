@@ -1,5 +1,5 @@
 #/bin/bash
-srcdir=$(dirname $(realpath $0))
+srcdir=$(readlink -f $(dirname ${0}))
 if [ "$OS" == "windows" ]
 then
   zdrv="Z:"
@@ -12,53 +12,71 @@ else
   TDITEST=tditest
   DIFF_Z=
 fi
-if diff --help | grep side-by-side && diff --help | grep suppress-common-lines
-then
-DIFF_SIDE_BY_SIDE=--side-by-side --suppress-common-lines
-else
-DIFF_SIDE_BY_SIDE=
-fi
-if [ -z "$PyLib" ]
-then
-  pyver="$($PYTHON -V 2>&1)"
-  if [ $? = 0 -a "$pyver" != "" ]
-  then
-    PyLib=$(echo $pyver | awk '{print $2}' 2>/dev/null | awk -F. '{print "python"$1"."$2}' 2>/dev/null)
-    if [ $? = 0 ]
-    then
-      export PyLib
-    fi
-  fi
-fi
+
+#if diff --help | grep side-by-side &>/dev/null
+#then
+#DIFF_FLAGS="--side-by-side -W128"
+#else
+#DIFF_FLAGS=
+#fi
+
 status=0
 
 test=$(basename "$1")
 test=${test%.tdi}
+
+hasmitdevices() {
+ for path in ${LD_LIBRARY_PATH//:/ }; do
+  if [ -e $path/libMitDevices.so ]
+  then return 0
+  fi
+ done
+ return 1
+}
+
+haspython() {
+ if $TDITEST <<< 'py("1")' > /dev/null
+ then return 0
+ else return 1
+ fi
+}
 
 if [ ! -z $1 ]
 then
 
 if [ "$2" == "update" ]
 then
-  $TDITEST $zdrv$1 2>&1 \
+  tmpdir=$(mktemp -d)
+  trap 'if [ ! -z "${tmpdir}" ]; then rm -Rf ${tmpdir}; fi' EXIT
+  export main_path="${tmpdir};$(readlink -f ${srcdir}/../../trees)"
+  export subtree_path="${tmpdir};$(readlink -f ${srcdir}/../../trees/subtree)"
+  export MDS_PATH="${tmpdir};$(readlink -f ${srcdir}/../../tdi)"
+  export MDS_PYDEVICE_PATH="${tmpdir};$(readlink -f ${srcdir}/../../pydevices)"
+  $TDITEST $zdrv$srcdir/$test.tdi 2>&1 \
    | grep -v 'Data inserted:' \
    | grep -v 'Length:' \
    > ${srcdir}/$test.ans
+   if [ -e ./tditst.tmp ] ;then rm -f ./tditst.tmp; fi
 else
-  if [ "$test" != "test-devices" ]
+  if [[ $test = *"py"* ]] && ! $TDITEST <<< 'py("1")' > /dev/null
+  then echo no python;exit 77
+  fi
+  if [[ $test = *"dev"* ]]
   then
-    if ( ! $0 $srcdir/test-devices.tdi )
-    then
-      if [ -r $srcdir/${test}-nodevices.tdi ]
-      then
-        test=${test}-nodevices
+    found=0
+    for path in ${LD_LIBRARY_PATH//:/ }; do
+      if [ -e $path/libMitDevices.so ]
+      then found=1
       fi
+    done
+    if [ $found == 0 ]
+    then echo no libMitDevices.so;exit 77
     fi
   fi
   $TDITEST $zdrv$srcdir/$test.tdi 2>&1 \
    | grep -v 'Data inserted:' \
    | grep -v 'Length:' \
-   | diff $DIFF_Z $DIFF_SIDE_BY_SIDE /dev/stdin $srcdir/$test.ans > $test-diff.log
+   | diff $DIFF_Z $DIFF_FLAGS /dev/stdin $srcdir/$test.ans
   tstat=$?
   if [ "$tstat" != "0" ]
   then

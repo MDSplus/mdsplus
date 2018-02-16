@@ -383,6 +383,7 @@ D3D_PACKAGE = @D3D_PACKAGE@
 DC1394_SUPPORT = @DC1394_SUPPORT@
 DC1394_SUPPORT2 = @DC1394_SUPPORT2@
 DEFS = @DEFS@
+DEF_PYLIB = @DEF_PYLIB@
 DEPDIR = @DEPDIR@
 DNET_STUB = @DNET_STUB@
 DOXYGEN = @DOXYGEN@
@@ -697,7 +698,8 @@ TEST_FLAGS = @MAKEFLAG_J@
 TESTS = \
 	test-tcl.tdi \
 	test-tdishr.tdi \
-	test-treeshr.tdi
+	test-treeshr.tdi \
+	test-dev-py.tdi
 
 
 # if VALGRIND_TESTS is defined this list is executed with valgrind
@@ -706,7 +708,8 @@ TESTS = \
 VALGRIND_TESTS = \
 	test-tcl.tdi \
 	test-tdishr.tdi \
-	test-treeshr.tdi
+	test-treeshr.tdi \
+	test-dev-py.tdi
 
 
 # Files produced by tests that must be purged
@@ -714,7 +717,7 @@ VALGRIND_TESTS = \
 MOSTLYCLEANFILES = \
 	./*.log ./*.tap \
 	tditst.tmp shotid.sys \
-	main_*.caracteristic? main_*.datafile? main_*.tree?
+	main_*.characteristics* main_*.datafile* main_*.tree*
 
 check_SCRIPTS = $(TESTS)
 all: all-am

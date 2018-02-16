@@ -1,6 +1,8 @@
+_shot=3
+3
 current_shot('main')
 44
-TreeOpen('main',-1)
+TreeOpen('main',-1,1)
 265388041
 member
 [1,2,3,4,5,6,7,8,9,10]
@@ -36,11 +38,11 @@ getnci(_nids,'fullpath')
 ["\\MAIN::TOP.SUBTREE    ","\\MAIN::TOP.SUBTREE.GUB"]
 TreeShr->TreeClose(val(0))
 265388041
-TreeOpen('main,',-1)
+TreeOpen('main,',-1,1)
 265388041
 size(getnci('***','nid_number'))
 1829
-TreeOpen('main,subtree',-1)
+TreeOpen('main,subtree',-1,1)
 265388041
 size(getnci('***','nid_number'))
 1829
@@ -56,8 +58,6 @@ getnci(.subtree:a12,"minpath")
 ".SUBTREE:A12"
 getnci(.subtree:a12,"node_name")
 "A12         "
-getnci(.subtree:a12:name,"original_part_name")
-":NAME"
 getnci(.subtree:a12,"path")
 "\\SUBTREE::TOP:A12"
 getnci(.subtree:a12,"compressible")
@@ -164,11 +164,11 @@ getnci(.subtree:a12,"on")
 1BU
 getnci(.subtree:a12,"rlength")
 58LU
-TreeCreatePulseFile(42)
+TreeCreatePulseFile(_shot)
 265388115
 TreeClose('main',-1)
 265388041
-TreeOpen('main',42)
+TreeOpen('main',_shot)
 265388041
 TreePutRecord(member,42)
 265389633
@@ -178,15 +178,15 @@ TreePutRecord(member,build_with_units(1:1000,'volts'))
 265389633
 member
 Build_With_Units(1 : 1000, "volts")
-TreeClose('main',42)
+TreeClose('main',_shot)
 265388041
-TreeOpen('main',-1)
+TreeOpen('main',-1,1)
 265388041
-TreeDeletePulseFile(42)
+TreeDeletePulseFile(_shot)
 1
 TreeClose()
 265388041
-TreeOpenNew('main',1)
+TreeOpenNew('main',_shot)
 265388041
 _nid=0
 0
@@ -351,13 +351,13 @@ TreePutRecord(axis,1E-4 : 20E-4 : 1E-4)
 265388041
 axis
 .0001 : .002 : .0001
-TreeShr->TreeWriteTree(ref('main\0'),val(1))
+TreeShr->TreeWriteTree(ref('main'),val(_shot))
 265388041
 TreeClose()
 265388041
-TreeShr->TreeCompressDatafile(ref('main\0'),val(1))
+TreeShr->TreeCompressDatafile(ref('main'),val(_shot))
 265388041
-TreeOpen('main',1)
+TreeOpen('main',_shot)
 265388041
 getnci(signal,'rlength')
 667LU
@@ -365,7 +365,7 @@ data(signal)[1:100]
 [200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2100,2200,2300,2400,2500,2600,2700,2800,2900,3000,3100,3200,3300,3400,3500,3600,3700,3800,3900,4000,4100,4200,4300,4400,4500,4600,4700,4800,4900,5000,5100,5200,5300,5400,5500,5600,5700,5800,5900,6000,6100,6200,6300,6400,6500,6600,6700,6800,6900,7000,7100,7200,7300,7400,7500,7600,7700,7800,7900,8000,8100,8200,8300,8400,8500,8600,8700,8800,8900,9000,9100,9200,9300,9400,9500,9600,9700,9800,9900,10000,10100]
 TreeClose()
 265388041
-TreeOpen('main',-1)
+TreeOpen('main',-1,1)
 265388041
-TreeDeletePulseFile(1)
+TreeDeletePulseFile(_shot)
 1
