@@ -369,6 +369,7 @@ then
 else
   MAKEFLAG_J="-j -l 1"
 fi
+DEF_PYLIB=$(ldd $(which python) | grep libpython | awk '{print $3}')
 MAKEFLAG_O="$(if ${MAKE:=make} -v -O&>/dev/null; then echo -O; fi)"
 MAKEUIDDIR="\$(top_builddir)/uid/"
 MAKESHLIBDIR="\$(top_builddir)/lib/"
@@ -1270,6 +1271,7 @@ AC_SUBST(MOTIF_LDARC)
 AC_SUBST(MOTIF_LD_LDSHARE)
 AC_SUBST(MOTIF_LD_LDARC)
 AC_SUBST(PYTHON_INCLUDE_DIR)
+AC_SUBST(DEF_PYLIB)
 AC_SUBST(NEED_SEMUN)
 AC_SUBST(RELEASE_MAJOR)
 AC_SUBST(RELEASE_MINOR)
