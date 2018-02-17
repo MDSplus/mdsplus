@@ -1,7 +1,5 @@
 _shot=3
 3
-current_shot('main')
-44
 TreeOpen('main',-1,1)
 265388041
 member
@@ -36,7 +34,7 @@ kind(.subtree:a12:stop_trig)
 "total of            2 subtrees"
 getnci(_nids,'fullpath')
 ["\\MAIN::TOP.SUBTREE    ","\\MAIN::TOP.SUBTREE.GUB"]
-TreeShr->TreeClose(val(0))
+TreeClose()
 265388041
 TreeOpen('main,',-1,1)
 265388041
@@ -192,48 +190,54 @@ _nid=0
 0
 TreeAddNode('.child',_nid,1)
 265388041
-_nid
-1
+getnci(_nid,'usage')
+1BU
 TreeAddNode('action',_nid,2)
 265388041
-_nid
-2
+getnci(_nid,'usage')
+2BU
 TreeAddNode('device',_nid,3)
 265388041
-_nid
-3
+getnci(_nid,'usage')
+3BU
 TreeAddNode('dispatch',_nid,4)
 265388041
-_nid
-4
+getnci(_nid,'usage')
+4BU
 TreeAddNode('numeric',_nid,5)
 265388041
-_nid
-5
+getnci(_nid,'usage')
+5BU
 TreeAddNode('signal',_nid,6)
 265388041
-_nid
-6
+getnci(_nid,'usage')
+6BU
 TreeAddNode('task',_nid,7)
 265388041
-_nid
-7
+getnci(_nid,'usage')
+7BU
 TreeAddNode('text',_nid,8)
 265388041
-_nid
-8
+getnci(_nid,'usage')
+8BU
 TreeAddNode('window',_nid,9)
 265388041
-_nid
-9
+getnci(_nid,'usage')
+9BU
 TreeAddNode('axis',_nid,10)
 265388041
-_nid
-10
+getnci(_nid,'usage')
+10BU
 TreeAddNode('.subtree',_nid,11)
 265388041
+getnci(_nid,'usage')
+11BU
 _nid
 11
+getnci(0,"child")
+.CHILD
+getnci(0,"children_nids")
+[.CHILD,.SUBTREE]
 TreeAddTag('.child','child')
 265388041
 TreeAddTag('.child','child_tag2')
@@ -333,6 +337,8 @@ TreePutRecord(signal,build_signal($value*100,`data(1:8140),build_dim(build_windo
 265388041
 signal,1
 1
+_len=getnci(signal,'length');'different on 32 vs 64bit'
+"different on 32 vs 64bit"
 getnci(signal,'rlength')
 2345LU
 TreePutRecord(task,Build_Method(*, "INIT", ACTION))
@@ -351,7 +357,7 @@ TreePutRecord(axis,1E-4 : 20E-4 : 1E-4)
 265388041
 axis
 .0001 : .002 : .0001
-TreeShr->TreeWriteTree(ref('main'),val(_shot))
+TreeWrite('main',_shot)
 265388041
 TreeClose()
 265388041
@@ -359,6 +365,8 @@ TreeShr->TreeCompressDatafile(ref('main'),val(_shot))
 265388041
 TreeOpen('main',_shot)
 265388041
+_len==getnci(signal,'length')
+1BU
 getnci(signal,'rlength')
 667LU
 data(signal)[1:100]

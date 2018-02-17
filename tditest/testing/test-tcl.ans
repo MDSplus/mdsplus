@@ -202,24 +202,23 @@ Tag listing for *::*
 \MAIN::CHILD_TAG
 Total of 2 tags
 1
-Tcl('set current subtree 1
-%TDI Error in COMPILE("Tcl('set current subtree 1")
-%TDI Syntax error near # marked region
-##Tcl('set current subtree 1##
-%TDI Error in EXECUTE("Tcl('set current subtree 1")
-
 Tcl('show current subtree')
 Failed to get shotid.
 1
-Tcl('set current subtree/increment')
+Tcl('set current subtree 1')
 1
 Tcl('show current subtree')
 Current shot is 1
 1
+Tcl('set current subtree/increment')
+1
+Tcl('show current subtree')
+Current shot is 2
+1
 Tcl('set current subtree "current_shot(""subtree"")+5"')
 1
 Tcl('show current subtree')
-Current shot is 6
+Current shot is 7
 1
 Tcl('show default')
 \MAIN::TOP
