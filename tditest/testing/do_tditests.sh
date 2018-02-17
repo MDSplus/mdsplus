@@ -1,4 +1,11 @@
 #/bin/bash
+TMP_LD_PRELOAD="$LD_PRELOAD"
+unset LD_PRELOAD
+test=$(basename "$1")
+test=${test%.tdi}
+if [[ "$TMP_LD_PRELOAD" == *"libtsan.so"* ]] && [[ "$DISTNAME" == "fc27" ]] && [[ "$test" == "test-dev-py" ]]
+then echo "test-dev-py hangs in Tcl('add node a12/model=a12') @ fc27 tsan" ;exit 77
+fi
 srcdir=$(readlink -f $(dirname ${0}))
 if [ "$OS" == "windows" ]
 then
@@ -22,25 +29,6 @@ fi
 
 status=0
 
-test=$(basename "$1")
-test=${test%.tdi}
-
-hasmitdevices() {
- for path in ${LD_LIBRARY_PATH//:/ }; do
-  if [ -e $path/libMitDevices.so ]
-  then return 0
-  fi
- done
- return 1
-}
-
-haspython() {
- if $TDITEST <<< 'py("1")' > /dev/null
- then return 0
- else return 1
- fi
-}
-
 if [ ! -z $1 ]
 then
 
@@ -58,10 +46,10 @@ then
    > ${srcdir}/$test.ans
    if [ -e ./tditst.tmp ] ;then rm -f ./tditst.tmp; fi
 else
-  if [[ $test = *"py"* ]] && ! $TDITEST <<< 'py("1")' > /dev/null
+  if [[ $test == *"py"* ]] && ! $TDITEST <<< 'py("1")' > /dev/null
   then echo no python;exit 77
   fi
-  if [[ $test = *"dev"* ]]
+  if [[ $test == *"dev"* ]]
   then
     found=0
     for path in ${LD_LIBRARY_PATH//:/ }; do
@@ -75,6 +63,7 @@ else
   fi
   if [ -e ./shotid.sys ]; then rm -f ./shotid.sys; fi
   LSAN_OPTIONS="$LSAN_OPTIONS,print_suppressions=0" \
+  LD_PRELOAD="$TMP_LD_PRELOAD" \
   $TDITEST $zdrv$srcdir/$test.tdi 2>&1 \
    | grep -v 'Data inserted:' \
    | grep -v 'Length:' \
