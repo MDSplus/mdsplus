@@ -107,11 +107,9 @@ EXPORT int MdsGet1DxA(struct descriptor_a const *in_ptr, unsigned short const *l
     out_dsc->dtype = *dtype_ptr;
     out_dsc->pointer = (char *)out_dsc + align(dsc_size, align_size);
     out_dsc->arsize = new_arsize;
-    if (out_dsc->aflags.coeff || (new_arsize == 0)) {
+    if (out_dsc->aflags.coeff || (new_arsize==0 && in_dsc->pointer)) {
       if (out_dsc->class == CLASS_CA) {
-	int64_t offset =
-	    ((int64_t) out_dsc->length) * ((in_dsc->a0 - (char *)0) /
-						((int64_t) in_dsc->length));
+	int64_t offset = ((int64_t) out_dsc->length) * (((char *)in_dsc->a0-(char*)0) / ((int64_t)in_dsc->length));
 	out_dsc->a0 = out_dsc->pointer + offset;
       } else {
 	int64_t offset = ((int64_t) out_dsc->length) *
