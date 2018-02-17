@@ -74,6 +74,7 @@ else
     fi
   fi
   if [ -e ./shotid.sys ]; then rm -f ./shotid.sys; fi
+  LSAN_OPTIONS="$LSAN_OPTIONS,print_suppressions=0" \
   $TDITEST $zdrv$srcdir/$test.tdi 2>&1 \
    | grep -v 'Data inserted:' \
    | grep -v 'Length:' \
