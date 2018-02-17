@@ -3032,6 +3032,10 @@ g_complex(42S0)
 Cmplx(42G0,0G0)
 g_complex(42T0)
 Cmplx(42G0,0G0)
+CULL(1:5,,0:7)
+[1,2,3,4,5]
+CULL(BUILD_DIM(BUILD_WINDOW(2,5,1.1),BUILD_RANGE(,,3)),0,5:8)
+[8.]
 EXTEND(1:5,,0:7)
 [1,1,2,3,4,5,5,5]
 IBSET(0ub,2)
@@ -5523,11 +5527,7 @@ text(42,5)
 build_signal(1:10,*,["1","2","3","4","5","6","7","8","9","10"])["5"]
 Build_Signal(5, *, "5 ")
 build_signal(1:10,*,1:10)[-1:5]
-%TDI Error in CULL(Build_Signal(1 : 10, *, 1 : 10), 0, -1 : 5)
-%TDI Error in SUBSCRIPT(Build_Signal(1 : 10, *, 1 : 10), -1 : 5)
-%TDI Error in EVALUATE(Build_Signal(1 : 10, *, 1 : 10)[-1 : 5])
-%TDI Error in EXECUTE("build_signal(1:10,*,1:10)[-1:5]")
-
+Build_Signal([1,2,3,4,5], *, [1,2,3,4,5])
 Build_signal(1:100,*,build_dim(*,.01:1:.01))[.2:.25]
 Build_Signal([20,21,22,23,24,25], *, [.2,.21,.22,.23,.24,.25])
 MAP(1:10,[20,-1,5])
@@ -5595,10 +5595,9 @@ Private _C	= [[0,3,5], [7,4,8]]
 Private _FSOURCE	= [[0,3,2], [7,4,8]]
 Private _M	= [0,0,0,9,0,0,7]
 Private _MASK	= [[1,0,1], [0,0,1]]
-Private _MSG	= '%TDI Error in CULL(Build_Signal(1 : 10, *, 1 : 10), 0, -1 : 5)\n%TDI Error in SUBSCRIPT(Build_Signal(1 : 10, *, 1 : 10), -1 : 5)\n%TDI Error in EVALUATE(Build_Signal(1 : 10, *, 1 : 10)[-1 : 5])\n%TDI Error in EXECUTE("build_signal(1:10,*,1:10)[-1:5]")\n'
 Private _SIGNAL	= Build_Signal(_array, *, -9 : 0, 1 : 5)
 Private _TSOURCE	= [[1,6,5], [2,4,6]]
-10
+9
 deallocate()
 *
 allocated(_a)

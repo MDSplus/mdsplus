@@ -189,7 +189,7 @@ STATIC_ROUTINE int rcull(struct descriptor *pnew __attribute__ ((unused)),
       break;
     }
   if (pi != po) {
-    status = MDSplusERROR;
+    status = SsINTERNAL;
 		/********************************
                 Scalars must be nulled elsewhere.
                 ********************************/
@@ -248,11 +248,8 @@ STATIC_ROUTINE int rextend(struct descriptor *pnew,
 /**********************************************
         Going to find out who is naughty and nice.
 */
-STATIC_ROUTINE int work(int
-			rroutine(struct descriptor *, struct descriptor_a *,
-				 struct descriptor_a *), int opcode, int narg,
-			struct descriptor *list[3], struct descriptor_xd *out_ptr)
-{
+STATIC_ROUTINE int work(int rroutine(struct descriptor *, struct descriptor_a *, struct descriptor_a *),
+		int opcode, int narg, struct descriptor *list[3], struct descriptor_xd *out_ptr) {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
   struct descriptor_xd in = EMPTY_XD, tmp = EMPTY_XD, units = EMPTY_XD;
@@ -324,9 +321,7 @@ STATIC_ROUTINE int work(int
       if STATUS_OK
 	status = TdiIsIn(dat[0].pointer, &in, &tmp MDS_END_ARG);
       if STATUS_OK
-	status =
-	    rroutine(dat[0].pointer, (struct descriptor_a *)tmp.pointer,
-		     (struct descriptor_a *)dat[0].pointer);
+	status = rroutine(dat[0].pointer,(struct descriptor_a*)tmp.pointer,(struct descriptor_a*)dat[0].pointer);
       if (status == SsINTERNAL)
 	status = TdiRecull(&dat[0]);
       MdsFree1Dx(&sig[0], NULL);
@@ -390,16 +385,12 @@ STATIC_ROUTINE int work(int
       if STATUS_OK
 	status = TdiGe(dat[2].pointer, dat[0].pointer, &tmp MDS_END_ARG);
       if STATUS_OK
-	s1 = status =
-	    rroutine(dat[0].pointer, (struct descriptor_a *)tmp.pointer,
-		     (struct descriptor_a *)dat[2].pointer);
-      if STATUS_OK
+	s1 = (status = rroutine(dat[0].pointer,(struct descriptor_a*)tmp.pointer,(struct descriptor_a*)dat[2].pointer))==SsINTERNAL;
+      if (STATUS_OK || s1==SsINTERNAL)
 	status = TdiLe(dat[2].pointer, dat[1].pointer, &tmp MDS_END_ARG);
       if STATUS_OK
-	s1 |= status =
-	    rroutine(dat[1].pointer, (struct descriptor_a *)tmp.pointer,
-		     (struct descriptor_a *)dat[2].pointer);
-      if (STATUS_OK && s1 == -1)
+	s1|= (status = rroutine(dat[1].pointer,(struct descriptor_a*)tmp.pointer,(struct descriptor_a*)dat[2].pointer))==SsINTERNAL;
+      if (STATUS_OK && s1)
 	status = TdiRecull(&dat[2]);
       MdsFree1Dx(&sig[0], NULL);
       MdsFree1Dx(&sig[1], NULL);
