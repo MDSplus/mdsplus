@@ -1567,7 +1567,7 @@ g_complex(42T0)
 CULL(1:5,,0:7)
 CULL(BUILD_DIM(BUILD_WINDOW(2,5,1.1),BUILD_RANGE(,,3)),0,5:8)
 EXTEND(1:5,,0:7)
-!EXTEND(BUILD_DIM(BUILD_WINDOW(2,5,1.1),BUILD_RANGE(,,3)),0,5:8) <-extend is broken
+EXTEND(BUILD_DIM(BUILD_WINDOW(2,5,1.1),BUILD_RANGE(,,3)),0,5:8)
 !
 ! Functions implemented in TdiDim.c
 !

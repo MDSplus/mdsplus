@@ -92,7 +92,7 @@ abs(COSD(60.)-.5)<1e-7
 abs(COSH(1.)-1.5430806)<1e-6
 COUNT([1,0,1])==2 && all(COUNT([[1,1,0],[0,1,1]],0)==[2,2]) && all(COUNT([[1,1,0],[0,1,1]],1)==[1,2,1])
 # cshift
-all(CULL(1:5,,0:7)==[1,2,3,4,5])
+all(CULL(1:5,,0:7)==[1,2,3,4,5]) && all(abs(CULL(build_dim(build_window(2,5,1.1),*:*:3),0,5:8)-[8.])<1e-6)
 CVT(123,"1234")==" 123"
 
 DATA(build_signal(42.*$value,6))==252
@@ -139,7 +139,7 @@ EVALUATE(2+3)==5
 EXECUTE("2+3")==5
 abs(EXP(1.)-2.7182818)<1e-6
 EXPONENT(10.)==2 && EXPONENT(20.)==3 /*different on VAX*/
-all(EXTEND(1:5,,0:7)==[1,1,2,3,4,5,5,5])
+all(EXTEND(1:5,,0:7)==[1,1,2,3,4,5,5,5]) && all(abs(EXTEND(build_dim(build_window(2,5,1.1),*:*:3),0,5:8)-[7.1,8.])<1e-6)
 EXTRACT(1,2,'A/B/C')=="/B" && EXTRACT(4,1,'12')==""
 EXT_FUNCTION(*,'whoami')==whoami()
 
