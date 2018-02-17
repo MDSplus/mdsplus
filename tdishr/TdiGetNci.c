@@ -435,12 +435,12 @@ int Tdi1GetNci(int opcode __attribute__ ((unused)),
                 First get size, then data.
                 *************************/
     else if (key_ptr->item_test) {
-      unsigned char dtype = (unsigned char)DTYPE_NID;
-      unsigned short dlen = sizeof(nid);
+      const uint8_t  dtype = (unsigned char)DTYPE_NID;
+      const uint16_t dlen  = sizeof(nid);
       array arr = *(array *) & arr0;
       NCI_ITM tested[2] = { {sizeof(int), 0, 0, 0}, EOL };
       tested[0].code = key_ptr->item_test;
-      tested[0].pointer = (unsigned char *)&arr.arsize;
+      tested[0].pointer = (char *)&arr.arsize;
       tested[0].return_length_address = &retlen;
       status = TreeGetNci(nid, tested);
       *(struct descriptor_xd *)hold_ptr = EMPTY_XD;
@@ -453,7 +453,7 @@ int Tdi1GetNci(int opcode __attribute__ ((unused)),
 	NCI_ITM listed[2] = { {0, 0, 0, 0}, EOL };
 	listed[0].buffer_length = (short)aptr->arsize;
 	listed[0].code = key_ptr->item_code;
-	listed[0].pointer = (unsigned char *)aptr->pointer;
+	listed[0].pointer = (char *)aptr->pointer;
 	listed[0].return_length_address = &retlen;
 	if (aptr->arsize)
 	  status = TreeGetNci(nid, listed);
