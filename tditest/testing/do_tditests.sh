@@ -46,8 +46,12 @@ then
    > ${srcdir}/$test.ans
    if [ -e ./tditst.tmp ] ;then rm -f ./tditst.tmp; fi
 else
-  if [[ $test == *"py"* ]] && ! $TDITEST <<< 'py("1")' > /dev/null
-  then echo no python;exit 77
+  if [[ $test == *"py"* ]]
+  then
+    LD_PRELOAD="$TMP_LD_PRELOAD"
+    if ! $TDITEST <<< 'py("1")' > /dev/null
+    then echo no python;exit 77
+    fi
   fi
   if [[ $test == *"dev"* ]]
   then
@@ -63,7 +67,6 @@ else
   fi
   if [ -e ./shotid.sys ]; then rm -f ./shotid.sys; fi
   LSAN_OPTIONS="$LSAN_OPTIONS,print_suppressions=0" \
-  LD_PRELOAD="$TMP_LD_PRELOAD" \
   $TDITEST $zdrv$srcdir/$test.tdi 2>&1 \
    | grep -v 'Data inserted:' \
    | grep -v 'Length:' \
