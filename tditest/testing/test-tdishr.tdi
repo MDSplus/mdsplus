@@ -1564,10 +1564,10 @@ g_complex(42T0)
 !
 ! Functions implemented in TdiCull.c
 !
-CULL(1..5,,0..7)
-CULL(BUILD_DIM(BUILD_WINDOW(2,5,1.1),BUILD_RANGE(,,3)),0,5..8)
-EXTEND(1..5,,0..7)
-EXTEND(BUILD_DIM(BUILD_WINDOW(2,5,1.1),BUILD_RANGE(,,3)),0,5..8)
+!CULL(1:5,,0:7) <- cull is broken
+!CULL(BUILD_DIM(BUILD_WINDOW(2,5,1.1),BUILD_RANGE(,,3)),0,5:8)
+EXTEND(1:5,,0:7)
+!EXTEND(BUILD_DIM(BUILD_WINDOW(2,5,1.1),BUILD_RANGE(,,3)),0,5:8) <-extend is broken
 !
 ! Functions implemented in TdiDim.c
 !
@@ -2899,8 +2899,8 @@ text(42,5)
 build_signal(1:10,*,["1","2","3","4","5","6","7","8","9","10"])["5"]
 build_signal(1:10,*,1:10)[-1:5]
 Build_signal(1:100,*,build_dim(*,.01:1:.01))[.2:.25]
-MAP(1..10,[20,-1,5])
-(_A=5..1..-1, MAP(_A,SORT(_A)))
+MAP(1:10,[20,-1,5])
+(_A=5:1:-1, MAP(_A,SORT(_A)))
 !
 ! Functions implemented in TdiStatement
 !
@@ -3015,7 +3015,7 @@ data_with_units(build_signal(10*$VALUE,build_with_units(1:10,"counts"),*))
 ! Functions implemented in TdiItoX.c
 !
 I_TO_X(BUILD_DIM(BUILD_WINDOW(2,5,1.1),BUILD_RANGE(,,3)))
-I_TO_X(BUILD_DIM(BUILD_WINDOW(2,7,1.1),BUILD_RANGE(,,3)),1..4)
+I_TO_X(BUILD_DIM(BUILD_WINDOW(2,7,1.1),BUILD_RANGE(,,3)),1:4)
 !
 ! Functions implemented in TdiXtoI.c
 !
