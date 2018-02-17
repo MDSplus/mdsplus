@@ -101,7 +101,6 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
 {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
-  STATIC_CONSTANT DESCRIPTOR_A_COEFF(coeff0, 1, DTYPE_B, 0, MAXDIM, 1);
   register char *pin, *pout;
   int bounded = 0, cmode = -1, dimct, highest = 0, highdim = 0, row;
   int dim;
@@ -111,7 +110,7 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
   struct descriptor_dimension *pdim;
   struct descriptor_xd *keeps = TdiThreadStatic_p->TdiSELF_PTR;
   array_coeff *pdat, *pdi = 0;
-  array_coeff arr = *(array_coeff *) & coeff0;
+  array_coeff arr = {1,DTYPE_B,CLASS_A,0,0,0,{0,1,1,1,0},MAXDIM,1,0,{0}};
   struct descriptor ddim = { sizeof(dim), DTYPE_L, CLASS_S, 0 };
   struct descriptor_xd ii[MAXDIM], xx[MAXDIM];
   struct descriptor_xd sig[1], uni[1], dat[1];
