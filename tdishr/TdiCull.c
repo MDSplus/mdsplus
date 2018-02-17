@@ -411,6 +411,8 @@ STATIC_ROUTINE int work(int
       MdsFree1Dx(&dat[1], NULL);
       if STATUS_OK
 	*out_ptr = dat[2];
+      else
+        MdsFree1Dx(&dat[2], NULL);
       break;
     }
   MdsFree1Dx(&tmp, NULL);
