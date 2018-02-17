@@ -73,6 +73,7 @@ else
     then echo no libMitDevices.so;exit 77
     fi
   fi
+  if [ -e ./shotid.sys ]; then rm -f ./shotid.sys; fi
   $TDITEST $zdrv$srcdir/$test.tdi 2>&1 \
    | grep -v 'Data inserted:' \
    | grep -v 'Length:' \

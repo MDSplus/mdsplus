@@ -1,5 +1,5 @@
 _shot=3
-current_shot('main')
+!current_shot('subtree')
 TreeOpen('main',-1,1)
 member
 _nids=getnci('***','nid_number'),size(_nids)
@@ -17,7 +17,7 @@ kind(.subtree:a12:stop_trig)
 'total of '//text(size(getnci('***','nid_number','numeric')))//' numerics'
 'total of '//text(size(_nids=getnci('***','nid_number','subtree')))//' subtrees'
 getnci(_nids,'fullpath')
-TreeShr->TreeClose(val(0))
+TreeClose()
 TreeOpen('main,',-1,1)
 size(getnci('***','nid_number'))
 TreeOpen('main,subtree',-1,1)
@@ -93,27 +93,30 @@ TreeClose()
 TreeOpenNew('main',_shot)
 _nid=0
 TreeAddNode('.child',_nid,1)
-_nid
+getnci(_nid,'usage')
 TreeAddNode('action',_nid,2)
-_nid
+getnci(_nid,'usage')
 TreeAddNode('device',_nid,3)
-_nid
+getnci(_nid,'usage')
 TreeAddNode('dispatch',_nid,4)
-_nid
+getnci(_nid,'usage')
 TreeAddNode('numeric',_nid,5)
-_nid
+getnci(_nid,'usage')
 TreeAddNode('signal',_nid,6)
-_nid
+getnci(_nid,'usage')
 TreeAddNode('task',_nid,7)
-_nid
+getnci(_nid,'usage')
 TreeAddNode('text',_nid,8)
-_nid
+getnci(_nid,'usage')
 TreeAddNode('window',_nid,9)
-_nid
+getnci(_nid,'usage')
 TreeAddNode('axis',_nid,10)
-_nid
+getnci(_nid,'usage')
 TreeAddNode('.subtree',_nid,11)
+getnci(_nid,'usage')
 _nid
+getnci(0,"child")
+getnci(0,"children_nids")
 TreeAddTag('.child','child')
 TreeAddTag('.child','child_tag2')
 TreeAddTag('.child','child_tag3')
@@ -160,7 +163,7 @@ TreePutRecord(signal,build_signal($value*100,`data(1:8140),build_dim(build_windo
 signal,1
 TreePutRecord(signal,build_signal($value*100,`data(1:8140),build_dim(build_window(1,8140,-4.),* : * : 1E-4)))
 signal,1
-!getnci(signal,'length')
+_len=getnci(signal,'length');'different on 32 vs 64bit'
 getnci(signal,'rlength')
 TreePutRecord(task,Build_Method(*, "INIT", ACTION))
 task
@@ -170,11 +173,11 @@ TreePutRecord(window,build_window(1,40,-4.))
 window
 TreePutRecord(axis,1E-4 : 20E-4 : 1E-4)
 axis
-TreeShr->TreeWriteTree(ref('main'),val(_shot))
+TreeWrite('main',_shot)
 TreeClose()
 TreeShr->TreeCompressDatafile(ref('main'),val(_shot))
 TreeOpen('main',_shot)
-!getnci(signal,'length') differen on 32 vs 64 bit
+_len==getnci(signal,'length')
 getnci(signal,'rlength')
 data(signal)[1:100]
 TreeClose()
