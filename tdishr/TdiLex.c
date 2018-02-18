@@ -1631,6 +1631,9 @@ int tdiyylook()
     }
 #endif
     while (lsp-- > tdiyylstate) {
+      // abc..xyz removes 'c' so we need to add the one char that is missing
+      // TODO: fix original error before
+      if (tdiyylastch[0]=='.' && tdiyylastch[-1]=='.') tdiyylastch++;
       *tdiyylastch-- = 0;
       if (*lsp != 0 && (tdiyyfnd = (*lsp)->tdiyystops) && *tdiyyfnd > 0) {
 	tdiyyolsp = lsp;
