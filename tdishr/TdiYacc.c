@@ -72,23 +72,29 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern unsigned short
  OpcAbort,
-    OpcAdd,
-    OpcCase,
-    OpcComma,
-    OpcConditional,
-    OpcConcat,
-    OpcDefault,
-    OpcEquals,
-    OpcEqualsFirst,
-    OpcExtFunction,
-    OpcFun,
-    OpcInT,
-    OpcInT_UNSIGNED,
-    OpcLabel,
-    OpcMultiply,
-    OpcPostDec,
-    OpcPostInc,
-    OpcPreInc, OpcStatement, OpcSubscript, OpcUnaryMinus, OpcUnaryPlus, OpcUsing, OpcVector;
+ OpcAdd,
+ OpcCase,
+ OpcComma,
+ OpcConditional,
+ OpcConcat,
+ OpcDefault,
+ OpcEquals,
+ OpcEqualsFirst,
+ OpcExtFunction,
+ OpcFun,
+ OpcInT,
+ OpcInT_UNSIGNED,
+ OpcLabel,
+ OpcMultiply,
+ OpcPostDec,
+ OpcPostInc,
+ OpcPreInc,
+ OpcStatement,
+ OpcSubscript,
+ OpcUnaryMinus,
+ OpcUnaryPlus,
+ OpcUsing,
+ OpcVector;
 
 extern int TdiYacc_RESOLVE();
 extern int TdiLex();
@@ -738,17 +744,15 @@ __YYSCLASS char *tdiyyreds[] = {
 #define YYABORT         {free_stacks(); return MDSplusERROR;}
 #endif
 
-#define YYBACKUP( newtoken, newvalue )\
-{\
-        if ( tdiyychar >= 0 || ( tdiyyr2[ tdiyytmp ] >> 1 ) != 1 )\
-        {\
-                tdiyyerror( (nl_msg(30001,"syntax error - cannot backup")) );\
-                goto tdiyyerrlab;\
-        }\
-        tdiyychar = newtoken;\
-        tdiyystate = *tdiyyps;\
-        tdiyylval = newvalue;\
-        goto tdiyynewstate;\
+#define YYBACKUP( newtoken, newvalue ) {\
+  if ( tdiyychar >= 0 || ( tdiyyr2[ tdiyytmp ] >> 1 ) != 1 ) {\
+    tdiyyerror( (nl_msg(30001,"syntax error - cannot backup")) );\
+    goto tdiyyerrlab;\
+  }\
+  tdiyychar = newtoken;\
+  tdiyystate = *tdiyyps;\
+  tdiyylval = newvalue;\
+  goto tdiyynewstate;\
 }
 //"
 #define YYRECOVERING()  (!!tdiyyerrflag)
@@ -831,7 +835,7 @@ int tdiyyparse()
      ** get globals into registers.
      ** either we just started, or we just finished a reduction
      */
- tdiyystack:
+ tdiyy_stack_reset:
     tdiyy_pv = tdiyypv;
     tdiyy_ps = tdiyyps;
     tdiyy_state = tdiyystate;
@@ -875,12 +879,12 @@ int tdiyyparse()
      */
  tdiyy_newstate:
     if ((tdiyy_n = tdiyypact[tdiyy_state]) <= YYFLAG)
-      goto tdiyydefault;		/* simple state */
+      goto tdiyy_default;		/* simple state */
     if ((tdiyychar < 0) && ((tdiyychar = tdiyylex()) < 0))
       tdiyychar = 0;		/* reached EOF */
     YYDEBUG_("Received token ")
     if (((tdiyy_n += tdiyychar) < 0) || (tdiyy_n >= YYLAST))
-      goto tdiyydefault;
+      goto tdiyy_default;
     if (tdiyychk[tdiyy_n = tdiyyact[tdiyy_n]] == tdiyychar) {	/*valid shift */
       tdiyychar = -1;
       tdiyyval = tdiyylval;
@@ -890,7 +894,7 @@ int tdiyyparse()
       goto tdiyy_stack;
     }
 
- tdiyydefault:
+ tdiyy_default:
     if ((tdiyy_n = tdiyydef[tdiyy_state]) == -2) {
       if ((tdiyychar < 0) && ((tdiyychar = tdiyylex()) < 0))
 	tdiyychar = 0;		/* reached EOF */
@@ -899,11 +903,8 @@ int tdiyyparse()
        ** look through exception table
        */
       {
-	int *tdiyyxi = tdiyyexca;
-
-	while ((*tdiyyxi != -1) || (tdiyyxi[1] != tdiyy_state)) {
-	  tdiyyxi += 2;
-	}
+	int *tdiyyxi;
+	for (tdiyyxi=tdiyyexca ; tdiyyxi[0]!=-1 || tdiyyxi[1]!=tdiyy_state ; tdiyyxi+=2);
 	while ((*(tdiyyxi += 2) >= 0) && (*tdiyyxi != tdiyychar)) ;
 	if ((tdiyy_n = tdiyyxi[1]) < 0)
 	  YYACCEPT;
@@ -982,7 +983,7 @@ int tdiyyparse()
     printf("Reduce by (%d) \"%s\"\n", tdiyy_n, tdiyyreds[tdiyy_n]);
 #endif
     tdiyytmp = tdiyy_n;		/* value to switch over */
-    tdiyypvt = tdiyy_pv;		/* $vars top of value stack */
+    tdiyypvt = tdiyy_pv;	/* $vars top of value stack */
     /*
      ** Look in goto table for next state
      ** Sorry about using tdiyy_state here as temporary
@@ -1660,7 +1661,7 @@ int tdiyyparse()
     }
     break;
   }
-  goto tdiyystack;			/* reset registers in driver code */
+  goto tdiyy_stack_reset;			/* reset registers in driver code */
 }
 
 #ifdef __RUNTIME_YYMAXDEPTH
