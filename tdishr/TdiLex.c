@@ -957,7 +957,7 @@ int TdiLexQuote(int len __attribute__ ((unused)),
 }
 
 #define YYNEWLINE 10
-int tdiyylex()
+int TdiLex() // aka tdiyylex
 {
   GET_TDITHREADSTATIC_P;
   int nstr;

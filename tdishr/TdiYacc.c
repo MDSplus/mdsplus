@@ -105,7 +105,6 @@ extern int TdiLexPath();
 
 #define YYMAXDEPTH      250
 
-#define tdiyyparse         TdiYacc
 #define _RESOLVE(arg)   			if IS_NOT_OK(TdiYacc_RESOLVE(&arg.rptr)) {tdiyyerror(0);}
 #define _FULL1(opcode,arg1,out)                 if IS_NOT_OK(TdiYacc_BUILD(255, 1, opcode, &out, &arg1)) {tdiyyerror(0);}
 #define _FULL2(opcode,arg1,arg2,out)            if IS_NOT_OK(TdiYacc_BUILD(255, 2, opcode, &out, &arg1, &arg2)) {tdiyyerror(0);}
@@ -802,8 +801,9 @@ int tdiyychar;			/* current input token number */
 /*
 ** tdiyyparse - return 0 if worked, 1 if syntax error not recovered from
 */
-int tdiyyparse()
-{
+// TdiYacc aka tdiyyparse         TdiYacc
+
+int TdiYacc(){
   GET_TDITHREADSTATIC_P;
   YYSTYPE *tdiyypvt;	/* top of value stack for $vars */
 
@@ -880,7 +880,7 @@ int tdiyyparse()
  tdiyy_newstate:
     if ((tdiyy_n = tdiyypact[tdiyy_state]) <= YYFLAG)
       goto tdiyy_default;		/* simple state */
-    if ((tdiyychar < 0) && ((tdiyychar = tdiyylex()) < 0))
+    if ((tdiyychar < 0) && ((tdiyychar = TdiLex()) < 0))
       tdiyychar = 0;		/* reached EOF */
     YYDEBUG_("Received token ")
     if (((tdiyy_n += tdiyychar) < 0) || (tdiyy_n >= YYLAST))
@@ -896,7 +896,7 @@ int tdiyyparse()
 
  tdiyy_default:
     if ((tdiyy_n = tdiyydef[tdiyy_state]) == -2) {
-      if ((tdiyychar < 0) && ((tdiyychar = tdiyylex()) < 0))
+      if ((tdiyychar < 0) && ((tdiyychar = TdiLex()) < 0))
 	tdiyychar = 0;		/* reached EOF */
       YYDEBUG_("received token ")
       /*
