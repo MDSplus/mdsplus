@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+-Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -58,9 +58,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strings.h>
 #include "tdithreadsafe.h"
 
-
-
-#define _MOVC3(a,b,c) memcpy(c,b,a)
 int TdiGetRecord(int nid, struct descriptor_xd *out);
 
 extern unsigned short OpcDtypeRange;
@@ -127,7 +124,7 @@ int TdiImpose(struct descriptor_a *in_ptr, struct descriptor_xd *out_ptr)
 	in_size += dimct * sizeof(int);
     }
     dimct = pout->dimct;
-    _MOVC3((short)in_size, (char *)in_ptr, (char *)&arr);
+    memcpy(&arr,in_ptr,in_size);
     if (in_ptr->class == CLASS_APD) {
       arr.length = pout->length;
       arr.dtype = pout->dtype;
@@ -150,7 +147,7 @@ int TdiImpose(struct descriptor_a *in_ptr, struct descriptor_xd *out_ptr)
 	out_size += dimct * sizeof(int);
     }
     if (in_size <= out_size && pout->class == CLASS_A)
-      _MOVC3((short)in_size, (char *)&arr, (char *)pout);
+      memcpy(pout,&arr,in_size);
     else {
       struct descriptor_xd tmp = *out_ptr;
       *out_ptr = EMPTY_XD;
@@ -186,12 +183,12 @@ int TdiImpose(struct descriptor_a *in_ptr, struct descriptor_xd *out_ptr)
 
 /*----------------------------------------------------------------------------
 */
-STATIC_CONSTANT struct descriptor missing_dsc = { 0, DTYPE_MISSING, CLASS_S, 0 };
+const struct descriptor missing_dsc = { 0, DTYPE_MISSING, CLASS_S, 0 };
 
-int TdiGetData(unsigned char omits[], struct descriptor *their_ptr, struct descriptor_xd *out_ptr)
+int TdiGetData(const unsigned char omits[], struct descriptor *their_ptr, struct descriptor_xd *out_ptr)
 {
   int nid, *pnid;
-  unsigned char *optr, dtype = 0;
+  unsigned char dtype = 0;
   struct descriptor_signal *keep;
   struct descriptor_xd hold = EMPTY_XD;
   struct descriptor_r *pin = (struct descriptor_r *)their_ptr;
@@ -210,10 +207,9 @@ int TdiGetData(unsigned char omits[], struct descriptor *their_ptr, struct descr
   if (!pin)
     status = MdsCopyDxXd(&missing_dsc, &hold);
   else {
-    for (optr = &omits[0]; *optr != 0; ++optr)
-      if (*optr == dtype)
-	break;
-    if (*optr)
+    int i;
+    for (i=0; omits[i] && omits[i]!=dtype ; i++);
+    if (omits[i])
       status = MdsCopyDxXd((struct descriptor *)pin, &hold);
     else
       switch (pin->class) {
@@ -660,15 +656,13 @@ int Tdi1Units(int opcode __attribute__ ((unused)), int narg, struct descriptor *
         Caution. The units field may be null.
                 status = TdiDataWithUnits(&in, &out MDS_END_ARG)
 */
-STATIC_CONSTANT DESCRIPTOR_WITH_UNITS(null, 0, 0);
 int Tdi1DataWithUnits(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 		      struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  STATIC_CONSTANT unsigned char omits[] = { DTYPE_WITH_UNITS, 0 };
-  struct descriptor_with_units dwu = null;
+  const unsigned char omits[] = { DTYPE_WITH_UNITS, 0 };
+  DESCRIPTOR_WITH_UNITS(dwu, &missing_dsc, 0);
   struct descriptor_xd data = EMPTY_XD, units = EMPTY_XD;
-  dwu.data = null.data = (struct descriptor *)&missing_dsc;
   status = TdiGetData((unsigned char *)omits, list[0], out_ptr);
   if STATUS_OK {
     struct descriptor_with_units *pwu = (struct descriptor_with_units *)out_ptr->pointer;
@@ -688,7 +682,7 @@ int Tdi1DataWithUnits(int opcode __attribute__ ((unused)), int narg __attribute_
       MdsFree1Dx(&data, NULL);
       MdsFree1Dx(&units, NULL);
     } else
-      status = MdsCopyDxXd((struct descriptor *)&null, out_ptr);
+      status = MdsCopyDxXd((struct descriptor *)&dwu, out_ptr);
   }
   return status;
 }
@@ -707,8 +701,8 @@ int Tdi1Validation(int opcode __attribute__ ((unused)), int narg __attribute__ (
   GET_TDITHREADSTATIC_P;
   struct descriptor_r *rptr;
   struct descriptor_xd *keep;
-  STATIC_CONSTANT unsigned char omits[] = { DTYPE_PARAM, 0 };
-  STATIC_CONSTANT unsigned char noomits[] = { 0 };
+  const unsigned char omits[] = { DTYPE_PARAM, 0 };
+  const unsigned char noomits[] = { 0 };
 
   status = TdiGetData((unsigned char *)omits, list[0], out_ptr);
   rptr = (struct descriptor_r *)out_ptr->pointer;
