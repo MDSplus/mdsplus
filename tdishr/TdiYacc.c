@@ -54,7 +54,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 May require (path)(a) if path-ness not clear.
         path[b] subscripts whatever is at node. Same problem.
         NOT and INOT of AND OR etc., form NAND or AND_NOT etc. See KNOT1 and KNOT2. Not after 9/25/89.
-*/
+-*/
 #include <mdsplus/mdsplus.h>
 #include <STATICdef.h>
 #include <stdio.h>
@@ -821,22 +821,11 @@ int tdiyyparse()
   tdiyyerrflag = 0;
   tdiyychar = -1;
 
-  goto tdiyystack;
   {
     YYSTYPE *tdiyy_pv;	/* top of value stack */
     int *tdiyy_ps;	/* top of state stack */
     int tdiyy_state;	/* current state */
-    int tdiyy_n;		/* internal state number info */
-
-    /*
-     ** get globals into registers.
-     ** branch to here only if YYBACKUP was called.
-     */
-    // tdiyynewstate:
-    tdiyy_pv = tdiyypv;
-    tdiyy_ps = tdiyyps;
-    tdiyy_state = tdiyystate;
-    goto tdiyy_newstate;
+    int tdiyy_n;	/* internal state number info */
 
     /*
      ** get globals into registers.
