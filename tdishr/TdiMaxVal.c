@@ -687,7 +687,7 @@ int Tdi3Sum(struct descriptor *in, struct descriptor *mask,
   case DTYPE_O:  OperateIfun(0,(void*) int128_add,&args);break;
   case DTYPE_OU: OperateIfun(0,(void*)uint128_add,&args);break;
   case DTYPE_F:  OperateFfun(0,DTYPE_F ,add,&args);break;
-  case DTYPE_FS: OperateFfun(0,DTYPE_FT,add,&args);break;
+  case DTYPE_FS: OperateFfun(0,DTYPE_FS,add,&args);break;
   case DTYPE_G:  OperateFfun(0,DTYPE_G ,add,&args);break;
   case DTYPE_D:  OperateFfun(0,DTYPE_D ,add,&args);break;
   case DTYPE_FT: OperateFfun(0,DTYPE_FT,add,&args);break;
