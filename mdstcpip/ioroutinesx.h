@@ -251,24 +251,24 @@ static void ChildSignalHandler(int num __attribute__ ((unused))){
 ////////////////////////////////////////////////////////////////////////////////
 
 static int io_authorize(Connection* c, char *username){
+  int ans;
+  char *iphost = NULL,*hoststr = NULL ,*info = NULL;
+  FREE_ON_EXIT(iphost);
+  FREE_ON_EXIT(hoststr);
+  FREE_ON_EXIT(info);
+  ans = C_OK;
   SOCKET sock = getSocket(c);
   time_t tim = time(0);
   char *timestr = ctime(&tim);
-  int ans = C_OK;
-  char *iphost = NULL;
-  FREE_ON_EXIT(iphost);
-  char *hoststr = NULL;
-  FREE_ON_EXIT(hoststr);
-  char *info = getHostInfo(sock, &iphost, &hoststr);
-  FREE_ON_EXIT(info);
+  info = getHostInfo(sock, &iphost, &hoststr);
   if (info) {
+    timestr[strlen(timestr) - 1] = 0;
+    printf("%s (%d) (pid %d) Connection received from %s@%s\r\n",
+           timestr, (int)sock, getpid(), username, info);
     char *matchString[2] = { NULL, NULL };
     FREE_ON_EXIT(matchString[0]);
     FREE_ON_EXIT(matchString[1]);
     int num = 1;
-    timestr[strlen(timestr) - 1] = 0;
-    printf("%s (%d) (pid %d) Connection received from %s@%s\r\n",
-           timestr, (int)sock, getpid(), username, info);
     matchString[0] = strcpy(malloc(strlen(username) + strlen(iphost) + 3), username);
     strcat(matchString[0], "@");
     strcat(matchString[0], iphost);

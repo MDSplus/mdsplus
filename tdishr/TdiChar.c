@@ -106,15 +106,12 @@ int Tdi3Char(struct descriptor *in_ptr, struct descriptor *kind_ptr __attribute_
   char *p1 = in_ptr->pointer;
   char *p2 = out_ptr->pointer;
   int step = in_ptr->length, n;
-
-  N_ELEMENTS(out_ptr, n);
 #ifdef WORDS_BIGENDIAN
-  for (; --n >= 0; p1 += step)
-    *p2++ = *(p1 + step - 1);
-#else
+  p1 += step - 1;
+#endif
+  N_ELEMENTS(out_ptr, n);
   for (; --n >= 0; p1 += step)
     *p2++ = *(p1);
-#endif
   return status;
 }
 
@@ -216,25 +213,8 @@ int Tdi3Extract(struct descriptor *start_ptr,
                 byte = IACHAR(ascii-text)
                 byte = ICHAR(text)
 */
-int Tdi3Ichar(struct descriptor *in_ptr, struct descriptor *out_ptr)
-{
-  INIT_STATUS;
-  int step = in_ptr->length;
-  char *p1 = in_ptr->pointer;
-  char *p2 = out_ptr->pointer;
-  int n;
-
-  N_ELEMENTS(out_ptr, n);
-#ifdef WORDS_BIGENDIAN
-  if STATUS_OK
-    for (; --n >= 0; p1 += step)
-      *p2++ = *(p1 + step - 1);
-#else
-  if STATUS_OK
-    for (; --n >= 0; p1 += step)
-      *p2++ = *(p1);
-#endif
-  return status;
+int Tdi3Ichar(struct descriptor *in_ptr, struct descriptor *out_ptr){
+  return Tdi3Char(in_ptr,NULL,out_ptr);
 }
 
 /*------------------------------------------------------------------------------

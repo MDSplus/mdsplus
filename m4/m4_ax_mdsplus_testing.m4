@@ -170,12 +170,15 @@ AC_DEFUN([TS_SELECT],[
    AS_VAR_IF([HAVE_WINE],[yes],
      [
       TS_WINE_ENV([WINEPREFIX],[WINEARCH])
-	  TS_WINE_LIBRARIESPATH([WINEPATH])
+      TS_WINE_LIBRARIESPATH([WINEPATH])
       AS_VAR_SET([PYTHONHOME],"TS_U2WPATH([/python27])")
-	  AS_VAR_APPEND([TESTS_ENVIRONMENT],["WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "])
-	  AS_VAR_APPEND([TESTS_ENVIRONMENT],["WINEDEBUG=-all "])
-	  AS_VAR_APPEND([TESTS_ENVIRONMENT],["MDS_PATH='TS_U2WPATH([${srcdir}/tdi])' "])
-	  AS_VAR_APPEND([TESTS_ENVIRONMENT],["MDSPLUS_DIR='TS_U2WPATH([${srcdir}])' "])
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],["WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "])
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],["WINEDEBUG=-all "])
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],["MDSPLUS_DIR='TS_U2WPATH([${srcdir}])' "])
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],["MDS_PATH='TS_U2WPATH([${srcdir}/tdi])' "])
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],["MDS_PYDEVICE_PATH='TS_U2WPATH([${srcdir}/pydevices])' "])
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],["main_path='.;TS_U2WPATH([${srcdir}/trees])' "])
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],["subtree_path='.;TS_U2WPATH([${srcdir}/trees/subtree])' "])
       AS_VAR_IF([WINEARCH],[win64],
 		[# WINEARCH win64
 		 AS_VAR_APPEND([WINEPATH],["${PYTHONHOME}"])
@@ -217,8 +220,12 @@ AC_DEFUN([TS_SELECT],[
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"PATH=${MAKEBINDIR}:\${PATH} ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR=\$(abs_top_srcdir) ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH=\$(abs_top_srcdir)/tdi ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PYDEVICE_PATH=\$(abs_top_srcdir)/pydevices ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"main_path='.;\$(abs_top_srcdir)/trees' ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"subtree_path='.;\$(abs_top_srcdir)/trees/subtree' ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PyLib=$(if test -z $PyLib; then echo ${DEF_PYLIB}; else echo $PyLib; fi) ")
    AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
  ],
  #
@@ -228,7 +235,6 @@ AC_DEFUN([TS_SELECT],[
  [ # in all other platform tests are disabled for now
    AS_VAR_SET([ENABLE_TESTS],[no])
  ])
-
 # MACOS: add --dsymutil=yes to valgrind
 
 # Set ENABLE_TESTS

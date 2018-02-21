@@ -83,7 +83,7 @@ class Apd(_array.Array):
 
     @classmethod
     def fromDescriptor(cls,d):
-        num   = int(d.arsize/d.length)
+        num   = d.arsize//d.length
         dptrs = _C.cast(d.pointer,_C.POINTER(_C.c_void_p*num)).contents
         descs = [_descriptor.pointerToObject(dptr,d.tree) for dptr in dptrs]
         return cls(descs)._setTree(d.tree)

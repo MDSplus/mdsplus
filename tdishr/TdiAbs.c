@@ -74,36 +74,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 #include <math.h>
 #include <STATICdef.h>
+#include <int128.h>
 
 extern int TdiConvert();
-extern int TdiSubtractOctaword();
 extern int TdiUnary();
 extern int Tdi3Multiply();
 extern int CvtConvertFloat();
 
 #define min(a,b) ((a)<(b)) ? (a) : (b)
 #define max(a,b) ((a)<(b)) ? (b) : (a)
-
-typedef struct {
-  int64_t longword[2];
-} Int128;
-typedef struct {
-  int64_t longword[2];
-} uInt128;
-
-#define negate128 TdiSubtractOctaword(&octazero,&in[i],&out[i])
-
-STATIC_CONSTANT Int128 octazero = {0};
-
-#define zero128 out[i].longword[0]=0; out[i].longword[1]=0;
-#define copy128 out[i].longword[0]=in[i].longword[0];out[i].longword[1]=in[i].longword[1];
-#define abs128 if (in[i].longword[1] < 0) TdiSubtractOctaword(&octazero,&in[i],&out[i]); else { copy128; }
-#define not128 out[i].longword[0] = ~in[i].longword[0]; out[i].longword[1] = ~in[i].longword[1]
-#ifdef WORDS_BIGENDIAN
-#define bool128 out[i]=(uint8_t)(1 & in[i].longword[0])
-#else
-#define bool128 out[i]=(uint8_t)(1 & in[i].longword[0])
-#endif
 
 STATIC_CONSTANT const int roprand = 0x8000;
 
@@ -267,13 +246,13 @@ int Tdi3Abs(struct descriptor *in_ptr, struct descriptor *out_ptr)
     end_operate case DTYPE_WU:start_operate(uint16_t) out[i] = in[i];
     end_operate case DTYPE_LU:start_operate(uint32_t) out[i] = in[i];
     end_operate case DTYPE_QU:start_operate(uint64_t) out[i] = in[i];
-    end_operate case DTYPE_OU:start_operate(uInt128); copy128;
+    end_operate case DTYPE_OU:start_operate(uint128_t); memcpy(&out[i],&in[i],sizeof(uint128_t));
     end_operate case DTYPE_B:start_operate(int8_t) out[i] = (int8_t)(in[i] > 0 ? in[i] : -in[i]);
     end_operate case DTYPE_W:start_operate(int16_t)
         out[i] = (int16_t)(in[i] > 0 ? in[i] : -in[i]);
     end_operate case DTYPE_L:start_operate(int32_t) out[i] = in[i] > 0 ? in[i] : -in[i];
     end_operate case DTYPE_Q:start_operate(int64_t) out[i] = in[i] > 0 ? in[i] : -in[i];
-    end_operate case DTYPE_O:start_operate(Int128) abs128;
+    end_operate case DTYPE_O:start_operate(int128_t) int128_abs(&in[i],&out[i]);
     end_operate case DTYPE_F:start_operate(float) AbsFloat(DTYPE_F)
     end_operate case DTYPE_FS:start_operate(float) AbsFloat(DTYPE_FS)
     end_operate case DTYPE_G:start_operate(double) AbsFloat(DTYPE_G)
@@ -305,13 +284,12 @@ int Tdi3Abs1(struct descriptor *in_ptr, struct descriptor *out_ptr)
     end_operate case DTYPE_WU:start_operate(uint16_t) out[i] = in[i];
     end_operate case DTYPE_LU:start_operate(uint32_t) out[i] = in[i];
     end_operate case DTYPE_QU:start_operate(uint64_t) out[i] = in[i];
-    end_operate case DTYPE_OU:start_operate(uInt128); copy128;
+    end_operate case DTYPE_OU:start_operate(uint128_t); memcpy(&out[i],&in[i],sizeof(uint128_t));
     end_operate case DTYPE_B:start_operate(int8_t) out[i] = (int8_t)(in[i] > 0 ? in[i] : -in[i]);
-    end_operate case DTYPE_W:start_operate(int16_t)
-        out[i] = (int16_t)(in[i] > 0 ? in[i] : -in[i]);
+    end_operate case DTYPE_W:start_operate(int16_t) out[i] = (int16_t)(in[i] > 0 ? in[i] : -in[i]);
     end_operate case DTYPE_L:start_operate(int32_t) out[i] = in[i] > 0 ? in[i] : -in[i];
     end_operate case DTYPE_Q:start_operate(int64_t) out[i] = in[i] > 0 ? in[i] : -in[i];
-    end_operate case DTYPE_O:start_operate(Int128) abs128;
+    end_operate case DTYPE_O:start_operate(int128_t) int128_abs(&in[i],&out[i]);
     end_operate case DTYPE_F:start_operate(float) AbsFloat(DTYPE_F)
     end_operate case DTYPE_FS:start_operate(float) AbsFloat(DTYPE_FS)
     end_operate case DTYPE_G:start_operate(double) AbsFloat(DTYPE_G)
@@ -385,7 +363,7 @@ int Tdi3Aimag(struct descriptor *in_ptr, struct descriptor *out_ptr)
     end_operate case DTYPE_W:case DTYPE_WU:start_operate2(int16_t) out[i] = 0;
     end_operate case DTYPE_L:case DTYPE_LU:start_operate2(int32_t) out[i] = 0;
     end_operate case DTYPE_Q:case DTYPE_QU:start_operate2(int64_t) out[i] = 0;
-    end_operate case DTYPE_O:case DTYPE_OU:start_operate2(Int128)   zero128;
+    end_operate case DTYPE_O:case DTYPE_OU:start_operate2(int128_t)   out[i].low=0;out[i].high=0;;
     end_operate case DTYPE_F:start_operate2(float)
     float ans = (float)0.0;
     CvtConvertFloat(&ans, DTYPE_NATIVE_FLOAT, &out[i], DTYPE_F, 0);
@@ -402,14 +380,10 @@ int Tdi3Aimag(struct descriptor *in_ptr, struct descriptor *out_ptr)
     double ans = 0.0;
     CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, &out[i], DTYPE_FT, 0);
     end_operate case DTYPE_FC:case DTYPE_FSC:start_operate(int) out[i] = in[i * 2 + 1];
-    end_operate case DTYPE_GC:case DTYPE_DC:case DTYPE_FTC:start_operate(double) memcpy(&out[i],
-											&in[i * 2 +
-											    1],
-											sizeof
-											(double));
+    end_operate case DTYPE_GC:case DTYPE_DC:case DTYPE_FTC:
+	start_operate(double) memcpy(&out[i],&in[i*2+1],sizeof(double));
     end_operate default:status = TdiINVDTYDSC;
   }
-
   return status;
 }
 
@@ -418,17 +392,15 @@ int Tdi3Conjg(struct descriptor *in_ptr, struct descriptor *out_ptr)
   INIT_STATUS;
   int out_count = 1;
   register int i;
-
   status = TdiUnary(in_ptr, out_ptr, &out_count);
   if STATUS_NOT_OK
     return status;
-
   switch (in_ptr->dtype) {
                 case DTYPE_BU:case DTYPE_B:start_operate( uint8_t) out[i] = in[i];
     end_operate case DTYPE_WU:case DTYPE_W:start_operate(uint16_t) out[i] = in[i];
     end_operate case DTYPE_LU:case DTYPE_L:start_operate(uint32_t) out[i] = in[i];
     end_operate case DTYPE_QU:case DTYPE_Q:start_operate(uint64_t) out[i] = in[i];
-    end_operate case DTYPE_OU:case DTYPE_O:start_operate(uInt128)  copy128;
+    end_operate case DTYPE_OU:case DTYPE_O:start_operate(uint128_t)  memcpy(&out[i],&in[i],sizeof(int128_t));
     end_operate case DTYPE_F:case DTYPE_FS:start_operate(float)    out[i] = in[i];
     end_operate case DTYPE_G:case DTYPE_D:case DTYPE_FT:start_operate(double) out[i] = in[i];
     end_operate case DTYPE_FC:start_operate(float) ConjgComplex(DTYPE_F)
@@ -438,7 +410,6 @@ int Tdi3Conjg(struct descriptor *in_ptr, struct descriptor *out_ptr)
     end_operate case DTYPE_FTC:start_operate(double) ConjgComplex(DTYPE_FT)
     end_operate default:status = TdiINVDTYDSC;
   }
-
   return status;
 }
 
@@ -447,25 +418,17 @@ int Tdi3Inot(struct descriptor *in_ptr, struct descriptor *out_ptr)
   INIT_STATUS;
   int out_count = 1;
   register int i;
-
   status = TdiUnary(in_ptr, out_ptr, &out_count);
   if STATUS_NOT_OK
     return status;
-
   switch (in_ptr->dtype) {
-                case DTYPE_BU:start_operate( int8_t)  out[i] = ~in[i];
-    end_operate case DTYPE_WU:start_operate(uint16_t) out[i] = ~in[i];
-    end_operate case DTYPE_LU:start_operate(uint32_t) out[i] = ~in[i];
-    end_operate case DTYPE_QU:start_operate(uint64_t) out[i] = ~in[i];
-    end_operate case DTYPE_OU:start_operate(uInt128)  not128;
-    end_operate case DTYPE_B: start_operate( int8_t) out[i] = ~in[i];
-    end_operate case DTYPE_W: start_operate(int16_t) out[i] = ~in[i];
-    end_operate case DTYPE_L: start_operate(int32_t) out[i] = ~in[i];
-    end_operate case DTYPE_O: start_operate(int64_t) out[i] = ~in[i];
-    end_operate case DTYPE_Q: start_operate(Int128)  not128;
+                case DTYPE_B:case DTYPE_BU:start_operate(  uint8_t) out[i] = ~in[i];
+    end_operate case DTYPE_W:case DTYPE_WU:start_operate( uint16_t) out[i] = ~in[i];
+    end_operate case DTYPE_L:case DTYPE_LU:start_operate( uint32_t) out[i] = ~in[i];
+    end_operate case DTYPE_Q:case DTYPE_QU:start_operate( uint64_t) out[i] = ~in[i];
+    end_operate case DTYPE_O:case DTYPE_OU:start_operate(uint128_t) out[i].low=~in[i].low; out[i].high=~in[i].high;
     end_operate default:status = TdiINVDTYDSC;
   }
-
   return status;
 }
 
@@ -477,21 +440,14 @@ int Tdi3Logical(struct descriptor *in_ptr, struct descriptor *kind __attribute__
   status = TdiUnary(in_ptr, out_ptr, &out_count);
   if STATUS_NOT_OK
     return status;
-
   switch (in_ptr->dtype) {
-  case DTYPE_BU:              start_operate1( uint8_t, uint8_t) out[i] = (uint8_t)(1 & in[i]);
-    end_operate case DTYPE_WU:start_operate1(uint16_t, uint8_t)	out[i] = (uint8_t)(1 & in[i]);
-    end_operate case DTYPE_LU:start_operate1(uint32_t, uint8_t)	out[i] = (uint8_t)(1 & in[i]);
-    end_operate case DTYPE_QU:start_operate1(uint64_t, uint8_t) out[i] = (uint8_t)(1 & in[i]);
-    end_operate case DTYPE_OU:start_operate1( uInt128, uint8_t) bool128;
-    end_operate case DTYPE_B: start_operate1( int8_t, uint8_t) out[i] =	(uint8_t)(1 & in[i]);
-    end_operate case DTYPE_W: start_operate1(int16_t, uint8_t) out[i] =	(uint8_t)(1 & in[i]);
-    end_operate case DTYPE_L: start_operate1(int32_t, uint8_t) out[i] = (uint8_t)(1 & in[i]);
-    end_operate case DTYPE_Q: start_operate1(int64_t, uint8_t) out[i] = (uint8_t)(1 & in[i]);
-    end_operate case DTYPE_O: start_operate1( Int128, uint8_t) bool128;
+                case DTYPE_B:case DTYPE_BU:start_operate1(  uint8_t, uint8_t) out[i] = (uint8_t)(1 & in[i]);
+    end_operate case DTYPE_W:case DTYPE_WU:start_operate1( uint16_t, uint8_t) out[i] = (uint8_t)(1 & in[i]);
+    end_operate case DTYPE_L:case DTYPE_LU:start_operate1( uint32_t, uint8_t) out[i] = (uint8_t)(1 & in[i]);
+    end_operate case DTYPE_Q:case DTYPE_QU:start_operate1( uint64_t, uint8_t) out[i] = (uint8_t)(1 & in[i]);
+    end_operate case DTYPE_O:case DTYPE_OU:start_operate1(uint128_t, uint8_t) out[i] = (uint8_t)(1 & in[i].low);
     end_operate default:status = TdiINVDTYDSC;
   }
-
   return status;
 }
 
@@ -503,20 +459,12 @@ int Tdi3Not(struct descriptor *in_ptr, struct descriptor *out_ptr)
   status = TdiUnary(in_ptr, out_ptr, &out_count);
   if STATUS_NOT_OK
     return status;
-
   switch (in_ptr->dtype) {
-  case DTYPE_BU:
-    start_operate1(uint8_t, uint8_t) out[i] = (uint8_t)!(in[i] & 1);
-    end_operate case DTYPE_WU:start_operate1(uint16_t, uint8_t)
-	out[i] = (uint8_t)!(in[i] & 1);
-    end_operate case DTYPE_LU:start_operate1(uint32_t, uint8_t)	out[i] = (uint8_t)!(in[i] & 1);
-    end_operate case DTYPE_QU:start_operate1(uint64_t, uint8_t) out[i] = (uint8_t)!(in[i] & 1);
-    end_operate case DTYPE_OU:start_operate1( uInt128, uint8_t) bool128; out[i] = (uint8_t)!out[i];
-    end_operate case DTYPE_B: start_operate1(int8_t, uint8_t)	out[i] = (uint8_t)!(in[i] & 1);
-    end_operate case DTYPE_W: start_operate1(int16_t, uint8_t)  out[i] = (uint8_t)!(in[i] & 1);
-    end_operate case DTYPE_L: start_operate1(int32_t, uint8_t)  out[i] = (uint8_t)!(in[i] & 1);
-    end_operate case DTYPE_Q: start_operate1(int64_t, uint8_t)  out[i] = (uint8_t)!(in[i] & 1);
-    end_operate case DTYPE_O: start_operate1( Int128, uint8_t)  bool128; out[i] = (uint8_t)!out[i];
+                case DTYPE_B:case DTYPE_BU:start_operate1(  uint8_t,uint8_t) out[i] = (uint8_t)!(in[i] & 1);
+    end_operate case DTYPE_W:case DTYPE_WU:start_operate1( uint16_t,uint8_t) out[i] = (uint8_t)!(in[i] & 1);
+    end_operate case DTYPE_L:case DTYPE_LU:start_operate1( uint32_t,uint8_t) out[i] = (uint8_t)!(in[i] & 1);
+    end_operate case DTYPE_Q:case DTYPE_QU:start_operate1( uint64_t,uint8_t) out[i] = (uint8_t)!(in[i] & 1);
+    end_operate case DTYPE_O:case DTYPE_OU:start_operate1(uint128_t,uint8_t) out[i] = (uint8_t)!(1 & in[i].low);
     end_operate default:status = TdiINVDTYDSC;
   }
 
@@ -534,26 +482,25 @@ int Tdi3Nint(struct descriptor *in_ptr, struct descriptor *kind __attribute__ ((
     return status;
 
   switch (in_ptr->dtype) {
-  case DTYPE_BU:
-    start_operate(uint8_t) out[i] = in[i];
-    end_operate case DTYPE_WU:start_operate(uint16_t) out[i] = in[i];
-    end_operate case DTYPE_LU:start_operate(uint32_t) out[i] = in[i];
-    end_operate case DTYPE_QU:start_operate(uint64_t) out[i] = in[i];
-    end_operate case DTYPE_OU:start_operate(uInt128)  copy128;
-    end_operate case DTYPE_B:start_operate(int8_t) out[i] = in[i];
-    end_operate case DTYPE_W:start_operate(int16_t) out[i] = in[i];
-    end_operate case DTYPE_L:start_operate(int32_t) out[i] = in[i];
-    end_operate case DTYPE_Q:start_operate(int64_t) out[i] = in[i];
-    end_operate case DTYPE_O:start_operate(Int128)  copy128;
-    end_operate case DTYPE_F:start_operate1(float, int) NintFloat(DTYPE_F);
-    end_operate case DTYPE_FS:start_operate1(float, int) NintFloat(DTYPE_FS);
-    end_operate case DTYPE_G:start_operate1(double, int) NintFloat(DTYPE_G);
-    end_operate case DTYPE_D:start_operate1(double, int) NintFloat(DTYPE_D);
-    end_operate case DTYPE_FT:start_operate1(double, int) NintFloat(DTYPE_FT);
-    end_operate case DTYPE_FC:start_operate1(float, int) NintComplex(DTYPE_F);
-    end_operate case DTYPE_FSC:start_operate1(float, int) NintComplex(DTYPE_FS);
-    end_operate case DTYPE_GC:start_operate1(double, int) NintComplex(DTYPE_G);
-    end_operate case DTYPE_DC:start_operate1(double, int) NintComplex(DTYPE_D);
+                case DTYPE_BU: start_operate(  uint8_t) out[i] = in[i];
+    end_operate case DTYPE_WU: start_operate( uint16_t) out[i] = in[i];
+    end_operate case DTYPE_LU: start_operate( uint32_t) out[i] = in[i];
+    end_operate case DTYPE_QU: start_operate( uint64_t) out[i] = in[i];
+    end_operate case DTYPE_OU: start_operate(uint128_t) memcpy(&out[i],&in[i],sizeof(uint128_t));
+    end_operate case DTYPE_B:  start_operate(   int8_t) out[i] = in[i];
+    end_operate case DTYPE_W:  start_operate(  int16_t) out[i] = in[i];
+    end_operate case DTYPE_L:  start_operate(  int32_t) out[i] = in[i];
+    end_operate case DTYPE_Q:  start_operate(  int64_t) out[i] = in[i];
+    end_operate case DTYPE_O:  start_operate( int128_t) memcpy(&out[i],&in[i],sizeof(int128_t));
+    end_operate case DTYPE_F:  start_operate1(float,  int) NintFloat(DTYPE_F);
+    end_operate case DTYPE_FS: start_operate1(float,  int) NintFloat(DTYPE_FS);
+    end_operate case DTYPE_G:  start_operate1(double, int) NintFloat(DTYPE_G);
+    end_operate case DTYPE_D:  start_operate1(double, int) NintFloat(DTYPE_D);
+    end_operate case DTYPE_FT: start_operate1(double, int) NintFloat(DTYPE_FT);
+    end_operate case DTYPE_FC: start_operate1(float,  int) NintComplex(DTYPE_F);
+    end_operate case DTYPE_FSC:start_operate1(float,  int) NintComplex(DTYPE_FS);
+    end_operate case DTYPE_GC: start_operate1(double, int) NintComplex(DTYPE_G);
+    end_operate case DTYPE_DC: start_operate1(double, int) NintComplex(DTYPE_D);
     end_operate case DTYPE_FTC:start_operate1(double, int) NintComplex(DTYPE_FT);
     end_operate default:status = TdiINVDTYDSC;
   }
@@ -572,25 +519,25 @@ int Tdi3UnaryMinus(struct descriptor *in_ptr, struct descriptor *out_ptr)
     return status;
 
   switch (in_ptr->dtype) {
-  case DTYPE_BU:              start_operate( int8_t) out[i] = -in[i];
-    end_operate case DTYPE_WU:start_operate(int16_t) out[i] = -in[i];
-    end_operate case DTYPE_LU:start_operate(int32_t) out[i] = -in[i];
-    end_operate case DTYPE_QU:start_operate(int64_t) out[i] = -in[i];
-    end_operate case DTYPE_OU:start_operate(uInt128) TdiSubtractOctaword(&octazero, &in[i], &out[i]);
-    end_operate case DTYPE_B:start_operate( int8_t) out[i] = -in[i];
-    end_operate case DTYPE_W:start_operate(int16_t) out[i] = -in[i];
-    end_operate case DTYPE_L:start_operate(int32_t) out[i] = -in[i];
-    end_operate case DTYPE_Q:start_operate(int64_t) out[i] = -in[i];
-    end_operate case DTYPE_O:start_operate(Int128) TdiSubtractOctaword(&octazero, &in[i], &out[i]);
-    end_operate case DTYPE_F:start_operate(float)  UnaryMinusFloat(DTYPE_F)
-    end_operate	case DTYPE_FS:start_operate(float) UnaryMinusFloat(DTYPE_FS)
-    end_operate case DTYPE_G:start_operate(double) UnaryMinusFloat(DTYPE_G)
-    end_operate case DTYPE_D:start_operate(double) UnaryMinusFloat(DTYPE_D)
-    end_operate case DTYPE_FT:start_operate(double) UnaryMinusFloat(DTYPE_FT)
-    end_operate case DTYPE_FC:start_operate(float) UnaryMinusComplex(DTYPE_F)
-    end_operate case DTYPE_FSC:start_operate(float) UnaryMinusComplex(DTYPE_FS)
-    end_operate case DTYPE_GC:start_operate(double) UnaryMinusComplex(DTYPE_G)
-    end_operate case DTYPE_DC:start_operate(double) UnaryMinusComplex(DTYPE_D)
+                case DTYPE_BU: start_operate(  int8_t) out[i] = -in[i];
+    end_operate case DTYPE_WU: start_operate( int16_t) out[i] = -in[i];
+    end_operate case DTYPE_LU: start_operate( int32_t) out[i] = -in[i];
+    end_operate case DTYPE_QU: start_operate( int64_t) out[i] = -in[i];
+    end_operate case DTYPE_OU: start_operate(int128_t) int128_minus((int128_t*)&in[i], &out[i]);
+    end_operate case DTYPE_B:  start_operate(  int8_t) out[i] = -in[i];
+    end_operate case DTYPE_W:  start_operate( int16_t) out[i] = -in[i];
+    end_operate case DTYPE_L:  start_operate( int32_t) out[i] = -in[i];
+    end_operate case DTYPE_Q:  start_operate( int64_t) out[i] = -in[i];
+    end_operate case DTYPE_O:  start_operate(int128_t) int128_minus((int128_t*)&in[i], &out[i]);
+    end_operate case DTYPE_F:  start_operate(float)  UnaryMinusFloat(DTYPE_F)
+    end_operate	case DTYPE_FS: start_operate(float)  UnaryMinusFloat(DTYPE_FS)
+    end_operate case DTYPE_G:  start_operate(double) UnaryMinusFloat(DTYPE_G)
+    end_operate case DTYPE_D:  start_operate(double) UnaryMinusFloat(DTYPE_D)
+    end_operate case DTYPE_FT: start_operate(double) UnaryMinusFloat(DTYPE_FT)
+    end_operate case DTYPE_FC: start_operate(float)  UnaryMinusComplex(DTYPE_F)
+    end_operate case DTYPE_FSC:start_operate(float)  UnaryMinusComplex(DTYPE_FS)
+    end_operate case DTYPE_GC: start_operate(double) UnaryMinusComplex(DTYPE_G)
+    end_operate case DTYPE_DC: start_operate(double) UnaryMinusComplex(DTYPE_D)
     end_operate case DTYPE_FTC:start_operate(double) UnaryMinusComplex(DTYPE_FT)
     end_operate default:status = TdiINVDTYDSC;
   }

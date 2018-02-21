@@ -66,8 +66,7 @@ class Tests(TestCase):
     def ArrayDimensionOrder(self):
       def test():
         from MDSplus import Tree,Float32,Float32Array,Int16Array
-        from numpy import int16,zeros
-        from random import randint
+        from numpy import zeros
         with Tree(self.tree,self.shot,'NEW') as ptree:
             node = ptree.addNode('IMM')
             ptree.write()
@@ -83,7 +82,7 @@ class Tests(TestCase):
         shape     = segment.getShape()
         node.makeSegment(startTime, endTime, dim, segment)
         retShape  = node.getShape()
-        self.assertEquals(shape,retShape)
+        self.assertEqual(shape,retShape)
       test()
       self.cleanup()
 
@@ -165,7 +164,7 @@ class Tests(TestCase):
         ### putSegment ###
         node = ptree.PS
         seglen = 4
-        segbuf = zeros((int(length/seglen),width),int32)
+        segbuf = zeros((length//seglen,width),int32)
         for i in range(0,length,seglen):
             node.beginSegment(dim[i]-1,dim[i+seglen-1]+1,ndim[i:i+seglen],segbuf)
             for j in range(seglen):
@@ -259,7 +258,7 @@ class Tests(TestCase):
         self.assertTrue(sig.dim_of().tolist(),(arange(0,length,dtype=int64)*int(1e9/clk)+trg).tolist())
         self.assertTrue((abs(sig.data()-(ones(length,dtype=int16)*slp+off))<1e-5).all(),"Stored data does not match expected array")
         trig.record = 0
-        for i in range(int(length/seglen)):
+        for i in range(length//seglen):
             dim = raw.getSegmentDim(i)
             raw.updateSegment(dim.data()[0],dim.data()[-1],dim,i)
         self.assertEqual(str(raw.getSegment(0)),"Build_Signal(Word([1,1,1,1,1,1,1,1,1,1]), *, Build_Dim(Build_Window(0Q, 9Q, TRG), * : * : 1000000000Q / CLK))")
@@ -268,7 +267,7 @@ class Tests(TestCase):
         ptree.compressDatafile() # this will break the functionality of updateSegment
         ptree.open()
         trig.record = 0
-        for i in range(int(length/seglen)):
+        for i in range(length//seglen):
             raw.updateSegment(i*seglen,i*seglen-1,None,i)
         self.assertEqual(str(raw.getSegment(0)),"Build_Signal(Word([1,1,1,1,1,1,1,1,1,1]), *, Build_Dim(Build_Window(0Q, 9Q, TRG), * : * : 1000000000Q / CLK))")
         self.assertTrue(sig.dim_of().tolist(),(arange(0,length,dtype=int64)*int(1e9/clk)).tolist())
@@ -277,9 +276,9 @@ class Tests(TestCase):
 
     def TimeContext(self):
       def test():
-        from MDSplus import Tree,Int64,Int64Array,Int32Array,tdi,tcl
+        from MDSplus import Tree,Int64,Int64Array,Int32Array,tdi
         #Tree.setTimeContext() # test initPinoDb
-        #self.assertEquals(Tree.getTimeContext(),(None,None,None))
+        #self.assertEqual(Tree.getTimeContext(),(None,None,None))
         with Tree(self.tree,self.shot,'NEW') as ptree:
             node = ptree.addNode('S')
             ptree.write()
@@ -294,28 +293,28 @@ class Tests(TestCase):
         self.assertEqual(node.record.data().tolist(),list(range(-9,9)))
         node.tree.setTimeContext(Int64(30),Int64(70),Int64(20))
 #        Tree.setTimeContext(1,2,3) # test privacy to Tree
-        self.assertEquals(node.tree.getTimeContext(),(30,70,20))
- #       self.assertEquals(Tree.getTimeContext(),(1,2,3))
+        self.assertEqual(node.tree.getTimeContext(),(30,70,20))
+ #       self.assertEqual(Tree.getTimeContext(),(1,2,3))
         self.assertEqual(node.record.data().tolist(),[3,5]+[6])  # delta is applied per segment
         node.tree.setTimeContext()
 
-        self.assertEquals(node.tree.getTimeContext(),(None,None,None))
+        self.assertEqual(node.tree.getTimeContext(),(None,None,None))
         self.assertEqual(node.record.data().tolist(),list(range(-9,9)))
 
-        #self.assertEquals(Tree.getTimeContext(),(1,2,3))
+        #self.assertEqual(Tree.getTimeContext(),(1,2,3))
         tdi('treeopen($,$)',self.tree,self.shot)
         Tree.setTimeContext(1,2,3) # test privacy to Tree
-        self.assertEquals(Tree.getTimeContext(),(1,2,3))
+        self.assertEqual(Tree.getTimeContext(),(1,2,3))
         tdi('treeopennew($,$)',self.tree,self.shot+1)
-        self.assertEquals(Tree.getTimeContext(),(None,None,None))
+        self.assertEqual(Tree.getTimeContext(),(None,None,None))
         Tree.setTimeContext(2,3,4) # test privacy to Tree
-        self.assertEquals(Tree.getTimeContext(),(2,3,4))
+        self.assertEqual(Tree.getTimeContext(),(2,3,4))
         tdi('treeopen($,$)',self.tree,self.shot)
-        self.assertEquals(Tree.getTimeContext(),(1,2,3))
+        self.assertEqual(Tree.getTimeContext(),(1,2,3))
         tdi('treeclose()')
-        self.assertEquals(Tree.getTimeContext(),(2,3,4))
+        self.assertEqual(Tree.getTimeContext(),(2,3,4))
         tdi('treeclose()',self.tree,self.shot)
-        self.assertEquals(Tree.getTimeContext(),(1,2,3))
+        self.assertEqual(Tree.getTimeContext(),(1,2,3))
       test()
       self.cleanup()
 

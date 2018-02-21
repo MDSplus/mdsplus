@@ -656,6 +656,7 @@ RELEASE_RELEASE
 RELEASE_MINOR
 RELEASE_MAJOR
 NEED_SEMUN
+DEF_PYLIB
 PYTHON_INCLUDE_DIR
 MOTIF_LD_LDARC
 MOTIF_LD_LDSHARE
@@ -8021,6 +8022,7 @@ then
 else
   MAKEFLAG_J="-j -l 1"
 fi
+DEF_PYLIB=$(ldd $(which python) | grep libpython | awk '{print $3}')
 MAKEFLAG_O="$(if ${MAKE:=make} -v -O&>/dev/null; then echo -O; fi)"
 MAKEUIDDIR="\$(top_builddir)/uid/"
 MAKESHLIBDIR="\$(top_builddir)/lib/"
@@ -14822,10 +14824,13 @@ fi
 
 
       PYTHONHOME="$(eval winepath -w /python27 2>/dev/null)"
-	  as_fn_append TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
-	  as_fn_append TESTS_ENVIRONMENT "WINEDEBUG=-all "
-	  as_fn_append TESTS_ENVIRONMENT "MDS_PATH='$(eval winepath -w ${srcdir}/tdi 2>/dev/null)' "
-	  as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR='$(eval winepath -w ${srcdir} 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
+      as_fn_append TESTS_ENVIRONMENT "WINEDEBUG=-all "
+      as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR='$(eval winepath -w ${srcdir} 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "MDS_PATH='$(eval winepath -w ${srcdir}/tdi 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "MDS_PYDEVICE_PATH='$(eval winepath -w ${srcdir}/pydevices 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "main_path='.;$(eval winepath -w ${srcdir}/trees 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "subtree_path='.;$(eval winepath -w ${srcdir}/trees/subtree 2>/dev/null)' "
       if test "x$WINEARCH" = xwin64; then :
   # WINEARCH win64
 		 as_fn_append WINEPATH "${PYTHONHOME}"
@@ -14876,8 +14881,12 @@ fi
    as_fn_append TESTS_ENVIRONMENT "PATH=${MAKEBINDIR}:\${PATH} "
    as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
    as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
+   as_fn_append TESTS_ENVIRONMENT "MDS_PYDEVICE_PATH=\$(abs_top_srcdir)/pydevices "
+   as_fn_append TESTS_ENVIRONMENT "main_path='.;\$(abs_top_srcdir)/trees' "
+   as_fn_append TESTS_ENVIRONMENT "subtree_path='.;\$(abs_top_srcdir)/trees/subtree' "
    as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
-   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes"
+   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes "
+   as_fn_append TESTS_ENVIRONMENT "PyLib=$(if test -z $PyLib; then echo ${DEF_PYLIB}; else echo $PyLib; fi) "
    as_fn_append PY_LOG_COMPILER "${PYTHON} -B \$(top_srcdir)/testing/testing.py"
   ;; #(
   #
@@ -14890,7 +14899,6 @@ fi
   *) :
      ;;
 esac
-
 # MACOS: add --dsymutil=yes to valgrind
 
 # Set ENABLE_TESTS
@@ -17157,11 +17165,12 @@ fi
 
 
 
+
 ac_config_headers="$ac_config_headers include/mdsplus/mdsconfig.h"
 
 
 
-ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javatraverser2/Makefile javatraverser2/java/mds/mdslib/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdsdcl/mdsdcl_show_version.c mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/_version.py mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/testing/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile pydevices/MitDevices/_version.py pydevices/RfxDevices/_version.py pydevices/W7xDevices/_version.py remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile treeshr/testing/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
+ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javatraverser2/Makefile javatraverser2/java/mds/mdslib/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdsdcl/mdsdcl_show_version.c mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/_version.py mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/testing/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile pydevices/MitDevices/_version.py pydevices/RfxDevices/_version.py pydevices/W7xDevices/_version.py remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile tditest/testing/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile treeshr/testing/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -18078,6 +18087,7 @@ do
     "tdishr/testing/Makefile") CONFIG_FILES="$CONFIG_FILES tdishr/testing/Makefile" ;;
     "tdic/Makefile") CONFIG_FILES="$CONFIG_FILES tdic/Makefile" ;;
     "tditest/Makefile") CONFIG_FILES="$CONFIG_FILES tditest/Makefile" ;;
+    "tditest/testing/Makefile") CONFIG_FILES="$CONFIG_FILES tditest/testing/Makefile" ;;
     "testing/Makefile") CONFIG_FILES="$CONFIG_FILES testing/Makefile" ;;
     "testing/backends/check/Makefile") CONFIG_FILES="$CONFIG_FILES testing/backends/check/Makefile" ;;
     "testing/selftest/Makefile") CONFIG_FILES="$CONFIG_FILES testing/selftest/Makefile" ;;

@@ -334,10 +334,10 @@ OPC (	Scan,	SCAN ,		Same,	Ttb,		Scan,	T,T,SUBSCRIPT,SUBSCRIPT,2,3,	OK	)/*;f9	(st
 OPC (	Fseek,	FSEEK ,		Fseek,	undef,		undef,		L,L,	L,L,	1,3,	OK+U	)/*;%cc	(unit,[offset],[origin])*/
 OPC (	SetExponent,	SET_EXPONENT ,	Same,	Long2,		SetExponent,	F,HC,	F,HC,	2,2,	OK	)/*;f9	(x,i)			*/
 OPC (	SetRange,	SET_RANGE ,	SetRange, undef,	undef,		XX,YY,	XX,YY,	2,1+MAXDIM,OK+I	)/*;%	(range...,name)		*/
-OPC (	Ishft,	ISHFT ,		Same,	Shft,		Ishft,		BU,Q,	BU,Q,	2,2,	OK	)/*;f9	(a,shift)		*/
-OPC (	Ishftc,	ISHFTC ,		Same,	Shft,		Ishftc,		BU,Q,	BU,Q,	3,3,	OK	)/*;f9	(a,shift,size)		*/
-OPC (	ShiftLeft,	SHIFT_LEFT ,	Same,	Shft,		ShiftLeft,	BU,Q,	BU,Q,	2,2,	SHIFT+S	)/*;%cc	i<<j			*/
-OPC (	ShiftRight,	SHIFT_RIGHT ,	Same,	Shft,		ShiftRight,	BU,Q,	BU,Q,	2,2,	SHIFT+S	)/*;%cc	i>>j sign=signed	*/
+OPC (	Ishft,	ISHFT ,		Same,	Shft,		Ishft,		BU,O,	BU,O,	2,2,	OK	)/*;f9	(a,shift)		*/
+OPC (	Ishftc,	ISHFTC ,		Same,	Shft,		Ishftc,		BU,O,	BU,O,	3,3,	OK	)/*;f9	(a,shift,size)		*/
+OPC (	ShiftLeft,	SHIFT_LEFT ,	Same,	Shft,		ShiftLeft,	BU,O,	BU,O,	2,2,	SHIFT+S	)/*;%cc	i<<j			*/
+OPC (	ShiftRight,	SHIFT_RIGHT ,	Same,	Shft,		ShiftRight,	BU,O,	BU,O,	2,2,	SHIFT+S	)/*;%cc	i>>j sign=signed	*/
 OPC (	Sign,	SIGN ,		Same,	Sign,		Sign,		BU,HC,	BU,HC,	2,2,	OK	)/*;f9	(a,b)			*/
 OPC (	Signed,	SIGNED ,		Same,	Keep,		undef,		B,O,	B,O,	1,1,	CAST+N+I )/*;%	(a)			*/
 OPC (	Sin,	SIN ,		Same,	NoHc,		Sin,		F,HC,	F,HC,	1,1,	OK	)/*;f9	(x) 			*/

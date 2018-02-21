@@ -47,7 +47,7 @@ static char *getExpression(FILE *f_in, char *command) {
       if (ans[strlen(ans)-1]=='\n')
 	ans[strlen(ans)-1]='\0';
       ans=strdup(ans);
-    }	
+    }
   }
   if (ans && strlen(ans) > 0 && ans[strlen(ans)-1] == '\\' ) {
     ans[strlen(ans)-1]='\0';
@@ -62,11 +62,11 @@ static char *getExpression(FILE *f_in, char *command) {
   }
   return ans;
 }
-  
+
 int main(int argc, char **argv)
 {
   FILE *f_in = NULL;
-  int status;
+  int status = 1;
   static struct descriptor expr_dsc = { 0, DTYPE_T, CLASS_S, 0};
   static EMPTYXD(ans);
   static EMPTYXD(output_unit);
@@ -78,10 +78,9 @@ int main(int argc, char **argv)
     f_in = fopen(argv[1], "r");
     if (f_in == (FILE *) 0) {
       printf("Error opening input file /%s/\n", argv[1]);
-      return 0;
+      return 1;
     }
-  }
-  else {
+  } else {
 #ifdef _WIN32
     char *home = getenv("USERPROFILE");
     char *sep = "\\";
@@ -117,7 +116,7 @@ int main(int argc, char **argv)
       expr_dsc.length = strlen(command);
       expr_dsc.pointer = command;
       status = TdiExecute((struct descriptor *)&expr_dsc, &ans MDS_END_ARG);
-      if (status & 1) {
+      if (status&1) {
 	add_history(command);
 	TdiExecute((struct descriptor *)&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);
       }
@@ -136,7 +135,7 @@ int main(int argc, char **argv)
     write_history(history_file);
     free(history_file);
   }
-  return 1;
+  return !(status&1);
 }
 
 static void tdiputs(char *line)
@@ -149,4 +148,5 @@ static void tdiputs(char *line)
   if (line[line_d.length - 1] == '\n')
     line_d.length--;
   TdiExecute((struct descriptor *)&write_it, &line_d, &ans MDS_END_ARG);
+  fflush(stdout);
 }

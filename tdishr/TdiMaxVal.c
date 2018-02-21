@@ -79,6 +79,7 @@ extern int Tdi3Divide();
 #include <mdsdescrip.h>
 #include <string.h>
 #include <tdishr_messages.h>
+#include <int128.h>
 
 #define out(typ) fprintf(stderr,"%3s: (%3d,%3d,%3d)\n",#typ,a->cnt_##typ,a->stp_##typ,a->stpm_##typ)
 
@@ -86,74 +87,23 @@ extern int CvtConvertFloat();
 
 const int roprand = 0x8000;
 
-typedef struct {
-  int o0;
-  int o1;
-  int o2;
-  int o3;
-} int128_t;
-#define uint128_t int128_t
-
-
-#define ozero { 0, 0, 0, 0 };
-#define oone  { 1, 0, 0, 0 };
-#define uqmax 0xffffffffffffffff;
-#define uqmin 0x0000000000000000;
-#define qmax  0x7fffffffffffffff;
-#define qmin  0x8000000000000000;
-
-#define ozero { 0, 0, 0, 0 };
-#define oone  { 1, 0, 0, 0 };
-#define uomax { -1, -1, -1, -1 };
-#define uomin { 0, 0, 0, 0 };
-#define omax  { -1, -1, -1, 0x7fffffff };
-#define omin  { 0, 0, 0, 0x80000000 };
-
 #if DTYPE_NATIVE_DOUBLE == DTYPE_D
-#define HUGE 1.7E38
+#define DHUGE 1.7E38
 #elif DTYPE_NATIVE_DOUBLE == DTYPE_G
-#define HUGE 8.9E307
+#define DHUGE 8.9E307
 #else
-#define HUGE 1.7E308
+#define DHUGE 1.7E308
 #endif
 
-extern int TdiMultiplyOctaword();
-extern int TdiAddOctaword();
-extern int TdiSubtractOctaword();
-
-static void TdiDivO(const char *in1,const char *in2,char *out){
- //DESCRIPTOR_A(name, len, type, ptr, arsize)
- const DESCRIPTOR_A(i1, sizeof(int128_t), DTYPE_O, in1, sizeof(int128_t));
- const DESCRIPTOR_A(i2, sizeof(int128_t), DTYPE_O, in2, sizeof(int128_t));
-       DESCRIPTOR_A(o,  sizeof(int128_t), DTYPE_O, out, sizeof(int128_t));
- Tdi3Divide(&i1,&i2,&o);
-}
-
 int TdiLtO(unsigned int *in1, unsigned int *in2, int is_signed){
-  int j, longwords = 4, *i1, *i2;
-  for (j = longwords - 1; j >= 0; j--) {
-    if (!j || in1[j] != in2[j]) {
-      if (!is_signed || j != longwords - 1)
-	return (in1[j] < in2[j]);
-      i1 = (int *)(in1 + j);
-      i2 = (int *)(in2 + j);
-      return (*i1 < *i2);
-    }
-  }
-  return 0;
+  if (is_signed)
+    return int128_lt(( int128_t*)in1,( int128_t*)in2);
+  return  uint128_lt((uint128_t*)in1,(uint128_t*)in2);
 }
 int TdiGtO(unsigned int *in1, unsigned int *in2, int is_signed){
-  int j, longwords = 4, *i1, *i2;
-  for (j = longwords - 1; j >= 0; j--) {
-    if (!j || in1[j] != in2[j]) {
-      if (!is_signed || j != longwords - 1)
-	return (in1[j] > in2[j]);
-      i1 = (int *)(in1 + j);
-      i2 = (int *)(in2 + j);
-      return (*i1 > *i2);
-    }
-  }
-  return 0;
+  if (is_signed)
+    return int128_gt(( int128_t*)in1,( int128_t*)in2);
+  return  uint128_gt((uint128_t*)in1,(uint128_t*)in2);
 }
 
 typedef struct _args_t{
@@ -242,40 +192,42 @@ static void type##_avgdiv(const char* in, const int count, char* out){\
 #define BITOP(bit)   OP(int##bit); OP(uint##bit)
 #define BITAVG(bit) AVG(int##bit);AVG(uint##bit)
 BITOP(8);BITOP(16);BITOP(32);BITOP(64);
-BITAVG(8);BITAVG(16);BITAVG(32);BITAVG(64);
-/*
-static void int64_avgadd(const char* in, char* inout){
-  int64_t  buf[2] = {*(int64_t*)in,0};
-  TdiAddOctaword(buf,inout,inout);
+BITAVG(8);BITAVG(16);BITAVG(32);
+
+static inline void int64_avgadd(const char* in, char* buf){
+  int128_t a = {.low=*(uint64_t*)in,.high=*(int64_t*)in<0 ? -1 : 0 };
+  int128_add(&a,(int128_t*)buf,(int128_t*)buf);
 }
-static void int64_avgdiv(const char* in, const int count, char* out){
-  const uint32_t cnt[4] = {count,0,0,0};
-         int64_t res[2];
-  TdiDivO(in,(char*)cnt,(char*)res);
-  memcpy(out,&res,8);
+static inline void int64_avgdiv(const char* in, const int count, char* out){
+  int128_t cnt = {.low=count,.high=0};
+  int128_div((int128_t*)in,&cnt,&cnt);
+  memcpy(out,&cnt.low,sizeof(int64_t));
 }
-#define uint64_avgadd int64_avgadd
-#define uint64_avgdiv int64_avgdiv
-*/
+static inline void uint64_avgadd(const char* in, char* buf){
+  uint128_t a = {.low=*(uint64_t*)in,.high=0};
+  uint128_add(&a,(uint128_t*)buf,(uint128_t*)buf);
+}
+static inline void uint64_avgdiv(const char* in, const int count, char* out){
+  uint128_t cnt = {.low=count,.high=0};
+  uint128_div((uint128_t*)in,&cnt,&cnt);
+  memcpy(out,&cnt.low,sizeof(uint64_t));
+}
 
 /* missing versions for octaword */
-static int  int128_lt(const char* in1,const char* in2){return TdiLtO((unsigned int *)in1,(unsigned int *)in2,1);}
-static int uint128_lt(const char* in1,const char* in2){return TdiLtO((unsigned int *)in1,(unsigned int *)in2,0);}
-static int  int128_gt(const char* in1,const char* in2){return TdiGtO((unsigned int *)in1,(unsigned int *)in2,1);}
-static int uint128_gt(const char* in1,const char* in2){return TdiGtO((unsigned int *)in1,(unsigned int *)in2,0);}
-#define  int128_add (void (*)())TdiAddOctaword
-#define uint128_add (void (*)())TdiAddOctaword
-#define  int128_mul (void (*)())TdiMultiplyOctaword
-#define uint128_mul (void (*)())TdiMultiplyOctaword
-static void int128_avgadd(const char* in, char* buf){
-  TdiAddOctaword(in,buf,buf);
+static inline void int128_avgadd(const char* in, char* buf){
+  int128_add((int128_t*)in,(int128_t*)buf,(int128_t*)buf);
 }
-static void int128_avgdiv(const char* in, const int count, char* out){
-  const uint32_t cnt[4] = {count,0,0,0};
-  TdiDivO(in,(char*)cnt,out);
+static inline void int128_avgdiv(const char* in, const int count, char* out){
+  int128_t cnt = {.low=count,.high=0};
+  int128_div((int128_t*)in,&cnt,(int128_t*)out);
 }
-#define uint128_avgadd int128_avgadd
-#define uint128_avgdiv int128_avgdiv
+static inline void uint128_avgadd(const char* in, char* buf){
+  uint128_add((uint128_t*)in,(uint128_t*)buf,(uint128_t*)buf);
+}
+static inline void uint128_avgdiv(const char* in, const int count, char* out){
+  uint128_t cnt = {.low=count,.high=0};
+  uint128_div((uint128_t*)in,&cnt,(uint128_t*)out);
+}
 
 static inline void operateIloc(void* start,int testit(const char*,const char*),args_t*a) {
   char* result = malloc(a->length);
@@ -357,15 +309,15 @@ int Tdi3MaxLoc(struct descriptor *in, struct descriptor *mask,
   case DTYPE_WU: OperateIloc( uint16_t,          0, uint16_gt);break;
   case DTYPE_L:  OperateIloc(  int32_t, 0x80000000,  int32_gt);break;
   case DTYPE_LU: OperateIloc( uint32_t,          0, uint32_gt);break;
-  case DTYPE_Q:  OperateIloc(  int64_t,       qmin,  int64_gt);break;
+  case DTYPE_Q:  OperateIloc(  int64_t,  int64_min,  int64_gt);break;
   case DTYPE_QU: OperateIloc( uint64_t,          0, uint64_gt);break;
-  case DTYPE_O:  OperateIloc( int128_t,       omin, int128_gt);break;
-  case DTYPE_OU: OperateIloc(uint128_t,      uomin,uint128_gt);break;
-  case DTYPE_F:  OperateFloc(DTYPE_F, -HUGE, gt,&args);break;
-  case DTYPE_FS: OperateFloc(DTYPE_FS,-HUGE, gt,&args);break;
-  case DTYPE_G:  OperateFloc(DTYPE_G, -HUGE, gt,&args);break;
-  case DTYPE_D:  OperateFloc(DTYPE_D, -HUGE, gt,&args);break;
-  case DTYPE_FT: OperateFloc(DTYPE_FT,-HUGE, gt,&args);break;
+  case DTYPE_O:  OperateIloc( int128_t, int128_min,(void*)int128_gt);break;
+  case DTYPE_OU: OperateIloc(uint128_t,uint128_min,(void*)uint128_gt);break;
+  case DTYPE_F:  OperateFloc(DTYPE_F, -DHUGE, gt,&args);break;
+  case DTYPE_FS: OperateFloc(DTYPE_FS,-DHUGE, gt,&args);break;
+  case DTYPE_G:  OperateFloc(DTYPE_G, -DHUGE, gt,&args);break;
+  case DTYPE_D:  OperateFloc(DTYPE_D, -DHUGE, gt,&args);break;
+  case DTYPE_FT: OperateFloc(DTYPE_FT,-DHUGE, gt,&args);break;
   default:return TdiINVDTYDSC;
   }
   return 1;
@@ -383,15 +335,15 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
   case DTYPE_WU: {OperateIloc( uint16_t,         -1, uint16_lt);break;}
   case DTYPE_L:  {OperateIloc(  int32_t, 0x7fffffff,  int32_lt);break;}
   case DTYPE_LU: {OperateIloc( uint32_t,         -1, uint32_lt);break;}
-  case DTYPE_Q:  {OperateIloc(  int64_t,       qmax,  int64_lt);break;}
+  case DTYPE_Q:  {OperateIloc(  int64_t,  int64_max,  int64_lt);break;}
   case DTYPE_QU: {OperateIloc( uint64_t,         -1, uint64_lt);break;}
-  case DTYPE_O:  {OperateIloc( int128_t,       omax, int128_lt);break;}
-  case DTYPE_OU: {OperateIloc(uint128_t,      uomax,uint128_lt);break;}
-  case DTYPE_F:  {OperateFloc(DTYPE_F, -HUGE, lt,&args);break;}
-  case DTYPE_FS: {OperateFloc(DTYPE_FS,-HUGE, lt,&args);break;}
-  case DTYPE_G:  {OperateFloc(DTYPE_G, -HUGE, lt,&args);break;}
-  case DTYPE_D:  {OperateFloc(DTYPE_D, -HUGE, lt,&args);break;}
-  case DTYPE_FT: {OperateFloc(DTYPE_FT,-HUGE, lt,&args);break;}
+  case DTYPE_O:  {OperateIloc( int128_t, int128_max,(void*) int128_lt);break;}
+  case DTYPE_OU: {OperateIloc(uint128_t,uint128_max,(void*)uint128_lt);break;}
+  case DTYPE_F:  {OperateFloc(DTYPE_F,  DHUGE, lt,&args);break;}
+  case DTYPE_FS: {OperateFloc(DTYPE_FS, DHUGE, lt,&args);break;}
+  case DTYPE_G:  {OperateFloc(DTYPE_G,  DHUGE, lt,&args);break;}
+  case DTYPE_D:  {OperateFloc(DTYPE_D,  DHUGE, lt,&args);break;}
+  case DTYPE_FT: {OperateFloc(DTYPE_FT, DHUGE, lt,&args);break;}
   default:return TdiINVDTYDSC;
   }
   return 1;
@@ -472,15 +424,15 @@ int Tdi3MaxVal(struct descriptor *in, struct descriptor *mask,
   case DTYPE_WU: OperateIval( uint16_t,          0, uint16_gt);break;
   case DTYPE_L:  OperateIval(  int32_t, 0x80000000,  int32_gt);break;
   case DTYPE_LU: OperateIval( uint32_t,          0, uint32_gt);break;
-  case DTYPE_Q:  OperateIval(  int64_t,       qmin,  int64_gt);break;
+  case DTYPE_Q:  OperateIval(  int64_t,  int64_min,  int64_gt);break;
   case DTYPE_QU: OperateIval( uint64_t,          0, uint64_gt);break;
-  case DTYPE_O:  OperateIval( int128_t,       omin, int128_gt);break;
-  case DTYPE_OU: OperateIval(uint128_t,      uomin,uint128_gt);break;
-  case DTYPE_F:  OperateFval(DTYPE_F, -HUGE, gt,&args);break;
-  case DTYPE_FS: OperateFval(DTYPE_FS,-HUGE, gt,&args);break;
-  case DTYPE_G:  OperateFval(DTYPE_G, -HUGE, gt,&args);break;
-  case DTYPE_D:  OperateFval(DTYPE_D, -HUGE, gt,&args);break;
-  case DTYPE_FT: OperateFval(DTYPE_FT,-HUGE, gt,&args);break;
+  case DTYPE_O:  OperateIval( int128_t, int128_min,(void*) int128_gt);break;
+  case DTYPE_OU: OperateIval(uint128_t,uint128_min,(void*)uint128_gt);break;
+  case DTYPE_F:  OperateFval(DTYPE_F, -DHUGE, gt,&args);break;
+  case DTYPE_FS: OperateFval(DTYPE_FS,-DHUGE, gt,&args);break;
+  case DTYPE_G:  OperateFval(DTYPE_G, -DHUGE, gt,&args);break;
+  case DTYPE_D:  OperateFval(DTYPE_D, -DHUGE, gt,&args);break;
+  case DTYPE_FT: OperateFval(DTYPE_FT,-DHUGE, gt,&args);break;
   default:return TdiINVDTYDSC;
   }
   return 1;
@@ -498,15 +450,15 @@ int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
   case DTYPE_WU: OperateIval( uint16_t,         -1, uint16_lt);break;
   case DTYPE_L:  OperateIval(  int32_t, 0x7fffffff,  int32_lt);break;
   case DTYPE_LU: OperateIval( uint32_t,         -1, uint32_lt);break;
-  case DTYPE_Q:  OperateIval(  int64_t,       qmax,  int64_lt);break;
+  case DTYPE_Q:  OperateIval(  int64_t,  int64_max,  int64_lt);break;
   case DTYPE_QU: OperateIval( uint64_t,         -1, uint64_lt);break;
-  case DTYPE_O:  OperateIval( int128_t,       omax, int128_lt);break;
-  case DTYPE_OU: OperateIval(uint128_t,      uomax,uint128_lt);break;
-  case DTYPE_F:  OperateFval(DTYPE_F, -HUGE, lt,&args);break;
-  case DTYPE_FS: OperateFval(DTYPE_FS,-HUGE, lt,&args);break;
-  case DTYPE_G:  OperateFval(DTYPE_G, -HUGE, lt,&args);break;
-  case DTYPE_D:  OperateFval(DTYPE_D, -HUGE, lt,&args);break;
-  case DTYPE_FT: OperateFval(DTYPE_FT,-HUGE, lt,&args);break;
+  case DTYPE_O:  OperateIval( int128_t, int128_max,(void*) int128_lt);break;
+  case DTYPE_OU: OperateIval(uint128_t,uint128_max,(void*)uint128_lt);break;
+  case DTYPE_F:  OperateFval(DTYPE_F,  DHUGE, lt,&args);break;
+  case DTYPE_FS: OperateFval(DTYPE_FS, DHUGE, lt,&args);break;
+  case DTYPE_G:  OperateFval(DTYPE_G,  DHUGE, lt,&args);break;
+  case DTYPE_D:  OperateFval(DTYPE_D,  DHUGE, lt,&args);break;
+  case DTYPE_FT: OperateFval(DTYPE_FT, DHUGE, lt,&args);break;
   default:return TdiINVDTYDSC;
   }
   return 1;
@@ -602,10 +554,10 @@ int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
   case DTYPE_WU: OperateImean( 8, uint16_avgadd, uint16_avgdiv,&args);break;
   case DTYPE_L:  OperateImean( 8,  int32_avgadd,  int32_avgdiv,&args);break;
   case DTYPE_LU: OperateImean( 8, uint32_avgadd, uint32_avgdiv,&args);break;
-  case DTYPE_Q:  OperateImean(8 ,  int64_avgadd,  int64_avgdiv,&args);break;//TODO: use octaword as buffer
-  case DTYPE_QU: OperateImean(8 , uint64_avgadd, uint64_avgdiv,&args);break;
-  case DTYPE_O:  OperateImean(16, int128_avgadd, int128_avgdiv,&args);break;
-  case DTYPE_OU: OperateImean(16,uint128_avgadd,uint128_avgdiv,&args);break;
+  case DTYPE_Q:  OperateImean(16,  int64_avgadd,  int64_avgdiv,&args);break;//TODO: use octaword as buffer
+  case DTYPE_QU: OperateImean(16, uint64_avgadd, uint64_avgdiv,&args);break;
+  case DTYPE_O:  OperateImean(16, int128_avgadd,(void*) int128_avgdiv,&args);break;
+  case DTYPE_OU: OperateImean(16,uint128_avgadd,(void*)uint128_avgdiv,&args);break;
   case DTYPE_F:  OperateFmean(DTYPE_F    ,&args);break;
   case DTYPE_FS: OperateFmean(DTYPE_FS   ,&args);break;
   case DTYPE_G:  OperateFmean(DTYPE_G    ,&args);break;
@@ -701,10 +653,10 @@ int Tdi3Product(struct descriptor *in, struct descriptor *mask,
   case DTYPE_LU: OperateIfun(1,  uint32_mul,&args);break;
   case DTYPE_Q:  OperateIfun(1,   int64_mul,&args);break;
   case DTYPE_QU: OperateIfun(1,  uint64_mul,&args);break;
-  case DTYPE_O:  OperateIfun(1,  int128_mul,&args);break;
-  case DTYPE_OU: OperateIfun(1, uint128_mul,&args);break;
+  case DTYPE_O:  OperateIfun(1,(void*) int128_mul,&args);break;
+  case DTYPE_OU: OperateIfun(1,(void*)uint128_mul,&args);break;
   case DTYPE_F:  OperateFfun(1,DTYPE_F ,mul,&args);break;
-  case DTYPE_FS: OperateFfun(1,DTYPE_FT,mul,&args);break;
+  case DTYPE_FS: OperateFfun(1,DTYPE_FS,mul,&args);break;
   case DTYPE_G:  OperateFfun(1,DTYPE_G ,mul,&args);break;
   case DTYPE_D:  OperateFfun(1,DTYPE_D ,mul,&args);break;
   case DTYPE_FT: OperateFfun(1,DTYPE_FT,mul,&args);break;
@@ -732,10 +684,10 @@ int Tdi3Sum(struct descriptor *in, struct descriptor *mask,
   case DTYPE_LU: OperateIfun(0,  uint32_add,&args);break;
   case DTYPE_Q:  OperateIfun(0,   int64_add,&args);break;
   case DTYPE_QU: OperateIfun(0,  uint64_add,&args);break;
-  case DTYPE_O:  OperateIfun(0,  int128_add,&args);break;
-  case DTYPE_OU: OperateIfun(0, uint128_add,&args);break;
+  case DTYPE_O:  OperateIfun(0,(void*) int128_add,&args);break;
+  case DTYPE_OU: OperateIfun(0,(void*)uint128_add,&args);break;
   case DTYPE_F:  OperateFfun(0,DTYPE_F ,add,&args);break;
-  case DTYPE_FS: OperateFfun(0,DTYPE_FT,add,&args);break;
+  case DTYPE_FS: OperateFfun(0,DTYPE_FS,add,&args);break;
   case DTYPE_G:  OperateFfun(0,DTYPE_G ,add,&args);break;
   case DTYPE_D:  OperateFfun(0,DTYPE_D ,add,&args);break;
   case DTYPE_FT: OperateFfun(0,DTYPE_FT,add,&args);break;
@@ -829,8 +781,8 @@ int Tdi3Accumulate(struct descriptor *in, struct descriptor *mask,
     case DTYPE_LU: OperateIaccum( uint32_add,&args);break;
     case DTYPE_Q:  OperateIaccum(  int64_add,&args);break;
     case DTYPE_QU: OperateIaccum( uint64_add,&args);break;
-    case DTYPE_O:  OperateIaccum( int128_add,&args);break;
-    case DTYPE_OU: OperateIaccum(uint128_add,&args);break;
+    case DTYPE_O:  OperateIaccum((void*) int128_add,&args);break;
+    case DTYPE_OU: OperateIaccum((void*)uint128_add,&args);break;
     case DTYPE_F:  OperateFaccum(DTYPE_F    ,&args);break;
     case DTYPE_FS: OperateFaccum(DTYPE_FS   ,&args);break;
     case DTYPE_G:  OperateFaccum(DTYPE_G    ,&args);break;

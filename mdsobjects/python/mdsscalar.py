@@ -124,7 +124,9 @@ class Scalar(_dat.Data):
 
     def __getattr__(self,name):
         if name.startswith("__array"):
-          raise AttributeError
+            raise AttributeError
+        try: return super(Scalar,self).__getattr__(name)
+        except AttributeError: pass
         return self.value.__getattribute__(name)
 
     @property

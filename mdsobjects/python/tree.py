@@ -225,7 +225,7 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
     def pushTree(cls,tree):
         private = Tree.usingPrivateCtx()
         if not private:
-            if tree is None:       
+            if tree is None:
                 cls.lock.acquire()
             else:
                 Tree.usePrivateCtx()
@@ -1447,12 +1447,12 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         #    return Tree()
         try:   return _getNodeByAttr(self,name)
         except _exc.TreeNNF: pass
-        try:   return super(TreeNode,self).__getattribute__(name)
+        try:   return super(TreeNode,self).__getattr__(name)
         except AttributeError: pass
         #if name=='length':
         #    raise AttributeError
         #if self.length>0:
-        #    return self.record.__getattribute__(name)
+        #    return self.record.__getattr__(name)
         raise AttributeError('No such attribute: '+name)
 
     def __str__(self):
@@ -1723,7 +1723,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         """
         xd=_dsc.Descriptor_xd()
         _TreeCtx.pushTree(self.tree)
-        try:    
+        try:
             status=_TreeShr.TreeGetRecord(self._nid,xd.ref)
         finally:
             _TreeCtx.popTree()

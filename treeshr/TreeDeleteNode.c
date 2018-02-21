@@ -96,7 +96,8 @@ int _TreeDeleteNodeInitialize(void *dbid, int nidin, int *count, int reset)
       if (count)
 	*count = 0;
     } else {
-      memcpy(dblist->delete_list, old_list, (size_t)((dblist->delete_list_vm < vm_needed) ? dblist->delete_list_vm : vm_needed));
+      if (old_list)
+        memcpy(dblist->delete_list, old_list, (size_t)((dblist->delete_list_vm < vm_needed) ? dblist->delete_list_vm : vm_needed));
       if (vm_needed > dblist->delete_list_vm)
 	memset(dblist->delete_list + dblist->delete_list_vm, 0, (size_t)(vm_needed - dblist->delete_list_vm));
     }
@@ -188,6 +189,8 @@ void TreeDeleteNodeExecute( )
 extern void _TreeDeleteNodeExecute(void *dbid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+  if (!IS_OPEN_FOR_EDIT(dblist))
+    return;
   NID nid;
   NODE *node;
   NODE *parent;

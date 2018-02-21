@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -61,7 +61,7 @@ class testing(object):
             try:
                 __import__(name, fromlist=mod.globalnames.keys(),level=1)
                 sys.stdout.write('.')
-            except ImportError, e:
+            except ImportError as e:
                 print("ERROR IMPORTING %s: " % name + "  --  "+e.message)
 
     def check_loadmethod(self, file_name, class_name, method_name ):
@@ -80,9 +80,9 @@ class testing(object):
             f.write("ok 1 - " + module_name + " # SKIP " + message + "\n")
             f.write("1..1")
             f.close
-	if 'log' in self.test_format:
-	    print(message)
-        sys.exit(77)
+        if 'log' in self.test_format:
+            print(message)
+            sys.exit(77)
 
     def run_tap(self, module):
         import tap,unittest
@@ -98,22 +98,19 @@ class testing(object):
         nose_aux_args = ['-d','-s','-v']
         res = 0
 
-	if 'tap' in f:
-	    try:
-		from tap.plugins._nose import TAP
-		nose.run(argv=[ sys.argv[1],'', '--with-tap'] + nose_aux_args)
-	    except:
-		f.remove('tap')
-	if 'xml' in f:
-	    try:
-		from nose.plugins.xunit import Xunit
-	    except ImportError:
-		f.remove('xml')
-
+        if 'tap' in f:
+            try:
+                from tap.plugins._nose import TAP #analysis:ignore
+                nose.run(argv=[ sys.argv[1],'', '--with-tap'] + nose_aux_args)
+            except:
+                f.remove('tap')
+        if 'xml' in f:
+            try:
+                from nose.plugins.xunit import Xunit #analysis:ignore
+            except ImportError:
+                f.remove('xml')
         if len(f) > 1:
             if 'log' in f and 'tap' in f and 'xml' in f:
-                from tap.plugins._nose import TAP
-                from nose.plugins.xunit import Xunit
                 res = nose.run(argv=[ sys.argv[1], module_name,
                 '--with-tap','--tap-combined','--tap-out=.'+os.path.basename(sys.argv[1]),
                 '--tap-format="{method_name} {short_description}"',
@@ -122,7 +119,6 @@ class testing(object):
                 shutil.rmtree('.'+os.path.basename(sys.argv[1]))
 
             elif 'log' in f and 'tap' in f:
-                from tap.plugins._nose import TAP
                 res = nose.run(argv=[ sys.argv[1], module_name,
                 '--with-tap','--tap-combined','--tap-out=.'+os.path.basename(sys.argv[1]),
                 '--tap-format="{method_name} {short_description}"'] + nose_aux_args)
@@ -130,7 +126,6 @@ class testing(object):
                 shutil.rmtree('.'+os.path.basename(sys.argv[1]))
 
             elif 'log' in f and 'xml' in f:
-                from nose.plugins.xunit import Xunit
                 res = nose.run(argv=[ sys.argv[1], module_name,
                 '--with-xunit','--xunit-file='+self.xml_file] + nose_aux_args)
         elif len(f) > 0:
@@ -145,9 +140,9 @@ class testing(object):
                 '--with-xunit','--xunit-file='+self.xml_file] + nose_aux_args)
             else:
                 res = nose.run(argv=[ sys.argv[1], module_name] + nose_aux_args)
-	else:
+        else:
             raise IndexError
-	return res
+        return res
 
 ts = testing()
 def check_arch(file_name):
@@ -181,6 +176,5 @@ if __name__ == '__main__':
     except:
         import traceback
         traceback.print_exc()
-	ts.skip_test(sys.argv[1],"unrecoverable error from nose "+str(sys.exc_info()[0]))
-
+    ts.skip_test(sys.argv[1],"unrecoverable error from nose "+str(sys.exc_info()[0]))
 

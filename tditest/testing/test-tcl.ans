@@ -1,0 +1,259 @@
+Tcl('abort server gub')
+Error: Problem aborting server 'gub'
+Error message was: %SERVER-E-PATH_DOWN, Path to server lost
+mdsdcl: --> failed on line 'abort server gub'
+Server 'gub' unknown
+266436674
+Tcl('set command tcl')
+1
+Tcl('set tree main')
+265388041
+Tcl('dir')
+
+\MAIN::TOP
+
+ :MEMBER       :NUMERIC      :SIGNAL       :TEXT        
+
+  CHILD         SUBTREE     
+
+Total of 6 nodes.
+1
+Tcl('dir/tag')
+
+Tag listing for *::*
+
+\MAIN::TOP
+\MAIN::MEMBER_TAG
+\SUBTREE::TOP
+\SUBTREE::A12_INPUT_1
+\SUBTREE::A12_INPUT_2
+\SUBTREE::A12_INPUT_3
+\SUBTREE::A12_INPUT_4
+\SUBTREE::A12_INPUT_6
+Total of 8 tags
+1
+Tcl('dir/tag *sub*::*')
+
+Tag listing for *sub*::*
+
+\SUBTREE::TOP
+\SUBTREE::A12_INPUT_1
+\SUBTREE::A12_INPUT_2
+\SUBTREE::A12_INPUT_3
+\SUBTREE::A12_INPUT_4
+\SUBTREE::A12_INPUT_6
+Total of 6 tags
+1
+Tcl('set default .subtree')
+265388041
+Tcl('set def \\main::top')
+265388041
+Tcl('dir A*/FULL')
+
+Total of 0 nodes.
+1
+Tcl('close')
+265388041
+Tcl('edit/new main/shot=1')
+265388041
+Tcl('add node any/usage=any')
+265388041
+Tcl('add node .child/usage=structure')
+265388041
+Tcl('add node action/usage=action')
+265388041
+Tcl('add node device/usage=device')
+265388041
+Tcl('add node dispatch/usage=dispatch')
+265388041
+Tcl('add node numeric/usage=numeric')
+265388041
+Tcl('add node signal/usage=signal')
+265388041
+Tcl('add node task/usage=task')
+265388041
+Tcl('add node text/usage=text')
+265388041
+Tcl('add node window/usage=window')
+265388041
+Tcl('add node axis/usage=axis')
+265388041
+Tcl('add node .subtree/usage=subtree')
+265388041
+Tcl('add node comp_data/usage=compound_data')
+265388041
+Tcl('add tag any any_tag1')
+265388041
+Tcl('add tag .child child_tag')
+265388041
+Tcl('add tag any any_tag2')
+265388041
+Tcl('add tag any any_tag3')
+265388041
+Tcl('put text """This is a test"""')
+265388041
+Tcl('write')
+265388041
+Tcl('close')
+265388041
+Tcl('edit main/shot=1')
+265388041
+Tcl('close')
+265388041
+Tcl('set tree main/shot=1')
+265388067
+Tcl('dir ***')
+
+\MAIN::TOP
+
+ :ACTION       :ANY          :AXIS         :COMP_DATA    :DEVICE      
+ :DISPATCH     :NUMERIC      :SIGNAL       :TASK         :TEXT        
+ :WINDOW      
+
+  CHILD         SUBTREE     
+
+Total of 13 nodes.
+1
+Tcl('close')
+265388041
+Tcl('set tree main/shot=1')
+265388067
+Tcl('create pulse 2')
+265388115
+Tcl('set tree main/shot=2')
+265388067
+Tcl('dir ***')
+
+\MAIN::TOP
+
+ :ACTION       :ANY          :AXIS         :COMP_DATA    :DEVICE      
+ :DISPATCH     :NUMERIC      :SIGNAL       :TASK         :TEXT        
+ :WINDOW      
+
+  CHILD         SUBTREE     
+
+Total of 13 nodes.
+1
+Tcl('set tree main/shot=1')
+265388067
+Tcl('delete pulse 2')
+1
+Tcl('close')
+265388041
+Tcl('clean main/shot=1/override')
+265388041
+Tcl('compress main/shot=1')
+265388041
+Tcl('compress main/shot=1/override')
+265388041
+Tcl('set tree main/shot=1')
+265388067
+Tcl('defined server gub')
+mdsdcl: No such command
+134349626
+Tcl('close')
+265388041
+Tcl('edit main/shot=1')
+265388041
+Tcl('delete node axis')
+1
+Tcl('dir ***')
+
+\MAIN::TOP
+
+ :ACTION       :ANY          :COMP_DATA    :DEVICE       :DISPATCH    
+ :NUMERIC      :SIGNAL       :TASK         :TEXT         :WINDOW      
+
+
+  CHILD         SUBTREE     
+
+Total of 12 nodes.
+1
+Tcl('dir/tag')
+
+Tag listing for *::*
+
+\MAIN::TOP
+\MAIN::ANY_TAG1
+\MAIN::ANY_TAG2
+\MAIN::ANY_TAG3
+\MAIN::CHILD_TAG
+Total of 5 tags
+1
+Tcl('remove tag any_tag2')
+265388041
+Tcl('dir/tag')
+
+Tag listing for *::*
+
+\MAIN::TOP
+\MAIN::ANY_TAG1
+\MAIN::ANY_TAG3
+\MAIN::CHILD_TAG
+Total of 4 tags
+1
+Tcl('delete node any')
+1
+Tcl('dir/tag')
+
+Tag listing for *::*
+
+\MAIN::TOP
+\MAIN::CHILD_TAG
+Total of 2 tags
+1
+Tcl('show current subtree')
+Failed to get shotid.
+1
+Tcl('set current subtree 1')
+1
+Tcl('show current subtree')
+Current shot is 1
+1
+Tcl('set current subtree/increment')
+1
+Tcl('show current subtree')
+Current shot is 2
+1
+Tcl('set current subtree "current_shot(""subtree"")+5"')
+1
+Tcl('show current subtree')
+Current shot is 7
+1
+Tcl('show default')
+\MAIN::TOP
+1
+Tcl('set default \\main::top')
+265388041
+Tcl('show default')
+\MAIN::TOP
+1
+Tcl('show db')
+000  MAIN          shot: 1 [\MAIN::TOP] open for edit,modified
+001  MAIN          shot: 2 [\MAIN::TOP]   
+
+265388041
+Tcl('show server gub')
+Server 'gub' unknown
+Checking server: gub
+Error connecting to server
+2752521
+Tcl('verify')
+Node summary:
+  Allocated = 12/14
+  Free      = 0/14
+  Other     = 2/14
+265388041
+Tcl('quit')
+134348817
+Tcl('close')
+This tree has been modified. Either use the WRITE
+command before closing to save modifications or
+use CLOSE/CONFIRM to discard changes.
+
+mdsdcl: --> failed on line 'close'
+265388378
+Tcl('set tree main')
+265388041
+Tcl('delete pulse 1')
+1
