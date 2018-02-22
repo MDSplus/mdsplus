@@ -190,7 +190,7 @@ class Dictionary(dict,Apd):
     """dictionary class"""
     class dict_np(_N.ndarray):
         def __new__(cls,items):
-            return _N.asarray(tuple(d.value for d in items),'object').view(Dictionary.dict_np)
+            return _N.asarray(tuple(d for d in items),'object').view(Dictionary.dict_np)
         def tolist(self):
             return dict(super(Dictionary.dict_np,self).tolist())
 
