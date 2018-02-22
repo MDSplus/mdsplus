@@ -163,7 +163,7 @@ class Data(object):
             return self
         if name.startswith('set'):
             return setXxx
-        raise AttributeError
+        return self.__getattribute__(name)
 
     @property
     def deref(self):
