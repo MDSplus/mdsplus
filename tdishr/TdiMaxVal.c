@@ -656,7 +656,7 @@ int Tdi3Product(struct descriptor *in, struct descriptor *mask,
   case DTYPE_O:  OperateIfun(1,(void*) int128_mul,&args);break;
   case DTYPE_OU: OperateIfun(1,(void*)uint128_mul,&args);break;
   case DTYPE_F:  OperateFfun(1,DTYPE_F ,mul,&args);break;
-  case DTYPE_FS: OperateFfun(1,DTYPE_FT,mul,&args);break;
+  case DTYPE_FS: OperateFfun(1,DTYPE_FS,mul,&args);break;
   case DTYPE_G:  OperateFfun(1,DTYPE_G ,mul,&args);break;
   case DTYPE_D:  OperateFfun(1,DTYPE_D ,mul,&args);break;
   case DTYPE_FT: OperateFfun(1,DTYPE_FT,mul,&args);break;
@@ -687,7 +687,7 @@ int Tdi3Sum(struct descriptor *in, struct descriptor *mask,
   case DTYPE_O:  OperateIfun(0,(void*) int128_add,&args);break;
   case DTYPE_OU: OperateIfun(0,(void*)uint128_add,&args);break;
   case DTYPE_F:  OperateFfun(0,DTYPE_F ,add,&args);break;
-  case DTYPE_FS: OperateFfun(0,DTYPE_FT,add,&args);break;
+  case DTYPE_FS: OperateFfun(0,DTYPE_FS,add,&args);break;
   case DTYPE_G:  OperateFfun(0,DTYPE_G ,add,&args);break;
   case DTYPE_D:  OperateFfun(0,DTYPE_D ,add,&args);break;
   case DTYPE_FT: OperateFfun(0,DTYPE_FT,add,&args);break;
