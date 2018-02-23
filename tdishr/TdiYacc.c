@@ -54,7 +54,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 May require (path)(a) if path-ness not clear.
         path[b] subscripts whatever is at node. Same problem.
         NOT and INOT of AND OR etc., form NAND or AND_NOT etc. See KNOT1 and KNOT2. Not after 9/25/89.
-*/
+-*/
 #include <mdsplus/mdsplus.h>
 #include <STATICdef.h>
 #include <stdio.h>
@@ -72,23 +72,29 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern unsigned short
  OpcAbort,
-    OpcAdd,
-    OpcCase,
-    OpcComma,
-    OpcConditional,
-    OpcConcat,
-    OpcDefault,
-    OpcEquals,
-    OpcEqualsFirst,
-    OpcExtFunction,
-    OpcFun,
-    OpcInT,
-    OpcInT_UNSIGNED,
-    OpcLabel,
-    OpcMultiply,
-    OpcPostDec,
-    OpcPostInc,
-    OpcPreInc, OpcStatement, OpcSubscript, OpcUnaryMinus, OpcUnaryPlus, OpcUsing, OpcVector;
+ OpcAdd,
+ OpcCase,
+ OpcComma,
+ OpcConditional,
+ OpcConcat,
+ OpcDefault,
+ OpcEquals,
+ OpcEqualsFirst,
+ OpcExtFunction,
+ OpcFun,
+ OpcInT,
+ OpcInT_UNSIGNED,
+ OpcLabel,
+ OpcMultiply,
+ OpcPostDec,
+ OpcPostInc,
+ OpcPreInc,
+ OpcStatement,
+ OpcSubscript,
+ OpcUnaryMinus,
+ OpcUnaryPlus,
+ OpcUsing,
+ OpcVector;
 
 extern int TdiYacc_RESOLVE();
 extern int TdiLex();
@@ -99,7 +105,6 @@ extern int TdiLexPath();
 
 #define YYMAXDEPTH      250
 
-#define tdiyyparse         TdiYacc
 #define _RESOLVE(arg)   			if IS_NOT_OK(TdiYacc_RESOLVE(&arg.rptr)) {tdiyyerror(0);}
 #define _FULL1(opcode,arg1,out)                 if IS_NOT_OK(TdiYacc_BUILD(255, 1, opcode, &out, &arg1)) {tdiyyerror(0);}
 #define _FULL2(opcode,arg1,arg2,out)            if IS_NOT_OK(TdiYacc_BUILD(255, 2, opcode, &out, &arg1, &arg2)) {tdiyyerror(0);}
@@ -190,7 +195,11 @@ const int
     LEX_LEQS = LEQS,
     LEX_LGES = LGES,
     LEX_LORS = LORS,
-    LEX_MULS = MULS, LEX_UNARYS = UNARYS, LEX_FUN = FUN, LEX_VBL = VBL, LEX_MODIF = MODIF;
+    LEX_MULS = MULS,
+    LEX_UNARYS = UNARYS,
+    LEX_FUN = FUN,
+    LEX_VBL = VBL,
+    LEX_MODIF = MODIF;
 
 YYSTYPE *TdiYylvalPtr = &tdiyylval;
 __YYSCLASS tdiyytabelem tdiyyexca[] = {
@@ -483,72 +492,100 @@ typedef struct {
   char *t_name;
   int t_val;
 } tdiyytoktype;
+
+
+//#define YYDEBUG
 #ifndef YYDEBUG
-#define YYDEBUG  0		/* don't allow debugging */
-#endif
-
-#if YYDEBUG
-
+#define YYDEBUG_STATE
+#define YYDEBUG_(msg)
+#else
+#define YYDEBUG_TOKEN \
+  if (tdiyychar == 0)\
+    printf("end-of-file\n");\
+  else if (tdiyychar < 0)\
+    printf("-none-\n");\
+  else {\
+    int i;\
+    for (i = 0; tdiyytoks[i].t_val >= 0; i++)\
+      if (tdiyytoks[i].t_val == tdiyychar)\
+        break;\
+    printf("%s\n", tdiyytoks[i].t_name);\
+  }
+/*
+ ** if debugging, look up token value in list of value vs.
+ ** name pairs.  0 and negative (-1) are special values.
+ ** Note: linear search is used since time is not a real
+ ** consideration while debugging.
+ */
+#define YYDEBUG_STATE {\
+  printf("State %d, token ", tdiyy_state);\
+  YYDEBUG_TOKEN;\
+}
+#define YYDEBUG_(msg) {\
+  printf(msg);\
+  YYDEBUG_TOKEN;\
+}
+//"
 __YYSCLASS tdiyytoktype tdiyytoks[] = {
-  "ERROR", 257,
-  "IDENT", 258,
-  "POINT", 259,
-  "TEXT", 260,
-  "VALUE", 261,
-  "BREAK", 262,
-  "CASE", 263,
-  "COND", 264,
-  "DEFAULT", 265,
-  "DO", 266,
-  "ELSE", 267,
-  "ELSEW", 268,
-  "FOR", 269,
-  "GOTO", 270,
-  "IF", 271,
-  "LABEL", 272,
-  "RETURN", 273,
-  "SIZEOF", 274,
-  "SWITCH", 275,
-  "USING", 276,
-  "WHERE", 277,
-  "WHILE", 278,
-  "ARG", 279,
-  "CAST", 280,
-  "CONST", 281,
-  "INC", 282,
-  "ADD", 283,
-  "CONCAT", 284,
-  "IAND", 285,
-  "IN", 286,
-  "IOR", 287,
-  "IXOR", 288,
-  "LEQV", 289,
-  "POWER", 290,
-  "PROMO", 291,
-  "RANGE", 292,
-  "SHIFT", 293,
-  "BINEQ", 294,
-  "LAND", 295,
-  "LEQ", 296,
-  "LGE", 297,
-  "LOR", 298,
-  "MUL", 299,
-  "UNARY", 300,
-  "LANDS", 301,
-  "LEQS", 302,
-  "LGES", 303,
-  "LORS", 304,
-  "MULS", 305,
-  "UNARYS", 306,
-  "FUN", 307,
-  "MODIF", 308,
-  "VBL", 309,
-  ",", 44,
-  "`", 96,
-  "=", 61,
-  "?", 63,
-  "*", 42,
-  "-unknown-", -1		/* ends search */
+ {"ERROR", 257},
+ {"IDENT", 258},
+ {"POINT", 259},
+ {"TEXT", 260},
+ {"VALUE", 261},
+ {"BREAK", 262},
+ {"CASE", 263},
+ {"COND", 264},
+ {"DEFAULT", 265},
+ {"DO", 266},
+ {"ELSE", 267},
+ {"ELSEW", 268},
+ {"FOR", 269},
+ {"GOTO", 270},
+ {"IF", 271},
+ {"LABEL", 272},
+ {"RETURN", 273},
+ {"SIZEOF", 274},
+ {"SWITCH", 275},
+ {"USING", 276},
+ {"WHERE", 277},
+ {"WHILE", 278},
+ {"ARG", 279},
+ {"CAST", 280},
+ {"CONST", 281},
+ {"INC", 282},
+ {"ADD", 283},
+ {"CONCAT", 284},
+ {"IAND", 285},
+ {"IN", 286},
+ {"IOR", 287},
+ {"IXOR", 288},
+ {"LEQV", 289},
+ {"POWER", 290},
+ {"PROMO", 291},
+ {"RANGE", 292},
+ {"SHIFT", 293},
+ {"BINEQ", 294},
+ {"LAND", 295},
+ {"LEQ", 296},
+ {"LGE", 297},
+ {"LOR", 298},
+ {"MUL", 299},
+ {"UNARY", 300},
+ {"LANDS", 301},
+ {"LEQS", 302},
+ {"LGES", 303},
+ {"LORS", 304},
+ {"MULS", 305},
+ {"UNARYS", 306},
+ {"FUN", 307},
+ {"MODIF", 308},
+ {"VBL", 309},
+ {",", 44},
+ {"`", 96},
+ {"=", 61},
+ {"?", 63},
+ {"*", 42},
+ {"-unknown-", -1}		/* ends search */
 };
 
 __YYSCLASS char *tdiyyreds[] = {
@@ -677,6 +714,7 @@ __YYSCLASS char *tdiyyreds[] = {
   "program : error",
 };
 #endif				/* YYDEBUG */
+
 #define YYFLAG  (-3000)
 /* @(#) $Revision$ */
 
@@ -705,28 +743,18 @@ __YYSCLASS char *tdiyyreds[] = {
 #define YYABORT         {free_stacks(); return MDSplusERROR;}
 #endif
 
-#define YYBACKUP( newtoken, newvalue )\
-{\
-        if ( tdiyychar >= 0 || ( tdiyyr2[ tdiyytmp ] >> 1 ) != 1 )\
-        {\
-                tdiyyerror( (nl_msg(30001,"syntax error - cannot backup")) );\
-                goto tdiyyerrlab;\
-        }\
-        tdiyychar = newtoken;\
-        tdiyystate = *tdiyyps;\
-        tdiyylval = newvalue;\
-        goto tdiyynewstate;\
+#define YYBACKUP( newtoken, newvalue ) {\
+  if ( tdiyychar >= 0 || ( tdiyyr2[ tdiyytmp ] >> 1 ) != 1 ) {\
+    tdiyyerror( (nl_msg(30001,"syntax error - cannot backup")) );\
+    goto tdiyyerrlab;\
+  }\
+  tdiyychar = newtoken;\
+  tdiyystate = *tdiyyps;\
+  tdiyylval = newvalue;\
+  goto tdiyynewstate;\
 }
 //"
 #define YYRECOVERING()  (!!tdiyyerrflag)
-#ifndef YYDEBUG
-#define YYDEBUG  1		/* make debugging available */
-#endif
-
-/*
-** user known globals
-*/
-int tdiyydebug;			/* set to 1 to get debugging */
 
 /*
 ** driver internal defines
@@ -773,10 +801,11 @@ int tdiyychar;			/* current input token number */
 /*
 ** tdiyyparse - return 0 if worked, 1 if syntax error not recovered from
 */
-int tdiyyparse()
-{
+// TdiYacc aka tdiyyparse         TdiYacc
+
+int TdiYacc(){
   GET_TDITHREADSTATIC_P;
-  register YYSTYPE *tdiyypvt;	/* top of value stack for $vars */
+  YYSTYPE *tdiyypvt;	/* top of value stack for $vars */
 
   /*
    ** Initialize externals - tdiyyparse may be called more than once
@@ -796,28 +825,17 @@ int tdiyyparse()
   tdiyyerrflag = 0;
   tdiyychar = -1;
 
-  goto tdiyystack;
   {
-    register YYSTYPE *tdiyy_pv;	/* top of value stack */
-    register int *tdiyy_ps;	/* top of state stack */
-    register int tdiyy_state;	/* current state */
-    register int tdiyy_n;		/* internal state number info */
-
-    /*
-     ** get globals into registers.
-     ** branch to here only if YYBACKUP was called.
-     */
-    // tdiyynewstate:
-    tdiyy_pv = tdiyypv;
-    tdiyy_ps = tdiyyps;
-    tdiyy_state = tdiyystate;
-    goto tdiyy_newstate;
+    YYSTYPE *tdiyy_pv;	/* top of value stack */
+    int *tdiyy_ps;	/* top of state stack */
+    int tdiyy_state;	/* current state */
+    int tdiyy_n;	/* internal state number info */
 
     /*
      ** get globals into registers.
      ** either we just started, or we just finished a reduction
      */
- tdiyystack:
+ tdiyy_stack_reset:
     tdiyy_pv = tdiyypv;
     tdiyy_ps = tdiyyps;
     tdiyy_state = tdiyystate;
@@ -829,30 +847,7 @@ int tdiyyparse()
     /*
      ** put a state and value onto the stacks
      */
-#if YYDEBUG
-    /*
-     ** if debugging, look up token value in list of value vs.
-     ** name pairs.  0 and negative (-1) are special values.
-     ** Note: linear search is used since time is not a real
-     ** consideration while debugging.
-     */
-    if (tdiyydebug) {
-      register int tdiyy_i;
-
-      printf("State %d, token ", tdiyy_state);
-      if (tdiyychar == 0)
-	printf("end-of-file\n");
-      else if (tdiyychar < 0)
-	printf("-none-\n");
-      else {
-	for (tdiyy_i = 0; tdiyytoks[tdiyy_i].t_val >= 0; tdiyy_i++) {
-	  if (tdiyytoks[tdiyy_i].t_val == tdiyychar)
-	    break;
-	}
-	printf("%s\n", tdiyytoks[tdiyy_i].t_name);
-      }
-    }
-#endif				/* YYDEBUG */
+    YYDEBUG_STATE
     if (++tdiyy_ps >= &tdiyys[tdiyymaxdepth]) {	/* room on stack? */
 #ifndef __RUNTIME_YYMAXDEPTH
       tdiyyerror((nl_msg(30002, "yacc stack overflow")));
@@ -884,35 +879,12 @@ int tdiyyparse()
      */
  tdiyy_newstate:
     if ((tdiyy_n = tdiyypact[tdiyy_state]) <= YYFLAG)
-      goto tdiyydefault;		/* simple state */
-#if YYDEBUG
-    /*
-     ** if debugging, need to mark whether new token grabbed
-     */
-    tdiyytmp = tdiyychar < 0;
-#endif
-    if ((tdiyychar < 0) && ((tdiyychar = tdiyylex()) < 0))
+      goto tdiyy_default;		/* simple state */
+    if ((tdiyychar < 0) && ((tdiyychar = TdiLex()) < 0))
       tdiyychar = 0;		/* reached EOF */
-#if YYDEBUG
-    if (tdiyydebug && tdiyytmp) {
-      register int tdiyy_i;
-
-      printf("Received token ");
-      if (tdiyychar == 0)
-	printf("end-of-file\n");
-      else if (tdiyychar < 0)
-	printf("-none-\n");
-      else {
-	for (tdiyy_i = 0; tdiyytoks[tdiyy_i].t_val >= 0; tdiyy_i++) {
-	  if (tdiyytoks[tdiyy_i].t_val == tdiyychar)
-	    break;
-	}
-	printf("%s\n", tdiyytoks[tdiyy_i].t_name);
-      }
-    }
-#endif				/* YYDEBUG */
+    YYDEBUG_("Received token ")
     if (((tdiyy_n += tdiyychar) < 0) || (tdiyy_n >= YYLAST))
-      goto tdiyydefault;
+      goto tdiyy_default;
     if (tdiyychk[tdiyy_n = tdiyyact[tdiyy_n]] == tdiyychar) {	/*valid shift */
       tdiyychar = -1;
       tdiyyval = tdiyylval;
@@ -922,41 +894,17 @@ int tdiyyparse()
       goto tdiyy_stack;
     }
 
- tdiyydefault:
+ tdiyy_default:
     if ((tdiyy_n = tdiyydef[tdiyy_state]) == -2) {
-#if YYDEBUG
-      tdiyytmp = tdiyychar < 0;
-#endif
-      if ((tdiyychar < 0) && ((tdiyychar = tdiyylex()) < 0))
+      if ((tdiyychar < 0) && ((tdiyychar = TdiLex()) < 0))
 	tdiyychar = 0;		/* reached EOF */
-#if YYDEBUG
-      if (tdiyydebug && tdiyytmp) {
-	register int tdiyy_i;
-
-	printf("Received token ");
-	if (tdiyychar == 0)
-	  printf("end-of-file\n");
-	else if (tdiyychar < 0)
-	  printf("-none-\n");
-	else {
-	  for (tdiyy_i = 0; tdiyytoks[tdiyy_i].t_val >= 0; tdiyy_i++) {
-	    if (tdiyytoks[tdiyy_i].t_val == tdiyychar) {
-	      break;
-	    }
-	  }
-	  printf("%s\n", tdiyytoks[tdiyy_i].t_name);
-	}
-      }
-#endif				/* YYDEBUG */
+      YYDEBUG_("received token ")
       /*
        ** look through exception table
        */
       {
-	register int *tdiyyxi = tdiyyexca;
-
-	while ((*tdiyyxi != -1) || (tdiyyxi[1] != tdiyy_state)) {
-	  tdiyyxi += 2;
-	}
+	int *tdiyyxi;
+	for (tdiyyxi=tdiyyexca ; tdiyyxi[0]!=-1 || tdiyyxi[1]!=tdiyy_state ; tdiyyxi+=2);
 	while ((*(tdiyyxi += 2) >= 0) && (*tdiyyxi != tdiyychar)) ;
 	if ((tdiyy_n = tdiyyxi[1]) < 0)
 	  YYACCEPT;
@@ -1002,11 +950,8 @@ int tdiyyparse()
 	   ** current state has no shift on
 	   ** "error", pop stack
 	   */
-#if YYDEBUG
-#define _POP_ "Error recovery pops state %d, uncovers state %d\n"
-	  if (tdiyydebug)
-	    printf(_POP_, *tdiyy_ps, tdiyy_ps[-1]);
-#undef _POP_
+#ifdef YYDEBUG
+	  printf("Error recovery pops state %d, uncovers state %d\n", *tdiyy_ps, tdiyy_ps[-1]);
 #endif
 	  tdiyy_ps--;
 	  tdiyy_pv--;
@@ -1017,32 +962,7 @@ int tdiyyparse()
 	 */
 	YYABORT;
       case 3:			/* no shift yet; eat a token */
-#if YYDEBUG
-	/*
-	 ** if debugging, look up token in list of
-	 ** pairs.  0 and negative shouldn't occur,
-	 ** but since timing doesn't matter when
-	 ** debugging, it doesn't hurt to leave the
-	 ** tests here.
-	 */
-	if (tdiyydebug) {
-	  register int tdiyy_i;
-
-	  printf("Error recovery discards ");
-	  if (tdiyychar == 0)
-	    printf("token end-of-file\n");
-	  else if (tdiyychar < 0)
-	    printf("token -none-\n");
-	  else {
-	    for (tdiyy_i = 0; tdiyytoks[tdiyy_i].t_val >= 0; tdiyy_i++) {
-	      if (tdiyytoks[tdiyy_i].t_val == tdiyychar) {
-		break;
-	      }
-	    }
-	    printf("token %s\n", tdiyytoks[tdiyy_i].t_name);
-	  }
-	}
-#endif				/* YYDEBUG */
+	YYDEBUG_("Error recovery discards token ")
 	if (tdiyychar == 0)	/* reached EOF. quit */
 	  YYABORT;
 	tdiyychar = -1;
@@ -1054,17 +974,16 @@ int tdiyyparse()
      ** reduction by production tdiyy_n
      ** put stack tops, etc. so things right after switch
      */
-#if YYDEBUG
+#ifdef YYDEBUG
     /*
      ** if debugging, print the string that is the user's
      ** specification of the reduction which is just about
      ** to be done.
      */
-    if (tdiyydebug)
-      printf("Reduce by (%d) \"%s\"\n", tdiyy_n, tdiyyreds[tdiyy_n]);
+    printf("Reduce by (%d) \"%s\"\n", tdiyy_n, tdiyyreds[tdiyy_n]);
 #endif
     tdiyytmp = tdiyy_n;		/* value to switch over */
-    tdiyypvt = tdiyy_pv;		/* $vars top of value stack */
+    tdiyypvt = tdiyy_pv;	/* $vars top of value stack */
     /*
      ** Look in goto table for next state
      ** Sorry about using tdiyy_state here as temporary
@@ -1079,23 +998,15 @@ int tdiyyparse()
      */
     {
       /* length of production doubled with extra bit */
-      register int tdiyy_len = tdiyyr2[tdiyy_n];
-
-      if (!(tdiyy_len & 01)) {
-	tdiyy_len >>= 1;
-	tdiyyval = (tdiyy_pv -= tdiyy_len)[1];	/* $$ = $1 */
-	tdiyy_state = tdiyypgo[tdiyy_n = tdiyyr1[tdiyy_n]] + *(tdiyy_ps -= tdiyy_len) + 1;
-	if (tdiyy_state >= YYLAST || tdiyychk[tdiyy_state = tdiyyact[tdiyy_state]] != -tdiyy_n) {
-	  tdiyy_state = tdiyyact[tdiyypgo[tdiyy_n]];
-	}
-	goto tdiyy_stack;
-      }
+      int tdiyy_len = tdiyyr2[tdiyy_n];
+      int back_to_stack = !(tdiyy_len & 1);
       tdiyy_len >>= 1;
       tdiyyval = (tdiyy_pv -= tdiyy_len)[1];	/* $$ = $1 */
       tdiyy_state = tdiyypgo[tdiyy_n = tdiyyr1[tdiyy_n]] + *(tdiyy_ps -= tdiyy_len) + 1;
-      if (tdiyy_state >= YYLAST || tdiyychk[tdiyy_state = tdiyyact[tdiyy_state]] != -tdiyy_n) {
+      if (tdiyy_state >= YYLAST || tdiyychk[tdiyy_state = tdiyyact[tdiyy_state]] != -tdiyy_n)
 	tdiyy_state = tdiyyact[tdiyypgo[tdiyy_n]];
-      }
+      if (back_to_stack)
+	goto tdiyy_stack;
     }
     /* save until reenter driver code */
     tdiyystate = tdiyy_state;
@@ -1750,7 +1661,7 @@ int tdiyyparse()
     }
     break;
   }
-  goto tdiyystack;			/* reset registers in driver code */
+  goto tdiyy_stack_reset;			/* reset registers in driver code */
 }
 
 #ifdef __RUNTIME_YYMAXDEPTH
