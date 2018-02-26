@@ -315,6 +315,12 @@ class Tree(object):
     tctx = None
     ctx  = None
 
+    def getDatafileSize(self):
+        """return data file size.
+        @rtype: long
+        """
+        _TreeShr._TreeGetDatafileSize.restype=_C.c_int64
+        return _TreeShr._TreeGetDatafileSize(self.ctx)
     @classmethodX
     def cleanDatafile(self,tree=None,shot=None):
         """Clean up data file.
