@@ -1,37 +1,40 @@
 #ifndef TESTUTILS_MDSIPMAIN_H
 #define TESTUTILS_MDSIPMAIN_H
 
-#include <string>
-#include <iostream>
-#include <fstream>
-
-#include <stdio.h>
-#include <time.h>
-#include <errno.h>
+#ifdef _WIN32
+ #ifdef _WIN32_WINNT
+  #undef _WIN32_WINNT
+ #endif
+ #define _WIN32_WINNT _WIN32_WINNT_WIN8 // Windows 8.0
+ #include <winsock2.h>
+ //#include <windows.h>
+ //#include <ws2tcpip.h>
+ #define REUSEADDR_TYPE BOOL
+#else
 #include <string.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/time.h>
-
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-
+ #define SOCKET int
+ #define INVALID_SOCKET -1
+ #include <sys/socket.h>
+ #include <netinet/in.h>
+ #include <arpa/inet.h>
+ #include <spawn.h>
+ #define REUSEADDR_TYPE int
+ #include <signal.h>
+ #include <errno.h>
+#endif
 #include <unistd.h>
+#include <fstream>
 #include <sys/types.h>
-#include <signal.h>
-
 #include <testutils/Singleton.h>
 
 #include <mdsobjects.h>
 
-extern "C" int mdsip_main(int argc, char **argv);
+
+extern char **environ;
 
 namespace mds = MDSplus;
-
 namespace testing {
 class MdsIpInstancer {
-
     struct HostFile {
         HostFile() {
             std::string hosts_default =
@@ -71,37 +74,36 @@ public:
           if(offset==100)
             throw std::out_of_range("any port found within 100 tries");
         }
-        m_pid = fork();
-        if(m_pid<0) {
-            perror("unable to fork process\n");
-            exit(1);
-        }
 
         // child //
-        if(m_pid == 0) {
-            char port_str[20];
-            char *_argv[] = {(char *)"mdsip",
-                             (char *)"-P",(char *)m_protocol.c_str(),
-                             (char *)"-h",(char *)m_host_file->name(),
-                             (char *)"-p",port_str,(char *)"-m"};
-            int _argc = 5;
-            if (m_port>0) {
-              sprintf(port_str,"%i",m_port);
-              _argc += 3;
-            }
-            int status __attribute__ ((unused)) = mdsip_main(_argc,_argv);
-            exit(1);
-        }  else {
-            std::cout << "started mdsip server for " << m_protocol << " on port: " << m_port << " pid: " << m_pid << "\n" << std::flush;
+        {
+           char port_str[20];
+           char *argv[] = {(char*)"mdsip",(char*)"-P",(char*)m_protocol.c_str(),(char*)"-h",(char*)m_host_file->name(),(char*)"-p",port_str,(char*)"-m", NULL};
+           if (m_port>0)
+             sprintf(port_str,"%i",m_port);
+           else
+             argv[5] = NULL;
+#ifdef _WIN32
+	   if (!(m_pid = _spawnle(P_NOWAIT, *argv, *environ)))
+#else
+	   if (posix_spawnp(&m_pid, "mdsip", NULL, NULL, argv, environ))
+#endif
+             std::cerr << "Could not start mdsip server " << m_protocol.c_str() << " on port " << m_port << ".";
+           else
+             std::cout << "started mdsip server for " << m_protocol << " on port: " << m_port << " pid: " << m_pid << "\n" << std::flush;
         }
 
     }
 
     ~MdsIpInstancer() {
-        if(m_pid>0) {
-            std::cout << "removing mdsip for " << m_protocol << "\n" << std::flush;
-            kill(m_pid,SIGKILL);
-        }
+	std::cout << "removing mdsip for " << m_protocol << "\n" << std::flush;
+#ifdef _WIN32
+	HANDLE explorer;
+	explorer = OpenProcess(PROCESS_ALL_ACCESS,false,m_pid);
+	TerminateProcess(explorer,1);
+#else
+	kill(m_pid,SIGKILL);
+#endif
     }
 
     int getPort() const { return m_port; }
@@ -142,13 +144,12 @@ private:
     // Allocate a new TCP server socket, and return
     // its handler
     int allocate(const std::string &protocol) {
-        int sock = -1;
-
+        SOCKET sock = INVALID_SOCKET;
         if(protocol == "tcp" || protocol == "tcpv6" || protocol == "gsi")
             sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         else if(protocol == "udt" || protocol == "udtv6")
             sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-        if (sock < 0) {
+        if (sock == INVALID_SOCKET) {
             if (errno == EMFILE) {
                 /* too many open files */
                 return 0;
@@ -156,8 +157,8 @@ private:
             perror("error allocating socket\n");
             exit(1);
         }
-        int optval = 1;
-        setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+	REUSEADDR_TYPE optval = 1;
+        setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&optval, sizeof(optval));
         return sock;
     }
 
@@ -168,8 +169,8 @@ private:
         struct sockaddr_in addr;
         memset(&addr, 0, sizeof(addr));
         addr.sin_family = AF_INET;
-        addr.sin_port = htons(port);
-        addr.sin_addr.s_addr = htonl(INADDR_ANY); //inet_addr("0.0.0.0")
+	addr.sin_port = htons(port);
+	addr.sin_addr.s_addr = htonl(INADDR_ANY); //inet_addr("0.0.0.0")
         int error = bind(sock, (struct sockaddr*) &addr, sizeof(addr));
         if(!error) {
             shutdown(sock,2);
