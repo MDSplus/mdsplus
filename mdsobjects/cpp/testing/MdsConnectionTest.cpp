@@ -73,6 +73,10 @@ void test_tree_open(const char *prot, const unsigned short port)
     TEST1( AutoString(data->getString()).string
            == "[0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]" );
 
+    // this should not hang //
+    data = cnx.get("setTimeContext()");
+    std::cout << AutoString(data->getString()).string;
+
     // test tree opening //
     cnx.openTree((char*)"t_connect",1);
 
