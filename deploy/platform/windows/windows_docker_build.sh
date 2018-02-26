@@ -56,10 +56,10 @@ buildrelease() {
 	trap windows_cleanup EXIT
 	topsrcdir=${WINREMBLD}/${tmpdir}
 	cd ${tmpdir}
-	rsync -am --include="*/" --include="*.h*" --include="*.def" --exclude="*" /source/ ./
+	rsync -am --include="*/" --include="*.h*" --include="*.def" --exclude="*" ${srcdir}/ ./
 	rsync -am /workspace/64/include/config.h ./include/
-	rsync -a /source/mdsobjects/cpp /source/mdsobjects/MdsObjects* /source/mdsobjects/VS-* ./mdsobjects/
-	rsync -a /source/deploy/platform/windows/winbld.bat ./deploy/
+	rsync -a ${srcdir}/mdsobjects/cpp ${srcdir}/mdsobjects/MdsObjects* ${srcdir}/mdsobjects/VS-* ./mdsobjects/
+	rsync -a ${srcdir}/deploy/platform/windows/winbld.bat ./deploy/
 	rsync -a ${MDSPLUS_DIR}/bin_* ./
 	curl http://${WINHOST}:8080${topsrcdir}/deploy/winbld.bat
 	# see if files are there
