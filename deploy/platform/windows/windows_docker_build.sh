@@ -78,12 +78,12 @@ EOF
 	fi
 	vs="-DVisualStudio"
 	popd
-    fi
   fi
   if [ -z "$NOMAKE" ]; then
     ${srcdir}/deploy/packaging/windows/create_installer.sh ${MDSPLUS_DIR}
   fi # NOMAKE
 }
+
 publish() {
     major=$(echo ${RELEASE_VERSION} | cut -d. -f1)
     minor=$(echo ${RELEASE_VERSION} | cut -d. -f2)
