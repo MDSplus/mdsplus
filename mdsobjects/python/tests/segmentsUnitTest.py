@@ -263,22 +263,14 @@ class Tests(TestCase):
             raw.updateSegment(dim.data()[0],dim.data()[-1],dim,i)
         self.assertEqual(str(raw.getSegment(0)),"Build_Signal(Word([1,1,1,1,1,1,1,1,1,1]), *, Build_Dim(Build_Window(0Q, 9Q, TRG), * : * : 1000000000Q / CLK))")
         self.assertTrue(sig.dim_of().tolist(),(arange(0,length,dtype=int64)*int(1e9/clk)).tolist())
-        ptree.close()
-        ptree.compressDatafile() # this will break the functionality of updateSegment
-        ptree.open()
-        trig.record = 0
-        for i in range(length//seglen):
-            raw.updateSegment(i*seglen,i*seglen-1,None,i)
-        self.assertEqual(str(raw.getSegment(0)),"Build_Signal(Word([1,1,1,1,1,1,1,1,1,1]), *, Build_Dim(Build_Window(0Q, 9Q, TRG), * : * : 1000000000Q / CLK))")
-        self.assertTrue(sig.dim_of().tolist(),(arange(0,length,dtype=int64)*int(1e9/clk)).tolist())
       test()
       self.cleanup()
 
     def TimeContext(self):
       def test():
         from MDSplus import Tree,Int64,Int64Array,Int32Array,tdi
-        #Tree.setTimeContext() # test initPinoDb
-        #self.assertEqual(Tree.getTimeContext(),(None,None,None))
+        Tree.setTimeContext() # test initPinoDb
+        self.assertEqual(Tree.getTimeContext(),(None,None,None))
         with Tree(self.tree,self.shot,'NEW') as ptree:
             node = ptree.addNode('S')
             ptree.write()
@@ -292,16 +284,14 @@ class Tests(TestCase):
         self.assertEqual(node.getSegmentList(21,60).dim_of(0).tolist(),[30,60])
         self.assertEqual(node.record.data().tolist(),list(range(-9,9)))
         node.tree.setTimeContext(Int64(30),Int64(70),Int64(20))
-#        Tree.setTimeContext(1,2,3) # test privacy to Tree
+        Tree.setTimeContext(1,2,3)
         self.assertEqual(node.tree.getTimeContext(),(30,70,20))
- #       self.assertEqual(Tree.getTimeContext(),(1,2,3))
+        self.assertEqual(Tree.getTimeContext(),(1,2,3))
         self.assertEqual(node.record.data().tolist(),[3,5]+[6])  # delta is applied per segment
         node.tree.setTimeContext()
-
         self.assertEqual(node.tree.getTimeContext(),(None,None,None))
         self.assertEqual(node.record.data().tolist(),list(range(-9,9)))
-
-        #self.assertEqual(Tree.getTimeContext(),(1,2,3))
+        self.assertEqual(Tree.getTimeContext(),(1,2,3))
         tdi('treeopen($,$)',self.tree,self.shot)
         Tree.setTimeContext(1,2,3) # test privacy to Tree
         self.assertEqual(Tree.getTimeContext(),(1,2,3))
@@ -320,19 +310,35 @@ class Tests(TestCase):
 
     def CompressSegments(self):
       def test():
-        from MDSplus import Tree,DateToQuad,Range
+        from MDSplus import Tree,DateToQuad,ZERO,Int32,Int32Array,Int64Array,Range
         with Tree('seg_tree',self.shot,'NEW') as ptree:
             ptree.addNode('S').compress_on_put = False
             ptree.write()
         ptree = Tree(self.tree,self.shot)
         node = ptree.S
-        for i in range(200):
-            node.putRow(100,Range(1,100).data(),DateToQuad("now"))
-        ptree.createPulse(self.shot+1)
+        ptree.compressDatafile()
+        te = DateToQuad("now")
+        sampperseg = 50
+        data = ZERO(Int32Array([sampperseg]),Int32(0)).data()
+        for i in range(513):
+            t0=te+1;te=t0+sampperseg-1
+            node.makeSegment(t0,te,Int64Array(range(t0,te+1)),data+Int32(i))
         node.compress_segments=True
+        ptree.createPulse(self.shot+1)
+        Tree.compressDatafile(self.tree,self.shot+1)
         ptree1 = Tree(self.tree,self.shot+1)
-        ptree1.compressDatafile()
-        self.assertEqual((node.record==ptree1.S.record).all(),True)
+        node1  = ptree1.S
+        self.assertEqual(True,(node.record==node1.record).all())
+        self.assertEqual(True,ptree.getDatafileSize()>ptree1.getDatafileSize())
+        for i in range(node.getNumSegments()):
+            str,end = node.getSegmentLimits(i)
+            node.updateSegment(str,end,Range(str,end),i)
+        ptree.close()
+        ptree.compressDatafile()
+        ptree.readonly()
+        self.assertEqual(True,ptree.getDatafileSize()<ptree1.getDatafileSize())
+        for i in range(node1.getNumSegments()):
+            self.assertEqual(node.getSegmentDim(i).data().tolist(),node1.getSegmentDim(i).data().tolist())
       test()
       self.cleanup()
 
