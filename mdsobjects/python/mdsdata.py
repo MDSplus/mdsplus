@@ -163,7 +163,7 @@ class Data(object):
             return self
         if name.startswith('set'):
             return setXxx
-        raise AttributeError
+        return self.__getattribute__(name)
 
     @property
     def deref(self):
@@ -386,7 +386,7 @@ class Data(object):
     def decompile(self):
         """Return string representation
         @rtype: string"""
-        return _cmp.DECOMPILE(self)._setTree(self.tree).evaluate()
+        return str(_cmp.DECOMPILE(self)._setTree(self.tree).evaluate())
 
     def __getitem__(self,y):
         """Subscript: x.__getitem__(y) <==> x[y]
