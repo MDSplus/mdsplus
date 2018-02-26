@@ -2037,6 +2037,7 @@ int TreeCopyExtended(PINO_DATABASE * dbid_in, PINO_DATABASE * dbid_out, int nid,
  *****************************************/
 int _TreeSetTimeContext(void *dbid, struct descriptor *start, struct descriptor *end, struct descriptor *delta){
   timecontext_t* tc = &((PINO_DATABASE*)dbid)->timecontext;
+  if(!dbid) return 1;
   INIT_STATUS_AS MdsCopyDxXd(start, &tc->start);
   if STATUS_OK {
     status = MdsCopyDxXd(end, &tc->end);
