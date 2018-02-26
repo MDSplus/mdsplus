@@ -115,8 +115,8 @@ class Array(_dat.Data):
     def _str_bad_ref(self):
         return _ver.tostr(self._value)
 
-    def __getattr__(self,name):
-        try: return super(Array,self).__getattr__(name)
+    def __getattribute__(self,name):
+        try: return super(Array,self).__getattribute__(name)
         except AttributeError: pass
         if name=='_value': raise Exception('_value undefined')
         try: return self._value.__getattribute__(name)

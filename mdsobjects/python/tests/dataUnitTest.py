@@ -133,6 +133,8 @@ class Tests(TestCase):
     def testData(self):
         self.assertEqual(m.Data(2).compare(2),True)
         self.assertEqual(m.Data(2).compare(1),False)
+        self.assertEqual(m.Dictionary([1,'a',2,'b']).data().tolist(),{1: 'a', 2: 'b'})
+        self.assertEqual(m.List([1,'a',2,'b']).data().tolist(),[1, 'a', 2, 'b'])
 
     def testScalars(self):
         def doTest(suffix,cl,scl,ucl,**kw):
