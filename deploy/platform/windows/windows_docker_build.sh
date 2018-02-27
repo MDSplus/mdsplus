@@ -57,7 +57,7 @@ buildrelease() {
 	topsrcdir=${WINREMBLD}/${tmpdir}
 	cd ${tmpdir}
 	rsync -am --include="*/" --include="*.h*" --include="*.def" --exclude="*" ${srcdir}/ ./
-	rsync -am /workspace/64/include ./
+	rsync -am /workspace/releasebld/64/include ./
 	rsync -a ${srcdir}/mdsobjects/cpp ${srcdir}/mdsobjects/MdsObjects* ${srcdir}/mdsobjects/VS-* ./mdsobjects/
 	rsync -a ${srcdir}/deploy/platform/windows/winbld.bat ./deploy/
 	rsync -a ${MDSPLUS_DIR}/bin_* ./
