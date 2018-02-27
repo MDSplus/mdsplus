@@ -46,10 +46,44 @@ buildrelease() {
     ###
     ### pack installer
     ###
+    if [ ! -z "$WINHOST" -a -r /winbld -a ! -z "$WINREMBLD" ]
+    then
+	windows_cleanup() {
+	    rm -Rf /winbld/${tmpdir}
+	}
+	pushd /winbld
+	tmpdir=$(mktemp -d mdsplus-XXXXXXXXXX)
+	trap windows_cleanup EXIT
+	topsrcdir=${WINREMBLD}/${tmpdir}
+	cd ${tmpdir}
+	rsync -am --include="*/" --include="*.h*" --include="*.def" --exclude="*" ${srcdir}/ ./
+	rsync -am /workspace/releasebld/64/include ./
+	rsync -a ${srcdir}/mdsobjects/cpp ${srcdir}/mdsobjects/MdsObjects* ${srcdir}/mdsobjects/VS-* ./mdsobjects/
+	rsync -a ${srcdir}/deploy/platform/windows/winbld.bat ./deploy/
+	rsync -a ${MDSPLUS_DIR}/bin_* ./
+	curl http://${WINHOST}:8080${topsrcdir}/deploy/winbld.bat
+	# see if files are there
+	if ( ls /winbld/${tmpdir}/bin_x86*/*.lib /winbld/${tmpdir}/bin_x86*/MdsObjectsCppShr-VS.* > /dev/null )
+	then
+	    rsync -av --include="*/" --include="*.lib" --include="MdsObjectsCppShr-VS.dll" --exclude="*" /winbld/${tmpdir}/bin_x86* ${MDSPLUS_DIR}/
+	else
+	    RED $COLOR
+	    cat <<EOF >&2
+============================================
+Failure: Problem building Visual Studio dll
+============================================
+EOF
+	    NORMAL $COLOR
+	    exit 1
+	fi
+	vs="-DVisualStudio"
+	popd
+  fi
   if [ -z "$NOMAKE" ]; then
     ${srcdir}/deploy/packaging/windows/create_installer.sh ${MDSPLUS_DIR}
   fi # NOMAKE
 }
+
 publish() {
     major=$(echo ${RELEASE_VERSION} | cut -d. -f1)
     minor=$(echo ${RELEASE_VERSION} | cut -d. -f2)
