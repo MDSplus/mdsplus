@@ -84,7 +84,7 @@ public:
            else
              argv[5] = NULL;
 #ifdef _WIN32
-	   if (!(m_pid = _spawnle(P_NOWAIT, *argv, *environ)))
+	   if (!(m_pid = _spawnvpe(P_NOWAIT, argv[0], &argv[1], environ)))
 #else
 	   if (posix_spawnp(&m_pid, "mdsip", NULL, NULL, argv, environ))
 #endif
