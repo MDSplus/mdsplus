@@ -147,6 +147,8 @@ static ssize_t tunnel_recv_to(Connection* c, void *buffer, size_t buflen, int to
 #ifndef _WIN32
 static void ChildSignalHandler(int num __attribute__ ((unused)))
 {
+  // Ensure that the handler does not spoil errno.
+  int saved_errno = errno;
   sigset_t set, oldset;
   pid_t pid;
   int status;
@@ -175,6 +177,7 @@ static void ChildSignalHandler(int num __attribute__ ((unused)))
     sigaddset(&set, SIGCHLD);
     sigprocmask(SIG_UNBLOCK, &set, &oldset);
   }
+  errno = saved_errno;
 }
 #endif
 
