@@ -175,6 +175,7 @@ void DisconnectConnectionC(Connection *c){
   FreeDescriptors(c);
   free(c->protocol);
   free(c->info_name);
+  TreeFreeDbid(c->DBID);
   pthread_cond_destroy(&c->cond);
   free(c);
 }
@@ -219,6 +220,7 @@ Connection* NewConnectionC(char *protocol){
     connection->protocol = strcpy(malloc(strlen(protocol) + 1), protocol);
     connection->id = INVALID_CONNECTION_ID;
     connection->state = CON_IDLE;
+    _TreeNewDbid(&connection->DBID);
     pthread_cond_init(&connection->cond,NULL);
     return connection;
   } else
