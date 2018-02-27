@@ -32,7 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #include <string.h>
 
-extern int initPinoDb(PINO_DATABASE ** dblist);
+extern int _TreeNewDbid(void** dblist);
 extern int TreeFreeDbid(PINO_DATABASE *db);
 static pthread_rwlock_t treectx_lock = PTHREAD_RWLOCK_INITIALIZER;
 void *DBID = NULL;
@@ -50,7 +50,7 @@ STATIC_ROUTINE void buffer_destroy(void *buf){
 }
 STATIC_ROUTINE void buffer_key_alloc(){
   pthread_key_create(&buffer_key, buffer_destroy);
-  if (!DBID) initPinoDb((PINO_DATABASE**)&DBID);
+  if (!DBID) _TreeNewDbid(&DBID);
 }
 /* Return the thread-specific buffer */
 TreeThreadStatic *TreeGetThreadStatic(){
@@ -58,7 +58,7 @@ TreeThreadStatic *TreeGetThreadStatic(){
   TreeThreadStatic* p = (TreeThreadStatic*)pthread_getspecific(buffer_key);
   if (!p) {
     p = (TreeThreadStatic*)calloc(1,sizeof(TreeThreadStatic));
-    initPinoDb((PINO_DATABASE **)&p->DBID);
+    _TreeNewDbid(&p->DBID);
     pthread_setspecific(buffer_key, (void*)p);
   }
   return p;

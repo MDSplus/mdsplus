@@ -90,6 +90,7 @@ extern int TREE_BLOCKID;
   extern EXPORT int _TreeFlushReset(void *dbid, int nid);
   extern EXPORT void TreeFree(void *);
   extern EXPORT void TreeFreeDbid(void *);
+  extern EXPORT int _TreeNewDbid(void **dbid);
   extern EXPORT int TreeGetDbi(struct dbi_itm *itmlst);
   extern EXPORT int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst);
   extern EXPORT int TreeGetNci(int nid, struct nci_itm *itmlst);

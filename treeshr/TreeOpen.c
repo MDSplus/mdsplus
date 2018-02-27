@@ -568,18 +568,18 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
             *dblist = db;}
 
 
-int initPinoDb(PINO_DATABASE ** dblist){
-  PINO_DATABASE *db = *dblist;
+EXPORT int _TreeNewDbid(void** dblist){
+  PINO_DATABASE *db = *(PINO_DATABASE **)dblist;
   *dblist = calloc(1,sizeof(PINO_DATABASE));
   if (*dblist) {
-    (*dblist)->next = db;
-    (*dblist)->timecontext.start.dtype = DTYPE_DSC;
-    (*dblist)->timecontext.start.class = CLASS_XD;
-    (*dblist)->timecontext.end.dtype = DTYPE_DSC;
-    (*dblist)->timecontext.end.class = CLASS_XD;
-    (*dblist)->timecontext.delta.dtype = DTYPE_DSC;
-    (*dblist)->timecontext.delta.class = CLASS_XD;
-    (*dblist)->stack_size = 8;
+    (*(PINO_DATABASE **)dblist)->next = db;
+    (*(PINO_DATABASE **)dblist)->timecontext.start.dtype = DTYPE_DSC;
+    (*(PINO_DATABASE **)dblist)->timecontext.start.class = CLASS_XD;
+    (*(PINO_DATABASE **)dblist)->timecontext.end.dtype = DTYPE_DSC;
+    (*(PINO_DATABASE **)dblist)->timecontext.end.class = CLASS_XD;
+    (*(PINO_DATABASE **)dblist)->timecontext.delta.dtype = DTYPE_DSC;
+    (*(PINO_DATABASE **)dblist)->timecontext.delta.class = CLASS_XD;
+    (*(PINO_DATABASE **)dblist)->stack_size = 8;
     return TreeNORMAL;
   }
   return TreeFAILURE;
@@ -667,7 +667,7 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
 	  treeshr_errno = TreeMAXOPENEDIT;
 	}
       } else
-        status = initPinoDb(dblist);
+        status = _TreeNewDbid((void**)dblist);
     }
   }
   if (status == TreeNORMAL) {

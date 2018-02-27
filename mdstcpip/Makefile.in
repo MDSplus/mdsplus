@@ -196,10 +196,10 @@ docs:
 
 
 @MAKEBINDIR@mdsiptest$(EXE): testing/mdsiptest.c $(MdsIpShr)
-	$(LINK.c) $< $(OUTPUT_OPTION) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(LIBS)
+	$(LINK.c) $< $(OUTPUT_OPTION) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr -lTreeShr $(LIBS)
 
 @MAKEBINDIR@mdsip_service.exe: mdsip_service.c $(MdsIpShr)
-	$(LINK.c) $< $(OUTPUT_OPTION) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(LIBS)
+	$(LINK.c) $< $(OUTPUT_OPTION) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr -lTreeShr $(LIBS)
 
 MDSIP_EXTRALIB = -lMdsIpSrvShr
 @MAKEBINDIR@mdsip$(EXE): $(MdsIpSrvShr)
@@ -223,7 +223,7 @@ $(MDSIP_UTIL) : mdsiputil.o mdsip_socket_io.o mdsip_parallel.o $(COMPRESSION_OBJ
 
 @MINGW_TRUE@ MAKE_IMPLIB_MdsIpShr=-Wl,--out-implib,$(IMPLIB_MdsIpShr)
 $(MdsIpShr): $(LIB_OBJECTS) $(COMPRESSION_OBJECTS) $(DEF)
-	$(LINK.c) $(OUTPUT_OPTION) $^ @LINKSHARED@ $(MDSIPSHR_EXTRALIBS) $(LIBS) $(MAKE_IMPLIB_MdsIpShr)
+	$(LINK.c) $(OUTPUT_OPTION) $^ @LINKSHARED@ $(MDSIPSHR_EXTRALIBS) -lTreeShr $(LIBS) $(MAKE_IMPLIB_MdsIpShr)
 
 LINK_MDSIPSHR = -L@MAKESHLIBDIR@ -lMdsIpShr
 @MINGW_TRUE@ MAKE_IMPLIB_MdsIpSrvShr=-Wl,--out-implib,$(IMPLIB_MdsIpSrvShr)

@@ -15,7 +15,6 @@
 #include <ipdesc.h>
 #include <mds_stdarg.h>
 #include <pthread.h>
-
 #define MDSIP_MAX_ARGS 256
 #define MDSIP_MAX_COMPRESS 9
 
@@ -32,7 +31,6 @@ enum _mdsip_client_types {
   CRAY_CLIENT = 8
 };
 
-typedef struct _treecontext { void *tree; } TreeContext;
 
 typedef struct _eventinfo {
   char data[12];
@@ -72,7 +70,7 @@ typedef struct _connection {
   char *info_name;
   void *info;
   size_t info_len;
-  TreeContext context;
+  void* DBID;
   unsigned char message_id;
   int client_type;
   int nargs;
