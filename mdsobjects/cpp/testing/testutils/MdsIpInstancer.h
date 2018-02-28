@@ -87,7 +87,8 @@ public:
 	std::cout << "FORKING PROCESS!" << std::flush;
 	m_pid = fork();
 	if(m_pid==0) // child process
-	   exit(execvpe(argv[0], argv, environ));
+	//   exit(execvpe(argv[0], argv, environ));
+	   exit(execvp(argv[0], argv));
 	else if (m_pid<0) // spawn failed
 #else
 	if (posix_spawnp(&m_pid, "mdsip", NULL, NULL, argv, environ))
