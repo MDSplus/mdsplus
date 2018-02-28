@@ -36,116 +36,10 @@ using namespace MDSplus;
 using namespace testing;
 namespace mds = MDSplus;
 
-#define MDS_LOCK_SCOPE(mutex) MDSplus::AutoLock al(mutex); (void)al
-
-class Lockable
-{
-public:
-
-    Lockable(const Lockable &) : m_mutex(new mds::Mutex) { }
-    Lockable() : m_mutex(new mds::Mutex) {}
-    ~Lockable() {
-        delete m_mutex;
-    }
-
-    void lock() const { m_mutex->lock(); }
-    void unlock() const { m_mutex->unlock(); }
-    mds::Mutex & mutex() const { return *m_mutex; }
-    operator mds::Mutex &() const { return *m_mutex; }
-
-private:
-    mds::Mutex *m_mutex;
-};
-
-class NullEvent : public Event, Lockable
-{
-public:
-    NullEvent(const char *name) :
-        Event((char*)name)
-    {
-        start();
-    }
-
-    ~NullEvent()
-    {
-        stop();
-    }
-
-    void run()
-    {
-        MDS_LOCK_SCOPE(*this);
-        const char *name = getName();                                     //Get the name of the event
-        AutoString date(unique_ptr<Uint64>(getTime())->getDate());  //Get the event reception date
-        std::cout << "RECEIVED EVENT " << name << " AT " << date.string << "\n";
-    }
-};
-
-
-class RawEvent : public Event, Lockable
-{
-    std::string test_str;
-public:
-    RawEvent(const char *name, std::string str) :
-        Event((char *)name),
-        test_str(str)
-    {
-        start();
-    }
-
-    ~RawEvent()
-    {
-        stop();
-    }
-
-    void run()
-    {
-        MDS_LOCK_SCOPE(*this);
-        size_t bufSize;
-        const char *name = getName();                                     //Get the name of the event
-        AutoString date(unique_ptr<Uint64>(getTime())->getDate());  //Get the event reception date
-        const char *str = getRaw(&bufSize);                         //Get raw data
-        std::cout << "RECEIVED EVENT " << name << " AT " << date.string << " WITH RAW  " << str << "\n";
-        TEST1( std::string(str) == test_str );
-    }
-};
-
-
-class DataEvent : public Event, Lockable
-{
-    unique_ptr<Data> test_data;
-public:
-    DataEvent(const char *name, Data *data) :
-        Event((char *)name),
-        test_data(data)
-    {
-        start();
-    }
-
-    ~DataEvent()
-    {
-        stop();
-    }
-
-
-    void run()
-    {
-        MDS_LOCK_SCOPE(*this);
-        const char *name = getName();                                     //Get the name of the event
-        AutoString date(unique_ptr<Uint64>(getTime())->getDate());  //Get the event reception date
-        unique_ptr<Data> data = getData();                          //Get data
-        if(data) {
-            std::cout << "RECEIVED EVENT " << name << " AT " << date.string
-                      << " WITH DATA  " << AutoString(data->getString()).string
-                      << "\n";
-            TEST1( AutoString(test_data->getString()).string == AutoString(data->getString()).string );
-        }
-    }
-};
-
 static void* setevent(void* evname) {
   sleep(1);
   Event::setEvent((char*)evname);
-  std::cout << "Event set\n" << std::flush;
+  //std::cout << "Event set\n" << std::flush;
   pthread_exit(0);
   return NULL;
 }
@@ -154,7 +48,7 @@ static void* seteventraw(void* args) {
   sleep(1);
   std::string* str = ((std::string**)args)[1];
   Event::setEventRaw(((char**)args)[0],str->size(),(char*)str->c_str());
-  std::cout << "EventRaw set\n" << std::flush;
+  //std::cout << "EventRaw set\n" << std::flush;
   pthread_exit(0);
   return NULL;
 }
@@ -162,7 +56,7 @@ static void* seteventraw(void* args) {
 static void* seteventdata(void* args) {
   sleep(1);
   Event::setEvent(((char**)args)[0],((Data**)args)[1]);
-  std::cout << "EventData set\n" << std::flush;
+  //std::cout << "EventData set\n" << std::flush;
   pthread_exit(0);
   return NULL;
 }
@@ -186,7 +80,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 	pthread_t thread;
 	if (pthread_create(&thread, attrp, setevent, (void*)evname))
 	  throw std::runtime_error("ERROR: Could not create thread for setevent");
-        NullEvent ev(evname);
+        Event ev(evname);
 	std::cout << "Waiting for wait\n" << std::flush;
         ev.wait();
 	std::cout << "Waiting for thread\n" << std::flush;
@@ -199,7 +93,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 	pthread_t thread;
 	if (pthread_create(&thread, attrp, seteventraw, (void*)args))
 	  throw std::runtime_error("ERROR: Could not create thread for seteventraw");
-	RawEvent ev(evname,str.c_str());
+	Event ev(evname);
 	size_t buf_len = 0;
 	std::cout << "Waiting for waitRaw\n" << std::flush;
 	const char *buf = ev.waitRaw(&buf_len);
@@ -214,7 +108,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 	pthread_t thread;
 	if (pthread_create(&thread, attrp, seteventdata, (void*)args))
 	  throw std::runtime_error("ERROR: Could not create thread for seteventdata");
-	DataEvent ev(evname,str->clone());
+	Event ev(evname);
 	std::cout << "Waiting for waitData\n" << std::flush;
 	unique_ptr<Data> data = ev.waitData();
 	std::cout << "Waiting for thread\n" << std::flush;
