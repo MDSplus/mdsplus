@@ -1,5 +1,6 @@
 #ifndef TESTUTILS_MDSIPMAIN_H
 #define TESTUTILS_MDSIPMAIN_H
+#define USE_FORK // could also be set by CXXFLAGS=-DUSE_FORK
 
 #ifdef _WIN32
  #ifdef _WIN32_WINNT
@@ -7,17 +8,17 @@
  #endif
  #define _WIN32_WINNT _WIN32_WINNT_WIN8 // Windows 8.0
  #include <winsock2.h>
- //#include <windows.h>
- //#include <ws2tcpip.h>
  #define REUSEADDR_TYPE BOOL
 #else
 #include <string.h>
+ #ifndef USE_FORK
+  #include <spawn.h>
+ #endif
  #define SOCKET int
  #define INVALID_SOCKET -1
  #include <sys/socket.h>
  #include <netinet/in.h>
  #include <arpa/inet.h>
- #include <spawn.h>
  #define REUSEADDR_TYPE int
  #include <signal.h>
  #include <errno.h>
@@ -64,37 +65,36 @@ public:
         m_port(port),
         m_protocol(protocol)
     {
-        // build lazy singleton instance //
-        m_host_file.get_instance();
-        if (m_port>0) {
-          // get first available port //
-          int offset = 0;
-          while(!available(m_port,m_protocol) && offset<100 )
-            m_port += offset++;
-          if(offset==100)
-            throw std::out_of_range("any port found within 100 tries");
-        }
-
-        // child //
-        {
-           char port_str[20];
-           char *argv[] = {(char*)"mdsip",(char*)"-P",(char*)m_protocol.c_str(),(char*)"-h",(char*)m_host_file->name(),(char*)"-p",port_str,(char*)"-m", NULL};
-           if (m_port>0)
-             sprintf(port_str,"%i",m_port);
-           else
-             argv[5] = NULL;
+      // build lazy singleton instance //
+      m_host_file.get_instance();
+      if (m_port>0) {
+	// get first available port //
+	int offset = 0;
+	while(!available(m_port,m_protocol) && offset<100 )
+	  m_port += offset++;
+	if(offset==100)
+	  throw std::out_of_range("any port found within 100 tries");
+      }
+      char port_str[20];
+      char *argv[] = {(char*)"mdsip",(char*)"-P",(char*)m_protocol.c_str(),(char*)"-h",(char*)m_host_file->name(),(char*)"-p",port_str,(char*)"-m", NULL};
+      if (m_port>0)
+	sprintf(port_str,"%i",m_port);
+      else
+	argv[5] = NULL;
 #ifdef _WIN32
-	   if (!(m_pid = _spawnvpe(P_NOWAIT, argv[0], &argv[1], environ)))
+	if (!(m_pid = _spawnvpe(P_NOWAIT, argv[0], &argv[1], environ)))
+#elif defined(USE_FORK)
+	std::cout << "FORKING PROCESS!" << std::flush;
+	m_pid = fork();
+	if(m_pid==0) // child process
+	   exit(execvpe(argv[0], argv, environ));
+	else if (m_pid<0) // spawn failed
 #else
-	   if (posix_spawnp(&m_pid, "mdsip", NULL, NULL, argv, environ))
+	if (posix_spawnp(&m_pid, "mdsip", NULL, NULL, argv, environ))
 #endif
-	   {
-	     char msg[128];sprintf(msg,"Could not start mdsip server %s on port %d.",m_protocol.c_str(), m_port);
-             throw std::runtime_error(msg);
-           } else
-             std::cout << "started mdsip server for " << m_protocol << " on port: " << m_port << " pid: " << m_pid << "\n" << std::flush;
-        }
-
+	  throw std::runtime_error("Could not start mdsip server");
+	else
+	  std::cout << "started mdsip server for " << m_protocol << " on port: " << m_port << " pid: " << m_pid << "\n" << std::flush;
     }
 
     ~MdsIpInstancer() {
@@ -104,7 +104,8 @@ public:
 	explorer = OpenProcess(PROCESS_ALL_ACCESS,false,m_pid);
 	TerminateProcess(explorer,1);
 #else
-	kill(m_pid,SIGKILL);
+	if(m_pid>0)
+	  kill(m_pid,SIGKILL);
 #endif
     }
 
