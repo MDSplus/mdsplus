@@ -36,8 +36,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace MDSplus;
 using namespace testing;
 
-#define NUM_THREADS 8
-#define NUM_REPEATS 8
+#define NUM_THREADS 4
+#define NUM_REPEATS 4
 #define MEM_ALLOC 1028
 
 static char** cmds;
