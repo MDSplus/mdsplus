@@ -44,7 +44,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <mdsshr.h>
 #include <libroutines.h>
-#define LOAD_INITIALIZESOCKETS
 #include "mdsshrthreadsafe.h"
 
 extern int UdpEventGetPort(unsigned short *port);
@@ -127,10 +126,6 @@ static int sendSocket = 0;
 static pthread_mutex_t eventIdMutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t sendEventMutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t getSocketMutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t initializeMutex = PTHREAD_MUTEX_INITIALIZER;
-
-extern void InitializeEventSettings();
-
 
 
 /**********************
@@ -201,14 +196,6 @@ static void *handleMessage(void *info_in)
     astadr(arg, (int)bufLen, currPtr);
   }
   return 0;
-}
-
-static void initialize()
-{
-  INITIALIZESOCKETS;
-  pthread_mutex_lock(&initializeMutex);
-  InitializeEventSettings();
-  pthread_mutex_unlock(&initializeMutex);
 }
 
 static int pushEvent(pthread_t thread, int socket) {
@@ -287,8 +274,6 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
   pthread_t thread;
   memset(&ipMreq, 0, sizeof(ipMreq));
 
-  initialize();
-
   if ((udpSocket = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
     print_error("Error creating socket");
     return 0;
@@ -365,7 +350,6 @@ int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf)
   char ttl, loop;
   struct in_addr *interface_addr=0;
 
-  initialize();
   getMulticastAddr(eventName, multiIp);
   udpSocket = getSendSocket();
 

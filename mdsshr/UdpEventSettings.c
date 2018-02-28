@@ -28,6 +28,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 #include <strings.h>
+#define LOAD_INITIALIZESOCKETS
+#include "mdsshrthreadsafe.h"
 #ifdef _WIN32
 #include <ws2tcpip.h>
 #else
@@ -49,8 +51,18 @@ static const char *environ_var[NUM_SETTINGS] = {"mdsevent_loop", "mdsevent_ttl",
 static const char *xml_setting[NUM_SETTINGS] = {"IP_MULTICAST_LOOP", "IP_MULTICAST_TTL", "IP_MULTICAST_IF", "PORT", "ADDRESS"};
 static const char *fname = "eventsConfig.xml";
 
+EXPORT void InitializeEventSettings();
+
+pthread_mutex_t init_lock = PTHREAD_MUTEX_INITIALIZER;
+static void initialize(){
+  static pthread_once_t once = PTHREAD_ONCE_INIT;
+  pthread_once(&once,InitializeEventSettings);
+}
+
 EXPORT int UdpEventGetLoop(unsigned char *loop) {
   int status = 0;
+  initialize();
+  pthread_mutex_lock(&init_lock);
   if (settings[LOOP]) {
     if (strcmp("0", settings[LOOP]) == 0) {
       *loop = 0;
@@ -62,11 +74,14 @@ EXPORT int UdpEventGetLoop(unsigned char *loop) {
       fprintf(stderr, "Invalid udp_multicast_loop value specified. Value must be 0 or 1.\n"
 	      "Using system default\n");
   }
+  pthread_mutex_unlock(&init_lock);
   return status;
 }
 
 EXPORT int UdpEventGetTtl(unsigned char *ttl) {
   int status = 0;
+  initialize();
+  pthread_mutex_lock(&init_lock);
   if (settings[TTL]) {
     char *endptr;
     long int lttl = strtol(settings[TTL],&endptr,0);
@@ -76,11 +91,14 @@ EXPORT int UdpEventGetTtl(unsigned char *ttl) {
     } else
       fprintf(stderr, "Invalid udp_multicast_ttl value specified. Value must be an integer >= 0.\n");
   }
+  pthread_mutex_unlock(&init_lock);
   return status;
 }
 
 EXPORT int UdpEventGetPort(unsigned short *port) {
   int status = 0;
+  initialize();
+  pthread_mutex_lock(&init_lock);
   if (settings[PORT]) {
     struct servent *srv = getservbyname(settings[PORT], "UDP");
     if (srv) {
@@ -102,6 +120,7 @@ EXPORT int UdpEventGetPort(unsigned short *port) {
     *port = srv ? (unsigned short)srv->s_port : 4000u;
     status = 1;
   }
+  pthread_mutex_unlock(&init_lock);
   return status;
 }
 
@@ -113,6 +132,8 @@ EXPORT int UdpEventGetInterface(struct in_addr **interface_addr __attribute__ ((
 #else
 EXPORT int UdpEventGetInterface(struct in_addr **interface_addr) {
   int status = 0;
+  initialize();
+  pthread_mutex_lock(&init_lock);
   if (settings[MULTICAST_IF]) {
     struct ifaddrs *ifaddr=0, *ifa=0;
     if (getifaddrs(&ifaddr) == 0) {
@@ -131,6 +152,7 @@ EXPORT int UdpEventGetInterface(struct in_addr **interface_addr) {
       freeifaddrs(ifaddr);
     }
   }
+  pthread_mutex_unlock(&init_lock);
   return status;
 }
 #endif
@@ -141,6 +163,8 @@ EXPORT int UdpEventGetAddress(char **address, unsigned char *arange) {
   *address = (char *)malloc(50);
   arange[0]=0;
   arange[1]=255;
+  initialize();
+  pthread_mutex_lock(&init_lock);
   if (settings[ADDRESS]) {
     if (strcasecmp(settings[ADDRESS], "compat") == 0) {
       strcpy(*address, "225.0.0.%d");
@@ -161,6 +185,7 @@ EXPORT int UdpEventGetAddress(char **address, unsigned char *arange) {
     strcpy(*address, "224.0.0.%d");
     arange[0] = arange[1] = 175;
   }
+  pthread_mutex_unlock(&init_lock);
   return 1;
 }
 
@@ -183,6 +208,9 @@ static const char *getProperty(xmlDocPtr doc, const char *settings, const char *
 
 EXPORT void InitializeEventSettings()
 {
+  pthread_mutex_lock(&init_lock);
+  pthread_cleanup_push((void*)pthread_mutex_unlock,&init_lock);
+  INITIALIZESOCKETS;
   int i, missing=0;
   xmlInitParser();
   for (i=0;i<NUM_SETTINGS;i++) {
@@ -246,4 +274,5 @@ EXPORT void InitializeEventSettings()
       }
     }
   }
+  pthread_cleanup_pop(1);
 }
