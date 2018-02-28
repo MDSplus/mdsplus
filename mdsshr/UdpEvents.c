@@ -27,6 +27,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ws2tcpip.h>
 #define SHUT_RDWR SD_BOTH
 #else
+#define SOCKET int
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
@@ -109,7 +110,7 @@ static void print_error(char* message) {
 typedef struct _EventList {
   int eventid;
   pthread_t thread;
-  int socket;
+  SOCKET socket;
   struct _EventList *next;
 } EventList;
 
@@ -141,18 +142,6 @@ extern void InitializeEventSettings();
 - buf (buf len chars)
 
 ***********************/
-static void EventExit(void *socket) {
-/*
-ifdef _WIN32
-  // For some reason shutdown does not abort the recvfrom and hangs the process joining
-  // the handleMessage thread. closesocket seems to work though.
-  closesocket(*(int*)socket);
-#else
-*/
-  shutdown(*(int*)socket, SHUT_RDWR);
-  close(*(int*)socket);
-//#endif
-}
 
 static void *handleMessage(void *info_in)
 {
@@ -173,18 +162,16 @@ static void *handleMessage(void *info_in)
   free(info->eventName);
   free(info);
   pthread_mutex_unlock(&eventIdMutex);
-  pthread_cleanup_push(EventExit,(void*)&socket);
-  while (1) {
+  for (;;) {
 #ifdef _WIN32
     if ((recBytes = recvfrom(socket, (char *)recBuf, MAX_MSG_LEN, 0,
 			     (struct sockaddr *)&clientAddr, &addrSize)) < 0) {
       int error = WSAGetLastError();
-      if (error == WSAESHUTDOWN || error == WSAEINTR || error == WSAENOTSOCK) {
+      if (error == WSAEBADF || error == WSAESHUTDOWN || error == WSAEINTR || error == WSAENOTSOCK ) {
 	break;
       } else {
 	fprintf(stderr,"Error getting data - %d\n", error);
       }
-      continue;
     }
 #else
     if ((recBytes = recvfrom(socket, (char *)recBuf, MAX_MSG_LEN, 0,
@@ -213,7 +200,6 @@ static void *handleMessage(void *info_in)
       continue;
     astadr(arg, (int)bufLen, currPtr);
   }
-  pthread_cleanup_pop(1);
   return 0;
 }
 
@@ -341,7 +327,7 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
   currInfo->arg = astprm;
   currInfo->astadr = astadr;
   pthread_create(&thread, 0, handleMessage, (void *)currInfo);
-//  pthread_detach(thread);
+  //pthread_detach(thread);
   *eventid = pushEvent(thread, udpSocket);
   return 1;
 }
@@ -350,8 +336,13 @@ int MDSUdpEventCan(int eventid)
 {
   EventList *ev = popEvent(eventid);
   if (ev) {
-    pthread_cancel(ev->thread);
-    pthread_join(ev->thread,0);
+#ifdef _WIN32
+    closesocket(ev->socket);
+#else
+    shutdown(ev->socket, SHUT_RDWR);
+    close(ev->socket);
+#endif
+    pthread_join(ev->thread,NULL);
     free(ev);
     return 1;
   } else {
