@@ -88,8 +88,10 @@ public:
 #else
 	   if (posix_spawnp(&m_pid, "mdsip", NULL, NULL, argv, environ))
 #endif
-             std::cerr << "Could not start mdsip server " << m_protocol.c_str() << " on port " << m_port << ".";
-           else
+	   {
+	     char msg[128];sprintf(msg,"Could not start mdsip server %s on port %d.",m_protocol.c_str(), m_port);
+             throw std::runtime_error(msg);
+           } else
              std::cout << "started mdsip server for " << m_protocol << " on port: " << m_port << " pid: " << m_pid << "\n" << std::flush;
         }
 
