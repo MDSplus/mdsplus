@@ -273,14 +273,13 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
   unsigned short port;
   pthread_t thread;
   memset(&ipMreq, 0, sizeof(ipMreq));
-
+  UdpEventGetPort(&port);
   if ((udpSocket = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
     print_error("Error creating socket");
     return 0;
   }
   //    serverAddr.sin_len = sizeof(serverAddr);
   serverAddr.sin_family = AF_INET;
-  UdpEventGetPort(&port);
   serverAddr.sin_port = htons(port);
   serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 

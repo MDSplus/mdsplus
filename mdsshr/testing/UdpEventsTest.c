@@ -96,7 +96,6 @@ int main(int argc, char **args)
     pthread_mutex_init(&astCount_lock, NULL);
     pthread_mutex_init(&first_lock, NULL);
     pthread_mutex_init(&second_lock, NULL);
-
     BEGIN_TESTING(UdpEvents);
     if (argc < 2) {
         iterations=3;

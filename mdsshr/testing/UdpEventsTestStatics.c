@@ -110,6 +110,7 @@ void test_handleMessage() {
     struct EventInfo *currInfo;
     unsigned short port;
     memset(&ipMreq, 0, sizeof(ipMreq));
+    UdpEventGetPort(&port);
 
     // create socket
     udpSocket = socket(AF_INET, SOCK_DGRAM, 0);
@@ -117,7 +118,6 @@ void test_handleMessage() {
 
     // set address
     serverAddr.sin_family = AF_INET;
-    UdpEventGetPort(&port);
     serverAddr.sin_port = htons(port);
     serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
