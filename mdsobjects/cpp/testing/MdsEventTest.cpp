@@ -57,11 +57,6 @@ private:
     mds::Mutex *m_mutex;
 };
 
-
-
-
-
-
 class NullEvent : public Event, Lockable
 {
 public:
@@ -147,66 +142,89 @@ public:
     }
 };
 
+static void* setevent(void* evname) {
+  sleep(1);
+  Event::setEvent((char*)evname);
+  std::cout << "Event set\n" << std::flush;
+  pthread_exit(0);
+  return NULL;
+}
+
+static void* seteventraw(void* args) {
+  sleep(1);
+  std::string* str = ((std::string**)args)[1];
+  Event::setEventRaw(((char**)args)[0],str->size(),(char*)str->c_str());
+  std::cout << "EventRaw set\n" << std::flush;
+  pthread_exit(0);
+  return NULL;
+}
+
+static void* seteventdata(void* args) {
+  sleep(1);
+  Event::setEvent(((char**)args)[0],((Data**)args)[1]);
+  std::cout << "EventData set\n" << std::flush;
+  pthread_exit(0);
+  return NULL;
+}
 
 int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 {
     BEGIN_TESTING(Event);
-#   ifdef _WIN32
-    SKIP_TEST("Event test requires fork")
-#   else
-    setenv("UDP_EVENTS","yes",1);
+    pthread_attr_t attr, *attrp;
+    if (pthread_attr_init(&attr))
+      attrp = NULL;
+    else {
+      attrp = &attr;
+      pthread_attr_setstacksize(&attr, 0x100000);
+    }
+    try {
     static char evname[100] = "empty";
     if(strcmp(evname,"empty") == 0)
         sprintf(evname,"event_test_%d",getpid());
 
     { // NULL EVENT //
-        if(fork()) {
-            NullEvent ev(evname);
-            ev.wait();
-        }
-        else {
-            sleep(1);
-            Event::setEvent(evname);
-            exit(0);
-        }
+	pthread_t thread;
+	if (pthread_create(&thread, attrp, setevent, (void*)evname))
+	  throw std::runtime_error("ERROR: Could not create thread for setevent");
+        NullEvent ev(evname);
+	std::cout << "Waiting for wait\n" << std::flush;
+        ev.wait();
+	std::cout << "Waiting for thread\n" << std::flush;
+	pthread_join(thread,NULL);
     }
-
 
     { // RAW EVENT //
         static std::string str("test string to be compared");
-
-        if(fork()) {
-            RawEvent ev(evname,str.c_str());
-            size_t buf_len = 0;
-            const char *buf = ev.waitRaw(&buf_len);
-            TEST1( std::string(str) == std::string(buf) );
-        }
-        else {
-            sleep(1);
-            Event::setEventRaw(evname,str.size(),(char*)str.c_str());
-            exit(0);
-        }
+	void* args[] = {evname,&str};
+	pthread_t thread;
+	if (pthread_create(&thread, attrp, seteventraw, (void*)args))
+	  throw std::runtime_error("ERROR: Could not create thread for seteventraw");
+	RawEvent ev(evname,str.c_str());
+	size_t buf_len = 0;
+	std::cout << "Waiting for waitRaw\n" << std::flush;
+	const char *buf = ev.waitRaw(&buf_len);
+	std::cout << "Waiting for thread\n" << std::flush;
+	pthread_join(thread,NULL);
+	TEST1( std::string(str) == std::string(buf) );
     }
-
 
     { // DATA EVENT //
-        static unique_ptr<String> str = new String("test string to be compared");
-
-        if(fork()) {
-            DataEvent ev(evname,str->clone());
-            unique_ptr<Data> data = ev.waitData();
-            TEST1( AutoString(data->getString()).string == AutoString(str->getString()).string );
-        }
-        else {
-            sleep(1);
-            Event::setEvent(evname,str);
-            exit(0);
-        }
+	static unique_ptr<String> str = new String("test string to be compared");
+	void* args[] = {evname,str};
+	pthread_t thread;
+	if (pthread_create(&thread, attrp, seteventdata, (void*)args))
+	  throw std::runtime_error("ERROR: Could not create thread for seteventdata");
+	DataEvent ev(evname,str->clone());
+	std::cout << "Waiting for waitData\n" << std::flush;
+	unique_ptr<Data> data = ev.waitData();
+	std::cout << "Waiting for thread\n" << std::flush;
+	pthread_join(thread,NULL);
+	TEST1( AutoString(data->getString()).string == AutoString(str->getString()).string );
     }
-
-#   endif
+    } catch (...) {
+      if (attrp) pthread_attr_destroy(attrp);
+      throw;
+    }
+    if (attrp) pthread_attr_destroy(attrp);
     END_TESTING;
 }
-
-
-
