@@ -311,7 +311,6 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
   currInfo->arg = astprm;
   currInfo->astadr = astadr;
   pthread_create(&thread, 0, handleMessage, (void *)currInfo);
-  //pthread_detach(thread);
   *eventid = pushEvent(thread, udpSocket);
   return 1;
 }
@@ -321,12 +320,22 @@ int MDSUdpEventCan(int eventid)
   EventList *ev = popEvent(eventid);
   if (ev) {
 #ifdef _WIN32
+	/**********************************************
+	Windows fails on canceling thread in recvfrom.
+	Closing the socket causes recvfrom to error
+	with WSAEBADF which terminates the thread.
+	This however is a race condition so we cancel
+	when we can (ifndef _WIN32)
+	*********************************************/
     closesocket(ev->socket);
 #else
+    pthread_cancel(ev->thread);
+#endif
+    pthread_join(ev->thread,NULL);
+#ifndef _WIN32
     shutdown(ev->socket, SHUT_RDWR);
     close(ev->socket);
 #endif
-    pthread_join(ev->thread,NULL);
     free(ev);
     return 1;
   } else {
