@@ -44,6 +44,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/types.h>
 #include <unistd.h>
 
+//#define DEBUG
+
 typedef enum { LOOP, TTL, MULTICAST_IF, PORT, ADDRESS } setting_types;
 #define NUM_SETTINGS 5
 static const char *settings[NUM_SETTINGS] = {0,0,0,0,0};
@@ -123,28 +125,61 @@ EXPORT int UdpEventGetPort(unsigned short *port) {
   pthread_mutex_unlock(&init_lock);
   return status;
 }
-
-
-#ifdef _WIN32
-EXPORT int UdpEventGetInterface(struct in_addr **interface_addr __attribute__ ((unused))) {
-  return 0;
+#ifdef DEBUG
+inline static void print_addr(FILE * file, struct sockaddr_in *addr) {
+  size_t i;
+  uint8_t* c = (uint8_t*)&addr->sin_addr;
+  fprintf(stderr,"%d",c[0]);
+  for (i=1;i< sizeof(addr->sin_addr);i++)
+    fprintf(file,".%u",c[i]);
 }
-#else
+#endif
 EXPORT int UdpEventGetInterface(struct in_addr **interface_addr) {
+  /*******************************************
+  struct in_addr is ipv4 so dont look for ipv6
+  ********************************************/
   int status = 0;
   initialize();
   pthread_mutex_lock(&init_lock);
   if (settings[MULTICAST_IF]) {
-    struct ifaddrs *ifaddr=0, *ifa=0;
-    if (getifaddrs(&ifaddr) == 0) {
+    int err;
+#ifdef _WIN32
+ #include <iphlpapi.h>
+ #define GAA_FLAGS GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_MULTICAST | GAA_FLAG_SKIP_DNS_SERVER
+ #define HAS_NO_ADDRESS(ifa) (ifa->FirstUnicastAddress == NULL)
+ #define CHECK_NAME(ifa)     (wcsicmp(ifa->FriendlyName,lookup_name)==0)
+ #define freeifaddrs(ifaddr) free(ifaddr);free(lookup_name)
+ #define ifa_name	FriendlyName
+ #define ifa_addr	FirstUnicastAddress->Address.lpSockaddr
+ #define ifa_next	Next
+    /*convert interface name to wchar for later compare*/
+    int len = strlen(settings[MULTICAST_IF]);
+    PWCHAR lookup_name = malloc(len*sizeof(WCHAR));
+    mbstowcs(lookup_name, settings[MULTICAST_IF], len);
+
+    /*windows substitute for getifaddrs*/
+    ULONG memlen = sizeof (IP_ADAPTER_ADDRESSES);
+    IP_ADAPTER_ADDRESSES *ifa,*ifaddr = malloc(memlen);
+    while ((err = GetAdaptersAddresses(AF_INET,GAA_FLAGS,NULL,ifaddr,&memlen))==ERROR_BUFFER_OVERFLOW) {
+      memlen*=2;
+      ifaddr = realloc(ifaddr,memlen);
+    }
+#else
+ #define HAS_NO_ADDRESS(ifa)    (ifa->ifa_addr == NULL)
+ #define CHECK_NAME(ifa)     (strcasecmp(ifa->ifa_name,settings[MULTICAST_IF])==0)
+    struct ifaddrs *ifaddr=0, *ifa;
+    err = getifaddrs(&ifaddr);
+#endif
+    if (!err) {
       for (ifa=ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
-	if (ifa->ifa_addr == NULL)
+	if HAS_NO_ADDRESS(ifa)
 	  continue;
-	if ((strcasecmp(ifa->ifa_name,settings[MULTICAST_IF])==0) &&
-	    ((ifa->ifa_addr->sa_family == AF_INET) ||
-	     (ifa->ifa_addr->sa_family == AF_INET6))) {
-	  struct sockaddr_in *addr = (struct sockaddr_in *)ifa->ifa_addr;
-	  *interface_addr = memcpy(malloc(sizeof(addr->sin_addr)),&addr->sin_addr,sizeof(addr->sin_addr));
+	struct sockaddr_in *addr = (struct sockaddr_in *)ifa->ifa_addr;
+	if (CHECK_NAME(ifa) && (addr->sin_family == AF_INET)) {
+	    *interface_addr = memcpy(malloc(sizeof(addr->sin_addr)),&addr->sin_addr,sizeof(addr->sin_addr));
+#ifdef DEBUG
+	  fprintf(stderr,"using address: ");print_addr(stderr,addr);fprintf(stderr,"\n");
+#endif
 	  status = 1;
 	  break;
 	}
@@ -155,7 +190,6 @@ EXPORT int UdpEventGetInterface(struct in_addr **interface_addr) {
   pthread_mutex_unlock(&init_lock);
   return status;
 }
-#endif
 
 EXPORT int UdpEventGetAddress(char **address, unsigned char *arange) {
   int num;
@@ -218,8 +252,17 @@ EXPORT void InitializeEventSettings()
     if (settings[i]==NULL)
       missing=1;
   }
-
+#ifdef DEBUG
+  fprintf(stderr,"UdpEventSettings by\nenvironment:");
+  for (i=0;i<NUM_SETTINGS;i++)
+    if (settings[i])
+      fprintf(stderr," %s=\"%s\"",environ_var[i],settings[i]);
+  fprintf(stderr,"\n");
+#endif
   if (missing) {
+#ifdef DEBUG
+  fprintf(stderr,"user xml:   ");
+#endif
     /* If not all setting already set look for settings in HOME/.mdsplus/eventsConfig.xml
        then in $MDSPLUS_DIR/local/eventsConfig.xml */
     char *home_dir;
@@ -245,14 +288,24 @@ EXPORT void InitializeEventSettings()
 	      settings[i] = getProperty(doc, "UdpEvents", xml_setting[i]);
 	      if (settings[i] == NULL)
 	        missing = 1;
+#ifdef DEBUG
+	      else
+		fprintf(stderr," %s=\"%s\"",environ_var[i],settings[i]);
+#endif
 	    }
 	  }
 	  xmlFreeDoc(doc);
 	}
       }
     }
+#ifdef DEBUG
+    fprintf(stderr,"\n");
+#endif
   }
   if (missing) {
+#ifdef DEBUG
+  fprintf(stderr,"local xml:  ");
+#endif
     xmlDocPtr doc=NULL;
     char *mdsplus_dir = getenv("MDSPLUS_DIR");
     static const char *local_xml_dir = "/local/";
@@ -265,14 +318,20 @@ EXPORT void InitializeEventSettings()
 	free(xmlfname);
 	if (doc) {
 	  for (i=0;i<NUM_SETTINGS;i++) {
-	    if (settings[i] == NULL) {
+	    if (settings[i] == NULL)
 	      settings[i] = getProperty(doc, "UdpEvents", xml_setting[i]);
-	    }
+#ifdef DEBUG
+	    else
+	      fprintf(stderr," %s=\"%s\"",environ_var[i],settings[i]);
+#endif
 	  }
 	  xmlFreeDoc(doc);
 	}
       }
     }
+#ifdef DEBUG
+    fprintf(stderr,"\n");
+#endif
   }
   pthread_cleanup_pop(1);
 }
