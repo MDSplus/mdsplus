@@ -96,29 +96,25 @@ int main(int argc, char **args)
     pthread_mutex_init(&astCount_lock, NULL);
     pthread_mutex_init(&first_lock, NULL);
     pthread_mutex_init(&second_lock, NULL);
-    
     BEGIN_TESTING(UdpEvents);
-#ifdef _WIN32
-    SKIP_TEST("Skipping UDP event tests on Windows because of problems with wine and udp.")
-#endif
     if (argc < 2) {
         iterations=3;
     } else {
         iterations=atoi(args[1]);
         printf("Doing %d iterations\n",iterations);
     }
-    
+
     for (i=0;i<iterations;i++) {
         sprintf(eventname,"ev_test_%d_%d",i,getpid());
 
         status = MDSEventAst(eventname, eventAst, eventname, &ev_id);
-        TEST0( status%1 );        
+        TEST0( status%1 );
         wait();
         status = MDSEvent(eventname,0,0);
-        TEST0( status%1 );        
+        TEST0( status%1 );
         status = MDSEvent(eventname,0,0);
-        TEST0( status%1 );                
-        wait();        
+        TEST0( status%1 );
+        wait();
         status = MDSEventCan(ev_id);
         TEST0( status%1 );
         wait();
@@ -126,15 +122,15 @@ int main(int argc, char **args)
     pthread_mutex_lock(&astCount_lock);
     TEST1(astCount == 2*iterations);
     pthread_mutex_unlock(&astCount_lock);
-    
+
 
     // Testing two listening events //
     int id1,id2;
     sprintf(eventname, "test_event_%d", getpid());
     status = MDSEventAst(eventname, eventAstFirst, "first", &id1);
-    status = MDSEventAst(eventname, eventAstSecond, "second", &id2);        
+    status = MDSEventAst(eventname, eventAstSecond, "second", &id2);
     wait();
-    status = MDSEvent(eventname,0,0);    
+    status = MDSEvent(eventname,0,0);
     wait();
     pthread_mutex_lock(&first_lock);
     pthread_mutex_lock(&second_lock);
@@ -145,7 +141,7 @@ int main(int argc, char **args)
     pthread_mutex_unlock(&second_lock);
     status = MDSEventCan(id1);
     status = MDSEventCan(id2);
-    
+
     END_TESTING;
     return (status & 1)==0;
 }

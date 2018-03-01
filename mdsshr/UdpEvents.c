@@ -27,6 +27,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ws2tcpip.h>
 #define SHUT_RDWR SD_BOTH
 #else
+#define SOCKET int
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
@@ -43,7 +44,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <mdsshr.h>
 #include <libroutines.h>
-#define LOAD_INITIALIZESOCKETS
 #include "mdsshrthreadsafe.h"
 
 extern int UdpEventGetPort(unsigned short *port);
@@ -109,7 +109,7 @@ static void print_error(char* message) {
 typedef struct _EventList {
   int eventid;
   pthread_t thread;
-  int socket;
+  SOCKET socket;
   struct _EventList *next;
 } EventList;
 
@@ -126,10 +126,6 @@ static int sendSocket = 0;
 static pthread_mutex_t eventIdMutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t sendEventMutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t getSocketMutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t initializeMutex = PTHREAD_MUTEX_INITIALIZER;
-
-extern void InitializeEventSettings();
-
 
 
 /**********************
@@ -141,18 +137,6 @@ extern void InitializeEventSettings();
 - buf (buf len chars)
 
 ***********************/
-static void EventExit(void *socket) {
-/*
-ifdef _WIN32
-  // For some reason shutdown does not abort the recvfrom and hangs the process joining
-  // the handleMessage thread. closesocket seems to work though.
-  closesocket(*(int*)socket);
-#else
-*/
-  shutdown(*(int*)socket, SHUT_RDWR);
-  close(*(int*)socket);
-//#endif
-}
 
 static void *handleMessage(void *info_in)
 {
@@ -173,18 +157,16 @@ static void *handleMessage(void *info_in)
   free(info->eventName);
   free(info);
   pthread_mutex_unlock(&eventIdMutex);
-  pthread_cleanup_push(EventExit,(void*)&socket);
-  while (1) {
+  for (;;) {
 #ifdef _WIN32
     if ((recBytes = recvfrom(socket, (char *)recBuf, MAX_MSG_LEN, 0,
 			     (struct sockaddr *)&clientAddr, &addrSize)) < 0) {
       int error = WSAGetLastError();
-      if (error == WSAESHUTDOWN || error == WSAEINTR || error == WSAENOTSOCK) {
+      if (error == WSAEBADF || error == WSAESHUTDOWN || error == WSAEINTR || error == WSAENOTSOCK ) {
 	break;
       } else {
 	fprintf(stderr,"Error getting data - %d\n", error);
       }
-      continue;
     }
 #else
     if ((recBytes = recvfrom(socket, (char *)recBuf, MAX_MSG_LEN, 0,
@@ -213,16 +195,7 @@ static void *handleMessage(void *info_in)
       continue;
     astadr(arg, (int)bufLen, currPtr);
   }
-  pthread_cleanup_pop(1);
   return 0;
-}
-
-static void initialize()
-{
-  INITIALIZESOCKETS;
-  pthread_mutex_lock(&initializeMutex);
-  InitializeEventSettings();
-  pthread_mutex_unlock(&initializeMutex);
 }
 
 static int pushEvent(pthread_t thread, int socket) {
@@ -300,16 +273,13 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
   unsigned short port;
   pthread_t thread;
   memset(&ipMreq, 0, sizeof(ipMreq));
-
-  initialize();
-
+  UdpEventGetPort(&port);
   if ((udpSocket = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
     print_error("Error creating socket");
     return 0;
   }
   //    serverAddr.sin_len = sizeof(serverAddr);
   serverAddr.sin_family = AF_INET;
-  UdpEventGetPort(&port);
   serverAddr.sin_port = htons(port);
   serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
@@ -341,7 +311,6 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
   currInfo->arg = astprm;
   currInfo->astadr = astadr;
   pthread_create(&thread, 0, handleMessage, (void *)currInfo);
-//  pthread_detach(thread);
   *eventid = pushEvent(thread, udpSocket);
   return 1;
 }
@@ -350,8 +319,23 @@ int MDSUdpEventCan(int eventid)
 {
   EventList *ev = popEvent(eventid);
   if (ev) {
+#ifdef _WIN32
+	/**********************************************
+	Windows fails on canceling thread in recvfrom.
+	Closing the socket causes recvfrom to error
+	with WSAEBADF which terminates the thread.
+	This however is a race condition so we cancel
+	when we can (ifndef _WIN32)
+	*********************************************/
+    closesocket(ev->socket);
+#else
     pthread_cancel(ev->thread);
-    pthread_join(ev->thread,0);
+#endif
+    pthread_join(ev->thread,NULL);
+#ifndef _WIN32
+    shutdown(ev->socket, SHUT_RDWR);
+    close(ev->socket);
+#endif
     free(ev);
     return 1;
   } else {
@@ -374,7 +358,6 @@ int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf)
   char ttl, loop;
   struct in_addr *interface_addr=0;
 
-  initialize();
   getMulticastAddr(eventName, multiIp);
   udpSocket = getSendSocket();
 
