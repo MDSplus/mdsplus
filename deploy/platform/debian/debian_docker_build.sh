@@ -148,7 +148,8 @@ EOF
     if [ ! -z "$GPG_HOME" ]
     then
     	echo "SignWith: MDSplus" >> /release/repo/conf/distributions
-	export HOME="$GPG_HOME"
+	rsync -a ${GPG_HOME}/.gnupg /workspace
+	export GNUPGHOME="/workspace"
     fi
     pushd /release/repo
     reprepro clearvanished
