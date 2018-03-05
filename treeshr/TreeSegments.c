@@ -699,12 +699,12 @@ inline static int open_index_read(vars_t*vars){
 
 inline static int ReadProperty(TREE_INFO *tinfo, const int64_t offset, char *buffer, const int length){
   INIT_TREESUCCESS;
-  int deleted = B_TRUE; \
-  while STATUS_OK { \
-    status = (MDS_IO_READ_X(tinfo->data_file->get,offset,buffer,length, &deleted) == length) ? TreeSUCCESS : TreeFAILURE; \
-    if (STATUS_OK && deleted) \
-      status = TreeReopenDatafile(tinfo); \
-    else break; \
+  int deleted = B_TRUE;
+  while STATUS_OK {
+    status = (MDS_IO_READ_X(tinfo->data_file->get,offset,buffer,length, &deleted) == length) ? TreeSUCCESS : TreeFAILURE;
+    if (STATUS_OK && deleted)
+      status = TreeReopenDatafile(tinfo);
+    else break;
   }
   return status;
 }
@@ -1779,7 +1779,7 @@ static int GetSegmentHeader(TREE_INFO * tinfo, const int64_t offset, SEGMENT_HEA
 static int GetSegmentIndex(TREE_INFO * tinfo, const int64_t offset, SEGMENT_INDEX * idx){
   INIT_TREESUCCESS;
   char buffer[sizeof(int64_t) + sizeof(int) + SEGMENTS_PER_INDEX * (6 * sizeof(int64_t) + 4 * sizeof(int))], *bptr;
-  status = ReadProperty_safe(tinfo,offset, buffer, sizeof(buffer));
+  status = ReadProperty_safe(tinfo, offset, buffer, sizeof(buffer));
   if (status == TreeSUCCESS) {
     bptr = buffer;
     idx->previous_offset = swapquad(bptr);
@@ -1966,24 +1966,47 @@ static int CopySegment(TREE_INFO *tinfo_in, TREE_INFO *tinfo_out, int nid, SEGME
   return status;
 }
 
+typedef struct indexlist {
+  struct indexlist* next;
+  int64_t           offset;
+} indexlist_t;
 static int CopySegmentIndex(TREE_INFO * tinfo_in, TREE_INFO * tinfo_out, int nid, SEGMENT_HEADER * shead,
-                            int64_t * index_offset, int64_t * data_offset, int64_t * dim_offset, int compress){
-  SEGMENT_INDEX sindex;
-  SEGMENT_INFO* sinfo;
-  int i;
-  int status = GetSegmentIndex(tinfo_in, *index_offset, &sindex);
-  if STATUS_OK {
-    if (sindex.previous_offset != -1) {
-      status =
-          CopySegmentIndex(tinfo_in, tinfo_out, nid, shead, &sindex.previous_offset, data_offset,
-                           dim_offset, compress);
+        int64_t * index_offset,
+        int64_t * data_offset __attribute__((unused)), int64_t * dim_offset __attribute__((unused)),
+        int compress){
+  INIT_TREESUCCESS;
+  indexlist_t *tlist, *list = NULL;
+  int64_t offset = *index_offset;
+  while (offset>=0 && STATUS_OK) {
+    tlist = malloc(sizeof(indexlist_t));
+    tlist->next   = list;
+    tlist->offset = offset;
+    list          = tlist;
+    status = ReadProperty(tinfo_in, offset, (char*)&offset, sizeof(offset));
+#ifdef WORDS_BIGENDIAN
+    offset = swapquad((char*)&offset);
+#endif
+    if (list->offset==offset)
+      break;
+  }
+  *index_offset = -1;
+  while (list) {
+    if STATUS_OK {
+      SEGMENT_INDEX sindex;
+      status = GetSegmentIndex(tinfo_in, list->offset, &sindex);
+      if STATUS_OK {
+	int i;
+	for (i = 0; (i < SEGMENTS_PER_INDEX) && STATUS_OK; i++) {
+	  SEGMENT_INFO* sinfo = &sindex.segment[i];
+	  status = CopySegment(tinfo_in, tinfo_out, nid, shead, sinfo, i,compress);
+	}
+	sindex.previous_offset = *index_offset;	*index_offset = -1; // append
+	status = PutSegmentIndex(tinfo_out, &sindex, index_offset);
+      }
     }
-    for (i = 0; (i < SEGMENTS_PER_INDEX) && STATUS_OK; i++) {
-      sinfo = &sindex.segment[i];
-      status = CopySegment(tinfo_in, tinfo_out, nid, shead, sinfo, i,compress);
-    }
-    *index_offset = -1;
-    status = PutSegmentIndex(tinfo_out, &sindex, index_offset);
+    tlist = list;
+    list  = list->next;
+    free(tlist);
   }
   return status;
 }
