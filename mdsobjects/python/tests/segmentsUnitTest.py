@@ -319,7 +319,7 @@ class Tests(TestCase):
         ptree.compressDatafile()
         te = DateToQuad("now")
         sampperseg = 50
-        data = ZERO(Int32Array([sampperseg]),Int32(0)).data()
+        data = ZERO(Int32Array([sampperseg]),Int32(0))
         for i in range(513):
             t0=te+1;te=t0+sampperseg-1
             node.makeSegment(t0,te,Int64Array(range(t0,te+1)),data+Int32(i))
