@@ -149,7 +149,6 @@ EOF
     then
     	echo "SignWith: MDSplus" >> /release/repo/conf/distributions
 	rsync -a ${GPG_HOME}/.gnupg /workspace
-	export GNUPGHOME="/workspace"
     fi
     pushd /release/repo
     reprepro clearvanished
@@ -157,7 +156,7 @@ EOF
     do
         if [ -z "$abort" ] || [ "$abort" = "0" ]
         then
-            :&& reprepro -V -C ${BRANCH} includedeb MDSplus $deb
+            :&& HOME=/workspace reprepro -V -C ${BRANCH} includedeb MDSplus $deb
             checkstatus abort "Failure: Problem installing $deb into repository." $?
         fi
     done
