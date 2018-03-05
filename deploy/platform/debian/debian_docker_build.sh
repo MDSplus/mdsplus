@@ -118,6 +118,7 @@ buildrelease() {
 	fi
     done
     checkstatus abort "Failure: Problem with contents of one or more debs. (see above)" $baddeb
+  if [ -z "$abort" ] || [ "$abort" = "0" ]
     echo "Building repo";
     mkdir -p /release/repo/conf
     mkdir -p /release/repo/db
@@ -158,9 +159,12 @@ EOF
         then
             :&& HOME=/tmp reprepro -V -C ${BRANCH} includedeb MDSplus $deb
             checkstatus abort "Failure: Problem installing $deb into repository." $?
+        else
+          break
         fi
     done
     popd
+  fi #abort
   fi #nomake
 }
 publish() {
