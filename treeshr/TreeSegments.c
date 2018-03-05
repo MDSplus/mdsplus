@@ -475,9 +475,10 @@ inline static int check_sinfo(vars_t*vars) {
   if (vars->idx < 0 || vars->idx > vars->shead.idx)
     return TreeFAILURE;
   for (vars->index_offset = vars->shead.index_offset;
-       STATUS_OK && vars->idx < vars->sindex.first_idx && vars->sindex.previous_offset > 0;
-       vars->index_offset = vars->sindex.previous_offset)
+       STATUS_OK && vars->idx < vars->sindex.first_idx && vars->sindex.previous_offset > 0;) {
+    vars->index_offset = vars->sindex.previous_offset;
     status = GetSegmentIndex(vars->tinfo, vars->sindex.previous_offset, &vars->sindex);
+  }
   if (STATUS_NOT_OK || (vars->idx < vars->sindex.first_idx))
     return TreeFAILURE;
   vars->sinfo = &vars->sindex.segment[vars->idx % SEGMENTS_PER_INDEX];
