@@ -57,7 +57,7 @@ static void printDecompiled(struct descriptor *inD)
 static int getShape(struct descriptor *dataD, int *dims, int *numDims)
 {
     int i;
-    ARRAY_COEFF(char *, 64) *arrPtr;
+    ARRAY_COEFF(char *, MAX_NDIMS) *arrPtr;
     if(dataD->class != CLASS_A)
     {
 //	printf("Internal error!!!! Class: %d\n", dataD->class);
@@ -104,11 +104,11 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
   //struct descriptor shapeExprD = { strlen(shapeExpr), DTYPE_T, CLASS_S, shapeExpr };
   //char setRangeExpr[512];	//Safe dimension, to avoid useless mallocs
   //struct descriptor setRangeExprD = { 0, DTYPE_T, CLASS_S, setRangeExpr };
-  DESCRIPTOR_SIGNAL(outSignalD, 64, 0, 0);
+  DESCRIPTOR_SIGNAL(outSignalD, MAX_NDIMS, 0, 0);
   DESCRIPTOR_A(outDimD, 0, 0, 0, 0);
   //DESCRIPTOR_A(outDataD, 0, 0, 0, 0);
-  DESCRIPTOR_A_COEFF(outDataD, 0, 0, 0, 64, 0) ;
-  
+  DESCRIPTOR_A_COEFF(outDataD, 0, 0, 0, MAX_NDIMS, 0) ;
+
   DESCRIPTOR_A(beginArrD, 0, 0, 0, 0);
   DESCRIPTOR_A(endingArrD, 0, 0, 0, 0);
   DESCRIPTOR_A(deltavalArrD, 0, 0, 0, 0);
@@ -119,10 +119,10 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
   int numSignals, numDimensions;
   int allDimensionsAreRanges;
   struct descriptor_range *rangeD, *prevRangeD;
-  
+
   int **shapes, *numShapes;
   int totShapes;
-  
+
   extern int TdiCompile(), TdiData();
 
   if (signalsApd->class == CLASS_XD)
@@ -133,7 +133,7 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
     MdsCopyDxXd((struct descriptor *)&emptyXd, outXd);
     return 1;
   }
-//Check shapes. If n-multidimensional arrays, the first n-1 dimensions must fit 
+//Check shapes. If n-multidimensional arrays, the first n-1 dimensions must fit
 
 /*
 
@@ -180,8 +180,8 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
     free((char *)shapesXd);
     return status;
   }
-*/  
-  
+*/
+
 //Get the shape of all segments
   numShapes = (int *)malloc(numSignals * sizeof(int));
   shapes = (int **)malloc(numSignals * sizeof(int *));
@@ -189,7 +189,7 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
     currSignalD = ((struct descriptor_signal **)signalsApd->pointer)[i];
     shapes[i] = (int *)malloc(54 * sizeof(int));
     getShape((struct descriptor *)(currSignalD->data), shapes[i], &numShapes[i]);
-    
+
     if(i == 0)
       minNumShapes = maxNumShapes = numShapes[i];
     else  {
@@ -218,7 +218,7 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
   if (!(status & 1)) {
     return status;
   }
-  
+
 //Shapes Ok, build definitive shapes array for this signal;
   for (i = 0; i < minNumShapes; i++)
     outShape[i] = shapes[0][i];
@@ -240,8 +240,8 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
     free((char *)shapes[i]);
   free((char *)shapes);
   free((char *)numShapes);
-  
-  
+
+
 //Check that the number of dimensions in signals is the same
   currSignalD = ((struct descriptor_signal **)signalsApd->pointer)[0];
   numDimensions = currSignalD->ndesc - 2;
@@ -254,7 +254,7 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
   if (!(status & 1))
     return status;
 
-//Check whether all dimensions are axpressed as a range. In this case a global range is built instead 
+//Check whether all dimensions are axpressed as a range. In this case a global range is built instead
 //of merging dimension arrays
   allDimensionsAreRanges = 1;
   for (i = 0; i < numSignals && allDimensionsAreRanges; i++) {
@@ -405,11 +405,11 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
   outDataD.dimct = totShapes;
   for(i = 0; i < totShapes; i++)
     outDataD.m[i] = outShape[i];
-  
+
   outSignalD.data = (struct descriptor *)&outDataD;
- 
- 
- 
+
+
+
 //Input signals merged now to outSignalD, Copy result back
   status = MdsCopyDxXd((struct descriptor *)&outSignalD, outXd);
 
