@@ -33,19 +33,35 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern void **TreeCtx();
 
+typedef struct move_s{
+char *from_c;
+char *to_c;
+char *from_d;
+char *to_d;
+} move_t;
+static void freemove(void* move_p) {
+  if (((move_t*)move_p)->from_c) free(((move_t*)move_p)->from_c);
+  if (((move_t*)move_p)->to_c  ) free(((move_t*)move_p)->to_c  );
+  if (((move_t*)move_p)->from_d) free(((move_t*)move_p)->from_d);
+  if (((move_t*)move_p)->to_d  ) free(((move_t*)move_p)->to_d  );
+}
+static void treeclose(void* dbid_p) {
+  _TreeClose(dbid_p, 0, 0);
+  if (*(void**)dbid_p)
+    free(*(void**)dbid_p);
+}
 STATIC_ROUTINE int RewriteDatafile(char *tree, int shot, int compress)
 {
   int status, stat1;
   void *dbid1 = 0, *dbid2 = 0;
-  char *from_c = NULL;
-  char *to_c = NULL;
-  char *from_d = NULL;
-  char *to_d = NULL;
   char *tree_list = strcpy(malloc(strlen(tree) + 4), tree);
   strcat(tree_list, ",\"\"");
   status = _TreeOpen(&dbid1, tree_list, shot, 1);
   free(tree_list);
   if STATUS_OK {
+    move_t move = {0};
+    pthread_cleanup_push(freemove,&move);
+    pthread_cleanup_push(treeclose,&dbid1);
     int stv;
     PINO_DATABASE *dblist1 = (PINO_DATABASE *) dbid1;
     TREE_INFO *info1 = dblist1->tree_info;
@@ -55,6 +71,7 @@ STATIC_ROUTINE int RewriteDatafile(char *tree, int shot, int compress)
       if STATUS_OK {
 	status = _TreeOpenEdit(&dbid2, tree, shot);
 	if STATUS_OK {
+	  pthread_cleanup_push(treeclose,&dbid2);
 	  PINO_DATABASE *dblist2 = (PINO_DATABASE *) dbid2;
 	  TREE_INFO *info2 = dblist2->tree_info;
 	  status = TreeOpenNciW(dblist2->tree_info, 1);
@@ -108,41 +125,30 @@ STATIC_ROUTINE int RewriteDatafile(char *tree, int shot, int compress)
 		  free(old_list);
 		}
 	      }
-	      from_c = strcpy(malloc(strlen(info1->filespec) + 20), info1->filespec);
-	      strcpy(from_c + strlen(info1->filespec) - 4, "characteristics#");
-	      to_c = strcpy(malloc(strlen(info1->filespec) + 20), info1->filespec);
-	      strcpy(to_c + strlen(info1->filespec) - 4, "characteristics");
-	      from_d = strcpy(malloc(strlen(info1->filespec) + 20), from_c);
-	      strcpy(from_d + strlen(info1->filespec) - 4, "datafile#");
-	      to_d = strcpy(malloc(strlen(info1->filespec) + 20), to_c);
-	      strcpy(to_d + strlen(info1->filespec) - 4, "datafile");
+	      move.from_c = strcpy(malloc(strlen(info1->filespec) + 13), info1->filespec);
+	      strcpy(move.from_c + strlen(info1->filespec) - 4, "characteristics#");
+	      move.to_c = strcpy(malloc(strlen(info1->filespec) + 12), info1->filespec);
+	      strcpy(move.to_c + strlen(info1->filespec) - 4, "characteristics");
+	      move.from_d = strcpy(malloc(strlen(info1->filespec) + 6), info1->filespec);
+	      strcpy(move.from_d + strlen(info1->filespec) - 4, "datafile#");
+	      move.to_d = strcpy(malloc(strlen(info1->filespec) + 5), info1->filespec);
+	      strcpy(move.to_d + strlen(info1->filespec) - 4, "datafile");
 	    }
 	  }
-	  _TreeClose(&dbid2, 0, 0);
-	  if (dbid2)
-	    free(dbid2);
+          pthread_cleanup_pop(1);//treeclose(&dbid2)
 	}
       }
     }
-    _TreeClose(&dbid1, 0, 0);
-    if (dbid1)
-      free(dbid1);
+    pthread_cleanup_pop(1);//treeclose(&dbid1)
     if STATUS_OK {
-      status = MDS_IO_REMOVE(to_c) == 0 ? TreeNORMAL : TreeDELFAIL;
+      status = MDS_IO_REMOVE(move.to_c) == 0 ? TreeNORMAL : TreeDELFAIL;
       if STATUS_OK
-	status = MDS_IO_REMOVE(to_d) == 0 ? TreeNORMAL : TreeDELFAIL;
+	status = MDS_IO_REMOVE(move.to_d) == 0 ? TreeNORMAL : TreeDELFAIL;
       if STATUS_OK
-	status = ((MDS_IO_RENAME(from_c, to_c) == 0)
-		  && (MDS_IO_RENAME(from_d, to_d) == 0)) ? TreeNORMAL : TreeRENFAIL;
+	status = ((MDS_IO_RENAME(move.from_c, move.to_c) == 0)
+		  && (MDS_IO_RENAME(move.from_d, move.to_d) == 0)) ? TreeNORMAL : TreeRENFAIL;
     }
-    if (from_c)
-      free(from_c);
-    if (to_c)
-      free(to_c);
-    if (from_d)
-      free(from_d);
-    if (to_d)
-      free(to_d);
+    pthread_cleanup_pop(1);//freemove(&move)
   }
   return status;
 }
