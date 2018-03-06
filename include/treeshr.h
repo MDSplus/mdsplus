@@ -260,6 +260,10 @@ extern int TREE_BLOCKID;
   extern EXPORT int TreeFindTagWildDsc(char *wild, int *nidout, void **ctx_inout,
 				       struct descriptor_xd *name);
 
+  extern EXPORT int _TreeGetSegmentScale(void *dbid, int nid, struct descriptor_xd *value);
+  extern EXPORT int TreeGetSegmentScale(int nid, struct descriptor_xd *value);
+  extern EXPORT int _TreeSetSegmentScale(void *dbid, int nid, struct descriptor *value);
+  extern EXPORT int TreeSetSegmentScale(int nid, struct descriptor *value);
 
 #ifdef __cplusplus
 }

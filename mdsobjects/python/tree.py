@@ -2052,7 +2052,11 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                                          dim.ref))
         except _exc.TreeNOSEGMENTS:
             return None
-        return _cmp.Signal(val.value,None,dim.value)
+        try:    scl = self.getSegmentScale()
+        except: scl = None
+        if scl is None:
+            return _cmp.Signal(val.value,None,dim.value)
+        return _cmp.Signal(scl,val.value,dim.value)
 
     def getSegmentDim(self,idx):
         """Return dimension of segment
@@ -2095,6 +2099,17 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                                            _dat.Data.byref(start),
                                            _dat.Data.byref(end),
                                            xd.ref))
+        return xd.value
+
+    def getSegmentScale(self):
+        """sets the scale expression of a segmetned Node
+        @rtype: expression for the data field; should contain $VALUE
+        """
+        xd=_dsc.Descriptor_xd()._setTree(self.tree)
+        _exc.checkStatus(
+            _TreeShr._TreeGetSegmentScale(self.ctx,
+                                          self._nid,
+                                          xd.ref))
         return xd.value
 
     def getSegmentTimes(self):
@@ -2595,6 +2610,34 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
             if not _ver.isNt: raise
         return self
 
+    def setSegmentScale(self,scale):
+        """sets the scale expression of a segmetned Node
+        @param scale: expression for the data field; should contain $VALUE
+        @rtype: None
+        """
+        if not scale is None:
+            if not isinstance(scale,_dat.Data):
+                scale = _dat.Data(scale)
+            if isinstance(scale,_scr.Scalar):
+                scale = _cmp.MULTIPLY(_cmp.dVALUE(),scale)
+            elif isinstance(scale,_arr.Array):
+                fac,nn = scale,scale.size
+                scale = None
+                for n in range(nn-1,-1,-1):
+                    if n>1:
+                        next = _cmp.MULTIPLY(_cmp.POWER(_cmp.dVALUE(),n),fac[n])
+                    if n==1:
+                        next = _cmp.MULTIPLY(_cmp.dVALUE(),fac[n])
+                    else:
+                        next = fac[n]
+                    if scale is None:
+                        scale = next
+                    else:
+                        scale = _cmp.ADD(scale,next)
+        _exc.checkStatus(
+            _TreeShr._TreeSetSegmentScale(self.ctx,
+                                          self._nid,
+                                          _dat.Data.byref(scale)))
 
     def setSubtree(self,flag):
         """Enable/Disable node as a subtree
