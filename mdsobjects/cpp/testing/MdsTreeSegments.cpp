@@ -88,6 +88,7 @@ void putSegment(){
 void BlockAndRows(){
   unique_ptr<Tree>     t = new MDSplus::Tree("t_treeseg",1,"NEW");
   unique_ptr<TreeNode> n = t->addNode("BAR","SIGNAL");
+  t->write();
   {
     int d[2] = {0,7};  unique_ptr<Int32Array> s = new Int32Array(d,2);
     n->beginTimestampedSegment(s);
@@ -111,6 +112,12 @@ void BlockAndRows(){
   }
   TEST1(AutoString(unique_ptr<Data>(n->getData()    )->decompile()).string == "Build_Signal(0, [1,7], *, [-1Q,0Q])");
   TEST1(AutoString(unique_ptr<Data>(n->getSegment(0))->decompile()).string == "[1,7]");
+  n->setSegmentScale(unique_ptr<Data>(compile("$VALUE*2")));
+  TEST1(AutoString(unique_ptr<Data>(n->getSegmentScale())->decompile()).string == "$VALUE * 2");
+  TEST1(AutoString(unique_ptr<Data>(n->getData()    )->decompile()).string == "Build_Signal(0, $VALUE * 2, [1,7], [-1Q,0Q])");
+  std::vector<int> data = n->getIntArray();
+  TEST1(data[0]==2);
+  TEST1(data[1]==14);
 }
 
 

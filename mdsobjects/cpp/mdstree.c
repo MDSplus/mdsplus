@@ -239,14 +239,15 @@ int getTreeSegmentInfo(void *dbid, int nid, int segIdx, char *dtype, char *dimct
 int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, void **timeDsc)
 {
   EMPTYXD(emptyXd);
-  struct descriptor_xd *dataXd = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
   struct descriptor_xd *timeXd = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
-
-  *dataXd = emptyXd;
-  *dataDsc = dataXd;
   *timeXd = emptyXd;
   *timeDsc = timeXd;
-
+  struct descriptor_xd *dataXd;
+  if (dataDsc) {
+    dataXd = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
+    *dataXd = emptyXd;
+    *dataDsc = dataXd;
+  } else dataXd = NULL;
   return _TreeGetSegment(dbid, nid, segIdx, dataXd, timeXd);
 }
 
@@ -311,4 +312,18 @@ int setTreeXNci(void *dbid, int nid, const char *name, void *dataDsc)
   return status;
 }
 
-
+int getTreeSegmentScale(void *dbid, int nid, void **sclDsc)
+{
+  EMPTYXD(emptyXd);
+  struct descriptor_xd *sclXd = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
+  *sclXd  = emptyXd;
+  *sclDsc = sclXd;
+  return _TreeGetSegmentScale(dbid, nid, sclXd);
+}
+int setTreeSegmentScale(void *dbid, int nid, void *sclDsc)
+{
+  struct descriptor_xd *sclXd = (struct descriptor_xd *)sclDsc;
+  int status = _TreeSetSegmentScale(dbid, nid, sclXd->pointer);
+  freeDsc(sclXd);
+  return status;
+}

@@ -2918,7 +2918,7 @@ protected:
     virtual void *convertToDsc();
     virtual bool getFlag(int flagOfs);
     virtual void setFlag(int flagOfs, bool val);
-    
+
     virtual char getNciChar(int itm);
     virtual int getNciInt(int itm);
     virtual int64_t getNciInt64(int itm);
@@ -3086,9 +3086,6 @@ public:
     /// Get all the descendant (members + children)for this node
     virtual TreeNode **getDescendants(int *numChildren);
 
-
-
-
     /// Return Nci class name (NciCLASS) as c string
     virtual const char *getClass();
 
@@ -3097,9 +3094,6 @@ public:
 
     /// Return Nci node usage (NciUSAGE) as c string
     virtual const char *getUsage();
-
-
-
 
     /// Get index of the node in the corresponding conglomerate.
     /// Ref to \ref getNci() with code NciCONGLOMERATE_ELT
@@ -3157,6 +3151,12 @@ public:
 
     /// Get both segment and segment dimension
     virtual void getSegmentAndDimension(int segIdx, Array *&segment, Data *&dimension);
+
+    /// Set scale for segmented Node
+    virtual void setSegmentScale(Data* scale);
+
+    /// Get scale of segmented Node
+    virtual Data* getSegmentScale();
 
     /// Begin a timestamted segment
     virtual void beginTimestampedSegment(Array *initData);
@@ -3248,7 +3248,7 @@ class  EXPORT TreeNodeThinClient: public TreeNode
 protected:
 
     Connection *connection;
- 
+
     //From Data
     virtual bool isImmutable() {return false;}
     // virtual void *convertToDsc();  Use superclass implementation
@@ -3314,13 +3314,13 @@ public:
     virtual TreeNode *getNode(char const * relPath)
     {
 	(void)relPath;
-	throw MdsException("getNode() not supported for TreeNodeThinClient object"); return NULL; 
+	throw MdsException("getNode() not supported for TreeNodeThinClient object"); return NULL;
     }
     /// Retrieve node from this tree by its realPath string
     virtual TreeNode *getNode(String *relPathStr)
     {
         (void)relPathStr;
-	throw MdsException("getNode() not supported for TreeNodeThinClient object"); return NULL; 
+	throw MdsException("getNode() not supported for TreeNodeThinClient object"); return NULL;
     }
 
     virtual Data *getData();
@@ -3650,7 +3650,7 @@ public:
       (void)isSubtree;
       throw MdsException("edit operations not supported for TreeNodeThinClient object");
     }
-    
+
 };
 
 /////////////////End Class TreeNodeThinClient///////////////
@@ -3774,7 +3774,7 @@ public:
     /// to.
     ///
     Tree(char const * name, int shot);
-    Tree(char const * name, int shot, void *ctx); 
+    Tree(char const * name, int shot, void *ctx);
 
 
     /// Builds a new Tree object instance creating or attaching to the named
@@ -4243,9 +4243,9 @@ public:
     {
         return new GetMany(this);
     }
-// Get TreeNode instance for (a subset of) TreeNode functionality in thin client configuration 
+// Get TreeNode instance for (a subset of) TreeNode functionality in thin client configuration
     TreeNodeThinClient *getNode(char *path);
-//Streaming stuff     
+//Streaming stuff
     void registerStreamListener(DataStreamListener *listener, char *expr, char *tree, int shot);
     void unregisterStreamListener(DataStreamListener *listener);
     void startStreaming();
