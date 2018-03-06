@@ -314,17 +314,23 @@ class Tests(TestCase):
         with Tree(self.tree,self.shot,'NEW') as ptree:
             node = ptree.addNode('S')
             ptree.write()
-        node.tree = Tree(self.tree,self.shot)
-        srt,end,dt=-10000,10000,1000
-        d = Int64Array(range(srt,end,dt))
-        v = Int16Array(range(srt,end,dt))
+        ptree.normal()
+        srt,end,dt=-1000,1000,1000
+        d = Int64Array(range(srt,end+1,dt))
+        v = Int16Array(range(srt,end+1,dt))
         node.beginSegment(srt,end,d,v)
         self.assertEqual(True,(node.getSegment(0).data()==v.data()).all())
-        node.setSegmentScale(2)
+        node.setSegmentScale(Int64(2))
+        self.assertEqual(node.getSegmentScale().decompile(),"$VALUE * 2Q")
+        self.assertEqual(ptree.tdiExecute("GetSegmentScale(S)").decompile(),"$VALUE * 2Q")
         self.assertEqual(True,(node.record.data()==v.data()*2).all())
         node.setSegmentScale(Int16Array([1,2]))
         self.assertEqual(True,(node.record.data()==v.data()*2+1).all())
         self.assertEqual(True,(node.getSegment(0)==v*2+1).all())
+        self.assertEqual(ptree.tdiExecute("GetSegment(S,0)").decompile(),"Build_Signal($VALUE * 2W + 1W, Word([-1000,0,1000]), [-1000Q,0Q,1000Q])")
+        ptree.tdiExecute("SetSegmentScale(S,$VALUE+1D0)")
+        self.assertEqual(ptree.tdiExecute("S").decompile(),"Build_Signal($VALUE + 1D0, Word([-1000,0,1000]), [-1000Q,0Q,1000Q])")
+        
       test()
       self.cleanup()
 
@@ -332,10 +338,10 @@ class Tests(TestCase):
       def test():
         from MDSplus import Tree,DateToQuad,ZERO,Int32,Int32Array,Int64Array,Range
         with Tree('seg_tree',self.shot,'NEW') as ptree:
-            ptree.addNode('S').compress_on_put = False
+            node = ptree.addNode('S')
+            node.compress_on_put = False
             ptree.write()
-        ptree = Tree(self.tree,self.shot)
-        node = ptree.S
+        ptree.normal()
         ptree.compressDatafile()
         te = DateToQuad("now")
         sampperseg = 50
