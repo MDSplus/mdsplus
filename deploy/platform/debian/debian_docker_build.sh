@@ -119,6 +119,7 @@ buildrelease() {
     done
     checkstatus abort "Failure: Problem with contents of one or more debs. (see above)" $baddeb
   if [ -z "$abort" ] || [ "$abort" = "0" ]
+  then
     echo "Building repo";
     mkdir -p /release/repo/conf
     mkdir -p /release/repo/db
