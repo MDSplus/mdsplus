@@ -35,22 +35,37 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern int _TreeNewDbid(void** dblist);
 extern int TreeFreeDbid(PINO_DATABASE *db);
 static pthread_rwlock_t treectx_lock = PTHREAD_RWLOCK_INITIALIZER;
-void *DBID = NULL;
+static void *DBID = NULL, *G_DBID = NULL;
 
 /* Key for the thread-specific buffer */
 STATIC_THREADSAFE pthread_key_t buffer_key;
 /* Free the thread-specific buffer */
 STATIC_ROUTINE void buffer_destroy(void *buf){
-  PINO_DATABASE* pDBID = ((TreeThreadStatic*)buf)->DBID;
-  if (pDBID!=DBID)
-    TreeFreeDbid(pDBID);
-  else
-    perror("privateCtx was globalCtx on Threadexit! -> memory leak");
+  PINO_DATABASE* P_DBID = ((TreeThreadStatic*)buf)->DBID;
+  if (P_DBID) {
+    PINO_DATABASE *g_dbid, *p_dbid;
+    pthread_rwlock_rdlock(&treectx_lock);
+    for (g_dbid=G_DBID ; g_dbid && g_dbid!=P_DBID ; g_dbid=g_dbid->next);
+    if (g_dbid) {
+      pthread_rwlock_unlock(&treectx_lock);
+      perror("privateCtx share globalCtx on Threadexit! -> memory leak");
+    } else {
+      for (p_dbid=P_DBID ; p_dbid->next ; p_dbid=p_dbid->next) {
+        if (p_dbid->next==G_DBID) {
+	  //clip private context if extension of global
+	  p_dbid->next = NULL;
+	  break;
+	}
+      }
+      pthread_rwlock_unlock(&treectx_lock);
+      TreeFreeDbid(P_DBID);
+    }
+  }
   free(buf);
 }
 STATIC_ROUTINE void buffer_key_alloc(){
   pthread_key_create(&buffer_key, buffer_destroy);
-  if (!DBID) _TreeNewDbid(&DBID);
+  if (!G_DBID) _TreeNewDbid(&G_DBID);
 }
 /* Return the thread-specific buffer */
 TreeThreadStatic *TreeGetThreadStatic(){
@@ -66,15 +81,16 @@ TreeThreadStatic *TreeGetThreadStatic(){
 
 EXPORT void **TreeCtx(){
   TreeThreadStatic *p = TreeGetThreadStatic();
-  void **dbid;
+  void **ctx;
   if (p->privateCtx)
-    dbid = &p->DBID;
+    ctx = &p->DBID;
   else {
-    pthread_rwlock_rdlock(&treectx_lock);
-    dbid = &DBID;
+    pthread_rwlock_wrlock(&treectx_lock);
+    if (!DBID) DBID = G_DBID;
+    ctx = &DBID;
     pthread_rwlock_unlock(&treectx_lock);
   }
-  return dbid;
+  return ctx;
 }
 
 EXPORT void *TreeDbid(){
