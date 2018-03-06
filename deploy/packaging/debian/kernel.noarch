@@ -158,6 +158,7 @@
 ./usr/local/mdsplus/tdi/segments/GetSegmentInfo.fun
 ./usr/local/mdsplus/tdi/segments/GetSegmentLimits.fun
 ./usr/local/mdsplus/tdi/segments/GetSegmentList.fun
+./usr/local/mdsplus/tdi/segments/GetSegmentScale.fun
 ./usr/local/mdsplus/tdi/segments/GetSegmentTimes.fun
 ./usr/local/mdsplus/tdi/segments/GetTimeContext.fun
 ./usr/local/mdsplus/tdi/segments/MakeSegment.fun
@@ -165,6 +166,7 @@
 ./usr/local/mdsplus/tdi/segments/PutRow.fun
 ./usr/local/mdsplus/tdi/segments/PutSegment.fun
 ./usr/local/mdsplus/tdi/segments/PutTimestampedSegment.fun
+./usr/local/mdsplus/tdi/segments/SetSegmentScale.fun
 ./usr/local/mdsplus/tdi/segments/SetTimeContext.fun
 ./usr/local/mdsplus/tdi/segments/testsegments.fun
 ./usr/local/mdsplus/tdi/shot_date.fun
