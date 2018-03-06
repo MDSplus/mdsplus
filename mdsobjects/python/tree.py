@@ -2041,16 +2041,17 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @return: Data segment
         @rtype: Signal | None
         """
-        num=self.getNumSegments()
-        if num <= 0 or idx >= num: return
         val=_dsc.Descriptor_xd()._setTree(self.tree)
         dim=_dsc.Descriptor_xd()._setTree(self.tree)
-        _exc.checkStatus(
-            _TreeShr._TreeGetSegment(self.ctx,
-                                     self._nid,
-                                     _C.c_int32(int(idx)),
-                                     val.ref,
-                                     dim.ref))
+        try:
+            _exc.checkStatus(
+                _TreeShr._TreeGetSegment(self.ctx,
+                                         self._nid,
+                                         _C.c_int32(int(idx)),
+                                         val.ref,
+                                         dim.ref))
+        except _exc.TreeNOSEGMENTS:
+            return None
         return _cmp.Signal(val.value,None,dim.value)
 
     def getSegmentDim(self,idx):
@@ -2060,11 +2061,17 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @return: Segment dimension
         @rtype: Dimension
         """
-        num=self.getNumSegments()
-        if num > 0 and idx < num:
-            return self.getSegment(idx).getDimensionAt(0)
-        else:
+        dim=_dsc.Descriptor_xd()._setTree(self.tree)
+        try:
+            _exc.checkStatus(
+                _TreeShr._TreeGetSegment(self.ctx,
+                                         self._nid,
+                                         _C.c_int32(int(idx)),
+                                         None,
+                                         dim.ref))
+        except _exc.TreeNOSEGMENTS:
             return None
+        return dim.value
 
     def getSegmentLimits(self,idx):
         start=_dsc.Descriptor_xd()._setTree(self.tree)
