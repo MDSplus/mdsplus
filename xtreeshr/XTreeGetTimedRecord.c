@@ -42,7 +42,6 @@ extern unsigned short OpcExtFunction;
 
 static int timedAccessFlag = 0;
 
-#define MAX_DIMENSION_SIGNAL 16
 #define MAX_FUN_NAMELEN 512
 
 #ifdef _WIN32
@@ -186,13 +185,13 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
   struct descriptor_xd *dataXds;
   struct descriptor_xd *dimensionXds;
 
-  DESCRIPTOR_SIGNAL(currSignalD, MAX_DIMENSION_SIGNAL, 0, 0);
+  DESCRIPTOR_SIGNAL(currSignalD, MAX_NDIMS, 0, 0);
   DESCRIPTOR_APD(signalsApd, DTYPE_SIGNAL, 0, 0);
   struct descriptor_signal **signals;
 
 //printf("GET TIMED RECORD\n");
 
-//Chheck for possible resampled versions
+  //Check for possible resampled versions
   nid = checkResampledVersion(dbid, inNid, minDeltaD);
 
   timedAccessFlag = 1;
