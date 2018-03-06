@@ -427,16 +427,21 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 //Free stuff
   free((char *)signals);
   for (i = 0; i < actNumSegments; i++) {
-    MdsFree1Dx(&resampledXds[i], 0);
+    MdsFree1Dx(&resampledXds[i], NULL);
   }
   free((char *)resampledXds);
   free((char *)dataXds);
   free((char *)dimensionXds);
   if (outSignal->pointer && (_TreeGetSegmentScale(dbid, inNid, &xd)&1)){
-    struct descriptor_signal* sig = (struct descriptor_signal*)outSignal->pointer;
     if (xd.pointer) {
+      struct descriptor_signal* sig = (struct descriptor_signal*)outSignal->pointer;
+      emptyXd = *outSignal;
+      outSignal->pointer = NULL;
       sig->raw  = sig->data;
       sig->data = xd.pointer;
+      MdsCopyDxXd((struct descriptor*)sig,outSignal);
+      MdsFree1Dx(&xd,NULL);
+      MdsFree1Dx(&emptyXd,NULL);
     }
   }
   return status;
