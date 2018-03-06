@@ -2086,7 +2086,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                                            _C.c_int32(int(idx)),
                                            start.ref,
                                            end.ref))
-        start,end = start.value,end.value
+        start,end = start.value,end.value;_gc.collect()
         if start is not None or end is not None:
             return (start,end)
 
