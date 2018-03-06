@@ -274,6 +274,15 @@ int TreePutTimestampedSegment(int nid, int64_t * timestamp, struct descriptor_a 
   return _TreePutTimestampedSegment(*TreeCtx(), nid, timestamp, data);
 }
 
+int _TreeGetSegmentScale(void *dbid, int nid, struct descriptor_xd *value);
+int TreeGetSegmentScale(int nid, struct descriptor_xd *value) {
+  return _TreeGetSegmentScale(*TreeCtx(), nid, value);
+}
+
+int _TreeSetSegmentScale(void *dbid, int nid, struct descriptor *value);
+int TreeSetSegmentScale(int nid, struct descriptor *value) {
+  return _TreeSetSegmentScale(*TreeCtx(), nid, value);
+}
 
 inline static int load_node_ptr(vars_t* vars) {
   vars->node_ptr = nid_to_node(vars->dblist, vars->nid_ptr);
@@ -2345,4 +2354,12 @@ int _TreeGetSegments(void *dbid, int nid, struct descriptor *start, struct descr
   if (apd.pointer)
     free(apd.pointer);
   return status;
+}
+
+#define SEGMENT_SCALE_NAME "SegmentScale"
+int _TreeSetSegmentScale(void *dbid, int nid, struct descriptor *value) {
+  return _TreeSetXNci(dbid, nid, SEGMENT_SCALE_NAME, value);
+}
+int _TreeGetSegmentScale(void *dbid, int nid, struct descriptor_xd *value) {
+  return _TreeGetXNci(dbid, nid, SEGMENT_SCALE_NAME, value);
 }
