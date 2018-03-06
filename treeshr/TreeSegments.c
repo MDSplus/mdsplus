@@ -1049,36 +1049,36 @@ static int ReadSegment(TREE_INFO* tinfo, int nid, SEGMENT_HEADER* shead, SEGMENT
                        int idx, struct descriptor_xd *segment, struct descriptor_xd *dim){
   INIT_TREESUCCESS;
   if (sinfo->data_offset != -1) {
-    int compressed_segment = 0;
+    int i,compressed_segment = sinfo->rows < 0;
     DESCRIPTOR_A(dim2, 8, DTYPE_Q, 0, 0);
     DESCRIPTOR_A_COEFF(ans, 0, 0, 0, 8, 0);
-    ans.pointer = 0;
-    ans.dtype = shead->dtype;
-    ans.length = shead->length;
-    ans.dimct = shead->dimct;
-    memcpy(ans.m, shead->dims, sizeof(shead->dims));
-    ans.m[shead->dimct - 1] = sinfo->rows;
-    ans.arsize = ans.length;
-    int i;
-    for (i = 0; i < ans.dimct; i++)
-      ans.arsize *= ans.m[i];
-    void *ans_ptr, *dim_ptr;
-    if (sinfo->rows < 0) {
-      EMPTYXD(compressed_segment_xd);
-      int data_length = sinfo->rows & 0x7fffffff;
-      compressed_segment = 1;
-      status = TreeGetDsc(tinfo, nid, sinfo->data_offset, data_length, &compressed_segment_xd);
-      if STATUS_OK {
-        status = MdsDecompress((struct descriptor_r *)compressed_segment_xd.pointer, segment);
-        MdsFree1Dx(&compressed_segment_xd, 0);
+    void *ans_ptr = NULL, *dim_ptr;
+    if (segment){
+      ans.pointer = 0;
+      ans.dtype = shead->dtype;
+      ans.length = shead->length;
+      ans.dimct = shead->dimct;
+      memcpy(ans.m, shead->dims, sizeof(shead->dims));
+      ans.m[shead->dimct - 1] = sinfo->rows;
+      ans.arsize = ans.length;
+      for (i = 0; i < ans.dimct; i++)
+        ans.arsize *= ans.m[i];
+      if (compressed_segment) {
+        EMPTYXD(compressed_segment_xd);
+        int data_length = sinfo->rows & 0x7fffffff;
+        status = TreeGetDsc(tinfo, nid, sinfo->data_offset, data_length, &compressed_segment_xd);
+        if STATUS_OK {
+          status = MdsDecompress((struct descriptor_r *)compressed_segment_xd.pointer, segment);
+          MdsFree1Dx(&compressed_segment_xd, 0);
+        }
+      } else {
+        ans_ptr = ans.pointer = malloc(ans.arsize);
+        status = ReadProperty(tinfo,sinfo->data_offset, ans.pointer, (ssize_t)ans.arsize);
       }
-    } else {
-      ans_ptr = ans.pointer = malloc(ans.arsize);
-      status = ReadProperty(tinfo,sinfo->data_offset, ans.pointer, (ssize_t)ans.arsize);
+      if (STATUS_OK && !compressed_segment)
+        CHECK_ENDIAN(ans.pointer,ans.arsize,ans.length,ans.dtype);
     }
     if STATUS_OK {
-      if (!compressed_segment)
-        CHECK_ENDIAN(ans.pointer,ans.arsize,ans.length,ans.dtype);
       if (sinfo->dimension_offset != -1 && sinfo->dimension_length == 0) {
         dim2.arsize = sinfo->rows * sizeof(int64_t);
         dim_ptr = dim2.pointer = malloc(dim2.arsize);
@@ -1087,13 +1087,15 @@ static int ReadSegment(TREE_INFO* tinfo, int nid, SEGMENT_HEADER* shead, SEGMENT
         if (!compressed_segment) {
           int filled_rows = get_filled_rows_ts(shead,sinfo,idx,(int64_t*)dim2.pointer);
           dim2.arsize = filled_rows * sizeof(int64_t);
-          ans.m[shead->dimct - 1] = filled_rows;
-          ans.arsize = ans.length;
-          for (i = 0; i < ans.dimct; i++)
-            ans.arsize *= ans.m[i];
+          if (segment) {
+            ans.m[shead->dimct - 1] = filled_rows;
+            ans.arsize = ans.length;
+            for (i = 0; i < ans.dimct; i++)
+              ans.arsize *= ans.m[i];
+          }
         }
         if (dim2.arsize==0){
-          ans.pointer  = NULL;
+          if (segment) ans.pointer = NULL;
           dim2.pointer = NULL;
         }
         MdsCopyDxXd((struct descriptor *)&dim2, dim);
@@ -1103,13 +1105,12 @@ static int ReadSegment(TREE_INFO* tinfo, int nid, SEGMENT_HEADER* shead, SEGMENT
           TreeGetDsc(tinfo, nid, sinfo->dimension_offset, sinfo->dimension_length, dim);
 	}
       }
-      if (!compressed_segment) {
+      if (ans_ptr)
         MdsCopyDxXd((struct descriptor *)&ans, segment);
-      }
     } else {
       status = TreeFAILURE;
     }
-    if (!compressed_segment)
+    if (ans_ptr)
       free(ans_ptr);
   } else {
     status = TreeFAILURE;
