@@ -54,7 +54,7 @@ void loadCmds(const char* filename){
     cmds = (char**)malloc(memlen*sizeof(char*));
     ncmd = 0;
     while (std::getline(file, str)){
-      if (str[0]=='#' || str.length()==0) continue;
+      if (str[0]=='!' || str.length()==0) continue;
       if ((ncmd+1) > memlen) {
         memlen += MEM_ALLOC;
         cmds = (char**)realloc(cmds,memlen*sizeof(char*));
