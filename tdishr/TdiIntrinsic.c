@@ -372,10 +372,12 @@ EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct 
   if (out_ptr)
     MdsFree1Dx(out_ptr, NULL);
  notmp:MdsFree1Dx(&tmp, NULL);
- done:TdiThreadStatic_p->TdiIntrinsic_recursion_count--;
-  TdiThreadStatic_p->TdiIntrinsic_mess_stat = status;
-  if (!TdiThreadStatic_p->TdiIntrinsic_recursion_count)
+ done:;
+  TdiThreadStatic_p->TdiIntrinsic_recursion_count--;
+  if (!TdiThreadStatic_p->TdiIntrinsic_recursion_count) {
+    TdiThreadStatic_p->TdiIntrinsic_mess_stat = status;
     freebegin(&TdiRefZone);
+  }
   FREE_CANCEL(&tmp);
   FREE_CANCEL(out_ptr);
   FREE_CANCEL(a_begin);
@@ -389,6 +391,7 @@ EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct 
                 1 to prepend first error message
                 2 to print the current message
                 4 to clear the message buffer
+		8 return message before clear
 */
 int Tdi1Debug(int opcode __attribute__ ((unused)),
 	      int narg,
@@ -406,16 +409,23 @@ int Tdi1Debug(int opcode __attribute__ ((unused)),
     struct descriptor dmsg = { 0, DTYPE_T, CLASS_S, 0 };
     dmsg.pointer = MdsGetMsg(mess_stat);
     dmsg.length = strlen(dmsg.pointer);
-    StrConcat((struct descriptor *)message, &dmsg, &newline, message MDS_END_ARG);
+    // in order to prepend we need to move the original message into temp desc
+    struct descriptor_d oldmsg = *message;
+    message->length=0; message->pointer=NULL;
+    StrConcat((struct descriptor *)message, &dmsg, &newline, &oldmsg MDS_END_ARG);
+    StrFree1Dx(&oldmsg);
   }
   if (message->length) {
     if (option & 2)
       printf("%.*s", message->length, message->pointer);
-    if (option & 4)
-      TdiThreadStatic_p->TdiIntrinsic_mess_stat = StrFree1Dx(message);
+    if (option & 4) {
+      if (option & 8)
+        status = MdsCopyDxXd((struct descriptor *)message, out_ptr);
+      StrFree1Dx(message);
+      return status;
+    }
   }
-  status = MdsCopyDxXd((struct descriptor *)message, out_ptr);
-  return status;
+  return MdsCopyDxXd((struct descriptor *)message, out_ptr);
 }
 
 STATIC_ROUTINE struct descriptor *FixedArray(struct descriptor *in)
