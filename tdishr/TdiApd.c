@@ -90,8 +90,7 @@ int Tdi1Apd(int dtype, int narg, struct descriptor *list[], struct descriptor_xd
   struct descriptor_a *oarr = (struct descriptor_a*)alist[0];
   if (oarr && oarr->dtype) {
     if (oarr->class!=CLASS_APD || oarr->length!=sizeof(void*)) {
-      fprintf(stderr,"DICT-E-APPENDCLS: First argument must be APD or *.\n");
-      status = TdiINVCLADSC;
+      status = ApdAPD_APPEND;
       goto free_alist;
     }
     osize = oarr->arsize;
@@ -102,15 +101,13 @@ int Tdi1Apd(int dtype, int narg, struct descriptor *list[], struct descriptor_xd
   }
   if (arr.dtype==DTYPE_DICTIONARY) {
     if (!(alen&1 || (osize/arr.length)&1)) {
-      fprintf(stderr,"DICT-E-KEYVALPAIR: A Dictionary requires an even number of arguments to form key-value pairs.\n");
-      status = TdiMISS_ARG;
+      status = ApdDICT_KEYVALPAIR;
       goto free_alist;
     }
     int i;
     for (i=1 ; i<alen ; i+=2) {
       if (alist[i]->class!=CLASS_S) {
-        fprintf(stderr,"DICT-E-KEYCLS: Keys must be of class S (item: %d).\n",i);
-	status = TdiINVCLADSC;
+	status = ApdDICT_KEYCLS;
         goto free_alist;
       }
     }
