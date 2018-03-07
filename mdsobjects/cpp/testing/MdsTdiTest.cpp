@@ -36,7 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace MDSplus;
 using namespace testing;
 
-#define NUM_THREADS 4
+#define NUM_THREADS 8
 #define NUM_REPEATS 4
 #define MEM_ALLOC 1028
 
@@ -107,7 +107,7 @@ void MultiThreadTest() {
       attrp = NULL;
     else {
       attrp = &attr;
-      pthread_attr_setstacksize(&attr, 0x100000);
+      pthread_attr_setstacksize(&attr, 0x40000);
     }
     int thread_idx, results[NUM_THREADS];
     for (thread_idx = 0 ; thread_idx<NUM_THREADS ; thread_idx++){
@@ -125,6 +125,13 @@ void MultiThreadTest() {
 
 
 int main(int argc, char *argv[]){
+    size_t stksize = -1; {
+      pthread_attr_t attr;
+      if (!pthread_attr_init(&attr)) {
+        pthread_attr_getstacksize(&attr, &stksize);
+        pthread_attr_destroy(&attr);
+      }
+    }
     if (argc>1)
       loadCmds(argv[1]);
     else {
@@ -144,9 +151,14 @@ int main(int argc, char *argv[]){
     TEST0(single=SingleThreadTest(0,1));
     END_TESTING;
     if (single) exit(1);
-    BEGIN_TESTING(MultiThread);
-    MultiThreadTest();
-    END_TESTING;
+
+    if (stksize<0x40000){
+      std::cout << " -- [MultiThread] -- Skipped because the default thread stack size is too small (" << stksize/1024 << "kB < 256kB)." << std::flush;
+    } else {
+      BEGIN_TESTING(MultiThread);
+      MultiThreadTest();
+      END_TESTING;
+    }
     for (;ncmd-->0;) free(cmds[ncmd]);
     free(cmds);
 }
