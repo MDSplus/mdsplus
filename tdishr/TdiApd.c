@@ -69,7 +69,7 @@ int UnwrapComma(int narg, struct descriptor *list[], int *nout_p, struct descrip
   int nout = 0;
   *list_ptr = malloc(*nout_p * sizeof(void*));
   int status = UnwrapCommaDesc(narg, list, &nout, *list_ptr);
-  if (STATUS_NOT_OK) {
+  if STATUS_NOT_OK {
     int i;
     for ( i=0 ; i<nout ; i++ )
       if ((*list_ptr)[i])
@@ -106,7 +106,9 @@ int Tdi1Apd(int dtype, int narg, struct descriptor *list[], struct descriptor_xd
     goto free_alist;
   }//TODO: Dict requires unique keys
   arr.pointer = malloc(arr.arsize);
-  memcpy(memcpy(arr.pointer,olist,osize)+osize,alist+1,asize);
+  if (olist)
+    memcpy(arr.pointer,olist,osize);
+  memcpy(arr.pointer+osize,alist+1,asize);
   status = MdsCopyDxXd((struct descriptor*)&arr, out_ptr);
   free(arr.pointer);
 free_alist :;
