@@ -32,11 +32,6 @@
 ./usr/local/mdsplus/share/man/man5/mdsip.hosts.5
 ./usr/local/mdsplus/share/man/man5/mdsplus.conf.5
 ./usr/local/mdsplus/tdi
-./usr/local/mdsplus/tdi/Apd
-./usr/local/mdsplus/tdi/Apd/PyDict.py
-./usr/local/mdsplus/tdi/Apd/PyList.py
-./usr/local/mdsplus/tdi/Apd/apdadd.py
-./usr/local/mdsplus/tdi/Apd/apdrm.py
 ./usr/local/mdsplus/tdi/Ccl.fun
 ./usr/local/mdsplus/tdi/axp.fun
 ./usr/local/mdsplus/tdi/c2vmstime.fun
