@@ -330,6 +330,10 @@ class Tests(TestCase):
         self._doThreeTestArray('array(10,0)',  m.ARRAY(10,0),m.Int32Array([0]*10))
         self._doThreeTestArray('array(10,0BU)',m.ARRAY(10,m.Uint8(0)),m.Uint8Array([0]*10))
         self._doThreeTestArray('zero(100)',    m.ZERO(100),m.Float32Array([0]*100))
+        self._doTdiTest('_l=list(*,1,2,3)', m.List([1,2,3]))
+        self._doTdiTest('_l=list(_l,4,5)', m.List([1,2,3,4,5]))
+        self._doTdiTest('_d=dict(*,1,"1",2,"2")', m.Dictionary([1,'1',2,'2']))
+        self._doTdiTest('_d=dict(_d,3,"3")', m.Dictionary([1,'1',2,'2',3,"3"]))
 
     def tdiPythonInterface(self):
         self._doTdiTest("Py('a=None')",1)
@@ -339,12 +343,6 @@ class Tests(TestCase):
         self._doTdiTest("pyfun('Uint8','MDSplus',-1)",m.Uint8(255))
         self._doTdiTest("pyfun('Uint8',*,-1)",m.Uint8(255))
         self._doTdiTest("pyfun('str',*,123)",m.String("123"))
-        self._doTdiTest('_l=list(*,1,2,3)', m.List([1,2,3]))
-        self._doTdiTest('_l=list(_l,4,5)', m.List([1,2,3,4,5]))
-        self._doTdiTest('apdrm(_l,1,3)',  m.List([1,3,5]))
-        self._doTdiTest('_d=dict(*,1,"1",2,"2")', m.Dictionary([1,'1',2,'2']))
-        self._doTdiTest('_d=dict(_d,3,"3")',     m.Dictionary([1,'1',2,'2',3,"3"]))
-        self._doTdiTest('apdrm(_d,2)',          m.Dictionary([1,'1',3,"3"]))
 
     def decompile(self):
         self.assertEqual(str(m.Uint8(123)),'123BU')
