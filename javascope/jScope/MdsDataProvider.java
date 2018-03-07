@@ -1567,8 +1567,11 @@ public class MdsDataProvider
                 case Descriptor.DTYPE_LONG:
                     return (float) desc.int_data[0];
                 case Descriptor.DTYPE_BYTE:
+                     return (float) desc.byte_data[0];
                 case Descriptor.DTYPE_UBYTE:
-                    return (float) desc.byte_data[0];
+		     short currShort = 0;
+		     currShort |= ((short)desc.byte_data[0] & 0x00FF);
+		     return(float)currShort;
                 case Descriptor.DTYPE_CSTRING:
                     if ( (desc.status & 1) == 0)
                     {
@@ -1647,7 +1650,6 @@ public class MdsDataProvider
             }
             break;
             case Descriptor.DTYPE_BYTE:
-            case Descriptor.DTYPE_UBYTE:
             {
                 float[] outF = new float[desc.byte_data.length];
                 for (int i = 0; i < desc.byte_data.length; i++)
@@ -1655,6 +1657,18 @@ public class MdsDataProvider
                 out = new RealArray(outF);
             }
             break;
+            case Descriptor.DTYPE_UBYTE:
+            {
+                float[] outF = new float[desc.byte_data.length];
+                for (int i = 0; i < desc.byte_data.length; i++)
+		{
+		    short currShort = 0;
+		    currShort |= ((short)desc.byte_data[i] & 0x00FF);
+                    outF[i] = (float) currShort;
+		}
+                out = new RealArray(outF);
+            }
+	    break;
             case Descriptor.DTYPE_ULONGLONG:
             case Descriptor.DTYPE_LONGLONG:
             {
