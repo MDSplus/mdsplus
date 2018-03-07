@@ -161,7 +161,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         text="Pre trigger samples either not available or invalid"
         />
     <status name="BAD_POST_TRIG" value ="4142" severity="Error"
-        text="Clock source either not available or invalid"
+        text="Post trigger samples either not available or invalid"
         />
     <status name="BAD_CLOCK_FREQ" value ="4143" severity="Error"
         text="Clock frequency either not available or invalid"
