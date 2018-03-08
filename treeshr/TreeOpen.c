@@ -1354,20 +1354,22 @@ void TreeFreeDbid(void *dbid)
   }
 }
 
-EXPORT struct descriptor *TreeFileName(char *tree, int shot)
-{
-  static struct descriptor ans_dsc = { 0, DTYPE_T, CLASS_D, 0 };
+
+#include "treethreadsafe.h"
+static int treefilename(char *tree, int shot, char** out){
   int fd;
-  char *ans;
   TREE_INFO dummy_info;
-  int status = OpenOne(&dummy_info, tree, shot, TREE_TREEFILE_TYPE, 0, &ans, 0, &fd);
-  if STATUS_OK {
+  int status = OpenOne(&dummy_info, tree, shot, TREE_TREEFILE_TYPE, 0, out, 0, &fd);
+  if STATUS_OK
     MDS_IO_CLOSE(fd);
-    ans_dsc.pointer = ans;
-    ans_dsc.length = (unsigned short)strlen(ans);
-  } else {
-    ans_dsc.pointer = NULL;
-    ans_dsc.length = 0;
-  }
-  return &ans_dsc;
+  else
+    *out = NULL;
+  return status;
+}
+
+EXPORT struct descriptor *TreeFileName(char *tree, int shot, struct descriptor_xd* out){
+  TREEGETTHREADSTATIC_P;
+  treefilename(tree, shot, &TreeGetThreadStatic_p->dsc_d.pointer);
+  TreeGetThreadStatic_p->dsc_d.length = (unsigned short)strlen(TreeGetThreadStatic_p->dsc_d.pointer);
+  return &TreeGetThreadStatic_p->dsc_d;
 }
