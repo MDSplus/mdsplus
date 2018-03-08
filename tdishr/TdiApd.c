@@ -90,6 +90,7 @@ int Tdi1Apd(int dtype, int narg, struct descriptor *list[], struct descriptor_xd
   struct descriptor_a *oarr = (struct descriptor_a*)alist[0];
   if (oarr && oarr->dtype) {
     if (oarr->class!=CLASS_APD || oarr->length!=sizeof(void*)) {
+      fprintf(stderr,"DICT-E-APPENDCLS: First argument must be APD or *.\n");
       status = TdiINVCLADSC;
       goto free_alist;
     }
@@ -99,12 +100,22 @@ int Tdi1Apd(int dtype, int narg, struct descriptor *list[], struct descriptor_xd
     osize = 0;
     olist = NULL;
   }
-  arr.arsize = osize+asize;
-  if (arr.dtype==DTYPE_DICTIONARY && (!(alen & 1) || (osize/arr.length) & 1)) {
-    // dict requires key-value-pairs
-    status = TdiMISS_ARG;
-    goto free_alist;
+  if (arr.dtype==DTYPE_DICTIONARY) {
+    if (!(alen&1 || (osize/arr.length)&1)) {
+      fprintf(stderr,"DICT-E-KEYVALPAIR: A Dictionary requires an even number of arguments to form key-value pairs.\n");
+      status = TdiMISS_ARG;
+      goto free_alist;
+    }
+    int i;
+    for (i=1 ; i<alen ; i+=2) {
+      if (alist[i]->class!=CLASS_S) {
+        fprintf(stderr,"DICT-E-KEYCLS: Keys must be of class S (item: %d).\n",i);
+	status = TdiINVCLADSC;
+        goto free_alist;
+      }
+    }
   }//TODO: Dict requires unique keys
+  arr.arsize = osize+asize;
   arr.pointer = malloc(arr.arsize);
   if (olist)
     memcpy(arr.pointer,olist,osize);
