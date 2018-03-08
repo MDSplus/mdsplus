@@ -63,7 +63,7 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned
 	((ndims > i * 2) ? (dims[i * 2] << 32) : 0) | ((ndims >
 							(i * 2 + 1)) ? (dims[i * 2 + 1]) : 0);
 #else
-  for (i = 0; i < MAX_DIMS; i++)
+  for (i = 0; i < MAX_DIMS_R; i++)
     m->h.dims[i] = i < ndims ? dims[i] : 0;
 #endif
   memcpy(m->bytes, bytes, nbytes);
