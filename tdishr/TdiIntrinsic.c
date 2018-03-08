@@ -64,6 +64,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 #include <tdishr_messages.h>
+#include <treeshr_messages.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
 typedef struct _bounds {
@@ -80,9 +81,6 @@ extern int TdiGetLong();
 extern int SysGetMsg();
 STATIC_ROUTINE struct descriptor *FixedArray();
 
-STATIC_CONSTANT DESCRIPTOR(compile_err, "%TDI Syntax error near # marked region\n");
-STATIC_CONSTANT DESCRIPTOR(hilite, "##");
-STATIC_CONSTANT DESCRIPTOR(newline, "\n");
 STATIC_CONSTANT struct descriptor miss_dsc = { 0, DTYPE_MISSING, CLASS_S, 0 };
 
 /****************************
@@ -191,8 +189,11 @@ static inline void TRACE(int opcode, int narg,
   add(")\n");
 }
 
+static const DESCRIPTOR(newline, "\n");
 static inline void ADD_COMPILE_INFO() {
   GET_TDITHREADSTATIC_P;
+  static const DESCRIPTOR(compile_err, "%TDI Error near # marked region\n");
+  static const DESCRIPTOR(hilite, "##");
   struct descriptor_d *message = &TdiThreadStatic_p->TdiIntrinsic_message;
   if (!TdiRefZone.a_begin || message->length >= MAXMESS)
     return;
@@ -368,7 +369,13 @@ EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct 
   /********************************
   Compiler errors get special help.
   ********************************/
-  if (opcode == OpcCompile && (status==TdiSYNTAX || status==TdiEXTRANEOUS || status==TdiUNBALANCE || status==TdiBOMB))
+  if (opcode == OpcCompile
+  && (status==TdiSYNTAX
+   || status==TdiEXTRANEOUS
+   || status==TdiUNBALANCE
+   || status==TreeNOT_OPEN
+   || status==TreeNNF
+   || status==TdiBOMB))
     ADD_COMPILE_INFO();
   TRACE(opcode, narg, list, out_ptr);
   if (out_ptr)
