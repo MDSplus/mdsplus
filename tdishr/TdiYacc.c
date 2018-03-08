@@ -104,18 +104,19 @@ extern int TdiYacc_ARG();
 extern int TdiLexPath();
 
 #define YYMAXDEPTH      250
+#define __RUN(method)				do{if IS_NOT_OK(method) tdiyyerror(0); else TdiRefZone.l_ok = TdiRefZone.a_cur - TdiRefZone.a_begin;}while(0)
+#define _RESOLVE(arg)   			__RUN(TdiYacc_RESOLVE(&arg.rptr))
 
-#define _RESOLVE(arg)   			if IS_NOT_OK(TdiYacc_RESOLVE(&arg.rptr)) {tdiyyerror(0);}
-#define _FULL1(opcode,arg1,out)                 if IS_NOT_OK(TdiYacc_BUILD(255, 1, opcode, &out, &arg1)) {tdiyyerror(0);}
-#define _FULL2(opcode,arg1,arg2,out)            if IS_NOT_OK(TdiYacc_BUILD(255, 2, opcode, &out, &arg1, &arg2)) {tdiyyerror(0);}
+#define _FULL1(opcode,arg1,out)                 __RUN(TdiYacc_BUILD(255, 1, opcode, &out, &arg1))
+#define _FULL2(opcode,arg1,arg2,out)            __RUN(TdiYacc_BUILD(255, 2, opcode, &out, &arg1, &arg2))
 	/*****************************
         Two args for image->routine.
         *****************************/
-#define _JUST0(opcode,out)                      if IS_NOT_OK(TdiYacc_BUILD(2, 0, opcode, &out)) {tdiyyerror(0);}
-#define _JUST1(opcode,arg1,out)                 if IS_NOT_OK(TdiYacc_BUILD(3, 1, opcode, &out, &arg1)) {tdiyyerror(0);}
-#define _JUST2(opcode,arg1,arg2,out)            if IS_NOT_OK(TdiYacc_BUILD(2, 2, opcode, &out, &arg1, &arg2)) {tdiyyerror(0);}
-#define _JUST3(opcode,arg1,arg2,arg3,out)       if IS_NOT_OK(TdiYacc_BUILD(3, 3, opcode, &out, &arg1, &arg2, &arg3)) {tdiyyerror(0);}
-#define _JUST4(opcode,arg1,arg2,arg3,arg4,out)  if IS_NOT_OK(TdiYacc_BUILD(4, 4, opcode, &out, &arg1, &arg2, &arg3, &arg4)) {tdiyyerror(0);}
+#define _JUST0(opcode,out)                      __RUN(TdiYacc_BUILD(2, 0, opcode, &out))
+#define _JUST1(opcode,arg1,out)                 __RUN(TdiYacc_BUILD(3, 1, opcode, &out, &arg1))
+#define _JUST2(opcode,arg1,arg2,out)            __RUN(TdiYacc_BUILD(2, 2, opcode, &out, &arg1, &arg2))
+#define _JUST3(opcode,arg1,arg2,arg3,out)       __RUN(TdiYacc_BUILD(3, 3, opcode, &out, &arg1, &arg2, &arg3))
+#define _JUST4(opcode,arg1,arg2,arg3,arg4,out)  __RUN(TdiYacc_BUILD(4, 4, opcode, &out, &arg1, &arg2, &arg3, &arg4))
 
 STATIC_THREADSAFE struct marker _EMPTY_MARKER = { 0 };
 
