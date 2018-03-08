@@ -192,32 +192,36 @@ static inline void TRACE(int opcode, int narg,
 static const DESCRIPTOR(newline, "\n");
 static inline void ADD_COMPILE_INFO() {
   GET_TDITHREADSTATIC_P;
-  static const DESCRIPTOR(compile_err, "%TDI Error near # marked region\n");
-  static const DESCRIPTOR(hilite, "##");
+  static const DESCRIPTOR(compile_err, "%TDI Error compiling region marked by ^\n");
   struct descriptor_d *message = &TdiThreadStatic_p->TdiIntrinsic_message;
   if (!TdiRefZone.a_begin || message->length >= MAXMESS)
     return;
-  struct descriptor pre = { 0, DTYPE_T, CLASS_S, 0 };
-  struct descriptor body = { 0, DTYPE_T, CLASS_S, 0 };
-  struct descriptor post = { 0, DTYPE_T, CLASS_S, 0 };
   // b------x----c----e
   // '-l_ok-'-xc-'-ce-'
   char *b = TdiRefZone.a_begin;
   char *e = TdiRefZone.a_end;
   char *c = MINMAX(b, TdiRefZone.a_cur, e);
   char *x = MINMAX(b, b + TdiRefZone.l_ok, c);
-  body.length = (unsigned short)MINMAX(0, c-x, MAXLINE);
-  body.pointer = body.length>0 ? x : NULL;
-  post.length = (unsigned short)MINMAX(0, e-c, MAXLINE);
-  if (body.length + post.length > MAXLINE)
-    post.length = MINMAX(0, post.length, MAXFRAC);
-  post.pointer = post.length>0 ? c : NULL;
-  pre.length = (unsigned short)MINMAX(0, x-b, MAXLINE);
-  if (pre.length + body.length + post.length > MAXLINE)
-    pre.length = 0;
-  pre.pointer = pre.length>0 ? x - pre.length : NULL;
-  StrConcat((struct descriptor *)message,(struct descriptor *)message, &compile_err,
-	&pre, &hilite, &body, &hilite, &post, &newline MDS_END_ARG);
+  int xc = MINMAX(0, c-x, MAXLINE);
+  int ce = MINMAX(0, e-c, MAXLINE);
+  int bx = MINMAX(0, x-b, MAXLINE);
+  if (xc+ce > MAXLINE)
+    ce = MINMAX(0, ce, MAXFRAC);
+  if (bx+xc+ce > MAXLINE)
+    bx = MINMAX(0, bx, MAXFRAC);
+  int len = bx+xc+2;
+  struct descriptor marker = { len+1, DTYPE_T, CLASS_S, memset(malloc(len+1),' ',len) };
+  struct descriptor region = { bx+xc+ce, DTYPE_T, CLASS_S, x-bx };
+  marker.pointer[bx]='^';
+  marker.pointer[0] = marker.pointer[len-1]='\n';
+  if (xc>0)
+    marker.pointer[bx+xc]='^';
+  else if (bx>0)
+    marker.pointer[bx]='^';
+  StrAppend(message,(struct descriptor *)&compile_err);
+  StrAppend(message,(struct descriptor *)&region);
+  StrAppend(message,(struct descriptor *)&marker);
+  free(marker.pointer);
 }
 
 /**********************************
