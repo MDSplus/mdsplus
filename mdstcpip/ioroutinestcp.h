@@ -159,8 +159,12 @@ static short getPort(char *name){
   if (port == 0) {
     sp = getservbyname(name, "tcp");
     if (!sp) {
-      fprintf(stderr, "Error unknown service: %s/%s: %s/n", name, PROT, strerror(errno));
-      exit(0);
+      if (errno) {
+        fprintf(stderr, "Error: unknown service port %s/%s; %s\n", name, PROT, strerror(errno));
+        exit(0);
+      }
+      fprintf(stderr, "Error: unknown service port %s/%s; default to 8000\n", name, PROT);
+      return 8000;
     }
     port = sp->s_port;
   }
