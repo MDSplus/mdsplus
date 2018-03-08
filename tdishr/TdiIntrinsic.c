@@ -140,17 +140,16 @@ int TdiTrace(int opcode __attribute__ ((unused)),
   return MDSplusSUCCESS;
 }
 
-int TRACE(int opcode, int narg,
+static inline void TRACE(int opcode, int narg,
 	  struct descriptor *list[],
 	  struct descriptor_xd *out_ptr __attribute__ ((unused)))
 {
+  struct descriptor_d *message = &((TdiGetThreadStatic())->TdiIntrinsic_message);
+  if (message->length >= MAXMESS)
+    return;
+  unsigned short now = message->length;
   int j;
   struct descriptor_d text = { 0, DTYPE_T, CLASS_D, 0 };
-  struct descriptor_d *message = &((TdiGetThreadStatic())->TdiIntrinsic_message);
-  unsigned short now = message->length;
-
-  if (now > MAXMESS)
-    return C_ERROR;
   if (opcode >= 0 && opcode <= TdiFUNCTION_MAX) {
     struct TdiFunctionStruct *pfun = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
     if (narg < pfun->m1 || narg > pfun->m2) {
@@ -190,7 +189,34 @@ int TRACE(int opcode, int narg,
     }
   }
   add(")\n");
-  return C_OK;
+}
+
+static inline void ADD_COMPILE_INFO() {
+  GET_TDITHREADSTATIC_P;
+  struct descriptor_d *message = &TdiThreadStatic_p->TdiIntrinsic_message;
+  if (!TdiRefZone.a_begin || message->length >= MAXMESS)
+    return;
+  struct descriptor pre = { 0, DTYPE_T, CLASS_S, 0 };
+  struct descriptor body = { 0, DTYPE_T, CLASS_S, 0 };
+  struct descriptor post = { 0, DTYPE_T, CLASS_S, 0 };
+  // b------x----c----e
+  // '-l_ok-'-xc-'-ce-'
+  char *b = TdiRefZone.a_begin;
+  char *e = TdiRefZone.a_end;
+  char *c = MINMAX(b, TdiRefZone.a_cur, e);
+  char *x = MINMAX(b, b + TdiRefZone.l_ok, c);
+  body.length = (unsigned short)MINMAX(0, c-x, MAXLINE);
+  body.pointer = body.length>0 ? x : NULL;
+  post.length = (unsigned short)MINMAX(0, e-c, MAXLINE);
+  if (body.length + post.length > MAXLINE)
+    post.length = MINMAX(0, post.length, MAXFRAC);
+  post.pointer = post.length>0 ? c : NULL;
+  pre.length = (unsigned short)MINMAX(0, x-b, MAXLINE);
+  if (pre.length + body.length + post.length > MAXLINE)
+    pre.length = 0;
+  pre.pointer = pre.length>0 ? x - pre.length : NULL;
+  StrConcat((struct descriptor *)message,(struct descriptor *)message, &compile_err,
+	&pre, &hilite, &body, &hilite, &post, &newline MDS_END_ARG);
 }
 
 /**********************************
@@ -224,7 +250,6 @@ EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct 
   FREEXD_ON_EXIT(out_ptr);
   FREEBEGIN_ON_EXIT();
   struct descriptor *dsc_ptr;
-  struct descriptor_d *message = &(TdiThreadStatic_p->TdiIntrinsic_message);
   TdiThreadStatic_p->TdiIntrinsic_recursion_count++;
   if (narg < fun_ptr->m1)
     status = TdiMISS_ARG;
@@ -340,35 +365,12 @@ EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct 
       goto done;
     status = stat1;
   }
-  TRACE(opcode, narg, list, out_ptr);
   /********************************
   Compiler errors get special help.
   ********************************/
-  if (opcode == OpcCompile && message->length < MAXMESS && TdiRefZone.a_begin) {
-    struct descriptor pre = { 0, DTYPE_T, CLASS_S, 0 };
-    struct descriptor body = { 0, DTYPE_T, CLASS_S, 0 };
-    struct descriptor post = { 0, DTYPE_T, CLASS_S, 0 };
-    // b------x----c----e
-    // '-l_ok-'-xc-'-ce-'
-    char *b = TdiRefZone.a_begin;
-    char *e = TdiRefZone.a_end;
-    char *c = MINMAX(b, TdiRefZone.a_cur, e);
-    char *x = MINMAX(b, b + TdiRefZone.l_ok, c);
-    body.length = (unsigned short)MINMAX(0, c-x, MAXLINE);
-    body.pointer = body.length>0 ? x : NULL;
-    post.length = (unsigned short)MINMAX(0, e-c, MAXLINE);
-    if (body.length + post.length > MAXLINE)
-        post.length = MINMAX(0, post.length, MAXFRAC);
-    post.pointer = post.length>0 ? c : NULL;
-    pre.length = (unsigned short)MINMAX(0, x-b, MAXLINE);
-    if (pre.length + body.length + post.length > MAXLINE)
-        pre.length = 0;
-    pre.pointer = pre.length>0 ? x - pre.length : NULL;
-    StrConcat((struct descriptor *)message,
-              (struct descriptor *)message, &compile_err, &pre, &hilite,
-              &body, &hilite, &post, &newline MDS_END_ARG);
-    freebegin(&TdiRefZone);
-  }
+  if (opcode == OpcCompile && (status==TdiSYNTAX || status==TdiEXTRANEOUS || status==TdiUNBALANCE || status==TdiBOMB))
+    ADD_COMPILE_INFO();
+  TRACE(opcode, narg, list, out_ptr);
   if (out_ptr)
     MdsFree1Dx(out_ptr, NULL);
  notmp:MdsFree1Dx(&tmp, NULL);
