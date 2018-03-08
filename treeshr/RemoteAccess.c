@@ -66,11 +66,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-#define MAX_DIMS 7
 struct descrip {
   char dtype;
   char ndims;
-  int dims[MAX_DIMS];
+  int dims[MAX_DIMS_R];
   int length;
   void *ptr;
 };
