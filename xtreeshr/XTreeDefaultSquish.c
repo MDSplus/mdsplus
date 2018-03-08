@@ -57,7 +57,7 @@ static void printDecompiled(struct descriptor *inD)
 static int getShape(struct descriptor *dataD, int *dims, int *numDims)
 {
     int i;
-    ARRAY_COEFF(char *, MAX_NDIMS) *arrPtr;
+    ARRAY_COEFF(char *, MAX_DIMS) *arrPtr;
     if(dataD->class != CLASS_A)
     {
 //	printf("Internal error!!!! Class: %d\n", dataD->class);
@@ -104,10 +104,10 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
   //struct descriptor shapeExprD = { strlen(shapeExpr), DTYPE_T, CLASS_S, shapeExpr };
   //char setRangeExpr[512];	//Safe dimension, to avoid useless mallocs
   //struct descriptor setRangeExprD = { 0, DTYPE_T, CLASS_S, setRangeExpr };
-  DESCRIPTOR_SIGNAL(outSignalD, MAX_NDIMS, 0, 0);
+  DESCRIPTOR_SIGNAL(outSignalD, MAX_DIMS, 0, 0);
   DESCRIPTOR_A(outDimD, 0, 0, 0, 0);
   //DESCRIPTOR_A(outDataD, 0, 0, 0, 0);
-  DESCRIPTOR_A_COEFF(outDataD, 0, 0, 0, MAX_NDIMS, 0) ;
+  DESCRIPTOR_A_COEFF(outDataD, 0, 0, 0, MAX_DIMS, 0) ;
 
   DESCRIPTOR_A(beginArrD, 0, 0, 0, 0);
   DESCRIPTOR_A(endingArrD, 0, 0, 0, 0);
