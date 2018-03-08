@@ -344,6 +344,17 @@ class Tree(object):
                 _TreeShr._TreeCompressDatafile(0,
                                                _C.c_char_p(_ver.tobytes(tree)),
                                                _C.c_int32(int(shot))))
+    @classmethodX
+    def getFilePath(self,tree=None,shot=None):
+        """Return file path.
+        @rtype: str
+        """
+        if isinstance(self,(Tree,)):
+            tree,shot = self.tree,self.shot
+        _TreeShr.TreeFileName.restype=_C.c_void_p
+        return str(_dsc.Descriptor(_TreeShr.TreeFileName(
+                   _C.c_char_p(_ver.tobytes(tree)),
+                   _C.c_int32(int(shot))))._setTree(tree).value)
 
     def readonly(self):
         self.open('READONLY')

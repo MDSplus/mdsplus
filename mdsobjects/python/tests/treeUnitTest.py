@@ -164,7 +164,10 @@ class Tests(TestCase):
 
     def openTrees(self):
       def test():
+        filepath = '%s%spytree_%03d.tree'%(self.tmpdir,os.path.sep,self.shot)
+        self.assertEqual(Tree.getFilePath('pytree',self.shot), filepath)
         pytree = Tree('pytree',self.shot)
+        self.assertEqual(pytree.getFilePath(), filepath)
         self.assertEqual(str(pytree),'Tree("PYTREE",%d,"Normal")'%(self.shot,))
         pytree.createPulse(self.shot+1)
         if not Tests.inThread:
