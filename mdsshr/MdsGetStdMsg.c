@@ -60,6 +60,7 @@ static const char *FAC_STR = "STR";
 static const char *FAC_MDSPLUS = "MDSPLUS";
 static const char *FAC_SS = "SS";
 static const char *FAC_TDI = "TDI";
+static const char *FAC_APD = "APD";
 static const char *FAC_MDSDCL = "MDSDCL";
 static const char *FAC_SERVER = "SERVER";
 static const char *FAC_CAM = "CAM";
@@ -522,7 +523,7 @@ EXPORT int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_ou
 
 /* DevBAD_POST_TRIG */
       case 0x277c8170:
-        {static const char *text="Clock source either not available or invalid";
+        {static const char *text="Post trigger samples either not available or invalid";
         static const char *msgnam="BAD_POST_TRIG";
         *fac_out = FAC_DEV;
         *msgnam_out = msgnam;
@@ -3255,6 +3256,36 @@ EXPORT int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_ou
         {static const char *text="task did not complete in alotted time";
         static const char *msgnam="TIMEOUT";
         *fac_out = FAC_TDI;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* ApdAPD_APPEND */
+      case 0xfdd0008:
+        {static const char *text="First argument must be APD or *";
+        static const char *msgnam="APD_APPEND";
+        *fac_out = FAC_APD;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* ApdDICT_KEYVALPAIR */
+      case 0xfdd0010:
+        {static const char *text="A Dictionary requires an even number of elements";
+        static const char *msgnam="DICT_KEYVALPAIR";
+        *fac_out = FAC_APD;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* ApdDICT_KEYCLS */
+      case 0xfdd0018:
+        {static const char *text="Keys must be scalar, i.e. CLASS_S";
+        static const char *msgnam="DICT_KEYCLS";
+        *fac_out = FAC_APD;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}

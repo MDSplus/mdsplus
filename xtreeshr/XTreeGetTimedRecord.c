@@ -185,7 +185,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
   struct descriptor_xd *dataXds;
   struct descriptor_xd *dimensionXds;
 
-  DESCRIPTOR_SIGNAL(currSignalD, MAX_NDIMS, 0, 0);
+  DESCRIPTOR_SIGNAL(currSignalD, MAX_DIMS, 0, 0);
   DESCRIPTOR_APD(signalsApd, DTYPE_SIGNAL, 0, 0);
   struct descriptor_signal **signals;
 

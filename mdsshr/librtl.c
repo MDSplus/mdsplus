@@ -586,7 +586,9 @@ EXPORT int LibFindImageSymbol(struct descriptor *filename, struct descriptor *sy
   free(c_symbol);
   return status;
 }
-
+/*******************************************************
+ TODO: StrConcat fails when any of the varargs is out
+ *******************************************************/
 EXPORT int StrConcat(struct descriptor *out, struct descriptor *first, ...)
 {
   int i;

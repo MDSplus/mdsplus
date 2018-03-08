@@ -41,7 +41,6 @@ extern unsigned short OpcExtFunction;
 
 //static int timedAccessFlag = 0;
 
-#define MAX_DIMENSION_SIGNAL 16
 #define MAX_FUN_NAMELEN 512
 extern int TdiData(), TdiEvaluate();
 

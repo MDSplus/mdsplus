@@ -104,18 +104,19 @@ extern int TdiYacc_ARG();
 extern int TdiLexPath();
 
 #define YYMAXDEPTH      250
+#define __RUN(method)				do{if IS_NOT_OK(method) tdiyyerror(0); else TdiRefZone.l_ok = TdiRefZone.a_cur - TdiRefZone.a_begin;}while(0)
+#define _RESOLVE(arg)   			__RUN(TdiYacc_RESOLVE(&arg.rptr))
 
-#define _RESOLVE(arg)   			if IS_NOT_OK(TdiYacc_RESOLVE(&arg.rptr)) {tdiyyerror(0);}
-#define _FULL1(opcode,arg1,out)                 if IS_NOT_OK(TdiYacc_BUILD(255, 1, opcode, &out, &arg1)) {tdiyyerror(0);}
-#define _FULL2(opcode,arg1,arg2,out)            if IS_NOT_OK(TdiYacc_BUILD(255, 2, opcode, &out, &arg1, &arg2)) {tdiyyerror(0);}
+#define _FULL1(opcode,arg1,out)                 __RUN(TdiYacc_BUILD(255, 1, opcode, &out, &arg1))
+#define _FULL2(opcode,arg1,arg2,out)            __RUN(TdiYacc_BUILD(255, 2, opcode, &out, &arg1, &arg2))
 	/*****************************
         Two args for image->routine.
         *****************************/
-#define _JUST0(opcode,out)                      if IS_NOT_OK(TdiYacc_BUILD(2, 0, opcode, &out)) {tdiyyerror(0);}
-#define _JUST1(opcode,arg1,out)                 if IS_NOT_OK(TdiYacc_BUILD(3, 1, opcode, &out, &arg1)) {tdiyyerror(0);}
-#define _JUST2(opcode,arg1,arg2,out)            if IS_NOT_OK(TdiYacc_BUILD(2, 2, opcode, &out, &arg1, &arg2)) {tdiyyerror(0);}
-#define _JUST3(opcode,arg1,arg2,arg3,out)       if IS_NOT_OK(TdiYacc_BUILD(3, 3, opcode, &out, &arg1, &arg2, &arg3)) {tdiyyerror(0);}
-#define _JUST4(opcode,arg1,arg2,arg3,arg4,out)  if IS_NOT_OK(TdiYacc_BUILD(4, 4, opcode, &out, &arg1, &arg2, &arg3, &arg4)) {tdiyyerror(0);}
+#define _JUST0(opcode,out)                      __RUN(TdiYacc_BUILD(2, 0, opcode, &out))
+#define _JUST1(opcode,arg1,out)                 __RUN(TdiYacc_BUILD(3, 1, opcode, &out, &arg1))
+#define _JUST2(opcode,arg1,arg2,out)            __RUN(TdiYacc_BUILD(2, 2, opcode, &out, &arg1, &arg2))
+#define _JUST3(opcode,arg1,arg2,arg3,out)       __RUN(TdiYacc_BUILD(3, 3, opcode, &out, &arg1, &arg2, &arg3))
+#define _JUST4(opcode,arg1,arg2,arg3,arg4,out)  __RUN(TdiYacc_BUILD(4, 4, opcode, &out, &arg1, &arg2, &arg3, &arg4))
 
 STATIC_THREADSAFE struct marker _EMPTY_MARKER = { 0 };
 
@@ -1030,9 +1031,8 @@ int TdiYacc(){
       tdiyyval.mark.rptr = tdiyypvt[-0].mark.rptr;
       tdiyyval.mark.builtin = -2;
       TdiRefZone.l_status = TdiYacc_IMMEDIATE(&tdiyyval.mark.rptr);
-      if (!(TdiRefZone.l_status & 1)) {
+      if (!(TdiRefZone.l_status & 1))
 	tdiyyerror(0);
-      }
     }
     break;
   case 33:
@@ -1453,7 +1453,7 @@ int TdiYacc(){
       _JUST1(tdiyypvt[-1].mark.builtin, tdiyypvt[-0].mark, tmp);
       _JUST1(tdiyypvt[-2].mark.builtin, tmp, tdiyyval.mark);
     } break;
-  case 91:
+  case 91: // WORD: CONST, IDENT, or PATH
 //#line 388 "TdiYacc.y"
     {
       if (*tdiyyval.mark.rptr->pointer == '$') {
@@ -1461,9 +1461,8 @@ int TdiYacc(){
 	  tdiyyval.mark.rptr->dtype = DTYPE_IDENT;
 	} else {
 	  if ((TdiRefFunction[tdiyyval.mark.builtin].token & LEX_M_TOKEN) == (unsigned int)LEX_ARG) {
-	    if (!((TdiRefZone.l_status = TdiYacc_ARG(&tdiyyval.mark)) & 1)) {
+	    if (!((TdiRefZone.l_status = TdiYacc_ARG(&tdiyyval.mark)) & 1))
 	      tdiyyerror(0);
-	    }
 	  } else {
 	    if ((TdiRefFunction[tdiyyval.mark.builtin].token & LEX_M_TOKEN) == (unsigned int)LEX_CONST)
 	      _JUST0(tdiyypvt[-0].mark.builtin, tdiyyval.mark);
@@ -1471,10 +1470,12 @@ int TdiYacc(){
 	}
       } else if (*tdiyyval.mark.rptr->pointer == '_')
 	tdiyyval.mark.rptr->dtype = DTYPE_IDENT;
-      else if (TdiLexPath
-	       (tdiyypvt[-0].mark.rptr->length, tdiyypvt[-0].mark.rptr->pointer, &tdiyyval.mark) == ERROR) {
-	tdiyyerror(0);
-      }
+      else if (TdiLexPath(tdiyypvt[-0].mark.rptr->length, tdiyypvt[-0].mark.rptr->pointer, &tdiyyval.mark) == ERROR) {
+	TdiRefZone.l_ok = tdiyypvt[-1].mark.w_ok;
+	TdiRefZone.a_cur = TdiRefZone.a_begin + TdiRefZone.l_ok + tdiyypvt[-0].mark.rptr->length;
+        return MDSplusERROR;
+      } else
+        TdiRefZone.l_ok = tdiyypvt[-0].mark.w_ok;
     }
     break;
   case 95:
@@ -1603,9 +1604,8 @@ int TdiYacc(){
       tdiyyval.mark.rptr = tdiyypvt[-0].mark.rptr;
       tdiyyval.mark.builtin = -2;
       TdiRefZone.l_status = TdiYacc_IMMEDIATE(&tdiyyval.mark.rptr);
-      if (!(TdiRefZone.l_status & 1)) {
+      if (!(TdiRefZone.l_status & 1))
 	tdiyyerror(0);
-      }
     }
     break;
   case 115:

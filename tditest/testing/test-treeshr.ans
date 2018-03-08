@@ -135,6 +135,7 @@ getnci(.subtree:a12,"status")
 getnci(.subtree:a12,"brother")
 .SUBTREE:A14
 getnci(.subtree:a12,"child")
+%TREE-W-NNF, Node Not Found
 %TDI Error in GETNCI(.SUBTREE:A12, "child")
 %TDI Error in EVALUATE(GETNCI(.SUBTREE:A12, "child"))
 %TDI Error in EXECUTE('getnci(.subtree:a12,"child")')
@@ -144,6 +145,7 @@ getnci(.subtree:a12,"member")
 getnci(.subtree:a12,"parent")
 .SUBTREE
 getnci(.subtree:a12,"children_nids")
+%TREE-W-NNF, Node Not Found
 %TDI Error in GETNCI(.SUBTREE:A12, "children_nids")
 %TDI Error in EVALUATE(GETNCI(.SUBTREE:A12, "children_nids"))
 %TDI Error in EXECUTE('getnci(.subtree:a12,"children_nids")')
@@ -293,6 +295,7 @@ TreeShr->TreeRemoveTag(ref('child_tag2\0'))
 getnci(\child,'nid_number')
 1
 getnci('\\child_tag2','nid_number')
+%TREE-W-NNF, Node Not Found
 %TDI Error in GETNCI("\\child_tag2", "nid_number")
 %TDI Error in EVALUATE(GETNCI("\\child_tag2", "nid_number"))
 %TDI Error in EXECUTE("getnci('\\\\child_tag2','nid_number')")
