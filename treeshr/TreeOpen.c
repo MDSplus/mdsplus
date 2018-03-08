@@ -705,6 +705,10 @@ int _TreeSetStackSize(void **dbid, int size)
 }
 
 static char *GetFname(char *tree, int shot)
+/*********************************************
+ allows to define a customized folder mapping.
+ DTYPE_T <expt>_tree_filename(LONG)
+ *********************************************/
 {
   int status = 1;
   static char *ans = 0;
