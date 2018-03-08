@@ -74,6 +74,7 @@ TreeThreadStatic *TreeGetThreadStatic(){
   if (!p) {
     p = (TreeThreadStatic*)calloc(1,sizeof(TreeThreadStatic));
     _TreeNewDbid(&p->DBID);
+    p->dsc_d = (struct descriptor){ 0, DTYPE_T, CLASS_D, 0 };
     pthread_setspecific(buffer_key, (void*)p);
   }
   return p;
