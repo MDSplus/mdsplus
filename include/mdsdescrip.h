@@ -2,7 +2,7 @@
 #define MDSDESCRIP_H_DEFINED 1
 
 #include <mdsplus/mdsconfig.h>
-#define MAX_NDIMS 64
+#define MAX_DIMS 8
 
 #ifdef _WIN32
 #define __char_align__ char
