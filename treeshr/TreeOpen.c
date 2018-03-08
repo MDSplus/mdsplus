@@ -908,7 +908,7 @@ static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, 
 	      status = TreeFCREATE;
 	  } else {
 	    fd = MDS_IO_OPEN(resnam, edit_flag ? O_RDWR : O_RDONLY, 0);
-#if (defined(__osf__) || defined(__linux) || defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX) || defined(__APPLE__))
+#ifndef _WIN32// (defined(__osf__) || defined(__linux) || defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX) || defined(__APPLE__))
 	    info->mapped = (MDS_IO_SOCKET(fd) == -1);
 #endif
 	    if (fd == -1)
@@ -1355,21 +1355,31 @@ void TreeFreeDbid(void *dbid)
 }
 
 
-#include "treethreadsafe.h"
-static int treefilename(char *tree, int shot, char** out){
-  int fd;
-  TREE_INFO dummy_info;
-  int status = OpenOne(&dummy_info, tree, shot, TREE_TREEFILE_TYPE, 0, out, 0, &fd);
-  if STATUS_OK
-    MDS_IO_CLOSE(fd);
-  else
-    *out = NULL;
+EXPORT int _TreeFileName(void* dbid, char *tree, int shot, struct descriptor_xd* out_ptr){
+  int status;
+  if (tree) {
+    struct descriptor dsc = {0,DTYPE_T,CLASS_S,0};
+    int fd;
+    TREE_INFO dummy_info;
+    status = OpenOne(&dummy_info, tree, shot, TREE_TREEFILE_TYPE, 0, &dsc.pointer, 0, &fd);
+    if STATUS_OK {
+      MDS_IO_CLOSE(fd);
+      dsc.length = (unsigned short)strlen(dsc.pointer);
+      status = MdsCopyDxXd(&dsc,out_ptr);
+      free(dsc.pointer);
+    }
+  } else {
+    PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+    if (IS_OPEN(dblist)) {
+      TREE_INFO* info = dblist->tree_info;
+      struct descriptor dsc = {(uint16_t)strlen(info->filespec),DTYPE_T,CLASS_S,info->filespec};
+      status = MdsCopyDxXd(&dsc,out_ptr);
+    } else
+      status = TreeNOT_OPEN;
+  }
   return status;
 }
 
-EXPORT struct descriptor *TreeFileName(char *tree, int shot, struct descriptor_xd* out){
-  TREEGETTHREADSTATIC_P;
-  treefilename(tree, shot, &TreeGetThreadStatic_p->dsc_d.pointer);
-  TreeGetThreadStatic_p->dsc_d.length = (unsigned short)strlen(TreeGetThreadStatic_p->dsc_d.pointer);
-  return &TreeGetThreadStatic_p->dsc_d;
+EXPORT int TreeFileName(char *tree, int shot, struct descriptor_xd* out_ptr){
+  return _TreeFileName(*TreeCtx(), tree, shot, out_ptr);
 }
