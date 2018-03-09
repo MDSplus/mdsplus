@@ -344,6 +344,26 @@ class Tree(object):
                 _TreeShr._TreeCompressDatafile(0,
                                                _C.c_char_p(_ver.tobytes(tree)),
                                                _C.c_int32(int(shot))))
+    @classmethodX
+    def getFileName(self,tree=None,shot=None):
+        """Return file path.
+        @rtype: str
+        """
+        xd = _dsc.Descriptor_xd()
+        if tree is None:
+            treeref = None
+        else:
+            # even with ctx, you may address subtrees
+            treeref =_C.c_char_p(_ver.tobytes(tree))
+        if isinstance(self,(Tree,)):
+            _exc.checkStatus(
+                _TreeShr._TreeFileName(self.ctx,
+                    treeref,_C.c_int32(0),xd.ref))
+        else:
+            _exc.checkStatus(
+                _TreeShr.TreeFileName(
+                    treeref,_C.c_int32(int(shot)),xd.ref))
+        return _ver.tostr(xd.value)
 
     def readonly(self):
         self.open('READONLY')

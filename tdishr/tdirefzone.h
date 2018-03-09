@@ -40,7 +40,7 @@ struct marker {
 	/*--------------------------------------------------
 	Definitions needed by Lex and Yacc.
 	--------------------------------------------------*/
-#define tdiyyerror(s)	TdiRefZone.l_ok = tdiyyval.mark.w_ok; return MDSplusERROR
+#define tdiyyerror(s)	do{TdiRefZone.l_ok = tdiyyval.mark.w_ok; return MDSplusERROR;}while(0)
 
 #define MAKE_S(dtype_in,bytes,out)					\
 	{unsigned int dsc_size = sizeof(struct descriptor_s);			\

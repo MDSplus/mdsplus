@@ -34,13 +34,13 @@ void FlipHeader(MsgHdr * header)
   Flip32(header->msglen);
   Flip32(header->status);
   Flip16(header->length);
-  for (i = 0; i < MAX_DIMS; i++)
+  for (i = 0; i < MAX_DIMS_R; i++)
     FlipBytes(4, ((char *)header->dims) + 4 * i);
 #else
   FlipBytes(4, (char *)&header->msglen);
   FlipBytes(4, (char *)&header->status);
   FlipBytes(2, (char *)&header->length);
-  for (i = 0; i < MAX_DIMS; i++)
+  for (i = 0; i < MAX_DIMS_R; i++)
     FlipBytes(sizeof(header->dims[i]), (char *)&header->dims[i]);
 #endif
 }

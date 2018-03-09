@@ -74,6 +74,8 @@ int main(int argc, char **argv)
   static DESCRIPTOR(out_unit_other, "PUBLIC _OUTPUT_UNIT=FOPEN($,'w')");
   static DESCRIPTOR(reset_output_unit, "PUBLIC _OUTPUT_UNIT=$");
   char *command=NULL;
+  static DESCRIPTOR(error_out, "WRITE($,DEBUG(13))");
+  static DESCRIPTOR(clear_errors, "WRITE($,DECOMPILE($)),DEBUG(4)");
   if (argc > 1) {
     f_in = fopen(argv[1], "r");
     if (f_in == (FILE *) 0) {
@@ -111,8 +113,6 @@ int main(int argc, char **argv)
       if (f_in) tdiputs(command);
     }
     if (!comment) {
-      static DESCRIPTOR(error_out, "_MSG=DEBUG(0),DEBUG(4),WRITE($,_MSG)");
-      static DESCRIPTOR(clear_errors, "WRITE($,DECOMPILE($)),DEBUG(4)");
       expr_dsc.length = strlen(command);
       expr_dsc.pointer = command;
       status = TdiExecute((struct descriptor *)&expr_dsc, &ans MDS_END_ARG);

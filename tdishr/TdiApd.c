@@ -69,7 +69,7 @@ int UnwrapComma(int narg, struct descriptor *list[], int *nout_p, struct descrip
   int nout = 0;
   *list_ptr = malloc(*nout_p * sizeof(void*));
   int status = UnwrapCommaDesc(narg, list, &nout, *list_ptr);
-  if (STATUS_NOT_OK) {
+  if STATUS_NOT_OK {
     int i;
     for ( i=0 ; i<nout ; i++ )
       if ((*list_ptr)[i])
@@ -90,7 +90,7 @@ int Tdi1Apd(int dtype, int narg, struct descriptor *list[], struct descriptor_xd
   struct descriptor_a *oarr = (struct descriptor_a*)alist[0];
   if (oarr && oarr->dtype) {
     if (oarr->class!=CLASS_APD || oarr->length!=sizeof(void*)) {
-      status = TdiINVCLADSC;
+      status = ApdAPD_APPEND;
       goto free_alist;
     }
     osize = oarr->arsize;
@@ -99,14 +99,24 @@ int Tdi1Apd(int dtype, int narg, struct descriptor *list[], struct descriptor_xd
     osize = 0;
     olist = NULL;
   }
-  arr.arsize = osize+asize;
-  if (arr.dtype==DTYPE_DICTIONARY && (!(alen & 1) || (osize/arr.length) & 1)) {
-    // dict requires key-value-pairs
-    status = TdiMISS_ARG;
-    goto free_alist;
+  if (arr.dtype==DTYPE_DICTIONARY) {
+    if (!(alen&1 || (osize/arr.length)&1)) {
+      status = ApdDICT_KEYVALPAIR;
+      goto free_alist;
+    }
+    int i;
+    for (i=1 ; i<alen ; i+=2) {
+      if (alist[i]->class!=CLASS_S) {
+	status = ApdDICT_KEYCLS;
+        goto free_alist;
+      }
+    }
   }//TODO: Dict requires unique keys
+  arr.arsize = osize+asize;
   arr.pointer = malloc(arr.arsize);
-  memcpy(memcpy(arr.pointer,olist,osize)+osize,alist+1,asize);
+  if (olist)
+    memcpy(arr.pointer,olist,osize);
+  memcpy(arr.pointer+osize,alist+1,asize);
   status = MdsCopyDxXd((struct descriptor*)&arr, out_ptr);
   free(arr.pointer);
 free_alist :;

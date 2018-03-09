@@ -40,3 +40,6 @@
 #define TdiUNKNOWN_VAR           0xfd380f2
 #define TdiSTRTOOLON             0xfd380fc
 #define TdiTIMEOUT               0xfd38104
+#define ApdAPD_APPEND            0xfdd000a
+#define ApdDICT_KEYVALPAIR       0xfdd0012
+#define ApdDICT_KEYCLS           0xfdd001a

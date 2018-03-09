@@ -39,7 +39,7 @@ struct descrip *MakeDescripWithLength(struct descrip *in_descrip, char dtype, in
   in_descrip->length = length;
   for (i = 0; i < ndims; i++)
     in_descrip->dims[i] = dims[i];
-  for (i = ndims; i < MAX_DIMS; i++)
+  for (i = ndims; i < MAX_DIMS_R; i++)
     in_descrip->dims[i] = 0;
   in_descrip->ptr = ptr;
   return in_descrip;
@@ -60,7 +60,7 @@ struct descrip *MakeDescrip(struct descrip *in_descrip, char dtype, char ndims, 
   in_descrip->length = 0;
   for (i = 0; i < ndims; i++)
     in_descrip->dims[i] = dims[i];
-  for (i = ndims; i < MAX_DIMS; i++)
+  for (i = ndims; i < MAX_DIMS_R; i++)
     in_descrip->dims[i] = 0;
   in_descrip->ptr = ptr;
   return in_descrip;

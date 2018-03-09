@@ -9,8 +9,10 @@
 typedef int SOCKET;
 #define INVALID_SOCKET -1
 #endif
-
-#define MAX_DIMS 7
+#ifdef MAX_DIMS
+ #undef MAX_DIMS
+#endif
+#define MAX_DIMS_R 7
 #define DTYPE_UCHAR   2
 #define DTYPE_USHORT  3
 #define DTYPE_ULONG   4
@@ -38,7 +40,7 @@ typedef int SOCKET;
 struct descrip {
   char dtype;
   char ndims;
-  int dims[MAX_DIMS];
+  int dims[MAX_DIMS_R];
   int length;
   void *ptr;
 };

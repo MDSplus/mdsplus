@@ -88,8 +88,6 @@ void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr)
   return xdPtr;
 }
 
-#define MAX_DIMS 32
-
 void *convertToArrayDsc(int clazz, int dtype, int length, int arsize, int nDims, int *dims,
 			void *ptr)
 {

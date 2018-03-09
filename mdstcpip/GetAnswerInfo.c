@@ -85,11 +85,11 @@ int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims, int *dims, 
       printf("dim[%d] = %d\n", i, dims[i]);
 #endif
     }
-    for (i = m->h.ndims; i < MAX_DIMS; i++)
+    for (i = m->h.ndims; i < MAX_DIMS_R; i++)
       dims[i] = 0;
   } else {
     *numbytes = m->h.length;
-    for (i = 0; i < MAX_DIMS; i++)
+    for (i = 0; i < MAX_DIMS_R; i++)
       dims[i] = 0;
   }
   if ((int)(sizeof(MsgHdr) + *numbytes) != m->h.msglen) {
