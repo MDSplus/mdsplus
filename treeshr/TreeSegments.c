@@ -689,7 +689,8 @@ inline static int ReadProperty_safe(TREE_INFO *tinfo, const int64_t offset,char 
   return TreeFAILURE;
 }
 
-#define GOTO_END_ON_ERROR(statement) if IS_NOT_OK((status = statement)) goto end;
+#define GOTO_END_ON_ERROR(statement) do{if IS_NOT_OK((status = statement)) goto end;}while(0)
+
 #define CLEANUP_NCI_PUSH pthread_cleanup_push(unlock_nci,(void*)vars)
 #define CLEANUP_NCI_POP  pthread_cleanup_pop(vars->nci_locked)
 //#define CLEANUP_NCI_PUSH
@@ -1190,15 +1191,15 @@ int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *v
   GOTO_END_ON_ERROR(open_datafile_write1(vars));
   set_compress(vars);
   vars->index_offset = -1;
-  int value_length;
-  int64_t value_offset;
+  int value_length = 0;
+  int64_t value_offset = -1;
   NAMED_ATTRIBUTES_INDEX index, current_index;
-  status = TreePutDsc(vars->tinfo, *(int*)vars->nid_ptr, value, &value_offset, &value_length, vars->compress);
-  if STATUS_NOT_OK
-    return status;
+  if (value) // NULL means delete
+    GOTO_END_ON_ERROR(TreePutDsc(vars->tinfo, *(int*)vars->nid_ptr, value, &value_offset, &value_length, vars->compress));
   /*** See if node is currently using the Extended Nci feature and if so get the current contents of the attr
        index. If not, make an empty index and flag that a new index needs to be written.***/
   IF_NO_EXTENDED_NCI {
+    if (!value) goto end; // has not xnci; nothing to delete
     memset(&vars->attr, -1, sizeof(vars->attr));
     vars->attr_update = 1;
     if (((vars->local_nci.flags2 & NciM_EXTENDED_NCI) == 0) && vars->local_nci.length > 0) {
@@ -1310,6 +1311,7 @@ int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *v
     index.attribute[found_index].offset = value_offset;
     index.attribute[found_index].length = value_length;
   } else {
+    if (!value) goto end; // nothing to delete
     int i;
     index = current_index;
     for (i = 0; i < NAMED_ATTRIBUTES_PER_INDEX; i++) {
