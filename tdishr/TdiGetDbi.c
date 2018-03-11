@@ -284,7 +284,9 @@ int Tdi1Using(int opcode __attribute__ ((unused)),
                 *********************/
     if STATUS_OK {
       char *tree = MdsDescrToCstring((struct descriptor *)&expt);
-      ctx = TreeSwitchDbid(0);
+      void *newctx = NULL;
+      _TreeNewDbid(&newctx);
+      ctx = TreeSwitchDbid(newctx);
       reset_ctx = 1;
       status = TreeOpen(tree, shot, 1);
       MdsFree(tree);
