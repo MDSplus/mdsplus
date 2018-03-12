@@ -20,7 +20,6 @@ import mds.data.descriptor.Descriptor_A;
 import mds.data.descriptor_a.Int32Array;
 import mds.data.descriptor_a.NidArray;
 import mds.data.descriptor_apd.List;
-import mds.data.descriptor_r.Signal;
 import mds.data.descriptor_s.CString;
 import mds.data.descriptor_s.NODE;
 import mds.data.descriptor_s.NODE.Flags;
@@ -442,7 +441,7 @@ public final class TREE implements MdsListener, CTX{
     }
 
     public final NidArray getNciChildrenNids(final NODE<?> node) throws MdsException {
-        final NidArray result = this.setActive().mds.getDescriptor(this.ctx, "_a=AS_IS($);IF(GetNci(_a,'NUMBER_OF_CHILDREN')>0)GetNci(_a,'CHILDREN_NIDS')", NidArray.class, node);
+        final NidArray result = this.setActive().mds.getDescriptor(this.ctx, "IF(GetNci(_a=as_is($),'NUMBER_OF_CHILDREN')>0)GetNci(_a,'CHILDREN_NIDS');ELSE []", NidArray.class, node);
         if(result == null) return new NidArray();
         return result;
     }
@@ -516,7 +515,7 @@ public final class TREE implements MdsListener, CTX{
     }
 
     public final NidArray getNciMemberNids(final NODE<?> node) throws MdsException {
-        final NidArray result = this.setActive().mds.getDescriptor(this.ctx, new Request<NidArray>(NidArray.class, "_a=AS_IS($);IF(GetNci(_a,'NUMBER_OF_MEMBERS')>0)GetNci(_a,'MEMBER_NIDS')", node));
+        final NidArray result = this.setActive().mds.getDescriptor(this.ctx, "IF(GetNci(_a=as_is($),'NUMBER_OF_MEMBERS')>0)GetNci(_a,'MEMBER_NIDS');ELSE []", NidArray.class, node);
         if(result == null) return new NidArray();
         return result;
     }
@@ -644,7 +643,7 @@ public final class TREE implements MdsListener, CTX{
         return new RecordInfo(node, this.mds, this.ctx);
     }
 
-    public final Signal getSegment(final int nid, final int idx) throws MdsException {
+    public final List getSegment(final int nid, final int idx) throws MdsException {
         return this.setActive().treeshr.treeGetSegment(this.ctx, nid, idx);
     }
 
@@ -656,6 +655,14 @@ public final class TREE implements MdsListener, CTX{
         final DescriptorStatus dscs = this.setActive().treeshr.treeGetSegmentLimits(this.ctx, nid, idx);
         MdsException.handleStatus(dscs.status);
         return dscs.data;
+    }
+
+    public final Descriptor<?> getSegmentScale(final int nid) throws MdsException {
+        return this.setActive().treeshr.treeGetSegmentScale(this.ctx, nid);
+    }
+
+    public final List getSegmentScale(final int nid, final int idx) throws MdsException {
+        return this.setActive().treeshr.treeGetSegment(this.ctx, nid, idx);
     }
 
     public List getSegmentTimes(final int nid) throws MdsException {
@@ -833,6 +840,10 @@ public final class TREE implements MdsListener, CTX{
     public final TREE setPath(final int nid, final String path) throws MdsException {
         MdsException.handleStatus(this.setActive().treeshr.treeRenameNode(this.ctx, nid, path));
         return this;
+    }
+
+    public final int setSegmentScale(final int nid, final Descriptor<?> scale) throws MdsException {
+        return this.setActive().treeshr.treeSetSegmentScale(this.ctx, nid, scale);
     }
 
     public final TREE setSubtree(final int nid) throws MdsException {

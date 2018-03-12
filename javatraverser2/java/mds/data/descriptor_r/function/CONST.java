@@ -593,119 +593,35 @@ public abstract class CONST extends Function{
             return this.VALUE.VALUE();
         }
     }
-    public static final Float32 ROPRAND = Float32.F(ByteBuffer.wrap(new byte[]{0, 0, -128, 0}).getFloat());
-
-    public static final d2Pi $2PI() {
-        return new d2Pi();
-    }
-
-    public static final dA0 $A0() {
-        return new dA0();
-    }
-
-    public static final dAlpha $ALPHA() {
-        return new dAlpha();
-    }
-
-    public static final dAmu $AMU() {
-        return new dAmu();
-    }
-
-    public static final dC $C() {
-        return new dC();
-    }
-
-    public static final dCal $CAL() {
-        return new dCal();
-    }
-
-    public static final dDegree $DEGREE() {
-        return new dDegree();
-    }
-
-    public static final dFalse $FALSE() {
-        return new dFalse();
-    }
-
-    public static final dFaraday $FARADAY() {
-        return new dFaraday();
-    }
-
-    public static final dG $G() {
-        return new dG();
-    }
-
-    public static final dGas $GAS() {
-        return new dGas();
-    }
-
-    public static final dH $H() {
-        return new dH();
-    }
-
-    public static final dHbar $HBAR() {
-        return new dHbar();
-    }
-
-    public static final dI $I() {
-        return new dI();
-    }
-
-    public static final dK $K() {
-        return new dK();
-    }
-
-    public static final dMissing $MISSING() {
-        return new dMissing();
-    }
-
-    public static final dMp $MP() {
-        return new dMp();
-    }
-
-    public static final dN0 $N0() {
-        return new dN0();
-    }
-
-    public static final dNa $NA() {
-        return new dNa();
-    }
-
-    public static final dP0 $P0() {
-        return new dP0();
-    }
-
-    public static final dPi $PI() {
-        return new dPi();
-    }
-
-    public static final dQe $QE() {
-        return new dQe();
-    }
-
-    public static final dRe $RE() {
-        return new dRe();
-    }
-
-    public static final dRoprand $ROPRAND() {
-        return new dRoprand();
-    }
-
-    public static final dRydberg $RYDBERG() {
-        return new dRydberg();
-    }
-
-    public static final dTorr $TORR() {
-        return new dTorr();
-    }
-
-    public static final dTrue $TRUE() {
-        return new dTrue();
-    }
-
-    public static final Function $VALUE() {
-        return new dValue();
-    }
+    public static final Float32  ROPRAND  = Float32.F(ByteBuffer.wrap(new byte[]{0, 0, -128, 0}).getFloat());
+    public final static Function $VALUE   = new dValue();
+    public static final dRoprand $ROPRAND = new dRoprand();
+    public static final dRydberg $RYDBERG = new dRydberg();
+    public static final dTorr    $TORR    = new dTorr();
+    public static final dTrue    $TRUE    = new dTrue();
+    public static final d2Pi     $2PI     = new d2Pi();
+    public static final dA0      $A0      = new dA0();
+    public static final dAlpha   $ALPHA   = new dAlpha();
+    public static final dAmu     $AMU     = new dAmu();
+    public static final dC       $C       = new dC();
+    public static final dCal     $CAL     = new dCal();
+    public static final dDegree  $DEGREE  = new dDegree();
+    public static final dFalse   $FALSE   = new dFalse();
+    public static final dFaraday $FARADAY = new dFaraday();
+    public static final dG       $G       = new dG();
+    public static final dGas     $GAS     = new dGas();
+    public static final dH       $H       = new dH();
+    public static final dHbar    $HBAR    = new dHbar();
+    public static final dI       $I       = new dI();
+    public static final dK       $K       = new dK();
+    public static final dMissing $MISSING = new dMissing();
+    public static final dMp      $MP      = new dMp();
+    public static final dN0      $N0      = new dN0();
+    public static final dNa      $NA      = new dNa();
+    public static final dP0      $P0      = new dP0();
+    public static final dPi      $PI      = new dPi();
+    public static final dQe      $QE      = new dQe();
+    public static final dRe      $RE      = new dRe();
 
     public static final boolean coversOpCode(final short opcode) {
         switch(opcode){

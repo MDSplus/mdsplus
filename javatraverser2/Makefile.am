@@ -26,7 +26,7 @@ bin_SCRIPTS = $(JAVAROOT)
 CLASSPATH_ENV = CLASSPATH=$(JSCH):$(JAVAROOT)
 
 # Build the final jar
-JTRAVERSER_JAR = $(abs_builddir)/jTraverser.jar
+JTRAVERSER_JAR = $(abs_builddir)/jTraverser2.jar
 TRAV_GIFS = $(addprefix ${srcdir}/java/,$(TRAV_GIF))
 
 java_SRC = $(TRAV_SRC) $(TOOLS_SRC) $(MDS_SRC)
@@ -49,7 +49,7 @@ $(MANIFEST): $(srcdir)/JTMANIFEST.mf
 
 if USE_JARS_DIR
 
-JTRAVERSER_JAR : @JARS_DIR@/javatraverser2/jTraverser.jar
+JTRAVERSER_JAR : @JARS_DIR@/javatraverser2/jTraverser2.jar
 	cp $< $@
 
 else

@@ -28,10 +28,12 @@ import mds.MdsEvent;
 import mds.MdsException;
 import mds.MdsException.MdsAbortException;
 import mds.MdsListener;
+import mds.TreeShr;
 import mds.UpdateEventListener;
 import mds.data.CTX;
 import mds.data.DTYPE;
 import mds.data.descriptor.Descriptor;
+import mds.data.descriptor_s.Int32;
 import mds.data.descriptor_s.Missing;
 import mds.data.descriptor_s.Pointer;
 
@@ -398,6 +400,7 @@ public class MdsIp extends Mds{
     public static final int          LOGIN_OK         = 1, LOGIN_ERROR = 2, LOGIN_CANCEL = 3;
     private static final String      NOT_CONNECTED    = "Not Connected.";
     private static final byte        MAX_MSGS         = 8;
+    private static final Pattern     dollar           = Pattern.compile("\\$");
 
     public static final boolean addSharedConnection(final MdsIp con) {
         synchronized(MdsIp.open_connections){
@@ -415,7 +418,7 @@ public class MdsIp extends Mds{
 
     private static final StringBuilder getMessageNestCtx_new(final StringBuilder cmd, final Descriptor<?>[] args, final Pointer ctx, final Request<?> req, final boolean serialize) {
         if(ctx == null) return MdsIp.getMessageNestSerial(cmd, args, req, serialize);
-        cmd.append("_ctx=TreeShr->TreeSwitchDbid:P(val($));");
+        cmd.append("__ctx=__save($);");
         MdsIp.getMessageNestSerial(cmd, args, req, serialize);
         return cmd;
     }
@@ -431,10 +434,10 @@ public class MdsIp extends Mds{
                     if(notatomic[i]) args[i] = req.args[i].serializeDsc();
                     else args[i] = req.args[i];
                 }
-            final Matcher m = Pattern.compile("\\$").matcher(req.expr);
+            final Matcher m = MdsIp.dollar.matcher(req.expr);
             int pos = 0;
             for(int i = 0; i < args.length && m.find(); i++){
-                cmd.append(req.expr.substring(pos, m.start())).append(notatomic[i] ? Mds.serialStr : "$");
+                cmd.append(req.expr.substring(pos, m.start())).append(notatomic[i] ? "`__serin($)" : "$"); // TODO: __serin
                 pos = m.end();
             }
             cmd.append(req.expr.substring(pos));
@@ -444,9 +447,9 @@ public class MdsIp extends Mds{
 
     private static final StringBuilder getMessageNestSerial(final StringBuilder cmd, final Descriptor<?>[] args, final Request<?> req, final boolean serialize) {
         if(!serialize) return MdsIp.getMessageNestExpr(cmd, args, req);
-        cmd.append("_ans=*;MdsShr->MdsSerializeDscOut(xd((");
+        cmd.append("__serout((");
         MdsIp.getMessageNestExpr(cmd, args, req);
-        cmd.append(";)),xd(_ans));_ans");
+        cmd.append(";))");
         return cmd;
     }
 
@@ -557,6 +560,12 @@ public class MdsIp extends Mds{
         }
         this.connectThread.retry();
         if(!Thread.currentThread().getName().startsWith("AWT-EventQueue-")) this.waitTried();
+        if(this.connected) try{
+            this.setup();
+        }catch(final MdsException e){
+            e.printStackTrace();
+            this.close();
+        }
         return this.connected;
     }
 
@@ -572,7 +581,7 @@ public class MdsIp extends Mds{
             if(this.userinfo == null) this.userinfo = new SSHSocket.SshUserInfo();
             this.sock = MdsIp.newSSHSocket(this.userinfo, this.provider);
         }else this.sock = new Socket(this.provider.host, this.provider.port);
-        System.out.println(this.sock.toString());
+        if(DEBUG.D) System.out.println(this.sock.toString());
         this.sock.setTcpNoDelay(true);
         this.dis = this.sock.getInputStream();
         this.dos = this.sock.getOutputStream();
@@ -599,16 +608,21 @@ public class MdsIp extends Mds{
 
     private final void disconnectFromServer() {
         try{
-            try{
-                if(this.dos != null) this.dos.close();
-            }finally{
-                if(this.dis != null) this.dis.close();
-            }
-            if(this.sock != null) this.sock.close();
-            if(this.receiveThread != null) this.receiveThread.waitExited();
+            if(this.dos != null) this.dos.close();
         }catch(final IOException e){
-            System.err.println("The closing of sockets failed:\n" + e.getMessage());
+            System.err.println("The closing of data output stream failed:\n" + e.getMessage());
         }
+        try{
+            if(this.dis != null) this.dis.close();
+        }catch(final IOException e){
+            System.err.println("The closing of data input stream failed:\n" + e.getMessage());
+        }
+        try{
+            if(this.sock != null) this.sock.close();
+        }catch(final IOException e){
+            System.err.println("The closing of socket failed:\n" + e.getMessage());
+        }
+        if(this.receiveThread != null) this.receiveThread.waitExited();
         this.connected = false;
     }
 
@@ -656,15 +670,16 @@ public class MdsIp extends Mds{
                 if(totalarg > 1){
                     this.sendArg(idx++, DTYPE.T, totalarg, null, cmd.toString().getBytes(), mid);
                     if(ctx != null) ctx.toMessage(idx++, totalarg, mid).send(this.dos);
-                    for(final Descriptor<?> d : args)
+                    for(final Descriptor<?> d : args){
                         d.toMessage(idx++, totalarg, mid).send(this.dos);
+                    }
                 }else new Message(cmd.toString(), mid).send(this.dos);
                 msg = this.getAnswer(mid);
             }finally{
                 /** save new tree context if ctx was provided **/
                 if(ctx != null){
                     try{
-                        new Message("TreeShr->TreeDbid:P()", midctx).send(this.dos);
+                        new Message("__restore(__ctx)", midctx).send(this.dos);
                         final Message ctx_msg = this.getAnswer(midctx);
                         ctx.setAddress(ctx_msg.body);
                     }catch(final IOException e){
@@ -766,6 +781,22 @@ public class MdsIp extends Mds{
         }catch(final IOException e){
             this.lostConnection();
             throw new MdsException("MdsIp.sendArg", e);
+        }
+    }
+
+    private final void setup() throws MdsException { // TODO: setup
+        this.simpleExpr("public fun __save(in _in) {return(TreeShr->TreeSavePrivateCtx:P(val(_in)));};"//
+                + "public fun __restore(in _in) {return(TreeShr->TreeRestorePrivateCtx:P(val(_in)));};"//
+                + "public fun __serout(in _in) {_out=*;MdsShr->MdsSerializeDscOut(xd(_in),xd(_out));return(_out);};"//
+                + "public fun __serin(in _in) {_out=*;MdsShr->MdsSerializeDscIn(ref(_in),xd(_out));return(_out);};1");
+        new TreeShr(this).treeSetPrivateCtx(true);
+    }
+
+    public final int simpleExpr(final String expr, final Descriptor<?>... args) {
+        try{
+            return this.getMessage(new Request<Int32>(Int32.class, expr, args), false).asIntArray()[0];
+        }catch(final MdsException e){
+            return 0;
         }
     }
 

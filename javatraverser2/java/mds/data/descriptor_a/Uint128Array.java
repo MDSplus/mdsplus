@@ -38,11 +38,6 @@ public final class Uint128Array extends INTEGER_UNSIGNEDArray<BigInteger>{
     }
 
     @Override
-    protected StringBuilder decompile(final StringBuilder pout, final BigInteger value) {
-        return pout.append(String.format("0X%x", value)).append(this.getSuffix());
-    }
-
-    @Override
     public final BigInteger getElement(final ByteBuffer b_in) {
         return Uint128.getBigInteger(b_in);
     }

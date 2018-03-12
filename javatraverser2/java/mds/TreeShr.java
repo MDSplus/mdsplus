@@ -359,8 +359,8 @@ public final class TreeShr extends Shr{
         return new TreeCall<Descriptor>(Request.PROP_DO_NOT_LIST, Descriptor.class, "_a=*", "TreeGetRecord", 57).val(nid).xd("_a").fin("_a");
     }
 
-    public static final Request<Signal> treeGetSegment(final int nid, final int idx) {
-        return new TreeCall<Signal>(Signal.class, "_a=_t=*", "TreeGetSegment", 102).val(nid).val(idx).xd("_a").xd("_t").fin("Make_Signal(_a,*,_t)");
+    public static final Request<List> treeGetSegment(final int nid, final int idx) {
+        return new TreeCall<List>(List.class, "_a=_t=*", "TreeGetSegment", 102).val(nid).val(idx).xd("_a").xd("_t").fin("List(*,_a,_t)");
     }
 
     public static final Request<List> treeGetSegmentInfo(final int nid, final int idx) {
@@ -369,6 +369,11 @@ public final class TreeShr extends Shr{
 
     public final static Request<List> treeGetSegmentLimits(final int nid, final int idx) {
         return new TreeCall<List>(List.class, "_a=_b=*", "TreeGetSegmentLimits", 106).val(nid).val(idx).xd("_a").xd("_b").fin(List.list, "[_a,_b],_s)");
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static final Request<Descriptor> treeGetSegmentScale(final int nid) {
+        return new TreeCall<Descriptor>(Descriptor.class, "_a=*", "TreeGetSegmentScale", 102).val(nid).xd("_a").fin("_a");
     }
 
     public static final Request<List> treeGetSegmentTimesXd(final int nid) {
@@ -465,6 +470,10 @@ public final class TreeShr extends Shr{
 
     public final static Request<Int32> treeSetNoSubtree(final int nid) {
         return new TreeCall<Int32>(Int32.class, "TreeSetNoSubtree", 43).val(nid).fin();
+    }
+
+    public final static Request<Int32> treeSetSegmentScale(final int nid, final Descriptor<?> scale) {
+        return new TreeCall<Int32>(Int32.class, "TreeSetSegmentScale", 59).val(nid).xd(scale).fin();
     }
 
     public final static Request<Int32> treeSetSubtree(final int nid) {
@@ -748,6 +757,15 @@ public final class TreeShr extends Shr{
     }
 
     /**
+     * checks for the current private context state
+     *
+     * @return boolean: true if private
+     **/
+    public final boolean treeGetPrivateCtx() throws MdsException {
+        return this.mds.getDescriptor(null, TreeShr.treeUsingPrivateCtx()).getValue() == 1;
+    }
+
+    /**
      * reads the full record of a node
      *
      * @return DescriptorStatus: record of node
@@ -761,7 +779,7 @@ public final class TreeShr extends Shr{
      *
      * @return SignalStatus: segment
      **/
-    public final Signal treeGetSegment(final Pointer ctx, final int nid, final int idx) throws MdsException {
+    public final List treeGetSegment(final Pointer ctx, final int nid, final int idx) throws MdsException {
         return this.mds.getDescriptor(ctx, TreeShr.treeGetSegment(nid, idx));
     }
 
@@ -777,6 +795,10 @@ public final class TreeShr extends Shr{
      **/
     public final DescriptorStatus treeGetSegmentLimits(final Pointer ctx, final int nid, final int idx) throws MdsException {
         return new DescriptorStatus(this.mds.getDescriptor(ctx, TreeShr.treeGetSegmentLimits(nid, idx)));
+    }
+
+    public final Descriptor<?> treeGetSegmentScale(final Pointer ctx, final int nid) throws MdsException {
+        return this.mds.getDescriptor(ctx, TreeShr.treeGetSegmentScale(nid));
     }
 
     public final List treeGetSegmentTimesXd(final Pointer ctx, final int nid) throws MdsException {
@@ -998,6 +1020,19 @@ public final class TreeShr extends Shr{
     }
 
     /**
+     * sets the current private context state
+     *
+     * @return boolean: previous state
+     **/
+    public final boolean treeSetPrivateCtx(final boolean state) throws MdsException {
+        return this.mds.getDescriptor(null, TreeShr.treeUsePrivateCtx(state)).getValue() == 1;
+    }
+
+    public final int treeSetSegmentScale(final Pointer ctx, final int nid, final Descriptor<?> scale) throws MdsException {
+        return this.mds.getDescriptor(ctx, TreeShr.treeSetSegmentScale(nid, scale)).getValue();
+    }
+
+    /**
      * adds subtree flag to a node (EDIT)
      *
      * @return int: status
@@ -1079,24 +1114,6 @@ public final class TreeShr extends Shr{
 
     public final int treeUpdateSegment(final Pointer ctx, final int nid, final long start, final long end, final Descriptor<?> dim, final int idx) throws MdsException {
         return this.mds.getDescriptor(ctx, TreeShr.treeUpdateSegment(nid, start, end, dim, idx)).getValue();
-    }
-
-    /**
-     * sets the current private context state
-     *
-     * @return boolean: previous state
-     **/
-    public final boolean treeUsePrivateCtx(final Pointer ctx, final boolean state) throws MdsException {
-        return this.mds.getDescriptor(ctx, TreeShr.treeUsePrivateCtx(state)).getValue() == 1;
-    }
-
-    /**
-     * checks for the current private context state
-     *
-     * @return boolean: true if private
-     **/
-    public final boolean treeUsingPrivateCtx(final Pointer ctx) throws MdsException {
-        return this.mds.getDescriptor(ctx, TreeShr.treeUsingPrivateCtx()).getValue() == 1;
     }
 
     public final int treeVerify(final Pointer ctx) throws MdsException {

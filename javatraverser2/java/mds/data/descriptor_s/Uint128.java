@@ -56,11 +56,6 @@ public final class Uint128 extends INTEGER_UNSIGNED<BigInteger>{
     }
 
     @Override
-    public StringBuilder decompile(final int prec, final StringBuilder pout, final int mode) {
-        return pout.append(String.format("0X%x", this.getAtomic())).append(this.getSuffix());
-    }
-
-    @Override
     public final Uint128 divide(final Descriptor<?> X, final Descriptor<?> Y) {
         return new Uint128(X.toBigInteger().divide(Y.toBigInteger()));
     }

@@ -15,7 +15,6 @@ import mds.data.descriptor.Descriptor_A;
 import mds.data.descriptor.Descriptor_S;
 import mds.data.descriptor_a.NidArray;
 import mds.data.descriptor_apd.List;
-import mds.data.descriptor_r.Signal;
 
 public abstract class NODE<T>extends Descriptor_S<T>{
     public static final class Flags{
@@ -454,7 +453,7 @@ public abstract class NODE<T>extends Descriptor_S<T>{
         return this.tree.getRecordInfo(this);
     }
 
-    public final Signal getSegment(final int idx) throws MdsException {
+    public final List getSegment(final int idx) throws MdsException {
         return this.tree.getSegment(this.getNidNumber(), idx);
     }
 
@@ -464,6 +463,10 @@ public abstract class NODE<T>extends Descriptor_S<T>{
 
     public final Descriptor<?> getSegmentLimits(final int idx) throws MdsException {
         return this.tree.getSegmentLimits(this.getNidNumber(), idx);
+    }
+
+    public final Descriptor<?> getSegmentScale() throws MdsException {
+        return this.tree.getSegmentScale(this.getNidNumber());
     }
 
     public final List getSegmentTimes() throws MdsException {
@@ -565,6 +568,10 @@ public abstract class NODE<T>extends Descriptor_S<T>{
     public final NODE<T> setPath(final String path) throws MdsException {
         this.tree.setPath(this.getNidNumber(), path);
         return this;
+    }
+
+    public final int setSegmentScale(final Descriptor<?> scale) throws MdsException {
+        return this.tree.setSegmentScale(this.getNidNumber(), scale);
     }
 
     public final NODE<T> setSubtree() throws MdsException {

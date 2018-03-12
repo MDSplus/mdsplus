@@ -120,4 +120,12 @@ public final class MdsShr extends Shr{
     public final Int8Array mdsSerializeDscOut(final Null NULL, final String expr, final Descriptor<?>... args) throws MdsException {
         return this.mds.getDescriptor(null, MdsShr.mdsSerializeDscOut(expr, args));
     }
+
+    public final int setenv(final String expr) throws MdsException {
+        return this.mds.getDescriptor(null, MdsShr.mdsPutEnv(expr)).getValue();
+    }
+
+    public final int setenv(final String name, final String value) throws MdsException {
+        return this.mds.getDescriptor(null, MdsShr.mdsPutEnv(name + '=' + value)).getValue();
+    }
 }

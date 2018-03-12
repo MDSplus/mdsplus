@@ -19,6 +19,9 @@ public class MdsException extends IOException{
         }
     }
     private static JLabel   statusLabel                       = null;
+    public static final int ApdAPD_APPEND                     = 0xfdd000a;
+    public static final int ApdDICT_KEYVALPAIR                = 0xfdd0012;
+    public static final int ApdDICT_KEYCLS                    = 0xfdd001a;
     public static final int DevBAD_ENDIDX                     = 662470666;
     public static final int DevBAD_FILTER                     = 662470674;
     public static final int DevBAD_FREQ                       = 662470682;
@@ -372,6 +375,12 @@ public class MdsException extends IOException{
         switch(status){
             default:
                 return "%MDSPLUS-?-UNKNOWN, Unknown exception " + status;
+            case ApdAPD_APPEND:
+                return "First argument must be APD or *";
+            case ApdDICT_KEYVALPAIR:
+                return "A Dictionary requires an even number of elements";
+            case ApdDICT_KEYCLS:
+                return "Keys must be scalar, i.e. CLASS_S";
             case DevBAD_ENDIDX:
                 return "unable to read end index for channel";
             case DevBAD_FILTER:
