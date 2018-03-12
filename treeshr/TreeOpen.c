@@ -1356,6 +1356,7 @@ void TreeFreeDbid(void *dbid)
   PINO_DATABASE *db = (PINO_DATABASE *) dbid;
   if (db) {
     TreeFreeDbid(db->next);
+    CloseTopTree(db, 1);
     free_xd(&db->timecontext.start);
     free_xd(&db->timecontext.end);
     free_xd(&db->timecontext.delta);
