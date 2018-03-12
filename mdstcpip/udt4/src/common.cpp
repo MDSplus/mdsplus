@@ -275,7 +275,9 @@ uint64_t CTimer::getTime()
 void CTimer::triggerEvent()
 {
    #ifndef WIN32
+      pthread_mutex_lock(&m_EventLock);
       pthread_cond_signal(&m_EventCond);
+      pthread_mutex_unlock(&m_EventLock);
    #else
       SetEvent(m_EventCond);
    #endif
