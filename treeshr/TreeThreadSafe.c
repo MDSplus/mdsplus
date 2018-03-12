@@ -133,17 +133,18 @@ struct private_ctx{
   int  upc;
 } PRIVATE_CTX;
 
-EXPORT void* TreeSavePrivateCtx(void** ctx){
+EXPORT void* TreeSavePrivateCtx(void* dbid){
   struct private_ctx* pctx = (struct private_ctx*)malloc(sizeof(struct private_ctx));
   pctx->dbid = TreeDbid();
   pctx->upc  = TreeUsePrivateCtx(1);
-  TreeSwitchDbid(*ctx);
+  TreeSwitchDbid(dbid);
   return pctx;
 }
 
-EXPORT void TreeRestorePrivateCtx(void* _pctx){
+EXPORT void* TreeRestorePrivateCtx(void* _pctx){
   struct private_ctx* pctx = (struct private_ctx*)_pctx;
-  TreeSwitchDbid(pctx->dbid);
+  void* dbid = TreeSwitchDbid(pctx->dbid);
   TreeUsePrivateCtx(pctx->upc);
   free(pctx);
+  return dbid;
 }
