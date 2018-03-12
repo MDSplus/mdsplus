@@ -1,27 +1,3 @@
-/*
-Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.
-
-Redistributions in binary form must reproduce the above copyright notice, this
-list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
 /*****************************************************************************
 Copyright (c) 2001 - 2011, The Board of Trustees of the University of Illinois.
 All rights reserved.
@@ -258,7 +234,7 @@ m_pTimer(NULL)
 {
    m_pHeap = new CSNode*[m_iArrayLength];
 
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_init(&m_ListLock, NULL);
    #else
       m_ListLock = CreateMutex(NULL, false, NULL);
@@ -269,7 +245,7 @@ CSndUList::~CSndUList()
 {
    delete [] m_pHeap;
 
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_destroy(&m_ListLock);
    #else
       CloseHandle(m_ListLock);
@@ -414,7 +390,7 @@ void CSndUList::insert_(int64_t ts, const CUDT* u)
    // first entry, activate the sending queue
    if (0 == m_iLastEntry)
    {
-      #if !defined WIN32 || defined __MINGW64__
+      #ifndef WIN32
          pthread_mutex_lock(m_pWindowLock);
          pthread_cond_signal(m_pWindowCond);
          pthread_mutex_unlock(m_pWindowLock);
@@ -476,7 +452,7 @@ m_WindowCond(),
 m_bClosing(false),
 m_ExitCond()
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_cond_init(&m_WindowCond, NULL);
       pthread_mutex_init(&m_WindowLock, NULL);
    #else
@@ -490,7 +466,7 @@ CSndQueue::~CSndQueue()
 {
    m_bClosing = true;
 
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_lock(&m_WindowLock);
       pthread_cond_signal(&m_WindowCond);
       pthread_mutex_unlock(&m_WindowLock);
@@ -520,7 +496,7 @@ void CSndQueue::init(CChannel* c, CTimer* t)
    m_pSndUList->m_pWindowCond = &m_WindowCond;
    m_pSndUList->m_pTimer = m_pTimer;
 
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       if (0 != pthread_create(&m_WorkerThread, NULL, CSndQueue::worker, this))
       {
          m_WorkerThread = 0;
@@ -534,7 +510,7 @@ void CSndQueue::init(CChannel* c, CTimer* t)
    #endif
 }
 
-#if !defined WIN32 || defined __MINGW64__
+#ifndef WIN32
    void* CSndQueue::worker(void* param)
 #else
    DWORD WINAPI CSndQueue::worker(LPVOID param)
@@ -565,7 +541,7 @@ void CSndQueue::init(CChannel* c, CTimer* t)
       else
       {
          // wait here if there is no sockets with data to be sent
-         #if !defined WIN32 || defined __MINGW64__
+         #ifndef WIN32
             pthread_mutex_lock(&self->m_WindowLock);
             if (!self->m_bClosing && (self->m_pSndUList->m_iLastEntry < 0))
                pthread_cond_wait(&self->m_WindowCond, &self->m_WindowLock);
@@ -775,7 +751,7 @@ CRendezvousQueue::CRendezvousQueue():
 m_lRendezvousID(),
 m_RIDVectorLock()
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_init(&m_RIDVectorLock, NULL);
    #else
       m_RIDVectorLock = CreateMutex(NULL, false, NULL);
@@ -784,7 +760,7 @@ m_RIDVectorLock()
 
 CRendezvousQueue::~CRendezvousQueue()
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_destroy(&m_RIDVectorLock);
    #else
       CloseHandle(m_RIDVectorLock);
@@ -807,7 +783,6 @@ void CRendezvousQueue::insert(const UDTSOCKET& id, CUDT* u, int ipv, const socka
 
    CRL r;
    r.m_iID = id;
-   u->m_llLastReqTime = CTimer::getTime();
    r.m_pUDT = u;
    r.m_iIPversion = ipv;
    r.m_pPeerAddr = (AF_INET == ipv) ? (sockaddr*)new sockaddr_in : (sockaddr*)new sockaddr_in6;
@@ -909,7 +884,7 @@ m_mBuffer(),
 m_PassLock(),
 m_PassCond()
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_init(&m_PassLock, NULL);
       pthread_cond_init(&m_PassCond, NULL);
       pthread_mutex_init(&m_LSLock, NULL);
@@ -927,7 +902,7 @@ CRcvQueue::~CRcvQueue()
 {
    m_bClosing = true;
 
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       if (0 != m_WorkerThread)
          pthread_join(m_WorkerThread, NULL);
       pthread_mutex_destroy(&m_PassLock);
@@ -977,7 +952,7 @@ void CRcvQueue::init(int qsize, int payload, int version, int hsize, CChannel* c
    m_pRcvUList = new CRcvUList;
    m_pRendezvousQueue = new CRendezvousQueue;
 
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       if (0 != pthread_create(&m_WorkerThread, NULL, CRcvQueue::worker, this))
       {
          m_WorkerThread = 0;
@@ -991,7 +966,7 @@ void CRcvQueue::init(int qsize, int payload, int version, int hsize, CChannel* c
    #endif
 }
 
-#if !defined WIN32 || defined __MINGW64__
+#ifndef WIN32
    void* CRcvQueue::worker(void* param)
 #else
    DWORD WINAPI CRcvQueue::worker(LPVOID param)
@@ -1136,7 +1111,7 @@ int CRcvQueue::recvfrom(int32_t id, CPacket& packet)
 
    if (i == m_mBuffer.end())
    {
-      #if !defined WIN32 || defined __MINGW64__
+      #ifndef WIN32
          uint64_t now = CTimer::getTime();
          timespec timeout;
 
@@ -1175,7 +1150,7 @@ int CRcvQueue::recvfrom(int32_t id, CPacket& packet)
    delete [] newpkt->m_pcData;
    delete newpkt;
 
-   // remove this message from queue,
+   // remove this message from queue, 
    // if no more messages left for this socket, release its data structure
    i->second.pop();
    if (i->second.empty())
@@ -1253,7 +1228,7 @@ CUDT* CRcvQueue::getNewEntry()
 
 void CRcvQueue::storePkt(int32_t id, CPacket* pkt)
 {
-   CGuard bufferlock(m_PassLock);
+   CGuard bufferlock(m_PassLock);   
 
    map<int32_t, std::queue<CPacket*> >::iterator i = m_mBuffer.find(id);
 
@@ -1261,7 +1236,7 @@ void CRcvQueue::storePkt(int32_t id, CPacket* pkt)
    {
       m_mBuffer[id].push(pkt);
 
-      #if !defined WIN32 || defined __MINGW64__
+      #ifndef WIN32
          pthread_cond_signal(&m_PassCond);
       #else
          SetEvent(m_PassCond);
