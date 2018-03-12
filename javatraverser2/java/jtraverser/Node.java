@@ -20,8 +20,10 @@ import mds.data.DTYPE;
 import mds.data.TREE.NodeInfo;
 import mds.data.TREE.RecordInfo;
 import mds.data.descriptor.Descriptor;
+import mds.data.descriptor_apd.List;
 import mds.data.descriptor_r.Action;
 import mds.data.descriptor_r.Conglom;
+import mds.data.descriptor_r.Signal;
 import mds.data.descriptor_s.CString;
 import mds.data.descriptor_s.NODE;
 import mds.data.descriptor_s.NODE.Flags;
@@ -377,7 +379,12 @@ public class Node{
     }
 
     public final Descriptor<?> getData() throws MdsException {
-        if(this.isSegmented()) return this.nid.getSegment(0);
+        if(this.isSegmented()){
+            final List seg = this.nid.getSegment(0);
+            final Descriptor<?> scale = this.nid.getSegmentScale();
+            if(Descriptor.isMissing(scale)) return new Signal(seg.get(0), null, seg.get(1));
+            return new Signal(scale, seg.get(0), seg.get(1));
+        }
         return this.nid.getRecord();
     }
 

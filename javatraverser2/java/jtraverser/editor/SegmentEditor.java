@@ -3,9 +3,12 @@ package jtraverser.editor;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -18,7 +21,7 @@ import jtraverser.editor.usage.NumericEditor;
 import mds.MdsException;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_A;
-import mds.data.descriptor_r.Signal;
+import mds.data.descriptor_apd.List;
 
 @SuppressWarnings("serial")
 public class SegmentEditor extends Editor{
@@ -32,7 +35,7 @@ public class SegmentEditor extends Editor{
     private int        segment = 0;
 
     public SegmentEditor(final Node node, final boolean editable, final Window window){
-        super(null, editable, 2);
+        super(null, editable, 3);
         this.node = node;
         try{
             node.readRecordInfo();
@@ -47,6 +50,23 @@ public class SegmentEditor extends Editor{
         this.add(columns);
         final JPanel segpane = new JPanel(new BorderLayout());
         final JSlider segments = new JSlider(0, this.node.getNumSegments() - 1, this.segment);
+        final JPanel scale = new JPanel(new BorderLayout());
+        scale.add(this.edit[2] = new ExprEditor(false, this.editable, false));
+        if(this.editable){
+            final JButton setscale = new JButton("set");
+            setscale.addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed(final ActionEvent arg0) {
+                    try{
+                        SegmentEditor.this.node.nid.setSegmentScale(SegmentEditor.this.edit[2].getData());
+                    }catch(final MdsException e){
+                        MdsException.stderr("SignalEditor", e);
+                    }
+                }
+            });
+            scale.add(setscale, BorderLayout.EAST);
+        }
+        segpane.add(Editor.addLabel("Segment Scale", scale), BorderLayout.NORTH);
         segpane.add(segments, BorderLayout.CENTER);
         final JTextField text = new JTextField(9);
         text.setHorizontalAlignment(SwingConstants.CENTER);
@@ -92,6 +112,10 @@ public class SegmentEditor extends Editor{
         return this.segment;
     }
 
+    public final Descriptor<?> getSegmentScale() throws MdsException {
+        return this.edit[2].getData();
+    }
+
     @Override
     public final void reset(final boolean hard) {
         this.setSegment(this.segment);
@@ -101,12 +125,13 @@ public class SegmentEditor extends Editor{
     public final void setData(final Descriptor<?> data) {/*NOP*/}
 
     public final void setSegment(final int segment) {
-        final Signal signal;
+        final List list;
         try{
-            this.data = signal = this.node.nid.getSegment(segment);
+            this.data = list = this.node.nid.getSegment(segment);
             this.segment = segment;
-            this.edit[0].setData(signal.getValue());
-            this.edit[1].setData(signal.getDimension());
+            this.edit[0].setData(list.get(0));
+            this.edit[1].setData(list.get(1));
+            this.edit[2].setData(this.node.nid.getSegmentScale());
         }catch(final MdsException e){
             MdsException.stderr("SignalEditor", e);
             this.data = null;

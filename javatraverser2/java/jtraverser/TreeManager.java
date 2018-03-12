@@ -439,12 +439,12 @@ public class TreeManager extends JPanel{
                     final Mds mds = ExtrasMenu.this.treeman.getMds();
                     final TreeShr tree = new TreeShr(mds);
                     final TCL tcl = new TCL(mds);
-                    final boolean wasprivate = tree.treeUsePrivateCtx(null, false);
+                    final boolean wasprivate = tree.treeSetPrivateCtx(false);
                     final StringBuilder msg = new StringBuilder(256).append("Public:\n");
                     msg.append(tcl.showDatabase());
-                    tree.treeUsePrivateCtx(null, true);
+                    tree.treeSetPrivateCtx(true);
                     msg.append("\nPrivate:\n").append(tcl.showDatabase());
-                    tree.treeUsePrivateCtx(null, wasprivate);
+                    tree.treeSetPrivateCtx(wasprivate);
                     JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), msg.toString(), mds.toString(), JOptionPane.PLAIN_MESSAGE);
                 }catch(final MdsException ex){/**/}
             }

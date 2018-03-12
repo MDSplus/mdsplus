@@ -58,7 +58,6 @@ public abstract class Mds{
         }
     }
     protected static final int MAX_NUM_EVENTS = 256;
-    public static final String serialStr      = "`(_d=*;_s=MdsShr->MdsSerializeDscIn(ref($),xd(_d));_d;)";
     private static Mds         active;
 
     @SuppressWarnings({"unchecked", "rawtypes"})
