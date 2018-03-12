@@ -56,7 +56,7 @@ written by
 
 enum UDTSockType {UDT_STREAM = 1, UDT_DGRAM};
 
-class UDT_API CUDT
+class CUDT
 {
 friend class CUDTSocket;
 friend class CUDTUnited;
