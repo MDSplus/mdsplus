@@ -53,3 +53,13 @@
    fun:pthread_cond_timedwait_WRK
    fun:pthread_cond_timedwait@*
 }
+
+{
+   garbageCollect in udt4 submodule
+   Helgrind:PthAPIerror
+   fun:mutex_lock_WRK
+   fun:pthread_mutex_lock
+   fun:*CGuard*
+   fun:*CUDTUnited*checkBrokenSockets*
+   fun:*CUDTUnited*garbageCollect*
+}
