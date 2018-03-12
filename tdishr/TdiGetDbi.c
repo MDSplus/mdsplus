@@ -306,9 +306,7 @@ int Tdi1Using(int opcode __attribute__ ((unused)),
 			    fixup_nid, NULL, fixup_path, NULL);
     MdsFree1Dx(&tmp, NULL);
   }
-  if (pctx) {
-    while (TreeClose(0, 0) & 1);
+  if (pctx)
     TreeFreeDbid(TreeRestorePrivateCtx(pctx));
-  }
   return status;
 }

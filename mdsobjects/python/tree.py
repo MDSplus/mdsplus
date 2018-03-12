@@ -188,14 +188,6 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
             #print('delete',self.id,{kv for kv in kw.items() if kv[0]!='trace'})
             if len(self.ctxs[ctx])>0: return # some context is still open
             self.ctxs.pop(ctx)
-            # apparently this was opened by python - so close all trees
-            try:
-                while True:
-                    try:    expt,shot = _dat.TdiExecute('$EXPT',ctx=ctx),_dat.TdiExecute('$SHOT',ctx=ctx)
-                    except: expt,shot = '?',0
-                    if not _TreeShr._TreeClose(_C.c_void_p(0),_C.c_void_p(0)) & 1: break
-                    _sys.stderr.write("Tree(%s,%d) has been forcefully closed!!"%(expt,shot))
-            except Exception as e: print(e)
             # now free current Dbid
             if _TreeShr: _TreeShr.TreeFreeDbid(_C.c_void_p(ctx))
         except Exception as e: print(e)
