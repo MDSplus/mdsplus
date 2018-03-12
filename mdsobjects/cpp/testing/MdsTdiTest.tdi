@@ -1,4 +1,8 @@
-treeopennew(_EXPT,_SHOT)
+TREEOPENNEW(_EXPT,_SHOT)
+USING($SHOT,*,_SHOT,_EXPT)==_SHOT && $SHOT==_SHOT
+TREEADDNODE('S',_n,'signal')&1 && GETNCI(_n,'usage')==6
+TREEWRITE()
+TREEOPEN(_EXPT,_SHOT,1)
 
 if_error(ABORT(),(debug(4),1))
 ABS(cmplx(3.0,4.0))==5.
@@ -397,7 +401,7 @@ UNARY_MINUS(1)==-1
 UNARY_PLUS(1)==1
 UNSIGNED(-1b)==255bu
 UPCASE("abc123")=="ABC123"
-! USING(A,[DEFAULT],[SHOTID],[EXPT])
+
 
 ! VAL /*to pass as value to call*/
 VALIDATION(build_param(0,,$value>0))==0 && VALIDATION(build_param(1,,$value>0))==1
