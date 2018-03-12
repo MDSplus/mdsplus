@@ -97,6 +97,8 @@ static long init_record(waveformRecord *prec)
      callbackSetUser(prec,pcallback);
      prec->dpvt = (void *)pcallback;
      registerMdsEvent(prec->inp.value.instio.string);
+
+
      return 0;
 }
 
@@ -125,14 +127,16 @@ static long asynchRead(CALLBACK *pcallback)
       	case DBF_DOUBLE: 
      		elSize = 8;
      		break;
+      	case DBF_STRING: 
+     		elSize = 1;
+     		break;
     	default:	
         	printf("Unexpected type for Waveform MDSplus event record\n");
         	return 0;
      }	
      maxLen = prec->nelm*elSize;
      waitMdsEvent(prec->inp.value.instio.string, prec->bptr, maxLen, &retLen); 
-     	prec->nord = retLen/elSize;
-
+     prec->nord = retLen/elSize;
      callbackRequest(pcallback);
      return 0;
 }

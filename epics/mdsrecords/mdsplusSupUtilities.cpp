@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsobjects.h>
 #include <string.h>
 #include <semaphore.h>
-
+#include <string>
 
 #include <dbFldTypes.h>
 
@@ -66,107 +66,27 @@ static void unlock()
 	sem_post(&semStruct);
 }
 
-
-////////Class EventHandler is a support class for Mds Event management in devMeSoft for WAVE record.
-class EventHandler:Event  //Inherits from MDSplus Event class
-{
-    sem_t lockSem;
-    sem_t sem;
-    char *data;
-    int dataSize;
-    bool dataReady;
-
-    void lock()
-    {
-	sem_wait(&lockSem);
-    }
-    void unlock()
-    {
-	sem_post(&lockSem);
-    }
-
-public:
-
-    EventHandler(char *evName):Event(evName)
-    {
- 	int status = sem_init(&lockSem, 0, 1);
-	if(status == -1)
-	{
-	    printf("FATAL: Cannot initialize semaphore\n");
-	    exit(0); //this MUST never happen
-	} 
-	status = sem_init(&sem, 0, 0);
-	if(status == -1)
-	{
-	    printf("FATAL: Cannot initialize semaphore\n");
-	    exit(0); //this MUST never happen
-	} 
-	dataReady = false;
-	dataSize = 0;
-	data = 0;
-    }
-
-    void postBuffer(char *buf, int size)
-    {
-
-	lock();
-	if(dataReady) //Previous event message not consumed yet
-	{
-	    delete []data;
-	    data = new char[size];
-	    memcpy(data, buf, size);
-	    dataSize = size;
-	}
-	else
-	{
-	    data = new char[size];
-	    memcpy(data, buf, size);
-	    sem_post(&sem);
-	    dataSize = size;
-	    dataReady = true;
-	
-	}
-	unlock();
-    }
-    char *getBuffer(int *size)
-    {
-	char *retData;
-	lock();
-	while(!dataReady)
-	{
-	    unlock();
-	    sem_wait(&sem);
-	    lock();
-	}
-	dataReady = false;
-	*size = dataSize;
-	retData = data;
-	unlock();
-	return retData;
-    }
-
-    void run() //Called by superclass upon receipt of an event
-    {
-	size_t size;
-//printf("Got Event %s\n", getName());
-	char *buf = (char *)getRaw(&size);
-	postBuffer(buf, size);
-    }
-};
-
-//End class EventHandler
 struct EventDescriptor{
     char *evName;
-    EventHandler *event;
+    Event *event;
 };
+
 #define MAX_EVENTS 1024
 static EventDescriptor eventDescrs[MAX_EVENTS];
 //return 0 if it is a new event
 //return -1 if the same name has already been declared: this is an error condition since only one record per event must be defined per IOC
-static int addEvent(char *evName)
+static int addEvent(char *evInName)
 {
     int i;
     lock();
+    std::string evStr(evInName);
+    std::string evNameStr = evStr;
+    size_t colPos = evStr.find_first_of(":");
+    if(colPos != std::string::npos)  //Need to get timeout from event name
+    {
+	evNameStr = evStr.substr(0, colPos);
+    }
+    char *evName = (char *)evNameStr.c_str();
     for(i = 0; i < MAX_EVENTS; i++)
     {
 	if(eventDescrs[i].evName && !strcmp(evName, eventDescrs[i].evName))
@@ -176,12 +96,13 @@ static int addEvent(char *evName)
     if(i == MAX_EVENTS) return -1;
     eventDescrs[i].evName = new char[strlen(evName) + 1];
     strcpy(eventDescrs[i].evName, evName);
-    eventDescrs[i].event = new EventHandler(evName);
+    eventDescrs[i].event = new Event(evName);
+    eventDescrs[i].event->start();
     unlock();
     return 0;
 }
 
-static EventHandler *getEvent(char *evName)
+static Event *getEvent(char *evName)
 {
     int i;
     lock();
@@ -268,9 +189,9 @@ static int getConnectionId(char *ipAddr, char *exp, int shot)
 	    connectionTable[i].connection = new Connection(ipAddr);
 	    if(exp && *exp) //May be NULL or empty string if only the connection is required
 	        connectionTable[i].connection->openTree(exp, shot);
-	}catch(MdsException *exc) 
+	}catch(MdsException &exc) 
 	{
-	    printf("Cannot establish mdsip connection: %s\n", exc->what());
+	    printf("Cannot establish mdsip connection: %s\n", exc.what());
 	    connectionTable[i].connection = 0;
 	}
     }
@@ -302,7 +223,7 @@ int openMds(char *expName, int shot, int isLocal, char *ipAddr, char *path, unsi
     int connId;
     int id;
     Tree *tree;
-    printf("OpenMds: %s %d %s %s %s\n", expName, shot, (isLocal)?"Local":"Remote", ipAddr, path);
+    //printf("OpenMds: %s %d %s %s %s\n", expName, shot, (isLocal)?"Local":"Remote", ipAddr, path);
 
     if(isLocal)
     {
@@ -314,10 +235,10 @@ int openMds(char *expName, int shot, int isLocal, char *ipAddr, char *path, unsi
 	    else
 		node = 0;
 	}
-    	catch(MdsException *exc)
+    	catch(MdsException &exc)
     	{
-	    printf("Cannot Open tree or find node: %s\n", exc->what());
-	    strncpy(errMsg, exc->what(), 40);
+	    printf("Cannot Open tree or find node: %s\n", exc.what());
+	    strncpy(errMsg, exc.what(), 40);
 	    return 0;
     	}
 	id = getNodeId(node, path, tree, -1);
@@ -394,6 +315,9 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples, int nVa
 		    break;
 		case DBF_DOUBLE: 
 		    data = (Data *)new Float64(((double *)vals)[0]);
+		    break;
+		case DBF_STRING: 
+		    data = (Data *)new String((char *)vals);
 		    break;
 		default:
 		    strcpy(errMsg, "Unsupported data type");
@@ -473,9 +397,9 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples, int nVa
 		node->putRow(data, (int64_t *)&epicsTime);
 		deleteData(data);
 	    }
-    	    catch(MdsException *exc)
+    	    catch(MdsException &exc)
     	    {
-		strncpy(errMsg, exc->what(), 40);
+		strncpy(errMsg, exc.what(), 40);
 		return 0;
     	    }
 	}
@@ -493,10 +417,10 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples, int nVa
 		deleteData(data);
 		deleteData(timeData);
 	    }
-    	    catch(MdsException *exc)
+    	    catch(MdsException &exc)
     	    {
-		if(debug) printf("ERROR WRITING REMOTE TREE: %s\n", exc->what());
-		strncpy(errMsg, exc->what(), 40);
+		if(debug) printf("ERROR WRITING REMOTE TREE: %s\n", exc.what());
+		strncpy(errMsg, exc.what(), 40);
 		return 0;
     	    }
 	}
@@ -557,9 +481,9 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples, int nVa
 	    	deleteData(times);
 		deleteData(end);
     	    }
-    	    catch(MdsException *exc)
+    	    catch(MdsException &exc)
     	    {
-	    	strncpy(errMsg, exc->what(), 40);
+	    	strncpy(errMsg, exc.what(), 40);
 	    	return 0;
     	    }
 	}
@@ -584,10 +508,10 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples, int nVa
 		deleteData(args[4]);
 		deleteData(end);
 	    }
-    	    catch(MdsException *exc)
+    	    catch(MdsException &exc)
     	    {
-		if(debug) printf("ERROR WRITING REMOTE TREE: %s\n", exc->what());
-		strncpy(errMsg, exc->what(), 40);
+		if(debug) printf("ERROR WRITING REMOTE TREE: %s\n", exc.what());
+		strncpy(errMsg, exc.what(), 40);
 		return 0;
     	    }
 	}
@@ -606,8 +530,7 @@ int evaluateExpr(char *expr, int treeIdx, int nBuffers, void **buffers, int *buf
     char *currPath;
     void *currBuf;
 
-//printf("EvaluateExpr: expr: %s %d %d, %d\n", expr, *(int *)buffers[0], bufDims[0], bufTypes[0]);
-printf("EvaluateExpr: expr: %s, treeIdx: %d, nBuffers: %d, maxRet: %d dim1: %d dim2: %d\n", expr, treeIdx, nBuffers, maxRetElements, bufDims[0], bufDims[1]);
+//printf("EvaluateExpr: expr: %s, treeIdx: %d, nBuffers: %d, maxRet: %d dim1: %d dim2: %d type2: %d\n", expr, treeIdx, nBuffers, maxRetElements, bufDims[0], bufDims[1], bufTypes[0]);
 
     try {
     	for (i = 0; i < nBuffers; i++)
@@ -667,6 +590,9 @@ printf("EvaluateExpr: expr: %s, treeIdx: %d, nBuffers: %d, maxRet: %d dim1: %d d
 		    	break;
 	    	    case DBF_DOUBLE: 
 		    	args[i] = new Float64( *((double *)buffers[0]));
+		    	break;
+	    	    case DBF_STRING: 
+		    	args[i] = new String((char *)buffers[0]);
 		    	break;
 		}
 	    }
@@ -729,7 +655,6 @@ printf("EvaluateExpr: expr: %s, treeIdx: %d, nBuffers: %d, maxRet: %d dim1: %d d
 	    else
 		evaluated = conn->get(expr);
 	}
-	
 	if(evaluated->getSize() == 1) //If scalar
 	{
 	    retElements = 1;
@@ -752,6 +677,13 @@ printf("EvaluateExpr: expr: %s, treeIdx: %d, nBuffers: %d, maxRet: %d dim1: %d d
 	    	case DBF_DOUBLE: 
 		    *((double *)retBuf) = evaluated->getDouble();
 		    break;
+	    	case DBF_STRING:
+		{
+		    char *retStr = evaluated->getString(); 
+		    strcpy((char *)retBuf, retStr);
+		    delete[] retStr;
+		    break;
+		}
 	    }
 	}
 	else //Array
@@ -803,10 +735,10 @@ printf("EvaluateExpr: expr: %s, treeIdx: %d, nBuffers: %d, maxRet: %d dim1: %d d
 	    deleteData(args[i]);
 
     }
-    catch(MdsException *exc)
+    catch(MdsException &exc)
     {
-	printf("ERROR WRITING REMOTE TREE: %s\n", exc->what());
-	strncpy(errMsg, exc->what(), 40);
+	printf("ERROR WRITING REMOTE TREE: %s\n", exc.what());
+	strncpy(errMsg, exc.what(), 40);
 	return 0;
     }
     return 1;
@@ -819,18 +751,34 @@ int registerMdsEvent(char *eventName)
 }
 void waitMdsEvent(char *eventName, char *buf, int maxLen, int *retLen)
 {
-    int size;
+    size_t size;
     char *evBuf;
 
-    EventHandler *event = getEvent(eventName);
+
+    std::string evStr(eventName);
+    std::string evNameStr = evStr;
+    size_t colPos = evStr.find_first_of(":");
+    int timeoutMs = 0;
+    if(colPos != std::string::npos)  //Need to get timeout from event name
+    {
+	evNameStr = evStr.substr(0, colPos);
+	if(colPos < evStr.size())
+	    sscanf(evStr.substr(colPos+1).c_str(), "%d", &timeoutMs);
+    }
+    Event *event = getEvent((char *)evNameStr.c_str());
     if(!event)
     {
 	printf("EVENT NOT FOUND!!!: %s\n", eventName);
 	*retLen = 0;
 	return;
     }
-
-    evBuf = event->getBuffer(&size);
+    try {
+    	evBuf = (char *)event->waitRaw(&size, timeoutMs);
+    } catch(MdsException &exc)
+    {
+	size = 0;
+    }
+    
     if(size > maxLen)
     {
 	printf("Event buffer truncated from %d to %d bytes\n", size, maxLen);
@@ -838,7 +786,7 @@ void waitMdsEvent(char *eventName, char *buf, int maxLen, int *retLen)
     }
     memcpy(buf, evBuf, size);
     *retLen = size;
-    delete[] evBuf;
+    //delete[] evBuf;
 }
 
 int doMdsAction(char *path, int nodeId, char *errMsg)
@@ -869,10 +817,10 @@ int doMdsAction(char *path, int nodeId, char *errMsg)
 	   // printf("Returned Data: %s\n", (resData)?resData->decompile():"");
 	    //if(resData) deleteData(resData);
 	}
-   	catch(MdsException *exc)
+   	catch(MdsException &exc)
     	{
-	    printf("ERROR EXECUTING ACTION: %s\n", exc->what());
-	    strncpy(errMsg, exc->what(), 40);
+	    printf("ERROR EXECUTING ACTION: %s\n", exc.what());
+	    strncpy(errMsg, exc.what(), 40);
 	    return 0;
     	}
     }
@@ -883,10 +831,10 @@ int doMdsAction(char *path, int nodeId, char *errMsg)
 	    //printf("Returned Data: %s\n", (resData)?resData->decompile():"");
 	    if(resData)deleteData(resData);
 	}
-   	catch(MdsException *exc)
+   	catch(MdsException &exc)
     	{
-	    printf("ERROR EXECUTING REMOTE ACTION: %s\n", exc->what());
-	    strncpy(errMsg, exc->what(), 40);
+	    printf("ERROR EXECUTING REMOTE ACTION: %s\n", exc.what());
+	    strncpy(errMsg, exc.what(), 40);
 	    return 0;
     	}
     }
