@@ -328,7 +328,7 @@ class Tests(TestCase):
         self.assertEqual(True,(node.record.data()==v.data()*2+1).all())
         self.assertEqual(True,(node.getSegment(0)==v*2+1).all())
         self.assertEqual(ptree.tdiExecute("GetSegment(S,0)").decompile(),"Build_Signal($VALUE * 2W + 1W, Word([-1000,0,1000]), [-1000Q,0Q,1000Q])")
-        ptree.tdiExecute("SetSegmentScale(S,$VALUE+1D0)")
+        ptree.tdiExecute("SetSegmentScale(S,as_is($VALUE+1D0))")
         self.assertEqual(ptree.tdiExecute("S").decompile(),"Build_Signal($VALUE + 1D0, Word([-1000,0,1000]), [-1000Q,0Q,1000Q])")
         
       test()
