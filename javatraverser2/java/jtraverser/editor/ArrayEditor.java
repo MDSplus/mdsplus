@@ -33,6 +33,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import jtraverser.dialogs.GraphPanel;
 import mds.MdsException;
+import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_CA;
 import mds.data.descriptor_a.NUMBERArray;
@@ -147,12 +148,12 @@ public class ArrayEditor extends Editor implements ChangeListener{
     private JSpinner[]               coord_edit;
     private JPanel                   dimcontrol;
 
-    public ArrayEditor(final boolean editable){
-        this(null, editable);
+    public ArrayEditor(final boolean editable, final CTX ctx){
+        this(null, editable, ctx);
     }
 
-    public ArrayEditor(final Descriptor<?> data, final boolean editable){
-        super(data, editable, 0);
+    public ArrayEditor(final Descriptor<?> data, final boolean editable, final CTX ctx){
+        super(data, editable, ctx, 0);
         this.table = new JTable();
         this.table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         this.table.setDoubleBuffered(true);
@@ -165,8 +166,8 @@ public class ArrayEditor extends Editor implements ChangeListener{
         scroll_panel.setCorner(ScrollPaneConstants.UPPER_LEFT_CORNER, this.rows.getTableHeader());
         this.setPreferredSize(new Dimension(240, 640));
         if(!Editor.isNoData(this.data)) this.setData(data);
-        final JButton b = new JButton("Plot");
-        b.addActionListener(new ActionListener(){
+        final JButton plot = new JButton("Plot");
+        plot.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(final ActionEvent arg0) {
                 final DefaultTableModel model = (DefaultTableModel)ArrayEditor.this.table.getModel();
@@ -176,7 +177,7 @@ public class ArrayEditor extends Editor implements ChangeListener{
                 GraphPanel.newPlot(dat, null, JOptionPane.getRootFrame(), ArrayEditor.this.getTitle());
             }
         });
-        this.add(b, BorderLayout.SOUTH);
+        this.add(plot, BorderLayout.SOUTH);
     }
 
     @Override

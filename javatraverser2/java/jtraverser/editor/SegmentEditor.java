@@ -35,7 +35,7 @@ public class SegmentEditor extends Editor{
     private int        segment = 0;
 
     public SegmentEditor(final Node node, final boolean editable, final Window window){
-        super(null, editable, 3);
+        super(null, editable, node.nid.getTree(), 5);
         this.node = node;
         try{
             node.readRecordInfo();
@@ -45,15 +45,37 @@ public class SegmentEditor extends Editor{
         }
         this.setLayout(new BorderLayout());
         final JPanel columns = new JPanel(new GridLayout(1, 2));
-        columns.add(this.edit[0] = new NumericEditor(this.editable, window, "Data"));
-        columns.add(this.edit[1] = new NumericEditor(this.editable, window, "Dimension"));
+        columns.add(this.edit[0] = new NumericEditor(this.editable, this.ctx, window, "Data"));
+        final JPanel dimension = new JPanel(new BorderLayout());
+        dimension.add(this.edit[1] = new NumericEditor(this.editable, this.ctx, window, "Dimension"));
+        columns.add(dimension);
+        final JPanel limits = new JPanel(new GridLayout(2, 1));
+        limits.add(this.edit[3] = Editor.addLabel("start", new ExprEditor(this.editable, this.ctx, false, false)), 0);
+        limits.add(this.edit[4] = Editor.addLabel("end", new ExprEditor(this.editable, this.ctx, false, false)), 1);
+        if(this.editable){
+            final JPanel limitsedit = new JPanel(new BorderLayout());
+            final JButton setlimits = new JButton("Update Limits");
+            setlimits.addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed(final ActionEvent arg0) {
+                    try{
+                        SegmentEditor.this.node.nid.updateSegment(SegmentEditor.this.edit[3].getData(), SegmentEditor.this.edit[4].getData(), null, SegmentEditor.this.segment);
+                    }catch(final MdsException e){
+                        MdsException.stderr("SignalEditor", e);
+                    }
+                }
+            });
+            limitsedit.add(limits);
+            limitsedit.add(setlimits, BorderLayout.SOUTH);
+            dimension.add(limitsedit, BorderLayout.SOUTH);
+        }else dimension.add(limits, BorderLayout.SOUTH);
         this.add(columns);
         final JPanel segpane = new JPanel(new BorderLayout());
         final JSlider segments = new JSlider(0, this.node.getNumSegments() - 1, this.segment);
         final JPanel scale = new JPanel(new BorderLayout());
-        scale.add(this.edit[2] = new ExprEditor(false, this.editable, false));
+        scale.add(this.edit[2] = new ExprEditor(this.editable, this.ctx, false, false));
         if(this.editable){
-            final JButton setscale = new JButton("set");
+            final JButton setscale = new JButton("Set Scale");
             setscale.addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(final ActionEvent arg0) {
@@ -132,6 +154,9 @@ public class SegmentEditor extends Editor{
             this.edit[0].setData(list.get(0));
             this.edit[1].setData(list.get(1));
             this.edit[2].setData(this.node.nid.getSegmentScale());
+            final List limits = this.node.nid.getSegmentLimits(segment);
+            this.edit[3].setData(limits.get(0));
+            this.edit[4].setData(limits.get(1));
         }catch(final MdsException e){
             MdsException.stderr("SignalEditor", e);
             this.data = null;

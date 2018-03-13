@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import javax.swing.JPanel;
 import mds.MdsException;
+import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_R;
 import mds.data.descriptor_r.Method;
@@ -15,24 +16,24 @@ public final class MethodEditor extends Editor{
     }
     ArgEditor arg_edit;
 
-    public MethodEditor(){
-        this(null, true);
+    public MethodEditor(final boolean editable, final CTX ctx){
+        this(null, editable, ctx);
     }
 
-    public MethodEditor(final boolean editable){
-        this(null, editable);
+    public MethodEditor(final CTX ctx){
+        this(null, true, ctx);
     }
 
-    public MethodEditor(final Method data, final boolean editable){
-        super(data, editable, 3);
+    public MethodEditor(final Method data, final boolean editable, final CTX ctx){
+        super(data, editable, ctx, 3);
         final JPanel jp = new JPanel();
         jp.setLayout(new GridLayout(3, 1, 0, 0));
-        jp.add(this.edit[0] = Editor.addLabel("Timeout", new ExprEditor(false, editable, false)));
-        jp.add(this.edit[1] = Editor.addLabel("Method", new ExprEditor(true, editable, false)));
-        jp.add(this.edit[2] = Editor.addLabel("Device", new ExprEditor(true, editable, false)));
+        jp.add(this.edit[0] = Editor.addLabel("Timeout", new ExprEditor(editable, ctx, false, false)));
+        jp.add(this.edit[1] = Editor.addLabel("Method", new ExprEditor(editable, ctx, true, false)));
+        jp.add(this.edit[2] = Editor.addLabel("Device", new ExprEditor(editable, ctx, true, false)));
         this.setLayout(new BorderLayout());
         this.add(jp, BorderLayout.NORTH);
-        this.add(this.arg_edit = new ArgEditor(editable), BorderLayout.CENTER);
+        this.add(this.arg_edit = new ArgEditor(editable, ctx), BorderLayout.CENTER);
     }
 
     @Override

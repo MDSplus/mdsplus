@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Window;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_r.Action;
 
@@ -12,12 +13,12 @@ public final class ActionEditor extends TextEditor{
     private final int     status;
     private final boolean ismodel;
 
-    public ActionEditor(final Descriptor<?> data, final boolean editable, final Window window){
-        this(data, editable, window, 0, true);
+    public ActionEditor(final Descriptor<?> data, final boolean editable, final CTX ctx, final Window window){
+        this(data, editable, ctx, window, 0, true);
     }
 
-    public ActionEditor(final Descriptor<?> data, final boolean editable, final Window window, final int status, final boolean ismodel){
-        super(null, editable, window, "Action", false, "Action");
+    public ActionEditor(final Descriptor<?> data, final boolean editable, final CTX ctx, final Window window, final int status, final boolean ismodel){
+        super(null, editable, ctx, window, "Action", false, "Action");
         this.status = status;
         this.ismodel = ismodel;
         this.setData(data);
@@ -27,7 +28,7 @@ public final class ActionEditor extends TextEditor{
     protected final boolean addExtraEditor() {
         if(!this.ismodel) this.editor.add(new JLabel(Action.getStatusMsg(this.status), SwingConstants.CENTER), BorderLayout.SOUTH);
         if(this.curr_mode_idx < this.mode_idx_usr) return false;
-        this.editor.add(this.data_edit = new jtraverser.editor.ActionEditor(this.editable, this.window), BorderLayout.CENTER);
+        this.editor.add(this.data_edit = new jtraverser.editor.ActionEditor(this.editable, this.ctx, this.window), BorderLayout.CENTER);
         return true;
     }
 

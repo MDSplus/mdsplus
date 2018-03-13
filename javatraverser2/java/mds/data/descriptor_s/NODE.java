@@ -461,7 +461,7 @@ public abstract class NODE<T>extends Descriptor_S<T>{
         return this.tree.getSegmentInfo(this.getNidNumber(), idx);
     }
 
-    public final Descriptor<?> getSegmentLimits(final int idx) throws MdsException {
+    public final List getSegmentLimits(final int idx) throws MdsException {
         return this.tree.getSegmentLimits(this.getNidNumber(), idx);
     }
 

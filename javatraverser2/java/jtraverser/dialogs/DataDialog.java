@@ -24,6 +24,7 @@ import jtraverser.editor.usage.TaskEditor;
 import jtraverser.editor.usage.TextEditor;
 import jtraverser.editor.usage.WindowEditor;
 import mds.MdsException;
+import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_A;
 import mds.data.descriptor_a.NUMBERArray;
@@ -112,35 +113,36 @@ public class DataDialog extends JDialog{
                 MdsException.stderr("DataDialog.getData", e);
                 e.printStackTrace();
             }
+            final CTX ctx = node.nid.getTree();
             switch(node.getUsage()){
                 case NODE.USAGE_SIGNAL:
-                    this.edit = new SignalEditor(data, this.editable, this);
+                    this.edit = new SignalEditor(data, this.editable, ctx, this);
                     break;
                 case NODE.USAGE_ACTION:
-                    this.edit = new ActionEditor(data, this.editable, this, node.getStatus(), node.treeview.isModel());
+                    this.edit = new ActionEditor(data, this.editable, ctx, this, node.getStatus(), node.treeview.isModel());
                     break;
                 case NODE.USAGE_DISPATCH:
-                    this.edit = new DispatchEditor(data, this.editable, this);
+                    this.edit = new DispatchEditor(data, this.editable, ctx, this);
                     break;
                 case NODE.USAGE_TASK:
-                    this.edit = new TaskEditor(data, this.editable, this);
+                    this.edit = new TaskEditor(data, this.editable, ctx, this);
                     break;
                 case NODE.USAGE_WINDOW:
-                    this.edit = new WindowEditor(data, this.editable, this);
+                    this.edit = new WindowEditor(data, this.editable, ctx, this);
                     break;
                 case NODE.USAGE_NUMERIC:
-                    this.edit = new NumericEditor(data, this.editable, this);
+                    this.edit = new NumericEditor(data, this.editable, ctx, this);
                     break;
                 case NODE.USAGE_AXIS:
-                    this.edit = new AxisEditor(data, this.editable, this);
+                    this.edit = new AxisEditor(data, this.editable, ctx, this);
                     break;
                 case NODE.USAGE_TEXT:
-                    this.edit = new TextEditor(data, this.editable, this);
+                    this.edit = new TextEditor(data, this.editable, ctx, this);
                     break;
                 case NODE.USAGE_COMPOUND_DATA:
                 case NODE.USAGE_DEVICE:
                 default:
-                    this.edit = new AnyEditor(data, this.editable, this);
+                    this.edit = new AnyEditor(data, this.editable, ctx, this);
             }
         }
         this.add(this.edit, BorderLayout.CENTER);

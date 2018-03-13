@@ -18,8 +18,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
-import mds.Mds;
 import mds.MdsException;
+import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_s.CString;
 
@@ -38,7 +38,7 @@ public class ExprEditor extends Editor{
                 ((JPopupMenu)((Component)e.getSource()).getParent()).setVisible(false);
                 String aeeval;
                 try{
-                    final Descriptor<?> aedata = Mds.getActiveMds().getDescriptor(this.evalexpr, new CString(EvalPopupMenu.this.text.getText()));
+                    final Descriptor<?> aedata = ExprEditor.this.getMds().getDescriptor(ExprEditor.this.ctx, this.evalexpr, new CString(EvalPopupMenu.this.text.getText()));
                     if(aedata == null) aeeval = "no data";
                     else aeeval = aedata.toString();
                 }catch(final MdsException de){
@@ -87,16 +87,20 @@ public class ExprEditor extends Editor{
     private String               expr;
     private boolean              quotes_added;
 
-    public ExprEditor(final boolean default_to_string, final boolean editable, final boolean asField){
-        this(null, null, default_to_string, editable, asField);
+    public ExprEditor(final boolean editable, final CTX ctx, final boolean default_to_string, final boolean asField){
+        this((Descriptor<?>)null, editable, ctx, null, default_to_string, asField);
     }
 
-    public ExprEditor(final Descriptor<?> data, final boolean editable){
-        this(data, null, (data != null && data instanceof CString), editable, true);
+    public ExprEditor(final boolean editable, final CTX ctx, final String tooltip, final boolean default_to_string, final boolean asField){
+        this(null, editable, ctx, tooltip, default_to_string, asField);
     }
 
-    public ExprEditor(final Descriptor<?> data, final String tooltip, final boolean default_to_string, final boolean editable, final boolean isField){
-        super(data, editable, 0);
+    public ExprEditor(final Descriptor<?> data, final boolean editable, final CTX ctx){
+        this(data, editable, ctx, null, (data != null && data instanceof CString), true);
+    }
+
+    public ExprEditor(final Descriptor<?> data, final boolean editable, final CTX ctx, final String tooltip, final boolean default_to_string, final boolean isField){
+        super(data, editable, ctx, 0);
         this.default_to_string = default_to_string;
         this.setLayout(new BorderLayout());
         if(isField){// default_scroll
@@ -144,16 +148,12 @@ public class ExprEditor extends Editor{
         this.setData(data);
     }
 
-    public ExprEditor(final String tooltip, final boolean default_to_string, final boolean editable, final boolean asField){
-        this(null, tooltip, default_to_string, editable, asField);
-    }
-
     @Override
     public final Descriptor<?> getData() throws MdsException {
         this.expr = this.text_edit.getText().trim();
         if(this.expr.isEmpty()) return null;
         if(this.quotes_added) return new CString(this.expr);
-        return Mds.getActiveMds().getDescriptor("COMPILE($)", new CString(this.expr));
+        return this.getMds().getDescriptor(this.ctx, "COMPILE($)", new CString(this.expr));
     }
 
     @Override

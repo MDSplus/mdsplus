@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import javax.swing.JPanel;
 import mds.MdsException;
+import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_r.Program;
 
@@ -13,20 +14,20 @@ public final class ProgramEditor extends Editor{
         return data instanceof Program;
     }
 
-    public ProgramEditor(){
-        this(null, true);
+    public ProgramEditor(final boolean editable, final CTX ctx){
+        this(null, editable, ctx);
     }
 
-    public ProgramEditor(final boolean editable){
-        this(null, editable);
+    public ProgramEditor(final CTX ctx){
+        this(null, true, ctx);
     }
 
-    public ProgramEditor(final Program data, final boolean editable){
-        super(data, editable, 2);
+    public ProgramEditor(final Program data, final boolean editable, final CTX ctx){
+        super(data, editable, ctx, 2);
         final JPanel jp = new JPanel();
         jp.setLayout(new GridLayout(2, 1));
-        jp.add(this.edit[0] = Editor.addLabel("Timeout", new ExprEditor(false, editable, false)));
-        jp.add(this.edit[1] = Editor.addLabel("Program", new ExprEditor(true, editable, false)));
+        jp.add(this.edit[0] = Editor.addLabel("Timeout", new ExprEditor(editable, ctx, false, false)));
+        jp.add(this.edit[1] = Editor.addLabel("Program", new ExprEditor(editable, ctx, true, false)));
         this.setLayout(new BorderLayout());
         this.add(jp, BorderLayout.NORTH);
     }
