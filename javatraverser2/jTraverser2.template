@@ -1,19 +1,16 @@
 #!/bin/sh
-#!
-#! display MDSplus javascope
-#
-java=`which java`
-if ( uname -p | grep 64 > /dev/null )
-then
-  if (file -L $java } grep 64i-bit > /dev/null )
-  then 
-    lib=lib64
-  else
-    lib=lib32
+lib=lib
+if java -d64 -version >  /dev/null 2>&1; then
+  if [ -r $MDSPLUS_DIR/lib64 ] ; then
+    lib=/lib64
   fi
 else
-  lib=lib
+  if [ -r $MDSPLUS_DIR/lib32 ]; then
+     lib=lib32
+  fi
 fi
 exec env \
-$java -Djava.library.path=".:$MDSPLUS_DIR/${lib}:$LD_LIBRARY_PATH:$SHLIB_PATH:$DYLD_LIBRARY_PATH:$PATH" \
- -Xss5M -jar $MDSPLUS_DIR/java/classes/jTraverser.jar $*
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MDSPLUS_DIR/${lib} \
+SHLIB_PATH=$SHLIB_PATH:$MDSPLUS_DIR/${lib} \
+DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$MDSPLUS_DIR/${lib} \
+java -jar $MDSPLUS_DIR/java/classes/jTraverser2.jar "$@"
