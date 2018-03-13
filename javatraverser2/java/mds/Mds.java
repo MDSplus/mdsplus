@@ -1,6 +1,7 @@
 package mds;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -9,7 +10,6 @@ import mds.data.descriptor.ARRAY;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_A;
 import mds.data.descriptor.Descriptor_S;
-import mds.data.descriptor_apd.List;
 import mds.data.descriptor_s.CString;
 import mds.data.descriptor_s.Missing;
 
@@ -56,6 +56,17 @@ public abstract class Mds{
         public Request(final Class<T> cls, final String expr, final Descriptor<?>... args){
             this(cls, 0, expr, args);
         }
+
+        @Override
+        final public String toString() {
+            final String argsstr = Arrays.toString(this.args);
+            final StringBuilder sb = new StringBuilder(11 + this.expr.length() + argsstr.length()).append("Execute(\"").append(this.expr).append("\",");
+            int len = sb.length();
+            sb.append(argsstr).replace(len, len + 1, " ");
+            len = sb.length();
+            sb.replace(len - 1, len, ")");
+            return sb.toString();
+        }
     }
     protected static final int MAX_NUM_EVENTS = 256;
     private static Mds         active;
@@ -78,7 +89,6 @@ public abstract class Mds{
     public final static Mds getActiveMds() {
         return Mds.active;
     }
-    private byte                                      newlist       = -1;
     protected transient HashSet<MdsListener>          mdslisteners  = new HashSet<MdsListener>();
     protected transient boolean[]                     event_flags   = new boolean[Mds.MAX_NUM_EVENTS];
     protected transient Hashtable<Integer, EventItem> hashEventId   = new Hashtable<Integer, EventItem>();
@@ -406,21 +416,7 @@ public abstract class Mds{
     }
 
     public final Mds setActive() {
-        if(Mds.active == this) return this;
         Mds.active = this;
-        if(this.newlist < 0) try{
-            // test for new List built-in
-            this.newlist = (byte)(1 - this.getDescriptor("LIST(*)", List.class).getLength());
-        }catch(final MdsException e){
-            this.newlist = 0;
-        }
-        if(this.newlist == 0){
-            List.list = List.list_old;
-            List.apdadd = List.apdadd_old;
-        }else{
-            List.list = List.list_new;
-            List.apdadd = List.apdadd_new;
-        }
         return this;
     }
 

@@ -307,7 +307,7 @@ public final class TreeShr extends Shr{
         final LibCall<List> expr = new TreeCall<List>(List.class, "TreeDoMethod", "_x=*", 1024).val(nid).ref(method);
         for(final Descriptor<?> arg : args)
             expr.ref(arg);
-        return expr.val(-1).xd("_x").fin(List.list, "_x,_s)");
+        return expr.val(-1).xd("_x").fin("List(*,_x,_s)");
     }
 
     public static final Request<Int32> treeEndConglomerate() {
@@ -315,19 +315,19 @@ public final class TreeShr extends Shr{
     }
 
     public static final Request<List> treeFindNodeTags_T(final int nid, final TagRef ref) {
-        return new TreeCall<List>(List.class, "_a=", ref.ref, "TreeFindNodeTags:T", 107).val(nid).ref("_a").fin("_a=", List.list, "_s,_a);MdsShr->StrFree1Dx(ref(_s));_a");
+        return new TreeCall<List>(List.class, "_a=", ref.ref, "TreeFindNodeTags:T", 107).val(nid).ref("_a").fin("_a=List(*,_s,_a);MdsShr->StrFree1Dx(ref(_s));_a");
     }
 
     public static final Request<List> treeFindNodeTagsDsc(final int nid, final TagRef ref) {
-        return new TreeCall<List>(List.class, "_t=REPEAT(' ',255),_a=", ref.ref, "TreeFindNodeTagsDsc", 132).val(nid).ref("_a").descr("_t").fin(List.list, "TRIM(_t),_a,_s)");
+        return new TreeCall<List>(List.class, "_t=REPEAT(' ',255),_a=", ref.ref, "TreeFindNodeTagsDsc", 132).val(nid).ref("_a").descr("_t").fin("List(*,TRIM(_t),_a,_s)");
     }
 
     public static final Request<List> treeFindNodeWild(final String searchstr, final int usage_mask, final NodeRefStatus ref) {
-        return new TreeCall<List>(List.class, "_a=-1;_q=", ref.ref, "TreeFindNodeWild", 115).ref(CString.make(searchstr)).ref("_a").ref("_q").val(usage_mask).fin(List.list, "_a,_q,_s)");
+        return new TreeCall<List>(List.class, "_a=-1;_q=", ref.ref, "TreeFindNodeWild", 115).ref(CString.make(searchstr)).ref("_a").ref("_q").val(usage_mask).fin("List(*,_a,_q,_s)");
     }
 
     public static final Request<List> treeFindTagWild(final String searchstr, final TagRefStatus ref) {
-        return new TreeCall<List>(List.class, "_a=*;_i=-1;_q=", ref.ref, "TreeFindTagWildDsc", 114).ref(CString.make(searchstr)).ref("_i").ref("_q").xd("_a").fin(List.list, "_a,_i,_q,_s)");
+        return new TreeCall<List>(List.class, "_a=*;_i=-1;_q=", ref.ref, "TreeFindTagWildDsc", 114).ref(CString.make(searchstr)).ref("_i").ref("_q").xd("_a").fin("List(*,_a,_i,_q,_s)");
     }
 
     public static final Request<Int32> treeGetCurrentShotId(final String expt) {
@@ -364,11 +364,11 @@ public final class TreeShr extends Shr{
     }
 
     public static final Request<List> treeGetSegmentInfo(final int nid, final int idx) {
-        return new TreeCall<List>(List.class, "_a=0B;_b=0B;_d=ZERO(8,0);_i=0", "TreeGetSegmentInfo", 146).val(nid).val(idx).ref("_a").ref("_b").ref("_d").ref("_i").fin(List.list, "_a,_b,_d,_i,_s)");
+        return new TreeCall<List>(List.class, "_a=0B;_b=0B;_d=ZERO(8,0);_i=0", "TreeGetSegmentInfo", 146).val(nid).val(idx).ref("_a").ref("_b").ref("_d").ref("_i").fin("List(*,_a,_b,_d,_i,_s)");
     }
 
     public final static Request<List> treeGetSegmentLimits(final int nid, final int idx) {
-        return new TreeCall<List>(List.class, "_a=_b=*", "TreeGetSegmentLimits", 106).val(nid).val(idx).xd("_a").xd("_b").fin(List.list, "[_a,_b],_s)");
+        return new TreeCall<List>(List.class, "_a=_b=*", "TreeGetSegmentLimits", 106).val(nid).val(idx).xd("_a").xd("_b").fin("List(*,List(*,_a,_b),_s)");
     }
 
     @SuppressWarnings("rawtypes")
@@ -377,11 +377,11 @@ public final class TreeShr extends Shr{
     }
 
     public static final Request<List> treeGetSegmentTimesXd(final int nid) {
-        return new TreeCall<List>(List.class, "_a=0;_b=*;_c=*", "TreeGetSegmentTimesXd", 113).val(nid).ref("_a").xd("_b").xd("_c").fin(List.list, List.list, "_a,_b,_c),_s)");
+        return new TreeCall<List>(List.class, "_a=0;_b=*;_c=*", "TreeGetSegmentTimesXd", 113).val(nid).ref("_a").xd("_b").xd("_c").fin("List(*,List(*,_a,_b,_c),_s)");
     }
 
     public final static Request<List> treeGetXNci(final int nid, final String name) {
-        return new TreeCall<List>(List.class, "_a=*", "TreeGetXNci", 73).val(nid).ref(CString.make(name)).xd("_a").fin(List.list, "_a,_s)");
+        return new TreeCall<List>(List.class, "_a=*", "TreeGetXNci", 73).val(nid).ref(CString.make(name)).xd("_a").fin("List(*,_a,_s)");
     }
 
     public final static Request<Int32> treeIsOn(final int nid) {

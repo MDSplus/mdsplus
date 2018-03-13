@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import javax.swing.JPanel;
 import mds.MdsException;
+import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_r.Param;
 import mds.data.descriptor_r.With_Units;
@@ -16,16 +17,16 @@ public class ParameterEditor extends Editor{
     private final ExprEditor help, validation, units;
     private final Editor     value;
 
-    public ParameterEditor(final Descriptor<?> data, final boolean editable){
-        this(data, editable, new ExprEditor(false, editable, true));
+    public ParameterEditor(final Descriptor<?> data, final boolean editable, final CTX ctx){
+        this(data, editable, ctx, new ExprEditor(editable, ctx, false, true));
     }
 
-    public ParameterEditor(final Descriptor<?> data, final boolean editable, final Editor value){
-        super(data, editable, 0);
+    public ParameterEditor(final Descriptor<?> data, final boolean editable, final CTX ctx, final Editor value){
+        super(data, editable, ctx, 0);
         this.value = value;
-        this.units = new ExprEditor(true, editable, false);
-        this.help = new ExprEditor(true, editable, false);
-        this.validation = new ExprEditor(false, editable, false);
+        this.units = new ExprEditor(editable, ctx, true, false);
+        this.help = new ExprEditor(editable, ctx, true, false);
+        this.validation = new ExprEditor(editable, ctx, false, false);
         this.setLayout(new BorderLayout());
         this.add(Editor.addLabel("Value", this.value), BorderLayout.CENTER);
         final JPanel jp = new JPanel(new GridLayout(3, 1));

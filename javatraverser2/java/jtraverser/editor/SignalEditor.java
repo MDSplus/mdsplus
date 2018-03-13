@@ -6,6 +6,7 @@ import java.awt.Window;
 import javax.swing.JPanel;
 import jtraverser.editor.usage.NumericEditor;
 import mds.MdsException;
+import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_r.Signal;
 
@@ -15,17 +16,17 @@ public class SignalEditor extends Editor{
         return data instanceof Signal;
     }
 
-    public SignalEditor(final boolean editable, final Window window){
-        this(null, editable, window);
+    public SignalEditor(final boolean editable, final CTX ctx, final Window window){
+        this(null, editable, ctx, window);
     }
 
-    public SignalEditor(final Descriptor<?> data, final boolean editable, final Window window){
-        super(data, editable, 3);
+    public SignalEditor(final Descriptor<?> data, final boolean editable, final CTX ctx, final Window window){
+        super(data, editable, ctx, 3);
         this.setLayout(new BorderLayout());
         final JPanel columns = new JPanel(new GridLayout(1, 3));
-        columns.add(this.edit[0] = new NumericEditor(this.editable, window, "Data"));
-        columns.add(this.edit[1] = new NumericEditor(this.editable, window, "Raw"));
-        columns.add(this.edit[2] = new NumericEditor(this.editable, window, "Dimension"));
+        columns.add(this.edit[0] = new NumericEditor(this.editable, ctx, window, "Data"));
+        columns.add(this.edit[1] = new NumericEditor(this.editable, ctx, window, "Raw"));
+        columns.add(this.edit[2] = new NumericEditor(this.editable, ctx, window, "Dimension"));
         this.add(columns);
         this.setData(data);
     }

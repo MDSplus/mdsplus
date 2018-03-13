@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import mds.MdsException;
+import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
 
 @SuppressWarnings("serial")
@@ -14,22 +15,22 @@ public class ArgEditor extends JScrollPane{
     private final int          num_args;
     protected final Dimension  preferred;
 
-    public ArgEditor(){
-        this(null, true, 9, new Dimension(220, 89));
+    public ArgEditor(final boolean editable, final CTX ctx, final Descriptor<?>... descriptors){
+        this(descriptors, editable, ctx, 9, new Dimension(220, 89));
     }
 
-    public ArgEditor(final boolean editable, final Descriptor<?>... descriptors){
-        this(descriptors, editable, 9, new Dimension(220, 89));
+    public ArgEditor(final CTX ctx){
+        this(null, true, ctx, 9, new Dimension(220, 89));
     }
 
-    public ArgEditor(final Descriptor<?>[] data, final boolean editable, final int num_args, final Dimension preferred){
+    public ArgEditor(final Descriptor<?>[] data, final boolean editable, final CTX ctx, final int num_args, final Dimension preferred){
         this.preferred = preferred;
         this.num_args = num_args;
         final JPanel jp = new JPanel();
         jp.setLayout(new GridLayout(num_args, 1));
         this.args = new ExprEditor[num_args];
         for(int i = 0; i < num_args; i++)
-            jp.add(this.args[i] = Editor.addLabel("Argument " + (i + 1), new ExprEditor(true, editable, false)));
+            jp.add(this.args[i] = Editor.addLabel("Argument " + (i + 1), new ExprEditor(editable, ctx, true, false)));
         final JPanel jp2 = new JPanel();
         jp2.setLayout(new BorderLayout());
         jp2.add(jp, BorderLayout.NORTH);

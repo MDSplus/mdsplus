@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import javax.swing.JPanel;
 import mds.MdsException;
+import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_R;
 import mds.data.descriptor_r.Procedure;
@@ -15,24 +16,24 @@ public final class ProcedureEditor extends Editor{
     }
     ArgEditor arg_edit;
 
-    public ProcedureEditor(){
-        this(null, true);
+    public ProcedureEditor(final boolean editable, final CTX ctx){
+        this(null, editable, ctx);
     }
 
-    public ProcedureEditor(final boolean editable){
-        this(null, editable);
+    public ProcedureEditor(final CTX ctx){
+        this(null, true, ctx);
     }
 
-    public ProcedureEditor(final Procedure data, final boolean editable){
-        super(data, editable, 3);
+    public ProcedureEditor(final Procedure data, final boolean editable, final CTX ctx){
+        super(data, editable, ctx, 3);
         final JPanel jp = new JPanel();
         jp.setLayout(new GridLayout(3, 1, 0, 0));
-        jp.add(this.edit[0] = Editor.addLabel("Timeout", new ExprEditor(false, editable, false)));
-        jp.add(this.edit[1] = Editor.addLabel("Language", new ExprEditor(true, editable, false)));
-        jp.add(this.edit[2] = Editor.addLabel("Procedure", new ExprEditor(true, editable, false)));
+        jp.add(this.edit[0] = Editor.addLabel("Timeout", new ExprEditor(editable, ctx, false, false)));
+        jp.add(this.edit[1] = Editor.addLabel("Language", new ExprEditor(editable, ctx, true, false)));
+        jp.add(this.edit[2] = Editor.addLabel("Procedure", new ExprEditor(editable, ctx, true, false)));
         this.setLayout(new BorderLayout());
         this.add(jp, BorderLayout.NORTH);
-        this.add(this.arg_edit = new ArgEditor(editable), BorderLayout.CENTER);
+        this.add(this.arg_edit = new ArgEditor(editable, ctx), BorderLayout.CENTER);
     }
 
     @Override

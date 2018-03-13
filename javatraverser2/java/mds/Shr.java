@@ -205,7 +205,7 @@ public abstract class Shr{
         }
 
         public final void add(final String cmd, final Descriptor<?>... argin) {
-            if(this.cmds.length() == 0) this.cmds.append(List.list);
+            if(this.cmds.length() == 0) this.cmds.append("List(*,");
             else this.cmds.append(',');
             this.cmds.append("(").append(cmd).append(";)");
             for(final Descriptor<?> arg : argin)
