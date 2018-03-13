@@ -131,6 +131,7 @@ CUDT::CUDT()
    m_bBroken = false;
    m_bPeerHealth = true;
    m_ullLingerExpiration = 0;
+   m_llLastReqTime = 0;
 }
 
 CUDT::CUDT(const CUDT& ancestor)
@@ -522,7 +523,7 @@ void CUDT::open()
 
    // set up the timers
    m_ullSYNInt = m_iSYNInterval * m_ullCPUFrequency;
-  
+
    // set minimum NAK and EXP timeout to 100ms
    m_ullMinNakInt = 300000 * m_ullCPUFrequency;
    m_ullMinExpInt = 300000 * m_ullCPUFrequency;
