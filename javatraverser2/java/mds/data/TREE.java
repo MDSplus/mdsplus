@@ -441,7 +441,7 @@ public final class TREE implements MdsListener, CTX{
     }
 
     public final NidArray getNciChildrenNids(final NODE<?> node) throws MdsException {
-        final NidArray result = this.setActive().mds.getDescriptor(this.ctx, "IF(GetNci(_a=as_is($),'NUMBER_OF_CHILDREN')>0)GetNci(_a,'CHILDREN_NIDS');ELSE []", NidArray.class, node);
+        final NidArray result = this.setActive().mds.getDescriptor(this.ctx, "IF(GetNci(_a=as_is($),'NUMBER_OF_CHILDREN')>0)GetNci(_a,'CHILDREN_NIDS')", NidArray.class, node);
         if(result == null) return new NidArray();
         return result;
     }
@@ -515,7 +515,7 @@ public final class TREE implements MdsListener, CTX{
     }
 
     public final NidArray getNciMemberNids(final NODE<?> node) throws MdsException {
-        final NidArray result = this.setActive().mds.getDescriptor(this.ctx, "IF(GetNci(_a=as_is($),'NUMBER_OF_MEMBERS')>0)GetNci(_a,'MEMBER_NIDS');ELSE []", NidArray.class, node);
+        final NidArray result = this.setActive().mds.getDescriptor(this.ctx, "IF(GetNci(_a=as_is($),'NUMBER_OF_MEMBERS')>0)GetNci(_a,'MEMBER_NIDS')", NidArray.class, node);
         if(result == null) return new NidArray();
         return result;
     }

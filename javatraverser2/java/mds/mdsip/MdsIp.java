@@ -787,7 +787,7 @@ public class MdsIp extends Mds{
     private final void setup() throws MdsException { // TODO: setup
         this.simpleExpr("public fun __save(in _in) {return(TreeShr->TreeSavePrivateCtx:P(val(_in)));};"//
                 + "public fun __restore(in _in) {return(TreeShr->TreeRestorePrivateCtx:P(val(_in)));};"//
-                + "public fun __serout(in _in) {_out=*;MdsShr->MdsSerializeDscOut(xd(_in),xd(_out));return(_out);};"//
+                + "public fun __serout(optional in _in) {_out=*;MdsShr->MdsSerializeDscOut(xd(_in),xd(_out));return(_out);};"//
                 + "public fun __serin(in _in) {_out=*;MdsShr->MdsSerializeDscIn(ref(_in),xd(_out));return(_out);};1");
         new TreeShr(this).treeSetPrivateCtx(true);
     }
