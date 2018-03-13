@@ -2,6 +2,7 @@
 ./usr/local/mdsplus/bin32/SetMdsplusFileProtection
 ./usr/local/mdsplus/bin32/actlog
 ./usr/local/mdsplus/bin32/build_test
+./usr/local/mdsplus/bin32/jTraverser2
 ./usr/local/mdsplus/bin32/job_finish
 ./usr/local/mdsplus/bin32/job_functions
 ./usr/local/mdsplus/bin32/job_output

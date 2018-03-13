@@ -1,1 +1,1 @@
-start "" javaw -jar "%MDSPLUS_DIR%\Java\Classes\jTraverser.jar" %*
+start "" javaw -jar "%MDSPLUS_DIR%\Java\Classes\jTraverser2.jar" %*
