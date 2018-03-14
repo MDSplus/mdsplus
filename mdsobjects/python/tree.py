@@ -3167,8 +3167,8 @@ class Device(TreeNode): # HINT: Device begin
         if name in self.part_dict:
             head = self if self._head==0 else self.head
             TreeNode(self.part_dict[name]+self.head.nid,self.tree,head).record=value
-        elif (hasattr(self,name)
-           or name.startswith('_')
+        elif (name.startswith('_')
+           or name in self.__dict__
            or isInDicts(name,self.__class__)
            or isinstance(stack()[1][0].f_locals.get('self',None),Device)):
               super(Device,self).__setattr__(name,value)
@@ -3246,10 +3246,8 @@ If you did intend to write to a subnode of the device you should check the prope
         The gtk.main() procedure must be run in a separate thread to avoid locking the main program.
         """
         try:
-            from widgets import MDSplusWidget
-            import gtk.glade
-            import os,gtk,inspect,threading
-            import sys
+            _widgets = _mimport('widgets')
+            import os,gtk,inspect,threading,sys,gtk.glade
             class gtkMain(threading.Thread):
                 def run(self):
                     gtk.main()
@@ -3268,7 +3266,7 @@ If you did intend to write to a subnode of the device you should check the prope
             sys.stderr = sys.__stderr__
             window.device_node=self
             window.set_title(window.get_title()+' - '+str(self)+' - '+str(self.tree))
-            MDSplusWidget.doToAll(window,"reset")
+            _widgets.MDSplusWidget.doToAll(window,"reset")
         except Exception as exc:
             raise Exception("No setup available, %s" % (str(exc),))
 
