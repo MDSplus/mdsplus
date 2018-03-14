@@ -112,7 +112,7 @@ public class DataDialog extends JDialog{
                     }
                 });
                 jp.add(this.apply_b = new JButton("Update Dim"));
-                this.ok_b.addActionListener(new ActionListener(){
+                this.apply_b.addActionListener(new ActionListener(){
                     @Override
                     public void actionPerformed(final ActionEvent e) {
                         DataDialog.this.updateDim();
