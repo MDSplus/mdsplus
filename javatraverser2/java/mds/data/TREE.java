@@ -13,6 +13,7 @@ import mds.TreeShr.DescriptorStatus;
 import mds.TreeShr.IntegerStatus;
 import mds.TreeShr.NodeRefStatus;
 import mds.TreeShr.SegmentInfo;
+import mds.TreeShr.StringStatus;
 import mds.TreeShr.TagRef;
 import mds.TreeShr.TagRefStatus;
 import mds.data.descriptor.Descriptor;
@@ -410,6 +411,17 @@ public final class TREE implements MdsListener, CTX{
         final IntegerStatus res = this.setActive().treeshr.treeGetDefaultNid(this.ctx);
         MdsException.handleStatus(res.status);
         return this.def_nid = new Nid(res.data, this);
+    }
+
+    public final String getFileName() throws MdsException {
+        return this.getFileName(this.expt);
+    }
+
+    public final String getFileName(final String subtree) throws MdsException {
+        final StringStatus ans = this.setActive().treeshr.treeFileName(this.ctx, subtree, this.shot);
+        if(ans.status == MdsException.TreeFOPENR) throw new MdsException(ans.status);
+        MdsException.handleStatus(ans.status);
+        return ans.data;
     }
 
     public final int getMode() {
