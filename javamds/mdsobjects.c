@@ -1520,7 +1520,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_openTree
     (JNIEnv * env, jobject jobj, jstring jname, jint shot, jboolean readonly) {
   int status = 1, ctx1, ctx2;
   const char *name;
-  void *ctx;
+  void *ctx=NULL;
   jfieldID ctx1Fid, ctx2Fid;
   jclass cls;
 
