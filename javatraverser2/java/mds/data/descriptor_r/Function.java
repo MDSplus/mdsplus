@@ -16,7 +16,6 @@ import mds.data.descriptor_r.function.CONST;
 import mds.data.descriptor_r.function.Fun;
 import mds.data.descriptor_r.function.MODIFIER;
 import mds.data.descriptor_r.function.UNARY;
-import mds.data.descriptor_s.Missing;
 
 /** Function 199 (-57) **/
 public class Function extends Descriptor_R<Short>{
@@ -178,7 +177,7 @@ public class Function extends Descriptor_R<Short>{
     }
 
     protected final StringBuilder deco_extfunction(final int prec, final StringBuilder pout, final int mode) {
-        if(this.getDescriptor(0) != Missing.NEW || this.getDescriptor(1) == Missing.NEW || this.getDescriptor(1).dtype() != DTYPE.T){
+        if(!Descriptor.isMissing(this.getDescriptor(0)) || Descriptor.isMissing(this.getDescriptor(1)) || this.getDescriptor(1).dtype() != DTYPE.T){
             pout.append(OPC.Names[this.getAtomic().shortValue()]);
             this.addArguments(0, "(", ")", pout, mode);
             return pout;

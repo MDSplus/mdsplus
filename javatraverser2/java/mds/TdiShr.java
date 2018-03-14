@@ -65,7 +65,7 @@ public final class TdiShr extends Shr{
     }
 
     public final Descriptor<?> tdiEvaluate(final Descriptor<?> data) throws MdsException {
-        if(data == null || data == Missing.NEW) return Missing.NEW;
+        if(Descriptor.isMissing(data)) return Missing.NEW;
         return this.mds.getDescriptor("Evaluate($)", data);
     }
 
