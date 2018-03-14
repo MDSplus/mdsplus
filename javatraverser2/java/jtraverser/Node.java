@@ -434,14 +434,17 @@ public class Node{
         final String sep = "</nobr>, <nobr>";
         final Flags lflags = this.getFlags();
         lflags.info(sb, sep);
-        sb.append("</nobr></td></tr><tr><td align=\"left\">Data:</td><td align=\"left\">");
-        if(this.getLength() == 0) sb.append("<nobr>There is no data stored for this this</nobr>");
+        if(this.getUsage() == NODE.USAGE_STRUCTURE || this.getUsage() == NODE.USAGE_SUBTREE) sb.append("</nobr>");
         else{
-            final String ldtype = DTYPE.getName(this.getDType());
-            final String ldclass = Descriptor.getDClassName(this.getDClass());
-            sb.append("<nobr>").append(ldtype).append(Node.tab).append(ldclass).append(Node.tab).append(this.getLength()).append(" B (").append(this.getRLength()).append(" B)</nobr>");
-            sb.append("</td></tr><tr><td align=\"left\">Inserted:</td><td align=\"left\">");
-            sb.append(this.getDate());
+            sb.append("</nobr></td></tr><tr><td align=\"left\">Data:</td><td align=\"left\">");
+            if(this.getLength() == 0) sb.append("<nobr>There is no data stored for this node</nobr>");
+            else{
+                final String ldtype = DTYPE.getName(this.getDType());
+                final String ldclass = Descriptor.getDClassName(this.getDClass());
+                sb.append("<nobr>").append(ldtype).append(Node.tab).append(ldclass).append(Node.tab).append(this.getLength()).append(" B (").append(this.getRLength()).append(" B)</nobr>");
+                sb.append("</td></tr><tr><td align=\"left\">Inserted:</td><td align=\"left\">");
+                sb.append(this.getDate());
+            }
         }
         return sb.append("</td></tr></table></html>").toString();
     }
