@@ -331,7 +331,9 @@ public abstract class Descriptor<T>{
     }
 
     public Descriptor_A<?> getDataA() throws MdsException {
-        return (Descriptor_A<?>)this.getData().toDescriptor();
+        final Descriptor<?> dsc = this.getData().toDescriptor();
+        if(dsc instanceof Descriptor_A) return (Descriptor_A<?>)dsc;
+        throw new MdsException(MdsException.TdiINVDTYDSC);
     }
 
     public Descriptor<?> getDataD() throws MdsException {
@@ -339,7 +341,9 @@ public abstract class Descriptor<T>{
     }
 
     public Descriptor_S<?> getDataS() throws MdsException {
-        return (Descriptor_S<?>)this.getData().toDescriptor();
+        final Descriptor<?> dsc = this.getData().toDescriptor();
+        if(dsc instanceof Descriptor_S) return (Descriptor_S<?>)dsc;
+        throw new MdsException(MdsException.TdiNOT_NUMBER);
     }
 
     /** Returns the dclass name of the Descriptor **/
