@@ -14,7 +14,6 @@ import mds.data.descriptor_s.FLOAT;
 import mds.data.descriptor_s.Float64;
 import mds.data.descriptor_s.Int32;
 import mds.data.descriptor_s.Int64;
-import mds.data.descriptor_s.Missing;
 
 public final class Range extends Descriptor_R<Number>{
     public static double[] range(final double begin, final double ending, final double delta) {
@@ -97,7 +96,7 @@ public final class Range extends Descriptor_R<Number>{
     public final StringBuilder decompile(final int prec, final StringBuilder pout, final int mode) {
         this.getBegin().decompile(prec, pout, mode).append(" : ");
         this.getEnding().decompile(prec, pout, mode);
-        if(this.getDelta() != Missing.NEW) this.getDelta().decompile(prec, pout.append(" : "), mode);
+        if(!Descriptor.isMissing(this.getDelta())) this.getDelta().decompile(prec, pout.append(" : "), mode);
         return pout;
     }
 
