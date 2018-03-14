@@ -22,6 +22,7 @@ import mds.MdsException;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_A;
 import mds.data.descriptor_apd.List;
+import mds.data.descriptor_s.NUMBER;
 
 @SuppressWarnings("serial")
 public class SegmentEditor extends Editor{
@@ -123,11 +124,15 @@ public class SegmentEditor extends Editor{
     }
 
     public final Descriptor_A<?> getSegmentData() throws MdsException {
-        return (Descriptor_A<?>)this.edit[0].getData();
+        return this.edit[0].getData().getDataA();
     }
 
     public final Descriptor<?> getSegmentDim() throws MdsException {
         return this.edit[1].getData();
+    }
+
+    public final NUMBER<?> getSegmentEnd() throws MdsException {
+        return this.edit[4].getNumber();
     }
 
     public final int getSegmentIdx() {
@@ -136,6 +141,10 @@ public class SegmentEditor extends Editor{
 
     public final Descriptor<?> getSegmentScale() throws MdsException {
         return this.edit[2].getData();
+    }
+
+    public final NUMBER<?> getSegmentStart() throws MdsException {
+        return this.edit[3].getNumber();
     }
 
     @Override
