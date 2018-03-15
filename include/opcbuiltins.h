@@ -257,7 +257,7 @@ OPC (	MatRot,	MAT_ROT ,	Matrix, undef,		MatRot,	F,HC,	F,HC,	2,5,	OK	)/*;	(mat,an
 OPC (	MatRotInt,	MAT_ROT_INT ,	Matrix, undef,		MatRotInt,	F,HC,	F,HC,	2,5,	OK	)/*;	(mat,angle,mag,x0,y0)	*/
 OPC (	Max,	MAX ,		MinMax, Add,		Max,		BU,HC,	BU,HC,	2,254,	OK	)/*;f9	(x,y..)			*/
 OPC (	MaxExponent,	MAXEXPONENT ,	Scalar,Any,		MaxExponent,	F,HC,	L,L,	1,1,	OK	)/*;f9	(model)			*/
-OPC (	MaxLoc,	MAXLOC ,		Trans,	Mask3L,		MaxLoc,	T,HC,SUBSCRIPT,SUBSCRIPT,1,3,	OK	)/*;f9	(x,[dim],[mask])		*/
+OPC (	MaxLoc,	MAXLOC ,		Trans,	Mask3,		MaxLoc,	T,HC,SUBSCRIPT,SUBSCRIPT,1,3,	OK	)/*;f9	(x,[dim],[mask])		*/
 OPC (	MaxVal,	MAXVAL ,		Trans,	Mask3,		MaxVal,		T,HC,	T,HC,	1,3,	OK	)/*;f9	(x,[dim],[mask])	*/
 OPC (	Mean,	MEAN ,		Trans,	Mask3,		Mean,		BU,HC,	F,HC,	1,3,	OK	)/*;	(x,[dim],[mask])	*/
 OPC (	Median,	MEDIAN ,		Same,	Long2,		Median,		BU,HC,	BU,HC,	2,2,	OK	)/*;	(a,width)		*/
@@ -265,7 +265,7 @@ OPC (	Merge,	MERGE ,		Same,	Merge,		Merge,		XX,YY,	XX,YY,	3,3,	OK	)/*;f9	(tsourc
 OPC (	MethodOf,	METHOD_OF ,	MethodOf, undef,	undef, METHOD,METHOD,	XX,YY,	1,1,	OK+I	)/*;mds	(method)		*/
 OPC (	Min,	MIN ,		MinMax,Add,		Min,		BU,HC,	BU,HC,	2,254,	OK	)/*;f9	(x,y..)			*/
 OPC (	MinExponent,	MINEXPONENT ,	Scalar,Any,		MinExponent,	F,HC,	L,L,	1,1,	OK	)/*;f9	(model)			*/
-OPC (	MinLoc,	MINLOC ,		Trans,	Mask3L,		MinLoc,	T,HC,SUBSCRIPT,SUBSCRIPT,1,3,	OK	)/*;f9	(x,[dim], [mask])		*/
+OPC (	MinLoc,	MINLOC ,		Trans,	Mask3,		MinLoc,	T,HC,SUBSCRIPT,SUBSCRIPT,1,3,	OK	)/*;f9	(x,[dim], [mask])		*/
 OPC (	MinVal,	MINVAL ,		Trans,	Mask3,		MinVal,		T,HC,	T,HC,	1,3,	OK	)/*;f9	(x,[dim],[mask])	*/
 OPC (	Mod,	MOD ,		Same,	Add,		Mod,		BU,HC,	BU,HC,	2,2,	MUL+N	)/*;f9	(a,p)			*/
 OPC (	ModelOf,	MODEL_OF ,	ModelOf, undef,		undef, CONGLOM,CONGLOM,	XX,YY,	1,1,	OK+I	)/*;mds	(conglom)		*/
@@ -334,10 +334,10 @@ OPC (	Scan,	SCAN ,		Same,	Ttb,		Scan,	T,T,SUBSCRIPT,SUBSCRIPT,2,3,	OK	)/*;f9	(st
 OPC (	Fseek,	FSEEK ,		Fseek,	undef,		undef,		L,L,	L,L,	1,3,	OK+U	)/*;%cc	(unit,[offset],[origin])*/
 OPC (	SetExponent,	SET_EXPONENT ,	Same,	Long2,		SetExponent,	F,HC,	F,HC,	2,2,	OK	)/*;f9	(x,i)			*/
 OPC (	SetRange,	SET_RANGE ,	SetRange, undef,	undef,		XX,YY,	XX,YY,	2,1+MAXDIM,OK+I	)/*;%	(range...,name)		*/
-OPC (	Ishft,	ISHFT ,		Same,	Shft,		Ishft,		BU,Q,	BU,Q,	2,2,	OK	)/*;f9	(a,shift)		*/
-OPC (	Ishftc,	ISHFTC ,		Same,	Shft,		Ishftc,		BU,Q,	BU,Q,	3,3,	OK	)/*;f9	(a,shift,size)		*/
-OPC (	ShiftLeft,	SHIFT_LEFT ,	Same,	Shft,		ShiftLeft,	BU,Q,	BU,Q,	2,2,	SHIFT+S	)/*;%cc	i<<j			*/
-OPC (	ShiftRight,	SHIFT_RIGHT ,	Same,	Shft,		ShiftRight,	BU,Q,	BU,Q,	2,2,	SHIFT+S	)/*;%cc	i>>j sign=signed	*/
+OPC (	Ishft,	ISHFT ,		Same,	Shft,		Ishft,		BU,O,	BU,O,	2,2,	OK	)/*;f9	(a,shift)		*/
+OPC (	Ishftc,	ISHFTC ,		Same,	Shft,		Ishftc,		BU,O,	BU,O,	3,3,	OK	)/*;f9	(a,shift,size)		*/
+OPC (	ShiftLeft,	SHIFT_LEFT ,	Same,	Shft,		ShiftLeft,	BU,O,	BU,O,	2,2,	SHIFT+S	)/*;%cc	i<<j			*/
+OPC (	ShiftRight,	SHIFT_RIGHT ,	Same,	Shft,		ShiftRight,	BU,O,	BU,O,	2,2,	SHIFT+S	)/*;%cc	i>>j sign=signed	*/
 OPC (	Sign,	SIGN ,		Same,	Sign,		Sign,		BU,HC,	BU,HC,	2,2,	OK	)/*;f9	(a,b)			*/
 OPC (	Signed,	SIGNED ,		Same,	Keep,		undef,		B,O,	B,O,	1,1,	CAST+N+I )/*;%	(a)			*/
 OPC (	Sin,	SIN ,		Same,	NoHc,		Sin,		F,HC,	F,HC,	1,1,	OK	)/*;f9	(x) 			*/

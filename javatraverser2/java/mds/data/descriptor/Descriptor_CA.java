@@ -72,7 +72,7 @@ public class Descriptor_CA extends ARRAY<ByteBuffer>{
     }
 
     @Override
-    public Descriptor_CA getLocal_() {
+    public Descriptor_CA getLocal_(final FLAG local) {
         return this;
     }
 

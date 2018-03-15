@@ -52,22 +52,14 @@ int SERVER$FIND_SERVERS(int *ctx, struct dsc$descriptor *server )
 
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>
-#ifndef _WIN32
-/* DTG: Unix Spec v.2 has <dirent.h> depends on <sys/types.h> */
 #include <sys/types.h>
 #include <dirent.h>
-#endif
 #include <status.h>
 #include <string.h>
 #include <stdlib.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <strroutines.h>
 
-#ifdef _WIN32
-EXPORT char *ServerFindServers(void **ctx __attribute__ ((unused)), char *wild_match __attribute__ ((unused))){
-  return NULL;
-}
-#else
 EXPORT char *ServerFindServers(void **ctx, char *wild_match){
   char *ans = NULL;
   DIR *dir = (DIR *) * ctx;
@@ -101,4 +93,3 @@ EXPORT char *ServerFindServers(void **ctx, char *wild_match){
   }
   return ans;
 }
-#endif

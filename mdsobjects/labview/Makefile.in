@@ -18,7 +18,17 @@ COBJECTS= $(CSOURCES:.c=.o)
 OBJECTS = $(CXXSOURCES:.cpp=.o)
 EXPORTS = MdsObjectsCppShr.exports
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ $(LV_SHR) @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr@SHARETYPE@ @MAKELIBDIR@@LIBPRE@MDSobjectsLVShr.a  
+all : primary
+	$(MAKE) secundary @MAKEFLAG_J@  @MAKEFLAG_O@
+
+primary : \
+	@MAKELIBDIR@ \
+	@MAKESHLIBDIR@ \
+	$(LV_SHR)
+
+secundary : primary \
+	@MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr@SHARETYPE@ \
+	@MAKELIBDIR@@LIBPRE@MDSobjectsLVShr.a
 
 clean:
 	@ $(RM) $(COBJECTS)

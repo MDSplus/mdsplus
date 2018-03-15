@@ -1520,7 +1520,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_openTree
     (JNIEnv * env, jobject jobj, jstring jname, jint shot, jboolean readonly) {
   int status = 1, ctx1, ctx2;
   const char *name;
-  void *ctx = 0;
+  void *ctx=NULL;
   jfieldID ctx1Fid, ctx2Fid;
   jclass cls;
 
@@ -1528,17 +1528,15 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_openTree
   name = (*env)->GetStringUTFChars(env, jname, 0);
   if (strlen(name) > 0)
     status = _TreeOpen(&ctx, (char *)name, shot, readonly ? 1 : 0);
-  else {
-    ctx = TreeSwitchDbid(NULL);
-    TreeSwitchDbid(ctx);
-  }
+  else
+    ctx = TreeDbid();
   (*env)->ReleaseStringUTFChars(env, jname, name);
   if STATUS_NOT_OK {
     UnlockMdsShrMutex(&openMutex);
     throwMdsException(env, status);
     return;
   }
-  TreeSwitchDbid(ctx);
+  //TreeSwitchDbid(ctx); should be at ctx already
   ctx1 = getCtx1(ctx);
   ctx2 = getCtx2(ctx);
   cls = (*env)->GetObjectClass(env, jobj);
@@ -1594,7 +1592,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_editTree
     throwMdsException(env, status);
     return;
   }
-  TreeSwitchDbid(ctx);
+  //TreeSwitchDbid(ctx);
   ctx1 = getCtx1(ctx);
   ctx2 = getCtx2(ctx);
   cls = (*env)->GetObjectClass(env, jobj);
@@ -3109,7 +3107,7 @@ static char getNDims(struct descriptor *dsc)
 
 static void getDims(struct descriptor *dsc, int *dims)
 {
-  ARRAY_BOUNDS(char *, MAX_DIMS) * arrPtr;
+  ARRAY_BOUNDS(char *, MAX_DIMS_R) * arrPtr;
   int i;
 
   if (dsc->class != CLASS_A)
@@ -3146,11 +3144,11 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Connection_get
   char dtype, nDims;
   short length;
   void *ptr;
-  int dims[MAX_DIMS];
+  int dims[MAX_DIMS_R];
   int numBytes;
   void *mem = 0;
   struct descriptor scalarDsc = { 0, 0, CLASS_S, 0 };
-  DESCRIPTOR_A_COEFF(arrayDsc, 0, 0, 0, MAX_DIMS, 0);
+  DESCRIPTOR_A_COEFF(arrayDsc, 0, 0, 0, MAX_DIMS_R, 0);
 
   expr = (*env)->GetStringUTFChars(env, jExpr, 0);
   nArgs = (*env)->GetArrayLength(env, jargs);
@@ -3300,7 +3298,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Connection_put
   char dtype, nDims;
   short length;
   void *ptr;
-  int dims[MAX_DIMS];
+  int dims[MAX_DIMS_R];
   int numBytes, varIdx;
   void *mem = 0;
 

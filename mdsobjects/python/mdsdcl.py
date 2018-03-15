@@ -46,8 +46,8 @@ def dcl(command,return_out=False,return_error=False,raise_exception=False,tree=N
     @type command: str
     @param return_out: True if output should be returned in the result of the function.
     @type return_out: bool
-    @param error_out: True if error should be returned in the result of the function.
-    @type error_out: bool
+    @param return_error: True if error should be returned in the result of the function.
+    @type return_error: bool
     @param raise_exception: True if the function should raise an exception on failure.
     @type raise_exception: bool
     @param setcommand: invokes 'set command $' to load a command set.

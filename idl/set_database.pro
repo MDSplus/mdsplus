@@ -358,10 +358,6 @@ function DBInfo, name, mdshost, dbhost, dbname, username, password, reset=reset,
               envar = 'userprofile'
               dpath = 'C:\program files\mdsplus\'
           end
-          'vms'		: begin
-              envar = 'sys$login' 
-              dpath = 'sys$manager:
-          end
           else		: begin
               envar = 'HOME' 
               dpath = '/etc/sybase/'

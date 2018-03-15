@@ -53,11 +53,11 @@ EventStruct *MDSEVENT(int *base_id, int *stub_id, struct dsc$descriptor *name)
 Invoked from MDSEVENT.PRO
 
 ------------------------------------------------------------------------------*/
-#include <ipdesc.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdsshr.h>
+#include <ipdesc.h>
 
 typedef struct _event_struct {
   int stub_id;
@@ -85,6 +85,12 @@ extern void MdsDispatchEvent();
 static EventStruct *EventList = (EventStruct *) 0;
 static int EventCount = 1;
 static void EventAst(void * e, int eventid, char *data);
+#ifdef strlcpy
+#undef strlcpy
+#endif
+#ifdef strlcat
+#undef strlcat
+#endif
 #include <export.h>
 #ifdef _WIN32
 #define BlockSig(arg)

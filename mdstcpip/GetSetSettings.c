@@ -187,33 +187,39 @@ int GetCompressionLevel()
 ////////////////////////////////////////////////////////////////////////////////
 //  CONNECTION TIMEOUT  ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-
-static int connect_timeout = -1;
-int SetMdsConnectTimeout(int sec)
-{
-  int old = connect_timeout;
-  connect_timeout = sec;
-  return old;
+static int             timeout_value = 0;
+static pthread_once_t  timeout_once  = PTHREAD_ONCE_INIT;
+static pthread_mutex_t timeout_mutex = PTHREAD_MUTEX_INITIALIZER;
+static void timeout_init() {
+  char *timeout=getenv("MDSIP_CONNECT_TIMEOUT");
+  if (timeout)
+    timeout_value = atoi(timeout);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //  GetMdsConnectTimeout  //////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int GetMdsConnectTimeout()
-{
-  if (connect_timeout == -1) {
-    char *timeout=getenv("MDSIP_CONNECT_TIMEOUT");
-    if (timeout){
-      connect_timeout = atoi(timeout); 
-    } else {
-      connect_timeout = 0;
-    }
-  }
+int GetMdsConnectTimeout() {
+  int connect_timeout;
+  pthread_mutex_lock(&timeout_mutex);
+  pthread_cleanup_push((void*)pthread_mutex_unlock,&timeout_mutex);
+  pthread_once(&timeout_once,timeout_init);
+  connect_timeout = timeout_value;
+  pthread_cleanup_pop(1);
   return connect_timeout;
 }
 
+int SetMdsConnectTimeout(int sec) {
+  int old;
+  pthread_mutex_lock(&timeout_mutex);
+  pthread_cleanup_push((void*)pthread_mutex_unlock,&timeout_mutex);
+  pthread_once(&timeout_once,timeout_init);
+  old = timeout_value;
+  timeout_value = sec;
+  pthread_cleanup_pop(1);
+  return old;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //  CLIENT ADDRESS  ////////////////////////////////////////////////////////////

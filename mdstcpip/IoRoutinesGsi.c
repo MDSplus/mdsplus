@@ -52,18 +52,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <time.h>
 #include <sys/wait.h>
 
 #include "mdsip_connections.h"
 
-static ssize_t gsi_send(int conid, const void *buffer, size_t buflen, int nowait);
-static ssize_t gsi_recv(int conid, void *buffer, size_t len);
-static int gsi_disconnect(int conid);
+static ssize_t gsi_send(Connection* c, const void *buffer, size_t buflen, int nowait);
+static ssize_t gsi_recv(Connection* c, void *buffer, size_t len);
+static int gsi_disconnect(Connection* c);
 static int gsi_listen(int argc, char **argv);
-static int gsi_authorize(int conid, char *username);
-static int gsi_connect(int conid, char *protocol, char *host);
+static int gsi_authorize(Connection* c, char *username);
+static int gsi_connect(Connection* c, char *protocol, char *host);
 static int gsi_reuseCheck(char *host, char *unique, size_t buflen);
 static IoRoutines gsi_routines = {
   gsi_connect, gsi_send, gsi_recv, NULL, gsi_listen, gsi_authorize, gsi_reuseCheck, gsi_disconnect, NULL
@@ -113,6 +113,14 @@ static void testStatus(globus_result_t res, char *msg)
   }
 }
 
+static GSI_INFO *getGsiInfoC(Connection* c)
+{
+  size_t len;
+  char *info_name;
+  int readfd;
+  GSI_INFO *info = (GSI_INFO *) GetConnectionInfoC(c, &info_name, &readfd, &len);
+  return (info_name && strcmp(info_name, "gsi") == 0) && len == sizeof(GSI_INFO) ? info : 0;
+}
 static GSI_INFO *getGsiInfo(int conid)
 {
   size_t len;
@@ -127,9 +135,9 @@ static GSI_INFO *getGsiInfo(int conid)
   testStatus(statvar,msg);\
   if (statvar!=GLOBUS_SUCCESS) fail_action
 
-static int gsi_authorize(int conid, char *username)
+static int gsi_authorize(Connection* c, char *username)
 {
-  GSI_INFO *info = getGsiInfo(conid);
+  GSI_INFO *info = getGsiInfoC(c);
   int ans = 0;
   if (info) {
     char *hostname;
@@ -208,11 +216,11 @@ static int gsi_authorize(int conid, char *username)
   return ans;
 }
 
-static ssize_t gsi_send(int conid, const void *bptr, size_t num, int options __attribute__ ((unused)))
+static ssize_t gsi_send(Connection* c, const void *bptr, size_t num, int options __attribute__ ((unused)))
 {
   globus_size_t nbytes;
   globus_result_t result;
-  GSI_INFO *info = getGsiInfo(conid);
+  GSI_INFO *info = getGsiInfoC(c);
   ssize_t sent = -1;
   if (info != 0) {
     doit(result,
@@ -223,11 +231,11 @@ static ssize_t gsi_send(int conid, const void *bptr, size_t num, int options __a
   return sent;
 }
 
-static ssize_t gsi_recv(int conid, void *bptr, size_t num)
+static ssize_t gsi_recv(Connection* c, void *bptr, size_t num)
 {
-  globus_result_t result;
-  GSI_INFO *info = getGsiInfo(conid);
+  GSI_INFO *info = getGsiInfoC(c);
   globus_size_t numreceived;
+  globus_result_t result;
   ssize_t recved = -1;
   if (info != 0) {
     doit(result,
@@ -238,9 +246,8 @@ static ssize_t gsi_recv(int conid, void *bptr, size_t num)
   return recved;
 }
 
-static int gsi_disconnect(int conid)
-{
-  GSI_INFO *info = getGsiInfo(conid);
+static int gsi_disconnect(Connection* c){
+  GSI_INFO *info = getGsiInfoC(c);
   if (info) {
     if (info->connection_name) {
       time_t tim = time(0);
@@ -275,7 +282,7 @@ static int gsi_reuseCheck(char *host, char *unique, size_t buflen)
   return ans;
 }
 
-static int gsi_connect(int conid, char *protocol __attribute__ ((unused)), char *host_in)
+static int gsi_connect(Connection* c, char *protocol __attribute__ ((unused)), char *host_in)
 {
   static int activated = 0;
   static globus_xio_stack_t stack_gsi;
@@ -332,7 +339,7 @@ static int gsi_connect(int conid, char *protocol __attribute__ ((unused)), char 
        "GSI Set KEEPALIVE", return C_ERROR);
   doit(result, globus_xio_open(info.xio_handle, contact_string, attr),
        "Error connecting",  return C_ERROR);
-  SetConnectionInfo(conid, "gsi", 0, &info, sizeof(info));
+  SetConnectionInfoC(c, "gsi", 0, &info, sizeof(info));
   return C_OK;
 }
 
@@ -451,8 +458,6 @@ static int gsi_listen(int argc, char **argv)
     res = globus_xio_server_create((globus_xio_server_t *) & info.xio_handle, server_attr, stack);
     testStatus(res, "gsi_listen,server_create");
     if (res == GLOBUS_SUCCESS) {
-      //      int id = NewConnection("gsi");
-      // SetConnectionInfo(id, "gsi", 0, &info, sizeof(info));
       res =
 	  globus_xio_server_register_accept((globus_xio_server_t) info.xio_handle, acceptCallback,
 					    &info);

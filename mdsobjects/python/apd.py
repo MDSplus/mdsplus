@@ -83,7 +83,7 @@ class Apd(_array.Array):
 
     @classmethod
     def fromDescriptor(cls,d):
-        num   = int(d.arsize/d.length)
+        num   = d.arsize//d.length
         dptrs = _C.cast(d.pointer,_C.POINTER(_C.c_void_p*num)).contents
         descs = [_descriptor.pointerToObject(dptr,d.tree) for dptr in dptrs]
         return cls(descs)._setTree(d.tree)
@@ -190,7 +190,7 @@ class Dictionary(dict,Apd):
     """dictionary class"""
     class dict_np(_N.ndarray):
         def __new__(cls,items):
-            return _N.asarray(tuple(d.value for d in items),'object').view(Dictionary.dict_np)
+            return _N.asarray(tuple(d for d in items),'object').view(Dictionary.dict_np)
         def tolist(self):
             return dict(super(Dictionary.dict_np,self).tolist())
 

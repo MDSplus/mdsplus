@@ -360,7 +360,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 	  status =
 	      _TreeDoMethod(dbid, &nid_dsc, (struct descriptor *)&part_name, &string_d MDS_END_ARG);
 	}
-	if (status & 1) {
+	if (STATUS_OK && string_d.pointer) {
 	  string = strncpy(malloc(string_d.length + 1), string_d.pointer, string_d.length);
 	  string[string_d.length] = 0;
 	}

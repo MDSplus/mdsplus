@@ -23,7 +23,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #define _GNU_SOURCE
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <STATICdef.h>
 #include <mdsshr.h>
 #include "mdsshrthreadsafe.h"
@@ -31,10 +31,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Key for the thread-specific buffer */
 STATIC_THREADSAFE pthread_key_t buffer_key;
-/* Once-only initialisation of the key */
-STATIC_THREADSAFE pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
-/* lock pthread_once */
-STATIC_THREADSAFE pthread_mutex_t buffer_key_mutex = PTHREAD_MUTEX_INITIALIZER;
 /* Free the thread-specific buffer */
 STATIC_ROUTINE void buffer_destroy(void *buf){
   free(buf);
@@ -44,9 +40,7 @@ STATIC_ROUTINE void buffer_key_alloc(){
 }
 /* Return the thread-specific buffer */
 MdsShrThreadStatic *MdsShrGetThreadStatic(){
-  pthread_mutex_lock(&buffer_key_mutex);
-  pthread_once(&buffer_key_once, buffer_key_alloc);
-  pthread_mutex_unlock(&buffer_key_mutex);
+  RUN_FUNCTION_ONCE(buffer_key_alloc);
   MdsShrThreadStatic *p = (MdsShrThreadStatic *) pthread_getspecific(buffer_key);
   if (!p) {
     p = (MdsShrThreadStatic *) malloc(sizeof(MdsShrThreadStatic));
@@ -58,9 +52,9 @@ MdsShrThreadStatic *MdsShrGetThreadStatic(){
   return p;
 }
 
-STATIC_THREADSAFE pthread_mutex_t initMutex = PTHREAD_MUTEX_INITIALIZER;
 void LockMdsShrMutex(pthread_mutex_t * mutex, int *initialized)
 {
+  static pthread_mutex_t initMutex = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_lock(&initMutex);
   if (!*initialized) {
     pthread_mutexattr_t m_attr;

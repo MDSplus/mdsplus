@@ -1,32 +1,27 @@
-EXTRA_DIST = 
-CLEANFILES = $(java_DATA) \
-	$(addprefix $(JAVAROOT)/,$(TRAV_CLS)) \
-	$(addprefix $(JAVAROOT)/,$(TOOLS_CLS)) \
-	$(addprefix $(JAVAROOT)/,$(MDS_CLS))
+EXTRA_DIST =
+dist_java_DATA = jTraverser2.jar
+CLEANFILES = $(java_DATA) $(addprefix $(JAVAROOT)/,$(java_JAR) debug/DEBUG.class)
 
 JAVAROOT = $(abs_builddir)/classes
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
 
 # Create the shell script that runs the program
-#if MINGW
-#bin_SCRIPTS = traverser2.bat $(JAVAROOT)
-#else
-#bin_SCRIPTS = jTraverser2 $(JAVAROOT)
-#CLEANFILES += jTraverser2
-#EXTRA_DIST += jTraverser2.template
-#jTraverser2: $(srcdir)/jTraverser2.template
-#	cp $< $@
-#endif
-bin_SCRIPTS = $(JAVAROOT)
-
+if MINGW
+bin_SCRIPTS = traverser2.bat $(JAVAROOT)
+else
+bin_SCRIPTS = jTraverser2 $(JAVAROOT)
+CLEANFILES += jTraverser2
+EXTRA_DIST += jTraverser2.template
+jTraverser2: $(srcdir)/jTraverser2.template
+	cp $< $@
+endif
 
 #$(INSTALL) -D $< $@
 # Build the class files
 CLASSPATH_ENV = CLASSPATH=$(JSCH):$(JAVAROOT)
 
 # Build the final jar
-JTRAVERSER_JAR = $(abs_builddir)/jTraverser.jar
 TRAV_GIFS = $(addprefix ${srcdir}/java/,$(TRAV_GIF))
 
 java_SRC = $(TRAV_SRC) $(TOOLS_SRC) $(MDS_SRC)
@@ -49,22 +44,21 @@ $(MANIFEST): $(srcdir)/JTMANIFEST.mf
 
 if USE_JARS_DIR
 
-JTRAVERSER_JAR : @JARS_DIR@/javatraverser2/jTraverser.jar
+jTraverser2.jar : @JARS_DIR@/javatraverser2/jTraverser2.jar
 	cp $< $@
 
 else
 
-java_DATA = $(JTRAVERSER_JAR)
+java_DATA = jTraverser2.jar
 java_JAVA = $(addprefix ${srcdir}/java/,$(java_SRC) debug/DEBUG.java)
 
 # Build the final jar
-$(JTRAVERSER_JAR): $(JSCH) $(MANIFEST) $(java_CLS)
+jTraverser2.jar: $(JSCH) $(MANIFEST) $(java_CLS)
 	mkdir -p $(JAVAROOT)/jtraverser &&\
 	cp -f $(TRAV_GIFS) $(JAVAROOT)/jtraverser &&\
-	cp -f $(JSCH) "$@" &&\
+	cp -f $(JSCH) "$(abs_builddir)/jTraverser2.jar" &&\
 	pushd $(JAVAROOT) &&\
-	$(JAR) u0fm "$@" $(MANIFEST) $(java_JAR) $(TRAV_GIF) &&\
-	popd
+	($(JAR) u0fm "$(abs_builddir)/jTraverser2.jar" $(MANIFEST) $(java_JAR) $(TRAV_GIF) ;	popd)
 
 endif
 
@@ -129,6 +123,7 @@ MDS_SRC = \
 	mds/TreeShr.java \
 	mds/UpdateEvent.java \
 	mds/UpdateEventListener.java \
+	mds/data/CTX.java \
 	mds/data/DATA.java \
 	mds/data/DTYPE.java \
 	mds/data/OPC.java \

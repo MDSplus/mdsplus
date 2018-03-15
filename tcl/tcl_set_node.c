@@ -22,7 +22,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -215,7 +215,7 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
 	    *output = realloc(*output, strlen(*output) + dsc_path.length + 100);
 	    nout = *output + strlen(*output);
 	  } else {
-	    *output = malloc(strlen(*output) + dsc_path.length + 100);
+	    *output = malloc(dsc_path.length + 100);
 	    nout = *output;
 	  }
 	  sprintf(nout, "Node: %.*s modified\n", dsc_path.length, dsc_path.pointer);

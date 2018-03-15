@@ -42,11 +42,6 @@ public final class Int128Array extends INTEGERArray<BigInteger>{
     }
 
     @Override
-    protected StringBuilder decompile(final StringBuilder pout, final BigInteger value) {
-        return pout.append(String.format("0X%x", value)).append(this.getSuffix());
-    }
-
-    @Override
     public final BigInteger getElement(final ByteBuffer b_in) {
         return Int128.getBigInteger(b_in);
     }

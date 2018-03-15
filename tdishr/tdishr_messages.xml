@@ -58,4 +58,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <status name="STRTOOLON" value="4127" severity="Fatal" text="string is too long (greater than 65535)"/>
     <status name="TIMEOUT" value="4128" severity="Fatal" text="task did not complete in alotted time"/>
   </facility>
+  <facility name="Apd" value="4061">
+    <status name="APD_APPEND" value="1" severity="Error" text="First argument must be APD or *"/>
+    <status name="DICT_KEYVALPAIR" value="2" severity="Error" text="A Dictionary requires an even number of elements"/>
+    <status name="DICT_KEYCLS" value="3" severity="Error" text="Keys must be scalar, i.e. CLASS_S"/>  
+  </facility>
 </messages>

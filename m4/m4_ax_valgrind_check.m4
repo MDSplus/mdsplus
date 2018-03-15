@@ -174,7 +174,7 @@ VALGRIND_memcheck_FLAGS  ?=
 VALGRIND_memcheck_FLAGS  += --leak-check=full --show-reachable=no
 
 VALGRIND_helgrind_FLAGS  ?=
-VALGRIND_helgrind_FLAGS  += --history-level=approx
+VALGRIND_helgrind_FLAGS  += --history-level=full
 
 VALGRIND_drd_FLAGS       ?=
 VALGRIND_drd_FLAGS       +=
@@ -263,10 +263,10 @@ $(VALGRIND_LOGS):
 tests-valgrind:
 	@ \
 	echo "--- VALGRIND TESTS --- enabled tools: $(foreach tool,$(VALGRIND_TOOLS), $(tool))"; \
-	$(MAKE) VALGRIND_BUILD="yes"; \
+	$(MAKE) -k $(BUILD_FLAGS) $(AM_MAKEFLAGS) all VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
-			$(MAKE) $(AM_MAKEFLAGS) -k tests-valgrind-tool VALGRIND_TOOL=$(tool); \
+			$(MAKE) -k $(TEST_FLAGS) $(AM_MAKEFLAGS) tests-valgrind-tool VALGRIND_TOOL=$(tool); \
 		) \
 	)
 

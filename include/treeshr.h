@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdstypes.h>
 
 #define TreeBLOCKID 0x3ade68b1
@@ -35,7 +35,8 @@ extern int TREE_BLOCKID;
 #endif
 
 
-
+  extern EXPORT void* TreeSavePrivateCtx(void* dbid);
+  extern EXPORT void* TreeRestorePrivateCtx(void* pctx);
   extern EXPORT char *TreeAbsPath(char const *in);	     /********** Use TreeFree(result) *****/
   extern EXPORT char *_TreeAbsPath(void *dbid, char const *in);/********** Use TreeFree(result) *****/
   extern EXPORT int TreeAddConglom(char const *path, char const *congtype, int *nid);
@@ -89,6 +90,7 @@ extern int TREE_BLOCKID;
   extern EXPORT int _TreeFlushReset(void *dbid, int nid);
   extern EXPORT void TreeFree(void *);
   extern EXPORT void TreeFreeDbid(void *);
+  extern EXPORT int _TreeNewDbid(void **dbid);
   extern EXPORT int TreeGetDbi(struct dbi_itm *itmlst);
   extern EXPORT int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst);
   extern EXPORT int TreeGetNci(int nid, struct nci_itm *itmlst);
@@ -182,8 +184,8 @@ extern int TREE_BLOCKID;
   extern EXPORT int _TreeMakeSegment(void *dbid, int nid, struct descriptor *start,
 				     struct descriptor *end, struct descriptor *dim,
 				     struct descriptor_a *initialData, int idx, int filled);
-  extern EXPORT int TreePutSegment(int nid, int rowidx, struct descriptor_a *data);
-  extern EXPORT int _TreePutSegment(void *dbid, int nid, int rowidx, struct descriptor_a *data);
+  extern EXPORT int TreePutSegment(int nid, const int rowidx, struct descriptor_a *data);
+  extern EXPORT int _TreePutSegment(void *dbid, int nid, const int rowidx, struct descriptor_a *data);
   extern EXPORT int TreeUpdateSegment(int nid, struct descriptor *start, struct descriptor *end,
 				      struct descriptor *dim, int idx);
   extern EXPORT int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start,
@@ -208,6 +210,10 @@ extern int TREE_BLOCKID;
 				       struct descriptor *delta);
   extern EXPORT int _TreeSetTimeContext(void *dbid, struct descriptor *start,
 					struct descriptor *end, struct descriptor *delta);
+  extern EXPORT int TreeGetTimeContext(struct descriptor_xd *start, struct descriptor_xd *end,
+				       struct descriptor_xd *delta);
+  extern EXPORT int _TreeGetTimeContext(void *dbid, struct descriptor_xd *start,
+					struct descriptor_xd *end, struct descriptor_xd *delta);
   extern EXPORT int TreeGetNumSegments(int nid, int *num);
   extern EXPORT int _TreeGetNumSegments(void *dbid, int nid, int *num);
   extern EXPORT int TreeGetSegmentLimits(int nid, int segidx, struct descriptor_xd *start,
@@ -254,6 +260,10 @@ extern int TREE_BLOCKID;
   extern EXPORT int TreeFindTagWildDsc(char *wild, int *nidout, void **ctx_inout,
 				       struct descriptor_xd *name);
 
+  extern EXPORT int _TreeGetSegmentScale(void *dbid, int nid, struct descriptor_xd *value);
+  extern EXPORT int TreeGetSegmentScale(int nid, struct descriptor_xd *value);
+  extern EXPORT int _TreeSetSegmentScale(void *dbid, int nid, struct descriptor *value);
+  extern EXPORT int TreeSetSegmentScale(int nid, struct descriptor *value);
 
 #ifdef __cplusplus
 }

@@ -100,7 +100,10 @@ class Scalar(_dat.Data):
             value = value.data()
         elif isinstance(value,_C._SimpleCData):
             value = value.value
-        self._value = self._ntype(value)
+        if _ver.ispy3 and self._ntype is _N.bytes_:
+            self._value = self._ntype(_ver.tobytes(value))
+        else:   
+            self._value = self._ntype(value)
 
     def _str_bad_ref(self):
         return _ver.tostr(self._value)
@@ -121,7 +124,9 @@ class Scalar(_dat.Data):
 
     def __getattr__(self,name):
         if name.startswith("__array"):
-          raise AttributeError
+            raise AttributeError
+        try: return super(Scalar,self).__getattr__(name)
+        except AttributeError: pass
         return self.value.__getattribute__(name)
 
     @property
@@ -280,10 +285,10 @@ class Uint64(Scalar):
     def fromTime(cls,value):
         """converts from seconds since 01-JAN-1970 00:00:00.00
         For example:
-           import MDSplus
-           import time
-           mdstime=MDSplus.Uint64.fromTime(time.time()-time.altzone)
-           print(mdstime.date)
+        >>> import MDSplus
+        >>> import time
+        >>> mdstime=MDSplus.Uint64.fromTime(time.time()-time.altzone)
+        >>> print(mdstime.date)
         """
         return cls(int(value * cls._utc1) + cls._utc0)
 
@@ -352,8 +357,7 @@ class String(Scalar):
     def __init__(self,value):
         super(String,self).__init__(value)
         if not isinstance(self._value,_N.str):
-            self._value = _ver.np2npstr(self._value)
-
+            self._value = _ver.npstr(_ver.tostr(self._value))
     @property
     def _descriptor(self):
         d=_dsc.Descriptor_s()

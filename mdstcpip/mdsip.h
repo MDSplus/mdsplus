@@ -14,10 +14,7 @@
 #define TCP_NODELAY 1
 #include <errno.h>
 #else
-#if defined(_WIN32) || defined(__VMS)
-#define I_NREAD FIONREAD
-#endif
-#if defined(__APPLE__)
+#if defined(_WIN32) || defined(__APPLE__)
 #define I_NREAD FIONREAD
 #endif
 
@@ -47,7 +44,7 @@
 #else
 #include <sys/errno.h>
 #endif
-#if defined(_WIN32)
+#ifdef _WIN32
 //#include <windows.h>
 //#include <io.h>
 #include <winsock2.h>
@@ -114,23 +111,10 @@
 #define EVENTASTREQUEST     "---EVENTAST---REQUEST---"
 #define EVENTCANREQUEST     "---EVENTCAN---REQUEST---"
 
-#define LOGINREQUEST        "---LOGIN------REQUEST___"
-#define LOGINUSER           "---LOGIN------USER------"
-#define LOGINGETP1          "---LOGIN------GETP1-----"
-#define LOGINGETP2          "---LOGIN------GETP2-----"
-#define LOGINPWD            "---LOGIN------PWD-------"
-#define LOGINVMS            "---LOGIN------VMS-------"
-
-#ifdef __VMS
-#include <starlet.h>
-#include <iodef.h>
-#include <lib$routines.h>
-#endif
-
 #define SEND_BUF_SIZE 32768
 #define RECV_BUF_SIZE 32768
 
-#if defined(__VMS) || defined(WIN32) || defined(__linux__) || defined(_NO_SIGHOLD)
+#if defined(WIN32) || defined(__linux__) || defined(_NO_SIGHOLD)
 #define sighold(arg)
 #define sigrelse(arg)
 #endif

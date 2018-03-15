@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #define _XOPEN_SOURCE_EXTENDED
 #define _GNU_SOURCE		/* glibc2 needs this */
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <sys/time.h>
 #include <time.h>
 #include <string.h>
@@ -42,6 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <windows.h>
 #include <process.h>
 #define setenv(name,value,overwrite) _putenv_s(name,value)
+#define localtime_r(time,tm)         localtime_s(tm,time)
 #else
 #include <sys/wait.h>
 #endif
@@ -77,6 +78,7 @@ typedef struct _VmList {
 typedef struct _ZoneList {
   VmList *vm;
   struct _ZoneList *next;
+  pthread_mutex_t lock;
 } ZoneList;
 
 typedef struct node {
@@ -86,32 +88,33 @@ typedef struct node {
 } LibTreeNode;
 
 #include <libroutines.h>
-#ifdef _WIN32
-  static time_t get_tz_offset(time_t* time){
-    time_t tz_offset;
-    static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-    pthread_mutex_lock(&lock);
-    struct tm* tmval = localtime(time);
-  #ifdef USE_TM_GMTOFF
-    tz_offset = tmval->tm_gmtoff;
-  #else
-    tz_offset = - timezone + daylight * (tmval->tm_isdst ? 3600 : 0);
-  #endif
-    pthread_mutex_unlock(&lock);
-    return tz_offset;
-  }
-#else
-  static time_t get_tz_offset(time_t* time){
-    struct tm tmval;
-    tzset();
-    localtime_r(time, &tmval);
-  #ifdef USE_TM_GMTOFF
-    return tmval.tm_gmtoff;
-  #else
-    return - timezone + daylight * (tmval.tm_isdst ? 3600 : 0);
-  #endif
-  }
+
+#ifndef USE_TM_GMTOFF
+/* tzset() sets the global statics daylight and timezone.
+ * However, this is not threadsafe as we cannot prevent third party code from calling tzset.
+ * Therefore, we make our private copies of timezone and daylight.
+ * timezone: constant offset of the local standard time to gmt.
+ * daylight: constant flag if region implements daylight saving at all. (seasonal flag is tmval.tm_isdst)
+ */
+time_t ntimezone_;
+int daylight_;
+static void tzset_(){
+  tzset();
+  ntimezone_ = - timezone;
+  daylight_ = daylight;
+}
 #endif
+
+static time_t get_tz_offset(time_t* time){
+  struct tm tmval;
+  localtime_r(time, &tmval);
+#ifdef USE_TM_GMTOFF
+  return tmval.tm_gmtoff;
+#else
+  RUN_FUNCTION_ONCE(tzset_);
+  return (daylight_ && tmval.tm_isdst) ? ntimezone_ + 3600 : ntimezone_;
+#endif
+}
 
 STATIC_CONSTANT int64_t VMS_TIME_OFFSET = LONG_LONG_CONSTANT(0x7c95674beb4000);
 
@@ -436,10 +439,6 @@ EXPORT char *TranslateLogical(char const *pathname)
                         for (narg=1; (narg < 256) && (va_arg(incrmtr, struct descriptor *) != MdsEND_ARG); narg++)
 #endif				/* va_count */
 
-
-
-ZoneList *MdsZones = NULL;
-
 EXPORT int TranslateLogicalXd(struct descriptor const *in, struct descriptor_xd *out)
 {
   struct descriptor out_dsc = { 0, DTYPE_T, CLASS_S, 0 };
@@ -483,31 +482,6 @@ EXPORT char *LibFindImageSymbolErrString()
   return FIS_Error;
 }
 
-STATIC_THREADSAFE int dlopen_mutex_initialized = 0;
-STATIC_THREADSAFE pthread_mutex_t dlopen_mutex;
-
-STATIC_ROUTINE void dlopen_lock()
-{
-
-  if (!dlopen_mutex_initialized) {
-    dlopen_mutex_initialized = 1;
-    pthread_mutex_init(&dlopen_mutex, NULL);
-  }
-
-  pthread_mutex_lock(&dlopen_mutex);
-}
-
-STATIC_ROUTINE void dlopen_unlock()
-{
-
-  if (!dlopen_mutex_initialized) {
-    dlopen_mutex_initialized = 1;
-    pthread_mutex_init(&dlopen_mutex, NULL);
-  }
-
-  pthread_mutex_unlock(&dlopen_mutex);
-}
-
 static void *loadLib(const char *dirspec, const char *filename, char *errorstr) {
   void *handle = NULL;
   char *full_filename = alloca( strlen(dirspec) + strlen(filename) + 10);
@@ -539,7 +513,11 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
   int status;
   void *handle = NULL;
   char *errorstr = alloca(4096);
-  char *filename = alloca(strlen(filename_in) + strlen(prefix) + strlen(SHARELIB_TYPE) + 1);
+  char *filename;
+  static pthread_mutex_t dlopen_mutex = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_lock(&dlopen_mutex);
+  pthread_cleanup_push((void*)pthread_mutex_unlock,(void*)&dlopen_mutex);
+  filename = alloca(strlen(filename_in) + strlen(prefix) + strlen(SHARELIB_TYPE) + 1);
   errorstr[0]='\0';
   *symbol_value = NULL;
   strcpy(filename,filename_in);
@@ -551,7 +529,6 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
   if (strcmp(filename+strlen(filename)-strlen(SHARELIB_TYPE),SHARELIB_TYPE)) {
     strcat(filename,SHARELIB_TYPE);
   }
-  dlopen_lock();
   handle = loadLib("", filename, errorstr);
   if (handle == NULL &&
       (strchr(filename, '/') == 0) &&
@@ -596,7 +573,7 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
   }
   else
     status = 1;
-  dlopen_unlock();
+  pthread_cleanup_pop(1);
   return status;
 }
 
@@ -609,7 +586,9 @@ EXPORT int LibFindImageSymbol(struct descriptor *filename, struct descriptor *sy
   free(c_symbol);
   return status;
 }
-
+/*******************************************************
+ TODO: StrConcat fails when any of the varargs is out
+ *******************************************************/
 EXPORT int StrConcat(struct descriptor *out, struct descriptor *first, ...)
 {
   int i;
@@ -660,11 +639,9 @@ EXPORT int StrPosition(struct descriptor *source, struct descriptor *substring, 
   return answer;
 }
 
-EXPORT int StrCopyR(struct descriptor *dest, unsigned short *len, char *source)
+EXPORT int StrCopyR(struct descriptor *dest, const unsigned short *len, char *source)
 {
-  struct descriptor s = { 0, DTYPE_T, CLASS_S, 0 };
-  s.length = *len;
-  s.pointer = source;
+  const struct descriptor s = { *len, DTYPE_T, CLASS_S, source };
   return StrCopyDx(dest, &s);
 }
 
@@ -683,7 +660,7 @@ EXPORT int StrLenExtr(struct descriptor *dest, struct descriptor *source, int *s
   return status;
 }
 
-EXPORT int StrGet1Dx(unsigned short *len, struct descriptor_d *out)
+EXPORT int StrGet1Dx(const unsigned short *len, struct descriptor_d *out)
 {
   if (out->class != CLASS_D)
     return LibINVSTRDES;
@@ -727,7 +704,7 @@ EXPORT int StrTrim(struct descriptor *out, struct descriptor *in, unsigned short
   return StrFree1Dx(&tmp);
 }
 
-EXPORT int StrCopyDx(struct descriptor *out, struct descriptor *in)
+EXPORT int StrCopyDx(struct descriptor *out, const struct descriptor *in)
 {
   if (out->class == CLASS_D && (in->length != out->length))
     StrGet1Dx(&in->length, (struct descriptor_d *)out);
@@ -777,9 +754,12 @@ EXPORT int StrRight(struct descriptor *out, struct descriptor *in, unsigned shor
   return StrFree1Dx(&tmp);
 }
 
-STATIC_THREADSAFE pthread_mutex_t VmMutex;
-
-int VmMutex_initialized = 0;
+static pthread_mutex_t zones_lock = PTHREAD_MUTEX_INITIALIZER;
+#define   LOCK_ZONES pthread_mutex_lock(&zones_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&zones_lock)
+#define UNLOCK_ZONES pthread_cleanup_pop(1);
+ZoneList *MdsZones = NULL;
+#define   LOCK_ZONE(zone) pthread_mutex_lock(&(zone)->lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&(zone)->lock)
+#define UNLOCK_ZONE(zone) pthread_cleanup_pop(1);
 
 EXPORT int LibCreateVmZone(ZoneList ** zone)
 {
@@ -787,23 +767,25 @@ EXPORT int LibCreateVmZone(ZoneList ** zone)
   *zone = malloc(sizeof(ZoneList));
   (*zone)->vm = NULL;
   (*zone)->next = NULL;
-  LockMdsShrMutex(&VmMutex, &VmMutex_initialized);
+  pthread_mutex_init(&(*zone)->lock,NULL);
+  LOCK_ZONES;
   if (MdsZones == NULL)
     MdsZones = *zone;
   else {
     for (list = MdsZones; list->next; list = list->next) ;
     list->next = *zone;
   }
-  UnlockMdsShrMutex(&VmMutex);
+  UNLOCK_ZONES;
   return (*zone != NULL);
 }
 
 EXPORT int LibDeleteVmZone(ZoneList ** zone)
 {
-  int found = 0;
+  int found;
   ZoneList *list, *prev;
-  LockMdsShrMutex(&VmMutex, &VmMutex_initialized);
   LibResetVmZone(zone);
+  LOCK_ZONES;
+  found = 0;
   if (*zone == MdsZones) {
     found = 1;
     MdsZones = (*zone)->next;
@@ -818,7 +800,7 @@ EXPORT int LibDeleteVmZone(ZoneList ** zone)
     free(*zone);
     *zone = 0;
   }
-  UnlockMdsShrMutex(&VmMutex);
+  UNLOCK_ZONES;
   return found;
 }
 
@@ -826,19 +808,19 @@ EXPORT int LibResetVmZone(ZoneList ** zone)
 {
   VmList *list;
   unsigned int len = 1;
-  LockMdsShrMutex(&VmMutex, &VmMutex_initialized);
+  LOCK_ZONES;
   while ((list = zone ? (*zone ? (*zone)->vm : NULL) : NULL) != NULL)
     LibFreeVm(&len, &list->ptr, zone);
-  UnlockMdsShrMutex(&VmMutex);
+  UNLOCK_ZONES;
   return MDSplusSUCCESS;
 }
 
 EXPORT int LibFreeVm(unsigned int *len, void **vm, ZoneList ** zone)
 {
   VmList *list = NULL;
-  if (zone != NULL) {
+  if (zone) {
+    LOCK_ZONE(*zone);
     VmList *prev;
-    LockMdsShrMutex(&VmMutex, &VmMutex_initialized);
     for (prev = NULL, list = (*zone)->vm;
 	 list && (list->ptr != *vm); prev = list, list = list->next) ;
     if (list) {
@@ -847,7 +829,7 @@ EXPORT int LibFreeVm(unsigned int *len, void **vm, ZoneList ** zone)
       else
 	(*zone)->vm = list->next;
     }
-    UnlockMdsShrMutex(&VmMutex);
+    UNLOCK_ZONE(*zone);
   }
   if (len && *len && vm && *vm)
     free(*vm);
@@ -872,18 +854,18 @@ EXPORT int LibGetVm(unsigned int *len, void **vm, ZoneList ** zone)
   if (*vm == NULL) {
     printf("Insufficient virtual memory\n");
   }
-  if (zone != NULL) {
+  if (zone) {
     VmList *list = malloc(sizeof(VmList));
     list->ptr = *vm;
     list->next = NULL;
-    LockMdsShrMutex(&VmMutex, &VmMutex_initialized);
+    LOCK_ZONE(*zone);
     if ((*zone)->vm) {
       VmList *ptr;
       for (ptr = (*zone)->vm; ptr->next; ptr = ptr->next) ;
       ptr->next = list;
     } else
       (*zone)->vm = list;
-    UnlockMdsShrMutex(&VmMutex);
+    UNLOCK_ZONE(*zone);
   }
   return (*vm != NULL);
 }
@@ -1439,7 +1421,7 @@ EXPORT int StrElement(struct descriptor *dest, int *num, struct descriptor *deli
   int status;
   if (delim->length != 1)
     return StrINVDELIM;
-  for (cnt = 0; (cnt < *num) && (src_ptr <= se_ptr); src_ptr++)
+  for (cnt = 0; (cnt < *num) && (src_ptr < se_ptr); src_ptr++)
     if (*src_ptr == *delim->pointer)
       cnt++;
   if (cnt < *num)

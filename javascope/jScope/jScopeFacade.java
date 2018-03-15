@@ -2944,7 +2944,7 @@ remove 28/06/2005
  
                 
         
-        win.num_scope++;
+        jScopeFacade.num_scope++;
         win.startScope(file);
     }
 
@@ -3010,7 +3010,7 @@ remove 28/06/2005
      * is supported. Returns false if the LookAndFeel is not supported
      * and/or if there is any kind of error checking if the LookAndFeel
      * is supported.
-     * The L&F menu will use this method to detemine whether the various
+     * The L&F menu will use this method to determine whether the various
      * L&F options should be active or inactive.
      *
      */
@@ -3161,11 +3161,11 @@ class WindowDialog
         row_1.setPaintTicks(true);
         row_1.setPaintLabels(true);
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
-        labelTable.put(new Integer(1), new JLabel("1"));
-        labelTable.put(new Integer(4), new JLabel("4"));
-        labelTable.put(new Integer(8), new JLabel("8"));
-        labelTable.put(new Integer(12), new JLabel("12"));
-        labelTable.put(new Integer(16), new JLabel("16"));
+        labelTable.put(Integer.valueOf(1), new JLabel("1"));
+        labelTable.put(Integer.valueOf(4), new JLabel("4"));
+        labelTable.put(Integer.valueOf(8), new JLabel("8"));
+        labelTable.put(Integer.valueOf(12), new JLabel("12"));
+        labelTable.put(Integer.valueOf(16), new JLabel("16"));
         row_1.setLabelTable(labelTable);
 
         row_1.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
@@ -3272,12 +3272,10 @@ class WindowDialog
 
     public void actionPerformed(ActionEvent e)
     {
-
         Object ob = e.getSource();
 
         try
         {
-
             if (ob == ok || ob == apply)
             {
                 parent.wave_panel.SetTitle(new String(titleText.getText()));
@@ -3384,24 +3382,21 @@ class ServerDialog
                 {
                     remove_b.setEnabled(true);
                     modify_b.setEnabled(true);
-                    server_l.setText(dw.server_ip_list[idx].name);
-                    server_a.setText(dw.server_ip_list[idx].argument);
-                    server_u.setText(dw.server_ip_list[idx].user);
-                    data_provider_list.setSelectedItem(dw.server_ip_list[idx].class_name);
-                    if (dw.server_ip_list[idx].tunnel_port != null)
+                    server_l.setText(jScopeFacade.server_ip_list[idx].name);
+                    server_a.setText(jScopeFacade.server_ip_list[idx].argument);
+                    server_u.setText(jScopeFacade.server_ip_list[idx].user);
+                    data_provider_list.setSelectedItem(jScopeFacade.server_ip_list[idx].class_name);
+                    if (jScopeFacade.server_ip_list[idx].tunnel_port != null)
                     {
-                        if (dw.server_ip_list[idx].tunnel_port.trim().length() ==
-                            0)
-                            dw.server_ip_list[idx].tunnel_port = null;
-                        else
-                        {
+                        if (jScopeFacade.server_ip_list[idx].tunnel_port.trim().length() == 0)
+                            jScopeFacade.server_ip_list[idx].tunnel_port = null;
+                        else {
                             tunneling.setSelected(true);
-                            tunnel_port.setText(dw.server_ip_list[idx].
-                                                tunnel_port);
+                            tunnel_port.setText(jScopeFacade.server_ip_list[idx].tunnel_port);
                             tunnel_port.setEditable(true);
                         }
                     }
-                    if (dw.server_ip_list[idx].tunnel_port == null)
+                    if (jScopeFacade.server_ip_list[idx].tunnel_port == null)
                     {
                         tunnel_port.setText("");
                         tunneling.setSelected(false);
@@ -3570,10 +3565,10 @@ class ServerDialog
 
         addKnowProvider();
 
-        if (dw.server_ip_list == null)
+        if (jScopeFacade.server_ip_list == null)
             GetPropertiesValue();
         else
-            addServerIpList(dw.server_ip_list);
+            addServerIpList(jScopeFacade.server_ip_list);
 
     }
 
@@ -3681,7 +3676,7 @@ class ServerDialog
             dw.servers_m.add(new_ip);
             new_ip.setActionCommand("SET_SERVER " + dsi.name);
             new_ip.addActionListener(dw);
-            dw.server_ip_list = getServerIpList();
+            jScopeFacade.server_ip_list = getServerIpList();
         }
 
         /*
@@ -3766,7 +3761,7 @@ class ServerDialog
         {
             int idx = server_list.getSelectedIndex();
             if (idx >= 0)
-                dw.SetDataServer( dw.server_ip_list[idx] );
+                dw.SetDataServer( jScopeFacade.server_ip_list[idx] );
         }
 
         if (ob == modify_b)
@@ -3777,26 +3772,26 @@ class ServerDialog
                 String srv = server_l.getText().trim();
                 if (srv != null && srv.length() != 0)
                 {
-                    if(!dw.server_ip_list[idx].name.equals(srv))
+                    if(!jScopeFacade.server_ip_list[idx].name.equals(srv))
                     {
                         int itemsCount = dw.servers_m.getItemCount();
                         JMenuItem mi;
                         for(int i = 0; i < itemsCount; i++)
                         {
                             mi = dw.servers_m.getItem(i);
-                            if(mi.getText().equals(dw.server_ip_list[idx].name))
+                            if(mi.getText().equals(jScopeFacade.server_ip_list[idx].name))
                             {
                                 mi.setText(srv);
                                 mi.setActionCommand("SET_SERVER " + srv);
 
                             }
                         }
-                        dw.server_ip_list[idx].name = srv;
+                        jScopeFacade.server_ip_list[idx].name = srv;
                     }
-                    dw.server_ip_list[idx].argument = server_a.getText().trim();
-                    dw.server_ip_list[idx].user = server_u.getText().trim();
-                    dw.server_ip_list[idx].class_name = (String)data_provider_list.getSelectedItem();
-                    dw.server_ip_list[idx].tunnel_port = tunnel_port.getText();
+                    jScopeFacade.server_ip_list[idx].argument = server_a.getText().trim();
+                    jScopeFacade.server_ip_list[idx].user = server_u.getText().trim();
+                    jScopeFacade.server_ip_list[idx].class_name = (String)data_provider_list.getSelectedItem();
+                    jScopeFacade.server_ip_list[idx].tunnel_port = tunnel_port.getText();
                     server_list.repaint();
                     //It is need to update the current data server if it is
                     //the modified server

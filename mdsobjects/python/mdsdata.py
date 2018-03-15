@@ -126,7 +126,6 @@ class Data(object):
     def __new__(cls,*value):
         """Convert a python object to a MDSobject Data object
         @param value: Any value
-        @type data: Any
         @rtype: Data
         """
         if cls is not Data or len(value)==0:
@@ -153,6 +152,18 @@ class Data(object):
     def _setTree(self,tree):
         if isinstance(tree,_tre.Tree): self.tree=tree
         return self
+
+    def __getattr__(self,name):
+        def getXxx():
+            return self.__getattribute__(name[3:].lower())
+        if name.startswith('get'):
+            return getXxx
+        def setXxx(value):
+            self.__setattr__(name[3:].lower(),value)
+            return self
+        if name.startswith('set'):
+            return setXxx
+        return self.__getattribute__(name)
 
     @property
     def deref(self):
@@ -192,9 +203,6 @@ class Data(object):
                 delattr(self,'_units')
         else:
             self._units=units
-    def setUnits(self,units):
-        self.units=units
-        return self
 
     @property
     def error(self):
@@ -207,9 +215,6 @@ class Data(object):
                 delattr(self,'_error')
         else:
             self._error=error
-    def setError(self,error):
-        self.error=error
-        return self
 
     @property
     def help(self):
@@ -222,9 +227,6 @@ class Data(object):
                 delattr(self,'_help')
         else:
             self._help=help
-    def setHelp(self,help):
-        self.help=help
-        return self
 
     @property
     def validation(self):
@@ -237,9 +239,6 @@ class Data(object):
                 delattr(self,'_validation')
         else:
             self._validation=validation
-    def setValidation(self,validation):
-        self.validation=validation
-        return self
 
     """ binary operator methods (order: https://docs.python.org/2/library/operator.html) """
     @staticmethod
@@ -387,7 +386,7 @@ class Data(object):
     def decompile(self):
         """Return string representation
         @rtype: string"""
-        return _cmp.DECOMPILE(self)._setTree(self.tree).evaluate()
+        return str(_cmp.DECOMPILE(self)._setTree(self.tree).evaluate())
 
     def __getitem__(self,y):
         """Subscript: x.__getitem__(y) <==> x[y]
@@ -485,8 +484,8 @@ class Data(object):
     @staticmethodX
     def setTdiVar(self,varname):
         """Set tdi public variable with this data
-        @param tdivarname: The name of the public tdi variable to create
-        @type tdivarname: string
+        @param varname: The name of the public tdi variable to create
+        @type varname: string
         @rtype: Data
         @return: Returns new value of the tdi variable
         """
@@ -495,8 +494,8 @@ class Data(object):
     @staticmethod
     def getTdiVar(varname):
         """Get value of tdi public variable
-        @param tdivarname: The name of the publi tdi variable
-        @type tdivarname: string
+        @param varname: The name of the public tdi variable
+        @type varname: string
         @rtype: Data"""
         try:
             return _cmp.PUBLIC(_sca.Ident(varname)).evaluate()
@@ -514,7 +513,7 @@ class Data(object):
 
     def __repr__(self):
         """Representation
-        @type: String"""
+        @rtype: String"""
         return str(self)
 
     def data(self,*altvalue):
@@ -544,10 +543,7 @@ class Data(object):
         data = cls(data)
         if data is None:
             return _dsc.Descriptor.null
-        try:
-            return data.descriptor.ptr_
-        except Exception as exc:
-            print(exc,data)
+        return data.descriptor.ptr_
 
     @property
     def ref(self):
@@ -741,8 +737,8 @@ class Data(object):
     @staticmethod
     def deserialize(bytes):
         """Return Data from serialized buffer.
-        @param data: Buffer returned from serialize.
-        @type data: Uint8Array
+        @param bytes: Buffer returned from serialize.
+        @type bytes: Uint8Array
         @rtype: Data
         """
         if len(bytes) == 0:  # short cut if setevent did not send array

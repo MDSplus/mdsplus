@@ -1,4 +1,4 @@
-# 
+#!/usr/bin/python
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
 #
 
 from unittest import TestCase,TestSuite,TextTestRunner
-from threading import Thread
+from threading import Thread,stack_size
 if __import__('sys').version_info<(3,):
     from io import BytesIO as StringIO
 else:
@@ -36,8 +36,6 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 
-from MDSplus import Tree
-
 class threadJob(Thread):
     def __init__(self,testclass,test,idx):
         super(threadJob,self).__init__()
@@ -46,7 +44,7 @@ class threadJob(Thread):
     """Thread to execute the treeTests"""
     def run(self):
         """Run test1.test() function"""
-        Tree.usePrivateCtx()
+        #Tree.usePrivateCtx()
         stream = StringIO()
         try:
             self.result = TextTestRunner(stream=stream,verbosity=2).run(self.test)
@@ -55,9 +53,10 @@ class threadJob(Thread):
             self.stream = stream.read()
             stream.close()
 
-class threadsTest(TestCase):
+class Tests(TestCase):
     def doThreadsTestCase(self,testclass,test,numthreads):
         numsuccess= 0
+        stack_size(0x2000000)
         threads = [ threadJob(testclass,test,i) for i in range(numthreads) ]
         for i,t in enumerate(threads):
             t.start()
@@ -71,13 +70,7 @@ class threadsTest(TestCase):
                 print('### end   thread %2d: %s##################'%(i,test))
         self.assertEqual(numsuccess,numthreads,test)
 
-    def dataThreadsTests(self):
-        Tests = _mimport('dataUnitTest').Tests
-        numthreads = 3
-        for test in Tests.getTests():
-            self.doThreadsTestCase(Tests,test,numthreads)
-
-    def _xxxThreadTests(self,Tests,numthreads):
+    def _xxxThreadsTest(self,Tests,numthreads):
         Tests.inThread = True
         Tests.setUpClass()
         try:
@@ -85,42 +78,58 @@ class threadsTest(TestCase):
                 self.doThreadsTestCase(Tests,test,numthreads)
         finally:
             Tests.inThread = False
-            while Tests.instances>0:
-                Tests.tearDownClass()
+            Tests.tearDownClass()
 
-    def dclThreadsTests(self):
-        self._xxxThreadTests(_mimport('dclUnitTest').Tests,3)
+    def dataThreadsTest(self):
+        self._xxxThreadsTest(_mimport('dataUnitTest').Tests,3)
 
-    def segmentsThreadTest(self):
-        self._xxxThreadTests(_mimport('segmentsUnitTest').Tests,3)
+    def dclThreadsTest(self):
+        self._xxxThreadsTest(_mimport('dclUnitTest').Tests,3)
 
-    def treeThreadsTests(self):
-        self._xxxThreadTests(_mimport('treeUnitTest').Tests,3)
+    def mdsipThreadsTest(self):
+        self._xxxThreadsTest(_mimport('mdsipUnitTest').Tests,3)
+
+    def segmentsThreadsTest(self):
+        self._xxxThreadsTest(_mimport('segmentsUnitTest').Tests,3)
+
+    def taskThreadsTest(self):
+        self._xxxThreadsTest(_mimport('treeUnitTest').Tests,3)
+
+    def treeThreadsTest(self):
+        self._xxxThreadsTest(_mimport('treeUnitTest').Tests,3)
+
 
     def runTest(self):
         for test in self.getTests():
-            self.__getattribute__(test)()
+            self.__getattribute__('%sThreadsTest'%test)()
+
     @staticmethod
     def getTests():
-        return ['dataThreadsTests']#'treeThreadsTests','segmentsThreadTest','dclThreadsTests']
+        return ['data','dcl','task','tree']#,'mdsip','segments'
+
     @classmethod
-    def getTestCases(cls):
-        return map(cls,cls.getTests())
+    def getTestCases(cls,tests=None):
+        if tests is None: tests = cls.getTests()
+        tests = [t if t.endswith('ThreadsTest') else '%sThreadsTest'%t for t in tests]
+        return map(cls,tests)
 
-def suite():
-    return TestSuite(threadsTest.getTestCases())
+def suite(tests=None):
+    return TestSuite(Tests.getTestCases(tests))
 
-def run():
-    from unittest import TextTestRunner
-    TextTestRunner(verbosity=2).run(suite())
+def run(tests=None):
+    TextTestRunner(verbosity=2).run(suite(tests))
+
+def objgraph():
+    import objgraph,gc
+    gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
+    run()
+    gc.collect()
+    objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
 
 if __name__=='__main__':
     import sys
-    if len(sys.argv)>1 and sys.argv[1].lower()=="objgraph":
-        import objgraph
-    else:      objgraph = None
-    import gc;gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    run()
-    if objgraph:
-         gc.collect()
-         objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
+    if len(sys.argv)==2 and sys.argv[1]=='all':
+        run()
+    elif len(sys.argv)>1:
+        run(sys.argv[1:])
+    else: print('Available tests: %s'%(' '.join(Tests.getTests())))

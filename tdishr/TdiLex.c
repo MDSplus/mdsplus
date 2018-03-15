@@ -22,7 +22,10 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#define tdiyytext tdishr_tdiyytext
+//#define LEXDEBUG
+#define tdiyyin  stdin
+#define tdiyyout stdout
+
 #include <STATICdef.h>
 #include "stdio.h"
 #include <treeshr_messages.h>
@@ -32,7 +35,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define INITIAL 0
 #define YYLERR tdiyysvec
 #define YYSTATE (tdiyyestate-tdiyysvec-1)
-#define YYOPTIM 1
 #define YYLMAX 200
 #define output(c) putc(c,tdiyyout)
 #define input() (((tdiyytchar=tdiyysptr>tdiyysbuf?U(*--tdiyysptr):getc(tdiyyin))==10?(tdiyylineno++,tdiyytchar):tdiyytchar)==EOF?0:tdiyytchar)
@@ -45,10 +47,7 @@ extern unsigned char tdiyytext[];
 int tdiyymorfg;
 extern unsigned char *tdiyysptr, tdiyysbuf[];
 int tdiyytchar;
-/*
-FILE *tdiyyin = {stdin}, *tdiyyout = {stdout};
-*/
-FILE *tdiyyin = 0, *tdiyyout = 0;
+
 extern int tdiyylineno;
 /* forward declaration for tdiyywork necessary for c++*/
 struct tdiyywork;
@@ -152,12 +151,12 @@ extern unsigned short Opcdollar, OpcZero,
     OpcPower, OpcPreDec, OpcPreInc, OpcPromote, OpcDtypeRange,
     OpcShiftLeft, OpcShiftRight, OpcSubtract;
 
-extern
-int LEX_ERROR, LEX_IDENT, LEX_VBL, LEX_TEXT, LEX_VALUE,
-    LEX_IN, LEX_LAND, LEX_LEQ, LEX_LEQV, LEX_LGE, LEX_LOR, LEX_MUL,
-    LEX_ADD, LEX_CONCAT, LEX_IAND, LEX_INC, LEX_IOR,
-    LEX_POINT, LEX_POWER, LEX_PROMO, LEX_RANGE, LEX_SHIFT, LEX_BINEQ,
-    LEX_LANDS, LEX_LEQS, LEX_LGES, LEX_LORS, LEX_MULS, LEX_UNARYS;
+extern int
+ LEX_ERROR, LEX_IDENT, LEX_VBL, LEX_TEXT, LEX_VALUE,
+ LEX_IN, LEX_LAND, LEX_LEQ, LEX_LEQV, LEX_LGE, LEX_LOR, LEX_MUL,
+ LEX_ADD, LEX_CONCAT, LEX_IAND, LEX_INC, LEX_IOR,
+ LEX_POINT, LEX_POWER, LEX_PROMO, LEX_RANGE, LEX_SHIFT, LEX_BINEQ,
+ LEX_LANDS, LEX_LEQS, LEX_LGES, LEX_LORS, LEX_MULS, LEX_UNARYS;
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 STATIC_ROUTINE int TdiLexBinEq(int token);
@@ -422,7 +421,7 @@ STATIC_ROUTINE int TdiLexIdent(int len, unsigned char *str, struct marker *mark_
 STATIC_ROUTINE int TdiLexInteger(int str_len, unsigned char *str, struct marker *mark_ptr)
 {
   GET_TDITHREADSTATIC_P;
-  STATIC_ROUTINE struct {
+  const struct {
     unsigned short length;
     unsigned char udtype, sdtype;
   } table[] = {
@@ -746,8 +745,11 @@ STATIC_ROUTINE int TdiLexPunct(int len __attribute__ ((unused)),
       mark_ptr->builtin = OpcPreDec;
       return (LEX_INC);
     }
+/***
+    if (c1 == '>')
+      return (LEX_POINT);
+***/
     break;
-/***                    if (c1 == '>') {                                        return                  (LEX_POINT);} break;***/
   case '.':
     if (c1 == '.') {
       mark_ptr->builtin = OpcDtypeRange;
@@ -957,7 +959,7 @@ int TdiLexQuote(int len __attribute__ ((unused)),
 }
 
 #define YYNEWLINE 10
-int tdiyylex()
+int TdiLex() // aka tdiyylex
 {
   GET_TDITHREADSTATIC_P;
   int nstr;
@@ -1514,33 +1516,17 @@ int tdiyyprevious = YYNEWLINE;
 
 #ifndef YY_NOPROTO
 int tdiyyback(int *, int);
-#ifdef LEXDEBUG
-#if defined (__cplusplus)
-extern "C" {
-#endif				/* __cplusplus */
-  int allprint(char);
-  int sprint(unsigned char *);
-#if defined (__cplusplus)
-}
-#endif				/* __cplusplus */
-#endif				/* LEXDEBUG */
 #endif				/* YY_NOPROTO */
 int tdiyylook()
 {
   GET_TDITHREADSTATIC_P;
-  register struct tdiyysvf *tdiyystate, **lsp;
-  register struct tdiyywork *tdiyyt;
+  struct tdiyysvf *tdiyystate, **lsp;
+  struct tdiyywork *tdiyyt;
   struct tdiyysvf *tdiyyz;
   int tdiyych, tdiyyfirst;
   struct tdiyywork *tdiyyr;
-#ifdef LEXDEBUG
-  int debug;
-#endif
   unsigned char *tdiyylastch;
   /* start off machines */
-#ifdef LEXDEBUG
-  debug = 0;
-#endif
   tdiyyfirst = 1;
   if (!tdiyymorfg)
     tdiyylastch = tdiyytext;
@@ -1555,8 +1541,7 @@ int tdiyylook()
       tdiyystate++;
     for (;;) {
 #ifdef LEXDEBUG
-      if (debug)
-	fprintf(tdiyyout, "state %d\n", tdiyystate - tdiyysvec - 1);
+      fprintf(tdiyyout, "state %d ", (int)(tdiyystate - tdiyysvec - 1));
 #endif
       tdiyyt = tdiyystate->tdiyystoff;
       if (tdiyyt == tdiyycrank && !tdiyyfirst) {	/* may not be any transitions */
@@ -1568,18 +1553,17 @@ int tdiyylook()
       }
       *tdiyylastch++ = tdiyych = input();
       if (tdiyylastch >= tdiyytext + (YYLMAX - 1)) {
-	fprintf(tdiyyout, "Maximum token length exceeded\n");
+	fprintf(tdiyyout, " ! Maximum token length exceeded\n");
 	tdiyytext[YYLMAX - 1] = 0;
 	return 0;
       }
       tdiyyfirst = 0;
+#define YYOPTIM
+#ifdef YYOPTIM
  tryagain:
+#endif
 #ifdef LEXDEBUG
-      if (debug) {
-	fprintf(tdiyyout, "char ");
-	allprint(tdiyych);
-	putchar('\n');
-      }
+      fprintf(tdiyyout, "char '%c' (%d)\n",(char)tdiyych,tdiyych);
 #endif
       tdiyyr = tdiyyt;
       if (tdiyyt > tdiyycrank) {
@@ -1593,13 +1577,10 @@ int tdiyylook()
 	  *lsp++ = tdiyystate = tdiyyt->advance + tdiyysvec;
 	  goto contin;
 	}
-      }
-#ifdef YYOPTIM
-      else if (tdiyyt < tdiyycrank) {	/* r < tdiyycrank */
+      } else if (tdiyyt < tdiyycrank) {	/* r < tdiyycrank */
 	tdiyyt = tdiyyr = tdiyycrank + (tdiyycrank - tdiyyt);
 #ifdef LEXDEBUG
-	if (debug)
-	  fprintf(tdiyyout, "compressed state\n");
+	fprintf(tdiyyout, "compressed state\n");
 #endif
 	tdiyyt = tdiyyt + tdiyych;
 	if (tdiyyt <= tdiyytop && tdiyyt->verify + tdiyysvec == tdiyystate) {
@@ -1613,11 +1594,7 @@ int tdiyylook()
 	}
 	tdiyyt = tdiyyr + YYU(tdiyymatch[tdiyych]);
 #ifdef LEXDEBUG
-	if (debug) {
-	  fprintf(tdiyyout, "try fall back character ");
-	  allprint(YYU(tdiyymatch[tdiyych]));
-	  putchar('\n');
-	}
+	fprintf(tdiyyout, "try fall back character %d\n",YYU(tdiyymatch[tdiyych]));
 #endif
 	if (tdiyyt <= tdiyytop && tdiyyt->verify + tdiyysvec == tdiyystate) {
 	  if (tdiyyt->advance + tdiyysvec == YYLERR) {	/* error transition */
@@ -1632,35 +1609,31 @@ int tdiyylook()
       if ((tdiyystate = tdiyystate->tdiyyother)
 	  && (tdiyyt = tdiyystate->tdiyystoff) != tdiyycrank) {
 #ifdef LEXDEBUG
-	if (debug)
-	  fprintf(tdiyyout, "fall back to state %d\n", tdiyystate - tdiyysvec - 1);
+	fprintf(tdiyyout, "fall back to state %d\n", (int)(tdiyystate - tdiyysvec - 1));
 #endif
 	goto tryagain;
-      }
-#endif
-      else {
+      } else {
 	--tdiyylastch;
 	unput(*tdiyylastch);
 	break;
       }
- contin:
+ contin:;
 #ifdef LEXDEBUG
-      if (debug) {
-	fprintf(tdiyyout, "state %d char ", tdiyystate - tdiyysvec - 1);
-	allprint(tdiyych);
-	putchar('\n');
-      }
+      fprintf(tdiyyout, "state %ld char '%c' (%d)\n", tdiyystate - tdiyysvec - 1, (char)tdiyych,tdiyych);
 #endif
-      ;
     }
 #ifdef LEXDEBUG
-    if (debug) {
-      fprintf(tdiyyout, "stopped at %d with ", *(lsp - 1) - tdiyysvec - 1);
-      allprint(tdiyych);
-      putchar('\n');
+    { int pos = *(lsp - 1) - tdiyysvec - 1;
+     if (pos<0)
+       fprintf(tdiyyout, "stopped EOF\n");
+     else
+       fprintf(tdiyyout, "stopped at %d with '%c' (%d)\n\n", pos, (char)tdiyych,tdiyych);
     }
 #endif
     while (lsp-- > tdiyylstate) {
+      // abc..xyz removes 'c' so we need to add the one char that is missing
+      // TODO: fix original error before
+      if (tdiyylastch[0]=='.' && tdiyylastch[-1]=='.') tdiyylastch++;
       *tdiyylastch-- = 0;
       if (*lsp != 0 && (tdiyyfnd = (*lsp)->tdiyystops) && *tdiyyfnd > 0) {
 	tdiyyolsp = lsp;
@@ -1681,11 +1654,7 @@ int tdiyylook()
 	}
 	tdiyytext[tdiyyleng] = 0;
 #ifdef LEXDEBUG
-	if (debug) {
-	  fprintf(tdiyyout, "\nmatch ");
-	  sprint(tdiyytext);
-	  fprintf(tdiyyout, " action %d\n", *tdiyyfnd);
-	}
+	fprintf(tdiyyout, "match \"%s\" action %d\n",tdiyytext,*tdiyyfnd);
 #endif
 	return (*tdiyyfnd++);
       }
@@ -1701,8 +1670,7 @@ int tdiyylook()
     //  output(tdiyyprevious);
     tdiyylastch = tdiyytext;
 #ifdef LEXDEBUG
-    if (debug)
-      putchar('\n');
+    fprintf(tdiyyout, "\n");
 #endif
   }
 }

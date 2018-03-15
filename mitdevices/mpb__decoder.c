@@ -471,7 +471,7 @@ static void Show(Widget w, Widget top, XmAnyCallbackStruct * cb __attribute__ ((
   for (i = 0; i < 5; i++) {
     String info;
     int mode;
-    char cheading[] = "Output E0 ";
+    char cheading[20];
     sprintf(cheading, "Output E%d ", i);
     strcat(text, cheading);
     GetInt(top, 0, i, CHANNEL_MODE, &mode);

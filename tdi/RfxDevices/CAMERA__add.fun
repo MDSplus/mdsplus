@@ -1,6 +1,6 @@
 public fun CAMERA__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'CAMERA', 22, _nidout);
+    DevAddStart(_path, 'CAMERA', 23, _nidout);
     DevAddNode(_path // ':COMMENT',     'TEXT', *, *, _nid);
     DevAddNode(_path // ':NAME',	'TEXT', *, *, _nid);
     DevAddNode(_path // ':IP_ADDRESS',  'TEXT', *, *, _nid);

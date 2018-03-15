@@ -1447,7 +1447,7 @@ EXPORT int addSignalWithParam(int obj_idx, float *x, float *y, int xType, int nu
   jstring jname, jcolour;
   jobject jobj = jobjects[obj_idx];
   jfloatArray jx, jy;
-  jdoubleArray jxDouble;
+  jdoubleArray jxDouble = NULL;
   jclass cls;
   jmethodID mid;
   jboolean jinter;
@@ -1637,8 +1637,7 @@ JNIEXPORT jint JNICALL Java_jScope_MdsIpProtocolWrapper_send
 {
     int size = (*env)->GetArrayLength(env, jbuf);
     char *buf = (char *)(*env)->GetByteArrayElements(env, jbuf, JNI_FALSE);
-    IoRoutines *ior = GetConnectionIo(connectionId);
-    return ior->send(connectionId, (const char *)buf, size, noWait);
+    return SendToConnection(connectionId, (const char *)buf, size, noWait);
 }
 
 
@@ -1651,16 +1650,13 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_MdsIpProtocolWrapper_recv
 (JNIEnv *env, jobject jobj __attribute__ ((unused)), jint connectionId, jint size)
 {
     jbyte *readBuf = malloc(size);
-    int retSize;
-    jbyteArray jarr;
-    IoRoutines *ior = GetConnectionIo(connectionId);
-    retSize = ior->recv(connectionId, readBuf, size);
+    int retSize = ReceiveFromConnection(connectionId, readBuf, size);
     if(retSize == -1)
     {
 	free(readBuf);
 	return 0;
     }
-    jarr = (*env)->NewByteArray(env, retSize);
+    jbyteArray jarr = (*env)->NewByteArray(env, retSize);
     (*env)->SetByteArrayRegion(env, jarr, 0, retSize, readBuf);
     free(readBuf);
     return jarr;
@@ -1674,8 +1670,7 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_MdsIpProtocolWrapper_recv
 JNIEXPORT void JNICALL Java_jScope_MdsIpProtocolWrapper_flush
 (JNIEnv *env __attribute__ ((unused)), jobject jobj __attribute__ ((unused)), jint connectionId)
 {
-    IoRoutines *ior = GetConnectionIo(connectionId);
-    ior->flush(connectionId);
+    FlushConnection(connectionId);
 }
 
 /*
@@ -1687,7 +1682,5 @@ JNIEXPORT void JNICALL Java_jScope_MdsIpProtocolWrapper_disconnect
 (JNIEnv *env __attribute__ ((unused)), jobject jobj __attribute__ ((unused)), jint connectionId)
 {
     DisconnectConnection(connectionId);
-    //IoRoutines *ior = GetConnectionIo(connectionId);
-    //ior->disconnect(connectionId);
 }
 

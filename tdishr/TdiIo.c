@@ -28,10 +28,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         Ken Klare, LANL P-4     (c)1989,1990,1991
 */
-#ifdef __VMS
-#include <dvidef.h>
-#endif
-
 #include <status.h>
 #include <mdsplus/mdsplus.h>
 #include <STATICdef.h>

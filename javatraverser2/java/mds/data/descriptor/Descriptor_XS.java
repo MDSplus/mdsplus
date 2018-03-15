@@ -53,8 +53,11 @@ public class Descriptor_XS extends Descriptor<Descriptor<?>>{
     }
 
     @Override
-    public Descriptor_XS getLocal_() {
-        return (Descriptor_XS)new Descriptor_XS(this.payload().getLocal()).setLocal();
+    public Descriptor_XS getLocal_(final FLAG local) {
+        final FLAG mylocal = new FLAG();
+        final Descriptor<?> dsc = Descriptor.getLocal(mylocal, this.payload());
+        if(FLAG.and(local, mylocal.flag)) return this;
+        return (Descriptor_XS)new Descriptor_XS(dsc).setLocal();
     }
 
     @Override

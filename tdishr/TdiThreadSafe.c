@@ -23,7 +23,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #define _GNU_SOURCE
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <libroutines.h>
 #include <STATICdef.h>
 #include "tdithreadsafe.h"
@@ -33,11 +33,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 /* Key for the thread-specific buffer */
 STATIC_THREADSAFE pthread_key_t buffer_key;
-/* Once-only initialisation of the key */
-STATIC_THREADSAFE pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
-/* lock pthread_once */
-STATIC_THREADSAFE pthread_mutex_t buffer_key_mutex = PTHREAD_MUTEX_INITIALIZER;
-/* Free the thread-specific buffer */
 STATIC_ROUTINE void buffer_destroy(void *buf){
   ThreadStatic *ts = (ThreadStatic *) buf;
   StrFree1Dx(&ts->TdiIntrinsic_message);
@@ -50,9 +45,7 @@ STATIC_ROUTINE void buffer_key_alloc(){
 }
 /* Return the thread-specific buffer */
 ThreadStatic *TdiGetThreadStatic(){
-  pthread_mutex_lock(&buffer_key_mutex);
-  pthread_once(&buffer_key_once, buffer_key_alloc);
-  pthread_mutex_unlock(&buffer_key_mutex);
+  RUN_FUNCTION_ONCE(buffer_key_alloc);
   ThreadStatic *p = (ThreadStatic *) pthread_getspecific(buffer_key);
   if (!p) {
     p = (ThreadStatic *) calloc(1,sizeof(ThreadStatic));
@@ -76,26 +69,23 @@ ThreadStatic *TdiGetThreadStatic(){
     pthread_setspecific(buffer_key, (void *)p);
     p->TdiIndent = 1;
     p->TdiDecompile_max = 0xffff;
+    p->TdiOnError = 0;
   }
   return p;
 }
 
-void LockTdiMutex(pthread_mutex_t * mutex, int *initialized){
-  if (!initialized || !*initialized) {
-#ifdef HAVE_PTHREAD_H
+void LockTdiMutex(pthread_mutex_t * mutex, int *initialized)
+{
+  static pthread_mutex_t initMutex = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_lock(&initMutex);
+  if (!*initialized) {
     pthread_mutexattr_t m_attr;
     pthread_mutexattr_init(&m_attr);
-#ifndef __sun
     pthread_mutexattr_settype(&m_attr, PTHREAD_MUTEX_RECURSIVE);
-#endif
     pthread_mutex_init(mutex, &m_attr);
-    pthread_mutexattr_destroy(&m_attr);
-#else
-    pthread_mutex_init(mutex);
-#endif
-    if (initialized)
-      *initialized = 1;
+    *initialized = 1;
   }
+  pthread_mutex_unlock(&initMutex);
   pthread_mutex_lock(mutex);
 }
 

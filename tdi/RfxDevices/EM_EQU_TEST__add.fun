@@ -1,8 +1,7 @@
 public fun EM_EQU_TEST__add(in _path, out _nidout)
 {
-
     DevAddStart(_path, 'EM_EQU_TEST', 56, _nidout);
-    DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
+    DevAddNode(_path // ':COMMENT', 	'TEXT', *, *, _nid);
     DevAddNode(_path // ':BIRA_CTRLR', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':DECODER_1',   'TEXT', *, *, _nid);
     DevAddNode(_path // ':DECODER_2',   'TEXT', *, *, _nid);
@@ -21,7 +20,6 @@ public fun EM_EQU_TEST__add(in _path, out _nidout)
      	DevAddNode(_cn // ':ADC_INT',   'TEXT', *, *, _nid);
 
 	}
-
     DevAddAction(_path//':INIT_ACTION', 'INIT', 'INIT', 55, 'EM_SERVER', getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 }

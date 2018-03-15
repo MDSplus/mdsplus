@@ -1,17 +1,17 @@
 package mds;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Vector;
+import mds.data.CTX;
 import mds.data.descriptor.ARRAY;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_A;
 import mds.data.descriptor.Descriptor_S;
-import mds.data.descriptor_apd.List;
 import mds.data.descriptor_s.CString;
 import mds.data.descriptor_s.Missing;
-import mds.data.descriptor_s.Pointer;
 
 public abstract class Mds{
     public static class EventItem{
@@ -56,9 +56,19 @@ public abstract class Mds{
         public Request(final Class<T> cls, final String expr, final Descriptor<?>... args){
             this(cls, 0, expr, args);
         }
+
+        @Override
+        final public String toString() {
+            final String argsstr = Arrays.toString(this.args);
+            final StringBuilder sb = new StringBuilder(11 + this.expr.length() + argsstr.length()).append("Execute(\"").append(this.expr).append("\",");
+            int len = sb.length();
+            sb.append(argsstr).replace(len, len + 1, " ");
+            len = sb.length();
+            sb.replace(len - 1, len, ")");
+            return sb.toString();
+        }
     }
     protected static final int MAX_NUM_EVENTS = 256;
-    public static final String serialStr      = "`(_d=*;_s=MdsShr->MdsSerializeDscIn(ref($),xd(_d));_d;)";
     private static Mds         active;
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -79,7 +89,6 @@ public abstract class Mds{
     public final static Mds getActiveMds() {
         return Mds.active;
     }
-    private byte                                      newlist       = -1;
     protected transient HashSet<MdsListener>          mdslisteners  = new HashSet<MdsListener>();
     protected transient boolean[]                     event_flags   = new boolean[Mds.MAX_NUM_EVENTS];
     protected transient Hashtable<Integer, EventItem> hashEventId   = new Hashtable<Integer, EventItem>();
@@ -95,7 +104,7 @@ public abstract class Mds{
      * @throws MdsException
      */
     @SuppressWarnings("rawtypes")
-    protected abstract <T extends Descriptor> T _getDescriptor(final Pointer ctx, final Request<T> req) throws MdsException;
+    protected abstract <T extends Descriptor> T _getDescriptor(final CTX ctx, final Request<T> req) throws MdsException;
 
     synchronized private final int addEvent(final UpdateEventListener l, final String eventName) {
         int eventid = -1;
@@ -146,11 +155,11 @@ public abstract class Mds{
         if(this.hashEventName.containsKey(eventName)) this.dispatchUpdateEvent(this.hashEventName.get(eventName));
     }
 
-    public final byte getByte(final Pointer ctx, final Request<Descriptor<?>> req) throws MdsException {
+    public final byte getByte(final CTX ctx, final Request<Descriptor<?>> req) throws MdsException {
         return this.getByte(ctx, req.expr, req.args);
     }
 
-    public final byte getByte(final Pointer ctx, final String expr, final Descriptor<?>... args) throws MdsException {
+    public final byte getByte(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         return this.getDataArray(ctx, expr, args).toByte();
     }
 
@@ -158,11 +167,11 @@ public abstract class Mds{
         return this.getByte(null, expr, args);
     }
 
-    public final byte[] getByteArray(final Pointer ctx, final Request<Descriptor<?>> req) throws MdsException {
+    public final byte[] getByteArray(final CTX ctx, final Request<Descriptor<?>> req) throws MdsException {
         return this.getByteArray(ctx, req.expr, req.args);
     }
 
-    public final byte[] getByteArray(final Pointer ctx, final String expr, final Descriptor<?>... args) throws MdsException {
+    public final byte[] getByteArray(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         return this.getDataArray(ctx, expr, args).toByteArray();
     }
 
@@ -170,7 +179,7 @@ public abstract class Mds{
         return this.getByteArray(null, expr, args);
     }
 
-    private final Descriptor<?> getDataArray(final Pointer ctx, final String expr, final Descriptor<?>... args) throws MdsException {
+    private final Descriptor<?> getDataArray(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         final Descriptor<?> desc = this.getDescriptor(ctx, expr, args);
         if(desc instanceof CString){
             if(desc.length() > 0) throw new MdsException(desc.toString(), 0);
@@ -180,7 +189,7 @@ public abstract class Mds{
     }
 
     @SuppressWarnings("rawtypes")
-    public final <T extends Descriptor> T getDescriptor(final Pointer ctx, final Request<T> req) throws MdsException {
+    public final <T extends Descriptor> T getDescriptor(final CTX ctx, final Request<T> req) throws MdsException {
         final Mds mds = Mds.getActiveMds();
         try{
             return this.setActive()._getDescriptor(ctx, req);
@@ -190,12 +199,12 @@ public abstract class Mds{
         }
     }
 
-    public final <T extends Descriptor<?>> T getDescriptor(final Pointer ctx, final String expr, final Class<T> cls, final Descriptor<?>... args) throws MdsException {
+    public final <T extends Descriptor<?>> T getDescriptor(final CTX ctx, final String expr, final Class<T> cls, final Descriptor<?>... args) throws MdsException {
         return this.getDescriptor(ctx, new Request<T>(cls, expr, args));
     }
 
     @SuppressWarnings("rawtypes")
-    public final Descriptor getDescriptor(final Pointer ctx, final String expr, final Descriptor<?>... args) throws MdsException {
+    public final Descriptor getDescriptor(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         return this.getDescriptor(ctx, new Request<Descriptor>(Descriptor.class, expr, args));
     }
 
@@ -207,11 +216,11 @@ public abstract class Mds{
         return this.getDescriptor(null, expr, args);
     }
 
-    public final double getDouble(final Pointer ctx, final Request<Descriptor<?>> req) throws MdsException {
+    public final double getDouble(final CTX ctx, final Request<Descriptor<?>> req) throws MdsException {
         return this.getDouble(ctx, req.expr, req.args);
     }
 
-    public final double getDouble(final Pointer ctx, final String expr, final Descriptor<?>... args) throws MdsException {
+    public final double getDouble(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         return this.getDataArray(ctx, expr, args).toDouble();
     }
 
@@ -219,11 +228,11 @@ public abstract class Mds{
         return this.getDouble(null, expr, args);
     }
 
-    public final double[] getDoubleArray(final Pointer ctx, final Request<Descriptor<?>> req) throws MdsException {
+    public final double[] getDoubleArray(final CTX ctx, final Request<Descriptor<?>> req) throws MdsException {
         return this.getDoubleArray(ctx, req.expr, req.args);
     }
 
-    public final double[] getDoubleArray(final Pointer ctx, final String expr, final Descriptor<?>... args) throws MdsException {
+    public final double[] getDoubleArray(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         return this.getDataArray(ctx, expr, args).toDoubleArray();
     }
 
@@ -240,11 +249,11 @@ public abstract class Mds{
         return i;
     }
 
-    public final float getFloat(final Pointer ctx, final Request<Descriptor<?>> req) throws MdsException {
+    public final float getFloat(final CTX ctx, final Request<Descriptor<?>> req) throws MdsException {
         return this.getFloat(ctx, req.expr, req.args);
     }
 
-    public final float getFloat(final Pointer ctx, final String expr, final Descriptor<?>... args) throws MdsException {
+    public final float getFloat(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         return this.getDataArray(ctx, expr, args).toFloat();
     }
 
@@ -252,11 +261,11 @@ public abstract class Mds{
         return this.getFloat(null, expr, args);
     }
 
-    public final float[] getFloatArray(final Pointer ctx, final Request<Descriptor<?>> req) throws MdsException {
+    public final float[] getFloatArray(final CTX ctx, final Request<Descriptor<?>> req) throws MdsException {
         return this.getFloatArray(ctx, req.expr, req.args);
     }
 
-    public final float[] getFloatArray(final Pointer ctx, final String expr, final Descriptor<?>... args) throws MdsException {
+    public final float[] getFloatArray(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         return this.getDataArray(ctx, expr, args).toFloatArray();
     }
 
@@ -264,11 +273,11 @@ public abstract class Mds{
         return this.getFloatArray(null, expr, args);
     }
 
-    public final int getInteger(final Pointer ctx, final Request<Descriptor<?>> req) throws MdsException {
+    public final int getInteger(final CTX ctx, final Request<Descriptor<?>> req) throws MdsException {
         return this.getInteger(ctx, req.expr, req.args);
     }
 
-    public final int getInteger(final Pointer ctx, final String expr, final Descriptor<?>... args) throws MdsException {
+    public final int getInteger(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         return this.getDataArray(ctx, expr, args).toInt();
     }
 
@@ -276,11 +285,11 @@ public abstract class Mds{
         return this.getInteger(null, expr, args);
     }
 
-    public final int[] getIntegerArray(final Pointer ctx, final Request<Descriptor<?>> req) throws MdsException {
+    public final int[] getIntegerArray(final CTX ctx, final Request<Descriptor<?>> req) throws MdsException {
         return this.getIntegerArray(ctx, req.expr, req.args);
     }
 
-    public final int[] getIntegerArray(final Pointer ctx, final String expr, final Descriptor<?>... args) throws MdsException {
+    public final int[] getIntegerArray(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         return this.getDataArray(ctx, expr, args).toIntArray();
     }
 
@@ -288,11 +297,11 @@ public abstract class Mds{
         return this.getIntegerArray(null, expr, args);
     }
 
-    public final long getLong(final Pointer ctx, final Request<Descriptor<?>> req) throws MdsException {
+    public final long getLong(final CTX ctx, final Request<Descriptor<?>> req) throws MdsException {
         return this.getLong(ctx, req.expr, req.args);
     }
 
-    public final long getLong(final Pointer ctx, final String expr, final Descriptor<?>... args) throws MdsException {
+    public final long getLong(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         return this.getDataArray(ctx, expr, args).toLong();
     }
 
@@ -300,11 +309,11 @@ public abstract class Mds{
         return this.getLong(null, expr, args);
     }
 
-    public final long[] getLongArray(final Pointer ctx, final Request<Descriptor<?>> req) throws MdsException {
+    public final long[] getLongArray(final CTX ctx, final Request<Descriptor<?>> req) throws MdsException {
         return this.getLongArray(ctx, req.expr, req.args);
     }
 
-    public final long[] getLongArray(final Pointer ctx, final String expr, final Descriptor<?>... args) throws MdsException {
+    public final long[] getLongArray(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         return this.getDataArray(ctx, expr, args).toLongArray();
     }
 
@@ -312,11 +321,11 @@ public abstract class Mds{
         return this.getLongArray(null, expr, args);
     }
 
-    public final short getShort(final Pointer ctx, final Request<Descriptor<?>> req) throws MdsException {
+    public final short getShort(final CTX ctx, final Request<Descriptor<?>> req) throws MdsException {
         return this.getShort(ctx, req.expr, req.args);
     }
 
-    public final short getShort(final Pointer ctx, final String expr, final Descriptor<?>... args) throws MdsException {
+    public final short getShort(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         return this.getDataArray(ctx, expr, args).toShort();
     }
 
@@ -324,11 +333,11 @@ public abstract class Mds{
         return this.getShort(null, expr, args);
     }
 
-    public final short[] getShortArray(final Pointer ctx, final Request<Descriptor<?>> req) throws MdsException {
+    public final short[] getShortArray(final CTX ctx, final Request<Descriptor<?>> req) throws MdsException {
         return this.getShortArray(ctx, req.expr, req.args);
     }
 
-    public final short[] getShortArray(final Pointer ctx, final String expr, final Descriptor<?>... args) throws MdsException {
+    public final short[] getShortArray(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         return this.getDataArray(ctx, expr, args).toShortArray();
     }
 
@@ -336,11 +345,11 @@ public abstract class Mds{
         return this.getShortArray(null, expr, args);
     }
 
-    public final String getString(final Pointer ctx, final Request<Descriptor<?>> req) throws MdsException {
+    public final String getString(final CTX ctx, final Request<Descriptor<?>> req) throws MdsException {
         return this.getString(ctx, req.expr, req.args);
     }
 
-    public final String getString(final Pointer ctx, final String expr, final Descriptor<?>... args) throws MdsException {
+    public final String getString(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         final Descriptor<?> desc = this.getDescriptor(ctx, expr, args);
         if(desc == null) return null;
         return desc.toString();
@@ -350,11 +359,11 @@ public abstract class Mds{
         return this.getString(null, expr, args);
     }
 
-    public final String[] getStringArray(final Pointer ctx, final Request<Descriptor<?>> req) throws MdsException {
+    public final String[] getStringArray(final CTX ctx, final Request<Descriptor<?>> req) throws MdsException {
         return this.getStringArray(ctx, req.expr, req.args);
     }
 
-    public final String[] getStringArray(final Pointer ctx, final String expr, final Descriptor<?>... args) throws MdsException {
+    public final String[] getStringArray(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         return this.getDataArray(ctx, expr, args).toStringArray();
     }
 
@@ -407,21 +416,7 @@ public abstract class Mds{
     }
 
     public final Mds setActive() {
-        if(Mds.active == this) return this;
         Mds.active = this;
-        if(this.newlist < 0) try{
-            // test for new List built-in
-            this.newlist = (byte)(1 - this.getDescriptor("LIST(*)", List.class).getLength());
-        }catch(final MdsException e){
-            this.newlist = 0;
-        }
-        if(this.newlist == 0){
-            List.list = List.list_old;
-            List.apdadd = List.apdadd_old;
-        }else{
-            List.list = List.list_new;
-            List.apdadd = List.apdadd_new;
-        }
         return this;
     }
 

@@ -94,9 +94,10 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 @ENABLE_SANITIZE_TRUE@am__append_1 = ${ENABLE_SANITIZE_OPTIONS}=${${ENABLE_SANITIZE_OPTIONS}_SUPP}:${SAN_OPTIONS}:${${ENABLE_SANITIZE_OPTIONS}}:start_deactivated=1:exitcode=1 \
-@ENABLE_SANITIZE_TRUE@	LSAN_OPTIONS=${LSAN_OPTIONS_SUPP}:${LSAN_OPTIONS} \
+@ENABLE_SANITIZE_TRUE@	LSAN_OPTIONS=${LSAN_OPTIONS_SUPP}:${LSAN_OPTIONS}:G_SLICE=always-malloc \
 @ENABLE_SANITIZE_TRUE@	TEST_LD_PRELOAD=${TEST_LD_PRELOAD} \
-@ENABLE_SANITIZE_TRUE@	TEST_TIMEUNIT=5
+@ENABLE_SANITIZE_TRUE@	TEST_TIMEUNIT=$$(($${TEST_TIMEUNIT:-1} * \
+@ENABLE_SANITIZE_TRUE@	5))
 @ENABLE_SANITIZE_TRUE@am__append_2 = $(shell ${_check_sanitize_ldd} || \
 @ENABLE_SANITIZE_TRUE@	echo --skip;) $(shell test \
 @ENABLE_SANITIZE_TRUE@	x"${ENABLE_SANITIZE}" != x"thread" || \
@@ -130,7 +131,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/include/config.h
+CONFIG_HEADER = $(top_builddir)/include/mdsplus/mdsconfig.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
@@ -381,6 +382,7 @@ D3D_PACKAGE = @D3D_PACKAGE@
 DC1394_SUPPORT = @DC1394_SUPPORT@
 DC1394_SUPPORT2 = @DC1394_SUPPORT2@
 DEFS = @DEFS@
+DEF_PYLIB = @DEF_PYLIB@
 DEPDIR = @DEPDIR@
 DNET_STUB = @DNET_STUB@
 DOXYGEN = @DOXYGEN@
@@ -458,6 +460,7 @@ JAVACFLAGS = @JAVACFLAGS@
 JAVAC_PATH_NAME = @JAVAC_PATH_NAME@
 JAVAVERSION = @JAVAVERSION@
 JAVA_APS = @JAVA_APS@
+JAVA_JAR = @JAVA_JAR@
 JAVA_ONLY = @JAVA_ONLY@
 JDK_CFLAGS = @JDK_CFLAGS@
 JDK_DIR = @JDK_DIR@
@@ -493,6 +496,8 @@ MACOSX = @MACOSX@
 MAINT = @MAINT@
 MAKEBINDIR = @MAKEBINDIR@
 MAKEETCDIR = @MAKEETCDIR@
+MAKEFLAG_J = @MAKEFLAG_J@
+MAKEFLAG_O = @MAKEFLAG_O@
 MAKEINFO = @MAKEINFO@
 MAKELIBDIR = @MAKELIBDIR@
 MAKESHLIBDIR = @MAKESHLIBDIR@
@@ -507,6 +512,7 @@ MOTIF_LDSHARE = @MOTIF_LDSHARE@
 MOTIF_LD_LDARC = @MOTIF_LD_LDARC@
 MOTIF_LD_LDSHARE = @MOTIF_LD_LDSHARE@
 NEED_SEMUN = @NEED_SEMUN@
+NOWARNFLAGS = @NOWARNFLAGS@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -675,24 +681,29 @@ SUFFIXES = .log .tap .xml
 TEST_BUILD_TAP = test-build.tap
 TEST_SUITE_TAP = test-suite.tap
 TEST_EXTENSIONS = .py
+TEST_FLAGS = @MAKEFLAG_J@
+
+#	simulateSegfault.py
 TESTS = \
-        dataUnitTest.py \
-        dclUnitTest.py \
-        segmentsUnitTest.py \
-        treeUnitTest.py \
-        threadsUnitTest.py
+	dataUnitTest.py \
+	treeUnitTest.py \
+	segmentsUnitTest.py \
+	taskUnitTest.py \
+	mdsipUnitTest.py \
+	dclUnitTest.py \
+	threadsUnitTest.py
 
-
-#  threadsUnitTest.py
-#  simulateSegfault.py
 
 # if VALGRIND_TESTS is defined this list is executed with valgrind
+
+#	threadsUnitTest.py
 VALGRIND_TESTS = \
-        dataUnitTest.py \
-        dclUnitTest.py \
-        segmentsUnitTest.py \
-        treeUnitTest.py \
-        threadsUnitTest.py
+	dataUnitTest.py \
+	treeUnitTest.py \
+	segmentsUnitTest.py \
+	taskUnitTest.py \
+	mdsipUnitTest.py \
+	dclUnitTest.py
 
 
 # DISABLE PYTHON LEAK DETECTION: This suppression file shall be removed when
@@ -702,7 +713,9 @@ VALGRIND_TESTS = \
 # times slower to run)
 #
 VALGRIND_SUPPRESSIONS_FILES_PY = \
-         ${top_srcdir}/conf/valgrind-python-disableleak.supp
+	$(top_srcdir)/conf/valgrind-mdsplus.supp \
+	${top_srcdir}/conf/valgrind-python.supp \
+	${top_srcdir}/conf/valgrind-python-disableleak.supp
 
 
 # Files produced by tests that must be purged
@@ -1079,9 +1092,9 @@ rebuild-tests:
 	 rm -f *.$(OBJEXT); \
 	 rm -f $(check_PROGRAMS); \
 	 if [ -n "$${VALGRIND_BUILD}" ]; then \
-	  $(MAKE) -k $(AM_MAKEFLAGS) all ||:; \
+	  $(MAKE) -k $(AM_MAKEFLAGS) $(BUILD_FLAGS) all ||:; \
 	 else \
-	  $(MAKE) -k $(AM_MAKEFLAGS) all \
+	  $(MAKE) -k $(AM_MAKEFLAGS) $(BUILD_FLAGS) all \
 	  CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING" ||:; \
 	 fi; \
 	fi
@@ -1092,7 +1105,7 @@ tests: rebuild-tests
 	echo "//// Performing tests /////"; \
 	export TEST_FORMAT=${TEST_FORMAT}; \
 	status=0; \
-	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) || status=$$?;\
+	$(MAKE) -k $(TEST_FLAGS) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) || status=$$?;\
 	$(MAKE) -k $(AM_MAKEFLAGS) $${TEST_FORMAT//,/ } || status=$$?; \
 	exit $$status
 
@@ -1221,9 +1234,12 @@ tests-envdump:
 	done;
 
 test-env:
-	for _i in ${TESTS_ENVIRONMENT}; do \
+	@for _i in ${TESTS_ENVIRONMENT}; do \
+	  echo $${_i}; \
 	  export $${_i}; \
 	done; \
+	echo srcdir=$(srcdir); \
+	export srcdir=$(srcdir); \
 	bash -i
 
 @HAVE_WINE_TRUE@wineconsole:

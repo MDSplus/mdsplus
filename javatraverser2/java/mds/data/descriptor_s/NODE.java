@@ -15,7 +15,6 @@ import mds.data.descriptor.Descriptor_A;
 import mds.data.descriptor.Descriptor_S;
 import mds.data.descriptor_a.NidArray;
 import mds.data.descriptor_apd.List;
-import mds.data.descriptor_r.Signal;
 
 public abstract class NODE<T>extends Descriptor_S<T>{
     public static final class Flags{
@@ -268,7 +267,7 @@ public abstract class NODE<T>extends Descriptor_S<T>{
 
     @Override
     public final DATA<?> getData() throws MdsException {
-        return this.tree.mds.getDescriptor(this.tree.ctx, "DATA($)", this).getData();
+        return this.tree.mds.getDescriptor(this.tree, "DATA($)", this).getData();
     }
 
     public final Descriptor<?> getNci(final String name) throws MdsException {
@@ -454,7 +453,7 @@ public abstract class NODE<T>extends Descriptor_S<T>{
         return this.tree.getRecordInfo(this);
     }
 
-    public final Signal getSegment(final int idx) throws MdsException {
+    public final List getSegment(final int idx) throws MdsException {
         return this.tree.getSegment(this.getNidNumber(), idx);
     }
 
@@ -462,8 +461,12 @@ public abstract class NODE<T>extends Descriptor_S<T>{
         return this.tree.getSegmentInfo(this.getNidNumber(), idx);
     }
 
-    public final Descriptor<?> getSegmentLimits(final int idx) throws MdsException {
+    public final List getSegmentLimits(final int idx) throws MdsException {
         return this.tree.getSegmentLimits(this.getNidNumber(), idx);
+    }
+
+    public final Descriptor<?> getSegmentScale() throws MdsException {
+        return this.tree.getSegmentScale(this.getNidNumber());
     }
 
     public final List getSegmentTimes() throws MdsException {
@@ -567,6 +570,10 @@ public abstract class NODE<T>extends Descriptor_S<T>{
         return this;
     }
 
+    public final int setSegmentScale(final Descriptor<?> scale) throws MdsException {
+        return this.tree.setSegmentScale(this.getNidNumber(), scale);
+    }
+
     public final NODE<T> setSubtree() throws MdsException {
         this.tree.setSubtree(this.getNidNumber());
         return this;
@@ -580,7 +587,7 @@ public abstract class NODE<T>extends Descriptor_S<T>{
     @Override
     public final byte[] toByteArray() {
         try{
-            return this.tree.mds.getByteArray(this.tree.ctx, "BYTE($)", this);
+            return this.tree.mds.getByteArray(this.tree, "BYTE($)", this);
         }catch(final MdsException e){
             return null;
         }
@@ -589,7 +596,7 @@ public abstract class NODE<T>extends Descriptor_S<T>{
     @Override
     public final double[] toDoubleArray() {
         try{
-            return this.tree.mds.getDoubleArray(this.tree.ctx, "FT_FLOAT($)", this);
+            return this.tree.mds.getDoubleArray(this.tree, "FT_FLOAT($)", this);
         }catch(final MdsException e){
             return null;
         }
@@ -598,7 +605,7 @@ public abstract class NODE<T>extends Descriptor_S<T>{
     @Override
     public final float[] toFloatArray() {
         try{
-            return this.tree.mds.getFloatArray(this.tree.ctx, "FS_FLOAT($)", this);
+            return this.tree.mds.getFloatArray(this.tree, "FS_FLOAT($)", this);
         }catch(final MdsException e){
             return null;
         }
@@ -609,7 +616,7 @@ public abstract class NODE<T>extends Descriptor_S<T>{
     @Override
     public final int[] toIntArray() {
         try{
-            return this.tree.mds.getIntegerArray(this.tree.ctx, "LONG($)", this);
+            return this.tree.mds.getIntegerArray(this.tree, "LONG($)", this);
         }catch(final MdsException e){
             return null;
         }
@@ -618,7 +625,7 @@ public abstract class NODE<T>extends Descriptor_S<T>{
     @Override
     public final long[] toLongArray() {
         try{
-            return this.tree.mds.getLongArray(this.tree.ctx, "QUADWORD($)", this);
+            return this.tree.mds.getLongArray(this.tree, "QUADWORD($)", this);
         }catch(final MdsException e){
             return null;
         }
@@ -633,7 +640,7 @@ public abstract class NODE<T>extends Descriptor_S<T>{
     @Override
     public final short[] toShortArray() {
         try{
-            return this.tree.mds.getShortArray(this.tree.ctx, "WORD($)", this);
+            return this.tree.mds.getShortArray(this.tree, "WORD($)", this);
         }catch(final MdsException e){
             return null;
         }
@@ -642,7 +649,7 @@ public abstract class NODE<T>extends Descriptor_S<T>{
     @Override
     public final String[] toStringArray() {
         try{
-            return this.tree.mds.getStringArray(this.tree.ctx, "TEXT($)", this);
+            return this.tree.mds.getStringArray(this.tree, "TEXT($)", this);
         }catch(final MdsException e){
             return null;
         }

@@ -36,7 +36,7 @@
 !********************* Vector extensions *******************************
 !-----------------------------------------------------------------------
       Subroutine CSVALV(nx,x,nintv,break,c,y)
-      ENTRY CSVALV_(nx,x,nintv,break,c,y)
+!     ENTRY CSVALV_(nx,x,nintv,break,c,y)
       Integer      nx      !input, the number of points
       Real      x(*)      !input, the [nx] points to evaluate
       Integer nintv      !input, the number of polynomial pieces
@@ -48,7 +48,7 @@
       End
 !-----------------------------------------------------------------------
       Subroutine CSDERV(ideriv,nx,x,nintv,break,c,y)
-      ENTRY CSDERV_(ideriv,nx,x,nintv,break,c,y)
+!     ENTRY CSDERV_(ideriv,nx,x,nintv,break,c,y)
       Integer ideriv      !input, the order of deriavtive to be evaluated
       Integer      nx      !input, the number of points
       Real      x(*)      !input, the [nx] points to evaluate
@@ -61,7 +61,7 @@
       End
 !-----------------------------------------------------------------------
       Subroutine CSITGV(na,a,nb,b,nintv,break,c,y)
-      ENTRY CSITGV_(na,a,nb,b,nintv,break,c,y)
+!     ENTRY CSITGV_(na,a,nb,b,nintv,break,c,y)
       Integer      na      !input, the number of points
       Real      a(*)      !input, the [na] points to evaluate
       Integer      nb      !input, the number of points

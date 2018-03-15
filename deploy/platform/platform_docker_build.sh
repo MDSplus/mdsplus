@@ -59,7 +59,7 @@ config_test(){
     cp -rf ${srcdir}/xml ${MDSPLUS_DIR}/xml;
     MDS_PATH=${MDSPLUS_DIR}/tdi;
     pushd ${MDSPLUS_DIR}/..;
-    config $@ --enable-debug --enable-werror;
+    config $@ --enable-debug;
 }
 checkstatus(){
 # checkstatus flagname "error message" $?
@@ -171,7 +171,7 @@ normaltest() {
     checkstatus tests_$1 "Failure testing $1-bit." $?
     if [ ! -z "$VALGRIND_TOOLS" ]
     then
-        ### Test with valgrind		
+        ### Test with valgrind
         to=$( gettimeout $VALGRIND_TOOLS )
 		:&& tio $to  $MAKE -k rebuild-tests VALGRIND_BUILD=yes 2>&1
 		checkstatus tests_${1}_val "Failure building tests $1-bit with valgrind." $?
@@ -202,7 +202,7 @@ NORMAL() {
 export PYTHONDONTWRITEBYTECODE=no
 export PyLib=$(ldd $(which python) | grep libpython | awk '{print $3}')
 main(){
-    MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
+    MAKE=${MAKE:="make"}
     if [ -r ${srcdir}/deploy/os/${OS}.env ]
     then
         source ${srcdir}/deploy/os/${OS}.env

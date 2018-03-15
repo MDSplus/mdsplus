@@ -57,6 +57,11 @@ public abstract class Shr{
             this.addEntryPoint(name);
         }
 
+        public final LibCall<T> addArg(final Descriptor<?> d) {
+            this.args.add(d);
+            return this;
+        }
+
         private final void addEntryPoint(final String name) {
             this.sb.append(this.getImage()).append("->").append(name).append('(');
             this.max += 3 + this.getImage().length() + name.length();
@@ -73,7 +78,7 @@ public abstract class Shr{
         }
 
         public final LibCall<T> descr(final Descriptor<?> d) {
-            if(d == null || d == Missing.NEW) return this.miss(8);
+            if(d == null || d == Missing.NEW) return this.miss(8);// +7 if as_is
             this.args.add(d);
             return this.arg("descr($)");
         }
@@ -181,9 +186,9 @@ public abstract class Shr{
         }
 
         public final LibCall<T> xd(final Descriptor<?> d) {
-            if(d == null || d == Missing.NEW) return this.miss(12);
+            if(d == null || d == Missing.NEW) return this.miss(5 + 7);
             this.args.add(d);
-            return this.arg("xd(AS_IS($))");
+            return this.arg("xd(as_is($))");
         }
 
         public final LibCall<T> xd(final String... ex) {
@@ -200,7 +205,7 @@ public abstract class Shr{
         }
 
         public final void add(final String cmd, final Descriptor<?>... argin) {
-            if(this.cmds.length() == 0) this.cmds.append(List.list);
+            if(this.cmds.length() == 0) this.cmds.append("List(*,");
             else this.cmds.append(',');
             this.cmds.append("(").append(cmd).append(";)");
             for(final Descriptor<?> arg : argin)

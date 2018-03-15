@@ -1,27 +1,3 @@
-/*
-Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.
-
-Redistributions in binary form must reproduce the above copyright notice, this
-list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
 /*****************************************************************************
 Copyright (c) 2001 - 2010, The Board of Trustees of the University of Illinois.
 All rights reserved.
@@ -76,10 +52,6 @@ written by
    #ifdef LEGACY_WIN32
       #include <wspiapi.h>
    #endif
-   #ifdef __MINGW64__
-      #include <pthread.h>
-      #include <sys/time.h>
-   #endif
 #endif
 
 #include <cmath>
@@ -88,7 +60,7 @@ written by
 
 bool CTimer::m_bUseMicroSecond = false;
 uint64_t CTimer::s_ullCPUFrequency = CTimer::readCPUFrequency();
-#if !defined WIN32 || defined __MINGW64__
+#ifndef WIN32
    pthread_mutex_t CTimer::m_EventLock = PTHREAD_MUTEX_INITIALIZER;
    pthread_cond_t CTimer::m_EventCond = PTHREAD_COND_INITIALIZER;
 #else
@@ -101,7 +73,7 @@ m_ullSchedTime(),
 m_TickCond(),
 m_TickLock()
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_init(&m_TickLock, NULL);
       pthread_cond_init(&m_TickCond, NULL);
    #else
@@ -112,7 +84,7 @@ m_TickLock()
 
 CTimer::~CTimer()
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_destroy(&m_TickLock);
       pthread_cond_destroy(&m_TickCond);
    #else
@@ -227,7 +199,7 @@ void CTimer::sleepto(uint64_t nexttime)
             __asm__ volatile ("nop; nop; nop; nop; nop;");
          #endif
       #else
-         #if !defined WIN32 || defined __MINGW64__
+         #ifndef WIN32
             timeval now;
             timespec timeout;
             gettimeofday(&now, 0);
@@ -262,7 +234,7 @@ void CTimer::interrupt()
 
 void CTimer::tick()
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_cond_signal(&m_TickCond);
    #else
       SetEvent(m_TickCond);
@@ -277,7 +249,7 @@ uint64_t CTimer::getTime()
    //return x / s_ullCPUFrequency;
    //Specific fix may be necessary if rdtsc is not available either.
 
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       timeval t;
       gettimeofday(&t, 0);
       return t.tv_sec * 1000000ULL + t.tv_usec;
@@ -302,8 +274,10 @@ uint64_t CTimer::getTime()
 
 void CTimer::triggerEvent()
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
+      pthread_mutex_lock(&m_EventLock);
       pthread_cond_signal(&m_EventCond);
+      pthread_mutex_unlock(&m_EventLock);
    #else
       SetEvent(m_EventCond);
    #endif
@@ -311,7 +285,7 @@ void CTimer::triggerEvent()
 
 void CTimer::waitForEvent()
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       timeval now;
       timespec timeout;
       gettimeofday(&now, 0);
@@ -349,7 +323,7 @@ CGuard::CGuard(pthread_mutex_t& lock):
 m_Mutex(lock),
 m_iLocked()
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       m_iLocked = pthread_mutex_lock(&m_Mutex);
    #else
       m_iLocked = WaitForSingleObject(m_Mutex, INFINITE);
@@ -359,7 +333,7 @@ m_iLocked()
 // Automatically unlock in destructor
 CGuard::~CGuard()
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       if (0 == m_iLocked)
          pthread_mutex_unlock(&m_Mutex);
    #else
@@ -370,7 +344,7 @@ CGuard::~CGuard()
 
 void CGuard::enterCS(pthread_mutex_t& lock)
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_lock(&lock);
    #else
       WaitForSingleObject(lock, INFINITE);
@@ -379,7 +353,7 @@ void CGuard::enterCS(pthread_mutex_t& lock)
 
 void CGuard::leaveCS(pthread_mutex_t& lock)
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_unlock(&lock);
    #else
       ReleaseMutex(lock);
@@ -388,7 +362,7 @@ void CGuard::leaveCS(pthread_mutex_t& lock)
 
 void CGuard::createMutex(pthread_mutex_t& lock)
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_init(&lock, NULL);
    #else
       lock = CreateMutex(NULL, false, NULL);
@@ -397,7 +371,7 @@ void CGuard::createMutex(pthread_mutex_t& lock)
 
 void CGuard::releaseMutex(pthread_mutex_t& lock)
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_destroy(&lock);
    #else
       CloseHandle(lock);
@@ -406,7 +380,7 @@ void CGuard::releaseMutex(pthread_mutex_t& lock)
 
 void CGuard::createCond(pthread_cond_t& cond)
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_cond_init(&cond, NULL);
    #else
       cond = CreateEvent(NULL, false, false, NULL);
@@ -415,7 +389,7 @@ void CGuard::createCond(pthread_cond_t& cond)
 
 void CGuard::releaseCond(pthread_cond_t& cond)
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_cond_destroy(&cond);
    #else
       CloseHandle(cond);

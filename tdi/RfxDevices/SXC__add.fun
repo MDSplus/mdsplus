@@ -1,7 +1,7 @@
 public fun SXC__add(in _path, out _nidout)
 {
 
-    DevAddStart(_path, 'SXC', 190, _nidout);
+    DevAddStart(_path, 'SXC', 191, _nidout);
     DevAddNode(_path // ':COMMENT',     'TEXT',    *,     *, _nid);
     DevAddNode(_path // ':IP_ADDR',   'TEXT',    *,     *, _nid);
     DevAddNode(_path // ':FREQUENCY',   'NUMERIC', 100000, *, _nid);

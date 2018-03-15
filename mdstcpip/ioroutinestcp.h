@@ -11,6 +11,7 @@
 #define RECV        recv
 // active select file descriptor
 static fd_set fdactive;
+static int io_flush(Connection* c);
 #include "ioroutinesx.h"
 ////////////////////////////////////////////////////////////////////////////////
 //  CONNECT  ///////////////////////////////////////////////////////////////////
@@ -42,7 +43,7 @@ static void SetSocketOptions(SOCKET s, int reuse){
   setsockopt(s, SOL_SOCKET, SO_OOBINLINE, (void *)&one, sizeof(one));
 }
 
-static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *host){
+static int io_connect(Connection* c, char *protocol __attribute__ ((unused)), char *host){
   struct SOCKADDR_IN sin;
   SOCKET sock;
   if IS_OK(GetHostAndPort(host, &sin)) {
@@ -98,7 +99,7 @@ static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *
       return C_ERROR;
     }
     SetSocketOptions(sock, 0);
-    SetConnectionInfo(conid, PROT, sock, NULL, 0);
+    SetConnectionInfoC(c, PROT, sock, NULL, 0);
     return C_OK;
   } else {
     fprintf(stderr, "Connect failed to host: %s\n",host);
@@ -111,9 +112,9 @@ static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *
 //  FLUSH  /////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static int io_flush(int conid){
+static int io_flush(Connection* c){
 #if !defined(__sparc__)
-  SOCKET sock = getSocket(conid);
+  SOCKET sock = getSocket(c);
   if (sock != INVALID_SOCKET) {
     struct timeval timout = { 0, 1 };
     int err;
@@ -158,8 +159,12 @@ static short getPort(char *name){
   if (port == 0) {
     sp = getservbyname(name, "tcp");
     if (!sp) {
-      fprintf(stderr, "Error unknown service: %s/%s: %s/n", name, PROT, strerror(errno));
-      exit(0);
+      if (errno) {
+        fprintf(stderr, "Error: unknown service port %s/%s; %s\n", name, PROT, strerror(errno));
+        exit(0);
+      }
+      fprintf(stderr, "Error: unknown service port %s/%s; default to 8000\n", name, PROT);
+      return 8000;
     }
     port = sp->s_port;
   }

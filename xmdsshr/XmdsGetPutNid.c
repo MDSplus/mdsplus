@@ -89,7 +89,7 @@ int XmdsXdsAreValid(Widget w)
 	Description:
 
 ------------------------------------------------------------------------------*/
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdsdescrip.h>
 #include <treeshr.h>
 #include <mdsshr.h>

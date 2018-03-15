@@ -95,7 +95,7 @@ int MdsPut(int id, char *node, char *expression, ...)
   va_end(incrmtr);
   if (status & 1) {
     char dtype;
-    int dims[MAX_DIMS];
+    int dims[MAX_DIMS_R];
     char ndims;
     short len;
     int numbytes;

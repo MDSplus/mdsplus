@@ -97,10 +97,10 @@ int Tdi1Decompile(int opcode __attribute__ ((unused)), int narg, struct descript
         Precedence is used by function evaluation.
 */
 #define P_ARG   88
-STATIC_CONSTANT unsigned char htab[16] =
-    { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
-  'f'
-};
+//STATIC_CONSTANT unsigned char htab[16] =
+//    { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
+//  'f'
+//};
 
 STATIC_CONSTANT DESCRIPTOR(BUILD_EVENT, "BuildEvent(\"");
 STATIC_CONSTANT DESCRIPTOR(CLASS, "??Class_");
@@ -110,7 +110,7 @@ STATIC_CONSTANT DESCRIPTOR(COMMA, ",");
 STATIC_CONSTANT DESCRIPTOR(COMMA_SPACE, ", ");
 STATIC_CONSTANT DESCRIPTOR(CMPLX, "Cmplx(");
 STATIC_CONSTANT DESCRIPTOR(DTYPE, "??Dtype_");
-STATIC_CONSTANT DESCRIPTOR(HEX, "0X");
+//STATIC_CONSTANT DESCRIPTOR(HEX, "0X");
 STATIC_CONSTANT DESCRIPTOR(LEFT_BRACKET, "[");
 STATIC_CONSTANT DESCRIPTOR(MISSING, "$Missing");
 STATIC_CONSTANT DESCRIPTOR(MORE, " /*** etc. ***/");
@@ -500,6 +500,8 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
     case DTYPE_LU:
     case DTYPE_Q:
     case DTYPE_QU:
+    case DTYPE_O:
+    case DTYPE_OU:
       cdsc.length = (unsigned short)(in_ptr->length * 2.4 + 1.6);
       status = TdiConvert(in_ptr, &cdsc MDS_END_ARG);
       if STATUS_OK
@@ -513,41 +515,6 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 		      (struct descriptor *)out_ptr, &cdsc, &sdsc MDS_END_ARG);
       }
       break;
-
-		/***********************************************
-                Assumes: low-order byte is first. right-to-left.
-                ***********************************************/
-    case DTYPE_O:
-    case DTYPE_OU:
-      cptr = c0;
-      j = in_ptr->length;
-#ifdef WORDS_BIGENDIAN
-      bptr = in_ptr->pointer - 1;
-      while (--j >= 0) {
-	*cptr++ = htab[(*(++bptr) >> 4) & 15];
-	*cptr++ = htab[*bptr & 15];
-      }
-#else
-      bptr = in_ptr->pointer + j;
-      while (--j >= 0) {
-	*cptr++ = htab[(*(--bptr) >> 4) & 15];
-	*cptr++ = htab[*bptr & 15];
-      }
-#endif
-      while (cdsc.pointer < cptr - 1 && *cdsc.pointer == '0') {
-	cdsc.pointer++;
-      }
-      cdsc.length = (unsigned short)(cptr - cdsc.pointer);
-      {
-	struct descriptor sdsc = { 0, DTYPE_T, CLASS_S, 0 };
-	sdsc.length = (unsigned short)strlen(TdiREF_CAT[dtype].name);
-	sdsc.pointer = TdiREF_CAT[dtype].name;
-	status =
-	    StrConcat((struct descriptor *)out_ptr,
-		      (struct descriptor *)out_ptr, &HEX, &cdsc, &sdsc MDS_END_ARG);
-      }
-      break;
-
     case DTYPE_D:
     case DTYPE_F:
     case DTYPE_G:

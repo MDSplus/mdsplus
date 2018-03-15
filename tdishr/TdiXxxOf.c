@@ -260,7 +260,10 @@ int Tdi1CompletionMessageOf(int opcode __attribute__ ((unused)), int narg __attr
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_ACTION:
-      status = MdsCopyDxXd(((struct descriptor_action *)tmp.pointer)->completion_message, out_ptr);
+      if (((struct descriptor_action *)tmp.pointer)->ndesc<4)
+	status = MdsFree1Dx(out_ptr, NULL);
+      else
+	status = MdsCopyDxXd(((struct descriptor_action *)tmp.pointer)->completion_message, out_ptr);
       break;
     default:
       status = TdiINVDTYDSC;
@@ -405,8 +408,7 @@ int Tdi1DispatchOf(int opcode __attribute__ ((unused)), int narg __attribute__ (
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_ACTION:
-      status =
-	  TdiDispatchOf(((struct descriptor_action *)tmp.pointer)->dispatch, out_ptr MDS_END_ARG);
+      status = TdiDispatchOf(((struct descriptor_action *)tmp.pointer)->dispatch, out_ptr MDS_END_ARG);
       break;
     case DTYPE_DISPATCH:
       MdsFree1Dx(out_ptr, NULL);
@@ -601,18 +603,14 @@ int Tdi1ErrorlogsOf(int opcode __attribute__ ((unused)), int narg __attribute__ 
     DTYPE_ACTION,
     0
   };
-
   status = TdiGetData(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_ACTION:
-      {
-	struct descriptor_action *act = (struct descriptor_action *)tmp.pointer;
-	if ((act->ndesc >= 3) && act->errorlogs)
-	  status = MdsCopyDxXd(act->errorlogs, out_ptr);
-	else
-	  status = TdiINVDTYDSC;
-      }
+      if (((struct descriptor_action *)tmp.pointer)->ndesc<3)
+	status = MdsFree1Dx(out_ptr, NULL);
+      else
+	status = MdsCopyDxXd(((struct descriptor_action *)tmp.pointer)->errorlogs, out_ptr);
       break;
     default:
       status = TdiINVDTYDSC;
@@ -931,8 +929,10 @@ int Tdi1PerformanceOf(int opcode __attribute__ ((unused)), int narg __attribute_
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_ACTION:
-      status = MdsCopyDxXd((struct descriptor *)
-			   ((struct descriptor_action *)tmp.pointer)->performance, out_ptr);
+      if (((struct descriptor_action *)tmp.pointer)->ndesc<5)
+        status = MdsFree1Dx(out_ptr, NULL);
+      else
+	status = MdsCopyDxXd((struct descriptor *)((struct descriptor_action *)tmp.pointer)->performance, out_ptr);
       break;
     default:
       status = TdiINVDTYDSC;

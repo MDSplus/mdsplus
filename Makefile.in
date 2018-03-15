@@ -11,16 +11,18 @@ VPATH=@srcdir@
 @TARGET_SELFHELP@
 HELP_DESCRIPTION = This is MDSplus build system, documented targets follow:
 
-JAVA_APS = \
-	   javamds \
+JAVA_JAR = \
 	   javascope \
 	   javatraverser \
 	   javatraverser2 \
-	   javatraverser2/java/mds/mdslib \
 	   javadispatcher \
 	   javadevices \
 	   javaclient \
 	   mdsobjects/java
+
+JAVA_APS = \
+	   javamds \
+	   javatraverser2/java/mds/mdslib
 
 ifeq "@HAVE_MOTIF@" "yes"
 MOTIF_APS = xmdsshr \
@@ -37,15 +39,10 @@ HDF5_APS = hdf5
 D3D_PACKAGE = d3dshr
 
 ifeq "@JAVA_ONLY@" "yes"
-PARTS = javascope \
-	javatraverser \
-	javatraverser2 \
-	javadispatcher \
-	javadevices \
-	javaclient \
-	mdsobjects/java
+NON_JAR =
+PARTS = $(JAVA_JAR)
 else
-PARTS = \
+NON_JAR = \
 	mdsshr \
 	treeshr \
 	tdishr \
@@ -78,9 +75,10 @@ PARTS = \
 	@LV@ \
 	LabView \
 	@MACOSX@
+@MINGW_TRUE@ NON_JAR += icons
+@ENABLE_TESTS_TRUE@ NON_JAR += testing
 
-@MINGW_TRUE@ PARTS += icons
-@ENABLE_TESTS_TRUE@ PARTS += testing
+PARTS = $(NON_JAR) @JAVA_JAR@
 endif
 
 .PHONY: all $(PARTS)
@@ -89,7 +87,11 @@ all: $(PARTS)
 
 DIRECTORIES = $(sort @MAKEBINDIR@ @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEUIDDIR@)
 
-$(PARTS): $(DIRECTORIES)
+$(NON_JAR): $(DIRECTORIES)
+@MINGW_FALSE@	$(MAKE) -C $@ @MAKEFLAG_J@ @MAKEFLAG_O@
+@MINGW_TRUE@	$(MAKE) -C $@
+# override parallel flags for java apps
+$(JAVA_JAR): $(DIRECTORIES)
 	$(MAKE) -C $@
 
 .PHONY: docs
@@ -187,7 +189,7 @@ install: $(install_DIRS)
 		--exclude='Makefile\.*' \
 		-cf  - $(MISC_PARTS) | (cd $(exec_prefix); tar -xf -)
 	find . -name '_version\.py' -not -path "./$(realpath --relative-to=$(pwd) $(exec_prefix))/*" -exec cp {} $(exec_prefix)/{} \;
-	tar -C ${top_builddir} -cf - include/config.h | (cd $(exec_prefix); tar -xf -) ## TODO: remove this and config.h from headers ...
+	tar -C ${top_builddir} -cf - include/mdsplus/mdsconfig.h | (cd $(exec_prefix); tar -xf -) ## TODO: remove this and config.h from headers ...
 	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > $(exec_prefix)/mdsobjects/python/mdsplus_version.py; fi
 	$(INSTALL) ${top_srcdir}/MDSplus-License.txt ${top_srcdir}/MDSplus-License.rtf $(exec_prefix)
 	(cd $(exec_prefix); chmod -R 755 $(MISC_PARTS))

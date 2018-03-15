@@ -1,7 +1,7 @@
 #pragma once
 
 #define MdsCOMPRESSIBLE 3
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdsdescrip.h>
 #include <mdstypes.h>
 #include <stdio.h>

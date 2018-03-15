@@ -45,26 +45,47 @@ void report(int test)
   }
 }
 
-long testOpen(char *tree, int shot)
+long testOpen(int ttype, int conid, char *tree, int shot)
 {
   printf("Opening tree %s shot %d", tree, shot);
-  status = MdsOpen(tree, &shot);
+  if (ttype < 3)
+    status = MdsOpen(tree, &shot);
+  else
+    status = MdsOpenR(&conid, tree, &shot);
   return (status);
 }
 
-long testClose(char *tree, int shot)
+long testClose(int ttype, int conid, char *tree, int shot)
 {
   printf("Closing tree %s shot %d", tree, shot);
-  status = MdsClose(tree, &shot);
+  if (ttype < 3)
+    status = MdsClose(tree, &shot);
+  else
+    status = MdsCloseR(&conid, tree, &shot);
   return (status);
 }
 
-long testScalarString(char *expression, char *expected, int length)
+long testScalarString(int ttype, int conid, char *expression, char *expected, int length)
 {
   char *string = malloc(length + 1);
   int dsc = descr(&dtype_cstring, string, &null, &length);
+  int dsc2 = descr2(&dtype_cstring, &null, &length);
   printf("Checking to see if '%s' is '%s'", expression, expected);
-  status = MdsValue(expression, &dsc, &null, &returnlength);
+  switch (ttype) {
+  case 1:
+    status = MdsValue(expression, &dsc, &null, &returnlength);
+    break;
+  case 2:
+    status = MdsValue2(expression, &dsc2, string, &null, &returnlength);
+    break;
+  case 3:
+    status = MdsValueR(&conid, expression, &dsc, &null, &returnlength);
+    break;
+  case 4:
+    status = MdsValue2R(&conid, expression, &dsc2, string, &null, &returnlength);
+    break;
+  }
+
   /*printf("result: %s\n",string); */
   if (status & 1)
     status = (returnlength == length) && (strncmp(string, expected, length) == 0);
@@ -72,63 +93,127 @@ long testScalarString(char *expression, char *expected, int length)
   return (status);
 }
 
-long testSetDefault(char *node)
+long testSetDefault(int ttype, int conid, char *node)
 {
   printf("Setting default to %s", node);
-  return (MdsSetDefault(node));
+  if (ttype < 3)
+    return (MdsSetDefault(node));
+  else
+    return (MdsSetDefaultR(&conid, node));
 }
 
-long testNull(char *expression)
+long testNull(int ttype, int conid, char *expression)
 {
   char *buf = malloc(BUFFLEN);
   int bufflen = BUFFLEN;
   int dsc = descr(&dtype_cstring, buf, &null, &bufflen);
+  int dsc2 = descr2(&dtype_cstring, &null, &bufflen);
   printf("Checking to see if '%s' is NULL", expression);
-  status = MdsValue(expression, &dsc, &null, &returnlength);
+  switch (ttype) {
+  case 1:
+    status = MdsValue(expression, &dsc, &null, &returnlength);
+    break;
+  case 2:
+    status = MdsValue2(expression, &dsc2, buf, &null, &returnlength);
+    break;
+  case 3:
+    status = MdsValueR(&conid, expression, &dsc, &null, &returnlength);
+    break;
+  case 4:
+    status = MdsValue2R(&conid, expression, &dsc, buf, &null, &returnlength);
+    break;
+  } 
   return ((status & 1) == 0 && (returnlength == 0));
 }
 
-long testPut1Dsc(char *node, char *expression, int dsc)
+long testPut1Dsc(int ttype, int conid, char *node, char *expression, int dsc, int dsc2, void *value)
 {
+  int status = 0;
   printf("Writing 1D array expression '%s' to  node %s", expression, node);
-  return (MdsPut(node, expression, &dsc, &null));
+  switch (ttype) {
+  case 1:
+    status = MdsPut(node, expression, &dsc, &null);
+    break;
+  case 2:
+    status = MdsPut2(node, expression, &dsc2, value, &null);
+    break;
+  case 3:
+    status = MdsPutR(&conid, node, expression, &dsc, &null);
+    break;
+  case 4:
+    status = MdsPut2R(&conid, node, expression, &dsc2, value, &null);
+    break;
+  }
+  return status;
 }
 
-long testPut2Dsc(char *node, char *expression, int dsc1, int dsc2)
+long testPut2Dsc(int ttype, int conid, char *node, char *expression,
+		 int dsc_1, void *value_1, int dsc2_1,
+		 int dsc_2, void *value_2, int dsc2_2)
 {
+  int status = 0;
   printf("Writing 2D array expression '%s' to  node %s\n", expression, node);
-  return (MdsPut(node, expression, &dsc1, &dsc2, &null));
+  switch (ttype) {
+  case 1:
+    status = MdsPut(node, expression, &dsc_1, &dsc_2, &null);
+    break;
+  case 2:
+    status = MdsPut2(node, expression, &dsc2_1, value_1, &dsc2_2, value_2, &null);
+    break;
+  case 3:
+    status = MdsPutR(&conid, node, expression, &dsc_1, &dsc_2, &null);
+    break;
+  case 4:
+    status = MdsPut2R(&conid, node, expression, &dsc2_1, value_1, &dsc2_2, value_2, &null);
+    break;
+  }
+  return status;
 }
 
-long testClearNode(char *node)
+long testClearNode(int ttype, int conid, char *node)
 {
+  int status = 0;
   printf("Clearing node %s", node);
-  return (MdsPut(node, "", &null));
+  switch (ttype) {
+  case 1:
+    status = MdsPut(node, "", &null);
+    break;
+  case 2:
+    status = MdsPut2(node, "", &null);
+    break;
+  case 3:
+    status = MdsPutR(&conid, node, "", &null);
+    break;
+  case 4:
+    status =MdsPut2R(&conid, node, "", &null);
+    break;
+  }
+  return status;
 }
 
 /******** MAJOR TEST SECTIONS ********/
 
-void TestTreeOpenClose()
+void TestTreeOpenClose(int ttype, int conid)
 {
   printf("\n*** TREE OPENING AND CLOSING TESTS ***\n");
-  report(testOpen("SUBTREE", -1));
-  report(testOpen("FOOFOOFOO", 12345) == TreeFILE_NOT_FOUND);
-  report(testOpen("MAIN", -1));
-  report(testSetDefault("\\MAIN::TOP.CHILD"));
-  report(testScalarString("$DEFAULT", "\\MAIN::TOP.CHILD", 16));
-  report(testClose("FOOFOOFOO", 12345) == TreeNOT_OPEN);
-  report(testScalarString("$EXPT", "MAIN", 4));
-  report(testClose("SUBTREE", -1));
-  report(testScalarString("$EXPT", "MAIN", 4));
-  report(testClose("MAIN", -1));
-  report(testNull("$EXPT"));
+  report(testOpen(ttype, conid, "SUBTREE", -1));
+  report(testOpen(ttype, conid, "FOOFOOFOO", 12345) == TreeFILE_NOT_FOUND);
+  report(testOpen(ttype, conid, "MAIN", -1));
+  report(testSetDefault(ttype, conid, "\\MAIN::TOP.CHILD"));
+  report(testScalarString(ttype, conid, "$DEFAULT", "\\MAIN::TOP.CHILD", 16));
+  report(testClose(ttype, conid, "FOOFOOFOO", 12345) == TreeNOT_OPEN);
+  report(testScalarString(ttype, conid, "$EXPT", "MAIN", 4));
+  report(testClose(ttype, conid, "SUBTREE", -1));
+  report(testScalarString(ttype, conid, "$EXPT", "MAIN", 4));
+  report(testClose(ttype, conid, "MAIN", -1));
+  report(testNull(ttype, conid, "$EXPT"));
 }
 
-void TestTdi()
+void TestTdi(int ttype, int conid)
 {
-  long status;
+  long status=0;
   float result[10], result1;
-  int dsc, dsc1, dsc2, i;
+  int dsc_1, dsc2_1, dsc_2, dsc2_2, i, dsc_r, dsc2_r;
   float arg1 = 1.234567;
   float arg2 = 2.345678;
   int sresult = 10;
@@ -140,13 +225,41 @@ void TestTdi()
     result[i] = 0;
 
 /**** should segfault with no return length argument!!!! need to provide NULL *****/
-  dsc = descr(&dtype_float, &result1, &null);
-  status = MdsValue("1.", &dsc, &null, 0);
+  dsc_1 = descr(&dtype_float, &result1, &null);
+  dsc2_1 = descr2(&dtype_float, &null);
+  switch (ttype) {
+  case 1:
+    status = MdsValue("1.", &dsc_1, &null, 0);
+    break;
+  case 2:
+    status = MdsValue2("1.", &dsc2_1, &result1, &null, 0);
+    break;
+  case 3:
+    status = MdsValueR(&conid, "1.", &dsc_1, &null, 0);
+    break;
+  case 4:
+    status = MdsValue2R(&conid, "1.", &dsc2_1, &result1, &null, 0);
+    break;
+  }
   printf("status: %ld\n", status);
 
   printf("Range creation");
-  dsc = descr(&dtype_float, result, &sresult, &null);
-  status = MdsValue("2. : 20. : 2.", &dsc, &null, &returnlength);
+  dsc_r = descr(&dtype_float, result, &sresult, &null);
+  dsc2_r = descr2(&dtype_float, &sresult, &null);
+  switch (ttype) {
+  case 1:
+    status = MdsValue("2. : 20. : 2.", &dsc_r, &null, &returnlength);
+    break;
+  case 2:
+    status = MdsValue2("2. : 20. : 2.", &dsc2_r, result, &null, &returnlength);
+    break;
+  case 3:
+    status = MdsValueR(&conid, "2. : 20. : 2.", &dsc_r, &null, &returnlength);
+    break;
+  case 4:
+    status = MdsValue2R(&conid, "2. : 20. : 2.", &dsc_r, result, &null, &returnlength);
+    break;
+  }
   status = (status && (returnlength == 10));
   if (status & 1) {
     for (i = 0; i < returnlength; i++)
@@ -155,38 +268,70 @@ void TestTdi()
   report(status);
 
   printf("Multiplication of two parameters");
-  dsc1 = descr(&dtype_float, &arg1, &null);
-  dsc2 = descr(&dtype_float, &arg2, &null);
-  dsc = descr(&dtype_float, &result1, &null);
-  status = MdsValue("$ * $", &dsc1, &dsc2, &dsc, &null, &returnlength);
+  dsc_1 = descr(&dtype_float, &arg1, &null);
+  dsc2_1 = descr2(&dtype_float, &null);
+  dsc_2 = descr(&dtype_float, &arg2, &null);
+  dsc2_2 = descr2(&dtype_float, &null);
+  dsc_r = descr(&dtype_float, &result1, &null);
+  dsc2_r = descr2(&dtype_float, &null);
+  switch (ttype) {
+  case 1:
+    status = MdsValue("$ * $", &dsc_1, &dsc_2, &dsc_r, &null, &returnlength);
+    break;
+  case 2:
+    status = MdsValue2("$ * $", &dsc2_1, &arg1, &dsc2_2, &arg2, &dsc2_r, &result1, &null, &returnlength);
+    break;
+  case 3:
+    status = MdsValueR(&conid, "$ * $", &dsc_1, &dsc_2, &dsc_r, &null, &returnlength);
+    break;
+  case 4:
+    status = MdsValue2R(&conid, "$ * $", &dsc2_1, &arg1, &dsc2_2, &arg2, &dsc2_r, &result1,
+			&null, &returnlength);
+    break;
+  }
   status = status && (returnlength == 1);
   if (status & 1)
     status = status && (sqrt(result1 * result1) - (arg1 * arg2) < 1.e-7);
   report(status);
 
   machine = machine ? machine : "";
-  report(testScalarString("MACHINE()", machine, strlen(machine)));
+  report(testScalarString(ttype, conid, "MACHINE()", machine, strlen(machine)));
 }
 
-void TestArray1D()
+void TestArray1D(int ttype, int conid)
 {
   int i;
-  int dsc;
+  int dsc, dsc2;
   int size = 100;
   float *array = malloc(size * sizeof(float));
   float *compare = malloc(size * sizeof(float));
 
   printf("\n*** WRITING AND READING 1D ARRAY TO/FROM TREE ***\n");
-  report(testOpen("MAIN", -1));
+  report(testOpen(ttype, conid, "MAIN", -1));
 
   for (i = 0; i < size; i++)
     array[i] = i * 10;
   dsc = descr(&dtype_float, array, &size, &null);
-  report(testPut1Dsc("\\TOP:NUMERIC", "$", dsc));
+  dsc2 = descr2(&dtype_float, &size, &null);
+  report(testPut1Dsc(ttype, conid, "\\TOP:NUMERIC", "$", dsc, dsc2, array));
 
-  printf("Testing data in \\TOP:NUMERIC");
+  printf("Testing data in \\TOP:NUMERIC ttype=%d", ttype);
   dsc = descr(&dtype_float, compare, &size, &null);
-  status = MdsValue("\\TOP:NUMERIC", &dsc, &null, &returnlength);
+  dsc2 = descr2(&dtype_float, &size, &null);
+  switch (ttype) {
+  case 1:
+    status = MdsValue("\\TOP:NUMERIC", &dsc, &null, &returnlength);
+    break;
+  case 2:
+    status = MdsValue2("\\TOP:NUMERIC", &dsc2, compare, &null, &returnlength);
+    break;
+  case 3:
+    status = MdsValueR(&conid,"\\TOP:NUMERIC", &dsc, &null, &returnlength);
+    break;
+  case 4:
+    status = MdsValue2R(&conid, "\\TOP:NUMERIC", &dsc2, compare, &null, &returnlength);
+    break;
+  }
   if (status & 1) {
     status = (returnlength == size);
     if (status & 1) {
@@ -197,15 +342,15 @@ void TestArray1D()
   }
   report(status);
 
-  report(testClearNode("\\TOP:NUMERIC"));
+  report(testClearNode(ttype, conid, "\\TOP:NUMERIC"));
 
   free(array);
   free(compare);
 }
 
-void TestArray2D()
+void TestArray2D(int ttype, int conid)
 {
-  int dsc;
+  int dsc,dsc2;
   int sx = 2;
   int sy = 13;
   int sxx = 4;
@@ -229,14 +374,29 @@ void TestArray2D()
   }
 
   printf("\n*** WRITING AND READING 2D SIGNAL ***\n");
-  report(testOpen("MAIN", -1));
+  report(testOpen(ttype, conid, "MAIN", -1));
 
   dsc = descr(&dtype_float, array, &sx, &sy, &null);
-  report(testPut1Dsc("\\TOP:SIGNAL", "BUILD_SIGNAL($,*,*,*)", dsc));
+  dsc2 = descr2(&dtype_float, &sx, &sy, &null);
+  report(testPut1Dsc(ttype, conid, "\\TOP:SIGNAL", "BUILD_SIGNAL($,*,*,*)", dsc, dsc2, array));
 
-  printf("Testing data in \\TOP:SIGNAL");
+  printf("Testing data in \\TOP:SIGNAL ttype=%d",ttype);
   dsc = descr(&dtype_float, compare, &sx, &sy, &null);
-  status = MdsValue("\\TOP:SIGNAL", &dsc, &null, &returnlength);
+  dsc2 = descr2(&dtype_float, &sx, &sy, &null);
+  switch (ttype) {
+  case 1:
+    status = MdsValue("\\TOP:SIGNAL", &dsc, &null, &returnlength);
+    break;
+  case 2:
+    status = MdsValue2("\\TOP:SIGNAL", &dsc2, compare, &null, &returnlength);
+    break;
+  case 3:
+    status = MdsValueR(&conid, "\\TOP:SIGNAL", &dsc, &null, &returnlength);
+    break;
+  case 4:
+    status = MdsValue2R(&conid, "\\TOP:SIGNAL", &dsc2, compare, &null, &returnlength);
+    break;
+  }
   if (status & 1) {
     status = (returnlength == sx * sy);
     if (status & 1) {
@@ -252,9 +412,23 @@ void TestArray2D()
   }
   report(status);
 
-  printf("Testing reading 2D data from \\TOP:SIGNAL into larger array");
+  printf("Testing reading 2D data from \\TOP:SIGNAL into larger array ttype=%d",ttype);
   dsc = descr(&dtype_float, compareBigger, &sxx, &syy, &null);
-  status = MdsValue("\\TOP:SIGNAL", &dsc, &null, &returnlength);
+  dsc2 = descr2(&dtype_float, &sxx, &syy, &null);
+  switch (ttype) {
+  case 1:
+    status = MdsValue("\\TOP:SIGNAL", &dsc, &null, &returnlength);
+    break;
+  case 2:
+    status = MdsValue2("\\TOP:SIGNAL", &dsc2, compareBigger, &null, &returnlength);
+    break;
+  case 3:
+    status = MdsValueR(&conid, "\\TOP:SIGNAL", &dsc, &null, &returnlength);
+    break;
+  case 4:
+    status = MdsValue2R(&conid, "\\TOP:SIGNAL", &dsc2, compareBigger, &null, &returnlength);
+    break;
+  }
   if (status & 1) {
     status = (returnlength == sx * sy);
     if (status & 1) {
@@ -270,23 +444,35 @@ void TestArray2D()
   }
   report(status);
 
-  report(testClearNode("\\TOP:SIGNAL"));
+  report(testClearNode(ttype, conid, "\\TOP:SIGNAL"));
 
 }
 
 int main(int argc, char *argv[])
 {
+  SOCKET connection=-1;
+  int pconnection=-1;
   if (argc > 1) {
-    SOCKET socket;
     printf("*** Connecting to: %s", argv[1]);
-    socket = MdsConnect(argv[1]);
-    report((socket != INVALID_SOCKET));
+    connection = MdsConnect(argv[1]);
+    pconnection = MdsConnectR(argv[1]);
+    report((connection != INVALID_SOCKET));
   }
+  int ttype;
 
-  TestTreeOpenClose();
-  TestTdi();
-  TestArray1D();
-  TestArray2D();
+  for (ttype=1; ttype < 5; ttype++) {
+    TestTreeOpenClose(ttype, pconnection);
+    TestTdi(ttype, pconnection);
+    TestArray1D(ttype, pconnection);
+    TestArray2D(ttype, pconnection);
+    TestTreeOpenClose(ttype, pconnection);
+    TestTdi(ttype, pconnection);
+    TestArray1D(ttype, pconnection);
+    TestArray2D(ttype, pconnection);
+    TestTreeOpenClose(ttype, pconnection);
+  }
+  MdsDisconnect();
+  MdsDisconnectR(&pconnection);
   printf("\n");
   exit(0);
 }

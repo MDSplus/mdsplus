@@ -3,9 +3,12 @@ package jtraverser.editor;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -18,7 +21,8 @@ import jtraverser.editor.usage.NumericEditor;
 import mds.MdsException;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_A;
-import mds.data.descriptor_r.Signal;
+import mds.data.descriptor_apd.List;
+import mds.data.descriptor_s.NUMBER;
 
 @SuppressWarnings("serial")
 public class SegmentEditor extends Editor{
@@ -32,7 +36,7 @@ public class SegmentEditor extends Editor{
     private int        segment = 0;
 
     public SegmentEditor(final Node node, final boolean editable, final Window window){
-        super(null, editable, 2);
+        super(null, editable, node.nid.getTree(), 5);
         this.node = node;
         try{
             node.readRecordInfo();
@@ -42,11 +46,50 @@ public class SegmentEditor extends Editor{
         }
         this.setLayout(new BorderLayout());
         final JPanel columns = new JPanel(new GridLayout(1, 2));
-        columns.add(this.edit[0] = new NumericEditor(this.editable, window, "Data"));
-        columns.add(this.edit[1] = new NumericEditor(this.editable, window, "Dimension"));
+        columns.add(this.edit[0] = new NumericEditor(this.editable, this.ctx, window, "Data"));
+        final JPanel dimension = new JPanel(new BorderLayout());
+        dimension.add(this.edit[1] = new NumericEditor(this.editable, this.ctx, window, "Dimension"));
+        columns.add(dimension);
+        final JPanel limits = new JPanel(new GridLayout(2, 1));
+        limits.add(this.edit[3] = Editor.addLabel("start", new ExprEditor(this.editable, this.ctx, false, false)), 0);
+        limits.add(this.edit[4] = Editor.addLabel("end", new ExprEditor(this.editable, this.ctx, false, false)), 1);
+        if(this.editable){
+            final JPanel limitsedit = new JPanel(new BorderLayout());
+            final JButton setlimits = new JButton("Update Limits");
+            setlimits.addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed(final ActionEvent arg0) {
+                    try{
+                        SegmentEditor.this.node.nid.updateSegment(SegmentEditor.this.edit[3].getData(), SegmentEditor.this.edit[4].getData(), null, SegmentEditor.this.segment);
+                    }catch(final MdsException e){
+                        MdsException.stderr("SignalEditor", e);
+                    }
+                }
+            });
+            limitsedit.add(limits);
+            limitsedit.add(setlimits, BorderLayout.SOUTH);
+            dimension.add(limitsedit, BorderLayout.SOUTH);
+        }else dimension.add(limits, BorderLayout.SOUTH);
         this.add(columns);
         final JPanel segpane = new JPanel(new BorderLayout());
         final JSlider segments = new JSlider(0, this.node.getNumSegments() - 1, this.segment);
+        final JPanel scale = new JPanel(new BorderLayout());
+        scale.add(this.edit[2] = new ExprEditor(this.editable, this.ctx, false, false));
+        if(this.editable){
+            final JButton setscale = new JButton("Set Scale");
+            setscale.addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed(final ActionEvent arg0) {
+                    try{
+                        SegmentEditor.this.node.nid.setSegmentScale(SegmentEditor.this.edit[2].getData());
+                    }catch(final MdsException e){
+                        MdsException.stderr("SignalEditor", e);
+                    }
+                }
+            });
+            scale.add(setscale, BorderLayout.EAST);
+        }
+        segpane.add(Editor.addLabel("Segment Scale", scale), BorderLayout.NORTH);
         segpane.add(segments, BorderLayout.CENTER);
         final JTextField text = new JTextField(9);
         text.setHorizontalAlignment(SwingConstants.CENTER);
@@ -81,15 +124,27 @@ public class SegmentEditor extends Editor{
     }
 
     public final Descriptor_A<?> getSegmentData() throws MdsException {
-        return (Descriptor_A<?>)this.edit[0].getData();
+        return this.edit[0].getData().getDataA();
     }
 
     public final Descriptor<?> getSegmentDim() throws MdsException {
         return this.edit[1].getData();
     }
 
+    public final NUMBER<?> getSegmentEnd() throws MdsException {
+        return this.edit[4].getNumber();
+    }
+
     public final int getSegmentIdx() {
         return this.segment;
+    }
+
+    public final Descriptor<?> getSegmentScale() throws MdsException {
+        return this.edit[2].getData();
+    }
+
+    public final NUMBER<?> getSegmentStart() throws MdsException {
+        return this.edit[3].getNumber();
     }
 
     @Override
@@ -101,12 +156,16 @@ public class SegmentEditor extends Editor{
     public final void setData(final Descriptor<?> data) {/*NOP*/}
 
     public final void setSegment(final int segment) {
-        final Signal signal;
+        final List list;
         try{
-            this.data = signal = this.node.nid.getSegment(segment);
+            this.data = list = this.node.nid.getSegment(segment);
             this.segment = segment;
-            this.edit[0].setData(signal.getValue());
-            this.edit[1].setData(signal.getDimension());
+            this.edit[0].setData(list.get(0));
+            this.edit[1].setData(list.get(1));
+            this.edit[2].setData(this.node.nid.getSegmentScale());
+            final List limits = this.node.nid.getSegmentLimits(segment);
+            this.edit[3].setData(limits.get(0));
+            this.edit[4].setData(limits.get(1));
         }catch(final MdsException e){
             MdsException.stderr("SignalEditor", e);
             this.data = null;

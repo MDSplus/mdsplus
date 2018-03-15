@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  *2    28-OCT-1994 16:23:53 TWF "split out opc$_xx and opc$xx" */
 /*  *1    25-OCT-1994 08:22:42 TWF "Define Opc_function and Opcfunction symbols" */
 /*  CMS REPLACEMENT HISTORY, Element TDI$$OPC_DEF.C */
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #define COM
 #define OPC(name,builtin,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11) EXPORT const unsigned short Opc##name = __LINE__ - 25;
 #include "opcbuiltins.h"

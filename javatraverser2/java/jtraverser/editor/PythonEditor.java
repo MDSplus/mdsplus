@@ -9,6 +9,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import mds.MdsException;
+import mds.data.CTX;
 import mds.data.OPC;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_a.CStringArray;
@@ -38,12 +39,12 @@ public final class PythonEditor extends Editor{
     JTextArea  text_area;
     JTextField text_field;
 
-    public PythonEditor(final boolean editable){
-        this(null, editable);
+    public PythonEditor(final boolean editable, final CTX ctx){
+        this(null, editable, ctx);
     }
 
-    public PythonEditor(final Function function, final boolean editable){
-        super(function, editable, 0);
+    public PythonEditor(final Function function, final boolean editable, final CTX ctx){
+        super(function, editable, ctx, 0);
         JScrollPane scroll_pane;
         this.default_scroll = true;
         if(function != null){

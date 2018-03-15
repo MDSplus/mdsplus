@@ -104,7 +104,7 @@ class Acq(MDSplus.Device):
 
     def getInteger(self, node, cls):
         try:
-            ans = int(node.record)
+            ans = int(node.data())
         except Exception as e:
             print("ACQ error reading %s erro is\n%s" %(node, e,))
             raise cls()
@@ -124,7 +124,7 @@ class Acq(MDSplus.Device):
         from MDSplus.mdsExceptions import DevNO_NAME_SPECIFIED
         from MDSplus.mdsExceptions import TreeNODATA
         try:
-            boardip=str(self.node.record)
+            boardip=str(self.node.data())
         except Exception as e:
             raise DevNO_NAME_SPECIFIED(str(e))
         if len(boardip) == 0 :
@@ -230,7 +230,7 @@ class Acq(MDSplus.Device):
 
     def storeStatusCommands(self):
         status = []
-        cmds = self.status_cmds.record
+        cmds = self.status_cmds.data()
         for cmd in cmds:
             cmd = cmd.strip()
             if self.debugging():

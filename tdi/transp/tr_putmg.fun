@@ -3,9 +3,6 @@ public fun tr_putmg(in _name, in _label, in _content, in _consign)
 
   private fun tr_put_record(in _nodename, in _data)
   {
-    if (vms())
-      Return(TreeShr->TREE$PUT_RECORD(getnci(_nodename,'nid_number'),xd(_data),val(0)));
-    else
      Return(TreeShr->TreePutRecord(val(getnci(_nodename,'nid_number')),xd(_data),val(0)));
   }
 

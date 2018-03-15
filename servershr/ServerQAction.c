@@ -22,7 +22,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <servershr.h>
 #include "servershrp.h"
 #include <stdlib.h>
@@ -299,16 +299,18 @@ static int QJob(SrvJob * job){
 }
 // main
 static void LogPrefix(char *ans_c){
-  char hname[512];
-  char *port = MdsGetServerPortname();
-  gethostname(hname, 512);
-  sprintf(ans_c, "%s, %s:%s, %s, ", Now(), hname, port ? port : "?",
+  if (ans_c) {
+    char hname[512];
+    char *port = MdsGetServerPortname();
+    gethostname(hname, 512);
+    sprintf(ans_c, "%s, %s:%s, %s, ", Now(), hname, port ? port : "?",
           Logging == 0 ? "logging disabled" : "logging enabled");
-  if (Debug) {
+    if (Debug) {
       sprintf(ans_c + strlen(ans_c), "\nDebug info: QueueLocked = %d ProgLoc = %d WorkerDied = %d"
             "\n            LeftWorkerLoop = %d CondWStat = %d\n",
             QueueLocked, ProgLoc, WorkerDied, LeftWorkerLoop, CondWStat);
     }
+  }
 }
 // main
 static int ShowCurrentJob(struct descriptor_xd *ans){
@@ -344,7 +346,7 @@ static int ShowCurrentJob(struct descriptor_xd *ans){
 }
 // main
 static int RemoveLast(){
-  INIT_STATUS_ERROR;
+  int status;
   SrvJob *job;
   QUEUE_LOCK;
   job = JobQueueNext;
@@ -357,15 +359,16 @@ static int RemoveLast(){
     FreeJob(job);
     printf("Removed pending action");
     status = MDSplusSUCCESS;
-  }
+  } else
+    status = MDSplusERROR;
   QUEUE_UNLOCK;
   return status;
 }
 // thread
 static SrvJob *NextJob(int wait){
   SrvJob *job;
-  int done = 0;
-  while (!done) {
+  //  int done = 0;
+  while (1) {
     QUEUE_LOCK;
     job = JobQueue;
     if (job) {
@@ -375,11 +378,11 @@ static SrvJob *NextJob(int wait){
       else
 	JobQueueNext = 0;
     }
-    if (job || (!wait))
-      done = 1;
-    else
+    if (job == NULL && wait)
       _CONDITION_WAIT(&JobQueueCond);
     QUEUE_UNLOCK;
+    if (job || (!wait))
+      break;
   }
   return job;
 }

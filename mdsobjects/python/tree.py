@@ -53,26 +53,16 @@ _TreeShr=_ver.load_library('TreeShr')
 _XTreeShr=_ver.load_library('XTreeShr')
 #############################################
 
-class staticmethodX(object):
+class classmethodX(object):
     def __get__(self, inst, cls):
-        if inst is not None:
-            return self.method.__get__(inst)
-        return self.static
+        if inst is None:
+              return self.method.__get__(cls)
+        else: return self.method.__get__(inst)
     def __init__(self, method):
         self.method = method
-    def static(mself,self,*args,**kwargs):
-        if self is None: return None
-        return mself.method(self,*args,**kwargs)
 
 #### hidden module variables ################
 #
-class _ThreadData(_threading.local):
-
-    """Contains thread specific information"""
-
-    def __init__(self):
-        self.private=False
-_thread_data=_ThreadData()
 
 _usage_table={'ANY':0,'NONE':1,'STRUCTURE':1,'ACTION':2,      # Usage name to codenum table
               'DEVICE':3,'DISPATCH':4,'NUMERIC':5,'SIGNAL':6,
@@ -145,13 +135,13 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
 
     def register(self,opened,**kw):
         with _TreeCtx.lock:
-            _TreeCtx._id+= 1
             self.id = _TreeCtx._id
+            _TreeCtx._id+= 1
             #kw['trace'] = trace()
             if self.ctx in _TreeCtx.ctxs:
                 _TreeCtx.ctxs[self.ctx][self.id] = kw
-            else:
-                _TreeCtx.ctxs[self.ctx] = {self.id:kw} if opened else {0:{}, self.id:kw}
+            elif opened:
+                _TreeCtx.ctxs[self.ctx] = {self.id:kw}
             #print('regist',self.id, {kv for kv in kw.items() if kv[0]!='trace'})
 
     def headId(cls,id):
@@ -192,19 +182,12 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
         except: self.lock = None
         try:
             ctx = self.ctx
+            if not ctx in self.ctxs: return # was global context
             self.__class__.order = [id for id in self.order if id!=self.id]
             kw = self.ctxs[ctx].pop(self.id) # analysis:ignore
             #print('delete',self.id,{kv for kv in kw.items() if kv[0]!='trace'})
             if len(self.ctxs[ctx])>0: return # some context is still open
             self.ctxs.pop(ctx)
-            # apparently this was opened by python - so close all trees
-            try:
-                while True:
-                    try:    expt,shot = _dat.TdiExecute('$EXPT',ctx=ctx),_dat.TdiExecute('$SHOT',ctx=ctx)
-                    except: expt,shot = '?',0
-                    if not _TreeShr._TreeClose(_C.c_void_p(0),_C.c_void_p(0)) & 1: break
-                    _sys.stderr.write("Tree(%s,%d) has been forcefully closed!!"%(expt,shot))
-            except Exception as e: print(e)
             # now free current Dbid
             if _TreeShr: _TreeShr.TreeFreeDbid(_C.c_void_p(ctx))
         except Exception as e: print(e)
@@ -232,30 +215,38 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
     local = _threading.local()
     @classmethod
     def pushTree(cls,tree):
-        cls.lock.acquire()
-        try:
-            if tree is None: tree = cls.getTree()
-            dbid = cls.switchDbid(tree)
-            if not hasattr(cls.local,'trees'):
-                cls.local.trees = [(tree,dbid)]
+        private = Tree.usingPrivateCtx()
+        if not private:
+            if tree is None:
+                cls.lock.acquire()
             else:
-                cls.local.trees.append((tree,dbid))
-            if tree is None: cls.switchDbid(dbid)
+                Tree.usePrivateCtx()
+        try:
+            dbid = None if tree is None else cls.switchDbid(tree)
+            if not hasattr(cls.local,'trees'):
+                cls.local.trees = [(tree,dbid,private)]
+            else:
+                cls.local.trees.append((tree,dbid,private))
         except:
-            cls.lock.release()
+            if not private:
+                if tree is None:
+                    cls.lock.release()
+                else:
+                    Tree.usePrivateCtx(private)
             raise
 
     @classmethod
     def popTree(cls):
+        tree,odbid,private = cls.local.trees.pop()
         try:
-            tree,odbid = cls.local.trees.pop()
-            dbid = cls.switchDbid(odbid)
-            if tree is None:
-                 cls.switchDbid(dbid)
-                 if not dbid==odbid:
-                     cls.local.tctx = cls(dbid,opened=(odbid is None))
+            if not tree is None:
+                 cls.switchDbid(odbid)
         finally:
-            cls.lock.release()
+            if not private:
+                if tree is None:
+                    cls.lock.release()
+                else:
+                    Tree.usePrivateCtx(private)
 
 class _DBI_ITM_INT(_C.Structure): # HINT: _DBI_ITM_INT begin
 
@@ -310,35 +301,112 @@ class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
 
     _lock=_threading.RLock()
-    _id=0
+    opened = False
+    _id  = 0
+    path = None
     tctx = None
     ctx  = None
 
-    @staticmethodX
-    def cleanDatafile(tree,shot=None):
+    def getDatafileSize(self):
+        """return data file size.
+        @rtype: long
+        """
+        _TreeShr._TreeGetDatafileSize.restype=_C.c_int64
+        return _TreeShr._TreeGetDatafileSize(self.ctx)
+    @classmethodX
+    def cleanDatafile(self,tree=None,shot=None):
         """Clean up data file.
         @rtype: None
         """
-        if isinstance(tree,(Tree,)):
-            tree,shot = tree.tree,tree.shot
+        if isinstance(self,(Tree,)):
+            tree,shot = self.tree,self.shot
         _exc.checkStatus(
                 _TreeShr._TreeCleanDatafile(0,
                                             _C.c_char_p(_ver.tobytes(tree)),
                                             _C.c_int32(int(shot))))
 
-    @staticmethodX
-    def compressDatafile(tree,shot=None):
+    @classmethodX
+    def compressDatafile(self,tree=None,shot=None):
         """Compress data file.
         @rtype: None
         """
-        if isinstance(tree,(Tree,)):
-            tree,shot = tree.tree,tree.shot
+        if isinstance(self,(Tree,)):
+            tree,shot = self.tree,self.shot
         _exc.checkStatus(
                 _TreeShr._TreeCompressDatafile(0,
                                                _C.c_char_p(_ver.tobytes(tree)),
                                                _C.c_int32(int(shot))))
+    @classmethodX
+    def getFileName(self,tree=None,shot=None):
+        """Return file path.
+        @rtype: str
+        """
+        xd = _dsc.Descriptor_xd()
+        if tree is None:
+            treeref = None
+        else:
+            # even with ctx, you may address subtrees
+            treeref =_C.c_char_p(_ver.tobytes(tree))
+        if isinstance(self,(Tree,)):
+            _exc.checkStatus(
+                _TreeShr._TreeFileName(self.ctx,
+                    treeref,_C.c_int32(0),xd.ref))
+        else:
+            _exc.checkStatus(
+                _TreeShr.TreeFileName(
+                    treeref,_C.c_int32(int(shot)),xd.ref))
+        return _ver.tostr(xd.value)
 
-    def __init__(self, tree=None, shot=-1, mode='NORMAL'):
+    def readonly(self):
+        self.open('READONLY')
+    def edit(self):
+        self.open('EDIT')
+    def normal(self):
+        self.open('NORMAL')
+    def open(self, mode='NORMAL'):
+        _TreeCtx.lock.acquire()
+        try:
+            env_name = '%s_path'%self.tree.lower()
+            if not self.path is None:
+                old_path = _mds.getenv(env_name)
+                _mds.setenv(env_name,self.path)
+            self.ctx = _C.c_void_p(0)
+            mode=mode.upper()
+            if mode == 'NORMAL':
+                status = _TreeShr._TreeOpen(_C.byref(self.ctx),
+                                      _C.c_char_p(_ver.tobytes(self.tree)),
+                                      _C.c_int32(self.shot),
+                                      _C.c_int32(0))
+            elif mode == 'EDIT':
+                status = _TreeShr._TreeOpenEdit(_C.byref(self.ctx),
+                                          _C.c_char_p(_ver.tobytes(self.tree)),
+                                          _C.c_int32(self.shot),
+                                          _C.c_int32(0))
+            elif mode == 'READONLY':
+                status = _TreeShr._TreeOpen(_C.byref(self.ctx),
+                                      _C.c_char_p(_ver.tobytes(self.tree)),
+                                      _C.c_int32(self.shot),
+                                      _C.c_int32(1))
+            elif mode == 'NEW':
+                status = _TreeShr._TreeOpenNew(_C.byref(self.ctx),
+                                         _C.c_char_p(_ver.tobytes(self.tree)),
+                                         _C.c_int32(self.shot))
+            else:
+                raise TypeError('Invalid mode specificed, use "normal","edit","new" or "readonly".')
+            _exc.checkStatus(status)
+            if status!=_exc.TreeALREADY_OPEN.status:
+                self.opened = True # only update if tree was not open before
+            if not isinstance(self.ctx,_C.c_void_p) or self.ctx.value is None:
+                raise _exc.MDSplusERROR
+            self.tctx = _TreeCtx(self.ctx.value,self.opened,tree=self.tree,shot=self.shot,mode=mode)
+            self.tree = self.name
+            self.shot = self.shotid
+        finally:
+                if not self.path is None:
+                    _mds.setenv(env_name,old_path)
+                _TreeCtx.lock.release()
+
+    def __init__(self, tree=None, shot=-1, mode='NORMAL', path=None):
         """Create a Tree instance. Specify a tree and shot and optionally a mode.
         If providing the mode argument it should be one of the following strings:
         'Normal','Edit','New','ReadOnly'.
@@ -355,42 +423,19 @@ class Tree(object):
             if ctx is None:
                 raise _exc.TreeNOT_OPEN
             self.ctx=_C.c_void_p(ctx)
-            self.opened = False
-        else:
-            self.opened = True
-            _TreeCtx.lock.acquire()
-        try:
-            if self.opened:
-                self.ctx = _C.c_void_p(0)
-                mode=mode.upper()
-                if mode == 'NORMAL':
-                    _exc.checkStatus(_TreeShr._TreeOpen(_C.byref(self.ctx),
-                                          _C.c_char_p(_ver.tobytes(tree)),
-                                          _C.c_int32(int(shot)),
-                                          _C.c_int32(0)))
-                elif mode == 'EDIT':
-                    _exc.checkStatus(_TreeShr._TreeOpenEdit(_C.byref(self.ctx),
-                                              _C.c_char_p(_ver.tobytes(tree)),
-                                              _C.c_int32(int(shot)),
-                                              _C.c_int32(0)))
-                elif mode == 'READONLY':
-                    _exc.checkStatus(_TreeShr._TreeOpen(_C.byref(self.ctx),
-                                          _C.c_char_p(_ver.tobytes(tree)),
-                                          _C.c_int32(int(shot)),
-                                          _C.c_int32(1)))
-                elif mode == 'NEW':
-                    _exc.checkStatus(_TreeShr._TreeOpenNew(_C.byref(self.ctx),
-                                             _C.c_char_p(_ver.tobytes(tree)),
-                                             _C.c_int32(int(shot))))
-                else:
-                    raise TypeError('Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".')
             if not isinstance(self.ctx,_C.c_void_p) or self.ctx.value is None:
                 raise _exc.MDSplusERROR
+            self.opened = False
             self.tctx = _TreeCtx(self.ctx.value,self.opened,tree=str(tree),shot=shot,mode=mode)
             self.tree = self.name
             self.shot = self.shotid
-        finally:
-            if self.opened: _TreeCtx.lock.release()
+        else:
+            if path is not None: self.path = path
+            self.tree = tree
+            self.shot = shot
+            self.opened = True
+            self.open(mode)
+
     # support for the with-structure
     def __enter__(self):
         """ referenced if using "with Tree() ... " block"""
@@ -568,8 +613,11 @@ class Tree(object):
             raise AttributeError('No such attribute: '+name)
 
     @staticmethod
+    def usingPrivateCtx():
+        return bool(_TreeShr.TreeUsingPrivateCtx())
+
+    @staticmethod
     def usePrivateCtx(on=True):
-        _thread_data.private=on
         if on:
             val=_C.c_int32(1)
         else:
@@ -699,19 +747,10 @@ class Tree(object):
         """list descendants of top"""
         self.top.dir()
 
-    def edit(self):
-        """Open tree for editing.
-        @rtype: None"""
-        with self._lock:
-            _exc.checkStatus(
-                _TreeShr._TreeOpenEdit(self.ctx,
-                                       _C.c_char_p(_ver.tobytes(self.tree)),
-                                       _C.c_int32(int(self.shot))))
-
     def findTagsIter(self, wild):
         """An iterator for the tagnames from a tree given a wildcard specification.
         @param wild: wildcard spec.
-        @type name: str
+        @type wild: str
         @return: iterator of tagnames (strings) that match the wildcard specification
         @rtype: iterator
         """
@@ -829,6 +868,23 @@ class Tree(object):
         """
         return TreeNodeArray([nid for nid in self._getNodeWildIter(name,*usage)],self)
 
+    @classmethodX
+    def getTimeContext(self):
+        """Get time context for retrieving segmented records
+        @rtype tuple: (begin,end,delta)
+        """
+        begin=_dsc.Descriptor_xd()
+        end  =_dsc.Descriptor_xd()
+        delta=_dsc.Descriptor_xd()
+        if isinstance(self,(Tree,)):
+            begin._setTree(self)
+            end._setTree(self)
+            delta._setTree(self)
+            _exc.checkStatus(_TreeShr._TreeGetTimeContext(self.ctx,begin.ref,end.ref,delta.ref))
+        else:
+            _exc.checkStatus(_TreeShr.TreeGetTimeContext(begin.ref,end.ref,delta.ref))
+        return (begin.value,end.value,delta.value)
+
     @staticmethod
     def getVersionDate():
         """Get date used for retrieving versions
@@ -894,19 +950,17 @@ class Tree(object):
         @rtype: TreeNode
         """
         old=self.default
-        if isinstance(node,TreeNode):
-            if node.ctx == self.ctx:
-                _exc.checkStatus(
+        if not isinstance(node,TreeNode):
+            raise TypeError('default node must be a TreeNode')
+        if not node.ctx == self.ctx:
+            raise TypeError('TreeNode must be in same tree')
+        _exc.checkStatus(
                     _TreeShr._TreeSetDefaultNid(self.ctx,
                                                 node._nid))
-            else:
-                raise TypeError('TreeNode must be in same tree')
-        else:
-            raise TypeError('default node must be a TreeNode')
         return old
 
-    @staticmethod
-    def setTimeContext(begin=None,end=None,delta=None):
+    @classmethodX
+    def setTimeContext(self,begin=None,end=None,delta=None):
         """Set time context for retrieving segmented records
         @param begin: Time value for beginning of segment.
         @type begin: str, Uint64, Float32 or Float64
@@ -916,13 +970,19 @@ class Tree(object):
         @type delta: Uint64, Float32 or Float64
         @rtype: None
         """
-        begin = None if begin is None else _dat.Data(begin)
-        end   = None if end   is None else _dat.Data(end)
-        delta = None if delta is None else _dat.Data(delta)
-        _exc.checkStatus(
-            _TreeShr.TreeSetTimeContext(_C.c_void_p(0) if begin is None else _dat.Data.byref(begin),
-                                        _C.c_void_p(0) if end   is None else _dat.Data.byref(end),
-                                        _C.c_void_p(0) if delta is None else _dat.Data.byref(delta)))
+        def prepValue(value):
+            if value is None:
+                return value,_C.c_void_p(0)
+            value = _dat.Data(value)
+            return value,_dat.Data.byref(value)
+
+        begin,begin_p = prepValue(begin)
+        end,  end_p   = prepValue(end)
+        delta,delta_p = prepValue(delta)
+        if isinstance(self,(Tree,)):
+            _exc.checkStatus(_TreeShr._TreeSetTimeContext(self.ctx,begin_p,end_p,delta_p))
+        else:
+            _exc.checkStatus(_TreeShr.TreeSetTimeContext(begin_p,end_p,delta_p))
 
     @staticmethod
     def setVersionDate(date):
@@ -1024,8 +1084,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
 
     def __new__(cls,nid,tree=None,head=None,*a,**kw):
         """Create class instance. Initialize part_dict class attribute if necessary.
-        @param node: Node of device
-        @type node: TreeNode
+        @param nid: Node of device
+        @type nid: TreeNode
         @return: Instance of the device subclass
         @rtype: Device subclass instance
         """
@@ -1041,8 +1101,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
 
     def __init__(self,nid,tree=None,head=None,*a,**kw):
         """Initialze TreeNode
-        @param n: Index of the node in the tree.
-        @type n: int
+        @param nid: Index of the node in the tree.
+        @type nid: int
         @param tree: Tree associated with this node
         @type tree: Tree
         """
@@ -1405,12 +1465,12 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         #    return Tree()
         try:   return _getNodeByAttr(self,name)
         except _exc.TreeNNF: pass
-        try:   return super(TreeNode,self).__getattribute__(name)
+        try:   return super(TreeNode,self).__getattr__(name)
         except AttributeError: pass
         #if name=='length':
         #    raise AttributeError
         #if self.length>0:
-        #    return self.record.__getattribute__(name)
+        #    return self.record.__getattr__(name)
         raise AttributeError('No such attribute: '+name)
 
     def __str__(self):
@@ -1497,10 +1557,10 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @type start: Data
         @param end: Index of last row of data
         @type end: Data
-        @param dimension: Dimension information of segment
-        @type dimension: Dimension
-        @param initialValueArray: Initial data array. Defines shape of segment
-        @type initialValueArray: Array
+        @param dim: Dimension information of segment
+        @type dim: Dimension
+        @param array: Initial data array. Defines shape of segment
+        @type array: Array
         @rtype: None
         """
         start,end,dim,array = map(_dat.Data,(start,end,dim,array))
@@ -1608,8 +1668,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         """Execute method on conglomerate element
         @param method: method name to perform
         @type method: str
-        @param arg: Optional argument for method
-        @type arg: Data
+        @param args: Optional arguments for method
+        @type args: Data or Tuple of Data
         @rtype: None
         """
         arglist=[self.ctx]
@@ -1877,7 +1937,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
             return list(ans.values())[0]
         return ans
 
-
     def getNid(self):
         """Return node index
         @return: Internal node index of this node
@@ -1994,17 +2053,22 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @return: Data segment
         @rtype: Signal | None
         """
-        num=self.getNumSegments()
-        if num <= 0 or idx >= num: return
-        val=_dsc.Descriptor_xd()
-        dim=_dsc.Descriptor_xd()
-        _exc.checkStatus(
-            _TreeShr._TreeGetSegment(self.ctx,
-                                     self._nid,
-                                     _C.c_int32(int(idx)),
-                                     val.ref,
-                                     dim.ref))
-        return _cmp.Signal(val.value,None,dim.value)
+        val=_dsc.Descriptor_xd()._setTree(self.tree)
+        dim=_dsc.Descriptor_xd()._setTree(self.tree)
+        try:
+            _exc.checkStatus(
+                _TreeShr._TreeGetSegment(self.ctx,
+                                         self._nid,
+                                         _C.c_int32(int(idx)),
+                                         val.ref,
+                                         dim.ref))
+        except _exc.TreeNOSEGMENTS:
+            return None
+        try:    scl = self.getSegmentScale()
+        except: scl = None
+        if scl is None:
+            return _cmp.Signal(val.value,None,dim.value)
+        return _cmp.Signal(scl,val.value,dim.value)
 
     def getSegmentDim(self,idx):
         """Return dimension of segment
@@ -2013,28 +2077,34 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @return: Segment dimension
         @rtype: Dimension
         """
-        num=self.getNumSegments()
-        if num > 0 and idx < num:
-            return self.getSegment(idx).getDimensionAt(0)
-        else:
+        dim=_dsc.Descriptor_xd()._setTree(self.tree)
+        try:
+            _exc.checkStatus(
+                _TreeShr._TreeGetSegment(self.ctx,
+                                         self._nid,
+                                         _C.c_int32(int(idx)),
+                                         None,
+                                         dim.ref))
+        except _exc.TreeNOSEGMENTS:
             return None
+        return dim.value
 
     def getSegmentLimits(self,idx):
-        start=_dsc.Descriptor_xd()
-        end=_dsc.Descriptor_xd()
+        start=_dsc.Descriptor_xd()._setTree(self.tree)
+        end=_dsc.Descriptor_xd()._setTree(self.tree)
         _exc.checkStatus(
             _TreeShr._TreeGetSegmentLimits(self.ctx,
                                            self._nid,
                                            _C.c_int32(int(idx)),
                                            start.ref,
                                            end.ref))
-        start,end = start.value,end.value
+        start,end = start.value,end.value;_gc.collect()
         if start is not None or end is not None:
             return (start,end)
 
     def getSegmentList(self,start,end):
         start,end = map(_dat.Data,(start,end))
-        xd=_dsc.Descriptor_xd()
+        xd=_dsc.Descriptor_xd()._setTree(self.tree)
         _exc.checkStatus(
             _XTreeShr._XTreeGetSegmentList(self.ctx,
                                            self._nid,
@@ -2043,10 +2113,21 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                                            xd.ref))
         return xd.value
 
+    def getSegmentScale(self):
+        """sets the scale expression of a segmetned Node
+        @rtype: expression for the data field; should contain $VALUE
+        """
+        xd=_dsc.Descriptor_xd()._setTree(self.tree)
+        _exc.checkStatus(
+            _TreeShr._TreeGetSegmentScale(self.ctx,
+                                          self._nid,
+                                          xd.ref))
+        return xd.value
+
     def getSegmentTimes(self):
         num = _C.c_int32(0)
-        start=_dsc.Descriptor_xd()
-        end=_dsc.Descriptor_xd()
+        start=_dsc.Descriptor_xd()._setTree(self.tree)
+        end=_dsc.Descriptor_xd()._setTree(self.tree)
         _exc.checkStatus(
             _TreeShr._TreeGetSegmentTimesXd(self.ctx,
                                            self._nid,
@@ -2277,10 +2358,10 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @type start: Data
         @param end: Index of last row of data
         @type end: Data
-        @param dimension: Dimension information of segment
-        @type dimension: Dimension
-        @param valueArray: Contents of segment
-        @type valueArray: Array
+        @param dim: Dimension information of segment
+        @type dim: Dimension
+        @param array: Contents of segment
+        @type array: Array
         @rtype: None
         """
         start,end,dim,array = map(_dat.Data,(start,end,dim,array))
@@ -2315,8 +2396,8 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
 
     def putData(self,value):
         """Store data
-        @param data: Data to store in this node.
-        @type data: Data
+        @param value: Data to store in this node.
+        @type value: Data
         @rtype: None
         """
         if value is None:
@@ -2541,6 +2622,34 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
             if not _ver.isNt: raise
         return self
 
+    def setSegmentScale(self,scale):
+        """sets the scale expression of a segmetned Node
+        @param scale: expression for the data field; should contain $VALUE
+        @rtype: None
+        """
+        if not scale is None:
+            if not isinstance(scale,_dat.Data):
+                scale = _dat.Data(scale)
+            if isinstance(scale,_scr.Scalar):
+                scale = _cmp.MULTIPLY(_cmp.dVALUE(),scale)
+            elif isinstance(scale,_arr.Array):
+                fac,nn = scale,scale.size
+                scale = None
+                for n in range(nn-1,-1,-1):
+                    if n>1:
+                        next = _cmp.MULTIPLY(_cmp.POWER(_cmp.dVALUE(),n),fac[n])
+                    if n==1:
+                        next = _cmp.MULTIPLY(_cmp.dVALUE(),fac[n])
+                    else:
+                        next = fac[n]
+                    if scale is None:
+                        scale = next
+                    else:
+                        scale = _cmp.ADD(scale,next)
+        _exc.checkStatus(
+            _TreeShr._TreeSetSegmentScale(self.ctx,
+                                          self._nid,
+                                          _dat.Data.byref(scale)))
 
     def setSubtree(self,flag):
         """Enable/Disable node as a subtree
@@ -2559,7 +2668,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
     def setUsage(self,usage):
         """Set the usage of a node
         @param usage: Usage string.
-        @type flag: str
+        @type usage: str
         @rtype: original type
         """
         try:
@@ -2608,6 +2717,24 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                                             _dat.Data.byref(start),
                                             _dat.Data.byref(end),
                                             _dat.Data.byref(dim),
+                                            _C.c_int32(int(idx))))
+    def updateSegmentLimits(self,start,end,idx):
+        """Update a segment
+        @param start: index of first row of segment
+        @type start: Data
+        @param end: index of last row of segment
+        @type end: Data
+        @param idx: Index of segment
+        @type idx: int
+        @rtype: None
+        """
+        start,end = map(_dat.Data,(start,end))
+        _exc.checkStatus(
+                _TreeShr._TreeUpdateSegment(self.ctx,
+                                            self._nid,
+                                            _dat.Data.byref(start),
+                                            _dat.Data.byref(end),
+                                            None,
                                             _C.c_int32(int(idx))))
 
 class TreePath(TreeNode): # HINT: TreePath begin
@@ -3179,69 +3306,68 @@ If you did intend to write to a subnode of the device you should check the prope
     __cached_mds_pydevice_path = ""
     __cached_py_device_not_found = []
     __cached_py_devices = None
-    @staticmethod
-    def importPyDeviceModule(name):
+    __cached_lock = _threading.Lock()
+    @classmethod
+    def importPyDeviceModule(cls,name):
         """Find a device support module with a case insensitive lookup of
         'model'.py in the MDS_PYDEVICE_PATH environment variable search list."""
-        sys,os,path = Device.__cached()
-        name = name.lower()
-        if name in Device.__cached_py_device_modules:
+        with cls.__cached_lock:
+          sys,os,path = Device.__cached()
+          name = name.lower()
+          if name in Device.__cached_py_device_modules:
             return Device.__cached_py_device_modules[name]
-        if name in Device.__cached_py_device_modules:
+          if name in Device.__cached_py_device_modules:
             raise _exc.DevPYDEVICE_NOT_FOUND
-        if path is not None:
-          check_name=name+".py"
-          parts=path.split(';')
-          for part in parts:
-            w=os.walk(part)
-            for dp,dn,fn in w:
-              for fname in fn:
-                if fname.lower() == check_name:
-                  sys.path.insert(0,dp)
-                  try:
-                    device = __import__(fname[:-3])
-                    Device.__cached_py_device_modules[name] = device
-                    return device
-                  finally:
-                    sys.path.remove(dp)
-        Device.__cached_py_device_not_found.append(name)
-        raise _exc.DevPYDEVICE_NOT_FOUND
-
-    @staticmethod
-    def findPyDevices():
-        """Find all device support modules in the MDS_PYDEVICE_PATH environment variable search list."""
-        sys,os,path = Device.__cached()
-        if Device.__cached_py_devices is not None:
-            return _dat.Data.compile(str(Device.__cached_py_devices))
-        ans=list()
-        if path is not None:
+          if path is not None:
+            check_name=name+".py"
             parts=path.split(';')
             for part in parts:
-                for dp,dn,fn in os.walk(part):
+              w=os.walk(part)
+              for dp,dn,fn in w:
+                for fname in fn:
+                  if fname.lower() == check_name:
                     sys.path.insert(0,dp)
                     try:
-                        for fname in fn:
-                            if fname.endswith('.py'):
-                                try:
-                                    devnam=fname[:-3].upper()
-                                    __import__(fname[:-3]).__dict__[devnam]
-                                    ans.append(devnam)
-                                except:
-                                    pass
+                      device = __import__(fname[:-3])
+                      Device.__cached_py_device_modules[name] = device
+                      return device
                     finally:
-                        sys.path.remove(dp)
-        if len(ans) == 0:
-            return None
-        else:
+                      sys.path.remove(dp)
+          Device.__cached_py_device_not_found.append(name)
+          raise _exc.DevPYDEVICE_NOT_FOUND
+
+    @classmethod
+    def findPyDevices(cls):
+        """Find all device support modules in the MDS_PYDEVICE_PATH environment variable search list."""
+        with cls.__cached_lock:
+          sys,os,path = Device.__cached()
+          if Device.__cached_py_devices is None:
+            ans=list()
+            if path is not None:
+              parts=path.split(';')
+              for part in parts:
+                for dp,dn,fn in os.walk(part):
+                  sys.path.insert(0,dp)
+                  try:
+                    for fname in fn:
+                      if fname.endswith('.py'):
+                        try:
+                          devnam=fname[:-3].upper()
+                          __import__(fname[:-3]).__dict__[devnam]
+                          ans.append(devnam)
+                        except:
+                          pass
+                  finally:
+                    sys.path.remove(dp)
             Device.__cached_py_devices = ans
-            return _dat.Data.compile(str(ans))
+          return Device.__cached_py_devices
 
     @staticmethod
     def PyDevice(module,model=None):
         """Find a python device class by:
-        1) finding the model in the list defined by
+          1. finding the model in the list defined by
            the tdi function, MdsDevices.
-        2) try importing the package for the model and calling its Add method.
+          2. try importing the package for the model and calling its Add method.
         The StringArray returned by MdsDevices() contains String instances
         containing blank filled values containing an \0 character embedded.
         These Strings have to be manipulated to produce simple str() values.
@@ -3251,11 +3377,11 @@ If you did intend to write to a subnode of the device you should check the prope
             model=module
             MODEL=model.upper()
             models = _dat.Data.execute('MdsDevices()').data()
-            for idx in range(0, len(models), 2):
-                modname = models[idx].rstrip()
+            for idx in range(len(models)):
+                modname = models[idx][0].rstrip()
                 MODNAME = modname.upper()
                 if MODEL == MODNAME:
-                    package = models[idx+1].rstrip()
+                    package = models[idx][1].rstrip()
                     if package == "pydevice":
                         break
                     try:

@@ -8,6 +8,15 @@ import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_r.Function;
 
 public abstract class MODIFIER extends Function{
+    public static final class AsIs extends MODIFIER{
+        public AsIs(final ByteBuffer b){
+            super(b);
+        }
+
+        public AsIs(final Descriptor<?> arg){
+            super(OPC.OpcAsIs, arg);
+        }
+    }
     public static class In extends MODIFIER{
         public In(final ByteBuffer b){
             super(b);
@@ -80,6 +89,8 @@ public abstract class MODIFIER extends Function{
     public static MODIFIER deserialize(final ByteBuffer b) throws MdsException {
         final short opcode = b.getShort(b.getInt(Descriptor._ptrI));
         switch(opcode){
+            case OPC.OpcAsIs:
+                return new AsIs(b);
             case OPC.OpcIn:
                 return new In(b);
             case OPC.OpcInOut:

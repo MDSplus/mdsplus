@@ -27,7 +27,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  CMS REPLACEMENT HISTORY, Element BWFILTER.C */
 #include <stdio.h>
 #include	<math.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 
 #define	PI 3.14159265359
 #define	max_order 10
@@ -99,8 +99,8 @@ EXPORT int bwfilter(float *w_cut_in, int *order_in, int *num, float *in, float *
     for (i = M; i >= 1; i--) {
       x_current[i] = x_current[i - 1];
     }
-    for (j = N; j >= 1; j--) {
-      y_filtered[j] = y_filtered[j - 1];
+    for (j = N-1; j > 1; j--) {
+      y_filtered[j+1] = y_filtered[j];
     }
 
     x_current[0] = in[in_idx++];

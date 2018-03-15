@@ -1,7 +1,7 @@
 #ifndef _TREESHRP_H
 #define _TREESHRP_H
 
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -512,6 +512,12 @@ always passed as an argument to tree traversal
 routines.
 *********************************************/
 
+typedef struct _timecontext_t{
+struct descriptor_xd start;
+struct descriptor_xd end;
+struct descriptor_xd delta;
+} timecontext_t;
+
 typedef struct pino_database {
   TREE_INFO *tree_info;		/* Pointer to main tree info block */
   NODE *default_node;		/* Pointer to current default node */
@@ -529,6 +535,9 @@ typedef struct pino_database {
   struct pino_database *next;	/* Link to next database in open list */
 
   int stack_size;
+  timecontext_t timecontext;
+  int delete_list_vm;
+  unsigned char* delete_list;
 } PINO_DATABASE;
 
 static inline NODE *nid_to_node(PINO_DATABASE * dbid, NID * nid)
@@ -640,29 +649,22 @@ Another useful macro based on nid:
 nid_to_tree_nidx(pino, nid, info, nidx)
 *******************************************/
 
-#define nid_to_tree_nidx(pino, nid, info, nidx) \
-    {\
-      unsigned int nid_to_tree_nidx__i;\
-      info = pino->tree_info;\
-      for (nid_to_tree_nidx__i=0; info ? nid_to_tree_nidx__i < nid->tree : 0; nid_to_tree_nidx__i++) \
-               info = info->next_info; \
-      info = info ? (info->header->nodes >= (int)nid->node ? info : 0) : 0; \
-      nidx = info ? nid->node : 0; \
-    }
+#define nid_to_tree_nidx(pino, nid, info, nidx) nidx = nid_to_tree_idx(pino,nid,&info)
+static inline int nid_to_tree_idx(PINO_DATABASE* pino,NID* nid,TREE_INFO** info_out) {
+  unsigned int i;
+  TREE_INFO* info = pino->tree_info;
+  for (i=0; info && i < nid->tree; i++)
+    info = info->next_info;
+  *info_out = info ? (info->header->nodes >= (int)nid->node ? info : 0) : NULL;
+  return *info_out ? nid->node : 0;
+}
 /******************************************
 Another useful macro based on nid:
 
 nid_to_tree(pino, nid, info)
 *******************************************/
 
-#define nid_to_tree(pino, nid, info) \
-    {\
-      unsigned int nid_to_tree_nidx__i;\
-      info = pino->tree_info;\
-      for (nid_to_tree_nidx__i=0; info ? nid_to_tree_nidx__i < nid->tree : 0; nid_to_tree_nidx__i++) \
-               info = info->next_info; \
-      info = info ? (info->header->nodes >= (int)nid->node ? info : 0) : 0; \
-    }
+#define nid_to_tree(pino, nid, info) nid_to_tree_idx(pino,nid,&info)
 
 /****************************
 Macro's for checking access
@@ -673,8 +675,11 @@ to databases
 #define IS_OPEN_FOR_EDIT(db) (IS_OPEN(db) ? (db)->open_for_edit : 0)
 
 #define TREE_PATH_SUFFIX "_path"
-#define TREE_PATH_DELIM  "/"
-
+#ifdef _WIN32
+ #define TREE_PATH_DELIM  "\\"
+#else
+ #define TREE_PATH_DELIM  "/"
+#endif
 /************* Prototypes for internal functions *************/
 extern int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *);
 extern int SetStackSizeRemote(PINO_DATABASE * dblist, int stack_size);

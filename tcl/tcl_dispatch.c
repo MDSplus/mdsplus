@@ -61,15 +61,9 @@ extern int TdiData();
 
 #define IS_WILD(T)   (strcspn(T,"*%") < strlen(T))
 
-#ifdef vms
-#define SYNCINIT
-#define SYNCPASS NULL
-#define SYNCWAIT ServerWait(0)
-#else
 #define SYNCINIT int SyncId = 0
 #define SYNCPASS &SyncId
 #define SYNCWAIT ServerWait(SyncId)
-#endif
 
 #define INIT_TCLSTATUS INIT_STATUS_AS TclNORMAL
 
@@ -232,20 +226,11 @@ EXPORT int TclDispatch_start_server(void *ctx, char **error, char **output __att
 /***************************************************************
  * TclDispatch_set_server:
  ***************************************************************/
-EXPORT int TclDispatch_set_server(void *ctx, char **error, char **output __attribute__ ((unused))){
-  INIT_TCLSTATUS;
-  char logging = 0;
+
+static inline int setLogging(void *ctx, int logging, char **error) {
   char *ident;
-  if (cli_present(ctx, "LOG") == MdsdclPRESENT) {
-    INIT_AND_FREE_ON_EXIT(char*,log_type);
-    cli_get_value(ctx, "LOG", &log_type);
-    if (strncasecmp(log_type, "statistics", strlen(log_type)) == 0)
-      logging = 2;
-    else if (strncasecmp(log_type, "actions", strlen(log_type)) == 0)
-      logging = 1;
-    // else  logging = 0;
-    FREE_NOW(log_type);
-  }
+  int status;
+  status = TclNORMAL;
   while (STATUS_OK && IS_OK(cli_get_value(ctx, "SERVER", &ident))) {
     FREE_ON_EXIT(ident);
     status = ServerSetLogging(ident, logging);
@@ -263,6 +248,26 @@ EXPORT int TclDispatch_set_server(void *ctx, char **error, char **output __attri
   return status;
 }
 
+EXPORT int TclDispatch_set_server(void *ctx, char **error, char **output __attribute__ ((unused))){
+  int status;
+  if (cli_present(ctx, "LOG") == MdsdclPRESENT) {
+    INIT_AND_FREE_ON_EXIT(char*,log_type);
+    int logging;
+    cli_get_value(ctx, "LOG", &log_type);
+    if (strncasecmp(log_type, "statistics", strlen(log_type)) == 0)
+      logging = 2;
+    else if (strncasecmp(log_type, "actions", strlen(log_type)) == 0)
+      logging = 1;
+    else
+      logging = 0;
+    status = setLogging(ctx, logging, error);
+    FREE_NOW(log_type);
+  }
+  else
+    status=setLogging(ctx, 0, error);
+  return status;
+}
+
 /**************************************************************
  * TclDispatch_show_server:
  **************************************************************/
@@ -275,7 +280,6 @@ EXPORT int TclDispatch_show_server(void *ctx, char **error __attribute__ ((unuse
     *output = strdup("");
   while (STATUS_OK && IS_OK(cli_get_value(ctx, "SERVER_NAME", &ident))) {
     FREE_ON_EXIT(ident);
-    char *info;
     if (IS_WILD(ident)) {	/* contains wildcard?     */
       void *ctx1 = NULL;
       char *server = NULL;
@@ -285,6 +289,7 @@ EXPORT int TclDispatch_show_server(void *ctx, char **error __attribute__ ((unuse
 	tclAppend(output, server);
 	tclAppend(output, "\n");
 	mdsdclFlushOutput(*output);
+	char *info=NULL;
         FREE_ON_EXIT(info);
 	if (dooutput) {
 	  tclAppend(output, info = ServerGetInfo(full, server));
@@ -295,16 +300,17 @@ EXPORT int TclDispatch_show_server(void *ctx, char **error __attribute__ ((unuse
 	FREE_NOW(server);
       }
     } else {
+      char *info=NULL;
       tclAppend(output, "Checking server: ");
       tclAppend(output, ident);
       tclAppend(output, "\n");
       mdsdclFlushOutput(*output);
       FREE_ON_EXIT(info);
+      info = ServerGetInfo(full, ident); 
       if (dooutput) {
-	tclAppend(output, info = ServerGetInfo(full, ident));
+	tclAppend(output, info); 
 	tclAppend(output, "\n");
-      } else
-	info = ServerGetInfo(full, ident);
+      }
       FREE_NOW(info);
     }
     FREE_NOW(ident);
@@ -320,7 +326,7 @@ static void printIt(char *output){
  * TclDispatch_phase:
  *****************************************************************/
 EXPORT int TclDispatch_phase(void *ctx, char **error, char **output __attribute__ ((unused))){
-  INIT_TCLSTATUS;
+  int status;
   INIT_AND_FREE_ON_EXIT(char*,phase);
   INIT_AND_FREE_ON_EXIT(char*,synch_str);
   INIT_AND_FREE_ON_EXIT(char*,monitor);
@@ -336,7 +342,7 @@ EXPORT int TclDispatch_phase(void *ctx, char **error, char **output __attribute_
     status = ServerDispatchPhase(NULL, dispatch_table,
 			      phase, (char)noaction, synch, output_rtn, monitor);
   else
-    *error = strdup("Error: No dispatch table found. Forgot to do DISPATCH/BUILD?\n");
+    status = TclNO_DISPATCH_TABLE;
   if STATUS_NOT_OK {
     char *msg = MdsGetMsg(status);
     *error = malloc(strlen(msg) + 100);

@@ -656,6 +656,7 @@ RELEASE_RELEASE
 RELEASE_MINOR
 RELEASE_MAJOR
 NEED_SEMUN
+DEF_PYLIB
 PYTHON_INCLUDE_DIR
 MOTIF_LD_LDARC
 MOTIF_LD_LDSHARE
@@ -669,6 +670,8 @@ MDSSQL
 MAKEUIDDIR
 MAKESHLIBDIR
 MAKELIBDIR
+MAKEFLAG_O
+MAKEFLAG_J
 MAKEBINDIR
 MACOSX
 LV_CINTOOLS
@@ -694,6 +697,7 @@ JDK_LIVECONNECT
 JDK_DIR
 JDK_CFLAGS
 JAVACFLAGS
+JAVA_JAR
 JAVA_APS
 JAVA_ONLY
 JARS_DIR
@@ -722,6 +726,7 @@ D3DLIB
 D3D_PACKAGE
 CLOCK_GETTIME_LIB
 CAMSHR
+NOWARNFLAGS
 WARNFLAGS
 DOXYGEN_PAPER_SIZE
 DX_COND_latex_FALSE
@@ -1024,6 +1029,7 @@ enable_doxygen_html
 enable_doxygen_ps
 enable_doxygen_pdf
 enable_werror
+enable_wreturns
 enable_wconversion
 '
       ac_precious_vars='build_alias
@@ -1705,6 +1711,8 @@ Optional Features:
   --enable-doxygen-ps     generate doxygen PostScript documentation
   --disable-doxygen-pdf   don't generate doxygen PDF documentation
   --enable-werror         Treat all warnings as errors
+  --disable-wreturns      Disable warnings about unused return value from
+                          functions
   --enable-wconversion    Warn about implicit conversions
 
 Optional Packages:
@@ -6691,7 +6699,7 @@ case "$host" in #(
      ;;
 esac
 
-#AC_CONFIG_HEADER(include/config.h)
+#AC_CONFIG_HEADER(include/mdsplus/mdsconfig.h)
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -8008,6 +8016,14 @@ then
 else
   : ${uiddir:=$exec_prefix/uid}
 fi
+if nproc&>/dev/null && perl -v&>/dev/null
+then
+  MAKEFLAG_J="-j -l $(perl -e "print $(nproc) * 0.9")"
+else
+  MAKEFLAG_J="-j -l 1"
+fi
+DEF_PYLIB=$(ldd $(which python) | grep libpython | awk '{print $3}')
+MAKEFLAG_O="$(if ${MAKE:=make} -v -O&>/dev/null; then echo -O; fi)"
 MAKEUIDDIR="\$(top_builddir)/uid/"
 MAKESHLIBDIR="\$(top_builddir)/lib/"
 MAKEBINDIR="\$(top_builddir)/bin/"
@@ -8025,9 +8041,11 @@ THREAD="-pthread"
 MITDEVICESIO_TARGETS=""
 case "$host" in
 *mingw*)
+       MAKEFLAG_J=""
+       MAKEFLAG_O=""
        IDLMDSEVENT=""
        LIBPRE=""
-       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields -Wno-clobbered ";
+       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields ";
        LD="$CXX -static-libgcc"
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="$FC"
@@ -8061,7 +8079,7 @@ case "$host" in
        jni_md_inc_dir="$with_jdk/include/linux";;
 
 *86*linux*)
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing -Wno-clobbered ";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing ";
        FORLD="$FC";
        LD="gcc"
        if ( echo $host| grep 64 > /dev/null )
@@ -8122,7 +8140,7 @@ case "$host" in
        SIZEOF_LONG=4;
        SIZEOF_LONG_LONG=8;
        D64="";
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing -Wno-clobbered";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
        if (test "$FC" = "gfortran"); then
          FCFLAGS="$FCFLAGS -fno-range-check";
          FORLD="$FC"
@@ -8143,7 +8161,7 @@ case "$host" in
        jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
-*linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing -Wno-clobbered";
+*linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing";
        FCFLAGS="$FCFLAGS -fno-range-check";
        FORLD="$FC"
        FOR_LDFLAGS="-lg2c"
@@ -8175,9 +8193,9 @@ case "$host" in
        LD_LDSHARE="";
        LDARC="";
        LD_LDARC="";
-       UILPATH=${OPENMOTIF}/bin;
-       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L${OPENMOTIF}/lib"
-       MOTIF_LD_LDARC="-multiply_defined suppress -L${OPENMOTIF}/lib"
+       UILPATH=${OPENMOTIF-/usr}/bin;
+       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L${OPENMOTIF-/usr}/lib"
+       MOTIF_LD_LDARC="-multiply_defined suppress -L${OPENMOTIF-/usr}/lib"
        	   	   LINKSHARED="$LDFLAGS -shared -arch x86_64 -install_name @loader_path/../lib/\$(@F) -headerpad_max_install_names";
            FOR_LINKSHARED="$LDFLAGS -shared";
 	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
@@ -10225,7 +10243,7 @@ fi
 if ${JDK_CFLAGS+:} false; then :
   case $enable_java in #(
   yes) :
-    JAVA_APS="\$(JAVA_APS)" ;; #(
+    JAVA_APS="\$(JAVA_APS)";JAVA_JAR="\$(JAVA_JAR)" ;; #(
   *) :
      ;;
 esac
@@ -11795,8 +11813,8 @@ fi
 
 case $host in #(
   *darwin*|*apple*) :
-    X_CFLAGS+=" -I${OPENMOTIF}/include"
-                             X_LIBS+=" -L${OPENMOTIF}/lib" ;; #(
+    X_CFLAGS+=" -I${OPENMOTIF-/usr}/include"
+                             X_LIBS+=" -L${OPENMOTIF-/usr}/lib" ;; #(
   *) :
      ;;
 esac
@@ -11856,18 +11874,16 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for uil command" >&5
 $as_echo_n "checking for uil command... " >&6; }
-if  ! "$MINGW" = "yes"  && ( which $UIL 2>/dev/null )
+if test ! "$MINGW" = "yes" && ( which $UIL &>/dev/null )
 then
   UIL="env LANG=en_US $UIL"
   HAVE_MOTIF="yes"
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: have uil so openmotif apps will be built." >&5
-$as_echo "have uil so openmotif apps will be built." >&6; }
+  #AC_MSG_RESULT(have uil so openmotif apps will be built.)
 else
 # IDLMDSEVENT and IDLMDSWIDGETS need MOTIF to build
   IDLMDSEVENT=""
   IDLMDSWIDGETS=""
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no uil so skipping openmotif apps.openmotif-devel not installed." >&5
-$as_echo "no uil so skipping openmotif apps.openmotif-devel not installed." >&6; }
+  #AC_MSG_RESULT(no uil so skipping openmotif apps.openmotif-devel not installed.)
 fi
 MOTIF_APS="\$(MOTIF_APS)"
  if ${HAVE_MOTIF+:} false; then
@@ -12977,7 +12993,7 @@ VALGRIND_memcheck_FLAGS  ?=
 VALGRIND_memcheck_FLAGS  += --leak-check=full --show-reachable=no
 
 VALGRIND_helgrind_FLAGS  ?=
-VALGRIND_helgrind_FLAGS  += --history-level=approx
+VALGRIND_helgrind_FLAGS  += --history-level=full
 
 VALGRIND_drd_FLAGS       ?=
 VALGRIND_drd_FLAGS       +=
@@ -13065,10 +13081,10 @@ $(VALGRIND_LOGS):
 tests-valgrind:
 	@ \
 	echo "--- VALGRIND TESTS --- enabled tools: $(foreach tool,$(VALGRIND_TOOLS), $(tool))"; \
-	$(MAKE) VALGRIND_BUILD="yes"; \
+	$(MAKE) -k $(BUILD_FLAGS) $(AM_MAKEFLAGS) all VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
-			$(MAKE) $(AM_MAKEFLAGS) -k tests-valgrind-tool VALGRIND_TOOL=$(tool); \
+			$(MAKE) -k $(TEST_FLAGS) $(AM_MAKEFLAGS) tests-valgrind-tool VALGRIND_TOOL=$(tool); \
 		) \
 	)
 
@@ -14808,10 +14824,13 @@ fi
 
 
       PYTHONHOME="$(eval winepath -w /python27 2>/dev/null)"
-	  as_fn_append TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
-	  as_fn_append TESTS_ENVIRONMENT "WINEDEBUG=-all "
-	  as_fn_append TESTS_ENVIRONMENT "MDS_PATH='$(eval winepath -w ${srcdir}/tdi 2>/dev/null)' "
-	  as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR='$(eval winepath -w ${srcdir} 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
+      as_fn_append TESTS_ENVIRONMENT "WINEDEBUG=-all "
+      as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR='$(eval winepath -w ${srcdir} 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "MDS_PATH='$(eval winepath -w ${srcdir}/tdi 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "MDS_PYDEVICE_PATH='$(eval winepath -w ${srcdir}/pydevices 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "main_path='.;$(eval winepath -w ${srcdir}/trees 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "subtree_path='.;$(eval winepath -w ${srcdir}/trees/subtree 2>/dev/null)' "
       if test "x$WINEARCH" = xwin64; then :
   # WINEARCH win64
 		 as_fn_append WINEPATH "${PYTHONHOME}"
@@ -14862,8 +14881,12 @@ fi
    as_fn_append TESTS_ENVIRONMENT "PATH=${MAKEBINDIR}:\${PATH} "
    as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
    as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
+   as_fn_append TESTS_ENVIRONMENT "MDS_PYDEVICE_PATH=\$(abs_top_srcdir)/pydevices "
+   as_fn_append TESTS_ENVIRONMENT "main_path='.;\$(abs_top_srcdir)/trees' "
+   as_fn_append TESTS_ENVIRONMENT "subtree_path='.;\$(abs_top_srcdir)/trees/subtree' "
    as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
-   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes"
+   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes "
+   as_fn_append TESTS_ENVIRONMENT "PyLib=$(if test -z $PyLib; then echo ${DEF_PYLIB}; else echo $PyLib; fi) "
    as_fn_append PY_LOG_COMPILER "${PYTHON} -B \$(top_srcdir)/testing/testing.py"
   ;; #(
   #
@@ -14876,7 +14899,6 @@ fi
   *) :
      ;;
 esac
-
 # MACOS: add --dsymutil=yes to valgrind
 
 # Set ENABLE_TESTS
@@ -16916,7 +16938,7 @@ RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEA
 
 # Determine common warning options to apply to C, C++, and Fortran languages
 WARNFLAGS="-Wall -Wextra"
-
+NOWARNFLAGS=
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to treat warnings as errors" >&5
 $as_echo_n "checking whether to treat warnings as errors... " >&6; }
 # Check whether --enable-werror was given.
@@ -16928,10 +16950,21 @@ fi
 
 case $enable_werror in #(
   yes) :
-    as_fn_append WARNFLAGS " -Werror" ;; #(
+    as_fn_append WARNFLAGS " -Werror " ;; #(
   *) :
      ;;
 esac
+# Check whether --enable-wreturns was given.
+if test "${enable_wreturns+set}" = set; then :
+  enableval=$enable_wreturns; case $enableval in #(
+  no) :
+    as_fn_append NOWARNFLAGS " -Wno-unused-result " ;; #(
+  *) :
+     ;;
+esac
+fi
+
+
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_werror" >&5
 $as_echo "$enable_werror" >&6; }
@@ -17129,11 +17162,15 @@ fi
 
 
 
-ac_config_headers="$ac_config_headers include/config.h"
 
 
 
-ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javatraverser2/Makefile javatraverser2/java/mds/mdslib/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdsdcl/mdsdcl_show_version.c mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/_version.py mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/testing/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile pydevices/MitDevices/_version.py pydevices/RfxDevices/_version.py pydevices/W7xDevices/_version.py remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile treeshr/testing/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
+
+ac_config_headers="$ac_config_headers include/mdsplus/mdsconfig.h"
+
+
+
+ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javatraverser2/Makefile javatraverser2/java/mds/mdslib/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdsdcl/mdsdcl_show_version.c mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/_version.py mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/testing/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile pydevices/MitDevices/_version.py pydevices/RfxDevices/_version.py pydevices/W7xDevices/_version.py remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile tditest/testing/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile treeshr/testing/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -17982,7 +18019,7 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
-    "include/config.h") CONFIG_HEADERS="$CONFIG_HEADERS include/config.h" ;;
+    "include/mdsplus/mdsconfig.h") CONFIG_HEADERS="$CONFIG_HEADERS include/mdsplus/mdsconfig.h" ;;
     "Makefile.inc") CONFIG_FILES="$CONFIG_FILES Makefile.inc" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "docs/Makefile") CONFIG_FILES="$CONFIG_FILES docs/Makefile" ;;
@@ -18050,6 +18087,7 @@ do
     "tdishr/testing/Makefile") CONFIG_FILES="$CONFIG_FILES tdishr/testing/Makefile" ;;
     "tdic/Makefile") CONFIG_FILES="$CONFIG_FILES tdic/Makefile" ;;
     "tditest/Makefile") CONFIG_FILES="$CONFIG_FILES tditest/Makefile" ;;
+    "tditest/testing/Makefile") CONFIG_FILES="$CONFIG_FILES tditest/testing/Makefile" ;;
     "testing/Makefile") CONFIG_FILES="$CONFIG_FILES testing/Makefile" ;;
     "testing/backends/check/Makefile") CONFIG_FILES="$CONFIG_FILES testing/backends/check/Makefile" ;;
     "testing/selftest/Makefile") CONFIG_FILES="$CONFIG_FILES testing/selftest/Makefile" ;;

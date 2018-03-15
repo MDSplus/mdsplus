@@ -399,7 +399,7 @@ static void pts_activate_proc(Widget w)
   L8210HeaderToPTS(header, (char *)&mems, pts);
   for (i = 0; i < 8; i++) {
     char pts_str[10];
-    char name_str[9];
+    char name_str[17];
     XmString lab;
     sprintf(pts_str, "%d", pts[i]);
     sprintf(name_str, "*.pts_%d", i);

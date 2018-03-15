@@ -45,8 +45,10 @@ def pointerToObject(pointer,tree=None):
     return Descriptor(pointer)._setTree(tree).value
 
 class Descriptor(object):
-    tree=None
+    tree = None
     dclass_id = 0
+    _value = None
+    _structure = None
     class _structure_class(_C.Structure):
         _fields_=[("length",_C.c_ushort),
                   ("dtype",_C.c_ubyte),
@@ -110,7 +112,7 @@ class Descriptor(object):
     def __getattr__(self,name):
         if name is not '_structure' and name in dict(self._structure._fields_):
             return self._structure.__getattribute__(name)
-        super(Descriptor,self).__getattribute__(name)
+        super(Descriptor,self).__getattr__(name)
     def __setattr__(self,name,value):
         if name is not '_structure' and name in dict(self._structure._fields_):
             return self._structure.__setattr__(name,value)

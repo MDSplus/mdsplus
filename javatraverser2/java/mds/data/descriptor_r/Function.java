@@ -32,8 +32,11 @@ public class Function extends Descriptor_R<Short>{
             this.lorr = lorr;
         }
     }
-    private static final String newline   = "\r\n\t\t\t\t\t\t\t";
-    private static int          TdiIndent = 1;
+    private static String newline;
+    private static int    TdiIndent;
+    static{
+        Function.setWindowsLineEnding(System.getProperty("os.name").startsWith("Win"));
+    }
 
     public static final Function ABS(final Descriptor<?> dscptrs) {
         return new Function(OPC.OpcAbs, dscptrs);
@@ -108,6 +111,11 @@ public class Function extends Descriptor_R<Short>{
             case OPC.OpcFun:
                 return new Fun(b);
         }
+    }
+
+    public static final void setWindowsLineEnding(final boolean win_in) {
+        Function.newline = win_in ? "\r\n\t\t\t\t\t\t\t" : "\n\t\t\t\t\t\t\t";
+        Function.TdiIndent = win_in ? 1 : 0;
     }
 
     protected Function(final ByteBuffer b){
@@ -333,8 +341,13 @@ public class Function extends Descriptor_R<Short>{
     }
 
     @Override
-    public Descriptor<?> getLocal_() {
-        return new Function(this.getOpCode(), Descriptor.getLOCAL(this.getArguments())).setLocal();
+    public Descriptor<?> getLocal_(final FLAG local) {
+        final short opc = this.getOpCode();
+        if(!FLAG.and(local, opc != OPC.OpcExtFunction && opc != OPC.OpcDefault && opc != OPC.OpcShot && opc != OPC.OpcExpt)) return this.evaluate().setLocal();
+        final FLAG mylocal = new FLAG();
+        final Descriptor<?>[] args = Descriptor.getLocals(mylocal, this.getArguments());
+        if(FLAG.and(local, mylocal.flag)) return this.setLocal();
+        return new Function(opc, args).setLocal();
     }
 
     protected final String getName() {

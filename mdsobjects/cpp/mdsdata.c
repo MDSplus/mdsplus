@@ -25,7 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdsplus/mdsplus.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
@@ -87,8 +87,6 @@ void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr)
   }
   return xdPtr;
 }
-
-#define MAX_DIMS 32
 
 void *convertToArrayDsc(int clazz, int dtype, int length, int arsize, int nDims, int *dims,
 			void *ptr)

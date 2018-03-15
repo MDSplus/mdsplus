@@ -57,7 +57,7 @@ int XmdsBells(int *number_of_bells )
 ------------------------------------------------------------------------------*/
 
 #include <X11/Xlib.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 
 EXPORT int XmdsBells(int *num_bells)
 {

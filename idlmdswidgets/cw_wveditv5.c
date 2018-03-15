@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <stdlib.h>
 #include <string.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <stdio.h>
 #include <mdsdescrip.h>
 #include <Mrm/MrmPublic.h>
@@ -35,6 +35,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <X11/Xatom.h>
 #include <X11/cursorfont.h>
 #include <Xm/Text.h>
+#ifdef strlcpy
+#undef strlcpy
+#endif
+#ifdef strlcat
+#undef strlcat
+#endif
 #include "export.h"
 
 enum callback_id { CB_UNKNOWN, CB_AUTOSCALE, CB_CROSSHAIRS, CB_LIMITS, CB_MOVE, CB_STRETCH,

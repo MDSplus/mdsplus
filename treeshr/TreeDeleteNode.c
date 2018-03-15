@@ -60,7 +60,6 @@ int TreeDeleteNodeInitialize(NID *nid,int *count,reset)
 
 extern void **TreeCtx();
 
-static unsigned char *TREE_DELETE_LIST = 0;
 
 STATIC_ROUTINE void check_nid(PINO_DATABASE * dblist, NID * nid, int *count);
 
@@ -83,30 +82,30 @@ int _TreeDeleteNodeInitialize(void *dbid, int nidin, int *count, int reset)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NID *nid = (NID *) & nidin;
-  static int list_vm = 0;
   int vm_needed;
   if (!IS_OPEN_FOR_EDIT(dblist))
     return TreeNOEDIT;
   vm_needed = dblist->tree_info->header->nodes / 8 + 4;
-  if (vm_needed != list_vm) {
-    unsigned char *old_list = TREE_DELETE_LIST;
-    TREE_DELETE_LIST = malloc((size_t)vm_needed);
-    if (!TREE_DELETE_LIST)
+  if (vm_needed != dblist->delete_list_vm) {
+    unsigned char *old_list = dblist->delete_list;
+    dblist->delete_list = malloc((size_t)vm_needed);
+    if (!dblist->delete_list)
       return TreeMEMERR;
     if (reset) {
-      memset(TREE_DELETE_LIST, 0, (size_t)vm_needed);
+      memset(dblist->delete_list, 0, (size_t)vm_needed);
       if (count)
 	*count = 0;
     } else {
-      memcpy(TREE_DELETE_LIST, old_list, (size_t)((list_vm < vm_needed) ? list_vm : vm_needed));
-      if (vm_needed > list_vm)
-	memset(TREE_DELETE_LIST + list_vm, 0, (size_t)(vm_needed - list_vm));
+      if (old_list)
+        memcpy(dblist->delete_list, old_list, (size_t)((dblist->delete_list_vm < vm_needed) ? dblist->delete_list_vm : vm_needed));
+      if (vm_needed > dblist->delete_list_vm)
+	memset(dblist->delete_list + dblist->delete_list_vm, 0, (size_t)(vm_needed - dblist->delete_list_vm));
     }
-    if (list_vm)
+    if (dblist->delete_list_vm)
       free(old_list);
-    list_vm = vm_needed;
+    dblist->delete_list_vm = vm_needed;
   } else if (reset) {
-    memset(TREE_DELETE_LIST, 0, (size_t)list_vm);
+    memset(dblist->delete_list, 0, (size_t)dblist->delete_list_vm);
     if (count)
       *count = 0;
   }
@@ -115,26 +114,24 @@ int _TreeDeleteNodeInitialize(void *dbid, int nidin, int *count, int reset)
   return TreeNORMAL;
 }
 
-STATIC_ROUTINE int getbit(int bitnum)
-{
-  return TREE_DELETE_LIST[bitnum / 8] & (1 << (bitnum % 8));
+static inline int getbit(PINO_DATABASE *dblist, int bitnum){
+  return dblist->delete_list[bitnum / 8] & (1 << (bitnum % 8));
 }
 
-STATIC_ROUTINE void setbit(int bitnum)
-{
-  TREE_DELETE_LIST[bitnum / 8] = (unsigned char)(TREE_DELETE_LIST[bitnum / 8] | (1 << bitnum % 8));
+static inline void setbit(PINO_DATABASE *dblist,int bitnum){
+  dblist->delete_list[bitnum / 8] = (unsigned char)(dblist->delete_list[bitnum / 8] | (1 << bitnum % 8));
 }
 
 STATIC_ROUTINE void check_nid(PINO_DATABASE * dblist, NID * nid, int *count)
 {
   int bitnum = nid->node;
-  if (!getbit(bitnum)) {
+  if (!getbit(dblist,bitnum)) {
     NODE *node;
     NODE *descendent;
     node = nid_to_node(dblist, nid);
     if (count)
       (*count)++;
-    setbit(bitnum);
+    setbit(dblist,bitnum);
     for (descendent = member_of(node); descendent; descendent = brother_of(0, descendent)) {
       NID nid;
       node_to_nid(dblist, descendent, (&nid));
@@ -192,13 +189,14 @@ void TreeDeleteNodeExecute( )
 extern void _TreeDeleteNodeExecute(void *dbid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
-  static NID nid;
+  if (!IS_OPEN_FOR_EDIT(dblist))
+    return;
+  NID nid;
   NODE *node;
   NODE *parent;
-  static NCI empty_nci;
+  const int zero = 0;
 
   TREE_EDIT *edit = dblist->tree_info->edit;
-  static int zero = 0;
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */
@@ -255,7 +253,7 @@ extern void _TreeDeleteNodeExecute(void *dbid)
       edit->deleted_nid_list=dnid;
     }
     else
-      memcpy(edit->nci + nid.node - edit->first_in_mem, &empty_nci, sizeof(struct nci));
+      memset(edit->nci + nid.node - edit->first_in_mem, 0, sizeof(struct nci));
     memcpy(node->name, "deleted node", sizeof(node->name));
     LoadShort(zero, &node->conglomerate_elt);
     node->member = 0;
@@ -268,10 +266,9 @@ extern void _TreeDeleteNodeExecute(void *dbid)
 
 void _TreeDeleteNodesWrite(void *dbid) {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
-  static NID nid;
+  NID nid;
   NODE *node;
   NODE *prevnode = 0;
-  static NCI empty_nci;
   NODE *firstempty = (dblist->tree_info->header->free == -1) ? (NODE *) 0 :
       (NODE *) ((char *)dblist->tree_info->node + dblist->tree_info->header->free);
   TREE_EDIT *edit = dblist->tree_info->edit;
@@ -304,6 +301,7 @@ void _TreeDeleteNodesWrite(void *dbid) {
       node->parent = 0;
     nidx = nid.node;
     TreeGetNciLw(dblist->tree_info, nidx, &old_nci);
+    NCI empty_nci = {0};
     TreePutNci(dblist->tree_info, nidx, &empty_nci, 1);
     TreeUnLockNci(dblist->tree_info, 0, nidx);
   }
@@ -357,8 +355,8 @@ int _TreeDeleteNodeGetNid(void *dbid, int *innid)
   int i;
   int status = TreeNORMAL;
   int found = 0;
-  if (TREE_DELETE_LIST != NULL)
-    for (i = nid->node + 1; i < dblist->tree_info->header->nodes && ((found = getbit(i)) == 0);
+  if (dblist->delete_list)
+    for (i = nid->node + 1; i < dblist->tree_info->header->nodes && ((found = getbit(dblist,i)) == 0);
 	 i++) ;
   if (found)
     nid->node = (unsigned)i&0xFFFFFF;

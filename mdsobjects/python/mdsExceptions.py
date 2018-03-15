@@ -456,7 +456,7 @@ MDSplusException.statusDict[662471016] = DevBAD_PRE_TRIG
 
 class DevBAD_POST_TRIG(DevException):
   status=662471026
-  message="Clock source either not available or invalid"
+  message="Post trigger samples either not available or invalid"
   msgnam="BAD_POST_TRIG"
 
 MDSplusException.statusDict[662471024] = DevBAD_POST_TRIG
@@ -2790,6 +2790,34 @@ class TdiTIMEOUT(TdiException):
 
 MDSplusException.statusDict[265519360] = TdiTIMEOUT
 
+
+class ApdException(MDSplusException):
+  fac="Apd"
+
+
+class ApdAPD_APPEND(ApdException):
+  status=266141706
+  message="First argument must be APD or *"
+  msgnam="APD_APPEND"
+
+MDSplusException.statusDict[266141704] = ApdAPD_APPEND
+
+
+class ApdDICT_KEYVALPAIR(ApdException):
+  status=266141714
+  message="A Dictionary requires an even number of elements"
+  msgnam="DICT_KEYVALPAIR"
+
+MDSplusException.statusDict[266141712] = ApdDICT_KEYVALPAIR
+
+
+class ApdDICT_KEYCLS(ApdException):
+  status=266141722
+  message="Keys must be scalar, i.e. CLASS_S"
+  msgnam="DICT_KEYCLS"
+
+MDSplusException.statusDict[266141720] = ApdDICT_KEYCLS
+
 ########################### generated from mdsdcl_messages.xml ########################
 
 
@@ -3057,3 +3085,11 @@ class TclFAILED_ESSENTIAL(TclException):
   msgnam="FAILED_ESSENTIAL"
 
 MDSplusException.statusDict[2752528] = TclFAILED_ESSENTIAL
+
+
+class TclNO_DISPATCH_TABLE(TclException):
+  status=2752536
+  message="No dispatch table found. Forgot to do DISPATCH/BUILD?"
+  msgnam="NO_DISPATCH_TABLE"
+
+MDSplusException.statusDict[2752536] = TclNO_DISPATCH_TABLE

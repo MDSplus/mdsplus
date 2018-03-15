@@ -13,9 +13,13 @@
 */
 PUBLIC FUN LOADPHASE(IN _actionpath)
 {
-	_machine = "lsf002";
+
+	/* This routine is obsolete */
+
+	/*_machine = "lsf002";
 	_command = "/f/mdsplus/dispatching/loadphase "//$SHOT//" "//$EXPT//" "//_actionpath//" >& /dev/null &";
 	_cmd = "/usr/bin/rsh -n "//_machine//" "//_command;
 	SPAWN(_cmd);
+	*/
 	return(1);
 }

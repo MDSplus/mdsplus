@@ -9,6 +9,7 @@
 ./usr/local/mdsplus/tdi/d3d/d3ddispatch.fun
 ./usr/local/mdsplus/tdi/d3d/damphase.fun
 ./usr/local/mdsplus/tdi/d3d/density.fun
+./usr/local/mdsplus/tdi/d3d/density_old.fun
 ./usr/local/mdsplus/tdi/d3d/eceprof.fun
 ./usr/local/mdsplus/tdi/d3d/echpwrc.fun
 ./usr/local/mdsplus/tdi/d3d/efittree.fun
@@ -16,7 +17,7 @@
 ./usr/local/mdsplus/tdi/d3d/findatree.fun
 ./usr/local/mdsplus/tdi/d3d/findcer.fun
 ./usr/local/mdsplus/tdi/d3d/findefit.fun
-./usr/local/mdsplus/tdi/d3d/findefitnew.fun
+./usr/local/mdsplus/tdi/d3d/findefit_coderundb.fun
 ./usr/local/mdsplus/tdi/d3d/findshot.fun
 ./usr/local/mdsplus/tdi/d3d/findsig.fun
 ./usr/local/mdsplus/tdi/d3d/findsig_clean.fun
@@ -116,11 +117,10 @@
 ./usr/local/mdsplus/tdi/d3d/show_tree_names.fun
 ./usr/local/mdsplus/tdi/d3d/sign_of.fun
 ./usr/local/mdsplus/tdi/d3d/sleep.fun
-./usr/local/mdsplus/tdi/d3d/tdiflux.fun
 ./usr/local/mdsplus/tdi/d3d/teceprof.fun
-./usr/local/mdsplus/tdi/d3d/tr_install.fun
 ./usr/local/mdsplus/tdi/d3d/transp_error.fun
 ./usr/local/mdsplus/tdi/d3d/transp_status.fun
 ./usr/local/mdsplus/tdi/d3d/tree_from_tag.fun
 ./usr/local/mdsplus/tdi/d3d/tsslice.fun
+./usr/local/mdsplus/tdi/d3d/tsslice2.fun
 ./usr/local/mdsplus/tdi/d3d/using_signal.fun

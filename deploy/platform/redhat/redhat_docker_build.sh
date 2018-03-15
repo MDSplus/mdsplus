@@ -16,13 +16,15 @@
 srcdir=$(readlink -e $(dirname ${0})/../..)
 
 test64="64 x86_64-linux bin64 lib64 --with-gsi=/usr:gcc64"
-test32="32 i686-linux   bin32 lib32 --with-gsi=/usr:gcc32"
+test32="32 i686-linux   bin32 lib32 --with-gsi=/usr:gcc32 --with-valgrind-lib=/usr/lib64/valgrind"
 makelist(){
     rpm2cpio $1 | \
         cpio --list --quiet | \
         grep -v python/dist | \
+	grep -v python/doc | \
         grep -v python/build | \
         grep -v egg-info | \
+	grep -v '\.build\-id' | \
         sort
 }
 buildrelease(){
@@ -67,6 +69,10 @@ buildrelease(){
     else
         echo "WARNING: Signing Keys Unavailable. Building unsigned RPMS"
         GPGCHECK="0"
+    fi
+    if [ -r /sign_keys/RPM-GPG-KEY-MDSplus ]
+    then
+	cp /sign_keys/RPM-GPG-KEY-MDSplus ${BUILDROOT}/etc/pki/rpm-gpg/;
     fi
     cat - > ${BUILDROOT}/etc/yum.repos.d/mdsplus${BNAME}.repo <<EOF
 [MDSplus${BNAME}]

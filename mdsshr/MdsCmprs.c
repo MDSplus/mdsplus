@@ -246,9 +246,9 @@ Do this in runs.
  *             compiler the other <= tests do not work.
  *        if overflow, put in flag value
  ***********/
-      ans = (int64_t)*p32 - (int64_t)old;
-      if ((ans > (int64_t)INT_MAX) || (ans < (int64_t)-2147483647)) {
-        *pn++=(int)ans;
+      ans = *p32 - old;
+      if ((uint32_t)ans == 0x80000000 || old<0 ? ans<*p32 : ans>*p32) {
+        *pn++=ans;
         yy = 32;
       }
       else {

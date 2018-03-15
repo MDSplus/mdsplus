@@ -216,7 +216,6 @@ static long read_mp(mdsexprRecord *prec)
      prec->pact=TRUE;
 
 /*************************Set Intermediate result to 0 UNTIL SET BY asyncRead*********************************/
-     printf("Scrivo zero\n");
      switch(prec->ftvl) {
 	    	case DBF_CHAR: 
 	    	case DBF_UCHAR: 
@@ -234,6 +233,9 @@ static long read_mp(mdsexprRecord *prec)
 		    *((float *)prec->bptr) = 0;
 		    break;
 	    	case DBF_DOUBLE: 
+		    *((double *)prec->bptr) = 0;
+		    break;
+	    	case DBF_STRING: 
 		    *((double *)prec->bptr) = 0;
 		    break;
 	}

@@ -11,3 +11,55 @@
    Helgrind:Race
    fun:_nss_files_gethostbyname*_r
 }
+
+{
+   leak in threadsafe posix gethostbyname_r
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:__nss_database_lookup
+   fun:__nss_hosts_lookup2
+   fun:gethostbyaddr_r@@GLIBC_2.2.5
+}
+
+{
+   race conditions on fc26
+   Helgrind:Race
+   ...
+   fun:gethostbyname2_r@@GLIBC_2.2.5
+   fun:gaih_inet.constprop.7
+   fun:getaddrinfo
+}
+
+{
+   race condition on daylight due to tzset
+   Helgrind:Race
+   fun:tzset_
+}
+
+{
+   fc27's libopenblasp is not thread safe
+   Helgrind:Race
+   fun:gotoblas_set_affinity
+   obj:/usr/lib64/libopenblasp-r0.2.20.so
+}
+
+{
+   fc27's libpthread is not compatible with helgrind
+   Helgrind:Misc
+   fun:pthread_cond_signal_WRK
+   fun:pthread_cond_signal@*
+   fun:pthread_cond_timedwait@@GLIBC_2.3.2
+   fun:pthread_cond_timedwait_WRK
+   fun:pthread_cond_timedwait@*
+}
+
+{
+   garbageCollect in udt4 submodule
+   Helgrind:PthAPIerror
+   fun:mutex_lock_WRK
+   fun:pthread_mutex_lock
+   fun:*CGuard*
+   fun:*CUDTUnited*checkBrokenSockets*
+   fun:*CUDTUnited*garbageCollect*
+}

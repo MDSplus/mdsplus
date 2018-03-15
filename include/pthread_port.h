@@ -6,26 +6,13 @@
 #include <STATICdef.h>
 #ifdef _WIN32
  #ifndef NO_WINDOWS_H
+  #ifdef LOAD_INITIALIZESOCKETS
+   #include <winsock2.h>
+  #endif
   #include <windows.h>
  #endif
- #ifdef HAVE_PTHREAD_H
-  #include <pthread.h>
- #else//HAVE_PTHREAD_H
-  #define pthread_mutex_t HANDLE
-  #define pthread_cond_t HANDLE
-  #define pthread_once_t int
-  typedef void *pthread_t;
-  #define PTHREAD_ONCE_INIT 0
-  #ifndef PTHREAD_MUTEX_RECURSIVE
-   #define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
-  #endif
-  //#ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
-  //#define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP {0x4000}
-  //#endif
- #endif//HAVE_PTHREAD_H
-#else//_WIN32
- #include <pthread.h>
-#endif//_WIN32
+#endif
+#include <pthread.h>
 
 #define DEFAULT_STACKSIZE 0x800000
 
@@ -75,13 +62,8 @@ typedef struct _Condition_p {
      ((struct TdiZoneStruct*)ptr)->a_begin=NULL;
    }
  }
- #ifdef _WIN32
-  #define FREEBEGIN_ON_EXIT(ptr) {
-  #define FREEBEGIN_NOW(ptr)     };freebegin(&TdiRefZone)
- #else
   #define FREEBEGIN_ON_EXIT() pthread_cleanup_push(freebegin,&TdiRefZone)
   #define FREEBEGIN_NOW()     pthread_cleanup_pop(1)
- #endif
 #endif
 
 #ifdef DEF_FREED
@@ -89,16 +71,10 @@ typedef struct _Condition_p {
  static void __attribute__((unused)) free_d(void *ptr){
    StrFree1Dx((struct descriptor_d*)ptr);
  }
- #ifdef _WIN32
-  #define FREED_ON_EXIT(ptr) {
-  #define FREED_IF(ptr,c)    };if (c) free_d(ptr)
-  #define FREED_NOW(ptr)     };free_d(ptr)
- #else
   #define FREED_ON_EXIT(ptr) pthread_cleanup_push(free_d, ptr)
   #define FREED_IF(ptr,c)    pthread_cleanup_pop(c)
   #define FREED_NOW(ptr)     pthread_cleanup_pop(1)
- #endif
- #define INIT_AS_AND_FREED_ON_EXIT(var,value) struct descriptor_d var = value;FREED_ON_EXIT(&var)
+ #define INIT_AS_AND_FREED_ON_EXIT(var,value) struct descriptor_d var=value;FREED_ON_EXIT(&var);
  #define INIT_AND_FREED_ON_EXIT(dtype,var)    INIT_AS_AND_FREED_ON_EXIT(var, ((struct descriptor_d){ 0, dtype, CLASS_D, 0 }))
 #endif
 #ifdef DEF_FREEXD
@@ -106,77 +82,64 @@ typedef struct _Condition_p {
  static void __attribute__((unused)) free_xd(void *ptr){
    MdsFree1Dx((struct descriptor_xd*)ptr, NULL);
  }
- #ifdef _WIN32
-  #define FREEXD_ON_EXIT(ptr) {
-  #define FREEXD_IF(ptr,c)    };if (c) free_xd((void*)&ptr)
-  #define FREEXD_NOW(ptr)     };free_xd(ptr)
- #else
   #define FREEXD_ON_EXIT(ptr) pthread_cleanup_push(free_xd, ptr)
   #define FREEXD_IF(ptr,c)    pthread_cleanup_pop(c)
   #define FREEXD_NOW(ptr)     pthread_cleanup_pop(1)
- #endif
- #define INIT_AND_FREEXD_ON_EXIT(ptr) EMPTYXD(xd);FREEXD_ON_EXIT(&xd);
+ #define INIT_AND_FREEXD_ON_EXIT(xd) EMPTYXD(xd);FREEXD_ON_EXIT(&xd);
 #endif
 static void __attribute__((unused)) free_if(void *ptr){
   if (*(void**)ptr) free(*(void**)ptr);
 }
-#ifdef _WIN32
- #define FREE_ON_EXIT(ptr)   {
- #define FREE_IF(ptr,c)      };if (c) free_if((void*)&ptr)
- #define FREE_NOW(ptr)       };free_if((void*)&ptr)
- #define FREE_CANCEL(ptr)    }
-#else
  #define FREE_ON_EXIT(ptr)   pthread_cleanup_push(free_if, (void*)&ptr)
  #define FREE_IF(ptr,c)      pthread_cleanup_pop(c)
  #define FREE_NOW(ptr)       pthread_cleanup_pop(1)
  #define FREE_CANCEL(ptr)    pthread_cleanup_pop(0)
-#endif
 #define INIT_AS_AND_FREE_ON_EXIT(type,ptr,value) type ptr = value;FREE_ON_EXIT(ptr)
 #define INIT_AND_FREE_ON_EXIT(type,ptr) INIT_AS_AND_FREE_ON_EXIT(type,ptr,NULL)
 
 #define CONDITION_INITIALIZER {PTHREAD_COND_INITIALIZER,PTHREAD_MUTEX_INITIALIZER,B_FALSE}
 
-#define CONDITION_INIT(input){\
+#define CONDITION_INIT(input) do{\
 (input)->value = 0;\
 pthread_cond_init(&(input)->cond, pthread_condattr_default);\
 pthread_mutex_init(&(input)->mutex, pthread_mutexattr_default);\
-}
+} while(0)
 #define _CONDITION_LOCK(input)   pthread_mutex_lock(&(input)->mutex)
 #define _CONDITION_UNLOCK(input) pthread_mutex_unlock(&(input)->mutex)
 #define _CONDITION_SIGNAL(input) pthread_cond_signal(&(input)->cond)
 #define _CONDITION_WAIT(input)   pthread_cond_wait(&(input)->cond,&(input)->mutex)
 #define _CONDITION_WAIT_SET(input)   while (!(input)->value) _CONDITION_WAIT(input)
 #define _CONDITION_WAIT_RESET(input) while ( (input)->value) _CONDITION_WAIT(input)
-#define _CONDITION_WAIT_1SEC(input,status){\
+#define _CONDITION_WAIT_1SEC(input,status) do{\
 struct timespec tp;\
 clock_gettime(CLOCK_REALTIME, &tp);\
 tp.tv_sec++;\
 status pthread_cond_timedwait(&(input)->cond,&(input)->mutex,&tp);\
-}
-#define CONDITION_SET_TO(input,value_in){\
+} while(0)
+#define CONDITION_SET_TO(input,value_in) do{\
 _CONDITION_LOCK(input);\
 (input)->value = value_in;\
 _CONDITION_SIGNAL(input);\
 _CONDITION_UNLOCK(input);\
-}
+} while(0)
 #define CONDITION_SET(input)   CONDITION_SET_TO(input,B_TRUE)
 #define CONDITION_RESET(input) CONDITION_SET_TO(input,0)
-#define CONDITION_WAIT_SET(input){\
+#define CONDITION_WAIT_SET(input) do{\
 _CONDITION_LOCK(input);\
 _CONDITION_WAIT_SET(input);\
 _CONDITION_UNLOCK(input);\
-}
-#define CONDITION_WAIT_1SEC(input){\
+} while(0)
+#define CONDITION_WAIT_1SEC(input) do{\
 _CONDITION_LOCK(input);\
 _CONDITION_WAIT_1SEC(input,);\
 _CONDITION_UNLOCK(input);\
-}
-#define CONDITION_DESTROY(input){\
-_CONDITION_LOCK(input);\
+} while(0)
+#define CONDITION_DESTROY(input,destroy_lock) do{\
+pthread_mutex_lock(destroy_lock);\
 pthread_cond_destroy(&(input)->cond);\
-_CONDITION_UNLOCK(input);\
 pthread_mutex_destroy(&(input)->mutex);\
-}
+pthread_mutex_unlock(destroy_lock);\
+} while(0)
 #define CREATE_DETACHED_THREAD(thread, stacksize, target, args)\
 pthread_attr_t attr;\
 pthread_attr_init(&attr);\
@@ -185,7 +148,7 @@ int c_status = pthread_create(&thread, &attr, (void *)target, args);\
 pthread_attr_destroy(&attr);\
 pthread_detach(thread);
 
-#define CONDITION_START_THREAD(input, thread, stacksize, target, args){\
+#define CONDITION_START_THREAD(input, thread, stacksize, target, args) do{\
 _CONDITION_LOCK(input);\
 if (!(input)->value) {\
   CREATE_DETACHED_THREAD(thread, stacksize, target, args);\
@@ -198,65 +161,20 @@ if (!(input)->value) {\
   }\
 }\
 _CONDITION_UNLOCK(input);\
-}
-//"
-#if defined(__MACH__) || defined(_WIN32)
-#define _ALLOC_HP struct hostent *hp;
-#define _GETHOSTBYADDR(addr,type) gethostbyaddr(((void *)&addr),sizeof(addr),type)
-#define _GETHOSTBYNAME(name)      gethostbyname(name)
-#define _GETHOST(gethost) hp = gethost
-#define FREE_HP
-#else
-#define _ALLOC_HP \
-size_t memlen = 1024;\
-struct hostent hostbuf, *hp;\
-int herr;\
-char *hp_mem = (char*)malloc(memlen)
-
-#define _GETHOST(gethost_r) \
-while ( hp_mem && (gethost_r == ERANGE) ) {\
-  memlen *=2;\
-  free(hp_mem);\
-  hp_mem = (char*)malloc(memlen);\
-}
-#define _GETHOSTBYADDR(addr,type) gethostbyaddr_r(((void *)&addr),sizeof(addr),type,&hostbuf,hp_mem,memlen,&hp,&herr)
-#define _GETHOSTBYNAME(name)      gethostbyname_r(name,&hostbuf,hp_mem,memlen,&hp,&herr)
-#define FREE_HP if (hp_mem) free(hp_mem)
-#endif
-
-#define GETHOSTBYADDR(addr,type) \
-_ALLOC_HP;\
-_GETHOST(_GETHOSTBYADDR(addr,type))
-
-#define GETHOSTBYNAME(name) \
-_ALLOC_HP;\
-_GETHOST(_GETHOSTBYNAME(name))
-
-#define GETHOSTBYNAMEORADDR(name,addr) \
-GETHOSTBYNAME(name);\
-if (!hp){\
-   addr = (int)inet_addr(name);\
-   if (addr != -1)  _GETHOST(_GETHOSTBYADDR(addr,AF_INET));\
-}
-
+} while(0)//"
 #ifdef LOAD_INITIALIZESOCKETS
-#ifndef _WIN32
-#define INITIALIZESOCKETS
-#else
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-static int sockets_initialized = B_FALSE;
-#define INITIALIZESOCKETS {\
-  pthread_mutex_lock(&mutex);\
-  if (!sockets_initialized) {\
-    WSADATA wsaData;\
-    WORD wVersionRequested;\
-    wVersionRequested = MAKEWORD(1, 1);\
-    WSAStartup(wVersionRequested, &wsaData);\
-    sockets_initialized = B_TRUE;\
-  }\
-  pthread_mutex_unlock(&mutex);\
-}
-#endif
+ #ifndef _WIN32
+  #define INITIALIZESOCKETS
+ #else
+  static pthread_once_t InitializeSockets_once = PTHREAD_ONCE_INIT;
+  static void InitializeSockets() {
+    WSADATA wsaData;
+    WORD wVersionRequested;
+    wVersionRequested = MAKEWORD(1, 1);
+    WSAStartup(wVersionRequested, &wsaData);
+  }
+  #define INITIALIZESOCKETS pthread_once(&InitializeSockets_once,InitializeSockets)
+ #endif
 #endif
 
 #ifdef LOAD_GETUSERNAME
@@ -303,5 +221,15 @@ static char* _getUserName(){
   return user_p;
 }
 #endif
+
+#define RUN_FUNCTION_ONCE(fun) do{ \
+  static pthread_once_t RUN_FUNCTION_once = PTHREAD_ONCE_INIT; \
+  static pthread_mutex_t RUN_FUNCTION_lock = PTHREAD_MUTEX_INITIALIZER; \
+  pthread_mutex_lock(&RUN_FUNCTION_lock); \
+  pthread_cleanup_push((void*)pthread_mutex_unlock,&RUN_FUNCTION_lock); \
+  pthread_once(&RUN_FUNCTION_once,fun); \
+  pthread_cleanup_pop(1); \
+}while(0)
+
 
 #endif//nPTHREAD_PORT_H

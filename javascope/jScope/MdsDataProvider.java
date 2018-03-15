@@ -1567,8 +1567,11 @@ public class MdsDataProvider
                 case Descriptor.DTYPE_LONG:
                     return (float) desc.int_data[0];
                 case Descriptor.DTYPE_BYTE:
+                     return (float) desc.byte_data[0];
                 case Descriptor.DTYPE_UBYTE:
-                    return (float) desc.byte_data[0];
+		     short currShort = 0;
+		     currShort |= ((short)desc.byte_data[0] & 0x00FF);
+		     return(float)currShort;
                 case Descriptor.DTYPE_CSTRING:
                     if ( (desc.status & 1) == 0)
                     {
@@ -1630,11 +1633,33 @@ public class MdsDataProvider
                 out = new RealArray(desc.double_data);
                 break;
             case Descriptor.DTYPE_LONG:
-            case Descriptor.DTYPE_USHORT:
             {
                 float[] outF = new float[desc.int_data.length];
                 for (int i = 0; i < desc.int_data.length; i++)
                     outF[i] = (float) desc.int_data[i];
+                out = new RealArray(outF);
+            }
+            case Descriptor.DTYPE_ULONG:
+            {
+                float[] outF = new float[desc.int_data.length];
+                for (int i = 0; i < desc.int_data.length; i++)
+ 		{
+		    long currLong = 0;
+		    currLong |= ((long)desc.int_data[i] & 0x00000000FFFFFFFF);
+                    outF[i] = (float) currLong;
+		}
+                out = new RealArray(outF);
+            }
+            break;
+            case Descriptor.DTYPE_USHORT:
+            {
+                float[] outF = new float[desc.int_data.length];
+                for (int i = 0; i < desc.int_data.length; i++)
+		{
+		    int currInt = 0;
+		    currInt |= ((int)desc.short_data[i] & 0x0000FFFF);
+                    outF[i] = (float) currInt;
+		}
                 out = new RealArray(outF);
             }
             break;
@@ -1647,7 +1672,6 @@ public class MdsDataProvider
             }
             break;
             case Descriptor.DTYPE_BYTE:
-            case Descriptor.DTYPE_UBYTE:
             {
                 float[] outF = new float[desc.byte_data.length];
                 for (int i = 0; i < desc.byte_data.length; i++)
@@ -1655,6 +1679,18 @@ public class MdsDataProvider
                 out = new RealArray(outF);
             }
             break;
+            case Descriptor.DTYPE_UBYTE:
+            {
+                float[] outF = new float[desc.byte_data.length];
+                for (int i = 0; i < desc.byte_data.length; i++)
+		{
+		    short currShort = 0;
+		    currShort |= ((short)desc.byte_data[i] & 0x00FF);
+                    outF[i] = (float) currShort;
+		}
+                out = new RealArray(outF);
+            }
+	    break;
             case Descriptor.DTYPE_ULONGLONG:
             case Descriptor.DTYPE_LONGLONG:
             {

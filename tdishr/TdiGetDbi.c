@@ -201,8 +201,7 @@ int Tdi1Using(int opcode __attribute__ ((unused)),
 	      struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  void *ctx;
-  int reset_ctx = 0;
+  void *pctx = NULL;
   int nid, shot;
   unsigned short stat1;
   struct descriptor_d def = { 0, DTYPE_T, CLASS_D, 0 }, expt = def;
@@ -267,9 +266,7 @@ int Tdi1Using(int opcode __attribute__ ((unused)),
       if (narg > 3 && list[3])
 	status = TdiData(list[3], &expt MDS_END_ARG);
       else {
-	DBI_ITM expt_itm[] = { {0, DbiNAME, 0, 0}
-	, EOL
-	};
+	DBI_ITM expt_itm[] = { {0, DbiNAME, 0, 0}, EOL};
 	status = TreeGetDbi(expt_itm);
 	if (expt_itm[0].pointer) {
 	  unsigned short len = (unsigned short)strlen((char *)expt_itm[0].pointer);
@@ -284,8 +281,7 @@ int Tdi1Using(int opcode __attribute__ ((unused)),
                 *********************/
     if STATUS_OK {
       char *tree = MdsDescrToCstring((struct descriptor *)&expt);
-      ctx = TreeSwitchDbid(0);
-      reset_ctx = 1;
+      pctx = TreeSavePrivateCtx(NULL);
       status = TreeOpen(tree, shot, 1);
       MdsFree(tree);
     }
@@ -310,10 +306,7 @@ int Tdi1Using(int opcode __attribute__ ((unused)),
 			    fixup_nid, NULL, fixup_path, NULL);
     MdsFree1Dx(&tmp, NULL);
   }
-  if (reset_ctx) {
-    while (TreeClose(0, 0) & 1) ;
-    TreeFreeDbid(TreeSwitchDbid(ctx));
-
-  }
+  if (pctx)
+    TreeFreeDbid(TreeRestorePrivateCtx(pctx));
   return status;
 }

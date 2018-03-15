@@ -28,20 +28,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <wspiapi.h>
 #endif
 #include "treeshrp.h"
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdstypes.h>
-#ifdef HAVE_PTHREAD_H
 #include <pthread.h>
-#endif
 #ifdef _WIN32
 #include <windows.h>
 #include <io.h>
-/*#define write _write
-#define lseek _lseeki64
-#define open _open
-#define close _close
-#define read _read
-*/
 #else
 #include <unistd.h>
 #endif
@@ -74,11 +66,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-#define MAX_DIMS 7
 struct descrip {
   char dtype;
   char ndims;
-  int dims[MAX_DIMS];
+  int dims[MAX_DIMS_R];
   int length;
   void *ptr;
 };
@@ -1193,15 +1184,14 @@ int MDS_IO_OPEN(char *filename, int options, mode_t mode)
 #ifndef _WIN32
     if ((fd != -1) && ((options & O_CREAT) != 0)) {
       struct descriptor cmd_d = { 0, DTYPE_T, CLASS_S, 0 };
-      char *cmd = (char *)malloc(64 + strlen(filename));
-      sprintf(cmd, "SetMdsplusFileProtection %s 2> /dev/null", filename);
-      cmd_d.length = strlen(cmd);
-      cmd_d.pointer = cmd;
-      LibSpawn(&cmd_d, 1, 0);
-      /*
-         system(cmd);
-       */
-      free(cmd);
+      char *cmd = (char *)malloc(39 + strlen(filename));
+      if (cmd) {
+        sprintf(cmd, "SetMdsplusFileProtection %s 2> /dev/null", filename);
+        cmd_d.length = strlen(cmd);
+        cmd_d.pointer = cmd;
+        LibSpawn(&cmd_d, 1, 0);
+        free(cmd);
+      }
     }
 #endif
   }
@@ -1550,7 +1540,7 @@ int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
     if (FDS[fd - 1].socket == -1) {
       int mode = mode_in & MDS_IO_LOCK_MASK;
       int nowait = mode_in & MDS_IO_LOCK_NOWAIT;
-#if defined (_WIN32)
+#ifdef _WIN32
       OVERLAPPED overlapped;
       int flags;
       offset = ((offset >= 0) && (nowait == 0)) ? offset : (lseek(FDS[fd - 1].fd, 0, SEEK_END));
@@ -1587,9 +1577,6 @@ int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
 #endif
     } else
       status = io_lock_remote(fd, offset, size, mode_in, deleted);
-#if !defined(_WIN32)
-    //ThreadLock(fd,offset,size,mode_in);
-#endif
   }
   UNLOCKFDS return status;
 }

@@ -36,7 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-------------------------------------------------------------------------
 
 #include "common.h"
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 
 EXPORT int CTSdbFileIsMapped = FALSE;
 EXPORT int CRATEdbFileIsMapped = FALSE;

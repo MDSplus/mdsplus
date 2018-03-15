@@ -34,7 +34,7 @@ extern int MDSEventCan();
 ///
 /// \brief RemoveConnection
 /// \param conid
-/// \return 
+/// \return
 ///
 int RemoveConnection(int conid)
 {
@@ -51,12 +51,7 @@ int RemoveConnection(int conid)
 	free(e->info);
       free(e);
     }
-    if (c->context.tree) {
-      void *old_context;
-      old_context = TreeSwitchDbid(c->context.tree);
-      TreeClose(0, 0);
-      c->context.tree = TreeSwitchDbid(old_context);
-    }
+    while IS_OK(_TreeClose(&c->DBID,0, 0));
     TdiSaveContext(tdi_context);
     TdiDeleteContext(c->tdicontext);
     TdiRestoreContext(tdi_context);

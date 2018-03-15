@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         type logical output, scalar for no DIM or vector input, else rank (n-1) with DIM-th dimension missing.
 
                 result = xx(ARRAY, [DIM], [MASK])
-        MASK3:  MAXVAL MEAN MINVAL PRODUCT RMS STD_DEV SUM
+        MASK3:  MAXVAL MEAN MINVAL PRODUCT RMS STD_DEV SUM MAXLOC MINLOC
         type numeric output, scalar for no DIM or vector input, else rank (n-1) with DIM-th dimension missing.
 
                 result = xx(ARRAY, [DIM], [MASK])

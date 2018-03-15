@@ -1,4 +1,4 @@
-public fun TreePutRecord(as_is _nodename, optional _data, optional _utility_update)
+public fun TreePutRecord(as_is _nodename, optional as_is _data, optional _utility_update)
 {
   if (!present(_utility_update)) _utility_update = 0;
   if (present(_data))

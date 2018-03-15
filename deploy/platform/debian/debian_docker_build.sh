@@ -46,6 +46,7 @@ makelist(){
     dpkg -c $1 | \
     grep -v python/dist | \
     grep -v python/build | \
+    grep -v python/doc | \
     grep -v egg-info | \
     grep -v '/$' | \
     awk '{for (i=6; i<NF; i++) printf $i " "; print $NF}' | \
@@ -117,6 +118,8 @@ buildrelease() {
 	fi
     done
     checkstatus abort "Failure: Problem with contents of one or more debs. (see above)" $baddeb
+  if [ -z "$abort" ] || [ "$abort" = "0" ]
+  then
     echo "Building repo";
     mkdir -p /release/repo/conf
     mkdir -p /release/repo/db
@@ -147,7 +150,7 @@ EOF
     if [ ! -z "$GPG_HOME" ]
     then
     	echo "SignWith: MDSplus" >> /release/repo/conf/distributions
-	export HOME="$GPG_HOME"
+	rsync -a ${GPG_HOME}/.gnupg /tmp
     fi
     pushd /release/repo
     reprepro clearvanished
@@ -155,11 +158,14 @@ EOF
     do
         if [ -z "$abort" ] || [ "$abort" = "0" ]
         then
-            :&& reprepro -V -C ${BRANCH} includedeb MDSplus $deb
+            :&& HOME=/tmp reprepro -V -C ${BRANCH} includedeb MDSplus $deb
             checkstatus abort "Failure: Problem installing $deb into repository." $?
+        else
+          break
         fi
     done
     popd
+  fi #abort
   fi #nomake
 }
 publish() {

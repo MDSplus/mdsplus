@@ -52,23 +52,22 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 {
     BEGIN_TESTING(MDSTreeSuppression);
 #ifdef _WIN32
-    _putenv_s("leaktest_path",".");
-#else
-    setenv("leaktest_path",".",1);
+#define setenv(name,val,extra) _putenv_s(name,val)
 #endif
-    
-    Tree * tree = new Tree("leaktest",-1,"NEW");    
+    setenv("t_treesupp_path",".",1);
+
+    Tree * tree = new Tree("t_treesupp",-1,"NEW");
     tree->write();
     delete tree;
 
-    tree = new Tree("leaktest",-1,"EDIT");
+    tree = new Tree("t_treesupp",-1,"EDIT");
 
     TreeNode * node = tree->addNode("dummy_node","NUMERIC");
     delete node;
-      
+
     TreeNode * node2 = tree->addNode("dummy_node2","TEXT");
     delete node2;
-        
+
     tree->write();
     delete tree;
     END_TESTING;

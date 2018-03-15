@@ -1,8 +1,6 @@
 public fun RFXControl__add(in _path, out _nidout)
 {
-write(*,'RFXControl__add'); 
-/*  DevAddStart(_path, 'RFXControl', 1721, _nidout);*/
-    DevAddStart(_path, 'RFXControl', 1785, _nidout);
+    DevAddStart(_path, 'RFXControl', 1797, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);

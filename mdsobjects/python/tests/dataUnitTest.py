@@ -1,4 +1,4 @@
-# 
+#!/usr/bin/python
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,8 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from unittest import TestCase,TestSuite
-
+from unittest import TestCase,TestSuite,TextTestRunner
 from numpy import ndarray, array, int32
 from math import log10
 import MDSplus as m
@@ -33,6 +32,7 @@ import MDSplus as m
 class Tests(TestCase):
     inThread = False
     index = 0
+
     def _doThreeTest(self,tdiexpr,pyexpr,ans,**kwargs):
         """ tests Scalars tdi expression vs. python Expression vs. expected result """
         almost = kwargs.get('almost',False)
@@ -133,6 +133,8 @@ class Tests(TestCase):
     def testData(self):
         self.assertEqual(m.Data(2).compare(2),True)
         self.assertEqual(m.Data(2).compare(1),False)
+        self.assertEqual(m.Dictionary([1,'a',2,'b']).data().tolist(),{1: 'a', 2: 'b'})
+        self.assertEqual(m.List([1,'a',2,'b']).data().tolist(),[1, 'a', 2, 'b'])
 
     def testScalars(self):
         def doTest(suffix,cl,scl,ucl,**kw):
@@ -274,8 +276,7 @@ class Tests(TestCase):
         self._doThreeTestArray('accumulate([1,2,3])',m.ACCUMULATE(m.makeArray([1,2,3])),m.Int32Array([1,3,6]))
         self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]])',m.ACCUMULATE(m.makeArray([[1,3,5],[2,4,6]])),m.Int32Array([[1,4,9], [11,15,21]]))
         self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]],0)',m.ACCUMULATE(m.makeArray([[1,3,5],[2,4,6]]),0),m.Int32Array([[1,4,9],[2,6,12]]))
-        #self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]],1)',m.ACCUMULATE([[1,3,5],[2,4,6]],1),m.Int32Array([[1,3,5],[3,7,11]]))  # tdi issue
-        self._doUnaryArray(m.Data.execute('accumulate([[1,3,5],[2,4,6]],1)'),m.ACCUMULATE(m.makeArray([[1,3,5],[2,4,6]]),1).getData())
+        self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]],1)',m.ACCUMULATE(m.makeArray([[1,3,5],[2,4,6]]),1),m.Int32Array([[1,3,5],[3,7,11]]))
         """Test achar"""
         self._doThreeTest('achar(88)',m.ACHAR(88),m.String('X'))
         """Test ADJUSTL"""
@@ -329,6 +330,10 @@ class Tests(TestCase):
         self._doThreeTestArray('array(10,0)',  m.ARRAY(10,0),m.Int32Array([0]*10))
         self._doThreeTestArray('array(10,0BU)',m.ARRAY(10,m.Uint8(0)),m.Uint8Array([0]*10))
         self._doThreeTestArray('zero(100)',    m.ZERO(100),m.Float32Array([0]*100))
+        self._doTdiTest('_l=list(*,1,2,3)', m.List([1,2,3]))
+        self._doTdiTest('_l=list(_l,4,5)', m.List([1,2,3,4,5]))
+        self._doTdiTest('_d=dict(*,1,"1",2,"2")', m.Dictionary([1,'1',2,'2']))
+        self._doTdiTest('_d=dict(_d,3,"3")', m.Dictionary([1,'1',2,'2',3,"3"]))
 
     def tdiPythonInterface(self):
         self._doTdiTest("Py('a=None')",1)
@@ -337,13 +342,7 @@ class Tests(TestCase):
         self._doTdiTest("Py('import MDSplus;a=MDSplus.Uint8(-1)','a')",m.Uint8(255))
         self._doTdiTest("pyfun('Uint8','MDSplus',-1)",m.Uint8(255))
         self._doTdiTest("pyfun('Uint8',*,-1)",m.Uint8(255))
-        self._doTdiTest("pyfun('str',*,123)",m.String(123))
-        self._doTdiTest('_l=list(*,1,2,3)', m.List([1,2,3]))
-        self._doTdiTest('_l=list(_l,4,5)', m.List([1,2,3,4,5]))
-        self._doTdiTest('apdrm(_l,1,3)',  m.List([1,3,5]))
-        self._doTdiTest('_d=dict(*,1,"1",2,"2")', m.Dictionary([1,'1',2,'2']))
-        self._doTdiTest('_d=dict(_d,3,"3")',     m.Dictionary([1,'1',2,'2',3,"3"]))
-        self._doTdiTest('apdrm(_d,2)',          m.Dictionary([1,'1',3,"3"]))
+        self._doTdiTest("pyfun('str',*,123)",m.String("123"))
 
     def decompile(self):
         self.assertEqual(str(m.Uint8(123)),'123BU')
@@ -356,7 +355,7 @@ class Tests(TestCase):
         self.assertEqual(str(m.Int64(123)),'123Q')
         self.assertEqual(str(m.Float32(1.2E-3)),'.0012')
         self.assertEqual(str(m.Float64(1.2E-3)),'.0012D0')
-        self.assertEqual(str(m.Signal(m.ZERO(100000,0).evaluate(),None,0)),"Build_Signal(Set_Range(100000,0 /*** etc. ***/), *, 0)")
+        self.assertEqual(str(m.Signal(m.ZERO(100000,0.).evaluate(),None,0.)),"Build_Signal(Set_Range(100000,0. /*** etc. ***/), *, 0.)")
 
     def runTest(self):
         for test in self.getTests():
@@ -365,23 +364,27 @@ class Tests(TestCase):
     def getTests():
         return ['testData','testScalars','testArrays','vmsSupport','tdiFunctions','decompile','tdiPythonInterface']
     @classmethod
-    def getTestCases(cls):
-        return map(cls,cls.getTests())
+    def getTestCases(cls,tests=None):
+        if tests is None: tests = cls.getTests()
+        return map(cls,tests)
 
-def suite():
-    return TestSuite(Tests.getTestCases())
+def suite(tests=None):
+    return TestSuite(Tests.getTestCases(tests))
 
-def run():
-    from unittest import TextTestRunner
-    TextTestRunner(verbosity=2).run(suite())
+def run(tests=None):
+    TextTestRunner(verbosity=2).run(suite(tests))
+
+def objgraph():
+    import objgraph,gc
+    gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
+    run()
+    gc.collect()
+    objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
 
 if __name__=='__main__':
     import sys
-    if len(sys.argv)>1 and sys.argv[1].lower()=="objgraph":
-        import objgraph
-    else:      objgraph = None
-    import gc;gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    run()
-    if objgraph:
-         gc.collect()
-         objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
+    if len(sys.argv)==2 and sys.argv[1]=='all':
+        run()
+    elif len(sys.argv)>1:
+        run(sys.argv[1:])
+    else: print('Available tests: %s'%(' '.join(Tests.getTests())))

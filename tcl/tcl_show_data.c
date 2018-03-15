@@ -22,7 +22,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
@@ -70,8 +70,8 @@ static char *TclDtypeString(	/* Returns:  address of formatted string */
     )
 {
   char *string = malloc(100);
-  sprintf(string, "%-30s: ", MdsDtypeString(dtype));
-  return (string);
+  if (string) sprintf(string, "%-30s: ", MdsDtypeString(dtype));
+  return string;
 }
 
 	/****************************************************************
@@ -109,8 +109,8 @@ static int CvtNidT(struct descriptor *in_dsc_ptr, int depth, char **error, char 
       struct descriptor_xd lxd = { 0, 0, CLASS_XD, 0, 0 };
       char *out_str = alloca(strlen(dstr) + strlen(pathname) + depth + 10);
       sprintf(out_str, "%*s%s\n", (int)(strlen(dstr) + depth), dstr, pathname);
-      TreeFree(pathname);
       tclAppend(output, out_str);
+      TreeFree(pathname);
       sts = TreeGetRecord(nid, &lxd);
       if (sts & 1) {
 	sts = CvtDxT((struct descriptor *)(&lxd), depth + 4, error, output);

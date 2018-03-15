@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <string.h>
 #include <stdio.h>
-#include <inttypes.h>
+#include <int128.h>
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
 #include <math.h>
@@ -834,16 +834,16 @@ STATIC_ROUTINE void DOUBLEC_TO_TEXT(int itype, char *pa, char *pb, int numb, int
   }
 }
 
-#define BU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,unsigned char,pb,numb,sprintf(text,"%u",(unsigned int)*ip++))
-#define WU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,unsigned short,pb,numb,sprintf(text,"%u",(unsigned int)*ip++))
-#define LU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,unsigned int,pb,numb,sprintf(text,"%u",(unsigned int)*ip++))
-#define QU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,uint64_t,pb,numb,sprintf(text,"%"PRIu64,(uint64_t)*ip++))
-#define B_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,char,pb,numb,sprintf(text,"%d",(int)*ip++))
-#define W_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,short,pb,numb,sprintf(text,"%d",(int)*ip++))
-#define L_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,int,pb,numb,sprintf(text,"%d",(int)*ip++))
-#define Q_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,int64_t,pb,numb,sprintf(text,"%"PRId64,(int64_t)*ip++))
-#define OU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,unsigned int,pb,numb,sprintf(text,"%#x%08x%08x%08x",ip[3],ip[2],ip[1],ip[0]);ip +=4)
-#define O_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,unsigned int,pb,numb,sprintf(text,"%#x%08x%08x%08x",ip[3],ip[2],ip[1],ip[0]);ip +=4)
+#define BU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,  uint8_t,pb,numb,sprintf(text,"%"PRIu8, *ip++))
+#define WU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa, uint16_t,pb,numb,sprintf(text,"%"PRIu16,*ip++))
+#define LU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa, uint32_t,pb,numb,sprintf(text,"%"PRIu32,*ip++))
+#define QU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa, uint64_t,pb,numb,sprintf(text,"%"PRIu64,*ip++))
+#define B_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,   int8_t,pb,numb,sprintf(text,"%"PRId8, *ip++))
+#define W_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,  int16_t,pb,numb,sprintf(text,"%"PRId16,*ip++))
+#define L_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,  int32_t,pb,numb,sprintf(text,"%"PRId32,*ip++))
+#define Q_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,  int64_t,pb,numb,sprintf(text,"%"PRId64,*ip++))
+#define OU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,uint128_t,pb,numb,sprintf(text,"%s",uint128_deco(ip++,int128_buf)))
+#define O_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa, int128_t,pb,numb,sprintf(text,"%s", int128_deco(ip++,int128_buf)))
 #if DTYPE_F == DTYPE_NATIVE_FLOAT
 #define F_T(lena,pa,lenb,pb,numb)   FLOAT_TO_TEXT(DTYPE_F,pa,pb,numb,lenb,'E'); status=1
 #define FS_T(lena,pa,lenb,pb,numb)  FLOAT_TO_TEXT(DTYPE_FS,pa,pb,numb,lenb,'S'); status=1
@@ -987,6 +987,7 @@ EXPORT int TdiConvert(struct descriptor_a *pdin, struct descriptor_a *pdout)
     goto same;
   } else {
 	/** big branch **/
+    INT128_BUF(int128_buf);
     n = MAXTYPE * dtypea + dtypeb;
     switch (n) {
       defset(BU)

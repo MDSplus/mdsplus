@@ -24,19 +24,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-                Name:   Tdi3Divide   
+                Name:   Tdi3Divide
 
                 Type:   C function
 
                 Author: TOM FREDIAN
 
-                Date:   5-OCT-1993 
+                Date:   5-OCT-1993
 
                 Purpose: Divide two operands
 
 ------------------------------------------------------------------------------
 
-        Call sequence: 
+        Call sequence:
 
 int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 
@@ -56,19 +56,12 @@ int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor
 #include <mdsdescrip.h>
 #include <mdstypes.h>
 #include <tdishr_messages.h>
+#include <int128.h>
 
 
 
 extern int CvtConvertFloat();
-extern double WideIntToDouble();
-extern void DoubleToWideInt();
 STATIC_CONSTANT int roprand = 0x8000;
-typedef struct {
-  int longword[2];
-} quadword;
-typedef struct {
-  int longword[4];
-} octaword;
 
 #define SetupArgs \
   struct descriptor_a *ina1 = (struct descriptor_a *)in1;\
@@ -136,22 +129,15 @@ typedef struct {
   break;\
 }
 
-#define OperateWideOne(type,size,is_signed) \
-  double a = WideIntToDouble(in1p,size/sizeof(int),is_signed);	\
-  double b = WideIntToDouble(in2p,size/sizeof(int),is_signed);	\
-  double ans = (b != 0) ? a/b : (double)0.0;			\
-  DoubleToWideInt(&ans,size/sizeof(int),outp++);
-
-#define OperateWide(type,size,is_signed) \
-{ type *in1p = (type *)in1->pointer;\
-  type *in2p = (type *)in2->pointer;\
-  type *outp = (type *)out->pointer;\
-  switch (scalars)\
-  {\
-    case 0: \
-    case 3: while (nout--) { OperateWideOne(type,size,is_signed) in1p++; in2p++; } break;\
-    case 1: while (nout--) { OperateWideOne(type,size,is_signed)         in2p++; } break;\
-    case 2: while (nout--) { OperateWideOne(type,size,is_signed) in1p++;         } break;\
+#define Operate128(type) {\
+  type##_t *in1p = (type##_t *)in1->pointer;\
+  type##_t *in2p = (type##_t *)in2->pointer;\
+  type##_t *outp = (type##_t *)out->pointer;\
+  switch (scalars) {\
+    case 0: while (nout--) type##_div(in1p++,in2p++,outp++); break;\
+    case 1: while (nout--) type##_div(in1p  ,in2p++,outp++); break;\
+    case 2: while (nout--) type##_div(in1p  ,in2p++,outp++); break;\
+    case 3:                type##_div(in1p  ,in2p  ,outp  ); break;\
   }\
   break;\
 }
@@ -207,54 +193,26 @@ int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor
   SetupArgs switch (in1->dtype) {
   case DTYPE_B:
     Operate(char)
-    case DTYPE_BU:Operate(unsigned char)
-    case DTYPE_W:Operate(short)
-    case DTYPE_WU:Operate(unsigned short)
-    case DTYPE_L:Operate(int)
-    case DTYPE_LU:Operate(unsigned int)
-    case DTYPE_Q:Operate(int64_t);
-  case DTYPE_QU:
-    Operate(uint64_t);
-  case DTYPE_O:
-    OperateWide(octaword, 4, 1);
-  case DTYPE_OU:
-    OperateWide(octaword, 4, 0);
-  case DTYPE_F:
-    OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT)
-    case DTYPE_FS:OperateF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT)
-    case DTYPE_G:OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
-    case DTYPE_D:OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE)
-    case DTYPE_FT:OperateF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE)
-    case DTYPE_FC:OperateC(float, DTYPE_F)
+    case DTYPE_BU: Operate(unsigned char)
+    case DTYPE_W:  Operate(short)
+    case DTYPE_WU: Operate(unsigned short)
+    case DTYPE_L:  Operate(int)
+    case DTYPE_LU: Operate(unsigned int)
+    case DTYPE_Q:  Operate(int64_t);
+    case DTYPE_QU: Operate(uint64_t);
+    case DTYPE_O:  Operate128( int128);
+    case DTYPE_OU: Operate128(uint128);
+    case DTYPE_F:  OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT)
+    case DTYPE_FS: OperateF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT)
+    case DTYPE_G:  OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
+    case DTYPE_D:  OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE)
+    case DTYPE_FT: OperateF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE)
+    case DTYPE_FC: OperateC(float, DTYPE_F)
     case DTYPE_FSC:OperateC(float, DTYPE_FS)
-    case DTYPE_GC:OperateC(double, DTYPE_G)
-    case DTYPE_DC:OperateC(double, DTYPE_D)
+    case DTYPE_GC: OperateC(double, DTYPE_G)
+    case DTYPE_DC: OperateC(double, DTYPE_D)
     case DTYPE_FTC:OperateC(double, DTYPE_FT)
     default:return TdiINVDTYDSC;
   }
   return 1;
 }
-
-/*  CMS REPLACEMENT HISTORY, Element Tdi3Divide.C */
-/*  *21   15-AUG-1996 15:48:38 TWF "Fix complex divide" */
-/*  *20   15-AUG-1996 15:32:03 TWF "Fix complex divide" */
-/*  *19   15-AUG-1996 15:04:55 TWF "Ieee support" */
-/*  *18    6-AUG-1996 11:33:54 TWF "Fix complex divide" */
-/*  *17    1-AUG-1996 17:21:14 TWF "Use int instead of long" */
-/*  *16   30-JUL-1996 09:05:31 TWF "Fix divide of complex" */
-/*  *15   29-JUL-1996 15:40:37 TWF "Fix addx and subx calls" */
-/*  *14   26-JUL-1996 12:24:51 TWF "Special handling for alpha and vms" */
-/*  *13   24-JUN-1996 14:44:08 TWF "Port to Unix/Windows" */
-/*  *12   17-OCT-1995 16:16:59 TWF "use <builtins.h> form" */
-/*  *11   19-OCT-1994 12:26:23 TWF "Use TDI$MESSAGES" */
-/*  *10   19-OCT-1994 10:39:13 TWF "No longer support VAXC" */
-/*  *9    19-OCT-1994 10:33:34 TWF "No longer support VAXC" */
-/*  *8    15-NOV-1993 10:09:44 TWF "Add memory block" */
-/*  *7    15-NOV-1993 09:42:20 TWF "Add memory block" */
-/*  *6    16-OCT-1993 13:01:50 MRL "" */
-/*  *5    16-OCT-1993 12:51:23 MRL "" */
-/*  *4    15-OCT-1993 18:11:03 MRL "" */
-/*  *3    15-OCT-1993 17:53:26 MRL "" */
-/*  *2     8-OCT-1993 09:51:06 MRL "" */
-/*  *1     7-OCT-1993 15:40:08 MRL "" */
-/*  CMS REPLACEMENT HISTORY, Element Tdi3Divide.C */

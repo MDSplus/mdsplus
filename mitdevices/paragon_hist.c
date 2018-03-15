@@ -49,7 +49,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdstypes.h>
 #include <mdsdescrip.h>
 #include <mds_gendevice.h>

@@ -115,6 +115,20 @@ public class BINARY extends Function{
     public interface DOUBLE_METHOD{
         public double method(double x, double y);
     }
+    public static class Equals extends BINARY{
+        public Equals(final ByteBuffer b){
+            super(b);
+        }
+
+        public Equals(final Descriptor<?> a, final Descriptor<?> b){
+            super(OPC.OpcEquals, a, b);
+        }
+
+        @Override
+        public final Descriptor<?> evaluate() {
+            return this.getArgument(1).evaluate();
+        }
+    }
     public interface LONG_METHOD{
         public long method(long x, long y);
     }
@@ -316,6 +330,8 @@ public class BINARY extends Function{
                 return new Divide(b);
             case OPC.OpcConcat:
                 return new Concat(b);
+            case OPC.OpcEquals:
+                return new Equals(b);
             case OPC.OpcMultiply:
                 return new Multiply(b);
             case OPC.OpcPower:
@@ -466,10 +482,10 @@ public class BINARY extends Function{
     }
 
     @Override
-    public final Descriptor<?> evaluate() {
+    public Descriptor<?> evaluate() {
         try{
-            if(MdsLib.lib_loaded == null) return Descriptor.mdslib.getDescriptor("EVALUATE($)", this.getLocal());
-            final DATA<?>[] args = Descriptor.getDATA(this.getArguments());
+            if(MdsLib.lib_loaded == null) return Descriptor.mdslib.getDescriptor(this.tree, "EVALUATE($)", this.getLocal());
+            final DATA<?>[] args = Descriptor.getDATAs(this.getArguments());
             return this.method(args);
         }catch(final MdsException e){
             System.err.println(e.getMessage());
@@ -478,8 +494,10 @@ public class BINARY extends Function{
     }
 
     @Override
-    public Descriptor<?> getLocal_() {
-        final Descriptor<?> X = this.getArgument(0).getLocal(), Y = this.getArgument(1).getLocal();
+    public Descriptor<?> getLocal_(final FLAG local) {
+        final FLAG mylocal = new FLAG();
+        final Descriptor<?> X = Descriptor.getLocal(mylocal, this.getArgument(0)), Y = Descriptor.getLocal(mylocal, this.getArgument(1));
+        if(FLAG.and(local, mylocal.flag)) return this.setLocal();
         try{
             return this.getClass().getConstructor(Descriptor.class, Descriptor.class).newInstance(X, Y).setLocal();
         }catch(final Exception e){

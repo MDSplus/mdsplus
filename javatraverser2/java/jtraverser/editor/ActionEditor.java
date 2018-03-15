@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import jtraverser.editor.usage.DispatchEditor;
 import jtraverser.editor.usage.TaskEditor;
 import mds.MdsException;
+import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_r.Action;
 
@@ -17,18 +18,18 @@ public class ActionEditor extends Editor{
     }
     JPanel action_panel, debug_panel;
 
-    public ActionEditor(final boolean editable, final Window window){
-        this(null, editable, window);
+    public ActionEditor(final boolean editable, final CTX ctx, final Window window){
+        this(null, editable, ctx, window);
     }
 
-    public ActionEditor(final Descriptor<?> data, final boolean editable, final Window window){
-        super(data, editable, 5);
+    public ActionEditor(final Descriptor<?> data, final boolean editable, final CTX ctx, final Window window){
+        super(data, editable, ctx, 5);
         this.setLayout(new BorderLayout());
-        this.edit[0] = new DispatchEditor(this.editable, window);
-        this.edit[1] = new TaskEditor(this.editable, window);
-        this.edit[2] = Editor.addLabel("ErrorLogs", new ExprEditor(true, this.editable, false));
-        this.edit[3] = Editor.addLabel("Completion", new ExprEditor(true, this.editable, false));
-        this.edit[4] = Editor.addLabel("Performance", new ExprEditor(false, this.editable, false));
+        this.edit[0] = new DispatchEditor(this.editable, ctx, window);
+        this.edit[1] = new TaskEditor(this.editable, ctx, window);
+        this.edit[2] = Editor.addLabel("ErrorLogs", new ExprEditor(this.editable, ctx, true, false));
+        this.edit[3] = Editor.addLabel("Completion", new ExprEditor(this.editable, ctx, true, false));
+        this.edit[4] = Editor.addLabel("Performance", new ExprEditor(this.editable, ctx, false, false));
         this.action_panel = new JPanel();
         this.action_panel.setLayout(new GridLayout(1, 2));
         this.action_panel.add(this.edit[0]);

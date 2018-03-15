@@ -42,7 +42,6 @@ extern unsigned short OpcExtFunction;
 
 static int timedAccessFlag = 0;
 
-#define MAX_DIMENSION_SIGNAL 16
 #define MAX_FUN_NAMELEN 512
 
 #ifdef _WIN32
@@ -186,13 +185,13 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
   struct descriptor_xd *dataXds;
   struct descriptor_xd *dimensionXds;
 
-  DESCRIPTOR_SIGNAL(currSignalD, MAX_DIMENSION_SIGNAL, 0, 0);
+  DESCRIPTOR_SIGNAL(currSignalD, MAX_DIMS, 0, 0);
   DESCRIPTOR_APD(signalsApd, DTYPE_SIGNAL, 0, 0);
   struct descriptor_signal **signals;
 
 //printf("GET TIMED RECORD\n");
 
-//Chheck for possible resampled versions
+  //Check for possible resampled versions
   nid = checkResampledVersion(dbid, inNid, minDeltaD);
 
   timedAccessFlag = 1;
@@ -428,11 +427,23 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 //Free stuff
   free((char *)signals);
   for (i = 0; i < actNumSegments; i++) {
-    MdsFree1Dx(&resampledXds[i], 0);
+    MdsFree1Dx(&resampledXds[i], NULL);
   }
   free((char *)resampledXds);
   free((char *)dataXds);
   free((char *)dimensionXds);
+  if (outSignal->pointer && (_TreeGetSegmentScale(dbid, inNid, &xd)&1)){
+    if (xd.pointer) {
+      struct descriptor_signal* sig = (struct descriptor_signal*)outSignal->pointer;
+      emptyXd = *outSignal;
+      outSignal->pointer = NULL;
+      sig->raw  = sig->data;
+      sig->data = xd.pointer;
+      MdsCopyDxXd((struct descriptor*)sig,outSignal);
+      MdsFree1Dx(&xd,NULL);
+      MdsFree1Dx(&emptyXd,NULL);
+    }
+  }
   return status;
 }
 

@@ -48,7 +48,7 @@ extern char *strsignal(int);
 
 
 // Check for HAVE_CHECK and HAVE_FORK //
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 
 #include "testing.h"
 

@@ -57,7 +57,9 @@ int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims, int *dims, 
   Message *m;
   *mout = 0;
   *numbytes = 0;
-  m = GetMdsMsgTO(id, &status, timeout_msec);
+  Connection* c = FindConnection(id,NULL);
+  m = GetMdsMsgTOC(c, &status, timeout_msec);
+  UnlockConnection(c);
   if STATUS_NOT_OK {
     *dtype = 0;
     *length = 0;
@@ -83,11 +85,11 @@ int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims, int *dims, 
       printf("dim[%d] = %d\n", i, dims[i]);
 #endif
     }
-    for (i = m->h.ndims; i < MAX_DIMS; i++)
+    for (i = m->h.ndims; i < MAX_DIMS_R; i++)
       dims[i] = 0;
   } else {
     *numbytes = m->h.length;
-    for (i = 0; i < MAX_DIMS; i++)
+    for (i = 0; i < MAX_DIMS_R; i++)
       dims[i] = 0;
   }
   if ((int)(sizeof(MsgHdr) + *numbytes) != m->h.msglen) {

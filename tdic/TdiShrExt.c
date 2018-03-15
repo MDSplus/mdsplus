@@ -59,7 +59,7 @@ dele *.exe;
  #include <sys/socket.h>
  #define INVALID_SOCKET -1
 #endif
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -71,10 +71,6 @@ dele *.exe;
 #endif
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
-#ifdef VMS
-#include <ctype.h>
-#define TdiCvt TDI$CVT
-#endif
 extern int MdsOpen(int sock, char *tree, int shot);
 extern int MdsClose(int sock);
 extern int TdiCvt();

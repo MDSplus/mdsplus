@@ -10,6 +10,7 @@ import mds.data.DATA;
 import mds.data.DTYPE;
 import mds.data.TREE;
 import mds.data.descriptor_a.Int8Array;
+import mds.data.descriptor_r.Function;
 import mds.data.descriptor_s.CString;
 import mds.data.descriptor_s.Missing;
 import mds.data.descriptor_s.NUMBER;
@@ -18,6 +19,30 @@ import mds.mdslib.MdsLib;
 
 /** DSC (24) **/
 public abstract class Descriptor<T>{
+    static protected class FLAG{
+        public static final boolean and(final FLAG flag, final boolean in) {
+            if(flag != null) flag.flag = flag.flag && in;
+            return in;
+        }
+
+        public static final boolean or(final FLAG flag, final boolean in) {
+            if(flag != null) flag.flag = flag.flag || in;
+            return in;
+        }
+
+        public static final boolean set(final FLAG flag, final boolean in) {
+            if(flag != null) flag.flag = in;
+            return in;
+        }
+
+        public static final boolean xor(final FLAG flag, final boolean in) {
+            if(flag != null) flag.flag = flag.flag ^ in;
+            return in;
+        }
+        public boolean flag = true;
+
+        public FLAG(){}
+    }
     protected static final int    _lenS     = 0;
     protected static final int    _typB     = 2;
     protected static final int    _clsB     = 3;
@@ -89,7 +114,7 @@ public abstract class Descriptor<T>{
         return t == null ? "*" : t.toString();
     }
 
-    protected final static DATA<?>[] getDATA(final Descriptor<?>... args) throws MdsException {
+    protected final static DATA<?>[] getDATAs(final Descriptor<?>... args) throws MdsException {
         final DATA<?>[] data_args = new DATA[args.length];
         for(int i = 0; i < args.length; i++)
             data_args[i] = args[i].getData();
@@ -155,11 +180,25 @@ public abstract class Descriptor<T>{
         }
     }
 
-    protected final static Descriptor<?>[] getLOCAL(final Descriptor<?>... args) {
+    public static final Descriptor<?> getLocal(final FLAG local, final Descriptor<?> dsc) {
+        if(dsc == null || dsc.isLocal()) return dsc;
+        return dsc.getLocal(local);
+    }
+
+    protected final static Descriptor<?>[] getLocals(final FLAG local, final Descriptor<?>... args) {
         final Descriptor<?>[] local_args = new Descriptor<?>[args.length];
         for(int i = 0; i < args.length; i++)
-            local_args[i] = args[i].getLocal();
+            local_args[i] = Descriptor.getLocal(local, args[i]);
         return local_args;
+    }
+
+    public static final boolean isLocal(final Descriptor<?> dsc) {
+        if(dsc == null) return true;
+        return dsc.isLocal();
+    }
+
+    public static final boolean isMissing(final Descriptor<?> dsc) {
+        return dsc == null || dsc == Missing.NEW;
     }
 
     public static final Descriptor<?> NEW(final Object obj) throws MdsException {
@@ -203,6 +242,10 @@ public abstract class Descriptor<T>{
             ((ByteBuffer)this.b.position(pointer)).put((ByteBuffer)data.duplicate().rewind()).rewind();
         }
         this.p = ((ByteBuffer)this.b.duplicate().position(this.pointer() == 0 ? this.b.limit() : this.pointer())).slice().order(this.b.order());
+    }
+
+    public Function as_is() {
+        return Function.AS_IS(this);
     }
 
     /** (3,b) descriptor class code **/
@@ -259,7 +302,7 @@ public abstract class Descriptor<T>{
 
     public Descriptor<?> evaluate_lib() throws MdsException {
         if(this instanceof DATA) return this;
-        if(MdsLib.lib_loaded == null) return Descriptor.mdslib.getDescriptor("EVALUATE($)", this.getLocal());
+        if(MdsLib.lib_loaded == null) return Descriptor.mdslib.getDescriptor(this.tree, "EVALUATE($)", this.getLocal());
         return new TdiShr(this.mds).tdiEvaluate(this);
     }
 
@@ -278,7 +321,7 @@ public abstract class Descriptor<T>{
      **/
     public DATA<?> getData() throws MdsException {
         if(this instanceof DATA) return (DATA<?>)this;
-        if(MdsLib.lib_loaded == null) return (DATA<?>)Descriptor.mdslib.getDescriptor("DATA($)", this.getLocal());
+        if(MdsLib.lib_loaded == null) return (DATA<?>)Descriptor.mdslib.getDescriptor(this.tree, "DATA($)", this.getLocal());
         return this.getData_();
     }
 
@@ -288,7 +331,9 @@ public abstract class Descriptor<T>{
     }
 
     public Descriptor_A<?> getDataA() throws MdsException {
-        return (Descriptor_A<?>)this.getData().toDescriptor();
+        final Descriptor<?> dsc = this.getData().toDescriptor();
+        if(dsc instanceof Descriptor_A) return (Descriptor_A<?>)dsc;
+        throw new MdsException(MdsException.TdiINVDTYDSC);
     }
 
     public Descriptor<?> getDataD() throws MdsException {
@@ -296,7 +341,9 @@ public abstract class Descriptor<T>{
     }
 
     public Descriptor_S<?> getDataS() throws MdsException {
-        return (Descriptor_S<?>)this.getData().toDescriptor();
+        final Descriptor<?> dsc = this.getData().toDescriptor();
+        if(dsc instanceof Descriptor_S) return (Descriptor_S<?>)dsc;
+        throw new MdsException(MdsException.TdiNOT_NUMBER);
     }
 
     /** Returns the dclass name of the Descriptor **/
@@ -314,18 +361,23 @@ public abstract class Descriptor<T>{
         return DTYPE.getName(this.dtype());
     }
 
+    final public Descriptor<?> getLocal() {
+        if(this.islocal) return this;
+        return this.getLocal(null);
+    }
+
     /**
      * Returns the local version of the Descriptor, i.e. it will download all required data
      *
      * @throws MdsException
      **/
-    public Descriptor<?> getLocal() {
-        if(this.isLocal()) return this;
-        final Descriptor<?> local = this.getLocal_();
-        return local.setLocal();
+    public Descriptor<?> getLocal(final FLAG local) {
+        if(this.islocal) return this;
+        return this.getLocal_(local);
     }
 
-    public Descriptor<?> getLocal_() {
+    public Descriptor<?> getLocal_(final FLAG local) {
+        FLAG.set(local, false);
         return this.evaluate().getLocal();
     }
 
