@@ -1162,46 +1162,46 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
     ### Node Properties
     ###################################
 
-    def nciProp(name,doc=None):
+    def _nciProp(name,doc=None):
         def get(self):
-            return self.getNci(name,False)
+            return self._getNci(name,False)
         if doc is not None: setattr(get,'__doc__',doc)
         return property(get)
 
-    brother=nciProp("brother","brother node of this node")
+    brother=_nciProp("brother","brother node of this node")
 
-    child=nciProp("child","child node of this node")
+    child=_nciProp("child","child node of this node")
 
-    __children_nids=nciProp("children_nids")
+    __children_nids=_nciProp("children_nids")
     @property
     def children_nids(self):
         """children nodes of this node"""
         try:    return self.__children_nids
         except _exc.TreeNNF: return TreeNodeArray([],self.tree)
 
-    mclass=_class=nciProp("class","class of the data stored in this node")
+    mclass=_class=_nciProp("class","class of the data stored in this node")
 
-    class_str=nciProp("class_str","class name of the data stored in this node")
+    class_str=_nciProp("class_str","class name of the data stored in this node")
 
-    compressible=nciProp("compressible","is the data stored in this node compressible")
+    compressible=_nciProp("compressible","is the data stored in this node compressible")
 
-    compress_on_put=nciProp("compress_on_put",
+    compress_on_put=_nciProp("compress_on_put",
                             "should data be compressed when stored in this node (settable)")
     @compress_on_put.setter
     def compress_on_put(self,value): self.setCompressOnPut(value)
 
-    conglomerate_elt=nciProp("conglomerate_elt",
+    conglomerate_elt=_nciProp("conglomerate_elt",
                              "what element of a conglomerate is this node")
 
-    conglomerate_nids=nciProp("conglomerate_nids",
+    conglomerate_nids=_nciProp("conglomerate_nids",
                               "what are the nodes of the conglomerate this node belongs to")
 
-    data_in_nci=nciProp("data_in_nci",
+    data_in_nci=_nciProp("data_in_nci",
                         "is the data of this node stored in its nci")
 
-    depth=nciProp("depth","what is the depth of this node in the tree structure")
+    depth=_nciProp("depth","what is the depth of this node in the tree structure")
 
-    original_part_name=nciProp("original_part_name","original part name of this node")
+    original_part_name=_nciProp("original_part_name","original part name of this node")
 
     @property
     def descendants(self):
@@ -1225,26 +1225,26 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
     @disabled.setter
     def disabled(self,value): self.setOn(not value)
 
-    do_not_compress=nciProp("do_not_compress",
+    do_not_compress=_nciProp("do_not_compress",
                             "is this node set to disable any compression of data stored in it. (settable)")
     @do_not_compress.setter
     def do_not_compress(self,value): self.setDoNotCompress(value)
 
-    dtype=nciProp("dtype","the numeric value of the data type stored in this node")
+    dtype=_nciProp("dtype","the numeric value of the data type stored in this node")
 
-    dtype_str=nciProp("dtype_str","the name of the data type stored in this node")
+    dtype_str=_nciProp("dtype_str","the name of the data type stored in this node")
 
-    error_on_put=nciProp("error_on_put","was there an error storing data for this node")
+    error_on_put=_nciProp("error_on_put","was there an error storing data for this node")
 
-    essential=nciProp("essential","essential action defined in this node (settable)")
+    essential=_nciProp("essential","essential action defined in this node (settable)")
     @essential.setter
     def essential(self,value): self.setEssential(value)
 
-    fullpath=nciProp("fullpath","full node path")
+    fullpath=_nciProp("fullpath","full node path")
 
-    get_flags=nciProp("get_flags","numeric flags mask for this node")
+    get_flags=_nciProp("get_flags","numeric flags mask for this node")
 
-    include_in_pulse=nciProp("include_in_pulse","include subtree in pulse")
+    include_in_pulse=_nciProp("include_in_pulse","include subtree in pulse")
     @include_in_pulse.setter
     def include_in_pulse(self,value): self.setIncludeInPulse(value)
 
@@ -1257,7 +1257,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
     def is_member(self):
         "is this a member node?"
         return self.isMember()
-    length=nciProp("length","length of data stored in this node (uncompressed)")
+    length=_nciProp("length","length of data stored in this node (uncompressed)")
 
     @property
     def local_path(self):
@@ -1269,16 +1269,16 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         "Return name of the tree this node is part of."
         return self.getLocalTree()
 
-    member=nciProp("member","first member immediate descendant of this node")
+    member=_nciProp("member","first member immediate descendant of this node")
 
-    __member_nids=nciProp("member_nids")
+    __member_nids=_nciProp("member_nids")
     @property
     def member_nids(self):
         """all member immediate descendants of this node"""
         try:    return self.__member_nids
         except _exc.TreeNNF: return TreeNodeArray([],tree=self.tree)
 
-    minpath=nciProp("minpath","minimum path string for this node based on current default node")
+    minpath=_nciProp("minpath","minimum path string for this node based on current default node")
 
     @property
     def nid_number(self):
@@ -1301,28 +1301,28 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
             self._nid=None
         else:
             self._nid=_C.c_int32(int(value))
-    nid_reference=nciProp("nid_reference","node data contains nid references")
+    nid_reference=_nciProp("nid_reference","node data contains nid references")
 
-    node_name=name=nciProp("node_name","node name")
+    node_name=name=_nciProp("node_name","node name")
 
-    no_write_model=nciProp("no_write_model","is storing data in this node disabled if model tree (settable)")
+    no_write_model=_nciProp("no_write_model","is storing data in this node disabled if model tree (settable)")
     @no_write_model.setter
     def no_write_model(self,value): self.setNoWriteModel(value)
 
-    no_write_shot=nciProp("no_write_shot",
+    no_write_shot=_nciProp("no_write_shot",
                           "is storing data in this node disabled if not model tree (settable)")
     @no_write_shot.setter
     def no_write_shot(self,value): self.setNoWriteShot(value)
-    number_of_children=nciProp("number_of_children","number of children")
+    number_of_children=_nciProp("number_of_children","number of children")
 
     @property
     def number_of_descendants(self):
         "Number of immediate descendants of this node."
         return self.getNumDescendants()
 
-    number_of_elts=nciProp("number_of_elts","number of nodes in a conglomerate")
+    number_of_elts=_nciProp("number_of_elts","number of nodes in a conglomerate")
 
-    number_of_members=nciProp("number_of_members","number of members")
+    number_of_members=_nciProp("number_of_members","number of members")
 
     @property
     def on(self):
@@ -1331,13 +1331,13 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
     @on.setter
     def on(self,value): self.setOn(value)
 
-    owner_id=nciProp("owner_id","id of the last person to write to this node")
+    owner_id=_nciProp("owner_id","id of the last person to write to this node")
 
-    parent=nciProp("parent","parent node of this node")
+    parent=_nciProp("parent","parent node of this node")
 
-    parent_state=nciProp("parent_state","is parent disabled")
+    parent_state=_nciProp("parent_state","is parent disabled")
 
-    parent_relationship=nciProp("parent_relationship","parent relationship")
+    parent_relationship=_nciProp("parent_relationship","parent relationship")
 
     @property
     def parent_disabled(self):
@@ -1355,12 +1355,12 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
     def path(self):
         """path to this node"""
         try:
-            self._path = self.getNci("path",False)
+            self._path = self._getNci("path",False)
         except _exc.TreeNOT_OPEN:
             return '%s /*tree closed*/'%self._path
         return self._path
 
-    path_reference=nciProp("path_reference","node data contains path references")
+    path_reference=_nciProp("path_reference","node data contains path references")
 
     @property
     def record(self):
@@ -1373,21 +1373,21 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
     def data(self,*altvalue):
         return self.record.data(*altvalue)
 
-    rfa=nciProp("rfa","data offset in datafile")
+    rfa=_nciProp("rfa","data offset in datafile")
 
-    rlength=nciProp("rlength","length of data in node")
+    rlength=_nciProp("rlength","length of data in node")
 
-    segmented=nciProp("segmented","is data segmented")
+    segmented=_nciProp("segmented","is data segmented")
 
-    setup=nciProp("setup_information","was this data present in the model")
+    setup=_nciProp("setup_information","was this data present in the model")
 
     setup_information=setup
 
-    state=nciProp("state","Use on property instead. on/off state of this node. False=on,True=off. (settable)")
+    state=_nciProp("state","Use on property instead. on/off state of this node. False=on,True=off. (settable)")
     @state.setter
     def state(self,value): self.on=not value
 
-    status=nciProp("status","status of action execution")
+    status=_nciProp("status","status of action execution")
 
     @property
     def subtree(self):
@@ -1409,7 +1409,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         return self.tags
     @tag.setter
     def tag(self,names): self.addTags(names,replace=False)
-    time_inserted=nciProp("time_inserted","64-bit timestamp when data was stored")
+    time_inserted=_nciProp("time_inserted","64-bit timestamp when data was stored")
 
     @property
     def usage(self):
@@ -1418,15 +1418,15 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
     @usage.setter
     def usage(self,usage): self.setUsage(usage)
 
-    usage_str=nciProp("usage_str","formal name of the usage of this node")
+    usage_str=_nciProp("usage_str","formal name of the usage of this node")
 
-    versions=nciProp("version","does the data contain versions")
+    versions=_nciProp("version","does the data contain versions")
 
-    write_once=nciProp("write_once","is no write once (settable)")
+    write_once=_nciProp("write_once","is no write once (settable)")
     @write_once.setter
     def write_once(self,value): self.setWriteOnce(value)
 
-    compress_segments=nciProp("compress_segments","should segments be compressed (settable)")
+    compress_segments=_nciProp("compress_segments","should segments be compressed (settable)")
     @compress_segments.setter
     def compress_segments(self,value): self.setCompressSegments(value)
 
@@ -1845,65 +1845,63 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         """
         return self.minpath
 
-    class NCI_ITEMS(_C.Structure):
-        _fields_=list()
-        for idx in range(50):
-            _fields_+=[("buflen%d"%idx,_C.c_ushort),
-                       ("code%d"%idx,_C.c_ushort),
-                       ("pointer%d"%idx,_C.c_void_p),
-                       ("retlen%d"%idx,_C.POINTER(_C.c_int32))]
-
-        def __init__(self,items):
-            self.ans=list()
-            self.retlen=list()
-            self.rettype=list()
-            if not isinstance(items,(list,tuple)):
-                items=tuple(items)
-            for idx in range(len(items)):
-                item="Nci"+items[idx].upper()
-                item_info=TreeNode.__dict__[item]
-                code=item_info[0]
-                item_type=item_info[1]
-                item_length=item_info[2]
-                self.retlen.append(_C.c_int32(0))
-                self.rettype.append(item_info[3])
-                if item_type == _C.c_char_p:
-                    self.ans.append(item_type(str.encode(' ')*item_length))
-                    self.__setattr__('pointer%d'%idx,
-                                     _C.cast(self.ans[idx],_C.c_void_p))
-                else:
-                    self.ans.append(item_type())
-                    self.__setattr__('pointer%d'%idx,
-                                     _C.cast(_C.pointer(self.ans[idx]),_C.c_void_p))
-                self.__setattr__('buflen%d'%idx,_C.c_ushort(item_length))
-                self.__setattr__('code%d'%idx,_C.c_ushort(code))
-                self.__setattr__('retlen%d'%idx,_C.pointer(self.retlen[idx]))
-            self.__setattr__('buflen%d'%len(items),_C.c_ushort(0))
-            self.__setattr__('code%d'%len(items),_C.c_ushort(TreeNode.NciEND_OF_LIST[0]))
-            self.__setattr__('pointer%d'%len(items),_C.c_void_p(0))
-            self.__setattr__('retlen%d'%len(items),_C.cast(_C.c_void_p(0),_C.POINTER(_C.c_int32)))
-
-    def getNci(self,items,returnDict=True):
+    def _getNci(self,items,returnDict=True):
         """Return dictionary of nci items"""
+        class NCI_ITEMS(_C.Structure):
+            _fields_=list()
+            for idx in range(50):
+                _fields_+=[("buflen%d"%idx,_C.c_ushort),
+                           ("code%d"%idx,_C.c_ushort),
+                           ("pointer%d"%idx,_C.c_void_p),
+                           ("retlen%d"%idx,_C.POINTER(_C.c_int32))]
+            def __init__(self,items):
+                self.ans=list()
+                self.retlen=list()
+                self.rettype=list()
+                if not isinstance(items,(list,tuple)):
+                    items=tuple(items)
+                for idx in range(len(items)):
+                    item="Nci%s"%(items[idx].upper(),)
+                    item_info=Nci.__dict__[item]
+                    code=item_info[0]
+                    item_type=item_info[1]
+                    item_length=item_info[2]
+                    self.retlen.append(_C.c_int32(0))
+                    self.rettype.append(item_info[3])
+                    if item_type == _C.c_char_p:
+                        self.ans.append(item_type(str.encode(' ')*item_length))
+                        self.__setattr__('pointer%d'%idx,
+                                         _C.cast(self.ans[idx],_C.c_void_p))
+                    else:
+                        self.ans.append(item_type())
+                        self.__setattr__('pointer%d'%idx,
+                                         _C.cast(_C.pointer(self.ans[idx]),_C.c_void_p))
+                    self.__setattr__('buflen%d'%idx,_C.c_ushort(item_length))
+                    self.__setattr__('code%d'%idx,_C.c_ushort(code))
+                    self.__setattr__('retlen%d'%idx,_C.pointer(self.retlen[idx]))
+                self.__setattr__('buflen%d'%len(items),_C.c_ushort(0))
+                self.__setattr__('code%d'%len(items),_C.c_ushort(Nci.NciEND_OF_LIST[0]))
+                self.__setattr__('pointer%d'%len(items),_C.c_void_p(0))
+                self.__setattr__('retlen%d'%len(items),_C.cast(_C.c_void_p(0),_C.POINTER(_C.c_int32)))
+
         if isinstance(items,str):
             items=[items]
         elif isinstance(items,tuple):
             items=list(items)
         elif not isinstance(items,list):
             raise TypeError("items must be a list,tuple or str")
-        flag_items=list()
         flags=None
         ans=dict()
         flag_items=list()
         for item in items:
-            if "NciM_"+item.upper() in TreeNode.__dict__:
+            if item.upper() in FLAGS.__dict__:
                 flag_items.append(item)
                 if flags is None:
                     flags=int(self.get_flags)
-                ans[item]=(flags & TreeNode.__dict__["NciM_"+item.upper()]) != 0
+                ans[item]=(flags & FLAGS.__dict__[item.upper()]) != 0
         for item in flag_items:
             items.remove(item)
-        itmlst=self.NCI_ITEMS(items)
+        itmlst=NCI_ITEMS(items)
         if len(items) > 0:
             _TreeCtx.pushTree(self.tree)
             try:
@@ -2241,7 +2239,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @return: True if this is a child node instead of a member node.
         @rtype: bool
         """
-        return int(self.parent_relationship)==TreeNode.NciK_IS_CHILD
+        return int(self.parent_relationship)==Nci._IS_CHILD
 
     def isCompressible(self):
         """Return true if node contains data which can be compressed
@@ -2294,7 +2292,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @return:  True if this is a member node
         @rtype: bool
         """
-        return int(self.parent_relationship)==TreeNode.NciK_IS_MEMBER
+        return int(self.parent_relationship)==Nci._IS_MEMBER
 
     def isNoWriteModel(self):
         """Return true if data storage to model is disabled for this node
@@ -2525,26 +2523,26 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         return self
 
     def _setNciFlag(self,mask,setting):
-        class NCI_ITEMS(_C.Structure):
-          _fields_=[("buflen",_C.c_ushort),("code",_C.c_ushort),
-                    ("pointer",_C.POINTER(_C.c_uint32)),("retlen",_C.c_void_p),
-                    ("buflen_e",_C.c_ushort),("code_e",_C.c_ushort),
-                    ("pointer_e",_C.c_void_p),("retlen_e",_C.c_void_p)]
-        itmlst=NCI_ITEMS()
-        code={True:1,False:2}
+        class NCI_ITEM(_C.Structure):
+            _fields_=[("buflen",_C.c_ushort),("code",_C.c_ushort),
+                      ("pointer",_C.POINTER(_C.c_uint32)),("retlen",_C.c_void_p),
+                      ("buflen_e",_C.c_ushort),("code_e",_C.c_ushort),
+                      ("pointer_e",_C.c_void_p),("retlen_e",_C.c_void_p)]
+        item=NCI_ITEM()
         mask=_C.c_uint32(mask)
-        itmlst.buflen=0
-        itmlst.code=code[setting]
-        itmlst.pointer=_C.pointer(mask)
-        itmlst.retlen=0
-        itmlst.buflen_e=0
-        itmlst.code_e=0
-        itmlst.pointer_e=0
-        itmlst.retlen_e=0
+        item.buflen=0
+        item.code=1 if setting else 2
+        item.pointer=_C.pointer(mask)
+        item.retlen=0
+        item.buflen_e=0
+        item.code_e=0
+        item.pointer_e=0
+        item.retlen_e=0        
         _exc.checkStatus(
                    _TreeShr._TreeSetNci(self.ctx,
                                         self._nid,
-                                        _C.pointer(itmlst)))
+                                        _C.byref(item)))
+
 
     def setCompressOnPut(self,flag):
         """Set compress on put state of this node
@@ -3406,107 +3404,104 @@ If you did intend to write to a subnode of the device you should check the prope
 
 ############### Node Characteristic Options ######
 #
-TreeNode.NciM_STATE            =0x00000001
-TreeNode.NciM_PARENT_STATE     =0x00000002
-TreeNode.NciM_ESSENTIAL        =0x00000004
-TreeNode.NciM_CACHED           =0x00000008
-TreeNode.NciM_VERSIONS         =0x00000010
-TreeNode.NciM_SEGMENTED        =0x00000020
-TreeNode.NciM_SETUP_INFORMATION=0x00000040
-TreeNode.NciM_WRITE_ONCE       =0x00000080
-TreeNode.NciM_COMPRESSIBLE     =0x00000100
-TreeNode.NciM_DO_NOT_COMPRESS  =0x00000200
-TreeNode.NciM_COMPRESS_ON_PUT  =0x00000400
-TreeNode.NciM_NO_WRITE_MODEL   =0x00000800
-TreeNode.NciM_NO_WRITE_SHOT    =0x00001000
-TreeNode.NciM_PATH_REFERENCE   =0x00002000
-TreeNode.NciM_NID_REFERENCE    =0x00004000
-TreeNode.NciM_INCLUDE_IN_PULSE =0x00008000
-TreeNode.NciM_COMPRESS_SEGMENTS=0x00010000
-
+class Nci(object):
+    _IS_CHILD =1
+    _IS_MEMBER=2
+    NciEND_OF_LIST        =(0,_C.c_void_p,4,None)
+    NciSET_FLAGS          =(1,_C.c_int32,4,_scr.Uint32)
+    NciCLEAR_FLAGS        =(2,_C.c_int32,4,_scr.Uint32)
+    NciTIME_INSERTED      =(4,_C.c_uint64,8,_scr.Uint64)
+    NciOWNER_ID           =(5,_C.c_int32,4,_scr.Uint8)
+    NciCLASS              =(6,_C.c_uint8,1,_scr.Uint8)
+    NciDTYPE              =(7,_C.c_uint8,1,_scr.Uint8)
+    NciLENGTH             =(8,_C.c_int32,4,_scr.Int32)
+    NciSTATUS             =(9,_C.c_uint32,4,_scr.Uint32)
+    NciCONGLOMERATE_ELT   =(10,_C.c_uint16,2,_scr.Uint16)
+    NciGET_FLAGS          =(12,_C.c_uint32,4,_scr.Uint32)
+    NciNODE_NAME          =(13,_C.c_char_p,13,_scr.String)
+    NciPATH               =(14,_C.c_char_p,1024,_scr.String)
+    NciDEPTH              =(15,_C.c_int32,4,_scr.Int32)
+    NciPARENT             =(16,_C.c_uint32,4,TreeNode)
+    NciBROTHER            =(17,_C.c_uint32,4,TreeNode)
+    NciMEMBER             =(18,_C.c_uint32,4,TreeNode)
+    NciCHILD              =(19,_C.c_uint32,4,TreeNode)
+    NciPARENT_RELATIONSHIP=(20,_C.c_uint32,4,_scr.Uint32)
+    NciCONGLOMERATE_NIDS  =(21,_C.c_uint32*1024,1024*4,TreeNodeArray)
+    NciORIGINAL_PART_NAME =(22,_C.c_char_p,1024,_scr.String)
+    NciNUMBER_OF_MEMBERS  =(23,_C.c_uint32,4,_scr.Uint32)
+    NciNUMBER_OF_CHILDREN =(24,_C.c_uint32,4,_scr.Uint32)
+    NciMEMBER_NIDS        =(25,_C.c_uint32*4096,4096*4,TreeNodeArray)
+    NciCHILDREN_NIDS      =(26,_C.c_uint32*4096,4096*4,TreeNodeArray)
+    NciFULLPATH           =(27,_C.c_char_p,1024,_scr.String)
+    NciMINPATH            =(28,_C.c_char_p,1024,_scr.String)
+    NciUSAGE              =(29,_C.c_uint8,1,_scr.Uint8)
+    NciPARENT_TREE        =(30,_C.c_char_p,13,_scr.String)
+    NciRLENGTH            =(31,_C.c_int32,4,_scr.Int32)
+    NciNUMBER_OF_ELTS     =(32,_C.c_uint32,4,_scr.Uint32)
+    NciDATA_IN_NCI        =(33,_C.c_bool,4,bool)
+    NciERROR_ON_PUT       =(34,_C.c_uint32,4,bool)
+    NciRFA                =(35,_C.c_uint64,8,_scr.Uint64)
+    NciIO_STATUS          =(36,_C.c_uint32,4,_scr.Uint32)
+    NciIO_STV             =(37,_C.c_uint32,4,_scr.Uint32)
+    NciDTYPE_STR          =(38,_C.c_char_p,64,_scr.String)
+    NciUSAGE_STR          =(39,_C.c_char_p,64,_scr.String)
+    NciCLASS_STR          =(40,_C.c_char_p,64,_scr.String)
+    NciVERSION            =(41,_C.c_uint32,4,_scr.Uint32)
 class FLAGS(object):
+    STATE            =0x00000001
+    PARENT_STATE     =0x00000002
+    ESSENTIAL        =0x00000004
+    CACHED           =0x00000008
+    VERSIONS         =0x00000010
+    SEGMENTED        =0x00000020
+    SETUP_INFORMATION=0x00000040
+    WRITE_ONCE       =0x00000080
+    COMPRESSIBLE     =0x00000100
+    DO_NOT_COMPRESS  =0x00000200
+    COMPRESS_ON_PUT  =0x00000400
+    NO_WRITE_MODEL   =0x00000800
+    NO_WRITE_SHOT    =0x00001000
+    PATH_REFERENCE   =0x00002000
+    NID_REFERENCE    =0x00004000
+    INCLUDE_IN_PULSE =0x00008000
+    COMPRESS_SEGMENTS=0x00010000
     def __init__(self,flags):
         self.flags = flags
     @property
-    def state(self): return self.flags&TreeNode.NciM_STATE!=0
+    def state(self): return self.flags&FLAGS.STATE!=0
     @property
-    def parent_state(self): return self.flags&TreeNode.NciM_PARENT_STATE!=0
+    def parent_state(self): return self.flags&FLAGS.PARENT_STATE!=0
     @property
-    def essential(self): return self.flags&TreeNode.NciM_ESSENTIAL!=0
+    def essential(self): return self.flags&FLAGS.ESSENTIAL!=0
     @property
-    def chached(self): return self.flags&TreeNode.NciM_CACHED!=0
+    def chached(self): return self.flags&FLAGS.CACHED!=0
     @property
-    def versions(self): return self.flags&TreeNode.NciM_VERSIONS!=0
+    def versions(self): return self.flags&FLAGS.VERSIONS!=0
     @property
-    def segmented(self): return self.flags&TreeNode.NciM_SEGMENTED!=0
+    def segmented(self): return self.flags&FLAGS.SEGMENTED!=0
     @property
-    def setup_information(self): return self.flags&TreeNode.NciM_SETUP_INFORMATION!=0
+    def setup_information(self): return self.flags&FLAGS.SETUP_INFORMATION!=0
     @property
-    def write_once(self): return self.flags&TreeNode.NciM_WRITE_ONCE!=0
+    def write_once(self): return self.flags&FLAGS.WRITE_ONCE!=0
     @property
-    def comressible(self): return self.flags&TreeNode.NciM_COMPRESSIBLE!=0
+    def comressible(self): return self.flags&FLAGS.COMPRESSIBLE!=0
     @property
-    def do_not_compress(self): return self.flags&TreeNode.NciM_DO_NOT_COMPRESS!=0
+    def do_not_compress(self): return self.flags&FLAGS.DO_NOT_COMPRESS!=0
     @property
-    def compress_on_put(self): return self.flags&TreeNode.NciM_COMPRESS_ON_PUT!=0
+    def compress_on_put(self): return self.flags&FLAGS.COMPRESS_ON_PUT!=0
     @property
-    def no_write_model(self): return self.flags&TreeNode.NciM_NO_WRITE_MODEL!=0
+    def no_write_model(self): return self.flags&FLAGS.NO_WRITE_MODEL!=0
     @property
-    def no_write_shot(self): return self.flags&TreeNode.NciM_NO_WRITE_SHOT!=0
+    def no_write_shot(self): return self.flags&FLAGS.NO_WRITE_SHOT!=0
     @property
-    def path_reference(self): return self.flags&TreeNode.NciM_PATH_REFERENCE!=0
+    def path_reference(self): return self.flags&FLAGS.PATH_REFERENCE!=0
     @property
-    def nid_reference(self): return self.flags&TreeNode.NciM_NID_REFERENCE!=0
+    def nid_reference(self): return self.flags&FLAGS.NID_REFERENCE!=0
     @property
-    def include_in_pulse(self): return self.flags&TreeNode.NciM_INCLUDE_IN_PULSE!=0
+    def include_in_pulse(self): return self.flags&FLAGS.INCLUDE_IN_PULSE!=0
     @property
-    def compress_segments(self): return self.flags&TreeNode.NciM_COMPRESS_SEGMENTS!=0
+    def compress_segments(self): return self.flags&FLAGS.COMPRESS_SEGMENTS!=0
 
-
-
-TreeNode.NciK_IS_CHILD         =1
-TreeNode.NciK_IS_MEMBER        =2
-
-TreeNode.NciEND_OF_LIST        =(0,_C.c_void_p,4,None)
-TreeNode.NciSET_FLAGS          =(1,_C.c_int32,4,_scr.Uint32)
-TreeNode.NciCLEAR_FLAGS        =(2,_C.c_int32,4,_scr.Uint32)
-TreeNode.NciTIME_INSERTED      =(4,_C.c_uint64,8,_scr.Uint64)
-TreeNode.NciOWNER_ID           =(5,_C.c_int32,4,_scr.Uint8)
-TreeNode.NciCLASS              =(6,_C.c_uint8,1,_scr.Uint8)
-TreeNode.NciDTYPE              =(7,_C.c_uint8,1,_scr.Uint8)
-TreeNode.NciLENGTH             =(8,_C.c_int32,4,_scr.Int32)
-TreeNode.NciSTATUS             =(9,_C.c_uint32,4,_scr.Uint32)
-TreeNode.NciCONGLOMERATE_ELT   =(10,_C.c_uint16,2,_scr.Uint16)
-TreeNode.NciGET_FLAGS          =(12,_C.c_uint32,4,_scr.Uint32)
-TreeNode.NciNODE_NAME          =(13,_C.c_char_p,13,_scr.String)
-TreeNode.NciPATH               =(14,_C.c_char_p,1024,_scr.String)
-TreeNode.NciDEPTH              =(15,_C.c_int32,4,_scr.Int32)
-TreeNode.NciPARENT             =(16,_C.c_uint32,4,TreeNode)
-TreeNode.NciBROTHER            =(17,_C.c_uint32,4,TreeNode)
-TreeNode.NciMEMBER             =(18,_C.c_uint32,4,TreeNode)
-TreeNode.NciCHILD              =(19,_C.c_uint32,4,TreeNode)
-TreeNode.NciPARENT_RELATIONSHIP=(20,_C.c_uint32,4,_scr.Uint32)
-TreeNode.NciCONGLOMERATE_NIDS  =(21,_C.c_uint32*1024,1024*4,TreeNodeArray)
-TreeNode.NciORIGINAL_PART_NAME =(22,_C.c_char_p,1024,_scr.String)
-TreeNode.NciNUMBER_OF_MEMBERS  =(23,_C.c_uint32,4,_scr.Uint32)
-TreeNode.NciNUMBER_OF_CHILDREN =(24,_C.c_uint32,4,_scr.Uint32)
-TreeNode.NciMEMBER_NIDS        =(25,_C.c_uint32*4096,4096*4,TreeNodeArray)
-TreeNode.NciCHILDREN_NIDS      =(26,_C.c_uint32*4096,4096*4,TreeNodeArray)
-TreeNode.NciFULLPATH           =(27,_C.c_char_p,1024,_scr.String)
-TreeNode.NciMINPATH            =(28,_C.c_char_p,1024,_scr.String)
-TreeNode.NciUSAGE              =(29,_C.c_uint8,1,_scr.Uint8)
-TreeNode.NciPARENT_TREE        =(30,_C.c_char_p,13,_scr.String)
-TreeNode.NciRLENGTH            =(31,_C.c_int32,4,_scr.Int32)
-TreeNode.NciNUMBER_OF_ELTS     =(32,_C.c_uint32,4,_scr.Uint32)
-TreeNode.NciDATA_IN_NCI        =(33,_C.c_bool,4,bool)
-TreeNode.NciERROR_ON_PUT       =(34,_C.c_uint32,4,bool)
-TreeNode.NciRFA                =(35,_C.c_uint64,8,_scr.Uint64)
-TreeNode.NciIO_STATUS          =(36,_C.c_uint32,4,_scr.Uint32)
-TreeNode.NciIO_STV             =(37,_C.c_uint32,4,_scr.Uint32)
-TreeNode.NciDTYPE_STR          =(38,_C.c_char_p,64,_scr.String)
-TreeNode.NciUSAGE_STR          =(39,_C.c_char_p,64,_scr.String)
-TreeNode.NciCLASS_STR          =(40,_C.c_char_p,64,_scr.String)
-TreeNode.NciVERSION            =(41,_C.c_uint32,4,_scr.Uint32)
 #
 #################################################################
 
