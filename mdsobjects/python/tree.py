@@ -1152,62 +1152,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         return self._original_part_name
     PART_NAME=ORIGINAL_PART_NAME
 
-    def __eq__(self,obj):
-        if isinstance(obj,(TreeNode,)):
-            return self.tree == obj.tree and self.nid == obj.nid
-        return False
-    def __ne__(self,obj): return not self.__eq__(obj)
-
-    ###################################
-    ### Node Properties
-    ###################################
-
-    def _nciProp(name,doc=None):
-        def get(self):
-            return self._getNci(name,False)
-        if doc is not None: setattr(get,'__doc__',doc)
-        return property(get)
-
-    brother=_nciProp("brother","brother node of this node")
-
-    child=_nciProp("child","child node of this node")
-
-    __children_nids=_nciProp("children_nids")
-    @property
-    def children_nids(self):
-        """children nodes of this node"""
-        try:    return self.__children_nids
-        except _exc.TreeNNF: return TreeNodeArray([],self.tree)
-
-    mclass=_class=_nciProp("class","class of the data stored in this node")
-
-    class_str=_nciProp("class_str","class name of the data stored in this node")
-
-    compressible=_nciProp("compressible","is the data stored in this node compressible")
-
-    compress_on_put=_nciProp("compress_on_put",
-                            "should data be compressed when stored in this node (settable)")
-    @compress_on_put.setter
-    def compress_on_put(self,value): self.setCompressOnPut(value)
-
-    conglomerate_elt=_nciProp("conglomerate_elt",
-                             "what element of a conglomerate is this node")
-
-    conglomerate_nids=_nciProp("conglomerate_nids",
-                              "what are the nodes of the conglomerate this node belongs to")
-
-    data_in_nci=_nciProp("data_in_nci",
-                        "is the data of this node stored in its nci")
-
-    depth=_nciProp("depth","what is the depth of this node in the tree structure")
-
-    original_part_name=_nciProp("original_part_name","original part name of this node")
-
-    @property
-    def descendants(self):
-        "Get all the immediate descendants of this node"
-        return self.getDescendants()
-
     @property
     def _descriptor(self):
       """Return a MDSplus descriptor"""
@@ -1218,35 +1162,221 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
       d.tree=self.tree
       return _cmp.Compound._descriptorWithProps(self,d)
 
+    def __eq__(self,obj):
+        if isinstance(obj,(TreeNode,)):
+            return self.tree == obj.tree and self.nid == obj.nid
+        return False
+    def __ne__(self,obj): return not self.__eq__(obj)
+
+    ###################################
+    ### Node Properties
+    ###################################
+
+    def _getNci(self,items,returnDict=True):
+        """Return dictionary of nci items"""
+        class NCI_ITEMS(_C.Structure):
+            _fields_=list()
+            for idx in range(50):
+                _fields_+=[("buflen%d"%idx,_C.c_ushort),
+                           ("code%d"%idx,_C.c_ushort),
+                           ("pointer%d"%idx,_C.c_void_p),
+                           ("retlen%d"%idx,_C.POINTER(_C.c_int32))]
+            def __init__(self,items):
+                self.ans=list()
+                self.retlen=list()
+                self.rettype=list()
+                if not isinstance(items,(list,tuple)):
+                    items=tuple(items)
+                for idx in range(len(items)):
+                    item="Nci%s"%(items[idx].upper(),)
+                    item_info=Nci.__dict__[item]
+                    code=item_info[0]
+                    item_type=item_info[1]
+                    item_length=item_info[2]
+                    self.retlen.append(_C.c_int32(0))
+                    self.rettype.append(item_info[3])
+                    if item_type == _C.c_char_p:
+                        self.ans.append(item_type(str.encode(' ')*item_length))
+                        self.__setattr__('pointer%d'%idx,
+                                         _C.cast(self.ans[idx],_C.c_void_p))
+                    else:
+                        self.ans.append(item_type())
+                        self.__setattr__('pointer%d'%idx,
+                                         _C.cast(_C.pointer(self.ans[idx]),_C.c_void_p))
+                    self.__setattr__('buflen%d'%idx,_C.c_ushort(item_length))
+                    self.__setattr__('code%d'%idx,_C.c_ushort(code))
+                    self.__setattr__('retlen%d'%idx,_C.pointer(self.retlen[idx]))
+                self.__setattr__('buflen%d'%len(items),_C.c_ushort(0))
+                self.__setattr__('code%d'%len(items),_C.c_ushort(Nci.NciEND_OF_LIST[0]))
+                self.__setattr__('pointer%d'%len(items),_C.c_void_p(0))
+                self.__setattr__('retlen%d'%len(items),_C.cast(_C.c_void_p(0),_C.POINTER(_C.c_int32)))
+
+        if isinstance(items,str):
+            items=[items]
+        elif isinstance(items,tuple):
+            items=list(items)
+        elif not isinstance(items,list):
+            raise TypeError("items must be a list,tuple or str")
+        flags=None
+        ans=dict()
+        flag_items=list()
+        for item in items:
+            if item.upper() in FLAGS.__dict__:
+                flag_items.append(item)
+                if flags is None:
+                    flags=int(self.get_flags)
+                ans[item]=(flags & FLAGS.__dict__[item.upper()]) != 0
+        for item in flag_items:
+            items.remove(item)
+        itmlst=NCI_ITEMS(items)
+        if len(items) > 0:
+            _TreeCtx.pushTree(self.tree)
+            try:
+                _exc.checkStatus(_TreeShr.TreeGetNci(
+                                                  self._nid,
+                                                  _C.byref(itmlst)))
+            finally:
+                _TreeCtx.popTree()
+        for idx in range(len(items)):
+            val=itmlst.ans[idx]
+            rettype=itmlst.rettype[idx]
+            retlen=itmlst.retlen[idx].value
+            if  rettype is _scr.String:
+                val=_scr.String(val.value[0:retlen].rstrip())
+            elif issubclass(rettype,_scr.Scalar):
+                val=_scr.Scalar(val)
+            elif rettype is TreeNode:
+                if retlen == 4:
+                    val=TreeNode(int(val.value),self.tree)
+                else:
+                    val=None
+            elif rettype is TreeNodeArray:
+                nids=list()
+                for n in range(retlen//4):
+                    nids.append(int(val[n]))
+                val=TreeNodeArray(nids,self.tree)
+            elif rettype is bool:
+                val=val.value != 0
+            ans[items[idx]]=val
+        if not returnDict and len(ans) == 1:
+            return list(ans.values())[0]
+        return ans
+
+    def _setNciFlag(self,mask,setting):
+        class NCI_ITEM(_C.Structure):
+            _fields_=[("buflen",_C.c_ushort),("code",_C.c_ushort),
+                      ("pointer",_C.POINTER(_C.c_uint32)),("retlen",_C.c_void_p),
+                      ("buflen_e",_C.c_ushort),("code_e",_C.c_ushort),
+                      ("pointer_e",_C.c_void_p),("retlen_e",_C.c_void_p)]
+        item=NCI_ITEM()
+        mask=_C.c_uint32(mask)
+        item.buflen=0
+        item.code=1 if setting else 2
+        item.pointer=_C.pointer(mask)
+        item.retlen=0
+        item.buflen_e=0
+        item.code_e=0
+        item.pointer_e=0
+        item.retlen_e=0        
+        _exc.checkStatus(
+                   _TreeShr._TreeSetNci(self.ctx,
+                                        self._nid,
+                                        _C.byref(item)))
+
+    def _nciProp(name,doc=None):
+        def getter(self):
+            return self._getNci(name,False)
+        return property(getter,doc=doc)
+    def _nciFlag(idx,name,doc=None):
+        mask = 1<<idx
+        def getter(self):
+            return self._getNci(name,False)
+        def setter(self,value):
+            return self._setNciFlag(mask,value)
+        if isinstance(doc,str): doc = "%s (settable)"%doc
+        return property(getter,setter,doc=doc)
+
+
+    essential           =_nciFlag( 2,"essential","essential action defined in this node")
+    write_once          =_nciFlag( 7,"write_once","is no write once")
+    do_not_compress     =_nciFlag( 9,"do_not_compress","is this node set to disable any compression of data stored in it")
+    compress_on_put     =_nciFlag(10,"compress_on_put","should data be compressed when stored in this node")
+    no_write_model      =_nciFlag(11,"no_write_model","is storing data in this node disabled if model tree")
+    no_write_shot       =_nciFlag(12,"no_write_shot","is storing data in this node disabled if not model tree")
+    include_in_pulse    =_nciFlag(15,"include_in_pulse","include subtree in pulse")
+    compress_segments   =_nciFlag(16,"compress_segments","should segments be compressed")
+    
+    brother             =_nciProp("brother","brother node of this node")
+    child               =_nciProp("child","child node of this node")
+    class_str           =_nciProp("class_str","class name of the data stored in this node")
+    compressible        =_nciProp("compressible","is the data stored in this node compressible")
+    conglomerate_elt    =_nciProp("conglomerate_elt","what element of a conglomerate is this node")
+    conglomerate_nids   =_nciProp("conglomerate_nids","what are the nodes of the conglomerate this node belongs to")
+    data_in_nci         =_nciProp("data_in_nci","is the data of this node stored in its nci")
+    depth               =_nciProp("depth","what is the depth of this node in the tree structure")
+    dtype               =_nciProp("dtype","the numeric value of the data type stored in this node")
+    dtype_str           =_nciProp("dtype_str","the name of the data type stored in this node")
+    error_on_put        =_nciProp("error_on_put","was there an error storing data for this node")
+    fullpath            =_nciProp("fullpath","full node path")
+    get_flags           =_nciProp("get_flags","numeric flags mask for this node")
+    length              =_nciProp("length","length of data stored in this node (uncompressed)")
+    mclass=_class       =_nciProp("class","class of the data stored in this node")
+    member              =_nciProp("member","first member immediate descendant of this node")
+    minpath             =_nciProp("minpath","minimum path string for this node based on current default node")
+    nid_reference       =_nciProp("nid_reference","node data contains nid references")
+    node_name=name      =_nciProp("node_name","node name")
+    number_of_children  =_nciProp("number_of_children","number of children")
+    number_of_elts      =_nciProp("number_of_elts","number of nodes in a conglomerate")
+    number_of_members   =_nciProp("number_of_members","number of members")
+    original_part_name  =_nciProp("original_part_name","original part name of this node")
+    owner_id            =_nciProp("owner_id","id of the last person to write to this node")
+    parent              =_nciProp("parent","parent node of this node")
+    parent_relationship =_nciProp("parent_relationship","parent relationship")
+    parent_state        =_nciProp("parent_state","is parent disabled")
+    path_reference      =_nciProp("path_reference","node data contains path references")
+    rfa                 =_nciProp("rfa","data offset in datafile")
+    rlength             =_nciProp("rlength","length of data in node")
+    segmented           =_nciProp("segmented","is data segmented")
+    setup_information   =_nciProp("setup_information","was this data present in the model");setup=setup_information
+    state               =_nciProp("state","Use on property instead. on/off state of this node. False=on,True=off. (settable)")
+    status              =_nciProp("status","status of action execution")
+    time_inserted       =_nciProp("time_inserted","64-bit timestamp when data was stored")
+    usage_str           =_nciProp("usage_str","formal name of the usage of this node")
+    versions            =_nciProp("version","does the data contain versions")
+
+    @state.setter
+    def state(self,value): self.on=not value
+
+    __children_nids     =_nciProp("children_nids")
+    @property
+    def children_nids(self):
+        """children nodes of this node"""
+        try:    return self.__children_nids
+        except _exc.TreeNNF: return TreeNodeArray([],self.tree)
+
+    __member_nids       =_nciProp("member_nids")
+    @property
+    def member_nids(self):
+        """all member immediate descendants of this node"""
+        try:    return self.__member_nids
+        except _exc.TreeNNF: return TreeNodeArray([],tree=self.tree)
+
+    @property
+    def descendants(self):
+        "Get all the immediate descendants of this node"
+        return self.children_nids+self.member_nids
+
+    @property
+    def number_of_descendants(self):
+        "Number of immediate descendants of this node."
+        return self.number_of_children+self.number_of_members
+
     @property
     def disabled(self):
       "is this node disabled (settable)"
       return self.isDisabled()
     @disabled.setter
     def disabled(self,value): self.setOn(not value)
-
-    do_not_compress=_nciProp("do_not_compress",
-                            "is this node set to disable any compression of data stored in it. (settable)")
-    @do_not_compress.setter
-    def do_not_compress(self,value): self.setDoNotCompress(value)
-
-    dtype=_nciProp("dtype","the numeric value of the data type stored in this node")
-
-    dtype_str=_nciProp("dtype_str","the name of the data type stored in this node")
-
-    error_on_put=_nciProp("error_on_put","was there an error storing data for this node")
-
-    essential=_nciProp("essential","essential action defined in this node (settable)")
-    @essential.setter
-    def essential(self,value): self.setEssential(value)
-
-    fullpath=_nciProp("fullpath","full node path")
-
-    get_flags=_nciProp("get_flags","numeric flags mask for this node")
-
-    include_in_pulse=_nciProp("include_in_pulse","include subtree in pulse")
-    @include_in_pulse.setter
-    def include_in_pulse(self,value): self.setIncludeInPulse(value)
 
     @property
     def is_child(self):
@@ -1257,7 +1387,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
     def is_member(self):
         "is this a member node?"
         return self.isMember()
-    length=_nciProp("length","length of data stored in this node (uncompressed)")
 
     @property
     def local_path(self):
@@ -1268,17 +1397,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
     def local_tree(self):
         "Return name of the tree this node is part of."
         return self.getLocalTree()
-
-    member=_nciProp("member","first member immediate descendant of this node")
-
-    __member_nids=_nciProp("member_nids")
-    @property
-    def member_nids(self):
-        """all member immediate descendants of this node"""
-        try:    return self.__member_nids
-        except _exc.TreeNNF: return TreeNodeArray([],tree=self.tree)
-
-    minpath=_nciProp("minpath","minimum path string for this node based on current default node")
 
     @property
     def nid_number(self):
@@ -1301,28 +1419,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
             self._nid=None
         else:
             self._nid=_C.c_int32(int(value))
-    nid_reference=_nciProp("nid_reference","node data contains nid references")
-
-    node_name=name=_nciProp("node_name","node name")
-
-    no_write_model=_nciProp("no_write_model","is storing data in this node disabled if model tree (settable)")
-    @no_write_model.setter
-    def no_write_model(self,value): self.setNoWriteModel(value)
-
-    no_write_shot=_nciProp("no_write_shot",
-                          "is storing data in this node disabled if not model tree (settable)")
-    @no_write_shot.setter
-    def no_write_shot(self,value): self.setNoWriteShot(value)
-    number_of_children=_nciProp("number_of_children","number of children")
-
-    @property
-    def number_of_descendants(self):
-        "Number of immediate descendants of this node."
-        return self.getNumDescendants()
-
-    number_of_elts=_nciProp("number_of_elts","number of nodes in a conglomerate")
-
-    number_of_members=_nciProp("number_of_members","number of members")
 
     @property
     def on(self):
@@ -1330,14 +1426,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         return self.isOn()
     @on.setter
     def on(self,value): self.setOn(value)
-
-    owner_id=_nciProp("owner_id","id of the last person to write to this node")
-
-    parent=_nciProp("parent","parent node of this node")
-
-    parent_state=_nciProp("parent_state","is parent disabled")
-
-    parent_relationship=_nciProp("parent_relationship","parent relationship")
 
     @property
     def parent_disabled(self):
@@ -1360,8 +1448,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
             return '%s /*tree closed*/'%self._path
         return self._path
 
-    path_reference=_nciProp("path_reference","node data contains path references")
-
     @property
     def record(self):
         "Data contents of node (settable)"
@@ -1372,22 +1458,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
 
     def data(self,*altvalue):
         return self.record.data(*altvalue)
-
-    rfa=_nciProp("rfa","data offset in datafile")
-
-    rlength=_nciProp("rlength","length of data in node")
-
-    segmented=_nciProp("segmented","is data segmented")
-
-    setup=_nciProp("setup_information","was this data present in the model")
-
-    setup_information=setup
-
-    state=_nciProp("state","Use on property instead. on/off state of this node. False=on,True=off. (settable)")
-    @state.setter
-    def state(self,value): self.on=not value
-
-    status=_nciProp("status","status of action execution")
 
     @property
     def subtree(self):
@@ -1409,7 +1479,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         return self.tags
     @tag.setter
     def tag(self,names): self.addTags(names,replace=False)
-    time_inserted=_nciProp("time_inserted","64-bit timestamp when data was stored")
 
     @property
     def usage(self):
@@ -1418,17 +1487,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
     @usage.setter
     def usage(self,usage): self.setUsage(usage)
 
-    usage_str=_nciProp("usage_str","formal name of the usage of this node")
-
-    versions=_nciProp("version","does the data contain versions")
-
-    write_once=_nciProp("write_once","is no write once (settable)")
-    @write_once.setter
-    def write_once(self,value): self.setWriteOnce(value)
-
-    compress_segments=_nciProp("compress_segments","should segments be compressed (settable)")
-    @compress_segments.setter
-    def compress_segments(self,value): self.setCompressSegments(value)
 
     ########################################
     ### End of Node Properties
@@ -1625,14 +1683,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         """
         self.putData(None)
 
-    def setDoNotCompress(self,flag):
-        """Set do not compress state of this node
-        @param flag: True do disable compression, False to enable compression
-        @type flag: bool
-        @rtype: None
-        """
-        self._setNciFlag(0x200,flag)
-
     def dir(self):
         """list descendants"""
         for desc in self.descendants:
@@ -1772,7 +1822,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @return: First level descendants of this node
         @rtype: TreeNodeArray
         """
-        return  self.children_nids + self.member_nids
+        return self.descendants
 
     def getDtype(self):
         """Return the name of the data type stored in this node
@@ -1845,96 +1895,6 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         """
         return self.minpath
 
-    def _getNci(self,items,returnDict=True):
-        """Return dictionary of nci items"""
-        class NCI_ITEMS(_C.Structure):
-            _fields_=list()
-            for idx in range(50):
-                _fields_+=[("buflen%d"%idx,_C.c_ushort),
-                           ("code%d"%idx,_C.c_ushort),
-                           ("pointer%d"%idx,_C.c_void_p),
-                           ("retlen%d"%idx,_C.POINTER(_C.c_int32))]
-            def __init__(self,items):
-                self.ans=list()
-                self.retlen=list()
-                self.rettype=list()
-                if not isinstance(items,(list,tuple)):
-                    items=tuple(items)
-                for idx in range(len(items)):
-                    item="Nci%s"%(items[idx].upper(),)
-                    item_info=Nci.__dict__[item]
-                    code=item_info[0]
-                    item_type=item_info[1]
-                    item_length=item_info[2]
-                    self.retlen.append(_C.c_int32(0))
-                    self.rettype.append(item_info[3])
-                    if item_type == _C.c_char_p:
-                        self.ans.append(item_type(str.encode(' ')*item_length))
-                        self.__setattr__('pointer%d'%idx,
-                                         _C.cast(self.ans[idx],_C.c_void_p))
-                    else:
-                        self.ans.append(item_type())
-                        self.__setattr__('pointer%d'%idx,
-                                         _C.cast(_C.pointer(self.ans[idx]),_C.c_void_p))
-                    self.__setattr__('buflen%d'%idx,_C.c_ushort(item_length))
-                    self.__setattr__('code%d'%idx,_C.c_ushort(code))
-                    self.__setattr__('retlen%d'%idx,_C.pointer(self.retlen[idx]))
-                self.__setattr__('buflen%d'%len(items),_C.c_ushort(0))
-                self.__setattr__('code%d'%len(items),_C.c_ushort(Nci.NciEND_OF_LIST[0]))
-                self.__setattr__('pointer%d'%len(items),_C.c_void_p(0))
-                self.__setattr__('retlen%d'%len(items),_C.cast(_C.c_void_p(0),_C.POINTER(_C.c_int32)))
-
-        if isinstance(items,str):
-            items=[items]
-        elif isinstance(items,tuple):
-            items=list(items)
-        elif not isinstance(items,list):
-            raise TypeError("items must be a list,tuple or str")
-        flags=None
-        ans=dict()
-        flag_items=list()
-        for item in items:
-            if item.upper() in FLAGS.__dict__:
-                flag_items.append(item)
-                if flags is None:
-                    flags=int(self.get_flags)
-                ans[item]=(flags & FLAGS.__dict__[item.upper()]) != 0
-        for item in flag_items:
-            items.remove(item)
-        itmlst=NCI_ITEMS(items)
-        if len(items) > 0:
-            _TreeCtx.pushTree(self.tree)
-            try:
-                _exc.checkStatus(_TreeShr.TreeGetNci(
-                                                  self._nid,
-                                                  _C.byref(itmlst)))
-            finally:
-                _TreeCtx.popTree()
-        for idx in range(len(items)):
-            val=itmlst.ans[idx]
-            rettype=itmlst.rettype[idx]
-            retlen=itmlst.retlen[idx].value
-            if  rettype is _scr.String:
-                val=_scr.String(val.value[0:retlen].rstrip())
-            elif issubclass(rettype,_scr.Scalar):
-                val=_scr.Scalar(val)
-            elif rettype is TreeNode:
-                if retlen == 4:
-                    val=TreeNode(int(val.value),self.tree)
-                else:
-                    val=None
-            elif rettype is TreeNodeArray:
-                nids=list()
-                for n in range(retlen//4):
-                    nids.append(int(val[n]))
-                val=TreeNodeArray(nids,self.tree)
-            elif rettype is bool:
-                val=val.value != 0
-            ans[items[idx]]=val
-        if not returnDict and len(ans) == 1:
-            return list(ans.values())[0]
-        return ans
-
     def getNid(self):
         """Return node index
         @return: Internal node index of this node
@@ -1989,7 +1949,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @return: total number of first level descendants of this node
         @rtype: int
         """
-        return self.number_of_children+self.number_of_members
+        return self.number_of_descendants
 
     def getNumElts(self):
         """Return number of nodes in this conglomerate
@@ -2522,35 +2482,13 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
             self.tree.setDefault(olddefault)
         return self
 
-    def _setNciFlag(self,mask,setting):
-        class NCI_ITEM(_C.Structure):
-            _fields_=[("buflen",_C.c_ushort),("code",_C.c_ushort),
-                      ("pointer",_C.POINTER(_C.c_uint32)),("retlen",_C.c_void_p),
-                      ("buflen_e",_C.c_ushort),("code_e",_C.c_ushort),
-                      ("pointer_e",_C.c_void_p),("retlen_e",_C.c_void_p)]
-        item=NCI_ITEM()
-        mask=_C.c_uint32(mask)
-        item.buflen=0
-        item.code=1 if setting else 2
-        item.pointer=_C.pointer(mask)
-        item.retlen=0
-        item.buflen_e=0
-        item.code_e=0
-        item.pointer_e=0
-        item.retlen_e=0        
-        _exc.checkStatus(
-                   _TreeShr._TreeSetNci(self.ctx,
-                                        self._nid,
-                                        _C.byref(item)))
-
-
     def setCompressOnPut(self,flag):
         """Set compress on put state of this node
         @param flag: State to set the compress on put characteristic
         @type flag: bool
         @rtype: original type
         """
-        self._setNciFlag(0x400,flag)
+        self.compress_on_put=flag
 
     def setCompressSegments(self,flag):
         """Set compress segments state of this node
@@ -2558,7 +2496,15 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @type flag: bool
         @rtype: original type
         """
-        self._setNciFlag(0x10000,flag)
+        self.compress_segments=flag
+
+    def setDoNotCompress(self,flag):
+        """Set do not compress state of this node
+        @param flag: True do disable compression, False to enable compression
+        @type flag: bool
+        @rtype: None
+        """
+        self.do_not_compress=flag
 
     def setEssential(self,flag):
         """Set essential state of this node
@@ -2566,7 +2512,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @type flag: bool
         @rtype: original type
         """
-        self._setNciFlag(0x04,flag)
+        self.essential=flag
 
     def setIncludeInPulse(self,flag):
         """Set include in pulse state of this node
@@ -2575,7 +2521,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @type flag: bool
         @rtype: original type
         """
-        self._setNciFlag( 0x8000,flag)
+        self.include_in_pulse=flag
 
     def setNoWriteModel(self,flag):
         """Set no write model state for this node
@@ -2584,7 +2530,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @type flag: bool
         @rtype: original type
         """
-        self._setNciFlag(0x800,flag)
+        self.no_write_model=flag
 
     def setNoWriteShot(self,flag):
         """Set no write shot state for this node
@@ -2593,7 +2539,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @type flag: bool
         @rtype: original type
         """
-        self._setNciFlag(0x1000,flag)
+        self.no_write_shot=flag
 
     def setParentOn(self,flag):
         """Turn parent node on or off
@@ -2694,7 +2640,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @type flag: bool
         @rtype: original type
         """
-        self._setNciFlag(0x80, flag)
+        self.write_once=flag
 
     def updateSegment(self,start,end,dim,idx):
         """Update a segment
