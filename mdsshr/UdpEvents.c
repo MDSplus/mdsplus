@@ -280,6 +280,11 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
     print_error("Cannot set REUSEADDR option");
     return 0;
   }
+  if (setsockopt(udpSocket, SOL_SOCKET, SO_REUSEPORT, &flag, sizeof(flag)) == SOCKET_ERROR) {
+    print_error("Cannot set REUSEPORT option");
+    return 0;
+  }
+
 #ifdef _WIN32
   check_bind_in_directive = (bind(udpSocket, (SOCKADDR *) & serverAddr, sizeof(serverAddr)) != 0);
 #else
