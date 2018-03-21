@@ -127,7 +127,7 @@ static void unlock_nci(void* vars_in) {
 }
 static void lock_nci(void* vars_in) {
   vars_t*vars = (vars_t*)vars_in;
-  fprintf(stderr,"lock_nci-------------------------------------------------------------------------------------------------\n");
+  //  fprintf(stderr,"lock_nci-------------------------------------------------------------------------------------------------\n");
   if (!vars->nci_locked) {
     TreeLockNci(vars->tinfo, 0, vars->nidx, NULL);
     vars->nci_locked = 1;
