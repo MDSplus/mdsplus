@@ -114,7 +114,7 @@ public abstract class Descriptor_R<T extends Number>extends Descriptor<T>{
             int offset = Descriptor_R._dscoffIa + this.length() + args.length * Integer.BYTES;
             for(int i = 0; i < getNargs; i++){
                 final int pos = Descriptor_R._dscoffIa + Integer.BYTES * i;
-                if(args[i] == null | args[i] == Missing.NEW) this.b.putInt(pos, 0);
+                if(Descriptor.isMissing(args[i])) this.b.putInt(pos, 0);
                 else{
                     this.b.putInt(pos, offset);
                     offset += args[i].getSize();

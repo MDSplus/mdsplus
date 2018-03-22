@@ -7,7 +7,6 @@ import mds.data.DTYPE;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_R;
 import mds.data.descriptor_a.Float32Array;
-import mds.data.descriptor_s.Missing;
 import mds.data.descriptor_s.Uint8;
 
 public final class Dim extends Descriptor_R<Number>{
@@ -36,14 +35,14 @@ public final class Dim extends Descriptor_R<Number>{
     public final DATA<?> getData_() throws MdsException {
         float begin = Float.NEGATIVE_INFINITY, ending = Float.POSITIVE_INFINITY, origin = 0, delta = 1;
         if(this.getAxis() instanceof Range){
-            if(((Range)(this.getAxis())).getDelta() != Missing.NEW) delta = ((Range)(this.getAxis())).getDelta().toFloat();
-            if(((Range)(this.getAxis())).getBegin() != Missing.NEW) begin = ((Range)(this.getAxis())).getBegin().toFloat();
-            if(((Range)(this.getAxis())).getEnding() != Missing.NEW) ending = ((Range)(this.getAxis())).getEnding().toFloat();
+            if(!Descriptor.isMissing(((Range)(this.getAxis())).getDelta())) delta = ((Range)(this.getAxis())).getDelta().toFloat();
+            if(!Descriptor.isMissing(((Range)(this.getAxis())).getBegin())) begin = ((Range)(this.getAxis())).getBegin().toFloat();
+            if(!Descriptor.isMissing(((Range)(this.getAxis())).getEnding())) ending = ((Range)(this.getAxis())).getEnding().toFloat();
         }
         if(this.getWindow() instanceof Window){
-            if(((Window)(this.getWindow())).getValueAtIdx0() != Missing.NEW) origin = ((Window)(this.getWindow())).getValueAtIdx0().toFloat();
-            if(((Window)(this.getWindow())).getStartingIdx() != Missing.NEW) begin = Math.max(begin, origin + delta * ((Window)(this.getWindow())).getStartingIdx().toFloat());
-            if(((Window)(this.getWindow())).getEndingIdx() != Missing.NEW) ending = Math.min(ending, origin + delta * ((Window)(this.getWindow())).getEndingIdx().toFloat());
+            if(!Descriptor.isMissing(((Window)(this.getWindow())).getValueAtIdx0())) origin = ((Window)(this.getWindow())).getValueAtIdx0().toFloat();
+            if(!Descriptor.isMissing(((Window)(this.getWindow())).getStartingIdx())) begin = Math.max(begin, origin + delta * ((Window)(this.getWindow())).getStartingIdx().toFloat());
+            if(!Descriptor.isMissing(((Window)(this.getWindow())).getEndingIdx())) ending = Math.min(ending, origin + delta * ((Window)(this.getWindow())).getEndingIdx().toFloat());
         }
         if(begin == Float.NEGATIVE_INFINITY || ending == Float.POSITIVE_INFINITY) return new Uint8(1);
         final int elements = (int)((ending - begin) / delta);

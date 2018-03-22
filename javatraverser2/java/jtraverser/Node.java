@@ -17,6 +17,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import mds.MdsException;
 import mds.data.DTYPE;
+import mds.data.TREE;
 import mds.data.TREE.NodeInfo;
 import mds.data.TREE.RecordInfo;
 import mds.data.descriptor.Descriptor;
@@ -434,14 +435,27 @@ public class Node{
         final String sep = "</nobr>, <nobr>";
         final Flags lflags = this.getFlags();
         lflags.info(sb, sep);
-        sb.append("</nobr></td></tr><tr><td align=\"left\">Data:</td><td align=\"left\">");
-        if(this.getLength() == 0) sb.append("<nobr>There is no data stored for this this</nobr>");
-        else{
-            final String ldtype = DTYPE.getName(this.getDType());
-            final String ldclass = Descriptor.getDClassName(this.getDClass());
-            sb.append("<nobr>").append(ldtype).append(Node.tab).append(ldclass).append(Node.tab).append(this.getLength()).append(" B (").append(this.getRLength()).append(" B)</nobr>");
-            sb.append("</td></tr><tr><td align=\"left\">Inserted:</td><td align=\"left\">");
-            sb.append(this.getDate());
+        if(this.getUsage() == NODE.USAGE_STRUCTURE) sb.append("</nobr>");
+        else if(this.getUsage() == NODE.USAGE_SUBTREE){
+            sb.append("</nobr></td></tr><tr><td align=\"left\">File:</td><td align=\"left\">");
+            final TREE tree = this.nid.getTree();
+            String filename;
+            try{
+                filename = this.nid.getNidNumber() == 0 ? tree.getFileName() : tree.getFileName(this.name);
+            }catch(final MdsException e){
+                filename = String.format("Could not find tree file.", this.name, Integer.valueOf(this.nid.getTree().shot));
+            }
+            sb.append("<nobr>").append(filename).append("</nobr>");
+        }else{
+            sb.append("</nobr></td></tr><tr><td align=\"left\">Data:</td><td align=\"left\">");
+            if(this.getLength() == 0) sb.append("<nobr>There is no data stored for this node</nobr>");
+            else{
+                final String ldtype = DTYPE.getName(this.getDType());
+                final String ldclass = Descriptor.getDClassName(this.getDClass());
+                sb.append("<nobr>").append(ldtype).append(Node.tab).append(ldclass).append(Node.tab).append(this.getLength()).append(" B (").append(this.getRLength()).append(" B)</nobr>");
+                sb.append("</td></tr><tr><td align=\"left\">Inserted:</td><td align=\"left\">");
+                sb.append(this.getDate());
+            }
         }
         return sb.append("</td></tr></table></html>").toString();
     }

@@ -5,7 +5,6 @@ import mds.Mds.Request;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_apd.List;
 import mds.data.descriptor_s.CString;
-import mds.data.descriptor_s.Missing;
 import mds.data.descriptor_s.Pointer;
 
 public abstract class Shr{
@@ -78,7 +77,7 @@ public abstract class Shr{
         }
 
         public final LibCall<T> descr(final Descriptor<?> d) {
-            if(d == null || d == Missing.NEW) return this.miss(8);// +7 if as_is
+            if(Descriptor.isMissing(d)) return this.miss(8);// +7 if as_is
             this.args.add(d);
             return this.arg("descr($)");
         }
@@ -150,7 +149,7 @@ public abstract class Shr{
         }
 
         public final LibCall<T> ref(final Descriptor<?> d) {
-            if(d == null || d == Missing.NEW) return this.miss(6);
+            if(Descriptor.isMissing(d)) return this.miss(6);
             this.args.add(d);
             return this.arg("ref($)");
         }
@@ -173,7 +172,7 @@ public abstract class Shr{
         }
 
         public final LibCall<T> val(final Descriptor<?> d) {
-            if(d == null || d == Missing.NEW) return this.miss(6);
+            if(Descriptor.isMissing(d)) return this.miss(6);
             this.args.add(d);
             return this.arg("val($)");
         }
@@ -186,7 +185,7 @@ public abstract class Shr{
         }
 
         public final LibCall<T> xd(final Descriptor<?> d) {
-            if(d == null || d == Missing.NEW) return this.miss(5 + 7);
+            if(Descriptor.isMissing(d)) return this.miss(5 + 7);
             this.args.add(d);
             return this.arg("xd(as_is($))");
         }

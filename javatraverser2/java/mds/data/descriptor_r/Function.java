@@ -16,7 +16,6 @@ import mds.data.descriptor_r.function.CONST;
 import mds.data.descriptor_r.function.Fun;
 import mds.data.descriptor_r.function.MODIFIER;
 import mds.data.descriptor_r.function.UNARY;
-import mds.data.descriptor_s.Missing;
 
 /** Function 199 (-57) **/
 public class Function extends Descriptor_R<Short>{
@@ -32,11 +31,13 @@ public class Function extends Descriptor_R<Short>{
             this.lorr = lorr;
         }
     }
-    private static String newline;
-    private static int    TdiIndent;
-    static{
-        Function.setWindowsLineEnding(System.getProperty("os.name").startsWith("Win"));
-    }
+    private static String                     newline;
+    private static final ThreadLocal<Integer> TdiIndent = new ThreadLocal<Integer>(){
+                                                            @Override
+                                                            protected Integer initialValue() {
+                                                                return Integer.valueOf(0);
+                                                            }
+                                                        };
 
     public static final Function ABS(final Descriptor<?> dscptrs) {
         return new Function(OPC.OpcAbs, dscptrs);
@@ -54,7 +55,9 @@ public class Function extends Descriptor_R<Short>{
     }
 
     private final static void addIndent(final int step, final StringBuilder pout) {
-        final int len = (((Function.TdiIndent += step) < 8 ? Function.TdiIndent : 8) + 1);
+        final int val = Function.TdiIndent.get().intValue() + step;
+        Function.TdiIndent.set(Integer.valueOf(val));
+        final int len = (val < 8 ? val : 8) + (Function.newline.charAt(0) == '\r' ? 2 : 1);
         pout.append(Function.newline.substring(0, len));
     }
 
@@ -115,7 +118,6 @@ public class Function extends Descriptor_R<Short>{
 
     public static final void setWindowsLineEnding(final boolean win_in) {
         Function.newline = win_in ? "\r\n\t\t\t\t\t\t\t" : "\n\t\t\t\t\t\t\t";
-        Function.TdiIndent = win_in ? 1 : 0;
     }
 
     protected Function(final ByteBuffer b){
@@ -178,7 +180,7 @@ public class Function extends Descriptor_R<Short>{
     }
 
     protected final StringBuilder deco_extfunction(final int prec, final StringBuilder pout, final int mode) {
-        if(this.getDescriptor(0) != Missing.NEW || this.getDescriptor(1) == Missing.NEW || this.getDescriptor(1).dtype() != DTYPE.T){
+        if(!Descriptor.isMissing(this.getDescriptor(0)) || Descriptor.isMissing(this.getDescriptor(1)) || this.getDescriptor(1).dtype() != DTYPE.T){
             pout.append(OPC.Names[this.getAtomic().shortValue()]);
             this.addArguments(0, "(", ")", pout, mode);
             return pout;
