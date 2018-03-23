@@ -37,7 +37,9 @@ TreeSetDefault.c \
 TreeSetNci.c \
 TreeThreadSafe.c \
 TreeVerify.c \
-RemoteAccess.c
+TFN.c \
+RemoteAccess.c \
+lex.yytreepath.c 
 
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = TreeShr.exports
@@ -70,3 +72,6 @@ install: $(libdir)
 
 TreeShr.exports: TreeShr.def
 	$(SED) -e /LIBRARY/\;/\;/d TreeShr.def > $@
+
+lex.yytreepath.c: TreeFindNodeWild.l
+	flex TreeFindNodeWild.l
