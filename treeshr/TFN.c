@@ -137,6 +137,7 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
 {
   NODELIST *answer = NULL;
   switch (term->search_type) {
+/*
     case (CHILD) : {
       NODE *n;
       char *match_str = (term->term[0]=='.') ? term->term+1 : term->term;
@@ -161,27 +162,44 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
       }
       break;
     }
+*/
+    case (CHILD) : 
+    case (MEMBER) : 
     case (CHILD_OR_MEMBER) : {
       NODE *n;
-      char *match_str = (term->term[0]=='~') ? term->term+1 : term->term;
       for (n=member_of(start); n; n = brother_of(dblist, n)) {
         char *trimmed = Trim(n->name);
-        if (match(match_str, trimmed)) {
+        if (match(term->term, trimmed)) {
           answer = AddNodeList(answer, n);
         }
         free(trimmed);
       }
       for (n=child_of(dblist, start); n; n = brother_of(dblist, n)) {
         char *trimmed = Trim(n->name);
-        if (match(match_str, trimmed)) {
+        if (match(term->term, trimmed)) {
           answer = AddNodeList(answer, n);
         }
         free(trimmed);
       }
       break;
     }
-
-
+    case (PARENT) :
+    {
+      answer = AddNodeList(answer, parent_of(dblist, start));
+      break;
+    }
+/*
+ * make this seperate and recursive
+ *
+    case (CHILD_SEARCH) :
+    {
+      NODE n;
+      char *match_str=term->term+3;
+      for (n=child_of(dblist, start); n; n = brother_of(dblist, n) {
+        
+      }
+    }   
+ */
     default: {
       printf("Search for type %d not implimented\n", term->search_type);
       return NULL;
@@ -223,7 +241,7 @@ STATIC_ROUTINE void FreeNodeList(NODELIST *list)
  */
 STATIC_ROUTINE char *Trim(char *str)
 {
-  char *ans = malloc(sizeof(NODE_NAME)+1);
+  char *ans = calloc(sizeof(NODE_NAME)+1, 1);
   char *p;
   strncpy(ans, str, sizeof(NODE_NAME));
   for (p=ans; *p; p++) {

@@ -13,16 +13,28 @@ STATIC_ROUTINE void upcaseAndTrim(char *str)
   }
 }
 
+STATIC_ROUTINE int isPunctuation(char c)
+{
+  return ((c == '.') || (c == ':') || (c=='-') || (c=='~') | (c=='^'));
+}
 STATIC_ROUTINE void addSearchTerm(int type, char *str)
 {
   SEARCH_TERM *ptr, *p;
-  printf("addSearchTerm\n");
+//  printf("addSearchTerm\n");
   ptr=malloc(sizeof(SEARCH_TERM));
   ptr->search_type = type;
   ptr->term = NULL;
   ptr->next = NULL;
   if (str) {
-    ptr->term = strdup(str);
+    char *cptr = str;
+    while(*cptr) {
+      if (isPunctuation(*cptr)) {
+        cptr++;
+      } else {
+       break; 
+     }
+    }
+    ptr->term = strdup(cptr);
   }
   upcaseAndTrim(ptr->term);
   if (THE_LIST==NULL)
@@ -55,47 +67,47 @@ newline \n
 %option prefix="yytreepath"
 %%
 ^\\{alphaplus}{1,12}:{2}{alphaplus}{1,23}	{
-  printf ("Found a tag tree /%s/\n", yytreepathtext);
+//  printf ("Found a tag tree /%s/\n", yytreepathtext);
   addSearchTerm(TAG_TREE, yytreepathtext);
 }
 ^\\{alphaplus}{1,23} {
-  printf ("Found a tag (no tree) /%s/ returning %d\n", yytreepathtext, TAG);
+//  printf ("Found a tag (no tree) /%s/ returning %d\n", yytreepathtext, TAG);
   addSearchTerm(TAG, yytreepathtext);
 }
 {child_search} {
-  printf ("Found a Child Search\n");
+//  printf ("Found a Child Search\n");
   addSearchTerm(CHILD_SEARCH, yytreepathtext);
 }
 {member_search} {
-  printf ("Found a Member Search\n");
+//  printf ("Found a Member Search\n");
   addSearchTerm(MEMBER_SEARCH, yytreepathtext);
 }
 {ancestor_search} {
-  printf ("Found a Ancestor Search\n");
+//  printf ("Found a Ancestor Search\n");
   addSearchTerm(ANCESTOR_SEARCH, yytreepathtext);
 }
 {child_or_member_search}|{old_child_or_member_search} {
-  printf ("Found a Child or Member Search\n");
+//  printf ("Found a Child or Member Search\n");
   addSearchTerm(CHILD_OR_MEMBER_SEARCH, yytreepathtext);
 }
 {childstart}{0,1}{parent} {
-  printf ("Found a Parent\n");
+//  printf ("Found a Parent\n");
   addSearchTerm(PARENT, yytreepathtext);
 }
 {ancestor} {
-  printf ("Found a Ancestor\n");
+//  printf ("Found a Ancestor\n");
   addSearchTerm(ANCESTOR, yytreepathtext);
 }
 :{0,1}{alphaplus}{1,12} {
-  printf ("Found MEMBER /%s/\n", yytreepathtext);
+//  printf ("Found MEMBER /%s/\n", yytreepathtext);
   addSearchTerm(MEMBER, yytreepathtext);
 }
 {childstart}{alphaplus}{1,12} {
-  printf ("Found a CHILD /%s/\n", yytreepathtext);
+//  printf ("Found a CHILD /%s/\n", yytreepathtext);
   addSearchTerm(CHILD, yytreepathtext);
 }
 {child_or_memberstart}{alphaplus}{1,12} {
-  printf ("Found a child or member /%s/\n", yytreepathtext);
+//  printf ("Found a child or member /%s/\n", yytreepathtext);
   addSearchTerm(CHILD_OR_MEMBER, yytreepathtext);
 }
 {newline} {
