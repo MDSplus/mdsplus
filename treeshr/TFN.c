@@ -91,8 +91,8 @@ STATIC_ROUTINE int _TFNWild(void *dbid, char const *path, int *nid_out, void **c
     NODELIST *tmp;
     tmp = ctx->answers->next;
     *nid_out = node_to_nid(dblist, ctx->answers->node, (NID *)nid_out);
-    ctx->answers = tmp;
-    free(tmp);
+    free(ctx->answers);
+    ctx->answers = tmp;    
   }
   else {
     status = TreeNMN;
@@ -252,9 +252,8 @@ STATIC_ROUTINE NODELIST *AddNodeList(NODELIST *list, NODE *node)
   this_one->next = NULL;
   if (list) {
     NODELIST *p;
-    for (p = list; p->next; p = p->next){
-      p->next = this_one;
-    }
+    for (p = list; p->next; p = p->next);
+    p->next = this_one;
   }
   else {
     list = this_one;
