@@ -153,22 +153,24 @@ STATIC_ROUTINE void PrintCtx(SEARCH_CTX *ctx)
 
 STATIC_ROUTINE SEARCH_TERM *SquishSearches(SEARCH_TERM *terms) {
   SEARCH_TERM *ptr = terms;
-  for (;ptr->next; ptr = ptr->next)
+  SEARCH_TERM *tmp;
+  for (;ptr && ptr->next; ptr = ptr->next)
     if ((ptr->search_type == ANCESTOR_SEARCH) ||
         (ptr->search_type == CHILD_SEARCH) ||
         (ptr->search_type == MEMBER_SEARCH) ||
         (ptr->search_type == CHILD_OR_MEMBER_SEARCH) )
-
     {
-      char *ans = (char *)malloc(strlen(ptr->term)+strlen(ptr->next->term)+1);
-      strcpy(ans, ptr->term);
-      strcat(ans, ptr->next->term);
+      char *str = calloc(strlen(ptr->term) + strlen(ptr->next->term) + 1, sizeof(char));
+      strcpy(str, ptr->term);
+      strcat(str, ptr->next->term);
       free(ptr->term);
       free(ptr->next->term);
-      ptr->term = ans;
-      ptr->next = ptr->next->next;
+      ptr->term = str;
+      tmp = ptr->next;
+      ptr->next=tmp->next;
+      free(tmp);
     }
-    return ptr;
+    return terms;
 }
 
 EXPORT void FreeSearchTerms(SEARCH_TERM *terms)
@@ -204,7 +206,7 @@ EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild)
   if (status == 0) {
     ctx->terms=THE_LIST;
     /* now merge in trailing search clauses */
-//    ctx->terms=SquishSearches(ctx->terms);
+    ctx->terms=SquishSearches(ctx->terms);
     /* check if any terms are wild */
     *wild = strchr(wild_path, '*') || 
             strchr(wild_path, '%') || 
