@@ -149,6 +149,39 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
       }
       break;
     }
+    case (MEMBER) : {
+      NODE *n;
+      char *match_str = (term->term[0]==':') ? term->term+1 : term->term;
+      for (n=member_of(start); n; n = brother_of(dblist, n)) {
+        char *trimmed = Trim(n->name);
+        if (match(match_str, trimmed)) {
+          answer = AddNodeList(answer, n);
+        }
+        free(trimmed);
+      }
+      break;
+    }
+    case (CHILD_OR_MEMBER) : {
+      NODE *n;
+      char *match_str = (term->term[0]=='~') ? term->term+1 : term->term;
+      for (n=member_of(start); n; n = brother_of(dblist, n)) {
+        char *trimmed = Trim(n->name);
+        if (match(match_str, trimmed)) {
+          answer = AddNodeList(answer, n);
+        }
+        free(trimmed);
+      }
+      for (n=child_of(dblist, start); n; n = brother_of(dblist, n)) {
+        char *trimmed = Trim(n->name);
+        if (match(match_str, trimmed)) {
+          answer = AddNodeList(answer, n);
+        }
+        free(trimmed);
+      }
+      break;
+    }
+
+
     default: {
       printf("Search for type %d not implimented\n", term->search_type);
       return NULL;
@@ -182,11 +215,17 @@ STATIC_ROUTINE void FreeNodeList(NODELIST *list)
   }
   free(list);
 }
-
+/*
+ * Trim trailing spaces from input nodename
+ *
+ * Note there will not be a \0
+ * so allocate 12+1 and copy it in first
+ */
 STATIC_ROUTINE char *Trim(char *str)
 {
-  char *ans = strdup(str);
+  char *ans = malloc(sizeof(NODE_NAME)+1);
   char *p;
+  strncpy(ans, str, sizeof(NODE_NAME));
   for (p=ans; *p; p++) {
     if (isspace(*p)) *p='\0';
   }
