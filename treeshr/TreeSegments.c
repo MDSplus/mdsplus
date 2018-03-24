@@ -1200,6 +1200,7 @@ int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *v
        index. If not, make an empty index and flag that a new index needs to be written.***/
   IF_NO_EXTENDED_NCI {
     if (!value) goto end; // has not xnci; nothing to delete
+    vars->attr_offset=-1;
     memset(&vars->attr, -1, sizeof(vars->attr));
     vars->attr_update = 1;
     if (((vars->local_nci.flags2 & NciM_EXTENDED_NCI) == 0) && vars->local_nci.length > 0) {
