@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern void **TreeCtx();
 
 STATIC_ROUTINE int _TFN (void *dbid, char const *path, int *outnid);
+STATIC_ROUTINE int _TFNWild(void *dbid,  char const *path, int *nid_out, void **ctx_inout, int usage_mask);
 STATIC_ROUTINE NODELIST *Search(PINO_DATABASE *dblist, SEARCH_CTX *ctx, SEARCH_TERM *term, NODE *start);
 STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start);
 STATIC_ROUTINE NODELIST *AddNodeList(NODELIST *list, NODE *node);
@@ -54,14 +55,49 @@ EXPORT int TFN(char const *path, int *outnid)
   return _TFN(*TreeCtx(), path, outnid);
 }
 
-// EXPORT int TFNWild(char const *path, int *nid_out, void **ctx_inout, int usage_mask)
-// {
-//   return _TFNWild(*TreeCtx(), path, nid_out, ctx_inout, usage_mask);
-// }
+EXPORT int TFNWild(char const *path, int *nid_out, void **ctx_inout, int usage_mask)
+{
+   return _TFNWild(*TreeCtx(), path, nid_out, ctx_inout, usage_mask);
+}
 
 EXPORT int TFNEnd(void **ctx_in)
 {
   return _TFNEnd(*TreeCtx(), ctx_in);
+}
+STATIC_ROUTINE int _TFNWild(void *dbid, char const *path, int *nid_out, void **ctx_inout, int usage_mask)
+{
+  int status = TreeNORMAL;
+  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+  int wild = 0;
+  SEARCH_CTX *ctx;
+
+  if (!IS_OPEN(dblist))
+    return TreeNOT_OPEN;
+//  if (dblist->remote)
+//    return FindNodeRemote(dblist, path, outnid);
+  if (*ctx_inout == NULL) {
+    ctx = (SEARCH_CTX *)calloc(1, sizeof(SEARCH_CTX));
+    status = WildParse(path, ctx, &wild);
+    if STATUS_NOT_OK
+      return(status);
+    *ctx_inout = ctx;
+    ctx->default_node = dblist->default_node;
+    ctx->answers = Search(dblist, ctx, ctx->terms, dblist->default_node);
+  }
+  else {
+    ctx = *ctx_inout;
+  }
+  if (ctx->answers) {
+    NODELIST *tmp;
+    tmp = ctx->answers->next;
+    *nid_out = node_to_nid(dblist, ctx->answers->node, (NID *)nid_out);
+    ctx->answers = tmp;
+    free(tmp);
+  }
+  else {
+    status = TreeNMN;
+  }
+  return status;
 }
 
 STATIC_ROUTINE int _TFN(void *dbid, char const *path, int *outnid)

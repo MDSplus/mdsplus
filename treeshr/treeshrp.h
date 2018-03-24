@@ -365,11 +365,16 @@ typedef struct _st {
   struct _st *next;
   NODE *start_node;
 } SEARCH_TERM;
+typedef struct node_list {
+  NODE *node;
+  struct node_list *next;
+} NODELIST;
 
 typedef struct {
   SEARCH_TERM *terms;
   char *wildcard;
   NODE *default_node;
+  NODELIST *answers;
 } SEARCH_CTX;
 
 
@@ -396,11 +401,6 @@ typedef struct {
       SON_MEMBER_TYPE_NOWILD,
       EOL
     } SEARCH_TYPE;
-
-    typedef struct node_list {
-      NODE *node;
-      struct node_list *next;
-    } NODELIST;
 
     typedef struct search_context {
       int level;

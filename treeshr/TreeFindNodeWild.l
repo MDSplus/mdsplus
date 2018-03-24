@@ -196,7 +196,9 @@ EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild)
       *p++ = '~';
       *p++ = '~';
   }
+  printf("about to hand off the string\n");
   ctx->wildcard = strdup(wild_path);
+  printf("now call the parse\n");
   yytreepath_scan_string(wild_path);
   while((status = yytreepathlex()) > 0) ;
   if (status == 0) {
