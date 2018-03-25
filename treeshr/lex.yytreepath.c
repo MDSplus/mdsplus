@@ -2006,22 +2006,18 @@ STATIC_ROUTINE SEARCH_TERM *SquishSearches(SEARCH_TERM *terms) {
   SEARCH_TERM *ptr = terms;
   SEARCH_TERM *tmp;
   for (;ptr && ptr->next; ptr = ptr->next)
-    if ((ptr->search_type == ANCESTOR_SEARCH) ||
-        (ptr->search_type == CHILD_SEARCH) ||
-        (ptr->search_type == MEMBER_SEARCH) ||
-        (ptr->search_type == CHILD_OR_MEMBER_SEARCH) )
-    {
-      if (ptr->next->search_type == CHILD) {
-        char *str = calloc(strlen(ptr->term) + strlen(ptr->next->term) + 1, sizeof(char));
-        strcpy(str, ptr->term);
-        strcat(str, ptr->next->term);
-        free(ptr->term);
-        free(ptr->next->term);
-        ptr->term = str;
-        tmp = ptr->next;
-        ptr->next=tmp->next;
-        free(tmp);
-      }
+    if (((ptr->search_type == CHILD_SEARCH) && (ptr->next->search_type == CHILD)) ||
+       ((ptr->search_type == MEMBER_SEARCH) && (ptr->next->search_type == MEMBER)) ||
+       ((ptr->search_type == CHILD_OR_MEMBER_SEARCH) && (ptr->next->search_type == CHILD_OR_MEMBER))) {
+      char *str = calloc(strlen(ptr->term) + strlen(ptr->next->term) + 1, sizeof(char));
+      strcpy(str, ptr->term);
+      strcat(str, ptr->next->term);
+      free(ptr->term);
+      free(ptr->next->term);
+      ptr->term = str;
+      tmp = ptr->next;
+      ptr->next=tmp->next;
+      free(tmp);
     }
     return terms;
 }
