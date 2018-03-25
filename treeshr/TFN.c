@@ -46,6 +46,8 @@ extern void FreeSearchTerms(SEARCH_TERM *terms);
 STATIC_ROUTINE NODELIST *ConcatenateNodeLists(NODELIST *start_list, NODELIST *end_list);
 STATIC_ROUTINE char *Trim(char *str);
 STATIC_ROUTINE NODELIST *FindChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start);
+STATIC_ROUTINE NODELIST *FindMembers(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start);
+STATIC_ROUTINE NODELIST *FindMembersOrChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start);
 
 EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild);
 
@@ -223,6 +225,14 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
       answer = FindChildren(dblist, term, start);
       break;
     }
+    case (MEMBER_SEARCH) : {
+      answer = FindMembers(dblist, term, start);
+      break;
+    }
+    case (CHILD_OR_MEMBER_SEARCH) : {
+      answer = FindMembersOrChildren(dblist, term, start);
+      break;
+    }
     case (PARENT) :
     {
       answer = AddNodeList(answer, parent_of(dblist, start));
@@ -248,6 +258,55 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
   }
   return(answer);
 }
+STATIC_ROUTINE NODELIST *FindMembersOrChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start)
+{
+  NODELIST *answer = NULL;
+  NODELIST *toDo = NULL;
+  NODELIST *nptr;
+  NODE *n;
+  for (n=member_of(start); n; n=brother_of(dblist, n)) {
+    toDo=AddNodeList(toDo, n);
+    char *trimmed = Trim(n->name);
+    if (match((strlen(term->term))?term->term:"*", trimmed)) {
+      answer = AddNodeList(answer, n);
+    }
+    free(trimmed);
+  }
+  for (n=child_of(dblist, start); n; n=brother_of(dblist, n)) {
+    toDo=AddNodeList(toDo, n);
+    char *trimmed = Trim(n->name);
+    if (match((strlen(term->term))?term->term:"*", trimmed)) {
+      answer = AddNodeList(answer, n);
+    }
+    free(trimmed);
+  }
+
+  for (nptr=toDo; nptr; nptr=nptr->next)
+    answer = ConcatenateNodeLists(answer, FindMembersOrChildren(dblist, term, nptr->node));
+  FreeNodeList(toDo);
+  return answer;
+}
+
+STATIC_ROUTINE NODELIST *FindMembers(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start)
+{
+  NODELIST *answer = NULL;
+  NODELIST *toDo = NULL;
+  NODELIST *nptr;
+  NODE *n;
+  for (n=member_of(start); n; n=brother_of(dblist, n)) {
+    toDo=AddNodeList(toDo, n);
+    char *trimmed = Trim(n->name);
+    if (match((strlen(term->term))?term->term:"*", trimmed)) {
+      answer = AddNodeList(answer, n);
+    }
+    free(trimmed);
+  }
+  for (nptr=toDo; nptr; nptr=nptr->next)
+    answer = ConcatenateNodeLists(answer, FindMembers(dblist, term, nptr->node));
+  FreeNodeList(toDo);
+  return answer;
+}
+
 STATIC_ROUTINE NODELIST *FindChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start) 
 {
   NODELIST *answer = NULL;
@@ -264,6 +323,7 @@ STATIC_ROUTINE NODELIST *FindChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, 
   }
   for (nptr=toDo; nptr; nptr=nptr->next)
     answer = ConcatenateNodeLists(answer, FindChildren(dblist, term, nptr->node));
+  FreeNodeList(toDo);
   return answer;
 }
 
@@ -286,10 +346,13 @@ STATIC_ROUTINE NODELIST *AddNodeList(NODELIST *list, NODE *node)
 
 STATIC_ROUTINE void FreeNodeList(NODELIST *list)
 {
-  if(list->next) {
-    FreeNodeList(list->next);
+  NODELIST *ptr;
+  for (ptr=list; ptr;)
+  {
+    NODELIST *nxt = ptr->next;
+    free(ptr);
+    ptr=nxt;
   }
-  free(list);
 }
 /*
  * Trim trailing spaces from input nodename
