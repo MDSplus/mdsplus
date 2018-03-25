@@ -2011,15 +2011,17 @@ STATIC_ROUTINE SEARCH_TERM *SquishSearches(SEARCH_TERM *terms) {
         (ptr->search_type == MEMBER_SEARCH) ||
         (ptr->search_type == CHILD_OR_MEMBER_SEARCH) )
     {
-      char *str = calloc(strlen(ptr->term) + strlen(ptr->next->term) + 1, sizeof(char));
-      strcpy(str, ptr->term);
-      strcat(str, ptr->next->term);
-      free(ptr->term);
-      free(ptr->next->term);
-      ptr->term = str;
-      tmp = ptr->next;
-      ptr->next=tmp->next;
-      free(tmp);
+      if (ptr->next->search_type == CHILD) {
+        char *str = calloc(strlen(ptr->term) + strlen(ptr->next->term) + 1, sizeof(char));
+        strcpy(str, ptr->term);
+        strcat(str, ptr->next->term);
+        free(ptr->term);
+        free(ptr->next->term);
+        ptr->term = str;
+        tmp = ptr->next;
+        ptr->next=tmp->next;
+        free(tmp);
+      }
     }
     return terms;
 }
