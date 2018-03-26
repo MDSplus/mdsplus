@@ -48,6 +48,7 @@ STATIC_ROUTINE char *Trim(char *str);
 STATIC_ROUTINE NODELIST *FindChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start);
 STATIC_ROUTINE NODELIST *FindMembers(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start);
 STATIC_ROUTINE NODELIST *FindMembersOrChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start);
+STATIC_ROUTINE NODELIST *FindTagWild(PINO_DATABASE *dblist, SEARCH_TERM *term);
 
 EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild);
 
@@ -233,23 +234,16 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
       answer = FindMembersOrChildren(dblist, term, start);
       break;
     }
+    case (TAG):
+    case (TAG_TREE): {
+      answer = FindTagWild(dblist, term);
+      break;
+    }
     case (PARENT) :
     {
       answer = AddNodeList(answer, parent_of(dblist, start));
       break;
     }
-/*
- * make this seperate and recursive
- *
-    case (CHILD_SEARCH) :
-    {
-      NODE n;
-      char *match_str=term->term+3;
-      for (n=child_of(dblist, start); n; n = brother_of(dblist, n) {
-        
-      }
-    }   
- */
     default: {
       printf("Search for type %d not implimented\n", term->search_type);
       return NULL;
@@ -257,6 +251,71 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
     }
   }
   return(answer);
+}
+
+STATIC_ROUTINE NODELIST *FindTags(PINO_DATABASE *dblist, TREE_INFO *info, int treenum, char *tagname)
+{
+  NODELIST *answer = NULL;
+  TAG_INFO *tptr = info->tag_info;
+  int i;
+  NID nid;
+  nid.tree = treenum;
+  for (i=0; i < *info->tags; i++) {
+    char *trimmed = Trim(tptr[i].name);
+    if(match(tagname, trimmed)) {
+      nid.node = tptr[i].node_idx;
+      answer = AddNodeList(answer, nid_to_node(dblist, &nid));
+    }
+    free(trimmed);
+  }
+  return(answer);
+}
+
+STATIC_ROUTINE TREE_INFO *GetDefaultTreeInfo(PINO_DATABASE *dblist, int *treenum)
+{
+  TREE_INFO *info;
+  int  i = 0;
+  NID nid;
+  node_to_nid(dblist, dblist->default_node, &nid);
+  *treenum = nid.tree; 
+  for (info=dblist->tree_info; i < *treenum; info = info->next_info, i++);
+  return info;
+
+}
+
+STATIC_ROUTINE NODELIST *FindTagWild(PINO_DATABASE *dblist, SEARCH_TERM *term)
+{
+  NODELIST *answer = NULL;
+  TREE_INFO *tinfo;
+  int treenum;
+  char *tag_term = strdup(term->term);
+  if (term->search_type == TAG_TREE) {
+    char *treename=tag_term;
+    char *tagname = strstr(tag_term, "::")+2;
+    *(strstr(tag_term, "::")) = '\0';
+    if (treename[0] == '\\') treename++;
+    printf("tag_tree search Tree /%s/ tag /%s/\n", treename, tagname);
+    for (treenum = 0, tinfo=dblist->tree_info; tinfo; tinfo = tinfo->next_info, treenum++) {
+      if(match(treename, tinfo->treenam)) {
+        answer = ConcatenateNodeLists(answer, FindTags(dblist, tinfo, treenum, tagname));
+      }
+    }
+  }
+  else {
+    TREE_INFO *default_tinfo = GetDefaultTreeInfo(dblist, &treenum);
+    char *tagname = tag_term;
+    if (tagname[0] == '\\') tagname++;
+    printf("tag (not tree) seart tag /%s/\n", tagname);
+    answer = FindTags(dblist, default_tinfo, treenum, tagname);
+    for (treenum=0, tinfo=dblist->tree_info; tinfo; tinfo = tinfo->next_info) {
+      if (tinfo != default_tinfo) {
+        answer = ConcatenateNodeLists(answer, FindTags(dblist, tinfo, treenum, tagname));
+      }
+      treenum++;
+    }
+  }
+  free(tag_term);
+  return answer;
 }
 STATIC_ROUTINE NODELIST *FindMembersOrChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start)
 {
