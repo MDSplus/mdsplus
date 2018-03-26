@@ -39,6 +39,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/RFXVICONTROL.py
 ./usr/local/mdsplus/pydevices/RfxDevices/RFXWAVESETUP.py
 ./usr/local/mdsplus/pydevices/RfxDevices/RFX_PROTECTIONS.py
+./usr/local/mdsplus/pydevices/RfxDevices/RFX_RPADC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SIS3820.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SPIDER.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SPIDER_SM.py
