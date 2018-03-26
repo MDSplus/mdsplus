@@ -26,7 +26,7 @@ public abstract class COMPRESSION extends Function{
 
         @Override
         public Descriptor<?> evaluate() {
-            if(this.pointer() != 0 && this.getArgument(0) != Missing.NEW) return Missing.NEW;
+            if(this.pointer() != 0 && !Descriptor.isMissing(this.getArgument(0))) return Missing.NEW;
             try{
                 return COMPRESSION.decompress((ARRAY<?>)this.getArgument(1), (ARRAY<?>)this.getArgument(2));
             }catch(final MdsException e){

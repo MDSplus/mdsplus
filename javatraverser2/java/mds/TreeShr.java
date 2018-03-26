@@ -149,6 +149,11 @@ public final class TreeShr extends Shr{
         public final String data;
         public final int    status;
 
+        public StringStatus(final List list){
+            this.data = list.get(0).toString();
+            this.status = list.get(1).toInt();
+        }
+
         public StringStatus(final String data, final int status){
             this.data = data;
             this.status = status;
@@ -312,6 +317,10 @@ public final class TreeShr extends Shr{
 
     public static final Request<Int32> treeEndConglomerate() {
         return new TreeCall<Int32>(Int32.class, "TreeEndConglomerate", 30).fin();
+    }
+
+    private static Request<List> treeFileName(final String expt, final int shot) {
+        return new TreeCall<List>(List.class, "_a=*", "TreeFileName", 70).ref(CString.make(expt)).val(shot).xd("_a").fin("List(*,_a,_s)");
     }
 
     public static final Request<List> treeFindNodeTags_T(final int nid, final TagRef ref) {
@@ -675,6 +684,10 @@ public final class TreeShr extends Shr{
      **/
     public final int treeEndConglomerate(final Pointer ctx) throws MdsException {
         return this.mds.getDescriptor(ctx, TreeShr.treeEndConglomerate()).getValue();
+    }
+
+    public final StringStatus treeFileName(final Pointer ctx, final String expt, final int shot) throws MdsException {
+        return new StringStatus(this.mds.getDescriptor(ctx, TreeShr.treeFileName(expt, shot)));
     }
 
     /**

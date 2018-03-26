@@ -237,7 +237,6 @@ Do this in runs.
     old = 0;
     for (pn = diff, j = xn; --j >= 0; old = *p32++) {
       unsigned int delta;
-      int64_t ans;
 /**** Check for integer overflow,
  *        previously was:
  *             Check for special delta of 0x80000000
@@ -246,18 +245,16 @@ Do this in runs.
  *             compiler the other <= tests do not work.
  *        if overflow, put in flag value
  ***********/
-      ans = *p32 - old;
-      if ((uint32_t)ans == 0x80000000 || old<0 ? ans<*p32 : ans>*p32) {
+      int32_t ans = *p32 - old;
+      if ((((uint32_t)ans) == 0x80000000) || (old<0 ? ans<*p32 : ans>*p32)) {
         *pn++=ans;
         yy = 32;
-      }
-      else {
-        i = *pn++ = (int)ans;
-	delta = (unsigned int)((i < 0) ? -i : i);
+      } else {
+        i = *pn++ = ans;
+	delta = (uint32_t)((i < 0) ? -i : i);
 	if (delta <= 64) {
 	  yy = signif[delta];
-	}
-	else {
+	} else {
 	  yy = 0;
 	  if (delta > 0x1000000) {
 	    delta = delta >> 24;
