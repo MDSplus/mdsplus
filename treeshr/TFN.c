@@ -176,32 +176,6 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
 {
   NODELIST *answer = NULL;
   switch (term->search_type) {
-/*
-    case (CHILD) : {
-      NODE *n;
-      char *match_str = (term->term[0]=='.') ? term->term+1 : term->term;
-      for (n=child_of(dblist, start); n; n = brother_of(dblist, n)) {
-        char *trimmed = Trim(n->name);
-        if (match(match_str, trimmed)) {
-          answer = AddNodeList(answer, n);
-        }
-        free(trimmed);
-      }
-      break;
-    }
-    case (MEMBER) : {
-      NODE *n;
-      char *match_str = (term->term[0]==':') ? term->term+1 : term->term;
-      for (n=member_of(start); n; n = brother_of(dblist, n)) {
-        char *trimmed = Trim(n->name);
-        if (match(match_str, trimmed)) {
-          answer = AddNodeList(answer, n);
-        }
-        free(trimmed);
-      }
-      break;
-    }
-*/
     case (CHILD) : 
     case (MEMBER) : 
     case (CHILD_OR_MEMBER) : {
@@ -242,6 +216,17 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
     case (PARENT) :
     {
       answer = AddNodeList(answer, parent_of(dblist, start));
+      break;
+    }
+    case (ANCESTOR): {
+      NODE *parent = parent_of(dblist, start);
+      if (parent) {
+        char *trimmed = Trim(parent->name);
+        char *search_term = (strlen(term->term)) ? term->term : "*";
+        if (match(search_term, trimmed))
+          answer = AddNodeList(answer, parent);
+        free(trimmed);
+      }
       break;
     }
     default: {

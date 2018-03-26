@@ -82,7 +82,7 @@ newline \n
 //  printf ("Found a Member Search\n");
   addSearchTerm(MEMBER_SEARCH, yytreepathtext);
 }
-{ancestor_search} {
+{ancestor_search}{alphaplus}{0,12} {
 //  printf ("Found a Ancestor Search\n");
   addSearchTerm(ANCESTOR_SEARCH, yytreepathtext);
 }
@@ -94,7 +94,7 @@ newline \n
 //  printf ("Found a Parent\n");
   addSearchTerm(PARENT, yytreepathtext);
 }
-{ancestor} {
+{ancestor}{alphaplus}{0,12} {
 //  printf ("Found a Ancestor\n");
   addSearchTerm(ANCESTOR, yytreepathtext);
 }
