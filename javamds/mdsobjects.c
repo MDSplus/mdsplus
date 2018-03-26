@@ -2248,7 +2248,51 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putData
     throwMdsException(env, status);
   FreeDescrip(dataD);
 }
+/*
+ * Class:     MDSplus_TreeNode
+ * Method:    getExtendedAttribute
+ * Signature: (IIILjava/lang/String;)LMDSplus/Data;
+ */
+JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getExtendedAttribute
+  (JNIEnv *env, jclass class, jint nid, jint ctx1, jint ctx2, jstring jname)
+{
+  int status;
+  EMPTYXD(xd);
+  jobject retObj;
+  const char *name = (*env)->GetStringUTFChars(env, jname, 0);
+  void *ctx = getCtx(ctx1, ctx2);
 
+  status = _TreeGetXNci(ctx, nid, name, &xd);
+  if STATUS_NOT_OK
+    throwMdsException(env, status);
+
+  retObj = DescripToObject(env, xd.pointer, NULL, NULL, NULL, NULL);
+  MdsFree1Dx(&xd, 0);
+  (*env)->ReleaseStringUTFChars(env, jname, name);
+  return retObj;
+}
+
+
+/*
+ * Class:     MDSplus_TreeNode
+ * Method:    setExtendedAttribute
+ * Signature: (IIILjava/lang/String;LMDSplus/Data;)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_TreeNode_setExtendedAttribute
+  (JNIEnv *env, jclass class, jint nid, jint ctx1, jint ctx2, jstring jname, jobject jdata)
+{
+  struct descriptor *dataD;
+  int status;
+  void *ctx = getCtx(ctx1, ctx2);
+  const char *name = (*env)->GetStringUTFChars(env, jname, 0);
+
+  dataD = ObjectToDescrip(env, jdata);
+  status = _TreeSetXNci(ctx, nid, name, dataD);
+  if STATUS_NOT_OK
+    throwMdsException(env, status);
+  FreeDescrip(dataD);
+  (*env)->ReleaseStringUTFChars(env, jname, name);
+}
 /*
  * Class:     MDSplus_TreeNode
  * Method:    deleteData

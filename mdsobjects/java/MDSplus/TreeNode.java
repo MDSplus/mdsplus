@@ -138,6 +138,8 @@ public class TreeNode extends Data
         static native int[]getNciNids(int nid, int ctx1, int ctx2, int nciNumType, int nciType) throws MdsException;
         static native void turnOn(int nid, int ctx1, int ctx2, boolean on) throws MdsException;
         static native boolean isOn(int nid, int ctx1, int ctx2) throws MdsException;
+        static native Data getExtendedAttribute(int nid, int ctx1, int ctx2, java.lang.String name) throws MdsException;
+        static native void setExtendedAttribute(int nid, int ctx1, int ctx2, java.lang.String name, Data data) throws MdsException;
         static native Data getData(int nid, int ctx1, int ctx2) throws MdsException;
         static native void putData(int nid, int ctx1, int ctx2, Data data) throws MdsException;
         static native void deleteData(int nid, int ctx1, int ctx2) throws MdsException;
@@ -535,6 +537,24 @@ public class TreeNode extends Data
         {
             resolveNid();
             return isOn(nid, tree.getCtx1(), tree.getCtx2());
+	}
+
+	/**
+	 * Set Extended Attribute
+	*/
+	public void setExtendedAttribute(java.lang.String name, Data val) throws MdsException
+	{
+	    resolveNid();
+	    setExtendedAttribute(nid, tree.getCtx1(), tree.getCtx2(), name, val);
+	}
+
+	/**
+	 * Get Extended Attribute
+	*/
+	public Data getExtendedAttribute(java.lang.String name) throws MdsException
+	{
+	    resolveNid();
+	    return getExtendedAttribute(nid, tree.getCtx1(), tree.getCtx2(), name);
 	}
 
 	/**
