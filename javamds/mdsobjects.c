@@ -1490,7 +1490,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_getActiveTree(JNIEnv * env, jclass c
 
   status = TreeGetDbi(dbiItems);
   if STATUS_NOT_OK {
-    throwMdsException(env, status);
+      //    throwMdsException(env, status);
     return NULL;
   }
   treeCls = (*env)->FindClass(env, "MDSplus/Tree");
