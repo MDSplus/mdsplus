@@ -196,9 +196,7 @@ EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild)
       *p++ = '~';
       *p++ = '~';
   }
-  printf("about to hand off the string\n");
   ctx->wildcard = strdup(wild_path);
-  printf("now call the parse\n");
   yytreepath_scan_string(wild_path);
   while((status = yytreepathlex()) > 0) ;
   if (status == 0) {
@@ -214,7 +212,7 @@ EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild)
             strstr(wild_path, "^^^") ;
   }
   free(wild_path);
-  PrintCtx(ctx);
+//  PrintCtx(ctx);
 
   THE_LIST =NULL;
   return(status ==0);

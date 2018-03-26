@@ -229,6 +229,19 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
       }
       break;
     }
+    case (ANCESTOR_SEARCH): {
+      NODE *parent = parent_of(dblist, start);
+      while (parent) {
+        char *trimmed = Trim(parent->name);
+        char *search_term = (strlen(term->term)) ? term->term : "*";
+        if (match(search_term, trimmed))
+          answer = AddNodeList(answer, parent);
+        free(trimmed);
+        parent = parent_of(dblist, parent);
+      }
+      break;
+    }
+
     default: {
       printf("Search for type %d not implimented\n", term->search_type);
       return NULL;
@@ -279,7 +292,6 @@ STATIC_ROUTINE NODELIST *FindTagWild(PINO_DATABASE *dblist, SEARCH_TERM *term)
     char *tagname = strstr(tag_term, "::")+2;
     *(strstr(tag_term, "::")) = '\0';
     if (treename[0] == '\\') treename++;
-    printf("tag_tree search Tree /%s/ tag /%s/\n", treename, tagname);
     for (treenum = 0, tinfo=dblist->tree_info; tinfo; tinfo = tinfo->next_info, treenum++) {
       if(match(treename, tinfo->treenam)) {
         answer = ConcatenateNodeLists(answer, FindTags(dblist, tinfo, treenum, tagname));
@@ -290,7 +302,6 @@ STATIC_ROUTINE NODELIST *FindTagWild(PINO_DATABASE *dblist, SEARCH_TERM *term)
     TREE_INFO *default_tinfo = GetDefaultTreeInfo(dblist, &treenum);
     char *tagname = tag_term;
     if (tagname[0] == '\\') tagname++;
-    printf("tag (not tree) seart tag /%s/\n", tagname);
     answer = FindTags(dblist, default_tinfo, treenum, tagname);
     for (treenum=0, tinfo=dblist->tree_info; tinfo; tinfo = tinfo->next_info) {
       if (tinfo != default_tinfo) {
@@ -439,42 +450,7 @@ STATIC_ROUTINE int match(char *first, char *second)
         return match(first+1, second) || match(first, second+1);
     return 0;
 }
-/*STATIC_ROUTINE int MatchWild(char *string, char *matchstring)
-{
-  char *sptr=string;
-  char *mptr=matchstring;
-  int match=1;
-  while(*sptr && *mptr && match) {
-    if (*sptr != *mptr) {
-      if (*mptr == '*')
-    }
-  }
-  int i;
-  int j;
-  int match = 1;
-  int slen;
-  for (slen = len; slen && string[slen - 1] == ' '; slen--) ;
-  for (i = 0, j = 0; i < mlen && match; i++, j++) {
-    if (matchstring[i] == '*') {
-      if (i != (mlen - 1)) {
-        if (j < slen) {
-          for (;
-            j < slen
-            && !(match = MatchWild(&string[j], slen - j, &matchstring[i + 1], mlen - (i + 1)));
-            j++) ;
-        } else {
-          for (; i < mlen && (match = matchstring[i] == '*'); i++) ;
-        }
-      }
-      j = slen;
-      break;
-              } else {
-       match = j < slen && ((matchstring[i] == '%') || (matchstring[i] == string[j]));
-     }
-   }
-   return match && j == slen;
-}
-*/
+
 STATIC_ROUTINE NODELIST  *ConcatenateNodeLists(NODELIST *start_list, NODELIST *end_list)
 {
   NODELIST *p;
