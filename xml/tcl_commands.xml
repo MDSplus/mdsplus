@@ -495,7 +495,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       include ACTION, ANY, AXIS, COMPOUND_DATA, DEVICE, DISPATCH, NUMERIC, SIGNAL,
       STRUCTURE, SUBTREE, TEXT or WINDOW.
     </help>
-    <parameter name="p1" label="NODE" default="*,.*" list="True"/>
+    <parameter name="p1" label="NODE" default="*" list="True"/>
     <qualifier name="full"/>
     <qualifier name="path"/>
     <qualifier name="usage" list="True" type="USAGE_TYPE"/>
