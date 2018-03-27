@@ -49,6 +49,7 @@ STATIC_ROUTINE NODELIST *FindChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, 
 STATIC_ROUTINE NODELIST *FindMembers(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start);
 STATIC_ROUTINE NODELIST *FindMembersOrChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start);
 STATIC_ROUTINE NODELIST *FindTagWild(PINO_DATABASE *dblist, SEARCH_TERM *term);
+STATIC_ROUTINE NODELIST *Filter(NODELIST *list, int mask);
 
 EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild);
 
@@ -86,7 +87,8 @@ STATIC_ROUTINE int _TFNWild(void *dbid, char const *path, int *nid_out, void **c
     *ctx_inout = ctx;
     ctx->default_node = dblist->default_node;
     ctx->answers = Search(dblist, ctx, ctx->terms, dblist->default_node);
-  }
+    ctx->answers = Filter(ctx->answers, usage_mask); 
+ }
   else {
     ctx = *ctx_inout;
   }
@@ -466,3 +468,23 @@ STATIC_ROUTINE NODELIST  *ConcatenateNodeLists(NODELIST *start_list, NODELIST *e
   return answer;
 }
 
+STATIC_ROUTINE NODELIST *Filter(NODELIST *list, int usage_mask) {
+  NODELIST *ptr;
+  NODELIST *previous=list;
+  NODELIST *answer=list;
+  for (ptr=list; ptr; previous = ptr, ptr = ptr->next) {
+    if(!((1<<((ptr->node->usage == TreeUSAGE_SUBTREE_TOP) ? TreeUSAGE_SUBTREE : ptr->node->usage)) & usage_mask)) {
+      NODELIST *tmp=ptr;
+      if (ptr == answer) {
+        answer = ptr->next;
+        previous = answer;
+      }
+      else {
+        previous->next=ptr->next;
+        ptr = previous;
+      }
+      free(tmp);
+    }
+  }
+  return answer;
+}
