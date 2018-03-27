@@ -178,8 +178,28 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
 {
   NODELIST *answer = NULL;
   switch (term->search_type) {
-    case (CHILD) : 
-    case (MEMBER) : 
+    case (CHILD) : {
+      NODE *n;
+      for (n=child_of(dblist, start); n; n = brother_of(dblist, n)) {
+        char *trimmed = Trim(n->name);
+        if (match(term->term, trimmed)) {
+          answer = AddNodeList(answer, n);
+        }
+        free(trimmed);
+      }
+      break;
+    }
+    case (MEMBER) : {
+      NODE *n;
+      for (n=member_of(start); n; n = brother_of(dblist, n)) {
+        char *trimmed = Trim(n->name);
+        if (match(term->term, trimmed)) {
+          answer = AddNodeList(answer, n);
+        }
+        free(trimmed);
+      }
+       break;
+    }
     case (CHILD_OR_MEMBER) : {
       NODE *n;
       for (n=member_of(start); n; n = brother_of(dblist, n)) {
