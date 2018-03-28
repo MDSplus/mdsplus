@@ -194,10 +194,17 @@ STATIC_ROUTINE NODELIST *Search(PINO_DATABASE *dblist, SEARCH_CTX *ctx, SEARCH_T
   } 
 }
 
+STATIC_ROUTINE inline int Wild(char *term) 
+{
+  return (strchr(term, '*') || strchr(term, '?'));
+}
 
 STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start)
 {
   NODELIST *answer = NULL;
+  if (((term->search_type==CHILD) || (term->search_type==MEMBER)) && (! Wild(term->term))) {
+    term->search_type = CHILD_OR_MEMBER;
+  }
   switch (term->search_type) {
     case (CHILD) : {
       NODE *n;
@@ -540,9 +547,10 @@ extern int TreeFindParent(PINO_DATABASE *dblist, char *name, NODE **node, char *
   if ((last_dot == NULL) && (last_colon == NULL)) {
     *node = start;
     *new_name = strdup(name);
+    *child=0;
   }
   else {
-  NID nid;
+    NID nid;
     *child = 0;
     if (last_dot > last_colon)
     {
@@ -555,9 +563,15 @@ extern int TreeFindParent(PINO_DATABASE *dblist, char *name, NODE **node, char *
       *new_name = strdup(last_colon+1);
       *last_colon = '\0';
     }
-    status = _TreeFindNode(dblist, parent_name, (int *)&nid);
-    if (status & 1) {
-      *node = nid_to_node(dblist, &nid);
+    if (strlen(parent_name) == 0) {
+      status = TreeNORMAL;
+      *node = dblist->default_node;
+    }
+    else {
+      status = _TreeFindNode(dblist, parent_name, (int *)&nid);
+      if (status & 1) {
+        *node = nid_to_node(dblist, &nid);
+      }
     }
   }
   if (! *node) {

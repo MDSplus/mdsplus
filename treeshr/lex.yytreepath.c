@@ -2026,7 +2026,6 @@ STATIC_ROUTINE void PrintCtx(SEARCH_CTX *ctx)
 STATIC_ROUTINE SEARCH_TERM *SquishSearches(SEARCH_TERM *terms) {
   SEARCH_TERM *ptr = terms;
   SEARCH_TERM *tmp;
-  int not_first_term = 0;
   for (;ptr && ptr->next; ptr = ptr->next) {
     if (((ptr->search_type == CHILD_SEARCH) && (ptr->next->search_type == CHILD)) ||
        ((ptr->search_type == MEMBER_SEARCH) && (ptr->next->search_type == MEMBER)) ||
@@ -2041,15 +2040,8 @@ STATIC_ROUTINE SEARCH_TERM *SquishSearches(SEARCH_TERM *terms) {
       ptr->next=tmp->next;
       free(tmp);
     }
-    if (not_first_term && ptr) {
-      if ((ptr->search_type == CHILD) || (ptr->search_type == MEMBER)){
-        ptr->search_type = CHILD_OR_MEMBER;
-      }
-    }
-    not_first_term = 1;
   }
   return terms;
-
 }
 
 EXPORT void FreeSearchTerms(SEARCH_TERM *terms)
