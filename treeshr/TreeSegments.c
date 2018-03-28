@@ -127,7 +127,7 @@ static void unlock_nci(void* vars_in) {
 }
 static void lock_nci(void* vars_in) {
   vars_t*vars = (vars_t*)vars_in;
-  fprintf(stderr,"lock_nci-------------------------------------------------------------------------------------------------\n");
+  //  fprintf(stderr,"lock_nci-------------------------------------------------------------------------------------------------\n");
   if (!vars->nci_locked) {
     TreeLockNci(vars->tinfo, 0, vars->nidx, NULL);
     vars->nci_locked = 1;
@@ -1200,6 +1200,7 @@ int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *v
        index. If not, make an empty index and flag that a new index needs to be written.***/
   IF_NO_EXTENDED_NCI {
     if (!value) goto end; // has not xnci; nothing to delete
+    vars->attr_offset=-1;
     memset(&vars->attr, -1, sizeof(vars->attr));
     vars->attr_update = 1;
     if (((vars->local_nci.flags2 & NciM_EXTENDED_NCI) == 0) && vars->local_nci.length > 0) {

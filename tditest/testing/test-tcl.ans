@@ -92,6 +92,27 @@ Tcl('add tag any any_tag3')
 265388041
 Tcl('put text """This is a test"""')
 265388041
+Tcl('set attr text/name=att1 42')
+265389633
+Tcl('set attr signal/name=att1 100')
+265389633
+Tcl('set attr signal/name=att2 200')
+265389633
+Tcl('show attr text')
+Defined attributes for this node:
+    att1
+1
+Tcl('show attr text/name=att1')
+42
+1
+Tcl('show attr signal')
+Defined attributes for this node:
+    att1
+    att2
+1
+Tcl('show attr signal/name=att1')
+100
+1
 Tcl('write')
 265388041
 Tcl('close')

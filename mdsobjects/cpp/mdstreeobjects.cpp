@@ -94,6 +94,7 @@ extern "C" {
 	int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t *times);
 	int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t *times, int rowsFilled);
 	int setTreeXNci(void *dbid, int nid, const char *name, void *dataDsc);
+	int getTreeXNci(void *dbid, int nid, const char *name, void **data, void *tree);
 	int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t *time, int size);
 	int getTreeSegmentInfo(void *dbid, int nid, int segIdx, char *dtype, char *dimct, int *dims, int *nextRow);
 	// From TreeFindTagWild.c
@@ -715,6 +716,38 @@ int TreeNode::getOwnerId() {
 int64_t TreeNode::getTimeInserted() {
 	resolveNid();
 	return getNciInt64(NciTIME_INSERTED);
+}
+
+
+Data *TreeNode::getExtendedAttribute(const char *name)
+{
+    Data *data = NULL;
+    int status = getTreeXNci(tree->getCtx(), nid, name, (void **)&data, tree);
+    if(!(status & 1))
+	throw MdsException(status);
+    return data;
+}
+
+Data *TreeNode::getExtendedAttribute(std::string name)
+{
+    return getExtendedAttribute(name.c_str());
+}
+
+void TreeNode::setExtendedAttribute (const char *name, Data *data)
+{
+    resolveNid();
+    int status = setTreeXNci(tree->getCtx(), nid, name, data->convertToDsc());
+    if(!(status & 1))
+	throw MdsException(status);
+  
+}
+
+void TreeNode::setExtendedAttribute (std::string name, Data *data)
+{
+    resolveNid();
+    int status = setTreeXNci(tree->getCtx(), nid, name.c_str(), data->convertToDsc());
+    if(!(status & 1))
+	throw MdsException(status);
 }
 
 void TreeNode::doMethod(char *method)

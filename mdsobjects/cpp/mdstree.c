@@ -312,6 +312,21 @@ int setTreeXNci(void *dbid, int nid, const char *name, void *dataDsc)
   return status;
 }
 
+
+int getTreeXNci(void *dbid, int nid, const char *name, void **data, void *tree)
+{
+    EMPTYXD(xd);
+    int status;
+
+    status = _TreeGetXNci(dbid, nid, name, &xd);
+    if (!(status & 1))
+	return status;
+    *data = convertFromDsc(&xd, tree);
+    MdsFree1Dx(&xd, 0);
+    return status;
+}
+
+
 int getTreeSegmentScale(void *dbid, int nid, void **sclDsc)
 {
   EMPTYXD(emptyXd);
