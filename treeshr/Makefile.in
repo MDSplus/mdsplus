@@ -20,6 +20,7 @@ TreeDeleteNode.c \
 TreeDeletePulseFile.c \
 TreeDoMethod.c \
 TreeFindNode.c \
+TreeFindTag.c \
 TreeFindTagWild.c \
 TreeGetDbi.c \
 TreeGetNci.c \
@@ -37,7 +38,6 @@ TreeSetDefault.c \
 TreeSetNci.c \
 TreeThreadSafe.c \
 TreeVerify.c \
-TFN.c \
 RemoteAccess.c \
 lex.yytreepath.c 
 

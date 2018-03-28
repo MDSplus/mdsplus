@@ -754,7 +754,7 @@ typedef struct {
         extern int TreeCopyExtended(PINO_DATABASE * dbid1, PINO_DATABASE * dbid2, int nid, NCI * nci, int compress);
         extern int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes);
         extern int TreeFindParent(PINO_DATABASE * dblist, char *path_ptr, NODE ** node_ptrptr,
-          char **namedsc_ptr, SEARCH_TYPE * type_ptr);
+          char **namedsc_ptr, int *chid);
           extern int TreeGetNciW(TREE_INFO * info, int node_number, NCI * nci, unsigned int version);
           extern int TreeGetNciLw(TREE_INFO * info, int node_number, NCI * nci);
           extern int TreeInsertChild(NODE * parent_ptr, NODE * child_ptr, int sort);
