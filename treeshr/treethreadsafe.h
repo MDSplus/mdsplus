@@ -6,7 +6,6 @@
 typedef struct _thread_static {
   void *DBID;
   int privateCtx;
-  SEARCH_CONTEXT search_ctx[MAX_SEARCH_LEVELS];
   int64_t ViewDate;
   int nid_reference;
   int path_reference;
