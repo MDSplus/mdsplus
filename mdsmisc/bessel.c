@@ -355,8 +355,7 @@ EXPORT void BessRoots()
   double curr_root, curr_x;
 
   printf("\nComputation of Roots for Bessel functions\n\nOut File (0 for screen):");
-  scanf("%s", filename);
-  if (strcmp(filename, "0")) {
+  if ((scanf("%s", filename) != 1) && strcmp(filename, "0")) {
     if ((fil_ptr = fopen(filename, "w")) == 0) {
       printf("\nCannot open file %s\n", filename);
       return;

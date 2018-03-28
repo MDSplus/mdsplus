@@ -2254,7 +2254,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putData
  * Signature: (IIILjava/lang/String;)LMDSplus/Data;
  */
 JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getExtendedAttribute
-  (JNIEnv *env, jclass class, jint nid, jint ctx1, jint ctx2, jstring jname)
+  (JNIEnv *env, jclass class __attribute__ ((unused)), jint nid, jint ctx1, jint ctx2, jstring jname)
 {
   int status;
   EMPTYXD(xd);
@@ -2279,7 +2279,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getExtendedAttribute
  * Signature: (IIILjava/lang/String;LMDSplus/Data;)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_setExtendedAttribute
-  (JNIEnv *env, jclass class, jint nid, jint ctx1, jint ctx2, jstring jname, jobject jdata)
+  (JNIEnv *env, jclass class __attribute__ ((unused)), jint nid, jint ctx1, jint ctx2, jstring jname, jobject jdata)
 {
   struct descriptor *dataD;
   int status;

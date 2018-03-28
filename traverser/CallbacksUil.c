@@ -518,7 +518,7 @@ static void Init(Widget tree)
 
 static void CommandLineOpen(Display * display __attribute__ ((unused)), Widget tree)
 {
-  char chars[132];
+  char chars[132] = {0};
   //int status;
   typedef struct {
     int shot;
@@ -549,8 +549,7 @@ static void CommandLineOpen(Display * display __attribute__ ((unused)), Widget t
 	status = TreeOpenEdit(options.tree, options.shot);
 	if (status == TreeFILE_NOT_FOUND || status == TreeFOPENW) {
 	  printf("Tree /%s/ shot /%d/ does not exist.  Create?(Y/N) ", options.tree, options.shot);
-	  scanf("%s", chars);
-	  if ((chars[0] == 'y') || (chars[0] == 'Y')) {
+	  if ((scanf("%1s",chars) > 0) && ((chars[0] == 'y') || (chars[0] == 'Y'))) {
 	    status = TreeOpenNew(options.tree, options.shot);
 	  }
 	}

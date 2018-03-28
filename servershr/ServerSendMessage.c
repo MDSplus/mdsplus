@@ -689,6 +689,9 @@ static void DoMessage(Client * c, fd_set * fdactive)
     free(msg);
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclobbered"
+
 static void RemoveClient(Client * c, fd_set * fdactive)
 {
   int client_found = 0;
@@ -730,6 +733,8 @@ static void RemoveClient(Client * c, fd_set * fdactive)
     } else break;
   }
 }
+
+#pragma GCC diagnostic pop
 
 static int GetHostAddr(char *name)
 {

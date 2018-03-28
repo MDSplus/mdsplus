@@ -967,8 +967,12 @@ Message *ProcessMessage(Connection * connection, Message * message)
 #ifndef _WIN32
 	if ((fd != -1) && ((fopts & O_CREAT) != 0)) {
 	  char *cmd = (char *)malloc(64 + strlen(filename));
-	  sprintf(cmd, "SetMdsplusFileProtection %s 2> /dev/null", filename);
-	  system(cmd);
+	  int num = snprintf(cmd, 64 + strlen(filename), "SetMdsplusFileProtection %s 2> /dev/null", filename);
+	  if (num > 0)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+	    system(cmd);
+#pragma GCC diagnostic pop
 	  free(cmd);
 	}
 #endif

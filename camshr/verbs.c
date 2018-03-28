@@ -265,16 +265,17 @@ EXPORT int Autoconfig(void *ctx __attribute__ ((unused)), char **error, char **o
 
   // loop thru list
   for (i = 0; i < numOfEntries; ++i) {
-    fscanf(fp, "%s", line);	// get a crate.db entry
-    sprintf(pHighwayName, "%.6s", line);	// trim it
+    if ( fscanf(fp, "%s", line) == 1) {	// get a crate.db entry
+      sprintf(pHighwayName, "%.6s", line);	// trim it
 
-    // NB! this is a work-around -- seems necessary for the moment
-    for (j = 0; j < 2; j++) {
-      if (map_scsi_device(pHighwayName) != SUCCESS) {	// map it if possible
-	  *error = malloc(strlen(pHighwayName)+100);
-	  sprintf(*error, "Error: problem mapping scsi device '%s'\n", pHighwayName);
-	  status = FILE_ERROR;
-	  goto AutoConfig_Exit;
+      // NB! this is a work-around -- seems necessary for the moment
+      for (j = 0; j < 2; j++) {
+        if (map_scsi_device(pHighwayName) != SUCCESS) {	// map it if possible
+	    *error = malloc(strlen(pHighwayName)+100);
+	    sprintf(*error, "Error: problem mapping scsi device '%s'\n", pHighwayName);
+	    status = FILE_ERROR;
+	    goto AutoConfig_Exit;
+        }
       }
     }
 
