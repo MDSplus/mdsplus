@@ -603,19 +603,21 @@ int compile_fun(struct descriptor *entry)
     StrAppend(&file, (struct descriptor *)&dnul);
     FILE *unit = fopen(file.pointer, "rb");
     if (unit) {
-	long flen;
-	fseek(unit, 0, SEEK_END);
-	flen = ftell(unit);
-	flen = (flen > 0xffff) ? 0xffff : flen;
-	fseek(unit, 0, SEEK_SET);
-	dcs.pointer = (char *)malloc(flen);
-	dcs.length = (unsigned short)flen;
-	fread(dcs.pointer, (size_t) flen, 1, unit);
-	fclose(unit);
-	status = TdiCompile(&dcs, &tmp MDS_END_ARG);
-	free(dcs.pointer);
+      long flen,readlen;
+      fseek(unit, 0, SEEK_END);
+      flen = ftell(unit);
+      flen = (flen > 0xffff) ? 0xffff : flen;
+      fseek(unit, 0, SEEK_SET);
+      dcs.pointer = (char *)malloc(flen);
+      dcs.length = (unsigned short)flen;
+      readlen = (long)fread(dcs.pointer, 1, (size_t) flen, unit);
+      if (readlen < flen)
+	perror("Error reading tdi function\n");
+      fclose(unit);
+      status = TdiCompile(&dcs, &tmp MDS_END_ARG);
+      free(dcs.pointer);
     } else
-	status = TdiUNKNOWN_VAR;
+      status = TdiUNKNOWN_VAR;
   }
   FREED_NOW(&file);
   if STATUS_OK {

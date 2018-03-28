@@ -243,8 +243,10 @@ static int tunnel_connect(Connection* c, char *protocol, char *host){
 #else
   pid_t pid;
   int pipe_fd1[2], pipe_fd2[2];
-  pipe(pipe_fd1);
-  pipe(pipe_fd2);
+  if (pipe(pipe_fd1) == -1)
+    perror("Error in mdsip tunnel_connect creating pipes\n");
+  if (pipe(pipe_fd2) == -1)
+    perror("Error in mdsip tunnel_connect creating pipes\n");
   pid = fork();
   if (!pid) {
     char *localcmd =

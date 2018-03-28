@@ -361,7 +361,8 @@ static void EventAst(void *astparam, int dlen __attribute__ ((unused)), char *da
   pthread_mutex_lock(&event_mutex);
   *received = 1;
   pthread_mutex_unlock(&event_mutex);
-  write(event_pipe[1], buf, 1);
+  if (write(event_pipe[1], buf, 1) == -1)
+    perror("Error writing to event pipe\n");
 }
 
 void SetupEvent(String event, Boolean * received, int *id)
@@ -380,13 +381,15 @@ void SetupEvent(String event, Boolean * received, int *id)
 static void DoEventUpdate(XtPointer client_data, int *source, XtInputId * id)
 {
   char buf[1];
-  read(event_pipe[0], buf, 1);
+  if (read(event_pipe[0], buf, 1) == -1)
+    perror("Error reading from event pipe\n");
   EventUpdate(client_data, source, id);
 }
 
 void SetupEventInput(XtAppContext app_context, Widget w __attribute__ ((unused)))
 {
-  pipe(event_pipe);
+  if (pipe(event_pipe) == -1)
+    perror("Error creating event pipes");
   XtAppAddInput(app_context, event_pipe[0], (XtPointer) XtInputReadMask, DoEventUpdate, 0);
 
 }

@@ -115,6 +115,9 @@ int TreeDoFun(struct descriptor *funname, int nargs, struct descriptor **args,
   return status;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclobbered"
+
 int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
 {
   INIT_STATUS;
@@ -239,4 +242,5 @@ end: ;
   FREEXD_NOW(xd);
   return status;
 }
+#pragma GCC diagnostic pop
 

@@ -367,6 +367,8 @@ STATIC_ROUTINE void handleRemoteEvent(int sock)
 }
 
 #else// GLOBUS
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
 
 STATIC_CONSTANT void KillHandler()
 {
@@ -420,6 +422,8 @@ STATIC_ROUTINE void handleRemoteAst()
     }
   }
 }
+#pragma GCC diagnostic pop
+
 #endif//GLOBUS
 
 /*
