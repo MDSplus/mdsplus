@@ -95,12 +95,14 @@ EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   int wild = 0;
   SEARCH_CTX *ctx;
+  int not_first_time = 1;
 
   if (!IS_OPEN(dblist))
     return TreeNOT_OPEN;
 //  if (dblist->remote)
 //    return FindNodeRemote(dblist, path, outnid);
   if (*ctx_inout == NULL) {
+    not_first_time = 0;
     ctx = (SEARCH_CTX *)calloc(1, sizeof(SEARCH_CTX));
     status = WildParse(path, ctx, &wild);
     if STATUS_NOT_OK
@@ -121,7 +123,7 @@ EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **
     ctx->answers = tmp;    
   }
   else {
-    status = TreeNMN;
+    status = (not_first_time) ? TreeNMN : TreeNNF;
   }
   return status;
 }
@@ -132,7 +134,7 @@ EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   int wild = 0;
   SEARCH_CTX ctx;
-  NODELIST *answer;
+  NODELIST *answer = NULL;
 
   if (!IS_OPEN(dblist))
     return TreeNOT_OPEN;
@@ -149,12 +151,13 @@ EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
   answer = Search(dblist, &ctx, ctx.terms, dblist->default_node);
   if (answer) {
     *outnid = node_to_nid(dblist, answer->node, (NID *)outnid);
+    FreeNodeList(answer);
   }
   else {
     status = TreeNNF;
   }
   FreeSearchCtx(&ctx);
-  return status;
+  return (status & 1) ? TreeNORMAL : status;
 }
 EXPORT int _TreeFindNodeEnd(void *dbid __attribute__ ((unused)), void **ctx)
 {
@@ -654,9 +657,11 @@ extern int TreeFindParent(PINO_DATABASE *dblist, char *name, NODE **node, char *
     }
     if (strlen(parent_name) == 0) {
       status = TreeNORMAL;
+      printf("FindParent parent_name empty\n");
       *node = dblist->default_node;
     }
     else {
+      printf("FindParent parent_name /%s/\n", parent_name);
       status = _TreeFindNode(dblist, parent_name, (int *)&nid);
       if (status & 1) {
         *node = nid_to_node(dblist, &nid);

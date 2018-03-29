@@ -2,6 +2,7 @@
 #include <STATICdef.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <treeshr_messages.h>
 #include "treeshrp.h"
 static SEARCH_TERM *THE_LIST = NULL;
 
@@ -67,11 +68,11 @@ newline \n
 %option prefix="yytreepath"
 %%
 ^\\{alphaplus}{1,12}:{2}{alphaplus}{1,23}	{
-//  printf ("Found a tag tree /%s/\n", yytreepathtext);
+  printf ("Found a tag tree /%s/\n", yytreepathtext);
   addSearchTerm(TAG_TREE, yytreepathtext);
 }
 ^\\{alphaplus}{1,23} {
-//  printf ("Found a tag (no tree) /%s/ returning %d\n", yytreepathtext, TAG);
+  printf ("Found a tag (no tree) /%s/ returning %d\n", yytreepathtext, TAG);
   addSearchTerm(TAG, yytreepathtext);
 }
 {child_search} {
@@ -217,5 +218,5 @@ EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild)
 //  PrintCtx(ctx);
 
   THE_LIST =NULL;
-  return(status ==0);
+  return(status ==0) ? TreeNORMAL : 0;
 }
