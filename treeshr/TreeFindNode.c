@@ -45,6 +45,8 @@ EXPORT int _TreeFindNodeEnd(void *dbid, void **ctx);
 /*
  * Static internal routines
  */
+STATIC_ROUTINE NODELIST *RemoveTail(NODELIST *list);
+STATIC_ROUTINE int NotIn(NODELIST *list, NODE *node);
 STATIC_ROUTINE char *AbsPath(void *dbid, char const *inpath, int nid_in);
 STATIC_ROUTINE NODELIST *Search(PINO_DATABASE *dblist, SEARCH_CTX *ctx, SEARCH_TERM *term, NODE *start);
 STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start);
@@ -141,7 +143,6 @@ EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
   if STATUS_NOT_OK 
     return(status);
   if (wild) {
-    printf("No wildcards allowed in TreeFindNode\n");
     return 0; /* should be TreeNOWILD */
   }
   ctx.default_node = dblist->default_node;
@@ -308,6 +309,10 @@ STATIC_ROUTINE NODELIST *FindTags(PINO_DATABASE *dblist, TREE_INFO *info, int tr
   int i;
   NID nid;
   nid.tree = treenum;
+  if(match(tagname, "TOP")) {
+    NID nid ={treenum, 0};
+    answer = AddNodeList(answer, nid_to_node(dblist, &nid));
+  } 
   for (i=0; i < *info->tags; i++) {
     char *trimmed = Trim(tptr[i].name);
     if(match(tagname, trimmed)) {
@@ -391,25 +396,63 @@ STATIC_ROUTINE NODELIST *FindMembersOrChildren(PINO_DATABASE *dblist, SEARCH_TER
   FreeNodeList(toDo);
   return answer;
 }
+STATIC_ROUTINE NODELIST *RemoveTail(NODELIST *list)
+{
+  NODELIST *ptr = list;
+  NODELIST *previous = NULL;
+  while(ptr->next) {
+    previous = ptr;
+    ptr = ptr->next;
+  }
+  free(ptr);
+  if (previous) previous->next = NULL;
+  return (previous) ? list : NULL;
+}
 
 STATIC_ROUTINE NODELIST *FindMembers(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start)
 {
   NODELIST *answer = NULL;
   NODELIST *toDo = NULL;
-  NODELIST *nptr;
+  NODELIST *ptr;
   NODE *n;
-  for (n=member_of(start); n; n=brother_of(dblist, n)) {
-    toDo=AddNodeList(toDo, n);
-    char *trimmed = Trim(n->name);
-    if (match((strlen(term->term))?term->term:"*", trimmed)) {
-      answer = AddNodeList(answer, n);
+
+  toDo = AddNodeList(toDo, member_of(start));
+  ptr = toDo;
+  while(ptr) {
+    if (NotIn(answer, ptr->node)) {
+      answer = AddNodeList(answer, ptr->node);
+      if ((n=brother_of(dblist, ptr->node))) {
+        toDo = AddNodeList(toDo, n);
+      }
+      ptr = ptr->next;
+      if (! ptr)
+        ptr = toDo;
     }
-    free(trimmed);
+    else if ((n = member_of(ptr->node))) {
+      toDo->node = n;
+      ptr = toDo;
+    }
+    else {
+      NODELIST *tmp;
+      tmp = toDo;
+      toDo = toDo->next;
+      free(tmp);
+      ptr = toDo;
+    }
   }
-  for (nptr=toDo; nptr; nptr=nptr->next)
-    answer = ConcatenateNodeLists(answer, FindMembers(dblist, term, nptr->node));
-  FreeNodeList(toDo);
   return answer;
+}
+
+STATIC_ROUTINE int NotIn(NODELIST *list, NODE *node)
+{
+  NODELIST *ptr = list;
+  while (ptr) {
+    if (ptr->node == node) {
+      return(0);
+    }
+    ptr = ptr->next;
+  }
+  return 1;
 }
 
 STATIC_ROUTINE NODELIST *FindChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start) 
