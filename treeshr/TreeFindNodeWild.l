@@ -179,6 +179,7 @@ EXPORT void FreeSearchTerms(SEARCH_TERM *terms)
   while (ptr){
      next = ptr->next;
      free(ptr->term);
+     free(ptr);
      ptr = next;
   }
 }
