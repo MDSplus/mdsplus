@@ -158,11 +158,16 @@ EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
 }
 EXPORT int _TreeFindNodeEnd(void *dbid __attribute__ ((unused)), void **ctx)
 {
-  FreeSearchCtx(*ctx);
-  free(*ctx);
-  *ctx = NULL;
+  if (ctx) {
+    if (*ctx) {
+      FreeSearchCtx(*ctx);
+      free(*ctx);
+      *ctx = NULL;
+    }
+  }
   return TreeNORMAL;
 }
+
 STATIC_ROUTINE void FreeSearchCtx(SEARCH_CTX *ctx)
 {
   free(ctx->wildcard);
