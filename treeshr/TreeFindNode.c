@@ -413,14 +413,20 @@ STATIC_ROUTINE NODELIST *FindMembers(PINO_DATABASE *dblist, SEARCH_TERM *term, N
 {
   NODELIST *answer = NULL;
   NODELIST *toDo = NULL;
+  NODELIST *visited = NULL;
   NODELIST *ptr;
   NODE *n;
 
   toDo = AddNodeList(toDo, member_of(start));
   ptr = toDo;
   while(ptr) {
-    if (NotIn(answer, ptr->node)) {
-      answer = AddNodeList(answer, ptr->node);
+    if (NotIn(visited, ptr->node)) {
+      char *trimmed = Trim(ptr->node->name);
+      visited = AddNodeList(visited, ptr->node);
+      if (match(term->term, trimmed)) {
+        answer = AddNodeList(answer, ptr->node);
+      }
+      free(trimmed);
       if ((n=brother_of(dblist, ptr->node))) {
         toDo = AddNodeList(toDo, n);
       }
@@ -440,6 +446,7 @@ STATIC_ROUTINE NODELIST *FindMembers(PINO_DATABASE *dblist, SEARCH_TERM *term, N
       ptr = toDo;
     }
   }
+  FreeNodeList(visited);
   return answer;
 }
 
@@ -514,7 +521,10 @@ STATIC_ROUTINE char *Trim(char *str)
   char *p;
   strncpy(ans, str, sizeof(NODE_NAME));
   for (p=ans; *p; p++) {
-    if (isspace(*p)) *p='\0';
+    if (isspace(*p)) {
+      *p='\0';
+      break;
+    }
   }
   return ans;
 }
