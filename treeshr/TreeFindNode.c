@@ -46,7 +46,6 @@ EXPORT int _TreeFindNodeEnd(void *dbid, void **ctx);
  * Static internal routines
  */
 STATIC_ROUTINE inline int IsWild(char *str);
-STATIC_ROUTINE int NotIn(NODELIST *list, NODE *node);
 STATIC_ROUTINE char *AbsPath(void *dbid, char const *inpath, int nid_in);
 STATIC_ROUTINE NODELIST *Search(PINO_DATABASE *dblist, SEARCH_CTX *ctx, SEARCH_TERM *term, NODE *start);
 STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start);
@@ -482,67 +481,6 @@ STATIC_ROUTINE NODELIST *FindMembersOrChildren(PINO_DATABASE *dblist, SEARCH_TER
     free(this);
   }
   return answer;
-}
-
-/*
-STATIC_ROUTINE NODELIST *FindMembersOrChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start)
-{
-  NODELIST *answer = NULL;
-  NODELIST *toDo = NULL;
-  NODELIST *visited = NULL;
-  NODELIST *ptr;
-  NODE *n;
-
-  for (n=member_of(start); n; n = brother_of(dblist, n))
-    toDo = AddNodeList(toDo, n);
-  for (n=child_of(dblist,start); n; n = brother_of(dblist, n))
-    toDo = AddNodeList(toDo, n);
-
-  ptr = toDo;
-  while(ptr) {
-    if (NotIn(visited, ptr->node)) {
-      char *trimmed = Trim(ptr->node->name);
-      char *search_term = (strlen(term->term)) ? term->term : "*";
-      visited = AddNodeList(visited, ptr->node);
-      if (match(search_term, trimmed)) {
-        answer = AddNodeList(answer, ptr->node);
-      }
-      free(trimmed);
-      ptr = ptr->next;
-      if (! ptr)
-        ptr = toDo;
-    }
-    else if (member_of(ptr->node) || child_of(dblist, ptr->node)) {
-      NODE *n;
-      for (n=member_of(ptr->node); n; n = brother_of(dblist, n))
-        toDo = AddNodeList(toDo, n);
-      for (n=child_of(dblist,ptr->node); n; n = brother_of(dblist, n))
-        toDo = AddNodeList(toDo, n);
-      ptr = ptr->next;
-    }
-    else {
-      NODELIST *tmp;
-      tmp = toDo;
-      toDo = toDo->next;
-      free(tmp);
-      ptr = toDo;
-    }
-  }
-  FreeNodeList(visited);
-  return answer;
-}
-*/
-
-STATIC_ROUTINE int NotIn(NODELIST *list, NODE *node)
-{
-  NODELIST *ptr = list;
-  while (ptr) {
-    if (ptr->node == node) {
-      return(0);
-    }
-    ptr = ptr->next;
-  }
-  return 1;
 }
 
 STATIC_ROUTINE NODELIST *AddNodeList(NODELIST *list, NODE *node)
