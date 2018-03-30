@@ -73,5 +73,8 @@ install: $(libdir)
 TreeShr.exports: TreeShr.def
 	$(SED) -e /LIBRARY/\;/\;/d TreeShr.def > $@
 
-lex.yytreepath.c: TreeFindNodeWild.l
-	flex TreeFindNodeWild.l
+lex.yytreepath.o: lex.yytreepath.c
+	$(COMPILE.c) $(CFLAGS) -Wno-sign-compare -Wno-unused-parameter -c $^
+
+#lex.yytreepath.c: TreeFindNodeWild.l
+#	flex $^

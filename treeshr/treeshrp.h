@@ -567,7 +567,13 @@ static inline NODE *member_of(NODE * a)
   }
   return ans;
 }
-
+/*
+ * Note in certain edit operations dbid is passed as 0, 
+ * which would cause nid_to_node(dbid)  to fail
+ *
+ * however, when editing, the usage of the nde will never be
+ * TreeUSAGE_SUBTREE_REF, so it will never call nid_to_node
+ */
 static inline NODE *child_of(PINO_DATABASE * dbid, NODE * a)
 {
   NODE *ans = 0;
@@ -600,6 +606,25 @@ static inline NODE *brother_of(PINO_DATABASE * dbid, NODE * a)
   return ans;
 }
 
+static inline NODE *descendant_of(PINO_DATABASE *dbid, NODE *a)
+{
+  NODE *answer = member_of(a);
+  return (answer)? answer : child_of(dbid, a);
+}
+
+static inline NODE *sibling_of(PINO_DATABASE *dbid, NODE *a)
+{
+  NODE *answer = brother_of(dbid, a);
+  if (! answer) {
+    if ((a->usage!=TreeUSAGE_STRUCTURE) &&
+        (a->usage != TreeUSAGE_SUBTREE) &&
+        (a->usage != TreeUSAGE_SUBTREE_REF) &&
+        (a->usage != TreeUSAGE_SUBTREE_TOP))
+       answer = child_of(dbid, parent_of(dbid, a));
+   }
+  return answer;
+}
+ 
 /******************************************
 Two macros are provided for converting from
 a NID to a node address or from a node
