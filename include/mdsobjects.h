@@ -3048,6 +3048,13 @@ public:
     virtual bool isChild();
     ///@}
 
+    ///Extended attribute getter/setter
+    virtual Data *getExtendedAttribute(const char *name);
+    virtual Data *getExtendedAttribute(std::string name);
+    virtual void setExtendedAttribute (const char *name, Data *data);
+    virtual void setExtendedAttribute (std::string name, Data *data);
+    
+    
     /// Get the parent of this node.
     /// Ref to \ref getNci() with code NciPARENT
     virtual TreeNode *getParent();

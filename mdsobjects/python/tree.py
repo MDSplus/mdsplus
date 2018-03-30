@@ -1521,8 +1521,12 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         """
         #if name=='tree':
         #    return Tree()
+        if (name.startswith('__') and
+            not name.endswith('__') and
+            name[2:].upper() == name[2:]):
+            return self.getExtendedAttribute(name[2:])
         try:   return _getNodeByAttr(self,name)
-        except _exc.TreeNNF: pass
+        except _exc.TreeNNF,_exc.TreePARSEERR: pass
         try:   return super(TreeNode,self).__getattr__(name)
         except AttributeError: pass
         #if name=='length':
@@ -1530,6 +1534,19 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         #if self.length>0:
         #    return self.record.__getattr__(name)
         raise AttributeError('No such attribute: '+name)
+
+    def __setattr__(self,name,value):
+        """ Enables the setting of node attributes using
+        then format:
+
+           node.__MYATTRIBUTE=value
+        """
+        if (name.startswith('__') and
+            not name.endswith('__') and
+            name[2:].upper() == name[2:]):
+          self.setExtendedAttribute(name[2:],value)
+        else:
+          super(TreeNode, self).__setattr__(name, value)
 
     def __str__(self):
       """Convert TreeNode to string."""
@@ -1830,6 +1847,43 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @rtype: String
         """
         return self.dtype_str
+
+    def getExtendedAttribute(self,name):
+        """Get extended attribute of node
+        @param name: Name of attribute
+        @type name: str
+        @return: value of attribute or
+                       None if no such attribute or
+                       attribute has no data
+        @rtype: MDSplus data type
+        """
+        xd=_dsc.Descriptor_xd()
+        status = _TreeShr._TreeGetXNci(self.ctx,
+                            self.nid, 
+                            _C.c_char_p(_ver.tobytes(str(name).rstrip().lower())),
+                            xd.ref)
+        if (status & 1):
+            return xd._setTree(self.tree).value
+        else:
+            return None
+
+    def getExtendedAttributes(self):
+        """Get all extended attributes of a node
+        @return: Dictionary of attributes or None if no attributes
+        @rtype: dict
+        """
+        ans=dict()
+        attributes = self.getExtendedAttribute("attributenames")
+        if attributes is None:
+            return None
+        for attr in attributes:
+            val=self.getExtendedAttribute(str(attr).rstrip())
+            if val is not None:
+                ans[str(attr).upper().rstrip()]=val
+        if len(ans) > 0:
+            return ans
+        else:
+            return None
 
     def getFullPath(self):
         """Return full path of this node
@@ -2513,6 +2567,26 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @rtype: original type
         """
         self.essential=flag
+
+    def setExtendedAttribute(self,name,value):
+        """Set extended attribute of node
+        @param name: Name of attribute
+        @type name: str
+        @param value: value of attribute
+        @type value: MDSplus data type
+        """
+        if value is None:
+            ref = _C.c_void_p(0)
+        else:
+            data = _dat.Data(value)
+            if data.__hasBadTreeReferences__(self.tree):
+                data = data.__fixTreeReferences__(self.tree)
+            ref = _dat.Data.byref(data)
+        _exc.checkStatus(
+            _TreeShr._TreeSetXNci(self.ctx,
+                                  self.nid, 
+                                  _C.c_char_p(_ver.tobytes(name)),
+                                            ref))
 
     def setIncludeInPulse(self,flag):
         """Set include in pulse state of this node

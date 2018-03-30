@@ -460,8 +460,10 @@ int main(int argc, String * argv)
 static void DoPrint(char *filename)
 {
   char cmd[512];
-  sprintf(cmd, "dwscopePrint %s %s", filename, ScopePrinter);
-  system(cmd);
+  int num = snprintf(cmd, sizeof(cmd), "dwscopePrint %s %s", filename, ScopePrinter);
+  if (num > 0 && num <= (int)sizeof(cmd))
+    if (system(cmd) != 0)
+      printf("Error invoking dwscopePrint\n");
 }
 
 static char *GetPrinterList()
