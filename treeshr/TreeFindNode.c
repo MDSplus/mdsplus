@@ -330,7 +330,7 @@ STATIC_ROUTINE NODELIST *FindTags(PINO_DATABASE *dblist, TREE_INFO *info, int tr
     answer = AddNodeList(answer, n);
   }
   else { 
-    for (i=0; strlen(tptr[i].name); i++) {
+    for (i=0; i<info->header->tags; i++) {
       char *trimmed = Trim(tptr[i].name);
       if(match(tagname, trimmed)) {
         NODE *n;
