@@ -45,6 +45,7 @@ EXPORT int _TreeFindNodeEnd(void *dbid, void **ctx);
 /*
  * Static internal routines
  */
+STATIC_ROUTINE inline int IsWild(char *str);
 STATIC_ROUTINE int NotIn(NODELIST *list, NODE *node);
 STATIC_ROUTINE char *AbsPath(void *dbid, char const *inpath, int nid_in);
 STATIC_ROUTINE NODELIST *Search(PINO_DATABASE *dblist, SEARCH_CTX *ctx, SEARCH_TERM *term, NODE *start);
@@ -315,20 +316,30 @@ STATIC_ROUTINE NODELIST *FindTags(PINO_DATABASE *dblist, TREE_INFO *info, int tr
   TAG_INFO *tptr = info->tag_info;
   int i;
   NID nid;
+  int tag_wild = IsWild(tagname);
   nid.tree = treenum;
   if(match(tagname, "TOP")) {
     NID nid ={treenum, 0};
     answer = AddNodeList(answer, nid_to_node(dblist, &nid));
-  } 
-  for (i=0; i < *info->tags; i++) {
-    char *trimmed = Trim(tptr[i].name);
-    if(match(tagname, trimmed)) {
-      nid.node = tptr[i].node_idx;
-      answer = AddNodeList(answer, nid_to_node(dblist, &nid));
+  }
+  else { 
+    for (i=0; i < *info->tags; i++) {
+      char *trimmed = Trim(tptr[i].name);
+      if(match(tagname, trimmed)) {
+        nid.node = tptr[i].node_idx;
+        answer = AddNodeList(answer, nid_to_node(dblist, &nid));
+        if (! tag_wild)
+          break;
+      }
+      free(trimmed);
     }
-    free(trimmed);
   }
   return(answer);
+}
+
+STATIC_ROUTINE inline int IsWild(char *str)
+{
+  return (strchr(str, '*') || strchr(str, '%'));
 }
 
 STATIC_ROUTINE TREE_INFO *GetDefaultTreeInfo(PINO_DATABASE *dblist, int *treenum)
@@ -350,26 +361,36 @@ STATIC_ROUTINE NODELIST *FindTagWild(PINO_DATABASE *dblist, SEARCH_TERM *term)
   int treenum;
   char *tag_term = strdup(term->term);
   if (term->search_type == TAG_TREE) {
+    int tree_wild;
     char *treename=tag_term;
     char *tagname = strstr(tag_term, "::")+2;
     *(strstr(tag_term, "::")) = '\0';
+    tree_wild = IsWild(treename);
     if (treename[0] == '\\') treename++;
     for (treenum = 0, tinfo=dblist->tree_info; tinfo; tinfo = tinfo->next_info, treenum++) {
       if(match(treename, tinfo->treenam)) {
         answer = ConcatenateNodeLists(answer, FindTags(dblist, tinfo, treenum, tagname));
+        if(! tree_wild) 
+          break;
       }
     }
   }
   else {
     TREE_INFO *default_tinfo = GetDefaultTreeInfo(dblist, &treenum);
     char *tagname = tag_term;
+    int tag_wild;
     if (tagname[0] == '\\') tagname++;
+    tag_wild = IsWild(tagname);
     answer = FindTags(dblist, default_tinfo, treenum, tagname);
-    for (treenum=0, tinfo=dblist->tree_info; tinfo; tinfo = tinfo->next_info) {
-      if (tinfo != default_tinfo) {
-        answer = ConcatenateNodeLists(answer, FindTags(dblist, tinfo, treenum, tagname));
+    if ((!answer) || tag_wild) {
+      for (treenum=0, tinfo=dblist->tree_info; tinfo; tinfo = tinfo->next_info) {
+        if (tinfo != default_tinfo) {
+          answer = ConcatenateNodeLists(answer, FindTags(dblist, tinfo, treenum, tagname));
+	  if(answer && (!tag_wild))
+            break;
+        }
+        treenum++;
       }
-      treenum++;
     }
   }
   free(tag_term);
@@ -657,11 +678,9 @@ extern int TreeFindParent(PINO_DATABASE *dblist, char *name, NODE **node, char *
     }
     if (strlen(parent_name) == 0) {
       status = TreeNORMAL;
-      printf("FindParent parent_name empty\n");
       *node = dblist->default_node;
     }
     else {
-      printf("FindParent parent_name /%s/\n", parent_name);
       status = _TreeFindNode(dblist, parent_name, (int *)&nid);
       if (status & 1) {
         *node = nid_to_node(dblist, &nid);
