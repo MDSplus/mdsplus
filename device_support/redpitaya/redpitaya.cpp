@@ -19,7 +19,8 @@ static bool stopped = false;
 static void writeSegment(MDSplus::Tree *t, MDSplus::TreeNode *chan1, MDSplus::TreeNode *chan2, MDSplus::Data *triggerTime, unsigned int *dataSamples,
 			 double *startTimes, double *endTimes, int segmentSamples, int blocksInSegment, double freq)
 {
-   short *chan1Samples, *chan2Samples;
+  
+  short *chan1Samples, *chan2Samples;
 
     chan1Samples = new short[segmentSamples];
     chan2Samples = new short[segmentSamples];
@@ -143,9 +144,9 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid, i
 	{
 	    for(int currSample = 0; currSample < blockSamples;)
 	    {
-std::cout << "READING" << std::endl;
+std::cout << "READING " << (blockSamples - currSample) << "CurrSample: " << currSample << "  Block samples: "<< blockSamples << std::endl;
 		int rb = read(fd,&dataSamples[currBlock * blockSamples + currSample], (blockSamples - currSample)*sizeof(int));
-std::cout << "READ " << rb << std::endl;
+std::cout << "READ " << rb/sizeof(int) << std::endl;
 		if(stopped)
 		{
 std::cout << "STOPPED!!!!!!!" << std::endl;
@@ -166,9 +167,10 @@ std::cout << "STOPPED!!!!!!!" << std::endl;
 	    }
 	    if(preSamples != 0 || postSamples != 0)
 	    {
-		unsigned int currTime;
-		ioctl(fd, RFX_RPADC_LAST_TIME, &currTime);
-//std::cout << "TIME COUNTER: " << currTime <<  "DELTA:  " << currTime - prevTime << "   " << (currTime - prevTime)/freq << std::endl;	
+		unsigned long long currTime;
+		if(ioctl(fd, RFX_RPADC_LAST_TIME, &currTime) < 0)
+		    std::cout << "ERROR READING TIME" << std::endl;
+std::cout << "TIME COUNTER: " << currTime <<  "DELTA:  " << currTime - prevTime << "   " << (currTime - prevTime)/freq << std::endl;
 		prevTime = currTime;
 		startTimes[currBlock] = (currTime - preSamples)/freq;
 		endTimes[currBlock] =  (currTime + postSamples - 1)/freq;  //include last sample
@@ -180,6 +182,7 @@ std::cout << "STOPPED!!!!!!!" << std::endl;
 	    endTimes[0] = (segmentIdx + 1) * segmentSamples/freq;
 	}
 	segmentIdx++;
+	
 	writeSegment(tree, chan1, chan2, trigger, dataSamples, startTimes, endTimes, segmentSamples, blocksInSegment,freq);
     }
 }
@@ -221,10 +224,12 @@ int rpadcInit(int preSamples, int postSamples, int trigFromChanA, int trigAboveT
     if(fd < 0) 
         return -1;
   
+    stopped = true;
+    sleep(1);
     status = ioctl(fd, RFX_RPADC_STOP, 0);
-    usleep(10);
-    status = ioctl(fd, RFX_RPADC_FIFO_INT_HALF_SIZE, 0);
-    //status = ioctl(fd, RFX_RPADC_FIFO_INT_FIRST_SAMPLE, 0);
+    usleep(100);
+    //status = ioctl(fd, RFX_RPADC_FIFO_INT_HALF_SIZE, 0);
+    status = ioctl(fd, RFX_RPADC_FIFO_INT_FIRST_SAMPLE, 0);
     usleep(10);
     status = ioctl(fd, RFX_RPADC_RESET, 0);
     usleep(10);
