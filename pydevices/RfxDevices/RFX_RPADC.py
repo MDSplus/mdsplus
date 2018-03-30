@@ -61,7 +61,7 @@ class RFX_RPADC(Device):
 
 
       def run(self):
-          print('START THREAD', self.name, self.shot)
+#          print('START THREAD', self.name, self.shot)
           try:
              self.lib.rpadcStream(c_int(self.fd), c_char_p(self.name), c_int(self.shot), c_int(self.chanANid), c_int(self.chanBNid), 
 			c_int(self.triggerNid), c_int(self.preSamples), c_int(self.postSamples), 
@@ -70,14 +70,13 @@ class RFX_RPADC(Device):
                print(ValueError)
                raise mdsExceptions.TclFAILED_ESSENTIAL
                
-          print('THREAD TERMINATED')
+#          print('THREAD TERMINATED')
       def stop(self):
           self.stopFlag = c_int(1)
 
     conf = Configuration()
     lib = None
     fd = 0
-    print('================= RPADC 9 ===============')
     
     def init(self):
 

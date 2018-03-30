@@ -95,6 +95,8 @@ void *dlsymget(void *handle, char *sym)
   return (ret);
 }
 
+#pragma GCC diagnostic ignored "-Wunused-result"
+
 int main(int argc, char **argv)
 {
   FILE *in = stdin;

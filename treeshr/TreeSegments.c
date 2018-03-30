@@ -696,6 +696,9 @@ inline static int ReadProperty_safe(TREE_INFO *tinfo, const int64_t offset,char 
 //#define CLEANUP_NCI_PUSH
 //#define CLEANUP_NCI_POP  unlock_nci(vars)
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclobbered"
+
 int _TreeMakeSegment(void *dbid, int nid,
         struct descriptor *start, struct descriptor *end, struct descriptor *dimension,
         struct descriptor_a *initValIn, int idx, int rows_filled){
@@ -742,6 +745,7 @@ end: ;
   unlock_nci(vars);
   return status;
 }
+
 int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end,
                        struct descriptor *dimension, int idx)
 {
@@ -905,6 +909,7 @@ end: ;
   return status;
 }
 
+#pragma GCC diagnostic pop
 
 ///// GET SEGMENT TIMES /////
 
@@ -1200,6 +1205,7 @@ int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *v
        index. If not, make an empty index and flag that a new index needs to be written.***/
   IF_NO_EXTENDED_NCI {
     if (!value) goto end; // has not xnci; nothing to delete
+    vars->attr_offset=-1;
     memset(&vars->attr, -1, sizeof(vars->attr));
     vars->attr_update = 1;
     if (((vars->local_nci.flags2 & NciM_EXTENDED_NCI) == 0) && vars->local_nci.length > 0) {

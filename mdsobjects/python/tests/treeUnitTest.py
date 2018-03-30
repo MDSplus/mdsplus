@@ -155,6 +155,14 @@ class Tests(TestCase):
             ip.tag='MAG_IP'
             ip.tag='MAGNETICS_IP'
             ip.tag='IP'
+            ip.setExtendedAttribute('ATT1',100)
+            ip.setExtendedAttribute('ATT2',Range(1,200))
+            ip.setExtendedAttribute('ATT3','this is ip')
+            ip.setExtendedAttribute('ATT3','this is plasma current')
+            self.assertEqual(str(ip.getExtendedAttribute('ATT1')),'100')
+            self.assertEqual(str(ip.getExtendedAttribute('ATT2')),'1 : 200 : *')
+            self.assertEqual(str(ip.getExtendedAttribute('ATT3')),'this is plasma current')
+            self.assertEqual(str(ip.getExtendedAttributes()),"{'ATT3': 'this is plasma current', 'ATT2': 1 : 200 : *, 'ATT1': 100}")
             for i in range(10):
                 node=pytreesub_top.addNode('child%02d' % (i,),'structure')
                 node.addDevice('dt200_%02d' % (i,),'dt200').on=False
@@ -332,6 +340,10 @@ class Tests(TestCase):
         self.assertEqual(ip.versions,ip.containsVersions())
         self.assertEqual(ip.getNumSegments(),0)
         self.assertEqual(ip.getSegment(0),None)
+        self.assertEqual(str(ip.getExtendedAttribute('ATT1')),'100')
+        self.assertEqual(str(ip.getExtendedAttribute('ATT2')),'1 : 200 : *')
+        self.assertEqual(str(ip.getExtendedAttribute('ATT3')),'this is plasma current')
+        self.assertEqual(str(ip.getExtendedAttributes()),"{'ATT3': 'this is plasma current', 'ATT2': 1 : 200 : *, 'ATT1': 100}")
       test()
       self.cleanup()
 
