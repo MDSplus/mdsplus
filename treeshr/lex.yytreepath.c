@@ -1993,7 +1993,7 @@ void yytreepathfree (void * ptr )
 #line 123 "TreeFindNodeWild.l"
 
 
-STATIC_ROUTINE const char  *SearchTypeName(enum yytokentype typ) 
+/*STATIC_ROUTINE const char  *SearchTypeName(enum yytokentype typ) 
 {
   const char * names[] = {
     "TAG_TREE",
@@ -2012,7 +2012,6 @@ STATIC_ROUTINE const char  *SearchTypeName(enum yytokentype typ)
   return names[typ-TAG_TREE];
 }
 
-/*
 STATIC_ROUTINE void PrintCtx(SEARCH_CTX *ctx) 
 {
   SEARCH_TERM *ptr;
