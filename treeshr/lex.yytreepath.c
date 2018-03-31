@@ -2012,7 +2012,7 @@ STATIC_ROUTINE const char  *SearchTypeName(enum yytokentype typ)
   return names[typ-TAG_TREE];
 }
 
-
+/*
 STATIC_ROUTINE void PrintCtx(SEARCH_CTX *ctx) 
 {
   SEARCH_TERM *ptr;
@@ -2023,6 +2023,7 @@ STATIC_ROUTINE void PrintCtx(SEARCH_CTX *ctx)
     printf("\t%s -%s-\n", SearchTypeName(ptr->search_type), ptr->term);
   }
 }
+*/
 
 STATIC_ROUTINE SEARCH_TERM *SquishSearches(SEARCH_TERM *terms) {
   SEARCH_TERM *ptr = terms;
