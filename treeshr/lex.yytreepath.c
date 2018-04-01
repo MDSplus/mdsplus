@@ -2059,6 +2059,7 @@ EXPORT void FreeSearchTerms(SEARCH_TERM *terms)
 
 EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild) 
 {
+  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
   char *wild_path = strdup(path);
   char *p;
   int status;
@@ -2072,6 +2073,8 @@ EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild)
       *p++ = '~';
   }
   ctx->wildcard = strdup(wild_path);
+  pthread_mutex_lock(&lock);
+
   yytreepath_scan_string(wild_path);
   while((status = yytreepathlex()) > 0) ;
   if (status == 0) {
@@ -2090,6 +2093,7 @@ EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild)
 //  PrintCtx(ctx);
 
   THE_LIST =NULL;
+  pthread_mutex_unlock(&lock);
   return(status ==0) ? TreeNORMAL : 0;
 }
 

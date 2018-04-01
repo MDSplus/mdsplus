@@ -573,18 +573,23 @@ STATIC_ROUTINE NODELIST *Filter(NODELIST *list, int usage_mask) {
   NODELIST *ptr;
   NODELIST *previous=list;
   NODELIST *answer=list;
-  for (ptr=list; ptr; previous = ptr, ptr = ptr->next) {
+  for (ptr=list; ptr;) {
     if(!((1<<((ptr->node->usage == TreeUSAGE_SUBTREE_TOP) ? TreeUSAGE_SUBTREE : ptr->node->usage)) & usage_mask)) {
       NODELIST *tmp=ptr;
       if (ptr == answer) {
         answer = ptr->next;
         previous = answer;
+        ptr = ptr->next;
       }
       else {
         previous->next=ptr->next;
-        ptr = previous;
+        ptr = ptr->next;
       }
-      free(tmp);
+      if (tmp) free(tmp);
+    }
+    else {
+      previous = ptr;
+      ptr = ptr->next;
     }
   }
   return answer;
