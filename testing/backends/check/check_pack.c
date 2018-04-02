@@ -330,7 +330,7 @@ static void ppack_cleanup(void *mutex)
     pthread_mutex_unlock((pthread_mutex_t *)mutex);
 }
 #endif
-
+#pragma GCC diagnostic ignored "-Wclobbered"
 void ppack(FILE * fdes, enum ck_msg_type type, CheckMsg * msg)
 {
     char *buf = NULL;

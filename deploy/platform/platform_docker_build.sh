@@ -48,6 +48,7 @@ config() {
         --libdir=${MDSPLUS_DIR}/$4 \
         ${CONFIGURE_PARAMS} \
         ${JAVA_OPTS} \
+	--enable-werror \
         $5 $6 $7 $8 $9;
     status=$?
 }

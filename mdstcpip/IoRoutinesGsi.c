@@ -202,7 +202,8 @@ static int gsi_authorize(Connection* c, char *username)
 	int fd = mkstemp(cred_file_name);
 	if (fd != -1) {
 	  fchmod(fd, 00600);
-	  write(fd, buffer_desc.value, buffer_desc.length);
+	  if (write(fd, buffer_desc.value, buffer_desc.length) == -1)
+	    perror("Error in gsi_authorize writing to temporary file\n");
 	  fchmod(fd, 00400);
 	  close(fd);
 	  setenv("X509_USER_PROXY", cred_file_name, 1);
