@@ -4,7 +4,6 @@
 #include <ctype.h>
 #include <treeshr_messages.h>
 #include "treeshrp.h"
-static SEARCH_TERM *THE_LIST = NULL;
 
 STATIC_ROUTINE void upcaseAndTrim(char *str)
 {
@@ -18,10 +17,11 @@ STATIC_ROUTINE int isPunctuation(char c)
 {
   return ((c == '.') || (c == ':') || (c=='-') || (c=='~') | (c=='^'));
 }
-STATIC_ROUTINE void addSearchTerm(int type, char *str)
+STATIC_ROUTINE void addSearchTerm(yyscan_t scanner, int type, char *str)
 {
   SEARCH_TERM *ptr, *p;
 //  printf("addSearchTerm\n");
+
   ptr=malloc(sizeof(SEARCH_TERM));
   ptr->search_type = type;
   ptr->term = NULL;
@@ -38,10 +38,11 @@ STATIC_ROUTINE void addSearchTerm(int type, char *str)
     ptr->term = strdup(cptr);
   }
   upcaseAndTrim(ptr->term);
-  if (THE_LIST==NULL)
-    THE_LIST=ptr;
+  
+  if (yyget_extra(scanner)->terms==NULL)
+    yyget_extra(scanner)->terms=ptr;
   else {
-    for (p=THE_LIST; p->next; p = p->next);
+    for (p=yyget_extra(scanner)->terms; p->next; p = p->next);
     p->next = ptr;
   }
 }
@@ -65,51 +66,42 @@ newline \n
 %option noinput
 %option nounput
 %option noyywrap
+%option reentrant 
 %option prefix="yytreepath"
+%option extra-type="SEARCH_CTX *"
 %%
 ^\\{alphaplus}{1,12}:{2}{alphaplus}{1,23}	{
-//  printf ("Found a tag tree /%s/\n", yytreepathtext);
-  addSearchTerm(TAG_TREE, yytreepathtext);
+  addSearchTerm(yyscanner, TAG_TREE, yyget_text( yyscanner ));
 }
 ^\\{alphaplus}{1,23} {
-//  printf ("Found a tag (no tree) /%s/ returning %d\n", yytreepathtext, TAG);
-  addSearchTerm(TAG, yytreepathtext);
+  addSearchTerm(yyscanner, TAG, yyget_text( yyscanner ));
 }
 {child_search} {
-//  printf ("Found a Child Search\n");
-  addSearchTerm(CHILD_SEARCH, yytreepathtext);
+  addSearchTerm(yyscanner, CHILD_SEARCH, yyget_text( yyscanner ));
 }
 {member_search} {
-//  printf ("Found a Member Search\n");
-  addSearchTerm(MEMBER_SEARCH, yytreepathtext);
+  addSearchTerm(yyscanner, MEMBER_SEARCH, yyget_text( yyscanner ));
 }
 {childstart}{0,1}{ancestor_search}{alphaplus}{0,12} {
-//  printf ("Found a Ancestor Search\n");
-  addSearchTerm(ANCESTOR_SEARCH, yytreepathtext);
+  addSearchTerm(yyscanner, ANCESTOR_SEARCH, yyget_text( yyscanner ));
 }
 {childstart}{0,1}{child_or_member_search}|{old_child_or_member_search} {
-//  printf ("Found a Child or Member Search\n");
-  addSearchTerm(CHILD_OR_MEMBER_SEARCH, yytreepathtext);
+  addSearchTerm(yyscanner, CHILD_OR_MEMBER_SEARCH, yyget_text( yyscanner ));
 }
 {childstart}{0,1}{parent} {
-//  printf ("Found a Parent\n");
-  addSearchTerm(PARENT, yytreepathtext);
+  addSearchTerm(yyscanner, PARENT, yyget_text( yyscanner ));
 }
 {childstart}{0,1}{ancestor}{alphaplus}{0,12} {
-//  printf ("Found a Ancestor\n");
-  addSearchTerm(ANCESTOR, yytreepathtext);
+  addSearchTerm(yyscanner, ANCESTOR, yyget_text( yyscanner ));
 }
 :{0,1}{alphaplus}{1,12} {
-//  printf ("Found MEMBER /%s/\n", yytreepathtext);
-  addSearchTerm(MEMBER, yytreepathtext);
+  addSearchTerm(yyscanner, MEMBER, yyget_text( yyscanner ));
 }
 {childstart}{alphaplus}{1,12} {
-//  printf ("Found a CHILD /%s/\n", yytreepathtext);
-  addSearchTerm(CHILD, yytreepathtext);
+  addSearchTerm(yyscanner, CHILD, yyget_text( yyscanner ));
 }
 {child_or_memberstart}{alphaplus}{1,12} {
-//  printf ("Found a child or member /%s/\n", yytreepathtext);
-  addSearchTerm(CHILD_OR_MEMBER, yytreepathtext);
+  addSearchTerm(yyscanner, CHILD_OR_MEMBER, yyget_text( yyscanner ));
 }
 {newline} {
   return (0);
@@ -121,7 +113,8 @@ newline \n
   return (-1);
 }
 %%
-/*STATIC_ROUTINE const char  *SearchTypeName(enum yytokentype typ) 
+/*
+STATIC_ROUTINE const char  *SearchTypeName(enum yytreepathtokentype typ) 
 {
   const char * names[] = {
     "TAG_TREE",
@@ -187,26 +180,26 @@ EXPORT void FreeSearchTerms(SEARCH_TERM *terms)
 
 EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild) 
 {
-  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+//  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
   char *wild_path = strdup(path);
   char *p;
   int status;
-//  if (THE_LIST) {
-//    FreeSearchTerms(THE_LIST);
-//  }
-  /* change *** to ~~~ */
+  yyscan_t scanner;
+
   while ((p = strstr(wild_path, "***"))) {
       *p++ = '~';
       *p++ = '~';
       *p++ = '~';
   }
-  ctx->wildcard = strdup(wild_path);
-  pthread_mutex_lock(&lock);
 
-  yytreepath_scan_string(wild_path);
-  while((status = yytreepathlex()) > 0) ;
+  yytreepathlex_init_extra(ctx, &scanner);
+  ctx->wildcard = strdup(wild_path);
+
+  yytreepath_scan_string(wild_path, scanner);
+  free(wild_path);
+
+  while((status = yytreepathlex(scanner)) > 0) ;
   if (status == 0) {
-    ctx->terms=THE_LIST;
     /* now merge in trailing search clauses */
     ctx->terms=SquishSearches(ctx->terms);
     /* check if any terms are wild */
@@ -217,10 +210,9 @@ EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild)
             strstr(wild_path, ":::") || 
             strstr(wild_path, "^^^") ;
   }
-  free(wild_path);
+  yytreepathlex_destroy(scanner);
+//  free(wild_path);
 //  PrintCtx(ctx);
 
-  THE_LIST =NULL;
-  pthread_mutex_unlock(&lock);
   return(status ==0) ? TreeNORMAL : 0;
 }
