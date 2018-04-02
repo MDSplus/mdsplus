@@ -133,7 +133,7 @@ EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
   int status = TreeNORMAL;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   int wild = 0;
-  SEARCH_CTX ctxi = {0};
+  SEARCH_CTX ctx = {0};
   NODELIST *answer = NULL;
 
 //  printf("entering TreeFindNode (%s)\n", path);
