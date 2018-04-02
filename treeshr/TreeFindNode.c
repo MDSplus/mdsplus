@@ -341,6 +341,7 @@ STATIC_ROUTINE NODELIST *FindTags(PINO_DATABASE *dblist, TREE_INFO *info, int tr
         }
         answer = AddNodeList(answer, n);
         if (! tag_wild)
+          free(trimmed);
           break;
       }
       free(trimmed);
@@ -427,6 +428,7 @@ STATIC_ROUTINE NODELIST *FindMembers(PINO_DATABASE *dblist, SEARCH_TERM *term, N
         if (match(search_term, trimmed)) {
           answer = AddNodeList(answer, n);
         }
+        free(trimmed);
       }
     }
     free(this);
@@ -452,6 +454,7 @@ STATIC_ROUTINE NODELIST *FindChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, 
         if (match(search_term, trimmed)) {
           answer = AddNodeList(answer, n);
         }
+        free(trimmed);
       }
     }
     free(this);
@@ -477,6 +480,7 @@ STATIC_ROUTINE NODELIST *FindMembersOrChildren(PINO_DATABASE *dblist, SEARCH_TER
         if (match(search_term, trimmed)) {
           answer = AddNodeList(answer, n);
         }
+        free(trimmed);
       }
     }
     free(this);
@@ -721,4 +725,3 @@ STATIC_ROUTINE char *Treename(PINO_DATABASE * dblist, int nid_in)
   for (info = dblist->tree_info, treenum = 0; info && treenum < nid.tree; info = info->next_info) ;
   return info ? info->treenam : "";
 }
-
