@@ -87,6 +87,7 @@ else
     echo "PASS: $test"
     rm -f $test-diff.log
   fi
+  rm -Rf ${tmpdir}
 fi
 exit $status
 
