@@ -237,7 +237,7 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
         }
         free(trimmed);
       }
-       break;
+      break;
     }
     case (CHILD_OR_MEMBER) : {
       NODE *n;
@@ -340,9 +340,10 @@ STATIC_ROUTINE NODELIST *FindTags(PINO_DATABASE *dblist, TREE_INFO *info, int tr
           n = child_of(dblist, n);
         }
         answer = AddNodeList(answer, n);
-        if (! tag_wild)
+        if (! tag_wild) {
           free(trimmed);
           break;
+        }
       }
       free(trimmed);
     }
