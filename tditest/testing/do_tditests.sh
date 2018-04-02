@@ -32,6 +32,8 @@ status=0
 if [ ! -z $1 ]
 then
 
+tmpdir=$(mktemp -d)
+trap 'if [ ! -z "${tmpdir}" ]; then rm -Rf ${tmpdir}; fi' EXIT
 export main_path="${tmpdir};$(readlink -f ${srcdir}/../../trees)"
 export subtree_path="${tmpdir};$(readlink -f ${srcdir}/../../trees/subtree)"
 export MDS_PATH="${tmpdir};$(readlink -f ${srcdir}/../../tdi)"
@@ -39,8 +41,8 @@ export MDS_PYDEVICE_PATH="${tmpdir};$(readlink -f ${srcdir}/../../pydevices)"
 
 if [ "$2" == "update" ]
 then
-  tmpdir=$(mktemp -d)
-  trap 'if [ ! -z "${tmpdir}" ]; then rm -Rf ${tmpdir}; fi' EXIT
+#  tmpdir=$(mktemp -d)
+#  trap 'if [ ! -z "${tmpdir}" ]; then rm -Rf ${tmpdir}; fi' EXIT
 #  export main_path="${tmpdir};$(readlink -f ${srcdir}/../../trees)"
 #  export subtree_path="${tmpdir};$(readlink -f ${srcdir}/../../trees/subtree)"
 #  export MDS_PATH="${tmpdir};$(readlink -f ${srcdir}/../../tdi)"
