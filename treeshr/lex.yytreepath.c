@@ -547,6 +547,8 @@ static yyconst flex_int16_t yy_chk[176] =
 #include <treeshr_messages.h>
 #include "treeshrp.h"
 
+STATIC_ROUTINE void addSearchTerm(yyscan_t scanner, int type, char *str);
+
 STATIC_ROUTINE void upcaseAndTrim(char *str)
 {
   char *p=str;
@@ -559,38 +561,9 @@ STATIC_ROUTINE int isPunctuation(char c)
 {
   return ((c == '.') || (c == ':') || (c=='-') || (c=='~') | (c=='^'));
 }
-STATIC_ROUTINE void addSearchTerm(yyscan_t scanner, int type, char *str)
-{
-  SEARCH_TERM *ptr, *p;
-//  printf("addSearchTerm\n");
-
-  ptr=malloc(sizeof(SEARCH_TERM));
-  ptr->search_type = type;
-  ptr->term = NULL;
-  ptr->next = NULL;
-  if (str) {
-    char *cptr = str;
-    while(*cptr) {
-      if (isPunctuation(*cptr)) {
-        cptr++;
-      } else {
-       break; 
-     }
-    }
-    ptr->term = strdup(cptr);
-  }
-  upcaseAndTrim(ptr->term);
-  
-  if (yytreepathget_extra(scanner)->terms==NULL)
-    yytreepathget_extra(scanner)->terms=ptr;
-  else {
-    for (p=yytreepathget_extra(scanner)->terms; p->next; p = p->next);
-    p->next = ptr;
-  }
-}
 
 #define YY_NO_INPUT 1
-#line 594 "lex.yytreepath.c"
+#line 567 "lex.yytreepath.c"
 
 #define INITIAL 0
 
@@ -850,9 +823,9 @@ YY_DECL
 		}
 
 	{
-#line 72 "TreeFindNodeWild.l"
+#line 45 "TreeFindNodeWild.l"
 
-#line 856 "lex.yytreepath.c"
+#line 829 "lex.yytreepath.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -912,77 +885,77 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 73 "TreeFindNodeWild.l"
+#line 46 "TreeFindNodeWild.l"
 {
   addSearchTerm(yyscanner, TAG_TREE, yytreepathget_text(yyscanner ));
 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 76 "TreeFindNodeWild.l"
+#line 49 "TreeFindNodeWild.l"
 {
   addSearchTerm(yyscanner, TAG, yytreepathget_text(yyscanner ));
 }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 79 "TreeFindNodeWild.l"
+#line 52 "TreeFindNodeWild.l"
 {
   addSearchTerm(yyscanner, CHILD_SEARCH, yytreepathget_text(yyscanner ));
 }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 82 "TreeFindNodeWild.l"
+#line 55 "TreeFindNodeWild.l"
 {
   addSearchTerm(yyscanner, MEMBER_SEARCH, yytreepathget_text(yyscanner ));
 }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 85 "TreeFindNodeWild.l"
+#line 58 "TreeFindNodeWild.l"
 {
   addSearchTerm(yyscanner, ANCESTOR_SEARCH, yytreepathget_text(yyscanner ));
 }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 88 "TreeFindNodeWild.l"
+#line 61 "TreeFindNodeWild.l"
 {
   addSearchTerm(yyscanner, CHILD_OR_MEMBER_SEARCH, yytreepathget_text(yyscanner ));
 }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 91 "TreeFindNodeWild.l"
+#line 64 "TreeFindNodeWild.l"
 {
   addSearchTerm(yyscanner, PARENT, yytreepathget_text(yyscanner ));
 }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 94 "TreeFindNodeWild.l"
+#line 67 "TreeFindNodeWild.l"
 {
   addSearchTerm(yyscanner, ANCESTOR, yytreepathget_text(yyscanner ));
 }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 97 "TreeFindNodeWild.l"
+#line 70 "TreeFindNodeWild.l"
 {
   addSearchTerm(yyscanner, MEMBER, yytreepathget_text(yyscanner ));
 }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 100 "TreeFindNodeWild.l"
+#line 73 "TreeFindNodeWild.l"
 {
   addSearchTerm(yyscanner, CHILD, yytreepathget_text(yyscanner ));
 }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 103 "TreeFindNodeWild.l"
+#line 76 "TreeFindNodeWild.l"
 {
   addSearchTerm(yyscanner, CHILD_OR_MEMBER, yytreepathget_text(yyscanner ));
 }
@@ -990,30 +963,30 @@ YY_RULE_SETUP
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
-#line 106 "TreeFindNodeWild.l"
+#line 79 "TreeFindNodeWild.l"
 {
   return (0);
 }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 109 "TreeFindNodeWild.l"
+#line 82 "TreeFindNodeWild.l"
 {
   return (0);
 }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 112 "TreeFindNodeWild.l"
+#line 85 "TreeFindNodeWild.l"
 {
   return (-1);
 }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 115 "TreeFindNodeWild.l"
+#line 88 "TreeFindNodeWild.l"
 ECHO;
 	YY_BREAK
-#line 1017 "lex.yytreepath.c"
+#line 990 "lex.yytreepath.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2145,7 +2118,7 @@ void yytreepathfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 115 "TreeFindNodeWild.l"
+#line 88 "TreeFindNodeWild.l"
 
 
 /*
@@ -2251,4 +2224,36 @@ EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild)
 
   return(status ==0) ? TreeNORMAL : 0;
 }
+
+STATIC_ROUTINE void addSearchTerm(yyscan_t scanner, int type, char *str)
+{
+
+  SEARCH_TERM *ptr, *p;
+//  printf("addSearchTerm\n");
+
+  ptr=malloc(sizeof(SEARCH_TERM));
+  ptr->search_type = type;
+  ptr->term = NULL;
+  ptr->next = NULL;
+  if (str) {
+    char *cptr = str;
+    while(*cptr) {
+      if (isPunctuation(*cptr)) {
+        cptr++;
+      } else {
+       break;
+     }
+    }
+    ptr->term = strdup(cptr);
+  }
+  upcaseAndTrim(ptr->term);
+
+  if (yytreepathget_extra(scanner)->terms==NULL)
+    yytreepathget_extra(scanner)->terms=ptr;
+  else {
+    for (p=yytreepathget_extra(scanner)->terms; p->next; p = p->next);
+    p->next = ptr;
+  }
+}
+
 

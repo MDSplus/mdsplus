@@ -5,6 +5,8 @@
 #include <treeshr_messages.h>
 #include "treeshrp.h"
 
+STATIC_ROUTINE void addSearchTerm(yyscan_t scanner, int type, char *str);
+
 STATIC_ROUTINE void upcaseAndTrim(char *str)
 {
   char *p=str;
@@ -16,35 +18,6 @@ STATIC_ROUTINE void upcaseAndTrim(char *str)
 STATIC_ROUTINE int isPunctuation(char c)
 {
   return ((c == '.') || (c == ':') || (c=='-') || (c=='~') | (c=='^'));
-}
-STATIC_ROUTINE void addSearchTerm(yyscan_t scanner, int type, char *str)
-{
-  SEARCH_TERM *ptr, *p;
-//  printf("addSearchTerm\n");
-
-  ptr=malloc(sizeof(SEARCH_TERM));
-  ptr->search_type = type;
-  ptr->term = NULL;
-  ptr->next = NULL;
-  if (str) {
-    char *cptr = str;
-    while(*cptr) {
-      if (isPunctuation(*cptr)) {
-        cptr++;
-      } else {
-       break; 
-     }
-    }
-    ptr->term = strdup(cptr);
-  }
-  upcaseAndTrim(ptr->term);
-  
-  if (yyget_extra(scanner)->terms==NULL)
-    yyget_extra(scanner)->terms=ptr;
-  else {
-    for (p=yyget_extra(scanner)->terms; p->next; p = p->next);
-    p->next = ptr;
-  }
 }
 
 %}
@@ -216,3 +189,35 @@ EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild)
 
   return(status ==0) ? TreeNORMAL : 0;
 }
+
+STATIC_ROUTINE void addSearchTerm(yyscan_t scanner, int type, char *str)
+{
+
+  SEARCH_TERM *ptr, *p;
+//  printf("addSearchTerm\n");
+
+  ptr=malloc(sizeof(SEARCH_TERM));
+  ptr->search_type = type;
+  ptr->term = NULL;
+  ptr->next = NULL;
+  if (str) {
+    char *cptr = str;
+    while(*cptr) {
+      if (isPunctuation(*cptr)) {
+        cptr++;
+      } else {
+       break;
+     }
+    }
+    ptr->term = strdup(cptr);
+  }
+  upcaseAndTrim(ptr->term);
+
+  if (yyget_extra(scanner)->terms==NULL)
+    yyget_extra(scanner)->terms=ptr;
+  else {
+    for (p=yyget_extra(scanner)->terms; p->next; p = p->next);
+    p->next = ptr;
+  }
+}
+
