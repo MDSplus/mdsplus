@@ -2204,7 +2204,6 @@ EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild)
   ctx->wildcard = strdup(wild_path);
 
   yytreepath_scan_string(wild_path, scanner);
-  free(wild_path);
 
   while((status = yytreepathlex(scanner)) > 0) ;
   if (status == 0) {
@@ -2219,7 +2218,8 @@ EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild)
             strstr(wild_path, "^^^") ;
   }
   yytreepathlex_destroy(scanner);
-//  free(wild_path);
+  free(wild_path);
+
 //  PrintCtx(ctx);
 
   return(status ==0) ? TreeNORMAL : 0;
