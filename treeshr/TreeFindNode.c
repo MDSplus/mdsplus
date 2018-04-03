@@ -54,7 +54,7 @@ STATIC_ROUTINE void FreeNodeList(NODELIST *list);
 STATIC_ROUTINE int match(char *first, char *second);
 STATIC_ROUTINE void FreeSearchCtx(SEARCH_CTX *ctx);
 STATIC_ROUTINE NODELIST *ConcatenateNodeLists(NODELIST *start_list, NODELIST *end_list);
-STATIC_ROUTINE char *Trim(char *str);
+STATIC_ROUTINE char *Trim(char *str, size_t len);
 STATIC_ROUTINE NODELIST *FindChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start);
 STATIC_ROUTINE NODELIST *FindMembers(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start);
 STATIC_ROUTINE NODELIST *FindMembersOrChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start);
@@ -222,7 +222,7 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
     case (CHILD) : {
       NODE *n=child_of(dblist, start);
       for (; n; n = brother_of(dblist, n)) {
-        char *trimmed = Trim(n->name);
+        char *trimmed = Trim(n->name,sizeof(NODE_NAME));
         if (match(term->term, trimmed)) {
           answer = AddNodeList(answer, n);
         }
@@ -233,7 +233,7 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
     case (MEMBER) : {
       NODE *n;
       for (n=member_of(start); n; n = brother_of(dblist, n)) {
-        char *trimmed = Trim(n->name);
+        char *trimmed = Trim(n->name, sizeof(NODE_NAME));
         if (match(term->term, trimmed)) {
           answer = AddNodeList(answer, n);
         }
@@ -244,7 +244,7 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
     case (CHILD_OR_MEMBER) : {
       NODE *n;
       for (n=member_of(start); n; n = brother_of(dblist, n)) {
-        char *trimmed = Trim(n->name);
+        char *trimmed = Trim(n->name, sizeof(NODE_NAME));
         if (match(term->term, trimmed)) {
           answer = AddNodeList(answer, n);
         }
@@ -252,7 +252,7 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
       }
       n=child_of(dblist, start);
       for (; n; n = brother_of(dblist, n)) {
-        char *trimmed = Trim(n->name);
+        char *trimmed = Trim(n->name, sizeof(NODE_NAME));
         if (match(term->term, trimmed)) {
           answer = AddNodeList(answer, n);
         }
@@ -285,7 +285,7 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
     case (ANCESTOR): {
       NODE *parent = parent_of(dblist, start);
       if (parent) {
-        char *trimmed = Trim(parent->name);
+        char *trimmed = Trim(parent->name, sizeof(NODE_NAME));
         char *search_term = (strlen(term->term)) ? term->term : "*";
         if (match(search_term, trimmed))
           answer = AddNodeList(answer, parent);
@@ -296,7 +296,7 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
     case (ANCESTOR_SEARCH): {
       NODE *parent = parent_of(dblist, start);
       while (parent) {
-        char *trimmed = Trim(parent->name);
+        char *trimmed = Trim(parent->name, sizeof(NODE_NAME));
         char *search_term = (strlen(term->term)) ? term->term : "*";
         if (match(search_term, trimmed))
           answer = AddNodeList(answer, parent);
@@ -324,7 +324,7 @@ STATIC_ROUTINE NODELIST *FindTags(PINO_DATABASE *dblist, TREE_INFO *info, int tr
   int tag_wild = IsWild(tagname);
   nid.tree = treenum;
   if(match(tagname, "TOP")) {
-    NID nid ={treenum, 0};
+    nid.node = 0;
     NODE *n = nid_to_node(dblist, &nid);
     if (n->usage == TreeUSAGE_SUBTREE_REF) {
       n = child_of(dblist, n);
@@ -333,7 +333,7 @@ STATIC_ROUTINE NODELIST *FindTags(PINO_DATABASE *dblist, TREE_INFO *info, int tr
   }
   else { 
     for (i=0; i<info->header->tags; i++) {
-      char *trimmed = Trim(tptr[i].name);
+      char *trimmed = Trim(tptr[i].name, sizeof(TAG_NAME));
       if(match(tagname, trimmed)) {
         NODE *n;
         nid.node = tptr[i].node_idx;
@@ -425,7 +425,7 @@ STATIC_ROUTINE NODELIST *FindMembers(PINO_DATABASE *dblist, SEARCH_TERM *term, N
     queue = queue->next;
     if ((n = member_of(this->node))) {
       for(; n; n = brother_of(dblist, n)) {
-        char *trimmed = Trim(n->name);
+        char *trimmed = Trim(n->name, sizeof(NODE_NAME));
         char *search_term = (strlen(term->term)) ? term->term : "*";
         queue = AddNodeList(queue, n);
         if (match(search_term, trimmed)) {
@@ -451,7 +451,7 @@ STATIC_ROUTINE NODELIST *FindChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, 
     queue = queue->next;
     if ((n = child_of(dblist, this->node))) {
       for(; n; n = brother_of(dblist, n)) {
-        char *trimmed = Trim(n->name);
+        char *trimmed = Trim(n->name, sizeof(NODE_NAME));
         char *search_term = (strlen(term->term)) ? term->term : "*";
         queue = AddNodeList(queue, n);
         if (match(search_term, trimmed)) {
@@ -477,7 +477,7 @@ STATIC_ROUTINE NODELIST *FindMembersOrChildren(PINO_DATABASE *dblist, SEARCH_TER
     queue = queue->next;
     if ((n = descendant_of(dblist, this->node))) {
       for(; n; n = sibling_of(dblist, n)) {
-        char *trimmed = Trim(n->name);
+        char *trimmed = Trim(n->name, sizeof(NODE_NAME));
         char *search_term = (strlen(term->term)) ? term->term : "*";
         queue = AddNodeList(queue, n);
         if (match(search_term, trimmed)) {
@@ -523,11 +523,11 @@ STATIC_ROUTINE void FreeNodeList(NODELIST *list)
  * Note there will not be a \0
  * so allocate 12+1 and copy it in first
  */
-STATIC_ROUTINE char *Trim(char *str)
+STATIC_ROUTINE char *Trim(char *str, size_t len)
 {
-  char *ans = calloc(sizeof(NODE_NAME)+1, 1);
+  char *ans = calloc(len+1, 1);
   char *p;
-  strncpy(ans, str, sizeof(NODE_NAME));
+  strncpy(ans, str, len);
   for (p=ans; *p; p++) {
     if (isspace(*p)) {
       *p='\0';
