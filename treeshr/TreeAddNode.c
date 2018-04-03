@@ -108,7 +108,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
   NODE *parent;
   NODE *new_ptr = NULL;
   char *node_name;
-  SEARCH_TYPE node_type;
+  int is_child;
   int nid;
   short *conglom_size;
   short *conglom_index;
@@ -130,7 +130,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
    See if the node's parent is already in the tree
    if not it is an error.
 ******************************************************/
-  status = TreeFindParent(dblist, upcase_name, &parent, &node_name, &node_type);
+  status = TreeFindParent(dblist, upcase_name, &parent, &node_name, &is_child);
   if STATUS_OK {
   /****************************************************
     make sure that the node is not already there
@@ -156,7 +156,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
       If OK so far so grab a new node, Fill in the name
       and insert it into the list of brothers.
     *************************************************/
-      if (STATUS_OK && ((node_type == BROTHER_TYPE_NOWILD) || (node_type == MEMBER_TYPE_NOWILD))) {
+      if (STATUS_OK) { 
 	status = TreeNewNode(dblist, &new_ptr, &parent);
 	if STATUS_OK {
 	  size_t i;
@@ -166,7 +166,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 	    new_ptr->name[i] = ' ';
 	  new_ptr->child = 0;
 	  LoadShort(idx, &new_ptr->conglomerate_elt);
-	  if (node_type == BROTHER_TYPE_NOWILD || usage == TreeUSAGE_STRUCTURE
+	  if (is_child || usage == TreeUSAGE_STRUCTURE
 	      || usage == TreeUSAGE_SUBTREE) {
 	    status = TreeInsertChild(parent, new_ptr, dblist->tree_info->header->sort_children);
 	    new_ptr->usage = usage == TreeUSAGE_SUBTREE ? TreeUSAGE_SUBTREE : TreeUSAGE_STRUCTURE;

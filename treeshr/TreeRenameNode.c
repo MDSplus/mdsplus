@@ -78,15 +78,16 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
   NID *nid_ptr = (NID *) & nid;
   NODE *pptr, *nptr, *newnode, *oldnode_ptr;
   char *newnode_name = 0;
-  SEARCH_TYPE newnode_type;
+  int is_child;
   int status;
   char *upcase_name;
   int i;
 /*****************************************************
   Make sure that the tree is open and OK and editable
 *****************************************************/
-  if (!(IS_OPEN_FOR_EDIT(dblist)))
+  if (!(IS_OPEN_FOR_EDIT(dblist))) {
     return TreeNOEDIT;
+  }
   upcase_name = strdup(newname);
 /**************************
    Convert to upper case.
@@ -106,13 +107,9 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
 /******************************************************
   Make sure the new node's parent is in the tree
 ******************************************************/
-  status = TreeFindParent(dblist, upcase_name, &newnode, &newnode_name, &newnode_type);
+  status = TreeFindParent(dblist, upcase_name, &newnode, &newnode_name, &is_child);
   if (!(status & 1))
     return status;
-  if ((newnode_type != BROTHER_TYPE_NOWILD) && (newnode_type != MEMBER_TYPE_NOWILD)) {
-    status = TreeINVPATH;
-    goto cleanup;
-  }
 /************************************************
   Make sure that the node being renamed is not
   an ancestor of the destination. (This check
@@ -120,52 +117,60 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
   off into space.)
 ************************************************/
   oldnode_ptr = nid_to_node(dblist, (nid_ptr));
-  for (nptr = newnode; nptr; nptr = parent_of(dblist, nptr))
+  for (nptr = newnode; nptr; nptr = parent_of(dblist, nptr)) {
     if (nptr == oldnode_ptr) {
       status = TreeINVPATH;
       goto cleanup;
     }
+  }
 
 /************************************************
   Make sure that a node with a non-STRUCTURE usage is
   not being renamed into a son.
  ************************************************/
-  if (newnode_type == BROTHER_TYPE_NOWILD)
+  if (is_child) {
     if (oldnode_ptr->usage != TreeUSAGE_STRUCTURE) {
       status = TreeINVPATH;
       goto cleanup;
     }
+  }
 
 /************************************************
  OK so far so disconnect the old node
 *************************************************/
   pptr = parent_of(dblist, oldnode_ptr);
-  if (child_of(dblist, pptr) == oldnode_ptr)
+  if (child_of(dblist, pptr) == oldnode_ptr) {
     if (oldnode_ptr->brother) {
       pptr->child = node_offset(brother_of(dblist, oldnode_ptr), pptr);
     } else
       pptr->child = 0;
+  }
   else {
-    for (nptr = child_of(dblist, pptr); nptr && (brother_of(dblist, nptr) != oldnode_ptr);
-	 nptr = brother_of(dblist, nptr)) ;
-    if (nptr)
+    for (nptr = child_of(dblist, pptr); 
+         nptr && (brother_of(dblist, nptr) != oldnode_ptr);
+         nptr = brother_of(dblist, nptr)) ;
+    if (nptr) {
       if (oldnode_ptr->brother) {
 	nptr->brother = node_offset(brother_of(dblist, oldnode_ptr), nptr);
       } else
 	nptr->brother = 0;
-    else if (member_of(pptr) == oldnode_ptr)
+    }
+    else if (member_of(pptr) == oldnode_ptr) {
       if (oldnode_ptr->brother) {
 	pptr->member = node_offset(brother_of(dblist, oldnode_ptr), pptr);
       } else
 	pptr->member = 0;
+    }
     else {
-      for (nptr = member_of(pptr); nptr && (brother_of(dblist, nptr) != oldnode_ptr);
+      for (nptr = member_of(pptr); 
+           nptr && (brother_of(dblist, nptr) != oldnode_ptr);
 	   nptr = brother_of(dblist, nptr)) ;
-      if (nptr)
+      if (nptr) {
 	if (oldnode_ptr->brother) {
 	  nptr->brother = node_offset(brother_of(dblist, oldnode_ptr), nptr);
 	} else
 	  nptr->brother = 0;
+      }
       else {
 	status = TreeINVTREE;
 	goto cleanup;
@@ -181,7 +186,7 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
   if (strlen(newnode_name) < sizeof(oldnode_ptr->name))
     memset(oldnode_ptr->name + strlen(newnode_name), 32,
 	   sizeof(oldnode_ptr->name) - strlen(newnode_name));
-  if (newnode_type == BROTHER_TYPE_NOWILD)
+  if (is_child)
     status = TreeInsertChild(newnode, oldnode_ptr, dblist->tree_info->header->sort_children);
   else
     status = TreeInsertMember(newnode, oldnode_ptr, dblist->tree_info->header->sort_members);
