@@ -194,7 +194,7 @@ char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout)
 /********************************************
   If done and found then fill in the answer
 *********************************************/
-  if (findtag(dblist,ctx)) {
+  if ((status&1) && findtag(dblist,ctx)) {
     NODE *nptr = (*ctx)->this_tree_info->node;
     char tagname[sizeof(TAG_NAME) + 1];
     if ((*ctx)->next_tag != -1) {

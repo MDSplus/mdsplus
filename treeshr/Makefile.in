@@ -20,6 +20,7 @@ TreeDeleteNode.c \
 TreeDeletePulseFile.c \
 TreeDoMethod.c \
 TreeFindNode.c \
+TreeFindTag.c \
 TreeFindTagWild.c \
 TreeGetDbi.c \
 TreeGetNci.c \
@@ -37,7 +38,8 @@ TreeSetDefault.c \
 TreeSetNci.c \
 TreeThreadSafe.c \
 TreeVerify.c \
-RemoteAccess.c
+RemoteAccess.c \
+lex.yytreepath.c 
 
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = TreeShr.exports
@@ -70,3 +72,9 @@ install: $(libdir)
 
 TreeShr.exports: TreeShr.def
 	$(SED) -e /LIBRARY/\;/\;/d TreeShr.def > $@
+
+lex.yytreepath.o: lex.yytreepath.c
+	$(COMPILE.c) $(CFLAGS) -Wno-sign-compare -Wno-unused-parameter -c $^
+
+#lex.yytreepath.c: TreeFindNodeWild.l
+#	flex $^
