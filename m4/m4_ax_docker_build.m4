@@ -1,5 +1,5 @@
 # ===========================================================================
-#      http://www.gnu.org/software/autoconf-archive/ac_local_scope.html
+#     https://www.gnu.org/software/autoconf-archive/ax_docker_build.html
 # ===========================================================================
 #
 # SYNOPSIS
@@ -12,7 +12,7 @@
 #   defines a dshell script that can be used by make to enter the running
 #   container performing target compilation inside. A set of targets and
 #   definitions are substituted in Makefile by the @AX_DOCKER_BUILD_TARGETS@
-#   symbbol.
+#   symbol.
 #
 # LICENSE
 #
@@ -46,7 +46,6 @@
 
 #serial 1
 
-
 AC_DEFUN([AX_DOCKER_BUILD],[
    AC_PUSH_LOCAL([m4_ax_docker_build])
 
@@ -54,40 +53,61 @@ AC_DEFUN([AX_DOCKER_BUILD],[
       AC_CHECK_PROG([HAVE_DOCKER],[docker],[yes],[no]))
 
    AC_ARG_WITH(docker-image,
-	       [AS_HELP_STRING([--with-docker-image],[specify docker images])],
-	       [],
-	       [AS_VAR_SET_IF([DOCKER_IMAGE],
-			      [AS_VAR_SET([with_docker_image], ["${DOCKER_IMAGE}"])],
-			      [])])
+               [AS_HELP_STRING([--with-docker-image],[specify docker images])],
+               [],
+               [AS_VAR_SET_IF([DOCKER_IMAGE],
+                              [AS_VAR_SET([with_docker_image], ["${DOCKER_IMAGE}"])],
+                              [])])
    AS_VAR_SET_IF([with_docker_image],
    AS_IF( [test x"${with_docker_image}" != x"no"],
-	  [AS_VAR_SET([DOCKER_IMAGE],["${with_docker_image}"])],
-	  [AS_UNSET([DOCKER_IMAGE])]
-	  ))
+          [AS_VAR_SET([DOCKER_IMAGE],["${with_docker_image}"])],
+          [AS_UNSET([DOCKER_IMAGE])]
+          ))
 
    AC_ARG_WITH(docker-container,
-	       [AS_HELP_STRING([--with-docker-container],[specify docker container])],
-	       [],
-	       [AS_VAR_SET_IF([DOCKER_CONTAINER],
-			      [AS_VAR_SET([with_docker_container], ["${DOCKER_CONTAINER}"])],
-			      [])])
+               [AS_HELP_STRING([--with-docker-container],[specify docker container])],
+               [],
+               [AS_VAR_SET_IF([DOCKER_CONTAINER],
+                              [AS_VAR_SET([with_docker_container], ["${DOCKER_CONTAINER}"])],
+                              [])])
    AS_VAR_SET_IF([with_docker_container],
    AS_IF( [test x"${with_docker_container}" != x"no"],
-	  [AS_VAR_SET([DOCKER_CONTAINER],["${with_docker_container}"])],
-	  [AS_UNSET([DOCKER_CONTAINER])]
-	  ))
+          [AS_VAR_SET([DOCKER_CONTAINER],["${with_docker_container}"])],
+          [AS_UNSET([DOCKER_CONTAINER])]
+          ))
 
    AC_ARG_WITH(docker-url,
-	       [AS_HELP_STRING([--with-docker-url],[specify docker url])],
-	       [],
-	       [AS_VAR_SET_IF([DOCKER_URL],
-			      [AS_VAR_SET([with_docker_url], ["${DOCKER_URL}"])],
-			      [])])
-   AS_VAR_SET_IF([with_docker_url],
+               [AS_HELP_STRING([--with-docker-url],[specify docker url])],
+               [],
+               [AS_VAR_SET_IF([DOCKER_URL],
+                              [AS_VAR_SET([with_docker_url], ["${DOCKER_URL}"])],
+                              [])])
+   AS_VAR_SET_IF([with_docker_url],[
    AS_IF( [test x"${with_docker_url}" != x"no"],
-	  [AS_VAR_SET([DOCKER_URL],["${with_docker_url}"])],
-	  [AS_UNSET([DOCKER_URL])]
-	  ))
+          [AS_VAR_SET([DOCKER_URL],["${with_docker_url}"])],
+          [AS_UNSET([DOCKER_URL])]
+		  )])
+
+
+
+   AC_ARG_WITH(docker-profile,
+			[AS_HELP_STRING([--with-docker-profile],[specify docker profile])],
+			[],
+			[AS_VAR_SET_IF([DOCKER_PROFILE],
+						   [AS_VAR_SET([with_docker_profile], ["${DOCKER_PROFILE}"])],
+						   [])])
+   AC_ARG_ENABLE(debug)
+   AS_VAR_SET_IF([enable_debug],[
+	 AS_VAR_IF([enable_debug],[no],,[
+	   AS_VAR_SET_IF([with_docker_profile],,[
+		 AS_VAR_IF([enable_debug],[yes],AS_VAR_SET([with_docker_profile],[debug]),
+										AS_VAR_SET([with_docker_profile],[${enable_debug}]))])
+										])])
+   AS_VAR_SET_IF([with_docker_profile],[
+   AS_IF( [test x"${with_docker_profile}" != x"no"],
+		 [AS_VAR_SET([DOCKER_PROFILE],["${with_docker_profile}"])],
+		 [AS_UNSET([DOCKER_PROFILE])]
+		 )])
 
 
    AS_VAR_IF([HAVE_DOCKER],[yes], [
@@ -105,10 +125,10 @@ AC_DEFUN([AX_DOCKER_BUILD],[
     ])
 
    AS_VAR_SET_IF([DOCKER_CONTAINER],[
-		  dk_set_user_env
-		  DK_WRITE_DSHELLFILE
-		  DK_SET_TARGETS
-		 ])
+                  dk_set_user_env
+                  DK_WRITE_DSHELLFILE
+                  DK_SET_TARGETS
+                 ])
 
    AS_VAR_SET_IF([DOCKER_CONTAINER],[
     AS_BANNER(["EXECUTING CONFIGURE IN DOCKER CONTAINER: ${DOCKER_CONTAINER}"])
@@ -116,14 +136,20 @@ AC_DEFUN([AX_DOCKER_BUILD],[
 
     dk_set_user_env
     DK_WRITE_DSHELLFILE
+	dnl execute bootstrap in container
+	AS_IF([test -n "$1"],
+	 [AS_ECHO("Docker config - performing autogen: cd ${srcdir} && ./$1")]
+	 [$(cd ${srcdir} && ./$1)])
+	dnl configure in container
     DK_CONFIGURE
     dnl and exit
+	exit 0;
    ])
    ],[
    AS_VAR_SET_IF([DOCKER_CONTAINER],[
-		   dk_set_user_env
-		   DK_SET_TARGETS
-		  ])
+                   dk_set_user_env
+                   DK_SET_TARGETS
+                  ])
    ])
 
    AC_POP_LOCAL([m4_ax_docker_build])
@@ -137,12 +163,12 @@ push_IFS(["'"])
  for x in ${ac_configure_args}; do
     # try to figure out if quoting was required for the $x
     AS_IF([test "$x" == " "],,[
-    AS_IF([test "$x" != "${x%=*}"],
-	  [AS_VAR_SET([x],[${x%=*}"=\""${x#*=}"\""])],
-	  [AS_IF([test "$x" != "${x%\[\[:space:\]\]*}"],
-		 [AS_VAR_SET([x],["\""$x"\""])],
-		 [AS_VAR_SET([x],["$x"])])
-	  ])
+    AS_IF([test "$x" != "${x%%=*}"],
+	  [AS_VAR_SET([x],[${x%%=*}"=\""${x#*=}"\""])],
+          [AS_IF([test "$x" != "${x%\[\[:space:\]\]*}"],
+                 [AS_VAR_SET([x],["\""$x"\""])],
+                 [AS_VAR_SET([x],["$x"])])
+          ])
     AS_VAR_SET([$1],["$$1 '$x'"])
     ])
  done
@@ -154,158 +180,185 @@ DK_GET_CONFIGURE_ARGS([_args])
 push_IFS(["'"])
  for x in ${_args}; do
     AS_IF([test "$x" == " "],[:],
-	  AS_IF([test "$x" != "${x%--with-docker-*}"],[:],
-	  AS_VAR_SET([$1],["$$1 $x"])))
+          AS_IF([test "$x" != "${x%--with-docker-*}"],[:],
+          AS_VAR_SET([$1],["$$1 $x"])))
  done
 pop_IFS
 ])
 
 
 AC_DEFUN_LOCAL([m4_ax_docker_build],[dk_set_user_env], [
-AS_VAR_SET([user_entry], [$(awk -F: "{if (\$[]1 == \"${USER}\") {print \$[]0} }" /etc/passwd)])
-AS_VAR_SET([user_id],    [$(echo ${user_entry} | awk -F: '{print $[]3}')])
-AS_VAR_SET([user_group], [$(echo ${user_entry} | awk -F: '{print $[]4}')])
-AS_VAR_SET([user_home],  [$(echo ${user_entry} | awk -F: '{print $[]6}')])
-AS_VAR_SET([group_entry],[$(awk -F: "{if (\$[]3 == \"${user_group}\") {print \$[]0} }" /etc/group)])
-AS_VAR_SET([user_groups],[$(id -G ${USER} | sed 's/ /,/g')])
+dnl AS_VAR_SET([user_entry], [$(awk -F: "{if (\$[]1 == \"${USER}\") {print \$[]0} }" /etc/passwd)])
+   AS_VAR_SET([user_id],    [$(id -u)])
+   AS_VAR_SET([user_group], [$(id -g)])
+dnl AS_VAR_SET([user_home],  [$(echo ${user_entry} | awk -F: '{print $[]6}')])
+dnl AS_VAR_SET([group_entry],[$(awk -F: "{if (\$[]3 == \"${user_group}\") {print \$[]0} }" /etc/group)])
+dnl AS_VAR_SET([user_groups],[$(id -G ${USER} | sed 's/ /,/g')])
+AS_VAR_SET([user_home],${HOME})
 AS_VAR_SET([abs_builddir],[$(pwd)])
 AS_VAR_SET([abs_srcdir],[$(cd ${srcdir}; pwd)])
+
+# Docker profiles
+AS_VAR_SET([DOCKER_PROFILE_debug],["--cap-add=SYS_PTRACE --security-opt seccomp=unconfined"])
+
 ])
+
+
+
 
 
 AC_DEFUN_LOCAL([m4_ax_docker_build],[DK_CMD_CNTRUN], [
   dnl set user variables
-  AS_VAR_SET([user_entry], [$(awk -F: "{if (\$[]1 == \"${USER}\") {print \$[]0} }" /etc/passwd)])
-  AS_VAR_SET([user_id],    [$(echo ${user_entry} | awk -F: '{print $[]3}')])
-  AS_VAR_SET([user_group], [$(echo ${user_entry} | awk -F: '{print $[]4}')])
-  AS_VAR_SET([user_home],  [$(echo ${user_entry} | awk -F: '{print $[]6}')])
-  AS_VAR_SET([group_entry],[$(awk -F: "{if (\$[]3 == \"${user_group}\") {print \$[]0} }" /etc/group)])
-  AS_VAR_SET([user_groups],[$(id -G ${USER} | sed 's/ /,/g')])
-  AS_VAR_SET([abs_srcdir],[$(cd ${srcdir}; pwd)])
+  dk_set_user_env
+  AS_VAR_SET_IF([DOCKER_SHARES],[
+		 for _share in ${DOCKER_SHARES}; do
+		  AS_VAR_APPEND([DOCKER_SHARES_VAR],"-v ${_share} ");
+		 done
+		])
+  AS_VAR_SET_IF([DOCKER_NETWORKS],[
+		 for _n in ${DOCKER_NETWORKS}; do
+		  AS_VAR_APPEND([DOCKER_NETWORKS_VAR],"--network=$_n ");
+		 done
+		])
+  AS_VAR_SET_IF([DOCKER_PROFILE],[
+		  AS_VAR_SET([DOCKER_PROFILE_VAR],[$(eval echo \${DOCKER_PROFILE_${DOCKER_PROFILE}})])
+		  AS_ECHO("DOCKER_PROFILE: ${DOCKER_PROFILE}")
+		  ])
+  AS_ECHO("DOCKER_ENTRYPOINT->|${DOCKER_ENTRYPOINT}|")
+  AS_IF([test -n "${DOCKER_ENTRYPOINT}"],,AS_VAR_SET([DOCKER_ENTRYPOINT],${SHELL}))
+  AS_ECHO("DOCKER_ENTRYPOINT->|${DOCKER_ENTRYPOINT}|")
   dnl run container
-  m4_normalize([ docker run -d -it --entrypoint=${SHELL} \
-		     -e USER=${USER} \
-		     -e DISPLAY=${DISPLAY} \
-		     -e http_proxy=${http_proxy} \
-		     -e https_proxy=${https_proxy} \
-		     -v /tmp/.X11-unix:/tmp/.X11-unix \
-		     -v /etc/resolv.conf:/etc/resolv.conf \
-		     -v ${abs_srcdir}:${abs_srcdir} \
-		     -v ${user_home}:${user_home} \
-		     -v $(pwd):$(pwd) \
-		     -w $(pwd) \
-		     --name $2 \
-		     $1;
-	       ])
+  m4_normalize([ docker run -d -it --entrypoint=${DOCKER_ENTRYPOINT} \
+                     -e USER=${USER} \
+                     -e DISPLAY=${DISPLAY} \
+					 -e LANG=${LANG} \
+                     -e http_proxy=${http_proxy} \
+                     -e https_proxy=${https_proxy} \
+                     -v /tmp/.X11-unix:/tmp/.X11-unix \
+                     -v /etc/resolv.conf:/etc/resolv.conf \
+                     -v ${abs_srcdir}:${abs_srcdir} \
+                     -v ${user_home}:${user_home} \
+                     -v $(pwd):$(pwd) \
+					 ${DOCKER_SHARES_VAR} \
+					 ${DOCKER_NETWORKS_VAR} \
+					 ${DOCKER_PROFILE_VAR} \
+                     -w $(pwd) \
+                     --name $2 \
+                     $1;
+               ])
   dnl set user option inside container
   m4_normalize([ docker exec --user root $2 ${SHELL} -c "
-			  echo ${user_entry}  >> /etc/passwd;
-			  echo ${group_entry} >> /etc/group;
-			 ";
-	       ])
+			  groupadd -g ${user_group} ${USER};
+			  useradd -d ${user_home} -u ${user_id} -g ${user_group} ${USER};
+                         ";
+               ])
 ])
 
 
 
 AC_DEFUN_LOCAL([m4_ax_docker_build],[DK_CONFIGURE],[
 
-	 dnl remove docker related options in configure args
-	 AS_VAR_SET([dk_configure_args])
-	 DK_GET_CONFIGURE_ARGS_WITHOUT_DOCKER([dk_configure_args])
-	 AS_VAR_APPEND([dk_configure_args],[" "])
-	 AS_VAR_SET_IF([DOCKER_IMAGE],AS_VAR_APPEND([dk_configure_args],["DOCKER_IMAGE=\"${DOCKER_IMAGE}\" "]));
-	 AS_VAR_SET_IF([DOCKER_CONTAINER],AS_VAR_APPEND([dk_configure_args],["DOCKER_CONTAINER=\"${DOCKER_CONTAINER}\" "]));
-	 AS_VAR_SET_IF([DOCKER_FILE],AS_VAR_APPEND([dk_configure_args],["DOCKER_FILE=\"${DOCKER_FILE}\" "]));
+         dnl remove docker related options in configure args
+         AS_VAR_SET([dk_configure_args])
+         DK_GET_CONFIGURE_ARGS_WITHOUT_DOCKER([dk_configure_args])
+         AS_VAR_APPEND([dk_configure_args],[" "])
+		 AS_VAR_SET_IF([DOCKER_IMAGE],AS_VAR_APPEND([dk_configure_args],
+		  ["DOCKER_IMAGE=\"${DOCKER_IMAGE}\" "]))
+		 AS_VAR_SET_IF([DOCKER_CONTAINER],AS_VAR_APPEND([dk_configure_args],
+		  ["DOCKER_CONTAINER=\"${DOCKER_CONTAINER}\" "]))
+		 AS_VAR_SET_IF([DOCKER_FILE],AS_VAR_APPEND([dk_configure_args],
+		  ["DOCKER_FILE=\"${DOCKER_FILE}\" "]))
 
 	 m4_pushdef([dk_configure_cmd], m4_normalize([
 	   ENABLE_KCONFIG=no
 	   docker exec -t
-	   --user ${USER}
-	   ${DOCKER_CONTAINER} bash -l
-	   -c \"cd $(pwd)\; DK_ADD_ESCAPE([ENABLE_KCONFIG=\"no\"]) ${0} DK_ADD_ESCAPE(${dk_configure_args}) DK_ADD_ESCAPE([HAVE_DOCKER=\"no\"]) \";
-	   exit 0;
-	 ]))
+           --user ${USER}
+		   ${DOCKER_CONTAINER} bash -l
+	   -c \"cd ${srcdir}\; cd $(pwd)\;
+		DK_ADD_ESCAPE([ENABLE_KCONFIG=\"no\"])
+		DK_ADD_ESCAPE([HAVE_DOCKER=\"no\"])
+		${0} DK_ADD_ESCAPE(${dk_configure_args}) \";
+         ]))
 
-	 AS_ECHO(" ------------------------- ")
-	 AS_ECHO(" DOCKER CONFIGURE COMMAND: ")
-	 AS_ECHO(" dk_configure_cmd          ")
-	 AS_ECHO(" ------------------------- ")
+         AS_ECHO(" ------------------------- ")
+         AS_ECHO(" DOCKER CONFIGURE COMMAND: ")
+         AS_ECHO(" dk_configure_cmd          ")
+         AS_ECHO(" ------------------------- ")
 
-	 dnl execute configuration inside docker container
-	 eval dk_configure_cmd
+         dnl execute configuration inside docker container
+         eval dk_configure_cmd
 
-	 m4_popdef([dk_configure_cmd])
+         m4_popdef([dk_configure_cmd])
 ])
 
 
 
 dnl sets DOCKER_CONTAINER var if not set to a unique name based on pwd dir.
 AC_DEFUN_LOCAL([m4_ax_docker_build],[DK_SET_DOCKER_CONTAINER], [
-	 AS_VAR_SET_IF([DOCKER_CONTAINER],,AS_VAR_SET([DOCKER_CONTAINER],
-	 [build_$(echo $(pwd) | md5sum | awk '{print $[]1}')]))
+         AS_VAR_SET_IF([DOCKER_CONTAINER],,AS_VAR_SET([DOCKER_CONTAINER],
+         [build_$(echo $(pwd) | md5sum | awk '{print $[]1}')]))
 ])
 
 AC_DEFUN_LOCAL([m4_ax_docker_build],[DK_SET_DOCKER_IMAGE], [
-	 AS_VAR_SET_IF([DOCKER_IMAGE],,AS_VAR_SET([DOCKER_IMAGE],
-	 [build_$(echo $(pwd) | md5sum | awk '{print $[]1}')]))
+         AS_VAR_SET_IF([DOCKER_IMAGE],,AS_VAR_SET([DOCKER_IMAGE],
+         [build_$(echo $(pwd) | md5sum | awk '{print $[]1}')]))
 ])
 
 
 dnl test_docker_container [cnt_name] [status] [action_if_yes] [action_if_no]
 AC_DEFUN_LOCAL([m4_ax_docker_build],[if_docker_container_string],[
-	  AS_VAR_SET([dk_cnt_status], $(docker ps -a -f name=$1 --format "{{.Status}}"))
-	  AS_CONTAINS([${dk_cnt_status}],[$2],[$3],[$4])
-	 ])
+		  AS_VAR_SET([cnt_id], $(docker ps -a -f name=$1 -q))
+		  AS_VAR_SET([cnt_status], $(docker ps -a -f name=$1 -f state=$2 -q))
+		  AS_CONTAINS([${cnt_status}],[${cnt_id}],[$3],[$4])
+         ])
 
 dnl test_docker_container_status [cnt_name] [status] [action_if_yes] [action_if_no]
 dnl status =  created, restarting, running, paused, exited
 AC_DEFUN_LOCAL([m4_ax_docker_build],[if_docker_container_status],[
-	 AS_VAR_SET([id_cnt_status],
-	 $(docker ps -a -f name=$1 -f status=$2 --format "{{.ID}}"))
-	 AS_IF([test -n "${id_cnt_status}"],[eval $3], [eval $4])
+         AS_VAR_SET([id_cnt_status],[$(docker ps -a -f name=$1 -f status=$2 -q)])
+         AS_IF([test -n "${id_cnt_status}"],[eval $3], [eval $4])
 ])
 
 AC_DEFUN_LOCAL([m4_ax_docker_build],[test_docker_container_status],[
-	 if_docker_container_status([$1],[$2],
-	    AS_SET_STATUS(0),AS_SET_STATUS(1))
+         if_docker_container_status([$1],[$2],
+            [AS_SET_STATUS(0),AS_SET_STATUS(1)])
 ])
 
 AC_DEFUN_LOCAL([m4_ax_docker_build],[get_docker_container_status],[
-	 if_docker_container_status([$2],[created],AS_VAR_SET($1,[created]))
-	 if_docker_container_status([$2],[restarting],AS_VAR_SET($1,[restarting]))
-	 if_docker_container_status([$2],[running],AS_VAR_SET($1,[running]))
-	 if_docker_container_status([$2],[paused],AS_VAR_SET($1,[paused]))
-	 if_docker_container_status([$2],[exited],AS_VAR_SET($1,[exited]))
+         if_docker_container_status([$2],[created],AS_VAR_SET($1,[created]))
+         if_docker_container_status([$2],[restarting],AS_VAR_SET($1,[restarting]))
+         if_docker_container_status([$2],[running],AS_VAR_SET($1,[running]))
+         if_docker_container_status([$2],[paused],AS_VAR_SET($1,[paused]))
+         if_docker_container_status([$2],[exited],AS_VAR_SET($1,[exited]))
 ])
 
 
 AC_DEFUN_LOCAL([m4_ax_docker_build],[get_docker_image_id],[
-	 AS_VAR_SET([$1], $(docker images -a | ${AWK} -v _img=$2 {if ($1 ":" $2 == _img) {print $3}} ))
+         AS_VAR_SET([$1], [$(docker images -a | ${AWK} -v _img=$2 {if ($1 ":" $2 == _img) {print $3}} )])
 ])
 
 AC_DEFUN_LOCAL([m4_ax_docker_build],[get_docker_container_id],[
-	 AS_VAR_SET([$1], $(docker ps -a -f name=$2 --format "{{.ID}}"))
-])
+		 AS_VAR_SET([$1],[$(docker ps -a -f name=$2 -q)])])
 
 AC_DEFUN_LOCAL([m4_ax_docker_build],[get_docker_container_image],[
-	 AS_VAR_SET([$1], $(docker ps -a -f name=$2 --format "{{.Image}}"))
+		 AS_VAR_SET([$1],[$(docker inspect --format='{{.Config.Image}}' $2)])
 ])
 
 AC_DEFUN_LOCAL([m4_ax_docker_build],[if_docker_image_exist],[
-	  AS_VAR_SET([id_img_exist], $(docker images -a -q $1 ))
-	  AS_IF([test -n "${id_img_exist}"],[eval $2], [eval $3])
+          AS_VAR_SET([id_img_exist],[$(docker images -a -q $1 )])
+          AS_IF([test -n "${id_img_exist}"],[eval $2], [eval $3])
 ])
 
 
 dnl start existing [container]
 AC_DEFUN_LOCAL([m4_ax_docker_build],[DK_START_CNT],[
-  AS_VAR_SET([DOCKER_CONTAINER],$1)
+  AS_VAR_SET([DOCKER_CONTAINER],[$1])
   get_docker_container_status([dk_status],[${DOCKER_CONTAINER}])
   AS_CASE([${dk_status}],
-	[running], [AS_ECHO("RUNNING")],
-	[paused],  [AS_ECHO("UNPAUSE")];[eval docker unpause ${DOCKER_CONTAINER}],
-	[exited],  [AS_ECHO("RESTART")];[eval docker restart ${DOCKER_CONTAINER}],
-	[AC_MSG_ERROR("container not found.")])
+        [running], [AS_ECHO("RUNNING")],
+        [paused],  [AS_ECHO("UNPAUSE")];[eval docker unpause ${DOCKER_CONTAINER}],
+        [exited],  [AS_ECHO("RESTART")];[eval docker restart ${DOCKER_CONTAINER}],
+        [AC_MSG_ERROR("container not found.")])
 
   get_docker_container_status([dk_status],[${DOCKER_CONTAINER}])
   AS_CASE([${dk_status}],
@@ -321,7 +374,6 @@ AC_DEFUN_LOCAL([m4_ax_docker_build],[DK_START_IMGCNT], [
    DK_SET_DOCKER_CONTAINER
    DK_GET_CONFIGURE_ARGS([dk_configure_args])
 
-
    AS_ECHO("Pulling image: $1")
    docker pull $1;
 
@@ -332,13 +384,13 @@ AC_DEFUN_LOCAL([m4_ax_docker_build],[DK_START_IMGCNT], [
    get_docker_container_image([dk_img],${DOCKER_CONTAINER})
    AS_ECHO("id: ${dk_id} img: ${dk_img}")
    AS_IF([test -n "${dk_id}" -a -n "${dk_img}"],
-	 [AS_IF([test x"${dk_img}" == x"$1"],
-	 [AC_MSG_NOTICE("container found of the correct image")],
-	 [AC_MSG_ERROR("container does not belong to the correct image")])])
+         [AS_IF([test x"${dk_img}" == x"$1"],
+         [AC_MSG_NOTICE("container found of the correct image")],
+         [AC_MSG_ERROR("container does not belong to the correct image")])])
 
    dnl find if container exists or start it
    AS_IF([test -n "${dk_id}"],,
-	 [AS_ECHO("CREATE ")];[DK_CMD_CNTRUN($1,${DOCKER_CONTAINER})])
+         [AS_ECHO("CREATE ")];[DK_CMD_CNTRUN($1,${DOCKER_CONTAINER})])
    DK_START_CNT(${DOCKER_CONTAINER})
 ])
 
@@ -350,8 +402,8 @@ AC_DEFUN_LOCAL([m4_ax_docker_build],[DK_START_URL], [
 
    dnl TODO: check status
    AS_VAR_SET_IF([DOCKER_URL],
-		 [echo docker build ${dk_build_args} -t $2 $1];
-		 [eval docker build ${dk_build_args} -t $2 $1])
+                 [echo docker build ${dk_build_args} -t $2 $1];
+                 [eval docker build ${dk_build_args} -t $2 $1])
 
 ])
 
@@ -359,12 +411,12 @@ AC_DEFUN_LOCAL([m4_ax_docker_build],[DK_START_URL], [
 
 
 AC_DEFUN_LOCAL([m4_ax_docker_build],[_dk_set_docker_build_debug],[
-	 AS_ECHO(" --------------------------------- ")
-	 AS_ECHO(" docker-image      = ${DOCKER_IMAGE}")
-	 AS_ECHO(" docker-container  = ${DOCKER_CONTAINER}")
-	 AS_ECHO(" ac_configure_args = ${ac_configure_args}")
-	 AS_ECHO(" --------------------------------- ")
-	 ])
+         AS_ECHO(" --------------------------------- ")
+         AS_ECHO(" docker-image      = ${DOCKER_IMAGE}")
+         AS_ECHO(" docker-container  = ${DOCKER_CONTAINER}")
+         AS_ECHO(" ac_configure_args = ${ac_configure_args}")
+         AS_ECHO(" --------------------------------- ")
+         ])
 
 
 
@@ -379,8 +431,10 @@ AS_VAR_READ([AX_DOCKER_BUILD_TARGETS],[
 # //// DOCKER TARGETS  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-DOCKER_CONTAINER = ${DOCKER_CONTAINER}
-DOCKER_IMAGE     = ${DOCKER_IMAGE}
+DOCKER_CONTAINER   = ${DOCKER_CONTAINER}
+DOCKER_IMAGE       = ${DOCKER_IMAGE}
+DOCKER_ENTRYPOINT ?= \${SHELL}
+DOCKER_PS1        ?= [[\\\u@${DOCKER_IMAGE}:\\\h \\\W]]\$
 
 user_id     = ${user_id}
 user_group  = ${user_group}
@@ -390,12 +444,16 @@ user_home   = ${user_home}
 # if MAKESHELL is not defined use local dshell to enter docker container
 docker_SHELL := \$(if \${MAKESHELL},\${MAKESHELL},\${abs_top_builddir}/dshell)
 local_SHELL  := \$(if \${SHELL},\${SHELL},/bin/sh)
-SHELL := \${docker_SHELL}
-export SHELL
+export SHELL := \${docker_SHELL}
+\$(foreach x,\$(NODOCKERBUILD),\$(eval \$x: override SHELL=\${local_SHELL}))
+
+# fix local_SHELL for automake targets
+Makefile Makefile.in \$(ACLOCAL_M4) \$(top_srcdir)/configure am--refresh: SHELL = \$(local_SHELL)
+AUTOMAKE += --add-missing --copy -W none
 
 .PHONY: docker
 ifeq (docker,\$(MAKECMDGOALS))
-docker: ##@docker get docker build help
+docker:
 	@ \
 	echo ; \
 	echo " This build was set to work with Docker: "; \
@@ -423,41 +481,47 @@ ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
 export SHELL = \${local_SHELL}
 
 .PHONY: info start stop shell inspect run
-inspect: ##@docker get container info (use: "make docker inspect")
+inspect: ##@docker inspect running container properties
 	@echo "info:";
 	docker inspect \${DOCKER_CONTAINER}
 
-start: ##@docker run the docker container (use: "make docker start")
+start: ##@docker start new session of configured container
 	@echo "Starting docker container:";
-	m4_normalize( docker run -d -it --entrypoint=\${SHELL}
+	m4_normalize( docker run -d -it --entrypoint=\${DOCKER_ENTRYPOINT}
 			     -e USER=\${USER}
 			     -e DISPLAY=\${DISPLAY}
+				 -e LANG=\${LANG}
 			     -e http_proxy=\${http_proxy}
 			     -e https_proxy=\${https_proxy}
+				 -e PS1="\${DOCKER_PS1}"
 			     -v /tmp/.X11-unix:/tmp/.X11-unix
 			     -v /etc/resolv.conf:/etc/resolv.conf
 			     -v \${abs_top_srcdir}:\${abs_top_srcdir}
 			     -v \${abs_top_builddir}:\${abs_top_builddir}
 			     -v \${user_home}:\${user_home}
+			     \$(foreach share,\${DOCKER_SHARES},-v \$(share) )
+				 \$(foreach net,\${DOCKER_NETWORKS},--network=\$(net) )
+				 \${DOCKER_PROFILE_\${DOCKER_PROFILE}}
 			     -w \${abs_top_builddir}
+				 --privileged
+				 --cap-add=SYS_PTRACE --security-opt seccomp=unconfined
 			     --name \${DOCKER_CONTAINER}
 			     \${DOCKER_IMAGE}; )
 	m4_normalize( docker exec --user root \${DOCKER_CONTAINER}
 				  \${SHELL} -c "
-				    echo ${user_entry}  >> /etc/passwd;
-				    echo ${group_entry} >> /etc/group;
+				    groupadd -g \${user_group} \${USER};
+				    useradd -d \${user_home} -u \${user_id} -g \${user_group} \${USER};
 				  ";)
 
-stop:  ##@docker stop and remove the docker container (use: "make docker stop")
+stop: ##@docker stop running container session
 	@echo "Stopping docker container:";
 	docker stop \${DOCKER_CONTAINER};
 	docker rm \${DOCKER_CONTAINER};
 
-shell: ##@docker launch a shell inside the container (use: "make docker shell")
+shell: ##@docker start a shell inside running container (use: USER=root for privleges)
 	@echo "Starting docker shell";
 	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
-	 \${SHELL} -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
-
+	 \${SHELL} -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; export PS1='\${DOCKER_PS1} '; bash -l "
 
 endif
 
@@ -487,13 +551,17 @@ user_group=${user_group}
 user_groups=${user_groups}
 user_home=${user_home}
 
+export SHELL=/bin/bash
+export M_PATH=\$PATH
+M_ENV="\$(export -p | awk '{printf("%s; ",\@S|@0)}')"
+xhost local:${USER} > /dev/null
 >&2 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 quoted_args="\$(printf " %q" "\$\@")"
 if [ -n "\${MAKESHELL}" ]; then
  \${MAKESHELL} \${quoted_args};
 else
  [ -t AS_ORIGINAL_STDIN_FD -o -t 0 ] && INT=-ti || INT=
- docker exec \${INT} --user \${USER} \${DOCKER_CONTAINER} /bin/bash -l -c "cd \$(pwd); export MAKESHELL=/bin/bash; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; /bin/bash \${quoted_args}";
+ docker exec \${INT} --user \${USER} \${DOCKER_CONTAINER} /bin/bash -l -c "save_path=\\\\\$PATH; \$M_ENV export PATH=\\\\\$save_path; cd \$(pwd); export MAKESHELL=/bin/bash; /bin/bash \${quoted_args}";
 fi
 ]))
 
@@ -512,10 +580,10 @@ dnl ////////////////////////////////////////////////////////////////////////////
 dnl // Utility functions
 
 AC_DEFUN_LOCAL([m4_ax_docker_build],[AS_BANNER],[
-	  AS_ECHO
-	  AS_BOX([// $1 //////], [\/])
-	  AS_ECHO
-	 ])
+          AS_ECHO
+          AS_BOX([// $1 //////], [\/])
+          AS_ECHO
+         ])
 
 
 AC_DEFUN_LOCAL([m4_ax_docker_build],[AS_VAR_READ],[
@@ -525,9 +593,9 @@ _as_read_EOF
 ])
 
 AC_DEFUN_LOCAL([m4_ax_docker_build],[AS_CONTAINS],[
-	  AS_VAR_SET([string],"$1")
-	  AS_VAR_SET([substring],"$2")
-	  AS_IF([test "${string#*$substring}" != "$string"], [eval $3], [eval $4])])
+          AS_VAR_SET([string],"$1")
+          AS_VAR_SET([substring],"$2")
+          AS_IF([test "${string#*$substring}" != "$string"], [eval $3], [eval $4])])
 
 
 AC_DEFUN_LOCAL([m4_ax_docker_build],[push_IFS],[
@@ -544,7 +612,3 @@ AC_DEFUN_LOCAL([m4_ax_docker_build],[DK_ADD_ESCAPE],$([
 dnl TODO: make this for all quote char in sh using awk
 echo $1 | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
 ]))
-
-
-
-
