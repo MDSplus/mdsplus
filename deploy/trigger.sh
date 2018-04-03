@@ -532,7 +532,7 @@ then
   "target_commitish":"${BRANCH}",
   "name":"${RELEASE_TAG}",
   "body":"Commits since last release:\n\n
-$(git log --decorate=full --no-merges ${LAST_RELEASE_COMMIT}..HEAD | awk '{gsub("\"","\\\"");print $0"\\n"}')"
+$(git log --decorate=full --no-merges ${LAST_RELEASE_COMMIT}..HEAD | awk '{gsub("\"","\\\"");gsub("\\~","\\\~");print $0"\\n"}')"
 }
 EOF
 	   if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
