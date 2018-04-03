@@ -143,10 +143,11 @@ EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
     return FindNodeRemote(dblist, path, outnid);
   
   status = WildParse(path, &ctx, &wild);
-  if STATUS_NOT_OK 
-    return(status);
+  if STATUS_NOT_OK
+    goto done;
   if (wild) {
-    return 0; /* should be TreeNOWILD */
+    status = 0; /* should be TreeNOWILD */
+    goto done;
   }
   ctx.default_node = dblist->default_node;
 //  ctx.terms->start_node = ctx.default_node;
@@ -158,6 +159,7 @@ EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
   else {
     status = TreeNNF;
   }
+ done:
   FreeSearchCtx(&ctx);
 //  printf("\treturning from TreeFindNode(%s) with status = %d\n", path, (status & 1) ? TreeNORMAL : status);
   return (status & 1) ? TreeNORMAL : status;
