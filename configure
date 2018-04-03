@@ -990,9 +990,10 @@ enable_option_checking
 with_docker_image
 with_docker_container
 with_docker_url
+with_docker_profile
+enable_debug
 enable_silent_rules
 enable_maintainer_mode
-enable_debug
 enable_java_only
 with_jars
 enable_dependency_tracking
@@ -1677,6 +1678,7 @@ Optional Features:
   --disable-option-checking  ignore unrecognized --enable/--with options
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+
   --enable-silent-rules   less verbose build output (undo: "make V=1")
   --disable-silent-rules  verbose build output (undo: "make V=0")
   --enable-maintainer-mode
@@ -1721,6 +1723,7 @@ Optional Packages:
   --with-docker-image     specify docker images
   --with-docker-container specify docker container
   --with-docker-url       specify docker url
+  --with-docker-profile   specify docker profile
   --with-jars=directory   specify directory tree to find java jars
   --with-jdk=JDKDIR       specify location of java jdk
   --with-java_target=version
@@ -3054,10 +3057,57 @@ fi
 fi
 
    if ${with_docker_url+:} false; then :
-  if test x"${with_docker_url}" != x"no"; then :
+
+   if test x"${with_docker_url}" != x"no"; then :
   DOCKER_URL="${with_docker_url}"
 else
   { DOCKER_URL=; unset DOCKER_URL;}
+
+fi
+fi
+
+
+
+
+# Check whether --with-docker-profile was given.
+if test "${with_docker_profile+set}" = set; then :
+  withval=$with_docker_profile;
+else
+  if ${DOCKER_PROFILE+:} false; then :
+  with_docker_profile="${DOCKER_PROFILE}"
+fi
+fi
+
+   # Check whether --enable-debug was given.
+if test "${enable_debug+set}" = set; then :
+  enableval=$enable_debug;
+fi
+
+   if ${enable_debug+:} false; then :
+
+	 if test "x$enable_debug" = xno; then :
+
+else
+
+	   if ${with_docker_profile+:} false; then :
+
+else
+
+		 if test "x$enable_debug" = xyes; then :
+  with_docker_profile=debug
+else
+  with_docker_profile=${enable_debug}
+fi
+fi
+
+fi
+fi
+   if ${with_docker_profile+:} false; then :
+
+   if test x"${with_docker_profile}" != x"no"; then :
+  DOCKER_PROFILE="${with_docker_profile}"
+else
+  { DOCKER_PROFILE=; unset DOCKER_PROFILE;}
 
 fi
 fi
@@ -3067,14 +3117,14 @@ fi
 
    if ${DOCKER_URL+:} false; then :
 
-	  $as_echo
-	  sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+          $as_echo
+          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
 ## // "BUILDING IMAGE FOR URL: ${DOCKER_URL}" ////// ##
 _ASBOX
-	  $as_echo
+          $as_echo
 
 
-	 if ${DOCKER_IMAGE+:} false; then :
+         if ${DOCKER_IMAGE+:} false; then :
 
 else
   DOCKER_IMAGE=build_$(echo $(pwd) | md5sum | awk '{print $1}')
@@ -3091,7 +3141,7 @@ fi
 
       if ${DOCKER_URL+:} false; then :
   echo docker build ${dk_build_args} -t ${DOCKER_IMAGE} ${DOCKER_URL};
-		 eval docker build ${dk_build_args} -t ${DOCKER_IMAGE} ${DOCKER_URL}
+                 eval docker build ${dk_build_args} -t ${DOCKER_IMAGE} ${DOCKER_URL}
 fi
 
 
@@ -3099,15 +3149,15 @@ fi
 
    if ${DOCKER_IMAGE+:} false; then :
 
-	  $as_echo
-	  sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+          $as_echo
+          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
 ## // "STARTING CONTAINER IN DOCKER IMAGE: ${DOCKER_IMAGE}" ////// ##
 _ASBOX
-	  $as_echo
+          $as_echo
 
 
 
-	 if ${DOCKER_CONTAINER+:} false; then :
+         if ${DOCKER_CONTAINER+:} false; then :
 
 else
   DOCKER_CONTAINER=build_$(echo $(pwd) | md5sum | awk '{print $1}')
@@ -3133,8 +3183,8 @@ IFS="'"
 
 else
 
-    if test "$x" != "${x%=*}"; then :
-  x=${x%=*}"=\""${x#*=}"\""
+    if test "$x" != "${x%%=*}"; then :
+  x=${x%%=*}"=\""${x#*=}"\""
 else
   if test "$x" != "${x%\\[:space:\]\*}"; then :
   x="\""$x"\""
@@ -3152,17 +3202,15 @@ IFS=${_save_IFS}
 
 
 
-
    $as_echo "Pulling image: ${DOCKER_IMAGE}"
    docker pull ${DOCKER_IMAGE};
 
    $as_echo "Starting container from image: ${DOCKER_IMAGE}"
 
 
-	 dk_id=$(docker ps -a -f name=${DOCKER_CONTAINER} --format "{{.ID}}")
+		 dk_id=$(docker ps -a -f name=${DOCKER_CONTAINER} -q)
 
-
-	 dk_img=$(docker ps -a -f name=${DOCKER_CONTAINER} --format "{{.Image}}")
+		 dk_img=$(docker inspect --format='{{.Config.Image}}' ${DOCKER_CONTAINER})
 
    $as_echo "id: ${dk_id} img: ${dk_img}"
    if test -n "${dk_id}" -a -n "${dk_img}"; then :
@@ -3178,55 +3226,86 @@ fi
 
 else
   $as_echo "CREATE ";
-    user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
-  user_id=$(echo ${user_entry} | awk -F: '{print $3}')
-  user_group=$(echo ${user_entry} | awk -F: '{print $4}')
-  user_home=$(echo ${user_entry} | awk -F: '{print $6}')
-  group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
-  user_groups=$(id -G ${USER} | sed 's/ /,/g')
-  abs_srcdir=$(cd ${srcdir}; pwd)
-    docker run -d -it --entrypoint=${SHELL} -e USER=${USER} -e DISPLAY=${DISPLAY} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v ${abs_srcdir}:${abs_srcdir} -v ${user_home}:${user_home} -v $(pwd):$(pwd) -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE};
-    docker exec --user root ${DOCKER_CONTAINER} ${SHELL} -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
+
+   user_id=$(id -u)
+   user_group=$(id -g)
+user_home=${HOME}
+abs_builddir=$(pwd)
+abs_srcdir=$(cd ${srcdir}; pwd)
+
+# Docker profiles
+DOCKER_PROFILE_debug="--cap-add=SYS_PTRACE --security-opt seccomp=unconfined"
+
+
+  if ${DOCKER_SHARES+:} false; then :
+
+		 for _share in ${DOCKER_SHARES}; do
+		  as_fn_append DOCKER_SHARES_VAR "-v ${_share} ";
+		 done
+
+fi
+  if ${DOCKER_NETWORKS+:} false; then :
+
+		 for _n in ${DOCKER_NETWORKS}; do
+		  as_fn_append DOCKER_NETWORKS_VAR "--network=$_n ";
+		 done
+
+fi
+  if ${DOCKER_PROFILE+:} false; then :
+
+		  DOCKER_PROFILE_VAR=$(eval echo \${DOCKER_PROFILE_${DOCKER_PROFILE}})
+		  $as_echo "DOCKER_PROFILE: ${DOCKER_PROFILE}"
+
+fi
+  $as_echo "DOCKER_ENTRYPOINT->|${DOCKER_ENTRYPOINT}|"
+  if test -n "${DOCKER_ENTRYPOINT}"; then :
+
+else
+  DOCKER_ENTRYPOINT=${SHELL}
+fi
+  $as_echo "DOCKER_ENTRYPOINT->|${DOCKER_ENTRYPOINT}|"
+    docker run -d -it --entrypoint=${DOCKER_ENTRYPOINT} -e USER=${USER} -e DISPLAY=${DISPLAY} -e LANG=${LANG} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v ${abs_srcdir}:${abs_srcdir} -v ${user_home}:${user_home} -v $(pwd):$(pwd) ${DOCKER_SHARES_VAR} ${DOCKER_NETWORKS_VAR} ${DOCKER_PROFILE_VAR} -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE};
+    docker exec --user root ${DOCKER_CONTAINER} ${SHELL} -c " groupadd -g ${user_group} ${USER}; useradd -d ${user_home} -u ${user_id} -g ${user_group} ${USER}; ";
 
 fi
 
   DOCKER_CONTAINER=${DOCKER_CONTAINER}
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=created
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=restarting
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=running
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=paused
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=exited
 else
   eval
@@ -3246,40 +3325,40 @@ esac
 
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=created
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=restarting
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=running
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=paused
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=exited
 else
   eval
@@ -3297,50 +3376,50 @@ esac
 else
   if ${DOCKER_CONTAINER+:} false; then :
 
-	  $as_echo
-	  sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+          $as_echo
+          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
 ## // "STARTING CONTAINER: ${DOCKER_CONTAINER}" ////// ##
 _ASBOX
-	  $as_echo
+          $as_echo
 
 
   DOCKER_CONTAINER=${DOCKER_CONTAINER}
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=created
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=restarting
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=running
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=paused
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=exited
 else
   eval
@@ -3360,40 +3439,40 @@ esac
 
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=created
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=restarting
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=running
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=paused
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=exited
 else
   eval
@@ -3414,14 +3493,15 @@ fi
    if ${DOCKER_CONTAINER+:} false; then :
 
 
-user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
-user_id=$(echo ${user_entry} | awk -F: '{print $3}')
-user_group=$(echo ${user_entry} | awk -F: '{print $4}')
-user_home=$(echo ${user_entry} | awk -F: '{print $6}')
-group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
-user_groups=$(id -G ${USER} | sed 's/ /,/g')
+   user_id=$(id -u)
+   user_group=$(id -g)
+user_home=${HOME}
 abs_builddir=$(pwd)
 abs_srcdir=$(cd ${srcdir}; pwd)
+
+# Docker profiles
+DOCKER_PROFILE_debug="--cap-add=SYS_PTRACE --security-opt seccomp=unconfined"
+
 
 
 
@@ -3442,13 +3522,17 @@ user_group=${user_group}
 user_groups=${user_groups}
 user_home=${user_home}
 
+export SHELL=/bin/bash
+export M_PATH=\$PATH
+M_ENV="\$(export -p | awk '{printf("%s; ",\$0)}')"
+xhost local:${USER} > /dev/null
 >&2 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 quoted_args="\$(printf " %q" "\$\@")"
 if [ -n "\${MAKESHELL}" ]; then
  \${MAKESHELL} \${quoted_args};
 else
  [ -t 7 -o -t 0 ] && INT=-ti || INT=
- docker exec \${INT} --user \${USER} \${DOCKER_CONTAINER} /bin/bash -l -c "cd \$(pwd); export MAKESHELL=/bin/bash; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; /bin/bash \${quoted_args}";
+ docker exec \${INT} --user \${USER} \${DOCKER_CONTAINER} /bin/bash -l -c "save_path=\\\\\$PATH; \$M_ENV export PATH=\\\\\$save_path; cd \$(pwd); export MAKESHELL=/bin/bash; /bin/bash \${quoted_args}";
 fi
 
 _as_read_EOF
@@ -3468,8 +3552,10 @@ read -d '' AX_DOCKER_BUILD_TARGETS << _as_read_EOF
 # //// DOCKER TARGETS  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-DOCKER_CONTAINER = ${DOCKER_CONTAINER}
-DOCKER_IMAGE     = ${DOCKER_IMAGE}
+DOCKER_CONTAINER   = ${DOCKER_CONTAINER}
+DOCKER_IMAGE       = ${DOCKER_IMAGE}
+DOCKER_ENTRYPOINT ?= \${SHELL}
+DOCKER_PS1        ?= [\\\u@${DOCKER_IMAGE}:\\\h \\\W]\$
 
 user_id     = ${user_id}
 user_group  = ${user_group}
@@ -3479,12 +3565,16 @@ user_home   = ${user_home}
 # if MAKESHELL is not defined use local dshell to enter docker container
 docker_SHELL := \$(if \${MAKESHELL},\${MAKESHELL},\${abs_top_builddir}/dshell)
 local_SHELL  := \$(if \${SHELL},\${SHELL},/bin/sh)
-SHELL := \${docker_SHELL}
-export SHELL
+export SHELL := \${docker_SHELL}
+\$(foreach x,\$(NODOCKERBUILD),\$(eval \$x: override SHELL=\${local_SHELL}))
+
+# fix local_SHELL for automake targets
+Makefile Makefile.in \$(ACLOCAL_M4) \$(top_srcdir)/configure am--refresh: SHELL = \$(local_SHELL)
+AUTOMAKE += --add-missing --copy -W none
 
 .PHONY: docker
 ifeq (docker,\$(MAKECMDGOALS))
-docker: ##@docker get docker build help
+docker:
 	@ \
 	echo ; \
 	echo " This build was set to work with Docker: "; \
@@ -3512,25 +3602,24 @@ ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
 export SHELL = \${local_SHELL}
 
 .PHONY: info start stop shell inspect run
-inspect: ##@docker get container info (use: "make docker inspect")
+inspect: ##@docker inspect running container properties
 	@echo "info:";
 	docker inspect \${DOCKER_CONTAINER}
 
-start: ##@docker run the docker container (use: "make docker start")
+start: ##@docker start new session of configured container
 	@echo "Starting docker container:";
-	docker run -d -it --entrypoint=\${SHELL} -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
-	docker exec --user root \${DOCKER_CONTAINER} \${SHELL} -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
+	docker run -d -it --entrypoint=\${DOCKER_ENTRYPOINT} -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e LANG=\${LANG} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -e PS1="\${DOCKER_PS1}" -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} \$(foreach share,\${DOCKER_SHARES},-v \$(share) ) \$(foreach net,\${DOCKER_NETWORKS},--network=\$(net) ) \${DOCKER_PROFILE_\${DOCKER_PROFILE}} -w \${abs_top_builddir} --privileged --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
+	docker exec --user root \${DOCKER_CONTAINER} \${SHELL} -c " groupadd -g \${user_group} \${USER}; useradd -d \${user_home} -u \${user_id} -g \${user_group} \${USER}; ";
 
-stop:  ##@docker stop and remove the docker container (use: "make docker stop")
+stop: ##@docker stop running container session
 	@echo "Stopping docker container:";
 	docker stop \${DOCKER_CONTAINER};
 	docker rm \${DOCKER_CONTAINER};
 
-shell: ##@docker launch a shell inside the container (use: "make docker shell")
+shell: ##@docker start a shell inside running container (use: USER=root for privleges)
 	@echo "Starting docker shell";
 	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
-	 \${SHELL} -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
-
+	 \${SHELL} -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; export PS1='\${DOCKER_PS1} '; bash -l "
 
 endif
 
@@ -3547,29 +3636,30 @@ fi
    if ${DOCKER_CONTAINER+:} false; then :
 
 
-	  $as_echo
-	  sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+          $as_echo
+          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
 ## // "EXECUTING CONFIGURE IN DOCKER CONTAINER: ${DOCKER_CONTAINER}" ////// ##
 _ASBOX
-	  $as_echo
+          $as_echo
 
 
-	 $as_echo " --------------------------------- "
-	 $as_echo " docker-image      = ${DOCKER_IMAGE}"
-	 $as_echo " docker-container  = ${DOCKER_CONTAINER}"
-	 $as_echo " ac_configure_args = ${ac_configure_args}"
-	 $as_echo " --------------------------------- "
+         $as_echo " --------------------------------- "
+         $as_echo " docker-image      = ${DOCKER_IMAGE}"
+         $as_echo " docker-container  = ${DOCKER_CONTAINER}"
+         $as_echo " ac_configure_args = ${ac_configure_args}"
+         $as_echo " --------------------------------- "
 
 
 
-user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
-user_id=$(echo ${user_entry} | awk -F: '{print $3}')
-user_group=$(echo ${user_entry} | awk -F: '{print $4}')
-user_home=$(echo ${user_entry} | awk -F: '{print $6}')
-group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
-user_groups=$(id -G ${USER} | sed 's/ /,/g')
+   user_id=$(id -u)
+   user_group=$(id -g)
+user_home=${HOME}
 abs_builddir=$(pwd)
 abs_srcdir=$(cd ${srcdir}; pwd)
+
+# Docker profiles
+DOCKER_PROFILE_debug="--cap-add=SYS_PTRACE --security-opt seccomp=unconfined"
+
 
 
 
@@ -3590,13 +3680,17 @@ user_group=${user_group}
 user_groups=${user_groups}
 user_home=${user_home}
 
+export SHELL=/bin/bash
+export M_PATH=\$PATH
+M_ENV="\$(export -p | awk '{printf("%s; ",\$0)}')"
+xhost local:${USER} > /dev/null
 >&2 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 quoted_args="\$(printf " %q" "\$\@")"
 if [ -n "\${MAKESHELL}" ]; then
  \${MAKESHELL} \${quoted_args};
 else
  [ -t 7 -o -t 0 ] && INT=-ti || INT=
- docker exec \${INT} --user \${USER} \${DOCKER_CONTAINER} /bin/bash -l -c "cd \$(pwd); export MAKESHELL=/bin/bash; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; /bin/bash \${quoted_args}";
+ docker exec \${INT} --user \${USER} \${DOCKER_CONTAINER} /bin/bash -l -c "save_path=\\\\\$PATH; \$M_ENV export PATH=\\\\\$save_path; cd \$(pwd); export MAKESHELL=/bin/bash; /bin/bash \${quoted_args}";
 fi
 
 _as_read_EOF
@@ -3607,9 +3701,13 @@ $as_echo "${DK_DSHELLFILE}" > ${abs_builddir}/dshell
 chmod +x dshell
 
 
+		if test -n ""; then :
+  $as_echo "Docker config - performing autogen: cd ${srcdir} && ./"
+	 $(cd ${srcdir} && ./)
+fi
 
 
-	 	 dk_configure_args=
+                  dk_configure_args=
 
 
 
@@ -3631,8 +3729,8 @@ IFS="'"
 
 else
 
-    if test "$x" != "${x%=*}"; then :
-  x=${x%=*}"=\""${x#*=}"\""
+    if test "$x" != "${x%%=*}"; then :
+  x=${x%%=*}"=\""${x#*=}"\""
 else
   if test "$x" != "${x%\\[:space:\]\*}"; then :
   x="\""$x"\""
@@ -3668,40 +3766,41 @@ fi
 IFS=${_save_IFS}
 
 
-	 as_fn_append dk_configure_args " "
-	 if ${DOCKER_IMAGE+:} false; then :
+         as_fn_append dk_configure_args " "
+		 if ${DOCKER_IMAGE+:} false; then :
   as_fn_append dk_configure_args "DOCKER_IMAGE=\"${DOCKER_IMAGE}\" "
-fi;
-	 if ${DOCKER_CONTAINER+:} false; then :
+fi
+		 if ${DOCKER_CONTAINER+:} false; then :
   as_fn_append dk_configure_args "DOCKER_CONTAINER=\"${DOCKER_CONTAINER}\" "
-fi;
-	 if ${DOCKER_FILE+:} false; then :
+fi
+		 if ${DOCKER_FILE+:} false; then :
   as_fn_append dk_configure_args "DOCKER_FILE=\"${DOCKER_FILE}\" "
-fi;
+fi
 
 
 
-	 $as_echo " ------------------------- "
-	 $as_echo " DOCKER CONFIGURE COMMAND: "
-	 $as_echo " ENABLE_KCONFIG=no docker exec -t --user ${USER} ${DOCKER_CONTAINER} bash -l -c \"cd $(pwd)\; $(
+         $as_echo " ------------------------- "
+         $as_echo " DOCKER CONFIGURE COMMAND: "
+         $as_echo " ENABLE_KCONFIG=no docker exec -t --user ${USER} ${DOCKER_CONTAINER} bash -l -c \"cd ${srcdir}\; cd $(pwd)\; $(
 echo ENABLE_KCONFIG=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
-) ${0} $(
-echo ${dk_configure_args} | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
 ) $(
 echo HAVE_DOCKER=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
-) \"; exit 0;          "
-	 $as_echo " ------------------------- "
-
-	 	 eval ENABLE_KCONFIG=no docker exec -t --user ${USER} ${DOCKER_CONTAINER} bash -l -c \"cd $(pwd)\; $(
-echo ENABLE_KCONFIG=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
 ) ${0} $(
 echo ${dk_configure_args} | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
+) \";          "
+         $as_echo " ------------------------- "
+
+                  eval ENABLE_KCONFIG=no docker exec -t --user ${USER} ${DOCKER_CONTAINER} bash -l -c \"cd ${srcdir}\; cd $(pwd)\; $(
+echo ENABLE_KCONFIG=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
 ) $(
 echo HAVE_DOCKER=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
-) \"; exit 0;
+) ${0} $(
+echo ${dk_configure_args} | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
+) \";
 
 
 
+    	exit 0;
 
 fi
 
@@ -3710,14 +3809,15 @@ else
    if ${DOCKER_CONTAINER+:} false; then :
 
 
-user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
-user_id=$(echo ${user_entry} | awk -F: '{print $3}')
-user_group=$(echo ${user_entry} | awk -F: '{print $4}')
-user_home=$(echo ${user_entry} | awk -F: '{print $6}')
-group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
-user_groups=$(id -G ${USER} | sed 's/ /,/g')
+   user_id=$(id -u)
+   user_group=$(id -g)
+user_home=${HOME}
 abs_builddir=$(pwd)
 abs_srcdir=$(cd ${srcdir}; pwd)
+
+# Docker profiles
+DOCKER_PROFILE_debug="--cap-add=SYS_PTRACE --security-opt seccomp=unconfined"
+
 
 
 
@@ -3728,8 +3828,10 @@ read -d '' AX_DOCKER_BUILD_TARGETS << _as_read_EOF
 # //// DOCKER TARGETS  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-DOCKER_CONTAINER = ${DOCKER_CONTAINER}
-DOCKER_IMAGE     = ${DOCKER_IMAGE}
+DOCKER_CONTAINER   = ${DOCKER_CONTAINER}
+DOCKER_IMAGE       = ${DOCKER_IMAGE}
+DOCKER_ENTRYPOINT ?= \${SHELL}
+DOCKER_PS1        ?= [\\\u@${DOCKER_IMAGE}:\\\h \\\W]\$
 
 user_id     = ${user_id}
 user_group  = ${user_group}
@@ -3739,12 +3841,16 @@ user_home   = ${user_home}
 # if MAKESHELL is not defined use local dshell to enter docker container
 docker_SHELL := \$(if \${MAKESHELL},\${MAKESHELL},\${abs_top_builddir}/dshell)
 local_SHELL  := \$(if \${SHELL},\${SHELL},/bin/sh)
-SHELL := \${docker_SHELL}
-export SHELL
+export SHELL := \${docker_SHELL}
+\$(foreach x,\$(NODOCKERBUILD),\$(eval \$x: override SHELL=\${local_SHELL}))
+
+# fix local_SHELL for automake targets
+Makefile Makefile.in \$(ACLOCAL_M4) \$(top_srcdir)/configure am--refresh: SHELL = \$(local_SHELL)
+AUTOMAKE += --add-missing --copy -W none
 
 .PHONY: docker
 ifeq (docker,\$(MAKECMDGOALS))
-docker: ##@docker get docker build help
+docker:
 	@ \
 	echo ; \
 	echo " This build was set to work with Docker: "; \
@@ -3772,25 +3878,24 @@ ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
 export SHELL = \${local_SHELL}
 
 .PHONY: info start stop shell inspect run
-inspect: ##@docker get container info (use: "make docker inspect")
+inspect: ##@docker inspect running container properties
 	@echo "info:";
 	docker inspect \${DOCKER_CONTAINER}
 
-start: ##@docker run the docker container (use: "make docker start")
+start: ##@docker start new session of configured container
 	@echo "Starting docker container:";
-	docker run -d -it --entrypoint=\${SHELL} -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
-	docker exec --user root \${DOCKER_CONTAINER} \${SHELL} -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
+	docker run -d -it --entrypoint=\${DOCKER_ENTRYPOINT} -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e LANG=\${LANG} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -e PS1="\${DOCKER_PS1}" -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} \$(foreach share,\${DOCKER_SHARES},-v \$(share) ) \$(foreach net,\${DOCKER_NETWORKS},--network=\$(net) ) \${DOCKER_PROFILE_\${DOCKER_PROFILE}} -w \${abs_top_builddir} --privileged --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
+	docker exec --user root \${DOCKER_CONTAINER} \${SHELL} -c " groupadd -g \${user_group} \${USER}; useradd -d \${user_home} -u \${user_id} -g \${user_group} \${USER}; ";
 
-stop:  ##@docker stop and remove the docker container (use: "make docker stop")
+stop: ##@docker stop running container session
 	@echo "Stopping docker container:";
 	docker stop \${DOCKER_CONTAINER};
 	docker rm \${DOCKER_CONTAINER};
 
-shell: ##@docker launch a shell inside the container (use: "make docker shell")
+shell: ##@docker start a shell inside running container (use: USER=root for privleges)
 	@echo "Starting docker shell";
 	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
-	 \${SHELL} -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
-
+	 \${SHELL} -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; export PS1='\${DOCKER_PS1} '; bash -l "
 
 endif
 
