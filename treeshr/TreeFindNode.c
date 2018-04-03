@@ -146,7 +146,7 @@ EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
   if STATUS_NOT_OK
     goto done;
   if (wild) {
-    status = 0; /* should be TreeNOWILD */
+    status = TreeNOWILD;
     goto done;
   }
   ctx.default_node = dblist->default_node;

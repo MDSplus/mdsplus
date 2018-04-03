@@ -2360,6 +2360,14 @@ class TreeWRITETREEERR(TreeException):
 
 MDSplusException.statusDict[265392272] = TreeWRITETREEERR
 
+
+class TreeNOWILD(TreeException):
+  status=265392282
+  message="No wildcard characters permitted in node specifier"
+  msgnam="NOWILD"
+
+MDSplusException.statusDict[265392280] = TreeNOWILD
+
 ########################### generated from mdsshr_messages.xml ########################
 
 
