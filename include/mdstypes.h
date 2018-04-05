@@ -2,6 +2,10 @@
 
 #define MDSTYPES_H
 
+#ifdef HAVE_WINDOWS_H
+#include <stdint.h>
+#endif
+
 #ifdef _MSC_VER
 
 #ifndef _OFF_T_DEFINED
