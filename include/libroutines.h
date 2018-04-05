@@ -11,6 +11,12 @@
 #define FindFileCtx void
 #endif
 
+
+#ifdef HAVE_WINDOWS_H
+#include <stdint.h>
+#endif
+
+
 /// @{
 /// defined in MdsShr.so
 

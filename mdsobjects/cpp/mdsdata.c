@@ -25,7 +25,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef HAVE_WINDOWS_H
 #include <mdsplus/mdsconfig.h>
+#else
+#define MAD_DIMS 64
+#define MDS_ATTR_FALLTHROUGH
+#endif
 #include <mdsplus/mdsplus.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>

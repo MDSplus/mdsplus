@@ -1,7 +1,8 @@
 #ifndef MDSDESCRIP_H_DEFINED
 #define MDSDESCRIP_H_DEFINED 1
-
+#ifndef HAVE_WINDOWS_H
 #include <mdsplus/mdsconfig.h>
+#endif
 #define MAX_DIMS   8
 #define MAX_DIMS_R 7 //remote access only supports 7
 
@@ -9,6 +10,7 @@
 #define __char_align__ char
 #define __fill_name__ fill
 #define __fill_value__ 0,
+
 #else				/* _WINDOWS */
 #define __char_align__
 #define __fill_name__
