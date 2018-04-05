@@ -12,7 +12,7 @@
 #endif
 
 
-#ifdef HAVE_WINDOWS_H
+#ifdef WINDOWS_H
 #include <stdint.h>
 #endif
 

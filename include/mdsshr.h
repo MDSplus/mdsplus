@@ -1,7 +1,7 @@
 #pragma once
 
 #define MdsCOMPRESSIBLE 3
-#ifndef HAVE_WINDOWS_H
+#ifndef WINDOWS_H
 #include <mdsplus/mdsconfig.h>
 #endif
 #include <mdsdescrip.h>

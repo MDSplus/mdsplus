@@ -25,7 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifndef HAVE_WINDOWS_H
+#ifndef WINDOWS_H
 #include <mdsplus/mdsconfig.h>
 #else
 #define MAD_DIMS 64

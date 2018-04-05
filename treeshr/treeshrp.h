@@ -1,8 +1,6 @@
 #ifndef _TREESHRP_H
 #define _TREESHRP_H
-#ifndef HAVE_WINDOWS_H
 #include <mdsplus/mdsconfig.h>
-#endif
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
