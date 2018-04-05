@@ -102,9 +102,10 @@ static FILE *switchStdout(const char *newStream)
     fflush(stdout);
     fgetpos(stdout, &out_pos);
     out_fd = dup(fileno(stdout));
-    if(newStream)
-        freopen(newStream, "w", stdout);
-    else
+    if(newStream) {
+      if (freopen(newStream, "w", stdout) == NULL)
+	perror("Error redirecting stdout\n");
+    } else
         fclose(stdout);
     return fdopen(out_fd, "w");
 }

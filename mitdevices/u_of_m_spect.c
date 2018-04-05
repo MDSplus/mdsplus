@@ -60,6 +60,9 @@ int u_of_m_spect___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
   return status;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+
 int u_of_m_spect___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
   int status;
@@ -127,6 +130,7 @@ int u_of_m_spect___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
   }
   return status;
 }
+#pragma GCC diagnostic pop
 
 static int StoreSpectra(int head_nid, int np, int num_frames, int *buffer, int p1, float dt)
 {

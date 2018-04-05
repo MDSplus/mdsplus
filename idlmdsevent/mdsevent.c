@@ -160,7 +160,8 @@ static void DoEventUpdate(XtPointer client_data __attribute__ ((unused)), int *s
   char *base_rec;
   EventStruct *e;
   IDL_WidgetStubLock(TRUE);
-  read(event_pipe[0], &e, sizeof(EventStruct *));
+  if (read(event_pipe[0], &e, sizeof(EventStruct *)) == -1)
+    perror("Error reading from event pipe\n");
   if ((stub_rec = IDL_WidgetStubLookup(e->stub_id))
       && (base_rec = IDL_WidgetStubLookup(e->base_id))) {
 #ifdef WIN32
@@ -195,7 +196,8 @@ static void EventAst(void * e_in, int len, char *data)
   EventStruct *e = (EventStruct *)e_in;
   if (len > 0)
     memcpy(e->value, data, len > 12 ? 12 : len);
-  write(event_pipe[1], &e, sizeof(EventStruct *));
+  if (write(event_pipe[1], &e, sizeof(EventStruct *)) == -1)
+    perror("Error writing to event pipe\n");
 }
 #endif
 EXPORT int IDLMdsEvent(int argc, void * *argv)
@@ -230,7 +232,8 @@ EXPORT int IDLMdsEvent(int argc, void * *argv)
 	    XtAppAddInput(XtWidgetToApplicationContext(w1), sock, (XtPointer) XtInputExceptMask,
 			  MdsDispatchEvent, (char *)0+sock);
 	  }
-	  pipe(event_pipe);
+	  if (pipe(event_pipe) == -1)
+	    perror("Error creating event pipes\n");
 	  XTINPUTID =
 	    XtAppAddInput(XtWidgetToApplicationContext(w1), event_pipe[0],
 			  (XtPointer) XtInputReadMask, DoEventUpdate, 0);

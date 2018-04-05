@@ -32,14 +32,21 @@ status=0
 if [ ! -z $1 ]
 then
 
+tmpdir=$(mktemp -d)
+trap 'if [ ! -z "${tmpdir}" ]; then rm -Rf ${tmpdir}; fi' EXIT
+export main_path="${tmpdir};$(readlink -f ${srcdir}/../../trees)"
+export subtree_path="${tmpdir};$(readlink -f ${srcdir}/../../trees/subtree)"
+export MDS_PATH="${tmpdir};$(readlink -f ${srcdir}/../../tdi)"
+export MDS_PYDEVICE_PATH="${tmpdir};$(readlink -f ${srcdir}/../../pydevices)"
+
 if [ "$2" == "update" ]
 then
-  tmpdir=$(mktemp -d)
-  trap 'if [ ! -z "${tmpdir}" ]; then rm -Rf ${tmpdir}; fi' EXIT
-  export main_path="${tmpdir};$(readlink -f ${srcdir}/../../trees)"
-  export subtree_path="${tmpdir};$(readlink -f ${srcdir}/../../trees/subtree)"
-  export MDS_PATH="${tmpdir};$(readlink -f ${srcdir}/../../tdi)"
-  export MDS_PYDEVICE_PATH="${tmpdir};$(readlink -f ${srcdir}/../../pydevices)"
+#  tmpdir=$(mktemp -d)
+#  trap 'if [ ! -z "${tmpdir}" ]; then rm -Rf ${tmpdir}; fi' EXIT
+#  export main_path="${tmpdir};$(readlink -f ${srcdir}/../../trees)"
+#  export subtree_path="${tmpdir};$(readlink -f ${srcdir}/../../trees/subtree)"
+#  export MDS_PATH="${tmpdir};$(readlink -f ${srcdir}/../../tdi)"
+#  export MDS_PYDEVICE_PATH="${tmpdir};$(readlink -f ${srcdir}/../../pydevices)"
   $TDITEST $zdrv$srcdir/$test.tdi 2>&1 \
    | grep -v 'Data inserted:' \
    | grep -v 'Length:' \
@@ -80,6 +87,7 @@ else
     echo "PASS: $test"
     rm -f $test-diff.log
   fi
+  rm -Rf ${tmpdir}
 fi
 exit $status
 
