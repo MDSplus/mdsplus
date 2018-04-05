@@ -7,7 +7,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#ifndef HAVE_WINDOWS_H
+#ifndef WINDOWS_H
 #include <mdsplus/mdsconfig.h>
 #else
 #ifdef EXPORT

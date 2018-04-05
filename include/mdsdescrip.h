@@ -1,6 +1,6 @@
 #ifndef MDSDESCRIP_H_DEFINED
 #define MDSDESCRIP_H_DEFINED 1
-#ifndef HAVE_WINDOWS_H
+#ifndef WINDOWS_H
 #include <mdsplus/mdsconfig.h>
 #endif
 #define MAX_DIMS   8

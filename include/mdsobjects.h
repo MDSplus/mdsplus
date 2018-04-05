@@ -19,10 +19,10 @@
  //#include <sys/sem.h>
  //#include <semaphore.h>
 #endif
-#ifndef HAVE_WINDOWS_H
+#ifndef WINDOWS_H
 #include <mdsplus/mdsconfig.h> // should be removed from here //
 #endif
-#ifdef HAVE_WINDOWS_H
+#ifdef WINDOWS_H
 #define __attribute__(arg)
 #define EXPORT __declspec(dllexport)
 #endif
