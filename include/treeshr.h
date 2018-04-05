@@ -10,6 +10,9 @@ extern "C" {
 #ifndef HAVE_WINDOWS_H
 #include <mdsplus/mdsconfig.h>
 #else
+#ifdef EXPORT
+#undef EXPORT
+#endif	
 #define EXPORT
 #endif
 #include <mdstypes.h>
