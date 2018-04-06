@@ -208,7 +208,7 @@ class Connection(object):
         @rtype: None
         """
         pexp  = 'TreePut($,$%s)'%(',$'*len(args),)
-        pargs = [node,exp]+args
+        pargs = [node,exp] + list(args)
         _exc.checkStatus(self.get(pexp,arglist=pargs))
 
     def putMany(self, value=None):
