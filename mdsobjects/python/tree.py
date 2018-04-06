@@ -739,9 +739,9 @@ class Tree(object):
         @rtype: None
         """
         _exc.checkStatus(
-                _TreeShr._TreeDeletePulse(self.ctx,
-                                          _C.c_int32(int(shot)),
-                                          _C.c_int32(1)))
+                _TreeShr._TreeDeletePulseFile(self.ctx,
+                                              _C.c_int32(int(shot)),
+                                              _C.c_int32(1)))
 
     def dir(self):
         """list descendants of top"""
@@ -1526,7 +1526,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
             name[2:].upper() == name[2:]):
             return self.getExtendedAttribute(name[2:])
         try:   return _getNodeByAttr(self,name)
-        except _exc.TreeNNF,_exc.TreePARSEERR: pass
+        except (_exc.TreeNNF,_exc.TreePARSEERR): pass
         try:   return super(TreeNode,self).__getattr__(name)
         except AttributeError: pass
         #if name=='length':
