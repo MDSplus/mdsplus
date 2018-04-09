@@ -28,11 +28,13 @@ def _TdiShrFun(function,errormessage,expression,args=None,ctx=None):
         raise TypeError('Arguments must be passed as a tuple')
     xd = _descriptor.descriptor_xd()
     arguments = [_C.byref(descriptor(expression))]+parseArguments(args)+[_C.byref(xd),_C.c_void_p(-1)]
-    opened = _tree._TreeCtx.setUpCtx(ctx)
+    if ctx is not None:
+        opened = _tree._TreeCtx.setUpCtx(ctx)
     try:
         status = function(*arguments)
     finally:
-        _tree._TreeCtx.restoreCtx(ctx,opened)
+        if ctx is not None:
+            _tree._TreeCtx.restoreCtx(ctx,opened)
 
     if (status & 1 != 0):
         value = xd.value
