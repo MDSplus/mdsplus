@@ -1,5 +1,6 @@
 #ifndef _TREESHRP_H
 #define _TREESHRP_H
+
 #include <mdsplus/mdsconfig.h>
 #include <stdio.h>
 #include <string.h>
@@ -611,16 +612,20 @@ static inline NODE *descendant_of(PINO_DATABASE *dbid, NODE *a)
   return (answer)? answer : child_of(dbid, a);
 }
 
+static inline int is_member(PINO_DATABASE * dblist, NODE * node)
+{
+  NODE *n = 0;
+  if (parent_of(dblist, node))
+    for (n = member_of(parent_of(dblist, node)); n && n != node; n = brother_of(dblist, n)) ;
+  return n == node;
+}
+
 static inline NODE *sibling_of(PINO_DATABASE *dbid, NODE *a)
 {
   NODE *answer = brother_of(dbid, a);
-  if (! answer) {
-    if ((a->usage!=TreeUSAGE_STRUCTURE) &&
-        (a->usage != TreeUSAGE_SUBTREE) &&
-        (a->usage != TreeUSAGE_SUBTREE_REF) &&
-        (a->usage != TreeUSAGE_SUBTREE_TOP))
-       answer = child_of(dbid, parent_of(dbid, a));
-   }
+  if (! answer) 
+    if (is_member(dbid, a))
+      answer = child_of(dbid, parent_of(dbid, a));
   return answer;
 }
  
