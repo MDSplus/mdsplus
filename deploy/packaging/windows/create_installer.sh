@@ -14,7 +14,6 @@ then
   windows_cleanup() {
       rm -Rf /winbld/${tmpdir}
   }
-  mkdir /winbld
   pushd /winbld
   tmpdir=$(mktemp -d mdsplus-XXXXXXXXXX)
   trap windows_cleanup EXIT
