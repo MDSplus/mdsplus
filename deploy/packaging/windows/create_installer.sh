@@ -3,7 +3,6 @@ abort=0
 major=$(echo ${RELEASE_VERSION} | cut -d. -f1)
 minor=$(echo ${RELEASE_VERSION} | cut -d. -f2)
 release=$(echo ${RELEASE_VERSION} | cut -d. -f3)
-srcdir=$(dirname $(dirname $(dirname $(dirname $(realpath $0)))))
 
 if [ "${BRANCH}" = "stable" ]
 then bname=""
@@ -19,7 +18,7 @@ then
   trap windows_cleanup EXIT
   topsrcdir=${WINREMBLD}/${tmpdir}
   cd ${tmpdir}
-  rsync -am --include="*/" --include="*.h*" --include="*.def" --exclude="*" ${srcdir}/ ./
+  rsync -am --include="*/" --include="*.h" --include="*.hpp" --include="*.def" --exclude="*" ${srcdir}/ ./
   rsync -am /workspace/releasebld/64/include/mdsplus/mdsconfig.h ./include/
   rsync -a ${srcdir}/mdsobjects/cpp ${srcdir}/mdsobjects/MdsObjects* ${srcdir}/mdsobjects/VS-* ./mdsobjects/
   rsync -a ${srcdir}/deploy/platform/windows/winbld.bat ./deploy/
