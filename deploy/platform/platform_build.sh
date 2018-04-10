@@ -115,6 +115,8 @@ rundocker(){
 		   -e "HOME=/workspace" \
 		   -e "JARS_DIR=$jars_dir" \
 		   -e "TEST_TIMEUNIT" \
+		   -e "WINHOST" \
+		   -e "WINREMBLD" \
 		   -v ${SRCDIR}:${DOCKER_SRCDIR} \
 		   -v ${WORKSPACE}:/workspace \
 		   $port_forwarding \
@@ -122,6 +124,7 @@ rundocker(){
 		   $(volume "${RELEASEDIR}" /release) \
 		   $(volume "${PUBLISHDIR}" /publish) \
 		   $(volume "${KEYS}" /sign_keys) \
+		   $(volume "${WINBLD}" /winbld) \
 		   ${image} $program
             status=$?
             if [ -r ${WORKSPACE}/${OS}_docker-cid ]

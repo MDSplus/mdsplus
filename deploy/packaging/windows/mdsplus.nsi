@@ -149,7 +149,8 @@ ${If} ${RunningX64}
 		loop_64:
 			StrCmp $2 "" done_64
 			FileWrite $0 "$SYSDIR\$2$\n"
-			Delete "$SYSDIR\$2"
+			Rename "$SYSDIR\$2" "$SYSDIR\$2-inuse"
+			Delete "$SYSDIR\$2-inuse"
 			Rename "$INSTDIR\bin_x86_64\$2" "$SYSDIR\$2"
 			FindNext $1 $2
 			Goto loop_64
@@ -181,7 +182,8 @@ ${IF} $7 == 1
 	loop_32:
 		StrCmp $2 "" done_32
 		FileWrite $0 "$5\$2$\n"
-		Delete "$5\$2"
+		Rename "$5\$2" "$5\$2-inuse"
+		Delete "$5\$2-inuse"
 		Rename "$INSTDIR\bin_x86\$2" "$5\$2"
 		FindNext $1 $2
 		Goto loop_32
@@ -331,7 +333,7 @@ File "/oname=tdishr.lib" bin_x86_64/TdiShr.lib
 File "/oname=mdsdcl.lib" bin_x86_64/mdsdclshr.lib
 File "/oname=mdsipshr.lib" bin_x86_64/mdsipshr.lib
 File "/oname=mdslib.lib" bin_x86_64/MdsLib.lib
-File "/oname=mdsobjectscppshr.lib" bin_x86_64/MdsObjectsCppShr-VS.lib
+File "/oname=mdsobjectscppshr-vs.lib" bin_x86_64/MdsObjectsCppShr-VS.lib
 File "/oname=mdsservershr.lib" bin_x86_64/servershr.lib
 !endif
 ${EndIf}
@@ -355,7 +357,7 @@ File "/oname=tdishr.lib" bin_x86/TdiShr.lib
 File "/oname=mdsdcl.lib" bin_x86/mdsdclshr.lib
 File "/oname=mdsipshr.lib" bin_x86/mdsipshr.lib
 File "/oname=mdslib.lib" bin_x86/MdsLib.lib
-File "/oname=mdsobjectscppshr.lib" bin_x86/MdsObjectsCppShr-VS.lib
+File "/oname=mdsobjectscppshr-vs.lib" bin_x86/MdsObjectsCppShr-VS.lib
 File "/oname=mdsservershr.lib" bin_x86/servershr.lib
 !endif
 SectionEnd
