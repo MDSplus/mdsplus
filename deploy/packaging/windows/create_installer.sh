@@ -4,12 +4,6 @@ major=$(echo ${RELEASE_VERSION} | cut -d. -f1)
 minor=$(echo ${RELEASE_VERSION} | cut -d. -f2)
 release=$(echo ${RELEASE_VERSION} | cut -d. -f3)
 srcdir=$(dirname $(dirname $(dirname $(dirname $(realpath $0)))))
-if [ -z $1 ]
-then BUILDDIR=/workspace/releasebld/buildroot/
-else BUILDDIR="$1"
-fi
-
-
 
 if [ "${BRANCH}" = "stable" ]
 then bname=""
@@ -39,7 +33,7 @@ then
   vs="-DVisualStudio"
   popd
 fi
-pushd "$BUILDDIR"
+pushd ${MDSPLUS_DIR}
 makensis -DMAJOR=${major} -DMINOR=${minor} -DRELEASE=${release} -DFLAVOR=${bname} -NOCD -DBRANCH=${BRANCH} \
      -DOUTDIR=/release/${BRANCH} -Dsrcdir=${srcdir} ${vs} ${srcdir}/deploy/packaging/${PLATFORM}/mdsplus.nsi
 popd

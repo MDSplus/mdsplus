@@ -47,7 +47,7 @@ buildrelease() {
     ### pack installer
     ###
   if [ -z "$NOMAKE" ]; then
-    ${srcdir}/deploy/packaging/windows/create_installer.sh ${MDSPLUS_DIR}
+    source ${srcdir}/deploy/packaging/windows/create_installer.sh
   fi # NOMAKE
 }
 publish() {
