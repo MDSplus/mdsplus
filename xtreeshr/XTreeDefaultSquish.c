@@ -324,6 +324,7 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
     //Merge first dimension in outDim array. It is assumed that the first dimension has been evaluaed to a 1D array
 //              memcpy(&outDimD, dimensionsXd[0].pointer, sizeof(struct descriptor_a));
     memcpy(&outDimD, arraysD[0], sizeof(struct descriptor_a));
+    outDimD.aflags.coeff=0;
 
     outDimBuf = malloc(totSize);
     outDimD.pointer = outDimBuf;
@@ -389,7 +390,7 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
     totSize += arrayD->arsize;
   }
   outDataBuf = malloc(totSize);
-  outDataD.pointer = outDataBuf;
+  outDataD.pointer = outDataD.a0 = outDataBuf;
   outDataD.arsize = totSize;
   currSignalD = ((struct descriptor_signal **)signalsApd->pointer)[0];
   arrayD = (struct descriptor_a *)currSignalD->data;
