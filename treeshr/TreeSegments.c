@@ -1087,7 +1087,7 @@ static int ReadSegment(TREE_INFO* tinfo, int nid, SEGMENT_HEADER* shead, SEGMENT
           MdsFree1Dx(&compressed_segment_xd, 0);
         }
       } else {
-        ans_ptr = ans.pointer = malloc(ans.arsize);
+        ans_ptr = ans.pointer = ans.a0 = malloc(ans.arsize);
         status = ReadProperty(tinfo,sinfo->data_offset, ans.pointer, (ssize_t)ans.arsize);
       }
       if (STATUS_OK && !compressed_segment)

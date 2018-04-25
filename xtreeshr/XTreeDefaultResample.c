@@ -684,7 +684,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   //Build array descriptor for out data
   outDataArray.length = dataD->length;
   outDataArray.dtype = dataD->dtype;
-  outDataArray.pointer = outData;
+  outDataArray.pointer = outDataArray.a0 = outData;
   outDataArray.arsize = itemSize * outSamples;
   outDataArray.dimct = numDims;
   for (i = 0; i < numDims - 1; i++) {
@@ -699,14 +699,14 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
     outDimArray.length = sizeof(double);
     outDimArray.arsize = sizeof(double) * outSamples;
     outDimArray.dtype = DTYPE_DOUBLE;
-    outDimArray.pointer = (char *)timebaseDouble;
+    outDimArray.pointer = outDataArray.a0 = (char *)timebaseDouble;
   }
 
   else {
     outDimArray.length = 8;
     outDimArray.arsize = 8 * outSamples;
     outDimArray.dtype = DTYPE_Q;
-    outDimArray.pointer = (char *)outDim;
+    outDimArray.pointer = outDataArray.a0 = (char *)outDim;
   }
 
   MdsCopyDxXd((struct descriptor *)&outSignalD, outSignalXd);
