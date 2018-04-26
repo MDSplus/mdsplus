@@ -312,7 +312,6 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 		status = (dbid)?_TreeGetSegment(dbid, nid, currIdx, &dataXds[currSegIdx], &dimensionXds[currSegIdx]):TreeGetSegment(nid, currIdx, &dataXds[currSegIdx], &dimensionXds[currSegIdx]);
 
 //printf("Read Segment %d\n", currSegIdx);
-		if STATUS_OK status = TdiData(dimensionXds[currSegIdx].pointer,&dimensionXds[currSegIdx] MDS_END_ARG);
 
 		if STATUS_NOT_OK
 		{
