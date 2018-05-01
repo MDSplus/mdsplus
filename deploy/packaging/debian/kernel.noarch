@@ -16,6 +16,7 @@
 ./usr/local/mdsplus/rpm/mdsipsd.xinetd
 ./usr/local/mdsplus/rpm/post_install_script
 ./usr/local/mdsplus/rpm/post_uninstall_script
+./usr/local/mdsplus/rpm/removePythonModule.sh
 ./usr/local/mdsplus/setup.csh
 ./usr/local/mdsplus/setup.sh
 ./usr/local/mdsplus/share/man/man1/mdsplus.1
