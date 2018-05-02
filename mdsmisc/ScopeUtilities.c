@@ -793,6 +793,30 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     if(nSamples > (int)(xArrD->arsize/xArrD->length))
 	nSamples = xArrD->arsize/xArrD->length;
  
+   //Handle old DTYPE_F format
+    if(yArrD->dtype == DTYPE_F)
+    {
+	char *expr = (char *)"FLOAT($)";
+	struct descriptor exprDsc = {strlen(expr), DTYPE_T, CLASS_S, expr};
+	EMPTYXD(currXd);
+	status = TdiCompile(&exprDsc, yArrD, &currXd MDS_END_ARG);
+	if(status & 1)
+	    status = TdiData((struct descriptor *)&currXd, &currXd MDS_END_ARG);
+	if(!(status & 1))
+	{
+	    err = "Cannot Convert Y to IEEE Floating point";
+	    MdsFree1Dx(&xXd, 0);
+	    MdsFree1Dx(&yXd, 0);
+	    errD.length = strlen(err);
+	    errD.pointer = err;
+	    MdsCopyDxXd(&errD, &retXd);
+	    return &retXd;
+	}
+	MdsFree1Dx(&yXd, 0);
+	yXd = currXd;
+	yArrD = (struct descriptor_a *)yXd.pointer;
+    }
+	      
     if(yArrD->dtype == DTYPE_FLOAT)
 	y = (float *)yArrD->pointer;
     else
