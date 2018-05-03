@@ -1169,7 +1169,7 @@ public class Signal implements WaveDataListener
         curr_y_xz_plot = Float.NaN;
         curr_y_xz_idx = -1;
 
-        if( zY2D != null )
+        if( zY2D != null && idx < zY2D.length)
         {
             ymin = ymax = zY2D[idx];
             for (int j = 0; j < y2d.length; j++)
@@ -2098,20 +2098,23 @@ public class Signal implements WaveDataListener
                         this.xmax = curr_xmax = xMax;
                 }
 //Autoscale Y, ymin and ymax are possibly changed afterwards
-                this.ymin = this.ymax = y[0];
-                for(int i = 0; i < y.length; i++)
-                {
-                    if(y[i] < this.ymin)
-                        this.ymin = y[i];
-                    if(y[i] > this.ymax)
-                        this.ymax = y[i];
-                }
-                
-                if(data.isXLong())
-                {
-                    xLong = xyData.xLong;
-                }
-                resolutionManager.addRegion(new RegionDescriptor(xMin, xMax, xyData.resolution));
+		if(y.length > 0)
+		{
+		    this.ymin = this.ymax = y[0];
+		    for(int i = 0; i < y.length; i++)
+		    {
+			if(y[i] < this.ymin)
+			    this.ymin = y[i];
+			if(y[i] > this.ymax)
+			    this.ymax = y[i];
+		    }
+		    
+		    if(data.isXLong())
+		    {
+			xLong = xyData.xLong;
+		    }
+		    resolutionManager.addRegion(new RegionDescriptor(xMin, xMax, xyData.resolution));
+		}
             }
             if(up_errorData != null && upError == null)
             {
