@@ -630,7 +630,12 @@ python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/n
     </pre-upgrade>
       
     <prerm>
+      if [ -d %{python_sitelib} -a "$1" -ne "0" ]
+      then
+      :
+      else
       __INSTALL_PREFIX__/mdsplus/rpm/removePythonModule.sh MDSplus
+      fi
     </prerm>
   </package>
 
