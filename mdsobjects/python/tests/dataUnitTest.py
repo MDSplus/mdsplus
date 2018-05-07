@@ -130,13 +130,14 @@ class Tests(TestCase):
             test('_a<_b',       a< b,   res.pop())
             test('_a<=_b',      a<=b,   res.pop())
 
-    def testData(self):
+    def data(self):
         self.assertEqual(m.Data(2).compare(2),True)
         self.assertEqual(m.Data(2).compare(1),False)
         self.assertEqual(m.Dictionary([1,'a',2,'b']).data().tolist(),{1: 'a', 2: 'b'})
         self.assertEqual(m.List([1,'a',2,'b']).data().tolist(),[1, 'a', 2, 'b'])
+        a = m.ADD(1,2);self.assertEqual(m.MULTIPLY(a,a).decompile(),"(1 + 2) * (1 + 2)")
 
-    def testScalars(self):
+    def scalars(self):
         def doTest(suffix,cl,scl,ucl,**kw):
             """ test scalar """
             import warnings
@@ -175,7 +176,7 @@ class Tests(TestCase):
         doTest('*cmplx(1.,0.)',  m.Complex64, m.Complex64, m.Uint64,almost=5,real=False)
         doTest('*cmplx(1D0,0D0)',m.Complex128,m.Complex128,m.Uint64,almost=7,real=False)
 
-    def testArrays(self):
+    def arrays(self):
         def doTest(suffix,cl,scl,ucl,**kw):
             """ test array and signal """
             def results(cl,scl,ucl):
@@ -362,11 +363,11 @@ class Tests(TestCase):
             self.__getattribute__(test)()
     @staticmethod
     def getTests():
-        return ['testData','testScalars','testArrays','vmsSupport','tdiFunctions','decompile','tdiPythonInterface']
+        return ['data','scalars','arrays','vmsSupport','tdiFunctions','decompile','tdiPythonInterface']
     @classmethod
     def getTestCases(cls,tests=None):
         if tests is None: tests = cls.getTests()
-        return map(cls,tests)
+        return list(map(cls,tests))
 
 def suite(tests=None):
     return TestSuite(Tests.getTestCases(tests))
