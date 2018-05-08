@@ -131,11 +131,21 @@ class Tests(TestCase):
             test('_a<=_b',      a<=b,   res.pop())
 
     def data(self):
+        a = m.ADD(1,2);self.assertEqual(m.MULTIPLY(a,a).decompile(),"(1 + 2) * (1 + 2)")
         self.assertEqual(m.Data(2).compare(2),True)
         self.assertEqual(m.Data(2).compare(1),False)
         self.assertEqual(m.Dictionary([1,'a',2,'b']).data().tolist(),{1: 'a', 2: 'b'})
         self.assertEqual(m.List([1,'a',2,'b']).data().tolist(),[1, 'a', 2, 'b'])
-        a = m.ADD(1,2);self.assertEqual(m.MULTIPLY(a,a).decompile(),"(1 + 2) * (1 + 2)")
+        a = m.Apd()
+        e=m.Data(1);e.tree='dummy_e'
+        f=m.Data(2);f.tree='dummy_f'
+        self.assertEqual(a.tree,None)
+        a.append(e) # a should use tree of e
+        self.assertEqual(a.tree,e.tree)
+        self.assertEqual(a[0].tree,e.tree)
+        a.append(f) # a should keep tree of e
+        self.assertEqual(a.tree,e.tree)
+        self.assertEqual(a[1].tree,f.tree)
 
     def scalars(self):
         def doTest(suffix,cl,scl,ucl,**kw):
