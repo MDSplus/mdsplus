@@ -534,7 +534,9 @@ class Data(object):
             return data.ref
         if data is None:
             return _dsc.Descriptor.null
-        return cls(data)._descriptor.ptr_
+        dsc = cls(data)._descriptor
+        ptr = dsc.ptr_;ptr.value = dsc
+        return ptr
 
     @classmethod
     def pointer(cls,data):
@@ -544,7 +546,9 @@ class Data(object):
             return data.descriptor.ptr_
         if data is None:
             return _dsc.Descriptor.null
-        return cls(data)._descriptor.ptr_
+        dsc = cls(data)._descriptor
+        ptr = dsc.ptr_;ptr.value = dsc
+        return ptr
 
     @property
     def ref(self):
