@@ -225,8 +225,12 @@ class Compound(_dat.Data):
         # to store the refs of the descriptors to prevent premature gc
         d.array = [None]*d.ndesc
         for idx in _ver.xrange(d.ndesc):
-            d.array[idx] = _dat.Data(self.getDescAt(idx))
-            d.dscptrs[idx] = _dat.Data.pointer(d.array[idx])
+            data = self.getDescAt(idx)
+            if data is None:
+                d.dscptrs[idx] = _dsc.DescriptorNULL
+            else:
+                d.array[idx] = data._descriptor
+                d.dscptrs[idx] = d.array[idx].ptr_
         return self._descriptorWithProps(self,d)
 
     @classmethod
