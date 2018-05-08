@@ -109,15 +109,18 @@ class Apd(_arr.Array):
                 self.descs[idx]=d.__fixTreeReferences__(tree)
         return self
 
-    def __init__(self,value,dtype=0):
+    def __init__(self,value=None,dtype=0):
         """Initializes a Apd instance
         """
         if value is self: return
-        if isinstance(value,(tuple,list,_ver.mapclass,_ver.generator,_N.ndarray)):
-            self.descs=list(value)
-            self.dtype=dtype
-        else:
-            raise TypeError("must provide tuple of items when creating ApdData: %s"%(type(value),))
+        self.dtype_id = dtype
+        self._descs = []
+        if value is not None:
+            if isinstance(value,(Apd,tuple,list,_ver.mapclass,_ver.generator,_N.ndarray)):
+                for val in value:
+                    self.append(_dat.Data(val))
+            else:
+                raise TypeError("must provide tuple of items when creating ApdData: %s"%(type(value),))
 
     def __len__(self):
         """Return the number of descriptors in the apd"""
