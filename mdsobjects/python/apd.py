@@ -32,13 +32,13 @@ def _mimport(name, level=1):
 import numpy as _N
 import ctypes as _C
 
-_descriptor=_mimport('descriptor')
-_data=_mimport('mdsdata')
-_scalar=_mimport('mdsscalar')
-_array=_mimport('mdsarray')
+_dsc=_mimport('descriptor')
+_dat=_mimport('mdsdata')
+_scr=_mimport('mdsscalar')
+_arr=_mimport('mdsarray')
 _ver=_mimport('version')
 
-class Apd(_array.Array):
+class Apd(_arr.Array):
     """The Apd class represents the Array of Pointers to Descriptors structure.
     This structure provides a mechanism for storing an array of non-primitive items.
     """
@@ -49,7 +49,7 @@ class Apd(_array.Array):
     def _descriptor(self):
         descs=self.descs
         _compound=_mimport('compound')
-        d=descriptor.Descriptor_apd()
+        d=_dsc.Descriptor_apd()
         d.scale=0
         d.digits=0
         d.aflags=0
@@ -60,17 +60,20 @@ class Apd(_array.Array):
         d.array=[None]*ndesc
         if ndesc:
             d.arsize=d.length*ndesc
-            descs_ptrs=(_descriptor.Descriptor.PTR*ndesc)()
+            descs_ptrs=(_dsc.Descriptor.PTR*ndesc)()
             for idx in range(len(descs)):
-                d.array[idx] = _data.Data(descs[idx])
-                descs_ptrs[idx] = _data.Data.pointer(d.array[idx])
+                if descs[idx] is None:
+                    descs_ptrs[idx] = _dsc.DescriptorNULL
+                else:
+                    d.array[idx] = descs[idx]._descriptor
+                    descs_ptrs[idx] = d.array[idx].ptr_
             d.pointer=_C.cast(_C.pointer(descs_ptrs),_C.c_void_p)
         d.a0=d.pointer
         return _compound.Compound._descriptorWithProps(self,d)
     @property
     def tree(self):
         for desc in self.descs:
-            if isinstance(desc,_data.Data):
+            if isinstance(desc,_dat.Data):
                 tree=desc.tree
                 if tree is not None:
                     return tree
@@ -78,20 +81,20 @@ class Apd(_array.Array):
     @tree.setter
     def tree(self,tree):
         for desc in self.descs:
-            if isinstance(desc,_data.Data):
+            if isinstance(desc,_dat.Data):
                 desc._setTree(tree)
 
     @classmethod
     def fromDescriptor(cls,d):
         num   = d.arsize//d.length
         dptrs = _C.cast(d.pointer,_C.POINTER(_C.c_void_p*num)).contents
-        descs = [_descriptor.pointerToObject(dptr,d.tree) for dptr in dptrs]
+        descs = [_dsc.pointerToObject(dptr,d.tree) for dptr in dptrs]
         return cls(descs)._setTree(d.tree)
 
 
     def __hasBadTreeReferences__(self,tree):
         for desc in self.descs:
-            if isinstance(desc,_data.Data) and desc.__hasBadTreeReferences__(tree):
+            if isinstance(desc,_dat.Data) and desc.__hasBadTreeReferences__(tree):
                 return True
         return False
 
@@ -99,7 +102,7 @@ class Apd(_array.Array):
     def __fixTreeReferences__(self,tree):
         for idx in range(len(self.descs)):
             d=self.descs[idx]
-            if isinstance(d,_data.Data) and d.__hasBadTreeReferences__(tree):
+            if isinstance(d,_dat.Data) and d.__hasBadTreeReferences__(tree):
                 self.descs[idx]=d.__fixTreeReferences__(tree)
         return self
 
@@ -153,7 +156,7 @@ class Apd(_array.Array):
         @rtype: None
         """
         if isinstance(descs,(tuple,list,_ver.mapclass,_ver.generator,_N.ndarray)):
-            self._descs=list(map(_data.Data,descs))
+            self._descs=list(map(_dat.Data,descs))
         else:
             raise TypeError("must provide tuple")
         return self
@@ -161,12 +164,12 @@ class Apd(_array.Array):
     def setDescAt(self,idx,value):
         """Set a descriptor in the Apd
         """
-        self[idx]=_data.Data(value)
+        self[idx]=_dat.Data(value)
         return self
 
     def append(self,value):
         """Append a value to apd"""
-        self[len(self)]=_data.Data(value)
+        self[len(self)]=_dat.Data(value)
         return self
 
     @property
@@ -219,7 +222,7 @@ class Dictionary(dict,Apd):
 
     @staticmethod
     def toKey(key):
-        if isinstance(key,(_scalar.Scalar,)):
+        if isinstance(key,(_scr.Scalar,)):
             key = key.value
         if isinstance(key,(_ver.npbytes,_ver.npunicode)):
             return _ver.tostr(key)
@@ -227,13 +230,13 @@ class Dictionary(dict,Apd):
             return int(key)
         if isinstance(key,(_N.float32,_N.float64)):
             return float(key)
-        return _data.Data(key).data().tolist()
+        return _dat.Data(key).data().tolist()
 
     def setdefault(self,key,val):
         """check keys and converts values to instances of Data"""
         key = Dictionary.toKey(key)
-        if not isinstance(val,_data.Data):
-            val=_data.Data(val)
+        if not isinstance(val,_dat.Data):
+            val=_dat.Data(val)
         super(Dictionary,self).setdefault(key,val)
 
     def remove(self,key):
@@ -273,7 +276,7 @@ class List(list,Apd):
         if value is not None:
             if isinstance(value,(Apd,tuple,list,_ver.mapclass,_ver.generator,_N.ndarray)):
                 for val in value:
-                    List.append(self,_data.Data(val))
+                    List.append(self,_dat.Data(val))
             else:
                 raise TypeError('Cannot create List from type: '+str(type(value)))
 
