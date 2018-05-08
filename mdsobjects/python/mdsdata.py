@@ -136,7 +136,7 @@ class Data(object):
         if isinstance(value,(Data,_dsc.Descriptor)):
             return value
         if isinstance(value,(_N.ScalarType,_C._SimpleCData)):
-            cls = _sca.Scalar
+            cls = _scr.Scalar
         elif isinstance(value,(_N.ndarray,_C.Array)):
             cls = _arr.Array
         elif isinstance(value,(tuple,list)):
@@ -479,7 +479,7 @@ class Data(object):
         @rtype: Data
         @return: Returns the tdi variable
         """
-        return _sca.Ident(varname).assign(self)
+        return _scr.Ident(varname).assign(self)
 
     @staticmethodX
     def setTdiVar(self,varname):
@@ -489,7 +489,7 @@ class Data(object):
         @rtype: Data
         @return: Returns new value of the tdi variable
         """
-        return _cmp.PUBLIC(_sca.Ident(varname)).assign(self)
+        return _cmp.PUBLIC(_scr.Ident(varname)).assign(self)
 
     @staticmethod
     def getTdiVar(varname):
@@ -498,7 +498,7 @@ class Data(object):
         @type varname: string
         @rtype: Data"""
         try:
-            return _cmp.PUBLIC(_sca.Ident(varname)).evaluate()
+            return _cmp.PUBLIC(_scr.Ident(varname)).evaluate()
         except _exc.MDSplusException:
             return None
 
@@ -554,7 +554,7 @@ class Data(object):
     def _isScalar(x):
         """Is item a Scalar
         @rtype: Bool"""
-        return isinstance(x,_sca.Scalar)
+        return isinstance(x,_scr.Scalar)
 
     def getData(self,*altvalue):
         """Return primitimive value of the data.
@@ -781,7 +781,7 @@ _dsc.dtypeToArrayClass[0]=Missing
 _dsc.dtypeToClass[EmptyData.dtype_id]=EmptyData
 
 _cmp=_mimport('compound')
-_sca=_mimport('mdsscalar')
+_scr=_mimport('mdsscalar')
 _arr=_mimport('mdsarray')
 _tre=_mimport('tree')
 _apd=_mimport('apd')
