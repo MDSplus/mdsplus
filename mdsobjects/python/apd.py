@@ -61,11 +61,14 @@ class Apd(_arr.Array):
         if ndesc:
             d.arsize=d.length*ndesc
             descs_ptrs=(_dsc.Descriptor.PTR*ndesc)()
-            for idx in range(len(descs)):
-                if descs[idx] is None:
-                    descs_ptrs[idx] = _dsc.DescriptorNULL
-                else:
-                    d.array[idx] = descs[idx]._descriptor
+            for idx,desc in enumerate(descs):
+                if desc is None:
+                    descs_ptrs[idx] = None
+                else: # keys in dicts have to be python types
+                    if isinstance(desc,_dsc.Descriptor):
+                        d.array[idx] = desc
+                    else:
+                        d.array[idx] = _dat.Data(desc)._descriptor
                     descs_ptrs[idx] = d.array[idx].ptr_
             d.pointer=_C.cast(_C.pointer(descs_ptrs),_C.c_void_p)
         d.a0=d.pointer
@@ -136,6 +139,11 @@ class Apd(_arr.Array):
         diff = 1+idx-len(self._descs)
         if diff>0:
             self._descs+=[None]*diff
+        if isinstance(value,_dat.Data):
+            if self.tree is None:
+                self._setTree(value.tree)
+        else:
+            value = _dat.Data(value)
         self._descs[idx]=value
 
     def getDescs(self):
@@ -156,7 +164,12 @@ class Apd(_arr.Array):
         @rtype: None
         """
         if isinstance(descs,(tuple,list,_ver.mapclass,_ver.generator,_N.ndarray)):
-            self._descs=list(map(_dat.Data,descs))
+            descs=list(map(_dat.Data,descs))
+            self._descs = descs
+            for desc in descs:
+                if not desc.tree is None:
+                    self.setTree(desc.tree)
+                    break
         else:
             raise TypeError("must provide tuple")
         return self
@@ -164,7 +177,7 @@ class Apd(_arr.Array):
     def setDescAt(self,idx,value):
         """Set a descriptor in the Apd
         """
-        self[idx]=_dat.Data(value)
+        self[idx]=value
         return self
 
     def append(self,value):

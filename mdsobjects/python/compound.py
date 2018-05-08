@@ -227,9 +227,12 @@ class Compound(_dat.Data):
         for idx in _ver.xrange(d.ndesc):
             data = self.getDescAt(idx)
             if data is None:
-                d.dscptrs[idx] = _dsc.DescriptorNULL
+                d.dscptrs[idx] = None
             else:
-                d.array[idx] = data._descriptor
+                if isinstance(data,_dsc.Descriptor):
+                    d.array[idx] = data
+                else:
+                    d.array[idx] = _dat.Data(data)._descriptor
                 d.dscptrs[idx] = d.array[idx].ptr_
         return self._descriptorWithProps(self,d)
 
