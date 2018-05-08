@@ -222,7 +222,7 @@ class Compound(_dat.Data):
             d.pointer= _C.cast(_C.pointer(_C.c_uint16(self.opcode)),_C.c_void_p)
         d.dtype = self.dtype_id
         d.ndesc = self.getNumDescs()
-        # to store the refs of the descriptors to prever premature gc
+        # to store the refs of the descriptors to prevent premature gc
         d.array = [None]*d.ndesc
         for idx in _ver.xrange(d.ndesc):
             d.array[idx] = _dat.Data(self.getDescAt(idx))
