@@ -151,6 +151,16 @@ EXPORT void FreeSearchTerms(SEARCH_TERM *terms)
   }
 }
 
+static char *strtrim(char *str)
+{
+  char *q = str;
+  while (* q) q++;
+  do { q--; } while (isspace(* q));
+  q++;
+  *q = '\0';
+  return str;
+}
+
 EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild) 
 {
 //  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
@@ -158,7 +168,7 @@ EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild)
   char *p;
   int status;
   yyscan_t scanner;
-
+  wild_path = strtrim(wild_path);
   while ((p = strstr(wild_path, "***"))) {
       *p++ = '~';
       *p++ = '~';
