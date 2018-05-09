@@ -590,6 +590,35 @@ python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/n
     <post-deinstall> rm -Rf /usr/local/mdsplus/pydevices/W7xDevices</post-deinstall>
   </package>
 
+  <package name="htsdevices" arch="noarch" summary="Support for HTS data acquisition devices" description="Support for HTS data acquisition devices">
+    <requires package="python"/>
+    <include dir="/usr/local/mdsplus/pydevices/HtsDevices"/>
+    <preinst>
+      __INSTALL_PREFIX__/mdsplus/rpm/removePythonModule.sh HtsDevices
+    </preinst>
+    <postinst>
+
+python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/HtsDevices &gt;/dev/null 2&gt;&amp;1
+
+    </postinst>
+    <postrm>
+      if [ -d "__INSTALL_PREFIX__" -a "$1" == "0" -o ! -d "__INSTALL_PREFIX__" ]
+      then
+        rm -Rf __INSTALL_PREFIX__/mdsplus/pydevices/HtsDevices
+      fi
+    </postrm>
+    <pre-install>
+      __INSTALL_PREFIX__/mdsplus/rpm/removePythonModule.sh HtsDevices
+    </pre-install>
+    <post-install>
+
+python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/HtsDevices &gt;/dev/null 2&gt;&amp;1
+
+    </post-install>
+    <post-deinstall> rm -Rf /usr/local/mdsplus/pydevices/HtsDevices</post-deinstall>
+  </package>
+
+
   <package name="kbsidevices" arch="noarch" summary="Support for KBSI data acquisition devices" description="Support for KBSI data acquisition devices">
     <include dir="/usr/local/mdsplus/tdi/KbsiDevices"/>
   </package>
