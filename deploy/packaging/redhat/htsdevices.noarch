@@ -1,12 +1,12 @@
 ./usr/local/mdsplus/pydevices/HtsDevices
-./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi
-./usr/local/mdsplus/pydevices/HtsDevices/acq435st.py
 ./usr/local/mdsplus/pydevices/HtsDevices/__init__.py
+./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi
+./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/README
+./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/__init__.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/acq400.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/cleanup.py
-./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/__init__.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/netclient.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/rad_dds.py
-./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/README
 ./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/setup.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/shotcontrol.py
+./usr/local/mdsplus/pydevices/HtsDevices/acq435st.py
