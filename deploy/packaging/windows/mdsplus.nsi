@@ -324,18 +324,16 @@ File "/oname=mdslib.lib" bin_x86_64/MdsLib.dll.a
 File "/oname=mdsobjectscppshr.lib" bin_x86_64/MdsObjectsCppShr.dll.a
 File "/oname=mdsservershr.lib" bin_x86_64/MdsServerShr.dll.a
 File "/oname=xtreeshr.lib" bin_x86_64/XTreeShr.dll.a
-!ifdef VisualStudio
 CreateDirectory "$INSTDIR\devtools\lib64\visual_studio"
 SetOutPath "$INSTDIR\devtools\lib64\visual_studio"
 File "/oname=mdsshr.lib" bin_x86_64/MdsShr.lib
 File "/oname=treeshr.lib" bin_x86_64/TreeShr.lib
 File "/oname=tdishr.lib" bin_x86_64/TdiShr.lib
-File "/oname=mdsdcl.lib" bin_x86_64/mdsdclshr.lib
-File "/oname=mdsipshr.lib" bin_x86_64/mdsipshr.lib
+File "/oname=mdsdcl.lib" bin_x86_64/MdsDcl.lib
+File "/oname=mdsipshr.lib" bin_x86_64/MdsIpShr.lib
 File "/oname=mdslib.lib" bin_x86_64/MdsLib.lib
 File "/oname=mdsobjectscppshr-vs.lib" bin_x86_64/MdsObjectsCppShr-VS.lib
-File "/oname=mdsservershr.lib" bin_x86_64/servershr.lib
-!endif
+File "/oname=mdsservershr.lib" bin_x86_64/MdsServerShr.lib
 ${EndIf}
 CreateDirectory "$INSTDIR\devtools\lib32\mingw"
 SetOutPath "$INSTDIR\devtools\lib32\mingw"
@@ -348,18 +346,15 @@ File "/oname=mdslib.lib" bin_x86/MdsLib.dll.a
 File "/oname=mdsobjectscppshr.lib" bin_x86/MdsObjectsCppShr.dll.a
 File "/oname=mdsservershr.lib" bin_x86/MdsServerShr.dll.a
 File "/oname=xtreeshr.lib" bin_x86/XTreeShr.dll.a
-!ifdef VisualStudio
-CreateDirectory "$INSTDIR\devtools\lib64\visual_studio"
+CreateDirectory "$INSTDIR\devtools\lib32\visual_studio"
 SetOutPath "$INSTDIR\devtools\lib32\visual_studio"
 File "/oname=mdsshr.lib" bin_x86/MdsShr.lib
 File "/oname=treeshr.lib" bin_x86/TreeShr.lib
 File "/oname=tdishr.lib" bin_x86/TdiShr.lib
-File "/oname=mdsdcl.lib" bin_x86/mdsdclshr.lib
+File "/oname=mdsdcl.lib" bin_x86/mdsdcl.lib
 File "/oname=mdsipshr.lib" bin_x86/mdsipshr.lib
 File "/oname=mdslib.lib" bin_x86/MdsLib.lib
-File "/oname=mdsobjectscppshr-vs.lib" bin_x86/MdsObjectsCppShr-VS.lib
-File "/oname=mdsservershr.lib" bin_x86/servershr.lib
-!endif
+File "/oname=mdsservershr.lib" bin_x86/MdsServerShr.lib
 SectionEnd
 
 
