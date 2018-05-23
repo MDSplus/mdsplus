@@ -7,6 +7,8 @@ getnci(_nids[100],'fullpath')
 getnci(member,'rlength')
 getnci(member,'length')
 getnci(member,'on')
+getnci('?ember','fullpath')
+getnci('%ember','fullpath')
 _tim=getnci(member,'time_inserted')
 date_time(_tim)
 .subtree:a12:name

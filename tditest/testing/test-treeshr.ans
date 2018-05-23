@@ -14,6 +14,10 @@ getnci(member,'length')
 72LU
 getnci(member,'on')
 1BU
+getnci('?ember','fullpath')
+"\\MAIN::TOP:MEMBER"
+getnci('%ember','fullpath')
+["\\MAIN::TOP:MEMBER"]
 _tim=getnci(member,'time_inserted')
 49776423271761650QU
 date_time(_tim)
