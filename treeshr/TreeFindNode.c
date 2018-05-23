@@ -212,7 +212,7 @@ STATIC_ROUTINE NODELIST *Search(PINO_DATABASE *dblist, SEARCH_CTX *ctx, SEARCH_T
 
 STATIC_ROUTINE inline int Wild(char *term) 
 {
-  return (strchr(term, '*') || strchr(term, '?'));
+  return (strchr(term, '*') || strchr(term, '?') || strchr(term, '%'));
 }
 
 STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start, NODELIST **tail)
@@ -566,7 +566,7 @@ STATIC_ROUTINE int match(char *first, char *second)
  
     // If the first string contains '?', or current characters
     // of both strings match
-    if (*first == '?' || *first == *second)
+    if (*first == '?' || *first == '%' || *first == *second)
         return match(first+1, second+1);
  
     // If there is *, then there are two possibilities
