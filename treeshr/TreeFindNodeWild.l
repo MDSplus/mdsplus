@@ -22,8 +22,8 @@ STATIC_ROUTINE int isPunctuation(char c)
 
 %}
 
-alphaplus     [a-zA-Z_0-9\*\?]
-nodestart     [:a-zA-Z\*\?]
+alphaplus     [a-zA-Z_0-9\*\?%]
+nodestart     [:a-zA-Z\*\?%]
 childstart    \.
 child_or_memberstart ~
 parent        \-
