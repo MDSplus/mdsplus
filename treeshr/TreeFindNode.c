@@ -99,8 +99,8 @@ EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **
 
   if (!IS_OPEN(dblist))
     return TreeNOT_OPEN;
-//  if (dblist->remote)
-//    return FindNodeRemote(dblist, path, outnid);
+  if (dblist->remote)
+    return FindNodeWildRemote(dbid, path, nid_out, ctx_inout, usage_mask);
   if (*ctx_inout == NULL) {
     not_first_time = 0;
     ctx = (SEARCH_CTX *)calloc(1, sizeof(SEARCH_CTX));
