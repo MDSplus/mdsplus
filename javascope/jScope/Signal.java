@@ -1187,6 +1187,9 @@ public class Signal implements WaveDataListener
         sliceY = new float[y2d.length];
         
         int zLen = z.length;
+	if(idx >= zLen)
+	    return;
+	
         float sliceMin, sliceMax;
         sliceMin = sliceMax = z[idx];
         for (int j = 0; j < y2d.length; j++)
