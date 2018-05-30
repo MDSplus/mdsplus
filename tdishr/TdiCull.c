@@ -165,7 +165,7 @@ STATIC_ROUTINE int rcull(struct descriptor *pnew __attribute__ ((unused)),
       break;
     }
   if (pi != po) {
-    status = MDSplusERROR;
+    status = SsINTERNAL;
 		/********************************
                 Scalars must be nulled elsewhere.
                 ********************************/
@@ -375,7 +375,7 @@ STATIC_ROUTINE int work(int
 	s1 |= status =
 	    rroutine(dat[1].pointer, (struct descriptor_a *)tmp.pointer,
 		     (struct descriptor_a *)dat[2].pointer);
-      if (STATUS_OK && s1 == -1)
+      if (STATUS_OK && s1)
 	status = TdiRecull(&dat[2]);
       MdsFree1Dx(&sig[0], NULL);
       MdsFree1Dx(&sig[1], NULL);
