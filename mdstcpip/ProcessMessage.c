@@ -718,6 +718,13 @@ static Message *ExecuteMessage(Connection * connection)
   return ans;
 }
 
+static inline char *replaceBackslashes(char *filename) {
+  char *ptr;
+  while ((ptr = strchr(filename, '\\')) != NULL) *ptr = '/';
+  return filename;
+}
+
+
 ///
 /// Handle message from server listen routine. A new descriptor instance is created
 /// with the message buffer size and the message memory is copyed inside. A proper
@@ -942,7 +949,6 @@ Message *ProcessMessage(Connection * connection, Message * message)
       {
 	int fd;
 	char *filename = (char *)message->bytes;
-	char *ptr;
 	int options = message->h.dims[1];
 	int fopts;
 	mode_t mode = message->h.dims[2];
@@ -956,13 +962,9 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	    (options & MDS_IO_O_RDONLY ? O_RDONLY : 0) | (options & MDS_IO_O_RDWR ? O_RDWR : 0);
 	fd = open(filename, fopts | O_BINARY | O_RANDOM, mode);
 	if (fd == -1) {
-	  int retry_open = 0;
-	  while (fd == -1 && ((ptr = strchr(filename, '\\')) != 0)) {
-	    retry_open = 1;
-	    *ptr = '/';
+	  if (strchr(filename, '\\') != NULL) {
+	    fd = open(replaceBackslashes(filename), fopts | O_BINARY | O_RANDOM, mode);
 	  }
-	  if (retry_open)
-	    fd = open(filename, fopts | O_BINARY | O_RANDOM, mode);
 	}
 #ifndef _WIN32
 	if ((fd != -1) && ((fopts & O_CREAT) != 0)) {
@@ -1083,7 +1085,12 @@ Message *ProcessMessage(Connection * connection, Message * message)
     case MDS_IO_EXISTS_K:
       {
 	struct stat statbuf;
-	int status = (stat(message->bytes, &statbuf) == 0);
+	char *filename = message->bytes;
+	int status = stat(filename, &statbuf);
+	if ((status != 0) && (strchr(filename,'\\') != NULL)) {
+	  status = stat(replaceBackslashes(filename),&statbuf);
+	}
+	status = status == 0;
 	DESCRIPTOR_LONG(status_d, 0);
 	status_d.pointer = (char *)&status;
 	ans =
@@ -1093,7 +1100,11 @@ Message *ProcessMessage(Connection * connection, Message * message)
       }
     case MDS_IO_REMOVE_K:
       {
-	int status = remove(message->bytes);
+	char *filename=message->bytes;
+	int status = remove(filename);
+	if ((status != 0) && (strchr(filename,'\\') != NULL)) {
+	  status = remove(replaceBackslashes(filename));
+	}
 	DESCRIPTOR_LONG(status_d, 0);
 	status_d.pointer = (char *)&status;
 	ans =
@@ -1104,8 +1115,15 @@ Message *ProcessMessage(Connection * connection, Message * message)
     case MDS_IO_RENAME_K:
       {
 	DESCRIPTOR_LONG(status_d, 0);
-	int status = rename(message->bytes,
-			    message->bytes + strlen(message->bytes) + 1);
+	char *old = message->bytes;
+	char *new = message->bytes + strlen(old) + 1;
+	int status = rename(old,new);
+	if (status != 0) {
+	  if ((strchr(old,'\\') != NULL) || (strchr(new,'\\') != NULL)) {
+	    status = rename(replaceBackslashes(old),replaceBackslashes(new));
+	  }
+	}
+
 	status_d.pointer = (char *)&status;
 	ans =
 	    BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)
