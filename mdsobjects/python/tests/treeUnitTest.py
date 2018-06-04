@@ -172,7 +172,7 @@ class Tests(TestCase):
 
     def openTrees(self):
       def test():
-        filepath = '%s/pytree_%03d.tree'%(self.tmpdir,self.shot)
+        filepath = ('%s/pytree_%03d.tree'%(self.tmpdir,self.shot)).replace(os.sep,'/')
         self.assertEqual(Tree.getFileName('pytree',self.shot), filepath)
         pytree = Tree('pytree',self.shot)
         self.assertEqual(pytree.getFileName(), filepath)
