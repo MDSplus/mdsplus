@@ -1207,9 +1207,9 @@ int MDS_IO_OPEN(char *filename_in, int options, mode_t mode)
   free(tmp);
   if (fd != -1)
     fd = NewFD(fd, socket, enhanced);
-  return fd;
   if (filename)
     free(filename);
+  return fd;
 }
 
 STATIC_ROUTINE int io_close_remote(int fd)
