@@ -701,11 +701,8 @@ to databases
 #define IS_OPEN_FOR_EDIT(db) (IS_OPEN(db) ? (db)->open_for_edit : 0)
 
 #define TREE_PATH_SUFFIX "_path"
-#ifdef _WIN32
- #define TREE_PATH_DELIM  "\\"
-#else
- #define TREE_PATH_DELIM  "/"
-#endif
+#define TREE_PATH_DELIM  "/"
+
 /************* Prototypes for internal functions *************/
 extern int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *);
 extern int SetStackSizeRemote(PINO_DATABASE * dblist, int stack_size);
