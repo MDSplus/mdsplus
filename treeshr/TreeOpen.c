@@ -75,6 +75,12 @@ static void SubtreeNodeConnect(PINO_DATABASE * dblist, NODE * parent, NODE * sub
 
 extern void **TreeCtx();
 
+static inline char *replaceBackslashes(char *filename) {
+  char *ptr;
+  while ((ptr = strchr(filename, '\\')) != NULL) *ptr = '/';
+  return filename;
+}
+
 int TreeClose(char const *tree, int shot)
 {
   return _TreeClose(TreeCtx(), tree, shot);
@@ -906,6 +912,7 @@ static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, 
 	    info->mapped = 0;
 	  }
 	  status = TreeNORMAL;
+	  resnam = replaceBackslashes(resnam);
 	  if (new) {
 	    fd = MDS_IO_OPEN(resnam, O_RDWR | O_CREAT, 0664);
 	    if (fd == -1)
