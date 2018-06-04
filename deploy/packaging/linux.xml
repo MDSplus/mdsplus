@@ -330,6 +330,7 @@ fi
     <include file="/usr/local/mdsplus/pixmaps/Tdi.png"/>
     <include file="/usr/local/mdsplus/pixmaps/dwscope.png"/>
     <include file="/usr/local/mdsplus/pixmaps/traverser.png"/>
+    <include dir="/usr/local/mdsplus/nodejs"/>
     <exclude dir="/usr/local/mdsplus/tdi/MitDevices"/>
     <exclude dir="/usr/local/mdsplus/pydevices"/>
     <exclude dir="/usr/local/mdsplus/tdi/RfxDevices"/>

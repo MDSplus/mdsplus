@@ -11,6 +11,8 @@
 ./usr/local/mdsplus/etc/mdsplus.conf.template
 ./usr/local/mdsplus/idl
 ./usr/local/mdsplus/mdsobjects
+./usr/local/mdsplus/nodejs
+./usr/local/mdsplus/nodejs/mdsipRest-multi.js
 ./usr/local/mdsplus/pixmaps/Tcl.png
 ./usr/local/mdsplus/pixmaps/Tdi.png
 ./usr/local/mdsplus/pixmaps/dwscope.png
