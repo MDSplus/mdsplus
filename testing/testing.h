@@ -177,6 +177,9 @@ void __mark_point(const char *__assertion, const char *__file,
 
 
 #if defined __cplusplus
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wcatch-value\"")
+#endif
 #define TEST_STD_EXCEPTION(val, string) try { val; } catch (std::exception &e) { TEST0( strcmp(e.what(), string) ); }
 #define TEST_MDS_EXCEPTION(val, string) try { val; } catch (std::exception &e) { TEST0( strcmp(e.what(), string) ); }
 #define TEST_EXCEPTION(val, ExceptionClass) { bool correct_exception_caught = false; \
