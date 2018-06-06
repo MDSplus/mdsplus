@@ -66,7 +66,7 @@ int Tdi1SetRange(int opcode, int narg, struct descriptor *list[], struct descrip
   struct descriptor_xd sig[1], uni[1], dat[1], tmp = EMPTY_XD;
   struct descriptor_range *prange;
   struct TdiCatStruct cats[2];
-  array_bounds *pa = 0, arr, *arr_b;
+  array_bounds *pa = 0, arr;
   int bounds = 0, coeff = 0, defhi, deflo, dimct, hi, j, lo, ndim = 0, cmode = 0;
 
 	/******************
