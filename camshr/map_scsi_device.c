@@ -134,10 +134,20 @@ int map_scsi_device(char *highway_name)
   // update memory mapped version
   if (found) {
     sprintf(dsf, "%03d", sg_number);	// format conversion
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
+#endif
     strncpy((CRATEdb + i)->DSFname, dsf, 3);	// real device number
+#pragma GCC diagnostic pop
     (CRATEdb + i)->HwyType = hwytype;	// highway type
   } else {
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
+#endif
     strncpy((CRATEdb + i)->DSFname, "...", 3);	// place-holder device number
+#pragma GCC diagnostic pop
     (CRATEdb + i)->HwyType = '.';
   }
 

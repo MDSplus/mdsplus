@@ -183,7 +183,12 @@ int _TreeOpenDatafileR(TREE_INFO * info)
   if (info->data_file) {
     if (!info->data_file->get) {
       size_t len = strlen(info->filespec) - 4;
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
+#endif
       char *filename = strncpy(malloc(len + 9), info->filespec, len);
+#pragma GCC diagnostic pop
       int lun = -1;
       filename[len] = '\0';
       strcat(filename, "datafile");

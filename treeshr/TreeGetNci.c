@@ -743,7 +743,12 @@ int _TreeOpenNciR(TREE_INFO * info)
     info->nci_file = calloc(1,sizeof(NCI_FILE));
     if (info->nci_file) {
       size_t len = strlen(info->filespec) - 4;
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
+#endif
       char *filename = strncpy(malloc(len + 16), info->filespec, len);
+#pragma GCC diagnostic pop
       filename[len] = '\0';
       strcat(filename, "characteristics");
       info->nci_file->get = MDS_IO_OPEN(filename, O_RDONLY | O_BINARY | O_RANDOM, 0);

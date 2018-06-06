@@ -242,7 +242,12 @@ EXPORT int IDLMdsEvent(int argc, void * *argv)
 	e->stub_id = *stub_id;
 	e->base_id = *base_id;
 	e->loc_event_id = EventCount++;
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
+#endif
 	strncpy(e->name, name, sizeof(e->name));
+#pragma GCC diagnostic pop
 	e->next = EventList;
 	EventList = e;
 	if (sock != INVALID_SOCKET) {
