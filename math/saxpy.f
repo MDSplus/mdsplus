@@ -32,7 +32,7 @@ C*26-NOV-90 11:35:29 MDS$SOURCE:[KKLARE]ZBLAS.FOR;5
       Integer Function ISAMAX(n,x,incx)
       Integer i,incx,j,n
       REAL xmax
-      REAL x(1)
+      REAL x(*)
       If (n.le.0) Then
          ISAMAX=0
       ElseIf (n.eq.1) Then
@@ -64,7 +64,7 @@ C*26-NOV-90 11:35:29 MDS$SOURCE:[KKLARE]ZBLAS.FOR;5
       REAL SASUM
       Integer i,incx,n
       REAL cutlo,cuthi,test
-      REAL x(1)
+      REAL x(*)
 ! machine precision      smallest-exp      largest-exp
 ! Prime            S 23      -128         127
 ! Prime            D 47      -32896(-32768-128) 32639(32767-128)
@@ -112,7 +112,7 @@ C*26-NOV-90 11:35:29 MDS$SOURCE:[KKLARE]ZBLAS.FOR;5
 !+ absolute values summed
       REAL Function SASUM(n,x,incx)
       Integer i,incx,m,n
-      REAL x(1)
+      REAL x(*)
       SASUM=0
       If (n.le.0) Then
       ElseIf (incx.ne.1) Then
@@ -196,7 +196,7 @@ C*26-NOV-90 11:35:29 MDS$SOURCE:[KKLARE]ZBLAS.FOR;5
 !+ dot product
       REAL Function SDOT(n,x,incx,y,incy)
       Integer i,incx,incy,j,k,m,n
-      REAL x(1),y(1)
+      REAL x(*),y(*)
       SDOT=0
       If (n.le.0) Return
       If (incx.ne.1.or.incy.ne.1) Then

@@ -36,6 +36,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MdsHelper.h"
 #include "jScope_MdsIpProtocolWrapper.h"
 #include "../mdstcpip/mdsip_connections.h"
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
+#endif
 
 extern int TdiCompile(), TdiData(), TdiFloat();
 

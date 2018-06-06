@@ -922,6 +922,7 @@ static struct descriptor *ObjectToDescrip(JNIEnv * env, jobject obj)
       return completeDescr(desc, helpDscPtr, unitsDscPtr, errorDscPtr, validationDscPtr);
     default:
       printf("\nUnsupported type for CLASS_S: %d\n", dtype);
+      return NULL;
     }
     break;
   case CLASS_A:
@@ -1057,7 +1058,7 @@ static struct descriptor *ObjectToDescrip(JNIEnv * env, jobject obj)
 			   validationDscPtr);
     default:
       printf("\nUnsupported type for CLASS_A: %d\n", dtype);
-      break;
+      return NULL;
     }
   case CLASS_R:
 

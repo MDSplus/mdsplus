@@ -32,7 +32,7 @@ C*26-NOV-90 11:35:29 MDS$SOURCE:[KKLARE]ZBLAS.FOR;5
       Integer Function IZAMAX(n,x,incx)
       Integer i,incx,j,n
       Real*8 xmax
-      Complex*16 x(1)
+      Complex*16 x(*)
       If (n.le.0) Then
          Izamax=0
       ElseIf (n.eq.1) Then
@@ -64,7 +64,7 @@ C*26-NOV-90 11:35:29 MDS$SOURCE:[KKLARE]ZBLAS.FOR;5
       Real*8 DZASUM
       Integer i,incx,n
       Real*8 cutlo,cuthi,test
-      Complex*16 x(1)
+      Complex*16 x(*)
 ! machine precision      smallest-exp      largest-exp
 ! Prime            S 23      -128         127
 ! Prime            D 47      -32896(-32768-128) 32639(32767-128)
@@ -115,7 +115,7 @@ C*26-NOV-90 11:35:29 MDS$SOURCE:[KKLARE]ZBLAS.FOR;5
 !+ absolute values summed
       Real*8 Function DZASUM(n,x,incx)
       Integer i,incx,m,n
-      Complex*16 x(1)
+      Complex*16 x(*)
       DZASUM=0
       If (n.le.0) Then
       ElseIf (incx.ne.1) Then
@@ -199,7 +199,7 @@ C*26-NOV-90 11:35:29 MDS$SOURCE:[KKLARE]ZBLAS.FOR;5
 !+ dot product
       Complex*16 Function ZDOTU(n,x,incx,y,incy)
       Integer i,incx,incy,j,k,m,n
-      Complex*16 x(1),y(1)
+      Complex*16 x(*),y(*)
       ZDOTU=0
       If (n.le.0) Return
       If (incx.ne.1.or.incy.ne.1) Then
@@ -227,7 +227,7 @@ C*26-NOV-90 11:35:29 MDS$SOURCE:[KKLARE]ZBLAS.FOR;5
 !+ dot product
       Complex*16 Function ZDOTC(n,x,incx,y,incy)
       Integer i,incx,incy,j,k,m,n
-      Complex*16 x(1),y(1)
+      Complex*16 x(*),y(*)
       ZDOTC=0
       If (n.le.0) Return
       If (incx.ne.1.or.incy.ne.1) Then

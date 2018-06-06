@@ -83,6 +83,9 @@ $ dwcope [-default setup]
 #include <DXm/DECspecific.h>
 #endif
 
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
+#endif
 pthread_mutex_t event_mutex;
 
 extern void XmdsInitialize();
@@ -1190,7 +1193,7 @@ static void /*XtCallbackProc */ ApplyCustomizeWindow(Widget w __attribute__ ((un
   XtVaGetValues(PlotsWidget, XmNnumChildren, &num, XmNchildren, &widgets, NULL);
   XtUnmanageChildren(widgets, num);
   Columns = 1;
-  memcpy(old_rows, Rows, sizeof(old_rows));
+  memcpy(old_rows, Rows, sizeof(Rows));
   for (c = 0; c < MaxCols; c++) {
     char name[8];
     sprintf(name, "rows_%d", c + 1);

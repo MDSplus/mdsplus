@@ -257,9 +257,9 @@ STATIC_ROUTINE char *getEnvironmentVar(char const *name)
   return trans;
 }
 
-STATIC_ROUTINE void handleRemoteAst();
+STATIC_ROUTINE void *handleRemoteAst(void *);
 
-STATIC_ROUTINE int createThread(pthread_t * thread, void (*rtn) (), void *par)
+STATIC_ROUTINE int createThread(pthread_t * thread, void *(*rtn) (void *), void *par)
 {
   int status = 1;
   if (pthread_create(thread, NULL, (void *(*)(void *))rtn, par) != 0) {
@@ -346,9 +346,10 @@ STATIC_ROUTINE void KillHandler()
 {
 }
 
-STATIC_ROUTINE void handleRemoteAst()
+STATIC_ROUTINE void *handleRemoteAst(void *arg __attribute__ ((unused)))
 {
   Poll(handleRemoteEvent);
+  return NULL;
 }
 
 STATIC_ROUTINE void handleRemoteEvent(int sock)
@@ -382,7 +383,7 @@ STATIC_CONSTANT void KillHandler()
   external_thread_created = 0;
 }
 
-STATIC_ROUTINE void handleRemoteAst()
+STATIC_ROUTINE void *handleRemoteAst(void *arg __attribute__ ((unused)))
 {
   INIT_STATUS;
   char buf[16];
@@ -399,7 +400,7 @@ STATIC_ROUTINE void handleRemoteAst()
     selectstat = select(tablesize, &readfds, 0, 0, 0);
     if (selectstat == -1) {
       perror("select error");
-      return;
+      return NULL;
     }
     if (external_shutdown) {
       read(fds[0], buf, 1);
@@ -421,6 +422,7 @@ STATIC_ROUTINE void handleRemoteAst()
       }
     }
   }
+  return NULL;
 }
 #pragma GCC diagnostic pop
 
