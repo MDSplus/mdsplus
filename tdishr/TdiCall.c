@@ -69,6 +69,10 @@ extern int TdiFindImageSymbol();
 extern int TdiGetLong();
 extern int TdiPutIdent();
 
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
+#endif
+
 STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
 				int (*routine) (), unsigned int *(*called) (),
 				void **result, int *max)

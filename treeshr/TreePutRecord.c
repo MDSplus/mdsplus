@@ -398,7 +398,12 @@ int _TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
     size_t len = strlen(info->filespec) - 4;
     size_t const filename_length = len + 20;
     char *filename = (char *)alloca(filename_length);
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
+#endif
     strncpy(filename, info->filespec, len);
+#pragma GCC diagnostic pop
     filename[len] = '\0';
     strcat(filename, tmpfile ? "datafile#" : "datafile");
     df_ptr->get = MDS_IO_OPEN(filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC | O_EXCL: O_RDONLY, 0664);

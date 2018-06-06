@@ -32,7 +32,7 @@ C*26-NOV-90 11:35:29 MDS$SOURCE:[KKLARE]ZBLAS.FOR;5
       Integer Function ICAMAX(n,x,incx)
       Integer i,incx,j,n
       REAL xmax
-      COMPLEX x(1)
+      COMPLEX x(n*incx)
       If (n.le.0) Then
          ICAMAX=0
       ElseIf (n.eq.1) Then

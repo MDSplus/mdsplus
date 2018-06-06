@@ -95,6 +95,10 @@ static void Ok(Widget w, XtCallbackList callbacks);
 static void Destroy(Widget w, XtCallbackList callbacks);
 static int CountCallbacks(XtCallbackList callbacks);
 
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
+#endif
+
 EXPORT Widget XmdsCreateOkButton(Widget parent, String name, ArgList args, Cardinal numargs)
 {
   Widget w = CreateButton(parent, name, args, numargs, "Ok", 1);

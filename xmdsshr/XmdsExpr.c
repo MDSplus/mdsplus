@@ -206,6 +206,10 @@ static struct descriptor_xd const empty_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
 
  Global variables:                                                            */
 
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
+#endif
+
 static void Focus_In(Widget w, XEvent * event, String * params, Cardinal num_params);
 static XtActionsRec actions[] = { {"Focus_In", (XtActionProc) Focus_In} };
 

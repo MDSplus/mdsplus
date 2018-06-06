@@ -44,7 +44,6 @@ static int one = 1;
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #define max(a,b) (((a) < (b)) ? (b) : (a))
-#define SignalError(call) status = call; if (!(status & 1)) { return status; }
 #define pio(f,a,d) {\
  if (!((status = DevCamChk(CamPiow(setup->name,a,f,d,16,0),&one,0)) & 1)) return status;}
 #define IsOn(nid) (((status = TreeIsOn(nid)) == TreeON) || (status == TreePARENT_OFF))
@@ -122,11 +121,14 @@ static int StoreChannel(InStoreStruct * setup, int chan)
     pio(1, chan, &off)
 	offset = 5.5 - off / 4096. * 11.;
     out_nid_d.pointer = (char *)&output_nid;
-    SignalError(TdiCompile
-		((struct descriptor *)&expression, &out_nid_d, &offset_d, &gain_d, &mult_d, &value MDS_END_ARG));
-    SignalError(TreePutRecord(input_nid, (struct descriptor *)&value, 0));
-    if (IsOn(filter_on_nid))
-      SignalError(TreePutRecord(filter_on_nid, filter, 0));
+    status = TdiCompile
+		((struct descriptor *)&expression, &out_nid_d, &offset_d, &gain_d, &mult_d, &value MDS_END_ARG);
+    if (status & 1) {
+      status = TreePutRecord(input_nid, (struct descriptor *)&value, 0);
+      if ((status & 1) && (IsOn(filter_on_nid))) {
+        status = TreePutRecord(filter_on_nid, filter, 0);
+      }
+    }
   }
   return status;
 }

@@ -43,6 +43,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #include "export.h"
 
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
+#endif
+
 enum callback_id { CB_UNKNOWN, CB_AUTOSCALE, CB_CROSSHAIRS, CB_LIMITS, CB_MOVE, CB_STRETCH,
       CB_SET_AT_LIMITS, CB_ADD_POINT,
   CB_DELETE_POINT, CB_PASTE, CB_FIT, CB_USER

@@ -70,12 +70,7 @@ static struct descriptor DBMSGTEXT_DSC = {0,DTYPE_T,CLASS_S,DBMSGTEXT};
 
 static void strcatn(char *dst, const char *src, int max)
 {
-  int dstlen = strlen(dst);
-  int srclen = strlen(src);
-  if ((dstlen + srclen) < (max - 1))
-    strcat(dst, src);
-  else
-    strncpy(&dst[dstlen], src, max - srclen - 1);
+  strncat(dst,src,max-strlen(dst));
 }
 
 /*

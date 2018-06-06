@@ -654,7 +654,12 @@ static long ConnectToMdsEvents(char *event_host)
   sscanf(event_host, "%[^:]:%s", hostpart, portpart);
   if (strlen(portpart) == 0)
     strcpy(portpart, "mdsipe");
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wformat-truncation\"")
+#endif
   snprintf(host, 99, "%s:%s", hostpart, portpart);
+#pragma GCC diagnostic pop
   return ConnectToMds(host);
 }
 

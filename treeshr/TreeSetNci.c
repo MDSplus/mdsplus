@@ -363,7 +363,12 @@ int _TreeOpenNciW(TREE_INFO * info, int tmpfile)
 	  (struct nci_file *)malloc(sizeof(NCI_FILE))) != NULL) ? TreeNORMAL : TreeFAILURE;
     if STATUS_OK {
       size_t len = strlen(info->filespec) - 4;
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
+#endif
       char *filename = strncpy(malloc(len + 20), info->filespec, len);
+#pragma GCC diagnostic pop
       filename[len] = '\0';
       strcat(filename, tmpfile ? "characteristics#" : "characteristics");
       memset(info->nci_file, 0, sizeof(NCI_FILE));
@@ -386,7 +391,12 @@ int _TreeOpenNciW(TREE_INFO * info, int tmpfile)
     open it for write access.
   *******************************************/
     size_t len = strlen(info->filespec) - 4;
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
+#endif
     char *filename = strncpy(malloc(len + 20), info->filespec, len);
+#pragma GCC diagnostic pop
     filename[len] = '\0';
     strcat(filename, tmpfile ? "characteristics#" : "characteristics");
     /********* this will never happen ***********/
