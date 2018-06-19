@@ -98,14 +98,14 @@ python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/MitDevices &gt;/dev/n
       fi
     </postrm>
     <pre-install>
-      __INSTALL_PREFIX__/mdsplus/rpm/removePythonModule.sh MitDevices
+      /mdsplus/rpm/removePythonModule.sh MitDevices
     </pre-install>
     <post-install>
 
-python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
+python -m compileall  /mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
 
     </post-install>
-    <post-deinstall> rm -Rf /usr/local/mdsplus/pydevices/MitDevices</post-deinstall>
+    <post-deinstall> rm -Rf /mdsplus/pydevices/MitDevices</post-deinstall>
   </package>
 
   <package name="mitdevices_bin" arch="bin" summary="Libraries used for mitdevices" description="Libraries used for mitdevices">
@@ -553,14 +553,14 @@ python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices &gt;/dev/n
       fi
     </postrm>
     <pre-install>
-      __INSTALL_PREFIX__/mdsplus/rpm/removePythonModule.sh RfxDevices
+      /mdsplus/rpm/removePythonModule.sh RfxDevices
     </pre-install>
     <post-install>
 
-python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1
+python -m compileall  /mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1
 
     </post-install>
-    <post-deinstall> rm -Rf /usr/local/mdsplus/pydevices/RfxDevices</post-deinstall>
+    <post-deinstall> rm -Rf /mdsplus/pydevices/RfxDevices</post-deinstall>
 
   </package>
   <package name="w7xdevices" arch="noarch" summary="Support for W7x data acquisition devices" description="Support for W7x data acquisition devices">
@@ -581,14 +581,14 @@ python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/n
       fi
     </postrm>
     <pre-install>
-      __INSTALL_PREFIX__/mdsplus/rpm/removePythonModule.sh W7xDevices
+      /mdsplus/rpm/removePythonModule.sh W7xDevices
     </pre-install>
     <post-install>
 
-python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1
+python -m compileall  /mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1
 
     </post-install>
-    <post-deinstall> rm -Rf /usr/local/mdsplus/pydevices/W7xDevices</post-deinstall>
+    <post-deinstall> rm -Rf /mdsplus/pydevices/W7xDevices</post-deinstall>
   </package>
 
   <package name="htsdevices" arch="noarch" summary="Support for HTS data acquisition devices" description="Support for HTS data acquisition devices">
@@ -609,14 +609,14 @@ python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/HtsDevices &gt;/dev/n
       fi
     </postrm>
     <pre-install>
-      __INSTALL_PREFIX__/mdsplus/rpm/removePythonModule.sh HtsDevices
+      /mdsplus/rpm/removePythonModule.sh HtsDevices
     </pre-install>
     <post-install>
 
-python -m compileall  __INSTALL_PREFIX__/mdsplus/pydevices/HtsDevices &gt;/dev/null 2&gt;&amp;1
+python -m compileall  /mdsplus/pydevices/HtsDevices &gt;/dev/null 2&gt;&amp;1
 
     </post-install>
-    <post-deinstall> rm -Rf /usr/local/mdsplus/pydevices/HtsDevices</post-deinstall>
+    <post-deinstall> rm -Rf /mdsplus/pydevices/HtsDevices</post-deinstall>
   </package>
 
 
