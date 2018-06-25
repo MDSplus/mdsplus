@@ -66,7 +66,7 @@ def dcl(command,return_out=False,return_error=False,raise_exception=False,tree=N
         status = _mdsdcl_do_command_dsc(_ver.tobytes(command), error_p, out_p)
     finally:
         _tre._TreeCtx.popTree()
-    if (return_out or return_error) and return_exception:
+    if (return_out or return_error) and raise_exception:
         if raise_exception: _exc.checkStatus(status)
     if return_out and return_error:
         return (xd_output.value,xd_error.value)
