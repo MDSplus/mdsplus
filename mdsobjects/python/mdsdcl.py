@@ -22,6 +22,8 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+from __future__ import print_function
+import sys as _sys
 
 def _mimport(name, level=1):
     try:
@@ -54,29 +56,29 @@ def dcl(command,return_out=False,return_error=False,raise_exception=False,tree=N
     @type setcommand: str
     @rtype: str / tuple / None
     """
-    if return_error:
-        xd_error=_dsc.Descriptor_xd()
-        error_p=xd_error.ptr
-    else:
-        error_p=_dsc.Descriptor_xd.null
-    if return_out:
-        xd_output = _dsc.Descriptor_xd()
-        out_p=xd_output.ptr
-    else:
-        out_p=_dsc.Descriptor_xd.null
+    xd_error=_dsc.Descriptor_xd()
+    error_p=xd_error.ptr
+    xd_output = _dsc.Descriptor_xd()
+    out_p=xd_output.ptr
     _exc.checkStatus(_mdsdcl_do_command_dsc(_ver.tobytes('set command %s'%(setcommand,)), error_p, out_p))
     _tre._TreeCtx.pushTree(tree)
     try:
         status = _mdsdcl_do_command_dsc(_ver.tobytes(command), error_p, out_p)
     finally:
         _tre._TreeCtx.popTree()
-    if raise_exception: _exc.checkStatus(status)
+    if (return_out or return_error) and return_exception:
+        if raise_exception: _exc.checkStatus(status)
     if return_out and return_error:
         return (xd_output.value,xd_error.value)
     elif return_out:
         return xd_output.value
     elif return_error:
         return xd_error.value
+    else:
+        if xd_output.value is not None:
+            print(xd_output.value)
+        if xd_error.value is not None:
+            print(xd_error.value, file=_sys.stderr)
 
 def ccl(command,*args,**kwargs):
     """Executes a ccl command (c.f. dcl)"""
