@@ -84,6 +84,7 @@ inline static void EventUpdate(LinkedEvent * event){
 
 static void PutLog(char *time, char *mode, char *status, char *server, char *path){
   fprintf(stdout, "%s %12d %-10.10s %-44.44s %-20.20s %s\n", time, current_shot, mode, status, server, path);
+  fflush(stdout);
 }
 
 static void PutError(char *time, char* mode, char *status, char *server, char *path){
