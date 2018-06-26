@@ -32,6 +32,7 @@ import ctypes as _C
 import numpy as _N
 import threading as _threading
 import gc as _gc
+import os as _os
 import sys as _sys
 #### Load other python modules referenced ###
 #
@@ -44,6 +45,7 @@ _dcl=_mimport('mdsdcl')
 _cmp=_mimport('compound')
 _dsc=_mimport('descriptor')
 _mds=_mimport('_mdsshr')
+_con=_mimport('connection')
 #
 #############################################
 
@@ -306,6 +308,68 @@ class Tree(object):
     path = None
     tctx = None
     ctx  = None
+
+    @staticmethod
+    def getShotDB(expt,path=None,lower=None,upper=None):
+        """
+        getShotDB("mytree")
+        getShotDB("mytree",n)                                # only n-th entry of mytree_path
+        getShotDB("mytree","/my/local/tree/path")            # only look in local path
+        getShotDB("mytree","myserver::")                     # only look on server
+        getShotDB("mytree","myserver::/my/remote/tree/path") # only look in path on server
+        getShotDB("mytree",lower=_from)                      # only shots >= _from
+        getShotDB("mytree",upper=_upto)                      # only shots <= _upto
+        getShotDB("mytree",lower=_from,upper=_upto)          # only shots from _from upto _upto
+        """
+        if isinstance(expt, _dat.Data):
+            expt = expt.data()
+        expt = str(expt).lower()
+        def getTreePath():
+            # split path variable into single paths and replaces the ~t treename
+            expt_paths = _mds.getenv(expt+'_path')
+            if expt_paths is None:
+                raise _exc.TreeNOPATH
+            return expt_paths.replace('~t',expt).split(';')
+        def getshots(expt_path,lower,upper):
+            if expt_path.find('::')>=0:
+                # path is referring to remote tree
+                server,path = expt_path.split('::',2)
+                # check if thick or distributed
+                path = "*"  if len(path)==0 else '"'+path+'"'
+                # handle None for upper and lower
+                if lower is None: lower = "*"
+                if upper is None: upper = "*"
+                # fetch data from server
+                return _con.Connection(server).get('getShotDb("%s",%s,%s,%s)'%(expt,path,str(lower),str(upper)),).data().tolist()
+            start = expt+'_'
+            files = [f[len(expt):-5].split('_') for f in _os.listdir(expt_path) if f.endswith('.tree') and f.startswith(start)]
+            return [int(f[1]) for f in files if len(f)==2 and f[1]!='model']
+        """The path argument is interpreted"""
+        # try to convert to native datatype
+        if isinstance(path, _dat.Data):
+            path = path.data().tolist()
+        if isinstance(path, (int,)):
+            # path is int and refering to the index of the path list
+            path = getTreePath()[path]
+        if isinstance(path, _ver.basestring):
+            # path is str and used as path
+            shots = getshots(path,lower,upper)
+        else:
+            # path is undefined and the total list will be collected
+            shots = []
+            for expt_path in getTreePath():
+                try:    shots += getshots(expt_path,lower,upper)
+                except: pass # may happen if path not reachable
+        """filter result by upper and lower limits"""
+        if lower is not None or upper is not None:
+            if lower is None:
+                shots = _N.array(filter(lambda x: x <= int(upper), shots))
+            elif upper is None:
+                shots = _N.array(filter(lambda x: x >= int(lower), shots))
+            else:
+                shots = _N.array(filter(lambda x: x >= int(lower) and x <= int(upper), shots))
+        shots.sort()
+        return shots
 
     def getDatafileSize(self):
         """return data file size.
