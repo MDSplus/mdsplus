@@ -662,7 +662,7 @@ python -m compileall  /mdsplus/pydevices/HtsDevices &gt;/dev/null 2&gt;&amp;1
     <prerm>
       if [ -d %{python_sitelib} -a "$1" -ne "0" ]
       then
-      :
+      ;
       else
       __INSTALL_PREFIX__/mdsplus/rpm/removePythonModule.sh MDSplus
       fi
