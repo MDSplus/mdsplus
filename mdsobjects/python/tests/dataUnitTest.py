@@ -131,7 +131,11 @@ class Tests(TestCase):
             test('_a<=_b',      a<=b,   res.pop())
 
     def data(self):
-        a = m.ADD(1,2);self.assertEqual(m.MULTIPLY(a,a).decompile(),"(1 + 2) * (1 + 2)")
+        self.assertEqual(m.Data(0x80000000).__class__,m.Int64)
+        self.assertEqual(m.Data(0x7fffffff).__class__,m.Int32)
+        if m.version.ispy2:
+            self.assertEqual(m.Data(long(1)).__class__,m.Int64)
+        a = m.ADD(m.Int32(1),m.Int32(2));self.assertEqual(m.MULTIPLY(a,a).decompile(),"(1 + 2) * (1 + 2)")
         self.assertEqual(m.Data(2).compare(2),True)
         self.assertEqual(m.Data(2).compare(1),False)
         self.assertEqual(m.Dictionary([1,'a',2,'b']).data().tolist(),{1: 'a', 2: 'b'})
