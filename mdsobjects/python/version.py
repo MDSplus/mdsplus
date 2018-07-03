@@ -47,6 +47,13 @@ has_buffer    = 'buffer'     in __builtins__
 has_xrange    = 'xrange'     in __builtins__
 has_mapclass  = isinstance(map,(type,))
 
+if pyver<(2,7):
+    def bit_length(val):
+        return len(bin(val)) - (3 is val<0 else 2)
+else:
+    def bit_length(val):
+        return val.bit_length()
+
 def load_library(name):
     import ctypes as C
     if os.sys.platform.startswith('darwin') and not os.getenv('DYLD_LIBRARY_PATH'):

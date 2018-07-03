@@ -66,8 +66,7 @@ class Scalar(_dat.Data):
         elif isinstance(value,(_C.c_float,float)):
             cls = Float32
         elif isinstance(value,(int,)):
-            if value.bit_length()>31: cls = Int64
-            else:                     cls = Int32
+            cls = Int64 if _ver.bit_length(value)>31 else Int32
         elif isinstance(value,(_C.c_int64,)) or (_ver.ispy2 and isinstance(value,(long,))):
             cls = Int64
         elif isinstance(value,(_C.c_uint64,)):
