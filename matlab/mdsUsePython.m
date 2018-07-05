@@ -14,7 +14,8 @@ function mdsUsePython( varargin )
    end
    if MDSINFO.usePython
      try
-       x=py.MDSplus.Int32(int32(1));
+       py_MDSplus_Int32=str2func('py.MDSplus.Int32');
+       x=py_MDSplus_Int32(int32(1));
      catch
          display('The python bridge to MDSplus is not available. Reverting to java brdige.')
          MDSINFO.usePython=false;

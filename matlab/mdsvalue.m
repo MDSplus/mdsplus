@@ -42,7 +42,8 @@ function [ result, status ] = mdsvalue( expression, varargin)
       end
     else
       if info.usePython
-        result = py.MDSplus.EXECUTE(expression,args{:}).evaluate();
+        py_MDSplus_EXECUTE=str2func('py.MDSplus.EXECUTE');
+        result = py_MDSplus_EXECUTE(expression,args{:}).evaluate();
       else
         dobj=javaObject('MDSplus.Data');
         result = dobj.execute(expression, args);
