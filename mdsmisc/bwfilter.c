@@ -1,9 +1,33 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*  CMS REPLACEMENT HISTORY, Element BWFILTER.C */
 /*  *1    22-DEC-1997 10:45:22 TWF "Butterworth filter" */
 /*  CMS REPLACEMENT HISTORY, Element BWFILTER.C */
 #include <stdio.h>
 #include	<math.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 
 #define	PI 3.14159265359
 #define	max_order 10
@@ -13,7 +37,7 @@ EXPORT int bwfilter(float *w_cut_in, int *order_in, int *num, float *in, float *
   int M, N;
   int p, q, order = *order_in;
   double num_coeff, den_coeff, c[max_order + 1], d[max_order + 1];
-  double coeff[2][max_order + 1];
+  double coeff[2][max_order + 1] = {{0},{0}};
   double w_cut = (double)*w_cut_in, omega_cut;
   int upto, i, j, k;
   int in_idx = 0, out_idx;
@@ -75,8 +99,8 @@ EXPORT int bwfilter(float *w_cut_in, int *order_in, int *num, float *in, float *
     for (i = M; i >= 1; i--) {
       x_current[i] = x_current[i - 1];
     }
-    for (j = N; j >= 1; j--) {
-      y_filtered[j] = y_filtered[j - 1];
+    for (j = N-1; j > 1; j--) {
+      y_filtered[j+1] = y_filtered[j];
     }
 
     x_current[0] = in[in_idx++];

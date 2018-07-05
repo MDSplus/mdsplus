@@ -1,6 +1,30 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 #include <string.h>
 #include <stdio.h>
-#include <inttypes.h>
+#include <int128.h>
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
 #include <math.h>
@@ -8,6 +32,10 @@
 
 #define MAXTYPE (DTYPE_FTC + 1)
 
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
+#endif
 
 
 extern void CvtConvertFloat();
@@ -597,8 +625,8 @@ typedef union {
 #define TO_TEXT(pa,it,pb,numb,cvt) \
   {it *ip = (it*)pa; char *op = (char *)pb; int i=numb; while(i-- > 0) {\
    char text[64]; int nfill; int n=cvt;  nfill = lenb - n; \
-   strncpy((nfill <= 0) ? op : op+nfill, (nfill <= 0) ? text-nfill : text, (nfill <= 0) ? lenb : n); \
-   if (nfill > 0) memset(op,32,nfill); op += lenb;} status = MDSplusSUCCESS;}
+   strncpy((nfill <= 0) ? op : op+nfill, (nfill <= 0) ? text-nfill : text, (size_t)((nfill <= 0) ? lenb : n)); \
+   if (nfill > 0) memset(op,32,(size_t)nfill); op += lenb;} status = MDSplusSUCCESS;}
 
 /******************* CODE *********************/
 void DoubleToWideInt();
@@ -810,16 +838,16 @@ STATIC_ROUTINE void DOUBLEC_TO_TEXT(int itype, char *pa, char *pb, int numb, int
   }
 }
 
-#define BU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,unsigned char,pb,numb,sprintf(text,"%u",(unsigned int)*ip++))
-#define WU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,unsigned short,pb,numb,sprintf(text,"%u",(unsigned int)*ip++))
-#define LU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,unsigned int,pb,numb,sprintf(text,"%u",(unsigned int)*ip++))
-#define QU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,uint64_t,pb,numb,sprintf(text,"%"PRIu64,(uint64_t)*ip++))
-#define B_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,char,pb,numb,sprintf(text,"%d",(int)*ip++))
-#define W_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,short,pb,numb,sprintf(text,"%d",(int)*ip++))
-#define L_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,int,pb,numb,sprintf(text,"%d",(int)*ip++))
-#define Q_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,int64_t,pb,numb,sprintf(text,"%"PRId64,(int64_t)*ip++))
-#define OU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,unsigned int,pb,numb,sprintf(text,"%#x%08x%08x%08x",ip[3],ip[2],ip[1],ip[0]);ip +=4)
-#define O_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,unsigned int,pb,numb,sprintf(text,"%#x%08x%08x%08x",ip[3],ip[2],ip[1],ip[0]);ip +=4)
+#define BU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,  uint8_t,pb,numb,sprintf(text,"%"PRIu8, *ip++))
+#define WU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa, uint16_t,pb,numb,sprintf(text,"%"PRIu16,*ip++))
+#define LU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa, uint32_t,pb,numb,sprintf(text,"%"PRIu32,*ip++))
+#define QU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa, uint64_t,pb,numb,sprintf(text,"%"PRIu64,*ip++))
+#define B_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,   int8_t,pb,numb,sprintf(text,"%"PRId8, *ip++))
+#define W_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,  int16_t,pb,numb,sprintf(text,"%"PRId16,*ip++))
+#define L_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,  int32_t,pb,numb,sprintf(text,"%"PRId32,*ip++))
+#define Q_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,  int64_t,pb,numb,sprintf(text,"%"PRId64,*ip++))
+#define OU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,uint128_t,pb,numb,sprintf(text,"%s",uint128_deco(ip++,int128_buf)))
+#define O_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa, int128_t,pb,numb,sprintf(text,"%s", int128_deco(ip++,int128_buf)))
 #if DTYPE_F == DTYPE_NATIVE_FLOAT
 #define F_T(lena,pa,lenb,pb,numb)   FLOAT_TO_TEXT(DTYPE_F,pa,pb,numb,lenb,'E'); status=1
 #define FS_T(lena,pa,lenb,pb,numb)  FLOAT_TO_TEXT(DTYPE_FS,pa,pb,numb,lenb,'S'); status=1
@@ -963,6 +991,7 @@ EXPORT int TdiConvert(struct descriptor_a *pdin, struct descriptor_a *pdout)
     goto same;
   } else {
 	/** big branch **/
+    INT128_BUF(int128_buf);
     n = MAXTYPE * dtypea + dtypeb;
     switch (n) {
       defset(BU)
@@ -1024,7 +1053,7 @@ void DoubleToWideInt(double *in, int size, unsigned int *out)
   double tmp;
   for (i = size - 1, tmp = negative ? -1 - *in : *in, factor =
        pow(2.0, 32. * (size - 1)); i >= 0; tmp -= out[i--] * factor, factor /= TWO_32)
-    out[i] = (int)((tmp / factor) + .49999999999);
+    out[i] = (unsigned int)((tmp / factor) + .49999999999);
   if (negative)
     for (i = 0; i < size; i++)
       out[i] = ~out[i];

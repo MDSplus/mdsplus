@@ -1,13 +1,19 @@
-import javax.xml.parsers.*;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.stream.*;
-import org.xml.sax.*;
-import org.xml.sax.helpers.*;
-import org.w3c.dom.*;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Properties;
+import java.util.Vector;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 
 public class DecompileTree
 {
@@ -71,7 +77,6 @@ public class DecompileTree
         {
             Element docSon = (Element) document.createElement("node");
             tree.appendChild(docSon);
-            NidData prevNid = null;
             recDecompile(sons[i], docSon, false, isFull);
          }
         NidData [] members;
@@ -92,8 +97,7 @@ public class DecompileTree
                     docMember = (Element) document.createElement("member");
             }catch(Exception exc){System.err.println(exc);}
             tree.appendChild(docMember);
-            NidData prevNid = null;
-             recDecompile(members[i], docMember, false, isFull);
+            recDecompile(members[i], docMember, false, isFull);
         }
         TransformerFactory transFactory = TransformerFactory.newInstance();
         try {

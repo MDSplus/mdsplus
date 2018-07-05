@@ -17,17 +17,14 @@ import java.awt.Graphics;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.TextField;
 import java.util.*;
 import java.io.*;
 import java.net.*;
 import javax.swing.*;
 import javax.print.*;
 import javax.print.attribute.*;
-import javax.print.attribute.standard.*;
 import java.awt.print.*;
 import java.awt.*;
-import java.awt.event.*;
 
 class jScopeWaveContainer
     extends WaveformContainer
@@ -37,16 +34,10 @@ class jScopeWaveContainer
 
     DataProvider dp;
     private jScopeDefaultValues def_vals;
-    private boolean supports_local = true;
     private String title = null;
     private DataServerItem server_item = null;
-    private String server_infor = null;
     private String event = null;
     private String print_event = null;
-    private Color colors[] = Waveform.COLOR_SET;
-    private String colors_name[] = Waveform.COLOR_NAME;
-    private int grid_mode = 0, x_lines_grid = 3, y_lines_grid = 3;
-    private boolean brief_error = true;
     private int columns;
     private UpdW updateThread;
     private boolean abort;
@@ -548,7 +539,6 @@ remove 28/06/2005
 
     public void EvaluateMainShot(String in_shots) throws IOException
     {
-        String error = null;
         long long_data[] = null;
 
         synchronized (mainShotLock)
@@ -578,8 +568,6 @@ remove 28/06/2005
     public void RemoveAllEvents(UpdateEventListener l) throws IOException
     {
         jScopeMultiWave w;
-        MdsWaveInterface wi;
-
         if (dp == null)
             return;
 
@@ -603,8 +591,6 @@ remove 28/06/2005
         IOException
     {
         jScopeMultiWave w;
-        MdsWaveInterface wi;
-
         if (dp == null)
             return;
 
@@ -629,7 +615,7 @@ remove 28/06/2005
         jScopeMultiWave w;
         for (int i = 0, k = 0; i < rows.length; i++)
         {
-            for (int j = 0, n_error; j < rows[i]; j++, k++)
+            for (int j = 0; j < rows[i]; j++, k++)
             {
                 w = (jScopeMultiWave) getGridComponent(k);
                 if (w != null)
@@ -711,7 +697,6 @@ remove 28/06/2005
 
     public synchronized void UpdateAllWave() throws Exception
     {
-        jScopeMultiWave w;
         WaveContainerEvent wce;
 
         try
@@ -1306,8 +1291,6 @@ remove 28/06/2005
         Exception
     {
         DataProvider new_dp = null;
-        String error = null;
-
         if (server_item == null || server_item.name.trim().length() == 0)
             throw (new Exception("Defined null or empty data server name"));
 
@@ -1593,14 +1576,14 @@ remove 28/06/2005
 
         out.println();
 
-        for (int i = 1, k = 0, pos = 0; i < getColumns(); i++)
+        for (int i = 1, pos = 0; i < getColumns(); i++)
         {
             // w = (jScopeMultiWave)getGridComponent(k);
             //	wi = (MdsWaveInterface)w.wi;
             // pos += (int)(((float)w.getSize().width/ getSize().width) * 1000.);
             pos += (int) (normWidth[i - 1] * 1000.);
             WaveInterface.WriteLine(out, prompt + "vpane_" + i + ": ", "" + pos);
-            k += getComponentsInColumn(i);
+            getComponentsInColumn(i);
         }
     }
 
@@ -1729,7 +1712,7 @@ remove 28/06/2005
                     panel.addElement(w);
 
                 String s = "", s1 = "", s2 = "";
-                boolean g_more_point, new_line;
+                boolean g_more_point;
                 StringBuffer space = new StringBuffer();
 
                 try

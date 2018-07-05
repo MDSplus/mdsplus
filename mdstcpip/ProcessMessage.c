@@ -1,15 +1,32 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 #include "mdsip_connections.h"
 #include <mdstypes.h>
 #include "cvtdef.h"
 #ifdef _WIN32
 #include <io.h>
-#define read _read
-#define write _write
-#define open _open
-#define close _close
-#ifndef HAVE_PTHREAD_H
-typedef int mode_t;
-#endif
 #else
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -63,7 +80,7 @@ static int lock_file(int fd, int64_t offset, int size, int mode_in, int *deleted
   int status;
   int mode = mode_in & MDS_IO_LOCK_MASK;
   int nowait = mode_in & MDS_IO_LOCK_NOWAIT;
-#if defined (_WIN32)
+#ifdef _WIN32
   OVERLAPPED overlapped;
   int flags;
   *deleted = 0;
@@ -157,12 +174,12 @@ ConvertFloat(int num, int in_type, char in_length, char *in_ptr,
 
 
 ///
-/// 
+///
 /// \param client_type
 /// \param message_id
 /// \param status
 /// \param d
-/// \return 
+/// \return
 ///
 static Message *BuildResponse(int client_type, unsigned char message_id,
 			      int status, struct descriptor *d)
@@ -565,15 +582,15 @@ static void ClientEventAst(MdsEventList * e, int data_len, char *data)
 /// Executes TDI expression held by a connecion instance. This first searches if
 /// connection message corresponds to AST or CAN requests, if no asyncronous ops
 /// are requested the TDI actual expression is parsed through tdishr library.
-/// In this case the current TDI context and tree is switched to the connection 
+/// In this case the current TDI context and tree is switched to the connection
 /// ones stored in the connection context field.
-/// 
+///
 /// ### AST and CAN
 /// AST and CAN stands for "Asynchronous System Trap" and "CANcel event request".
-/// This is an asyncronous message mechanism taken from the OpenVMS system. 
-/// The event handler is passed inside the message arguments and executed by the 
+/// This is an asyncronous message mechanism taken from the OpenVMS system.
+/// The event handler is passed inside the message arguments and executed by the
 /// MDSEventAst() function from mdslib.
-/// 
+///
 /// \param connection the Connection instance filled with proper descriptor arguments
 /// \return the execute message answer built using BuildAnswer()
 ///
@@ -659,13 +676,13 @@ static Message *ExecuteMessage(Connection * connection)
   }
   // NORMAL TDI COMMAND //
   else {
-    void *old_context;
+    void *old_dbid;
     void *tdi_context[6];
     EMPTYXD(ans_xd);
 
     int contextSwitch = GetContextSwitching();
     if (contextSwitch) {
-      old_context = TreeSwitchDbid(connection->context.tree);
+      old_dbid = TreeSwitchDbid(connection->DBID);
       TdiSaveContext(tdi_context);
       TdiRestoreContext(connection->tdicontext);
     }
@@ -694,19 +711,26 @@ static Message *ExecuteMessage(Connection * connection)
     if (contextSwitch) {
       TdiSaveContext(connection->tdicontext);
       TdiRestoreContext(tdi_context);
-      connection->context.tree = TreeSwitchDbid(old_context);
+      connection->DBID = TreeSwitchDbid(old_dbid);
     }
   }
   FreeDescriptors(connection);
   return ans;
 }
 
+static inline char *replaceBackslashes(char *filename) {
+  char *ptr;
+  while ((ptr = strchr(filename, '\\')) != NULL) *ptr = '/';
+  return filename;
+}
+
+
 ///
 /// Handle message from server listen routine. A new descriptor instance is created
 /// with the message buffer size and the message memory is copyed inside. A proper
 /// conversion of memory structure is applied if neede for the type of client
 /// connected.
-/// 
+///
 /// \param connection the connection instance to handle
 /// \param message the message to process
 /// \return message answer
@@ -718,7 +742,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
 
   // COMING NEW MESSAGE  //
   // reset connection id //
-  if (connection->message_id != message->h.message_id) {      
+  if (connection->message_id != message->h.message_id) {
     FreeDescriptors(connection);
     if (message->h.nargs < MDSIP_MAX_ARGS - 1) {
       connection->message_id = message->h.message_id;
@@ -741,8 +765,8 @@ Message *ProcessMessage(Connection * connection, Message * message)
     connection->client_type = message->h.client_type;
 
     // d -> reference to curent idx argument desctriptor  //
-    struct descriptor *d = connection->descrip[message->h.descriptor_idx];    
-    
+    struct descriptor *d = connection->descrip[message->h.descriptor_idx];
+
     if (!d) {
       // instance the connection descriptor field //
       static short lengths[] = { 0, 0, 1, 2, 4, 8, 1, 2, 4, 8, 4, 8, 8, 16, 0 };
@@ -801,7 +825,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
     if (d) {
         // have valid connection descriptor instance     //
         // copy the message buffer into the descriptor   //
-        
+
       int dbytes = d->class == CLASS_S ? (int)d->length : (int)((ARRAY_7 *) d)->arsize;
       int num = dbytes / max(1, d->length);
 
@@ -916,16 +940,15 @@ Message *ProcessMessage(Connection * connection, Message * message)
   }
 
   // SPECIAL I/O MESSAGES //////////////////////////////////////////////////////
-  // idx >= nargs         ////////////////////////////////////////////////////// 
+  // idx >= nargs         //////////////////////////////////////////////////////
   else {
-      
+
     connection->client_type = message->h.client_type;
     switch (message->h.descriptor_idx) {
     case MDS_IO_OPEN_K:
       {
 	int fd;
 	char *filename = (char *)message->bytes;
-	char *ptr;
 	int options = message->h.dims[1];
 	int fopts;
 	mode_t mode = message->h.dims[2];
@@ -939,19 +962,19 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	    (options & MDS_IO_O_RDONLY ? O_RDONLY : 0) | (options & MDS_IO_O_RDWR ? O_RDWR : 0);
 	fd = open(filename, fopts | O_BINARY | O_RANDOM, mode);
 	if (fd == -1) {
-	  int retry_open = 0;
-	  while (fd == -1 && ((ptr = strchr(filename, '\\')) != 0)) {
-	    retry_open = 1;
-	    *ptr = '/';
+	  if (strchr(filename, '\\') != NULL) {
+	    fd = open(replaceBackslashes(filename), fopts | O_BINARY | O_RANDOM, mode);
 	  }
-	  if (retry_open)
-	    fd = open(filename, fopts | O_BINARY | O_RANDOM, mode);
 	}
 #ifndef _WIN32
 	if ((fd != -1) && ((fopts & O_CREAT) != 0)) {
 	  char *cmd = (char *)malloc(64 + strlen(filename));
-	  sprintf(cmd, "SetMdsplusFileProtection %s 2> /dev/null", filename);
-	  system(cmd);
+	  int num = snprintf(cmd, 64 + strlen(filename), "SetMdsplusFileProtection %s 2> /dev/null", filename);
+	  if (num > 0)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+	    system(cmd);
+#pragma GCC diagnostic pop
 	  free(cmd);
 	}
 #endif
@@ -1062,7 +1085,12 @@ Message *ProcessMessage(Connection * connection, Message * message)
     case MDS_IO_EXISTS_K:
       {
 	struct stat statbuf;
-	int status = (stat(message->bytes, &statbuf) == 0);
+	char *filename = message->bytes;
+	int status = stat(filename, &statbuf);
+	if ((status != 0) && (strchr(filename,'\\') != NULL)) {
+	  status = stat(replaceBackslashes(filename),&statbuf);
+	}
+	status = status == 0;
 	DESCRIPTOR_LONG(status_d, 0);
 	status_d.pointer = (char *)&status;
 	ans =
@@ -1072,7 +1100,11 @@ Message *ProcessMessage(Connection * connection, Message * message)
       }
     case MDS_IO_REMOVE_K:
       {
-	int status = remove(message->bytes);
+	char *filename=message->bytes;
+	int status = remove(filename);
+	if ((status != 0) && (strchr(filename,'\\') != NULL)) {
+	  status = remove(replaceBackslashes(filename));
+	}
 	DESCRIPTOR_LONG(status_d, 0);
 	status_d.pointer = (char *)&status;
 	ans =
@@ -1083,8 +1115,15 @@ Message *ProcessMessage(Connection * connection, Message * message)
     case MDS_IO_RENAME_K:
       {
 	DESCRIPTOR_LONG(status_d, 0);
-	int status = rename(message->bytes,
-			    message->bytes + strlen(message->bytes) + 1);
+	char *old = message->bytes;
+	char *new = message->bytes + strlen(old) + 1;
+	int status = rename(old,new);
+	if (status != 0) {
+	  if ((strchr(old,'\\') != NULL) || (strchr(new,'\\') != NULL)) {
+	    status = rename(replaceBackslashes(old),replaceBackslashes(new));
+	  }
+	}
+
 	status_d.pointer = (char *)&status;
 	ans =
 	    BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)

@@ -15,7 +15,7 @@
 #
 # See Misc/README.valgrind for more information.
 
-# all tool names: Addrcheck,Memcheck,cachegrind,helgrind,massif
+# all tool names: Addrcheck,Memcheck,cachegrind,Helgrind,massif
 {
    ADDRESS_IN_RANGE/Invalid read of size 4
    Memcheck:Addr4
@@ -398,6 +398,12 @@
 }
 
 {
+   manually added: python-c-interface (twf)
+   Helgrind:Race
+   fun:PyThreadState_DeleteCurrent
+}
+
+{
    manually added: pyhon-c-interface (zack-vii)
    Helgrind:Race
    fun:PyThreadState_Swap
@@ -414,4 +420,49 @@
    Memcheck:Leak
    fun:calloc
    obj:*/libpython?.?.so*
+}
+
+{
+   python race between PyObject_Free
+   Helgrind:Race
+   fun:PyObject_Free
+}
+{
+   python race on allocate_stack pthread_create
+   Helgrind:Race
+   fun:mempcpy
+   ...
+   fun:PyThread_start_new_thread
+}
+
+{
+   python 32bit problem in PyObject_Realloc
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:realloc
+   fun:PyObject_Realloc
+}
+
+{
+   python 32bit problem during thread creation
+   Helgrind:Race
+   ...
+   fun:blas_memory_*
+   fun:blas_thread_server
+   fun:mythread_wrapper
+   fun:start_thread
+   fun:clone
+}
+
+{
+   python 32bit problem during thread shutdown via fork
+   Helgrind:Race
+   fun:blas_thread_shutdown_
+   fun:fork
+}
+
+{
+   race with PyThreadState
+   Helgrind:Race
+   fun:PyGILState_Ensure
 }

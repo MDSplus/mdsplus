@@ -114,7 +114,21 @@ public class Data {
         
         static {
             try {
-              System.loadLibrary("JavaMds");
+              int loaded = 0;
+              try {
+                java.lang.String value = System.getenv("JavaMdsLib");
+                if (value == null) {
+                  value = System.getProperty("JavaMdsLib");
+                }
+                if (value != null) {
+                  System.load(value);
+                  loaded = 1;
+                }
+              } catch (Throwable e) {
+              }
+              if (loaded == 0) {
+                System.loadLibrary("JavaMds");
+              }
 	    }catch(Throwable e)
             {
                   System.out.println("Error loading library javamds: "+e);

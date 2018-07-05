@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 #include <mdsobjects.h>
 #include <mdsplus/mdsplus.h>
 #include <mdsplus/AutoPointer.hpp>
@@ -39,12 +63,12 @@ extern "C" {
 	void * convertToArrayDsc(int clazz, int dtype, int length, int l_length, int nDims, int *dims, void *ptr);
 	void * convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndescs, void **descs);
 	void * convertToApdDsc(int ndescs, void **ptr);
-	void * convertToByte(void *dsc); 
-	void * convertToShort(void *dsc); 
-	void * convertToInt(void *dsc); 
-	void * convertToLong(void *dsc); 
-	void * convertToFloat(void *dsc); 
-	void * convertToDouble(void *dsc); 
+	void * convertToByte(void *dsc);
+	void * convertToShort(void *dsc);
+	void * convertToInt(void *dsc);
+	void * convertToLong(void *dsc);
+	void * convertToFloat(void *dsc);
+	void * convertToDouble(void *dsc);
 	void * convertToShape(void *dcs);
 
 	// From mdstree.c
@@ -61,17 +85,22 @@ extern "C" {
 	int updateTreeSegment(void *dbid, int nid, int segIdx, void *startDsc, void *endDsc,
 									void *timeDsc);
 	int getTreeNumSegments(void *dbid, int nid, int *numSegments);
+	int getTreeSegmentScale(void *dbid, int nid, void* scale);
+	int setTreeSegmentScale(void *dbid, int nid, void* scale);
 	int getTreeSegmentLimits(void *dbid, int nid, int idx, void **startDsc, void **endDsc);
 	int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, void **timeDsc);
-	int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc);
+	int setTreeTimeContext(void *dbid, void *startDsc, void *endDsc, void *deltaDsc);
 	int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc);
 	int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t *times);
 	int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t *times, int rowsFilled);
 	int setTreeXNci(void *dbid, int nid, const char *name, void *dataDsc);
+	int getTreeXNci(void *dbid, int nid, const char *name, void **data, void *tree);
 	int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t *time, int size);
 	int getTreeSegmentInfo(void *dbid, int nid, int segIdx, char *dtype, char *dimct, int *dims, int *nextRow);
 	// From TreeFindTagWild.c
 	char * _TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout);
+	char *MdsGetMsg(int status);
+	void *TreeDbid();
 
 }
 
@@ -111,7 +140,7 @@ static int convertUsage(std::string const & usage)
 
 static Mutex treeMutex;
 
-Tree::Tree(char const *name, int shot): name(name), shot(shot), ctx(nullptr)
+Tree::Tree(char const *name, int shot): name(name), shot(shot), ctx(nullptr), fromActiveTree(false)
 {
 	int status = _TreeOpen(&ctx, name, shot, 0);
 	if(!(status & 1))
@@ -119,8 +148,12 @@ Tree::Tree(char const *name, int shot): name(name), shot(shot), ctx(nullptr)
 	//setActiveTree(this);
 }
 
+Tree::Tree(char const *name, int shot, void *ctx): name(name), shot(shot), ctx(ctx), fromActiveTree(true)
+{
+}
 
-Tree::Tree(char const *name, int shot, char const *mode): name(name), shot(shot), ctx(nullptr)
+
+Tree::Tree(char const *name, int shot, char const *mode): name(name), shot(shot), ctx(nullptr), fromActiveTree(false)
 {
 	std::string upMode(mode);
 	std::transform(upMode.begin(), upMode.end(), upMode.begin(), static_cast<int(*)(int)>(&std::toupper));
@@ -143,6 +176,7 @@ Tree::Tree(char const *name, int shot, char const *mode): name(name), shot(shot)
 
 Tree::~Tree()
 {
+    if(fromActiveTree) return;
     if( isModified() ) {
         int status = _TreeQuitTree(&ctx, name.c_str(), shot);
         (void)status;
@@ -150,7 +184,7 @@ Tree::~Tree()
 //            throw MdsException(status);
     } else {
         int status = _TreeClose(&ctx, name.c_str(), shot);
-        (void)status;
+       (void)status;
 //        if(!(status & 1))
 //            throw MdsException(status);
     }
@@ -362,7 +396,7 @@ void Tree::setViewDate(char *date)
 
 void Tree::setTimeContext(Data *start, Data *end, Data *delta)
 {
-	int status = setTreeTimeContext((start)?start->convertToDsc():0, (end)?end->convertToDsc():0,
+	int status = setTreeTimeContext(ctx, (start)?start->convertToDsc():0, (end)?end->convertToDsc():0,
 		(delta)?delta->convertToDsc():0);
 	if(!(status & 1))
 		throw MdsException(status);
@@ -507,7 +541,7 @@ TreeNode::TreeNode(int nid, Tree *tree, Data *units, Data *error, Data *help, Da
 	this->tree = 0;
 	if(!tree && nid != 0)
 		this->tree = getActiveTree();
-	if(!tree && nid != 0) //exclude the case in which this constructor has been called in a TreePath instantiation 
+	if(!tree && nid != 0) //exclude the case in which this constructor has been called in a TreePath instantiation
 		throw MdsException("A Tree instance must be defined when ceating TreeNode instances");
 	this->nid = nid;
 	this->tree = tree;
@@ -523,6 +557,26 @@ EXPORT void *TreeNode::operator new(size_t sz)
 EXPORT void TreeNode::operator delete(void *p)
 {
     ::operator delete(p);
+}
+
+std::string  TreeNode::getNciString(int itm)
+{
+    return getNci<std::string>(tree->getCtx(), nid, itm);
+}
+
+char TreeNode::getNciChar(int itm)
+{
+    return getNci<char>(tree->getCtx(), nid, itm);
+}
+
+int TreeNode::getNciInt(int itm)
+{
+    return getNci<int>(tree->getCtx(), nid, itm);
+}
+
+int64_t TreeNode::getNciInt64(int itm)
+{
+    return getNci<int64_t>(tree->getCtx(), nid, itm);
 }
 
 char *TreeNode::getPath()
@@ -543,7 +597,7 @@ std::string TreeNode::getPathStr()
 
 char *TreeNode::getMinPath() {
 	resolveNid();
-	std::string path = getNci<std::string>(tree->getCtx(), nid, NciMINPATH);
+	std::string path = getNciString(NciMINPATH);
 	char *retPath = new char[path.length() + 1];
 	strcpy(retPath, path.c_str());
 	return retPath;
@@ -555,7 +609,7 @@ std::string TreeNode::getMinPathStr() {
 
 char *TreeNode::getFullPath() {
 	resolveNid();
-	std::string path = getNci<std::string>(tree->getCtx(), nid, NciFULLPATH);
+	std::string path = getNciString(NciFULLPATH);
 	char *retPath = new char[path.length() + 1];
 	strcpy(retPath, path.c_str());
 	return retPath;
@@ -567,7 +621,7 @@ std::string TreeNode::getFullPathStr() {
 
 char *TreeNode::getOriginalPartName() {
 	resolveNid();
-	std::string path = getNci<std::string>(tree->getCtx(), nid, NciORIGINAL_PART_NAME);
+	std::string path = getNciString(NciORIGINAL_PART_NAME);
 	char *retPath = new char[path.length() + 1];
 	strcpy(retPath, path.c_str());
 	return retPath;
@@ -579,7 +633,7 @@ std::string TreeNode::getOriginalPartNameStr() {
 
 char *TreeNode::getNodeName() {
 	resolveNid();
-	std::string path = getNci<std::string>(tree->getCtx(), nid, NciNODE_NAME);
+	std::string path = getNciString(NciNODE_NAME);
 	char *retPath = new char[path.length() + 1];
 	strcpy(retPath, path.c_str());
 
@@ -641,27 +695,59 @@ void TreeNode::setOn(bool on)
 
 int TreeNode::getLength() {
 	resolveNid();
-	return getNci<int>(tree->getCtx(), nid, NciLENGTH);
+	return getNciInt(NciLENGTH);
 }
 
 int TreeNode::getCompressedLength() {
 	resolveNid();
-	return getNci<int>(tree->getCtx(), nid, NciRLENGTH);
+	return getNciInt(NciRLENGTH);
 }
 
 int TreeNode::getStatus() {
 	resolveNid();
-	return getNci<int>(tree->getCtx(), nid, NciSTATUS);
+	return getNciInt(NciSTATUS);
 }
 
 int TreeNode::getOwnerId() {
 	resolveNid();
-	return getNci<int>(tree->getCtx(), nid, NciOWNER_ID);
+	return getNciInt(NciOWNER_ID);
 }
 
 int64_t TreeNode::getTimeInserted() {
 	resolveNid();
-	return getNci<int64_t>(tree->getCtx(), nid, NciTIME_INSERTED);
+	return getNciInt64(NciTIME_INSERTED);
+}
+
+
+Data *TreeNode::getExtendedAttribute(const char *name)
+{
+    Data *data = NULL;
+    int status = getTreeXNci(tree->getCtx(), nid, name, (void **)&data, tree);
+    if(!(status & 1))
+	throw MdsException(status);
+    return data;
+}
+
+Data *TreeNode::getExtendedAttribute(std::string name)
+{
+    return getExtendedAttribute(name.c_str());
+}
+
+void TreeNode::setExtendedAttribute (const char *name, Data *data)
+{
+    resolveNid();
+    int status = setTreeXNci(tree->getCtx(), nid, name, data->convertToDsc());
+    if(!(status & 1))
+	throw MdsException(status);
+  
+}
+
+void TreeNode::setExtendedAttribute (std::string name, Data *data)
+{
+    resolveNid();
+    int status = setTreeXNci(tree->getCtx(), nid, name.c_str(), data->convertToDsc());
+    if(!(status & 1))
+	throw MdsException(status);
 }
 
 void TreeNode::doMethod(char *method)
@@ -674,7 +760,7 @@ void TreeNode::doMethod(char *method)
 
 bool TreeNode::getFlag(int flagOfs) {
 	resolveNid();
-	int nciFlags = getNci<int>(tree->getCtx(), nid, NciGET_FLAGS);
+	int nciFlags = getNciInt(NciGET_FLAGS);
 	return (nciFlags & flagOfs) ? true : false;
 }
 
@@ -735,13 +821,13 @@ bool TreeNode::containsVersions() {
 
 bool TreeNode::isMember() {
 	resolveNid();
-	int par = getNci<int>(tree->getCtx(), nid, NciPARENT_RELATIONSHIP);
+	int par = getNciInt(NciPARENT_RELATIONSHIP);
 	return (par & NciK_IS_MEMBER) ? true : false;
 }
 
 bool TreeNode::isChild() {
 	resolveNid();
-	int par = getNci<int>(tree->getCtx(), nid, NciPARENT_RELATIONSHIP);
+	int par = getNciInt(NciPARENT_RELATIONSHIP);
 	return (par & NciK_IS_CHILD) ? true : false;
 }
 
@@ -754,42 +840,42 @@ void TreeNode::setIncludeInPulse(bool flag) {
 
 TreeNode *TreeNode::getParent() {
 	resolveNid();
-	int nodeId = getNci<int>(tree->getCtx(), nid, NciPARENT);
+	int nodeId = getNciInt(NciPARENT);
 	return new TreeNode(nodeId, tree);
 }
 
 TreeNode *TreeNode::getBrother() {
 	resolveNid();
-	int nodeId = getNci<int>(tree->getCtx(), nid, NciBROTHER);
+	int nodeId = getNciInt(NciBROTHER);
 	return new TreeNode(nodeId, tree);
 }
 
 TreeNode *TreeNode::getChild() {
 	resolveNid();
-	int nodeId = getNci<int>(tree->getCtx(), nid, NciCHILD);
+	int nodeId = getNciInt(NciCHILD);
 	return new TreeNode(nodeId, tree);
 }
 
 TreeNode *TreeNode::getMember() {
 	resolveNid();
-	int nodeId = getNci<int>(tree->getCtx(), nid, NciMEMBER);
+	int nodeId = getNciInt(NciMEMBER);
 	return new TreeNode(nodeId, tree);
 }
 
 int TreeNode::getNumChildren() {
 	resolveNid();
-	return getNci<int>(tree->getCtx(), nid, NciNUMBER_OF_CHILDREN);
+	return getNciInt(NciNUMBER_OF_CHILDREN);
 }
 
 int TreeNode::getNumMembers() {
 	resolveNid();
-	return getNci<int>(tree->getCtx(), nid, NciNUMBER_OF_MEMBERS);
+	return getNciInt(NciNUMBER_OF_MEMBERS);
 }
 
 int TreeNode::getNumDescendants() {
 	resolveNid();
-	int members = getNci<int>(tree->getCtx(), nid, NciNUMBER_OF_MEMBERS);
-	int children = getNci<int>(tree->getCtx(), nid, NciNUMBER_OF_CHILDREN);
+	int members = getNciInt(NciNUMBER_OF_MEMBERS);
+	int children = getNciInt(NciNUMBER_OF_CHILDREN);
 	return members + children;
 }
 
@@ -864,19 +950,19 @@ TreeNode **TreeNode::getMembers(int *numMembers)
 
 const char *TreeNode::getClass() {
 	resolveNid();
-	char type = getNci<char>(tree->getCtx(), nid, NciCLASS);
+	char type = getNciChar(NciCLASS);
 	return MdsClassString(type);
 }
 
 const char *TreeNode::getDType() {
 	resolveNid();
-	char type = getNci<char>(tree->getCtx(), nid, NciDTYPE);
+	char type = getNciChar(NciDTYPE);
 	return MdsDtypeString(type);
 }
 
 const char *TreeNode::getUsage() {
 	resolveNid();
-	int usage = getNci<int>(tree->getCtx(), nid, NciUSAGE);
+	int usage = getNciInt(NciUSAGE);
 
 	switch(usage)  {
 		case TreeUSAGE_ACTION: return "ACTION";
@@ -898,12 +984,12 @@ const char *TreeNode::getUsage() {
 
 int TreeNode::getConglomerateElt() {
 	resolveNid();
-	return getNci<char>(tree->getCtx(), nid, NciCONGLOMERATE_ELT);
+	return getNciChar(NciCONGLOMERATE_ELT);
 }
 
 int TreeNode::getNumElts() {
 	resolveNid();
-	return getNci<int>(tree->getCtx(), nid, NciNUMBER_OF_ELTS);
+	return getNciInt(NciNUMBER_OF_ELTS);
 }
 
 TreeNodeArray *TreeNode::getConglomerateNodes()
@@ -935,7 +1021,7 @@ TreeNodeArray *TreeNode::getConglomerateNodes()
 
 int TreeNode::getDepth() {
 	resolveNid();
-	return getNci<int>(tree->getCtx(), nid, NciDEPTH);
+	return getNciInt(NciDEPTH);
 }
 
 #ifdef _WIN32
@@ -950,7 +1036,7 @@ void TreeNode::makeSegment(Data *start, Data *end, Data *time, Array *initialDat
 	int numDims;
 	int *shape = initialData->getShape(&numDims);
 	//if(tree) tree->lock();
-	int status = makeTreeSegment(tree->getCtx(), getNid(), initialData->convertToDsc(), start->convertToDsc(), 
+	int status = makeTreeSegment(tree->getCtx(), getNid(), initialData->convertToDsc(), start->convertToDsc(),
 		end->convertToDsc(), time->convertToDsc(), shape[0]);
 	deleteNativeArray(shape);
 	//if(tree) tree->unlock();
@@ -979,26 +1065,22 @@ void TreeNode::makeSegmentMinMax(Data *start, Data *end, Data *time, Array *init
 		resSamples[2*i/resFactor] = minVal;
 		resSamples[2*i/resFactor+1] = maxVal;
 	}
-	Array *resData = new Float32Array(resSamples, 2* numRows/resFactor);
+	AutoData<Array> resData(new Float32Array(resSamples, 2* numRows/resFactor));
 	char dimExpr[64];
 	sprintf(dimExpr,"BUILD_RANGE($1,$2,%d*($3-$4)/%d)", resFactor/2,numRows);
-	Data *resDim = compileWithArgs(dimExpr, getTree(), 4, start, end, end, start);
+	AutoData<Data> resDim(compileWithArgs(dimExpr, getTree(), 4, start, end, end, start));
 	resampledNode->makeSegment(start, end, resDim, resData);
-	MDSplus::deleteData(resDim);
-	MDSplus::deleteData(resData);
 	delete[] arrSamples;
 	delete[] resSamples;
 
 	int numSegments = getNumSegments();
 	if(numSegments == 0)  //Set XNCI only when writing the first segment
 	{
-		String *resModeD = new String("MinMax");
+		AutoData<Data> resModeD(new String("MinMax"));
 		setTreeXNci(tree->getCtx(), nid, "ResampleMode", resModeD->convertToDsc());
-		MDSplus::deleteData(resModeD);
-		Data *resSamplesD = new Int32(resFactor/2);
+		AutoData<Data> resSamplesD(new Int32(resFactor/2));
 		setTreeXNci(tree->getCtx(), nid, "ResampleFactor", resSamplesD->convertToDsc());
 		setTreeXNci(tree->getCtx(), nid, "ResampleNid", resampledNode->convertToDsc());
-		MDSplus::deleteData(resSamplesD);
 	}
 	makeSegment(start, end, time, initialData);
 }
@@ -1009,7 +1091,7 @@ void TreeNode::makeSegmentResampled(Data *start, Data *end, Data *time, Array *i
 	//Resampled aray always converted to float, Assumed 1D array
 	int numRows;
 	float *arrSamples = initialData->getFloatArray(&numRows);
-	float *resSamples = new float[numRows/RES_FACTOR]; 
+	float *resSamples = new float[numRows/RES_FACTOR];
 	for(int i = 0; i < numRows; i+= RES_FACTOR)
 	{
 		float avgVal = arrSamples[i];
@@ -1020,25 +1102,22 @@ void TreeNode::makeSegmentResampled(Data *start, Data *end, Data *time, Array *i
 		avgVal /= RES_FACTOR;
 		resSamples[i/RES_FACTOR] = avgVal;
 	}
-	Array *resData = new Float32Array(resSamples, numRows/RES_FACTOR);
+	AutoData<Array> resData(new Float32Array(resSamples, numRows/RES_FACTOR));
 	char dimExpr[64];
 	sprintf(dimExpr,"BUILD_RANGE($1,$2,%d*($3-$4)/%d)", RES_FACTOR,numRows);
-	Data *resDim = compileWithArgs(dimExpr, getTree(), 4, start, end, end, start);
+	AutoData<Data> resDim(compileWithArgs(dimExpr, getTree(), 4, start, end, end, start));
 	resampledNode->makeSegment(start, end, resDim, resData);
-	MDSplus::deleteData(resDim);
-	MDSplus::deleteData(resData);
 	delete[] arrSamples;
 	delete[] resSamples;
 
 	int numSegments = getNumSegments();
 	if(numSegments == 0)  //Set XNCI only when writing the first segment
 	{
-		String *resModeD = new String("Resample");
+		AutoData<Data> resModeD(new String("Resample"));
 		setTreeXNci(tree->getCtx(), nid, "ResampleMode", resModeD->convertToDsc());
-		Data *resSamplesD = new Int32(RES_FACTOR);
+		AutoData<Data> resSamplesD(new Int32(RES_FACTOR));
 		setTreeXNci(tree->getCtx(), nid, "ResampleFactor", resSamplesD->convertToDsc());
 		setTreeXNci(tree->getCtx(), nid, "ResampleNid", resampledNode->convertToDsc());
-		MDSplus::deleteData(resSamplesD);
 	}
 	makeSegment(start, end, time, initialData);
 }
@@ -1047,7 +1126,7 @@ void TreeNode::beginSegment(Data *start, Data *end, Data *time, Array *initialDa
 {
 	resolveNid();
 	//if(tree) tree->lock();
-	int status = beginTreeSegment(tree->getCtx(), getNid(), initialData->convertToDsc(), start->convertToDsc(), 
+	int status = beginTreeSegment(tree->getCtx(), getNid(), initialData->convertToDsc(), start->convertToDsc(),
 		end->convertToDsc(), time->convertToDsc());
 	//if(tree) tree->unlock();
 	if(!(status & 1))
@@ -1068,7 +1147,7 @@ void TreeNode::updateSegment(Data *start, Data *end, Data *time)
 {
 	resolveNid();
 	//if(tree) tree->lock();
-	int status = updateTreeSegment(tree->getCtx(), getNid(), -1, start->convertToDsc(), 
+	int status = updateTreeSegment(tree->getCtx(), getNid(), -1, start->convertToDsc(),
 		end->convertToDsc(), time->convertToDsc());
 	//if(tree) tree->unlock();
 	if(!(status & 1))
@@ -1079,7 +1158,7 @@ void TreeNode::updateSegment(int segIdx, Data *start, Data *end, Data *time)
 {
 	resolveNid();
 	//if(tree) tree->lock();
-	int status = updateTreeSegment(tree->getCtx(), getNid(), segIdx, start->convertToDsc(), 
+	int status = updateTreeSegment(tree->getCtx(), getNid(), segIdx, start->convertToDsc(),
 		end->convertToDsc(), time->convertToDsc());
 	//if(tree) tree->unlock();
 	if(!(status & 1))
@@ -1131,8 +1210,7 @@ Array *TreeNode::getSegment(int segIdx)
 	//if(tree) tree->lock();
 	int status = getTreeSegment(tree->getCtx(), getNid(), segIdx, &dataDsc, &timeDsc);
 	//if(tree) tree->unlock();
-	if(!(status & 1))
-	{
+	if(!(status & 1)) {
 		freeDsc(dataDsc);
 		freeDsc(timeDsc);
 		throw MdsException(status);
@@ -1145,28 +1223,63 @@ Array *TreeNode::getSegment(int segIdx)
 
 Data *TreeNode::getSegmentDim(int segIdx)
 {
-	void *dataDsc;
 	void *timeDsc;
 	resolveNid();
 	//if(tree) tree->lock();
-	int status = getTreeSegment(tree->getCtx(), getNid(), segIdx, &dataDsc, &timeDsc);
+	int status = getTreeSegment(tree->getCtx(), getNid(), segIdx, NULL, &timeDsc);
 	//if(tree) tree->unlock();
-	if(!(status & 1))
-	{
-		freeDsc(dataDsc);
+	if(!(status & 1)) {
 		freeDsc(timeDsc);
 		throw MdsException(status);
 	}
 	Data *retDim = (Data *)convertFromDsc(timeDsc, tree);
-	freeDsc(dataDsc);
 	freeDsc(timeDsc);
     return retDim;
 }
 
 void TreeNode::getSegmentAndDimension(int segIdx, Array *&segment, Data *&dimension)
 {
-    segment = getSegment(segIdx);
-    dimension = getSegmentDim(segIdx);
+	void *dataDsc;
+	void *timeDsc;
+	resolveNid();
+	//if(tree) tree->lock();
+	int status = getTreeSegment(tree->getCtx(), getNid(), segIdx, &dataDsc, &timeDsc);
+	//if(tree) tree->unlock();
+	if(!(status & 1)) {
+		freeDsc(dataDsc);
+		freeDsc(timeDsc);
+		throw MdsException(status);
+	}
+	segment   = (Array *)convertFromDsc(dataDsc, tree);
+	dimension = (Data *)convertFromDsc(dataDsc, tree);
+        freeDsc(dataDsc);
+        freeDsc(timeDsc);
+}
+
+Data *TreeNode::getSegmentScale()
+{
+	void *sclDsc;
+	resolveNid();
+	//if(tree) tree->lock();
+	int status = getTreeSegmentScale(tree->getCtx(), getNid(), &sclDsc);
+	//if(tree) tree->unlock();
+        if(!(status & 1)) {
+                freeDsc(sclDsc);
+                sclDsc = NULL;
+        }
+	Data *retScl = (Data *)convertFromDsc(sclDsc, tree);
+	freeDsc(sclDsc);
+	return retScl;
+}
+
+void TreeNode::setSegmentScale(Data *scale)
+{
+        resolveNid();
+        //if(tree) tree->lock();
+        int status = setTreeSegmentScale(tree->getCtx(), getNid(), scale->convertToDsc());
+        //if(tree) tree->unlock();
+        if(!(status & 1))
+                throw MdsException(status);
 }
 
 void TreeNode::beginTimestampedSegment(Array *initData)
@@ -1225,7 +1338,10 @@ TreeNode *TreeNode::getNode(char const * relPath)
 	if(status & 1) status = _TreeFindNode(tree->getCtx(), relPath, &newNid);
 	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), defNid);
 	if(!(status & 1))
+	{
+		status = _TreeSetDefaultNid(tree->getCtx(), defNid);
 		throw MdsException(status);
+	}
 	return new TreeNode(newNid, tree);
 }
 
@@ -1463,7 +1579,7 @@ out of scope, this triggering multiple deallocation of the same C string and cra
 
 StringArray *TreeNodeArray::getFullPath()
 {
-/* Same as before  
+/* Same as before
 	std::vector<AutoArray<char> > paths;
 	for(int i = 0; i < numNodes; ++i)
 		paths.push_back(nodes[i]->getFullPath());
@@ -1627,7 +1743,284 @@ StringArray *TreeNodeArray::getUsage()
 
 
 ////////////////End TreeNodeArray methods/////////////////////
+////////////////TreeNodeThinClient methods ///////////////////
 
+static const char *convertNciItm(int nciItm)
+{
+    switch(nciItm) {
+      case NciTIME_INSERTED: 		return "\'TIME_INSERTED\'";
+      case NciOWNER_ID: 		return "\'OWNER_ID\'";
+      case NciCLASS:			return "\'CLASS\'";
+      case NciDTYPE:			return "\'DTYPE\'";
+      case NciLENGTH:			return "\'LENGTH\'";
+      case NciSTATUS:			return "\'STATUS\'";
+      case NciCONGLOMERATE_ELT:		return "\'CONGLOMERATE_ELT\'";
+      case NciGET_FLAGS:		return "\'GET_FLAGS\'";
+      case NciNODE_NAME:		return "\'NODE_NAME\'";
+      case NciPATH:			return "\'PATH\'";
+      case NciDEPTH:			return "\'DEPTH\'";
+      case NciPARENT:			return "\'PARENT\'";
+      case NciBROTHER:			return "\'BROTHER\'";
+      case NciMEMBER:			return "\'MEMBER\'";
+      case NciCHILD:			return "\'CHILD\'";
+      case NciPARENT_RELATIONSHIP:	return "\'PARENT_RELATIONSHIP\'";
+      case NciK_IS_CHILD:		return "\'IS_CHILD\'";
+      case NciK_IS_MEMBER:		return "\'IS_MEMBER\'";
+      case NciCONGLOMERATE_NIDS:	return "\'CONGLOMERATE_NIDS\'";
+      case NciORIGINAL_PART_NAME:	return "\'ORIGINAL_PART_NAME\'";
+      case NciNUMBER_OF_MEMBERS:	return "\'NUMBER_OF_MEMBERS\'";
+      case NciNUMBER_OF_CHILDREN :	return "\'NUMBER_OF_CHILDREN\'";
+      case NciMEMBER_NIDS:		return "\'MEMBER_NIDS\'";
+      case NciCHILDREN_NIDS:		return "\'CHILDREN_NIDS\'";
+      case NciFULLPATH:			return "\'FULLPATH\'";
+      case NciMINPATH:			return "\'MINPATH\'";
+      case NciUSAGE:			return "\'USAGE\'";
+      default:				throw MdsException("Unexpected NCI item in TreeNodeThinClient");
+    }
+}
+
+TreeNodeThinClient::TreeNodeThinClient(int nid, Connection *connection, Data *units, Data *error, Data *help, Data *validation)
+{
+    this->tree = 0;
+    this->nid = nid;
+    this->connection = connection;
+    clazz = CLASS_S;
+    dtype = DTYPE_NID;
+    setAccessory(units, error, help, validation);
+}
+
+std::string  TreeNodeThinClient::getNciString(int itm)
+{
+    char expr[64];
+    sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
+    AutoData<Data> retStringData(connection->get(expr));
+    if(!retStringData.get())
+	throw MdsException("Error in Remote evaluation of getnci");
+
+    AutoString as(retStringData->getString());
+    return as.string;
+}
+
+char TreeNodeThinClient::getNciChar(int itm)
+{
+    char expr[64];
+    sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
+    AutoData<Data> retData(connection->get(expr));
+     if(!retData.get())
+	throw MdsException("Error in Remote evaluation of getnci");
+     char retChar = retData->getByte();
+     return retChar;
+}
+
+int TreeNodeThinClient::getNciInt(int itm)
+{
+    char expr[64];
+    sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
+    AutoData<Data> retData(connection->get(expr));
+    if(!retData.get())
+	throw MdsException("Error in Remote evaluation of getnci");
+    return retData->getInt();
+}
+
+int64_t TreeNodeThinClient::getNciInt64(int itm)
+{
+    char expr[64];
+    sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
+    AutoData<Data> retData(connection->get(expr));
+    if(!retData.get())
+	throw MdsException("Error in Remote evaluation of getnci");
+    return retData->getLong();
+}
+
+char *TreeNodeThinClient::getPath()
+{
+    char expr[64];
+    sprintf(expr, "GETNCI(%d,\'PATH\')", nid);
+    AutoData<Data> retData(connection->get(expr));
+    if(!retData.get())
+	throw MdsException("Error in Remote evaluation of getnci(path)");
+    return retData->getString();
+}
+
+EXPORT Data *TreeNodeThinClient::getData()
+{
+    char expr[64];
+    sprintf(expr, "GETNCI(%d,\'RECORD\')", nid);
+    Data *retData = connection->get(expr);
+    if(!retData)
+	throw MdsException("Error in Remote evaluation of getnci(record)");
+    return retData;
+}
+
+EXPORT void TreeNodeThinClient::putData(Data *data)
+{
+    AutoArray<char> path(getPath());
+    AutoData<Data> argsD[] = {data->data()};
+    Data *args[] = {argsD[0].get()};
+    connection->put(path, (char *)"$", args, 1);
+}
+
+EXPORT void TreeNodeThinClient::deleteData()
+{
+    AutoArray<char> path = getFullPath();
+    Data *args[1] = {0};
+    connection->put(path, (char *)"*", args, 0);
+}
+
+EXPORT bool TreeNodeThinClient::isOn()
+{
+    char expr[64];
+    sprintf(expr, "GETNCI(%d,\'STATE\')", nid);
+    AutoData<Data> retData(connection->get(expr));
+    if(!retData.get())
+	throw MdsException("Error in Remote evaluation of getnci(state)");
+
+    char onData = retData->getByte();
+    return (onData)?false:true;
+}
+
+EXPORT void TreeNodeThinClient::setOn(bool on)
+{
+    char expr[64];
+    if(on)
+      sprintf(expr, "TreeTurnOn(%d)", nid);
+    else
+      sprintf(expr, "TreeTurnOff(%d)", nid);
+    AutoData<Data> retData(connection->get(expr));
+}
+
+EXPORT void TreeNodeThinClient::beginSegment(Data *start, Data *end, Data *time, Array *initialData)
+{
+    char expr[256];
+    AutoData<Data> argsD[] = { start->data(), end->data(), time->data(), initialData->data()};
+    Data *args[] = {argsD[0].get(), argsD[1].get(), argsD[2].get(), argsD[3].get()};
+    sprintf(expr, "BeginSegment(%d, $1, $2, $3, $4, -1)", nid);
+    AutoData<Data> retData(connection->get(expr, args, 4));
+}
+
+EXPORT void TreeNodeThinClient::makeSegment(Data *start, Data *end, Data *time, Array *initialData)
+{
+    char expr[256];
+    AutoData<Data> argsD[] = { start->data(), end->data(), time->data(), initialData->data()};
+    Data *args[] = {argsD[0].get(), argsD[1].get(), argsD[2].get(), argsD[3].get()};
+    sprintf(expr, "MakeSegment(%d, $1, $2, $3, $4, -1, size($4))", nid);
+    AutoData<Data> retData(connection->get(expr, args, 4));
+}
+
+EXPORT void TreeNodeThinClient::putSegment(Array *data, int ofs)
+{
+    char expr[256];
+    AutoData<Data> argsD[] = {data->data()};
+    Data *args[] = {argsD[0].get()};
+    sprintf(expr, "PutSegment(%d, %d, $1)", nid, ofs);
+    AutoData<Data> retData(connection->get(expr, args, 1));
+}
+
+EXPORT int TreeNodeThinClient::getNumSegments()
+{
+    char expr[64];
+    sprintf(expr, "GetNumSegments(%d)", nid);
+    AutoData<Data> data(connection->get(expr));
+    if(!data.get())
+	throw MdsException("Error in Remote evaluation of GetNumSegmentss");
+    return data->getInt();
+}
+
+EXPORT void TreeNodeThinClient::getSegmentLimits(int segmentIdx, Data **start, Data **end)
+{
+    char expr[64];
+    sprintf(expr, "GetSegmentLimits(%d, %d)", nid, segmentIdx);
+    AutoData<Array> limitsArr((Array *)connection->get(expr));
+    if(!limitsArr)
+	throw MdsException("Error in Remote evaluation of GetSegmentLimits");
+    int startIdx = 0, endIdx = 1;
+    *start = limitsArr->getElementAt(&startIdx, 1);
+    *end = limitsArr->getElementAt(&endIdx, 1);
+}
+
+EXPORT Array *TreeNodeThinClient::getSegment(int segIdx)
+{
+    char expr[64];
+    sprintf(expr, "GetSegment(%d, %d)", nid, segIdx);
+    Array *retSegment = (Array *)connection->get(expr);
+    if(!retSegment)
+	throw MdsException("Error in Remote evaluation of GetSegment");
+    return retSegment;
+}
+
+EXPORT Data *TreeNodeThinClient::getSegmentDim(int segIdx)
+{
+    char expr[64];
+    sprintf(expr, "DIM_OF(GetSegment(%d, %d))", nid, segIdx);
+    Data *retDim = connection->get(expr);
+    if(!retDim)
+	throw MdsException("Error in Remote evaluation of dim_of(GetSegment)");
+    return retDim;
+}
+
+EXPORT void TreeNodeThinClient::getSegmentAndDimension(int segIdx, Array *&segment, Data *&dimension)
+{
+    char expr[64];
+    sprintf(expr, "GetSegment(%d, %d)", nid, segIdx);
+    segment = (Array *)connection->get(expr);
+    sprintf(expr, "DIM_OF(GetSegment(%d, %d))", nid, segIdx);
+    dimension = connection->get(expr);
+    if(!segment || !dimension)
+	throw MdsException("Error in Remote evaluation of GetSegment");
+
+}
+
+EXPORT void TreeNodeThinClient::beginTimestampedSegment(Array *initData)
+{
+    char expr[64];
+    AutoData<Data> argsD[] = {initData->data()};
+    Data *args[] = {argsD[0].get()};
+    sprintf(expr, "BeginTimestampedSegment(%d, $1, -1)", nid);
+    AutoData<Data> retData(connection->get(expr, args, 1));
+}
+
+EXPORT void TreeNodeThinClient::putTimestampedSegment(Array *data, int64_t *times)
+{
+    char expr[64];
+    int len = data->getSize();
+    AutoData<Data> argsD[] = {new Int64Array(times, len), data->data()};
+    Data *args[] = {argsD[0].get(), argsD[1].get()};
+    sprintf(expr, "PutTimestampedSegment(%d, $1, $2)", nid);
+    AutoData<Data> retData(connection->get(expr, args, 2));
+}
+
+EXPORT void TreeNodeThinClient::makeTimestampedSegment(Array *data, int64_t *times)
+{
+    beginTimestampedSegment(data);
+    putTimestampedSegment(data, times);
+}
+
+EXPORT void TreeNodeThinClient::putRow(Data *data, int64_t *time, int size)
+{
+    AutoData<Data> argsD[] = {new Int64(*time), data->data()};
+    Data *args[] = {argsD[0].get(), argsD[1].get()};
+    char expr[64];
+    sprintf(expr, "PutRow(%d, %d, $1, $2)", nid, size);
+    AutoData<Data> retData(connection->get(expr, args, 2));
+}
+
+EXPORT StringArray *TreeNodeThinClient::findTags()
+{
+    char expr[64];
+    sprintf(expr, "TreeFindNodeTags(%d)", nid);
+    AutoData<Data> retData(connection->get(expr));
+    if(!retData.get())
+	throw MdsException("Error in Remote evaluation of TreeFindNodeTags");
+
+    int numTags;
+    char **tags = retData->getStringArray(&numTags);
+    StringArray *tagsArray = new StringArray(tags, numTags);
+    for(int i = 0; i < numTags; i++)
+	delete[] tags[i];
+    delete [] tags;
+    return tagsArray;
+}
+//////////////////////////////////////////////////////////////
 
 void MDSplus::setActiveTree(Tree *tree)
 {
@@ -1639,15 +2032,16 @@ Tree *MDSplus::getActiveTree()
 	char name[1024];
 	int shot;
 	int retNameLen, retShotLen;
-
 	DBI_ITM dbiItems[] = {
 		{1024, DbiNAME, name, &retNameLen},
 		{sizeof(int), DbiSHOTID, &shot, &retShotLen},
 		{0, DbiEND_OF_LIST, 0, 0}};
 	int status = TreeGetDbi(dbiItems);
 	if(!(status & 1))
+	{
 		throw MdsException(status);
-	return new Tree(name, shot);
+	}
+	return new Tree(name, shot, TreeDbid());
 }
 
 ostream &operator<<(ostream &stream, TreeNode *treeNode)

@@ -1,24 +1,50 @@
-from unittest import TestCase,TestSuite
-import os
-from threading import Lock
+#!/usr/bin/python
+# Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright notice, this
+# list of conditions and the following disclaimer in the documentation and/or
+# other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
 
-from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,DateToQuad,Device,Int32Array
+from unittest import TestCase,TestSuite,TextTestRunner
+import os
+from threading import RLock
+
+from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,Device,tree,tcl
 from MDSplus import getenv,setenv
 
-class treeTests(TestCase):
-    lock = Lock()
+class Tests(TestCase):
+    inThread = False
+    lock = RLock()
     shotinc = 3
     instances = 0
-    inThread = False
     index = 0
     @property
     def shot(self):
-        return self.index*treeTests.shotinc+1
+        return self.index*Tests.shotinc+1
 
     @classmethod
     def setUpClass(cls):
         with cls.lock:
             if cls.instances==0:
+                import gc;gc.collect()
                 from tempfile import mkdtemp
                 if getenv("TEST_DISTRIBUTED_TREES") is not None:
                     treepath="localhost::%s"
@@ -26,17 +52,16 @@ class treeTests(TestCase):
                     treepath="%s"
                 cls.tmpdir = mkdtemp()
                 cls.root = os.path.dirname(os.path.realpath(__file__))
+                cls.topsrc = os.path.realpath(cls.root+"%s..%s..%s.."%tuple([os.sep]*3))
                 cls.env = dict((k,str(v)) for k,v in os.environ.items())
                 cls.envx= {}
                 cls._setenv('PyLib',getenv('PyLib'))
-                cls._setenv("MDS_PYDEVICE_PATH",'%s/devices'%cls.root)
+                cls._setenv("MDS_PYDEVICE_PATH",'%s/pydevices;%s/devices'%(cls.topsrc,cls.root))
                 cls._setenv("pytree_path",treepath%cls.tmpdir)
                 cls._setenv("pytreesub_path",treepath%cls.tmpdir)
                 if getenv("testing_path") is None:
                     cls._setenv("testing_path","%s/trees"%cls.root)
             cls.instances += 1
-            if cls.inThread:
-                print('threads up: %d'%(cls.instances,))
 
     @classmethod
     def _setenv(cls,name,value):
@@ -45,7 +70,50 @@ class treeTests(TestCase):
         cls.envx[name] = value
         setenv(name,value)
 
+    @classmethod
+    def tearDownClass(cls):
+        import gc,shutil
+        gc.collect()
+        with cls.lock:
+            cls.instances -= 1
+            if not cls.instances>0:
+                shutil.rmtree(cls.tmpdir)
+    def cleanup(self,refs=0):
+        import MDSplus,gc;gc.collect()
+        if self.inThread: return
+        def isTree(o):
+            try:    return isinstance(o,MDSplus.Tree)
+            except: return False
+        self.assertEqual([o for o in gc.get_objects() if isTree(o)][refs:],[])
+
+    def treeCtx(self):
+        from gc import collect
+        from time import sleep
+        def check(n):
+            if n==0:self.assertEqual(tree._TreeCtx.ctxs,{})  # neither tcl nor tdi has been called yet
+            else: self.assertEqual(n,len(tree._TreeCtx.ctxs.items()[0][1]))
+        tcl('edit pytree/shot=%d/new'%self.shot);check(0)
+        self.assertEqual(tree._TreeCtx.ctxs,{})  # neither tcl nor tdi has been called yet
+        Data.execute('$EXPT'); check(0)
+        t = Tree();            check(0)
+        Data.execute('tcl("dir", _out)');check(0)
+        del(t);collect(2);sleep(.1);check(0)
+        Data.execute('_out');check(0)
+        t = Tree('pytree',self.shot+1,'NEW');
+        self.assertEqual(len(tree._TreeCtx.ctxs[t.ctx.value]),1)
+        Data.execute('tcl("close")');
+        self.assertEqual(len(tree._TreeCtx.ctxs[t.ctx.value]),1)
+        self.assertEqual(str(t),'Tree("PYTREE",%d,"Edit")'%(self.shot+1,))
+        self.assertEqual(str(Data.execute('tcl("show db", _out);_out')),"\n")
+        del(t);collect(2);sleep(.01);check(0)
+        # tcl/tdi context remains until end of session
+        t = Tree('pytree',self.shot+1,'NEW');
+        self.assertEqual(len(tree._TreeCtx.ctxs[t.ctx.value]),1)
+        del(t);collect(2);sleep(.01);check(0)
+        self.cleanup()
+
     def buildTrees(self):
+      def test():
         with Tree('pytree',self.shot,'new') as pytree:
             if pytree.shot != self.shot:
                 raise Exception("Shot number changed! tree.shot=%d, thread.shot=%d" % (pytree.shot, self.shot))
@@ -80,37 +148,45 @@ class treeTests(TestCase):
             node.compress_on_put=True
             node.record=Signal(Range(2.,2000.,2.),None,Range(1.,1000.))
             ip=pytreesub_top.addNode('ip','signal')
-            rec=Data.compile("Build_Signal(Build_With_Units(\\MAG_ROGOWSKI.SIGNALS:ROG_FG + 2100. * \\BTOR, 'ampere'), *, DIM_OF(\\BTOR))")
+            rec=pytreesub.tdiCompile("Build_Signal(Build_With_Units(\\MAG_ROGOWSKI.SIGNALS:ROG_FG + 2100. * \\BTOR, 'ampere'), *, DIM_OF(\\BTOR))")
             ip.record=rec
             ip.tag='MAG_PLASMA_CURRENT'
             ip.tag='MAGNETICS_PLASMA_CURRENT'
             ip.tag='MAG_IP'
             ip.tag='MAGNETICS_IP'
             ip.tag='IP'
+            ip.setExtendedAttribute('ATT1',100)
+            ip.setExtendedAttribute('ATT2',Range(1,200))
+            ip.setExtendedAttribute('ATT3','this is ip')
+            ip.setExtendedAttribute('ATT3','this is plasma current')
+            self.assertEqual(str(ip.getExtendedAttribute('ATT1')),'100')
+            self.assertEqual(str(ip.getExtendedAttribute('ATT2')),'1 : 200 : *')
+            self.assertEqual(str(ip.getExtendedAttribute('ATT3')),'this is plasma current')
+            self.assertEqual(str(ip.getExtendedAttributes()),"{'ATT3': 'this is plasma current', 'ATT2': 1 : 200 : *, 'ATT1': 100}")
             for i in range(10):
                 node=pytreesub_top.addNode('child%02d' % (i,),'structure')
                 node.addDevice('dt200_%02d' % (i,),'dt200').on=False
             pytreesub.write()
-
-    @classmethod
-    def tearDownClass(cls):
-        import gc,shutil
-        gc.collect()
-        with cls.lock:
-            cls.instances -= 1
-            if not cls.instances>0:
-                shutil.rmtree(cls.tmpdir)
+      test()
+      self.cleanup()
 
     def openTrees(self):
+      def test():
+        filepath = ('%s/pytree_%03d.tree'%(self.tmpdir,self.shot)).replace(os.sep,'/')
+        self.assertEqual(Tree.getFileName('pytree',self.shot), filepath)
         pytree = Tree('pytree',self.shot)
+        self.assertEqual(pytree.getFileName(), filepath)
         self.assertEqual(str(pytree),'Tree("PYTREE",%d,"Normal")'%(self.shot,))
         pytree.createPulse(self.shot+1)
-        if not treeTests.inThread:
+        if not Tests.inThread:
             Tree.setCurrent('pytree',self.shot+1)
             pytree2=Tree('pytree',0)
             self.assertEqual(str(pytree2),'Tree("PYTREE",%d,"Normal")'%(self.shot+1,))
+      test()
+      self.cleanup()
 
     def getNode(self):
+      def test():
         pytree=Tree('pytree',self.shot,'ReadOnly')
         ip = pytree.getNode('\\ip')
         self.assertEqual(str(ip),'\\PYTREESUB::IP')
@@ -119,15 +195,21 @@ class treeTests(TestCase):
         self.assertEqual(ip.nid,pytree.__PYTREESUB__IP.nid)
         self.assertEqual(pytree.TESTDEVICE.__class__,Device.PyDevice('TESTDEVICE'))
         self.assertEqual(pytree.CYGNET4K.__class__,Device.PyDevice('CYGNET4K'))
+      test()
+      self.cleanup()
 
     def setDefault(self):
+      def test():
         pytree = Tree('pytree',self.shot,'ReadOnly')
         pytree2= Tree('pytree',self.shot,'ReadOnly')
         pytree.setDefault(pytree._IP)
         self.assertEqual(str(pytree.getDefault()),'\\PYTREESUB::IP')
         self.assertEqual(str(pytree2.getDefault()),'\\PYTREE::TOP')
+      test()
+      self.cleanup()
 
     def nodeLinkage(self):
+      def test():
         from numpy import array,int32
         pytree = Tree('pytree',self.shot,'ReadOnly')
         top=TreeNode(0,pytree)
@@ -150,8 +232,8 @@ class treeTests(TestCase):
         self.assertEqual(top.child.nid_number,pytree.getNode(str(top.child)).nid_number)
         self.assertEqual(top.child.child.parent.nid_number,top.child.nid_number)
         x=array(int32(0)).repeat(len(members)+len(children))
-        x[0:len(members)]=members.nid_number.data()
-        x[len(members):]=children.nid_number.data()
+        x[0:len(children)]=children.nid_number.data()
+        x[len(children):]=members.nid_number.data()
         self.assertEqual((makeArray(x)==top.descendants.nid_number).all(),True)
         self.assertEqual((top.descendants.nid_number==top.getDescendants().nid_number).all(),True)
         self.assertEqual(top.child.child.depth,3)
@@ -184,8 +266,11 @@ class treeTests(TestCase):
         self.assertEqual(ip.node_name,ip.getNodeName())
         self.assertEqual(ip.path,"\\PYTREESUB::IP")
         self.assertEqual(ip.path,ip.getPath())
+      test()
+      self.cleanup()
 
     def nciInfo(self):
+      def test():
         pytree = Tree('pytree',self.shot,'ReadOnly')
         ip=pytree.getNode('\\ip')
         self.assertEqual(ip.getUsage(),'SIGNAL')
@@ -224,7 +309,8 @@ class treeTests(TestCase):
         pydev = pytree.TESTDEVICE
         part = pydev.conglomerate_nids[1]
         self.assertEqual(part.PART_NAME(),':ACTIONSERVER')
-        self.assertEqual(part.original_part_name,str(Data.execute('GETNCI($,"ORIGINAL_PART_NAME")',part)))
+        self.assertEqual(part.original_part_name,':ACTIONSERVER')
+        self.assertEqual(str(Data.execute('GETNCI($,"ORIGINAL_PART_NAME")',part)),':ACTIONSERVER')
         self.assertEqual(pydev.__class__,Device.PyDevice('TestDevice'))
         devs = pytree.getNodeWild('\\PYTREESUB::TOP.***','DEVICE')
         part = devs[0].conglomerate_nids[3]
@@ -240,8 +326,11 @@ class treeTests(TestCase):
         self.assertEqual((ip.tags==makeArray(['IP','MAGNETICS_IP','MAG_IP','MAGNETICS_PLASMA_CURRENT','MAG_PLASMA_CURRENT'])).all(),True)
         self.assertEqual((ip.tags==ip.getTags()).all(),True)
         self.assertEqual(ip.time_inserted,ip.getTimeInserted())
+      test()
+      self.cleanup()
 
     def getData(self):
+      def test():
         pytree = Tree('pytree',self.shot,'ReadOnly')
         ip=pytree.getNode('\\ip')
         pytree.setDefault(ip)
@@ -251,67 +340,54 @@ class treeTests(TestCase):
         self.assertEqual(ip.versions,ip.containsVersions())
         self.assertEqual(ip.getNumSegments(),0)
         self.assertEqual(ip.getSegment(0),None)
+        self.assertEqual(str(ip.getExtendedAttribute('ATT1')),'100')
+        self.assertEqual(str(ip.getExtendedAttribute('ATT2')),'1 : 200 : *')
+        self.assertEqual(str(ip.getExtendedAttribute('ATT3')),'this is plasma current')
+        self.assertEqual(str(ip.getExtendedAttributes()),"{'ATT3': 'this is plasma current', 'ATT2': 1 : 200 : *, 'ATT1': 100}")
+      test()
+      self.cleanup()
 
     def getCompression(self):
+      def test():
         pytree = Tree('pytree',self.shot)
         testing = Tree('testing', -1)
         for node in testing.getNodeWild(".compression:*"):
             pytree.SIG_CMPRS.record=node.record
             self.assertTrue((pytree.SIG_CMPRS.record == node.record).all(),
                              msg="Error writing compressed signal%s"%node)
-
-    def segments(self):
-        pytree = Tree('pytree',self.shot)
-        signal=pytree.SIG01
-        signal.record=None
-        signal.compress_on_put=False
-        for i in range(2000):
-            signal.putRow(100,Range(1,1000).data(),DateToQuad("now"))
-        pytree.createPulse(self.shot+2)
-        signal.compress_segments=True
-        pytree3 = Tree('pytree',self.shot+2)
-        pytree3.compressDatafile()
-        self.assertEqual((signal.record==pytree3.SIG01.record).all(),True)
-        signal.deleteData()
-        # beginning a block set next_row to 0
-        signal.beginTimestampedSegment(Int32Array([0,7]))
-        self.assertEqual(str(signal.record),       "Build_Signal([], *, [])")
-        self.assertEqual(str(signal.getSegment(0)),"Build_Signal([], *, [])")
-        # beginning adding row increments next_row to 1
-        signal.putRow(1,Int32Array([1]),-1)
-        self.assertEqual(str(signal.record),       "Build_Signal([1], *, [-1Q])")
-        self.assertEqual(str(signal.getSegment(0)),"Build_Signal([1], *, [-1Q])")
-        # beginning a new block set next_row back to 0 of the new block
-        # the previous block is assumed to be full as the tailing zero could be valid data
-        signal.beginTimestampedSegment(Int32Array([0]))
-        self.assertEqual(str(signal.record),       "Build_Signal([1,7], *, [-1Q,0Q])")
-        self.assertEqual(str(signal.getSegment(0)),"Build_Signal([1,7], *, [-1Q,0Q])")
-
+      test()
+      self.cleanup()
 
     def runTest(self):
         for test in self.getTests():
             self.__getattribute__(test)()
     @staticmethod
     def getTests():
-        return ['buildTrees','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','segments','getCompression']
+        lst = ['buildTrees','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','getCompression']
+        if Tests.inThread: return lst
+        return ['treeCtx']+lst
     @classmethod
-    def getTestCases(cls):
-        return map(cls,cls.getTests())
+    def getTestCases(cls,tests=None):
+        if tests is None: tests = cls.getTests()
+        return map(cls,tests)
 
-def suite():
-    return TestSuite(treeTests.getTestCases())
+def suite(tests=None):
+    return TestSuite(Tests.getTestCases(tests))
 
-def run():
-    from unittest import TextTestRunner
-    TextTestRunner().run(suite())
+def run(tests=None):
+    TextTestRunner(verbosity=2).run(suite(tests))
+
+def objgraph():
+    import objgraph,gc
+    gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
+    run()
+    gc.collect()
+    objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
 
 if __name__=='__main__':
     import sys
-    if len(sys.argv)>1 and sys.argv[1].lower()=="objgraph":
-        import objgraph
-    else:      objgraph = None
-    import gc;gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    run()
-    if objgraph:
-         gc.collect()
-         objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
+    if len(sys.argv)==2 and sys.argv[1]=='all':
+        run()
+    elif len(sys.argv)>1:
+        run(sys.argv[1:])
+    else: print('Available tests: %s'%(' '.join(Tests.getTests())))

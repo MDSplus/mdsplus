@@ -63,7 +63,7 @@ AC_DEFUN([AX_VALGRIND_CHECK],[
 
 	dnl Check for --enable-valgrind
 	AC_ARG_ENABLE([valgrind],
-	              [AS_HELP_STRING([--enable-valgrind], 
+	              [AS_HELP_STRING([--enable-valgrind],
 		                      [Whether to enable Valgrind on the unit tests])],
 	              [enable_valgrind=$enableval],[enable_valgrind="yes"])
 
@@ -101,7 +101,7 @@ AC_DEFUN([AX_VALGRIND_CHECK],[
 	AC_SUBST(enable_valgrind)
 
 	AC_ARG_WITH([valgrind-lib],
-	              [AS_HELP_STRING([--with-valgrind-lib], 
+	              [AS_HELP_STRING([--with-valgrind-lib],
 		                      [Set Valgrind lib directory])],
 	              [valgrind_dir=$withval])
 	AS_VAR_SET_IF([VALGRIND_LIB], AS_VAR_SET([valgrind_dir],[${VALGRIND_LIB}]))
@@ -138,16 +138,16 @@ AC_DEFUN([AX_VALGRIND_CHECK],[
 
 
 
-dnl 
+dnl
 dnl  Parsed substitutions
-dnl 
+dnl
 AS_VAR_READ([VALGRIND_CHECK_RULES_PRE],[
 VALGRIND_LIB             ?= ${VALGRIND_LIB}
 ])
 
-dnl 
+dnl
 dnl  Not parsed substitutions
-dnl 
+dnl
 VALGRIND_CHECK_RULES='
 # //////////////////////////////////////////////////////////////////////////// #
 # /// Valgrind check  //////////////////////////////////////////////////////// #
@@ -164,7 +164,8 @@ VALGRIND_CHECK_RULES='
 
 # Optional variables
 VALGRIND_FLAGS           ?=
-VALGRIND_FLAGS           += --num-callers=30 \
+VALGRIND_FLAGS           += --gen-suppressions=all \
+                            --num-callers=30 \
                             --trace-children=yes \
                             --child-silent-after-fork=yes \
                             --trace-children-skip-by-arg=*SetMdsplusFileProtection*
@@ -173,7 +174,7 @@ VALGRIND_memcheck_FLAGS  ?=
 VALGRIND_memcheck_FLAGS  += --leak-check=full --show-reachable=no
 
 VALGRIND_helgrind_FLAGS  ?=
-VALGRIND_helgrind_FLAGS  += --history-level=approx
+VALGRIND_helgrind_FLAGS  += --history-level=full
 
 VALGRIND_drd_FLAGS       ?=
 VALGRIND_drd_FLAGS       +=
@@ -187,7 +188,7 @@ VALGRIND_SUPPRESSIONS    += $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_
 VALGRIND_SUPPRESSIONS_PY ?=
 VALGRIND_SUPPRESSIONS_PY += --suppressions=$(top_srcdir)/conf/valgrind-python.supp \
                             $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_FILES_PY))
-                            
+
 
 VALGRIND_TOOLS ?= memcheck helgrind drd sgcheck
 
@@ -204,7 +205,7 @@ valgrind_log_files = $(addprefix valgrind-suite-,$(addsuffix .log,$(VALGRIND_TOO
                      $(TEST_LOGS:.log=-valgrind-*.xml) \
                      $(TEST_LOGS:.log=-valgrind-*.supp)
 dnl                  $(foreach tst,$(TESTS),$(addprefix $(tst)-valgrind-,$(addsuffix .xml,$(VALGRIND_TOOLS))))
-                     
+
 valgrind_supp_files = $(addsuffix -valgrind.supp,$(TESTS))
 
 valgrind_memcheck_flags = --tool=memcheck $(VALGRIND_memcheck_FLAGS)
@@ -262,10 +263,10 @@ $(VALGRIND_LOGS):
 tests-valgrind:
 	@ \
 	echo "--- VALGRIND TESTS --- enabled tools: $(foreach tool,$(VALGRIND_TOOLS), $(tool))"; \
-	$(MAKE) VALGRIND_BUILD="yes"; \
+	$(MAKE) -k $(BUILD_FLAGS) $(AM_MAKEFLAGS) all VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
-			$(MAKE) $(AM_MAKEFLAGS) -k tests-valgrind-tool VALGRIND_TOOL=$(tool); \
+			$(MAKE) -k $(TEST_FLAGS) $(AM_MAKEFLAGS) tests-valgrind-tool VALGRIND_TOOL=$(tool); \
 		) \
 	)
 

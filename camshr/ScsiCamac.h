@@ -80,36 +80,7 @@ typedef struct {
 #define OpCodeCamacDataCommand 		0xE1
 #define CDBCamacDataCommand(name)  CamacDataCommand name = {OpCodeCamacDataCommand, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, {0, 0, 0}, 0}
 
-#if OS == VMS
-// original version
-typedef struct {
-  unsigned noq:1;
-  unsigned nox:1;
-  unsigned ste:1;
-  unsigned adnr:1;
-  unsigned tpe:1;
-  unsigned lpe:1;
-  unsigned n_gt_23:1;
-  unsigned err:1;
-  unsigned no_sync:1;
-  unsigned tmo:1;
-  unsigned derr:1;
-  unsigned should_be_zero:5;
-  unsigned error_code:4;
-  unsigned should_be_0:2;
-  unsigned no_halt:1;
-  unsigned read:1;
-  unsigned ad:1;
-  unsigned word_size:2;
-  unsigned qmd:2;
-  unsigned tm:2;
-  unsigned cm:1;
-} ErrorStatusRegister;
-
-#elif OS == LINUX
-// Linux version
 #include "ESR.h"
-#endif
 
 typedef struct {
   unsigned short status;
@@ -142,58 +113,7 @@ typedef struct {
 } CamKey;
 
 //  Request Sense Command - page 26
-#if OS == VMS
-// original version
-typedef struct {
-  unsigned error_code:7;
-  unsigned valid:1;
-  unsigned segment_number:8;
-  unsigned sense_key:4;
-  unsigned rsvd:1;
-  unsigned ili:1;
-  unsigned eom:1;
-  unsigned fm:1;
-  unsigned int information_long;
-  unsigned char sense_length;
-  unsigned int command_specific_information;
-  unsigned char sense_code;
-  unsigned char sense_qual;
-  unsigned reserved;
-  unsigned int stat;
-
-  union {
-    unsigned short stacsr;
-    struct {
-      unsigned noq:1;
-      unsigned nox:1;
-      unsigned done:1;
-      unsigned lam_pending:1;
-      unsigned:1;
-      unsigned qrpt_timeout:1;
-      unsigned:1;
-      unsigned abort:1;
-      unsigned xmt_fifo_empty:1;
-      unsigned xmt_fifo_full:1;
-      unsigned rcv_fifo_empty:1;
-      unsigned rcv_fifo_full:1;
-      unsigned high_byte_first:1;
-      unsigned scsi_id:3;
-    } csr;
-  } u1;
-
-  union {
-    unsigned int staesr;
-    ErrorStatusRegister esr;
-  } u2;
-
-  unsigned int staccs;
-  unsigned int stasum;
-  unsigned int stacnt;
-} RequestSenseData;
-#elif OS == LINUX
-// Linux version
 #include "RSD.h"
-#endif
 
 //  Inquiry Command - page 37
 typedef struct {
@@ -308,84 +228,9 @@ typedef struct {
 
 // CAMAC non data command  F8-15 and F24-F31
 // CAMAC data commands
-#if OS == VMS
-typedef struct {
-  unsigned char opcode;
-  unsigned char zero1;
-  unsigned f:5;
-  unsigned bs:1;		/* 1->24 bit  0->16 bit */
-  unsigned zero2:2;
-  unsigned n:5;
-  unsigned m:3;
-  unsigned a:4;
-  unsigned sncx:1;		/* skip non existant 0 */
-  unsigned scs:1;		/* single crate scan 0 */
-  unsigned dd:1;		/* disables SCSI detection and reconnection 0 */
-  unsigned zero3:1;
-  unsigned crate:7;
-  unsigned sp:1;		/* serial or parallel */
-  unsigned char transfer_len[3];	/* reverse order bytes !! */
-  unsigned char zero4;
-} CamacDataCommand;
-#elif OS == LINUX
-// Linux version
 #include "CDC.h"
-#endif
 
-#if OS == VMS
-// original version
-typedef struct {
-  unsigned code:7;
-  unsigned valid:1;
-  unsigned char segment_no;	/* 0 */
-  unsigned sense_key:4;
-  unsigned zero1:12;
-  unsigned char word_count_deficit[3];	/* reverse order !!!! */
-  unsigned char additional_sense_length;
-
-  struct {
-    unsigned bdmd:1;
-    unsigned dsne:1;
-    unsigned bdsq:1;
-    unsigned snex:1;
-    unsigned crto:1;
-    unsigned to:1;
-    unsigned no_x:1;
-    unsigned no_q:1;
-  } main_status_reg;
-
-  struct {
-    /* 'high' byte */
-    unsigned cret:1;
-    unsigned timos:1;
-    unsigned rpe:1;
-    unsigned hdrrec:1;
-    unsigned cmdfor:1;
-    unsigned rnre1:1;
-    unsigned rnrg1:1;
-    unsigned snex:1;
-    /* 'low' byte */
-    unsigned fill:2;
-    unsigned hngd:1;
-    unsigned spare:1;
-    unsigned sync:1;
-    unsigned losyn:1;
-    unsigned rerr:1;
-    unsigned derr:1;
-  } serial_status_reg;		/* reversed bytes !!!! */
-
-  unsigned char zero2;
-  unsigned char additional_sense_code;
-  unsigned char zero3;
-  unsigned slot_high_bit:1;
-  unsigned char crate:7;
-  unsigned char address:4;
-  unsigned char slot:4;
-} SenseData;
-#elif OS == LINUX
-// Linux version
 #include "SD.h"
-#endif
 
 typedef struct {
   Iosb actual_iosb;

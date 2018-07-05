@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*      Tdi1Compile.C
         The interface to compiler.
 
@@ -41,19 +65,21 @@ extern void TdiYyReset();
         Thus no recursion because the tdiyy's are built into LEX and YACC.
         IMMEDIATE (`) must never call COMPILE. NEED to prevent this.
 */
-STATIC_THREADSAFE int yacc_mutex_initialized = 0;
-STATIC_THREADSAFE pthread_mutex_t yacc_mutex;
+
 int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[],
 		struct descriptor_xd *out_ptr)
 {
-  INIT_STATUS;
+  int status;
   struct descriptor *text_ptr;
-  LockMdsShrMutex(&yacc_mutex, &yacc_mutex_initialized);
   GET_TDITHREADSTATIC_P;
   if (TdiThreadStatic_p->compiler_recursing == 1) {
     fprintf(stderr, "Error: Recursive calls to TDI Compile is not supported");
     return TdiRECURSIVE;
   }
+  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER; // TODO: try to avoid
+  pthread_mutex_lock(&lock);
+  pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
+
   EMPTYXD(tmp);
   FREEXD_ON_EXIT(&tmp);
   status = TdiEvaluate(list[0], &tmp MDS_END_ARG);
@@ -62,10 +88,6 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
     status = TdiINVDTYDSC;
   if STATUS_OK {
     if (text_ptr->length > 0) {
-      if (TdiThreadStatic_p->compiler_recursing == 1) {
-	fprintf(stderr, "Error: Recursive calls to TDI Compile is not supported\n");
-	return TdiRECURSIVE;
-      }
       TdiThreadStatic_p->compiler_recursing = 1;
       if (!TdiRefZone.l_zone)
 	status = LibCreateVmZone(&TdiRefZone.l_zone);
@@ -102,7 +124,8 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
   }
   FREEXD_NOW(&tmp);
   if STATUS_NOT_OK MdsFree1Dx(out_ptr, NULL);
-  UnlockMdsShrMutex(&yacc_mutex);
+
+  pthread_cleanup_pop(1);
   return status;
 }
 

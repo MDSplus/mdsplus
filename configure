@@ -635,6 +635,7 @@ USE_TM_GMTOFF
 USE_PIPED_MESSAGING
 uiddir
 XM_LIBS
+THREAD
 TDIC
 TAR_EXCLUDE
 TARGET_ARCH
@@ -655,18 +656,22 @@ RELEASE_RELEASE
 RELEASE_MINOR
 RELEASE_MAJOR
 NEED_SEMUN
+DEF_PYLIB
 PYTHON_INCLUDE_DIR
 MOTIF_LD_LDARC
 MOTIF_LD_LDSHARE
 MOTIF_LDARC
 MOTIF_LDSHARE
 MOTIF_APS
+HAVE_MOTIF
 MITDEVICESIO_TARGETS
 MDSTCPIP
 MDSSQL
 MAKEUIDDIR
 MAKESHLIBDIR
 MAKELIBDIR
+MAKEFLAG_O
+MAKEFLAG_J
 MAKEBINDIR
 MACOSX
 LV_CINTOOLS
@@ -692,7 +697,10 @@ JDK_LIVECONNECT
 JDK_DIR
 JDK_CFLAGS
 JAVACFLAGS
+JAVA_JAR
 JAVA_APS
+JAVA_ONLY
+JARS_DIR
 IDLMDSWIDGETS
 IDLMDSEVENT
 IDL_LIB
@@ -718,6 +726,7 @@ D3DLIB
 D3D_PACKAGE
 CLOCK_GETTIME_LIB
 CAMSHR
+NOWARNFLAGS
 WARNFLAGS
 DOXYGEN_PAPER_SIZE
 DX_COND_latex_FALSE
@@ -816,6 +825,8 @@ PYTHON_EXEC_PREFIX
 PYTHON_PREFIX
 PYTHON_VERSION
 PYTHON
+HAVE_MOTIF_FALSE
+HAVE_MOTIF_TRUE
 UIL
 X_EXTRA_LIBS
 X_LIBS
@@ -838,7 +849,6 @@ READLINE_LDFLAGS
 READLINE_CPPFLAGS
 LIBSOCKET
 MAKEETCDIR
-THREAD
 VS_FALSE
 VS_TRUE
 MINGW_FALSE
@@ -889,6 +899,8 @@ CPPFLAGS
 LDFLAGS
 CXXFLAGS
 CXX
+USE_JARS_DIR_FALSE
+USE_JARS_DIR_TRUE
 TARGET_SELFHELP
 MAINT
 MAINTAINER_MODE_FALSE
@@ -978,9 +990,12 @@ enable_option_checking
 with_docker_image
 with_docker_container
 with_docker_url
+with_docker_profile
+enable_debug
 enable_silent_rules
 enable_maintainer_mode
-enable_debug
+enable_java_only
+with_jars
 enable_dependency_tracking
 enable_largefile
 enable_shared
@@ -1015,6 +1030,8 @@ enable_doxygen_html
 enable_doxygen_ps
 enable_doxygen_pdf
 enable_werror
+enable_wreturns
+enable_wconversion
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1661,6 +1678,7 @@ Optional Features:
   --disable-option-checking  ignore unrecognized --enable/--with options
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+
   --enable-silent-rules   less verbose build output (undo: "make V=1")
   --disable-silent-rules  verbose build output (undo: "make V=0")
   --enable-maintainer-mode
@@ -1668,6 +1686,7 @@ Optional Features:
                           sometimes confusing) to the casual installer
   --enable-debug=[yes/info/profile/no]
                           compile with debugging
+  --enable-java_only      Only build java jar files
   --enable-dependency-tracking
                           do not reject slow dependency extractors
   --disable-dependency-tracking
@@ -1694,6 +1713,9 @@ Optional Features:
   --enable-doxygen-ps     generate doxygen PostScript documentation
   --disable-doxygen-pdf   don't generate doxygen PDF documentation
   --enable-werror         Treat all warnings as errors
+  --disable-wreturns      Disable warnings about unused return value from
+                          functions
+  --enable-wconversion    Warn about implicit conversions
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -1701,6 +1723,8 @@ Optional Packages:
   --with-docker-image     specify docker images
   --with-docker-container specify docker container
   --with-docker-url       specify docker url
+  --with-docker-profile   specify docker profile
+  --with-jars=directory   specify directory tree to find java jars
   --with-jdk=JDKDIR       specify location of java jdk
   --with-java_target=version
                           specify version of compiled mdsobjects classes (i.e.
@@ -3033,10 +3057,57 @@ fi
 fi
 
    if ${with_docker_url+:} false; then :
-  if test x"${with_docker_url}" != x"no"; then :
+
+   if test x"${with_docker_url}" != x"no"; then :
   DOCKER_URL="${with_docker_url}"
 else
   { DOCKER_URL=; unset DOCKER_URL;}
+
+fi
+fi
+
+
+
+
+# Check whether --with-docker-profile was given.
+if test "${with_docker_profile+set}" = set; then :
+  withval=$with_docker_profile;
+else
+  if ${DOCKER_PROFILE+:} false; then :
+  with_docker_profile="${DOCKER_PROFILE}"
+fi
+fi
+
+   # Check whether --enable-debug was given.
+if test "${enable_debug+set}" = set; then :
+  enableval=$enable_debug;
+fi
+
+   if ${enable_debug+:} false; then :
+
+	 if test "x$enable_debug" = xno; then :
+
+else
+
+	   if ${with_docker_profile+:} false; then :
+
+else
+
+		 if test "x$enable_debug" = xyes; then :
+  with_docker_profile=debug
+else
+  with_docker_profile=${enable_debug}
+fi
+fi
+
+fi
+fi
+   if ${with_docker_profile+:} false; then :
+
+   if test x"${with_docker_profile}" != x"no"; then :
+  DOCKER_PROFILE="${with_docker_profile}"
+else
+  { DOCKER_PROFILE=; unset DOCKER_PROFILE;}
 
 fi
 fi
@@ -3046,14 +3117,14 @@ fi
 
    if ${DOCKER_URL+:} false; then :
 
-	  $as_echo
-	  sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+          $as_echo
+          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
 ## // "BUILDING IMAGE FOR URL: ${DOCKER_URL}" ////// ##
 _ASBOX
-	  $as_echo
+          $as_echo
 
 
-	 if ${DOCKER_IMAGE+:} false; then :
+         if ${DOCKER_IMAGE+:} false; then :
 
 else
   DOCKER_IMAGE=build_$(echo $(pwd) | md5sum | awk '{print $1}')
@@ -3070,7 +3141,7 @@ fi
 
       if ${DOCKER_URL+:} false; then :
   echo docker build ${dk_build_args} -t ${DOCKER_IMAGE} ${DOCKER_URL};
-		 eval docker build ${dk_build_args} -t ${DOCKER_IMAGE} ${DOCKER_URL}
+                 eval docker build ${dk_build_args} -t ${DOCKER_IMAGE} ${DOCKER_URL}
 fi
 
 
@@ -3078,15 +3149,15 @@ fi
 
    if ${DOCKER_IMAGE+:} false; then :
 
-	  $as_echo
-	  sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+          $as_echo
+          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
 ## // "STARTING CONTAINER IN DOCKER IMAGE: ${DOCKER_IMAGE}" ////// ##
 _ASBOX
-	  $as_echo
+          $as_echo
 
 
 
-	 if ${DOCKER_CONTAINER+:} false; then :
+         if ${DOCKER_CONTAINER+:} false; then :
 
 else
   DOCKER_CONTAINER=build_$(echo $(pwd) | md5sum | awk '{print $1}')
@@ -3112,8 +3183,8 @@ IFS="'"
 
 else
 
-    if test "$x" != "${x%=*}"; then :
-  x=${x%=*}"=\""${x#*=}"\""
+    if test "$x" != "${x%%=*}"; then :
+  x=${x%%=*}"=\""${x#*=}"\""
 else
   if test "$x" != "${x%\\[:space:\]\*}"; then :
   x="\""$x"\""
@@ -3131,17 +3202,15 @@ IFS=${_save_IFS}
 
 
 
-
    $as_echo "Pulling image: ${DOCKER_IMAGE}"
    docker pull ${DOCKER_IMAGE};
 
    $as_echo "Starting container from image: ${DOCKER_IMAGE}"
 
 
-	 dk_id=$(docker ps -a -f name=${DOCKER_CONTAINER} --format "{{.ID}}")
+		 dk_id=$(docker ps -a -f name=${DOCKER_CONTAINER} -q)
 
-
-	 dk_img=$(docker ps -a -f name=${DOCKER_CONTAINER} --format "{{.Image}}")
+		 dk_img=$(docker inspect --format='{{.Config.Image}}' ${DOCKER_CONTAINER})
 
    $as_echo "id: ${dk_id} img: ${dk_img}"
    if test -n "${dk_id}" -a -n "${dk_img}"; then :
@@ -3157,55 +3226,86 @@ fi
 
 else
   $as_echo "CREATE ";
-    user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
-  user_id=$(echo ${user_entry} | awk -F: '{print $3}')
-  user_group=$(echo ${user_entry} | awk -F: '{print $4}')
-  user_home=$(echo ${user_entry} | awk -F: '{print $6}')
-  group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
-  user_groups=$(id -G ${USER} | sed 's/ /,/g')
-  abs_srcdir=$(cd ${srcdir}; pwd)
-    docker run -d -it --entrypoint=${SHELL} -e USER=${USER} -e DISPLAY=${DISPLAY} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v ${abs_srcdir}:${abs_srcdir} -v ${user_home}:${user_home} -v $(pwd):$(pwd) -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE};
-    docker exec --user root ${DOCKER_CONTAINER} ${SHELL} -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
+
+   user_id=$(id -u)
+   user_group=$(id -g)
+user_home=${HOME}
+abs_builddir=$(pwd)
+abs_srcdir=$(cd ${srcdir}; pwd)
+
+# Docker profiles
+DOCKER_PROFILE_debug="--cap-add=SYS_PTRACE --security-opt seccomp=unconfined"
+
+
+  if ${DOCKER_SHARES+:} false; then :
+
+		 for _share in ${DOCKER_SHARES}; do
+		  as_fn_append DOCKER_SHARES_VAR "-v ${_share} ";
+		 done
+
+fi
+  if ${DOCKER_NETWORKS+:} false; then :
+
+		 for _n in ${DOCKER_NETWORKS}; do
+		  as_fn_append DOCKER_NETWORKS_VAR "--network=$_n ";
+		 done
+
+fi
+  if ${DOCKER_PROFILE+:} false; then :
+
+		  DOCKER_PROFILE_VAR=$(eval echo \${DOCKER_PROFILE_${DOCKER_PROFILE}})
+		  $as_echo "DOCKER_PROFILE: ${DOCKER_PROFILE}"
+
+fi
+  $as_echo "DOCKER_ENTRYPOINT->|${DOCKER_ENTRYPOINT}|"
+  if test -n "${DOCKER_ENTRYPOINT}"; then :
+
+else
+  DOCKER_ENTRYPOINT=${SHELL}
+fi
+  $as_echo "DOCKER_ENTRYPOINT->|${DOCKER_ENTRYPOINT}|"
+    docker run -d -it --entrypoint=${DOCKER_ENTRYPOINT} -e USER=${USER} -e DISPLAY=${DISPLAY} -e LANG=${LANG} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v ${abs_srcdir}:${abs_srcdir} -v ${user_home}:${user_home} -v $(pwd):$(pwd) ${DOCKER_SHARES_VAR} ${DOCKER_NETWORKS_VAR} ${DOCKER_PROFILE_VAR} -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE};
+    docker exec --user root ${DOCKER_CONTAINER} ${SHELL} -c " groupadd -g ${user_group} ${USER}; useradd -d ${user_home} -u ${user_id} -g ${user_group} ${USER}; ";
 
 fi
 
   DOCKER_CONTAINER=${DOCKER_CONTAINER}
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=created
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=restarting
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=running
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=paused
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=exited
 else
   eval
@@ -3225,40 +3325,40 @@ esac
 
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=created
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=restarting
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=running
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=paused
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=exited
 else
   eval
@@ -3276,50 +3376,50 @@ esac
 else
   if ${DOCKER_CONTAINER+:} false; then :
 
-	  $as_echo
-	  sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+          $as_echo
+          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
 ## // "STARTING CONTAINER: ${DOCKER_CONTAINER}" ////// ##
 _ASBOX
-	  $as_echo
+          $as_echo
 
 
   DOCKER_CONTAINER=${DOCKER_CONTAINER}
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=created
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=restarting
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=running
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=paused
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=exited
 else
   eval
@@ -3339,40 +3439,40 @@ esac
 
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=created
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=restarting
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=running
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=paused
 else
   eval
 fi
 
 
-	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
-	 if test -n "${id_cnt_status}"; then :
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited -q)
+         if test -n "${id_cnt_status}"; then :
   eval dk_status=exited
 else
   eval
@@ -3393,14 +3493,15 @@ fi
    if ${DOCKER_CONTAINER+:} false; then :
 
 
-user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
-user_id=$(echo ${user_entry} | awk -F: '{print $3}')
-user_group=$(echo ${user_entry} | awk -F: '{print $4}')
-user_home=$(echo ${user_entry} | awk -F: '{print $6}')
-group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
-user_groups=$(id -G ${USER} | sed 's/ /,/g')
+   user_id=$(id -u)
+   user_group=$(id -g)
+user_home=${HOME}
 abs_builddir=$(pwd)
 abs_srcdir=$(cd ${srcdir}; pwd)
+
+# Docker profiles
+DOCKER_PROFILE_debug="--cap-add=SYS_PTRACE --security-opt seccomp=unconfined"
+
 
 
 
@@ -3421,13 +3522,17 @@ user_group=${user_group}
 user_groups=${user_groups}
 user_home=${user_home}
 
+export SHELL=/bin/bash
+export M_PATH=\$PATH
+M_ENV="\$(export -p | awk '{printf("%s; ",\$0)}')"
+xhost local:${USER} > /dev/null
 >&2 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 quoted_args="\$(printf " %q" "\$\@")"
 if [ -n "\${MAKESHELL}" ]; then
  \${MAKESHELL} \${quoted_args};
 else
  [ -t 7 -o -t 0 ] && INT=-ti || INT=
- docker exec \${INT} --user \${USER} \${DOCKER_CONTAINER} /bin/bash -l -c "cd \$(pwd); export MAKESHELL=/bin/bash; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; /bin/bash \${quoted_args}";
+ docker exec \${INT} --user \${USER} \${DOCKER_CONTAINER} /bin/bash -l -c "save_path=\\\\\$PATH; \$M_ENV export PATH=\\\\\$save_path; cd \$(pwd); export MAKESHELL=/bin/bash; /bin/bash \${quoted_args}";
 fi
 
 _as_read_EOF
@@ -3447,8 +3552,10 @@ read -d '' AX_DOCKER_BUILD_TARGETS << _as_read_EOF
 # //// DOCKER TARGETS  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-DOCKER_CONTAINER = ${DOCKER_CONTAINER}
-DOCKER_IMAGE     = ${DOCKER_IMAGE}
+DOCKER_CONTAINER   = ${DOCKER_CONTAINER}
+DOCKER_IMAGE       = ${DOCKER_IMAGE}
+DOCKER_ENTRYPOINT ?= \${SHELL}
+DOCKER_PS1        ?= [\\\u@${DOCKER_IMAGE}:\\\h \\\W]\$
 
 user_id     = ${user_id}
 user_group  = ${user_group}
@@ -3458,12 +3565,16 @@ user_home   = ${user_home}
 # if MAKESHELL is not defined use local dshell to enter docker container
 docker_SHELL := \$(if \${MAKESHELL},\${MAKESHELL},\${abs_top_builddir}/dshell)
 local_SHELL  := \$(if \${SHELL},\${SHELL},/bin/sh)
-SHELL := \${docker_SHELL}
-export SHELL
+export SHELL := \${docker_SHELL}
+\$(foreach x,\$(NODOCKERBUILD),\$(eval \$x: override SHELL=\${local_SHELL}))
+
+# fix local_SHELL for automake targets
+Makefile Makefile.in \$(ACLOCAL_M4) \$(top_srcdir)/configure am--refresh: SHELL = \$(local_SHELL)
+AUTOMAKE += --add-missing --copy -W none
 
 .PHONY: docker
 ifeq (docker,\$(MAKECMDGOALS))
-docker: ##@docker get docker build help
+docker:
 	@ \
 	echo ; \
 	echo " This build was set to work with Docker: "; \
@@ -3491,25 +3602,24 @@ ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
 export SHELL = \${local_SHELL}
 
 .PHONY: info start stop shell inspect run
-inspect: ##@docker get container info (use: "make docker inspect")
+inspect: ##@docker inspect running container properties
 	@echo "info:";
 	docker inspect \${DOCKER_CONTAINER}
 
-start: ##@docker run the docker container (use: "make docker start")
+start: ##@docker start new session of configured container
 	@echo "Starting docker container:";
-	docker run -d -it --entrypoint=\${SHELL} -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
-	docker exec --user root \${DOCKER_CONTAINER} \${SHELL} -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
+	docker run -d -it --entrypoint=\${DOCKER_ENTRYPOINT} -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e LANG=\${LANG} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -e PS1="\${DOCKER_PS1}" -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} \$(foreach share,\${DOCKER_SHARES},-v \$(share) ) \$(foreach net,\${DOCKER_NETWORKS},--network=\$(net) ) \${DOCKER_PROFILE_\${DOCKER_PROFILE}} -w \${abs_top_builddir} --privileged --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
+	docker exec --user root \${DOCKER_CONTAINER} \${SHELL} -c " groupadd -g \${user_group} \${USER}; useradd -d \${user_home} -u \${user_id} -g \${user_group} \${USER}; ";
 
-stop:  ##@docker stop and remove the docker container (use: "make docker stop")
+stop: ##@docker stop running container session
 	@echo "Stopping docker container:";
 	docker stop \${DOCKER_CONTAINER};
 	docker rm \${DOCKER_CONTAINER};
 
-shell: ##@docker launch a shell inside the container (use: "make docker shell")
+shell: ##@docker start a shell inside running container (use: USER=root for privleges)
 	@echo "Starting docker shell";
 	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
-	 \${SHELL} -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
-
+	 \${SHELL} -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; export PS1='\${DOCKER_PS1} '; bash -l "
 
 endif
 
@@ -3526,29 +3636,30 @@ fi
    if ${DOCKER_CONTAINER+:} false; then :
 
 
-	  $as_echo
-	  sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+          $as_echo
+          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
 ## // "EXECUTING CONFIGURE IN DOCKER CONTAINER: ${DOCKER_CONTAINER}" ////// ##
 _ASBOX
-	  $as_echo
+          $as_echo
 
 
-	 $as_echo " --------------------------------- "
-	 $as_echo " docker-image      = ${DOCKER_IMAGE}"
-	 $as_echo " docker-container  = ${DOCKER_CONTAINER}"
-	 $as_echo " ac_configure_args = ${ac_configure_args}"
-	 $as_echo " --------------------------------- "
+         $as_echo " --------------------------------- "
+         $as_echo " docker-image      = ${DOCKER_IMAGE}"
+         $as_echo " docker-container  = ${DOCKER_CONTAINER}"
+         $as_echo " ac_configure_args = ${ac_configure_args}"
+         $as_echo " --------------------------------- "
 
 
 
-user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
-user_id=$(echo ${user_entry} | awk -F: '{print $3}')
-user_group=$(echo ${user_entry} | awk -F: '{print $4}')
-user_home=$(echo ${user_entry} | awk -F: '{print $6}')
-group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
-user_groups=$(id -G ${USER} | sed 's/ /,/g')
+   user_id=$(id -u)
+   user_group=$(id -g)
+user_home=${HOME}
 abs_builddir=$(pwd)
 abs_srcdir=$(cd ${srcdir}; pwd)
+
+# Docker profiles
+DOCKER_PROFILE_debug="--cap-add=SYS_PTRACE --security-opt seccomp=unconfined"
+
 
 
 
@@ -3569,13 +3680,17 @@ user_group=${user_group}
 user_groups=${user_groups}
 user_home=${user_home}
 
+export SHELL=/bin/bash
+export M_PATH=\$PATH
+M_ENV="\$(export -p | awk '{printf("%s; ",\$0)}')"
+xhost local:${USER} > /dev/null
 >&2 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 quoted_args="\$(printf " %q" "\$\@")"
 if [ -n "\${MAKESHELL}" ]; then
  \${MAKESHELL} \${quoted_args};
 else
  [ -t 7 -o -t 0 ] && INT=-ti || INT=
- docker exec \${INT} --user \${USER} \${DOCKER_CONTAINER} /bin/bash -l -c "cd \$(pwd); export MAKESHELL=/bin/bash; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; /bin/bash \${quoted_args}";
+ docker exec \${INT} --user \${USER} \${DOCKER_CONTAINER} /bin/bash -l -c "save_path=\\\\\$PATH; \$M_ENV export PATH=\\\\\$save_path; cd \$(pwd); export MAKESHELL=/bin/bash; /bin/bash \${quoted_args}";
 fi
 
 _as_read_EOF
@@ -3586,9 +3701,13 @@ $as_echo "${DK_DSHELLFILE}" > ${abs_builddir}/dshell
 chmod +x dshell
 
 
+		if test -n ""; then :
+  $as_echo "Docker config - performing autogen: cd ${srcdir} && ./"
+	 $(cd ${srcdir} && ./)
+fi
 
 
-	 	 dk_configure_args=
+                  dk_configure_args=
 
 
 
@@ -3610,8 +3729,8 @@ IFS="'"
 
 else
 
-    if test "$x" != "${x%=*}"; then :
-  x=${x%=*}"=\""${x#*=}"\""
+    if test "$x" != "${x%%=*}"; then :
+  x=${x%%=*}"=\""${x#*=}"\""
 else
   if test "$x" != "${x%\\[:space:\]\*}"; then :
   x="\""$x"\""
@@ -3647,40 +3766,41 @@ fi
 IFS=${_save_IFS}
 
 
-	 as_fn_append dk_configure_args " "
-	 if ${DOCKER_IMAGE+:} false; then :
+         as_fn_append dk_configure_args " "
+		 if ${DOCKER_IMAGE+:} false; then :
   as_fn_append dk_configure_args "DOCKER_IMAGE=\"${DOCKER_IMAGE}\" "
-fi;
-	 if ${DOCKER_CONTAINER+:} false; then :
+fi
+		 if ${DOCKER_CONTAINER+:} false; then :
   as_fn_append dk_configure_args "DOCKER_CONTAINER=\"${DOCKER_CONTAINER}\" "
-fi;
-	 if ${DOCKER_FILE+:} false; then :
+fi
+		 if ${DOCKER_FILE+:} false; then :
   as_fn_append dk_configure_args "DOCKER_FILE=\"${DOCKER_FILE}\" "
-fi;
+fi
 
 
 
-	 $as_echo " ------------------------- "
-	 $as_echo " DOCKER CONFIGURE COMMAND: "
-	 $as_echo " ENABLE_KCONFIG=no docker exec -t --user ${USER} ${DOCKER_CONTAINER} bash -l -c \"cd $(pwd)\; $(
+         $as_echo " ------------------------- "
+         $as_echo " DOCKER CONFIGURE COMMAND: "
+         $as_echo " ENABLE_KCONFIG=no docker exec -t --user ${USER} ${DOCKER_CONTAINER} bash -l -c \"cd ${srcdir}\; cd $(pwd)\; $(
 echo ENABLE_KCONFIG=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
-) ${0} $(
-echo ${dk_configure_args} | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
 ) $(
 echo HAVE_DOCKER=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
-) \"; exit 0;          "
-	 $as_echo " ------------------------- "
-
-	 	 eval ENABLE_KCONFIG=no docker exec -t --user ${USER} ${DOCKER_CONTAINER} bash -l -c \"cd $(pwd)\; $(
-echo ENABLE_KCONFIG=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
 ) ${0} $(
 echo ${dk_configure_args} | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
+) \";          "
+         $as_echo " ------------------------- "
+
+                  eval ENABLE_KCONFIG=no docker exec -t --user ${USER} ${DOCKER_CONTAINER} bash -l -c \"cd ${srcdir}\; cd $(pwd)\; $(
+echo ENABLE_KCONFIG=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
 ) $(
 echo HAVE_DOCKER=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
-) \"; exit 0;
+) ${0} $(
+echo ${dk_configure_args} | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
+) \";
 
 
 
+    	exit 0;
 
 fi
 
@@ -3689,14 +3809,15 @@ else
    if ${DOCKER_CONTAINER+:} false; then :
 
 
-user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
-user_id=$(echo ${user_entry} | awk -F: '{print $3}')
-user_group=$(echo ${user_entry} | awk -F: '{print $4}')
-user_home=$(echo ${user_entry} | awk -F: '{print $6}')
-group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
-user_groups=$(id -G ${USER} | sed 's/ /,/g')
+   user_id=$(id -u)
+   user_group=$(id -g)
+user_home=${HOME}
 abs_builddir=$(pwd)
 abs_srcdir=$(cd ${srcdir}; pwd)
+
+# Docker profiles
+DOCKER_PROFILE_debug="--cap-add=SYS_PTRACE --security-opt seccomp=unconfined"
+
 
 
 
@@ -3707,8 +3828,10 @@ read -d '' AX_DOCKER_BUILD_TARGETS << _as_read_EOF
 # //// DOCKER TARGETS  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-DOCKER_CONTAINER = ${DOCKER_CONTAINER}
-DOCKER_IMAGE     = ${DOCKER_IMAGE}
+DOCKER_CONTAINER   = ${DOCKER_CONTAINER}
+DOCKER_IMAGE       = ${DOCKER_IMAGE}
+DOCKER_ENTRYPOINT ?= \${SHELL}
+DOCKER_PS1        ?= [\\\u@${DOCKER_IMAGE}:\\\h \\\W]\$
 
 user_id     = ${user_id}
 user_group  = ${user_group}
@@ -3718,12 +3841,16 @@ user_home   = ${user_home}
 # if MAKESHELL is not defined use local dshell to enter docker container
 docker_SHELL := \$(if \${MAKESHELL},\${MAKESHELL},\${abs_top_builddir}/dshell)
 local_SHELL  := \$(if \${SHELL},\${SHELL},/bin/sh)
-SHELL := \${docker_SHELL}
-export SHELL
+export SHELL := \${docker_SHELL}
+\$(foreach x,\$(NODOCKERBUILD),\$(eval \$x: override SHELL=\${local_SHELL}))
+
+# fix local_SHELL for automake targets
+Makefile Makefile.in \$(ACLOCAL_M4) \$(top_srcdir)/configure am--refresh: SHELL = \$(local_SHELL)
+AUTOMAKE += --add-missing --copy -W none
 
 .PHONY: docker
 ifeq (docker,\$(MAKECMDGOALS))
-docker: ##@docker get docker build help
+docker:
 	@ \
 	echo ; \
 	echo " This build was set to work with Docker: "; \
@@ -3751,25 +3878,24 @@ ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
 export SHELL = \${local_SHELL}
 
 .PHONY: info start stop shell inspect run
-inspect: ##@docker get container info (use: "make docker inspect")
+inspect: ##@docker inspect running container properties
 	@echo "info:";
 	docker inspect \${DOCKER_CONTAINER}
 
-start: ##@docker run the docker container (use: "make docker start")
+start: ##@docker start new session of configured container
 	@echo "Starting docker container:";
-	docker run -d -it --entrypoint=\${SHELL} -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
-	docker exec --user root \${DOCKER_CONTAINER} \${SHELL} -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
+	docker run -d -it --entrypoint=\${DOCKER_ENTRYPOINT} -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e LANG=\${LANG} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -e PS1="\${DOCKER_PS1}" -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} \$(foreach share,\${DOCKER_SHARES},-v \$(share) ) \$(foreach net,\${DOCKER_NETWORKS},--network=\$(net) ) \${DOCKER_PROFILE_\${DOCKER_PROFILE}} -w \${abs_top_builddir} --privileged --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
+	docker exec --user root \${DOCKER_CONTAINER} \${SHELL} -c " groupadd -g \${user_group} \${USER}; useradd -d \${user_home} -u \${user_id} -g \${user_group} \${USER}; ";
 
-stop:  ##@docker stop and remove the docker container (use: "make docker stop")
+stop: ##@docker stop running container session
 	@echo "Stopping docker container:";
 	docker stop \${DOCKER_CONTAINER};
 	docker rm \${DOCKER_CONTAINER};
 
-shell: ##@docker launch a shell inside the container (use: "make docker shell")
+shell: ##@docker start a shell inside running container (use: USER=root for privleges)
 	@echo "Starting docker shell";
 	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
-	 \${SHELL} -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
-
+	 \${SHELL} -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; export PS1='\${DOCKER_PS1} '; bash -l "
 
 endif
 
@@ -4645,6 +4771,29 @@ _as_read_EOF
 
 
 
+
+# Check whether --enable-java_only was given.
+if test "${enable_java_only+set}" = set; then :
+  enableval=$enable_java_only; JAVA_ONLY=yes
+fi
+
+
+
+# Check whether --with-jars was given.
+if test "${with_jars+set}" = set; then :
+  withval=$with_jars; JARS_DIR=$withval
+else
+  JARS_DIR=
+fi
+
+
+ if test x"$JARS_DIR" != x; then
+  USE_JARS_DIR_TRUE=
+  USE_JARS_DIR_FALSE='#'
+else
+  USE_JARS_DIR_TRUE='#'
+  USE_JARS_DIR_FALSE=
+fi
 
 
 # Checks for programs.
@@ -6639,6 +6788,7 @@ _ACEOF
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: **********VISIBILITY*********$CFLAG_VISIBILITY*******************" >&5
 $as_echo "**********VISIBILITY*********$CFLAG_VISIBILITY*******************" >&6; }
+CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
 #if test -n "$CFLAG_VISIBILITY" && test "$is_w32" != yes; then
 #	CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
 #fi
@@ -6654,7 +6804,7 @@ case "$host" in #(
      ;;
 esac
 
-#AC_CONFIG_HEADER(include/config.h)
+#AC_CONFIG_HEADER(include/mdsplus/mdsconfig.h)
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -7953,8 +8103,6 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_visual_studio" >&5
 $as_echo "$with_visual_studio" >&6; }
 
-
-
 FORLD=ld
 LD=ld LD_LDARC=""
 LD_LDSHARE=""
@@ -7973,6 +8121,14 @@ then
 else
   : ${uiddir:=$exec_prefix/uid}
 fi
+if nproc&>/dev/null && perl -v&>/dev/null
+then
+  MAKEFLAG_J="-j -l $(perl -e "print $(nproc) * 0.9")"
+else
+  MAKEFLAG_J="-j -l 1"
+fi
+DEF_PYLIB=$(ldd $(which python) | grep libpython | awk '{print $3}')
+MAKEFLAG_O="$(if ${MAKE:=make} -v -O&>/dev/null; then echo -O; fi)"
 MAKEUIDDIR="\$(top_builddir)/uid/"
 MAKESHLIBDIR="\$(top_builddir)/lib/"
 MAKEBINDIR="\$(top_builddir)/bin/"
@@ -7987,13 +8143,14 @@ FOR_LDFLAGS=""
 SHARETYPE=".so"
 
 THREAD="-pthread"
-
 MITDEVICESIO_TARGETS=""
 case "$host" in
 *mingw*)
+       MAKEFLAG_J=""
+       MAKEFLAG_O=""
        IDLMDSEVENT=""
        LIBPRE=""
-       CFLAGS="$CFLAGS -Wno-implicit-fallthrough -fno-strict-aliasing -mno-ms-bitfields";
+       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields ";
        LD="$CXX -static-libgcc"
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="$FC"
@@ -8027,7 +8184,7 @@ case "$host" in
        jni_md_inc_dir="$with_jdk/include/linux";;
 
 *86*linux*)
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing ";
        FORLD="$FC";
        LD="gcc"
        if ( echo $host| grep 64 > /dev/null )
@@ -8129,8 +8286,9 @@ case "$host" in
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X";
+       THREAD=""
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic";
+       CFLAGS="$CFLAGS -arch x86_64 -dynamic -Wno-error=unused-command-line-argument -Wno-missing-field-initializers -Wno-parentheses-equality";
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="gfortran"
        FOR_LDFLAGS="-shared"
@@ -8140,10 +8298,10 @@ case "$host" in
        LD_LDSHARE="";
        LDARC="";
        LD_LDARC="";
-       UILPATH=/usr/OpenMotif/bin;
-       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L/usr/OpenMotif/lib"
-       MOTIF_LD_LDARC="-multiply_defined suppress -L/usr/OpenMotif/lib"
-       	   	   LINKSHARED="$LDFLAGS -shared -arch i386 -arch x86_64 -install_name @loader_path/../lib/\$(@F) -headerpad_max_install_names";
+       UILPATH=${OPENMOTIF-/usr}/bin;
+       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L${OPENMOTIF-/usr}/lib"
+       MOTIF_LD_LDARC="-multiply_defined suppress -L${OPENMOTIF-/usr}/lib"
+       	   	   LINKSHARED="$LDFLAGS -shared -arch x86_64 -install_name @loader_path/../lib/\$(@F) -headerpad_max_install_names";
            FOR_LINKSHARED="$LDFLAGS -shared";
 	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
        IDL_LD="";
@@ -8273,6 +8431,7 @@ fi
 #
 
 
+raw_old_libs="$LIBS" #### needed because of nested call to MDS_SEARCH_LIBS
 
   old_LIBS="$LIBS"
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing raw1394_get_libversion" >&5
@@ -8454,6 +8613,7 @@ fi
 
   LIBS="$old_LIBS"
 
+LIBS="$raw_old_libs"
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing gethostbyname" >&5
 $as_echo_n "checking for library containing gethostbyname... " >&6; }
@@ -10188,7 +10348,7 @@ fi
 if ${JDK_CFLAGS+:} false; then :
   case $enable_java in #(
   yes) :
-    JAVA_APS="\$(JAVA_APS)" ;; #(
+    JAVA_APS="\$(JAVA_APS)";JAVA_JAR="\$(JAVA_JAR)" ;; #(
   *) :
      ;;
 esac
@@ -11758,8 +11918,8 @@ fi
 
 case $host in #(
   *darwin*|*apple*) :
-    X_CFLAGS+=" -I/usr/OpenMotif/include"
-                             X_LIBS+=" -L/usr/OpenMotif/lib" ;; #(
+    X_CFLAGS+=" -I${OPENMOTIF-/usr}/include"
+                             X_LIBS+=" -L${OPENMOTIF-/usr}/lib" ;; #(
   *) :
      ;;
 esac
@@ -11819,25 +11979,33 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for uil command" >&5
 $as_echo_n "checking for uil command... " >&6; }
-if ( which $UIL 2>/dev/null )
+if test ! "$MINGW" = "yes" && ( which $UIL &>/dev/null )
 then
   UIL="env LANG=en_US $UIL"
-  MOTIF_APS="\$(MOTIF_APS)"
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: have uil so openmotif apps will be built." >&5
-$as_echo "have uil so openmotif apps will be built." >&6; }
+  HAVE_MOTIF="yes"
+  #AC_MSG_RESULT(have uil so openmotif apps will be built.)
 else
-  MOTIF_APS=""
 # IDLMDSEVENT and IDLMDSWIDGETS need MOTIF to build
   IDLMDSEVENT=""
   IDLMDSWIDGETS=""
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no uil so skipping openmotif apps.openmotif-devel not installed." >&5
-$as_echo "no uil so skipping openmotif apps.openmotif-devel not installed." >&6; }
+  #AC_MSG_RESULT(no uil so skipping openmotif apps.openmotif-devel not installed.)
 fi
-if [ "$MINGW" = "yes" ]
-then
-  MOTIF_APS=""
+MOTIF_APS="\$(MOTIF_APS)"
+ if ${HAVE_MOTIF+:} false; then
+  HAVE_MOTIF_TRUE=
+  HAVE_MOTIF_FALSE='#'
+else
+  HAVE_MOTIF_TRUE='#'
+  HAVE_MOTIF_FALSE=
 fi
 
+if test -z "$HAVE_MOTIF_TRUE"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
 
 XM_LIBS="-lMrm -lXm"
 
@@ -12920,7 +13088,8 @@ VALGRIND_CHECK_RULES='
 
 # Optional variables
 VALGRIND_FLAGS           ?=
-VALGRIND_FLAGS           += --num-callers=30 \
+VALGRIND_FLAGS           += --gen-suppressions=all \
+                            --num-callers=30 \
                             --trace-children=yes \
                             --child-silent-after-fork=yes \
                             --trace-children-skip-by-arg=*SetMdsplusFileProtection*
@@ -12929,7 +13098,7 @@ VALGRIND_memcheck_FLAGS  ?=
 VALGRIND_memcheck_FLAGS  += --leak-check=full --show-reachable=no
 
 VALGRIND_helgrind_FLAGS  ?=
-VALGRIND_helgrind_FLAGS  += --history-level=approx
+VALGRIND_helgrind_FLAGS  += --history-level=full
 
 VALGRIND_drd_FLAGS       ?=
 VALGRIND_drd_FLAGS       +=
@@ -13017,10 +13186,10 @@ $(VALGRIND_LOGS):
 tests-valgrind:
 	@ \
 	echo "--- VALGRIND TESTS --- enabled tools: $(foreach tool,$(VALGRIND_TOOLS), $(tool))"; \
-	$(MAKE) VALGRIND_BUILD="yes"; \
+	$(MAKE) -k $(BUILD_FLAGS) $(AM_MAKEFLAGS) all VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
-			$(MAKE) $(AM_MAKEFLAGS) -k tests-valgrind-tool VALGRIND_TOOL=$(tool); \
+			$(MAKE) -k $(TEST_FLAGS) $(AM_MAKEFLAGS) tests-valgrind-tool VALGRIND_TOOL=$(tool); \
 		) \
 	)
 
@@ -14529,6 +14698,52 @@ fi
 
  # selects particular envs for build:host
 
+  # Extract the first word of "winepath", so it can be a program name with args.
+set dummy winepath; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_HAVE_WINEPATH+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$HAVE_WINEPATH"; then
+  ac_cv_prog_HAVE_WINEPATH="$HAVE_WINEPATH" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_HAVE_WINEPATH="yes"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_HAVE_WINEPATH" && ac_cv_prog_HAVE_WINEPATH="no"
+fi
+fi
+HAVE_WINEPATH=$ac_cv_prog_HAVE_WINEPATH
+if test -n "$HAVE_WINEPATH"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_WINEPATH" >&5
+$as_echo "$HAVE_WINEPATH" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  if test "x$HAVE_WINEPATH" = xno; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: winepath command not found" >&5
+$as_echo "$as_me: WARNING: winepath command not found" >&2;}
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: winepath is required by wine to properly set the tests path" >&5
+$as_echo "$as_me: WARNING: winepath is required by wine to properly set the tests path" >&2;}
+fi
+
+
  LOG_DRIVER="\$(SHELL) \$(top_srcdir)/conf/test-driver"
  abs_srcdir=$(cd ${srcdir}; pwd)
 
@@ -14600,14 +14815,17 @@ esac
 
 # Check whether --with-winebottle was given.
 if test "${with_winebottle+set}" = set; then :
-  withval=$with_winebottle;
+  withval=$with_winebottle; { $as_echo "$as_me:${as_lineno-$LINENO}: using wine bottle: ${with_winebottle}" >&5
+$as_echo "$as_me: using wine bottle: ${with_winebottle}" >&6;}
 else
-  if ${winebottle+:} false; then :
+  if ${WINEPREFIX+:} false; then :
   with_winebottle="${WINEPREFIX}"
 else
   with_winebottle="\$(top_builddir)/${winebottle_name}"
 fi
 fi
+
+  WINEPREFIX=${with_winebottle}
 
 
     if ${HAVE_WINEBOOT+:} false; then :
@@ -14653,249 +14871,87 @@ fi
 
 fi
   if test "x$HAVE_WINEBOOT" = xyes; then :
-  if ${WINEPREFIX+:} false; then :
-  $(eval "WINEPREFIX=${WINEPREFIX}             WINEARCH=${WINEARCH}" wineboot -f -r)
+  # Creating bottle using wineboot
+	  # WINEDLLOVERRIDES prevents asking to install mono and geko here
+	  if test -d ${WINEPREFIX}; then :
+  $(eval WINEDLLOVERRIDES="mscoree,mshtml=" WINEPREFIX=${WINEPREFIX} WINEARCH=${WINEARCH} wineboot -f -r)
 else
-  $(eval "WINEPREFIX=$(pwd)/${winebottle_name} WINEARCH=${WINEARCH}" wineboot -f -i)
+  $(eval WINEDLLOVERRIDES="mscoree,mshtml=" WINEPREFIX=${WINEPREFIX} WINEARCH=${WINEARCH} wineboot -f -u)
 fi
-
-fi
-  WINEPREFIX=${with_winebottle}
-
-
-
-         { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
-$as_echo_n "checking for a sed that does not truncate output... " >&6; }
-if ${ac_cv_path_SED+:} false; then :
-  $as_echo_n "(cached) " >&6
 else
-            ac_script=s/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/
-     for ac_i in 1 2 3 4 5 6 7; do
-       ac_script="$ac_script$as_nl$ac_script"
-     done
-     echo "$ac_script" 2>/dev/null | sed 99q >conftest.sed
-     { ac_script=; unset ac_script;}
-     if test -z "$SED"; then
-  ac_path_SED_found=false
-  # Loop through the user's path and test for each of PROGNAME-LIST
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_prog in sed gsed; do
-    for ac_exec_ext in '' $ac_executable_extensions; do
-      ac_path_SED="$as_dir/$ac_prog$ac_exec_ext"
-      as_fn_executable_p "$ac_path_SED" || continue
-# Check for GNU ac_path_SED and select it if it is found.
-  # Check for GNU $ac_path_SED
-case `"$ac_path_SED" --version 2>&1` in
-*GNU*)
-  ac_cv_path_SED="$ac_path_SED" ac_path_SED_found=:;;
-*)
-  ac_count=0
-  $as_echo_n 0123456789 >"conftest.in"
-  while :
-  do
-    cat "conftest.in" "conftest.in" >"conftest.tmp"
-    mv "conftest.tmp" "conftest.in"
-    cp "conftest.in" "conftest.nl"
-    $as_echo '' >> "conftest.nl"
-    "$ac_path_SED" -f conftest.sed < "conftest.nl" >"conftest.out" 2>/dev/null || break
-    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
-    as_fn_arith $ac_count + 1 && ac_count=$as_val
-    if test $ac_count -gt ${ac_path_SED_max-0}; then
-      # Best one so far, save it but keep looking for a better one
-      ac_cv_path_SED="$ac_path_SED"
-      ac_path_SED_max=$ac_count
-    fi
-    # 10*(2^10) chars as input seems more than enough
-    test $ac_count -gt 10 && break
-  done
-  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
-esac
-
-      $ac_path_SED_found && break 3
-    done
-  done
-  done
-IFS=$as_save_IFS
-  if test -z "$ac_cv_path_SED"; then
-    as_fn_error $? "no acceptable sed could be found in \$PATH" "$LINENO" 5
-  fi
+  if test -d ${WINEPREFIX}; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: unable to update winebottle" >&5
+$as_echo "$as_me: WARNING: unable to update winebottle" >&2;}
 else
-  ac_cv_path_SED=$SED
+  as_fn_error $? "unable to create or find winebottle" "$LINENO" 5
 fi
 
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_SED" >&5
-$as_echo "$ac_cv_path_SED" >&6; }
- SED="$ac_cv_path_SED"
-  rm -f conftest.sed
-
-         { $as_echo "$as_me:${as_lineno-$LINENO}: checking for grep that handles long lines and -e" >&5
-$as_echo_n "checking for grep that handles long lines and -e... " >&6; }
-if ${ac_cv_path_GREP+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -z "$GREP"; then
-  ac_path_GREP_found=false
-  # Loop through the user's path and test for each of PROGNAME-LIST
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH$PATH_SEPARATOR/usr/xpg4/bin
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_prog in grep ggrep; do
-    for ac_exec_ext in '' $ac_executable_extensions; do
-      ac_path_GREP="$as_dir/$ac_prog$ac_exec_ext"
-      as_fn_executable_p "$ac_path_GREP" || continue
-# Check for GNU ac_path_GREP and select it if it is found.
-  # Check for GNU $ac_path_GREP
-case `"$ac_path_GREP" --version 2>&1` in
-*GNU*)
-  ac_cv_path_GREP="$ac_path_GREP" ac_path_GREP_found=:;;
-*)
-  ac_count=0
-  $as_echo_n 0123456789 >"conftest.in"
-  while :
-  do
-    cat "conftest.in" "conftest.in" >"conftest.tmp"
-    mv "conftest.tmp" "conftest.in"
-    cp "conftest.in" "conftest.nl"
-    $as_echo 'GREP' >> "conftest.nl"
-    "$ac_path_GREP" -e 'GREP$' -e '-(cannot match)-' < "conftest.nl" >"conftest.out" 2>/dev/null || break
-    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
-    as_fn_arith $ac_count + 1 && ac_count=$as_val
-    if test $ac_count -gt ${ac_path_GREP_max-0}; then
-      # Best one so far, save it but keep looking for a better one
-      ac_cv_path_GREP="$ac_path_GREP"
-      ac_path_GREP_max=$ac_count
-    fi
-    # 10*(2^10) chars as input seems more than enough
-    test $ac_count -gt 10 && break
-  done
-  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
-esac
-
-      $ac_path_GREP_found && break 3
-    done
-  done
-  done
-IFS=$as_save_IFS
-  if test -z "$ac_cv_path_GREP"; then
-    as_fn_error $? "no acceptable grep could be found in $PATH$PATH_SEPARATOR/usr/xpg4/bin" "$LINENO" 5
-  fi
-else
-  ac_cv_path_GREP=$GREP
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_GREP" >&5
-$as_echo "$ac_cv_path_GREP" >&6; }
- GREP="$ac_cv_path_GREP"
 
 
-         _libs=$(${CC} --print-search-dir | \
-           ${GREP} "libraries:" | \
-           ${SED} 's/^libraries: =//' | \
-           ${SED} 's/:/ /g')
-         as_fn_append _libs " "
 
-         _prog=$(${CC} --print-search-dir | \
-           ${GREP} "programs:" | \
-           ${SED} 's/^programs: =//' | \
-           ${SED} 's/:/ /g')
-         as_fn_append _libs "${_prog} "
 
-                  _sysroot=$(${CC} --print-sysroot)
+
+		 _libs=$(${CC} --print-search-dir | \
+		   ${GREP} "libraries:" | \
+		   ${SED} 's/^libraries: =//' | \
+		   ${SED} 's/:/ /g')
+		 as_fn_append _libs " "
+
+		 _prog=$(${CC} --print-search-dir | \
+		   ${GREP} "programs:" | \
+		   ${SED} 's/^programs: =//' | \
+		   ${SED} 's/:/ /g')
+		 as_fn_append _libs "${_prog} "
+
+		          _sysroot=$(${CC} --print-sysroot)
          as_fn_append _libs "${_sysroot}/mingw/bin "
          as_fn_append _libs "${_sysroot}/mingw/lib "
          as_fn_append _libs ${MAKESHLIBDIR}
 
-         WINEPATH=
-                  if ${HAVE_WINEPATH+:} false; then :
+		 WINEPATH=
+
+
+ # reset variable WINEPATH
+ if ${WINEPATH+:} false; then :
 
 else
-  # Extract the first word of "winepath", so it can be a program name with args.
-set dummy winepath; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_HAVE_WINEPATH+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$HAVE_WINEPATH"; then
-  ac_cv_prog_HAVE_WINEPATH="$HAVE_WINEPATH" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_HAVE_WINEPATH="yes"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_prog_HAVE_WINEPATH" && ac_cv_prog_HAVE_WINEPATH="no"
+  WINEPATH=
 fi
-fi
-HAVE_WINEPATH=$ac_cv_prog_HAVE_WINEPATH
-if test -n "$HAVE_WINEPATH"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_WINEPATH" >&5
-$as_echo "$HAVE_WINEPATH" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
+ if test "x$HAVE_WINEPATH" = xyes; then :
+  for _i in ${_libs}; do
+   # AS_VAR_SET([_dir],[$(eval cd $_i; pwd)])
+   # AS_VAR_APPEND([WINEPATH],["$(eval winepath -w $_i 2>/dev/null);"]);
+   as_fn_append WINEPATH "\$(shell winepath -w $_i 2>/dev/null);";
+   done
 fi
 
 
-fi
 
-         case ${HAVE_WINEPATH} in #(
-  yes|Yes|YES|Y|y) :
-    for _i in $_libs; do
-          as_fn_append WINEPATH "\$(shell winepath -w $_i 2>/dev/null);";
-         done
-          ;; #(
-  no|No|NO|N|n) :
-     ;; #(
-  *) :
-     ;; #(
-  *) :
-     ;;
-esac
-
-
-
-      PYTHONHOME="\$(shell winepath -w /python27 2>/dev/null)"
+      PYTHONHOME="$(eval winepath -w /python27 2>/dev/null)"
       as_fn_append TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
       as_fn_append TESTS_ENVIRONMENT "WINEDEBUG=-all "
-      as_fn_append TESTS_ENVIRONMENT "MDS_PATH='\$(shell winepath -w \$(abs_top_srcdir)/tdi 2>/dev/null)' "
-      as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR='\$(shell winepath -w \$(abs_top_srcdir) 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR='$(eval winepath -w ${srcdir} 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "MDS_PATH='$(eval winepath -w ${srcdir}/tdi 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "MDS_PYDEVICE_PATH='$(eval winepath -w ${srcdir}/pydevices 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "main_path='.;$(eval winepath -w ${srcdir}/trees 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "subtree_path='.;$(eval winepath -w ${srcdir}/trees/subtree 2>/dev/null)' "
       if test "x$WINEARCH" = xwin64; then :
-
-         as_fn_append WINEPATH "${PYTHONHOME}"
-         as_fn_append TESTS_ENVIRONMENT "PYTHONHOME='${PYTHONHOME}' "
-         as_fn_append TESTS_ENVIRONMENT "PYTHONPATH='%PYTHONHOME%\\Lib;%PYTHONHOME%\\Lib\\site-packages;\$(shell winepath -w \$(abs_top_srcdir)/testing 2>/dev/null)' "
-         as_fn_append TESTS_ENVIRONMENT "PyLib='python27' "
-         PYTHON="\$(abs_top_srcdir)/testing/winpython python"
-         as_fn_append PY_LOG_COMPILER "\${PYTHON} -B \$(abs_top_srcdir)/testing/testing.py"
-
+  # WINEARCH win64
+		 as_fn_append WINEPATH "${PYTHONHOME}"
+		 as_fn_append TESTS_ENVIRONMENT "PYTHONHOME='${PYTHONHOME}' "
+		 as_fn_append TESTS_ENVIRONMENT "PYTHONPATH='%PYTHONHOME%\\Lib;%PYTHONHOME%\\Lib\\site-packages;$(eval winepath -w ${srcdir}/testing 2>/dev/null)' "
+		 as_fn_append TESTS_ENVIRONMENT "PyLib='python27' "
+		 PYTHON="\$(abs_top_srcdir)/testing/winpython python"
+		 as_fn_append PY_LOG_COMPILER "\${PYTHON} -B \$(abs_top_srcdir)/testing/testing.py"
 else
-
+  # WINEARCH win32
 
  PY_LOG_COMPILER="sh -c \"exit 77\"; :"
 
-
-
 fi
-         as_fn_append TESTS_ENVIRONMENT "WINEPATH='${WINEPATH}' "
+	  # any wine flavor
+	  as_fn_append TESTS_ENVIRONMENT "WINEPATH='${WINEPATH}' "
       as_fn_append LOG_COMPILER "wine "
       # WINE Valgrind tuning ..
       # see: http://wiki.winehq.org/WineAndValgrind
@@ -14930,24 +14986,25 @@ fi
    as_fn_append TESTS_ENVIRONMENT "PATH=${MAKEBINDIR}:\${PATH} "
    as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
    as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
+   as_fn_append TESTS_ENVIRONMENT "MDS_PYDEVICE_PATH=\$(abs_top_srcdir)/pydevices "
+   as_fn_append TESTS_ENVIRONMENT "main_path='.;\$(abs_top_srcdir)/trees' "
+   as_fn_append TESTS_ENVIRONMENT "subtree_path='.;\$(abs_top_srcdir)/trees/subtree' "
    as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
-   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes"
+   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes "
+   as_fn_append TESTS_ENVIRONMENT "PyLib=$(if test -z $PyLib; then echo ${DEF_PYLIB}; else echo $PyLib; fi) "
    as_fn_append PY_LOG_COMPILER "${PYTHON} -B \$(top_srcdir)/testing/testing.py"
   ;; #(
   #
  # OTHER
  #
  *) :
-
-   # in all other platform tests are disabled for now
+     # in all other platform tests are disabled for now
    ENABLE_TESTS=no
   ;; #(
   *) :
      ;;
 esac
-
 # MACOS: add --dsymutil=yes to valgrind
-
 
 # Set ENABLE_TESTS
 
@@ -14958,7 +15015,6 @@ else
   ENABLE_TESTS_TRUE='#'
   ENABLE_TESTS_FALSE=
 fi
-
 
 
 
@@ -16987,7 +17043,7 @@ RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEA
 
 # Determine common warning options to apply to C, C++, and Fortran languages
 WARNFLAGS="-Wall -Wextra"
-
+NOWARNFLAGS=
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to treat warnings as errors" >&5
 $as_echo_n "checking whether to treat warnings as errors... " >&6; }
 # Check whether --enable-werror was given.
@@ -16999,13 +17055,44 @@ fi
 
 case $enable_werror in #(
   yes) :
-    as_fn_append WARNFLAGS " -Werror" ;; #(
+    as_fn_append WARNFLAGS " -Werror " ;; #(
+  *) :
+     ;;
+esac
+# Check whether --enable-wreturns was given.
+if test "${enable_wreturns+set}" = set; then :
+  enableval=$enable_wreturns; case $enableval in #(
+  no) :
+    as_fn_append NOWARNFLAGS " -Wno-unused-result " ;; #(
+  *) :
+     ;;
+esac
+fi
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_werror" >&5
+$as_echo "$enable_werror" >&6; }
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to warn about implicit conversions" >&5
+$as_echo_n "checking whether to warn about implicit conversions... " >&6; }
+# Check whether --enable-wconversion was given.
+if test "${enable_wconversion+set}" = set; then :
+  enableval=$enable_wconversion;
+else
+  enable_wconversion=no
+fi
+
+case $enable_wconversion in #(
+  yes) :
+    as_fn_append WARNFLAGS " -Wconversion" ;; #(
   *) :
      ;;
 esac
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_werror" >&5
-$as_echo "$enable_werror" >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_wconversion" >&5
+$as_echo "$enable_wconversion" >&6; }
+
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  CONFIG_H  ///////////////////////////////////////////////////////////// #
@@ -17176,11 +17263,19 @@ fi
 
 
 
-ac_config_headers="$ac_config_headers include/config.h"
 
 
 
-ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdsdcl/mdsdcl_show_version.c mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/_version.py mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/testing/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdi/MitDevices/_version.py tdi/RfxDevices/_version.py tdi/W7xDevices/_version.py tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile treeshr/testing/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
+
+
+
+
+
+ac_config_headers="$ac_config_headers include/mdsplus/mdsconfig.h"
+
+
+
+ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javatraverser2/Makefile javatraverser2/java/mds/mdslib/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdsdcl/mdsdcl_show_version.c mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/_version.py mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/testing/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile pydevices/MitDevices/_version.py pydevices/RfxDevices/_version.py pydevices/W7xDevices/_version.py remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile tditest/testing/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile treeshr/testing/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -17311,6 +17406,10 @@ if test -z "${MAINTAINER_MODE_TRUE}" && test -z "${MAINTAINER_MODE_FALSE}"; then
   as_fn_error $? "conditional \"MAINTAINER_MODE\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
+if test -z "${USE_JARS_DIR_TRUE}" && test -z "${USE_JARS_DIR_FALSE}"; then
+  as_fn_error $? "conditional \"USE_JARS_DIR\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 if test -z "${AMDEP_TRUE}" && test -z "${AMDEP_FALSE}"; then
   as_fn_error $? "conditional \"AMDEP\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
@@ -17348,6 +17447,10 @@ if test -z "${XML_TRUE}" && test -z "${XML_FALSE}"; then
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
+if test -z "${HAVE_MOTIF_TRUE}" && test -z "${HAVE_MOTIF_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_MOTIF\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 if test -z "${HAVE_PYTHON_TRUE}" && test -z "${HAVE_PYTHON_FALSE}"; then
   as_fn_error $? "conditional \"HAVE_PYTHON\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
@@ -18021,7 +18124,7 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
-    "include/config.h") CONFIG_HEADERS="$CONFIG_HEADERS include/config.h" ;;
+    "include/mdsplus/mdsconfig.h") CONFIG_HEADERS="$CONFIG_HEADERS include/mdsplus/mdsconfig.h" ;;
     "Makefile.inc") CONFIG_FILES="$CONFIG_FILES Makefile.inc" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "docs/Makefile") CONFIG_FILES="$CONFIG_FILES docs/Makefile" ;;
@@ -18039,6 +18142,8 @@ do
     "javamds/Makefile") CONFIG_FILES="$CONFIG_FILES javamds/Makefile" ;;
     "javascope/Makefile") CONFIG_FILES="$CONFIG_FILES javascope/Makefile" ;;
     "javatraverser/Makefile") CONFIG_FILES="$CONFIG_FILES javatraverser/Makefile" ;;
+    "javatraverser2/Makefile") CONFIG_FILES="$CONFIG_FILES javatraverser2/Makefile" ;;
+    "javatraverser2/java/mds/mdslib/Makefile") CONFIG_FILES="$CONFIG_FILES javatraverser2/java/mds/mdslib/Makefile" ;;
     "javadevices/Makefile") CONFIG_FILES="$CONFIG_FILES javadevices/Makefile" ;;
     "LabView/Makefile") CONFIG_FILES="$CONFIG_FILES LabView/Makefile" ;;
     "manpages/Makefile") CONFIG_FILES="$CONFIG_FILES manpages/Makefile" ;;
@@ -18071,6 +18176,9 @@ do
     "mdstcpip/docs/img/Makefile") CONFIG_FILES="$CONFIG_FILES mdstcpip/docs/img/Makefile" ;;
     "mdsvme/Makefile") CONFIG_FILES="$CONFIG_FILES mdsvme/Makefile" ;;
     "mitdevices/Makefile") CONFIG_FILES="$CONFIG_FILES mitdevices/Makefile" ;;
+    "pydevices/MitDevices/_version.py") CONFIG_FILES="$CONFIG_FILES pydevices/MitDevices/_version.py" ;;
+    "pydevices/RfxDevices/_version.py") CONFIG_FILES="$CONFIG_FILES pydevices/RfxDevices/_version.py" ;;
+    "pydevices/W7xDevices/_version.py") CONFIG_FILES="$CONFIG_FILES pydevices/W7xDevices/_version.py" ;;
     "remcam/Makefile") CONFIG_FILES="$CONFIG_FILES remcam/Makefile" ;;
     "roam/Makefile") CONFIG_FILES="$CONFIG_FILES roam/Makefile" ;;
     "rpm/Makefile") CONFIG_FILES="$CONFIG_FILES rpm/Makefile" ;;
@@ -18080,13 +18188,11 @@ do
     "servershr/Makefile") CONFIG_FILES="$CONFIG_FILES servershr/Makefile" ;;
     "setevent/Makefile") CONFIG_FILES="$CONFIG_FILES setevent/Makefile" ;;
     "tcl/Makefile") CONFIG_FILES="$CONFIG_FILES tcl/Makefile" ;;
-    "tdi/MitDevices/_version.py") CONFIG_FILES="$CONFIG_FILES tdi/MitDevices/_version.py" ;;
-    "tdi/RfxDevices/_version.py") CONFIG_FILES="$CONFIG_FILES tdi/RfxDevices/_version.py" ;;
-    "tdi/W7xDevices/_version.py") CONFIG_FILES="$CONFIG_FILES tdi/W7xDevices/_version.py" ;;
     "tdishr/Makefile") CONFIG_FILES="$CONFIG_FILES tdishr/Makefile" ;;
     "tdishr/testing/Makefile") CONFIG_FILES="$CONFIG_FILES tdishr/testing/Makefile" ;;
     "tdic/Makefile") CONFIG_FILES="$CONFIG_FILES tdic/Makefile" ;;
     "tditest/Makefile") CONFIG_FILES="$CONFIG_FILES tditest/Makefile" ;;
+    "tditest/testing/Makefile") CONFIG_FILES="$CONFIG_FILES tditest/testing/Makefile" ;;
     "testing/Makefile") CONFIG_FILES="$CONFIG_FILES testing/Makefile" ;;
     "testing/backends/check/Makefile") CONFIG_FILES="$CONFIG_FILES testing/backends/check/Makefile" ;;
     "testing/selftest/Makefile") CONFIG_FILES="$CONFIG_FILES testing/selftest/Makefile" ;;
@@ -18876,7 +18982,7 @@ $as_echo "$as_me: WARNING: " >&2;}
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: " >&5
 $as_echo "$as_me: WARNING: " >&2;}
 fi
-if test "$MOTIF_APS" = "" -a "$MINGW" = ""
+if test "$HAVE_MOTIF" = "" -a "$MINGW" = "" -a ! "$OS" = "windows"
 then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: " >&5
 $as_echo "$as_me: WARNING: " >&2;}

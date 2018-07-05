@@ -1,8 +1,13 @@
-import javax.swing.*;
-import java.beans.*;
-import java.awt.*;
-import java.lang.reflect.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Choice;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.Customizer;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 public class DeviceWaveDisplayCustomizer extends DeviceCustomizer implements Customizer
 {

@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*------------------------------------------------------------------------------
 
 		Name: TreePutRecord
@@ -27,7 +51,7 @@
 
 +-----------------------------------------------------------------------------*/
 #include "treeshrp.h"		/* must be first or off_t wrong */
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <mdstypes.h>
@@ -101,7 +125,7 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
   int64_t extended_offset;
   int compress_utility = utility_update == 2;
   int unlock_nci_needed = 0;
-#if !defined(_WIN32)
+#ifndef _WIN32
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif
@@ -218,8 +242,10 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 		attributes.facility_length[SEGMENTED_RECORD_FACILITY] = 0;
 		status = TreePutExtendedAttributes(info_ptr, &attributes, &extended_offset);
 	      }
-	      if (status & 1)
+	      if (status & 1) {
+		bitassign(0,nci->flags,NciM_SEGMENTED);
 		TreePutNci(info_ptr, nidx, nci, 1);
+	      }
 	    } else if ((nci->DATA_INFO.DATA_LOCATION.record_length != old_record_length) ||
 		       (nci->DATA_INFO.DATA_LOCATION.record_length >= DATAF_C_MAX_RECORD_SIZE) ||
 		       utility_update ||
@@ -372,7 +398,12 @@ int _TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
     size_t len = strlen(info->filespec) - 4;
     size_t const filename_length = len + 20;
     char *filename = (char *)alloca(filename_length);
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
+#endif
     strncpy(filename, info->filespec, len);
+#pragma GCC diagnostic pop
     filename[len] = '\0';
     strcat(filename, tmpfile ? "datafile#" : "datafile");
     df_ptr->get = MDS_IO_OPEN(filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC | O_EXCL: O_RDONLY, 0664);
@@ -417,11 +448,11 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
   int locked = 0;
   unsigned char rfa[6];
   if (blen > 0) {
-    bitassign(1, nci_ptr->flags2, NciM_DATA_CONTIGUOUS);
+    bitassign_c(1, nci_ptr->flags2, NciM_DATA_CONTIGUOUS);
     if (nonvms_compatible == -1)
       nonvms_compatible = getenv("NONVMS_COMPATIBLE") != NULL;
     if (nonvms_compatible) {
-      bitassign(1, nci_ptr->flags2, NciM_NON_VMS);
+      bitassign_c(1, nci_ptr->flags2, NciM_NON_VMS);
       status = TreeLockDatafile(info, 0, 0);
       locked = 1;
       eof = MDS_IO_LSEEK(info->data_file->put, 0, SEEK_END);
@@ -431,7 +462,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
       buffer = (char *)malloc(blen);
       bptr = buffer;
       LoadInt(nodenum, (char *)&info->data_file->record_header->node_number);
-      bitassign(0, nci_ptr->flags2, NciM_NON_VMS);
+      bitassign_c(0, nci_ptr->flags2, NciM_NON_VMS);
       memset(&info->data_file->record_header->rfa, 0, sizeof(RFA));
       while (bytes_to_put && (status & 1)) {
 	int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
@@ -466,12 +497,12 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 	  (MDS_IO_WRITE(info->data_file->put, (void *)buffer, bptr - buffer) == (bptr - buffer))
 	  ? TreeNORMAL : TreeFAILURE;
       if (status & 1) {
-	bitassign(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
+	bitassign_c(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
 	SeekToRfa(eof, rfa);
 	memcpy(nci_ptr->DATA_INFO.DATA_LOCATION.rfa, rfa,
 	       sizeof(nci_ptr->DATA_INFO.DATA_LOCATION.rfa));
       } else {
-	bitassign(1, nci_ptr->flags2, NciM_ERROR_ON_PUT);
+	bitassign_c(1, nci_ptr->flags2, NciM_ERROR_ON_PUT);
 	nci_ptr->DATA_INFO.ERROR_INFO.error_status = status;
 	nci_ptr->length = 0;
       }
@@ -527,6 +558,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 	    bytes_this_time) == bytes_this_time)
 	  ? TreeNORMAL : TreeFAILURE;
       if (!bytes_to_put) {
+	bitassign(0,nci_ptr->flags,NciM_SEGMENTED);
 	if STATUS_OK {
 	  bitassign(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
 	  SeekToRfa(eof, rfa);
@@ -578,10 +610,11 @@ static int UpdateDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 	   (info->data_file->put, (void *)(((char *)data_dsc_ptr->pointer->pointer) + bytes_to_put),
 	    bytes_this_time) == bytes_this_time) ? TreeNORMAL : TreeFAILURE;
       if (!bytes_to_put) {
+	bitassign(0,nci_ptr->flags,NciM_SEGMENTED);
 	if (status & 1) {
-	  bitassign(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
+	  bitassign_c(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
 	} else {
-	  bitassign(1, nci_ptr->flags2, NciM_ERROR_ON_PUT);
+	  bitassign_c(1, nci_ptr->flags2, NciM_ERROR_ON_PUT);
 	  nci_ptr->DATA_INFO.ERROR_INFO.error_status = status;
 	  nci_ptr->length = 0;
 	}

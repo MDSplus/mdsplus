@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*      Tdi1ItoX.C
         Convert between axis and index.
 
@@ -19,6 +43,7 @@
         Ken Klare, LANL P-4     (c)1990,1991,1992
         KK      21-Oct-1992     Text requires exact match.
  */
+#include <mdsplus/mdsplus.h>
 #include <STATICdef.h>
 #define beg     0
 #define end     1
@@ -204,8 +229,10 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
       switch (pslope->ndesc) {
       case 3:
 	fake.ending = pslope->segment[0].ending;
+	MDS_ATTR_FALLTHROUGH
       case 2:
 	fake.begin = pslope->segment[0].begin;
+	MDS_ATTR_FALLTHROUGH
       case 1:
 	fake.deltaval = pslope->segment[0].slope;
 	break;
@@ -237,6 +264,7 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
 			/*********************
                 WARNING falls through.
 			 *********************/
+      MDS_ATTR_FALLTHROUGH
     case DTYPE_RANGE:
       status = TdiGetArgs(opcode, nran = paxis->ndesc, &paxis->begin, sig, uni, dat, cats);
       nseg = HUGE;

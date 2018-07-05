@@ -1,23 +1,39 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <wspiapi.h>
 #endif
 #include "treeshrp.h"
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdstypes.h>
-#ifdef HAVE_PTHREAD_H
 #include <pthread.h>
-#endif
 #ifdef _WIN32
 #include <windows.h>
 #include <io.h>
-/*#define write _write
-#define lseek _lseeki64
-#define open _open
-#define close _close
-#define read _read
-*/
 #else
 #include <unistd.h>
 #endif
@@ -50,17 +66,21 @@
 #endif
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-#define MAX_DIMS 7
 struct descrip {
   char dtype;
   char ndims;
-  int dims[MAX_DIMS];
+  int dims[MAX_DIMS_R];
   int length;
   void *ptr;
 };
 
 STATIC_CONSTANT struct descrip empty_ans;
 
+static inline char *replaceBackslashes(char *filename) {
+  char *ptr;
+  while ((ptr = strchr(filename, '\\')) != NULL) *ptr = '/';
+  return filename;
+}
 
 #if !defined(HAVE_PTHREAD_H)
 #define pthread_mutex_t int
@@ -1037,8 +1057,7 @@ STATIC_ROUTINE int SendArg(int socket, unsigned char idx, char dtype, unsigned c
 {
   if (MDS_SEND_ARG == 0) {
     int status = FindImageSymbol("SendArg", (void **)&MDS_SEND_ARG);
-    if (!(status & 1))
-      return status;
+    if STATUS_NOT_OK  return status;
   }
   return (*MDS_SEND_ARG) (socket, idx, dtype, nargs, length, ndims, dims, bytes);
 }
@@ -1050,11 +1069,25 @@ STATIC_ROUTINE int GetAnswerInfoTS(int sock, char *dtype, short *length, char *n
 {
   if (MDS_GET_ANSWER_INFO_TS == 0) {
     int status = FindImageSymbol("GetAnswerInfoTS", (void **)&MDS_GET_ANSWER_INFO_TS);
-    if (!(status & 1))
-      return status;
+    if STATUS_NOT_OK  return status;
   }
   return (*MDS_GET_ANSWER_INFO_TS) (sock, dtype, length, ndims, dims, numbytes, dptr, m);
 }
+
+/*
+STATIC_THREADSAFE int (*MDS_GET_ANSWER_INFO_TO) () = 0;
+
+STATIC_ROUTINE int GetAnswerInfoTO(int sock, char *dtype, short *length, char *ndims, int *dims,
+				   int *numbytes, void **dptr, void **m, int timeout)
+{
+  if (MDS_GET_ANSWER_INFO_TO == 0) {
+    int status = FindImageSymbol("GetAnswerInfoTO", (void **)&MDS_GET_ANSWER_INFO_TO);
+    if STATUS_NOT_OK  return status;
+  }
+  return (*MDS_GET_ANSWER_INFO_TO) (sock, dtype, length, ndims, dims, numbytes, dptr, m, timeout);
+}
+*/
+
 
 #define MDS_IO_OPEN_K   1
 #define MDS_IO_CLOSE_K  2
@@ -1074,11 +1107,12 @@ STATIC_ROUTINE int GetAnswerInfoTS(int sock, char *dtype, short *length, char *n
 #define MDS_IO_O_RDONLY 0x00004000
 #define MDS_IO_O_RDWR   0x00000002
 
-STATIC_ROUTINE int io_open_remote(char *host, char *filename, int options, mode_t mode, int *sock,
+STATIC_ROUTINE int io_open_remote(char *host, char *filename_in, int options, mode_t mode, int *sock,
 				  int *enhanced)
 {
   int fd = -1;
   int try_again = 1;
+  char *filename = replaceBackslashes(strdup(filename_in));
   LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   while (try_again) {
     *sock = RemoteAccessConnect(host, 1, 0);
@@ -1133,11 +1167,14 @@ STATIC_ROUTINE int io_open_remote(char *host, char *filename, int options, mode_
     }
   }
   UnlockMdsShrMutex(&IOMutex);
+  if (filename)
+    free(filename);
   return fd;
 }
 
-int MDS_IO_OPEN(char *filename, int options, mode_t mode)
+int MDS_IO_OPEN(char *filename_in, int options, mode_t mode)
 {
+  char *filename = replaceBackslashes(strdup(filename_in));
   int socket = -1;
   char *hostpart, *filepart;
   char *tmp = ParseFile(filename, &hostpart, &filepart);
@@ -1156,21 +1193,22 @@ int MDS_IO_OPEN(char *filename, int options, mode_t mode)
 #ifndef _WIN32
     if ((fd != -1) && ((options & O_CREAT) != 0)) {
       struct descriptor cmd_d = { 0, DTYPE_T, CLASS_S, 0 };
-      char *cmd = (char *)malloc(64 + strlen(filename));
-      sprintf(cmd, "SetMdsplusFileProtection %s 2> /dev/null", filename);
-      cmd_d.length = strlen(cmd);
-      cmd_d.pointer = cmd;
-      LibSpawn(&cmd_d, 1, 0);
-      /*
-         system(cmd);
-       */
-      free(cmd);
+      char *cmd = (char *)malloc(39 + strlen(filename));
+      if (cmd) {
+        sprintf(cmd, "SetMdsplusFileProtection %s 2> /dev/null", filename);
+        cmd_d.length = strlen(cmd);
+        cmd_d.pointer = cmd;
+        LibSpawn(&cmd_d, 1, 0);
+        free(cmd);
+      }
     }
 #endif
   }
   free(tmp);
   if (fd != -1)
     fd = NewFD(fd, socket, enhanced);
+  if (filename)
+    free(filename);
   return fd;
 }
 
@@ -1513,7 +1551,7 @@ int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
     if (FDS[fd - 1].socket == -1) {
       int mode = mode_in & MDS_IO_LOCK_MASK;
       int nowait = mode_in & MDS_IO_LOCK_NOWAIT;
-#if defined (_WIN32)
+#ifdef _WIN32
       OVERLAPPED overlapped;
       int flags;
       offset = ((offset >= 0) && (nowait == 0)) ? offset : (lseek(FDS[fd - 1].fd, 0, SEEK_END));
@@ -1550,9 +1588,6 @@ int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
 #endif
     } else
       status = io_lock_remote(fd, offset, size, mode_in, deleted);
-#if !defined(_WIN32)
-    //ThreadLock(fd,offset,size,mode_in);
-#endif
   }
   UNLOCKFDS return status;
 }
@@ -1589,8 +1624,9 @@ STATIC_ROUTINE int io_exists_remote(char *host, char *filename)
   return ans;
 }
 
-int MDS_IO_EXISTS(char *filename)
+int MDS_IO_EXISTS(char *filename_in)
 {
+  char *filename = replaceBackslashes(strdup(filename_in));
   int status;
   struct stat statbuf;
   char *hostpart, *filepart;
@@ -1602,6 +1638,8 @@ int MDS_IO_EXISTS(char *filename)
 #endif
     status = hostpart ? io_exists_remote(hostpart, filepart) : (stat(filename, &statbuf) == 0);
   free(tmp);
+  if (filename)
+    free(filename);
   return status;
 }
 
@@ -1637,8 +1675,9 @@ STATIC_ROUTINE int io_remove_remote(char *host, char *filename)
   return ans;
 }
 
-int MDS_IO_REMOVE(char *filename)
+int MDS_IO_REMOVE(char *filename_in)
 {
+  char *filename = replaceBackslashes(strdup(filename_in));
   int status;
   char *hostpart, *filepart;
   char *tmp = ParseFile(filename, &hostpart, &filepart);
@@ -1649,6 +1688,8 @@ int MDS_IO_REMOVE(char *filename)
 #endif
     status = hostpart ? io_remove_remote(hostpart, filepart) : remove(filename);
   free(tmp);
+  if (filename)
+    free(filename);
   return status;
 }
 
@@ -1694,6 +1735,9 @@ int MDS_IO_RENAME(char *filename_old, char *filename_new)
   char *hostpart_old, *filepart_old, *hostpart_new, *filepart_new;
   char *tmp_old = ParseFile(filename_old, &hostpart_old, &filepart_old);
   char *tmp_new = ParseFile(filename_new, &hostpart_new, &filepart_new);
+  filename_old = replaceBackslashes(filename_old);
+  filename_new = replaceBackslashes(filename_new);
+
 #ifdef SRB
   if (strcmp(hostpart_new, "SRB") == 0) {
     if (strcmp(hostpart_old, hostpart_new) == 0) {

@@ -7,9 +7,10 @@
 # Build script from within a docker image
 #
 export HOME=/tmp/home
+srcdir=$(readlink -f $(dirname ${0})/../..)
 mkdir -p $HOME
 tio(){
-    :&& /source/deploy/platform/timeout.sh "$@";
+    :&& ${srcdir}/deploy/platform/timeout.sh "$@";
     return $?;
 }
 getenv() {
@@ -18,7 +19,12 @@ getenv() {
 runtests() {
     # run tests with the platform specific params read from test32 and test64
     testarch ${test64};
-    testarch ${test32};
+    if [ -f /usr/bin/python-i686 ]
+    then
+      PYTHON=/usr/bin/python-i686 testarch ${test32};
+    else
+      testarch ${test32};
+    fi
     checktests;
 }
 testarch(){
@@ -28,14 +34,21 @@ testarch(){
     normaltest $@;
 }
 config() {
-    :&& /source/configure \
+    if [ -z "$JARS_DIR" ]
+    then
+	JAVA_OPTS="--with-java_target=6 --with-java_bootclasspath=${srcdir}/rt.jar"
+    else
+	JAVA_OPTS="--with-jars=${JARS_DIR}"
+    fi
+    :&& ${srcdir}/configure \
         --prefix=${MDSPLUS_DIR} \
         --exec_prefix=${MDSPLUS_DIR} \
         --host=$2 \
         --bindir=${MDSPLUS_DIR}/$3 \
         --libdir=${MDSPLUS_DIR}/$4 \
-        --with-java_target=6 \
-        --with-java_bootclasspath=/source/rt.jar \
+        ${CONFIGURE_PARAMS} \
+        ${JAVA_OPTS} \
+	--enable-werror \
         $5 $6 $7 $8 $9;
     status=$?
 }
@@ -44,10 +57,10 @@ config_test(){
     export WINEPATH="Z:${MDSPLUS_DIR}/$3"
     rm -Rf $(dirname "${MDSPLUS_DIR}");
     mkdir -p ${MDSPLUS_DIR};
-    cp -rf /source/xml ${MDSPLUS_DIR}/xml;
+    cp -rf ${srcdir}/xml ${MDSPLUS_DIR}/xml;
     MDS_PATH=${MDSPLUS_DIR}/tdi;
     pushd ${MDSPLUS_DIR}/..;
-    config $@ --enable-debug --enable-werror;
+    config $@ --enable-debug;
 }
 checkstatus(){
 # checkstatus flagname "error message" $?
@@ -130,9 +143,18 @@ sanitize() {
         done
     fi
 }
+make_jars() {
+  rm -Rf /workspace/jars
+  mkdir -p /workspace/jars
+  pushd /workspace/jars
+  ${srcdir}/configure --enable-java_only --with-java_target=6 --with-java_bootclasspath=${srcdir}/rt.jar
+  if [ -z "$NOMAKE" ]; then
+    $MAKE
+  fi
+  popd
+}
+
 normaltest() {
-  if [ "$TEST" = "yes" ]
-  then
     gettimeout() {
         declare -i n=1800*$#
         echo $n
@@ -152,12 +174,13 @@ normaltest() {
     then
         ### Test with valgrind
         to=$( gettimeout $VALGRIND_TOOLS )
-        :&& tio $to  $MAKE -k tests-valgrind 2>&1
+		:&& tio $to  $MAKE -k rebuild-tests VALGRIND_BUILD=yes 2>&1
+		checkstatus tests_${1}_val "Failure building tests $1-bit with valgrind." $?
+		:&& tio $to  $MAKE -k tests-valgrind 2>&1
         checkstatus tests_${1}_val "Failure testing $1-bit with valgrind." $?
     fi
    fi
     popd
-  fi
 }
 RED() {
     if [ "$1" = "yes" ]
@@ -180,15 +203,20 @@ NORMAL() {
 export PYTHONDONTWRITEBYTECODE=no
 export PyLib=$(ldd $(which python) | grep libpython | awk '{print $3}')
 main(){
-    MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
-    if [ -r /source/deploy/os/${OS}.env ]
+    MAKE=${MAKE:="make"}
+    if [ -r ${srcdir}/deploy/os/${OS}.env ]
     then
-        source /source/deploy/os/${OS}.env
+        source ${srcdir}/deploy/os/${OS}.env
     fi
-    if [ "$TEST" = "yes" ] || [ ! -z "$SANITIZE" ] || [ ! -z "$VALGRIND_TOOLS" ]
+    if [ "$TEST" = "yes" ]
     then
         set +e
         runtests
+    fi
+    if [ "$MAKE_JARS" = "yes" ]
+    then
+      set +e
+      make_jars
     fi
     case "$BRANCH" in
      stable) export BNAME="";;
@@ -206,8 +234,9 @@ main(){
         publish
     fi
 }
-source /source/deploy/platform/${PLATFORM}/${PLATFORM}_docker_build.sh
+source ${srcdir}/deploy/platform/${PLATFORM}/${PLATFORM}_docker_build.sh
 if [ ! -z "$0" ] && [ ${0:0:1} != "-" ] && [ "$( basename $0 )" = "platform_docker_build.sh" ]
 then
+    env
     main
 fi

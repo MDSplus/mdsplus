@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*  CMS REPLACEMENT HISTORY, Element MdsGet1DxS.C */
 /*  *10    2-AUG-1996 08:16:21 TWF "Use int instead of long" */
 /*  *9    23-OCT-1995 08:14:57 TWF "Use sizeof descriptor" */
@@ -40,6 +64,7 @@
 +-----------------------------------------------------------------------------*/
 
 #include <stdlib.h>
+#include <status.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <STATICdef.h>
@@ -51,14 +76,14 @@ EXPORT int MdsGet1DxS(unsigned short const *length_ptr, unsigned char const *dty
 {
 
   int status;
-  int dsc_size = sizeof(struct descriptor);
-  int align_size = (*dtype_ptr == DTYPE_T) ? 1 : *length_ptr;
+  unsigned int dsc_size = (unsigned int)sizeof(struct descriptor);
+  unsigned int align_size = (*dtype_ptr == DTYPE_T) ? 1 : *length_ptr;
   unsigned int length;
   STATIC_CONSTANT unsigned char dsc_dtype = DTYPE_DSC;
   dsc_size = align(dsc_size, align_size);
   length = dsc_size + *length_ptr;
   status = MdsGet1Dx(&length, &dsc_dtype, out_dsc_ptr, NULL);
-  if (status & 1) {
+  if STATUS_OK {
     out_dsc_ptr->pointer->length = *length_ptr;
     out_dsc_ptr->pointer->dtype = *dtype_ptr;
     out_dsc_ptr->pointer->class = CLASS_S;

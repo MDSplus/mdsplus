@@ -5,7 +5,6 @@ import jScope.MdsWaveInterface;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.net.*;
 import java.lang.Integer;
 import java.util.*;
 import javax.swing.*;
@@ -26,7 +25,6 @@ import javax.swing.event.*;
    private SList	    signalList;
    private jScopeMultiWave  wave;
    public  MdsWaveInterface wi;
-   private Point            wave_coord;
 
     JCheckBox title_b = new JCheckBox("Title");
     JTextField title = new JTextField(50);
@@ -448,7 +446,7 @@ import javax.swing.event.*;
 
      public void removeSignalSetup()
      {
-	    int i, sig_idx, start_idx, end_idx;
+	    int i, start_idx, end_idx;
 	    int num_shot = 1;
 	    int num_signal = signals.size();
 
@@ -781,14 +779,12 @@ import javax.swing.event.*;
 
        public void updateSignals()
        {
-	        int i, j, sig_idx, start_idx, end_idx;
+	        int start_idx, end_idx;
 	        int num_shot = 1;
 	        int num_signal = signals.size();
 
-
 	        if(findSignalSetup(getSignalSetup()) != -1)
 	            return;
-
 
 	        if(getSignalSelect() != -1)
 	        {
@@ -798,7 +794,7 @@ import javax.swing.event.*;
 	            start_idx = (getSignalSelect()/num_shot) * num_shot; // Divisione intera
 	            end_idx   = start_idx + num_shot;
 
-	            for (i = 0,  j = 0 ; i < num_signal; i++)
+	            for (int i = 0; i < num_signal; i++)
 		            if(i >= start_idx && i < end_idx)
 		            {
 		                signals.elementAt(i).label  = signal_label.getText();
@@ -1024,12 +1020,8 @@ import javax.swing.event.*;
 
 	    if(ob == ok)
 	    {
-	        String pp = y_expr.getText();
-	        String zz = x_expr.getText();
 	        conf_dialog.x_expr.setText(x_expr.getText());
 	        conf_dialog.y_expr.setText(y_expr.getText());
-	        pp = conf_dialog.y_expr.getText();
-	        zz = conf_dialog.x_expr.getText();
 	        updateDataSetup();
 	    }
 	    setVisible(false);
@@ -1240,7 +1232,6 @@ import javax.swing.event.*;
 
     public void Show(Waveform w, int col, int row)
     {
-      wave_coord = new Point(row, col);
       wave = (jScopeMultiWave)w;
       
 //    wave.addWaveformListener(this);
@@ -1450,8 +1441,6 @@ import javax.swing.event.*;
 
    public void putWindowSetup(MdsWaveInterface wi)
    {
-       boolean def_flag;
-
        if (wi == null)
        {
            eraseForm();
@@ -2065,8 +2054,7 @@ import javax.swing.event.*;
 	    if(ob == x_max || ob == y_max || ob == x_min
 	       || ob == y_min || ob == shot || ob == time_max || ob == time_min)
 	    {
-	        Character ch = new Character(key);
-                if(!ch.isDigit(key) && key != KeyEvent.VK_DELETE && key != '.' && key != '+' && key != '-')
+                if(!Character.isDigit(key) && key != KeyEvent.VK_DELETE && key != '.' && key != '+' && key != '-')
                     return;
             }
         }

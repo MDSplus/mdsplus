@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /* define  RETRY_CONNECTS to have the code retry connects on login when
    there is a failure */
 /***********************************************************************/
@@ -24,7 +48,7 @@ typedef const LPBYTE LPCBYTE;
 #pragma GCC diagnostic pop
 #define dbloginfree dbfreelogin
 #endif
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdsdescrip.h>
 #include <status.h>
 static LOGINREC *loginrec = 0;
@@ -46,12 +70,7 @@ static struct descriptor DBMSGTEXT_DSC = {0,DTYPE_T,CLASS_S,DBMSGTEXT};
 
 static void strcatn(char *dst, const char *src, int max)
 {
-  int dstlen = strlen(dst);
-  int srclen = strlen(src);
-  if ((dstlen + srclen) < (max - 1))
-    strcat(dst, src);
-  else
-    strncpy(&dst[dstlen], src, max - srclen - 1);
+  strncat(dst,src,max-strlen(dst));
 }
 
 /*
@@ -196,10 +215,6 @@ EXPORT int Login_Sybase(char *host, char *user, char *pass)
    */
 
 #ifdef RETRY_CONNECTS
-#ifdef  __VMS
-  extern void decc$sleep();
-#define Sleep decc$sleep()
-#endif
   for (try = 0; ((dbproc == 0) && (try < 10)); try++) {
     DBMSGTEXT[0] = 0;
     SetMsgLen();

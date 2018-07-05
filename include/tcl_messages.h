@@ -10,3 +10,4 @@
 
 #define TclNORMAL                0x2a0009
 #define TclFAILED_ESSENTIAL      0x2a0010
+#define TclNO_DISPATCH_TABLE     0x2a0018

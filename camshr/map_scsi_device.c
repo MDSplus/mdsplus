@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 // map_scsi_device.c
 //-------------------------------------------------------------------------
 //      Stuart Sherman
@@ -45,7 +69,7 @@ struct scsi_info {
 int map_scsi_device(char *highway_name)
 {
   char line[80], *pline, tmp[7];
-  char dsf[4], hwytype='.';
+  char dsf[11], hwytype='.';
   int adapter, i, numOfEntries, scsi_id, sg_number;
   int status = SUCCESS;		// optimistic
   int found = FALSE;
@@ -110,10 +134,20 @@ int map_scsi_device(char *highway_name)
   // update memory mapped version
   if (found) {
     sprintf(dsf, "%03d", sg_number);	// format conversion
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
+#endif
     strncpy((CRATEdb + i)->DSFname, dsf, 3);	// real device number
+#pragma GCC diagnostic pop
     (CRATEdb + i)->HwyType = hwytype;	// highway type
   } else {
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
+#endif
     strncpy((CRATEdb + i)->DSFname, "...", 3);	// place-holder device number
+#pragma GCC diagnostic pop
     (CRATEdb + i)->HwyType = '.';
   }
 

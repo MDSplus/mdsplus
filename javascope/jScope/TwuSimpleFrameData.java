@@ -7,18 +7,12 @@ package jScope;
 // $Id$
 // 
 // -------------------------------------------------------------------------------------------------
-
-import jScope.Frames;
-import jScope.FrameData;
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.awt.*;
-import javax.swing.*;
-import java.awt.event.*;
-import java.lang.InterruptedException;
-
-// -------------------------------------------------------------------------------------------------
+import java.awt.Dimension;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.StringTokenizer;
 
 class TwuSimpleFrameData
     implements FrameData
@@ -31,7 +25,6 @@ class TwuSimpleFrameData
     private int st_idx = -1, end_idx = -1;
     private int n_frames = 0;
     private float times[] = null;
-    private int header_size = 0;
     private TwuDataProvider provider = null;
 
     public TwuSimpleFrameData (TwuDataProvider dp,
@@ -41,7 +34,6 @@ class TwuSimpleFrameData
         int i;
         float t;
         float all_times[] = null;
-        int n_all_frames = 0;
 
         this.provider = dp;
         

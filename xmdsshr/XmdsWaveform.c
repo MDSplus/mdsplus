@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*------------------------------------------------------------------------------
 
 		Name:   XmdsWaveform
@@ -153,11 +177,7 @@ static void AutoScale(int num, float *value, float *minval, float *maxval, float
 static Boolean UpdateLimit(float *old, float *req, float **new);
 static Boolean UpdateLimits(XmdsWaveformWidget old, float *xmin, float *xmax, float *ymin,
 			    float *ymax, XmdsWaveformWidget new);
-#ifdef __ALPHA
-#define FixupMissing lib$sig_to_ret
-#else
 int FixupMissing(unsigned sig_args[], unsigned mech_args[]);
-#endif
 static void Pan();
 static void PanEnd();
 static void DragZoom();
@@ -187,6 +207,10 @@ static void DrawString(XmdsWaveformWidget w, Display * display, Window win, GC g
 static void Reverse();
 static void Cut();
 static void Paste();
+
+static inline int intAbs(int val) {
+  return val < 0 ? -val : val;
+}
 
 static XtActionsRec actionlist[] = { {"WaveformPan", Pan},
 {"WaveformPanEnd", PanEnd},
@@ -2113,8 +2137,13 @@ static void Print(XmdsWaveformWidget w, FILE * filefid, int inp_total_width, int
 	fontinfo = NULL;
 	if (strstr(fontname, "New Century Schoolbook"))
 	  strcpy(fontname, "NewCenturySchlbk");
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
+#endif
 	while (strstr(fontname, " "))
 	  strncpy(strstr(fontname, " "), "-", 1);
+#pragma GCC diagnostic pop
 	fatom = XInternAtom(XtDisplay(w), "WEIGHT_NAME", False);
 	for (i = 0; i < fs->n_properties; i++)
 	  if (fs->properties[i].name == fatom) {
@@ -2262,43 +2291,43 @@ static void Print(XmdsWaveformWidget w, FILE * filefid, int inp_total_width, int
     /* The following mess draws finds borders that intersect at the */
     /* corners and draws them in succession to obtain rounded corners. */
 
-    if (xoffset == xtest && abs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) > 5) {
+    if (xoffset == xtest && intAbs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) > 5) {
       fprintf(printfid, "%g %g moveto\n", xstart, ystart);
       fprintf(printfid, "%g %g lineto\n", xstart, yend);
       if (yoffset == ytest) {
 	fprintf(printfid, "%g %g lineto\n", xend, yend);
-	if (abs((xoffset / scale + inp_total_width) - (xorigin + XtWidth(w))) < 5)
+	if (intAbs((xoffset / scale + inp_total_width) - (xorigin + XtWidth(w))) < 5)
 	  fprintf(printfid, "%g %g lineto\n", xend, ystart);
-      } else if (abs((xoffset / scale + inp_total_width) - (xorigin + XtWidth(w))) < 5) {
+      } else if (intAbs((xoffset / scale + inp_total_width) - (xorigin + XtWidth(w))) < 5) {
 	fprintf(printfid, "stroke\n");
 	fprintf(printfid, "%g %g moveto\n", xend, yend);
 	fprintf(printfid, "%g %g lineto\n", xend, ystart);
       }
       fprintf(printfid, "stroke\n");
     } else if (yoffset == ytest && (xoffset != xtest ||
-				    abs((yoffset / scale + inp_total_height) -
+				    intAbs((yoffset / scale + inp_total_height) -
 					(yorigin + XtHeight(w))) > 5)) {
       fprintf(printfid, "%g %g moveto\n", xstart, yend);
       fprintf(printfid, "%g %g lineto\n", xend, yend);
-      if (abs((xoffset / scale + inp_total_width) - (xorigin + XtWidth(w))) < 5) {
+      if (intAbs((xoffset / scale + inp_total_width) - (xorigin + XtWidth(w))) < 5) {
 	fprintf(printfid, "%g %g lineto\n", xend, ystart);
-	if (abs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) < 5)
+	if (intAbs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) < 5)
 	  fprintf(printfid, "%g %g lineto\n", xstart, ystart);
-      } else if (abs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) < 5) {
+      } else if (intAbs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) < 5) {
 	fprintf(printfid, "stroke\n");
 	fprintf(printfid, "%g %g moveto\n", xstart, ystart);
 	fprintf(printfid, "%g %g lineto\n", xend, ystart);
       }
       fprintf(printfid, "stroke\n");
-    } else if (abs((xoffset / scale + inp_total_width) - (xorigin + XtWidth(w))) < 5) {
+    } else if (intAbs((xoffset / scale + inp_total_width) - (xorigin + XtWidth(w))) < 5) {
       fprintf(printfid, "%g %g moveto\n", xend, yend);
       fprintf(printfid, "%g %g lineto\n", xend, ystart);
-      if (abs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) < 5)
+      if (intAbs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) < 5)
 	fprintf(printfid, "%g %g lineto\n", xstart, ystart);
       if (xoffset == xtest)
 	fprintf(printfid, "%g %g lineto\n", xstart, yend);
       fprintf(printfid, "stroke\n");
-    } else if (abs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) < 5) {
+    } else if (intAbs((yoffset / scale + inp_total_height) - (yorigin + XtHeight(w))) < 5) {
       fprintf(printfid, "%g %g moveto\n", xend, ystart);
       fprintf(printfid, "%g %g lineto\n", xstart, ystart);
       if (xoffset == xtest)
@@ -2365,7 +2394,7 @@ static void DrawLines(Display * display, Window win, GC gc, XPoint * point, int 
     int num_to_left = 0;
     int num_to_right = 0;
     int num_in_middle = 0;
-    short lastx;
+    short lastx = 0;
     short enter_y;
     short max_y;
     short min_y;

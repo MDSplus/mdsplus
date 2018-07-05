@@ -13,80 +13,99 @@ dnl ////////////////////////////////////////////////////////////////////////////
 dnl /// TS WINE    /////////////////////////////////////////////////////////////
 dnl ////////////////////////////////////////////////////////////////////////////
 
-
-AC_DEFUN([TS_WINEPATH],[
-AS_VAR_SET_IF([$1],,AS_VAR_SET([$1]))
-for _i in $2; do
- AS_VAR_APPEND([$1], "$(shell winepath -w $_i 2>/dev/null);");
-done
+dnl # test for wine path binary
+AC_DEFUN([TS_PROG_WINEPATH],[
+  AC_CHECK_PROG([HAVE_WINEPATH],[winepath],[yes],[no])
+  AS_VAR_IF([HAVE_WINEPATH],[no],
+   [AC_MSG_WARN([winepath command not found])
+	AC_MSG_WARN([winepath is required by wine to properly set the tests path])])
 ])
 
-AC_DEFUN([TS_U2WPATH],\$(shell winepath -w $1 2>/dev/null))
+dnl # compile a winepath env using specified directories. Wine supports the
+dnl # WINEPATH variable. If, in your Unix Shell, you export WINEPATH, once you
+dnl # launch wine it will use this to populate the PATH environment variable
+dnl # inside wine.
+dnl #
+dnl # Usage: TS_WINEPATH [variable],[dir_list]
+dnl #
+AC_DEFUN([TS_WINEPATH],[
+ AC_REQUIRE([TS_PROG_WINEPATH])
+ # reset variable $1
+ AS_VAR_SET_IF([$1],,AS_VAR_SET([$1]))
+ AS_VAR_IF([HAVE_WINEPATH],[yes],
+  [for _i in m4_normalize([$2]); do
+   # AS_VAR_SET([_dir],[$(eval cd $_i; pwd)])
+   # AS_VAR_APPEND([$1],["$(eval winepath -w $_i 2>/dev/null);"]);
+   AS_VAR_APPEND([$1],["\$(shell winepath -w $_i 2>/dev/null);"]);
+   done])
+])
 
-dnl compile a winepath command using specified directories
-dnl Usage: TS_WINEPATH [var],[library_dirs]
-dnl
+dnl # inline unix to windows path conversion
+AC_DEFUN([TS_U2WPATH],[$(eval winepath -w $1 2>/dev/null)])
+
+dnl # Automatically add mingw compiler library to wine path
+dnl # usage: TS_WINE_LIBRARIESPATH <PATH_VARIABLE> [LIBDIR]
 AC_DEFUN([TS_WINE_LIBRARIESPATH],[
          m4_pushdef([libdir], [m4_default([$2], [${MAKESHLIBDIR}])])
-         AC_PROG_SED
-         AC_PROG_GREP
-         AS_VAR_SET([_libs], [$(${CC} --print-search-dir | \
-           ${GREP} "libraries:" | \
-           ${SED} 's/^libraries: =//' | \
-           ${SED} 's/:/ /g')])
-         AS_VAR_APPEND([_libs],[" "])
+		 AC_REQUIRE([AC_PROG_SED])
+		 AC_REQUIRE([AC_PROG_GREP])
+		 AS_VAR_SET([_libs], [$(${CC} --print-search-dir | \
+		   ${GREP} "libraries:" | \
+		   ${SED} 's/^libraries: =//' | \
+		   ${SED} 's/:/ /g')])
+		 AS_VAR_APPEND([_libs],[" "])
 
-         AS_VAR_SET([_prog], [$(${CC} --print-search-dir | \
-           ${GREP} "programs:" | \
-           ${SED} 's/^programs: =//' | \
-           ${SED} 's/:/ /g')])
-         AS_VAR_APPEND([_libs],["${_prog} "])
+		 AS_VAR_SET([_prog], [$(${CC} --print-search-dir | \
+		   ${GREP} "programs:" | \
+		   ${SED} 's/^programs: =//' | \
+		   ${SED} 's/:/ /g')])
+		 AS_VAR_APPEND([_libs],["${_prog} "])
 
-         dnl this is a workaround for build_mingw (centos7) docker image
+		 dnl # this is a workaround for build_mingw (centos7) docker image
          AS_VAR_SET([_sysroot],[$(${CC} --print-sysroot)])
          AS_VAR_APPEND([_libs],["${_sysroot}/mingw/bin "])
          AS_VAR_APPEND([_libs],["${_sysroot}/mingw/lib "])
          AS_VAR_APPEND([_libs],m4_join([" "],libdir))
 
-         AS_VAR_SET($1)
-         dnl // if not defined HAVE_WINEPATH search for winepath in current path //
-         AS_VAR_SET_IF([HAVE_WINEPATH],,[AC_CHECK_PROG(HAVE_WINEPATH,winepath,yes,no)])
-         TS_VAR_YN(HAVE_WINEPATH,[
-         for _i in $_libs; do
-          AS_VAR_APPEND($1, "\$(shell winepath -w $_i 2>/dev/null);");
-         done
-         ]) dnl YN
-
-         m4_popdef([libdir])
+		 AS_VAR_SET($1)
+		 TS_WINEPATH([$1],[${_libs}])
+		 m4_popdef([libdir])
 ])
 
 
-dnl TS_WINE_ENV [WINEPREFIX] [WINEARCH]
-dnl
+dnl # Set Wineprefix and check for winebottle
+dnl # usage: TS_WINE_ENV [WINEPREFIX] [WINEARCH]
 AC_DEFUN([TS_WINE_ENV],[
 
-  dnl select wine architecture
+  dnl # select wine architecture
   AS_CASE([${host}],
-          [i686*mingw*],   [AS_VAR_SET([winebottle_name],["winebottle_mingw32"]) AS_VAR_SET([$2],["win32"])],
-          [x86_64*mingw*], [AS_VAR_SET([winebottle_name],["winebottle_mingw64"]) AS_VAR_SET([$2],["win64"])] )
+		  [i686*mingw*],
+		  [AS_VAR_SET([winebottle_name],["winebottle_mingw32"]) AS_VAR_SET([$2],["win32"])],
+		  [x86_64*mingw*],
+		  [AS_VAR_SET([winebottle_name],["winebottle_mingw64"]) AS_VAR_SET([$2],["win64"])] )
 
-  dnl select a wine bottle
-  AC_ARG_WITH(winebottle,
+  dnl # select a wine bottle
+  AC_ARG_WITH([winebottle],
               [AS_HELP_STRING([--with-winebottle],[specify bottle])],
-              [],
-              [AS_VAR_SET_IF([winebottle],
-                             [AS_VAR_SET([with_winebottle], ["${WINEPREFIX}"])],
+			  [AC_MSG_NOTICE([using wine bottle: ${with_winebottle}])],
+			  [AS_VAR_SET_IF([WINEPREFIX],
+							 [AS_VAR_SET([with_winebottle], ["${WINEPREFIX}"])],
                              [AS_VAR_SET([with_winebottle], ["\$(top_builddir)/${winebottle_name}"])])])
-
-  dnl launch boot in wine bottle (creating new one if it does not exist)
-  AS_VAR_SET_IF([HAVE_WINEBOOT],,[AC_CHECK_PROG(HAVE_WINEBOOT,wineboot,yes,no)])
-  AS_VAR_IF([HAVE_WINEBOOT],[yes],
-   [AS_VAR_SET_IF([WINEPREFIX],
-                 [$(eval "WINEPREFIX=${WINEPREFIX}             WINEARCH=${$2}" wineboot -f -r)],
-                 [$(eval "WINEPREFIX=$(pwd)/${winebottle_name} WINEARCH=${$2}" wineboot -f -i)])
-   ])
   AS_VAR_SET([$1],[${with_winebottle}])
-  ]) dnl HAVE_WINE
+
+
+  dnl # launch boot in wine bottle (creating new one if it does not exist)
+  AS_VAR_SET_IF([HAVE_WINEBOOT],,[AC_CHECK_PROG(HAVE_WINEBOOT,wineboot,yes,no)])
+  AS_VAR_IF([HAVE_WINEBOOT],[yes],	 
+	 [# Creating bottle using wineboot
+	  # WINEDLLOVERRIDES prevents asking to install mono and geko here
+	  AS_IF([test -d ${$1}],
+			[$(eval WINEDLLOVERRIDES="mscoree,mshtml=" WINEPREFIX=${$1} WINEARCH=${$2} wineboot -f -r)],
+			[$(eval WINEDLLOVERRIDES="mscoree,mshtml=" WINEPREFIX=${$1} WINEARCH=${$2} wineboot -f -u)])],
+	 [AS_IF([test -d ${$1}],
+			[AC_MSG_WARN([unable to update winebottle])],
+			[AC_MSG_ERROR([unable to create or find winebottle])])
+	 ])
 ])
 
 
@@ -153,23 +172,27 @@ AC_DEFUN([TS_SELECT],[
       TS_WINE_ENV([WINEPREFIX],[WINEARCH])
       TS_WINE_LIBRARIESPATH([WINEPATH])
       AS_VAR_SET([PYTHONHOME],"TS_U2WPATH([/python27])")
-      AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' ")
-      AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEDEBUG=-all ")
-      AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH='TS_U2WPATH([\$(abs_top_srcdir)/tdi])' ")
-      AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR='TS_U2WPATH([\$(abs_top_srcdir)])' ")
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],["WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "])
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],["WINEDEBUG=-all "])
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],["MDSPLUS_DIR='TS_U2WPATH([${srcdir}])' "])
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],["MDS_PATH='TS_U2WPATH([${srcdir}/tdi])' "])
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],["MDS_PYDEVICE_PATH='TS_U2WPATH([${srcdir}/pydevices])' "])
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],["main_path='.;TS_U2WPATH([${srcdir}/trees])' "])
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],["subtree_path='.;TS_U2WPATH([${srcdir}/trees/subtree])' "])
       AS_VAR_IF([WINEARCH],[win64],
-        [
-         AS_VAR_APPEND([WINEPATH],"${PYTHONHOME}")
-         AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONHOME='${PYTHONHOME}' ")
-         AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH='%PYTHONHOME%\\Lib;%PYTHONHOME%\\Lib\\site-packages;TS_U2WPATH([\$(abs_top_srcdir)/testing])' ")
-         AS_VAR_APPEND([TESTS_ENVIRONMENT],"PyLib='python27' ")
-         AS_VAR_SET([PYTHON],"\$(abs_top_srcdir)/testing/winpython python")
-         AS_VAR_APPEND([PY_LOG_COMPILER],  ["\${PYTHON} -B \$(abs_top_srcdir)/testing/testing.py"])
-        ],[
-         TS_LOG_SKIP([PY_LOG_COMPILER])
-        ]
-      )
-         AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEPATH='${WINEPATH}' ")
+		[# WINEARCH win64
+		 AS_VAR_APPEND([WINEPATH],["${PYTHONHOME}"])
+		 AS_VAR_APPEND([TESTS_ENVIRONMENT],["PYTHONHOME='${PYTHONHOME}' "])
+		 AS_VAR_APPEND([TESTS_ENVIRONMENT],
+		   ["PYTHONPATH='%PYTHONHOME%\\Lib;%PYTHONHOME%\\Lib\\site-packages;TS_U2WPATH([${srcdir}/testing])' "])
+		 AS_VAR_APPEND([TESTS_ENVIRONMENT],["PyLib='python27' "])
+		 AS_VAR_SET([PYTHON],["\$(abs_top_srcdir)/testing/winpython python"])
+		 AS_VAR_APPEND([PY_LOG_COMPILER],
+		   ["\${PYTHON} -B \$(abs_top_srcdir)/testing/testing.py"])],
+		[# WINEARCH win32
+		 TS_LOG_SKIP([PY_LOG_COMPILER])])
+	  # any wine flavor
+	  AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEPATH='${WINEPATH}' ")
       AS_VAR_APPEND([LOG_COMPILER],"wine ")
       # WINE Valgrind tuning ..
       # see: http://wiki.winehq.org/WineAndValgrind
@@ -197,27 +220,27 @@ AC_DEFUN([TS_SELECT],[
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"PATH=${MAKEBINDIR}:\${PATH} ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR=\$(abs_top_srcdir) ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH=\$(abs_top_srcdir)/tdi ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PYDEVICE_PATH=\$(abs_top_srcdir)/pydevices ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"main_path='.;\$(abs_top_srcdir)/trees' ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"subtree_path='.;\$(abs_top_srcdir)/trees/subtree' ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PyLib=$(if test -z $PyLib; then echo ${DEF_PYLIB}; else echo $PyLib; fi) ")
    AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
  ],
  #
  # OTHER
  #
  [*],
- [
-   # in all other platform tests are disabled for now
+ [ # in all other platform tests are disabled for now
    AS_VAR_SET([ENABLE_TESTS],[no])
  ])
-
 # MACOS: add --dsymutil=yes to valgrind
-
 
 # Set ENABLE_TESTS
   AC_SUBST([ENABLE_TESTS])
   AM_CONDITIONAL([ENABLE_TESTS],[test x"${ENABLE_TESTS}" = x"yes"])
   m4_ifdef([AM_SUBST_NOTMAKE], [AM_SUBST_NOTMAKE([ENABLE_TESTS])])
-
 
 ])
 

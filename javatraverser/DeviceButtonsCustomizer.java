@@ -1,9 +1,18 @@
-import javax.swing.*;
-import java.beans.*;
-import java.awt.*;
-import java.lang.reflect.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.GridLayout;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.beans.Customizer;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 public class DeviceButtonsCustomizer extends Panel implements Customizer
 {

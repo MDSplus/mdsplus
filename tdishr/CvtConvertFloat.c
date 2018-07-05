@@ -1,5 +1,31 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 #include <string.h>
 #include <mdsdescrip.h>
+#include <mdsplus/mdsplus.h>
+#include <inttypes.h>
 #include <STATICdef.h>
 
 /** Adapted from VMS V7.0 sources CvtConvertFloat.lis                      **/
@@ -176,13 +202,7 @@ struct cvt_r_conversion_options {
 #define CvtOVERFLOW 100302922
 #define CvtPOSINF 100302930
 #define CvtUNDERFLOW 100302938
-typedef char Int_8;
-typedef unsigned char U_Int_8;
-typedef short Int_16;
-typedef unsigned short U_Int_16;
-typedef int Int_32;
-typedef unsigned int U_Int_32;
-typedef U_Int_8 CVT_BYTE;
+typedef uint8_t CVT_BYTE;
 typedef CVT_BYTE *CVT_BYTE_PTR;
 typedef CVT_BYTE CVT_VAX_F[4];
 typedef CVT_BYTE CVT_VAX_D[8];
@@ -194,7 +214,7 @@ typedef CVT_BYTE CVT_IEEE_X[16];
 typedef CVT_BYTE CVT_IBM_SHORT[4];
 typedef CVT_BYTE CVT_IBM_LONG[8];
 typedef CVT_BYTE CVT_CRAY[8];
-typedef U_Int_32 CVT_STATUS;
+typedef uint32_t CVT_STATUS;
 /*
 typedef struct {unsigned hi : 7; unsigned exp :  8; unsigned sign : 1; unsigned low : 16;} f_float;
 typedef struct {unsigned hi : 7; unsigned exp :  8; unsigned sign : 1; unsigned low : 16; unsigned int low2;} d_float;
@@ -246,7 +266,7 @@ typedef struct {unsigned int low2; unsigned low:16; unsigned hi : 4; unsigned ex
 **=============================================================================
 */
 
-typedef U_Int_32 UNPACKED_REAL[6];
+typedef uint32_t UNPACKED_REAL[6];
 typedef UNPACKED_REAL *UNPACKED_REAL_PTR;
 
 /*
@@ -268,7 +288,7 @@ typedef UNPACKED_REAL *UNPACKED_REAL_PTR;
 ** Special floating point constant definitions
 **=============================================================================
 */
-STATIC_CONSTANT U_Int_32 const vax_c[] = {
+STATIC_CONSTANT uint32_t const vax_c[] = {
 
   0x00008000, 0x00000000, 0x00000000, 0x00000000,	/* ROPs */
   0x00000000, 0x00000000, 0x00000000, 0x00000000,	/* zeros */
@@ -276,7 +296,7 @@ STATIC_CONSTANT U_Int_32 const vax_c[] = {
   0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,	/* -huge */
 };
 
-STATIC_CONSTANT U_Int_32 const ieee_s[] = {
+STATIC_CONSTANT uint32_t const ieee_s[] = {
 
   0x7fbfffff,			/* little endian ieee s nan */
   0xffffbf7f,			/* big endian ieee s nan */
@@ -294,7 +314,7 @@ STATIC_CONSTANT U_Int_32 const ieee_s[] = {
   0x000080ff,			/* be ieee s -infinity */
 };
 
-STATIC_CONSTANT U_Int_32 const ieee_t[] = {
+STATIC_CONSTANT uint32_t const ieee_t[] = {
 
   0xffffffff, 0x7ff7ffff,	/* le ieee t nan */
   0xfffff77f, 0xffffffff,	/* be ieee t nan */
@@ -312,7 +332,7 @@ STATIC_CONSTANT U_Int_32 const ieee_t[] = {
   0x0000f0ff, 0x00000000,	/* be ieee t -infinity */
 };
 
-STATIC_CONSTANT U_Int_32 const ieee_x[] = {
+STATIC_CONSTANT uint32_t const ieee_x[] = {
 
   0xffffffff, 0xffffffff, 0xffffffff, 0x7fff7fff,	/* le ieee x nan */
   0xff7fff7f, 0xffffffff, 0xffffffff, 0xffffffff,	/* be ieee x nan */
@@ -330,7 +350,7 @@ STATIC_CONSTANT U_Int_32 const ieee_x[] = {
   0x0000ffff, 0x00000000, 0x00000000, 0x00000000,	/* be ieee x -infinity */
 };
 
-STATIC_CONSTANT U_Int_32 const ibm_s[] = {
+STATIC_CONSTANT uint32_t const ibm_s[] = {
 
   0x000000ff,			/* ibm s invalid */
   0x00000000,			/* ibm s +zero */
@@ -342,7 +362,7 @@ STATIC_CONSTANT U_Int_32 const ibm_s[] = {
 
 };
 
-STATIC_CONSTANT U_Int_32 const ibm_l[] = {
+STATIC_CONSTANT uint32_t const ibm_l[] = {
 
   0x000000ff, 0x00000000,	/* ibm t invalid */
   0x00000000, 0x00000000,	/* ibm t +zero */
@@ -354,7 +374,7 @@ STATIC_CONSTANT U_Int_32 const ibm_l[] = {
 
 };
 
-STATIC_CONSTANT U_Int_32 const cray[] = {
+STATIC_CONSTANT uint32_t const cray[] = {
 
   0x00000060, 0x00000000,	/* cray invalid */
   0x00000000, 0x00000000,	/* cray +zero */
@@ -471,70 +491,70 @@ STATIC_CONSTANT U_Int_32 const cray[] = {
 **-----------------------------------------------------------------------------
 */
 STATIC_ROUTINE CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_F output_value, U_Int_32 options __attribute__ ((unused)));
+				     CVT_VAX_F output_value, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_D output_value, U_Int_32 options __attribute__ ((unused)));
+				     CVT_VAX_D output_value, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_G output_value, U_Int_32 options __attribute__ ((unused)));
+				     CVT_VAX_G output_value, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_H output_value, U_Int_32 options __attribute__ ((unused)));
+				     CVT_VAX_H output_value, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_S output_value, U_Int_32 options __attribute__ ((unused)));
+				      CVT_IEEE_S output_value, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_T output_value, U_Int_32 options __attribute__ ((unused)));
+				      CVT_IEEE_T output_value, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_X output_value, U_Int_32 options __attribute__ ((unused)));
+				      CVT_IEEE_X output_value, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
-				     CVT_IBM_LONG output_value, U_Int_32 options __attribute__ ((unused)));
+				     CVT_IBM_LONG output_value, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
-				     CVT_IBM_SHORT output_value, U_Int_32 options __attribute__ ((unused)));
+				     CVT_IBM_SHORT output_value, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
-				    CVT_CRAY output_value, U_Int_32 options __attribute__ ((unused)));
+				    CVT_CRAY output_value, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE void _round(UNPACKED_REAL intermediate_value,
-			   U_Int_32 round_bit_position, U_Int_32 options __attribute__ ((unused)));
+			   uint32_t round_bit_position, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_vax_f(CVT_VAX_F input_value,
-				 UNPACKED_REAL intermediate_value, U_Int_32 options __attribute__ ((unused)));
+				 UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_vax_d(CVT_VAX_D input_value,
-				 UNPACKED_REAL intermediate_value, U_Int_32 options __attribute__ ((unused)));
+				 UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_vax_g(CVT_VAX_G input_value,
-				 UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)));
+				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_vax_h(CVT_VAX_H input_value,
-				 UNPACKED_REAL intermediate_value, U_Int_32 options __attribute__ ((unused)));
+				 UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_ieee_s(CVT_IEEE_S input_value,
-				  UNPACKED_REAL intermediate_value, U_Int_32 options __attribute__ ((unused)));
+				  UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_ieee_t(CVT_IEEE_T input_value,
-				  UNPACKED_REAL intermediate_value, U_Int_32 options __attribute__ ((unused)));
+				  UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
-				  UNPACKED_REAL intermediate_value, U_Int_32 options __attribute__ ((unused)));
+				  UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_ibm_l(CVT_IBM_LONG input_value,
-				 UNPACKED_REAL intermediate_value, U_Int_32 options __attribute__ ((unused)));
+				 UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_ibm_s(CVT_IBM_SHORT input_value,
-				 UNPACKED_REAL intermediate_value, U_Int_32 options __attribute__ ((unused)));
+				 UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_cray(CVT_CRAY input_value,
-				UNPACKED_REAL intermediate_value, U_Int_32 options __attribute__ ((unused)));
+				UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
 
 extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value,
-			   U_Int_32 input_type, void *output_value, U_Int_32 output_type)
+			   uint32_t input_type, void *output_value, uint32_t output_type)
 
 /*
 **=============================================================================
@@ -605,7 +625,7 @@ extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value,
    ** Local variable definitions.
    ** ==========================================================================
    */
-  U_Int_32 options = 0;
+  uint32_t options = 0;
   CVT_STATUS return_status;
   UNPACKED_REAL intermediate_value;
 
@@ -808,7 +828,7 @@ STATIC_ROUTINE void FlipDouble(int *in)
 }
 
 STATIC_ROUTINE CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_F output_value, U_Int_32 options __attribute__ ((unused)))
+				     CVT_VAX_F output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -984,7 +1004,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_D output_value, U_Int_32 options __attribute__ ((unused)))
+				     CVT_VAX_D output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -1172,7 +1192,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_G output_value, U_Int_32 options __attribute__ ((unused)))
+				     CVT_VAX_G output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -1353,7 +1373,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_H output_value, U_Int_32 options __attribute__ ((unused)))
+				     CVT_VAX_H output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -1501,20 +1521,20 @@ STATIC_ROUTINE CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
       intermediate_value[2] |= (intermediate_value[1] << 17);
       intermediate_value[1] >>= 15;
 
-      /*          
+      /*
        ** Clear implicit bit.
        ** ----------------------------------------------------------------------
        */
       intermediate_value[1] &= 0x0000FFFFL;
 
-      /*          
+      /*
        ** OR in exponent and sign bit.
        ** ----------------------------------------------------------------------
        */
       intermediate_value[1] |= (intermediate_value[U_R_EXP] << 16);
       intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
 
-      /*          
+      /*
        ** Adjust for VAX 16 bit floating format.
        ** ----------------------------------------------------------------------
        */
@@ -1527,7 +1547,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
     }
   }
 
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -1536,7 +1556,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_S output_value, U_Int_32 options __attribute__ ((unused)))
+				      CVT_IEEE_S output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -1551,7 +1571,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
 **
 **        1.0 <= fraction < 2.0, MSB implicit
 **
-**      For more details see "Mips R2000 Risc Architecture" by Gerry Kane, 
+**      For more details see "Mips R2000 Risc Architecture" by Gerry Kane,
 **      page 6-8 or ANSI/IEEE Std 754-1985.
 **
 **
@@ -1586,7 +1606,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Local variable definition.
    ** ==========================================================================
    */
@@ -1594,13 +1614,13 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
   int i;
   CVT_STATUS return_status;
 
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
   return_status = cvt_s_normal;
 
-  /*      
+  /*
    ** Check for unusual situations in the intermediate value.
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
@@ -1627,8 +1647,8 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
     }
   }
 
-  /*      
-   ** Precision varies if value will be a denorm.  So, figure out where to 
+  /*
+   ** Precision varies if value will be a denorm.  So, figure out where to
    ** round (0 <= i <= 24).
    ** ==========================================================================
    */
@@ -1641,13 +1661,13 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
 
     _round(intermediate_value, round_bit_position, options);
 
-    /*    
+    /*
      ** Check for Denorm or underflow.
      ** ========================================================================
      */
     if (intermediate_value[U_R_EXP] < (U_R_BIAS - 125)) {
       /*
-       ** Value is too small for a denorm, so underflow. 
+       ** Value is too small for a denorm, so underflow.
        ** ----------------------------------------------------------------------
        */
       if (intermediate_value[U_R_EXP] < ((U_R_BIAS - 125) - 23)) {
@@ -1686,7 +1706,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
       }
     }
 
-    /*    
+    /*
      ** Check for overflow.
      ** ========================================================================
      */
@@ -1711,30 +1731,30 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
       RAISE(cvt_s_overflow);
     }
 
-    /*    
+    /*
      ** Pack up the output value and return it.
      ** ========================================================================
      */
     else {
-      /*          
+      /*
        ** Adjust the bias of the exponent.
        ** ----------------------------------------------------------------------
        */
       intermediate_value[U_R_EXP] -= (U_R_BIAS - 126);
 
-      /*          
+      /*
        ** Make room for exponent and sign bit.
        ** ----------------------------------------------------------------------
        */
       intermediate_value[1] >>= 8;
 
-      /*          
+      /*
        ** Clear implicit bit.
        ** ----------------------------------------------------------------------
        */
       intermediate_value[1] &= 0x007FFFFFL;
 
-      /*          
+      /*
        ** OR in exponent and sign bit.
        ** ----------------------------------------------------------------------
        */
@@ -1752,7 +1772,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
     }
   }
 
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -1761,7 +1781,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_T output_value, U_Int_32 options __attribute__ ((unused)))
+				      CVT_IEEE_T output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -1777,7 +1797,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
 **
 **          1.0 <= fraction < 2.0, MSB implicit
 **
-**      For more details see "Mips R2000 Risc Architecture" by Gerry Kane, 
+**      For more details see "Mips R2000 Risc Architecture" by Gerry Kane,
 **      page 6-8 or ANSI/IEEE Std 754-1985.
 **
 ** INPUT PARAMETERS:
@@ -1811,7 +1831,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Local variable definition.
    ** ==========================================================================
    */
@@ -1821,13 +1841,13 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
   STATIC_CONSTANT double fliptest = 42.;
   int flip = *(int *)&fliptest != 0;
 
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
   return_status = cvt_s_normal;
 
-  /*      
+  /*
    ** Check for unusual situations in the intermediate value.
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
@@ -1864,8 +1884,8 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
     }
   }
 
-  /*      
-   ** Precision varies if value will be a denorm.  So, figure out where to 
+  /*
+   ** Precision varies if value will be a denorm.  So, figure out where to
    ** round (0 <= i <= 53).
    ** ==========================================================================
    */
@@ -1878,13 +1898,13 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
 
     _round(intermediate_value, round_bit_position, options);
 
-    /*    
+    /*
      ** Check for Denorm or underflow.
      ** ========================================================================
      */
     if (intermediate_value[U_R_EXP] < (U_R_BIAS - 1021)) {
       /*
-       ** Value is too small for a denorm, so underflow. 
+       ** Value is too small for a denorm, so underflow.
        ** ----------------------------------------------------------------------
        */
       if (intermediate_value[U_R_EXP] < ((U_R_BIAS - 1021) - 52)) {
@@ -1939,7 +1959,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
       }
     }
 
-    /*    
+    /*
      ** Check for overflow.
      ** ========================================================================
      */
@@ -1982,18 +2002,18 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
       RAISE(cvt_s_overflow);
     }
 
-    /*    
+    /*
      ** Pack up the output value and return it.
      ** ========================================================================
      */
     else {
-      /*          
+      /*
        ** Adjust the bias of the exponent.
        ** ----------------------------------------------------------------------
        */
       intermediate_value[U_R_EXP] -= (U_R_BIAS - 1022);
 
-      /*          
+      /*
        ** Make room for exponent and sign bit.
        ** ----------------------------------------------------------------------
        */
@@ -2001,13 +2021,13 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
       intermediate_value[2] |= (intermediate_value[1] << 21);
       intermediate_value[1] >>= 11;
 
-      /*          
+      /*
        ** Clear implicit bit.
        ** ----------------------------------------------------------------------
        */
       intermediate_value[1] &= 0x000FFFFFL;
 
-      /*          
+      /*
        ** OR in exponent and sign bit.
        ** ----------------------------------------------------------------------
        */
@@ -2030,7 +2050,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
     }
   }
 
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -2039,7 +2059,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_X output_value, U_Int_32 options __attribute__ ((unused)))
+				      CVT_IEEE_X output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -2091,7 +2111,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Local variable definition.
    ** ==========================================================================
    */
@@ -2099,13 +2119,13 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
   int i;
   CVT_STATUS return_status;
 
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
   return_status = cvt_s_normal;
 
-  /*      
+  /*
    ** Check for unusual situations in the intermediate value.
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
@@ -2132,8 +2152,8 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
     }
   }
 
-  /*      
-   ** Precision varies if value will be a denorm.  So, figure out where to 
+  /*
+   ** Precision varies if value will be a denorm.  So, figure out where to
    ** round (0 <= i <= 113).
    ** ==========================================================================
    */
@@ -2146,13 +2166,13 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
 
     _round(intermediate_value, round_bit_position, options);
 
-    /*    
+    /*
      ** Check for Denorm or underflow.
      ** ========================================================================
      */
     if (intermediate_value[U_R_EXP] < (U_R_BIAS - 16381)) {
       /*
-       ** Value is too small for a denorm, so underflow. 
+       ** Value is too small for a denorm, so underflow.
        ** ----------------------------------------------------------------------
        */
       if (intermediate_value[U_R_EXP] < ((U_R_BIAS - 16381) - 112)) {
@@ -2234,7 +2254,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
       }
     }
 
-    /*    
+    /*
      ** Check for overflow.
      ** ========================================================================
      */
@@ -2265,18 +2285,18 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
       RAISE(cvt_s_overflow);
     }
 
-    /*    
+    /*
      ** Pack up the output value and return it.
      ** ========================================================================
      */
     else {
-      /*          
+      /*
        ** Adjust the bias of the exponent.
        ** ----------------------------------------------------------------------
        */
       intermediate_value[U_R_EXP] -= (U_R_BIAS - 16382);
 
-      /*          
+      /*
        ** Make room for exponent and sign bit.
        ** ----------------------------------------------------------------------
        */
@@ -2288,13 +2308,13 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
       intermediate_value[2] |= (intermediate_value[1] << 17);
       intermediate_value[1] >>= 15;
 
-      /*          
+      /*
        ** Clear implicit bit.
        ** ----------------------------------------------------------------------
        */
       intermediate_value[1] &= 0x0000FFFFL;
 
-      /*          
+      /*
        ** OR in exponent and sign bit.
        ** ----------------------------------------------------------------------
        */
@@ -2327,7 +2347,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
     }
   }
 
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -2336,7 +2356,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
-				     CVT_IBM_LONG output_value, U_Int_32 options __attribute__ ((unused)))
+				     CVT_IBM_LONG output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -2386,7 +2406,7 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Local variable definition.
    ** ==========================================================================
    */
@@ -2394,13 +2414,13 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
   int i, j;
   CVT_STATUS return_status;
 
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
   return_status = cvt_s_normal;
 
-  /*      
+  /*
    ** Check for unusual situations in the intermediate value.
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
@@ -2425,9 +2445,9 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
     }
   }
 
-  /*      
+  /*
    ** Precision varies because binary exp must be multiple of 4 (since we must
-   ** convert it to a hexadecimal exponent).  So, figure out where to round 
+   ** convert it to a hexadecimal exponent).  So, figure out where to round
    ** (53 <= i <= 56).
    ** ==========================================================================
    */
@@ -2440,13 +2460,13 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
 
     _round(intermediate_value, round_bit_position, options);
 
-    /*    
+    /*
      ** Check for underflow.
      ** ========================================================================
      */
     if (intermediate_value[U_R_EXP] < (U_R_BIAS - 255)) {
       /*
-       ** Value is too small, so underflow. 
+       ** Value is too small, so underflow.
        ** ----------------------------------------------------------------------
        */
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
@@ -2458,13 +2478,13 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
       if (options & CVT_M_ERR_UNDERFLOW)
 	RAISE(cvt_s_underflow);
     }
-    /*    
+    /*
      ** Check for overflow.
      ** ========================================================================
      */
     else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 252)) {
       /*
-       ** Value is too large, so overflow. 
+       ** Value is too large, so overflow.
        ** ----------------------------------------------------------------------
        */
       if (options & CVT_M_TRUNCATE) {
@@ -2487,7 +2507,7 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
       RAISE(cvt_s_overflow);
     }
 
-    /*    
+    /*
      ** Pack up the output value and return it.
      ** ========================================================================
      */
@@ -2508,7 +2528,7 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
       }
 
       /*
-       ** Make room for exponent and sign bit 
+       ** Make room for exponent and sign bit
        ** ----------------------------------------------------------------------
        */
       intermediate_value[2] >>= i;
@@ -2516,14 +2536,14 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
       intermediate_value[1] >>= i;
 
       /*
-       ** OR in exponent and sign bit 
+       ** OR in exponent and sign bit
        ** ----------------------------------------------------------------------
        */
       intermediate_value[1] |= (j << 24);
       intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
 
       /*
-       ** Shuffle bytes to big endian format 
+       ** Shuffle bytes to big endian format
        ** ----------------------------------------------------------------------
        */
       intermediate_value[0] = ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
@@ -2537,7 +2557,7 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
     }
   }
 
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -2546,7 +2566,7 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
-				     CVT_IBM_SHORT output_value, U_Int_32 options __attribute__ ((unused)))
+				     CVT_IBM_SHORT output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -2595,7 +2615,7 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Local variable definition.
    ** ==========================================================================
    */
@@ -2603,13 +2623,13 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
   int i, j;
   CVT_STATUS return_status;
 
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
   return_status = cvt_s_normal;
 
-  /*      
+  /*
    ** Check for unusual situations in the intermediate value.
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
@@ -2633,9 +2653,9 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
     }
   }
 
-  /*      
+  /*
    ** Precision varies because exp must be multiple of 4 (since we must convert
-   ** it to a hexadecimal exponent).  So, figure out where to round 
+   ** it to a hexadecimal exponent).  So, figure out where to round
    ** (21 <= i <=24).
    ** ==========================================================================
    */
@@ -2648,7 +2668,7 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
 
     _round(intermediate_value, round_bit_position, options);
 
-    /*    
+    /*
      ** Check for underflow.
      ** ========================================================================
      */
@@ -2664,7 +2684,7 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
       }
     }
 
-    /*    
+    /*
      ** Check for overflow.
      ** ========================================================================
      */
@@ -2689,12 +2709,12 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
       RAISE(cvt_s_overflow);
     }
 
-    /*    
+    /*
      ** Pack up the output value and return it.
      ** ========================================================================
      */
     else {
-      /* 
+      /*
        ** Figure leading zeros (i) and biased exponent (j)
        ** ----------------------------------------------------------------------
        */
@@ -2709,20 +2729,20 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
 	i = 8;
       }
 
-      /* 
+      /*
        ** Make room for exponent and sign bit
        ** ----------------------------------------------------------------------
        */
       intermediate_value[1] >>= i;
 
-      /* 
+      /*
        ** OR in exponent and sign bit
        ** ----------------------------------------------------------------------
        */
       intermediate_value[1] |= (j << 24);
       intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
 
-      /* 
+      /*
        ** Shuffle bytes to big endian format
        ** ----------------------------------------------------------------------
        */
@@ -2735,7 +2755,7 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
     }
   }
 
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -2744,7 +2764,7 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
-				    CVT_CRAY output_value, U_Int_32 options __attribute__ ((unused)))
+				    CVT_CRAY output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -2760,7 +2780,7 @@ STATIC_ROUTINE CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
 **          [0]: Sign bit, 15 exp bits (bias 16384), 16 fraction bits
 **          [1]: 32 low order fraction bits
 **
-**          0.5 <= fraction < 1.0, MSB explicit 
+**          0.5 <= fraction < 1.0, MSB explicit
 **          Since CRAY has no hidden bits the MSB must always be set.
 **
 **      Some of the CRAY exponent range is not used.
@@ -2800,20 +2820,20 @@ STATIC_ROUTINE CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Local variable definition.
    ** ==========================================================================
    */
   int round_bit_position;
   CVT_STATUS return_status;
 
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
   return_status = cvt_s_normal;
 
-  /*      
+  /*
    ** Check for unusual situations in the intermediate value.
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
@@ -2849,7 +2869,7 @@ STATIC_ROUTINE CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
 
     _round(intermediate_value, round_bit_position, options);
 
-    /*    
+    /*
      ** Check for underflow.
      ** ========================================================================
      */
@@ -2865,7 +2885,7 @@ STATIC_ROUTINE CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
       }
     }
 
-    /*    
+    /*
      ** Check for overflow.
      ** ========================================================================
      */
@@ -2891,13 +2911,13 @@ STATIC_ROUTINE CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
      ** ========================================================================
      */
     else {
-      /* 
+      /*
        ** Adjust bias of exponent
        ** ----------------------------------------------------------------------
        */
       intermediate_value[U_R_EXP] -= (U_R_BIAS - 16384);
 
-      /* 
+      /*
        ** Make room for exponent and sign bit
        ** ----------------------------------------------------------------------
        */
@@ -2905,14 +2925,14 @@ STATIC_ROUTINE CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
       intermediate_value[2] |= (intermediate_value[1] << 16);
       intermediate_value[1] >>= 16;
 
-      /* 
+      /*
        ** OR in exponent and sign bit
        ** ----------------------------------------------------------------------
        */
       intermediate_value[1] |= (intermediate_value[U_R_EXP] << 16);
       intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
 
-      /* 
+      /*
        ** Shuffle bytes to big endian format
        ** ----------------------------------------------------------------------
        */
@@ -2928,7 +2948,7 @@ STATIC_ROUTINE CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
     }
   }
 
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -2937,7 +2957,7 @@ STATIC_ROUTINE CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE void _round(UNPACKED_REAL intermediate_value,
-			   U_Int_32 round_bit_position, U_Int_32 options __attribute__ ((unused)))
+			   uint32_t round_bit_position, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -2989,7 +3009,7 @@ STATIC_ROUTINE void _round(UNPACKED_REAL intermediate_value,
 **              rounding towards zero, implies input data are rounded such
 **              that the representable value closest to and no greater in
 **              magnitude than the infinitely precise result is delivered.
-** 
+**
 **      Note: for efficiency this routine performs no explicit error checking.
 **
 **
@@ -2998,7 +3018,7 @@ STATIC_ROUTINE void _round(UNPACKED_REAL intermediate_value,
 **      intermediate_value      - address of the UNPACKED_REAL to be rounded.
 **
 **      round_bit_position      - An integer specifying the position to round
-**                                to.  0 <= round_bit_position <= 127.  
+**                                to.  0 <= round_bit_position <= 127.
 **
 **                                Note: Valid CVT mantissa bits are addressed
 **                                as 1 through 128.  Accordingly, specifying 0
@@ -3007,7 +3027,7 @@ STATIC_ROUTINE void _round(UNPACKED_REAL intermediate_value,
 **                                truncation: truncation always leaves a CVT
 **                                number untouched.
 **
-**      options                 - A valid CVT options bit mask in which at 
+**      options                 - A valid CVT options bit mask in which at
 **                                least one, and only one, CVT rounding mode is
 **                                specified.  If no rounding mode is specified,
 **                                results are unpredictable.  Rounding is
@@ -3036,41 +3056,41 @@ STATIC_ROUTINE void _round(UNPACKED_REAL intermediate_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Local variable definition.
    ** ==========================================================================
    */
-  U_Int_32 bit_mask;
+  uint32_t bit_mask;
   int i;
   int more_bits;
   int roundup;
 
-  /*      
+  /*
    ** If we are not going to TRUNCATE the number.
    ** ==========================================================================
    */
   if (!(options & CVT_M_TRUNCATE)) {
 
-    /*    
+    /*
      ** Determine which word the round bit resides in.
      ** ========================================================================
      */
     i = (round_bit_position >> 5) + 1;
 
-    /*    
+    /*
      ** Create a mask isolating the round bit.
      ** ========================================================================
      */
     bit_mask = 0x1L << (31 - (round_bit_position & 0x1FL));
 
-    /*    
+    /*
      ** If we are doing VAX ROUNDING.
      ** ========================================================================
      */
     if (options & CVT_M_VAX_ROUNDING)
       roundup = intermediate_value[i] & bit_mask;
 
-    /*    
+    /*
      ** Else handle the other rounding options.
      ** ========================================================================
      */
@@ -3086,6 +3106,7 @@ STATIC_ROUTINE void _round(UNPACKED_REAL intermediate_value,
       case 0:
 	if (options & CVT_M_ROUND_TO_NEAREST)
 	  break;
+	MDS_ATTR_FALLTHROUGH
 
 	/*
 	 ** Otherwise, make note of wheather there are any bits set after the
@@ -3097,10 +3118,13 @@ STATIC_ROUTINE void _round(UNPACKED_REAL intermediate_value,
 	  switch (i) {
 	  case 1:
 	    more_bits = intermediate_value[2];
+	    MDS_ATTR_FALLTHROUGH
 	  case 2:
 	    more_bits |= intermediate_value[3];
+	    MDS_ATTR_FALLTHROUGH
 	  case 3:
 	    more_bits |= intermediate_value[4];
+	    break;
 	  default:
 	    break;
 	  }
@@ -3140,27 +3164,27 @@ STATIC_ROUTINE void _round(UNPACKED_REAL intermediate_value,
       }
     }
 
-    /*    
+    /*
      ** Perform rounding if necessary.
      ** ========================================================================
      */
     if (roundup) {
 
-      /*          
+      /*
        ** Add 1 at round position.
        ** ----------------------------------------------------------------------
        */
       bit_mask <<= 1;
       intermediate_value[i] = (intermediate_value[i] & ~(bit_mask - 1)) + bit_mask;
 
-      /*          
+      /*
        ** Propagate any carry.
        ** ----------------------------------------------------------------------
        */
       while (!intermediate_value[i])
 	intermediate_value[--i] += 1;
 
-      /*          
+      /*
        ** If carry reaches exponent MSB gets zeroed and must be reset.
        ** ----------------------------------------------------------------------
        */
@@ -3169,7 +3193,7 @@ STATIC_ROUTINE void _round(UNPACKED_REAL intermediate_value,
     }
   }
 
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -3178,7 +3202,7 @@ STATIC_ROUTINE void _round(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE void unpack_vax_f(CVT_VAX_F input_value,
-				 UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
+				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -3205,7 +3229,7 @@ STATIC_ROUTINE void unpack_vax_f(CVT_VAX_F input_value,
 **
 ** OUTPUT PARAMETERS:
 **
-**      output_value            - address of where to place the UNPACKED_REAL 
+**      output_value            - address of where to place the UNPACKED_REAL
 **                                result value
 **
 ** IMPLICIT OUTPUTS:
@@ -3223,26 +3247,26 @@ STATIC_ROUTINE void unpack_vax_f(CVT_VAX_F input_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
   memcpy(&output_value[1], input_value, 4);
 
-  /*      
+  /*
    ** Initialize FLAGS and perhaps set NEGATIVE bit.
    ** ==========================================================================
    */
   output_value[U_R_FLAGS] = (output_value[1] >> 15) & U_R_NEGATIVE;
 
-  /*      
+  /*
    ** Extract VAX biased exponent.
    ** ==========================================================================
    */
   output_value[U_R_EXP] = (output_value[1] >> 7) & 0x000000FFL;
 
-  /*      
-   ** If the exponent is zero, determine if we have an invalid number or 
+  /*
+   ** If the exponent is zero, determine if we have an invalid number or
    ** a zero value.  Set the flag bits accordingly.
    ** ==========================================================================
    */
@@ -3253,32 +3277,32 @@ STATIC_ROUTINE void unpack_vax_f(CVT_VAX_F input_value,
       output_value[U_R_FLAGS] = U_R_ZERO;
   }
 
-  /*      
+  /*
    ** Else the exponent is not zero and we will always have a valid number.
    ** ==========================================================================
    */
   else {
     output_value[1] = ((output_value[1] << 16) | (output_value[1] >> 16));
 
-    /*    
+    /*
      ** Adjust for VAX 16 bit floating format.
      ** ------------------------------------------------------------------------
      */
     output_value[U_R_EXP] += (U_R_BIAS - 128);
 
-    /*    
+    /*
      ** Set hidden bit.
      ** ------------------------------------------------------------------------
      */
     output_value[1] |= 0x00800000L;
 
-    /*    
+    /*
      ** Left justify fraction bits.
      ** ------------------------------------------------------------------------
      */
     output_value[1] <<= 8;
 
-    /*    
+    /*
      ** Clear uninitialized parts for unpacked real.
      ** ------------------------------------------------------------------------
      */
@@ -3287,7 +3311,7 @@ STATIC_ROUTINE void unpack_vax_f(CVT_VAX_F input_value,
     output_value[4] = 0;
   }
 
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -3296,7 +3320,7 @@ STATIC_ROUTINE void unpack_vax_f(CVT_VAX_F input_value,
 }
 
 STATIC_ROUTINE void unpack_vax_d(CVT_VAX_D input_value,
-				 UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
+				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -3325,7 +3349,7 @@ STATIC_ROUTINE void unpack_vax_d(CVT_VAX_D input_value,
 **
 ** OUTPUT PARAMETERS:
 **
-**      output_value            - address of where to place the UNPACKED_REAL 
+**      output_value            - address of where to place the UNPACKED_REAL
 **                                result value
 **
 ** IMPLICIT OUTPUTS:
@@ -3343,7 +3367,7 @@ STATIC_ROUTINE void unpack_vax_d(CVT_VAX_D input_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
@@ -3353,20 +3377,20 @@ STATIC_ROUTINE void unpack_vax_d(CVT_VAX_D input_value,
 #else
   memcpy(&output_value[1], input_value, 8);
 #endif
-  /*      
+  /*
    ** Initialize FLAGS and perhaps set NEGATIVE bit.
    ** ==========================================================================
    */
   output_value[U_R_FLAGS] = (output_value[1] >> 15) & U_R_NEGATIVE;
 
-  /*      
+  /*
    ** Extract VAX biased exponent.
    ** ==========================================================================
    */
   output_value[U_R_EXP] = (output_value[1] >> 7) & 0x000000FFL;
 
-  /*      
-   ** If the exponent is zero, determine if we have an invalid number or 
+  /*
+   ** If the exponent is zero, determine if we have an invalid number or
    ** a zero value.  Set the flag bits accordingly.
    ** ==========================================================================
    */
@@ -3377,31 +3401,31 @@ STATIC_ROUTINE void unpack_vax_d(CVT_VAX_D input_value,
       output_value[U_R_FLAGS] = U_R_ZERO;
   }
 
-  /*      
+  /*
    ** Else the exponent is not zero and we will always have a valid number.
    ** ==========================================================================
    */
   else {
-    /*    
+    /*
      ** Adjust for VAX 16 bit floating format.
      ** ------------------------------------------------------------------------
      */
     output_value[1] = ((output_value[1] << 16) | (output_value[1] >> 16));
     output_value[2] = ((output_value[2] << 16) | (output_value[2] >> 16));
 
-    /*    
+    /*
      ** Add unpacked real bias and subtract VAX bias.
      ** ------------------------------------------------------------------------
      */
     output_value[U_R_EXP] += (U_R_BIAS - 128);
 
-    /*    
+    /*
      ** Set hidden bit.
      ** ------------------------------------------------------------------------
      */
     output_value[1] |= 0x00800000L;
 
-    /*    
+    /*
      ** Left justify fraction bits.
      ** ------------------------------------------------------------------------
      */
@@ -3409,7 +3433,7 @@ STATIC_ROUTINE void unpack_vax_d(CVT_VAX_D input_value,
     output_value[1] |= (output_value[2] >> 24);
     output_value[2] <<= 8;
 
-    /*    
+    /*
      ** Clear uninitialized part of unpacked real.
      ** ------------------------------------------------------------------------
      */
@@ -3417,7 +3441,7 @@ STATIC_ROUTINE void unpack_vax_d(CVT_VAX_D input_value,
     output_value[4] = 0;
   }
 
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -3426,7 +3450,7 @@ STATIC_ROUTINE void unpack_vax_d(CVT_VAX_D input_value,
 }
 
 STATIC_ROUTINE void unpack_vax_g(CVT_VAX_G input_value,
-				 UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
+				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -3436,7 +3460,7 @@ STATIC_ROUTINE void unpack_vax_g(CVT_VAX_G input_value,
 **      number and to initialize an UNPACKED_REAL structure with those bits.
 **
 **      A VAX g_floating number in (16 bit words) looks like:
-** 
+**
 **          [0]: Sign bit, 11 exp bits (bias 1024), 4 fraction bits
 **          [1]: 16 more fraction bits
 **          [2]: 16 more fraction bits
@@ -3455,7 +3479,7 @@ STATIC_ROUTINE void unpack_vax_g(CVT_VAX_G input_value,
 **
 ** OUTPUT PARAMETERS:
 **
-**      output_value            - address of where to place the UNPACKED_REAL 
+**      output_value            - address of where to place the UNPACKED_REAL
 **                                result value
 **
 ** IMPLICIT OUTPUTS:
@@ -3473,7 +3497,7 @@ STATIC_ROUTINE void unpack_vax_g(CVT_VAX_G input_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
@@ -3484,20 +3508,20 @@ STATIC_ROUTINE void unpack_vax_g(CVT_VAX_G input_value,
   memcpy(&output_value[1], input_value, 8);
 #endif
 
-  /*      
+  /*
    ** Initialize FLAGS and perhaps set NEGATIVE bit.
    ** ==========================================================================
    */
   output_value[U_R_FLAGS] = (output_value[1] >> 15) & U_R_NEGATIVE;
 
-  /*      
+  /*
    ** Extract VAX biased exponent.
    ** ==========================================================================
    */
   output_value[U_R_EXP] = (output_value[1] >> 4) & 0x000007FFL;
 
-  /*      
-   ** If the exponent is zero, determine if we have an invalid number or 
+  /*
+   ** If the exponent is zero, determine if we have an invalid number or
    ** a zero value.  Set the flag bits accordingly.
    ** ==========================================================================
    */
@@ -3508,31 +3532,31 @@ STATIC_ROUTINE void unpack_vax_g(CVT_VAX_G input_value,
       output_value[U_R_FLAGS] = U_R_ZERO;
   }
 
-  /*      
+  /*
    ** Else the exponent is not zero and we will always have a valid number.
    ** ==========================================================================
    */
   else {
-    /*    
+    /*
      ** Adjust for VAX 16 bit floating format.
      ** ------------------------------------------------------------------------
      */
     output_value[1] = ((output_value[1] << 16) | (output_value[1] >> 16));
     output_value[2] = ((output_value[2] << 16) | (output_value[2] >> 16));
 
-    /*    
+    /*
      ** Add unpacked real bias and subtract VAX bias.
      ** ------------------------------------------------------------------------
      */
     output_value[U_R_EXP] += (U_R_BIAS - 1024);
 
-    /*    
+    /*
      ** Set hidden bit.
      ** ------------------------------------------------------------------------
      */
     output_value[1] |= 0x00100000L;
 
-    /*    
+    /*
      ** Left justify fraction bits.
      ** ------------------------------------------------------------------------
      */
@@ -3540,7 +3564,7 @@ STATIC_ROUTINE void unpack_vax_g(CVT_VAX_G input_value,
     output_value[1] |= (output_value[2] >> 21);
     output_value[2] <<= 11;
 
-    /*    
+    /*
      ** Clear uninitialized part of unpacked real.
      ** ------------------------------------------------------------------------
      */
@@ -3548,7 +3572,7 @@ STATIC_ROUTINE void unpack_vax_g(CVT_VAX_G input_value,
     output_value[4] = 0;
   }
 
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -3557,7 +3581,7 @@ STATIC_ROUTINE void unpack_vax_g(CVT_VAX_G input_value,
 }
 
 STATIC_ROUTINE void unpack_vax_h(CVT_VAX_H input_value,
-				 UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
+				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -3590,7 +3614,7 @@ STATIC_ROUTINE void unpack_vax_h(CVT_VAX_H input_value,
 **
 ** OUTPUT PARAMETERS:
 **
-**      output_value            - address of where to place the UNPACKED_REAL 
+**      output_value            - address of where to place the UNPACKED_REAL
 **                                result value
 **
 ** IMPLICIT OUTPUTS:
@@ -3608,26 +3632,26 @@ STATIC_ROUTINE void unpack_vax_h(CVT_VAX_H input_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
   memcpy(&output_value[1], input_value, 16);
 
-  /*      
+  /*
    ** Initialize FLAGS and perhaps set NEGATIVE bit.
    ** ==========================================================================
    */
   output_value[U_R_FLAGS] = (output_value[1] >> 15) & U_R_NEGATIVE;
 
-  /*      
+  /*
    ** Extract VAX biased exponent.
    ** ==========================================================================
    */
   output_value[U_R_EXP] = output_value[1] & 0x00007FFFL;
 
-  /*      
-   ** If the exponent is zero, determine if we have an invalid number or 
+  /*
+   ** If the exponent is zero, determine if we have an invalid number or
    ** a zero value.  Set the flag bits accordingly.
    ** ==========================================================================
    */
@@ -3638,12 +3662,12 @@ STATIC_ROUTINE void unpack_vax_h(CVT_VAX_H input_value,
       output_value[U_R_FLAGS] = U_R_ZERO;
   }
 
-  /*      
+  /*
    ** Else the exponent is not zero and we will always have a valid number.
    ** ==========================================================================
    */
   else {
-    /*    
+    /*
      ** Adjust for VAX 16 bit floating format.
      ** ------------------------------------------------------------------------
      */
@@ -3652,19 +3676,19 @@ STATIC_ROUTINE void unpack_vax_h(CVT_VAX_H input_value,
     output_value[3] = ((output_value[3] << 16) | (output_value[3] >> 16));
     output_value[4] = ((output_value[4] << 16) | (output_value[4] >> 16));
 
-    /*    
+    /*
      ** Add unpacked real bias and subtract VAX bias.
      ** ------------------------------------------------------------------------
      */
     output_value[U_R_EXP] += (U_R_BIAS - 16384);
 
-    /*    
+    /*
      ** Set hidden bit.
      ** ------------------------------------------------------------------------
      */
     output_value[1] |= 0x00010000L;
 
-    /*    
+    /*
      ** Left justify fraction bits.
      ** ------------------------------------------------------------------------
      */
@@ -3677,7 +3701,7 @@ STATIC_ROUTINE void unpack_vax_h(CVT_VAX_H input_value,
     output_value[4] <<= 15;
   }
 
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -3686,7 +3710,7 @@ STATIC_ROUTINE void unpack_vax_h(CVT_VAX_H input_value,
 }
 
 STATIC_ROUTINE void unpack_ieee_s(CVT_IEEE_S input_value,
-				  UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
+				  UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -3702,7 +3726,7 @@ STATIC_ROUTINE void unpack_ieee_s(CVT_IEEE_S input_value,
 **
 **          1.0 <= fraction < 2.0, MSB implicit
 **
-**      For more details see "Mips R2000 Risc Architecture" by Gerry Kane, 
+**      For more details see "Mips R2000 Risc Architecture" by Gerry Kane,
 **      page 6-8 or ANSI/IEEE Std 754-1985.
 **
 ** INPUT PARAMETERS:
@@ -3716,7 +3740,7 @@ STATIC_ROUTINE void unpack_ieee_s(CVT_IEEE_S input_value,
 **
 ** OUTPUT PARAMETERS:
 **
-**      output_value            - address of where to place the UNPACKED_REAL 
+**      output_value            - address of where to place the UNPACKED_REAL
 **                                result value
 **
 ** IMPLICIT OUTPUTS:
@@ -3734,20 +3758,20 @@ STATIC_ROUTINE void unpack_ieee_s(CVT_IEEE_S input_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Local variable definition.
    ** ==========================================================================
    */
   int i;
 
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
   if (options & CVT_M_BIG_ENDIAN) {
     memcpy(output_value, input_value, 4);
 
-    /*    
+    /*
      ** Shuffle bytes to little endian format.
      ** ------------------------------------------------------------------------
      */
@@ -3758,35 +3782,35 @@ STATIC_ROUTINE void unpack_ieee_s(CVT_IEEE_S input_value,
     memcpy(&output_value[1], input_value, 4);
   }
 
-  /*      
+  /*
    ** Initialize FLAGS and perhaps set NEGATIVE bit.
    ** ==========================================================================
    */
   output_value[U_R_FLAGS] = (output_value[1] >> 31);
 
-  /*      
+  /*
    ** Extract biased exponent.
    ** ==========================================================================
    */
   output_value[U_R_EXP] = (output_value[1] >> 23) & 0x000000FFL;
 
-  /*      
+  /*
    ** Check for denormalized values.
    ** ==========================================================================
    */
   if (output_value[U_R_EXP] == 0) {
-    /*    
+    /*
      ** Clear sign bit.
      ** ------------------------------------------------------------------------
      */
     output_value[1] &= 0x7FFFFFFFL;
 
-    /*    
+    /*
      ** If fraction is non-zero then normalize it.
      ** ------------------------------------------------------------------------
      */
     if (output_value[1] != 0) {
-      /*          
+      /*
        ** Count leading zeros.
        ** ----------------------------------------------------------------------
        */
@@ -3796,14 +3820,14 @@ STATIC_ROUTINE void unpack_ieee_s(CVT_IEEE_S input_value,
 	i += 1;
       }
 
-      /*          
+      /*
        ** Adjust exponent and normalize fraction.
        ** ----------------------------------------------------------------------
        */
       output_value[U_R_EXP] = U_R_BIAS - 126 - i;
       output_value[1] <<= 9;
 
-      /*          
+      /*
        ** Clear uninitialized part of unpacked real.
        ** ----------------------------------------------------------------------
        */
@@ -3817,12 +3841,12 @@ STATIC_ROUTINE void unpack_ieee_s(CVT_IEEE_S input_value,
     }
   }
 
-  /*      
+  /*
    ** Check for NANs and INFINITIES.
    ** ==========================================================================
    */
   else if (output_value[U_R_EXP] == 255) {
-    /*    
+    /*
      ** Clear sign bit and exponent.
      ** ------------------------------------------------------------------------
      */
@@ -3833,30 +3857,30 @@ STATIC_ROUTINE void unpack_ieee_s(CVT_IEEE_S input_value,
       output_value[U_R_FLAGS] |= U_R_INFINITY;
   }
 
-  /*      
+  /*
    ** We have ourselves a genuine valid number.
    ** ==========================================================================
    */
   else {
-    /*    
+    /*
      ** Adjust exponent bias.
      ** ------------------------------------------------------------------------
      */
     output_value[U_R_EXP] += (U_R_BIAS - 126);
 
-    /*    
+    /*
      ** Set hidden bit.
      ** ------------------------------------------------------------------------
      */
     output_value[1] |= 0x00800000L;
 
-    /*    
+    /*
      ** Left justify fraction bits.
      ** ------------------------------------------------------------------------
      */
     output_value[1] <<= 8;
 
-    /*    
+    /*
      ** Clear uninitialized part of unpacked real.
      ** ------------------------------------------------------------------------
      */
@@ -3865,7 +3889,7 @@ STATIC_ROUTINE void unpack_ieee_s(CVT_IEEE_S input_value,
     output_value[4] = 0;
   }
 
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -3874,7 +3898,7 @@ STATIC_ROUTINE void unpack_ieee_s(CVT_IEEE_S input_value,
 }
 
 STATIC_ROUTINE void unpack_ieee_t(CVT_IEEE_T input_value,
-				  UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
+				  UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -3891,7 +3915,7 @@ STATIC_ROUTINE void unpack_ieee_t(CVT_IEEE_T input_value,
 **
 **          1.0 <= fraction < 2.0, MSB implicit
 **
-**      For more details see "Mips R2000 Risc Architecture" by Gerry Kane, 
+**      For more details see "Mips R2000 Risc Architecture" by Gerry Kane,
 **      page 6-8 or ANSI/IEEE Std 754-1985.
 **
 ** INPUT PARAMETERS:
@@ -3905,7 +3929,7 @@ STATIC_ROUTINE void unpack_ieee_t(CVT_IEEE_T input_value,
 **
 ** OUTPUT PARAMETERS:
 **
-**      output_value            - address of where to place the UNPACKED_REAL 
+**      output_value            - address of where to place the UNPACKED_REAL
 **                                result value
 **
 ** IMPLICIT OUTPUTS:
@@ -3923,7 +3947,7 @@ STATIC_ROUTINE void unpack_ieee_t(CVT_IEEE_T input_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Local variable definition.
    ** ==========================================================================
    */
@@ -3931,7 +3955,7 @@ STATIC_ROUTINE void unpack_ieee_t(CVT_IEEE_T input_value,
   STATIC_CONSTANT double fliptest = 42.;
   int flip = *(int *)&fliptest != 0;
 
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
@@ -3939,7 +3963,7 @@ STATIC_ROUTINE void unpack_ieee_t(CVT_IEEE_T input_value,
   if (flip)
     FlipDouble((int *)output_value);
   if (options & CVT_M_BIG_ENDIAN) {
-    /*    
+    /*
      ** Shuffle bytes to little endian format.
      ** ------------------------------------------------------------------------
      */
@@ -3953,35 +3977,35 @@ STATIC_ROUTINE void unpack_ieee_t(CVT_IEEE_T input_value,
     output_value[2] = output_value[0];
   }
 
-  /*      
+  /*
    ** Initialize FLAGS and perhaps set NEGATIVE bit.
    ** ==========================================================================
    */
   output_value[U_R_FLAGS] = (output_value[1] >> 31);
 
-  /*      
+  /*
    ** Extract biased exponent.
    ** ==========================================================================
    */
   output_value[U_R_EXP] = (output_value[1] >> 20) & 0x000007FFL;
 
-  /*      
+  /*
    ** Check for denormalized values.
    ** ==========================================================================
    */
   if (output_value[U_R_EXP] == 0) {
-    /*    
+    /*
      ** Clear sign bit.
      ** ------------------------------------------------------------------------
      */
     output_value[1] &= 0x7FFFFFFFL;
 
-    /*    
+    /*
      ** If fraction is non-zero then normalize it.
      ** ------------------------------------------------------------------------
      */
     if (output_value[1] != 0) {
-      /*          
+      /*
        ** Count leading zeros in fraction.
        ** ----------------------------------------------------------------------
        */
@@ -3991,7 +4015,7 @@ STATIC_ROUTINE void unpack_ieee_t(CVT_IEEE_T input_value,
 	i += 1;
       }
 
-      /*          
+      /*
        ** Adjust exponent and normalize fraction.
        ** ----------------------------------------------------------------------
        */
@@ -4001,7 +4025,7 @@ STATIC_ROUTINE void unpack_ieee_t(CVT_IEEE_T input_value,
       output_value[1] |= (output_value[2] >> (32 - i));
       output_value[2] <<= i;
 
-      /*          
+      /*
        ** Clear uninitialized part of unpacked real.
        ** ----------------------------------------------------------------------
        */
@@ -4012,7 +4036,7 @@ STATIC_ROUTINE void unpack_ieee_t(CVT_IEEE_T input_value,
     else if (output_value[2]) {
       output_value[1] = output_value[2];
 
-      /*          
+      /*
        ** Count leading zeros in fraction.
        ** ----------------------------------------------------------------------
        */
@@ -4022,13 +4046,13 @@ STATIC_ROUTINE void unpack_ieee_t(CVT_IEEE_T input_value,
 	i += 1;
       }
 
-      /*          
+      /*
        ** Adjust exponent.
        ** ----------------------------------------------------------------------
        */
       output_value[U_R_EXP] = U_R_BIAS - 1022 - i;
 
-      /*          
+      /*
        ** Clear uninitialized part of unpacked real.
        ** ----------------------------------------------------------------------
        */
@@ -4040,12 +4064,12 @@ STATIC_ROUTINE void unpack_ieee_t(CVT_IEEE_T input_value,
     }
   }
 
-  /*      
+  /*
    ** Check for NANs and INFINITIES.
    ** ==========================================================================
    */
   else if (output_value[U_R_EXP] == 2047) {
-    /*    
+    /*
      ** Clear sign bit and exponent.
      ** ------------------------------------------------------------------------
      */
@@ -4057,24 +4081,24 @@ STATIC_ROUTINE void unpack_ieee_t(CVT_IEEE_T input_value,
       output_value[U_R_FLAGS] |= U_R_INFINITY;
   }
 
-  /*      
+  /*
    ** We have ourselves a genuine valid number.
    ** ==========================================================================
    */
   else {
-    /*    
+    /*
      ** Adjust exponent.
      ** ------------------------------------------------------------------------
      */
     output_value[U_R_EXP] += (U_R_BIAS - 1022);
 
-    /*    
+    /*
      ** Set hidden bit.
      ** ------------------------------------------------------------------------
      */
     output_value[1] |= 0x00100000L;
 
-    /*    
+    /*
      ** Left justify fraction bits.
      ** ------------------------------------------------------------------------
      */
@@ -4082,14 +4106,14 @@ STATIC_ROUTINE void unpack_ieee_t(CVT_IEEE_T input_value,
     output_value[1] |= (output_value[2] >> 21);
     output_value[2] <<= 11;
 
-    /*    
+    /*
      ** Clear uninitialized part of unpacked real.
      ** ------------------------------------------------------------------------
      */
     output_value[3] = 0;
     output_value[4] = 0;
   }
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -4098,7 +4122,7 @@ STATIC_ROUTINE void unpack_ieee_t(CVT_IEEE_T input_value,
 }
 
 STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
-				  UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
+				  UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -4130,7 +4154,7 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
 **
 ** OUTPUT PARAMETERS:
 **
-**      output_value            - address of where to place the UNPACKED_REAL 
+**      output_value            - address of where to place the UNPACKED_REAL
 **                                result value
 **
 ** IMPLICIT OUTPUTS:
@@ -4148,20 +4172,20 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Local variable definition.
    ** ==========================================================================
    */
   int i;
 
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
   memcpy(output_value, input_value, 16);
 
   if (options & CVT_M_BIG_ENDIAN) {
-    /*    
+    /*
      ** Shuffle bytes to little endian format.
      ** ------------------------------------------------------------------------
      */
@@ -4187,35 +4211,35 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
     output_value[1] = output_value[0];
   }
 
-  /*      
+  /*
    ** Initialize FLAGS and perhaps set NEGATIVE bit.
    ** ==========================================================================
    */
   output_value[U_R_FLAGS] = (output_value[1] >> 31);
 
-  /*      
+  /*
    ** Extract biased exponent.
    ** ==========================================================================
    */
   output_value[U_R_EXP] = (output_value[1] >> 16) & 0x00007FFFL;
 
-  /*      
+  /*
    ** Check for denormalized values.
    ** ==========================================================================
    */
   if (output_value[U_R_EXP] == 0) {
-    /*    
+    /*
      ** Clear sign bit.
      ** ------------------------------------------------------------------------
      */
     output_value[1] &= 0x7FFFFFFFL;
 
-    /*    
+    /*
      ** If fraction is non-zero then normalize it.
      ** ------------------------------------------------------------------------
      */
     if (output_value[1] != 0) {
-      /*          
+      /*
        ** Count leading zeros in fraction.
        ** ----------------------------------------------------------------------
        */
@@ -4225,7 +4249,7 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
 	i += 1;
       }
 
-      /*          
+      /*
        ** Adjust exponent and normalize fraction.
        ** ----------------------------------------------------------------------
        */
@@ -4240,7 +4264,7 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
       output_value[4] <<= i;
     }
 
-    /*    
+    /*
      ** If fraction in first 32 bits is zero then move each longword up one
      ** longword and then normalize it.
      ** ------------------------------------------------------------------------
@@ -4250,7 +4274,7 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
       output_value[2] = output_value[3];
       output_value[3] = output_value[4];
 
-      /*          
+      /*
        ** Count leading zeros in fraction.
        ** ----------------------------------------------------------------------
        */
@@ -4260,7 +4284,7 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
 	i += 1;
       }
 
-      /*          
+      /*
        ** Adjust exponent.
        ** ----------------------------------------------------------------------
        */
@@ -4270,14 +4294,14 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
       output_value[2] |= (output_value[3] >> (32 - i));
       output_value[3] <<= i;
 
-      /*          
+      /*
        ** Clear uninitialized part of unpacked real.
        ** ----------------------------------------------------------------------
        */
       output_value[4] = 0;
     }
 
-    /*    
+    /*
      ** If fraction in first 64 bits is zero then move each longword up two
      ** longwords and then normalize it.
      ** ------------------------------------------------------------------------
@@ -4286,7 +4310,7 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
       output_value[1] = output_value[3];
       output_value[2] = output_value[4];
 
-      /*          
+      /*
        ** Count leading zeros in fraction.
        ** ----------------------------------------------------------------------
        */
@@ -4296,7 +4320,7 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
 	i += 1;
       }
 
-      /*          
+      /*
        ** Adjust exponent.
        ** ----------------------------------------------------------------------
        */
@@ -4304,7 +4328,7 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
       output_value[1] |= (output_value[2] >> (32 - i));
       output_value[2] <<= i;
 
-      /*          
+      /*
        ** Clear uninitialized part of unpacked real.
        ** ----------------------------------------------------------------------
        */
@@ -4312,7 +4336,7 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
       output_value[4] = 0;
     }
 
-    /*    
+    /*
      ** If fraction in first 96 bits is zero then move each longword up three
      ** longwords and then normalize it.
      ** ------------------------------------------------------------------------
@@ -4320,7 +4344,7 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
     else if (output_value[4]) {
       output_value[1] = output_value[4];
 
-      /*          
+      /*
        ** Count leading zeros in fraction.
        ** ----------------------------------------------------------------------
        */
@@ -4330,13 +4354,13 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
 	i += 1;
       }
 
-      /*          
+      /*
        ** Adjust exponent.
        ** ----------------------------------------------------------------------
        */
       output_value[U_R_EXP] = U_R_BIAS - 16382 - (i + 80);
 
-      /*          
+      /*
        ** Clear uninitialized part of unpacked real.
        ** ----------------------------------------------------------------------
        */
@@ -4345,7 +4369,7 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
       output_value[4] = 0;
     }
 
-    /*    
+    /*
      ** Otherwise the fraction is completely zero, so set the zero flag.
      ** ------------------------------------------------------------------------
      */
@@ -4354,12 +4378,12 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
     }
   }
 
-  /*      
+  /*
    ** Check for NANs and INFINITIES.
    ** ==========================================================================
    */
   else if (output_value[U_R_EXP] == 32767) {
-    /*    
+    /*
      ** Clear sign bit and exponent.
      ** ------------------------------------------------------------------------
      */
@@ -4371,24 +4395,24 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
       output_value[U_R_FLAGS] |= U_R_INFINITY;
   }
 
-  /*      
+  /*
    ** We have ourselves a genuine valid number.
    ** ==========================================================================
    */
   else {
-    /*    
+    /*
      ** Adjust exponent.
      ** ------------------------------------------------------------------------
      */
     output_value[U_R_EXP] += (U_R_BIAS - 16382);
 
-    /*    
+    /*
      ** Set hidden bit.
      ** ------------------------------------------------------------------------
      */
     output_value[1] |= 0x00010000L;
 
-    /*    
+    /*
      ** Left justify fraction bits.
      ** ------------------------------------------------------------------------
      */
@@ -4401,7 +4425,7 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
     output_value[4] <<= 15;
   }
 
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -4410,7 +4434,7 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
 }
 
 STATIC_ROUTINE void unpack_ibm_l(CVT_IBM_LONG input_value,
-				 UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
+				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -4441,7 +4465,7 @@ STATIC_ROUTINE void unpack_ibm_l(CVT_IBM_LONG input_value,
 **
 ** OUTPUT PARAMETERS:
 **
-**      output_value            - address of where to place the UNPACKED_REAL 
+**      output_value            - address of where to place the UNPACKED_REAL
 **                                result value
 **
 ** IMPLICIT OUTPUTS:
@@ -4459,19 +4483,19 @@ STATIC_ROUTINE void unpack_ibm_l(CVT_IBM_LONG input_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Local variable definition.
    ** ==========================================================================
    */
   int i;
 
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
   memcpy(output_value, input_value, 8);
 
-  /*      
+  /*
    ** Shuffle bytes to little endian format.
    ** ==========================================================================
    */
@@ -4482,19 +4506,19 @@ STATIC_ROUTINE void unpack_ibm_l(CVT_IBM_LONG input_value,
   output_value[1] |= ((output_value[0] << 8) & 0x00FF0000L);
   output_value[1] |= ((output_value[0] >> 8) & 0x0000FF00L);
 
-  /*      
+  /*
    ** Initialize FLAGS and perhaps set NEGATIVE bit.
    ** ==========================================================================
    */
   output_value[U_R_FLAGS] = (output_value[1] >> 31);
 
-  /*      
+  /*
    ** Clear sign bit.
    ** ==========================================================================
    */
   output_value[1] &= 0x7FFFFFFFL;
 
-  /*      
+  /*
    ** Check if 0.
    ** ==========================================================================
    */
@@ -4502,7 +4526,7 @@ STATIC_ROUTINE void unpack_ibm_l(CVT_IBM_LONG input_value,
     output_value[U_R_FLAGS] |= U_R_ZERO;
   }
 
-  /*      
+  /*
    ** Ok, we know that the number is not zero.
    ** ==========================================================================
    */
@@ -4563,7 +4587,7 @@ STATIC_ROUTINE void unpack_ibm_l(CVT_IBM_LONG input_value,
     }
   }
 
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -4572,7 +4596,7 @@ STATIC_ROUTINE void unpack_ibm_l(CVT_IBM_LONG input_value,
 }
 
 STATIC_ROUTINE void unpack_ibm_s(CVT_IBM_SHORT input_value,
-				 UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
+				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -4602,7 +4626,7 @@ STATIC_ROUTINE void unpack_ibm_s(CVT_IBM_SHORT input_value,
 **
 ** OUTPUT PARAMETERS:
 **
-**      output_value            - address of where to place the UNPACKED_REAL 
+**      output_value            - address of where to place the UNPACKED_REAL
 **                                result value
 **
 ** IMPLICIT OUTPUTS:
@@ -4620,19 +4644,19 @@ STATIC_ROUTINE void unpack_ibm_s(CVT_IBM_SHORT input_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Local variable definition.
    ** ==========================================================================
    */
   int i;
 
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
   memcpy(output_value, input_value, 4);
 
-  /*      
+  /*
    ** Shuffle bytes to little endian format.
    ** ==========================================================================
    */
@@ -4640,19 +4664,19 @@ STATIC_ROUTINE void unpack_ibm_s(CVT_IBM_SHORT input_value,
   output_value[1] |= ((output_value[0] << 8) & 0x00FF0000L);
   output_value[1] |= ((output_value[0] >> 8) & 0x0000FF00L);
 
-  /*      
+  /*
    ** Initialize FLAGS and perhaps set NEGATIVE bit.
    ** ==========================================================================
    */
   output_value[U_R_FLAGS] = (output_value[1] >> 31);
 
-  /*      
+  /*
    ** Clear sign bit.
    ** ==========================================================================
    */
   output_value[1] &= 0x7FFFFFFFL;
 
-  /*      
+  /*
    ** Check if 0.
    ** ==========================================================================
    */
@@ -4660,7 +4684,7 @@ STATIC_ROUTINE void unpack_ibm_s(CVT_IBM_SHORT input_value,
     output_value[U_R_FLAGS] |= U_R_ZERO;
   }
 
-  /*      
+  /*
    ** Ok, we know that the number is not zero.
    ** ==========================================================================
    */
@@ -4719,7 +4743,7 @@ STATIC_ROUTINE void unpack_ibm_s(CVT_IBM_SHORT input_value,
     }
   }
 
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -4727,7 +4751,7 @@ STATIC_ROUTINE void unpack_ibm_s(CVT_IBM_SHORT input_value,
 
 }
 
-STATIC_ROUTINE void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
+STATIC_ROUTINE void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -4746,7 +4770,7 @@ STATIC_ROUTINE void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL output_value
 **          0.5 <= fraction < 1.0, MSB explicit
 **          Since CRAY has no hidden bits the MSB must always be set.
 **
-**      Some of the CRAY exponent range is not used.  
+**      Some of the CRAY exponent range is not used.
 **      Exponents < 0x2000 and >= 0x6000 are invalid.
 **
 ** INPUT PARAMETERS:
@@ -4760,7 +4784,7 @@ STATIC_ROUTINE void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL output_value
 **
 ** OUTPUT PARAMETERS:
 **
-**      output_value            - address of where to place the UNPACKED_REAL 
+**      output_value            - address of where to place the UNPACKED_REAL
 **                                result value
 **
 ** IMPLICIT OUTPUTS:
@@ -4778,17 +4802,17 @@ STATIC_ROUTINE void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL output_value
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Local variable definition.
    ** ==========================================================================
    */
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
   memcpy(output_value, input_value, 8);
 
-  /*      
+  /*
    ** Shuffle bytes to little endian format.
    ** ==========================================================================
    */
@@ -4799,25 +4823,25 @@ STATIC_ROUTINE void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL output_value
   output_value[1] |= ((output_value[0] << 8) & 0x00FF0000L);
   output_value[1] |= ((output_value[0] >> 8) & 0x0000FF00L);
 
-  /*      
+  /*
    ** Initialize FLAGS and perhaps set NEGATIVE bit.
    ** ==========================================================================
    */
   output_value[U_R_FLAGS] = (output_value[1] >> 31);
 
-  /*      
+  /*
    ** Clear sign bit.
    ** ==========================================================================
    */
   output_value[1] &= 0x7FFFFFFFL;
 
-  /*      
+  /*
    ** Extract CRAY biased exponent.
    ** ==========================================================================
    */
   output_value[U_R_EXP] = output_value[1] >> 16;
 
-  /*      
+  /*
    ** Check if 0 or an invalid exponent.
    ** ==========================================================================
    */
@@ -4828,7 +4852,7 @@ STATIC_ROUTINE void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL output_value
     output_value[U_R_FLAGS] |= U_R_INVALID;
   }
 
-  /*      
+  /*
    ** Ok, we know that the number is not zero.
    ** ==========================================================================
    */
@@ -4855,7 +4879,7 @@ STATIC_ROUTINE void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL output_value
     output_value[4] = 0;
   }
 
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */

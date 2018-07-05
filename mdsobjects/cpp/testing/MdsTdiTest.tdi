@@ -1,0 +1,475 @@
+TREEOPENNEW(_EXPT,_SHOT)
+USING($SHOT,*,_SHOT,_EXPT)==_SHOT && $SHOT==_SHOT
+TREEADDNODE('S',_n,'signal')&1 && GETNCI(_n,'usage')==6
+TREEWRITE()
+TREEOPEN(_EXPT,_SHOT,1)
+
+if_error(ABORT(),(debug(4),1))
+ABS(cmplx(3.0,4.0))==5.
+ABS1(cmplx(3.0,-4.0))==7.
+ABSSQ(cmplx(3.0,4.0))==25.
+! TDI examples are column-major but it is row-major
+all(ACCUMULATE([1,2,3])            ==[1,3,6])
+all(ACCUMULATE([[1,3,5],[2,4,6]])  ==[[1,4,9],[11,15,21]])
+all(ACCUMULATE([[1,3,5],[2,4,6]],0)==[[1,4,9],[2,6,12]])
+all(ACCUMULATE([[1,3,5],[2,4,6]],1)==[[1,3,5],[3,7,11]])
+ACHAR(88)=="X"
+abs(ACOS(0.54030231)-1.)<1e-6
+abs(ACOSD(0.5)-60.)<1e-6
+all(ADD([2,3,4],5.0)==[7.0,8.0,9.0])
+ADJUSTL(" word")=="word "
+ADJUSTR("word ")==" word"
+AIMAG(cmplx(2.0,3.0))==3.
+AINT(2.783)==2. && AINT(-2.783)==-2.
+ALL([$true,$false,$true]) == $false
+! TDI example does not work; NE seems to be different
+_b=[[1,1,1],[0,1,1],[0,1,0]];1
+all(ALL(_b,0)==[1,0,0]) && all(ALL(_b,1)==[0,1,0])
+ALLOCATED(_b)
+all(AND([0,0,1,1],[0,1,0,1])==[0,0,0,1])
+all(AND_NOT([0,0,1,1],[0,1,0,1])==[0,0,1,0])
+ANINT(2.783)==3. && ANINT(-2.783)==-3.
+
+BEGIN_OF(1:10)==1
+BIT_SIZE(1)==32
+for (_b=0; ;_b++) if (_b==5) BREAK;_b==5
+BSEARCH(3,1:10)==2
+all(BSEARCH(1:8,3:5)==[-1,-1,0,1,2,-1,-1,-1])
+map(1:10,BSEARCH(3.9,1:10,1))==3
+BTEST(8,3)
+! BTEST does not work on arrays (only 1st element)
+!all(BTEST([1,3,2,4],2),[0,0,0,1])
+KIND(BUILD_ACTION(1,2))==202
+! TDI-E-NO_OUTPTR
+KIND(_a=BUILD_CALL(51,'TreeShr','TreeCtx'))==51
+! BUILD_CONDITION
+! BUILD_CONGLOM
+! BUILD_DEPENDENCY
+all(data(BUILD_DIM(build_window(-1,3,10.),build_slope(3.)))[-1:3]==[7.,10.,13.,16.,19.])
+decompile(BUILD_DISPATCH(0,1,2,3,4))=="Build_Dispatch(0, 1, 2, 3, 4)"
+! BUILD_EVENT('SHOT_DONE')
+BUILD_FUNCTION(builtin_opcode('sin'),30)==sin(30)
+! BUILD_METHOD
+_b=BUILD_PARAM(42.,'The answer.',$value > 6 && help_of($this) <> "");and(data(_b)==42.,validation(_b))
+! BUILD_PATH('\TOP.XRAY:LEADER')
+! BUILD_PROCEDURE
+KIND(BUILD_PROGRAM(1.2,'/bin/sh'))==204
+!all((2..5)==[2,3,4,5]) /* .. notation leaves start value 0 */
+all((2:5)==[2,3,4,5])
+KIND(BUILD_ROUTINE(1.2,"I","R",5))==205
+_v=build_with_units($value*6,'m/s^2');1
+_r=build_with_units(5./1024*[1,2,3],'v');1
+_d=build_dim(build_window(0,2,10.),build_slope(build_with_units(3.,'s')));1
+_s=BUILD_SIGNAL(`_v,`_r,`_d);1
+all(abs(data(_s)-[.0292969,.0585938,.0878906])<1e-7)
+all(abs(data(raw_of(_s))-[.00488281,.00976562,.0146484])<1e-7)
+all(data(dim_of(_s))==[10.,13.,16.])
+_s=BUILD_SLOPE(3.0);1
+_w=BUILD_WINDOW(-1024,7168,BUILD_WITH_UNITS(-0.1,'s'));1
+(_d=build_dim(`_w,`_s))[1]==2.9
+size(_d)==8193
+units_of(BUILD_WITH_UNITS(1,'sec'))=='sec'
+BUILTIN_OPCODE('$')==0 && BUILTIN_OPCODE('$PI')==22
+BYTE(123)==123 && BYTE(257)==1 && kind(BYTE(123))==6
+BYTE_UNSIGNED(123)==123 && BYTE_UNSIGNED(257)==1 && kind(BYTE_UNSIGNED(123))==2
+
+! CALL
+switch (5.1) {CASE (1) _j=0; break;CASE (4.5:5.5) _j=1; break;CASE default _j=0;}_j
+CEILING(2.783)==3.0 && CEILING(-2.783)==-2.0
+CHAR(88)=="X"
+_a=0;CLASS(3)==1 && CLASS([1])==4 && CLASS(_a)==1
+_a=0;CLASS_OF(3)==1 && CLASS_OF([1])==4 && CLASS_OF(_a)==1
+CMPLX(-3)==CMPLX(-3.0,0.0) && CMPLX(3,4,5d6)==CMPLX(3d0,4d0)
+COMMA(_A=5,_B=6,_A+_B)==11
+_a=COMPILE("1*1");qualifiers_of(_a)==247
+! COMPILE_DEPENDENCY
+COMPLETION_OF(build_dispatch(1,2,3,4,5))==5
+COMPLETION_MESSAGE_OF(build_action(1,2,3,4))==4 && kind(COMPLETION_MESSAGE_OF(build_action(1,2,3)))==0
+CONCAT("ABC",'DEF')=="ABCDEF" 
+CONDITIONAL(1,2,1)==1 && CONDITIONAL(1,2,0)==2
+CONDITION_OF(build_condition(1,2))==2
+CONJG(cmplx(2.0,3.0))==cmplx(2.0,-3.0)
+for (_j=3; _j-->0; ) {if (_j>1) CONTINUE;break;}_j==1
+! convolve
+abs(COS(1.)-0.5403023)<1e-6
+abs(COSD(60.)-.5)<1e-7
+abs(COSH(1.)-1.5430806)<1e-6
+COUNT([1,0,1])==2 && all(COUNT([[1,1,0],[0,1,1]],0)==[2,2]) && all(COUNT([[1,1,0],[0,1,1]],1)==[1,2,1])
+! cshift
+all(CULL(1:5,,0:7)==[1,2,3,4,5]) && all(abs(CULL(build_dim(build_window(2,5,1.1),*:*:3),0,5:8)-[8.])<1e-6)
+CVT(123,"1234")==" 123"
+
+DATA(build_signal(42.*$value,6))==252
+units_of(DATA_WITH_UNITS(build_signal(42.*$value, build_with_units(6,'cnt'//'s'))))=='cnts'
+! DATE_TIME(0)==" 1-JAN-1970 00:00:00.00" /*windows is different*/
+(_d=DBLE(3))==3 && KIND(_d)==9 && (_d=DBLE(3.))==3 && KIND(_d)==KIND(1D0)
+DEALLOCATE("_A*")==1 && DEALLOCATE("_A*")==0
+DEBUG(7)==""
+! decode
+DECOMPILE([1,2,3,4],4)=="[1,2,3,4]" && DECOMPILE([1,2,3,4],3)=="Set_Range(4,1 /*** etc. ***/)"
+! DECOMPILE_DEPENDENCY
+all(DECOMPRESS(,,ARRAY(10,1),[0x00880246, 0x84620800LU, 0x4befcb4e, 0x080a])==[0,164,228,252,256,250,238,224,207,190])
+switch (3.1) {case (1) _j=0; break;case default _j=1; break;case (4.5:5.5) _j=0;}_j
+! derivative ??
+all(DIAGONAL([1,2,3])==[[1,0,0],[0,2,0],[0,0,3]])
+DIGITS(1.0)==24
+DIM(-3.1,2.)==0. && abs(DIM(3.1,2.)-1.1)<1e6
+all(DIM_OF([1,2,3])==(0:2))
+kind(DISPATCH_OF(build_action(_d=build_dispatch(,,,,),)))==kind(_d)
+DIVIDE(5,3)==1 && units_of(5/build_with_units(3,"s"))=="/s"
+_j=5;DO{_j--;} WHILE (_j>1);_j==1
+DOT_PRODUCT([1,2,3],[2,3,4])==20
+(_d=DPROD(3,4))==12 && KIND(_d)==9 && (_d=DPROD(-3.,2.))==-6 && KIND(_d)==KIND(1D0)
+DSCPTR(AS_IS(1+2),1)==2
+DSCPTR_OF(1+2,1)==2
+all(DTYPE_RANGE(2,5,2)==[2,4])
+_d=D_COMPLEX(3,4.1),abs(_d-cmplx(3V0,4.1V0))<1e-6
+_d=D_FLOAT(12);abs(_d-12V0)<1V-6 && KIND(_d)==53
+
+all(ELBOUND(_a=set_range(2:3,7:10,0))==[2,7]) && ELBOUND(_a,1)==7
+ELEMENT(1,'/','a/b/c')=="b" && ELEMENT(4,'/','12')==""
+END_OF(1:10)==10
+! all(EOSHIFT(_V=[1,2,3,4,5,6],3)==[4,5,6,0,0,0]) /*TODO*/
+abs(EPSILON(1.0))<1e-6 && EPSILON(1.0) NE 0.
+EQ(2,2.)
+EQUALS(_a,3)==3 && _a==3
+EQUALS_FIRST(_a*2)==6 && _a==6
+EQV(2>3,3>4)
+ERRORLOGS_OF(build_action(1,2,3))==3 && kind(ERRORLOGS_OF(build_action(1,2)))==0
+all(ESHAPE(array([1,2,3]))==[1,2,3]) /* ESHAPE(3)==[] TODO _=-1 */
+ESIZE(array([1,2,3]))==6 /* ESIZE(3)==[] TODO _=-1 */
+all(EUBOUND(_a=set_range(2:3,7:10,0))==[3,10]) && EUBOUND(_a,1)==10
+EVALUATE(2+3)==5
+EXECUTE("2+3")==5
+abs(EXP(1.)-2.7182818)<1e-6
+EXPONENT(10.)==2 && EXPONENT(20.)==3 /*different on VAX*/
+all(EXTEND(1:5,,0:7)==[1,1,2,3,4,5,5,5]) && all(abs(EXTEND(build_dim(build_window(2,5,1.1),*:*:3),0,5:8)-[7.1,8.])<1e-6)
+EXTRACT(1,2,'A/B/C')=="/B" && EXTRACT(4,1,'12')==""
+EXT_FUNCTION(*,'whoami')==whoami()
+
+! FCLOSE(UNIT) /*tested with ftell*/
+! fft(ARRAY,[DIM],S)
+FINITE(1.) && not(FINITE(1./0))
+all(FIRSTLOC(_a=[[0,1],[0,1]])==[0,1,0,0]) && all(FIRSTLOC(_a,0)==[[0,1],[0,1]]) && all(FIRSTLOC(_a,1)==[[0,1],[0,0]])
+! fit(GUESS,RESIDUALS)
+FIX_ROPRAND(1./0.,5)==5.
+abs(FLOAT(3)-3V0)<1e-6 && kind(FLOAT(3))==kind(3.)
+FLOOR(2.783)==2. && FLOOR(-2.783)==-3.
+_u=FOPEN("t_test"//decompile(`_shot)//".txt","w");1
+! FOR /*tested*/
+FRACTION(10.)==2.5 && FRACTION(20.)==2.5 /*different on VAX*/
+write(_u,"012345")==7 && FSEEK(_u,2,0)==0
+FTELL(_u)==2 && fclose(_u)==0
+FUN test(in _a){return(-_a);};test(-1)==1
+abs(F_COMPLEX(3,4.1D0)-cmplx(3V0,4V1))<1e-6
+abs(F_FLOAT(3)-3V0)<1e-6 && kind(F_FLOAT(3))==kind(3.)
+
+GE(1,1) && GE(1.1,1.) && not(GE(-1Q,1Q))
+GETDBI("max")==8 && GETDBI("num")==1 && getnci(GETDBI("def",0),'nid_number')==0
+GETNCI(0,"USAGE_SUBTREE")==1
+! statement(_j=0,GOTO(_lab),_j++,LABEL(_lab,_j++));_j==1 /*marker can only be set in a file?*/
+not(GT(1,1)) && GT(1.1,1.) && not(GT(-1Q,1Q))
+abs(G_COMPLEX(3,4.1D0)-cmplx(3G0,4G1))<1D-9 
+abs(G_FLOAT(3)-3.)<1D-9 && kind(G_FLOAT(3))==kind(3G0)
+
+HELP_OF(build_param(1,2,3))==2
+HUGE(1.0)>340E36 && HUGE(0)==0x7fffffff
+! abs(H_COMPLEX(3,4.1D0)-cmplx(3H0,4H1))<1D-9 /*SIGFPE*/
+! abs(H_FLOAT(3)-3.)<1H-9 && kind(H_FLOAT(3))==kind(3H0)
+
+IACHAR('X')==88
+IAND(3,5)==1 && IAND(14w,13w)==12
+IAND_NOT(3,5)==2 && IAND_NOT(14w,13w)==2
+IBCLR(14, 1)==12 && all(IBCLR(31,[1,2,3,4])==[29,27,23,15])
+! ibits(I,POS,LEN) /*F90*/
+IBSET(12,1)==14 && all(IBSET(0,[1,2,3,4])==[2,4,8,16])
+ICHAR('X')==88
+IDENT_OF(build_dispatch(1,2,3,4,5))==2
+IEOR(1,3)==2
+IEOR_NOT(1B,3B)==253
+IF($true) _B=2; else _B=3;_B==2
+IF_ERROR(abort(),(debug(4),1))
+IMAGE_OF(build_call(1,2,3,4))==2 && IMAGE_OF(build_conglom(1,2,3,4))==1 && IMAGE_OF(build_routine(1,2,3,4))==2
+INAND(3b,5b)==254 && INAND(14w,13w)==65523
+INAND_NOT(3b,5b)==253 && INAND_NOT(14w,13w)==65533
+INDEX('mdsplus','s')==2 && INDEX('mdsplus','s',1)==6
+INOR(3b,5b)==248 && INOR(14w,13w)==65520
+INOR_NOT(3,5)==4 && INOR_NOT(14w,13w)==1
+INOT(5b)==250 && INOT(13w)==65522
+! inquire (UNIT|file,select)
+(_a=INT(-3.1))==-3 && kind(_a)==8 && kind(INT(.1,9))==9 /*kind is passed differently in docs*/
+! integral (ARRAY,[DIM],[WIDTH])
+! interpol (ARRAY,[DIM],[WIDTH])
+INTERRUPT_OF(build_dispatch(2,'a','b','c','d'))=='c'
+! intersect (A,B)
+INT_UNSIGNED(-1w)==65535wu && INT_UNSIGNED(-1.)==0
+! inverse (MATRIX)
+IOR(3,5)==7 && IOR(14w,13w)==15
+IOR_NOT(3b,5b)==251 && IOR_NOT(14w,13w)==65534
+ISHFT(3,1)==6 && all(ISHFT(3,[1,2,3])==[6,12,24])
+! ishftc (I,SHIFT,SIZE)
+! is_in (X,SET)
+all(I_TO_X(build_dim(build_window(2,7,1.1),build_range(,,3)),1:4)==set_range(1:5,[4.1,7.1,10.1,13.1]))
+
+KIND(1)==8 && KIND(1.)==52 /* && KIND(1o)==26 */
+KIND_OF(1)==8 && KIND_OF(1.)==52 /* && KIND_OF(1o)==26 */
+
+LABEL(_lab,1) /*marker can only be set in a file?*/
+LANGUAGE_OF(build_procedure(1,2,3))==2
+all(LASTLOC(_a=[[0,1],[0,1]])==[0,0,0,1]) && all(LASTLOC(_a,0)==[[0,1],[0,1]]) && all(LASTLOC(_a,1)==[[0,0],[0,1]])
+all(LBOUND(_a=set_range(2:3,7:10,0))==[2,7]) && LBOUND(_a,1)==7
+LE(2,2.)==1 && LE(1.,2)==1
+LEN('abcdefghijk')==11
+LEN_TRIM(' A B ')==4
+LGE('oneormore','one') && LGE('one','one') && not(LGE('one','two'))
+LGT('oneormore','one') && not(LGT('one','one')) && not(LGT('one','two'))
+not(LLE('oneormore','one')) && LLE('one','one') && LLE('one','two')
+not(LLT('oneormore','one')) && not(LLT('one','one')) && LLT('one','two')
+abs(LOG(10D0)-2.3025851D0)<1e-6
+abs(LOG10(100.)-2.)<1e-6
+abs(LOG2(8.)-3.)<1e-6
+LOGICAL(-3)==1 && LOGICAL(2)==0
+LONG(-123.4)==-123 && kind(LONG(1Q))==8
+LONG_UNSIGNED(-123.4)==0 && kind(LONG_UNSIGNED(1Q))==4 && LONG_UNSIGNED(-1w)==4294967295LU
+LT(1,2.) && not(LT(2,2.)) && not(LT(3,2.)) 
+
+! MAKE_ACTION (DISPATCH,TASK,[ERRORLOGS], [COMPLETION],[PERFORMANCE])
+! MAKE_CALL ([KIND],IMAGE,ROUTINE,[ARG],...)
+! MAKE_CONDITION (MODIFIER,CONDITION)
+! MAKE_CONGLOM (IMAGE,MODEL,NAME,QUALIFIERS)
+! MAKE_DEPENDENCY (OP_CODE,ARG_1,ARG_2)
+! MAKE_DIM ([WINDOW],AXIS)
+! MAKE_DISPATCH (TYPE,IDENT,PHASE,WHEN,COMPLETION)
+! MAKE_FUNCTION (OPCODE,[ARG],...)
+! MAKE_METHOD (TIME_OUT,METHOD,OBJECT,[ARG]...)
+! MAKE_PARAM (VALUE,HELP,VALIDATION)
+! MAKE_PROCEDURE (TIME_OUT,LANGUAGE,PROCEDURE,[ARG],...)
+! MAKE_PROGRAM (TIME_OUT,PROGRAM)
+! MAKE_RANGE ([START],[END],[DELTA])
+! MAKE_ROUTINE (TIME_OUT,IMAGE,ROUTINE,[ARG],...)
+! MAKE_SIGNAL (DATA,RAW,[DIMENSION,...])
+! MAKE_SLOPE (SLOPE,[BEGIN,[END...)]]
+! MAKE_WINDOW ([ISTART],[IEND],[X_AT_0])
+! MAKE_WITH_UNITS (DATA,UNITS)
+all(MAP(1:10,[20,-1,5])==[10,1,6])
+! matmul (MATRIX_A,MATRIX_B)
+! mat_rot (MATRIX,ANGLE,MAG,X0,Y0)
+! mat_rot_int (MATRIX,ANGLE,MAG,X0,Y0)
+MAX(-9.0,7.0,2.0)==7.0
+MAXEXPONENT(1.0)==127
+all(MAXLOC(_a=[[0,-5,8,3],[3,4,1,2],[1,5,6,-4]],0,_a < 6)==[3,1,1]) && all(MAXLOC(_a,1,_a < 6)==[1,2,1,0])
+all(MAXVAL(_a=[[0,-5,8,3],[3,4,1,2],[1,5,6,-4]],0,_a < 6)==[3,4,5]) && all(MAXVAL(_a,1,_a < 6)==[3,5,1,3])
+MEAN([1,2,3])==2
+! median (ARRAY,WIDTH)
+all(MERGE([1,2,3],[4,5,6],[1,0,1])==[1,5,3]) && all(MERGE([[1,6,5],[2,4,6]],[[0,3,2],[7,4,8]],[[1,0,1],[0,0,1]])==[[1,3,5],[7,4,6]])
+METHOD_OF(build_method(1,2,3))==2
+MIN(-9.0,7.0,2.0)==-9.0 
+MINEXPONENT(1.0)==-127
+all(MINLOC(_a=[[0,-5,8,3],[3,4,1,2],[1,5,6,-4]],0,_a>-4)==[0,2,0]) && all(MINLOC(_a,1,_a>-4)==[0,1,1,1])
+all(MINVAL(_a=[[0,-5,8,3],[3,4,1,2],[1,5,6,-4]],0,_a>-4)==[0,1,1]) && all(MINVAL(_a,1,_a>-4)==[0,4,1,2])
+abs(MOD(3.1,2.0)-1.1)<1e-6 && MOD(8,5)==3 && /* MOD(-8,5)==2 && MOD(8,-5)==-2 && */ MOD(-8,-5)==-3
+MODEL_OF(build_conglom(1,2,3,4))==2
+! modulo (A,P)
+abs(3.*2-6.)<1e-6 && build_with_units(-2,"V")*build_with_units(3,"s")==build_with_units(-6,"V*s")
+
+NAME_OF(build_conglom(1,2,3,4))==3
+all(NAND([0,0,1,1],[0,1,0,1])==[1,1,1,0])
+all(NAND_NOT([0,0,1,1],[0,1,0,1])==[1,1,0,1])
+NDESC(as_is($value))==0 && NDESC(as_is(1+2))==2
+NDESC_OF($value)==0 && NDESC_OF(1*1)==2
+NDIMS(42)==0 && NDIMS(zero([3,3],0))==2 && NDIMS(build_signal(1,*,3,4,5))==3
+NE(1,2.) && not(NE(2,2.)) && NE(3,2.)
+! nearest (X,S)
+not(NEQV(2>3,3>4))
+NINT(2.783)==3 && NINT(-2.783)==-3 && kind(NINT(2.2,25))==25
+all(NOR([0,0,1,1],[0,1,0,1])==[1,0,0,0])
+all(NOR_NOT([0,0,1,1],[0,1,0,1])==[0,1,0,0])
+all(NOT([1,2,3])==[0,1,0])
+
+OBJECT_OF(build_method(1,2,3,4))==3
+OCTAWORD(0x12345670q)==0x12345670O
+OCTAWORD_UNSIGNED(-1)==0xffffffffffffffffffffffffffffffffOU
+! on_error ([A])
+OPCODE_BUILTIN(0)=="$" && OPCODE_BUILTIN(22)=="$PI"
+OPCODE_STRING(0)=="OPC$$" && OPCODE_STRING(22)=="OPC$$PI"
+all(OR([0,0,1,1],[0,1,0,1])==[0,1,1,1])
+all(OR_NOT([0,0,1,1],[0,1,0,1])==[1,0,1,1])
+
+! all(PACK(_M=[[4,5],[2,0],[3,0]],_M > 0,[1,2,3,4])==[4,5,2,3]) /* last element is wrong */
+KIND(PERFORMANCE_OF(build_action(1,2,3,4)))==0 && PERFORMANCE_OF(build_action(1,2,3,4,5))==5
+PHASE_OF(build_dispatch(1,2,3,4,5))==3
+_s=2;POST_DEC(_s)==2 && _s==1
+_s=0;POST_INC(_s)==0 && _s==1
+POWER(2,3)==8 && abs(POWER(2,.5)-sqrt(2))<1e-6
+PRECISION(1.)==6 && PRECISION(1D0)==15
+PRESENT(_a) && not(PRESENT(_x))
+_s=2;PRE_DEC(_s)==1 && _s==1
+_s=0;PRE_INC(_s)==1 && _s==1
+PRIVATE(_a)=1;public(_a)=0;PRIVATE(_a)
+PROCEDURE_OF(build_procedure(1,2,3,4))==3
+PRODUCT(_a=[[1,2,3],[4,5,6],[7,8,9]],*,[[0,1,0],[1,0,1],[0,1,0]])==384 && all(PRODUCT(_a,0)==[6,120,504]) && all(PRODUCT(_a,1)==[28,80,162])
+PROGRAM_OF(build_program(1,2))==2
+! project (ARRAY,MASK,FIELD,[DIM])
+! promote (NCOPIES,VALUE)
+! PUBLIC(_a)=1;private(_a)=0;PUBLIC(_a) /*not thread safe, tested elsewhere*/
+
+kind(QUADWORD(1))==9
+kind(QUADWORD_UNSIGNED(1))==5
+QUALIFIERS_OF(build_call(1,2,3)) && QUALIFIERS_OF(build_condition(1,2)) && QUALIFIERS_OF(build_conglom(1,2,3,4))==4 && QUALIFIERS_OF(build_dependency(1,2,3))==1 && QUALIFIERS_OF(build_dispatch(1,2,3,4,5)) && QUALIFIERS_OF(build_function(1,2,3))==1
+
+RADIX(1)==2 && RADIX(1.)==2
+_a=RAMP([2,3,4],1.)/2;all(shape(_a)==[2,3,4]) && _a[1,2,3]==11.5
+all(GE(_a=RANDOM([2,3,4],1D0),0D0)) && all(LT(_a,1D0))
+! random_seed ([PUT])
+RANGE(3.)==38 && RANGE(3D0)==307
+RANK(1)==0 && RANK([1])==1 && RANK([[1]])==2
+RAW_OF(build_signal(1,2,3))==2
+! rc_droop (ARRAY,[DIM],RC)
+! read ([UNIT],fmt|*,[arg]...)
+REAL(cmplx(1,2))==1 && kind(REAL(1,53))==53
+! rebin (ARRAY,SIZE1,[SIZE2])
+! REF /*pass as ref to call e.g. strings*/
+kind(REM("bla",1))==0
+REPEAT("1",3)=="111"
+all(shape(_a=REPLICATE(REPLICATE([[1]],0,2),1,3))==[2,3]) && all(_a==1)
+! RESET_PRIVATE()
+! RESET_PUBLIC()
+! reshape (SOURCE,SHAPE,[PAD],[ORDER])
+fun test(){RETURN(1);};test()
+! rewind (UNIT)
+! rms (ARRAY,[DIM],[MASK])
+ROUTINE_OF(build_call(1,2,3))==3 && ROUTINE_OF(build_routine(1,2,3))==3
+abs(RRSPACING(1.)/33.5544e6-1)<1e-6
+
+SCALE(1,1)==2
+SCAN("mdsplus","sp")==2 && SCAN("mdsplus","sp",1)==6
+SELECTED_INT_KIND(6)==8 && SELECTED_INT_KIND(4)==7 && SELECTED_INT_KIND(99)==-1
+SELECTED_REAL_KIND(5,30)==52 && SELECTED_REAL_KIND(5,40)==53 && SELECTED_REAL_KIND(7,30)==53 /*&& SELECTED_REAL_KIND(20,20)==-1 && SELECTED_REAL_KIND(5,999)==-2 && SELECTED_REAL_KIND(99,999)==-3*/
+SET_EXPONENT(3,-1)==1.5
+all(SET_RANGE(2:3,5,1:10)[2]==[1,3,5,7,9])
+all(SHAPE(zero(1:3))==(1:3)) && SHAPE(zero(1:3),1)==2
+SHIFT_LEFT(4,2)==16
+SHIFT_RIGHT(16,2)==4
+! _a=0,SHOW_PRIVATE(_a)
+! _public _p,SHOW_PUBLIC(_p)
+! sign (A,B)
+kind(SIGNED(1bu))==6 && kind(SIGNED(1wu))==7
+SIN(0)==0 && abs(SIN(1)-.841471)<1e-6
+SIND(30)==.5
+abs(SINH(1.0)-1.1752012)<1e-6
+SIZE(zero(1:3))==6 && SIZE(zero(1:3),1)==2
+SIZEOF(1)==4 && SIZEOF(1Q)==8 && SIZEOF(1.)==4 && SIZEOF(1D0)==8 && SIZEOF("123")==3
+SLOPE_OF(build_range(1,2,3))==3 && SLOPE_OF(build_range(,))==1 && SLOPE_OF(build_slope(1,2,3))==1
+! smooth (ARRAY,[DIM],WIDTH)
+! solve (VECTOR,MATRIX)
+all(SORT(1:3)==(0:2)) && all(SORT([2,3,1])==[2,0,1])
+all(SORTVAL(1:3)==(1:3)) && all(SORTVAL([2,3,1])==(1:3))
+SPACING(1)*rrspacing(1)==2.
+! SPAWN("/bin/sh -c 'echo yo'",_in,_out) /*platform dependent*/
+! SPREAD (SOURCE,DIM,NCOPIES)
+SQRT(4)==2
+SQUARE(2)==4
+STATEMENT(_a=1,_a++,_a)==2
+! std_dev (ARRAY,[DIM],[MASK])
+! string (X,[Y],...[FORMAT])
+STRING_OPCODE('$')==0 && STRING_OPCODE('$PI')==22
+SUBSCRIPT(1:3,1)==2
+SUBTRACT(3,5)==-2
+SUM(_a=ramp([2,3,4]))==276 && all(SUM(_a,2)==[36,40,44,48,52,56]) && all(SUM(_a,2,mod(_a,2))==[0,40,0,48,0,56])
+SWITCH(2){case(1) _a=0;break;case(2) _a=1;break;case default _a=2;};_a==1
+! system_clock (STRING)
+
+abs(TAN(1.0)-1.557408)<1e-6
+TAND(45)==1
+abs(TANH(1.0)-0.761594)<1e-6
+TASK_OF(build_action(1,2))==2
+TEXT(1,1)=="1" && TEXT(1,3)=="  1"
+TIME_OUT_OF(build_method(1,2,3))==1
+TINY(1d0)<23.3d-309 && TINY(1d0)>0 && TINY(1e0)<11.8e-39 && TINY(1e0)>0
+! transfer (SOURCE,MOLD,[SIZE])
+TRANSLATE('abcdef','135','ace')=="1b3d5f"
+! transpose (MATRIX)
+! transpose_mul (MATRIX_A,MATRIX_B)
+TRIM(' a b ')==" a b"
+
+all(UBOUND(_a=set_range(2:3,7:10,0))==[3,10]) && UBOUND(_a,1)==10
+all(UNION([4,5],[2,3,5])==[2,3,4,5])
+UNITS(_u=build_with_units(1,2))==2 && UNITS(build_signal(_u,3))==2
+UNITS_OF(_u=build_with_units(1,2))==2 && UNITS_OF(build_signal(_u,3))==2
+! unpack (VECTOR,MASK,FIELD)
+UNARY_MINUS(1)==-1
+UNARY_PLUS(1)==1
+UNSIGNED(-1b)==255bu
+UPCASE("abc123")=="ABC123"
+
+
+! VAL /*to pass as value to call*/
+VALIDATION(build_param(0,,$value>0))==0 && VALIDATION(build_param(1,,$value>0))==1
+VALIDATION_OF(build_param(1,2,3))==3
+VALUE_OF(_w=build_window(1,2,3))==3 && VALUE_OF(build_dim(_w,4))==3 && VALUE_OF(build_param(1,2,3))==1 && VALUE_OF(build_signal(1,2)) && VALUE_OF(build_with_units(1,2))==1
+_a=0;VAR("_a",1)==1 /*doc sais should be old value 0*/ && _a==1
+all(VECTOR(1,2,3,4)==(1:4))
+VERIFY('abba','ab')==-1 && VERIFY('abba','a')==1 && VERIFY('abba','a',1)==2
+
+WAIT(.01);1
+WHEN_OF(build_dispatch(1,2,3,4,5))==4
+! where (TEST,STMT,[ELSESTMT])
+_a=0;WHILE(_a<5) {_a++;}_a==5
+WINDOW_OF(build_dim(1,2))==1
+WORD(4e4)==32767 && WORD(40000)==-25536
+WORD_UNSIGNED(-1)==65535
+! WRITE([UNIT],...) /*tested with fseek*/
+
+all(X_TO_I(build_dim(build_window(2,7,1.1),build_range(,,3)),[4.1,7.1,10.1,13.1])==[1.,2.,3.,4.])
+! XD /*pass ext dsc to call*/
+
+any(_a=ZERO(100,1b))==0 && size(_a)==100 && kind(_a)==6
+
+class(_a=LIST(*,1,"b",3b,4Q))==196 && kind(_a)==214
+(_a=LIST(_a,5W,6))[5]==6 && _a[1]=="b"
+class(_a=DICT(*,"a",1,2,"b"))==196 && kind(_a)==216
+_a["a"]==1 && _a[2]=="b"
+
+treeclose()
+
+!quadword tests
+0x1234567012345670q*2==0x2468ace02468ace0q
+0x1234567012345670q+0x123456701234567q==0x13579bd713579bd7q
+0x2468ace02468ace0q/2==0x1234567012345670q
+  and(1q,3q) &&   and_not(1q,2q)
+!nand(1q,3q) && !nand_not(1q,2q)
+  nor(0q,2q) &&   nor_not(0q,3q)
+  !or(0q,2q) &&   !or_not(0q,3q)
+  eqv(1q,3q) &&       eqv(0q,2q)
+ neqv(0q,3q) &&      neqv(1q,2q)
+ishft(-1q,-1)==huge(1q)
+-15q >>1== -8q  && -15q >>-63== -8q
+ 15q >>1==  7q  &&  15q >>-63==  7q
+-15q <<1==-30q  && -15q <<-63==-30q
+ 15q <<1== 30q  &&  15q <<-63== 30q
+ 15qu>>1==  7qu &&  15qu>>-63==  7qu
+ 15qu<<1== 30qu &&  15qu<<-63== 30qu
+
+
+!octaword tests require execute
+execute("0x1234567012345670o*16==0x12345670123456700o")
+execute("0x12345670123456701o+0x1234567012345670q==0x13579bd713579bd71o")
+execute("0x12345670123456701o-0x1234567012345670q==0x11111109111111091o")
+0xffffffffffffffffffffffffffffffffou/0xfffffffffffffffffou==0x1000000000000000ou
+0xffffffffffffffffffffffffffffffffou/0xffffffffffffffffou==0x10000000000000001ou
+-100000000000000o/1000000000000o==-100o
+execute("(-0x2468ace02468ace0o)/2==-0x1234567012345670o")
+execute("  and(1o,3o) &&   and_not(1o,2o)")
+execute("!nand(1o,3o) && !nand_not(1o,2o)")
+execute("  nor(0o,2o) &&   nor_not(0o,3o)")
+execute("  !or(0o,2o) &&   !or_not(0o,3o)")
+execute("  eqv(1o,3o) &&       eqv(0o,2o)")
+execute(" neqv(0o,3o) &&      neqv(1o,2o)")
+execute("ishft(-1o,-1)==huge(1o)")
+execute("-15o >>1== -8o  &&-15o >>-127== -8o")
+execute(" 15o >>1==  7o  && 15o >>-127==  7o")
+execute("-15o <<1==-30o  &&-15o <<-127==-30o")
+execute(" 15o <<1== 30o  && 15o <<-127== 30o")
+execute(" 15ou>>1==  7ou && 15ou>>-127==  7ou")
+execute(" 15ou<<1== 30ou && 15ou<<-127== 30ou")
+

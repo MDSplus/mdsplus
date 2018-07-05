@@ -1,3 +1,28 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,9 +32,7 @@
 #include <libroutines.h>
 #include <mdstypes.h>
 
-#ifndef _WIN32
-#include <mdstypes.h>
-#endif
+
 
 extern void *convertDataToDsc(void *data);
 extern void *convertFromDsc(void *dscPtr, void *tree);
@@ -23,7 +46,7 @@ extern int TreeUpdateSegment(int nid, struct descriptor *start, struct descripto
 extern int TreeBeginTimestampedSegment(int nid, struct descriptor_a *initialValue, int idx);
 extern int TreePutTimestampedSegment(int nid, int64_t *timestamp, struct descriptor_a *rowdata);
 extern int TreePutRow(int nid, int bufsize, int64_t *timestamp, struct descriptor_a *rowdata);
-extern int TreeSetTimeContext( struct descriptor *start, struct descriptor *end, struct descriptor *delta);
+extern int _TreeSetTimeContext(void* dbid, struct descriptor *start, struct descriptor *end, struct descriptor *delta);
 extern int TreeGetNumSegments(int nid, int *num);
 extern int TreeGetSegmentLimits(int nid, int segidx, struct descriptor_xd *start, struct descriptor_xd *end);
 extern int TreeGetSegment(int nid, int segidx, struct descriptor_xd *data, struct descriptor_xd *dim);
@@ -43,7 +66,7 @@ int updateTreeSegment(void *dbid, int nid, int segIdx, void *startDsc, void *end
 int getTreeNumSegments(void *dbid, int nid, int *numSegments);
 int getTreeSegmentLimits(void *dbid, int nid, int idx, void **startDsc, void **endDsc);
 int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, void **timesDsc);
-int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc);
+int setTreeTimeContext(void* dbid, void *startDsc, void *endDsc, void *deltaDsc);
 int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc);
 int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times, int rowsFilled);
 int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times);
@@ -215,23 +238,24 @@ int getTreeSegmentInfo(void *dbid, int nid, int segIdx, char *dtype, char *dimct
 int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, void **timeDsc)
 {
   EMPTYXD(emptyXd);
-  struct descriptor_xd *dataXd = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
   struct descriptor_xd *timeXd = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
-
-  *dataXd = emptyXd;
-  *dataDsc = dataXd;
   *timeXd = emptyXd;
   *timeDsc = timeXd;
-
+  struct descriptor_xd *dataXd;
+  if (dataDsc) {
+    dataXd = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
+    *dataXd = emptyXd;
+    *dataDsc = dataXd;
+  } else dataXd = NULL;
   return _TreeGetSegment(dbid, nid, segIdx, dataXd, timeXd);
 }
 
-int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc)
+int setTreeTimeContext(void* dbid, void *startDsc, void *endDsc, void *deltaDsc)
 {
   int status;
 
   status =
-      TreeSetTimeContext((struct descriptor *)startDsc, (struct descriptor *)endDsc,
+      _TreeSetTimeContext(dbid, (struct descriptor *)startDsc, (struct descriptor *)endDsc,
 			 (struct descriptor *)deltaDsc);
   if (startDsc)
     freeDsc(startDsc);
@@ -288,3 +312,32 @@ int setTreeXNci(void *dbid, int nid, const char *name, void *dataDsc)
 }
 
 
+int getTreeXNci(void *dbid, int nid, const char *name, void **data, void *tree)
+{
+    EMPTYXD(xd);
+    int status;
+
+    status = _TreeGetXNci(dbid, nid, name, &xd);
+    if (!(status & 1))
+	return status;
+    *data = convertFromDsc(&xd, tree);
+    MdsFree1Dx(&xd, 0);
+    return status;
+}
+
+
+int getTreeSegmentScale(void *dbid, int nid, void **sclDsc)
+{
+  EMPTYXD(emptyXd);
+  struct descriptor_xd *sclXd = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
+  *sclXd  = emptyXd;
+  *sclDsc = sclXd;
+  return _TreeGetSegmentScale(dbid, nid, sclXd);
+}
+int setTreeSegmentScale(void *dbid, int nid, void *sclDsc)
+{
+  struct descriptor_xd *sclXd = (struct descriptor_xd *)sclDsc;
+  int status = _TreeSetSegmentScale(dbid, nid, sclXd->pointer);
+  freeDsc(sclXd);
+  return status;
+}

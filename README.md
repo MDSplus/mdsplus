@@ -18,9 +18,49 @@ And then untar it (The exact filename will depend on the release version):
 
 To build the software do the following (See special notes below):
 
-    # cd mdsplus
-    # ./configure
-    # make all
+    # mkdir build
+    # cd build
+    # <mdsplus-src-dir>/configure
+    # make
+
+However this requires having all the needed libraries and packages installed
+and there are many different options to configure for building MDSplus.
+When MDSplus is built to generate releases for public distribution a deploy
+script is used which uses Docker to pull specially configured Docker images
+from https://hub.docker.com/r/mdsplus/docker/
+
+You can build MDSplus for any of the linux and windows operatings systems
+without needing to install any special compilers or libraries. If you have
+the mdsplus source code and Docker installed on your linux system and your
+account has privileges to run docker then you can build MDSplus using
+a simple command:
+
+    # cd build
+    # <mdsplus-src-dir>/deploy/build.sh --os=fc25 --branch=<branch> \
+    --release=<version i.e. 7.99.100>
+    
+The above command will build the installer packages using the sources in
+`<mdsplus-src-dir>/...` for the operating system selected. The packages will
+be named based on the branch and version specified. Note the branch option
+is only used for naming the packages. It does not checkout or create a git
+branch. There are many more options to the build.sh script which you can
+see by typing:
+
+    # <mdsplus-src-dir>/deploy/build --help
+    
+You can find the available operating systems that you could specify for the
+--os=<operating-system> by doing a directory as follows:
+
+    # ls <mdsplus-src-dir>/deploy/os/*.opts
+
+    
+---------------------------------------------------------------------------
+Who Uses MDSplus
+This map shows world fusion sites with MDSplus users marked in Blue.  To update
+edit the file sites.csv and put in a pull request.
+
+<a href="https://batchgeo.com/map/4cb145f00105157a242b5acafa8e646b" _target="_blank">
+A Full screen Map </a> of MDSplus sites.  Use the 'back' button to return to this page.
 
 ---------------------------------------------------------------------------
 Special Notes

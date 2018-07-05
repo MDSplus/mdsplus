@@ -1,6 +1,4 @@
 ./usr/local/mdsplus/include/STATICdef.h
-./usr/local/mdsplus/include/SystemSpecific.h
-./usr/local/mdsplus/include/Timeout.h
 ./usr/local/mdsplus/include/WindowsUnnamedSemaphore.h
 ./usr/local/mdsplus/include/Xmds/ListTree.h
 ./usr/local/mdsplus/include/Xmds/ListTreeP.h
@@ -31,10 +29,9 @@
 ./usr/local/mdsplus/include/camdef.h
 ./usr/local/mdsplus/include/camshr.h
 ./usr/local/mdsplus/include/camshr_messages.h
-./usr/local/mdsplus/include/ccldef.h
-./usr/local/mdsplus/include/config.h
 ./usr/local/mdsplus/include/dbidef.h
 ./usr/local/mdsplus/include/dcl.h
+./usr/local/mdsplus/include/int128.h
 ./usr/local/mdsplus/include/ipdesc.h
 ./usr/local/mdsplus/include/libroutines.h
 ./usr/local/mdsplus/include/mds_gendevice.h
@@ -49,6 +46,7 @@
 ./usr/local/mdsplus/include/mdsplus/ConditionVar.hpp
 ./usr/local/mdsplus/include/mdsplus/Mutex.hpp
 ./usr/local/mdsplus/include/mdsplus/Traits.hpp
+./usr/local/mdsplus/include/mdsplus/mdsconfig.h
 ./usr/local/mdsplus/include/mdsplus/mdsplus.h
 ./usr/local/mdsplus/include/mdsplus/numeric_cast.hpp
 ./usr/local/mdsplus/include/mdsserver.h
@@ -70,7 +68,6 @@
 ./usr/local/mdsplus/include/status.h
 ./usr/local/mdsplus/include/strroutines.h
 ./usr/local/mdsplus/include/tcl_messages.h
-./usr/local/mdsplus/include/tcldef.h
 ./usr/local/mdsplus/include/tdishr.h
 ./usr/local/mdsplus/include/tdishr_messages.h
 ./usr/local/mdsplus/include/treeioperf.h

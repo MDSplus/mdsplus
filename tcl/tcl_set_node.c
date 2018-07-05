@@ -1,4 +1,28 @@
-#include <config.h>
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+#include <mdsplus/mdsconfig.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -191,7 +215,7 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
 	    *output = realloc(*output, strlen(*output) + dsc_path.length + 100);
 	    nout = *output + strlen(*output);
 	  } else {
-	    *output = malloc(strlen(*output) + dsc_path.length + 100);
+	    *output = malloc(dsc_path.length + 100);
 	    nout = *output;
 	  }
 	  sprintf(nout, "Node: %.*s modified\n", dsc_path.length, dsc_path.pointer);
@@ -200,7 +224,7 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
       } else {
 	char *msg = MdsGetMsg(status);
 	*error = malloc(strlen(msg) + dsc_path.length + 100);
-	sprintf(*output, "Error problem modifying node %.*s\n"
+	sprintf(*error, "Error problem modifying node %.*s\n"
 		"Error message was: %s\n", dsc_path.length, dsc_path.pointer, msg);
 	StrFree1Dx(&dsc_path);
 	goto error;

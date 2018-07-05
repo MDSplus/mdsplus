@@ -44,15 +44,16 @@ written by
    #ifdef LEGACY_WIN32
       #include <wspiapi.h>
    #endif
-   #ifdef __MINGW64__
-      #include <sys/time.h>
-   #endif
 #else
    #include <unistd.h>
 #endif
 #include <cstring>
 #include "api.h"
 #include "core.h"
+
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wcatch-value\"")
+#endif
 
 using namespace std;
 
@@ -74,7 +75,7 @@ m_AcceptLock(),
 m_uiBackLog(0),
 m_iMuxID(-1)
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_init(&m_AcceptLock, NULL);
       pthread_cond_init(&m_AcceptCond, NULL);
       pthread_mutex_init(&m_ControlLock, NULL);
@@ -104,7 +105,7 @@ CUDTSocket::~CUDTSocket()
    delete m_pQueuedSockets;
    delete m_pAcceptSockets;
 
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_destroy(&m_AcceptLock);
       pthread_cond_destroy(&m_AcceptCond);
       pthread_mutex_destroy(&m_ControlLock);
@@ -139,7 +140,7 @@ m_ClosedSockets()
    srand((unsigned int)CTimer::getTime());
    m_SocketID = 1 + (int)((1 << 30) * (double(rand()) / RAND_MAX));
 
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_init(&m_ControlLock, NULL);
       pthread_mutex_init(&m_IDLock, NULL);
       pthread_mutex_init(&m_InitLock, NULL);
@@ -149,7 +150,7 @@ m_ClosedSockets()
       m_InitLock = CreateMutex(NULL, false, NULL);
    #endif
 
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_key_create(&m_TLSError, TLSDestroy);
    #else
       m_TLSError = TlsAlloc();
@@ -161,7 +162,7 @@ m_ClosedSockets()
 
 CUDTUnited::~CUDTUnited()
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_destroy(&m_ControlLock);
       pthread_mutex_destroy(&m_IDLock);
       pthread_mutex_destroy(&m_InitLock);
@@ -171,7 +172,7 @@ CUDTUnited::~CUDTUnited()
       CloseHandle(m_InitLock);
    #endif
 
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_key_delete(m_TLSError);
    #else
       TlsFree(m_TLSError);
@@ -204,7 +205,7 @@ int CUDTUnited::startup()
       return true;
 
    m_bClosing = false;
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_init(&m_GCStopLock, NULL);
       pthread_cond_init(&m_GCStopCond, NULL);
       pthread_create(&m_GCThread, NULL, garbageCollect, this);
@@ -233,7 +234,7 @@ int CUDTUnited::cleanup()
       return 0;
 
    m_bClosing = true;
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_cond_signal(&m_GCStopCond);
       pthread_join(m_GCThread, NULL);
       pthread_mutex_destroy(&m_GCStopLock);
@@ -455,7 +456,7 @@ int CUDTUnited::newConnection(const UDTSOCKET listen, const sockaddr* peer, CHan
    }
 
    // wake up a waiting accept() call
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_lock(&(ls->m_AcceptLock));
       pthread_cond_signal(&(ls->m_AcceptCond));
       pthread_mutex_unlock(&(ls->m_AcceptLock));
@@ -641,7 +642,7 @@ UDTSOCKET CUDTUnited::accept(const UDTSOCKET listen, sockaddr* addr, int* addrle
    bool accepted = false;
 
    // !!only one conection can be set up each time!!
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       while (!accepted)
       {
          pthread_mutex_lock(&(ls->m_AcceptLock));
@@ -825,7 +826,7 @@ int CUDTUnited::close(const UDTSOCKET u)
       s->m_pUDT->m_bBroken = true;
 
       // broadcast all "accept" waiting
-      #if !defined WIN32 || defined __MINGW64__
+      #ifndef WIN32
          pthread_mutex_lock(&(s->m_AcceptLock));
          pthread_cond_broadcast(&(s->m_AcceptCond));
          pthread_mutex_unlock(&(s->m_AcceptLock));
@@ -1319,7 +1320,7 @@ void CUDTUnited::removeSocket(const UDTSOCKET u)
 
 void CUDTUnited::setError(CUDTException* e)
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       delete (CUDTException*)pthread_getspecific(m_TLSError);
       pthread_setspecific(m_TLSError, e);
    #else
@@ -1332,7 +1333,7 @@ void CUDTUnited::setError(CUDTException* e)
 
 CUDTException* CUDTUnited::getError()
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       if(NULL == pthread_getspecific(m_TLSError))
          pthread_setspecific(m_TLSError, new CUDTException);
       return (CUDTException*)pthread_getspecific(m_TLSError);
@@ -1466,7 +1467,7 @@ void CUDTUnited::updateMux(CUDTSocket* s, const CUDTSocket* ls)
    }
 }
 
-#if !defined WIN32 || defined __MINGW64__
+#ifndef WIN32
    void* CUDTUnited::garbageCollect(void* p)
 #else
    DWORD WINAPI CUDTUnited::garbageCollect(LPVOID p)
@@ -1484,7 +1485,7 @@ void CUDTUnited::updateMux(CUDTSocket* s, const CUDTSocket* ls)
          self->checkTLSValue();
       #endif
 
-      #if !defined WIN32 || defined __MINGW64__
+      #ifndef WIN32
          timeval now;
          timespec timeout;
          gettimeofday(&now, 0);

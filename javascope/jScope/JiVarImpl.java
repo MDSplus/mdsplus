@@ -1,9 +1,7 @@
 package jScope;
 
 /* $Id$ */
-
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
 
 public abstract class JiVarImpl implements JiVar 
 {

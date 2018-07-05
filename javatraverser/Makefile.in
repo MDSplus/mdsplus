@@ -118,9 +118,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
+DIST_COMMON = $(srcdir)/Makefile.am $(dist_java_DATA) \
+	$(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/include/config.h
+CONFIG_HEADER = $(top_builddir)/include/mdsplus/mdsconfig.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -151,7 +152,7 @@ am__uninstall_files_from_dir = { \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(javadir)" \
-	"$(DESTDIR)$(javadir)"
+	"$(DESTDIR)$(javadir)" "$(DESTDIR)$(javadir)"
 SCRIPTS = $(bin_SCRIPTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -172,7 +173,7 @@ am__can_run_installinfo = \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
 am__java_sources = $(java_JAVA)
-DATA = $(java_DATA)
+DATA = $(dist_java_DATA) $(java_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -219,6 +220,7 @@ D3D_PACKAGE = @D3D_PACKAGE@
 DC1394_SUPPORT = @DC1394_SUPPORT@
 DC1394_SUPPORT2 = @DC1394_SUPPORT2@
 DEFS = @DEFS@
+DEF_PYLIB = @DEF_PYLIB@
 DEPDIR = @DEPDIR@
 DNET_STUB = @DNET_STUB@
 DOXYGEN = @DOXYGEN@
@@ -269,6 +271,7 @@ GLOBUS_LIBS = @GLOBUS_LIBS@
 GLOBUS_LOCATION = @GLOBUS_LOCATION@
 GREP = @GREP@
 HAVE_DOCKER = @HAVE_DOCKER@
+HAVE_MOTIF = @HAVE_MOTIF@
 HAVE_VISIBILITY = @HAVE_VISIBILITY@
 HAVE_WINE = @HAVE_WINE@
 HAVE_WINEBOOT = @HAVE_WINEBOOT@
@@ -289,11 +292,14 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 JAR = @JAR@
+JARS_DIR = @JARS_DIR@
 JAVAC = @JAVAC@
 JAVACFLAGS = @JAVACFLAGS@
 JAVAC_PATH_NAME = @JAVAC_PATH_NAME@
 JAVAVERSION = @JAVAVERSION@
 JAVA_APS = @JAVA_APS@
+JAVA_JAR = @JAVA_JAR@
+JAVA_ONLY = @JAVA_ONLY@
 JDK_CFLAGS = @JDK_CFLAGS@
 JDK_DIR = @JDK_DIR@
 JDK_LIVECONNECT = @JDK_LIVECONNECT@
@@ -328,6 +334,8 @@ MACOSX = @MACOSX@
 MAINT = @MAINT@
 MAKEBINDIR = @MAKEBINDIR@
 MAKEETCDIR = @MAKEETCDIR@
+MAKEFLAG_J = @MAKEFLAG_J@
+MAKEFLAG_O = @MAKEFLAG_O@
 MAKEINFO = @MAKEINFO@
 MAKELIBDIR = @MAKELIBDIR@
 MAKESHLIBDIR = @MAKESHLIBDIR@
@@ -342,6 +350,7 @@ MOTIF_LDSHARE = @MOTIF_LDSHARE@
 MOTIF_LD_LDARC = @MOTIF_LD_LDARC@
 MOTIF_LD_LDSHARE = @MOTIF_LD_LDSHARE@
 NEED_SEMUN = @NEED_SEMUN@
+NOWARNFLAGS = @NOWARNFLAGS@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -485,6 +494,7 @@ top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 EXTRA_DIST = servlet-2_3-fcs-classfiles.zip $(am__append_2)
 CLEANFILES = $(java_DATA) $(am__append_1)
+dist_java_DATA = jTraverser.jar DeviceBeans.jar
 JAVAROOT = $(builddir)
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
@@ -496,12 +506,6 @@ docsdir = $(exec_prefix)/java/classes/docs
 #$(INSTALL) -D $< $@
 # Build the class files
 CLASSPATH_ENV = CLASSPATH=$(top_builddir)/javascope/jScope.jar
-java_JAVA = $(SOURCES)
-
-# Build the final jar
-java_DATA = jTraverser.jar DeviceBeans.jar 
-
-# Giant list of source files follow
 SOURCES = \
 	ActionData.java\
 	ActionEditor.java\
@@ -677,6 +681,10 @@ GIFS = \
 	text.gif           \
 	window.gif
 
+@USE_JARS_DIR_FALSE@java_JAVA = $(SOURCES)
+
+# Build the final jar
+@USE_JARS_DIR_FALSE@java_DATA = jTraverser.jar DeviceBeans.jar 
 all: all-am
 
 .SUFFIXES:
@@ -773,6 +781,27 @@ uninstall-javaJAVA:
 
 clean-javaJAVA:
 	-rm -f *.class classjava.stamp
+install-dist_javaDATA: $(dist_java_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(dist_java_DATA)'; test -n "$(javadir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(javadir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(javadir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(javadir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(javadir)" || exit $$?; \
+	done
+
+uninstall-dist_javaDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dist_java_DATA)'; test -n "$(javadir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(javadir)'; $(am__uninstall_files_from_dir)
 install-javaDATA: $(java_DATA)
 	@$(NORMAL_INSTALL)
 	@list='$(java_DATA)'; test -n "$(javadir)" || list=; \
@@ -881,7 +910,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(SCRIPTS) classjava.stamp $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(javadir)" "$(DESTDIR)$(javadir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(javadir)" "$(DESTDIR)$(javadir)" "$(DESTDIR)$(javadir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -935,7 +964,8 @@ info: info-am
 
 info-am:
 
-install-data-am: install-javaDATA install-javaJAVA
+install-data-am: install-dist_javaDATA install-javaDATA \
+	install-javaJAVA
 
 install-dvi: install-dvi-am
 
@@ -979,8 +1009,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binSCRIPTS uninstall-javaDATA \
-	uninstall-javaJAVA
+uninstall-am: uninstall-binSCRIPTS uninstall-dist_javaDATA \
+	uninstall-javaDATA uninstall-javaJAVA
 
 .MAKE: install-am install-strip
 
@@ -988,14 +1018,15 @@ uninstall-am: uninstall-binSCRIPTS uninstall-javaDATA \
 	clean-javaJAVA cscopelist-am ctags ctags-am distclean \
 	distclean-generic distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am install-binSCRIPTS \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-javaDATA install-javaJAVA \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am tags \
-	tags-am uninstall uninstall-am uninstall-binSCRIPTS \
+	install-data install-data-am install-dist_javaDATA install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-javaDATA \
+	install-javaJAVA install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
+	pdf-am ps ps-am tags tags-am uninstall uninstall-am \
+	uninstall-binSCRIPTS uninstall-dist_javaDATA \
 	uninstall-javaDATA uninstall-javaJAVA
 
 .PRECIOUS: Makefile
@@ -1003,14 +1034,20 @@ uninstall-am: uninstall-binSCRIPTS uninstall-javaDATA \
 @MINGW_FALSE@$(bin_SCRIPTS): $(srcdir)/jTraverser.template
 @MINGW_FALSE@	cp $< $@
 
-jTraverser.jar: $(GIFS) classjava.stamp
-	@ echo "Creating JAR: $@ ..."; \
-	  $(JAR) c0f $@ $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
+@USE_JARS_DIR_TRUE@jTraverser.jar : @JARS_DIR@/javatraverser/jTraverser.jar
+@USE_JARS_DIR_TRUE@	cp $< $@
 
-DeviceBeans.jar: classjava.stamp $(GIFS) DeviceBeansManifest.mf
-	@ echo "Creating JAR: $@ ..."; \
-	  $(JAR) c0fm $@ ${srcdir}/DeviceBeansManifest.mf \
-	  $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
+@USE_JARS_DIR_TRUE@DeviceBeans.jar : @JARS_DIR@/javatraverser/DeviceBeans.jar
+@USE_JARS_DIR_TRUE@	cp $< $@
+
+@USE_JARS_DIR_FALSE@jTraverser.jar: $(GIFS) classjava.stamp
+@USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ..."; \
+@USE_JARS_DIR_FALSE@	  $(JAR) c0f $@ $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
+
+@USE_JARS_DIR_FALSE@DeviceBeans.jar: classjava.stamp $(GIFS) DeviceBeansManifest.mf
+@USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ..."; \
+@USE_JARS_DIR_FALSE@	  $(JAR) c0fm $@ ${srcdir}/DeviceBeansManifest.mf \
+@USE_JARS_DIR_FALSE@	  $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

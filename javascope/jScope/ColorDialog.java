@@ -4,7 +4,6 @@ package jScope;
 import jScope.Waveform;
 import java.awt.*;
 import java.awt.event.*;
-import java.lang.*;
 import java.util.*;
 import java.io.*;
 import javax.swing.*;
@@ -565,7 +564,7 @@ class ColorDialog
         colorMapIndex = new int[newColorMap.size()];
         for (int i = 0; i < newColorMap.size(); i++)
         {
-            colorMapIndex[i] = ( (Integer) newColorMap.elementAt(i)).intValue();
+            colorMapIndex[i] = newColorMap.elementAt(i).intValue();
         }
 
         //Set default color list if is not defined color
@@ -594,7 +593,6 @@ class ColorDialog
     {
 
         Object ob = e.getSource();
-        int i;
 
         if (ob == ok)
         {

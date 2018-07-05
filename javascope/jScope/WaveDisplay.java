@@ -220,7 +220,6 @@ public class WaveDisplay
    public void addSignal(String signalParams, String globalAutentication, boolean image)
    {
         String url = null, color, marker, name, title;
-        String param;
         String signalAutentication, autentication;
         
         if( signalParams == null ) return ;
@@ -354,7 +353,6 @@ public class WaveDisplay
    
   private void getSignalsParameter() {
     String sig_param;
-    String param;
     String global_autentication;
     boolean image = false;
 
@@ -373,7 +371,6 @@ public class WaveDisplay
 
   protected String getParameterValue(String context, String param) 
   {
-    boolean found = false;
     String value = null;
 
     StringTokenizer st = new StringTokenizer(context);

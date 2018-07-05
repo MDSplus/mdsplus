@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*      Tdi1xxx_OF.C
         KIND and all xxx_OF routines in one module.
 
@@ -236,7 +260,10 @@ int Tdi1CompletionMessageOf(int opcode __attribute__ ((unused)), int narg __attr
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_ACTION:
-      status = MdsCopyDxXd(((struct descriptor_action *)tmp.pointer)->completion_message, out_ptr);
+      if (((struct descriptor_action *)tmp.pointer)->ndesc<4)
+	status = MdsFree1Dx(out_ptr, NULL);
+      else
+	status = MdsCopyDxXd(((struct descriptor_action *)tmp.pointer)->completion_message, out_ptr);
       break;
     default:
       status = TdiINVDTYDSC;
@@ -381,8 +408,7 @@ int Tdi1DispatchOf(int opcode __attribute__ ((unused)), int narg __attribute__ (
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_ACTION:
-      status =
-	  TdiDispatchOf(((struct descriptor_action *)tmp.pointer)->dispatch, out_ptr MDS_END_ARG);
+      status = TdiDispatchOf(((struct descriptor_action *)tmp.pointer)->dispatch, out_ptr MDS_END_ARG);
       break;
     case DTYPE_DISPATCH:
       MdsFree1Dx(out_ptr, NULL);
@@ -577,18 +603,14 @@ int Tdi1ErrorlogsOf(int opcode __attribute__ ((unused)), int narg __attribute__ 
     DTYPE_ACTION,
     0
   };
-
   status = TdiGetData(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_ACTION:
-      {
-	struct descriptor_action *act = (struct descriptor_action *)tmp.pointer;
-	if ((act->ndesc >= 3) && act->errorlogs)
-	  status = MdsCopyDxXd(act->errorlogs, out_ptr);
-	else
-	  status = TdiINVDTYDSC;
-      }
+      if (((struct descriptor_action *)tmp.pointer)->ndesc<3)
+	status = MdsFree1Dx(out_ptr, NULL);
+      else
+	status = MdsCopyDxXd(((struct descriptor_action *)tmp.pointer)->errorlogs, out_ptr);
       break;
     default:
       status = TdiINVDTYDSC;
@@ -758,6 +780,7 @@ int Tdi1MethodOf(int opcode __attribute__ ((unused)), int narg __attribute__ ((u
       break;
     case DTYPE_OPAQUE:
       status = MdsCopyDxXd(((struct descriptor_opaque *)tmp.pointer)->opaque_type, out_ptr);
+      break;
     default:
       status = TdiINVDTYDSC;
       break;
@@ -906,8 +929,10 @@ int Tdi1PerformanceOf(int opcode __attribute__ ((unused)), int narg __attribute_
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_ACTION:
-      status = MdsCopyDxXd((struct descriptor *)
-			   ((struct descriptor_action *)tmp.pointer)->performance, out_ptr);
+      if (((struct descriptor_action *)tmp.pointer)->ndesc<5)
+        status = MdsFree1Dx(out_ptr, NULL);
+      else
+	status = MdsCopyDxXd((struct descriptor *)((struct descriptor_action *)tmp.pointer)->performance, out_ptr);
       break;
     default:
       status = TdiINVDTYDSC;
@@ -1337,6 +1362,7 @@ int Tdi1ValueOf(int opcode __attribute__ ((unused)), int narg __attribute__ ((un
       break;
     case DTYPE_OPAQUE:
       status = MdsCopyDxXd(((struct descriptor_opaque *)tmp.pointer)->data, out_ptr);
+      break;
     default:
       MdsFree1Dx(out_ptr, NULL);
       *out_ptr = tmp;

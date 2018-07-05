@@ -217,9 +217,6 @@ private:
    #ifndef WIN32
       static void TLSDestroy(void* e) {if (NULL != e) delete (CUDTException*)e;}
    #else
-      #ifdef __MINGW64__
-      static void TLSDestroy(void* e) {if (NULL != e) delete (CUDTException*)e;}
-      #endif
       std::map<DWORD, CUDTException*> m_mTLSRecord;
       void checkTLSValue();
       pthread_mutex_t m_TLSLock;
@@ -249,7 +246,7 @@ private:
    bool m_bGCStatus;					// if the GC thread is working (true)
 
    pthread_t m_GCThread;
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       static void* garbageCollect(void*);
    #else
       static DWORD WINAPI garbageCollect(LPVOID);

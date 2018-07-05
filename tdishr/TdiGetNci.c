@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*      Tdi1GetNci.C
         Get node characteristic information by name.
         WARNING this routine is an exception to rule that NIDs and PATHs are evaluated.
@@ -37,9 +61,9 @@
 #include <treeshr.h>
 #include <mdsshr.h>
 #include <stdio.h>
+#include <pthread_port.h>
 #include "tdirefstandard.h"
 #include "tdinelements.h"
-
 
 
 extern unsigned short OpcVector;
@@ -85,7 +109,7 @@ STATIC_CONSTANT struct item {
   "IO_STV", 0, 0, NciIO_STV, DTYPE_LU, 4}, {
   "IS_CHILD", 0xffff, NciK_IS_CHILD, NciPARENT_RELATIONSHIP, DTYPE_BU, 1}, {
   "IS_MEMBER", 0xffff, NciK_IS_MEMBER, NciPARENT_RELATIONSHIP, DTYPE_BU, 1}, {
-  "LENGTH", 0, 0, NciLENGTH, DTYPE_L, 4}, {
+  "LENGTH", 0, 0, NciLENGTH, DTYPE_LU, 4}, {
   "MEMBER", 0, 0, NciMEMBER, DTYPE_NID, 4}, {
   "MEMBER_NIDS", 0, NciNUMBER_OF_MEMBERS, NciMEMBER_NIDS, DTYPE_NID, 0}, {
   "MINPATH", 0, 0, NciMINPATH, DTYPE_T, 0}, {
@@ -109,7 +133,7 @@ STATIC_CONSTANT struct item {
   "PATH_REFERENCE", NciM_PATH_REFERENCE, NciM_PATH_REFERENCE, NciGET_FLAGS, DTYPE_BU, 1}, {
   "RECORD", 0, 0, RECORDIDX, DTYPE_L, 0}, {
   "RFA", 0, 0, NciRFA, DTYPE_Q, 8}, {
-  "RLENGTH", 0, 0, NciRLENGTH, DTYPE_L, 4}, {
+  "RLENGTH", 0, 0, NciRLENGTH, DTYPE_LU, 4}, {
   "SEGMENTED", NciM_SEGMENTED, NciM_SEGMENTED, NciGET_FLAGS, DTYPE_BU, 1}, {
   "SETUP_INFORMATION", NciM_SETUP_INFORMATION, NciM_SETUP_INFORMATION, NciGET_FLAGS, DTYPE_BU, 1}, {
   "STATE", NciM_STATE, NciM_STATE, NciGET_FLAGS, DTYPE_BU, 1}, {
@@ -181,6 +205,30 @@ STATIC_ROUTINE int compare(struct descriptor *s1, struct item s2[1])
   return cmp;
 }
 
+inline static int treefindnodewild(char *dat_ptr, int len, int *nid, void *pctx, int usage_mask) {
+  int status;
+  char *path = NULL;
+  FREE_ON_EXIT(path);
+  path = malloc((size_t)len+1);
+  memcpy(path, dat_ptr, len);
+  path[len] = 0;
+  status = TreeFindNodeWild(path, nid, pctx, usage_mask);
+  FREE_NOW(path);
+  return status;
+}
+
+inline static int treefindnode(char *dat_ptr, int len, int *nid) {
+  int status;
+  char *path = NULL;
+  FREE_ON_EXIT(path);
+  path = malloc((size_t)len+1);
+  memcpy(path, dat_ptr, len);
+  path[len] = 0;
+  status = TreeFindNode(path, nid);
+  FREE_NOW(path);
+  return status;
+}
+
 int Tdi1GetNci(int opcode __attribute__ ((unused)),
 	       int narg,
 	       struct descriptor *list[],
@@ -218,14 +266,8 @@ int Tdi1GetNci(int opcode __attribute__ ((unused)),
 	case DTYPE_T:
 	case DTYPE_PATH:
 	  {
-	    struct descriptor path_d = { 0, DTYPE_PATH, CLASS_S, 0 };
-	    char *path;
-	    path_d.length = (unsigned char)len;
-	    path_d.pointer = dat_ptr;
-	    path = MdsDescrToCstring(&path_d);
-	    if (!(TreeFindNode(path, &nid) & 1))
+	    if IS_NOT_OK(treefindnode(dat_ptr,len,&nid))
 	      class = CLASS_A;
-	    MdsFree(path);
 	  }
 	}
     }
@@ -312,16 +354,8 @@ int Tdi1GetNci(int opcode __attribute__ ((unused)),
  more:switch (dtype) {
     case DTYPE_PATH:
     case DTYPE_T:
-      {
-	struct descriptor path_d = { 0, DTYPE_PATH, CLASS_S, 0 };
-	char *path;
-	path_d.length = (unsigned short)len;
-	path_d.pointer = dat_ptr;
-	path = MdsDescrToCstring(&path_d);
-	if STATUS_OK
-	  status = TreeFindNodeWild(path, &nid, &pctx, usage_mask);
-	MdsFree(path);
-      }
+      if STATUS_OK
+	status = treefindnodewild(dat_ptr, len, &nid, &pctx, usage_mask);
       if (status == TreeNMN || status == TreeNNF) {
 	TreeFindNodeEnd(&pctx);
 	pctx = NULL;
@@ -401,12 +435,12 @@ int Tdi1GetNci(int opcode __attribute__ ((unused)),
                 First get size, then data.
                 *************************/
     else if (key_ptr->item_test) {
-      unsigned char dtype = (unsigned char)DTYPE_NID;
-      unsigned short dlen = sizeof(nid);
+      const uint8_t  dtype = (unsigned char)DTYPE_NID;
+      const uint16_t dlen  = sizeof(nid);
       array arr = *(array *) & arr0;
       NCI_ITM tested[2] = { {sizeof(int), 0, 0, 0}, EOL };
       tested[0].code = key_ptr->item_test;
-      tested[0].pointer = (unsigned char *)&arr.arsize;
+      tested[0].pointer = (char *)&arr.arsize;
       tested[0].return_length_address = &retlen;
       status = TreeGetNci(nid, tested);
       *(struct descriptor_xd *)hold_ptr = EMPTY_XD;
@@ -419,7 +453,7 @@ int Tdi1GetNci(int opcode __attribute__ ((unused)),
 	NCI_ITM listed[2] = { {0, 0, 0, 0}, EOL };
 	listed[0].buffer_length = (short)aptr->arsize;
 	listed[0].code = key_ptr->item_code;
-	listed[0].pointer = (unsigned char *)aptr->pointer;
+	listed[0].pointer = (char *)aptr->pointer;
 	listed[0].return_length_address = &retlen;
 	if (aptr->arsize)
 	  status = TreeGetNci(nid, listed);

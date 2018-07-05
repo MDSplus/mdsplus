@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*      Tdi1SetRange
         Set the upper and lower bounds of an array.
                 SET_RANGE(range0,... array)
@@ -79,7 +103,6 @@ int Tdi1SetRange(int opcode, int narg, struct descriptor *list[], struct descrip
       }
   }
   arr.dimct = (unsigned char)(dimct = narg - 1);
-  arr.a0 = 0;
 
 	/******************************
         For each input, check defaults.
@@ -150,9 +173,11 @@ int Tdi1SetRange(int opcode, int narg, struct descriptor *list[], struct descrip
       }
     }
 
-    if (lo != 0)
+    if (lo != 0) {
       arr.aflags.bounds = 1;
-    arr.a0 -= lo * (int)arr.arsize;
+      arr.a0 = pa->pointer;
+      arr.pointer = arr.a0 + lo;
+    }
     arr.m[dimct + 2 * j] = lo;
     arr.m[dimct + 2 * j + 1] = hi;
     arr.m[j] = hi - lo + 1;
@@ -168,6 +193,7 @@ int Tdi1SetRange(int opcode, int narg, struct descriptor *list[], struct descrip
         Copy/expand data to new.
         ***********************/
   if STATUS_OK
+      
     status = TdiConvert(pa, out_ptr->pointer MDS_END_ARG);
 
 	/******************************

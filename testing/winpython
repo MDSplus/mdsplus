@@ -2,6 +2,7 @@
 test=$(basename $4)
 test=${test:0:-11}
 echo $test
+srcdir=$(readlink -f $(dirname ${0})/..)
 if [ "$test" == "dcl" ]; then
   if [ -z $ACTION_SERVER ]
   then
@@ -9,7 +10,7 @@ if [ "$test" == "dcl" ]; then
     then
       ACTION_PORT=8800
     fi
-    cmd="wine mdsip -s -p ${ACTION_PORT} -h $(winepath -w /source/mdsobjects/python/tests/mdsip.hosts)"
+    cmd="wine mdsip -s -p ${ACTION_PORT} -h $(winepath -w ${srcdir}/mdsobjects/python/tests/mdsip.hosts)"
     echo "$cmd";$cmd  &>server_0.log &
     export ACTION_SERVER=localhost:${ACTION_PORT}
   fi
@@ -19,7 +20,7 @@ if [ "$test" == "dcl" ]; then
     then
       MONITOR_PORT=4400
     fi
-    cmd="wine mdsip -s -p ${MONITOR_PORT} -h $(winepath -w /source/mdsobjects/python/tests/mdsip.hosts)"
+    cmd="wine mdsip -s -p ${MONITOR_PORT} -h $(winepath -w ${srcdir}/mdsobjects/python/tests/mdsip.hosts)"
     echo "$cmd";$cmd &>monitor_0.log &
     export ACTION_MONITOR=localhost:${MONITOR_PORT}
   fi

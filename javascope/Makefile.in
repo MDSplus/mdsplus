@@ -92,6 +92,7 @@ host_triplet = @host@
 target_triplet = @target@
 @MINGW_FALSE@am__append_1 = jScope.template
 @MINGW_FALSE@am__append_2 = $(bin_SCRIPTS)
+@USE_JARS_DIR_FALSE@am__append_3 = $(JSCOPE_CLASS) $(WAVEDISPLAY_CLASS) $(EXTRA_CLASS)
 subdir = javascope
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
@@ -118,10 +119,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-DIST_COMMON = $(srcdir)/Makefile.am $(dist_java_JAVA) \
+DIST_COMMON = $(srcdir)/Makefile.am $(am__dist_java_JAVA_DIST) \
 	$(dist_docs_DATA) $(dist_java_DATA) $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/include/config.h
+CONFIG_HEADER = $(top_builddir)/include/mdsplus/mdsconfig.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -174,6 +175,63 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+am__dist_java_JAVA_DIST = jScope.java jScope/CompositeWaveDisplay.java \
+	jScope/LocalDataProvider.java \
+	jScope/LocalDataProviderInfo.java jScope/MdsDataClient.java \
+	jScope/MdsIOException.java jScope/MdsPlusBrowseSignals.java \
+	jScope/TextorBrowseSignals.java jScope/AboutWindow.java \
+	jScope/ASCIIDataProvider.java jScope/AsdexDataProvider.java \
+	jScope/AsynchDataSource.java jScope/Base64.java \
+	jScope/ColorDialog.java jScope/ColorMapDialog.java \
+	jScope/ColorMap.java jScope/ConnectionEvent.java \
+	jScope/ConnectionListener.java jScope/ContourSignal.java \
+	jScope/DataAccess.java jScope/DataAccessURL.java \
+	jScope/DataCached.java jScope/DataCacheObject.java \
+	jScope/DataProvider.java jScope/DataServerItem.java \
+	jScope/Descriptor.java jScope/FakeTWUProperties.java \
+	jScope/FontSelection.java jScope/FrameData.java \
+	jScope/Frames.java jScope/FtuDataProvider.java \
+	jScope/Grid.java jScope/ImageTransferable.java \
+	jScope/JetDataProvider.java jScope/JetMdsDataProvider.java \
+	jScope/JiDataSource.java jScope/JiDim.java \
+	jScope/JiNcSource.java jScope/JiNcVarByte.java \
+	jScope/JiNcVarChar.java jScope/JiNcVarDouble.java \
+	jScope/JiNcVarFloat.java jScope/JiNcVarImp.java \
+	jScope/JiNcVarInt.java jScope/JiNcVar.java \
+	jScope/JiNcVarShort.java jScope/JiSlabIterator.java \
+	jScope/JiSlab.java jScope/JiVarImpl.java jScope/JiVar.java \
+	jScope/jScopeBrowseSignals.java jScope/jScopeBrowseUrl.java \
+	jScope/jScopeDefaultValues.java jScope/jScopeFacade.java \
+	jScope/jScopeMultiWave.java jScope/jScopeProperties.java \
+	jScope/jScopeWaveContainer.java jScope/jScopeWavePopup.java \
+	jScope/MdsIpProtocolWrapper.java jScope/MdsAccess.java \
+	jScope/MdsConnection.java jScope/MdsConnectionUdt.java \
+	jScope/MdsDataProvider.java jScope/MdsDataProviderUdt.java \
+	jScope/MdsMessage.java jScope/MdsplusParser.java \
+	jScope/MdsWaveInterface.java jScope/MultiWaveform.java \
+	jScope/MultiWavePopup.java \
+	jScope/NotConnectedDataProvider.java jScope/ProfileDialog.java \
+	jScope/PropertiesEditor.java jScope/RandomAccessData.java \
+	jScope/RowColumnContainer.java jScope/SignalListener.java \
+	jScope/RowColumnLayout.java jScope/SetupDataDialog.java \
+	jScope/SetupDefaults.java jScope/SetupWaveformParams.java \
+	jScope/SignalBox.java jScope/Signal.java \
+	jScope/SignalsBoxDialog.java jScope/SshTunneling.java \
+	jScope/TSDataProvider.java jScope/TwuAccess.java \
+	jScope/TwuDataProvider.java jScope/TWUFetchOptions.java \
+	jScope/TwuNameServices.java jScope/TWUProperties.java \
+	jScope/TWUSignal.java jScope/TwuSimpleFrameData.java \
+	jScope/TwuSingleSignal.java jScope/TwuWaveData.java \
+	jScope/UniversalDataProvider.java jScope/UpdateEvent.java \
+	jScope/UpdateEventListener.java jScope/WaveContainerEvent.java \
+	jScope/WaveContainerListener.java jScope/WaveData.java \
+	jScope/WaveDisplay.java jScope/WaveformContainer.java \
+	jScope/WaveformEditor.java jScope/WaveformEditorListener.java \
+	jScope/WaveformEvent.java jScope/Waveform.java \
+	jScope/WaveformListener.java jScope/WaveformManager.java \
+	jScope/WaveformMetrics.java jScope/WaveInterface.java \
+	jScope/WavePopup.java jScope/XYData.java \
+	jScope/XYWaveData.java jScope/WaveDataListener.java
 am__java_sources = $(dist_java_JAVA)
 DATA = $(dist_docs_DATA) $(dist_java_DATA) $(java_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
@@ -204,6 +262,7 @@ D3D_PACKAGE = @D3D_PACKAGE@
 DC1394_SUPPORT = @DC1394_SUPPORT@
 DC1394_SUPPORT2 = @DC1394_SUPPORT2@
 DEFS = @DEFS@
+DEF_PYLIB = @DEF_PYLIB@
 DEPDIR = @DEPDIR@
 DNET_STUB = @DNET_STUB@
 DOXYGEN = @DOXYGEN@
@@ -254,6 +313,7 @@ GLOBUS_LIBS = @GLOBUS_LIBS@
 GLOBUS_LOCATION = @GLOBUS_LOCATION@
 GREP = @GREP@
 HAVE_DOCKER = @HAVE_DOCKER@
+HAVE_MOTIF = @HAVE_MOTIF@
 HAVE_VISIBILITY = @HAVE_VISIBILITY@
 HAVE_WINE = @HAVE_WINE@
 HAVE_WINEBOOT = @HAVE_WINEBOOT@
@@ -274,11 +334,14 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 JAR = @JAR@
+JARS_DIR = @JARS_DIR@
 JAVAC = @JAVAC@
 JAVACFLAGS = @JAVACFLAGS@
 JAVAC_PATH_NAME = @JAVAC_PATH_NAME@
 JAVAVERSION = @JAVAVERSION@
 JAVA_APS = @JAVA_APS@
+JAVA_JAR = @JAVA_JAR@
+JAVA_ONLY = @JAVA_ONLY@
 JDK_CFLAGS = @JDK_CFLAGS@
 JDK_DIR = @JDK_DIR@
 JDK_LIVECONNECT = @JDK_LIVECONNECT@
@@ -313,6 +376,8 @@ MACOSX = @MACOSX@
 MAINT = @MAINT@
 MAKEBINDIR = @MAKEBINDIR@
 MAKEETCDIR = @MAKEETCDIR@
+MAKEFLAG_J = @MAKEFLAG_J@
+MAKEFLAG_O = @MAKEFLAG_O@
 MAKEINFO = @MAKEINFO@
 MAKELIBDIR = @MAKELIBDIR@
 MAKESHLIBDIR = @MAKESHLIBDIR@
@@ -327,6 +392,7 @@ MOTIF_LDSHARE = @MOTIF_LDSHARE@
 MOTIF_LD_LDARC = @MOTIF_LD_LDARC@
 MOTIF_LD_LDSHARE = @MOTIF_LD_LDSHARE@
 NEED_SEMUN = @NEED_SEMUN@
+NOWARNFLAGS = @NOWARNFLAGS@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -470,8 +536,7 @@ top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 JAVAROOT = $(builddir)
 EXTRA_DIST = $(MINDTERM) $(am__append_1) colors1.tbl
-CLEANFILES = $(java_DATA) $(am__append_2) $(JSCOPE_CLASS) \
-	$(WAVEDISPLAY_CLASS) $(EXTRA_CLASS)
+CLEANFILES = $(java_DATA) $(am__append_2) $(am__append_3)
 MINDTERM = $(srcdir)/MindTerm.jar
 CLASSPATH_ENV = CLASSPATH=$(MINDTERM)
 @MINGW_FALSE@bin_SCRIPTS = scripts/jScope
@@ -485,10 +550,10 @@ docsdir = $(exec_prefix)/java/classes/jdocs
 dist_java_DATA = jScope.properties MindTerm.jar
 java_DATA = jScope.jar WaveDisplay.jar
 javadir = $(exec_prefix)/java/classes
-dist_java_JAVA = $(JSCOPE_SRC) $(WAVEDISPLAY_SRC) $(COMMON_SRC)
-COMMON_CLASS = $(COMMON_SRC:.java=*.class)
-JSCOPE_CLASS = $(COMMON_CLASS) $(JSCOPE_SRC:.java=*.class) $(EXTRA_CLASS)
-WAVEDISPLAY_CLASS = $(COMMON_CLASS) $(WAVEDISPLAY_SRC:.java=*.class)
+@USE_JARS_DIR_FALSE@dist_java_JAVA = $(JSCOPE_SRC) $(WAVEDISPLAY_SRC) $(COMMON_SRC)
+@USE_JARS_DIR_FALSE@COMMON_CLASS = $(COMMON_SRC:.java=*.class)
+@USE_JARS_DIR_FALSE@JSCOPE_CLASS = $(COMMON_CLASS) $(JSCOPE_SRC:.java=*.class) $(EXTRA_CLASS)
+@USE_JARS_DIR_FALSE@WAVEDISPLAY_CLASS = $(COMMON_CLASS) $(WAVEDISPLAY_SRC:.java=*.class)
 DOCS = jScope.html jScope.jpg popup.jpg about_jscope.jpg \
 	CompositeWaveDisplay.html \
 	ConnectionEvent.html ConnectionListener.html \
@@ -887,17 +952,23 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_docsDATA \
 @MINGW_FALSE@clean-local:
 @MINGW_FALSE@	-rm -rf scripts
 $(java_DATA): classjava.stamp
-jScope.jar: colors1.tbl
-	@ echo "Creating JAR: $@ ..."; \
-	  $(MKDIR_P) $(builddir)/jdocs; \
-	  cp $(addprefix $(srcdir)/,$(DOCS)) $(builddir)/jdocs; \
-	  $(JAR) c0f $@ $(JSCOPE_CLASS) $(builddir)/jdocs \
-		     -C $(srcdir) colors1.tbl; \
-	  rm -Rf $(builddir)/jdocs;
+@USE_JARS_DIR_TRUE@jScope.jar: @JARS_DIR@/javascope/jScope.jar
+@USE_JARS_DIR_TRUE@	cp $< $@
 
-WaveDisplay.jar:
-	@ echo "Creating JAR: $@ ..."; \
-	  $(JAR) c0f $@ $(WAVEDISPLAY_CLASS)
+@USE_JARS_DIR_TRUE@WaveDisplay.jar: @JARS_DIR@/javascope/WaveDisplay.jar
+@USE_JARS_DIR_TRUE@	cp $< $@
+
+@USE_JARS_DIR_FALSE@jScope.jar: colors1.tbl
+@USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ..."; \
+@USE_JARS_DIR_FALSE@	  $(MKDIR_P) $(builddir)/jdocs; \
+@USE_JARS_DIR_FALSE@	  cp $(addprefix $(srcdir)/,$(DOCS)) $(builddir)/jdocs; \
+@USE_JARS_DIR_FALSE@	  $(JAR) c0f $@ $(JSCOPE_CLASS) $(builddir)/jdocs \
+@USE_JARS_DIR_FALSE@		     -C $(srcdir) colors1.tbl; \
+@USE_JARS_DIR_FALSE@	  rm -Rf $(builddir)/jdocs;
+
+@USE_JARS_DIR_FALSE@WaveDisplay.jar:
+@USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ..."; \
+@USE_JARS_DIR_FALSE@	  $(JAR) c0f $@ $(WAVEDISPLAY_CLASS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

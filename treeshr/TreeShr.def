@@ -16,6 +16,7 @@ TreeClose
 TreeCompressDatafile
 TreeCreatePulseFile
 TreeCreateTreeFiles
+TreeDbid
 TreeDeleteNodeExecute
 TreeDeleteNodeGetNid
 TreeDeleteNodeInitialize
@@ -101,6 +102,7 @@ _TreeCleanDatafile
 _TreeClose
 _TreeCompressDatafile
 _TreeCreatePulseFile
+_TreeDbid
 _TreeDeleteNodeExecute
 _TreeDeleteNodeGetNid
 _TreeDeleteNodeInitialize
@@ -125,6 +127,7 @@ _TreeGetPath
 _TreeGetRecord
 _TreeGetSegment
 _TreeGetSegmentInfo
+_TreeGetSegmentScale
 _TreeGetSegmentLimits
 _TreeGetSegmentTimes
 _TreeGetSegments
@@ -152,8 +155,10 @@ _TreeSetDefault
 _TreeSetDefaultNid
 _TreeSetNci
 _TreeSetNoSubtree
+_TreeSetSegmentScale
 _TreeSetStackSize
 _TreeSetSubtree
+_TreeSetTimeContext
 _TreeSetUsage
 _TreeSetXNci
 _TreeStartConglomerate

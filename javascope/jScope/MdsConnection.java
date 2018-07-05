@@ -1,15 +1,14 @@
 package jScope;
 
-/* $Id$ */
-import jScope.ConnectionEvent;
-import jScope.ConnectionListener;
-import java.io.*;
-import java.net.*;
-import java.nio.ByteBuffer;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Hashtable;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 public class MdsConnection
@@ -255,7 +254,6 @@ public class MdsConnection
     public synchronized Descriptor getAnswer() throws IOException
     {
         Descriptor out = new Descriptor();
-        int i;
 
         //wait();//!!!!!!!!!!
 
@@ -306,17 +304,17 @@ public class MdsConnection
         return out;
     }
 
-    public Descriptor MdsValue(String expr, Vector args)
+    public Descriptor MdsValue(String expr, Vector<Descriptor> args)
     {
         return MdsValue(expr, args, true);
     }
 
-    public Descriptor MdsValueStraight(String expr, Vector args)
+    public Descriptor MdsValueStraight(String expr, Vector<Descriptor> args)
     {
         return MdsValue(expr, args, false);
     }
 
-    public synchronized Descriptor MdsValue(String expr, Vector args, boolean wait)
+    public synchronized Descriptor MdsValue(String expr, Vector<Descriptor> args, boolean wait)
     {
         StringBuffer cmd = new StringBuffer(expr);
         int n_args = args.size();
@@ -380,7 +378,6 @@ public class MdsConnection
     // Read either a string or a float array
     public synchronized Descriptor MdsValue(String expr)
     {
-	int i, status;
 	Descriptor out;
         MdsMessage message = new MdsMessage(expr);
 
@@ -508,7 +505,7 @@ public class MdsConnection
 
     public synchronized int AddEvent(UpdateEventListener l, String eventName)
     {
-       int i, eventid = -1;
+       int eventid = -1;
        EventItem eventItem;
 
        if( hashEventName.containsKey(eventName) )
@@ -529,7 +526,7 @@ public class MdsConnection
 
     public synchronized int RemoveEvent(UpdateEventListener l, String eventName)
     {
-        int i, eventid = -1;
+        int eventid = -1;
         EventItem eventItem;
 
         if( hashEventName.containsKey(eventName) )

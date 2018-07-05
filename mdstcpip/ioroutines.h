@@ -16,7 +16,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <time.h>
 #ifdef HAVE_UNISTD_H
  #include <unistd.h>
@@ -56,29 +56,18 @@
 #endif
 #define LOAD_INITIALIZESOCKETS
 #include <pthread_port.h>
-static ssize_t io_send(int conid, const void *buffer, size_t buflen, int nowait);
-static ssize_t io_recv(int conid, void *buffer, size_t len);
-static int io_disconnect(int conid);
-static int io_flush(int conid);
-static int io_listen(int argc, char **argv);
-static int io_authorize(int conid, char *username);
-static int io_connect(int conid, char *protocol, char *host);
-static int io_reuseCheck(char *host, char *unique, size_t buflen);
-static IoRoutines io_routines = {
-  io_connect, io_send, io_recv, io_flush, io_listen, io_authorize, io_reuseCheck, io_disconnect
-};
 
-static int getHostAndPort(char *hostin, struct sockaddr_in *sin);
+static int GetHostAndPort(char *hostin, struct sockaddr_in *sin);
 
 static int io_reuseCheck(char *host, char *unique, size_t buflen){
   struct sockaddr_in sin;
-  if IS_OK(getHostAndPort(host, &sin)) {
+  if IS_OK(GetHostAndPort(host, &sin)) {
     char *addr = (char *)&sin.sin_addr;
     snprintf(unique, buflen,
       "%s://%d.%d.%d.%d:%d",
       PROT, addr[0], addr[1], addr[2], addr[3], ntohs(sin.sin_port));
-    return 0;
+    return C_OK;
   }
   *unique = 0;
-  return -1;
+  return C_ERROR;
 }

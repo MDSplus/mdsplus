@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 #include <stdlib.h>
 #include <string.h>
 #include <treeshr.h>
@@ -14,7 +38,7 @@ int TreeGetDbi(struct dbi_itm *itmlst)
 
 #define set_retlen(length) if ((unsigned int)lst->buffer_length < length) { status = TreeBUFFEROVF; break; } else retlen=length
 #define CheckOpen(db) if (!db || !db->open) {status=TreeNOT_OPEN;break;}
-#define set_ret_char(val) memset(lst->pointer, 0, lst->buffer_length); *((char *)lst->pointer) = val
+#define set_ret_char(val) memset(lst->pointer, 0, (size_t)lst->buffer_length); *((char *)lst->pointer) = val
 
 int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
 {
@@ -72,8 +96,8 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
 	PINO_DATABASE *db_tmp;
 	for (count = 0, db_tmp = (PINO_DATABASE *) dbid; db_tmp ? db_tmp->open : 0;
 	     count++, db_tmp = db_tmp->next) ;
-	memset(lst->pointer, 0, lst->buffer_length);
-	memcpy(lst->pointer, &count, minInt(lst->buffer_length, sizeof(int)));
+	memset(lst->pointer, 0, (size_t)lst->buffer_length);
+	memcpy(lst->pointer, &count, (size_t)minInt(lst->buffer_length, sizeof(int)));
 	if (lst->return_length_address)
 	  *lst->return_length_address = minInt(lst->buffer_length, sizeof(int));
 	break;
@@ -83,8 +107,8 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
 
       {
 	int count = db->stack_size;
-	memset(lst->pointer, 0, lst->buffer_length);
-	memcpy(lst->pointer, &count, minInt(lst->buffer_length, sizeof(int)));
+	memset(lst->pointer, 0, (size_t)lst->buffer_length);
+	memcpy(lst->pointer, &count, (size_t)minInt(lst->buffer_length, sizeof(int)));
 	if (lst->return_length_address)
 	  *lst->return_length_address = minInt(lst->buffer_length, sizeof(int));
 	break;
@@ -104,8 +128,8 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
       CheckOpen(db);
       {
 	int value = db->tree_info->header->versions_in_model;
-	memset(lst->pointer, 0, lst->buffer_length);
-	memcpy(lst->pointer, &value, minInt(lst->buffer_length, sizeof(int)));
+	memset(lst->pointer, 0, (size_t)lst->buffer_length);
+	memcpy(lst->pointer, &value, (size_t)minInt(lst->buffer_length, sizeof(int)));
 	if (lst->return_length_address)
 	  *lst->return_length_address = minInt(lst->buffer_length, sizeof(int));
 	break;
@@ -115,8 +139,8 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
       CheckOpen(db);
       {
 	int value = db->tree_info->header->versions_in_pulse;
-	memset(lst->pointer, 0, lst->buffer_length);
-	memcpy(lst->pointer, &value, minInt(lst->buffer_length, sizeof(int)));
+	memset(lst->pointer, 0, (size_t)lst->buffer_length);
+	memcpy(lst->pointer, &value, (size_t)minInt(lst->buffer_length, sizeof(int)));
 	if (lst->return_length_address)
 	  *lst->return_length_address = minInt(lst->buffer_length, sizeof(int));
 	break;
@@ -128,8 +152,13 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
     }
     if (string) {
       if (lst->buffer_length && lst->pointer) {
-	retlen = minInt(strlen(string), lst->buffer_length);
-	strncpy((char *)lst->pointer, string, retlen);
+	retlen = (unsigned short)minInt((int)strlen(string), lst->buffer_length);
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
+#endif
+	strncpy((char *)lst->pointer, string, (size_t)retlen);
+#pragma GCC diagnostic pop
 	if (retlen < lst->buffer_length)
 	  ((char *)lst->pointer)[retlen] = '\0';
 	free(string);

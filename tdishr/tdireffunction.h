@@ -6,7 +6,7 @@
 */
 #define TdiFUNCTION_DEF
 #include <mdstypes.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 struct TdiFunctionStruct {
   char *name;			/*string to compile/decompile   */
   int (*f1) ();			/*routine to check arguments    */

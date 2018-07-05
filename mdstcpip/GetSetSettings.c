@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 #include "mdsip_connections.h"
 #include <stdlib.h>
 #include <string.h>
@@ -163,33 +187,39 @@ int GetCompressionLevel()
 ////////////////////////////////////////////////////////////////////////////////
 //  CONNECTION TIMEOUT  ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-
-static int connect_timeout = -1;
-int SetMdsConnectTimeout(int sec)
-{
-  int old = connect_timeout;
-  connect_timeout = sec;
-  return old;
+static int             timeout_value = 0;
+static pthread_once_t  timeout_once  = PTHREAD_ONCE_INIT;
+static pthread_mutex_t timeout_mutex = PTHREAD_MUTEX_INITIALIZER;
+static void timeout_init() {
+  char *timeout=getenv("MDSIP_CONNECT_TIMEOUT");
+  if (timeout)
+    timeout_value = atoi(timeout);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //  GetMdsConnectTimeout  //////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int GetMdsConnectTimeout()
-{
-  if (connect_timeout == -1) {
-    char *timeout=getenv("MDSIP_CONNECT_TIMEOUT");
-    if (timeout){
-      connect_timeout = atoi(timeout); 
-    } else {
-      connect_timeout = 0;
-    }
-  }
+int GetMdsConnectTimeout() {
+  int connect_timeout;
+  pthread_mutex_lock(&timeout_mutex);
+  pthread_cleanup_push((void*)pthread_mutex_unlock,&timeout_mutex);
+  pthread_once(&timeout_once,timeout_init);
+  connect_timeout = timeout_value;
+  pthread_cleanup_pop(1);
   return connect_timeout;
 }
 
+int SetMdsConnectTimeout(int sec) {
+  int old;
+  pthread_mutex_lock(&timeout_mutex);
+  pthread_cleanup_push((void*)pthread_mutex_unlock,&timeout_mutex);
+  pthread_once(&timeout_once,timeout_init);
+  old = timeout_value;
+  timeout_value = sec;
+  pthread_cleanup_pop(1);
+  return old;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //  CLIENT ADDRESS  ////////////////////////////////////////////////////////////

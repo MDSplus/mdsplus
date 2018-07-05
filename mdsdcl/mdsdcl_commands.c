@@ -1,7 +1,32 @@
-#include <config.h>
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+#include <mdsplus/mdsconfig.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <mdsdcl_messages.h>
 #include <sys/time.h>
 #ifdef HAVE_SYS_RESOURCE_H
@@ -204,7 +229,7 @@ EXPORT int mdsdcl_set_verify(void *ctx, char **error __attribute__ ((unused)), c
 	 ****************************************************************/
 EXPORT int mdsdcl_define_symbol(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
-  char *name, *value;
+  char *name=NULL, *value=NULL;
   int status = cli_get_value(ctx, "SYMBOL", &name);
   if STATUS_NOT_OK {
     *error = malloc(100);
@@ -233,22 +258,29 @@ EXPORT int mdsdcl_define_symbol(void *ctx, char **error, char **output __attribu
   return (status);
 }
 
-EXPORT int mdsdcl_env(void *ctx, char **error, char **output __attribute__ ((unused)))
-{
-  int status;
+EXPORT int mdsdcl_env(void *ctx, char **error, char **output __attribute__ ((unused))){
   char *name, *value;
-  status = cli_get_value(ctx, "P1", &name);
+  int status = cli_get_value(ctx, "P1", &name);
   for (value=name ; value[0] && value[0]!='=' ; value++ );
-  value[0] = '\0'; value++;
-  fprintf(stderr, "'%s'='%s'\n",name,value);
-  status = setenv(name,value,1);
-  if (status) {
-    *error = malloc(100);
-    perror("error from putenv");
-    sprintf(*error, "Attempting putenv(\"%s\")\n", value);
-    status = MdsdclERROR;
-  } else
-    status = MdsdclSUCCESS;
+  if (value[0]=='\0') {
+      value = getenv(name);
+      if (value){
+         fprintf(stderr, "'%s'='%s'\n",name,value);
+         //free(value);
+      } else
+         fprintf(stderr, "'%s'= not defined\n",name);
+  } else {
+    value[0] = '\0'; value++;
+    fprintf(stderr, "'%s'='%s'\n",name,value);
+    status = setenv(name,value,1);
+    if (status) {
+      *error = malloc(100);
+      perror("error from putenv");
+      sprintf(*error, "Attempting putenv(\"%s\")\n", value);
+      status = MdsdclERROR;
+    } else
+      status = MdsdclSUCCESS;
+  }
   if (name)
     free(name);
   return (status);
@@ -259,7 +291,7 @@ extern int LibSpawn();
 	/**************************************************************
 	 * mdsdcl_spawn:
 	 **************************************************************/
-int mdsdcl_spawn(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int mdsdcl_spawn(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int notifyFlag;
   int waitFlag;

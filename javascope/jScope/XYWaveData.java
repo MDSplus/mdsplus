@@ -177,21 +177,16 @@ public class XYWaveData implements WaveData
         
         //OK, trovato l'intervallo tra minIdx e maxIdx
         double delta = (xmax - xmin)/numPoints;
-        double retResolution;
         boolean showMinMax = false;
         int actPoints;
         //Forces resampling only if there is a significant numebr of points
-        if((maxIdx - minIdx) > 1000 &&  delta > 4 * (maxIdx - minIdx + 1)/(xmax - xmin)) //If at least there are four times  real points
-        {
+        if((maxIdx - minIdx) > 1000 &&  delta > 4 * (maxIdx - minIdx + 1)/(xmax - xmin)) {
+        	//If at least there are four times  real points
             actPoints = 2 * (int)((xmax - xmin)/delta + 0.5);
             showMinMax = true;
-            retResolution = 1./delta;
-        }
-        else
-        {
-           actPoints = maxIdx - minIdx + 1; //No resampling at all
-           showMinMax = false;
-           retResolution = Double.MAX_VALUE;  //Maximum resolution
+        } else {
+        	actPoints = maxIdx - minIdx + 1; //No resampling at all
+        	showMinMax = false;
         }
           
         float retY[] = new float[actPoints];

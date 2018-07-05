@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*      Tdi1GetDbi.C
         Get data base information by name.
                 GETDBI(STRING, [OFFSET])
@@ -177,8 +201,7 @@ int Tdi1Using(int opcode __attribute__ ((unused)),
 	      struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  void *ctx;
-  int reset_ctx = 0;
+  void *pctx = NULL;
   int nid, shot;
   unsigned short stat1;
   struct descriptor_d def = { 0, DTYPE_T, CLASS_D, 0 }, expt = def;
@@ -243,9 +266,7 @@ int Tdi1Using(int opcode __attribute__ ((unused)),
       if (narg > 3 && list[3])
 	status = TdiData(list[3], &expt MDS_END_ARG);
       else {
-	DBI_ITM expt_itm[] = { {0, DbiNAME, 0, 0}
-	, EOL
-	};
+	DBI_ITM expt_itm[] = { {0, DbiNAME, 0, 0}, EOL};
 	status = TreeGetDbi(expt_itm);
 	if (expt_itm[0].pointer) {
 	  unsigned short len = (unsigned short)strlen((char *)expt_itm[0].pointer);
@@ -260,8 +281,7 @@ int Tdi1Using(int opcode __attribute__ ((unused)),
                 *********************/
     if STATUS_OK {
       char *tree = MdsDescrToCstring((struct descriptor *)&expt);
-      ctx = TreeSwitchDbid(0);
-      reset_ctx = 1;
+      pctx = TreeSavePrivateCtx(NULL);
       status = TreeOpen(tree, shot, 1);
       MdsFree(tree);
     }
@@ -286,10 +306,7 @@ int Tdi1Using(int opcode __attribute__ ((unused)),
 			    fixup_nid, NULL, fixup_path, NULL);
     MdsFree1Dx(&tmp, NULL);
   }
-  if (reset_ctx) {
-    while (TreeClose(0, 0) & 1) ;
-    TreeFreeDbid(TreeSwitchDbid(ctx));
-
-  }
+  if (pctx)
+    TreeFreeDbid(TreeRestorePrivateCtx(pctx));
   return status;
 }

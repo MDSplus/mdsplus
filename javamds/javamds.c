@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 #include <stdio.h>
 #include <treeshr.h>
 #include <mdsshr.h>
@@ -12,6 +36,9 @@
 #include "MdsHelper.h"
 #include "jScope_MdsIpProtocolWrapper.h"
 #include "../mdstcpip/mdsip_connections.h"
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
+#endif
 
 extern int TdiCompile(), TdiData(), TdiFloat();
 
@@ -1423,7 +1450,7 @@ EXPORT int addSignalWithParam(int obj_idx, float *x, float *y, int xType, int nu
   jstring jname, jcolour;
   jobject jobj = jobjects[obj_idx];
   jfloatArray jx, jy;
-  jdoubleArray jxDouble;
+  jdoubleArray jxDouble = NULL;
   jclass cls;
   jmethodID mid;
   jboolean jinter;
@@ -1613,8 +1640,7 @@ JNIEXPORT jint JNICALL Java_jScope_MdsIpProtocolWrapper_send
 {
     int size = (*env)->GetArrayLength(env, jbuf);
     char *buf = (char *)(*env)->GetByteArrayElements(env, jbuf, JNI_FALSE);
-    IoRoutines *ior = GetConnectionIo(connectionId);
-    return ior->send(connectionId, (const char *)buf, size, noWait);
+    return SendToConnection(connectionId, (const char *)buf, size, noWait);
 }
 
 
@@ -1627,16 +1653,13 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_MdsIpProtocolWrapper_recv
 (JNIEnv *env, jobject jobj __attribute__ ((unused)), jint connectionId, jint size)
 {
     jbyte *readBuf = malloc(size);
-    int retSize;
-    jbyteArray jarr;
-    IoRoutines *ior = GetConnectionIo(connectionId);
-    retSize = ior->recv(connectionId, readBuf, size);
+    int retSize = ReceiveFromConnection(connectionId, readBuf, size);
     if(retSize == -1)
     {
 	free(readBuf);
 	return 0;
     }
-    jarr = (*env)->NewByteArray(env, retSize);
+    jbyteArray jarr = (*env)->NewByteArray(env, retSize);
     (*env)->SetByteArrayRegion(env, jarr, 0, retSize, readBuf);
     free(readBuf);
     return jarr;
@@ -1650,8 +1673,7 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_MdsIpProtocolWrapper_recv
 JNIEXPORT void JNICALL Java_jScope_MdsIpProtocolWrapper_flush
 (JNIEnv *env __attribute__ ((unused)), jobject jobj __attribute__ ((unused)), jint connectionId)
 {
-    IoRoutines *ior = GetConnectionIo(connectionId);
-    ior->flush(connectionId);
+    FlushConnection(connectionId);
 }
 
 /*
@@ -1663,7 +1685,5 @@ JNIEXPORT void JNICALL Java_jScope_MdsIpProtocolWrapper_disconnect
 (JNIEnv *env __attribute__ ((unused)), jobject jobj __attribute__ ((unused)), jint connectionId)
 {
     DisconnectConnection(connectionId);
-    //IoRoutines *ior = GetConnectionIo(connectionId);
-    //ior->disconnect(connectionId);
 }
 

@@ -92,7 +92,9 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-bin_PROGRAMS = actions$(EXEEXT) actmon$(EXEEXT) actlog$(EXEEXT)
+@HAVE_MOTIF_FALSE@bin_PROGRAMS = actlog$(EXEEXT)
+@HAVE_MOTIF_TRUE@bin_PROGRAMS = actions$(EXEEXT) actmon$(EXEEXT) \
+@HAVE_MOTIF_TRUE@	actlog$(EXEEXT)
 subdir = actions
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
@@ -121,25 +123,29 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/include/config.h
+CONFIG_HEADER = $(top_builddir)/include/mdsplus/mdsconfig.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(uiddir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_actions_OBJECTS = actions.$(OBJEXT)
+am__actions_SOURCES_DIST = actions.c
+@HAVE_MOTIF_TRUE@am_actions_OBJECTS = actions.$(OBJEXT)
 actions_OBJECTS = $(am_actions_OBJECTS)
 actions_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
-actions_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+@HAVE_MOTIF_TRUE@actions_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+@HAVE_MOTIF_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+@HAVE_MOTIF_TRUE@	$(am__DEPENDENCIES_1)
 am_actlog_OBJECTS = actlog.$(OBJEXT)
 actlog_OBJECTS = $(am_actlog_OBJECTS)
 actlog_DEPENDENCIES =
-am_actmon_OBJECTS = actmon.$(OBJEXT)
+am__actmon_SOURCES_DIST = actmon.c
+@HAVE_MOTIF_TRUE@am_actmon_OBJECTS = actmon.$(OBJEXT)
 actmon_OBJECTS = $(am_actmon_OBJECTS)
-am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-actmon_DEPENDENCIES = $(am__DEPENDENCIES_2)
+@HAVE_MOTIF_TRUE@am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) \
+@HAVE_MOTIF_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+@HAVE_MOTIF_TRUE@	$(am__DEPENDENCIES_1)
+@HAVE_MOTIF_TRUE@actmon_DEPENDENCIES = $(am__DEPENDENCIES_2)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -152,7 +158,7 @@ AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
-DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
+DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include/mdsplus
 depcomp = $(SHELL) $(top_srcdir)/conf/depcomp
 am__depfiles_maybe = depfiles
 am__mv = mv -f
@@ -169,7 +175,8 @@ am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(actions_SOURCES) $(actlog_SOURCES) $(actmon_SOURCES)
-DIST_SOURCES = $(actions_SOURCES) $(actlog_SOURCES) $(actmon_SOURCES)
+DIST_SOURCES = $(am__actions_SOURCES_DIST) $(actlog_SOURCES) \
+	$(am__actmon_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -249,6 +256,7 @@ D3D_PACKAGE = @D3D_PACKAGE@
 DC1394_SUPPORT = @DC1394_SUPPORT@
 DC1394_SUPPORT2 = @DC1394_SUPPORT2@
 DEFS = @DEFS@
+DEF_PYLIB = @DEF_PYLIB@
 DEPDIR = @DEPDIR@
 DNET_STUB = @DNET_STUB@
 DOXYGEN = @DOXYGEN@
@@ -299,6 +307,7 @@ GLOBUS_LIBS = @GLOBUS_LIBS@
 GLOBUS_LOCATION = @GLOBUS_LOCATION@
 GREP = @GREP@
 HAVE_DOCKER = @HAVE_DOCKER@
+HAVE_MOTIF = @HAVE_MOTIF@
 HAVE_VISIBILITY = @HAVE_VISIBILITY@
 HAVE_WINE = @HAVE_WINE@
 HAVE_WINEBOOT = @HAVE_WINEBOOT@
@@ -319,11 +328,14 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 JAR = @JAR@
+JARS_DIR = @JARS_DIR@
 JAVAC = @JAVAC@
 JAVACFLAGS = @JAVACFLAGS@
 JAVAC_PATH_NAME = @JAVAC_PATH_NAME@
 JAVAVERSION = @JAVAVERSION@
 JAVA_APS = @JAVA_APS@
+JAVA_JAR = @JAVA_JAR@
+JAVA_ONLY = @JAVA_ONLY@
 JDK_CFLAGS = @JDK_CFLAGS@
 JDK_DIR = @JDK_DIR@
 JDK_LIVECONNECT = @JDK_LIVECONNECT@
@@ -358,6 +370,8 @@ MACOSX = @MACOSX@
 MAINT = @MAINT@
 MAKEBINDIR = @MAKEBINDIR@
 MAKEETCDIR = @MAKEETCDIR@
+MAKEFLAG_J = @MAKEFLAG_J@
+MAKEFLAG_O = @MAKEFLAG_O@
 MAKEINFO = @MAKEINFO@
 MAKELIBDIR = @MAKELIBDIR@
 MAKESHLIBDIR = @MAKESHLIBDIR@
@@ -372,6 +386,7 @@ MOTIF_LDSHARE = @MOTIF_LDSHARE@
 MOTIF_LD_LDARC = @MOTIF_LD_LDARC@
 MOTIF_LD_LDSHARE = @MOTIF_LD_LDSHARE@
 NEED_SEMUN = @NEED_SEMUN@
+NOWARNFLAGS = @NOWARNFLAGS@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -512,22 +527,22 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-
-# User interface descriptions, installed as generic data but with build rules
 uiddir = @uiddir@
 
 #AC_PATH_XTRA puts CPPFLAGS in a CFLAGS variable. Adjust here.
 AM_CPPFLAGS = $(TARGET_ARCH) $(WARNFLAGS) $(X_CFLAGS)
 @RPATHLINK_TRUE@AM_LDFLAGS = $(RPATHLINK)=@MAKESHLIBDIR@ $(TARGET_ARCH)
-LDADD = -L@MAKESHLIBDIR@ -lXmdsShr -lTreeShr -lTdiShr -lMdsShr $(X_PRE_LIBS) $(X_LIBS) $(MOTIF_LIBS) $(X_EXTRA_LIBS)
-MOTIF_LIBS = -lMrm -lXm -lXt -lX11
-actions_SOURCES = actions.c
-actmon_SOURCES = actmon.c
-actmon_LDADD = $(LDADD) -lMdsIpShr -lMdsServerShr
 actlog_SOURCES = actlog.c
 actlog_LDADD = -L@MAKESHLIBDIR@ -lTreeShr -lTdiShr -lMdsShr -lMdsIpShr -lMdsServerShr
-uid_DATA = actions.uid actmon.uid
-MOSTLYCLEANFILES = $(uid_DATA)
+@HAVE_MOTIF_TRUE@LDADD = -L@MAKESHLIBDIR@ -lXmdsShr -lTreeShr -lTdiShr -lMdsShr $(X_PRE_LIBS) $(X_LIBS) $(MOTIF_LIBS) $(X_EXTRA_LIBS)
+@HAVE_MOTIF_TRUE@MOTIF_LIBS = -lMrm -lXm -lXt -lX11
+@HAVE_MOTIF_TRUE@actmon_SOURCES = actmon.c
+@HAVE_MOTIF_TRUE@actmon_LDADD = $(LDADD) -lMdsIpShr -lMdsServerShr
+@HAVE_MOTIF_TRUE@actions_SOURCES = actions.c
+
+# User interface descriptions, installed as generic data but with build rules
+@HAVE_MOTIF_TRUE@uid_DATA = actions.uid actmon.uid
+@HAVE_MOTIF_TRUE@MOSTLYCLEANFILES = $(uid_DATA)
 all: all-am
 
 .SUFFIXES:
@@ -870,8 +885,8 @@ uninstall-am: uninstall-binPROGRAMS uninstall-uidDATA
 
 .PRECIOUS: Makefile
 
-%.uid: %.uil
-	@UIL@ -I$(top_srcdir)/include -o $@ $<
+@HAVE_MOTIF_TRUE@%.uid: %.uil
+@HAVE_MOTIF_TRUE@	@UIL@ -I$(top_srcdir)/include -o $@ $<
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

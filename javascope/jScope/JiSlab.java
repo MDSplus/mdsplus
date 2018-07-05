@@ -1,9 +1,5 @@
 package jScope;
 
-/* $Id$ */
-import java.io.*;
-import java.util.*;
-
 class JiSlab 
 {
 	public int mOffset, mSize;

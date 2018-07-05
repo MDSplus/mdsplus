@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*------------------------------------------------------------------------------
 
                 Name:   MDSEVENTV5
@@ -29,11 +53,11 @@ EventStruct *MDSEVENT(int *base_id, int *stub_id, struct dsc$descriptor *name)
 Invoked from MDSEVENT.PRO
 
 ------------------------------------------------------------------------------*/
-#include <ipdesc.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdsshr.h>
+#include <ipdesc.h>
 
 typedef struct _event_struct {
   int stub_id;
@@ -61,6 +85,12 @@ extern void MdsDispatchEvent();
 static EventStruct *EventList = (EventStruct *) 0;
 static int EventCount = 1;
 static void EventAst(void * e, int eventid, char *data);
+#ifdef strlcpy
+#undef strlcpy
+#endif
+#ifdef strlcat
+#undef strlcat
+#endif
 #include <export.h>
 #ifdef _WIN32
 #define BlockSig(arg)
@@ -130,7 +160,8 @@ static void DoEventUpdate(XtPointer client_data __attribute__ ((unused)), int *s
   char *base_rec;
   EventStruct *e;
   IDL_WidgetStubLock(TRUE);
-  read(event_pipe[0], &e, sizeof(EventStruct *));
+  if (read(event_pipe[0], &e, sizeof(EventStruct *)) == -1)
+    perror("Error reading from event pipe\n");
   if ((stub_rec = IDL_WidgetStubLookup(e->stub_id))
       && (base_rec = IDL_WidgetStubLookup(e->base_id))) {
 #ifdef WIN32
@@ -165,7 +196,8 @@ static void EventAst(void * e_in, int len, char *data)
   EventStruct *e = (EventStruct *)e_in;
   if (len > 0)
     memcpy(e->value, data, len > 12 ? 12 : len);
-  write(event_pipe[1], &e, sizeof(EventStruct *));
+  if (write(event_pipe[1], &e, sizeof(EventStruct *)) == -1)
+    perror("Error writing to event pipe\n");
 }
 #endif
 EXPORT int IDLMdsEvent(int argc, void * *argv)
@@ -200,7 +232,8 @@ EXPORT int IDLMdsEvent(int argc, void * *argv)
 	    XtAppAddInput(XtWidgetToApplicationContext(w1), sock, (XtPointer) XtInputExceptMask,
 			  MdsDispatchEvent, (char *)0+sock);
 	  }
-	  pipe(event_pipe);
+	  if (pipe(event_pipe) == -1)
+	    perror("Error creating event pipes\n");
 	  XTINPUTID =
 	    XtAppAddInput(XtWidgetToApplicationContext(w1), event_pipe[0],
 			  (XtPointer) XtInputReadMask, DoEventUpdate, 0);
@@ -209,7 +242,12 @@ EXPORT int IDLMdsEvent(int argc, void * *argv)
 	e->stub_id = *stub_id;
 	e->base_id = *base_id;
 	e->loc_event_id = EventCount++;
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
+#endif
 	strncpy(e->name, name, sizeof(e->name));
+#pragma GCC diagnostic pop
 	e->next = EventList;
 	EventList = e;
 	if (sock != INVALID_SOCKET) {
