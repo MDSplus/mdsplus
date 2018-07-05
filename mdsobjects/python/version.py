@@ -69,14 +69,14 @@ def load_library(name):
         if os.sys.platform.startswith('darwin'):
             return C.CDLL('lib%s.dylib'%name)
         try: return C.CDLL('lib%s.so'%name)
-        except:raise Exception("Error finding library: "+name)
+        except:raise Exception("Could not find library: %s"%(name,))
     else:
         try:   return C.CDLL(libnam)
         except:pass
         try:   return C.CDLL(name)
         except:pass
         try:   return C.CDLL(os.path.basename(libnam))
-        except:print('Could not load CDLL: '+libnam)
+        except:raise Exception('Could not load library: %s'%(name,))
 
 from types import GeneratorType as generator  # analysis:ignore
 
