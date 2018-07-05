@@ -45,8 +45,10 @@ function  result = mdsToMatlab( mdsthing )
         end
         f=str2func(dtype);
         if value.ndim > 1
-          shape=int32(py.array.array('i',py.numpy.transpose(value).shape));
-          val=py.numpy.asfortranarray(value);
+	  py_numpy_transpose=str2func('py.numpy.transpose');
+          py_numpy_asfortranarray=str2func('py.numpy.asfortranarray');
+          shape=int32(py.array.array('i',py_numpy_transpose(value).shape));
+          val=py_numpy_asfortranarray(value);
           pyarray=py.array.array(value.dtype.char,val.flat);
           result=reshape(f(py.array.array(value.dtype.char,pyarray)),shape);
         else
