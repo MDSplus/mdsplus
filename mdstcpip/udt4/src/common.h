@@ -48,15 +48,12 @@ written by
    #include <pthread.h>
 #else
    #include <windows.h>
-   #ifdef __MINGW64__
-      #include <pthread.h>
-   #endif
 #endif
 #include <cstdlib>
 #include "udt.h"
 
 
-#if defined WIN32 && !defined __MINGW64__
+#ifdef WIN32
    // Windows compability
    typedef HANDLE pthread_t;
    typedef HANDLE pthread_mutex_t;

@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*      TdiHash.C
         Use hashing method to lookup a function name with fewest string compares.
         The choice of size will vary but should be a few times larger than the number of names.
@@ -12,9 +36,7 @@
 #include "tdithreadsafe.h"
 #define TdiHASH_MAX 991
 
-STATIC_THREADSAFE int lock_initialized = 0;
-STATIC_THREADSAFE pthread_mutex_t lock;
-STATIC_THREADSAFE short TdiREF_HASH[1024];	/*TdiHASH_MAX]; */
+STATIC_THREADSAFE short TdiREF_HASH[TdiHASH_MAX];
 #include "tdireffunction.h"
 #include <string.h>
 #include <stdio.h>
@@ -29,8 +51,6 @@ STATIC_ROUTINE int TdiHashOne(int len, char *pstring)
   char *ps = pstring;
   while (--n >= 0 && *ps) {
     hash = (int)(((uint64_t)hash) * 11 + (upcase(ps) - ' '));
-    //__builtin_smul_overflow(hash, 11, &hash);
-    //__builtin_sadd_overflow(hash, (upcase(ps) - ' '), &hash);
     ps++;
   }
   hash %= TdiHASH_MAX;
@@ -71,31 +91,22 @@ STATIC_ROUTINE int TdiHashAll()
 int TdiHash(int len, char *pstring)
 {
   int jh, jf;
-
-	/**************
-        Self-initialize
-        **************/
-  LockTdiMutex(&lock, &lock_initialized);
+  static pthread_mutex_t lock;
+  pthread_mutex_lock(&lock);
+  pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
   jh = TdiHashOne(len, pstring);
   if (TdiREF_HASH[0] == 0)
     TdiHashAll();
-
   while ((jf = TdiREF_HASH[jh]) >= 0) {
     int i;
     char *name = TdiRefFunction[jf].name;
     for (i = 0; (i < len) && (name[i] != '\0') && (upcase(pstring + i) == name[i]); i++) ;
     if (i == len && name[i] == '\0')
       break;
-/*
-                if (strncmp(pstring, TdiRefFunction[jf].name, len) == 0) {
-                        k = strlen(TdiRefFunction[jf].name);
-                        if (k == len || *(pstring+k) == '\0') break;
-                }
-*/
     if (++jh >= TdiHASH_MAX)
       jh = 0;
   }
-  UnlockTdiMutex(&lock);
+  pthread_cleanup_pop(1);
   return jf;
 }
 

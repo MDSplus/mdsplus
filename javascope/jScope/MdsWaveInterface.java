@@ -1,10 +1,9 @@
 package jScope;
 
-/* $Id$ */
-import jScope.ColorMapDialog;
-import java.io.*;
-import java.awt.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 class MdsWaveInterface
     extends WaveInterface
@@ -980,7 +979,7 @@ Fix bug : shot expression must be always evaluated.
     public void FromFile(Properties pr, String prompt, ColorMapDialog cmd) throws IOException
     {
         String prop = null;
-        int len, pos, num_expr = 0;
+        int num_expr = 0;
 
         Erase();
 

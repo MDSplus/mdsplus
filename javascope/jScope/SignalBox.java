@@ -1,8 +1,7 @@
 package jScope;
 
 /* $Id$ */
-import java.util.*;
-import javax.swing.*;
+import java.util.Hashtable;
 
 public class SignalBox
 {

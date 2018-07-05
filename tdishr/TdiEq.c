@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*  CMS REPLACEMENT HISTORY, Element Tdi3Eq.C */
 /*  *15   26-AUG-1996 15:07:24 TWF "remove ints.h" */
 /*  *14   16-AUG-1996 08:42:01 TWF "Add ieee support" */
@@ -60,6 +84,7 @@
        use without specific written approval of MIT Plasma Fusion Center
        Management.
 ------------------------------------------------------------------------------*/
+#include <stdint.h>
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
@@ -234,16 +259,16 @@ int Tdi3_Eq(struct descriptor *in1_ptr,
   switch (in1_ptr->dtype) {
   case DTYPE_T:
     testc(unsigned char)
-    case DTYPE_BU:test(unsigned char)
-    case DTYPE_WU:test(unsigned short int)
-    case DTYPE_LU:test(unsigned int)
-    case DTYPE_QU:testn(unsigned int, 2, 0)
+    case DTYPE_BU:test(uint8_t)
+    case DTYPE_WU:test(uint16_t)
+    case DTYPE_LU:test(uint32_t)
+    case DTYPE_QU:test(uint64_t)
     case DTYPE_OU:testn(unsigned int, 4, 0)
-    case DTYPE_B:test(char)
-    case DTYPE_W:test(short int)
-    case DTYPE_L:test(int)
-    case DTYPE_Q:testn(unsigned int, 2, 1)
-    case DTYPE_O:testn(unsigned int, 4, 1)
+    case DTYPE_B:test(int8_t)
+    case DTYPE_W:test(int16_t)
+    case DTYPE_L:test(int32_t)
+    case DTYPE_Q:test(int64_t)
+    case DTYPE_O:testn(int, 4, 1)
     case DTYPE_F:testf(float, DTYPE_F, DTYPE_NATIVE_FLOAT)
     case DTYPE_FS:testf(float, DTYPE_FS, DTYPE_NATIVE_FLOAT)
     case DTYPE_G:testf(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)

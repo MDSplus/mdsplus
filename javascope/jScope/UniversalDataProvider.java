@@ -1,226 +1,211 @@
 package jScope;
 
-/* $Id$ */
-import jScope.TSDataProvider;
-import jScope.DataProvider;
-import jScope.JetMdsDataProvider;
-import jScope.FrameData;
-import jScope.DataServerItem;
-import jScope.MdsDataProvider;
-import jScope.FtuDataProvider;
-import jScope.JetDataProvider;
-import jScope.ConnectionListener;
-import jScope.AsdexDataProvider;
-import java.io.*;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 import javax.swing.JFrame;
-import java.util.*;
 
 class UniversalDataProvider implements DataProvider
 {
-    String error = "Unknown experiment";
-    MdsDataProvider rfx;
-    FtuDataProvider ftu;
-    TwuDataProvider twu;
-    JetDataProvider jet;
-    JetMdsDataProvider jetmds;
-    TSDataProvider ts;
-    AsdexDataProvider asd;
-    public UniversalDataProvider() throws IOException
+    String error;
+    MdsDataProvider defaultProvider;
+    Hashtable<String, MdsDataProvider> dataProviderH = new Hashtable<>();
+    MdsDataProvider getProvider(String ip)
     {
-        rfx = new MdsDataProvider();
+        if(!ip.startsWith("//"))
+            return defaultProvider;
+        int pos = ip.substring(2).indexOf("/");
+        String currIp = ip.substring(2,pos+2);
+        MdsDataProvider provider = (MdsDataProvider)dataProviderH.get(currIp);
+        if(provider == null)
+        {
+            provider = new MdsDataProvider();
+            try {
+                provider.SetArgument(currIp);
+                dataProviderH.put(currIp, provider);
+            }catch(Exception exc){return null;}
+        }
+        return provider;
+    }
+    boolean isDefault(String in)
+    {
+        return (!in.startsWith("//"));
+    }
+    String getExperiment(String in)
+    {
+        String subStr1 = in.trim().substring(2);
+        int pos1 = subStr1.indexOf("/");
+        String subStr2 = subStr1.substring(pos1+1);
+        int pos2 = subStr2.indexOf("/");
+        return subStr2.substring(0, pos2);
+    }
+    int getShot(String in) throws Exception
+    {
+        String subStr1 = in.trim().substring(2);
+        int pos1 = subStr1.indexOf("/");
+        String subStr2 = subStr1.substring(pos1+1);
+        int pos2 = subStr2.indexOf("/");
+        String subStr3 = subStr2.substring(pos2+1);
+        int pos3 =  subStr3.indexOf("/");
+        String subStr4 = subStr3.substring(0, pos3);
+        return Integer.parseInt(subStr4);
+    }
+    
+    public UniversalDataProvider() 
+    {
+        defaultProvider = new MdsDataProvider();
+    }
+    public void    SetArgument(String arg)
+    {
         try {
-            rfx.SetArgument("150.178.3.80");
-        }catch(Exception exc){rfx = null;}
-        ftu = new FtuDataProvider();
-        try {
-            ftu.SetArgument("192.107.51.84:8100");
-        }catch(Exception exc){ftu = null;}
-        twu = new TwuDataProvider();
-        jet = new JetDataProvider();
-        jetmds = new JetMdsDataProvider();
-        ts = new TSDataProvider();
-        try {
-            ts.SetArgument("132.169.8.164:8000");
-        }catch(Exception exc){ts = null;}
-        asd = new AsdexDataProvider();
-        try {
-            asd.SetArgument("localhost:8000");
-        }catch(Exception exc){asd = null;}
+            defaultProvider.SetArgument(arg);
+        }catch(Exception exc){defaultProvider = null;}
     }
 
-
-    public void enableAsyncUpdate(boolean enable){}
-    protected DataProvider SelectProvider(String spec)
+    public void enableAsyncUpdate(boolean enable)
     {
-        if(spec.startsWith("rfx:"))
-            return rfx;
-        if(spec.startsWith("ftu:"))
-            return ftu;
-        if(spec.startsWith("twu:"))
-            return twu;
-        if(spec.startsWith("jet:"))
-            return jet;
-        if(spec.startsWith("jetmds:"))
-            return jetmds;
-        if(spec.startsWith("ts:"))
-            return ts;
-        if(spec.startsWith("asd:"))
-            return asd;
-        error = "Unknown experiment";
-
-        return null;
+        Enumeration<MdsDataProvider> en = dataProviderH.elements();
+        while(en.hasMoreElements())
+            en.nextElement().enableAsyncUpdate(enable);
     }
-
-    protected String RemoveExp(String spec)
+ 
+    String getExpr(String spec)
     {
-        if(spec.startsWith("jetmds:"))
-            return spec.substring(7);
-        if(spec.startsWith("ts:"))
-            return spec.substring(3);
-        return spec.substring(4);
-    }
-
+        if(!spec.startsWith("//"))
+            return spec;
+        String subStr1 = spec.trim().substring(2);
+        int pos1 = subStr1.indexOf("/");
+        String subStr2 = subStr1.substring(pos1+1);
+        int pos2 = subStr2.indexOf("/");
+        String subStr3 = subStr2.substring(pos2+1);
+        int pos3 =  subStr3.indexOf("/");
+        return subStr3.substring(pos3+1);
+     }
+    
     public WaveData GetWaveData(String in)
     {
+        MdsDataProvider currProvider = getProvider(in);
+        if(currProvider == null)
+        {
+            error = "Missing default provider";
+            return null;
+        }
+        if(!isDefault(in))
+        {
+            try {
+                currProvider.Update(getExperiment(in), getShot(in));
+            }
+            catch(Exception exc)
+            {
+                System.out.println(exc);
+            }
+        }
         try {
-            return SelectProvider(in).GetWaveData(RemoveExp(in));
+            return currProvider.GetWaveData(getExpr(in));
         }catch(Exception exc) {return null; }
     }
     public WaveData GetWaveData(String in_y, String in_x)
     {
+        MdsDataProvider currProvider = getProvider(in_y);
+        if(currProvider == null)
+        {
+            error = "Missing default provider";
+            return null;
+        }
+        if(!isDefault(in_y))
+        {
+            try {
+                currProvider.Update(getExperiment(in_y), getShot(in_y));
+            }
+            catch(Exception exc)
+            {
+                System.out.println(exc);
+            }
+        }
         try {
-            return SelectProvider(in_y).GetWaveData(RemoveExp(in_y), in_x);
-        }catch(Exception exc) {return null; }
-    }
-    public WaveData GetResampledWaveData(String in, double start, double end, int n_points)
-    {
-        return null;
-    }
-    public WaveData GetResampledWaveData(String in_y, String in_x, double start, double end, int n_points)
-    {
-        return null;
+            return currProvider.GetWaveData(getExpr(in_y), getExpr(in_x));
+        }catch(Exception exc) 
+        {
+            error = ""+exc; 
+            return null; 
+        }
     }
 
     public void    Dispose()
     {
-        if(rfx != null) rfx.Dispose();
-        if(ftu != null) ftu.Dispose();
-        if(twu != null) twu.Dispose();
-        if(jet != null) jet.Dispose();
-        if(jetmds != null) jetmds.Dispose();
-        if(ts != null) ts.Dispose();
-        if(asd != null) asd.Dispose();
+        Enumeration<MdsDataProvider> en = dataProviderH.elements();
+        while(en.hasMoreElements())
+            en.nextElement().Dispose();
     }
-    public boolean SupportsCompression(){return false;}
-    public void    SetCompression(boolean state){}
-    public boolean SupportsContinuous() { return true; }
     public int     InquireCredentials(JFrame f, DataServerItem server_item)
     {
-        if(rfx != null) rfx.InquireCredentials(f, new DataServerItem("java_user_ext"));
-        return jet.InquireCredentials(f, server_item);
+        return 1;
     }
     public boolean SupportsTunneling() {return false; }
-    public boolean SupportsFastNetwork(){return false;}
-    public void    SetArgument(String arg){}
-
 
     public void SetEnvironment(String exp)
     {
-        error = null;
+        Enumeration<MdsDataProvider> en = dataProviderH.elements();
+        while(en.hasMoreElements())
+        {
+            try {
+                en.nextElement().SetEnvironment(exp);
+            }catch(Exception exc){}
+        }
     }
     public void Update(String exp, long s)
     {
-        if(exp == null) return;
-        if(exp.equals("rfx") && rfx != null)
-            rfx.Update(exp, s);
-        else if(exp.equals("ftu") && ftu != null)
-            ftu.Update(exp, s);
-        else if(exp.equals("twu") && twu != null)
-            twu.Update(exp, s);
-        else if(exp.equals("jet") && jet != null)
-            jet.Update(null, s);
-        else if(exp.equals("jetmds") && jetmds != null)
-            jetmds.Update(null, s);
-        else if(exp.equals("ts") && ts != null)
-            ts.Update(null, s);
-        else if(exp.equals("asd") && asd != null)
-            asd.Update(null, s);
-        error = null;
+        defaultProvider.Update(exp, s);
     }
 
     public String GetString(String in)
     {
-        error = null;
-        return new String(in);
+        try {
+            return defaultProvider.GetString(in);
+        }catch(Exception exc){return null;}
     }
-
     public double GetFloat(String in)
     {
-        error = null;
-        return Double.parseDouble(in);
-    }
+         try {
+            return defaultProvider.GetFloat(in);
+        }catch(Exception exc) 
+        {
+            error = ""+exc; 
+            return 0;
+        }
+   }
 
     public long[] GetShots(String in)
     {
-        long d[] = new long[1];
         try {
-            return rfx.GetShots(in);
-        }catch (Exception exc)
-        {
-            try {
-                StringTokenizer st = new StringTokenizer(in, ":");
-                String shotStr = st.nextToken();
-                d[0] = Long.parseLong(shotStr);
-            }catch(Exception exc1) {d[0] = 0;}
-        }
-        return d;
-    }
+            return defaultProvider.GetShots(in);
+        }catch(Exception exc){error = ""+exc;return null;}
+     }
 
     public String ErrorString()
     {
         return error;
     }
+    
+    
+    
+    
     public void AddUpdateEventListener(UpdateEventListener l, String event) throws IOException
     {
-        if(twu != null) twu.AddUpdateEventListener(l, event);
-        if(rfx != null) rfx.AddUpdateEventListener(l, event);
-        if(ftu != null) ftu.AddUpdateEventListener(l, event);
-        if(jet != null) jet.AddUpdateEventListener(l, event);
-        if(jetmds != null) jetmds.AddUpdateEventListener(l, event);
-        if(ts != null) ts.AddUpdateEventListener(l, event);
-        if(asd != null) asd.AddUpdateEventListener(l, event);
+        defaultProvider.AddUpdateEventListener(l, event);
     }
     public void RemoveUpdateEventListener(UpdateEventListener l, String event)throws IOException
     {
-        if(twu != null) twu.RemoveUpdateEventListener(l, event);
-        if(rfx != null) rfx.RemoveUpdateEventListener(l, event);
-        if(ftu != null) ftu.RemoveUpdateEventListener(l, event);
-        if(jet != null) jet.RemoveUpdateEventListener(l, event);
-        if(jetmds != null) jetmds.RemoveUpdateEventListener(l, event);
-        if(ts != null) ts.RemoveUpdateEventListener(l, event);
-        if(asd != null) asd.RemoveUpdateEventListener(l, event);
-
+        defaultProvider.RemoveUpdateEventListener(l, event);
     }
     public void    AddConnectionListener(ConnectionListener l)
     {
-        if(twu != null) twu.AddConnectionListener(l);
-        if(rfx != null) rfx.AddConnectionListener(l);
-        if(ftu != null) ftu.AddConnectionListener(l);
-        if(jet != null) jet.AddConnectionListener(l);
-        if(jetmds != null) jetmds.AddConnectionListener(l);
-        if(ts != null) ts.AddConnectionListener(l);
-        if(asd != null) asd.AddConnectionListener(l);
+        defaultProvider.AddConnectionListener(l);
     }
     public void    RemoveConnectionListener(ConnectionListener l)
     {
-        if(twu != null) twu.RemoveConnectionListener(l);
-        if(rfx != null) rfx.RemoveConnectionListener(l);
-        if(ftu != null) ftu.RemoveConnectionListener(l);
-        if(jet != null) jet.RemoveConnectionListener(l);
-        if(jetmds != null) jetmds.RemoveConnectionListener(l);
-        if(ts != null) ts.RemoveConnectionListener(l);
-        if(asd != null) asd.RemoveConnectionListener(l);
-
+        defaultProvider.RemoveConnectionListener(l);
     }
 
     public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
@@ -239,11 +224,6 @@ class UniversalDataProvider implements DataProvider
     public byte[] GetFrameAt(String in_expr, int frame_idx)
     {
         return null;
-    }
-
-    public boolean DataPending()
-    {
-        return false;
     }
 
  }

@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 #include <stdlib.h>
 #include <mdsobjects.h>
 
@@ -9,10 +33,10 @@
 #include "testutils/String.h"
 #include "mdsplus/AutoPointer.hpp"
 
+
+
 using namespace MDSplus;
 using namespace testing;
-
-
 
 namespace testing {
 class TestTreeNodePotected : public MDSplus::TreeNode {
@@ -79,28 +103,22 @@ void print_segment_info(TreeNode *node, int segment = -1)
 
 #ifdef _WIN32
 #include <windows.h>
+#define setenv(name,val,extra) _putenv_s(name,val)
 #endif
 
 
 int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 {
+    setenv("t_treenode_path",".",1);
+    setenv("t_treenode2_path",".",1);
+
     BEGIN_TESTING(TreeNode);
 
-
-#ifdef _WIN32
-    _putenv_s("test_tree_path",".");
-    _putenv_s("test_tree2_path",".");
-#else
-    setenv("test_tree_path",".",1);
-    setenv("test_tree2_path",".",1);
-#endif
-
-
-    unique_ptr<Tree> tree = new Tree("test_tree",-1,"NEW");
-    unique_ptr<Tree> tree2 = new Tree("test_tree2",-1,"NEW");
+    unique_ptr<Tree> tree = new Tree("T_TREENODE",-1,"NEW");
+    unique_ptr<Tree> tree2 = new Tree("T_TREENODE2",-1,"NEW");
 
     unique_ptr<TreeNode> node2 = tree2->addNode("test_node","ANY");
-    unique_ptr<TreeNode> subtree = tree->addNode("tree2","SUBTREE");
+    unique_ptr<TreeNode> subtree = tree->addNode("T_TREENODE2","SUBTREE");
     unique_ptr<TreeNode> node = tree->addNode("test_node","ANY");
     unique_ptr<TreeNode> node_child = tree->addNode("test_node:node_child","ANY");
 
@@ -135,7 +153,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
         unique_ptr<TreeNode> node = tree->getNode("test_node");
         std::stringstream ss;
         ss << (TreeNode*)node;
-        TEST1( ss.str() == "\\TEST_TREE::TOP:TEST_NODE");
+        TEST1( ss.str() == "\\T_TREENODE::TOP:TEST_NODE");
     }
 
 
@@ -156,12 +174,12 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
         node->setTree(tree);
 
         // getPath()
-        TEST1( AutoString(node->getPath()).string ==  "\\TEST_TREE::TOP:TEST_NODE" );
-        TEST1( AutoString(node_child->getPath()).string ==  "\\TEST_TREE::TOP:TEST_NODE:NODE_CHILD" );
+        TEST1( AutoString(node->getPath()).string ==  "\\T_TREENODE::TOP:TEST_NODE" );
+        TEST1( AutoString(node_child->getPath()).string ==  "\\T_TREENODE::TOP:TEST_NODE:NODE_CHILD" );
 
         // getPathStr()
-        TEST1( node->getPathStr() ==  "\\TEST_TREE::TOP:TEST_NODE" );
-        TEST1( node_child->getPathStr() ==  "\\TEST_TREE::TOP:TEST_NODE:NODE_CHILD" );
+        TEST1( node->getPathStr() ==  "\\T_TREENODE::TOP:TEST_NODE" );
+        TEST1( node_child->getPathStr() ==  "\\T_TREENODE::TOP:TEST_NODE:NODE_CHILD" );
 
         // getMinPath()
         TEST1( AutoString(node->getMinPath()).string == "TEST_NODE" );
@@ -172,12 +190,12 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
         TEST1( node_child->getMinPathStr() == "TEST_NODE:NODE_CHILD" );
 
         // getFullPath()
-        TEST1( AutoString(node->getFullPath()).string ==  "\\TEST_TREE::TOP:TEST_NODE" );
-        TEST1( AutoString(node_child->getFullPath()).string ==  "\\TEST_TREE::TOP:TEST_NODE:NODE_CHILD" );
+        TEST1( AutoString(node->getFullPath()).string ==  "\\T_TREENODE::TOP:TEST_NODE" );
+        TEST1( AutoString(node_child->getFullPath()).string ==  "\\T_TREENODE::TOP:TEST_NODE:NODE_CHILD" );
 
         // getFullPathStr()
-        TEST1( node->getFullPathStr() ==  "\\TEST_TREE::TOP:TEST_NODE" );
-        TEST1( node_child->getFullPathStr() ==  "\\TEST_TREE::TOP:TEST_NODE:NODE_CHILD" );
+        TEST1( node->getFullPathStr() ==  "\\T_TREENODE::TOP:TEST_NODE" );
+        TEST1( node_child->getFullPathStr() ==  "\\T_TREENODE::TOP:TEST_NODE:NODE_CHILD" );
 
         // getNodeName()
         TEST1( AutoString(node->getNodeName()).string == "TEST_NODE" );
@@ -430,7 +448,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
         tree->createPulse(1);
         tree->edit(true);
 
-        unique_ptr<Tree> shot = new Tree("test_tree",1);
+        unique_ptr<Tree> shot = new Tree("T_TREENODE",1);
         unique_ptr<TreeNode> shot_node = shot->getNode("test_flags");
 
 
@@ -494,7 +512,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
         //        tree->edit(false);
         //        tree->createPulse(2);
         //        tree->edit(true);
-        //        shot = new Tree("test_tree",2);
+        //        shot = new Tree("T_TREENODE",2);
         //        TEST1( node->isIncludedInPulse() );
         //        TEST_EXCEPTION( unique_ptr<Data>(unique_ptr<TreeNode>(shot->getNode("no_in_pulse"))->getData()), MdsException );
 
@@ -598,7 +616,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
         }
 
         { // getSegment
-            unique_ptr<Array> data = node->getSegment(0);
+            unique_ptr<Array> data = node->getSegment(1);
             int num_elements;
             AutoArray<int> elements(data->getIntArray(&num_elements));
             TEST1( num_elements == 10 );
@@ -798,12 +816,12 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 
         // addNode with relative path //
         unique_ptr<TreeNode> n2 = n1->addNode("n2","ANY");
-        TestNode(n2.base())("n2", "ANY", "n1", "test_tree");
+        TestNode(n2.base())("n2", "ANY", "n1", "T_TREENODE");
 
 
         // addNode with absolute path //
         unique_ptr<TreeNode> n3 = n1->addNode("\\top.test_edit:n3","ANY");
-        TestNode(n3.base())("n3", "ANY", "test_edit", "test_tree");
+        TestNode(n3.base())("n3", "ANY", "test_edit", "T_TREENODE");
 
         // remove relative path //
         n1->remove("n2");
@@ -818,7 +836,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
         TEST1(unique_ptr<TreeNode>(n1->getParent())->getNodeNameStr() == "TOP");
 
         n1->rename("\\top.test_edit:parent");
-        TestNode(n1.base())( "parent", "ANY", "test_edit", "test_tree");
+        TestNode(n1.base())( "parent", "ANY", "test_edit", "T_TREENODE");
 
         n2 = n1->addNode("subnode","ANY");
         n3 = n2->addNode("child","ANY");
@@ -846,23 +864,17 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 
     BEGIN_TESTING(TreeNode-Tree reference);
 
-#   ifdef _WIN32
-    _putenv_s("test_node_path",".");
-#   else
-    setenv("test_node_path",".",1);
-#   endif
-
-    Tree *tree = new Tree("test_node", -1, "NEW");
+    Tree *tree = new Tree("t_treenode", -1, "NEW");
     TreeNode *n = tree->addNode(":DATA", "NUMERIC");
     delete n;
     tree->write();
     delete tree;
-    tree = new Tree("test_node", -1);
+    tree = new Tree("t_treenode", -1);
     tree->createPulse(1);
     tree->createPulse(2);
     delete tree;
-    tree = new Tree("test_node", 1);
-    Tree *tree1 = new Tree("test_node", 2);
+    tree = new Tree("t_treenode", 1);
+    Tree *tree1 = new Tree("t_treenode", 2);
     n = tree->getNode(":DATA");
     Data *d = new Int32(1);
     Data *d1 = new Int32(2);

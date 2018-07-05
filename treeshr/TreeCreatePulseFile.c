@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*------------------------------------------------------------------------------
 
 		Name:   TreeCreatePulseFile
@@ -150,7 +174,7 @@ int TreeCreateTreeFiles(char *tree, int shot, int source_shot)
   int itype;
   char *types[] = { ".tree", ".characteristics", ".datafile" };
   for (i = 0; i < len && i < 12; i++)
-    tree_lower[i] = tolower(tree[i]);
+    tree_lower[i] = (char)tolower(tree[i]);
   tree_lower[i] = 0;
   strcpy(pathname, tree_lower);
   strcat(pathname, TREE_PATH_SUFFIX);
@@ -272,7 +296,7 @@ STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it)
     if ((dst_fd != -1) && (src_len != -1)) {
       MDS_IO_LSEEK(src_fd, 0, SEEK_SET);
       if (lock_it)
-	MDS_IO_LOCK(src_fd, 0, (int)src_len, MDS_IO_LOCK_RD, 0);
+	MDS_IO_LOCK(src_fd, 0, (size_t)src_len, MDS_IO_LOCK_RD, 0);
       if (src_len > 0) {
 	size_t chunk_size = (size_t) (MIN(MAX_CHUNK, src_len));
 	void *buff = malloc(chunk_size);
@@ -294,7 +318,7 @@ STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it)
       } else
 	status = TreeSUCCESS;
       if (lock_it)
-	MDS_IO_LOCK(src_fd, 0, (int)src_len, MDS_IO_LOCK_NONE, 0);
+	MDS_IO_LOCK(src_fd, 0, (size_t)src_len, MDS_IO_LOCK_NONE, 0);
       MDS_IO_CLOSE(dst_fd);
     } else
       status = TreeFCREATE;

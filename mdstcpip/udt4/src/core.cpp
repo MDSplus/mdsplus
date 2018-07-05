@@ -51,9 +51,6 @@ written by
    #ifdef LEGACY_WIN32
       #include <wspiapi.h>
    #endif
-   #ifdef __MINGW64__
-      #include <pthread.h>
-   #endif
 #endif
 #include <cmath>
 #include <sstream>
@@ -134,6 +131,7 @@ CUDT::CUDT()
    m_bBroken = false;
    m_bPeerHealth = true;
    m_ullLingerExpiration = 0;
+   m_llLastReqTime = 0;
 }
 
 CUDT::CUDT(const CUDT& ancestor)
@@ -525,7 +523,7 @@ void CUDT::open()
 
    // set up the timers
    m_ullSYNInt = m_iSYNInterval * m_ullCPUFrequency;
-  
+
    // set minimum NAK and EXP timeout to 100ms
    m_ullMinNakInt = 300000 * m_ullCPUFrequency;
    m_ullMinExpInt = 300000 * m_ullCPUFrequency;
@@ -1044,7 +1042,7 @@ int CUDT::send(const char* data, int len)
       else
       {
          // wait here during a blocking sending
-         #if !defined WIN32 || defined __MINGW64__
+         #ifndef WIN32
             pthread_mutex_lock(&m_SendBlockLock);
             if (m_iSndTimeOut < 0) 
             { 
@@ -1144,7 +1142,7 @@ int CUDT::recv(char* data, int len)
          throw CUDTException(6, 2, 0);
       else
       {
-         #if !defined WIN32 || defined __MINGW64__
+         #ifndef WIN32
             pthread_mutex_lock(&m_RecvDataLock);
             if (m_iRcvTimeOut < 0) 
             { 
@@ -1243,7 +1241,7 @@ int CUDT::sendmsg(const char* data, int len, int msttl, bool inorder)
       else
       {
          // wait here during a blocking sending
-         #if !defined WIN32 || defined __MINGW64__
+         #ifndef WIN32
             pthread_mutex_lock(&m_SendBlockLock);
             if (m_iSndTimeOut < 0)
             {
@@ -1356,7 +1354,7 @@ int CUDT::recvmsg(char* data, int len)
 
    do
    {
-      #if !defined WIN32 || defined __MINGW64__
+      #ifndef WIN32
          pthread_mutex_lock(&m_RecvDataLock);
 
          if (m_iRcvTimeOut < 0)
@@ -1458,7 +1456,7 @@ int64_t CUDT::sendfile(fstream& ifs, int64_t& offset, int64_t size, int block)
 
       unitsize = int((tosend >= block) ? block : tosend);
 
-      #if !defined WIN32 || defined __MINGW64__
+      #ifndef WIN32
          pthread_mutex_lock(&m_SendBlockLock);
          while (!m_bBroken && m_bConnected && !m_bClosing && (m_iSndBufSize <= m_pSndBuffer->getCurrBufSize()) && m_bPeerHealth)
             pthread_cond_wait(&m_SendBlockCond, &m_SendBlockLock);
@@ -1545,7 +1543,7 @@ int64_t CUDT::recvfile(fstream& ofs, int64_t& offset, int64_t size, int block)
          throw CUDTException(4, 4);
       }
 
-      #if !defined WIN32 || defined __MINGW64__
+      #ifndef WIN32
          pthread_mutex_lock(&m_RecvDataLock);
          while (!m_bBroken && m_bConnected && !m_bClosing && (0 == m_pRcvBuffer->getRcvDataSize()))
             pthread_cond_wait(&m_RecvDataCond, &m_RecvDataLock);
@@ -1623,7 +1621,7 @@ void CUDT::sample(CPerfMon* perf, bool clear)
    perf->msRTT = m_iRTT/1000.0;
    perf->mbpsBandwidth = m_iBandwidth * m_iPayloadSize * 8.0 / 1000000.0;
 
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       if (0 == pthread_mutex_trylock(&m_ConnectionLock))
    #else
       if (WAIT_OBJECT_0 == WaitForSingleObject(m_ConnectionLock, 0))
@@ -1632,7 +1630,7 @@ void CUDT::sample(CPerfMon* perf, bool clear)
       perf->byteAvailSndBuf = (NULL == m_pSndBuffer) ? 0 : (m_iSndBufSize - m_pSndBuffer->getCurrBufSize()) * m_iMSS;
       perf->byteAvailRcvBuf = (NULL == m_pRcvBuffer) ? 0 : m_pRcvBuffer->getAvailBufSize() * m_iMSS;
 
-      #if !defined WIN32 || defined __MINGW64__
+      #ifndef WIN32
          pthread_mutex_unlock(&m_ConnectionLock);
       #else
          ReleaseMutex(m_ConnectionLock);
@@ -1666,7 +1664,7 @@ void CUDT::CCUpdate()
 
 void CUDT::initSynch()
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_init(&m_SendBlockLock, NULL);
       pthread_cond_init(&m_SendBlockCond, NULL);
       pthread_mutex_init(&m_RecvDataLock, NULL);
@@ -1689,7 +1687,7 @@ void CUDT::initSynch()
 
 void CUDT::destroySynch()
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       pthread_mutex_destroy(&m_SendBlockLock);
       pthread_cond_destroy(&m_SendBlockCond);
       pthread_mutex_destroy(&m_RecvDataLock);
@@ -1712,7 +1710,7 @@ void CUDT::destroySynch()
 
 void CUDT::releaseSynch()
 {
-   #if !defined WIN32 || defined __MINGW64__
+   #ifndef WIN32
       // wake up user calls
       pthread_mutex_lock(&m_SendBlockLock);
       pthread_cond_signal(&m_SendBlockCond);
@@ -1781,7 +1779,7 @@ void CUDT::sendCtrl(int pkttype, void* lparam, void* rparam, int size)
          m_pRcvBuffer->ackData(acksize);
 
          // signal a waiting "recv" call if there is any data available
-         #if !defined WIN32 || defined __MINGW64__
+         #ifndef WIN32
             pthread_mutex_lock(&m_RecvDataLock);
             if (m_bSynRecving)
                pthread_cond_signal(&m_RecvDataCond);
@@ -2038,7 +2036,7 @@ void CUDT::processCtrl(CPacket& ctrlpkt)
 
       CGuard::leaveCS(m_AckLock);
 
-      #if !defined WIN32 || defined __MINGW64__
+      #ifndef WIN32
          pthread_mutex_lock(&m_SendBlockLock);
          if (m_bSynSending)
             pthread_cond_signal(&m_SendBlockCond);

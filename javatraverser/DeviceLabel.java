@@ -1,11 +1,13 @@
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.FontMetrics;
 
-public class DeviceLabel
-    extends DeviceComponent
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+public class DeviceLabel extends DeviceComponent
 {
   Data data;
   public boolean textOnly = false;
@@ -13,7 +15,6 @@ public class DeviceLabel
   public boolean displayEvaluated = false;
   public String labelString = "<empty>";
   public int numCols = 10;
-  private boolean initial_state;
   protected boolean initializing = false;
 //  GridBagLayout gridbag;
   protected int preferredWidth = -1;
@@ -131,7 +132,6 @@ public class DeviceLabel
   protected void initializeData(Data data, boolean is_on)
   {
     initializing = true;
-    initial_state = is_on;
 
     //initialField =  Tree.dataToString(data);
 
@@ -265,7 +265,6 @@ public class DeviceLabel
   protected void displayData(Data data, boolean is_on)
   {
     this.data = data;
-    initial_state = is_on;
     /*
     if (showState)
       checkB.setSelected(is_on);

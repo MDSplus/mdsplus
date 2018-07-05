@@ -1,5 +1,31 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+#define LOAD_INITIALIZESOCKETS
+#include <pthread_port.h>
 #include <stdlib.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <process.h>
 #include <stdio.h>
 #include <io.h>
@@ -182,20 +208,6 @@ static int InstallService()
   return status;
 }
 
-static void InitializeSockets()
-{
-#ifdef _WIN32
-  static int initialized = 0;
-  if (!initialized) {
-    WSADATA wsaData;
-    WORD wVersionRequested;
-    wVersionRequested = MAKEWORD(1, 1);
-    WSAStartup(wVersionRequested, &wsaData);
-    initialized = 1;
-  }
-#endif
-}
-
 static short GetPort()
 {
   short port;
@@ -272,8 +284,7 @@ static int ServiceMain(int argc, char **argv)
     FD_ZERO(&fdactive);
     FD_SET(s, &fdactive);
     for (readfds = fdactive; !shut; readfds = fdactive) {
-      int sstatus;
-      if ((sstatus = select(tablesize, &readfds, 0, 0, &timeout)) != SOCKET_ERROR) {
+      if (select(tablesize, &readfds, 0, 0, &timeout) != SOCKET_ERROR) {
 	error_count = 0;
 	if (FD_ISSET(s, &readfds)) {
 	  int len = sizeof(struct sockaddr_in);
@@ -321,7 +332,7 @@ int main(int argc, char **argv)
     SERVICE_TABLE_ENTRY srvcTable[] = { {ServiceName(1), (LPSERVICE_MAIN_FUNCTION) ServiceMain}
     , {NULL, NULL}
     };
-    InitializeSockets();
+    INITIALIZESOCKETS;
     StartServiceCtrlDispatcher(srvcTable);
   }
   return 1;

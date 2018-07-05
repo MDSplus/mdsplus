@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 // CamFunctions.c ala Cam_...()
 //-------------------------------------------------------------------------
 //      Stuart Sherman
@@ -468,7 +492,7 @@ CallSingleIo(Piow, QIgnore)	// yields: int = CamPiow( ... )
 static int SingleIo(CamKey Key,
 		    BYTE A, BYTE F, BYTE * Data, BYTE Mem, TranslatedIosb * iosb, int dmode)
 {
-  char tmp[7];
+  char tmp[9];
   int highwayType, status;
 
   if (MSGLVL(FUNCTION_NAME))
@@ -552,7 +576,7 @@ static int MultiIo(CamKey Key,
 		   BYTE F,
 		   int Count, BYTE * Data, BYTE Mem, TranslatedIosb * iosb, int dmode, int Enhanced)
 {
-  char tmp[7];
+  char tmp[10];
   int highwayType, mode, status;
 
   if (MSGLVL(FUNCTION_NAME))
@@ -645,7 +669,7 @@ static int JorwayDoIo(CamKey Key,
 		      int Count,
 		      BYTE * Data, BYTE Mem, TranslatedIosb * iosb, int dmode, int Enhanced)
 {
-  char dev_name[7];
+  char dev_name[12];
   int IsDataCommand, scsiDevice;
   int status;
   unsigned char *cmd = 0;
@@ -757,7 +781,7 @@ static int Jorway73ADoIo(CamKey Key,
 			 int Count,
 			 BYTE * Data, BYTE Mem, TranslatedIosb * iosb, int dmode, int Enhanced __attribute__ ((unused)))
 {
-  char dev_name[7];
+  char dev_name[12];
   int IsDataCommand, scsiDevice;
   int status;
   unsigned char *cmd = 0;
@@ -1255,7 +1279,7 @@ EXPORT int CamSetMAXBUF(char *Name, int new)
     CamKey Key;
     int status = CamAssign(Name, &Key);
     if (status & 1) {
-      char dev_name[7];
+      char dev_name[12];
       sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address, Key.crate);
       if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0) {
 	return -1;
@@ -1277,7 +1301,7 @@ EXPORT int CamGetMAXBUF(char *Name)
     CamKey Key;
     int status = CamAssign(Name, &Key);
     if (status & 1) {
-      char dev_name[7];
+      char dev_name[12];
     sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address, Key.crate);
     if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0) {
       return -1;

@@ -1,7 +1,7 @@
 #ifndef _TREESHRP_H
 #define _TREESHRP_H
 
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -154,17 +154,17 @@ typedef struct named_attributes_index {
                            (outp)[6] = ((char *)&in)[1]; (outp)[7] = ((char *)&in)[0]
 #else
 
-static inline int64_t swapquad(void *buf) {
+static inline int64_t swapquad(const void *buf) {
   int64_t ans;
   memcpy(&ans,buf,sizeof(ans));
   return ans;
 }
-static inline int32_t swapint(void *buf) {
+static inline int32_t swapint(const void *buf) {
   int32_t ans;
   memcpy(&ans,buf,sizeof(ans));
   return ans;
 }
-static inline int16_t swapshort(void *buf) {
+static inline int16_t swapshort(const void *buf) {
   int16_t ans;
   memcpy(&ans,buf,sizeof(ans));
   return ans;
@@ -179,8 +179,9 @@ static inline int16_t swapshort(void *buf) {
                            (outp)[6] = ((char *)&in)[6]; (outp)[7] = ((char *)&in)[7]
 #endif
 
-#define bitassign(bool,value,mask) value = (bool) ? (value) | (mask) : (value) & ~(mask)
-#define bitassign_c(bool,value,mask) value = (char)((bool) ? (value) | (mask) : (value) & ~(mask))
+#define bitassign(bool,value,mask)   value = (bool) ? (value) | (unsigned)(mask) : (value) & ~(unsigned)(mask)
+#define bitassign_c(bool,value,mask) value = (unsigned char)(( (bool) ? (value) |  (unsigned)(mask) : (value) & ~(unsigned)(mask) )&0xFF)
+
 
 /*****************************************
   NID
@@ -193,13 +194,13 @@ can be passed between processes.
 
 #ifdef WORDS_BIGENDIAN
 typedef struct nid {
-  unsigned tree:8;
-  unsigned node:24;
+  unsigned int tree:8;
+  unsigned int  node:24;
 } NID;
 #else
 typedef struct nid {
-  unsigned node:24;		/* Node offset of root node of tree this node belongs to */
-  unsigned tree:8;		/* Level of tree in chained tree_info blocks 0=main tree */
+  unsigned int node:24;		/* Node offset of root node of tree this node belongs to */
+  unsigned int tree:8;		/* Level of tree in chained tree_info blocks 0=main tree */
 } NID;
 #endif
 
@@ -227,7 +228,7 @@ PACK_START
  -sizeof(NODE). To connect to the following
  node it should be set to sizeof(NODE) etc.
 *********************************************/
-    typedef struct node {
+typedef struct node {
   NODE_NAME name;
   int parent;
   int member;
@@ -236,7 +237,7 @@ PACK_START
   unsigned char usage;
   unsigned short conglomerate_elt PACK_ATTR;
   char fill;
-  unsigned int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
+  int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
 } NODE;
 
 #ifdef EMPTY_NODE
@@ -248,8 +249,8 @@ static inline int node_offset(NODE * a, NODE * b)
 {
   /* Returns byte offset of two nodes if both pointers are not NULL otherwise 0 */
   int ans = 0;
-  if ((a != 0) && (b != 0)) {
-    ans = (char *)a - (char *)b;
+  if (a && b) {
+    ans = (int)((char *)a - (char *)b);
     ans = swapint((char *)&ans);
   }
   return ans;
@@ -337,46 +338,43 @@ typedef struct record_header {
 #else
 PACK_STOP
 #endif
-/*****************************************************
-  Search structures
-*****************************************************/
-#define MAX_SEARCH_LEVELS 32
-    typedef enum search_type {
-  NONE,
-  MEMBER_START,
-  BROTHER_START,
-  SON_BROTHER_TYPE,
-  SON_MEMBER_BROTHER_TYPE,
-  TAG_TYPE,
-  ANCESTOR_TYPE,
-  PARENT_TYPE,
-  BROTHER_TYPE,
-  BROTHER_TYPE_NOWILD,
-  TAG_TREE_TYPE,
-  MEMBER_TYPE,
-  MEMBER_TYPE_NOWILD,
-  ASTASTAST_TYPE,
-  SON_MEMBER_TYPE,
-  SON_MEMBER_TYPE_NOWILD,
-  EOL
-} SEARCH_TYPE;
 
+/*****************************************************
+*     New Search structures
+*****************************************************/
+  typedef enum yytokentype
+  {
+    TAG_TREE = 258,
+    TAG = 259,
+    CHILD = 260,
+    MEMBER = 261,
+    CHILD_OR_MEMBER = 262,
+    ANCESTOR = 263,
+    ANCESTOR_SEARCH = 264,
+    CHILD_SEARCH = 265,
+    MEMBER_SEARCH = 266,
+    CHILD_OR_MEMBER_SEARCH = 267,
+    PARENT = 268,
+    EOLL = 269
+} YYTOKENTYPE;
+
+typedef struct _st {
+  int search_type;
+  char *term;
+  struct _st *next;
+  NODE *start_node;
+} SEARCH_TERM;
 typedef struct node_list {
   NODE *node;
   struct node_list *next;
 } NODELIST;
 
-typedef struct search_context {
-  int level;
-  SEARCH_TYPE type;
-  char *string;
-  short len;
-  char *tag_tree_name;
-  short tag_tree_name_len;
-  NODE *node;
-  NODE *stop;
-  NODELIST *stack;
-} SEARCH_CONTEXT;
+typedef struct {
+  SEARCH_TERM *terms;
+  char *wildcard;
+  NODE *default_node;
+  NODELIST *answers;
+} SEARCH_CTX;
 
 /********************************************
    TREE_EDIT
@@ -416,7 +414,7 @@ Contains definitions of all structures used
 in doing I/O to the tree files.
 ********************************************/
 
-#define DATAF_C_MAX_RECORD_SIZE 32765 - sizeof(RECORD_HEADER)
+#define DATAF_C_MAX_RECORD_SIZE (32765u - sizeof(RECORD_HEADER))
 
 #define TREE_DATAFILE_TYPE ".datafile"
 #define TREE_NCIFILE_TYPE  ".characteristics"
@@ -511,6 +509,12 @@ always passed as an argument to tree traversal
 routines.
 *********************************************/
 
+typedef struct _timecontext_t{
+struct descriptor_xd start;
+struct descriptor_xd end;
+struct descriptor_xd delta;
+} timecontext_t;
+
 typedef struct pino_database {
   TREE_INFO *tree_info;		/* Pointer to main tree info block */
   NODE *default_node;		/* Pointer to current default node */
@@ -528,6 +532,9 @@ typedef struct pino_database {
   struct pino_database *next;	/* Link to next database in open list */
 
   int stack_size;
+  timecontext_t timecontext;
+  int delete_list_vm;
+  unsigned char* delete_list;
 } PINO_DATABASE;
 
 static inline NODE *nid_to_node(PINO_DATABASE * dbid, NID * nid)
@@ -560,7 +567,13 @@ static inline NODE *member_of(NODE * a)
   }
   return ans;
 }
-
+/*
+ * Note in certain edit operations dbid is passed as 0, 
+ * which would cause nid_to_node(dbid)  to fail
+ *
+ * however, when editing, the usage of the nde will never be
+ * TreeUSAGE_SUBTREE_REF, so it will never call nid_to_node
+ */
 static inline NODE *child_of(PINO_DATABASE * dbid, NODE * a)
 {
   NODE *ans = 0;
@@ -593,6 +606,29 @@ static inline NODE *brother_of(PINO_DATABASE * dbid, NODE * a)
   return ans;
 }
 
+static inline NODE *descendant_of(PINO_DATABASE *dbid, NODE *a)
+{
+  NODE *answer = member_of(a);
+  return (answer)? answer : child_of(dbid, a);
+}
+
+static inline int is_member(PINO_DATABASE * dblist, NODE * node)
+{
+  NODE *n = 0;
+  if (parent_of(dblist, node))
+    for (n = member_of(parent_of(dblist, node)); n && n != node; n = brother_of(dblist, n)) ;
+  return n == node;
+}
+
+static inline NODE *sibling_of(PINO_DATABASE *dbid, NODE *a)
+{
+  NODE *answer = brother_of(dbid, a);
+  if (! answer) 
+    if (is_member(dbid, a))
+      answer = child_of(dbid, parent_of(dbid, a));
+  return answer;
+}
+ 
 /******************************************
 Two macros are provided for converting from
 a NID to a node address or from a node
@@ -625,7 +661,7 @@ static inline int node_to_nid(PINO_DATABASE * dbid, NODE * node, NID * nid_out)
       break;
   }
   if (info)
-    nid.node = (int)(node - info->node);
+    nid.node = (unsigned int)((node - info->node)&0xFFFFFF);
   else
     nid.tree = 0;
   if (nid_out)
@@ -639,29 +675,22 @@ Another useful macro based on nid:
 nid_to_tree_nidx(pino, nid, info, nidx)
 *******************************************/
 
-#define nid_to_tree_nidx(pino, nid, info, nidx) \
-    {\
-      unsigned int nid_to_tree_nidx__i;\
-      info = pino->tree_info;\
-      for (nid_to_tree_nidx__i=0; info ? nid_to_tree_nidx__i < nid->tree : 0; nid_to_tree_nidx__i++) \
-               info = info->next_info; \
-      info = info ? (info->header->nodes >= (int)nid->node ? info : 0) : 0; \
-      nidx = info ? nid->node : 0; \
-    }
+#define nid_to_tree_nidx(pino, nid, info, nidx) nidx = nid_to_tree_idx(pino,nid,&info)
+static inline int nid_to_tree_idx(PINO_DATABASE* pino,NID* nid,TREE_INFO** info_out) {
+  unsigned int i;
+  TREE_INFO* info = pino->tree_info;
+  for (i=0; info && i < nid->tree; i++)
+    info = info->next_info;
+  *info_out = info ? (info->header->nodes >= (int)nid->node ? info : 0) : NULL;
+  return *info_out ? nid->node : 0;
+}
 /******************************************
 Another useful macro based on nid:
 
 nid_to_tree(pino, nid, info)
 *******************************************/
 
-#define nid_to_tree(pino, nid, info) \
-    {\
-      unsigned int nid_to_tree_nidx__i;\
-      info = pino->tree_info;\
-      for (nid_to_tree_nidx__i=0; info ? nid_to_tree_nidx__i < nid->tree : 0; nid_to_tree_nidx__i++) \
-               info = info->next_info; \
-      info = info ? (info->header->nodes >= (int)nid->node ? info : 0) : 0; \
-    }
+#define nid_to_tree(pino, nid, info) nid_to_tree_idx(pino,nid,&info)
 
 /****************************
 Macro's for checking access
@@ -713,7 +742,7 @@ extern int TreeCloseFiles(TREE_INFO * info, int nci, int data);
 extern int TreeCopyExtended(PINO_DATABASE * dbid1, PINO_DATABASE * dbid2, int nid, NCI * nci, int compress);
 extern int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes);
 extern int TreeFindParent(PINO_DATABASE * dblist, char *path_ptr, NODE ** node_ptrptr,
-			  char **namedsc_ptr, SEARCH_TYPE * type_ptr);
+                          char **namedsc_ptr, int *chid);
 extern int TreeGetNciW(TREE_INFO * info, int node_number, NCI * nci, unsigned int version);
 extern int TreeGetNciLw(TREE_INFO * info, int node_number, NCI * nci);
 extern int TreeInsertChild(NODE * parent_ptr, NODE * child_ptr, int sort);
@@ -731,7 +760,7 @@ extern void _TreeDeleteNodesDiscard(void *dbid);
 extern int TreeGetDatafile(TREE_INFO * info_ptr, unsigned char *rfa, int *buffer_size, char *record,
 			   int *retsize, int *nodenum, unsigned char flags);
 extern int TreeEstablishRundownEvent(TREE_INFO * info);
-extern int TreeGetDsc(TREE_INFO * info, int nid, int64_t offset, int length,
+extern int TreeGetDsc(TREE_INFO * info, const int nid, const int64_t offset, const int length,
 		      struct descriptor_xd *dsc);
 extern int TreeGetExtendedAttributes(TREE_INFO * info_ptr, int64_t offset,
 				     EXTENDED_ATTRIBUTES * att);

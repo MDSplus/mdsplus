@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 #include "mdsip_connections.h"
 #include <STATICdef.h>
 #include <signal.h>
@@ -6,6 +30,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
+#include <status.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -16,13 +41,18 @@
 #include <sys/wait.h>
 #endif
 
-static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait);
-static ssize_t tunnel_recv(int id, void *buffer, size_t len);
-static int tunnel_disconnect(int id);
-static int tunnel_connect(int id, char *protocol, char *host);
+static ssize_t tunnel_send(Connection* c, const void *buffer, size_t buflen, int nowait);
+static ssize_t tunnel_recv(Connection* c, void *buffer, size_t len);
+#ifdef _WIN32
+#define tunnel_recv_to NULL
+#else
+static ssize_t tunnel_recv_to(Connection* c, void *buffer, size_t len, int to_msec);
+#endif
+static int tunnel_disconnect(Connection* c);
+static int tunnel_connect(Connection* c, char *protocol, char *host);
 static int tunnel_listen(int argc, char **argv);
 static IoRoutines tunnel_routines =
-    { tunnel_connect, tunnel_send, tunnel_recv, 0, tunnel_listen, 0, 0, tunnel_disconnect };
+    { tunnel_connect, tunnel_send, tunnel_recv, NULL, tunnel_listen, NULL, NULL, tunnel_disconnect, tunnel_recv_to};
 
 EXPORT IoRoutines *Io()
 {
@@ -42,42 +72,42 @@ struct TUNNEL_PIPES {
 };
 #endif
 
-static struct TUNNEL_PIPES *getTunnelPipes(int id)
+static struct TUNNEL_PIPES *getTunnelPipes(Connection* c)
 {
   size_t len;
   char *info_name;
-  struct TUNNEL_PIPES *p = (struct TUNNEL_PIPES *)GetConnectionInfo(id, &info_name, 0, &len);
+  struct TUNNEL_PIPES *p = (struct TUNNEL_PIPES *)GetConnectionInfoC(c, &info_name, 0, &len);
 
   return (info_name && strcmp("tunnel", info_name) == 0
 	  && len == sizeof(struct TUNNEL_PIPES)) ? p : 0;
 }
 
 #ifdef _WIN32
-static int tunnel_disconnect(int id)
+static int tunnel_disconnect(Connection* c)
 {
-  struct TUNNEL_PIPES *p = getTunnelPipes(id);
+  struct TUNNEL_PIPES *p = getTunnelPipes(c);
   if (p) {
     CloseHandle(p->stdin_pipe);
     CloseHandle(p->stdout_pipe);
   }
-  return 0;
+  return C_OK;
 }
 #else
-static int tunnel_disconnect(int id)
+static int tunnel_disconnect(Connection* c)
 {
-  struct TUNNEL_PIPES *p = getTunnelPipes(id);
+  struct TUNNEL_PIPES *p = getTunnelPipes(c);
   if (p) {
     kill(p->pid, SIGTERM);
     waitpid(p->pid, NULL, WNOHANG);
     close(p->stdin_pipe);
     close(p->stdout_pipe);
   }
-  return 0;
+  return C_OK;
 }
 #endif
 
-static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait __attribute__ ((unused))){
-  struct TUNNEL_PIPES *p = getTunnelPipes(id);
+static ssize_t tunnel_send(Connection* c, const void *buffer, size_t buflen, int nowait __attribute__ ((unused))){
+  struct TUNNEL_PIPES *p = getTunnelPipes(c);
 #ifdef _WIN32
   ssize_t num = 0;
   return (p && WriteFile(p->stdin_pipe, buffer, buflen, (DWORD *)&num, NULL)) ? num : -1;
@@ -86,8 +116,8 @@ static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait
 #endif
 }
 
-static ssize_t tunnel_recv(int id, void *buffer, size_t buflen){
-  struct TUNNEL_PIPES *p = getTunnelPipes(id);
+static ssize_t tunnel_recv(Connection* c, void *buffer, size_t buflen){
+  struct TUNNEL_PIPES *p = getTunnelPipes(c);
 #ifdef _WIN32
   ssize_t num = 0;
   return (p && ReadFile(p->stdout_pipe, buffer, buflen, (DWORD *)&num, NULL)) ? num : -1;
@@ -97,8 +127,28 @@ static ssize_t tunnel_recv(int id, void *buffer, size_t buflen){
 }
 
 #ifndef _WIN32
+static ssize_t tunnel_recv_to(Connection* c, void *buffer, size_t buflen, int to_msec){
+  struct TUNNEL_PIPES *p = getTunnelPipes(c);
+  if (!p) return -1;
+  if (to_msec>=0) { // don't tiime out if to_msec < 0
+    struct timeval timeout;
+    timeout.tv_sec = (to_msec/1000);
+    timeout.tv_usec = to_msec % 1000;
+    fd_set set;
+    FD_ZERO(&set); /* clear the set */
+    FD_SET(p->stdout_pipe, &set); /* add our file descriptor to the set */
+    int rv = select(p->stdout_pipe + 1, &set, NULL, NULL, &timeout);
+    if (rv<=0) return rv;
+  }
+  return read(p->stdout_pipe, buffer, buflen);
+}
+#endif
+
+#ifndef _WIN32
 static void ChildSignalHandler(int num __attribute__ ((unused)))
 {
+  // Ensure that the handler does not spoil errno.
+  int saved_errno = errno;
   sigset_t set, oldset;
   pid_t pid;
   int status;
@@ -112,8 +162,8 @@ static void ChildSignalHandler(int num __attribute__ ((unused)))
     int id;
     char *info_name;
     void *info;
-    size_t info_len;
-    while ((id = NextConnection(&ctx, &info_name, &info, &info_len)) != -1) {
+    size_t info_len = 0;
+    while ((id = NextConnection(&ctx, &info_name, &info, &info_len)) != INVALID_CONNECTION_ID) {
       if (info_name && strcmp(info_name, "tunnel") == 0
 	  && ((struct TUNNEL_PIPES *)info)->pid == pid) {
 	DisconnectConnection(id);
@@ -127,10 +177,11 @@ static void ChildSignalHandler(int num __attribute__ ((unused)))
     sigaddset(&set, SIGCHLD);
     sigprocmask(SIG_UNBLOCK, &set, &oldset);
   }
+  errno = saved_errno;
 }
 #endif
 
-static int tunnel_connect(int id, char *protocol, char *host){
+static int tunnel_connect(Connection* c, char *protocol, char *host){
 #ifdef _WIN32
   SECURITY_ATTRIBUTES saAttr;
   size_t len = strlen(protocol) * 2 + strlen(host) + 512;
@@ -181,19 +232,21 @@ static int tunnel_connect(int id, char *protocol, char *host){
     CloseHandle(g_hChildStd_OUT_Wr);
     CloseHandle(piProcInfo.hProcess);
     CloseHandle(piProcInfo.hThread);
-    SetConnectionInfo(id, "tunnel", 0, &p, sizeof(p));
-    status = 1;
+    SetConnectionInfoC(c, "tunnel", 0, &p, sizeof(p));
+    status = C_OK;
   } else {
     DWORD errstatus = GetLastError();
     fprintf(stderr,"Error in CreateProcees, error: %lu\n",errstatus);
-    status = 0;
+    status = C_ERROR;
   }
   return status;
 #else
   pid_t pid;
   int pipe_fd1[2], pipe_fd2[2];
-  pipe(pipe_fd1);
-  pipe(pipe_fd2);
+  if (pipe(pipe_fd1) == -1)
+    perror("Error in mdsip tunnel_connect creating pipes\n");
+  if (pipe(pipe_fd2) == -1)
+    perror("Error in mdsip tunnel_connect creating pipes\n");
   pid = fork();
   if (!pid) {
     char *localcmd =
@@ -209,14 +262,14 @@ static int tunnel_connect(int id, char *protocol, char *host){
     dup2(pipe_fd1[1], 1);
     close(pipe_fd1[1]);
     execvp(arglist[0], arglist);
-    exit(1);
+    exit(C_ERROR);
   } else if (pid == -1) {
     fprintf(stderr, "Error %d from fork()\n", errno);
     close(pipe_fd1[0]);
     close(pipe_fd1[1]);
     close(pipe_fd2[0]);
     close(pipe_fd2[1]);
-    return (-1);
+    return C_ERROR;
   } else {
     struct TUNNEL_PIPES p;
     p.stdin_pipe = pipe_fd2[1];
@@ -225,15 +278,15 @@ static int tunnel_connect(int id, char *protocol, char *host){
     close(pipe_fd1[1]);
     close(pipe_fd2[0]);
     signal(SIGCHLD, ChildSignalHandler);
-    SetConnectionInfo(id, "tunnel", p.stdout_pipe, &p, sizeof(p));
+    SetConnectionInfoC(c, "tunnel", p.stdout_pipe, &p, sizeof(p));
   }
-  return 0;
+  return C_OK;
 #endif
 }
 
 static int tunnel_listen(int argc __attribute__ ((unused)), char **argv __attribute__ ((unused))){
 #ifdef _WIN32
-  return 0;
+  return C_OK;
 #else
   struct TUNNEL_PIPES p = { 1, 0, 0 };
   int id;
@@ -247,6 +300,6 @@ static int tunnel_listen(int argc __attribute__ ((unused)), char **argv __attrib
   if (username)
     free(username);
   while (DoMessage(id) != 0) ;
-  return 1;
+  return C_ERROR;
 #endif
 }

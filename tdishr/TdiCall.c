@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*      TdiCall.C
         Call a routine in an image.
         A CALL has pointers to
@@ -20,6 +44,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <mdsplus/mdsplus.h>
 #include <mdsdescrip.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
@@ -44,11 +69,15 @@ extern int TdiFindImageSymbol();
 extern int TdiGetLong();
 extern int TdiPutIdent();
 
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
+#endif
+
 STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
 				int (*routine) (), unsigned int *(*called) (),
 				void **result, int *max)
 {
-#if  defined(__ALPHA) && defined(__VMS)
+#ifdef __ALPHA
   int f_regs = (*(int *)routine == 0x23FF0000) ? 0 : 1;
 #else
   int f_regs = 1;		/*(opcode == 0) */
@@ -77,6 +106,7 @@ STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
       *result_g = (*called_g) (newdsc, routine);
       break;
     }
+    MDS_ATTR_FALLTHROUGH
   case DTYPE_T:
   case DTYPE_POINTER:
     if (f_regs) {
@@ -84,17 +114,16 @@ STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
       void **result_p = (void *)result;
       *max = sizeof(void *);
       *result_p = (*called_p) (newdsc, routine);
-      break;
     }
-#if  defined(__ALPHA) && defined(__VMS)
+#ifdef __ALPHA
     else {
       _int64_t(*called_g) () = (_int64_t(*)())called;
       _int64_t *result_g = (_int64_t *) result;
       *max = sizeof(double);
       *result_g = (*called_g) (newdsc, routine);
-      break;
     }
 #endif
+    break;
   case DTYPE_DSC:
     {
       void *(*called_dsc) () = (void *(*)())called;
@@ -237,6 +266,7 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
       break;
     case DTYPE_POINTER:
       dx.length = sizeof(void *);
+      dx.pointer = (char *)result;
       //      if (sizeof(void *) == 8)
       //  dx.dtype = DTYPE_QU;
       //else

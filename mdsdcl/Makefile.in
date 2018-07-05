@@ -52,7 +52,6 @@ cmdHelp.o: cmdHelp.c
 cmdParseLex.o: cmdParseLex.c
 	$(COMPILE.c) $(CFLAGS) -Wno-sign-compare -Wno-unused-parameter -c $^
 
-
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
 @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB): $(OBJECTS) $(DEF)
 	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr $(LIBS) $(MAKE_IMPLIB) $(THREAD) $(XML_LIBS) @LIBREADLINE@

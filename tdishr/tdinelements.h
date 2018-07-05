@@ -10,7 +10,19 @@
 	else {\
 		switch (dsc_ptr->class) {\
 		default : count = 0; status = TdiINVCLADSC; break;\
-		case CLASS_A : count = ((int)dsc_ptr->length > 0) ? (int)((struct descriptor_a *)dsc_ptr)->arsize / (int)dsc_ptr->length : 0; break;\
+		case CLASS_A : {				  \
+		  array_coeff *aptr = (array_coeff *)dsc_ptr; \
+		  count = 0; \
+		  if (aptr->length != 0) { \
+		    count = aptr->arsize / aptr->length; \
+	          } else if ( aptr->dtype == DTYPE_T && aptr->aflags.coeff == 1 ) { \
+		    int i; \
+		    for (i=0;i<aptr->dimct;i++) { \
+		      if (count == 0) count=aptr->m[i]; else count=count*aptr->m[i]; \
+		    }\
+		  }\
+		  break;\
+ 	        }\
 		case CLASS_S : case CLASS_D : count = 1; break;\
 		} \
 	}

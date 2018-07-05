@@ -1,10 +1,12 @@
 package jScope;
 
-/* $Id$ */
-import jScope.MultiWaveform;
-import java.awt.*;
-import java.util.Vector;
-import java.awt.image.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.LayoutManager;
+import java.awt.Rectangle;
 
 
 /**
@@ -276,9 +278,6 @@ public class RowColumnLayout implements LayoutManager {
 	        percent_height = new float[b_comp + 1];
 	        percent_width  = new float[row.length];
 
-		    int MaxWidth = maxWidth - (column - 1) * hgap;
-		    int currMaxWidth = MaxWidth;
-
 	        for(int i = 0; i < b_comp + 1; i++)
 		        percent_height[i] = ph[i];
 
@@ -406,7 +405,7 @@ public class RowColumnLayout implements LayoutManager {
     private void setSizes(Container parent) {
         int nComps = parent.getComponentCount();
         Dimension d = null;
-	    int tot_comp = 0, totW, totH, k, maxW[];
+	    int totW, totH, k, maxW[];
 
         //Reset preferred/minimum width and height.
         preferredWidth = 0;
@@ -526,7 +525,7 @@ public class RowColumnLayout implements LayoutManager {
         Component c = null, b;
         int idx = 0, k;
         boolean found;
-        int pos, pos_x[];
+        int pos;
         Rectangle r;
         int i, j , jj, num_line = 0, pos_y, n_draw, curr_height, start_pos;
 
@@ -707,7 +706,7 @@ public class RowColumnLayout implements LayoutManager {
      */
     public void ResizeRowColumn(Component _b)
     {
-        Component b, c;
+        Component b;
 	    int idx = 0;
 
 		init_resize = true;
@@ -716,7 +715,6 @@ public class RowColumnLayout implements LayoutManager {
 	        {
 		        b = main_p.getComponent(idx);
 		        if(_b == b) {
-		            c = main_p.getComponent(b_comp + idx);
 		            col_idx = j;
 		            comp_idx = idx;
 		            if(i == row[j] - 1)
@@ -759,7 +757,7 @@ public class RowColumnLayout implements LayoutManager {
      */
     public void ResizeRowColumn(Component _b, int x, int y)
     {
-	int k = 0, currHeight = 0, currWidth = 0, curr_y = 0, curr_x = 0;
+	int k = 0, currHeight = 0, curr_y = 0, curr_x = 0;
 	int currMaxHeight, currMaxWidth;
 	int max_y, max_x, min_x;
 	int start_comp, end_comp, inc_comp;
@@ -922,7 +920,7 @@ public class RowColumnLayout implements LayoutManager {
      */
     private void ResizeColumn(Container parent, int col_idx)
     {
-	int k = 0, x, y = 0;
+	int k = 0, y = 0;
 	int previousHeight = 0, currMaxHeight;
 
 	    for(int i = 0; i <  col_idx; i++)
@@ -966,7 +964,6 @@ public class RowColumnLayout implements LayoutManager {
      */
     public Dimension preferredLayoutSize(Container parent) {
         Dimension dim = new Dimension(0, 0);
-        int nComps = parent.getComponentCount();
 
         setSizes(parent);
 
@@ -988,7 +985,6 @@ public class RowColumnLayout implements LayoutManager {
      */
     public Dimension minimumLayoutSize(Container parent) {
         Dimension dim = new Dimension(0, 0);
-        int nComps = parent.getComponentCount();
 
         //Always add the container's insets!
         Insets insets = parent.getInsets();

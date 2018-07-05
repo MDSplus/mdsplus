@@ -21,7 +21,7 @@
   ghost@aladdin.com
 
  */
-/* $Id$ */
+/* $Id: md5.h,v 1.2 2007/12/24 05:58:37 lilyco Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
 

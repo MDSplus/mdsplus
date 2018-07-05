@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*  CMS REPLACEMENT HISTORY, Element BESSEL.C */
 /*  *44   20-SEP-2001 14:15:14 MDSPLUS "Fix s3 parameter di BessJ0" */
 /*  *43   16-SEP-1996 10:22:07 MDSPLUS "Add total power" */
@@ -115,7 +139,7 @@ Computes the surface integral for mode 0 of rebuilt emissivity
 //#include "definitions.h"
 #include "bessel.h"
 #include "filter.h"
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #define STEP_ROOT	1E-1
 #define TOLERANCE	1E-8
 
@@ -331,8 +355,7 @@ EXPORT void BessRoots()
   double curr_root, curr_x;
 
   printf("\nComputation of Roots for Bessel functions\n\nOut File (0 for screen):");
-  scanf("%s", filename);
-  if (strcmp(filename, "0")) {
+  if ((scanf("%s", filename) != 1) && strcmp(filename, "0")) {
     if ((fil_ptr = fopen(filename, "w")) == 0) {
       printf("\nCannot open file %s\n", filename);
       return;

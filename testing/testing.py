@@ -1,14 +1,36 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-
-import sys,os
+#
+# Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright notice, this
+# list of conditions and the following disclaimer in the documentation and/or
+# other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+import sys,os,ctypes
 if "LD_PRELOAD" in os.environ:
     os.environ.pop("LD_PRELOAD")
 
 MDSplus_path=os.path.dirname(os.path.abspath(__file__))
 if sys.path[0] != MDSplus_path:
     sys.path.insert(0,MDSplus_path)
-
 
 class testing(object):
     import re
@@ -38,7 +60,7 @@ class testing(object):
             try:
                 __import__(name, fromlist=mod.globalnames.keys(),level=1)
                 sys.stdout.write('.')
-            except ImportError, e:
+            except ImportError as e:
                 print("ERROR IMPORTING %s: " % name + "  --  "+e.message)
 
     def check_loadmethod(self, file_name, class_name, method_name ):
@@ -46,9 +68,7 @@ class testing(object):
         m = imp.load_source(class_name, file_name)
         getattr(m, method_name)()
 
-    def check_loadlib(self, lib):
-        import ctypes
-        ctypes.CDLL(lib)
+    check_load_lib=ctypes.CDLL
 
     def skip_test(self, module_name, message):
         # TODO: fix this
@@ -57,9 +77,9 @@ class testing(object):
             f.write("ok 1 - " + module_name + " # SKIP " + message + "\n")
             f.write("1..1")
             f.close
-	if 'log' in self.test_format:
-	    print(message)
-        sys.exit(77)
+        if 'log' in self.test_format:
+            print(message)
+            sys.exit(77)
 
     def run_tap(self, module):
         import tap,unittest
@@ -75,22 +95,19 @@ class testing(object):
         nose_aux_args = ['-d','-s','-v']
         res = 0
 
-	if 'tap' in f:
-	    try:
-		from tap.plugins._nose import TAP
-		nose.run(argv=[ sys.argv[1],'', '--with-tap'] + nose_aux_args)
-	    except:
-		f.remove('tap')
-	if 'xml' in f:
-	    try:
-		from nose.plugins.xunit import Xunit
-	    except ImportError:
-		f.remove('xml')
-
+        if 'tap' in f:
+            try:
+                from tap.plugins._nose import TAP #analysis:ignore
+                nose.run(argv=[ sys.argv[1],'', '--with-tap'] + nose_aux_args)
+            except:
+                f.remove('tap')
+        if 'xml' in f:
+            try:
+                from nose.plugins.xunit import Xunit #analysis:ignore
+            except ImportError:
+                f.remove('xml')
         if len(f) > 1:
             if 'log' in f and 'tap' in f and 'xml' in f:
-                from tap.plugins._nose import TAP
-                from nose.plugins.xunit import Xunit
                 res = nose.run(argv=[ sys.argv[1], module_name,
                 '--with-tap','--tap-combined','--tap-out=.'+os.path.basename(sys.argv[1]),
                 '--tap-format="{method_name} {short_description}"',
@@ -99,7 +116,6 @@ class testing(object):
                 shutil.rmtree('.'+os.path.basename(sys.argv[1]))
 
             elif 'log' in f and 'tap' in f:
-                from tap.plugins._nose import TAP
                 res = nose.run(argv=[ sys.argv[1], module_name,
                 '--with-tap','--tap-combined','--tap-out=.'+os.path.basename(sys.argv[1]),
                 '--tap-format="{method_name} {short_description}"'] + nose_aux_args)
@@ -107,7 +123,6 @@ class testing(object):
                 shutil.rmtree('.'+os.path.basename(sys.argv[1]))
 
             elif 'log' in f and 'xml' in f:
-                from nose.plugins.xunit import Xunit
                 res = nose.run(argv=[ sys.argv[1], module_name,
                 '--with-xunit','--xunit-file='+self.xml_file] + nose_aux_args)
         elif len(f) > 0:
@@ -122,9 +137,9 @@ class testing(object):
                 '--with-xunit','--xunit-file='+self.xml_file] + nose_aux_args)
             else:
                 res = nose.run(argv=[ sys.argv[1], module_name] + nose_aux_args)
-	else:
+        else:
             raise IndexError
-	return res
+        return res
 
 ts = testing()
 def check_arch(file_name):
@@ -132,18 +147,22 @@ def check_arch(file_name):
     if not ts.check_unittest_version(module_name):
         ts.skip_test(module_name,'Unfit unittest version < 2.7')
     try:
-        from MDSplus import getenv
-    except Exception as e:
-        ts.skip_test(module_name,'Unable to import MDSplus: "%s"'%(e,))
+        if sys.platform.startswith('win'):
+            ts.check_load_lib("MdsShr.dll")
+        else:
+            ts.check_load_lib("libMdsShr.so")
+    except:
+        ts.skip_test(module_name,'Unable to load mdsplus lib "MdsShr"')
     if module_name.startswith('dcl'):
-      try:
-        pylib = getenv('PyLib')
-        print('PyLib="%s"'%pylib)
-        if not pylib:
-            ts.skip_test(module_name,'Invalid/unset PyLib env.')
-        ts.check_loadlib(pylib)
-      except OSError:
-        ts.skip_test(module_name,'Unable to load python lib "%s"'%(pylib,))
+        from MDSplus import getenv
+        try:
+            pylib = getenv('PyLib')
+            print('PyLib="%s"'%pylib)
+            if not pylib:
+                ts.skip_test(module_name,'Invalid/unset PyLib env.')
+            ts.check_load_lib(pylib)
+        except Exception:
+            ts.skip_test(module_name,'Unable to load python lib "%s"'%(pylib,))
 
 if __name__ == '__main__':
     if '--skip' in sys.argv:
@@ -158,6 +177,4 @@ if __name__ == '__main__':
     except:
         import traceback
         traceback.print_exc()
-	ts.skip_test(sys.argv[1],"unrecoverable error from nose "+str(sys.exc_info()[0]))
-
-
+    ts.skip_test(sys.argv[1],"unrecoverable error from nose "+str(sys.exc_info()[0]))

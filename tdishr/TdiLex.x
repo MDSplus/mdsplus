@@ -204,13 +204,13 @@ static struct {
 	**********************/
 	idx = StrFindFirstInSet(&str_dsc, &dfghst_dsc);
 	if (idx) { switch (tst = str[idx-1]) {
-  	  case 'D' :	type = 1;	break;
+          case 'D' :	type = 1;	break;
           case 'V' :    type = 2;       break;
 	  case 'G' :	type = 3;	break;
 	  case 'H' :	type = 4;	break;
 	  case 'F' :	type = 5;	break;
 	  case 'S' :	type = 6;	break;
-	  case 'T' : 	type = 7;	break;
+	  case 'T' :    type = 7;	break;
 	  }
           str[idx-1] = 'E';
         }
@@ -239,7 +239,7 @@ struct TdiFunctionStruct	*s2)
 }
 
 static int			TdiLexIdent(
-int 			len,
+int                     len,
 unsigned char		*str,
 struct marker		*mark_ptr)
 {
@@ -486,7 +486,7 @@ int			len,
 unsigned char		*str,
 struct marker		*mark_ptr)
 {
-  	int nid, token = LEX_VALUE;
+	int nid, token = LEX_VALUE;
 	unsigned char *str_l;
 	str_l = (unsigned char *)strncpy((char *)malloc(len+1),(char *)str,len);
         str_l[len] = 0;
@@ -578,8 +578,8 @@ char		c0 = str[0], c1 = input();
 	case '/' :	if (c1 == '/') {mark_ptr->builtin = OpcConcat;		return TdiLexBinEq	(LEX_CONCAT);} break;
 /***                     else if (c1 == '*') return (TdiLexComment(len, str, mark_ptr) == 0) ? input() : 0; break; ***/
 /***			if (c1 == '=') {mark_ptr->builtin = OpcNe;		return TdiLexBinEq	(LEX_LEQS);}*/
-/***			if (c1 == ')') {					return 			']';} break;***/
-/***	case '(' :	if (c1 == '/') {					return 			'[';} break;***/
+/***			if (c1 == ')') {					return			']';} break;***/
+/***	case '(' :	if (c1 == '/') {					return			'[';} break;***/
 	case '<' :	if (c1 == '<') {mark_ptr->builtin = OpcShiftLeft;	return TdiLexBinEq	(LEX_SHIFT);}
 			if (c1 == '=') {mark_ptr->builtin = OpcLe;		return TdiLexBinEq	(LEX_LGES);}
 			if (c1 == '>') {mark_ptr->builtin = OpcNe;		return TdiLexBinEq	(LEX_LEQS);} break;

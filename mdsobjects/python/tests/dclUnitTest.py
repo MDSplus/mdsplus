@@ -1,30 +1,56 @@
-from unittest import TestCase,TestSuite
+#!/usr/bin/python
+# Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright notice, this
+# list of conditions and the following disclaimer in the documentation and/or
+# other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+from unittest import TestCase,TestSuite,TextTestRunner
 import os,sys
 from re import match
-from threading import Lock
+from threading import RLock
 
-from MDSplus import Tree,Device
+from MDSplus import Tree,Device,Connection,GetMany,Range
 from MDSplus import getenv,setenv,dcl,ccl,tcl,cts
 from MDSplus import mdsExceptions as Exc
 
-class dclTests(TestCase):
+class Tests(TestCase):
     debug = False
-    lock = Lock()
-    shotinc = 2
-    instances = 0
     inThread = False
+    lock = RLock()
+    shotinc = 1
+    instances = 0
     index = 0
     @property
     def shot(self):
-        return self.index*dclTests.shotinc+1
-    def _doTCLTest(self,expr,out=None,err=None,re=False):
+        return self.index*Tests.shotinc+1
+
+    def _doTCLTest(self,expr,out=None,err=None,re=False,tcl=tcl):
         def checkre(pattern,string):
             if pattern is None:
                 self.assertEqual(string is None,True)
             else:
                 self.assertEqual(string is None,False)
                 self.assertEqual(match(pattern,str(string)) is None,False,'"%s"\nnot matched by\n"%s"'%(string,pattern))
-        if dclTests.debug: sys.stderr.write("TCL(%s)\n"%(expr,));
+        if Tests.debug: sys.stderr.write("TCL(%s)\n"%(expr,));
         outerr = tcl(expr,True,True,True)
         if not re:
             self.assertEqual(outerr,(out,err))
@@ -33,7 +59,7 @@ class dclTests(TestCase):
             checkre(err,outerr[1])
 
     def _doExceptionTest(self,expr,exc):
-        if dclTests.debug: sys.stderr.write("TCL(%s) # expected exception: %s\n"%(expr,exc.__name__));
+        if Tests.debug: sys.stderr.write("TCL(%s) # expected exception: %s\n"%(expr,exc.__name__));
         try:
             tcl(expr,True,True,True)
         except Exception as e:
@@ -45,6 +71,7 @@ class dclTests(TestCase):
     def setUpClass(cls):
         with cls.lock:
             if cls.instances==0:
+                import gc;gc.collect()
                 from tempfile import mkdtemp
                 if getenv("TEST_DISTRIBUTED_TREES") is not None:
                     treepath="localhost::%s"
@@ -61,8 +88,6 @@ class dclTests(TestCase):
                      Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE')
                      pytree.write()
             cls.instances += 1
-            if cls.inThread:
-                print('threads up: %d'%(cls.instances,))
 
     @classmethod
     def _setenv(cls,name,value):
@@ -80,7 +105,20 @@ class dclTests(TestCase):
             if not cls.instances>0:
                 shutil.rmtree(cls.tmpdir)
 
-    def dclInterface(self):
+    @classmethod
+    def tearDown(cls):
+        import gc
+        gc.collect()
+    def cleanup(self,refs=0):
+        import MDSplus,gc;gc.collect()
+        if self.inThread: return
+        def isTree(o):
+            try:    return isinstance(o,MDSplus.Tree)
+            except: return False
+        self.assertEqual([o for o in gc.get_objects() if isTree(o)][refs:],[])
+
+    def interface(self):
+      def test():
         Tree('pytree',-1,'ReadOnly').createPulse(self.shot)
         self.assertEqual(dcl('help set verify',1,1,0)[1],None)
         self.assertEqual(tcl('help set tree',1,1,0)[1],None)
@@ -88,6 +126,7 @@ class dclTests(TestCase):
         self.assertEqual(cts('help addcrate',1,1,0)[1],None)
         """ tcl commands """
         self._doTCLTest('type test','test\n')
+        if self.inThread: Tree.usePrivateCtx(1)
         self._doTCLTest('close/all')
         self._doTCLTest('show db','\n')
         self._doTCLTest('set tree pytree/shot=%d'%(self.shot,))
@@ -96,9 +135,8 @@ class dclTests(TestCase):
         self._doTCLTest('add node TCL_NUM/usage=numeric')
         self._doTCLTest('add node TCL_PY_DEV/model=TESTDEVICE')
         self._doTCLTest('do TESTDEVICE:TASK_TEST')
-        self._doExceptionTest('do TESTDEVICE:TASK_ERROR',Exc.DevUNKOWN_STATE)
-        if not sys.platform.startswith('win'): # Windows does not support timeout yet
-            self._doExceptionTest('do TESTDEVICE:TASK_TIMEOUT',Exc.TdiTIMEOUT)
+        self._doExceptionTest('do TESTDEVICE:TASK_ERROR1',Exc.DevUNKOWN_STATE)
+        self._doExceptionTest('do TESTDEVICE:TASK_ERROR2',Exc.DevUNKOWN_STATE)
         self._doExceptionTest('close',Exc.TreeWRITEFIRST)
         self._doTCLTest('write')
         self._doTCLTest('close')
@@ -109,12 +147,17 @@ class dclTests(TestCase):
         self.assertEqual(str(pytree),'Tree("PYTREE",-1,"Normal")')
         self._doTCLTest('close pytree')
         self.assertEqual(str(pytree),'Tree("PYTREE",-1,"Closed")')
+        if self.inThread: Tree.usePrivateCtx(0)
         """ tcl exceptions """
         self._doExceptionTest('close',Exc.TreeNOT_OPEN)
         self._doExceptionTest('dispatch/command/server=xXxXxXx type test',Exc.ServerPATH_DOWN)
         self._doExceptionTest('dispatch/command/server type test',Exc.MdsdclIVVERB)
+      test()
+      self.cleanup(0 if sys.platform.startswith('win') else 1)
+
 
     def dispatcher(self):
+      def test():
         from time import sleep
         hosts = '%s/mdsip.hosts'%self.root
         def testDispatchCommand(mdsip,command,stdout=None,stderr=None):
@@ -131,10 +174,11 @@ class dclTests(TestCase):
         def start_mdsip(server,port,logname,env=None):
             if port>0:
                 from subprocess import Popen,STDOUT
-                log = open('%s_%d.log'%(logname,self.index),'w')
+                logfile = '%s_%d.log'%(logname,self.index) 
+                log = open(logfile,'w')
                 try:
                     params = ['mdsip','-s','-p',str(port),'-h',hosts]
-                    print(' '.join(params+['&>',logname]))
+                    print(' '.join(params+['&>',logfile]))
                     mdsip = Popen(params,env=env,stdout=log,stderr=STDOUT)
                 except:
                     log.close()
@@ -144,9 +188,9 @@ class dclTests(TestCase):
                 for envpair in self.envx.items():
                     testDispatchCommand(server,'env %s=%s'%envpair)
             return None,None
-        monitor,monitor_port = setup_mdsip('ACTION_MONITOR','MONITOR_PORT',4400,False)
+        monitor,monitor_port = setup_mdsip('ACTION_MONITOR','MONITOR_PORT',8700+self.index,False)
         monitor_opt = "/monitor=%s"%monitor if monitor_port>0 else ""
-        server ,server_port  = setup_mdsip('ACTION_SERVER', 'ACTION_PORT',8800,True)
+        server ,server_port  = setup_mdsip('ACTION_SERVER', 'ACTION_PORT',8800+self.index,True)
         shot = self.shot+1
         Tree('pytree',-1,'ReadOnly').createPulse(shot)
         show_server = "Checking server: %s\n[^,]+, [^,]+, logging enabled, Inactive\n"%server
@@ -162,10 +206,29 @@ class dclTests(TestCase):
                 sleep(3)
                 if mon: self.assertEqual(mon.poll(),None)
                 if svr: self.assertEqual(svr.poll(),None)
+                """ mdsconnect """
+                c = Connection(server)
+                self.assertEqual(c.get('1').tolist(),1)
+                self.assertEqual(c.getObject('1:3:1').__class__,Range)
+                if not sys.platform.startswith('win'): # Windows does not support timeout yet
+                    try: #  currently the connection needs to be closed after a timeout
+                        Connection(server).get("wait(1)",timeout=100)
+                        self.fail("Connection.get(wait(1)) should have timed out.")
+                    except Exc.MDSplusException as e:
+                        self.assertEqual(e.__class__,Exc.TdiTIMEOUT)
+                g = GetMany(c);
+                g.append('a','1')
+                g.append('b','$',2)
+                g.append('c','$+$',1,2)
+                g.execute()
+                self.assertEqual(g.get('a'),1)
+                self.assertEqual(g.get('b'),2)
+                self.assertEqual(g.get('c'),3)
                 """ tcl dispatch """
                 self._doTCLTest('show server %s'%server,out=show_server,re=True)
                 testDispatchCommand(server,'set verify')
                 testDispatchCommand(server,'type test')
+                self._doTCLTest('set tree pytree/shot=%d'%shot)
                 self._doTCLTest('dispatch/build%s'%monitor_opt)
                 self._doTCLTest('dispatch/phase%s INIT'%monitor_opt)
                 sleep(1)
@@ -197,31 +260,39 @@ class dclTests(TestCase):
             self._doTCLTest('close/all')
         pytree = Tree('pytree',shot,'ReadOnly')
         self.assertTrue(pytree.TESTDEVICE.INIT1_DONE.record <= pytree.TESTDEVICE.INIT2_DONE.record)
+      test()
+      self.cleanup()
 
     def runTest(self):
         for test in self.getTests():
             self.__getattribute__(test)()
     @staticmethod
     def getTests():
-        return ['dclInterface','dispatcher']
+        lst = ['interface']
+        if Tests.inThread: return lst
+        return ['dispatcher'] + lst
     @classmethod
-    def getTestCases(cls):
-        return map(cls,cls.getTests())
+    def getTestCases(cls,tests=None):
+        if tests is None: tests = cls.getTests()
+        return map(cls,tests)
 
-def suite():
-    return TestSuite(dclTests.getTestCases())
+def suite(tests=None):
+    return TestSuite(Tests.getTestCases(tests))
 
-def run():
-    from unittest import TextTestRunner
-    TextTestRunner().run(suite())
+def run(tests=None):
+    TextTestRunner(verbosity=2).run(suite(tests))
+
+def objgraph():
+    import objgraph,gc
+    gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
+    run()
+    gc.collect()
+    objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
 
 if __name__=='__main__':
     import sys
-    if len(sys.argv)>1 and sys.argv[1].lower()=="objgraph":
-        import objgraph
-    else:      objgraph = None
-    import gc;gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    run()
-    if objgraph:
-         gc.collect()
-         objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
+    if len(sys.argv)==2 and sys.argv[1]=='all':
+        run()
+    elif len(sys.argv)>1:
+        run(sys.argv[1:])
+    else: print('Available tests: %s'%(' '.join(Tests.getTests())))

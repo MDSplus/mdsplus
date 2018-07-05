@@ -1,8 +1,16 @@
-import javax.xml.parsers.*;
-import org.xml.sax.*;
-import org.xml.sax.helpers.*;
-import org.w3c.dom.*;
-import java.util.*;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 public class CompileTree extends Thread
 {
@@ -171,7 +179,6 @@ public class CompileTree extends Thread
     {
         String type = node.getNodeName();
         String name = node.getAttribute("NAME");
-        String state = node.getAttribute("STATE");
         String usageStr = node.getAttribute("USAGE");
         NidData nid = null;
         boolean success;
@@ -182,7 +189,6 @@ public class CompileTree extends Thread
             success = false;
             if(type.equals("data"))
             {
-                Element parentNode = (Element)node.getParentNode();
                 boolean isDeviceField = node.getNodeName().equals("field");
                 Text dataNode = (Text)node.getFirstChild();
                 if(dataNode != null)
@@ -247,8 +253,9 @@ public class CompileTree extends Thread
             if(type.equals("node"))
             {
                 try  {
-                    if(name.length() > 12) name = name.substring(0,12);
-                    nid = tree.addNode("."+name, NodeInfo.USAGE_STRUCTURE, 0);
+//                    if(name.length() > 12) name = name.substring(0,12);
+//                    nid = tree.addNode("."+name, NodeInfo.USAGE_STRUCTURE, 0);
+                    nid = addNode("."+name, NodeInfo.USAGE_STRUCTURE);
                     if(usageStr != null && usageStr.equals("SUBTREE"))
                         subtreeNids.addElement(nid);
                     tree.setDefault(nid, 0);
@@ -271,8 +278,9 @@ public class CompileTree extends Thread
                 if(usageStr.equals("AXIS")) usage = NodeInfo.USAGE_AXIS;
                 if(usageStr.equals("DISPATCH")) usage = NodeInfo.USAGE_DISPATCH;
                 try {
-                    if(name.length() > 12) name = name.substring(0,12);
-                    nid = tree.addNode(":"+name, usage, 0);
+//                    if(name.length() > 12) name = name.substring(0,12);
+//                    nid = tree.addNode(":"+name, usage, 0);
+                    nid = addNode(":"+name, usage);
                     tree.setDefault(nid, 0);
                     success = true;
                 }catch(Exception exc)
@@ -284,7 +292,6 @@ public class CompileTree extends Thread
             if(type.equals("device"))
             {
                 String model = node.getAttribute("MODEL");
-                NodeInfo info = tree.getInfo(parentNid, 0);
 
                 try {
                     Thread.currentThread().sleep(100);
@@ -390,6 +397,21 @@ public class CompileTree extends Thread
         }
     }
 
-
+    NidData  addNode(String name, int usage) throws Exception
+    {
+	NidData prevNid = tree.getDefault(0);
+        String currName = name.substring(1);
+	String prevNode = "";
+	while(currName.length() > 12)
+	{
+	      String shortName = currName.substring(0, 12);
+	      currName = currName.substring(12);
+	      try {
+		tree.addNode(prevNode + "."+shortName, NodeInfo.USAGE_STRUCTURE, 0);
+	      }catch(Exception exc){}
+	      prevNode += "."+shortName;
+	}
+	return tree.addNode(prevNode+name.substring(0,1)+currName, usage, 0);
+    }
 }
 

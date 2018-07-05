@@ -19,6 +19,7 @@
 ./usr/local/mdsplus/tdi/KbsiDevices/E1564__setup_old.fun
 ./usr/local/mdsplus/tdi/KbsiDevices/E1564__status.fun
 ./usr/local/mdsplus/tdi/KbsiDevices/E1564__store.fun
+./usr/local/mdsplus/tdi/KbsiDevices/KBISDEVICES.py
 ./usr/local/mdsplus/tdi/KbsiDevices/NI5122__add.fun
 ./usr/local/mdsplus/tdi/KbsiDevices/NI5122__arm.fun
 ./usr/local/mdsplus/tdi/KbsiDevices/NI5122__close.fun

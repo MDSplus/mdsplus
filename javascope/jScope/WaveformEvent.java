@@ -1,14 +1,12 @@
 package jScope;
 
-/* $Id$ */
-import jScope.FrameData;
 import java.awt.AWTEvent;
-import java.awt.Event;
-import java.util.*;
-import java.text.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.SimpleTimeZone;
 
-public class WaveformEvent
-    extends AWTEvent
+public class WaveformEvent extends AWTEvent
 {
     static final int POINT_UPDATE = AWTEvent.RESERVED_ID_MAX + 1;
     static final int MEASURE_UPDATE = AWTEvent.RESERVED_ID_MAX + 2;
@@ -266,20 +264,12 @@ public class WaveformEvent
 
             case WaveformEvent.POINT_UPDATE:
             case WaveformEvent.POINT_IMAGE_UPDATE:
-                if (s == null)
-                {
-                    if (!w.IsImage())
-                    {
-                        Float xf = new Float(x_value);
-                        Float tf = new Float(time_value);
-                        Float df = new Float(data_value);
-                        Float nan_f = new Float(Float.NaN);
+                if (s == null) {
+                    if (!w.IsImage()) {
                         String xt_string = null;
-                        if (!xf.equals(nan_f))
-                            xt_string = ", Y = " +
-                                Waveform.ConvertToString(x_value, false);
-                        else
-                        if (!tf.equals(nan_f))
+                        if (!Float.isNaN(x_value))
+                            xt_string = ", Y = " + Waveform.ConvertToString(x_value, false);
+                        else if (!Double.isNaN(time_value))
                             if(showXasDate)
                             {
                                 /*
@@ -291,14 +281,10 @@ public class WaveformEvent
                                  */
                                 xt_string = ", T = " + getFormattedDate( /*dateValue*/ + (long)time_value , "d-MMM-yyyy HH:mm:ss.SSS" );// format.format(date).toString();
                                 showXasDate = false;
-                            }
-                            else
+                            } else
                                 xt_string = ", X = " + Waveform.ConvertToString(time_value, false);
-                        else
-                        if (!df.equals(nan_f))
-                            xt_string = ", Z = " +
-                                Waveform.ConvertToString(data_value, false);
-
+                        else if (!Double.isNaN(data_value))
+                            xt_string = ", Z = " + Waveform.ConvertToString(data_value, false);
 
                         String x_string = null;
                         int string_size = 40;
@@ -315,14 +301,14 @@ public class WaveformEvent
                             string_size = 45;
                         }
                         else
-                           x_string = ""+new Float(point_x);
+                           x_string = Double.toString(point_x);
 
                         if (xt_string == null)
                             s = SetStrSize("[" + x_string + ", "
-                                           + new Float(point_y) + "]", string_size);
+                                           + point_y + "]", string_size);
                         else
                             s = SetStrSize("[" + x_string + ", "
-                                           + new Float(point_y) + xt_string +
+                                           + point_y + xt_string +
                                            "]", string_size + 40);
                     }
                     else
@@ -331,7 +317,7 @@ public class WaveformEvent
                     {
                         s = SetStrSize("[" + ( (int) point_x) + ", "
                                        + ( (int) point_y) + " : "
-                                       + "(" + new Float(point_value) + ")"
+                                       + "(" + point_value + ")"
                                        + " : " + delta_x + "]", 50);
                     }
                     else

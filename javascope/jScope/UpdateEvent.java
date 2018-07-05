@@ -2,7 +2,6 @@ package jScope;
 
 /* $Id$ */
 import java.awt.AWTEvent;
-import java.awt.Event;
 
 /**
  * An UpdateEvent instance is passed to UpdateEventListener implementations as argument of processUpdateEvent

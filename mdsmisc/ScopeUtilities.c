@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 #include <mdsdescrip.h>
 #include <treeshr.h>
 #include <mds_stdarg.h>
@@ -31,13 +55,13 @@ static int getSegmentedNid(char *expr)
 
 /**
 * Make an estimation of the number of samples in the specified interval. -1 is returned when
-* when online minmax reasampling is deemed not necessary. If the number  
+* when online minmax reasampling is deemed not necessary. If the number
 **/
 
 static int64_t estimateNumSamples(char *sigName, float *xMin, float *xMax, int *estimatedSegmentSamples, double *estimatedDuration)
 {
 	int nid, numSegments, status, startIdx, endIdx;
-	uint64_t startTime, endTime, currStartTime, currEndTime;
+	int64_t startTime, endTime, currStartTime, currEndTime;
 	char dtype, dimct;
 	int dims[64];
 	int nextRow, segmentSamples, numActSegments, segmentIdx;
@@ -769,6 +793,52 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     if(nSamples > (int)(xArrD->arsize/xArrD->length))
 	nSamples = xArrD->arsize/xArrD->length;
  
+   //Handle old DTYPE_F format
+    if(yArrD->dtype == DTYPE_F)
+    {
+	char *expr = (char *)"FLOAT($)";
+	struct descriptor exprDsc = {strlen(expr), DTYPE_T, CLASS_S, expr};
+	EMPTYXD(currXd);
+	status = TdiCompile(&exprDsc, yArrD, &currXd MDS_END_ARG);
+	if(status & 1)
+	    status = TdiData((struct descriptor *)&currXd, &currXd MDS_END_ARG);
+	if(!(status & 1))
+	{
+	    err = "Cannot Convert Y to IEEE Floating point";
+	    MdsFree1Dx(&xXd, 0);
+	    MdsFree1Dx(&yXd, 0);
+	    errD.length = strlen(err);
+	    errD.pointer = err;
+	    MdsCopyDxXd(&errD, &retXd);
+	    return &retXd;
+	}
+	MdsFree1Dx(&yXd, 0);
+	yXd = currXd;
+	yArrD = (struct descriptor_a *)yXd.pointer;
+    }
+    if(xArrD->dtype == DTYPE_F)
+    {
+	char *expr = (char *)"FLOAT($)";
+	struct descriptor exprDsc = {strlen(expr), DTYPE_T, CLASS_S, expr};
+	EMPTYXD(currXd);
+	status = TdiCompile(&exprDsc, xArrD, &currXd MDS_END_ARG);
+	if(status & 1)
+	    status = TdiData((struct descriptor *)&currXd, &currXd MDS_END_ARG);
+	if(!(status & 1))
+	{
+	    err = "Cannot Convert X to IEEE Floating point";
+	    MdsFree1Dx(&xXd, 0);
+	    MdsFree1Dx(&yXd, 0);
+	    errD.length = strlen(err);
+	    errD.pointer = err;
+	    MdsCopyDxXd(&errD, &retXd);
+	    return &retXd;
+	}
+	MdsFree1Dx(&xXd, 0);
+	xXd = currXd;
+	xArrD = (struct descriptor_a *)xXd.pointer;
+    }
+	      
     if(yArrD->dtype == DTYPE_FLOAT)
 	y = (float *)yArrD->pointer;
     else

@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 #include <pthread.h>
 #include <mdsshr.h>
 #include <stdio.h>
@@ -72,29 +96,25 @@ int main(int argc, char **args)
     pthread_mutex_init(&astCount_lock, NULL);
     pthread_mutex_init(&first_lock, NULL);
     pthread_mutex_init(&second_lock, NULL);
-    
     BEGIN_TESTING(UdpEvents);
-#ifdef _WIN32
-    SKIP_TEST("Skipping UDP event tests on Windows because of problems with wine and udp.")
-#endif
     if (argc < 2) {
         iterations=3;
     } else {
         iterations=atoi(args[1]);
         printf("Doing %d iterations\n",iterations);
     }
-    
+
     for (i=0;i<iterations;i++) {
         sprintf(eventname,"ev_test_%d_%d",i,getpid());
 
         status = MDSEventAst(eventname, eventAst, eventname, &ev_id);
-        TEST0( status%1 );        
+        TEST0( status%1 );
         wait();
         status = MDSEvent(eventname,0,0);
-        TEST0( status%1 );        
+        TEST0( status%1 );
         status = MDSEvent(eventname,0,0);
-        TEST0( status%1 );                
-        wait();        
+        TEST0( status%1 );
+        wait();
         status = MDSEventCan(ev_id);
         TEST0( status%1 );
         wait();
@@ -102,15 +122,15 @@ int main(int argc, char **args)
     pthread_mutex_lock(&astCount_lock);
     TEST1(astCount == 2*iterations);
     pthread_mutex_unlock(&astCount_lock);
-    
+
 
     // Testing two listening events //
     int id1,id2;
     sprintf(eventname, "test_event_%d", getpid());
     status = MDSEventAst(eventname, eventAstFirst, "first", &id1);
-    status = MDSEventAst(eventname, eventAstSecond, "second", &id2);        
+    status = MDSEventAst(eventname, eventAstSecond, "second", &id2);
     wait();
-    status = MDSEvent(eventname,0,0);    
+    status = MDSEvent(eventname,0,0);
     wait();
     pthread_mutex_lock(&first_lock);
     pthread_mutex_lock(&second_lock);
@@ -121,7 +141,7 @@ int main(int argc, char **args)
     pthread_mutex_unlock(&second_lock);
     status = MDSEventCan(id1);
     status = MDSEventCan(id2);
-    
+
     END_TESTING;
     return (status & 1)==0;
 }

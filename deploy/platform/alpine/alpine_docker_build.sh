@@ -7,6 +7,7 @@
 testx86_64="64 x86_64-linux bin lib"
 testx86="32 i686-linux   bin lib --with-gsi=/usr:gcc32"
 testarmhf="arm armv6-alpine-linux-muslgnueabihf bin lib"
+srcdir=$(readlink -f $(dirname ${0})/../..)
 
 gethost() {
     case $1 in
@@ -17,7 +18,7 @@ gethost() {
 }
 
 getjava() {
-    if [ "$ARCH" = "armhf" ]; then echo "--disable-java"; fi
+    if [ "$ARCH" = "armhfxxxxx" ]; then echo "--disable-java"; fi
 }
 
 if [ -z "$host" ]
@@ -60,7 +61,7 @@ buildrelease() {
     RELEASE_VERSION=${RELEASE_VERSION} \
     ARCH=${ARCH} \
     DISTNAME=${DISTNAME} \
-    HOME=/ /source/deploy/platform/alpine/alpine_build_apks.py
+    HOME=/ ${srcdir}/deploy/platform/alpine/alpine_build_apks.py
   fi
 }
 

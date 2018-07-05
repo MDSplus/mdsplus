@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*------------------------------------------------------------------------------
 
 		Name:   ServerSendMessage
@@ -27,7 +51,9 @@ int ServerSendMessage();
  	Description:
 
 ------------------------------------------------------------------------------*/
-#include <config.h>
+#define LOAD_INITIALIZESOCKETS
+#include <pthread_port.h>
+#include <mdsplus/mdsconfig.h>
 #include <ipdesc.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -44,12 +70,9 @@ int ServerSendMessage();
 #include <errno.h>
 #ifdef _WIN32
  typedef int socklen_t;
- #include <windows.h>
  #define random rand
  #define close closesocket
 #else
- #define INVALID_SOCKET -1
- #include <sys/socket.h>
  #include <netinet/in.h>
  #include <netdb.h>
  #include <arpa/inet.h>
@@ -83,10 +106,9 @@ typedef struct _Job {
   struct _Job *next;
 } Job;
 static pthread_mutex_t jobs_mutex = PTHREAD_MUTEX_INITIALIZER;
-#define LOCK_JOBS   pthread_mutex_lock(&jobs_mutex)
-#define UNLOCK_JOBS pthread_mutex_unlock(&jobs_mutex)
+#define LOCK_JOBS   pthread_mutex_lock(&jobs_mutex);pthread_cleanup_push((void*)pthread_mutex_unlock, &jobs_mutex)
+#define UNLOCK_JOBS pthread_cleanup_pop(1)
 static Job *Jobs = 0;
-
 
 typedef struct _client {
   SOCKET reply_sock;
@@ -96,6 +118,8 @@ typedef struct _client {
   struct _client *next;
 } Client;
 static pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
+#define LOCK_CLIENTS   pthread_mutex_lock(&clients_mutex)
+#define UNLOCK_CLIENTS pthread_mutex_unlock(&clients_mutex)
 #define LOCK_CLIENTS   pthread_mutex_lock(&clients_mutex)
 #define UNLOCK_CLIENTS pthread_mutex_unlock(&clients_mutex)
 static Client *Clients = 0;
@@ -119,23 +143,6 @@ static void RemoveClient(Client * c, fd_set * fdactive);
 static int GetHostAddr(char *host);
 static void AddClient(unsigned int addr, short port, int send_sock);
 static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fdactive);
-
-static void InitializeSockets()
-{
-#ifdef _WIN32
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-  pthread_mutex_lock(&mutex);
-  static int initialized = B_FALSE;
-  if (!initialized) {
-    WSADATA wsaData;
-    WORD wVersionRequested;
-    wVersionRequested = MAKEWORD(1, 1);
-    WSAStartup(wVersionRequested, &wsaData);
-    initialized = B_TRUE;
-  }
-  pthread_mutex_unlock(&mutex);
-#endif
-}
 
 extern void *GetConnectionInfo();
 static SOCKET getSocket(int conid)
@@ -230,10 +237,18 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
       return status;
   }
   status = GetAnswerInfoTS(conid, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem);
-  if STATUS_NOT_OK {
-    perror("Error: no response from server");
+  if (op==SrvStop) {
+    if STATUS_NOT_OK {
+      status = MDSplusSUCCESS;
+      CleanupJob(status, jobid);
+    } else
+      status = MDSplusERROR;
+  } else {
+    if STATUS_NOT_OK {
+      perror("Error: no response from server");
       CleanupJob(status, jobid);
       return status;
+    }
   }
   if (mem)
     free(mem);
@@ -254,6 +269,7 @@ static void RemoveJob(Job *j){
 }
 
 
+static pthread_mutex_t job_conds = PTHREAD_MUTEX_INITIALIZER;
 static void DoCompletionAst(Job *j, int status, char *msg, int removeJob){
   int has_condition = j->has_condition;
   if (j->lock) pthread_rwlock_wrlock(j->lock);
@@ -265,8 +281,11 @@ static void DoCompletionAst(Job *j, int status, char *msg, int removeJob){
   if (removeJob && j->jobid != MonJob)
     RemoveJob(j);
   /**** If job has a condition, RemoveJob will not remove it. ***/
-  if (has_condition)
+  if (has_condition){
+    pthread_mutex_lock(&job_conds);pthread_cleanup_push((void*)pthread_mutex_unlock, &job_conds);
     CONDITION_SET(j);
+    pthread_cleanup_pop(1);
+  }
 }
 
 static void DoCompletionAstId(int jobid, int status, char *msg, int removeJob){
@@ -286,7 +305,7 @@ void ServerWait(int jobid)
   UNLOCK_JOBS;
   if (j && j->has_condition) {
     CONDITION_WAIT_SET(j);
-    CONDITION_DESTROY(j);
+    CONDITION_DESTROY(j,&job_conds);
     free(j);
   }
 }
@@ -294,15 +313,19 @@ void ServerWait(int jobid)
 static void DoBeforeAst(int jobid)
 {
   Job *j;
+  void *astparam;
+  void (*before_ast) ();
   LOCK_JOBS;
+  astparam = NULL;
+  before_ast = NULL;
   for (j = Jobs; j && (j->jobid != jobid); j = j->next) ;
-  if (j && j->before_ast) {
-    void *astparam        = j->astparam;
-    void (*before_ast) () = j->before_ast;
-    UNLOCK_JOBS;
+  if (j) {
+    astparam   = j->astparam;
+    before_ast = j->before_ast;
+  }
+  UNLOCK_JOBS;
+  if (before_ast)
     before_ast(astparam);
-  } else
-    UNLOCK_JOBS;
 }
 
 static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void (*ast) (), void *astparam,
@@ -318,7 +341,7 @@ static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void 
   LOCK_JOBS;
   j->jobid = ++JobId;
   if (msgid) {
-    CONDITION_INIT(j)
+    CONDITION_INIT(j);
     j->has_condition = B_TRUE;
     *msgid = j->jobid;
   } else {
@@ -359,10 +382,10 @@ static SOCKET CreatePort(short starting_port, short *port_out)
   static struct sockaddr_in sin;
   long sendbuf = 6000, recvbuf = 6000;
   SOCKET s;
-  int c_status = -1;
+  int c_status = C_ERROR;
   int tries = 0;
   int one = 1;
-  InitializeSockets();
+  INITIALIZESOCKETS;
   s = socket(AF_INET, SOCK_STREAM, 0);
   if (s == INVALID_SOCKET) {
     perror("Error getting Connection Socket\n");
@@ -429,8 +452,7 @@ static void ReceiverExit(void *arg __attribute__ ((unused))){
   CONDITION_RESET(&ReceiverRunning);
 }
 
-static void ResetFdactive(int rep, SOCKET sock, fd_set * active)
-{
+static void ResetFdactive(int rep, SOCKET sock, fd_set * active){
   Client *c;
   if (rep > 0) {
     LOCK_CLIENTS;
@@ -455,7 +477,6 @@ static void ResetFdactive(int rep, SOCKET sock, fd_set * active)
   }
   UNLOCK_CLIENTS;
   printf("reset fdactive in ResetFdactive\n");
-  return;
 }
 
 static void ReceiverThread(void *sockptr){
@@ -668,10 +689,13 @@ static void DoMessage(Client * c, fd_set * fdactive)
     free(msg);
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclobbered"
+
 static void RemoveClient(Client * c, fd_set * fdactive)
 {
   int client_found = 0;
-  int conid = -1;
+  int conid;
   LOCK_CLIENTS;
   if (Clients == c) {
     client_found = 1;
@@ -696,7 +720,8 @@ static void RemoveClient(Client * c, fd_set * fdactive)
     if (c->conid >= 0)
       DisconnectFromMds(c->conid);
     free(c);
-  }
+  } else
+    conid = -1;
   Job *j;
   for (;;) {
     LOCK_JOBS;
@@ -709,13 +734,27 @@ static void RemoveClient(Client * c, fd_set * fdactive)
   }
 }
 
-static int GetHostAddr(char *host)
+#pragma GCC diagnostic pop
+
+static int GetHostAddr(char *name)
 {
-  InitializeSockets();
+  INITIALIZESOCKETS;
   int addr = 0;
-  GETHOSTBYNAMEORADDR(host,addr);
-  if (hp) addr = *(int *)hp->h_addr_list[0];
-  FREE_HP;
+#if defined(__MACH__) || defined(_WIN32)
+  struct hostent* hp = gethostbyname(name);
+  addr = hp ? *(int *)hp->h_addr_list[0] : (int)inet_addr(name);
+#else
+  size_t memlen;
+  struct hostent hostbuf, *hp = NULL;
+  int herr;
+  char *hp_mem = NULL;
+  FREE_ON_EXIT(hp_mem);
+  for ( memlen=1024, hp_mem=malloc(memlen);
+	hp_mem && (gethostbyname_r(name,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE);
+	memlen *= 2, free(hp_mem), hp_mem = malloc(memlen));
+  addr = hp ? *(int *)hp->h_addr_list[0] : (int)inet_addr(name);
+  FREE_NOW(hp_mem);
+#endif
   return addr == -1 ? 0 : addr;
 }
 

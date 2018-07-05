@@ -1,7 +1,6 @@
 pro setenv_,envstring
 case (!version.os) of
   'MacOS' :
-  'vms' : 
   else : setenv,envstring
 endcase
 end
@@ -24,17 +23,9 @@ function mds$socket,quiet=quiet,status=status,socket=socket
   return,sock
 end
 
-function MdsRoutinePrefix
-;Descriptors or argc/argv convention?
-;Shouldn't need to be changed for macos
-;By the way, probably didn't need to port routines beginning with "Idl"
-  if !version.os eq 'vms' then return,'' else return,'Idl'
-end
-
 Function MdsIPImage
 ;Path to shared library
   case !version.os of
-    'vms' : if float(strmid(!version.release,0,3)) ge 5.2 then return,'mdsipshr_ieee' else return,'mdsipshr'
     'windows' : return,'mdsipshr'
 	'Win32'	: return,'mdsipshr'
     'AIX' : return,'libMdsIpShr.a'
@@ -52,18 +43,13 @@ Function MdsIPImage
   endcase
 end
 
-function MdsGetAnsFn
-  if (!version.os eq 'vms') then return,"GetAnswerInfo" else return,"IdlGetAnsInfo"
-end
-
 Pro MdsMemCpy,outvar,inptr,num
 ;Does pointer to input data need to be passed by value or reference?
-;VMS & else, passed by value
+;else, passed by value
 ;OSF by reference
   case !version.os of
-    'vms' :  dummy = call_external('decc$shr','decc$memcpy',outvar,inptr,num,value=[0,1,1])
-    'OSF' :  dummy = call_external(MdsIpImage(),MdsRoutinePrefix()+'memcpy',outvar,inptr,num,value=[0,0,1])
-    else  :  dummy = call_external(MdsIpImage(),MdsRoutinePrefix()+'memcpy',outvar,inptr,num,value=[0,1,1])
+    'OSF' :  dummy = call_external(MdsIpImage(),'Idlmemcpy',outvar,inptr,num,value=[0,0,1])
+    else  :  dummy = call_external(MdsIpImage(),'Idlmemcpy',outvar,inptr,num,value=[0,1,1])
   endcase
   return
 end
@@ -115,7 +101,7 @@ pro Mds$SendArg,sock,n,idx,arg
   endif else begin
     argByVal = 0b
   endelse
-  x = call_external(MdsIPImage(),MdsRoutinePrefix()+'SendArg',sock,idx,dtype,n,length,ndims,dims,arg,value=[1b,1b,1b,1b,1b,1b,0b,argByVal])
+  x = call_external(MdsIPImage(),'IdlSendArg',sock,idx,dtype,n,length,ndims,dims,arg,value=[1b,1b,1b,1b,1b,1b,0b,argByVal])
   if (n_elements(arg_saved) gt 0) then arg=arg_saved
   return
 end
@@ -129,7 +115,7 @@ pro mds$connect,host,status=status,quiet=quiet,port=port
     setenv_,'mdsip=8000'
   endif
   if (!version.release ne '5.0.3') then !ERROR_STATE.MSG="About to connect"
-  sock = call_external(MdsIPImage(),MdsRoutinePrefix()+'ConnectToMds',host,value=[byte(!version.os ne 'windows')])
+  sock = call_external(MdsIPImage(),'IdlConnectToMds',host,value=[byte(!version.os ne 'windows')])
   sockmin=1l-(!version.os eq 'MacOS')
   if (sock ge sockmin) then begin
     status = 1
@@ -145,7 +131,7 @@ pro mds$disconnect,status=status,quiet=quiet
   status = 1
   sock = mds$socket(status=status,quiet=quiet)
   if status then begin
-    status = call_external(MdsIPImage(),MdsRoutinePrefix()+'DisconnectFromMds',sock,value=[1b])
+    status = call_external(MdsIPImage(),'IdlDisconnectFromMds',sock,value=[1b])
     if (status eq 0) then status = 1 else status = 0
     !MDS_SOCKET = 0l
   endif
@@ -171,7 +157,7 @@ pro mdsconnect,host,status=status,quiet=quiet,port=port,socket=socket
     setenv_,'mdsip=8000'
   endif
 
-  sock = call_external(MdsIPImage(),MdsRoutinePrefix()+'ConnectToMds',host,value=[byte(!version.os ne 'windows')])
+  sock = call_external(MdsIPImage(),'IdlConnectToMds',host,value=[byte(!version.os ne 'windows')])
   sockmin=1l-(!version.os eq 'MacOS')
   if (sock ge sockmin) then begin
     status = 1

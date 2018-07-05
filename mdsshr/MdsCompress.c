@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*	MDS$COMPRESS.C
 	Compress waveform or other data using specified or delta method.
 		status = MDS$COMPRESS(%descr(cimage), %descr(centry), %descr(input), %ref(output_xd))
@@ -54,9 +78,10 @@ The expansion routine "xentry":
 #include <strroutines.h>
 #include <mdsshr_messages.h>
 #include <STATICdef.h>
+#include <mdsplus/mdsplus.h>
 #include "mdsshrp.h"
 
-#define _MOVC3(a,b,c) memcpy(c,b,a)
+#define _MOVC3(a,b,c) memcpy(c,b,(size_t)(a))
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 typedef ARRAY_COEFF(char, 1) array_coef;
 typedef RECORD(4) record_four;
@@ -77,21 +102,22 @@ STATIC_ROUTINE int compress(const struct descriptor *pcimage,
 			    const struct descriptor *pcentry, int64_t delta, struct descriptor *pwork)
 {
   int j, stat1, status = 1;
-  int bit = 0, asize, nitems, (*symbol) ();
+  unsigned int bit = 0;
+  int nitems, (*symbol) ();
   char *pcmp, *plim;
   array_coef *pca0, *pca1;
   struct descriptor_a *pdat, *porig;
   record_four *prec;
   struct descriptor_d dximage, dxentry;
   struct descriptor *pd0, *pd1, **ppd;
-  int align_size;
+  size_t asize,align_size;
   if (pwork)
     switch (pwork->class) {
     case CLASS_APD:
 //      pd1 = (struct descriptor *) pwork->pointer;
       ppd = (struct descriptor **)pwork->pointer;
-      j = (long)((struct descriptor_a *)pwork)->arsize / (long)pwork->length;
-      while ((--j >= 0) && (status & 1))
+      j = (int)(((struct descriptor_a *)pwork)->arsize / pwork->length);
+      while ((--j >= 0) && STATUS_OK)
 //      if ((stat1 = compress(pcimage, pcentry, delta, pd1++)) != 1)
 	if ((stat1 = compress(pcimage, pcentry, delta, *ppd++)) != 1)
 	  status = stat1;
@@ -127,7 +153,7 @@ STATIC_ROUTINE int compress(const struct descriptor *pcimage,
       porig = (struct descriptor_a *)((char *)pwork + delta);
       asize = sizeof(struct descriptor_a) +
 	  (porig->aflags.coeff ? sizeof(void *) + porig->dimct * sizeof(int) : 0) +
-	  (porig->aflags.bounds ? porig->dimct * 2 * sizeof(int) : 0);
+	  (porig->aflags.bounds ? (size_t)(porig->dimct * 2) * sizeof(int) : 0);
       align_size = (porig->dtype == DTYPE_T) ? 1 : porig->length;
       asize = align(asize, align_size);
   /**************************************************************
@@ -137,9 +163,9 @@ STATIC_ROUTINE int compress(const struct descriptor *pcimage,
     Second is dummy for expansion function.
     ASSUME compressor fails gracefully and only changes *pdat data.
     **************************************************************/
-      prec = (record_four *) align((intptr_t) ((char *)pwork + asize), sizeof(void *));
+      prec = (record_four *) align((size_t) ((char *)pwork + asize), sizeof(void *));
       pca1 = (array_coef *) ((char *)prec + sizeof(rec0));
-      pdat = (struct descriptor_a *)align((intptr_t) ((char *)pca1 + asize), sizeof(void *));
+      pdat = (struct descriptor_a *)align((size_t) ((char *)pca1 + asize), sizeof(void *));
       pcmp = (char *)pdat + sizeof(struct descriptor_a);
       plim = porig->pointer + porig->arsize - sizeof(opcode);
       if (pcmp >= plim)
@@ -153,7 +179,7 @@ STATIC_ROUTINE int compress(const struct descriptor *pcimage,
       *prec = rec0;
       *pdat = *(struct descriptor_a *)&dat0;
       pdat->pointer = pcmp;
-      pdat->arsize = plim - pcmp;
+      pdat->arsize = (unsigned int)(plim - pcmp);
 
       nitems = (int)porig->arsize / (int)porig->length;
       if (pcentry) {
@@ -192,13 +218,13 @@ STATIC_ROUTINE int compress(const struct descriptor *pcimage,
 	bit = 0;
 	prec->dscptrs[0] = 0;
 	prec->dscptrs[1] = 0;
-	_MOVC3(pdat->arsize = plim - pcmp, pcmp + delta, pcmp);
+	_MOVC3(pdat->arsize = (unsigned int)(plim - pcmp), pcmp + delta, pcmp);
       }
 
     /********************
     Standard compression.
     ********************/
-      status = MdsCmprs(&nitems, (struct descriptor_a *)pwork, pdat, &bit);
+      status = MdsCmprs(&nitems, (struct descriptor_a *)pwork, pdat, (int*)&bit);
       pdat->arsize = (bit + 7) / 8;
       if ((status & 1) && (status != LibSTRTRU))
 	goto good;
@@ -246,6 +272,7 @@ EXPORT int MdsCompress(const struct descriptor *cimage_ptr,
   case CLASS_R:
     if (((struct descriptor_r *)in_ptr)->ndesc == 0)
       return MdsCopyDxXd(in_ptr, out_ptr);
+    MDS_ATTR_FALLTHROUGH
   case CLASS_A:
   case CLASS_APD:
   case CLASS_CA:

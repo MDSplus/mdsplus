@@ -1,7 +1,4 @@
 %{
-#ifdef __VMS
-#pragma module TdiYacc TdiYacc
-#endif
 
 #ifdef WIN32
 #pragma warning (disable : 4244 4102 ) /* int to short conversions and unreferenced label */

@@ -14,39 +14,32 @@
 #define SEND udt_send
 #define RECV udt_recv
 int server_epoll = -1;
+#define io_flush NULL
 #include "ioroutinesx.h"
 ////////////////////////////////////////////////////////////////////////////////
 //  CONNECT  ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *host){
+static int io_connect(Connection* c, char *protocol __attribute__ ((unused)), char *host){
   struct SOCKADDR_IN sin;
   UDTSOCKET sock;
-  if IS_OK(getHostAndPort(host, &sin)) {
+  if IS_OK(GetHostAndPort(host, &sin)) {
     sock = udt_socket(PF_T, SOCK_STREAM, 0);
     if (!sock) {
       perror("Error in (udt) connect");
-      return -1;
+      return C_ERROR;
     }
     if (udt_connect(sock, (struct sockaddr *)&sin, sizeof(sin))) {
       PERROR("Error in connect to service");
-      return -1;
+      return C_ERROR;
     }
-    SetConnectionInfo(conid, PROT, sock, NULL, 0);
-    return 0;
+    SetConnectionInfoC(c, PROT, sock, NULL, 0);
+    return C_OK;
   } else {
     fprintf(stderr,"Connect failed to host: %s\n",host);
     fflush(stderr);
-    return -1;
+    return C_ERROR;
   }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-//  FLUSH  /////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-static int io_flush(int conid __attribute__ ((unused))){
-  return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -180,5 +173,5 @@ static int io_listen(int argc, char **argv){
     }
   } else
     runServerMode(&options[1]);
-  return 1;
+  return C_ERROR;
 }

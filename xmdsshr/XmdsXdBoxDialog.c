@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSXDBOXDIALOG.C */
 /*  *5    23-JUN-1994 10:45:09 TWF "Motif 1.2" */
 /*  *4    22-FEB-1994 15:18:25 TWF "remove NO_X_GBLS" */
@@ -35,7 +59,7 @@
 
 #include <Xm/DialogS.h>
 #include <Xmds/XmdsXdBoxP.h>
-static void LoadDialog(Widget shell, Widget xdbw);
+static void LoadDialog(Widget shell, void *, void *);
 extern void XmdsXdBoxLoad();
 #include <xmdsshr.h>
 /****************************************************
@@ -111,12 +135,12 @@ EXPORT Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args, Car
      Add a callback to load the dialog
      box when it is popped up
    *************************************/
-  XtAddCallback(hidden, XmNpopupCallback, (XtCallbackProc) LoadDialog, widg);
+  XtAddCallback(hidden, XmNpopupCallback, LoadDialog, widg);
   XtRealizeWidget(hidden);
   return widg;
 }
 
-static void LoadDialog(Widget shell, Widget xdbw)
+static void LoadDialog(Widget shell, void *xdbw, void *unused __attribute__ ((unused)))
 {
-  XmdsXdBoxLoad(xdbw);
+  XmdsXdBoxLoad((Widget)xdbw);
 }

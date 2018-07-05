@@ -1,6 +1,5 @@
 Function MdsIdlImage
   case !version.os of
-    'vms' : return,'mdslibidl'
     'Win32' : return,'mdslibidl'
     'AIX' : return,'libMdsLibIdl.a'
     'IRIX' : return,'libMdsLibIdl.so'

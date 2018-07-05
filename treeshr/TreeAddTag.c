@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*------------------------------------------------------------------------------
 
 		Name: TREE$ADD_TAG
@@ -84,7 +108,7 @@ the tag name specified does not already exist.
     return TreeTAGNAMLEN;
 
   for (i = 0; i < len; i++)
-    tag[i] = toupper(tagnam[i]);
+    tag[i] = (char)toupper(tagnam[i]);
   for (i = len; i < 24; i++)
     tag[i] = ' ';
 
@@ -147,13 +171,13 @@ the tag name specified does not already exist.
    to the end of the existing tag information blocks.
   ********************************************************/
 
-    new_tags_ptr = memset(malloc(pages_needed * 512), 0, pages_needed * 512);
+    new_tags_ptr = calloc(512,(size_t)pages_needed);
     if (!(new_tags_ptr)) {
       return TreeMEMERR;
     }
-    memcpy(new_tags_ptr, old_tags_ptr, newtag_idx * sizeof(int));
+    memcpy(new_tags_ptr, old_tags_ptr, (size_t)newtag_idx * sizeof(int));
     memcpy(new_tags_ptr + newtag_idx + 1, old_tags_ptr + newtag_idx,
-	   (tags - newtag_idx) * sizeof(int));
+	   (size_t)(tags - newtag_idx) * sizeof(int));
     *(new_tags_ptr + newtag_idx) = swapint((char *)&tags);
     if (dblist->tree_info->edit->tags_pages > 0)
       free(old_tags_ptr);
@@ -171,7 +195,7 @@ the tag name specified does not already exist.
   ********************************************************/
 
     memmove(old_tags_ptr + newtag_idx + 1, old_tags_ptr + newtag_idx,
-	    (tags - newtag_idx) * sizeof(int));
+	    (size_t)(tags - newtag_idx) * sizeof(int));
     *(old_tags_ptr + newtag_idx) = swapint((char *)&tags);	/* Load new */
   }
 
@@ -191,8 +215,8 @@ the tag name specified does not already exist.
  is allocated in multiples of 512 byte chunks.
 ********************************************************/
 
-  pages_needed = ((tags + 1) * sizeof(TAG_INFO) + 511) / 512;
-  pages_allocated = max((int)(tags * sizeof(TAG_INFO) + 511) / 512,
+  pages_needed = ((tags + 1) * (int)sizeof(TAG_INFO) + 511) / 512;
+  pages_allocated = max((tags * (int)sizeof(TAG_INFO) + 511) / 512,
 			dblist->tree_info->edit->tag_info_pages);
   if (pages_needed > pages_allocated) {
 
@@ -206,11 +230,11 @@ the tag name specified does not already exist.
   *******************************************************/
 
     pages_needed = pages_needed + 31;
-    new_tag_info_ptr = memset(malloc(pages_needed * 512), 0, pages_needed * 512);
+    new_tag_info_ptr = calloc(512,(size_t)pages_needed);
     if (!new_tag_info_ptr)
       return TreeMEMERR;
 
-    memcpy(new_tag_info_ptr, dblist->tree_info->tag_info, tags * sizeof(TAG_INFO));
+    memcpy(new_tag_info_ptr, dblist->tree_info->tag_info, (size_t)tags * sizeof(TAG_INFO));
     *(new_tag_info_ptr + tags) = tag_info;	/* Load new */
     if (dblist->tree_info->edit->tag_info_pages > 0)
       free(dblist->tree_info->tag_info);

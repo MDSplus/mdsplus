@@ -11,6 +11,7 @@
 #define RECV        recv
 // active select file descriptor
 static fd_set fdactive;
+static int io_flush(Connection* c);
 #include "ioroutinesx.h"
 ////////////////////////////////////////////////////////////////////////////////
 //  CONNECT  ///////////////////////////////////////////////////////////////////
@@ -42,15 +43,15 @@ static void SetSocketOptions(SOCKET s, int reuse){
   setsockopt(s, SOL_SOCKET, SO_OOBINLINE, (void *)&one, sizeof(one));
 }
 
-static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *host){
+static int io_connect(Connection* c, char *protocol __attribute__ ((unused)), char *host){
   struct SOCKADDR_IN sin;
   SOCKET sock;
-  if IS_OK(getHostAndPort(host, &sin)) {
+  if IS_OK(GetHostAndPort(host, &sin)) {
     INITIALIZESOCKETS;
     sock = socket(AF_T, SOCK_STREAM, 0);
     if (sock == INVALID_SOCKET) {
       PERROR("Error creating socket");
-      return -1;
+      return C_ERROR;
     }
     struct timeval connectTimer = { 0, 0 };
     connectTimer.tv_sec = GetMdsConnectTimeout();
@@ -76,7 +77,7 @@ static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *
           shutdown(sock, 2);
           close(sock);
           fflush(stderr);
-          return -1;
+          return C_ERROR;
         }
       }
 #ifndef _WIN32
@@ -90,20 +91,20 @@ static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *
       shutdown(sock, 2);
       sock = INVALID_SOCKET;
       PERROR("Error in connect to service");
-      return -1;
+      return C_ERROR;
     }
     if (sock == INVALID_SOCKET) {
       fprintf(stderr,"Error in connect to service\n");
       fflush(stderr);
-      return -1;
+      return C_ERROR;
     }
     SetSocketOptions(sock, 0);
-    SetConnectionInfo(conid, PROT, sock, NULL, 0);
-    return 0;
+    SetConnectionInfoC(c, PROT, sock, NULL, 0);
+    return C_OK;
   } else {
     fprintf(stderr, "Connect failed to host: %s\n",host);
     fflush(stderr);
-    return -1;
+    return C_ERROR;
   }
 }
 
@@ -111,9 +112,9 @@ static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *
 //  FLUSH  /////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static int io_flush(int conid){
+static int io_flush(Connection* c){
 #if !defined(__sparc__)
-  SOCKET sock = getSocket(conid);
+  SOCKET sock = getSocket(c);
   if (sock != INVALID_SOCKET) {
     struct timeval timout = { 0, 1 };
     int err;
@@ -144,7 +145,7 @@ static int io_flush(int conid){
     }
   }
 #endif
-  return 0;
+  return C_OK;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -158,8 +159,12 @@ static short getPort(char *name){
   if (port == 0) {
     sp = getservbyname(name, "tcp");
     if (!sp) {
-      fprintf(stderr, "Error unknown service: %s/%s: %s/n", name, PROT, strerror(errno));
-      exit(0);
+      if (errno) {
+        fprintf(stderr, "Error: unknown service port %s/%s; %s\n", name, PROT, strerror(errno));
+        exit(0);
+      }
+      fprintf(stderr, "Error: unknown service port %s/%s; default to 8000\n", name, PROT);
+      return 8000;
     }
     port = sp->s_port;
   }
@@ -297,5 +302,5 @@ static int io_listen(int argc, char **argv){
     }// end LISTEN LOOP //
   } else
     runServerMode(&options[1]);
-  return 1;
+  return C_ERROR;
 }

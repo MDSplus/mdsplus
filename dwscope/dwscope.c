@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*------------------------------------------------------------------------------
 
  		Name:   DWScope
@@ -28,7 +52,7 @@ $ dwcope [-default setup]
 
 ------------------------------------------------------------------------------*/
 #include <mdstypes.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,6 +83,9 @@ $ dwcope [-default setup]
 #include <DXm/DECspecific.h>
 #endif
 
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
+#endif
 pthread_mutex_t event_mutex;
 
 extern void XmdsInitialize();
@@ -436,8 +463,10 @@ int main(int argc, String * argv)
 static void DoPrint(char *filename)
 {
   char cmd[512];
-  sprintf(cmd, "dwscopePrint %s %s", filename, ScopePrinter);
-  system(cmd);
+  int num = snprintf(cmd, sizeof(cmd), "dwscopePrint %s %s", filename, ScopePrinter);
+  if (num > 0 && num <= (int)sizeof(cmd))
+    if (system(cmd) != 0)
+      printf("Error invoking dwscopePrint\n");
 }
 
 static char *GetPrinterList()
@@ -1164,7 +1193,7 @@ static void /*XtCallbackProc */ ApplyCustomizeWindow(Widget w __attribute__ ((un
   XtVaGetValues(PlotsWidget, XmNnumChildren, &num, XmNchildren, &widgets, NULL);
   XtUnmanageChildren(widgets, num);
   Columns = 1;
-  memcpy(old_rows, Rows, sizeof(old_rows));
+  memcpy(old_rows, Rows, sizeof(Rows));
   for (c = 0; c < MaxCols; c++) {
     char name[8];
     sprintf(name, "rows_%d", c + 1);

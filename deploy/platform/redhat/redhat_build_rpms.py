@@ -1,6 +1,31 @@
 #!/bin/env python
-
+# 
+# Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright notice, this
+# list of conditions and the following disclaimer in the documentation and/or
+# other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
 import subprocess,os,sys,pexpect,xml.etree.ElementTree as ET,fnmatch,tempfile
+
+srcdir=os.path.realpath(os.path.dirname(os.path.realpath(__file__))+'/../../..')
 
 def externalPackage(info, root, package):
     ans = None
@@ -55,7 +80,7 @@ def buildRpms():
     info['buildroot']=os.environ['BUILDROOT']
     info['bname']=os.environ['BNAME']
     info['platform']=os.environ['PLATFORM']
-    tree=ET.parse('/source/deploy/packaging/linux.xml')
+    tree=ET.parse(srcdir+'/deploy/packaging/linux.xml')
     root=tree.getroot()
     rpmspec=root.find('rpm').find('spec_start').text
     s=rpmspec.split('\n')
@@ -112,14 +137,10 @@ def buildRpms():
                 os.write(out,"%%exclude /usr/local/mdsplus/lib%(bits)d/*.a\n" % info)
             if package.find("include_staticlibs") is not None:
                 os.write(out,"/usr/local/mdsplus/lib%(bits)d/*.a\n" % info)
-            for s in (("preinst","pre"),("postinst","post"),("prerm","preun"),("postrm","postun")):
-                script=package.find(s[0])
-                if script is not None and ("type" not in script.attrib or script.attrib["type"]=="rpm"):
-                    os.write(out,"%%%s\n%s\n" % (s[1],script.text.replace("__INSTALL_PREFIX__","$RPM_INSTALL_PREFIX")))
-            triggerin=package.find("triggerin")
-            if triggerin is not None:
-                os.write(out,"%%triggerin -- %s\n%s\n" % (triggerin.attrib['trigger'],
-                                                           triggerin.text.replace("__INSTALL_PREFIX__","$RPM_INSTALL_PREFIX")))
+            for s in ("pre","post","preun","postun"):
+                script=package.find(s)
+                if script is not None:
+                    os.write(out,"%%%s\n%s\n" % (s,script.text))
             os.close(out)
             info['specfilename']=specfilename
             print("Building rpm for mdsplus%(bname)s%(packagename)s%(arch_t)s" % info)
@@ -198,7 +219,7 @@ Buildarch: noarch
     try:
         os.stat('/sign_keys/.gnupg')
         try:
-            cmd="/bin/sh -c 'HOME=/sign_keys rpmsign --addsign /release/%(branch)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
+            cmd="/bin/sh -c 'rsync -a /sign_keys /tmp/; HOME=/tmp/sign_keys rpmsign --addsign /release/%(branch)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
             child = pexpect.spawn(cmd,timeout=60,logfile=sys.stdout)
             child.expect("Enter pass phrase: ")
             child.sendline("")

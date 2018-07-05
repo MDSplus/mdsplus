@@ -1,21 +1,45 @@
-#include <config.h>
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+#include <mdsplus/mdsconfig.h>
 #include <string.h>
 #include <STATICdef.h>
 #include <mdsshr.h>
 #include "mdsshrp.h"
 #include "mdsshrthreadsafe.h"
-#include        <stdio.h>
-#include        <stdarg.h>
-#include        <stdlib.h>
-#include        <sys/time.h>
-#include        <unistd.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#include <sys/time.h>
+#include <unistd.h>
 #include <libroutines.h>
 #include <strroutines.h>
 
-		/*========================================================
-		 * "Define"s and structure definitions ...
-		 *=======================================================*/
-#define ALREADY_DISPLAYED  0x80000000
+/*========================================================
+ * "Define"s and structure definitions ...
+ *=======================================================*/
+#define ALREADY_DISPLAYED (int)0x80000000
 
 /**********************************************************************
 * MDSMSG.C --
@@ -29,9 +53,9 @@
 ************************************************************************/
 
 
-	/*****************************************************************
-	 * MdsGetMsg:
-	 *****************************************************************/
+/*****************************************************************
+ * MdsGetMsg:
+ *****************************************************************/
 EXPORT char *MdsGetMsg(		/* Return: addr of "status" string      */
 		 int sts	/* <r> sts value                        */
     )
@@ -46,22 +70,22 @@ EXPORT char *MdsGetMsg(		/* Return: addr of "status" string      */
   int (*getmsg) (int, const char **, const char **, const char **);
 
   status = MdsGetStdMsg(sts, &facnam, &msgnam, &msgtext);
-  if (status & 1) {
+  if STATUS_OK {
     sprintf((MdsShrGetThreadStatic())->MdsGetMsg_text, "%%%s-%s-%s, %s", facnam,
 	    severity[sts & 0x7], msgnam, msgtext);
     return (MdsShrGetThreadStatic())->MdsGetMsg_text;
   }
-  while (!(status & 1) && (LibFindFile((struct descriptor *)&msg_files, (struct descriptor *)&filnam, &ctx) & 1)) {
+  while (STATUS_NOT_OK && (LibFindFile((struct descriptor *)&msg_files, (struct descriptor *)&filnam, &ctx) & 1)) {
     status = LibFindImageSymbol(&filnam, &getmsg_nam, &getmsg);
-    if (status & 1) {
+    if STATUS_OK {
       status = (*getmsg) (sts, &facnam, &msgnam, &msgtext);
-      if (status & 1)
+      if STATUS_OK
 	sprintf((MdsShrGetThreadStatic())->MdsGetMsg_text, "%%%s-%s-%s, %s", facnam,
 		severity[sts & 0x7], msgnam, msgtext);
     }
   }
   LibFindFileEnd(&ctx);
-  if (!(status & 1))
+  if STATUS_NOT_OK
     sprintf((MdsShrGetThreadStatic())->MdsGetMsg_text, "%%NONAME-%s-NOMSG, Message number 0x%08X",
 	    severity[sts & 0x7], sts);
   return (MdsShrGetThreadStatic())->MdsGetMsg_text;
@@ -71,7 +95,7 @@ EXPORT void MdsGetMsgDsc(int status, struct descriptor *out)
 {
   MdsGetMsg(status);
   (MdsShrGetThreadStatic())->MdsGetMsgDsc_tmp.length =
-      strlen((MdsShrGetThreadStatic())->MdsGetMsgDsc_tmp.pointer);
+      (unsigned short)strlen((MdsShrGetThreadStatic())->MdsGetMsgDsc_tmp.pointer);
   StrCopyDx(out, &(MdsShrGetThreadStatic())->MdsGetMsgDsc_tmp);
   return;
 }

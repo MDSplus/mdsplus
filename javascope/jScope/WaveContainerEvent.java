@@ -2,7 +2,6 @@ package jScope;
 
 /* $Id$ */
 import java.awt.AWTEvent;
-import java.awt.Event;
 
 public class WaveContainerEvent extends AWTEvent 
 {

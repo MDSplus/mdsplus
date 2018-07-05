@@ -1,4 +1,4 @@
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdsdescrip.h>
 #include "treeshrp.h"
 #include <pthread_port.h>
@@ -6,11 +6,11 @@
 typedef struct _thread_static {
   void *DBID;
   int privateCtx;
-  SEARCH_CONTEXT search_ctx[MAX_SEARCH_LEVELS];
   int64_t ViewDate;
   int nid_reference;
   int path_reference;
   NCI TemplateNci;
+  char TreeFindTagWild_answer[128];
 } TreeThreadStatic;
 
 #define TREEGETTHREADSTATIC_P TreeThreadStatic * TreeGetThreadStatic_p = TreeGetThreadStatic()

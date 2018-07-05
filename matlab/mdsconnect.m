@@ -9,31 +9,32 @@ function [ status ] = mdsconnect( host )
 %      mdsdisconnect will destroy this connection, reverting the above
 %      described routines to their local behaviors
 %
-  
-    import MDSplus.Connection
-    global MDSplus_Connection_Host
-    global MDSplus_Connection_Obj
-   
-    status = 0;
-    if isa(MDSplus_Connection_Host, 'char')
-      if compareIP(MDSplus_Connection_Host, host) == 1 
-         status = 1;
-      end
-    end
-    if status == 0
-      if strcmp(upper(host),'LOCAL') == 1
-        clearvars -global MDSplusConnection_Obj
-        MDSplus_Connection_Host='LOCAL';
-        status = 1;
-      else
-        try
-          MDSplus_Connection_Obj=Connection(host);
-          MDSplus_Connection_Host=host;
-          status = 1;
-        catch err
-	  status = -1;
+  mdsInfo();
+  global MDSINFO   
+  if MDSINFO.isConnected && strcmp(MDSINFO.connectedHost, host) && MDSINFO.usePython == MDSINFO.isPythonConnection
+    status = 1;
+  else
+    if strcmpi(host,'LOCAL') == 1
+      MDSINFO.isConnected = false;
+      MDSINFO.connection = [];
+      MDSINFO.connectedHost = host;
+      status = 1;
+    else
+      try
+        if MDSINFO.usePython
+	  py_MDSplus_Connection=str2func('py.MDSplus.Connection');
+          MDSINFO.connection=py_MDSplus_Connection(host);
+        else
+          MDSINFO.connection=javaObject('MDSplus.Connection',host);
         end
+        MDSINFO.isPythonConnection=MDSINFO.usePython;
+        MDSINFO.connectedHost=host;
+        MDSINFO.isConnected=true;
+        status = 1;
+      catch
+	      status = -1;
       end
     end
+  end
 end
 

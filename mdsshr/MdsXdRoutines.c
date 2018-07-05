@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*  CMS REPLACEMENT HISTORY, Element MDSXDROUTINES.C */
 /*  *12    4-SEP-1996 08:04:48 TWF "Remove libvmdef.h" */
 /*  *11    5-AUG-1996 14:38:17 TWF "Fix copy_dx for unpacked descriptors" */
@@ -27,7 +51,7 @@
 #define LibVM_EXTEND_AREA    32
 #define LibVM_TAIL_LARGE     128
 #define compression_threshold 128
-#define _MOVC3(a,b,c) memcpy(c,b,a)
+#define _MOVC3(a,b,c) memcpy(c,b,(size_t)(a))
 
 inline static size_t _sizeAligned(size_t bytes) {
   size_t b_mod = bytes % sizeof(void *);
@@ -42,8 +66,6 @@ inline static char *_align(char *ptr, size_t offset, size_t size) {
 void MdsFixDscLength(struct descriptor *in);
 //static void _checkAlign(struct descriptor *in);
 
-STATIC_CONSTANT void *MdsVM_ZONE = 0;
-
 EXPORT int MdsGet1Dx(unsigned int const *length_ptr, unsigned char const *dtype_ptr, struct descriptor_xd *dsc_ptr,
 	      void **zone)
 {
@@ -52,16 +74,15 @@ EXPORT int MdsGet1Dx(unsigned int const *length_ptr, unsigned char const *dtype_
     if (*length_ptr != dsc_ptr->l_length) {
       if (dsc_ptr->l_length)
 	status =
-	  LibFreeVm(&dsc_ptr->l_length, (void *)&dsc_ptr->pointer,
-		      zone ? zone : (MdsVM_ZONE ? &MdsVM_ZONE : 0));
+	  LibFreeVm(&dsc_ptr->l_length, (void *)&dsc_ptr->pointer, zone);
       else
 	status = 1;
-      if (status & 1)
+      if STATUS_OK
 	status =
-	  LibGetVm((unsigned int *)length_ptr, (void *)&dsc_ptr->pointer, zone ? zone : (MdsVM_ZONE ? &MdsVM_ZONE : 0));
+	  LibGetVm((unsigned int *)length_ptr, (void *)&dsc_ptr->pointer, zone);
     } else
       status = 1;
-    if (status & 1) {
+    if STATUS_OK {
       dsc_ptr->length = 0;
       dsc_ptr->l_length = *length_ptr;
       dsc_ptr->class = CLASS_XD;
@@ -78,11 +99,10 @@ EXPORT int MdsFree1Dx(struct descriptor_xd *dsc_ptr, void **zone)
   if (dsc_ptr->class == CLASS_XD) {
     if (dsc_ptr->pointer)
       status =
-	LibFreeVm(&dsc_ptr->l_length, (void *)&dsc_ptr->pointer,
-		    zone ? zone : (MdsVM_ZONE ? &MdsVM_ZONE : 0));
+	LibFreeVm(&dsc_ptr->l_length, (void *)&dsc_ptr->pointer, zone);
     else
       status = 1;
-    if (status & 1) {
+    if STATUS_OK {
       dsc_ptr->pointer = 0;
       dsc_ptr->l_length = 0;
     }
@@ -111,10 +131,10 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 			   int (*fixup_nid) (),
 			   void *fixup_nid_arg,
 			   int (*fixup_path) (), void *fixup_path_arg, int *compressible)
-{
-  unsigned int status = 1, bytes = 0, j, size;
+{ int status = 1;
+  unsigned int bytes = 0, j, size;
   struct descriptor *in_ptr = (struct descriptor *)in_dsc_ptr;
-  int align_size;
+  unsigned int align_size;
   while (in_ptr && in_ptr->dtype == DTYPE_DSC && in_ptr->class != CLASS_APD)
     in_ptr = (struct descriptor *)in_ptr->pointer;
   if (in_ptr)
@@ -146,7 +166,7 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 	}
 	if (path.pointer)
 	  StrFree1Dx(&path);
-	bytes = sizeof(struct descriptor_s) + in.length + align_size;
+	bytes = (unsigned int)sizeof(struct descriptor_s) + in.length + align_size;
       }
       break;
 
@@ -174,7 +194,7 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 	}
 	if (path.pointer)
 	  StrFree1Dx(&path);
-	bytes = _sizeAligned(sizeof(struct descriptor_xs) + in.l_length);
+	bytes = (unsigned int)_sizeAligned(sizeof(struct descriptor_xs) + in.l_length);
       }
       break;
 
@@ -182,7 +202,7 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
       {
 	struct descriptor_r *pi = (struct descriptor_r *)in_ptr;
 	struct descriptor_r *po = (struct descriptor_r *)out_dsc_ptr;
-	bytes = sizeof(struct descriptor_r) + (int)(pi->ndesc - 1) * sizeof(struct descriptor *);
+	bytes = (unsigned int)sizeof(struct descriptor_r) + (pi->ndesc - 1u) * (unsigned int)sizeof(struct descriptor *);
 	if (po) {
 	  _MOVC3(bytes, (char *)pi, (char *)po);
 	  if (pi->length > 0) {
@@ -190,11 +210,11 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 	    _MOVC3(pi->length, (char *)pi->pointer, (char *)po->pointer);
 	  }
 	}
-	bytes = _sizeAligned(bytes + pi->length);
+	bytes = (unsigned int)_sizeAligned(bytes + pi->length);
       /******************************
       Each descriptor must be copied.
       ******************************/
-	for (j = 0; j < pi->ndesc && status & 1; ++j)
+	for (j = 0; j < pi->ndesc && STATUS_OK; ++j)
 	  if (pi->dscptrs[j]) {
 	    status = copy_dx((struct descriptor_xd *)pi->dscptrs[j],
 			     po ? (struct descriptor_xd *)((char *)po + bytes) : 0,
@@ -202,7 +222,7 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 			     fixup_path, fixup_path_arg, compressible);
 	    if (po)
 	      po->dscptrs[j] = size ? (struct descriptor *)((char *)po + bytes) : 0;
-	    bytes = _sizeAligned(bytes + size);
+	    bytes = (unsigned int)_sizeAligned(bytes + size);
 	  }
       }
       break;
@@ -211,9 +231,9 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
       {
 	array_coeff *pi = (array_coeff *) FixedArray(in_ptr);
 	array_coeff *po = (array_coeff *) out_dsc_ptr;
-	bytes = sizeof(struct descriptor_a)
-	    + (pi->aflags.coeff ? sizeof(int) * (pi->dimct + 1) : 0)
-	    + (pi->aflags.bounds ? sizeof(int) * (pi->dimct * 2) : 0);
+	bytes = (unsigned int)sizeof(struct descriptor_a)
+	    + (pi->aflags.coeff  ? (unsigned int)sizeof(int) * (pi->dimct + 1u) : 0u)
+	    + (pi->aflags.bounds ? (unsigned int)sizeof(int) *  pi->dimct * 2u  : 0u);
 	if (po) {
 	  _MOVC3(bytes, (char *)pi, (char *)po);
 	  po->pointer = (char *)po + bytes;
@@ -221,7 +241,7 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 	  if (pi->aflags.coeff)
 	    po->a0 = po->pointer + (pi->a0 - pi->pointer);
 	}
-	bytes = _sizeAligned(bytes + pi->arsize);
+	bytes = (unsigned int)_sizeAligned(bytes + pi->arsize);
 	if (pi->arsize > compression_threshold)
 	  *compressible = 1;
 	free(pi);
@@ -230,13 +250,12 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 
     case CLASS_A:
       {
-	int dscsize;
-	int align_size;
+	unsigned int dscsize, align_size;
 	array_coeff *pi = (array_coeff *) in_ptr;
 	array_coeff *po = (array_coeff *) out_dsc_ptr;
-	dscsize = sizeof(struct descriptor_a)
-	    + (pi->aflags.coeff ? sizeof(char *) + sizeof(int) * pi->dimct : 0)
-	    + (pi->aflags.bounds ? sizeof(int) * (pi->dimct * 2) : 0);
+	dscsize = (unsigned int)sizeof(struct descriptor_a)
+	    + (pi->aflags.coeff  ? (unsigned int)sizeof(char *) + (unsigned int)sizeof(int) * pi->dimct : 0u)
+	    + (pi->aflags.bounds ? (unsigned int)sizeof(int) * pi->dimct * 2u : 0u);
 	if (pi->length == 0)
 	  MdsFixDscLength((struct descriptor *)pi);
 	align_size = (pi->dtype == DTYPE_T || pi->length == 0) ? 1 : pi->length;
@@ -264,26 +283,26 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 	struct descriptor **pdi = (struct descriptor **)pi->pointer;
 	struct descriptor **pdo = 0;
 	unsigned int num_dsc = pi->arsize / pi->length;
-	bytes = sizeof(struct descriptor_a)
-	    + (pi->aflags.coeff ? sizeof(char *) + sizeof(int) * pi->dimct : 0)
-	    + (pi->aflags.bounds ? sizeof(int) * (pi->dimct * 2) : 0);
+	bytes = (unsigned int)sizeof(struct descriptor_a)
+	    + (pi->aflags.coeff ? (unsigned int)sizeof(char *) + (unsigned int)sizeof(int) * pi->dimct : 0u)
+	    + (pi->aflags.bounds ? (unsigned int)sizeof(int) * pi->dimct * 2u : 0u);
 	if (po) {
 	  _MOVC3(bytes, (char *)pi, (char *)po);
 	  pdo = (struct descriptor **)(po->pointer = (char *)po + bytes);
 	}
-	bytes = _sizeAligned(bytes + pi->arsize);
+	bytes = (unsigned int)_sizeAligned(bytes + pi->arsize);
 
       /******************************
       Each descriptor must be copied.
       ******************************/
-	for (j = 0; j < num_dsc && status & 1; ++j) {
+	for (j = 0; j < num_dsc && STATUS_OK; ++j) {
 	  status = copy_dx((struct descriptor_xd *)*pdi++,
 			   po ? (struct descriptor_xd *)((char *)po + bytes) : 0,
 			   &size, fixup_nid, fixup_nid_arg, fixup_path, fixup_path_arg,
 			   compressible);
 	  if (po)
 	    *pdo++ = size ? (struct descriptor *)((char *)po + bytes) : 0;
-	  bytes = _sizeAligned(bytes + size);
+	  bytes = (unsigned int)_sizeAligned(bytes + size);
 	}
       }
       break;
@@ -292,9 +311,9 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
       {
 	struct descriptor_a *pi = (struct descriptor_a *)in_ptr;
 	struct descriptor_a *po = (struct descriptor_a *)out_dsc_ptr;
-	bytes = _sizeAligned(sizeof(struct descriptor_a)
-		      + (pi->aflags.coeff ? sizeof(char *) + sizeof(int) * pi->dimct : 0)
-		      + (pi->aflags.bounds ? sizeof(int) * (pi->dimct * 2) : 0));
+	bytes = (unsigned int)_sizeAligned(sizeof(struct descriptor_a)
+		+ (pi->aflags.coeff  ? (unsigned int)sizeof(char *) + (unsigned int)sizeof(int) * pi->dimct : 0u)
+		+ (pi->aflags.bounds ? (unsigned int)sizeof(int) * pi->dimct * 2u : 0u));
 	if (po) {
 	  _MOVC3(bytes, (char *)pi, (char *)po);
 	  if (pi->pointer)
@@ -311,7 +330,7 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 			   po ? (struct descriptor_xd *)(po->pointer) : 0,
 			   &size, fixup_nid, fixup_nid_arg, fixup_path, fixup_path_arg,
 			   compressible);
-	  bytes = _sizeAligned(bytes + size);
+	  bytes = (unsigned int)_sizeAligned(bytes + size);
 	}
       }
       break;
@@ -348,13 +367,13 @@ EXPORT int MdsCopyDxXdZ(const struct descriptor *in_dsc_ptr, struct descriptor_x
   status =
       copy_dx((struct descriptor_xd *)in_dsc_ptr, 0, &size, fixup_nid, fixup_nid_arg, fixup_path,
 	      fixup_path_arg, &compressible);
-  if (status & 1 && size) {
+  if (STATUS_OK && size) {
     status = MdsGet1Dx(&size, (unsigned char *)&dsc_dtype, out_dsc_ptr, zone);
-    if (status & 1)
+    if STATUS_OK
       status = copy_dx((struct descriptor_xd *)in_dsc_ptr,
 		       (struct descriptor_xd *)out_dsc_ptr->pointer,
 		       &size, fixup_nid, fixup_nid_arg, fixup_path, fixup_path_arg, &compressible);
-    if (status & 1 && compressible)
+    if (STATUS_OK && compressible)
       status = MdsCOMPRESSIBLE;
   } else
     MdsFree1Dx(out_dsc_ptr, zone);
@@ -365,17 +384,17 @@ STATIC_ROUTINE struct descriptor *FixedArray(struct descriptor *in)
 {
 
   array_coeff *a = (array_coeff *) in;
-  int dsize = sizeof(struct descriptor_a) + 4 + 12 * a->dimct;
-  int i;
+  unsigned int dsize = (unsigned int)sizeof(struct descriptor_a) + 4u + 12u * a->dimct;
   BOUNDS *bounds = (BOUNDS *) & a->m[a->dimct];
   array_coeff *answer = (array_coeff *) memcpy(malloc(dsize), a, dsize);
   answer->class = CLASS_A;
   answer->aflags.column = 1;
   answer->aflags.coeff = 1;
   answer->aflags.bounds = 1;
+  int i;
   for (i = 0; i < a->dimct - 1; i++)
     answer->m[i] = a->m[i + 1] / a->m[i];
-  answer->m[i] = bounds[i].u - bounds[i].l + 1;
+  answer->m[i] = (unsigned int)(bounds[i].u - bounds[i].l) + 1u;
   return (struct descriptor *)answer;
 }
 
