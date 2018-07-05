@@ -46,7 +46,8 @@ function info = mdsInfo()
     end
     if usePython
       try
-        x=py.MDSplus.Int32(int32(1));
+        py_MDSplus_Int32=str2func('py.MDSplus.Int32');
+        x=py_MDSplus_Int32(int32(1));
       catch pythonerror
         disp('Unable to connect to MDSplus using either a java bridge or a python bridge')
         disp(strcat(' Java error: ',javaerror.message))
