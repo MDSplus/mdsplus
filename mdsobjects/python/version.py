@@ -49,7 +49,7 @@ has_mapclass  = isinstance(map,(type,))
 
 if pyver<(2,7):
     def bit_length(val):
-        return len(bin(val)) - (3 is val<0 else 2)
+        return len(bin(val)) - (3 if val<0 else 2)
 else:
     def bit_length(val):
         return val.bit_length()
