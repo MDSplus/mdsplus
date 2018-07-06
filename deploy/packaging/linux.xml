@@ -877,7 +877,12 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
       find . -name '*\.pyc' -delete
       popd &gt;/dev/null 2&gt;&amp;1
     </post>
-    <preun>$RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh MDSplus</preun>
+    <preun>
+      if [ "$1" == "0" ]
+      then
+        $RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh MDSplus
+      fi
+    </preun>
     <!-- end rpm scripts -->
     
     <!-- deb scripts -->
