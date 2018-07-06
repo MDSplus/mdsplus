@@ -39,6 +39,10 @@ _tre=_mimport('tree')
 _exc=_mimport('mdsExceptions')
 
 class Compound(_dat.Data):
+    fields = tuple()
+    def __dir__(self):
+        """used for tab completion"""
+        return list(self.fields)
 
     def __init__(self,*args, **kwargs):
         """MDSplus compound data."""
