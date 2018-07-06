@@ -811,6 +811,10 @@ class Tree(object):
         """list descendants of top"""
         self.top.dir()
 
+    def __dir__(self):
+        """used for tab completion"""
+        return self.top.__dir__()
+
     def findTagsIter(self, wild):
         """An iterator for the tagnames from a tree given a wildcard specification.
         @param wild: wildcard spec.
@@ -1341,7 +1345,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         item.buflen_e=0
         item.code_e=0
         item.pointer_e=0
-        item.retlen_e=0        
+        item.retlen_e=0
         _exc.checkStatus(
                    _TreeShr._TreeSetNci(self.ctx,
                                         self._nid,
@@ -1369,7 +1373,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
     no_write_shot       =_nciFlag(12,"no_write_shot","is storing data in this node disabled if not model tree")
     include_in_pulse    =_nciFlag(15,"include_in_pulse","include subtree in pulse")
     compress_segments   =_nciFlag(16,"compress_segments","should segments be compressed")
-    
+
     brother             =_nciProp("brother","brother node of this node")
     child               =_nciProp("child","child node of this node")
     class_str           =_nciProp("class_str","class name of the data stored in this node")
@@ -1769,6 +1773,10 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         for desc in self.descendants:
             print('%-12s    %s'%(desc.node_name,desc.usage))
 
+    def __dir__(self):
+        """used for tab completion"""
+        return [str(n.node_name) for n in self.descendants]
+
     def dispatch(self,wait=True):
         """Dispatch an action node
         @rtype: None
@@ -1923,7 +1931,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         """
         xd=_dsc.Descriptor_xd()
         status = _TreeShr._TreeGetXNci(self.ctx,
-                            self.nid, 
+                            self.nid,
                             _C.c_char_p(_ver.tobytes(str(name).rstrip().lower())),
                             xd.ref)
         if (status & 1):
@@ -2648,7 +2656,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
             ref = _dat.Data.byref(data)
         _exc.checkStatus(
             _TreeShr._TreeSetXNci(self.ctx,
-                                  self.nid, 
+                                  self.nid,
                                   _C.c_char_p(_ver.tobytes(name)),
                                             ref))
 
@@ -2996,22 +3004,13 @@ class TreeNodeArray(_arr.Int32Array): # HINT: TreeNodeArray begin
 
     def __getattr__(self,name):
         ans=[]
-        doArray=None
         for node in self:
-            val=node.__getattribute__(name)
+            val = node.__getattribute__(name)
             if isinstance(val,_dat.Data):
-                val=val.data()
-                if doArray is None:
-                    doArray=True
-            else:
-                doArray is False
+                val = val.data()
             ans.append(val)
-        if doArray:
-            ans = _arr.Array(ans)
-        else:
-            ans = tuple(ans)
-        return ans
-
+        try:    return _arr.Array(ans)
+        except: return _apt.List(*ans)
 
 class Device(TreeNode): # HINT: Device begin
     """Used for device support classes. Provides ORIGINAL_PART_NAME, PART_NAME and Add methods and allows referencing of subnodes as conglomerate node attributes.
