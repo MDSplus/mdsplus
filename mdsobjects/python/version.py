@@ -108,6 +108,25 @@ if has_mapclass:
 else:
     mapclass = tuple
 
+if  ispy3:
+    def superdir(cls,self):
+        return super(cls, self).__dir__()
+else:
+    # http://www.quora.com/How-dir-is-implemented-Is-there-any-PEP-related-to-that
+    def superdir(cls,self=None):
+        def get_attrs(obj):
+            try:    return obj.__dict__.keys()
+            except: return []
+        attrs = set()
+        attrs.update(get_attrs(cls))
+        if hasattr(cls,'__bases__'):
+            for cls in cls.__bases__:
+                attrs.update(get_attrs(cls))
+                attrs.update(superdir(cls))
+        if not self is None:
+            attrs.update(get_attrs(self))
+        return list(attrs)
+
 # helper variant string
 if has_unicode:
     varstr = unicode
