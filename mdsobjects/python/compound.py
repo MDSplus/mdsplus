@@ -42,7 +42,7 @@ class Compound(_dat.Data):
     fields = tuple()
     def __dir__(self):
         """used for tab completion"""
-        return list(self.fields)
+        return list(self.fields)+_ver.superdir(Compound,self)
 
     def __init__(self,*args, **kwargs):
         """MDSplus compound data."""

@@ -813,7 +813,7 @@ class Tree(object):
 
     def __dir__(self):
         """used for tab completion"""
-        return self.top.__dir__()
+        return [str(n.node_name) for n in self.top.descendants]+_ver.superdir(Tree,self)
 
     def findTagsIter(self, wild):
         """An iterator for the tagnames from a tree given a wildcard specification.
@@ -1775,7 +1775,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
 
     def __dir__(self):
         """used for tab completion"""
-        return [str(n.node_name) for n in self.descendants]
+        return [str(n.node_name) for n in self.descendants]+_ver.superdir(TreeNode,self)
 
     def dispatch(self,wait=True):
         """Dispatch an action node
