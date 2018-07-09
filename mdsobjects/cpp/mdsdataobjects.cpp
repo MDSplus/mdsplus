@@ -1,3 +1,28 @@
+
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 #include "mdsobjects.h"
 
 #include <mdsplus/mdsplus.h>
@@ -32,16 +57,16 @@ extern "C" {
 	char * serializeData(void *dsc, int *retSize, void **retDsc);
 	void *deserializeData(char const * serialized);
 
-	void * convertToByte(void *dsc); 
-	void * convertToShort(void *dsc); 
-	void * convertToInt(void *dsc); 
-	void * convertToLong(void *dsc); 
-	void * convertToByteUnsigned(void *dsc); 
-	void * convertToShortUnsigned(void *dsc); 
-	void * convertToIntUnsigned(void *dsc); 
-	void * convertToLongUnsigned(void *dsc); 
-	void * convertToFloat(void *dsc); 
-	void * convertToDouble(void *dsc); 
+	void * convertToByte(void *dsc);
+	void * convertToShort(void *dsc);
+	void * convertToInt(void *dsc);
+	void * convertToLong(void *dsc);
+	void * convertToByteUnsigned(void *dsc);
+	void * convertToShortUnsigned(void *dsc);
+	void * convertToIntUnsigned(void *dsc);
+	void * convertToLongUnsigned(void *dsc);
+	void * convertToFloat(void *dsc);
+	void * convertToDouble(void *dsc);
 	void * convertToShape(void *dcs);
 	void * convertToParameter(void *dsc, void *helpDsc, void *validationDsc);
 	void * convertToUnits(void *dsc, void *unitsDsc);
@@ -58,7 +83,7 @@ extern "C"  void *convertDataToDsc(void *data)
 	return ((Data *)data)->convertToDsc();
 }
 
-extern "C"  void *createScalarData(int dtype, int length, char *ptr, Data *unitsData, Data *errorData, 
+extern "C"  void *createScalarData(int dtype, int length, char *ptr, Data *unitsData, Data *errorData,
 								  Data *helpData, Data *validationData, Tree *tree)
 {
 	switch(dtype) {
@@ -71,13 +96,13 @@ extern "C"  void *createScalarData(int dtype, int length, char *ptr, Data *units
 		case DTYPE_Q: return new Int64(*(int64_t *)ptr, unitsData, errorData, helpData, validationData);
 		case DTYPE_QU: return new Uint64(*(int64_t *)ptr, unitsData, errorData, helpData, validationData);
 		case DTYPE_FLOAT: return new Float32(*(float *)ptr, unitsData, errorData, helpData, validationData);
-		case DTYPE_F: 
-			convertToIEEEFloat(dtype, length, ptr); 
+		case DTYPE_F:
+			convertToIEEEFloat(dtype, length, ptr);
 			return new Float32(*(float *)ptr, unitsData, errorData, helpData, validationData);
 		case DTYPE_DOUBLE: return new Float64(*(double *)ptr, unitsData, errorData, helpData, validationData);
 		case DTYPE_G:
 		case DTYPE_D:
-			convertToIEEEFloat(dtype, length, ptr); 
+			convertToIEEEFloat(dtype, length, ptr);
 			return new Float64(*(double *)ptr, unitsData, errorData, helpData, validationData);
 		case DTYPE_FSC: return new Complex32(((float *)ptr)[0], ((float *)ptr)[1], unitsData, errorData, helpData, validationData);
 		case DTYPE_FTC: return new Complex64(((double *)ptr)[0], ((double *)ptr)[1], unitsData, errorData, helpData, validationData);
@@ -89,7 +114,7 @@ extern "C"  void *createScalarData(int dtype, int length, char *ptr, Data *units
 	return 0;
 }
 
-extern "C"  void *createArrayData(int dtype, int length, int nDims, int *dims, char *ptr, 
+extern "C"  void *createArrayData(int dtype, int length, int nDims, int *dims, char *ptr,
 								 Data *unitsData, Data *errorData, Data *helpData, Data *validationData)
 {
 	int revDims[MAX_ARGS];
@@ -105,7 +130,7 @@ extern "C"  void *createArrayData(int dtype, int length, int nDims, int *dims, c
 		case DTYPE_Q: return new Int64Array((int64_t *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_QU: return new Uint64Array((uint64_t *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_FLOAT: return new Float32Array((float *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
-		case DTYPE_F: 
+		case DTYPE_F:
 			convertToIEEEFloatArray(dtype, length, nDims, dims, ptr);
 			return new Float32Array((float *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_DOUBLE: return new Float64Array((double *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
@@ -120,7 +145,7 @@ extern "C"  void *createArrayData(int dtype, int length, int nDims, int *dims, c
 	return 0;
 }
 
-extern "C"  void *createCompoundData(int dtype, int length, char *ptr, int nDescs, char **descs, 
+extern "C"  void *createCompoundData(int dtype, int length, char *ptr, int nDescs, char **descs,
 									Data *unitsData, Data *errorData, Data *helpData, Data *validationData)
 {
 //printf("CREATE COMPOUND DATA nDescs = %d ptr= %x\n", nDescs, ptr);
@@ -145,17 +170,17 @@ extern "C"  void *createCompoundData(int dtype, int length, char *ptr, int nDesc
 	return 0;
 }
 
-extern "C"  void *createApdData(int nData, char **dataPtrs, Data *unitsData, 
+extern "C"  void *createApdData(int nData, char **dataPtrs, Data *unitsData,
 							   Data *errorData, Data *helpData, Data *validationData)
 {
 	return new Apd(nData, (Data **) dataPtrs, unitsData, errorData, helpData, validationData);
 }
-extern "C"  void *createListData(int nData, char **dataPtrs, Data *unitsData, 
+extern "C"  void *createListData(int nData, char **dataPtrs, Data *unitsData,
 							   Data *errorData, Data *helpData, Data *validationData)
 {
 	return new List(nData, (Data **) dataPtrs, unitsData, errorData, helpData, validationData);
 }
-extern "C"  void *createDictionaryData(int nData, char **dataPtrs, Data *unitsData, 
+extern "C"  void *createDictionaryData(int nData, char **dataPtrs, Data *unitsData,
 							   Data *errorData, Data *helpData, Data *validationData)
 {
 	return new Dictionary(nData, (Data **) dataPtrs, unitsData, errorData, helpData, validationData);
@@ -329,7 +354,7 @@ int * Data::getShape(int *numDim)
 		throw MdsException("Cannot compute shape");
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
-	
+
 	int *res = retData->getIntArray(numDim);
 	deleteData(retData);
 	return res;
@@ -340,16 +365,16 @@ int * Data::getShape(int *numDim)
 Data * Data::getData(int classType, int dataType) {
 	void *dscPtr = convertToDsc();
 	void *retDsc = NULL;
-	switch(dataType)  
+	switch(dataType)
 	{
-	  case DTYPE_B: 
-	    retDsc = convertToByte(dscPtr); 
+	  case DTYPE_B:
+	    retDsc = convertToByte(dscPtr);
 	    break;
 	  case DTYPE_BU:
-	    retDsc = convertToByteUnsigned(dscPtr); 
+	    retDsc = convertToByteUnsigned(dscPtr);
 	    break;
 	  case DTYPE_W:
-	    retDsc = convertToShort(dscPtr); 
+	    retDsc = convertToShort(dscPtr);
 	    break;
 	  case DTYPE_WU:
 	    retDsc = convertToShortUnsigned(dscPtr);
@@ -643,7 +668,7 @@ Data * Data::getDimensionAt(int dimIdx UNUSED_ARGUMENT) {
 
 ///
 /// \return new instanced Data representing compiled script
-/// 
+///
 /// ref to \ref MDSplus::compileWithArgs
 Data * MDSplus::compile(const char *expr) {
 	return compileWithArgs(expr, 0);
@@ -730,7 +755,7 @@ Data * MDSplus::executeWithArgs(const char *expr, int nArgs ...) {
 
 		va_list v;
 		va_start(v, nArgs);
-		
+
 		for(int i = 0; i < nArgs; i++)
 		{
 			Data *currArg = va_arg(v, Data *);
@@ -749,7 +774,7 @@ Data * MDSplus::executeWithArgs(const char *expr, int nArgs ...) {
 		for(int i = 0; i < nArgs; i++)
 		    freeDsc(args[i]);
 		if(actTree)
-			delete(actTree);
+		    delete(actTree);
 
 		return evalData;
 }
@@ -829,7 +854,7 @@ void * Data::completeConversionToDsc(void *dsc) {
 		if(validationDsc) freeDsc(validationDsc);
 		if(oldDsc) freeDsc(oldDsc);
 	}
-		 
+
 	if(error)
 	{
 		void *errorDsc = error->convertToDsc();
@@ -838,7 +863,7 @@ void * Data::completeConversionToDsc(void *dsc) {
 		if(errorDsc) freeDsc(errorDsc);
 		if(oldDsc) freeDsc(oldDsc);
 	}
-		
+
 	if(units)
 	{
 		void *unitsDsc = units->convertToDsc();
@@ -990,7 +1015,7 @@ void Array::setElementAt(int *getDims, int getNumDims, Data *data)
 		scalarData = (Scalar *)data;
         //Propagate the passed scalar to all the remaining dimensions
 		for(i = 0; i < rowDims[getNumDims - 1]; i++)
-			memcpy(ptr + ((startIdx + i) * length), scalarData->ptr, length); 
+			memcpy(ptr + ((startIdx + i) * length), scalarData->ptr, length);
 	}
 	delete [] rowDims;
 
@@ -1255,7 +1280,7 @@ std::complex<double> *Array::getComplexArray(int *numElements)
 		switch(dtype) {
 			case DTYPE_FSC:
 				retArr[i] = std::complex<double>(((float *)ptr)[2*i], ((float *)ptr)[2*i+1]); break;
-			case DTYPE_FTC: 
+			case DTYPE_FTC:
 				retArr[i] = std::complex<double>(((double *)ptr)[2*i], ((double *)ptr)[2*i+1]); break;
             default:
             delete [] retArr;
@@ -1272,7 +1297,7 @@ char **Array::getStringArray(int *numElements)
 	char **retArr = new char*[size];
 	for(int i = 0; i < size; i++)
 		switch(dtype) {
-			case DTYPE_T: 
+			case DTYPE_T:
 				retArr[i] = new char[length+1];
 				memcpy(retArr[i], &ptr[i*length], length);
 				retArr[i][length] = 0;

@@ -18,7 +18,17 @@ COBJECTS= $(CSOURCES:.c=.o)
 OBJECTS = $(CXXSOURCES:.cpp=.o)
 EXPORTS = MdsObjectsCppShr.exports
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ $(LV_SHR) @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr@SHARETYPE@ @MAKELIBDIR@@LIBPRE@MDSobjectsLVShr.a  
+all : primary
+	$(MAKE) secundary @MAKEFLAG_J@  @MAKEFLAG_O@
+
+primary : \
+	@MAKELIBDIR@ \
+	@MAKESHLIBDIR@ \
+	$(LV_SHR)
+
+secundary : primary \
+	@MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr@SHARETYPE@ \
+	@MAKELIBDIR@@LIBPRE@MDSobjectsLVShr.a
 
 clean:
 	@ $(RM) $(COBJECTS)
@@ -37,6 +47,7 @@ install: $(libdir)
 	$(MKDIR_P) $(exec_prefix)/LabView
 	tar -C ${top_srcdir}/mdsobjects/labview -cf - MDSplus | tar -C ${exec_prefix}/LabView -xf -
 	tar -C ${top_srcdir}/mdsobjects/labview -cf - MDSplus_LV2012 | tar -C ${exec_prefix}/LabView -xf -
+	tar -C ${top_srcdir}/mdsobjects/labview -cf - MDSplus_LV2015 | tar -C ${exec_prefix}/LabView -xf -
 	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr@SHARETYPE@ @libdir@
 @MINGW_FALSE@	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr @libdir@
 @MINGW_FALSE@	$(INSTALL) -m 755  @MAKESHLIBDIR@MDSobjectsLVShr @libdir@

@@ -1,2 +1,5 @@
 #!/bin/sh
+date >> ~/mdsip-ssh.log
+echo "----------> Connected `date` SSH mdsip connection from `whoami` on $SSH_CLIENT" >> ~/mdsip-ssh.log
 exec mdsip -P ssh 2>> ~/mdsip-ssh.log
+echo "----------< Disconnected `date` >> ~/mdsip-ssh.log

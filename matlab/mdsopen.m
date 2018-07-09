@@ -9,8 +9,6 @@ function [ shoto,status ] = mdsopen( tree, shot )
 %      mdsdisconnect will destroy this connection, reverting the above
 %      described routines to their local behaviors
 %
-   import MDSplus.Data
-   global MDSplus_Connection_Obj
    status = 1;
    shoto = 'Failed';
    idx=strfind(tree, '::');
@@ -22,16 +20,17 @@ function [ shoto,status ] = mdsopen( tree, shot )
        ltree=tree;
    end
    if mod(status,2)
-     if isjava(MDSplus_Connection_Obj)
+     info=mdsInfo();
+     if info.isConnected
        try
-         MDSplus_Connection_Obj.openTree(ltree,shot);
-         shoto = MDSplus_Connection_Obj.get('$shot');
+         info.connection.openTree(ltree,int32(shot));
+         shoto = mdsToMatlab(info.connection.get('$shot'));
        catch err
          status=0;
          shoto=err.message;
        end
      else
-       status = mdsvalue('TreeOpen($,$)',ltree,shot);
+       status = mdsvalue('TreeOpen($,$)',ltree,int32(shot));
        if mod(status,2)
          shoto = mdsvalue('$shot');
        end

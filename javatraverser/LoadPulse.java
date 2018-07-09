@@ -63,7 +63,6 @@ public class LoadPulse
     public static void main(String args[])
     {
 
-        Vector nodesV = new Vector();
         int outShot = -1;
         if (args.length < 2)
         {
@@ -154,7 +153,6 @@ public class LoadPulse
         while ( (basePathLine = br.readLine()) != null)
         {
             NidData currNid;
-            NidData outNid;
             if(basePathLine.trim().equals("")) continue;
             System.out.println(basePathLine);
             String basePath = "";
@@ -163,7 +161,7 @@ public class LoadPulse
                 
                 StringTokenizer st = new StringTokenizer(basePathLine, " ");
                 basePath = st.nextToken();
-                currNid = outNid = tree.resolve(new PathData(basePath), 0);
+                currNid = tree.resolve(new PathData(basePath), 0);
                 outPath = null;
                 if(st.hasMoreTokens())
                 {

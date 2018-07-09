@@ -1,13 +1,7 @@
 package jScope;
 
-/* $Id$ */
-import jScope.Signal;
-import jScope.DataProvider;
-import jScope.FrameData;
-import jScope.DataAccess;
-import java.util.*;
-import java.awt.*;
 import java.io.IOException;
+import java.util.StringTokenizer;
 
 public class TwuAccess implements DataAccess
 {
@@ -20,7 +14,6 @@ public class TwuAccess implements DataAccess
     {
         TwuAccess access = new TwuAccess();
         String url = "twu://ipptwu.ipp.kfa-juelich.de/textor/all/86858/RT2/IVD/IBT2P-star";
-        boolean supports = access.supports(url);
         try
         {
         float y [] = access.getY(url);
@@ -44,12 +37,11 @@ public class TwuAccess implements DataAccess
     {
         signal = "http" + url.substring(url.indexOf(":"));
         
-        String dummy;
         StringTokenizer st = new StringTokenizer(url, "/");
-        dummy = st.nextToken();
-        dummy = st.nextToken();
-        dummy = st.nextToken();
-        dummy = st.nextToken();
+        st.nextToken();
+        st.nextToken();
+        st.nextToken();
+        st.nextToken();
         shot_str  = st.nextToken();
         
         if(tw == null)

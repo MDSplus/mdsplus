@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*------------------------------------------------------------------------------
 
 		Name:   SERVER$DISPATCH_PHASE
@@ -99,14 +123,18 @@ STATIC_THREADSAFE char *Monitor = 0;
 STATIC_THREADSAFE int first_s;
 STATIC_THREADSAFE int last_s;
 
-STATIC_THREADSAFE pthread_cond_t JobWaitCondition = PTHREAD_COND_INITIALIZER;
-STATIC_THREADSAFE pthread_mutex_t JobWaitMutex = PTHREAD_MUTEX_INITIALIZER;
-STATIC_THREADSAFE pthread_mutex_t wake_send_monitor_mutex = PTHREAD_MUTEX_INITIALIZER;
-STATIC_THREADSAFE pthread_cond_t wake_send_monitor_cond = PTHREAD_COND_INITIALIZER;
-STATIC_THREADSAFE pthread_mutex_t wake_completed_mutex = PTHREAD_MUTEX_INITIALIZER;
-STATIC_THREADSAFE pthread_cond_t wake_completed_cond = PTHREAD_COND_INITIALIZER;
+
+STATIC_THREADSAFE Condition JobWaitC = CONDITION_INITIALIZER;
+STATIC_THREADSAFE Condition SendMonitorC = CONDITION_INITIALIZER;
+STATIC_THREADSAFE Condition CompletedC = CONDITION_INITIALIZER;
+
 STATIC_THREADSAFE pthread_mutex_t send_monitor_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
 STATIC_THREADSAFE pthread_mutex_t completed_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+STATIC_THREADSAFE pthread_rwlock_t table_lock = PTHREAD_RWLOCK_INITIALIZER;
+#define WRLOCK_TABLE pthread_rwlock_wrlock(&table_lock)
+#define RDLOCK_TABLE pthread_rwlock_rdlock(&table_lock)
+#define UNLOCK_TABLE pthread_rwlock_unlock(&table_lock)
 
 #define WRLOCK_ACTION(idx) pthread_rwlock_wrlock(&table->actions[idx].lock)
 #define RDLOCK_ACTION(idx) pthread_rwlock_rdlock(&table->actions[idx].lock)
@@ -140,6 +168,7 @@ void SendMonitor(int mode, int idx){
     char tree[13];
     char *cptr;
     int i;
+    RDLOCK_TABLE;{
     for (i = 0, cptr = table->tree; i < 12; i++)
       if (cptr[i] == (char)32)
 	break;
@@ -156,16 +185,13 @@ void SendMonitor(int mode, int idx){
     MonitorOn = ServerSendMonitor(Monitor, tree, table->shot, actions[idx].phase,
 				  actions[idx].nid, on, mode, server, actions[idx].status);
     UNLOCK_ACTION(idx);
+    }UNLOCK_TABLE;
   }
 }
 
 STATIC_ROUTINE char *now(char *buf){
   time_t tim = time(0);
-#ifdef _WIN32
-  buf = ctime(&tim);
-#else
   ctime_r(&tim, buf);
-#endif
   buf[strlen(buf) - 1] = 0;
   return buf;
 }
@@ -174,6 +200,7 @@ STATIC_ROUTINE void ActionDone(int idx){
   int i;
   char logmsg[1024];
   if (idx >= 0) {
+    RDLOCK_TABLE;{
     RDLOCK_ACTION(idx);
     ActionInfo *actions = table->actions;
     if (actions[idx].event)
@@ -223,17 +250,17 @@ STATIC_ROUTINE void ActionDone(int idx){
         }
       }
     }UNLOCK_ACTION(idx);
-    WRLOCK_ACTION(idx);
+    WRLOCK_ACTION(idx);{
     actions[idx].done = 1;
     actions[idx].recorded = 0;
-    UNLOCK_ACTION(idx);
+    }UNLOCK_ACTION(idx);
+    }UNLOCK_TABLE;
   }
-  pthread_mutex_lock(&JobWaitMutex);
-  pthread_cond_signal(&JobWaitCondition);
-  pthread_mutex_unlock(&JobWaitMutex);
+  CONDITION_SET(&JobWaitC);
 }
 
 STATIC_ROUTINE void Before(int idx){
+  RDLOCK_TABLE;{
   WRLOCK_ACTION(idx);{
   ActionInfo *actions = table->actions;
   char logmsg[1024];
@@ -246,6 +273,7 @@ STATIC_ROUTINE void Before(int idx){
     (*Output) (logmsg);
   }
   }UNLOCK_ACTION(idx);
+  }UNLOCK_TABLE;
 }
 
 /* FIND_NEXT_ACTION(START,END,CONDITION)
@@ -265,6 +293,7 @@ UNLOCK_ACTION(i);\
 
 STATIC_ROUTINE void SetActionRanges(int phase, int *first_c, int *last_c){
   int i;
+  RDLOCK_TABLE;{
   ActionInfo *actions = table->actions;
 #ifdef DEBUG
   PRINT_ACTIONS;
@@ -292,6 +321,7 @@ STATIC_ROUTINE void SetActionRanges(int phase, int *first_c, int *last_c){
     first_s = table->num;
     last_s = table->num;
   }
+  }UNLOCK_TABLE;
 #ifdef DEBUG
   fprintf(stderr,"ActionRange: %d,%d,%d,%d\n",*first_c, *last_c, first_s, last_s);
 #endif
@@ -300,6 +330,7 @@ STATIC_ROUTINE void SetActionRanges(int phase, int *first_c, int *last_c){
 STATIC_ROUTINE void AbortRange(int s, int e)
 {
   int i;
+  RDLOCK_TABLE;{
   ActionInfo *actions = table->actions;
   for (i = s; i < e; i++) {
     RDLOCK_ACTION(i);
@@ -310,6 +341,7 @@ STATIC_ROUTINE void AbortRange(int s, int e)
     }
     UNLOCK_ACTION(i);
   }
+  }UNLOCK_TABLE;
 }
 
 STATIC_ROUTINE void SetGroup(int sync, int first_g, int *last_g){
@@ -319,6 +351,7 @@ STATIC_ROUTINE void SetGroup(int sync, int first_g, int *last_g){
   }
   int i;
   int group;
+  RDLOCK_TABLE;{
   ActionInfo *actions = table->actions;
   sync = (sync < 1) ? 1 : sync;
   RDLOCK_ACTION(first_g);
@@ -326,6 +359,7 @@ STATIC_ROUTINE void SetGroup(int sync, int first_g, int *last_g){
   UNLOCK_ACTION(first_g);
   FIND_NEXT_ACTION(first_g+1, last_s, (actions[i].sequence / sync) != group);
   FIND_NEXT_ACTION_END(last_s);
+  }UNLOCK_TABLE;
   *last_g = i;
 }
 
@@ -343,6 +377,7 @@ STATIC_ROUTINE int NoOutstandingActions(const int s, const int e){
 STATIC_ROUTINE void RecordStatus(int s, int e)
 {
   int i;
+  RDLOCK_TABLE;{
   ActionInfo *actions = table->actions;
   for (i = s; i < e; i++) {
     WRLOCK_ACTION(i);
@@ -365,12 +400,12 @@ STATIC_ROUTINE void RecordStatus(int s, int e)
     }
     UNLOCK_ACTION(i);
   }
+  }UNLOCK_TABLE;
 }
 
-STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g, int first_c, int last_c)
-{
+STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g, int first_c, int last_c){
   int c_status = C_OK;
-  pthread_mutex_lock(&JobWaitMutex);
+  _CONDITION_LOCK(&JobWaitC);
   struct timespec tp;
   clock_gettime(CLOCK_REALTIME, &tp);
   int g,c = 1;
@@ -383,57 +418,51 @@ STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g, int first_c
     PRINT_ACTIONS;
 #endif
     tp.tv_sec++;
-    c_status = pthread_cond_timedwait(&JobWaitCondition, &JobWaitMutex, &tp);
+    c_status = pthread_cond_timedwait(&JobWaitC.cond, &JobWaitC.mutex, &tp);
 #if defined(_DECTHREADS_) && (_DECTHREADS_ == 1)
     if (c_status == -1 && errno == 11)
       c_status = ETIMEDOUT;
 #endif
   }
-  pthread_mutex_unlock(&JobWaitMutex);
+  _CONDITION_UNLOCK(&JobWaitC);
 }
 
-STATIC_ROUTINE char *DetailProc(int full)
-{
+STATIC_ROUTINE char *DetailProc(int full){
   int i;
-  int first = 1;
   int doing;
   char msg1[1024];
   char *msg = NULL;
-  unsigned int msglen;
+  unsigned int msglen = 4096;
+  RDLOCK_TABLE;{
   ActionInfo *actions = table->actions;
   for (doing = 1; doing > (full ? -1 : 0); doing--) {
     for (i = 0; i < table->num; i++) {
       RDLOCK_ACTION(i);
       if (actions[i].dispatched && !actions[i].done && ((int)actions[i].doing == doing)) {
 	char server[33];
-	if (first) {
-	  msglen = 4096;
-	  msg = (char *)malloc(4096);
-	  strcpy(msg, "\nWaiting on:\n");
-	  first = 0;
-	}
 	sprintf(msg1, "	%s %s %s for shot %d\n",
                 actions[i].path,
 		actions[i].doing ? "in progress on" : "dispatched to", Server(server,actions[i].server),
 		table->shot);
         UNLOCK_ACTION(i);
+	if (!msg)
+	  msg = strcpy((char *)malloc(msglen), "\nWaiting on:\n");
 	if (msglen < (strlen(msg) + strlen(msg1) + 1)) {
 	  char *oldmsg = msg;
-	  msg = (char *)malloc(msglen + 4096);
 	  msglen += 4096;
-	  strcpy(msg, oldmsg);
+	  msg = strcpy((char *)malloc(msglen), oldmsg);
 	  free(oldmsg);
 	}
 	strcat(msg, msg1);
       }
     }
   }
+  }UNLOCK_TABLE;
   return msg;
 }
 
 EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, char *phasenam, char noact_in,
-			int sync, void (*output_rtn) (), char *monitor)
-{
+			int sync, void (*output_rtn) (), char *monitor){
   int i;
   int status;
   int phase;
@@ -442,11 +471,13 @@ EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, c
   STATIC_CONSTANT DESCRIPTOR(phase_lookup, "PHASE_NUMBER_LOOKUP($)");
   struct descriptor phasenam_d = { 0, DTYPE_T, CLASS_S, 0 };
   phase_d.pointer = (char *)&phase;
+  WRLOCK_TABLE;{
   table = vtable;
+  table->failed_essential = 0;
+  }UNLOCK_TABLE;
   Output = output_rtn;
   noact = noact_in;
   AbortInProgress = 0;
-  table->failed_essential = 0;
   phasenam_d.length = strlen(phasenam);
   phasenam_d.pointer = phasenam;
   ProgLoc = 6005;
@@ -493,6 +524,7 @@ EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, c
     WaitForActions(1, first_g, last_g, first_c, last_c);
     ProgLoc = 6015;
     AbortInProgress = 1;
+    RDLOCK_TABLE;{
     ActionInfo *actions = table->actions;
     for (i = first_c; i < last_c; i++) {
       RDLOCK_ACTION(i);
@@ -504,6 +536,7 @@ EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, c
       }
       UNLOCK_ACTION(i);
     }
+    }UNLOCK_TABLE;
     ProgLoc = 6015;
     WaitForActions(1, first_g, last_g, first_c, last_c);
     ProgLoc = 6016;
@@ -518,12 +551,14 @@ EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, c
   return status;
 }
 
-EXPORT int ServerFailedEssential(void *vtable, int reset)
-{
+EXPORT int ServerFailedEssential(void *vtable, int reset){
+  int failed;
+  WRLOCK_TABLE;{
   DispatchTable *table = vtable;
-  int failed = table ? table->failed_essential : 0;
+  failed = table ? table->failed_essential : 0;
   if (table && reset)
     table->failed_essential = 0;
+  }UNLOCK_TABLE;
   return failed;
 }
 
@@ -531,6 +566,7 @@ STATIC_ROUTINE void Dispatch(int i){
   INIT_STATUS;
   char logmsg[1024];
   char server[33];
+  RDLOCK_TABLE;{
   WRLOCK_ACTION(i);{
     ActionInfo *actions = table->actions;
     actions[i].done = 0;
@@ -565,23 +601,15 @@ STATIC_ROUTINE void Dispatch(int i){
     }
     ProgLoc = 7005;
   }UNLOCK_ACTION(i);
+  }UNLOCK_TABLE;
 }
 
 STATIC_ROUTINE void WakeCompletedActionQueue(){
-  pthread_mutex_lock(&wake_completed_mutex);
-  pthread_cond_signal(&wake_completed_cond);
-  pthread_mutex_unlock(&wake_completed_mutex);
+  CONDITION_SET(&CompletedC);
 }
 
 STATIC_ROUTINE void WaitForActionDoneQueue(){
-  pthread_mutex_lock(&wake_completed_mutex);
-  {
-    struct timespec tp;
-    clock_gettime(CLOCK_REALTIME, &tp);
-    tp.tv_sec++;
-    pthread_cond_timedwait(&wake_completed_cond, &wake_completed_mutex, &tp);
-  }
-  pthread_mutex_unlock(&wake_completed_mutex);
+  CONDITION_WAIT_1SEC(&CompletedC);
 }
 
 STATIC_ROUTINE void QueueCompletedAction(int i)
@@ -618,20 +646,20 @@ STATIC_ROUTINE int DequeueCompletedAction(int *i)
     }
   }
   *i = doneAction;
-  return 1;
+  return B_TRUE;
 }
 
 
-STATIC_THREADSAFE Condition ActionDoneRunning = CONDITION_INITIALIZER;
+STATIC_THREADSAFE Condition ActionDoneRunningC = CONDITION_INITIALIZER;
 
 STATIC_ROUTINE void ActionDoneExit(){
-  CONDITION_RESET(&ActionDoneRunning);
+  CONDITION_RESET(&ActionDoneRunningC);
 }
 
 STATIC_ROUTINE void ActionDoneThread(){
   int i;
   pthread_cleanup_push(ActionDoneExit, 0);
-  CONDITION_SET(&ActionDoneRunning);
+  CONDITION_SET(&ActionDoneRunningC);
   while (DequeueCompletedAction(&i))
     ActionDone(i);
   pthread_cleanup_pop(1);
@@ -642,25 +670,18 @@ STATIC_ROUTINE void DoActionDone(int i){
   INIT_STATUS;
   pthread_t thread;
   QueueCompletedAction(i); /***** must be done before starting thread ****/
-  CONDITION_START_THREAD(&ActionDoneRunning, thread, , ActionDoneThread, NULL);
+  CONDITION_START_THREAD(&ActionDoneRunningC, thread, , ActionDoneThread, NULL);
   if STATUS_NOT_OK perror("DoActionDone: pthread creation failed");
 }
 
-STATIC_THREADSAFE Condition SendMonitorRunning = CONDITION_INITIALIZER;
+STATIC_THREADSAFE Condition SendMonitorRunningC = CONDITION_INITIALIZER;
 
 STATIC_ROUTINE void WakeSendMonitorQueue(){
-  pthread_mutex_lock(&wake_send_monitor_mutex);
-  pthread_cond_signal(&wake_send_monitor_cond);
-  pthread_mutex_unlock(&wake_send_monitor_mutex);
+  CONDITION_SET(&SendMonitorC);
 }
 
 STATIC_ROUTINE void WaitForSendMonitorQueue(){
-  pthread_mutex_lock(&wake_send_monitor_mutex);
-  struct timespec tp;
-  clock_gettime(CLOCK_REALTIME, &tp);
-  tp.tv_sec++;
-  pthread_cond_timedwait(&wake_send_monitor_cond, &wake_send_monitor_mutex, &tp);
-  pthread_mutex_unlock(&wake_send_monitor_mutex);
+  CONDITION_WAIT_1SEC(&SendMonitorC);
 }
 
 STATIC_ROUTINE void QueueSendMonitor(int mode, int i){
@@ -700,18 +721,18 @@ STATIC_ROUTINE int DequeueSendMonitor(int *mode_out, int *i)
   }
   *i = idx;
   *mode_out = mode;
-  return MDSplusSUCCESS;
+  return B_TRUE;
 }
 
 STATIC_ROUTINE void SendMonitorExit(){
-  CONDITION_RESET(&SendMonitorRunning);
+  CONDITION_RESET(&SendMonitorRunningC);
 }
 
 STATIC_ROUTINE void SendMonitorThread(){
   int i;
   int mode;
   pthread_cleanup_push(SendMonitorExit, NULL);
-  CONDITION_SET(&SendMonitorRunning);
+  CONDITION_SET(&SendMonitorRunningC);
   while (DequeueSendMonitor(&mode, &i))
     SendMonitor(mode, i);
   pthread_cleanup_pop(1);
@@ -722,6 +743,6 @@ STATIC_ROUTINE void DoSendMonitor(int mode, int idx){
   INIT_STATUS;
   pthread_t thread;
   QueueSendMonitor(mode, idx);/***** must be done before starting thread ****/
-  CONDITION_START_THREAD(&SendMonitorRunning, thread, , SendMonitorThread,NULL);
+  CONDITION_START_THREAD(&SendMonitorRunningC, thread, , SendMonitorThread,NULL);
   if STATUS_NOT_OK perror("DoSendMonitor: pthread creation failed");
 }

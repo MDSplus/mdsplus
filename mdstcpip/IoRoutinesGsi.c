@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 #include "globus_common.h"
 #include "globus_xio.h"
 #include "globus_xio_gsi.h"
@@ -23,26 +47,27 @@
 
 #include <STATICdef.h>
 #include <signal.h>
+#include <status.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <time.h>
 #include <sys/wait.h>
 
 #include "mdsip_connections.h"
 
-static ssize_t gsi_send(int conid, const void *buffer, size_t buflen, int nowait);
-static ssize_t gsi_recv(int conid, void *buffer, size_t len);
-static int gsi_disconnect(int conid);
+static ssize_t gsi_send(Connection* c, const void *buffer, size_t buflen, int nowait);
+static ssize_t gsi_recv(Connection* c, void *buffer, size_t len);
+static int gsi_disconnect(Connection* c);
 static int gsi_listen(int argc, char **argv);
-static int gsi_authorize(int conid, char *username);
-static int gsi_connect(int conid, char *protocol, char *host);
+static int gsi_authorize(Connection* c, char *username);
+static int gsi_connect(Connection* c, char *protocol, char *host);
 static int gsi_reuseCheck(char *host, char *unique, size_t buflen);
-static IoRoutines gsi_routines =
-    { gsi_connect, gsi_send, gsi_recv, 0, gsi_listen, gsi_authorize, gsi_reuseCheck,
-gsi_disconnect };
+static IoRoutines gsi_routines = {
+  gsi_connect, gsi_send, gsi_recv, NULL, gsi_listen, gsi_authorize, gsi_reuseCheck, gsi_disconnect, NULL
+};
 
 static int MDSIP_SNDBUF = 32768;
 static int MDSIP_RCVBUF = 32768;
@@ -57,8 +82,7 @@ typedef struct _gsi_info {
   char *connection_name;
 } GSI_INFO;
 
-EXPORT IoRoutines *Io()
-{
+EXPORT IoRoutines *Io(){
   return &gsi_routines;
 }
 
@@ -89,6 +113,14 @@ static void testStatus(globus_result_t res, char *msg)
   }
 }
 
+static GSI_INFO *getGsiInfoC(Connection* c)
+{
+  size_t len;
+  char *info_name;
+  int readfd;
+  GSI_INFO *info = (GSI_INFO *) GetConnectionInfoC(c, &info_name, &readfd, &len);
+  return (info_name && strcmp(info_name, "gsi") == 0) && len == sizeof(GSI_INFO) ? info : 0;
+}
 static GSI_INFO *getGsiInfo(int conid)
 {
   size_t len;
@@ -103,9 +135,9 @@ static GSI_INFO *getGsiInfo(int conid)
   testStatus(statvar,msg);\
   if (statvar!=GLOBUS_SUCCESS) fail_action
 
-static int gsi_authorize(int conid, char *username)
+static int gsi_authorize(Connection* c, char *username)
 {
-  GSI_INFO *info = getGsiInfo(conid);
+  GSI_INFO *info = getGsiInfoC(c);
   int ans = 0;
   if (info) {
     char *hostname;
@@ -121,7 +153,7 @@ static int gsi_authorize(int conid, char *username)
     doit(res,
 	 globus_xio_handle_cntl(info->xio_handle, info->tcp_driver,
 				GLOBUS_XIO_TCP_GET_REMOTE_CONTACT, &hostname), "Get Remote Contact",
-	 return 0);
+	 return C_ERROR);
     doit(res,
 	 globus_xio_handle_cntl(info->xio_handle, info->tcp_driver,
 				GLOBUS_XIO_TCP_GET_REMOTE_NUMERIC_CONTACT, &hostip),
@@ -133,7 +165,7 @@ static int gsi_authorize(int conid, char *username)
     //gss_release_name(&mstatus,&peer);
     if (status != GSS_S_COMPLETE) {
       fprintf(stderr, "Error getting display name\n");
-      return 0;
+      return C_ERROR;
     }
     match_string[0] = (char *)malloc(strlen(hostname) + strlen((char *)peer_name_buffer.value) + 2);
     match_string[1] = (char *)malloc(strlen(hostip) + strlen((char *)peer_name_buffer.value) + 2);
@@ -170,7 +202,8 @@ static int gsi_authorize(int conid, char *username)
 	int fd = mkstemp(cred_file_name);
 	if (fd != -1) {
 	  fchmod(fd, 00600);
-	  write(fd, buffer_desc.value, buffer_desc.length);
+	  if (write(fd, buffer_desc.value, buffer_desc.length) == -1)
+	    perror("Error in gsi_authorize writing to temporary file\n");
 	  fchmod(fd, 00400);
 	  close(fd);
 	  setenv("X509_USER_PROXY", cred_file_name, 1);
@@ -184,11 +217,11 @@ static int gsi_authorize(int conid, char *username)
   return ans;
 }
 
-static ssize_t gsi_send(int conid, const void *bptr, size_t num, int options __attribute__ ((unused)))
+static ssize_t gsi_send(Connection* c, const void *bptr, size_t num, int options __attribute__ ((unused)))
 {
   globus_size_t nbytes;
   globus_result_t result;
-  GSI_INFO *info = getGsiInfo(conid);
+  GSI_INFO *info = getGsiInfoC(c);
   ssize_t sent = -1;
   if (info != 0) {
     doit(result,
@@ -199,11 +232,11 @@ static ssize_t gsi_send(int conid, const void *bptr, size_t num, int options __a
   return sent;
 }
 
-static ssize_t gsi_recv(int conid, void *bptr, size_t num)
+static ssize_t gsi_recv(Connection* c, void *bptr, size_t num)
 {
-  globus_result_t result;
-  GSI_INFO *info = getGsiInfo(conid);
+  GSI_INFO *info = getGsiInfoC(c);
   globus_size_t numreceived;
+  globus_result_t result;
   ssize_t recved = -1;
   if (info != 0) {
     doit(result,
@@ -214,10 +247,8 @@ static ssize_t gsi_recv(int conid, void *bptr, size_t num)
   return recved;
 }
 
-static int gsi_disconnect(int conid)
-{
-  int status = -1;
-  GSI_INFO *info = getGsiInfo(conid);
+static int gsi_disconnect(Connection* c){
+  GSI_INFO *info = getGsiInfoC(c);
   if (info) {
     if (info->connection_name) {
       time_t tim = time(0);
@@ -228,9 +259,9 @@ static int gsi_disconnect(int conid)
       free(info->connection_name);
     }
     globus_result_t result = globus_xio_close(info->xio_handle, NULL);
-    status = (result == GLOBUS_SUCCESS) ? 0 : -1;
+    return (result == GLOBUS_SUCCESS) ? C_OK : C_ERROR;
   }
-  return status;
+  return C_ERROR;
 }
 
 static int gsi_reuseCheck(char *host, char *unique, size_t buflen)
@@ -252,7 +283,7 @@ static int gsi_reuseCheck(char *host, char *unique, size_t buflen)
   return ans;
 }
 
-static int gsi_connect(int conid, char *protocol __attribute__ ((unused)), char *host_in)
+static int gsi_connect(Connection* c, char *protocol __attribute__ ((unused)), char *host_in)
 {
   static int activated = 0;
   static globus_xio_stack_t stack_gsi;
@@ -264,7 +295,7 @@ static int gsi_connect(int conid, char *protocol __attribute__ ((unused)), char 
   char *host = host_in ? strcpy((char *)malloc(strlen(host_in) + 1), host_in) : 0;
   GSI_INFO info;
   if (!host)
-    return -1;
+    return C_ERROR;
   info.connection_name = 0;
   if ((colon = strchr(host, ':')) != 0) {
     *colon = 0;
@@ -277,36 +308,40 @@ static int gsi_connect(int conid, char *protocol __attribute__ ((unused)), char 
   free(host);
 
   if (activated == 0) {
-    doit(result, globus_module_activate(GLOBUS_XIO_MODULE), "GSI XIO Activate", return -1);
+    doit(result, globus_module_activate(GLOBUS_XIO_MODULE),
+       "GSI XIO Activate", return C_ERROR);
     activated = 1;
   }
-  doit(result, globus_xio_driver_load("tcp", &info.tcp_driver), "GSI Load TCP", return -1);
-  doit(result, globus_xio_driver_load("gsi", &info.gsi_driver), "GSI Load GSI", return -1);
-  doit(result, globus_xio_stack_init(&stack_gsi, NULL), "GSI Init stack", return -1);
-  doit(result, globus_xio_stack_push_driver(stack_gsi, info.tcp_driver), "GSI Push TCP", return -1);
-  doit(result, globus_xio_stack_push_driver(stack_gsi, info.gsi_driver), "GSI Push GSI", return -1);
-  doit(result, globus_xio_handle_create(&info.xio_handle, stack_gsi), "GSI Create Handle",
-       return -1);
-  doit(result, globus_xio_attr_init(&attr), "GSI Init Attr", return 1);
-  doit(result, globus_xio_attr_cntl(attr, info.gsi_driver, GLOBUS_XIO_GSI_SET_DELEGATION_MODE,
-				    GLOBUS_XIO_GSI_DELEGATION_MODE_FULL), "GSI Set Delegation",
-       return -1);
-  doit(result,
-       globus_xio_attr_cntl(attr, info.gsi_driver, GLOBUS_XIO_GSI_SET_AUTHORIZATION_MODE,
-			    GLOBUS_XIO_GSI_HOST_AUTHORIZATION), "GSI Set Authorization", return -1);
+  doit(result, globus_xio_driver_load("tcp", &info.tcp_driver),
+       "GSI Load TCP", return C_ERROR);
+  doit(result, globus_xio_driver_load("gsi", &info.gsi_driver),
+       "GSI Load GSI", return C_ERROR);
+  doit(result, globus_xio_stack_init(&stack_gsi, NULL),
+       "GSI Init stack", return C_ERROR);
+  doit(result, globus_xio_stack_push_driver(stack_gsi, info.tcp_driver),
+       "GSI Push TCP", return C_ERROR);
+  doit(result, globus_xio_stack_push_driver(stack_gsi, info.gsi_driver),
+       "GSI Push GSI", return C_ERROR);
+  doit(result, globus_xio_handle_create(&info.xio_handle, stack_gsi),
+       "GSI Create Handle", return C_ERROR);
+  doit(result, globus_xio_attr_init(&attr),
+       "GSI Init Attr", return C_ERROR);
+  doit(result, globus_xio_attr_cntl(attr, info.gsi_driver, GLOBUS_XIO_GSI_SET_DELEGATION_MODE, GLOBUS_XIO_GSI_DELEGATION_MODE_FULL),
+       "GSI Set Delegation", return C_ERROR);
+  doit(result, globus_xio_attr_cntl(attr, info.gsi_driver, GLOBUS_XIO_GSI_SET_AUTHORIZATION_MODE, GLOBUS_XIO_GSI_HOST_AUTHORIZATION),
+       "GSI Set Authorization", return -1);
   doit(result, globus_xio_attr_cntl(attr, info.tcp_driver, GLOBUS_XIO_TCP_SET_SNDBUF, MDSIP_SNDBUF),
-       "GSI Set SNDBUF", return -1);
+       "GSI Set SNDBUF", return C_ERROR);
   doit(result, globus_xio_attr_cntl(attr, info.tcp_driver, GLOBUS_XIO_TCP_SET_RCVBUF, MDSIP_RCVBUF),
-       "GSI Set RCVBUF", return -1);
+       "GSI Set RCVBUF", return C_ERROR);
   doit(result, globus_xio_attr_cntl(attr, info.tcp_driver, GLOBUS_XIO_TCP_SET_NODELAY, GLOBUS_TRUE),
-       "GSI Set NODELAY", return -1);
-  doit(result,
-       globus_xio_attr_cntl(attr, info.tcp_driver, GLOBUS_XIO_TCP_SET_KEEPALIVE, GLOBUS_TRUE),
-       "GSI Set KEEPALIVE", return -1);
-  doit(result, globus_xio_open(info.xio_handle, contact_string, attr), "Error connecting",
-       return -1);
-  SetConnectionInfo(conid, "gsi", 0, &info, sizeof(info));
-  return 0;
+       "GSI Set NODELAY", return C_ERROR);
+  doit(result, globus_xio_attr_cntl(attr, info.tcp_driver, GLOBUS_XIO_TCP_SET_KEEPALIVE, GLOBUS_TRUE),
+       "GSI Set KEEPALIVE", return C_ERROR);
+  doit(result, globus_xio_open(info.xio_handle, contact_string, attr),
+       "Error connecting",  return C_ERROR);
+  SetConnectionInfoC(c, "gsi", 0, &info, sizeof(info));
+  return C_OK;
 }
 
 static void readCallback(globus_xio_handle_t xio_handle __attribute__ ((unused)),
@@ -323,7 +358,7 @@ static void readCallback(globus_xio_handle_t xio_handle __attribute__ ((unused))
       globus_result_t res __attribute__ ((unused));
       globus_byte_t buff[1];
       int status = DoMessage(id);
-      if (status & 1)
+      if STATUS_OK
 	res = globus_xio_register_read(info->xio_handle, buff, 0, 0, 0, readCallback, userarg);
     }
   }
@@ -347,7 +382,7 @@ static void acceptCallback(globus_xio_server_t server,
     testStatus(res, "mdsip_accept_cp, open");
     if (res == GLOBUS_SUCCESS) {
       status = AcceptConnection("gsi", "gsi", 0, &info, sizeof(info), &id, &username);
-      if (status & 1) {
+      if STATUS_OK {
 	globus_byte_t buff[1];
 	doit(res,
 	     globus_xio_register_read(xio_handle, buff, 0, 0, 0, readCallback,
@@ -389,7 +424,7 @@ static int gsi_listen(int argc, char **argv)
     sl = GLOBUS_XIO_GSI_PROTECTION_LEVEL_PRIVACY;
   else {
     fprintf(stderr, "Invalid security level specified, must be one of none,integrity or private\n");
-    exit(1);
+    exit(C_ERROR);
   }
   info.connection_name = 0;
   globus_mutex_init(&globus_l_mutex, NULL);
@@ -424,13 +459,11 @@ static int gsi_listen(int argc, char **argv)
     res = globus_xio_server_create((globus_xio_server_t *) & info.xio_handle, server_attr, stack);
     testStatus(res, "gsi_listen,server_create");
     if (res == GLOBUS_SUCCESS) {
-      //      int id = NewConnection("gsi");
-      // SetConnectionInfo(id, "gsi", 0, &info, sizeof(info));
       res =
 	  globus_xio_server_register_accept((globus_xio_server_t) info.xio_handle, acceptCallback,
 					    &info);
       if (res != GLOBUS_SUCCESS)
-	exit(1);
+	exit(C_ERROR);
       else {
 	while (1) {
 	  res = globus_mutex_lock(&globus_l_mutex);
@@ -449,9 +482,9 @@ static int gsi_listen(int argc, char **argv)
     res = globus_xio_open(info.xio_handle, NULL, server_attr);
     testStatus(res, "get handle to connection");
     status = AcceptConnection("gsi", "gsi", 0, &info, sizeof(info), &id, &username);
-    while (status & 1) {
+    while STATUS_OK {
       status = DoMessage(id);
     }
   }
-  return 0;
+  return C_OK;
 }

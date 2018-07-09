@@ -1,6 +1,7 @@
-import javax.swing.*;
-import java.awt.*;
-import java.util.*;
+import java.util.Vector;
+
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 public class  DeviceParameters extends DeviceMultiComponent
 {
 
@@ -75,7 +76,6 @@ public class  DeviceParameters extends DeviceMultiComponent
     protected void addParameter(JPanel jp, NidData nidData)
      {
         try {
-            NidData prevDefNid = subtree.getDefault(0);
             subtree.setDefault(nidData, 0);
             NidData currNid;
             currNid = subtree.resolve(new PathData(":DESCRIPTION"), 0);

@@ -1,3 +1,28 @@
+#
+# Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright notice, this
+# list of conditions and the following disclaimer in the documentation and/or
+# other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
 """
 This is a helper module.
 Its purpose is to supply tools that are used to generate version specific code.
@@ -5,9 +30,14 @@ Goal is to generate code that work on both python2x and python3x.
 """
 from numpy import generic as npscalar
 from numpy import ndarray as nparray
+from numpy import string_ as npbytes
+from numpy import unicode_ as npunicode
 from sys import version_info as pyver
+import os
 ispy3 = pyver>(3,)
 ispy2 = pyver<(3,)
+isNt = os.name=='nt'
+npstr = npunicode if ispy3 else npbytes
 # __builtins__ is dict
 has_long      = 'long'       in __builtins__
 has_unicode   = 'unicode'    in __builtins__
@@ -17,39 +47,38 @@ has_buffer    = 'buffer'     in __builtins__
 has_xrange    = 'xrange'     in __builtins__
 has_mapclass  = isinstance(map,(type,))
 
+if pyver<(2,7):
+    def bit_length(val):
+        return len(bin(val)) - (3 if val<0 else 2)
+else:
+    def bit_length(val):
+        return val.bit_length()
+
 def load_library(name):
     import ctypes as C
-    import os
-    import platform
-    if platform.system() == 'Darwin':
-        if not os.getenv('DYLD_LIBRARY_PATH'):
-            if os.getenv('MDSPLUS_DIR'):
-                os.environ['DYLD_LIBRARY_PATH'] = os.path.join(os.getenv('MDSPLUS_DIR'),'lib')
-            else:
-                os.environ['DYLD_LIBRARY_PATH'] = '/usr/local/mdsplus/lib'
-    libnam = None
-    if pyver>(2,5,):
-        from ctypes.util import find_library
-        libnam = find_library(name)
+    if os.sys.platform.startswith('darwin') and not os.getenv('DYLD_LIBRARY_PATH'):
+        if os.getenv('MDSPLUS_DIR'):
+            os.environ['DYLD_LIBRARY_PATH'] = os.path.join(os.getenv('MDSPLUS_DIR'),'lib')
+        else:
+            os.environ['DYLD_LIBRARY_PATH'] = '/usr/local/mdsplus/lib'
+    from ctypes.util import find_library
+    libnam = find_library(name)
     if libnam is None:
-        try:
-            return C.CDLL('lib'+name+'.so')
-        except:
-            try:
-                return C.CDLL(name+'.dll')
-            except:
-                try:
-                    return C.CDLL('lib'+name+'.dylib')
-                except:
-                    raise Exception("Error finding library: "+name)
+        if os.sys.platform.startswith('win'):
+            return C.CDLL('%s.dll'%name)
+        if os.sys.platform.startswith('darwin'):
+            return C.CDLL('lib%s.dylib'%name)
+        try: return C.CDLL('lib%s.so'%name)
+        except:raise Exception("Could not find library: %s"%(name,))
     else:
-        try:
-            return C.CDLL(libnam)
-        except:
-            try:
-                return C.CDLL(name)
-            except:
-                return C.CDLL(os.path.basename(libnam))
+        try:   return C.CDLL(libnam)
+        except:pass
+        try:   return C.CDLL(name)
+        except:pass
+        try:   return C.CDLL(os.path.basename(libnam))
+        except:raise Exception('Could not load library: %s'%(name,))
+
+from types import GeneratorType as generator  # analysis:ignore
 
 # substitute missing builtins
 if has_long:
@@ -79,20 +108,39 @@ if has_mapclass:
 else:
     mapclass = tuple
 
+if  ispy3:
+    def superdir(cls,self):
+        return super(cls, self).__dir__()
+else:
+    # http://www.quora.com/How-dir-is-implemented-Is-there-any-PEP-related-to-that
+    def superdir(cls,self=None):
+        def get_attrs(obj):
+            try:    return obj.__dict__.keys()
+            except: return []
+        attrs = set()
+        attrs.update(get_attrs(cls))
+        if hasattr(cls,'__bases__'):
+            for cls in cls.__bases__:
+                attrs.update(get_attrs(cls))
+                attrs.update(superdir(cls))
+        if not self is None:
+            attrs.update(get_attrs(self))
+        return list(attrs)
+
 # helper variant string
 if has_unicode:
     varstr = unicode
 else:
     varstr = bytes
-
-# numpy char types
-npunicode = 'U'
-npbytes = 'S'
-if ispy2:
-    npstr = npbytes
+if has_xrange:
+    xrange = xrange
 else:
-    npstr = npunicode
+    xrange = range
 
+if has_xrange:
+    xrange = xrange
+else:
+    xrange = range
 
 def _decode(string):
     try:
@@ -100,19 +148,14 @@ def _decode(string):
     except:
         return string.decode('CP1252', 'backslashreplace')
 
-
 def _encode(string):
     return string.encode('utf-8', 'backslashreplace')
-
 
 def _tostring(string, targ, nptarg, conv, lstres):
     if isinstance(string, targ):  # short cut
         return targ(string)
     if isinstance(string, npscalar):
-        try:
-            return targ(string.astype(nptarg))
-        except:  # might happen on non ansii chars
-            return targ(conv(str(string)))
+        return targ(conv(string))
     if isinstance(string, basestring):
         return targ(conv(string))
     if isinstance(string, nparray):
@@ -123,28 +166,30 @@ def _tostring(string, targ, nptarg, conv, lstres):
 
 
 def tostr(string):
-    if ispy2:
-        return _tostring(string, str, npbytes, _encode, bytes)
-    else:
-        return _tostring(string, str, npunicode, _decode, unicode)
+    if isinstance(string,(list, tuple)):
+        return string.__class__(tostr(item) for item in string)
+    return _tostring(string, str, npstr, _decode, str)
 
+
+if ispy2:
+    _bytes = bytes
+    def _unicode(string):
+        return _decode(str(string))
+else:
+    def _bytes(string):
+        return _encode(str(string))
+    _unicode = unicode
 
 def tobytes(string):
-    if ispy2:
-        return _tostring(string, bytes, npbytes, _encode, bytes)
-    else:
-        def _bytes(string):
-            return _encode(str(string))
-        return _tostring(string, bytes, npbytes, _encode, _bytes)
+    if isinstance(string,(list, tuple)):
+        return string.__class__(tobytes(item) for item in string)
+    return _tostring(string, bytes, npbytes, _encode, _bytes)
 
 
 def tounicode(string):
-    if ispy3:
-        return _tostring(string, unicode, npbytes, _encode, unicode)
-    else:
-        def _unicode(string):
-            return _decode(str(string))
-        return _tostring(string, unicode, npunicode, _decode, _unicode)
+    if isinstance(string,(list, tuple)):
+        return string.__class__(tounicode(item) for item in string)
+    return _tostring(string, unicode, npunicode, _decode, _unicode)
 
 # Extract the code attribute of a function. Different implementations
 # are for Python 2/3 compatibility.

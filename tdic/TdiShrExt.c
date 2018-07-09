@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*  CMS REPLACEMENT HISTORY, Element TDISHREXT.C */
 /*  *3    31-AUG-2000 14:34:34 TWF "Fix conflicting names" */
 /*  *2    31-AUG-2000 14:32:24 TWF "Fix conflicting names" */
@@ -35,7 +59,7 @@ dele *.exe;
  #include <sys/socket.h>
  #define INVALID_SOCKET -1
 #endif
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,10 +71,6 @@ dele *.exe;
 #endif
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
-#ifdef VMS
-#include <ctype.h>
-#define TdiCvt TDI$CVT
-#endif
 extern int MdsOpen(int sock, char *tree, int shot);
 extern int MdsClose(int sock);
 extern int TdiCvt();

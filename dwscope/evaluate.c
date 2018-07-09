@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*  CMS REPLACEMENT HISTORY, Element EVALUATE.C */
 /*  *41   18-SEP-1997 14:19:37 TWF "Add brief/full messages" */
 /*  *40   27-AUG-1997 14:50:44 TWF "Add multiline error messages" */
@@ -337,7 +361,8 @@ static void EventAst(void *astparam, int dlen __attribute__ ((unused)), char *da
   pthread_mutex_lock(&event_mutex);
   *received = 1;
   pthread_mutex_unlock(&event_mutex);
-  write(event_pipe[1], buf, 1);
+  if (write(event_pipe[1], buf, 1) == -1)
+    perror("Error writing to event pipe\n");
 }
 
 void SetupEvent(String event, Boolean * received, int *id)
@@ -356,13 +381,15 @@ void SetupEvent(String event, Boolean * received, int *id)
 static void DoEventUpdate(XtPointer client_data, int *source, XtInputId * id)
 {
   char buf[1];
-  read(event_pipe[0], buf, 1);
+  if (read(event_pipe[0], buf, 1) == -1)
+    perror("Error reading from event pipe\n");
   EventUpdate(client_data, source, id);
 }
 
 void SetupEventInput(XtAppContext app_context, Widget w __attribute__ ((unused)))
 {
-  pipe(event_pipe);
+  if (pipe(event_pipe) == -1)
+    perror("Error creating event pipes");
   XtAppAddInput(app_context, event_pipe[0], (XtPointer) XtInputReadMask, DoEventUpdate, 0);
 
 }
@@ -627,7 +654,12 @@ static long ConnectToMdsEvents(char *event_host)
   sscanf(event_host, "%[^:]:%s", hostpart, portpart);
   if (strlen(portpart) == 0)
     strcpy(portpart, "mdsipe");
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wformat-truncation\"")
+#endif
   snprintf(host, 99, "%s:%s", hostpart, portpart);
+#pragma GCC diagnostic pop
   return ConnectToMds(host);
 }
 

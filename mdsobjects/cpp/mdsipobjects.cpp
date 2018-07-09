@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 #include <mdsobjects.h>
 #include <mdsplus/mdsplus.h>
 #include <mdsplus/AutoPointer.hpp>
@@ -76,6 +100,7 @@ void *getManyObj(char *serializedIn)
 		throw MdsException("INTERNAL ERROR: Get Multi did not receive a LIST argument");
 
 	int nArgs = inArgs->len();
+
 	String nameKey("name");
 	String exprKey("exp");
 	String argsKey("args");
@@ -90,15 +115,87 @@ void *getManyObj(char *serializedIn)
 		AutoData<String> exprData((String *)currArg->getItem(&exprKey));
 		AutoArray<char> expr(exprData->getString());
 		AutoData<List> argsData((List *)currArg->getItem(&argsKey));
-
 		AutoData<Dictionary> answDict(new Dictionary());
 		try {
 			Data *currAnsw;
 			if(argsData.get() && argsData->len() > 0)
-				currAnsw = executeWithArgs(expr.get(), 2, argsData->getDscs(), argsData->len());
-			else
-				currAnsw = execute(expr.get());
+			{
+				MDSplus::Data **args = argsData->getDscs();
+				switch( argsData->len()) 
+				{
+				  case 1: 
+				      currAnsw = executeWithArgs(expr.get(), 1, args[0]);
+				      break;
+				  case 2: 
+//std::cout << "EXPR: " << expr.get() << std::endl;
+//std::cout << "Arg 1: " << args[0]->decompile() << std::endl;
+//std::cout << "Arg 2: " << args[1]->decompile() << std::endl << std::endl;
 
+				      currAnsw = executeWithArgs(expr.get(), 2, args[0], args[1]);
+				      break;
+				  case 3: 
+				      currAnsw = executeWithArgs(expr.get(), 3, args[0], args[1], args[2]);
+				      break;
+				  case 4: 
+				      currAnsw = executeWithArgs(expr.get(), 4, args[0], args[1], args[2], args[3]);
+				      break;
+				  case 5: 
+				      currAnsw = executeWithArgs(expr.get(), 5, args[0], args[1], args[2], args[3], args[4]);
+				      break;
+				  case 6: 
+				      currAnsw = executeWithArgs(expr.get(), 6, args[0], args[1], args[2], args[3], args[4], 
+						  args[5]);
+				      break;
+				  case 7: 
+				      currAnsw = executeWithArgs(expr.get(), 7, args[0], args[1], args[2], args[3], args[4], 
+						  args[5], args[6]);
+				      break;
+				  case 8: 
+				      currAnsw = executeWithArgs(expr.get(), 8, args[0], args[1], args[2], args[3], args[4], 
+						  args[5], args[6], args[7]);
+				      break;
+				  case 9: 
+				      currAnsw = executeWithArgs(expr.get(), 9, args[0], args[1], args[2], args[3], args[4], 
+						  args[5], args[6], args[7], args[8]);
+				      break;
+				  case 10: 
+				      currAnsw = executeWithArgs(expr.get(), 10, args[0], args[1], args[2], args[3], args[4], 
+						  args[5], args[6], args[7], args[8], args[9]);
+				      break;
+				  case 11: 
+				      currAnsw = executeWithArgs(expr.get(), 11, args[0], args[1], args[2], args[3], args[4], 
+						  args[5], args[6], args[7], args[8], args[9], args[10]);
+				      break;
+				  case 12: 
+				      currAnsw = executeWithArgs(expr.get(), 12, args[0], args[1], args[2], args[3], args[4], 
+						  args[5], args[6], args[7], args[8], args[9], args[10], args[11]);
+				      break;
+				  case 13: 
+				      currAnsw = executeWithArgs(expr.get(), 13, args[0], args[1], args[2], args[3], args[4], 
+						  args[5], args[6], args[7], args[8], args[9], args[10], args[11],
+						  args[12]);
+				      break;
+				  case 14: 
+				      currAnsw = executeWithArgs(expr.get(), 14, args[0], args[1], args[2], args[3], args[4], 
+						  args[5], args[6], args[7], args[8], args[9], args[10], args[11],
+						  args[12], args[13]);
+				      break;
+				  case 15: 
+				      currAnsw = executeWithArgs(expr.get(), 15, args[0], args[2], args[3], args[4], 
+						  args[5], args[6], args[7], args[8], args[9], args[10], args[11],
+						  args[12], args[13], args[14]);
+				      break;
+				  default: 
+				      currAnsw = executeWithArgs(expr.get(), 16, args[0], args[2], args[3], args[4], 
+						  args[5], args[6], args[7], args[8], args[9], args[10], args[11],
+						  args[12], args[13], args[14], args[15]);
+				      break;
+				}
+			}
+			else
+			{
+				currAnsw = execute(expr.get());
+			}
 			AutoData<String> valueKey(new String("value"));
 			answDict->setItem(valueKey.get(), currAnsw);
 		} catch(MdsException const & e) {
@@ -241,11 +338,13 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 			throw MdsException(status);
 		}
 	}
-    //	unlockGlobal();	
-    status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
+    //	unlockGlobal();
+	status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
 	unlockLocal();
 	if(!(status & 1))
+	{
 		throw MdsException(status);
+	}
 
 	if(nDims == 0) {
 		switch(dtype) {
@@ -341,6 +440,7 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		if(!ptr)
 			throw MdsException("Invalid argument passed to Connection::put(). Can only be Scalar or Array");
+		if(nDims > 0) delete []dims;
 	}
 
 	//Double backslashes!!
@@ -369,6 +469,7 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 			unlockLocal();
 			throw MdsException(status);
 		}
+		if(nDims > 0) delete []dims;
 	}
 
 	int retDims[MAX_DIMS];
@@ -389,15 +490,25 @@ void Connection::setDefault(char *path)
 		throw MdsException(status);
 }
 
+TreeNodeThinClient *Connection::getNode(char *path)
+{
+	char expr[256];
+	sprintf(expr, "GETNCI(%s, \'NID_NUMBER\')", path);
+	AutoData<Data> nidData(get(expr));
+	if(!nidData)
+	    throw MdsException("Cannot get remote nid in Connection::getNode");
+	int nid = nidData->getInt();
+	return new TreeNodeThinClient(nid, this);
+}
+
 #ifndef _MSC_VER
 void Connection::registerStreamListener(DataStreamListener *listener, char *expr, char *tree, int shot)
 {
 	char regExpr[64 + strlen(expr) + strlen(tree)];
 	sprintf(regExpr, "MdsObjectsCppShr->registerListener(\"%s\",\"%s\",val(%d))", expr, tree, shot);
 
-	Data *idData = get(regExpr, NULL, 0);
+	AutoData<Data> idData(get(regExpr, NULL, 0));
 	int id = idData->getInt();
-	deleteData(idData);
 	listenerV.push_back(listener);
 	listenerIdV.push_back(id);
 }
@@ -425,10 +536,9 @@ void Connection::checkDataAvailability()
 	{
 		while(true)
 		{
-			Data *serData = get("MdsObjectsCppShr->getNewSamplesSerializedXd:DSC()");
+			AutoData<Data> serData(get("MdsObjectsCppShr->getNewSamplesSerializedXd:DSC()"));
 			int numBytes;
 			char *serialized = serData->getByteArray(&numBytes);
-			deleteData(serData);
 			Apd *apdData = (Apd *)deserialize(serialized);
 			delete [] serialized;
 			int numDescs =  apdData->getDimension();
@@ -445,12 +555,10 @@ void Connection::checkDataAvailability()
 				}
 				if(idx < (int)listenerV.size())
 				{
-					Data *sigData = sig->getData();
-					Data *sigDim = sig->getDimension();
-					if(((Array *)sigData)->getSize() > 0)
+					AutoData<Data> sigData(sig->getData());
+					AutoData<Data> sigDim(sig->getDimension());
+					if(((Array *)sigData.get())->getSize() > 0)
 						listenerV[idx]->dataReceived(sigData, sigDim);
-					deleteData(sigData);
-					deleteData(sigDim);
 				}
 			}
 			deleteData(apdData);

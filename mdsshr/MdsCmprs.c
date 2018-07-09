@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*	MdsCmprs.C
 	An algorithm to compress data with small differences.
 	Only data less than 32 bits can be packed.
@@ -73,17 +97,18 @@
 #include <stdlib.h>
 #include <limits.h>
 
+
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #define MAXX 1024		/*length of longest run allowed */
 #define MAXY 32			/*maximum bits that we can pack */
 #define BITSX 10		/*number of bits for run length */
 #define BITSY 6			/*number of bits in y 0-32 */
-#define MASK(bits)  ((unsigned int)0xffffffff >> (32 - bits))
-#define YFIELD(y) ((unsigned int)(y) & MASK(BITSY))
-#define XFIELD(x) (((unsigned int)(x) & MASK(BITSX)) << BITSY)
-#define X_AND_Y(x,y) (XFIELD(x) | YFIELD(y))
-#define X_OF_INT(val) (((unsigned int)(val) >> BITSY) & MASK(BITSX))
-#define Y_OF_INT(val) ((unsigned int)(val) & MASK(BITSY))
+#define MASK(bits)   (0xffffffff >> (32 - bits))
+#define YFIELD(y)    ((unsigned int)(y) & MASK(BITSY))
+#define XFIELD(x)    (((unsigned int)(x) & MASK(BITSX)) << BITSY)
+#define X_AND_Y(x,y) (int)(XFIELD(x) | YFIELD(y))
+#define X_OF_INT(val) (int)(((unsigned int)(val) >> BITSY) & MASK(BITSX))
+#define Y_OF_INT(val) (int)((unsigned int)(val) & MASK(BITSY))
 #define SWAP_SHORTS(in,out)         ((short *)out)[0] = ((short *)in)[1],((short *)out)[1] = ((short *)in)[0]
 
 typedef struct {
@@ -212,27 +237,24 @@ Do this in runs.
     old = 0;
     for (pn = diff, j = xn; --j >= 0; old = *p32++) {
       unsigned int delta;
-      int64_t ans;
-    /**** Check for integer overflow, 
+/**** Check for integer overflow,
  *        previously was:
  *             Check for special delta of 0x80000000
  *             which is the largest negative
  *             32-bit value. On some versions of the c
  *             compiler the other <= tests do not work.
  *        if overflow, put in flag value
-      ***********/
-      ans = (int64_t)*p32 - (int64_t)old;
-      if ((ans > (int64_t)INT_MAX) || (ans < (int64_t)-2147483647)) {
+ ***********/
+      int32_t ans = *p32 - old;
+      if ((((uint32_t)ans) == 0x80000000) || (old<0 ? ans<*p32 : ans>*p32)) {
         *pn++=ans;
         yy = 32;
-      }
-      else {
+      } else {
         i = *pn++ = ans;
-	delta = (i < 0) ? -i : i;
+	delta = (uint32_t)((i < 0) ? -i : i);
 	if (delta <= 64) {
 	  yy = signif[delta];
-	}
-	else {
+	} else {
 	  yy = 0;
 	  if (delta > 0x1000000) {
 	    delta = delta >> 24;
@@ -268,7 +290,7 @@ Do this in runs.
     **************************************************/
       tally[MAXY - 1] += tally[MAXY];
       for (ptally = tally, xsum = xn; (*ptally = xsum -= *ptally) > 0; ++ptally) ;
-      yn = ye = yy = (ptally - tally) + 1;
+      yn = ye = yy = (int)(ptally - tally) + 1;
     /*******************************************
     We have ptally pointed at last nonempty bin.
     Determine optimal breakpoint for exceptions.
@@ -288,7 +310,7 @@ Do this in runs.
   Build exception table.
   Assume 2's complement.
   *********************/
-    mark = 0xFFFFFFFF << (yn - 1);
+    mark = (int)(0xFFFFFFFF << (yn - 1));
     maxim = ~mark;
     for (pn = diff, pe = exce, j = xe; --j >= 0;) {
       while (*pn <= maxim && *pn > mark)
@@ -323,7 +345,7 @@ EXPORT int MdsXpand(int *nitems_ptr,
   int nitems = *nitems_ptr;
   char *ppack =
       memcpy(malloc(pack_dsc_ptr->arsize + 4), pack_dsc_ptr->pointer, pack_dsc_ptr->arsize);
-  int limit = pack_dsc_ptr->arsize * 8;
+  int limit = (int)pack_dsc_ptr->arsize * 8;
   int step = items_dsc_ptr->length;
   int dtype = items_dsc_ptr->dtype;
   register PF px = (PF) items_dsc_ptr->pointer;
@@ -369,7 +391,7 @@ Note the sign-extended unpacking.
       pe = exce;
       nbits = (char)ye;
       MdsUnpk(&nbits, &xe, (int *)ppack, pe, (int *)bit_ptr);
-      mark = 0xFFFFFFFF << (-yn - 1);
+      mark = (int)(0xFFFFFFFF << (-yn - 1));
     }
     else {
       pe = diff;

@@ -1,10 +1,13 @@
 package jScope;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Toolkit;
+
 /* $Id$ */
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.IOException;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
 
 public class AboutWindow extends JLabel  {
@@ -12,16 +15,18 @@ public class AboutWindow extends JLabel  {
     ImageIcon io = null;
 
     public AboutWindow() {
-	String icon_file = jScopeFacade.findFileInClassPath("jdocs/about_jscope.jpg");
-	if (icon_file != null)
-	io = new ImageIcon(icon_file);
-	else
-	io = new ImageIcon(getClass().getClassLoader().getResource("jdocs/about_jscope.jpg"));
+        try {
+            String icon_file = jScopeFacade.findFileInClassPath("jdocs/about_jscope.jpg");
+            if (icon_file != null)
+            io = new ImageIcon(icon_file);
+            else
+            io = new ImageIcon(getClass().getClassLoader().getResource("jdocs/about_jscope.jpg"));
 
-	if (jScopeFacade.is_debug)
-	System.out.println("about_jscope image path " + icon_file + io);
-	if(io != null) setIcon(io);
-	}
+            if (jScopeFacade.is_debug)
+            System.out.println("about_jscope image path " + icon_file + io);
+            if(io != null) setIcon(io);
+        }catch(Exception exc){}
+    }
 
     public void update(Graphics g) {
 	paint(g);

@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*      Tdi1Subscript.C
         Select portions of a data array.
                 array[subscript...]
@@ -77,7 +101,6 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
 {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
-  STATIC_CONSTANT DESCRIPTOR_A_COEFF(coeff0, 1, DTYPE_B, 0, MAXDIM, 1);
   register char *pin, *pout;
   int bounded = 0, cmode = -1, dimct, highest = 0, highdim = 0, row;
   int dim;
@@ -87,7 +110,7 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
   struct descriptor_dimension *pdim;
   struct descriptor_xd *keeps = TdiThreadStatic_p->TdiSELF_PTR;
   array_coeff *pdat, *pdi = 0;
-  array_coeff arr = *(array_coeff *) & coeff0;
+  array_coeff arr = {1,DTYPE_B,CLASS_A,0,0,0,{0,1,1,1,0},MAXDIM,1,0,{0}};
   struct descriptor ddim = { sizeof(dim), DTYPE_L, CLASS_S, 0 };
   struct descriptor_xd ii[MAXDIM], xx[MAXDIM];
   struct descriptor_xd sig[1], uni[1], dat[1];

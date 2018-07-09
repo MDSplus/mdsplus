@@ -1,8 +1,7 @@
 package jScope;
 
-/* $Id$ */
-import java.util.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintStream;
 
 public class JiNcSource implements JiDataSource 
 {
@@ -10,7 +9,6 @@ public class JiNcSource implements JiDataSource
 	private JiDim[] mDimArray;
 	private JiNcVar[] mGattArray;
 	private JiNcVar[] mVarArray;
-	private int mNextVarID = 0;
 	private RandomAccessData mInput;
 	private String mName;
 	// netCDF record size is sum of record variable lengths
@@ -68,7 +66,6 @@ public class JiNcSource implements JiDataSource
 	  {
 	  JiNcVar rval = null;
 	  for (int i=0; i < varray.length; ++i){
-	      JiNcVar var = varray[i];
 	      if (name.equals(varray[i].getName())){
 		  rval = varray[i];
 		  break;
@@ -294,7 +291,6 @@ public class JiNcSource implements JiDataSource
 	  }  
 	private void toStringAtt(PrintStream out, JiVar parent, JiVar v)
 	  {
-	  String outstr = null;
 	  if (parent == null){
 	      out.print("\t\t:");
 	  } else {

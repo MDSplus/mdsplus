@@ -9,6 +9,8 @@
 # $HOME/.mdsplus
 #
 MDS_PATH	$MDSPLUS_DIR/tdi
+MDS_PYDEVICE_PATH $MDSPLUS_DIR/pydevices
+PYTHONPATH      $MDSPLUS_DIR/pydevices >:
 MATLABPATH      $MDSPLUS_DIR/matlab <:
 UIDPATH		$MDSPLUS_DIR/uid/%U <:
 IDL_PATH        \<IDL_DEFAULT\>    <:

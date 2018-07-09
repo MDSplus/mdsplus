@@ -1,3 +1,28 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+#include <mdsplus/mdsplus.h>
 #include <mdsdescrip.h>
 #include <treeshr.h>
 #include <mdsshr.h>
@@ -7,7 +32,7 @@
 #include <stdio.h>
 #include <mds_stdarg.h>
 #include <libroutines.h>
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
@@ -370,6 +395,7 @@ EXPORT int IdlMdsValue(int argc, void **argv)
 	switch (mdsValueAnswer.pointer->dtype) {
 	case DTYPE_B:
 	  strcpy((char *)argv[2], "if answer gt 127 then answer = fix(answer)-256");
+	  MDS_ATTR_FALLTHROUGH
 	case DTYPE_BU:
 	  strcpy((char *)argv[1], "answer = 0b");
 	  break;
@@ -417,15 +443,23 @@ EXPORT int IdlMdsValue(int argc, void **argv)
 	char dims[512] = "(";
 	int i;
 	if (ptr->aflags.coeff)
-	  for (i = 0; i < ptr->dimct; i++)
-	    sprintf(dims, "%s%d,", dims, ptr->m[i] > 0 ? ptr->m[i] : 1);
-	else
-	  sprintf(dims, "%s%d,", dims,
+	  for (i = 0; i < ptr->dimct; i++) {
+	    char dim[16];
+	    sprintf(dim, "%d,", ptr->m[i] > 0 ? ptr->m[i] : 1);
+	    strcat(dims,dim);
+	  }
+	else {
+	  char dim[16];
+	  sprintf(dim, "%d,",
 		  ((ptr->arsize / ptr->length) > 0) ? (ptr->arsize / ptr->length) : 1);
-	dims[strlen(dims) - 1] = ')';
+	  strcat(dims,dim);
+	}
+        dims[strlen(dims)-1]='\0';
+	strcat(dims,")");
 	switch (mdsValueAnswer.pointer->dtype) {
 	case DTYPE_B:
 	  strcpy((char *)argv[2], "if max(answer) gt 127 then answer = fix(answer)-256");
+	  MDS_ATTR_FALLTHROUGH
 	case DTYPE_BU:
 	  strcpy((char *)argv[1], "answer = bytarr");
 	  strcat((char *)argv[1], dims);

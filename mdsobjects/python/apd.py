@@ -1,236 +1,310 @@
+#
+# Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright notice, this
+# list of conditions and the following disclaimer in the documentation and/or
+# other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
 
-import copy as _copy
 import numpy as _N
-import types as _T
+import ctypes as _C
 
-_data=_mimport('mdsdata')
-_scalar=_mimport('mdsscalar')
+_dsc=_mimport('descriptor')
+_dat=_mimport('mdsdata')
+_scr=_mimport('mdsscalar')
+_arr=_mimport('mdsarray')
 _ver=_mimport('version')
 
-class Apd(_data.Data):
+class Apd(_arr.Array):
     """The Apd class represents the Array of Pointers to Descriptors structure.
     This structure provides a mechanism for storing an array of non-primitive items.
     """
-
     mdsclass=196
+    dtype_id=24
+
+    @property
+    def _descriptor(self):
+        descs=self.descs
+        _compound=_mimport('compound')
+        d=_dsc.Descriptor_apd()
+        d.scale=0
+        d.digits=0
+        d.aflags=0
+        d.dtype=self.dtype_id
+        d.dimct=1
+        d.length=_C.sizeof(_C.c_void_p)
+        ndesc = len(descs)
+        d.array=[None]*ndesc
+        if ndesc:
+            d.arsize=d.length*ndesc
+            descs_ptrs=(_dsc.Descriptor.PTR*ndesc)()
+            for idx,desc in enumerate(descs):
+                if desc is None:
+                    descs_ptrs[idx] = None
+                else: # keys in dicts have to be python types
+                    if isinstance(desc,_dsc.Descriptor):
+                        d.array[idx] = desc
+                    else:
+                        d.array[idx] = _dat.Data(desc)._descriptor
+                    descs_ptrs[idx] = d.array[idx].ptr_
+            d.pointer=_C.cast(_C.pointer(descs_ptrs),_C.c_void_p)
+        d.a0=d.pointer
+        return _compound.Compound._descriptorWithProps(self,d)
+    @property
+    def tree(self):
+        for desc in self.descs:
+            if isinstance(desc,_dat.Data):
+                tree=desc.tree
+                if tree is not None:
+                    return tree
+        return None
+    @tree.setter
+    def tree(self,tree):
+        for desc in self.descs:
+            if isinstance(desc,_dat.Data):
+                desc._setTree(tree)
+
+    @classmethod
+    def fromDescriptor(cls,d):
+        num   = d.arsize//d.length
+        dptrs = _C.cast(d.pointer,_C.POINTER(_C.c_void_p*num)).contents
+        descs = [_dsc.pointerToObject(dptr,d.tree) for dptr in dptrs]
+        return cls(descs)._setTree(d.tree)
 
 
     def __hasBadTreeReferences__(self,tree):
         for desc in self.descs:
-            if isinstance(desc,_data.Data) and desc.__hasBadTreeReferences__(tree):
+            if isinstance(desc,_dat.Data) and desc.__hasBadTreeReferences__(tree):
                 return True
         return False
 
-    def __fixTreeReferences__(self,tree):
-        ans=_copy.deepcopy(self)
-        descs=list(ans.descs)
-        for idx in range(len(descs)):
-            if isinstance(descs[idx],_data.Data) and descs[idx].__hasBadTreeReferences__(tree):
-                descs[idx]=descs[idx].__fixTreeReferences__(tree)
-        ans.descs=tuple(descs)
-        return ans
 
-    def __init__(self,descs,dtype=0):
+    def __fixTreeReferences__(self,tree):
+        for idx in range(len(self.descs)):
+            d=self.descs[idx]
+            if isinstance(d,_dat.Data) and d.__hasBadTreeReferences__(tree):
+                self.descs[idx]=d.__fixTreeReferences__(tree)
+        return self
+
+    def __init__(self,value=None,dtype=0):
         """Initializes a Apd instance
         """
-        if isinstance(descs,(tuple,list,Apd)):
-            self.descs=descs
-            self.dtype=dtype
-        else:
-            raise TypeError("must provide tuple of items when creating ApdData")
+        if value is self: return
+        self.dtype_id = dtype
+        self._descs = []
+        if value is not None:
+            if isinstance(value,(Apd,tuple,list,_ver.mapclass,_ver.generator,_N.ndarray)):
+                for val in value:
+                    self.append(_dat.Data(val))
+            else:
+                raise TypeError("must provide tuple of items when creating ApdData: %s"%(type(value),))
 
     def __len__(self):
         """Return the number of descriptors in the apd"""
-        return len(self.descs)
+        return len(self._descs)
 
     def __getitem__(self,idx):
         """Return descriptor(s) x.__getitem__(idx) <==> x[idx]
         @rtype: Data|tuple
         """
         try:
-            return self.descs[idx]
+            return self.descs[idx]._setTree(self.tree)
         except:
-            return None
-        return
+            return
 
     def __setitem__(self,idx,value):
         """Set descriptor. x.__setitem__(idx,value) <==> x[idx]=value
         @rtype: None
         """
-        l=list(self.descs)
-        while len(l) <= idx:
-            l.append(None)
-        l[idx]=value
-        self.descs=tuple(l)
-        return None
+        diff = 1+idx-len(self._descs)
+        if diff>0:
+            self._descs+=[None]*diff
+        if isinstance(value,_dat.Data):
+            if self.tree is None:
+                self._setTree(value.tree)
+        else:
+            value = _dat.Data(value)
+        self._descs[idx]=value
 
     def getDescs(self):
         """Returns the descs of the Apd.
         @rtype: tuple
         """
-        return self.descs
+        return self._descs
 
     def getDescAt(self,idx=0):
         """Return the descriptor indexed by idx. (indexes start at 0).
         @rtype: Data
         """
-        return self[idx]
+        return self[idx]._setTree(self.tree)
 
     def setDescs(self,descs):
         """Set the descriptors of the Apd.
         @type descs: tuple
         @rtype: None
         """
-        if isinstance(descs,tuple):
-            self.descs=descs
+        if isinstance(descs,(tuple,list,_ver.mapclass,_ver.generator,_N.ndarray)):
+            descs=list(map(_dat.Data,descs))
+            self._descs = descs
+            for desc in descs:
+                if not desc.tree is None:
+                    self.setTree(desc.tree)
+                    break
         else:
             raise TypeError("must provide tuple")
-        return
+        return self
 
     def setDescAt(self,idx,value):
         """Set a descriptor in the Apd
         """
         self[idx]=value
-        return None
+        return self
 
     def append(self,value):
         """Append a value to apd"""
-        self[len(self)]=value
+        self[len(self)]=_dat.Data(value)
+        return self
 
-    def data(self):
-        """Returns native representation of the apd"""
-        l=list()
-        for d in self.descs:
-            l.append(d.data())
-        return tuple(l)
+    @property
+    def value(self):
+        return _N.array(self.descs,object)
+
+    @property
+    def descs(self):
+        """Returns the descs of the Apd.
+        @rtype: tuple
+        """
+        return tuple(self._descs)
+
+    @property
+    def _value(self):
+        """Returns native representation of the List"""
+        return _N.asarray(tuple(d.value for d in self.descs),'object')
+
 
 class Dictionary(dict,Apd):
     """dictionary class"""
+    class dict_np(_N.ndarray):
+        def __new__(cls,items):
+            return _N.asarray(tuple(d for d in items),'object').view(Dictionary.dict_np)
+        def tolist(self):
+            return dict(super(Dictionary.dict_np,self).tolist())
 
-    mdsdtype=216
+    _key_value_exception = Exception('A dictionary requires an even number of elements read as key-value pairs.')
 
-    @staticmethod
-    def toKey(key):
-        if isinstance(key,_scalar.Scalar):
-            key=key.value
-        if isinstance(key,_N.string_):
-            key=str(key)
-        elif isinstance(key,_N.int32):
-            key=int(key)
-        elif isinstance(key,(_N.float32,_N.float64)):
-            key=float(key)
-        return key
-
-    def __hasBadTreeReferences__(self,tree):
-        for v in self.itervalues():
-            if isinstance(v,_data.Data) and v.__hasBadTreeReferences__(tree):
-                return True
-        return False
-
-    def __fixTreeReferences__(self,tree):
-        ans = _copy.deepcopy(self)
-        for key,value in ans.iteritems():
-            if isinstance(value,_data.Data) and value.__hasBadTreeReferences__(tree):
-                ans[key]=value.__fixTreeReferences__(tree)
-        return ans
+    dtype_id=216
 
     def __init__(self,value=None):
+        if value is self: return
         if value is not None:
             if isinstance(value,dict):
                 for key,val in value.items():
                     self.setdefault(key,val)
-                return
-            elif isinstance(value,(Apd,list,tuple)):
+            elif isinstance(value,(Apd,tuple,list,_ver.mapclass,_N.ndarray)):
+                if isinstance(value,(_ver.mapclass,)) and not isinstance(value,(tuple,)):
+                    value = tuple(value)
+                if  len(value)&1:
+                    raise Dictionary._key_value_exception
                 for idx in range(0,len(value),2):
-                    key=value[idx]
-                    val=value[idx+1]
-                    self.setdefault(key,val)
-            elif isinstance(value,_T.GeneratorType):
-                if _ver.ispy3:
-                    for key in value:
-                        self.setdefault(key,value.__next__())
-                else:
-                    for key in value:
-                        self.setdefault(key,value.next())
+                    self.setdefault(value[idx],value[idx+1])
+            elif isinstance(value,(_ver.generator)):
+                for key in value:
+                    self.setdefault(key,next(value))
             else:
                 raise TypeError('Cannot create Dictionary from type: '+str(type(value)))
 
-    def __getattr__(self,name):
-        if name in self.keys():
-            return self[name]
-        else:
-            raise AttributeError('No such attribute: '+name)
-
-    def __setattr__(self,name,value):
-        if name in self.keys():
-            self[name]=value
-        elif hasattr(self,name):
-            self.__dict__[name]=value
-        else:
-            self.setdefault(name,value)
+    @staticmethod
+    def toKey(key):
+        if isinstance(key,(_scr.Scalar,)):
+            key = key.value
+        if isinstance(key,(_ver.npbytes,_ver.npunicode)):
+            return _ver.tostr(key)
+        if isinstance(key,(_N.int32,)):
+            return int(key)
+        if isinstance(key,(_N.float32,_N.float64)):
+            return float(key)
+        return _dat.Data(key).data().tolist()
 
     def setdefault(self,key,val):
+        """check keys and converts values to instances of Data"""
         key = Dictionary.toKey(key)
-        if isinstance(val,Apd):
-            val=Dictionary(val)
+        if not isinstance(val,_dat.Data):
+            val=_dat.Data(val)
         super(Dictionary,self).setdefault(key,val)
 
-    def data(self):
+    def remove(self,key):
+        """remove pair with key"""
+        del(self[Dictionary.toKey(key)])
+
+    def __setitem__(self,name,value):
+        """sets values as instances of Data"""
+        self.setdefault(name,value)
+
+    def __getitem__(self,name):
+        """gets values as instances of Data"""
+        return super(Dictionary,self).__getitem__(Dictionary.toKey(name))
+
+    @property
+    def value(self):
         """Return native representation of data item"""
-        d=dict()
-        for key,val in self.items():
-            d.setdefault(key,val.data())
-        return d
+        return Dictionary.dict_np(self.items())
 
     def toApd(self):
-        apd=Apd(tuple(),self.mdsdtype)
-        for key,val in self.items():
-            apd.append(key)
-            apd.append(val)
-        return apd
+        return Apd(self.descs,self.dtype_id)
 
-    def __str__(self):
-        return dict.__str__(self)
+    @property
+    def descs(self):
+        """Returns the descs of the Apd.
+        @rtype: tuple
+        """
+        return sum(self.items(),())
 
 class List(list,Apd):
     """list class"""
 
-    mdsdtype=214
-
-    def __hasBadTreeReferences__(self,tree):
-        for v in self:
-            if isinstance(v,_data.Data) and v.__hasBadTreeReferences__(tree):
-                return True
-        return False
-
-    def __fixTreeReferences__(self,tree):
-        ans = _copy.deepcopy(self)
-        for idx in range(len(ans)):
-            if isinstance(ans[idx],_data.Data) and ans[idx].__hasBadTreeReferences__(tree):
-                ans[idx]=ans[idx].__fixTreeReferences__(tree)
-        return ans
+    dtype_id=214
 
     def __init__(self,value=None):
+        if value is self: return
         if value is not None:
-            if isinstance(value,(list,tuple,_T.GeneratorType)):
+            if isinstance(value,(Apd,tuple,list,_ver.mapclass,_ver.generator,_N.ndarray)):
                 for val in value:
-                    super(List,self).append(val)
-            elif isinstance(value,(Apd,)):
-                for val in value.descs:
-                    super(List,self).append(val)
+                    List.append(self,_dat.Data(val))
             else:
                 raise TypeError('Cannot create List from type: '+str(type(value)))
 
-    def toApd(self):
-        apd=Apd(tuple(),self.mdsdtype)
-        for idx in range(len(self)):
-            apd.append(self[idx])
-        return apd
+    @property
+    def descs(self):
+        """Returns the descs of the Apd.
+        @rtype: tuple
+        """
+        return tuple(self)
 
-    def __str__(self):
-        return list.__str__(self)
+descriptor=_mimport('descriptor')
+descriptor.dtypeToArrayClass[Apd.dtype_id]=Apd
+descriptor.dtypeToArrayClass[List.dtype_id]=List
+descriptor.dtypeToArrayClass[Dictionary.dtype_id]=Dictionary
+

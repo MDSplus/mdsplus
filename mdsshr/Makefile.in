@@ -10,7 +10,8 @@ LDFLAGS += $(THREAD)
 @MINGW_TRUE@ DEF=${srcdir}/MdsShr.def
 @MINGW_TRUE@ XML_LIBS=-Wl,-Bstatic -lxml2 -lz -Wl,-Bdynamic -liconv -ldl
 @MINGW_FALSE@ XML_LIBS=@XML_LIBS@
-LIBS=@LIBS@ @LIBDL@ $(XML_LIBS) @CLOCK_GETTIME_LIB@ $(LIBSOCKET)
+LIBS=@LIBS@ @LIBDL@ $(XML_LIBS) @CLOCK_GETTIME_LIB@ $(LIBSOCKET) \
+@MINGW_TRUE@ -liphlpapi
 
 
 lib_LIBRARIES = MdsShr

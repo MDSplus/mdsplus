@@ -1,12 +1,15 @@
 package jScope;
 
-/* $Id$ */
-import jScope.Signal;
-import java.awt.*;
-import java.awt.image.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.image.IndexColorModel;
 import java.io.Serializable;
+import java.util.Vector;
 
 public class WaveformMetrics
     implements Serializable
@@ -239,7 +242,7 @@ public class WaveformMetrics
 
     public void ToImage(Signal s, Image img, Dimension d, ColorMap colorMap)
     {
-        int i, j;
+        int i;
         int xSt, xEt, ySt, yEt;
         Graphics2D g2 = (Graphics2D) img.getGraphics();
 
@@ -353,7 +356,7 @@ public class WaveformMetrics
 
     public Vector<Polygon> ToPolygonsDoubleX(Signal sig, Dimension d)
     {
-        int i, j, curr_num_points, curr_x, start_x, max_points;
+        int i, j, curr_num_points, start_x;
         double max_y, min_y, curr_y;
         Vector<Polygon> curr_vect = new Vector<Polygon>(5);
         int xpoints[], ypoints[];
@@ -370,7 +373,6 @@ public class WaveformMetrics
 
         if (x_log || y_log)
         {
-            double xmax_nolog = Math.pow(10, xmax);
             double xmin_nolog = Math.pow(10, xmin);
 
             double first_y, last_y;
@@ -387,7 +389,7 @@ public class WaveformMetrics
             {
                 for (j = i + 1; j < sig.getNumPoints() &&
                      (pol_idx >= sig.getNumNaNs() || j != sig.getNaNs()[pol_idx]) &&
-                     (curr_x = XPixel(sig.getX(j), d)) == start_x; j++)
+                     XPixel(sig.getX(j), d) == start_x; j++)
                 {
                     last_y = curr_y = sig.getY(j);
                     if (curr_y < min_y)
@@ -466,7 +468,7 @@ public class WaveformMetrics
                     first_y = last_y = y[i];
                     for (j = i + 1; j < x.length && //!Float.isNaN(sig.y[j]) &&
                          (pol_idx >= sig.getNumNaNs() || j != sig.getNaNs()[pol_idx]) &&
-                         (curr_x = XPixel(x[j])) == start_x; j++)
+                         XPixel(x[j]) == start_x; j++)
                     {
                         last_y = curr_y = y[j];
                         if (curr_y < min_y)

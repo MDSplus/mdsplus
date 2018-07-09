@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*      Tdi1Vector.C
         Converts a list of scalars and arrays into a rank-1 vector or higher array.
         Signality is lost.
@@ -97,8 +121,8 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
         Shape: [[3,1],[3,4]] is [3,5].
         Shape: [[3],[3,4]] is [3,5].
         ********************************/
-  if (STATUS_NOT_OK) ;
-  else if (mind > 0 && mind >= maxd - 1 && mind < MAXDIM && nmiss == 0) {
+ if (STATUS_OK) {
+  if (mind > 0 && mind >= maxd - 1 && mind < MAXDIM && nmiss == 0) {
     n = 0;
     for (j = 0; j < narg; ++j) {
       array_coeff *pnew = (array_coeff *) (*pdat)[j].pointer;
@@ -132,7 +156,7 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
  simple:arr.dimct = 1;
     arr.aflags.coeff = 0;
   }
-
+ }
   if STATUS_OK
     status = Tdi2Vector(narg, (*puni), (*pdat), (*pcats), 0);
 
@@ -165,6 +189,11 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
       arr.arsize = (*pnelem)[j] * arr.length;
       status = TdiConvert((*pdat)[j].pointer, &arr MDS_END_ARG);
       arr.pointer += arr.arsize;
+    }
+    if (arr.length == 0 && arr.dtype == DTYPE_T && arr.dimct == 1) {
+      arr.aflags.coeff = 1;
+      arr.m[0] = narg;
+      status = MdsCopyDxXd((struct descriptor *)&arr, out_ptr);
     }
   }
 

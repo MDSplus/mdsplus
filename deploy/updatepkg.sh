@@ -17,10 +17,11 @@
 # Note this requires a running docker service on your system and your
 # account to be enabled to run docker.
 #
+jars=""
 for os in fc22 ubuntu14 raspberrypi
 do
     echo "$(date) Build of $os starting"
-    if ( $(dirname $0)/build.sh --os=$os --release --updatepkg > ./updatepkg.log 2>&1 )
+    if ( $(dirname $0)/build.sh --os=$os --release ${jars} --updatepkg > ./updatepkg.log 2>&1 )
     then
 	echo "$(date) Build of $os completed successfully"
     else
@@ -28,5 +29,6 @@ do
 	echo "$(date) Build of $os failed. See ./updatepkg.log for details"
 	exit $stat
     fi
+    jars="--jars-dir=build/fc22/releasebld/64"
 done
 

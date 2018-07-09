@@ -96,3 +96,4 @@
 #define TreeOPENEDITERR          0xfd19082
 #define TreeREADONLY_TREE        0xfd1908a
 #define TreeWRITETREEERR         0xfd19092
+#define TreeNOWILD               0xfd1909a

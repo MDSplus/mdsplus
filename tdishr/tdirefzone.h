@@ -40,12 +40,11 @@ struct marker {
 	/*--------------------------------------------------
 	Definitions needed by Lex and Yacc.
 	--------------------------------------------------*/
-#define tdiyylex()		TdiLex()
-#define tdiyyerror(s)	TdiRefZone.l_ok = tdiyyval.mark.w_ok; return MDSplusERROR
+#define tdiyyerror(s)	do{TdiRefZone.l_ok = tdiyyval.mark.w_ok; return MDSplusERROR;}while(0)
 
 #define MAKE_S(dtype_in,bytes,out)					\
-	{int dsc_size = sizeof(struct descriptor_s);			\
-	unsigned int vm_size = dsc_size + (bytes);			\
+	{unsigned int dsc_size = sizeof(struct descriptor_s);			\
+	unsigned int vm_size = (dsc_size + (bytes));			\
 	LibGetVm(&vm_size,(void *)&(out),(void *)&TdiRefZone.l_zone);	\
 	((struct descriptor *)(out))->length = bytes;			\
 	((struct descriptor *)(out))->dtype = dtype_in;			\
@@ -53,7 +52,7 @@ struct marker {
 	((struct descriptor *)(out))->pointer = (char *)(out) + dsc_size;}
 
 #define MAKE_XD(dtype_in,bytes,out)					\
-	{int dsc_size = sizeof(struct descriptor_xd);			\
+	{unsigned int dsc_size = sizeof(struct descriptor_xd);			\
 	unsigned int vm_size = dsc_size + (bytes);			\
 	LibGetVm(&vm_size,(void *)&(out),(void *)&TdiRefZone.l_zone);	\
 	((struct descriptor_xd *)(out))->l_length = bytes;		\
@@ -63,7 +62,7 @@ struct marker {
 	((struct descriptor_xd *)(out))->pointer = (struct descriptor *)((char *)(out) + dsc_size);}
 
 #define MAKE_R(ndesc,dtype_in,bytes,out)				\
-	{int dsc_size = sizeof($RECORD(ndesc));				\
+	{unsigned int dsc_size = sizeof($RECORD(ndesc));				\
 	unsigned int vm_size = dsc_size + (bytes);			\
 	LibGetVm(&vm_size,(void *)&(out),(void *)&TdiRefZone.l_zone);	\
 	((struct descriptor *)(out))->length = bytes;			\

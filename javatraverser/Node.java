@@ -1,11 +1,12 @@
 //package jTraverser;
-import javax.swing.*;
-import java.net.URL;
-import java.rmi.*;
-import java.rmi.RemoteException.*;
-import javax.swing.tree.*;
-import java.awt.*;
+import java.awt.Dimension;
+import java.rmi.RemoteException;
 
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 public class Node
 {
@@ -442,12 +443,11 @@ public class Node
 
     public void executeDelete()
     {
-        NidData[] nids = {nid};
-        try
-        {
+        try {
             experiment.executeDelete(Tree.context);
+        } catch (Exception exc) {
+        	jTraverser.stderr("Error executing delete", exc);
         }
-        catch (Exception exc){jTraverser.stderr("Error executing delete", exc);}
     }
 
 

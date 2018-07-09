@@ -5,12 +5,12 @@ public fun DevAddDevice(in _path, in _type, optional out _nidout)
    {
     	_models = MdsDevices();
     	_model = UPCASE(_type);
-    	for (_idx=0; _idx<size(_models); _idx++, _idx++) {
-	  if (UPCASE(_models[_idx])==_model) break;
+    	for (_idx=0; _idx<size(_models[0]); _idx++) {
+	  if (UPCASE(_models[0,_idx])==_model) break;
 	};
-    	if (_idx == size(_models))
+    	if (_idx == size(_models[0]))
 	    return(0);
-    	_image = trim(_models[_idx+1]);
+    	_image = trim(_models[1,_idx]);
 	_rtn = _type//"__add";
     	_nidout = 0l;
 	_addr = 0Q;

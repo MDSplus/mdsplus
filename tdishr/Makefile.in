@@ -16,6 +16,7 @@ IsRoprand.c \
 TdiAbs.c \
 TdiAdd.c \
 TdiAnd.c \
+TdiApd.c \
 TdiArray.c \
 TdiBinary.c \
 TdiBound.c \
@@ -94,7 +95,7 @@ all: @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ $(IMPLI
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 	@mv Makefile Makefile.tmp
-	@grep -v '\.y' Makefile.tmp > Makefile   
+	@grep -v '\.y' Makefile.tmp > Makefile
 	@rm Makefile.tmp
 
 clean:
@@ -128,7 +129,3 @@ TdiSql.o : TdiSql.c
 
 TdiYacc.o : TdiYacc.c
 	$(COMPILE.c) $(OUTPUT_OPTION) $< -Wno-array-bounds
-
-
-
-

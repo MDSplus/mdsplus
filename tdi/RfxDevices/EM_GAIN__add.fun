@@ -4,7 +4,6 @@ public fun EM_GAIN__add(in _path, out _nidout)
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':BIRA_CTRLR', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':CARD_ADDR', 'NUMERIC', *, *, _nid);
-
 	for (_c = 1; _c <=16; _c++)
 	{
 		if(_c < 10)

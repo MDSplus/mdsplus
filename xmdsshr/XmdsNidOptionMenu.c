@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSNIDOPTIONMENU.C */
 /*  *25   23-JUN-1994 12:04:26 TWF "Motif 1.2" */
 /*  *24   22-FEB-1994 15:18:09 TWF "remove NO_X_GBLS" */
@@ -72,6 +96,7 @@ struct dsc$descriptor_xd *XmdsNidOptionMenuIdxGetXd(Widget w, int selected);
 #include <Xmds/XmdsXdBoxDialogButton.h>
 #include <Xmds/XmdsNidOptionMenu.h>
 #include <Mrm/MrmPublic.h>
+#include <Xm/Xm.h>
 #include <xmdsshr.h>
 #include <mds_stdarg.h>
 
@@ -103,6 +128,9 @@ static XtResource resources[] = {
    XtOffsetOf(Resources, values), XmRImmediate, 0}
   ,
 };
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
+#endif
 
 EXPORT Widget XmdsCreateNidOptionMenu(Widget parent, String name, ArgList args, Cardinal argcount)
 {
@@ -122,7 +150,7 @@ EXPORT Widget XmdsCreateNidOptionMenu(Widget parent, String name, ArgList args, 
   XtAddCallback(info->pulldown, XmNentryCallback, (XtCallbackProc) MenuChanged, info);
   for (idx = 0, s = info->labels, v = info->values; s && *s && v && *v; s++, v++, idx++) {
     String expression = "";
-    expression = XmStringUnparse(*v, NULL, 0, XmCHARSET_TEXT, XmCHARSET_TEXT, 0, XmOUTPUT_ALL);
+    expression = XmStringUnparse(*v, NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
     {
       static EMPTYXD(empty_xd);
       struct descriptor_xd *xd = (struct descriptor_xd *)XtMalloc(sizeof(empty_xd));

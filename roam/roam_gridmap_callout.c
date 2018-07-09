@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 #include <globus_common.h>
 #include <gssapi.h>
 #include <globus_gss_assist.h>
@@ -138,11 +162,11 @@ EXPORT globus_result_t roam_gridmap_callout(va_list ap)
   gss_release_name(&minor_status, &peer);
 
   if (desired_identity == NULL) {
-    char *expression = (char *)malloc(strlen(service) + strlen(peer_name_buffer.value) + 128);
     struct descriptor expression_d = { 0, DTYPE_T, CLASS_S, 0 };
     struct descriptor local_user_d = { 0, DTYPE_T, CLASS_D, 0 };
     int status;
-    sprintf(expression, "_who=check_access_%s(\"%s\")", service, (char *)peer_name_buffer.value);
+    char *expression = malloc(strlen(service) + strlen(peer_name_buffer.value) + 23);
+    if (expression) sprintf(expression, "_who=check_access_%s(\"%s\")", service, (char *)peer_name_buffer.value);
     expression_d.length = strlen(expression);
     expression_d.pointer = expression;
     status = TdiExecute(&expression_d, &local_user_d MDS_END_ARG);

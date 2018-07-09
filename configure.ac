@@ -50,6 +50,18 @@ AX_CHECK_ENABLE_DEBUG([no],,,,[-g -O3])
 dnl AX_TARGET_SELFHELP /////////////////////////////////////////////////////////
 AX_TARGET_SELFHELP
 
+AC_ARG_ENABLE([java_only],
+              [AS_HELP_STRING([--enable-java_only],
+                              [Only build java jar files])],
+              [AS_VAR_SET([JAVA_ONLY],[yes])])
+
+AC_ARG_WITH([jars],
+	    [AS_HELP_STRING([--with-jars=directory],
+                            [specify directory tree to find java jars])],
+	    [AS_VAR_SET([JARS_DIR],[$withval])],
+	    [AS_VAR_SET([JARS_DIR],[])])
+
+AM_CONDITIONAL([USE_JARS_DIR],[test x"$JARS_DIR" != x])
 
 # Checks for programs.
 AC_PROG_AWK
@@ -67,6 +79,7 @@ AC_CHECK_TOOL([WINDRES], [windres], [:])
 AC_MSG_RESULT([before VISIBILITY])
 gl_VISIBILITY
 AC_MSG_RESULT([**********VISIBILITY*********$CFLAG_VISIBILITY*******************])
+CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
 #if test -n "$CFLAG_VISIBILITY" && test "$is_w32" != yes; then
 #	CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
 #fi
@@ -79,7 +92,7 @@ dnl See if we need to use native compilers
 AS_CASE(["$host"],
         [sparc-sun-solaris2*], [${CC=cc}])
 
-#AC_CONFIG_HEADER(include/config.h)
+#AC_CONFIG_HEADER(include/mdsplus/mdsconfig.h)
 AC_CHECK_SIZEOF(int *)
 AC_SYS_LARGEFILE
 
@@ -332,8 +345,6 @@ AC_ARG_WITH([visual_studio],
 AM_CONDITIONAL([VS],[AS_VAR_TEST_SET([VS_DIR])])
 AC_MSG_RESULT([$with_visual_studio])
 
-
-
 FORLD=ld
 LD=ld LD_LDARC=""
 LD_LDSHARE=""
@@ -352,6 +363,14 @@ then
 else
   : ${uiddir:=$exec_prefix/uid}
 fi
+if nproc&>/dev/null && perl -v&>/dev/null
+then
+  MAKEFLAG_J="-j -l $(perl -e "print $(nproc) * 0.9")"
+else
+  MAKEFLAG_J="-j -l 1"
+fi
+DEF_PYLIB=$(ldd $(which python) | grep libpython | awk '{print $3}')
+MAKEFLAG_O="$(if ${MAKE:=make} -v -O&>/dev/null; then echo -O; fi)"
 MAKEUIDDIR="\$(top_builddir)/uid/"
 MAKESHLIBDIR="\$(top_builddir)/lib/"
 MAKEBINDIR="\$(top_builddir)/bin/"
@@ -366,13 +385,14 @@ FOR_LDFLAGS=""
 SHARETYPE=".so"
 
 THREAD="-pthread"
-AC_SUBST([THREAD])
 MITDEVICESIO_TARGETS=""
 case "$host" in
 *mingw*)
+       MAKEFLAG_J=""
+       MAKEFLAG_O=""
        IDLMDSEVENT=""
        LIBPRE=""
-       CFLAGS="$CFLAGS -Wno-implicit-fallthrough -fno-strict-aliasing -mno-ms-bitfields";
+       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields ";
        LD="$CXX -static-libgcc"
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="$FC"
@@ -406,7 +426,7 @@ case "$host" in
        jni_md_inc_dir="$with_jdk/include/linux";;
 
 *86*linux*)
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing ";
        FORLD="$FC";
        LD="gcc"
        if ( echo $host| grep 64 > /dev/null )
@@ -508,8 +528,9 @@ case "$host" in
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X";
+       THREAD=""
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic";
+       CFLAGS="$CFLAGS -arch x86_64 -dynamic -Wno-error=unused-command-line-argument -Wno-missing-field-initializers -Wno-parentheses-equality";
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="gfortran"
        FOR_LDFLAGS="-shared"
@@ -519,12 +540,12 @@ case "$host" in
        LD_LDSHARE="";
        LDARC="";
        LD_LDARC="";
-       UILPATH=/usr/OpenMotif/bin;
-       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L/usr/OpenMotif/lib"
-       MOTIF_LD_LDARC="-multiply_defined suppress -L/usr/OpenMotif/lib"
+       UILPATH=${OPENMOTIF-/usr}/bin;
+       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L${OPENMOTIF-/usr}/lib"
+       MOTIF_LD_LDARC="-multiply_defined suppress -L${OPENMOTIF-/usr}/lib"
        dnl LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -prebind \
 	   dnl -seg_addr_table_filename \$(@F) -seg_addr_table ../macosx/bindtable -Wl,-single_module";
-	   LINKSHARED="$LDFLAGS -shared -arch i386 -arch x86_64 -install_name @loader_path/../lib/\$(@F) -headerpad_max_install_names";
+	   LINKSHARED="$LDFLAGS -shared -arch x86_64 -install_name @loader_path/../lib/\$(@F) -headerpad_max_install_names";
            FOR_LINKSHARED="$LDFLAGS -shared";
 	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
        IDL_LD="";
@@ -596,11 +617,13 @@ AS_VAR_SET_IF([TARGET_ARCH],[CFLAGS="$CFLAGS $TARGET_ARCH"])
 
 dnl see if we have libdc1394 libraries and what version
 
+raw_old_libs="$LIBS" #### needed because of nested call to MDS_SEARCH_LIBS
 MDS_SEARCH_LIBS([raw1394_get_libversion],[raw1394],
 [
   MDS_SEARCH_LIBS([dc1394_new],[dc1394],[DC1394_SUPPORT2="${MAKESHLIBDIR}libdc1394_support2$SHARETYPE"])
   MDS_SEARCH_LIBS([dc1394_get_camera_info],[dc1394],[DC1394_SUPPORT="${MAKESHLIBDIR}libdc1394_support$SHARETYPE"])
 ])
+LIBS="$raw_old_libs"
 
 AC_SEARCH_LIBS([gethostbyname], [nsl socket],
                [AS_VAR_IF([ac_cv_search_gethostbyname], ["none required"], [], [LIBSOCKET=$ac_cv_search_gethostbyname])],
@@ -781,7 +804,7 @@ AS_VAR_SET_IF([JNI_MD_INCLUDE_DIR],[jni_md_inc_dir="$JNI_MD_INCLUDE_DIR"])
 CPPFLAGS="$CPPFLAGS -I$jni_inc_dir -I$jni_md_inc_dir"
 AC_CHECK_HEADER(jni.h,JDK_CFLAGS="-I$jni_inc_dir")
 AC_CHECK_HEADER(jni_md.h,JDK_CFLAGS="$JDK_CFLAGS -I$jni_md_inc_dir")
-AS_VAR_SET_IF([JDK_CFLAGS], [AS_CASE([$enable_java], [yes], [JAVA_APS="\$(JAVA_APS)"])])
+AS_VAR_SET_IF([JDK_CFLAGS], [AS_CASE([$enable_java], [yes], [JAVA_APS="\$(JAVA_APS)";JAVA_JAR="\$(JAVA_JAR)"])])
 CPPFLAGS="$OLD_CPPFLAGS"
 
 dnl Checks for typedefs, structures, and compiler characteristics.
@@ -919,8 +942,8 @@ AC_C_BIGENDIAN
 
 AC_PATH_XTRA
 AS_CASE([$host],
-        [*darwin*|*apple*], [X_CFLAGS+=" -I/usr/OpenMotif/include"
-                             X_LIBS+=" -L/usr/OpenMotif/lib"])
+        [*darwin*|*apple*], [X_CFLAGS+=" -I${OPENMOTIF-/usr}/include"
+                             X_LIBS+=" -L${OPENMOTIF-/usr}/lib"])
 AS_CASE([$host],[arm*gnueabihf],[X_CFLAGS=""])
 #FIXME: Change the above to AS_VAR_APPEND with a new autoconf version (2.64+?)
 
@@ -930,23 +953,20 @@ then
 fi
 AC_PATH_PROG(UIL,$UILCMD,$UILCMD,$UILPATH:/usr/bin/X11:$PATH:/usr/dt/bin)
 AC_MSG_CHECKING(for uil command)
-if ( which $UIL 2>/dev/null )
+if test ! "$MINGW" = "yes" && ( which $UIL &>/dev/null )
 then
   UIL="env LANG=en_US $UIL"
-  MOTIF_APS="\$(MOTIF_APS)"
-  AC_MSG_RESULT(have uil so openmotif apps will be built.)
+  HAVE_MOTIF="yes"
+  #AC_MSG_RESULT(have uil so openmotif apps will be built.)
 else
-  MOTIF_APS=""
 # IDLMDSEVENT and IDLMDSWIDGETS need MOTIF to build
   IDLMDSEVENT=""
   IDLMDSWIDGETS=""
-  AC_MSG_RESULT(no uil so skipping openmotif apps.openmotif-devel not installed.)
+  #AC_MSG_RESULT(no uil so skipping openmotif apps.openmotif-devel not installed.)
 fi
-if [[ "$MINGW" = "yes" ]]
-then
-  MOTIF_APS=""
-fi
-
+MOTIF_APS="\$(MOTIF_APS)"
+AM_CONDITIONAL([HAVE_MOTIF], [AS_VAR_TEST_SET([HAVE_MOTIF])])
+AM_COND_IF([HAVE_MOTIF], [AC_MSG_RESULT([yes])], [AC_MSG_RESULT([no])])
 
 XM_LIBS="-lMrm -lXm"
 MDS_SEARCH_LIBS([XextAddDisplay],[Xext],[AS_VAR_SET([LIBXEXT],[$ac_cv_search_XextAddDisplay])])
@@ -1115,7 +1135,7 @@ RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEA
 
 # Determine common warning options to apply to C, C++, and Fortran languages
 AS_VAR_SET([WARNFLAGS], ["-Wall -Wextra"])
-
+AS_VAR_SET([NOWARNFLAGS],[])
 AC_MSG_CHECKING([whether to treat warnings as errors])
 AC_ARG_ENABLE([werror],
               [AS_HELP_STRING([--enable-werror],
@@ -1123,18 +1143,37 @@ AC_ARG_ENABLE([werror],
               [],
               [AS_VAR_SET([enable_werror], [no])])
 AS_CASE([$enable_werror],
-        [yes], [AS_VAR_APPEND([WARNFLAGS], [" -Werror"])],
+        [yes], [AS_VAR_APPEND([WARNFLAGS], [" -Werror "])],
+        [])
+AC_ARG_ENABLE([wreturns],
+              [AS_HELP_STRING([--disable-wreturns],
+                              [Disable warnings about unused return value from functions])],
+              [AS_CASE([$enableval],[no], [AS_VAR_APPEND([NOWARNFLAGS],[" -Wno-unused-result "])])],
+	      [])
+AC_SUBST([WARNFLAGS])
+AC_SUBST([NOWARNFLAGS])
+AC_MSG_RESULT([$enable_werror])
+
+AC_MSG_CHECKING([whether to warn about implicit conversions])
+AC_ARG_ENABLE([wconversion],
+              [AS_HELP_STRING([--enable-wconversion],
+                              [Warn about implicit conversions])],
+              [],
+              [AS_VAR_SET([enable_wconversion], [no])])
+AS_CASE([$enable_wconversion],
+        [yes], [AS_VAR_APPEND([WARNFLAGS], [" -Wconversion"])],
         [])
 AC_SUBST([WARNFLAGS])
-AC_MSG_RESULT([$enable_werror])
+AC_MSG_RESULT([$enable_wconversion])
+
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  CONFIG_H  ///////////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-dnl Here we define all custom autoheader adds to config.h.in
+dnl Here we define all custom autoheader adds to mdsconfig.h.in
 
-dnl add here what goes on tom of config.h
+dnl add here what goes on tom of mdsconfig.h
 AH_TOP()
 
 AH_VERBATIM([_LL_CONSTANTS], [
@@ -1156,7 +1195,7 @@ AH_VERBATIM([_WIN32], [
 #endif
 ])
 
-dnl add here what goes on bottom of config.h
+dnl add here what goes on bottom of mdsconfig.h
 AH_BOTTOM()
 
 
@@ -1188,7 +1227,10 @@ AC_SUBST(IDL_INC)
 AC_SUBST(IDL_LIB)
 AC_SUBST(IDLMDSEVENT)
 AC_SUBST(IDLMDSWIDGETS)
+AC_SUBST(JARS_DIR)
+AC_SUBST(JAVA_ONLY)
 AC_SUBST(JAVA_APS)
+AC_SUBST(JAVA_JAR)
 AC_SUBST(JAVACFLAGS)
 AC_SUBST(JDK_CFLAGS)
 AC_SUBST(JDK_DIR)
@@ -1214,18 +1256,22 @@ AC_SUBST(LV)
 AC_SUBST(LV_CINTOOLS)
 AC_SUBST(MACOSX)
 AC_SUBST(MAKEBINDIR)
+AC_SUBST(MAKEFLAG_J)
+AC_SUBST(MAKEFLAG_O)
 AC_SUBST(MAKELIBDIR)
 AC_SUBST(MAKESHLIBDIR)
 AC_SUBST(MAKEUIDDIR)
 AC_SUBST(MDSSQL)
 AC_SUBST(MDSTCPIP)
 AC_SUBST(MITDEVICESIO_TARGETS)
+AC_SUBST(HAVE_MOTIF)
 AC_SUBST(MOTIF_APS)
 AC_SUBST(MOTIF_LDSHARE)
 AC_SUBST(MOTIF_LDARC)
 AC_SUBST(MOTIF_LD_LDSHARE)
 AC_SUBST(MOTIF_LD_LDARC)
 AC_SUBST(PYTHON_INCLUDE_DIR)
+AC_SUBST(DEF_PYLIB)
 AC_SUBST(NEED_SEMUN)
 AC_SUBST(RELEASE_MAJOR)
 AC_SUBST(RELEASE_MINOR)
@@ -1247,6 +1293,7 @@ AC_SUBST(SYBASE_LIB)
 AC_SUBST([TARGET_ARCH])
 AC_SUBST(TAR_EXCLUDE)
 AC_SUBST(TDIC)
+AC_SUBST([THREAD])
 AC_SUBST(UIL)
 AC_SUBST(XM_LIBS)
 AC_SUBST(uiddir)
@@ -1257,7 +1304,7 @@ AC_SUBST(DC1394_SUPPORT2)
 AC_SUBST(VS)
 AC_SUBST(VS_ARCH)
 AC_SUBST(VS_DIR)
-AC_CONFIG_HEADER(include/config.h)
+AC_CONFIG_HEADER(include/mdsplus/mdsconfig.h)
 
 
 AC_OUTPUT(Makefile.inc
@@ -1277,6 +1324,8 @@ AC_OUTPUT(Makefile.inc
           javamds/Makefile
           javascope/Makefile
           javatraverser/Makefile
+          javatraverser2/Makefile
+          javatraverser2/java/mds/mdslib/Makefile
           javadevices/Makefile
           LabView/Makefile
           manpages/Makefile
@@ -1309,6 +1358,9 @@ AC_OUTPUT(Makefile.inc
           mdstcpip/docs/img/Makefile
           mdsvme/Makefile
           mitdevices/Makefile
+	  pydevices/MitDevices/_version.py
+	  pydevices/RfxDevices/_version.py
+	  pydevices/W7xDevices/_version.py
           remcam/Makefile
           roam/Makefile
           rpm/Makefile
@@ -1318,13 +1370,11 @@ AC_OUTPUT(Makefile.inc
           servershr/Makefile
           setevent/Makefile
           tcl/Makefile
-	  tdi/MitDevices/_version.py
-	  tdi/RfxDevices/_version.py
-	  tdi/W7xDevices/_version.py
           tdishr/Makefile
           tdishr/testing/Makefile
           tdic/Makefile
           tditest/Makefile
+          tditest/testing/Makefile
           testing/Makefile
           testing/backends/check/Makefile
           testing/selftest/Makefile
@@ -1369,7 +1419,7 @@ then
   AC_MSG_WARN()
   AC_MSG_WARN()
 fi
-if test "$MOTIF_APS" = "" -a "$MINGW" = ""
+if test "$HAVE_MOTIF" = "" -a "$MINGW" = "" -a ! "$OS" = "windows"
 then
   AC_MSG_WARN()
   AC_MSG_WARN()

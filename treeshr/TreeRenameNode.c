@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*------------------------------------------------------------------------------
 
 		Name: TreeRenameNode
@@ -29,7 +53,7 @@
   move the node from its location in the tree.
 +-----------------------------------------------------------------------------*/
 
-#include <config.h>
+#include <mdsplus/mdsconfig.h>
 #include <string.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
@@ -54,27 +78,28 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
   NID *nid_ptr = (NID *) & nid;
   NODE *pptr, *nptr, *newnode, *oldnode_ptr;
   char *newnode_name = 0;
-  SEARCH_TYPE newnode_type;
+  int is_child;
   int status;
   char *upcase_name;
   int i;
 /*****************************************************
   Make sure that the tree is open and OK and editable
 *****************************************************/
-  if (!(IS_OPEN_FOR_EDIT(dblist)))
+  if (!(IS_OPEN_FOR_EDIT(dblist))) {
     return TreeNOEDIT;
+  }
   upcase_name = strdup(newname);
 /**************************
    Convert to upper case.
 ***************************/
   for (i = 0; i < (int)strlen(newname); i++) {
-    upcase_name[i] = toupper(newname[i]);
+    upcase_name[i] = (char)toupper(newname[i]);
   }
   upcase_name[i] = 0;
 /****************************************************
   make sure that the new node is not already there
 ***************************************************/
-  status = TreeFindNode(upcase_name, &i);
+  status = _TreeFindNode(dbid, upcase_name, &i);
   if (status & 1) {
     status = TreeALREADY_THERE;
     goto cleanup;
@@ -82,13 +107,9 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
 /******************************************************
   Make sure the new node's parent is in the tree
 ******************************************************/
-  status = TreeFindParent(dblist, upcase_name, &newnode, &newnode_name, &newnode_type);
+  status = TreeFindParent(dblist, upcase_name, &newnode, &newnode_name, &is_child);
   if (!(status & 1))
     return status;
-  if ((newnode_type != BROTHER_TYPE_NOWILD) && (newnode_type != MEMBER_TYPE_NOWILD)) {
-    status = TreeINVPATH;
-    goto cleanup;
-  }
 /************************************************
   Make sure that the node being renamed is not
   an ancestor of the destination. (This check
@@ -96,52 +117,60 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
   off into space.)
 ************************************************/
   oldnode_ptr = nid_to_node(dblist, (nid_ptr));
-  for (nptr = newnode; nptr; nptr = parent_of(dblist, nptr))
+  for (nptr = newnode; nptr; nptr = parent_of(dblist, nptr)) {
     if (nptr == oldnode_ptr) {
       status = TreeINVPATH;
       goto cleanup;
     }
+  }
 
 /************************************************
   Make sure that a node with a non-STRUCTURE usage is
   not being renamed into a son.
  ************************************************/
-  if (newnode_type == BROTHER_TYPE_NOWILD)
+  if (is_child) {
     if (oldnode_ptr->usage != TreeUSAGE_STRUCTURE) {
       status = TreeINVPATH;
       goto cleanup;
     }
+  }
 
 /************************************************
  OK so far so disconnect the old node
 *************************************************/
   pptr = parent_of(dblist, oldnode_ptr);
-  if (child_of(dblist, pptr) == oldnode_ptr)
+  if (child_of(dblist, pptr) == oldnode_ptr) {
     if (oldnode_ptr->brother) {
       pptr->child = node_offset(brother_of(dblist, oldnode_ptr), pptr);
     } else
       pptr->child = 0;
+  }
   else {
-    for (nptr = child_of(dblist, pptr); nptr && (brother_of(dblist, nptr) != oldnode_ptr);
-	 nptr = brother_of(dblist, nptr)) ;
-    if (nptr)
+    for (nptr = child_of(dblist, pptr); 
+         nptr && (brother_of(dblist, nptr) != oldnode_ptr);
+         nptr = brother_of(dblist, nptr)) ;
+    if (nptr) {
       if (oldnode_ptr->brother) {
 	nptr->brother = node_offset(brother_of(dblist, oldnode_ptr), nptr);
       } else
 	nptr->brother = 0;
-    else if (member_of(pptr) == oldnode_ptr)
+    }
+    else if (member_of(pptr) == oldnode_ptr) {
       if (oldnode_ptr->brother) {
 	pptr->member = node_offset(brother_of(dblist, oldnode_ptr), pptr);
       } else
 	pptr->member = 0;
+    }
     else {
-      for (nptr = member_of(pptr); nptr && (brother_of(dblist, nptr) != oldnode_ptr);
+      for (nptr = member_of(pptr); 
+           nptr && (brother_of(dblist, nptr) != oldnode_ptr);
 	   nptr = brother_of(dblist, nptr)) ;
-      if (nptr)
+      if (nptr) {
 	if (oldnode_ptr->brother) {
 	  nptr->brother = node_offset(brother_of(dblist, oldnode_ptr), nptr);
 	} else
 	  nptr->brother = 0;
+      }
       else {
 	status = TreeINVTREE;
 	goto cleanup;
@@ -157,7 +186,7 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
   if (strlen(newnode_name) < sizeof(oldnode_ptr->name))
     memset(oldnode_ptr->name + strlen(newnode_name), 32,
 	   sizeof(oldnode_ptr->name) - strlen(newnode_name));
-  if (newnode_type == BROTHER_TYPE_NOWILD)
+  if (is_child)
     status = TreeInsertChild(newnode, oldnode_ptr, dblist->tree_info->header->sort_children);
   else
     status = TreeInsertMember(newnode, oldnode_ptr, dblist->tree_info->header->sort_members);
@@ -184,10 +213,10 @@ static int FixParentState(PINO_DATABASE * dblist, NODE * parent_ptr, NODE * chil
   NID child_nid;
   int parent_state;
   int child_parent_state;
-  static int retlen;
-  static unsigned int child_flags;
-  static NCI_ITM child_itm_list[] =
-      { {sizeof(unsigned int), NciGET_FLAGS, (unsigned char *)&child_flags, &retlen},
+  int retlen;
+  unsigned int child_flags;
+  NCI_ITM child_itm_list[] =
+      { {sizeof(unsigned int), NciGET_FLAGS, &child_flags, &retlen},
 	{0, NciEND_OF_LIST, 0, 0}
   };
   node_to_nid(dblist, parent_ptr, (&parent_nid));
@@ -200,10 +229,12 @@ static int FixParentState(PINO_DATABASE * dblist, NODE * parent_ptr, NODE * chil
   to SET_PARENT_STATE are negative boolean logic.
 ****************************************************/
   parent_state = _TreeIsOn(dblist, *(int *)&parent_nid) & 1;
-  TreeGetNci(*(int *)&child_nid, child_itm_list);
-  child_parent_state = ((child_flags & NciM_PARENT_STATE) == 0);
-  if (child_parent_state != parent_state)
-    status = SetParentState(dblist, child_ptr, !parent_state);
+  status = _TreeGetNci(dblist, *(int *)&child_nid, child_itm_list);
+  if (status & 1) {
+    child_parent_state = ((child_flags & NciM_PARENT_STATE) == 0);
+    if (child_parent_state != parent_state)
+      status = SetParentState(dblist, child_ptr, !parent_state);
+  }
 
   return status;
 }

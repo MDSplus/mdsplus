@@ -12,6 +12,8 @@
 # /publish/$branch/DEBS/$arch/*.deb
 #
 
+srcdir=$(readlink -e $(dirname ${0})/../..)
+
 # configure based on ARCH
 case "${ARCH}" in
   "amd64")
@@ -30,7 +32,8 @@ case "${ARCH}" in
     bits=32
     ;;
 esac
-if [[ x$OS == xdebian* ]]
+
+if [[ "$OS" == "debian_wheezy" ]]
 then
   export JDK_DIR=/usr/lib/jvm/java-7-openjdk-${ARCH}
 fi
@@ -43,6 +46,7 @@ makelist(){
     dpkg -c $1 | \
     grep -v python/dist | \
     grep -v python/build | \
+    grep -v python/doc | \
     grep -v egg-info | \
     grep -v '/$' | \
     awk '{for (i=6; i<NF; i++) printf $i " "; print $NF}' | \
@@ -82,7 +86,7 @@ buildrelease() {
 	     ARCH=${ARCH} \
 	     DISTNAME=${DISTNAME} \
 	     PLATFORM=${PLATFORM} \
-	     /source/deploy/platform/debian/debian_build_debs.py
+	     ${srcdir}/deploy/platform/debian/debian_build_debs.py
     baddeb=0
     for deb in $(find /release/${BRANCH}/DEBS/${ARCH} -name "*\.deb")
     do
@@ -93,13 +97,13 @@ buildrelease() {
 	fi
         if [[ x${pkg} == x*_bin ]]
         then
-          checkfile=/source/deploy/packaging/${PLATFORM}/$pkg.$ARCH
+          checkfile=${srcdir}/deploy/packaging/${PLATFORM}/$pkg.$ARCH
         else
-          checkfile=/source/deploy/packaging/${PLATFORM}/$pkg.noarch
+          checkfile=${srcdir}/deploy/packaging/${PLATFORM}/$pkg.noarch
         fi
 	if [ "$UPDATEPKG" = "yes" ]
 	then
-	    mkdir -p /source/deploy/packaging/${PLATFORM}
+	    mkdir -p ${srcdir}/deploy/packaging/${PLATFORM}
 	    makelist $deb > ${checkfile}
 	else
 	    set +e
@@ -114,6 +118,8 @@ buildrelease() {
 	fi
     done
     checkstatus abort "Failure: Problem with contents of one or more debs. (see above)" $baddeb
+  if [ -z "$abort" ] || [ "$abort" = "0" ]
+  then
     echo "Building repo";
     mkdir -p /release/repo/conf
     mkdir -p /release/repo/db
@@ -144,7 +150,7 @@ EOF
     if [ ! -z "$GPG_HOME" ]
     then
     	echo "SignWith: MDSplus" >> /release/repo/conf/distributions
-	export HOME="$GPG_HOME"
+	rsync -a ${GPG_HOME}/.gnupg /tmp
     fi
     pushd /release/repo
     reprepro clearvanished
@@ -152,11 +158,14 @@ EOF
     do
         if [ -z "$abort" ] || [ "$abort" = "0" ]
         then
-            :&& reprepro -V -C ${BRANCH} includedeb MDSplus $deb
+            :&& HOME=/tmp reprepro -V -C ${BRANCH} includedeb MDSplus $deb
             checkstatus abort "Failure: Problem installing $deb into repository." $?
+        else
+          break
         fi
     done
     popd
+  fi #abort
   fi #nomake
 }
 publish() {

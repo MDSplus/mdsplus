@@ -64,8 +64,6 @@
 /* Copy the first part of user declarations.  */
 #line 1 "cmdParse.y" /* yacc.c:339  */
 
-  #include "mdsdclthreadsafe.h"
-  #include <config.h>
   #include <stdio.h>
   #include <stdlib.h>
   int yydebug=0;
@@ -73,7 +71,9 @@
   #define yylex dcl_lex
   #include "dcl_p.h"
   #include <mdsdcl_messages.h>
+  #include <mdsplus/mdsconfig.h>
   #include "dcllex.h"
+  #include "mdsdclthreadsafe.h"
   static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, char *s);
 
 #line 80 "cmdParse.tab.c" /* yacc.c:339  */

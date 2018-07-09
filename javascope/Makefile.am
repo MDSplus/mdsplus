@@ -35,6 +35,14 @@ javadir = $(exec_prefix)/java/classes
 $(java_DATA): classjava.stamp
 
 EXTRA_DIST += colors1.tbl
+if USE_JARS_DIR
+jScope.jar: @JARS_DIR@/javascope/jScope.jar
+	cp $< $@
+
+WaveDisplay.jar: @JARS_DIR@/javascope/WaveDisplay.jar
+	cp $< $@
+
+else
 jScope.jar: colors1.tbl
 	@ echo "Creating JAR: $@ ..."; \
 	  $(MKDIR_P) $(builddir)/jdocs; \
@@ -52,5 +60,6 @@ COMMON_CLASS = $(COMMON_SRC:.java=*.class)
 JSCOPE_CLASS = $(COMMON_CLASS) $(JSCOPE_SRC:.java=*.class) $(EXTRA_CLASS)
 WAVEDISPLAY_CLASS = $(COMMON_CLASS) $(WAVEDISPLAY_SRC:.java=*.class)
 CLEANFILES += $(JSCOPE_CLASS) $(WAVEDISPLAY_CLASS) $(EXTRA_CLASS)
+endif
 
 include Makefile.common

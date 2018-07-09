@@ -483,7 +483,6 @@ public class DeviceSetup
                 if (currData != null)
                     varExpr.append("_" + currId + " = " +
                                    Tree.dataToString(currData) + ";");
-                int currState;
                 if ( ( (DeviceComponent) (device_components.elementAt(idx))).
                     getState())
                     varExpr.append("_" + currId + "_state = 1; ");

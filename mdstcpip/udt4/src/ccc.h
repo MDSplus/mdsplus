@@ -250,7 +250,7 @@ public:
    virtual CCCVirtualFactory* clone() {return new CCCFactory<T>;}
 };
 
-class UDT_API CUDTCC: public CCC
+class CUDTCC: public CCC
 {
 public:
    CUDTCC();

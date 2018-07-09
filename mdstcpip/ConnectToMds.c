@@ -1,4 +1,28 @@
-#include <config.h>
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+#include <mdsplus/mdsconfig.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -21,7 +45,7 @@
 //  Parse Host  ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static void ParseHost(char *hostin, char **protocol, char **host)
+static void parseHost(char *hostin, char **protocol, char **host)
 {
   size_t i;
   *protocol = strcpy((char *)malloc(strlen(hostin) + 10), "");
@@ -54,7 +78,7 @@ static void ParseHost(char *hostin, char **protocol, char **host)
 /// \return status o login into server 1 if success, MDSplusERROR if not authorized or error
 /// occurred
 ///
-static int DoLogin(int id)
+static int doLogin(Connection* c)
 {
   INIT_STATUS;
   Message *m;
@@ -66,13 +90,13 @@ static int DoLogin(int id)
   m->h.length = (short)length;
   m->h.msglen = sizeof(MsgHdr) + length;
   m->h.dtype = DTYPE_CSTRING;
-  m->h.status = GetConnectionCompression(id);
+  m->h.status = c->compression_level;
   m->h.ndims = 0;
   memcpy(m->bytes, user_p, length);
-  status = SendMdsMsg(id, m, 0);
+  status = SendMdsMsgC(c, m, 0);
   free(m);
   if STATUS_OK {
-    m = GetMdsMsg(id, &status);
+    m = GetMdsMsgTOC(c, &status, 10000);
     if (m == 0 || STATUS_NOT_OK) {
       printf("Error in connect\n");
       return MDSplusERROR;
@@ -83,7 +107,7 @@ static int DoLogin(int id)
 	return MDSplusERROR;
       }
       // SET CLIENT COMPRESSION FROM SERVER //
-      SetConnectionCompression(id, (m->h.status & 0x1e) >> 1);
+      c->compression_level= (m->h.status & 0x1e) >> 1;
     }
     if (m)
       free(m);
@@ -109,9 +133,8 @@ int ReuseCheck(char *hostin, char *unique, size_t buflen)
   int ok = -1;
   char *host = 0;
   char *protocol = 0;
-  IoRoutines *io;
-  ParseHost(hostin, &protocol, &host);
-  io = LoadIo(protocol);
+  parseHost(hostin, &protocol, &host);
+  IoRoutines* io = LoadIo(protocol);
   if (io) {
     if (io->reuseCheck)
       ok = io->reuseCheck(host, unique, buflen);
@@ -140,17 +163,16 @@ int ConnectToMds(char *hostin)
   char *host = 0;
   char *protocol = 0;
   if (hostin == 0)
-    return -1;
-  ParseHost(hostin, &protocol, &host);
-  id = NewConnection(protocol);
-  if (id != -1) {
-    IoRoutines *io;
-    io = GetConnectionIo(id);
-    if (io && io->connect) {
-      SetConnectionCompression(id, GetCompressionLevel());
-      if (io->connect(id, protocol, host)<0 || IS_NOT_OK(DoLogin(id))) {
-        DisconnectConnection(id);
-        id = -1;
+    return id;
+  parseHost(hostin, &protocol, &host);
+  Connection* c = NewConnectionC(protocol);
+  if (c) {
+    if (c->io && c->io->connect) {
+      c->compression_level = GetCompressionLevel();
+      if (c->io->connect(c, protocol, host)<0 || IS_NOT_OK(doLogin(c))) {
+        DisconnectConnectionC(c);
+      } else {
+        id = AddConnection(c);
       }
     }
   }

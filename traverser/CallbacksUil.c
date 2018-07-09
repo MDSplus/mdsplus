@@ -1,4 +1,28 @@
 /*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+/*
  * README: This file is appended to at file generation time.
  * Edits can be made throughout the file
  */
@@ -34,6 +58,9 @@
 #include <tdishr_messages.h>
 #include <mdsshr.h>
 extern int mdsdcl_do_command();
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
+#endif
 /*
  * Standard includes for builtins.
  */
@@ -494,7 +521,7 @@ static void Init(Widget tree)
 
 static void CommandLineOpen(Display * display __attribute__ ((unused)), Widget tree)
 {
-  char chars[132];
+  char chars[132] = {0};
   //int status;
   typedef struct {
     int shot;
@@ -525,8 +552,7 @@ static void CommandLineOpen(Display * display __attribute__ ((unused)), Widget t
 	status = TreeOpenEdit(options.tree, options.shot);
 	if (status == TreeFILE_NOT_FOUND || status == TreeFOPENW) {
 	  printf("Tree /%s/ shot /%d/ does not exist.  Create?(Y/N) ", options.tree, options.shot);
-	  scanf("%s", chars);
-	  if ((chars[0] == 'y') || (chars[0] == 'Y')) {
+	  if ((scanf("%1s",chars) > 0) && ((chars[0] == 'y') || (chars[0] == 'Y'))) {
 	    status = TreeOpenNew(options.tree, options.shot);
 	  }
 	}

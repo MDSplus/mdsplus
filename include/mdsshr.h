@@ -1,7 +1,9 @@
 #pragma once
 
 #define MdsCOMPRESSIBLE 3
-#include <config.h>
+#ifndef WINDOWS_H
+#include <mdsplus/mdsconfig.h>
+#endif
 #include <mdsdescrip.h>
 #include <mdstypes.h>
 #include <stdio.h>
@@ -86,6 +88,7 @@ extern int MdsGet1DxS(const unsigned short *len, const unsigned char *dtype,
 			       struct descriptor_xd *out);
 extern char *MdsGetMsg(int sts);
 extern void MdsGetMsgDsc(int status, struct descriptor *out);
+extern int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, const char **text_out);
 extern int MdsFree1Dx(struct descriptor_xd *dsc, void **zone);
 extern int MdsMsg(int sts, const char *fmt, ...);
 extern int MDSQueueEvent(const char *event, int *eventid);
@@ -114,10 +117,10 @@ extern void TranslateLogicalFree(char *value);
 extern int TranslateLogicalXd(const struct descriptor *in, struct descriptor_xd *out);
 extern const char *MdsRelease();
 extern struct descriptor *MdsReleaseDsc();
-extern void MdsFloatToTime(const double floatTime, uint64_t * outTime);
-extern void MdsFloatToDelta(const double floatTime, uint64_t * outTime);
-extern void MdsTimeToFloat(const uint64_t inTime, float *outFloat);
-extern void MdsTimeToDouble(const uint64_t inTime, double *outFloat);
+extern void MdsFloatToTime(const double floatTime, int64_t * outTime);
+extern void MdsFloatToDelta(const double floatTime, int64_t * outTime);
+extern void MdsTimeToFloat(const int64_t inTime, float *outFloat);
+extern void MdsTimeToDouble(const int64_t inTime, double *outFloat);
 extern int MdsPutEnv(const char *cmd);
 extern void MdsGlobalLock();
 extern void MdsGlobalUnlock();

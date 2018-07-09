@@ -1,2 +1,2 @@
 #!/bin/sh
-exec ssh $1 "/bin/sh -c '. /etc/profile; $2'"
+exec ssh $1 "/bin/sh -l -c $2"

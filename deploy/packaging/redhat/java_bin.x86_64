@@ -4,3 +4,4 @@
 ./usr/local/mdsplus/bin64/jServer
 ./usr/local/mdsplus/bin64/jTraverser
 ./usr/local/mdsplus/lib64/libJavaMds.so
+./usr/local/mdsplus/lib64/libJavaMdsLib.so

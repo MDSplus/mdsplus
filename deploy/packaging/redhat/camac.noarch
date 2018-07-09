@@ -17,7 +17,6 @@
 ./usr/local/mdsplus/idl/camac/camqstopw.pro
 ./usr/local/mdsplus/idl/camac/camshow_stat.pro
 ./usr/local/mdsplus/idl/camac/camstopw.pro
-./usr/local/mdsplus/idl/camac/camtest.pro
 ./usr/local/mdsplus/idl/camac/camv2.pro
 ./usr/local/mdsplus/idl/camac/camverbose.pro
 ./usr/local/mdsplus/idl/camac/camx.pro

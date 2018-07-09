@@ -1,5 +1,29 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 
-#include <config.h>
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+#include <mdsplus/mdsconfig.h>
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,11 +51,9 @@
 }
 //"
 
-static pthread_mutex_t libpython_mutex = PTHREAD_MUTEX_INITIALIZER;
 typedef void* PyThreadState;
 static PyThreadState *(*PyGILState_Ensure)() = NULL;
 static void (*PyGILState_Release)(PyThreadState *) = NULL;
-extern int MdsGetStdMsg();
 
 typedef void* PyObject;
 typedef ssize_t Py_ssize_t;
@@ -222,7 +244,7 @@ static void addToPath(char *dirspec)
   }
 }
 
-static char *findModule(struct descriptor *modname_d, char **modname_out)
+char *findModule(struct descriptor *modname_d, char **modname_out)
 {
   /* Look for at python module in MDS_PATH. */
   static char *mpath = "MDS_PATH:";
@@ -319,12 +341,11 @@ static void getAnswer(PyObject * value, struct descriptor_xd *outptr)
   }
 }
 
-int TdiExtPython(struct descriptor *modname_d,
+int TdiExtPython2(char *dirspec,char *filename,
                  int nargs, struct descriptor **args, struct descriptor_xd *out_ptr){
   /* Try to locate a python module in the MDS_PATH search list and if found execute a function with the same name
      as the module in that module passing the arguments and get the answer back from python. */
   INIT_STATUS;
-  char *filename = NULL, *dirspec = NULL;
 #ifndef _WIN32
   struct sigaction offact;
   struct sigaction oldact;
@@ -332,13 +353,11 @@ int TdiExtPython(struct descriptor *modname_d,
   offact.sa_handler=SIG_DFL;
   sigaction(SIGCHLD, &offact, &oldact);
 #endif
-  dirspec = findModule(modname_d, &filename);
-  if (dirspec) {
-    FREE_ON_EXIT(filename);
-    FREE_ON_EXIT(dirspec);
-    pthread_mutex_lock(&libpython_mutex);
+    static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_lock(&lock);
+    pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
     status = Initialize();
-    pthread_mutex_unlock(&libpython_mutex);
+    pthread_cleanup_pop(1);
     if STATUS_OK {
       PyThreadState *GIL = (*PyGILState_Ensure)();
       PyObject *ans;
@@ -360,11 +379,11 @@ int TdiExtPython(struct descriptor *modname_d,
               if STATUS_NOT_OK {
                 char *fac_out=NULL, *msgnam_out=NULL, *text_out=NULL;
                 const char *f = "WSEIF???";
-                MdsGetStdMsg(status,&fac_out,&msgnam_out,&text_out);
+                MdsGetStdMsg(status,(const char **)&fac_out,(const char **)&msgnam_out,(const char **)&text_out);
                 printf("%%%s-%c-%s: %s\n",fac_out,f[status&7],msgnam_out,text_out);
                }
             } else {
-              printf("Error calling fun in %s\n", filename);
+              fprintf(stderr,"Error calling fun in %s\n", filename);
               (*PyErr_Print)();
               status = MDSplusERROR;
             }
@@ -376,14 +395,30 @@ int TdiExtPython(struct descriptor *modname_d,
         }
         (*Py_DecRef)(pyArgs);
         (*Py_DecRef)(pyFunction);
-      } else status = TdiUNKNOWN_VAR;
+      } else {
+        status = TdiUNKNOWN_VAR;
+        fprintf(stderr,"Error: Module '%s' found but it does not contain function '%s'\n",filename,filename);
+      }
       (*PyGILState_Release)(GIL);
     }
-    FREE_NOW(dirspec);
-    FREE_NOW(filename);
-  } else status = TdiUNKNOWN_VAR;
 #ifndef _WIN32
   sigaction(SIGCHLD, &oldact, NULL);
 #endif
+  return status;
+}
+
+int TdiExtPython(struct descriptor *modname_d,
+                 int nargs, struct descriptor **args, struct descriptor_xd *out_ptr){
+  int status;
+  char *dirspec = NULL, *filename = NULL;
+  FREE_ON_EXIT(dirspec);
+  FREE_ON_EXIT(filename);
+  dirspec = findModule(modname_d, &filename);
+  if (dirspec)
+    status = TdiExtPython2(dirspec,filename,nargs,args,out_ptr);
+  else
+    status = TdiUNKNOWN_VAR;
+  FREE_NOW(filename);
+  FREE_NOW(dirspec);
   return status;
 }

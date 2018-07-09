@@ -888,6 +888,8 @@ extern "C" {
   EXPORT void mdsplus_connection_openTree(const void *lvConnectionPtr, const char *tree,
 					     int shot, ErrorCluster * error);
   EXPORT void mdsplus_connection_closeTree(const void *lvConnectionPtr, ErrorCluster * error);
+  EXPORT void mdsplus_connection_getNode(const void *lvConnectionPtr, void **lvTreeNodePtrOut,
+				      const char *pathIn, ErrorCluster * error);
 
 #ifdef __cplusplus
 }

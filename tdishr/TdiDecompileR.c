@@ -1,3 +1,27 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 /*      Tdi0Decompile_R
         Routine to decompile a descriptor of class R.
         status = Tdi0Decompile_R(in_ptr, precedence, out_ptr);
@@ -116,8 +140,6 @@ STATIC_ROUTINE int Append(char *pstr, struct descriptor_d *pd)
   return StrAppend(pd, &dstr);
 }
 
-STATIC_CONSTANT DESCRIPTOR(newline, "\r\n\t\t\t\t\t\t\t");
-
 void TdiDecompileDeindent(struct descriptor_d *pout)
 {
   char *start = pout->pointer, *fin = start + pout->length - 1;
@@ -132,8 +154,20 @@ void TdiDecompileDeindent(struct descriptor_d *pout)
 
 STATIC_ROUTINE int Indent(int step, struct descriptor_d *pout){
   GET_TDITHREADSTATIC_P;
-  newline.length = (unsigned short)(((TdiThreadStatic_p->TdiIndent += step) < 8 ? TdiThreadStatic_p->TdiIndent : 8) + 1);
-  return StrAppend(pout, (struct descriptor *)&newline);
+#ifdef _WIN32
+  const char* newline= "\r\n\t\t\t\t\t\t\t";
+  int identlen = ((TdiThreadStatic_p->TdiIndent += step) < 8 ? TdiThreadStatic_p->TdiIndent : 8)+1;
+#else
+  const char* newline= "\n\t\t\t\t\t\t\t";
+  int identlen = ((TdiThreadStatic_p->TdiIndent += step) < 8 ? TdiThreadStatic_p->TdiIndent : 8);
+#endif
+  struct descriptor_d new = { 0, DTYPE_T, CLASS_D, 0 };
+  new.length = pout->length + identlen;
+  new.pointer = malloc(new.length);
+  memcpy(new.pointer,pout->pointer,pout->length);
+  memcpy(new.pointer+pout->length,newline,identlen);
+  StrFree1Dx(pout);*pout = new;
+  return MDSplusSUCCESS;
 }
 
 STATIC_ROUTINE int OneStatement(struct descriptor_r *pin, struct descriptor_d *pout)

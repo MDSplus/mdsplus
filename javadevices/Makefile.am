@@ -4,14 +4,6 @@ CLEANFILES = $(java_DATA)
 JAVAROOT = $(builddir)
 CLASSPATH_ENV = CLASSPATH=$(top_builddir)/javatraverser/jTraverser.jar
 javadir = $(exec_prefix)/java/classes
-java_JAVA = $(SOURCES)
-
-# Build the final jar
-java_DATA = jDevices.jar
-
-jDevices.jar: classjava.stamp
-	$(JAR) c0f $@ $(java_JAVA:.java=*.class)
-
 
 # Giant list of source files follow
 SOURCES = \
@@ -165,5 +157,24 @@ MARTE_DEVICESetup.java \
 RFXVICONTROLSetup.java \
 REDPYTADCSetup.java \
 JRG_ADC32ASetup.java \
-A3248Setup.java
+A3248Setup.java \
+RFX_RPADCSetup.java
+
+java_DATA = jDevices.jar
+
+if USE_JARS_DIR
+
+jDevices.jar: @JARS_DIR@/javadevices/jDevices.jar
+	cp $< $@
+
+else
+
+java_JAVA = $(SOURCES)
+
+# Build the final jar
+
+jDevices.jar: classjava.stamp
+	$(JAR) c0f $@ $(java_JAVA:.java=*.class)
+
+endif
 

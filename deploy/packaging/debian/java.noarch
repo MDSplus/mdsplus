@@ -9,6 +9,7 @@
 ./usr/local/mdsplus/java/classes/jScope.jar
 ./usr/local/mdsplus/java/classes/jScope.properties
 ./usr/local/mdsplus/java/classes/jTraverser.jar
+./usr/local/mdsplus/java/classes/jTraverser2.jar
 ./usr/local/mdsplus/java/classes/jdocs/CompositeWaveDisplay.html
 ./usr/local/mdsplus/java/classes/jdocs/ConnectionEvent.html
 ./usr/local/mdsplus/java/classes/jdocs/ConnectionListener.html

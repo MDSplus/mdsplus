@@ -1,6 +1,6 @@
-import javax.swing.*;
-import java.awt.*;
-import java.util.*;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 public  class  DeviceWaveParameters extends DeviceParameters
 {
      public DeviceWaveParameters(){}
@@ -8,7 +8,6 @@ public  class  DeviceWaveParameters extends DeviceParameters
      protected void addParameter(JPanel jp, NidData nidData)
      {
         try {
-            NidData prevDefNid = subtree.getDefault(0);
             subtree.setDefault(nidData, 0);
             NidData currNid;
             currNid = subtree.resolve(new PathData(":DESCRIPTION"), 0);
