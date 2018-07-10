@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <mdsshr.h>
 #include "treeshrp.h"
+#include <tdishr_messages.h>
 #include <mds_stdarg.h>
 static int (*tdiExecute)();
 static int (*Notify) (TreeshrHookType, char *, int, int);
@@ -64,7 +65,8 @@ int TreeCallHook(PINO_DATABASE *dbid, TreeshrHookType htype, int nid)
     int status = (*tdiExecute) (&expression_d, &ans_d,  MdsEND_ARG);
     MdsFree1Dx(&ans_d,NULL);
     old_dbid = TreeSwitchDbid(old_dbid);
-    return status;
+    if (status != TdiUNKNOWN_VAR)
+      return status;
   }
   return 1;
 }
