@@ -1,0 +1,16 @@
+public fun TreeShrHook(in _action, in _treename, in _shot, in _nid) {
+  /* This is a sample hook for treeshr operations. These hooks can be used for various purposes
+   such as recording tree access in a relation database, retrieving trees from offline storage when they
+   are opened, etc...
+
+   This is just a template to demonstrate when these hooks are called. It is written as a tdi fun which
+   would have to be MDS_PATH with a name such as TreeShrHook.fun. It can also be implemented as a python
+   function by writing a TreeShrHook.py module with the same function name enclosed which would be called
+   with the same arguments.
+  */
+  _actions=["OpenTree","OpenTreeEdit","RetrieveTree","WriteTree","CloseTree",
+  "OpenNciFileWrite","OpenDataFileWrite","GetData","GetNci","PutData","PutNci"];
+  _actnam=trim(_actions[_action]);
+  write(*,"TreeShrHook called with action="//_actnam//", tree="//_treename//", shot="//trim(adjustl(_shot))//", nid="//trim(adjustl(_nid)));
+  return(1);
+}

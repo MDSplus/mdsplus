@@ -141,7 +141,7 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
     int stv;
     NCI local_nci, old_nci;
     int64_t saved_viewdate;
-    status = TreeCallHook(PutData, info_ptr, nid);
+    status = TreeCallHook(dblist, PutData, nid);
     if (status && !(status & 1))
       return status;
     TreeGetViewDate(&saved_viewdate);
@@ -150,8 +150,11 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
       unlock_nci_needed = 1;
     TreeSetViewDate(&saved_viewdate);
     memcpy(&old_nci, &local_nci, sizeof(local_nci));
-    if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
+    if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1) {
       open_status = TreeOpenDatafileW(info_ptr, &stv, 0);
+      if (open_status & 1)
+        TreeCallHook(dblist, OpenDataFileWrite, 0);
+    }
     else
       open_status = 1;
     if (local_nci.flags2 & NciM_EXTENDED_NCI) {
@@ -425,8 +428,6 @@ int _TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
     df_ptr = NULL;
   }
   info->data_file = df_ptr;
-  if (status & 1)
-    TreeCallHook(OpenDataFileWrite, info, 0);
   return status;
 }
 

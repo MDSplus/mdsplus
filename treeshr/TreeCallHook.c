@@ -26,21 +26,45 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libroutines.h>
 #include <treeshr_hooks.h>
 #include <ncidef.h>
+#include <treeshr.h>
+#include <mdsshr.h>
 #include "treeshrp.h"
 #include <mds_stdarg.h>
-
+static int (*tdiExecute)();
 static int (*Notify) (TreeshrHookType, char *, int, int);
 static void load_Notify() {
   DESCRIPTOR(image, "TreeShrHooks");
   DESCRIPTOR(rtnname, "Notify");
   if IS_NOT_OK(LibFindImageSymbol(&image, &rtnname, &Notify))
     Notify = NULL;
+  if (Notify == NULL) {
+    DESCRIPTOR(image, "TdiShr");
+    DESCRIPTOR(rtnname, "TdiExecute");
+    if IS_NOT_OK(LibFindImageSymbol(&image, &rtnname, &tdiExecute))
+      tdiExecute=NULL;
+  }
 }
 
-int TreeCallHook(TreeshrHookType htype, TREE_INFO * info, int nid)
+int TreeCallHook(PINO_DATABASE *dbid, TreeshrHookType htype, int nid)
 {
   RUN_FUNCTION_ONCE(load_Notify);
+  TREE_INFO *info = (dbid == NULL) ? NULL : dbid->tree_info;
+  if (info == NULL)
+    return 1;
   if (Notify)
     return (*Notify) (htype, info->treenam, info->shot, nid);
+  if (tdiExecute) {
+    char expression[128];
+    struct descriptor expression_d = {0, DTYPE_T, CLASS_S, expression};
+    snprintf(expression, sizeof(expression), "TreeShrHook(%d,'%s',%d,%d)",
+	     htype, info->treenam, info->shot, nid);
+    expression_d.length=strlen(expression);
+    void *old_dbid=TreeSwitchDbid(dbid);
+    EMPTYXD(ans_d);
+    int status = (*tdiExecute) (&expression_d, &ans_d,  MdsEND_ARG);
+    MdsFree1Dx(&ans_d,NULL);
+    old_dbid = TreeSwitchDbid(old_dbid);
+    return status;
+  }
   return 1;
 }

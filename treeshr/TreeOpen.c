@@ -400,8 +400,12 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
 	      free(local_info->nci_file);
 	      local_info->nci_file = NULL;
 	    }
-	    if (call_hook)
-	      TreeCallHook(CloseTree, local_info, 0);
+	    if (call_hook) {
+	      TREE_INFO *old_info = dblist->tree_info;
+	      dblist->tree_info=local_info;
+	      TreeCallHook(dblist, CloseTree, 0);
+	      dblist->tree_info=old_info;
+	    }
 	    if (local_info->filespec)
 	      free(local_info->filespec);
 	    if (local_info->treenam)
@@ -450,6 +454,7 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
   int i;
   TREE_INFO *info;
   TREE_INFO *iptr;
+  TREE_INFO *old_info = dblist->tree_info;
 
 /***********************************************
   If the parent's usage is not subtree then
@@ -505,12 +510,16 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
       info->shot = dblist->shotid;
       status = MapTree(tree, dblist->shotid, info, 0);
       if (!(status & 1) && (status == TreeFILE_NOT_FOUND || treeshr_errno == TreeFILE_NOT_FOUND)) {
-	status = TreeCallHook(RetrieveTree, info, 0);
+	dblist->tree_info=info;
+	status = TreeCallHook(dblist, RetrieveTree, 0);
+	dblist->tree_info=old_info;
 	if (status & 1)
 	  status = MapTree(tree, dblist->shotid, info, 0);
       }
       if (status == TreeNORMAL) {
-	TreeCallHook(OpenTree, info, 0);
+	dblist->tree_info=info;
+	TreeCallHook(dblist, OpenTree, 0);
+	dblist->tree_info=old_info;
 
       /**********************************************
        If this is the main tree the root node is the
@@ -1233,7 +1242,9 @@ int _TreeOpenEdit(void **dbid, char const *tree_in, int shot_in)
     status = TreeNOCURRENT;
   else {
     PINO_DATABASE **dblist = (PINO_DATABASE **) dbid;
+    TREE_INFO *old_info;
     status = CreateDbSlot(dblist, tree, shot, 1);
+    old_info=(*dblist)->tree_info;
     if (status == TreeNORMAL) {
       info = (TREE_INFO *) malloc(sizeof(TREE_INFO));
       if (info) {
@@ -1243,12 +1254,16 @@ int _TreeOpenEdit(void **dbid, char const *tree_in, int shot_in)
 	info->shot = (*dblist)->shotid;
 	status = MapTree(tree, (*dblist)->shotid, info, 1);
 	if (STATUS_NOT_OK && (status == TreeFILE_NOT_FOUND || treeshr_errno == TreeFILE_NOT_FOUND)) {
-	  status = TreeCallHook(RetrieveTree, info, 0);
+	  (*dblist)->tree_info=info;
+	  status = TreeCallHook(*dblist, RetrieveTree, 0);
+	  (*dblist)->tree_info=old_info;
 	  if STATUS_OK
 	    status = MapTree(tree, (*dblist)->shotid, info, 1);
 	}
 	if STATUS_OK {
-	  TreeCallHook(OpenTreeEdit, info, 0);
+	  (*dblist)->tree_info=info;
+	  TreeCallHook(*dblist, OpenTreeEdit, 0);
+	  (*dblist)->tree_info=old_info;
 	  info->edit = (TREE_EDIT *) malloc(sizeof(TREE_EDIT));
 	  if (info->edit) {
 	    memset(info->edit, 0, sizeof(TREE_EDIT));
@@ -1256,6 +1271,7 @@ int _TreeOpenEdit(void **dbid, char const *tree_in, int shot_in)
 	    status = TreeOpenNciW(info, 0);
 	    if (status & 1) {
 	      (*dblist)->tree_info = info;
+              TreeCallHook(*dblist, OpenNCIFileWrite, 0);
 	      (*dblist)->open = 1;
 	      (*dblist)->open_for_edit = 1;
 	      (*dblist)->open_readonly = 0;
@@ -1317,7 +1333,6 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
 	  }
 	}
 	if STATUS_OK {
-	  TreeCallHook(OpenTreeEdit, info, 0);
 	  info->edit = (TREE_EDIT *) malloc(sizeof(TREE_EDIT));
 	  if (info->edit) {
 	    memset(info->edit, 0, sizeof(TREE_EDIT));
@@ -1332,6 +1347,7 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
 	    (*dblist)->open_readonly = 0;
 	    info->root = info->node;
 	    (*dblist)->default_node = info->root;
+	    TreeCallHook(*dblist, OpenTreeEdit, 0);
 	    TreeOpenNciW(info, 0);
 	    info->edit->first_in_mem = 0;
 	    status = TreeExpandNodes(*dblist, 0, 0);
