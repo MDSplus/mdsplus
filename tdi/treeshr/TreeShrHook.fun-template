@@ -10,7 +10,11 @@ public fun TreeShrHook(in _action, in _treename, in _shot, in _nid) {
   */
   _actions=["OpenTree","OpenTreeEdit","RetrieveTree","WriteTree","CloseTree",
   "OpenNciFileWrite","OpenDataFileWrite","GetData","GetNci","PutData","PutNci"];
-  _actnam=trim(_actions[_action]);
-  write(*,"TreeShrHook called with action="//_actnam//", tree="//_treename//", shot="//trim(adjustl(_shot))//", nid="//trim(adjustl(_nid)));
+  if ( _action >= 0 && _action < size(_actions) ) {
+    _actnam=trim(_actions[_action]);
+    write(*,"TreeShrHook called with action="//_actnam//", tree="//_treename//", shot="//trim(adjustl(_shot))//", nid="//trim(adjustl(_nid)));
+  } else {
+    write(*,"TreeShrHook initialize called with action="//trim(adjustl(_action)));
+  }
   return(1);
 }

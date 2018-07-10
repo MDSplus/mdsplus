@@ -43,6 +43,13 @@ static void load_Notify() {
     DESCRIPTOR(rtnname, "TdiExecute");
     if IS_NOT_OK(LibFindImageSymbol(&image, &rtnname, &tdiExecute))
       tdiExecute=NULL;
+    else {
+      DESCRIPTOR(expression,"TreeShrHook(-1,'',0,0)");
+      EMPTYXD(ans_d);
+      if ((*tdiExecute)(&expression, &ans_d, MdsEND_ARG) == TdiUNKNOWN_VAR)
+	tdiExecute=NULL;
+      MdsFree1Dx(&ans_d,NULL);
+    }
   }
 }
 
@@ -62,11 +69,16 @@ int TreeCallHook(PINO_DATABASE *dbid, TreeshrHookType htype, int nid)
     expression_d.length=strlen(expression);
     void *old_dbid=TreeSwitchDbid(dbid);
     EMPTYXD(ans_d);
-    int status = (*tdiExecute) (&expression_d, &ans_d,  MdsEND_ARG);
-    MdsFree1Dx(&ans_d,NULL);
+    (*tdiExecute) (&expression_d, &ans_d,  MdsEND_ARG);
     old_dbid = TreeSwitchDbid(old_dbid);
-    if (status != TdiUNKNOWN_VAR)
-      return status;
+    if (ans_d.pointer != NULL) {
+      int ans = 1;
+      struct descriptor *d = (struct descriptor *)ans_d.pointer;
+      if ((d->dtype == DTYPE_L) && (d->pointer != NULL))
+	ans = *(int *)d->pointer;
+      MdsFree1Dx(&ans_d,NULL);
+      return ans;
+    }
   }
   return 1;
 }
