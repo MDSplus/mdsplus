@@ -1,3 +1,4 @@
+/* FOR INTERNAL USE ONLY */
 public fun GetDefaultNid()
 {
   _nid = 0L;

@@ -1,3 +1,4 @@
+/* FOR INTERNAL USE ONLY */
 public fun TreeCreatePulseFile(in _shot, optional in _num, optional in _nids)
 {
   if (! present(_num)) {

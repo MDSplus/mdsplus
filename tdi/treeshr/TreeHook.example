@@ -1,3 +1,4 @@
+/* FOR INTERNAL USE ONLY */
 public fun TreeHook(in _mode, in _tree, in _shot, in _nid)
 {
   switch(_mode)
