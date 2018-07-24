@@ -1,3 +1,4 @@
+/* FOR INTERNAL USE ONLY */
 public fun GetExtendedAttribute(as_is _node, optional in _name) {
 /* Get extended node attribute value */
   if (!present(_name)) _name='attributenames';

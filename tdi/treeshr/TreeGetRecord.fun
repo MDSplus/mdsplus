@@ -1,3 +1,4 @@
+/* FOR INTERNAL USE ONLY */
 /* Future support for multi-shot trending --- not currently used */
 public fun TreeGetRecord(in _nid, out _out) {
         _out=1;
