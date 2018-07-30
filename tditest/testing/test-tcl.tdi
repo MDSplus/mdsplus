@@ -80,3 +80,5 @@ Tcl('quit')
 Tcl('close')
 Tcl('set tree main')
 Tcl('delete pulse 1')
+_status=Tcl(['set tree main','dir','close'],_out,_err)
+write(*,"output=",_out,"error=",_err),_status 
