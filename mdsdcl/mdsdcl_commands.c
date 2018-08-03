@@ -770,6 +770,11 @@ EXPORT int mdsdcl_help_device(void *ctx, char **error __attribute__((unused)), c
   char *expr = NULL;
   cli_get_value(ctx, "devtype", &device);
   if (device != NULL) {
+    if (strcasecmp("HELP",device) == 0) {
+      extern int mdsdcl_do_help();
+      free(device);
+      return mdsdcl_do_help("HELP/DEVICE", error, output);
+    }
     int full=cli_present(ctx, "FULL") & 1;
     expr=malloc(strlen("pydev_help('','')")+strlen(device)+2);
     sprintf(expr,"pydev_help('%s',%d)",device,full);
