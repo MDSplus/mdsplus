@@ -221,7 +221,7 @@ javadispatcher: javascope javatraverser
 javamds: mdstcpip
 javatraverser: javascope
 math: mdsshr
-mdsdcl: mdsshr tdishr
+mdsdcl: mdsshr treeshr tdishr
 mdslib: mdstcpip
 mdslibidl: tdishr
 mdsmisc: tdishr xtreeshr

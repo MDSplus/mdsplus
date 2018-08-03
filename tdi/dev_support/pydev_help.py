@@ -1,5 +1,6 @@
 def pydev_help(devtype_in,full_in):
   from MDSplus import Device,Data
+  from pydoc import TextDoc
   devtype=str(devtype_in).upper()
   devnames=[]
   full=int(full_in)
@@ -14,7 +15,7 @@ def pydev_help(devtype_in,full_in):
 	dmod = Device.importPyDeviceModule(devtype)
         cls = eval('dmod.%s' % dmod.__name__.upper())
         if full == 1:
-          return help(cls)
+          return TextDoc().docclass(cls)
         else:
           return cls.__doc__
     except:
