@@ -776,8 +776,9 @@ EXPORT int mdsdcl_help_device(void *ctx, char **error __attribute__((unused)), c
       return mdsdcl_do_help("HELP/DEVICE", error, output);
     }
     int full=cli_present(ctx, "FULL") & 1;
-    expr=malloc(strlen("pydev_help('','')")+strlen(device)+2);
-    sprintf(expr,"pydev_help('%s',%d)",device,full);
+    size_t len=strlen("pydev_help('','')")+strlen(device)+20;
+    expr=malloc(len);
+    snprintf(expr, len, "pydev_help('%s',%d)", device, full);
     free(device);
     struct descriptor expr_d = {strlen(expr), DTYPE_T, CLASS_S, expr};
     EMPTYXD(ans_d);
