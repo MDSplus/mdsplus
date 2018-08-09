@@ -43,18 +43,20 @@ class Scalar(_dat.Data):
     def _setTree(self,*a,**kw): return self;
 
     def __new__(cls,*value):
-        if cls is not Scalar or len(value)==0:
+        if len(value)==0:
             return object.__new__(cls)
         value = value[0]
+        if isinstance(value,(_arr.Array,list,tuple,_ver.generator,_ver.mapclass,_ver.nparray)):
+            key = cls.__name__+'Array'
+            if key in _arr.__dict__:
+                cls = _arr.__dict__[key]
+                return cls(value)
+        if cls is not Scalar:
+            return object.__new__(cls)
         if isinstance(value,(Scalar,)):
             return value
         if isinstance(value,_dat.Data):
             value = value.data()
-        if (isinstance(value,_arr.Array)) or isinstance(value,list) or isinstance(value, _ver.nparray):
-            key = cls.__name__+'Array'
-            if key in _arr.__dict__:
-                cls = _arr.__dict__[key]
-                return cls.__new__(cls,value)
         if isinstance(value,(_ver.npbytes, _ver.npunicode,_ver.basestring)):
             cls = String
         elif isinstance(value,(_N.bool_,)):
