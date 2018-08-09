@@ -409,6 +409,14 @@ class Routine(Compound):
     dtype_id=205
 _dsc.addDtypeToClass(Routine)
 
+class Slope(Compound):
+    """A Slope is a deprecated object. You should use Range instead."""
+    fields=('slope','begin','end')
+    dtype_id=198
+    def slice(self):
+        return slice(self.begin.data(),self.end.data(),self.slope.data())
+_dsc.addDtypeToClass(Slope)
+
 class Signal(Compound):
     """A Signal is used to describe a measurement, usually time dependent, and associated the data with its independent
     axis (Dimensions). When Signals are indexed using s[idx], the index is resolved using the dimension of the signal
