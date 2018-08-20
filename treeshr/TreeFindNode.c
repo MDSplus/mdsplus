@@ -702,7 +702,7 @@ STATIC_ROUTINE char *AbsPath(void *dbid, char const *inpath, int nid_in)
     }
     else {
       char *treename = Treename(dblist, nid_in);
-      char *answer = (char *)malloc(strlen(treename) + strlen(pathptr) + 2 + 1);
+      answer = (char *)malloc(strlen(treename) + strlen(pathptr) + 2 + 1);
       strcpy(answer, "\\");
       strcat(answer, treename);
       strcat(answer, "::");
