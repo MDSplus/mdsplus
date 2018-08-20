@@ -150,6 +150,7 @@ class Tests(TestCase):
         a.append(f) # a should keep tree of e
         self.assertEqual(a.tree,e.tree)
         self.assertEqual(a[1].tree,f.tree)
+        self._doUnaryArray(m.Int32(range(10)),m.Int32Array(range(10)),'Int32(range(10))')
 
     def scalars(self):
         def doTest(suffix,cl,scl,ucl,**kw):
