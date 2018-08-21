@@ -222,6 +222,7 @@ static void Phase(LinkedEvent * event){
   static DESCRIPTOR(const phase_lookup, "PHASE_NAME_LOOKUP($)");
   static struct descriptor phase_d = { sizeof(int), DTYPE_L, CLASS_S, 0 };
   phase_d.pointer = (char *)&event->phase;
+  if (current_shot == -9999) current_shot = event->shot;
   if (current_phase != event->phase) {
     if (!(TdiExecute(&phase_lookup, &phase_d, &phase MDS_END_ARG) & 1))
       StrCopyDx((struct descriptor *)&phase, (struct descriptor *)&unknown);
