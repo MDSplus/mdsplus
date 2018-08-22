@@ -3003,6 +3003,9 @@ class TreeNodeArray(_arr.Int32Array): # HINT: TreeNodeArray begin
         return self.usage
 
     def __getattr__(self,name):
+      try:
+          return self.tree.tdiExecute('getnci($,$)',self._value,name)
+      except:
         ans=[]
         for node in self:
             val = node.__getattribute__(name)
