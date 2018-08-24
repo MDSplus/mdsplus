@@ -109,7 +109,7 @@ OPTIONS
        timeout time for a test will be set to this value times the normal
        timeout for the test. For example, --test_timeunit=2.5 would
        allow the tests to run 2.5 as long as the normally do before being
-       stopped with a timeout error. 
+       stopped with a timeout error.
 
    --eventport=number
        Select a port number to use for udp event tests. If running
@@ -501,7 +501,7 @@ if [ "${TEST}"            != "yes"  \
  -a  "${RELEASE}"         != "yes"  \
  -a  "${PUBLISH}"         != "yes"  ]
 then
-    >&2 echo "None of --test --make-jars --release=version --publish=version options specified on the command. Nothing to do!"
+    >&2 echo "None of --test --make-jars --release=version --publish=version options specified on the command or skipped. Nothing to do!"
     exit 0
 fi
 #
