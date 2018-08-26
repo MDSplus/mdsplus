@@ -108,7 +108,7 @@ typedef struct _Job {
 static pthread_mutex_t jobs_mutex = PTHREAD_MUTEX_INITIALIZER;
 #define LOCK_JOBS   pthread_mutex_lock(&jobs_mutex);pthread_cleanup_push((void*)pthread_mutex_unlock, &jobs_mutex)
 #define UNLOCK_JOBS pthread_cleanup_pop(1)
-static Job *Jobs = 0;
+static Job *Jobs = NULL;
 
 typedef struct _client {
   SOCKET reply_sock;
@@ -118,11 +118,11 @@ typedef struct _client {
   struct _client *next;
 } Client;
 static pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
-#define LOCK_CLIENTS   pthread_mutex_lock(&clients_mutex)
-#define UNLOCK_CLIENTS pthread_mutex_unlock(&clients_mutex)
-#define LOCK_CLIENTS   pthread_mutex_lock(&clients_mutex)
-#define UNLOCK_CLIENTS pthread_mutex_unlock(&clients_mutex)
-static Client *Clients = 0;
+#define LOCK_CLIENTS   pthread_mutex_lock(&clients_mutex);pthread_cleanup_push((void*)pthread_mutex_unlock, &clients_mutex)
+#define UNLOCK_CLIENTS pthread_cleanup_pop(1)
+#define UNLOCK_CLIENTS_REV pthread_mutex_unlock(&clients_mutex);pthread_cleanup_push((void*)pthread_mutex_lock, &clients_mutex)
+#define LOCK_CLIENTS_REV   pthread_cleanup_pop(1)
+static Client *Clients = NULL;
 
 static int MonJob = -1;
 static int JobId = 0;
@@ -459,10 +459,10 @@ static void ResetFdactive(int rep, SOCKET sock, fd_set * active){
     do {
       for (c = Clients; c; c = c->next)
 	if (ServerBadSocket(c->reply_sock)) {
-	  UNLOCK_CLIENTS;
+	  UNLOCK_CLIENTS_REV;
 	  printf("removed client in ResetFdactive\n");
 	  RemoveClient(c, 0);
-          LOCK_CLIENTS;
+          LOCK_CLIENTS_REV;
 	  break;
 	}
     } while (c);
@@ -515,9 +515,9 @@ static void ReceiverThread(void *sockptr){
           if (c && c->reply_sock != INVALID_SOCKET && FD_ISSET(c->reply_sock, &readfds)) {
             SOCKET reply_sock = c->reply_sock;
             last_client_addr = c->addr;
-            UNLOCK_CLIENTS;
+            UNLOCK_CLIENTS_REV;
             DoMessage(c, &fdactive);
-            LOCK_CLIENTS;
+            LOCK_CLIENTS_REV;
             FD_CLR(reply_sock, &readfds);
           } else
             break;
