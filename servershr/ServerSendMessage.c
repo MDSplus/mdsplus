@@ -196,7 +196,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
   jobid = RegisterJob(msgid, retstatus, lock, ast, astparam, before_ast, conid);
   if (before_ast)
     flags |= SrvJobBEFORE_NOTIFY;
-  sprintf(cmd, "MdsServerShr->ServerQAction(%d,%dwu,%d,%d,%d", addr, port, op, flags, jobid);
+  sprintf(cmd, "MdsServerShr->ServerQAction(%d,%uwu,%d,%d,%d", addr, (unsigned)port, op, flags, jobid);
   va_start(vlist, numargs_in);
   for (i = 0; i < numargs; i++) {
     strcat(cmd, ",");
