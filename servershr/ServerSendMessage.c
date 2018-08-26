@@ -139,10 +139,7 @@ static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void 
 static void CleanupJob(int status, int jobid);
 static void ReceiverThread(void *sockptr);
 static void DoMessage(Client * c, fd_set * fdactive);
-static void _RemoveClient(Client * c, fd_set * fdactive);
-static void RemoveClient(Client * c, fd_set * fdactive) {
-  LOCK_CLIENTS;_RemoveClient(c,fdactive);UNLOCK_CLIENTS;
-}
+static void RemoveClient(Client * c, fd_set * fdactive);
 static int GetHostAddr(char *host);
 static void AddClient(unsigned int addr, short port, int send_sock);
 static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fdactive);
@@ -199,7 +196,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
   jobid = RegisterJob(msgid, retstatus, lock, ast, astparam, before_ast, conid);
   if (before_ast)
     flags |= SrvJobBEFORE_NOTIFY;
-  sprintf(cmd, "MdsServerShr->ServerQAction(%d,%uwu,%d,%d,%d", addr, (unsigned)port, op, flags, jobid);
+  sprintf(cmd, "MdsServerShr->ServerQAction(%d,%dwu,%d,%d,%d", addr, port, op, flags, jobid);
   va_start(vlist, numargs_in);
   for (i = 0; i < numargs; i++) {
     strcat(cmd, ",");
@@ -484,7 +481,9 @@ static void ResetFdactive(int rep, SOCKET sock, fd_set * active){
       for (c = Clients; c; c = c->next)
 	if (ServerBadSocket(c->reply_sock)) {
 	  printf("removed client in ResetFdactive\n");
-	  RemoveClient(c, 0);
+          UNLOCK_CLIENTS_REV;
+	  RemoveClient(c, NULL);
+          LOCK_CLIENTS_REV;
 	  break;
 	}
     } while (c);
@@ -503,45 +502,48 @@ static void ResetFdactive(int rep, SOCKET sock, fd_set * active){
 
 static void ReceiverThread(void *sockptr){
   atexit((void*)ReceiverExit);
+  struct sockaddr_in sin;
   int tablesize = FD_SETSIZE;
-  fd_set fdactive, readfds;
+  int num = 0;
+  int last_client_addr;
+  int rep;
+  fd_set readfds, fdactive;
+  last_client_addr = 0;
   CONDITION_SET(&ReceiverRunning);
 // CONDITION_SET(&ReceiverRunning);
   _CONDITION_LOCK(&ReceiverRunning);
   SOCKET sock = *(SOCKET*)sockptr;
-  FD_SET(sock, &fdactive);
   ReceiverRunning.value = B_TRUE;
   _CONDITION_SIGNAL(&ReceiverRunning);
   _CONDITION_UNLOCK(&ReceiverRunning);  FD_ZERO(&fdactive);
   CONDITION_SET(&ReceiverRunning);
 // \CONDITION_SET(&ReceiverRunning);
-  struct sockaddr_in sin;
-  int last_client_addr = 0;
-  int rep;
+  FD_SET(sock, &fdactive);
   for (rep = 0; rep < 10; rep++) {
     readfds = fdactive;
-    while ((select(tablesize, &readfds, 0, 0, 0)) != -1) {
+    while ((num = select(tablesize, &readfds, 0, 0, 0)) != -1) {
       rep = 0;
       if (FD_ISSET(sock, &readfds)) {
         socklen_t len = sizeof(struct sockaddr_in);
         AcceptClient(accept(sock, (struct sockaddr *)&sin, &len), &sin, &fdactive);
       } else {
+        Client *c, *next;
+        LOCK_CLIENTS;
         for (;;) {
-          Client *c;
-          LOCK_CLIENTS;
-          Client *next;
-          for (c = Clients, next = c ? c->next : NULL;
+          for (c = Clients, next = c ? c->next : 0;
                c && (c->reply_sock == INVALID_SOCKET || !FD_ISSET(c->reply_sock, &readfds));
-               c = next, next = c ? c->next : NULL) ;
-          UNLOCK_CLIENTS;
+               c = next, next = c ? c->next : 0) ;
           if (c && c->reply_sock != INVALID_SOCKET && FD_ISSET(c->reply_sock, &readfds)) {
             SOCKET reply_sock = c->reply_sock;
             last_client_addr = c->addr;
+            UNLOCK_CLIENTS_REV;
             DoMessage(c, &fdactive);
+            LOCK_CLIENTS_REV;
             FD_CLR(reply_sock, &readfds);
           } else
             break;
         }
+        UNLOCK_CLIENTS;
       }
       readfds = fdactive;
     }
@@ -569,8 +571,7 @@ int ServerBadSocket(SOCKET socket)
 int get_addr_port(char* server_in, char* server, int* addrp, short* portp) {
   char hostpart[256] = { 0 };
   char portpart[256] = { 0 };
-  int num;
-  num = sscanf(server, "%[^:]:%s", hostpart, portpart);
+  int num = sscanf(server, "%[^:]:%s", hostpart, portpart);
   if (num != 2) {
     printf("Server '%s' unknown\n", server_in);
     return B_FALSE;
@@ -602,39 +603,37 @@ EXPORT int ServerDisconnect(char *server_in) {
   if (get_addr_port(server_in,server,&addr,&port)) {
     Client *c;
     LOCK_CLIENTS;
-    status = MDSplusERROR;
     for (c = Clients; c && (c->addr != addr || c->port != port); c = c->next) ;
+    UNLOCK_CLIENTS;
     if (c) {
-      _RemoveClient(c, 0);
+      RemoveClient(c, 0);
       status = MDSplusSUCCESS;
     }
-    UNLOCK_CLIENTS;
   }
   FREE_NOW(srv);
   return status;
 }
 
 static int get_addr_port_conid(int addr, short port){
-  int conid;
-  LOCK_CLIENTS;
-  conid = -1;
+  int conid = -1;
   Client *c;
+  LOCK_CLIENTS;
   for (c = Clients; c && (c->addr != addr || c->port != port); c = c->next) ;
+  UNLOCK_CLIENTS;
   if (c) {
     if (ServerBadSocket(getSocket(c->conid)))
-      _RemoveClient(c, NULL);
+      RemoveClient(c, NULL);
     else
       conid = c->conid;
   }
-  UNLOCK_CLIENTS;
   return conid;
 }
 
-EXPORT int ServerConnect(char *server_in){
-  int conid;
+EXPORT int ServerConnect(char *server_in)
+{
+  int conid = -1;
   char *srv = TranslateLogical(server_in);
   FREE_ON_EXIT(srv);
-  conid = -1;
   char *server = srv ? srv : server_in;
   int addr;
   short port;
@@ -697,8 +696,14 @@ static void DoMessage(Client * c, fd_set * fdactive)
   FREE_NOW(msg);
 }
 
-static int get_client_conid(Client* c, fd_set * fdactive) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclobbered"
+
+static void RemoveClient(Client * c, fd_set * fdactive)
+{
   int client_found = 0;
+  int conid;
+  LOCK_CLIENTS;
   if (Clients == c) {
     client_found = 1;
     Clients = c->next;
@@ -710,8 +715,9 @@ static int get_client_conid(Client* c, fd_set * fdactive) {
       cp->next = c->next;
     }
   }
+  UNLOCK_CLIENTS;
   if (client_found) {
-    int conid = c->conid;
+    conid = c->conid;
     if (c->reply_sock != INVALID_SOCKET) {
       shutdown(c->reply_sock, 2);
       close(c->reply_sock);
@@ -721,13 +727,8 @@ static int get_client_conid(Client* c, fd_set * fdactive) {
     if (c->conid >= 0)
       DisconnectFromMds(c->conid);
     free(c);
-    return conid;
-  }
-  return -1;
-}
-
-static void _RemoveClient(Client * c, fd_set * fdactive) {
-  int conid = get_client_conid(c,fdactive);
+  } else
+    conid = -1;
   Job *j;
   for (;;) {
     LOCK_JOBS;
@@ -739,6 +740,8 @@ static void _RemoveClient(Client * c, fd_set * fdactive) {
     } else break;
   }
 }
+
+#pragma GCC diagnostic pop
 
 static int GetHostAddr(char *name)
 {
