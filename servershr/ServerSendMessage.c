@@ -79,6 +79,11 @@ int ServerSendMessage();
 #endif
 #include <signal.h>
 
+//#define DEBUG(...)
+#define DEBUG(...) printf(__VA_ARGS__)
+#define IP(addr)   ((uint8_t*)&addr)
+#define ADDR2IP(a) IP(a)[0],IP(a)[1],IP(a)[2],IP(a)[3]
+
 
 extern short ArgLen();
 
@@ -397,7 +402,7 @@ static SOCKET CreatePort(short *port_out) {
       start_port = 8800;
       range_port =  256;
     }
-    printf("Receiver will be using 'MDSIP_PORT_RANGE=%d-%d'.\n",start_port,start_port+range_port-1);
+    printf("Receiver will be using 'MDSIP_PORT_RANGE=%u-%u'.\n",start_port,start_port+range_port-1);
   }
   short port;
   static struct sockaddr_in sin;
@@ -431,6 +436,7 @@ static SOCKET CreatePort(short *port_out) {
     perror("Error from listen\n");
     return INVALID_SOCKET;
   }
+  DEBUG("Listener opened on port %u.\n",port);
   *port_out = port;
   return s;
 }
@@ -469,7 +475,7 @@ static int start_receiver(short *port_out)
 }
 
 static void ReceiverExit(void *arg __attribute__ ((unused))){
-  printf("ServerSendMessage thread exitted\n");
+  DEBUG("ServerSendMessage thread exitted\n");
   CONDITION_RESET(&ReceiverRunning);
 }
 
@@ -480,7 +486,7 @@ static void ResetFdactive(int rep, SOCKET sock, fd_set * active){
     do {
       for (c = Clients; c; c = c->next)
 	if (ServerBadSocket(c->reply_sock)) {
-	  printf("removed client in ResetFdactive\n");
+	  DEBUG("removed client in ResetFdactive\n");
           UNLOCK_CLIENTS_REV;
 	  RemoveClient(c, NULL);
           LOCK_CLIENTS_REV;
@@ -497,7 +503,7 @@ static void ResetFdactive(int rep, SOCKET sock, fd_set * active){
       FD_SET(c->reply_sock, active);
   }
   UNLOCK_CLIENTS;
-  printf("reset fdactive in ResetFdactive\n");
+  DEBUG("reset fdactive in ResetFdactive\n");
 }
 
 static void ReceiverThread(void *sockptr){
@@ -521,8 +527,10 @@ static void ReceiverThread(void *sockptr){
   int rep;
   for (rep = 0; rep < 10; rep++) {
     readfds = fdactive;
-    while (select(tablesize, &readfds, 0, 0, 0) != -1) {
-      if (FD_ISSET(sock, &readfds)) {
+    int num;
+    while ((num=select(tablesize, &readfds, 0, 0, 0)) != -1) {
+      if (!num) {
+      } else if (FD_ISSET(sock, &readfds)) {
         socklen_t len = sizeof(struct sockaddr_in);
         AcceptClient(accept(sock, (struct sockaddr *)&sin, &len), &sin, &fdactive);
       } else {
@@ -533,7 +541,7 @@ static void ReceiverThread(void *sockptr){
                c && (c->reply_sock == INVALID_SOCKET || !FD_ISSET(c->reply_sock, &readfds));
                c = next, next = c ? c->next : 0) ;
           UNLOCK_CLIENTS;
-          if (c && c->reply_sock != INVALID_SOCKET && FD_ISSET(c->reply_sock, &readfds)) {
+          if (c) {
             SOCKET reply_sock = c->reply_sock;
             last_client_addr = c->addr;
             DoMessage(c, &fdactive);
@@ -545,7 +553,7 @@ static void ReceiverThread(void *sockptr){
       readfds = fdactive;
       rep = 0;
     }
-    fprintf(stderr,"Dispatcher select loop failed\nLast client addr = %d\n", last_client_addr);
+    fprintf(stderr,"Dispatcher select loop failed\nLast client addr = %u.%u.%u.%u\n",ADDR2IP(last_client_addr));
     ResetFdactive(rep, sock, &fdactive);
   }
   fprintf(stderr,"Cannot recover from select errors in ServerSendMessage, exitting\n");
@@ -571,7 +579,7 @@ int get_addr_port(char* server_in, char* server, int* addrp, short* portp) {
   char portpart[256] = { 0 };
   int num = sscanf(server, "%[^:]:%s", hostpart, portpart);
   if (num != 2) {
-    printf("Server '%s' unknown\n", server_in);
+    fprintf(stderr,"Server '%s' unknown\n", server_in);
     return B_FALSE;
   }
   *addrp = GetHostAddr(hostpart);
@@ -694,13 +702,9 @@ static void DoMessage(Client * c, fd_set * fdactive)
   FREE_NOW(msg);
 }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wclobbered"
 
-static void RemoveClient(Client * c, fd_set * fdactive)
-{
-  int client_found = 0;
-  int conid;
+static int get_client_conid(Client * c, fd_set * fdactive) {
+  int client_found;
   LOCK_CLIENTS;
   if (Clients == c) {
     client_found = 1;
@@ -715,7 +719,7 @@ static void RemoveClient(Client * c, fd_set * fdactive)
   }
   UNLOCK_CLIENTS;
   if (client_found) {
-    conid = c->conid;
+    int conid = c->conid;
     if (c->reply_sock != INVALID_SOCKET) {
       shutdown(c->reply_sock, 2);
       close(c->reply_sock);
@@ -725,8 +729,13 @@ static void RemoveClient(Client * c, fd_set * fdactive)
     if (c->conid >= 0)
       DisconnectFromMds(c->conid);
     free(c);
-  } else
-    conid = -1;
+    return conid;
+  }
+  return -1;
+}
+
+static void RemoveClient(Client * c, fd_set * fdactive) {
+  int conid = get_client_conid(c,fdactive);
   Job *j;
   for (;;) {
     LOCK_JOBS;
@@ -738,8 +747,6 @@ static void RemoveClient(Client * c, fd_set * fdactive)
     } else break;
   }
 }
-
-#pragma GCC diagnostic pop
 
 static int GetHostAddr(char *name)
 {
@@ -779,21 +786,24 @@ static void AddClient(unsigned int addr, short port, int conid)
   else
     Clients = new;
   UNLOCK_CLIENTS;
+  DEBUG("added connection from %u.%u.%u.%u\n",ADDR2IP(addr));
 }
 
 static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fdactive)
 {
+  if (reply_sock == INVALID_SOCKET) return;
   int addr = *(int *)&sin->sin_addr;
   Client *c;
   LOCK_CLIENTS;
-  for (c = Clients; c && (c->addr != addr || c->reply_sock != INVALID_SOCKET); c = c->next) ;
+  for (c = Clients; c && (c->addr != addr || c->reply_sock != INVALID_SOCKET);c = c->next);
   UNLOCK_CLIENTS;
   if (c) {
     c->reply_sock = reply_sock;
-    if (reply_sock != INVALID_SOCKET)
-      FD_SET(reply_sock, fdactive);
+    FD_SET(reply_sock, fdactive);
+    DEBUG("accepted connection from %u.%u.%u.%u\n",ADDR2IP(addr));
   } else {
     shutdown(reply_sock, 2);
     close(reply_sock);
+    DEBUG("dropped connection from %u.%u.%u.%u\n",ADDR2IP(addr));
   }
 }
