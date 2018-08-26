@@ -566,7 +566,7 @@ int ServerBadSocket(SOCKET socket)
   return status!=C_OK;
 }
 
-int getaddrport(char* server_in, char* server, int* addrp, short* portp) {
+int get_addr_port(char* server_in, char* server, int* addrp, short* portp) {
   char hostpart[256] = { 0 };
   char portpart[256] = { 0 };
   int num;
@@ -599,7 +599,7 @@ EXPORT int ServerDisconnect(char *server_in) {
   char *server = srv ? srv : server_in;
   int addr;
   short port;
-  if (getaddrport(server_in,server,&addr,&port)) {
+  if (get_addr_port(server_in,server,&addr,&port)) {
     Client *c;
     LOCK_CLIENTS;
     status = MDSplusERROR;
@@ -616,9 +616,9 @@ EXPORT int ServerDisconnect(char *server_in) {
 
 static int get_addr_port_conid(int addr, short port){
   int conid;
-  Client *c;
   LOCK_CLIENTS;
   conid = -1;
+  Client *c;
   for (c = Clients; c && (c->addr != addr || c->port != port); c = c->next) ;
   if (c) {
     if (ServerBadSocket(getSocket(c->conid)))
@@ -638,7 +638,7 @@ EXPORT int ServerConnect(char *server_in){
   char *server = srv ? srv : server_in;
   int addr;
   short port;
-  if (getaddrport(server_in,server,&addr,&port)) {
+  if (get_addr_port(server_in,server,&addr,&port)) {
     // check if connection already open and ok
     conid = get_addr_port_conid(addr,port);
     if (conid == -1) {
