@@ -40,6 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #ifdef _WIN32
 #include <windows.h>
+ #define MSG_DONTWAIT 0 // TODO: implement workaround usiing select
 #else
  typedef int SOCKET;
  #define INVALID_SOCKET -1
@@ -763,17 +764,20 @@ static int SendReply(SrvJob * job, int replyType, int status_in, int length, cha
     int bytes;
     memset(reply, 0, 60);
     sprintf(reply, "%d %d %d %ld", job->h.jobid, replyType, status_in, msg ? (long)strlen(msg) : 0);
-    bytes = send(sock, reply, 60, 0);
+    bytes = send(sock, reply, 60, MSG_DONTWAIT);
     if (bytes == 60) {
       if (length) {
-	bytes = send(sock, msg, length, 0);
+	bytes = send(sock, msg, length, MSG_DONTWAIT);
 	if (bytes == length)
 	  status = MDSplusSUCCESS;
       } else
 	status = MDSplusSUCCESS;
     }
-    if STATUS_NOT_OK
+    if STATUS_NOT_OK {
+      char* ip = (char*)&job->h.addr;
+      printf("%s: Dropped connection to %u.%u.%u.%u:%u\n", Now(), ip[0],ip[1],ip[2],ip[3], job->h.port);
       RemoveClient(job);
+    }
   }
 #ifndef _WIN32
   signal(SIGPIPE, SIG_DFL);
