@@ -42,8 +42,8 @@
 typedef struct {
   struct _SrvJob *next;
   struct _SrvJob *previous;
-  int addr;
-  int port;
+  unsigned int addr;
+  unsigned int port;
   int sock;
   int length;
   int op;

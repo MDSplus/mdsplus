@@ -118,8 +118,8 @@ static Job *Jobs = NULL;
 typedef struct _client {
   SOCKET reply_sock;
   int conid;
-  int addr;
-  short port;
+  uint32_t addr;
+  uint16_t port;
   struct _client *next;
 } Client;
 static pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -137,7 +137,7 @@ int ServerBadSocket(SOCKET socket);
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 
-static int start_receiver(short *port);
+static int start_receiver(uint16_t *port);
 int ServerConnect(char *server);
 static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void (*ast) (), void *astparam,
 		       void (*before_ast) (), int sock);
@@ -145,8 +145,8 @@ static void CleanupJob(int status, int jobid);
 static void ReceiverThread(void *sockptr);
 static void DoMessage(Client * c, fd_set * fdactive);
 static void RemoveClient(Client * c, fd_set * fdactive);
-static int GetHostAddr(char *host);
-static void AddClient(unsigned int addr, short port, int send_sock);
+static uint32_t GetHostAddr(char *host);
+static void AddClient(uint32_t addr, uint16_t port, int send_sock);
 static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fdactive);
 
 extern void *GetConnectionInfo();
@@ -162,7 +162,7 @@ static SOCKET getSocket(int conid)
 int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_rwlock_t *lock, int *conid_out,
 		      void (*ast) (), void *astparam, void (*before_ast) (), int numargs_in, ...)
 {
-  short port = 0;
+  uint16_t port = 0;
   int conid;
   if (start_receiver(&port) || ((conid = ServerConnect(server)) < 0)) {
     if (ast && astparam)
@@ -173,7 +173,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
   int flags = 0;
   int jobid;
   int i;
-  unsigned int addr = 0;
+  uint32_t addr = 0;
   char cmd[4096];
   unsigned char numargs = max(0, min(numargs_in, 8));
   unsigned char idx = 0;
@@ -191,7 +191,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
   struct sockaddr_in addr_struct = {0};
   socklen_t len = sizeof(addr_struct);
   if (getsockname(sock, (struct sockaddr *)&addr_struct, &len) == 0)
-    addr = *(int *)&addr_struct.sin_addr;
+    addr = *(uint32_t *)&addr_struct.sin_addr;
   if (!addr) {
     perror("Error getting the address the socket is bound to.\n");
     if (ast && astparam)
@@ -201,7 +201,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
   jobid = RegisterJob(msgid, retstatus, lock, ast, astparam, before_ast, conid);
   if (before_ast)
     flags |= SrvJobBEFORE_NOTIFY;
-  sprintf(cmd, "MdsServerShr->ServerQAction(%d,%dwu,%d,%d,%d", addr, port, op, flags, jobid);
+  sprintf(cmd, "MdsServerShr->ServerQAction(%ulu,%uwu,%d,%d,%d", addr, port, op, flags, jobid);
   va_start(vlist, numargs_in);
   for (i = 0; i < numargs; i++) {
     strcat(cmd, ",");
@@ -381,8 +381,8 @@ static void CleanupJob(int status, int jobid)
   }
 }
 
-static SOCKET CreatePort(short *port_out) {
-  static short start_port = 0, range_port;
+static SOCKET CreatePort(uint16_t *port_out) {
+  static uint16_t start_port = 0, range_port;
   if (!start_port) {
     char *range = TranslateLogical("MDSIP_PORT_RANGE");
     if (range) {
@@ -390,10 +390,10 @@ static SOCKET CreatePort(short *port_out) {
       for (dash=range; *dash && *dash!='-' ; dash++);
       if (dash)
         *(dash++)=0;
-      start_port = (short)(atoi(range)&0xffff);
+      start_port = (uint16_t)(atoi(range)&0xffff);
       int end = atoi(dash);
       if (end>0 && end<65536)
-        range_port = (short)end-start_port+1;
+        range_port = (uint16_t)end-start_port+1;
       else
         range_port = 100;
     }
@@ -404,7 +404,7 @@ static SOCKET CreatePort(short *port_out) {
     }
     printf("Receiver will be using 'MDSIP_PORT_RANGE=%u-%u'.\n",start_port,start_port+range_port-1);
   }
-  short port;
+  uint16_t port;
   static struct sockaddr_in sin;
   long sendbuf = 6000, recvbuf = 6000;
   SOCKET s;
@@ -443,10 +443,10 @@ static SOCKET CreatePort(short *port_out) {
 
 static Condition ReceiverRunning = CONDITION_INITIALIZER;
 
-static int start_receiver(short *port_out)
+static int start_receiver(uint16_t *port_out)
 {
   INIT_STATUS;
-  static short port = 0;
+  static uint16_t port = 0;
   static SOCKET sock;
   static pthread_t thread;
 // CONDITION_START_THREAD(&ReceiverRunning, thread, *16, ReceiverThread, s);
@@ -519,9 +519,8 @@ static void ReceiverThread(void *sockptr){
 // \CONDITION_SET(&ReceiverRunning);
   struct sockaddr_in sin;
   int tablesize = FD_SETSIZE;
-  int last_client_addr;
+  uint32_t last_client_addr = 0;
   fd_set readfds, fdactive;
-  last_client_addr = 0;
   FD_ZERO(&fdactive);
   FD_SET(sock, &fdactive);
   int rep;
@@ -574,7 +573,7 @@ int ServerBadSocket(SOCKET socket)
   return status!=C_OK;
 }
 
-int get_addr_port(char* server_in, char* server, int* addrp, short* portp) {
+int get_addr_port(char* server_in, char* server, uint32_t* addrp, uint16_t* portp) {
   char hostpart[256] = { 0 };
   char portpart[256] = { 0 };
   int num = sscanf(server, "%[^:]:%s", hostpart, portpart);
@@ -591,10 +590,10 @@ int get_addr_port(char* server_in, char* server, int* addrp, short* portp) {
     else {
       char *portnam = getenv(portpart);
       portnam = (!portnam) ? ((hostpart[0] == '_') ? "8200" : "8000") : portnam;
-      *portp = htons((short)atoi(portnam));
+      *portp = htons((uint16_t)atoi(portnam));
     }
   } else
-    *portp = htons((short)atoi(portpart));
+    *portp = htons((uint16_t)atoi(portpart));
   return *portp!=0;
 }
 
@@ -604,8 +603,8 @@ EXPORT int ServerDisconnect(char *server_in) {
   FREE_ON_EXIT(srv);
   status = MDSplusERROR;
   char *server = srv ? srv : server_in;
-  int addr;
-  short port;
+  uint32_t addr;
+  uint16_t port;
   if (get_addr_port(server_in,server,&addr,&port)) {
     Client *c;
     LOCK_CLIENTS;
@@ -620,12 +619,12 @@ EXPORT int ServerDisconnect(char *server_in) {
   return status;
 }
 
-static int get_addr_port_conid(int addr, short port){
-  int conid = -1;
+static int get_addr_port_conid(uint32_t addr, uint16_t port){
   Client *c;
   LOCK_CLIENTS;
   for (c = Clients; c && (c->addr != addr || c->port != port); c = c->next) ;
   UNLOCK_CLIENTS;
+  int conid = -1;
   if (c) {
     if (ServerBadSocket(getSocket(c->conid)))
       RemoveClient(c, NULL);
@@ -641,8 +640,8 @@ EXPORT int ServerConnect(char *server_in)
   char *srv = TranslateLogical(server_in);
   FREE_ON_EXIT(srv);
   char *server = srv ? srv : server_in;
-  int addr;
-  short port;
+  uint32_t addr;
+  uint16_t port;
   if (get_addr_port(server_in,server,&addr,&port)) {
     // check if connection already open and ok
     conid = get_addr_port_conid(addr,port);
@@ -706,6 +705,7 @@ static void DoMessage(Client * c, fd_set * fdactive)
 static int get_client_conid(Client * c, fd_set * fdactive) {
   int client_found;
   LOCK_CLIENTS;
+  client_found = 0;
   if (Clients == c) {
     client_found = 1;
     Clients = c->next;
@@ -748,10 +748,10 @@ static void RemoveClient(Client * c, fd_set * fdactive) {
   }
 }
 
-static int GetHostAddr(char *name)
+static uint32_t GetHostAddr(char *name)
 {
   INITIALIZESOCKETS;
-  int addr = 0;
+  uint32_t addr = 0;
 #if defined(__MACH__) || defined(_WIN32)
   struct hostent* hp = gethostbyname(name);
   addr = hp ? *(int *)hp->h_addr_list[0] : (int)inet_addr(name);
@@ -764,13 +764,13 @@ static int GetHostAddr(char *name)
   for ( memlen=1024, hp_mem=malloc(memlen);
 	hp_mem && (gethostbyname_r(name,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE);
 	memlen *= 2, free(hp_mem), hp_mem = malloc(memlen));
-  addr = hp ? *(int *)hp->h_addr_list[0] : (int)inet_addr(name);
+  addr = hp ? *(uint32_t *)hp->h_addr_list[0] : (uint32_t)inet_addr(name);
   FREE_NOW(hp_mem);
 #endif
-  return addr == -1 ? 0 : addr;
+  return addr == 0xffffffff ? 0 : addr;
 }
 
-static void AddClient(unsigned int addr, short port, int conid)
+static void AddClient(unsigned int addr, uint16_t port, int conid)
 {
   Client *c;
   Client *new = (Client *) malloc(sizeof(Client));
@@ -792,7 +792,7 @@ static void AddClient(unsigned int addr, short port, int conid)
 static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fdactive)
 {
   if (reply_sock == INVALID_SOCKET) return;
-  int addr = *(int *)&sin->sin_addr;
+  uint32_t addr = *(uint32_t *)&sin->sin_addr;
   Client *c;
   LOCK_CLIENTS;
   for (c = Clients; c && (c->addr != addr || c->reply_sock != INVALID_SOCKET);c = c->next);
