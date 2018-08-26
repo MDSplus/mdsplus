@@ -502,50 +502,48 @@ static void ResetFdactive(int rep, SOCKET sock, fd_set * active){
 
 static void ReceiverThread(void *sockptr){
   atexit((void*)ReceiverExit);
-  struct sockaddr_in sin;
-  int tablesize = FD_SETSIZE;
-  int num = 0;
-  int last_client_addr;
-  int rep;
-  fd_set readfds, fdactive;
-  last_client_addr = 0;
   CONDITION_SET(&ReceiverRunning);
 // CONDITION_SET(&ReceiverRunning);
   _CONDITION_LOCK(&ReceiverRunning);
   SOCKET sock = *(SOCKET*)sockptr;
   ReceiverRunning.value = B_TRUE;
   _CONDITION_SIGNAL(&ReceiverRunning);
-  _CONDITION_UNLOCK(&ReceiverRunning);  FD_ZERO(&fdactive);
+  _CONDITION_UNLOCK(&ReceiverRunning);
   CONDITION_SET(&ReceiverRunning);
 // \CONDITION_SET(&ReceiverRunning);
+  struct sockaddr_in sin;
+  int tablesize = FD_SETSIZE;
+  int last_client_addr;
+  fd_set readfds, fdactive;
+  last_client_addr = 0;
+  FD_ZERO(&fdactive);
   FD_SET(sock, &fdactive);
+  int rep;
   for (rep = 0; rep < 10; rep++) {
     readfds = fdactive;
-    while ((num = select(tablesize, &readfds, 0, 0, 0)) != -1) {
-      rep = 0;
+    while (select(tablesize, &readfds, 0, 0, 0) != -1) {
       if (FD_ISSET(sock, &readfds)) {
         socklen_t len = sizeof(struct sockaddr_in);
         AcceptClient(accept(sock, (struct sockaddr *)&sin, &len), &sin, &fdactive);
       } else {
         Client *c, *next;
-        LOCK_CLIENTS;
         for (;;) {
+          LOCK_CLIENTS;
           for (c = Clients, next = c ? c->next : 0;
                c && (c->reply_sock == INVALID_SOCKET || !FD_ISSET(c->reply_sock, &readfds));
                c = next, next = c ? c->next : 0) ;
+          UNLOCK_CLIENTS;
           if (c && c->reply_sock != INVALID_SOCKET && FD_ISSET(c->reply_sock, &readfds)) {
             SOCKET reply_sock = c->reply_sock;
             last_client_addr = c->addr;
-            UNLOCK_CLIENTS_REV;
             DoMessage(c, &fdactive);
-            LOCK_CLIENTS_REV;
             FD_CLR(reply_sock, &readfds);
           } else
             break;
         }
-        UNLOCK_CLIENTS;
       }
       readfds = fdactive;
+      rep = 0;
     }
     fprintf(stderr,"Dispatcher select loop failed\nLast client addr = %d\n", last_client_addr);
     ResetFdactive(rep, sock, &fdactive);
