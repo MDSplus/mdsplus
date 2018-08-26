@@ -376,8 +376,29 @@ static void CleanupJob(int status, int jobid)
   }
 }
 
-static SOCKET CreatePort(short starting_port, short *port_out)
-{
+static SOCKET CreatePort(short *port_out) {
+  static short start_port = 0, range_port;
+  if (!start_port) {
+    char *range = TranslateLogical("MDSIP_PORT_RANGE");
+    if (range) {
+      char* dash;
+      for (dash=range; *dash && *dash!='-' ; dash++);
+      if (dash)
+        *(dash++)=0;
+      start_port = (short)(atoi(range)&0xffff);
+      int end = atoi(dash);
+      if (end>0 && end<65536)
+        range_port = (short)end-start_port+1;
+      else
+        range_port = 100;
+    }
+    TranslateLogicalFree(range);
+    if (!start_port) {
+      start_port = 8800;
+      range_port =  256;
+    }
+    printf("Receiver will be using 'MDSIP_PORT_RANGE=%d-%d'.\n",start_port,start_port+range_port-1);
+  }
   short port;
   static struct sockaddr_in sin;
   long sendbuf = 6000, recvbuf = 6000;
@@ -397,7 +418,7 @@ static SOCKET CreatePort(short starting_port, short *port_out)
   sin.sin_family = AF_INET;
   sin.sin_addr.s_addr = INADDR_ANY;
   for (tries = 0 ; (c_status < 0) && (tries < 500); tries++) {
-    port = starting_port + (random() & 0xff);
+    port = start_port + (random()%range_port);
     sin.sin_port = htons(port);
     c_status = bind(s, (struct sockaddr *)&sin, sizeof(struct sockaddr_in));
   }
@@ -425,7 +446,7 @@ static int start_receiver(short *port_out)
 // CONDITION_START_THREAD(&ReceiverRunning, thread, *16, ReceiverThread, s);
   _CONDITION_LOCK(&ReceiverRunning);
   if (port == 0) {
-    sock = CreatePort((short)8800, &port);
+    sock = CreatePort(&port);
     if (sock == INVALID_SOCKET) {
       _CONDITION_UNLOCK(&ReceiverRunning);
       return C_ERROR;
