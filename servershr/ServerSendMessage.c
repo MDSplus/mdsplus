@@ -524,10 +524,11 @@ static void ReceiverThread(void *sockptr){
   FD_ZERO(&fdactive);
   FD_SET(sock, &fdactive);
   int rep;
+  struct timeval timeout = {1,0};
   for (rep = 0; rep < 10; rep++) {
     readfds = fdactive;
     int num;
-    while ((num=select(tablesize, &readfds, 0, 0, 0)) != -1) {
+    while ((num=select(tablesize, &readfds, NULL, NULL, &timeout)) != -1) {
       if (!num) {
       } else if (FD_ISSET(sock, &readfds)) {
         socklen_t len = sizeof(struct sockaddr_in);
@@ -551,6 +552,7 @@ static void ReceiverThread(void *sockptr){
       }
       readfds = fdactive;
       rep = 0;
+      timeout.tv_sec = 1;
     }
     fprintf(stderr,"Dispatcher select loop failed\nLast client addr = %u.%u.%u.%u\n",ADDR2IP(last_client_addr));
     ResetFdactive(rep, sock, &fdactive);
