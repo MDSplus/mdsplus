@@ -1,8 +1,8 @@
 Tcl('abort server gub')
+Server 'gub' unknown
 Error: Problem aborting server 'gub'
 Error message was: %SERVER-E-PATH_DOWN, Path to server lost
 mdsdcl: --> failed on line 'abort server gub'
-Server 'gub' unknown
 266436674
 Tcl('set command tcl')
 1
