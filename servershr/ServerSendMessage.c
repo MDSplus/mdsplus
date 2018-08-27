@@ -79,8 +79,7 @@ int ServerSendMessage();
 #endif
 #include <signal.h>
 
-//#define DEBUG(...)
-#define DEBUG(...) printf(__VA_ARGS__)
+#define DEBUG(...) //printf(__VA_ARGS__)
 #define IP(addr)   ((uint8_t*)&addr)
 #define ADDR2IP(a) IP(a)[0],IP(a)[1],IP(a)[2],IP(a)[3]
 
@@ -402,7 +401,7 @@ static SOCKET CreatePort(uint16_t *port_out) {
       start_port = 8800;
       range_port =  256;
     }
-    printf("Receiver will be using 'MDSIP_PORT_RANGE=%u-%u'.\n",start_port,start_port+range_port-1);
+    DEBUG("Receiver will be using 'MDSIP_PORT_RANGE=%u-%u'.\n",start_port,start_port+range_port-1);
   }
   uint16_t port;
   static struct sockaddr_in sin;
