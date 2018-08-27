@@ -478,25 +478,26 @@ static void ReceiverExit(void *arg __attribute__ ((unused))){
   CONDITION_RESET(&ReceiverRunning);
 }
 
-static void ResetFdactive(int rep, SOCKET sock, fd_set * active){
-  Client *c;
+static void _RemoveClient(Client* c){
+  UNLOCK_CLIENTS_REV;
+  RemoveClient(c, NULL);
+  LOCK_CLIENTS_REV;
+}
+static void ResetFdactive(int rep, SOCKET sock, fd_set* active){
+  LOCK_CLIENTS;
+  Client* c;
   if (rep > 0) {
-    LOCK_CLIENTS;
-    do {
-      for (c = Clients; c; c = c->next)
-	if (ServerBadSocket(c->reply_sock)) {
-	  DEBUG("removed client in ResetFdactive\n");
-          UNLOCK_CLIENTS_REV;
-	  RemoveClient(c, NULL);
-          LOCK_CLIENTS_REV;
-	  break;
-	}
-    } while (c);
-    UNLOCK_CLIENTS;
+    for (c = Clients; c;) {
+      if (ServerBadSocket(c->reply_sock)) {
+	DEBUG("removed client in ResetFdactive\n");
+        _RemoveClient(c);
+        c = Clients;
+      } else
+        c = c->next;
+    }
   }
   FD_ZERO(active);
   FD_SET(sock, active);
-  LOCK_CLIENTS;
   for (c = Clients; c; c = c->next) {
     if (c->reply_sock != INVALID_SOCKET)
       FD_SET(c->reply_sock, active);
@@ -574,83 +575,75 @@ int ServerBadSocket(SOCKET socket)
   return status!=C_OK;
 }
 
-int get_addr_port(char* server_in, char* server, uint32_t* addrp, uint16_t* portp) {
+static Client* get_client(uint32_t addr, uint16_t port) {
+  Client *c;
+  LOCK_CLIENTS;
+  for (c = Clients; c && (c->addr != addr || c->port != port); c = c->next) ;
+  UNLOCK_CLIENTS;
+  return c;
+}
+
+static Client* get_addr_port(char* server_in, char* server, uint32_t*addrp, uint16_t*portp) {
+  uint32_t addr;
+  uint16_t port;
   char hostpart[256] = { 0 };
   char portpart[256] = { 0 };
   int num = sscanf(server, "%[^:]:%s", hostpart, portpart);
   if (num != 2) {
     fprintf(stderr,"Server '%s' unknown\n", server_in);
-    return B_FALSE;
+    return NULL;
   }
-  *addrp = GetHostAddr(hostpart);
-  if (!*addrp) return B_FALSE;
+  addr = GetHostAddr(hostpart);
+  if (!addr) return NULL;
   if (atoi(portpart) == 0) {
     struct servent *sp = getservbyname(portpart, "tcp");
     if (sp)
-      *portp = sp->s_port;
+      port = sp->s_port;
     else {
       char *portnam = getenv(portpart);
       portnam = (!portnam) ? ((hostpart[0] == '_') ? "8200" : "8000") : portnam;
-      *portp = htons((uint16_t)atoi(portnam));
+      port = htons((uint16_t)atoi(portnam));
     }
   } else
-    *portp = htons((uint16_t)atoi(portpart));
-  return *portp!=0;
+    port = htons((uint16_t)atoi(portpart));
+  if (addrp) *addrp=addr;
+  if (portp) *portp=port;
+  return get_client(addr,port);
 }
 
 EXPORT int ServerDisconnect(char *server_in) {
-  int status;
   char *srv = TranslateLogical(server_in);
+  Client* c;
   FREE_ON_EXIT(srv);
-  status = MDSplusERROR;
   char *server = srv ? srv : server_in;
-  uint32_t addr;
-  uint16_t port;
-  if (get_addr_port(server_in,server,&addr,&port)) {
-    Client *c;
-    LOCK_CLIENTS;
-    for (c = Clients; c && (c->addr != addr || c->port != port); c = c->next) ;
-    UNLOCK_CLIENTS;
-    if (c) {
-      RemoveClient(c, 0);
-      status = MDSplusSUCCESS;
-    }
-  }
+  c = get_addr_port(server_in,server,NULL,NULL);
   FREE_NOW(srv);
-  return status;
+  if (c) {
+    RemoveClient(c, NULL);
+    return MDSplusSUCCESS;
+  }
+  return MDSplusERROR;
 }
 
-static int get_addr_port_conid(uint32_t addr, uint16_t port){
-  Client *c;
-  LOCK_CLIENTS;
-  for (c = Clients; c && (c->addr != addr || c->port != port); c = c->next) ;
-  UNLOCK_CLIENTS;
-  int conid = -1;
+EXPORT int ServerConnect(char *server_in) {
+  int conid;
+  char *srv = TranslateLogical(server_in);
+  FREE_ON_EXIT(srv);
+  conid = -1;
+  char *server = srv ? srv : server_in;
+  uint32_t addr;
+  uint16_t port = 0;
+  Client* c = get_addr_port(server_in,server,&addr,&port);
   if (c) {
     if (ServerBadSocket(getSocket(c->conid)))
       RemoveClient(c, NULL);
     else
       conid = c->conid;
   }
-  return conid;
-}
-
-EXPORT int ServerConnect(char *server_in)
-{
-  int conid = -1;
-  char *srv = TranslateLogical(server_in);
-  FREE_ON_EXIT(srv);
-  char *server = srv ? srv : server_in;
-  uint32_t addr;
-  uint16_t port;
-  if (get_addr_port(server_in,server,&addr,&port)) {
-    // check if connection already open and ok
-    conid = get_addr_port_conid(addr,port);
-    if (conid == -1) {
-      conid = ConnectToMds(server);
-      if (conid>=0)
-        AddClient(addr, port, conid);
-    }
+  if (port && conid == -1) {
+    conid = ConnectToMds(server);
+    if (conid>=0)
+      AddClient(addr, port, conid);
   }
   FREE_NOW(srv);
   return conid;
