@@ -583,14 +583,14 @@ static Client* get_client(uint32_t addr, uint16_t port) {
   return c;
 }
 
-static Client* get_addr_port(char* server_in, char* server, uint32_t*addrp, uint16_t*portp) {
+static Client* get_addr_port(char* server, uint32_t*addrp, uint16_t*portp) {
   uint32_t addr;
   uint16_t port;
   char hostpart[256] = { 0 };
   char portpart[256] = { 0 };
   int num = sscanf(server, "%[^:]:%s", hostpart, portpart);
   if (num != 2) {
-    fprintf(stderr,"Server '%s' unknown\n", server_in);
+    DEBUG("Server '%s' unknown\n", server);
     return NULL;
   }
   addr = GetHostAddr(hostpart);
@@ -616,7 +616,7 @@ EXPORT int ServerDisconnect(char *server_in) {
   Client* c;
   FREE_ON_EXIT(srv);
   char *server = srv ? srv : server_in;
-  c = get_addr_port(server_in,server,NULL,NULL);
+  c = get_addr_port(server,NULL,NULL);
   FREE_NOW(srv);
   if (c) {
     RemoveClient(c, NULL);
@@ -633,7 +633,7 @@ EXPORT int ServerConnect(char *server_in) {
   char *server = srv ? srv : server_in;
   uint32_t addr;
   uint16_t port = 0;
-  Client* c = get_addr_port(server_in,server,&addr,&port);
+  Client* c = get_addr_port(server,&addr,&port);
   if (c) {
     if (ServerBadSocket(getSocket(c->conid)))
       RemoveClient(c, NULL);
