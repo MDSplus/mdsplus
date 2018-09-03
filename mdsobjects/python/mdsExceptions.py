@@ -2371,6 +2371,14 @@ class TreeNOWILD(TreeException):
 
 MDSplusException.statusDict[265392280] = TreeNOWILD
 
+
+class TreeOPENDEF(TreeException):
+  status=265392291
+  message="Tree file not found, opened default instead"
+  msgnam="OPENDEF"
+
+MDSplusException.statusDict[265392288] = TreeOPENDEF
+
 ########################### generated from mdsshr_messages.xml ########################
 
 

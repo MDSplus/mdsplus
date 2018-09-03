@@ -204,7 +204,7 @@ EXPORT int _TreeOpen(void **dbid, char const *tree_in, int shot_in, int read_onl
 **************************************************/
 
   shot = shot_in ? shot_in : TreeGetCurrentShotId(tree);
-  if (shot < -1)
+  if (shot < -2)
     status = TreeINVSHOT;
   else if (shot == 0)
     status = TreeNOCURRENT;
@@ -218,7 +218,7 @@ EXPORT int _TreeOpen(void **dbid, char const *tree_in, int shot_in, int read_onl
 	  status = ConnectTreeRemote(*dblist, tree, subtree_list, path);
 	else
 	  status = ConnectTree(*dblist, tree, 0, subtree_list);
-	if (status == TreeNORMAL || status == TreeNOTALLSUBS) {
+	if (status == TreeNORMAL || status == TreeNOTALLSUBS || status == TreeOPENDEF) {
 	  if (db_slot_status == TreeNORMAL)
 	    (*dblist)->default_node = (*dblist)->tree_info->root;
 	  (*dblist)->open = 1;
@@ -232,10 +232,8 @@ EXPORT int _TreeOpen(void **dbid, char const *tree_in, int shot_in, int read_onl
 	    db->next->next = 0;
 	  }
 	}
-      }
-      else {
+      } else
 	status = db_slot_status;
-      }
       TranslateLogicalFree(path);
     } else
       status = TreeNOPATH;
@@ -504,12 +502,12 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
       info->treenam = strcpy(malloc(strlen(tree) + 1), tree);
       info->shot = dblist->shotid;
       status = MapTree(tree, dblist->shotid, info, 0);
-      if (!(status & 1) && (status == TreeFILE_NOT_FOUND || treeshr_errno == TreeFILE_NOT_FOUND)) {
+      if (STATUS_NOT_OK && (status == TreeFILE_NOT_FOUND || treeshr_errno == TreeFILE_NOT_FOUND)) {
 	status = TreeCallHook(RetrieveTree, info, 0);
-	if (status & 1)
+	if STATUS_OK
 	  status = MapTree(tree, dblist->shotid, info, 0);
       }
-      if (status == TreeNORMAL) {
+      if (status == TreeNORMAL || status == TreeOPENDEF) {
 	TreeCallHook(OpenTree, info, 0);
 
       /**********************************************
@@ -538,7 +536,7 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
        the subtree(s).
       *************************************************/
       }
-      if (!(status & 1) && info) {
+      if (STATUS_NOT_OK && info) {
 	if (info->treenam)
 	  free(info->treenam);
 	free(info);
@@ -562,7 +560,7 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
 	*blank = 0;
       ext_status = ConnectTree(dblist, subtree, external_node, subtree_list);
       free(subtree);
-      if (!(ext_status & 1)) {
+      if IS_NOT_OK(ext_status) {
 	status = TreeNOTALLSUBS;
 	if (treeshr_errno == TreeCANCEL)
 	  break;
@@ -615,7 +613,11 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
   for (prev_db = 0, db = *dblist; db ? db->open : 0; prev_db = db, db = db->next) {
     if (db->shotid == shot) {
       if (strcmp(db->main_treenam, tree) == 0) {
-	if (editting) {
+        if (db->tree_info->shot == -2) {
+          // if tree is backed by default tree we need to reopen
+          option = CLOSE;
+          break;
+	} else if (editting) {
 	  if (db->open_for_edit) {
 	    option = MOVE_TO_TOP;
 	    break;
@@ -645,7 +647,6 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
     move_to_top(prev_db, db);
     status = TreeALREADY_OPEN;
     break;
-
   case CLOSE:
     move_to_top(prev_db, db);
     _TreeClose((void **)dblist, 0, 0);
@@ -886,6 +887,7 @@ static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, 
 #endif
   int fd = -1;
   int status = TreeNORMAL;
+  int used_default = B_FALSE;
   char *path;
   char name[32];
   size_t i;
@@ -907,9 +909,11 @@ static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, 
       sprintf(name, "%s_%03d", tree_lower, shot);
     else if (shot == -1)
       sprintf(name, "%s_model", tree_lower);
+    else if (shot == -2)
+      sprintf(name, "%s_default", tree_lower);
     else
       status = TreeINVSHOT;
-    if (status & 1) {
+    if STATUS_OK for (;;) { // if open normal or readonly try again with default tree
       for (i = 0, part = path; (i < (pathlen + 1)) && (fd == -1); i++) {
 	if (*part == ' ')
 	  part++;
@@ -957,6 +961,11 @@ static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, 
 	  part = &path[i + 1];
 	}
       }
+      // try again only if normal tree open did not find tree
+      // would be TreeFCREATE or TreeFOPENW otherwise
+      if (status != TreeFOPENR || used_default) break;
+      used_default=B_TRUE;
+      sprintf(name, "%s_default", tree_lower);
     }
     if (path)
       TranslateLogicalFree(path);
@@ -974,6 +983,8 @@ static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, 
   else if (resnam)
     free(resnam);
   *fd_out = fd;
+  if (STATUS_OK && used_default)
+    return TreeOPENDEF;
   return status;
 }
 
@@ -990,8 +1001,10 @@ static int MapTree(char *tree, int shot, TREE_INFO * info, int edit_flag)
   *******************************************/
 
   status = OpenTreefile(tree, shot, info, edit_flag, &nomap, &fd);
-  if (status == TreeNORMAL)
-    status = MapFile(fd, info,  nomap);
+  if STATUS_OK {
+    int stat = MapFile(fd, info,  nomap);
+    if IS_NOT_OK(stat) return stat;
+  }
   return status;
 }
 
@@ -1008,7 +1021,7 @@ static int OpenTreefile(char *tree, int shot, TREE_INFO * info, int edit_flag, i
       status = TreeFILE_NOT_FOUND;
     } else {
       MDS_IO_LSEEK(*fd, 0, SEEK_SET);
-      status = TreeNORMAL;
+      if (status!=TreeOPENDEF) status = TreeNORMAL;
       info->filespec = resnam;
       *nomap = !info->mapped;
     }
@@ -1227,7 +1240,7 @@ int _TreeOpenEdit(void **dbid, char const *tree_in, int shot_in)
 
   RemoveBlanksAndUpcase(tree, tree_in);
   shot = shot_in ? shot_in : TreeGetCurrentShotId(tree);
-  if (shot < -1)
+  if (shot < -2)
     status = TreeINVSHOT;
   else if (shot == 0)
     status = TreeNOCURRENT;
@@ -1283,7 +1296,7 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
 
   RemoveBlanksAndUpcase(tree, tree_in);
   shot = shot_in ? shot_in : TreeGetCurrentShotId(tree);
-  if (shot < -1)
+  if (shot < -2)
     status = TreeINVSHOT;
   else if (shot == 0)
     status = TreeNOCURRENT;

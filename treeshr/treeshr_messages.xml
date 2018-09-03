@@ -114,5 +114,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <status name="READONLY_TREE" value="4625" severity="Error" text="Tree is marked as readonly. No write operations permitted."/>
     <status name="WRITETREEERR" value="4626" severity="Error" text="Error writing .tree file"/>
     <status name="NOWILD" value="4627" severity="Error" text="No wildcard characters permitted in node specifier"/>
+    <status name="OPENDEF" value="4628" severity="Info" text="Tree file not found, opened default instead"/>
   </facility>
 </messages>

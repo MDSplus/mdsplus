@@ -289,6 +289,9 @@ public class MdsException extends IOException{
     public static final int TreeMOVEERROR                     = 265392250;
     public static final int TreeOPENEDITERR                   = 265392258;
     public static final int TreeREADONLY_TREE                 = 265392266;
+    public static final int TreeWRITETREEERR                  = 265392274;
+    public static final int TreeNOWILD                        = 265392282;
+    public static final int TreeOPENDEF                       = 265392291;
     public static final int LibINSVIRMEM                      = 1409556;
     public static final int LibINVARG                         = 1409588;
     public static final int LibINVSTRDES                      = 1409572;
@@ -915,6 +918,12 @@ public class MdsException extends IOException{
                 return "Error reopening new treefile for write access.";
             case TreeREADONLY_TREE:
                 return "Tree is marked as readonly. No write operations permitted.";
+            case TreeWRITETREEERR:
+                return "Error writing .tree file";
+            case TreeNOWILD:
+                return "No wildcard characters permitted in node specifier.";
+            case TreeOPENDEF:
+                return "Tree file not found, opened default instead.";
             case LibINSVIRMEM:
                 return "Insufficient virtual memory";
             case LibINVARG:
