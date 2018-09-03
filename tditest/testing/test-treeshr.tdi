@@ -1,5 +1,16 @@
 _shot=3
 !current_shot('subtree')
+TreeOpen('main',1)
+TreeOpenNew('main',-2)
+TreeClose()
+_s=TreeFileName('main',1);EXTRACT(LEN(_s)-17,17,_s)
+TreeOpen('main',1)
+_s=TreeFileName();EXTRACT(LEN(_s)-17,17,_s)
+TreeOpenEdit('main',1)
+TreeFileName()
+TreeOpenNew('main',1)
+_s=TreeFileName();EXTRACT(LEN(_s)-13,13,_s)
+TreeClose()
 TreeOpen('main',-1,1)
 member
 _nids=getnci('***','nid_number'),size(_nids)
