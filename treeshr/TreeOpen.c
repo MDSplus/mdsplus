@@ -771,7 +771,7 @@ EXPORT char *MaskReplace(char *path_in, char *tree, int shot)
   char ShotMask[13];
   char *tilde;
   char *fname;
-  int replace_tilde = 0;
+  int replace_tilde = B_FALSE;
   unsigned int i;
   if (shot > 0)
     sprintf(ShotMask, "%012u", shot);
@@ -858,7 +858,7 @@ EXPORT char *MaskReplace(char *path_in, char *tree, int shot)
       break;
     default:
       tilde[0] = 1;
-      replace_tilde = (char)1;
+      replace_tilde = B_TRUE;
       break;
     }
   }
@@ -882,6 +882,7 @@ static void init_rlimit_once(){
 #endif
 static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, char **resnam_out, int edit_flag, int *fd_out)
 {
+  if (!shot || shot<-2) return TreeINVSHOT;
 #ifdef HAVE_SYS_RESOURCE_H
   RUN_FUNCTION_ONCE(init_rlimit_once);
 #endif
@@ -909,10 +910,8 @@ static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, 
       sprintf(name, "%s_%03d", tree_lower, shot);
     else if (shot == -1)
       sprintf(name, "%s_model", tree_lower);
-    else if (shot == -2)
+    else // if (shot == -2)
       sprintf(name, "%s_default", tree_lower);
-    else
-      status = TreeINVSHOT;
     if STATUS_OK for (;;) { // if open normal or readonly try again with default tree
       for (i = 0, part = path; (i < (pathlen + 1)) && (fd == -1); i++) {
 	if (*part == ' ')
@@ -983,8 +982,10 @@ static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, 
   else if (resnam)
     free(resnam);
   *fd_out = fd;
-  if (STATUS_OK && used_default)
+  if (STATUS_OK && used_default) {
+    info->shot = -2;
     return TreeOPENDEF;
+  }
   return status;
 }
 
