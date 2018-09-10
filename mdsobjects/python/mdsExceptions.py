@@ -32,7 +32,10 @@
 #     python gen_devices.py
 ########################################################
 
-class MDSplusException(Exception):
+class MdsException(Exception):
+  pass
+
+class MDSplusException(MdsException):
   fac="MDSplus"
   statusDict={}
   severities=["W", "S", "E", "I", "F", "?", "?", "?"]
