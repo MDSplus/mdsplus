@@ -42,7 +42,7 @@ OPTIONS
        This will make the directory if necessary, cd to that directory and run
        configure --enable-java_only and build the java jars in that directory
        tree. This is used to build the jar files once and then trigger the
-       platform builds with a --jars_dir=directory option so platform builds
+       platform builds with a --jars option so platform builds
        can just cp the jar files from the trigger directory location.
 
    --make_epydocs
@@ -153,7 +153,7 @@ parsecmd() {
 		;;
 	    --make_jars=*)
 		MAKE_JARS=${i#*=}
-		opts="${opts} --jars-dir=${SRCDIR}/jars"
+		opts="${opts} --jars"
 		;;
 	    --make_epydocs)
 		MAKE_EPYDOCS=yes
