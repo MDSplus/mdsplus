@@ -36,7 +36,6 @@ _dsc=_mimport('descriptor')
 _exc=_mimport('mdsExceptions')
 
 MDSplusException = _exc.MDSplusException
-MdsException = MDSplusException
 #### Load Shared Libraries Referenced #######
 #
 _MdsShr=_ver.load_library('MdsShr')
