@@ -36,7 +36,6 @@ SOURCES = \
         MdsShrThreadSafe.c \
         MdsXdRoutines.c \
 	mds_dsc_string.c \
-	MdsFloatToTime.c \
 	UdpEvents.c \
 	UdpEventSettings.c
 

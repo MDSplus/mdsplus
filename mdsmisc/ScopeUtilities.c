@@ -76,10 +76,8 @@ static int64_t estimateNumSamples(char *sigName, float *xMin, float *xMax, int *
 		return -1;
 	if(xMin != NULL || xMax != NULL)
 	{
-		if(xMin)
-			MdsFloatToTime(*xMin, &startTime);
-		if(xMax)
-			MdsFloatToTime(*xMax, &endTime);
+		if(xMin) startTime = (int64_t) (*xMin * 1e9);
+		if(xMax)   endTime = (int64_t) (*xMax * 1e9);
 		if(numSegments < NUM_SEGMENTS_THRESHOLD)
 			return -1;
 		startIdx = 0;
