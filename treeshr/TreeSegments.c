@@ -2207,7 +2207,7 @@ inline static int get_segment(vars_t* vars) {
     status = GetSegmentIndex(vars->tinfo, vars->sindex.previous_offset, &vars->sindex);
   if STATUS_NOT_OK
     return status;
-  if (vars->idx < vars->sindex.first_idx || vars->idx > vars->sindex.first_idx + SEGMENTS_PER_INDEX)
+  if (vars->idx < vars->sindex.first_idx || vars->idx >= vars->sindex.first_idx + SEGMENTS_PER_INDEX)
     return TreeFAILURE;
   vars->sinfo = &vars->sindex.segment[vars->idx % SEGMENTS_PER_INDEX];
   return status;
