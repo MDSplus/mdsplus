@@ -35,6 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     ENV            - Define an environment variable.
     EXIT           - Exit the command interpreter utility. (same as QUIT)
     HELP           - Help on available commands.
+    HELP/DEVICE    - Help on python based devices
     INIT TIMER     - Initialize a timer.
     QUIT           - Exit the command interpreter utility. (same as EXIT)
     SET COMMAND    - Load additional commands to interpreter.
@@ -250,8 +251,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Format: HELP [command]
     </help>      
    <routine name="mdsdcl_help"/>
-    <parameter name="P1" type="rest_of_line"/>
+   <parameter name="P1" type="rest_of_line"/>
+   <qualifier name="DEVICE" syntax="HELP_DEVICE"/>
   </verb>
+
+  <syntax name="HELP_DEVICE">
+    <help name="HELP/DEVICE">
+      Command: HELP/DEVICE
+      Purpose: Optain help information about python device support modules.
+      Format: HELP/DEVICE [device_type] [/FULL]
+      Description:
+
+      Get a description of a python device support module. If the device type
+      parameter is omitted a list of all the available python devices will be displayed.
+      If the device type contains a wildcard character such as an asterisk the devices
+      matching that wildcard will be listed. The FULL qualifier will show the full python
+      help for the device class.
+    </help>
+    <routine name="mdsdcl_help_device"/>
+    <parameter name="devtype" prompt="Device type:" default="*"/>
+    <qualifier name="FULL"/>
+  </syntax>
 
   <verb name="INIT">
     <parameter name="p1" prompt="What" required="True" type="INIT_KEYWORDS"/>
