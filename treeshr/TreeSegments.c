@@ -315,7 +315,7 @@ inline static int open_datafile_write0(vars_t* vars) {
   RETURN_IF_NOT_OK(load_node_ptr(vars));
   RETURN_IF_NOT_OK(check_segment_remote(vars));
   RETURN_IF_NOT_OK(load_info_ptr(vars));
-  status = TreeCallHook(PutData, vars->tinfo, *(int*)vars->nid_ptr);
+  status = TreeCallHook(vars->dblist, PutData, *(int*)vars->nid_ptr);
   if (status && STATUS_NOT_OK)
     return status;
   TreeGetViewDate(&vars->saved_viewdate);
@@ -338,8 +338,12 @@ inline static int open_datafile_write0(vars_t* vars) {
 }
 
 inline static int open_datafile_write1(vars_t* vars){
-  if (vars->tinfo->data_file ? (!vars->tinfo->data_file->open_for_write) : 1)
-     return TreeOpenDatafileW(vars->tinfo, &vars->stv, 0);
+  if (vars->tinfo->data_file ? (!vars->tinfo->data_file->open_for_write) : 1) {
+     int status = TreeOpenDatafileW(vars->tinfo, &vars->stv, 0);
+     if (STATUS_OK && (vars->dblist != NULL))
+       TreeCallHook(vars->dblist, OpenDataFileWrite, 0);
+     return status;
+  }
   return TreeSUCCESS;
 }
 

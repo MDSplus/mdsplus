@@ -67,8 +67,10 @@ STATIC_ROUTINE int RewriteDatafile(char *tree, int shot, int compress)
     TREE_INFO *info1 = dblist1->tree_info;
     status = TreeOpenNciW(dblist1->tree_info, 0);
     if STATUS_OK {
+      TreeCallHook(dblist1, OpenNCIFileWrite, 0);
       status = TreeOpenDatafileW(dblist1->tree_info, &stv, 0);
       if STATUS_OK {
+	TreeCallHook(dblist1, OpenDataFileWrite, 0);
 	status = _TreeOpenEdit(&dbid2, tree, shot);
 	if STATUS_OK {
 	  pthread_cleanup_push(treeclose,&dbid2);

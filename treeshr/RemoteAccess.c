@@ -368,10 +368,10 @@ int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, ch
 	  info->flush = (dblist->shotid == -1);
 	  info->header = (TREE_HEADER *) & info[1];
 	  info->treenam = strcpy(malloc(strlen(tree) + 1), tree);
-	  TreeCallHook(OpenTree, info, 0);
-	  info->channel = socket;
 	  dblist->tree_info = info;
 	  dblist->remote = 1;
+	  TreeCallHook(dblist, OpenTree, 0);
+	  info->channel = socket;
 	  status = TreeNORMAL;
 	} else
 	  status = TreeFILE_NOT_FOUND;

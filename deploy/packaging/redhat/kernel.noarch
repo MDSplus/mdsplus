@@ -238,6 +238,7 @@
 ./usr/local/mdsplus/tdi/treeshr/TreeSetDbiItm.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeSetDefault.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeSetNciItm.fun
+./usr/local/mdsplus/tdi/treeshr/TreeShrHook.fun-template
 ./usr/local/mdsplus/tdi/treeshr/TreeTurnOff.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeTurnOn.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeWrite.fun

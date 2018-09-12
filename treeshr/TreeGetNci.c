@@ -50,7 +50,7 @@ static inline int minInt(int a, int b) { return a < b ? a : b; }
  if (nci_version != version)\
  {\
     nid_to_tree_nidx(dblist, (&nid), info, node_number);\
-    status = TreeCallHook(GetNci,info,nid_in);\
+    status = TreeCallHook(dblist, GetNci, nid_in);	\
     if (status && STATUS_NOT_OK) break;\
     status = TreeGetNciW(info, node_number, &nci,version);\
     if STATUS_OK nci_version = version;\
