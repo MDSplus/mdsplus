@@ -39,10 +39,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 EXPORT int XTreeConvertToLongTime(struct descriptor *timeD, int64_t * retTime)
 {
+  int status;
   EMPTYXD(xd);
-  int status = TdiData(timeD, &xd MDS_END_ARG);
-  if STATUS_NOT_OK return status;
   FREEXD_ON_EXIT(&xd);
+  status = TdiData(timeD, &xd MDS_END_ARG);
+  if STATUS_NOT_OK return status;
   if (!xd.pointer || xd.pointer->class != CLASS_S)
     status = MDSplusERROR;//InvalidTimeFormat
   else switch (xd.pointer->dtype) {
