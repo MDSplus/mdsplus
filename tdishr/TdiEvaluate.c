@@ -46,6 +46,7 @@ RULES OF THE GAME:
 #include <treeshr.h>
 #include <stdlib.h>
 #include <string.h>
+#include <mdsplus/mdsplus.h>
 
 
 
@@ -106,6 +107,8 @@ int Tdi1Evaluate(int opcode __attribute__ ((unused)),
       }
       break;
     }
+    MDS_ATTR_FALLTHROUGH
+
   /*****************************************************************************
   WARNING falls through if an XD but not DSC of usable data (no known examples).
   *****************************************************************************/

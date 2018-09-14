@@ -39,6 +39,10 @@ _tre=_mimport('tree')
 _exc=_mimport('mdsExceptions')
 
 class Compound(_dat.Data):
+    fields = tuple()
+    def __dir__(self):
+        """used for tab completion"""
+        return list(self.fields)+_ver.superdir(Compound,self)
 
     def __init__(self,*args, **kwargs):
         """MDSplus compound data."""
@@ -404,6 +408,14 @@ class Routine(Compound):
     fields=('timeout','image','routine')
     dtype_id=205
 _dsc.addDtypeToClass(Routine)
+
+class Slope(Compound):
+    """A Slope is a deprecated object. You should use Range instead."""
+    fields=('slope','begin','end')
+    dtype_id=198
+    def slice(self):
+        return slice(self.begin.data(),self.end.data(),self.slope.data())
+_dsc.addDtypeToClass(Slope)
 
 class Signal(Compound):
     """A Signal is used to describe a measurement, usually time dependent, and associated the data with its independent

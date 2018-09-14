@@ -23,7 +23,7 @@ SYNOPSIS
                [--distname=name] [--updatepkg] [--eventport=number]
                [--arch=name] [--color] [--winhost=hostname]
                [--winbld=dir] [--winrembld=dir] [--gitcommit=commit]
-               [--jars-dir=dir] [--make-jars] [--docker-srcdir=dir]
+               [--jars] [--make-jars] [--docker-srcdir=dir]
 
 DESCRIPTION
     The build.sh script is used for building, testing and deploy MDSplus
@@ -109,7 +109,7 @@ OPTIONS
        timeout time for a test will be set to this value times the normal
        timeout for the test. For example, --test_timeunit=2.5 would
        allow the tests to run 2.5 as long as the normally do before being
-       stopped with a timeout error. 
+       stopped with a timeout error.
 
    --eventport=number
        Select a port number to use for udp event tests. If running
@@ -193,7 +193,7 @@ OPTIONS
     --gitcommit=commit
        Set by trigger jenkins job representing the commit hash of the sources.
 
-    --jars-dir=dir
+    --jars
        Set by trigger job to indicate that build job should get the java jar
        files from the trigger source directory instead of building them.
 
@@ -382,8 +382,8 @@ parsecmd() {
 	    --gitcommit=*)
 		GIT_COMMIT="${i#*=}"
 		;;
-	    --jars-dir=*)
-		JARS_DIR="$(realpath ${i#*=})"
+	    --jars)
+		JARS_DIR="$(realpath $(dirname ${0})/../jars)"
 		;;
 	    --make-jars)
 		MAKE_JARS="yes"
@@ -501,7 +501,7 @@ if [ "${TEST}"            != "yes"  \
  -a  "${RELEASE}"         != "yes"  \
  -a  "${PUBLISH}"         != "yes"  ]
 then
-    >&2 echo "None of --test --make-jars --release=version --publish=version options specified on the command. Nothing to do!"
+    >&2 echo "None of --test --make-jars --release=version --publish=version options specified on the command or skipped. Nothing to do!"
     exit 0
 fi
 #

@@ -76,6 +76,11 @@ struct descrip {
 
 STATIC_CONSTANT struct descrip empty_ans;
 
+static inline char *replaceBackslashes(char *filename) {
+  char *ptr;
+  while ((ptr = strchr(filename, '\\')) != NULL) *ptr = '/';
+  return filename;
+}
 
 #if !defined(HAVE_PTHREAD_H)
 #define pthread_mutex_t int
@@ -1102,11 +1107,12 @@ STATIC_ROUTINE int GetAnswerInfoTO(int sock, char *dtype, short *length, char *n
 #define MDS_IO_O_RDONLY 0x00004000
 #define MDS_IO_O_RDWR   0x00000002
 
-STATIC_ROUTINE int io_open_remote(char *host, char *filename, int options, mode_t mode, int *sock,
+STATIC_ROUTINE int io_open_remote(char *host, char *filename_in, int options, mode_t mode, int *sock,
 				  int *enhanced)
 {
   int fd = -1;
   int try_again = 1;
+  char *filename = replaceBackslashes(strdup(filename_in));
   LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   while (try_again) {
     *sock = RemoteAccessConnect(host, 1, 0);
@@ -1161,11 +1167,14 @@ STATIC_ROUTINE int io_open_remote(char *host, char *filename, int options, mode_
     }
   }
   UnlockMdsShrMutex(&IOMutex);
+  if (filename)
+    free(filename);
   return fd;
 }
 
-int MDS_IO_OPEN(char *filename, int options, mode_t mode)
+int MDS_IO_OPEN(char *filename_in, int options, mode_t mode)
 {
+  char *filename = replaceBackslashes(strdup(filename_in));
   int socket = -1;
   char *hostpart, *filepart;
   char *tmp = ParseFile(filename, &hostpart, &filepart);
@@ -1198,6 +1207,8 @@ int MDS_IO_OPEN(char *filename, int options, mode_t mode)
   free(tmp);
   if (fd != -1)
     fd = NewFD(fd, socket, enhanced);
+  if (filename)
+    free(filename);
   return fd;
 }
 
@@ -1613,8 +1624,9 @@ STATIC_ROUTINE int io_exists_remote(char *host, char *filename)
   return ans;
 }
 
-int MDS_IO_EXISTS(char *filename)
+int MDS_IO_EXISTS(char *filename_in)
 {
+  char *filename = replaceBackslashes(strdup(filename_in));
   int status;
   struct stat statbuf;
   char *hostpart, *filepart;
@@ -1626,6 +1638,8 @@ int MDS_IO_EXISTS(char *filename)
 #endif
     status = hostpart ? io_exists_remote(hostpart, filepart) : (stat(filename, &statbuf) == 0);
   free(tmp);
+  if (filename)
+    free(filename);
   return status;
 }
 
@@ -1661,8 +1675,9 @@ STATIC_ROUTINE int io_remove_remote(char *host, char *filename)
   return ans;
 }
 
-int MDS_IO_REMOVE(char *filename)
+int MDS_IO_REMOVE(char *filename_in)
 {
+  char *filename = replaceBackslashes(strdup(filename_in));
   int status;
   char *hostpart, *filepart;
   char *tmp = ParseFile(filename, &hostpart, &filepart);
@@ -1673,6 +1688,8 @@ int MDS_IO_REMOVE(char *filename)
 #endif
     status = hostpart ? io_remove_remote(hostpart, filepart) : remove(filename);
   free(tmp);
+  if (filename)
+    free(filename);
   return status;
 }
 
@@ -1718,6 +1735,9 @@ int MDS_IO_RENAME(char *filename_old, char *filename_new)
   char *hostpart_old, *filepart_old, *hostpart_new, *filepart_new;
   char *tmp_old = ParseFile(filename_old, &hostpart_old, &filepart_old);
   char *tmp_new = ParseFile(filename_new, &hostpart_new, &filepart_new);
+  filename_old = replaceBackslashes(filename_old);
+  filename_new = replaceBackslashes(filename_new);
+
 #ifdef SRB
   if (strcmp(hostpart_new, "SRB") == 0) {
     if (strcmp(hostpart_old, hostpart_new) == 0) {

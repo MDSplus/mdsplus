@@ -59,7 +59,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Xm/DialogS.h>
 #include <Xmds/XmdsXdBoxP.h>
-static void LoadDialog(Widget shell, Widget xdbw);
+static void LoadDialog(Widget shell, void *, void *);
 extern void XmdsXdBoxLoad();
 #include <xmdsshr.h>
 /****************************************************
@@ -135,12 +135,12 @@ EXPORT Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args, Car
      Add a callback to load the dialog
      box when it is popped up
    *************************************/
-  XtAddCallback(hidden, XmNpopupCallback, (XtCallbackProc) LoadDialog, widg);
+  XtAddCallback(hidden, XmNpopupCallback, LoadDialog, widg);
   XtRealizeWidget(hidden);
   return widg;
 }
 
-static void LoadDialog(Widget shell, Widget xdbw)
+static void LoadDialog(Widget shell, void *xdbw, void *unused __attribute__ ((unused)))
 {
-  XmdsXdBoxLoad(xdbw);
+  XmdsXdBoxLoad((Widget)xdbw);
 }

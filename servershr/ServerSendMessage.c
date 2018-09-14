@@ -79,6 +79,10 @@ int ServerSendMessage();
 #endif
 #include <signal.h>
 
+#define DEBUG(...) //printf(__VA_ARGS__)
+#define IP(addr)   ((uint8_t*)&addr)
+#define ADDR2IP(a) IP(a)[0],IP(a)[1],IP(a)[2],IP(a)[3]
+
 
 extern short ArgLen();
 
@@ -108,21 +112,21 @@ typedef struct _Job {
 static pthread_mutex_t jobs_mutex = PTHREAD_MUTEX_INITIALIZER;
 #define LOCK_JOBS   pthread_mutex_lock(&jobs_mutex);pthread_cleanup_push((void*)pthread_mutex_unlock, &jobs_mutex)
 #define UNLOCK_JOBS pthread_cleanup_pop(1)
-static Job *Jobs = 0;
+static Job *Jobs = NULL;
 
 typedef struct _client {
   SOCKET reply_sock;
   int conid;
-  int addr;
-  short port;
+  uint32_t addr;
+  uint16_t port;
   struct _client *next;
 } Client;
 static pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
-#define LOCK_CLIENTS   pthread_mutex_lock(&clients_mutex)
-#define UNLOCK_CLIENTS pthread_mutex_unlock(&clients_mutex)
-#define LOCK_CLIENTS   pthread_mutex_lock(&clients_mutex)
-#define UNLOCK_CLIENTS pthread_mutex_unlock(&clients_mutex)
-static Client *Clients = 0;
+#define LOCK_CLIENTS   pthread_mutex_lock(&clients_mutex);pthread_cleanup_push((void*)pthread_mutex_unlock, &clients_mutex)
+#define UNLOCK_CLIENTS pthread_cleanup_pop(1)
+#define UNLOCK_CLIENTS_REV pthread_mutex_unlock(&clients_mutex);pthread_cleanup_push((void*)pthread_mutex_lock, &clients_mutex)
+#define LOCK_CLIENTS_REV   pthread_cleanup_pop(1)
+static Client *Clients = NULL;
 
 static int MonJob = -1;
 static int JobId = 0;
@@ -132,7 +136,7 @@ int ServerBadSocket(SOCKET socket);
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 
-static int start_receiver(short *port);
+static int start_receiver(uint16_t *port);
 int ServerConnect(char *server);
 static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void (*ast) (), void *astparam,
 		       void (*before_ast) (), int sock);
@@ -140,8 +144,8 @@ static void CleanupJob(int status, int jobid);
 static void ReceiverThread(void *sockptr);
 static void DoMessage(Client * c, fd_set * fdactive);
 static void RemoveClient(Client * c, fd_set * fdactive);
-static int GetHostAddr(char *host);
-static void AddClient(unsigned int addr, short port, int send_sock);
+static uint32_t GetHostAddr(char *host);
+static void AddClient(uint32_t addr, uint16_t port, int send_sock);
 static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fdactive);
 
 extern void *GetConnectionInfo();
@@ -157,7 +161,7 @@ static SOCKET getSocket(int conid)
 int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_rwlock_t *lock, int *conid_out,
 		      void (*ast) (), void *astparam, void (*before_ast) (), int numargs_in, ...)
 {
-  short port = 0;
+  uint16_t port = 0;
   int conid;
   if (start_receiver(&port) || ((conid = ServerConnect(server)) < 0)) {
     if (ast && astparam)
@@ -168,7 +172,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
   int flags = 0;
   int jobid;
   int i;
-  unsigned int addr = 0;
+  uint32_t addr = 0;
   char cmd[4096];
   unsigned char numargs = max(0, min(numargs_in, 8));
   unsigned char idx = 0;
@@ -186,7 +190,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
   struct sockaddr_in addr_struct = {0};
   socklen_t len = sizeof(addr_struct);
   if (getsockname(sock, (struct sockaddr *)&addr_struct, &len) == 0)
-    addr = *(int *)&addr_struct.sin_addr;
+    addr = *(uint32_t *)&addr_struct.sin_addr;
   if (!addr) {
     perror("Error getting the address the socket is bound to.\n");
     if (ast && astparam)
@@ -196,7 +200,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
   jobid = RegisterJob(msgid, retstatus, lock, ast, astparam, before_ast, conid);
   if (before_ast)
     flags |= SrvJobBEFORE_NOTIFY;
-  sprintf(cmd, "MdsServerShr->ServerQAction(%d,%dwu,%d,%d,%d", addr, port, op, flags, jobid);
+  sprintf(cmd, "MdsServerShr->ServerQAction(%ulu,%uwu,%d,%d,%d", addr, port, op, flags, jobid);
   va_start(vlist, numargs_in);
   for (i = 0; i < numargs; i++) {
     strcat(cmd, ",");
@@ -376,9 +380,30 @@ static void CleanupJob(int status, int jobid)
   }
 }
 
-static SOCKET CreatePort(short starting_port, short *port_out)
-{
-  short port;
+static SOCKET CreatePort(uint16_t *port_out) {
+  static uint16_t start_port = 0, range_port;
+  if (!start_port) {
+    char *range = TranslateLogical("MDSIP_PORT_RANGE");
+    if (range) {
+      char* dash;
+      for (dash=range; *dash && *dash!='-' ; dash++);
+      if (dash)
+        *(dash++)=0;
+      start_port = (uint16_t)(atoi(range)&0xffff);
+      int end = atoi(dash);
+      if (end>0 && end<65536)
+        range_port = (uint16_t)end-start_port+1;
+      else
+        range_port = 100;
+    }
+    TranslateLogicalFree(range);
+    if (!start_port) {
+      start_port = 8800;
+      range_port =  256;
+    }
+    DEBUG("Receiver will be using 'MDSIP_PORT_RANGE=%u-%u'.\n",start_port,start_port+range_port-1);
+  }
+  uint16_t port;
   static struct sockaddr_in sin;
   long sendbuf = 6000, recvbuf = 6000;
   SOCKET s;
@@ -397,7 +422,7 @@ static SOCKET CreatePort(short starting_port, short *port_out)
   sin.sin_family = AF_INET;
   sin.sin_addr.s_addr = INADDR_ANY;
   for (tries = 0 ; (c_status < 0) && (tries < 500); tries++) {
-    port = starting_port + (random() & 0xff);
+    port = start_port + (random()%range_port);
     sin.sin_port = htons(port);
     c_status = bind(s, (struct sockaddr *)&sin, sizeof(struct sockaddr_in));
   }
@@ -410,22 +435,23 @@ static SOCKET CreatePort(short starting_port, short *port_out)
     perror("Error from listen\n");
     return INVALID_SOCKET;
   }
+  DEBUG("Listener opened on port %u.\n",port);
   *port_out = port;
   return s;
 }
 
 static Condition ReceiverRunning = CONDITION_INITIALIZER;
 
-static int start_receiver(short *port_out)
+static int start_receiver(uint16_t *port_out)
 {
   INIT_STATUS;
-  static short port = 0;
+  static uint16_t port = 0;
   static SOCKET sock;
   static pthread_t thread;
 // CONDITION_START_THREAD(&ReceiverRunning, thread, *16, ReceiverThread, s);
   _CONDITION_LOCK(&ReceiverRunning);
   if (port == 0) {
-    sock = CreatePort((short)8800, &port);
+    sock = CreatePort(&port);
     if (sock == INVALID_SOCKET) {
       _CONDITION_UNLOCK(&ReceiverRunning);
       return C_ERROR;
@@ -448,90 +474,91 @@ static int start_receiver(short *port_out)
 }
 
 static void ReceiverExit(void *arg __attribute__ ((unused))){
-  printf("ServerSendMessage thread exitted\n");
+  DEBUG("ServerSendMessage thread exitted\n");
   CONDITION_RESET(&ReceiverRunning);
 }
 
-static void ResetFdactive(int rep, SOCKET sock, fd_set * active){
-  Client *c;
+static void _RemoveClient(Client* c){
+  UNLOCK_CLIENTS_REV;
+  RemoveClient(c, NULL);
+  LOCK_CLIENTS_REV;
+}
+static void ResetFdactive(int rep, SOCKET sock, fd_set* active){
+  LOCK_CLIENTS;
+  Client* c;
   if (rep > 0) {
-    LOCK_CLIENTS;
-    do {
-      for (c = Clients; c; c = c->next)
-	if (ServerBadSocket(c->reply_sock)) {
-	  UNLOCK_CLIENTS;
-	  printf("removed client in ResetFdactive\n");
-	  RemoveClient(c, 0);
-          LOCK_CLIENTS;
-	  break;
-	}
-    } while (c);
-    UNLOCK_CLIENTS;
+    for (c = Clients; c;) {
+      if (ServerBadSocket(c->reply_sock)) {
+	DEBUG("removed client in ResetFdactive\n");
+        _RemoveClient(c);
+        c = Clients;
+      } else
+        c = c->next;
+    }
   }
   FD_ZERO(active);
   FD_SET(sock, active);
-  LOCK_CLIENTS;
   for (c = Clients; c; c = c->next) {
     if (c->reply_sock != INVALID_SOCKET)
       FD_SET(c->reply_sock, active);
   }
   UNLOCK_CLIENTS;
-  printf("reset fdactive in ResetFdactive\n");
+  DEBUG("reset fdactive in ResetFdactive\n");
 }
 
 static void ReceiverThread(void *sockptr){
-  struct sockaddr_in sin;
-  int tablesize = FD_SETSIZE;
-  int num = 0;
-  int last_client_addr;
-  int rep;
-  pthread_cleanup_push(ReceiverExit, NULL);
-  fd_set readfds, fdactive;
-  last_client_addr = 0;
+  atexit((void*)ReceiverExit);
   CONDITION_SET(&ReceiverRunning);
 // CONDITION_SET(&ReceiverRunning);
   _CONDITION_LOCK(&ReceiverRunning);
   SOCKET sock = *(SOCKET*)sockptr;
   ReceiverRunning.value = B_TRUE;
   _CONDITION_SIGNAL(&ReceiverRunning);
-  _CONDITION_UNLOCK(&ReceiverRunning);  FD_ZERO(&fdactive);
+  _CONDITION_UNLOCK(&ReceiverRunning);
   CONDITION_SET(&ReceiverRunning);
 // \CONDITION_SET(&ReceiverRunning);
+  struct sockaddr_in sin;
+  int tablesize = FD_SETSIZE;
+  uint32_t last_client_addr = 0;
+  fd_set readfds, fdactive;
+  FD_ZERO(&fdactive);
   FD_SET(sock, &fdactive);
+  int rep;
+  struct timeval timeout = {1,0};
   for (rep = 0; rep < 10; rep++) {
     readfds = fdactive;
-    while ((num = select(tablesize, &readfds, 0, 0, 0)) != -1) {
-      rep = 0;
-      if (FD_ISSET(sock, &readfds)) {
+    int num;
+    while ((num=select(tablesize, &readfds, NULL, NULL, &timeout)) != -1) {
+      if (!num) {
+      } else if (FD_ISSET(sock, &readfds)) {
         socklen_t len = sizeof(struct sockaddr_in);
         AcceptClient(accept(sock, (struct sockaddr *)&sin, &len), &sin, &fdactive);
       } else {
         Client *c, *next;
-        LOCK_CLIENTS;
         for (;;) {
+          LOCK_CLIENTS;
           for (c = Clients, next = c ? c->next : 0;
                c && (c->reply_sock == INVALID_SOCKET || !FD_ISSET(c->reply_sock, &readfds));
                c = next, next = c ? c->next : 0) ;
-          if (c && c->reply_sock != INVALID_SOCKET && FD_ISSET(c->reply_sock, &readfds)) {
+          UNLOCK_CLIENTS;
+          if (c) {
             SOCKET reply_sock = c->reply_sock;
             last_client_addr = c->addr;
-            UNLOCK_CLIENTS;
             DoMessage(c, &fdactive);
-            LOCK_CLIENTS;
             FD_CLR(reply_sock, &readfds);
           } else
             break;
         }
-        UNLOCK_CLIENTS;
       }
       readfds = fdactive;
+      rep = 0;
+      timeout.tv_sec = 1;
     }
-    fprintf(stderr,"Dispatcher select loop failed\nLast client addr = %d\n", last_client_addr);
+    fprintf(stderr,"Dispatcher select loop failed\nLast client addr = %u.%u.%u.%u\n",ADDR2IP(last_client_addr));
     ResetFdactive(rep, sock, &fdactive);
   }
   fprintf(stderr,"Cannot recover from select errors in ServerSendMessage, exitting\n");
-  pthread_cleanup_pop(1);
-  exit(0);
+  pthread_exit(0);
 }
 
 int ServerBadSocket(SOCKET socket)
@@ -548,99 +575,78 @@ int ServerBadSocket(SOCKET socket)
   return status!=C_OK;
 }
 
-EXPORT int ServerDisconnect(char *server_in)
-{
-  int status = 0;
-  char *srv = TranslateLogical(server_in);
-  char *server = srv ? srv : server_in;
-  int addr;
-  char hostpart[256] = { 0 };
-  char portpart[256] = { 0 };
-  short port = 0;
-  int num = sscanf(server, "%[^:]:%s", hostpart, portpart);
-  if (num != 2) {
-    printf("Server '%s' unknown\n", server_in);
-  } else {
-    addr = GetHostAddr(hostpart);
-    if (addr) {
-      if (atoi(portpart) == 0) {
-	struct servent *sp = getservbyname(portpart, "tcp");
-	if (sp)
-	  port = sp->s_port;
-	else {
-	  char *portnam = getenv(portpart);
-	  portnam = (!portnam) ? ((hostpart[0] == '_') ? "8200" : "8000") : portnam;
-	  port = htons((short)atoi(portnam));
-	}
-      } else
-	port = htons((short)atoi(portpart));
-      if (port) {
-	Client *c;
-	LOCK_CLIENTS;
-	for (c = Clients; c && (c->addr != addr || c->port != port); c = c->next) ;
-	UNLOCK_CLIENTS;
-	if (c) {
-	  RemoveClient(c, 0);
-	  status = 1;
-	}
-      }
-    }
-  }
-  if (srv)
-    TranslateLogicalFree(srv);
-  return (status);
+static Client* get_client(uint32_t addr, uint16_t port) {
+  Client *c;
+  LOCK_CLIENTS;
+  for (c = Clients; c && (c->addr != addr || c->port != port); c = c->next) ;
+  UNLOCK_CLIENTS;
+  return c;
 }
 
-EXPORT int ServerConnect(char *server_in)
-{
-  int conid = -1;
-  char *srv = TranslateLogical(server_in);
-  char *server = srv ? srv : server_in;
-  int found = 0;
-  int addr;
+static Client* get_addr_port(char* server, uint32_t*addrp, uint16_t*portp) {
+  uint32_t addr;
+  uint16_t port;
   char hostpart[256] = { 0 };
   char portpart[256] = { 0 };
-  short port = 0;
   int num = sscanf(server, "%[^:]:%s", hostpart, portpart);
   if (num != 2) {
-    printf("Server '%s' unknown\n", server_in);
-  } else {
-    addr = GetHostAddr(hostpart);
-    if (addr) {
-      if (atoi(portpart) == 0) {
-	struct servent *sp = getservbyname(portpart, "tcp");
-	if (sp)
-	  port = sp->s_port;
-	else {
-	  char *portnam = getenv(portpart);
-	  portnam = (!portnam) ? ((hostpart[0] == '_') ? "8200" : "8000") : portnam;
-	  port = htons((short)atoi(portnam));
-	}
-      } else
-	port = htons((short)atoi(portpart));
-      if (port) {
-	Client *c;
-	LOCK_CLIENTS;
-	for (c = Clients; c && (c->addr != addr || c->port != port); c = c->next) ;
-	UNLOCK_CLIENTS;
-	if (c) {
-	  if (ServerBadSocket(getSocket(c->conid)))
-	    RemoveClient(c, 0);
-	  else {
-	    conid = c->conid;
-	    found = 1;
-	  }
-	}
-      }
-    }
-    if (conid == -1)
-      conid = ConnectToMds(server);
+    DEBUG("Server '%s' unknown\n", server);
+    return NULL;
   }
-  if (srv)
-    TranslateLogicalFree(srv);
-  if (!found && conid >= 0)
-    AddClient(addr, port, conid);
-  return (conid);
+  addr = GetHostAddr(hostpart);
+  if (!addr) return NULL;
+  if (atoi(portpart) == 0) {
+    struct servent *sp = getservbyname(portpart, "tcp");
+    if (sp)
+      port = sp->s_port;
+    else {
+      char *portnam = getenv(portpart);
+      portnam = (!portnam) ? ((hostpart[0] == '_') ? "8200" : "8000") : portnam;
+      port = htons((uint16_t)atoi(portnam));
+    }
+  } else
+    port = htons((uint16_t)atoi(portpart));
+  if (addrp) *addrp=addr;
+  if (portp) *portp=port;
+  return get_client(addr,port);
+}
+
+EXPORT int ServerDisconnect(char *server_in) {
+  char *srv = TranslateLogical(server_in);
+  Client* c;
+  FREE_ON_EXIT(srv);
+  char *server = srv ? srv : server_in;
+  c = get_addr_port(server,NULL,NULL);
+  FREE_NOW(srv);
+  if (c) {
+    RemoveClient(c, NULL);
+    return MDSplusSUCCESS;
+  }
+  return MDSplusERROR;
+}
+
+EXPORT int ServerConnect(char *server_in) {
+  int conid;
+  char *srv = TranslateLogical(server_in);
+  FREE_ON_EXIT(srv);
+  conid = -1;
+  char *server = srv ? srv : server_in;
+  uint32_t addr;
+  uint16_t port = 0;
+  Client* c = get_addr_port(server,&addr,&port);
+  if (c) {
+    if (ServerBadSocket(getSocket(c->conid)))
+      RemoveClient(c, NULL);
+    else
+      conid = c->conid;
+  }
+  if (port && conid == -1) {
+    conid = ConnectToMds(server);
+    if (conid>=0)
+      AddClient(addr, port, conid);
+  }
+  FREE_NOW(srv);
+  return conid;
 }
 
 static void DoMessage(Client * c, fd_set * fdactive)
@@ -663,6 +669,7 @@ static void DoMessage(Client * c, fd_set * fdactive)
     RemoveClient(c, fdactive);
     return;
   }
+  FREE_ON_EXIT(msg);
   if (msglen != 0) {
     msg = (char *)malloc(msglen + 1);
     msg[msglen] = 0;
@@ -685,18 +692,14 @@ static void DoMessage(Client * c, fd_set * fdactive)
   default:
     RemoveClient(c, fdactive);
   }
-  if (msglen)
-    free(msg);
+  FREE_NOW(msg);
 }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wclobbered"
 
-static void RemoveClient(Client * c, fd_set * fdactive)
-{
-  int client_found = 0;
-  int conid;
+static int get_client_conid(Client * c, fd_set * fdactive) {
+  int client_found;
   LOCK_CLIENTS;
+  client_found = 0;
   if (Clients == c) {
     client_found = 1;
     Clients = c->next;
@@ -710,7 +713,7 @@ static void RemoveClient(Client * c, fd_set * fdactive)
   }
   UNLOCK_CLIENTS;
   if (client_found) {
-    conid = c->conid;
+    int conid = c->conid;
     if (c->reply_sock != INVALID_SOCKET) {
       shutdown(c->reply_sock, 2);
       close(c->reply_sock);
@@ -720,8 +723,13 @@ static void RemoveClient(Client * c, fd_set * fdactive)
     if (c->conid >= 0)
       DisconnectFromMds(c->conid);
     free(c);
-  } else
-    conid = -1;
+    return conid;
+  }
+  return -1;
+}
+
+static void RemoveClient(Client * c, fd_set * fdactive) {
+  int conid = get_client_conid(c,fdactive);
   Job *j;
   for (;;) {
     LOCK_JOBS;
@@ -734,12 +742,10 @@ static void RemoveClient(Client * c, fd_set * fdactive)
   }
 }
 
-#pragma GCC diagnostic pop
-
-static int GetHostAddr(char *name)
+static uint32_t GetHostAddr(char *name)
 {
   INITIALIZESOCKETS;
-  int addr = 0;
+  uint32_t addr = 0;
 #if defined(__MACH__) || defined(_WIN32)
   struct hostent* hp = gethostbyname(name);
   addr = hp ? *(int *)hp->h_addr_list[0] : (int)inet_addr(name);
@@ -752,13 +758,13 @@ static int GetHostAddr(char *name)
   for ( memlen=1024, hp_mem=malloc(memlen);
 	hp_mem && (gethostbyname_r(name,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE);
 	memlen *= 2, free(hp_mem), hp_mem = malloc(memlen));
-  addr = hp ? *(int *)hp->h_addr_list[0] : (int)inet_addr(name);
+  addr = hp ? *(uint32_t *)hp->h_addr_list[0] : (uint32_t)inet_addr(name);
   FREE_NOW(hp_mem);
 #endif
-  return addr == -1 ? 0 : addr;
+  return addr == 0xffffffff ? 0 : addr;
 }
 
-static void AddClient(unsigned int addr, short port, int conid)
+static void AddClient(unsigned int addr, uint16_t port, int conid)
 {
   Client *c;
   Client *new = (Client *) malloc(sizeof(Client));
@@ -774,21 +780,24 @@ static void AddClient(unsigned int addr, short port, int conid)
   else
     Clients = new;
   UNLOCK_CLIENTS;
+  DEBUG("added connection from %u.%u.%u.%u\n",ADDR2IP(addr));
 }
 
 static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fdactive)
 {
-  int addr = *(int *)&sin->sin_addr;
+  if (reply_sock == INVALID_SOCKET) return;
+  uint32_t addr = *(uint32_t *)&sin->sin_addr;
   Client *c;
   LOCK_CLIENTS;
-  for (c = Clients; c && (c->addr != addr || c->reply_sock != INVALID_SOCKET); c = c->next) ;
+  for (c = Clients; c && (c->addr != addr || c->reply_sock != INVALID_SOCKET);c = c->next);
   UNLOCK_CLIENTS;
   if (c) {
     c->reply_sock = reply_sock;
-    if (reply_sock != INVALID_SOCKET)
-      FD_SET(reply_sock, fdactive);
+    FD_SET(reply_sock, fdactive);
+    DEBUG("accepted connection from %u.%u.%u.%u\n",ADDR2IP(addr));
   } else {
     shutdown(reply_sock, 2);
     close(reply_sock);
+    DEBUG("dropped connection from %u.%u.%u.%u\n",ADDR2IP(addr));
   }
 }

@@ -29,14 +29,14 @@
 
 pro MdsLogin,user,password,quiet=quiet,status=status
 
-  forward_function mdsIsClient,mdsIdlImage,mds$socket,MdsRoutinePrefix,MdsIPImage,IsWindows
+  forward_function mdsIsClient,mdsIdlImage,mds$socket,MdsIPImage,IsWindows
 
   if (mdsIsClient()) then begin
 
     ON_ERROR,2                  ;RETURN TO CALLER IF ERROR
     sock = mds$socket(quiet=quiet,status=status)
     if not status then return
-    status = call_external(MdsIPImage(),MdsRoutinePrefix()+'MdsLogin',sock,string(user),string(password),value=[1b,byte([1,1] * (not IsWindows()))])
+    status = call_external(MdsIPImage(),'MdsLogin',sock,string(user),string(password),value=[1b,byte([1,1] * (not IsWindows()))])
     if not status then begin
       if keyword_set(quiet) then message,mdsgetmsg(status,quiet=quiet),/continue,/noprint $
                             else message,mdsgetmsg(status,quiet=quiet),/continue

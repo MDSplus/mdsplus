@@ -34,8 +34,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdirefstandard.h"
 #include <mdsshr.h>
 #include <STATICdef.h>
-
-
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
+#endif
 
 int Tdi1Constant(int opcode, int narg __attribute__ ((unused)),
 		 struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)

@@ -165,7 +165,7 @@ EXPORT Widget XmdsCreateDigChans(Widget parent, String name, ArgList args, Cardi
 		(char *)0 + info.put_on_apply, NULL);
   rowcol_w = XtNameToWidget(channels_w, "*c_rowcol");
   for (i = 0; i < info.channels; i++) {
-    char name_c[4];
+    char name_c[12];
     XmString name;
     XmString path;
     /*    static struct descriptor path_s = {0,DTYPE_T,CLASS_D,0}; */

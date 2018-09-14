@@ -3022,6 +3022,10 @@ I_TO_X(BUILD_DIM(BUILD_WINDOW(2,7,1.1),BUILD_RANGE(,,3)),1:4)
 X_TO_I(BUILD_DIM(BUILD_WINDOW(2,5,1.1),BUILD_RANGE(,,3)))
 X_TO_I(BUILD_DIM(BUILD_WINDOW(2,7,1.1),BUILD_RANGE(,,3)),[4.1,7.1,10.1,13.1])
 !
+! Functions implemented in TdiGetData.c
+!
+data(BUILD_SLOPE(.1,0.,1.,.2,1.2,2.))
+!
 ! Miscellaneous
 !
 _x=build_signal(10*$VALUE,1:10,*)

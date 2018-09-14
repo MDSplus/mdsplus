@@ -1,3 +1,4 @@
+/* FOR INTERNAL USE ONLY */
 Public fun TreeFindNodeWild(in _path, optional _usagemask)
 {
   _ctx = 0q;

@@ -75,6 +75,12 @@ static void SubtreeNodeConnect(PINO_DATABASE * dblist, NODE * parent, NODE * sub
 
 extern void **TreeCtx();
 
+static inline char *replaceBackslashes(char *filename) {
+  char *ptr;
+  while ((ptr = strchr(filename, '\\')) != NULL) *ptr = '/';
+  return filename;
+}
+
 int TreeClose(char const *tree, int shot)
 {
   return _TreeClose(TreeCtx(), tree, shot);
@@ -543,8 +549,13 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
   if (info) {
     for (i = 0; i < info->header->externals; i++) {
       NODE *external_node = info->node + swapint((char *)&info->external[i]);
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
+#endif
       char *subtree = strncpy(memset(malloc(sizeof(NODE_NAME) + 1), 0, sizeof(NODE_NAME) + 1),
 			      external_node->name, sizeof(NODE_NAME));
+#pragma GCC diagnostic pop
       char *blank = strchr(subtree, 32);
       subtree[sizeof(NODE_NAME)] = '\0';
       if (blank)
@@ -815,7 +826,13 @@ EXPORT char *MaskReplace(char *path_in, char *tree, int shot)
 	tmp2 = strcpy(malloc(strlen(path) + 1 + strlen(fname)), path);
 	strcpy(tmp2 + (tilde - path) + strlen(fname), tmp);
 	free(tmp);
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
+#endif
 	strncpy(tmp2 + (tilde - path), fname, strlen(fname));
+#pragma GCC diagnostic pop
       } else {
 	tmp2 = strcpy(malloc(strlen(path) + 1 + strlen(fname)), path);
 	strcpy(tmp2 + (tilde - path), fname);
@@ -828,7 +845,13 @@ EXPORT char *MaskReplace(char *path_in, char *tree, int shot)
       tmp2 = strcpy(malloc(strlen(path) + 1 + strlen(tree)), path);
       strcpy(tmp2 + (tilde - path) + strlen(tree), tmp);
       free(tmp);
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
+#endif
       strncpy(tmp2 + (tilde - path), tree, strlen(tree));
+#pragma GCC diagnostic pop
       free(path);
       path = tmp2;
       break;
@@ -906,6 +929,7 @@ static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, 
 	    info->mapped = 0;
 	  }
 	  status = TreeNORMAL;
+	  resnam = replaceBackslashes(resnam);
 	  if (new) {
 	    fd = MDS_IO_OPEN(resnam, O_RDWR | O_CREAT, 0664);
 	    if (fd == -1)
@@ -1311,7 +1335,12 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
 	    TreeOpenNciW(info, 0);
 	    info->edit->first_in_mem = 0;
 	    status = TreeExpandNodes(*dblist, 0, 0);
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
+#endif
 	    strncpy(info->node->name, "TOP         ", sizeof(info->node->name));
+#pragma GCC diagnostic pop
 	    info->node->parent = 0;
 	    info->node->child = 0;
 	    info->node->member = 0;

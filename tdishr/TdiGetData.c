@@ -61,6 +61,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 int TdiGetRecord(int nid, struct descriptor_xd *out);
 
 extern unsigned short OpcDtypeRange;
+extern unsigned short OpcVector;
 
 extern int TdiEvaluate();
 extern int TdiGetIdent();
@@ -296,7 +297,22 @@ int TdiGetData(const unsigned char omits[], struct descriptor *their_ptr, struct
 		/***************
                 Windowless axis.
                 ***************/
-	case DTYPE_SLOPE:
+	case DTYPE_SLOPE: {
+	  int seg;
+	  EMPTYXD(times);
+	  for (seg = 0; (status & 1) && (seg < pin->ndesc/3); seg++) {
+	    struct descriptor *args[]={*(pin->dscptrs+(seg*3+1)),
+				       *(pin->dscptrs+(seg*3+2)),
+				       *(pin->dscptrs+(seg*3))};
+	    status = TdiIntrinsic(OpcDtypeRange, 3, &args, &times);
+	    if (status & 1) {
+	      args[0]=(struct descriptor *)&hold;
+	      args[1]=(struct descriptor *)&times;
+	      status = TdiIntrinsic(OpcVector, 2, &args, &hold);
+	    }
+	  }
+	  goto redo;
+	}
 	case DTYPE_DIMENSION:
 	  status = TdiItoX(pin, &hold MDS_END_ARG);
 	  goto redo;

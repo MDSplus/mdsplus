@@ -40,6 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #ifdef _WIN32
 #include <windows.h>
+ #define MSG_DONTWAIT 0 // TODO: implement workaround usiing select
 #else
  typedef int SOCKET;
  #define INVALID_SOCKET -1
@@ -50,14 +51,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/time.h>
 
 typedef struct _MonitorList {
-  int addr;
-  short port;
+  uint32_t addr;
+  uint16_t port;
   struct _MonitorList *next;
 } MonitorList;
 
 typedef struct _ClientList {
-  int addr;
-  short port;
+  uint32_t addr;
+  uint16_t port;
   int sock;
   struct _ClientList *next;
 } ClientList;
@@ -78,7 +79,7 @@ static void DoSrvMonitor(SrvJob * job_in);
 static char *Now();
 
 static void RemoveClient(SrvJob * job);
-extern int MdsGetClientAddr();
+extern uint32_t MdsGetClientAddr();
 extern char *MdsGetServerPortname();
 static ClientList *Clients = NULL;
 
@@ -135,7 +136,7 @@ EXPORT int ServerDebug(int setting){
   return old;
 }
 // main
-EXPORT int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
+EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags, int *jobid,
 		  void *p1, void *p2, void *p3, void *p4, void *p5, void *p6, void *p7, void *p8)
 {
   int status = ServerINVALID_ACTION_OPERATION;
@@ -599,8 +600,8 @@ static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in){
 // thread
 static int SendToMonitors(SrvJob * job){
   MonitorList *m, *prev, *next;
-  int prev_addr = job->h.addr;
-  short prev_port = job->h.port;
+  uint32_t prev_addr = job->h.addr;
+  uint16_t prev_port = job->h.port;
   for (prev = NULL , m = Monitors ; m ; m = next) {
     job->h.addr = m->addr;
     job->h.port = m->port;
@@ -695,7 +696,7 @@ static void KillWorker(){
 }
 
 // both
-static SOCKET AttachPort(int addr, short port){
+static SOCKET AttachPort(uint32_t addr, uint16_t port){
   int sock;
   struct sockaddr_in sin;
   ClientList *l, *new;
@@ -712,7 +713,7 @@ static SOCKET AttachPort(int addr, short port){
     }
   sin.sin_port = htons(port);
   sin.sin_family = AF_INET;
-  *(int *)(&sin.sin_addr) = addr;
+  *(uint32_t *)(&sin.sin_addr) = addr;
   sock = socket(AF_INET, SOCK_STREAM, 0);
   if (sock >= 0) {
     if (connect(sock, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
@@ -757,23 +758,26 @@ static int SendReply(SrvJob * job, int replyType, int status_in, int length, cha
 #ifndef _WIN32
   signal(SIGPIPE, SIG_IGN);
 #endif
-  sock = AttachPort(job->h.addr, (short)job->h.port);
+  sock = AttachPort(job->h.addr, (uint16_t)job->h.port);
   if (sock != INVALID_SOCKET) {
     char reply[60];
     int bytes;
     memset(reply, 0, 60);
     sprintf(reply, "%d %d %d %ld", job->h.jobid, replyType, status_in, msg ? (long)strlen(msg) : 0);
-    bytes = send(sock, reply, 60, 0);
+    bytes = send(sock, reply, 60, MSG_DONTWAIT);
     if (bytes == 60) {
       if (length) {
-	bytes = send(sock, msg, length, 0);
+	bytes = send(sock, msg, length, MSG_DONTWAIT);
 	if (bytes == length)
 	  status = MDSplusSUCCESS;
       } else
 	status = MDSplusSUCCESS;
     }
-    if STATUS_NOT_OK
+    if STATUS_NOT_OK {
+      char* ip = (char*)&job->h.addr;
+      printf("%s: Dropped connection to %u.%u.%u.%u:%u\n", Now(), ip[0],ip[1],ip[2],ip[3], job->h.port);
       RemoveClient(job);
+    }
   }
 #ifndef _WIN32
   signal(SIGPIPE, SIG_DFL);

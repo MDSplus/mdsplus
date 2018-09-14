@@ -1,3 +1,4 @@
+/* FOR INTERNAL USE ONLY */
 Public fun TreeSetDefault(in _path)
 {
   _nid_ptr = 0;
