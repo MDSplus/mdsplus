@@ -1038,7 +1038,6 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
 {
     static EMPTYXD(retXd);
     EMPTYXD(xd);
-    EMPTYXD(evalxd);
     EMPTYXD(yXd);
     EMPTYXD(xXd);
     EMPTYXD(evaluatedXd);
