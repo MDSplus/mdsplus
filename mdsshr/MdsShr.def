@@ -40,8 +40,6 @@ MdsCopyDxXdZ
 MdsDecompress
 MdsDescrToCstring
 MdsDtypeString
-MdsFloatToDelta
-MdsFloatToTime
 MdsFree
 MdsFree1Dx
 MdsGet1Dx
@@ -57,8 +55,6 @@ MdsRelease
 MdsSerializeDscIn
 MdsSerializeDscOut
 MdsSerializeDscOutZ
-MdsTimeToDouble
-MdsTimeToFloat
 MdsUsageString
 MdsXpand
 StrAppend

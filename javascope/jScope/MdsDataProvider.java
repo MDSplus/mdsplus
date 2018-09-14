@@ -743,8 +743,8 @@ public class MdsDataProvider
                 
                 if(isLong)
                 {
-                    args.addElement(new Descriptor(null, new long[]{(xmin == -Double.MAX_VALUE)?0:(long)xmin}));
-                    args.addElement(new Descriptor(null, new long[]{(xmax == Double.MAX_VALUE)?0:(long)xmax}));
+                    args.addElement(new Descriptor(null, new long[]{(xmin <= -Double.MAX_VALUE)?Long.MIN_VALUE:(long)xmin}));
+                    args.addElement(new Descriptor(null, new long[]{(xmax >= Double.MAX_VALUE)?Long.MAX_VALUE:(long)xmax}));
                 }
                 else
                 {

@@ -44,7 +44,6 @@ extern int TdiData();
 extern int TdiFloat();
 extern int TdiEvaluate();
 extern int XTreeConvertToLongTime(struct descriptor *timeD, int64_t * converted);
-extern int XTreeConvertToLongDelta(struct descriptor *deltaD, int64_t * converted);
 
 static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct descriptor *startD,
 				    struct descriptor *endD, struct descriptor *deltaD, char mode,
@@ -482,12 +481,12 @@ static int64_t *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int 
   if (currDim->dtype == DTYPE_FLOAT) {
     floatPtr = (float *)currDim->pointer;
     for (i = 0; i < numSamples; i++)
-      MdsFloatToTime(floatPtr[i], &outPtr[i]);
+      outPtr[i] = (int64_t)(floatPtr[i]*1e9);
   } else			//currDim->dtype == DTYPE_DOUBLE)
   {
     doublePtr = (double *)currDim->pointer;
     for (i = 0; i < numSamples; i++)
-      MdsFloatToTime(doublePtr[i], &outPtr[i]);
+      outPtr[i] = (int64_t)(doublePtr[i]*1e9);
   }
   *outSamples = numSamples;
   MdsFree1Dx(&currXd, 0);
@@ -598,7 +597,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
       return status;
   }
   if (deltaD) {
-    status = XTreeConvertToLongDelta(deltaD, &delta64);
+    status = XTreeConvertToLongTime(deltaD, &delta64);
     if (!(status & 1))
       return status;
     if (delta64 == 0)
@@ -695,7 +694,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   if (isFloat) {
     timebaseDouble = (double *)malloc(outSamples * sizeof(double));
     for (i = 0; i < outSamples; i++)
-      MdsTimeToDouble(outDim[i], &timebaseDouble[i]);
+      timebaseDouble[i] = (double)outDim[i] / 1e9;
     outDimArray.length = sizeof(double);
     outDimArray.arsize = sizeof(double) * outSamples;
     outDimArray.dtype = DTYPE_DOUBLE;

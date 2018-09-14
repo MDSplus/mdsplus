@@ -76,11 +76,9 @@ static int64_t estimateNumSamples(char *sigName, float *xMin, float *xMax, int *
 		return -1;
 	if(xMin != NULL || xMax != NULL)
 	{
-		if(xMin)
-			MdsFloatToTime(*xMin, &startTime);
-		if(xMax)
-			MdsFloatToTime(*xMax, &endTime);
-		if(numSegments < NUM_SEGMENTS_THRESHOLD) 
+		if(xMin) startTime = (int64_t) (*xMin * 1e9);
+		if(xMax)   endTime = (int64_t) (*xMax * 1e9);
+		if(numSegments < NUM_SEGMENTS_THRESHOLD)
 			return -1;
 		startIdx = 0;
 		if(!xMin)     //If no start time specified, take all initial segments
@@ -88,7 +86,7 @@ static int64_t estimateNumSamples(char *sigName, float *xMin, float *xMax, int *
 		else
 		{
 			while(startIdx < numSegments)
-			{	
+			{
 				status = TreeGetSegmentLimits(nid, startIdx, &retStartXd, &retEndXd);
 				if(!(status & 1)) return status;
 				status = XTreeConvertToLongTime(retStartXd.pointer, &currStartTime);
@@ -136,10 +134,9 @@ static int64_t estimateNumSamples(char *sigName, float *xMin, float *xMax, int *
 		endIdx = numSegments - 1;
 	}
 	status = TreeGetSegmentInfo(nid, startIdx, &dtype, &dimct, dims, &nextRow);
-	if(!(status & 1)) 
-		return -1;
+	if STATUS_NOT_OK return -1;
 	segmentSamples = dims[dimct - 1];
-//Cpmpute duration 
+//Cpmpute duration
 	status = TreeGetSegmentLimits(nid, startIdx, &retStartXd, &retEndXd);
   	if(status & 1) status = TdiData((struct descriptor *)&retStartXd, &retStartXd MDS_END_ARG);
 	if(status & 1) status = TdiFloat((struct descriptor *)&retStartXd, &retStartXd MDS_END_ARG);
@@ -198,7 +195,7 @@ static void swap8(char *buf)
     swap4(&buf[2]);
 }
 
-#define TRUE 1 
+#define TRUE 1
 #define FALSE 0
 
 static double toDouble(void *ptr, int type)
@@ -240,7 +237,7 @@ static void compressData(float *y, char *x, int xSize, int xType, int nSamples, 
 	double deltaTime, startXDouble, currXDouble;
     if(nSamples < 10 * reqPoints)
     {
-//Does not perform any compression 
+//Does not perform any compression
 	*retResolution = 1E12;
 	*retPoints = nSamples;
 	return;
@@ -266,7 +263,7 @@ static void compressData(float *y, char *x, int xSize, int xType, int nSamples, 
     else
     {
     	*retResolution = reqPoints/(toDouble(&x[endIdx * xSize], xType) - toDouble(&x[startIdx * xSize], xType));
-	
+
 //	printf("Resolution: %f, points: %d, interval: %f\n", *retResolution, reqPoints, (toDouble(&x[endIdx * xSize], xType) - toDouble(&x[startIdx * xSize], xType)));
     }
     currSamples = startIdx;
@@ -320,7 +317,7 @@ static char *recGetHelp(struct descriptor *dsc)
 	 	nid = *(int *)dsc->pointer;
 		status = TreeGetNumSegments(nid, &numSegments);
 		if(!(status & 1) || numSegments > 0)
-		    return NULL;  
+		    return NULL;
 		status = TreeGetRecord(nid, &xd);
 		if(status & 1)
 		{
@@ -340,7 +337,7 @@ static char *recGetHelp(struct descriptor *dsc)
 		    return NULL;
 		status = TreeGetNumSegments(nid, &numSegments);
 		if(!(status & 1) || numSegments > 0)
-		    return NULL;  
+		    return NULL;
 		status = TreeGetRecord(nid, &xd);
 		if(status & 1)
 		{
@@ -404,7 +401,7 @@ static char *recGetUnits(struct descriptor *dsc, int isX)
 	 	nid = *(int *)dsc->pointer;
 		status = TreeGetNumSegments(nid, &numSegments);
 		if(!(status & 1) || numSegments > 0)
-		    return NULL;  
+		    return NULL;
 		status = TreeGetRecord(nid, &xd);
 		if(status & 1)
 		{
@@ -424,7 +421,7 @@ static char *recGetUnits(struct descriptor *dsc, int isX)
 		    return NULL;
 		status = TreeGetNumSegments(nid, &numSegments);
 		if(!(status & 1) || numSegments > 0)
-		    return NULL;  
+		    return NULL;
 		status = TreeGetRecord(nid, &xd);
 		if(status & 1)
 		{
@@ -529,11 +526,11 @@ static char *recGetUnits(struct descriptor *dsc, int isX)
 		return units;
 	    }
 	    return NULL;
-	
+
 	default: return NULL;
     }
 }
-	
+
 
 
 
@@ -546,11 +543,11 @@ static int recIsSegmented(struct descriptor *dsc)
     struct nci_itm nciList[] = {{1, NciCLASS, &nciClass, &retClassLen},
 	  {1, NciDTYPE, &nciDtype, &retDtypeLen},
 	  {NciEND_OF_LIST, 0, 0, 0}};
-	  
+
     EMPTYXD(xd);
-	  
+
     int retNid;
-  
+
     struct descriptor_r *rDsc;
     if(!dsc) return FALSE;
 
@@ -561,7 +558,7 @@ static int recIsSegmented(struct descriptor *dsc)
 	 	nid = *(int *)dsc->pointer;
 		status = TreeGetNumSegments(nid, &numSegments);
 		if((status & 1) && numSegments > 0)
-		    return nid; 
+		    return nid;
 		//Now check if the node contains an expression or a direct nid reference
 		status = TreeGetNci(nid, nciList);
 		if((status & 1) && ((nciClass == CLASS_S && (nciDtype == DTYPE_NID ||nciDtype == DTYPE_PATH))||nciClass == CLASS_R))
@@ -585,7 +582,7 @@ static int recIsSegmented(struct descriptor *dsc)
 		if(status & 1)
 		    status = TreeGetNumSegments(nid, &numSegments);
 		if((status & 1) && numSegments > 0)
-		    return nid; 
+		    return nid;
 		return 0;
 	    }
 	    else
@@ -607,7 +604,7 @@ static int recIsSegmented(struct descriptor *dsc)
 	default: return 0;
     }
 }
-	
+
 //Check if the passed expression contains at least one segmented node
 EXPORT int IsSegmented(char *expr)
 {
@@ -620,7 +617,7 @@ EXPORT int IsSegmented(char *expr)
     MdsFree1Dx(&xd, 0);
     return segNid != 0;
 }
-    
+
 EXPORT int TestGetHelp(char *expr)
 {
     EMPTYXD(xd);
@@ -632,7 +629,7 @@ EXPORT int TestGetHelp(char *expr)
     MdsFree1Dx(&xd, 0);
     return 1;
 }
-    
+
 EXPORT int TestGetUnits(char *expr)
 {
     EMPTYXD(xd);
@@ -644,7 +641,7 @@ EXPORT int TestGetUnits(char *expr)
     MdsFree1Dx(&xd, 0);
     return 1;
 }
-    
+
 
 
 EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, float *inXMax, int *reqNSamples)
@@ -671,20 +668,20 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     int idx, i, status;
     char *retArr;
     float retResolution;
-    DESCRIPTOR_A(retArrD, 1, DTYPE_B, 0, 0); 
+    DESCRIPTOR_A(retArrD, 1, DTYPE_B, 0, 0);
     float xMin = *inXMin;
-    float xMax = *inXMax; 
+    float xMax = *inXMax;
     struct descriptor_a *xArrD, *yArrD;
     float *y;
     double maxX, minX, currX;
     char *title, *xLabel, *yLabel;
 	double delta;
-	struct descriptor deltaD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)&delta}; 
+	struct descriptor deltaD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)&delta};
 	int64_t estimatedSamples;
 	int estimatedSegmentSamples = 0;
 	double estimatedDuration = 0;
 
-//printf("GetXYSignal(%s, %s, %f, %f, %d)\n", inY, inX, *inXMin, *inXMax, *reqNSamples); 
+//printf("GetXYSignal(%s, %s, %f, %f, %d)\n", inY, inX, *inXMin, *inXMax, *reqNSamples);
 
 	float * const currXMin = (*inXMin < -1E20)? NULL : inXMin;
 	float * const currXMax = (*inXMax >  1E20)? NULL : inXMax;
@@ -695,7 +692,7 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
 	if(estimatedSamples > NUM_SAMPLES_THRESHOLD)
 	{
 //First guess on delta  G
-		delta = 100 * estimatedSamples/NUM_SAMPLES_THRESHOLD; 
+		delta = 100 * estimatedSamples/NUM_SAMPLES_THRESHOLD;
 //Now delta represents the number of samples to be compressed in a min-max mair
 		if(delta > estimatedSegmentSamples/10.)
 			delta = estimatedSegmentSamples/10.;
@@ -744,7 +741,7 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
 	errD.pointer = err;
 	MdsCopyDxXd(&errD, &retXd);
 	return &retXd;
-    } 
+    }
 //Get X
 	if(*inX) //If an explicit expression for X has been given
 	{
@@ -794,7 +791,7 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     nSamples = yArrD->arsize/yArrD->length;
     if(nSamples > (int)(xArrD->arsize/xArrD->length))
 	nSamples = xArrD->arsize/xArrD->length;
- 
+
    //Handle old DTYPE_F format
     if(yArrD->dtype == DTYPE_F)
     {
@@ -840,7 +837,7 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
 	xXd = currXd;
 	xArrD = (struct descriptor_a *)xXd.pointer;
     }
-	      
+
     if(yArrD->dtype == DTYPE_FLOAT)
 	y = (float *)yArrD->pointer;
     else
@@ -879,17 +876,17 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
 -number of samples (minumum between X and Y)
 -type of X xamples (byte: int64_t(1), double(2) or float(3))
 -y samples (float - big endian)
--x Samples 
+-x Samples
 */
-	
+
     swap = *((int *)testEndian) != 1;
     if(xArrD->dtype == DTYPE_Q || xArrD->dtype == DTYPE_QU || xArrD->dtype == DTYPE_DOUBLE)
 	xSampleSize = sizeof(int64_t);
     else
 	xSampleSize = sizeof(int);
 
-    
-    
+
+
 
     retSize = sizeof(float) + sizeof(int) + 1 + retSamples * (sizeof(float) + xSampleSize);
 //Add rool for title and labels
@@ -907,7 +904,7 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     if(swap)swap4(&retArr[4]);
     if(xArrD->dtype == DTYPE_Q || xArrD->dtype == DTYPE_QU)
     {
-	retArr[8] = 1; 
+	retArr[8] = 1;
     }
     else if(xArrD->dtype == DTYPE_DOUBLE)
 	retArr[8] = 2;
@@ -1058,34 +1055,31 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     int idx, i, status;
     char *retArr;
     float retResolution;
-    DESCRIPTOR_A(retArrD, 1, DTYPE_B, 0, 0); 
+    DESCRIPTOR_A(retArrD, 1, DTYPE_B, 0, 0);
     int64_t xMin = *inXMin;
-    int64_t xMax = *inXMax; 
+    int64_t xMax = *inXMax;
     struct descriptor_a *xArrD, *yArrD;
     float *y;
     double maxX, minX, currX;
     char *title, *xLabel, *yLabel;
 
-//printf("GetXYSignalLongTimes(%s, %s, %d, %d, %d)\n", inY, inX, *inXMin, *inXMax, *reqNSamples); 
+//printf("GetXYSignalLongTimes(%s, %s, %d, %d, %d)\n", inY, inX, *inXMin, *inXMax, *reqNSamples);
 
-
+#define MAX64 0x7FFFFFFFFFFFFFFFL
 //Set limits if any
-   if(xMin == 0 && xMax  == 0)
+   if(xMin <= -MAX64 && xMax == MAX64)
 	status = TreeSetTimeContext(NULL, NULL, NULL);
-    else if(xMin == 0)
+    else if(xMin <= -MAX64)
 	status = TreeSetTimeContext(NULL, &xMaxD, NULL);
-    else if(xMax == 0)
+    else if(xMax ==  MAX64)
 	status = TreeSetTimeContext(&xMinD, NULL, NULL);
     else
     	status = TreeSetTimeContext(&xMinD, &xMaxD, NULL);
 
 //Get Y
 
-
-
     status = TdiCompile(&yExpr, &xd MDS_END_ARG);
-    if(status & 1)
-    {
+    if STATUS_OK {
 //Get title and yLabel, if any
     	title = recGetHelp(xd.pointer);
 		yLabel = recGetUnits(xd.pointer, 0);
@@ -1094,16 +1088,15 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
 		if(status & 1) status = TdiData((struct descriptor *)&evaluatedXd, &yXd MDS_END_ARG);
     }
     MdsFree1Dx(&xd, 0);
-    if(!(status & 1))
-    {
+    if STATUS_NOT_OK {
 		err = MdsGetMsg(status);
 		errD.length = strlen(err);
 		errD.pointer = err;
 		MdsCopyDxXd(&errD, &retXd);
 		return &retXd;
-    } 
+    }
 //Get X
- 
+
 	if(*inX) //If an explicit expression for X has been given
 	{
 		MdsFree1Dx(&evaluatedXd, 0);
@@ -1152,7 +1145,7 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     nSamples = yArrD->arsize/yArrD->length;
     if(nSamples > (int)(xArrD->arsize/xArrD->length))
 	nSamples = xArrD->arsize/xArrD->length;
- 
+
     if(yArrD->dtype == DTYPE_FLOAT)
 	y = (float *)yArrD->pointer;
     else
@@ -1190,17 +1183,17 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
 -number of samples (minumum between X and Y)
 -type of X xamples (byte: int64_t(1), double(2) or float(3))
 -y samples (float - big endian)
--x Samples 
+-x Samples
 */
-	
+
     swap = *((int *)testEndian) != 1;
     if(xArrD->dtype == DTYPE_Q || xArrD->dtype == DTYPE_QU || xArrD->dtype == DTYPE_DOUBLE)
 	xSampleSize = sizeof(int64_t);
     else
 	xSampleSize = sizeof(int);
 
-    
-    
+
+
 
     retSize = sizeof(float) + sizeof(int) + 1 + retSamples * (sizeof(float) + xSampleSize);
 //Add rool for title and labels
@@ -1218,7 +1211,7 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     if(swap)swap4(&retArr[4]);
     if(xArrD->dtype == DTYPE_Q || xArrD->dtype == DTYPE_QU)
     {
-	retArr[8] = 1; 
+	retArr[8] = 1;
     }
     else if(xArrD->dtype == DTYPE_DOUBLE)
 	retArr[8] = 2;
@@ -1366,10 +1359,10 @@ EXPORT struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXM
     DESCRIPTOR_A(retDimD, 0, 0, 0, 0);
     DESCRIPTOR_SIGNAL_1(retSignalD, &retDataD, 0, &retDimD);
     float xMin = *inXMin;
-    float xMax = *inXMax; 
+    float xMax = *inXMax;
     struct descriptor_a *xArrD, *yArrD;
     float *y;
-//printf("GetXYWave(%s, %f, %f, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples); 
+//printf("GetXYWave(%s, %f, %f, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples);
 
 	//Set limits if any
 	if(xMin <= -MAX_LIMIT && xMax >= MAX_LIMIT)
@@ -1397,7 +1390,7 @@ EXPORT struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXM
 	errD.pointer = err;
 	MdsCopyDxXd(&errD, &retXd);
 	return &retXd;
-    } 
+    }
 
 //Get X
     status = TdiCompile(&xExpr, &xd MDS_END_ARG);
@@ -1435,7 +1428,7 @@ EXPORT struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXM
     nSamples = yArrD->arsize/yArrD->length;
     if(nSamples > (int)(xArrD->arsize/xArrD->length))
 	nSamples = xArrD->arsize/xArrD->length;
- 
+
     if(yArrD->dtype == DTYPE_FLOAT)
 	y = (float *)yArrD->pointer;
     else
@@ -1493,7 +1486,7 @@ static void compressDataLongX(float *y, int64_t *x, int nSamples, int reqPoints,
     float minY, maxY;
     if(nSamples < 10 * reqPoints)
     {
-//Does not perform any compression 
+//Does not perform any compression
 	*retResolution = 1E12;
 	*retPoints = nSamples;
 	return;
@@ -1582,10 +1575,10 @@ EXPORT struct descriptor_xd *GetXYWaveLongTimes(char *sigName, int64_t *inXMin, 
     struct descriptor_a *xArrD, *yArrD;
     float *y;
 
-//printf("GetXYWaveLongTimes(%s, %d, %d, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples); 
+//printf("GetXYWaveLongTimes(%s, %d, %d, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples);
 
 
-//Set limits 
+//Set limits
 	status = TreeSetTimeContext(&xMinD, &xMaxD, NULL);
 
 //Set correct name for xExpr
@@ -1604,7 +1597,7 @@ EXPORT struct descriptor_xd *GetXYWaveLongTimes(char *sigName, int64_t *inXMin, 
 	errD.pointer = err;
 	MdsCopyDxXd(&errD, &retXd);
 	return &retXd;
-    } 
+    }
 
 //Get X
     status = TdiCompile(&xExpr, &xd MDS_END_ARG);
@@ -1642,7 +1635,7 @@ EXPORT struct descriptor_xd *GetXYWaveLongTimes(char *sigName, int64_t *inXMin, 
     nSamples = yArrD->arsize/yArrD->length;
     if(nSamples > (int)(xArrD->arsize/xArrD->length))
 	nSamples = xArrD->arsize/xArrD->length;
- 
+
     if(yArrD->dtype == DTYPE_FLOAT)
 	y = (float *)yArrD->pointer;
     else

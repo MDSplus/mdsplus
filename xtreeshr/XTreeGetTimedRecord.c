@@ -49,8 +49,6 @@ static int timedAccessFlag = 0;
 #endif
 extern int XTreeConvertToLongTime(struct descriptor *timeD,
 				  int64_t * converted);
-extern int XTreeConvertToLongDelta(struct descriptor *deltaD,
-				   int64_t * converted);
 extern int XTreeMinMaxResample(struct descriptor_signal *inSignalD,
 			       struct descriptor *startD,
 			       struct descriptor *endD,
@@ -109,7 +107,7 @@ static int checkResampledVersion(void *dbid, int nid, struct descriptor *deltaD)
 
 	if(deltaD == 0)
 	    return nid;
-	status = XTreeConvertToLongDelta(deltaD, &deltaNs);
+	status = XTreeConvertToLongTime(deltaD, &deltaNs);
 	if STATUS_NOT_OK
 		return nid;
 	status = (dbid) ? _TreeGetXNci(dbid, nid, "ResampleFactor", &xd) : TreeGetXNci(nid, "ResampleFactor", &xd);
