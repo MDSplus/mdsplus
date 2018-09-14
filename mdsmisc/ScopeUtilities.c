@@ -733,7 +733,6 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
 		title = recGetHelp(xd.pointer);
 		yLabel = recGetUnits(xd.pointer, 0);
 	//get Data
-//		status = MdsCopyDxXd((struct descriptor *)&xd, &evaluatedXd);
 		status = TdiEvaluate((struct descriptor *)&xd, &evaluatedXd MDS_END_ARG);
 		if(status & 1) status = TdiData((struct descriptor *)&evaluatedXd, &yXd MDS_END_ARG);
     }
@@ -1092,7 +1091,6 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     	title = recGetHelp(xd.pointer);
 		yLabel = recGetUnits(xd.pointer, 0);
 //get Data
-//		status = MdsCopyDxXd((struct descriptor *)&xd, &evaluatedXd);
 		status = TdiEvaluate((struct descriptor *)&xd, &evaluatedXd MDS_END_ARG);
 		if(status & 1) status = TdiData((struct descriptor *)&evaluatedXd, &yXd MDS_END_ARG);
     }
@@ -1114,9 +1112,7 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
 	}
 	else
 	{
-	  printf("ESPRESSII\n");
     	    status = TdiCompile(&dimExpr, &evaluatedXd, &xd MDS_END_ARG);
-	  printf("ESPRESSII status: %d\n", status);
 	    MdsFree1Dx(&evaluatedXd, 0);
 	}
     if(status & 1)
