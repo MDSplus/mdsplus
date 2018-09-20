@@ -8150,7 +8150,7 @@ case "$host" in
        MAKEFLAG_O=""
        IDLMDSEVENT=""
        LIBPRE=""
-       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields ";
+       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields -DWIN32 -D_WIN32 ";
        LD="$CXX -static-libgcc"
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="$FC"
@@ -8181,7 +8181,7 @@ case "$host" in
        FEXECLIBDIR="-L";
        SHARETYPE=".dll"
        jni_inc_dir="$with_jdk/include";
-       jni_md_inc_dir="$with_jdk/include/linux";;
+       jni_md_inc_dir="$with_jdk/include/win32";;
 
 *86*linux*)
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing ";
