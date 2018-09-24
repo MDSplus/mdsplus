@@ -34,9 +34,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static int one = 1;
 #define min(a,b) (((a) <= (b)) ? (a) : (b))
 #define max(a,b) (((a) <= (b)) ? (b) : (a))
-#define SignalError(call) status = call; if (!(status & 1)) { return status; }
 #define pio(f,a,dv) {int d = dv;\
- if (!((status = DevCamChk(CamPiow(setup->name,a,f,&d,16,0),&one,&one)) & 1)) return status;}
+    if (!((status = DevCamChk(CamPiow(setup->name,a,f,&d,16,0),&one,&one)) & 1)) {return status;}}
 extern int DevCamChk();
 
 
@@ -91,10 +90,13 @@ static int StoreChannel(InStoreStruct * setup, int chan)
     pio(1, chan, ctl)
 	offset = ctl * 10. / 2048.0 - 10.0;
     out_nid_d.pointer = (char *)&output_nid;
-    SignalError(TdiCompile((struct descriptor *)&expression, &out_nid_d, &offset_d, &gain_d, &value MDS_END_ARG));
-    SignalError(TreePutRecord(input_nid, (struct descriptor *)&value, 0));
-    if (TreeIsOn(filter_on_nid) & 1)
-      SignalError(TreePutRecord(filter_on_nid, filter, 0));
+    status = TdiCompile((struct descriptor *)&expression, &out_nid_d, &offset_d, &gain_d, &value MDS_END_ARG);
+    if (!(status & 1)) { return status; }
+    status = TreePutRecord(input_nid, (struct descriptor *)&value, 0);
+    if (!(status & 1)) { return status; }
+    if (TreeIsOn(filter_on_nid) & 1) {
+      status = TreePutRecord(filter_on_nid, filter, 0);
+    }
   }
   return status;
 }

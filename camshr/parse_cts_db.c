@@ -95,5 +95,10 @@ void parse_cts_db(struct MODULE *in, struct Module_ *out)
       break;
   }
   comm[i + 1] = '\0';		// 'early' termination
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
+#endif
   strncpy(out->comment, comm, i);	// 'copy' it over       [2002.02.07]
+#pragma GCC diagnostic pop
 }

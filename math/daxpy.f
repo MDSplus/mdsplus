@@ -32,7 +32,7 @@ C*26-NOV-90 11:35:29 MDS$SOURCE:[KKLARE]ZBLAS.FOR;5
       Integer Function IDAMAX(n,x,incx)
       Integer i,incx,j,n
       Real*8 xmax
-      REAL*8 x(1)
+      REAL*8 x(*)
       If (n.le.0) Then
          IDAMAX=0
       ElseIf (n.eq.1) Then
@@ -137,7 +137,7 @@ C*26-NOV-90 11:35:29 MDS$SOURCE:[KKLARE]ZBLAS.FOR;5
 !+ y=a*x+y  scale and add, backwards if negative increment
       SUBROUTINE DAXPY(n,a,x,incx,y,incy)
       Integer i,incx,incy,j,k,m,n
-      REAL*8 x(1),y(1),a
+      REAL*8 x(*),y(*),a
       If (n.le.0.or.a.eq.0) Then
       ElseIf (incx.ne.1.or.incy.ne.1) Then
          j=1
@@ -165,7 +165,7 @@ C*26-NOV-90 11:35:29 MDS$SOURCE:[KKLARE]ZBLAS.FOR;5
 !+ copy array, backwards if negative increment
       SUBROUTINE DCOPY(n,x,incx,y,incy)
       Integer i,incx,incy,j,k,m,n
-      REAL*8 x(1),y(1)
+      REAL*8 x(*),y(*)
       If (n.le.0) Then
       ElseIf (incx.ne.1.or.incy.ne.1) Then
          j=1
@@ -281,7 +281,7 @@ C*26-NOV-90 11:35:29 MDS$SOURCE:[KKLARE]ZBLAS.FOR;5
 !+ x=a*x  scale
       SUBROUTINE DSCAL(n,a,x,incx)
       Integer i,incx,m,n
-      REAL*8 x(1),a
+      REAL*8 x(*),a
       If (n.le.0) Return
       If (incx.ne.1) Then
          Do i=1,n*incx,incx
@@ -304,7 +304,7 @@ C*26-NOV-90 11:35:29 MDS$SOURCE:[KKLARE]ZBLAS.FOR;5
 !+ swap arrays, backwards if negative increment
       SUBROUTINE DSWAP(n,x,incx,y,incy)
       Integer i,incx,incy,j,k,m,n
-      REAL*8 x(1),y(1),temp
+      REAL*8 x(*),y(*),temp
       If (n.le.0) Return
       If (incx.ne.1.or.incy.ne.1) Then
          j=1

@@ -161,7 +161,12 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 	if STATUS_OK {
 	  size_t i;
 	  short idx = *conglom_index;
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
+#endif
 	  strncpy(new_ptr->name, node_name, sizeof(new_ptr->name));
+#pragma GCC diagnostic pop
 	  for (i = strlen(node_name); i < sizeof(new_ptr->name); i++)
 	    new_ptr->name[i] = ' ';
 	  new_ptr->child = 0;

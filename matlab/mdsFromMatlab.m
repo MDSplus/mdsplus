@@ -25,13 +25,16 @@ function  result = mdsFromMatlab( thing )
         if isscalar(thing)
           f=str2func(strcat('py.numpy.',dtype));
           result=f(thing);
-        else
+	else
+	  py_numpy_array=str2func('py.numpy.array');  
           sz=size(thing);
-          result=py.numpy.array(reshape(thing,int32(1),prod(int32(size(thing)))),dtype);
+          result=py_numpy_array(reshape(thing,int32(1),prod(int32(size(thing)))),dtype);
           if not(numel(sz) == 2 && sz(2) == 1)
-            presult=py.numpy.resize(result,int32(sz));
-            result=py.numpy.resize(result,presult.transpose().shape);
-            result=py.numpy.ascontiguousarray(result);
+	    py_numpy_resize=str2func('py.numpy.resize');
+            py_numpy_ascontiguousarray=str2func('py.numpy.ascontiguousarray');
+            presult=py_numpy_resize(result,int32(sz));
+            result=py_numpy_resize(result,presult.transpose().shape);
+            result=py_numpy_ascontiguousarray(result);
           end
         end
     end

@@ -128,6 +128,9 @@ static XtResource resources[] = {
    XtOffsetOf(Resources, values), XmRImmediate, 0}
   ,
 };
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
+#endif
 
 EXPORT Widget XmdsCreateNidOptionMenu(Widget parent, String name, ArgList args, Cardinal argcount)
 {

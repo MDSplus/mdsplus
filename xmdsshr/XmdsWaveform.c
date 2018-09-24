@@ -2137,8 +2137,13 @@ static void Print(XmdsWaveformWidget w, FILE * filefid, int inp_total_width, int
 	fontinfo = NULL;
 	if (strstr(fontname, "New Century Schoolbook"))
 	  strcpy(fontname, "NewCenturySchlbk");
+#pragma GCC diagnostic push
+#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
+    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
+#endif
 	while (strstr(fontname, " "))
 	  strncpy(strstr(fontname, " "), "-", 1);
+#pragma GCC diagnostic pop
 	fatom = XInternAtom(XtDisplay(w), "WEIGHT_NAME", False);
 	for (i = 0; i < fs->n_properties; i++)
 	  if (fs->properties[i].name == fatom) {
@@ -2389,7 +2394,7 @@ static void DrawLines(Display * display, Window win, GC gc, XPoint * point, int 
     int num_to_left = 0;
     int num_to_right = 0;
     int num_in_middle = 0;
-    short lastx;
+    short lastx = 0;
     short enter_y;
     short max_y;
     short min_y;

@@ -24,14 +24,13 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-import sys,os
+import sys,os,ctypes
 if "LD_PRELOAD" in os.environ:
     os.environ.pop("LD_PRELOAD")
 
 MDSplus_path=os.path.dirname(os.path.abspath(__file__))
 if sys.path[0] != MDSplus_path:
     sys.path.insert(0,MDSplus_path)
-
 
 class testing(object):
     import re
@@ -69,9 +68,7 @@ class testing(object):
         m = imp.load_source(class_name, file_name)
         getattr(m, method_name)()
 
-    def check_loadlib(self, lib):
-        import ctypes
-        ctypes.CDLL(lib)
+    check_load_lib=ctypes.CDLL
 
     def skip_test(self, module_name, message):
         # TODO: fix this
@@ -150,18 +147,22 @@ def check_arch(file_name):
     if not ts.check_unittest_version(module_name):
         ts.skip_test(module_name,'Unfit unittest version < 2.7')
     try:
-        from MDSplus import getenv
-    except Exception as e:
-        ts.skip_test(module_name,'Unable to import MDSplus: "%s"'%(e,))
+        if sys.platform.startswith('win'):
+            ts.check_load_lib("MdsShr.dll")
+        else:
+            ts.check_load_lib("libMdsShr.so")
+    except:
+        ts.skip_test(module_name,'Unable to load mdsplus lib "MdsShr"')
     if module_name.startswith('dcl'):
-      try:
-        pylib = getenv('PyLib')
-        print('PyLib="%s"'%pylib)
-        if not pylib:
-            ts.skip_test(module_name,'Invalid/unset PyLib env.')
-        ts.check_loadlib(pylib)
-      except OSError:
-        ts.skip_test(module_name,'Unable to load python lib "%s"'%(pylib,))
+        from MDSplus import getenv
+        try:
+            pylib = getenv('PyLib')
+            print('PyLib="%s"'%pylib)
+            if not pylib:
+                ts.skip_test(module_name,'Invalid/unset PyLib env.')
+            ts.check_load_lib(pylib)
+        except Exception:
+            ts.skip_test(module_name,'Unable to load python lib "%s"'%(pylib,))
 
 if __name__ == '__main__':
     if '--skip' in sys.argv:
@@ -177,4 +178,3 @@ if __name__ == '__main__':
         import traceback
         traceback.print_exc()
     ts.skip_test(sys.argv[1],"unrecoverable error from nose "+str(sys.exc_info()[0]))
-

@@ -137,14 +137,10 @@ def buildRpms():
                 os.write(out,"%%exclude /usr/local/mdsplus/lib%(bits)d/*.a\n" % info)
             if package.find("include_staticlibs") is not None:
                 os.write(out,"/usr/local/mdsplus/lib%(bits)d/*.a\n" % info)
-            for s in (("preinst","pre"),("postinst","post"),("prerm","preun"),("postrm","postun")):
-                script=package.find(s[0])
-                if script is not None and ("type" not in script.attrib or script.attrib["type"]=="rpm"):
-                    os.write(out,"%%%s\n%s\n" % (s[1],script.text.replace("__INSTALL_PREFIX__","$RPM_INSTALL_PREFIX")))
-            triggerin=package.find("triggerin")
-            if triggerin is not None:
-                os.write(out,"%%triggerin -- %s\n%s\n" % (triggerin.attrib['trigger'],
-                                                           triggerin.text.replace("__INSTALL_PREFIX__","$RPM_INSTALL_PREFIX")))
+            for s in ("pre","post","preun","postun"):
+                script=package.find(s)
+                if script is not None:
+                    os.write(out,"%%%s\n%s\n" % (s,script.text))
             os.close(out)
             info['specfilename']=specfilename
             print("Building rpm for mdsplus%(bname)s%(packagename)s%(arch_t)s" % info)
@@ -198,14 +194,10 @@ Buildarch: noarch
                 os.write(out,"%%exclude %s\n" % exclude)
         if package.find("exclude_staticlibs") is not None:
             os.write(out,"%%exclude /usr/local/mdsplus/lib??/*.a\n" % info)
-        for s in (("preinst","pre"),("postinst","post"),("prerm","preun"),("postrm","postun")):
-            script=package.find(s[0])
-            if script is not None and ("type" not in script.attrib or script.attrib["type"]=="rpm"):
-                os.write(out,"%%%s\n%s\n" % (s[1],script.text.replace("__INSTALL_PREFIX__","$RPM_INSTALL_PREFIX")))
-        triggerin=package.find("triggerin")
-        if triggerin is not None:
-            os.write(out,"%%triggerin -- %s\n%s\n" % (triggerin.attrib['trigger'],
-                                                       triggerin.text.replace("__INSTALL_PREFIX__","$RPM_INSTALL_PREFIX")))
+        for s in ("pre","post","preun","postun"):
+            script=package.find(s)
+            if script is not None:
+                os.write(out,"%%%s\n%s\n" % (s,script.text))
         os.close(out)
         info['specfilename']=specfilename
         print("Building rpm for mdsplus%(bname)s%(packagename)s.noarch" % info)

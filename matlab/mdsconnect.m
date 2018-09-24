@@ -22,7 +22,8 @@ function [ status ] = mdsconnect( host )
     else
       try
         if MDSINFO.usePython
-          MDSINFO.connection=py.MDSplus.Connection(host);
+	  py_MDSplus_Connection=str2func('py.MDSplus.Connection');
+          MDSINFO.connection=py_MDSplus_Connection(host);
         else
           MDSINFO.connection=javaObject('MDSplus.Connection',host);
         end

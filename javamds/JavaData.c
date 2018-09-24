@@ -726,6 +726,7 @@ EXPORT struct descriptor *ObjectToDescrip(JNIEnv * env, jobject obj)
       return desc;
     default:
       printf("\nUnsupported type for CLASS_S: %d\n", dtype);
+      return NULL;
     }
     break;
   case CLASS_A:
@@ -846,6 +847,7 @@ EXPORT struct descriptor *ObjectToDescrip(JNIEnv * env, jobject obj)
       return (struct descriptor *)array_d;
     default:
       printf("\nUnsupported type for CLASS_A: %d\n", dtype);
+      return NULL;
       break;
     }
   case CLASS_R:
@@ -893,7 +895,7 @@ EXPORT struct descriptor *ObjectToDescrip(JNIEnv * env, jobject obj)
   default:
     printf("\nUnsupported class: %d\n", dclass);
   }
-  return 0;
+  return NULL;
 }
 
 EXPORT void FreeDescrip(struct descriptor *desc)

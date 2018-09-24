@@ -443,12 +443,19 @@ EXPORT int IdlMdsValue(int argc, void **argv)
 	char dims[512] = "(";
 	int i;
 	if (ptr->aflags.coeff)
-	  for (i = 0; i < ptr->dimct; i++)
-	    sprintf(dims, "%s%d,", dims, ptr->m[i] > 0 ? ptr->m[i] : 1);
-	else
-	  sprintf(dims, "%s%d,", dims,
+	  for (i = 0; i < ptr->dimct; i++) {
+	    char dim[16];
+	    sprintf(dim, "%d,", ptr->m[i] > 0 ? ptr->m[i] : 1);
+	    strcat(dims,dim);
+	  }
+	else {
+	  char dim[16];
+	  sprintf(dim, "%d,",
 		  ((ptr->arsize / ptr->length) > 0) ? (ptr->arsize / ptr->length) : 1);
-	dims[strlen(dims) - 1] = ')';
+	  strcat(dims,dim);
+	}
+        dims[strlen(dims)-1]='\0';
+	strcat(dims,")");
 	switch (mdsValueAnswer.pointer->dtype) {
 	case DTYPE_B:
 	  strcpy((char *)argv[2], "if max(answer) gt 127 then answer = fix(answer)-256");

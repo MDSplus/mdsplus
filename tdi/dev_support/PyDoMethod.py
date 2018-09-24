@@ -60,5 +60,6 @@ def PyDoMethod(n,method,*args):
         raise
     except Exception as exc:
         stderr.write("Python error in %s.%s:\n%s\n\n" % (model,method,str(exc)))
+        import traceback
+        traceback.print_exc()
         raise PyUNHANDLED_EXCEPTION
-
