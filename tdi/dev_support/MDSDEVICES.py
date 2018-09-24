@@ -5,7 +5,7 @@ lock = Lock() # locks the cache
 def MDSDEVICES():
   with lock:
    if cache[0] is None:
-    from MDSplus import Device,tdi,version
+    from MDSplus import Device,tdi,version,getenv
     from numpy import array
     def importDevices(name):
         bname = version.tobytes(name)
@@ -18,7 +18,12 @@ def MDSDEVICES():
         tdidev = [[k.rstrip(), v.rstrip()] for k,v in tdidev.value.reshape((int(tdidev.value.size/2),2)).tolist()]
         return tdidev+ans
     ans = [[version.tobytes(d),b'pydevice'] for d in Device.findPyDevices()]
-    for module in ["KbsiDevices","MitDevices","RfxDevices","W7xDevices"]:
+    mdsdevs=getenv('MDS_DEVICES')
+    if mdsdevs is not None:
+      modules=mdsdevs.split(':')
+    else:
+      modules=["KbsiDevices","MitDevices","RfxDevices","W7xDevices"]
+    for module in modules:
         ans += importDevices(module)
     ans = array(list(dict(ans).items()))
     ans.view('%s,%s'%(ans.dtype,ans.dtype)).sort(order=['f0'], axis=0)
