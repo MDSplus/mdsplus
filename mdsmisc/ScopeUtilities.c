@@ -61,7 +61,7 @@ static int getSegmentedNid(char *expr)
 static int64_t estimateNumSamples(char *sigName, float *xMin, float *xMax, int *estimatedSegmentSamples, double *estimatedDuration)
 {
 	int nid, numSegments, status, startIdx, endIdx;
-	int64_t startTime, endTime, currStartTime, currEndTime;
+	int64_t startTime, endTime = INT64_MAX, currStartTime, currEndTime;
 	char dtype, dimct;
 	int dims[64];
 	int nextRow, segmentSamples, numActSegments, segmentIdx;
