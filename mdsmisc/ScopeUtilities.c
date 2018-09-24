@@ -650,7 +650,7 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     EMPTYXD(xd);
     EMPTYXD(yXd);
     EMPTYXD(xXd);
-    EMPTYXD(evaluatedXd);
+//    EMPTYXD(evaluatedXd);
     struct descriptor xMinD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)inXMin};
     struct descriptor xMaxD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)inXMax};
     struct descriptor yExpr = {strlen(inY), DTYPE_T, CLASS_S, inY};
