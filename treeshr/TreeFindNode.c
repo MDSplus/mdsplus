@@ -112,6 +112,11 @@ EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **
     ctx->default_node = dblist->default_node;
     ctx->answers = Search(dblist, ctx, ctx->terms, dblist->default_node, &tail);
     ctx->answers = Filter(ctx->answers, usage_mask); 
+    if (ctx->answers->node == ctx->default_node) {
+      NODELIST *tmp = ctx->answers;
+      ctx->answers = ctx->answers->next;
+      free(tmp);
+    }
  }
   else {
     ctx = *ctx_inout;
