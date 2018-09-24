@@ -198,6 +198,15 @@ class Tests(TestCase):
       test()
       self.cleanup()
 
+    def findNode(self):
+      def test():
+        pytree=Tree('pytree',self.shot,'ReadOnly')
+        nodes = pytree.getNodeWild('***:SIG_CMPRS')
+        self.assertEqual(len(nodes), 1)
+        self.assertEqual(str(nodes[0]), '\\PYTREE::TOP:SIG_CMPRS')
+      test()
+      self.cleanup()
+
     def setDefault(self):
       def test():
         pytree = Tree('pytree',self.shot,'ReadOnly')
@@ -363,7 +372,7 @@ class Tests(TestCase):
             self.__getattribute__(test)()
     @staticmethod
     def getTests():
-        lst = ['buildTrees','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','getCompression']
+        lst = ['buildTrees','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','getCompression', 'findNode']
         if Tests.inThread: return lst
         return ['treeCtx']+lst
     @classmethod
