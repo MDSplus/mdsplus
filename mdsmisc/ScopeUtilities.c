@@ -650,12 +650,13 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     EMPTYXD(xd);
     EMPTYXD(yXd);
     EMPTYXD(xXd);
-    EMPTYXD(evaluatedXd);
     struct descriptor xMinD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)inXMin};
     struct descriptor xMaxD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)inXMax};
     struct descriptor yExpr = {strlen(inY), DTYPE_T, CLASS_S, inY};
     struct descriptor xExpr = {strlen(inX), DTYPE_T, CLASS_S, inX};
-	struct  descriptor dimExpr = {strlen("DIM_OF($)"), DTYPE_T, CLASS_S, (char *)"DIM_OF($)"};
+    static char *dimExprStr = "_a = $; _s = SIZE(_a); DIM_OF(SET_RANGE(_s,_a))";
+    struct  descriptor dimExpr = {strlen(dimExprStr), DTYPE_T, CLASS_S, (char *)dimExprStr};
+    //struct  descriptor dimExpr = {strlen("DIM_OF($)"), DTYPE_T, CLASS_S, (char *)"DIM_OF($)"};
     struct descriptor errD = {0, DTYPE_T, CLASS_S, 0};
     char *err;
     char swap;
@@ -728,10 +729,8 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
 		title = recGetHelp(xd.pointer);
 		yLabel = recGetUnits(xd.pointer, 0);
 	//get Data
-		status = TdiEvaluate((struct descriptor *)&xd, &evaluatedXd MDS_END_ARG);
-		if(status & 1) status = TdiData((struct descriptor *)&evaluatedXd, &yXd MDS_END_ARG);
+		if(status & 1) status = TdiData((struct descriptor *)&xd, &yXd MDS_END_ARG);
     }
-    MdsFree1Dx(&xd, 0);
     if(!(status & 1))
     {
 	err = MdsGetMsg(status);
@@ -743,13 +742,12 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
 //Get X
 	if(*inX) //If an explicit expression for X has been given
 	{
-		MdsFree1Dx(&evaluatedXd, 0);
-    	status = TdiCompile(&xExpr, &xd MDS_END_ARG);
+	    MdsFree1Dx(&xd, 0);
+    	    status = TdiCompile(&xExpr, &xd MDS_END_ARG);
 	}
 	else
 	{
-    	status = TdiCompile(&dimExpr, &evaluatedXd, &xd MDS_END_ARG);
-		MdsFree1Dx(&evaluatedXd, 0);
+    	    status = TdiCompile(&dimExpr, &xd, &xd MDS_END_ARG);
 	}
     if(status & 1)
     {
@@ -1036,9 +1034,11 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     EMPTYXD(yXd);
     EMPTYXD(xXd);
     EMPTYXD(evaluatedXd);
-	struct  descriptor dimExpr = {strlen("DIM_OF($)"), DTYPE_T, CLASS_S, (char *)"DIM_OF($)"};
-    struct descriptor xMinD = {sizeof(int64_t), DTYPE_Q, CLASS_S, (char *)inXMin};
-    struct descriptor xMaxD = {sizeof(int64_t), DTYPE_Q, CLASS_S, (char *)inXMax};
+//    struct  descriptor dimExpr = {strlen("DIM_OF($)"), DTYPE_T, CLASS_S, (char *)"DIM_OF($)"};
+    static char *dimExprStr = "_a = $; _s = SIZE(_a); DIM_OF(SET_RANGE(_s,_a))";
+    struct  descriptor dimExpr = {strlen(dimExprStr), DTYPE_T, CLASS_S, (char *)dimExprStr};
+    struct descriptor xMinD = {sizeof(int64_t), DTYPE_QU, CLASS_S, (char *)inXMin};
+    struct descriptor xMaxD = {sizeof(int64_t), DTYPE_QU, CLASS_S, (char *)inXMax};
     struct descriptor yExpr = {strlen(inY), DTYPE_T, CLASS_S, inY};
     struct descriptor xExpr = {strlen(inX), DTYPE_T, CLASS_S, inX};
     struct descriptor errD = {0, DTYPE_T, CLASS_S, 0};
@@ -1100,8 +1100,8 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
 	}
 	else
 	{
-    	status = TdiCompile(&dimExpr, &evaluatedXd, &xd MDS_END_ARG);
-		MdsFree1Dx(&evaluatedXd, 0);
+    	    status = TdiCompile(&dimExpr, &evaluatedXd, &xd MDS_END_ARG);
+	    MdsFree1Dx(&evaluatedXd, 0);
 	}
     if(status & 1)
     {
