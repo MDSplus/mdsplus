@@ -760,8 +760,7 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     if(status & 1)
     {
 //Get xLabel, if any
-	//xLabel = recGetUnits(xd.pointer, 1);
-	xLabel = "";
+	xLabel = recGetUnits(xd.pointer, 1);
 //get Data
 	status = TdiData((struct descriptor *)&xd, &xXd MDS_END_ARG);
     }
