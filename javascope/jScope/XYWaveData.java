@@ -216,7 +216,6 @@ public class XYWaveData implements WaveData
                retY[2*i] = currMin;
                retY[2*i+1] = currMax;
             }
-            startLiveUpdate();
             if(isLong)
                 return new XYData(retXLong, retY, actPoints/(xmax - xmin), true);
             else
@@ -231,8 +230,7 @@ public class XYWaveData implements WaveData
                 if(isLong)
                     retXLong[i] = xLong[minIdx + i];
             }
-            startLiveUpdate();
-            if(isLong)
+             if(isLong)
                 return new XYData(retXLong, retY, Double.MAX_VALUE, true);
             else
                 return new XYData(retX, retY, Double.MAX_VALUE, true);
@@ -393,33 +391,4 @@ public class XYWaveData implements WaveData
        }
     }
 
-       //Inner class LiveUpdater just for test
-    class LiveUpdater extends Thread
-    {
-       public void run()
-       {
-           //if(true) return; //REMOVE THIS FOR LIVE UPDATE
-           double []newX = new double[1];
-           float []newY = new float[1];
-           for(int i = 0; i < x.length; i++)
-           {
-                try {
-                    Thread.sleep(100);
-                }catch(InterruptedException exc){}
-                
-                newX[0] = x[x.length - 1] + i + 1;
-                newY[0] = y[x.length - 1 - i];
-                fireListeners(newX, newY, Double.MAX_VALUE);
-            }
-        }
-    }
-    
-    void startLiveUpdate()
-    {
-        if(!liveUpdateStarted)
-        {
-            liveUpdateStarted = true;
-            (new LiveUpdater()).start();
-        }
-    }
 }
