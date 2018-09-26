@@ -2084,15 +2084,20 @@ int TreeGetTimeContext(struct descriptor_xd *start, struct descriptor_xd *end, s
 }
 
 static int getOpaqueList(void *dbid, int nid, struct descriptor_xd *out) {
+  {
+    unsigned char data_type;
+    NCI_ITM itmlst[] = { {1, NciDTYPE, &data_type, 0},{0, NciEND_OF_LIST, 0, 0}};
+    int status = _TreeGetNci(dbid, nid, itmlst);
+    if STATUS_NOT_OK return status;
+    if (data_type != DTYPE_OPAQUE) return 0;
+  }
   INIT_VARS;
-  int isOpList=0;
   EMPTYXD(segdata);
   EMPTYXD(segdim);
   status = _TreeGetSegment(dbid, nid, 0, &segdata, &segdim);
-  isOpList = segdata.pointer && (segdata.pointer->dtype == DTYPE_OPAQUE);
   MdsFree1Dx(&segdata, 0);
   MdsFree1Dx(&segdim, 0);
-  if (isOpList) {
+  if STATUS_OK {
     RETURN_IF_NOT_OK(open_header_read(vars));
     int numsegs = vars->shead.idx + 1;
     int apd_idx = 0;
@@ -2132,18 +2137,14 @@ static int getOpaqueList(void *dbid, int nid, struct descriptor_xd *out) {
     }
     if (apd.pointer)
       free(apd.pointer);
-  } else if STATUS_OK {
-    status = 0;
   }
   return status;
 }
 
 int _TreeGetSegmentedRecord(void *dbid, int nid, struct descriptor_xd *data)
 {
-  INIT_TREESUCCESS;
-  int opstatus = getOpaqueList(dbid, nid, data );
-  if IS_OK(opstatus)
-    return opstatus;
+  int status = getOpaqueList(dbid, nid, data );
+  if (status) return status; // 0: data is not Opaque
   static int activated = 0;
   static int (*addr) (void *, int, struct descriptor *, struct descriptor *, struct descriptor *, struct descriptor_xd *);
   if (!activated) {
