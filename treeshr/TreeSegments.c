@@ -1079,13 +1079,8 @@ static int ReadSegment(TREE_INFO* tinfo, int nid, SEGMENT_HEADER* shead, SEGMENT
       for (i = 0; i < ans.dimct; i++)
         ans.arsize *= ans.m[i];
       if (compressed_segment) {
-        EMPTYXD(compressed_segment_xd);
         int data_length = sinfo->rows & 0x7fffffff;
-        status = TreeGetDsc(tinfo, nid, sinfo->data_offset, data_length, &compressed_segment_xd);
-        if STATUS_OK {
-          status = MdsDecompress((struct descriptor_r *)compressed_segment_xd.pointer, segment);
-          MdsFree1Dx(&compressed_segment_xd, 0);
-        }
+        status = TreeGetDsc(tinfo, nid, sinfo->data_offset, data_length, segment);
       } else {
         ans_ptr = ans.pointer = ans.a0 = malloc(ans.arsize);
         status = ReadProperty(tinfo,sinfo->data_offset, ans.pointer, (ssize_t)ans.arsize);
