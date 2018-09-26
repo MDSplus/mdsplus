@@ -124,6 +124,7 @@ int _TreeDeletePulseFile(void *dbid, int shotid, int allfiles __attribute__ ((un
 
 STATIC_ROUTINE int TreeDeleteTreeFiles(char *tree, int shot)
 {
+  if (!shot || shot<-2) return TreeINVSHOT;
   size_t len = strlen(tree);
   char tree_lower[13];
   char pathname[32];
@@ -151,12 +152,14 @@ STATIC_ROUTINE int TreeDeleteTreeFiles(char *tree, int shot)
       char *type = types[itype];
       char *part;
       strcpy(path, pathin);
-      if (shot < 0)
-	sprintf(name, "%s_model", tree_lower);
-      else if (shot < 1000)
-	sprintf(name, "%s_%03d", tree_lower, shot);
-      else
-	sprintf(name, "%s_%d", tree_lower, shot);
+      if (shot > 999)
+        sprintf(name, "%s_%d", tree_lower, shot);
+      else if (shot > 0)
+        sprintf(name, "%s_%03d", tree_lower, shot);
+      else if (shot == -1)
+        sprintf(name, "%s_model", tree_lower);
+      else // if (shot == -2)
+        sprintf(name, "%s_default", tree_lower);
       for (i = 0, part = path; i < pathlen + 1; i++) {
 	if (*part == ' ')
 	  part++;

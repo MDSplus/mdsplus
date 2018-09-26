@@ -131,6 +131,7 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
 
   retstatus = status;
   if STATUS_OK {
+    int src_shot;
     for (i = 0; i < num && (retstatus & 1); i++) {
       int skip = 0;
       char name[13];
@@ -148,11 +149,13 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
 	for (j = 11; j > 0; j--)
 	  if (name[j] == 0x20)
 	    name[j] = '\0';
+        src_shot = source_shot;
       } else {
 	strcpy(name, dblist->experiment);
+        src_shot = dblist->tree_info->shot;
       }
       if (STATUS_OK && !(skip))
-	status = TreeCreateTreeFiles(name, shot, source_shot);
+	status = TreeCreateTreeFiles(name, shot, src_shot);
       if (STATUS_NOT_OK && (i == 0))
 	retstatus = status;
     }
@@ -162,6 +165,7 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
 
 int TreeCreateTreeFiles(char *tree, int shot, int source_shot)
 {
+  if (!shot||shot<-2||!source_shot||source_shot<-2) return TreeINVSHOT;
   INIT_STATUS;
   size_t len = strlen(tree);
   char tree_lower[13];
@@ -194,8 +198,8 @@ int TreeCreateTreeFiles(char *tree, int shot, int source_shot)
 	sprintf(name, "%s_%03d", tree_lower, source_shot);
       else if (source_shot == -1)
 	sprintf(name, "%s_model", tree_lower);
-      else
-	return TreeINVSHOT;
+      else // if (source_shot == -2)
+	sprintf(name, "%s_default", tree_lower);
       for (i = 0, part = path; i < pathlen + 1; i++) {
 	if (*part == ' ')
 	  part++;
@@ -229,9 +233,8 @@ int TreeCreateTreeFiles(char *tree, int shot, int source_shot)
 	  sprintf(name, "%s_%03d", tree_lower, shot);
 	else if (shot == -1)
 	  sprintf(name, "%s_model", tree_lower);
-	else
-	  return TreeINVSHOT;
-
+	else // if (shot == -2)
+          sprintf(name, "%s_default", tree_lower);
 	for (i = 0, part = path; i < pathlen + 1; i++) {
 	  if (*part == ' ')
 	    part++;

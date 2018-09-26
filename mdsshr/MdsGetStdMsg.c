@@ -2761,6 +2761,16 @@ EXPORT int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_ou
         sts = 1;}
         break;
 
+/* TreeOPENDEF */
+      case 0xfd190a0:
+        {static const char *text="Tree file not found, opened default instead";
+        static const char *msgnam="OPENDEF";
+        *fac_out = FAC_TREE;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
 /* LibINSVIRMEM */
       case 0x158210:
         {static const char *text="Insufficient virtual memory";
