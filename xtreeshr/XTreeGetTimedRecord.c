@@ -308,11 +308,14 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 	for(currIdx = startIdx, currSegIdx = 0; currIdx <= endIdx; currIdx++, currSegIdx++)
 	{
 		status = (dbid)?_TreeGetSegment(dbid, nid, currIdx, &dataXds[currSegIdx], &dimensionXds[currSegIdx]):TreeGetSegment(nid, currIdx, &dataXds[currSegIdx], &dimensionXds[currSegIdx]);
-
-//printf("Read Segment %d\n", currSegIdx);
-
-		if STATUS_NOT_OK
-		{
+		// decompress if compressed
+		if (STATUS_OK && dataXds[currSegIdx].pointer->class == CLASS_CA) {
+                  struct descriptor_xd compressed = dataXds[currSegIdx];
+                  dataXds[currSegIdx] = emptyXd;
+		  status = MdsDecompress((struct descriptor_r *)compressed.pointer, &dataXds[currSegIdx]);
+		  MdsFree1Dx(&compressed, 0);
+		}
+		if STATUS_NOT_OK {
 			free((char *)signals);
 			for(i = 0; i < actNumSegments; i++)
 			{
