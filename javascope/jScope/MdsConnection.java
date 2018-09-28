@@ -398,22 +398,24 @@ public class MdsConnection
 
     public  int DisconnectFromMds()
     {
-	    try {
+//	    try {
             if(connection_listener.size() > 0)
                 connection_listener.removeAllElements();
-	    dos.close();
-            dis.close();
+//	    dos.close();
+//            dis.close();
 
-            receiveThread.waitExited();
+//            receiveThread.waitExited();
             connected = false;
-	    }
+/*	    }
 	    catch(IOException e)
 	        {
 	            error = "Could not get IO for " + provider + e;
 	            return 0;
 	        }
-
-	    return 1;
+try{
+Thread.currentThread().sleep(2000);
+}catch(Exception esxc){}
+*/	    return 1;
     }
 
     public  void QuitFromMds()
@@ -455,9 +457,9 @@ public class MdsConnection
                     connectToServer();
 	            MdsMessage message = new MdsMessage(user);
 	            message.useCompression(use_compression);
-	            message.Send(dos);
-	            message.Receive(dis);
-                    //NOTE Removed check, unsuccessful in UDT
+ 	            message.Send(dos);
+ 	            message.Receive(dis);
+                     //NOTE Removed check, unsuccessful in UDT
 	            //if((message.status & 1) != 0)
 	            if(true)
 	            {

@@ -1107,6 +1107,11 @@ public class MdsDataProvider
         return new MdsConnection();
     }
     
+    protected MdsConnection getConnection(String arg) 
+    {
+        return new MdsConnection(arg);
+    }
+    
     
     public MdsDataProvider(String provider)
     {
@@ -1114,7 +1119,8 @@ public class MdsDataProvider
         experiment = null;
         shot = 0;
         open = connected = false;
-        mds = new MdsConnection(this.provider);
+//        mds = new MdsConnection(this.provider);
+        mds = getConnection(this.provider);
         error = null;
         //updateWorker = new UpdateWorker();
         //updateWorker.start();
@@ -1125,7 +1131,8 @@ public class MdsDataProvider
         experiment = exp;
         shot = 0;
         open = connected = false;
-        mds = new MdsConnection();
+ //       mds = new MdsConnection();
+        mds = getConnection();
         error = null;
         //updateWorker = new UpdateWorker();
         //updateWorker.start();
@@ -1805,7 +1812,6 @@ public class MdsDataProvider
        {
            ssh_tunneling.Dispose();
        }
-
        if (connected)
         {
             connected = false;
@@ -1823,7 +1829,7 @@ public class MdsDataProvider
         {
             updateWorker.stopUpdateWorker();
         }
-    }
+   }
 
     protected synchronized void CheckConnection() throws IOException
     {
