@@ -177,7 +177,7 @@ am__can_run_installinfo = \
   esac
 am__dist_java_JAVA_DIST = jScope.java jScope/CompositeWaveDisplay.java \
 	jScope/LocalDataProvider.java \
-	jScope/LocalDataProviderInfo.java jScope/MdsDataClient.java \
+	jScope/LocalDataProviderInfo.java  \
 	jScope/MdsIOException.java jScope/MdsPlusBrowseSignals.java \
 	jScope/TextorBrowseSignals.java jScope/AboutWindow.java \
 	jScope/ASCIIDataProvider.java jScope/AsdexDataProvider.java \
@@ -231,7 +231,8 @@ am__dist_java_JAVA_DIST = jScope.java jScope/CompositeWaveDisplay.java \
 	jScope/WaveformListener.java jScope/WaveformManager.java \
 	jScope/WaveformMetrics.java jScope/WaveInterface.java \
 	jScope/WavePopup.java jScope/XYData.java \
-	jScope/XYWaveData.java jScope/WaveDataListener.java
+	jScope/XYWaveData.java jScope/WaveDataListener.java \
+	jScope/MdsConnectionLocal.java
 am__java_sources = $(dist_java_JAVA)
 DATA = $(dist_docs_DATA) $(dist_java_DATA) $(java_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
@@ -600,7 +601,8 @@ COMMON_SRC = \
 	jScope/WaveformEditor.java            jScope/WaveformEditorListener.java  jScope/WaveformEvent.java         \
 	jScope/Waveform.java                  jScope/WaveformListener.java        jScope/WaveformManager.java       \
 	jScope/WaveformMetrics.java           jScope/WaveInterface.java           jScope/WavePopup.java             \
-        jScope/XYData.java		      jScope/XYWaveData.java		  jScope/WaveDataListener.java
+        jScope/XYData.java		      jScope/XYWaveData.java		  jScope/WaveDataListener.java      \
+	jScope/MdsConnectionLocal.java
 
 WAVEDISPLAY_SRC = 
 JSCOPE_SRC = \
@@ -608,7 +610,6 @@ JSCOPE_SRC = \
 	jScope/CompositeWaveDisplay.java \
 	jScope/LocalDataProvider.java    \
 	jScope/LocalDataProviderInfo.java    \
-	jScope/MdsDataClient.java        \
 	jScope/MdsIOException.java       \
 	jScope/MdsPlusBrowseSignals.java \
 	jScope/TextorBrowseSignals.java
