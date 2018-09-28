@@ -45,7 +45,8 @@ COMMON_SRC = \
 	jScope/WaveformEditor.java            jScope/WaveformEditorListener.java  jScope/WaveformEvent.java         \
 	jScope/Waveform.java                  jScope/WaveformListener.java        jScope/WaveformManager.java       \
 	jScope/WaveformMetrics.java           jScope/WaveInterface.java           jScope/WavePopup.java             \
-        jScope/XYData.java		      jScope/XYWaveData.java		  jScope/WaveDataListener.java
+        jScope/XYData.java		      jScope/XYWaveData.java		  jScope/WaveDataListener.java	    \
+	jScope/MdsConnectionLocal.java	      
 
 WAVEDISPLAY_SRC = 
 
@@ -54,7 +55,6 @@ JSCOPE_SRC = \
 	jScope/CompositeWaveDisplay.java \
 	jScope/LocalDataProvider.java    \
 	jScope/LocalDataProviderInfo.java    \
-	jScope/MdsDataClient.java        \
 	jScope/MdsIOException.java       \
 	jScope/MdsPlusBrowseSignals.java \
 	jScope/TextorBrowseSignals.java
