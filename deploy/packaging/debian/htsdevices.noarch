@@ -1,6 +1,5 @@
 ./usr/local/mdsplus/pydevices/HtsDevices/__init__.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq2106_423st.py
-./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi
 ./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/README
 ./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/__init__.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/acq400.py
