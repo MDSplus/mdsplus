@@ -5,7 +5,7 @@ builddir=@builddir@
 VPATH = @srcdir@
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@Mdsdcl.dll.a
 @MINGW_TRUE@ DEF=${srcdir}/mdsdclshr.def
-@MINGW_TRUE@ XML_LIBS=-Wl,-Bstatic -lxml2 -lz -Wl,-Bdynamic -liconv @LIBDL@ $(LIBSOCKET)
+@MINGW_TRUE@ XML_LIBS=-Wl,-Bstatic -lxml2 -lz @LIBLZMA@ -Wl,-Bdynamic -liconv @LIBDL@ $(LIBSOCKET)
 @MINGW_FALSE@ XML_LIBS=@XML_LIBS@ @LIBDL@
 
 SOURCES = 		\
