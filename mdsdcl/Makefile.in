@@ -5,8 +5,8 @@ builddir=@builddir@
 VPATH = @srcdir@
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@Mdsdcl.dll.a
 @MINGW_TRUE@ DEF=${srcdir}/mdsdclshr.def
-@MINGW_TRUE@ XML_LIBS=-Wl,-Bstatic -lxml2 -lz -Wl,-Bdynamic -liconv  @LIBDL@ $(LIBSOCKET)
-@MINGW_FALSE@ XML_LIBS=@XML_LIBS@ 
+@MINGW_TRUE@ XML_LIBS=-Wl,-Bstatic -lxml2 -lz @LIBLZMA@ -Wl,-Bdynamic -liconv @LIBDL@ $(LIBSOCKET)
+@MINGW_FALSE@ XML_LIBS=@XML_LIBS@ @LIBDL@
 
 SOURCES = 		\
 mdsdclThreadSafe.c     	\
@@ -41,13 +41,13 @@ install: $(libdir) $(bindir)
 		@RANLIB@ $@
 
 mdsdclThreadSafe.o: mdsdclThreadSafe.c
-	$(COMPILE.c) $(CFLAGS) -c -I/usr/include/libxml2 $^
+	$(COMPILE.c) $(CFLAGS) -c @XML_CPPFLAGS@ $^
 
 cmdExecute.o: cmdExecute.c
-	$(COMPILE.c) $(CFLAGS) -c -I/usr/include/libxml2 $^
+	$(COMPILE.c) $(CFLAGS) -c @XML_CPPFLAGS@ $^
 
 cmdHelp.o: cmdHelp.c
-	$(COMPILE.c) $(CFLAGS) -c -I/usr/include/libxml2 $^
+	$(COMPILE.c) $(CFLAGS) -c @XML_CPPFLAGS@ $^
 
 cmdParseLex.o: cmdParseLex.c
 	$(COMPILE.c) $(CFLAGS) -Wno-sign-compare -Wno-unused-parameter -c $^
