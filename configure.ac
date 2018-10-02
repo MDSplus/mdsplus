@@ -423,7 +423,7 @@ case "$host" in
        FEXECLIBDIR="-L";
        SHARETYPE=".dll"
        jni_inc_dir="$with_jdk/include";
-       jni_md_inc_dir="$with_jdk/include/linux";;
+       jni_md_inc_dir="$with_jdk/include/win32";;
 
 *86*linux*)
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing ";
@@ -717,6 +717,19 @@ dnl AC_CHECK_HEADERS(readline/readline.h readline/history.h)
 
 
 ## ////////////////////////////////////////////////////////////////////////// ##
+## //  LIBLZMA  ///////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+AC_CHECK_LIB(lzma,lzma_code,LIBLZMA_SETTING=yes,LIBLZMA_SETTING=no,)
+AC_CHECK_HEADERS(lzma.h)
+if test "$LIBLZMA_SETTING" = "yes" -a "$ac_cv_header_lzma_h" = "yes" ; then
+ LIBLZMA="-llzma"
+else
+ LIBLZMA_SETTING=no
+fi
+AC_SUBST(LIBLZMA)
+
+
+## ////////////////////////////////////////////////////////////////////////// ##
 ## //  LIBXML  ////////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
 
@@ -732,7 +745,7 @@ AC_SUBST(XML_LIBS)
 AM_CONDITIONAL(XML, test x"$have_xml" = x"yes")
 
 if test "x$have_xml" = "xyes"; then
- dnl test also for headers usability required by mdsdcl
+ dnl test also for headers usability required by mdsdcl and mdsshr
  CPPFLAGS_save="$CPPFLAGS"
  CPPFLAGS="$XML_CPPFLAGS $CPPFLAGS $TARGET_ARCH"
  AC_CHECK_HEADERS(libxml/tree.h libxml/parser.h libxml/xpath.h libxml/xpathInternals.h
