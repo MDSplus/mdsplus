@@ -1074,7 +1074,7 @@ static int ReadSegment(TREE_INFO* tinfo, int nid, SEGMENT_HEADER* shead, SEGMENT
       ans.length = shead->length;
       ans.dimct = shead->dimct;
       memcpy(ans.m, shead->dims, sizeof(shead->dims));
-      ans.m[shead->dimct - 1] = sinfo->rows;
+      ans.m[shead->dimct - 1] = (idx == shead->idx) ? shead->next_row : sinfo->rows;
       ans.arsize = ans.length;
       for (i = 0; i < ans.dimct; i++)
         ans.arsize *= ans.m[i];
@@ -1118,6 +1118,24 @@ static int ReadSegment(TREE_INFO* tinfo, int nid, SEGMENT_HEADER* shead, SEGMENT
       } else {
 	if (sinfo->dimension_length != -1) {
           TreeGetDsc(tinfo, nid, sinfo->dimension_offset, sinfo->dimension_length, dim);
+          if (idx == shead->idx && shead->next_row != sinfo->rows) {
+	    STATIC_CONSTANT DESCRIPTOR(tdishr, "TdiShr");
+	    STATIC_CONSTANT DESCRIPTOR(tdiexecute, "TdiExecute");
+	    STATIC_THREADSAFE int (*addr) () = NULL;
+	    if (!addr)
+	      status = LibFindImageSymbol(&tdishr, &tdiexecute, &addr);
+	    if STATUS_OK {
+		STATIC_CONSTANT DESCRIPTOR(expression, "data($)[0:($-1)]");
+		DESCRIPTOR_LONG(row_d, &shead->next_row);
+		void *arglist[6] = { (void *)5 };
+		arglist[1] = &expression;
+		arglist[2] = dim;
+		arglist[3] = &row_d;
+		arglist[4] = dim;
+		arglist[5] = MdsEND_ARG;
+		status = (int)((char *)LibCallg(arglist, addr) - (char *)0);
+	      }
+	  }
 	}
       }
       if (ans_ptr)
