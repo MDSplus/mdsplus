@@ -214,6 +214,8 @@ TreeAddNode('numeric',_nid,5)
 265388041
 getnci(_nid,'usage')
 5BU
+TreeAddNode('segs',_nid,6)
+265388041
 TreeAddNode('signal',_nid,6)
 265388041
 getnci(_nid,'usage')
@@ -239,7 +241,7 @@ TreeAddNode('.subtree',_nid,11)
 getnci(_nid,'usage')
 11BU
 _nid
-11
+12
 getnci(0,"child")
 .CHILD
 getnci(0,"children_nids")
@@ -312,8 +314,8 @@ getnci(\child_tag5,'nid_number')
 1
 TreeShr->TreeVerify()
 Node summary:
-  Allocated = 12/14
-  Free      = 1/14
+  Allocated = 13/14
+  Free      = 0/14
   Other     = 1/14
 265388041
 TreePutRecord(action,Build_Action(Build_Dispatch(2, "CAMAC_SERVER", "INIT", *, *), Build_Method(*, "INIT", ACTION), *, *, *))
@@ -364,6 +366,14 @@ TreePutRecord(axis,1E-4 : 20E-4 : 1E-4)
 265388041
 axis
 .0001 : .002 : .0001
+BeginSegment(segs,0.,99.,0.:99.,data(0:99))
+265388041
+putsegment(segs,-1,data(0:9))
+265389633
+getsegment(segs,0)
+Build_Signal([0,1,2,3,4,5,6,7,8,9], *, [0.,1.,2.,3.,4.,5.,6.,7.,8.,9.])
+segs
+Build_Signal([0,1,2,3,4,5,6,7,8,9], *, [0.,1.,2.,3.,4.,5.,6.,7.,8.,9.])
 TreeWrite('main',_shot)
 265388041
 TreeClose()
