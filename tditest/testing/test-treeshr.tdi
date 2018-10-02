@@ -104,6 +104,7 @@ TreeAddNode('dispatch',_nid,4)
 getnci(_nid,'usage')
 TreeAddNode('numeric',_nid,5)
 getnci(_nid,'usage')
+TreeAddNode('segs',_nid,6)
 TreeAddNode('signal',_nid,6)
 getnci(_nid,'usage')
 TreeAddNode('task',_nid,7)
@@ -175,6 +176,10 @@ TreePutRecord(window,build_window(1,40,-4.))
 window
 TreePutRecord(axis,1E-4 : 20E-4 : 1E-4)
 axis
+BeginSegment(segs,0.,99.,0.:99.,data(0:99))
+putsegment(segs,-1,data(0:9))
+getsegment(segs,0)
+segs
 TreeWrite('main',_shot)
 TreeClose()
 TreeShr->TreeCompressDatafile(ref('main'),val(_shot))

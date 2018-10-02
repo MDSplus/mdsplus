@@ -278,7 +278,7 @@ class Tests(TestCase):
         for i in range(-9,9,3):
             d = Int64Array(range(3))*10+i*10
             v = Int32Array(range(3))+i
-            node.beginSegment(d[0],d[2],d,v)
+            node.makeSegment(d[0],d[2],d,v)
         self.assertEqual(node.getSegmentList(20,59).dim_of(0).tolist(),[0,30])
         self.assertEqual(node.getSegmentList(20,60).dim_of(0).tolist(),[0,30,60])
         self.assertEqual(node.getSegmentList(21,60).dim_of(0).tolist(),[30,60])
@@ -318,7 +318,7 @@ class Tests(TestCase):
         srt,end,dt=-1000,1000,1000
         d = Int64Array(range(srt,end+1,dt))
         v = Int16Array(range(srt,end+1,dt))
-        node.beginSegment(srt,end,d,v)
+        node.makeSegment(srt,end,d,v)
         self.assertEqual(True,(node.getSegment(0).data()==v.data()).all())
         node.setSegmentScale(Int64(2))
         self.assertEqual(node.getSegmentScale().decompile(),"$VALUE * 2Q")
