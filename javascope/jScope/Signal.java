@@ -2570,7 +2570,8 @@ public class Signal implements WaveDataListener
             actXMax = this.xmax;
  
         /*Enlarge by 1/20 */
-        double enlargeFactor = 40;
+//        double enlargeFactor = 40;
+        double enlargeFactor = 3;
         actXMax += (actXMax - actXMin)/enlargeFactor;
         actXMin -= (actXMax - actXMin)/enlargeFactor;
         

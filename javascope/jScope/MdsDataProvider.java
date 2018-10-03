@@ -1915,8 +1915,13 @@ public class MdsDataProvider
         if (open && def_node_changed)
         {
             if (default_node != null) {
-                Descriptor descr = mds.MdsValue("TreeSetDefault(\"\\\\" + default_node + "\")");
-                if ((descr.int_data[0] & 1 ) == 0)
+		Descriptor descr;
+		if(default_node.trim().charAt(0) == '\\')
+		    descr = mds.MdsValue("TreeSetDefault(\"\\" + default_node + "\")");
+		else
+		    descr = mds.MdsValue("TreeSetDefault(\"\\" + default_node + "\")");
+ 
+               if ((descr.int_data[0] & 1 ) == 0)
                     mds.MdsValue("TreeSetDefault(\"\\\\" + experiment + "::TOP\")");
             } else
                 mds.MdsValue("TreeSetDefault(\"\\\\" + experiment + "::TOP\")");

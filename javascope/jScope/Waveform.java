@@ -2440,6 +2440,11 @@ protected void drawMarkers(Graphics g, Vector<Polygon> segments, int marker, int
     }
     //GABRIELE AUGUST 2014
     setXlimits(r.start_xs, r.end_xs);
+//    Dimension d = getWaveSize();
+//    double enlargedStart = wm.XValue(wm.XPixel(r.start_xs)-horizontal_offset, d);
+//    double enlargedEnd = wm.XValue(wm.XPixel(r.end_xs) + horizontal_offset, d);
+
+//    waveform_signal.setXLimits( enlargedStart, enlargedEnd, Signal.SIMPLE);
     waveform_signal.setXLimits( r.start_xs, r.end_xs, Signal.SIMPLE);
     waveform_signal.setYmin( r.end_ys, Signal.SIMPLE);
     waveform_signal.setYmax( r.start_ys, Signal.SIMPLE);

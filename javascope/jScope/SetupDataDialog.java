@@ -1240,8 +1240,7 @@ import javax.swing.event.*;
       
       wi = new MdsWaveInterface(wave,
                                 ((MdsWaveInterface)wave.wi).dp,
-                                ((MdsWaveInterface)wave.wi).def_vals,
-                                wave.wi.cache_enabled);
+                                ((MdsWaveInterface)wave.wi).def_vals);
 
       wi.defaults = ((MdsWaveInterface)wave.wi).defaults;
       
