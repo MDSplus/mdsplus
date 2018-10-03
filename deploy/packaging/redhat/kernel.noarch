@@ -54,6 +54,7 @@
 ./usr/local/mdsplus/tdi/dev_support/DevAddStart.fun
 ./usr/local/mdsplus/tdi/dev_support/DevCamChk.fun
 ./usr/local/mdsplus/tdi/dev_support/DevHead.fun
+./usr/local/mdsplus/tdi/dev_support/DevHelp.fun
 ./usr/local/mdsplus/tdi/dev_support/DevIsOn.fun
 ./usr/local/mdsplus/tdi/dev_support/DevNodeRef.fun
 ./usr/local/mdsplus/tdi/dev_support/DevPutSignal.fun
