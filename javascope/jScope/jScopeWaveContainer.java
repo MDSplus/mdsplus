@@ -107,7 +107,7 @@ class jScopeWaveContainer
                     }
                     catch (Throwable e)
                     {
-                        e.printStackTrace();
+ //                       e.printStackTrace();
                         wce = new WaveContainerEvent(this,
                         WaveContainerEvent.KILL_UPDATE, e.getMessage());
                         jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
@@ -701,7 +701,7 @@ remove 28/06/2005
                         }
                         catch(Exception exc)
                         {
-                            exc.printStackTrace();
+ //                           exc.printStackTrace();
                         }
                     }
                 }
@@ -791,7 +791,7 @@ remove 28/06/2005
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+//            e.printStackTrace();
             RepaintAllWave();
             //throw (e);
         }
@@ -994,7 +994,6 @@ remove 28/06/2005
     {
         String prop;
         int read_rows[] = {0, 0, 0, 0};
-
         resetMaximizeComponent();
                 
         prop = pr.getProperty(prompt + ".columns");
@@ -1403,6 +1402,7 @@ remove 28/06/2005
         MdsWaveInterface wi;
 
         WaveInterface.WriteLine(out, prompt + "title: ", title);
+
         if (server_item != null)
         {
             WaveInterface.WriteLine(out, prompt + "data_server_name: ",
