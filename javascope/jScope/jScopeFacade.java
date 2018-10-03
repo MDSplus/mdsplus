@@ -116,6 +116,11 @@ public class jScopeFacade
 
     JWindow aboutScreen;
 
+    static boolean enableNetworkSelection = true;
+    static String mdsDataServer = null; //If enableNetworkSelection == false, mdsDataServer contains the mdsio address. 
+    static String sshDataServer = null; //If enableNetworkSelection == false, either mdsDataServer or sshDataServer contains the mdsio address. 
+			  //If enableNetworkSelection == false and mdsDataServer null and sshDataServer == null, LocalDataProvider is selected instead
+
     /**Main menu bar*/
     protected JMenuBar mb;
     /**Menus on menu bar */
@@ -128,8 +133,7 @@ public class jScopeFacade
     protected JMenuItem default_i, use_i, pub_variables_i, save_as_i,
         use_last_i,
         save_i, color_i, print_all_i, open_i,
-        close_i, server_list_i, font_i, save_all_as_text_i,
-        free_cache_i;
+        close_i, server_list_i, font_i, save_all_as_text_i;
     private JCheckBoxMenuItem brief_error_i;
     /**Menu item on menu pointer_mode_m */
     private JMenuItem zoom_i, point_i, copy_i, pan_i;
@@ -1087,35 +1091,38 @@ public class jScopeFacade
         autoscale_m.add(allY_i);
         allY_i.addActionListener(this);
 
-        network_m = new JMenu("Network");
-        mb.add(network_m);
+	network_m = new JMenu("Network");
+	mb.add(network_m);
 
 
-        servers_m = new JMenu("Servers");
-        network_m.add(servers_m);
-        //servers_m.addActionListener(this);
-        servers_m.addMenuListener(new MenuListener()
-        {
-            public void menuSelected(MenuEvent e)
-            {
-                server_diag.addServerIpList(server_ip_list);
-            }
+	servers_m = new JMenu("Servers");
+	network_m.add(servers_m);
+	if(!enableNetworkSelection)
+	    network_m.setEnabled(false);
+    //servers_m.addActionListener(this);
+	servers_m.addMenuListener(new MenuListener()
+	{
+	    public void menuSelected(MenuEvent e)
+	    {
+		server_diag.addServerIpList(server_ip_list);
+	    }
 
-            public void menuCanceled(MenuEvent e)
-            {
-            }
+	    public void menuCanceled(MenuEvent e)
+	    {
+	    }
 
-            public void menuDeselected(MenuEvent e)
-            {
-            }
-        }
-        );
+	    public void menuDeselected(MenuEvent e)
+	    {
+	    }
+	}
+	);
 
-        server_list_i = new JMenuItem("Edit server list ...");
-        network_m.add(server_list_i);
-        server_list_i.addActionListener(this);
+	server_list_i = new JMenuItem("Edit server list ...");
+	network_m.add(server_list_i);
+	server_list_i.addActionListener(this);
 
-         point_pos = new JLabel("[0.000000000, 0.000000000]");
+
+        point_pos = new JLabel("[0.000000000, 0.000000000]");
         point_pos.setFont(new Font("Courier", Font.PLAIN, 12));
         info_text = new JTextField(" Status : ", 85);
         info_text.setBorder(BorderFactory.createLoweredBevelBorder());
@@ -1321,10 +1328,10 @@ public class jScopeFacade
             );
             panel1.add("West", exec_gc);
         }
-        InitDataServer();
+//	if(enableNetworkSelection)
+	InitDataServer();
         UpdateFont();
         UpdateColors();
-
     }
 
     protected jScopeWaveContainer buildWaveContainer()
@@ -1629,8 +1636,6 @@ public class jScopeFacade
             {}
         }
 
-        String cache_directory = js_prop.getProperty("jScope.cache_directory");
-        String cache_size = js_prop.getProperty("jScope.cache_size");
         String f_name = js_prop.getProperty("jScope.save_selected_points");
         String proxy_host = js_prop.getProperty("jScope.http_proxy_host");
         String proxy_port = js_prop.getProperty("jScope.http_proxy_port");
@@ -1654,10 +1659,6 @@ public class jScopeFacade
         }
 
         Properties p = System.getProperties();
-        if (cache_directory != null)
-            p.put("Signal.cache_directory", cache_directory);
-        if (cache_size != null)
-            p.put("Signal.cache_size", cache_size);
         if (f_name != null)
             p.put("jScope.save_selected_points", f_name);
         if (curr_directory != null)
@@ -1707,7 +1708,7 @@ public class jScopeFacade
 
         if (ip_addr != null && dp_class != null) //|| is_local == null || (is_local != null && is_local.equals("no")))
         {
-            srv_item = new DataServerItem(ip_addr, ip_addr, null, dp_class, null, null, null, false);
+            srv_item = new DataServerItem(ip_addr, ip_addr, null, dp_class, null, null, null);
             //Add server to the server list and if presente browse class and
             //url browse signal set it into srv_item
             server_diag.addServerIp(srv_item);
@@ -1732,7 +1733,20 @@ public class jScopeFacade
 
     public void setDataServerLabel()
     {
-        net_text.setText("Data Server:" + wave_panel.GetServerLabel());
+	if(enableNetworkSelection)
+	{
+	    if(wave_panel != null)
+		net_text.setText("Data Server:" + wave_panel.GetServerLabel());
+	}
+	else //taken from command line
+	{
+	    if(mdsDataServer != null)
+		net_text.setText("Data Server: " +mdsDataServer);
+	    else if (sshDataServer != null)
+		net_text.setText("SSH Data Server: " +sshDataServer);
+	    else
+		net_text.setText("Data Server: Local");
+	}
     }
 
     public void SetStatusLabel(String msg)
@@ -2155,18 +2169,19 @@ public class jScopeFacade
         try
         {
             wave_panel.SetDataServer(new_srv_item, this);
-
-            wave_panel.SetCacheState(new_srv_item.enable_cache);
             setDataServerLabel();
 
             return true;
         }
         catch (Exception e)
         {
-            JOptionPane.showMessageDialog(null, e.getMessage(), "alert SetDataServer",
+	    //e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Cannot establish connection with data server",
                                           JOptionPane.ERROR_MESSAGE);
 
-            setDataServerLabel();
+            net_text.setText("Not Connected");
+	    if(!enableNetworkSelection)
+		System.exit(0);
 
         }
         return false;
@@ -2343,7 +2358,7 @@ public class jScopeFacade
                                           JOptionPane.ERROR_MESSAGE);
 
             SetDataServer(new DataServerItem("Not Connected", null, null,
-                                             "NotConnectedDataProvider", null, null, null, false));
+                                             "NotConnectedDataProvider", null, null, null));
             return;
         }
 
@@ -2853,16 +2868,17 @@ public class jScopeFacade
 remove 28/06/2005
             wave_panel.SetServerItem(dsi);
 */
-            
-                
-            if( ! SetDataServer(dsi) )
-                SetDataServer(new DataServerItem("Not Connected", null, null,
-                                             "NotConnectedDataProvider", null, null, null, false));
-          //SetFastNetworkState(wave_panel.GetFastNetworkState());
+	    if(enableNetworkSelection) //Take Data Server fedinition from configuration file ONLY if not forced in command line
+	    {
+		if( ! SetDataServer(dsi) )
+		    SetDataServer(new DataServerItem("Not Connected", null, null,
+				"NotConnectedDataProvider", null, null, null));
+	    }
             UpdateAllWaves();
         }
         catch (Exception e)
         {
+	    e.printStackTrace();
             Reset();
             JOptionPane.showMessageDialog(this, e.getMessage(),
                                           "alert LoadConfiguration", JOptionPane.ERROR_MESSAGE);
@@ -2883,6 +2899,19 @@ remove 28/06/2005
             config_file = new String(file);
             LoadConfiguration();
         }
+	if(!enableNetworkSelection) //Creation of DataProvider  based on command line 
+	{
+	    if (mdsDataServer != null)
+		SetDataServer(new DataServerItem("mdsip connection", mdsDataServer, "JAVA_USER", 
+                         "MdsDataProvider", null, null, null));
+	    else if (sshDataServer != null)
+		SetDataServer(new DataServerItem("mdsip connection", sshDataServer, "JAVA_USER", 
+                          "SSHDataProvider", null, null, null));
+	    else
+		SetDataServer(new DataServerItem("local access", "", "", 
+                          "LocalDataProvider", null, null, null));
+	}
+
         SetWindowTitle("");
         setVisible(true);
     }
@@ -2924,7 +2953,25 @@ remove 28/06/2005
                     if( i+1 < args.length )
                         propertiesFile = args[i+1];
                     i++;
-                } else { 
+                } 
+		else if(args[i].equals("-s") && i < args.length - 1)
+		{
+		    enableNetworkSelection = false;
+		    mdsDataServer = args[i+1];
+		    i++;
+		}
+		else if(args[i].equals("-ssh") && i < args.length - 1)
+		{
+		    enableNetworkSelection = false;
+		    sshDataServer = args[i+1];
+		    i++;
+		}
+		else if(args[i].equals("-l"))
+		{
+		    enableNetworkSelection = false;
+		    mdsDataServer = null;
+		}
+		else { 
                     file = new String(args[i]);
                 }
             }
@@ -3341,16 +3388,16 @@ class ServerDialog
         {
         "MdsDataProvider",
         "MdsDataProviderUdt",
-        "JetMdsDataProvider",
-        "TwuDataProvider",
-        "JetDataProvider",
-        "FtuDataProvider",
-        "TSDataProvider",
-        "AsdexDataProvider",
-        "ASCIIDataProvider",
-        "T2DataProvider",
+//       "JetMdsDataProvider",
+//        "TwuDataProvider",
+//        "FtuDataProvider",
+//        "TSDataProvider",
+//        "AsdexDataProvider",
+//        "ASCIIDataProvider",
+//        "T2DataProvider",
+        "SSHDataProvider",
         "LocalDataProvider",
-        "MdsAsynchDataProvider",
+//        "MdsAsynchDataProvider",
         "MDSplus.MdsStreamingDataProvider"};
 
     ServerDialog(JFrame _dw, String title)
@@ -3592,14 +3639,6 @@ class ServerDialog
             dsi.browse_class = js_prop.getProperty("jScope.data_server_" + i + ".browse_class");
             dsi.browse_url = js_prop.getProperty("jScope.data_server_" + i + ".browse_url");
             dsi.tunnel_port = js_prop.getProperty("jScope.data_server_" + i + ".tunnel_port");
-            try {
-                dsi.fast_network_access = new Boolean(js_prop.getProperty(
-                    "jScope.data_server_" + i + ".fast_network_access")).booleanValue();
-            }
-            catch (Exception exc)
-            {
-                dsi.fast_network_access = false;
-            }
             addServerIp(dsi);
             i++;
         }
@@ -3664,7 +3703,7 @@ class ServerDialog
         if (dsi.class_name == null)
         {
             JOptionPane.showMessageDialog(null,
-                                          "Undefine data server class for " +
+                                          "Undefined data server class for " +
                                           dsi.name, "alert addServerIp",
                                           JOptionPane.ERROR_MESSAGE);
         }
@@ -3743,7 +3782,7 @@ class ServerDialog
                 addServerIp(new DataServerItem(srv, server_a.getText().trim(),
                                                server_u.getText().trim(),
                                                (String)data_provider_list.getSelectedItem(),
-                                               null, null, tunnel_port.getText(), false));
+                                               null, null, tunnel_port.getText()));
             }
         }
 
@@ -3761,7 +3800,7 @@ class ServerDialog
         {
             int idx = server_list.getSelectedIndex();
             if (idx >= 0)
-                dw.SetDataServer( jScopeFacade.server_ip_list[idx] );
+                 dw.SetDataServer( jScopeFacade.server_ip_list[idx] );
         }
 
         if (ob == modify_b)

@@ -70,15 +70,12 @@ public class WaveInterface
     int     signal_select = -1;
     private Frames frames;
 
-    protected boolean is_async_update = false;
-
     static public boolean auto_color_on_expr = false;
 
     //True when a signal is added
     protected boolean add_signal = false;
     protected boolean is_signal_added = false;
 
-    boolean cache_enabled = false;
     static boolean brief_error = true;
 
     ColorMap colorMap = new ColorMap();
@@ -161,14 +158,6 @@ public class WaveInterface
     public void SetAsImage(boolean is_image)
     {
         this.is_image = is_image;
-    }
-
-    public void EnableCache(boolean state)
-    {
-    }
-
-    static public void FreeCache()
-    {
     }
 
     static void WriteLine(PrintWriter out, String prompt, String value)

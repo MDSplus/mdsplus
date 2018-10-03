@@ -107,7 +107,7 @@ class jScopeWaveContainer
                     }
                     catch (Throwable e)
                     {
-                        e.printStackTrace();
+ //                       e.printStackTrace();
                         wce = new WaveContainerEvent(this,
                         WaveContainerEvent.KILL_UPDATE, e.getMessage());
                         jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
@@ -130,7 +130,7 @@ class jScopeWaveContainer
     {
         this(rows, new NotConnectedDataProvider(), def_vals);
         server_item = new DataServerItem("Not Connected", null, null,
-                                         "NotConnectedDataProvider", null, null, null, false);
+                                         "NotConnectedDataProvider", null, null, null);
 
     }
 
@@ -165,7 +165,7 @@ class jScopeWaveContainer
     protected jScopeMultiWave BuildjScopeMultiWave(DataProvider dp,
         jScopeDefaultValues def_vals)
     {
-        return new jScopeMultiWave(dp, def_vals, IsCacheEnabled());
+        return new jScopeMultiWave(dp, def_vals);
     }
 
     public synchronized void getjScopeMultiWave()
@@ -288,6 +288,9 @@ class jScopeWaveContainer
 
     public DataServerItem GetServerItem()
     {
+	if(server_item == null)
+	    server_item = new DataServerItem("Not Connected", null, null,
+                                         "NotConnectedDataProvider", null, null, null);
         return server_item;
     }
 /*
@@ -307,12 +310,6 @@ remove 28/06/2005
         return server_item.name;
     }
 
-
- 
-    public void FreeCache()
-    {
-        WaveInterface.FreeCache();
-    }
 
     public void processWaveformEvent(WaveformEvent e)
     {
@@ -624,16 +621,6 @@ remove 28/06/2005
         }
     }
 
-    public boolean GetFastNetworkState()
-    {
-        return (server_item != null ? server_item.fast_network_access : false);
-    }
-
-    public boolean IsCacheEnabled()
-    {
-        return (server_item != null ? server_item.enable_cache : false);
-    }
-
  
     public void SetModifiedState(boolean state)
     {
@@ -648,34 +635,6 @@ remove 28/06/2005
         }
     }
 
-    public void SetFastNetworkState(boolean state)
-    {
-        jScopeMultiWave w;
-        server_item.fast_network_access = state;
-        for (int i = 0; i < getComponentNumber(); i++)
-        {
-            w = (jScopeMultiWave) getGridComponent(i);
-            if (w != null && w.wi != null)
-            {
-                w.wi.setModified(true);
-            }
-        }
-    }
-
-    public void SetCacheState(boolean state)
-    {
-        jScopeMultiWave w;
-        server_item.enable_cache = state;
-        for (int i = 0; i < getComponentNumber(); i++)
-        {
-            w = (jScopeMultiWave) getGridComponent(i);
-            if (w != null && w.wi != null)
-            {
-                w.wi.EnableCache(state);
-                w.wi.setModified(true);
-            }
-        }
-    }
 
     public void maximizeComponent(Waveform w)
     {
@@ -711,17 +670,6 @@ remove 28/06/2005
             if( def_vals != null && !def_vals.getIsEvaluated() )
             {
                 dp.SetEnvironment(def_vals.getPublicVariables());
-/*
-                if (IsCacheEnabled())
-                {
-                    JOptionPane.showMessageDialog(this,
-                        "Signal cache must be disabled when public varibles are set.\n" +
-                        "Cache operation is automatically disabled.",
-                        "alert", JOptionPane.WARNING_MESSAGE);
-
-                    SetCacheState(false);
-                }
-*/
                 def_vals.setIsEvaluated(true);
             }
 
@@ -753,7 +701,7 @@ remove 28/06/2005
                         }
                         catch(Exception exc)
                         {
-                            exc.printStackTrace();
+ //                           exc.printStackTrace();
                         }
                     }
                 }
@@ -843,7 +791,7 @@ remove 28/06/2005
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+//            e.printStackTrace();
             RepaintAllWave();
             //throw (e);
         }
@@ -1037,26 +985,6 @@ remove 28/06/2005
                 ".data_server_browse_url");
             server_item.tunnel_port = pr.getProperty(prompt +
                 ".data_server_tunnel_port");
-            try
-            {
-                server_item.fast_network_access = new Boolean(pr.getProperty(
-                    prompt + ".fast_network_access")).booleanValue();
-            }
-            catch (Exception exc)
-            {
-                server_item.fast_network_access = false;
-            }
-
-            try
-            {
-                server_item.enable_cache = new Boolean(pr.getProperty(prompt +
-                    ".enable_cache")).booleanValue();
-            }
-            catch (Exception exc)
-            {
-                server_item.enable_cache = false;
-            }
-
         }
         return server_item;
     }
@@ -1066,7 +994,6 @@ remove 28/06/2005
     {
         String prop;
         int read_rows[] = {0, 0, 0, 0};
-
         resetMaximizeComponent();
                 
         prop = pr.getProperty(prompt + ".columns");
@@ -1342,7 +1269,7 @@ remove 28/06/2005
                 case DataProvider.LOGIN_ERROR:
                 case DataProvider.LOGIN_CANCEL:
                     server_item = new DataServerItem("Not Connected", null, null,
-                        "NotConnectedDataProvider", null, null, null, false);
+                        "NotConnectedDataProvider", null, null, null);
                     dp = new NotConnectedDataProvider();
             }
 
@@ -1387,7 +1314,7 @@ remove 28/06/2005
         catch (IOException e)
         {
             this.server_item = new DataServerItem("Not Connected", null, null,
-                          "NotConnectedDataProvider", null, null, null, false);
+                          "NotConnectedDataProvider", null, null, null);
             dp = new NotConnectedDataProvider();
             ChangeDataProvider(dp);
 
@@ -1428,12 +1355,11 @@ remove 28/06/2005
 
         if (sel_wave.wi == null || is_image)
         {
-            sel_wave.wi = new MdsWaveInterface(sel_wave, dp, def_vals,
-                                               IsCacheEnabled());
+            sel_wave.wi = new MdsWaveInterface(sel_wave, dp, def_vals);
             sel_wave.wi.SetAsImage(is_image);
             if (!with_error)
                 ( (MdsWaveInterface) sel_wave.wi).prev_wi = new
-                    MdsWaveInterface(sel_wave, dp, def_vals, IsCacheEnabled());
+                    MdsWaveInterface(sel_wave, dp, def_vals);
         }
         else
         {
@@ -1476,6 +1402,7 @@ remove 28/06/2005
         MdsWaveInterface wi;
 
         WaveInterface.WriteLine(out, prompt + "title: ", title);
+
         if (server_item != null)
         {
             WaveInterface.WriteLine(out, prompt + "data_server_name: ",
@@ -1500,13 +1427,6 @@ remove 28/06/2005
                 WaveInterface.WriteLine(out,
                                         prompt + "data_server_tunnel_port: ",
                                         server_item.tunnel_port);
-
-            WaveInterface.WriteLine(out, prompt + "fast_network_access: ",
-                                    "" + server_item.fast_network_access);
-
-            if (server_item.enable_cache)
-                WaveInterface.WriteLine(out, prompt + "enable_cache: ",
-                                        "" + server_item.enable_cache);
 
         }
         WaveInterface.WriteLine(out, prompt + "update_event: ", event);
@@ -1595,23 +1515,6 @@ remove 28/06/2005
             p = getSplitPosition();
         if (p == null)
             p = getComponentPosition(w);
-
-            // Disable signal cache if public variable
-            // are set
-        /*
-        if (def_vals != null &&
-            def_vals.public_variables != null &&
-            def_vals.public_variables.trim().length() != 0 &&
-            IsCacheEnabled())
-        {
-            this.SetCacheState(false);
-        }
-        */
-        if (def_vals != null && def_vals.isSet() )
-        {
-            this.SetCacheState(false);            
-        }
-
         WaveContainerEvent wce = new WaveContainerEvent(this,
             WaveContainerEvent.START_UPDATE,
             label + " wave column " + p.x + " row " + p.y);

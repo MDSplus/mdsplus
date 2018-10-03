@@ -1,13 +1,13 @@
 package jScope;
 
-class LocalDataProvider extends MdsDataProvider
+class SSHDataProvider extends MdsDataProvider
 {
     public MdsConnection getConnection() 
     {
-        return new MdsConnectionLocal();
+        return new MdsConnectionSSH();
     }
     public MdsConnection getConnection(String arg) 
     {
-        return new MdsConnectionLocal();
+        return new MdsConnectionSSH(arg);
     }
 }

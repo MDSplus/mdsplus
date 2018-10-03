@@ -31,11 +31,10 @@ class MdsWaveInterface
     public String previous_shot = "";
 
     public MdsWaveInterface(Waveform wave, DataProvider dp,
-                            jScopeDefaultValues def_vals, boolean enable_cache)
+                            jScopeDefaultValues def_vals)
     {
         super(dp);
         setDefaultsValues(def_vals);
-        EnableCache(enable_cache);
         this.wave = wave;
     }
 
@@ -348,7 +347,6 @@ Fix bug : shot expression must be always evaluated.
     public MdsWaveInterface(MdsWaveInterface wi)
     {
         previous_shot = wi.previous_shot;
-        cache_enabled = wi.cache_enabled;
         provider = wi.provider;
         num_waves = wi.num_waves;
         num_shot = wi.num_shot;
@@ -980,6 +978,7 @@ Fix bug : shot expression must be always evaluated.
     {
         String prop = null;
         int num_expr = 0;
+	int autoDefault = 0xffffffff;
 
         Erase();
 
@@ -993,27 +992,48 @@ Fix bug : shot expression must be always evaluated.
             if (prop != null)
                 in_grid_mode = Integer.parseInt(prop);
 
+	    cin_ylabel = pr.getProperty(prompt+".label");  //DWScope backward compatibility
+	    if(cin_ylabel == null)
+		cin_ylabel = pr.getProperty(prompt + ".y_label");
+	    else
+	    {
+		cin_ylabel = "\""+cin_ylabel+"\"";
+		autoDefault &= ~(1 << B_y_label);
+	    }
             cin_xlabel = pr.getProperty(prompt + ".x_label");
 
-            cin_ylabel = pr.getProperty(prompt + ".y_label");
-
             cin_title = pr.getProperty(prompt + ".title");
+	    if(cin_title != null)
+		autoDefault &= ~(1 << B_title);
+
 
             cin_ymin = pr.getProperty(prompt + ".ymin");
+	    if(cin_ymin != null)
+		autoDefault &= ~(1 << B_y_min);
 
             cin_ymax = pr.getProperty(prompt + ".ymax");
+	    if(cin_ymax != null)
+		autoDefault &= ~(1 << B_y_max);
 
             cin_xmin = pr.getProperty(prompt + ".xmin");
+	    if(cin_xmin != null)
+		autoDefault &= ~(1 << B_x_min);
 
             cin_xmax = pr.getProperty(prompt + ".xmax");
+	    if(cin_xmax != null)
+		autoDefault &= ~(1 << B_x_max);
 
             cin_timemin = pr.getProperty(prompt + ".time_min");
 
             cin_timemax = pr.getProperty(prompt + ".time_max");
 
             cin_def_node = pr.getProperty(prompt + ".default_node");
+	    if(cin_def_node != null)
+		autoDefault &= ~(1 << B_default_node);
 
             cin_upd_event = pr.getProperty(prompt + ".event");
+	    if(cin_upd_event != null)
+		autoDefault &= ~(1 << B_update);
             
             String continuousUpdateStr = pr.getProperty(prompt + ".continuous_update");
             if(continuousUpdateStr != null && continuousUpdateStr.trim().equals("1"))
@@ -1225,7 +1245,8 @@ Fix bug : shot expression must be always evaluated.
             {
                 defaults = Integer.parseInt(prop);
             }
-
+	    else
+		defaults = autoDefault;  //DWScope backward compatibility   
             int expr_idx;
 
             for (int idx = 1; idx <= num_expr; idx++)
