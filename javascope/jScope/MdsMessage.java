@@ -142,7 +142,6 @@ public class MdsMessage extends Object
  //   protected /*synchronized */void ReadBuf(byte buf[], DataInputStream dis) throws IOException
     protected synchronized  void ReadBuf(byte buf[], InputStream dis) throws IOException
     {
-        
         ConnectionEvent e;
         int bytes_to_read = buf.length, read_bytes = 0, curr_offset = 0;
         boolean send = false;
@@ -157,13 +156,14 @@ public class MdsMessage extends Object
         while(bytes_to_read > 0)
         {                
             read_bytes     = dis.read(buf, curr_offset, bytes_to_read);
-	        curr_offset   += read_bytes;
-	        bytes_to_read -= read_bytes;
-	        if(send)
-	        {
-	            e = new ConnectionEvent(this, buf.length, curr_offset);
-	            dispatchConnectionEvent(e);
-	        }
+	    if(read_bytes < 0) throw new IOException("Read Operation Failed");
+	    curr_offset   += read_bytes;
+	    bytes_to_read -= read_bytes;
+	    if(send)
+	    {
+		e = new ConnectionEvent(this, buf.length, curr_offset);
+		dispatchConnectionEvent(e);
+	    }
         }
     }
 
