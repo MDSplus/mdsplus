@@ -1332,18 +1332,6 @@ public class jScopeFacade
 	InitDataServer();
         UpdateFont();
         UpdateColors();
-	if(!enableNetworkSelection) //Creation of DataProvider  based on command line 
-	{
-	    if (mdsDataServer != null)
-		SetDataServer(new DataServerItem("mdsip connection", mdsDataServer, "JAVA_USER", 
-                         "MdsDataProvider", null, null, null));
-	    else if (sshDataServer != null)
-		SetDataServer(new DataServerItem("mdsip connection", sshDataServer, "JAVA_USER", 
-                          "SSHDataProvider", null, null, null));
-	    else
-		SetDataServer(new DataServerItem("local access", "", "", 
-                          "LocalDataProvider", null, null, null));
-	}
     }
 
     protected jScopeWaveContainer buildWaveContainer()
@@ -2911,6 +2899,19 @@ remove 28/06/2005
             config_file = new String(file);
             LoadConfiguration();
         }
+	if(!enableNetworkSelection) //Creation of DataProvider  based on command line 
+	{
+	    if (mdsDataServer != null)
+		SetDataServer(new DataServerItem("mdsip connection", mdsDataServer, "JAVA_USER", 
+                         "MdsDataProvider", null, null, null));
+	    else if (sshDataServer != null)
+		SetDataServer(new DataServerItem("mdsip connection", sshDataServer, "JAVA_USER", 
+                          "SSHDataProvider", null, null, null));
+	    else
+		SetDataServer(new DataServerItem("local access", "", "", 
+                          "LocalDataProvider", null, null, null));
+	}
+
         SetWindowTitle("");
         setVisible(true);
     }
