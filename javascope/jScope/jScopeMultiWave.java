@@ -24,11 +24,10 @@ public class jScopeMultiWave
     implements UpdateEventListener
 {
     String eventName;
-    public jScopeMultiWave(DataProvider dp, jScopeDefaultValues def_values,
-                           boolean cache_enabled)
+    public jScopeMultiWave(DataProvider dp, jScopeDefaultValues def_values)
     {
         super();
-        wi = new MdsWaveInterface(this, dp, def_values, cache_enabled);
+        wi = new MdsWaveInterface(this, dp, def_values);
         setTransferHandler(new ToTransferHandler());
     }
 
@@ -67,16 +66,12 @@ public class jScopeMultiWave
             {
        */
                 MdsWaveInterface mwi = (MdsWaveInterface) wi;
-                boolean cache_state = mwi.cache_enabled;
-                mwi.cache_enabled = false;
-                try {
+                 try {
                     mwi.refresh();
                 }catch(Exception exc)
                 {
                     System.out.println(exc);
                 }
-                mwi.cache_enabled = cache_state;
-
                 SwingUtilities.invokeLater(new Runnable()
                 {
                     public void run()

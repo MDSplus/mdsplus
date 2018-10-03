@@ -15,7 +15,7 @@ COMMON_SRC = \
 	jScope/Base64.java                    jScope/ColorDialog.java             jScope/ColorMapDialog.java        \
 	jScope/ColorMap.java                  jScope/ConnectionEvent.java         jScope/ConnectionListener.java    \
 	jScope/ContourSignal.java             jScope/DataAccess.java              jScope/DataAccessURL.java         \
-	jScope/DataCached.java                jScope/DataCacheObject.java         jScope/DataProvider.java          \
+	jScope/DataProvider.java                                                                                    \
 	jScope/DataServerItem.java            jScope/Descriptor.java              jScope/FakeTWUProperties.java     \
 	jScope/FontSelection.java             jScope/FrameData.java               jScope/Frames.java                \
 	jScope/FtuDataProvider.java           jScope/Grid.java                    jScope/ImageTransferable.java     \
@@ -46,7 +46,7 @@ COMMON_SRC = \
 	jScope/Waveform.java                  jScope/WaveformListener.java        jScope/WaveformManager.java       \
 	jScope/WaveformMetrics.java           jScope/WaveInterface.java           jScope/WavePopup.java             \
         jScope/XYData.java		      jScope/XYWaveData.java		  jScope/WaveDataListener.java	    \
-	jScope/MdsConnectionLocal.java	      
+	jScope/MdsConnectionLocal.java	      jScope/MdsConnectionSSH.java	  jScope/SSHDataProvider.java 
 
 WAVEDISPLAY_SRC = 
 
