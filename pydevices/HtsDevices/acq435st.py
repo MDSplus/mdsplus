@@ -106,7 +106,7 @@ class ACQ435ST(MDSplus.Device):
         chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT,MDSplus.dVALUE()),chan.OFFSET))
 
     def init(self):
-        import acq400_hapi
+        import HtsDevices.acq400_hapi as acq400_hapi
         from threading import Thread
 
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
@@ -155,7 +155,7 @@ class ACQ435ST(MDSplus.Device):
     STOP=stop
 
     def trig(self):
-        import acq400_hapi
+        import HtsDevices.acq400_hapi as acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.so.set_knob('soft_trigger','1')
         return 1
