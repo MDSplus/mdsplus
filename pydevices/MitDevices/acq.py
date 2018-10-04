@@ -51,7 +51,7 @@ class Acq(MDSplus.Device):
 
     acq_parts=[
         {'path':':NODE','type':'text','value':'192.168.0.254'},
-        {'path':':COMMENT','type':'text'},
+        {'path':':COMMENT','type':'text','help':'Place to document device'},
         ]
 
     for i in range(6):

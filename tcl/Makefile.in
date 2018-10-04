@@ -26,6 +26,7 @@ SOURCES = 			\
 	tcl_do_method.c	\
 	tcl_do_node.c	\
 	tcl_edit.c		\
+        tcl_help_device.c       \
 	tcl_put_expression.c		\
 	tcl_remove_tag.c	\
 	tcl_rename.c		\

@@ -13,6 +13,7 @@ Tcl('dir/full a12')
       Status: on,parent is on, usage device,readonly
       compress on put
       Model element: 1
+      Device Help: A12: tdi, java or shared library device
 
 Total of 1 node.
 1
