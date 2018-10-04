@@ -221,6 +221,9 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
         TEST1( AutoData<TreeNode>(tree->getNode("ANY")).get() != NULL );
         TEST1( AutoData<TreeNode>(tree->getNode(AutoData<String>(new String("ANY")))).get() != NULL );
         TEST1( AutoData<TreeNode>(tree->getNode(AutoData<TreePath>(new TreePath(std::string("ANY"), tree)))).get() != NULL );
+
+        // testing exception on null path
+        TEST_EXCEPTION( AutoData<TreeNode>(tree->getNode("")), MdsException );
     }
 
 
