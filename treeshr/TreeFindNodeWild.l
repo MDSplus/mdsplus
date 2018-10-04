@@ -163,41 +163,42 @@ static char *strtrim(char *str)
 
 EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild) 
 {
+  int status = TreeINVPATH;
+
 //  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-  char *wild_path = strdup(path);
-  char *p;
-  int status;
-  yyscan_t scanner;
-  wild_path = strtrim(wild_path);
-  while ((p = strstr(wild_path, "***"))) {
+  if (path && strlen(path)) {
+    char *wild_path = strdup(path);
+    char *p;
+    yyscan_t scanner;
+    wild_path = strtrim(wild_path);
+    while ((p = strstr(wild_path, "***"))) {
       *p++ = '~';
       *p++ = '~';
       *p++ = '~';
+    }
+
+    yytreepathlex_init_extra(ctx, &scanner);
+    ctx->wildcard = strdup(wild_path);
+
+    yytreepath_scan_string(wild_path, scanner);
+
+    while((status = yytreepathlex(scanner)) > 0) ;
+    if (status == 0) {
+      /* now merge in trailing search clauses */
+      ctx->terms=SquishSearches(ctx->terms);
+      /* check if any terms are wild */
+      *wild = strchr(wild_path, '*') || 
+              strchr(wild_path, '%') || 
+              strstr(wild_path, "~~~") || 
+              strstr(wild_path, "...") || 
+              strstr(wild_path, ":::") || 
+              strstr(wild_path, "^^^") ;
+    }
+    yytreepathlex_destroy(scanner);
+    free(wild_path);
   }
 
-  yytreepathlex_init_extra(ctx, &scanner);
-  ctx->wildcard = strdup(wild_path);
-
-  yytreepath_scan_string(wild_path, scanner);
-
-  while((status = yytreepathlex(scanner)) > 0) ;
-  if (status == 0) {
-    /* now merge in trailing search clauses */
-    ctx->terms=SquishSearches(ctx->terms);
-    /* check if any terms are wild */
-    *wild = strchr(wild_path, '*') || 
-            strchr(wild_path, '%') || 
-            strstr(wild_path, "~~~") || 
-            strstr(wild_path, "...") || 
-            strstr(wild_path, ":::") || 
-            strstr(wild_path, "^^^") ;
-  }
-  yytreepathlex_destroy(scanner);
-  free(wild_path);
-
-//  PrintCtx(ctx);
-
-  return(status ==0) ? TreeNORMAL : 0;
+  return(status ==0) ? TreeNORMAL : status;
 }
 
 STATIC_ROUTINE void addSearchTerm(yyscan_t scanner, int type, char *str)
