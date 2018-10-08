@@ -744,7 +744,6 @@ Fix bug : shot expression must be always evaluated.
     public void AddEvent(UpdateEventListener w, String event) throws
         IOException
     {
-
         if (in_upd_event != null && in_upd_event.length() != 0)
         {
             if (event == null || event.length() == 0)

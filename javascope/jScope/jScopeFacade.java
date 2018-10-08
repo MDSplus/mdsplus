@@ -2812,6 +2812,7 @@ public class jScopeFacade
             color_dialog.FromFile(pr, "Scope.color_");
             pub_var_diag.fromFile(pr, "Scope.public_variable_");
             wave_panel.FromFile(pr, "Scope", color_dialog.getColorMapIndex(), colorMapDialog);
+	    wave_panel.AddAllEvents(this);	    
         }
         catch (Exception e)
         {
