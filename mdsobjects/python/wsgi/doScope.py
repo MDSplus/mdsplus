@@ -2,7 +2,7 @@
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
+# modification, are permitted provided that the foll4owing conditions are met:
 #
 # Redistributions of source code must retain the above copyright notice, this
 # list of conditions and the following disclaimer.
@@ -100,7 +100,7 @@ def doScope(self):
           file_list=getConfigFiles(user,True,'')
           file_list.extend(getConfigFiles(user,False,''))
       if(len(file_list) == 0):
-          outStr = outStr+'No Scope configuration file found</body></html>'            
+          outStr = outStr+'No Scope configuration file found for user ' + user+'</body></html>'            
           status = '200 OK'
           return (status, response_headers, outStr)
       file_list.sort(file_list_cmp)
@@ -360,12 +360,15 @@ ERRORn
 """
 
 def doScopepanel(self):
-    def getStringExp(self,name,response_headers):
+    def getStringExp(self,name,response_headers, t):
         if name in self.args:
             try:
-                response_headers.append((name,str(Data.execute(self.args[name][-1]).data())))
+                if t == None:
+		    response_headers.append((name,str(Data.execute(self.args[name][-1]).data())))
+		else:
+		    response_headers.append((name,str(t.tdiExecute(self.args[name][-1]).data())))
             except Exception:
-                response_headers.append((name + '_error:',str(sys.exc_info())))
+                response_headers.append((name + '_error',str(sys.exc_info())))
 
     def manageContinuousUpdate(self,x):
           if x.getShape().size == 1:
@@ -395,6 +398,7 @@ def doScopepanel(self):
     response_headers=list()
     response_headers.append(('Cache-Control','no-store, no-cache, must-revalidate'))
     response_headers.append(('Pragma','no-cache'))
+    t = None
     if 'tree' in self.args:
         Tree.usePrivateCtx()
         try:
@@ -403,7 +407,7 @@ def doScopepanel(self):
             pass
 
     for name in ('title','xlabel','ylabel','xmin','xmax','ymin','ymax'):
-        getStringExp(self,name,response_headers)
+        getStringExp(self,name,response_headers, t)
 
     continuous_update = 'continuous_update' in self.args
 
@@ -435,7 +439,10 @@ def doScopepanel(self):
                                                                                                                                     self.args['tree'][-1],shot,sys.exc_info())))
                         continue
                 try:
-                    sig=Data.execute(expr)
+                    if t == None:
+                        sig=Data.execute(expr)
+                    else:
+                        sig=t.tdiExecute(expr)
                     if not continuous_update:
                         y=makeData(sig.data())
                 except Exception:
@@ -444,7 +451,10 @@ def doScopepanel(self):
                 if 'x'+x_idx_s in self.args:
                     expr=self.args['x'+x_idx_s][-1]
                     try:
-                        x=Data.execute(expr)
+                        if t == None:
+                            x=Data.execute(expr)
+                        else:
+                            x=t.tdiEexecute(expr)
                         x=makeData(x.data())
                         if continuous_update:
                             x,y=manageContinuousUpdate(self,x)
@@ -478,7 +488,10 @@ def doScopepanel(self):
             sig_idx=sig_idx+1
             sig_idx_s='%d' % (sig_idx,)
             try:
-                sig=Data.execute(expr)
+                if t == None:
+                    sig=Data.execute(expr)
+                else:
+                    sig=t.tdiExecute(expr)
                 if not continuous_update:
                     y=makeData(sig.data())
             except Exception:
@@ -487,7 +500,10 @@ def doScopepanel(self):
             if 'x'+x_idx_s in self.args:
                 expr=self.args['x'+x_idx_s][-1]
                 try:
-                    x=Data.execute(expr)
+                    if t == None:
+                        x=Data.execute(expr)
+                    else:
+                        x=t.tdiExecute(expr)
                     x=makeData(x.data())
                     if continuous_update:
                         x,y=manageContinuousUpdate(self,x)

@@ -27,10 +27,13 @@ from MDSplus import makeData,Data,Tree,Float64Array
 import sys
 
 def doFrame(self):
-    def getStringExp(self,name,response_headers):
+    def getStringExp(self,name,response_headers,t):
         if name in self.args:
             try:
-                response_headers.append((name,str(Data.execute(self.args[name][-1]).data())))
+                if t == None:
+                    response_headers.append((name,str(Data.execute(self.args[name][-1]).data())))
+                else:
+                    response_headers.append((name,str(t.tdiExecute(self.args[name][-1]).data())))
             except Exception:
                 response_headers.append((name,str(sys.exc_info())))
 
@@ -39,6 +42,7 @@ def doFrame(self):
     response_headers.append(('Pragma','no-cache'))
     response_headers.append(('Content-Type','application/octet-stream'))
 
+    t = None
     if 'tree' in self.args:
         Tree.usePrivateCtx()
         try:
@@ -47,7 +51,7 @@ def doFrame(self):
             response_headers.append(('ERROR','Error opening tree'))
 
     for name in ('title','xlabel','ylabel'):
-        getStringExp(self,name,response_headers)
+        getStringExp(self,name,response_headers,t)
 
     if 'frame_idx' in self.args:
         frame_idx = self.args['frame_idx'][-1]
@@ -56,7 +60,10 @@ def doFrame(self):
 
     expr = self.args['y'][-1]
     try:
-        sig = Data.execute('GetSegment(' + expr + ',' + frame_idx + ')')
+        if t != None:
+            sig = t.tdiExecute('GetSegment(' + expr + ',' + frame_idx + ')')
+        else:
+            sig = Data.execute('GetSegment(' + expr + ',' + frame_idx + ')')
         frame_data = makeData(sig.data())
     except Exception:
         response_headers.append(('ERROR','Error evaluating expression: "%s", error: %s' % (expr,sys.exc_info())))
@@ -65,7 +72,10 @@ def doFrame(self):
         if 'x' in self.args:
             expr = self.args['x'][-1]
             try:
-                times = Data.execute(expr)
+                if t == None:
+                    times = Data.execute(expr)
+                else:
+                    times = t.tdiExecute(expr)
                 times = makeData(times.data())
             except Exception:
                 response_headers.append(('ERROR','Error evaluating expression: "%s", error: %s' % (expr,sys.exc_info())))
@@ -73,9 +83,16 @@ def doFrame(self):
             try:
                 #times = Data.execute('dim_of(' + expr + ')')
                 times = list()
-                numSegments = Data.execute('GetNumSegments(' + expr + ')').data()
+                if t == None:
+                    numSegments = Data.execute('GetNumSegments(' + expr + ')').data()
+                else:
+                   numSegments = t.tdiExecute('GetNumSegments(' + expr + ')').data()
                 for i in range(0, numSegments):
-                    times.append(Data.execute('GetSegmentLimits(' + expr + ',' + str(i) + ')').data()[0])
+                    if t == None:
+                        times.append(Data.execute('GetSegmentLimits(' + expr + ',' + str(i) + ')').data()[0])
+                    else:
+                        times.append(t.tdiExecute('GetSegmentLimits(' + expr + ',' + str(i) + ')').data()[0])
+                
                 times = Float64Array(times)
             except Exception:
                 response_headers.append(('ERROR','Error getting x axis of: "%s", error: %s' % (expr,sys.exc_info())))
