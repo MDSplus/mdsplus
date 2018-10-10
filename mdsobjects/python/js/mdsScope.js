@@ -1091,7 +1091,7 @@ function Grid(g, metrics, labels, xIsDateTime)
             lineX.setAttribute("stroke-dasharray", "1,4");
             g.appendChild(lineX);
         }
-        if(this.labels != undefined && this.labels.title != undefined)
+        if(this.labels != undefined && (this.labels.title != undefined || this.labels.errors != undefined))
         {
             var title=document.createElementNS("http://www.w3.org/2000/svg","text");
             this.g.appendChild(title);
@@ -1105,8 +1105,11 @@ function Grid(g, metrics, labels, xIsDateTime)
             else
              title.setAttributeNS(null,"font-size","8px"); */
             //title.setAttributeNS(null,"alignment-baseline", "text-after-edge");
-            title.appendChild(document.createTextNode(this.labels.title));
             if(this.labels.errors != undefined)
+		title.appendChild(document.createTextNode(this.labels.errors));
+	    else
+		title.appendChild(document.createTextNode(this.labels.title));
+	                  if(this.labels.errors != undefined)
             {
                 var errorLabel=document.createElementNS("http://www.w3.org/2000/svg","text");
                 var tooltip=document.createElementNS("http://www.w3.org/2000/svg","title");
@@ -1116,7 +1119,8 @@ function Grid(g, metrics, labels, xIsDateTime)
                 errorLabel.setAttributeNS(null,"x",this.metrics.width/2);
                 errorLabel.setAttributeNS(null,"y",36);
                 errorLabel.setAttributeNS(null,"font-size","14px");
-                var parsedMessage = this.labels.errors.match(/u'%[A-Za-z\-\,\s_]+/);
+ //               var parsedMessage = this.labels.errors.match(/u'%[A-Za-z\-\,\s_]+/);
+                var parsedMessage = this.labels.errors;
                 var errorMessage = '';
                 if(parsedMessage != undefined);
                     errorMessage = parsedMessage[0].substring(3);
@@ -1309,6 +1313,7 @@ function Wave(signals, color, g, metrics, clippath)
     this.getCrosshairShot = getCrosshairShot;
     function getMinX()
     {
+        if (signals == undefined || signals.size == 0|| signals[0] == undefined) return 0;
         var xmin = this.signals[0].getMinX();
         for(var idx = 0; idx < this.signals.size; idx++)
         {
@@ -1321,6 +1326,7 @@ function Wave(signals, color, g, metrics, clippath)
     this.getMinX = getMinX;
     function getMaxX()
     {
+        if (signals == undefined || signals.size == 0 || signals[0] == undefined) return 1;
         var xmax = this.signals[0].getMaxX();
         for(var idx = 0; idx < this.signals.size; idx++)
         {
@@ -1589,8 +1595,8 @@ function WavePanel(svg, panelIdx, numCols, numRows, col, row, clippath, tree, sh
 
     function updateSuccess(signals, labels, limits, continuousUpdateCase)
     {
-        if(signals.length == 0)
-            return;
+        if(signals.length == 0 && (labels.errors == undefined || labels.errors == ''))
+	    return;
         var isFirstUpdate = false;
         if(this.originalSignals == undefined && continuousUpdateCase == undefined)
         {
@@ -2387,15 +2393,16 @@ function FramePanel(svg, canvas, numCols, numRows, col, row, tree, shots, signal
                     var frameHeight = this.getResponseHeader('FRAME_HEIGHT');
                     var frameBitsPerPixel = 8 * parseInt(this.getResponseHeader('FRAME_BYTES_PER_PIXEL'));
                     var frameLength = parseInt(this.getResponseHeader('FRAME_LENGTH'));
-                    var frameData = eval('new Uint' +  frameBitsPerPixel + 'Array(this.response, 0, frameLength)');
+//                    var frameData = eval('new Uint' +  frameBitsPerPixel + 'Array(this.response, 0, frameLength)');
+                    var frameData = eval('new Uint' +  frameBitsPerPixel + 'Array(this.response, 0, frameWidth*frameHeight)');
                     if(isInit)
                     {
                         var timesDataType = this.getResponseHeader('TIMES_DATATYPE');
                         var timesLength = parseInt(this.getResponseHeader('TIMES_LENGTH'));
                         try {
-                             var tempBuf = eval('new Int8Array(this.response, frameLength * frameData.BYTES_PER_ELEMENT, timesLength*8)');
-                             this.framePanel.times = new Float64Array(tempBuf);
-//                            this.framePanel.times = eval('new ' + timesDataType + '(this.response, frameLength * frameData.BYTES_PER_ELEMENT, timesLength)');
+//                             var tempBuf = eval('new Int8Array(this.response, frameLength * frameWidth * frameHeight *frameData.BYTES_PER_ELEMENT, timesLength*8)');
+//                             this.framePanel.times = new Float64Array(tempBuf);
+                             this.framePanel.times = eval('new ' + timesDataType + '(this.response, frameLength * frameWidth*frameHeight*frameData.BYTES_PER_ELEMENT, timesLength)');
                         }catch(err) {alert(err);}
                     }
                     this.framePanel.labels = new Object();
