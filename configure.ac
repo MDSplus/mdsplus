@@ -392,7 +392,7 @@ case "$host" in
        MAKEFLAG_O=""
        IDLMDSEVENT=""
        LIBPRE=""
-       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields ";
+       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields -DWIN32 -D_WIN32 ";
        LD="$CXX -static-libgcc"
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="$FC"

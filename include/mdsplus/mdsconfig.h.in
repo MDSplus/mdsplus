@@ -71,6 +71,9 @@
 /* Define to 1 if you have the <linux/types.h> header file. */
 #undef HAVE_LINUX_TYPES_H
 
+/* Define to 1 if you have the <lzma.h> header file. */
+#undef HAVE_LZMA_H
+
 /* Define to 1 if you have the <malloc.h> header file. */
 #undef HAVE_MALLOC_H
 
