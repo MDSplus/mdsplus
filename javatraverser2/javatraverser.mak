@@ -107,9 +107,11 @@ TOOLS_SRC= \
 
 MDSIP_SRC= \
   mds/Mds.java \
+  mds/MdsApi.java \
   mds/MdsEvent.java \
-  mds/MdsListener.java \
   mds/MdsException.java \
+  mds/MdsListener.java \
+  mds/MdsMisc.java \
   mds/MdsShr.java \
   mds/Shr.java \
   mds/TCL.java \
@@ -183,6 +185,7 @@ MDSIP_SRC= \
   mds/data/descriptor_r/function/Fun.java \
   mds/data/descriptor_r/function/MODIFIER.java \
   mds/data/descriptor_r/function/UNARY.java \
+  mds/data/descriptor_r/function/X_OF.java \
   mds/data/descriptor_s/COMPLEX.java /
   mds/data/descriptor_s/CString.java /
   mds/data/descriptor_s/Complex32.java /

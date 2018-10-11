@@ -62,6 +62,13 @@ public class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
 
     public Descriptor_APD(final byte dtype, final Descriptor<?>[] descs, final int... shape){
         super(Descriptor_APD.makeBuffer(dtype, descs, shape));
+        boolean local = true;
+        for(final Descriptor<?> dsc : descs)
+            if(!Descriptor.isMissing(dsc) && !dsc.isLocal()){
+                local = false;
+                break;
+            }
+        if(local) this.setLocal();
     }
 
     protected Descriptor_APD(final ByteBuffer b){
@@ -84,7 +91,7 @@ public class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
         if(dscptr == 0) return Missing.NEW;
         final int max = this.getLength() * Integer.BYTES;
         int pos = b_ptr.position();
-        for(; pos < max && b_ptr.getInt(pos) == 0; pos += Integer.BYTES){/*cond*/}
+        for(; pos < max && b_ptr.getInt(pos) == 0; pos += Integer.BYTES){/*NOP*/}
         final int next = pos < max ? b_ptr.getInt(pos) : this.b.limit();
         try{
             return Descriptor.deserialize(((ByteBuffer)this.b.duplicate().position(dscptr).limit(next)).slice().order(this.b.order())).setTree(this.tree).VALUE(this);

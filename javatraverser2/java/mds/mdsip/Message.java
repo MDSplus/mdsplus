@@ -8,7 +8,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Set;
 import java.util.zip.InflaterInputStream;
-import debug.DEBUG;
 import mds.MdsEvent;
 import mds.MdsException;
 import mds.MdsListener;
@@ -50,18 +49,18 @@ public final class Message extends Object{
     private static final byte[] readBuf(int bytes_to_read, final InputStream dis, final Set<MdsListener> mdslisteners) throws IOException {
         final byte[] buf = new byte[bytes_to_read];
         int read_bytes = 0, curr_offset = 0;
-        final boolean send = (bytes_to_read > 2000);
-        if(send) Message.dispatchMdsEvent(mdslisteners, new MdsEvent(dis, buf.length, curr_offset));
+        final boolean event = (bytes_to_read > 2000);
         try{
             while(bytes_to_read > 0){
                 read_bytes = dis.read(buf, curr_offset, bytes_to_read);
                 if(read_bytes == -1) throw new SocketException("connection lost");
                 curr_offset += read_bytes;
                 bytes_to_read -= read_bytes;
-                if(send) Message.dispatchMdsEvent(mdslisteners, new MdsEvent(dis, buf.length, curr_offset));
+                if(event) Message.dispatchMdsEvent(mdslisteners, new MdsEvent(dis, buf.length, curr_offset));
             }
-        }finally{
-            if(send) Message.dispatchMdsEvent(mdslisteners, new MdsEvent(dis));
+        }catch(final IOException e){
+            Message.dispatchMdsEvent(mdslisteners, new MdsEvent(dis, MdsEvent.TRANSFER, e.getMessage()));
+            throw e;
         }
         return buf;
     }
@@ -88,7 +87,6 @@ public final class Message extends Object{
         }else body = ByteBuffer.allocate(0);
         body.order(Descriptor.BYTEORDER);
         final Message msg = new Message(header, body);
-        if(DEBUG.N) System.err.println(msg.message_id + "< " + msg.toString());
         return msg;
     }
     public final ByteBuffer body;
@@ -279,7 +277,6 @@ public final class Message extends Object{
 
     public final void send(final OutputStream dos) throws MdsException {
         try{
-            if(DEBUG.N) System.err.println(this.message_id + "> " + this.toString());
             synchronized(dos){
                 dos.write(this.header.array());
                 final ByteBuffer buf = this.body.slice();

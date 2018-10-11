@@ -268,7 +268,7 @@ public class CompileTree extends Thread{
             Descriptor<?> data = null;
             try{
                 this.unresolvedNidV.elementAt(i).setDefault();
-                data = this.tree.mds.getDescriptor(this.unresolvedExprV.elementAt(i));
+                data = this.tree.getMds().getDescriptor(this.unresolvedExprV.elementAt(i));
             }catch(final Exception e){
                 System.err.println("Error parsing expression " + this.unresolvedExprV.elementAt(i) + " : " + e);
             }
