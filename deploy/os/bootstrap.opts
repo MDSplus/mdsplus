@@ -1,0 +1,1 @@
+--platform=bootstrap --dockerimage=mdsplus/docker:fc23 --release
