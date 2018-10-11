@@ -192,6 +192,7 @@ public class OpenTreeDialog extends JDialog{
         final JPanel buttons = new JPanel();
         JButton but;
         buttons.add(but = new JButton("Ok"));
+        this.getRootPane().setDefaultButton(but);
         but.setSelected(true);
         but.addActionListener(new ActionListener(){
             @Override
@@ -251,9 +252,8 @@ public class OpenTreeDialog extends JDialog{
             final TREE tree = TREE.getActiveTree();
             if(tree != null) this.setFields(tree.expt, tree.shot);
         }
-        // * seems like it might also work on remotes
-        // final Mds mds = this.treeman == null ? null : this.treeman.getMds();
-        // this.expt_path.setEnabled(mds instanceof MdsLib);
+        if(this.expt.getText().length() > 0) this.shot_list.grabFocus();
+        else this.expt.grabFocus();
         this.setVisible(true);
     }
 

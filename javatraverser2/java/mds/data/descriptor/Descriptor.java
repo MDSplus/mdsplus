@@ -5,7 +5,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import mds.Mds;
 import mds.MdsException;
-import mds.TdiShr;
 import mds.data.DATA;
 import mds.data.DTYPE;
 import mds.data.TREE;
@@ -221,14 +220,14 @@ public abstract class Descriptor<T>{
 
     public Descriptor(final ByteBuffer b){
         this.tree = TREE.getActiveTree();
-        this.mds = this.tree == null ? Mds.getActiveMds() : this.tree.mds;
+        this.mds = this.tree == null ? Mds.getActiveMds() : this.getMds();
         this.b = b.slice().order(b.order());
         this.p = ((ByteBuffer)this.b.duplicate().position(this.pointer() == 0 ? this.b.limit() : this.pointer())).slice().order(this.b.order());
     }
 
     public Descriptor(final short length, final byte dtype, final byte dclass, final ByteBuffer data, final int pointer, int size){
         this.tree = TREE.getActiveTree();
-        this.mds = this.tree == null ? Mds.getActiveMds() : this.tree.mds;
+        this.mds = this.tree == null ? Mds.getActiveMds() : this.getMds();
         size += pointer;
         if(data != null) size += data.limit();
         this.b = ByteBuffer.allocate(size).order(Descriptor.BYTEORDER);
@@ -294,7 +293,7 @@ public abstract class Descriptor<T>{
         if(this instanceof DATA) return this;
         try{
             if(this.isLocal()) return this.evaluate_lib();
-            return new TdiShr(this.mds).tdiEvaluate(this);
+            return this.mds.getAPI().tdiEvaluate(this.tree, this).data;
         }catch(final MdsException e){
             return Missing.NEW;
         }
@@ -302,8 +301,8 @@ public abstract class Descriptor<T>{
 
     public Descriptor<?> evaluate_lib() throws MdsException {
         if(this instanceof DATA) return this;
-        if(MdsLib.lib_loaded == null) return Descriptor.mdslib.getDescriptor(this.tree, "EVALUATE($)", this.getLocal());
-        return new TdiShr(this.mds).tdiEvaluate(this);
+        if(MdsLib.lib_loaded == null) return Descriptor.mdslib.getAPI().tdiEvaluate(null, this.getLocal()).data;
+        return this.mds.getAPI().tdiEvaluate(this.tree, this).data;
     }
 
     /** Returns the value<T> of the body directed to by pointer **/
@@ -372,13 +371,18 @@ public abstract class Descriptor<T>{
      * @throws MdsException
      **/
     public Descriptor<?> getLocal(final FLAG local) {
-        if(this.islocal) return this;
+        if(this.isLocal()) return this;
         return this.getLocal_(local);
     }
 
     public Descriptor<?> getLocal_(final FLAG local) {
         FLAG.set(local, false);
-        return this.evaluate().getLocal();
+        final Descriptor<?> eval = this.evaluate();
+        return eval.getLocal();
+    }
+
+    protected Mds getMds() {
+        return this.getTree().getMds();
     }
 
     /** Returns the shape of the Descriptor, i.e. SHAPE($THIS) **/
@@ -387,6 +391,10 @@ public abstract class Descriptor<T>{
     /** Returns the total size of the backing buffer in bytes **/
     public final int getSize() {
         return this.b.limit();
+    }
+
+    public final TREE getTree() {
+        return this.tree;
     }
 
     @Override
@@ -447,7 +455,7 @@ public abstract class Descriptor<T>{
 
     public Descriptor<?> setTree(final TREE tree) {
         this.tree = tree;
-        if(tree != null) this.mds = tree.mds;
+        if(this.tree != null) this.mds = this.getMds();
         return this;
     }
 
@@ -458,6 +466,11 @@ public abstract class Descriptor<T>{
 
     /** Returns value as BigInteger[] **/
     public abstract BigInteger[] toBigIntegerArray();
+
+    /** Returns value as boolean **/
+    public boolean toBool() {
+        return (this.toByte() & 1) == 1;
+    }
 
     /** Returns value as byte **/
     public byte toByte() {

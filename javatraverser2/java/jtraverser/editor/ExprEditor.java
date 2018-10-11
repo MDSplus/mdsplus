@@ -18,14 +18,40 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
+import jtraverser.dialogs.GraphPanel;
 import mds.MdsException;
 import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
+import mds.data.descriptor_r.Signal;
 import mds.data.descriptor_s.CString;
 
 @SuppressWarnings("serial")
 public class ExprEditor extends Editor{
     protected final class EvalPopupMenu extends JPopupMenu implements MouseListener{
+        public final class DisplaySignal implements ActionListener{
+            @Override
+            public final void actionPerformed(final ActionEvent ae) {
+                try{
+                    Descriptor<?> local = ExprEditor.this.getMds().getDescriptor(ExprEditor.this.ctx, "COMPILE($)", new CString(EvalPopupMenu.this.text.getText())).getLocal();
+                    if(ExprEditor.this.value != null) local = new Signal(local, ExprEditor.this.value.getLocal(), null);
+                    GraphPanel.newPlot(local.toFloatArray(), null, null, ExprEditor.this.expr.length() < 128 ? ExprEditor.this.expr : ExprEditor.this.expr.substring(0, 127)).setVisible(true);
+                }catch(final Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+        /*
+        public final class EditExpression implements ActionListener{
+            @Override
+            public final void actionPerformed(final ActionEvent ae) {
+                try{
+                    final DataDialog dd = DataDialog.open(ExprEditor.this.getDataDialog(),ExprEditor.this.editable);
+                }catch(final Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+        */
         private class EvalActionListener implements ActionListener{
             private final String evalexpr;
 
@@ -59,6 +85,14 @@ public class ExprEditor extends Editor{
             item.addActionListener(new EvalActionListener("RAW_OF(COMPILE($))"));
             this.add(item = new JMenuItem("DIM_OF($)"));
             item.addActionListener(new EvalActionListener("DIM_OF(COMPILE($))"));
+            this.add(item = new JMenuItem("Plot DATA($)"));
+            item.addActionListener(new DisplaySignal());
+            /*
+            if(ExprEditor.this.editable){
+                this.add(item = new JMenuItem("Edit Expression"));
+                item.addActionListener(new EditExpression());
+            }
+            */
         }
 
         @Override
@@ -86,6 +120,7 @@ public class ExprEditor extends Editor{
     private final JScrollPane    scroll_pane;
     private String               expr;
     private boolean              quotes_added;
+    private Descriptor<?>        value;
 
     public ExprEditor(final boolean editable, final CTX ctx, final boolean default_to_string, final boolean asField){
         this((Descriptor<?>)null, editable, ctx, null, default_to_string, asField);
@@ -182,5 +217,9 @@ public class ExprEditor extends Editor{
     public final void setData(final Descriptor<?> data) {
         this.data = data;
         this.reset(false);
+    }
+
+    public final void setValue(final Descriptor<?> _value) {
+        this.value = _value;
     }
 }

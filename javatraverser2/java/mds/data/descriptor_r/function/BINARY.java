@@ -115,6 +115,15 @@ public class BINARY extends Function{
     public interface DOUBLE_METHOD{
         public double method(double x, double y);
     }
+    public static class Eq extends BINARY{
+        public Eq(final ByteBuffer b){
+            super(b);
+        }
+
+        public Eq(final Descriptor<?> a, final Descriptor<?> b){
+            super(OPC.OpcEq, a, b);
+        }
+    }
     public static class Equals extends BINARY{
         public Equals(final ByteBuffer b){
             super(b);
@@ -129,8 +138,44 @@ public class BINARY extends Function{
             return this.getArgument(1).evaluate();
         }
     }
+    public static class Ge extends BINARY{
+        public Ge(final ByteBuffer b){
+            super(b);
+        }
+
+        public Ge(final Descriptor<?> a, final Descriptor<?> b){
+            super(OPC.OpcGe, a, b);
+        }
+    }
+    public static class Gt extends BINARY{
+        public Gt(final ByteBuffer b){
+            super(b);
+        }
+
+        public Gt(final Descriptor<?> a, final Descriptor<?> b){
+            super(OPC.OpcGt, a, b);
+        }
+    }
+    public static class Le extends BINARY{
+        public Le(final ByteBuffer b){
+            super(b);
+        }
+
+        public Le(final Descriptor<?> a, final Descriptor<?> b){
+            super(OPC.OpcLe, a, b);
+        }
+    }
     public interface LONG_METHOD{
         public long method(long x, long y);
+    }
+    public static class Lt extends BINARY{
+        public Lt(final ByteBuffer b){
+            super(b);
+        }
+
+        public Lt(final Descriptor<?> a, final Descriptor<?> b){
+            super(OPC.OpcLt, a, b);
+        }
     }
     public static class Multiply extends BINARY{
         static public final class double_multiply implements DOUBLE_METHOD{
@@ -157,6 +202,15 @@ public class BINARY extends Function{
         @Override
         public final Descriptor<?> method(final DATA<?>[] args) throws MdsException {
             return BINARY.getCommon(args).multiply(args[0].toDescriptor(), args[1].toDescriptor());
+        }
+    }
+    public static class Ne extends BINARY{
+        public Ne(final ByteBuffer b){
+            super(b);
+        }
+
+        public Ne(final Descriptor<?> a, final Descriptor<?> b){
+            super(OPC.OpcNe, a, b);
         }
     }
     static public final class Power extends BINARY{
@@ -324,6 +378,18 @@ public class BINARY extends Function{
         switch(opcode){
             default:
                 return new BINARY(b);
+            case OPC.OpcGe:
+                return new Ge(b);
+            case OPC.OpcGt:
+                return new Gt(b);
+            case OPC.OpcLe:
+                return new Le(b);
+            case OPC.OpcLt:
+                return new Lt(b);
+            case OPC.OpcEq:
+                return new Eq(b);
+            case OPC.OpcNe:
+                return new Ne(b);
             case OPC.OpcAdd:
                 return new Add(b);
             case OPC.OpcDivide:

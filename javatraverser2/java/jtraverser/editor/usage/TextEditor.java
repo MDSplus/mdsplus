@@ -63,7 +63,7 @@ public class TextEditor extends Editor implements ActionListener{
         if(data != null) this.setData(data);
     }
 
-    protected TextEditor(final Descriptor<?> data, final boolean editable, final CTX ctx, final Window window, final String name, final String... modes){
+    public TextEditor(final Descriptor<?> data, final boolean editable, final CTX ctx, final Window window, final String name, final String... modes){
         this(data, editable, ctx, window, name, true, modes);
     }
 

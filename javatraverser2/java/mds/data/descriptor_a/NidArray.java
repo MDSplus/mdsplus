@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import mds.MdsException;
 import mds.data.DATA;
 import mds.data.DTYPE;
+import mds.data.TREE;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_A;
 import mds.data.descriptor_s.Nid;
@@ -29,6 +30,10 @@ public final class NidArray extends Descriptor_A<Nid>{
     public NidArray(final Nid... nids){
         super(DTYPE.NID, NidArray.getByteBuffer(nids), nids.length);
         this.setTree(nids[0].getTree());
+    }
+
+    public NidArray(final TREE tree, final Int32Array nid_num){
+        super(DTYPE.NID, nid_num.getBuffer(), nid_num.getLength());
     }
 
     @Override

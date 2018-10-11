@@ -1,6 +1,7 @@
 package mds;
 
 import mds.Mds.Request;
+import mds.data.descriptor.ARRAY;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_A;
 import mds.data.descriptor_a.Int32Array;
@@ -12,7 +13,7 @@ import mds.data.descriptor_s.Int32;
 import mds.data.descriptor_s.NUMBER;
 import mds.data.descriptor_s.Pointer;
 
-public final class TreeShr extends Shr{
+public class TreeShr extends MdsShr{
     public static class DescriptorStatus{
         public final Descriptor<?> data;
         public final int           status;
@@ -145,25 +146,6 @@ public final class TreeShr extends Shr{
             return new StringBuilder().append(this.data).append(";").append(this.status).toString();
         }
     }
-    public static class StringStatus{
-        public final String data;
-        public final int    status;
-
-        public StringStatus(final List list){
-            this.data = list.get(0).toString();
-            this.status = list.get(1).toInt();
-        }
-
-        public StringStatus(final String data, final int status){
-            this.data = data;
-            this.status = status;
-        }
-
-        @Override
-        public final String toString() {
-            return new StringBuilder(32).append(this.data).append(";").append(this.status).toString();
-        }
-    }
     public static class TagRef{
         public static final TagRef init = new TagRef(null, 0);
         public final String        data;
@@ -219,24 +201,12 @@ public final class TreeShr extends Shr{
     }
     @SuppressWarnings("rawtypes")
     public static final class TreeCall<T extends Descriptor>extends Shr.LibCall<T>{
-        public TreeCall(final Class<T> rtype, final String name, final int cap_in){
-            super(0, rtype, name, cap_in);
+        public TreeCall(final Class<T> rtype, final String name){
+            super(0, rtype, name);
         }
 
-        public TreeCall(final Class<T> rtype, final String prefix, final int preval, final String name, final int cap_in){
-            super(0, rtype, prefix, preval, name, cap_in);
-        }
-
-        public TreeCall(final Class<T> rtype, final String prefix, final long preval, final String name, final int cap_in){
-            super(0, rtype, prefix, preval, name, cap_in);
-        }
-
-        public TreeCall(final Class<T> rtype, final String prefix, final String name, final int cap_in){
-            super(0, rtype, prefix, name, cap_in);
-        }
-
-        public TreeCall(final int props, final Class<T> rtype, final String prefix, final String name, final int cap_in){
-            super(props, rtype, prefix, name, cap_in);
+        public TreeCall(final int prop, final Class<T> rtype, final String name){
+            super(prop, rtype, name);
         }
 
         @Override
@@ -247,55 +217,55 @@ public final class TreeShr extends Shr{
     public static final int NO_STATUS = -1;
 
     private static Request<CString> treeAbsPath(final String relpath) {
-        return new TreeCall<CString>(CString.class, "TreeAbsPath:T", 77).ref(CString.make(relpath)).fin(LibCall.finT);
+        return new TreeCall<CString>(CString.class, "TreeAbsPath:T").ref(CString.make(relpath)).fin();
     }
 
     public static final Request<Int32Array> treeAddConglom(final String path, final String model) {
-        return new TreeCall<Int32Array>(Int32Array.class, "_a=-1", "TreeAddConglom", 62).ref(CString.make(path)).ref(CString.make(model)).ref("_a").fin("[_a,_s]");
+        return new TreeCall<Int32Array>(Int32Array.class, "TreeAddConglom").ref(CString.make(path)).ref(CString.make(model)).ref("a", -1).finA("a", "s");
     }
 
     public static final Request<Int32Array> treeAddNode(final String path, final byte usage) {
-        return new TreeCall<Int32Array>(Int32Array.class, "_a=-1", "TreeAddNode", 69).ref(CString.make(path)).ref("_a").val(usage).fin("[_a,_s]");
+        return new TreeCall<Int32Array>(Int32Array.class, "TreeAddNode").ref(CString.make(path)).ref("a", -1).val(usage).finA("a", "s");
     }
 
     public static final Request<Int32> treeAddTag(final int nid, final String tag) {
-        return new TreeCall<Int32>(Int32.class, "TreeAddTag", 44).val(nid).ref(CString.make(tag)).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeAddTag").val(nid).ref(CString.make(tag)).fin();
     }
 
     public static final Request<Int32> treeBeginTimestampedSegment(final int nid, final Descriptor_A<?> initialValue, final int idx) {
-        return new TreeCall<Int32>(Int32.class, "TreeBeginTimestampedSegment", 84).val(nid).xd(initialValue).val(idx).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeBeginTimestampedSegment").val(nid).xd(initialValue).val(idx).fin();
     }
 
     public static final Request<Int32> treeCleanDatafile(final String expt, final int shot) {
-        return new TreeCall<Int32>(Int32.class, "TreeCleanDatafile", 51).ref(CString.make(expt)).val(shot).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeCleanDatafile").ref(CString.make(expt)).val(shot).fin();
     }
 
     public static final Request<Int32> treeClose(final String expt, final int shot) {
-        return new TreeCall<Int32>(Int32.class, "TreeClose", 43).ref(CString.make(expt)).val(shot).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeClose").ref(CString.make(expt)).val(shot).fin();
     }
 
     public static final Request<Int32> treeCompressDatafile(final String expt, final int shot) {
-        return new TreeCall<Int32>(Int32.class, "TreeCompressDatafile", 54).ref(CString.make(expt)).val(shot).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeCompressDatafile").ref(CString.make(expt)).val(shot).fin();
     }
 
     public static final Request<Int32> treeCreateTreeFiles(final String expt, final int newshot, final int fromshot) {
-        return new TreeCall<Int32>(Int32.class, "TreeCreateTreeFiles", 70).ref(CString.make(expt)).val(newshot).val(fromshot).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeCreateTreeFiles").ref(CString.make(expt)).val(newshot).val(fromshot).fin();
     }
 
     public static final Request<Pointer> treeCtx() {
-        return new TreeCall<Pointer>(Pointer.class, "TreeCtx:P", 20).fin();
+        return new TreeCall<Pointer>(Pointer.class, "TreeCtx:P").fin();
     }
 
     private static final Request<Pointer> treeDbid() {
-        return new TreeCall<Pointer>(Pointer.class, "TreeDbid:P", 21).fin();
+        return new TreeCall<Pointer>(Pointer.class, "TreeDbid:P").fin();
     }
 
     public static final Request<Int32> treeDeleteNodeExecute() {
-        return new TreeCall<Int32>(Int32.class, "TreeDeleteNodeExecute", 32).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeDeleteNodeExecute").fin();
     }
 
     public static final Request<Int32Array> treeDeleteNodeGetNid(final int idx) {
-        return new TreeCall<Int32Array>(Int32Array.class, "_a=", idx, "TreeDeleteNodeGetNid", 64).ref("_a").fin("[_a,_s]");
+        return new TreeCall<Int32Array>(Int32Array.class, "TreeDeleteNodeGetNid").ref("a", idx).finA("a", "s");
     }
 
     public static final Request<Int32Array> treeDeleteNodeInitialize(final int nid) {
@@ -303,110 +273,122 @@ public final class TreeShr extends Shr{
     }
 
     public static final Request<Int32Array> treeDeleteNodeInitialize(final int nid, final int count, final boolean init) {
-        return new TreeCall<Int32Array>(Int32Array.class, "_a=", count, "TreeDeleteNodeInitialize", 101).val(nid).ref("_a").val(init ? 1 : 0).fin("[_a,_s]");
+        return new TreeCall<Int32Array>(Int32Array.class, "TreeDeleteNodeInitialize").val(nid).ref("a", count).val(init ? 1 : 0).finA("a", "s");
     }
 
     public static final Request<List> treeDoMethod(final int nid, final String method, final Descriptor<?>... args) {
-        final Descriptor<?>[] parms = new CString[args.length + 1];
-        parms[0] = CString.make(method);
-        final LibCall<List> expr = new TreeCall<List>(List.class, "TreeDoMethod", "_x=*", 1024).val(nid).ref(method);
+        final LibCall<List> expr = new TreeCall<List>(List.class, "TreeDoMethod").val(nid).ref(CString.make(method));
         for(final Descriptor<?> arg : args)
             expr.ref(arg);
-        return expr.val(-1).xd("_x").fin("List(*,_x,_s)");
+        return expr.val(-1).xd("x").finL("x", "s");
     }
 
     public static final Request<Int32> treeEndConglomerate() {
-        return new TreeCall<Int32>(Int32.class, "TreeEndConglomerate", 30).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeEndConglomerate").fin();
     }
 
     private static Request<List> treeFileName(final String expt, final int shot) {
-        return new TreeCall<List>(List.class, "_a=*", "TreeFileName", 70).ref(CString.make(expt)).val(shot).xd("_a").fin("List(*,_a,_s)");
+        return new TreeCall<List>(List.class, "TreeFileName").ref(CString.make(expt)).val(shot).xd("a").finL("a", "s");
     }
 
     public static final Request<List> treeFindNodeTags_T(final int nid, final TagRef ref) {
-        return new TreeCall<List>(List.class, "_a=", ref.ref, "TreeFindNodeTags:T", 107).val(nid).ref("_a").fin("_a=List(*,_s,_a);MdsShr->StrFree1Dx(ref(_s));_a");
+        return new TreeCall<List>(List.class, "TreeFindNodeTags:T").val(nid).ref("a", ref.ref).finL("s", "a");
     }
 
     public static final Request<List> treeFindNodeTagsDsc(final int nid, final TagRef ref) {
-        return new TreeCall<List>(List.class, "_t=REPEAT(' ',255),_a=", ref.ref, "TreeFindNodeTagsDsc", 132).val(nid).ref("_a").descr("_t").fin("List(*,TRIM(_t),_a,_s)");
+        return new TreeCall<List>(List.class, "TreeFindNodeTagsDsc").val(nid).ref("a", ref.ref).descr("t", "REPEAT(' ',255)").fin("List(*,TRIM(__t),__a,__s)");
     }
 
     public static final Request<List> treeFindNodeWild(final String searchstr, final int usage_mask, final NodeRefStatus ref) {
-        return new TreeCall<List>(List.class, "_a=-1;_q=", ref.ref, "TreeFindNodeWild", 115).ref(CString.make(searchstr)).ref("_a").ref("_q").val(usage_mask).fin("List(*,_a,_q,_s)");
+        return new TreeCall<List>(List.class, "TreeFindNodeWild").ref(CString.make(searchstr)).ref("a", -1).ref("q", ref.ref).val(usage_mask).finL("a", "q", "s");
     }
 
     public static final Request<List> treeFindTagWild(final String searchstr, final TagRefStatus ref) {
-        return new TreeCall<List>(List.class, "_a=*;_i=-1;_q=", ref.ref, "TreeFindTagWildDsc", 114).ref(CString.make(searchstr)).ref("_i").ref("_q").xd("_a").fin("List(*,_a,_i,_q,_s)");
+        return new TreeCall<List>(List.class, "TreeFindTagWildDsc").ref(CString.make(searchstr)).ref("i", -1).ref("q", ref.ref).xd("a").finL("a", "i", "q", "s");
     }
 
     public static final Request<Int32> treeGetCurrentShotId(final String expt) {
-        return new TreeCall<Int32>(Int32.class, "TreeGetCurrentShotId", 37).ref(CString.make(expt)).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeGetCurrentShotId").ref(CString.make(expt)).fin();
     }
 
     public static final Request<Int32> treeGetDatafileSize() {
-        return new TreeCall<Int32>(Int32.class, "TreeGetDatafileSize", 30).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeGetDatafileSize").fin();
     }
 
     public static final Request<Int32Array> treeGetDefaultNid() {
-        return new TreeCall<Int32Array>(Int32Array.class, "_a=-1", "TreeGetDefaultNid", 52).ref("_a").fin("[_a,_s]");
+        return new TreeCall<Int32Array>(Int32Array.class, "TreeGetDefaultNid").ref("a", -1).finA("a", "s");
     }
 
     public static final Request<CString> treeGetMinimumPath(final int nid) {
-        return new TreeCall<CString>(CString.class, "TreeGetMinimumPath:T", 104).val(0).val(nid).fin(LibCall.finT);
+        return new TreeCall<CString>(CString.class, "TreeGetMinimumPath:T").val(0).val(nid).fin();
     }
 
     public static final Request<Int32Array> treeGetNumSegments(final int nid) {
-        return new TreeCall<Int32Array>(Int32Array.class, "_a=0", "TreeGetNumSegments", 68).val(nid).ref("_a").fin("[_a,_s]");
+        return new TreeCall<Int32Array>(Int32Array.class, "TreeGetNumSegments").val(nid).ref("a", 0).finA("a", "s");
     }
 
     public static final Request<CString> treeGetPath(final int nid) {
-        return new TreeCall<CString>(CString.class, "TreeGetPath:T", 80).val(nid).fin(LibCall.finT);
+        return new TreeCall<CString>(CString.class, "TreeGetPath:T").val(nid).fin();
     }
 
     @SuppressWarnings("rawtypes")
     public static final Request<Descriptor> treeGetRecord(final int nid) {
-        return new TreeCall<Descriptor>(Request.PROP_DO_NOT_LIST, Descriptor.class, "_a=*", "TreeGetRecord", 57).val(nid).xd("_a").fin("_a");
+        return new TreeCall<Descriptor>(Request.PROP_DO_NOT_LIST, Descriptor.class, "TreeGetRecord").val(nid).xd("a").finV("a");
     }
 
-    public static final Request<List> treeGetSegment(final int nid, final int idx) {
-        return new TreeCall<List>(List.class, "_a=_t=*", "TreeGetSegment", 102).val(nid).val(idx).xd("_a").xd("_t").fin("List(*,_a,_t)");
+    public static final Request<Signal> treeGetSegment(final int nid, final int idx) {
+        return new TreeCall<Signal>(Signal.class, "TreeGetSegment").val(nid).val(idx).xd("a").xd("d").fin("make_signal(__a,*,__d)");
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static Request<ARRAY> treeGetSegmentData(final int nid, final int idx) {
+        return new TreeCall<ARRAY>(ARRAY.class, "TreeGetSegment").val(nid).val(idx).xd("a").xd("d").finV("a"); // TODO: .xd("d") can be .val(0) with newer version
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static Request<Descriptor> treeGetSegmentDim(final int nid, final int idx) {
+        return new TreeCall<Descriptor>(Descriptor.class, "TreeGetSegment").val(nid).val(idx).val(0).xd("a").finV("a");
     }
 
     public static final Request<List> treeGetSegmentInfo(final int nid, final int idx) {
-        return new TreeCall<List>(List.class, "_a=0B;_b=0B;_d=ZERO(8,0);_i=0", "TreeGetSegmentInfo", 146).val(nid).val(idx).ref("_a").ref("_b").ref("_d").ref("_i").fin("List(*,_a,_b,_d,_i,_s)");
+        return new TreeCall<List>(List.class, "TreeGetSegmentInfo").val(nid).val(idx).ref("a", "0B").ref("b", "0B").ref("d", "ZERO(8,0)").ref("i", 0).finL("a", "b", "d", "i", "s");
     }
 
     public final static Request<List> treeGetSegmentLimits(final int nid, final int idx) {
-        return new TreeCall<List>(List.class, "_a=_b=*", "TreeGetSegmentLimits", 106).val(nid).val(idx).xd("_a").xd("_b").fin("List(*,List(*,_a,_b),_s)");
+        return new TreeCall<List>(List.class, "TreeGetSegmentLimits").val(nid).val(idx).xd("a").xd("b").fin("List(*,List(*,__a,__b),__s)");
     }
 
     @SuppressWarnings("rawtypes")
     public static final Request<Descriptor> treeGetSegmentScale(final int nid) {
-        return new TreeCall<Descriptor>(Descriptor.class, "_a=*", "TreeGetSegmentScale", 102).val(nid).xd("_a").fin("_a");
+        return new TreeCall<Descriptor>(Descriptor.class, "TreeGetSegmentScale").val(nid).xd("a").finV("a");
     }
 
     public static final Request<List> treeGetSegmentTimesXd(final int nid) {
-        return new TreeCall<List>(List.class, "_a=0;_b=*;_c=*", "TreeGetSegmentTimesXd", 113).val(nid).ref("_a").xd("_b").xd("_c").fin("List(*,List(*,_a,_b,_c),_s)");
+        return new TreeCall<List>(List.class, "TreeGetSegmentTimesXd").val(nid).ref("a", "0").xd("b").xd("c").fin("List(*,List(*,__a,__b,__c),__s)");
+    }
+
+    private static Request<List> treeGetTimeContext() {
+        return new TreeCall<List>(List.class, "TreeGetTimeContext").ref("a", "*").xd("b").xd("c").xd("c").fin("List(*,List(*,__a,__b,__c),__s)");
     }
 
     public final static Request<List> treeGetXNci(final int nid, final String name) {
-        return new TreeCall<List>(List.class, "_a=*", "TreeGetXNci", 73).val(nid).ref(CString.make(name)).xd("_a").fin("List(*,_a,_s)");
+        return new TreeCall<List>(List.class, "TreeGetXNci").val(nid).ref(CString.make(name)).xd("a").finL("a", "s");
     }
 
     public final static Request<Int32> treeIsOn(final int nid) {
-        return new TreeCall<Int32>(Int32.class, "TreeIsOn", 35).val(nid).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeIsOn").val(nid).fin();
     }
 
     public static final Request<Int32> treeIsOpen(final Pointer ctx) {
-        return new TreeCall<Int32>(Int32.class, "_TreeIsOpen", 37).val(ctx).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "_TreeIsOpen").val(ctx).fin();
     }
 
     public final static Request<Int32> treeMakeSegment(final int nid, final Descriptor<?> start, final Descriptor<?> end, final Descriptor<?> dimension, final Descriptor_A<?> values, final int idx, final int rows_filled) {
-        return new TreeCall<Int32>(Int32.class, "TreeMakeSegment", 128).val(nid).xd(start).xd(end).xd(dimension).xd(values).val(idx).val(rows_filled).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeMakeSegment").val(nid).xd(start).xd(end).xd(dimension).xd(values).val(idx).val(rows_filled).fin();
     }
 
     public final static Request<Int32> treeMakeTimestampedSegment(final int nid, final Int64Array timestamps, final Descriptor_A<?> values, final int idx, final int rows_filled) {
-        return new TreeCall<Int32>(Int32.class, "TreeMakeTimestampedSegment", 107).val(nid).ref(timestamps).xd(values).val(idx).val(rows_filled).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeMakeTimestampedSegment").val(nid).ref(timestamps).xd(values).val(idx).val(rows_filled).fin();
     }
 
     public static final Request<Int32> treeMakeTimestampedSegment(final int nid, final long[] dim, final Descriptor_A<?> values, final int idx, final int rows_filled) {
@@ -414,127 +396,127 @@ public final class TreeShr extends Shr{
     }
 
     public final static Request<Int32> treeOpen(final String expt, final int shot, final boolean readonly) {
-        return new TreeCall<Int32>(Int32.class, "TreeOpen", 59).ref(CString.make(expt)).val(shot).val(readonly ? 1 : 0).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeOpen").ref(CString.make(expt)).val(shot).val(readonly ? 1 : 0).fin();
     }
 
     public final static Request<Int32> treeOpenEdit(final String expt, final int shot) {
-        return new TreeCall<Int32>(Int32.class, "TreeOpenEdit", 46).ref(CString.make(expt)).val(shot).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeOpenEdit").ref(CString.make(expt)).val(shot).fin();
     }
 
     public final static Request<Int32> treeOpenNew(final String expt, final int shot) {
-        return new TreeCall<Int32>(Int32.class, "TreeOpenNew", 45).ref(CString.make(expt)).val(shot).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeOpenNew").ref(CString.make(expt)).val(shot).fin();
     }
 
     public final static Request<Int32> treePutRecord(final int nid, final Descriptor<?> dsc, final int utility_update) {
-        return new TreeCall<Int32>(Int32.class, "TreePutRecord", 70).val(nid).xd(dsc).val(utility_update).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreePutRecord").val(nid).xd(dsc).val(utility_update).fin();
     }
 
     public final static Request<Int32> treePutRow(final int nid, final int bufsize, final long timestamp, final Descriptor_A<?> data) {
-        return new TreeCall<Int32>(Int32.class, "TreePutRow", 94).val(nid).val(bufsize).ref(timestamp).xd(data).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreePutRow").val(nid).val(bufsize).ref(timestamp).xd(data).fin();
     }
 
     public final static Request<Int32> treePutSegment(final int nid, final int rowidx, final Descriptor_A<?> data) {
-        return new TreeCall<Int32>(Int32.class, "TreePutSegment", 67).val(nid).val(rowidx).descr(data).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreePutSegment").val(nid).val(rowidx).descr(data).fin();
     }
 
     public final static Request<Int32> treePutTimestampedSegment(final int nid, final long timestamp, final Descriptor_A<?> data) {
-        return new TreeCall<Int32>(Int32.class, "TreePutTimestampedSegment", 92).val(nid).ref(timestamp).xd(data).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreePutTimestampedSegment").val(nid).ref(timestamp).xd(data).fin();
     }
 
     public final static Request<Int32> treeQuitTree(final String expt, final int shot) {
-        return new TreeCall<Int32>(Int32.class, "TreeQuitTree", 46).ref(CString.make(expt)).val(shot).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeQuitTree").ref(CString.make(expt)).val(shot).fin();
     }
 
     public final static Request<Int32> treeRemoveNodesTags(final int nid) {
-        return new TreeCall<Int32>(Int32.class, "TreeRemoveNodesTags", 46).val(nid).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeRemoveNodesTags").val(nid).fin();
     }
 
     public final static Request<Int32> treeRenameNode(final int nid, final String name) {
-        return new TreeCall<Int32>(Int32.class, "TreeRenameNode", 48).val(nid).ref(CString.make(name)).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeRenameNode").val(nid).ref(CString.make(name)).fin();
     }
 
     public final static Request<Int32> treeRestoreContext(final Pointer treectx) {
-        return new TreeCall<Int32>(Int32.class, "TreeRestoreContext", 35).val(treectx).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeRestoreContext").val(treectx).fin();
     }
 
     public final static Request<Pointer> treeSaveContext() {
-        return new TreeCall<Pointer>(Pointer.class, "TreeSaveContext:P", 28).fin();
+        return new TreeCall<Pointer>(Pointer.class, "TreeSaveContext:P").fin();
     }
 
     public final static Request<Int32> treeSetCurrentShotId(final String expt, final int shot) {
-        return new TreeCall<Int32>(Int32.class, "TreeSetCurrentShotId", 54).ref(CString.make(expt)).val(shot).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeSetCurrentShotId").ref(CString.make(expt)).val(shot).fin();
     }
 
     public final static Request<Int32Array> treeSetDefault(final String path) {
-        return new TreeCall<Int32Array>(Int32Array.class, "_a=-1", "TreeSetDefault", 55).ref(CString.make(path)).ref("_a").fin("[_a,_s]");
+        return new TreeCall<Int32Array>(Int32Array.class, "TreeSetDefault").ref(CString.make(path)).ref("a", -1).finA("a", "s");
     }
 
     public final static Request<Int32> treeSetDefaultNid(final int nid) {
-        return new TreeCall<Int32>(Int32.class, "TreeSetDefaultNid", 44).val(nid).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeSetDefaultNid").val(nid).fin();
     }
 
     public final static Request<Int32> treeSetNciItm(final int nid, final boolean state, final int flags) {
-        return new TreeCall<Int32>(Int32.class, "TreeSetNciItm", 74).val(nid).val(state ? 1 : 2).val(flags).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeSetNciItm").val(nid).val(state ? 1 : 2).val(flags).fin();
     }
 
     public final static Request<Int32> treeSetNoSubtree(final int nid) {
-        return new TreeCall<Int32>(Int32.class, "TreeSetNoSubtree", 43).val(nid).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeSetNoSubtree").val(nid).fin();
     }
 
     public final static Request<Int32> treeSetSegmentScale(final int nid, final Descriptor<?> scale) {
-        return new TreeCall<Int32>(Int32.class, "TreeSetSegmentScale", 59).val(nid).xd(scale).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeSetSegmentScale").val(nid).xd(scale).fin();
     }
 
     public final static Request<Int32> treeSetSubtree(final int nid) {
-        return new TreeCall<Int32>(Int32.class, "TreeSetSubtree", 41).val(nid).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeSetSubtree").val(nid).fin();
     }
 
     public final static Request<Int32> treeSetTimeContext(final NUMBER<?> start, final NUMBER<?> end, final NUMBER<?> delta) {
-        return new TreeCall<Int32>(Int32.class, "TreeSetTimeContext", 55).descr(start).descr(end).descr(delta).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeSetTimeContext").descr(start).descr(end).descr(delta).fin();
     }
 
     public final static Request<Int32> treeSetXNci(final int nid, final String name, final Descriptor<?> value) {
-        return new TreeCall<Int32>(Int32.class, "TreeSetXNci", 58).val(nid).ref(CString.make(name)).xd(value).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeSetXNci").val(nid).ref(CString.make(name)).xd(value).fin();
     }
 
     public final static Request<Int32> treeStartConglomerate(final int size) {
-        return new TreeCall<Int32>(Int32.class, "TreeStartConglomerate", 48).val(size).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeStartConglomerate").val(size).fin();
     }
 
     public static final Request<Pointer> treeSwitchDbid(final Pointer ctx) {
-        return new TreeCall<Pointer>(Pointer.class, "TreeSwitchDbid:P", 33).val(ctx).fin();
+        return new TreeCall<Pointer>(Pointer.class, "TreeSwitchDbid:P").val(ctx).fin();
     }
 
     public final static Request<Int32> treeTurnOff(final int nid) {
-        return new TreeCall<Int32>(Int32.class, "TreeTurnOff", 38).val(nid).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeTurnOff").val(nid).fin();
     }
 
     public final static Request<Int32> treeTurnOn(final int nid) {
-        return new TreeCall<Int32>(Int32.class, "TreeTurnOn", 37).val(nid).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeTurnOn").val(nid).fin();
     }
 
     public final static Request<Int32> treeUpdateSegment(final int nid, final Descriptor<?> start, final Descriptor<?> end, final Descriptor<?> dim, final int idx) {
-        return new TreeCall<Int32>(Int32.class, "TreeUpdateSegment", 88).val(nid).descr(start).descr(end).descr(dim).val(idx).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeUpdateSegment").val(nid).descr(start).descr(end).descr(dim).val(idx).fin();
     }
 
     public final static Request<Int32> treeUpdateSegment(final int nid, final long start, final long end, final Descriptor<?> dim, final int idx) {
-        return new TreeCall<Int32>(Int32.class, "TreeUpdateSegment", 60).val(nid).ref(start).ref(end).ref(dim).val(idx).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeUpdateSegment").val(nid).ref(start).ref(end).ref(dim).val(idx).fin();
     }
 
     public final static Request<Int32> treeUsePrivateCtx(final boolean state) {
-        return new TreeCall<Int32>(Int32.class, "TreeUsePrivateCtx", 44).val(state ? 1 : 0).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeUsePrivateCtx").val(state ? 1 : 0).fin();
     }
 
     public final static Request<Int32> treeUsingPrivateCtx() {
-        return new TreeCall<Int32>(Int32.class, "TreeUsingPrivateCtx", 30).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeUsingPrivateCtx").fin();
     }
 
     public static final Request<Int32> treeVerify() {
-        return new TreeCall<Int32>(Int32.class, "TreeVerify", 21).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeVerify").fin();
     }
 
     public final static Request<Int32> treeWriteTree(final String expt, final int shot) {
-        return new TreeCall<Int32>(Int32.class, "TreeWriteTree", 47).ref(CString.make(expt)).val(shot).fin();
+        return new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeWriteTree").ref(CString.make(expt)).val(shot).fin();
     }
 
     public TreeShr(final Mds mds){
@@ -627,8 +609,8 @@ public final class TreeShr extends Shr{
      *
      * @return Pointer: context
      **/
-    public final Pointer treeCtx(final Pointer ctx) throws MdsException {
-        return this.mds.getDescriptor(ctx, TreeShr.treeCtx());
+    public final Pointer treeCtx(final Null NULL) throws MdsException {
+        return this.mds.getDescriptor(null, TreeShr.treeCtx());
     }
 
     /**
@@ -636,8 +618,8 @@ public final class TreeShr extends Shr{
      *
      * @return Pointer: current dbid
      **/
-    public Pointer treeDbid(final Pointer ctx) throws MdsException {
-        return this.mds.getDescriptor(ctx, TreeShr.treeDbid());
+    public Pointer treeDbid(final Null NULL) throws MdsException {
+        return this.mds.getDescriptor(null, TreeShr.treeDbid());
     }
 
     /**
@@ -792,8 +774,16 @@ public final class TreeShr extends Shr{
      *
      * @return SignalStatus: segment
      **/
-    public final List treeGetSegment(final Pointer ctx, final int nid, final int idx) throws MdsException {
+    public final Signal treeGetSegment(final Pointer ctx, final int nid, final int idx) throws MdsException {
         return this.mds.getDescriptor(ctx, TreeShr.treeGetSegment(nid, idx));
+    }
+
+    public final Descriptor_A<?> treeGetSegmentData(final Pointer ctx, final int nid, final int idx) throws MdsException {
+        return this.mds.getDescriptor(ctx, TreeShr.treeGetSegmentData(nid, idx)).getDataA();
+    }
+
+    public final Descriptor<?> treeGetSegmentDim(final Pointer ctx, final int nid, final int idx) throws MdsException {
+        return this.mds.getDescriptor(ctx, TreeShr.treeGetSegmentDim(nid, idx));
     }
 
     /**
@@ -814,8 +804,12 @@ public final class TreeShr extends Shr{
         return this.mds.getDescriptor(ctx, TreeShr.treeGetSegmentScale(nid));
     }
 
-    public final List treeGetSegmentTimesXd(final Pointer ctx, final int nid) throws MdsException {
-        return this.mds.getDescriptor(ctx, TreeShr.treeGetSegmentTimesXd(nid));
+    public final DescriptorStatus treeGetSegmentTimesXd(final Pointer ctx, final int nid) throws MdsException {
+        return new DescriptorStatus(this.mds.getDescriptor(ctx, TreeShr.treeGetSegmentTimesXd(nid)));
+    }
+
+    public DescriptorStatus treeGetTimeContext(final Pointer ctx) throws MdsException {
+        return new DescriptorStatus(this.mds.getDescriptor(ctx, TreeShr.treeGetTimeContext()));
     }
 
     /**

@@ -31,7 +31,7 @@ SET SRCDIR=%CD%\java
 SET JSCH=%SRCDIR%\..\jsch-0.1.54.jar
 SET CLASSPATH=-classpath ".;%JSCH%"
 SET JAVAC="%JDK_HOME%\bin\javac.exe" ||rem -Xlint -deprecation
-SET JCFLAGS= -O -source 1.6 -target 1.6 -g:none||rem -Xlint -deprecation
+SET JCFLAGS= -g:none||rem -Xlint -deprecation  -O -source 1.6 -target 1.6
 SET JAR="%JDK_HOME%\bin\jar.exe"
 SET JTMANIFEST=%JARDIR%\JTMANIFEST.mf
 
@@ -85,9 +85,11 @@ jtraverser\tools\DecompileTree.java
 
 SET MDS_SRC=^
 mds\Mds.java ^
+mds\MdsApi.java ^
 mds\MdsEvent.java ^
-mds\MdsListener.java ^
 mds\MdsException.java ^
+mds\MdsListener.java ^
+mds\MdsMisc.java ^
 mds\MdsShr.java ^
 mds\Shr.java ^
 mds\TCL.java ^
@@ -163,6 +165,7 @@ mds\data\descriptor_r\function\CONST.java ^
 mds\data\descriptor_r\function\Fun.java ^
 mds\data\descriptor_r\function\MODIFIER.java ^
 mds\data\descriptor_r\function\UNARY.java ^
+mds\data\descriptor_r\function\X_OF.java ^
 mds\data\descriptor_s\COMPLEX.java ^
 mds\data\descriptor_s\CString.java ^
 mds\data\descriptor_s\Complex32.java ^
@@ -194,6 +197,21 @@ mds\mdsip\MdsIp.java ^
 mds\mdsip\Message.java ^
 mds\mdslib\MdsLib.java
 
+SET DEVICE_GIF=^
+devicebeans\DeviceApply.gif ^
+devicebeans\DeviceButtons.gif ^
+devicebeans\DeviceCancel.gif ^
+devicebeans\DeviceChannel.gif ^
+devicebeans\DeviceChoice.gif ^
+devicebeans\DeviceDispatch.gif ^
+devicebeans\DeviceField.gif ^
+devicebeans\DeviceOk.gif ^
+devicebeans\DeviceReset.gif ^
+devicebeans\DeviceSetup.gif
+
+SET DEVWAVE_GIF=^
+devicebeans\devicewave\DeviceWave.gif
+  
 SET TRAV_GIF=^
 jtraverser\action.gif ^
 jtraverser\any.gif ^
@@ -213,6 +231,8 @@ MKDIR %JARDIR% 2>NUL
 SET TRAV_CLS=%TRAV_SRC:.java=*.class%
 SET TOOLS_CLS=%TOOLS_SRC:.java=*.class%
 SET MDS_CLS=%MDS_SRC:.java=*.class%
+rem SET DEVICE_CLS=%DEVICE_SRC:.java=*.class%
+rem SET DEVWAV_CLS=%DEVWAV_SRC:.java=*.class%
 
 ECHO compiling *.java to *.class . . .
 PUSHD %SRCDIR%
@@ -224,23 +244,31 @@ IF %ERROR% NEQ 0 GOTO:cleanup
 ECHO gathering data
 MKDIR %JARDIR%\jTraverser 2>NUL
 COPY /Y %SRCDIR%\jtraverser\*.gif  %JARDIR%\jtraverser>NUL
+rem xcopy /Y/S/I %CD%\lib %JARDIR%\lib>NUL
 COPY /Y %CD%\JTMANIFEST.mf %JTMANIFEST%>NUL
 ECHO Built-Date: %Year%-%Month:~-2%-%Day:~-2% %TIME:~0,8%>>%JTMANIFEST%
 
 ECHO creating jar packages
 PUSHD %JARDIR%
 COPY %JSCH% %SRCDIR%\jTraverser.jar>NUL
-%JAR% -umf %JTMANIFEST% %SRCDIR%\jTraverser.jar %TRAV_CLS% %TRAV_GIF% %MDS_CLS% %TOOLS_CLS% lib
+%JAR% -umf %JTMANIFEST% %SRCDIR%\jTraverser.jar %TRAV_CLS% %TRAV_GIF% %MDS_CLS% %TOOLS_CLS%
+rem %JAR% -cf %SRCDIR%\MDS.jar %MDS_CLS%
+rem %JAR% -cf %SRCDIR%\Tools.jar %TOOLS_CLS%
+rem %JAR% -cmf %DBMANIFEST% %SRCDIR%\devicebeans.jar %DEVICE_CLS% %DEVICE_GIF%
 POPD
 
 :cleanup
 ECHO cleaning up
 PUSHD %JARDIR%
-RMDIR /Q/S .
+IF %ERROR% NEQ 0 GOTO:end
+RMDIR /Q/S . 2>NUL
 POPD
 
-:jtraveser
+COPY /Y %SRCDIR%\jTraverser.jar %CD%\..\javascope\java\
+
+:jtraverser
 IF %ERROR% NEQ 0 GOTO:end
+IF 0%1 NEQ 0 GOTO:EOF
 ECHO start jTraverser?
 PAUSE
 CLS
