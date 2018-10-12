@@ -210,11 +210,12 @@ class Tests(TestCase):
                 c = Connection(server)
                 self.assertEqual(c.get('1').tolist(),1)
                 self.assertEqual(c.getObject('1:3:1').__class__,Range)
-                try: #  currently the connection needs to be closed after a timeout
-                    Connection(server).get("wait(1)",timeout=100)
-                    self.fail("Connection.get(wait(1)) should have timed out.")
-                except Exc.MDSplusException as e:
-                    self.assertEqual(e.__class__,Exc.TdiTIMEOUT)
+                if not sys.platform.startswith('win'): # Windows does not support timeout yet
+                    try: #  currently the connection needs to be closed after a timeout
+                        Connection(server).get("wait(1)",timeout=100)
+                        self.fail("Connection.get(wait(1)) should have timed out.")
+                    except Exc.MDSplusException as e:
+                        self.assertEqual(e.__class__,Exc.TdiTIMEOUT)
                 g = GetMany(c);
                 g.append('a','1')
                 g.append('b','$',2)
