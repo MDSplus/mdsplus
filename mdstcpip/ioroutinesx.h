@@ -3,15 +3,10 @@ static int io_disconnect(Connection* c);
 static int io_listen(int argc, char **argv);
 static int io_authorize(Connection* c, char *username);
 static int io_connect(Connection* c, char *protocol, char *host);
-#ifdef _WIN32
-#define io_recv_to NULL
-static ssize_t io_recv(Connection* c, void *buffer, size_t len);
-#else
 static ssize_t io_recv_to(Connection* c, void *buffer, size_t len, int to_msec);
 inline static ssize_t io_recv(Connection* c, void *buffer, size_t len){
   return io_recv_to(c, buffer,len, -1);
 }
-#endif
 static IoRoutines io_routines = {
   io_connect, io_send, io_recv, io_flush, io_listen, io_authorize, io_reuseCheck, io_disconnect, io_recv_to
 };
@@ -308,11 +303,7 @@ static ssize_t io_send(Connection* c, const void *bptr, size_t num, int nowait){
 //  RECEIVE  ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifdef _WIN32
-static ssize_t io_recv(Connection* c, void *bptr, size_t num){
-#else
 static ssize_t io_recv_to(Connection* c, void *bptr, size_t num, int to_msec){
-#endif
   SOCKET sock = getSocket(c);
   ssize_t recved = -1;
   if (sock != INVALID_SOCKET) {
@@ -323,16 +314,23 @@ static ssize_t io_recv_to(Connection* c, void *bptr, size_t num, int to_msec){
     if (GETPEERNAME(sock, (struct sockaddr *)&sin, &len))
       PERROR("Error getting peer name from socket");
     else
-#ifdef _WIN32
-      recved = RECV(sock, bptr, num, MSG_NOSIGNAL);
-#else
     if (to_msec<0)
       recved = RECV(sock, bptr, num, MSG_NOSIGNAL);
     else {
+#ifdef WIN32
+      struct timeval tv;
+      fd_set rfds;
+      tv.tv_sec  = to_msec/1000;
+      tv.tv_usec = (to_msec%1000)*1000;
+      FD_ZERO(&rfds);
+      FD_SET(sock, &rfds);
+      recved = select(1, &rfds, NULL, NULL, &tv);
+#else
       struct pollfd fd;
       fd.fd = sock; // your socket handler
       fd.events = POLLIN;
       recved = poll(&fd, 1, to_msec); // 1 second for timeout
+#endif
       switch (recved) {
       case -1: break; // Error
       case  0: break; // Timeout
@@ -341,7 +339,6 @@ static ssize_t io_recv_to(Connection* c, void *bptr, size_t num, int to_msec){
         break;
       }
     }
-#endif
     PopSocket(sock);
   }
   return recved;
