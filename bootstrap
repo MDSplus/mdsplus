@@ -1,5 +1,17 @@
 #! /bin/sh
 cd $(dirname $0)
+if !(automake --version | grep automake | grep 1.15)
+then
+warning() {
+echo 'WARNING:'
+echo 'WARNING: If you intend to issue a pull request on github.com,'
+echo 'WARNING: please use "git status" or "git diff" to check for changes.'
+echo 'WARNING: If you experience unintended changes, you are using a different version of automake,'
+echo 'WARNING: In this case, please use "deploy/build.sh --os=bootstrap" instead.'
+echo 'WARNING:'
+}
+trap warning EXIT
+fi
 
 aclocal -I ./m4
 
