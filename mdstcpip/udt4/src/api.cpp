@@ -88,6 +88,7 @@ m_iMuxID(-1)
 
 CUDTSocket::~CUDTSocket()
 {
+   CGuard cg(m_ControlLock);
    if (AF_INET == m_iIPversion)
    {
       delete (sockaddr_in*)m_pSelfAddr;
