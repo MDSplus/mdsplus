@@ -11,8 +11,10 @@ static IoRoutines io_routines = {
   io_connect, io_send, io_recv, io_flush, io_listen, io_authorize, io_reuseCheck, io_disconnect, io_recv_to
 };
 
-#ifdef _WIN32
- #define close closesocket
+#ifdef _TCP
+ #ifdef _WIN32
+  #define close closesocket
+ #endif
 #else
  #include <poll.h>
 #endif
@@ -317,7 +319,7 @@ static ssize_t io_recv_to(Connection* c, void *bptr, size_t num, int to_msec){
     if (to_msec<0)
       recved = RECV(sock, bptr, num, MSG_NOSIGNAL);
     else {
-#ifdef WIN32
+#ifdef _TCP
       struct timeval timeout;
       timeout.tv_sec  = to_msec/1000;
       timeout.tv_usec = (to_msec%1000)*1000;
