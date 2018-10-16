@@ -4163,7 +4163,7 @@ public:
 class EXPORT DataStreamListener
 {
 public:
-    virtual void dataReceived(Data *samples, Data *times) = 0;
+    virtual void dataReceived(Data *samples, Data *times, int shot = 0) = 0;
 };
 
 
@@ -4230,6 +4230,21 @@ public:
     void show();
 };
 
+
+class EXPORT EventStream:public Event {
+  std::vector<DataStreamListener *> listeners;
+  std::vector<std::string> names;
+public:
+  void run();
+  EventStream():Event("STREAMING"){}
+  static void send(int shot, const char *name, float time, float sample);
+  static void send(int shot, const char *name, uint64_t time, float sample);
+  static void send(int shot, const char *name, int numSamples, float *times, float *samples);
+  static void send(int shot, const char *name, int numSamples, uint64_t *times, float *samples);
+  static void send(int shot, const char *name, Data *timeData, Data *valueData);
+  void registerListener(DataStreamListener *listener, const char *name);
+};  
+  
 
 
 //////////////Support functions////////
