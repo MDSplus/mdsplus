@@ -382,5 +382,176 @@ void *monitorStreamInfo(void *par UNUSED_ARGUMENT)
         return NULL;
 }
 	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Class StreamEvents provides an alternative streaming solution. It provides a set of methods for sending chuncks of data as MDSplus events. Events will be       //
+// recorded by node.js application using ServerSent Events for streaming visualization and/or by registered StreamEvent listeners.                                 //
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+using namespace MDSplus;
+
+void EventStream::send(int shot, const char *name, float time, float sample)
+{
+    char msgBuf[strlen(name) + 256];
+    sprintf(msgBuf, "%d %s F 1 %f %f", shot, name, time, sample);  
+    //ASCII coding: <shot> <name> [F|L] <numSamples> <xval>[ xval]* <yval>[ <yval>]*  where F and L indicate floating or integer times, respectrively
+    Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
+}
+
+void EventStream::send(int shot, const char *name, uint64_t time, float sample)
+{
+    char msgBuf[strlen(name) + 256];
+    sprintf(msgBuf, "%d %s L 1 %lu %f", shot, name, (unsigned long)time, sample);  
+    Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
+}
+
+void EventStream::send(int shot, const char *name, int numSamples, float *times, float *samples)
+{
+    char msgBuf[strlen(name) + numSamples * 64 + 256];
+    sprintf(msgBuf, "%d %s F %d", shot, name, numSamples);
+    for(int i = 0; i < numSamples; i++)
+    {
+        sprintf(&msgBuf[strlen(msgBuf)], " %f", times[i]);
+    }
+    for(int i = 0; i < numSamples; i++)
+        sprintf(&msgBuf[strlen(msgBuf)], " %f", samples[i]);
+    Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
+}
+
+void EventStream::send(int shot, const char *name, int numSamples, uint64_t *times, float *samples)
+{
+    char msgBuf[strlen(name) + numSamples * 64 + 256];
+    sprintf(msgBuf, "%d %s L %d", shot, name, numSamples);
+    for(int i = 0; i < numSamples; i++)
+    {
+        sprintf(&msgBuf[strlen(msgBuf)], " %lu", (unsigned long)times[i]);
+    }
+    for(int i = 0; i < numSamples; i++)
+        sprintf(&msgBuf[strlen(msgBuf)], " %f", samples[i]);
+    Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
+}
+
+
+
+void EventStream::run()
+{
+    const char *eventName = getName(); //Get the name of the event
+    if(strcmp(eventName, "STREAMING")) return; //Should neve return
+    size_t bufSize;
+    const char *buf =  getRaw(&bufSize); //Get raw data
+    char *str = new char[bufSize+1]; //Make it a string
+    memcpy(str, buf, bufSize);
+    str[bufSize] = 0;
+    int shot, numSamples;
+    char timeFormat[16], name[256];
+    std::cout << "RECEIVED EVENT " << eventName << " WITH DATA  " << str << std::endl;
+    int readItems = sscanf(str, "%d %s %s %d", &shot, name, timeFormat, &numSamples);
+    if(readItems < 4)
+    {
+        delete [] str;
+        return; //Incorrect message
+    }
+    //skip to fourth blank
+    int len = strlen(str);
+    int j = 0;
+    for(int i = 0; j < len && i < 4; i++)
+    {
+	while(j < len && str[j] != ' ')
+	    j++;
+	if(j == len) 
+	{
+	    delete [] str;
+	    return; //Incorrect message
+	}
+	j++;
+    }
+    Data *timesD;
+    if(timeFormat[0] == 'F')
+    {
+	float *times = new float[numSamples];
+	for(int i = 0; i < numSamples; i++)
+	{
+	    sscanf(&str[j], "%f", &times[i]);
+	    while(j < len && str[j] != ' ')  
+		j++;
+	    if(i < numSamples && j == len)
+	    {
+	        delete [] times;
+		delete [] str;
+		return; //Incorrect message
+	    }
+	    j++;
+	}
+	if(numSamples > 1)
+	    timesD = new Float32Array(times, numSamples);
+	else
+	    timesD = new Float32(times[0]);
+        delete [] times;
+    }
+    else
+    {
+	unsigned long *times = new unsigned long[numSamples];
+	for(int i = 0; i < numSamples; i++)
+	{
+	    sscanf(&str[j], "%lu", &times[i]);
+	    while(j < len && str[j] != ' ')  
+		j++;
+	    if(i < numSamples - 1 && j == len)
+	    {
+	        delete [] times;
+		delete [] str;
+		return; //Incorrect message
+	    }
+	    j++;
+	}
+	if(numSamples > 1)
+	    timesD = new Uint64Array(times, numSamples);
+	else
+	    timesD = new Uint64(times[0]);
+        delete [] times;
+    }
+    Data *samplesD; 
+    float *samples = new float[numSamples];
+    for(int i = 0; i < numSamples; i++)
+    {
+	sscanf(&str[j], "%f", &samples[i]);
+	while(j < len && str[j] != ' ')  
+	    j++;
+	if(i < numSamples - 1 && j == len)
+	{
+	    delete [] samples;
+	    delete [] str;
+	    deleteData(timesD);
+	    return; //Incorrect message
+	}
+	j++;
+    }
+    if(numSamples > 1)
+        samplesD = new Float32Array(samples, numSamples);
+    else
+	samplesD = new Float32(samples[0]);
+    
+    delete [] samples;
+    std::string nameStr(name);
+    
+    for(int i = 0; i < listeners.size(); i++)
+    {
+	if(names[i] == nameStr)
+	    listeners[i]->dataReceived(samplesD, timesD, shot);
+    }
+    deleteData(samplesD);
+    deleteData(timesD);
+}
+
+
+void EventStream::registerListener(DataStreamListener *listener, const char *name)
+{
+    listeners.push_back(listener);
+    names.push_back(std::string(name));
+}
+
+
+
+
+
+
 
 #endif
