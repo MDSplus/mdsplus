@@ -85,6 +85,7 @@ then
     MDSPLUS_DIR=${WORKSPACE}/releasebld/buildroot/usr/local/mdsplus
     mkdir -p ${MDSPLUS_DIR}
     cp ${SRCDIR}/deploy/platform/macosx/MDSplus.pkgproj ${WORKSPACE}/releasebld/
+    cp ${SRCDIR}/deploy/platform/macosx/postInstall.sh ${WORKSPACE}/releasebld/
     pushd ${WORKSPACE}/releasebld/
     ${SRCDIR}/configure \
 	    --prefix=${MDSPLUS_DIR} \
