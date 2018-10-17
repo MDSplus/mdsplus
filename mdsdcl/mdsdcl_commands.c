@@ -245,8 +245,7 @@ EXPORT int mdsdcl_define_symbol(void *ctx, char **error, char **output __attribu
   status = setenv(name,value,1);
   if (status) {
     *error = malloc(100);
-    sprintf(*error, "putenv returned %d. Environment variable not set.", status);
-    perror("error from putenv");
+    sprintf(*error, "setenv returned %d. Environment variable not set.", status);
     status = MdsdclERROR;
   } else
     status = MdsdclSUCCESS;
@@ -265,18 +264,19 @@ EXPORT int mdsdcl_env(void *ctx, char **error, char **output __attribute__ ((unu
   if (value[0]=='\0') {
       value = getenv(name);
       if (value){
-         fprintf(stderr, "'%s'='%s'\n",name,value);
+         *output = malloc(strlen(name)+strlen(value)+7);
+         sprintf(*output, "%s=%s\n",name,value);
          //free(value);
-      } else
-         fprintf(stderr, "'%s'= not defined\n",name);
+      } else {
+         *error = malloc(strlen(name)+19);
+         sprintf(*error, "\"%s\" not defined\n",name);
+      }
   } else {
     value[0] = '\0'; value++;
-    fprintf(stderr, "'%s'='%s'\n",name,value);
     status = setenv(name,value,1);
     if (status) {
       *error = malloc(100);
-      perror("error from putenv");
-      sprintf(*error, "Attempting putenv(\"%s\")\n", value);
+      sprintf(*error, "setenv returned %d. Environment variable not set.", status);
       status = MdsdclERROR;
     } else
       status = MdsdclSUCCESS;
