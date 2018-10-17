@@ -67,7 +67,7 @@ extern int TdiDoTask();
 extern int TdiGetNci();
 extern int TdiExecute();
 extern int mdsdcl_do_command(char *command);
-extern int ServerBadSocket(int sock);
+extern int is_broken_socket(SOCKET sock);
 
 static int SendReply(SrvJob * job, int replyType, int status, int length, char *msg);
 
@@ -702,7 +702,7 @@ static SOCKET AttachPort(uint32_t addr, uint16_t port){
   ClientList *l, *new;
   for (l = Clients; l; l = l->next)
     if (l->addr == addr && l->port == port) {
-      if (ServerBadSocket(l->sock)) {
+      if (is_broken_socket(l->sock)) {
 	SrvJob job;
 	job.h.addr = l->addr;
 	job.h.port = l->port;

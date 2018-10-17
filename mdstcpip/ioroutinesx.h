@@ -52,7 +52,7 @@ EXPORT IoRoutines *Io(){
 static SOCKET getSocket(Connection* c){
   size_t len;
   char *info_name;
-  int readfd;
+  SOCKET readfd;
   GetConnectionInfoC(c, &info_name, &readfd, &len);
   return (info_name && strcmp(info_name, PROT) == 0) ? (SOCKET)readfd : (SOCKET)-1;
 }
@@ -323,11 +323,10 @@ static ssize_t io_recv_to(Connection* c, void *bptr, size_t num, int to_msec){
       struct timeval timeout;
       timeout.tv_sec  = to_msec/1000;
       timeout.tv_usec = (to_msec%1000)*1000;
-      int tablesize = FD_SETSIZE;
       fd_set readfds;
       FD_ZERO(&readfds);
       FD_SET(sock, &readfds);
-      recved = select(tablesize, &readfds, NULL, NULL, &timeout);
+      recved = select(sock+1, &readfds, NULL, NULL, &timeout);
 #else
       struct pollfd fd;
       fd.fd = sock; // your socket handler

@@ -79,7 +79,7 @@ typedef struct _connection {
   void *tdicontext[6];
   int addr;
   int compression_level;
-  int readfd;
+  SOCKET readfd;
   struct _io_routines *io;
 } Connection;
 
@@ -217,7 +217,7 @@ typedef void *pthread_mutex_t;
 /// \param user
 /// \return
 ///
-EXPORT int AcceptConnection(char *protocol, char *info_name, int readfd,
+EXPORT int AcceptConnection(char *protocol, char *info_name, SOCKET readfd,
                             void *info, size_t infolen, int *conid,
                             char **user);
 
@@ -377,9 +377,9 @@ EXPORT int GetCompressionLevel();
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
-EXPORT void *GetConnectionInfoC(Connection* c, char **info_name, int *readfd,
+EXPORT void *GetConnectionInfoC(Connection* c, char **info_name, SOCKET *readfd,
                                size_t *len);
-EXPORT void *GetConnectionInfo(int id, char **info_name, int *readfd,
+EXPORT void *GetConnectionInfo(int id, char **info_name, SOCKET *readfd,
                                size_t *len);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -685,8 +685,8 @@ int SendMdsMsgC(Connection* c, Message *m, int msg_options);
 /// \param info accessory info descriptor
 /// \param len length of accessory info descriptor
 ///
-EXPORT void SetConnectionInfo(int conid, char *info_name, int readfd, void *info, size_t len);
-EXPORT void SetConnectionInfoC(Connection* c, char *info_name, int readfd, void *info, size_t len);
+EXPORT void SetConnectionInfo(int conid, char *info_name, SOCKET readfd, void *info, size_t len);
+EXPORT void SetConnectionInfoC(Connection* c, char *info_name, SOCKET readfd, void *info, size_t len);
 
 EXPORT int SetCompressionLevel(int setting);
 
