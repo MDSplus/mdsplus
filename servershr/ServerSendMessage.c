@@ -521,7 +521,6 @@ static void ReceiverThread(void *sockptr){
   CONDITION_SET(&ReceiverRunning);
 // \CONDITION_SET(&ReceiverRunning);
   struct sockaddr_in sin;
-  int tablesize = FD_SETSIZE;
   uint32_t last_client_addr = 0;
   uint16_t last_client_port = 0;
   fd_set readfds, fdactive;
@@ -532,7 +531,7 @@ static void ReceiverThread(void *sockptr){
   for (rep = 0; rep < 10; rep++) {
     for (readfds=fdactive,readto=timeout
       ;; readfds=fdactive,readto=timeout,rep=0) {
-      int num = select(tablesize, &readfds, NULL, NULL, &readto);
+      int num = select(FD_SETSIZE, &readfds, NULL, NULL, &readto);
       if (num <0) break;
       if (num==0) continue;
       if (FD_ISSET(sock, &readfds)) {

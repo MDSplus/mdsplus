@@ -71,7 +71,7 @@ static int io_connect(Connection* c, char *protocol __attribute__ ((unused)), ch
         FD_SET(sock, &exceptfds);
         FD_ZERO(&writefds);
         FD_SET(sock, &writefds);
-        err = select(FD_SETSIZE, &readfds, &writefds, &exceptfds, &connectTimer);
+        err = select(sock+1, &readfds, &writefds, &exceptfds, &connectTimer);
         if (err == 0) {
           PERROR("Error in connect");
           shutdown(sock, 2);
@@ -126,7 +126,7 @@ static int io_flush(Connection* c){
     FD_SET(sock, &readfds);
     FD_ZERO(&writefds);
     FD_SET(sock, &writefds);
-    while (((((err = select(FD_SETSIZE, &readfds, &writefds, 0, &timout)) > 0)
+    while (((((err = select(sock+1, &readfds, &writefds, 0, &timout)) > 0)
              && FD_ISSET(sock, &readfds)) || (err == -1 && errno == EINTR)) && tries < 10) {
       tries++;
       if (FD_ISSET(sock, &readfds)) {
@@ -223,13 +223,12 @@ static int io_listen(int argc, char **argv){
       exit(EXIT_FAILURE);
     }
     // LISTEN LOOP ///////////////////////////////////////////////////////////
-    int tablesize = FD_SETSIZE;
     int error_count = 0;
     fd_set readfds;
     for(;;) {
       readfds = fdactive;
       // SELECT select read ready from socket list //
-      if (select(tablesize, &readfds, 0, 0, 0) != -1) {
+      if (select(FD_SETSIZE, &readfds, 0, 0, 0) != -1) {
         error_count = 0;
         if (FD_ISSET(ssock, &readfds)) {
           socklen_t len = sizeof(sin);

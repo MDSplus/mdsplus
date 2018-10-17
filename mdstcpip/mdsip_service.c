@@ -242,7 +242,6 @@ static int ServiceMain(int argc, char **argv)
   SOCKET s;
   int status;
   static struct sockaddr_in sin;
-  int tablesize = FD_SETSIZE;
   extern fd_set FdActive();
   struct timeval timeout = { 1, 0 };
   int error_count = 0;
@@ -283,8 +282,8 @@ static int ServiceMain(int argc, char **argv)
     }
     FD_ZERO(&fdactive);
     FD_SET(s, &fdactive);
-    for (readfds = fdactive; !shut; readfds = fdactive) {
-      if (select(tablesize, &readfds, 0, 0, &timeout) != SOCKET_ERROR) {
+    for (readfds=fdactive; !shut; readfds=fdactive) {
+      if (select(s+1, &readfds, 0, 0, &timeout) != SOCKET_ERROR) {
 	error_count = 0;
 	if (FD_ISSET(s, &readfds)) {
 	  int len = sizeof(struct sockaddr_in);

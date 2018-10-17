@@ -389,7 +389,7 @@ STATIC_ROUTINE void *handleRemoteAst(void *arg __attribute__ ((unused)))
   char buf[16];
   int i;
   Message *m;
-  int tablesize = FD_SETSIZE, selectstat;
+  int selectstat;
   fd_set readfds;
   while (1) {
     FD_ZERO(&readfds);
@@ -397,7 +397,7 @@ STATIC_ROUTINE void *handleRemoteAst(void *arg __attribute__ ((unused)))
       if (receive_sockets[i])
 	FD_SET(receive_sockets[i], &readfds);
     FD_SET(fds[0], &readfds);
-    selectstat = select(tablesize, &readfds, 0, 0, 0);
+    selectstat = select(FD_SETSIZE, &readfds, 0, 0, 0);
     if (selectstat == -1) {
       perror("select error");
       return NULL;
