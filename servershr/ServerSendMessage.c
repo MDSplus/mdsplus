@@ -72,7 +72,9 @@ int ServerSendMessage();
  typedef int socklen_t;
  #define random rand
  #define close closesocket
+ #define SOCKERROR(...) do{errno = WSAGetLastError();fprintf (stderr, __VA_ARGS__);}while (0)
 #else
+ #define SOCKERROR(...) fprintf (stderr, __VA_ARGS__)
  #include <netinet/in.h>
  #include <netdb.h>
  #include <arpa/inet.h>
@@ -131,10 +133,11 @@ static Client *Clients = NULL;
 static int MonJob = -1;
 static int JobId = 0;
 
-int ServerBadSocket(SOCKET socket);
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #define max(a,b) (((a) > (b)) ? (a) : (b))
+
+int is_broken_socket(SOCKET socket);
 
 static int start_receiver(uint16_t *port);
 int ServerConnect(char *server);
@@ -488,7 +491,7 @@ static void ResetFdactive(int rep, SOCKET sock, fd_set* active){
   Client* c;
   if (rep > 0) {
     for (c = Clients; c;) {
-      if (ServerBadSocket(c->reply_sock)) {
+      if (is_broken_socket(c->reply_sock)) {
 	DEBUG("removed client in ResetFdactive\n");
         _RemoveClient(c);
         c = Clients;
@@ -520,59 +523,57 @@ static void ReceiverThread(void *sockptr){
   struct sockaddr_in sin;
   int tablesize = FD_SETSIZE;
   uint32_t last_client_addr = 0;
+  uint16_t last_client_port = 0;
   fd_set readfds, fdactive;
   FD_ZERO(&fdactive);
   FD_SET(sock, &fdactive);
   int rep;
-  struct timeval timeout = {1,0};
+  struct timeval readto, timeout = {1,0};
   for (rep = 0; rep < 10; rep++) {
-    readfds = fdactive;
-    int num;
-    while ((num=select(tablesize, &readfds, NULL, NULL, &timeout)) != -1) {
-      if (!num) {
-      } else if (FD_ISSET(sock, &readfds)) {
-        socklen_t len = sizeof(struct sockaddr_in);
-        AcceptClient(accept(sock, (struct sockaddr *)&sin, &len), &sin, &fdactive);
+    for (readfds=fdactive,readto=timeout
+      ;; readfds=fdactive,readto=timeout,rep=0) {
+      int num = select(tablesize, &readfds, NULL, NULL, &readto);
+      if (num <0) break;
+      if (num==0) continue;
+      if (FD_ISSET(sock, &readfds)) {
+          socklen_t len = sizeof(struct sockaddr_in);
+          AcceptClient(accept(sock, (struct sockaddr *)&sin, &len), &sin, &fdactive);
       } else {
         Client *c, *next;
         for (;;) {
           LOCK_CLIENTS;
           for (c = Clients, next = c ? c->next : 0;
                c && (c->reply_sock == INVALID_SOCKET || !FD_ISSET(c->reply_sock, &readfds));
-               c = next, next = c ? c->next : 0) ;
+               c = next, next = c ? c->next : 0);
           UNLOCK_CLIENTS;
           if (c) {
             SOCKET reply_sock = c->reply_sock;
             last_client_addr = c->addr;
+            last_client_port = c->port;
             DoMessage(c, &fdactive);
             FD_CLR(reply_sock, &readfds);
           } else
             break;
         }
       }
-      readfds = fdactive;
-      rep = 0;
-      timeout.tv_sec = 1;
     }
-    fprintf(stderr,"Dispatcher select loop failed\nLast client addr = %u.%u.%u.%u\n",ADDR2IP(last_client_addr));
+    SOCKERROR("Dispatcher select loop failed\nLast client addr = %u.%u.%u.%u:%u\n",ADDR2IP(last_client_addr),last_client_port);
     ResetFdactive(rep, sock, &fdactive);
   }
   fprintf(stderr,"Cannot recover from select errors in ServerSendMessage, exitting\n");
   pthread_exit(0);
 }
 
-int ServerBadSocket(SOCKET socket)
+int is_broken_socket(SOCKET socket)
 {
-  int status = C_ERROR;
   if (socket != INVALID_SOCKET) {
-    int tablesize = FD_SETSIZE;
     fd_set fdactive;
-    struct timeval timeout = { 0, 1000 };
     FD_ZERO(&fdactive);
     FD_SET(socket, &fdactive);
-    status = select(tablesize, &fdactive, 0, 0, &timeout);
+    struct timeval timeout = {0,0}; // non-blocking
+    return select(socket+1, &fdactive, 0, 0, &timeout) < 0;
   }
-  return status!=C_OK;
+  return B_TRUE;
 }
 
 static Client* get_client(uint32_t addr, uint16_t port) {
@@ -635,7 +636,7 @@ EXPORT int ServerConnect(char *server_in) {
   uint16_t port = 0;
   Client* c = get_addr_port(server,&addr,&port);
   if (c) {
-    if (ServerBadSocket(getSocket(c->conid)))
+    if (is_broken_socket(getSocket(c->conid)))
       RemoveClient(c, NULL);
     else
       conid = c->conid;

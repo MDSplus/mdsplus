@@ -31,8 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "mdsip_connections.h"
 #include <pthread_port.h>
 
-
-//#define DEBUG
+#define DEBUG(...) //fprintf(stderr,__VA_ARGS__)
 
 static Connection *ConnectionList = NULL;
 static pthread_mutex_t connection_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -61,18 +60,14 @@ Connection *FindConnectionWithLock(int id, char state){
   c = _FindConnection(id, NULL);
   if (c) {
     while (c->state>0) {
-#ifdef DEBUG
-      fprintf(stderr,"Connection %02d -- %02x waiting\n",c->id,(unsigned char)state);
-#endif
+      DEBUG("Connection %02d -- %02x waiting\n",c->id,(unsigned char)state);
       pthread_cond_wait(&c->cond,&connection_mutex);
     }
     if (c->state<0) {
       pthread_cond_signal(&c->cond); // pass on signal
       c = NULL;
     } else {
-#ifdef DEBUG
-      fprintf(stderr,"Connection %02d -> %02x   locked\n",c->id,(unsigned char)state);
-#endif
+      DEBUG("Connection %02d -> %02x   locked\n",c->id,(unsigned char)state);
       c->state = state;
     }
   }
@@ -84,9 +79,7 @@ void UnlockConnection(Connection* c) {
   if (c) {
     CONNECTIONLIST_LOCK;
     c->state &= CON_DISCONNECT; // preserve CON_DISCONNECT
-#ifdef DEBUG
-      fprintf(stderr,"Connection %02d -> %02x unlocked\n",c->id,(unsigned char)c->state);
-#endif
+    DEBUG("Connection %02d -> %02x unlocked\n",c->id,(unsigned char)c->state);
     pthread_cond_signal(&c->cond);
     CONNECTIONLIST_UNLOCK;
   }
@@ -266,7 +259,7 @@ IoRoutines *GetConnectionIo(int conid){
 //  GetConnectionInfo  /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void *GetConnectionInfoC(Connection* c, char **info_name, int *readfd, size_t * len){
+void *GetConnectionInfoC(Connection* c, char **info_name, SOCKET *readfd, size_t * len){
   if (c) {
     if (len)
       *len = c->info_len;
@@ -279,7 +272,7 @@ void *GetConnectionInfoC(Connection* c, char **info_name, int *readfd, size_t * 
   return NULL;
 }
 
-void *GetConnectionInfo(int conid, char **info_name, int *readfd, size_t * len){
+void *GetConnectionInfo(int conid, char **info_name, SOCKET *readfd, size_t * len){
   void *ans;
   CONNECTIONLIST_LOCK;
   Connection *c = _FindConnection(conid, 0);
@@ -292,7 +285,7 @@ void *GetConnectionInfo(int conid, char **info_name, int *readfd, size_t * len){
 //  SetConnectionInfo  /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void SetConnectionInfoC(Connection* c, char *info_name, int readfd, void *info, size_t len){
+void SetConnectionInfoC(Connection* c, char *info_name, SOCKET readfd, void *info, size_t len){
   if (c) {
     c->info_name = strcpy(malloc(strlen(info_name) + 1), info_name);
     if (info) {
@@ -306,7 +299,7 @@ void SetConnectionInfoC(Connection* c, char *info_name, int readfd, void *info, 
   }
 }
 
-void SetConnectionInfo(int conid, char *info_name, int readfd, void *info, size_t len){
+void SetConnectionInfo(int conid, char *info_name, SOCKET readfd, void *info, size_t len){
   CONNECTIONLIST_LOCK;
   Connection *c = _FindConnection(conid, 0);
   if (c) SetConnectionInfoC(c, info_name, readfd, info, len);
@@ -438,7 +431,7 @@ int AddConnection(Connection* c) {
 }
 
 
-int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, size_t info_len, int *id, char **usr){
+int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info, size_t info_len, int *id, char **usr){
   Connection* c = NewConnectionC(protocol);
   INIT_STATUS_ERROR;
   if (c) {
