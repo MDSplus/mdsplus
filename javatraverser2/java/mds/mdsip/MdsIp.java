@@ -402,22 +402,22 @@ public class MdsIp extends Mds{
                 if(known_hosts.exists()) try{
                     _jsch.setKnownHosts(known_hosts.getAbsolutePath());
                 }catch(final JSchException e){
-                    System.err.println(e.getMessage());
+                    e.printStackTrace();
                 }
                 else try{
                     known_hosts.createNewFile();
                 }catch(final IOException e){
-                    System.err.println(e.getMessage());
+                    e.printStackTrace();
                 }
                 if(id_rsa.exists()) try{
                     _jsch.addIdentity(id_rsa.getAbsolutePath());
                 }catch(final JSchException e){
-                    System.err.println(e.getMessage());
+                    e.printStackTrace();
                 }
                 if(config.exists()) try{
                     _jsch.setConfigRepository(OpenSSHConfig.parseFile(config.getAbsolutePath()));
                 }catch(final IOException e){
-                    System.err.println(e.getMessage());
+                    e.printStackTrace();
                 }
             }catch(final Exception e){
                 System.err.println("Error loading JSch, no ssh support!");
@@ -630,7 +630,7 @@ public class MdsIp extends Mds{
         try{
             this.connectToServer();
         }catch(final IOException e){
-            this.last_error = e.getMessage();
+            this.last_error = "connect: " + e.getMessage();
             return false;
         }
         return this.connected;

@@ -114,6 +114,7 @@ TOOLS_SRC = \
 MDS_SRC = \
 	mds/Mds.java \
 	mds/MdsApi.java \
+	mds/Mdsdcl.java \
 	mds/MdsEvent.java \
 	mds/MdsListener.java \
 	mds/MdsMisc.java \
