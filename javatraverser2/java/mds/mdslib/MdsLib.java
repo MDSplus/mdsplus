@@ -36,6 +36,7 @@ public final class MdsLib extends Mds{
             return MdsLib.testLib(libname);
         }catch(final UnsatisfiedLinkError exc){/**/}
         try{
+            @SuppressWarnings("resource")
             final InputStream is = MdsLib.class.getResourceAsStream(libinjar);
             if(is == null) throw new FileNotFoundException("File '" + libinjar + "' was not found inside JAR: " + libinjar);
             try{
@@ -50,6 +51,7 @@ public final class MdsLib extends Mds{
                 else libpath.createNewFile();
                 if(!libpath.exists()) throw new FileNotFoundException("Could not create file '" + libpath.getAbsolutePath() + "'.");
                 libpath.deleteOnExit();
+                @SuppressWarnings("resource")
                 final OutputStream os = new FileOutputStream(libpath);
                 try{
                     int readBytes;
@@ -76,6 +78,7 @@ public final class MdsLib extends Mds{
     private static final String testLib(final String libname) {
         try{
             final MdsLib mdslib = new MdsLib();
+            mdslib.getAPI().treeSetPrivateCtx(true);
             if(1 != mdslib.getInteger("1BU")) return "Library does not work properly.";
         }catch(final Exception e){
             return "Library is broken " + libname + ": " + e.toString();
@@ -105,6 +108,11 @@ public final class MdsLib extends Mds{
             }
         }
         return (T)(buffer == null ? null : Mds.bufferToClass(ByteBuffer.wrap(buffer).order(Descriptor.BYTEORDER), request.cls).setLocal());
+    }
+
+    @Override
+    public void execute(final String expr, final Descriptor<?>... args) throws MdsException {
+        this.getDescriptor(expr + ";1", args);
     }
 
     @Override

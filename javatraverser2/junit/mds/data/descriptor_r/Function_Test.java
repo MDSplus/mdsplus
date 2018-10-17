@@ -45,19 +45,19 @@ public final class Function_Test{
 
     @Test
     public final void test_$a0() throws MdsException {
-        Assert.assertEquals(Function_Test.tdi.tdiExecute("$A0").decompile(), CONST.$A0().evaluate().decompile());// , Function.$A0()));
+        Assert.assertEquals(Function_Test.tdi.tdiExecute(null, "$A0").data.decompile(), CONST.$A0.evaluate().decompile());// , Function.$A0()));
     }
 
     @Test
     public final void test_$p0() throws MdsException {
-        Assert.assertEquals("Build_With_Units(101325., \"Pa\")", Function_Test.tdi.tdiCompile("$P0").evaluate().decompile());
+        Assert.assertEquals("Build_With_Units(101325., \"Pa\")", Function_Test.tdi.tdiCompile(null, "$P0").data.evaluate().decompile());
     }
 
     @Test
     public final void test_$value() throws MdsException {
-        Assert.assertEquals("[1]", new Signal(CONST.$VALUE(), new Int32Array(1), new Uint64Array(1l)).getData().decompile());
-        Assert.assertEquals("[1.]", new Signal(new CAST.Float(CONST.$VALUE()), new Int16Array((short)1), new Uint64Array(1l)).getData().decompile());
-        Assert.assertEquals("[1D0]", new Signal(new CAST.FT_Float(CONST.$VALUE()), new Uint32Array(1), new Uint64Array(1l)).getData().decompile());
+        Assert.assertEquals("[1]", new Signal(CONST.$VALUE, new Int32Array(1), new Uint64Array(1l)).getData().decompile());
+        Assert.assertEquals("[1.]", new Signal(new CAST.Float(CONST.$VALUE), new Int16Array((short)1), new Uint64Array(1l)).getData().decompile());
+        Assert.assertEquals("[1D0]", new Signal(new CAST.FT_Float(CONST.$VALUE), new Uint32Array(1), new Uint64Array(1l)).getData().decompile());
     }
 
     @Test
@@ -104,7 +104,7 @@ public final class Function_Test{
         Function fun;
         Assert.assertEquals("\"str\" // 12345WU", (fun = new BINARY.Concat(new CString("str"), new Uint16((short)12345))).decompile());
         Assert.assertEquals("\"str   12345\"", fun.getData().decompile());
-        Assert.assertEquals("\"test\" // TEXT(1) // \"test\"", (fun = (Function)Function_Test.tdi.tdiCompile("'test'//text(1)//\"test\"")).decompile());
+        Assert.assertEquals("\"test\" // TEXT(1) // \"test\"", (fun = (Function)Function_Test.tdi.tdiCompile(null, "'test'//text(1)//\"test\"").data).decompile());
         Assert.assertEquals("\"test           1test\"", fun.getData().decompile());// tdi produces length12
     }
 
@@ -173,17 +173,13 @@ public final class Function_Test{
     }
 
     private final Descriptor<?> testdeco(final String expr) throws MdsException {
-        final Descriptor<?> dsc = Function_Test.tdi.tdiCompile(expr);
-        String deco;
-        Assert.assertEquals(Function_Test.tdi.tdiDecompile(dsc), deco = dsc.decompile());
-        System.out.println(deco);
+        final Descriptor<?> dsc = Function_Test.tdi.tdiCompile(null, expr).data;
+        Assert.assertEquals(Function_Test.tdi.tdiDecompile(null, dsc), dsc.decompile());
         return dsc;
     }
 
     private final void testdecoeval(final String expr) throws MdsException {
         final Descriptor<?> dsc = this.testdeco(expr);
-        String deco;
-        Assert.assertEquals(Function_Test.tdi.tdiEvaluate(dsc).decompile(), deco = dsc.evaluate().decompile());
-        System.out.println(deco);
+        Assert.assertEquals(Function_Test.tdi.tdiEvaluate(null, dsc).data.decompile(), dsc.evaluate().decompile());
     }
 }

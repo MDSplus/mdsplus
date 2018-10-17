@@ -8,7 +8,6 @@ import mds.Mds;
 import mds.MdsException;
 import mds.data.CTX;
 import mds.data.DTYPE;
-import mds.data.TREE;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_R;
 import mds.data.descriptor_s.NUMBER;
@@ -38,7 +37,8 @@ public abstract class Editor extends JPanel{
     public abstract Descriptor<?> getData() throws MdsException;
 
     protected Mds getMds() {
-        if(this.ctx instanceof TREE) return ((TREE)this.ctx).mds;
+        final Mds mds = this.ctx.getMds();
+        if(mds != null) return mds;
         return Mds.getActiveMds();
     }
 

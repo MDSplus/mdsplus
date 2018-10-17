@@ -156,13 +156,12 @@ public class SegmentEditor extends Editor{
     public final void setData(final Descriptor<?> data) {/*NOP*/}
 
     public final void setSegment(final int segment) {
-        final List list;
         try{
-            this.data = list = this.node.nid.getSegment(segment);
             this.segment = segment;
-            this.edit[0].setData(list.get(0));
-            this.edit[1].setData(list.get(1));
+            this.edit[0].setData(this.node.nid.getSegmentData(segment));
+            this.edit[1].setData(this.node.nid.getSegmentDim(segment));
             this.edit[2].setData(this.node.nid.getSegmentScale());
+            ((ExprEditor)this.edit[2]).setValue(this.edit[0].data);
             final List limits = this.node.nid.getSegmentLimits(segment);
             this.edit[3].setData(limits.get(0));
             this.edit[4].setData(limits.get(1));

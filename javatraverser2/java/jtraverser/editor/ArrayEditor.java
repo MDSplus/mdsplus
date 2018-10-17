@@ -181,12 +181,6 @@ public class ArrayEditor extends Editor implements ChangeListener{
     }
 
     @Override
-    protected void finalize() throws Throwable {
-        this.interrupt();
-        super.finalize();
-    }
-
-    @Override
     public Descriptor<?> getData() throws MdsException {
         if(!(this.data instanceof NUMBERArray)) return this.data;
         @SuppressWarnings("unchecked")

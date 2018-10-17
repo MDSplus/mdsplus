@@ -17,7 +17,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 import java.util.Vector;
 import java.util.jar.Attributes;
@@ -26,6 +25,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -41,6 +41,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.ToolTipManager;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
@@ -54,15 +56,11 @@ import jtraverser.dialogs.SubTreeList;
 import jtraverser.dialogs.TagsDialog;
 import jtraverser.tools.DecompileTree;
 import mds.Mds;
+import mds.MdsApi;
 import mds.MdsException;
-import mds.MdsShr;
 import mds.TCL;
-import mds.TreeShr;
-import mds.TreeShr.TagRefStatus;
 import mds.data.TREE;
-import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_s.NODE;
-import mds.data.descriptor_s.Nid;
 import mds.mdsip.MdsIp;
 import mds.mdsip.MdsIp.Provider;
 import mds.mdslib.MdsLib;
@@ -201,20 +199,19 @@ public class TreeManager extends JPanel{
 
                 @Override
                 public void actionPerformed(final ActionEvent e) {
-                    String aeeval;
+                    String aedata;
                     final Node currnode = DisplayMenu.this.treeman.getCurrentNode();
                     if(currnode == null) return;
                     try{
                         final NODE<?> datanode = currnode.nid.followReference();
                         final TREE tree = DisplayDataMenu.this.treeman.getCurrentTree();
-                        final Descriptor<?> aedata = tree.mds.getDescriptor(tree.ctx, this.evalexpr, datanode);
-                        if(aedata == null) aeeval = "no data";
-                        else aeeval = aedata.toString();
+                        aedata = tree.getMds().getAPI().tdiDecompile(tree, this.evalexpr, datanode);
+                        if(aedata == null) aedata = "no data";
                     }catch(final MdsException de){
-                        aeeval = de.getMessage();
+                        aedata = de.getMessage();
                     }
-                    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(aeeval), null);
-                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "<html><body><p style='width: 360px;'>" + aeeval + "</p></body></html>", this.evalexpr.replace("$", currnode.getFullPath()), JOptionPane.PLAIN_MESSAGE);
+                    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(aedata), null);
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "<html><body><p style='width: 360px;'>" + aedata + "</p></body></html>", this.evalexpr.replace("$", currnode.getFullPath()), JOptionPane.PLAIN_MESSAGE);
                 }
             }
 
@@ -420,10 +417,18 @@ public class TreeManager extends JPanel{
 
             @Override
             public final void actionPerformed(final ActionEvent e) {
-                if(e.getSource().equals(CopyFormat.this.fullpath)) ExtrasMenu.this.treeman.copy_format = CopyFormat.FULLPATH;
-                else if(e.getSource().equals(CopyFormat.this.path)) ExtrasMenu.this.treeman.copy_format = CopyFormat.PATH;
-                else if(e.getSource().equals(CopyFormat.this.minpath)) ExtrasMenu.this.treeman.copy_format = CopyFormat.MINPATH;
-                else if(e.getSource().equals(CopyFormat.this.nodename)) ExtrasMenu.this.treeman.copy_format = CopyFormat.NODENAME;
+                if(e.getSource().equals(CopyFormat.this.fullpath)) ExtrasMenu.this.treeman.set_copy_format(CopyFormat.FULLPATH);
+                else if(e.getSource().equals(CopyFormat.this.path)) ExtrasMenu.this.treeman.set_copy_format(CopyFormat.PATH);
+                else if(e.getSource().equals(CopyFormat.this.minpath)) ExtrasMenu.this.treeman.set_copy_format(CopyFormat.MINPATH);
+                else if(e.getSource().equals(CopyFormat.this.nodename)) ExtrasMenu.this.treeman.set_copy_format(CopyFormat.NODENAME);
+            }
+        }
+        public final class OpenTCL implements ActionListener{
+            @Override
+            public final void actionPerformed(final ActionEvent e) {
+                final JFrame f = TCL.getPrompt(ExtrasMenu.this.treeman.getMds());
+                f.setLocation(ExtrasMenu.this.treeman.getLocationOnScreen());
+                f.setVisible(true);
             }
         }
         public final class ShowActionList implements ActionListener{
@@ -437,14 +442,14 @@ public class TreeManager extends JPanel{
             public final void actionPerformed(final ActionEvent e) {
                 try{
                     final Mds mds = ExtrasMenu.this.treeman.getMds();
-                    final TreeShr tree = new TreeShr(mds);
-                    final TCL tcl = new TCL(mds);
-                    final boolean wasprivate = tree.treeSetPrivateCtx(false);
+                    final MdsApi api = mds.getAPI();
+                    final TCL tcl = mds.getTCL();
+                    final boolean wasprivate = api.treeSetPrivateCtx(false);
                     final StringBuilder msg = new StringBuilder(256).append("Public:\n");
                     msg.append(tcl.showDatabase());
-                    tree.treeSetPrivateCtx(true);
+                    api.treeSetPrivateCtx(true);
                     msg.append("\nPrivate:\n").append(tcl.showDatabase());
-                    tree.treeSetPrivateCtx(wasprivate);
+                    api.treeSetPrivateCtx(wasprivate);
                     JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), msg.toString(), mds.toString(), JOptionPane.PLAIN_MESSAGE);
                 }catch(final MdsException ex){/**/}
             }
@@ -478,16 +483,14 @@ public class TreeManager extends JPanel{
                     public final void run() {
                         final TreeView treeview = ExtrasMenu.this.treeman.getCurrentTreeView();
                         final TREE tree = treeview.getTree();
-                        TagRefStatus tag = TagRefStatus.init;
                         try{
-                            final String root = new StringBuilder(tree.expt.length() + 3).append("\\").append(tree.expt).append("::").toString();
-                            while((tag = tree.findTagWild("***", tag)).ok()){
-                                tabmodel.addRow(new String[]{tag.data.replace(root, "\\"), new Nid(tag.nid, tree).toString()});
+                            for(final String[] row : tree.findTagsPath()){
+                                tabmodel.addRow(row);
                                 synchronized(this){
                                     if(this.isInterrupted()) return;
                                 }
                             }
-                        }catch(final MdsException exc){/**/}
+                        }catch(final MdsException me){/**/}
                     }
                 };
                 thread.start();
@@ -500,7 +503,9 @@ public class TreeManager extends JPanel{
             super(treeman, menu);
             this.addMenuItem(new JCheckBoxMenuItem("Always on top"), new AlwaysOnTop());
             menu.add(new CopyFormat());
+            this.addSeparator();
             this.addMenuItem("Show DataBase", new ShowDatabase());
+            this.addMenuItem("MdsTCL", new OpenTCL());
             this.addSeparator();
             this.addMenuItem("List Actions", new ShowActionList());
             this.addMenuItem("List Subtrees", new ShowSubTreeList());
@@ -513,7 +518,7 @@ public class TreeManager extends JPanel{
             this.items.get(0).setEnabled(ExtrasMenu.this.treeman.frame.isAlwaysOnTopSupported());
             ((JCheckBoxMenuItem)this.items.get(0)).setSelected(ExtrasMenu.this.treeman.frame.isAlwaysOnTop());
             this.items.get(1).setEnabled(this.treeman.getCurrentMdsView() != null);
-            for(final JMenuItem item : this.items.subList(2, this.items.size()))
+            for(final JMenuItem item : this.items.subList(3, this.items.size()))
                 item.setEnabled(open);
         }
     }
@@ -546,6 +551,18 @@ public class TreeManager extends JPanel{
             @Override
             public final void actionPerformed(final ActionEvent e) {
                 final JTextField provider = new JTextField(FileMenu.prev_provider, 20);
+                provider.addAncestorListener(new AncestorListener(){
+                    @Override
+                    public void ancestorAdded(final AncestorEvent ae) {
+                        ((JTextField)ae.getSource()).grabFocus();
+                    }
+
+                    @Override
+                    public void ancestorMoved(final AncestorEvent ae) {/**/}
+
+                    @Override
+                    public void ancestorRemoved(final AncestorEvent ae) {/**/}
+                });
                 final Object[] ob = {"[ssh://][<user>@]<hostname>[:<port>]", provider};
                 final int result = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), ob, "Open new connection", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
                 if(result == JOptionPane.OK_OPTION) new Thread(new Runnable(){
@@ -604,7 +621,7 @@ public class TreeManager extends JPanel{
             final boolean noopen = noconnected || this.treeman.getCurrentTree() == null;
             int i = 1;
             this.items.get(i++).setEnabled(!noconnected);
-            this.items.get(i++).setEnabled(noopen ? false : this.treeman.getCurrentTree().isEditable());
+            this.items.get(i++).setEnabled(noopen ? false : this.treeman.getCurrentTree().is_editable());
             this.items.get(i++).setEnabled(!noopen);
             this.items.get(i++).setEnabled(!nodisconnect);
             // this.items.get(i++).setEnabled(!noopen);
@@ -640,10 +657,10 @@ public class TreeManager extends JPanel{
                 });
             }
         }
-        protected final List<JMenuItem>    items = new ArrayList<JMenuItem>();
-        final protected TreeManager        treeman;
-        protected final GridBagConstraints gbc;
-        protected final JComponent         menu;
+        protected final ArrayList<JMenuItem> items = new ArrayList<JMenuItem>();
+        final protected TreeManager          treeman;
+        protected final GridBagConstraints   gbc;
+        protected final JComponent           menu;
 
         public Menu(final TreeManager treeman, final JComponent menu){
             this(treeman, menu, -1);
@@ -702,14 +719,6 @@ public class TreeManager extends JPanel{
                 ModifyMenu.this.treeman.dialogs.modifyFlags.open();
             }
         }
-        public final class SetupDevice implements ActionListener{
-            @Override
-            public final void actionPerformed(final ActionEvent e) {
-                final Node currnode = ModifyMenu.this.treeman.getCurrentNode();
-                if(currnode == null) return;
-                currnode.setupDevice();
-            }
-        }
         private final class TurnOnOff implements ActionListener{
             private final boolean on;
 
@@ -735,7 +744,6 @@ public class TreeManager extends JPanel{
             this.addMenuItem("Turn On", new TurnOnOff(true));
             this.addMenuItem("Turn Off", new TurnOnOff(false));
             this.addSeparator();
-            this.addMenuItem("Setup Device", new SetupDevice());
             this.addMenuItem("Do Action", new DoAction());
         }
 
@@ -747,8 +755,7 @@ public class TreeManager extends JPanel{
                 final int usage = node.getUsage();
                 final boolean isst = usage == NODE.USAGE_STRUCTURE || usage == NODE.USAGE_SUBTREE;
                 final boolean isact = usage == NODE.USAGE_ACTION || usage == NODE.USAGE_TASK;
-                final boolean isdev = usage == NODE.USAGE_DEVICE;
-                mask = new boolean[]{!isst, true, true, true, isdev, isact};
+                mask = new boolean[]{!isst, true, true, true, isact};
             }
             for(int i = 0; i < mask.length; i++)
                 this.items.get(i).setEnabled(mask[i]);
@@ -760,7 +767,6 @@ public class TreeManager extends JPanel{
     }
     private final JProgressBar     progress = new JProgressBar();
     private final JLabel           status   = new JLabel();
-    public int                     copy_format;
     public final Dialogs           dialogs;
     private final jTraverserFacade frame;
     private final OpenTreeDialog   opentree_dialog;
@@ -843,6 +849,12 @@ public class TreeManager extends JPanel{
             }
         }
         final MdsView mdsview = new MdsView(this, mds);
+        mdsview.addChangeReportListener(new Job(){
+            @Override
+            public void program() {
+                TreeManager.this.reportChange();
+            }
+        });
         this.tabs.addTab(mdsview.toString(), mdsview);
         this.tabs.setSelectedIndex(this.tabs.getTabCount() - 1);
         return mdsview;
@@ -968,6 +980,11 @@ public class TreeManager extends JPanel{
         this.frame.repaint();
     }
 
+    public void set_copy_format(final int format) {
+        for(final MdsView view : this.mdsviews)
+            view.set_copy_format(format);
+    }
+
     public final void setProgress(final MdsView mdsView, final int value, final int max) {
         if(!mdsView.equals(this.getCurrentMdsView())) return;
         this.progress.setValue(value);
@@ -978,7 +995,7 @@ public class TreeManager extends JPanel{
         final Mds mds;
         if(exp == null || path == null || exp.length() == 0 || path.length() == 0 || (mds = this.getMds()) == null) return;
         try{
-            new MdsShr(mds).mdsPutEnv(null, new StringBuilder(8 + exp.length() + path.length()).append(exp.toLowerCase()).append("_path=").append(path).toString());
+            mds.getAPI().setenv(new StringBuilder(16).append(exp.toLowerCase()).append("_path=").toString(), path);
         }catch(final MdsException e){
             JOptionPane.showMessageDialog(this, "Could not set environment variable.\n" + e.getMessage(), "Error setting tree_path", JOptionPane.WARNING_MESSAGE);
         }

@@ -40,12 +40,12 @@ public class SubTreeList extends CheckBoxList{
     @Override
     public final void update() {
         super.update();
-        if(this.treeview.getTree().mds.isLowLatency()){
+        if(this.treeview.getMds().isLowLatency()){
             final int[] nid = new int[this.checkboxes.size()];
             for(int i = 0; i < this.checkboxes.size(); i++)
                 nid[i] = ((Nid)this.checkboxes.getElementAt(i).getClientProperty(CheckBoxList.PROP_NID)).getNidNumber();
             try{
-                final int[] flag = this.treeview.getTree().mds.getIntegerArray(this.treeview.getTree().ctx, "GETNCI($,'GET_FLAGS')", new Int32Array(nid));
+                final int[] flag = this.treeview.getMds().getIntegerArray(this.treeview.getTree().ctx, "GETNCI($,'GET_FLAGS')", new Int32Array(nid));
                 for(int i = 0; i < this.checkboxes.size(); i++)
                     this.checkboxes.getElementAt(i).setSelected((flag[i] & NODE.Flags.INCLUDE_IN_PULSE) != 0);
             }catch(final MdsException e){

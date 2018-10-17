@@ -110,6 +110,7 @@ public abstract class Descriptor_R<T extends Number>extends Descriptor<T>{
         super((short)(data == null ? 0 : data.limit()), dtype, Descriptor_R.CLASS, data, Descriptor_R._dscoffIa + (args == null ? 0 : args.length * Integer.BYTES), Descriptor_R.joinSize(args));
         int getNargs;
         this.b.put(Descriptor_R._ndesc, (byte)(getNargs = args == null ? 0 : args.length));
+        boolean local = true;
         if(args != null && args.length > 0){
             int offset = Descriptor_R._dscoffIa + this.length() + args.length * Integer.BYTES;
             for(int i = 0; i < getNargs; i++){
@@ -118,12 +119,14 @@ public abstract class Descriptor_R<T extends Number>extends Descriptor<T>{
                 else{
                     this.b.putInt(pos, offset);
                     offset += args[i].getSize();
+                    if(!args[i].isLocal()) local = false;
                 }
             }
             for(int i = 0; i < getNargs; i++){
                 if(this.desc_ptr(i) != 0) ((ByteBuffer)this.b.position(this.desc_ptr(i))).put(args[i].b.duplicate()).position(0);
             }
         }
+        if(local) this.setLocal();
     }
 
     protected Descriptor_R(final byte dtype, final ByteBuffer data, final Descriptor<?>[] args1, final Descriptor<?>... args0){

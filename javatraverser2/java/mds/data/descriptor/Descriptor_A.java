@@ -2,6 +2,8 @@ package mds.data.descriptor;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Iterator;
 import mds.MdsException;
 import mds.data.DTYPE;
 import mds.data.descriptor_a.CStringArray;
@@ -15,6 +17,7 @@ import mds.data.descriptor_a.Int16Array;
 import mds.data.descriptor_a.Int32Array;
 import mds.data.descriptor_a.Int64Array;
 import mds.data.descriptor_a.Int8Array;
+import mds.data.descriptor_a.NUMBERArray;
 import mds.data.descriptor_a.NidArray;
 import mds.data.descriptor_a.Uint128Array;
 import mds.data.descriptor_a.Uint16Array;
@@ -24,7 +27,7 @@ import mds.data.descriptor_a.Uint8Array;
 import mds.mdsip.Message;
 
 /** Array Descriptor (4) **/
-public abstract class Descriptor_A<T>extends ARRAY<T[]>{
+public abstract class Descriptor_A<T>extends ARRAY<T[]> implements Iterable<T>{
     private final class AStringBuilder{
         private final int           length, i = 0;
         private final StringBuilder pout;
@@ -152,6 +155,43 @@ public abstract class Descriptor_A<T>extends ARRAY<T[]>{
         super(b);
     }
 
+    public final byte[] asByteArray() {
+        return this.asByteArray(0, this.arsize());
+    }
+
+    public final byte[] asByteArray(final int offset, final int length) {
+        final ByteBuffer bb = this.getBuffer();
+        bb.position(bb.position() + offset);
+        if(bb.order() == ByteOrder.LITTLE_ENDIAN && this instanceof NUMBERArray && this.length() != 1){
+            final ByteBuffer sb = ByteBuffer.allocate(length);
+            switch(this.length()){
+                case 2:
+                    while(bb.remaining() >= 2)
+                        sb.putShort(bb.getShort());
+                    return sb.array();
+                case 4:
+                    while(bb.remaining() >= 4)
+                        sb.putLong(bb.getLong());
+                    return sb.array();
+                case 8:
+                    while(bb.remaining() >= 8)
+                        sb.putLong(bb.getLong());
+                    return sb.array();
+                case 16:
+                    long tmp;
+                    while(bb.remaining() >= 16){
+                        tmp = bb.getLong();
+                        sb.putLong(bb.getLong());
+                        sb.putLong(tmp);
+                    }
+                    return sb.array();
+            }
+        }
+        final byte[] bytes = new byte[length];
+        bb.get(bytes);
+        return bytes;
+    }
+
     @Override
     public StringBuilder decompile(final int prec, final StringBuilder pout, final int mode) {
         pout.ensureCapacity(1024);
@@ -235,6 +275,24 @@ public abstract class Descriptor_A<T>extends ARRAY<T[]>{
     @Override
     public boolean isAtomic() {
         return Descriptor_A.atomic;
+    }
+
+    @Override
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public Iterator<T> iterator() {
+        return new Iterator(){
+            int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                return this.index < Descriptor_A.this.getLength();
+            }
+
+            @Override
+            public T next() {
+                return Descriptor_A.this.getElement(this.index++);
+            }
+        };
     }
 
     public Descriptor<?> not() {

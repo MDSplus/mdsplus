@@ -1,6 +1,7 @@
 package mds.data.descriptor_s;
 
 import java.nio.ByteBuffer;
+import mds.Mds;
 import mds.MdsException;
 import mds.data.CTX;
 import mds.data.DATA;
@@ -80,6 +81,11 @@ public final class Pointer extends Descriptor_S<Number> implements DATA<Number>,
     @Override
     public Descriptor<?> getLocal_(final FLAG local) {
         return this;
+    }
+
+    @Override
+    public Mds getMds() {
+        return this.mds;
     }
 
     @Override

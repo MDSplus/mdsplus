@@ -9,7 +9,6 @@ import org.junit.Test;
 import mds.data.DTYPE;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_a.Int16Array;
-import mds.data.descriptor_apd.List;
 import mds.data.descriptor_r.Call;
 import mds.data.descriptor_s.CString;
 
@@ -35,6 +34,7 @@ public class Mds_Test{
 
     @Test
     public void test_getDescriptor() throws MdsException {
+        Assert.assertEquals("[0.,.5,1.,1.5]", Mds_Test.mds.getDescriptor("[0W,1W,2W,3W]*0.5E0+0E0").toString());
         Assert.assertEquals("Set_Range(1000,0. /*** etc. ***/)", Mds_Test.mds.getDescriptor("Array([1000],0.)").toString());
         Assert.assertEquals("[[[1.1],[2.1]],[[3.1],[4.1]]]", Mds_Test.mds.getDescriptor("[[[1.1],[2.1]],[[3.1],[4.1]]]").toString());
         final Descriptor<?> array = new Int16Array(new short[]{1, 2, 3, 4, 5});
@@ -49,6 +49,6 @@ public class Mds_Test{
         Assert.assertArrayEquals(Mds_Test.mds.getDescriptor("SerializeOut(TreeShr->TreeCtx:P())").toByteArray(), call.serializeArray());
         Assert.assertArrayEquals(call.serializeArray(), Mds_Test.mds.getDescriptor("SerializeOut($)", call).toByteArray());
         Assert.assertEquals("TreeShr->TreeCtx:P()", Mds_Test.mds.getDescriptor("AS_IS(TreeShr->TreeCtx:P())").decompile());
-        Assert.assertEquals("[TreeShr->TreeCtx:P(),TreeShr->TreeCtx:P()]", Mds_Test.mds.getDescriptor(List.list + "As_Is(TreeShr->TreeCtx:P()),AS_IS($))", new Call(DTYPE.POINTER, "TreeShr", "TreeCtx")).decompile());
+        Assert.assertEquals("[TreeShr->TreeCtx:P(),TreeShr->TreeCtx:P()]", Mds_Test.mds.getDescriptor("List(*,As_Is(TreeShr->TreeCtx:P()),AS_IS($))", new Call(DTYPE.POINTER, "TreeShr", "TreeCtx")).decompile());
     }
 }
