@@ -14,7 +14,7 @@ import mds.data.descriptor_s.Float32;
 import mds.data.descriptor_s.Int32;
 import mds.data.descriptor_s.Int64;
 
-public class MdsMisc extends TdiShr{
+public class MdsMisc extends Mdsdcl{
     public final static class DataStruct{
         private static String byte2String(final byte[] bytes) {
             try{

@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Vector;
+import mds.Mdsdcl.DclStatus;
 import mds.data.CTX;
 import mds.data.TREE;
 import mds.data.descriptor.ARRAY;
@@ -457,7 +458,11 @@ public abstract class Mds{
         this.mdsSetEvent(event, eventid);
     }
 
-    public final String tcl(final String tclcmd) throws MdsException {
-        return this.getString("__a=__e=*;TCL($,__a,__e);execute(\"deallocate('__*');`(__a//__e;))\"", new CString(tclcmd)).trim();
+    public final String tcl(final CTX ctx, final String tclcmd) throws MdsException {
+        final DclStatus res = this.getAPI().mdsdcl_do_command_dsc(ctx, tclcmd);
+        MdsException.handleStatus(res.status);
+        final String err = res.getErrString();
+        if(err != null) throw new Mdsdcl.DclException(err);
+        return res.getOutString();
     }
 }

@@ -86,6 +86,7 @@ jtraverser\tools\DecompileTree.java
 SET MDS_SRC=^
 mds\Mds.java ^
 mds\MdsApi.java ^
+mds\Mdsdcl.java ^
 mds\MdsEvent.java ^
 mds\MdsException.java ^
 mds\MdsListener.java ^

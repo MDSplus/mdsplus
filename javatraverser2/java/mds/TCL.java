@@ -84,6 +84,7 @@ public final class TCL{
         TCL.getPrompt(new MdsLib()).setVisible(true);
     }
     private final Mds mds;
+    boolean           setcommandtcl = false;
 
     public TCL(final Mds mds){
         this.mds = mds;
@@ -103,7 +104,11 @@ public final class TCL{
 
     public String execute(final String command) {
         try{
-            return this.mds.tcl(command);
+            if(!this.setcommandtcl){
+                this.mds.tcl(null, "set command tcl");
+                this.setcommandtcl = true;
+            }
+            return this.mds.tcl(null, command);
         }catch(final MdsException e){
             return e.toString();
         }
