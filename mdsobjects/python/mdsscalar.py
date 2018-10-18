@@ -46,7 +46,7 @@ class Scalar(_dat.Data):
         if len(value)==0:
             return object.__new__(cls)
         value = value[0]
-        if isinstance(value,(_arr.Array,list,tuple,_ver.generator,_ver.mapclass,_ver.nparray)):
+        if isinstance(value,(_arr.Array,list,tuple,_ver.generator,_ver.mapclass,_ver.nparray,_ver.xrange)):
             key = cls.__name__+'Array'
             if key in _arr.__dict__:
                 cls = _arr.__dict__[key]
