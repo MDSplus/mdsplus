@@ -91,7 +91,7 @@ STATIC_ROUTINE int TdiHashAll()
 int TdiHash(int len, char *pstring)
 {
   int jh, jf;
-  static pthread_mutex_t lock;
+  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_lock(&lock);
   pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
   jh = TdiHashOne(len, pstring);
