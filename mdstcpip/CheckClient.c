@@ -166,15 +166,11 @@ int CheckClient(char *username, int num, char **matchString)
     struct descriptor_d ans_d = { 0, DTYPE_T, CLASS_D, 0 };
     size_t cmdlen = strlen(hostfile) + 10 + strlen(username);
     char *cmd;
-    static int (*TdiExecute) (struct descriptor * cmd, struct descriptor_d * ans, void *endarg) = 0;
-    if (TdiExecute == 0) {
-      DESCRIPTOR(TdiShr, "TdiShr");
-      DESCRIPTOR(tdiexec, "TdiExecute");
-      status = LibFindImageSymbol(&TdiShr, &tdiexec, &TdiExecute);
-      if (!(status & 1)) {
-	fprintf(stderr, "Error activating TdiShr");
-	return 0;
-      }
+    static int (*TdiExecute) (struct descriptor * cmd, struct descriptor_d * ans, void *endarg) = NULL;
+    status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
+    if STATUS_NOT_OK {
+      fprintf(stderr, "Error activating TdiShr");
+      return 0;
     }
     for (i = 0; i < num; i++)
       cmdlen += (strlen(matchString[i]) + 3);

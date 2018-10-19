@@ -30,7 +30,7 @@ extern int LibFindFileEnd(FindFileCtx **ctx);
 extern int LibFindFileRecurseCaseBlind(struct descriptor *filespec,
 				       struct descriptor *result, FindFileCtx **ctx);
 extern int LibFindImageSymbol();
-extern int LibFindImageSymbol_C(const char *filename, const char *symbol, void **symbol_value);
+extern int LibFindImageSymbol_C();
 extern char *LibFindImageSymbolErrString();
 extern int LibFreeVm(unsigned int *len, void **vm, ZoneList ** zone);
 extern int libfreevm_(unsigned int *len, void **vm, ZoneList ** zone);
