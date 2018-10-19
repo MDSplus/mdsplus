@@ -1,6 +1,26 @@
 #define _TCP
 #ifdef _WIN32
- #define PERROR(...) do{errno = WSAGetLastError();fprintf(stderr,__VA_ARGS__);fprintf(stderr,": ");perror("");}while(0)
+ static void socketerror(){
+  int err;
+  switch(err = WSAGetLastError()){
+    case 0:                 perror("");                          break;
+    case WSANOTINITIALISED: fprintf(stderr,"WSANOTINITIALISED\n"); break;
+    case WSAENETDOWN:       fprintf(stderr,"WSAENETDOWN\n");       break;
+    case WSAEADDRINUSE:     fprintf(stderr,"WSAEADDRINUSE\n");     break;
+    case WSAEINTR:          fprintf(stderr,"WSAEINTR\n");          break;
+    case WSAENOTCONN:       fprintf(stderr,"WSAENOTCONN\n");       break;
+    case WSAEINPROGRESS:    fprintf(stderr,"WSAEINPROGRESS\n");    break;
+    case WSAEALREADY:       fprintf(stderr,"WSAEALREADY\n");       break;
+    case WSAEADDRNOTAVAIL:  fprintf(stderr,"WSAEADDRNOTAVAIL\n");  break;
+    case WSAEAFNOSUPPORT:   fprintf(stderr,"WSAEAFNOSUPPORT\n");   break;
+    case WSAECONNREFUSED:   fprintf(stderr,"WSAECONNREFUSED\n");   break;
+    case WSAENOPROTOOPT:    fprintf(stderr,"WSAENOPROTOOPT\n");    break;
+    case WSAEFAULT:         fprintf(stderr,"WSAEFAULT\n");         break;
+    case WSAENOTSOCK:       fprintf(stderr,"WSAENOTSOCK\n");       break;
+    default:                fprintf(stderr,"WSA %d\n",err);
+  }
+ }
+ #define PERROR(...) do{fprintf(stderr,__VA_ARGS__);fprintf(stderr,": ");socketerror();}while(0)
 #else
  #define PERROR(...) do{fprintf(stderr,__VA_ARGS__);fprintf(stderr,": ");perror("");}while(0)
  #include <netinet/tcp.h>
@@ -272,7 +292,7 @@ static int io_listen(int argc, char **argv){
         exit(EINTR);// signal interrupt
       } else {// Select returned -1 error code
         error_count++;
-        perror("error in main select");
+        PERROR("error in main select");
         fprintf(stderr, "Error count=%d\n", error_count);
         fflush(stderr);
         if (error_count > 100) {
