@@ -29,12 +29,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "treeshrp.h"
 #include <mds_stdarg.h>
 
-static int (*Notify) (TreeshrHookType, char *, int, int);
+static int (*Notify) (TreeshrHookType, char *, int, int) = NULL;
 static void load_Notify() {
-  DESCRIPTOR(image, "TreeShrHooks");
-  DESCRIPTOR(rtnname, "Notify");
-  if IS_NOT_OK(LibFindImageSymbol(&image, &rtnname, &Notify))
-    Notify = NULL;
+  LibFindImageSymbol_C("TreeShrHooks", "Notify", &Notify);
 }
 
 int TreeCallHook(TreeshrHookType htype, TREE_INFO * info, int nid)

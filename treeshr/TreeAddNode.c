@@ -480,8 +480,6 @@ int _TreeAddConglom(void *dbid, char const *path, char const *congtype, int *nid
   struct descriptor expdsc = { 0, DTYPE_T, CLASS_S, 0 };
   char exp[256];
   void *arglist[4] = { (void *)3 };
-  STATIC_CONSTANT DESCRIPTOR(tdishr, "TdiShr");
-  STATIC_CONSTANT DESCRIPTOR(tdiexecute, "TdiExecute");
   DESCRIPTOR_LONG(statdsc, 0);
   statdsc.pointer = (char *)&addstatus;
   if (!IS_OPEN_FOR_EDIT(dblist))
@@ -490,11 +488,8 @@ int _TreeAddConglom(void *dbid, char const *path, char const *congtype, int *nid
     sprintf(exp, "DevAddDevice('\\%s', '%s')", path, congtype);
   else
     sprintf(exp, "DevAddDevice('%s', '%s')", path, congtype);
-  static int (*addr) () = NULL;
-  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-  pthread_mutex_lock(&lock);
-  if (!addr) status = LibFindImageSymbol(&tdishr, &tdiexecute, &addr);
-  pthread_mutex_unlock(&lock);
+  static int (*TdiExecute) () = NULL;
+  status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
   if STATUS_OK {
     expdsc.length = (unsigned short)strlen(exp);
     expdsc.pointer = exp;
@@ -504,7 +499,7 @@ int _TreeAddConglom(void *dbid, char const *path, char const *congtype, int *nid
     // switch to privateContext for thread safety
     int old_pc = TreeUsePrivateCtx(1);
     void* old_dbid = *TreeCtx();*TreeCtx() = dbid;
-    status = (int)((char *)LibCallg(arglist, addr) - (char *)0);
+    status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
     *TreeCtx() = old_dbid;TreeUsePrivateCtx(old_pc);
     // old context restored
     if STATUS_OK {
