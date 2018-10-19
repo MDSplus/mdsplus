@@ -74,7 +74,7 @@ struct descrip {
   void *ptr;
 };
 
-STATIC_CONSTANT struct descrip empty_ans;
+static struct descrip empty_ans;
 
 static inline char *replaceBackslashes(char *filename) {
   char *ptr;
@@ -82,15 +82,10 @@ static inline char *replaceBackslashes(char *filename) {
   return filename;
 }
 
-#if !defined(HAVE_PTHREAD_H)
+#ifndef HAVE_PTHREAD_H
 #define pthread_mutex_t int
-static void LockMdsShrMutex()
-{
-}
-
-static void UnlockMdsShrMutex()
-{
-}
+static void LockMdsShrMutex(){}
+static void UnlockMdsShrMutex(){}
 #else
 extern void LockMdsShrMutex(pthread_mutex_t *, int *);
 extern void UnlockMdsShrMutex(pthread_mutex_t *);
@@ -99,34 +94,21 @@ extern void UnlockMdsShrMutex(pthread_mutex_t *);
 extern void TreePerfWrite(int);
 extern void TreePerfRead(int);
 
-STATIC_ROUTINE int FindImageSymbol(char *name, void **sym)
-{
-  STATIC_CONSTANT DESCRIPTOR(image, "MdsIpShr");
-  struct descriptor symname = { 0, DTYPE_T, CLASS_S, 0 };
-  STATIC_CONSTANT int mdslib_library_linked = 0;
-
+int FindImageSymbol(char *name, void **sym){
 /*
 Manage name clash for MdsValue (defined both in mdsipshr and mdslib) by forcing library MdsLib to be loaded first.
 This does not make harm to treeshr, but avoids to load a wrong symbol when MdsLib's MdsValue is then loaded.
 */
-  if (!mdslib_library_linked) {
-    STATIC_CONSTANT DESCRIPTOR(dummySymbol, "MdsOpen");
-    STATIC_CONSTANT DESCRIPTOR(dummyImage, "MdsLib");
-    void *dummySym;
-    LibFindImageSymbol(&dummyImage, &dummySymbol, &dummySym);
-    mdslib_library_linked = 1;
-  }
-
-  symname.length = (unsigned short)strlen(name);
-  symname.pointer = name;
-  return LibFindImageSymbol(&image, &symname, sym);
+  static void *dummySym = NULL;
+  LibFindImageSymbol_C("MdsLib", "MdsOpen", &dummySym);
+  return LibFindImageSymbol_C("MdsIpShr", name, sym);
 }
 
-STATIC_THREADSAFE pthread_mutex_t HostListMutex;
-STATIC_THREADSAFE int HostListMutex_initialized = 0;
+static pthread_mutex_t HostListMutex;
+static int HostListMutex_initialized = 0;
 
-STATIC_THREADSAFE pthread_mutex_t IOMutex;
-STATIC_THREADSAFE int IOMutex_initialized = 0;
+static pthread_mutex_t IOMutex;
+static int IOMutex_initialized = 0;
 #if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
 #ifndef _WIN32
 #include <sys/socket.h>
@@ -134,7 +116,7 @@ STATIC_THREADSAFE int IOMutex_initialized = 0;
 #include <netinet/in.h>
 #endif
 
-STATIC_THREADSAFE struct _host_list {
+static struct _host_list {
   void *dbid;
   char *host;
   int socket;
@@ -144,12 +126,12 @@ STATIC_THREADSAFE struct _host_list {
   struct _host_list *next;
 } *host_list = 0;
 
-STATIC_ROUTINE int GetAddr(char *host, struct sockaddr_in *sockaddr)
+int GetAddr(char *host, struct sockaddr_in *sockaddr)
 {
   int status;
   struct addrinfo *res;
   struct addrinfo hints;
-  STATIC_THREADSAFE struct addr_list {
+  static struct addr_list {
     char *host;
     struct sockaddr_in sockaddr;
     struct addr_list *next;
@@ -195,7 +177,7 @@ STATIC_ROUTINE int GetAddr(char *host, struct sockaddr_in *sockaddr)
   return status;
 }
 #else
-STATIC_THREADSAFE struct _host_list {
+static struct _host_list {
   void *dbid;
   char *host;
   int socket;
@@ -205,35 +187,23 @@ STATIC_THREADSAFE struct _host_list {
 } *host_list = 0;
 #endif
 
-STATIC_ROUTINE void MdsIpFree(void *ptr)
-{
-  STATIC_THREADSAFE void (*rtn) (void *) = 0;
-  if (rtn == 0) {
-    int status = FindImageSymbol("MdsIpFree", (void **)&rtn);
-    if (!(status & 1))
-      return;
-  }
+void MdsIpFree(void *ptr){
+  static void (*rtn) (void *) = NULL;
+  if IS_NOT_OK(FindImageSymbol("MdsIpFree", (void **)&rtn)) return;
   (*rtn) (ptr);
 }
 
-STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count, void *dbid)
-{
+int RemoteAccessConnect(char *host, int inc_count, void *dbid){
   int host_in_directive;
   struct _host_list *hostchk;
   struct _host_list **nextone;
-  STATIC_THREADSAFE int (*rtn) (char *) = 0;
   int socket = -1;
+  static int (*rtn) (char *) = NULL;
+  int status = FindImageSymbol("ConnectToMds", (void **)&rtn);
+  if STATUS_NOT_OK return -1;
 #if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
   struct sockaddr_in sockaddr;
-  int getaddr_status;
-#endif
-  if (rtn == 0) {
-    int status = FindImageSymbol("ConnectToMds", (void **)&rtn);
-    if (!(status & 1))
-      return -1;
-  }
-#if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
-  getaddr_status = GetAddr(host, &sockaddr);
+  int getaddr_status = GetAddr(host, &sockaddr);
 #endif
   LockMdsShrMutex(&HostListMutex, &HostListMutex_initialized);
   for (nextone = &host_list, hostchk = host_list; hostchk;
@@ -272,17 +242,12 @@ STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count, void *dbid)
   return socket;
 }
 
-STATIC_ROUTINE int RemoteAccessDisconnect(int socket, int force)
-{
-  int status = 1;
+int RemoteAccessDisconnect(int socket, int force){
   struct _host_list *hostchk;
   struct _host_list *previous;
-  STATIC_THREADSAFE int (*rtn) (int) = 0;
-  if (rtn == 0) {
-    int status = FindImageSymbol("DisconnectFromMds", (void **)&rtn);
-    if (!(status & 1))
-      return status;
-  }
+  static int (*rtn) (int) = NULL;
+  int status = FindImageSymbol("DisconnectFromMds", (void **)&rtn);
+  if STATUS_NOT_OK return status;
   LockMdsShrMutex(&HostListMutex, &HostListMutex_initialized);
   for (hostchk = host_list; hostchk && hostchk->socket != socket; hostchk = hostchk->next) ;
   if (hostchk) {
@@ -310,42 +275,29 @@ STATIC_ROUTINE int RemoteAccessDisconnect(int socket, int force)
   return status;
 }
 
-STATIC_THREADSAFE int (*MdsValue) () = 0;
-
-STATIC_ROUTINE int MdsValue0(int socket, char *exp, struct descrip *ans)
-{
-  int status;
-  if (MdsValue == 0) {
-    status = FindImageSymbol("MdsValue", (void **)&MdsValue);
-    if (!(status & 1))
-      return status;
-  }
+static int (*MdsValue) () = NULL;
+int MdsValue0(int socket, char *exp, struct descrip *ans){
+  int status = FindImageSymbol("MdsValue", (void **)&MdsValue);
+  if STATUS_NOT_OK return status;
   LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   status = (*MdsValue) (socket, exp, ans, NULL);
   UnlockMdsShrMutex(&IOMutex);
   return status;
 }
 
-STATIC_ROUTINE int MdsValue1(int socket, char *exp, struct descrip *arg1, struct descrip *ans)
-{
-  int status;
-  if (MdsValue == 0) {
-    status = FindImageSymbol("MdsValue", (void **)&MdsValue);
-    if (!(status & 1))
-      return status;
-  }
+int MdsValue1(int socket, char *exp, struct descrip *arg1, struct descrip *ans){
+  int status = FindImageSymbol("MdsValue", (void **)&MdsValue);
+  if STATUS_NOT_OK return status;
   LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   status = (*MdsValue) (socket, exp, arg1, ans, NULL);
   UnlockMdsShrMutex(&IOMutex);
   return status;
 }
 
-int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *logname)
-{
-  int socket;
+int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *logname){
   logname[strlen(logname) - 2] = '\0';
   int status = TreeNORMAL;
-  socket = RemoteAccessConnect(logname, 1, (void *)dblist);
+  int socket = RemoteAccessConnect(logname, 1, (void *)dblist);
   if (socket != -1) {
     struct descrip ans = empty_ans;
     char *exp = malloc(strlen(subtree_list ? subtree_list : tree) + 100);
@@ -385,14 +337,11 @@ int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, ch
   return status;
 }
 
-int SetStackSizeRemote(PINO_DATABASE *dbid __attribute__ ((unused)),
-		       int stack_size __attribute__ ((unused)))
-{
+int SetStackSizeRemote(PINO_DATABASE *dbid __attribute__ ((unused)), int stack_size __attribute__ ((unused))){
   return 1;
 }
 
-int CloseTreeRemote(PINO_DATABASE * dblist, int call_host __attribute__ ((unused)))
-{
+int CloseTreeRemote(PINO_DATABASE * dblist, int call_host __attribute__ ((unused))){
   struct descrip ans = empty_ans;
   int status;
   char exp[512];
@@ -448,7 +397,7 @@ int GetRecordRemote(PINO_DATABASE * dblist, int nid_in, struct descriptor_xd *ds
   return status;
 }
 
-STATIC_ROUTINE int LeadingBackslash(char const *path)
+int LeadingBackslash(char const *path)
 {
   size_t i;
   size_t len = strlen(path);
@@ -501,8 +450,7 @@ int FindNodeEndRemote(PINO_DATABASE * dblist __attribute__ ((unused)), void **ct
   return 1;
 }
 
-int FindNodeWildRemote(PINO_DATABASE * dblist, char const *path, int *nid_out, void **ctx_inout,
-		       int usage_mask)
+int FindNodeWildRemote(PINO_DATABASE * dblist, char const *path, int *nid_out, void **ctx_inout, int usage_mask)
 {
   int status = TreeNORMAL;
   struct _FindNodeStruct *ctx = (struct _FindNodeStruct *)*ctx_inout;
@@ -838,7 +786,7 @@ int PutRecordRemote(PINO_DATABASE * dblist, int nid_in, struct descriptor *dsc, 
   return status;
 }
 
-STATIC_ROUTINE int SetNciItmRemote(PINO_DATABASE * dblist, int nid, int code, int value)
+int SetNciItmRemote(PINO_DATABASE * dblist, int nid, int code, int value)
 {
   struct descrip ans = empty_ans;
   char exp[512];
@@ -852,7 +800,7 @@ STATIC_ROUTINE int SetNciItmRemote(PINO_DATABASE * dblist, int nid, int code, in
   return status;
 }
 
-STATIC_ROUTINE int SetDbiItmRemote(PINO_DATABASE * dblist, int code, int value)
+int SetDbiItmRemote(PINO_DATABASE * dblist, int code, int value)
 {
   struct descrip ans = empty_ans;
   char exp[512];
@@ -996,18 +944,18 @@ int TreeSetCurrentShotIdRemote(char *tree, char *path, int shot)
   return status;
 }
 
-STATIC_THREADSAFE pthread_mutex_t FdsMutex;
-STATIC_THREADSAFE int FdsMutex_initialized = 0;
+static pthread_mutex_t FdsMutex;
+static int FdsMutex_initialized = 0;
 
-STATIC_THREADSAFE struct fd_info_struct {
+static struct fd_info_struct {
   int in_use;
   int socket;
   int fd;
   int enhanced;
 } *FDS = 0;
-STATIC_THREADSAFE int ALLOCATED_FDS = 0;
+static int ALLOCATED_FDS = 0;
 
-STATIC_ROUTINE char *ParseFile(char *filename, char **hostpart, char **filepart)
+char *ParseFile(char *filename, char **hostpart, char **filepart)
 {
   char *tmp = strcpy((char *)malloc(strlen(filename) + 1), filename);
   char *ptr = strstr(tmp, "::");
@@ -1024,8 +972,7 @@ STATIC_ROUTINE char *ParseFile(char *filename, char **hostpart, char **filepart)
 
 #define LOCKFDS  LockMdsShrMutex(&FdsMutex,&FdsMutex_initialized);
 #define UNLOCKFDS  UnlockMdsShrMutex(&FdsMutex);
-STATIC_ROUTINE int NewFD(int fd, int socket, int enhanced)
-{
+int NewFD(int fd, int socket, int enhanced) {
   int idx;
   LOCKFDS for (idx = 0; idx < ALLOCATED_FDS && FDS[idx].in_use; idx++) ;
   if (idx == ALLOCATED_FDS)
@@ -1037,54 +984,38 @@ STATIC_ROUTINE int NewFD(int fd, int socket, int enhanced)
   UNLOCKFDS return idx + 1;
 }
 
-int MDS_IO_SOCKET(int fd)
-{
+int MDS_IO_SOCKET(int fd) {
   int ans;
   LOCKFDS ans = (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) ? FDS[fd - 1].socket : -1;
   UNLOCKFDS return ans;
 }
 
-int MDS_IO_FD(int fd)
-{
+int MDS_IO_FD(int fd){
   int ans;
   LOCKFDS ans = (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) ? FDS[fd - 1].fd : -1;
   UNLOCKFDS return ans;
 }
 
-STATIC_THREADSAFE int (*MDS_SEND_ARG) () = 0;
-STATIC_ROUTINE int SendArg(int socket, unsigned char idx, char dtype, unsigned char nargs,
-			   short length, char ndims, int *dims, char *bytes)
-{
-  if (MDS_SEND_ARG == 0) {
-    int status = FindImageSymbol("SendArg", (void **)&MDS_SEND_ARG);
-    if STATUS_NOT_OK  return status;
-  }
-  return (*MDS_SEND_ARG) (socket, idx, dtype, nargs, length, ndims, dims, bytes);
+int SendArg(int socket, unsigned char idx, char dtype, unsigned char nargs, short length, char ndims, int *dims, char *bytes) {
+  static int (*rtn) () = NULL;
+  int status = FindImageSymbol("SendArg", (void **)&rtn);
+  if STATUS_NOT_OK  return status;
+  return (*rtn) (socket, idx, dtype, nargs, length, ndims, dims, bytes);
 }
 
-STATIC_THREADSAFE int (*MDS_GET_ANSWER_INFO_TS) () = 0;
-
-STATIC_ROUTINE int GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims,
-				   int *numbytes, void **dptr, void **m)
-{
-  if (MDS_GET_ANSWER_INFO_TS == 0) {
-    int status = FindImageSymbol("GetAnswerInfoTS", (void **)&MDS_GET_ANSWER_INFO_TS);
-    if STATUS_NOT_OK  return status;
-  }
-  return (*MDS_GET_ANSWER_INFO_TS) (sock, dtype, length, ndims, dims, numbytes, dptr, m);
+int GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void **dptr, void **m){
+  static int (*rtn) () = NULL;
+  int status = FindImageSymbol("GetAnswerInfoTS", (void **)&rtn);
+  if STATUS_NOT_OK  return status;
+  return (*rtn) (sock, dtype, length, ndims, dims, numbytes, dptr, m);
 }
 
 /*
-STATIC_THREADSAFE int (*MDS_GET_ANSWER_INFO_TO) () = 0;
-
-STATIC_ROUTINE int GetAnswerInfoTO(int sock, char *dtype, short *length, char *ndims, int *dims,
-				   int *numbytes, void **dptr, void **m, int timeout)
-{
-  if (MDS_GET_ANSWER_INFO_TO == 0) {
-    int status = FindImageSymbol("GetAnswerInfoTO", (void **)&MDS_GET_ANSWER_INFO_TO);
-    if STATUS_NOT_OK  return status;
-  }
-  return (*MDS_GET_ANSWER_INFO_TO) (sock, dtype, length, ndims, dims, numbytes, dptr, m, timeout);
+int GetAnswerInfoTO(int sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void **dptr, void **m, int timeout){
+  static int (*rtn) () = NULL;
+  int status = FindImageSymbol("GetAnswerInfoTO", (void **)&rtn);
+  if STATUS_NOT_OK return status;
+  return (*rtn) (sock, dtype, length, ndims, dims, numbytes, dptr, m, timeout);
 }
 */
 
@@ -1107,7 +1038,7 @@ STATIC_ROUTINE int GetAnswerInfoTO(int sock, char *dtype, short *length, char *n
 #define MDS_IO_O_RDONLY 0x00004000
 #define MDS_IO_O_RDWR   0x00000002
 
-STATIC_ROUTINE int io_open_remote(char *host, char *filename_in, int options, mode_t mode, int *sock,
+int io_open_remote(char *host, char *filename_in, int options, mode_t mode, int *sock,
 				  int *enhanced)
 {
   int fd = -1;
@@ -1212,7 +1143,7 @@ int MDS_IO_OPEN(char *filename_in, int options, mode_t mode)
   return fd;
 }
 
-STATIC_ROUTINE int io_close_remote(int fd)
+int io_close_remote(int fd)
 {
   int ret = -1;
   int info[] = { 0, 0 };
@@ -1259,7 +1190,7 @@ int MDS_IO_CLOSE(int fd)
   }
 }
 
-STATIC_ROUTINE off_t io_lseek_remote(int fd, off_t offset, int whence)
+off_t io_lseek_remote(int fd, off_t offset, int whence)
 {
   off_t ret = -1;
   int info[] = { 0, 0, 0, 0, 0 };
@@ -1317,7 +1248,7 @@ off_t MDS_IO_LSEEK(int fd, off_t offset, int whence)
   }
 }
 
-STATIC_ROUTINE ssize_t io_write_remote(int fd, void *buff, size_t count)
+ssize_t io_write_remote(int fd, void *buff, size_t count)
 {
   ssize_t ret = 0;
   int info[] = { 0, 0 };
@@ -1368,7 +1299,7 @@ ssize_t MDS_IO_WRITE(int fd, void *buff, size_t count)
   UNLOCKFDS return ans;
 }
 
-STATIC_ROUTINE ssize_t io_read_remote(int fd, void *buff, size_t count)
+ssize_t io_read_remote(int fd, void *buff, size_t count)
 {
   ssize_t ret = 0;
   int ret_i;
@@ -1399,7 +1330,7 @@ STATIC_ROUTINE ssize_t io_read_remote(int fd, void *buff, size_t count)
   return ret;
 }
 
-STATIC_ROUTINE ssize_t io_read_x_remote(int fd, off_t offset, void *buff, size_t count,
+ssize_t io_read_x_remote(int fd, off_t offset, void *buff, size_t count,
 					int *deleted)
 {
   ssize_t ret = -1;
@@ -1497,7 +1428,7 @@ if (FDS[fd - 1].socket == SRB_SOCKET) {
     UNLOCKFDS return ans;
   }
 
-STATIC_ROUTINE int io_lock_remote(int fd, off_t offset, size_t size, int mode, int *deleted)
+int io_lock_remote(int fd, off_t offset, size_t size, int mode, int *deleted)
 {
   int ret = 0;
   int info[] = { 0, 0, 0, 0, 0, 0 };
@@ -1592,7 +1523,7 @@ int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
   UNLOCKFDS return status;
 }
 
-STATIC_ROUTINE int io_exists_remote(char *host, char *filename)
+int io_exists_remote(char *host, char *filename)
 {
   int ans = 0;
   int sock;
@@ -1643,7 +1574,7 @@ int MDS_IO_EXISTS(char *filename_in)
   return status;
 }
 
-STATIC_ROUTINE int io_remove_remote(char *host, char *filename)
+int io_remove_remote(char *host, char *filename)
 {
   int ans = -1;
   int sock;
@@ -1693,7 +1624,7 @@ int MDS_IO_REMOVE(char *filename_in)
   return status;
 }
 
-STATIC_ROUTINE int io_rename_remote(char *host, char *filename_old, char *filename_new)
+int io_rename_remote(char *host, char *filename_old, char *filename_new)
 {
   int ans = -1;
   int sock;
