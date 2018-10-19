@@ -72,9 +72,8 @@ void eventAst(void *arg, int len __attribute__ ((unused)), char *buf __attribute
 
 
 static void *handleMessage(void *info_in);
-static int pushEvent(pthread_t thread, int socket);
+static int pushEvent(pthread_t thread, SOCKET socket);
 static EventList *popEvent(int eventid);
-static int getSendSocket();
 static void getMulticastAddr(char const *eventName, char *retIp);
 
 
@@ -104,7 +103,7 @@ void test_handleMessage() {
     int flag = 1;
     int const SOCKET_ERROR = -1;
 #   endif
-    int udpSocket;
+    SOCKET udpSocket;
     char ipAddress[64];
     struct ip_mreq ipMreq;
     struct EventInfo *currInfo;
@@ -114,7 +113,7 @@ void test_handleMessage() {
 
     // create socket
     udpSocket = socket(AF_INET, SOCK_DGRAM, 0);
-    TEST1(udpSocket > 0);
+    TEST1(udpSocket != INVALID_SOCKET);
 
     // set address
     serverAddr.sin_family = AF_INET;
