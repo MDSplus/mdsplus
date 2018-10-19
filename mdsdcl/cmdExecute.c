@@ -517,7 +517,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
 			     char **error, char **output, char *(*getline) (), void *getlineinfo)
 {
   int i;
-  int (*handler) (dclCommandPtr, char **, char **, char *(*getline) (), void *getlineinfo);
+  int (*handler) (dclCommandPtr, char **, char **, char *(*getline) (), void *getlineinfo) = NULL;
   int status;
 
   /* Make sure the command processing discovered the name of the handler routine.
@@ -796,7 +796,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
     image = "Mdsdcl";
   if (cmdDef->image)
     image = cmdDef->image;
-  status = LibFindImageSymbol_C(image, cmdDef->routine, (void **)&handler);
+  status = LibFindImageSymbol_C(image, cmdDef->routine, &handler);
   if (status & 1) {
     status = handler(cmd, error, output, getline, getlineinfo);
     if (!(status & 1)) {

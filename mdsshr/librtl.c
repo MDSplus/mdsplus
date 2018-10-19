@@ -503,6 +503,13 @@ static void *loadLib(const char *dirspec, const char *filename, char *errorstr) 
 
 EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, void **symbol_value)
 {
+  int status;
+  static pthread_mutex_t dlopen_mutex = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_lock(&dlopen_mutex);
+  pthread_cleanup_push((void*)pthread_mutex_unlock,(void*)&dlopen_mutex);
+ if (*symbol_value) // already loaded
+  status = 1;
+ else{
 #ifdef _WIN32
   const char *prefix="";
   const char delim = ';';
@@ -510,16 +517,10 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
   const char *prefix="lib";
   const char delim = ':';
 #endif
-  int status;
   void *handle = NULL;
   char *errorstr = alloca(4096);
-  char *filename;
-  static pthread_mutex_t dlopen_mutex = PTHREAD_MUTEX_INITIALIZER;
-  pthread_mutex_lock(&dlopen_mutex);
-  pthread_cleanup_push((void*)pthread_mutex_unlock,(void*)&dlopen_mutex);
-  filename = alloca(strlen(filename_in) + strlen(prefix) + strlen(SHARELIB_TYPE) + 1);
+  char *filename = alloca(strlen(filename_in) + strlen(prefix) + strlen(SHARELIB_TYPE) + 1);
   errorstr[0]='\0';
-  *symbol_value = NULL;
   strcpy(filename,filename_in);
   if ((!(strchr(filename,'/') || strchr(filename,'\\'))) &&
       (strlen(prefix) > 0) &&
@@ -573,6 +574,7 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
   }
   else
     status = 1;
+ }
   pthread_cleanup_pop(1);
   return status;
 }
@@ -581,6 +583,7 @@ EXPORT int LibFindImageSymbol(struct descriptor *filename, struct descriptor *sy
 {
   char *c_filename = MdsDescrToCstring(filename);
   char *c_symbol = MdsDescrToCstring(symbol);
+  *symbol_value = NULL; // maintain previous behaviour
   int status = LibFindImageSymbol_C(c_filename, c_symbol, symbol_value);
   free(c_filename);
   free(c_symbol);

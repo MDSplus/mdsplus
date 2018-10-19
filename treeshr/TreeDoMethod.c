@@ -93,21 +93,10 @@ int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
   return (int)((char *)LibCallg(arglist, _TreeDoMethod) - (char *)0);
 }
 
-static void* (*TdiExecute)  () = NULL;
-static void* (*TdiEvaluate) () = NULL;
-static int lib_status        = 0;
-static pthread_once_t once = PTHREAD_ONCE_INIT;
-static void load_tdifun(){
-  DESCRIPTOR(tdishr, "TdiShr");
-  DESCRIPTOR(tdievaluate, "TdiEvaluate");
-  lib_status = LibFindImageSymbol(&tdishr, &tdievaluate, &TdiEvaluate);
-  if IS_NOT_OK(lib_status) return;
-  DESCRIPTOR(tdiexecute, "TdiExecute");
-  lib_status = LibFindImageSymbol(&tdishr, &tdiexecute, &TdiExecute);
-}
-
 int do_fun(struct descriptor *funname, int nargs, struct descriptor **args, struct descriptor_xd *out_ptr){
-  if IS_NOT_OK(lib_status) return lib_status;
+  static void* (*TdiEvaluate) () = NULL;
+  int status = LibFindImageSymbol_C("TdiShr", "TdiEvaluate", &TdiEvaluate);
+  if IS_NOT_OK(status) return status;
   short OpcExtFunction = 162;
   DESCRIPTOR_FUNCTION(fun, &OpcExtFunction, 255);
   void *call_arglist[] = { (void *)3, (void *)&fun, (void *)out_ptr, MdsEND_ARG };
@@ -125,8 +114,6 @@ int do_fun(struct descriptor *funname, int nargs, struct descriptor **args, stru
 
 int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
 {
-  pthread_once(&once,load_tdifun);
-  if IS_NOT_OK(lib_status) return lib_status;
   INIT_STATUS;
   va_list incrmtr;
   short conglomerate_elt;
@@ -192,13 +179,17 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	StrAppend(&exp, (struct descriptor *)&arg);
       StrAppend(&exp, (struct descriptor *)&close);
       if STATUS_OK {
-	for (i = _nargs; i > 0; i--)
-	  arglist[i + 1] = arglist[i];
-	_nargs += 2;
-	arglist[0] = arglist_nargs(_nargs);
-	arglist[1] = &exp;
-	arglist[_nargs] = MdsEND_ARG;
-	status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
+        static void* (*TdiExecute)  () = NULL;
+        status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
+        if STATUS_OK {
+	  for (i = _nargs; i > 0; i--)
+	    arglist[i + 1] = arglist[i];
+	  _nargs += 2;
+	  arglist[0] = arglist_nargs(_nargs);
+	  arglist[1] = &exp;
+	  arglist[_nargs] = MdsEND_ARG;
+	  status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
+        }
       }
       FREED_NOW(&exp);
       *TreeCtx() = dbid;

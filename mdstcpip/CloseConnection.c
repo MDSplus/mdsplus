@@ -29,19 +29,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int CloseConnection(int id)
 {
-  int status = 0;
-  static int (*removeConnection) (int) = 0;
+  INIT_STATUS_AS MDSplusERROR;
+  static int (*removeConnection) (int) = NULL;
   Connection *c = FindConnection(id, 0);
   if (c) {
-    if (removeConnection == 0) {
-      DESCRIPTOR(MdsIpSrvShr, "MdsIpSrvShr");
-      DESCRIPTOR(rmcon, "RemoveConnection");
-      status = LibFindImageSymbol(&MdsIpSrvShr, &rmcon, &removeConnection);
-    } else
-      status = 1;
-    if (status & 1) {
+    status = LibFindImageSymbol_C("MdsIpSrvShr", "RemoveConnection", &removeConnection);
+    if STATUS_OK
       status = (*removeConnection) (id);
-    }
   }
   return status;
 }
