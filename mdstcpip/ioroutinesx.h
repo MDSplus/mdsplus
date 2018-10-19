@@ -10,7 +10,7 @@ inline static ssize_t io_recv(Connection* c, void *buffer, size_t len){
 static IoRoutines io_routines = {
   io_connect, io_send, io_recv, io_flush, io_listen, io_authorize, io_reuseCheck, io_disconnect, io_recv_to
 };
-
+#include <inttypes.h>
 #ifdef _TCP
  #ifdef _WIN32
   #define close closesocket
@@ -54,7 +54,7 @@ static SOCKET getSocket(Connection* c){
   char *info_name;
   SOCKET readfd;
   GetConnectionInfoC(c, &info_name, &readfd, &len);
-  return (info_name && strcmp(info_name, PROT) == 0) ? (SOCKET)readfd : (SOCKET)-1;
+  return (info_name && strcmp(info_name, PROT) == 0) ? readfd : INVALID_SOCKET;
 }
 
 static pthread_mutex_t socket_list_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -279,7 +279,7 @@ static int io_authorize(Connection* c, char *username){
     FREE_NOW(matchString[1]);
     FREE_NOW(matchString[0]);
   } else
-    fprintf(stderr,"error getting hostinfo");
+    PERROR("error getting hostinfo");
   FREE_NOW(info);
   FREE_NOW(iphost);
   FREE_NOW(hoststr);
@@ -313,9 +313,9 @@ static ssize_t io_recv_to(Connection* c, void *bptr, size_t num, int to_msec){
     signal(SIGABRT, ABORT);
     struct SOCKADDR_IN sin;
     SOCKLEN_T len = sizeof(sin);
-    if (GETPEERNAME(sock, (struct sockaddr *)&sin, &len))
-      PERROR("Error getting peer name from socket");
-    else
+    if (GETPEERNAME(sock, (struct sockaddr *)&sin, &len)) {
+      PERROR(("Error getting peer name from socket %"PRIu64),(uint64_t)sock);
+    } else
     if (to_msec<0)
       recved = RECV(sock, bptr, num, MSG_NOSIGNAL);
     else {

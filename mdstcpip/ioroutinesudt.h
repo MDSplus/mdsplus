@@ -1,9 +1,9 @@
 #ifdef _WIN32
  #define close closesocket
- #define PERROR(string) do{errno = WSAGetLastError();perror(string);}while (0)
+ #define PERROR(...) do{errno = WSAGetLastError();fprintf(stderr,__VA_ARGS__);fprintf(stderr,": ");perror("");}while(0)
  #undef INVALID_SOCKET
 #else
- #define PERROR(string) do{fprintf(stderr,"%s: %s\n",string,udt_getlasterror_desc());fflush(stderr);}while (0)
+ #define PERROR(...) do{fprintf(stderr,__VA_ARGS__);fprintf(stderr,": %s\n",udt_getlasterror_desc());}while(0)
 #endif
 #undef SOCKET
 #define SOCKET UDTSOCKET

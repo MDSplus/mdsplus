@@ -141,8 +141,7 @@ int is_broken_socket(SOCKET socket);
 
 static int start_receiver(uint16_t *port);
 int ServerConnect(char *server);
-static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void (*ast) (), void *astparam,
-		       void (*before_ast) (), int sock);
+static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void (*ast) (), void *astparam, void (*before_ast) (), int conid);
 static void CleanupJob(int status, int jobid);
 static void ReceiverThread(void *sockptr);
 static void DoMessage(Client * c, fd_set * fdactive);
@@ -189,7 +188,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
   struct descrip *arg;
   if (conid_out)
     *conid_out = conid;
-  int sock = getSocket(conid);
+  SOCKET sock = getSocket(conid);
   struct sockaddr_in addr_struct = {0};
   socklen_t len = sizeof(addr_struct);
   if (getsockname(sock, (struct sockaddr *)&addr_struct, &len) == 0)
@@ -335,9 +334,7 @@ static void DoBeforeAst(int jobid)
     before_ast(astparam);
 }
 
-static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void (*ast) (), void *astparam,
-		       void (*before_ast) (), int conid)
-{
+static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void (*ast) (), void *astparam, void (*before_ast) (), int conid){
   Job *j = (Job *) malloc(sizeof(Job));
   j->retstatus = retstatus;
   j->lock = lock;

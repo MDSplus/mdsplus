@@ -457,7 +457,7 @@ EXPORT char *GetProtocol();
 
 EXPORT int GetService();
 
-EXPORT int GetSocketHandle();
+EXPORT SOCKET GetSocketHandle();
 
 EXPORT int GetWorker();
 
@@ -710,7 +710,7 @@ EXPORT char *SetProtocol(char *);
 
 EXPORT int SetService(int setting);
 
-EXPORT int SetSocketHandle(int handle);
+EXPORT SOCKET SetSocketHandle(SOCKET handle);
 
 EXPORT int SetWorker(int setting);
 

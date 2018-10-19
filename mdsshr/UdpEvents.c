@@ -117,7 +117,7 @@ typedef struct _EventList {
 } EventList;
 
 struct EventInfo {
-  int socket;
+  SOCKET socket;
   char *eventName;
   void *arg;
   void (*astadr) (void *, int, char *);
@@ -145,7 +145,7 @@ static void *handleMessage(void *info_in)
 {
   struct EventInfo *info = (struct EventInfo *)info_in;
   pthread_mutex_lock(&eventIdMutex);
-  int socket = info->socket;
+  SOCKET socket = info->socket;
   size_t thisNameLen = strlen(info->eventName);
   char *thisEventName = strcpy(alloca(thisNameLen+1),info->eventName);
   void *arg = info->arg;
@@ -192,7 +192,7 @@ static void *handleMessage(void *info_in)
   return 0;
 }
 
-static int pushEvent(pthread_t thread, int socket) {
+static int pushEvent(pthread_t thread, SOCKET socket) {
   pthread_mutex_lock(&eventIdMutex);
   EventList *ev = malloc(sizeof(EventList));
   ev->eventid = ++EVENTID;

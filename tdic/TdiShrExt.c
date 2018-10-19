@@ -71,8 +71,8 @@ dele *.exe;
 #endif
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
-extern int MdsOpen(int sock, char *tree, int shot);
-extern int MdsClose(int sock);
+extern int MdsOpen(int conid, char *tree, int shot);
+extern int MdsClose(int conid);
 extern int TdiCvt();
 extern int GetAnswerInfoTS();
 extern int MdsIpFree();
