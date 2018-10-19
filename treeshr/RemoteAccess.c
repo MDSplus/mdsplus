@@ -58,10 +58,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #ifdef SRB
-#define SRB_SOCKET 12345	/* this is the socket value used to indicate that
-				   this file is an an SRB file.  Positive so that
-				   other MDSPlus checks pass, but a value that
-				   otherwise will not occur */
+#define SRB_ID 123456789/* this is the id value used to indicate that
+			   this file is an SRB file.  Positive so that
+			   other MDSPlus checks pass, but a value that
+			   otherwise will not occur */
 #include "srbUio.h"
 #endif
 
@@ -137,7 +137,7 @@ STATIC_THREADSAFE int IOMutex_initialized = 0;
 STATIC_THREADSAFE struct _host_list {
   void *dbid;
   char *host;
-  int socket;
+  int conid;
   struct sockaddr_in sockaddr;
   int connections;
   time_t time;
@@ -198,7 +198,7 @@ STATIC_ROUTINE int GetAddr(char *host, struct sockaddr_in *sockaddr)
 STATIC_THREADSAFE struct _host_list {
   void *dbid;
   char *host;
-  int socket;
+  int conid;
   int connections;
   time_t time;
   struct _host_list *next;
@@ -222,7 +222,7 @@ STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count, void *dbid)
   struct _host_list *hostchk;
   struct _host_list **nextone;
   STATIC_THREADSAFE int (*rtn) (char *) = 0;
-  int socket = -1;
+  int conid = -1;
 #if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
   struct sockaddr_in sockaddr;
   int getaddr_status;
@@ -250,16 +250,16 @@ STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count, void *dbid)
       hostchk->time = time(0);
       if (inc_count)
 	hostchk->connections++;
-      socket = hostchk->socket;
+      conid = hostchk->conid;
     }
   }
-  if (socket == -1) {
-    socket = (*rtn) (host);
-    if (socket != -1) {
+  if (conid == -1) {
+    conid = (*rtn) (host);
+    if (conid != -1) {
       *nextone = malloc(sizeof(struct _host_list));
       (*nextone)->dbid = dbid;
       (*nextone)->host = strcpy(malloc(strlen(host) + 1), host);
-      (*nextone)->socket = socket;
+      (*nextone)->conid = conid;
       (*nextone)->connections = inc_count ? 1 : 0;
 #if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
       memcpy(&(*nextone)->sockaddr, &sockaddr, sizeof(sockaddr));
@@ -269,10 +269,10 @@ STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count, void *dbid)
     }
   }
   UnlockMdsShrMutex(&HostListMutex);
-  return socket;
+  return conid;
 }
 
-STATIC_ROUTINE int RemoteAccessDisconnect(int socket, int force)
+STATIC_ROUTINE int RemoteAccessDisconnect(int conid, int force)
 {
   int status = 1;
   struct _host_list *hostchk;
@@ -284,7 +284,7 @@ STATIC_ROUTINE int RemoteAccessDisconnect(int socket, int force)
       return status;
   }
   LockMdsShrMutex(&HostListMutex, &HostListMutex_initialized);
-  for (hostchk = host_list; hostchk && hostchk->socket != socket; hostchk = hostchk->next) ;
+  for (hostchk = host_list; hostchk && hostchk->conid != conid; hostchk = hostchk->next) ;
   if (hostchk) {
     hostchk->connections--;
   }
@@ -293,7 +293,7 @@ STATIC_ROUTINE int RemoteAccessDisconnect(int socket, int force)
   while (hostchk) {
     if (force || (hostchk->connections <= 0 && (hostchk->dbid || ((time(0) - hostchk->time) > 60)))) {
       struct _host_list *next = hostchk->next;
-      status = (*rtn) (hostchk->socket);
+      status = (*rtn) (hostchk->conid);
       free(hostchk->host);
       free(hostchk);
       if (previous)
@@ -312,7 +312,7 @@ STATIC_ROUTINE int RemoteAccessDisconnect(int socket, int force)
 
 STATIC_THREADSAFE int (*MdsValue) () = 0;
 
-STATIC_ROUTINE int MdsValue0(int socket, char *exp, struct descrip *ans)
+STATIC_ROUTINE int MdsValue0(int conid, char *exp, struct descrip *ans)
 {
   int status;
   if (MdsValue == 0) {
@@ -321,12 +321,12 @@ STATIC_ROUTINE int MdsValue0(int socket, char *exp, struct descrip *ans)
       return status;
   }
   LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
-  status = (*MdsValue) (socket, exp, ans, NULL);
+  status = (*MdsValue) (conid, exp, ans, NULL);
   UnlockMdsShrMutex(&IOMutex);
   return status;
 }
 
-STATIC_ROUTINE int MdsValue1(int socket, char *exp, struct descrip *arg1, struct descrip *ans)
+STATIC_ROUTINE int MdsValue1(int conid, char *exp, struct descrip *arg1, struct descrip *ans)
 {
   int status;
   if (MdsValue == 0) {
@@ -335,22 +335,22 @@ STATIC_ROUTINE int MdsValue1(int socket, char *exp, struct descrip *arg1, struct
       return status;
   }
   LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
-  status = (*MdsValue) (socket, exp, arg1, ans, NULL);
+  status = (*MdsValue) (conid, exp, arg1, ans, NULL);
   UnlockMdsShrMutex(&IOMutex);
   return status;
 }
 
 int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *logname)
 {
-  int socket;
+  int conid;
   logname[strlen(logname) - 2] = '\0';
   int status = TreeNORMAL;
-  socket = RemoteAccessConnect(logname, 1, (void *)dblist);
-  if (socket != -1) {
+  conid = RemoteAccessConnect(logname, 1, (void *)dblist);
+  if (conid != -1) {
     struct descrip ans = empty_ans;
     char *exp = malloc(strlen(subtree_list ? subtree_list : tree) + 100);
     sprintf(exp, "TreeOpen('%s',%d)", subtree_list ? subtree_list : tree, dblist->shotid);
-    status = MdsValue0(socket, exp, &ans);
+    status = MdsValue0(conid, exp, &ans);
     free(exp);
     status = (status & 1) ? (((ans.dtype == DTYPE_L) && ans.ptr) ? *(int *)ans.ptr : 0) : status;
     if (status & 1) {
@@ -369,7 +369,7 @@ int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, ch
 	  info->header = (TREE_HEADER *) & info[1];
 	  info->treenam = strcpy(malloc(strlen(tree) + 1), tree);
 	  TreeCallHook(OpenTree, info, 0);
-	  info->channel = socket;
+	  info->channel = conid;
 	  dblist->tree_info = info;
 	  dblist->remote = 1;
 	  status = TreeNORMAL;
@@ -377,7 +377,7 @@ int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, ch
 	  status = TreeFILE_NOT_FOUND;
       }
     } else
-      RemoteAccessDisconnect(socket, 0);
+      RemoteAccessDisconnect(conid, 0);
     if (ans.ptr)
       MdsIpFree(ans.ptr);
   } else
@@ -610,7 +610,7 @@ typedef struct tag_search {
   unsigned char top_match;
   unsigned char remote;
   char *remote_tag;
-  int socket;
+  int conid;
 } TAG_SEARCH;
 
 char *FindTagWildRemote(PINO_DATABASE * dblist, char *wild, int *nidout, void **ctx_inout)
@@ -625,7 +625,7 @@ char *FindTagWildRemote(PINO_DATABASE * dblist, char *wild, int *nidout, void **
     *ctx = (TAG_SEARCH *) malloc(sizeof(TAG_SEARCH));
     (*ctx)->remote = 1;
     (*ctx)->remote_tag = 0;
-    (*ctx)->socket = dblist->tree_info->channel;
+    (*ctx)->conid = dblist->tree_info->channel;
     first_time = 1;
   } else if ((*ctx)->remote_tag)
     free((*ctx)->remote_tag);
@@ -657,7 +657,7 @@ void FindTagEndRemote(void **ctx_inout)
   if (*ctx != (TAG_SEARCH *) 0) {
     if ((*ctx)->remote_tag)
       MdsIpFree((*ctx)->remote_tag);
-    MdsValue0((*ctx)->socket, "TreeFindTagEnd(_remftwctx)", &ans);
+    MdsValue0((*ctx)->conid, "TreeFindTagEnd(_remftwctx)", &ans);
     if (ans.ptr)
       MdsIpFree(ans.ptr);
   }
@@ -1001,7 +1001,7 @@ STATIC_THREADSAFE int FdsMutex_initialized = 0;
 
 STATIC_THREADSAFE struct fd_info_struct {
   int in_use;
-  int socket;
+  int conid;
   int fd;
   int enhanced;
 } *FDS = 0;
@@ -1024,23 +1024,23 @@ STATIC_ROUTINE char *ParseFile(char *filename, char **hostpart, char **filepart)
 
 #define LOCKFDS  LockMdsShrMutex(&FdsMutex,&FdsMutex_initialized);
 #define UNLOCKFDS  UnlockMdsShrMutex(&FdsMutex);
-STATIC_ROUTINE int NewFD(int fd, int socket, int enhanced)
+STATIC_ROUTINE int NewFD(int fd, int conid, int enhanced)
 {
   int idx;
   LOCKFDS for (idx = 0; idx < ALLOCATED_FDS && FDS[idx].in_use; idx++) ;
   if (idx == ALLOCATED_FDS)
     FDS = realloc(FDS, sizeof(struct fd_info_struct) * (++ALLOCATED_FDS));
   FDS[idx].in_use = 1;
-  FDS[idx].socket = socket;
+  FDS[idx].conid = conid;
   FDS[idx].fd = fd;
   FDS[idx].enhanced = enhanced;
   UNLOCKFDS return idx + 1;
 }
 
-int MDS_IO_SOCKET(int fd)
+int MDS_IO_ID(int fd)
 {
   int ans;
-  LOCKFDS ans = (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) ? FDS[fd - 1].socket : -1;
+  LOCKFDS ans = (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) ? FDS[fd - 1].conid : -1;
   UNLOCKFDS return ans;
 }
 
@@ -1052,14 +1052,14 @@ int MDS_IO_FD(int fd)
 }
 
 STATIC_THREADSAFE int (*MDS_SEND_ARG) () = 0;
-STATIC_ROUTINE int SendArg(int socket, unsigned char idx, char dtype, unsigned char nargs,
+STATIC_ROUTINE int SendArg(int conid, unsigned char idx, char dtype, unsigned char nargs,
 			   short length, char ndims, int *dims, char *bytes)
 {
   if (MDS_SEND_ARG == 0) {
     int status = FindImageSymbol("SendArg", (void **)&MDS_SEND_ARG);
     if STATUS_NOT_OK  return status;
   }
-  return (*MDS_SEND_ARG) (socket, idx, dtype, nargs, length, ndims, dims, bytes);
+  return (*MDS_SEND_ARG) (conid, idx, dtype, nargs, length, ndims, dims, bytes);
 }
 
 STATIC_THREADSAFE int (*MDS_GET_ANSWER_INFO_TS) () = 0;
@@ -1175,7 +1175,7 @@ STATIC_ROUTINE int io_open_remote(char *host, char *filename_in, int options, mo
 int MDS_IO_OPEN(char *filename_in, int options, mode_t mode)
 {
   char *filename = replaceBackslashes(strdup(filename_in));
-  int socket = -1;
+  int conid = -1;
   char *hostpart, *filepart;
   char *tmp = ParseFile(filename, &hostpart, &filepart);
   int fd;
@@ -1184,10 +1184,10 @@ int MDS_IO_OPEN(char *filename_in, int options, mode_t mode)
 #ifdef SRB
     if (strcmp(hostpart, "SRB") == 0) {
       fd = srbUioOpen(filepart, options, mode);
-      socket = SRB_SOCKET;	/* flag to indicate SRB file */
+      conid = SRB_ID;	/* flag to indicate SRB file */
     } else
 #endif
-      fd = io_open_remote(hostpart, filepart, options, mode, &socket, &enhanced);
+      fd = io_open_remote(hostpart, filepart, options, mode, &conid, &enhanced);
   else {
     fd = open(filename, options | O_BINARY | O_RANDOM, mode);
 #ifndef _WIN32
@@ -1206,7 +1206,7 @@ int MDS_IO_OPEN(char *filename_in, int options, mode_t mode)
   }
   free(tmp);
   if (fd != -1)
-    fd = NewFD(fd, socket, enhanced);
+    fd = NewFD(fd, conid, enhanced);
   if (filename)
     free(filename);
   return fd;
@@ -1216,7 +1216,7 @@ STATIC_ROUTINE int io_close_remote(int fd)
 {
   int ret = -1;
   int info[] = { 0, 0 };
-  int sock = FDS[fd - 1].socket;
+  int sock = FDS[fd - 1].conid;
   int status;
   LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   info[1] = FDS[fd - 1].fd;
@@ -1246,11 +1246,11 @@ int MDS_IO_CLOSE(int fd)
   int status;
   LOCKFDS if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
 #ifdef SRB
-    if (FDS[fd - 1].socket == SRB_SOCKET) {
+    if (FDS[fd - 1].conid == SRB_ID) {
       status = srbUioClose(FDS[fd - 1].fd);
     } else
 #else
-    status = (FDS[fd - 1].socket == -1) ? close(FDS[fd - 1].fd) : io_close_remote(fd);
+    status = (FDS[fd - 1].conid == -1) ? close(FDS[fd - 1].fd) : io_close_remote(fd);
 #endif
     FDS[fd - 1].in_use = 0;
     UNLOCKFDS return status;
@@ -1263,7 +1263,7 @@ STATIC_ROUTINE off_t io_lseek_remote(int fd, off_t offset, int whence)
 {
   off_t ret = -1;
   int info[] = { 0, 0, 0, 0, 0 };
-  int sock = FDS[fd - 1].socket;
+  int sock = FDS[fd - 1].conid;
   int status;
   LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   info[1] = FDS[fd - 1].fd;
@@ -1301,14 +1301,14 @@ off_t MDS_IO_LSEEK(int fd, off_t offset, int whence)
   off_t pos;
   LOCKFDS if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
 #ifdef SRB
-    if (FDS[fd - 1].socket == SRB_SOCKET) {
+    if (FDS[fd - 1].conid == SRB_ID) {
       pos = srbUioSeek(FDS[fd - 1].fd, offset, whence);
       UnlockMdsShrMutex(&IOMutex);
       UNLOCKFDS return pos;
     }
 #endif
     pos =
-	(FDS[fd - 1].socket == -1) ? lseek(FDS[fd - 1].fd, offset, whence) : io_lseek_remote(fd,
+	(FDS[fd - 1].conid == -1) ? lseek(FDS[fd - 1].fd, offset, whence) : io_lseek_remote(fd,
 											     offset,
 											     whence);
     UNLOCKFDS return pos;
@@ -1321,7 +1321,7 @@ STATIC_ROUTINE ssize_t io_write_remote(int fd, void *buff, size_t count)
 {
   ssize_t ret = 0;
   int info[] = { 0, 0 };
-  int sock = FDS[fd - 1].socket;
+  int sock = FDS[fd - 1].conid;
   int status;
   LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   info[0] = (int)count;
@@ -1353,11 +1353,11 @@ ssize_t MDS_IO_WRITE(int fd, void *buff, size_t count)
     return 0;
   LOCKFDS if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
 #ifdef SRB
-    if (FDS[fd - 1].socket == SRB_SOCKET) {
+    if (FDS[fd - 1].conid == SRB_ID) {
       ans = srbUioWrite(FDS[fd - 1].fd, buff, count);
     } else
 #endif
-    if (FDS[fd - 1].socket == -1) {
+    if (FDS[fd - 1].conid == -1) {
 #ifdef USE_PERF
       TreePerfWrite(count);
 #endif
@@ -1373,7 +1373,7 @@ STATIC_ROUTINE ssize_t io_read_remote(int fd, void *buff, size_t count)
   ssize_t ret = 0;
   int ret_i;
   int info[] = { 0, 0, 0 };
-  int sock = FDS[fd - 1].socket;
+  int sock = FDS[fd - 1].conid;
   int status;
   LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   info[1] = FDS[fd - 1].fd;
@@ -1404,7 +1404,7 @@ STATIC_ROUTINE ssize_t io_read_x_remote(int fd, off_t offset, void *buff, size_t
 {
   ssize_t ret = -1;
   int info[] = { 0, 0, 0, 0, 0 };
-  int sock = FDS[fd - 1].socket;
+  int sock = FDS[fd - 1].conid;
   int status;
   LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   info[1] = FDS[fd - 1].fd;
@@ -1447,11 +1447,11 @@ ssize_t MDS_IO_READ(int fd, void *buff, size_t count)
     return 0;
   LOCKFDS if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
 #ifdef SRB
-    if (FDS[fd - 1].socket == SRB_SOCKET) {
+    if (FDS[fd - 1].conid == SRB_ID) {
       ans = srbUioRead(FDS[fd - 1].fd, buff, count);
     } else
 #endif
-    if (FDS[fd - 1].socket == -1) {
+    if (FDS[fd - 1].conid == -1) {
 #ifdef USE_PERF
       TreePerfRead(count);
 #endif
@@ -1463,7 +1463,7 @@ ssize_t MDS_IO_READ(int fd, void *buff, size_t count)
 }
 
 #ifdef SRB
-if (FDS[fd - 1].socket == SRB_SOCKET) {
+if (FDS[fd - 1].conid == SRB_ID) {
   pos = srbUioSeek(FDS[fd - 1].fd, offset, whence);
   ans = srbUioRead(FDS[fd - 1].fd, buff, count);
 } else
@@ -1478,12 +1478,12 @@ if (FDS[fd - 1].socket == SRB_SOCKET) {
     }
     LOCKFDS if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
 #ifdef SRB
-      if (FDS[fd - 1].socket == SRB_SOCKET) {
+      if (FDS[fd - 1].conid == SRB_ID) {
 	pos = srbUioSeek(FDS[fd - 1].fd, offset, whence);
 	ans = srbUioRead(FDS[fd - 1].fd, buff, count);
       } else
 #endif
-      if (FDS[fd - 1].socket == -1 || (!FDS[fd - 1].enhanced)) {
+      if (FDS[fd - 1].conid == -1 || (!FDS[fd - 1].enhanced)) {
 	LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
 	MDS_IO_LOCK(fd, offset, count, MDS_IO_LOCK_RD, deleted);
 	MDS_IO_LSEEK(fd, offset, SEEK_SET);
@@ -1501,7 +1501,7 @@ STATIC_ROUTINE int io_lock_remote(int fd, off_t offset, size_t size, int mode, i
 {
   int ret = 0;
   int info[] = { 0, 0, 0, 0, 0, 0 };
-  int sock = FDS[fd - 1].socket;
+  int sock = FDS[fd - 1].conid;
   int status;
   LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   info[1] = FDS[fd - 1].fd;
@@ -1543,12 +1543,12 @@ int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
     *deleted = 0;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
 #ifdef SRB
-    if (FDS[fd - 1].socket == SRB_SOCKET) {
+    if (FDS[fd - 1].conid == SRB_ID) {
       status = srbUioLock(FDS[fd - 1].fd, offset, size, mode_in);
       UNLOCKFDS return (status == 0) ? TreeSUCCESS : TreeLOCK_FAILURE;
     }
 #endif
-    if (FDS[fd - 1].socket == -1) {
+    if (FDS[fd - 1].conid == -1) {
       int mode = mode_in & MDS_IO_LOCK_MASK;
       int nowait = mode_in & MDS_IO_LOCK_NOWAIT;
 #ifdef _WIN32

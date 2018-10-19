@@ -789,7 +789,7 @@ extern int TreeLockNci(TREE_INFO * info, int readonly, int nodenum, int *deleted
 extern int TreeUnLockNci(TREE_INFO * info, int readonly, int nodenum);
 extern int TreeLockDatafile(TREE_INFO * info, int readonly, int64_t where);
 extern int TreeUnLockDatafile(TREE_INFO * info, int readonly, int64_t where);
-extern int MDS_IO_SOCKET(int fd);
+extern int MDS_IO_ID(int fd);
 extern int MDS_IO_FD(int fd);
 #ifdef _WIN32
 #ifndef HAVE_PTHREAD_H

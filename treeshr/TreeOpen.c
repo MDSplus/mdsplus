@@ -937,7 +937,7 @@ static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, 
 	  } else {
 	    fd = MDS_IO_OPEN(resnam, edit_flag ? O_RDWR : O_RDONLY, 0);
 #ifndef _WIN32
-	    info->mapped = (MDS_IO_SOCKET(fd) == -1);
+	    info->mapped = (MDS_IO_ID(fd) == -1);
  #ifdef __APPLE__
  /* from python-mmap Issue #11277: fsync(2) is not enough on OS X - a special, OS X specific
     fcntl(2) is necessary to force DISKSYNC and get around mmap(2) bug */
