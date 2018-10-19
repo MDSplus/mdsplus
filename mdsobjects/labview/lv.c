@@ -35,7 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <mdsplus/mdsconfig.h>
 #include <stdint.h>
-#include  <platdefines.h>
+#include <platdefines.h>
 #include <extcode.h>
 #include <fundtypes.h>
 #include <mdsdescrip.h>
@@ -45,71 +45,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma pack(1)
 
-static void Initialize();
-
-static DESCRIPTOR(LVMemoryManager_10Name, "LVMemoryManager_10");
-static DESCRIPTOR(LVRT_10Name, "LVRT_10");
-
-static DESCRIPTOR(DSNewHandleName, "DSNewHandle");
-static DESCRIPTOR(MoveBlockName, "MoveBlock");
-static DESCRIPTOR(NumericArrayResizeName, "NumericArrayResize");
-
-void (*LVMoveBlock) () = 0;
-UHandle(*LVDSNewHandle) () = 0;
-MgErr(*LVNumericArrayResize) () = 0;
-
-EXPORT extern void MoveBlock(const void *src, void *dest, size_t siz)
-{
-  if (!LVMoveBlock)
-    Initialize();
-  if (LVMoveBlock)
-    LVMoveBlock(src, dest, siz);
+EXPORT extern void MoveBlock(const void *src, void *dest, size_t siz){
+  void (*LVMoveBlock) () = NULL;
+  LibFindImageSymbol_C("LVRT_10", "MoveBlock", &LVMoveBlock);
+  if (LVMoveBlock) LVMoveBlock(src, dest, siz);
 }
 
-EXPORT extern UHandle DSNewHandle(size_t siz)
-{
-  if (!LVDSNewHandle)
-    Initialize();
-  if (LVDSNewHandle)
-    return LVDSNewHandle(siz);
-  else
-    return (UHandle) - 1;
+EXPORT extern UHandle DSNewHandle(size_t siz){
+  static UHandle(*LVDSNewHandle) () = NULL;
+  LibFindImageSymbol_C("LVMemoryManager_10", "DSNewHandle", &LVDSNewHandle);
+  if (LVDSNewHandle)  return LVDSNewHandle(siz);
+  return (UHandle) - 1;
 }
 
-EXPORT MgErr NumericArrayResizeCACCA(int32 a, int32 b, UHandle * h, size_t siz)
-{
-  printf("CIAO SONO NUMERIC ARRAY RESIZE CACCA\n");
-  printf("\n\n\n\n");
-  if (!LVNumericArrayResize)
-    Initialize();
-  if (LVNumericArrayResize)
-    return LVNumericArrayResize(a, b, h, siz);
-  else
-    return -1;
+EXPORT MgErr NumericArrayResize(int32 a, int32 b, UHandle * h, size_t siz){
+  static MgErr(*LVNumericArrayResize) () = NULL;
+  LibFindImageSymbol_C("LVRT_10", "NumericArrayResize", &LVNumericArrayResize);
+  if (LVNumericArrayResize) return LVNumericArrayResize(a, b, h, siz);
+  return -1;
 }
 
-EXPORT MgErr NumericArrayResize(int32 a, int32 b, UHandle * h, size_t siz)
-{
-  printf("CIAO SONO NUMERIC ARRAY RESIZE\n");
-  printf("\n\n\n\n");
-  if (!LVNumericArrayResize)
-    Initialize();
-  if (LVNumericArrayResize)
-    return LVNumericArrayResize(a, b, h, siz);
-  else
-    return -1;
-}
-
-static void Initialize()
-{
-  int status;
-  printf("CIAO SONO INITIALIZE\n");
-  if (!LVDSNewHandle) {
-    status = LibFindImageSymbol(&LVMemoryManager_10Name, &DSNewHandleName, &LVDSNewHandle);
-    printf("FIND IMAGE SYMBOL status: %d %s\n", status, MdsGetMsg(status));
-  }
-  if (!LVMoveBlock)
-    LibFindImageSymbol(&LVRT_10Name, &MoveBlockName, &LVMoveBlock);
-  if (!LVNumericArrayResize)
-    LibFindImageSymbol(&LVRT_10Name, &NumericArrayResizeName, &LVNumericArrayResize);
+EXPORT MgErr NumericArrayResizeCACCA(int32 a, int32 b, UHandle * h, size_t siz){
+  return NumericArrayResize(a,b,h,siz);
 }

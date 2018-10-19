@@ -72,13 +72,8 @@ static int Initialized = 0;
 
 static void *FindSymbol(char *name)
 {
-  void *rtn;
-  DESCRIPTOR(image, "hdf5");
-  struct descriptor routine = { 0, DTYPE_T, CLASS_S, 0 };
-  int status;
-  routine.length = strlen(name);
-  routine.pointer = name;
-  status = LibFindImageSymbol(&image, &routine, &rtn);
+  void *rtn = NULL;
+  int status = LibFindImageSymbol_C("hdf5", name, &rtn);
   if (!(status & 1)) {
     printf("Error activating hdf5 shared library\n");
     exit(1);
