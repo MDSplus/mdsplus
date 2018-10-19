@@ -152,8 +152,8 @@ class Tests(TestCase):
         self._doExceptionTest('close',Exc.TreeNOT_OPEN)
         self._doExceptionTest('dispatch/command/server=xXxXxXx type test',Exc.ServerPATH_DOWN)
         self._doExceptionTest('dispatch/command/server type test',Exc.MdsdclIVVERB)
-      test()
-      self.cleanup(0 if sys.platform.startswith('win') else 1)
+      try:     test()
+      finally: self.cleanup()
 
 
     def dispatcher(self):
@@ -178,7 +178,7 @@ class Tests(TestCase):
                 log = open(logfile,'w')
                 try:
                     params = ['mdsip','-s','-p',str(port),'-h',hosts]
-                    print(' '.join(params+['&>',logfile]))
+                    print(' '.join(params+['>',logfile,'2>&1']))
                     mdsip = Popen(params,env=env,stdout=log,stderr=STDOUT)
                 except:
                     log.close()
@@ -259,8 +259,8 @@ class Tests(TestCase):
             self._doTCLTest('close/all')
         pytree = Tree('pytree',shot,'ReadOnly')
         self.assertTrue(pytree.TESTDEVICE.INIT1_DONE.record <= pytree.TESTDEVICE.INIT2_DONE.record)
-      test()
-      self.cleanup()
+      try:     test()
+      finally: self.cleanup(1 if sys.platform.startswith('win') else 0)
 
     def runTest(self):
         for test in self.getTests():
