@@ -87,6 +87,7 @@ class Tests(TestCase):
         self.assertEqual([o for o in gc.get_objects() if isTree(o)][refs:],[])
 
     def treeCtx(self):
+      def test():
         from gc import collect
         from time import sleep
         def check(n):
@@ -110,7 +111,8 @@ class Tests(TestCase):
         t = Tree('pytree',self.shot+1,'NEW');
         self.assertEqual(len(tree._TreeCtx.ctxs[t.ctx.value]),1)
         del(t);collect(2);sleep(.01);check(0)
-        self.cleanup()
+      try:     test()
+      finally: self.cleanup()
 
     def buildTrees(self):
       def test():
@@ -162,13 +164,16 @@ class Tests(TestCase):
             self.assertEqual(str(ip.getExtendedAttribute('ATT1')),'100')
             self.assertEqual(str(ip.getExtendedAttribute('ATT2')),'1 : 200 : *')
             self.assertEqual(str(ip.getExtendedAttribute('ATT3')),'this is plasma current')
-            self.assertEqual(str(ip.getExtendedAttributes()),"{'ATT3': 'this is plasma current', 'ATT2': 1 : 200 : *, 'ATT1': 100}")
+            exattr = ip.getExtendedAttributes()
+            self.assertEqual(exattr['ATT1'],100)
+            self.assertEqual(str(exattr['ATT2']),'1 : 200 : *')
+            self.assertEqual(exattr['ATT3'],'this is plasma current')
             for i in range(10):
                 node=pytreesub_top.addNode('child%02d' % (i,),'structure')
                 node.addDevice('dt200_%02d' % (i,),'dt200').on=False
             pytreesub.write()
-      test()
-      self.cleanup()
+      try:     test()
+      finally: self.cleanup()
 
     def openTrees(self):
       def test():
@@ -182,8 +187,8 @@ class Tests(TestCase):
             Tree.setCurrent('pytree',self.shot+1)
             pytree2=Tree('pytree',0)
             self.assertEqual(str(pytree2),'Tree("PYTREE",%d,"Normal")'%(self.shot+1,))
-      test()
-      self.cleanup()
+      try:     test()
+      finally: self.cleanup()
 
     def getNode(self):
       def test():
@@ -195,8 +200,8 @@ class Tests(TestCase):
         self.assertEqual(ip.nid,pytree.__PYTREESUB__IP.nid)
         self.assertEqual(pytree.TESTDEVICE.__class__,Device.PyDevice('TESTDEVICE'))
         self.assertEqual(pytree.CYGNET4K.__class__,Device.PyDevice('CYGNET4K'))
-      test()
-      self.cleanup()
+      try:     test()
+      finally: self.cleanup()
 
     def findNode(self):
       def test():
@@ -204,8 +209,8 @@ class Tests(TestCase):
         nodes = pytree.getNodeWild('***:SIG_CMPRS')
         self.assertEqual(len(nodes), 1)
         self.assertEqual(str(nodes[0]), '\\PYTREE::TOP:SIG_CMPRS')
-      test()
-      self.cleanup()
+      try:     test()
+      finally: self.cleanup()
 
     def setDefault(self):
       def test():
@@ -214,8 +219,8 @@ class Tests(TestCase):
         pytree.setDefault(pytree._IP)
         self.assertEqual(str(pytree.getDefault()),'\\PYTREESUB::IP')
         self.assertEqual(str(pytree2.getDefault()),'\\PYTREE::TOP')
-      test()
-      self.cleanup()
+      try:     test()
+      finally: self.cleanup()
 
     def nodeLinkage(self):
       def test():
@@ -275,8 +280,8 @@ class Tests(TestCase):
         self.assertEqual(ip.node_name,ip.getNodeName())
         self.assertEqual(ip.path,"\\PYTREESUB::IP")
         self.assertEqual(ip.path,ip.getPath())
-      test()
-      self.cleanup()
+      try:     test()
+      finally: self.cleanup()
 
     def nciInfo(self):
       def test():
@@ -335,8 +340,8 @@ class Tests(TestCase):
         self.assertEqual((ip.tags==makeArray(['IP','MAGNETICS_IP','MAG_IP','MAGNETICS_PLASMA_CURRENT','MAG_PLASMA_CURRENT'])).all(),True)
         self.assertEqual((ip.tags==ip.getTags()).all(),True)
         self.assertEqual(ip.time_inserted,ip.getTimeInserted())
-      test()
-      self.cleanup()
+      try:     test()
+      finally: self.cleanup()
 
     def getData(self):
       def test():
@@ -349,12 +354,8 @@ class Tests(TestCase):
         self.assertEqual(ip.versions,ip.containsVersions())
         self.assertEqual(ip.getNumSegments(),0)
         self.assertEqual(ip.getSegment(0),None)
-        self.assertEqual(str(ip.getExtendedAttribute('ATT1')),'100')
-        self.assertEqual(str(ip.getExtendedAttribute('ATT2')),'1 : 200 : *')
-        self.assertEqual(str(ip.getExtendedAttribute('ATT3')),'this is plasma current')
-        self.assertEqual(str(ip.getExtendedAttributes()),"{'ATT3': 'this is plasma current', 'ATT2': 1 : 200 : *, 'ATT1': 100}")
-      test()
-      self.cleanup()
+      try:     test()
+      finally: self.cleanup()
 
     def getCompression(self):
       def test():
@@ -364,8 +365,8 @@ class Tests(TestCase):
             pytree.SIG_CMPRS.record=node.record
             self.assertTrue((pytree.SIG_CMPRS.record == node.record).all(),
                              msg="Error writing compressed signal%s"%node)
-      test()
-      self.cleanup()
+      try:     test()
+      finally: self.cleanup()
 
     def runTest(self):
         for test in self.getTests():
