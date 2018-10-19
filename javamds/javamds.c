@@ -44,19 +44,12 @@ extern int TdiCompile(), TdiData(), TdiFloat();
 
 static char error_message[512];
 
-static jint DYN_JNI_CreateJavaVM(JavaVM ** jvm, void **env, JavaVMInitArgs * vm_args)
-{
-  int status;
-  static jint(*JNI_CreateJavaVM) (JavaVM **, void **, JavaVMInitArgs *) = 0;
-  if (JNI_CreateJavaVM == 0) {
-    static DESCRIPTOR(javalib_d, "java");
-    static DESCRIPTOR(jvmlib_d, "jvm");
-    static DESCRIPTOR(javasym_d, "JNI_CreateJavaVM");
-    status = LibFindImageSymbol(&javalib_d, &javasym_d, &JNI_CreateJavaVM);
-    if (!(status & 1))
-      status = LibFindImageSymbol(&jvmlib_d, &javasym_d, &JNI_CreateJavaVM);
+static jint DYN_JNI_CreateJavaVM(JavaVM ** jvm, void **env, JavaVMInitArgs * vm_args){
+  static jint(*JNI_CreateJavaVM) (JavaVM **, void **, JavaVMInitArgs *) = NULL;
+  int status = LibFindImageSymbol_C("java", "JNI_CreateJavaVM", &JNI_CreateJavaVM);
+  if (!(status & 1)) {
+      status = LibFindImageSymbol_C("jvm", "JNI_CreateJavaVM", &JNI_CreateJavaVM);
     if (!(status & 1)) {
-      JNI_CreateJavaVM = 0;
       printf("JNI_CreateJavaVM Not Found!\n");
       return -1;
     }
