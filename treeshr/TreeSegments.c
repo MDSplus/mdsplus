@@ -1060,6 +1060,7 @@ int _TreeGetNumSegments(void *dbid, int nid, int *num){
   return status;
 }
 
+static int (*TdiExecute) () = NULL;
 static int ReadSegment(TREE_INFO* tinfo, int nid, SEGMENT_HEADER* shead, SEGMENT_INFO* sinfo,
                        int idx, struct descriptor_xd *segment, struct descriptor_xd *dim){
   INIT_TREESUCCESS;
@@ -1114,11 +1115,7 @@ static int ReadSegment(TREE_INFO* tinfo, int nid, SEGMENT_HEADER* shead, SEGMENT
 	if (sinfo->dimension_length != -1) {
           TreeGetDsc(tinfo, nid, sinfo->dimension_offset, sinfo->dimension_length, dim);
           if (idx == shead->idx && shead->next_row != sinfo->rows) {
-	    STATIC_CONSTANT DESCRIPTOR(tdishr, "TdiShr");
-	    STATIC_CONSTANT DESCRIPTOR(tdiexecute, "TdiExecute");
-	    STATIC_THREADSAFE int (*addr) () = NULL;
-	    if (!addr)
-	      status = LibFindImageSymbol(&tdishr, &tdiexecute, &addr);
+	    status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
 	    if STATUS_OK {
 		STATIC_CONSTANT DESCRIPTOR(expression, "data($)[0:($-1)]");
 		DESCRIPTOR_LONG(row_d, &shead->next_row);
@@ -1128,7 +1125,7 @@ static int ReadSegment(TREE_INFO* tinfo, int nid, SEGMENT_HEADER* shead, SEGMENT
 		arglist[3] = &row_d;
 		arglist[4] = dim;
 		arglist[5] = MdsEND_ARG;
-		status = (int)((char *)LibCallg(arglist, addr) - (char *)0);
+		status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
 	      }
 	  }
 	}
@@ -2145,21 +2142,14 @@ int _TreeGetSegmentedRecord(void *dbid, int nid, struct descriptor_xd *data)
 {
   int status = getOpaqueList(dbid, nid, data );
   if (status) return status; // 0: data is not Opaque
-  static int activated = 0;
-  static int (*addr) (void *, int, struct descriptor *, struct descriptor *, struct descriptor *, struct descriptor_xd *);
-  if (!activated) {
-    static DESCRIPTOR(library, "XTreeShr");
-    static DESCRIPTOR(routine, "_XTreeGetTimedRecord");
-    status = LibFindImageSymbol(&library, &routine, &addr);
-    if STATUS_OK
-      activated = 1;
-    else {
-      fprintf(stderr, "Error activating XTreeShr library. Cannot access segmented records.\n");
-      return status;
-    }
+  static int (*_XTreeGetTimedRecord) () = NULL;
+  status = LibFindImageSymbol_C("XTreeShr", "_XTreeGetTimedRecord", &_XTreeGetTimedRecord);
+  if STATUS_NOT_OK {
+    fprintf(stderr, "Error activating XTreeShr library. Cannot access segmented records.\n");
+    return status;
   }
   timecontext_t* tc = &((PINO_DATABASE*)dbid)->timecontext;
-  return (*addr) (dbid, nid, tc->start.pointer, tc->end.pointer, tc->delta.pointer, data);
+  return (*_XTreeGetTimedRecord) (dbid, nid, tc->start.pointer, tc->end.pointer, tc->delta.pointer, data);
 }
 
 int _TreePutRow(void *dbid, int nid, int bufsize, int64_t * timestamp, struct descriptor_a *data){
@@ -2264,11 +2254,7 @@ static int isSegmentInRange(vars_t* vars,
   int ans = B_FALSE;
   if ((start && start->pointer) || (end && end->pointer)) {
     INIT_TREESUCCESS;
-    STATIC_CONSTANT DESCRIPTOR(tdishr, "TdiShr");
-    STATIC_CONSTANT DESCRIPTOR(tdiexecute, "TdiExecute");
-    STATIC_THREADSAFE int (*addr) () = NULL;
-    if (!addr)
-      status = LibFindImageSymbol(&tdishr, &tdiexecute, &addr);
+    status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
     if STATUS_OK {
       EMPTYXD(segstart);
       EMPTYXD(segend);
@@ -2285,7 +2271,7 @@ static int isSegmentInRange(vars_t* vars,
           arglist[5] = &segstart;
           arglist[6] = &ans_d;
           arglist[7] = MdsEND_ARG;
-          status = (int)((char *)LibCallg(arglist, addr) - (char *)0);
+          status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
         } else {
           if (start && start->pointer) {
             STATIC_CONSTANT DESCRIPTOR(expression, "($ <= $)");
@@ -2295,7 +2281,7 @@ static int isSegmentInRange(vars_t* vars,
             arglist[3] = &segend;
             arglist[4] = &ans_d;
             arglist[5] = MdsEND_ARG;
-            status = (int)((char *)LibCallg(arglist, addr) - (char *)0);
+            status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
           } else {
             STATIC_CONSTANT DESCRIPTOR(expression, "($ >= $)");
             void *arglist[6] = { (void *)5 };
@@ -2304,7 +2290,7 @@ static int isSegmentInRange(vars_t* vars,
             arglist[3] = &segstart;
             arglist[4] = &ans_d;
             arglist[5] = MdsEND_ARG;
-            status = (int)((char *)LibCallg(arglist, addr) - (char *)0);
+            status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
           }
         }
       }
