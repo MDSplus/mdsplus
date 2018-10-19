@@ -33,17 +33,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////
 
 
-int DoMessage(int id)
-{
+int DoMessage(int id){
   INIT_STATUS_AS MDSplusERROR;
-  Message *(*processMessage) (Connection *, Message *) = 0;
   Connection *c = FindConnection(id, 0);
-  if (processMessage == 0) {
-    DESCRIPTOR(MdsIpSrvShr, "MdsIpSrvShr");
-    DESCRIPTOR(procmsg, "ProcessMessage");
-    status = LibFindImageSymbol(&MdsIpSrvShr, &procmsg, &processMessage);
-  }
-  if (c && processMessage) {
+  Message *(*processMessage) (Connection *, Message *) = NULL;
+  status = LibFindImageSymbol_C("MdsIpSrvShr", "ProcessMessage", &processMessage);
+  if (c && STATUS_OK) {
     Message *msgptr = GetMdsMsg(id, &status);
     Message *ans = 0;
     if STATUS_OK {

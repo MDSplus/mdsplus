@@ -35,7 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////
 
 IoRoutines *LoadIo(char *protocol_in){
-  IoRoutines *(*rtn) ();
+  IoRoutines *(*rtn) () = NULL;
   if (protocol_in == 0)
     protocol_in = "TCP";
   char *protocol = strcpy((char *)malloc(strlen(protocol_in) + 1), protocol_in);

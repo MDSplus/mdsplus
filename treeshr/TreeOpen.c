@@ -726,7 +726,6 @@ static char *GetFname(char *tree, int shot)
   struct descriptor_d fname = { 0, DTYPE_T, CLASS_D, 0 };
   void *arglist[4];
   char expression[128];
-  static void *TdiExecute = 0;
   struct descriptor expression_d = { 0, DTYPE_T, CLASS_S, 0 };
   if (ans) {
     free(ans);
@@ -738,11 +737,8 @@ static char *GetFname(char *tree, int shot)
   arglist[1] = &expression_d;
   arglist[2] = &fname;
   arglist[3] = MdsEND_ARG;
-  if (TdiExecute == 0) {
-    static DESCRIPTOR(image, "TdiShr");
-    static DESCRIPTOR(routine, "TdiExecute");
-    status = LibFindImageSymbol(&image, &routine, &TdiExecute);
-  }
+  static void *TdiExecute = NULL; // LibFindImageSymbol_C is a NOP if TdiExecute is already set
+  status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
   if STATUS_OK
     status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
   if (status & 1) {
