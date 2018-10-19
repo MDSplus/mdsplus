@@ -40,68 +40,57 @@ static char *Portname = 0;
 static char *protocol = "tcp";
 static char *hostfile = 0;
 static int flags = 0;
-static int socketHandle = 0;
+static SOCKET socketHandle = 0;
 
-int GetSocketHandle()
-{
+SOCKET GetSocketHandle(){
   return socketHandle;
 }
 
-int SetSocketHandle(int handle)
-{
-  int old = socketHandle;
+SOCKET SetSocketHandle(SOCKET handle){
+  SOCKET old = socketHandle;
   socketHandle = handle;
   return old;
 }
 
-int GetFlags()
-{
+int GetFlags(){
   return flags;
 }
 
-int SetFlags(int f)
-{
+int SetFlags(int f){
   int old = flags;
   flags = f;
   return old;
 }
 
-char *GetProtocol()
-{
+char *GetProtocol(){
   return protocol;
 }
 
-char *SetProtocol(char *p)
-{
+char *SetProtocol(char *p){
   char *old = protocol;
   protocol = p;
   return old;
 }
 
-char *GetPortname()
-{
+char *GetPortname(){
   return Portname;
 }
 
-char *MdsGetServerPortname()
-{
+char *MdsGetServerPortname(){
   return Portname;
 }
 
-char *SetPortname(char *p)
-{
+char *SetPortname(char *p){
   char *old = Portname;
   Portname = p;
   return old;
 }
 
-char *GetHostfile()
-{
+char *GetHostfile(){
   return hostfile ? hostfile : DEFAULT_HOSTFILE;
 }
 
-char *SetHostfile(char *newhostfile)
-{
+char *SetHostfile(char *newhostfile){
   char *old = hostfile;
   hostfile = newhostfile;
   return old;
@@ -125,29 +114,25 @@ char *GetLogDir() {
   return logdir;
 }
 
-unsigned char GetMulti()
-{
+unsigned char GetMulti(){
   return multi;
 }
 
 ///
-/// Set multi mode active in this scope. 
+/// Set multi mode active in this scope.
 /// Mutiple connection mode (accepts multiple connections each with own context)
-/// 
-unsigned char SetMulti(unsigned char s)
-{
+///
+unsigned char SetMulti(unsigned char s){
   unsigned char old_multi = multi;
   multi = s;
   return old_multi;
 }
 
-int GetContextSwitching()
-{
+int GetContextSwitching(){
   return ContextSwitching;
 }
 
-int SetContextSwitching(int s)
-{
+int SetContextSwitching(int s){
   int old_ctx_switching = ContextSwitching;
   ContextSwitching = s;
   return old_ctx_switching;
@@ -159,27 +144,23 @@ int SetContextSwitching(int s)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-int GetMaxCompressionLevel()
-{
+int GetMaxCompressionLevel(){
   return MaxCompressionLevel;
 }
 
-int SetMaxCompressionLevel(int s)
-{
+int SetMaxCompressionLevel(int s){
   int old_max_compression = MaxCompressionLevel;
   MaxCompressionLevel = s;
   return old_max_compression;
 }
 
-int SetCompressionLevel(int level)
-{
+int SetCompressionLevel(int level){
   int old_level = CompressionLevel;
   CompressionLevel = level;
   return old_level;
 }
 
-int GetCompressionLevel()
-{
+int GetCompressionLevel(){
   return CompressionLevel;
 }
 
@@ -227,13 +208,11 @@ int SetMdsConnectTimeout(int sec) {
 
 
 static int ClientAddr = 0;
-int MdsGetClientAddr()
-{
+int MdsGetClientAddr(){
   return ClientAddr;
 }
 
 /// Address of current client structure
-void MdsSetClientAddr(int addr)
-{
+void MdsSetClientAddr(int addr){
   ClientAddr = addr;
 }

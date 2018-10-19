@@ -56,7 +56,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "mdsip_connections.h"
 
 struct mdsfile {
-  int socket;
+  SOCKET socket;
   int fd;
 };
 
@@ -162,7 +162,7 @@ off_t getSize(struct mdsfile * file)
   } else {
     off_t ret = -1;
     int info[] = { 0, 0, 0, 0, 0 };
-    int sock = file->socket;
+    SOCKET sock = file->socket;
     int status;
     info[1] = file->fd;
     info[4] = SEEK_END;
@@ -215,7 +215,7 @@ off_t doRead(struct mdsfile * file, off_t count, void *buff)
   } else {
     off_t ret = -1;
     int info[] = { 0, 0, 0 };
-    int sock = file->socket;
+    SOCKET sock = file->socket;
     int status;
     info[1] = file->fd;
     info[2] = count;
@@ -247,7 +247,7 @@ static off_t doWrite(struct mdsfile *file, off_t count, void *buff)
   } else {
     off_t ret = -1;
     int info[] = { 0, 0 };
-    int sock = file->socket;
+    SOCKET sock = file->socket;
     int status;
     info[1] = file->fd;
     info[0] = count;
@@ -277,7 +277,7 @@ static int doClose(struct mdsfile *file)
   } else {
     int ret = -1;
     int info[] = { 0, 0 };
-    int sock = file->socket;
+    SOCKET sock = file->socket;
     int status;
     info[1] = file->fd;
     status = SendArg(sock, MDS_IO_CLOSE_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);

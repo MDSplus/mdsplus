@@ -70,8 +70,8 @@ EXPORT char *ServerGetInfo(int full __attribute__ ((unused)), char *server){
   char *ansret;
   short len = 0;
   void *mem = 0;
-  int sock = ServerConnect(server);
-  if (sock >= 0) {
+  SOCKET sock = ServerConnect(server);
+  if (sock != INVALID_SOCKET) {
     int status = SendArg(sock,(unsigned char)0,(char)DTYPE_CSTRING,(unsigned char)1,(short)strlen(cmd),0,0,cmd);
     if STATUS_OK {
       char dtype;

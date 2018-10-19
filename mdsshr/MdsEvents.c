@@ -104,12 +104,12 @@ static void *GetConnectionInfo_(int id, char **name, int *readfd, size_t * len)
   return 0;
 }
 
-static int MdsEventAst_(int sock, char const *eventnam, void (*astadr) (), void *astprm, int *eventid)
+static int MdsEventAst_(int conid, char const *eventnam, void (*astadr) (), void *astprm, int *eventid)
 {
   STATIC_THREADSAFE int (*rtn) () = 0;
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "MdsEventAst", (void **)&rtn) : 1;
   if (status & 1) {
-    return (*rtn) (sock, eventnam, astadr, astprm, eventid);
+    return (*rtn) (conid, eventnam, astadr, astprm, eventid);
   }
   return 0;
 }
@@ -145,7 +145,7 @@ static int MdsValue_(int id, char const *exp, struct descrip *d1, struct descrip
 }
 
 #ifdef GLOBUS
-static int RegisterRead_(int sock)
+static int RegisterRead_(int conid)
 {
   int status = 1;
   STATIC_THREADSAFE int (*rtn) (int) = 0;
@@ -155,7 +155,7 @@ static int RegisterRead_(int sock)
     printf("%s\n", MdsGetMsg(status));
     return status;
   }
-  return ((*rtn) (sock));
+  return ((*rtn) (conid));
 }
 #endif
 
@@ -340,7 +340,7 @@ STATIC_ROUTINE void getServerDefinition(char const *env_var, char **servers, int
 }
 
 #ifdef GLOBUS
-STATIC_ROUTINE void handleRemoteEvent(int sock);
+STATIC_ROUTINE void handleRemoteEvent(int conid);
 
 STATIC_ROUTINE void KillHandler()
 {
@@ -352,7 +352,7 @@ STATIC_ROUTINE void *handleRemoteAst(void *arg __attribute__ ((unused)))
   return NULL;
 }
 
-STATIC_ROUTINE void handleRemoteEvent(int sock)
+STATIC_ROUTINE void handleRemoteEvent(int conid)
 {
   char buf[16];
   STATIC_CONSTANT struct descriptor

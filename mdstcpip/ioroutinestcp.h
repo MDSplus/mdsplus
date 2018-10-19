@@ -1,8 +1,8 @@
 #define _TCP
 #ifdef _WIN32
- #define PERROR(string) do{errno = WSAGetLastError();perror(string);}while (0)
+ #define PERROR(...) do{errno = WSAGetLastError();fprintf(stderr,__VA_ARGS__);fprintf(stderr,": ");perror("");}while(0)
 #else
- #define PERROR(string) perror(string)
+ #define PERROR(...) do{fprintf(stderr,__VA_ARGS__);fprintf(stderr,": ");perror("");}while(0)
  #include <netinet/tcp.h>
 #endif
 #define SOCKLEN_T   socklen_t

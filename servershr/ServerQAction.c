@@ -59,7 +59,7 @@ typedef struct _MonitorList {
 typedef struct _ClientList {
   uint32_t addr;
   uint16_t port;
-  int sock;
+  SOCKET sock;
   struct _ClientList *next;
 } ClientList;
 
@@ -697,7 +697,7 @@ static void KillWorker(){
 
 // both
 static SOCKET AttachPort(uint32_t addr, uint16_t port){
-  int sock;
+  SOCKET sock;
   struct sockaddr_in sin;
   ClientList *l, *new;
   for (l = Clients; l; l = l->next)
@@ -715,7 +715,7 @@ static SOCKET AttachPort(uint32_t addr, uint16_t port){
   sin.sin_family = AF_INET;
   *(uint32_t *)(&sin.sin_addr) = addr;
   sock = socket(AF_INET, SOCK_STREAM, 0);
-  if (sock >= 0) {
+  if (sock != INVALID_SOCKET) {
     if (connect(sock, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
       shutdown(sock, 2);
       close(sock);
