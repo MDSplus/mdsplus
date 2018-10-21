@@ -506,6 +506,8 @@ static void ResetFdactive(int rep, SOCKET sock, fd_set* active){
   DEBUG("reset fdactive in ResetFdactive\n");
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclobbered"
 static void ReceiverThread(void *sockptr){
   atexit((void*)ReceiverExit);
   CONDITION_SET(&ReceiverRunning);
@@ -553,12 +555,13 @@ static void ReceiverThread(void *sockptr){
         }
       }
     }
-    SOCKERROR("Dispatcher select loop failed\nLast client addr = %u.%u.%u.%u:%u\n",ADDR2IP(last_client_addr),last_client_port);
+    SOCKERROR("Dispatcher select loop failed\nLast client: %u.%u.%u.%u:%u\n",ADDR2IP(last_client_addr),last_client_port);
     ResetFdactive(rep, sock, &fdactive);
   }
   fprintf(stderr,"Cannot recover from select errors in ServerSendMessage, exitting\n");
   pthread_exit(0);
 }
+#pragma GCC diagnostic pop
 
 int is_broken_socket(SOCKET socket)
 {
