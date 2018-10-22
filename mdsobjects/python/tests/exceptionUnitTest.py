@@ -69,10 +69,10 @@ def suite(tests=None):
 def run(tests=None):
     TextTestRunner(verbosity=2).run(suite(tests))
 
-def objgraph():
+def objgraph(*args):
     import objgraph,gc
     gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    run()
+    run(*args)
     gc.collect()
     objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
 
