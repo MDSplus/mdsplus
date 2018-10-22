@@ -61,7 +61,11 @@ class Tests(TestCase):
         def isTree(o):
             try:    return isinstance(o,MDSplus.Tree)
             except: return False
-        self.assertEqual([o for o in gc.get_objects() if isTree(o)][refs:],[])
+        trees = [o for o in gc.get_objects() if isTree(o)]
+        stree = [str(t) for t in trees]
+        for t in trees: t.close()
+        if refs<0: return
+        self.assertEqual(stree[refs:],[])
 
     def ArrayDimensionOrder(self):
       def test():
@@ -83,8 +87,13 @@ class Tests(TestCase):
         node.makeSegment(startTime, endTime, dim, segment)
         retShape  = node.getShape()
         self.assertEqual(shape,retShape)
-      test()
-      self.cleanup()
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup()
 
     def BlockAndRows(self):
       def test():
@@ -107,8 +116,13 @@ class Tests(TestCase):
         node.beginTimestampedSegment(Int32Array([0]))
         self.assertEqual(str(node.record),       "Build_Signal([1,7], *, [-1Q,0Q])")
         self.assertEqual(str(node.getSegment(0)),"Build_Signal([1,7], *, [-1Q,0Q])")
-      test()
-      self.cleanup()
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup()
 
     def WriteSegments(self):
       def test():
@@ -189,8 +203,13 @@ class Tests(TestCase):
         self.assertEqual(node.getSegmentLimits(1),(10,16))
         self.assertEqual(node.record.dim_of().tolist(),dim)
         self.assertEqual(node.record.data().tolist(),dat)
-      test()
-      self.cleanup()
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup()
 
     def WriteOpaque(self):
       def test():
@@ -217,8 +236,13 @@ class Tests(TestCase):
         for i in range(3):
             seg = node.getSegment(i)
             self.assertEqual(len(seg.value.value.data()),lens[i])
-      test()
-      self.cleanup()
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup()
 
     def UpdateSegments(self):
       def test():
@@ -263,8 +287,13 @@ class Tests(TestCase):
             raw.updateSegment(dim.data()[0],dim.data()[-1],dim,i)
         self.assertEqual(str(raw.getSegment(0)),"Build_Signal(Word([1,1,1,1,1,1,1,1,1,1]), *, Build_Dim(Build_Window(0Q, 9Q, TRG), * : * : 1000000000Q / CLK))")
         self.assertTrue(sig.dim_of().tolist(),(arange(0,length,dtype=int64)*int(1e9/clk)).tolist())
-      test()
-      self.cleanup()
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup()
 
     def TimeContext(self):
       def test():
@@ -305,8 +334,13 @@ class Tests(TestCase):
         self.assertEqual(Tree.getTimeContext(),(2,3,4))
         tdi('treeclose()',self.tree,self.shot)
         self.assertEqual(Tree.getTimeContext(),(1,2,3))
-      test()
-      self.cleanup()
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup()
 
     def ScaledSegments(self):
       def test():
@@ -330,9 +364,13 @@ class Tests(TestCase):
         self.assertEqual(ptree.tdiExecute("GetSegment(S,0)").decompile(),"Build_Signal($VALUE * 2W + 1W, Word([-1000,0,1000]), [-1000Q,0Q,1000Q])")
         ptree.tdiExecute("SetSegmentScale(S,as_is($VALUE+1D0))")
         self.assertEqual(ptree.tdiExecute("S").decompile(),"Build_Signal($VALUE + 1D0, Word([-1000,0,1000]), [-1000Q,0Q,1000Q])")
-        
-      test()
-      self.cleanup()
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup()
 
     def CompressSegments(self):
       def test():
@@ -365,8 +403,13 @@ class Tests(TestCase):
         self.assertEqual(True,ptree.getDatafileSize()<ptree1.getDatafileSize())
         for i in range(node1.getNumSegments()):
             self.assertEqual(node.getSegmentDim(i).data().tolist(),node1.getSegmentDim(i).data().tolist())
-      test()
-      self.cleanup()
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup()
 
     def runTest(self):
         for test in self.getTests():
@@ -385,10 +428,10 @@ def suite(tests=None):
 def run(tests=None):
     TextTestRunner(verbosity=2).run(suite(tests))
 
-def objgraph():
+def objgraph(*args):
     import objgraph,gc
     gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    run()
+    run(*args)
     gc.collect()
     objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
 

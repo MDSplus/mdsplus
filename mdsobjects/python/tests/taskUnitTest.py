@@ -107,21 +107,19 @@ class Tests(TestCase):
 
     @classmethod
     def tearDown(cls):
-        import gc
-        gc.collect()
-    def cleanup(self,refs=0):
         import MDSplus,gc;gc.collect()
         def isTree(o):
             try:    return isinstance(o,MDSplus.Tree)
             except: return False
-        self.assertEqual([o for o in gc.get_objects() if isTree(o)][refs:],[])
+        for o in gc.get_objects():
+            if isTree(o):
+                o.close()
 
     def dotask_timeout(self):
       def test():
           with Tree('pytree'):
               for i in range(1000):
                   self._doExceptionTest('do TESTDEVICE:TASK_TIMEOUT',Exc.TdiTIMEOUT)
-      self.cleanup(0 if sys.platform.startswith('win') else 1)
 
     def runTest(self):
         for test in self.getTests():
@@ -142,10 +140,10 @@ def suite(tests=None):
 def run(tests=None):
     TextTestRunner(verbosity=2).run(suite(tests))
 
-def objgraph():
+def objgraph(*args):
     import objgraph,gc
     gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    run()
+    run(*args)
     gc.collect()
     objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
 
