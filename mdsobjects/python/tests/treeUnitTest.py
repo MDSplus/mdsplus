@@ -84,7 +84,11 @@ class Tests(TestCase):
         def isTree(o):
             try:    return isinstance(o,MDSplus.Tree)
             except: return False
-        self.assertEqual([o for o in gc.get_objects() if isTree(o)][refs:],[])
+        trees = [o for o in gc.get_objects() if isTree(o)]
+        stree = [str(t) for t in trees]
+        for t in trees: t.close()
+        if refs<0: return
+        self.assertEqual(stree[refs:],[])
 
     def treeCtx(self):
       def test():
@@ -111,8 +115,13 @@ class Tests(TestCase):
         t = Tree('pytree',self.shot+1,'NEW');
         self.assertEqual(len(tree._TreeCtx.ctxs[t.ctx.value]),1)
         del(t);collect(2);sleep(.01);check(0)
-      try:     test()
-      finally: self.cleanup()
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup()
 
     def buildTrees(self):
       def test():
@@ -172,8 +181,13 @@ class Tests(TestCase):
                 node=pytreesub_top.addNode('child%02d' % (i,),'structure')
                 node.addDevice('dt200_%02d' % (i,),'dt200').on=False
             pytreesub.write()
-      try:     test()
-      finally: self.cleanup()
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup()
 
     def openTrees(self):
       def test():
@@ -187,8 +201,13 @@ class Tests(TestCase):
             Tree.setCurrent('pytree',self.shot+1)
             pytree2=Tree('pytree',0)
             self.assertEqual(str(pytree2),'Tree("PYTREE",%d,"Normal")'%(self.shot+1,))
-      try:     test()
-      finally: self.cleanup()
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup()
 
     def getNode(self):
       def test():
@@ -200,8 +219,13 @@ class Tests(TestCase):
         self.assertEqual(ip.nid,pytree.__PYTREESUB__IP.nid)
         self.assertEqual(pytree.TESTDEVICE.__class__,Device.PyDevice('TESTDEVICE'))
         self.assertEqual(pytree.CYGNET4K.__class__,Device.PyDevice('CYGNET4K'))
-      try:     test()
-      finally: self.cleanup()
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup()
 
     def setDefault(self):
       def test():
@@ -210,8 +234,13 @@ class Tests(TestCase):
         pytree.setDefault(pytree._IP)
         self.assertEqual(str(pytree.getDefault()),'\\PYTREESUB::IP')
         self.assertEqual(str(pytree2.getDefault()),'\\PYTREE::TOP')
-      try:     test()
-      finally: self.cleanup()
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup()
 
     def nodeLinkage(self):
       def test():
@@ -271,8 +300,13 @@ class Tests(TestCase):
         self.assertEqual(ip.node_name,ip.getNodeName())
         self.assertEqual(ip.path,"\\PYTREESUB::IP")
         self.assertEqual(ip.path,ip.getPath())
-      try:     test()
-      finally: self.cleanup()
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup()
 
     def nciInfo(self):
       def test():
@@ -331,8 +365,13 @@ class Tests(TestCase):
         self.assertEqual((ip.tags==makeArray(['IP','MAGNETICS_IP','MAG_IP','MAGNETICS_PLASMA_CURRENT','MAG_PLASMA_CURRENT'])).all(),True)
         self.assertEqual((ip.tags==ip.getTags()).all(),True)
         self.assertEqual(ip.time_inserted,ip.getTimeInserted())
-      try:     test()
-      finally: self.cleanup()
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup()
 
     def getData(self):
       def test():
@@ -345,8 +384,13 @@ class Tests(TestCase):
         self.assertEqual(ip.versions,ip.containsVersions())
         self.assertEqual(ip.getNumSegments(),0)
         self.assertEqual(ip.getSegment(0),None)
-      try:     test()
-      finally: self.cleanup()
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup()
 
     def getCompression(self):
       def test():
@@ -356,8 +400,13 @@ class Tests(TestCase):
             pytree.SIG_CMPRS.record=node.record
             self.assertTrue((pytree.SIG_CMPRS.record == node.record).all(),
                              msg="Error writing compressed signal%s"%node)
-      try:     test()
-      finally: self.cleanup()
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup()
 
     def runTest(self):
         for test in self.getTests():
@@ -378,10 +427,10 @@ def suite(tests=None):
 def run(tests=None):
     TextTestRunner(verbosity=2).run(suite(tests))
 
-def objgraph():
+def objgraph(*args):
     import objgraph,gc
     gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    run()
+    run(*args)
     gc.collect()
     objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
 

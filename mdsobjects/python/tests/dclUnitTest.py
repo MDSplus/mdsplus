@@ -115,7 +115,14 @@ class Tests(TestCase):
         def isTree(o):
             try:    return isinstance(o,MDSplus.Tree)
             except: return False
-        self.assertEqual([o for o in gc.get_objects() if isTree(o)][refs:],[])
+        trees = [o for o in gc.get_objects() if isTree(o)]
+        stree = [str(t) for t in trees]
+        for t in trees:
+            try: t.close()
+            except MDSplus.TreeNOT_OPEN:
+                print(stree)
+        if refs<0: return
+        self.assertEqual(stree[refs:],[])
 
     def interface(self):
       def test():
@@ -152,9 +159,13 @@ class Tests(TestCase):
         self._doExceptionTest('close',Exc.TreeNOT_OPEN)
         self._doExceptionTest('dispatch/command/server=xXxXxXx type test',Exc.ServerPATH_DOWN)
         self._doExceptionTest('dispatch/command/server type test',Exc.MdsdclIVVERB)
-      try:     test()
-      finally: self.cleanup()
-
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup(1)
 
     def dispatcher(self):
       def test():
@@ -260,8 +271,13 @@ class Tests(TestCase):
             self._doTCLTest('close/all')
         pytree = Tree('pytree',shot,'ReadOnly')
         self.assertTrue(pytree.TESTDEVICE.INIT1_DONE.record <= pytree.TESTDEVICE.INIT2_DONE.record)
-      try:     test()
-      finally: self.cleanup(1 if sys.platform.startswith('win') else 0)
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup(1 if sys.platform.startswith('win') else 0)
 
     def runTest(self):
         for test in self.getTests():
@@ -282,10 +298,10 @@ def suite(tests=None):
 def run(tests=None):
     TextTestRunner(verbosity=2).run(suite(tests))
 
-def objgraph():
+def objgraph(*args):
     import objgraph,gc
     gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    run()
+    run(*args)
     gc.collect()
     objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
 
