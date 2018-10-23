@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
 #include <mdsshr.h>
+#include <treeshr.h>
 #include <xtreeshr.h>
 
 #define INTERPOLATION 1
@@ -48,28 +49,6 @@ extern int XTreeConvertToLongTime(struct descriptor *timeD, int64_t * converted)
 static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct descriptor *startD,
 				    struct descriptor *endD, struct descriptor *deltaD, char mode,
 				    struct descriptor_xd *outSignalXd);
-
-/*
-static void printDecompiled(struct descriptor *inD)
-{
-  int status;
-  EMPTYXD(out_xd);
-  char *buf;
-
-  status = TdiDecompile(inD, &out_xd MDS_END_ARG);
-  if (!(status & 1)) {
-    printf("%s\n", MdsGetMsg(status));
-    return;
-  }
-  buf = malloc(out_xd.pointer->length + 1);
-  memcpy(buf, out_xd.pointer->pointer, out_xd.pointer->length);
-  buf[out_xd.pointer->length] = 0;
-  out_xd.pointer->pointer[out_xd.pointer->length - 1] = 0;
-  printf("%s\n", buf);
-  free(buf);
-  MdsFree1Dx(&out_xd, 0);
-}
-*/
 
 //64 bit time-based resampling function. It is assumed here that the 64 bit representation of time is the count
 //of a given, fixed amount of time, starting from a given time in the past
@@ -102,10 +81,9 @@ static void resample(int64_t start, int64_t end, int64_t delta, int64_t * inTime
 
 	for (startIdx = 0; startIdx < inTimebaseSamples && inTimebase[startIdx] < start; startIdx++) ;
 
-	if (startIdx == inTimebaseSamples)	//Not possible in any case
-	{
-    	*retSamples = 0;
-    	return;
+	if (startIdx == inTimebaseSamples) {	//Not possible in any case
+	  *retSamples = 0;
+	  return;
   	}
 
   	timebase = &inTimebase[startIdx];
@@ -433,16 +411,21 @@ static void resample(int64_t start, int64_t end, int64_t delta, int64_t * inTime
 
 //The default resample handles int64 timebases
 //return 0 if the conversion is  not possible
-static int64_t *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int *outSamples, int *isFloat)
-{
-  struct descriptor_a *currDim;
+static int64_t *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int *outSamples, int *isFloat){
+  if (inSignalD->ndesc<3) {
+    ARRAY_COEFF(char *, MAX_DIMS) *dataD = (void*)inSignalD->data;
+    if (dataD->dimct == 1)
+      *outSamples = dataD->arsize / dataD->length;
+    else
+      *outSamples = dataD->m[dataD->dimct-1];
+    return NULL;
+  }
+  int64_t *outPtr;
+  EMPTYXD(currXd);
   double *doublePtr;
   float *floatPtr;
-  int64_t *outPtr;
   int numSamples, i, status;
-  EMPTYXD(currXd);
-
-  currDim = (struct descriptor_a *)inSignalD->dimensions[0];
+  struct descriptor_a *currDim = (struct descriptor_a *)inSignalD->dimensions[0];
   //If timebase already using 64 bit int
   if (currDim->class == CLASS_A && (currDim->dtype == DTYPE_Q || currDim->dtype == DTYPE_QU)) {
     outPtr = malloc(currDim->arsize);
@@ -452,6 +435,7 @@ static int64_t *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int 
     *outSamples = numSamples;
     return outPtr;
   }
+
   //otherwise evaluate it
   status = TdiData(currDim, &currXd MDS_END_ARG);
   if (status & 1) {
@@ -530,43 +514,13 @@ EXPORT int XTreeMinMaxResample(struct descriptor_signal *inSignalD, struct descr
   return XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, MINMAX, outSignalXd);
 }
 
-static int getShape(struct descriptor *dataD, int *dims, int *numDims)
-{
-    int i;
-    ARRAY_COEFF(char *, 64) *arrPtr;
-    if(dataD->class != CLASS_A)
-    {
-//	printf("Internal error resample!!!!\n");
-	return 0;
-    }
-    arrPtr = (void *)dataD;
-    if(arrPtr->dimct == 1)
-    {
-        *numDims = 1;
-	dims[0] = arrPtr->arsize/arrPtr->length;
-    }
-    else
-    {
-        *numDims = arrPtr->dimct;
-	for(i = 0; i < arrPtr->dimct; i++)
-	    dims[i] = arrPtr->m[i];
-    }
-    return 1;
-}
-
+extern int getShape(struct descriptor *dataD, int *dims, int *numDims);
 
 static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct descriptor *startD,
 				    struct descriptor *endD, struct descriptor *inDeltaD, char mode,
 				    struct descriptor_xd *outSignalXd)
 {
-  //char resampleExpr[64];
-  //struct descriptor resampleExprD = { 0, DTYPE_T, CLASS_S, resampleExpr };
-  //struct descriptor_a *arrayD;
-  //char *shapeExpr = "SHAPE(DATA($1))";
-  //struct descriptor shapeExprD = { strlen(shapeExpr), DTYPE_T, CLASS_S, shapeExpr };
-
   int64_t start64, end64, delta64, *timebase64, *outDim;
-//      float *timebaseFloat;
   double *timebaseDouble;
   int dims[64];
   int numDims;
@@ -577,7 +531,6 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   int numYSamples;
   char *outData;
   struct descriptor_a *dataD;
-  //EMPTYXD(shapeXd);
   EMPTYXD(dataXd);
 
   DESCRIPTOR_A_COEFF(outDataArray, 0, 0, 0, 255, 0);
@@ -588,33 +541,27 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   deltaD = inDeltaD;
   if (startD) {
     status = XTreeConvertToLongTime(startD, &start64);
-    if (!(status & 1))
-      return status;
+    if STATUS_NOT_OK return status;
   }
   if (endD) {
     status = XTreeConvertToLongTime(endD, &end64);
-    if (!(status & 1))
-      return status;
+    if STATUS_NOT_OK return status;
   }
   if (deltaD) {
     status = XTreeConvertToLongTime(deltaD, &delta64);
-    if (!(status & 1))
-      return status;
-    if (delta64 == 0)
-      deltaD = 0;
+    if STATUS_NOT_OK return status;
+    if (delta64 == 0)   deltaD = 0;
   }
 
 //This version handles only 64 bit time format
 
   timebase64 = convertTimebaseToInt64(inSignalD, &numTimebaseSamples, &isFloat);
-  if (!timebase64)
-    return 0;			//Cannot convert timebase to 64 bit int
-
-  if (!startD)
-    start64 = timebase64[0];
-  if (!endD)
-    end64 = timebase64[numTimebaseSamples - 1];
-
+  if (!timebase64) {
+    MdsCopyDxXd((struct descriptor *)&inSignalD, outSignalXd);
+    return 3;			//Cannot convert timebase to 64 bit int
+  }
+  if (!startD)  start64 = timebase64[0];
+  if (!endD)    end64   = timebase64[numTimebaseSamples - 1];
   if (start64 < timebase64[0])
     start64 = timebase64[0];
   if (end64 > timebase64[numTimebaseSamples - 1])
@@ -625,36 +572,17 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
     dataD = (struct descriptor_a *)inSignalD->data;
   } else {
     status = TdiData(inSignalD->data, &dataXd MDS_END_ARG);
-    if (status & 1)
-      dataD = (struct descriptor_a *)dataXd.pointer;
-    else
-      return status;
+    if STATUS_NOT_OK return status;
+    dataD = (struct descriptor_a *)dataXd.pointer;
   }
   numYSamples = dataD->arsize/dataD->length;
 
 
   status = getShape((struct descriptor *)dataD, dims, &numDims);
-  if (!(status & 1)) {
+  if STATUS_NOT_OK {
     MdsFree1Dx(&dataXd, 0);
     return status;
   }
-
-  /*
-  status = TdiCompile(&shapeExprD, dataD, &shapeXd MDS_END_ARG);
-  if (!(status & 1)) {
-    MdsFree1Dx(&dataXd, 0);
-    return status;
-  }
-  status = TdiData(&shapeXd, &shapeXd MDS_END_ARG);
-  if (!(status & 1)) {
-    MdsFree1Dx(&dataXd, 0);
-    return status;
-  }
-  arrayD = (struct descriptor_a *)shapeXd.pointer;
-  numDims = arrayD->arsize / arrayD->length;
-  dims = (int *)arrayD->pointer;
-
-*/
 
   itemSize = dataD->length;
   for (i = 0; i < numDims - 1; i++)
