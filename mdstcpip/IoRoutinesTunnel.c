@@ -285,21 +285,23 @@ static int tunnel_connect(Connection* c, char *protocol, char *host){
 }
 
 static int tunnel_listen(int argc __attribute__ ((unused)), char **argv __attribute__ ((unused))){
-#ifdef _WIN32
-  return C_OK;
-#else
-  struct TUNNEL_PIPES p = { 1, 0, 0 };
   int id;
   char *username;
+#ifdef _WIN32
+  struct TUNNEL_PIPES p;
+  p.stdin_pipe = GetStdHandle(STD_OUTPUT_HANDLE);
+  p.stdout_pipe = GetStdHandle(STD_INPUT_HANDLE);
+#else
+  struct TUNNEL_PIPES p = { 1, 0, 0 };
   p.stdin_pipe = dup2(1, 10);
   p.stdout_pipe = dup2(0, 11);
   close(0);
   close(1);
   dup2(2, 1);
+#endif
   AcceptConnection(GetProtocol(), "tunnel", 0, &p, sizeof(p), &id, &username);
   if (username)
     free(username);
   while (DoMessage(id) != 0) ;
   return C_ERROR;
-#endif
 }
