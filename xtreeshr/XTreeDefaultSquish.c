@@ -32,7 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <xtreeshr.h>
 
-static inline int getShape(struct descriptor *dataD, int *dims, int *numDims){
+int getShape(struct descriptor *dataD, int *dims, int *numDims){
 /*
  * returns 1-D and N-D shaped arrays
  */
