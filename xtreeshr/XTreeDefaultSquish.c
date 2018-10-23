@@ -100,7 +100,8 @@ static inline int checkShapes(struct descriptor_a *signalsApd, int *totShapes, i
     }
     *totShapes = maxNumShapes;
     outShape[*totShapes - 1] = lastDimension;
-  }
+  } else
+    *totShapes = 0;
 
   // Free shape stuff
   for(i = 0; i < numSignals; i++)
