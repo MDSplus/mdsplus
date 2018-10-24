@@ -67,11 +67,20 @@ extern int TdiData();
 
 #define INIT_TCLSTATUS INIT_STATUS_AS TclNORMAL
 
-static void *dispatch_table = 0;
-
 extern int ServerFailedEssential();
 
 extern int TdiIdentOf();
+
+static void *getDispatchTable() {
+  void *dispatch_table = NULL;
+  DBI_ITM itmlst[] = {{sizeof(void *), DbiDISPATCH_TABLE, &dispatch_table, 0},{0,0,0,0}};
+  return (IS_OK(TreeGetDbi(itmlst))) ? dispatch_table : NULL;
+}
+
+static void setDispatchTable(void *dispatch_table) {
+  DBI_ITM itmlst[] = {{sizeof(void *), DbiDISPATCH_TABLE, dispatch_table, 0},{0,0,0,0}};
+  TreeSetDbi(itmlst);
+}  
 
 /****************************************************************
  * TclDispatch_close:
@@ -79,6 +88,7 @@ extern int TdiIdentOf();
 EXPORT int TclDispatch_close(void *ctx, char **error __attribute__ ((unused)), char **output __attribute__ ((unused)))
 {
   char *ident;
+  void *dispatch_table = getDispatchTable();
   if (IS_NOT_OK(cli_present(ctx, "SERVER")) && dispatch_table)
     ServerDispatchClose(dispatch_table);
   else {
@@ -98,16 +108,18 @@ EXPORT int TclDispatch_build(void *ctx, char **error, char **output __attribute_
   INIT_TCLSTATUS;
   INIT_AND_FREE_ON_EXIT(char*,monitor);
   cli_get_value(ctx, "MONITOR", &monitor);
+  void *dispatch_table = getDispatchTable();
   if (dispatch_table){
     ServerFreeDispatchTable(dispatch_table);
-    dispatch_table = NULL;
+    dispatch_table=NULL;
   }
   status = ServerBuildDispatchTable(0, monitor, &dispatch_table);
   if STATUS_NOT_OK {
     char *msg = MdsGetMsg(status);
     *error = malloc(strlen(msg) + 100);
     sprintf(*error, "Error: problem building dispatch table\n" "Error message was: %s\n", msg);
-  }
+    }
+  setDispatchTable(dispatch_table);
   FREE_NOW(monitor);
   return status;
 }
@@ -327,6 +339,7 @@ static void printIt(char *output){
  *****************************************************************/
 EXPORT int TclDispatch_phase(void *ctx, char **error, char **output __attribute__ ((unused))){
   int status;
+  void *dispatch_table = getDispatchTable();
   INIT_AND_FREE_ON_EXIT(char*,phase);
   INIT_AND_FREE_ON_EXIT(char*,synch_str);
   INIT_AND_FREE_ON_EXIT(char*,monitor);
@@ -415,6 +428,7 @@ cleanup: ;
  * TclDispatch_check:
  ***************************************************************/
 EXPORT int TclDispatch_check(void *ctx, char **error, char **output __attribute__ ((unused))){
+  void *dispatch_table=getDispatchTable();
   if IS_OK(ServerFailedEssential(dispatch_table, cli_present(ctx, "RESET"))) {
     *error = strdup("Error: A essential action failed!\n");
     return TclFAILED_ESSENTIAL;

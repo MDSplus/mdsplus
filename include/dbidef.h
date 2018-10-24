@@ -21,6 +21,7 @@
 #define DbiVERSIONS_IN_MODEL 10	/* True if using versioning in model */
 #define DbiVERSIONS_IN_PULSE 11	/* True if using versioning in pulse files */
 #define DbiREADONLY          12 /* True if making tree readonly */
+#define DbiDISPATCH_TABLE    13 /* Tree dispatch table */
 
 typedef struct dbi_itm {
   short int buffer_length;
