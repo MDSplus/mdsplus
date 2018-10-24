@@ -1086,15 +1086,14 @@ log: $(TEST_SUITE_LOG)
 rebuild-tests:
 	@ \
 	if [ -n "$(check_PROGRAMS)" ]; then \
-	 echo "//// Rebuilding tests ////"; \
-	 rm -f *.$(OBJEXT); \
-	 rm -f $(check_PROGRAMS); \
 	 if [ -n "$${VALGRIND_BUILD}" ]; then \
-	  $(MAKE) -k $(AM_MAKEFLAGS) $(BUILD_FLAGS) all ||:; \
+          if [   -f testing ]; then $(MAKE) clean; fi; \
+          $(MAKE) -k $(AM_MAKEFLAGS) $(BUILD_FLAGS) all; \
 	 else \
-	  $(MAKE) -k $(AM_MAKEFLAGS) $(BUILD_FLAGS) all \
-	  CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING" ||:; \
-	 fi; \
+          if [ ! -f testing ]; then $(MAKE) clean; fi; \
+          $(MAKE) -k $(AM_MAKEFLAGS) $(BUILD_FLAGS) all \
+           CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING" && touch testing; \
+	 fi;\
 	fi
 
 .PHONY: tests
@@ -1212,6 +1211,7 @@ $(TEST_LOGS:.log=.xml):
 
 .PHONY: clean-local-tests
 clean-local-tests:
+	-$(RM) -f testing
 	-$(RM) -rf $(TEST_BUILD_TAP)
 	-$(RM) -rf $(TEST_SUITE_TAP)
 	-$(RM) -rf $(TEST_LOGS:.log=.tap)
