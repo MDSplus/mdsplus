@@ -146,6 +146,17 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
 	break;
       }
 
+    case DbiDISPATCH_TABLE:
+      CheckOpen(db);
+      {
+	memset(lst->pointer, 0, (size_t)lst->buffer_length);
+	memcpy(lst->pointer, &db->tree_info->dispatch_table, (size_t)minInt(lst->buffer_length, sizeof(void *)));
+	if (lst->return_length_address)
+	  *lst->return_length_address = minInt(lst->buffer_length, sizeof(void *));
+	break;
+      }
+	
+
     default:
       status = TreeILLEGAL_ITEM;
 
