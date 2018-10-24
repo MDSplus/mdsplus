@@ -104,7 +104,8 @@ int _TreeSetDbi(void *dbid, DBI_ITM * dbi_itm_ptr)
       dblist->modified = 1;
       break;
     case DbiDISPATCH_TABLE:
-      dblist->tree_info->dispatch_table=itm_ptr->pointer;
+      if (dblist && dblist->tree_info)
+	dblist->tree_info->dispatch_table=itm_ptr->pointer;
       break;
     default:
       status = TreeILLEGAL_ITEM;

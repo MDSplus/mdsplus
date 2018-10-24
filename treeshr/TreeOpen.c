@@ -357,6 +357,16 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
             free(local_info->edit->deleted_nid_list);
 	  free(local_info->edit);
 	}
+	if (local_info->dispatch_table) {
+	  static void *ServerFreeDispatchTable = NULL;
+	  status = LibFindImageSymbol_C("MdsServerShr", "ServerFreeDispatchTable",
+					&ServerFreeDispatchTable);
+	  if STATUS_OK {
+	      void *arglist[2] = {(void *)1,local_info->dispatch_table};
+	      
+	      status = (int)((char *)LibCallg(arglist, ServerFreeDispatchTable) - (char *)0);
+	    }
+	}
 
        /********************************************************
        For each tree in the linked list, first the pages must be
