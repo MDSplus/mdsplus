@@ -34,6 +34,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  LoadIo  ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+extern IoRoutines tunnel_routines;
+
 IoRoutines *LoadIo(char *protocol_in){
   IoRoutines *(*rtn) () = NULL;
   if (protocol_in == 0)
@@ -44,14 +46,10 @@ IoRoutines *LoadIo(char *protocol_in){
     protocol[i] = toupper(protocol[i]);
   char* image = strcpy((char *)malloc(strlen(protocol) + 36), "MdsIp");
   strcat(image, protocol);
+  free(protocol);
   int ok = LibFindImageSymbol_C(image, "Io", (void**)&rtn);
   free(image);
-  if (ok && rtn) {
-    free(protocol);
-    return rtn();
-  } else {
-    fprintf(stderr, "Protocol %s is not supported\n", protocol);
-    free(protocol);
-    return NULL;
-  }
+  if (ok && rtn) return rtn();
+  return &tunnel_routines;
 }
+
