@@ -160,7 +160,7 @@ static void CK_ATTRIBUTE_UNUSED sig_handler(int sig_nr)
         break;
     }
     default:
-        eprintf("Unhandrled signal: %d", __FILE__, __LINE__, sig_nr);
+        eprintf("Unhandled signal: %d", __FILE__, __LINE__, sig_nr);
         break;
     }
 }
