@@ -47,9 +47,9 @@ IoRoutines *LoadIo(char *protocol_in){
   char* image = strcpy((char *)malloc(strlen(protocol) + 36), "MdsIp");
   strcat(image, protocol);
   free(protocol);
-  int ok = LibFindImageSymbol_C(image, "Io", (void**)&rtn);
+  int status = LibFindImageSymbol_C(image, "Io", (void**)&rtn);
   free(image);
-  if (ok && rtn) return rtn();
+  if (STATUS_OK && rtn) return rtn();
   return &tunnel_routines;
 }
 
