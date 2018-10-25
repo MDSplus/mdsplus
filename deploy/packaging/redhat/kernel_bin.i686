@@ -28,14 +28,10 @@
 ./usr/local/mdsplus/bin32/unix_submit
 ./usr/local/mdsplus/bin32/wfevent
 ./usr/local/mdsplus/lib32
-./usr/local/mdsplus/lib32/libMdsIpHTTP.so
-./usr/local/mdsplus/lib32/libMdsIpLOCAL.so
-./usr/local/mdsplus/lib32/libMdsIpSSH.so
 ./usr/local/mdsplus/lib32/libMdsIpShr.so
 ./usr/local/mdsplus/lib32/libMdsIpSrvShr.so
 ./usr/local/mdsplus/lib32/libMdsIpTCP.so
 ./usr/local/mdsplus/lib32/libMdsIpTCPV6.so
-./usr/local/mdsplus/lib32/libMdsIpTunnel.so
 ./usr/local/mdsplus/lib32/libMdsIpUDT.so
 ./usr/local/mdsplus/lib32/libMdsIpUDTV6.so
 ./usr/local/mdsplus/lib32/libMdsLib.so
