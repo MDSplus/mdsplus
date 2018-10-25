@@ -31,7 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //  ASSERT  ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-/*
+ /*
 //# define assert(expr)							\
 //    ((expr)								\
 //    ? __ASSERT_VOID_CAST (0)						\
@@ -59,7 +59,7 @@
 #  endif
 # endif
 
-#if defined __cplusplus 
+#if defined __cplusplus
 // Assertion fail declaration as found in assert.h //
 EXPORT void __assert_fail (const char *__assertion, const char *__file,
                            int __line, const char *__function)
@@ -70,7 +70,7 @@ extern "C" {
 #ifdef _TESTING
 
 
-EXPORT void __mark_point(const char *__assertion, const char *__file, 
+EXPORT void __mark_point(const char *__assertion, const char *__file,
                          ASSERT_LINE_TYPE  __line, const char *__function);
 
 EXPORT void __test_setfork(const int value);
@@ -95,21 +95,21 @@ void __test_timeout(double seconds) { (void)seconds; }
 void __test_end() { atexit(__test_exit); }
 
 void __test_abort(int code, const char *__msg, const char *__file,
-                  unsigned int __line, const char *__function) 
-{ 
+                  unsigned int __line, const char *__function)
+{
     printf(" TEST: ABORT - "
            "  file: %s ,  function: %s, line: %d "
-           "  message:  (%s) \n", 
+           "  message:  (%s) \n",
            __file,__function,__line,__msg);
     fflush(stdout);
-    _Exit(code); 
+    _Exit(code);
 }
 
 void __test_assert_fail(const char *file, int line, const char *expr, ...)
 {
     printf(" TEST: FAIL"
            "  file: %s ,  line: %d "
-           "  assertion:  (%s) \n", 
+           "  assertion:  (%s) \n",
            file,line,expr);
     fflush(stdout);
     abort();
@@ -120,19 +120,19 @@ void __assert_fail (const char *__assertion, const char *__file,
 __THROW __attribute__ ((__noreturn__));
 
 
-void __mark_point(const char *__assertion, const char *__file, 
-                  unsigned int __line, const char *__function) 
+void __mark_point(const char *__assertion, const char *__file,
+                  unsigned int __line, const char *__function)
 {
     printf(" TEST: OK"
            "  file: %s ,  function: %s, line: %d "
-           "  assertion:  (%s) \n", 
+           "  assertion:  (%s) \n",
            __file,__function,__line,__assertion);
     fflush(stdout);
 }
 
 #endif // _TESTING
 
-#if defined __cplusplus 
+#if defined __cplusplus
 }
 #endif
 
@@ -148,25 +148,22 @@ void __mark_point(const char *__assertion, const char *__file,
 
 #define TEST_FORK(value)    __test_setfork(value);
 
-#define TEST_ASSERT(expr) \
-    ((expr)				  \
-    ? __mark_point (__STRING(expr), __FILE__, __LINE__, __ASSERT_FUNCTION) \
-    : __test_assert_fail (__FILE__, __LINE__, __ASSERT_FUNCTION))
-
 #define TEST1(expr)  \
-    ((expr)			 \
-    ? __mark_point (__STRING(expr), __FILE__, __LINE__, __ASSERT_FUNCTION) \
-    : __test_assert_fail (__FILE__, __LINE__, __ASSERT_FUNCTION))
+    ((expr)			\
+    ? __mark_point       (__STRING(expr), __FILE__, __LINE__, __ASSERT_FUNCTION) \
+    : __test_assert_fail (__FILE__, __LINE__,__STRING(expr),__ASSERT_FUNCTION));
 
 #define TEST0(expr) \
-    ((expr)			\
-    ? __test_assert_fail (__FILE__, __LINE__, __ASSERT_FUNCTION) \
-    : __mark_point (__STRING(expr), __FILE__, __LINE__, __ASSERT_FUNCTION)) 
+    (!(expr)			\
+    ? __mark_point       (__STRING(expr), __FILE__, __LINE__, __ASSERT_FUNCTION) \
+    : __test_assert_fail (__FILE__, __LINE__,__STRING(expr),__ASSERT_FUNCTION));
+
+#define TEST_ASSERT(expr) TEST1(expr)
 
 #define BEGIN_TESTING(description) \
     __test_init(__STRING(description),__FILE__,__LINE__); \
     if( !__setup_parent() ) { __setup_child();
-    
+
 #define END_TESTING } __test_end();
 
 #define SKIP_TEST(msg)  __test_abort(77,msg,__FILE__,__LINE__,__ASSERT_FUNCTION);
