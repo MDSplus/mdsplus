@@ -49,35 +49,30 @@ using namespace testing;
 
 
 
-void test_tree_open(const char *prot, const unsigned short port)
-{
-    MdsIpInstancer mdsip(prot,port);
-
-    // get address form instancer for the specified protocol //
+void test_tree_open(const char *prot, const unsigned short port, const char* mode){
+    MdsIpInstancer mdsip(prot,port,mode);
     std::string addr = mdsip.getAddress();
-
-    std::cout << "attempt to connect to: " << addr << "\n" << std::flush;
+    std::cout << "attempt to connect to: " << addr;
+    if (mode) std::cout << " (" << mode <<")";
+    std::cout << "\n" << std::flush;
     unique_ptr<Connection> cnx = NULL;
-    int retry = 5;
-    for (;!cnx;) try {
+    int retry = 3;
+    for (;!cnx; retry--) try {
       cnx = new Connection(const_cast<char*>(addr.c_str()));
     } catch (...) {
-      if (--retry<0)
-        throw;
+      if (retry<=1) TEST0("could not connect");
       std::cout << "retry\n" << std::flush;
       usleep(500000);
     }
+    std::cout << "success: starting test\n" << std::flush;
     // test client-server communication //
     unique_ptr<Data> data = cnx->get("ZERO(10)");
-    TEST1( AutoString(data->getString()).string
-           == "[0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]" );
 
     data = cnx->get("DECOMPILE(`TreeShr->TreeDbid:P())");
-    TEST0( AutoString(data->getString()).string
-           == "Pointer(0)" );
+    TEST0( AutoString(data->getString()).string == "Pointer(0)" );
 
     data = cnx->get("setTimeContext()");
-    TEST1(data->getInt() == 1);
+    TEST1(data->getInt() == 1 && "setTimeContext()");
 
     // test tree opening //
     data = cnx->get("setenv('t_connect_path=.')");
@@ -85,18 +80,22 @@ void test_tree_open(const char *prot, const unsigned short port)
 
     Data *args[] = { new Int32(5552368),
                      new Float64(111.234) };
-
     cnx->put("test_cnx",(char*)"$+10",args,1);
+    data = cnx->get("test_cnx");
+    TEST1( data->getInt() == 5552378 && "$+10");
+
     cnx->put("test_cnx",(char*)"[$1+10, $2]",args,2);
+    data = cnx->get("test_cnx");
+    TEST1( AutoString(data->getString()).string == "[5552378D0,111.234D0]" );
+
     cnx->put("test_cnx",(char*)"5552368",NULL,0);
+    data = cnx->get("test_cnx");
+    TEST1( data->getInt() == 5552368 && "5552368" );
 
     deleteData(args[0]);
     deleteData(args[1]);
 
-    data = cnx->get("test_cnx");
-    TEST1( data->getInt() == 5552368 );
-
-    // colsing tree //
+    // closing tree //
     cnx->closeTree((char*)"t_connect",1);
 }
 
@@ -112,6 +111,12 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
     TEST_TIMEOUT(30);
     setenv("t_connect_path",".",1);
 
+#ifdef _WIN32
+    WSADATA wsaData;
+    WORD wVersionRequested;
+    wVersionRequested = MAKEWORD(1, 1);
+    WSAStartup(wVersionRequested, &wsaData);
+#endif
 
     ////////////////////////////////////////////////////////////////////////////////
     //  Generate Tree  /////////////////////////////////////////////////////////////
@@ -133,52 +138,36 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
     //  TEST CONNECTION TO REMOTE TREE  ////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
 
-    // local //
+    // local  (includes: ssh, htmp) //
     BEGIN_TESTING(Connection local);
-    test_tree_open("local",0);
+    test_tree_open("local",0,NULL);
     END_TESTING;
-
-/*
-// TODO: http test does not work
-// http server requires setup
-
-    // http //
-    BEGIN_TESTING(Connection http);
-    test_tree_open("http",0);
-    END_TESTING;
-*/
-
-/*
-// TODO: ssh test does not work (unknown user)
-// ssh requires some setup for executing user
-// $HOME/.ssh/{authorized_keys,id_rsa,id_rsa.pub,known_hosts}
-
-    // ssh //
-    BEGIN_TESTING(Connection ssh);
-    test_tree_open("ssh",0);
-    END_TESTING;
-*/
 
     // tcp //
     BEGIN_TESTING(Connection tcp);
-    test_tree_open("tcp",8601);
-    END_TESTING;
-
-    // udt //
-    BEGIN_TESTING(Connection udt);
-    test_tree_open("udt",8602);
+    test_tree_open("tcp",8600,"-s");
+    test_tree_open("tcp",8601,"-m");
     END_TESTING;
 
     // tcpv6 //
     BEGIN_TESTING(Connection tcpv6);
-    test_tree_open("tcpv6",8603);
+    test_tree_open("tcpv6",8604,"-s");
+    test_tree_open("tcpv6",8605,"-m");
+    END_TESTING;
+
+#ifndef _WIN32
+    // udt //
+    BEGIN_TESTING(Connection udt);
+    test_tree_open("udt",8602,"-s");
+    test_tree_open("udt",8603,"-m");
     END_TESTING;
 
     // udtv6 //
     BEGIN_TESTING(Connection udtv6);
-    test_tree_open("udtv6",8604);
+    test_tree_open("udtv6",8606,"-s");
+    test_tree_open("udtv6",8607,"-m");
     END_TESTING;
-
+#endif
 /*
 // TODO: gsi test does not work (gsi setup?)
 // ERROR:Error connecting ---
@@ -189,7 +178,8 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 
     // gsi //
     BEGIN_TESTING(Connection gsi);
-    test_tree_open("gsi",8605);
+    test_tree_open("gsi",8608,"-s");
+    test_tree_open("gsi",8608,"-m");
     END_TESTING;
 */
 }
