@@ -482,9 +482,7 @@ static int gsi_listen(int argc, char **argv)
     res = globus_xio_open(info.xio_handle, NULL, server_attr);
     testStatus(res, "get handle to connection");
     status = AcceptConnection("gsi", "gsi", 0, &info, sizeof(info), &id, &username);
-    while STATUS_OK {
-      status = DoMessage(id);
-    }
+    if STATUS_OK while (DoMessage(id));
   }
   return C_OK;
 }

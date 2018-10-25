@@ -210,12 +210,16 @@ static int tunnel_connect(Connection* c, char *protocol, char *host){
   bSuccess = CreateProcess(NULL, cmd, NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &siStartInfo, &piProcInfo);
   free(cmd);
   if (bSuccess) {
-    if (WaitForInputIdle(piProcInfo.hProcess, 10000)==WAIT_FAILED){
+    // WaitForInputIdle(piProcInfo.hProcess, 10000) will return immediately for console applications
+/*
       char* c = protocol;
       for (;*c;c++) *c = toupper(*c);
+      DWORD exitcode;
+      if (GetExitCodeProcess(piProcInfo.hProcess, &exitcode))
+         {errno=exitcode;perror("Child terminated");}
       fprintf(stderr,"Protocol %s is not supported.\n", protocol);
       return C_ERROR;
-    }
+*/
     p.stdin_pipe = g_hChildStd_IN_Wr;
     p.stdout_pipe = g_hChildStd_OUT_Rd;
     CloseHandle(g_hChildStd_IN_Rd);
@@ -302,10 +306,9 @@ static int tunnel_listen(int argc __attribute__ ((unused)), char **argv __attrib
   close(1);
   dup2(2, 1);
 #endif
-  AcceptConnection(GetProtocol(), "tunnel", 0, &p, sizeof(p), &id, &username);
+  int status = AcceptConnection(GetProtocol(), "tunnel", 0, &p, sizeof(p), &id, &username);
   if (username)
     free(username);
-  while (DoMessage(id) != 0) ;
-  return C_ERROR;
+  if STATUS_OK while (DoMessage(id));
+  return C_OK;
 }
-

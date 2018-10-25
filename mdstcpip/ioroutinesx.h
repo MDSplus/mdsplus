@@ -420,6 +420,6 @@ void runServerMode(Options *options  __attribute__((unused))){
 #ifdef _TCP
       FD_SET(sock, &fdactive);
 #endif
-      while IS_OK(DoMessage(id));
+      while (DoMessage(id));
     }
 }
