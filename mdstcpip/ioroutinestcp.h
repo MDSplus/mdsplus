@@ -17,6 +17,8 @@
     case WSAENOPROTOOPT:    fprintf(stderr,"WSAENOPROTOOPT\n");    break;
     case WSAEFAULT:         fprintf(stderr,"WSAEFAULT\n");         break;
     case WSAENOTSOCK:       fprintf(stderr,"WSAENOTSOCK\n");       break;
+    case WSAESHUTDOWN:      fprintf(stderr,"WSAESHUTDOWN\n");      break;
+    case WSAEACCES:         fprintf(stderr,"WSAEACCES\n");         break;
     default:                fprintf(stderr,"WSA %d\n",err);
   }
  }
