@@ -33,7 +33,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * This will have to be compiled with the mdsplus/include in the -I path
  * B.P.DUVAL, March 2000
  */
-#ifdef EXAMPLE
+
+/*EXAMPLE
 dele *.exe;
 *, *.obj;
 *, *.opt;
@@ -42,23 +43,11 @@ dele *.exe;
     define TdiShrExt USER:[DUVAL.IBQ.ECC2.TDIC] bpdmdsunix_axp.exe
     _status = build_call(8, 'TdiShrExt', 'rMdsOpen', ref('crpppc6::'), val(0l))
     _oo = build_call(24, 'TdiShrExt', 'rMdsValue', descr('2+3'), xd([]), val(0ul))
-#endif
-#ifdef HOW_TO_COMPILE
-/* to compile with debugging */
+EXAMPLE*/
+/*COMPILE w/ debugging
     export DEBUG = -DDEBUG
     make libBpdMdsUnix.so cp libBpdMdsUnix.so / usr / lib / libBpdMdsUnix.so ldconfig
-#endif
-#if  !defined(int32) && !defined(_AIX)
-#define int32 int
-#endif
-#ifdef _WIN32
- #include <winsock2.h>
- #include <windows.h>
-#else
- #include <netdb.h>
- #include <sys/socket.h>
- #define INVALID_SOCKET -1
-#endif
+COMPILE*/
 #include <mdsplus/mdsconfig.h>
 #include <string.h>
 #include <stdio.h>
@@ -66,6 +55,7 @@ dele *.exe;
 #include <ipdesc.h>
 #include <ctype.h>
 #include <mdsshr.h>
+#include <status.h>
 #ifdef DTYPE_EVENT
 #undef DTYPE_EVENT
 #endif
@@ -76,21 +66,19 @@ extern int MdsClose(int conid);
 extern int TdiCvt();
 extern int GetAnswerInfoTS();
 extern int MdsIpFree();
-extern SOCKET ReuseCheck(char *hostin, char *unique, size_t buflen);
-#define MIN(a,b) (((a) < (b)) ? (a) : (b))
-#define MAX(a,b) (((a) > (b)) ? (a) : (b))
+extern int ReuseCheck(char *hostin, char *unique, size_t buflen);
 
 #define LOCAL "local"
 #define STRLEN 4096
-
+#define INVALID_ID -1
 /* Variables that stay set between calls */
-static SOCKET sock = INVALID_SOCKET;	/* Mark the socket as unopen */
+static int id = INVALID_ID;	/* Mark the conid as unopen */
 static char serv[STRLEN];	/* Current server */
 static EMPTYXD(ans_xd);
 
 /* Connection record */
 typedef struct _connection {
-  SOCKET sock;			/* Mark the socket as unopen */
+  int id;			/* Mark the conid as unopen */
   char *unique;			/* Unique connection name */
   int port;
   char serv[STRLEN];		/* Current server */
@@ -108,7 +96,7 @@ struct descriptor_xd *rMdsVersion();
 struct descriptor_xd *rMdsCurrent();
 struct descriptor_xd *rgetenv();
 
-static SOCKET AddConnection(char *server);
+static int AddConnection(char *server);
 static int MdsToIp(struct descriptor **tdiarg, short *len);
 static int IpToMds(int dtypein);
 
@@ -141,9 +129,9 @@ EXPORT int rMdsList()
     printf("Current connection is local\n");
   for (cptr = Connections; (cptr != NULL);) {
     i++;
-    if (cptr->sock != INVALID_SOCKET) {
-      printf("Name[%20s] Id[%s] Connection[%3d]", cptr->serv, cptr->unique, (int)cptr->sock);
-      if (cptr->sock == sock)
+    if (cptr->id != INVALID_ID) {
+      printf("Name[%20s] Id[%s] Connection[%3d]", cptr->serv, cptr->unique, (int)cptr->id);
+      if (cptr->id == id)
 	printf("  <-- active");
     } else
       printf("UnUsed slot");
@@ -179,37 +167,37 @@ EXPORT struct descriptor_xd *rMdsVersion()
   return (&ans_xd);
 }
 
-/* Routine returns socket if valid */
-static SOCKET AddConnection(char *server)
+/* Routine returns conid if valid */
+static int AddConnection(char *server)
 {
   Connection *cptr;
-  SOCKET nsock;
+  int nid;
   char unique[128]="\0";
 /* Extract the ip and port numbers */
-  if ((nsock = ReuseCheck(server, unique, 128)) == INVALID_SOCKET) {
+  if ((nid = ReuseCheck(server, unique, 128)) == INVALID_ID) {
     printf("hostname [%s] invalid, No Connection\n", server);
-    return INVALID_SOCKET;
+    return INVALID_ID;
   }
 /* scan through current list looking for an ip/port pair */
   for (cptr = Connections; (cptr != NULL);) {
-    if ((cptr->sock != INVALID_SOCKET) && (strcmp(unique, cptr->unique) == 0)) {
+    if ((cptr->id != INVALID_ID) && (strcmp(unique, cptr->unique) == 0)) {
 #ifdef DEBUG
-      printf("mdsopen: Keep socket! name changed from  [%s] to [%s]\n", cptr->serv, server);
+      printf("mdsopen: Keep conid! name changed from  [%s] to [%s]\n", cptr->serv, server);
 #endif
-/* found a match, replace string and return socket */
+/* found a match, replace string and return conid */
       strcpy(cptr->serv, server);
-      return (cptr->sock);
+      return (cptr->id);
     }
     cptr = cptr->next;
   }
 /* See if the connection works */
-  if ((nsock = ConnectToMds(server)) == INVALID_SOCKET) {
+  if ((nid = ConnectToMds(server)) == INVALID_ID) {
     printf("mdsopen: Could not open connection to MDS server\n");
-    return (INVALID_SOCKET);
+    return (INVALID_ID);
   }
 /* Connection valid, find a slot in the stack */
   for (cptr = Connections; (cptr != NULL);) {
-    if (cptr->sock == INVALID_SOCKET) {	/* found an empty slot */
+    if (cptr->id == INVALID_ID) {	/* found an empty slot */
 #ifdef DEBUG
       printf("Found empty slot\n");
 #endif
@@ -228,9 +216,9 @@ static SOCKET AddConnection(char *server)
   }
 /* Copy in the connection details */
   cptr->unique = strdup(unique);
-  cptr->sock = nsock;
+  cptr->id = nid;
   strcpy(cptr->serv, server);	/* Copy in the name */
-  return (nsock);
+  return (nid);
 }
 
 /* mds server connect */
@@ -246,19 +234,19 @@ EXPORT int rMdsConnect(char *hostin)
   host[i] = 0;
   if (!strcmp(host, LOCAL)) {
     strcpy(serv, LOCAL);
-    sock = INVALID_SOCKET;
-    return (sock);
+    id = INVALID_ID;
+    return (id);
   }
-/* If no socket, or server name has changed */
-  if ((sock == INVALID_SOCKET) || strcmp(host, serv)) {
-    if ((sock = AddConnection(hostin)) == INVALID_SOCKET) {
+/* If no conid, or server name has changed */
+  if ((id == INVALID_ID) || strcmp(host, serv)) {
+    if ((id = AddConnection(hostin)) == INVALID_ID) {
       *serv = '\0';
       return (0);		/* no connection obtained */
     } else {
-      strcpy(serv, host);	/* copy new name to memory, keep socket open */
+      strcpy(serv, host);	/* copy new name to memory, keep conid open */
     }
   }
-  return (sock);
+  return (id);
 }
 
 /* mdsdisconnect ==================================================================== */
@@ -269,20 +257,20 @@ EXPORT int rMdsDisconnect(int all)
 
   if (all) {
     for (cptr = Connections; (cptr != NULL); cptr = cptr->next) {
-      if (cptr->sock != INVALID_SOCKET) {
-	DisconnectFromMds(sock);
-	cptr->sock = INVALID_SOCKET;
+      if (cptr->id != INVALID_ID) {
+	DisconnectFromMds(id);
+	cptr->id = INVALID_ID;
 	if (cptr->unique) {
 	  free(cptr->unique);
 	  cptr->unique = 0;
 	}
       }
     }
-  } else if (sock != INVALID_SOCKET) {
-    status = DisconnectFromMds(sock);
+  } else if (id != INVALID_ID) {
+    status = DisconnectFromMds(id);
     for (cptr = Connections; (cptr != NULL);) {
-      if (cptr->sock == sock) {
-	cptr->sock = INVALID_SOCKET;
+      if (cptr->id == id) {
+	cptr->id = INVALID_ID;
 	if (cptr->unique) {
 	  free(cptr->unique);
 	  cptr->unique = 0;
@@ -292,10 +280,10 @@ EXPORT int rMdsDisconnect(int all)
       cptr = cptr->next;
     }
   } else if (strcmp(serv, "local")) {
-    printf("mdsdisconnect: warning, communication socket aleady closed\n");
+    printf("mdsdisconnect: warning, communication conid aleady closed\n");
     status = 0;
   }
-  sock = INVALID_SOCKET;
+  id = INVALID_ID;
   *serv = '\0';			/* Clear current server string */
   return (status);
 }
@@ -320,7 +308,7 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
   void *dptr;
   void *mem = 0;
 /* check there is a connection open */
-  if (sock == INVALID_SOCKET) {
+  if (id == INVALID_ID) {
     printf("MdsValue: No Socket open\n");
     return (0);
   }
@@ -373,24 +361,19 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
       return (0);
     ptr = (unsigned char *)tdiarg->pointer;
 #ifdef DEBUG
-    printf("SendArg sock[%d],idx[%d],dtype[%d],nargs[%d],len[%d],ndims[%d]\n",
-	   sock, i, dtype, nargs, len, ndims);
+    printf("SendArg id[%d],idx[%d],dtype[%d],nargs[%d],len[%d],ndims[%d]\n",
+	   id, i, dtype, nargs, len, ndims);
 #endif
-    status = SendArg(sock, (unsigned char)i, dtype, nargs, len, ndims, dims, (char *)ptr);
+    status = SendArg(id, (unsigned char)i, dtype, nargs, len, ndims, dims, (char *)ptr);
     tdiarg = va_arg(incrmtr, struct descriptor *);	/* get next in list */
   }
   va_end(incrmtr);
 /* Get the reply ================================================== */
-  if (status & 1) {
-    status = GetAnswerInfoTS(sock, &dtype, &len, &ndims, dims, &numbytes, &dptr, &mem);
+  if STATUS_OK {
+    status = GetAnswerInfoTS(id, &dtype, &len, &ndims, dims, &numbytes, &dptr, &mem);
 #ifdef DEBUG
-    printf("Reply status[%d],dtype[%d],len[%d],ndims[%d],numbytes[%d],ans[%d]\n", status, dtype,
-	   len, ndims, numbytes, *(int *)dptr);
+    printf("Reply status[%d],dtype[%d],len[%d],ndims[%d],numbytes[%d],ans[%d]\n", status, dtype, len, ndims, numbytes, *(int *)dptr);
 #endif
-  }
-  if (!status & 1) {
-    MdsFree1Dx(&ans_xd, 0);
-  } else {
 /* Remap the descriptor types */
     dtype = IpToMds(dtype);
 /* Copy the Josh way ( see his example in MdsRemote.c ) */
@@ -416,6 +399,9 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
       }
       MdsCopyDxXd((struct descriptor *)&a_dsc, &ans_xd);	/* Copy the arrival data to xd output */
     }
+  } else {
+    MdsFree1Dx(&ans_xd, 0);
+    rMdsDisconnect(id);
   }
   if (mem)
     MdsIpFree(mem);
