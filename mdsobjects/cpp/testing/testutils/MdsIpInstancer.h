@@ -1,6 +1,6 @@
 #ifndef TESTUTILS_MDSIPMAIN_H
 #define TESTUTILS_MDSIPMAIN_H
-//#define USE_FORK // could also be set by CXXFLAGS=-DUSE_FORK
+#define USE_FORK // could also be set by CXXFLAGS=-DUSE_FORK
 
 #ifdef _WIN32
  #ifdef _WIN32_WINNT
@@ -58,9 +58,9 @@ class MdsIpInstancer {
     unsigned short m_port;
     std::string m_protocol;
 #ifdef _WIN32
-    HANDLE m_process = NULL;
+    HANDLE m_process;
 #else
-    pid_t  m_process = 0;
+    pid_t  m_process;
 #endif
 public:
 
@@ -68,6 +68,7 @@ public:
         m_port(port),
         m_protocol(protocol)
     {
+        m_process = 0;
 	if (port==0) return;
 	m_host_file.get_instance();
 	// get first available port  //
