@@ -113,8 +113,9 @@ void test_tree_open(const char *prot, const unsigned short port, const char* mod
 
 
 
-int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
+int main(int argc, char *argv[])
 {
+    int ipv6 = (argc>1 && !strcmp(argv[1],"ipv6"));
     TEST_TIMEOUT(30);
     setenv("t_connect_path",".",1);
 
@@ -151,30 +152,40 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
     END_TESTING;
 
     // tcp //
-    BEGIN_TESTING(Connection tcp);
+    BEGIN_TESTING(Connection tcp -s);
     test_tree_open("tcp",8600,"-s");
+    END_TESTING;
+    BEGIN_TESTING(Connection tcp -m);
     test_tree_open("tcp",8601,"-m");
     END_TESTING;
-/*
-    // tcpv6 //
-    BEGIN_TESTING(Connection tcpv6);
-    test_tree_open("tcpv6",8604,"-s");
-    test_tree_open("tcpv6",8605,"-m");
-    END_TESTING;
-*/
+
+    if (ipv6) {
+      // tcpv6 //
+      BEGIN_TESTING(Connection tcpv6 -s);
+      test_tree_open("tcpv6",8602,"-s");
+      END_TESTING;
+      BEGIN_TESTING(Connection tcpv6 -m);
+      test_tree_open("tcpv6",8603,"-m");
+      END_TESTING;
+    }
 #ifndef _WIN32
     // udt //
-    BEGIN_TESTING(Connection udt);
-    test_tree_open("udt",8602,"-s");
-    test_tree_open("udt",8603,"-m");
+    BEGIN_TESTING(Connection udt -s);
+    test_tree_open("udt",8604,"-s");
     END_TESTING;
-/*
-    // udtv6 //
-    BEGIN_TESTING(Connection udtv6);
-    test_tree_open("udtv6",8606,"-s");
-    test_tree_open("udtv6",8607,"-m");
+    BEGIN_TESTING(Connection udt -m);
+    test_tree_open("udt",8605,"-m");
     END_TESTING;
-*/
+
+    if (ipv6) {
+      // udtv6 //
+      BEGIN_TESTING(Connection udtv6 -s);
+      test_tree_open("udtv6",8606,"-s");
+      END_TESTING;
+      BEGIN_TESTING(Connection udtv6 -m);
+      test_tree_open("udtv6",8607,"-m");
+      END_TESTING;
+    }
 #endif
 /*
 // TODO: gsi test does not work (gsi setup?)
