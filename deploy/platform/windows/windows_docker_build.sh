@@ -42,7 +42,7 @@ buildrelease() {
       $MAKE install
     fi
     if [ -z "$NOMAKE" ]; then
-      HOME=$winebottle64 WINEARCH=win64 wine cmd /C ${srcdir}/mdsobjects/cpp/visual-studio-build.bat
+      HOME=/workspace/winebottle64 WINEARCH=win64 wine cmd /C ${srcdir}/mdsobjects/cpp/visual-studio-build.bat
       cp /workspace/releasebld/64/bin_x86_64/MdsObjectsCppShr-VS.dll ${MDSPLUS_DIR}/bin_x86_64/
       cp /workspace/releasebld/64/bin_x86_64/*.lib ${MDSPLUS_DIR}/bin_x86_64/
       cp /workspace/releasebld/32/bin_x86/*.lib ${MDSPLUS_DIR}/bin_x86/
