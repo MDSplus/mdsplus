@@ -1,6 +1,6 @@
 #ifndef TESTUTILS_MDSIPMAIN_H
 #define TESTUTILS_MDSIPMAIN_H
-#define USE_FORK // could also be set by CXXFLAGS=-DUSE_FORK
+//#define USE_FORK // could also be set by CXXFLAGS=-DUSE_FORK
 
 #ifdef _WIN32
  #ifdef _WIN32_WINNT
@@ -55,24 +55,21 @@ class MdsIpInstancer {
     };
 
     Singleton<HostFile> m_host_file;
-    pid_t m_pid;
     unsigned short m_port;
     std::string m_protocol;
-
+#ifdef _WIN32
+    HANDLE m_process = NULL;
+#else
+    pid_t  m_process = 0;
+#endif
 public:
 
     MdsIpInstancer(const char *protocol,unsigned short port, const char *mode) :
         m_port(port),
         m_protocol(protocol)
     {
-	if (port==0) {
-	  m_pid = 0;
-	  return;
-	}
-        // build lazy singleton instance //
+	if (port==0) return;
 	m_host_file.get_instance();
-	char port_str[20];
-	char *argv[] = {(char*)"mdsip",(char*)"-P",(char*)m_protocol.c_str(),(char*)"-h",(char*)m_host_file->name(),(char*)"-p",port_str,(char*)mode, NULL};
 	// get first available port  //
 	/*
         int offset = 0;
@@ -81,33 +78,60 @@ public:
 	if(offset==100)
 	  throw std::out_of_range("any port found within 100 tries");
 	*/
-	sprintf(port_str,"%i",m_port);
 #ifdef _WIN32
-	if (!(m_pid = _spawnvpe(P_NOWAIT, argv[0], argv, environ)))
-#elif defined(USE_FORK)
-	std::cout << "FORKING PROCESS!\n" << std::flush;
-	m_pid = fork();	if(m_pid==0) // child process
+        char* hostfile = (char*)m_host_file->name();
+	size_t len = strlen(protocol) + strlen(hostfile) + 128;
+	char *cmd = (char *)malloc(len);
+        _snprintf_s(cmd, len, len-1, "mdsip.exe %s -P %s -p %u -h %s", mode, protocol, port, hostfile);
+        fprintf(stdout,"spawning \"%s\"\n",cmd);
+	PROCESS_INFORMATION piProcInfo;
+	STARTUPINFO siStartInfo;
+	memset(&siStartInfo, 0, sizeof(siStartInfo));
+	siStartInfo.cb = sizeof(siStartInfo);
+	siStartInfo.hStdError  = GetStdHandle(STD_ERROR_HANDLE);
+	siStartInfo.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+	siStartInfo.hStdInput  = GetStdHandle(STD_INPUT_HANDLE);
+	siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
+	BOOL bSuccess = CreateProcess(NULL, cmd, NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &siStartInfo, &piProcInfo);
+	free(cmd);
+        if (bSuccess) {
+	  m_process = piProcInfo.hProcess;
+	  CloseHandle(piProcInfo.hThread);
+	  DWORD pid = piProcInfo.dwProcessId;
+#else
+	pid_t pid;
+	char port_str[20];
+	sprintf(port_str,"%i",m_port);
+	char *argv[] = {(char*)"mdsip",(char*)"-P",(char*)m_protocol.c_str(),(char*)"-h",(char*)m_host_file->name(),(char*)"-p",port_str,(char*)mode, NULL};
+ #ifdef USE_FORK
+	std::cout << "forking process!\n" << std::flush;
+	pid = fork();
+        if(pid==0) // child process
 	//   exit(execvpe(argv[0], argv, environ));
 	   exit(execvp(argv[0], argv) ? errno : 0);
-	else if (m_pid<0) // spawn failed
-#else
-	if (posix_spawnp(&m_pid, argv[0], NULL, NULL, argv, environ))
+	else if (pid > 0) {// spawned ok
+ #else
+	if (!posix_spawnp(&pid, argv[0], NULL, NULL, argv, environ)) {
+ #endif
+          m_process = pid;
 #endif
-	  throw std::runtime_error("Could not start mdsip server");
-	else
-	  std::cout << "started mdsip server for " << m_protocol << " on port: " << m_port << " pid: " << m_pid << "\n" << std::flush;
+	  std::cout << "started mdsip server for " << m_protocol << " on port: " << m_port << " pid: " << pid << "\n" << std::flush;
+	} else throw std::runtime_error("Could not start mdsip server");
     }
 
     ~MdsIpInstancer() {
-	if(m_pid>0){
-	  std::cout << "removing mdsip for " << m_protocol << "\n" << std::flush;
+	if(m_process){
+	  std::cout << "removing mdsip for " << m_protocol << ".." << std::flush;
 #ifdef _WIN32
-	  HANDLE explorer;
-	  explorer = OpenProcess(PROCESS_ALL_ACCESS,false,m_pid);
-	  TerminateProcess(explorer,1);
+	  BOOL ok = TerminateProcess(m_process,0);
+          CloseHandle(m_process);
+	  if (ok)
 #else
-	  kill(m_pid,SIGKILL);
+	  if (!kill(m_process,SIGKILL))
 #endif
+	    std::cout << "success\n" << std::flush;
+	  else
+	    std::cout << "FAILED\n" << std::flush;
 	}
     }
 
@@ -126,7 +150,7 @@ public:
     }
 
     bool waitForServer(int retries = 5, int usec = 500000) const {
-        if(m_pid > 0) { // only parent can wait //
+        if(m_process) { // only parent can wait //
             for(int retry = 0; retry<retries; ++retry) {
                 try {
                     mds::Connection cnx((char *)this->getAddress().c_str());
