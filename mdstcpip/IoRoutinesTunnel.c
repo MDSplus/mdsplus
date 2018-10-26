@@ -142,8 +142,10 @@ static void ChildSignalHandler(int num __attribute__ ((unused))){
   pid_t pid;
   int status;
   while ((pid = waitpid( (pid_t)-1, &status, WNOHANG)) > 0) {
+#ifdef DEBUG
     printf("pid: %d, exited: %d, stop signal: %d, term signal: %d, exit status: %d\n",
       pid, WIFEXITED(status), WSTOPSIG(status), WTERMSIG(status), WEXITSTATUS(status));
+#endif
     void *ctx = (void *)-1;
     int id;
     char *info_name;
@@ -227,22 +229,22 @@ static int tunnel_connect(Connection* c, char *protocol, char *host){
 	strcpy((char *)malloc(strlen(protocol) + strlen("mdsip-client-") + 1), "mdsip-client-");
     char *remotecmd =
 	strcpy((char *)malloc(strlen(protocol) + strlen("mdsip-server-") + 1), "mdsip-server-");
-    char *arglist[] = { localcmd, host, remotecmd, 0 };
     strcat(localcmd, protocol);
     strcat(remotecmd, protocol);
+    char *arglist[] = { localcmd, host, remotecmd, 0 };
     signal(SIGCHLD, SIG_IGN);
     dup2(pipe_fd2[0], 0);
     close(pipe_fd2[0]);
     dup2(pipe_fd1[1], 1);
     close(pipe_fd1[1]);
-    int err = execvp(arglist[0], arglist) ? errno : 0;
+    int err = execvp(localcmd, arglist) ? errno : 0;
     close(pipe_fd2[1]);
     close(pipe_fd1[0]);
     if (err==2) {
       char* c = protocol;
       for (;*c;c++) *c = toupper(*c);
       fprintf(stderr,"Protocol %s is not supported.\n", protocol);
-    }
+    } else if ((errno=err)) perror("Client process terminated");
     exit(err);
   } else if (pid == -1) {
     fprintf(stderr, "Error %d from fork()\n", errno);
