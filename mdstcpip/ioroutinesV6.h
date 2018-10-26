@@ -5,6 +5,7 @@
 #define SIN_FAMILY sin6_family
 #define SIN_ADDR sin6_addr
 #define SIN_PORT sin6_port
+#define _INADDR_ANY in6addr_any
 #define GET_IPHOST(sin) \
 char iphost[INET6_ADDRSTRLEN];\
 inet_ntop(AF_INET6, &sin.sin6_addr, iphost, INET6_ADDRSTRLEN)

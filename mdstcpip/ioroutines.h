@@ -3,8 +3,9 @@
 #define PORTDELIM ':'
 #define SOCKADDR_IN sockaddr_in
 #define SIN_FAMILY sin_family
-#define SIN_ADDR sin_addr
+#define SIN_ADDR sin_addr.s_addr
 #define SIN_PORT sin_port
+#define _INADDR_ANY INADDR_ANY
 #define GET_IPHOST(sin) char *iphost = inet_ntoa(sin.sin_addr)
 
 #include "mdsip_connections.h"

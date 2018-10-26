@@ -230,11 +230,9 @@ static int io_listen(int argc, char **argv){
     unsigned short port = getPort(GetPortname());
     struct SOCKADDR_IN sin;
     memset(&sin, 0, sizeof(sin));
-    sin.SIN_PORT = port;
+    sin.SIN_PORT   = port;
     sin.SIN_FAMILY = AF_T;
-#if AF_T == AF_INET
-    sin.sin_addr.s_addr = INADDR_ANY;
-#endif
+    sin.SIN_ADDR   = _INADDR_ANY;
     if (bind(ssock, (struct sockaddr *)&sin, sizeof(sin))<0) {
       PERROR("Error binding to service (tcp_listen)");
       exit(EXIT_FAILURE);
