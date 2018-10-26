@@ -81,6 +81,13 @@ AC_DEFUN([AX_CHECK_ENABLE_DEBUG],[
 	FCFLAGS="${FCFLAGS} -g -O0"
 	OBJCFLAGS="${OBJCFLAGS} -g -O0"
       ],
+      [define],[
+	AC_MSG_RESULT(yes)
+	CFLAGS="${CFLAGS} -g -O0 -DDEBUG"
+	CXXFLAGS="${CXXFLAGS} -g -O0 -DDEBUG"
+	FCFLAGS="${FCFLAGS} -g -O0"
+	OBJCFLAGS="${OBJCFLAGS} -g -O0"
+      ],
       [info],[
 	AC_MSG_RESULT(info)
 	CFLAGS="${CFLAGS} -g"

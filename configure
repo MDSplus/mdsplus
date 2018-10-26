@@ -4677,6 +4677,15 @@ $as_echo "yes" >&6; }
 	FCFLAGS="${FCFLAGS} -g -O0"
 	OBJCFLAGS="${OBJCFLAGS} -g -O0"
        ;; #(
+  define) :
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	CFLAGS="${CFLAGS} -g -O0 -DDEBUG"
+	CXXFLAGS="${CXXFLAGS} -g -O0 -DDEBUG"
+	FCFLAGS="${FCFLAGS} -g -O0"
+	OBJCFLAGS="${OBJCFLAGS} -g -O0"
+       ;; #(
   info) :
 
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: info" >&5
@@ -17121,7 +17130,7 @@ fi
 
 case $enable_werror in #(
   yes) :
-    as_fn_append WARNFLAGS " -Werror " ;; #(
+    as_fn_append WARNFLAGS " -Werror" ;; #(
   *) :
      ;;
 esac
