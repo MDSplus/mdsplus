@@ -1156,7 +1156,7 @@ AC_ARG_ENABLE([werror],
               [],
               [AS_VAR_SET([enable_werror], [no])])
 AS_CASE([$enable_werror],
-        [yes], [AS_VAR_APPEND([WARNFLAGS], [" -Werror "])],
+        [yes], [AS_VAR_APPEND([WARNFLAGS], [" -Werror"])],
         [])
 AC_ARG_ENABLE([wreturns],
               [AS_HELP_STRING([--disable-wreturns],
