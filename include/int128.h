@@ -4,7 +4,7 @@
 #include <math.h>
 #include <stdio.h>
 
-//#define DEBUG
+// #define DEBUG_INT128
 
 #define uint64_max 0xffffffffffffffffLL
 #define uint64_min 0x0000000000000000LL
@@ -272,10 +272,10 @@ static inline int uint128_div(const uint128_t* x, const uint128_t* y, uint128_t*
     d.low=d.low>>1|d.high<<63, d.high=d.high>>1;
   }
 #ifdef DEBUG
-  fprintf(stderr,"  0x%016lx %016lxou\n",x->high,x->low);
-  fprintf(stderr,"/ 0x%016lx %016lxou\n",y->high,y->low);
-  fprintf(stderr,"= 0x%016lx %016lxou\n",ans->high,ans->low);
-  fprintf(stderr,"R 0x%016lx %016lxou\n\n",n.high,n.low);
+  fprintf(stderr,"  0x%016"PRIx64" %016"PRIx64"ou\n",x->high,x->low);
+  fprintf(stderr,"/ 0x%016"PRIx64" %016"PRIx64"ou\n",y->high,y->low);
+  fprintf(stderr,"= 0x%016"PRIx64" %016"PRIx64"ou\n",ans->high,ans->low);
+  fprintf(stderr,"R 0x%016"PRIx64" %016"PRIx64"ou\n\n",n.high,n.low);
 #endif
   return n.low==0 && n.high==0;
 }
