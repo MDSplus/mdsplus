@@ -54,6 +54,7 @@ COMPILE*/
 #include <stdlib.h>
 #include <ipdesc.h>
 #include <ctype.h>
+#include <inttypes.h>
 #include <mdsshr.h>
 #include <status.h>
 #ifdef DTYPE_EVENT
@@ -102,7 +103,7 @@ static int IpToMds(int dtypein);
 
 /* Test routines */
 #ifdef DEBUG
-int bTest(struct descriptor *desc);
+static void bTest(struct descriptor *desc);
 struct descriptor_xd *bTest1(struct descriptor *in_bufD);
 #endif
 
@@ -318,7 +319,7 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
   for (nargs = 0; tdiarg != NULL; nargs++) {
     tdiarg = va_arg(incrmtr, struct descriptor *);
 #ifdef DEBUG
-    printf("Vararg [%d] for [%lu]\n", nargs, tdiarg);
+    printf("Vararg [%d] for [0x%"PRIxPTR"]\n", nargs, (uintptr_t)tdiarg);
 #endif
   }
 /* note minimum 1 arg I/P and 1 arg O/P */
@@ -583,17 +584,17 @@ static int IpToMds(int dtypein)
 
 #ifdef DEBUG
 /* test routines for fun */
-int bTest(struct descriptor *desc)
+static void bTest(struct descriptor *desc)
 {
   int i, num;
-  char *pntC;
-  unsigned char *pntUC;
-  short *pntS;
-  unsigned short *pntUS;
-  int *pntW;
-  unsigned int *pntUW;
-  long *pntL;
-  unsigned long *pntUL;
+   int8_t *pntC;
+  uint8_t *pntUC;
+   int16_t *pntS;
+  uint16_t *pntUS;
+   int32_t *pntW;
+  uint32_t *pntUW;
+   int64_t *pntL;
+  uint64_t *pntUL;
   float *pntF;
   double *pntD;
 
@@ -601,14 +602,13 @@ int bTest(struct descriptor *desc)
 /* if an array, print out other info */
   switch (desc->class) {
   case CLASS_S:		/* fixed-length descriptor */
-    printf("got descriptor [%d],[%d],[%d],[%lu]\n", desc->length, desc->dtype, desc->class,
-	   desc->pointer);
+    printf("got descriptor [%d],[%d],[%d],[%"PRIu64"]\n", desc->length, desc->dtype, desc->class, (uintptr_t)desc->pointer);
     num = (desc->pointer == NULL) ? 0 : 1;	/* pointer must be non zero to print */
     break;
   case CLASS_A:		/* Array descriptor */
     desca = (struct descriptor_a *)desc;
-    printf("got descriptor [%d],[%d],[%d],[%lu] [%d][%d][%d][%d]\n",
-	   desca->length, desca->dtype, desca->class, desca->pointer,
+    printf("got descriptor [%d],[%d],[%d],[0x%"PRIxPTR"] [%d][%d][%d][%d]\n",
+	   desca->length, desca->dtype, desca->class, (uintptr_t)desca->pointer,
 	   desca->scale, desca->digits, desca->dimct, desca->arsize);
     printf("aflags binscale[%d],redim[%d],column[%d],coeff[%d],bounds[%d]\n",
 	   desca->aflags.binscale, desca->aflags.redim, desca->aflags.column, desca->aflags.coeff,
@@ -626,13 +626,12 @@ int bTest(struct descriptor *desc)
     break;
   case CLASS_XD:
     printf("extended Descriptor\n");
-    printf("got descriptor [%d],[%d],[%d],[%lu]\n", desc->length, desc->dtype, desc->class,
-	   desc->pointer);
+    printf("got descriptor [%d],[%d],[%d],[0x%"PRIxPTR"]\n", desc->length, desc->dtype, desc->class, (uintptr_t)desc->pointer);
     num = 0;
     break;
   default:
     printf("class [%d] unknown\n", desc->class);
-    return (0);
+    return;
   }
   if (num)
     switch (desc->dtype) {
@@ -640,46 +639,46 @@ int bTest(struct descriptor *desc)
       printf("unspecified ($MISSING)");
       break;
     case DTYPE_BU:		/*      2               byte (unsigned);  8-bit unsigned quantity */
-      pntUC = (unsigned char *)desc->pointer;
+      pntUC = (uint8_t *)desc->pointer;
       for (i = 0; i++ < num;)
 	printf("[%u]", *pntUC++);
       break;
     case DTYPE_WU:		/*      3               word (unsigned);  16-bit unsigned quantity */
-      pntUS = (unsigned short *)desc->pointer;
+      pntUS = (uint16_t *)desc->pointer;
       for (i = 0; i++ < num;)
 	printf("[%u]", *pntUS++);
       break;
     case DTYPE_LU:		/*      4               longword (unsigned);  32-bit unsigned quantity */
-      pntUW = (unsigned int *)desc->pointer;
+      pntUW = (uint32_t *)desc->pointer;
       for (i = 0; i++ < num;)
 	printf("[%u]", *pntUW++);
       break;
     case DTYPE_QU:		/*      5               quadword (unsigned);  64-bit unsigned quantity */
-      pntUL = (unsigned long *)desc->pointer;
+      pntUL = (uint64_t *)desc->pointer;
       for (i = 0; i++ < num;)
-	printf("[%ul]", *pntUL++);
+	printf("[%"PRIu64"]", *pntUL++);
       break;
     case DTYPE_OU:		/*      25              octaword (unsigned);  128-bit unsigned quantity */
       break;
     case DTYPE_B:		/*      6               byte integer (signed);  8-bit signed 2's-complement integer */
-      pntC = (char *)desc->pointer;
+      pntC = (int8_t *)desc->pointer;
       for (i = 0; i++ < num;)
 	printf("[%d]", *pntC++);
       break;
     case DTYPE_W:		/*      7               word integer (signed);  16-bit signed 2's-complement integer */
-      pntS = (short *)desc->pointer;
+      pntS = (int16_t *)desc->pointer;
       for (i = 0; i++ < num;)
 	printf("[%d]", *pntS++);
       break;
     case DTYPE_L:		/*      8               longword integer (signed);  32-bit signed 2's-complement integer */
-      pntW = (int *)desc->pointer;
+      pntW = (int32_t *)desc->pointer;
       for (i = 0; i++ < num;)
 	printf("[%d]", *pntW++);
       break;
     case DTYPE_Q:		/*      9               quadword integer (signed);  64-bit signed 2's-complement integer */
-      pntL = (long *)desc->pointer;
+      pntL = (int64_t *)desc->pointer;
       for (i = 0; i++ < num;)
-	printf("[%l]", *pntL++);
+	printf("[%"PRId64"]", *pntL++);
       break;
     case DTYPE_T:		/*      14              character string;  a single 8-bit character or a sequence of characters */
       printf("string [%s]", (char *)desc->pointer);

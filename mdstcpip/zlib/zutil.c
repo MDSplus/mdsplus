@@ -57,7 +57,7 @@ const char *ZEXPORT zlibVersion()
   return ZLIB_VERSION;
 }
 
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
 
 #ifndef verbose
 #define verbose 0

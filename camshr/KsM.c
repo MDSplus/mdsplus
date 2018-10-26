@@ -138,12 +138,12 @@ static int KsMultiIo(CamKey Key,	// module info
     0x1, 0x88, 4, "CAMAC Word Count"}, {
     0x2, 0x00, 2, "Command Memory Address"}, {
     0x2, 0x02, 2, "Demand Message"}};
-    int i;
+    unsigned int i;
     for (i = 0; i < (sizeof(reg) / sizeof(reg[0])); i++) {
       unsigned int l;
       unsigned short s;
       unsigned char c;
-      char *dptr;
+      char *dptr = 0;
       switch (reg[i].nb) {
       case 1:
 	dptr = (char *)&c;
@@ -154,6 +154,10 @@ static int KsMultiIo(CamKey Key,	// module info
       case 4:
 	dptr = (char *)&l;
 	break;
+      }
+      if (!dptr) {
+        printf("%s = invalid reg->nb = %d\n", reg[i].name, reg[i].nb);
+        break;
       }
       Command[0] = OpCodeRegisterAccess;
       Command[1] = 0;

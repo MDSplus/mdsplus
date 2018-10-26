@@ -186,7 +186,7 @@ extern void zmemzero OF((Bytef * dest, uInt len));
 #endif
 
 /* Diagnostic functions */
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
 #include <stdio.h>
 extern int z_verbose;
 extern void z_error OF((char *m));
