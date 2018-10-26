@@ -31,7 +31,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "mdsip_connections.h"
 #include <pthread_port.h>
 
-#define DEBUG(...) //fprintf(stderr,__VA_ARGS__)
+#ifdef DEBUG
+ #define PDEBUG(...) fprintf(stderr,__VA_ARGS__)
+#else
+ #define PDEBUG(...)
+#endif
 
 static Connection *ConnectionList = NULL;
 static pthread_mutex_t connection_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -60,14 +64,14 @@ Connection *FindConnectionWithLock(int id, char state){
   c = _FindConnection(id, NULL);
   if (c) {
     while (c->state>0) {
-      DEBUG("Connection %02d -- %02x waiting\n",c->id,(unsigned char)state);
+      PDEBUG("Connection %02d -- %02x waiting\n",c->id,(unsigned char)state);
       pthread_cond_wait(&c->cond,&connection_mutex);
     }
     if (c->state<0) {
       pthread_cond_signal(&c->cond); // pass on signal
       c = NULL;
     } else {
-      DEBUG("Connection %02d -> %02x   locked\n",c->id,(unsigned char)state);
+      PDEBUG("Connection %02d -> %02x   locked\n",c->id,(unsigned char)state);
       c->state = state;
     }
   }
@@ -79,7 +83,7 @@ void UnlockConnection(Connection* c) {
   if (c) {
     CONNECTIONLIST_LOCK;
     c->state &= CON_DISCONNECT; // preserve CON_DISCONNECT
-    DEBUG("Connection %02d -> %02x unlocked\n",c->id,(unsigned char)c->state);
+    PDEBUG("Connection %02d -> %02x unlocked\n",c->id,(unsigned char)c->state);
     pthread_cond_signal(&c->cond);
     CONNECTIONLIST_UNLOCK;
   }

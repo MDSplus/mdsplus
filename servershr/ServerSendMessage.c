@@ -81,7 +81,12 @@ int ServerSendMessage();
 #endif
 #include <signal.h>
 
-#define DEBUG(...) //printf(__VA_ARGS__)
+#ifdef DEBUG
+ #define PDEBUG(...) fprintf(stderr,__VA_ARGS__)
+#else
+ #define PDEBUG(...)
+#endif
+
 #define IP(addr)   ((uint8_t*)&addr)
 #define ADDR2IP(a) IP(a)[0],IP(a)[1],IP(a)[2],IP(a)[3]
 
@@ -401,7 +406,7 @@ static SOCKET CreatePort(uint16_t *port_out) {
       start_port = 8800;
       range_port =  256;
     }
-    DEBUG("Receiver will be using 'MDSIP_PORT_RANGE=%u-%u'.\n",start_port,start_port+range_port-1);
+    PDEBUG("Receiver will be using 'MDSIP_PORT_RANGE=%u-%u'.\n",start_port,start_port+range_port-1);
   }
   uint16_t port;
   static struct sockaddr_in sin;
@@ -435,7 +440,7 @@ static SOCKET CreatePort(uint16_t *port_out) {
     perror("Error from listen\n");
     return INVALID_SOCKET;
   }
-  DEBUG("Listener opened on port %u.\n",port);
+  PDEBUG("Listener opened on port %u.\n",port);
   *port_out = port;
   return s;
 }
@@ -474,7 +479,7 @@ static int start_receiver(uint16_t *port_out)
 }
 
 static void ReceiverExit(void *arg __attribute__ ((unused))){
-  DEBUG("ServerSendMessage thread exitted\n");
+  PDEBUG("ServerSendMessage thread exitted\n");
   CONDITION_RESET(&ReceiverRunning);
 }
 
@@ -489,7 +494,7 @@ static void ResetFdactive(int rep, SOCKET sock, fd_set* active){
   if (rep > 0) {
     for (c = Clients; c;) {
       if (is_broken_socket(c->reply_sock)) {
-	DEBUG("removed client in ResetFdactive\n");
+	PDEBUG("removed client in ResetFdactive\n");
         _RemoveClient(c);
         c = Clients;
       } else
@@ -503,7 +508,7 @@ static void ResetFdactive(int rep, SOCKET sock, fd_set* active){
       FD_SET(c->reply_sock, active);
   }
   UNLOCK_CLIENTS;
-  DEBUG("reset fdactive in ResetFdactive\n");
+  PDEBUG("reset fdactive in ResetFdactive\n");
 }
 
 #pragma GCC diagnostic push
@@ -590,7 +595,7 @@ static Client* get_addr_port(char* server, uint32_t*addrp, uint16_t*portp) {
   char portpart[256] = { 0 };
   int num = sscanf(server, "%[^:]:%s", hostpart, portpart);
   if (num != 2) {
-    DEBUG("Server '%s' unknown\n", server);
+    PDEBUG("Server '%s' unknown\n", server);
     return NULL;
   }
   addr = GetHostAddr(hostpart);
@@ -780,7 +785,7 @@ static void AddClient(unsigned int addr, uint16_t port, int conid)
   else
     Clients = new;
   UNLOCK_CLIENTS;
-  DEBUG("added connection from %u.%u.%u.%u\n",ADDR2IP(addr));
+  PDEBUG("added connection from %u.%u.%u.%u\n",ADDR2IP(addr));
 }
 
 static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fdactive)
@@ -794,10 +799,10 @@ static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fd
   if (c) {
     c->reply_sock = reply_sock;
     FD_SET(reply_sock, fdactive);
-    DEBUG("accepted connection from %u.%u.%u.%u\n",ADDR2IP(addr));
+    PDEBUG("accepted connection from %u.%u.%u.%u\n",ADDR2IP(addr));
   } else {
     shutdown(reply_sock, 2);
     close(reply_sock);
-    DEBUG("dropped connection from %u.%u.%u.%u\n",ADDR2IP(addr));
+    PDEBUG("dropped connection from %u.%u.%u.%u\n",ADDR2IP(addr));
   }
 }
