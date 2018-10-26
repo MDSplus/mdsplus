@@ -49,7 +49,7 @@ using namespace testing;
 
 
 
-void test_tree_open(const char *prot, const unsigned short port, const char* mode){
+void _test_tree_open(const char *prot, const unsigned short port, const char* mode){
     MdsIpInstancer mdsip(prot,port,mode);
     std::string addr = mdsip.getAddress();
     std::cout << "attempt to connect to: " << addr;
@@ -99,6 +99,13 @@ void test_tree_open(const char *prot, const unsigned short port, const char* mod
     cnx->closeTree((char*)"t_connect",1);
 }
 
+void test_tree_open(const char *prot, const unsigned short port, const char* mode){
+  try {
+    _test_tree_open(prot, port, mode);
+  } catch (...) {
+    TEST0("exception");
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //  main  //////////////////////////////////////////////////////////////////////
@@ -148,25 +155,26 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
     test_tree_open("tcp",8600,"-s");
     test_tree_open("tcp",8601,"-m");
     END_TESTING;
-
+/*
     // tcpv6 //
     BEGIN_TESTING(Connection tcpv6);
     test_tree_open("tcpv6",8604,"-s");
     test_tree_open("tcpv6",8605,"-m");
     END_TESTING;
-
+*/
 #ifndef _WIN32
     // udt //
     BEGIN_TESTING(Connection udt);
     test_tree_open("udt",8602,"-s");
     test_tree_open("udt",8603,"-m");
     END_TESTING;
-
+/*
     // udtv6 //
     BEGIN_TESTING(Connection udtv6);
     test_tree_open("udtv6",8606,"-s");
     test_tree_open("udtv6",8607,"-m");
     END_TESTING;
+*/
 #endif
 /*
 // TODO: gsi test does not work (gsi setup?)
