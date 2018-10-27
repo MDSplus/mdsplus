@@ -479,7 +479,6 @@ int _TreeAddConglom(void *dbid, char const *path, char const *congtype, int *nid
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   struct descriptor expdsc = { 0, DTYPE_T, CLASS_S, 0 };
   char exp[256];
-  void *arglist[4] = { (void *)3 };
   DESCRIPTOR_LONG(statdsc, 0);
   statdsc.pointer = (char *)&addstatus;
   if (!IS_OPEN_FOR_EDIT(dblist))
@@ -493,13 +492,10 @@ int _TreeAddConglom(void *dbid, char const *path, char const *congtype, int *nid
   if STATUS_OK {
     expdsc.length = (unsigned short)strlen(exp);
     expdsc.pointer = exp;
-    arglist[1] = &expdsc;
-    arglist[2] = &statdsc;
-    arglist[3] = MdsEND_ARG;
     // switch to privateContext for thread safety
     int old_pc = TreeUsePrivateCtx(1);
     void* old_dbid = *TreeCtx();*TreeCtx() = dbid;
-    status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
+    status = (*TdiExecute)(&expdsc,&statdsc MDS_END_ARG);
     *TreeCtx() = old_dbid;TreeUsePrivateCtx(old_pc);
     // old context restored
     if STATUS_OK {

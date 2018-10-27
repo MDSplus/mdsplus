@@ -109,7 +109,7 @@ EXPORT int TclDoMethod(void *ctx, char **error, char **output __attribute__ ((un
 	arglist[argc + 3] = &dometh_stat_d;
 	arglist[argc + 4] = MdsEND_ARG;
 	arglist[0] = (argc + 4) + (char *)0;
-	sts = (char *)LibCallg(arglist, TreeDoMethod) - (char *)0;
+	sts = (int)(intptr_t)LibCallg(arglist, TreeDoMethod);
 	if (sts & 1)
 	  sts = dometh_stat;
       }
