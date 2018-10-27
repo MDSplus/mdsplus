@@ -80,7 +80,7 @@ static void *getDispatchTable() {
 static void setDispatchTable(void *dispatch_table) {
   DBI_ITM itmlst[] = {{sizeof(void *), DbiDISPATCH_TABLE, dispatch_table, 0},{0,0,0,0}};
   TreeSetDbi(itmlst);
-}  
+}
 
 /****************************************************************
  * TclDispatch_close:
@@ -318,9 +318,9 @@ EXPORT int TclDispatch_show_server(void *ctx, char **error __attribute__ ((unuse
       tclAppend(output, "\n");
       mdsdclFlushOutput(*output);
       FREE_ON_EXIT(info);
-      info = ServerGetInfo(full, ident); 
+      info = ServerGetInfo(full, ident);
       if (dooutput) {
-	tclAppend(output, info); 
+	tclAppend(output, info);
 	tclAppend(output, "\n");
       }
       FREE_NOW(info);
@@ -339,10 +339,10 @@ static void printIt(char *output){
  *****************************************************************/
 EXPORT int TclDispatch_phase(void *ctx, char **error, char **output __attribute__ ((unused))){
   int status;
-  void *dispatch_table = getDispatchTable();
   INIT_AND_FREE_ON_EXIT(char*,phase);
   INIT_AND_FREE_ON_EXIT(char*,synch_str);
   INIT_AND_FREE_ON_EXIT(char*,monitor);
+  void *dispatch_table = getDispatchTable();
   int synch;
   int noaction = IS_OK(cli_present(ctx, "NOACTION"));
   void (*output_rtn) () = IS_OK(cli_present(ctx, "LOG")) ? printIt : 0;
