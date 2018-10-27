@@ -730,7 +730,6 @@ static char *GetFname(char *tree, int shot)
   int status = 1;
   static char *ans = 0;
   struct descriptor_d fname = { 0, DTYPE_T, CLASS_D, 0 };
-  void *arglist[4];
   char expression[128];
   struct descriptor expression_d = { 0, DTYPE_T, CLASS_S, 0 };
   if (ans) {
@@ -739,14 +738,10 @@ static char *GetFname(char *tree, int shot)
   }
   expression_d.length = (unsigned short)sprintf(expression, "%s_tree_filename(%d)", tree, shot);
   expression_d.pointer = expression;
-  arglist[0] = (void *)3;
-  arglist[1] = &expression_d;
-  arglist[2] = &fname;
-  arglist[3] = MdsEND_ARG;
-  static void *TdiExecute = NULL; // LibFindImageSymbol_C is a NOP if TdiExecute is already set
+  static int (*TdiExecute)() = NULL; // LibFindImageSymbol_C is a NOP if TdiExecute is already set
   status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
   if STATUS_OK
-    status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
+    status = (*TdiExecute)(&expression_d,&fname MDS_END_ARG);
   if (status & 1) {
     ans = strncpy(malloc((size_t)fname.length + 2), fname.pointer, fname.length);
     ans[fname.length] = '+';

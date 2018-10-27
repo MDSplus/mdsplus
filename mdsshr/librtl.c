@@ -327,7 +327,7 @@ EXPORT int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag __attri
     }
   }
   arglist[numargs]=(void *)NULL;
-  status = (char *)LibCallg(arglist, (void *)_spawnlp) - (char *)NULL;
+  status = (int)(intptr_t)LibCallg(arglist, (void *)_spawnlp);
   free(cmd_c);
   return status;
 }

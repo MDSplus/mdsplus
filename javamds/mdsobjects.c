@@ -1247,7 +1247,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_compile
   arglist[varIdx++] = &outXd;
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
-  status = (char *)LibCallg(arglist, TdiCompile) - (char *)0;
+  status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
   (*env)->ReleaseStringUTFChars(env, jexpr, expr);
   for (i = 0; i < numArgs; i++)
     FreeDescrip(arglist[2 + i]);
@@ -1341,7 +1341,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_execute
   arglist[varIdx++] = &outXd;
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
-  status = (char *)LibCallg(arglist, TdiCompile) - (char *)0;
+  status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
   (*env)->ReleaseStringUTFChars(env, jexpr, expr);
   for (i = 0; i < numArgs; i++)
     FreeDescrip(arglist[2 + i]);

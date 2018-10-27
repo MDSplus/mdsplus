@@ -694,7 +694,7 @@ static Message *ExecuteMessage(Connection * connection)
     connection->descrip[connection->nargs++] = MdsEND_ARG;
     ResetErrors();
     SetCompressionLevel(connection->compression_level);
-    status = (char *)LibCallg(&connection->nargs, TdiExecute) - (char *)0;
+    status = (int)(intptr_t)LibCallg(&connection->nargs, TdiExecute);
     if (status & 1)
       status = TdiData(xd, &ans_xd MDS_END_ARG);
     if (!(status & 1))
