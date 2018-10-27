@@ -12,7 +12,9 @@
 #define MDS_STDARG
 
 #include <stdarg.h>
-#define MdsEND_ARG ((void *)0xffffffff)
+#include <stdint.h>
+
+#define MdsEND_ARG ((void *)(uintptr_t)0xffffffff)
 #ifdef va_count
 #define MDS_END_ARG
 #else
