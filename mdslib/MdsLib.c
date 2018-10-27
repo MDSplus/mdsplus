@@ -27,6 +27,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <pthread_port.h>
 #define MDSLIB_NO_PROTOS
 #include "mdslib.h"
+#include <stdint.h>
 static int MdsCONNECTION = -1;
 #define NDESCRIP_CACHE 1024
 #ifndef _CLIENT_ONLY
@@ -39,7 +40,7 @@ extern int TdiExecute();
 extern int TdiCompile();
 extern int TdiData();
 extern int TdiCvt();
-extern int LibCallg();
+extern void* LibCallg();
 extern int TreeFindNode();
 extern int TreePutRecord();
 extern int TreeWait();
@@ -538,7 +539,7 @@ static inline int MdsValueVargs(va_list incrmtr, int connection, char *expressio
     arglist[argidx++] = (void *)&xd1;
     arglist[argidx++] = MdsEND_ARG;
     *(int *)&arglist[0] = argidx - 1;
-    status = LibCallg(arglist, TdiExecute);
+    status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
 
     if (status & 1) {
 
@@ -766,7 +767,7 @@ static inline int MdsValue2Vargs(va_list incrmtr, int connection, char *expressi
     arglist[argidx++] = (void *)&xd1;
     arglist[argidx++] = MdsEND_ARG;
     *(int *)&arglist[0] = argidx - 1;
-    status = LibCallg(arglist, TdiExecute);
+    status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
 
     if (status & 1) {
 
@@ -909,7 +910,7 @@ static inline int MdsPutVargs(va_list incrmtr, int connection, char *pathname, c
       arglist[argidx++] = MdsEND_ARG;
       *(int *)&arglist[0] = argidx - 1;
 
-      status = LibCallg(arglist, TdiCompile);
+      status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
 
       if (status & 1) {
 	if ((status = TreePutRecord(nid, (struct descriptor *)arglist[argidx - 2], 0)) & 1) {
@@ -1035,7 +1036,7 @@ EXPORT int MdsPut2Vargs(va_list incrmtr, int connection, char *pathname, char *e
       arglist[argidx++] = MdsEND_ARG;
       *(int *)&arglist[0] = argidx - 1;
 
-      status = LibCallg(arglist, TdiCompile);
+      status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
 
       if (status & 1) {
 	if ((status = TreePutRecord(nid, (struct descriptor *)arglist[argidx - 2]), 0) & 1) {
@@ -1149,7 +1150,7 @@ extern EXPORT int *cdescr(int dtype, void *data, ...)
   }
   arglist[argidx++] = MdsEND_ARG;
   *(int *)&arglist[0] = argidx - 1;
-  status = LibCallg(arglist, descr);
+  status = (int)(intptr_t)LibCallg(arglist, descr);
   return (&status);
 }
 #endif

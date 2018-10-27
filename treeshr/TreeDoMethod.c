@@ -90,7 +90,7 @@ int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
     arglist[i + 1] = va_arg(incrmtr, struct descriptor *);
   va_end(incrmtr);
   arglist[nargs + 2] = MdsEND_ARG;
-  return (int)((char *)LibCallg(arglist, _TreeDoMethod) - (char *)0);
+  return (int)(intptr_t)LibCallg(arglist, _TreeDoMethod);
 }
 
 int do_fun(struct descriptor *funname, int nargs, struct descriptor **args, struct descriptor_xd *out_ptr){
@@ -106,8 +106,7 @@ int do_fun(struct descriptor *funname, int nargs, struct descriptor **args, stru
   int i;
   for (i = 0; i < nargs; i++)
     fun.arguments[2 + i] = args[i];
-  status = (int)((char *)LibCallg(call_arglist, TdiEvaluate) - (char *)0);
-  return status;
+  return (int)(intptr_t)LibCallg(call_arglist, TdiEvaluate);
 }
 
 #pragma GCC diagnostic push
@@ -191,13 +190,13 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
         static void* (*TdiExecute)  () = NULL;
         status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
         if STATUS_OK {
+	  _nargs += 2;
 	  for (i = _nargs; i > 0; i--)
 	    arglist[i + 1] = arglist[i];
-	  _nargs += 2;
 	  arglist[0] = arglist_nargs(_nargs);
 	  arglist[1] = &exp;
 	  arglist[_nargs] = MdsEND_ARG;
-	  status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
+	  status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
         }
       }
       FREED_NOW(&exp);
@@ -214,7 +213,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     if STATUS_OK {
       void *old_dbid = *TreeCtx();
       *TreeCtx() = dbid;
-      status = (int)((char *)LibCallg(arglist, addr) - (char *)0);
+      status = (int)(intptr_t)LibCallg(arglist, addr);
       *TreeCtx() = old_dbid;
       if (arglist[nargs]) {
 	struct descriptor *ans = (struct descriptor *)arglist[nargs];

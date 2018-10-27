@@ -1124,13 +1124,7 @@ static int ReadSegment(TREE_INFO* tinfo, int nid, SEGMENT_HEADER* shead, SEGMENT
 	    if STATUS_OK {
 		STATIC_CONSTANT DESCRIPTOR(expression, "data($)[0:($-1)]");
 		DESCRIPTOR_LONG(row_d, &shead->next_row);
-		void *arglist[6] = { (void *)5 };
-		arglist[1] = &expression;
-		arglist[2] = dim;
-		arglist[3] = &row_d;
-		arglist[4] = dim;
-		arglist[5] = MdsEND_ARG;
-		status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
+		status = (*TdiExecute)(&expression,dim,&row_d,dim MDS_END_ARG);
 	      }
 	  }
 	}
@@ -2265,34 +2259,14 @@ static int isSegmentInRange(vars_t* vars,
       if STATUS_OK {
         if ((start && start->pointer) && (end && end->pointer)) {
           STATIC_CONSTANT DESCRIPTOR(expression, "($ <= $) && ($ >= $)");
-          void *arglist[8] = { (void *)7 };
-          arglist[1] = &expression;
-          arglist[2] = start;
-          arglist[3] = &segend;
-          arglist[4] = end;
-          arglist[5] = &segstart;
-          arglist[6] = &ans_d;
-          arglist[7] = MdsEND_ARG;
-          status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
+          status = (*TdiExecute)(&expression,start,&segend,end,&segstart,&ans_d MDS_END_ARG);
         } else {
           if (start && start->pointer) {
             STATIC_CONSTANT DESCRIPTOR(expression, "($ <= $)");
-            void *arglist[6] = { (void *)5 };
-            arglist[1] = &expression;
-            arglist[2] = start;
-            arglist[3] = &segend;
-            arglist[4] = &ans_d;
-            arglist[5] = MdsEND_ARG;
-            status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
+            status = (*TdiExecute)(&expression,start,&segend,&ans_d MDS_END_ARG);
           } else {
             STATIC_CONSTANT DESCRIPTOR(expression, "($ >= $)");
-            void *arglist[6] = { (void *)5 };
-            arglist[1] = &expression;
-            arglist[2] = end;
-            arglist[3] = &segstart;
-            arglist[4] = &ans_d;
-            arglist[5] = MdsEND_ARG;
-            status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
+            status = (*TdiExecute)(&expression,end,&segstart,&ans_d MDS_END_ARG);
           }
         }
       }

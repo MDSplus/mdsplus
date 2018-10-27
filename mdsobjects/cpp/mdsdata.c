@@ -267,7 +267,7 @@ void *convertFromDsc(void *ptr, void *tree)
   }
   dscPtr = (struct descriptor *)dscRPtr;
 
-//printf("CONVERTFROMDSC class %d  type %d\n", dscPtr->class, dscPtr->dtype);   
+//printf("CONVERTFROMDSC class %d  type %d\n", dscPtr->class, dscPtr->dtype);
 
   switch (dscPtr->class) {
   case CLASS_S:
@@ -372,7 +372,7 @@ void *convertFromDsc(void *ptr, void *tree)
 
 void freeDsc(void *dscPtr)
 {
-  
+
   struct descriptor_xd *xdPtr = (struct descriptor_xd *)dscPtr;
   if(!dscPtr) return;
   if (xdPtr->class != CLASS_XD) {
@@ -414,7 +414,7 @@ void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree, in
   EMPTYXD(xd);
   struct descriptor exprD = { 0, DTYPE_T, CLASS_S, 0 };
 
-  exprD.length = strlen(expr);
+  exprD.length = (uint16_t)strlen(expr);
   exprD.pointer = (char *)expr;
 
   arglist[1] = &exprD;
@@ -432,7 +432,7 @@ void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree, in
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
 
-  status = *retStatus = (char *)LibCallg(arglist, TdiCompile) - (char *)0;
+  status = *retStatus = (int)(intptr_t)LibCallg(arglist, TdiCompile);
   if (!(status & 1))
     return NULL;
 
