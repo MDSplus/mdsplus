@@ -341,7 +341,10 @@ static void getAnswer(PyObject * value, struct descriptor_xd *outptr)
   }
 }
 
-int TdiExtPython2(char *dirspec,char *filename,
+
+
+
+int TdiExtPython(char *dirspec,char *filename,
                  int nargs, struct descriptor **args, struct descriptor_xd *out_ptr){
   /* Try to locate a python module in the MDS_PATH search list and if found execute a function with the same name
      as the module in that module passing the arguments and get the answer back from python. */
@@ -360,6 +363,7 @@ int TdiExtPython2(char *dirspec,char *filename,
     pthread_cleanup_pop(1);
     if STATUS_OK {
       PyThreadState *GIL = (*PyGILState_Ensure)();
+      pthread_cleanup_push((void*)PyGILState_Release,(void*)GIL);
       PyObject *ans;
       PyObject *pyFunction;
       PyObject *pyArgs;
@@ -399,7 +403,7 @@ int TdiExtPython2(char *dirspec,char *filename,
         status = TdiUNKNOWN_VAR;
         fprintf(stderr,"Error: Module '%s' found but it does not contain function '%s'\n",filename,filename);
       }
-      (*PyGILState_Release)(GIL);
+      pthread_cleanup_pop(1);//(*PyGILState_Release)(GIL);
     }
 #ifndef _WIN32
   sigaction(SIGCHLD, &oldact, NULL);
@@ -407,7 +411,13 @@ int TdiExtPython2(char *dirspec,char *filename,
   return status;
 }
 
-int TdiExtPython(struct descriptor *modname_d,
+
+
+
+
+
+/* original TdiExtPython
+int TdiExtPython2(struct descriptor *modname_d,
                  int nargs, struct descriptor **args, struct descriptor_xd *out_ptr){
   int status;
   char *dirspec = NULL, *filename = NULL;
@@ -415,10 +425,11 @@ int TdiExtPython(struct descriptor *modname_d,
   FREE_ON_EXIT(filename);
   dirspec = findModule(modname_d, &filename);
   if (dirspec)
-    status = TdiExtPython2(dirspec,filename,nargs,args,out_ptr);
+    status = TdiExtPython(dirspec,filename,nargs,args,out_ptr);
   else
     status = TdiUNKNOWN_VAR;
   FREE_NOW(filename);
   FREE_NOW(dirspec);
   return status;
 }
+*/
