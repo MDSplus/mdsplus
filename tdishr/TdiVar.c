@@ -642,7 +642,7 @@ int compile_fun(struct descriptor *entry)
 }
 
 extern char* findModule();
-extern int TdiExtPython2();
+extern int TdiExtPython();
 int TdiDoFun(struct descriptor *ident_ptr,
 	     int nactual, struct descriptor_r *actual_arg_ptr[], struct descriptor_xd *out_ptr)
 {
@@ -674,7 +674,7 @@ int TdiDoFun(struct descriptor *ident_ptr,
   pthread_cleanup_pop(1);
   // method is loaded or python at this point
   if (ispython) // execute python method if special flag is set
-    status = TdiExtPython2(dirspec, filename, nactual, (struct descriptor **)actual_arg_ptr, out_ptr);
+    status = TdiExtPython(dirspec, filename, nactual, (struct descriptor **)actual_arg_ptr, out_ptr);
   FREE_NOW(dirspec);
   FREE_NOW(filename);
   if (ispython || STATUS_NOT_OK)
