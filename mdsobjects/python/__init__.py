@@ -88,7 +88,8 @@ if __name__==__package__:
         from ctypes.util import find_library
         import sys
         libname = ('python%d%d' if sys.platform.startswith('win') else 'python%d.%d')%sys.version_info[0:2]
-        return find_library(libname)
+        try:   return find_library(libname)
+        except:return None
     if not "PyLib" in globals():
         PyLib = getPyLib()
         if   PyLib:globals()['setenv']("PyLib",PyLib)

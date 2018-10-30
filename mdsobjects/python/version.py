@@ -61,22 +61,23 @@ def load_library(name):
             os.environ['DYLD_LIBRARY_PATH'] = os.path.join(os.getenv('MDSPLUS_DIR'),'lib')
         else:
             os.environ['DYLD_LIBRARY_PATH'] = '/usr/local/mdsplus/lib'
-    from ctypes.util import find_library
-    libnam = find_library(name)
-    if libnam is None:
+    try:
         if os.sys.platform.startswith('win'):
-            return C.CDLL('%s.dll'%name)
+            return C.CDLL(name)
         if os.sys.platform.startswith('darwin'):
             return C.CDLL('lib%s.dylib'%name)
-        try: return C.CDLL('lib%s.so'%name)
-        except:raise Exception("Could not find library: %s"%(name,))
-    else:
-        try:   return C.CDLL(libnam)
-        except:pass
-        try:   return C.CDLL(name)
-        except:pass
-        try:   return C.CDLL(os.path.basename(libnam))
-        except:raise Exception('Could not load library: %s'%(name,))
+        return C.CDLL('lib%s.so'%name)
+    except: pass
+    print("Issues loading %s, trying find_library"%name)
+    from ctypes.util import find_library
+    try:    libnam = find_library(name)
+    except: raise Exception("Could not find library: %s"%(name,))
+    if libnam is None:
+            raise Exception("Could not find library: %s"%(name,))
+    try:   return C.CDLL(libnam)
+    except:pass
+    try:   return C.CDLL(os.path.basename(libnam))
+    except:raise Exception('Could not load library: %s'%(name,))
 
 from types import GeneratorType as generator  # analysis:ignore
 
