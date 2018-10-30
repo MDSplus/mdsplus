@@ -189,13 +189,6 @@ void SendMonitor(int mode, int idx){
   }
 }
 
-STATIC_ROUTINE char *now(char *buf){
-  time_t tim = time(0);
-  ctime_r(&tim, buf);
-  buf[strlen(buf) - 1] = 0;
-  return buf;
-}
-
 STATIC_ROUTINE void ActionDone(int idx){
   int i;
   char logmsg[1024];
@@ -207,12 +200,12 @@ STATIC_ROUTINE void ActionDone(int idx){
       MDSEvent(actions[idx].event, sizeof(int), (char *)&table->shot);
     DoSendMonitor(MonitorDone, idx);
     if (Output) {
-      char buf[30];
+      char now[32];Now32(now);
       if IS_OK(actions[idx].status)
-	sprintf(logmsg, "%s, Action %s completed", now(buf), actions[idx].path);
+	sprintf(logmsg, "%s, Action %s completed", now, actions[idx].path);
       else {
 	char *emsg = MdsGetMsg(actions[idx].status);
-	sprintf(logmsg, "%s, Action %s failed, %s", now(buf), actions[idx].path, emsg);
+	sprintf(logmsg, "%s, Action %s failed, %s", now, actions[idx].path, emsg);
       }
       (*Output) (logmsg);
     }
@@ -268,8 +261,8 @@ STATIC_ROUTINE void Before(int idx){
   DoSendMonitor(MonitorDoing, idx);
   if (Output) {
     char server[33];
-    char buf[30];
-    sprintf(logmsg,"%s, %s is beginning action %s",now(buf),Server(server, actions[idx].server),actions[idx].path);
+    char now[32];Now32(now);
+    sprintf(logmsg,"%s, %s is beginning action %s",now,Server(server, actions[idx].server),actions[idx].path);
     (*Output) (logmsg);
   }
   }UNLOCK_ACTION(idx);
@@ -573,8 +566,8 @@ STATIC_ROUTINE void Dispatch(int i){
     actions[i].doing = 0;
     actions[i].dispatched = 0;
     if (Output) {
-      char buf[30];
-      sprintf(logmsg,"%s, Dispatching node %s to %s",now(buf),actions[i].path,Server(server,actions[i].server));
+      char now[32];Now32(now);
+      sprintf(logmsg,"%s, Dispatching node %s to %s",now,actions[i].path,Server(server,actions[i].server));
       (*Output) (logmsg);
     }
     ProgLoc = 7001;

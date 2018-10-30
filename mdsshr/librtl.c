@@ -43,6 +43,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <process.h>
 #define setenv(name,value,overwrite) _putenv_s(name,value)
 #define localtime_r(time,tm)         localtime_s(tm,time)
+#define ctime_r(tm,buf)              ctime_s(buf,32,tm)
 #else
 #include <sys/wait.h>
 #endif
@@ -132,6 +133,12 @@ EXPORT int LibWait(const float *secs)
   return nanosleep(&ts, 0) == 0;
 }
 
+EXPORT char *Now32(char* buf){
+  time_t tim = time(0);
+  ctime_r(&tim,buf);
+  buf[strlen(buf) - 1] = '\0';
+  return buf;
+}
 ///
 /// Call a routine in a shared library passing zero or more arguments.
 ///
@@ -913,8 +920,8 @@ EXPORT int LibConvertDateString(const char *asc_time, int64_t * qtime)
   }
   if (parse_it) {
     if (ctime_it) {
-      char *time_str;
-      time_str = ctime(&tim);
+      char time_str[32];
+      ctime_r(&tim,time_str);
       time_out[0] = time_str[8];
       time_out[1] = time_str[9];
       time_out[2] = '-';
@@ -1021,13 +1028,13 @@ EXPORT time_t LibCvtTim(int *time_in, double *t)
 
 EXPORT int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
 {
-  char *time_str;
   char time_out[24];
   unsigned short slen = sizeof(time_out)-1;
   time_t bintim = LibCvtTim(time_in, 0);
   int64_t chunks = time_in ? *(int64_t *)time_in % 10000000 : 0;
-  time_str = ctime(&bintim);
-  if (time_str) {
+  char time_str[32];time_str[0]='\0';
+  ctime_r(&bintim,time_str);
+  if (strlen(time_str)>18) {
     time_out[0] = time_str[8];
     time_out[1] = time_str[9];
     time_out[2] = '-';

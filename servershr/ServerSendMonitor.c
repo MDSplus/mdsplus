@@ -34,11 +34,7 @@ int ServerSendMonitor(char *monitor, char *tree, int shot, int phase,
 		      int nid, int on, int mode, char *server, int actstatus) {
   static int initialized=B_FALSE;
   static char *event = NULL;
-  char now[64];
-  time_t tim;
-  tim = time(0);
-  strcpy(now, ctime(&tim));
-  now[strlen(now) - 1] = 0;
+  char now[32];Now32(now);
   const char*        event_str = "event:";
   const unsigned int event_len = strlen(event_str);
   if (!initialized) {

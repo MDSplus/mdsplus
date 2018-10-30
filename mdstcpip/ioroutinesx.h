@@ -10,6 +10,7 @@ inline static ssize_t io_recv(Connection* c, void *buffer, size_t len){
 static IoRoutines io_routines = {
   io_connect, io_send, io_recv, io_flush, io_listen, io_authorize, io_reuseCheck, io_disconnect, io_recv_to
 };
+#include <mdsshr.h>
 #include <inttypes.h>
 #ifdef _TCP
  #ifdef _WIN32
@@ -255,13 +256,11 @@ static int io_authorize(Connection* c, char *username){
   FREE_ON_EXIT(info);
   ans = C_OK;
   SOCKET sock = getSocket(c);
-  time_t tim = time(0);
-  char *timestr = ctime(&tim);
+  char now[32];Now32(now);
   info = getHostInfo(sock, &iphost, &hoststr);
   if (info) {
-    timestr[strlen(timestr) - 1] = 0;
     printf("%s (%d) (pid %d) Connection received from %s@%s\r\n",
-           timestr, (int)sock, getpid(), username, info);
+           now, (int)sock, getpid(), username, info);
     char *matchString[2] = { NULL, NULL };
     FREE_ON_EXIT(matchString[0]);
     FREE_ON_EXIT(matchString[1]);
@@ -353,8 +352,7 @@ static ssize_t io_recv_to(Connection* c, void *bptr, size_t num, int to_msec){
 static int io_disconnect(Connection* con){
   SOCKET sock = getSocket(con);
   int err = C_OK;
-  time_t tim = time(0);
-  char *timestr = ctime(&tim);
+  char now[32];Now32(now);
   if (sock != INVALID_SOCKET) {
     Client *c, **p;
     for (p = &ClientList, c = ClientList; c && c->id != con->id; p = &c->next, c = c->next) ;
@@ -367,9 +365,8 @@ static int io_disconnect(Connection* con){
       if (server_epoll != -1) {
 	udt_epoll_remove_usock(server_epoll, sock);
 #endif
-        timestr[strlen(timestr) - 1] = 0;
         printf("%s (%d) (pid %d) Connection disconnected from %s@%s [%s]\r\n",
-               timestr, (int)sock, getpid(),
+               now, (int)sock, getpid(),
                c->username ? c->username : "?",
                c->host     ? c->host     : "?",
                c->iphost   ? c->iphost   : "?");
