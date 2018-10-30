@@ -23,23 +23,22 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+import MDSplus
 def pyfun(fun,module=None,*args):
-    import MDSplus
     MDSplus.DEALLOCATE('public _py_exception')
-    fun = str(fun)
-    if module is not None:
-        module = __import__(str(module), globals(), locals(), [fun])
-        fun = module.__dict__[fun]
-    elif fun in __builtins__:
-        fun = __builtins__[fun]
-    else:
-        try:
-            module = __import__('MDSplus', globals(), locals(), [fun])
-            fun = module.__dict__[fun]
-        except:
-            raise MDSplus.TdiUNKNOWN_VAR(fun)
+    fun    = MDSplus.Data(fun).data()
+    module = MDSplus.Data(module).data()
+    def getfun(fun):
+        fun = str(fun)
+        if module is not None:
+            return __import__(str(module), globals(), locals(), [fun]).__dict__[fun]
+        builtins = __builtins__ if isinstance(__builtins__,dict) else __builtins__.__dict__
+        if fun in builtins:
+            return builtins[fun]
+        try:    return MDSplus.__dict__[fun]
+        except: raise MDSplus.TdiUNKNOWN_VAR(fun)
+    fun = getfun(fun)
     args = tuple(map(MDSplus.Data.evaluate,args))
-
     try:
         return fun(*args)
     except Exception as exc:
