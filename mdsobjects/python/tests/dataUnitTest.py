@@ -371,7 +371,7 @@ class Tests(TestCase):
         self.assertEqual(str(m.Int64(123)),'123Q')
         self.assertEqual(str(m.Float32(1.2E-3)),'.0012')
         self.assertEqual(str(m.Float64(1.2E-3)),'.0012D0')
-        self.assertEqual(str(m.Signal(m.ZERO(100000,0.).evaluate(),None,0.)),"Build_Signal(Set_Range(100000,0. /*** etc. ***/), *, 0.)")
+        self.assertEqual(str(m.Signal(m.ZERO(100000,0.).evaluate(),None,0.)),"Build_Signal(Set_Range(100000,0D0 /*** etc. ***/), *, 0D0)")
 
     def runTest(self):
         for test in self.getTests():
