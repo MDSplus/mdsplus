@@ -1,4 +1,5 @@
-import MDSplus,sys,imp
+import MDSplus,sys,types
+modulename = "tdi_functions"
 def addfun(name,code):
     """
     can be used to add customized python functions to the tdi environment
@@ -14,11 +15,12 @@ def addfun(name,code):
     """
     name = str(MDSplus.Data.data(name))
     mdsname = name.upper()
+    if not modulename in sys.modules:
+       sys.modules[modulename] = types.ModuleType(modulename)
     code = MDSplus.Data.data(code)
-    mod = imp.new_module(mdsname)
-    exec(code) in locals()
-    mod.__dict__[mdsname] = locals()[name]
-    sys.modules[mdsname] = mod
+    env = {}
+    exec(code) in env
+    sys.modules[modulename].__dict__[mdsname] = env[name]
     mdsname = MDSplus.String(mdsname)
     return MDSplus.EQUALS(MDSplus.PUBLIC(mdsname),mdsname).evaluate()
 
