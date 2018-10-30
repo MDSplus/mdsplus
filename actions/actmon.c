@@ -108,7 +108,6 @@ static XmString error_label;
 static XtAppContext app_ctx;
 static char* expt  = NULL;
 
-#define TimeString(tm) ctime(&tm)
 #define offset(strc,field) (int)((void*)&(strc).field-(void*)&(strc))
 
 

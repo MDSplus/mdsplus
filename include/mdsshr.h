@@ -120,8 +120,8 @@ extern struct descriptor *MdsReleaseDsc();
 extern int MdsPutEnv(const char *cmd);
 extern void MdsGlobalLock();
 extern void MdsGlobalUnlock();
-extern int MdsXpand(int *nitems_ptr, struct descriptor_a *pack_dsc_ptr, struct descriptor_a *items_dsc_ptr,
-                     int *bit_ptr);
+extern int MdsXpand(int *nitems_ptr, struct descriptor_a *pack_dsc_ptr, struct descriptor_a *items_dsc_ptr, int *bit_ptr);
+extern char* Now32(char* buf);
 
 
 
