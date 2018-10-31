@@ -27,6 +27,7 @@ TRCFSetup.java \
 Aurora14Setup.java \
 ACQD265Setup.java \
 NI6071ESetup.java\
+NI6683Setup.java\
 PELLETSetup.java\
 L5613Setup.java\
 RFXTimesSetup.java\
