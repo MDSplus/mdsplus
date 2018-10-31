@@ -116,19 +116,39 @@ STATIC_THREADSAFE SendMonitorInfo *SendMonitorQueueTail = NULL;
 
 STATIC_THREADSAFE DispatchTable *table;
 STATIC_THREADSAFE int noact;
-STATIC_THREADSAFE int AbortInProgress;
 STATIC_THREADSAFE void (*Output) ();
 STATIC_THREADSAFE int MonitorOn = 0;
 STATIC_THREADSAFE char *Monitor = 0;
 STATIC_THREADSAFE int first_s;
 STATIC_THREADSAFE int last_s;
 
+static int AbortInProgress;
+static pthread_mutex_t abortinprogress_mutex = PTHREAD_MUTEX_INITIALIZER;
+static inline int setAbortInProgress(int val_in){
+  int val_out;
+  pthread_mutex_lock(&abortinprogress_mutex);
+  val_out = AbortInProgress;
+  AbortInProgress = val_in;
+  pthread_mutex_unlock(&abortinprogress_mutex);
+  return val_out;
+}
+static inline int isAbortInProgress(){
+  int val;
+  pthread_mutex_lock(&abortinprogress_mutex);
+  val = AbortInProgress;
+  pthread_mutex_unlock(&abortinprogress_mutex);
+  return val;
+}
+
 
 STATIC_THREADSAFE Condition JobWaitC = CONDITION_INITIALIZER;
 STATIC_THREADSAFE Condition SendMonitorC = CONDITION_INITIALIZER;
 STATIC_THREADSAFE Condition CompletedC = CONDITION_INITIALIZER;
 
-STATIC_THREADSAFE pthread_mutex_t send_monitor_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t send_monitor_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
+#define MONITOR_QUEUE_LOCK   pthread_mutex_lock(&send_monitor_queue_mutex);pthread_cleanup_push((void*)pthread_mutex_unlock,&send_monitor_queue_mutex)
+#define MONITOR_QUEUE_UNLOCK pthread_cleanup_pop(1)
+
 STATIC_THREADSAFE pthread_mutex_t completed_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 STATIC_THREADSAFE pthread_rwlock_t table_lock = PTHREAD_RWLOCK_INITIALIZER;
@@ -209,7 +229,7 @@ STATIC_ROUTINE void ActionDone(int idx){
       }
       (*Output) (logmsg);
     }
-    if (!AbortInProgress) {
+    if (!isAbortInProgress()) {
       EMPTYXD(xd);
       char expression[60];
       struct descriptor expression_d = { 0, DTYPE_T, CLASS_S, 0 };
@@ -403,7 +423,7 @@ STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g, int first_c
   clock_gettime(CLOCK_REALTIME, &tp);
   int g,c = 1;
   while ((c_status == ETIMEDOUT || c_status == C_OK)
-      && !AbortInProgress
+      && !isAbortInProgress()
       && (g=!NoOutstandingActions(first_g, last_g)
         || (all && (c=!NoOutstandingActions(first_c, last_c))))) {
 #ifdef DEBUG
@@ -470,14 +490,14 @@ EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, c
   }UNLOCK_TABLE;
   Output = output_rtn;
   noact = noact_in;
-  AbortInProgress = 0;
+  setAbortInProgress(0);
   phasenam_d.length = strlen(phasenam);
   phasenam_d.pointer = phasenam;
   ProgLoc = 6005;
   status = TdiExecute(&phase_lookup, &phasenam_d, &phase_d MDS_END_ARG);
   ProgLoc = 6006;
   if (STATUS_OK && (phase > 0)) {
-    pthread_mutex_lock(&send_monitor_queue_mutex);
+    MONITOR_QUEUE_LOCK;
     if (monitor) {
       MonitorOn = B_TRUE;
       if (Monitor)
@@ -489,14 +509,14 @@ EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, c
       Monitor = NULL;
       MonitorOn = B_FALSE;
     }
-    pthread_mutex_unlock(&send_monitor_queue_mutex);
+    MONITOR_QUEUE_UNLOCK;
     ProgLoc = 6007;
     SetActionRanges(phase, &first_c, &last_c);
     ProgLoc = 6008;
     ServerSetDetailProc(DetailProc);
     ProgLoc = 6009;
     first_g = first_s;
-    while (!AbortInProgress && (first_g < last_s)) {
+    while (!isAbortInProgress() && (first_g < last_s)) {
       ProgLoc = 6010;
       SetGroup(sync, first_g, &last_g);
       ProgLoc = 6011;
@@ -507,8 +527,7 @@ EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, c
       first_g = last_g;
     }
     ProgLoc = 6013;
-    if (AbortInProgress) {
-      AbortInProgress = 0;
+    if (setAbortInProgress(0)) {
       AbortRange(first_c, last_c);
       AbortRange(first_s, last_s);
       status = ServerABORT;
@@ -516,7 +535,7 @@ EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, c
     ProgLoc = 6014;
     WaitForActions(1, first_g, last_g, first_c, last_c);
     ProgLoc = 6015;
-    AbortInProgress = 1;
+    setAbortInProgress(1);
     RDLOCK_TABLE;{
     ActionInfo *actions = table->actions;
     for (i = first_c; i < last_c; i++) {
@@ -682,13 +701,13 @@ STATIC_ROUTINE void QueueSendMonitor(int mode, int i){
   c->idx = i;
   c->mode = mode;
   c->next = 0;
-  pthread_mutex_lock(&send_monitor_queue_mutex);
+  MONITOR_QUEUE_LOCK;
   if (SendMonitorQueueTail)
     SendMonitorQueueTail->next = c;
   else
     SendMonitorQueueHead = c;
   SendMonitorQueueTail = c;
-  pthread_mutex_unlock(&send_monitor_queue_mutex);
+  MONITOR_QUEUE_UNLOCK;
   WakeSendMonitorQueue();
 }
 
@@ -697,7 +716,9 @@ STATIC_ROUTINE int DequeueSendMonitor(int *mode_out, int *i)
   int idx = -1;
   int mode;
   while (idx == -1) {
-    pthread_mutex_lock(&send_monitor_queue_mutex);
+    int release;
+    MONITOR_QUEUE_LOCK;
+    release = 1;
     if (SendMonitorQueueHead) {
       SendMonitorInfo *c = SendMonitorQueueHead;
       idx = SendMonitorQueueHead->idx;
@@ -706,11 +727,12 @@ STATIC_ROUTINE int DequeueSendMonitor(int *mode_out, int *i)
       if (!SendMonitorQueueHead)
 	SendMonitorQueueTail = NULL;
       free(c);
-      pthread_mutex_unlock(&send_monitor_queue_mutex);
     } else {
       pthread_mutex_unlock(&send_monitor_queue_mutex);
+      release = 0;
       WaitForSendMonitorQueue();
     }
+    pthread_cleanup_pop(release);
   }
   *i = idx;
   *mode_out = mode;
