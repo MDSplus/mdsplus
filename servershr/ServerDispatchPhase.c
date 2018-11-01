@@ -716,12 +716,12 @@ STATIC_ROUTINE void QueueSendMonitor(int mode, int i){
 
 STATIC_ROUTINE int DequeueSendMonitor(int *mode_out, int *i)
 {
-  int idx = -1;
+  int idx;
   int mode;
-  while (idx == -1) {
+  do{
     int release;
     MONITOR_QUEUE_LOCK;
-    release = 1;
+    release =  1;
     if (SendMonitorQueueHead) {
       SendMonitorInfo *c = SendMonitorQueueHead;
       idx = SendMonitorQueueHead->idx;
@@ -732,11 +732,13 @@ STATIC_ROUTINE int DequeueSendMonitor(int *mode_out, int *i)
       free(c);
     } else {
       pthread_mutex_unlock(&send_monitor_queue_mutex);
-      release = 0;
+      release =  0;
+      idx     = -1;
+      mode    =  0;
       WaitForSendMonitorQueue();
     }
     pthread_cleanup_pop(release);
-  }
+  }while(idx == -1);
   *i = idx;
   *mode_out = mode;
   return B_TRUE;
