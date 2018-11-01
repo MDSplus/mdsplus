@@ -38,8 +38,7 @@ EXPORT extern int ServerDispatchCommand(int *id, char *server, char *cli, char *
 EXPORT extern int ServerSetLinkDownHandler(void (*handler) ());
 EXPORT extern void ServerSetDetailProc(char *(*detail_proc) (int));
 EXPORT extern char *(*ServerGetDetailProc()) (int);
-EXPORT extern int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact_in,
-			       int sync, void (*output_rtn) (), char *monitor);
+EXPORT extern int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact_in, int sync, void (*output_rtn) (), const char *monitor);
 EXPORT extern int ServerFailedEssential(void *vtable, int reset);
 EXPORT extern char *ServerFindServers(void **ctx, char *wild_match);
 EXPORT extern int ServerMonitorCheckin(char *server, void (*ast) (), void *astparam);

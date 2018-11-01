@@ -474,8 +474,23 @@ STATIC_ROUTINE char *DetailProc(int full){
   return msg;
 }
 
-EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, char *phasenam, char noact_in,
-			int sync, void (*output_rtn) (), char *monitor){
+static inline void setMonitor(const char* monitor){
+    MONITOR_QUEUE_LOCK;
+    if (monitor) {
+      MonitorOn = B_TRUE;
+      if (Monitor)
+	free(Monitor);
+      Monitor = strdup(monitor);
+    } else {
+      if (Monitor)
+	free(Monitor);
+      Monitor = NULL;
+      MonitorOn = B_FALSE;
+    }
+    MONITOR_QUEUE_UNLOCK;
+}
+
+EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, char *phasenam, char noact_in, int sync, void (*output_rtn) (), const char *monitor){
   int i;
   int status;
   int phase;
@@ -497,19 +512,7 @@ EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, c
   status = TdiExecute(&phase_lookup, &phasenam_d, &phase_d MDS_END_ARG);
   ProgLoc = 6006;
   if (STATUS_OK && (phase > 0)) {
-    MONITOR_QUEUE_LOCK;
-    if (monitor) {
-      MonitorOn = B_TRUE;
-      if (Monitor)
-	free(Monitor);
-      Monitor = strdup(monitor);
-    } else {
-      if (Monitor)
-	free(Monitor);
-      Monitor = NULL;
-      MonitorOn = B_FALSE;
-    }
-    MONITOR_QUEUE_UNLOCK;
+    setMonitor(monitor);
     ProgLoc = 6007;
     SetActionRanges(phase, &first_c, &last_c);
     ProgLoc = 6008;
