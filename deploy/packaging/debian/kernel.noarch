@@ -125,6 +125,7 @@
 ./usr/local/mdsplus/tdi/noderefs_of.fun
 ./usr/local/mdsplus/tdi/output_name.fun
 ./usr/local/mdsplus/tdi/python/Py.py
+./usr/local/mdsplus/tdi/python/addfun.py
 ./usr/local/mdsplus/tdi/python/ctime.py
 ./usr/local/mdsplus/tdi/python/getShotDB.py
 ./usr/local/mdsplus/tdi/python/intersect1d.py
