@@ -37,6 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #define Py_None _Py_NoneStruct
 
+
 #define loadrtn2(sym,name,check) do{\
   sym = dlsym(handle,name); \
   if (check && !sym) { \
@@ -73,7 +74,7 @@ static int       (*PyObject_IsSubclass) () = NULL;
 //getAnswer
 static void*     (*PyLong_AsVoidPtr) () = NULL;
 static PyObject* (*PyObject_CallFunctionObjArgs) () = NULL;//argsToTuple
-static PyObject* (*PyObject_GetAttrString) () = NULL;//getFunction
+static PyObject* (*PyObject_GetAttrString) () = NULL;//getFunction,USERUNSIMPLE
 //getFunction
 static int       (*PyCallable_Check) () = NULL;
 static PyObject* (*PyImport_ImportModule) () = NULL;
@@ -81,26 +82,20 @@ static PyObject* (*PyImport_ImportModule) () = NULL;
 static PyObject* (*PyObject_CallFunction) () = NULL;
 static PyObject* (*PyTuple_New) () = NULL;
 static void      (*PyTuple_SetItem) () = NULL;
-#ifdef _WIN32
+#ifdef USEPATH
 //addTo/removeFromPath
 static PyObject* (*PySys_GetObject) () = NULL;
 static int       (*PyList_Insert) () = NULL;
 static int       (*PySequence_DelItem) () = NULL;
 #else
 static PyObject* (*PyDict_Copy) () = NULL;
-static PyObject* (*PyRun_FileEx)() = NULL;
+# ifdef _WIN32
+static int       (*PyRun_SimpleStringFlags)() = NULL;
+# else
+static FILE*     (*_Py_fopen_obj) () = NULL;
+static PyObject* (*PyRun_SimpleFileExFlags)() = NULL;
+# endif
 #endif
-
-static pthread_once_t once = PTHREAD_ONCE_INIT;
-#define PYTHON_OPEN \
-pthread_once(&once,&initialize);\
-if (PyGILState_Ensure) { \
-  PyThreadState *GIL = (*PyGILState_Ensure)(); \
-  pthread_cleanup_push((void*)PyGILState_Release,(void*)GIL);
-
-#define PYTHON_CLOSE \
-  pthread_cleanup_pop(1);\
-} else status = LibNOTFOU;
 
 static void initialize(){
   void (*Py_Initialize) () = NULL;
@@ -190,34 +185,23 @@ static void initialize(){
   loadrtn(PyObject_CallFunction, 1);
   loadrtn(PyTuple_New, 1);
   loadrtn(PyTuple_SetItem, 1);
-#ifdef _WIN32
+#ifdef USEPATH
   //addTo/removeFromPath
   loadrtn(PySys_GetObject, 1);
   loadrtn(PyList_Insert, 1);
   loadrtn(PySequence_DelItem, 1);
 #else
   loadrtn(PyDict_Copy, 1);
-  loadrtn(PyRun_FileEx, 1);
+# ifdef _WIN32
+  loadrtn(PyRun_SimpleStringFlags, 1);
+# else
+  loadrtn(_Py_fopen_obj, 0);
+  loadrtn(PyRun_SimpleFileExFlags, 1);
+# endif
 #endif
   // last key function
   loadrtn(PyGILState_Ensure, 1);
 }
-
-#ifdef _WIN32
-static void addToPath(const char *dirspec){
-  // Add directory to top of sys.path
-  PyObject *sys_path = PySys_GetObject("path");
-  PyObject *path = PyString_FromString(dirspec);
-  PyList_Insert(sys_path, (Py_ssize_t) 0, path);
-  Py_DecRef(path);
-}
-
-static void removeFromPath(){
-  // Add directory to top of sys.path
-  PyObject *sys_path = PySys_GetObject("path");
-  PySequence_DelItem(sys_path, (Py_ssize_t) 0);
-}
-#endif
 
 static PyObject *getFunction(const char *modulename, const char *functionname){
   /* Given a directory path and a function name import a module with the same name as the
@@ -248,7 +232,7 @@ static PyObject *getFunction(const char *modulename, const char *functionname){
 }
 
 char *findModule(struct descriptor *modname_d, char **modname_out){
-  /* Look for at python module in MDS_PATH. */
+  /* Look for at python module in MDS_PATH. used by TdiVar*/
   static char *mpath = "MDS_PATH:";
   static char *ftype = ".py";
   char *modname = MdsDescrToCstring(modname_d);
@@ -333,8 +317,26 @@ static void getAnswer(PyObject * value, struct descriptor_xd *outptr){
   Py_DecRef(descrPtr);
 }
 
+
+#ifdef USEPATH
+static void addToPath(const char *dirspec){
+  // Add directory to top of sys.path
+  PyObject *sys_path = PySys_GetObject("path");
+  PyObject *path = PyString_FromString(dirspec);
+  PyList_Insert(sys_path, (Py_ssize_t) 0, path);
+  Py_DecRef(path);
+}
+
+static void removeFromPath(){
+  // Add directory to top of sys.path
+  PyObject *sys_path = PySys_GetObject("path");
+  PySequence_DelItem(sys_path, (Py_ssize_t) 0);
+}
+#endif
+
+
 int loadPyFunction_(const char *dirspec,const char *filename) {
-#ifdef _WIN32
+#ifdef USEPATH
   // cannot get the other method to work in wine
   PyObject *pyFunction;
   addToPath(dirspec);
@@ -342,40 +344,48 @@ int loadPyFunction_(const char *dirspec,const char *filename) {
   pyFunction = getFunction(filename,filename);
   pthread_cleanup_pop(1);
 #else
+  PyObject *__main__ = PyImport_AddModule("__main__");
+  if (!__main__) {
+    fprintf(stderr,"Error getting __main__ module'\n");
+    if (PyErr_Occurred()) PyErr_Print();
+    return MDSplusERROR;
+  }
+  int flags = 0;
   char* fullpath = malloc(strlen(dirspec)+strlen(filename)+4);
   strcpy(fullpath, dirspec);
   strcat(fullpath, filename);
   strcat(fullpath, ".py");
-  FILE *fp = fopen(fullpath,"r");
+# ifdef _WIN32
+  char *c,*cmd = malloc(strlen(fullpath)+16);
+  strcpy(cmd,"execfile(\"");
+  strcat(cmd,fullpath);
+  strcat(cmd,"\")");
+  for (c=cmd ; *c ; c++) if (*c == '\\') *c = '/';
+  int err = PyRun_SimpleStringFlags(cmd, &flags);
+  free(cmd);
+  if (err) {
+# else
+  FILE *fp;
+  if (_Py_fopen_obj) {
+    PyObject *obj = PyString_FromString(fullpath);
+    fp = _Py_fopen_obj(obj, "r+");
+    Py_DecRef(obj);
+  } else
+    fp = fopen(fullpath, "r+");
   if (!fp) {
     fprintf(stderr,"Error opening file '%s'\n",fullpath);
     free(fullpath);
     return TdiUNKNOWN_VAR;
   }
-  PyObject *__main__ = PyImport_AddModule("__main__");
-  if (!__main__) {
-    fprintf(stderr,"Error getting __main__ module'\n");
-    if (PyErr_Occurred()) PyErr_Print();
-    fclose(fp);
+  if (PyRun_SimpleFileExFlags(fp, fullpath, 1, &flags)) {
+# endif
+    fprintf(stderr,"Error compiling file '%s'\n",fullpath);
     free(fullpath);
-    return MDSplusERROR;
-  }
-  PyObject *env = PyDict_Copy(PyModule_GetDict(__main__));
-  // add __file__ required for e.g. RFXDEVICES.py
-  PyObject *__file__ = PyString_FromString(fullpath);
-  free(fullpath);
-  PyDict_SetItemString(env,"__file__",__file__);
-  Py_DecRef(__file__);
-  PyObject *res = PyRun_FileEx(fp, filename, Py_file_input, env, env, 1);
-  if (!res) {
-    fprintf(stderr,"Error compiling file '%s%s.py'\n",dirspec,filename);
     if (PyErr_Occurred()) PyErr_Print();
-    Py_DecRef(env);
     return TdiUNKNOWN_VAR;
   }
-  Py_DecRef(res);
-  PyObject *pyFunction = PyDict_GetItemString(env,filename);
-  Py_DecRef(env);
+  free(fullpath);
+  PyObject *pyFunction = PyObject_GetAttrString(__main__,filename);
 #endif
   if (!pyFunction) {
     fprintf(stderr,"Error loading function '%s' from file '%s%s.py'\n",filename,dirspec,filename);
@@ -428,6 +438,41 @@ int callPyFunction_(char *filename,int nargs, struct descriptor **args, struct d
   }
   return MDSplusSUCCESS;
 }
+
+#ifndef _WIN32
+#include <signal.h>
+static struct sigaction* setsignal(){
+  struct sigaction offact;
+  memset(&offact,0,sizeof(offact));
+  offact.sa_handler = SIG_DFL;
+  struct sigaction *oldact = malloc(sizeof(struct sigaction));
+  sigaction(SIGCHLD, &offact, oldact);
+  return oldact;
+}
+static void resetsignal(struct sigaction* oldact){
+  sigaction(SIGCHLD, oldact, NULL);
+  free(oldact);
+}
+#define SIGNAL_SETUP struct sigaction* oldact = setsignal();pthread_cleanup_push((void*)resetsignal,oldact);
+#define SIGNAL_RESET pthread_cleanup_pop(1);
+#else
+#define SIGNAL_SETUP
+#define SIGNAL_RESET
+#endif
+
+static pthread_once_t once = PTHREAD_ONCE_INIT;
+#define PYTHON_OPEN \
+pthread_once(&once,&initialize);\
+if (PyGILState_Ensure) { \
+  SIGNAL_SETUP;\
+  PyThreadState *GIL = (*PyGILState_Ensure)(); \
+  pthread_cleanup_push((void*)PyGILState_Release,(void*)GIL);
+
+#define PYTHON_CLOSE \
+  pthread_cleanup_pop(1);\
+  SIGNAL_RESET;\
+} else status = LibNOTFOU;
+
 
 int loadPyFunction(const char *dirspec,const char *filename) {
   int status;
