@@ -35,8 +35,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 #include <libroutines.h>
 #include <strroutines.h>
-#define Py_None _Py_NoneStruct
 
+#ifdef _WIN32
+#define USE_EXECFILE	/* windows cannot use PyRun_File because if crashes on _lockfile */
+//#define USE_PATH	/*  old version; does not prevent name clash with existing packages / modules */
+#endif
+//#define USE_EXECFILE
 
 #define loadrtn2(sym,name,check) do{\
   sym = dlsym(handle,name); \
@@ -46,11 +50,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 }}while(0)
 //"
 #define loadrtn(sym,check) loadrtn2(sym,#sym,check)
-
 // general
 #define Py_single_input 256
 #define Py_file_input 257
 #define Py_eval_input 258
+#define Py_None _Py_NoneStruct
 typedef void*          PyThreadState;
 typedef void*          PyObject;
 typedef ssize_t        Py_ssize_t;
@@ -61,10 +65,8 @@ static PyObject*     (*PyErr_Occurred) () = NULL;
 static void          (*PyErr_Print) () = NULL;
 
 //loadPyFunction
-static PyObject* (*PyDict_GetItemString) () = NULL;
-static PyObject* (*PyDict_SetItemString) () = NULL;
+static PyObject* (*PyModule_AddObject) () = NULL;
 static PyObject* (*PyImport_AddModule) () = NULL;
-static PyObject* (*PyModule_GetDict) () = NULL;
 static PyObject* (*PyString_FromString) () = NULL;
 //callPyFunction
 static PyObject* _Py_NoneStruct = NULL;
@@ -82,20 +84,22 @@ static PyObject* (*PyImport_ImportModule) () = NULL;
 static PyObject* (*PyObject_CallFunction) () = NULL;
 static PyObject* (*PyTuple_New) () = NULL;
 static void      (*PyTuple_SetItem) () = NULL;
-#ifdef USEPATH
+#ifdef USE_PATH
 //addTo/removeFromPath
 static PyObject* (*PySys_GetObject) () = NULL;
 static int       (*PyList_Insert) () = NULL;
 static int       (*PySequence_DelItem) () = NULL;
 #else
 static PyObject* (*PyDict_Copy) () = NULL;
-# ifdef _WIN32
+# ifdef USE_EXECFILE
+void             (*PyErr_Clear) () = NULL;
 static int       (*PyRun_SimpleStringFlags)() = NULL;
 # else
 static FILE*     (*_Py_fopen_obj) () = NULL;
 static PyObject* (*PyRun_SimpleFileExFlags)() = NULL;
 # endif
 #endif
+
 
 static void initialize(){
   void (*Py_Initialize) () = NULL;
@@ -162,10 +166,8 @@ static void initialize(){
   loadrtn(PyErr_Occurred, 1);
   loadrtn(PyErr_Print, 1);
   //loadPyFunction
-  loadrtn(PyDict_GetItemString, 1);
-  loadrtn(PyDict_SetItemString, 1);
+  loadrtn(PyModule_AddObject, 1);
   loadrtn(PyImport_AddModule, 1);
-  loadrtn(PyModule_GetDict, 1);
   loadrtn(PyString_FromString, 0);
   if (!PyString_FromString)
     loadrtn2(PyString_FromString,"PyUnicode_FromString", 1);
@@ -185,14 +187,15 @@ static void initialize(){
   loadrtn(PyObject_CallFunction, 1);
   loadrtn(PyTuple_New, 1);
   loadrtn(PyTuple_SetItem, 1);
-#ifdef USEPATH
+#ifdef USE_PATH
   //addTo/removeFromPath
   loadrtn(PySys_GetObject, 1);
   loadrtn(PyList_Insert, 1);
   loadrtn(PySequence_DelItem, 1);
 #else
   loadrtn(PyDict_Copy, 1);
-# ifdef _WIN32
+# ifdef USE_EXECFILE
+  loadrtn(PyErr_Clear, 1);
   loadrtn(PyRun_SimpleStringFlags, 1);
 # else
   loadrtn(_Py_fopen_obj, 0);
@@ -318,7 +321,7 @@ static void getAnswer(PyObject * value, struct descriptor_xd *outptr){
 }
 
 
-#ifdef USEPATH
+#ifdef USE_PATH
 static void addToPath(const char *dirspec){
   // Add directory to top of sys.path
   PyObject *sys_path = PySys_GetObject("path");
@@ -336,7 +339,7 @@ static void removeFromPath(){
 
 
 int loadPyFunction_(const char *dirspec,const char *filename) {
-#ifdef USEPATH
+#ifdef USE_PATH
   // cannot get the other method to work in wine
   PyObject *pyFunction;
   addToPath(dirspec);
@@ -344,26 +347,45 @@ int loadPyFunction_(const char *dirspec,const char *filename) {
   pyFunction = getFunction(filename,filename);
   pthread_cleanup_pop(1);
 #else
+  int flags = 0;
   PyObject *__main__ = PyImport_AddModule("__main__");
   if (!__main__) {
     fprintf(stderr,"Error getting __main__ module'\n");
     if (PyErr_Occurred()) PyErr_Print();
     return MDSplusERROR;
   }
-  int flags = 0;
+# ifdef USE_EXECFILE
+  // TODO: get execfile handler
+  PyObject *execfile = PyObject_GetAttrString(__main__,"execfile");
+  if (!execfile) {
+    // not defined yet so we define it
+    PyErr_Clear();
+    char def[] = "import __main__\ndef execfile(filename):\n with open(filename,'r+') as f:\n  exec(compile(f.read(),filename,'exec'),__main__.__dict__,__main__.__dict__)\0";
+    if (PyRun_SimpleStringFlags(def,&flags)) {
+      fprintf(stderr,"Error defining execfile\n");
+      if (PyErr_Occurred()) PyErr_Print();
+      return MDSplusERROR;
+    }
+    execfile = PyObject_GetAttrString(__main__,"execfile");
+  }
+# endif
   char* fullpath = malloc(strlen(dirspec)+strlen(filename)+4);
   strcpy(fullpath, dirspec);
   strcat(fullpath, filename);
   strcat(fullpath, ".py");
-# ifdef _WIN32
-  char *c,*cmd = malloc(strlen(fullpath)+16);
-  strcpy(cmd,"execfile(\"");
-  strcat(cmd,fullpath);
-  strcat(cmd,"\")");
-  for (c=cmd ; *c ; c++) if (*c == '\\') *c = '/';
-  int err = PyRun_SimpleStringFlags(cmd, &flags);
-  free(cmd);
-  if (err) {
+  {
+    if (PyModule_AddObject(__main__,"__file__", PyString_FromString(fullpath))) { // no need to deref PyString
+      fprintf(stderr,"Failed adding __file__='%s'\n",fullpath);
+      if (PyErr_Occurred()) PyErr_Print();
+    }
+  }
+# ifdef USE_EXECFILE
+  PyObject *arg = PyString_FromString(fullpath);
+  PyObject *ans = PyObject_CallFunction(execfile, "s", fullpath);
+  Py_DecRef(execfile);
+  Py_DecRef(arg);
+  Py_DecRef(ans);
+  if (!ans) {
 # else
   FILE *fp;
   if (_Py_fopen_obj) {
@@ -392,9 +414,8 @@ int loadPyFunction_(const char *dirspec,const char *filename) {
     return TdiUNKNOWN_VAR;
   }
   PyObject *tdi_functions = PyImport_AddModule("tdi_functions"); // from sys.modules or new
-  PyObject *tdi_dict = PyModule_GetDict(tdi_functions);
-  int status = PyDict_SetItemString(tdi_dict, filename, pyFunction) ? MDSplusERROR : MDSplusSUCCESS;
-  Py_DecRef(pyFunction);
+  int status = PyModule_AddObject(tdi_functions,filename, pyFunction) ? MDSplusERROR : MDSplusSUCCESS;
+  // Py_DecRef(pyFunction);  //PyModule_AddObject: This steals a reference to value
   return status;
 }
 
@@ -489,4 +510,3 @@ int callPyFunction(char *filename,int nargs, struct descriptor **args, struct de
   PYTHON_CLOSE;
   return status;
 }
-
