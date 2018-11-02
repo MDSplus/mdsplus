@@ -3266,7 +3266,7 @@ If you did intend to write to a subnode of the device you should check the prope
         try:
             import_string = "from %s import %s" % (cls.__module__.split('.',1)[0],cls.__name__)
             # test if this would work
-            exec(compile(import_string,'<string>','exec')) in {},{}
+            exec(compile(import_string,'<string>','exec'),{},{})
             return import_string
         except ImportError:
             try:
