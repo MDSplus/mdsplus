@@ -455,14 +455,21 @@
 }
 
 {
-   python 32bit problem during thread shutdown via fork
+   python 32bit problem during thead after fork and fc27
    Helgrind:Race
    fun:blas_thread_shutdown_
-   fun:fork
 }
 
 {
    race with PyThreadState
    Helgrind:Race
    fun:PyGILState_Ensure
+}
+
+
+{
+   OPENSSL_cleanup on fc27
+   Helgrind:Race
+   ...
+   fun:OPENSSL_cleanup
 }
