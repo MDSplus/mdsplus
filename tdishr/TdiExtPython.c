@@ -38,9 +38,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef _WIN32
 #define USE_EXECFILE	/* windows cannot use PyRun_File because if crashes on _lockfile */
-//#define USE_PATH	/*  old version; does not prevent name clash with existing packages / modules */
+//#define USE_PATH	/* old version; does not prevent name clash with existing packages / modules */
+#else
+//#define HANDLE_SIGCHLD	/* anyone knows why we need to handle SIGCHLD */
+//#define USE_EXECFILE	/* for debugging purpose */
+//#define USE_PATH	/* old version; for debugging purpose */
 #endif
-//#define USE_EXECFILE
 
 #define loadrtn2(sym,name,check) do{\
   sym = dlsym(handle,name); \
@@ -460,7 +463,7 @@ int callPyFunction_(char *filename,int nargs, struct descriptor **args, struct d
   return MDSplusSUCCESS;
 }
 
-#ifndef _WIN32
+#ifdef HANDLE_SIGCHLD
 #include <signal.h>
 static struct sigaction* setsignal(){
   struct sigaction offact;
