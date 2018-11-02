@@ -55,7 +55,7 @@ def Py(cmds, *arg):
     cmds="\n".join(cmdlist)
     env = {"arg":arg,'MDSplus':MDSplus}
     try:
-        exec(compile(cmds,'<string>','exec'),globals(),env)
+        exec(compile(cmds,'<string>','exec'),env,env)
     except Exception as exc:
         _tb.print_exc()
         MDSplus.String(exc).setTdiVar("_py_exception")

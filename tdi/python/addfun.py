@@ -19,7 +19,7 @@ def addfun(name,code):
        sys.modules[modulename] = types.ModuleType(modulename)
     code = MDSplus.Data.data(code)
     env = {}
-    exec(code) in env
+    exec(compile(code,"TDI/%s"%(name,),'exec'),env,env)
     sys.modules[modulename].__dict__[mdsname] = env[name]
     mdsname = MDSplus.String(mdsname)
     return MDSplus.EQUALS(MDSplus.PUBLIC(mdsname),mdsname).evaluate()
