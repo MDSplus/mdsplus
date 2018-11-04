@@ -363,7 +363,7 @@ int loadPyFunction_(const char *dirspec,const char *filename) {
   if (!execfile) {
     // not defined yet so we define it
     PyErr_Clear();
-    char def[] = "import __main__\ndef execfile(filename):\n with open(filename,'r+') as f:\n  exec(compile(f.read(),filename,'exec'),__main__.__dict__,__main__.__dict__)\0";
+    char def[] = "import __main__\ndef execfile(filename):\n with open(filename,'r') as f:\n  exec(compile(f.read(),filename,'exec'),__main__.__dict__,__main__.__dict__)\0";
     if (PyRun_SimpleStringFlags(def,&flags)) {
       fprintf(stderr,"Error defining execfile\n");
       if (PyErr_Occurred()) PyErr_Print();
@@ -393,10 +393,10 @@ int loadPyFunction_(const char *dirspec,const char *filename) {
   FILE *fp;
   if (_Py_fopen_obj) {
     PyObject *obj = PyString_FromString(fullpath);
-    fp = _Py_fopen_obj(obj, "r+");
+    fp = _Py_fopen_obj(obj, "r");
     Py_DecRef(obj);
   } else
-    fp = fopen(fullpath, "r+");
+    fp = fopen(fullpath, "r");
   if (!fp) {
     fprintf(stderr,"Error opening file '%s'\n",fullpath);
     free(fullpath);
