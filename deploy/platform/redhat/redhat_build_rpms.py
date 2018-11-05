@@ -27,6 +27,12 @@ import subprocess,os,sys,pexpect,xml.etree.ElementTree as ET,fnmatch,tempfile
 
 srcdir=os.path.realpath(os.path.dirname(os.path.realpath(__file__))+'/../../..')
 
+def doWrite(out,string):
+    try:
+      os.write(out,string.encode())
+    except Exception:
+      os.write(out,string)
+
 def externalPackage(info, root, package):
     ans = None
     for extpackages in root.getiterator('external_packages'):
@@ -64,10 +70,10 @@ def doRequire(info, out, root, require):
     if 'external' in require.attrib:
         pkg=externalPackage(info,root,require.attrib['package'])
         if pkg is not None:
-            os.write(out,"Requires: %s\n" % pkg)
+            doWrite(out,"Requires: %s\n" % pkg)
     else:
         info['reqpkg']=require.attrib['package']
-        os.write(out,"Requires: mdsplus%(bname)s-%(reqpkg)s = %(major)d.%(minor)d-%(release)d.%(distname)s\n" % info)
+        doWrite(out,"Requires: mdsplus%(bname)s-%(reqpkg)s = %(major)d.%(minor)d-%(release)d.%(distname)s\n" % info)
 
 def buildRpms():
     info=dict()
@@ -111,11 +117,11 @@ def buildRpms():
             info['summary']=package.attrib['summary']
             info['description']=package.attrib['description']
             out,specfilename=tempfile.mkstemp()
-	    print info,rpmspec
-            os.write(out,rpmspec % info)
+            print (info,rpmspec)
+            doWrite(out,rpmspec % info)
             for require in package.getiterator("requires"):
                 doRequire(info,out,root,require)
-            os.write(out,"""
+            doWrite(out,"""
 %%description
 %(description)s
 %%clean
@@ -126,21 +132,21 @@ def buildRpms():
                 for inctype in inc.attrib:
                     include=fixFilename(info, inc.attrib[inctype])
                     if inctype == "dironly":
-                        os.write(out,"%%dir %s\n" % include)
+                        doWrite(out,"%%dir %s\n" % include)
                     else:
-                        os.write(out,"%s\n" % include)
+                        doWrite(out,"%s\n" % include)
             for exc in package.getiterator('exclude'):
                 for exctype in exc.attrib:
                     exclude=fixFilename(info, exc.attrib[exctype])
-                    os.write(out,"%%exclude %s\n" % exclude)
+                    doWrite(out,"%%exclude %s\n" % exclude)
             if package.find("exclude_staticlibs") is not None:
-                os.write(out,"%%exclude /usr/local/mdsplus/lib%(bits)d/*.a\n" % info)
+                doWrite(out,"%%exclude /usr/local/mdsplus/lib%(bits)d/*.a\n" % info)
             if package.find("include_staticlibs") is not None:
-                os.write(out,"/usr/local/mdsplus/lib%(bits)d/*.a\n" % info)
+                doWrite(out,"/usr/local/mdsplus/lib%(bits)d/*.a\n" % info)
             for s in ("pre","post","preun","postun"):
                 script=package.find(s)
                 if script is not None:
-                    os.write(out,"%%%s\n%s\n" % (s,script.text))
+                    doWrite(out,"%%%s\n%s\n" % (s,script.text))
             os.close(out)
             info['specfilename']=specfilename
             print("Building rpm for mdsplus%(bname)s%(packagename)s%(arch_t)s" % info)
@@ -156,7 +162,11 @@ def buildRpms():
             status=p.wait()
             os.remove(specfilename)
             if status != 0:
-                print(''.join(messages))
+                for msg in messages:
+                    if isinstance(msg,str):
+                        sys.stdout.write(msg)
+                    else:
+                        sys.stdout.write(msg.decode())
                 sys.stdout.flush()
                 raise Exception("Error building rpm for package mdsplus%(bname)s%(packagename)s%(arch_t)s" % info)
             print("Done building rpm for mdsplus%(bname)s%(packagename)s%(arch_t)s" % info)
@@ -170,10 +180,10 @@ def buildRpms():
         info['summary']=package.attrib['summary']
         info['description']=package.attrib['description']
         out,specfilename=tempfile.mkstemp()
-        os.write(out,rpmspec % info)
+        doWrite(out,rpmspec % info)
         for require in package.getiterator("requires"):
             doRequire(info, out, root, require)
-        os.write(out,"""
+        doWrite(out,"""
 Buildarch: noarch
 %%description
 %(description)s
@@ -185,19 +195,19 @@ Buildarch: noarch
             for inctype in inc.attrib:
                 include=fixFilename(info, inc.attrib[inctype])
                 if inctype == "dironly":
-                    os.write(out,"%%dir %s\n" % include)
+                    doWrite(out,"%%dir %s\n" % include)
                 else:
-                    os.write(out,"%s\n" % include)
+                    doWrite(out,"%s\n" % include)
         for exc in package.getiterator('exclude'):
             for exctype in exc.attrib:
                 exclude=fixFilename(info, exc.attrib[exctype])
-                os.write(out,"%%exclude %s\n" % exclude)
+                doWrite(out,"%%exclude %s\n" % exclude)
         if package.find("exclude_staticlibs") is not None:
-            os.write(out,"%%exclude /usr/local/mdsplus/lib??/*.a\n" % info)
+            doWrite(out,"%%exclude /usr/local/mdsplus/lib??/*.a\n" % info)
         for s in ("pre","post","preun","postun"):
             script=package.find(s)
             if script is not None:
-                os.write(out,"%%%s\n%s\n" % (s,script.text))
+                doWrite(out,"%%%s\n%s\n" % (s,script.text))
         os.close(out)
         info['specfilename']=specfilename
         print("Building rpm for mdsplus%(bname)s%(packagename)s.noarch" % info)
@@ -224,7 +234,7 @@ Buildarch: noarch
             if child.status != 0:
                 sys.stdout.flush()
                 raise Exception("Error signing rpms. status=%d" % child.status)
-        except Exception,e:
+        except Exception as e:
             print("Got exception in rpm signing: %s" % str(e))
     except:
         print("Sign keys unavailable. Not signing packages.")
