@@ -391,6 +391,7 @@ static inline int loadPyFunction_(const char *dirspec,const char *filename) {
     Py_DecRef(__file__);
     return TdiUNKNOWN_VAR;
   }
+  free(fullpath);
   PyObject *tdi_functions = PyImport_AddModule("tdi_functions"); // from sys.modules or new
   // add __file__<filename> to module
   add__file__FUN(tdi_functions, filename, __file__);
