@@ -16,7 +16,7 @@ def _devHelpDevtype(devtype, full):
     return '\n'.join(devnames)
   else:
     try: 
-	dmod = Device.importPyDeviceModule(devtype)
+        dmod = Device.importPyDeviceModule(devtype)
         cls = eval('dmod.%s' % dmod.__name__.upper())
         if full == 1:
           return TextDoc().docclass(cls)
