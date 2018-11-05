@@ -56,7 +56,7 @@ def fixFilename(info,filename):
             if filename[len(filename)-4:] in ('/lib','/bin','/uid'):
                 filename=filename+"%(bits)d"
         ans=filename % info
-    except Exception,e:
+    except Exception as e:
         raise Exception("Error fixing filename %s: %s" % (filename,e))
     return ans
 
