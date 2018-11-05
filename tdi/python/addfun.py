@@ -13,12 +13,8 @@ def addfun(name,code,_file_=__file__):
         >>> IF_ERROR(PUBLIC("MYFUN2"),ADDFUN("myfun2","def myfun2(a): print(a)"))
         "MYFUN2"
     """
-    def tostr(var):
-        if isinstance(var,MDSplus.Data):
-            return str(var.data())
-        return str(var)
-    name   = tostr(name)
-    _file_ = tostr(_file_)
+    name   = str( name .data() if isinstance( name ,MDSplus.Data) else  name )
+    _file_ = str(_file_.data() if isinstance(_file_,MDSplus.Data) else _file_)
     mdsname = name.upper()
     if not modulename in sys.modules:
        sys.modules[modulename] = types.ModuleType(modulename)
