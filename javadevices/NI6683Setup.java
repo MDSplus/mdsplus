@@ -304,7 +304,7 @@ public class NI6683Setup extends DeviceSetup {
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
 
-        setDeviceProvider("scdev6vl.nbtf");
+        setDeviceProvider("192.168.62.47:8001");
         setDeviceTitle("NI 6683 Timing Device");
         setDeviceType("NI6683");
         setHeight(400);
@@ -315,7 +315,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel75.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice24.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice24.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice24.setIdentifier("");
         deviceChoice24.setLabelString("Mode");
         deviceChoice24.setOffsetNid(6);
@@ -366,7 +366,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel79.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice25.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice25.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice25.setIdentifier("");
         deviceChoice25.setLabelString("Mode");
         deviceChoice25.setOffsetNid(16);
@@ -417,7 +417,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel83.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice26.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice26.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice26.setIdentifier("");
         deviceChoice26.setLabelString("Mode");
         deviceChoice26.setOffsetNid(26);
@@ -468,7 +468,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel87.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice27.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice27.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice27.setIdentifier("");
         deviceChoice27.setLabelString("Mode");
         deviceChoice27.setOffsetNid(36);
@@ -519,7 +519,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel91.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice28.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice28.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice28.setIdentifier("");
         deviceChoice28.setLabelString("Mode");
         deviceChoice28.setOffsetNid(46);
@@ -570,7 +570,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel95.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice29.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice29.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice29.setIdentifier("");
         deviceChoice29.setLabelString("Mode");
         deviceChoice29.setOffsetNid(56);
@@ -621,7 +621,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel99.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice30.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice30.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice30.setIdentifier("");
         deviceChoice30.setLabelString("Mode");
         deviceChoice30.setOffsetNid(66);
@@ -672,7 +672,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel103.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice31.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice31.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice31.setIdentifier("");
         deviceChoice31.setLabelString("Mode");
         deviceChoice31.setOffsetNid(76);
@@ -723,7 +723,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel107.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice32.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice32.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice32.setIdentifier("");
         deviceChoice32.setLabelString("Mode");
         deviceChoice32.setOffsetNid(86);
@@ -774,7 +774,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel111.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice33.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice33.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice33.setIdentifier("");
         deviceChoice33.setLabelString("Mode");
         deviceChoice33.setOffsetNid(96);
@@ -825,7 +825,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel115.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice34.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice34.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice34.setIdentifier("");
         deviceChoice34.setLabelString("Mode");
         deviceChoice34.setOffsetNid(106);
@@ -876,7 +876,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel119.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice35.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice35.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice35.setIdentifier("");
         deviceChoice35.setLabelString("Mode");
         deviceChoice35.setOffsetNid(116);
@@ -927,7 +927,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel123.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice36.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice36.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice36.setIdentifier("");
         deviceChoice36.setLabelString("Mode");
         deviceChoice36.setOffsetNid(126);
@@ -978,7 +978,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel127.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice37.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice37.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice37.setIdentifier("");
         deviceChoice37.setLabelString("Mode");
         deviceChoice37.setOffsetNid(136);
@@ -1029,7 +1029,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel131.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice38.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice38.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice38.setIdentifier("");
         deviceChoice38.setLabelString("Mode");
         deviceChoice38.setOffsetNid(146);
@@ -1080,7 +1080,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel135.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice39.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice39.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice39.setIdentifier("");
         deviceChoice39.setLabelString("Mode");
         deviceChoice39.setOffsetNid(156);
@@ -1131,7 +1131,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel139.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice40.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice40.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice40.setIdentifier("");
         deviceChoice40.setLabelString("Mode");
         deviceChoice40.setOffsetNid(166);
@@ -1182,7 +1182,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel143.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice41.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice41.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice41.setIdentifier("");
         deviceChoice41.setLabelString("Mode");
         deviceChoice41.setOffsetNid(176);
@@ -1233,7 +1233,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel147.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice42.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice42.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice42.setIdentifier("");
         deviceChoice42.setLabelString("Mode");
         deviceChoice42.setOffsetNid(186);
@@ -1284,7 +1284,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel151.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice43.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice43.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice43.setIdentifier("");
         deviceChoice43.setLabelString("Mode");
         deviceChoice43.setOffsetNid(196);
@@ -1335,7 +1335,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel155.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice44.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice44.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice44.setIdentifier("");
         deviceChoice44.setLabelString("Mode");
         deviceChoice44.setOffsetNid(206);
@@ -1386,7 +1386,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel159.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice45.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice45.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice45.setIdentifier("");
         deviceChoice45.setLabelString("Mode");
         deviceChoice45.setOffsetNid(216);
@@ -1437,7 +1437,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel163.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice46.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice46.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice46.setIdentifier("");
         deviceChoice46.setLabelString("Mode");
         deviceChoice46.setOffsetNid(226);
@@ -1488,7 +1488,7 @@ public class NI6683Setup extends DeviceSetup {
 
         jPanel167.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceChoice47.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER", "DISABLED"});
+        deviceChoice47.setChoiceItems(new String[] {"CLOCK", "HIGH PULSE", "LOW PULSE", "HIGH", "LOW", "RECORDER RISING", "RECORDER FALLING", "RECORDER ANY", "DISABLED"});
         deviceChoice47.setIdentifier("");
         deviceChoice47.setLabelString("Mode");
         deviceChoice47.setOffsetNid(236);
