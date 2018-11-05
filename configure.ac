@@ -988,18 +988,12 @@ MDS_SEARCH_LIBS([XpGetDocumentData],[Xp],[AS_VAR_SET([LIBXP],[$ac_cv_search_XpGe
 ## //  PYTHON   ///////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
 
-## TODO: Add version here
-
-dnl Find a Python2 interpreter.  Python versions prior to 2.0 are not
-dnl supported. (2.0 was released on October 16, 2000).
-m4_define([_AM_PYTHON_INTERPRETER_LIST],
-	  [python2.7 python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 python2.0 python2])
-AM_PATH_PYTHON([2],,[:])
+dnl Find a Python interpreter.  Python versions prior to 2.6 are not
+dnl supported.
+AX_PATH_PYTHON([2.6],[$host],,[:])
 AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
-
 AX_PYTHON_ARCH(PYTHON_ARCHITECTURE)
 AC_SUBST(PYTHON_ARCHITECTURE)
-
 DEF_PYLIB=$(ldd $PYTHON | grep libpython | awk '{print $3}')
 
 ## ////////////////////////////////////////////////////////////////////////// ##
