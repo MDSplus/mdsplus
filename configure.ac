@@ -369,7 +369,6 @@ then
 else
   MAKEFLAG_J="-j -l 1"
 fi
-DEF_PYLIB=$(ldd $(which python) | grep libpython | awk '{print $3}')
 MAKEFLAG_O="$(if ${MAKE:=make} -v -O&>/dev/null; then echo -O; fi)"
 MAKEUIDDIR="\$(top_builddir)/uid/"
 MAKESHLIBDIR="\$(top_builddir)/lib/"
@@ -1001,6 +1000,7 @@ AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
 AX_PYTHON_ARCH(PYTHON_ARCHITECTURE)
 AC_SUBST(PYTHON_ARCHITECTURE)
 
+DEF_PYLIB=$(ldd $PYTHON | grep libpython | awk '{print $3}')
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  TESTS    ///////////////////////////////////////////////////////////// ##
