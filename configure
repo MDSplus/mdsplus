@@ -12207,9 +12207,6 @@ fi
 ## //  PYTHON   ///////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
 
-## TODO: Add version here
-
-
 
 
 
@@ -12218,17 +12215,15 @@ fi
 
         if test -n "$PYTHON"; then
       # If the user set $PYTHON, use it and don't search something else.
-      { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $PYTHON version is >= 2" >&5
-$as_echo_n "checking whether $PYTHON version is >= 2... " >&6; }
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $PYTHON version is >= 2.6" >&5
+$as_echo_n "checking whether $PYTHON version is >= 2.6... " >&6; }
       prog="import sys
-# split strings by '.' and convert to numeric.  Append some zeros
-# because we need at least 4 digits for the hex conversion.
-# map returns an iterator in Python 3.0 and a list in 2.x
-minver = list(map(int, '2'.split('.'))) + [0, 0, 0]
-minverhex = 0
+is32 = sys.maxsize == 0x7fffffff
+archok = is32 if 'i686' in '$host' else not is32
+minver = tuple(map(int, '2.6'.split('.')))
+verok = minver<=sys.version_info
 # xrange is not present in Python 3.0 and range returns an iterator
-for i in list(range(0, 4)): minverhex = (minverhex << 8) + minver[i]
-sys.exit(sys.hexversion < minverhex)"
+sys.exit(not (verok and archok))"
   if { echo "$as_me:$LINENO: $PYTHON -c "$prog"" >&5
    ($PYTHON -c "$prog") >&5 2>&5
    ac_status=$?
@@ -12245,23 +12240,21 @@ fi
     else
       # Otherwise, try each interpreter until we find one that satisfies
       # VERSION.
-      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a Python interpreter with version >= 2" >&5
-$as_echo_n "checking for a Python interpreter with version >= 2... " >&6; }
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a Python interpreter with version >= 2.6 fitting arch of $host" >&5
+$as_echo_n "checking for a Python interpreter with version >= 2.6 fitting arch of $host... " >&6; }
 if ${am_cv_pathless_PYTHON+:} false; then :
   $as_echo_n "(cached) " >&6
 else
 
-	for am_cv_pathless_PYTHON in python2.7 python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 python2.0 python2 none; do
+	for am_cv_pathless_PYTHON in python3 python2 python  python3.7 python3.6 python3.5 python3.4 python3.3 python3.2 python3.1 python3.0  python2.7 python2.6 none; do
 	  test "$am_cv_pathless_PYTHON" = none && break
 	  prog="import sys
-# split strings by '.' and convert to numeric.  Append some zeros
-# because we need at least 4 digits for the hex conversion.
-# map returns an iterator in Python 3.0 and a list in 2.x
-minver = list(map(int, '2'.split('.'))) + [0, 0, 0]
-minverhex = 0
+is32 = sys.maxsize == 0x7fffffff
+archok = is32 if 'i686' in '$host' else not is32
+minver = tuple(map(int, '2.6'.split('.')))
+verok = minver<=sys.version_info
 # xrange is not present in Python 3.0 and range returns an iterator
-for i in list(range(0, 4)): minverhex = (minverhex << 8) + minver[i]
-sys.exit(sys.hexversion < minverhex)"
+sys.exit(not (verok and archok))"
   if { echo "$as_me:$LINENO: $am_cv_pathless_PYTHON -c "$prog"" >&5
    ($am_cv_pathless_PYTHON -c "$prog") >&5 2>&5
    ac_status=$?
@@ -12481,7 +12474,6 @@ fi
 
 
 
-
     if test -z $PYTHON;
     then
         if test -z "${PYTHON}";
@@ -12531,7 +12523,6 @@ fi
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${_python_arch}" >&5
 $as_echo "${_python_arch}" >&6; }
     PYTHON_ARCHITECTURE=${_python_arch}
-
 
 
 DEF_PYLIB=$(ldd $PYTHON | grep libpython | awk '{print $3}')
@@ -15067,6 +15058,7 @@ fi
    as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
    as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes "
    as_fn_append TESTS_ENVIRONMENT "PyLib=$(if test -z $PyLib; then echo ${DEF_PYLIB}; else echo $PyLib; fi) "
+   as_fn_append TESTS_ENVIRONMENT "PYTHON=$PYTHON "
    as_fn_append PY_LOG_COMPILER "${PYTHON} -B \$(top_srcdir)/testing/testing.py"
   ;; #(
   #
