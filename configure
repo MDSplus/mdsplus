@@ -8128,7 +8128,6 @@ then
 else
   MAKEFLAG_J="-j -l 1"
 fi
-DEF_PYLIB=$(ldd $(which python) | grep libpython | awk '{print $3}')
 MAKEFLAG_O="$(if ${MAKE:=make} -v -O&>/dev/null; then echo -O; fi)"
 MAKEUIDDIR="\$(top_builddir)/uid/"
 MAKESHLIBDIR="\$(top_builddir)/lib/"
@@ -12524,6 +12523,7 @@ $as_echo "${_python_arch}" >&6; }
 
 
 
+DEF_PYLIB=$(ldd $PYTHON | grep libpython | awk '{print $3}')
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  TESTS    ///////////////////////////////////////////////////////////// ##
