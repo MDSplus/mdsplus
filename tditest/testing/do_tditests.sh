@@ -59,7 +59,6 @@ if [ "$2" == "update" ]
   $TDITEST $zdrv$srcdir/$test.tdi 2>&1 \
    | grep -v 'Data inserted:' \
    | grep -v 'Length:' \
-   | grep -v "Server 'gub' unknown" \
    > ${srcdir}/$test.ans
  else
   unset ok
@@ -68,14 +67,12 @@ if [ "$2" == "update" ]
    $TDITEST $zdrv$srcdir/$test.tdi 2>&1 \
    | grep -v 'Data inserted:' \
    | grep -v 'Length:' \
-   | grep -v "Server 'gub' unknown" \
    | diff $DIFF_Z --side-by-side -W128 /dev/stdin $srcdir/$test.ans \
    | expand | grep -E -C3 '^.{61} ([|>]\s|<$)' || ok=1
   else
    $TDITEST $zdrv$srcdir/$test.tdi 2>&1 \
    | grep -v 'Data inserted:' \
    | grep -v 'Length:' \
-   | grep -v "Server 'gub' unknown" \
    | diff $DIFF_Z /dev/stdin $srcdir/$test.ans && ok=1
   fi
   echo ok=$ok

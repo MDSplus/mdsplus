@@ -2,6 +2,7 @@ Tcl('abort server gub')
 Error: Problem aborting server 'gub'
 Error message was: %SERVER-E-PATH_DOWN, Path to server lost
 mdsdcl: --> failed on line 'abort server gub'
+Server 'gub' unknown
 266436674
 Tcl('set command tcl')
 1
@@ -254,6 +255,7 @@ Tcl('show db')
 
 265388041
 Tcl('show server gub')
+Server 'gub' unknown
 Checking server: gub
 Error connecting to server
 2752521
@@ -276,3 +278,8 @@ Tcl('set tree main')
 265388041
 Tcl('delete pulse 1')
 1
+_status=Tcl(['set tree main','dir','close'],_out,_err)
+265388041
+write(*,"output=",_out,"error=",_err),_status 
+output=error=
+265388041
