@@ -67,6 +67,7 @@ static PyObject *(*PyObject_GetAttrString) () = NULL;//getFunction,getAnswer
 static void *(*PyLong_AsVoidPtr) () = NULL;//getAnswer
 static PyObject *(*PyErr_Occurred) () = NULL;//getFunction
 static void (*PyErr_Print) () = NULL;//getFunction
+static void (*PyErr_Clear) () = NULL;
 static PyObject *(*PyImport_ImportModule) () = NULL;//getFunction
 static PyObject *_Py_NoneStruct;//TdiExtPython
 static PyObject *(*PyList_Insert) () = NULL;//addToPath
@@ -81,6 +82,12 @@ static int (*PyCallable_Check) () = NULL;//getFunction
 static PyObject *(*PyList_GetItem) () = NULL;//addToPath
 static PyObject *(*PyObject_Str) () = NULL;//addToPath
 static int (*PyObject_IsSubclass) () = NULL;//TdiExtPython
+
+static PyObject *getFunction(char *modulename, char *functionname);
+static PyObject *makeDataFunction = NULL;
+static PyObject *pointerToObject  = NULL;
+static PyObject *MDSplusException = NULL;
+
 
 static int Initialize(){
   if (PyGILState_Ensure)
@@ -160,6 +167,7 @@ static int Initialize(){
     loadrtn(PyLong_AsVoidPtr, 1);
     loadrtn(PyErr_Occurred, 1);
     loadrtn(PyErr_Print, 1);
+    loadrtn(PyErr_Clear, 1);
     loadrtn(PyImport_ImportModule, 1);
     loadrtn(_Py_NoneStruct, 1);
     loadrtn(PyList_Insert, 1);
@@ -176,6 +184,14 @@ static int Initialize(){
     loadrtn(PyList_GetItem, 1);
     loadrtn(PyObject_Str,1);
     loadrtn(PyObject_IsSubclass,1);
+
+    PyThreadState *GIL = PyGILState_Ensure();
+    makeDataFunction = getFunction("MDSplus", "makeData");
+    pointerToObject  = getFunction("MDSplus", "pointerToObject");
+    MDSplusException = getFunction("MDSplus", "MDSplusException");
+    if (PyErr_Occurred()) PyErr_Print();
+    PyGILState_Release(GIL);
+
     return MDSplusSUCCESS;
   }
 }
@@ -278,7 +294,6 @@ static PyObject *argsToTuple(int nargs, struct descriptor **args)
   /* Convert descriptor argument list to a tuple of python objects. */
   int idx = 0;
   PyObject *ans = (*PyTuple_New)(nargs);
-  PyObject *pointerToObject = getFunction("MDSplus", "pointerToObject");
   if (pointerToObject) {
     for (idx = 0; idx < nargs; idx++) {
       PyObject *arg =
@@ -292,7 +307,6 @@ static PyObject *argsToTuple(int nargs, struct descriptor **args)
         break;
       }
     }
-    (*Py_DecRef)(pointerToObject);
   }
   if (idx != nargs) {
     (*Py_DecRef)(ans);
@@ -304,11 +318,8 @@ static PyObject *argsToTuple(int nargs, struct descriptor **args)
 static void getAnswer(PyObject * value, struct descriptor_xd *outptr)
 {
   PyObject *dataObj = NULL;
-  PyObject *makeDataFunction = getFunction("MDSplus", "makeData");
-  if (makeDataFunction) {
+  if (makeDataFunction)
     dataObj = (*PyObject_CallFunction)(makeDataFunction, "O", value);
-    (*Py_DecRef)(makeDataFunction);
-  }
   if (dataObj) {
     PyObject *descr = (*PyObject_GetAttrString)(dataObj, "descriptor");
     if (descr) {
@@ -371,7 +382,6 @@ int TdiExtPython2(char *dirspec,char *filename,
         if (!ans) {
           PyObject* exc = PyErr_Occurred();
           if (exc) {
-            PyObject *MDSplusException = getFunction("MDSplus", "MDSplusException");
             if (MDSplusException && PyObject_IsSubclass(exc,MDSplusException)) {
               PyObject *status_obj = (*PyObject_GetAttrString)(exc, "status");
               status = (int)(*PyLong_AsLong)(status_obj);
@@ -382,12 +392,12 @@ int TdiExtPython2(char *dirspec,char *filename,
                 MdsGetStdMsg(status,(const char **)&fac_out,(const char **)&msgnam_out,(const char **)&text_out);
                 printf("%%%s-%c-%s: %s\n",fac_out,f[status&7],msgnam_out,text_out);
                }
+               PyErr_Clear();
             } else {
               fprintf(stderr,"Error calling fun in %s\n", filename);
               (*PyErr_Print)();
               status = MDSplusERROR;
             }
-            (*Py_DecRef)(MDSplusException);
           }
         } else {
           getAnswer(ans, out_ptr);
