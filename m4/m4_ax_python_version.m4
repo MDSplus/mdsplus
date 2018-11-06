@@ -42,16 +42,16 @@ AC_DEFUN([AX_PATH_PYTHON],
     dnl A version check is needed.
     if test -n "$PYTHON"; then
       # If the user set $PYTHON, use it and don't search something else.
-      AC_MSG_CHECKING([whether $PYTHON version is >= $1])
+      AC_MSG_CHECKING([whether $PYTHON meets requirements (numpy,nose,version>=$1,$2)])
       AX_PYTHON_CHECK_VERSION([$PYTHON], [$1], [$2],
 			      [AC_MSG_RESULT([yes])],
 			      [AC_MSG_RESULT([no])
-			       AC_MSG_ERROR([Python interpreter is too old])])
+			       AC_MSG_ERROR([Python interpreter does not meet requirements])])
       am_display_PYTHON=$PYTHON
     else
       # Otherwise, try each interpreter until we find one that satisfies
       # VERSION.
-      AC_CACHE_CHECK([for a Python interpreter with version >= $1 fitting arch of $2],
+      AC_CACHE_CHECK([for a Python interpreter meeting requirements (numpy,nose,version>=$1,$2)],
 	[am_cv_pathless_PYTHON],[
 	for am_cv_pathless_PYTHON in _AM_PYTHON_INTERPRETER_LIST none; do
 	  test "$am_cv_pathless_PYTHON" = none && break
@@ -209,10 +209,10 @@ sys.stdout.write(sitedir)"`
 
 # AX_PYTHON_CHECK_VERSION(PROG, VERSION, ARCH, [ACTION-IF-TRUE], [ACTION-IF-FALSE])
 # ---------------------------------------------------------------------------
-# Run ACTION-IF-TRUE if the Python interpreter PROG has version >= VERSION.
+# Run ACTION-IF-TRUE if the Python interpreter meets requirements, i.e. nose numpy version and bits
 # Run ACTION-IF-FALSE otherwise.
 AC_DEFUN([AX_PYTHON_CHECK_VERSION],
- [prog="import sys
+ [prog="import sys,nose,numpy
 is32 = sys.maxsize == 0x7fffffff
 archok = is32 if 'i686' in '$3' else not is32
 minver = tuple(map(int, '$2'.split('.')))
