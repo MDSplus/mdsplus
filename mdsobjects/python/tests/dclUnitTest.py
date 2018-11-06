@@ -119,6 +119,8 @@ class Tests(TestCase):
         stree = [str(t) for t in trees]
         for t in trees:
             try: t.close()
+            except MDSplus.TreeWRITEFIRST:
+                 t.quit()
             except MDSplus.TreeNOT_OPEN:
                 print(stree)
         if refs<0: return
