@@ -1,3 +1,4 @@
+/* FOR INTERNAL USE ONLY */
 public fun TreeFindTagWild(in _wild, out _nid, inout _ctx)
 {
   if (kind(_ctx) != kind(0q)) _ctx=0q;

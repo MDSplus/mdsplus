@@ -1,3 +1,4 @@
+/* FOR INTERNAL USE ONLY */
 public fun TreeDirName(in _tree, in _shot)
 {
   _file = TreeFileName(_tree, _shot);

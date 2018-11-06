@@ -1,3 +1,4 @@
+/* FOR INTERNAL USE ONLY */
 public fun TreeAbsPath(in _inpath)
 {
   _abspath = repeat(' ',512);
