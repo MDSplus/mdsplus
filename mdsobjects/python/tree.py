@@ -3003,6 +3003,9 @@ class TreeNodeArray(_arr.Int32Array): # HINT: TreeNodeArray begin
         return self.usage
 
     def __getattr__(self,name):
+      try:
+          return self.tree.tdiExecute('getnci($,$)',self._value,name)
+      except:
         ans=[]
         for node in self:
             val = node.__getattribute__(name)
@@ -3263,7 +3266,7 @@ If you did intend to write to a subnode of the device you should check the prope
         try:
             import_string = "from %s import %s" % (cls.__module__.split('.',1)[0],cls.__name__)
             # test if this would work
-            exec(compile(import_string,'<string>','exec')) in {},{}
+            exec(compile(import_string,'<string>','exec'),{},{})
             return import_string
         except ImportError:
             try:

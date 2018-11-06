@@ -63,9 +63,9 @@ class Scalar(_dat.Data):
             cls = Uint8
         elif isinstance(value,(_N.generic,)):
             cls = globals()[value.__class__.__name__.capitalize()]
-        elif isinstance(value,(_C.c_double)):
+        elif isinstance(value,(_C.c_double,float)):
             cls = Float64
-        elif isinstance(value,(_C.c_float,float)):
+        elif isinstance(value,(_C.c_float)):
             cls = Float32
         elif isinstance(value,(int,)):
             cls = Int64 if _ver.bit_length(value)>31 else Int32
