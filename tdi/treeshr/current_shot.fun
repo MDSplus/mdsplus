@@ -1,3 +1,4 @@
+/* FOR INTERNAL USE ONLY */
 public fun current_shot(in _exp)
 {
   _shot = TreeShr->TreeGetCurrentShotId(_exp);

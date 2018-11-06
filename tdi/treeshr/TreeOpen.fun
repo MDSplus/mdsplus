@@ -1,3 +1,4 @@
+/* FOR INTERNAL USE ONLY */
 public fun TreeOpen(in _tree, in _shot, optional in _isreadonly)
 {
   if (not PRESENT(_isreadonly)) _isreadonly = 0;

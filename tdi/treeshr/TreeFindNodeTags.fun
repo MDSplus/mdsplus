@@ -1,3 +1,4 @@
+/* FOR INTERNAL USE ONLY */
 public fun TreeFindNodeTags(as_is _nid)
 {
   _nidlocal = getnci(_nid,"nid_number");
