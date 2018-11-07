@@ -15,7 +15,7 @@ then
   DIFF_Z=-Z
 else
   zdrv=""
-  PYTHON=python
+  PYTHON=${PYTHON:-python}
   TDITEST=tditest
   DIFF_Z=
 fi
