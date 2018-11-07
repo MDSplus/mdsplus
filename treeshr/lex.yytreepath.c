@@ -2173,11 +2173,8 @@ EXPORT void FreeSearchTerms(SEARCH_TERM *terms)
 
 static char *strtrim(char *str)
 {
-  char *q = str;
-  while (* q) q++;
-  do { q--; } while (isspace(* q));
-  q++;
-  *q = '\0';
+  char *q;
+  for (q=str+strlen(str)-1; (q > str) && isspace(*q); q--) *q='\0';
   return str;
 }
 

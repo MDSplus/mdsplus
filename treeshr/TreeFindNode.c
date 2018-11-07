@@ -142,7 +142,12 @@ EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
     return TreeNOT_OPEN;
   if (dblist->remote)
     return FindNodeRemote(dblist, path, outnid);
-  
+
+  if (path && (path[0] == '\n')) {
+      status = TreeNNF;
+      goto done;
+  }
+
   status = WildParse(path, &ctx, &wild);
   if STATUS_NOT_OK
     goto done;
@@ -183,7 +188,7 @@ STATIC_ROUTINE void FreeSearchCtx(SEARCH_CTX *ctx)
 }
 STATIC_ROUTINE NODELIST *Search(PINO_DATABASE *dblist, SEARCH_CTX *ctx, SEARCH_TERM *term, NODE *start, NODELIST **tail)
 {
-  NODELIST *nodes = Find(dblist, term, start, tail);
+  NODELIST *nodes = term ? Find(dblist, term, start, tail) : NULL;
   if (nodes) {
     NODELIST *more_nodes = NULL;
     NODELIST *more_tail = NULL;    
