@@ -17,8 +17,6 @@
     case WSAENOPROTOOPT:    fprintf(stderr,"WSAENOPROTOOPT\n");    break;
     case WSAEFAULT:         fprintf(stderr,"WSAEFAULT\n");         break;
     case WSAENOTSOCK:       fprintf(stderr,"WSAENOTSOCK\n");       break;
-    case WSAESHUTDOWN:      fprintf(stderr,"WSAESHUTDOWN\n");      break;
-    case WSAEACCES:         fprintf(stderr,"WSAEACCES\n");         break;
     default:                fprintf(stderr,"WSA %d\n",err);
   }
  }
@@ -94,7 +92,7 @@ static int io_connect(Connection* c, char *protocol __attribute__ ((unused)), ch
         FD_ZERO(&writefds);
         FD_SET(sock, &writefds);
         err = select(sock+1, &readfds, &writefds, &exceptfds, &connectTimer);
-        if (err == 0) {
+        if ((err == 0) && (errno != EINPROGRESS)) {
           PERROR("Error in connect");
           shutdown(sock, 2);
           close(sock);
@@ -230,9 +228,11 @@ static int io_listen(int argc, char **argv){
     unsigned short port = getPort(GetPortname());
     struct SOCKADDR_IN sin;
     memset(&sin, 0, sizeof(sin));
-    sin.SIN_PORT   = port;
+    sin.SIN_PORT = port;
     sin.SIN_FAMILY = AF_T;
-    sin.SIN_ADDR   = _INADDR_ANY;
+#if AF_T == AF_INET
+    sin.sin_addr.s_addr = INADDR_ANY;
+#endif
     if (bind(ssock, (struct sockaddr *)&sin, sizeof(sin))<0) {
       PERROR("Error binding to service (tcp_listen)");
       exit(EXIT_FAILURE);
