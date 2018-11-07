@@ -994,8 +994,9 @@ AX_PATH_PYTHON([2.6],[$host],,[:])
 AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
 AX_PYTHON_ARCH(PYTHON_ARCHITECTURE)
 AC_SUBST(PYTHON_ARCHITECTURE)
+AC_MSG_CHECKING(libpython path)
 DEF_PYLIB=$(ldd $PYTHON | grep libpython | awk '{print $3}')
-
+AC_MSG_RESULT($DEF_PYLIB)
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  TESTS    ///////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
