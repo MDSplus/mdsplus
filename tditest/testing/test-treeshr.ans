@@ -18,6 +18,12 @@ getnci('?ember','fullpath')
 "\\MAIN::TOP:MEMBER"
 getnci('%ember','fullpath')
 ["\\MAIN::TOP:MEMBER"]
+getnci('\n','fullpath')
+%TREE-W-NNF, Node Not Found
+%TDI Error in GETNCI("\n", "fullpath")
+%TDI Error in EVALUATE(GETNCI("\n", "fullpath"))
+%TDI Error in EXECUTE("getnci('\\n','fullpath')")
+
 _tim=getnci(member,'time_inserted')
 49776423271761650QU
 date_time(_tim)
