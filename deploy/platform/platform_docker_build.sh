@@ -200,8 +200,7 @@ NORMAL() {
         echo -e "\033[m"
     fi
 }
-export PYTHONDONTWRITEBYTECODE=no
-export PyLib=$(ldd $(which python) | grep libpython | awk '{print $3}')
+
 main(){
     MAKE=${MAKE:="make"}
     if [ -r ${srcdir}/deploy/os/${OS}.env ]
@@ -234,6 +233,7 @@ main(){
         publish
     fi
 }
+
 source ${srcdir}/deploy/platform/${PLATFORM}/${PLATFORM}_docker_build.sh
 if [ ! -z "$0" ] && [ ${0:0:1} != "-" ] && [ "$( basename $0 )" = "platform_docker_build.sh" ]
 then
