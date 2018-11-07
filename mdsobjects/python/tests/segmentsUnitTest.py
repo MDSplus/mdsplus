@@ -372,6 +372,30 @@ class Tests(TestCase):
       else:
           self.cleanup()
 
+    def DimensionlessSegments(self):
+      def test():
+        from MDSplus import Tree,Float32Array
+        with Tree('seg_tree',self.shot,'NEW') as ptree:
+            ptree.addNode('S')
+            ptree.write()
+        ptree = Tree('seg_tree',self.shot)
+        len = 100;dt=.001
+        node = ptree.S
+        for i in range(0,1000,len):
+            node.beginSegment(i*dt,(i+len-1)*dt,None,Float32Array(range(i,i+len)))
+        seg0 = Float32Array(range(0,len))
+        self.assertEqual(node.getSegment(0).data().tolist(),seg0.tolist(),1e-5)
+        self.assertEqual(node.record.data()[0:100].tolist(),seg0.tolist(),1e-5)
+        ptree.setTimeContext(.12,.13,None) # interval contained in segment 1 
+        self.assertEqual(node.record.data().tolist(),node.getSegment(1).data().tolist(),1e-5)
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup()
+
     def CompressSegments(self):
       def test():
         from MDSplus import Tree,DateToQuad,ZERO,Int32,Int32Array,Int64Array,Range
@@ -416,7 +440,7 @@ class Tests(TestCase):
             self.__getattribute__(test)()
     @staticmethod
     def getTests():
-        return ['ArrayDimensionOrder','BlockAndRows','WriteSegments','WriteOpaque','UpdateSegments','TimeContext','ScaledSegments','CompressSegments']
+        return ['ArrayDimensionOrder','BlockAndRows','WriteSegments','WriteOpaque','UpdateSegments','TimeContext','ScaledSegments','DimensionlessSegments','CompressSegments']
     @classmethod
     def getTestCases(cls,tests=None):
         if tests is None: tests = cls.getTests()
