@@ -142,7 +142,12 @@ EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
     return TreeNOT_OPEN;
   if (dblist->remote)
     return FindNodeRemote(dblist, path, outnid);
-  
+
+  if (path && (path[0] == '\n') {
+      status = TreeNNF;
+      goto done;
+  }
+
   status = WildParse(path, &ctx, &wild);
   if STATUS_NOT_OK
     goto done;
