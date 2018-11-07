@@ -143,7 +143,7 @@ EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
   if (dblist->remote)
     return FindNodeRemote(dblist, path, outnid);
 
-  if (path && (path[0] == '\n') {
+  if (path && (path[0] == '\n')) {
       status = TreeNNF;
       goto done;
   }
