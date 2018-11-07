@@ -12516,8 +12516,11 @@ $as_echo "${_python_arch}" >&6; }
     PYTHON_ARCHITECTURE=${_python_arch}
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking libpython path" >&5
+$as_echo_n "checking libpython path... " >&6; }
 DEF_PYLIB=$(ldd $PYTHON | grep libpython | awk '{print $3}')
-
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $DEF_PYLIB" >&5
+$as_echo "$DEF_PYLIB" >&6; }
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  TESTS    ///////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -15048,7 +15051,7 @@ fi
    as_fn_append TESTS_ENVIRONMENT "subtree_path='.;\$(abs_top_srcdir)/trees/subtree' "
    as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
    as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes "
-   as_fn_append TESTS_ENVIRONMENT "PyLib=$(if test -z $PyLib; then echo ${DEF_PYLIB}; else echo $PyLib; fi) "
+   as_fn_append TESTS_ENVIRONMENT "PyLib=${PyLib:-$DEF_PYLIB} "
    as_fn_append TESTS_ENVIRONMENT "PYTHON=$PYTHON "
    as_fn_append PY_LOG_COMPILER "${PYTHON} -B \$(top_srcdir)/testing/testing.py"
   ;; #(
