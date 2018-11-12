@@ -263,7 +263,7 @@ STATIC_ROUTINE void ActionDone(int idx){
             UNLOCK_ACTION(cidx,ad_fte);
             DoActionDone(cidx);
           }
-        }
+        } else UNLOCK_ACTION(cidx,ad_fe);
       }
     }
     UNLOCK_ACTION(idx,ad);
