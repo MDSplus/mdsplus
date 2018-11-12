@@ -480,11 +480,10 @@ static pthread_once_t once = PTHREAD_ONCE_INIT;
 pthread_once(&once,&initialize);\
 if (PyGILState_Ensure) { \
   SIGNAL_SETUP;\
-  PyThreadState *GIL = (*PyGILState_Ensure)(); \
-  pthread_cleanup_push((void*)PyGILState_Release,(void*)GIL);
+  PyThreadState* GIL = PyGILState_Ensure();
 
 #define PYTHON_CLOSE \
-  pthread_cleanup_pop(1);\
+  PyGILState_Release(GIL);\
   SIGNAL_RESET;\
 } else status = LibNOTFOU;
 
