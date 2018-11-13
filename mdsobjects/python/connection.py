@@ -56,14 +56,29 @@ _SendArg.argtypes=[_C.c_int32,_C.c_ubyte,_C.c_ubyte,_C.c_ubyte,_C.c_ushort,_C.c_
 
 class Connection(object):
     """Implements an MDSip connection to an MDSplus server"""
-
+    _socket = 0
+    @property
+    def socket(self):
+        if self._socket==0:
+            self._socket = _ConnectToMds(_ver.tobytes(self.hostspec))
+        if self._socket == -1:
+            raise MdsIpException("Error connecting to %s" % (self.hostspec,))
+        return self._socket
+    @socket.setter
+    def socket(self,value):
+        if self._socket>0:
+            try:    _DisconnectFromMds(self._socket)
+            except: pass
+        self._socket = value
+            
     def __enter__(self):
         """ Used for with statement. """
+        self.connect()
         return self
 
     def __exit__(self, type, value, traceback):
         """ Cleanup for with statement. """
-        _DisconnectFromMds(self.socket)
+        self.disconnect()
 
     def __inspect__(self,value):
         """Internal routine used in determining characteristics of the value"""
@@ -142,14 +157,21 @@ class Connection(object):
                 _MdsIpFree(mem)
 
     def __init__(self,hostspec):
-        self.socket=_ConnectToMds(_ver.tobytes(hostspec))
-        if self.socket == -1:
-            raise MdsIpException("Error connecting to %s" % (hostspec,))
         self.hostspec=hostspec
+        self.connect()
+
+    def connect(self):
+        return self.socket
+    
+    def disconnect(self):
+        self.socket = 0
+
+    def reconnect(self):
+        self.disconnect()
+        self.connect()
 
     def __del__(self):
-        try:    _DisconnectFromMds(self.socket)
-        except: pass
+        self.disconnect()
 
     def __sendArg__(self,value,idx,num):
         """Internal routine to send argument to mdsip server"""
