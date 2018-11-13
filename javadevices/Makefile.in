@@ -635,6 +635,7 @@ SPIDER_SMSetup.java\
 SPIDERSetup.java\
 ZELOS2150GVSetup.java\
 NI6259AISetup.java\
+NI6259EVSetup.java\
 FAKECAMERASetup.java\
 AWG2021Setup.java\
 RFXWAVESETUPSetup.java\
