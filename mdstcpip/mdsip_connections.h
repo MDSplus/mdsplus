@@ -159,6 +159,7 @@ typedef struct _io_routines {
   int (*reuseCheck)(char *connectString, char *uniqueString, size_t buflen);
   int (*disconnect)(Connection* c);
   ssize_t (*recv_to)(Connection* c, void *buffer, size_t len, int to_msec);
+  int     (*check)(Connection* c);
 } IoRoutines;
 
 #define EVENTASTREQUEST "---EVENTAST---REQUEST---"
