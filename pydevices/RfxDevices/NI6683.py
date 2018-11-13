@@ -177,6 +177,14 @@ class NI6683(Device):
             Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
             raise DevBAD_PARAMETER
 
+    def getRelTime(self, absTime):
+        try:
+            return float((absTime - self.abs_start.data())/1E9 + self.rel_start.data())
+        except:
+            emsg = 'Cannot convert absolute time to relative ' + str(self.fd)
+            Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
+            raise DevBAD_PARAMETER
+
     def getStartEnd(self, termName):
         try:
             start = getattr(self, termName.lower()+'_start').data()
@@ -555,7 +563,8 @@ class NI6683(Device):
                     termName = self.nameDict[readyFd]
                     print('ECCO EVENTO DA TERM ' + termName)
                     recorderNid = getattr(self.device, termName.lower()+'_raw_events')
-                    recorderNid.putRow(10, Uint64(timestamp.value), Uint64(timestamp.value))
+                    eventRelTime = getRelTime(self, timestamp.value)
+                    recorderNid.putRow(10, Float64(eventRelTime), Float64(eventRelTime))
                     try:
                         eventNameNid = getattr(self.device, termName.lower()+'_event_name')
                         eventName = eventDameNid.data()

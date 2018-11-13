@@ -95,6 +95,7 @@ _mimport('MARTE_XRAY')
 
 _mimport('MILL3')
 _mimport('NI6259AI')
+_mimport('NI6259EV')
 _mimport('NI6368AI')
 _mimport('NI6682')
 _mimport('NI6683')

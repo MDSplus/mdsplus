@@ -35,6 +35,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <stdio.h>
 #include <mdsobjects.h>
+#include <vector>
+
 
 using namespace MDSplus;
 
@@ -52,10 +54,16 @@ extern "C" int xseries_AI_scale(int16_t *raw, float *scaled, uint32_t num_sample
 extern "C" void openTree(char *name, int shot, void **treePtr);
 extern "C" int readAndSave(int chanFd, int bufSize, int segmentSize, int counter, int dataNid, int clockNid, void *treePtr, void *saveList);
 extern "C" int readAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int segmentSize, int numSamples, void *dataNidPtr, int clockNid, void *treePtr, void *saveListPtr, void *stopAcq);
+
+
 extern "C" void readAiConfiguration(int fd);
 
 
 extern "C" int pxi6259_readAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int segmentSize, int sampleToSkip, int numSamples, void *dataNidPtr, int clockNid, float timeIdx0, float period, void *treePtr, void *saveListPtr, void *stopAcq);
+
+extern "C" int pxi6259EV_readAndSaveAllChannels(int nChan, void *chanFdPtr, int *isBurst, int *f1Div, int *f2Div, double maxDelay, double baseFreq, double *preTimes, double *postTimes, double startTime, int bufSize, int segmentSize, char **eventNames, void *dataNidPtr, void *treePtr, void *saveListPtr, void *stopAcq);
+
+
 
 extern "C" void getStopAcqFlag(void **stopAcq);
 extern "C" void freeStopAcqFlag(void *stopAcq);
@@ -616,7 +624,8 @@ int pxi6259_getCalibrationParams(int chanfd, int range, float *coeffVal)
     int32_t i, j;
     int retval;
 
-    retval = ioctl(chanfd, PXI6259_IOC_GET_AI_SCALING_COEF, &ai_coefs);
+    retval = pxi6259_get_ai_coefficient(chanfd, &ai_coefs);
+    //retval = ioctl(chanfd, PXI6259_IOC_GET_AI_SCALING_COEF, &ai_coefs);
     if (retval) return retval;
 
 
@@ -2583,3 +2592,615 @@ int stopWaveGeneration()
     return 1;
 
 }
+
+////////////////////////////////////////////////////////////////////////////
+//////////////////////////    NI6259EV stuff   /////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+#define SEGMENT_OP_BEGIN 1
+#define SEGMENT_OP_UPDATE 2
+#define SEGMENT_OP_PUT 3
+#define SEGMENT_OP_MAKE 4
+
+//Support class for enqueueing storage requests, specific for NI6259 EV management
+class SaveItemEV {
+    int operation; //BEGIN UPDATE PUT MAKE
+    MDSplus::Data *startData;
+    MDSplus::Data *endData;
+    MDSplus::Data *dimData;
+    MDSplus::Array *segData;
+    MDSplus::TreeNode *node;
+    SaveItemEV *nxt;
+ public:
+    SaveItemEV(int operation, MDSplus::Data *startData, MDSplus::Data *endData, MDSplus::Data *dimData, MDSplus::Array *segData, MDSplus::TreeNode *node)
+    {
+	this->operation = operation;
+	this->startData = startData;
+	this->endData = endData;
+	this->dimData = dimData;
+	this->segData = segData;
+	this->node = node;
+	this->nxt = 0;
+    }
+
+    void setNext(SaveItemEV *itm)
+    {
+	nxt = itm;
+    }
+
+    SaveItemEV *getNext()
+    {
+	return nxt;
+    }
+
+    void save()
+    {
+	switch(operation)
+	{
+	    case SEGMENT_OP_BEGIN:
+		try {
+std::cout << "SAVE ITEM OP_BEGIN START:" << startData << "  END: " << endData << "  DIM: " << dimData <<std::endl;
+		    node->beginSegment(startData, endData, dimData, segData);
+		    MDSplus::deleteData(startData);
+		    MDSplus::deleteData(endData);
+		    MDSplus::deleteData(dimData);
+		} catch(MDSplus::MdsException &exc)
+		{
+		    std::cout << "Error in BeginSegment: " << exc.what() << std::endl;
+		}
+std::cout << "OP_BEGIN FINITO" << std::endl;
+		break;
+	    case SEGMENT_OP_MAKE:
+		try {
+std::cout << "SAVE ITEM OP_MAKE" << std::endl;
+		    node->makeSegment(startData, endData, dimData, segData);
+		    MDSplus::deleteData(startData);
+		    MDSplus::deleteData(endData);
+		    MDSplus::deleteData(dimData);
+		    MDSplus::deleteData(segData);
+		} catch(MDSplus::MdsException &exc)
+		{
+		    std::cout << "Error in MakeSegment: " << exc.what() << std::endl;
+		}
+		break;
+	    case SEGMENT_OP_UPDATE:
+		try {
+std::cout << "SAVE ITEM OP_UPDATE" << std::endl;
+		    node->updateSegment(startData, endData, dimData);
+		    MDSplus::deleteData(startData);
+		    MDSplus::deleteData(endData);
+		    MDSplus::deleteData(dimData);
+		} catch(MDSplus::MdsException &exc)
+		{
+		    std::cout << "Error in UpdateSegment: " << exc.what() << std::endl;
+		}
+		break;
+	    case SEGMENT_OP_PUT:
+		try {
+std::cout << "SAVE ITEM OP_PUT" << std::endl;
+		    node->putSegment(segData, -1);
+		    MDSplus::deleteData(segData);
+		} catch(MDSplus::MdsException &exc)
+		{
+		    std::cout << "Error in PutSegment: " << exc.what() << std::endl;
+		}
+		break;
+	    }
+
+    }
+
+}; //class SaveItemEV
+
+extern "C" void *handleSaveEV(void *listPtr);
+
+class SaveListEV
+{
+    public:
+	pthread_cond_t itemAvailable;
+	pthread_t thread;
+	bool threadCreated;
+	SaveItemEV *saveHead, *saveTail;
+	bool stopReq;
+	pthread_mutex_t mutex;
+    SaveListEV()
+    {
+	int status = pthread_mutex_init(&mutex, NULL);
+	pthread_cond_init(&itemAvailable, NULL);
+	saveHead = saveTail = NULL;
+	stopReq = false;
+	threadCreated = false;
+    }
+    void addItem(int operation, MDSplus::Data *startData, MDSplus::Data *endData, MDSplus::Data *dimData, MDSplus::Array *segData, MDSplus::TreeNode *node)
+    {
+	SaveItemEV *newItem = new SaveItemEV(operation, startData, endData, dimData, segData, node);
+	pthread_mutex_lock(&mutex);
+	if(saveHead == NULL)
+	    saveHead = saveTail = newItem;
+	else
+	{
+	    saveTail->setNext(newItem);
+	    saveTail = newItem;
+	}
+	pthread_cond_signal(&itemAvailable);
+	pthread_mutex_unlock(&mutex);
+    }
+    void executeItems()
+    {
+	while(true)
+	{
+	    pthread_mutex_lock(&mutex);
+	    if(stopReq && saveHead == NULL)
+	    {
+		pthread_mutex_unlock(&mutex);
+		pthread_exit(NULL);
+	    }
+
+	    while(saveHead == NULL)
+	    {
+		pthread_cond_wait(&itemAvailable, &mutex);
+		if(stopReq && saveHead == NULL)
+	        {
+		    pthread_mutex_unlock(&mutex);
+		    pthread_exit(NULL);
+	        }
+	    }
+	    SaveItemEV *currItem = saveHead;
+	    saveHead = saveHead->getNext();
+	    pthread_mutex_unlock(&mutex);
+	    currItem->save();
+	    delete currItem;
+	}
+    }
+    void start()
+    {
+	pthread_create(&thread, NULL, handleSaveEV, (void *)this);
+	threadCreated = true;
+    }
+    void stop()
+    {
+	stopReq = true;
+	pthread_cond_signal(&itemAvailable);
+	if(threadCreated)
+	{	
+	    pthread_join(thread, NULL);
+	    printf("SAVE THREAD TERMINATED\n");
+	}
+    }
+ };
+
+
+extern "C" void *handleSaveEV(void *listPtr)
+{
+    SaveListEV *list = (SaveListEV *)listPtr;
+    list->executeItems();
+    return NULL;
+}
+
+extern "C" void startSaveEV(void **retList)
+{
+    SaveListEV *saveList = new SaveListEV;
+    saveList->start();
+    *retList = (void *)saveList;
+
+std::cout << "CREATE SAVE LIST: " << saveList << std::endl;
+}
+
+extern "C" void stopSaveEV(void *listPtr)
+{
+    if(listPtr) 
+    {
+        SaveListEV *list = (SaveListEV *)listPtr;
+        list->stop();
+        delete list;
+    }
+}
+
+
+class BufferHandler
+{
+    size_t bufSize;
+    short *buffer;
+    size_t bufferIdx, oldestBufferIdx;
+    unsigned long sampleCount;
+  protected:
+    MDSplus::Tree *tree;
+    MDSplus::TreeNode *rawNode;
+    SaveListEV *saveList;
+
+  public:
+    BufferHandler(MDSplus::Tree *tree, MDSplus::TreeNode *rawNode, double maxDelay, double preTime, double baseFreq, SaveListEV *saveList)
+    {
+	this->tree = tree;
+	this->rawNode = rawNode;
+	this->bufSize = (preTime + maxDelay) * baseFreq;
+	this->buffer = new short[this->bufSize];
+	this->bufferIdx = this->oldestBufferIdx = 0;
+        this->sampleCount = 0;
+	this->saveList = saveList;
+    }
+    ~BufferHandler()
+    {
+	delete [] buffer;
+    }
+
+    void processSample(short sample)
+    {
+	buffer[bufferIdx] = sample;
+	sampleCount++;
+	if(sampleCount > bufSize)
+	{
+	    processSampleDelayed(buffer[oldestBufferIdx]);
+	    oldestBufferIdx = (oldestBufferIdx + 1)%bufSize;
+	}
+	bufferIdx = (bufferIdx + 1)%bufSize;
+    }
+    virtual void processSampleDelayed(short sample) = 0;
+    virtual void trigger(double trigTime) = 0;
+};
+
+
+
+
+class ClockBufferHandler:public BufferHandler
+{
+    short *segBuffer;
+    MDSplus::Array *initSegData;
+    size_t bufIdx;
+
+    int f12Div[2], currDivIdx;
+    double baseFreq;
+    int segBufSize;
+    int segmentSize;
+    int numBuffersInSegment;
+    int bufferCount;
+    double startTime;
+    double preTime, postTime;
+    unsigned long baseSampleCount, currBaseSampleCount, sampleCount;
+    unsigned long segBufSampleCount;
+    double basePeriod;
+    double bufStartTime;
+    std::vector<double> bufStartTimes;
+    std::vector<double> bufEndTimes;
+    std::vector<double> bufPeriods;
+    std::vector<double> switchTimes;
+    bool freqSwitched;
+
+public:
+    ClockBufferHandler(MDSplus::Tree *tree, MDSplus::TreeNode *rawNode, double maxDelay, int f1Div, int f2Div, 
+	double baseFreq, int segBufSize, int segmentSize, double startTime, double preTime, 
+	double postTime, SaveListEV *saveList):BufferHandler(tree, rawNode, maxDelay, preTime, baseFreq, saveList)
+    {
+	this->basePeriod = 1./baseFreq;
+	this->segBufSize = segBufSize;
+	this->segBuffer = new short[segBufSize];
+	this->numBuffersInSegment = segmentSize / segBufSize;
+	this->segmentSize = segBufSize * this->numBuffersInSegment;
+	this->f12Div[0] = f1Div;
+	this->f12Div[1] = f2Div;
+	this->currDivIdx = 0;
+	this->startTime = startTime;
+	this->preTime = preTime;
+	this->postTime = postTime;
+ 	this->baseSampleCount = this->currBaseSampleCount = this->segBufSampleCount = this->sampleCount = 0;
+	this->bufStartTime = startTime;
+	double bufEndTime = startTime + segmentSize * (this->basePeriod * f12Div[0]);
+	bufStartTimes.push_back(startTime);
+	bufEndTimes.push_back(bufEndTime);
+	bufPeriods.push_back(this->basePeriod * f12Div[0]);
+//Prepare first segment
+	short *initSeg = new short[segmentSize];
+	memset(initSeg, 0, sizeof(short) * segmentSize);
+	initSegData = new MDSplus::Int16Array(initSeg, segmentSize);
+	delete [] initSeg; 
+	MDSplus::Data *startSegData = new MDSplus::Float64(startTime);
+	MDSplus::Data *endSegData = new MDSplus::Float64(bufEndTime);
+	MDSplus::Data *periodData = new MDSplus::Float64(this->basePeriod * f12Div[0]);
+	MDSplus::Data *dimData = MDSplus::compileWithArgs("build_range($, $, $)", tree, 3, startSegData, endSegData, periodData);
+	rawNode->beginSegment(startSegData, endSegData, dimData, initSegData);
+	MDSplus::deleteData(startSegData);
+	MDSplus::deleteData(endSegData);
+	MDSplus::deleteData(periodData);
+	MDSplus::deleteData(dimData);
+	this->bufferCount = 0;
+	this->freqSwitched = false;
+    }
+    ~ClockBufferHandler()
+    {
+	delete [] segBuffer;
+	MDSplus::deleteData(initSegData);
+    }
+
+
+    void processSampleDelayed(short sample)
+    {
+	baseSampleCount++;
+	currBaseSampleCount++;
+//Check whether frequency switched
+	double currTime = startTime + baseFreq * baseSampleCount;
+	if(switchTimes.size() > 0 && switchTimes[0] <= currTime) //frequencySwitched
+	{
+std::cout << "FREQUENCY SWITCH " << std::endl;
+
+	    currDivIdx = (currDivIdx + 1)%2;
+	    bufStartTimes.push_back(switchTimes[0]);
+	    bufPeriods.push_back(basePeriod * f12Div[currDivIdx]);
+	    bufEndTimes[bufEndTimes.size() - 1] = switchTimes[0];
+	    bufEndTimes.push_back(switchTimes[0] + (segmentSize - (bufferCount * segmentSize + segBufSampleCount)) * 
+		basePeriod * f12Div[currDivIdx]);
+	    freqSwitched = true;
+	    switchTimes.erase(switchTimes.begin());
+	    currBaseSampleCount = 0;
+	}
+
+	if(currBaseSampleCount % f12Div[currDivIdx] == 0)
+	{
+	    segBuffer[segBufSampleCount] = sample;
+	    segBufSampleCount++;
+	    if(segBufSampleCount >= segBufSize) //buffer filled
+	    {
+std::cout << "BUFFER FILLED" << std::endl;
+
+		MDSplus::Array *bufferData = new Int16Array(segBuffer, segBufSize);
+		saveList->addItem(SEGMENT_OP_PUT, NULL, NULL, NULL, bufferData, rawNode);
+		//rawNode->putSegment(bufferData, -1);
+		segBufSampleCount = 0;
+		bufferCount++;
+		if(bufferCount >= numBuffersInSegment) //Need to possibly adjust segment end and dimension and create a new segment
+		{
+std::cout << "SEGMENT FILLED" << std::endl;
+		    if(freqSwitched) //A least one time switch occurred, need to update end time and dimension
+		    {
+			double bufEndTime = bufEndTimes[bufEndTimes.size() - 1];
+		    	MDSplus::Data *startTimeData = new MDSplus::Float64(bufStartTime);
+		    	MDSplus::Data *endTimeData = new MDSplus::Float64(bufEndTime);
+			MDSplus::Data *startTimesData = new MDSplus::Float64Array(bufStartTimes.data(), bufStartTimes.size());
+			MDSplus::Data *endTimesData = new MDSplus::Float64Array(bufEndTimes.data(), bufEndTimes.size());
+			MDSplus::Data *periodsData = new MDSplus::Float64Array(bufPeriods.data(), bufPeriods.size());
+			MDSplus::Data *dimData = MDSplus::compileWithArgs("build_range($, $, $)", tree, 3, startTimesData, 
+				endTimesData, periodsData);
+			saveList->addItem(SEGMENT_OP_UPDATE, startTimeData, endTimeData, dimData, NULL, rawNode);
+//			rawNode->updateSegment(startTimeData, endTimeData, dimData);
+			MDSplus::deleteData(startTimesData);
+			MDSplus::deleteData(endTimesData);
+			MDSplus::deleteData(periodsData);
+		    }
+//Prepare next segment
+		    bufStartTime = basePeriod * baseSampleCount;
+		    double bufEndTime = bufStartTime + segmentSize * basePeriod*f12Div[currDivIdx];
+		    MDSplus::Data *startSegData = new MDSplus::Float64(bufStartTime);
+		    MDSplus::Data *endSegData = new MDSplus::Float64(bufEndTime);
+		    MDSplus::Data *periodData = new MDSplus::Float64(basePeriod * f12Div[currDivIdx]);
+		    MDSplus::Data *dimData = MDSplus::compileWithArgs("build_range($, $, $)", tree, 3, startSegData, 
+			endSegData, periodData);
+		    saveList->addItem(SEGMENT_OP_BEGIN, startSegData, endSegData, dimData, initSegData, rawNode);
+		    //rawNode->beginSegment(startSegData, endSegData, dimData, initSegData);
+		    MDSplus::deleteData(periodData);
+
+		    bufferCount = 0;
+		    bufStartTimes.clear();
+		    bufStartTimes.push_back(bufStartTime);
+		    bufEndTimes.clear();
+		    bufEndTimes.push_back(bufEndTime);
+		    bufPeriods.clear();
+		    bufPeriods.push_back(basePeriod * f12Div[currDivIdx]);
+		    freqSwitched = false;
+		}
+	    }
+	}
+    }  //processSample()
+    virtual void trigger(double trigTime)
+    {
+	switchTimes.push_back(trigTime - preTime);
+	switchTimes.push_back(trigTime + postTime);
+    }
+};
+
+
+class BurstBufferHandler:public BufferHandler
+{
+    short *segBuffer;
+    std::vector<double> startTimes;
+    int freqDiv;
+    double baseFreq;
+    int segmentSize, burstCount;
+    double startTime;
+    double basePeriod;
+    double segStart;
+    double preTime;
+    bool inBurst;
+    unsigned long baseSampleCount, currBaseSampleCount;
+
+public:
+    BurstBufferHandler(MDSplus::Tree *tree, MDSplus::TreeNode *rawNode, double maxDelay, int freqDiv, 
+	double baseFreq, double startTime, double preTime, double postTime, SaveListEV *saveList):BufferHandler(tree, rawNode, maxDelay, preTime, baseFreq, saveList)
+    {
+	this->preTime = preTime;
+	this->basePeriod = 1./baseFreq;
+	this->segmentSize = (postTime + preTime) * this->basePeriod;
+	this->segBuffer = new short[this->segmentSize];
+	this->freqDiv = freqDiv;
+	this->startTime = startTime;
+	this->inBurst = false;
+	this->baseSampleCount = 0;
+    }
+    ~BurstBufferHandler()
+    {
+	delete [] segBuffer;
+    }
+
+    virtual void processSampleDelayed(short sample)
+    {
+	baseSampleCount++;
+	currBaseSampleCount++;
+//Check whether frequency switched
+	double currTime = startTime + baseFreq * baseSampleCount;
+	if(startTimes.size() > 0 && startTimes[0] <= currTime) //frequencySwitched. 
+	{
+	    if(!inBurst)  //Trigger considered only if not serving a previous burst
+	    {
+		inBurst = true;
+	    	currBaseSampleCount = 0;
+	    	burstCount = 0;
+		segStart = currTime;
+	    }
+	    startTimes.erase(startTimes.begin());
+	}
+
+	if(inBurst && (currBaseSampleCount % freqDiv == 0))
+	{
+	    segBuffer[burstCount++] = sample;
+	    if(burstCount >= segmentSize)
+	    {   
+		double segEnd = segStart + segmentSize * basePeriod / freqDiv;
+		MDSplus::Data *startSegData = new MDSplus::Float64(segStart);
+		MDSplus::Data *endSegData = new MDSplus::Float64(segEnd);
+		MDSplus::Data *periodData = new MDSplus::Float64(basePeriod / freqDiv);
+		MDSplus::Data *dimData = MDSplus::compileWithArgs("build_range($, $, $)", tree, 3, startSegData, endSegData, periodData);
+		MDSplus::Array *segData = new MDSplus::Int16Array(segBuffer, segmentSize);
+		saveList->addItem(SEGMENT_OP_MAKE, startSegData, endSegData, dimData, segData, rawNode);
+//		rawNode->makeSegment(startSegData, endSegData, dimData, segData);
+		MDSplus::deleteData(periodData);
+		inBurst = false;
+	    }
+	}
+    }
+    virtual void trigger(double trigTime)
+    {
+	startTimes.push_back(trigTime - preTime);
+    }
+};
+
+class EventHandler:public Event
+{
+    BufferHandler *bufHandler;
+public:
+    EventHandler(char *name, BufferHandler *buf):Event(name)
+    {
+	this->bufHandler = bufHandler;
+    }
+    void run()
+    {
+        int bufSize;
+        MDSplus::Data *evData =  getData(); //Get raw data
+	double triggerTime = evData->getDouble();
+        std::cout << "RECEIVED EVENT " << getName() << " WITH DATA  " << evData << "\n";
+	bufHandler->trigger(triggerTime);
+	MDSplus::deleteData(evData);
+    }
+};
+
+	
+#define ADC_BUFFER_SIZE 1000
+int pxi6259EV_readAndSaveAllChannels(int nChan, void *chanFdPtr, int *isBurst, int *f1Div, int *f2Div, double maxDelay, double baseFreq, double *preTimes, double *postTimes, double startTime, int bufSize, int segmentSize, char **eventNames, void *dataNidPtr, void *treePtr, void *saveListPtr, void *stopAcq)
+{ 
+    int chan;
+    SaveListEV *saveList  = (SaveListEV *)saveListPtr;
+    int *chanFd 	= (int *)chanFdPtr;
+    int *dataNid 	= (int *)dataNidPtr;
+    BufferHandler **bufferHandlers;
+    EventHandler **eventHandlers;
+    MDSplus::TreeNode **treeNodes;
+
+
+std::cout << "READ AND SAVE ALL CHANNELS" << std::endl;
+
+    treeNodes = new MDSplus::TreeNode *[nChan];
+    //Delete first all data nids
+    for(int i = 0; i < nChan; i++)
+    {
+        try {
+            treeNodes[i] = new TreeNode(dataNid[i], (Tree *)treePtr);
+            treeNodes[i]->deleteData();
+
+        }catch(MdsException &exc)
+        {
+            printf("Error deleting data nodes\n");
+        }
+    }
+
+    (*(int*)stopAcq) = 0;
+
+    bufferHandlers = new BufferHandler *[nChan];
+    eventHandlers = new EventHandler *[nChan];
+    for( chan = 0; chan < nChan; chan++ )
+    {
+
+std::cout << ":CHANNEL " << chan << "  BURST: " << isBurst[chan] << std::endl;
+
+	if(isBurst[chan])
+	    bufferHandlers[chan] = new BurstBufferHandler((MDSplus::Tree *)treePtr, treeNodes[chan], maxDelay, f1Div[chan], baseFreq, startTime, preTimes[chan], postTimes[chan], saveList);
+	else
+    	    bufferHandlers[chan] = new ClockBufferHandler((MDSplus::Tree *)treePtr, treeNodes[chan], maxDelay, f1Div[chan], f2Div[chan], baseFreq, bufSize, segmentSize, 
+		startTime, preTimes[chan], postTimes[chan], saveList);
+std::cout << "CREATO " << std::endl;
+std::cout << "EVENT: " << eventNames[chan] << std::endl;
+
+	if(eventNames[chan][0]) //Empty string is passed for no event
+	{
+	    eventHandlers[chan] = new EventHandler(eventNames[chan], bufferHandlers[chan]);
+	    eventHandlers[chan]->start();
+	}
+	else
+	    eventHandlers[chan] = NULL;
+
+std::cout << "CREATO EVENT" << std::endl;
+
+    }
+    while( !(*(int*)stopAcq) )
+    {
+	short buffer[ADC_BUFFER_SIZE];
+	for(chan = 0; chan < nChan; chan++)
+	{
+	    int currReadSamples = read(chanFd[chan], buffer, ADC_BUFFER_SIZE * 2);
+            if(currReadSamples <=0)
+            {
+                if (errno == EAGAIN || errno == ENODATA) 
+		{
+                    usleep(50);
+			        currReadSamples = 0; // No data currently available... Try again
+                    //continue;
+                }
+                else
+                {
+                    if (errno == EOVERFLOW )
+                    {
+		    	printf("PXI 6259 Error reading samples on ai%d: (%d) %s \n", chan, errno, strerror(errno));
+                    	for( chan = 0; chan < nChan; chan++ )
+		    	{
+			    if(eventHandlers[chan])
+			    {
+	    		    	eventHandlers[chan]->stop();
+	    		    	delete eventHandlers[chan];
+			    }
+			    delete bufferHandlers[chan];
+		        }
+		        delete [] eventHandlers;
+		        delete [] bufferHandlers;
+                        return -2;
+                    }
+                } 
+	    }
+	    else
+	    {
+	        for(int sampleIdx = 0; sampleIdx < currReadSamples; sampleIdx++)
+		    bufferHandlers[chan]->processSample(buffer[sampleIdx]);
+	    }
+	}
+    }
+
+    for( chan = 0; chan < nChan; chan++ )
+    {
+	if(eventHandlers[chan])
+	{
+	    eventHandlers[chan]->stop();
+	    delete eventHandlers[chan];
+	}
+	delete bufferHandlers[chan];
+    }
+    delete [] eventHandlers;
+    delete [] bufferHandlers;
+    printf("STOP PXI 6259 Acquisition %d\n", *(int *)stopAcq );
+    return 1;
+}   
+
+
