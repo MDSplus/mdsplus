@@ -23,14 +23,18 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "mdsip_connections.h"
+#include <pthread_port.h>
+#include <tdishr_messages.h>
 #include <mdstypes.h>
 #include "cvtdef.h"
 #ifdef _WIN32
-#include <io.h>
+# include <io.h>
+#define SIGCHLD 17
 #else
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+# ifdef HAVE_UNISTD_H
+# include <unistd.h>
+# endif
+# include <signal.h>
 #endif
 #include <fcntl.h>
 #include "mdsIo.h"
@@ -41,9 +45,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <stdio.h>
 #if defined(linux) && !defined(_LARGEFILE_SOURCE)
-#define _LARGEFILE_SOURCE
-#define _FILE_OFFSET_BITS 64
-#define __USE_FILE_OFFSET64
+# define _LARGEFILE_SOURCE
+# define _FILE_OFFSET_BITS 64
+# define __USE_FILE_OFFSET64
 #endif
 #include "mdsip_connections.h"
 #include <treeshr.h>
@@ -52,6 +56,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <libroutines.h>
 #include <strroutines.h>
+#include <errno.h>
 #include "cvtdef.h"
 
 extern int TdiExecute();
@@ -226,7 +231,7 @@ static Message *BuildResponse(int client_type, unsigned char message_id,
     }
     nbytes = num * length;
   }
-  m = memset(malloc(sizeof(MsgHdr) + nbytes), 0, sizeof(MsgHdr) + nbytes);
+  m = calloc(1,sizeof(MsgHdr) + nbytes);
   m->h.msglen = sizeof(MsgHdr) + nbytes;
   m->h.client_type = client_type;
   m->h.message_id = message_id;
@@ -578,6 +583,119 @@ static void ClientEventAst(MdsEventList * e, int data_len, char *data)
   UnlockAsts();
 }
 
+#define CANCELABLE
+typedef struct worker_args_s {
+  Connection*          connection;
+  struct descriptor_xd*xd_out;
+  int                  status;
+#ifdef CANCELABLE
+  Condition* condition;
+#endif
+} worker_args_t;
+
+typedef struct worker_cleanup_s {
+  Connection*connection;
+  void*      old_dbid;
+  void*      tdi_context[6];
+#ifdef CANCELABLE
+  Condition* condition;
+#endif
+} worker_cleanup_t;
+static void WorkerCleanup(void *worker_cleanup_v) {
+  worker_cleanup_t* wc = (worker_cleanup_t*)worker_cleanup_v;
+  if (wc->connection) {
+    TdiSaveContext(wc->connection->tdicontext);
+    TdiRestoreContext(wc->tdi_context);
+    wc->connection->DBID = TreeSwitchDbid(wc->old_dbid);
+  }
+#ifdef CANCELABLE
+  CONDITION_RESET(wc->condition);
+#endif
+}
+static void WorkerThread(void *args) {
+  worker_args_t* wa = (worker_args_t*)args;
+  worker_cleanup_t wc;
+  if (GetContextSwitching()) {
+    wc.connection = wa->connection;
+    wc.old_dbid = TreeSwitchDbid(wa->connection->DBID);
+    TdiSaveContext(wc.tdi_context);
+    TdiRestoreContext(wa->connection->tdicontext);
+  }else wc.connection = NULL;
+#ifdef CANCELABLE
+# ifndef SIGNAL
+  struct sigaction oldact;
+  if (sigaction(SIGINT, NULL, &oldact)) {
+    perror("get SIGINT");
+    exit(EXIT_FAILURE);
+  };
+  if (sigaction(SIGCHLD, &oldact, NULL)) {
+    perror("set SIGCHLD");
+    exit(EXIT_FAILURE);
+  };
+# endif
+  CONDITION_SET((wc.condition = wa->condition));
+#endif
+  pthread_cleanup_push(WorkerCleanup,(void*)&wc);
+  wa->status = (int)(intptr_t)LibCallg(&wa->connection->nargs, TdiExecute, wa->connection->descrip);
+  if IS_OK(wa->status)
+    wa->status = TdiData(wa->connection->descrip[wa->connection->nargs-2], wa->xd_out MDS_END_ARG);
+  pthread_cleanup_pop(1);
+}
+
+static inline int executeCommand(Connection* connection, struct descriptor_xd* ans_xd) {
+#ifdef CANCELABLE
+  pthread_t Worker;
+  Condition WorkerRunning = CONDITION_INITIALIZER;
+#endif
+  worker_args_t wa;
+  wa.connection = connection;
+  wa.xd_out     = ans_xd;
+  wa.status     = MDSplusSUCCESS;
+#ifdef CANCELABLE
+  wa.condition  = &WorkerRunning;
+# define status wa.status
+  CONDITION_START_THREAD(&WorkerRunning, Worker, *4, WorkerThread, &wa);
+# undef status
+  int canceled = B_FALSE;
+#ifdef SIGNAL
+  int signalled = 0;
+#endif
+  _CONDITION_LOCK(&WorkerRunning);
+  while (WorkerRunning.value) {
+    _CONDITION_WAIT_1SEC(&WorkerRunning,);\
+    if (canceled                //skip check if already canceled
+     || !connection->io->check) continue; // if no io->check def
+    int res = connection->io->check(connection);
+    if (res) {
+#ifdef SIGNAL
+      //fprintf(stderr,"io-check failed: %d,%d,%d",res,signalled,canceled);perror(" ");
+      if (!signalled) {
+        pthread_kill(Worker,signalled=SIGCHLD);
+        continue;
+      }
+#endif
+      pthread_cancel(Worker);
+#ifdef SIGNAL
+      pthread_kill(Worker,SIGCHLD);
+#endif
+      canceled = B_TRUE;
+    }
+  }
+  _CONDITION_UNLOCK(&WorkerRunning);
+  pthread_cond_destroy(&WorkerRunning.cond);
+  pthread_mutex_destroy(&WorkerRunning.mutex);
+#ifdef SIGNAL
+  if (canceled || signalled) return TdiABORT;
+#else
+  if (canceled) return TdiABORT;
+#endif
+#else //CANCELABLE
+  WorkerThread(&wa);
+#endif //CANCELABLE
+  return wa.status;
+}
+
+
 ///
 /// Executes TDI expression held by a connecion instance. This first searches if
 /// connection message corresponds to AST or CAN requests, if no asyncronous ops
@@ -594,8 +712,7 @@ static void ClientEventAst(MdsEventList * e, int data_len, char *data)
 /// \param connection the Connection instance filled with proper descriptor arguments
 /// \return the execute message answer built using BuildAnswer()
 ///
-static Message *ExecuteMessage(Connection * connection)
-{
+static Message *ExecuteMessage(Connection * connection) {
   Message *ans = 0;		// return message instance //
   int status = 1;		// return status           //
 
@@ -676,28 +793,13 @@ static Message *ExecuteMessage(Connection * connection)
   }
   // NORMAL TDI COMMAND //
   else {
-    void *old_dbid;
-    void *tdi_context[6];
     EMPTYXD(ans_xd);
-
-    int contextSwitch = GetContextSwitching();
-    if (contextSwitch) {
-      old_dbid = TreeSwitchDbid(connection->DBID);
-      TdiSaveContext(tdi_context);
-      TdiRestoreContext(connection->tdicontext);
-    }
-    connection->descrip[connection->nargs++] = (struct descriptor *)(xd = (struct descriptor_xd *)
-								     memcpy(malloc
-									    (sizeof
-									     (emptyxd)), &emptyxd,
-									    sizeof(emptyxd)));
+    xd = (struct descriptor_xd *)memcpy(malloc(sizeof(emptyxd)), &emptyxd,sizeof(emptyxd));
+    connection->descrip[connection->nargs++] = (struct descriptor *)xd;
     connection->descrip[connection->nargs++] = MdsEND_ARG;
     ResetErrors();
-    SetCompressionLevel(connection->compression_level);
-    status = (int)(intptr_t)LibCallg(&connection->nargs, TdiExecute);
-    if (status & 1)
-      status = TdiData(xd, &ans_xd MDS_END_ARG);
-    if (!(status & 1))
+    status = executeCommand(connection,&ans_xd);
+    if STATUS_NOT_OK
       GetErrorText(status, &ans_xd);
     else if (GetCompressionLevel() != connection->compression_level) {
       connection->compression_level = GetCompressionLevel();
@@ -708,11 +810,6 @@ static Message *ExecuteMessage(Connection * connection)
     ans = BuildResponse(connection->client_type, connection->message_id, status, ans_xd.pointer);
     MdsFree1Dx(xd, NULL);
     MdsFree1Dx(&ans_xd, NULL);
-    if (contextSwitch) {
-      TdiSaveContext(connection->tdicontext);
-      TdiRestoreContext(tdi_context);
-      connection->DBID = TreeSwitchDbid(old_dbid);
-    }
   }
   FreeDescriptors(connection);
   return ans;
