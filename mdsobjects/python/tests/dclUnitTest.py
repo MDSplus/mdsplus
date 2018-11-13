@@ -25,6 +25,7 @@
 
 from unittest import TestCase,TestSuite,TextTestRunner
 import os,sys
+from time import sleep
 from re import match
 from threading import RLock
 
@@ -119,8 +120,6 @@ class Tests(TestCase):
         stree = [str(t) for t in trees]
         for t in trees:
             try: t.close()
-            except MDSplus.TreeWRITEFIRST:
-                 t.quit()
             except MDSplus.TreeNOT_OPEN:
                 print(stree)
         if refs<0: return
@@ -169,41 +168,44 @@ class Tests(TestCase):
       else:
           self.cleanup(1)
 
+    def _testDispatchCommand(self,mdsip,command,stdout=None,stderr=None):
+        self.assertEqual(tcl('dispatch/command/nowait/server=%s %s'  %(mdsip,command),1,1,1),(None,None))
+
+    @staticmethod
+    def _setup_mdsip(server_env,port_env,default_port,fix0):
+        host = getenv(server_env,'')
+        if len(host)>0:
+            return host,0
+        port = int(getenv(port_env,default_port))
+        if port==0:
+            if fix0: port = default_port
+            else: return None,0
+        return 'localhost:%d'%(port,),port
+
+    def _start_mdsip(self,server,port,logname,env=None):
+        if port>0:
+            from subprocess import Popen,STDOUT
+            logfile = '%s_%d.log'%(logname,self.index) 
+            log = open(logfile,'w')
+            try:
+                hosts = '%s/mdsip.hosts'%self.root
+                params = ['mdsip','-s','-p',str(port),'-h',hosts]
+                print(' '.join(params+['>',logfile,'2>&1']))
+                mdsip = Popen(params,env=env,stdout=log,stderr=STDOUT)
+            except:
+                log.close()
+                raise
+            return mdsip,log
+        if server:
+            for envpair in self.envx.items():
+                self._testDispatchCommand(server,'env %s=%s'%envpair)
+        return None,None
+
     def dispatcher(self):
       def test():
-        from time import sleep
-        hosts = '%s/mdsip.hosts'%self.root
-        def testDispatchCommand(mdsip,command,stdout=None,stderr=None):
-            self.assertEqual(tcl('dispatch/command/nowait/server=%s %s'  %(mdsip,command),1,1,1),(None,None))
-        def setup_mdsip(server_env,port_env,default_port,fix0):
-            host = getenv(server_env,'')
-            if len(host)>0:
-                return host,0
-            port = int(getenv(port_env,default_port))
-            if port==0:
-                if fix0: port = default_port
-                else: return None,0
-            return 'localhost:%d'%(port,),port
-        def start_mdsip(server,port,logname,env=None):
-            if port>0:
-                from subprocess import Popen,STDOUT
-                logfile = '%s_%d.log'%(logname,self.index) 
-                log = open(logfile,'w')
-                try:
-                    params = ['mdsip','-s','-p',str(port),'-h',hosts]
-                    print(' '.join(params+['>',logfile,'2>&1']))
-                    mdsip = Popen(params,env=env,stdout=log,stderr=STDOUT)
-                except:
-                    log.close()
-                    raise
-                return mdsip,log
-            if server:
-                for envpair in self.envx.items():
-                    testDispatchCommand(server,'env %s=%s'%envpair)
-            return None,None
-        monitor,monitor_port = setup_mdsip('ACTION_MONITOR','MONITOR_PORT',8700+self.index,False)
+        monitor,monitor_port = self._setup_mdsip('ACTION_MONITOR','MONITOR_PORT',8700+self.index,False)
         monitor_opt = "/monitor=%s"%monitor if monitor_port>0 else ""
-        server ,server_port  = setup_mdsip('ACTION_SERVER', 'ACTION_PORT',8800+self.index,True)
+        server ,server_port  = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT',8800+self.index,True)
         shot = self.shot+1
         Tree('pytree',-1,'ReadOnly').createPulse(shot)
         show_server = "Checking server: %s\n[^,]+, [^,]+, logging enabled, Inactive\n"%server
@@ -213,22 +215,16 @@ class Tests(TestCase):
         """ using dispatcher """
         mon,mon_log,svr,svr_log = (None,None,None,None)
         try:
-            mon,mon_log = start_mdsip(monitor,monitor_port,'monitor')
-            svr,svr_log = start_mdsip(server ,server_port ,'server',self.env)
+            mon,mon_log = self._start_mdsip(monitor,monitor_port,'monitor')
+            svr,svr_log = self._start_mdsip(server ,server_port ,'server',self.env)
             try:
-                sleep(3)
+                sleep(1)
                 if mon: self.assertEqual(mon.poll(),None)
                 if svr: self.assertEqual(svr.poll(),None)
                 """ mdsconnect """
                 c = Connection(server)
                 self.assertEqual(c.get('1').tolist(),1)
                 self.assertEqual(c.getObject('1:3:1').__class__,Range)
-                if not sys.platform.startswith('win'): # Windows does not support timeout yet
-                    try: #  currently the connection needs to be closed after a timeout
-                        Connection(server).get("wait(1)",timeout=100)
-                        self.fail("Connection.get(wait(1)) should have timed out.")
-                    except Exc.MDSplusException as e:
-                        self.assertEqual(e.__class__,Exc.TdiTIMEOUT)
                 g = GetMany(c);
                 g.append('a','1')
                 g.append('b','$',2)
@@ -239,18 +235,18 @@ class Tests(TestCase):
                 self.assertEqual(g.get('c'),3)
                 """ tcl dispatch """
                 self._doTCLTest('show server %s'%server,out=show_server,re=True)
-                testDispatchCommand(server,'set verify')
-                testDispatchCommand(server,'type test')
+                self._testDispatchCommand(server,'set verify')
+                self._testDispatchCommand(server,'type test')
                 self._doTCLTest('set tree pytree/shot=%d'%shot)
                 self._doTCLTest('dispatch/build%s'%monitor_opt)
                 self._doTCLTest('dispatch/phase%s INIT'%monitor_opt)
-                sleep(1)
+                sleep(.1)
                 self._doTCLTest('show server %s'%server,out=show_server,re=True)
                 self._doTCLTest('dispatch/phase%s PULSE'%monitor_opt)
-                sleep(1)
+                sleep(.1)
                 self._doTCLTest('show server %s'%server,out=show_server,re=True)
                 self._doTCLTest('dispatch/phase%s STORE'%monitor_opt)
-                sleep(1)
+                sleep(.1)
                 self._doTCLTest('show server %s'%server,out=show_server,re=True)
                 """ tcl exceptions """
                 self._doExceptionTest('dispatch/command/server=%s '%server,Exc.MdsdclIVVERB)
@@ -279,16 +275,51 @@ class Tests(TestCase):
           self.cleanup(-1)
           raise
       else:
-          self.cleanup(1 if sys.platform.startswith('win') else 0)
+          self.cleanup(1)
+
+    def timeout(self,full=False):
+      def test():
+        def test_timeout(c,expr,to):
+            with c:
+                try: # break out of sleep
+                    c.get('write(2,"tic: "//"%s");%s;write(2,"toc: "//"%s")'%(expr,expr,expr),timeout=to)
+                    self.fail('Connection.get("%s") should have timed out.'%expr)
+                except Exc.MDSplusException as e:
+                    self.assertEqual(e.__class__,Exc.TdiTIMEOUT)
+        server ,server_port  = self._setup_mdsip('TIMEOUT_SERVER', 'TIMEOUT_PORT',8600+self.index,True)
+        svr = svr_log = None
+        try:
+            svr,svr_log = self._start_mdsip(server ,server_port ,'timeout',self.env)
+            try:
+                sleep(1)
+                if svr: self.assertEqual(svr.poll(),None)
+                test_timeout(Connection(server),"wait(3)",100) # break tdi wait
+            finally:
+                if svr and svr.poll() is None:
+                    svr.terminate()
+                    svr.wait()
+        finally:
+            if svr_log: svr_log.close()
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup(1)
 
     def runTest(self):
         for test in self.getTests():
+            sys.stdout.write("\n### %s ###\n"%test);sys.stdout.flush()
             self.__getattribute__(test)()
     @staticmethod
     def getTests():
         lst = ['interface']
         if Tests.inThread: return lst
-        return ['dispatcher'] + lst
+        lst.append('dispatcher')
+        if not sys.platform.startswith('win'):
+            lst.append('timeout')
+        return lst
     @classmethod
     def getTestCases(cls,tests=None):
         if tests is None: tests = cls.getTests()
