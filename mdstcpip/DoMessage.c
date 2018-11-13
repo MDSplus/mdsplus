@@ -35,15 +35,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int DoMessage(int id){
   Connection *c = FindConnection(id, 0);
-  Message *(*processMessage) (Connection *, Message *) = NULL;
+  static Message *(*processMessage) (Connection *, Message *) = NULL;
   int status = LibFindImageSymbol_C("MdsIpSrvShr", "ProcessMessage", &processMessage);
   if (STATUS_NOT_OK || !c) return 0; // will cause tunnel to terminate
   Message *msgptr = GetMdsMsg(id, &status);
   Message *ans = 0;
   if STATUS_OK {
-    ans = (*processMessage) (c, msgptr);
+    ans = processMessage(c, msgptr);
     if (ans) {
-      // NOTE: [Andrea] this status is not actually tested for errors //
       status = SendMdsMsg(id, ans, 0);
       free(ans);
     }
