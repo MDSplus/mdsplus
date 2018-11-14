@@ -368,12 +368,11 @@ static int io_check(Connection* c){
       FD_SET(sock, &readfds);
       err = select(sock+1, &readfds, NULL, NULL, &timeout);
       switch (err) {
-      case -1: perror("select");break; // Error
+      case -1: break; // Error
       case  0: break; // Timeout
       default: {// for select this will be 1
           char bptr[1];
           err = RECV(sock, bptr, 1, MSG_NOSIGNAL||MSG_PEEK);
-          if (err<0) perror("recv");
           err = (err==1) ? 0 : -1;
           break;
         }
