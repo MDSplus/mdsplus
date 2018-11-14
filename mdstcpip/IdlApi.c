@@ -25,7 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <STATICdef.h>
 #include <mdsplus/mdsconfig.h>
 #include <ipdesc.h>
-#ifdef WIN32
+#ifdef _WIN32
 #define BlockSig(arg)
 #define UnBlockSig(arg)
 #else
