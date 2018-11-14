@@ -23,7 +23,7 @@ SYNOPSIS
                [--distname=name] [--updatepkg] [--eventport=number]
                [--arch=name] [--color] [--winhost=hostname]
                [--winbld=dir] [--winrembld=dir] [--gitcommit=commit]
-               [--jars] [--make-jars] [--docker-srcdir=dir]
+               [--jars] [--jars-dir=dir] [--make-jars] [--docker-srcdir=dir]
 
 DESCRIPTION
     The build.sh script is used for building, testing and deploy MDSplus
@@ -197,6 +197,9 @@ OPTIONS
        Set by trigger job to indicate that build job should get the java jar
        files from the trigger source directory instead of building them.
 
+    --jars-dir=dirspec
+       Use java jars from specified directory tree.
+
     --make-jars
        Triggers the generation of the java programs (.jar files)
 
@@ -295,7 +298,6 @@ parsecmd() {
 		EVENT_PORT="${i#*=}"
 		;;
 	    --release)
-		RELEASE_VERSION=1.2.3
 		RELEASE=yes
 		;;
             --release=*)
@@ -303,7 +305,6 @@ parsecmd() {
 		RELEASE=yes
 		;;
 	    --publish)
-		RELEASE_VERSION=1.2.3
 		PUBLISH=yes
 		;;
             --publish=*)
@@ -383,7 +384,10 @@ parsecmd() {
 		GIT_COMMIT="${i#*=}"
 		;;
 	    --jars)
-		JARS_DIR="$(realpath $(dirname ${0})/../jars)"
+		JARS_DIR="${JARS_DIR-$(realpath $(dirname ${0})/../jars)}"
+		;;
+	    --jars-dir=*)
+		JARS_DIR="$(realpath ${i#*=})"
 		;;
 	    --make-jars)
 		MAKE_JARS="yes"
@@ -463,6 +467,8 @@ NORMAL() {
 	echo -e "\033[m"
     fi
 }
+
+RELEASE_VERSION="${RELEASE_VERSION-1.2.3}"
 
 if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
 then
