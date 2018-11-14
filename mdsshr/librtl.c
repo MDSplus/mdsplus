@@ -339,7 +339,7 @@ EXPORT int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag __attri
   return status;
 }
 
-#else				/* WIN32 */
+#else	/* _WIN32 */
 
 
 STATIC_ROUTINE char const *nonblank(char *p)
