@@ -278,6 +278,13 @@ class Tests(TestCase):
           self.cleanup(1 if sys.platform.startswith('win') else 0)
 
     def timeout(self):
+        def test_timeout(c,expr):
+            with c:
+                try: # break out of sleep
+                    c.get(expr,timeout=100)
+                    self.fail('Connection.get("%s") should have timed out.'%expr)
+                except Exc.MDSplusException as e:
+                    self.assertEqual(e.__class__,Exc.TdiTIMEOUT)
         server ,server_port  = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT',8800+self.index,True)
         svr = svr_log = None
         try:
@@ -286,21 +293,11 @@ class Tests(TestCase):
                 sleep(1)
                 if svr: self.assertEqual(svr.poll(),None)
                 c = Connection(server)
-                with c:
-                  try: # break out of sleep
-                    c.get("wait(10)",timeout=100)
-                    self.fail("Connection.get(wait(10)) should have timed out.")
-                  except Exc.MDSplusException as e:
-                    self.assertEqual(e.__class__,Exc.TdiTIMEOUT)
-                with c:
-                  try: # break out of infinite loop
-                    c.get("py('while 1: pass')",timeout=100)
-                    self.fail("Connection.get(wait(10)) should have timed out.")
-                  except Exc.MDSplusException as e:
-                    self.assertEqual(e.__class__,Exc.TdiTIMEOUT)
-                # after a timeout the server still finishes the task unless the client disconnects
-                # with and reconnect make sure this happens
-                c.reconnect()
+                test_timeout(c,"wait(10)") # break tdi wait
+                test_timeout(c,"for(;1;) ;") # break tdi inf.loop
+                if not sys.platform.startswith("win"): # windows cannot cancel python yet (signal handling)
+                    test_timeout(c,"py('from time import sleep;sleep(10)')") # break python sleep
+                    test_timeout(c,"py('while 1: pass')") # break python inf.loop
                 c.get("1")
             finally:
                 if svr and svr.poll() is None:
