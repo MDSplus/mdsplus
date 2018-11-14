@@ -130,7 +130,7 @@ extern "C" {
 #include <tdishr_messages.h>
 #include <treeshr.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 //#pragma warning (disable : 4013 4102 4035)	/* LEX produces code with no forward declarations of tdiyylook and tdiyyback. Also has unreferenced label tdiyyfussy. And two int functions: tdiyyoutput and tdiyyunput do not return a value. */
 #endif
 
