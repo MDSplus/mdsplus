@@ -114,7 +114,7 @@
 #define SEND_BUF_SIZE 32768
 #define RECV_BUF_SIZE 32768
 
-#if defined(WIN32) || defined(__linux__) || defined(_NO_SIGHOLD)
+#if defined(_WIN32) || defined(__linux__) || defined(_NO_SIGHOLD)
 #define sighold(arg)
 #define sigrelse(arg)
 #endif
