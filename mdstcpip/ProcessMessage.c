@@ -27,14 +27,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 #include <mdstypes.h>
 #include "cvtdef.h"
+#include <signal.h>
 #ifdef _WIN32
 # include <io.h>
-#define SIGCHLD 17
+#define SIGCHLD SIGINT
 #else
 # ifdef HAVE_UNISTD_H
 # include <unistd.h>
 # endif
-# include <signal.h>
 #endif
 #include <fcntl.h>
 #include "mdsIo.h"
@@ -587,7 +587,6 @@ static void ClientEventAst(MdsEventList * e, int data_len, char *data)
 typedef struct worker_args_s {
   Connection*          connection;
   struct descriptor_xd*xd_out;
-  int                  status;
 #ifdef CANCELABLE
   Condition* condition;
 #endif
@@ -612,87 +611,67 @@ static void WorkerCleanup(void *worker_cleanup_v) {
   CONDITION_RESET(wc->condition);
 #endif
 }
-static void WorkerThread(void *args) {
+static void* WorkerThread(void *args) {
+  int status;
   worker_args_t* wa = (worker_args_t*)args;
-  worker_cleanup_t wc;
+  worker_cleanup_t wc;memset(&wc,0,sizeof(worker_cleanup_t));
+#ifdef CANCELABLE
+  CONDITION_SET((wc.condition = wa->condition));
+#endif
+  pthread_cleanup_push(WorkerCleanup,(void*)&wc);
   if (GetContextSwitching()) {
     wc.connection = wa->connection;
     wc.old_dbid = TreeSwitchDbid(wa->connection->DBID);
     TdiSaveContext(wc.tdi_context);
     TdiRestoreContext(wa->connection->tdicontext);
-  }else wc.connection = NULL;
-#ifdef CANCELABLE
-# ifndef SIGNAL
-  struct sigaction oldact;
-  if (sigaction(SIGINT, NULL, &oldact)) {
-    perror("get SIGINT");
-    exit(EXIT_FAILURE);
-  };
-  if (sigaction(SIGCHLD, &oldact, NULL)) {
-    perror("set SIGCHLD");
-    exit(EXIT_FAILURE);
-  };
-# endif
-  CONDITION_SET((wc.condition = wa->condition));
-#endif
-  pthread_cleanup_push(WorkerCleanup,(void*)&wc);
-  wa->status = (int)(intptr_t)LibCallg(&wa->connection->nargs, TdiExecute, wa->connection->descrip);
-  if IS_OK(wa->status)
-    wa->status = TdiData(wa->connection->descrip[wa->connection->nargs-2], wa->xd_out MDS_END_ARG);
+  }
+  status = (int)(intptr_t)LibCallg(&wa->connection->nargs, TdiExecute, wa->connection->descrip);
+  if IS_OK(status)
+    status = TdiData(wa->connection->descrip[wa->connection->nargs-2], wa->xd_out MDS_END_ARG);
   pthread_cleanup_pop(1);
+  return (void*)(intptr_t)status;
 }
 
 static inline int executeCommand(Connection* connection, struct descriptor_xd* ans_xd) {
-#ifdef CANCELABLE
-  pthread_t Worker;
-  Condition WorkerRunning = CONDITION_INITIALIZER;
-#endif
   worker_args_t wa;
   wa.connection = connection;
   wa.xd_out     = ans_xd;
-  wa.status     = MDSplusSUCCESS;
-#ifdef CANCELABLE
+#ifndef CANCELABLE
+  return (int)(intptr_t)WorkerThread(&wa);
+#else
+  pthread_t Worker;
+  Condition WorkerRunning = CONDITION_INITIALIZER;
   wa.condition  = &WorkerRunning;
-# define status wa.status
-  CONDITION_START_THREAD(&WorkerRunning, Worker, *4, WorkerThread, &wa);
-# undef status
   int canceled = B_FALSE;
-#ifdef SIGNAL
-  int signalled = 0;
-#endif
-  _CONDITION_LOCK(&WorkerRunning);
+  _CONDITION_LOCK(wa.condition);
+  CREATE_THREAD(Worker, *4, WorkerThread, &wa);
+  if (c_status) {
+    perror("Error creating pthread");
+    pthread_cond_destroy(&WorkerRunning.cond);
+    pthread_mutex_destroy(&WorkerRunning.mutex);
+    return MDSplusFATAL;
+  } else
+    _CONDITION_WAIT_SET(wa.condition);
   while (WorkerRunning.value) {
-    _CONDITION_WAIT_1SEC(&WorkerRunning,);\
-    if (canceled                //skip check if already canceled
-     || !connection->io->check) continue; // if no io->check def
-    int res = connection->io->check(connection);
-    if (res) {
-#ifdef SIGNAL
-      //fprintf(stderr,"io-check failed: %d,%d,%d",res,signalled,canceled);perror(" ");
-      if (!signalled) {
-        pthread_kill(Worker,signalled=SIGCHLD);
-        continue;
-      }
-#endif
-      pthread_cancel(Worker);
-#ifdef SIGNAL
-      pthread_kill(Worker,SIGCHLD);
-#endif
-      canceled = B_TRUE;
-    }
+    _CONDITION_WAIT_1SEC(wa.condition,);
+    if (!WorkerRunning.value) break;
+    if (canceled) continue;     //skip check if already canceled
+    if (!connection->io->check) continue; // if no io->check def
+    if (!connection->io->check(connection)) continue;
+    pthread_cancel(Worker);
+// under linux this allows to break out from python
+    pthread_kill(Worker,SIGCHLD);
+//
+    canceled = B_TRUE;
   }
-  _CONDITION_UNLOCK(&WorkerRunning);
+  _CONDITION_UNLOCK(wa.condition);
+  void* result;
+  pthread_join(Worker,&result);
   pthread_cond_destroy(&WorkerRunning.cond);
   pthread_mutex_destroy(&WorkerRunning.mutex);
-#ifdef SIGNAL
-  if (canceled || signalled) return TdiABORT;
-#else
-  if (canceled) return TdiABORT;
-#endif
-#else //CANCELABLE
-  WorkerThread(&wa);
+  if (result==PTHREAD_CANCELED) return TdiABORT;
+  return (int)(intptr_t)result;
 #endif //CANCELABLE
-  return wa.status;
 }
 
 
