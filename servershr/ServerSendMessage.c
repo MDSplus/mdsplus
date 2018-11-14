@@ -453,7 +453,6 @@ static int start_receiver(uint16_t *port_out)
   static uint16_t port = 0;
   static SOCKET sock;
   static pthread_t thread;
-// CONDITION_START_THREAD(&ReceiverRunning, thread, *16, ReceiverThread, s);
   _CONDITION_LOCK(&ReceiverRunning);
   if (port == 0) {
     sock = CreatePort(&port);
@@ -473,7 +472,6 @@ static int start_receiver(uint16_t *port_out)
     }
   }
   _CONDITION_UNLOCK(&ReceiverRunning);
-//\CONDITION_START_THREAD(&ReceiverRunning, thread, *16, ReceiverThread, &sock);
   *port_out = port;
   return STATUS_NOT_OK;
 }
