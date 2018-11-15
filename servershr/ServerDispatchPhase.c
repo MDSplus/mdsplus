@@ -156,22 +156,25 @@ STATIC_THREADSAFE pthread_rwlock_t table_lock = PTHREAD_RWLOCK_INITIALIZER;
 #define RDLOCK_TABLE pthread_rwlock_rdlock(&table_lock)
 #define UNLOCK_TABLE pthread_rwlock_unlock(&table_lock)
 
-#define WRLOCK_ACTION(idx) pthread_rwlock_wrlock(&table->actions[idx].lock)
-#define RDLOCK_ACTION(idx) pthread_rwlock_rdlock(&table->actions[idx].lock)
-#define UNLOCK_ACTION(idx) pthread_rwlock_unlock(&table->actions[idx].lock)
+#define ACTION_LOCK(idx) table->actions[idx].lock
+#define DEBUG_LOCK(idx,info,typ,b) // fprintf(stderr,"%d: %-10s %s[%d,%d]%c\n",idx,#info,#typ,ACTION_LOCK(idx).__data.__readers,ACTION_LOCK(idx).__data.__writers,b)
+#define XLOCK_ACTION(idx,info,typ) do{DEBUG_LOCK(idx,info,typ,'?');pthread_rwlock_ ## typ ## lock(&ACTION_LOCK(idx));DEBUG_LOCK(idx,info,typ,'!');}while(0)
+#define WRLOCK_ACTION(idx,info) XLOCK_ACTION(idx,info,wr)
+#define RDLOCK_ACTION(idx,info) XLOCK_ACTION(idx,info,rd)
+#define UNLOCK_ACTION(idx,info) XLOCK_ACTION(idx,info,un)
 
 //#define DEBUG
 #define PRINT_ACTIONS {\
   int sti;\
   for (sti=0 ; sti < table->num ; sti++){\
-    RDLOCK_ACTION(sti);\
+    RDLOCK_ACTION(sti,debug);\
     fprintf(stderr,"Action(%d): %s, p=%d(%d), %d, %d\n",sti,\
       table->actions[sti].path,\
       table->actions[sti].phase,\
       table->actions[sti].condition!=NULL,\
       table->actions[sti].dispatched,\
       table->actions[sti].done);\
-    UNLOCK_ACTION(sti);\
+    UNLOCK_ACTION(sti,debug);\
   }\
 }
 //"
@@ -196,7 +199,7 @@ void SendMonitor(int mode, int idx){
 	tree[i] = cptr[i];
     tree[i] = 0;
     ActionInfo *actions = table->actions;
-    RDLOCK_ACTION(idx);
+    RDLOCK_ACTION(idx,sm);
     int on = actions[idx].on;
     char server[33];
     for (i = 0, cptr = actions[idx].server; i < 32 && (cptr[i]!=' ') ; i++)
@@ -204,7 +207,7 @@ void SendMonitor(int mode, int idx){
     server[i] = 0;
     MonitorOn = ServerSendMonitor(Monitor, tree, table->shot, actions[idx].phase,
 				  actions[idx].nid, on, mode, server, actions[idx].status);
-    UNLOCK_ACTION(idx);
+    UNLOCK_ACTION(idx,sm);
     }UNLOCK_TABLE;
   }
 }
@@ -214,7 +217,7 @@ STATIC_ROUTINE void ActionDone(int idx){
   char logmsg[1024];
   if (idx >= 0) {
     RDLOCK_TABLE;{
-    RDLOCK_ACTION(idx);
+    RDLOCK_ACTION(idx,ad);
     ActionInfo *actions = table->actions;
     if (actions[idx].event)
       MDSEvent(actions[idx].event, sizeof(int), (char *)&table->shot);
@@ -241,32 +244,33 @@ STATIC_ROUTINE void ActionDone(int idx){
         int dstat;
         int doit;
         int cidx = actions[idx].referenced_by[i];
-        RDLOCK_ACTION(cidx);
+        RDLOCK_ACTION(cidx,adl);
         if (!actions[cidx].done) {
           if IS_OK(dstat = TdiGetLong(actions[cidx].condition, &doit)) {
-            UNLOCK_ACTION(cidx);
+            UNLOCK_ACTION(cidx,ad_ftt);
             if (doit)
               Dispatch(cidx);
             else {
-              WRLOCK_ACTION(cidx);
+              WRLOCK_ACTION(cidx,ad_ftte);
               actions[cidx].status = ServerNOT_DISPATCHED;
-              UNLOCK_ACTION(cidx);
+              UNLOCK_ACTION(cidx,ad_ftte);
               DoActionDone(cidx);
             }
           } else if (dstat != TdiUNKNOWN_VAR) {
-            UNLOCK_ACTION(cidx);
-            WRLOCK_ACTION(cidx);
+            UNLOCK_ACTION(cidx,ad_fte);
+            WRLOCK_ACTION(cidx,ad_fte);
             actions[cidx].status = ServerINVALID_DEPENDENCY;
-            UNLOCK_ACTION(cidx);
+            UNLOCK_ACTION(cidx,ad_fte);
             DoActionDone(cidx);
           }
-        }
+        } else UNLOCK_ACTION(cidx,ad_fe);
       }
-    }UNLOCK_ACTION(idx);
-    WRLOCK_ACTION(idx);{
+    }
+    UNLOCK_ACTION(idx,ad);
+    WRLOCK_ACTION(idx,ad);{
     actions[idx].done = 1;
     actions[idx].recorded = 0;
-    }UNLOCK_ACTION(idx);
+    }UNLOCK_ACTION(idx,ad);
     }UNLOCK_TABLE;
   }
   CONDITION_SET(&JobWaitC);
@@ -274,7 +278,7 @@ STATIC_ROUTINE void ActionDone(int idx){
 
 STATIC_ROUTINE void Before(int idx){
   RDLOCK_TABLE;{
-  WRLOCK_ACTION(idx);{
+  WRLOCK_ACTION(idx,b);{
   ActionInfo *actions = table->actions;
   char logmsg[1024];
   actions[idx].doing = 1;
@@ -285,7 +289,7 @@ STATIC_ROUTINE void Before(int idx){
     sprintf(logmsg,"%s, %s is beginning action %s",now,Server(server, actions[idx].server),actions[idx].path);
     (*Output) (logmsg);
   }
-  }UNLOCK_ACTION(idx);
+  }UNLOCK_ACTION(idx,b);
   }UNLOCK_TABLE;
 }
 
@@ -295,14 +299,14 @@ STATIC_ROUTINE void Before(int idx){
  * FIND_NEXT_ACTION_END(END)
  * UNLOCKs action[i] if FIND_NEXT_ACTION left if locked, i.e. CONDITION was met, i<END.
  */
-#define FIND_NEXT_ACTION(START,END,CONDITION)\
+#define FIND_NEXT_ACTION(START,END,CONDITION,info)\
 i = START;\
 for (; i < END ; i++){\
-RDLOCK_ACTION(i);\
+RDLOCK_ACTION(i,fna_##info);\
 if ( CONDITION ) break;\
-UNLOCK_ACTION(i);\
+UNLOCK_ACTION(i,fna_##info);\
 }// leaves actions[i] locked if i < table->num
-#define FIND_NEXT_ACTION_END(END) if (i < END) UNLOCK_ACTION(i);
+#define FIND_NEXT_ACTION_END(END,info) if (i < END) UNLOCK_ACTION(i,fnae_##info);
 
 STATIC_ROUTINE void SetActionRanges(int phase, int *first_c, int *last_c){
   int i;
@@ -311,23 +315,23 @@ STATIC_ROUTINE void SetActionRanges(int phase, int *first_c, int *last_c){
 #ifdef DEBUG
   PRINT_ACTIONS;
 #endif
-  FIND_NEXT_ACTION(0, table->num, actions[i].phase==phase)
+  FIND_NEXT_ACTION(0, table->num, actions[i].phase==phase,sar)
   if (i < table->num) {
     if (actions[i].condition) {
-      UNLOCK_ACTION(i);
+      UNLOCK_ACTION(i,sar1);
       *first_c = i;
-      FIND_NEXT_ACTION(*first_c+1,table->num, (actions[i].phase != phase) || !actions[i].condition);
+      FIND_NEXT_ACTION(*first_c+1,table->num, (actions[i].phase != phase) || !actions[i].condition,sar1);
       *last_c = i;
     } else
       *first_c = *last_c = table->num;
     if (i < table->num && actions[i].phase == phase) {
-      UNLOCK_ACTION(i);
+      UNLOCK_ACTION(i,sar2);
       first_s = i;
-      FIND_NEXT_ACTION(first_s+1,table->num, actions[i].phase != phase);
+      FIND_NEXT_ACTION(first_s+1,table->num, actions[i].phase != phase,sar2);
       last_s = i;
     } else
       first_s = last_s = table->num;
-    FIND_NEXT_ACTION_END(table->num);
+    FIND_NEXT_ACTION_END(table->num,sar);
   } else {
     *first_c = table->num;
     *last_c = table->num;
@@ -346,13 +350,13 @@ STATIC_ROUTINE void AbortRange(int s, int e)
   RDLOCK_TABLE;{
   ActionInfo *actions = table->actions;
   for (i = s; i < e; i++) {
-    RDLOCK_ACTION(i);
+    RDLOCK_ACTION(i,ar);
     if (actions[i].dispatched && !actions[i].done) {
       char server[33];
       int one = 1;
       ServerAbortServer(Server(server, actions[i].server), one);
     }
-    UNLOCK_ACTION(i);
+    UNLOCK_ACTION(i,ar);
   }
   }UNLOCK_TABLE;
 }
@@ -367,11 +371,11 @@ STATIC_ROUTINE void SetGroup(int sync, int first_g, int *last_g){
   RDLOCK_TABLE;{
   ActionInfo *actions = table->actions;
   sync = (sync < 1) ? 1 : sync;
-  RDLOCK_ACTION(first_g);
+  RDLOCK_ACTION(first_g,sg);
   group = actions[first_g].sequence / sync;
-  UNLOCK_ACTION(first_g);
-  FIND_NEXT_ACTION(first_g+1, last_s, (actions[i].sequence / sync) != group);
-  FIND_NEXT_ACTION_END(last_s);
+  UNLOCK_ACTION(first_g,sg);
+  FIND_NEXT_ACTION(first_g+1, last_s, (actions[i].sequence / sync) != group,sg);
+  FIND_NEXT_ACTION_END(last_s,sg);
   }UNLOCK_TABLE;
   *last_g = i;
 }
@@ -379,8 +383,8 @@ STATIC_ROUTINE void SetGroup(int sync, int first_g, int *last_g){
 STATIC_ROUTINE int NoOutstandingActions(const int s, const int e){
   int i;
   ActionInfo *actions = table->actions;
-  FIND_NEXT_ACTION(s,e, actions[i].dispatched && !actions[i].done);
-  FIND_NEXT_ACTION_END(e);
+  FIND_NEXT_ACTION(s,e, actions[i].dispatched && !actions[i].done,noa);
+  FIND_NEXT_ACTION_END(e,noa);
 #ifdef DEBUG
   fprintf(stderr, "%d -> %d==%d\n",s,i,e);
 #endif
@@ -393,7 +397,7 @@ STATIC_ROUTINE void RecordStatus(int s, int e)
   RDLOCK_TABLE;{
   ActionInfo *actions = table->actions;
   for (i = s; i < e; i++) {
-    WRLOCK_ACTION(i);
+    WRLOCK_ACTION(i,rs);
     if (actions[i].done && !actions[i].recorded) {
       NCI_ITM setnci[] = { {sizeof(actions[0].status), NciSTATUS, 0, 0}
       , {0, NciEND_OF_LIST, 0, 0}
@@ -411,7 +415,7 @@ STATIC_ROUTINE void RecordStatus(int s, int e)
 	table->failed_essential = (flags & NciM_ESSENTIAL)!=0;
       }
     }
-    UNLOCK_ACTION(i);
+    UNLOCK_ACTION(i,rs);
   }
   }UNLOCK_TABLE;
 }
@@ -450,14 +454,14 @@ STATIC_ROUTINE char *DetailProc(int full){
   ActionInfo *actions = table->actions;
   for (doing = 1; doing > (full ? -1 : 0); doing--) {
     for (i = 0; i < table->num; i++) {
-      RDLOCK_ACTION(i);
+      RDLOCK_ACTION(i,dp);
       if (actions[i].dispatched && !actions[i].done && ((int)actions[i].doing == doing)) {
 	char server[33];
 	sprintf(msg1, "	%s %s %s for shot %d\n",
                 actions[i].path,
 		actions[i].doing ? "in progress on" : "dispatched to", Server(server,actions[i].server),
 		table->shot);
-        UNLOCK_ACTION(i);
+        UNLOCK_ACTION(i,dp_t);
 	if (!msg)
 	  msg = strcpy((char *)malloc(msglen), "\nWaiting on:\n");
 	if (msglen < (strlen(msg) + strlen(msg1) + 1)) {
@@ -467,7 +471,8 @@ STATIC_ROUTINE char *DetailProc(int full){
 	  free(oldmsg);
 	}
 	strcat(msg, msg1);
-      }
+      }else
+        UNLOCK_ACTION(i,dp_e);
     }
   }
   }UNLOCK_TABLE;
@@ -542,14 +547,14 @@ EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, c
     RDLOCK_TABLE;{
     ActionInfo *actions = table->actions;
     for (i = first_c; i < last_c; i++) {
-      RDLOCK_ACTION(i);
+      RDLOCK_ACTION(i,sdp);
       if (!actions[i].done) {
-        UNLOCK_ACTION(i);
-        WRLOCK_ACTION(i);
+        UNLOCK_ACTION(i,sdpw);
+        WRLOCK_ACTION(i,sdpw);
 	actions[i].status = ServerCANT_HAPPEN;
 	DoActionDone(i);
       }
-      UNLOCK_ACTION(i);
+      UNLOCK_ACTION(i,sdp);
     }
     }UNLOCK_TABLE;
     ProgLoc = 6015;
@@ -582,7 +587,7 @@ STATIC_ROUTINE void Dispatch(int i){
   char logmsg[1024];
   char server[33];
   RDLOCK_TABLE;{
-  WRLOCK_ACTION(i);{
+  WRLOCK_ACTION(i,d);{
     ActionInfo *actions = table->actions;
     actions[i].done = 0;
     actions[i].doing = 0;
@@ -600,11 +605,11 @@ STATIC_ROUTINE void Dispatch(int i){
       actions[i].status = status = 1;
       DoActionDone(i);
     } else {
-      UNLOCK_ACTION(i);
+      UNLOCK_ACTION(i,d_w);
       status = ServerDispatchAction(0, Server(server, actions[i].server), table->tree, table->shot,
 				    actions[i].nid, DoActionDone, i + (char *)0, &actions[i].status, &actions[i].lock,
 				    &actions[i].netid, Before);
-      WRLOCK_ACTION(i);
+      WRLOCK_ACTION(i,d_w);
       ProgLoc = 7003;
       if STATUS_OK
         actions[i].dispatched = 1;
@@ -615,7 +620,7 @@ STATIC_ROUTINE void Dispatch(int i){
       DoActionDone(i);
     }
     ProgLoc = 7005;
-  }UNLOCK_ACTION(i);
+  }UNLOCK_ACTION(i,d);
   }UNLOCK_TABLE;
 }
 
