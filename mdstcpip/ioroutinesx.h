@@ -315,11 +315,6 @@ static ssize_t io_recv_to(Connection* c, void *bptr, size_t num, int to_msec){
   if (sock != INVALID_SOCKET) {
     PushSocket(sock);
     signal(SIGABRT, ABORT);
-    struct SOCKADDR_IN sin;
-    SOCKLEN_T len = sizeof(sin);
-    if (GETPEERNAME(sock, (struct sockaddr *)&sin, &len)) {
-      PERROR(("Error getting peer name from socket %"PRIu64),(uint64_t)sock);
-    } else
     if (to_msec<0)
       recved = RECV(sock, bptr, num, MSG_NOSIGNAL);
     else {
@@ -357,25 +352,19 @@ static int io_check(Connection* c){
   if (sock != INVALID_SOCKET) {
     PushSocket(sock);
     signal(SIGABRT, ABORT);
-    struct SOCKADDR_IN sin;
-    SOCKLEN_T len = sizeof(sin);
-    if (GETPEERNAME(sock, (struct sockaddr *)&sin, &len)) {
-      PERROR(("Error getting peer name from socket %"PRIu64),(uint64_t)sock);
-    } else {
-      struct timeval timeout = {0,0};
-      fd_set readfds;
-      FD_ZERO(&readfds);
-      FD_SET(sock, &readfds);
-      err = select(sock+1, &readfds, NULL, NULL, &timeout);
-      switch (err) {
-      case -1: break; // Error
-      case  0: break; // Timeout
-      default: {// for select this will be 1
-          char bptr[1];
-          err = RECV(sock, bptr, 1, MSG_NOSIGNAL||MSG_PEEK);
-          err = (err==1) ? 0 : -1;
-          break;
-        }
+    struct timeval timeout = {0,0};
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(sock, &readfds);
+    err = select(sock+1, &readfds, NULL, NULL, &timeout);
+    switch (err) {
+    case -1: break; // Error
+    case  0: break; // Timeout
+    default: {// for select this will be 1
+        char bptr[1];
+        err = RECV(sock, bptr, 1, MSG_NOSIGNAL||MSG_PEEK);
+        err = (err==1) ? 0 : -1;
+        break;
       }
     }
     PopSocket(sock);
