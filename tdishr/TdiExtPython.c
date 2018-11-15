@@ -142,7 +142,7 @@ static void initialize(){
     }
     free(lib);
     loadrtn(Py_InitializeEx, 1);
-    Py_InitializeEx(0);
+    Py_InitializeEx(0); // 1: register signals; 0: don't
     int (*PyEval_ThreadsInitialized)() = NULL;
     loadrtn(PyEval_ThreadsInitialized, 1);
     if (!PyEval_ThreadsInitialized()) {
@@ -464,31 +464,13 @@ static inline int callPyFunction_(char *filename,int nargs, struct descriptor **
   return MDSplusSUCCESS;
 }
 
-#ifdef HANDLE_SIGCHLD
-#include <signal.h>
-static void resetsignal(struct sigaction* oldact){
-  sigaction(SIGCHLD, oldact, NULL);
-}
-#define SIGNAL_SETUP struct sigaction offact,oldact;\
- memset(&offact,0,sizeof(offact));\
- offact.sa_handler = SIG_DFL;\
- sigaction(SIGCHLD, &offact, &oldact);\
- pthread_cleanup_push((void*)resetsignal,&oldact);
-#define SIGNAL_RESET pthread_cleanup_pop(1);
-#else
-#define SIGNAL_SETUP
-#define SIGNAL_RESET
-#endif
-
 #define PYTHON_OPEN \
 importMDSplus_once();\
 if (PyGILState_Ensure) { \
-  SIGNAL_SETUP;\
   PyThreadState* GIL = PyGILState_Ensure();
 
 #define PYTHON_CLOSE \
   PyGILState_Release(GIL);\
-  SIGNAL_RESET;\
 } else status = LibNOTFOU;
 
 
