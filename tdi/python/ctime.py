@@ -23,10 +23,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 def ctime(t):
-"""
-  ctime - a function to translate c epoch based time into a local time string
+    """
+    ctime - a function to translate c epoch based time into a local time string
 
-  arguments: t - a unix time since the epoch
-"""
+    arguments: t - a unix time since the epoch
+    """
     import time
     return time.ctime(t)
