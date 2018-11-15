@@ -275,9 +275,10 @@ class Tests(TestCase):
           self.cleanup(-1)
           raise
       else:
-          self.cleanup(1 if sys.platform.startswith('win') else 0)
+          self.cleanup(1)
 
     def timeout(self):
+      def test():
         def test_timeout(c,expr):
             with c:
                 try: # break out of sleep
@@ -285,7 +286,7 @@ class Tests(TestCase):
                     self.fail('Connection.get("%s") should have timed out.'%expr)
                 except Exc.MDSplusException as e:
                     self.assertEqual(e.__class__,Exc.TdiTIMEOUT)
-        server ,server_port  = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT',8800+self.index,True)
+        server ,server_port  = self._setup_mdsip('TIMEOUT_SERVER', 'TIMEOUT_PORT',8600+self.index,True)
         svr = svr_log = None
         try:
             svr,svr_log = self._start_mdsip(server ,server_port ,'timeout',self.env)
@@ -293,11 +294,11 @@ class Tests(TestCase):
                 sleep(1)
                 if svr: self.assertEqual(svr.poll(),None)
                 c = Connection(server)
+                c.get("py('1')") # preload MDSplus on server
                 test_timeout(c,"wait(10)") # break tdi wait
                 test_timeout(c,"for(;1;) ;") # break tdi inf.loop
-                if not sys.platform.startswith("win"): # windows cannot cancel python yet (signal handling)
-                    test_timeout(c,"py('from time import sleep;sleep(10)')") # break python sleep
-                    test_timeout(c,"py('while 1: pass')") # break python inf.loop
+                test_timeout(c,"py('from time import sleep;sleep(10)')") # break python sleep
+                test_timeout(c,"py('while 1: pass')") # break python inf.loop
                 c.get("1")
             finally:
                 if svr and svr.poll() is None:
@@ -305,6 +306,13 @@ class Tests(TestCase):
                     svr.wait()
         finally:
             if svr_log: svr_log.close()
+      try:
+          test()
+      except:
+          self.cleanup(-1)
+          raise
+      else:
+          self.cleanup(1)
 
     def runTest(self):
         for test in self.getTests():
@@ -313,7 +321,7 @@ class Tests(TestCase):
     def getTests():
         lst = ['interface']
         if Tests.inThread: return lst
-        return ['dispatcher','timeout'] + lst
+        return lst + ['dispatcher','timeout']
     @classmethod
     def getTestCases(cls,tests=None):
         if tests is None: tests = cls.getTests()
