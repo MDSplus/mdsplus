@@ -642,6 +642,7 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
 #ifdef _WIN32
   HANDLE hWorker= CreateThread(NULL, DEFAULT_STACKSIZE*16, (void*)WorkerThread, &wa, 0, NULL);
   if (!hWorker) {
+    errno = GetLastError();
     perror("ERROR CreateThread");
     return MDSplusFATAL;
   }
@@ -664,7 +665,7 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
   pthread_attr_t attr;
   pthread_attr_init(&attr);
   pthread_attr_setstacksize(&attr, DEFAULT_STACKSIZE*16);
-  if (errno=pthread_create(&Worker, &attr, (void *)WorkerThread, &wa)) {
+  if ((errno=pthread_create(&Worker, &attr, (void *)WorkerThread, &wa))) {
     perror("ERROR pthread_create");
     pthread_attr_destroy(&attr);
     _CONDITION_UNLOCK(wa.condition);
