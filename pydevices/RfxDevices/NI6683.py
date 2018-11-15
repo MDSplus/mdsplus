@@ -188,7 +188,7 @@ class NI6683(Device):
     def getStartEnd(self, termName):
         try:
             start = getattr(self, termName.lower()+'_start').data()
-            if start <= 0:
+            if start < 0:
                 start = 0
             else:
                 start = self.getAbsTime(start)

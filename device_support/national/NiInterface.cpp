@@ -2648,7 +2648,7 @@ std::cout << "SAVE ITEM OP_BEGIN START:" << startData << "  END: " << endData <<
 		{
 		    std::cout << "Error in BeginSegment: " << exc.what() << std::endl;
 		}
-std::cout << "OP_BEGIN FINITO" << std::endl;
+//std::cout << "OP_BEGIN FINITO" << std::endl;
 		break;
 	    case SEGMENT_OP_MAKE:
 		try {
@@ -2737,9 +2737,13 @@ class SaveListEV
 
 	    while(saveHead == NULL)
 	    {
+std::cout << "SAVE LIST WAIT..." << std::endl;
 		pthread_cond_wait(&itemAvailable, &mutex);
+std::cout << "SAVE LIST CONDITION" << std::endl;
 		if(stopReq && saveHead == NULL)
 	        {
+std::cout << "SAVE LIST EXIT" << std::endl;
+
 		    pthread_mutex_unlock(&mutex);
 		    pthread_exit(NULL);
 	        }
@@ -2773,7 +2777,9 @@ extern "C" void *handleSaveEV(void *listPtr)
 {
     SaveListEV *list = (SaveListEV *)listPtr;
     list->executeItems();
-    return NULL;
+ 
+std::cout << "HANDLE SAVE EV TERMINATED " << std::endl;
+   return NULL;
 }
 
 extern "C" void startSaveEV(void **retList)
@@ -2781,8 +2787,6 @@ extern "C" void startSaveEV(void **retList)
     SaveListEV *saveList = new SaveListEV;
     saveList->start();
     *retList = (void *)saveList;
-
-std::cout << "CREATE SAVE LIST: " << saveList << std::endl;
 }
 
 extern "C" void stopSaveEV(void *listPtr)
@@ -2827,15 +2831,29 @@ class BufferHandler
     {
 	buffer[bufferIdx] = sample;
 	sampleCount++;
-	if(sampleCount > bufSize)
+	if(sampleCount >= bufSize - 1)
 	{
 	    processSampleDelayed(buffer[oldestBufferIdx]);
 	    oldestBufferIdx = (oldestBufferIdx + 1)%bufSize;
 	}
 	bufferIdx = (bufferIdx + 1)%bufSize;
     }
+    void terminate()
+    {
+	if(sampleCount > bufSize)
+	{
+	    for(size_t i = 0; i < bufSize - 2; i++)
+	    {
+	    	processSampleDelayed(buffer[oldestBufferIdx]);
+	    	oldestBufferIdx = (oldestBufferIdx + 1)%bufSize;
+	    }
+	    flushBuffer();
+	}
+    }
+	
     virtual void processSampleDelayed(short sample) = 0;
     virtual void trigger(double trigTime) = 0;
+    virtual void flushBuffer() = 0;
 };
 
 
@@ -2855,10 +2873,11 @@ class ClockBufferHandler:public BufferHandler
     int bufferCount;
     double startTime;
     double preTime, postTime;
-    unsigned long baseSampleCount, currBaseSampleCount, sampleCount;
+    long baseSampleCount, currBaseSampleCount, sampleCount;
     unsigned long segBufSampleCount;
     double basePeriod;
     double bufStartTime;
+    double minPeriod;
     std::vector<double> bufStartTimes;
     std::vector<double> bufEndTimes;
     std::vector<double> bufPeriods;
@@ -2871,17 +2890,23 @@ public:
 	double postTime, SaveListEV *saveList):BufferHandler(tree, rawNode, maxDelay, preTime, baseFreq, saveList)
     {
 	this->basePeriod = 1./baseFreq;
+        this->baseFreq = baseFreq;
 	this->segBufSize = segBufSize;
 	this->segBuffer = new short[segBufSize];
 	this->numBuffersInSegment = segmentSize / segBufSize;
 	this->segmentSize = segBufSize * this->numBuffersInSegment;
 	this->f12Div[0] = f1Div;
 	this->f12Div[1] = f2Div;
+	if(f1Div > f2Div)
+	    this->minPeriod = basePeriod * f2Div;
+	else
+	    this->minPeriod = basePeriod * f1Div;
 	this->currDivIdx = 0;
 	this->startTime = startTime;
 	this->preTime = preTime;
 	this->postTime = postTime;
- 	this->baseSampleCount = this->currBaseSampleCount = this->segBufSampleCount = this->sampleCount = 0;
+ 	this->baseSampleCount = this->segBufSampleCount = this->sampleCount = 0;
+	this->currBaseSampleCount = -1;
 	this->bufStartTime = startTime;
 	double bufEndTime = startTime + segmentSize * (this->basePeriod * f12Div[0]);
 	bufStartTimes.push_back(startTime);
@@ -2916,22 +2941,15 @@ public:
 	baseSampleCount++;
 	currBaseSampleCount++;
 //Check whether frequency switched
-	double currTime = startTime + baseFreq * baseSampleCount;
-	if(switchTimes.size() > 0 && switchTimes[0] <= currTime) //frequencySwitched
-	{
-std::cout << "FREQUENCY SWITCH " << std::endl;
-
-	    currDivIdx = (currDivIdx + 1)%2;
-	    bufStartTimes.push_back(switchTimes[0]);
-	    bufPeriods.push_back(basePeriod * f12Div[currDivIdx]);
-	    bufEndTimes[bufEndTimes.size() - 1] = switchTimes[0];
-	    bufEndTimes.push_back(switchTimes[0] + (segmentSize - (bufferCount * segmentSize + segBufSampleCount)) * 
-		basePeriod * f12Div[currDivIdx]);
-	    freqSwitched = true;
-	    switchTimes.erase(switchTimes.begin());
-	    currBaseSampleCount = 0;
-	}
-
+	double currTime = startTime + basePeriod * baseSampleCount;
+static int i = 0;
+/*if(i++ % 1000 == 0)
+{
+    std::cout << currTime << std::endl;
+    if(switchTimes.size() > 0)
+        std::cout << switchTimes[0] << std::endl;
+}
+*/
 	if(currBaseSampleCount % f12Div[currDivIdx] == 0)
 	{
 	    segBuffer[segBufSampleCount] = sample;
@@ -2948,22 +2966,6 @@ std::cout << "BUFFER FILLED" << std::endl;
 		if(bufferCount >= numBuffersInSegment) //Need to possibly adjust segment end and dimension and create a new segment
 		{
 std::cout << "SEGMENT FILLED" << std::endl;
-		    if(freqSwitched) //A least one time switch occurred, need to update end time and dimension
-		    {
-			double bufEndTime = bufEndTimes[bufEndTimes.size() - 1];
-		    	MDSplus::Data *startTimeData = new MDSplus::Float64(bufStartTime);
-		    	MDSplus::Data *endTimeData = new MDSplus::Float64(bufEndTime);
-			MDSplus::Data *startTimesData = new MDSplus::Float64Array(bufStartTimes.data(), bufStartTimes.size());
-			MDSplus::Data *endTimesData = new MDSplus::Float64Array(bufEndTimes.data(), bufEndTimes.size());
-			MDSplus::Data *periodsData = new MDSplus::Float64Array(bufPeriods.data(), bufPeriods.size());
-			MDSplus::Data *dimData = MDSplus::compileWithArgs("build_range($, $, $)", tree, 3, startTimesData, 
-				endTimesData, periodsData);
-			saveList->addItem(SEGMENT_OP_UPDATE, startTimeData, endTimeData, dimData, NULL, rawNode);
-//			rawNode->updateSegment(startTimeData, endTimeData, dimData);
-			MDSplus::deleteData(startTimesData);
-			MDSplus::deleteData(endTimesData);
-			MDSplus::deleteData(periodsData);
-		    }
 //Prepare next segment
 		    bufStartTime = basePeriod * baseSampleCount;
 		    double bufEndTime = bufStartTime + segmentSize * basePeriod*f12Div[currDivIdx];
@@ -2987,12 +2989,84 @@ std::cout << "SEGMENT FILLED" << std::endl;
 		}
 	    }
 	}
+	if(switchTimes.size() > 0 && switchTimes[0] <= currTime) //frequencySwitched
+	{
+//std::cout << "FREQUENCY SWITCH " << std::endl;
+
+	    currDivIdx = (currDivIdx + 1)%2;
+	    bufPeriods.push_back(basePeriod * f12Div[currDivIdx]);
+	    if(currBaseSampleCount % f12Div[currDivIdx] == 0) //A sample at previous frequency has been written at this time
+	    {
+		currBaseSampleCount = 0; //wait a period for the new frequency before saving sample
+	    	bufStartTimes.push_back(switchTimes[0] + basePeriod * f12Div[currDivIdx]);
+                bufEndTimes[bufEndTimes.size() - 1] = switchTimes[0]+ minPeriod/2.;
+	    }
+	    else
+	    {
+		currBaseSampleCount = -1; //Next sample is being written
+	    	bufStartTimes.push_back(switchTimes[0]);
+                bufEndTimes[bufEndTimes.size() - 1] = switchTimes[0]- minPeriod/2.;
+	    }
+
+
+
+//std::cout << "SEGMENT SIZE: " << segmentSize << "  BUFFER COUNT: " << bufferCount << "  SEG BUF SAMPLE COUNT: " << segBufSampleCount << "  PERIOD: " << basePeriod * f12Div[currDivIdx] << std::endl;
+	    bufEndTimes.push_back(switchTimes[0] + (segmentSize - (bufferCount * segBufSize + segBufSampleCount)-1) * 
+		basePeriod * f12Div[currDivIdx] - basePeriod * f12Div[currDivIdx]/2.);
+	    freqSwitched = true;
+	    switchTimes.erase(switchTimes.begin());
+
+
+	    MDSplus::Data *startTimeData  = new MDSplus::Float64(bufStartTimes[0]);
+	    MDSplus::Data *endTimeData  = new MDSplus::Float64(bufEndTimes[bufEndTimes.size()]);
+	    MDSplus::Data *startTimesData = new MDSplus::Float64Array(bufStartTimes.data(), bufStartTimes.size());
+	    MDSplus::Data *endTimesData = new MDSplus::Float64Array(bufEndTimes.data(), bufEndTimes.size());
+	    MDSplus::Data *periodsData = new MDSplus::Float64Array(bufPeriods.data(), bufPeriods.size());
+	    MDSplus::Data *dimData = MDSplus::compileWithArgs("build_range($, $, $)", tree, 3, startTimesData, 
+		endTimesData, periodsData);
+
+std::cout << "UPDATE start: " << startTimesData << std::endl;
+std::cout << "UPDATE end: " << endTimesData << std::endl;
+std::cout << "UPDATE dim: " << dimData << std::endl;
+
+	    saveList->addItem(SEGMENT_OP_UPDATE, startTimeData, endTimeData, dimData, NULL, rawNode);
+	    MDSplus::deleteData(periodsData);
+	    MDSplus::deleteData(startTimesData);
+	    MDSplus::deleteData(endTimesData);
+
+
+
+	}
+
     }  //processSample()
     virtual void trigger(double trigTime)
     {
-	switchTimes.push_back(trigTime - preTime);
-	switchTimes.push_back(trigTime + postTime);
+	double startTime = trigTime - preTime;
+	if(switchTimes.size() == 0 || switchTimes[switchTimes.size() - 1] <= startTime)
+	    switchTimes.push_back(startTime);
+	else
+	{
+	    size_t idx;
+	    for(idx = switchTimes.size() - 1; idx > 0 && switchTimes[idx] >= startTime; idx--);
+	    switchTimes.insert(switchTimes.begin() + idx, startTime);
+	}
+	double endTime = trigTime + postTime;
+	if(switchTimes[switchTimes.size() - 1] <= endTime)
+	    switchTimes.push_back(endTime);
+	else
+	{
+	    size_t idx;
+	    for(idx = switchTimes.size() - 1; idx > 0 && switchTimes[idx] >= endTime; idx--);
+	    switchTimes.insert(switchTimes.begin() + idx, endTime);
+	}
     }
+    virtual void flushBuffer()
+    {
+std::cout << "FLUSH BUFFER " << segBufSampleCount << std::endl;
+	MDSplus::Array *bufferData = new Int16Array(segBuffer, segBufSampleCount);
+	saveList->addItem(SEGMENT_OP_PUT, NULL, NULL, NULL, bufferData, rawNode);
+    }
+
 };
 
 
@@ -3002,7 +3076,7 @@ class BurstBufferHandler:public BufferHandler
     std::vector<double> startTimes;
     int freqDiv;
     double baseFreq;
-    int segmentSize, burstCount;
+    int segmentSize, burstCount, windowSize, windowCount;
     double startTime;
     double basePeriod;
     double segStart;
@@ -3012,11 +3086,15 @@ class BurstBufferHandler:public BufferHandler
 
 public:
     BurstBufferHandler(MDSplus::Tree *tree, MDSplus::TreeNode *rawNode, double maxDelay, int freqDiv, 
-	double baseFreq, double startTime, double preTime, double postTime, SaveListEV *saveList):BufferHandler(tree, rawNode, maxDelay, preTime, baseFreq, saveList)
+	double baseFreq, double startTime, double preTime, double postTime, int segmentSize, SaveListEV *saveList):BufferHandler(tree, rawNode, maxDelay, preTime, baseFreq, saveList)
     {
 	this->preTime = preTime;
+	this->baseFreq = baseFreq;
 	this->basePeriod = 1./baseFreq;
-	this->segmentSize = (postTime + preTime) * this->basePeriod;
+	this->windowSize = (postTime + preTime) * this->baseFreq/freqDiv;
+	this->segmentSize = segmentSize;
+	if(this->segmentSize > this->windowSize)
+	    this->segmentSize = this->windowSize;
 	this->segBuffer = new short[this->segmentSize];
 	this->freqDiv = freqDiv;
 	this->startTime = startTime;
@@ -3025,7 +3103,9 @@ public:
     }
     ~BurstBufferHandler()
     {
+std::cout << "DISTRUTTORE BURST" << std::endl;
 	delete [] segBuffer;
+std::cout << "DISTRUTTO" << std::endl;
     }
 
     virtual void processSampleDelayed(short sample)
@@ -3033,7 +3113,10 @@ public:
 	baseSampleCount++;
 	currBaseSampleCount++;
 //Check whether frequency switched
-	double currTime = startTime + baseFreq * baseSampleCount;
+	double currTime = startTime + basePeriod * baseSampleCount;
+//static int i = 0;
+//if(i++ % 1000 == 0)
+//    std::cout << currTime << std::endl;
 	if(startTimes.size() > 0 && startTimes[0] <= currTime) //frequencySwitched. 
 	{
 	    if(!inBurst)  //Trigger considered only if not serving a previous burst
@@ -3041,6 +3124,7 @@ public:
 		inBurst = true;
 	    	currBaseSampleCount = 0;
 	    	burstCount = 0;
+		windowCount = 0;
 		segStart = currTime;
 	    }
 	    startTimes.erase(startTimes.begin());
@@ -3049,16 +3133,40 @@ public:
 	if(inBurst && (currBaseSampleCount % freqDiv == 0))
 	{
 	    segBuffer[burstCount++] = sample;
+	    windowCount++;
 	    if(burstCount >= segmentSize)
 	    {   
-		double segEnd = segStart + segmentSize * basePeriod / freqDiv;
+		double segEnd = segStart + (segmentSize-1) * basePeriod * freqDiv;
 		MDSplus::Data *startSegData = new MDSplus::Float64(segStart);
 		MDSplus::Data *endSegData = new MDSplus::Float64(segEnd);
-		MDSplus::Data *periodData = new MDSplus::Float64(basePeriod / freqDiv);
+		MDSplus::Data *periodData = new MDSplus::Float64(basePeriod * freqDiv);
 		MDSplus::Data *dimData = MDSplus::compileWithArgs("build_range($, $, $)", tree, 3, startSegData, endSegData, periodData);
 		MDSplus::Array *segData = new MDSplus::Int16Array(segBuffer, segmentSize);
+std::cout << "SEG START: " << startSegData << std::endl;
+std::cout << "SEG END: " << endSegData << std::endl;
+std::cout << "SEG DIM: " << dimData << std::endl;
 		saveList->addItem(SEGMENT_OP_MAKE, startSegData, endSegData, dimData, segData, rawNode);
-//		rawNode->makeSegment(startSegData, endSegData, dimData, segData);
+		MDSplus::deleteData(periodData);
+		if(windowCount > windowSize)
+		    inBurst = false;
+		else //There are still other segments to be stored for this burst
+		{
+		    burstCount = 0;
+		    segStart = currTime;
+		}
+	    }
+	    else if (windowCount > windowSize) //Last piece of burst
+	    {   
+		double segEnd = segStart + (burstCount - 1) * basePeriod * freqDiv;
+		MDSplus::Data *startSegData = new MDSplus::Float64(segStart);
+		MDSplus::Data *endSegData = new MDSplus::Float64(segEnd);
+		MDSplus::Data *periodData = new MDSplus::Float64(basePeriod * freqDiv);
+		MDSplus::Data *dimData = MDSplus::compileWithArgs("build_range($, $, $)", tree, 3, startSegData, endSegData, periodData);
+		MDSplus::Array *segData = new MDSplus::Int16Array(segBuffer,burstCount);
+std::cout << "LAST SEG START: " << startSegData << std::endl;
+std::cout << "LAST SEG END: " << endSegData << std::endl;
+std::cout << "LAST SEG DIM: " << dimData << std::endl;
+		saveList->addItem(SEGMENT_OP_MAKE, startSegData, endSegData, dimData, segData, rawNode);
 		MDSplus::deleteData(periodData);
 		inBurst = false;
 	    }
@@ -3066,7 +3174,20 @@ public:
     }
     virtual void trigger(double trigTime)
     {
-	startTimes.push_back(trigTime - preTime);
+	double startTime = trigTime - preTime;
+	size_t idx;
+	if(startTimes.size() == 0 || startTimes[startTimes.size() - 1] <= startTime)
+	    startTimes.push_back(startTime);
+	else
+	{
+	    size_t idx;
+	    for(idx = startTimes.size() - 1; idx > 0 && startTimes[idx] >= startTime; idx--);
+	    startTimes.insert(startTimes.begin() + idx, startTime);
+	}
+    }
+    virtual void flushBuffer()
+    {
+std::cout << "FLUSH BUFFERS" << std::endl;
     }
 };
 
@@ -3076,7 +3197,8 @@ class EventHandler:public Event
 public:
     EventHandler(char *name, BufferHandler *buf):Event(name)
     {
-	this->bufHandler = bufHandler;
+std::cout << "Created event handler for " << name <<std::endl; 
+	this->bufHandler = buf;
     }
     void run()
     {
@@ -3101,9 +3223,6 @@ int pxi6259EV_readAndSaveAllChannels(int nChan, void *chanFdPtr, int *isBurst, i
     EventHandler **eventHandlers;
     MDSplus::TreeNode **treeNodes;
 
-
-std::cout << "READ AND SAVE ALL CHANNELS" << std::endl;
-
     treeNodes = new MDSplus::TreeNode *[nChan];
     //Delete first all data nids
     for(int i = 0; i < nChan; i++)
@@ -3121,20 +3240,16 @@ std::cout << "READ AND SAVE ALL CHANNELS" << std::endl;
     (*(int*)stopAcq) = 0;
 
     bufferHandlers = new BufferHandler *[nChan];
+    memset(bufferHandlers, 0, sizeof(BufferHandler *) * nChan);
     eventHandlers = new EventHandler *[nChan];
-    for( chan = 0; chan < nChan; chan++ )
+    memset(eventHandlers, 0, sizeof(EventHandler *) * nChan);
+   for( chan = 0; chan < nChan; chan++ )
     {
-
-std::cout << ":CHANNEL " << chan << "  BURST: " << isBurst[chan] << std::endl;
-
 	if(isBurst[chan])
-	    bufferHandlers[chan] = new BurstBufferHandler((MDSplus::Tree *)treePtr, treeNodes[chan], maxDelay, f1Div[chan], baseFreq, startTime, preTimes[chan], postTimes[chan], saveList);
+	    bufferHandlers[chan] = new BurstBufferHandler((MDSplus::Tree *)treePtr, treeNodes[chan], maxDelay, f1Div[chan], baseFreq, startTime, preTimes[chan], postTimes[chan], segmentSize, saveList);
 	else
     	    bufferHandlers[chan] = new ClockBufferHandler((MDSplus::Tree *)treePtr, treeNodes[chan], maxDelay, f1Div[chan], f2Div[chan], baseFreq, bufSize, segmentSize, 
 		startTime, preTimes[chan], postTimes[chan], saveList);
-std::cout << "CREATO " << std::endl;
-std::cout << "EVENT: " << eventNames[chan] << std::endl;
-
 	if(eventNames[chan][0]) //Empty string is passed for no event
 	{
 	    eventHandlers[chan] = new EventHandler(eventNames[chan], bufferHandlers[chan]);
@@ -3142,9 +3257,6 @@ std::cout << "EVENT: " << eventNames[chan] << std::endl;
 	}
 	else
 	    eventHandlers[chan] = NULL;
-
-std::cout << "CREATO EVENT" << std::endl;
-
     }
     while( !(*(int*)stopAcq) )
     {
@@ -3182,24 +3294,39 @@ std::cout << "CREATO EVENT" << std::endl;
 	    }
 	    else
 	    {
-	        for(int sampleIdx = 0; sampleIdx < currReadSamples; sampleIdx++)
-		    bufferHandlers[chan]->processSample(buffer[sampleIdx]);
+	        for(int sampleIdx = 0; sampleIdx < currReadSamples/sizeof(short); sampleIdx++)
+		{
+		    bufferHandlers[chan]->processSample(buffer[sampleIdx] );
+//		    std::cout << buffer[sampleIdx] << std::endl;
+		}
 	    }
 	}
     }
+
 
     for( chan = 0; chan < nChan; chan++ )
     {
 	if(eventHandlers[chan])
 	{
+std::cout << "STOPPING EVENT HANDLER...." << std::endl;
 	    eventHandlers[chan]->stop();
+std::cout << "STOPPED" << std::endl;
 	    delete eventHandlers[chan];
 	}
-	delete bufferHandlers[chan];
+	std::cout << "TERMINATING BUFFER HANDLER...." << std::endl;
+	bufferHandlers[chan]->terminate();
+std::cout << "TERMINATED" << std::endl;
     }
+    saveList->stop();
+   
+
+std::cout << "DELETING eventHandlers" << std::endl;
     delete [] eventHandlers;
+std::cout << "DELETING bufferHandlers" << std::endl;
+//    for( chan = 0; chan < nChan; chan++ )
+//	delete bufferHandlers[chan];
     delete [] bufferHandlers;
-    printf("STOP PXI 6259 Acquisition %d\n", *(int *)stopAcq );
+    printf("STOP PXI 6259 Acquisition \n");
     return 1;
 }   
 

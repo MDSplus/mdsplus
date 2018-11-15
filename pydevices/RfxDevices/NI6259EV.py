@@ -351,8 +351,8 @@ class NI6259EV(Device):
             for chan in range(len(self.chanMap)):
                 os.close(chanFd[chan])
             self.device.debugPrint ('ASYNCH WORKER TERMINATED')
-            NI6259EV.niInterfaceLib.stopSaveEV(saveList)
-            NI6259EV.niInterfaceLib.freeStopAcqFlag(self.stopAcq)
+#            NI6259EV.niInterfaceLib.stopSaveEV(saveList)
+#            NI6259EV.niInterfaceLib.freeStopAcqFlag(self.stopAcq)
             self.device.closeInfo()
 
             return 
@@ -423,14 +423,22 @@ class NI6259EV(Device):
                 chanEvents.append('')
             try:
                 preTime = getattr(self, 'channel_%d_start_time'%(chan+1)).data()
-                postTime = getattr(self, 'channel_%d_post_time'%(chan+1)).data()
+                if preTime < 0:
+                    Data.execute('DevLogErr($1,$2)', self.getNid(), 'Pre time for channel %d must be geater of equal to 0 '+str(chan + 1))
+                    raise DevBAD_PARAMETER
+
+                postTime = getattr(self, 'channel_%d_end_time'%(chan+1)).data()
+                if postTime < 0:
+                    Data.execute('DevLogErr($1,$2)', self.getNid(), 'Post time for channel %d must be geater of equal to 0 '+str(chan + 1))
+                    raise DevBAD_PARAMETER
             except:
                 if mode == 'BURST(FREQ1)' or mode == 'BURST(FREQ2)' or mode == ('DUAL SPEED'):
-                    Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing pre or post time for channel '+str(currChan + 1))
+                    Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing pre or post time for channel '+str(chan + 1))
                     raise DevBAD_PARAMETER
                 else:
                     preTime = 0
                     postTime = 0
+
             chanPreTimes.append(preTime)
             chanPostTimes.append(postTime)
 
@@ -517,6 +525,8 @@ class NI6259EV(Device):
         self.worker = self.AsynchStore()
         self.worker.daemon = True
         self.worker.stopReq = False
+        NI6259EV.workers[self.nid] = self.worker
+
         chanMap = []
         stopAcq = c_void_p(0)
         NI6259EV.niInterfaceLib.getStopAcqFlag(byref(stopAcq));
@@ -557,7 +567,7 @@ class NI6259EV(Device):
 
     def stop_store(self):
 
-      self.debugPrint('================= PXI 6259 stop store ================')
+      self.debugPrint('================= PXI 6259 EV stop store ================')
       error = False
       """
       if self.restoreInfo() != self.DEV_IS_OPEN :
