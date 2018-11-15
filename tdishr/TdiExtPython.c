@@ -39,7 +39,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef _WIN32
 #define USE_EXECFILE	/* windows cannot use PyRun_File because if crashes on _lockfile */
 #else
-//#define HANDLE_SIGCHLD	/* anyone knows why we need to handle SIGCHLD */
 //#define USE_EXECFILE	/* for debugging purpose */
 #endif
 
@@ -111,14 +110,14 @@ static void initialize(){
 #endif
     fprintf(stderr,"\nYou should defined the PyLib environment variable!\nPlease define PyLib to be the name of your python library, i.e. '%s' or '%s'.\nWe will try '%s' as default.\n\n",envsym,aspath,envsym);
   }
-  void (*Py_Initialize) () = NULL;
+  void (*Py_InitializeEx) () = NULL;
 #ifdef RTLD_NOLOAD
   /*** See if python routines are already available ***/
   handle = dlopen(0, RTLD_NOLOAD);
-  loadrtn(Py_Initialize, 0);
+  loadrtn(Py_InitializeEx, 0);
   /*** If not, load the python library ***/
 #endif
-  if (!Py_Initialize) {
+  if (!Py_InitializeEx) {
 #ifdef _WIN32
     if (strlen(envsym)>6 && (envsym[1] == ':' || strncmp(envsym+strlen(envsym)-4, ".dll", 4) == 0)) {
       lib = strcpy((char *)malloc(strlen(envsym) + 1), envsym);
@@ -142,8 +141,8 @@ static void initialize(){
        return;
     }
     free(lib);
-    loadrtn(Py_Initialize, 1);
-    Py_Initialize();
+    loadrtn(Py_InitializeEx, 1);
+    Py_InitializeEx(0);
     int (*PyEval_ThreadsInitialized)() = NULL;
     loadrtn(PyEval_ThreadsInitialized, 1);
     if (!PyEval_ThreadsInitialized()) {
@@ -186,7 +185,15 @@ static void initialize(){
 #endif
   loadrtn(PyGILState_Release, 1);
   loadrtn(PyGILState_Ensure, 1);
+}
 
+static inline void initialize_once() {
+  static pthread_once_t once = PTHREAD_ONCE_INIT;
+  pthread_once(&once,&initialize);
+}
+
+static void importMDSplus() {
+  initialize_once();
   PyThreadState *GIL = PyGILState_Ensure();
   PyObject *MDSplus= PyImport_ImportModule("MDSplus");
   if (MDSplus) {
@@ -210,6 +217,11 @@ static void initialize(){
     if (PyErr_Occurred()) PyErr_Print();
   }
   PyGILState_Release(GIL);
+}
+
+static inline void importMDSplus_once() {
+  static pthread_once_t once = PTHREAD_ONCE_INIT;
+  pthread_once(&once,&importMDSplus);
 }
 
 char *findModule(struct descriptor *modname_d, char **modname_out){
@@ -468,9 +480,8 @@ static void resetsignal(struct sigaction* oldact){
 #define SIGNAL_RESET
 #endif
 
-static pthread_once_t once = PTHREAD_ONCE_INIT;
 #define PYTHON_OPEN \
-pthread_once(&once,&initialize);\
+importMDSplus_once();\
 if (PyGILState_Ensure) { \
   SIGNAL_SETUP;\
   PyThreadState* GIL = PyGILState_Ensure();
