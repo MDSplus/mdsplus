@@ -318,11 +318,6 @@ static ssize_t io_recv_to(Connection* c, void *bptr, size_t num, int to_msec){
   if (sock != INVALID_SOCKET) {
     PushSocket(sock);
     signal(SIGABRT, ABORT);
-    struct SOCKADDR_IN sin;
-    SOCKLEN_T len = sizeof(sin);
-    if (GETPEERNAME(sock, (struct sockaddr *)&sin, &len))
-      PERROR("Error getting peer name from socket");
-    else
 #ifdef _WIN32
       recved = RECV(sock, bptr, num, MSG_NOSIGNAL);
 #else
