@@ -277,12 +277,12 @@ class Tests(TestCase):
       else:
           self.cleanup(1)
 
-    def timeout(self):
+    def timeout(self,full=False):
       def test():
-        def test_timeout(c,expr):
+        def test_timeout(c,expr,to):
             with c:
                 try: # break out of sleep
-                    c.get(expr,timeout=100)
+                    c.get('write(2,"tic: "//"%s");%s;write(2,"toc: "//"%s")'%(expr,expr,expr),timeout=to)
                     self.fail('Connection.get("%s") should have timed out.'%expr)
                 except Exc.MDSplusException as e:
                     self.assertEqual(e.__class__,Exc.TdiTIMEOUT)
@@ -295,10 +295,11 @@ class Tests(TestCase):
                 if svr: self.assertEqual(svr.poll(),None)
                 c = Connection(server)
                 c.get("py('1')") # preload MDSplus on server
-                test_timeout(c,"wait(10)") # break tdi wait
-                test_timeout(c,"for(;1;) ;") # break tdi inf.loop
-                test_timeout(c,"py('from time import sleep;sleep(10)')") # break python sleep
-                test_timeout(c,"py('while 1: pass')") # break python inf.loop
+                test_timeout(c,"wait(3)",100) # break tdi wait
+                test_timeout(c,"py('from time import sleep;sleep(3)')",500) # break python sleep
+                if full: # timing too unreliable for standard test
+                    test_timeout(c,"for(;1;) ;",100) # break tdi inf.loop
+                    test_timeout(c,"py('while 1: pass')",500) # break python inf.loop
                 c.get("1")
             finally:
                 if svr and svr.poll() is None:
@@ -313,9 +314,11 @@ class Tests(TestCase):
           raise
       else:
           self.cleanup(1)
+    def timeoutfull(self): self.timeout(full=True)
 
     def runTest(self):
         for test in self.getTests():
+            sys.stdout.write("\n### %s ###\n"%test);sys.stdout.flush()
             self.__getattribute__(test)()
     @staticmethod
     def getTests():
