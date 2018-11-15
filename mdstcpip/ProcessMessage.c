@@ -26,11 +26,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <pthread_port.h>
 #include <tdishr_messages.h>
 #include <mdstypes.h>
+#include <inttypes.h>
 #include "cvtdef.h"
 #include <signal.h>
 #ifdef _WIN32
 # include <io.h>
-#define SIGCHLD SIGINT
 #else
 # ifdef HAVE_UNISTD_H
 # include <unistd.h>
@@ -60,6 +60,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "cvtdef.h"
 
 extern int TdiExecute();
+//extern int InitPython();
 extern int TdiRestoreContext();
 extern int TreePerfRead();
 extern int TreePerfWrite();
@@ -583,11 +584,11 @@ static void ClientEventAst(MdsEventList * e, int data_len, char *data)
   UnlockAsts();
 }
 
-#define CANCELABLE
 typedef struct worker_args_s {
   Connection*          connection;
   struct descriptor_xd*xd_out;
-#ifdef CANCELABLE
+  int                  status;
+#ifndef _WIN32
   Condition* condition;
 #endif
 } worker_args_t;
@@ -596,7 +597,7 @@ typedef struct worker_cleanup_s {
   Connection*connection;
   void*      old_dbid;
   void*      tdi_context[6];
-#ifdef CANCELABLE
+#ifndef _WIN32
   Condition* condition;
 #endif
 } worker_cleanup_t;
@@ -607,15 +608,15 @@ static void WorkerCleanup(void *worker_cleanup_v) {
     TdiRestoreContext(wc->tdi_context);
     wc->connection->DBID = TreeSwitchDbid(wc->old_dbid);
   }
-#ifdef CANCELABLE
+#ifndef _WIN32
   CONDITION_RESET(wc->condition);
 #endif
 }
-static void* WorkerThread(void *args) {
-  int status;
+
+static int WorkerThread(void *args) {
   worker_args_t* wa = (worker_args_t*)args;
   worker_cleanup_t wc;memset(&wc,0,sizeof(worker_cleanup_t));
-#ifdef CANCELABLE
+#ifndef _WIN32
   CONDITION_SET((wc.condition = wa->condition));
 #endif
   pthread_cleanup_push(WorkerCleanup,(void*)&wc);
@@ -625,53 +626,90 @@ static void* WorkerThread(void *args) {
     TdiSaveContext(wc.tdi_context);
     TdiRestoreContext(wa->connection->tdicontext);
   }
-  status = (int)(intptr_t)LibCallg(&wa->connection->nargs, TdiExecute, wa->connection->descrip);
-  if IS_OK(status)
-    status = TdiData(wa->connection->descrip[wa->connection->nargs-2], wa->xd_out MDS_END_ARG);
+  wa->status = (int)(intptr_t)LibCallg(&wa->connection->nargs, TdiExecute, wa->connection->descrip);
+  if IS_OK(wa->status)
+    wa->status = (int)(intptr_t)TdiData(wa->connection->descrip[wa->connection->nargs-2], wa->xd_out MDS_END_ARG);
   pthread_cleanup_pop(1);
-  return (void*)(intptr_t)status;
+  fprintf(stderr,"OK returning %d\n",wa->status);
+  return wa->status;
 }
 
 static inline int executeCommand(Connection* connection, struct descriptor_xd* ans_xd) {
+  fprintf(stderr,"starting task for connection %d\n",connection->id);
   worker_args_t wa;
   wa.connection = connection;
   wa.xd_out     = ans_xd;
-#ifndef CANCELABLE
-  return (int)(intptr_t)WorkerThread(&wa);
+  wa.status     = -1;
+#ifdef _WIN32
+  HANDLE hWorker= CreateThread(NULL, DEFAULT_STACKSIZE*16, (void*)WorkerThread, &wa, 0, NULL);
+  if (!hWorker) {
+    perror("Error CreateThread");
+    return MDSplusFATAL;
+  }
+  int canceled = B_FALSE;
+  while (WaitForSingleObject(hWorker, 100) == WAIT_TIMEOUT) {
+    if (canceled) continue;     //skip check if already canceled
+    if (!connection->io->check) continue; // if no io->check def
+    if (!connection->io->check(connection)) continue;
+    fprintf(stderr, "TerminateThread\n");
+    TerminateThread(hWorker,2);
+    canceled = B_TRUE;
+    if (WaitForSingleObject(hWorker, 1000) == WAIT_OBJECT_0) break;
+    SetConsoleCtrlHandler(NULL, TRUE);
+    if (!GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0)) {//CTRL_BREAK_EVENT
+      errno = GetLastError();
+      perror("failed to send CTRL_C_EVENT");
+    } else {
+      fprintf(stderr,"send CTRL_C_EVENT\n");
+      WaitForSingleObject(hWorker, INFINITE);
+    }
+    SetConsoleCtrlHandler(NULL, FALSE);
+  }
+  WaitForSingleObject(hWorker, INFINITE);
+  if (canceled) return TdiABORT;
 #else
   pthread_t Worker;
   Condition WorkerRunning = CONDITION_INITIALIZER;
   wa.condition  = &WorkerRunning;
-  int canceled = B_FALSE;
   _CONDITION_LOCK(wa.condition);
-  CREATE_THREAD(Worker, *4, WorkerThread, &wa);
-  if (c_status) {
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setstacksize(&attr, DEFAULT_STACKSIZE*16);
+  if (errno=pthread_create(&Worker, &attr, (void *)WorkerThread, &wa)) {
     perror("Error creating pthread");
+    pthread_attr_destroy(&attr);
+    _CONDITION_UNLOCK(wa.condition);
     pthread_cond_destroy(&WorkerRunning.cond);
     pthread_mutex_destroy(&WorkerRunning.mutex);
     return MDSplusFATAL;
-  } else
-    _CONDITION_WAIT_SET(wa.condition);
-  while (WorkerRunning.value) {
+  }
+  pthread_attr_destroy(&attr);
+  _CONDITION_WAIT_SET(wa.condition);
+  int canceled = B_FALSE;
+  for (;;) {
     _CONDITION_WAIT_1SEC(wa.condition,);
     if (!WorkerRunning.value) break;
+    fprintf(stderr,"thread running\n");
     if (canceled) continue;     //skip check if already canceled
     if (!connection->io->check) continue; // if no io->check def
     if (!connection->io->check(connection)) continue;
+    fprintf(stderr,"cancel Worker\n");
     pthread_cancel(Worker);
-// under linux this allows to break out from python
-    pthread_kill(Worker,SIGCHLD);
-//
     canceled = B_TRUE;
+    _CONDITION_WAIT_1SEC(wa.condition,);
+    if (!WorkerRunning.value) break;
+    fprintf(stderr,"send SIGCHLD\n");
+    pthread_kill(Worker,SIGCHLD);
   }
   _CONDITION_UNLOCK(wa.condition);
   void* result;
   pthread_join(Worker,&result);
+  fprintf(stderr,"joined with %"PRIdPTR" -> %d\n",(intptr_t)result,(int)(intptr_t)result);
   pthread_cond_destroy(&WorkerRunning.cond);
   pthread_mutex_destroy(&WorkerRunning.mutex);
-  if (result==PTHREAD_CANCELED) return TdiABORT;
-  return (int)(intptr_t)result;
-#endif //CANCELABLE
+  if (canceled && result==PTHREAD_CANCELED) return TdiABORT;
+#endif
+  return wa.status;
 }
 
 
