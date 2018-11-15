@@ -630,12 +630,11 @@ static int WorkerThread(void *args) {
   if IS_OK(wa->status)
     wa->status = (int)(intptr_t)TdiData(wa->connection->descrip[wa->connection->nargs-2], wa->xd_out MDS_END_ARG);
   pthread_cleanup_pop(1);
-  fprintf(stderr,"OK returning %d\n",wa->status);
   return wa->status;
 }
 
 static inline int executeCommand(Connection* connection, struct descriptor_xd* ans_xd) {
-  fprintf(stderr,"starting task for connection %d\n",connection->id);
+  //fprintf(stderr,"starting task for connection %d\n",connection->id);
   worker_args_t wa;
   wa.connection = connection;
   wa.xd_out     = ans_xd;
@@ -643,7 +642,7 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
 #ifdef _WIN32
   HANDLE hWorker= CreateThread(NULL, DEFAULT_STACKSIZE*16, (void*)WorkerThread, &wa, 0, NULL);
   if (!hWorker) {
-    perror("Error CreateThread");
+    perror("ERROR CreateThread");
     return MDSplusFATAL;
   }
   int canceled = B_FALSE;
@@ -651,19 +650,9 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
     if (canceled) continue;     //skip check if already canceled
     if (!connection->io->check) continue; // if no io->check def
     if (!connection->io->check(connection)) continue;
-    fprintf(stderr, "TerminateThread\n");
+    fflush(stdout);fprintf(stderr, "Client disconnected, terminating Worker\n");
     TerminateThread(hWorker,2);
     canceled = B_TRUE;
-    if (WaitForSingleObject(hWorker, 1000) == WAIT_OBJECT_0) break;
-    SetConsoleCtrlHandler(NULL, TRUE);
-    if (!GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0)) {//CTRL_BREAK_EVENT
-      errno = GetLastError();
-      perror("failed to send CTRL_C_EVENT");
-    } else {
-      fprintf(stderr,"send CTRL_C_EVENT\n");
-      WaitForSingleObject(hWorker, INFINITE);
-    }
-    SetConsoleCtrlHandler(NULL, FALSE);
   }
   WaitForSingleObject(hWorker, INFINITE);
   if (canceled) return TdiABORT;
@@ -676,7 +665,7 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
   pthread_attr_init(&attr);
   pthread_attr_setstacksize(&attr, DEFAULT_STACKSIZE*16);
   if (errno=pthread_create(&Worker, &attr, (void *)WorkerThread, &wa)) {
-    perror("Error creating pthread");
+    perror("ERROR pthread_create");
     pthread_attr_destroy(&attr);
     _CONDITION_UNLOCK(wa.condition);
     pthread_cond_destroy(&WorkerRunning.cond);
@@ -689,22 +678,23 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
   for (;;) {
     _CONDITION_WAIT_1SEC(wa.condition,);
     if (!WorkerRunning.value) break;
-    fprintf(stderr,"thread running\n");
     if (canceled) continue;     //skip check if already canceled
     if (!connection->io->check) continue; // if no io->check def
     if (!connection->io->check(connection)) continue;
-    fprintf(stderr,"cancel Worker\n");
+    fflush(stdout);fprintf(stderr,"Client disconnected, canceling Worker ..");
     pthread_cancel(Worker);
     canceled = B_TRUE;
     _CONDITION_WAIT_1SEC(wa.condition,);
-    if (!WorkerRunning.value) break;
-    fprintf(stderr,"send SIGCHLD\n");
+    if (!WorkerRunning.value) {
+      fprintf(stderr," ok\n");
+      break;
+    }
+    fflush(stdout);fprintf(stderr," failed - sending SIGCHLD\n");
     pthread_kill(Worker,SIGCHLD);
   }
   _CONDITION_UNLOCK(wa.condition);
   void* result;
   pthread_join(Worker,&result);
-  fprintf(stderr,"joined with %"PRIdPTR" -> %d\n",(intptr_t)result,(int)(intptr_t)result);
   pthread_cond_destroy(&WorkerRunning.cond);
   pthread_mutex_destroy(&WorkerRunning.mutex);
   if (canceled && result==PTHREAD_CANCELED) return TdiABORT;
