@@ -295,8 +295,8 @@ class Tests(TestCase):
                 if svr: self.assertEqual(svr.poll(),None)
                 c = Connection(server)
                 c.get("py('1')") # preload MDSplus on server
-                test_timeout(c,"wait(3)",100) # break tdi wait
-                test_timeout(c,"py('from time import sleep;sleep(3)')",500) # break python sleep
+                test_timeout(c,"wait(3)",1000) # break tdi wait
+                test_timeout(c,"py('from time import sleep;sleep(3)')",1500) # break python sleep
                 if full: # timing too unreliable for standard test
                     test_timeout(c,"for(;1;) ;",100) # break tdi inf.loop
                     test_timeout(c,"py('while 1: pass')",500) # break python inf.loop
@@ -324,7 +324,10 @@ class Tests(TestCase):
     def getTests():
         lst = ['interface']
         if Tests.inThread: return lst
-        return lst + ['dispatcher','timeout']
+        lst.append('dispatcher')
+        if sys.platform.startswith('win') or sys.maxsize > 1<<32:
+            lst.append('timeout')
+        return lst
     @classmethod
     def getTestCases(cls,tests=None):
         if tests is None: tests = cls.getTests()
