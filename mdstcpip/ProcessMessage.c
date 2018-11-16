@@ -609,16 +609,17 @@ static void WorkerCleanup(void *worker_cleanup_v) {
     wc->connection->DBID = TreeSwitchDbid(wc->old_dbid);
   }
 #ifndef _WIN32
-  CONDITION_RESET(wc->condition);
+  CONDITION_SET(wc->condition);
 #endif
 }
 
 static int WorkerThread(void *args) {
   worker_args_t* wa = (worker_args_t*)args;
-  worker_cleanup_t wc;memset(&wc,0,sizeof(worker_cleanup_t));
+  worker_cleanup_t wc = {NULL,NULL,{0}
 #ifndef _WIN32
-  CONDITION_SET((wc.condition = wa->condition));
+  ,wa->condition
 #endif
+  };
   pthread_cleanup_push(WorkerCleanup,(void*)&wc);
   if (GetContextSwitching()) {
     wc.connection = wa->connection;
@@ -658,7 +659,7 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
   WaitForSingleObject(hWorker, INFINITE);
   if (canceled) return TdiABORT;
 #else
-  pthread_t Worker;
+  pthread_t Worker = 0;
   Condition WorkerRunning = CONDITION_INITIALIZER;
   wa.condition  = &WorkerRunning;
   _CONDITION_LOCK(wa.condition);
@@ -674,11 +675,10 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
     return MDSplusFATAL;
   }
   pthread_attr_destroy(&attr);
-  _CONDITION_WAIT_SET(wa.condition);
   int canceled = B_FALSE;
   for (;;) {
     _CONDITION_WAIT_1SEC(wa.condition,);
-    if (!WorkerRunning.value) break;
+    if (WorkerRunning.value) break;
     if (canceled) continue;     //skip check if already canceled
     if (!connection->io->check) continue; // if no io->check def
     if (!connection->io->check(connection)) continue;
@@ -686,7 +686,7 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
     pthread_cancel(Worker);
     canceled = B_TRUE;
     _CONDITION_WAIT_1SEC(wa.condition,);
-    if (!WorkerRunning.value) {
+    if (WorkerRunning.value) {
       fprintf(stderr," ok\n");
       break;
     }
