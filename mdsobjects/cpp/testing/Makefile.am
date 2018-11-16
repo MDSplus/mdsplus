@@ -39,9 +39,6 @@ TESTS = \
         MdsFunctionTest \
         MdsConglomTest \
         MdsRangeTest \
-        MdsCallTest \
-        MdsActionTest \
-        MdsApdTest \
         MdsTreeSuppression \
         MdsTreeTest \
         MdsTreeNodeTest \
@@ -49,6 +46,10 @@ TESTS = \
         MdsEventSuppression \
         MdsEventTest \
 	MdsConnectionTest
+
+#        MdsCallTest
+#        MdsActionTest
+#        MdsApdTest
 
 # set VALGRIND_TESTS to select a subset of tests performed under valgrind if
 # the variable is unset all TESTS are added.
