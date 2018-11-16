@@ -92,10 +92,9 @@ EXPORT int MdsGet1DxA(struct descriptor_a const *in_ptr, unsigned short const *l
     new_arsize = 0;
   else
     new_arsize = (in_dsc->arsize / in_dsc->length) * (*length_ptr);
-  dsc_size = (unsigned int)(sizeof(struct descriptor_a) + ((in_dsc->aflags.coeff || (new_arsize == 0))? sizeof(char *) +
-					    sizeof(int) * in_dsc->dimct : 0) +
-      (in_dsc->aflags.bounds ? sizeof(int) * (size_t)(in_dsc->dimct * 2)
-       : 0));
+  dsc_size = (unsigned int)(sizeof(struct descriptor_a)
+           + ((in_dsc->aflags.coeff || (new_arsize == 0)) ? sizeof(void*) + sizeof(int) * in_dsc->dimct : 0)
+           + ( in_dsc->aflags.bounds                      ? sizeof(int) * (size_t)(in_dsc->dimct * 2)   : 0));
   align_size = (*dtype_ptr == DTYPE_T) ? 1 : *length_ptr;
   dsc_size = align(dsc_size, align_size);
   new_size = dsc_size + new_arsize;
@@ -108,12 +107,15 @@ EXPORT int MdsGet1DxA(struct descriptor_a const *in_ptr, unsigned short const *l
     out_dsc->pointer = (char *)out_dsc + align(dsc_size, align_size);
     out_dsc->arsize = new_arsize;
     if (out_dsc->aflags.coeff || (new_arsize==0 && in_dsc->pointer)) {
-      if (out_dsc->class == CLASS_CA) {
-	int64_t offset = ((int64_t) out_dsc->length) * (((char *)in_dsc->a0-(char*)0) / ((int64_t)in_dsc->length));
-	out_dsc->a0 = out_dsc->pointer + offset;
+      if (!in_dsc->aflags.coeff) {//new_arsize==0; in_dsc->a0 invalid
+        out_dsc->aflags.coeff = 1;
+        out_dsc->a0 = out_dsc->pointer;
       } else {
-	int64_t offset = ((int64_t) out_dsc->length) *
-	  ((in_dsc->a0 - in_dsc->pointer) / ((int64_t) (in_dsc->length > 0 ? in_dsc ->length : 1)));
+        int64_t offset;
+        if (out_dsc->class == CLASS_CA)
+	  offset = ((int64_t) out_dsc->length) * ((int64_t)(intptr_t)in_dsc->a0  / ((int64_t)(in_dsc->length > 0 ? in_dsc->length : 1)));
+        else
+	  offset = ((int64_t) out_dsc->length) * ((in_dsc->a0 - in_dsc->pointer) / ((int64_t)(in_dsc->length > 0 ? in_dsc->length : 1)));
 	out_dsc->a0 = out_dsc->pointer + offset;
       }
       for (i = 0; i < out_dsc->dimct; i++)
@@ -132,7 +134,6 @@ EXPORT int MdsGet1DxA(struct descriptor_a const *in_ptr, unsigned short const *l
 	for (i = 0; i < out_dsc->dimct; i++)
 	  new_bound_ptr[i] = a_bound_ptr[i];
       }
-
     }
     out_dsc->class = CLASS_A;
   }
