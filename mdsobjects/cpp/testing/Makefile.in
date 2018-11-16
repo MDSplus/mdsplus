@@ -110,12 +110,10 @@ TESTS = buildtest$(EXEEXT) MdsExpressionCompileTest$(EXEEXT) \
 	MdsCompoundTest$(EXEEXT) MdsSignalTest$(EXEEXT) \
 	MdsDimensionTest$(EXEEXT) MdsWindowTest$(EXEEXT) \
 	MdsFunctionTest$(EXEEXT) MdsConglomTest$(EXEEXT) \
-	MdsRangeTest$(EXEEXT) MdsCallTest$(EXEEXT) \
-	MdsActionTest$(EXEEXT) MdsApdTest$(EXEEXT) \
-	MdsTreeSuppression$(EXEEXT) MdsTreeTest$(EXEEXT) \
-	MdsTreeNodeTest$(EXEEXT) MdsTreeSegments$(EXEEXT) \
-	MdsEventSuppression$(EXEEXT) MdsEventTest$(EXEEXT) \
-	MdsConnectionTest$(EXEEXT)
+	MdsRangeTest$(EXEEXT) MdsTreeSuppression$(EXEEXT) \
+	MdsTreeTest$(EXEEXT) MdsTreeNodeTest$(EXEEXT) \
+	MdsTreeSegments$(EXEEXT) MdsEventSuppression$(EXEEXT) \
+	MdsEventTest$(EXEEXT) MdsConnectionTest$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = mdsobjects/cpp/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -157,30 +155,16 @@ am__EXEEXT_1 = buildtest$(EXEEXT) MdsExpressionCompileTest$(EXEEXT) \
 	MdsCompoundTest$(EXEEXT) MdsSignalTest$(EXEEXT) \
 	MdsDimensionTest$(EXEEXT) MdsWindowTest$(EXEEXT) \
 	MdsFunctionTest$(EXEEXT) MdsConglomTest$(EXEEXT) \
-	MdsRangeTest$(EXEEXT) MdsCallTest$(EXEEXT) \
-	MdsActionTest$(EXEEXT) MdsApdTest$(EXEEXT) \
-	MdsTreeSuppression$(EXEEXT) MdsTreeTest$(EXEEXT) \
-	MdsTreeNodeTest$(EXEEXT) MdsTreeSegments$(EXEEXT) \
-	MdsEventSuppression$(EXEEXT) MdsEventTest$(EXEEXT) \
-	MdsConnectionTest$(EXEEXT)
-MdsActionTest_SOURCES = MdsActionTest.cpp
-MdsActionTest_OBJECTS = MdsActionTest.$(OBJEXT)
-MdsActionTest_LDADD = $(LDADD)
-am__DEPENDENCIES_1 =
-am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
-MdsActionTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
-MdsApdTest_SOURCES = MdsApdTest.cpp
-MdsApdTest_OBJECTS = MdsApdTest.$(OBJEXT)
-MdsApdTest_LDADD = $(LDADD)
-MdsApdTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
-MdsCallTest_SOURCES = MdsCallTest.cpp
-MdsCallTest_OBJECTS = MdsCallTest.$(OBJEXT)
-MdsCallTest_LDADD = $(LDADD)
-MdsCallTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
+	MdsRangeTest$(EXEEXT) MdsTreeSuppression$(EXEEXT) \
+	MdsTreeTest$(EXEEXT) MdsTreeNodeTest$(EXEEXT) \
+	MdsTreeSegments$(EXEEXT) MdsEventSuppression$(EXEEXT) \
+	MdsEventTest$(EXEEXT) MdsConnectionTest$(EXEEXT)
 MdsCompoundTest_SOURCES = MdsCompoundTest.cpp
 MdsCompoundTest_OBJECTS = MdsCompoundTest.$(OBJEXT)
 MdsCompoundTest_LDADD = $(LDADD)
+am__DEPENDENCIES_1 =
+am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	testutils/libMdsTestUtils.a
 MdsCompoundTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsConglomTest_SOURCES = MdsConglomTest.cpp
 MdsConglomTest_OBJECTS = MdsConglomTest.$(OBJEXT)
@@ -302,8 +286,7 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = MdsActionTest.cpp MdsApdTest.cpp MdsCallTest.cpp \
-	MdsCompoundTest.cpp MdsConglomTest.cpp MdsConnectionTest.cpp \
+SOURCES = MdsCompoundTest.cpp MdsConglomTest.cpp MdsConnectionTest.cpp \
 	MdsDataTest.cpp MdsDimensionTest.cpp MdsEventSuppression.cpp \
 	MdsEventTest.cpp MdsExceptionTest.cpp \
 	MdsExpressionCompileTest.cpp MdsFunctionTest.cpp \
@@ -312,10 +295,9 @@ SOURCES = MdsActionTest.cpp MdsApdTest.cpp MdsCallTest.cpp \
 	MdsSignalTest.cpp MdsStringTest.cpp MdsTdiTest.cpp \
 	MdsTreeNodeTest.cpp MdsTreeSegments.cpp MdsTreeSuppression.cpp \
 	MdsTreeTest.cpp MdsWindowTest.cpp buildtest.cpp
-DIST_SOURCES = MdsActionTest.cpp MdsApdTest.cpp MdsCallTest.cpp \
-	MdsCompoundTest.cpp MdsConglomTest.cpp MdsConnectionTest.cpp \
-	MdsDataTest.cpp MdsDimensionTest.cpp MdsEventSuppression.cpp \
-	MdsEventTest.cpp MdsExceptionTest.cpp \
+DIST_SOURCES = MdsCompoundTest.cpp MdsConglomTest.cpp \
+	MdsConnectionTest.cpp MdsDataTest.cpp MdsDimensionTest.cpp \
+	MdsEventSuppression.cpp MdsEventTest.cpp MdsExceptionTest.cpp \
 	MdsExpressionCompileTest.cpp MdsFunctionTest.cpp \
 	MdsRangeTest.cpp MdsScalarTest_NumericConversion.cpp \
 	MdsScalarTest_NumericLimits.cpp MdsScalarTest_ScalarCast.cpp \
@@ -926,6 +908,10 @@ BUILD_FLAGS = @MAKEFLAG_J@
 # no parallel execution as this currently breaks the MdsConnectionTest "Connection local"
 TEST_FLAGS = 
 
+#        MdsCallTest
+#        MdsActionTest
+#        MdsApdTest
+
 # set VALGRIND_TESTS to select a subset of tests performed under valgrind if
 # the variable is unset all TESTS are added.
 #
@@ -988,18 +974,6 @@ $(am__aclocal_m4_deps):
 
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
-
-MdsActionTest$(EXEEXT): $(MdsActionTest_OBJECTS) $(MdsActionTest_DEPENDENCIES) $(EXTRA_MdsActionTest_DEPENDENCIES) 
-	@rm -f MdsActionTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsActionTest_OBJECTS) $(MdsActionTest_LDADD) $(LIBS)
-
-MdsApdTest$(EXEEXT): $(MdsApdTest_OBJECTS) $(MdsApdTest_DEPENDENCIES) $(EXTRA_MdsApdTest_DEPENDENCIES) 
-	@rm -f MdsApdTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsApdTest_OBJECTS) $(MdsApdTest_LDADD) $(LIBS)
-
-MdsCallTest$(EXEEXT): $(MdsCallTest_OBJECTS) $(MdsCallTest_DEPENDENCIES) $(EXTRA_MdsCallTest_DEPENDENCIES) 
-	@rm -f MdsCallTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsCallTest_OBJECTS) $(MdsCallTest_LDADD) $(LIBS)
 
 MdsCompoundTest$(EXEEXT): $(MdsCompoundTest_OBJECTS) $(MdsCompoundTest_DEPENDENCIES) $(EXTRA_MdsCompoundTest_DEPENDENCIES) 
 	@rm -f MdsCompoundTest$(EXEEXT)
@@ -1099,9 +1073,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsActionTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsApdTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsCallTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsCompoundTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsConglomTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsConnectionTest.Po@am__quote@
@@ -1490,27 +1461,6 @@ MdsConglomTest.log: MdsConglomTest$(EXEEXT)
 MdsRangeTest.log: MdsRangeTest$(EXEEXT)
 	@p='MdsRangeTest$(EXEEXT)'; \
 	b='MdsRangeTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsCallTest.log: MdsCallTest$(EXEEXT)
-	@p='MdsCallTest$(EXEEXT)'; \
-	b='MdsCallTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsActionTest.log: MdsActionTest$(EXEEXT)
-	@p='MdsActionTest$(EXEEXT)'; \
-	b='MdsActionTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsApdTest.log: MdsApdTest$(EXEEXT)
-	@p='MdsApdTest$(EXEEXT)'; \
-	b='MdsApdTest'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
