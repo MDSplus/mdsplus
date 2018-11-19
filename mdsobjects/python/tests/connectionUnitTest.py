@@ -1,4 +1,4 @@
-#!/usr/bin/python 
+#!/usr/bin/python
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,20 +23,46 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from unittest import TestCase,TestSuite,TextTestRunner
-from MDSplus import Connection
+from threading import Thread
+from MDSplus import Connection,Float32
+import time
 
-class Tests(TestCase):
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+_UnitTest=_mimport("_UnitTest")
+class Tests(_UnitTest.Tests,_UnitTest.MdsIp):
+    index = 0
+    def threadsTcp(self):
+        server,server_port  = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT',7100+self.index,True)
+        svr = svr_log = None
+        try:
+            svr,svr_log = self._start_mdsip(server ,server_port ,'connectionTCP')
+            try:
+                if svr is not None: time.sleep(1)
+                def requests(c,idx):
+                    args = [Float32(i/10+idx) for i in range(10)]
+                    for i in range(10):
+                        self.assertEqual(c.get("[$,$,$,$,$,$,$,$,$,$]",*args).tolist(),args)
+                c = Connection(server)
+                threads = [Thread(name="C%d"%i,target=requests,args=(c,i)) for i in range(10)]
+                for thread in threads: thread.start()
+                for thread in threads: thread.join()
+            finally:
+                if svr and svr.poll() is None:
+                    svr.terminate()
+                    svr.wait()
+        finally:
+            if svr_log: svr_log.close()
 
-    def connectionWithThreads(self):
-        from threading import Thread
+    def threadsLocal(self):
         c=Connection('local://gub')
-
         class ConnectionThread(Thread):
             def run(self):
                 for i in range(1000):
                     self.test.assertEqual(int(c.get('%d' % i)),i)
-
         t1=ConnectionThread()
         t1.test=self
         t2=ConnectionThread()
@@ -46,34 +72,8 @@ class Tests(TestCase):
         t1.join()
         t2.join()
 
-    def runTest(self):
-        for test in self.getTests():
-            self.__getattribute__(test)()
     @staticmethod
     def getTests():
-        return ['connectionWithThreads']
-    @classmethod
-    def getTestCases(cls,tests=None):
-        if tests is None: tests = cls.getTests()
-        return map(cls,tests)
+        return ['threadsTcp','threadsLocal']
 
-def suite(tests=None):
-    return TestSuite(Tests.getTestCases(tests))
-
-def run(tests=None):
-    TextTestRunner(verbosity=2).run(suite(tests))
-
-def objgraph(*args):
-    import objgraph,gc
-    gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    run(*args)
-    gc.collect()
-    objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
-
-if __name__=='__main__':
-    import sys
-    if len(sys.argv)==2 and sys.argv[1]=='all':
-        run()
-    elif len(sys.argv)>1:
-        run(sys.argv[1:])
-    else: print('Available tests: %s'%(' '.join(Tests.getTests())))
+Tests.main(__name__)

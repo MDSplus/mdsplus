@@ -32,9 +32,10 @@ Tests of MDSplus
 """
 def _mimportSuite(name, level=1):
     try:
-        return __import__(name, globals(), level=level).suite
+        module = __import__(name, globals(), level=level)
     except:
-        return __import__(name, globals()).suite
+        module = __import__(name, globals())
+    return module.Tests.getTestSuite
 
 from unittest import TestSuite,TextTestRunner
 import sys
@@ -54,8 +55,8 @@ def test_all(*arg):
         'segmentsUnitTest',
         'treeUnitTest',
         'threadsUnitTest',
+        'connectionUnitTest',
     ]
-    #testSuites += ['connectionUnitTest']
     tests=[]
     for suite in testSuites:
         try:
