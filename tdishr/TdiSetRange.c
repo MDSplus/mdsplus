@@ -41,8 +41,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         NEED way to specify character string subscript range
 */
 
-#define _MOVC3(a,b,c) memcpy(c,b,a)
-
 #include <STATICdef.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
@@ -75,7 +73,7 @@ int Tdi1SetRange(int opcode, int narg, struct descriptor *list[], struct descrip
   status = TdiGetArgs(opcode, 1, &list[narg - 1], sig, uni, dat, cats);
 
   if STATUS_OK {
-    _MOVC3(sizeof(arr0), (char *)&arr0, (char *)&arr);
+    memcpy(&arr,&arr0,sizeof(arr0));arr.a0=NULL;
     pa = (array_bounds *) dat[0].pointer;
     if (pa == 0)
       status = TdiNULL_PTR;
@@ -185,15 +183,14 @@ int Tdi1SetRange(int opcode, int narg, struct descriptor *list[], struct descrip
   }
   MdsFree1Dx(&tmp, NULL);
 
-  arr.aflags.coeff = (unsigned char)(dimct > 1 || arr.aflags.bounds);
-  if STATUS_OK
+  if STATUS_OK {
+    arr.aflags.coeff = (unsigned char)(dimct > 1 || arr.aflags.bounds);
     status = MdsGet1DxA((struct descriptor_a *)&arr, &pa->length, &pa->dtype, out_ptr);
-
+  }
 	/***********************
         Copy/expand data to new.
         ***********************/
   if STATUS_OK
-      
     status = TdiConvert(pa, out_ptr->pointer MDS_END_ARG);
 
 	/******************************
