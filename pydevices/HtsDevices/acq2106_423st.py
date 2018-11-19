@@ -60,7 +60,7 @@ class Acq2106_423st(MDSplus.Device):
         {'path':':TRIG_MODE','type':'text', 'value': 'hard', 'options':('no_write_shot')},
         {'path':':EXT_CLOCK','type':'axis', 'options':('no_write_shot')},
         {'path':':FREQ','type':'numeric', 'value': 16000, 'options':('no_write_shot')},        
-        {'path':':DEF_DCIM','type':'numeric', 'value': 1, 'options':('no_write_shot')},
+        {'path':':DEF_DECIMATE','type':'numeric', 'value': 1, 'options':('no_write_shot')},
         {'path':':SEG_LENGTH','type':'numeric', 'value': 8000, 'options':('no_write_shot')},
         {'path':':MAX_SEGMENTS','type':'numeric', 'value': 1000, 'options':('no_write_shot')},
         {'path':':SEG_EVENT','type':'text', 'value': 'STREAM', 'options':('no_write_shot')},
@@ -95,7 +95,7 @@ class Acq2106_423st(MDSplus.Device):
         return ans
 
     def init(self):
-        import HtsDevices.acq400_hapi as acq400_hapi
+        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('set_abort', '1')
         if self.ext_clock.length > 0:
@@ -134,7 +134,7 @@ class Acq2106_423st(MDSplus.Device):
     STOP=stop
 
     def trig(self):
-        import HtsDevices.acq400_hapi as acq400_hapi
+        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.so.set_knob('soft_trigger','1')
         return 1
