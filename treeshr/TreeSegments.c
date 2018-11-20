@@ -1075,7 +1075,7 @@ static int ReadSegment(TREE_INFO* tinfo, int nid, SEGMENT_HEADER* shead, SEGMENT
       ans.length = shead->length;
       ans.dimct = shead->dimct;
       memcpy(ans.m, shead->dims, sizeof(shead->dims));
-      ans.m[shead->dimct - 1] = sinfo->rows;
+      ans.m[shead->dimct - 1] = (idx == shead->idx) ? shead->next_row : sinfo->rows;
       ans.arsize = ans.length;
       for (i = 0; i < ans.dimct; i++)
         ans.arsize *= ans.m[i];
@@ -1124,7 +1124,7 @@ static int ReadSegment(TREE_INFO* tinfo, int nid, SEGMENT_HEADER* shead, SEGMENT
 	    if STATUS_OK {
 		STATIC_CONSTANT DESCRIPTOR(expression, "data($)[0:($-1)]");
 		DESCRIPTOR_LONG(row_d, &shead->next_row);
-		status = (*TdiExecute)(&expression,dim,&row_d,dim MDS_END_ARG);
+		status = TdiExecute(&expression,dim,&row_d,dim MDS_END_ARG);
 	      }
 	  }
 	}
@@ -2207,7 +2207,7 @@ inline static int get_segment(vars_t* vars) {
     status = GetSegmentIndex(vars->tinfo, vars->sindex.previous_offset, &vars->sindex);
   if STATUS_NOT_OK
     return status;
-  if (vars->idx < vars->sindex.first_idx || vars->idx > vars->sindex.first_idx + SEGMENTS_PER_INDEX)
+  if (vars->idx < vars->sindex.first_idx || vars->idx >= vars->sindex.first_idx + SEGMENTS_PER_INDEX)
     return TreeFAILURE;
   vars->sinfo = &vars->sindex.segment[vars->idx % SEGMENTS_PER_INDEX];
   return status;
@@ -2259,14 +2259,14 @@ static int isSegmentInRange(vars_t* vars,
       if STATUS_OK {
         if ((start && start->pointer) && (end && end->pointer)) {
           STATIC_CONSTANT DESCRIPTOR(expression, "($ <= $) && ($ >= $)");
-          status = (*TdiExecute)(&expression,start,&segend,end,&segstart,&ans_d MDS_END_ARG);
+          status = TdiExecute(&expression,start,&segend,end,&segstart,&ans_d MDS_END_ARG);
         } else {
           if (start && start->pointer) {
             STATIC_CONSTANT DESCRIPTOR(expression, "($ <= $)");
-            status = (*TdiExecute)(&expression,start,&segend,&ans_d MDS_END_ARG);
+            status = TdiExecute(&expression,start,&segend,&ans_d MDS_END_ARG);
           } else {
             STATIC_CONSTANT DESCRIPTOR(expression, "($ >= $)");
-            status = (*TdiExecute)(&expression,end,&segstart,&ans_d MDS_END_ARG);
+            status = TdiExecute(&expression,end,&segstart,&ans_d MDS_END_ARG);
           }
         }
       }
