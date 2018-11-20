@@ -141,6 +141,7 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
     int stv;
     NCI local_nci, old_nci;
     int64_t saved_viewdate;
+    TreeCallHookFun("TreeNidHook","PutData",info_ptr->treenam, info_ptr->shot, nid, NULL);
     status = TreeCallHook(PutData, info_ptr, nid);
     if (status && !(status & 1))
       return status;
@@ -425,8 +426,10 @@ int _TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
     df_ptr = NULL;
   }
   info->data_file = df_ptr;
-  if (status & 1)
+  if (status & 1) {
+    TreeCallHookFun("TreeHook","OpenDataFileWrite", info->treenam, info->shot, NULL);
     TreeCallHook(OpenDataFileWrite, info, 0);
+  }
   return status;
 }
 

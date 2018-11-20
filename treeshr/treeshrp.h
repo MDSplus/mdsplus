@@ -738,6 +738,7 @@ extern int GetDefaultNidRemote(PINO_DATABASE * dblist, int *nid);
 extern int64_t RfaToSeek(unsigned char *rfa);
 void SeekToRfa(int64_t seek, unsigned char *rfa);
 extern int SetParentState(PINO_DATABASE * db, NODE * node, unsigned int state);
+extern void TreeCallHookFun(char *hookType, char *hookName, ...);
 extern int TreeMakeNidsLocal(struct descriptor *dsc_ptr, int nid);
 extern int TreeCloseFiles(TREE_INFO * info, int nci, int data);
 extern int TreeCopyExtended(PINO_DATABASE * dbid1, PINO_DATABASE * dbid2, int nid, NCI * nci, int compress);

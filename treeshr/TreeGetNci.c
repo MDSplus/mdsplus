@@ -50,6 +50,7 @@ static inline int minInt(int a, int b) { return a < b ? a : b; }
  if (nci_version != version)\
  {\
     nid_to_tree_nidx(dblist, (&nid), info, node_number);\
+    TreeCallHookFun("TreeNidHook","GetNci",info->treenam, info->shot, nid, NULL); \
     status = TreeCallHook(GetNci,info,nid_in);\
     if (status && STATUS_NOT_OK) break;\
     status = TreeGetNciW(info, node_number, &nci,version);\

@@ -321,6 +321,7 @@ int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, ch
 	  info->flush = (dblist->shotid == -1);
 	  info->header = (TREE_HEADER *) & info[1];
 	  info->treenam = strcpy(malloc(strlen(tree) + 1), tree);
+	  TreeCallHookFun("TreeHook","OpenTree",tree,dblist->shotid, NULL);
 	  TreeCallHook(OpenTree, info, 0);
 	  info->channel = conid;
 	  dblist->tree_info = info;
