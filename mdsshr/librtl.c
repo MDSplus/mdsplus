@@ -146,8 +146,8 @@ EXPORT char *Now32(char* buf){
 /// \param routine address of the routine to call
 /// \return the value returned by the routine as a void *
 ///
-EXPORT void *LibCallg(void **arglist, void *(*routine) ())
-{
+EXPORT void *LibCallg(void **arglist, void *(*routine) ()) {
+  if (!routine) abort(); // intercept definite stack corruption
   switch (*(int*)&arglist[0] & 0xff) {
   case 0:
     return (*routine) ();
