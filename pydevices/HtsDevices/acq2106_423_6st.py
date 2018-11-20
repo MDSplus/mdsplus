@@ -23,7 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 from acq2106_423st import Acq2106_423st
-class ACQ2106_423_1ST(Acq2106_423st):
+class ACQ2106_423_6ST(Acq2106_423st):
     """
     D-Tacq ACQ2106 with ACQ423 Digitizers (up to 6)  real time streaming support.
 
