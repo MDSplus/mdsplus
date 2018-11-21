@@ -637,6 +637,7 @@ int64_t _TreeGetDatafileSize(void *dbid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   TREE_INFO *info = dblist->tree_info;
+  if (!info) return -1;
   if ((!info->data_file) || info->data_file->get == 0) {
     if IS_NOT_OK(TreeOpenDatafileR(info))
       return -1;
