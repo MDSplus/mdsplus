@@ -23,16 +23,17 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from unittest import TestCase,TestSuite,TextTestRunner
 from numpy import ndarray, array, int32
 from math import log10
 import MDSplus as m
 
-
-class Tests(TestCase):
-    inThread = False
-    index = 0
-
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+_UnitTest=_mimport("_UnitTest")
+class Tests(_UnitTest.Tests):
     def _doThreeTest(self,tdiexpr,pyexpr,ans,**kwargs):
         """ tests Scalars tdi expression vs. python Expression vs. expected result """
         almost = kwargs.get('almost',False)
@@ -379,34 +380,8 @@ class Tests(TestCase):
         self.assertEqual(str(m.Float64(1.2E-3)),'.0012D0')
         self.assertEqual(str(m.Signal(m.ZERO(100000,0.).evaluate(),None,0.)),"Build_Signal(Set_Range(100000,0D0 /*** etc. ***/), *, 0D0)")
 
-    def runTest(self):
-        for test in self.getTests():
-            self.__getattribute__(test)()
     @staticmethod
     def getTests():
         return ['data','scalars','arrays','vmsSupport','tdiFunctions','decompile','tdiPythonInterface']
-    @classmethod
-    def getTestCases(cls,tests=None):
-        if tests is None: tests = cls.getTests()
-        return list(map(cls,tests))
 
-def suite(tests=None):
-    return TestSuite(Tests.getTestCases(tests))
-
-def run(tests=None):
-    TextTestRunner(verbosity=2).run(suite(tests))
-
-def objgraph(*args):
-    import objgraph,gc
-    gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    run(*args)
-    gc.collect()
-    objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
-
-if __name__=='__main__':
-    import sys
-    if len(sys.argv)==2 and sys.argv[1]=='all':
-        run()
-    elif len(sys.argv)>1:
-        run(sys.argv[1:])
-    else: print('Available tests: %s'%(' '.join(Tests.getTests())))
+Tests.main(__name__)

@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,13 +26,16 @@
 # This test is meant to intentionally rise a segmentation fault within the
 # mdsplus libraries to see if the python test library can manage it.
 #
-from unittest import TestCase,TestSuite
-
+import sys
 from MDSplus import Data
 
-
-class Tests(TestCase):
-
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+_UnitTest=_mimport("_UnitTest")
+class Tests(_UnitTest.Tests):
     def generateSegFault(self):
         try:
             Data.execute('MdsShr->LibFindImageSymbol(val(0))')
@@ -41,31 +44,10 @@ class Tests(TestCase):
             self.assertEqual(exc.__class__,WindowsError)
             self.assertEqual(exc.message, expected[0:len(exc.message)])
 
-    def runTest(self):
-        for test in self.getTests():
-            self.__getattribute__(test)()
     @staticmethod
     def getTests():
-        return ['generateSegFault']
-    @classmethod
-    def getTestCases(cls):
-        return map(cls,cls.getTests())
+        if sys.platform.startswith("win"):
+            return ['generateSegFault']
+        return []
 
-def suite():
-    return TestSuite(Tests.getTestCases())
-
-def run():
-    from unittest import TextTestRunner
-    TextTestRunner(verbosity=2).run(suite())
-
-if __name__=='__main__':
-    import sys
-    if len(sys.argv)>1 and sys.argv[1].lower()=="objgraph":
-        import objgraph
-    else:      objgraph = None
-    import gc;gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    run()
-    if objgraph:
-         gc.collect()
-         objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
-
+Tests.main(__name__)

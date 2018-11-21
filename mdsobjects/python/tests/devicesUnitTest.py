@@ -23,31 +23,17 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from unittest import TestCase, TestSuite, TextTestRunner
-from MDSplus import Tree, Device, tdi, setenv
-from threading import Lock
+from MDSplus import Tree, Device, tdi
 
-class Tests(TestCase):
-    _lock      = Lock()
-    _instances = 0
-    _tmpdir    = None
-    maxDiff    = None
-    @classmethod
-    def setUpClass(cls):
-        with cls._lock:
-            if cls._instances == 0:
-                import tempfile
-                cls._tmpdir=tempfile.mkdtemp()
-            setenv("devtree_path",cls._tmpdir)
-            cls._instances+=1
-    @classmethod
-    def tearDownClass(cls):
-        import gc,shutil
-        gc.collect()
-        with cls._lock:
-            cls._instances -= 1
-            if not cls._instances>0:
-                shutil.rmtree(cls._tmpdir)
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+_UnitTest=_mimport("_UnitTest")
+class Tests(_UnitTest.TreeTests):
+    tree = 'devtree'
+
     @staticmethod
     def getNodeName(t, model):
         """produces a generic path fitting with the 12 char limit of node names"""
@@ -69,7 +55,7 @@ class Tests(TestCase):
         return node,name
 
     def DevicesTests(self,package):
-        with Tree('devtree',-1,'new') as t:
+        with Tree(self.tree,self.shot,'new') as t:
             devices = __import__(package).__dict__
             for model in sorted(devices.keys()):
                 cls = devices[model]
@@ -82,7 +68,7 @@ class Tests(TestCase):
             expected = [s for s in (str(s).strip() for s,p in tdi('%s()'%package))]
         expected.sort()
         passed = []
-        with Tree('devtree',-1,'new') as t:
+        with Tree(self.tree,self.shot,'new') as t:
             for model in expected:
                 node,name = self.getNodeName(t,model)
                 try:
@@ -101,34 +87,8 @@ class Tests(TestCase):
     def W7xDevices(self):
         self.XyzDevices('W7xDevices',[])  # no tdi devices to check
 
-    def runTest(self):
-        for test in self.getTests():
-            self.__getattribute__(test)()
     @staticmethod
     def getTests():
         return ['MitDevices','RfxDevices','W7xDevices']
-    @classmethod
-    def getTestCases(cls,tests=None):
-        if tests is None: tests = cls.getTests()
-        return map(cls,tests)
 
-def suite(tests=None):
-    return TestSuite(Tests.getTestCases(tests))
-
-def run(tests=None):
-    TextTestRunner(verbosity=2).run(suite(tests))
-
-def objgraph(*args):
-    import objgraph,gc
-    gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    run(*args)
-    gc.collect()
-    objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
-
-if __name__=='__main__':
-    import sys
-    if len(sys.argv)==2 and sys.argv[1]=='all':
-        run()
-    elif len(sys.argv)>1:
-        run(sys.argv[1:])
-    else: print('Available tests: %s'%(' '.join(Tests.getTests())))
+Tests.main(__name__)

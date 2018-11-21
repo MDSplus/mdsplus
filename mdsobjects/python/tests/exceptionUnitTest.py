@@ -1,4 +1,4 @@
-#!/usr/bin/python 
+#!/usr/bin/python
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,13 +23,16 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from unittest import TestCase, TestSuite, TextTestRunner
 
 from MDSplus import DevNOT_TRIGGERED, TclNORMAL
 
-
-class Tests(TestCase):
-
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+_UnitTest=_mimport("_UnitTest")
+class Tests(_UnitTest.Tests):
     def defaultErrorValues(self):
         err = DevNOT_TRIGGERED()
         self.assertEqual(err.status, 662470754)
@@ -52,34 +55,8 @@ class Tests(TestCase):
         self.assertEqual(err.severity, 'S')
         self.assertEqual(err.fac, 'Tcl')
 
-    def runTest(self):
-        for test in self.getTests():
-            self.__getattribute__(test)()
     @staticmethod
     def getTests():
         return ['defaultErrorValues','customErrorString','tclErrors']
-    @classmethod
-    def getTestCases(cls,tests=None):
-        if tests is None: tests = cls.getTests()
-        return map(cls,tests)
 
-def suite(tests=None):
-    return TestSuite(Tests.getTestCases(tests))
-
-def run(tests=None):
-    TextTestRunner(verbosity=2).run(suite(tests))
-
-def objgraph(*args):
-    import objgraph,gc
-    gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    run(*args)
-    gc.collect()
-    objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
-
-if __name__=='__main__':
-    import sys
-    if len(sys.argv)==2 and sys.argv[1]=='all':
-        run()
-    elif len(sys.argv)>1:
-        run(sys.argv[1:])
-    else: print('Available tests: %s'%(' '.join(Tests.getTests())))
+Tests.main(__name__)
