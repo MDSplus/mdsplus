@@ -324,7 +324,6 @@ class Tests(_UnitTest.TreeTests):
         for i in range(node.getNumSegments()):
             str,end = node.getSegmentLimits(i)
             node.updateSegment(str,end,Range(str,end),i)
-        ptree.close()
         ptree.compressDatafile()
         ptree.readonly()
         self.assertEqual(True,ptree.getDatafileSize()<ptree1.getDatafileSize())
