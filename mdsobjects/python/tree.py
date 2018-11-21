@@ -384,8 +384,10 @@ class Tree(object):
         """
         if isinstance(self,(Tree,)):
             tree,shot = self.tree,self.shot
+            ctx_p = 0 if self.ctx is None else _C.byref(self.ctx)
+        else: ctx_p = 0
         _exc.checkStatus(
-                _TreeShr._TreeCleanDatafile(0,
+                _TreeShr._TreeCleanDatafile(ctx_p,
                                             _C.c_char_p(_ver.tobytes(tree)),
                                             _C.c_int32(int(shot))))
 
@@ -396,8 +398,10 @@ class Tree(object):
         """
         if isinstance(self,(Tree,)):
             tree,shot = self.tree,self.shot
+            ctx_p = 0 if self.ctx is None else _C.byref(self.ctx)
+        else: ctx_p = 0
         _exc.checkStatus(
-                _TreeShr._TreeCompressDatafile(0,
+                _TreeShr._TreeCompressDatafile(ctx_p,
                                                _C.c_char_p(_ver.tobytes(tree)),
                                                _C.c_int32(int(shot))))
     @classmethodX
