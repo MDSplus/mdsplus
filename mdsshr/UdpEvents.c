@@ -245,7 +245,6 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
 #ifdef SO_REUSEPORT
   if (setsockopt(udpSocket, SOL_SOCKET, SO_REUSEPORT, &flag, sizeof(flag)) == SOCKET_ERROR) {
     print_error("Cannot set REUSEPORT option");
-    return 0;
   }
 #endif
 #ifdef _WIN32
