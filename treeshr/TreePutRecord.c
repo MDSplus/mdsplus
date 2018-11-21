@@ -142,6 +142,8 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
     NCI local_nci, old_nci;
     int64_t saved_viewdate;
     TreeCallHookFun("TreeNidHook","PutData",info_ptr->treenam, info_ptr->shot, nid, NULL);
+    TreeCallHookFun("TreeNidDataHook","PutData",info_ptr->treenam,
+		    info_ptr->shot, nid, descriptor_ptr, NULL);
     status = TreeCallHook(PutData, info_ptr, nid);
     if (status && !(status & 1))
       return status;

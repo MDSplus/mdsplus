@@ -64,7 +64,11 @@ static int isEnabled(char *hookName) {
   char *enabledHooks=getenv("TreeHooks");
   if (enabledHooks==NULL) return 0;
   enabledHooks=strdup(enabledHooks);
-  if (strcasecmp(enabledHooks,"all")==0) return 1;
+  if ((_strcasestr(enabledHooks,"allhooks") != NULL) &&
+      (_strcasestr(hookName,"full") == NULL)) return 1;
+  if ((_strcasestr(enabledHooks,"fullhooks") != NULL) &&
+      (_strcasestr(hookName,"full") != NULL)) return 1;
+      
   char *p=enabledHooks;
   while (p) {
     p=_strcasestr(p,hookName);
@@ -89,6 +93,7 @@ void TreeCallHookFun(char *hookType, char *hookName, ...) {
   static DESCRIPTOR(tree_key_d,"tree");
   static DESCRIPTOR(shot_key_d,"shot");
   static DESCRIPTOR(nid_key_d,"nid");
+  static DESCRIPTOR(data_key_d,"data");
   EMPTYXD(defaultAns);
   struct descriptor_xd *ans=&defaultAns;
   struct descriptor *dict=NULL;
@@ -131,6 +136,31 @@ void TreeCallHookFun(char *hookType, char *hookName, ...) {
                                       (struct descriptor *)&nid_key_d,
                                       (struct descriptor *)&nid_d};
     DESCRIPTOR_APD(hook_d, DTYPE_DICTIONARY, &hook_dscs, 8);
+    dict = (struct descriptor *)&hook_d;
+  } else if (strcmp(hookType,"TreeNidDataHook")==0) {
+    va_list ap;
+    va_start(ap, hookName);
+    char *tree = va_arg(ap, char *);
+    int shot = va_arg(ap, int);
+    int nid = va_arg(ap, int);
+    struct descriptor *data_d = va_arg(ap,struct descriptor *);
+    struct descriptor_xd *this_ans = va_arg(ap, struct descriptor_xd *);
+    DESCRIPTOR_FROM_CSTRING(tree_d,tree);
+    DESCRIPTOR_LONG(shot_d,&shot);
+    DESCRIPTOR_NID(nid_d,&nid);
+    va_end(ap);
+    ans=this_ans ? this_ans : &defaultAns;
+    struct descriptor *hook_dscs[] = {(struct descriptor *)&hooktype_key_d,
+				      (struct descriptor *)&hooktype_d,
+				      (struct descriptor *)&tree_key_d,
+				      (struct descriptor *)&tree_d,
+				      (struct descriptor *)&shot_key_d,
+				      (struct descriptor *)&shot_d,
+                                      (struct descriptor *)&nid_key_d,
+                                      (struct descriptor *)&nid_d,
+				      (struct descriptor *)&data_key_d,
+				      data_d};
+    DESCRIPTOR_APD(hook_d, DTYPE_DICTIONARY, &hook_dscs, 10);
     dict = (struct descriptor *)&hook_d;
   } else {
     return;
