@@ -597,33 +597,27 @@ EXPORT int LibFindImageSymbol(struct descriptor *filename, struct descriptor *sy
  *******************************************************/
 EXPORT int StrConcat(struct descriptor *out, struct descriptor *first, ...)
 {
-  int i;
-  va_list incrmtr;
+  int i,nargs;
+  struct descriptor * arglist[256];
+  VA_LIST_MDS_END_ARG(arglist,nargs,0,0,first)
   int status = StrCopyDx(out, first);
   if STATUS_OK {
-    va_start(incrmtr, first);
     if (out->class == CLASS_D) {
-      struct descriptor *arg = va_arg(incrmtr, struct descriptor *);
-      for (i = 1; STATUS_OK && arg != MdsEND_ARG; i++) {
-	status = StrAppend((struct descriptor_d *)out, arg);
-	arg = va_arg(incrmtr, struct descriptor *);
-      }
+      for (i = 0; STATUS_OK && i<nargs ; i++)
+	status = StrAppend((struct descriptor_d *)out, arglist[i]);
     } else if (out->class == CLASS_S) {
       struct descriptor temp = *out;
-      struct descriptor *next;
-      for (i = 1,
+      for (i = 0,
 	   temp.length = (unsigned short)(out->length - first->length),
 	   temp.pointer = out->pointer + first->length;
-	   STATUS_OK && temp.length > 0;
-	   i++,
-	   temp.length = (unsigned short)(temp.length - next->length),
-	   temp.pointer += next->length) {
-	next = va_arg(incrmtr, struct descriptor *);
-        if (next == MdsEND_ARG) break;
-	if (next)
-	  status = StrCopyDx(&temp, next);
+	   i<nargs && STATUS_OK && temp.length > 0;
+	   temp.length = (unsigned short)(temp.length - arglist[i]->length),
+	   temp.pointer += arglist[i]->length,
+           i++) {
+	if (arglist[i])
+	  status = StrCopyDx(&temp, arglist[i]);
 	else
-	  temp.length = 0;
+	  break;
       }
     } else
       status = MDSplusERROR;
