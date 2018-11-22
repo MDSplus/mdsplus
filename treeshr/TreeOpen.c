@@ -1429,3 +1429,15 @@ EXPORT int _TreeFileName(void* dbid, char *tree, int shot, struct descriptor_xd*
 EXPORT int TreeFileName(char *tree, int shot, struct descriptor_xd* out_ptr){
   return _TreeFileName(*TreeCtx(), tree, shot, out_ptr);
 }
+
+void* dbid_push(void* dbid){
+  void* ps = malloc(sizeof(pushstate_t));
+  ((pushstate_t*)ps)->private = TreeUsePrivateCtx(1);
+  ((pushstate_t*)ps)->dbid    = TreeSwitchDbid(dbid);
+  return ps;
+}
+void  dbid_pop(void *ps){
+  TreeSwitchDbid(    ((pushstate_t*)ps)->dbid   );
+  TreeUsePrivateCtx( ((pushstate_t*)ps)->private);
+  free(ps);
+}
