@@ -569,7 +569,7 @@ static inline NODE *member_of(NODE * a)
   return ans;
 }
 /*
- * Note in certain edit operations dbid is passed as 0, 
+ * Note in certain edit operations dbid is passed as 0,
  * which would cause nid_to_node(dbid)  to fail
  *
  * however, when editing, the usage of the nde will never be
@@ -624,12 +624,12 @@ static inline int is_member(PINO_DATABASE * dblist, NODE * node)
 static inline NODE *sibling_of(PINO_DATABASE *dbid, NODE *a)
 {
   NODE *answer = brother_of(dbid, a);
-  if (! answer) 
+  if (! answer)
     if (is_member(dbid, a))
       answer = child_of(dbid, parent_of(dbid, a));
   return answer;
 }
- 
+
 /******************************************
 Two macros are provided for converting from
 a NID to a node address or from a node
@@ -809,5 +809,15 @@ extern int MDS_IO_EXISTS(char *filename);
 extern int MDS_IO_REMOVE(char *filename);
 extern int MDS_IO_RENAME(char *oldname, char *newname);
 extern ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *deleted);
+
+typedef struct pushstate_s{
+int            private;
+PINO_DATABASE* dbid;
+} pushstate_t;
+extern void* dbid_push(void* dbid);
+extern void  dbid_pop(void* ps);
+#define DBID_PUSH(dbid) pthread_cleanup_push(dbid_pop,dbid_push(dbid))
+#define DBID_POP(dbid)  pthread_cleanup_pop(1)
+
 
 #endif

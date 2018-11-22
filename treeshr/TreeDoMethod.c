@@ -125,9 +125,6 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
   {0, NciEND_OF_LIST, 0, 0}
   };
   void (*addr) ();
-  STATIC_CONSTANT DESCRIPTOR(close, "$)");
-  STATIC_CONSTANT DESCRIPTOR(arg, "$,");
-  const DESCRIPTOR(underunder, "__");
   int nargs;
   void *arglist[256];
   count(nargs);
@@ -138,7 +135,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     && nid_dsc->dtype!=DTYPE_LU))
     return TreeNOMETHOD;
   head_nid = 0;
-  status = _TreeGetNci(dbid, *(int *)nid_dsc->pointer, itmlst);
+  status = _TreeGetNci(dbid,*(int *)nid_dsc->pointer, itmlst);
   if STATUS_NOT_OK
     return status;
   struct descriptor_conglom *conglom_ptr;
@@ -162,22 +159,21 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     if (conglom_ptr->image
      && conglom_ptr->image->length == strlen("__python__")
      && strncmp(conglom_ptr->image->pointer, "__python__", strlen("__python__")) == 0) {
-      void *dbid = *TreeCtx();
       /**** Try python class ***/
-      struct descriptor_d exp = { 0, DTYPE_T, CLASS_D, 0 };
-      FREED_ON_EXIT(&exp);
       int _nargs = nargs;
-      STATIC_CONSTANT DESCRIPTOR(open, "PyDoMethod(");
-      StrCopyDx((struct descriptor *)&exp, (struct descriptor *)&open);
       if (_nargs == 4
        && method_ptr->length == strlen("DW_SETUP")
        && strncmp(method_ptr->pointer, "DW_SETUP", strlen("DW_SETUP")) == 0) {
 	arglist[3] = arglist[4];
 	_nargs--;
       }
+      char exp[1024];
+      DESCRIPTOR(exp_dsc, exp);
+      strcpy(exp,"PyDoMethod(");
       for (i = 1; i < _nargs - 1; i++)
-	StrAppend(&exp, (struct descriptor *)&arg);
-      StrAppend(&exp, (struct descriptor *)&close);
+	strcat(exp, "$,");
+      strcat(exp, "$)");
+      exp_dsc.length=strlen(exp);
       if STATUS_OK {
         static void* (*TdiExecute)  () = NULL;
         status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
@@ -186,15 +182,16 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	  for (i = _nargs; i > 0; i--)
 	    arglist[i + 1] = arglist[i];
 	  arglist[0] = arglist_nargs(_nargs);
-	  arglist[1] = &exp;
+	  arglist[1] = &exp_dsc;
 	  arglist[_nargs] = MdsEND_ARG;
+          DBID_PUSH(dbid);
 	  status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
+          DBID_POP(dbid);
         }
       }
-      FREED_NOW(&exp);
-      *TreeCtx() = dbid;
       goto end;
     }
+    const DESCRIPTOR(underunder, "__");
     StrConcat((struct descriptor *)&method, conglom_ptr->model, (struct descriptor *)&underunder, method_ptr MDS_END_ARG);
     for (i = 0; i < method.length; i++)
       method.pointer[i] = (char)tolower(method.pointer[i]);
@@ -203,10 +200,9 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     else
       status = TdiINVDTYDSC;
     if STATUS_OK {
-      void *old_dbid = *TreeCtx();
-      *TreeCtx() = dbid;
+      DBID_PUSH(dbid);
       status = (int)(intptr_t)LibCallg(arglist, addr);
-      *TreeCtx() = old_dbid;
+      DBID_POP(dbid);
       if (arglist[nargs]) {
 	struct descriptor *ans = (struct descriptor *)arglist[nargs];
 	if (ans->class == CLASS_XD) {
