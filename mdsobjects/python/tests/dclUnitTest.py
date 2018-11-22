@@ -23,26 +23,21 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from unittest import TestCase,TestSuite,TextTestRunner
-import os,sys
+import sys
+from time import sleep
 from re import match
-from threading import RLock
-
 from MDSplus import Tree,Device,Connection,GetMany,Range
-from MDSplus import getenv,setenv,dcl,ccl,tcl,cts
-from MDSplus import mdsExceptions as Exc
+from MDSplus import dcl,ccl,tcl,cts,mdsExceptions as Exc
 
-class Tests(TestCase):
-    debug = False
-    inThread = False
-    lock = RLock()
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+_UnitTest=_mimport("_UnitTest")
+class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
     shotinc = 1
-    instances = 0
-    index = 0
-    @property
-    def shot(self):
-        return self.index*Tests.shotinc+1
-
+    tree = 'pytree'
     def _doTCLTest(self,expr,out=None,err=None,re=False,tcl=tcl):
         def checkre(pattern,string):
             if pattern is None:
@@ -67,66 +62,10 @@ class Tests(TestCase):
             return
         self.fail("TCL: '%s' should have signaled an exception"%expr)
 
-    @classmethod
-    def setUpClass(cls):
-        with cls.lock:
-            if cls.instances==0:
-                import gc;gc.collect()
-                from tempfile import mkdtemp
-                if getenv("TEST_DISTRIBUTED_TREES") is not None:
-                    treepath="localhost::%s"
-                else:
-                    treepath="%s"
-                cls.tmpdir = mkdtemp()
-                cls.root = os.path.dirname(os.path.realpath(__file__))
-                cls.env = dict((k,str(v)) for k,v in os.environ.items())
-                cls.envx= {}
-                cls._setenv('PyLib',getenv('PyLib'))
-                cls._setenv("MDS_PYDEVICE_PATH",'%s/devices'%cls.root)
-                cls._setenv("pytree_path",treepath%cls.tmpdir)
-                with Tree('pytree',-1,'new') as pytree:
-                     Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE')
-                     pytree.write()
-            cls.instances += 1
-
-    @classmethod
-    def _setenv(cls,name,value):
-        value = str(value)
-        cls.env[name]  = value
-        cls.envx[name] = value
-        setenv(name,value)
-
-    @classmethod
-    def tearDownClass(cls):
-        import gc,shutil
-        gc.collect()
-        with cls.lock:
-            cls.instances -= 1
-            if not cls.instances>0:
-                shutil.rmtree(cls.tmpdir)
-
-    @classmethod
-    def tearDown(cls):
-        import gc
-        gc.collect()
-    def cleanup(self,refs=0):
-        import MDSplus,gc;gc.collect()
-        if self.inThread: return
-        def isTree(o):
-            try:    return isinstance(o,MDSplus.Tree)
-            except: return False
-        trees = [o for o in gc.get_objects() if isTree(o)]
-        stree = [str(t) for t in trees]
-        for t in trees:
-            try: t.close()
-            except MDSplus.TreeNOT_OPEN:
-                print(stree)
-        if refs<0: return
-        self.assertEqual(stree[refs:],[])
-
     def interface(self):
-      def test():
-        Tree('pytree',-1,'ReadOnly').createPulse(self.shot)
+        with Tree(self.tree,self.shot,'new') as pytree:
+            Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE')
+            pytree.write()
         self.assertEqual(dcl('help set verify',1,1,0)[1],None)
         self.assertEqual(tcl('help set tree',1,1,0)[1],None)
         self.assertEqual(ccl('help set xandq',1,1,0)[1],None)
@@ -149,83 +88,42 @@ class Tests(TestCase):
         self._doTCLTest('close')
         self._doTCLTest('show db','\n')
         """ context """
-        self._doTCLTest('set tree pytree')
+        self._doTCLTest('set tree pytree/shot=%d'%(self.shot,))
         pytree = Tree()
-        self.assertEqual(str(pytree),'Tree("PYTREE",-1,"Normal")')
-        self._doTCLTest('close pytree')
-        self.assertEqual(str(pytree),'Tree("PYTREE",-1,"Closed")')
+        self.assertEqual(str(pytree),'Tree("PYTREE",%d,"Normal")'%self.shot)
+        self._doTCLTest('close pytree/shot=%d'%(self.shot,))
+        self.assertEqual(str(pytree),'Tree("PYTREE",%d,"Closed")'%self.shot)
         if self.inThread: Tree.usePrivateCtx(0)
         """ tcl exceptions """
         self._doExceptionTest('close',Exc.TreeNOT_OPEN)
         self._doExceptionTest('dispatch/command/server=xXxXxXx type test',Exc.ServerPATH_DOWN)
         self._doExceptionTest('dispatch/command/server type test',Exc.MdsdclIVVERB)
-      try:
-          test()
-      except:
-          self.cleanup(-1)
-          raise
-      else:
-          self.cleanup(1)
 
     def dispatcher(self):
-      def test():
-        from time import sleep
-        hosts = '%s/mdsip.hosts'%self.root
-        def testDispatchCommand(mdsip,command,stdout=None,stderr=None):
-            self.assertEqual(tcl('dispatch/command/nowait/server=%s %s'  %(mdsip,command),1,1,1),(None,None))
-        def setup_mdsip(server_env,port_env,default_port,fix0):
-            host = getenv(server_env,'')
-            if len(host)>0:
-                return host,0
-            port = int(getenv(port_env,default_port))
-            if port==0:
-                if fix0: port = default_port
-                else: return None,0
-            return 'localhost:%d'%(port,),port
-        def start_mdsip(server,port,logname,env=None):
-            if port>0:
-                from subprocess import Popen,STDOUT
-                logfile = '%s_%d.log'%(logname,self.index) 
-                log = open(logfile,'w')
-                try:
-                    params = ['mdsip','-s','-p',str(port),'-h',hosts]
-                    print(' '.join(params+['>',logfile,'2>&1']))
-                    mdsip = Popen(params,env=env,stdout=log,stderr=STDOUT)
-                except:
-                    log.close()
-                    raise
-                return mdsip,log
-            if server:
-                for envpair in self.envx.items():
-                    testDispatchCommand(server,'env %s=%s'%envpair)
-            return None,None
-        monitor,monitor_port = setup_mdsip('ACTION_MONITOR','MONITOR_PORT',8700+self.index,False)
-        monitor_opt = "/monitor=%s"%monitor if monitor_port>0 else ""
-        server ,server_port  = setup_mdsip('ACTION_SERVER', 'ACTION_PORT',8800+self.index,True)
         shot = self.shot+1
-        Tree('pytree',-1,'ReadOnly').createPulse(shot)
+        with Tree(self.tree,shot,'new') as pytree:
+            Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE')
+            pytree.write()
+        monitor,monitor_port = self._setup_mdsip('ACTION_MONITOR','MONITOR_PORT',7010+self.index,False)
+        monitor_opt = "/monitor=%s"%monitor if monitor_port>0 else ""
+        server ,server_port  = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT',7000+self.index,True)
         show_server = "Checking server: %s\n[^,]+, [^,]+, logging enabled, Inactive\n"%server
-        pytree = Tree('pytree',shot)
+        pytree.normal()
         pytree.TESTDEVICE.ACTIONSERVER.no_write_shot = False
         pytree.TESTDEVICE.ACTIONSERVER.record = server
         """ using dispatcher """
         mon,mon_log,svr,svr_log = (None,None,None,None)
         try:
-            mon,mon_log = start_mdsip(monitor,monitor_port,'monitor')
-            svr,svr_log = start_mdsip(server ,server_port ,'server',self.env)
+            mon,mon_log = self._start_mdsip(monitor,monitor_port,'monitor')
+            svr,svr_log = self._start_mdsip(server ,server_port ,'server',self.env)
             try:
-                sleep(3)
+                if mon or svr: sleep(1)
                 if mon: self.assertEqual(mon.poll(),None)
                 if svr: self.assertEqual(svr.poll(),None)
                 """ mdsconnect """
                 c = Connection(server)
                 self.assertEqual(c.get('1').tolist(),1)
                 self.assertEqual(c.getObject('1:3:1').__class__,Range)
-                try: #  currently the connection needs to be closed after a timeout
-                    Connection(server).get("wait(1)",timeout=100)
-                    self.fail("Connection.get(wait(1)) should have timed out.")
-                except Exc.MDSplusException as e:
-                    self.assertEqual(e.__class__,Exc.TdiTIMEOUT)
                 g = GetMany(c);
                 g.append('a','1')
                 g.append('b','$',2)
@@ -236,18 +134,18 @@ class Tests(TestCase):
                 self.assertEqual(g.get('c'),3)
                 """ tcl dispatch """
                 self._doTCLTest('show server %s'%server,out=show_server,re=True)
-                testDispatchCommand(server,'set verify')
-                testDispatchCommand(server,'type test')
+                self._testDispatchCommand(server,'set verify')
+                self._testDispatchCommand(server,'type test')
                 self._doTCLTest('set tree pytree/shot=%d'%shot)
                 self._doTCLTest('dispatch/build%s'%monitor_opt)
                 self._doTCLTest('dispatch/phase%s INIT'%monitor_opt)
-                sleep(1)
+                sleep(.1)
                 self._doTCLTest('show server %s'%server,out=show_server,re=True)
                 self._doTCLTest('dispatch/phase%s PULSE'%monitor_opt)
-                sleep(1)
+                sleep(.1)
                 self._doTCLTest('show server %s'%server,out=show_server,re=True)
                 self._doTCLTest('dispatch/phase%s STORE'%monitor_opt)
-                sleep(1)
+                sleep(.1)
                 self._doTCLTest('show server %s'%server,out=show_server,re=True)
                 """ tcl exceptions """
                 self._doExceptionTest('dispatch/command/server=%s '%server,Exc.MdsdclIVVERB)
@@ -255,59 +153,61 @@ class Tests(TestCase):
                 if mon: self.assertEqual(mon.poll(),None)
                 if svr: self.assertEqual(svr.poll(),None)
             finally:
-                try:
-                    self._doTCLTest('dispatch/command/wait/server=%s close/all'%server)
-                finally:
-                    if svr and svr.poll() is None:
-                        svr.terminate()
-                        svr.wait()
-                    if mon and mon.poll() is None:
-                        mon.terminate()
-                        mon.wait()
+                if svr and svr.poll() is None:
+                    svr.terminate()
+                    svr.wait()
+                else:
+                    try: self._doTCLTest('dispatch/command/wait/server=%s close/all'%server)
+                    except: pass
+                if mon and mon.poll() is None:
+                    mon.terminate()
+                    mon.wait()
         finally:
             if svr_log: svr_log.close()
             if mon_log: mon_log.close()
             self._doTCLTest('close/all')
-        pytree = Tree('pytree',shot,'ReadOnly')
+        pytree.readonly()
         self.assertTrue(pytree.TESTDEVICE.INIT1_DONE.record <= pytree.TESTDEVICE.INIT2_DONE.record)
-      try:
-          test()
-      except:
-          self.cleanup(-1)
-          raise
-      else:
-          self.cleanup(1 if sys.platform.startswith('win') else 0)
 
-    def runTest(self):
-        for test in self.getTests():
-            self.__getattribute__(test)()
+    def timeout(self,full=False):
+        def test_timeout(c,expr,to):
+            with c:
+                try: # break out of sleep
+                    c.get('write(2,"tic: "//"%s");%s;write(2,"toc: "//"%s")'%(expr,expr,expr),timeout=to)
+                    self.fail('Connection.get("%s") should have timed out.'%expr)
+                except Exc.MDSplusException as e:
+                    self.assertEqual(e.__class__,Exc.TdiTIMEOUT)
+        server,server_port  = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT',7000+self.index,True)
+        svr = svr_log = None
+        try:
+            svr,svr_log = self._start_mdsip(server ,server_port ,'timeout',self.env)
+            try:
+                if svr:
+                    sleep(1)
+                    self.assertEqual(svr.poll(),None)
+                c = Connection(server)
+                c.get("py('1')") # preload MDSplus on server
+                test_timeout(c,"wait(3)",1000) # break tdi wait
+                test_timeout(c,"py('from time import sleep;sleep(3)')",1500) # break python sleep
+                if full: # timing too unreliable for standard test
+                    test_timeout(c,"for(;1;) ;",100) # break tdi inf.loop
+                    test_timeout(c,"py('while 1: pass')",500) # break python inf.loop
+                c.get("1")
+            finally:
+                if svr and svr.poll() is None:
+                    svr.terminate()
+                    svr.wait()
+        finally:
+            if svr_log: svr_log.close()
+    def timeoutfull(self): self.timeout(full=True)
+
     @staticmethod
     def getTests():
         lst = ['interface']
         if Tests.inThread: return lst
-        return ['dispatcher'] + lst
-    @classmethod
-    def getTestCases(cls,tests=None):
-        if tests is None: tests = cls.getTests()
-        return map(cls,tests)
+        lst.append('dispatcher')
+        if sys.platform.startswith('win') or sys.maxsize > 1<<32:
+            lst.append('timeout')
+        return lst
 
-def suite(tests=None):
-    return TestSuite(Tests.getTestCases(tests))
-
-def run(tests=None):
-    TextTestRunner(verbosity=2).run(suite(tests))
-
-def objgraph(*args):
-    import objgraph,gc
-    gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    run(*args)
-    gc.collect()
-    objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
-
-if __name__=='__main__':
-    import sys
-    if len(sys.argv)==2 and sys.argv[1]=='all':
-        run()
-    elif len(sys.argv)>1:
-        run(sys.argv[1:])
-    else: print('Available tests: %s'%(' '.join(Tests.getTests())))
+Tests.main(__name__)

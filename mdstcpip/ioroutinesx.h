@@ -4,11 +4,16 @@ static int io_listen(int argc, char **argv);
 static int io_authorize(Connection* c, char *username);
 static int io_connect(Connection* c, char *protocol, char *host);
 static ssize_t io_recv_to(Connection* c, void *buffer, size_t len, int to_msec);
-inline static ssize_t io_recv(Connection* c, void *buffer, size_t len){
+#ifdef _TCP
+static int io_check(Connection* c);
+#else
+# define io_check NULL
+#endif
+static ssize_t io_recv(Connection* c, void *buffer, size_t len){
   return io_recv_to(c, buffer,len, -1);
 }
 static IoRoutines io_routines = {
-  io_connect, io_send, io_recv, io_flush, io_listen, io_authorize, io_reuseCheck, io_disconnect, io_recv_to
+  io_connect, io_send, io_recv, io_flush, io_listen, io_authorize, io_reuseCheck, io_disconnect, io_recv_to, io_check
 };
 #include <mdsshr.h>
 #include <inttypes.h>
@@ -310,11 +315,6 @@ static ssize_t io_recv_to(Connection* c, void *bptr, size_t num, int to_msec){
   if (sock != INVALID_SOCKET) {
     PushSocket(sock);
     signal(SIGABRT, ABORT);
-    struct SOCKADDR_IN sin;
-    SOCKLEN_T len = sizeof(sin);
-    if (GETPEERNAME(sock, (struct sockaddr *)&sin, &len)) {
-      PERROR(("Error getting peer name from socket %"PRIu64),(uint64_t)sock);
-    } else
     if (to_msec<0)
       recved = RECV(sock, bptr, num, MSG_NOSIGNAL);
     else {
@@ -328,15 +328,15 @@ static ssize_t io_recv_to(Connection* c, void *bptr, size_t num, int to_msec){
       recved = select(sock+1, &readfds, NULL, NULL, &timeout);
 #else
       struct pollfd fd;
-      fd.fd = sock; // your socket handler
+      fd.fd = sock;
       fd.events = POLLIN;
-      recved = poll(&fd, 1, to_msec); // 1 second for timeout
+      recved = poll(&fd, 1, to_msec);
 #endif
       switch (recved) {
       case -1: break; // Error
       case  0: break; // Timeout
       default: // for select this will be 1
-        recved = RECV(sock, bptr, num, MSG_NOSIGNAL); // get your data
+        recved = RECV(sock, bptr, num, MSG_NOSIGNAL);
         break;
       }
     }
@@ -344,6 +344,34 @@ static ssize_t io_recv_to(Connection* c, void *bptr, size_t num, int to_msec){
   }
   return recved;
 }
+
+#ifdef _TCP
+static int io_check(Connection* c){
+  SOCKET sock = getSocket(c);
+  ssize_t err = -1;
+  if (sock != INVALID_SOCKET) {
+    PushSocket(sock);
+    signal(SIGABRT, ABORT);
+    struct timeval timeout = {0,0};
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(sock, &readfds);
+    err = select(sock+1, &readfds, NULL, NULL, &timeout);
+    switch (err) {
+    case -1: break; // Error
+    case  0: break; // Timeout
+    default: {// for select this will be 1
+        char bptr[1];
+        err = RECV(sock, bptr, 1, MSG_NOSIGNAL||MSG_PEEK);
+        err = (err==1) ? 0 : -1;
+        break;
+      }
+    }
+    PopSocket(sock);
+  }
+  return (int)err;
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 //  DISCONNECT  ////////////////////////////////////////////////////////////////

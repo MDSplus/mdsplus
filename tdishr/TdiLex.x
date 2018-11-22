@@ -56,7 +56,7 @@
 #include <tdimessages.h>
 #include <treeshr.h>
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-#ifdef WIN32
+#ifdef _WIN32
 #pragma warning (disable : 4013 4102 4035) /* LEX produces code with no forward declarations of yylook and yyback. Also has unreferenced label yyfussy. And two int functions: yyoutput and yyunput do not return a value.*/
 #endif
 

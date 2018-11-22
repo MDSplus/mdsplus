@@ -29,7 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef WIN32
+#ifdef _WIN32
 #include <io.h>
 #include <windows.h>
 #else

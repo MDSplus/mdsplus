@@ -67,7 +67,7 @@ static int gsi_authorize(Connection* c, char *username);
 static int gsi_connect(Connection* c, char *protocol, char *host);
 static int gsi_reuseCheck(char *host, char *unique, size_t buflen);
 static IoRoutines gsi_routines = {
-  gsi_connect, gsi_send, gsi_recv, NULL, gsi_listen, gsi_authorize, gsi_reuseCheck, gsi_disconnect, NULL
+  gsi_connect, gsi_send, gsi_recv, NULL, gsi_listen, gsi_authorize, gsi_reuseCheck, gsi_disconnect, NULL, NULL
 };
 
 static int MDSIP_SNDBUF = 32768;

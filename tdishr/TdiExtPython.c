@@ -39,7 +39,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef _WIN32
 #define USE_EXECFILE	/* windows cannot use PyRun_File because if crashes on _lockfile */
 #else
-//#define HANDLE_SIGCHLD	/* anyone knows why we need to handle SIGCHLD */
 //#define USE_EXECFILE	/* for debugging purpose */
 #endif
 
@@ -62,9 +61,9 @@ typedef ssize_t        Py_ssize_t;
 static void          (*Py_DecRef)() = NULL;
 static PyObject*     (*PyErr_Occurred) () = NULL;
 static void          (*PyErr_Print) () = NULL;
+static PyObject*     (*PyImport_ImportModule) () = NULL;
 static PyThreadState*(*PyGILState_Ensure)() = NULL;
 static void          (*PyGILState_Release)(PyThreadState *) = NULL;
-static PyObject*     (*PyImport_ImportModule) () = NULL;
 
 //loadPyFunction
 static int       (*PyCallable_Check) () = NULL;
@@ -96,10 +95,6 @@ static PyObject *makeData = NULL;
 static PyObject *MDSplusException = NULL;
 
 static void initialize(){
-  void (*Py_Initialize) () = NULL;
-  void (*PyEval_InitThreads)() = NULL;
-  int  (*PyEval_ThreadsInitialized)() = NULL;
-  void *(*PyEval_SaveThread)() = NULL;
   void *handle;
   char *lib;
   char *envsym = getenv("PyLib");
@@ -115,13 +110,14 @@ static void initialize(){
 #endif
     fprintf(stderr,"\nYou should defined the PyLib environment variable!\nPlease define PyLib to be the name of your python library, i.e. '%s' or '%s'.\nWe will try '%s' as default.\n\n",envsym,aspath,envsym);
   }
+  void (*Py_InitializeEx) () = NULL;
 #ifdef RTLD_NOLOAD
   /*** See if python routines are already available ***/
   handle = dlopen(0, RTLD_NOLOAD);
-  loadrtn(Py_Initialize, 0);
+  loadrtn(Py_InitializeEx, 0);
   /*** If not, load the python library ***/
 #endif
-  if (!Py_Initialize) {
+  if (!Py_InitializeEx) {
 #ifdef _WIN32
     if (strlen(envsym)>6 && (envsym[1] == ':' || strncmp(envsym+strlen(envsym)-4, ".dll", 4) == 0)) {
       lib = strcpy((char *)malloc(strlen(envsym) + 1), envsym);
@@ -145,12 +141,13 @@ static void initialize(){
        return;
     }
     free(lib);
-    loadrtn(Py_Initialize, 1);
-    Py_Initialize();
+    loadrtn(Py_InitializeEx, 1);
+    Py_InitializeEx(0); // 1: register signals; 0: don't
+    int (*PyEval_ThreadsInitialized)() = NULL;
     loadrtn(PyEval_ThreadsInitialized, 1);
-    if (PyEval_ThreadsInitialized() == C_OK) {
-      loadrtn(PyEval_InitThreads, 1);
-      loadrtn(PyEval_SaveThread, 1);
+    if (!PyEval_ThreadsInitialized()) {
+      void (*PyEval_InitThreads)();loadrtn(PyEval_InitThreads, 1);
+      void *(*PyEval_SaveThread)();loadrtn(PyEval_SaveThread,  1);
       PyEval_InitThreads();
       PyEval_SaveThread();
     }
@@ -158,7 +155,6 @@ static void initialize(){
   loadrtn(Py_DecRef, 1);
   loadrtn(PyErr_Occurred, 1);
   loadrtn(PyErr_Print, 1);
-  loadrtn(PyGILState_Release, 1);
   loadrtn(PyImport_ImportModule, 1);
   //loadPyFunction
   loadrtn(PyCallable_Check, 1);
@@ -187,9 +183,18 @@ static void initialize(){
   loadrtn(_Py_fopen_obj, 0);
   loadrtn(PyRun_SimpleFileExFlags, 1);
 #endif
+  loadrtn(PyGILState_Release, 1);
   loadrtn(PyGILState_Ensure, 1);
-  PyThreadState *GIL = (*PyGILState_Ensure)(); \
-  pthread_cleanup_push((void*)PyGILState_Release,(void*)GIL);
+}
+
+static inline void initialize_once() {
+  static pthread_once_t once = PTHREAD_ONCE_INIT;
+  pthread_once(&once,&initialize);
+}
+
+static void importMDSplus() {
+  initialize_once();
+  PyThreadState *GIL = PyGILState_Ensure();
   PyObject *MDSplus= PyImport_ImportModule("MDSplus");
   if (MDSplus) {
     pointerToObject  = PyObject_GetAttrString(MDSplus, "pointerToObject");
@@ -211,7 +216,12 @@ static void initialize(){
     fprintf(stderr,"Error loading package MDSplus, check your PYTHONPATH; very limited functionality\n");
     if (PyErr_Occurred()) PyErr_Print();
   }
-  pthread_cleanup_pop(1);
+  PyGILState_Release(GIL);
+}
+
+static inline void importMDSplus_once() {
+  static pthread_once_t once = PTHREAD_ONCE_INIT;
+  pthread_once(&once,&importMDSplus);
 }
 
 char *findModule(struct descriptor *modname_d, char **modname_out){
@@ -454,37 +464,13 @@ static inline int callPyFunction_(char *filename,int nargs, struct descriptor **
   return MDSplusSUCCESS;
 }
 
-#ifdef HANDLE_SIGCHLD
-#include <signal.h>
-static struct sigaction* setsignal(){
-  struct sigaction offact;
-  memset(&offact,0,sizeof(offact));
-  offact.sa_handler = SIG_DFL;
-  struct sigaction *oldact = malloc(sizeof(struct sigaction));
-  sigaction(SIGCHLD, &offact, oldact);
-  return oldact;
-}
-static void resetsignal(struct sigaction* oldact){
-  sigaction(SIGCHLD, oldact, NULL);
-  free(oldact);
-}
-#define SIGNAL_SETUP struct sigaction* oldact = setsignal();pthread_cleanup_push((void*)resetsignal,oldact);
-#define SIGNAL_RESET pthread_cleanup_pop(1);
-#else
-#define SIGNAL_SETUP
-#define SIGNAL_RESET
-#endif
-
-static pthread_once_t once = PTHREAD_ONCE_INIT;
 #define PYTHON_OPEN \
-pthread_once(&once,&initialize);\
+importMDSplus_once();\
 if (PyGILState_Ensure) { \
-  SIGNAL_SETUP;\
   PyThreadState* GIL = PyGILState_Ensure();
 
 #define PYTHON_CLOSE \
   PyGILState_Release(GIL);\
-  SIGNAL_RESET;\
 } else status = LibNOTFOU;
 
 

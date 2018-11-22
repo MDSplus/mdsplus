@@ -140,13 +140,14 @@ pthread_cond_destroy(&(input)->cond);\
 pthread_mutex_destroy(&(input)->mutex);\
 pthread_mutex_unlock(destroy_lock);\
 } while(0)
-#define CREATE_DETACHED_THREAD(thread, stacksize, target, args)\
+#define CREATE_THREAD(thread, stacksize, target, args)\
 pthread_attr_t attr;\
 pthread_attr_init(&attr);\
 pthread_attr_setstacksize(&attr, DEFAULT_STACKSIZE stacksize);\
 int c_status = pthread_create(&thread, &attr, (void *)target, args);\
-pthread_attr_destroy(&attr);\
-pthread_detach(thread);
+pthread_attr_destroy(&attr)
+#define CREATE_DETACHED_THREAD(thread, stacksize, target, args)\
+CREATE_THREAD(thread, stacksize, target, args);pthread_detach(thread);
 
 #define CONDITION_START_THREAD(input, thread, stacksize, target, args) do{\
 _CONDITION_LOCK(input);\

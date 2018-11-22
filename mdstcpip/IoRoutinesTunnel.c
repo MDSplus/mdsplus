@@ -47,8 +47,9 @@ static ssize_t tunnel_recv_to(Connection* c, void *buffer, size_t len, int to_ms
 static int tunnel_disconnect(Connection* c);
 static int tunnel_connect(Connection* c, char *protocol, char *host);
 static int tunnel_listen(int argc, char **argv);
-IoRoutines tunnel_routines =
-    { tunnel_connect, tunnel_send, tunnel_recv, NULL, tunnel_listen, NULL, NULL, tunnel_disconnect, tunnel_recv_to};
+IoRoutines tunnel_routines = {
+ tunnel_connect, tunnel_send, tunnel_recv, NULL, tunnel_listen, NULL, NULL, tunnel_disconnect, tunnel_recv_to, NULL
+};
 
 struct TUNNEL_PIPES {
 #ifdef _WIN32

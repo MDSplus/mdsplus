@@ -23,26 +23,19 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from unittest import TestCase,TestSuite,TextTestRunner
-import os,sys
+import sys
 from re import match
-from threading import RLock
+from MDSplus import Tree,setenv,tcl,mdsExceptions as Exc
 
-from MDSplus import Tree,Device
-from MDSplus import getenv,setenv,tcl
-from MDSplus import mdsExceptions as Exc
-
-class Tests(TestCase):
-    debug = False
-    inThread = False
-    lock = RLock()
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+_UnitTest=_mimport("_UnitTest")
+class Tests(_UnitTest.TreeTests):
     shotinc = 1
-    instances = 0
-    index = 0
-    @property
-    def shot(self):
-        return self.index*Tests.shotinc+1
-
+    tree = 'pytree'
     def _doTCLTest(self,expr,out=None,err=None,re=False,tcl=tcl):
         def checkre(pattern,string):
             if pattern is None:
@@ -67,90 +60,14 @@ class Tests(TestCase):
             return
         self.fail("TCL: '%s' should have signaled an exception"%expr)
 
-    @classmethod
-    def setUpClass(cls):
-        with cls.lock:
-            if cls.instances==0:
-                import gc;gc.collect()
-                from tempfile import mkdtemp
-                if getenv("TEST_DISTRIBUTED_TREES") is not None:
-                    treepath="localhost::%s"
-                else:
-                    treepath="%s"
-                cls.tmpdir = mkdtemp()
-                cls.root = os.path.dirname(os.path.realpath(__file__))
-                cls.env = dict((k,str(v)) for k,v in os.environ.items())
-                cls.envx= {}
-                cls._setenv('PyLib',getenv('PyLib'))
-                cls._setenv("MDS_PYDEVICE_PATH",'%s/devices'%cls.root)
-                cls._setenv("pytree_path",treepath%cls.tmpdir)
-                with Tree('pytree',-1,'new') as pytree:
-                     Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE')
-                     pytree.write()
-            cls.instances += 1
-
-    @classmethod
-    def _setenv(cls,name,value):
-        value = str(value)
-        cls.env[name]  = value
-        cls.envx[name] = value
-        setenv(name,value)
-
-    @classmethod
-    def tearDownClass(cls):
-        import gc,shutil
-        gc.collect()
-        with cls.lock:
-            cls.instances -= 1
-            if not cls.instances>0:
-                shutil.rmtree(cls.tmpdir)
-
-    @classmethod
-    def tearDown(cls):
-        import MDSplus,gc;gc.collect()
-        def isTree(o):
-            try:    return isinstance(o,MDSplus.Tree)
-            except: return False
-        for o in gc.get_objects():
-            if isTree(o):
-                o.close()
-
     def dotask_timeout(self):
       def test():
-          with Tree('pytree'):
+          with Tree(self.tree,self.shot):
               for i in range(1000):
                   self._doExceptionTest('do TESTDEVICE:TASK_TIMEOUT',Exc.TdiTIMEOUT)
 
-    def runTest(self):
-        for test in self.getTests():
-            self.__getattribute__(test)()
     @staticmethod
     def getTests():
-        lst = ['dotask_timeout']
-        if Tests.inThread: return lst
-        return []+lst
-    @classmethod
-    def getTestCases(cls,tests=None):
-        if tests is None: tests = cls.getTests()
-        return map(cls,tests)
+        return ['dotask_timeout']
 
-def suite(tests=None):
-    return TestSuite(Tests.getTestCases(tests))
-
-def run(tests=None):
-    TextTestRunner(verbosity=2).run(suite(tests))
-
-def objgraph(*args):
-    import objgraph,gc
-    gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    run(*args)
-    gc.collect()
-    objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
-
-if __name__=='__main__':
-    import sys
-    if len(sys.argv)==2 and sys.argv[1]=='all':
-        run()
-    elif len(sys.argv)>1:
-        run(sys.argv[1:])
-    else: print('Available tests: %s'%(' '.join(Tests.getTests())))
+Tests.main(__name__)

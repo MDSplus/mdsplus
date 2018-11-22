@@ -146,8 +146,8 @@ EXPORT char *Now32(char* buf){
 /// \param routine address of the routine to call
 /// \return the value returned by the routine as a void *
 ///
-EXPORT void *LibCallg(void **arglist, void *(*routine) ())
-{
+EXPORT void *LibCallg(void **arglist, void *(*routine) ()) {
+  if (!routine) abort(); // intercept definite stack corruption
   switch (*(int*)&arglist[0] & 0xff) {
   case 0:
     return (*routine) ();
@@ -339,7 +339,7 @@ EXPORT int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag __attri
   return status;
 }
 
-#else				/* WIN32 */
+#else	/* _WIN32 */
 
 
 STATIC_ROUTINE char const *nonblank(char *p)

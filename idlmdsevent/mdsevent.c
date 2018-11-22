@@ -66,7 +66,7 @@ typedef struct _event_struct {
   char name[28];
   char value[12];
   int loc_event_id;
-#ifdef WIN32
+#ifdef _WIN32
   void *thread_handle;
   DWORD thread_id;
 #endif
@@ -74,7 +74,7 @@ typedef struct _event_struct {
 } EventStruct;
 
 #include <stdio.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #else
 #include <X11/Intrinsic.h>
@@ -125,7 +125,7 @@ EXPORT int IDLMdsEventCan(int argc, void * *argv)
     UnBlockSig(SIGALRM);
     for (e = EventList, p = 0; e && e->loc_event_id != eventid; p = e, e = e->next) ;
     if (e) {
-#ifdef WIN32
+#ifdef _WIN32
       if (e->thread_handle)
 	TerminateThread(e->thread_handle, 0);
 #endif
@@ -151,7 +151,7 @@ EXPORT int IDLMdsGetevi(int argc, void **argv)
   } else return 0;
 }
 
-#ifndef WIN32
+#ifndef _WIN32
 static int event_pipe[2];
 
 static void DoEventUpdate(XtPointer client_data __attribute__ ((unused)), int *source __attribute__ ((unused)), XtInputId * id __attribute__ ((unused)))
@@ -164,11 +164,11 @@ static void DoEventUpdate(XtPointer client_data __attribute__ ((unused)), int *s
     perror("Error reading from event pipe\n");
   if ((stub_rec = IDL_WidgetStubLookup(e->stub_id))
       && (base_rec = IDL_WidgetStubLookup(e->base_id))) {
-#ifdef WIN32
+#ifdef _WIN32
     HWND wid1, wid2;
 #endif
     IDL_WidgetIssueStubEvent(stub_rec, (IDL_LONG) 0);
-#ifdef WIN32
+#ifdef _WIN32
     IDL_WidgetGetStubIds(stub_rec, (IDL_LONG *) & wid1, (IDL_LONG *) & wid2);
     PostMessage(wid1, WM_MOUSEMOVE, (WPARAM) NULL, (LPARAM) NULL);
 #else
@@ -216,7 +216,7 @@ EXPORT int IDLMdsEvent(int argc, void * *argv)
       if ((parent_rec = IDL_WidgetStubLookup(*base_id))
 	  && (stub_rec = IDL_WidgetStubLookup(*stub_id))) {
 	/* IDL_WidgetSetStubIds(stub_rec, parent_rec, parent_rec);   */
-#ifdef WIN32
+#ifdef _WIN32
 	if (sock != INVALID_SOCKET) {
 	  e->thread_handle = CreateThread((LPSECURITY_ATTRIBUTES) NULL,
 					  0,
@@ -265,7 +265,7 @@ EXPORT int IDLMdsEvent(int argc, void * *argv)
   return -1;
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 static void EventAst(void * e_in, int len, char *data)
 {
   EventStruct *e = (EventStruct *)e_in;
