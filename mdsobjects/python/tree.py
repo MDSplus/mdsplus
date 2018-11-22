@@ -358,7 +358,6 @@ class Tree(object):
     def normal(self):
         self.open('NORMAL')
     def open(self, mode='NORMAL'):
-        _TreeCtx.lock.acquire()
         try:
             env_name = '%s_path'%self.tree.lower()
             if not self.path is None:
@@ -393,7 +392,6 @@ class Tree(object):
         finally:
                 if not self.path is None:
                     _mds.setenv(env_name,old_path)
-                _TreeCtx.lock.release()
 
     def __init__(self, tree=None, shot=-1, mode='NORMAL', path=None):
         """Create a Tree instance. Specify a tree and shot and optionally a mode.

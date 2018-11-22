@@ -89,16 +89,16 @@ EXPORT int _TreeFun(void *dbid, ...) {\
   if IS_NOT_OK(status) return status;\
   int nargs;\
   VA_LIST_TO_ARGLIST(arglist,nargs,0,1,dbid);\
-  arglist[nargs] = MdsEND_ARG;\
   DBID_PUSH(dbid);\
   status = (int)(intptr_t)LibCallg(arglist, TdiFun);\
   DBID_POP(dbid);\
   return status;\
 } /*"*/
 
+_TREE_TDI(_TreeCompile  ,TdiCompile  )
 _TREE_TDI(_TreeExecute  ,TdiExecute  )
 _TREE_TDI(_TreeEvaluate ,TdiEvaluate )
-_TREE_TDI(_TreeCompile  ,TdiCompile  )
+_TREE_TDI(_TreeData     ,TdiData     )
 _TREE_TDI(_TreeDecompile,TdiDecompile)
 
 int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...) {
