@@ -35,29 +35,6 @@ _UnitTest=_mimport("_UnitTest")
 class Tests(_UnitTest.TreeTests):
     trees = ['pytree','pytreesub']
     shotinc = 10
-    def treeCtx(self):
-        from time import sleep
-        def check(n):
-            if n==0:self.assertEqual(tree._TreeCtx.ctxs,{})  # neither tcl nor tdi has been called yet
-            else: self.assertEqual(n,len(tree._TreeCtx.ctxs.items()[0][1]))
-        tcl('edit pytree/shot=%d/new'%self.shot);check(0)
-        self.assertEqual(tree._TreeCtx.ctxs,{})  # neither tcl nor tdi has been called yet
-        Data.execute('$EXPT'); check(0)
-        t = Tree();            check(0)
-        Data.execute('tcl("dir", _out)');check(0)
-        del(t);gc.collect(2);sleep(.1);check(0)
-        Data.execute('_out');check(0)
-        t = Tree('pytree',self.shot+1,'NEW');
-        self.assertEqual(len(tree._TreeCtx.ctxs[t.ctx.value]),1)
-        Data.execute('tcl("close")');
-        self.assertEqual(len(tree._TreeCtx.ctxs[t.ctx.value]),1)
-        self.assertEqual(str(t),'Tree("PYTREE",%d,"Edit")'%(self.shot+1,))
-        self.assertEqual(str(Data.execute('tcl("show db", _out);_out')),"\n")
-        del(t);gc.collect(2);sleep(.01);check(0)
-        # tcl/tdi context remains until end of session
-        t = Tree('pytree',self.shot+1,'NEW');
-        self.assertEqual(len(tree._TreeCtx.ctxs[t.ctx.value]),1)
-        del(t);gc.collect(2);sleep(.01);check(0)
 
     def extAttr(self):
         with Tree('pytree',self.shot+0,'new') as pytree:
@@ -339,8 +316,6 @@ class Tests(_UnitTest.TreeTests):
                              msg="Error writing compressed signal%s"%node)
     @staticmethod
     def getTests():
-        lst = ['extAttr','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','getCompression']
-        if Tests.inThread: return lst
-        return ['treeCtx']+lst
+        return ['extAttr','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','getCompression']
 
 Tests.main(__name__)

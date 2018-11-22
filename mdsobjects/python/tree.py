@@ -53,6 +53,9 @@ _con=_mimport('connection')
 #
 _TreeShr=_ver.load_library('TreeShr')
 _XTreeShr=_ver.load_library('XTreeShr')
+_TreeShr.TreeCtx.restype=_C.c_void_p
+_TreeShr.TreeDbid.restype=_C.c_void_p
+
 #############################################
 
 class classmethodX(object):
@@ -119,91 +122,9 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
     """ The TreeCtx class is used to manage proper garbage collection
     of open trees. It retains reference counts of tree contexts and
     closes and frees tree contexts when no longer being used. """
-    lock = _GCLock(_threading.RLock())
-    ctxs = {}
-    order= []
-    _id  = 0
-    def __new__(cls,ctx,opened,**kw):
-        # check if ctx is a valid context
-        if ctx: return super(_TreeCtx,cls).__new__(cls)
-    def __init__(self,ctx,opened,**kw):
-        self.ctx_p = _C.c_void_p(ctx)
-        self.register(opened,**kw)
-        self.open = True
-
-    @property
-    def ctx(self):
-        return self.ctx_p.value
-
-    def register(self,opened,**kw):
-        with _TreeCtx.lock:
-            self.id = _TreeCtx._id
-            _TreeCtx._id+= 1
-            #kw['trace'] = trace()
-            if self.ctx in _TreeCtx.ctxs:
-                _TreeCtx.ctxs[self.ctx][self.id] = kw
-            elif opened:
-                _TreeCtx.ctxs[self.ctx] = {self.id:kw}
-            #print('regist',self.id, {kv for kv in kw.items() if kv[0]!='trace'})
-
-    def headId(cls,id):
-        with cls.lock:
-            cls.order = [id]+[i for i in cls.order if i!=id]
-
-    @classmethod
-    def canClose(cls,ctx):
-        with cls.lock:
-            return len(cls.ctxs[ctx])==1
-
-    @staticmethod
-    def getTree_id(id):
-        import gc
-        for o in gc.get_objects():
-            if isinstance(o,Tree) and o.tctx and o.tctx.id==id:
-                return o
-
-    @staticmethod
-    def getTree_ctx(ctx):
-        if isinstance(ctx,_C.c_void_p):
-            ctx = ctx.value
-        if not ctx: return
-        import gc
-        for o in gc.get_objects():
-            if isinstance(o,Tree) and o.tctx and o.tctx.ctx==ctx:
-                return o
-
-    @classmethod
-    def getTree(cls):
-        if len(cls.order)>0:
-            return cls.getTree_id(cls.order[0])
-
-    def __del__(self):
-        if not self.open: return
-        self.open = False
-        try:    self.lock.lock.acquire()
-        except: self.lock = None
-        try:
-            ctx = self.ctx
-            if not ctx in self.ctxs: return # was global context
-            self.__class__.order = [id for id in self.order if id!=self.id]
-            kw = self.ctxs[ctx].pop(self.id) # analysis:ignore
-            #print('delete',self.id,{kv for kv in kw.items() if kv[0]!='trace'})
-            if len(self.ctxs[ctx])>0: return # some context is still open
-            self.ctxs.pop(ctx)
-            # now free current Dbid
-            if _TreeShr: _TreeShr.TreeFreeDbid(_C.c_void_p(ctx))
-        except Exception as e: print(e)
-        finally:
-            if self.lock: self.lock.lock.release()
-
-    @staticmethod
-    def getDbid(ctx=0):
-        _TreeShr.TreeCtx.restype=_C.POINTER(_C.c_void_p)
-        return _TreeShr.TreeCtx().contents.value
-
     @staticmethod
     def switchDbid(tree=None):
-        if   isinstance(tree,(Tree,_TreeCtx)):
+        if   isinstance(tree,Tree):
             ctx = tree.ctx
         elif isinstance(tree,_C.c_void_p):
             ctx = tree
@@ -214,6 +135,7 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
         _TreeShr.TreeSwitchDbid.restype=_C.c_void_p
         return _TreeShr.TreeSwitchDbid(ctx)
 
+    lock  = _GCLock(_threading.RLock())
     local = _threading.local()
     @classmethod
     def pushTree(cls,tree):
@@ -303,12 +225,16 @@ class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
 
     _lock=_threading.RLock()
-    opened = False
+    public = False
     _id  = 0
     path = None
-    tctx = None
-    ctx  = None
-
+    _ctx = None
+    @property
+    def pctx(self):
+        return _C.c_void_p(_TreeShr.TreeCtx()) if self.public else _C.byref(self._ctx)
+    @property
+    def ctx(self):
+        return _C.c_void_p(_TreeShr.TreeDbid()) if self.public else self._ctx
     @staticmethod
     def getShotDB(expt,path=None,lower=None,upper=None):
         """
@@ -384,10 +310,10 @@ class Tree(object):
         """
         if isinstance(self,(Tree,)):
             tree,shot = self.tree,self.shot
-            ctx_p = 0 if self.ctx is None else _C.byref(self.ctx)
-        else: ctx_p = 0
+            pctx = self.pctx
+        else: pctx = _C.c_void_p(_TreeShr.TreeCtx())
         _exc.checkStatus(
-                _TreeShr._TreeCleanDatafile(ctx_p,
+                _TreeShr._TreeCleanDatafile(pctx,
                                             _C.c_char_p(_ver.tobytes(tree)),
                                             _C.c_int32(int(shot))))
 
@@ -398,10 +324,10 @@ class Tree(object):
         """
         if isinstance(self,(Tree,)):
             tree,shot = self.tree,self.shot
-            ctx_p = 0 if self.ctx is None else _C.byref(self.ctx)
-        else: ctx_p = 0
+            pctx = self.pctx
+        else: pctx = _C.c_void_p(_TreeShr.TreeCtx())
         _exc.checkStatus(
-                _TreeShr._TreeCompressDatafile(ctx_p,
+                _TreeShr._TreeCompressDatafile(pctx,
                                                _C.c_char_p(_ver.tobytes(tree)),
                                                _C.c_int32(int(shot))))
     @classmethodX
@@ -438,37 +364,32 @@ class Tree(object):
             if not self.path is None:
                 old_path = _mds.getenv(env_name)
                 _mds.setenv(env_name,self.path)
-            self.ctx = _C.c_void_p(0)
             mode=mode.upper()
             if mode == 'NORMAL':
-                status = _TreeShr._TreeOpen(_C.byref(self.ctx),
+                status = _TreeShr._TreeOpen(self.pctx,
                                       _C.c_char_p(_ver.tobytes(self.tree)),
                                       _C.c_int32(self.shot),
                                       _C.c_int32(0))
             elif mode == 'EDIT':
-                status = _TreeShr._TreeOpenEdit(_C.byref(self.ctx),
+                status = _TreeShr._TreeOpenEdit(self.pctx,
                                           _C.c_char_p(_ver.tobytes(self.tree)),
                                           _C.c_int32(self.shot),
                                           _C.c_int32(0))
             elif mode == 'READONLY':
-                status = _TreeShr._TreeOpen(_C.byref(self.ctx),
+                status = _TreeShr._TreeOpen(self.pctx,
                                       _C.c_char_p(_ver.tobytes(self.tree)),
                                       _C.c_int32(self.shot),
                                       _C.c_int32(1))
             elif mode == 'NEW':
-                status = _TreeShr._TreeOpenNew(_C.byref(self.ctx),
+                status = _TreeShr._TreeOpenNew(self.pctx,
                                          _C.c_char_p(_ver.tobytes(self.tree)),
                                          _C.c_int32(self.shot))
             else:
                 raise TypeError('Invalid mode specificed, use "normal","edit","new" or "readonly".')
             _exc.checkStatus(status)
-            if status!=_exc.TreeALREADY_OPEN.status:
-                self.opened = True # only update if tree was not open before
-            if not isinstance(self.ctx,_C.c_void_p) or self.ctx.value is None:
-                raise _exc.MDSplusERROR
-            self.tctx = _TreeCtx(self.ctx.value,self.opened,tree=self.tree,shot=self.shot,mode=mode)
-            self.tree = self.name
-            self.shot = self.shotid
+            if not self.public:
+                self.tree = self.name
+                self.shot = self.shotid
         finally:
                 if not self.path is None:
                     _mds.setenv(env_name,old_path)
@@ -487,21 +408,13 @@ class Tree(object):
         @type mode: str
         """
         if tree is None:
-            ctx = _TreeCtx.getDbid()
-            if ctx is None:
-                raise _exc.TreeNOT_OPEN
-            self.ctx=_C.c_void_p(ctx)
-            if not isinstance(self.ctx,_C.c_void_p) or self.ctx.value is None:
-                raise _exc.MDSplusERROR
-            self.opened = False
-            self.tctx = _TreeCtx(self.ctx.value,self.opened,tree=str(tree),shot=shot,mode=mode)
-            self.tree = self.name
-            self.shot = self.shotid
+            self.public = True
         else:
             if path is not None: self.path = path
+            self._ctx = _C.c_void_p(0)
             self.tree = tree
             self.shot = shot
-            self.opened = True
+            self.public = False
             self.open(mode)
 
     # support for the with-structure
@@ -510,8 +423,9 @@ class Tree(object):
         return self
 
     def __del__(self):
-        if self.opened and self.tctx and self.ctx:
+        if not self.public:
             self.__exit__()
+            _TreeShr.TreeFreeDbid(self.ctx)
 
     def __exit__(self, *args):
         """ Cleanup for with statement. If tree is open for edit close it. """
@@ -521,27 +435,19 @@ class Tree(object):
             else:
                  self.close()
         except: pass
-        if self.tctx:
-            del(self.tctx,self.ctx)
 
     def quit(self):
         """Close edit session discarding node structure and tag changes.
         @rtype: None
         """
         with self._lock:
-            _exc.checkStatus(
-                _TreeShr._TreeQuitTree(_C.byref(self.ctx),
-                                       _C.c_char_p(_ver.tobytes(self.tree)),
-                                       _C.c_int32(int(self.shot))))
+            _exc.checkStatus(_TreeShr._TreeQuitTree(self.pctx,0,0))
 
     def close(self):
         """Close tree.
         @rtype: None
         """
-        _exc.checkStatus(
-                _TreeShr._TreeClose(_C.byref(self.ctx),
-                                    _C.c_char_p(_ver.tobytes(self.tree)),
-                                    _C.c_int32(self.shot)))
+        _exc.checkStatus(_TreeShr._TreeClose(self.pctx,0,0))
 
 
 ########### Tree instance properties #######################
@@ -674,7 +580,8 @@ class Tree(object):
         If the tree has a top leve child or member with
         the name "NODENAME" t.NODENAME will return a
         TreeNode instance."""
-        if name=='tctx': raise _exc.TreeNOT_OPEN
+        if name == "tree": return self.name
+        if name == "shot": return self.shotid
         try:
             return _getNodeByAttr(self,name)
         except _exc.TreeNNF:
@@ -697,7 +604,7 @@ class Tree(object):
 
     def __eq__(self,obj):
         if isinstance(obj,(Tree,)):
-            return self.ctx.value == obj.ctx.value
+            return self.ctx == obj.ctx
         return False
     def __ne__(self,obj): return not self.__eq__(obj)
 
@@ -714,8 +621,9 @@ class Tree(object):
             else:
                 mode="Normal"
         except _exc.TreeNOT_OPEN:
+            if self.public: return 'Tree("?",?,"Closed")'
             mode="Closed"
-        return self.__class__.__name__+'("%s",%d,"%s")' % (self.tree,self.shot,mode)
+        return 'Tree("%s",%d,"%s")' % (self.tree,self.shot,mode)
 
     __str__=__repr__
     def addDevice(self,nodename,model):
@@ -1102,10 +1010,7 @@ class Tree(object):
         @rtype: None
         """
         with self._lock:
-            _exc.checkStatus(
-                _TreeShr._TreeWriteTree(_C.byref(self.ctx),
-                                        _C.c_char_p(_ver.tobytes(self.tree)),
-                                        _C.c_int32(int(self.shot))))
+            _exc.checkStatus(_TreeShr._TreeWriteTree(self.pctx,0,0))
 
     def tcl(self,cmd,*args,**kwargs):
         """tree specific tcl command"""
@@ -1149,7 +1054,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
     _setTree = _dat.Data._setTree
 
     @property
-    def ctx(self): return _C.c_void_p(_TreeCtx.getDbid()) if self.tree is None else self.tree.ctx
+    def ctx(self): return _C.c_void_p(_TreeShr.TreeDbid()) if self.tree is None else self.tree.ctx
     @property
     def _lock(self): return self.tree._lock
     _setTree = _dat.Data._setTree
@@ -1302,13 +1207,9 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
             items.remove(item)
         itmlst=NCI_ITEMS(items)
         if len(items) > 0:
-            _TreeCtx.pushTree(self.tree)
-            try:
-                _exc.checkStatus(_TreeShr.TreeGetNci(
+            _exc.checkStatus(_TreeShr._TreeGetNci(self.ctx,
                                                   self._nid,
                                                   _C.byref(itmlst)))
-            finally:
-                _TreeCtx.popTree()
         for idx in range(len(items)):
             val=itmlst.ans[idx]
             rettype=itmlst.rettype[idx]
@@ -1883,11 +1784,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @rtype: Data
         """
         xd=_dsc.Descriptor_xd()
-        _TreeCtx.pushTree(self.tree)
-        try:
-            status=_TreeShr.TreeGetRecord(self._nid,xd.ref)
-        finally:
-            _TreeCtx.popTree()
+        status=_TreeShr._TreeGetRecord(self.ctx,self._nid,xd.ref)
         if (status & 1):
             return xd._setTree(self.tree).value
         elif len(altvalue)==1 and status == _exc.TreeNODATA.status:
