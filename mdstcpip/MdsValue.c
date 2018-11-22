@@ -26,6 +26,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "mdsip_connections.h"
 #include <stdlib.h>
 #include <string.h>
+#include <status.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 //  MdsValue  //////////////////////////////////////////////////////////////////
@@ -33,30 +34,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int MdsValue(int id, char *expression, ...){
 /**** NOTE: NULL terminated argument list expected ****/
-  va_list incrmtr;
-  int a_count;
   int i;
-  unsigned char nargs;
-  unsigned char idx;
+  int nargs;
+  struct descrip* arglist[265];
+  VA_LIST_NULL(arglist,nargs,1,0,expression);
   int status = 1;
   struct descrip exparg;
-  struct descrip *ans_arg;
-  struct descrip *arg = &exparg;
-  va_start(incrmtr, expression);
-  for (a_count = 1; arg != NULL; a_count++) {
-    ans_arg = arg;
-    arg = va_arg(incrmtr, struct descrip *);
-  }
-  va_start(incrmtr, expression);
-  nargs = a_count - 2;
-  arg = MakeDescrip((struct descrip *)&exparg, DTYPE_CSTRING, 0, 0, expression);
-  for (i = 1; i < a_count - 1 && (status & 1); i++) {
-    idx = i - 1;
-    status = SendArg(id, idx, arg->dtype, nargs, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
-    arg = va_arg(incrmtr, struct descrip *);
-  }
-  va_end(incrmtr);
-  if (status & 1) {
+  arglist[0] = MakeDescrip((struct descrip *)&exparg, DTYPE_CSTRING, 0, 0, expression);
+  struct descrip* ans_arg = arglist[--nargs]; // dont exchange out_ptr
+  for (i = 0; i < nargs && STATUS_OK; i++)
+    status = SendArg(id, i, arglist[i]->dtype, nargs, ArgLen(arglist[i]), arglist[i]->ndims, arglist[i]->dims, arglist[i]->ptr);
+  if STATUS_OK {
     short len;
     int numbytes;
     void *dptr;
