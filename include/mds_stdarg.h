@@ -14,10 +14,20 @@
 #include <stdarg.h>
 #include <stdint.h>
 
-#define MdsEND_ARG ((void *)(uintptr_t)0xffffffff)
-#ifdef va_count
-#define MDS_END_ARG
-#else
+#define MdsEND_ARG ((void *)(intptr_t)0xffffffff)
 #define MDS_END_ARG ,MdsEND_ARG
-#endif
+
+#define VA_LIST_TO_ARGLIST(arglist,nargs,pre,post,fst,end) {\
+  va_list args;\
+  va_start(args, fst);\
+  for (nargs = pre; nargs < (int)(sizeof(arglist)/sizeof(arglist[0])) ; nargs++)\
+    if (end == (arglist[nargs] = va_arg(args, void*)))\
+      break;\
+  va_end(args);\
+  nargs+=post;\
+}
+#define VA_LIST_MDS_END_ARG(arglist,nargs,pre,post,fst) VA_LIST_TO_ARGLIST(arglist,nargs,pre,post,fst,MdsEND_ARG)
+#define VA_LIST_NULL(arglist,nargs,pre,post,fst)        VA_LIST_TO_ARGLIST(arglist,nargs,pre,post,fst,NULL)
+
+
 #endif				/* MDS_STDARG */

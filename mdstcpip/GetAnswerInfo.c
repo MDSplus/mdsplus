@@ -62,6 +62,10 @@ int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims, int *dims, 
   *numbytes = 0;
   Connection* c = FindConnection(id,NULL);
   m = GetMdsMsgTOC(c, &status, timeout_msec);
+  if (!m && status == SsINTERNAL) {
+    DisconnectConnectionC(c);
+    status = MDSplusERROR;
+  }
   UnlockConnection(c);
   if STATUS_NOT_OK {
     *dtype = 0;

@@ -71,7 +71,7 @@ def _TdiShrFun(tdifun,treefun,errormessage,expression,*args,**kwargs):
             tree = arg.tree
             if isinstance(arg,_tre.TreeNode): break
     xd = _dsc.Descriptor_xd()
-    rargs = list(map(Data.byref,dargs))+[xd.ref,_C.c_void_p(0xffffffff)]
+    rargs = list(map(Data.byref,dargs))+[xd.ref,_ver.MdsEND_ARG]
     if not isinstance(tree,_tre.Tree):
         _exc.checkStatus(tdifun(*rargs))
     else:
