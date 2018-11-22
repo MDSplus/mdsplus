@@ -34,11 +34,21 @@ import threading as _threading
 import gc as _gc
 import os as _os
 import sys as _sys
-#### Load other python modules referenced ###
+#### Load base python modules referenced ###
 #
 _ver=_mimport('version')
 _dat=_mimport('mdsdata')
 _exc=_mimport('mdsExceptions')
+#### Load Shared Libraries Referenced #######
+#
+_TreeShr=_ver.load_library('TreeShr')
+_XTreeShr=_ver.load_library('XTreeShr')
+_TreeShr.TreeCtx.restype=_C.c_void_p
+_TreeShr.TreeDbid.restype=_C.c_void_p
+
+#############################################
+#### Load other python modules referenced ###
+#
 _arr=_mimport('mdsarray')
 _scr=_mimport('mdsscalar')
 _dcl=_mimport('mdsdcl')
@@ -47,15 +57,6 @@ _dsc=_mimport('descriptor')
 _mds=_mimport('_mdsshr')
 _con=_mimport('connection')
 #
-#############################################
-
-#### Load Shared Libraries Referenced #######
-#
-_TreeShr=_ver.load_library('TreeShr')
-_XTreeShr=_ver.load_library('XTreeShr')
-_TreeShr.TreeCtx.restype=_C.c_void_p
-_TreeShr.TreeDbid.restype=_C.c_void_p
-
 #############################################
 
 class classmethodX(object):
@@ -82,33 +83,6 @@ class UsageError(KeyError):
 
 class TreeNodeException(_exc.MDSplusException): pass
 
-class _GCLock(object):
-    _lock= _threading.RLock()
-    _cnt = 0
-    def __init__(self,lock):
-        self.lock = lock
-        self._old = 0
-    def __enter__(self):
-        with _GCLock._lock:
-            _gc.disable()
-            _GCLock._cnt+=1
-        self.lock.acquire()
-    def __exit__(self,*a,**b):
-        self.lock.release()
-        with _GCLock._lock:
-            _GCLock._cnt-=1
-            if _GCLock._cnt==0:
-                _gc.enable()
-    def acquire(self):
-        with _GCLock._lock:
-            _gc.disable()
-            _GCLock._cnt+=1
-    def release(self):
-        with _GCLock._lock:
-            _GCLock._cnt-=1
-            if _GCLock._cnt==0:
-                _gc.enable()
-
 def trace():
     import inspect
     frame = inspect.currentframe().f_back
@@ -117,60 +91,6 @@ def trace():
         s = "%-20s %s,%d\n"%(frame.f_code.co_name,frame.f_code.co_filename,frame.f_lineno)+s
         frame = frame.f_back
     return s
-
-class _TreeCtx(object): # HINT: _TreeCtx begin
-    """ The TreeCtx class is used to manage proper garbage collection
-    of open trees. It retains reference counts of tree contexts and
-    closes and frees tree contexts when no longer being used. """
-    @staticmethod
-    def switchDbid(tree=None):
-        if   isinstance(tree,Tree):
-            ctx = tree.ctx
-        elif isinstance(tree,_C.c_void_p):
-            ctx = tree
-        elif isinstance(tree,(int,_ver.long)):
-            ctx = _C.c_void_p(tree)
-        else:
-            ctx = _C.c_void_p(0)
-        _TreeShr.TreeSwitchDbid.restype=_C.c_void_p
-        return _TreeShr.TreeSwitchDbid(ctx)
-
-    lock  = _GCLock(_threading.RLock())
-    local = _threading.local()
-    @classmethod
-    def pushTree(cls,tree):
-        private = Tree.usingPrivateCtx()
-        if not private:
-            if tree is None:
-                cls.lock.acquire()
-            else:
-                Tree.usePrivateCtx()
-        try:
-            dbid = None if tree is None else cls.switchDbid(tree)
-            if not hasattr(cls.local,'trees'):
-                cls.local.trees = [(tree,dbid,private)]
-            else:
-                cls.local.trees.append((tree,dbid,private))
-        except:
-            if not private:
-                if tree is None:
-                    cls.lock.release()
-                else:
-                    Tree.usePrivateCtx(private)
-            raise
-
-    @classmethod
-    def popTree(cls):
-        tree,odbid,private = cls.local.trees.pop()
-        try:
-            if not tree is None:
-                 cls.switchDbid(odbid)
-        finally:
-            if not private:
-                if tree is None:
-                    cls.lock.release()
-                else:
-                    Tree.usePrivateCtx(private)
 
 class _DBI_ITM_INT(_C.Structure): # HINT: _DBI_ITM_INT begin
 
