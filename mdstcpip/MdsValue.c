@@ -31,8 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  MdsValue  //////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int MdsValue(int id, char *expression, ...)
-{
+int MdsValue(int id, char *expression, ...){
 /**** NOTE: NULL terminated argument list expected ****/
   va_list incrmtr;
   int a_count;
@@ -43,24 +42,12 @@ int MdsValue(int id, char *expression, ...)
   struct descrip exparg;
   struct descrip *ans_arg;
   struct descrip *arg = &exparg;
-#ifdef _USE_VARARGS
-  va_start(incrmtr);
-  id = va_arg(incrmtr, int);
-  expression = va_arg(incrmtr, char *);
-#else
   va_start(incrmtr, expression);
-#endif
   for (a_count = 1; arg != NULL; a_count++) {
     ans_arg = arg;
     arg = va_arg(incrmtr, struct descrip *);
   }
-#ifdef _USE_VARARGS
-  va_start(incrmtr);
-  id = va_arg(incrmtr, int);
-  expression = va_arg(incrmtr, char *);
-#else
   va_start(incrmtr, expression);
-#endif
   nargs = a_count - 2;
   arg = MakeDescrip((struct descrip *)&exparg, DTYPE_CSTRING, 0, 0, expression);
   for (i = 1; i < a_count - 1 && (status & 1); i++) {
@@ -74,8 +61,7 @@ int MdsValue(int id, char *expression, ...)
     int numbytes;
     void *dptr;
     void *mem = 0;
-    status =
-	GetAnswerInfoTS(id, &ans_arg->dtype, &len, &ans_arg->ndims, ans_arg->dims, &numbytes, &dptr, &mem);
+    status = GetAnswerInfoTS(id, &ans_arg->dtype, &len, &ans_arg->ndims, ans_arg->dims, &numbytes, &dptr, &mem);
     ans_arg->length = len;
     if (numbytes) {
       if (ans_arg->dtype == DTYPE_CSTRING) {

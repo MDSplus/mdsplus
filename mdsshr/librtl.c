@@ -441,10 +441,6 @@ EXPORT char *TranslateLogical(char const *pathname)
   return NULL;
 }
 
-#ifndef va_count
-#define  va_count(narg) va_start(incrmtr, first); \
-                        for (narg=1; (narg < 256) && (va_arg(incrmtr, struct descriptor *) != MdsEND_ARG); narg++)
-#endif				/* va_count */
 
 EXPORT int TranslateLogicalXd(struct descriptor const *in, struct descriptor_xd *out)
 {
@@ -602,16 +598,14 @@ EXPORT int LibFindImageSymbol(struct descriptor *filename, struct descriptor *sy
 EXPORT int StrConcat(struct descriptor *out, struct descriptor *first, ...)
 {
   int i;
-  int narg;
   va_list incrmtr;
   int status = StrCopyDx(out, first);
   if STATUS_OK {
-    va_count(narg);
     va_start(incrmtr, first);
     if (out->class == CLASS_D) {
       struct descriptor *arg = va_arg(incrmtr, struct descriptor *);
-      for (i = 1; i < narg && STATUS_OK && arg; i++) {
-	StrAppend((struct descriptor_d *)out, arg);
+      for (i = 1; STATUS_OK && arg != MdsEND_ARG; i++) {
+	status = StrAppend((struct descriptor_d *)out, arg);
 	arg = va_arg(incrmtr, struct descriptor *);
       }
     } else if (out->class == CLASS_S) {
@@ -620,16 +614,16 @@ EXPORT int StrConcat(struct descriptor *out, struct descriptor *first, ...)
       for (i = 1,
 	   temp.length = (unsigned short)(out->length - first->length),
 	   temp.pointer = out->pointer + first->length;
-	   i < narg && STATUS_OK && temp.length > 0;
+	   STATUS_OK && temp.length > 0;
 	   i++,
 	   temp.length = (unsigned short)(temp.length - next->length),
 	   temp.pointer += next->length) {
 	next = va_arg(incrmtr, struct descriptor *);
-	if (next) {
-	  StrCopyDx(&temp, next);
-	} else {
+        if (next == MdsEND_ARG) break;
+	if (next)
+	  status = StrCopyDx(&temp, next);
+	else
 	  temp.length = 0;
-	}
       }
     } else
       status = MDSplusERROR;

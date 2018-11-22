@@ -69,18 +69,6 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 #include <ctype.h>
 
 extern void **TreeCtx();
-#define VA_LIST_TO_ARGLIST(arglist,nargs,pre,post,frst) \
-void *arglist[256];\
-{\
-  va_list args;\
-  va_start(args, frst);\
-  for (nargs = pre; nargs < 256 ; nargs++)\
-    if (MdsEND_ARG == (arglist[nargs+1] = va_arg(args, struct descriptor *)))\
-      break;\
-  va_end(args);\
-  nargs+=post;\
-  arglist[0] = (void*)(intptr_t)nargs;\
-}
 
 #define _TREE_TDI(_TreeFun,TdiFun) \
 static int *(*TdiFun)() = NULL;\
@@ -88,7 +76,9 @@ EXPORT int _TreeFun(void *dbid, ...) {\
   int status = LibFindImageSymbol_C("TdiShr", #TdiFun, &TdiFun);\
   if IS_NOT_OK(status) return status;\
   int nargs;\
-  VA_LIST_TO_ARGLIST(arglist,nargs,0,1,dbid);\
+  void *arglist[256];\
+  VA_LIST_MDS_END_ARG(arglist,nargs,1,1,dbid);\
+  arglist[0] = (void*)(intptr_t)--nargs;\
   DBID_PUSH(dbid);\
   status = (int)(intptr_t)LibCallg(arglist, TdiFun);\
   DBID_POP(dbid);\
@@ -113,7 +103,9 @@ EXPORT int _TreeDcl(void *dbid, char*cmd, struct descriptor_xd *err, struct desc
 
 int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...) {
   int nargs;
-  VA_LIST_TO_ARGLIST(arglist,nargs,3,1,method_ptr);
+  void *arglist[256];
+  VA_LIST_MDS_END_ARG(arglist,nargs,4,1,method_ptr);
+  arglist[0] = (void*)(intptr_t)--nargs;
   arglist[1] = *TreeCtx();
   arglist[2] = nid_dsc;
   arglist[3] = method_ptr;
@@ -168,10 +160,11 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       {status = TreeNOT_CONGLOM;goto end;}
 
     int i,nargs;
-    VA_LIST_TO_ARGLIST(arglist,nargs,2,0,method_ptr);
+    void *arglist[256];
+    VA_LIST_MDS_END_ARG(arglist,nargs,3,0,method_ptr);
+    arglist[0] = (void*)(intptr_t)--nargs;
     arglist[1] = nid_dsc;
     arglist[2] = method_ptr;
-
     if (conglom_ptr->image
      && conglom_ptr->image->length == strlen("__python__")
      && strncmp(conglom_ptr->image->pointer, "__python__", strlen("__python__")) == 0) {
@@ -223,7 +216,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	  status_d.pointer = (char *)&status;
 	  MdsCopyDxXd(&status_d, (struct descriptor_xd *)ans);
 	} else if ((ans->dtype == DTYPE_L) && (ans->length == 4) && (ans->pointer)) {
-	  *(int *)ans->pointer = status;
+	  *(int*)ans->pointer = status;
 	}
       }
     } else {

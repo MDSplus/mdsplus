@@ -1639,7 +1639,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         argsobj = [_scr.Int32(self.nid),_scr.String(method)]
         argsobj+= list(map(_dat.Data,args))
         arglist+= list(map(_dat.Data.byref,argsobj))
-        arglist+= [xd.ref,_C.c_void_p(0xffffffff)]
+        arglist+= [xd.ref,_ver.MdsEND_ARG]
         _exc.checkStatus(_TreeShr._TreeDoMethod(*arglist))
         return xd._setTree(self.tree).value
 

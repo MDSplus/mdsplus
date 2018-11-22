@@ -60,7 +60,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "cvtdef.h"
 
 extern int TdiExecute();
-//extern int InitPython();
 extern int TdiRestoreContext();
 extern int TreePerfRead();
 extern int TreePerfWrite();
