@@ -819,5 +819,4 @@ extern void  dbid_pop(void* ps);
 #define DBID_PUSH(dbid) pthread_cleanup_push(dbid_pop,dbid_push(dbid))
 #define DBID_POP(dbid)  pthread_cleanup_pop(1)
 
-
 #endif
