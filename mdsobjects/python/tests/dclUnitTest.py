@@ -92,7 +92,7 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         pytree = Tree()
         self.assertEqual(str(pytree),'Tree("PYTREE",%d,"Normal")'%self.shot)
         self._doTCLTest('close pytree/shot=%d'%(self.shot,))
-        self.assertEqual(str(pytree),'Tree("PYTREE",%d,"Closed")'%self.shot)
+        self.assertEqual(str(pytree),'Tree("?",?,"Closed")')
         if self.inThread: Tree.usePrivateCtx(0)
         """ tcl exceptions """
         self._doExceptionTest('close',Exc.TreeNOT_OPEN)
