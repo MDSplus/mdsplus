@@ -271,6 +271,11 @@ extern int TREE_BLOCKID;
   extern EXPORT int _TreeSetSegmentScale(void *dbid, int nid, struct descriptor *value);
   extern EXPORT int TreeSetSegmentScale(int nid, struct descriptor *value);
 
+  extern EXPORT int _TreeExecute(void *dbid, ...);
+  extern EXPORT int _TreeEvaluate(void *dbid, ...);
+  extern EXPORT int _TreeDecompile(void *dbid, ...);
+  extern EXPORT int _TreeCompile(void *dbid, ...);
+
 #ifdef __cplusplus
 }
 #endif

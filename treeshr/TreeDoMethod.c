@@ -71,17 +71,43 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 #define  count(num) va_start(incrmtr, method_ptr); \
                      for (num=2; (num < 256) && (va_arg(incrmtr, struct descriptor *) != MdsEND_ARG);  num++)
 
-#define arglist_nargs(nargs) (void *)((char *)0+(nargs));
 extern void **TreeCtx();
 
+#define _TREE_TDI(_TreeFun,TdiFun) \
+static int *(*TdiFun)() = NULL;\
+EXPORT int _TreeFun(void *dbid, ...) {\
+  int status = LibFindImageSymbol_C("TdiShr", #TdiFun, &TdiFun);\
+  if IS_NOT_OK(status) return status;\
+  void *arglist[256];\
+  va_list args;\
+  va_start(args, dbid);\
+  int nargs;\
+  for (nargs = 0; nargs < 255 ; nargs++)\
+    if (MdsEND_ARG == (arglist[nargs+1] = va_arg(args, struct descriptor *)))\
+      break;\
+  va_end(args);\
+  arglist[0] = (void*)(intptr_t)nargs;\
+  fprintf(stderr,"%s, %d\n",#_TreeFun,nargs);\
+  DBID_PUSH(dbid);\
+  status = (int)(intptr_t)LibCallg(arglist, TdiFun);\
+  DBID_POP(dbid);\
+  return status;\
+} /*"*/
+
+_TREE_TDI(_TreeExecute  ,TdiExecute  )
+_TREE_TDI(_TreeEvaluate ,TdiEvaluate )
+_TREE_TDI(_TreeCompile  ,TdiCompile  )
+_TREE_TDI(_TreeDecompile,TdiDecompile)
+
 int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
+
 {
   int i;
   int nargs;
   void *arglist[256];
   va_list incrmtr;
   count(nargs);
-  arglist[0] = arglist_nargs(nargs + 2);
+  arglist[0] = (void*)(intptr_t)(nargs + 2);
   arglist[1] = *TreeCtx();
   arglist[2] = nid_dsc;
   arglist[3] = method_ptr;
@@ -94,9 +120,6 @@ int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
 }
 
 int do_fun(struct descriptor *funname, int nargs, struct descriptor **args, struct descriptor_xd *out_ptr){
-  static void* (*TdiEvaluate) () = NULL;
-  int status = LibFindImageSymbol_C("TdiShr", "TdiEvaluate", &TdiEvaluate);
-  if IS_NOT_OK(status) return status;
   short OpcExtFunction = 162;
   DESCRIPTOR_FUNCTION(fun, &OpcExtFunction, 255);
   void *call_arglist[] = { (void *)3, (void *)&fun, (void *)out_ptr, MdsEND_ARG };
@@ -112,8 +135,7 @@ int do_fun(struct descriptor *funname, int nargs, struct descriptor **args, stru
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wclobbered"
 
-int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
-{
+int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *method_ptr, ...){
   INIT_STATUS;
   va_list incrmtr;
   short conglomerate_elt;
@@ -128,7 +150,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
   int nargs;
   void *arglist[256];
   count(nargs);
-  arglist[0] = arglist_nargs(nargs);
+  arglist[0] = (void*)(intptr_t)(nargs);
   if (!nid_dsc->pointer
    || (nid_dsc->dtype!=DTYPE_NID
     && nid_dsc->dtype!=DTYPE_L
@@ -181,7 +203,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	  _nargs += 2;
 	  for (i = _nargs; i > 0; i--)
 	    arglist[i + 1] = arglist[i];
-	  arglist[0] = arglist_nargs(_nargs);
+	  arglist[0] = (void*)(intptr_t)(_nargs);
 	  arglist[1] = &exp_dsc;
 	  arglist[_nargs] = MdsEND_ARG;
           DBID_PUSH(dbid);
