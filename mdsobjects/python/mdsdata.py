@@ -40,7 +40,6 @@ MDSplusException = _exc.MDSplusException
 #
 _MdsShr=_ver.load_library('MdsShr')
 _TdiShr=_ver.load_library('TdiShr')
-_TreeShr=_ver.load_library('TreeShr')
 #
 #############################################
 class staticmethodX(object):
@@ -82,19 +81,19 @@ def _TdiShrFun(tdifun,treefun,errormessage,expression,*args,**kwargs):
 
 def TdiCompile(expression,*args,**kwargs):
     """Compile a TDI expression. Format: TdiCompile('expression-string')"""
-    return _TdiShrFun(_TdiShr.TdiCompile,_TreeShr._TreeCompile,"Error compiling",expression,*args,**kwargs)
+    return _TdiShrFun(_TdiShr.TdiCompile,_tre._TreeShr._TreeCompile,"Error compiling",expression,*args,**kwargs)
 
 def TdiExecute(expression,*args,**kwargs):
     """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
-    return _TdiShrFun(_TdiShr.TdiExecute,_TreeShr._TreeExecute,"Error executing",expression,*args,**kwargs)
+    return _TdiShrFun(_TdiShr.TdiExecute,_tre._TreeShr._TreeExecute,"Error executing",expression,*args,**kwargs)
 tdi=TdiExecute
 def TdiDecompile(expression,**kwargs):
     """Decompile a TDI expression. Format: TdiDecompile(tdi_expression)"""
-    return _ver.tostr(_TdiShrFun(_TdiShr.TdiDecompile,_TreeShr._TreeDecompile,"Error decompiling",expression,**kwargs))
+    return _ver.tostr(_TdiShrFun(_TdiShr.TdiDecompile,_tre._TreeShr._TreeDecompile,"Error decompiling",expression,**kwargs))
 
 def TdiEvaluate(expression,**kwargs):
     """Evaluate and functions. Format: TdiEvaluate(data)"""
-    return _TdiShrFun(_TdiShr.TdiEvaluate,_TreeShr._TreeEvaluate,"Error evaluating",expression,**kwargs)
+    return _TdiShrFun(_TdiShr.TdiEvaluate,_tre._TreeShr._TreeEvaluate,"Error evaluating",expression,**kwargs)
 
 def TdiData(expression,**kwargs):
     """Return primiitive data type. Format: TdiData(value)"""

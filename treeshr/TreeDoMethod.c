@@ -101,6 +101,16 @@ _TREE_TDI(_TreeEvaluate ,TdiEvaluate )
 _TREE_TDI(_TreeData     ,TdiData     )
 _TREE_TDI(_TreeDecompile,TdiDecompile)
 
+EXPORT int _TreeDcl(void *dbid, char*cmd, struct descriptor_xd *err, struct descriptor_xd *out){
+  static int *(*mdsdcl_do_command_dsc)();
+  int status = LibFindImageSymbol_C("Mdsdcl", "mdsdcl_do_command_dsc", &mdsdcl_do_command_dsc);
+  if IS_NOT_OK(status) return status;
+  DBID_PUSH(dbid);
+  status = (int)(intptr_t)mdsdcl_do_command_dsc(cmd,err,out);
+  DBID_POP(dbid);
+  return status;
+}
+
 int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...) {
   int nargs;
   VA_LIST_TO_ARGLIST(arglist,nargs,3,1,method_ptr);
