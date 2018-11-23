@@ -6,6 +6,7 @@
 #include <stdlib.h> //free
 #include <string.h> //strlen
 #include <mdstypes.h> //DTYPE
+#include <status.h> //STATUS_OK
 
 extern int TdiIntrinsic();
 extern int TdiEvaluate();
@@ -19,12 +20,10 @@ static void RaiseException(JNIEnv * env, int status) {
   (*env)->ExceptionClear(env);
   (*env)->Throw(env, exc);
 }
-
-int thisTdiExecute(int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
-{
-  int status = 1;
+#define OpcCompile 99
+int thisTdiExecute(int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
   EMPTYXD(tmp);
-  status = TdiIntrinsic(99, narg, list, &tmp);
+  int status = TdiIntrinsic(OpcCompile, narg, list, &tmp);
   if (status & 1)
     status = TdiEvaluate(tmp.pointer, out_ptr MDS_END_ARG);
   MdsFree1Dx(&tmp, NULL);
@@ -39,7 +38,7 @@ JNIEXPORT jbyteArray JNICALL Java_mds_mdslib_MdsLib_evaluate(JNIEnv * env, jobje
   struct descriptor* list[nargs+1];
   char* const expr = (char*)(*env)->GetStringUTFChars(env, jexpr, 0);
   list[0] = &(struct descriptor){strlen(expr), DTYPE_T, CLASS_S, expr};
-  for(i = 0; i < nargs; ++i) {
+  for(i = 0; i < nargs && STATUS_OK ; ++i) {
     EMPTYXD(xd);
     jarg = (jbyteArray)((*env)->GetObjectArrayElement(env,args, i));
     jargdim = (*env)->GetArrayLength(env,jarg);
@@ -59,16 +58,16 @@ JNIEXPORT jbyteArray JNICALL Java_mds_mdslib_MdsLib_evaluate(JNIEnv * env, jobje
     if (!(status & 1)) break;
     list[i+1] = xd.pointer;
   }
-  if ((status & 1)){
+  if STATUS_OK {
     //printf("10-%d\n",(int)nargs);
     EMPTYXD(xd);
     status = thisTdiExecute(nargs+1, list, &xd);
     (*env)->ReleaseStringUTFChars(env, jexpr, expr);
-    if ((status & 1)){
+    if STATUS_OK {
       EMPTYXD(xds);
       //printf("11\n");
       status = MdsSerializeDscOut(xd.pointer, &xds);
-      if ((status & 1)){
+      if STATUS_OK {
         //printf("12\n");
         struct descriptor_a* bytes_d = (struct descriptor_a*)xds.pointer;
         if (bytes_d) {
@@ -90,7 +89,7 @@ JNIEXPORT jbyteArray JNICALL Java_mds_mdslib_MdsLib_evaluate(JNIEnv * env, jobje
     }
     MdsFree1Dx(&xd, NULL);
   }
-  if (!(status & 1))
+  if STATUS_NOT_OK
     RaiseException(env, status);
   return result;
 }
