@@ -35,65 +35,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 
-#ifdef _USE_VARARGS
-int MdsPut(va_alist)
-va_dcl
-{
-  int id;
-  char *node;
-  char *expression;
-#else
-int MdsPut(int id, char *node, char *expression, ...)
-{
+int MdsPut(int id, char *node, char *expression, ...) {
 /**** NOTE: NULL terminated argument list expected ****/
-#endif
-  va_list incrmtr;
-  int a_count;
   int i;
-  unsigned char nargs;
-  unsigned char idx = 0;
   int status = 1;
-  STATIC_CONSTANT char *putexpprefix = "TreePut(";
-  STATIC_CONSTANT char *argplace = "$,";
-  char *putexp;
-  struct descrip putexparg;
-  struct descrip exparg;
-  struct descrip *arg;
-#ifdef _USE_VARARGS
-  va_start(incrmtr);
-  id = va_arg(incrmtr, int);
-  node = va_arg(incrmtr, char *);
-  expression = va_arg(incrmtr, char *);
-#else
-  va_start(incrmtr, expression);
-#endif
-  for (a_count = 3; va_arg(incrmtr, struct descrip *); a_count++) ;
-  putexp = malloc(strlen(putexpprefix) + (a_count - 1) * strlen(argplace) + 1);
-  strcpy(putexp, putexpprefix);
-  for (i = 0; i < a_count - 1; i++)
-    strcat(putexp, argplace);
-  putexp[strlen(putexp) - 1] = ')';
-#ifdef _USE_VARARGS
-  va_start(incrmtr);
-  id = va_arg(incrmtr, int);
-  node = va_arg(incrmtr, char *);
-  expression = va_arg(incrmtr, char *);
-#else
-  va_start(incrmtr, expression);
-#endif
-  nargs = a_count;
-  arg = MakeDescrip(&putexparg, DTYPE_CSTRING, 0, 0, putexp);
-  status = SendArg(id, idx++, arg->dtype, nargs, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
-  free(putexp);
-  arg = MakeDescrip(&exparg, DTYPE_CSTRING, 0, 0, node);
-  status = SendArg(id, idx++, arg->dtype, nargs, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
-  arg = MakeDescrip(&exparg, DTYPE_CSTRING, 0, 0, expression);
-  for (i = idx; i < a_count && (status & 1); i++) {
-    status = SendArg(id, (char)i, arg->dtype, nargs, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
-    arg = va_arg(incrmtr, struct descrip *);
-  }
-  va_end(incrmtr);
-  if (status & 1) {
+  int nargs;
+  struct descrip  dsc[3];
+  struct descrip* arglist[265];
+  VA_LIST_NULL(arglist,nargs,3,-1,expression); // -1: dont count putexpr
+  char *putexpr = malloc(8 + nargs * 2 + 1);
+  strcpy(putexpr, "TreePut(");
+  for (i = 0; i < nargs-1; i++) strcat(putexpr, "$,");
+  strcat(putexpr, "$)");
+  arglist[0] = MakeDescrip(&dsc[0], DTYPE_CSTRING, 0, 0, putexpr);
+  arglist[1] = MakeDescrip(&dsc[1], DTYPE_CSTRING, 0, 0, node);
+  arglist[2] = MakeDescrip(&dsc[2], DTYPE_CSTRING, 0, 0, expression);
+  for (i = 0; i <= nargs && STATUS_OK; i++)
+    status = SendArg(id, i, arglist[i]->dtype, nargs, ArgLen(arglist[i]), arglist[i]->ndims, arglist[i]->dims, arglist[i]->ptr);
+  free(putexpr);
+  if STATUS_OK {
     char dtype;
     int dims[MAX_DIMS_R];
     char ndims;
@@ -102,7 +62,7 @@ int MdsPut(int id, char *node, char *expression, ...)
     void *dptr;
     void *mem = 0;
     status = GetAnswerInfoTS(id, &dtype, &len, &ndims, dims, &numbytes, &dptr, &mem);
-    if (status & 1 && dtype == DTYPE_LONG && ndims == 0 && numbytes == sizeof(int))
+    if (STATUS_OK && dtype == DTYPE_LONG && ndims == 0 && numbytes == sizeof(int))
       memcpy(&status, dptr, numbytes);
     if (mem)
       free(mem);
