@@ -25,7 +25,7 @@
 
 import sys
 from re import match
-from MDSplus import Tree,setenv,tcl,mdsExceptions as Exc
+from MDSplus import Tree,tcl,mdsExceptions as Exc
 
 def _mimport(name, level=1):
     try:
