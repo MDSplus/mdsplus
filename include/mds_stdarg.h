@@ -29,10 +29,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 
 /* Should be save for descriptor args due to alignment.
- * Better would be ((void *)(intptr_t)1)
- * but 0xffffffff seems to be hardcoded somewhere.
+ * !!! must match mdsobjects/python/version.py !!!
  */
-#define MdsEND_ARG ((void *)(intptr_t)0xffffffff)
+#define MdsEND_ARG ((void *)(intptr_t)1)
 #define MDS_END_ARG ,MdsEND_ARG
 
 /* VA_LIST_TO_ARGLIST helps to unwrap the va_list into

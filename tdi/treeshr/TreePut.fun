@@ -13,7 +13,7 @@ public fun TreePut(in _nodename, in _expression, optional in  _p1, optional in _
     else
       break;
   }
-  _exp = _exp // ",xd(_treeput_ans),val(-1))";
+  _exp = _exp // ",xd(_treeput_ans),val(1))";
   _treeput_ans = *;
   _status = execute(_exp);
   if (_status & 1) {
