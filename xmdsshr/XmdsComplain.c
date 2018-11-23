@@ -22,17 +22,6 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-/*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSCOMPLAIN.C */
-/*  *9    23-JUN-1994 09:20:32 TWF "Motif 1.2" */
-/*  *8    22-FEB-1994 14:53:44 TWF "remove NO_X_GBLS" */
-/*  *7     4-MAR-1993 16:31:00 TWF "Check va_count" */
-/*  *6     4-MAR-1993 15:07:09 JAS "make it complile with vaxc" */
-/*  *5    23-FEB-1993 17:55:47 JAS "port to decc" */
-/*  *4    10-AUG-1992 15:56:42 JAS "typo" */
-/*  *3    10-AUG-1992 15:30:42 JAS "Make sure the parent is a widget" */
-/*  *2    10-AUG-1992 15:17:46 JAS "Make sure the parent is a widget" */
-/*  *1     9-OCT-1991 09:54:01 JAS "Routine to put complaints on the screen" */
-/*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSCOMPLAIN.C */
 /*------------------------------------------------------------------------------
 
 		Name:   XmdsComplain
