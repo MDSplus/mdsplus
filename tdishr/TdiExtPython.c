@@ -88,13 +88,15 @@ static void      (*PyTuple_SetItem) () = NULL;
 static int       (*PyRun_SimpleStringFlags)() = NULL;
 #else
 static FILE*     (*_Py_fopen_obj) () = NULL;
-static PyObject* (*PyRun_SimpleFileExFlags)() = NULL;
+static int       (*PyRun_SimpleFileExFlags)() = NULL;
 #endif
 static PyObject *pointerToObject = NULL;
 static PyObject *makeData = NULL;
 static PyObject *MDSplusException = NULL;
 
 static void initialize(){
+  int old_state = PTHREAD_CANCEL_DISABLE;
+  pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,&old_state);
   void *handle;
   char *lib;
   char *envsym = getenv("PyLib");
@@ -185,6 +187,8 @@ static void initialize(){
 #endif
   loadrtn(PyGILState_Release, 1);
   loadrtn(PyGILState_Ensure, 1);
+  if (old_state != PTHREAD_CANCEL_DISABLE)
+    pthread_setcancelstate(old_state,NULL);
 }
 
 static inline void initialize_once() {
@@ -193,6 +197,8 @@ static inline void initialize_once() {
 }
 
 static void importMDSplus() {
+  int old_state = PTHREAD_CANCEL_DISABLE;
+  pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,&old_state);
   initialize_once();
   PyThreadState *GIL = PyGILState_Ensure();
   PyObject *MDSplus= PyImport_ImportModule("MDSplus");
@@ -217,6 +223,8 @@ static void importMDSplus() {
     if (PyErr_Occurred()) PyErr_Print();
   }
   PyGILState_Release(GIL);
+  if (old_state != PTHREAD_CANCEL_DISABLE)
+    pthread_setcancelstate(old_state,NULL);
 }
 
 static inline void importMDSplus_once() {
@@ -386,8 +394,12 @@ static inline int loadPyFunction_(const char *dirspec,const char *filename) {
     Py_DecRef(__file__);
     return MDSplusERROR;
   }
+  int err;
+  pthread_cleanup_push((void*)fclose,(void*)fp);
   int flags = 0;
-  if (PyRun_SimpleFileExFlags(fp, fullpath, 1, &flags)) {
+  err = PyRun_SimpleFileExFlags(fp, fullpath, 1, &flags);
+  pthread_cleanup_pop(0);
+  if (err) {
 # endif
     fprintf(stderr,"Error compiling file '%s'\n",fullpath);
     if (PyErr_Occurred()) PyErr_Print();

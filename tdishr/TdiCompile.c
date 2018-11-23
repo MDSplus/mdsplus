@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 extern unsigned short OpcCompile;
+extern unsigned short OpcEvaluate;
 #define DEF_FREEXD
 
 #include <stdlib.h>
@@ -45,7 +46,7 @@ extern unsigned short OpcCompile;
 extern void LockMdsShrMutex(pthread_mutex_t *, int *);
 extern void UnlockMdsShrMutex(pthread_mutex_t *);
 
-extern int TdiEvaluate();
+extern int Tdi1Evaluate();
 extern int TdiYacc();
 extern int TdiIntrinsic();
 extern void TdiYyReset();
@@ -66,7 +67,7 @@ extern void TdiYyReset();
         IMMEDIATE (`) must never call COMPILE. NEED to prevent this.
 */
 
-int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[],
+EXPORT int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[],
 		struct descriptor_xd *out_ptr)
 {
   int status;
@@ -82,7 +83,7 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
 
   EMPTYXD(tmp);
   FREEXD_ON_EXIT(&tmp);
-  status = TdiEvaluate(list[0], &tmp MDS_END_ARG);
+  status = Tdi1Evaluate(-1, 1, list, &tmp);// using Tdi1Evaluate over TdiEvaluate saves 3 stack levels
   text_ptr = tmp.pointer;
   if (STATUS_OK && text_ptr->dtype != DTYPE_T)
     status = TdiINVDTYDSC;
@@ -139,9 +140,9 @@ int Tdi1Execute(int opcode __attribute__ ((unused)), int narg, struct descriptor
   FREEXD_ON_EXIT(out_ptr);
   EMPTYXD(tmp);
   FREEXD_ON_EXIT(&tmp);
-  status = TdiIntrinsic(OpcCompile, narg, list, &tmp);
+  status = Tdi1Compile(OpcCompile, narg, list, &tmp);
   if STATUS_OK
-    status = TdiEvaluate(tmp.pointer, out_ptr MDS_END_ARG);
+    status = Tdi1Evaluate(OpcEvaluate, 1, &tmp.pointer, out_ptr);
   FREEXD_NOW(&tmp);
   if STATUS_NOT_OK MdsFree1Dx(out_ptr, NULL);
   FREE_CANCEL(out_ptr);

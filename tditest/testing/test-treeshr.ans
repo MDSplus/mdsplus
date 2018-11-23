@@ -21,7 +21,6 @@ getnci('%ember','fullpath')
 getnci('\n','fullpath')
 %TREE-W-NNF, Node Not Found
 %TDI Error in GETNCI("\n", "fullpath")
-%TDI Error in EVALUATE(GETNCI("\n", "fullpath"))
 %TDI Error in EXECUTE("getnci('\\n','fullpath')")
 
 _tim=getnci(member,'time_inserted')
@@ -147,7 +146,6 @@ getnci(.subtree:a12,"brother")
 getnci(.subtree:a12,"child")
 %TREE-W-NNF, Node Not Found
 %TDI Error in GETNCI(.SUBTREE:A12, "child")
-%TDI Error in EVALUATE(GETNCI(.SUBTREE:A12, "child"))
 %TDI Error in EXECUTE('getnci(.subtree:a12,"child")')
 
 getnci(.subtree:a12,"member")
@@ -157,7 +155,6 @@ getnci(.subtree:a12,"parent")
 getnci(.subtree:a12,"children_nids")
 %TREE-W-NNF, Node Not Found
 %TDI Error in GETNCI(.SUBTREE:A12, "children_nids")
-%TDI Error in EVALUATE(GETNCI(.SUBTREE:A12, "children_nids"))
 %TDI Error in EXECUTE('getnci(.subtree:a12,"children_nids")')
 
 getnci(.subtree:a12,"conglomerate_nids")
@@ -309,7 +306,6 @@ getnci(\child,'nid_number')
 getnci('\\child_tag2','nid_number')
 %TREE-W-NNF, Node Not Found
 %TDI Error in GETNCI("\\child_tag2", "nid_number")
-%TDI Error in EVALUATE(GETNCI("\\child_tag2", "nid_number"))
 %TDI Error in EXECUTE("getnci('\\\\child_tag2','nid_number')")
 
 getnci(\child_tag3,'nid_number')
