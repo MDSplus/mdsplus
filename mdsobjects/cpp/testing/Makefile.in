@@ -1759,7 +1759,7 @@ tests: rebuild-tests
 @ENABLE_SANITIZE_TRUE@  # // sanitizer options specific (overload this in your Makefile.am) //
 @ENABLE_SANITIZE_TRUE@  LSAN_OPTIONS       ?=
 @ENABLE_SANITIZE_TRUE@  ASAN_OPTIONS       ?=
-@ENABLE_SANITIZE_TRUE@  TSAN_OPTIONS       ?=
+@ENABLE_SANITIZE_TRUE@  TSAN_OPTIONS       ?= second_deadlock_stack=1
 @ENABLE_SANITIZE_TRUE@  UBSAN_OPTIONS      ?=
 
 @ENABLE_SANITIZE_TRUE@  # // suppressions files (overload this in your Makefile.am) //
