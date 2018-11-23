@@ -56,7 +56,7 @@ extern int TdiGetFloat();
 extern int TdiGetLong();
 extern int TdiConvert();
 extern int TdiSubtract();
-extern int TdiData();
+extern int Tdi1Data();
 extern int TdiGetNid();
 extern int TdiPutLong();
 extern int TdiCall();
@@ -95,7 +95,7 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
       struct descriptor_d method_d = { 0, DTYPE_T, CLASS_D, 0 };
       FREED_ON_EXIT(&method_d);
       arglist[2] = (void*)&method_d;
-      status = TdiData(pmethod->method, &method_d MDS_END_ARG);
+      status = Tdi1Data(OpcData, 1, pmethod->method, &method_d);
       if STATUS_OK
 	status = TdiGetNid(pmethod->object, &nid);
       status = (int)(intptr_t)LibCallg(arglist, TreeDoMethod);
