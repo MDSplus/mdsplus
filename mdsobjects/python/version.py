@@ -47,7 +47,7 @@ has_buffer    = 'buffer'     in __builtins__
 has_xrange    = 'xrange'     in __builtins__
 has_mapclass  = isinstance(map,(type,))
 
-MdsEND_ARG = ctypes.c_void_p(0xffffffff)
+MdsEND_ARG = ctypes.c_void_p(1) # must match include/mds_stdarg.h
 
 if pyver<(2,7):
     def bit_length(val):
