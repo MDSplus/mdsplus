@@ -64,27 +64,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #ifdef DEBUG
-#include <stdlib.h>
-#include <stdarg.h>
-void DBG(int line, const char *fcn, const char *fmt, ...)
-{
-  va_list ap;
-
-  fprintf(stderr, "%s:%d %s()  ", __FILE__, line, fcn);
-  va_start(ap, fmt);
-  vfprintf(stderr, fmt, ap);
-  va_end(ap);
-}
-
-#define DARG __LINE__,__FUNCTION__
-#define DBGW(a) fprintf(stderr,"%s:%d %s()   %s\n",__FILE__,__LINE__,__FUNCTION__, a)
+# define DBG(fmt, ...) do{fprintf(stderr, "%s:%d %s()  ", __FILE__,__LINE__,__FUNCTION__);fprintf(stderr, fmt, __VA_ARGS__);}while(0)
+# define DBGW(a) fprintf(stderr,"%s:%d %s()  %s\n",__FILE__,__LINE__,__FUNCTION__, a)
 #else
-void DBG(int line, const char *fcn, const char *fmt, ...)
-{
-}
-
-#define DARG __LINE__,__FUNCTION__
-#define DBGW(a)
+# define DBG(fmt ...)
+# define DBGW(a)
 #endif
 
 #define folder_width 16
@@ -526,7 +510,7 @@ static void InitializeGeometry(ListTreeWidget w)
     w->list.preferredHeight = XtHeight(w) - 2 * Prim_ShadowThickness(w)
 	- 2 * Prim_HighlightThickness(w);
   }
-  DBG(DARG, "prefWidth=%d prefHeight=%d\n", w->list.preferredWidth, w->list.preferredHeight);
+  DBG( "prefWidth=%d prefHeight=%d\n", w->list.preferredWidth, w->list.preferredHeight);
 }
 
 static void Initialize(Widget request, Widget tnew, ArgList args, Cardinal * num)
@@ -658,10 +642,10 @@ static void SetScrollbars(ListTreeWidget w)
       top = w->list.topItemPos;
       bot = w->list.itemCount;
       size = w->list.visibleCount;
-      DBG(DARG, "BEFORE: top=%d bot=%d size=%d ", top, bot, size);
+      DBG( "BEFORE: top=%d bot=%d size=%d ", top, bot, size);
       if (top + size > bot)
 	bot = top + size;
-      DBG(DARG, "  AFTER: bot=%d\n", bot);
+      DBG( "  AFTER: bot=%d\n", bot);
 
       XtVaSetValues(w->list.vsb,
 		    XmNvalue, top,
@@ -700,7 +684,7 @@ static void SetScrollbars(ListTreeWidget w)
     }
   }
 
-  DBG(DARG, "item=%d visible=%d\n", w->list.itemCount, w->list.visibleCount);
+  DBG( "item=%d visible=%d\n", w->list.itemCount, w->list.visibleCount);
 }
 
 static void VSBCallback(Widget scrollbar, XtPointer client_data, XtPointer call_data)
@@ -710,15 +694,15 @@ static void VSBCallback(Widget scrollbar, XtPointer client_data, XtPointer call_
 
   w->list.topItemPos = cbs->value;
 
-  DBG(DARG, "topItemPos=%d\n", w->list.topItemPos);
+  DBG( "topItemPos=%d\n", w->list.topItemPos);
 #if 0
-  DBG(DARG, "VSBCallback: cbs->reason=%d ", cbs->reason);
+  DBG( "VSBCallback: cbs->reason=%d ", cbs->reason);
   if (cbs->reason == XmCR_INCREMENT) {
-    DBG(DARG, "increment\n");
+    DBG( "increment\n");
   } else if (cbs->reason == XmCR_DECREMENT) {
-    DBG(DARG, "decrement\n");
+    DBG( "decrement\n");
   } else if (cbs->reason == XmCR_VALUE_CHANGED) {
-    DBG(DARG, "value_changed\n");
+    DBG( "value_changed\n");
     SetScrollbars(w);
   }
 #else
@@ -738,7 +722,7 @@ static void HSBCallback(Widget scrollbar, XtPointer client_data, XtPointer call_
   w->list.hsbPos = cbs->value;
   HSB2X(w);
 
-  DBG(DARG, "XOffset=%d prefWidth=%d viewWidth=%d\n",
+  DBG( "XOffset=%d prefWidth=%d viewWidth=%d\n",
       w->list.XOffset, w->list.preferredWidth, w->list.viewWidth);
   if (w->list.XOffset != w->list.lastXOffset) {
     DrawAll(w);
@@ -763,7 +747,7 @@ QueryGeometry(ListTreeWidget w, XtWidgetGeometry * proposed, XtWidgetGeometry * 
   answer->height = w->list.preferredHeight + 2 * Prim_ShadowThickness(w)
       + 2 * Prim_HighlightThickness(w);
 
-  DBG(DARG, "w=%d h=%d\n", answer->width, answer->height);
+  DBG( "w=%d h=%d\n", answer->width, answer->height);
 
   if (proposed->width >= answer->width && proposed->height >= answer->height)
     return XtGeometryYes;
@@ -1112,7 +1096,7 @@ static void extend_select(Widget aw, XEvent * event, String * params, Cardinal *
     if (y < yend) {
       while (item && y < yend && y < w->list.viewY + w->list.viewHeight) {
 	if (item) {
-	  DBG(DARG, "Highlighting y=%d item=%s\n", y, item->text);
+	  DBG( "Highlighting y=%d item=%s\n", y, item->text);
 	  HighlightItem(w, item, True, True);
 	  y += item->height + w->list.VSpacing;
 	}
@@ -1121,7 +1105,7 @@ static void extend_select(Widget aw, XEvent * event, String * params, Cardinal *
     } else {
       while (item && y > yend && y > 0) {
 	if (item) {
-	  DBG(DARG, "Highlighting y=%d item=%s\n", y, item->text);
+	  DBG( "Highlighting y=%d item=%s\n", y, item->text);
 	  HighlightItem(w, item, True, True);
 	  y -= item->height + w->list.VSpacing;
 	}
@@ -1221,7 +1205,7 @@ XEvent *event;
 String *params;
 Cardinal *num_params;
 {
-  DBG(DARG, "keypress\n");
+  DBG( "keypress\n");
 }
 
 /* ListTree private drawing functions ------------------------------------- */
@@ -1437,11 +1421,11 @@ static void DrawVertical(ListTreeWidget w, ListTreeItem * item)
       else
 	yroot = item->parent->y + item->parent->height;
 
-      DBG(DARG, "parent=%s drawing x=%d y=%d\n", item->parent->text, xroot, yroot);
+      DBG( "parent=%s drawing x=%d y=%d\n", item->parent->text, xroot, yroot);
       XDrawLine(XtDisplay(w), XtWindow(w), w->list.drawGC,
 		xroot + w->list.XOffset, yroot, xroot + w->list.XOffset, w->list.exposeBot);
     } else {
-      DBG(DARG, "parent=%s  NOT DRAWING\n", item->parent->text);
+      DBG( "parent=%s  NOT DRAWING\n", item->parent->text);
     }
 
     item = item->parent;
@@ -1477,7 +1461,7 @@ static void Draw(ListTreeWidget w, int yevent, int hevent)
 
   DrawChildren(w, item, &lastdrawn, y, xbranch, ybranch);
 
-  DBG(DARG, "lastdrawn=%s\n", lastdrawn->text);
+  DBG( "lastdrawn=%s\n", lastdrawn->text);
   w->list.bottomItemPos = lastdrawn->count;
 
   DrawVertical(w, lastdrawn);
@@ -1728,7 +1712,7 @@ SearchChildren(ListTreeWidget w, ListTreeItem * item, ListTreeItem ** last,
 	       int y, int findy, ListTreeItem ** finditem)
 {
   while (item) {
-    DBG(DARG, "searching y=%d item=%s\n", y, item->text);
+    DBG( "searching y=%d item=%s\n", y, item->text);
     if (findy >= y && findy <= y + item->height + w->list.VSpacing) {
       *finditem = item;
       return -1;
@@ -1797,7 +1781,7 @@ Boolean *found;
   Pixinfo *pix;
 
   while (item) {
-/*              DBG(DARG,"Checking y=%d  item=%s\n",y,item->text); */
+/*              DBG("Checking y=%d  item=%s\n",y,item->text); */
     if (item == finditem) {
       *found = True;
       return y;
