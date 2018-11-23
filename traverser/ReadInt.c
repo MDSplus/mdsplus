@@ -28,47 +28,33 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <mds_stdarg.h>
 #include <status.h>
-#define MAX_ARGUMENTS 2
+
 extern int TdiCompile();
 extern int TdiEvaluate();
 extern int TdiExecute();
-#ifndef va_count
-#define  va_count(narg) va_start(ap, expr); \
-                        for (narg=1; (narg < 256) && (va_arg(ap, struct descriptor *) != MdsEND_ARG); narg++)
-#endif				/* va_count */
 
-int ReadInt(char *expr, ...)
-{
+int ReadInt(char *expr, ...){
   INIT_STATUS;
   static struct descriptor expr_dsc = { 0, DTYPE_T, CLASS_S, 0 };
   int ans;
-  struct descriptor *dsc_ptrs[MAX_ARGUMENTS];
-  int numargs;
   static struct descriptor_xd ans_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
-  va_list ap;
-  va_count(numargs);
-
-  if ((numargs - 1) > MAX_ARGUMENTS)
-    return 0;
-  if (numargs > 1) {
-    int i;
-    va_start(ap, expr);
-    for (i = 0; i < numargs - 1; i++)
-      dsc_ptrs[i] = va_arg(ap, struct descriptor *);
-    va_end(ap);
-  }
   expr_dsc.length = strlen(expr);
   expr_dsc.pointer = expr;
+  int numargs;
+  struct descriptor *dsc_ptrs[3];
+  VA_LIST_MDS_END_ARG(dsc_ptrs,numargs,0,0,expr);
   switch (numargs) {
-  case 1:
+  case 0:
     status = TdiExecute(&expr_dsc, &ans_xd MDS_END_ARG);
     break;
-  case 2:
+  case 1:
     status = TdiExecute(&expr_dsc, dsc_ptrs[0], &ans_xd MDS_END_ARG);
     break;
-  case 3:
+  case 2:
     status = TdiExecute(&expr_dsc, dsc_ptrs[0], dsc_ptrs[1], &ans_xd MDS_END_ARG);
     break;
+  default:
+    return 0;
   }
   if STATUS_OK {
     /*    status = TdiEvaluate(&ans_xd, &ans_xd); */
