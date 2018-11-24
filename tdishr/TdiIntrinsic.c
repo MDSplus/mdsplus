@@ -48,8 +48,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MAXLINE 120
 #define MAXFRAC 40
 #define MINMAX(min, test, max) ((min) >= (test) ? (min) : (test) < (max) ? (test) : (max))
-#define DEF_FREEXD
-#define DEF_FREEBEGIN
 #define OPC_ENUM
 
 #include <STATICdef.h>
@@ -72,6 +70,15 @@ typedef struct _bounds {
   int l;
   int u;
 } BOUNDS;
+
+static void free_begin(void* ptr){
+  if (((struct TdiZoneStruct*)ptr)->a_begin) {
+    free(((struct TdiZoneStruct*)ptr)->a_begin);
+    ((struct TdiZoneStruct*)ptr)->a_begin=NULL;
+  }
+}
+#define FREEBEGIN_ON_EXIT() pthread_cleanup_push(free_begin,&TdiRefZone)
+#define FREEBEGIN_NOW()     pthread_cleanup_pop(1)
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 extern int TdiFaultHandlerNoFixup();
@@ -380,7 +387,7 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, struct descriptor *list[], st
   TdiThreadStatic_p->TdiIntrinsic_recursion_count--;
   if (!TdiThreadStatic_p->TdiIntrinsic_recursion_count) {
     TdiThreadStatic_p->TdiIntrinsic_mess_stat = status;
-    freebegin(&TdiRefZone);
+    free_begin(&TdiRefZone);
   }
   FREE_CANCEL(&tmp);
   FREE_CANCEL(out_ptr);

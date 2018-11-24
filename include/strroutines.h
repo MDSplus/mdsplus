@@ -24,3 +24,15 @@ extern int StrTranslate(struct descriptor *dest, struct descriptor *src, struct 
 extern int StrTrim(struct descriptor *out, struct descriptor *in, unsigned short *lenout);
 extern int StrUpcase(struct descriptor *out, struct descriptor *in);
 
+#ifdef HAVE_PTHREAD_H
+#include <pthread.h>
+static void __attribute__((unused)) free_d(void *ptr){
+  StrFree1Dx((struct descriptor_d*)ptr);
+}
+#define FREED_ON_EXIT(ptr) pthread_cleanup_push(free_d, ptr)
+#define FREED_IF(ptr,c)    pthread_cleanup_pop(c)
+#define FREED_NOW(ptr)     FREED_IF(ptr,1)
+#define FREED_CANCEL(ptr)  FREED_IF(ptr,0)
+#define INIT_AS_AND_FREED_ON_EXIT(var,value) struct descriptor_d var=value;FREED_ON_EXIT(&var)
+#define INIT_AND_FREED_ON_EXIT(var,dtype)    INIT_AS_AND_FREED_ON_EXIT(var, ((struct descriptor_d){ 0, dtype, CLASS_D, NULL}))
+#endif

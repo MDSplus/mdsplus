@@ -30,7 +30,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern unsigned short OpcCompile;
 extern unsigned short OpcEvaluate;
-#define DEF_FREEXD
 
 #include <stdlib.h>
 #include <string.h>

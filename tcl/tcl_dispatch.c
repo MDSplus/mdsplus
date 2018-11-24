@@ -35,8 +35,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <tcl_messages.h>
 #include <mdsdcl_messages.h>
-#define DEF_FREED
-#define DEF_FREEXD
 #include <pthread_port.h>
 
 #include "tcl_p.h"
@@ -141,7 +139,7 @@ EXPORT int TclDispatch(void *ctx, char **error, char **output __attribute__ ((un
   status = TreeFindNode(treenode, &nid);
   if STATUS_OK {
     struct descriptor niddsc = { 4, DTYPE_NID, CLASS_S, (char *)0 };
-    INIT_AND_FREED_ON_EXIT(DTYPE_T,ident);
+    INIT_AND_FREED_ON_EXIT(ident,DTYPE_T);
     INIT_AND_FREEXD_ON_EXIT(xd);
     niddsc.pointer = (char *)&nid;
     status = TdiIdentOf(&niddsc, &xd MDS_END_ARG);
