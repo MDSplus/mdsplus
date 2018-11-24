@@ -32,21 +32,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <STATICdef.h>
 #include <mds_stdarg.h>
 #include <libroutines.h>
-#include <tdishr_messages.h>
-#include <mdsdescrip.h>
-#define COM
+#include <tdishr.h>
 
 extern int TdiIntrinsic();
-
-#define OPC(name,builtin,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11) \
+#define COM
+#define OPC(name,NAME, ...) \
 extern EXPORT int Tdi##name ( struct descriptor *first, ... ){\
   if (first==MdsEND_ARG) return TdiNO_OUTPTR;\
   int nargs;\
-  void* arglist[256];\
+  struct descriptor* arglist[256];\
   arglist[0] = (void*)first;\
   VA_LIST_MDS_END_ARG(arglist,nargs,1,0,first);\
   if (nargs<256)\
-    return TdiIntrinsic(__LINE__ - 25,nargs-1,arglist,arglist[nargs-1]);\
+    return TdiIntrinsic(OPC_##NAME,nargs-1,arglist,(struct descriptor_xd*)arglist[nargs-1]);\
   return TdiNO_OUTPTR;\
 }
 #include <opcbuiltins.h>

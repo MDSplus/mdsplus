@@ -50,6 +50,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MINMAX(min, test, max) ((min) >= (test) ? (min) : (test) < (max) ? (test) : (max))
 #define DEF_FREEXD
 #define DEF_FREEBEGIN
+#define OPC_ENUM
 
 #include <STATICdef.h>
 #include "tdithreadsafe.h"
@@ -63,7 +64,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <tdishr_messages.h>
+#include <tdishr.h>
 #include <treeshr_messages.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
@@ -73,7 +74,6 @@ typedef struct _bounds {
 } BOUNDS;
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
-extern unsigned short OpcCompile;
 extern int TdiFaultHandlerNoFixup();
 extern int Tdi0Decompile();
 extern int TdiConvert();
@@ -224,15 +224,6 @@ static inline void ADD_COMPILE_INFO() {
   free(marker.pointer);
 }
 
-/**********************************
-Useful for access violation errors.
-**********************************/
-STATIC_ROUTINE int interlude(int (*f1) (), int opcode, int narg,
-                             struct descriptor *list[], struct descriptor_xd *out_ptr)
-{
-  return (*f1) (opcode, narg, list, out_ptr);
-}
-
 struct _fixed {
   int n;
   char f[256];
@@ -245,7 +236,7 @@ void cleanup_list(void* fixed_in) {
 	free(fixed->a[fixed->n]);
 }
 
-EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+EXPORT int TdiIntrinsic(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS, stat1 = MDSplusSUCCESS;
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
@@ -273,7 +264,7 @@ EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct 
 	fixed.f[fixed.n] = 0;
 	fixed.a[fixed.n] = list[fixed.n];
       }
-    status = interlude(fun_ptr->f1, opcode, narg, fixed.a, &tmp);
+    status = fun_ptr->f1(opcode, narg, fixed.a, &tmp);
     pthread_cleanup_pop(1);
   }
   if (STATUS_OK || status == TdiBREAK || status == TdiCONTINUE || status == TdiGOTO || status == TdiRETURN) {
@@ -373,7 +364,7 @@ EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct 
   /********************************
   Compiler errors get special help.
   ********************************/
-  if (opcode == OpcCompile
+  if (opcode == OPC_COMPILE
   && (status==TdiSYNTAX
    || status==TdiEXTRANEOUS
    || status==TdiUNBALANCE
