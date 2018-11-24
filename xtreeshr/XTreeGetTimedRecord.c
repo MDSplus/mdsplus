@@ -33,8 +33,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr.h>
 #include <treeshr.h>
 
-extern unsigned short OpcExtFunction;
-
 static int timedAccessFlag = 0;
 
 #define MAX_FUN_NAMELEN 512
@@ -293,9 +291,8 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 
 //If defined, call User Provided resampling function, oterwise use default one (XTreeDefaultResample())
     if(resampleFunName[0]) {
-      unsigned short funCode = 162; // OpcExtFunction
       resampleFunD.length = sizeof(unsigned short);
-      resampleFunD.pointer = (unsigned char *)&funCode;
+      resampleFunD.pointer = (unsigned char *)&OpcExtFunction;
       resampleFunNameD.length = strlen(resampleFunName);
       resampleFunNameD.pointer = resampleFunName;
       resampleFunD.dscptrs[0] = 0;
