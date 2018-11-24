@@ -48,8 +48,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MAXLINE 120
 #define MAXFRAC 40
 #define MINMAX(min, test, max) ((min) >= (test) ? (min) : (test) < (max) ? (test) : (max))
-#define DEF_FREEXD
-#define DEF_FREEBEGIN
 
 #include <STATICdef.h>
 #include "tdithreadsafe.h"

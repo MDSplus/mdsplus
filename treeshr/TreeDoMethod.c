@@ -51,9 +51,6 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 	Description:
 
 ------------------------------------------------------------------------------*/
-#define DEF_FREED
-#define DEF_FREEXD
-
 #include <STATICdef.h>
 #include <ncidef.h>
 #include "treeshrp.h"

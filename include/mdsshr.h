@@ -127,7 +127,18 @@ extern void MdsGlobalUnlock();
 extern int MdsXpand(int *nitems_ptr, struct descriptor_a *pack_dsc_ptr, struct descriptor_a *items_dsc_ptr,
                      int *bit_ptr);
 
-
+#ifdef HAVE_PTHREAD_H
+#include <pthread.h>
+// FREEXD
+static void __attribute__((unused)) free_xd(void *ptr){
+  MdsFree1Dx((struct descriptor_xd*)ptr, NULL);
+}
+#define FREEXD_ON_EXIT(ptr) pthread_cleanup_push(free_xd, ptr)
+#define FREEXD_IF(ptr,c)    pthread_cleanup_pop(c)
+#define FREEXD_NOW(ptr)     FREEXD_IF(ptr,1)
+#define FREEXD_CANCEL(ptr)  FREEXD_IF(ptr,0)
+#define INIT_AND_FREEXD_ON_EXIT(xd) EMPTYXD(xd);FREEXD_ON_EXIT(&xd)
+#endif
 
 #ifdef __cplusplus
 }

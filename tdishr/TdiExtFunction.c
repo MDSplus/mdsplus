@@ -48,8 +48,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Ken Klare, LANL P-4     (c)1989,1990,1991
         NEED we chase logical names if not in first image?
 */
-#define DEF_FREED
-#define DEF_FREEXD
 #include <pthread_port.h>
 #include <stdio.h>
 #include "tdirefstandard.h"
