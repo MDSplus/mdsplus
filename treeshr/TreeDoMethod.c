@@ -70,26 +70,32 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 
 extern void **TreeCtx();
 
-#define _TREE_TDI(_TreeFun,TdiFun) \
-static int *(*TdiFun)() = NULL;\
+#define COM
+#define OPC(name,NAME,...) OPC_##NAME,
+typedef enum opcode_e {
+#include <opcbuiltins.h>
+OPC_INVALID=-1
+} opcode_t;
+
+static int (*TdiIntrinsic)() = NULL;
+#define _TREE_TDI(_TreeFun,OpcFun) \
 EXPORT int _TreeFun(void *dbid, ...) {\
-  int status = LibFindImageSymbol_C("TdiShr", #TdiFun, &TdiFun);\
-  if IS_NOT_OK(status) return status;\
-  int nargs;\
-  void *arglist[256];\
-  VA_LIST_MDS_END_ARG(arglist,nargs,1,1,dbid);\
-  arglist[0] = (void*)(intptr_t)--nargs;\
+  int status = LibFindImageSymbol_C("TdiShr", "TdiIntrinsic", &TdiIntrinsic);\
+  if STATUS_NOT_OK return status;\
   DBID_PUSH(dbid);\
-  status = (int)(intptr_t)LibCallg(arglist, TdiFun);\
+  int nargs;\
+  struct descriptor* arglist[256];\
+  VA_LIST_MDS_END_ARG(arglist,nargs,0,0,dbid);\
+  status = TdiIntrinsic(OpcFun, nargs-1, arglist, (struct descriptor_xd*)arglist[nargs-1]);\
   DBID_POP(dbid);\
   return status;\
 } /*"*/
 
-_TREE_TDI(_TreeCompile  ,TdiCompile  )
-_TREE_TDI(_TreeExecute  ,TdiExecute  )
-_TREE_TDI(_TreeEvaluate ,TdiEvaluate )
-_TREE_TDI(_TreeData     ,TdiData     )
-_TREE_TDI(_TreeDecompile,TdiDecompile)
+_TREE_TDI(_TreeCompile  ,OPC_COMPILE  )
+_TREE_TDI(_TreeExecute  ,OPC_EXECUTE  )
+_TREE_TDI(_TreeEvaluate ,OPC_EVALUATE )
+_TREE_TDI(_TreeData     ,OPC_DATA     )
+_TREE_TDI(_TreeDecompile,OPC_DECOMPILE)
 
 EXPORT int _TreeDcl(void *dbid, char*cmd, struct descriptor_xd *err, struct descriptor_xd *out){
   static int *(*mdsdcl_do_command_dsc)();
@@ -113,7 +119,7 @@ int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
 }
 
 int do_fun(void* dbid, struct descriptor *funname, int nargs, struct descriptor **args, struct descriptor_xd *out_ptr){
-  short OpcExtFunction = 162;
+  short OpcExtFunction = OPC_EXT_FUNCTION;
   DESCRIPTOR_FUNCTION(fun, &OpcExtFunction, 255);
   void *call_arglist[] = { (void *)4, dbid, (void *)&fun, (void *)out_ptr, MdsEND_ARG };
   fun.ndesc = nargs>253 ? 255 : (unsigned char)(nargs + 2);
