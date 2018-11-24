@@ -152,6 +152,8 @@ int main(int argc, char *argv[]){
     END_TESTING;
     if (single) exit(1);
 
+    TEST_TIMEOUT(100);
+
     if (stksize<0x40000){
       std::cout << " -- [MultiThread] -- Skipped because the default thread stack size is too small (" << stksize/1024 << "kB < 256kB)." << std::flush;
     } else {

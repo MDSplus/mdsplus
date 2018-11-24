@@ -116,6 +116,7 @@ using namespace testing;
 
 int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 {
+    TEST_TIMEOUT(100);
     BEGIN_TESTING(Tree);
 
 #ifdef _WIN32

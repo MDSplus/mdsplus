@@ -479,3 +479,12 @@
    Helgrind:Race
    fun:blas_shutdown_
 }
+
+{
+   Exiting thread still holds 1 lock python on fc25
+   Helgrind:Misc
+   obj:/usr/lib64/libc-2.24.so
+   fun:_IO_file_xsgetn
+   fun:fread
+   obj:/usr/lib*/libpython2.7.so.1.0
+}
