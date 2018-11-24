@@ -112,6 +112,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
     setenv("t_treenode_path",".",1);
     setenv("t_treenode2_path",".",1);
 
+    TEST_TIMEOUT(100);
     BEGIN_TESTING(TreeNode);
 
     unique_ptr<Tree> tree = new Tree("T_TREENODE",-1,"NEW");
