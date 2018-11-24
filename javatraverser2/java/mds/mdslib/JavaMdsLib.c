@@ -6,12 +6,8 @@
 #include <stdlib.h> //free
 #include <string.h> //strlen
 #include <mdstypes.h> //DTYPE
+#include <tdishr.h> //TdiIntrinsic
 #include <status.h> //STATUS_OK
-
-extern int TdiIntrinsic();
-extern int TdiEvaluate();
-extern int MdsSerializeDscOut(struct descriptor const *in, struct descriptor_xd *out);
-extern int MdsSerializeDscIn(char const *in, struct descriptor_xd *out);
 
 static void RaiseException(JNIEnv * env, int status) {
   jclass cls = (*env)->FindClass(env, "mds/MdsException");
@@ -19,15 +15,6 @@ static void RaiseException(JNIEnv * env, int status) {
   jobject exc = (*env)->NewObject(env, cls, constructor, status);
   (*env)->ExceptionClear(env);
   (*env)->Throw(env, exc);
-}
-#define OpcCompile 99
-int thisTdiExecute(int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
-  EMPTYXD(tmp);
-  int status = TdiIntrinsic(OpcCompile, narg, list, &tmp);
-  if (status & 1)
-    status = TdiEvaluate(tmp.pointer, out_ptr MDS_END_ARG);
-  MdsFree1Dx(&tmp, NULL);
-  return status;
 }
 
 JNIEXPORT jbyteArray JNICALL Java_mds_mdslib_MdsLib_evaluate(JNIEnv * env, jobject obj __attribute__((unused)), jobject jexpr, jobjectArray args) {
@@ -61,7 +48,7 @@ JNIEXPORT jbyteArray JNICALL Java_mds_mdslib_MdsLib_evaluate(JNIEnv * env, jobje
   if STATUS_OK {
     //printf("10-%d\n",(int)nargs);
     EMPTYXD(xd);
-    status = thisTdiExecute(nargs+1, list, &xd);
+    status = TdiIntrinsic(OPC_EXECUTE, nargs+1, list, &xd);
     (*env)->ReleaseStringUTFChars(env, jexpr, expr);
     if STATUS_OK {
       EMPTYXD(xds);
