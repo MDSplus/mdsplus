@@ -245,13 +245,14 @@ void cleanup_list(void* fixed_in) {
 
 EXPORT int TdiIntrinsic(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  INIT_STATUS, stat1 = MDSplusSUCCESS;
+  int status;
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   GET_TDITHREADSTATIC_P;
   EMPTYXD(tmp);
   FREEXD_ON_EXIT(&tmp);
   FREEXD_ON_EXIT(out_ptr);
   FREEBEGIN_ON_EXIT();
+  int stat1 = status = MDSplusSUCCESS;
   struct descriptor *dsc_ptr;
   TdiThreadStatic_p->TdiIntrinsic_recursion_count++;
   if (narg < fun_ptr->m1)
