@@ -3,7 +3,7 @@ include @top_builddir@/Makefile.inc
 VPATH = @srcdir@
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsObjectsCppShr.dll.a
 
-CPPFLAGS += -I$(top_srcdir)/tdishr
+CPPFLAGS += 
 CFLAGS += @SRBINCLUDE@
 CXXFLAGS += -Wno-deprecated $(CFLAGS) @CXXFLAGS@
 LIBS=-L@MAKESHLIBDIR@ @LIBS@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @SRBLIB@
