@@ -52,7 +52,6 @@ TreeFindTagEnd(void **ctx);
 	Description:
 
 +-----------------------------------------------------------------------------*/
-#define DEF_FREED
 #include <stdlib.h>
 #include <string.h>
 #include <treeshr.h>

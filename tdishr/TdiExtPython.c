@@ -383,7 +383,8 @@ static inline int loadPyFunction_(const char *dirspec,const char *filename) {
   Py_DecRef(ans);
   if (!ans) {
 # else
-  FILE *fp;
+  int err;
+  INIT_AND_FCLOSE_ON_EXIT(fp);
   if (_Py_fopen_obj)
     fp = _Py_fopen_obj(__file__, "r");
   else
@@ -394,11 +395,9 @@ static inline int loadPyFunction_(const char *dirspec,const char *filename) {
     Py_DecRef(__file__);
     return MDSplusERROR;
   }
-  int err;
-  pthread_cleanup_push((void*)fclose,(void*)fp);
   int flags = 0;
   err = PyRun_SimpleFileExFlags(fp, fullpath, 1, &flags);
-  pthread_cleanup_pop(0);
+  FCLOSE_CANCEL(fp);
   if (err) {
 # endif
     fprintf(stderr,"Error compiling file '%s'\n",fullpath);

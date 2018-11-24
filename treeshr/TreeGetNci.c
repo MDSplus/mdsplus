@@ -35,14 +35,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 #include <mds_stdarg.h>
+#include <strroutines.h>
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif
 #ifndef O_RANDOM
 #define O_RANDOM 0
 #endif
-
-extern int StrFree1Dx();
 
 static inline int minInt(int a, int b) { return a < b ? a : b; }
 
@@ -353,7 +352,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm){
     case NciORIGINAL_PART_NAME:
       break_on_no_node;
       if (swapshort((char *)&node->conglomerate_elt)) {
-	struct descriptor string_d = { 0, DTYPE_T, CLASS_D, 0 };
+	struct descriptor_d string_d = { 0, DTYPE_T, CLASS_D, 0 };
 	DESCRIPTOR_NID(nid_dsc, 0);
 	DESCRIPTOR(part_name, "PART_NAME");
 	nid_dsc.pointer = (char *)&nid;

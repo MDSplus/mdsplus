@@ -55,47 +55,29 @@ typedef struct _Condition_p {
   pthread_mutex_t mutex;
   void*           value;
 } Condition_p;
-#ifdef DEF_FREEBEGIN
- static void __attribute__((unused)) freebegin(void* ptr){
-   if (((struct TdiZoneStruct*)ptr)->a_begin) {
-     free(((struct TdiZoneStruct*)ptr)->a_begin);
-     ((struct TdiZoneStruct*)ptr)->a_begin=NULL;
-   }
- }
-  #define FREEBEGIN_ON_EXIT() pthread_cleanup_push(freebegin,&TdiRefZone)
-  #define FREEBEGIN_NOW()     pthread_cleanup_pop(1)
-#endif
 
-#ifdef DEF_FREED
- #include <strroutines.h>
- static void __attribute__((unused)) free_d(void *ptr){
-   StrFree1Dx((struct descriptor_d*)ptr);
- }
-  #define FREED_ON_EXIT(ptr) pthread_cleanup_push(free_d, ptr)
-  #define FREED_IF(ptr,c)    pthread_cleanup_pop(c)
-  #define FREED_NOW(ptr)     pthread_cleanup_pop(1)
- #define INIT_AS_AND_FREED_ON_EXIT(var,value) struct descriptor_d var=value;FREED_ON_EXIT(&var);
- #define INIT_AND_FREED_ON_EXIT(dtype,var)    INIT_AS_AND_FREED_ON_EXIT(var, ((struct descriptor_d){ 0, dtype, CLASS_D, 0 }))
-#endif
-#ifdef DEF_FREEXD
- #include <mdsshr.h>
- static void __attribute__((unused)) free_xd(void *ptr){
-   MdsFree1Dx((struct descriptor_xd*)ptr, NULL);
- }
-  #define FREEXD_ON_EXIT(ptr) pthread_cleanup_push(free_xd, ptr)
-  #define FREEXD_IF(ptr,c)    pthread_cleanup_pop(c)
-  #define FREEXD_NOW(ptr)     pthread_cleanup_pop(1)
- #define INIT_AND_FREEXD_ON_EXIT(xd) EMPTYXD(xd);FREEXD_ON_EXIT(&xd);
-#endif
+// FREE
 static void __attribute__((unused)) free_if(void *ptr){
   if (*(void**)ptr) free(*(void**)ptr);
 }
- #define FREE_ON_EXIT(ptr)   pthread_cleanup_push(free_if, (void*)&ptr)
- #define FREE_IF(ptr,c)      pthread_cleanup_pop(c)
- #define FREE_NOW(ptr)       pthread_cleanup_pop(1)
- #define FREE_CANCEL(ptr)    pthread_cleanup_pop(0)
+#define FREE_ON_EXIT(ptr)   pthread_cleanup_push(free_if, (void*)&ptr)
+#define FREE_IF(ptr,c)      pthread_cleanup_pop(c);
+#define FREE_NOW(ptr)       FREE_IF(ptr,1)
+#define FREE_CANCEL(ptr)    FREE_IF(ptr,0)
 #define INIT_AS_AND_FREE_ON_EXIT(type,ptr,value) type ptr = value;FREE_ON_EXIT(ptr)
-#define INIT_AND_FREE_ON_EXIT(type,ptr) INIT_AS_AND_FREE_ON_EXIT(type,ptr,NULL)
+#define INIT_AND_FREE_ON_EXIT(type,ptr)		 INIT_AS_AND_FREE_ON_EXIT(type,ptr,NULL)
+
+// FCLOSE
+#include <stdio.h>
+static void __attribute__((unused)) fclose_if(void *ptr){
+  if (*(FILE**)ptr) fclose(*(FILE**)ptr);
+}
+#define FCLOSE_ON_EXIT(ptr)   pthread_cleanup_push(fclose_if, (void*)&ptr)
+#define FCLOSE_IF(ptr,c)      pthread_cleanup_pop(c)
+#define FCLOSE_NOW(ptr)       FCLOSE_IF(ptr,1)
+#define FCLOSE_CANCEL(ptr)    FCLOSE_IF(ptr,0)
+#define INIT_AS_AND_FCLOSE_ON_EXIT(ptr,value)	FILE *ptr = value;FCLOSE_ON_EXIT(ptr)
+#define INIT_AND_FCLOSE_ON_EXIT(ptr)		INIT_AS_AND_FCLOSE_ON_EXIT(ptr,NULL)
 
 #define CONDITION_INITIALIZER {PTHREAD_COND_INITIALIZER,PTHREAD_MUTEX_INITIALIZER,B_FALSE}
 
