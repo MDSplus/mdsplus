@@ -60,12 +60,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Ken Klare, LANL P-4     (c)1989,1990,1991,1992
         NEED subscripted assignment.
 */
-#define DEF_FREED
-
 #include <mdsplus/mdsconfig.h>
 #include "STATICdef.h"
-#define DEF_FREEXD
-#define DEF_FREED
 #include "tdithreadsafe.h"
 #include "tdirefstandard.h"
 #include "tdishrp.h"

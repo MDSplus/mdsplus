@@ -28,7 +28,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Ken Klare, LANL CTR-7   (c)1989,1990
 */
 
-#define DEF_FREEXD
 #define MAXLINE 120
 #define MAXFRAC 40
 #define MINMAX(min, test, max) ((min) >= (test) ? (min) : (test) < (max) ? (test) : (max))
