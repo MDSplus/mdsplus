@@ -57,6 +57,8 @@ static char *_strcasestr(char *s1_in, char *s2_in) {
   s=strstr(s1,s2);
   if (s)
     s=s1_in + (s-s1);
+  free(s1);
+  free(s2);
   return s;
 }
 
