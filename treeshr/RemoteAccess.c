@@ -99,8 +99,9 @@ This does not make harm to treeshr, but avoids to load a wrong symbol when MdsLi
   return LibFindImageSymbol_C("MdsIpShr", name, sym);
 }
 
-static pthread_mutex_t HostListMutex;
-static int HostListMutex_initialized = 0;
+static pthread_mutex_t host_list_lock = PTHREAD_MUTEX_INITIALIZER;
+#define HOST_LIST_LOCK    pthread_mutex_lock(&host_list_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&host_list_lock);
+#define HOST_LIST_UNLOCK  pthread_cleanup_pop(1);
 
 static pthread_mutex_t io_lock = PTHREAD_MUTEX_INITIALIZER;
 #define IO_LOCK    pthread_mutex_lock(&io_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&io_lock);
@@ -194,7 +195,6 @@ int RemoteAccessConnect(char *host, int inc_count, void *dbid){
   int host_in_directive;
   struct _host_list *hostchk;
   struct _host_list **nextone;
-  int conid = -1;
   static int (*rtn) (char *) = NULL;
   int status = FindImageSymbol("ConnectToMds", (void **)&rtn);
   if STATUS_NOT_OK return -1;
@@ -202,7 +202,9 @@ int RemoteAccessConnect(char *host, int inc_count, void *dbid){
   struct sockaddr_in sockaddr;
   int getaddr_status = GetAddr(host, &sockaddr);
 #endif
-  LockMdsShrMutex(&HostListMutex, &HostListMutex_initialized);
+  int conid;
+  HOST_LIST_LOCK;
+  conid = -1;
   for (nextone = &host_list, hostchk = host_list; hostchk;
        nextone = &hostchk->next, hostchk = hostchk->next) {
     if (dbid && hostchk->dbid != dbid)
@@ -235,7 +237,7 @@ int RemoteAccessConnect(char *host, int inc_count, void *dbid){
       (*nextone)->next = 0;
     }
   }
-  UnlockMdsShrMutex(&HostListMutex);
+  HOST_LIST_UNLOCK;
   return conid;
 }
 
@@ -245,7 +247,7 @@ int RemoteAccessDisconnect(int conid, int force){
   static int (*rtn) (int) = NULL;
   int status = FindImageSymbol("DisconnectFromMds", (void **)&rtn);
   if STATUS_NOT_OK return status;
-  LockMdsShrMutex(&HostListMutex, &HostListMutex_initialized);
+  HOST_LIST_LOCK;
   for (hostchk = host_list; hostchk && hostchk->conid != conid; hostchk = hostchk->next) ;
   if (hostchk) {
     hostchk->connections--;
@@ -268,7 +270,7 @@ int RemoteAccessDisconnect(int conid, int force){
       hostchk = hostchk->next;
     }
   }
-  UnlockMdsShrMutex(&HostListMutex);
+  HOST_LIST_UNLOCK;
   return status;
 }
 
