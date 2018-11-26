@@ -64,7 +64,7 @@ if [ "$2" == "update" ]
   unset ok
   if diff --help | grep side-by-side &>/dev/null
   then
-   $TDITEST $zdrv$srcdir/$test.tdi 2>&1 \
+   $TDITEST $zdrv$srcdir/$test.tdi 2>&1 | tee ${test}-out.log \
    | grep -v 'Data inserted:' \
    | grep -v 'Length:' \
    | diff $DIFF_Z --side-by-side -W128 /dev/stdin $srcdir/$test.ans \
