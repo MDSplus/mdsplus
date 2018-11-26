@@ -57,14 +57,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define O_RANDOM 0x0
 #endif
 
-#ifdef SRB
-#define SRB_ID 123456789/* this is the id value used to indicate that
-			   this file is an SRB file.  Positive so that
-			   other MDSPlus checks pass, but a value that
-			   otherwise will not occur */
-#include "srbUio.h"
-#endif
-
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 struct descrip {
   char dtype;
@@ -304,8 +296,8 @@ int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, ch
     sprintf(exp, "TreeOpen('%s',%d)", subtree_list ? subtree_list : tree, dblist->shotid);
     status = MdsValue0(conid, exp, &ans);
     free(exp);
-    status = (status & 1) ? (((ans.dtype == DTYPE_L) && ans.ptr) ? *(int *)ans.ptr : 0) : status;
-    if (status & 1) {
+    status = STATUS_OK ? (((ans.dtype == DTYPE_L) && ans.ptr) ? *(int *)ans.ptr : 0) : status;
+    if STATUS_OK {
       TREE_INFO *info;
       /***********************************************
        Get virtual memory for the tree
@@ -391,7 +383,7 @@ int GetRecordRemote(PINO_DATABASE * dblist, int nid_in, struct descriptor_xd *ds
   sprintf(exp, "_thick_client_rec=getnci(%d,'RECORD'),execute('SerializeOut(`_thick_client_rec)')",
 	  nid_in);
   status = MdsValue0(dblist->tree_info->channel, exp, &ans);
-  if (status & 1) {
+  if STATUS_OK {
     if (ans.ptr)
       status = MdsSerializeDscIn(ans.ptr, dsc);
     else
@@ -427,7 +419,7 @@ int FindNodeRemote(PINO_DATABASE * dblist, char const *path, int *outnid)
 
   free(exp);
 
-  if (status & 1) {
+  if STATUS_OK {
     if (ans.ptr)
       *outnid = *(int *)ans.ptr;
     else
@@ -470,7 +462,7 @@ int FindNodeWildRemote(PINO_DATABASE * dblist, char const *path, int *nid_out, v
 
     free(exp);
 
-    if (status & 1) {
+    if STATUS_OK {
       if (ans.ptr) {
 	ctx = malloc(sizeof(struct _FindNodeStruct));
 	ctx->nids = ctx->ptr = (int *)ans.ptr;
@@ -480,7 +472,7 @@ int FindNodeWildRemote(PINO_DATABASE * dblist, char const *path, int *nid_out, v
 	status = TreeNNF;
     }
   }
-  if (status & 1) {
+  if STATUS_OK {
     if (ctx->num > 0) {
       *nid_out = *ctx->nids;
       ctx->num--;
@@ -548,7 +540,7 @@ int GetDefaultNidRemote(PINO_DATABASE * dblist, int *nid)
   if (ans.ptr) {
     if (ans.dtype == DTYPE_L)
       *nid = *(int *)ans.ptr;
-    else if (status & 1)
+    else if STATUS_OK
       status = 0;
     MdsIpFree(ans.ptr);
   }
@@ -593,7 +585,7 @@ char *FindTagWildRemote(PINO_DATABASE * dblist, char *wild, int *nidout, void **
     MdsIpFree(ans.ptr);
   if (status & 1 && nidout) {
     status = MdsValue0(dblist->tree_info->channel, "_nid", &nid_ans);
-    if ((status & 1) && (nid_ans.dtype == DTYPE_L) && (nid_ans.ptr != 0))
+    if (STATUS_OK && (nid_ans.dtype == DTYPE_L) && (nid_ans.ptr != 0))
       *nidout = *(int *)nid_ans.ptr;
     else
       *nidout = 0;
@@ -737,11 +729,11 @@ int GetNciRemote(PINO_DATABASE * dblist, int nid_in, struct nci_itm *nci_itm)
       status = TreeILLEGAL_ITEM;
       break;
     }
-    if (status & 1) {
+    if STATUS_OK {
       char exp[1024];
       sprintf(exp, getnci_str, nid_in);
       status = MdsValue0(dblist->tree_info->channel, exp, &ans);
-      if (status & 1) {
+      if STATUS_OK {
 	if (ans.ptr && ans.length) {
 	  int length = ans.length * (ans.ndims ? ans.dims[0] : 1);
 	  if (itm->return_length_address)
@@ -766,7 +758,7 @@ int PutRecordRemote(PINO_DATABASE * dblist, int nid_in, struct descriptor *dsc, 
   EMPTYXD(out);
   int status = MdsSerializeDscOut(dsc, &out);
 
-  if (status & 1) {
+  if STATUS_OK {
     char exp[512];
     struct descrip ans = empty_ans;
     if (out.pointer) {
@@ -782,7 +774,7 @@ int PutRecordRemote(PINO_DATABASE * dblist, int nid_in, struct descriptor *dsc, 
     if (ans.ptr) {
       if (ans.dtype == DTYPE_L)
 	status = *(int *)ans.ptr;
-      else if (status & 1)
+      else if STATUS_OK
 	status = 0;
       MdsIpFree(ans.ptr);
     }
@@ -809,9 +801,8 @@ int SetDbiItmRemote(PINO_DATABASE * dblist, int code, int value)
 {
   struct descrip ans = empty_ans;
   char exp[512];
-  int status;
   sprintf(exp, "TreeSetDbiItm(%d,%d)", code, value);
-  status = MdsValue0(dblist->tree_info->channel, exp, &ans);
+  int status = MdsValue0(dblist->tree_info->channel, exp, &ans);
   if (ans.ptr) {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
     MdsIpFree(ans.ptr);
@@ -860,9 +851,8 @@ int TreeFlushOffRemote(PINO_DATABASE * dblist, int nid)
 {
   struct descrip ans = empty_ans;
   char exp[512];
-  int status;
   sprintf(exp, "TreeFlushOff(%d)", nid);
-  status = MdsValue0(dblist->tree_info->channel, exp, &ans);
+  int status = MdsValue0(dblist->tree_info->channel, exp, &ans);
   if (ans.ptr) {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
     MdsIpFree(ans.ptr);
@@ -1076,7 +1066,7 @@ int io_open_remote(char *host, char *filename_in, int options, mode_t mode, int 
 	  (options & O_RDONLY ? MDS_IO_O_RDONLY : 0) | (options & O_RDWR ? MDS_IO_O_RDWR : 0);
       info[2] = (int)mode;
       status = SendArg(*sock, MDS_IO_OPEN_K, 0, 0, 0, sizeof(info) / sizeof(int), info, filename);
-      if (status & 1) {
+      if STATUS_OK {
 	char dtype;
 	short length;
 	char ndims;
@@ -1121,13 +1111,7 @@ int MDS_IO_OPEN(char *filename_in, int options, mode_t mode)
   int fd;
   int enhanced = 0;
   if (hostpart)
-#ifdef SRB
-    if (strcmp(hostpart, "SRB") == 0) {
-      fd = srbUioOpen(filepart, options, mode);
-      conid = SRB_ID;	/* flag to indicate SRB file */
-    } else
-#endif
-      fd = io_open_remote(hostpart, filepart, options, mode, &conid, &enhanced);
+    fd = io_open_remote(hostpart, filepart, options, mode, &conid, &enhanced);
   else {
     fd = open(filename, options | O_BINARY | O_RANDOM, mode);
 #ifndef _WIN32
@@ -1162,7 +1146,7 @@ int io_close_remote(int fd)
   int status;
   info[1] = FDS[fd - 1].fd;
   status = SendArg(sock, MDS_IO_CLOSE_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);
-  if (status & 1) {
+  if STATUS_OK {
     char dtype;
     short length;
     char ndims;
@@ -1187,13 +1171,7 @@ int MDS_IO_CLOSE(int fd)
   int status;
   FDS_LOCK;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
-#ifdef SRB
-    if (FDS[fd - 1].conid == SRB_ID)
-      status = srbUioClose(FDS[fd - 1].fd);
-    else
-#else
-      status = (FDS[fd - 1].conid == -1) ? close(FDS[fd - 1].fd) : io_close_remote(fd);
-#endif
+    status = (FDS[fd - 1].conid == -1) ? close(FDS[fd - 1].fd) : io_close_remote(fd);
     FDS[fd - 1].in_use = 0;
   } else
     status = -1;
@@ -1218,7 +1196,7 @@ off_t io_lseek_remote(int fd, off_t offset, int whence)
   info[3] = status;
 #endif
   status = SendArg(sock, MDS_IO_LSEEK_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);
-  if (status & 1) {
+  if STATUS_OK {
     char dtype;
     short length;
     char ndims;
@@ -1242,16 +1220,10 @@ off_t io_lseek_remote(int fd, off_t offset, int whence)
 static off_t MDS_IO_LSEEK_(int fd, off_t offset, int whence){
   off_t pos;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
-#ifdef SRB
-    if (FDS[fd - 1].conid == SRB_ID)
-      pos = srbUioSeek(FDS[fd - 1].fd, offset, whence);
+    if (FDS[fd - 1].conid == -1)
+      pos = lseek(FDS[fd - 1].fd, offset, whence);
     else
-#endif
-    { if (FDS[fd - 1].conid == -1)
-        pos = lseek(FDS[fd - 1].fd, offset, whence);
-      else
-        pos = io_lseek_remote(fd, offset, whence);
-    }
+      pos = io_lseek_remote(fd, offset, whence);
   } else
     pos = -1;
   return pos;
@@ -1276,7 +1248,7 @@ ssize_t io_write_remote(int fd, void *buff, size_t count)
   info[0] = (int)count;
   info[1] = FDS[fd - 1].fd;
   status = SendArg(sock, MDS_IO_WRITE_K, 0, 0, 0, sizeof(info) / sizeof(int), info, buff);
-  if (status & 1) {
+  if STATUS_OK {
     char dtype;
     short length;
     char ndims;
@@ -1302,19 +1274,13 @@ ssize_t MDS_IO_WRITE(int fd, void *buff, size_t count)
     return 0;
   FDS_LOCK;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
-#ifdef SRB
-    if (FDS[fd - 1].conid == SRB_ID) {
-      ans = srbUioWrite(FDS[fd - 1].fd, buff, count);
-    } else
-#endif
-   {if (FDS[fd - 1].conid == -1) {
+    if (FDS[fd - 1].conid == -1) {
 #ifdef USE_PERF
       TreePerfWrite(count);
 #endif
       ans = (ssize_t) write(FDS[fd - 1].fd, buff, (unsigned int)count);
     } else
       ans = io_write_remote(fd, buff, count);
-   }
   } else ans = -1;
   FDS_UNLOCK;
   return ans;
@@ -1370,7 +1336,7 @@ ssize_t io_read_x_remote(int fd, off_t offset, void *buff, size_t count,
   info[3] = status;
 #endif
   status = SendArg(sock, MDS_IO_READ_X_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);
-  if (status & 1) {
+  if STATUS_OK {
     char dtype;
     short length;
     char ndims;
@@ -1399,19 +1365,13 @@ static ssize_t MDS_IO_READ_(int fd, void *buff, size_t count){
     return 0;
   ssize_t ans;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
-#ifdef SRB
-    if (FDS[fd - 1].conid == SRB_ID) {
-      ans = srbUioRead(FDS[fd - 1].fd, buff, count);
-    } else
-#endif
-   {if (FDS[fd - 1].conid == -1) {
+    if (FDS[fd - 1].conid == -1) {
 #ifdef USE_PERF
       TreePerfRead(count);
 #endif
       ans = (ssize_t) read(FDS[fd - 1].fd, buff, (unsigned int)count);
     } else
       ans = (ssize_t) io_read_remote(fd, buff, count);
-   }
   } else ans = -1;
   return ans;
 }
@@ -1431,25 +1391,18 @@ ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *delet
   ssize_t ans;
   FDS_LOCK;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
-#ifdef SRB
-    if (FDS[fd - 1].conid == SRB_ID) {
-      pos = srbUioSeek(FDS[fd - 1].fd, offset, whence);
-      ans = srbUioRead(FDS[fd - 1].fd, buff, count);
+    if (FDS[fd - 1].conid == -1 || (!FDS[fd - 1].enhanced)) {
+      int old_state;
+      if (pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,&old_state)) old_state = -1;
+      IO_LOCK;
+      MDS_IO_LOCK_(fd, offset, count, MDS_IO_LOCK_RD, deleted);
+      MDS_IO_LSEEK_(fd, offset, SEEK_SET);
+      ans = MDS_IO_READ_(fd, buff, count);
+      MDS_IO_LOCK_(fd, offset, count, MDS_IO_LOCK_NONE, deleted);
+      IO_UNLOCK;
+      if (old_state!=-1) pthread_setcancelstate(old_state,NULL);
     } else
-#endif
-     {if (FDS[fd - 1].conid == -1 || (!FDS[fd - 1].enhanced)) {
-        int old_state;
-        if (pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,&old_state)) old_state = -1;
-	IO_LOCK;
-	MDS_IO_LOCK_(fd, offset, count, MDS_IO_LOCK_RD, deleted);
-	MDS_IO_LSEEK_(fd, offset, SEEK_SET);
-	ans = MDS_IO_READ_(fd, buff, count);
-	MDS_IO_LOCK_(fd, offset, count, MDS_IO_LOCK_NONE, deleted);
-	IO_UNLOCK;
-        if (old_state!=-1) pthread_setcancelstate(old_state,NULL);
-      } else
-        ans = io_read_x_remote(fd, offset, buff, count, deleted);
-    }
+      ans = io_read_x_remote(fd, offset, buff, count, deleted);
   } else ans = -1;
   FDS_UNLOCK;
   return ans;
@@ -1473,7 +1426,7 @@ int io_lock_remote(int fd, off_t offset, size_t size, int mode, int *deleted)
   info[3] = status;
 #endif
   status = SendArg(sock, MDS_IO_LOCK_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);
-  if (status & 1) {
+  if STATUS_OK {
     char dtype;
     short length;
     char ndims;
@@ -1499,13 +1452,7 @@ static int MDS_IO_LOCK_(int fd, off_t offset, size_t size, int mode_in, int *del
   if (deleted) *deleted = 0;
   int status = TreeLOCK_FAILURE;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
-#ifdef SRB
-    if (FDS[fd - 1].conid == SRB_ID) {
-      status = srbUioLock(FDS[fd - 1].fd, offset, size, mode_in);
-      status = (status == 0) ? TreeSUCCESS : TreeLOCK_FAILURE;
-    } else
-#endif
-    { if (FDS[fd - 1].conid == -1) {
+    if (FDS[fd - 1].conid == -1) {
       int mode = mode_in & MDS_IO_LOCK_MASK;
       int nowait = mode_in & MDS_IO_LOCK_NOWAIT;
 #ifdef _WIN32
@@ -1536,9 +1483,8 @@ static int MDS_IO_LOCK_(int fd, off_t offset, size_t size, int mode_in, int *del
       fstat(FDS[fd - 1].fd, &stat);
       if (deleted) *deleted = stat.st_nlink <= 0;
 #endif
-      } else
-        status = io_lock_remote(fd, offset, size, mode_in, deleted);
-    }
+    } else
+      status = io_lock_remote(fd, offset, size, mode_in, deleted);
   }
   return status;
 }
@@ -1563,7 +1509,7 @@ int io_exists_remote(char *host, char *filename)
     int status;
     info[0] = (int)strlen(filename) + 1;
     status = SendArg(sock, MDS_IO_EXISTS_K, 0, 0, 0, sizeof(info) / sizeof(int), info, filename);
-    if (status & 1) {
+    if STATUS_OK {
       char dtype;
       short length;
       char ndims;
@@ -1591,12 +1537,7 @@ int MDS_IO_EXISTS(char *filename_in)
   struct stat statbuf;
   char *hostpart, *filepart;
   char *tmp = ParseFile(filename, &hostpart, &filepart);
-#ifdef SRB
-  if (strcmp(hostpart, "SRB") == 0) {
-    status = srbUioStat(filepart, &statbuf);
-  } else
-#endif
-    status = hostpart ? io_exists_remote(hostpart, filepart) : (stat(filename, &statbuf) == 0);
+  status = hostpart ? io_exists_remote(hostpart, filepart) : (stat(filename, &statbuf) == 0);
   free(tmp);
   if (filename)
     free(filename);
@@ -1615,7 +1556,7 @@ int io_remove_remote(char *host, char *filename)
     int status;
     info[0] = (int)strlen(filename) + 1;
     status = SendArg(sock, MDS_IO_REMOVE_K, 0, 0, 0, sizeof(info) / sizeof(int), info, filename);
-    if (status & 1) {
+    if STATUS_OK {
       char dtype;
       short length;
       char ndims;
@@ -1642,12 +1583,7 @@ int MDS_IO_REMOVE(char *filename_in)
   int status;
   char *hostpart, *filepart;
   char *tmp = ParseFile(filename, &hostpart, &filepart);
-#ifdef SRB
-  if (strcmp(hostpart, "SRB") == 0) {
-    status = srbUioUnlink(filepart);
-  } else
-#endif
-    status = hostpart ? io_remove_remote(hostpart, filepart) : remove(filename);
+  status = hostpart ? io_remove_remote(hostpart, filepart) : remove(filename);
   free(tmp);
   if (filename)
     free(filename);
@@ -1669,7 +1605,7 @@ int io_rename_remote(char *host, char *filename_old, char *filename_new)
     names = strcpy(malloc(info[0]), filename_old);
     strcpy(&names[strlen(filename_old) + 1], filename_new);
     status = SendArg(sock, MDS_IO_RENAME_K, 0, 0, 0, sizeof(info) / sizeof(int), info, names);
-    if (status & 1) {
+    if STATUS_OK {
       char dtype;
       short length;
       char ndims;
@@ -1699,28 +1635,13 @@ int MDS_IO_RENAME(char *filename_old, char *filename_new)
   char *tmp_new = ParseFile(filename_new, &hostpart_new, &filepart_new);
   filename_old = replaceBackslashes(filename_old);
   filename_new = replaceBackslashes(filename_new);
-
-#ifdef SRB
-  if (strcmp(hostpart_new, "SRB") == 0) {
-    if (strcmp(hostpart_old, hostpart_new) == 0) {
-      status = srbUioRename(filepart_old, filepart_new);
-    } else {
-      status = 1;
-    }
-    free(tmp_old);
-    free(tmp_new);
-    return status;
-  }
-#endif
-
   if (hostpart_old) {
     if (hostpart_new && (strcmp(hostpart_old, hostpart_new) == 0))
       status = io_rename_remote(hostpart_old, filepart_old, filepart_new);
     else
       status = -1;
-  } else {
+  } else
     status = rename(filename_old, filename_new);
-  }
   free(tmp_old);
   free(tmp_new);
   return status;
