@@ -102,8 +102,10 @@ This does not make harm to treeshr, but avoids to load a wrong symbol when MdsLi
 static pthread_mutex_t HostListMutex;
 static int HostListMutex_initialized = 0;
 
-static pthread_mutex_t IOMutex;
-static int IOMutex_initialized = 0;
+static pthread_mutex_t io_lock = PTHREAD_MUTEX_INITIALIZER;
+#define IO_LOCK    pthread_mutex_lock(&io_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&io_lock);
+#define IO_UNLOCK  pthread_cleanup_pop(1);
+
 #if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
 #ifndef _WIN32
 #include <sys/socket.h>
@@ -274,18 +276,18 @@ static int (*MdsValue) () = NULL;
 int MdsValue0(int conid, char *exp, struct descrip *ans){
   int status = FindImageSymbol("MdsValue", (void **)&MdsValue);
   if STATUS_NOT_OK return status;
-  LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
+  IO_LOCK;
   status = (*MdsValue) (conid, exp, ans, NULL);
-  UnlockMdsShrMutex(&IOMutex);
+  IO_UNLOCK;
   return status;
 }
 
 int MdsValue1(int conid, char *exp, struct descrip *arg1, struct descrip *ans){
   int status = FindImageSymbol("MdsValue", (void **)&MdsValue);
   if STATUS_NOT_OK return status;
-  LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
+  IO_LOCK;
   status = (*MdsValue) (conid, exp, arg1, ans, NULL);
-  UnlockMdsShrMutex(&IOMutex);
+  IO_UNLOCK;
   return status;
 }
 
@@ -1045,13 +1047,12 @@ int GetAnswerInfoTO(int sock, char *dtype, short *length, char *ndims, int *dims
 #define MDS_IO_O_RDONLY 0x00004000
 #define MDS_IO_O_RDWR   0x00000002
 
-int io_open_remote(char *host, char *filename_in, int options, mode_t mode, int *sock,
-				  int *enhanced)
-{
-  int fd = -1;
+int io_open_remote(char *host, char *filename_in, int options, mode_t mode, int *sock, int *enhanced){
+  int fd;
+  IO_LOCK;
+  INIT_AS_AND_FREE_ON_EXIT(char*,filename,replaceBackslashes(strdup(filename_in)));
+  fd = -1;
   int try_again = 1;
-  char *filename = replaceBackslashes(strdup(filename_in));
-  LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   while (try_again) {
     *sock = RemoteAccessConnect(host, 1, 0);
     if (*sock != -1) {
@@ -1104,9 +1105,8 @@ int io_open_remote(char *host, char *filename_in, int options, mode_t mode, int 
       try_again = 0;
     }
   }
-  UnlockMdsShrMutex(&IOMutex);
-  if (filename)
-    free(filename);
+  FREE_NOW(filename);
+  IO_UNLOCK;
   return fd;
 }
 
@@ -1152,11 +1152,12 @@ int MDS_IO_OPEN(char *filename_in, int options, mode_t mode)
 
 int io_close_remote(int fd)
 {
-  int ret = -1;
+  int ret;
+  IO_LOCK;
+  ret = -1;
   int info[] = { 0, 0 };
   int sock = FDS[fd - 1].conid;
   int status;
-  LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   info[1] = FDS[fd - 1].fd;
   status = SendArg(sock, MDS_IO_CLOSE_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);
   if (status & 1) {
@@ -1175,7 +1176,7 @@ int io_close_remote(int fd)
     RemoteAccessDisconnect(sock, 0);
   } else
     RemoteAccessDisconnect(sock, 1);
-  UnlockMdsShrMutex(&IOMutex);
+  IO_UNLOCK;
   return ret;
 }
 
@@ -1200,11 +1201,12 @@ int MDS_IO_CLOSE(int fd)
 
 off_t io_lseek_remote(int fd, off_t offset, int whence)
 {
-  off_t ret = -1;
+  off_t ret;
+  IO_LOCK;
+  ret = -1;
   int info[] = { 0, 0, 0, 0, 0 };
   int sock = FDS[fd - 1].conid;
   int status;
-  LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   info[1] = FDS[fd - 1].fd;
   info[4] = whence;
   *(off_t *) (&info[2]) = offset;
@@ -1231,7 +1233,7 @@ off_t io_lseek_remote(int fd, off_t offset, int whence)
       free(msg);
   } else
     RemoteAccessDisconnect(sock, 1);
-  UnlockMdsShrMutex(&IOMutex);
+  IO_UNLOCK;
   return ret;
 }
 
@@ -1239,10 +1241,9 @@ static off_t MDS_IO_LSEEK_(int fd, off_t offset, int whence){
   off_t pos;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
 #ifdef SRB
-    if (FDS[fd - 1].conid == SRB_ID) {
+    if (FDS[fd - 1].conid == SRB_ID)
       pos = srbUioSeek(FDS[fd - 1].fd, offset, whence);
-      UnlockMdsShrMutex(&IOMutex);
-    } else
+    else
 #endif
     { if (FDS[fd - 1].conid == -1)
         pos = lseek(FDS[fd - 1].fd, offset, whence);
@@ -1264,11 +1265,12 @@ off_t MDS_IO_LSEEK(int fd, off_t offset, int whence){
 
 ssize_t io_write_remote(int fd, void *buff, size_t count)
 {
-  ssize_t ret = 0;
+  ssize_t ret;
+  IO_LOCK;
+  ret = 0;
   int info[] = { 0, 0 };
   int sock = FDS[fd - 1].conid;
   int status;
-  LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   info[0] = (int)count;
   info[1] = FDS[fd - 1].fd;
   status = SendArg(sock, MDS_IO_WRITE_K, 0, 0, 0, sizeof(info) / sizeof(int), info, buff);
@@ -1287,7 +1289,7 @@ ssize_t io_write_remote(int fd, void *buff, size_t count)
       free(msg);
   } else
     RemoteAccessDisconnect(sock, 1);
-  UnlockMdsShrMutex(&IOMutex);
+  IO_UNLOCK;
   return ret;
 }
 
@@ -1318,16 +1320,17 @@ ssize_t MDS_IO_WRITE(int fd, void *buff, size_t count)
 
 ssize_t io_read_remote(int fd, void *buff, size_t count)
 {
-  ssize_t ret = 0;
+  ssize_t ret;
+  IO_LOCK;
+  ret = 0;
   int ret_i;
   int info[] = { 0, 0, 0 };
   int sock = FDS[fd - 1].conid;
   int status;
-  LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   info[1] = FDS[fd - 1].fd;
   info[2] = (int)count;
   status = SendArg(sock, MDS_IO_READ_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);
-  if (status & 1) {
+  if STATUS_OK {
     char dtype;
     short length;
     char ndims;
@@ -1343,18 +1346,19 @@ ssize_t io_read_remote(int fd, void *buff, size_t count)
       free(msg);
   } else
     RemoteAccessDisconnect(sock, 1);
-  UnlockMdsShrMutex(&IOMutex);
+  IO_UNLOCK;
   return ret;
 }
 
 ssize_t io_read_x_remote(int fd, off_t offset, void *buff, size_t count,
 					int *deleted)
 {
-  ssize_t ret = -1;
+  ssize_t ret;
+  IO_LOCK;
+  ret = -1;
   int info[] = { 0, 0, 0, 0, 0 };
   int sock = FDS[fd - 1].conid;
   int status;
-  LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   info[1] = FDS[fd - 1].fd;
   info[4] = (int)count;
   *(off_t *) (&info[2]) = offset;
@@ -1384,7 +1388,7 @@ ssize_t io_read_x_remote(int fd, off_t offset, void *buff, size_t count,
       free(msg);
   } else
     RemoteAccessDisconnect(sock, 1);
-  UnlockMdsShrMutex(&IOMutex);
+  IO_UNLOCK;
   return ret;
 }
 
@@ -1432,12 +1436,15 @@ ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *delet
     } else
 #endif
      {if (FDS[fd - 1].conid == -1 || (!FDS[fd - 1].enhanced)) {
-	LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
+        int old_state;
+        if (pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,&old_state)) old_state = -1;
+	IO_LOCK;
 	MDS_IO_LOCK_(fd, offset, count, MDS_IO_LOCK_RD, deleted);
 	MDS_IO_LSEEK_(fd, offset, SEEK_SET);
 	ans = MDS_IO_READ_(fd, buff, count);
 	MDS_IO_LOCK_(fd, offset, count, MDS_IO_LOCK_NONE, deleted);
-	UnlockMdsShrMutex(&IOMutex);
+	IO_UNLOCK;
+        if (old_state!=-1) pthread_setcancelstate(old_state,NULL);
       } else
         ans = io_read_x_remote(fd, offset, buff, count, deleted);
     }
@@ -1448,11 +1455,12 @@ ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *delet
 
 int io_lock_remote(int fd, off_t offset, size_t size, int mode, int *deleted)
 {
-  int ret = 0;
+  int ret;
+  IO_LOCK;
+  ret = 0;
   int info[] = { 0, 0, 0, 0, 0, 0 };
   int sock = FDS[fd - 1].conid;
   int status;
-  LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   info[1] = FDS[fd - 1].fd;
   info[4] = (int)size;
   info[5] = mode;
@@ -1481,7 +1489,7 @@ int io_lock_remote(int fd, off_t offset, size_t size, int mode, int *deleted)
       free(msg);
   } else
     RemoteAccessDisconnect(sock, 1);
-  UnlockMdsShrMutex(&IOMutex);
+  IO_UNLOCK;
   return ret;
 }
 
@@ -1543,9 +1551,10 @@ int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted){
 
 int io_exists_remote(char *host, char *filename)
 {
-  int ans = 0;
+  int ans;
+  IO_LOCK;
+  ans = 0;
   int sock;
-  LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   sock = RemoteAccessConnect(host, 1, 0);
   if (sock != -1) {
     int info[] = { 0 };
@@ -1569,7 +1578,7 @@ int io_exists_remote(char *host, char *filename)
     } else
       RemoteAccessDisconnect(sock, 1);
   }
-  UnlockMdsShrMutex(&IOMutex);
+  IO_UNLOCK;
   return ans;
 }
 
@@ -1594,9 +1603,10 @@ int MDS_IO_EXISTS(char *filename_in)
 
 int io_remove_remote(char *host, char *filename)
 {
-  int ans = -1;
+  int ans;
+  IO_LOCK;
+  ans = -1;
   int sock;
-  LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   sock = RemoteAccessConnect(host, 1, 0);
   if (sock != -1) {
     int info[] = { 0 };
@@ -1620,7 +1630,7 @@ int io_remove_remote(char *host, char *filename)
     } else
       RemoteAccessDisconnect(sock, 1);
   }
-  UnlockMdsShrMutex(&IOMutex);
+  IO_UNLOCK;
   return ans;
 }
 
@@ -1644,9 +1654,10 @@ int MDS_IO_REMOVE(char *filename_in)
 
 int io_rename_remote(char *host, char *filename_old, char *filename_new)
 {
-  int ans = -1;
+  int ans;
+  IO_LOCK;
+  ans = -1;
   int sock;
-  LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
   sock = RemoteAccessConnect(host, 1, 0);
   if (sock != -1) {
     int info[] = { 0 };
@@ -1674,7 +1685,7 @@ int io_rename_remote(char *host, char *filename_old, char *filename_new)
       RemoteAccessDisconnect(sock, 1);
     free(names);
   }
-  UnlockMdsShrMutex(&IOMutex);
+  IO_UNLOCK;
   return ans;
 }
 
