@@ -488,3 +488,34 @@
    fun:fread
    obj:/usr/lib*/libpython2.7.so.1.0
 }
+
+{
+   fc28 and python36m
+   Helgrind:Race
+   ...
+   fun:_PyFunction_FastCallDict
+   fun:_PyObject_FastCallDict
+   fun:_PyObject_Call_Prepend
+   fun:PyObject_Call
+}
+
+{
+   fc28 and python36m Thread Locks
+   Helgrind:Race
+   fun:PyEval_RestoreThread
+}
+
+{
+   fc28 and python36m internals
+   Helgrind:Race
+   obj:/usr/lib*/libpython3.6.so.1.0
+   fun:PyEval_AcquireThread
+   obj:/usr/lib*/libpython3.6.so.1.0
+}
+
+{
+   fc28 and python36m internals
+   Helgrind:Race
+   fun:_PyEval_EvalFrameDefault
+   obj:/usr/lib*/libpython3.6.so.1.0
+}
