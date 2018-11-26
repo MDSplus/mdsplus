@@ -82,17 +82,12 @@ static inline char *replaceBackslashes(char *filename) {
   return filename;
 }
 
-#ifndef HAVE_PTHREAD_H
-#define pthread_mutex_t int
-static void LockMdsShrMutex(){}
-static void UnlockMdsShrMutex(){}
-#else
 extern void LockMdsShrMutex(pthread_mutex_t *, int *);
 extern void UnlockMdsShrMutex(pthread_mutex_t *);
-#endif
-
 extern void TreePerfWrite(int);
 extern void TreePerfRead(int);
+
+static int MDS_IO_LOCK_(int fd, off_t offset, size_t size, int mode_in, int *deleted);
 
 int FindImageSymbol(char *name, void **sym){
 /*
@@ -950,9 +945,6 @@ int TreeSetCurrentShotIdRemote(char *tree, char *path, int shot)
   return status;
 }
 
-static pthread_mutex_t FdsMutex;
-static int FdsMutex_initialized = 0;
-
 static struct fd_info_struct {
   int in_use;
   int conid;
@@ -976,31 +968,39 @@ char *ParseFile(char *filename, char **hostpart, char **filepart)
   return tmp;
 }
 
-#define LOCKFDS  LockMdsShrMutex(&FdsMutex,&FdsMutex_initialized);
-#define UNLOCKFDS  UnlockMdsShrMutex(&FdsMutex);
+static pthread_mutex_t fds_lock = PTHREAD_MUTEX_INITIALIZER;
+#define FDS_LOCK    pthread_mutex_lock(&fds_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&fds_lock);
+#define FDS_UNLOCK  pthread_cleanup_pop(1);
+
 int NewFD(int fd, int conid, int enhanced)
 {
   int idx;
-  LOCKFDS for (idx = 0; idx < ALLOCATED_FDS && FDS[idx].in_use; idx++) ;
+  FDS_LOCK;
+  for (idx = 0; idx < ALLOCATED_FDS && FDS[idx].in_use; idx++) ;
   if (idx == ALLOCATED_FDS)
     FDS = realloc(FDS, sizeof(struct fd_info_struct) * (++ALLOCATED_FDS));
   FDS[idx].in_use = 1;
   FDS[idx].conid = conid;
   FDS[idx].fd = fd;
   FDS[idx].enhanced = enhanced;
-  UNLOCKFDS return idx + 1;
+  FDS_UNLOCK;
+  return idx + 1;
 }
 
 int MDS_IO_ID(int fd){
   int ans;
-  LOCKFDS ans = (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) ? FDS[fd - 1].conid : -1;
-  UNLOCKFDS return ans;
+  FDS_LOCK;
+  ans = (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) ? FDS[fd - 1].conid : -1;
+  FDS_UNLOCK;
+  return ans;
 }
 
 int MDS_IO_FD(int fd){
   int ans;
-  LOCKFDS ans = (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) ? FDS[fd - 1].fd : -1;
-  UNLOCKFDS return ans;
+  FDS_LOCK;
+  ans = (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) ? FDS[fd - 1].fd : -1;
+  FDS_UNLOCK;
+  return ans;
 }
 
 int SendArg(int conid, unsigned char idx, char dtype, unsigned char nargs, short length, char ndims, int *dims, char *bytes) {
@@ -1182,19 +1182,20 @@ int io_close_remote(int fd)
 int MDS_IO_CLOSE(int fd)
 {
   int status;
-  LOCKFDS if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
+  FDS_LOCK;
+  if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
 #ifdef SRB
-    if (FDS[fd - 1].conid == SRB_ID) {
+    if (FDS[fd - 1].conid == SRB_ID)
       status = srbUioClose(FDS[fd - 1].fd);
-    } else
+    else
 #else
-    status = (FDS[fd - 1].conid == -1) ? close(FDS[fd - 1].fd) : io_close_remote(fd);
+      status = (FDS[fd - 1].conid == -1) ? close(FDS[fd - 1].fd) : io_close_remote(fd);
 #endif
     FDS[fd - 1].in_use = 0;
-    UNLOCKFDS return status;
-  } else {
-    UNLOCKFDS return -1;
-  }
+  } else
+    status = -1;
+  FDS_UNLOCK;
+  return status;
 }
 
 off_t io_lseek_remote(int fd, off_t offset, int whence)
@@ -1234,25 +1235,31 @@ off_t io_lseek_remote(int fd, off_t offset, int whence)
   return ret;
 }
 
-off_t MDS_IO_LSEEK(int fd, off_t offset, int whence)
-{
+static off_t MDS_IO_LSEEK_(int fd, off_t offset, int whence){
   off_t pos;
-  LOCKFDS if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
+  if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
 #ifdef SRB
     if (FDS[fd - 1].conid == SRB_ID) {
       pos = srbUioSeek(FDS[fd - 1].fd, offset, whence);
       UnlockMdsShrMutex(&IOMutex);
-      UNLOCKFDS return pos;
-    }
+    } else
 #endif
-    pos =
-	(FDS[fd - 1].conid == -1) ? lseek(FDS[fd - 1].fd, offset, whence) : io_lseek_remote(fd,
-											     offset,
-											     whence);
-    UNLOCKFDS return pos;
-  } else {
-    UNLOCKFDS return -1;
-  }
+    { if (FDS[fd - 1].conid == -1)
+        pos = lseek(FDS[fd - 1].fd, offset, whence);
+      else
+        pos = io_lseek_remote(fd, offset, whence);
+    }
+  } else
+    pos = -1;
+  return pos;
+}
+
+off_t MDS_IO_LSEEK(int fd, off_t offset, int whence){
+  off_t pos;
+  FDS_LOCK;
+  pos = MDS_IO_LSEEK_(fd, offset, whence);
+  FDS_UNLOCK;
+  return pos;
 }
 
 ssize_t io_write_remote(int fd, void *buff, size_t count)
@@ -1286,24 +1293,27 @@ ssize_t io_write_remote(int fd, void *buff, size_t count)
 
 ssize_t MDS_IO_WRITE(int fd, void *buff, size_t count)
 {
-  ssize_t ans = -1;
+  ssize_t ans;
   if (count == 0)
     return 0;
-  LOCKFDS if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
+  FDS_LOCK;
+  if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
 #ifdef SRB
     if (FDS[fd - 1].conid == SRB_ID) {
       ans = srbUioWrite(FDS[fd - 1].fd, buff, count);
     } else
 #endif
-    if (FDS[fd - 1].conid == -1) {
+   {if (FDS[fd - 1].conid == -1) {
 #ifdef USE_PERF
       TreePerfWrite(count);
 #endif
       ans = (ssize_t) write(FDS[fd - 1].fd, buff, (unsigned int)count);
     } else
       ans = io_write_remote(fd, buff, count);
-  }
-  UNLOCKFDS return ans;
+   }
+  } else ans = -1;
+  FDS_UNLOCK;
+  return ans;
 }
 
 ssize_t io_read_remote(int fd, void *buff, size_t count)
@@ -1378,62 +1388,63 @@ ssize_t io_read_x_remote(int fd, off_t offset, void *buff, size_t count,
   return ret;
 }
 
-ssize_t MDS_IO_READ(int fd, void *buff, size_t count)
-{
-  ssize_t ans = -1;
+static ssize_t MDS_IO_READ_(int fd, void *buff, size_t count){
   if (count == 0)
     return 0;
-  LOCKFDS if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
+  ssize_t ans;
+  if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
 #ifdef SRB
     if (FDS[fd - 1].conid == SRB_ID) {
       ans = srbUioRead(FDS[fd - 1].fd, buff, count);
     } else
 #endif
-    if (FDS[fd - 1].conid == -1) {
+   {if (FDS[fd - 1].conid == -1) {
 #ifdef USE_PERF
       TreePerfRead(count);
 #endif
       ans = (ssize_t) read(FDS[fd - 1].fd, buff, (unsigned int)count);
     } else
       ans = (ssize_t) io_read_remote(fd, buff, count);
-  }
-  UNLOCKFDS return ans;
+   }
+  } else ans = -1;
+  return ans;
+}
+ssize_t MDS_IO_READ(int fd, void *buff, size_t count){
+  int ans;
+  FDS_LOCK;
+  ans = MDS_IO_READ_(fd, buff, count);
+  FDS_UNLOCK;
+  return ans;
 }
 
-#ifdef SRB
-if (FDS[fd - 1].conid == SRB_ID) {
-  pos = srbUioSeek(FDS[fd - 1].fd, offset, whence);
-  ans = srbUioRead(FDS[fd - 1].fd, buff, count);
-} else
-#endif
-
-  ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *deleted) {
-    ssize_t ans = -1;
-    if (count == 0) {
-      if (deleted)
-	*deleted = 0;
-      return 0;
-    }
-    LOCKFDS if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
-#ifdef SRB
-      if (FDS[fd - 1].conid == SRB_ID) {
-	pos = srbUioSeek(FDS[fd - 1].fd, offset, whence);
-	ans = srbUioRead(FDS[fd - 1].fd, buff, count);
-      } else
-#endif
-      if (FDS[fd - 1].conid == -1 || (!FDS[fd - 1].enhanced)) {
-	LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
-	MDS_IO_LOCK(fd, offset, count, MDS_IO_LOCK_RD, deleted);
-	MDS_IO_LSEEK(fd, offset, SEEK_SET);
-	ans = MDS_IO_READ(fd, buff, count);
-	MDS_IO_LOCK(fd, offset, count, MDS_IO_LOCK_NONE, deleted);
-	UnlockMdsShrMutex(&IOMutex);
-      } else {
-	ans = io_read_x_remote(fd, offset, buff, count, deleted);
-      }
-    }
-    UNLOCKFDS return ans;
+ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *deleted) {
+  if (count == 0) {
+    if (deleted) *deleted = 0;
+    return 0;
   }
+  ssize_t ans;
+  FDS_LOCK;
+  if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
+#ifdef SRB
+    if (FDS[fd - 1].conid == SRB_ID) {
+      pos = srbUioSeek(FDS[fd - 1].fd, offset, whence);
+      ans = srbUioRead(FDS[fd - 1].fd, buff, count);
+    } else
+#endif
+     {if (FDS[fd - 1].conid == -1 || (!FDS[fd - 1].enhanced)) {
+	LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
+	MDS_IO_LOCK_(fd, offset, count, MDS_IO_LOCK_RD, deleted);
+	MDS_IO_LSEEK_(fd, offset, SEEK_SET);
+	ans = MDS_IO_READ_(fd, buff, count);
+	MDS_IO_LOCK_(fd, offset, count, MDS_IO_LOCK_NONE, deleted);
+	UnlockMdsShrMutex(&IOMutex);
+      } else
+        ans = io_read_x_remote(fd, offset, buff, count, deleted);
+    }
+  } else ans = -1;
+  FDS_UNLOCK;
+  return ans;
+}
 
 int io_lock_remote(int fd, off_t offset, size_t size, int mode, int *deleted)
 {
@@ -1474,19 +1485,17 @@ int io_lock_remote(int fd, off_t offset, size_t size, int mode, int *deleted)
   return ret;
 }
 
-int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
-{
+static int MDS_IO_LOCK_(int fd, off_t offset, size_t size, int mode_in, int *deleted){
+  if (deleted) *deleted = 0;
   int status = TreeLOCK_FAILURE;
-  LOCKFDS if (deleted)
-    *deleted = 0;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
 #ifdef SRB
     if (FDS[fd - 1].conid == SRB_ID) {
       status = srbUioLock(FDS[fd - 1].fd, offset, size, mode_in);
-      UNLOCKFDS return (status == 0) ? TreeSUCCESS : TreeLOCK_FAILURE;
-    }
+      status = (status == 0) ? TreeSUCCESS : TreeLOCK_FAILURE;
+    } else
 #endif
-    if (FDS[fd - 1].conid == -1) {
+    { if (FDS[fd - 1].conid == -1) {
       int mode = mode_in & MDS_IO_LOCK_MASK;
       int nowait = mode_in & MDS_IO_LOCK_NOWAIT;
 #ifdef _WIN32
@@ -1499,16 +1508,12 @@ int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
       if (mode > 0) {
 	HANDLE h = (HANDLE) _get_osfhandle(FDS[fd - 1].fd);
 	flags = ((mode == MDS_IO_LOCK_RD) && (nowait == 0)) ? 0 : LOCKFILE_EXCLUSIVE_LOCK;
-	if (nowait)
-	  flags |= LOCKFILE_FAIL_IMMEDIATELY;
+	if (nowait) flags |= LOCKFILE_FAIL_IMMEDIATELY;
 	status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped);
-	status =
-	    LockFileEx(h, flags, 0, (DWORD) size, 0,
-		       &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
+	status = LockFileEx(h, flags, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
       } else {
 	HANDLE h = (HANDLE) _get_osfhandle(FDS[fd - 1].fd);
-	status =
-	    UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
+	status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
       }
 #else
       struct flock flock_info;
@@ -1517,17 +1522,23 @@ int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
       flock_info.l_whence = (mode == 0) ? SEEK_SET : ((offset >= 0) ? SEEK_SET : SEEK_END);
       flock_info.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
       flock_info.l_len = (mode == 0) ? 0 : size;
-      status =
-	  (fcntl(FDS[fd - 1].fd, nowait ? F_SETLK : F_SETLKW, &flock_info) !=
-	   -1) ? TreeSUCCESS : TreeLOCK_FAILURE;
+      status = (fcntl(FDS[fd - 1].fd, nowait ? F_SETLK : F_SETLKW, &flock_info) != -1) ? TreeSUCCESS : TreeLOCK_FAILURE;
       fstat(FDS[fd - 1].fd, &stat);
-      if (deleted)
-	*deleted = stat.st_nlink <= 0;
+      if (deleted) *deleted = stat.st_nlink <= 0;
 #endif
-    } else
-      status = io_lock_remote(fd, offset, size, mode_in, deleted);
+      } else
+        status = io_lock_remote(fd, offset, size, mode_in, deleted);
+    }
   }
-  UNLOCKFDS return status;
+  return status;
+}
+
+int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted){
+  int status;
+  FDS_LOCK
+  status = MDS_IO_LOCK_(fd,offset,size,mode_in,deleted);
+  FDS_UNLOCK
+  return status;
 }
 
 int io_exists_remote(char *host, char *filename)
