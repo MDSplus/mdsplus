@@ -202,29 +202,29 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
   struct descriptor in_d = { 0, DTYPE_T, CLASS_S, 0 };
   EMPTYXD(xd);
   struct descriptor_a *arr_ptr;
-
-  char * const expanded_in = calloc(strlen(in) + 40, sizeof(char));
+  size_t expanded_len = strlen(in) + 40;
+  char * const expanded_in = calloc(expanded_len, sizeof(char));
   error_message[0] = 0;
   *out_dim = 0;
   switch (type) {
   case FLOAT:
-    sprintf(expanded_in, "_xxx = (%s);fs_float(_xxx)", in);
+    snprintf(expanded_in, expanded_len, "_xxx = (%s);fs_float(_xxx)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
   case DOUBLE:
-    sprintf(expanded_in, "_xxx = (%s);ft_float(_xxx)", in);
+    snprintf(expanded_in, expanded_len, "_xxx = (%s);ft_float(_xxx)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
   case BYTE:
   case LONG:
-    sprintf(expanded_in, "long(%s)", in);
+    snprintf(expanded_in, expanded_len, "long(%s)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
   case QUADWORD:
-    sprintf(expanded_in, "%s", in);
+    snprintf(expanded_in, expanded_len, "%s", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
