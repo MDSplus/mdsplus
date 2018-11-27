@@ -34,14 +34,17 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_XRAY.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MILL3.py
 ./usr/local/mdsplus/pydevices/RfxDevices/NI6259AI.py
+./usr/local/mdsplus/pydevices/RfxDevices/NI6259EV.py
 ./usr/local/mdsplus/pydevices/RfxDevices/NI6368AI.py
 ./usr/local/mdsplus/pydevices/RfxDevices/NI6682.py
+./usr/local/mdsplus/pydevices/RfxDevices/NI6683.py
 ./usr/local/mdsplus/pydevices/RfxDevices/REDPYTADC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/RFXVICONTROL.py
 ./usr/local/mdsplus/pydevices/RfxDevices/RFXWAVESETUP.py
 ./usr/local/mdsplus/pydevices/RfxDevices/RFX_PROTECTIONS.py
 ./usr/local/mdsplus/pydevices/RfxDevices/RFX_RPADC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SIS3820.py
+./usr/local/mdsplus/pydevices/RfxDevices/SOFT_TRIGGER.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SPIDER.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SPIDER_SM.py
 ./usr/local/mdsplus/pydevices/RfxDevices/ZELOS2150GV.py
@@ -404,6 +407,7 @@
 ./usr/local/mdsplus/tdi/RfxDevices/NI6071E__store.fun
 ./usr/local/mdsplus/tdi/RfxDevices/NI6259AIGetStartEnd.fun
 ./usr/local/mdsplus/tdi/RfxDevices/NIanalogInputScaled.fun
+./usr/local/mdsplus/tdi/RfxDevices/NIpxi6259AnalogInputScaled.fun
 ./usr/local/mdsplus/tdi/RfxDevices/OAM01__add.fun
 ./usr/local/mdsplus/tdi/RfxDevices/OAM01__calib.fun
 ./usr/local/mdsplus/tdi/RfxDevices/OAM01__info.fun
