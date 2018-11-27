@@ -321,6 +321,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
       _MOVC3(head, (char *)pa, (char *)&arr);
       arr.dimct = 2;
       arr.aflags.coeff = 1;
+      arr.a0=arr.pointer;
       arr.m[1] = arr.m[0] = (int)pa->arsize / (int)pa->length;
       arr.m[dim] = ncopies;
     }
