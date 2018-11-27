@@ -192,6 +192,7 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
     }
     if (arr.length == 0 && arr.dtype == DTYPE_T && arr.dimct == 1) {
       arr.aflags.coeff = 1;
+      arr.a0=arr.pointer;
       arr.m[0] = narg;
       status = MdsCopyDxXd((struct descriptor *)&arr, out_ptr);
     }

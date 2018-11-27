@@ -2992,7 +2992,7 @@ trim(' A B  ')
   for (_i=0;1;_i++) {\
    _s=if_error(OPCODE_BUILTIN(_i)," ");\
    if (_s == " ") break;\
-   write(PUBLIC _output_unit,_s//"   "//OPCODE_STRING(_i));\
+   write(PUBLIC _output_unit,_s//"   "//OPCODE_STRING(_i)//"   "//text(_i));\
   };\
 })
 showopcodes()
