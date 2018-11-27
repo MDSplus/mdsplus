@@ -20,8 +20,8 @@
 ./usr/local/mdsplus/mdsobjects/python/modpython.py
 ./usr/local/mdsplus/mdsobjects/python/scope.py
 ./usr/local/mdsplus/mdsobjects/python/setup.py
-./usr/local/mdsplus/mdsobjects/python/tests/__init__.py
 ./usr/local/mdsplus/mdsobjects/python/tests/_UnitTest.py
+./usr/local/mdsplus/mdsobjects/python/tests/__init__.py
 ./usr/local/mdsplus/mdsobjects/python/tests/connectionUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/dataUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/dclUnitTest.py

@@ -2,7 +2,7 @@ ifeq ($(CODAC_ROOT),)
   $(error CODAC_ROOT is not set)
 endif
 
-CC=gcc
+CC=g++
 
 CFLAGS =  -fPIC  -O3 -I${MDSPLUS_DIR}/include -I${CODAC_ROOT}/include 
 LDFLAGS = -fPIC  -L${MDSPLUS_DIR}/lib -L${CODAC_ROOT}/lib/  -lpxi6259 -lnixseries -lpthread -lMdsObjectsCppShr 
@@ -23,7 +23,7 @@ libNiInterface : $(OBJECTS)
 	$(CC)  -c $(CFLAGS)  $< -o $@
 
 $(BIN):	$(SOURCES_EXE)
-	gcc $(LDFLAGS) -L . -lNiInterface $(CFLAGS)  -o $@ $<
+	g++ $(LDFLAGS) -L . -lNiInterface $(CFLAGS)  -o $@ $<
 
 
 clean:

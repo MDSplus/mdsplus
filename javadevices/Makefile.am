@@ -27,6 +27,8 @@ TRCFSetup.java \
 Aurora14Setup.java \
 ACQD265Setup.java \
 NI6071ESetup.java\
+NI6683Setup.java\
+SOFT_TRIGGERSetup.java\
 PELLETSetup.java\
 L5613Setup.java\
 RFXTimesSetup.java\
@@ -145,6 +147,7 @@ SPIDER_SMSetup.java\
 SPIDERSetup.java\
 ZELOS2150GVSetup.java\
 NI6259AISetup.java\
+NI6259EVSetup.java\
 FAKECAMERASetup.java\
 AWG2021Setup.java\
 RFXWAVESETUPSetup.java\
