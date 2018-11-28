@@ -416,9 +416,9 @@ static int io_disconnect(Connection* con){
 
 
 #ifdef _WIN32
-void runServerMode(Options *options){
+int runServerMode(Options *options){
 #else
-void runServerMode(Options *options  __attribute__((unused))){
+int runServerMode(Options *options  __attribute__((unused))){
 #endif
   //////////////////////////////////////////////////////////////////////////
   // SERVER MODE                                ////////////////////////////
@@ -428,23 +428,24 @@ void runServerMode(Options *options  __attribute__((unused))){
 #else
     SOCKET sock = 0;
 #endif
-    int id;
-    char *username;
-    if IS_OK(AcceptConnection(PROT, PROT, sock, 0, 0, &id, &username)) {
-      struct SOCKADDR_IN sin;
-      SOCKLEN_T len = sizeof(sin);
-      if (GETPEERNAME(sock, (struct sockaddr *)&sin, &len) == 0)
-        MdsSetClientAddr(((struct sockaddr_in*)&sin)->sin_addr.s_addr);
-      Client *client = memset(malloc(sizeof(Client)), 0, sizeof(Client));
-      client->id = id;
-      client->sock = sock;
-      client->next = ClientList;
-      client->username = username;
-      client->host = getHostInfo(sock, &client->iphost, NULL);
-      ClientList = client;
+  int id;
+  char *username;
+  if IS_NOT_OK(AcceptConnection(PROT, PROT, sock, 0, 0, &id, &username))
+    return C_ERROR;
+  struct SOCKADDR_IN sin;
+  SOCKLEN_T len = sizeof(sin);
+  if (GETPEERNAME(sock, (struct sockaddr *)&sin, &len) == 0)
+    MdsSetClientAddr(((struct sockaddr_in*)&sin)->sin_addr.s_addr);
+  Client *client = memset(malloc(sizeof(Client)), 0, sizeof(Client));
+  client->id = id;
+  client->sock = sock;
+  client->next = ClientList;
+  client->username = username;
+  client->host = getHostInfo(sock, &client->iphost, NULL);
+  ClientList = client;
 #ifdef _TCP
-      FD_SET(sock, &fdactive);
+  FD_SET(sock, &fdactive);
 #endif
-      while (DoMessage(id));
-    }
+  while (DoMessage(id));
+  return C_ERROR;
 }
