@@ -62,7 +62,7 @@ def dcl(command,return_out=False,return_error=False,raise_exception=False,tree=N
     out_p=xd_output.ptr
     _exc.checkStatus(_mdsdcl.mdsdcl_do_command_dsc(_ver.tobytes('set command %s'%(setcommand,)), error_p, out_p))
     if isinstance(tree,_tre.Tree) and not tree.public:
-        status = _mdsdcl._mdsdcl_do_command_dsc(tree.ctx,_ver.tobytes(command), error_p, out_p)
+        status = _mdsdcl._mdsdcl_do_command_dsc(tree.pctx,_ver.tobytes(command), error_p, out_p)
     else:
         status = _mdsdcl.mdsdcl_do_command_dsc(_ver.tobytes(command), error_p, out_p)
     if (return_out or return_error) and raise_exception:

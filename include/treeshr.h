@@ -279,11 +279,12 @@ extern int TREE_BLOCKID;
   typedef struct pushstate_s{
   int   priv;
   void* dbid;
+  void**ctx;
   } pushstate_t;
-  extern EXPORT void* dbid_push(void* dbid);
-  extern EXPORT void  dbid_pop(void* ps);
-  #define DBID_PUSH(dbid) pthread_cleanup_push(dbid_pop,dbid_push(dbid))
-  #define DBID_POP(dbid)  pthread_cleanup_pop(1)
+  extern EXPORT void* ctx_push(void** ctx);
+  extern EXPORT void  ctx_pop(void* ps);
+  #define CTX_PUSH(ctx) pthread_cleanup_push(ctx_pop,ctx_push(ctx))
+  #define CTX_POP(ctx)  pthread_cleanup_pop(1)
 
 #ifdef __cplusplus
 }

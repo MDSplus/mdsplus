@@ -387,11 +387,11 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, struct descriptor *list[], st
   FREE_CANCEL(a_begin);
   return status;
 }
-EXPORT int _TdiIntrinsic(void* dbid, opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+EXPORT int _TdiIntrinsic(void** ctx, opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
   int status;
-  DBID_PUSH(dbid);
+  CTX_PUSH(ctx);
   status = TdiIntrinsic(opcode, narg, list, out_ptr);
-  DBID_POP(dbid);
+  CTX_POP(ctx);
   return status;
 }
 
