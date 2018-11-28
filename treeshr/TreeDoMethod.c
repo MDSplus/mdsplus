@@ -77,35 +77,7 @@ typedef enum opcode_e {
 OPC_INVALID=-1
 } opcode_t;
 
-static int (*TdiIntrinsic)() = NULL;
-#define _TREE_TDI(_TreeFun,OpcFun) \
-EXPORT int _TreeFun(void *dbid, ...) {\
-  int status = LibFindImageSymbol_C("TdiShr", "TdiIntrinsic", &TdiIntrinsic);\
-  if STATUS_NOT_OK return status;\
-  DBID_PUSH(dbid);\
-  int nargs;\
-  struct descriptor* arglist[256];\
-  VA_LIST_MDS_END_ARG(arglist,nargs,0,0,dbid);\
-  status = TdiIntrinsic(OpcFun, nargs-1, arglist, (struct descriptor_xd*)arglist[nargs-1]);\
-  DBID_POP(dbid);\
-  return status;\
-} /*"*/
-
-_TREE_TDI(_TreeCompile  ,OPC_COMPILE  )
-_TREE_TDI(_TreeExecute  ,OPC_EXECUTE  )
-_TREE_TDI(_TreeEvaluate ,OPC_EVALUATE )
-_TREE_TDI(_TreeData     ,OPC_DATA     )
-_TREE_TDI(_TreeDecompile,OPC_DECOMPILE)
-
-EXPORT int _TreeDcl(void *dbid, char*cmd, struct descriptor_xd *err, struct descriptor_xd *out){
-  static int *(*mdsdcl_do_command_dsc)();
-  int status = LibFindImageSymbol_C("Mdsdcl", "mdsdcl_do_command_dsc", &mdsdcl_do_command_dsc);
-  if IS_NOT_OK(status) return status;
-  DBID_PUSH(dbid);
-  status = (int)(intptr_t)mdsdcl_do_command_dsc(cmd,err,out);
-  DBID_POP(dbid);
-  return status;
-}
+static int (*_TdiIntrinsic)() = NULL;
 
 int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...) {
   int nargs;
@@ -118,21 +90,14 @@ int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
   return (int)(intptr_t)LibCallg(arglist, _TreeDoMethod);
 }
 
-int do_fun(void* dbid, struct descriptor *funname, int nargs, struct descriptor **args, struct descriptor_xd *out_ptr){
-  short OpcExtFunction = OPC_EXT_FUNCTION;
-  DESCRIPTOR_FUNCTION(fun, &OpcExtFunction, 255);
-  void *call_arglist[] = { (void *)4, dbid, (void *)&fun, (void *)out_ptr, MdsEND_ARG };
-  fun.ndesc = nargs>253 ? 255 : (unsigned char)(nargs + 2);
-  fun.arguments[0] = 0;
-  fun.arguments[1] = funname;
-  int i;
-  for (i = 0; i < nargs; i++)
-    fun.arguments[2 + i] = args[i];
-  return (int)(intptr_t)LibCallg(call_arglist, _TreeEvaluate);
-}
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wclobbered"
+
+inline static int strdcmp(const struct descriptor* strd, const char* cmp){
+  return strd
+     && strd->length == strlen(cmp)
+     && strncmp(strd->pointer, cmp, strlen(cmp)) == 0;
+}
 
 int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *method_ptr, ...){
   INIT_STATUS;
@@ -151,88 +116,79 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     return TreeNOMETHOD;
   head_nid = 0;
   status = _TreeGetNci(dbid,*(int *)nid_dsc->pointer, itmlst);
-  if STATUS_NOT_OK
-    return status;
+  if STATUS_NOT_OK return status;
+  if (!conglomerate_elt && (data_type != DTYPE_CONGLOM)) return TreeNOMETHOD;
   struct descriptor_conglom *conglom_ptr;
   struct descriptor_xd xd = { 0, 0, CLASS_XD, 0, 0 };
   struct descriptor_d method = { 0, DTYPE_T, CLASS_D, 0 };
   FREEXD_ON_EXIT(&xd);
   FREED_ON_EXIT(&method);
-  if (conglomerate_elt || (data_type == DTYPE_CONGLOM)) {
-    status = _TreeGetRecord(dbid, head_nid ? head_nid : *((int *)nid_dsc->pointer), &xd);
-    if STATUS_NOT_OK goto end;
-    conglom_ptr = (struct descriptor_conglom *)xd.pointer;
-    if (conglom_ptr->dtype != DTYPE_CONGLOM)
-      {status = TreeNOT_CONGLOM;goto end;}
-
-    int i,nargs;
-    void *arglist[256];
-    VA_LIST_MDS_END_ARG(arglist,nargs,3,0,method_ptr);
-    arglist[0] = (void*)(intptr_t)--nargs;
-    arglist[1] = nid_dsc;
-    arglist[2] = method_ptr;
-    if (conglom_ptr->image
-     && conglom_ptr->image->length == strlen("__python__")
-     && strncmp(conglom_ptr->image->pointer, "__python__", strlen("__python__")) == 0) {
-      /**** Try python class ***/
-      int _nargs = nargs;
-      if (_nargs == 4
-       && method_ptr->length == strlen("DW_SETUP")
-       && strncmp(method_ptr->pointer, "DW_SETUP", strlen("DW_SETUP")) == 0) {
-	arglist[3] = arglist[4];
-	_nargs--;
-      }
+  status = _TreeGetRecord(dbid, head_nid ? head_nid : *((int *)nid_dsc->pointer), &xd);
+  if STATUS_NOT_OK goto end;
+  conglom_ptr = (struct descriptor_conglom *)xd.pointer;
+  if (conglom_ptr->dtype != DTYPE_CONGLOM)
+    {status = TreeNOT_CONGLOM;goto end;}
+  const short OpcExtFunction = OPC_EXT_FUNCTION;
+  DESCRIPTOR_FUNCTION(fun, &OpcExtFunction, 255);
+  int i,nargs;
+  void **arglist = (void **)&fun.arguments[1];
+  VA_LIST_MDS_END_ARG(fun.arguments,nargs,4,-2,method_ptr);
+  arglist[0] = (void*)(intptr_t)nargs; //if called with LibCallg
+  arglist[1] = nid_dsc;
+  arglist[2] = method_ptr;
+  struct descriptor_xd* out_ptr = (struct descriptor_xd *)arglist[nargs];
+  /**** Try python class ***/
+  if (strdcmp(conglom_ptr->image,"__python__")) {
+    status = LibFindImageSymbol_C("TdiShr","_TdiIntrinsic",&_TdiIntrinsic);
+    if STATUS_OK {
+      if (nargs == 4 && strdcmp(method_ptr,"DW_SETUP")) nargs--;
       char exp[1024];
       DESCRIPTOR(exp_dsc, exp);
       strcpy(exp,"PyDoMethod(");
-      for (i = 1; i < _nargs - 1; i++)
+      for (i = 1; i < nargs - 1; i++)
 	strcat(exp, "$,");
       strcat(exp, "$)");
       exp_dsc.length=strlen(exp);
-      if STATUS_OK {
-	  _nargs += 3;
-	  for (i = _nargs; i > 2; i--)
-	    arglist[i] = arglist[i-2];
-	  arglist[0] = (void*)(intptr_t)(_nargs);
-	  arglist[1] = dbid;
-	  arglist[2] = &exp_dsc;
-	  arglist[_nargs] = MdsEND_ARG;
-	  status = (int)(intptr_t)LibCallg(arglist, _TreeExecute);
-      }
-      goto end;
+      arglist[0] = &exp_dsc;
+      status = _TdiIntrinsic(dbid,OPC_EXECUTE,nargs,arglist,out_ptr);
     }
-    const DESCRIPTOR(underunder, "__");
-    StrConcat((struct descriptor *)&method, conglom_ptr->model, (struct descriptor *)&underunder, method_ptr MDS_END_ARG);
-    for (i = 0; i < method.length; i++)
-      method.pointer[i] = (char)tolower(method.pointer[i]);
-    if (conglom_ptr->image && conglom_ptr->image->dtype != DTYPE_T) {
-      status = TdiINVDTYDSC;
-      goto end;
+    goto end;
+  }
+  /**** Try lib call ***/
+  const DESCRIPTOR(underunder, "__");
+  StrConcat((struct descriptor *)&method, conglom_ptr->model, (struct descriptor *)&underunder, method_ptr MDS_END_ARG);
+  for (i = 0; i < method.length; i++)
+    method.pointer[i] = (char)tolower(method.pointer[i]);
+  if (conglom_ptr->image && conglom_ptr->image->dtype != DTYPE_T) {
+    status = TdiINVDTYDSC;
+    goto end;
+  }
+  void (*addr) ();
+  status = LibFindImageSymbol(conglom_ptr->image, &method, &addr);
+  if STATUS_OK {
+    DBID_PUSH(dbid);
+    status = (int)(intptr_t)LibCallg(arglist, addr);
+    DBID_POP(dbid);
+    if (arglist[nargs]) {
+      struct descriptor *ans = (struct descriptor *)arglist[nargs];
+      if (ans->class == CLASS_XD) {
+	DESCRIPTOR_LONG(status_d, 0);
+	status_d.pointer = (char *)&status;
+	MdsCopyDxXd(&status_d, (struct descriptor_xd *)ans);
+      } else if ((ans->dtype == DTYPE_L) && (ans->length == 4) && (ans->pointer))
+	*(int*)ans->pointer = status;
     }
-    void (*addr) ();
-    status = LibFindImageSymbol(conglom_ptr->image, &method, &addr);
-    if STATUS_OK {
-      DBID_PUSH(dbid);
-      status = (int)(intptr_t)LibCallg(arglist, addr);
-      DBID_POP(dbid);
-      if (arglist[nargs]) {
-	struct descriptor *ans = (struct descriptor *)arglist[nargs];
-	if (ans->class == CLASS_XD) {
-	  DESCRIPTOR_LONG(status_d, 0);
-	  status_d.pointer = (char *)&status;
-	  MdsCopyDxXd(&status_d, (struct descriptor_xd *)ans);
-	} else if ((ans->dtype == DTYPE_L) && (ans->length == 4) && (ans->pointer)) {
-	  *(int*)ans->pointer = status;
-	}
-      }
-    } else {
-      /**** Try tdi fun ***/
-      status = do_fun(dbid,(struct descriptor *)&method, nargs - 1, (struct descriptor **)&arglist[1], (struct descriptor_xd *)arglist[nargs]);
-      if (status == TdiUNKNOWN_VAR)
-	status = TreeNOMETHOD;
-    }
-  } else
-    status = TreeNOMETHOD;
+    goto end;
+  }
+  /**** Try tdi fun ***/
+  status = LibFindImageSymbol_C("TdiShr","_TdiIntrinsic",&_TdiIntrinsic);
+  if STATUS_NOT_OK goto end;
+  void *funarglist[] = { (void *)&fun };
+  fun.ndesc = nargs>254 ? 255 : (unsigned char)(nargs + 1); // add NULL
+  fun.arguments[0] = NULL;
+  fun.arguments[1] = (struct descriptor *)&method; //aka arglist[0]
+  status = _TdiIntrinsic(dbid,OPC_EVALUATE,1,funarglist,out_ptr);
+  if (status == TdiUNKNOWN_VAR) status = TreeNOMETHOD;
 end: ;
   FREED_NOW(method);
   FREEXD_NOW(xd);

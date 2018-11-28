@@ -81,23 +81,23 @@ def _TdiShrFun(tdifun,treefun,errormessage,expression,*args,**kwargs):
 
 def TdiCompile(expression,*args,**kwargs):
     """Compile a TDI expression. Format: TdiCompile('expression-string')"""
-    return _TdiShrFun(_TdiShr.TdiCompile,_tre._TreeShr._TreeCompile,"Error compiling",expression,*args,**kwargs)
+    return _TdiShrFun(_TdiShr.TdiCompile,_TdiShr._TdiCompile,"Error compiling",expression,*args,**kwargs)
 
 def TdiExecute(expression,*args,**kwargs):
     """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
-    return _TdiShrFun(_TdiShr.TdiExecute,_tre._TreeShr._TreeExecute,"Error executing",expression,*args,**kwargs)
+    return _TdiShrFun(_TdiShr.TdiExecute,_TdiShr._TdiExecute,"Error executing",expression,*args,**kwargs)
 tdi=TdiExecute
 def TdiDecompile(expression,**kwargs):
     """Decompile a TDI expression. Format: TdiDecompile(tdi_expression)"""
-    return _ver.tostr(_TdiShrFun(_TdiShr.TdiDecompile,_tre._TreeShr._TreeDecompile,"Error decompiling",expression,**kwargs))
+    return _ver.tostr(_TdiShrFun(_TdiShr.TdiDecompile,_TdiShr._TdiDecompile,"Error decompiling",expression,**kwargs))
 
 def TdiEvaluate(expression,**kwargs):
     """Evaluate and functions. Format: TdiEvaluate(data)"""
-    return _TdiShrFun(_TdiShr.TdiEvaluate,_tre._TreeShr._TreeEvaluate,"Error evaluating",expression,**kwargs)
+    return _TdiShrFun(_TdiShr.TdiEvaluate,_TdiShr._TdiEvaluate,"Error evaluating",expression,**kwargs)
 
 def TdiData(expression,**kwargs):
     """Return primiitive data type. Format: TdiData(value)"""
-    return _TdiShrFun(_TdiShr.TdiData,_TreeShr._TreeData,"Error converting to data",expression,**kwargs)
+    return _TdiShrFun(_TdiShr.TdiData,_TdiShr._TdiData,"Error converting to data",expression,**kwargs)
 
 class Data(object):
     """Superclass used by most MDSplus objects. This provides default methods if not provided by the subclasses.

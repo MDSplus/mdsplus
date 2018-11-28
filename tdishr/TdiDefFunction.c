@@ -35,6 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr.h>
 
 extern int TdiIntrinsic();
+extern int _TdiIntrinsic();
 #define COM
 #define OPC(name,NAME, ...) \
 extern EXPORT int Tdi##name ( struct descriptor *first, ... ){\
@@ -43,8 +44,17 @@ extern EXPORT int Tdi##name ( struct descriptor *first, ... ){\
   struct descriptor* arglist[256];\
   arglist[0] = (void*)first;\
   VA_LIST_MDS_END_ARG(arglist,nargs,1,0,first);\
-  if (nargs<256)\
-    return TdiIntrinsic(OPC_##NAME,nargs-1,arglist,(struct descriptor_xd*)arglist[nargs-1]);\
-  return TdiNO_OUTPTR;\
+  if (nargs>255) return TdiNO_OUTPTR;\
+  return TdiIntrinsic(OPC_##NAME,nargs-1,arglist,(struct descriptor_xd*)arglist[nargs-1]);\
+}\
+extern EXPORT int _Tdi##name ( void* dbid, struct descriptor *first, ... ){\
+   if (first==MdsEND_ARG) return TdiNO_OUTPTR;\
+  int nargs;\
+  struct descriptor* arglist[256];\
+  arglist[0] = (void*)first;\
+  VA_LIST_MDS_END_ARG(arglist,nargs,1,0,first);\
+  if (nargs>255) return TdiNO_OUTPTR;\
+  return _TdiIntrinsic(dbid, OPC_##NAME, nargs-1, arglist, (struct descriptor_xd*)arglist[nargs-1]);\
 }
+
 #include <opcbuiltins.h>
