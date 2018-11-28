@@ -1,15 +1,15 @@
 Tcl('edit main/shot=5/new')
 265388041
-Tcl('add node a12/model=a12')
+Tcl('add node tdidev/model=a12')
 265388041
-Tcl('decompile a12')
+Tcl('decompile tdidev')
 Build_Conglom("MIT$DEVICES", "A12", *, *)
 1
-Tcl('dir/full a12')
+Tcl('dir/full tdidev')
 
 \MAIN::TOP
 
- :A12         
+ :TDIDEV      
       Status: on,parent is on, usage device,readonly
       compress on put
       Model element: 1
@@ -17,37 +17,65 @@ Tcl('dir/full a12')
 
 Total of 1 node.
 1
-Tcl('do/method a12 not_a_method')
+Tcl('do/method tdidev not_a_method')
 Error executing device method
 Error message was: %TREE-W-NOMETHOD, Method not available for this object
-mdsdcl: --> failed on line 'do/method a12 not_a_method'
+mdsdcl: --> failed on line 'do/method tdidev not_a_method'
 265388208
-Tcl('set default a12')
-265388041
-Tcl('show default')
-\MAIN::TOP:A12
+Tcl('set node tdidev/nowrite_once')
 1
-Tcl('dir/full a12')
+Tcl('dir/full tdidev')
 
-Total of 0 nodes.
-1
-Tcl('set node a12/nowrite_once')
-Error message was: %TREE-W-NNF, Node Not Found
-mdsdcl: --> failed on line 'set node a12/nowrite_once'
-265388144
-Tcl('dir/full a12')
+\MAIN::TOP
 
-Total of 0 nodes.
-1
-Tcl('set node a12/shot/model/off/compress/do_not/log')
-Error message was: %TREE-W-NNF, Node Not Found
-mdsdcl: --> failed on line 'set node a12/shot/model/off/compress/do_not/log'
-265388144
-Tcl('dir/full a12')
+ :TDIDEV      
+      Status: on,parent is on, usage device
+      compress on put
+      Model element: 1
+      Device Help: A12: tdi, java or shared library device
 
-Total of 0 nodes.
+Total of 1 node.
 1
-Tcl('show data a12')
+Tcl('set node tdidev/shot/model/off/nocompress/do_not/log')
+Node:  modified
 1
-getnci(:name,"original_part_name")
+Tcl('dir/full tdidev')
+
+\MAIN::TOP
+
+ :TDIDEV      
+      Status: off,parent is on, usage device
+      do not compress
+      Model element: 1
+      Device Help: A12: tdi, java or shared library device
+
+Total of 1 node.
+1
+Tcl('show data tdidev')
+\MAIN::TOP:TDIDEV
+ DTYPE_CONGLOM                 : 
+     DTYPE_T                       : MIT$DEVICES
+     DTYPE_T                       : A12
+     *** EMPTY ****
+     *** EMPTY ****
+1
+getnci(tdidev:name,"original_part_name")
 ":NAME"
+Tcl('add node pydev/model=cygnet4k')
+265388041
+Tcl('dir/full pydev')
+
+\MAIN::TOP
+
+ :PYDEV       
+      Status: on,parent is on, usage device,readonly
+      compress on put
+      Model element: 1
+      Device Help: Cygnet 4K sCMOS Camera
+
+Total of 1 node.
+1
+getnci(pydev:comment,"original_part_name")
+":COMMENT"
+Tcl('write')
+265388041
