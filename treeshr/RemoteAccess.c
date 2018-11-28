@@ -263,7 +263,7 @@ int RemoteAccessDisconnect(int conid, int force){
     }
   }
   HOST_LIST_UNLOCK;
-  return status;
+  return MDSplusSUCCESS;
 }
 
 static int (*MdsValue) () = NULL;
@@ -1040,18 +1040,37 @@ int GetAnswerInfoTO(int sock, char *dtype, short *length, char *ndims, int *dims
 #define MDS_IO_O_RDONLY 0x00004000
 #define MDS_IO_O_RDWR   0x00000002
 
-int io_open_remote(char *host, char *filename_in, int options, mode_t mode, int *sock, int *enhanced){
+inline static int get_answer_info_open(int sock, int *try_again, int *enhanced){
   int fd;
-  INIT_AND_FREE_ON_EXIT(char*,filename);
+  INIT_AND_FREE_ON_EXIT(void*,msg);
+  char dtype, ndims;
+  int dims[7], numbytes;
+  short length;
+  void *dptr;
+  int status = GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg);
+  if (STATUS_OK && (length == sizeof(fd))) {
+    memcpy(&fd, dptr, sizeof(fd));
+    *enhanced = status == 3;
+    *try_again = 0;
+  } else {
+    fprintf(stderr, "Err in GetAnswerInfoTS in io_open_remote: status = %d, length = %d\n", status, length);
+    fd = -1;
+  }
+  FREE_NOW(msg);
+  return fd;
+}
+
+inline static int io_open_remote(char *host, char *filename_in, int options, mode_t mode, int *sock, int *enhanced){
+  int fd;
   IO_LOCK;
-  fd = -1;
+  INIT_AND_FREE_ON_EXIT(char*,filename);
   filename = replaceBackslashes(strdup(filename_in));
   int try_again = 1;
-  while (try_again) {
+  fd = -1;
+  do {
     *sock = RemoteAccessConnect(host, 1, 0);
     if (*sock != -1) {
-      int status;
-      int info[3];
+      int status, info[3];
       info[0] = (int)strlen(filename) + 1;
       if (O_CREAT == 0x0200) {	/* BSD */
 	if (options & O_CREAT)
@@ -1069,24 +1088,7 @@ int io_open_remote(char *host, char *filename_in, int options, mode_t mode, int 
       info[2] = (int)mode;
       status = SendArg(*sock, MDS_IO_OPEN_K, 0, 0, 0, sizeof(info) / sizeof(int), info, filename);
       if STATUS_OK {
-	char dtype;
-	short length;
-	char ndims;
-	int dims[7];
-	int numbytes;
-	void *dptr;
-	INIT_AND_FREE_ON_EXIT(void*,msg);
-	int sts;
-	if (((sts =
-	      GetAnswerInfoTS(*sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg)) & 1)
-	    && (length == sizeof(fd))) {
-	  *enhanced = sts == 3;
-	  memcpy(&fd, dptr, sizeof(fd));
-	  try_again = 0;
-	} else
-	  fprintf(stderr, "Err in GetAnswerInfoTS in io_open_remote: status = %d, length = %d\n",
-		  sts, length);
-	FREE_NOW(msg);
+        fd = get_answer_info_open(*sock, &try_again, enhanced);
 	if (fd == -1)
 	  RemoteAccessDisconnect(*sock, 0);
       } else {
@@ -1097,10 +1099,21 @@ int io_open_remote(char *host, char *filename_in, int options, mode_t mode, int 
       fprintf(stderr, "Error connecting to host /%s/ in io_open_remote\n", host);
       try_again = 0;
     }
-  }
-  IO_UNLOCK;
+  } while (try_again);
   FREE_NOW(filename);
+  IO_UNLOCK;
   return fd;
+}
+
+inline static void set_mdsplus_file_protection(const char* filename){
+  INIT_AND_FREE_ON_EXIT(char*,cmd);
+  struct descriptor cmd_d = { 0, DTYPE_T, CLASS_S, 0 };
+  cmd = (char *)malloc(39 + strlen(filename));
+  sprintf(cmd, "SetMdsplusFileProtection %s 2> /dev/null", filename);
+  cmd_d.length = strlen(cmd);
+  cmd_d.pointer = cmd;
+  LibSpawn(&cmd_d, 1, 0);
+  FREE_NOW(cmd);
 }
 
 int MDS_IO_OPEN(char *filename_in, int options, mode_t mode){
@@ -1117,16 +1130,8 @@ int MDS_IO_OPEN(char *filename_in, int options, mode_t mode){
   else {
     fd = open(filename, options | O_BINARY | O_RANDOM, mode);
 #ifndef _WIN32
-    if ((fd != -1) && ((options & O_CREAT) != 0)) {
-      struct descriptor cmd_d = { 0, DTYPE_T, CLASS_S, 0 };
-      INIT_AND_FREE_ON_EXIT(char*,cmd);
-      cmd = (char *)malloc(39 + strlen(filename));
-      sprintf(cmd, "SetMdsplusFileProtection %s 2> /dev/null", filename);
-      cmd_d.length = strlen(cmd);
-      cmd_d.pointer = cmd;
-      LibSpawn(&cmd_d, 1, 0);
-      FREE_NOW(cmd);
-    }
+    if ((fd != -1) && ((options & O_CREAT) != 0))
+      set_mdsplus_file_protection(filename);
 #endif
   }
   if (fd != -1)
@@ -1136,8 +1141,22 @@ int MDS_IO_OPEN(char *filename_in, int options, mode_t mode){
   return fd;
 }
 
-int io_close_remote(int fd)
-{
+inline static int get_answer_info_close(int sock){
+  int ret;
+  INIT_AND_FREE_ON_EXIT(void*,msg);
+  char dtype, ndims;
+  int dims[7], numbytes;
+  short length;
+  void *dptr;
+  if (IS_OK(GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg))
+   && length == (short)sizeof(ret))
+    memcpy(&ret, dptr, sizeof(ret));
+  else ret = -1;
+  FREE_NOW(msg);
+  return ret;
+}
+
+inline static int io_close_remote(int fd){
   int ret;
   IO_LOCK;
   ret = -1;
@@ -1147,16 +1166,7 @@ int io_close_remote(int fd)
   info[1] = FDS[fd - 1].fd;
   status = SendArg(sock, MDS_IO_CLOSE_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);
   if STATUS_OK {
-    char dtype;
-    short length;
-    char ndims;
-    int dims[7];
-    int numbytes;
-    void *dptr;
-    INIT_AND_FREE_ON_EXIT(void*,msg);
-    if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1) && (length == sizeof(ret)))
-      memcpy(&ret, dptr, sizeof(ret));
-    FREE_NOW(msg);
+    ret = get_answer_info_close(sock);
     RemoteAccessDisconnect(sock, 0);
   } else
     RemoteAccessDisconnect(sock, 1);
@@ -1164,8 +1174,7 @@ int io_close_remote(int fd)
   return ret;
 }
 
-int MDS_IO_CLOSE(int fd)
-{
+int MDS_IO_CLOSE(int fd){
   int status;
   FDS_LOCK;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
@@ -1177,8 +1186,23 @@ int MDS_IO_CLOSE(int fd)
   return status;
 }
 
-off_t io_lseek_remote(int fd, off_t offset, int whence)
-{
+inline static off_t get_answer_info_off_t(int sock){
+  off_t ret;
+  INIT_AND_FREE_ON_EXIT(void*,msg);
+  char dtype, ndims;
+  int dims[7], numbytes;
+  short length;
+  void *dptr;
+  if (IS_OK(GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg))
+  && (size_t)length >= sizeof(int)) {
+    ret = 0;
+    memcpy(&ret, dptr, ((size_t)length > sizeof(off_t)) ? sizeof(off_t) : (size_t)length);
+  } else ret = -1;
+  FREE_NOW(msg);
+  return ret;
+}
+
+inline static off_t io_lseek_remote(int fd, off_t offset, int whence) {
   off_t ret;
   IO_LOCK;
   ret = -1;
@@ -1194,21 +1218,9 @@ off_t io_lseek_remote(int fd, off_t offset, int whence)
   info[3] = status;
 #endif
   status = SendArg(sock, MDS_IO_LSEEK_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);
-  if STATUS_OK {
-    char dtype;
-    short length;
-    char ndims;
-    int dims[7];
-    int numbytes;
-    void *dptr;
-    INIT_AND_FREE_ON_EXIT(void*,msg);
-    if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)
-	&& ((size_t)length >= sizeof(int))) {
-      ret = 0;
-      memcpy(&ret, dptr, ((size_t)length > sizeof(ret)) ? sizeof(ret) : (size_t)length);
-    }
-    FREE_NOW(msg);
-  } else
+  if STATUS_OK
+    ret = get_answer_info_off_t(sock);
+  else
     RemoteAccessDisconnect(sock, 1);
   IO_UNLOCK;
   return ret;
@@ -1234,8 +1246,24 @@ off_t MDS_IO_LSEEK(int fd, off_t offset, int whence){
   return pos;
 }
 
-ssize_t io_write_remote(int fd, void *buff, size_t count)
-{
+inline static ssize_t get_answer_info_write(int sock){
+  ssize_t ret;
+  INIT_AND_FREE_ON_EXIT(void*,msg);
+  char dtype;
+  char ndims;
+  int dims[7];
+  int numbytes;
+  void *dptr;
+  short length;
+  if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)
+      && (numbytes == sizeof(int)))
+    ret = (ssize_t) * (int *)dptr;
+  else ret = 0;
+  FREE_NOW(msg);
+  return ret;
+}
+
+inline static ssize_t io_write_remote(int fd, void *buff, size_t count){
   ssize_t ret;
   IO_LOCK;
   ret = 0;
@@ -1245,19 +1273,9 @@ ssize_t io_write_remote(int fd, void *buff, size_t count)
   info[0] = (int)count;
   info[1] = FDS[fd - 1].fd;
   status = SendArg(sock, MDS_IO_WRITE_K, 0, 0, 0, sizeof(info) / sizeof(int), info, buff);
-  if STATUS_OK {
-    char dtype;
-    short length;
-    char ndims;
-    int dims[7];
-    int nbytes;
-    void *dptr;
-    INIT_AND_FREE_ON_EXIT(void*,msg);
-    if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &nbytes, &dptr, &msg) & 1)
-	&& (nbytes == sizeof(int)))
-      ret = (ssize_t) * (int *)dptr;
-    FREE_NOW(msg);
-  } else
+  if STATUS_OK
+    ret = get_answer_info_write(sock);
+  else
     RemoteAccessDisconnect(sock, 1);
   IO_UNLOCK;
   return ret;
@@ -1282,40 +1300,59 @@ ssize_t MDS_IO_WRITE(int fd, void *buff, size_t count)
   return ans;
 }
 
-ssize_t io_read_remote(int fd, void *buff, size_t count)
-{
+inline static ssize_t get_answer_info_read(int sock, void* buff){
+  ssize_t ret;
+  INIT_AND_FREE_ON_EXIT(void*,msg);
+  char dtype, ndims;
+  int dims[7], numbytes;
+  short length;
+  void *dptr;
+  if (GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1) {
+    ret = (ssize_t) numbytes;
+    if (ret) memcpy(buff, dptr, (size_t) ret);
+  } else ret = 0;
+  FREE_NOW(msg);
+  return ret;
+}
+
+inline static ssize_t io_read_remote(int fd, void *buff, size_t count){
   ssize_t ret;
   IO_LOCK;
   ret = 0;
-  int ret_i;
   int info[] = { 0, 0, 0 };
   int sock = FDS[fd - 1].conid;
   int status;
   info[1] = FDS[fd - 1].fd;
   info[2] = (int)count;
   status = SendArg(sock, MDS_IO_READ_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);
-  if STATUS_OK {
-    char dtype;
-    short length;
-    char ndims;
-    int dims[7];
-    void *dptr;
-    INIT_AND_FREE_ON_EXIT(void*,msg);
-    if (GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &ret_i, &dptr, &msg) & 1) {
-      ret = (ssize_t) ret_i;
-      if (ret)
-	memcpy(buff, dptr, (size_t) ret);
-    }
-    FREE_NOW(msg);
-  } else
+  if STATUS_OK
+    ret = get_answer_info_read(sock,buff);
+  else
     RemoteAccessDisconnect(sock, 1);
   IO_UNLOCK;
   return ret;
 }
 
-ssize_t io_read_x_remote(int fd, off_t offset, void *buff, size_t count,
-					int *deleted)
-{
+inline static ssize_t get_answer_info_read_x(int sock, void* buff, int* deleted){
+  ssize_t ret;
+  INIT_AND_FREE_ON_EXIT(void*,msg);
+  char dtype, ndims;
+  int dims[7], numbytes;
+  short length;
+  void *dptr;
+  int status = GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg);
+  if STATUS_OK {
+    if (deleted)
+      *deleted = status == 3;
+    ret = (ssize_t) numbytes;
+    if (ret)
+      memcpy(buff, dptr, (size_t) ret);
+  } else ret = -1;
+  FREE_NOW(msg);
+  return ret;
+}
+
+inline static ssize_t io_read_x_remote(int fd, off_t offset, void *buff, size_t count, int *deleted){
   ssize_t ret;
   IO_LOCK;
   ret = -1;
@@ -1331,24 +1368,9 @@ ssize_t io_read_x_remote(int fd, off_t offset, void *buff, size_t count,
   info[3] = status;
 #endif
   status = SendArg(sock, MDS_IO_READ_X_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);
-  if STATUS_OK {
-    char dtype;
-    short length;
-    char ndims;
-    int dims[7];
-    void *dptr;
-    int ret_i;
-    INIT_AND_FREE_ON_EXIT(void*,msg);
-    int sts;
-    if ((sts = GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &ret_i, &dptr, &msg)) & 1) {
-      if (deleted)
-	*deleted = sts == 3;
-      ret = (ssize_t) ret_i;
-      if (ret)
-	memcpy(buff, dptr, (size_t) ret);
-    }
-    FREE_NOW(msg);
-  } else
+  if STATUS_OK
+    ret = get_answer_info_read_x(sock,buff,deleted);
+  else
     RemoteAccessDisconnect(sock, 1);
   IO_UNLOCK;
   return ret;
@@ -1402,8 +1424,24 @@ ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *delet
   return ans;
 }
 
-int io_lock_remote(int fd, off_t offset, size_t size, int mode, int *deleted)
-{
+inline static int get_answer_info_lock(int sock, int* deleted){
+  int ret;
+  INIT_AND_FREE_ON_EXIT(void*,msg);
+  char dtype, ndims;
+  int dims[7], numbytes;
+  short length;
+  void *dptr;
+  int status = GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg);
+  if STATUS_OK {
+    if (deleted)
+      *deleted = status == 3;
+    memcpy(&ret, dptr, sizeof(ret));
+  } else ret = 0;
+  FREE_NOW(msg);
+  return ret;
+}
+
+inline static int io_lock_remote(int fd, off_t offset, size_t size, int mode, int *deleted){
   int ret;
   IO_LOCK;
   ret = 0;
@@ -1420,22 +1458,9 @@ int io_lock_remote(int fd, off_t offset, size_t size, int mode, int *deleted)
   info[3] = status;
 #endif
   status = SendArg(sock, MDS_IO_LOCK_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);
-  if STATUS_OK {
-    char dtype;
-    short length;
-    char ndims;
-    int nbytes;
-    int dims[7];
-    void *dptr;
-    INIT_AND_FREE_ON_EXIT(void*,msg);
-    int sts;
-    if ((sts = GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &nbytes, &dptr, &msg)) & 1) {
-      if (deleted)
-	*deleted = sts == 3;
-      memcpy(&ret, dptr, sizeof(ret));
-    }
-    FREE_NOW(msg);
-  } else
+  if STATUS_OK
+    ret = get_answer_info_lock(sock,deleted);
+  else
     RemoteAccessDisconnect(sock, 1);
   IO_UNLOCK;
   return ret;
@@ -1490,10 +1515,25 @@ int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted){
   return status;
 }
 
-int io_exists_remote(char *host, char *filename){
-  int ans;
+inline static int get_answer_info_exists(int sock){
+  int ret;
+  INIT_AND_FREE_ON_EXIT(void*,msg);
+  char dtype, ndims;
+  int dims[7], numbytes;
+  short length;
+  void *dptr;
+  if (IS_OK(GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg))
+  && (length == (short)sizeof(ret)))
+    memcpy(&ret, dptr, sizeof(ret));
+  else ret = 0;
+  FREE_NOW(msg);
+  return ret;
+}
+
+inline static int io_exists_remote(char *host, char *filename){
+  int ret;
   IO_LOCK;
-  ans = 0;
+  ret = 0;
   int sock;
   sock = RemoteAccessConnect(host, 1, 0);
   if (sock != -1) {
@@ -1502,23 +1542,13 @@ int io_exists_remote(char *host, char *filename){
     info[0] = (int)strlen(filename) + 1;
     status = SendArg(sock, MDS_IO_EXISTS_K, 0, 0, 0, sizeof(info) / sizeof(int), info, filename);
     if STATUS_OK {
-      char dtype;
-      short length;
-      char ndims;
-      int dims[7];
-      int numbytes;
-      void *dptr;
-      INIT_AND_FREE_ON_EXIT(void*,msg);
-      if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)
-	  && (length == sizeof(ans)))
-	memcpy(&ans, dptr, sizeof(ans));
-      FREE_NOW(msg);
+      ret = get_answer_info_exists(sock);
       RemoteAccessDisconnect(sock, 0);
     } else
       RemoteAccessDisconnect(sock, 1);
   }
   IO_UNLOCK;
-  return ans;
+  return ret;
 }
 
 int MDS_IO_EXISTS(char *filename_in){
@@ -1535,11 +1565,25 @@ int MDS_IO_EXISTS(char *filename_in){
   return status;
 }
 
-int io_remove_remote(char *host, char *filename)
-{
-  int ans;
+inline static int get_answer_info_remove(int sock){
+  int ret;
+  INIT_AND_FREE_ON_EXIT(void*,msg);
+  char dtype, ndims;
+  int dims[7], numbytes;
+  short length;
+  void *dptr;
+  if (IS_OK(GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg))
+  && (length == (short)sizeof(ret)))
+    memcpy(&ret, dptr, sizeof(ret));
+  else ret = -1;
+  FREE_NOW(msg);
+  return ret;
+}
+
+inline static int io_remove_remote(char *host, char *filename){
+  int ret;
   IO_LOCK;
-  ans = -1;
+  ret = -1;
   int sock;
   sock = RemoteAccessConnect(host, 1, 0);
   if (sock != -1) {
@@ -1548,27 +1592,16 @@ int io_remove_remote(char *host, char *filename)
     info[0] = (int)strlen(filename) + 1;
     status = SendArg(sock, MDS_IO_REMOVE_K, 0, 0, 0, sizeof(info) / sizeof(int), info, filename);
     if STATUS_OK {
-      char dtype;
-      short length;
-      char ndims;
-      int dims[7];
-      int numbytes;
-      void *dptr;
-      INIT_AND_FREE_ON_EXIT(void*,msg);
-      if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)
-	  && (length == sizeof(ans)))
-	memcpy(&ans, dptr, sizeof(ans));
-      FREE_NOW(msg);
+      ret = get_answer_info_remove(sock);
       RemoteAccessDisconnect(sock, 0);
     } else
       RemoteAccessDisconnect(sock, 1);
   }
   IO_UNLOCK;
-  return ans;
+  return ret;
 }
 
-int MDS_IO_REMOVE(char *filename_in)
-{
+int MDS_IO_REMOVE(char *filename_in){
   int status;
   INIT_AND_FREE_ON_EXIT(char*,filename);
   INIT_AND_FREE_ON_EXIT(char*,tmp);
@@ -1581,8 +1614,7 @@ int MDS_IO_REMOVE(char *filename_in)
   return status;
 }
 
-int io_rename_remote(char *host, char *filename_old, char *filename_new)
-{
+inline static int io_rename_remote(char *host, char *filename_old, char *filename_new){
   int ans;
   IO_LOCK;
   int sock;
