@@ -65,7 +65,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 #include <tdishr.h>
-#include <treeshr_messages.h>
+#include <treeshr.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
 typedef struct _bounds {
@@ -385,6 +385,13 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, struct descriptor *list[], st
   FREE_CANCEL(&tmp);
   FREE_CANCEL(out_ptr);
   FREE_CANCEL(a_begin);
+  return status;
+}
+EXPORT int _TdiIntrinsic(void* dbid, opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+  int status;
+  DBID_PUSH(dbid);
+  status = TdiIntrinsic(opcode, narg, list, out_ptr);
+  DBID_POP(dbid);
   return status;
 }
 

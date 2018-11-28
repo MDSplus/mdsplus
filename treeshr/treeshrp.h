@@ -810,13 +810,4 @@ extern int MDS_IO_REMOVE(char *filename);
 extern int MDS_IO_RENAME(char *oldname, char *newname);
 extern ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *deleted);
 
-typedef struct pushstate_s{
-int            private;
-PINO_DATABASE* dbid;
-} pushstate_t;
-extern void* dbid_push(void* dbid);
-extern void  dbid_pop(void* ps);
-#define DBID_PUSH(dbid) pthread_cleanup_push(dbid_pop,dbid_push(dbid))
-#define DBID_POP(dbid)  pthread_cleanup_pop(1)
-
 #endif

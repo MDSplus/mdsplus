@@ -12,7 +12,7 @@ extern "C" {
 #else
 #ifdef EXPORT
 #undef EXPORT
-#endif	
+#endif
 #define EXPORT
 #endif
 #include <mdstypes.h>
@@ -275,6 +275,15 @@ extern int TREE_BLOCKID;
   extern EXPORT int _TreeEvaluate(void *dbid, ...);
   extern EXPORT int _TreeDecompile(void *dbid, ...);
   extern EXPORT int _TreeCompile(void *dbid, ...);
+
+  typedef struct pushstate_s{
+  int   priv;
+  void* dbid;
+  } pushstate_t;
+  extern EXPORT void* dbid_push(void* dbid);
+  extern EXPORT void  dbid_pop(void* ps);
+  #define DBID_PUSH(dbid) pthread_cleanup_push(dbid_pop,dbid_push(dbid))
+  #define DBID_POP(dbid)  pthread_cleanup_pop(1)
 
 #ifdef __cplusplus
 }

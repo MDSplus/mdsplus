@@ -40,6 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsdcl_messages.h>
 #include "dcl_p.h"
 #include "mdsdclthreadsafe.h"
+#include <treeshr.h>
 
 
 dclDocListPtr mdsdcl_getdocs(){
@@ -1162,9 +1163,7 @@ EXPORT int mdsdcl_do_command(char const *command)
   return status;
 }
 
-EXPORT int mdsdcl_do_command_dsc(char const *command, struct descriptor_xd *error_dsc,
-			  struct descriptor_xd *output_dsc)
-{
+EXPORT int mdsdcl_do_command_dsc(char const *command, struct descriptor_xd *error_dsc, struct descriptor_xd *output_dsc) {
   char *error = 0;
   char *output = 0;
   int status =
@@ -1180,6 +1179,13 @@ EXPORT int mdsdcl_do_command_dsc(char const *command, struct descriptor_xd *erro
     MdsCopyDxXd(&d, output_dsc);
     free(output);
   }
+  return status;
+}
+EXPORT int _mdsdcl_do_command_dsc(void *dbid, char const *command, struct descriptor_xd *error_dsc, struct descriptor_xd *output_dsc){
+  int status;
+  DBID_PUSH(dbid);
+  status = (int)(intptr_t)mdsdcl_do_command_dsc(command,error_dsc,output_dsc);
+  DBID_POP(dbid);
   return status;
 }
 
