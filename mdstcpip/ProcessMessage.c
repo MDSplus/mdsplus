@@ -22,12 +22,16 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#define DEF_FREEXD
+#if defined(linux) && !defined(_LARGEFILE_SOURCE)
+# define _LARGEFILE_SOURCE
+# define _FILE_OFFSET_BITS 64
+# define __USE_FILE_OFFSET64
+#endif
 #include "mdsip_connections.h"
 #include <pthread_port.h>
-#include <tdishr_messages.h>
 #include <mdstypes.h>
 #include <inttypes.h>
-#include "cvtdef.h"
 #include <signal.h>
 #ifdef _WIN32
 # include <io.h>
@@ -40,32 +44,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "mdsIo.h"
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <treeshr.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#if defined(linux) && !defined(_LARGEFILE_SOURCE)
-# define _LARGEFILE_SOURCE
-# define _FILE_OFFSET_BITS 64
-# define __USE_FILE_OFFSET64
-#endif
-#include "mdsip_connections.h"
-#include <treeshr.h>
-#include <stdlib.h>
-#include <string.h>
 #include <mdsshr.h>
+#include <treeshr.h>
+#include <tdishr.h>
 #include <libroutines.h>
 #include <strroutines.h>
 #include <errno.h>
 #include "cvtdef.h"
 
-extern int TdiExecute();
 extern int TdiRestoreContext();
 extern int TreePerfRead();
 extern int TreePerfWrite();
-extern int TdiDebug();
 extern int TdiSaveContext();
-extern int TdiData();
 
 #ifdef min
 #undef min
@@ -519,16 +512,14 @@ static Message *BuildResponse(int client_type, unsigned char message_id,
   return m;
 }
 
-static void ResetErrors()
-{
+static void ResetErrors() {
   static int four = 4;
   static DESCRIPTOR_LONG(clear_messages, &four);
   static DESCRIPTOR(messages, "");
   TdiDebug(&clear_messages, &messages MDS_END_ARG);
 }
 
-static void GetErrorText(int status, struct descriptor_xd *xd)
-{
+static void GetErrorText(int status, struct descriptor_xd *xd){
   static int one = 1;
   static DESCRIPTOR_LONG(get_messages, &one);
   TdiDebug(&get_messages, xd MDS_END_ARG);
@@ -596,12 +587,14 @@ typedef struct worker_cleanup_s {
   Connection*connection;
   void*      old_dbid;
   void*      tdi_context[6];
+  struct descriptor_xd* xdp;
 #ifndef _WIN32
   Condition* condition;
 #endif
 } worker_cleanup_t;
 static void WorkerCleanup(void *worker_cleanup_v) {
   worker_cleanup_t* wc = (worker_cleanup_t*)worker_cleanup_v;
+  MdsFree1Dx(wc->xdp,NULL);
   if (wc->connection) {
     TdiSaveContext(wc->connection->tdicontext);
     TdiRestoreContext(wc->tdi_context);
@@ -614,7 +607,8 @@ static void WorkerCleanup(void *worker_cleanup_v) {
 
 static int WorkerThread(void *args) {
   worker_args_t* wa = (worker_args_t*)args;
-  worker_cleanup_t wc = {NULL,NULL,{0}
+  EMPTYXD(xd);
+  worker_cleanup_t wc = {NULL,NULL,{0},&xd
 #ifndef _WIN32
   ,wa->condition
 #endif
@@ -626,9 +620,9 @@ static int WorkerThread(void *args) {
     TdiSaveContext(wc.tdi_context);
     TdiRestoreContext(wa->connection->tdicontext);
   }
-  wa->status = (int)(intptr_t)LibCallg(&wa->connection->nargs, TdiExecute, wa->connection->descrip);
+  wa->status = TdiIntrinsic(OPC_EXECUTE, wa->connection->nargs, wa->connection->descrip, &xd);
   if IS_OK(wa->status)
-    wa->status = (int)(intptr_t)TdiData(wa->connection->descrip[wa->connection->nargs-2], wa->xd_out MDS_END_ARG);
+    wa->status = TdiData(xd.pointer, wa->xd_out MDS_END_ARG);
   pthread_cleanup_pop(1);
   return wa->status;
 }
@@ -723,8 +717,6 @@ static Message *ExecuteMessage(Connection * connection) {
   Message *ans = 0;		// return message instance //
   int status = 1;		// return status           //
 
-  static EMPTYXD(emptyxd);
-  struct descriptor_xd *xd;
   char *evname;
   static DESCRIPTOR(eventastreq, EVENTASTREQUEST);	// AST request descriptor //
   static DESCRIPTOR(eventcanreq, EVENTCANREQUEST);	// Can request descriptor //
@@ -800,10 +792,7 @@ static Message *ExecuteMessage(Connection * connection) {
   }
   // NORMAL TDI COMMAND //
   else {
-    EMPTYXD(ans_xd);
-    xd = (struct descriptor_xd *)memcpy(malloc(sizeof(emptyxd)), &emptyxd,sizeof(emptyxd));
-    connection->descrip[connection->nargs++] = (struct descriptor *)xd;
-    connection->descrip[connection->nargs++] = MdsEND_ARG;
+    INIT_AND_FREEXD_ON_EXIT(ans_xd);
     ResetErrors();
     status = executeCommand(connection,&ans_xd);
     if STATUS_NOT_OK
@@ -815,8 +804,7 @@ static Message *ExecuteMessage(Connection * connection) {
       SetCompressionLevel(connection->compression_level);
     }
     ans = BuildResponse(connection->client_type, connection->message_id, status, ans_xd.pointer);
-    MdsFree1Dx(xd, NULL);
-    MdsFree1Dx(&ans_xd, NULL);
+    FREEXD_NOW(ans_xd);
   }
   FreeDescriptors(connection);
   return ans;
