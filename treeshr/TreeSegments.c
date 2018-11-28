@@ -315,6 +315,7 @@ inline static int open_datafile_write0(vars_t* vars) {
   RETURN_IF_NOT_OK(load_node_ptr(vars));
   RETURN_IF_NOT_OK(check_segment_remote(vars));
   RETURN_IF_NOT_OK(load_info_ptr(vars));
+  TreeCallHookFun("TreeNidHook","PutData",vars->tinfo->treenam,vars->tinfo->shot,*vars->nid_ptr,NULL);
   status = TreeCallHook(PutData, vars->tinfo, *(int*)vars->nid_ptr);
   if (status && STATUS_NOT_OK)
     return status;
@@ -716,6 +717,12 @@ int _TreeMakeSegment(void *dbid, int nid,
   GOTO_END_ON_ERROR(begin_sinfo(vars,initialValue,check_compress_dim));
   GOTO_END_ON_ERROR(putdata_initialvalue(vars,initialValue));
   GOTO_END_ON_ERROR(putdim_dim(vars,start,end,dimension));
+  TreeCallHookFun("TreeNidHook","MakeSegment",vars->tinfo->treenam,
+		  vars->tinfo->shot,*vars->nid_ptr,NULL);
+  SIGNAL(1) signal = {0, DTYPE_SIGNAL, CLASS_R, 0, 3, __fill_value__ \
+		      (struct descriptor *)initValIn, NULL, {dimension}};
+  TreeCallHookFun("TreeNidDataHook","MakeSegmentFull",vars->tinfo->treenam,
+		  vars->tinfo->shot,*vars->nid_ptr,&signal,NULL);
   status = begin_finish(vars);
 end: ;
   pthread_cleanup_pop(vars->nci_locked);
@@ -739,6 +746,13 @@ int _TreeMakeTimestampedSegment(void *dbid, int nid,
   GOTO_END_ON_ERROR(begin_sinfo(vars,initialValue,check_compress_ts));
   GOTO_END_ON_ERROR(putdata_initialvalue(vars,initialValue));
   GOTO_END_ON_ERROR(putdim_ts(vars,timestamps,initialValue));
+  TreeCallHookFun("TreeNidHook","MakeTimestampedSegment",vars->tinfo->treenam,
+		  vars->tinfo->shot,*vars->nid_ptr,NULL);
+  DESCRIPTOR_A(dimension, sizeof(int64_t), DTYPE_Q, timestamps, rows_filled * sizeof(int64_t));
+  SIGNAL(1) signal = {0, DTYPE_SIGNAL, CLASS_R, 0, 3, __fill_value__ \
+		      (struct descriptor *)initValIn, NULL, {(struct descriptor *)&dimension}};
+  TreeCallHookFun("TreeNidDataHook","MakeTimestampedSegmentFull",vars->tinfo->treenam,
+		  vars->tinfo->shot,*vars->nid_ptr,&signal,NULL);
   status = begin_finish(vars);
 end: ;
   CLEANUP_NCI_POP;
@@ -759,6 +773,8 @@ int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct des
   IF_NO_SEGMENT_INDEX  {status = TreeFAILURE;goto end;}
   GOTO_END_ON_ERROR(check_sinfo(vars));
   GOTO_END_ON_ERROR(putdim_dim(vars,start,end,dimension));
+  TreeCallHookFun("TreeNidHook","UpdateSegment",vars->tinfo->treenam,
+		  vars->tinfo->shot,*vars->nid_ptr,NULL);
   status = PutSegmentIndex(vars->tinfo, &vars->sindex, &vars->index_offset);
 end: ;
   CLEANUP_NCI_POP;
@@ -827,8 +843,13 @@ int _TreePutSegment(void *dbid, int nid, const int startIdx, struct descriptor_a
   }
   if (start_idx == vars->shead.next_row)
     vars->shead.next_row += bytes_to_insert / bytes_per_row;
-  if STATUS_OK
+  if STATUS_OK {
     status = PutSegmentHeader(vars->tinfo, &vars->shead, &vars->attr.facility_offset[SEGMENTED_RECORD_FACILITY]);
+    TreeCallHookFun("TreeNidHook","PutSegment",vars->tinfo->treenam,
+		    vars->tinfo->shot,*vars->nid_ptr,NULL);
+    TreeCallHookFun("TreeNidDataHook","PutSegmentFull",vars->tinfo->treenam,
+		    vars->tinfo->shot,*vars->nid_ptr,data,NULL);
+    }
 end: ;
   CLEANUP_NCI_POP;
   return status;
@@ -902,8 +923,16 @@ int _TreePutTimestampedSegment(void *dbid, int nid, int64_t * timestamp, struct 
   FREE_BUFFER(times);
   TreeUnLockDatafile(vars->tinfo, 0, offset);
   vars->shead.next_row = start_idx + bytes_to_insert / bytes_per_row;
-  if STATUS_OK
+  if STATUS_OK {
     status = PutSegmentHeader(vars->tinfo, &vars->shead, &vars->attr.facility_offset[SEGMENTED_RECORD_FACILITY]);
+    TreeCallHookFun("TreeNidHook","PutTimestampedSegment",vars->tinfo->treenam,
+		    vars->tinfo->shot,*vars->nid_ptr,NULL);
+    DESCRIPTOR_A(dimension, sizeof(int64_t), DTYPE_Q, timestamp, rows_to_insert * sizeof(int64_t)); 
+    SIGNAL(1) signal = {0, DTYPE_SIGNAL, CLASS_R, 0, 3, __fill_value__ \
+			(struct descriptor *)data_in, NULL, {(struct descriptor *)&dimension}};
+    TreeCallHookFun("TreeNidDataHook","PutTimestampedSegmentFull",vars->tinfo->treenam,
+		    vars->tinfo->shot,*vars->nid_ptr,&signal,NULL);
+    }
 end: ;
   CLEANUP_NCI_POP;
   return status;

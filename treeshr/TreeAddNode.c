@@ -748,6 +748,7 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
                 MDS_IO_LOCK(info_ptr->channel, 1, 1, MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0);
                 status = TreeNORMAL;
                 (*dblist)->modified = 0;
+		TreeCallHookFun("TreeHook","WriteTree",info_ptr->treenam, (*dblist)->shotid, NULL);
                 TreeCallHook(WriteTree, info_ptr, 0);
             } else {
                 (*dblist)->modified = 0;

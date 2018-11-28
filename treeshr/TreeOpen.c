@@ -74,7 +74,6 @@ static int MapTree(char *tree, int shot, TREE_INFO * info, int edit_flag);
 static void SubtreeNodeConnect(PINO_DATABASE * dblist, NODE * parent, NODE * subtreetop);
 
 extern void **TreeCtx();
-
 static inline char *replaceBackslashes(char *filename) {
   char *ptr;
   while ((ptr = strchr(filename, '\\')) != NULL) *ptr = '/';
@@ -406,8 +405,10 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
 	      free(local_info->nci_file);
 	      local_info->nci_file = NULL;
 	    }
-	    if (call_hook)
+	    if (call_hook) {
+	      TreeCallHookFun("TreeHook","CloseTree",local_info->treenam, local_info->shot,NULL);
 	      TreeCallHook(CloseTree, local_info, 0);
+	    }
 	    if (local_info->filespec)
 	      free(local_info->filespec);
 	    if (local_info->treenam)
@@ -511,11 +512,13 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
       info->shot = dblist->shotid;
       status = MapTree(tree, dblist->shotid, info, 0);
       if (!(status & 1) && (status == TreeFILE_NOT_FOUND || treeshr_errno == TreeFILE_NOT_FOUND)) {
+	TreeCallHookFun("TreeHook","RetrieveTree", info->treenam, info->shot, NULL);
 	status = TreeCallHook(RetrieveTree, info, 0);
 	if (status & 1)
 	  status = MapTree(tree, dblist->shotid, info, 0);
       }
       if (status == TreeNORMAL) {
+	TreeCallHookFun("TreeHook", "OpenTree", tree, dblist->shotid, NULL);
 	TreeCallHook(OpenTree, info, 0);
 
       /**********************************************
@@ -1240,11 +1243,16 @@ int _TreeOpenEdit(void **dbid, char const *tree_in, int shot_in)
 	info->shot = (*dblist)->shotid;
 	status = MapTree(tree, (*dblist)->shotid, info, 1);
 	if (STATUS_NOT_OK && (status == TreeFILE_NOT_FOUND || treeshr_errno == TreeFILE_NOT_FOUND)) {
-	  status = TreeCallHook(RetrieveTree, info, 0);
-	  if STATUS_OK
-	    status = MapTree(tree, (*dblist)->shotid, info, 1);
+	  TreeCallHookFun("TreeHook","RetrieveTree", tree, (*dblist)->shotid, NULL);
+	  status = MapTree(tree, (*dblist)->shotid, info, 1);
+	  if (STATUS_NOT_OK && (status == TreeFILE_NOT_FOUND || treeshr_errno == TreeFILE_NOT_FOUND)) {
+	    status = TreeCallHook(RetrieveTree, info, 0);
+	    if STATUS_OK
+	      status = MapTree(tree, (*dblist)->shotid, info, 1);
+	  }
 	}
 	if STATUS_OK {
+	  TreeCallHookFun("TreeHook","OpenTreeEdit", tree, (*dblist)->shotid, NULL);
 	  TreeCallHook(OpenTreeEdit, info, 0);
 	  info->edit = (TREE_EDIT *) malloc(sizeof(TREE_EDIT));
 	  if (info->edit) {
@@ -1314,6 +1322,7 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
 	  }
 	}
 	if STATUS_OK {
+	  TreeCallHookFun("TreeHook","OpenTreeEdit",info->treenam, info->shot,NULL);
 	  TreeCallHook(OpenTreeEdit, info, 0);
 	  info->edit = (TREE_EDIT *) malloc(sizeof(TREE_EDIT));
 	  if (info->edit) {

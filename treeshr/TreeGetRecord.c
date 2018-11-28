@@ -66,6 +66,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
     return GetRecordRemote(dblist, nid_in, dsc);
   nid_to_tree_nidx(dblist, nid, info, nidx);
   if (info) {
+    TreeCallHookFun("TreeNidHook","GetNci",info->treenam, info->shot, nid, NULL);
     status = TreeCallHook(GetNci, info, nid_in);
     if (status && STATUS_NOT_OK)
       return 0;
@@ -74,6 +75,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
       status = TreeGetNciW(info, nidx, &nci, 0);
       if STATUS_OK {
 	if (nci.length) {
+	  TreeCallHookFun("TreeNidHook","GetData", info->treenam, info->shot, nid, NULL);
 	  status = TreeCallHook(GetData, info, nid_in);
 	  if (status && STATUS_NOT_OK)
 	    return 0;
