@@ -1181,11 +1181,11 @@ EXPORT int mdsdcl_do_command_dsc(char const *command, struct descriptor_xd *erro
   }
   return status;
 }
-EXPORT int _mdsdcl_do_command_dsc(void *dbid, char const *command, struct descriptor_xd *error_dsc, struct descriptor_xd *output_dsc){
+EXPORT int _mdsdcl_do_command_dsc(void**ctx, char const *command, struct descriptor_xd *error_dsc, struct descriptor_xd *output_dsc){
   int status;
-  DBID_PUSH(dbid);
-  status = (int)(intptr_t)mdsdcl_do_command_dsc(command,error_dsc,output_dsc);
-  DBID_POP(dbid);
+  CTX_PUSH(ctx);
+  status = mdsdcl_do_command_dsc(command,error_dsc,output_dsc);
+  CTX_POP(ctx);
   return status;
 }
 

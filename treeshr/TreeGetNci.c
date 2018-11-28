@@ -82,9 +82,9 @@ int TreeIsOn(int nid)
 
 int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm) {
   int status;
-  DBID_PUSH(dbid);
+  CTX_PUSH(&dbid);
   status = TreeGetNci(nid_in, nci_itm);
-  DBID_POP(dbid);
+  CTX_POP(&dbid);
   return status;
 }
 

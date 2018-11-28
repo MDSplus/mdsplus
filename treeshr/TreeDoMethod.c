@@ -150,7 +150,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       strcat(exp, "$)");
       exp_dsc.length=strlen(exp);
       arglist[0] = &exp_dsc;
-      status = _TdiIntrinsic(dbid,OPC_EXECUTE,nargs,arglist,out_ptr);
+      status = _TdiIntrinsic(&dbid,OPC_EXECUTE,nargs,arglist,out_ptr);
     }
     goto end;
   }
@@ -166,9 +166,9 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
   void (*addr) ();
   status = LibFindImageSymbol(conglom_ptr->image, &method, &addr);
   if STATUS_OK {
-    DBID_PUSH(dbid);
+    CTX_PUSH(&dbid);
     status = (int)(intptr_t)LibCallg(arglist, addr);
-    DBID_POP(dbid);
+    CTX_POP(&dbid);
     if (arglist[nargs]) {
       struct descriptor *ans = (struct descriptor *)arglist[nargs];
       if (ans->class == CLASS_XD) {
@@ -187,7 +187,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
   fun.ndesc = nargs>254 ? 255 : (unsigned char)(nargs + 1); // add NULL
   fun.arguments[0] = NULL;
   fun.arguments[1] = (struct descriptor *)&method; //aka arglist[0]
-  status = _TdiIntrinsic(dbid,OPC_EVALUATE,1,funarglist,out_ptr);
+  status = _TdiIntrinsic(&dbid,OPC_EVALUATE,1,funarglist,out_ptr);
   if (status == TdiUNKNOWN_VAR) status = TreeNOMETHOD;
 end: ;
   FREED_NOW(method);

@@ -75,7 +75,7 @@ def _TdiShrFun(tdifun,treefun,errormessage,expression,*args,**kwargs):
     if not isinstance(tree,_tre.Tree):
         _exc.checkStatus(tdifun(*rargs))
     else:
-        rargs = [tree.ctx]+rargs
+        rargs = [tree.pctx]+rargs
         _exc.checkStatus(treefun(*rargs))
     return xd._setTree(tree).value
 

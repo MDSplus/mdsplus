@@ -45,9 +45,9 @@ extern void **TreeCtx();
 int TreeGetRecord(int nid_in, struct descriptor_xd *dsc);
 int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc){
   int status;
-  DBID_PUSH(dbid);
+  CTX_PUSH(&dbid);
   status = TreeGetRecord(nid_in, dsc);
-  DBID_POP(dbid);
+  CTX_POP(&dbid);
   return status;
 }
 
