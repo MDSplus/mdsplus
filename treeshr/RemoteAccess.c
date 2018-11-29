@@ -66,7 +66,7 @@ struct descrip {
   void *ptr;
 };
 
-static struct descrip empty_ans;
+static struct descrip empty_ans = {0};
 
 static inline char *replaceBackslashes(char *filename) {
   char *ptr;
@@ -78,8 +78,6 @@ extern void LockMdsShrMutex(pthread_mutex_t *, int *);
 extern void UnlockMdsShrMutex(pthread_mutex_t *);
 extern void TreePerfWrite(int);
 extern void TreePerfRead(int);
-
-static int MDS_IO_LOCK_(int fd, off_t offset, size_t size, int mode_in, int *deleted);
 
 int FindImageSymbol(char *name, void **sym){
 /*
@@ -98,6 +96,25 @@ static pthread_mutex_t host_list_lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t io_lock = PTHREAD_MUTEX_INITIALIZER;
 #define IO_LOCK    pthread_mutex_lock(&io_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&io_lock);
 #define IO_UNLOCK  pthread_cleanup_pop(1);
+
+static int MDS_IO_LOCK_(int fd, off_t offset, size_t size, int mode_in, int *deleted);
+typedef struct iolock_s {
+int   fd;
+off_t offset;
+size_t size;
+int *deleted;
+} iolock_t;
+static void mds_io_unlock(void*in){
+  iolock_t*l = (iolock_t*)in;
+  MDS_IO_LOCK_(l->fd,l->offset,l->size,MDS_IO_LOCK_NONE,l->deleted);
+  pthread_mutex_unlock(&io_lock);
+}
+#define MDS_IO_RDLOCK(fd,offset,size,deleted) \
+ pthread_mutex_lock(&io_lock);\
+ MDS_IO_LOCK_(fd,offset,size,MDS_IO_LOCK_RD,deleted);\
+ iolock_t iolock = {fd,offset,size,deleted};\
+ pthread_cleanup_push(mds_io_unlock,&iolock);
+#define MDS_IO_UNLOCK() pthread_cleanup_pop(1);
 
 #if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
 #ifndef _WIN32
@@ -1399,6 +1416,7 @@ static ssize_t MDS_IO_READ_(int fd, void *buff, size_t count){
   } else ans = -1;
   return ans;
 }
+
 ssize_t MDS_IO_READ(int fd, void *buff, size_t count){
   int ans;
   FDS_LOCK;
@@ -1416,15 +1434,10 @@ ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *delet
   FDS_LOCK;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
     if (FDS[fd - 1].conid == -1 || (!FDS[fd - 1].enhanced)) {
-      int old_state;
-      if (pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,&old_state)) old_state = -1;
-      IO_LOCK;
-      MDS_IO_LOCK_(fd, offset, count, MDS_IO_LOCK_RD, deleted);
+      MDS_IO_RDLOCK(fd, offset, count, deleted);
       MDS_IO_LSEEK_(fd, offset, SEEK_SET);
       ans = MDS_IO_READ_(fd, buff, count);
-      MDS_IO_LOCK_(fd, offset, count, MDS_IO_LOCK_NONE, deleted);
-      IO_UNLOCK;
-      if (old_state!=-1) pthread_setcancelstate(old_state,NULL);
+      MDS_IO_UNLOCK();
     } else
       ans = io_read_x_remote(fd, offset, buff, count, deleted);
   } else ans = -1;
