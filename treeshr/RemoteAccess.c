@@ -285,19 +285,29 @@ int MdsValue1(int conid, char *exp, struct descrip *arg1, struct descrip *ans){
   return status;
 }
 
+inline static int tree_open(PINO_DATABASE * dblist, int conid, const char* treearg) {
+  int status;
+  INIT_AND_FREE_ON_EXIT(char*,exp);
+  struct descrip ans = empty_ans;
+  exp = malloc(strlen(treearg) + 32);
+  sprintf(exp, "TreeOpen('%s',%d)", treearg, dblist->shotid);
+  status = MdsValue0(conid, exp, &ans);
+  if (ans.ptr) {
+    if STATUS_OK
+      status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : TreeFAILURE;
+    MdsIpFree(ans.ptr);
+  }
+  FREE_NOW(exp);
+  return status;
+}
+
 int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *logname){
   int conid;
   logname[strlen(logname) - 2] = '\0';
   int status = TreeNORMAL;
   conid = RemoteAccessConnect(logname, 1, (void *)dblist);
   if (conid != -1) {
-    struct descrip ans = empty_ans;
-    INIT_AND_FREE_ON_EXIT(char*,exp);
-    exp = malloc(strlen(subtree_list ? subtree_list : tree) + 100);
-    sprintf(exp, "TreeOpen('%s',%d)", subtree_list ? subtree_list : tree, dblist->shotid);
-    status = MdsValue0(conid, exp, &ans);
-    FREE_NOW(exp);
-    status = STATUS_OK ? (((ans.dtype == DTYPE_L) && ans.ptr) ? *(int *)ans.ptr : 0) : status;
+    status = tree_open(dblist,conid,subtree_list ? subtree_list : tree);
     if STATUS_OK {
       TREE_INFO *info;
       /***********************************************
@@ -324,8 +334,6 @@ int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, ch
       }
     } else
       RemoteAccessDisconnect(conid, 0);
-    if (ans.ptr)
-      MdsIpFree(ans.ptr);
   } else
     status = TreeCONNECTFAIL;
   return status;
@@ -355,11 +363,9 @@ int CloseTreeRemote(PINO_DATABASE * dblist, int call_host __attribute__ ((unused
   return status;
 }
 
-int CreatePulseFileRemote(PINO_DATABASE * dblist, int shot, int *nids, int num)
-{
-  struct descrip ans = empty_ans;
+int CreatePulseFileRemote(PINO_DATABASE * dblist, int shot, int *nids, int num){
   int status;
-  char exp[8192];
+  INIT_AND_FREE_ON_EXIT(char*,exp);
   int i;
   sprintf(exp, "TreeShr->TreeCreatePulseFile(val(%d),val(%d),ref([", shot,num);
   for (i = 0; i < num; i++) {
@@ -368,11 +374,13 @@ int CreatePulseFileRemote(PINO_DATABASE * dblist, int shot, int *nids, int num)
       strcat(exp,",");
   }
   strcat(exp,"]))");
+  struct descrip ans = empty_ans;
   status = MdsValue0(dblist->tree_info->channel, exp, &ans);
   if (ans.ptr) {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
     MdsIpFree(ans.ptr);
   }
+  FREE_NOW(exp);
   return status;
 }
 
