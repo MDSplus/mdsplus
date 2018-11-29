@@ -51,27 +51,27 @@ IoRoutines tunnel_routines = {
  tunnel_connect, tunnel_send, tunnel_recv, NULL, tunnel_listen, NULL, NULL, tunnel_disconnect, tunnel_recv_to, NULL
 };
 
-struct TUNNEL_PIPES {
+typedef struct tunnel_pipes_s {
 #ifdef _WIN32
-  HANDLE stdin_pipe;
-  HANDLE stdout_pipe;
+  HANDLE stdin;
+  HANDLE stdout;
   HANDLE hProcess;
 #else
-  int stdin_pipe;
-  int stdout_pipe;
+  int stdin;
+  int stdout;
   int pid;
 #endif
-};
+} tunnel_pipes_t;
 
-static struct TUNNEL_PIPES *getTunnelPipes(Connection* c){
+static tunnel_pipes_t *getTunnelPipes(Connection* c){
   size_t len;
   char *info_name;
-  struct TUNNEL_PIPES *p = (struct TUNNEL_PIPES *)GetConnectionInfoC(c, &info_name, 0, &len);
-  return (info_name && !strcmp("tunnel", info_name) && len == sizeof(struct TUNNEL_PIPES)) ? p : 0;
+  tunnel_pipes_t *p = (tunnel_pipes_t *)GetConnectionInfoC(c, &info_name, 0, &len);
+  return (info_name && !strcmp("tunnel", info_name) && len == sizeof(tunnel_pipes_t)) ? p : 0;
 }
 
 static int tunnel_disconnect(Connection* c){
-  struct TUNNEL_PIPES *p = getTunnelPipes(c);
+  tunnel_pipes_t *p = getTunnelPipes(c);
   if (p) {
 #ifdef _WIN32
     if (p->hProcess){
@@ -81,27 +81,27 @@ static int tunnel_disconnect(Connection* c){
       else
         TerminateProcess(p->hProcess,0);
     }
-    CloseHandle(p->stdin_pipe);
-    CloseHandle(p->stdout_pipe);
+    CloseHandle(p->stdin);
+    CloseHandle(p->stdout);
     CloseHandle(p->hProcess);
 #else
     kill(p->pid, SIGTERM);
     waitpid(p->pid, NULL, WNOHANG);
-    close(p->stdin_pipe);
-    close(p->stdout_pipe);
+    close(p->stdin);
+    close(p->stdout);
 #endif
   }
   return C_OK;
 }
 
 static ssize_t tunnel_send(Connection* c, const void *buffer, size_t buflen, int nowait __attribute__ ((unused))){
-  struct TUNNEL_PIPES *p = getTunnelPipes(c);
+  tunnel_pipes_t *p = getTunnelPipes(c);
   if (!p) return -1;
 #ifdef _WIN32
   ssize_t num = 0;
-  return WriteFile(p->stdin_pipe, buffer, buflen, (DWORD *)&num, NULL) ? num : -1;
+  return WriteFile(p->stdin, buffer, buflen, (DWORD *)&num, NULL) ? num : -1;
 #else
-  return write(p->stdin_pipe, buffer, buflen);
+  return write(p->stdin, buffer, buflen);
 #endif
 }
 
@@ -110,7 +110,7 @@ static ssize_t tunnel_recv(Connection* c, void *buffer, size_t buflen){
 }
 
 static ssize_t tunnel_recv_to(Connection* c, void *buffer, size_t buflen, int to_msec){
-  struct TUNNEL_PIPES *p = getTunnelPipes(c);
+  tunnel_pipes_t *p = getTunnelPipes(c);
   if (!p) return -1;
 #ifdef _WIN32
   DWORD toval;
@@ -118,9 +118,9 @@ static ssize_t tunnel_recv_to(Connection* c, void *buffer, size_t buflen, int to
   else if (to_msec==0) toval = MAXDWORD;
   else                 toval = to_msec;
   COMMTIMEOUTS timeouts = { 0, 0, toval, 0, 0};
-  SetCommTimeouts(p->stdout_pipe, &timeouts);
+  SetCommTimeouts(p->stdout, &timeouts);
   ssize_t num = 0;
-  return ReadFile(p->stdout_pipe, buffer, buflen, (DWORD *)&num, NULL) ? num : -1;
+  return ReadFile(p->stdout, buffer, buflen, (DWORD *)&num, NULL) ? num : -1;
 #else
   if (to_msec>=0) { // don't time out if to_msec < 0
     struct timeval timeout;
@@ -128,11 +128,11 @@ static ssize_t tunnel_recv_to(Connection* c, void *buffer, size_t buflen, int to
     timeout.tv_usec = to_msec % 1000;
     fd_set set;
     FD_ZERO(&set); /* clear the set */
-    FD_SET(p->stdout_pipe, &set); /* add our file descriptor to the set */
-    int rv = select(p->stdout_pipe + 1, &set, NULL, NULL, &timeout);
+    FD_SET(p->stdout, &set); /* add our file descriptor to the set */
+    int rv = select(p->stdout + 1, &set, NULL, NULL, &timeout);
     if (rv<=0) return rv;
   }
-  return read(p->stdout_pipe, buffer, buflen);
+  return read(p->stdout, buffer, buflen);
 #endif
 }
 
@@ -154,7 +154,7 @@ static void ChildSignalHandler(int num __attribute__ ((unused))){
     size_t info_len = 0;
     while ((id = NextConnection(&ctx, &info_name, &info, &info_len)) != INVALID_CONNECTION_ID) {
       if (info_name && strcmp(info_name, "tunnel") == 0
-	  && ((struct TUNNEL_PIPES *)info)->pid == pid) {
+	  && ((tunnel_pipes_t *)info)->pid == pid) {
 	DisconnectConnection(id);
 	break;
       }
@@ -172,7 +172,7 @@ static int tunnel_connect(Connection* c, char *protocol, char *host){
   BOOL bSuccess = FALSE;
   PROCESS_INFORMATION piProcInfo;
   STARTUPINFO siStartInfo;
-  struct TUNNEL_PIPES p;
+  tunnel_pipes_t p;
   HANDLE g_hChildStd_IN_Rd = NULL;
   HANDLE g_hChildStd_IN_Wr = NULL;
   HANDLE g_hChildStd_IN_Wr_tmp = NULL;
@@ -204,9 +204,9 @@ static int tunnel_connect(Connection* c, char *protocol, char *host){
   bSuccess = CreateProcess(NULL, cmd, NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &siStartInfo, &piProcInfo);
   free(cmd);
   if (bSuccess) {
-    p.stdin_pipe  = g_hChildStd_IN_Wr;
-    p.stdout_pipe = g_hChildStd_OUT_Rd;
-    p.hProcess    = piProcInfo.hProcess;
+    p.stdin    = g_hChildStd_IN_Wr;
+    p.stdout   = g_hChildStd_OUT_Rd;
+    p.hProcess = piProcInfo.hProcess;
     CloseHandle(g_hChildStd_IN_Rd);
     CloseHandle(g_hChildStd_OUT_Wr);
     CloseHandle(piProcInfo.hThread);
@@ -255,9 +255,9 @@ static int tunnel_connect(Connection* c, char *protocol, char *host){
     close(pipe_fd2[1]);
     return C_ERROR;
   } else {
-    struct TUNNEL_PIPES p;
-    p.stdin_pipe = pipe_fd2[1];
-    p.stdout_pipe = pipe_fd1[0];
+    tunnel_pipes_t p;
+    p.stdin  = pipe_fd2[1];
+    p.stdout = pipe_fd1[0];
     p.pid = pid;
     close(pipe_fd1[1]);
     close(pipe_fd2[0]);
@@ -269,7 +269,7 @@ static int tunnel_connect(Connection* c, char *protocol, char *host){
     sigaddset(&handler.sa_mask, SIGPIPE);
     sigaction(SIGCHLD, &handler,NULL);
     sigaction(SIGPIPE, &handler,NULL);
-    SetConnectionInfoC(c, "tunnel", p.stdout_pipe, &p, sizeof(p));
+    SetConnectionInfoC(c, "tunnel", p.stdout, &p, sizeof(p));
   }
   return C_OK;
 #endif
@@ -279,14 +279,14 @@ static int tunnel_listen(int argc __attribute__ ((unused)), char **argv __attrib
   int id;
   char *username;
 #ifdef _WIN32
-  struct TUNNEL_PIPES p;
-  p.stdin_pipe  = GetStdHandle(STD_OUTPUT_HANDLE);
-  p.stdout_pipe = GetStdHandle(STD_INPUT_HANDLE);
-  p.hProcess    = NULL;
+  tunnel_pipes_t p;
+  p.stdin    = GetStdHandle(STD_OUTPUT_HANDLE);
+  p.stdout   = GetStdHandle(STD_INPUT_HANDLE);
+  p.hProcess = NULL;
 #else
-  struct TUNNEL_PIPES p = { 1, 0, 0 };
-  p.stdin_pipe = dup2(1, 10);
-  p.stdout_pipe = dup2(0, 11);
+  tunnel_pipes_t p = { 1, 0, 0 };
+  p.stdin  = dup2(1, 10);
+  p.stdout = dup2(0, 11);
   close(0);
   close(1);
   dup2(2, 1);
