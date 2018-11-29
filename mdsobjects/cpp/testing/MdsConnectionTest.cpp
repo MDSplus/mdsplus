@@ -52,9 +52,6 @@ inline static Data* cnx_get(Connection* cnx,const char*cmd) {
   return cnx->get(test);
 }
 
-
-
-
 void _test_tree_open(const char *prot, const unsigned short port, const char* mode){
     MdsIpInstancer mdsip(prot,port,mode);
     std::string addr = mdsip.getAddress();
@@ -155,7 +152,12 @@ int main(int argc, char *argv[])
     //  TEST CONNECTION TO REMOTE TREE  ////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
 
-    // local  (includes: ssh, htmp) //
+    // thread //
+    BEGIN_TESTING(Connection thread);
+    test_tree_open("thread",0,NULL);
+    END_TESTING;
+
+    // local  (includes: ssh, html) //
     BEGIN_TESTING(Connection local);
     test_tree_open("local",0,NULL);
     END_TESTING;

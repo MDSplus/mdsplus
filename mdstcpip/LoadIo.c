@@ -35,18 +35,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////
 
 extern IoRoutines tunnel_routines;
+extern IoRoutines thread_routines;
 
 IoRoutines *LoadIo(char *protocol_in){
-  IoRoutines *(*rtn) () = NULL;
-  if (protocol_in == 0)
-    protocol_in = "TCP";
+  if (protocol_in == 0) protocol_in = "TCP";
   char *protocol = strcpy((char *)malloc(strlen(protocol_in) + 1), protocol_in);
   size_t i;
-  for (i = 0; i < strlen(protocol) ; i++)
-    protocol[i] = toupper(protocol[i]);
+  for (i = 0; i < strlen(protocol) ; i++) protocol[i] = toupper(protocol[i]);
+  if (strcmp(protocol,"THREAD")==0) {
+    free(protocol);
+    return &thread_routines;
+  }
   char* image = strcpy((char *)malloc(strlen(protocol) + 36), "MdsIp");
   strcat(image, protocol);
   free(protocol);
+  IoRoutines *(*rtn) () = NULL;
   int status = LibFindImageSymbol_C(image, "Io", (void**)&rtn);
   free(image);
   if (STATUS_OK && rtn) return rtn();
