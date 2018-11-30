@@ -107,11 +107,7 @@ void print_segment_info(TreeNode *node, int segment = -1)
 #endif
 
 
-int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
-{
-    setenv("t_treenode_path",".",1);
-    setenv("t_treenode2_path",".",1);
-
+void main_test(){
     TEST_TIMEOUT(100);
     BEGIN_TESTING(TreeNode);
 
@@ -895,5 +891,16 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
     delete tree;
     delete tree1;
     END_TESTING;
+}
 
+int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
+{
+    std::cout << "START NORMAL TEST\n" << std::flush;
+    setenv("t_treenode_path",".",1);
+    setenv("t_treenode2_path",".",1);
+    main_test();
+    std::cout << "START REMOTE TEST\n" << std::flush;
+    setenv("t_treenode_path","local://1::.",1);
+    setenv("t_treenode2_path","local://2::.",1);
+    main_test();
 }
