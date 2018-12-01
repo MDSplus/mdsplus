@@ -292,10 +292,11 @@ int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, ch
   conid = RemoteAccessConnect(logname, 1, (void *)dblist);
   if (conid != -1) {
     struct descrip ans = empty_ans;
-    char *exp = malloc(strlen(subtree_list ? subtree_list : tree) + 100);
+    INIT_AND_FREE_ON_EXIT(char*,exp);
+    exp = malloc(strlen(subtree_list ? subtree_list : tree) + 100);
     sprintf(exp, "TreeOpen('%s',%d)", subtree_list ? subtree_list : tree, dblist->shotid);
     status = MdsValue0(conid, exp, &ans);
-    free(exp);
+    FREE_NOW(exp);
     status = STATUS_OK ? (((ans.dtype == DTYPE_L) && ans.ptr) ? *(int *)ans.ptr : 0) : status;
     if STATUS_OK {
       TREE_INFO *info;
@@ -413,12 +414,11 @@ int FindNodeRemote(PINO_DATABASE * dblist, char const *path, int *outnid)
 {
   struct descrip ans = empty_ans;
   int status;
-  char *exp = malloc(strlen(path) + 32);
+  INIT_AND_FREE_ON_EXIT(char*,exp);
+  exp = malloc(strlen(path) + 32);
   sprintf(exp, "getnci(%s%s,'nid_number')", path[0] == '-' ? "." : "", path);
   status = MdsValue0(dblist->tree_info->channel, exp, &ans);
-
-  free(exp);
-
+  FREE_NOW(exp);
   if STATUS_OK {
     if (ans.ptr)
       *outnid = *(int *)ans.ptr;
@@ -453,15 +453,14 @@ int FindNodeWildRemote(PINO_DATABASE * dblist, char const *path, int *nid_out, v
   struct _FindNodeStruct *ctx = (struct _FindNodeStruct *)*ctx_inout;
   if (!ctx) {
     struct descrip ans = empty_ans;
-    char *exp = malloc(strlen(path) + 50);
+    INIT_AND_FREE_ON_EXIT(char*,exp);
+    exp = malloc(strlen(path) + 50);
     if (LeadingBackslash(path))
       sprintf(exp, "TreeFindNodeWild('\\%s',%d)", path, usage_mask);
     else
       sprintf(exp, "TreeFindNodeWild('%s',%d)", path, usage_mask);
     status = MdsValue0(dblist->tree_info->channel, exp, &ans);
-
-    free(exp);
-
+    FREE_NOW(exp);
     if STATUS_OK {
       if (ans.ptr) {
 	ctx = malloc(sizeof(struct _FindNodeStruct));
@@ -499,17 +498,19 @@ char *FindNodeTagsRemote(PINO_DATABASE * dblist, int nid_in, void **ctx_ptr __at
   return tag;
 }
 
-char *AbsPathRemote(PINO_DATABASE * dblist, char const *inpath)
-{
-  struct descrip ans = empty_ans;
-  char *exp = (char *)malloc(strlen(inpath) + 20);
-  char *retans = 0;
+char *AbsPathRemote(PINO_DATABASE * dblist, char const *inpath){
+  char *retans;
+  struct descrip ans;
+  INIT_AND_FREE_ON_EXIT(char*,exp);
+  ans = empty_ans;
+  retans = 0;
+  exp = (char *)malloc(strlen(inpath) + 20);
   if (LeadingBackslash(inpath))
     sprintf(exp, "TreeAbsPath(\"\\%s\")", inpath);
   else
     sprintf(exp, "TreeAbsPath(\"%s\")", inpath);
   MdsValue0(dblist->tree_info->channel, exp, &ans);
-  free(exp);
+  FREE_NOW(exp);
   if (ans.ptr) {
     if (ans.dtype == DTYPE_T && (strlen(ans.ptr) > 0)) {
       retans = strcpy(malloc(strlen(ans.ptr) + 1), ans.ptr);
@@ -1041,9 +1042,10 @@ int GetAnswerInfoTO(int sock, char *dtype, short *length, char *ndims, int *dims
 
 int io_open_remote(char *host, char *filename_in, int options, mode_t mode, int *sock, int *enhanced){
   int fd;
+  INIT_AND_FREE_ON_EXIT(char*,filename);
   IO_LOCK;
-  INIT_AS_AND_FREE_ON_EXIT(char*,filename,replaceBackslashes(strdup(filename_in)));
   fd = -1;
+  filename = replaceBackslashes(strdup(filename_in));
   int try_again = 1;
   while (try_again) {
     *sock = RemoteAccessConnect(host, 1, 0);
@@ -1073,7 +1075,7 @@ int io_open_remote(char *host, char *filename_in, int options, mode_t mode, int 
 	int dims[7];
 	int numbytes;
 	void *dptr;
-	void *msg = 0;
+	INIT_AND_FREE_ON_EXIT(void*,msg);
 	int sts;
 	if (((sts =
 	      GetAnswerInfoTS(*sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg)) & 1)
@@ -1084,8 +1086,7 @@ int io_open_remote(char *host, char *filename_in, int options, mode_t mode, int 
 	} else
 	  fprintf(stderr, "Err in GetAnswerInfoTS in io_open_remote: status = %d, length = %d\n",
 		  sts, length);
-	if (msg)
-	  free(msg);
+	FREE_NOW(msg);
 	if (fd == -1)
 	  RemoteAccessDisconnect(*sock, 0);
       } else {
@@ -1097,19 +1098,20 @@ int io_open_remote(char *host, char *filename_in, int options, mode_t mode, int 
       try_again = 0;
     }
   }
-  FREE_NOW(filename);
   IO_UNLOCK;
+  FREE_NOW(filename);
   return fd;
 }
 
-int MDS_IO_OPEN(char *filename_in, int options, mode_t mode)
-{
-  char *filename = replaceBackslashes(strdup(filename_in));
+int MDS_IO_OPEN(char *filename_in, int options, mode_t mode){
+  int fd;
+  INIT_AND_FREE_ON_EXIT(char*,filename);
+  INIT_AND_FREE_ON_EXIT(char*,tmp);
+  int enhanced = 0;
+  filename = replaceBackslashes(strdup(filename_in));
   int conid = -1;
   char *hostpart, *filepart;
-  char *tmp = ParseFile(filename, &hostpart, &filepart);
-  int fd;
-  int enhanced = 0;
+  tmp = ParseFile(filename, &hostpart, &filepart);
   if (hostpart)
     fd = io_open_remote(hostpart, filepart, options, mode, &conid, &enhanced);
   else {
@@ -1117,22 +1119,20 @@ int MDS_IO_OPEN(char *filename_in, int options, mode_t mode)
 #ifndef _WIN32
     if ((fd != -1) && ((options & O_CREAT) != 0)) {
       struct descriptor cmd_d = { 0, DTYPE_T, CLASS_S, 0 };
-      char *cmd = (char *)malloc(39 + strlen(filename));
-      if (cmd) {
-        sprintf(cmd, "SetMdsplusFileProtection %s 2> /dev/null", filename);
-        cmd_d.length = strlen(cmd);
-        cmd_d.pointer = cmd;
-        LibSpawn(&cmd_d, 1, 0);
-        free(cmd);
-      }
+      INIT_AND_FREE_ON_EXIT(char*,cmd);
+      cmd = (char *)malloc(39 + strlen(filename));
+      sprintf(cmd, "SetMdsplusFileProtection %s 2> /dev/null", filename);
+      cmd_d.length = strlen(cmd);
+      cmd_d.pointer = cmd;
+      LibSpawn(&cmd_d, 1, 0);
+      FREE_NOW(cmd);
     }
 #endif
   }
-  free(tmp);
   if (fd != -1)
     fd = NewFD(fd, conid, enhanced);
-  if (filename)
-    free(filename);
+  FREE_NOW(tmp);
+  FREE_NOW(filename);
   return fd;
 }
 
@@ -1153,12 +1153,10 @@ int io_close_remote(int fd)
     int dims[7];
     int numbytes;
     void *dptr;
-    void *msg = 0;
-    if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)
-	&& (length == sizeof(ret)))
+    INIT_AND_FREE_ON_EXIT(void*,msg);
+    if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1) && (length == sizeof(ret)))
       memcpy(&ret, dptr, sizeof(ret));
-    if (msg)
-      free(msg);
+    FREE_NOW(msg);
     RemoteAccessDisconnect(sock, 0);
   } else
     RemoteAccessDisconnect(sock, 1);
@@ -1203,14 +1201,13 @@ off_t io_lseek_remote(int fd, off_t offset, int whence)
     int dims[7];
     int numbytes;
     void *dptr;
-    void *msg = 0;
+    INIT_AND_FREE_ON_EXIT(void*,msg);
     if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)
 	&& ((size_t)length >= sizeof(int))) {
       ret = 0;
       memcpy(&ret, dptr, ((size_t)length > sizeof(ret)) ? sizeof(ret) : (size_t)length);
     }
-    if (msg)
-      free(msg);
+    FREE_NOW(msg);
   } else
     RemoteAccessDisconnect(sock, 1);
   IO_UNLOCK;
@@ -1255,12 +1252,11 @@ ssize_t io_write_remote(int fd, void *buff, size_t count)
     int dims[7];
     int nbytes;
     void *dptr;
-    void *msg = 0;
+    INIT_AND_FREE_ON_EXIT(void*,msg);
     if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &nbytes, &dptr, &msg) & 1)
 	&& (nbytes == sizeof(int)))
       ret = (ssize_t) * (int *)dptr;
-    if (msg)
-      free(msg);
+    FREE_NOW(msg);
   } else
     RemoteAccessDisconnect(sock, 1);
   IO_UNLOCK;
@@ -1304,14 +1300,13 @@ ssize_t io_read_remote(int fd, void *buff, size_t count)
     char ndims;
     int dims[7];
     void *dptr;
-    void *msg = 0;
+    INIT_AND_FREE_ON_EXIT(void*,msg);
     if (GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &ret_i, &dptr, &msg) & 1) {
       ret = (ssize_t) ret_i;
       if (ret)
 	memcpy(buff, dptr, (size_t) ret);
     }
-    if (msg)
-      free(msg);
+    FREE_NOW(msg);
   } else
     RemoteAccessDisconnect(sock, 1);
   IO_UNLOCK;
@@ -1343,7 +1338,7 @@ ssize_t io_read_x_remote(int fd, off_t offset, void *buff, size_t count,
     int dims[7];
     void *dptr;
     int ret_i;
-    void *msg = 0;
+    INIT_AND_FREE_ON_EXIT(void*,msg);
     int sts;
     if ((sts = GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &ret_i, &dptr, &msg)) & 1) {
       if (deleted)
@@ -1352,8 +1347,7 @@ ssize_t io_read_x_remote(int fd, off_t offset, void *buff, size_t count,
       if (ret)
 	memcpy(buff, dptr, (size_t) ret);
     }
-    if (msg)
-      free(msg);
+    FREE_NOW(msg);
   } else
     RemoteAccessDisconnect(sock, 1);
   IO_UNLOCK;
@@ -1433,15 +1427,14 @@ int io_lock_remote(int fd, off_t offset, size_t size, int mode, int *deleted)
     int nbytes;
     int dims[7];
     void *dptr;
-    void *msg = 0;
+    INIT_AND_FREE_ON_EXIT(void*,msg);
     int sts;
     if ((sts = GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &nbytes, &dptr, &msg)) & 1) {
       if (deleted)
 	*deleted = sts == 3;
       memcpy(&ret, dptr, sizeof(ret));
     }
-    if (msg)
-      free(msg);
+    FREE_NOW(msg);
   } else
     RemoteAccessDisconnect(sock, 1);
   IO_UNLOCK;
@@ -1497,8 +1490,7 @@ int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted){
   return status;
 }
 
-int io_exists_remote(char *host, char *filename)
-{
+int io_exists_remote(char *host, char *filename){
   int ans;
   IO_LOCK;
   ans = 0;
@@ -1516,12 +1508,11 @@ int io_exists_remote(char *host, char *filename)
       int dims[7];
       int numbytes;
       void *dptr;
-      void *msg = 0;
+      INIT_AND_FREE_ON_EXIT(void*,msg);
       if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)
 	  && (length == sizeof(ans)))
 	memcpy(&ans, dptr, sizeof(ans));
-      if (msg)
-	free(msg);
+      FREE_NOW(msg);
       RemoteAccessDisconnect(sock, 0);
     } else
       RemoteAccessDisconnect(sock, 1);
@@ -1530,17 +1521,17 @@ int io_exists_remote(char *host, char *filename)
   return ans;
 }
 
-int MDS_IO_EXISTS(char *filename_in)
-{
-  char *filename = replaceBackslashes(strdup(filename_in));
+int MDS_IO_EXISTS(char *filename_in){
   int status;
+  INIT_AND_FREE_ON_EXIT(char*,filename);
+  INIT_AND_FREE_ON_EXIT(char*,tmp);
+  filename = replaceBackslashes(strdup(filename_in));
   struct stat statbuf;
   char *hostpart, *filepart;
-  char *tmp = ParseFile(filename, &hostpart, &filepart);
+  tmp = ParseFile(filename, &hostpart, &filepart);
   status = hostpart ? io_exists_remote(hostpart, filepart) : (stat(filename, &statbuf) == 0);
-  free(tmp);
-  if (filename)
-    free(filename);
+  FREE_NOW(tmp);
+  FREE_NOW(filename);
   return status;
 }
 
@@ -1563,12 +1554,11 @@ int io_remove_remote(char *host, char *filename)
       int dims[7];
       int numbytes;
       void *dptr;
-      void *msg = 0;
+      INIT_AND_FREE_ON_EXIT(void*,msg);
       if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)
 	  && (length == sizeof(ans)))
 	memcpy(&ans, dptr, sizeof(ans));
-      if (msg)
-	free(msg);
+      FREE_NOW(msg);
       RemoteAccessDisconnect(sock, 0);
     } else
       RemoteAccessDisconnect(sock, 1);
@@ -1579,14 +1569,15 @@ int io_remove_remote(char *host, char *filename)
 
 int MDS_IO_REMOVE(char *filename_in)
 {
-  char *filename = replaceBackslashes(strdup(filename_in));
   int status;
+  INIT_AND_FREE_ON_EXIT(char*,filename);
+  INIT_AND_FREE_ON_EXIT(char*,tmp);
+  filename = replaceBackslashes(strdup(filename_in));
   char *hostpart, *filepart;
-  char *tmp = ParseFile(filename, &hostpart, &filepart);
+  tmp = ParseFile(filename, &hostpart, &filepart);
   status = hostpart ? io_remove_remote(hostpart, filepart) : remove(filename);
-  free(tmp);
-  if (filename)
-    free(filename);
+  FREE_NOW(tmp);
+  FREE_NOW(filename);
   return status;
 }
 
@@ -1594,12 +1585,12 @@ int io_rename_remote(char *host, char *filename_old, char *filename_new)
 {
   int ans;
   IO_LOCK;
-  ans = -1;
   int sock;
   sock = RemoteAccessConnect(host, 1, 0);
   if (sock != -1) {
+    INIT_AND_FREE_ON_EXIT(char*,names);
     int info[] = { 0 };
-    char *names;
+    ans = -1;
     int status;
     info[0] = (int)(strlen(filename_old) + 1 + strlen(filename_new) + 1);
     names = strcpy(malloc(info[0]), filename_old);
@@ -1612,27 +1603,27 @@ int io_rename_remote(char *host, char *filename_old, char *filename_new)
       int dims[7];
       int numbytes;
       void *dptr;
-      void *msg = 0;
+      INIT_AND_FREE_ON_EXIT(void*,msg);
       if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)
 	  && (length == sizeof(ans)))
 	memcpy(&ans, dptr, sizeof(ans));
-      if (msg)
-	free(msg);
+      FREE_NOW(msg);
       RemoteAccessDisconnect(sock, 0);
     } else
       RemoteAccessDisconnect(sock, 1);
-    free(names);
-  }
+    FREE_NOW(names);
+  } else ans = -1;
   IO_UNLOCK;
   return ans;
 }
 
-int MDS_IO_RENAME(char *filename_old, char *filename_new)
-{
+int MDS_IO_RENAME(char *filename_old, char *filename_new){
   int status;
+  INIT_AND_FREE_ON_EXIT(char*,tmp_new);
+  INIT_AND_FREE_ON_EXIT(char*,tmp_old);
   char *hostpart_old, *filepart_old, *hostpart_new, *filepart_new;
-  char *tmp_old = ParseFile(filename_old, &hostpart_old, &filepart_old);
-  char *tmp_new = ParseFile(filename_new, &hostpart_new, &filepart_new);
+  tmp_old = ParseFile(filename_old, &hostpart_old, &filepart_old);
+  tmp_new = ParseFile(filename_new, &hostpart_new, &filepart_new);
   filename_old = replaceBackslashes(filename_old);
   filename_new = replaceBackslashes(filename_new);
   if (hostpart_old) {
@@ -1642,7 +1633,7 @@ int MDS_IO_RENAME(char *filename_old, char *filename_new)
       status = -1;
   } else
     status = rename(filename_old, filename_new);
-  free(tmp_old);
-  free(tmp_new);
+  FREE_NOW(tmp_old);
+  FREE_NOW(tmp_new);
   return status;
 }
