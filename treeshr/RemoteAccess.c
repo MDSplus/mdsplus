@@ -66,7 +66,7 @@ struct descrip {
   void *ptr;
 };
 
-static struct descrip empty_ans = {0};
+static const struct descrip empty_ans = {0};
 
 static inline char *replaceBackslashes(char *filename) {
   char *ptr;
@@ -78,16 +78,6 @@ extern void LockMdsShrMutex(pthread_mutex_t *, int *);
 extern void UnlockMdsShrMutex(pthread_mutex_t *);
 extern void TreePerfWrite(int);
 extern void TreePerfRead(int);
-
-int FindImageSymbol(char *name, void **sym){
-/*
-Manage name clash for MdsValue (defined both in mdsipshr and mdslib) by forcing library MdsLib to be loaded first.
-This does not make harm to treeshr, but avoids to load a wrong symbol when MdsLib's MdsValue is then loaded.
-*/
-  static void *dummySym = NULL;
-  LibFindImageSymbol_C("MdsLib", "MdsOpen", &dummySym);
-  return LibFindImageSymbol_C("MdsIpShr", name, sym);
-}
 
 static pthread_mutex_t host_list_lock = PTHREAD_MUTEX_INITIALIZER;
 #define HOST_LIST_LOCK    pthread_mutex_lock(&host_list_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&host_list_lock);
@@ -195,17 +185,17 @@ static struct _host_list {
 #endif
 
 void MdsIpFree(void *ptr){
-  static void (*rtn) (void *) = NULL;
-  if IS_NOT_OK(FindImageSymbol("MdsIpFree", (void **)&rtn)) return;
-  (*rtn) (ptr);
+  static void (*mdsIpFree) (void *) = NULL;
+  if IS_NOT_OK(LibFindImageSymbol_C("MdsIpShr", "MdsIpFree", &mdsIpFree)) return;
+  mdsIpFree(ptr);
 }
 
 int RemoteAccessConnect(char *host, int inc_count, void *dbid){
   int host_in_directive;
   struct _host_list *hostchk;
   struct _host_list **nextone;
-  static int (*rtn) (char *) = NULL;
-  int status = FindImageSymbol("ConnectToMds", (void **)&rtn);
+  static int (*connectToMds) (char *) = NULL;
+  int status = LibFindImageSymbol_C("MdsIpShr", "ConnectToMds", &connectToMds);
   if STATUS_NOT_OK return -1;
 #if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
   struct sockaddr_in sockaddr;
@@ -232,7 +222,7 @@ int RemoteAccessConnect(char *host, int inc_count, void *dbid){
     }
   }
   if (conid == -1) {
-    conid = (*rtn) (host);
+    conid = connectToMds(host);
     if (conid != -1) {
       *nextone = malloc(sizeof(struct _host_list));
       (*nextone)->dbid = dbid;
@@ -253,8 +243,8 @@ int RemoteAccessConnect(char *host, int inc_count, void *dbid){
 int RemoteAccessDisconnect(int conid, int force){
   struct _host_list *hostchk;
   struct _host_list *previous;
-  static int (*rtn) (int) = NULL;
-  int status = FindImageSymbol("DisconnectFromMds", (void **)&rtn);
+  static int (*disconnectFromMds) (int) = NULL;
+  int status = LibFindImageSymbol_C("MdsIpShr", "DisconnectFromMds", &disconnectFromMds);
   if STATUS_NOT_OK return status;
   HOST_LIST_LOCK;
   for (hostchk = host_list; hostchk && hostchk->conid != conid; hostchk = hostchk->next) ;
@@ -266,7 +256,7 @@ int RemoteAccessDisconnect(int conid, int force){
   while (hostchk) {
     if (force || (hostchk->connections <= 0 && (hostchk->dbid || ((time(0) - hostchk->time) > 60)))) {
       struct _host_list *next = hostchk->next;
-      status = (*rtn) (hostchk->conid);
+      status = disconnectFromMds(hostchk->conid);
       free(hostchk->host);
       free(hostchk);
       if (previous)
@@ -284,37 +274,50 @@ int RemoteAccessDisconnect(int conid, int force){
 }
 
 static int (*MdsValue) () = NULL;
-int MdsValue0(int conid, char *exp, struct descrip *ans){
-  int status = FindImageSymbol("MdsValue", (void **)&MdsValue);
+static int MdsValue0(int conid, char *exp, struct descrip *ans){
+  int status = LibFindImageSymbol_C("MdsIpShr", "MdsValue", (void **)&MdsValue);
   if STATUS_NOT_OK return status;
   IO_LOCK;
-  status = (*MdsValue) (conid, exp, ans, NULL);
+  status = MdsValue(conid, exp, ans, NULL);
   IO_UNLOCK;
   return status;
 }
 
-int MdsValue1(int conid, char *exp, struct descrip *arg1, struct descrip *ans){
-  int status = FindImageSymbol("MdsValue", (void **)&MdsValue);
+static int MdsValue1(int conid, char *exp, struct descrip *arg1, struct descrip *ans){
+  int status = LibFindImageSymbol_C("MdsIpShr", "MdsValue", (void **)&MdsValue);
   if STATUS_NOT_OK return status;
   IO_LOCK;
-  status = (*MdsValue) (conid, exp, arg1, ans, NULL);
+  status = MdsValue(conid, exp, arg1, ans, NULL);
   IO_UNLOCK;
   return status;
+}
+
+/*static int MdsValue2(int conid, char *exp, struct descrip *arg1, struct descrip *arg2, struct descrip *ans){
+  int status = LibFindImageSymbol_C("MdsIpShr", "MdsValue", (void **)&MdsValue);
+  if STATUS_NOT_OK return status;
+  IO_LOCK;
+  status = MdsValue(conid, exp, arg1, arg2, ans, NULL);
+  IO_UNLOCK;
+  return status;
+}*/
+
+inline static struct descrip str2descrip(const char* str) {
+  struct descrip ans = {DTYPE_T,1,{0},strlen(str),(char*)str};
+  return ans;
 }
 
 inline static int tree_open(PINO_DATABASE * dblist, int conid, const char* treearg) {
   int status;
-  INIT_AND_FREE_ON_EXIT(char*,exp);
   struct descrip ans = empty_ans;
-  exp = malloc(strlen(treearg) + 32);
-  sprintf(exp, "TreeOpen('%s',%d)", treearg, dblist->shotid);
-  status = MdsValue0(conid, exp, &ans);
+  char exp[64];
+  sprintf(exp, "TreeShr->TreeOpen(ref($),val(%d))", dblist->shotid);
+  struct descrip tree = str2descrip(treearg);
+  status = MdsValue1(conid, exp, &tree, &ans);
   if (ans.ptr) {
     if STATUS_OK
       status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : TreeFAILURE;
     MdsIpFree(ans.ptr);
   }
-  FREE_NOW(exp);
   return status;
 }
 
@@ -362,10 +365,11 @@ int SetStackSizeRemote(PINO_DATABASE *dbid __attribute__ ((unused)), int stack_s
 
 int CloseTreeRemote(PINO_DATABASE * dblist, int call_host __attribute__ ((unused))){
   struct descrip ans = empty_ans;
+  struct descrip tree = str2descrip(dblist->experiment);
   int status;
-  char exp[512];
-  sprintf(exp, "TreeClose('%s',%d)", dblist->experiment, dblist->shotid);
-  status = MdsValue0(dblist->tree_info->channel, exp, &ans);
+  char exp[64];
+  sprintf(exp, "TreeShr->TreeClose(ref($),val(%d))", dblist->shotid);
+  status = MdsValue1(dblist->tree_info->channel, exp, &tree, &ans);
   if (ans.ptr) {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
     MdsIpFree(ans.ptr);
@@ -381,23 +385,15 @@ int CloseTreeRemote(PINO_DATABASE * dblist, int call_host __attribute__ ((unused
 }
 
 int CreatePulseFileRemote(PINO_DATABASE * dblist, int shot, int *nids, int num){
-  int status;
-  INIT_AND_FREE_ON_EXIT(char*,exp);
-  int i;
-  sprintf(exp, "TreeShr->TreeCreatePulseFile(val(%d),val(%d),ref([", shot,num);
-  for (i = 0; i < num; i++) {
-    sprintf(&exp[strlen(exp)], "%d", nids[i]);
-    if (i<num-1)
-      strcat(exp,",");
-  }
-  strcat(exp,"]))");
+  char exp[64];
+  sprintf(exp, "TreeShr->TreeCreatePulseFile(val(%d),ref($),val(%d))", shot, num);
+  struct descrip arr = {DTYPE_L,1,{num},sizeof(int),(void*)nids};
   struct descrip ans = empty_ans;
-  status = MdsValue0(dblist->tree_info->channel, exp, &ans);
+  int status = MdsValue1(dblist->tree_info->channel, exp, &arr, &ans);
   if (ans.ptr) {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
     MdsIpFree(ans.ptr);
   }
-  FREE_NOW(exp);
   return status;
 }
 
@@ -405,9 +401,8 @@ int GetRecordRemote(PINO_DATABASE * dblist, int nid_in, struct descriptor_xd *ds
 {
   struct descrip ans = empty_ans;
   int status;
-  char exp[512];
-  sprintf(exp, "_thick_client_rec=getnci(%d,'RECORD'),execute('SerializeOut(`_thick_client_rec)')",
-	  nid_in);
+  char exp[80];
+  sprintf(exp, "SerializeOut(`getnci(%d,'RECORD'))", nid_in);
   status = MdsValue0(dblist->tree_info->channel, exp, &ans);
   if STATUS_OK {
     if (ans.ptr)
@@ -472,20 +467,16 @@ int FindNodeEndRemote(PINO_DATABASE * dblist __attribute__ ((unused)), void **ct
   return 1;
 }
 
-int FindNodeWildRemote(PINO_DATABASE * dblist, char const *path, int *nid_out, void **ctx_inout, int usage_mask)
+int FindNodeWildRemote(PINO_DATABASE * dblist, char const *patharg, int *nid_out, void **ctx_inout, int usage_mask)
 {
   int status = TreeNORMAL;
   struct _FindNodeStruct *ctx = (struct _FindNodeStruct *)*ctx_inout;
   if (!ctx) {
     struct descrip ans = empty_ans;
-    INIT_AND_FREE_ON_EXIT(char*,exp);
-    exp = malloc(strlen(path) + 50);
-    if (LeadingBackslash(path))
-      sprintf(exp, "TreeFindNodeWild('\\%s',%d)", path, usage_mask);
-    else
-      sprintf(exp, "TreeFindNodeWild('%s',%d)", path, usage_mask);
-    status = MdsValue0(dblist->tree_info->channel, exp, &ans);
-    FREE_NOW(exp);
+    struct descrip path = str2descrip(patharg);
+    char exp[64];
+    sprintf(exp, "TreeShr->TreeFindNodeWild(ref($),val(%d))", usage_mask);
+    status = MdsValue1(dblist->tree_info->channel, exp, &path, &ans);
     if STATUS_OK {
       if (ans.ptr) {
 	ctx = malloc(sizeof(struct _FindNodeStruct));
@@ -514,7 +505,7 @@ char *FindNodeTagsRemote(PINO_DATABASE * dblist, int nid_in, void **ctx_ptr __at
   struct descrip ans = empty_ans;
   char exp[64];
   char *tag = 0;
-  sprintf(exp, "TreeFindNodeTags(%d)", nid_in);
+  sprintf(exp, "TreeShr->TreeFindNodeTags(val(%d))", nid_in);
   MdsValue0(dblist->tree_info->channel, exp, &ans);
   if (ans.ptr && (ans.dtype == DTYPE_T) && (strlen(ans.ptr) > 0)) {
     tag = strcpy(malloc(strlen(ans.ptr) + 1), ans.ptr);
@@ -523,19 +514,11 @@ char *FindNodeTagsRemote(PINO_DATABASE * dblist, int nid_in, void **ctx_ptr __at
   return tag;
 }
 
-char *AbsPathRemote(PINO_DATABASE * dblist, char const *inpath){
-  char *retans;
-  struct descrip ans;
-  INIT_AND_FREE_ON_EXIT(char*,exp);
-  ans = empty_ans;
-  retans = 0;
-  exp = (char *)malloc(strlen(inpath) + 20);
-  if (LeadingBackslash(inpath))
-    sprintf(exp, "TreeAbsPath(\"\\%s\")", inpath);
-  else
-    sprintf(exp, "TreeAbsPath(\"%s\")", inpath);
-  MdsValue0(dblist->tree_info->channel, exp, &ans);
-  FREE_NOW(exp);
+char *AbsPathRemote(PINO_DATABASE * dblist, char const *inpatharg){
+  char *retans = 0;
+  struct descrip ans = empty_ans;
+  struct descrip inpath = str2descrip(inpatharg);
+  MdsValue1(dblist->tree_info->channel, "TreeShr->TreeAbsPath(ref($))", &inpath, &ans);
   if (ans.ptr) {
     if (ans.dtype == DTYPE_T && (strlen(ans.ptr) > 0)) {
       retans = strcpy(malloc(strlen(ans.ptr) + 1), ans.ptr);
@@ -548,9 +531,9 @@ char *AbsPathRemote(PINO_DATABASE * dblist, char const *inpath){
 int SetDefaultNidRemote(PINO_DATABASE * dblist, int nid)
 {
   struct descrip ans = empty_ans;
-  char exp[512];
+  char exp[64];
   int status;
-  sprintf(exp, "SetDefaultNid(%d)", nid);
+  sprintf(exp, "TreeShr->SetDefaultNid(val(%d))", nid);
   status = MdsValue0(dblist->tree_info->channel, exp, &ans);
   if (ans.ptr) {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
@@ -562,7 +545,7 @@ int SetDefaultNidRemote(PINO_DATABASE * dblist, int nid)
 int GetDefaultNidRemote(PINO_DATABASE * dblist, int *nid)
 {
   struct descrip ans = empty_ans;
-  int status = MdsValue0(dblist->tree_info->channel, "GetDefaultNid()", &ans);
+  int status = MdsValue0(dblist->tree_info->channel, "TreeShr->GetDefaultNid()", &ans);
   if (ans.ptr) {
     if (ans.dtype == DTYPE_L)
       *nid = *(int *)ans.ptr;
@@ -584,12 +567,13 @@ typedef struct tag_search {
   int conid;
 } TAG_SEARCH;
 
-char *FindTagWildRemote(PINO_DATABASE * dblist, char *wild, int *nidout, void **ctx_inout)
+char *FindTagWildRemote(PINO_DATABASE * dblist, const char *wildarg, int *nidout, void **ctx_inout)
 {
   TAG_SEARCH **ctx = (TAG_SEARCH **) ctx_inout;
   struct descrip ans = empty_ans;
+  struct descrip wild = str2descrip(wildarg);
   struct descrip nid_ans = empty_ans;
-  char exp[512];
+  char exp[64];
   int status;
   int first_time = 0;
   if (*ctx == (TAG_SEARCH *) 0) {
@@ -600,9 +584,8 @@ char *FindTagWildRemote(PINO_DATABASE * dblist, char *wild, int *nidout, void **
     first_time = 1;
   } else if ((*ctx)->remote_tag)
     free((*ctx)->remote_tag);
-  sprintf(exp, "TreeFindTagWild(\"%s\",_nid,%s)//\"\\0\"", wild,
-	  first_time ? "_remftwctx = 0" : "_remftwctx");
-  status = MdsValue0(dblist->tree_info->channel, exp, &ans);
+  sprintf(exp, "TreeFindTagWild($,_nid,%s)//\"\\0\"",first_time ? "___=0" : "___");
+  status = MdsValue1(dblist->tree_info->channel, exp, &wild, &ans);
   if (status & 1 && ans.ptr && ans.dtype == DTYPE_T && strlen((char *)ans.ptr) > 0) {
     (*ctx)->remote_tag = strcpy(malloc(strlen(ans.ptr) + 1), ans.ptr);
   } else
@@ -785,16 +768,16 @@ int PutRecordRemote(PINO_DATABASE * dblist, int nid_in, struct descriptor *dsc, 
   int status = MdsSerializeDscOut(dsc, &out);
 
   if STATUS_OK {
-    char exp[512];
+    char exp[80];
     struct descrip ans = empty_ans;
     if (out.pointer) {
-      struct descrip data = { DTYPE_B, 1, {0, 0, 0, 0, 0, 0, 0}, 1, 0 };
-      sprintf(exp, "TreePutRecord(%d, SerializeIn($), %d)", nid_in, utility_update);
+      struct descrip data = { DTYPE_B, 1, {0}, 1, 0 };
+      sprintf(exp, "TreeShr->TreePutRecord(val(%d),xd(`(___=*;MdsShr->MdsSerializeDscIn(ref($),xd(___));___;)),val(%d))", nid_in, utility_update);
       data.dims[0] = ((struct descriptor_a *)out.pointer)->arsize;
       data.ptr = out.pointer->pointer;
       status = MdsValue1(dblist->tree_info->channel, exp, &data, &ans);
     } else {
-      sprintf(exp, "TreePutRecord(%d, *, %d)", nid_in, utility_update);
+      sprintf(exp, "TreeShr->TreePutRecord(val(%d),val(0),val(%d))", nid_in, utility_update);
       status = MdsValue0(dblist->tree_info->channel, exp, &ans);
     }
     if (ans.ptr) {
@@ -812,9 +795,9 @@ int PutRecordRemote(PINO_DATABASE * dblist, int nid_in, struct descriptor *dsc, 
 int SetNciItmRemote(PINO_DATABASE * dblist, int nid, int code, int value)
 {
   struct descrip ans = empty_ans;
-  char exp[512];
+  char exp[80];
   int status;
-  sprintf(exp, "TreeSetNciItm(%d,%d,%d)", nid, code, value);
+  sprintf(exp, "TreeShr->TreeSetNciItm(val(%d),val(%d),val(%d))", nid, code, value);
   status = MdsValue0(dblist->tree_info->channel, exp, &ans);
   if (ans.ptr) {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
@@ -826,8 +809,8 @@ int SetNciItmRemote(PINO_DATABASE * dblist, int nid, int code, int value)
 int SetDbiItmRemote(PINO_DATABASE * dblist, int code, int value)
 {
   struct descrip ans = empty_ans;
-  char exp[512];
-  sprintf(exp, "TreeSetDbiItm(%d,%d)", code, value);
+  char exp[64];
+  sprintf(exp, "TreeShr->TreeSetDbiItm(val(%d),val(%d))", code, value);
   int status = MdsValue0(dblist->tree_info->channel, exp, &ans);
   if (ans.ptr) {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
@@ -876,8 +859,8 @@ int SetDbiRemote(PINO_DATABASE * dblist, DBI_ITM * dbi_itm)
 int TreeFlushOffRemote(PINO_DATABASE * dblist, int nid)
 {
   struct descrip ans = empty_ans;
-  char exp[512];
-  sprintf(exp, "TreeFlushOff(%d)", nid);
+  char exp[64];
+  sprintf(exp, "TreeShr->TreeFlushOff(val(%d))", nid);
   int status = MdsValue0(dblist->tree_info->channel, exp, &ans);
   if (ans.ptr) {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
@@ -889,9 +872,9 @@ int TreeFlushOffRemote(PINO_DATABASE * dblist, int nid)
 int TreeFlushResetRemote(PINO_DATABASE * dblist, int nid)
 {
   struct descrip ans = empty_ans;
-  char exp[512];
+  char exp[64];
   int status;
-  sprintf(exp, "TreeFlushReset(%d)", nid);
+  sprintf(exp, "TreeShr->TreeFlushReset(val(%d))", nid);
   status = MdsValue0(dblist->tree_info->channel, exp, &ans);
   if (ans.ptr) {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
@@ -903,9 +886,9 @@ int TreeFlushResetRemote(PINO_DATABASE * dblist, int nid)
 int TreeTurnOnRemote(PINO_DATABASE * dblist, int nid)
 {
   struct descrip ans = empty_ans;
-  char exp[512];
+  char exp[64];
   int status;
-  sprintf(exp, "TreeTurnOn(%d)", nid);
+  sprintf(exp, "TreeShr->TreeTurnOn(val(%d))", nid);
   status = MdsValue0(dblist->tree_info->channel, exp, &ans);
   if (ans.ptr) {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
@@ -917,9 +900,9 @@ int TreeTurnOnRemote(PINO_DATABASE * dblist, int nid)
 int TreeTurnOffRemote(PINO_DATABASE * dblist, int nid)
 {
   struct descrip ans = empty_ans;
-  char exp[512];
+  char exp[64];
   int status;
-  sprintf(exp, "TreeTurnOff(%d)", nid);
+  sprintf(exp, "TreeShr->TreeTurnOff(val(%d))", nid);
   status = MdsValue0(dblist->tree_info->channel, exp, &ans);
   if (ans.ptr) {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
@@ -928,15 +911,14 @@ int TreeTurnOffRemote(PINO_DATABASE * dblist, int nid)
   return status;
 }
 
-int TreeGetCurrentShotIdRemote(char *tree, char *path, int *shot)
+int TreeGetCurrentShotIdRemote(const char *treearg, char *path, int *shot)
 {
   int status = 0;
   int channel = RemoteAccessConnect(path, 0, 0);
   if (channel > 0) {
     struct descrip ans = empty_ans;
-    char exp[512];
-    sprintf(exp, "TreeGetCurrentShot(\"%s\")", tree);
-    status = MdsValue0(channel, exp, &ans);
+    struct descrip tree = str2descrip(treearg);
+    status = MdsValue1(channel, "TreeGetCurrentShot(ref($))", &tree, &ans);
     if (ans.ptr) {
       if (ans.dtype == DTYPE_L)
 	*shot = *(int *)ans.ptr;
@@ -948,15 +930,16 @@ int TreeGetCurrentShotIdRemote(char *tree, char *path, int *shot)
   return status;
 }
 
-int TreeSetCurrentShotIdRemote(char *tree, char *path, int shot)
+int TreeSetCurrentShotIdRemote(const char *treearg, char *path, int shot)
 {
   int status = 0;
   int channel = RemoteAccessConnect(path, 0, 0);
   if (channel > 0) {
     struct descrip ans = empty_ans;
-    char exp[512];
-    sprintf(exp, "TreeSetCurrentShot(\"%s\",%d)", tree, shot);
-    status = MdsValue0(channel, exp, &ans);
+    struct descrip tree = str2descrip(treearg);
+    char exp[64];
+    sprintf(exp, "TreeShr->TreeSetCurrentShot(ref($),val(%d))", shot);
+    status = MdsValue1(channel, exp, &tree, &ans);
     if (ans.ptr) {
       status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
       MdsIpFree(ans.ptr);
@@ -1023,26 +1006,26 @@ int MDS_IO_FD(int fd){
   return ans;
 }
 
-int SendArg(int conid, unsigned char idx, char dtype, unsigned char nargs, short length, char ndims, int *dims, char *bytes) {
-  static int (*rtn) () = NULL;
-  int status = FindImageSymbol("SendArg", (void **)&rtn);
+static int SendArg(int conid, unsigned char idx, char dtype, unsigned char nargs, short length, char ndims, int *dims, char *bytes) {
+  static int (*sendArg) () = NULL;
+  int status = LibFindImageSymbol_C("MdsIpShr", "SendArg", &sendArg);
   if STATUS_NOT_OK  return status;
-  return (*rtn) (conid, idx, dtype, nargs, length, ndims, dims, bytes);
+  return sendArg(conid, idx, dtype, nargs, length, ndims, dims, bytes);
 }
 
-int GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void **dptr, void **m){
-  static int (*rtn) () = NULL;
-  int status = FindImageSymbol("GetAnswerInfoTS", (void **)&rtn);
+static int GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void **dptr, void **m){
+  static int (*getAnswerInfoTS) () = NULL;
+  int status = LibFindImageSymbol_C("MdsIpShr", "GetAnswerInfoTS", &getAnswerInfoTS);
   if STATUS_NOT_OK  return status;
-  return (*rtn) (sock, dtype, length, ndims, dims, numbytes, dptr, m);
+  return getAnswerInfoTS(sock, dtype, length, ndims, dims, numbytes, dptr, m);
 }
 
 /*
-int GetAnswerInfoTO(int sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void **dptr, void **m, int timeout){
-  static int (*rtn) () = NULL;
-  int status = FindImageSymbol("GetAnswerInfoTO", (void **)&rtn);
+static int GetAnswerInfoTO(int sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void **dptr, void **m, int timeout){
+  static int (*getAnswerInfoTO) () = NULL;
+  int status = LibFindImageSymbol_C("MdsIpShr", "GetAnswerInfoTO", &getAnswerInfoTO);
   if STATUS_NOT_OK return status;
-  return (*rtn) (sock, dtype, length, ndims, dims, numbytes, dptr, m, timeout);
+  return getAnswerInfoTO(sock, dtype, length, ndims, dims, numbytes, dptr, m, timeout);
 }
 */
 
