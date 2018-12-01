@@ -900,7 +900,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
     setenv("t_treenode2_path",".",1);
     main_test();
     std::cout << "START REMOTE TEST\n" << std::flush;
-    setenv("t_treenode_path","local://1::.",1);
-    setenv("t_treenode2_path","local://2::.",1);
+    setenv("t_treenode_path","thread://1::.",1);
+    setenv("t_treenode2_path","thread://2::.",1);
     main_test();
 }
