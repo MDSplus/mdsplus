@@ -24,7 +24,7 @@
 #
 
 from threading import Thread
-from MDSplus import Connection,GetMany,Float32,Range
+from MDSplus import Connection,GetMany,Float32,Range,setenv,Tree,TreeNNF,TreeNodeArray
 import time
 
 def _mimport(name, level=1):
@@ -33,8 +33,55 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 _UnitTest=_mimport("_UnitTest")
-class Tests(_UnitTest.Tests,_UnitTest.MdsIp):
+class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
     index = 0
+    tree = "pytree"
+    def thick(self):
+        def testnci(thick,local,con,nci):
+            l = local.S.__getattribute__(nci)
+            t = thick.S.__getattribute__(nci)
+            if nci.endswith("_nids"):
+                l,t = str(l),str(t)
+                try:   c = str(con.get("getnci(getnci(S,$),'nid_number')",nci))
+                except TreeNNF: c = '[]'
+            else:
+                c = con.get("getnci(S,$)",nci)
+            try:
+                self.assertEqual(t,c)
+                self.assertEqual(t,l)
+            except:
+                print(nci,t,l,c)
+                raise
+        server,server_port  = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT',7100+self.index,True)
+        svr = svr_log = None
+        try:
+            svr,svr_log = self._start_mdsip(server ,server_port ,'connectionTCP')
+            try:
+                con = Connection(server)
+                with Tree(self.tree,-1,"new") as local:
+                    s=local.addNode("S","SIGNAL")
+                    s.addNode("T","TEXT").addTag("tagT")
+                    s.addTag("tagS")
+                    s.record = Float32([0,1,2,3])
+                    local.write()
+                local.normal()
+                setenv("pytree_path","%s::"%server)
+                thick = Tree(self.tree,-1)
+                con.get("treeopen($,$)",self.tree,-1)
+                # self.assertEqual(local.getFileName(),thick.getFileName());# remote Segmentation fault
+                self.assertEqual(local.getFileName(),con.get("treefilename($,-1)",self.tree))
+                self.assertEqual(str(thick.S.record.evaluate()), "[0.,1.,2.,3.]")
+                self.assertEqual(str(local.S.record.evaluate()), "[0.,1.,2.,3.]")
+                self.assertEqual(thick.findTags("*")[0],local.findTags("*")[0]) # thick client only finds first tag
+                for nci in ('depth','usage_str','dtype','length','rlength','fullpath','minpath','member_nids','children_nids','rfa'):
+                    testnci(thick,local,con,nci)
+            finally:
+                if svr and svr.poll() is None:
+                    svr.terminate()
+                    svr.wait()
+        finally:
+            if svr_log: svr_log.close()
+
     def threadsTcp(self):
         server,server_port  = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT',7100+self.index,True)
         svr = svr_log = None
@@ -86,6 +133,6 @@ class Tests(_UnitTest.Tests,_UnitTest.MdsIp):
 
     @staticmethod
     def getTests():
-        return ['threadsTcp','threadsLocal']
+        return ['threadsTcp','threadsLocal','thick']
 
 Tests.main(__name__)

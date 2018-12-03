@@ -26,7 +26,7 @@
 from unittest import TestCase,TestSuite,TextTestRunner
 from MDSplus import Tree,getenv,setenv,tcl
 from threading import RLock
-import gc,os,sys
+import gc,os,sys,time
 
 class Tests(TestCase):
     debug = False
@@ -63,6 +63,7 @@ class Tests(TestCase):
                 cls.runTests(sys.argv[1:])
             else: print('Available tests: %s'%(' '.join(cls.getTests())))
     envx = {}
+    env  = {}
     @classmethod
     def _setenv(cls,name,value):
         value = str(value)
@@ -86,7 +87,7 @@ class MdsIp(object):
     def _testDispatchCommand(self,mdsip,command,stdout=None,stderr=None):
         self.assertEqual(tcl('dispatch/command/nowait/server=%s %s'  %(mdsip,command),1,1,1),(None,None))
 
-    def _start_mdsip(self,server,port,logname,env=None,protocol='TCP'):
+    def _start_mdsip(self,server,port,logname,protocol='TCP'):
         if port>0:
             from subprocess import Popen,STDOUT
             logfile = '%s_%d.log'%(logname,self.index)
@@ -95,10 +96,13 @@ class MdsIp(object):
                 hosts = '%s/mdsip.hosts'%self.root
                 params = ['mdsip','-s','-p',str(port),'-P',protocol,'-h',hosts]
                 print(' '.join(params+['>',logfile,'2>&1']))
-                mdsip = Popen(params,env=env,stdout=log,stderr=STDOUT)
+                mdsip = Popen(params,stdout=log,stderr=STDOUT)
             except:
                 log.close()
                 raise
+            time.sleep(1)
+            for envpair in self.envx.items():
+                self._testDispatchCommand(server,'env %s=%s'%envpair)
             return mdsip,log
         if server:
             for envpair in self.envx.items():

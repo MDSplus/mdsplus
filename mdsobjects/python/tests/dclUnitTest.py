@@ -115,9 +115,8 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         mon,mon_log,svr,svr_log = (None,None,None,None)
         try:
             mon,mon_log = self._start_mdsip(monitor,monitor_port,'monitor')
-            svr,svr_log = self._start_mdsip(server ,server_port ,'server',self.env)
+            svr,svr_log = self._start_mdsip(server ,server_port ,'server')
             try:
-                if mon or svr: sleep(1)
                 if mon: self.assertEqual(mon.poll(),None)
                 if svr: self.assertEqual(svr.poll(),None)
                 """ tcl dispatch """
@@ -168,10 +167,9 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         server,server_port  = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT',7000+self.index,True)
         svr = svr_log = None
         try:
-            svr,svr_log = self._start_mdsip(server ,server_port ,'timeout',self.env)
+            svr,svr_log = self._start_mdsip(server ,server_port ,'timeout')
             try:
                 if svr:
-                    sleep(1)
                     self.assertEqual(svr.poll(),None)
                 c = Connection(server)
                 c.get("py('1')") # preload MDSplus on server
