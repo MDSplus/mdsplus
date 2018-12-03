@@ -359,6 +359,7 @@ int CloseTreeRemote(PINO_DATABASE * dblist, int call_host __attribute__ ((unused
   if (dblist->tree_info)
     free(dblist->tree_info);
   dblist->tree_info = 0;
+  dblist->remote = 0;
   return status;
 }
 
