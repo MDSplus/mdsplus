@@ -95,7 +95,7 @@ class Acq2106_423st(MDSplus.Device):
         return ans
 
     def init(self):
-        import acq400_hapi
+        acq400_hapi=self.importPyDeviceModule('acq400_hapi')
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('set_abort', '1')
         if self.ext_clock.length > 0:
@@ -134,7 +134,7 @@ class Acq2106_423st(MDSplus.Device):
     STOP=stop
 
     def trig(self):
-        import acq400_hapi
+        acq400_hapi=self.importPyDeviceModule('acq400_hapi')
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.so.set_knob('soft_trigger','1')
         return 1

@@ -3406,11 +3406,20 @@ If you did intend to write to a subnode of the device you should check the prope
             for part in parts:
               w=os.walk(part)
               for dp,dn,fn in w:
-                for fname in fn:
-                  if fname.lower() == check_name:
+                devname=None
+                for d in dn:
+                    if d.lower() == name:
+                        devname=d
+                        break
+                if devname is None:
+                    for fname in fn:
+                        if fname.lower() == check_name:
+                            devname=fname[:-3]
+                            break
+                if devname is not None:
                     sys.path.insert(0,dp)
                     try:
-                      device = __import__(fname[:-3])
+                      device = __import__(devname)
                       Device.__cached_py_device_modules[name] = device
                       return device
                     finally:
