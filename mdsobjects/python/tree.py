@@ -3407,16 +3407,15 @@ If you did intend to write to a subnode of the device you should check the prope
               w=os.walk(part)
               for dp,dn,fn in w:
                 devname=None
-                if name in dn:
-                    devname=name
-                    doimport=True
-                else:
+                for d in dn:
+                    if name == d.lower():
+                        devname=name
+                        break
+                if devname is None:
                     for fname in fn:
                         if fname.lower() == check_name:
                             devname=fname[:-3]
-                            doimport=True
                             break
-                print("devname=%s\n" % devname)
                 if devname is not None:
                     sys.path.insert(0,dp)
                     try:
