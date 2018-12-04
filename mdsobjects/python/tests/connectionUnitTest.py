@@ -24,7 +24,7 @@
 #
 
 from threading import Thread
-from MDSplus import Connection,GetMany,Float32,Range,setenv,Tree,TreeNNF,TreeNodeArray
+from MDSplus import Connection,GetMany,Float32,Range,setenv,Tree,TreeNNF,TreeNodeArray,ADD
 import time
 
 def _mimport(name, level=1):
@@ -55,26 +55,56 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         server,server_port  = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT',7100+self.index,True)
         svr = svr_log = None
         try:
-            svr,svr_log = self._start_mdsip(server ,server_port ,'connectionTCP')
+            svr,svr_log = self._start_mdsip(server ,server_port ,'connection_thick')
             try:
                 con = Connection(server)
                 with Tree(self.tree,-1,"new") as local:
                     s=local.addNode("S","SIGNAL")
-                    s.addNode("T","TEXT").addTag("tagT")
                     s.addTag("tagS")
-                    s.record = Float32([0,1,2,3])
+                    s.record = ADD(Float32(1),Float32(2))
+                    t=local.addNode("T","TEXT")
+                    t.addNode("TT","TEXT").addTag("tagTT")
+                    t.record = t.TT
+                    t.TT = "recTT"
                     local.write()
                 local.normal()
+                Tree.setCurrent(self.tree,7)
                 setenv("pytree_path","%s::"%server)
+                print(con.get("getenv($//'_path')",self.tree))
+                con.get("TreeShr->TreeOpen(ref($),val($),val(1))",self.tree,-1)
                 thick = Tree(self.tree,-1)
-                con.get("treeopen($,$)",self.tree,-1)
+                thick.createPulse(1)
                 # self.assertEqual(local.getFileName(),thick.getFileName());# remote Segmentation fault
-                self.assertEqual(local.getFileName(),con.get("treefilename($,-1)",self.tree))
-                self.assertEqual(str(thick.S.record.evaluate()), "[0.,1.,2.,3.]")
-                self.assertEqual(str(local.S.record.evaluate()), "[0.,1.,2.,3.]")
-                self.assertEqual(thick.findTags("*")[0],local.findTags("*")[0]) # thick client only finds first tag
-                for nci in ('depth','usage_str','dtype','length','rlength','fullpath','minpath','member_nids','children_nids','rfa'):
+                """ TreeTurnOff / TreeTurnOn """
+                thick.S.on = False;self.assertEqual(local.S.on,False)
+                thick.S.on = True; self.assertEqual(local.S.on,True )
+                """ TreeSetCurrentShotId / TreeGetCurrentShotId """
+                Tree.setCurrent(self.tree,1)
+                self.assertEqual(Tree.getCurrent(self.tree),1)
+                """ TreeGetRecord / TreeSetRecord """
+                self.assertEqual(str(local.S.record), "1. + 2.")
+                self.assertEqual(str(thick.S.record), "1. + 2.")
+                thick.S.record = ADD(Float32(2),Float32(4))
+                self.assertEqual(str(local.S.record), "2. + 4.")
+                self.assertEqual(str(thick.S.record), "2. + 4.")
+                self.assertEqual(str(local.T.record), str(thick.T.record))
+                """ GetDefaultNid / SetDefaultNid """
+                self.assertEqual(thick.getDefault(),thick.top)
+                thick.setDefault(thick.S)
+                self.assertEqual(thick.getDefault(),thick.top.S)
+                thick.setDefault(thick.top)
+                """ FindNodeWildRemote """
+                # self.assertEqual(thick.getNodeWild("T*"),local.getNodeWild("T*"))
+                """ FindTagWildRemote """
+                self.assertEqual(thick.findTags("*"),local.findTags("*"))
+                """ nci """
+                thick.S.write_once = True
+                self.assertEqual(thick.S.write_once,True)
+                for nci in ('on','depth','usage_str','dtype','length','rlength','fullpath','minpath','member_nids','children_nids','rfa','write_once'):
                     testnci(thick,local,con,nci)
+                """ """
+                """ new stuff """
+                self.assertEqual(local.getFileName(),con.get("treefilename($,-1)",self.tree))
             finally:
                 if svr and svr.poll() is None:
                     svr.terminate()

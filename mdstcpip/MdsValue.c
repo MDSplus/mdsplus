@@ -24,7 +24,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "mdsip_connections.h"
+#include <mdsshr.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <status.h>
 
@@ -32,16 +34,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  MdsValue  //////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int MdsValue(int id, char *expression, ...){
-/**** NOTE: NULL terminated argument list expected ****/
-  int i;
-  int nargs;
-  struct descrip* arglist[265];
-  VA_LIST_NULL(arglist,nargs,1,0,expression);
-  int status = 1;
-  struct descrip exparg;
-  arglist[0] = MakeDescrip((struct descrip *)&exparg, DTYPE_CSTRING, 0, 0, expression);
-  struct descrip* ans_arg = arglist[--nargs]; // dont exchange out_ptr
+#ifdef DEBUG
+# define DBG(...) fprintf(stderr, __VA_ARGS__)
+#else
+# define DBG(...)
+#endif
+EXPORT int _MdsValue(int id, int nargs, struct descrip** arglist, struct descrip* ans_arg) {
+  DBG("mdstcpip.MdsValue> '%s'\n", (char*)(**arglist).ptr);
+  int i,status = 1;
   for (i = 0; i < nargs && STATUS_OK; i++)
     status = SendArg(id, i, arglist[i]->dtype, nargs, ArgLen(arglist[i]), arglist[i]->ndims, arglist[i]->dims, arglist[i]->ptr);
   if STATUS_OK {
@@ -53,12 +53,12 @@ int MdsValue(int id, char *expression, ...){
     ans_arg->length = len;
     if (numbytes) {
       if (ans_arg->dtype == DTYPE_CSTRING) {
-	ans_arg->ptr = malloc(numbytes + 1);
-	((char *)ans_arg->ptr)[numbytes] = 0;
+        ans_arg->ptr = malloc(numbytes + 1);
+        ((char *)ans_arg->ptr)[numbytes] = 0;
       } else if (numbytes > 0)
-	ans_arg->ptr = malloc(numbytes);
+        ans_arg->ptr = malloc(numbytes);
       if (numbytes > 0)
-	memcpy(ans_arg->ptr, dptr, numbytes);
+        memcpy(ans_arg->ptr, dptr, numbytes);
     } else
       ans_arg->ptr = NULL;
     if (mem)
@@ -66,4 +66,45 @@ int MdsValue(int id, char *expression, ...){
   } else
     ans_arg->ptr = NULL;
   return status;
+}
+
+EXPORT int _MdsValueDsc(int id, int nargs, struct descrip** arglist_in, struct descriptor_xd* ans_ptr) {
+  DBG("mdstcpip.MdsValueDsc> '%s'\n", (char*)(**arglist_in).ptr);
+  struct descrip** arglist = malloc((++nargs)*sizeof(struct descrip*));
+  int i;
+  char* ser = malloc(2 * nargs + 128);
+  strcpy(ser,"_=*;MdsShr->MdsSerializeDscOut(xd(execute($");
+  for ( i=1 ; i<nargs ; i++) arglist[i] = arglist_in[i-1];
+  for ( i=2 ; i<nargs ; i++) strcat(ser,",$"); //add remaining inputs
+  strcat(ser,")),xd(_));execute('deallocate(\"_\");`_')");
+  struct descrip ser_dsc = {DTYPE_CSTRING,0,{0},0,ser};
+  arglist[0] = &ser_dsc;
+  struct descrip ans_tmp = {0};
+  int status = _MdsValue(id,nargs,arglist,&ans_tmp);
+  if (STATUS_OK && ans_tmp.dtype==DTYPE_B)
+    status = MdsSerializeDscIn((char*)ans_tmp.ptr,ans_ptr);
+  if (ans_tmp.ptr) MdsIpFree(ans_tmp.ptr);
+  free(arglist);
+  free(ser);
+  return status;
+}
+
+int MdsValue(int id, char *expression, ...){
+/**** NOTE: NULL terminated argument list expected ****/
+  int nargs;
+  struct descrip* arglist[265];
+  VA_LIST_NULL(arglist,nargs,1,-1,expression);
+  struct descrip exparg = {DTYPE_CSTRING,0,{0},0,(char*)expression};
+  arglist[0] = &exparg;
+  return _MdsValue(id,nargs,arglist,arglist[nargs]);
+}
+
+EXPORT int MdsValueDsc(int id, const char *expression, ...){
+  int nargs;
+  struct descrip* arglist[265];
+  VA_LIST_NULL(arglist,nargs,1,-1,expression);
+  struct descrip exp_dsc = {DTYPE_CSTRING,0,{0},0,(char*)expression};
+  arglist[0] = &exp_dsc;
+  struct descriptor_xd *ans_ptr = (struct descriptor_xd *)arglist[nargs];
+  return _MdsValueDsc(id,nargs,arglist,ans_ptr);
 }
