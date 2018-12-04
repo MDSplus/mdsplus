@@ -3408,8 +3408,8 @@ If you did intend to write to a subnode of the device you should check the prope
               for dp,dn,fn in w:
                 devname=None
                 for d in dn:
-                    if name == d.lower():
-                        devname=name
+                    if d.lower() == name:
+                        devname=d
                         break
                 if devname is None:
                     for fname in fn:
