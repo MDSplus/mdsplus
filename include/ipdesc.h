@@ -36,6 +36,7 @@ typedef int SOCKET;
 #ifndef DTYPE_EVENT
 #define DTYPE_EVENT DTYPE_EVENT_NOTIFY
 #endif
+#define DTYPE_SERIAL 24
 
 struct descrip {
   char dtype;
