@@ -40,6 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define LOAD_GETUSERNAME
 #include <pthread_port.h>
 #include "mdsip_connections.h"
+#include "mdsIo.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Parse Host  ////////////////////////////////////////////////////////////////
@@ -91,13 +92,14 @@ static int doLogin(Connection* c)
   m->h.msglen = sizeof(MsgHdr) + length;
   m->h.dtype = DTYPE_CSTRING;
   m->h.status = c->compression_level;
-  m->h.ndims = 0;
+  m->h.ndims = 1;
+  m->h.dims[0] = MDSIP_VERSION;
   memcpy(m->bytes, user_p, length);
   status = SendMdsMsgC(c, m, 0);
   free(m);
   if STATUS_OK {
     m = GetMdsMsgTOC(c, &status, 10000);
-    if (m == 0 || STATUS_NOT_OK) {
+    if (!m || STATUS_NOT_OK) {
       printf("Error in connect\n");
       return MDSplusERROR;
     } else {
@@ -108,6 +110,8 @@ static int doLogin(Connection* c)
       }
       // SET CLIENT COMPRESSION FROM SERVER //
       c->compression_level= (m->h.status & 0x1e) >> 1;
+      c->client_type = m->h.client_type;
+      if (m->h.ndims>0) c->version = m->h.dims[0];
     }
     if (m)
       free(m);

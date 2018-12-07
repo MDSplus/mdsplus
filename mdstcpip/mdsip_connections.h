@@ -82,6 +82,7 @@ typedef struct _connection {
   int compression_level;
   SOCKET readfd;
   struct _io_routines *io;
+  unsigned short version;
 } Connection;
 
 #define INVALID_CONNECTION_ID 0
