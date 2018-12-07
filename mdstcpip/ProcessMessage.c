@@ -53,12 +53,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #include <errno.h>
 #include "cvtdef.h"
+#include "../treeshr/treeshrp.h"
 
 extern int TdiRestoreContext();
 extern void** TreeCtx();
 extern int TreePerfRead();
 extern int TreePerfWrite();
 extern int TdiSaveContext();
+extern char* TreePath();
+extern char* MaskReplace();
 
 #ifdef min
 #undef min
@@ -68,58 +71,11 @@ extern int TdiSaveContext();
 #undef max
 #endif
 #define max(a,b) (((a) > (b)) ? (a) : (b))
-#define MakeDesc(name) memcpy(malloc(sizeof(name)),&name,sizeof(name))
+#define MAKE_DESC(name) (struct descriptor*)memcpy(malloc(sizeof(name)),&name,sizeof(name))
 
 typedef ARRAY_COEFF(char, 7) ARRAY_7;
 
-
-static int lock_file(int fd, int64_t offset, int size, int mode_in, int *deleted)
-{
-  int status;
-  int mode = mode_in & MDS_IO_LOCK_MASK;
-  int nowait = mode_in & MDS_IO_LOCK_NOWAIT;
-#ifdef _WIN32
-  OVERLAPPED overlapped;
-  int flags;
-  *deleted = 0;
-  offset = ((offset >= 0)
-	    && (nowait == 0)) ? offset : (lseek(fd, 0, SEEK_END));
-  overlapped.Offset = (int)(offset & 0xffffffff);
-  overlapped.OffsetHigh = (int)(offset >> 32);
-  overlapped.hEvent = 0;
-  if (mode > 0) {
-    HANDLE h = (HANDLE) _get_osfhandle(fd);
-    flags = ((mode == MDS_IO_LOCK_RD)
-	     && (nowait == 0)) ? 0 : LOCKFILE_EXCLUSIVE_LOCK;
-    if (nowait)
-      flags |= LOCKFILE_FAIL_IMMEDIATELY;
-    status = UnlockFileEx(h, 0, size, 0, &overlapped);
-    status = LockFileEx(h, flags, 0, size, 0, &overlapped) == 0 ? TreeFAILURE : TreeNORMAL;
-  } else {
-    HANDLE h = (HANDLE) _get_osfhandle(fd);
-    status = UnlockFileEx(h, 0, size, 0, &overlapped) == 0 ? TreeFAILURE : TreeNORMAL;
-  }
-#else
-  struct stat stat;
-  struct flock flock_info;
-  flock_info.l_type = (mode == 0) ? F_UNLCK : ((mode == 1) ? F_RDLCK : F_WRLCK);
-  flock_info.l_whence = (mode == 0) ? SEEK_SET : ((offset >= 0) ? SEEK_SET : SEEK_END);
-  flock_info.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
-  flock_info.l_len = (mode == 0) ? 0 : size;
-  status =
-      (fcntl(fd, nowait ? F_SETLK : F_SETLKW, &flock_info) != -1) ? TreeSUCCESS : TreeLOCK_FAILURE;
-  if (!(status & 1))
-    perror("Error in lock_file");
-  fstat(fd, &stat);
-  *deleted = stat.st_nlink <= 0;
-#endif
-  return status;
-}
-
-static void
-ConvertBinary(int num, int sign_extend, short in_length, char *in_ptr,
-	      short out_length, char *out_ptr)
-{
+static void ConvertBinary(int num, int sign_extend, short in_length, char *in_ptr, short out_length, char *out_ptr){
   int i;
   int j;
   signed char *in_p = (signed char *)in_ptr;
@@ -179,10 +135,28 @@ ConvertFloat(int num, int in_type, char in_length, char *in_ptr,
 /// \param d
 /// \return
 ///
-static Message *BuildResponse(int client_type, unsigned char message_id,
-			      int status, struct descriptor *d)
-{
-  Message *m = 0;
+
+static Message *BuildResponse(int client_type, unsigned char message_id, int status, struct descriptor *d){
+  Message *m = NULL;
+  /*
+  if (SupportsCompression(client_type)) {
+    INIT_AND_FREEXD_ON_EXIT(out);
+    if IS_OK(MdsSerializeDscOut(d, &out)) {
+      struct descriptor_a* array = (struct descriptor_a*)out.pointer;
+      m = malloc(sizeof(MsgHdr) + array->arsize);
+      memset(&m->h,0,sizeof(MsgHdr));
+      m->h.msglen = sizeof(MsgHdr) + array->arsize;
+      m->h.client_type= client_type;
+      m->h.message_id = message_id;
+      m->h.status     = status;
+      m->h.dtype      = DTYPE_SERIAL;
+      m->h.length     = 1;
+      memcpy(m->bytes, array->pointer, array->arsize);
+    }
+    FREEXD_NOW(out);
+    return m;
+  }
+  */
   int nbytes = (d->class == CLASS_S) ? d->length : ((ARRAY_7 *) d)->arsize;
   int num = nbytes / ((d->length < 1) ? 1 : d->length);
   short length = d->length;
@@ -224,7 +198,8 @@ static Message *BuildResponse(int client_type, unsigned char message_id,
     }
     nbytes = num * length;
   }
-  m = calloc(1,sizeof(MsgHdr) + nbytes);
+  m = malloc(sizeof(MsgHdr) + nbytes);
+  memset(&m->h,0,sizeof(MsgHdr));
   m->h.msglen = sizeof(MsgHdr) + nbytes;
   m->h.client_type = client_type;
   m->h.message_id = message_id;
@@ -849,8 +824,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
       DESCRIPTOR_LONG(status_d, 0);
       int status = 0;
       status_d.pointer = (char *)&status;
-      ans = BuildResponse(connection->client_type,
-			  connection->message_id, 1, (struct descriptor *)&status_d);
+      ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&status_d);
       return ans;
     }
   }
@@ -864,7 +838,17 @@ Message *ProcessMessage(Connection * connection, Message * message)
 
     // d -> reference to curent idx argument desctriptor  //
     struct descriptor *d = connection->descrip[message->h.descriptor_idx];
-
+    static EMPTYXD(empty);
+    if (message->h.dtype == DTYPE_SERIAL) {
+      if (d && d->class != CLASS_XD) {
+        if (d->class == CLASS_D && d->pointer)
+          free(d->pointer);
+        free(d);
+      }
+      d = MAKE_DESC(empty);
+      connection->descrip[message->h.descriptor_idx] = d;
+      return ans;
+    }
     if (!d) {
       // instance the connection descriptor field //
       static short lengths[] = { 0, 0, 1, 2, 4, 8, 1, 2, 4, 8, 4, 8, 8, 16, 0 };
@@ -878,28 +862,28 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	static DESCRIPTOR_A_COEFF(array_6, 0, 0, 0, 6, 0);
 	static DESCRIPTOR_A_COEFF(array_7, 0, 0, 0, 7, 0);
       case 0:
-	d = (struct descriptor *)MakeDesc(scalar);
+	d = MAKE_DESC(scalar);
 	break;
       case 1:
-	d = (struct descriptor *)MakeDesc(array_1);
+	d = MAKE_DESC(array_1);
 	break;
       case 2:
-	d = (struct descriptor *)MakeDesc(array_2);
+	d = MAKE_DESC(array_2);
 	break;
       case 3:
-	d = (struct descriptor *)MakeDesc(array_3);
+	d = MAKE_DESC(array_3);
 	break;
       case 4:
-	d = (struct descriptor *)MakeDesc(array_4);
+	d = MAKE_DESC(array_4);
 	break;
       case 5:
-	d = (struct descriptor *)MakeDesc(array_5);
+	d = MAKE_DESC(array_5);
 	break;
       case 6:
-	d = (struct descriptor *)MakeDesc(array_6);
+	d = MAKE_DESC(array_6);
 	break;
       case 7:
-	d = (struct descriptor *)MakeDesc(array_7);
+	d = MAKE_DESC(array_7);
 	break;
       }
       d->length =
@@ -1045,50 +1029,26 @@ Message *ProcessMessage(Connection * connection, Message * message)
     switch (message->h.descriptor_idx) {
     case MDS_IO_OPEN_K:
       {
-	int fd;
 	char *filename = (char *)message->bytes;
 	int options = message->h.dims[1];
-	int fopts;
 	mode_t mode = message->h.dims[2];
-	DESCRIPTOR_LONG(fd_d, 0);
-	fd_d.pointer = (char *)&fd;
-	fopts =
-	    (options & MDS_IO_O_CREAT ? O_CREAT : 0) |
-	    (options & MDS_IO_O_TRUNC ? O_TRUNC : 0) |
-	    (options & MDS_IO_O_EXCL ? O_EXCL : 0) |
-	    (options & MDS_IO_O_WRONLY ? O_WRONLY : 0) |
-	    (options & MDS_IO_O_RDONLY ? O_RDONLY : 0) | (options & MDS_IO_O_RDWR ? O_RDWR : 0);
-	fd = open(filename, fopts | O_BINARY | O_RANDOM, mode);
-	if (fd == -1) {
-	  if (strchr(filename, '\\') != NULL) {
-	    fd = open(replaceBackslashes(filename), fopts | O_BINARY | O_RANDOM, mode);
-	  }
-	}
-#ifndef _WIN32
-	if ((fd != -1) && ((fopts & O_CREAT) != 0)) {
-	  char *cmd = (char *)malloc(64 + strlen(filename));
-	  int num = snprintf(cmd, 64 + strlen(filename), "SetMdsplusFileProtection %s 2> /dev/null", filename);
-	  if (num > 0)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-result"
-	    system(cmd);
-#pragma GCC diagnostic pop
-	  free(cmd);
-	}
-#endif
-	ans =
-	    BuildResponse(connection->client_type,
-			  connection->message_id, 3, (struct descriptor *)&fd_d);
+	int fopts = 0;
+	if (options & MDS_IO_O_CREAT)	fopts|= O_CREAT;
+	if (options & MDS_IO_O_TRUNC)	fopts|= O_TRUNC;
+	if (options & MDS_IO_O_EXCL)	fopts|= O_EXCL;
+	if (options & MDS_IO_O_WRONLY)fopts|= O_WRONLY;
+	if (options & MDS_IO_O_RDONLY)fopts|= O_RDONLY;
+	if (options & MDS_IO_O_RDWR)	fopts|= O_RDWR;
+	int fd = MDS_IO_OPEN(filename, fopts , mode);
+        DESCRIPTOR_LONG(fd_d, (char *)&fd);
+        ans = BuildResponse(connection->client_type, connection->message_id, 3, (struct descriptor *)&fd_d);
 	break;
       }
     case MDS_IO_CLOSE_K:
       {
-	int stat = close(message->h.dims[1]);
-	DESCRIPTOR_LONG(stat_d, 0);
-	stat_d.pointer = (char *)&stat;
-	ans =
-	    BuildResponse(connection->client_type,
-			  connection->message_id, 1, (struct descriptor *)&stat_d);
+	int stat = MDS_IO_CLOSE(message->h.dims[1]);
+	DESCRIPTOR_LONG(stat_d, (char *)&stat);
+	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&stat_d);
 	break;
       }
     case MDS_IO_LSEEK_K:
@@ -1105,11 +1065,9 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	message->h.dims[3] = tmp;
 #endif
 	offset = (off_t) * (int64_t *) & message->h.dims[2];
-	ans_o = lseek(fd, offset, whence);
+	ans_o = MDS_IO_LSEEK(fd, offset, whence);
 	ans_d.pointer = (char *)&ans_o;
-	ans =
-	    BuildResponse(connection->client_type,
-			  connection->message_id, 1, (struct descriptor *)&ans_d);
+	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&ans_d);
 	break;
       }
     case MDS_IO_READ_K:
@@ -1117,7 +1075,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	int fd = message->h.dims[1];
 	void *buf = malloc(message->h.dims[2]);
 	size_t num = (size_t) message->h.dims[2];
-	ssize_t nbytes = read(fd, buf, num);
+	ssize_t nbytes = MDS_IO_READ(fd, buf, num);
 #ifdef USE_PERF
 	TreePerfRead(nbytes);
 #endif
@@ -1127,40 +1085,27 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	    perror("READ_K wrong byte count");
 	  ans_d.pointer = buf;
 	  ans_d.arsize = nbytes;
-	  ans =
-	      BuildResponse
-	      (connection->client_type, connection->message_id, 1, (struct descriptor *)
-	       &ans_d);
+	  ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&ans_d);
 	} else {
 	  DESCRIPTOR(ans_d, "");
-	  ans =
-	      BuildResponse
-	      (connection->client_type, connection->message_id, 1, (struct descriptor *)
-	       &ans_d);
+	  ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&ans_d);
 	}
 	free(buf);
 	break;
       }
     case MDS_IO_WRITE_K:
       {
-	ssize_t nbytes = write(message->h.dims[1], message->bytes,
-			       (size_t) message->h.dims[0]);
+	ssize_t nbytes = MDS_IO_WRITE(message->h.dims[1], message->bytes, (size_t) message->h.dims[0]);
 	DESCRIPTOR_LONG(ans_d, 0);
-#ifdef USE_PERF
-	TreePerfWrite(nbytes);
-#endif
 	ans_d.pointer = (char *)&nbytes;
 	if (nbytes != (ssize_t) message->h.dims[0])
 	  perror("WRITE_K wrong byte count");
-	ans =
-	    BuildResponse(connection->client_type,
-			  connection->message_id, 1, (struct descriptor *)&ans_d);
+	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&ans_d);
 	break;
       }
     case MDS_IO_LOCK_K:
       {
 	int fd = message->h.dims[1];
-	int status;
 	int64_t offset;
 	int size = message->h.dims[4];
 	int mode_in = message->h.dims[5];
@@ -1173,41 +1118,27 @@ Message *ProcessMessage(Connection * connection, Message * message)
 #else
 	offset = ((int64_t) message->h.dims[3]) << 32 | message->h.dims[2];
 #endif
-	status = lock_file(fd, offset, size, mode | nowait, &deleted);
+	int status = MDS_IO_LOCK(fd, offset, size, mode | nowait, &deleted);
 	ans_d.pointer = (char *)&status;
-	ans =
-	    BuildResponse(connection->client_type,
-			  connection->message_id, deleted ? 3 : 1, (struct descriptor *)&ans_d);
+	ans = BuildResponse(connection->client_type, connection->message_id, deleted ? 3 : 1, (struct descriptor *)&ans_d);
 	break;
       }
     case MDS_IO_EXISTS_K:
       {
-	struct stat statbuf;
 	char *filename = message->bytes;
-	int status = stat(filename, &statbuf);
-	if ((status != 0) && (strchr(filename,'\\') != NULL)) {
-	  status = stat(replaceBackslashes(filename),&statbuf);
-	}
-	status = status == 0;
+	int status = MDS_IO_EXISTS(filename);
 	DESCRIPTOR_LONG(status_d, 0);
 	status_d.pointer = (char *)&status;
-	ans =
-	    BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)
-			  &status_d);
+	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&status_d);
 	break;
       }
     case MDS_IO_REMOVE_K:
       {
 	char *filename=message->bytes;
-	int status = remove(filename);
-	if ((status != 0) && (strchr(filename,'\\') != NULL)) {
-	  status = remove(replaceBackslashes(filename));
-	}
+	int status = MDS_IO_REMOVE(filename);
 	DESCRIPTOR_LONG(status_d, 0);
 	status_d.pointer = (char *)&status;
-	ans =
-	    BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)
-			  &status_d);
+	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&status_d);
 	break;
       }
     case MDS_IO_RENAME_K:
@@ -1215,17 +1146,9 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	DESCRIPTOR_LONG(status_d, 0);
 	char *old = message->bytes;
 	char *new = message->bytes + strlen(old) + 1;
-	int status = rename(old,new);
-	if (status != 0) {
-	  if ((strchr(old,'\\') != NULL) || (strchr(new,'\\') != NULL)) {
-	    status = rename(replaceBackslashes(old),replaceBackslashes(new));
-	  }
-	}
-
+	int status = MDS_IO_RENAME(old,new);
 	status_d.pointer = (char *)&status;
-	ans =
-	    BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)
-			  &status_d);
+	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&status_d);
 	break;
       }
     case MDS_IO_READ_X_K:
@@ -1237,52 +1160,77 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	ssize_t nbytes;
 	int deleted;
 #ifdef WORDS_BIGENDIAN
-	int tmp;
-	tmp = message->h.dims[2];
-	message->h.dims[2] = message->h.dims[3];
-	message->h.dims[3] = tmp;
+        offset = ((int64_t) message->h.dims[2]) << 32 | message->h.dims[3];
+#else
+        offset = ((int64_t) message->h.dims[3]) << 32 | message->h.dims[2];
 #endif
-	offset = (off_t) * (int64_t *) & message->h.dims[2];
-
-	lock_file(fd, offset, num, 1, &deleted);
-	lseek(fd, offset, SEEK_SET);
-	nbytes = read(fd, buf, num);
-	if (nbytes != (ssize_t)num)
-	  perror("READ_X wrong byte count");
-#ifdef USE_PERF
-	TreePerfRead(nbytes);
-#endif
-	lock_file(fd, offset, num, 0, &deleted);
+        nbytes = MDS_IO_READ_X(fd, offset,buf,num,&deleted);
 	if (nbytes > 0) {
 	  DESCRIPTOR_A(ans_d, 1, DTYPE_B, 0, 0);
 	  ans_d.pointer = buf;
 	  ans_d.arsize = nbytes;
-	  ans =
-	      BuildResponse
-	      (connection->client_type,
-	       connection->message_id, deleted ? 3 : 1, (struct descriptor *)
-	       &ans_d);
+	  ans = BuildResponse(connection->client_type, connection->message_id, deleted ? 3 : 1, (struct descriptor *)&ans_d);
 	} else {
 	  DESCRIPTOR(ans_d, "");
-	  ans =
-	      BuildResponse
-	      (connection->client_type,
-	       connection->message_id, deleted ? 3 : 1, (struct descriptor *)
-	       &ans_d);
+	  ans = BuildResponse(connection->client_type, connection->message_id, deleted ? 3 : 1, (struct descriptor *)&ans_d);
 	}
 	free(buf);
 	break;
       }
+    case MDS_IO_OPEN_ONE_K:
+      {
+        char *treename= message->bytes;
+        char *filepath= message->bytes+strlen(treename)+1;
+        int shot      = message->h.dims[1];
+        int type      = message->h.dims[2];
+        int new       = message->h.dims[3];
+        int edit_flag = message->h.dims[4];
+        int fd;
+        char*fullpath = NULL;
+	char tree_lower[13];
+	int status = TreeFAILURE,i;
+        if (strlen(filepath)==0) {
+	  char *opath = TreePath(treename, tree_lower);
+	  if (opath) {
+	    char *part, *path = MaskReplace(opath, tree_lower, shot);
+	    free(opath);
+	    int pathlen = (int)strlen(path);
+	    for (i = 0, part = path; (i < (pathlen + 1)) ; i++) {
+              if (path[i] != ';' && path[i] != '\0') continue;
+              while(*part == ' ') part++;
+              if (!strlen(part)) break;
+              path[i] = 0;
+              status = MDS_IO_OPEN_ONE(part,tree_lower,shot,type,new,edit_flag,&fullpath,&fd);
+	      if (fd != -1) break;
+	      part = &path[i + 1];
+	    }
+	    if (path) free(path);
+	  }
+	} else
+          status = MDS_IO_OPEN_ONE(filepath,treename,shot,type,new,edit_flag,&fullpath,&fd);
+	int msglen = fullpath ? strlen(fullpath)+9 : 8;
+	char* msg = malloc(msglen);
+	DESCRIPTOR_A(ans_d,sizeof(char),DTYPE_B,msg,msglen);
+	memcpy(msg,&status,4);
+	memcpy(msg+4,&fd,4);
+	if (fullpath) {
+	  memcpy(msg+8,fullpath,msglen-8);
+	  free(fullpath);
+	}
+	ans = BuildResponse(connection->client_type, connection->message_id, 3, (struct descriptor *)&ans_d);
+	free(msg);
+	break;
+      }
+    default:
       {
 	DESCRIPTOR_LONG(status_d, 0);
 	int status = 0;
 	status_d.pointer = (char *)&status;
-	ans =
-	    BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)
-			  &status_d);
+	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&status_d);
 	break;
       }
     }
   }
   return ans;
 }
+

@@ -27,9 +27,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # include <ws2tcpip.h>
 # include <wspiapi.h>
 # include <windows.h>
-# include <io.h>
-#else
-# include <unistd.h>
 #endif
 #include "treeshrp.h"
 #include <mdsplus/mdsconfig.h>
@@ -50,61 +47,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libroutines.h>
 #include <inttypes.h>
 
-#ifndef O_BINARY
-# define O_BINARY 0x0
-#endif
-#ifndef O_RANDOM
-# define O_RANDOM 0x0
-#endif
-
-#define min(a,b) (((a) < (b)) ? (a) : (b))
-struct descrip {
-  char dtype;
-  char ndims;
-  int dims[MAX_DIMS_R];
-  int length;
-  void *ptr;
-};
-
-static const struct descrip empty_ans = {0};
-
 static inline char *replaceBackslashes(char *filename) {
   char *ptr;
   while ((ptr = strchr(filename, '\\')) != NULL) *ptr = '/';
   return filename;
 }
 
-extern void LockMdsShrMutex(pthread_mutex_t *, int *);
-extern void UnlockMdsShrMutex(pthread_mutex_t *);
-extern void TreePerfWrite(int);
-extern void TreePerfRead(int);
-
 static pthread_mutex_t host_list_lock = PTHREAD_MUTEX_INITIALIZER;
 #define HOST_LIST_LOCK    pthread_mutex_lock(&host_list_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&host_list_lock);
 #define HOST_LIST_UNLOCK  pthread_cleanup_pop(1);
-
-static pthread_mutex_t io_lock = PTHREAD_MUTEX_INITIALIZER;
-#define IO_LOCK    pthread_mutex_lock(&io_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&io_lock);
-#define IO_UNLOCK  pthread_cleanup_pop(1);
-
-static int MDS_IO_LOCK_(int fd, off_t offset, size_t size, int mode_in, int *deleted);
-typedef struct iolock_s {
-int   fd;
-off_t offset;
-size_t size;
-int *deleted;
-} iolock_t;
-static void mds_io_unlock(void*in){
-  iolock_t*l = (iolock_t*)in;
-  MDS_IO_LOCK_(l->fd,l->offset,l->size,MDS_IO_LOCK_NONE,l->deleted);
-  pthread_mutex_unlock(&io_lock);
-}
-#define MDS_IO_RDLOCK(fd,offset,size,deleted) \
- pthread_mutex_lock(&io_lock);\
- MDS_IO_LOCK_(fd,offset,size,MDS_IO_LOCK_RD,deleted);\
- iolock_t iolock = {fd,offset,size,deleted};\
- pthread_cleanup_push(mds_io_unlock,&iolock);
-#define MDS_IO_UNLOCK() pthread_cleanup_pop(1);
 
 #if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
 # ifndef _WIN32
@@ -184,10 +135,70 @@ static struct _host_list {
 } *host_list = 0;
 #endif
 
-void MdsIpFree(void *ptr){
+
+///////////////////////////////////////////////////////////////////
+///////OLD THICK CLIENT////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+struct descrip {
+  char dtype;
+  char ndims;
+  int dims[MAX_DIMS_R];
+  int length;
+  void *ptr;
+};
+
+inline static void MdsIpFree(void *ptr){
   static void (*mdsIpFree) (void *) = NULL;
   if IS_NOT_OK(LibFindImageSymbol_C("MdsIpShr", "MdsIpFree", &mdsIpFree)) return;
   mdsIpFree(ptr);
+}
+
+#define STR2DESCRIP(str) (struct descrip){DTYPE_T,0,{0},strlen(str),(char*)str}
+static int MdsValue(int conid, char *exp, ...){
+  static int (*_mds_value) () = NULL;
+  int status = LibFindImageSymbol_C("MdsIpShr", "_MdsValue", (void **)&_mds_value);
+  if STATUS_NOT_OK {
+    fprintf(stderr,"Error loadig symbol MdsIpShr->_MdsValue: %d\n",status);
+    return status;
+  }
+  int nargs;
+  struct descrip* arglist[256];
+  VA_LIST_NULL(arglist,nargs,1,-1,exp);
+  struct descrip expd = STR2DESCRIP(exp);
+  arglist[0] = &expd;
+  return _mds_value(conid,nargs,arglist,arglist[nargs]);
+}
+
+static int MdsValueDsc(int conid, char* exp, ...){
+  static int (*_mds_value_dsc) () = NULL;
+  int status = LibFindImageSymbol_C("MdsIpShr", "MdsIpGetDescriptor", (void **)&_mds_value_dsc);
+  if STATUS_NOT_OK {
+    fprintf(stderr,"Error loadig symbol MdsIpShr->MdsIpGetDescriptor: %d\n",status);
+    return status;
+  }
+  int nargs;
+  struct descrip* arglist[256];
+  VA_LIST_NULL(arglist,nargs,0,-1,exp);
+  return _mds_value_dsc(conid,exp,nargs,arglist,arglist[nargs]);
+}
+
+
+inline static int tree_open(PINO_DATABASE * dblist, int conid, const char* treearg) {
+  int status;
+  struct descrip ans = {0};
+  char exp[256];
+  sprintf(exp, "TreeShr->TreeOpen(ref($),val(%d),val(0))", dblist->shotid);
+  struct descrip tree = STR2DESCRIP(treearg);
+  status = MdsValue(conid, exp, &tree, &ans, NULL);
+  if (ans.ptr) {
+    if STATUS_OK
+      status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : TreeFAILURE;
+    MdsIpFree(ans.ptr);
+  }
+  return status;
 }
 
 int RemoteAccessConnect(char *host, int inc_count, void *dbid){
@@ -240,7 +251,7 @@ int RemoteAccessConnect(char *host, int inc_count, void *dbid){
   return conid;
 }
 
-int RemoteAccessDisconnect(int conid, int force){
+EXPORT  int RemoteAccessDisconnect(int conid, int force){
   struct _host_list *hostchk;
   struct _host_list *previous;
   static int (*disconnectFromMds) (int) = NULL;
@@ -271,52 +282,6 @@ int RemoteAccessDisconnect(int conid, int force){
   }
   HOST_LIST_UNLOCK;
   return MDSplusSUCCESS;
-}
-
-#define str2descrip(str) (struct descrip){DTYPE_T,0,{0},strlen(str),(char*)str}
-static int MdsValue(int conid, char *exp, ...){
-  static int (*_mds_value) () = NULL;
-  int status = LibFindImageSymbol_C("MdsIpShr", "_MdsValue", (void **)&_mds_value);
-  if STATUS_NOT_OK return status;
-  int nargs;
-  struct descrip* arglist[256];
-  VA_LIST_NULL(arglist,nargs,1,-1,exp);
-  struct descrip expd = str2descrip(exp);
-  arglist[0] = &expd;
-  IO_LOCK;
-  status = _mds_value(conid,nargs,arglist,arglist[nargs]);
-  IO_UNLOCK;
-  return status;
-}
-static int MdsValueDsc(int conid, char* exp, ...){
-  static int (*_mds_value_dsc) () = NULL;
-  int status = LibFindImageSymbol_C("MdsIpShr", "_MdsValueDsc", (void **)&_mds_value_dsc);
-  if STATUS_NOT_OK return status;
-  int nargs;
-  struct descrip* arglist[256];
-  VA_LIST_NULL(arglist,nargs,1,-1,exp);
-  struct descrip expd = str2descrip(exp);
-  arglist[0] = &expd;
-  IO_LOCK;
-  status = _mds_value_dsc(conid,nargs,arglist,arglist[nargs]);
-  IO_UNLOCK;
-  return status;
-}
-
-
-inline static int tree_open(PINO_DATABASE * dblist, int conid, const char* treearg) {
-  int status;
-  struct descrip ans = empty_ans;
-  char exp[80];
-  sprintf(exp, "TreeShr->TreeOpen(ref($),val(%d),val(0))", dblist->shotid);
-  struct descrip tree = str2descrip(treearg);
-  status = MdsValue(conid, exp, &tree, &ans, NULL);
-  if (ans.ptr) {
-    if STATUS_OK
-      status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : TreeFAILURE;
-    MdsIpFree(ans.ptr);
-  }
-  return status;
 }
 
 int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *logname){
@@ -362,8 +327,8 @@ int SetStackSizeRemote(PINO_DATABASE *dbid __attribute__ ((unused)), int stack_s
 }
 
 int CloseTreeRemote(PINO_DATABASE * dblist, int call_host __attribute__ ((unused))){
-  struct descrip ans = empty_ans;
-  struct descrip tree = str2descrip(dblist->experiment);
+  struct descrip ans = {0};
+  struct descrip tree = STR2DESCRIP(dblist->experiment);
   int status;
   char exp[80];
   sprintf(exp, "TreeShr->TreeClose(ref($),val(%d))", dblist->shotid);
@@ -386,7 +351,7 @@ int CreatePulseFileRemote(PINO_DATABASE * dblist, int shot, int *nids, int num){
   char exp[80];
   sprintf(exp, "TreeShr->TreeCreatePulseFile(val(%d),ref($),val(%d))", shot, num);
   struct descrip arr = {DTYPE_L,1,{num},sizeof(int),(void*)nids};
-  struct descrip ans = empty_ans;
+  struct descrip ans = {0};
   int status = MdsValue(dblist->tree_info->channel, exp, &arr, &ans, NULL);
   if (ans.ptr) {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
@@ -422,7 +387,7 @@ int LeadingBackslash(char const *path)
 
 int FindNodeRemote(PINO_DATABASE * dblist, char const *path, int *outnid)
 {
-  struct descrip ans = empty_ans;
+  struct descrip ans = {0};
   int status;
   INIT_AND_FREE_ON_EXIT(char*,exp);
   exp = malloc(strlen(path) + 32);
@@ -442,30 +407,28 @@ int FindNodeRemote(PINO_DATABASE * dblist, char const *path, int *outnid)
 
 struct _FindNodeStruct {
   int *nids;
-  int num;
-  int *ptr;
+  int   num;
+  void *ptr;
 };
 
-int FindNodeEndRemote(PINO_DATABASE * dblist __attribute__ ((unused)), void **ctx_inout)
-{
+int FindNodeEndRemote(PINO_DATABASE * dblist __attribute__ ((unused)), void **ctx_inout){
   struct _FindNodeStruct *ctx = (struct _FindNodeStruct *)*ctx_inout;
   if (ctx) {
-    MdsIpFree(ctx->ptr);
+    free(ctx->ptr);
     free(ctx);
     *ctx_inout = 0;
   }
   return 1;
 }
 
-int FindNodeWildRemote(PINO_DATABASE * dblist, char const *patharg, int *nid_out, void **ctx_inout, int usage_mask)
-{
+int FindNodeWildRemote(PINO_DATABASE * dblist, char const *patharg, int *nid_out, void **ctx_inout, int usage_mask){
   int status = TreeNORMAL;
   struct _FindNodeStruct *ctx = (struct _FindNodeStruct *)*ctx_inout;
   if (!ctx) {
-    struct descrip ans = empty_ans;
-    struct descrip path = str2descrip(patharg);
+    struct descrip ans = {0};
+    struct descrip path = STR2DESCRIP(patharg);
     char exp[80];
-    sprintf(exp, "TreeShr->TreeFindNodeWild(ref($),val(%d))", usage_mask);
+    sprintf(exp, "TreeFindNodeWild($,%d)", usage_mask);
     status = MdsValue(dblist->tree_info->channel, exp, &path, &ans, NULL);
     if STATUS_OK {
       if (ans.ptr) {
@@ -491,10 +454,10 @@ int FindNodeWildRemote(PINO_DATABASE * dblist, char const *patharg, int *nid_out
 }
 
 char *FindNodeTagsRemote(PINO_DATABASE * dblist, int nid_in, void **ctx_ptr __attribute__((unused))){
-  struct descrip ans = empty_ans;
+  struct descrip ans = {0};
   char exp[80];
   char *tag = 0;
-  sprintf(exp, "TreeShr->TreeFindNodeTags(val(%d))", nid_in);
+  sprintf(exp, "TreeFindNodeTags(%d)", nid_in);
   MdsValue(dblist->tree_info->channel, exp, &ans, NULL);
   if (ans.ptr && (ans.dtype == DTYPE_BU) && (strlen(ans.ptr) > 0)) {
     tag = strcpy(malloc(strlen(ans.ptr) + 1), ans.ptr);
@@ -505,9 +468,9 @@ char *FindNodeTagsRemote(PINO_DATABASE * dblist, int nid_in, void **ctx_ptr __at
 
 char *AbsPathRemote(PINO_DATABASE * dblist, char const *inpatharg){
   char *retans = 0;
-  struct descrip ans = empty_ans;
-  struct descrip inpath = str2descrip(inpatharg);
-  MdsValue(dblist->tree_info->channel, "TreeShr->TreeAbsPath(ref($))", &inpath, &ans, NULL);
+  struct descrip ans = {0};
+  struct descrip inpath = STR2DESCRIP(inpatharg);
+  MdsValue(dblist->tree_info->channel, "TreeAbsPath($)", &inpath, &ans, NULL);
   if (ans.ptr) {
     if (ans.dtype == DTYPE_T && (strlen(ans.ptr) > 0)) {
       retans = strcpy(malloc(strlen(ans.ptr) + 1), ans.ptr);
@@ -517,9 +480,8 @@ char *AbsPathRemote(PINO_DATABASE * dblist, char const *inpatharg){
   return retans;
 }
 
-int SetDefaultNidRemote(PINO_DATABASE * dblist, int nid)
-{
-  struct descrip ans = empty_ans;
+int SetDefaultNidRemote(PINO_DATABASE * dblist, int nid){
+  struct descrip ans = {0};
   char exp[80];
   int status;
   sprintf(exp, "TreeShr->TreeSetDefaultNid(val(%d))", nid);
@@ -533,7 +495,7 @@ int SetDefaultNidRemote(PINO_DATABASE * dblist, int nid)
 
 int GetDefaultNidRemote(PINO_DATABASE * dblist, int *nid)
 {
-  struct descrip ans = empty_ans;
+  struct descrip ans = {0};
   int status = MdsValue(dblist->tree_info->channel, "_=0;TreeShr->TreeGetDefaultNid(ref(_));_", &ans, NULL);
   if (ans.ptr) {
     if (ans.dtype == DTYPE_L)
@@ -557,16 +519,17 @@ typedef struct tag_search {
   int64_t ctx;
 } TAG_SEARCH;
 
+
 char *FindTagWildRemote(PINO_DATABASE * dblist, const char *wildarg, int *nidout, void **ctx_inout){
   TAG_SEARCH **ctx = (TAG_SEARCH **) ctx_inout;
-  char exp[128];
+  char exp[256];
   if (!*ctx) {
     *ctx = malloc(sizeof(TAG_SEARCH));
     (*ctx)->remote = 1;
     (*ctx)->conid = dblist->tree_info->channel;
     (*ctx)->ctx = 0;
   } else if ((*ctx)->remote_tag) free((*ctx)->remote_tag);
-  struct descrip wild = str2descrip(wildarg);
+  struct descriptor wild = {strlen(wildarg),DTYPE_T,CLASS_S,(char*)wildarg};
   INIT_AND_FREEXD_ON_EXIT(ans);
   sprintf(exp,"__a=-1;__b=0x%"PRIx64"QU;__c=*;___=TreeShr->TreeFindTagWildDsc(ref($),ref(__a),ref(__b),xd(__c));execute('deallocate(\"__*\");`list(*,___,__a,__b,__c)')",(*ctx)->ctx);
   int status = MdsValueDsc(dblist->tree_info->channel, exp, &wild, &ans, NULL);
@@ -578,7 +541,8 @@ char *FindTagWildRemote(PINO_DATABASE * dblist, const char *wildarg, int *nidout
   if ((*ctx)->ctx) {
     (*ctx)->remote_tag = memcpy(malloc(list[3]->length + 1), list[3]->pointer, list[3]->length);
     (*ctx)->remote_tag[list[3]->length] = '\0';
-  } else (*ctx)->remote_tag = NULL;
+  } else
+   (*ctx)->remote_tag = NULL;
   FREEXD_NOW(ans);
   return (*ctx)->remote_tag;
 }
@@ -586,7 +550,7 @@ char *FindTagWildRemote(PINO_DATABASE * dblist, const char *wildarg, int *nidout
 void FindTagEndRemote(void **ctx_inout)
 {
   TAG_SEARCH **ctx = (TAG_SEARCH **) ctx_inout;
-  struct descrip ans = empty_ans;
+  struct descrip ans = {0};
   if (*ctx) {
     if ((*ctx)->remote_tag) free((*ctx)->remote_tag);
     if ((*ctx)->ctx) {
@@ -747,34 +711,29 @@ int GetNciRemote(PINO_DATABASE * dblist, int nid_in, struct nci_itm *nci_itm)
 int PutRecordRemote(PINO_DATABASE * dblist, int nid_in, struct descriptor *dsc, int utility_update)
 {
   int status;
-  char exp[196];
-  struct descrip ans = empty_ans;
+  INIT_AND_FREEXD_ON_EXIT(ans)
+  char exp[80];
   if (dsc) {
-    EMPTYXD(out);
-    status = MdsSerializeDscOut(dsc, &out);
-    struct descrip data = { DTYPE_B, 1, {0}, 1, 0 };
-    sprintf(exp, "___=*;MdsShr->MdsSerializeDscIn(ref($),xd(___));execute('deallocate(\"___\");`TreeShr->TreePutRecord(val(%d),xd(___),val(%d))')", nid_in, utility_update);
-    data.dims[0] = ((struct descriptor_a *)out.pointer)->arsize;
-    data.ptr = out.pointer->pointer;
-    status = MdsValue(dblist->tree_info->channel, exp, &data, &ans, NULL);
-    MdsFree1Dx(&out, NULL);
+    sprintf(exp, "TreeShr->TreePutRecord(val(%d),xd($),val(%d))", nid_in, utility_update);
+    status = MdsValueDsc(dblist->tree_info->channel, exp, dsc, &ans, NULL);
   } else {
     sprintf(exp, "TreeShr->TreePutRecord(val(%d),val(0),val(%d))", nid_in, utility_update);
-    status = MdsValue(dblist->tree_info->channel, exp, &ans, NULL);
+    status = MdsValueDsc(dblist->tree_info->channel, exp, &ans, NULL);
   }
-  if (ans.ptr) {
-    if (ans.dtype == DTYPE_L)
-      status = *(int *)ans.ptr;
+  if (ans.pointer) {
+    if (ans.pointer->dtype == DTYPE_L)
+      status = *(int *)ans.pointer->pointer;
     else if STATUS_OK
       status = 0;
-    MdsIpFree(ans.ptr);
+    MdsFree1Dx(&ans,NULL);
   }
+  FREEXD_NOW(ans);
   return status;
 }
 
 int SetNciItmRemote(PINO_DATABASE * dblist, int nid, int code, int value)
 {
-  struct descrip ans = empty_ans;
+  struct descrip ans = {0};
   char exp[80];
   int status;
   sprintf(exp, "TreeShr->TreeSetNciItm(val(%d),val(%d),val(%d))", nid, code, value);
@@ -788,7 +747,7 @@ int SetNciItmRemote(PINO_DATABASE * dblist, int nid, int code, int value)
 
 int SetDbiItmRemote(PINO_DATABASE * dblist, int code, int value)
 {
-  struct descrip ans = empty_ans;
+  struct descrip ans = {0};
   char exp[64];
   sprintf(exp, "TreeShr->TreeSetDbiItm(val(%d),val(%d))", code, value);
   int status = MdsValue(dblist->tree_info->channel, exp, &ans, NULL);
@@ -838,7 +797,7 @@ int SetDbiRemote(PINO_DATABASE * dblist, DBI_ITM * dbi_itm)
 
 int TreeFlushOffRemote(PINO_DATABASE * dblist, int nid)
 {
-  struct descrip ans = empty_ans;
+  struct descrip ans = {0};
   char exp[64];
   sprintf(exp, "TreeShr->TreeFlushOff(val(%d))", nid);
   int status = MdsValue(dblist->tree_info->channel, exp, &ans, NULL);
@@ -851,7 +810,7 @@ int TreeFlushOffRemote(PINO_DATABASE * dblist, int nid)
 
 int TreeFlushResetRemote(PINO_DATABASE * dblist, int nid)
 {
-  struct descrip ans = empty_ans;
+  struct descrip ans = {0};
   char exp[64];
   int status;
   sprintf(exp, "TreeShr->TreeFlushReset(val(%d))", nid);
@@ -865,7 +824,7 @@ int TreeFlushResetRemote(PINO_DATABASE * dblist, int nid)
 
 int TreeTurnOnRemote(PINO_DATABASE * dblist, int nid)
 {
-  struct descrip ans = empty_ans;
+  struct descrip ans = {0};
   char exp[64];
   int status;
   sprintf(exp, "TreeShr->TreeTurnOn(val(%d))", nid);
@@ -879,7 +838,7 @@ int TreeTurnOnRemote(PINO_DATABASE * dblist, int nid)
 
 int TreeTurnOffRemote(PINO_DATABASE * dblist, int nid)
 {
-  struct descrip ans = empty_ans;
+  struct descrip ans = {0};
   char exp[64];
   int status;
   sprintf(exp, "TreeShr->TreeTurnOff(val(%d))", nid);
@@ -896,8 +855,8 @@ int TreeGetCurrentShotIdRemote(const char *treearg, char *path, int *shot)
   int status = TreeFAILURE;
   int channel = RemoteAccessConnect(path, 0, 0);
   if (channel > 0) {
-    struct descrip ans = empty_ans;
-    struct descrip tree = str2descrip(treearg);
+    struct descrip ans = {0};
+    struct descrip tree = STR2DESCRIP(treearg);
     status = MdsValue(channel, "TreeShr->TreeGetCurrentShotId(ref($))", &tree, &ans, NULL);
     if (ans.ptr) {
       if (ans.dtype == DTYPE_L)
@@ -915,8 +874,8 @@ int TreeSetCurrentShotIdRemote(const char *treearg, char *path, int shot)
   int status = 0;
   int channel = RemoteAccessConnect(path, 0, 0);
   if (channel > 0) {
-    struct descrip ans = empty_ans;
-    struct descrip tree = str2descrip(treearg);
+    struct descrip ans = {0};
+    struct descrip tree = STR2DESCRIP(treearg);
     char exp[64];
     sprintf(exp, "TreeShr->TreeSetCurrentShotId(ref($),val(%d))", shot);
     status = MdsValue(channel, exp, &tree, &ans, NULL);
@@ -928,6 +887,44 @@ int TreeSetCurrentShotIdRemote(const char *treearg, char *path, int shot)
   return status;
 }
 
+
+///////////////////////////////////////////////////////////////////
+///////DISTRIBUTED AND NEW THICK CLIENT////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+#ifdef _WIN32
+# include <io.h>
+#else
+# include <unistd.h>
+#endif
+#include "../mdstcpip/mdsIo.h"
+
+extern void TreePerfWrite(int);
+extern void TreePerfRead(int);
+
+static pthread_mutex_t io_lock = PTHREAD_MUTEX_INITIALIZER;
+#define IO_LOCK    pthread_mutex_lock(&io_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&io_lock);
+#define IO_UNLOCK  pthread_cleanup_pop(1);
+
+static int io_lock_local(int fd, off_t offset, size_t size, int mode_in, int *deleted);
+typedef struct iolock_s {
+int   fd;
+off_t offset;
+size_t size;
+int *deleted;
+} iolock_t;
+static void mds_io_unlock(void*in){
+  iolock_t*l = (iolock_t*)in;
+  io_lock_local(l->fd,l->offset,l->size,MDS_IO_LOCK_NONE,l->deleted);
+  pthread_mutex_unlock(&io_lock);
+}
+#define IO_RDLOCK_LOCAL(fd,offset,size,deleted) \
+ pthread_mutex_lock(&io_lock);\
+ io_lock_local(fd,offset,size,MDS_IO_LOCK_RD,deleted);\
+ iolock_t iolock = {fd,offset,size,deleted};\
+ pthread_cleanup_push(mds_io_unlock,&iolock);
+#define IO_UNLOCK_LOCAL() pthread_cleanup_pop(1);
+
 static struct fd_info_struct {
   int in_use;
   int conid;
@@ -936,8 +933,7 @@ static struct fd_info_struct {
 } *FDS = 0;
 static int ALLOCATED_FDS = 0;
 
-char *ParseFile(char *filename, char **hostpart, char **filepart)
-{
+char *ParseFile(char *filename, char **hostpart, char **filepart){
   char *tmp = strcpy((char *)malloc(strlen(filename) + 1), filename);
   char *ptr = strstr(tmp, "::");
   if (ptr) {
@@ -970,7 +966,7 @@ int NewFD(int fd, int conid, int enhanced)
   return idx + 1;
 }
 
-int MDS_IO_ID(int fd){
+EXPORT int MDS_IO_ID(int fd){
   int ans;
   FDS_LOCK;
   ans = (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) ? FDS[fd - 1].conid : -1;
@@ -978,7 +974,7 @@ int MDS_IO_ID(int fd){
   return ans;
 }
 
-int MDS_IO_FD(int fd){
+EXPORT int MDS_IO_FD(int fd){
   int ans;
   FDS_LOCK;
   ans = (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) ? FDS[fd - 1].fd : -1;
@@ -986,113 +982,80 @@ int MDS_IO_FD(int fd){
   return ans;
 }
 
-static int SendArg(int conid, unsigned char idx, char dtype, unsigned char nargs, short length, char ndims, int *dims, char *bytes) {
-  static int (*sendArg) () = NULL;
-  int status = LibFindImageSymbol_C("MdsIpShr", "SendArg", &sendArg);
-  if STATUS_NOT_OK  return status;
-  return sendArg(conid, idx, dtype, nargs, length, ndims, dims, bytes);
-}
-
-static int GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void **dptr, void **m){
-  static int (*getAnswerInfoTS) () = NULL;
-  int status = LibFindImageSymbol_C("MdsIpShr", "GetAnswerInfoTS", &getAnswerInfoTS);
-  if STATUS_NOT_OK  return status;
-  return getAnswerInfoTS(sock, dtype, length, ndims, dims, numbytes, dptr, m);
-}
-
-/*
-static int GetAnswerInfoTO(int sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void **dptr, void **m, int timeout){
-  static int (*getAnswerInfoTO) () = NULL;
-  int status = LibFindImageSymbol_C("MdsIpShr", "GetAnswerInfoTO", &getAnswerInfoTO);
+EXPORT int MdsIoRequest(int conid, mds_io_mode idx, char nargs, int* args,char* din,int*bytes,char**dout,void**m){
+  static int (*SendArg)() = NULL;
+  int status = LibFindImageSymbol_C("MdsIpShr", "SendArg", &SendArg);
   if STATUS_NOT_OK return status;
-  return getAnswerInfoTO(sock, dtype, length, ndims, dims, numbytes, dptr, m, timeout);
+  static int (*GetAnswerInfoTS)() = NULL;
+  status = LibFindImageSymbol_C("MdsIpShr", "GetAnswerInfoTS", &GetAnswerInfoTS);
+  if STATUS_NOT_OK return status;
+  status = SendArg(conid, (int)idx, 0, 0, 0, nargs, args, din);
+  if STATUS_NOT_OK {
+    if (idx!=MDS_IO_CLOSE_K) fprintf(stderr, "Error in SendArg: mode = %d, status = %d\n", idx, status);
+    RemoteAccessDisconnect(conid, 1);
+  } else {
+    int d[MAX_DIMS_R];
+    status = GetAnswerInfoTS(conid, (char*)d, (short*)d, (char*)d, d, bytes, (void**)dout, m);
+    if STATUS_NOT_OK {
+      if (idx!=MDS_IO_CLOSE_K) fprintf(stderr, "Error in GetAnswerInfoTS: mode = %d, status = %d\n", idx, status);
+      RemoteAccessDisconnect(conid, 0);
+    }
+  }
+  return status;
 }
-*/
 
-
-#define MDS_IO_OPEN_K   1
-#define MDS_IO_CLOSE_K  2
-#define MDS_IO_LSEEK_K  3
-#define MDS_IO_READ_K   4
-#define MDS_IO_WRITE_K  5
-#define MDS_IO_LOCK_K   6
-#define MDS_IO_EXISTS_K 7
-#define MDS_IO_REMOVE_K 8
-#define MDS_IO_RENAME_K 9
-#define MDS_IO_READ_X_K 10
-
-#define MDS_IO_O_CREAT  0x00000040
-#define MDS_IO_O_TRUNC  0x00000200
-#define MDS_IO_O_EXCL   0x00000080
-#define MDS_IO_O_WRONLY 0x00000001
-#define MDS_IO_O_RDONLY 0x00004000
-#define MDS_IO_O_RDWR   0x00000002
-
-inline static int get_answer_info_open(int sock, int *try_again, int *enhanced){
+inline static int io_open_request(int conid,int*try_again,int*enhanced,size_t sinfo,int*info,char*filename){
   int fd;
   INIT_AND_FREE_ON_EXIT(void*,msg);
-  char dtype, ndims;
-  int dims[7], numbytes;
-  short length;
-  void *dptr;
-  int status = GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg);
-  if (STATUS_OK && (length == sizeof(fd))) {
-    memcpy(&fd, dptr, sizeof(fd));
+  int len;
+  char *dout;
+  int status = MdsIoRequest(conid, MDS_IO_OPEN_K,sinfo,info,filename,&len,&dout,&msg);
+  if (STATUS_OK && sizeof(int)==len) {
+    fd = *(int*)dout;
     *enhanced = status == 3;
     *try_again = 0;
   } else {
-    fprintf(stderr, "Err in GetAnswerInfoTS in io_open_remote: status = %d, length = %d\n", status, length);
+    if (status==LibKEYNOTFOU) *try_again = 0;
     fd = -1;
   }
   FREE_NOW(msg);
   return fd;
 }
 
-inline static int io_open_remote(char *host, char *filename_in, int options, mode_t mode, int *sock, int *enhanced){
+inline static int io_open_remote(char *host, char *filename, int options, mode_t mode, int *conid, int *enhanced){
   int fd;
   IO_LOCK;
-  INIT_AND_FREE_ON_EXIT(char*,filename);
-  filename = replaceBackslashes(strdup(filename_in));
   int try_again = 1;
   fd = -1;
+  int info[3];
+  info[0] = (int)strlen(filename) + 1;
+  if (O_CREAT == 0x0200) {	/* BSD */
+    if (options & O_CREAT) options = (options & ~O_CREAT) | 0100;
+    if (options & O_TRUNC) options = (options & ~O_TRUNC) | 01000;
+    if (options & O_EXCL)  options = (options & ~O_EXCL)  | 0200;
+  }
+  info[1] = 0;
+  if (options & O_CREAT)  info[1]|= MDS_IO_O_CREAT;
+  if (options & O_TRUNC)  info[1]|= MDS_IO_O_TRUNC;
+  if (options & O_EXCL)	  info[1]|= MDS_IO_O_EXCL;
+  if (options & O_WRONLY) info[1]|= MDS_IO_O_WRONLY;
+  if (options & O_RDONLY) info[1]|= MDS_IO_O_RDONLY;
+  if (options & O_RDWR)	  info[1]|= MDS_IO_O_RDWR;
+  info[2] = (int)mode;
   do {
-    *sock = RemoteAccessConnect(host, 1, 0);
-    if (*sock != -1) {
-      int status, info[3];
-      info[0] = (int)strlen(filename) + 1;
-      if (O_CREAT == 0x0200) {	/* BSD */
-	if (options & O_CREAT)
-	  options = (options & ~O_CREAT) | 0100;
-	if (options & O_TRUNC)
-	  options = (options & ~O_TRUNC) | 01000;
-	if (options & O_EXCL)
-	  options = (options & ~O_EXCL) | 0200;
-      }
-      info[1] = (options & O_CREAT ? MDS_IO_O_CREAT : 0) |
-	  (options & O_TRUNC ? MDS_IO_O_TRUNC : 0) |
-	  (options & O_EXCL ? MDS_IO_O_EXCL : 0) |
-	  (options & O_WRONLY ? MDS_IO_O_WRONLY : 0) |
-	  (options & O_RDONLY ? MDS_IO_O_RDONLY : 0) | (options & O_RDWR ? MDS_IO_O_RDWR : 0);
-      info[2] = (int)mode;
-      status = SendArg(*sock, MDS_IO_OPEN_K, 0, 0, 0, sizeof(info) / sizeof(int), info, filename);
-      if STATUS_OK {
-        fd = get_answer_info_open(*sock, &try_again, enhanced);
-	if (fd == -1)
-	  RemoteAccessDisconnect(*sock, 0);
-      } else {
-	fprintf(stderr, "Err in SendArg in io_open_remote: status = %d\n", status);
-	RemoteAccessDisconnect(*sock, 1);
-      }
+    *conid = RemoteAccessConnect(host, 1, 0);
+    if (*conid != -1) {
+      fd = io_open_request(*conid,&try_again,enhanced,sizeof(info)/sizeof(*info),info,filename);
     } else {
       fprintf(stderr, "Error connecting to host /%s/ in io_open_remote\n", host);
       try_again = 0;
     }
   } while (try_again);
-  FREE_NOW(filename);
   IO_UNLOCK;
   return fd;
 }
 
+#ifndef _WIN32
 inline static void set_mdsplus_file_protection(const char* filename){
   INIT_AND_FREE_ON_EXIT(char*,cmd);
   struct descriptor cmd_d = { 0, DTYPE_T, CLASS_S, 0 };
@@ -1103,8 +1066,9 @@ inline static void set_mdsplus_file_protection(const char* filename){
   LibSpawn(&cmd_d, 1, 0);
   FREE_NOW(cmd);
 }
+#endif
 
-int MDS_IO_OPEN(char *filename_in, int options, mode_t mode){
+EXPORT int MDS_IO_OPEN(char *filename_in, int options, mode_t mode){
   int fd;
   INIT_AND_FREE_ON_EXIT(char*,filename);
   INIT_AND_FREE_ON_EXIT(char*,tmp);
@@ -1129,93 +1093,67 @@ int MDS_IO_OPEN(char *filename_in, int options, mode_t mode){
   return fd;
 }
 
-inline static int get_answer_info_close(int sock){
-  int ret;
-  INIT_AND_FREE_ON_EXIT(void*,msg);
-  char dtype, ndims;
-  int dims[7], numbytes;
-  short length;
-  void *dptr;
-  if (IS_OK(GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg))
-   && length == (short)sizeof(ret))
-    memcpy(&ret, dptr, sizeof(ret));
-  else ret = -1;
-  FREE_NOW(msg);
-  return ret;
-}
-
 inline static int io_close_remote(int fd){
   int ret;
   IO_LOCK;
-  ret = -1;
-  int info[] = { 0, 0 };
-  int sock = FDS[fd - 1].conid;
-  int status;
-  info[1] = FDS[fd - 1].fd;
-  status = SendArg(sock, MDS_IO_CLOSE_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);
-  if STATUS_OK {
-    ret = get_answer_info_close(sock);
-    RemoteAccessDisconnect(sock, 0);
+  INIT_AND_FREE_ON_EXIT(void*,msg);
+  int len;
+  char *dout;
+  int info[] = { 0, FDS[fd - 1].fd };
+  int status = MdsIoRequest(FDS[fd - 1].conid, MDS_IO_CLOSE_K,sizeof(info)/sizeof(*info),info,NULL,&len,&dout,&msg);
+  if (STATUS_OK) RemoteAccessDisconnect(FDS[fd - 1].conid, 0);
+  if (STATUS_OK && sizeof(int)==len) {
+    ret = *(int*)dout;
   } else
-    RemoteAccessDisconnect(sock, 1);
+    ret = -1;
+  FREE_NOW(msg);
   IO_UNLOCK;
   return ret;
 }
 
-int MDS_IO_CLOSE(int fd){
-  int status;
+EXPORT int MDS_IO_CLOSE(int fd){
+  int ret;
   FDS_LOCK;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
-    status = (FDS[fd - 1].conid == -1) ? close(FDS[fd - 1].fd) : io_close_remote(fd);
+    if (FDS[fd - 1].conid == -1)
+      ret = close(FDS[fd - 1].fd);
+    else
+      ret = io_close_remote(fd);
     FDS[fd - 1].in_use = 0;
   } else
-    status = -1;
+    ret = -1;
   FDS_UNLOCK;
-  return status;
-}
-
-inline static off_t get_answer_info_off_t(int sock){
-  off_t ret;
-  INIT_AND_FREE_ON_EXIT(void*,msg);
-  char dtype, ndims;
-  int dims[7], numbytes;
-  short length;
-  void *dptr;
-  if (IS_OK(GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg))
-  && (size_t)length >= sizeof(int)) {
-    ret = 0;
-    memcpy(&ret, dptr, ((size_t)length > sizeof(off_t)) ? sizeof(off_t) : (size_t)length);
-  } else ret = -1;
-  FREE_NOW(msg);
   return ret;
 }
 
 inline static off_t io_lseek_remote(int fd, off_t offset, int whence) {
   off_t ret;
   IO_LOCK;
-  ret = -1;
-  int info[] = { 0, 0, 0, 0, 0 };
-  int sock = FDS[fd - 1].conid;
-  int status;
-  info[1] = FDS[fd - 1].fd;
-  info[4] = whence;
+  INIT_AND_FREE_ON_EXIT(void*,msg);
+  int info[] = { 0, FDS[fd - 1].fd, 0, 0, whence };
+  int conid = FDS[fd - 1].conid;
   *(off_t *) (&info[2]) = offset;
 #ifdef WORDS_BIGENDIAN
   status = info[2];
   info[2] = info[3];
   info[3] = status;
 #endif
-  status = SendArg(sock, MDS_IO_LSEEK_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);
-  if STATUS_OK
-    ret = get_answer_info_off_t(sock);
-  else
-    RemoteAccessDisconnect(sock, 1);
+  int len;
+  char *dout;
+  int status = MdsIoRequest(conid, MDS_IO_LSEEK_K,sizeof(info)/sizeof(*info),info,NULL,&len,&dout,&msg);
+  if (STATUS_OK)
+         if (sizeof(int32_t)==len)      ret = (off_t)*(int32_t*)dout;
+    else if (sizeof(int64_t)==len)      ret = (off_t)*(int64_t*)dout;
+    else                                ret = -1;
+  else                                  ret = -1;
+  FREE_NOW(msg);
   IO_UNLOCK;
   return ret;
 }
 
-static off_t MDS_IO_LSEEK_(int fd, off_t offset, int whence){
+EXPORT off_t MDS_IO_LSEEK(int fd, off_t offset, int whence){
   off_t pos;
+  FDS_LOCK;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
     if (FDS[fd - 1].conid == -1)
       pos = lseek(FDS[fd - 1].fd, offset, whence);
@@ -1223,53 +1161,29 @@ static off_t MDS_IO_LSEEK_(int fd, off_t offset, int whence){
       pos = io_lseek_remote(fd, offset, whence);
   } else
     pos = -1;
-  return pos;
-}
-
-off_t MDS_IO_LSEEK(int fd, off_t offset, int whence){
-  off_t pos;
-  FDS_LOCK;
-  pos = MDS_IO_LSEEK_(fd, offset, whence);
   FDS_UNLOCK;
   return pos;
-}
-
-inline static ssize_t get_answer_info_write(int sock){
-  ssize_t ret;
-  INIT_AND_FREE_ON_EXIT(void*,msg);
-  char dtype;
-  char ndims;
-  int dims[7];
-  int numbytes;
-  void *dptr;
-  short length;
-  if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)
-      && (numbytes == sizeof(int)))
-    ret = (ssize_t) * (int *)dptr;
-  else ret = 0;
-  FREE_NOW(msg);
-  return ret;
 }
 
 inline static ssize_t io_write_remote(int fd, void *buff, size_t count){
   ssize_t ret;
   IO_LOCK;
-  ret = 0;
-  int info[] = { 0, 0 };
-  int sock = FDS[fd - 1].conid;
-  int status;
-  info[0] = (int)count;
-  info[1] = FDS[fd - 1].fd;
-  status = SendArg(sock, MDS_IO_WRITE_K, 0, 0, 0, sizeof(info) / sizeof(int), info, buff);
-  if STATUS_OK
-    ret = get_answer_info_write(sock);
-  else
-    RemoteAccessDisconnect(sock, 1);
+  INIT_AND_FREE_ON_EXIT(void*,msg);
+  int info[] = { (int)count, FDS[fd - 1].fd };
+  int len;
+  char *dout;
+  int status =  MdsIoRequest(FDS[fd - 1].conid, MDS_IO_WRITE_K,sizeof(info)/sizeof(*info),info,buff,&len,&dout,&msg);
+  if STATUS_OK {
+         if(len==sizeof(int32_t))	ret = (ssize_t)*(int32_t*)dout;
+    else if(len==sizeof(int64_t))	ret = (ssize_t)*(int64_t*)dout;
+    else				ret = 0;
+  } else				ret = 0;
+  FREE_NOW(msg);
   IO_UNLOCK;
   return ret;
 }
 
-ssize_t MDS_IO_WRITE(int fd, void *buff, size_t count)
+EXPORT ssize_t MDS_IO_WRITE(int fd, void *buff, size_t count)
 {
   ssize_t ans;
   if (count == 0)
@@ -1288,86 +1202,27 @@ ssize_t MDS_IO_WRITE(int fd, void *buff, size_t count)
   return ans;
 }
 
-inline static ssize_t get_answer_info_read(int sock, void* buff){
-  ssize_t ret;
-  INIT_AND_FREE_ON_EXIT(void*,msg);
-  char dtype, ndims;
-  int dims[7], numbytes;
-  short length;
-  void *dptr;
-  if (GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1) {
-    ret = (ssize_t) numbytes;
-    if (ret) memcpy(buff, dptr, (size_t) ret);
-  } else ret = 0;
-  FREE_NOW(msg);
-  return ret;
-}
-
 inline static ssize_t io_read_remote(int fd, void *buff, size_t count){
   ssize_t ret;
   IO_LOCK;
-  ret = 0;
-  int info[] = { 0, 0, 0 };
-  int sock = FDS[fd - 1].conid;
-  int status;
-  info[1] = FDS[fd - 1].fd;
-  info[2] = (int)count;
-  status = SendArg(sock, MDS_IO_READ_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);
-  if STATUS_OK
-    ret = get_answer_info_read(sock,buff);
-  else
-    RemoteAccessDisconnect(sock, 1);
-  IO_UNLOCK;
-  return ret;
-}
-
-inline static ssize_t get_answer_info_read_x(int sock, void* buff, int* deleted){
-  ssize_t ret;
   INIT_AND_FREE_ON_EXIT(void*,msg);
-  char dtype, ndims;
-  int dims[7], numbytes;
-  short length;
-  void *dptr;
-  int status = GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg);
+  int info[] = { 0, FDS[fd - 1].fd, (int)count };
+  int len;
+  char*dout;
+  int status =  MdsIoRequest(FDS[fd - 1].conid, MDS_IO_READ_K,sizeof(info)/sizeof(*info),info,NULL,&len,&dout,&msg);
   if STATUS_OK {
-    if (deleted)
-      *deleted = status == 3;
-    ret = (ssize_t) numbytes;
-    if (ret)
-      memcpy(buff, dptr, (size_t) ret);
-  } else ret = -1;
+    ret = (ssize_t) len;
+    memcpy(buff, dout, ret);
+  } else ret = 0;
   FREE_NOW(msg);
-  return ret;
-}
-
-inline static ssize_t io_read_x_remote(int fd, off_t offset, void *buff, size_t count, int *deleted){
-  ssize_t ret;
-  IO_LOCK;
-  ret = -1;
-  int info[] = { 0, 0, 0, 0, 0 };
-  int sock = FDS[fd - 1].conid;
-  int status;
-  info[1] = FDS[fd - 1].fd;
-  info[4] = (int)count;
-  *(off_t *) (&info[2]) = offset;
-#ifdef WORDS_BIGENDIAN
-  status = info[2];
-  info[2] = info[3];
-  info[3] = status;
-#endif
-  status = SendArg(sock, MDS_IO_READ_X_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);
-  if STATUS_OK
-    ret = get_answer_info_read_x(sock,buff,deleted);
-  else
-    RemoteAccessDisconnect(sock, 1);
   IO_UNLOCK;
   return ret;
 }
 
-static ssize_t MDS_IO_READ_(int fd, void *buff, size_t count){
-  if (count == 0)
-    return 0;
+EXPORT ssize_t MDS_IO_READ(int fd, void *buff, size_t count){
+  if (count == 0) return 0;
   ssize_t ans;
+  FDS_LOCK;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
     if (FDS[fd - 1].conid == -1) {
 #ifdef USE_PERF
@@ -1377,18 +1232,36 @@ static ssize_t MDS_IO_READ_(int fd, void *buff, size_t count){
     } else
       ans = (ssize_t) io_read_remote(fd, buff, count);
   } else ans = -1;
-  return ans;
-}
-
-ssize_t MDS_IO_READ(int fd, void *buff, size_t count){
-  int ans;
-  FDS_LOCK;
-  ans = MDS_IO_READ_(fd, buff, count);
   FDS_UNLOCK;
   return ans;
 }
 
-ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *deleted) {
+inline static ssize_t io_read_x_remote(int fd, off_t offset, void *buff, size_t count, int *deleted){
+  ssize_t ret;
+  IO_LOCK;
+  INIT_AND_FREE_ON_EXIT(void*,msg);
+  int info[] = { 0, FDS[fd - 1].fd, 0, 0, (int)count};
+  int status;
+  *(off_t *) (&info[2]) = offset;
+#ifdef WORDS_BIGENDIAN
+  status = info[2];
+  info[2] = info[3];
+  info[3] = status;
+#endif
+  int len;
+  char*dout;
+  status =  MdsIoRequest(FDS[fd - 1].conid, MDS_IO_READ_X_K,sizeof(info)/sizeof(*info),info,NULL,&len,&dout,&msg);
+  if STATUS_OK {
+    if (deleted) *deleted = status == 3;
+    ret = (ssize_t)len;
+    if (ret) memcpy(buff, dout, ret);
+  } else ret = -1;
+  FREE_NOW(msg);
+  IO_UNLOCK;
+  return ret;
+}
+
+EXPORT ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *deleted) {
   if (count == 0) {
     if (deleted) *deleted = 0;
     return 0;
@@ -1397,10 +1270,10 @@ ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *delet
   FDS_LOCK;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
     if (FDS[fd - 1].conid == -1 || (!FDS[fd - 1].enhanced)) {
-      MDS_IO_RDLOCK(fd, offset, count, deleted);
-      MDS_IO_LSEEK_(fd, offset, SEEK_SET);
-      ans = MDS_IO_READ_(fd, buff, count);
-      MDS_IO_UNLOCK();
+      IO_RDLOCK_LOCAL(FDS[fd - 1].fd, offset, count, deleted);
+      lseek(FDS[fd - 1].fd, offset, SEEK_SET);
+      ans = (ssize_t) read(FDS[fd - 1].fd, buff, (unsigned int)count);
+      IO_UNLOCK_LOCAL();
     } else
       ans = io_read_x_remote(fd, offset, buff, count, deleted);
   } else ans = -1;
@@ -1408,134 +1281,99 @@ ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *delet
   return ans;
 }
 
-inline static int get_answer_info_lock(int sock, int* deleted){
-  int ret;
-  INIT_AND_FREE_ON_EXIT(void*,msg);
-  char dtype, ndims;
-  int dims[7], numbytes;
-  short length;
-  void *dptr;
-  int status = GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg);
-  if STATUS_OK {
-    if (deleted)
-      *deleted = status == 3;
-    memcpy(&ret, dptr, sizeof(ret));
-  } else ret = 0;
-  FREE_NOW(msg);
-  return ret;
-}
-
 inline static int io_lock_remote(int fd, off_t offset, size_t size, int mode, int *deleted){
   int ret;
   IO_LOCK;
-  ret = 0;
-  int info[] = { 0, 0, 0, 0, 0, 0 };
-  int sock = FDS[fd - 1].conid;
+  INIT_AND_FREE_ON_EXIT(void*,msg);
+  int info[] = { 0, FDS[fd - 1].fd, 0, 0, (int)size, mode };
   int status;
-  info[1] = FDS[fd - 1].fd;
-  info[4] = (int)size;
-  info[5] = mode;
   *(off_t *) (&info[2]) = offset;
 #ifdef WORDS_BIGENDIAN
   status = info[2];
   info[2] = info[3];
   info[3] = status;
 #endif
-  status = SendArg(sock, MDS_IO_LOCK_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);
-  if STATUS_OK
-    ret = get_answer_info_lock(sock,deleted);
-  else
-    RemoteAccessDisconnect(sock, 1);
+  int len;
+  char*dout;
+  status =  MdsIoRequest(FDS[fd - 1].conid, MDS_IO_LOCK_K,sizeof(info)/sizeof(*info),info,NULL,&len,&dout,&msg);
+  if (STATUS_OK && len==sizeof(ret)) {
+    if (deleted) *deleted = status == 3;
+    ret = *(int*)dout;
+  } else ret = 0;
+  FREE_NOW(msg);
   IO_UNLOCK;
   return ret;
 }
 
-static int MDS_IO_LOCK_(int fd, off_t offset, size_t size, int mode_in, int *deleted){
-  if (deleted) *deleted = 0;
+static int io_lock_local(int fd, off_t offset, size_t size, int mode_in, int *deleted) {
   int status = TreeLOCK_FAILURE;
-  if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
-    if (FDS[fd - 1].conid == -1) {
-      int mode = mode_in & MDS_IO_LOCK_MASK;
-      int nowait = mode_in & MDS_IO_LOCK_NOWAIT;
+  int mode = mode_in & MDS_IO_LOCK_MASK;
+  int nowait = mode_in & MDS_IO_LOCK_NOWAIT;
 #ifdef _WIN32
-      OVERLAPPED overlapped;
-      int flags;
-      offset = ((offset >= 0) && (nowait == 0)) ? offset : (lseek(FDS[fd - 1].fd, 0, SEEK_END));
-      overlapped.Offset = (int)(offset & 0xffffffff);
-      overlapped.OffsetHigh = (int)(offset >> 32);
-      overlapped.hEvent = 0;
-      if (mode > 0) {
-	HANDLE h = (HANDLE) _get_osfhandle(FDS[fd - 1].fd);
-	flags = ((mode == MDS_IO_LOCK_RD) && (nowait == 0)) ? 0 : LOCKFILE_EXCLUSIVE_LOCK;
-	if (nowait) flags |= LOCKFILE_FAIL_IMMEDIATELY;
-	status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped);
-	status = LockFileEx(h, flags, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
-      } else {
-	HANDLE h = (HANDLE) _get_osfhandle(FDS[fd - 1].fd);
-	status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
-      }
-#else
-      struct flock flock_info;
-      struct stat stat;
-      flock_info.l_type = (mode == 0) ? F_UNLCK : ((mode == 1) ? F_RDLCK : F_WRLCK);
-      flock_info.l_whence = (mode == 0) ? SEEK_SET : ((offset >= 0) ? SEEK_SET : SEEK_END);
-      flock_info.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
-      flock_info.l_len = (mode == 0) ? 0 : size;
-      status = (fcntl(FDS[fd - 1].fd, nowait ? F_SETLK : F_SETLKW, &flock_info) != -1) ? TreeSUCCESS : TreeLOCK_FAILURE;
-      fstat(FDS[fd - 1].fd, &stat);
-      if (deleted) *deleted = stat.st_nlink <= 0;
-#endif
-    } else
-      status = io_lock_remote(fd, offset, size, mode_in, deleted);
+  OVERLAPPED overlapped;
+  int flags;
+  offset = ((offset >= 0) && (nowait == 0)) ? offset : (lseek(fd, 0, SEEK_END));
+  overlapped.Offset = (int)(offset & 0xffffffff);
+  overlapped.OffsetHigh = (int)(offset >> 32);
+  overlapped.hEvent = 0;
+  if (mode > 0) {
+    HANDLE h = (HANDLE) _get_osfhandle(fd);
+    flags = ((mode == MDS_IO_LOCK_RD) && (nowait == 0)) ? 0 : LOCKFILE_EXCLUSIVE_LOCK;
+    if (nowait) flags |= LOCKFILE_FAIL_IMMEDIATELY;
+    UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped); //TODO: check return value
+    status = LockFileEx(h, flags, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
+  } else {
+    HANDLE h = (HANDLE) _get_osfhandle(fd);
+    status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
   }
+#else
+  struct flock flock_info;
+  struct stat stat;
+  flock_info.l_type = (mode == 0) ? F_UNLCK : ((mode == 1) ? F_RDLCK : F_WRLCK);
+  flock_info.l_whence = (mode == 0) ? SEEK_SET : ((offset >= 0) ? SEEK_SET : SEEK_END);
+  flock_info.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
+  flock_info.l_len = (mode == 0) ? 0 : size;
+  status = (fcntl(fd, nowait ? F_SETLK : F_SETLKW, &flock_info) != -1) ? TreeSUCCESS : TreeLOCK_FAILURE;
+  fstat(fd, &stat);
+  if (deleted) *deleted = stat.st_nlink <= 0;
+#endif
   return status;
 }
 
-int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted){
+EXPORT int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted){
   int status;
   FDS_LOCK
-  status = MDS_IO_LOCK_(fd,offset,size,mode_in,deleted);
+  if (deleted) *deleted = 0;
+  if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
+    if (FDS[fd - 1].conid == -1)
+      status = io_lock_local(FDS[fd - 1].fd, offset, size, mode_in, deleted);
+    else
+      status = io_lock_remote(fd, offset, size, mode_in, deleted);
+  } else status = TreeLOCK_FAILURE;
   FDS_UNLOCK
   return status;
-}
-
-inline static int get_answer_info_exists(int sock){
-  int ret;
-  INIT_AND_FREE_ON_EXIT(void*,msg);
-  char dtype, ndims;
-  int dims[7], numbytes;
-  short length;
-  void *dptr;
-  if (IS_OK(GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg))
-  && (length == (short)sizeof(ret)))
-    memcpy(&ret, dptr, sizeof(ret));
-  else ret = 0;
-  FREE_NOW(msg);
-  return ret;
 }
 
 inline static int io_exists_remote(char *host, char *filename){
   int ret;
   IO_LOCK;
-  ret = 0;
-  int sock;
-  sock = RemoteAccessConnect(host, 1, 0);
-  if (sock != -1) {
-    int info[] = { 0 };
-    int status;
-    info[0] = (int)strlen(filename) + 1;
-    status = SendArg(sock, MDS_IO_EXISTS_K, 0, 0, 0, sizeof(info) / sizeof(int), info, filename);
-    if STATUS_OK {
-      ret = get_answer_info_exists(sock);
-      RemoteAccessDisconnect(sock, 0);
-    } else
-      RemoteAccessDisconnect(sock, 1);
-  }
+  INIT_AND_FREE_ON_EXIT(void*,msg);
+  int conid = RemoteAccessConnect(host, 1, 0);
+  if (conid != -1) {
+    int info[] = { (int)strlen(filename) + 1 };
+    int len;
+    char*dout;
+    int status = MdsIoRequest(conid,MDS_IO_EXISTS_K,sizeof(info)/sizeof(*info),info,filename,&len,&dout,&msg);
+    if (STATUS_OK && len==sizeof(int))
+	 ret = *(int*)dout;
+    else ret = 0;
+  } else ret = 0;
+  FREE_NOW(msg);
   IO_UNLOCK;
   return ret;
 }
 
-int MDS_IO_EXISTS(char *filename_in){
+EXPORT int MDS_IO_EXISTS(char *filename_in){
   int status;
   INIT_AND_FREE_ON_EXIT(char*,filename);
   INIT_AND_FREE_ON_EXIT(char*,tmp);
@@ -1549,43 +1387,26 @@ int MDS_IO_EXISTS(char *filename_in){
   return status;
 }
 
-inline static int get_answer_info_remove(int sock){
-  int ret;
-  INIT_AND_FREE_ON_EXIT(void*,msg);
-  char dtype, ndims;
-  int dims[7], numbytes;
-  short length;
-  void *dptr;
-  if (IS_OK(GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg))
-  && (length == (short)sizeof(ret)))
-    memcpy(&ret, dptr, sizeof(ret));
-  else ret = -1;
-  FREE_NOW(msg);
-  return ret;
-}
-
 inline static int io_remove_remote(char *host, char *filename){
   int ret;
   IO_LOCK;
-  ret = -1;
-  int sock;
-  sock = RemoteAccessConnect(host, 1, 0);
-  if (sock != -1) {
-    int info[] = { 0 };
-    int status;
-    info[0] = (int)strlen(filename) + 1;
-    status = SendArg(sock, MDS_IO_REMOVE_K, 0, 0, 0, sizeof(info) / sizeof(int), info, filename);
-    if STATUS_OK {
-      ret = get_answer_info_remove(sock);
-      RemoteAccessDisconnect(sock, 0);
-    } else
-      RemoteAccessDisconnect(sock, 1);
-  }
+  INIT_AND_FREE_ON_EXIT(void*,msg);
+  int conid = RemoteAccessConnect(host, 1, 0);
+  if (conid != -1) {
+    int info[] = { (int)strlen(filename) + 1 };
+    int len;
+    char*dout;
+    int status = MdsIoRequest(conid,MDS_IO_REMOVE_K,sizeof(info)/sizeof(*info),info,filename,&len,&dout,&msg);
+    if (STATUS_OK && len==sizeof(int))
+	 ret = *(int*)dout;
+    else ret = -1;
+  } else ret = -1;
+  FREE_NOW(msg);
   IO_UNLOCK;
   return ret;
 }
 
-int MDS_IO_REMOVE(char *filename_in){
+EXPORT int MDS_IO_REMOVE(char *filename_in){
   int status;
   INIT_AND_FREE_ON_EXIT(char*,filename);
   INIT_AND_FREE_ON_EXIT(char*,tmp);
@@ -1599,41 +1420,30 @@ int MDS_IO_REMOVE(char *filename_in){
 }
 
 inline static int io_rename_remote(char *host, char *filename_old, char *filename_new){
-  int ans;
+  int ret;
   IO_LOCK;
-  int sock;
-  sock = RemoteAccessConnect(host, 1, 0);
-  if (sock != -1) {
-    INIT_AND_FREE_ON_EXIT(char*,names);
-    int info[] = { 0 };
-    ans = -1;
-    int status;
-    info[0] = (int)(strlen(filename_old) + 1 + strlen(filename_new) + 1);
+  INIT_AND_FREE_ON_EXIT(char*,names);
+  INIT_AND_FREE_ON_EXIT(void*,msg);
+  int conid;
+  conid = RemoteAccessConnect(host, 1, 0);
+  if (conid != -1) {
+    int info[] = { (int)(strlen(filename_old) + 1 + strlen(filename_new) + 1) };
     names = strcpy(malloc(info[0]), filename_old);
     strcpy(&names[strlen(filename_old) + 1], filename_new);
-    status = SendArg(sock, MDS_IO_RENAME_K, 0, 0, 0, sizeof(info) / sizeof(int), info, names);
-    if STATUS_OK {
-      char dtype;
-      short length;
-      char ndims;
-      int dims[7];
-      int numbytes;
-      void *dptr;
-      INIT_AND_FREE_ON_EXIT(void*,msg);
-      if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)
-	  && (length == sizeof(ans)))
-	memcpy(&ans, dptr, sizeof(ans));
-      FREE_NOW(msg);
-      RemoteAccessDisconnect(sock, 0);
-    } else
-      RemoteAccessDisconnect(sock, 1);
-    FREE_NOW(names);
-  } else ans = -1;
+    int len;
+    char*dout;
+    int status = MdsIoRequest(conid,MDS_IO_RENAME_K,sizeof(info)/sizeof(*info),info,names,&len,&dout,&msg);
+    if (STATUS_OK && len==sizeof(int))
+	 ret = *(int*)dout;
+    else ret = -1;
+  } else ret = -1;
+  FREE_NOW(msg);
+  FREE_NOW(names);
   IO_UNLOCK;
-  return ans;
+  return ret;
 }
 
-int MDS_IO_RENAME(char *filename_old, char *filename_new){
+EXPORT int MDS_IO_RENAME(char *filename_old, char *filename_new){
   int status;
   INIT_AND_FREE_ON_EXIT(char*,tmp_new);
   INIT_AND_FREE_ON_EXIT(char*,tmp_old);
@@ -1651,5 +1461,148 @@ int MDS_IO_RENAME(char *filename_old, char *filename_new){
     status = rename(filename_old, filename_new);
   FREE_NOW(tmp_old);
   FREE_NOW(tmp_new);
+  return status;
+}
+
+///////////////////////////////////////////////////////////////////
+/////////NEW OPEN ONE INTERFACE////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+
+inline static char* generate_fullpath(char* filepath,char* treename,int shot, int type) {
+  const char treeext[] = TREE_TREEFILE_EXT;
+  const char nciext[]  = TREE_NCIFILE_EXT;
+  const char dataext[] = TREE_DATAFILE_EXT;
+  const char none[]    = "";
+  char name[40];
+  if (shot > 999)
+    sprintf(name, "%s_%d", treename, shot);
+  else if (shot > 0)
+    sprintf(name, "%s_%03d", treename, shot);
+  else// if (shot == -1)
+    sprintf(name, "%s_model", treename);
+  char* ext;
+  if     (type==TREE_TREEFILE_TYPE) ext = (char*)treeext;
+  else if(type==TREE_NCIFILE_TYPE ) ext = (char*)nciext;
+  else if(type==TREE_DATAFILE_TYPE) ext = (char*)dataext;
+  else				    ext = (char*)none;
+  char * resnam = strcpy(malloc(2+strlen(filepath)+strlen(name)+strlen(ext)),filepath);
+  int last = strlen(resnam) - 1;
+  if (resnam[last] == '+')
+    resnam[last] = '\0';
+  else {
+    if (strcmp(resnam + last, TREE_PATH_DELIM))
+      strcat(resnam, TREE_PATH_DELIM);
+    strcat(resnam, name);
+  }
+  strcat(resnam, ext);
+  return resnam;
+}
+
+inline static int io_open_one_request(int conid,size_t sinfo,int*info,char*data,char*host,int *try_again,int *enhanced,char**fullpath,int *fd_out){
+  int status;
+  INIT_AND_FREE_ON_EXIT(void*,msg);
+  int len;
+  int*dout;
+  status = MdsIoRequest(conid,MDS_IO_OPEN_ONE_K,sinfo,info,data,&len,(char**)&dout,&msg);
+  if (STATUS_OK && len>=8) {
+    *enhanced = status == 3;
+    status = *(dout++);
+    *fd_out= *(dout++);
+    if (len>8) {
+      *fullpath = malloc(len-8+strlen(host)+3);
+      sprintf(*fullpath,"%s::%s",host,(char*)dout);
+    } else *fullpath = NULL;
+    *try_again = 0;
+  } else {
+    if (status==LibKEYNOTFOU) *try_again = 0;
+    *fd_out = -1;
+  }
+  FREE_NOW(msg);
+  return status;
+}
+
+inline static int io_open_one_remote(char *host,char *filepath,char* treename,int shot,int type,int new,int edit_flag,char**fullpath,int*fd_out,int*conid,int*enhanced){
+  int status;
+  IO_LOCK;
+  static int (*GetConnectionVersion)(int) = NULL;
+  status = LibFindImageSymbol_C("MdsIpShr","GetConnectionVersion",&GetConnectionVersion);
+  int try_again = 1;
+  do {
+    *conid = RemoteAccessConnect(host, 1, 0);
+    if (*conid != -1) {
+      if (GetConnectionVersion(*conid) < MDSIP_VERSION_OPEN_ONE) {
+	status = TreeCANCEL;
+        *fd_out = -1;
+	break;
+      }
+      int len = strlen(treename);
+      int totlen = strlen(filepath)+len+2;
+      char* data = malloc(totlen);
+      strcpy(data,       treename);
+      strcpy(data+len+1,filepath);
+      int info[] = {totlen,shot,type,new,edit_flag};
+      status = io_open_one_request(*conid,sizeof(info)/sizeof(*info),info,data,host,&try_again,enhanced,fullpath,fd_out);
+      free(data);
+    } else {
+      fprintf(stderr, "Error connecting to host /%s/ in io_open_one_remote\n", host);
+      try_again = 0;
+      *fd_out = -1;
+    }
+  } while (try_again&&(status!=TreeCANCEL));
+  IO_UNLOCK;
+  return status;
+}
+
+EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename,int shot, int type, int new, int edit_flag, char**fullpath, int *fd_out){
+  int status = TreeSUCCESS;
+  int enhanced = 0;
+  int conid = -1;
+  int fd;
+  char *hostpart, *filepart;
+  char *filepath = replaceBackslashes(strdup(filepath_in));
+  char *tmp = ParseFile(filepath, &hostpart,&filepart);
+  int options,mode,needs_locking;
+  if (!hostpart || *filepart) {
+    if (new){
+      options = O_RDWR | O_CREAT;
+      mode = 0664;
+    } else {
+      options = edit_flag ? O_RDWR : O_RDONLY;
+      mode = 0;
+    }
+    needs_locking = 1;
+  } else needs_locking = 0;
+  if (hostpart) {
+    status = io_open_one_remote(hostpart, filepart, treename, shot, type, new, edit_flag, fullpath, &fd, &conid, &enhanced);
+    if (status==TreeCANCEL && *filepart && filepart[strlen(filepart)-1] != ':') {
+      *fullpath = generate_fullpath(filepath,treename,shot,type);
+      fd = io_open_remote(hostpart, *fullpath+strlen(hostpart)+2, options, mode, &conid, &enhanced);
+      status = fd==-1 ? TreeFAILURE : TreeSUCCESS;
+    }
+  } else {
+    *fullpath = generate_fullpath(filepart, treename, shot, type);
+    fd = open(*fullpath, options | O_BINARY | O_RANDOM, mode);
+#ifndef _WIN32
+    if ((fd != -1) && new)
+      set_mdsplus_file_protection(*fullpath);
+#endif
+  }
+  free(filepath);
+  free(tmp);
+  if (fd != -1) {
+    fd = NewFD(fd, conid, enhanced);
+    if (needs_locking) {
+      int is_tree = type == TREE_TREEFILE_TYPE;
+      if (is_tree && edit_flag) {
+	if IS_NOT_OK(MDS_IO_LOCK(fd, 1, 1, MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0)) {
+	  MDS_IO_CLOSE(fd);
+	  status = TreeEDITTING;
+	  fd = -1;
+	}
+      }
+    }
+  }
+  *fd_out = fd;
   return status;
 }
