@@ -74,7 +74,7 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                 con.get("TreeShr->TreeOpen(ref($),val($),val(1))",self.tree,-1)
                 thick = Tree(self.tree,-1)
                 thick.createPulse(1)
-                # self.assertEqual(local.getFileName(),thick.getFileName());# remote Segmentation fault
+                self.assertEqual(local.getFileName(),thick.getFileName().split("::",2)[1]);
                 """ TreeTurnOff / TreeTurnOn """
                 thick.S.on = False;self.assertEqual(local.S.on,False)
                 thick.S.on = True; self.assertEqual(local.S.on,True )
@@ -94,7 +94,7 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                 self.assertEqual(thick.getDefault(),thick.top.S)
                 thick.setDefault(thick.top)
                 """ FindNodeWildRemote """
-                # self.assertEqual(thick.getNodeWild("T*"),local.getNodeWild("T*"))
+                self.assertEqual(str(thick.getNodeWild("T*")),str(local.getNodeWild("T*")))
                 """ FindTagWildRemote """
                 self.assertEqual(thick.findTags("*"),local.findTags("*"))
                 """ nci """
@@ -102,7 +102,6 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                 self.assertEqual(thick.S.write_once,True)
                 for nci in ('on','depth','usage_str','dtype','length','rlength','fullpath','minpath','member_nids','children_nids','rfa','write_once'):
                     testnci(thick,local,con,nci)
-                """ """
                 """ new stuff """
                 self.assertEqual(local.getFileName(),con.get("treefilename($,-1)",self.tree))
             finally:
