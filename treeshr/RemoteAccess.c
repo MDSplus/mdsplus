@@ -57,24 +57,16 @@ static pthread_mutex_t host_list_lock = PTHREAD_MUTEX_INITIALIZER;
 #define HOST_LIST_LOCK    pthread_mutex_lock(&host_list_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&host_list_lock);
 #define HOST_LIST_UNLOCK  pthread_cleanup_pop(1);
 
+
+
 #if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
+# define USE_GET_ADDR
 # ifndef _WIN32
 #  include <sys/socket.h>
 #  include <netdb.h>
 #  include <netinet/in.h>
 # endif
-
-static struct _host_list {
-  void *dbid;
-  char *host;
-  int conid;
-  struct sockaddr_in sockaddr;
-  int connections;
-  time_t time;
-  struct _host_list *next;
-} *host_list = 0;
-
-int GetAddr(char *host, struct sockaddr_in *sockaddr)
+int get_addr(char *host, struct sockaddr_in *sockaddr)
 {
   int status;
   struct addrinfo *res;
@@ -124,7 +116,9 @@ int GetAddr(char *host, struct sockaddr_in *sockaddr)
   }
   return status;
 }
-#else
+#endif
+
+
 static struct _host_list {
   void *dbid;
   char *host;
@@ -132,8 +126,10 @@ static struct _host_list {
   int connections;
   time_t time;
   struct _host_list *next;
-} *host_list = 0;
+#ifdef USE_GET_ADDR
+  struct sockaddr_in sockaddr;
 #endif
+} *host_list = 0;
 
 
 ///////////////////////////////////////////////////////////////////
@@ -208,9 +204,9 @@ int RemoteAccessConnect(char *host, int inc_count, void *dbid){
   static int (*connectToMds) (char *) = NULL;
   int status = LibFindImageSymbol_C("MdsIpShr", "ConnectToMds", &connectToMds);
   if STATUS_NOT_OK return -1;
-#if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
+#ifdef USE_GET_ADDR
   struct sockaddr_in sockaddr;
-  int getaddr_status = GetAddr(host, &sockaddr);
+  int getaddr_status = get_addr(host, &sockaddr);
 #endif
   int conid;
   HOST_LIST_LOCK;
@@ -219,12 +215,12 @@ int RemoteAccessConnect(char *host, int inc_count, void *dbid){
        nextone = &hostchk->next, hostchk = hostchk->next) {
     if (dbid && hostchk->dbid != dbid)
       continue;
-#if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
-    host_in_directive = (((getaddr_status == 0) ? memcmp(&sockaddr, &hostchk->sockaddr,
-					sizeof(sockaddr)) : strcmp(hostchk->host, host)) == 0);
-#else
-    host_in_directive = (strcmp(hostchk->host, host) == 0);
+#ifdef USE_GET_ADDR
+    if (getaddr_status == 0)
+      host_in_directive = memcmp(&sockaddr, &hostchk->sockaddr,	sizeof(sockaddr))
+    else
 #endif
+      host_in_directive = !strcmp(hostchk->host, host);
     if (host_in_directive){
       hostchk->time = time(0);
       if (inc_count)
@@ -240,7 +236,7 @@ int RemoteAccessConnect(char *host, int inc_count, void *dbid){
       (*nextone)->host = strcpy(malloc(strlen(host) + 1), host);
       (*nextone)->conid = conid;
       (*nextone)->connections = inc_count ? 1 : 0;
-#if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
+#ifdef USE_GET_ADDR
       memcpy(&(*nextone)->sockaddr, &sockaddr, sizeof(sockaddr));
 #endif
       (*nextone)->time = time(0);
