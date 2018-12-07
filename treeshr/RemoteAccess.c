@@ -898,7 +898,7 @@ int TreeSetCurrentShotIdRemote(const char *treearg, char *path, int shot)
 # include <unistd.h>
 #endif
 #include "../mdstcpip/mdsIo.h"
-
+extern char *TreePath(char *tree, char *tree_lower_out);
 extern void TreePerfWrite(int);
 extern void TreePerfRead(int);
 
@@ -1381,7 +1381,10 @@ EXPORT int MDS_IO_EXISTS(char *filename_in){
   struct stat statbuf;
   char *hostpart, *filepart;
   tmp = ParseFile(filename, &hostpart, &filepart);
-  status = hostpart ? io_exists_remote(hostpart, filepart) : (stat(filename, &statbuf) == 0);
+  if (hostpart)
+    status = io_exists_remote(hostpart, filepart);
+  else
+    status = (stat(filename, &statbuf) == 0);
   FREE_NOW(tmp);
   FREE_NOW(filename);
   return status;
@@ -1473,7 +1476,11 @@ inline static char* generate_fullpath(char* filepath,char* treename,int shot, in
   const char treeext[] = TREE_TREEFILE_EXT;
   const char nciext[]  = TREE_NCIFILE_EXT;
   const char dataext[] = TREE_DATAFILE_EXT;
-  const char none[]    = "";
+  char* ext;
+  if     (type==TREE_TREEFILE_TYPE) ext = (char*)treeext;
+  else if(type==TREE_NCIFILE_TYPE ) ext = (char*)nciext;
+  else if(type==TREE_DATAFILE_TYPE) ext = (char*)dataext;
+  else  return strdup(filepath);
   char name[40];
   if (shot > 999)
     sprintf(name, "%s_%d", treename, shot);
@@ -1481,12 +1488,7 @@ inline static char* generate_fullpath(char* filepath,char* treename,int shot, in
     sprintf(name, "%s_%03d", treename, shot);
   else// if (shot == -1)
     sprintf(name, "%s_model", treename);
-  char* ext;
-  if     (type==TREE_TREEFILE_TYPE) ext = (char*)treeext;
-  else if(type==TREE_NCIFILE_TYPE ) ext = (char*)nciext;
-  else if(type==TREE_DATAFILE_TYPE) ext = (char*)dataext;
-  else				    ext = (char*)none;
-  char * resnam = strcpy(malloc(2+strlen(filepath)+strlen(name)+strlen(ext)),filepath);
+  char* resnam = strcpy(malloc(2+strlen(filepath)+strlen(name)+strlen(ext)),filepath);
   int last = strlen(resnam) - 1;
   if (resnam[last] == '+')
     resnam[last] = '\0';
@@ -1553,56 +1555,84 @@ inline static int io_open_one_remote(char *host,char *filepath,char* treename,in
   IO_UNLOCK;
   return status;
 }
-
-EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename,int shot, int type, int new, int edit_flag, char**fullpath, int *fd_out){
+extern char* MaskReplace(char*,char*,int);
+#include <ctype.h>
+EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, int type, int new, int edit, char**fullpath, int *fd_out){
   int status = TreeSUCCESS;
   int enhanced = 0;
   int conid = -1;
-  int fd;
+  int fd = -1;
+  char treename[13];
   char *hostpart, *filepart;
-  char *filepath = replaceBackslashes(strdup(filepath_in));
-  char *tmp = ParseFile(filepath, &hostpart,&filepart);
-  int options,mode,needs_locking;
-  if (!hostpart || *filepart) {
-    if (new){
-      options = O_RDWR | O_CREAT;
-      mode = 0664;
-    } else {
-      options = edit_flag ? O_RDWR : O_RDONLY;
-      mode = 0;
-    }
-    needs_locking = 1;
-  } else needs_locking = 0;
-  if (hostpart) {
-    status = io_open_one_remote(hostpart, filepart, treename, shot, type, new, edit_flag, fullpath, &fd, &conid, &enhanced);
-    if (status==TreeCANCEL && *filepart && filepart[strlen(filepart)-1] != ':') {
-      *fullpath = generate_fullpath(filepath,treename,shot,type);
-      fd = io_open_remote(hostpart, *fullpath+strlen(hostpart)+2, options, mode, &conid, &enhanced);
-      status = fd==-1 ? TreeFAILURE : TreeSUCCESS;
-    }
+  int options,mode;
+  if (new){
+    options = O_RDWR | O_CREAT;
+    mode = 0664;
   } else {
-    *fullpath = generate_fullpath(filepart, treename, shot, type);
-    fd = open(*fullpath, options | O_BINARY | O_RANDOM, mode);
-#ifndef _WIN32
-    if ((fd != -1) && new)
-      set_mdsplus_file_protection(*fullpath);
-#endif
+    options = edit ? O_RDWR : O_RDONLY;
+    mode = 0;
   }
-  free(filepath);
-  free(tmp);
-  if (fd != -1) {
-    fd = NewFD(fd, conid, enhanced);
-    if (needs_locking) {
-      int is_tree = type == TREE_TREEFILE_TYPE;
-      if (is_tree && edit_flag) {
-	if IS_NOT_OK(MDS_IO_LOCK(fd, 1, 1, MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0)) {
-	  MDS_IO_CLOSE(fd);
-	  status = TreeEDITTING;
-	  fd = -1;
+  size_t i;
+  char *filepath = NULL;
+  if (filepath_in && strlen(filepath_in)) {
+    for (i=0 ; i<12 ; i++) treename[i] = tolower(treename_in[i]);
+  } else {
+    char* tmp = TreePath(treename_in, treename);
+    if (tmp) {
+      replaceBackslashes(tmp);
+      filepath = MaskReplace(tmp, treename, shot);
+      free(tmp);
+    }
+  }
+  if (filepath) {
+    size_t pathlen = strlen(filepath);
+    char *part = filepath;
+    for (i = 0 ; (i < (pathlen + 1)) && (fd == -1); i++) {
+      if (filepath[i] != ';' && filepath[i] != '\0') continue;
+      while(*part == ' ') part++;
+      if (!strlen(part)) break;
+      filepath[i] = 0;
+      char *tmp = ParseFile(part, &hostpart,&filepart);
+      if (hostpart) {
+	status = io_open_one_remote(hostpart, filepart, treename, shot, type, new, edit, fullpath, &fd, &conid, &enhanced);
+	if (status==TreeCANCEL && *filepart && filepart[strlen(filepart)-1] != ':') {
+	  *fullpath = generate_fullpath(filepath,treename,shot,type);
+	  fd = io_open_remote(hostpart, *fullpath+strlen(hostpart)+2, options, mode, &conid, &enhanced);
+	  status = fd==-1 ? TreeFAILURE : TreeSUCCESS;
+	  if ((fd != -1) && edit && (type == TREE_TREEFILE_TYPE)) {
+	    if IS_NOT_OK(io_lock_remote(fd, 1, 1, MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0)) {
+	      status = TreeEDITTING;
+	      fd = -2;
+	    }
+	  }
+	}
+      } else {
+	*fullpath = generate_fullpath(filepart, treename, shot, type);
+	fd = open(*fullpath, options | O_BINARY | O_RANDOM, mode);
+	if (type == TREE_DIRECTORY) {
+          if (fd != -1) {
+	    close(fd);
+	    fd = -3;
+	  }
+        } else {
+#ifndef _WIN32
+          if ((fd != -1) && new)
+            set_mdsplus_file_protection(*fullpath);
+#endif
+	  if ((fd != -1) && edit && (type == TREE_TREEFILE_TYPE)) {
+	    if IS_NOT_OK(io_lock_local(fd, 1, 1, MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0)) {
+	      status = TreeEDITTING;
+	      fd = -2;
+	    }
+	  }
 	}
       }
+      free(tmp);
+      part = &filepath[i + 1];
     }
+    free(filepath);
   }
+  if (fd >= 0) fd = NewFD(fd, conid, enhanced);
   *fd_out = fd;
   return status;
 }

@@ -416,9 +416,10 @@ in doing I/O to the tree files.
 
 #define DATAF_C_MAX_RECORD_SIZE (32765u - sizeof(RECORD_HEADER))
 
-#define TREE_TREEFILE_TYPE 0 //".tree"
-#define TREE_NCIFILE_TYPE  1 //".characteristics"
-#define TREE_DATAFILE_TYPE 2 //".datafile"
+#define TREE_DIRECTORY     0 // just directory
+#define TREE_TREEFILE_TYPE 1 //".tree"
+#define TREE_NCIFILE_TYPE  2 //".characteristics"
+#define TREE_DATAFILE_TYPE 3 //".datafile"
 #define TREE_TREEFILE_EXT  ".tree"
 #define TREE_NCIFILE_EXT   ".characteristics"
 #define TREE_DATAFILE_EXT  ".datafile"

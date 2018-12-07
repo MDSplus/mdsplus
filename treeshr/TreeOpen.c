@@ -868,53 +868,31 @@ int OpenOne(TREE_INFO * info, int type, int new, char **resnam_out, int edit_fla
   RUN_FUNCTION_ONCE(init_rlimit_once);
 #endif
   int fd = -1;
-  int status = TreeNORMAL;
-  size_t i;
-  char tree_lower[13];
   char *resnam = NULL;
   int is_tree = type == TREE_TREEFILE_TYPE;
-  char *opath = TreePath(info->treenam, tree_lower);
-  if (opath) {
-    char *part, *path = MaskReplace(opath, tree_lower, info->shot);
-    free(opath);
-    size_t pathlen = strlen(path);
-    for (i = 0, part = path; (i < (pathlen + 1)) && (fd == -1); i++) {
-	if (path[i] != ';' && path[i] != '\0') continue;
-        while(*part == ' ') part++;
-        if (!strlen(part)) break;
-	path[i] = 0;
-	status = MDS_IO_OPEN_ONE(part,tree_lower,info->shot,type,new,edit_flag,&resnam,&fd);
-        if (status==TreeCANCEL) ;
-	else if (new && fd == -1)
-	  status = TreeFCREATE;
-	else {
+  int status = MDS_IO_OPEN_ONE(NULL,info->treenam,info->shot,type,new,edit_flag,&resnam,&fd);
+  if STATUS_OK {
+    if (new && fd == -1)
+      status = TreeFCREATE;
+    else {
 #ifndef _WIN32
-	  info->mapped = (MDS_IO_ID(fd) == -1);
+      info->mapped = (MDS_IO_ID(fd) == -1);
 # ifdef __APPLE__
  /* from python-mmap Issue #11277: fsync(2) is not enough on OS X - a special, OS X specific
     fcntl(2) is necessary to force DISKSYNC and get around mmap(2) bug */
-          if (info->mapped && fd != -1)
-            (void)fcntl(fd, F_FULLFSYNC);
+      if (info->mapped && fd != -1)
+        (void)fcntl(fd, F_FULLFSYNC);
 # endif
 #endif
-	  if (fd == -1)
-	    status = edit_flag ? TreeFOPENW : TreeFOPENR;
-	}
-	if (fd == -1) {
-	  free(resnam);
-	  resnam = NULL;
-	} else if (is_tree)
-	  info->channel = fd;
-	part = &path[i + 1];
+      if (fd == -1)
+        status = edit_flag ? TreeFOPENW : TreeFOPENR;
     }
-    if (path)
-      free(path);
-  } else
-    status = TreeNOPATH;
-  if (resnam_out)
-    *resnam_out = fd >= 0 ? resnam : 0;
-  else if (resnam)
-    free(resnam);
+  }
+  if (fd >= 0) {
+    if (is_tree) info->channel = fd;
+    if (resnam_out)*resnam_out = resnam;
+    else free_if(&resnam);
+  } else free_if(&resnam);
   *fd_out = fd;
   return status;
 }
@@ -944,7 +922,6 @@ static int MapTree(TREE_INFO * info, int edit_flag){
       nomap = !info->mapped;
     }
   }
-
 
   if (status == TreeNORMAL)
     status = MapFile(fd, info,  nomap);

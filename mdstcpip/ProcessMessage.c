@@ -1187,27 +1187,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
         int edit_flag = message->h.dims[4];
         int fd;
         char*fullpath = NULL;
-	char tree_lower[13];
-	int status = TreeFAILURE,i;
-        if (strlen(filepath)==0) {
-	  char *opath = TreePath(treename, tree_lower);
-	  if (opath) {
-	    char *part, *path = MaskReplace(opath, tree_lower, shot);
-	    free(opath);
-	    int pathlen = (int)strlen(path);
-	    for (i = 0, part = path; (i < (pathlen + 1)) ; i++) {
-              if (path[i] != ';' && path[i] != '\0') continue;
-              while(*part == ' ') part++;
-              if (!strlen(part)) break;
-              path[i] = 0;
-              status = MDS_IO_OPEN_ONE(part,tree_lower,shot,type,new,edit_flag,&fullpath,&fd);
-	      if (fd != -1) break;
-	      part = &path[i + 1];
-	    }
-	    if (path) free(path);
-	  }
-	} else
-          status = MDS_IO_OPEN_ONE(filepath,treename,shot,type,new,edit_flag,&fullpath,&fd);
+        int status = MDS_IO_OPEN_ONE(filepath,treename,shot,type,new,edit_flag,&fullpath,&fd);
 	int msglen = fullpath ? strlen(fullpath)+9 : 8;
 	char* msg = malloc(msglen);
 	DESCRIPTOR_A(ans_d,sizeof(char),DTYPE_B,msg,msglen);

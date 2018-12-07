@@ -61,22 +61,16 @@ int TreeCreatePulseFile(int shotid,int numnids, int *nids)
 #include <ncidef.h>
 #include <treeshr.h>
 #include <ctype.h>
-#include <usagedef.h>
+
+#ifdef DEBUG
+# define DBG(...) fprintf(stderr, __VA_ARGS__)
+#else
+# define DBG(...)
+#endif
 
 extern char *MaskReplace();
 
-STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it);
-#include <fcntl.h>
-#ifdef _WIN32
-#include <windows.h>
-#else
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
-#ifndef O_RANDOM
-#define O_RANDOM 0
-#endif
-#endif
+STATIC_ROUTINE int _CopyFile(int src_fd, int dst_fd, int lock_it);
 
 extern void **TreeCtx();
 
@@ -104,11 +98,12 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
   source_shot = dblist->shotid;
   if (numnids_in == 0) {
     void *ctx = 0;
-    nids[0] = 0;
     for (num = 0; num < 256 && _TreeFindTagWild(dbid, "TOP", &nids[num], &ctx); num++);
-    /* for (num = 1;
-	 num < 256
-	 && (_TreeFindNodeWild(dbid, "***", &nids[num], &ctx, (1 << TreeUSAGE_SUBTREE)) & 1);
+    TreeFindTagEnd(&ctx);
+    /*
+    nids[0] = 0;
+    for (num = 1;
+	 num < 256 && (_TreeFindNodeWild(dbid, "***", &nids[num], &ctx, (1 << TreeUSAGE_SUBTREE)) & 1);
 	 num++) ;
     TreeFindNodeEnd(&ctx);
     */
@@ -160,125 +155,34 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
   return retstatus;
 }
 
-int TreeCreateTreeFiles(char *tree, int shot, int source_shot)
-{
+int TreeCreateTreeFiles(char *tree, int shot, int source_shot){
+  if (!source_shot || (source_shot < -1)) return TreeINVSHOT;
+  if (!shot        || (shot        < -1)) return TreeINVSHOT;
   INIT_STATUS;
-  size_t len = strlen(tree);
-  char tree_lower[13];
-  char pathname[32];
-  char *path;
-  char *pathin;
-  size_t pathlen;
-  char name[32];
-  size_t i;
-  int itype;
-  char *types[] = { ".tree", ".characteristics", ".datafile" };
-  for (i = 0; i < len && i < 12; i++)
-    tree_lower[i] = (char)tolower(tree[i]);
-  tree_lower[i] = 0;
-  strcpy(pathname, tree_lower);
-  strcat(pathname, TREE_PATH_SUFFIX);
-  pathin = TranslateLogical(pathname);
-  if (pathin) {
-    pathlen = strlen(pathin);
-    for (itype = 0; itype < 3 && STATUS_OK; itype++) {
-      char *srcfile = 0;
-      char *dstfile = 0;
-      char *type = types[itype];
-      char *part;
-      path = MaskReplace(pathin, tree_lower, source_shot);
-      pathlen = strlen(path);
-      if (source_shot > 999)
-	sprintf(name, "%s_%d", tree_lower, source_shot);
-      else if (source_shot > 0)
-	sprintf(name, "%s_%03d", tree_lower, source_shot);
-      else if (source_shot == -1)
-	sprintf(name, "%s_model", tree_lower);
-      else
-	return TreeINVSHOT;
-      for (i = 0, part = path; i < pathlen + 1; i++) {
-	if (*part == ' ')
-	  part++;
-	else if ((path[i] == ';' || path[i] == 0) && strlen(part)) {
-	  path[i] = 0;
-	  srcfile = strcpy(malloc(strlen(part) + strlen(name) + strlen(type) + 2), part);
-	  if (srcfile[strlen(srcfile) - 1] == '+') {
-	    srcfile[strlen(srcfile) - 1] = '\0';
-	  } else {
-	    if (strcmp(srcfile + strlen(srcfile) - 1, TREE_PATH_DELIM))
-	      strcat(srcfile, TREE_PATH_DELIM);
-	    strcat(srcfile, name);
-	  }
-	  strcat(srcfile, type);
-	  if (MDS_IO_EXISTS(srcfile))
-	    break;
-	  else {
-	    free(srcfile);
-	    srcfile = 0;
-	    part = &path[i + 1];
-	  }
-	}
-      }
-      free(path);
-      if (srcfile) {
-	path = MaskReplace(pathin, tree_lower, shot);
-	pathlen = strlen(path);
-	if (shot > 999)
-	  sprintf(name, "%s_%d", tree_lower, shot);
-	else if (shot > 0)
-	  sprintf(name, "%s_%03d", tree_lower, shot);
-	else if (shot == -1)
-	  sprintf(name, "%s_model", tree_lower);
-	else
-	  return TreeINVSHOT;
-
-	for (i = 0, part = path; i < pathlen + 1; i++) {
-	  if (*part == ' ')
-	    part++;
-	  else if ((path[i] == ';' || path[i] == 0) && strlen(part)) {
-	    path[i] = 0;
-	    dstfile = strcpy(malloc(strlen(part) + strlen(name) + strlen(type) + 2), part);
-	    if (dstfile[strlen(dstfile) - 1] == '+') {
-	      char *delim = TREE_PATH_DELIM;
-	      int j = (int)(strlen(dstfile) - 1);
-	      dstfile[j] = '\0';
-	      for (j--; j >= 0 && dstfile[j] != delim[0]; j--) ;
-	      if (j >= 0) {
-		dstfile[j] = 0;
-		if (MDS_IO_EXISTS(dstfile)) {
-		  dstfile[j] = delim[0];
-		  strcat(dstfile, type);
-		  break;
-		}
-	      }
-	    } else {
-	      if (strcmp(dstfile + strlen(dstfile) - 1, TREE_PATH_DELIM) == 0)
-		*(dstfile + strlen(dstfile) - 1) = 0;
-	      if (MDS_IO_EXISTS(dstfile)) {
-		strcat(dstfile, TREE_PATH_DELIM);
-		strcat(dstfile, name);
-		strcat(dstfile, type);
-		break;
-	      }
-	    }
-	    free(dstfile);
-	    dstfile = 0;
-	    part = &path[i + 1];
-	  }
-	}
-	free(path);
-	if (dstfile) {
-	  status = _CopyFile(srcfile, dstfile, itype != 0);
-	  free(dstfile);
-	} else
-	  status = TreeINVPATH;
-	free(srcfile);
-      } else
-	status = TreeTREENF;
+  int src[] = {-1,-1,-1};
+  int dst[] = {-1,-1,-1};
+  int i;
+  for (i = 0 ; i < 3 && STATUS_OK ; i++) {
+    char *tmp = NULL;
+    status = MDS_IO_OPEN_ONE(NULL,tree,source_shot,i+TREE_TREEFILE_TYPE,0,0,&tmp,&src[i]);
+    if STATUS_OK {
+      DBG("%s ->\n",tmp);
+      free(tmp);
     }
-    TranslateLogicalFree(pathin);
-  } else
-    status = TreeINVPATH;
+  }
+  for (i = 0 ; i < 3 && STATUS_OK ; i++) {
+    char *tmp = NULL;
+    status = MDS_IO_OPEN_ONE(NULL,tree,shot,i+TREE_TREEFILE_TYPE,1,0,&tmp,&dst[i]);
+    if STATUS_OK {
+      DBG("%s <-\n",tmp);
+      free(tmp);
+    }
+  }
+  for (i = 0 ; i < 3 ; i++) {
+    if STATUS_OK status = _CopyFile(src[i],dst[i],i>0);
+    if (src[i]>=0) MDS_IO_CLOSE(src[i]);
+    if (dst[i]>=0) MDS_IO_CLOSE(dst[i]);
+  }
   return status;
 }
 
@@ -286,13 +190,11 @@ int TreeCreateTreeFiles(char *tree, int shot, int source_shot)
 #define MIN(a,b) ((a) < (b))?(a):(b)
 #define MAX(a,b) ((a) > (b))?(a):(b)
 
-STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it)
+STATIC_ROUTINE int _CopyFile(int src_fd, int dst_fd, int lock_it)
 {
   INIT_STATUS_ERROR;
-  int src_fd = MDS_IO_OPEN(src, O_RDONLY | O_BINARY | O_RANDOM, 0);
   if (src_fd != -1) {
     ssize_t src_len = MDS_IO_LSEEK(src_fd, 0, SEEK_END);
-    int dst_fd = MDS_IO_OPEN(dst, O_RDWR | O_CREAT | O_TRUNC, 0664);
     if ((dst_fd != -1) && (src_len != -1)) {
       MDS_IO_LSEEK(src_fd, 0, SEEK_SET);
       if (lock_it)
@@ -319,10 +221,8 @@ STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it)
 	status = TreeSUCCESS;
       if (lock_it)
 	MDS_IO_LOCK(src_fd, 0, (size_t)src_len, MDS_IO_LOCK_NONE, 0);
-      MDS_IO_CLOSE(dst_fd);
     } else
       status = TreeFCREATE;
-    MDS_IO_CLOSE(src_fd);
   } else
     status = TreeFOPENR;
   return status;
