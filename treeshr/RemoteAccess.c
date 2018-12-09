@@ -127,8 +127,9 @@ int RemoteAccessConnect(char *server, int inc_count, void *dbid){
 
 int RemoteAccessDisconnect(int conid, int force){
   static int (*disconnectFromMds) (int) = NULL;
-  int status = LibFindImageSymbol_C("MdsIpShr", "DisconnectFromMds", &disconnectFromMds);
+  int status;
   HOST_LIST_LOCK;
+  status = LibFindImageSymbol_C("MdsIpShr", "DisconnectFromMds", &disconnectFromMds);
   host_list_t *host, *prev = NULL;
   for (host = host_list; host && host->h.conid != conid; host = host->next);
   if (host) {
@@ -651,7 +652,7 @@ int GetNciRemote(PINO_DATABASE * dblist, int nid_in, struct nci_itm *nci_itm)
 int PutRecordRemote(PINO_DATABASE * dblist, int nid_in, struct descriptor *dsc, int utility_update)
 {
   int status;
-  INIT_AND_FREEXD_ON_EXIT(ans)
+  INIT_AND_FREEXD_ON_EXIT(ans);
   char exp[80];
   if (dsc) {
     sprintf(exp, "TreeShr->TreePutRecord(val(%d),xd($),val(%d))", nid_in, utility_update);
@@ -1268,6 +1269,7 @@ static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size, int mode_in
   } else {
     status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
   }
+  if (deleted) *deleted = 0;
 #else
   struct flock flock_info;
   struct stat stat;
