@@ -1533,6 +1533,7 @@ EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, int typ
   char *filepath = NULL;
   if (filepath_in && strlen(filepath_in)) {
     for (i=0 ; i<12 ; i++) treename[i] = tolower(treename_in[i]);
+    filepath = strdup(filepath_in);
   } else {
     char* tmp = TreePath(treename_in, treename);
     if (tmp) {
