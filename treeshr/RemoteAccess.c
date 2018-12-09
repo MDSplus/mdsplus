@@ -1,4 +1,3 @@
-
 /*
 Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 
@@ -53,7 +52,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef DEBUG
 # define DBG(...) fprintf(stderr,__VA_ARGS__)
 #else
-# define DBG(...)
+# define DBG(...) {}
 #endif
 
 static inline char *replaceBackslashes(char *filename) {

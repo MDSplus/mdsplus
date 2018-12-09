@@ -495,7 +495,7 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
       info->treenam = strcpy(malloc(strlen(tree) + 1), tree);
       info->shot = dblist->shotid;
       status = MapTree(info, 0);
-      if (!(status & 1) && (status == TreeFILE_NOT_FOUND || treeshr_errno == TreeFILE_NOT_FOUND)) {
+      if (STATUS_NOT_OK && (status == TreeFILE_NOT_FOUND || treeshr_errno == TreeFILE_NOT_FOUND)) {
 	TreeCallHookFun("TreeHook","RetrieveTree", info->treenam, info->shot, NULL);
 	status = TreeCallHook(RetrieveTree, info, 0);
 	if STATUS_OK

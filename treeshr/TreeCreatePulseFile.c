@@ -65,7 +65,7 @@ int TreeCreatePulseFile(int shotid,int numnids, int *nids)
 #ifdef DEBUG
 # define DBG(...) fprintf(stderr, __VA_ARGS__)
 #else
-# define DBG(...)
+# define DBG(...) {}
 #endif
 
 extern char *MaskReplace();

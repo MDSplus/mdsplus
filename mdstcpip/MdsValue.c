@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef DEBUG
 # define DBG(...) fprintf(stderr, __VA_ARGS__)
 #else
-# define DBG(...)
+# define DBG(...) {}
 #endif
 
 EXPORT int MdsIpGetDescriptor(int id, const char* expression, int nargs, struct descriptor** arglist_in, struct descriptor_xd* ans_ptr){
