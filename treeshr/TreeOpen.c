@@ -863,14 +863,14 @@ static void init_rlimit_once(){
   }
 }
 #endif
-int OpenOne(TREE_INFO * info, int type, int new, char **resnam_out, int edit_flag, int *fd_out) {
+int OpenOne(TREE_INFO * info, int type, int new, char **filespec_out, int edit_flag, int *fd_out) {
 #ifdef HAVE_SYS_RESOURCE_H
   RUN_FUNCTION_ONCE(init_rlimit_once);
 #endif
+  int status;
+  INIT_AND_FREE_ON_EXIT(char*,filespec);
   int fd = -1;
-  char *resnam = NULL;
-  int is_tree = type == TREE_TREEFILE_TYPE;
-  int status = MDS_IO_OPEN_ONE(NULL,info->treenam,info->shot,type,new,edit_flag,&resnam,&fd);
+  status = MDS_IO_OPEN_ONE(NULL,info->treenam,info->shot,type,new,edit_flag,&filespec,&fd);
   if STATUS_OK {
     if (new && fd == -1)
       status = TreeFCREATE;
@@ -888,12 +888,13 @@ int OpenOne(TREE_INFO * info, int type, int new, char **resnam_out, int edit_fla
         status = edit_flag ? TreeFOPENW : TreeFOPENR;
     }
   }
-  if (fd >= 0) {
-    if (is_tree) info->channel = fd;
-    if (resnam_out)*resnam_out = resnam;
-    else free_if(&resnam);
-  } else free_if(&resnam);
   *fd_out = fd;
+  if (fd >= 0) {
+    if (type == TREE_TREEFILE_TYPE) info->channel = fd;
+    if (filespec_out)*filespec_out = filespec;
+    else free_if(&filespec);
+  } else free_if(&filespec);
+  FREE_CANCEL(filespec);
   return status;
 }
 
@@ -906,19 +907,22 @@ static int MapTree(TREE_INFO * info, int edit_flag){
   If successful, we create and map a global
   section on the tree file.
   *******************************************/
-
-  char *resnam;
-  int status = OpenOne(info, TREE_TREEFILE_TYPE, 0, &resnam, edit_flag, &fd);
+  char *filespec = NULL;
+  int status = OpenOne(info, TREE_TREEFILE_TYPE, 0, &filespec, edit_flag, &fd);
   if STATUS_OK {
     info->alq = (int)(MDS_IO_LSEEK(fd, 0, SEEK_END) / 512);
     if (info->alq < 1) {
-      fprintf(stderr, "Corrupted/truncated tree file: %s\n", resnam);
+      if (filespec) {
+	fprintf(stderr, "Corrupted/truncated tree file: %s\n", filespec);
+	free(filespec);
+      } else
+	fprintf(stderr, "Corrupted/truncated tree file: <filespec undefined>\n");
       MDS_IO_CLOSE(fd);
       status = TreeFILE_NOT_FOUND;
     } else {
       MDS_IO_LSEEK(fd, 0, SEEK_SET);
       status = TreeNORMAL;
-      info->filespec = resnam;
+      info->filespec = filespec;
       nomap = !info->mapped;
     }
   }
