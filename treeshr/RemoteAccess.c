@@ -119,7 +119,7 @@ int RemoteAccessConnect(char *server, int inc_count, void *dbid){
 	host->next = host_list;
 	host_list = host;
       }
-    }
+    } else conid = -1;
   } else conid = host->h.conid;
   HOST_LIST_UNLOCK;
   return conid;
