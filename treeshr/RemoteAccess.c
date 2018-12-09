@@ -1,3 +1,4 @@
+
 /*
 Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 
@@ -46,8 +47,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <dbidef.h>
 #include <libroutines.h>
 #include <inttypes.h>
+#include <ctype.h>
 
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
 # define DBG(...) fprintf(stderr,__VA_ARGS__)
 #else
@@ -64,15 +66,99 @@ static pthread_mutex_t host_list_lock = PTHREAD_MUTEX_INITIALIZER;
 #define HOST_LIST_LOCK    pthread_mutex_lock(&host_list_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&host_list_lock);
 #define HOST_LIST_UNLOCK  pthread_cleanup_pop(1);
 
-
-static struct _host_list {
-  void *dbid;
-  char *host;
+typedef struct {
   int conid;
   int connections;
   time_t time;
-  struct _host_list *next;
-} *host_list = NULL;
+  char* unique;
+} host_t;
+
+typedef struct host_list{
+  struct host_list *next;
+  host_t h;
+} host_list_t;
+
+host_list_t*host_list = NULL;
+
+int RemoteAccessConnect(char *server, int inc_count, void *dbid){
+  static int (*ReuseCheck) (char *,char *,int) = NULL;
+  char unique[128]="\0";
+  if IS_OK(LibFindImageSymbol_C("MdsIpShr", "ReuseCheck", &ReuseCheck)) {
+    if (ReuseCheck(server,unique, 128)<0) return -1;
+  } else {
+    int i;
+    for (i=0;server[i] && i<127 ;i++)
+      unique[i]=tolower(server[i]);
+    unique[127]='\0';
+  }
+  int conid;
+  HOST_LIST_LOCK;
+  host_list_t *host;
+  for (host = host_list; host; host = host->next) {
+    if (!strcmp(host->h.unique,unique)) {
+      host->h.time = time(0);
+      if (inc_count) {
+	host->h.connections++;
+	DBG("Connection %d> %d\n",host->h.conid,host->h.connections);
+      } else
+	DBG("Connection %d= %d\n",host->h.conid,host->h.connections);
+      break;
+    }
+  }
+  static int (*ConnectToMds) (char *) = NULL;
+  if (!host) {
+    if IS_OK(LibFindImageSymbol_C("MdsIpShr", "ConnectToMds", &ConnectToMds)) {
+      conid = ConnectToMds(unique);
+      if (conid>0) {
+	DBG("New connection %d> %s\n",conid,unique);
+	host = malloc(sizeof(host_list_t));
+	host->h.conid = conid;
+	host->h.connections = inc_count ? 1 : 0;
+	// if global context, keep connection alive
+	host->h.time = !dbid ? time(0) : 0;
+	host->h.unique = strdup(unique);
+	host->next = host_list;
+	host_list = host;
+      }
+    }
+  } else conid = host->h.conid;
+  HOST_LIST_UNLOCK;
+  return conid;
+}
+
+int RemoteAccessDisconnect(int conid, int force){
+  static int (*disconnectFromMds) (int) = NULL;
+  int status = LibFindImageSymbol_C("MdsIpShr", "DisconnectFromMds", &disconnectFromMds);
+  HOST_LIST_LOCK;
+  host_list_t *host, *prev = NULL;
+  for (host = host_list; host && host->h.conid != conid; host = host->next);
+  if (host) {
+    host->h.connections--;
+    DBG("Connection %d< %d\n",conid,host->h.connections);
+  } else DBG("Disconnected %d\n",conid);
+  for (host = host_list; host && host->h.conid != conid;) {
+    if ((force && host->h.conid == conid) || (host->h.connections <= 0 && host->h.time < time(0)-60)) {
+      DBG("Disconnecting %d: %d\n",host->h.conid,host->h.connections);
+      if (disconnectFromMds)
+        status = disconnectFromMds(conid);
+      if (prev==host) {
+	prev->next = host->next;
+	free(host->h.unique);
+	free(host);
+        host = prev->next;
+      } else {
+	host_list  = host->next;
+	free(host);
+        host = host_list;
+      }
+    } else {
+      prev = host;
+      host = host->next;
+    }
+  }
+  HOST_LIST_UNLOCK;
+  return status;
+}
 
 
 ///////////////////////////////////////////////////////////////////
@@ -122,62 +208,6 @@ static int MdsValueDsc(int conid, char* exp, ...){
   struct descrip* arglist[256];
   VA_LIST_NULL(arglist,nargs,0,-1,exp);
   return _mds_value_dsc(conid,exp,nargs,arglist,arglist[nargs]);
-}
-
-int RemoteAccessConnect(char *host, int inc_count, void *dbid){
-  static int (*connectToMds) (char *) = NULL;
-  int status = LibFindImageSymbol_C("MdsIpShr", "ConnectToMds", &connectToMds);
-  if STATUS_NOT_OK return -1;
-  const int conid = connectToMds(host);
-  if (conid==-1) return -1;
-  HOST_LIST_LOCK;
-  struct _host_list *hostchk;
-  for (hostchk = host_list; hostchk; hostchk = hostchk->next) {
-    if (hostchk->conid == conid) {
-      hostchk->time = time(0);
-      if (inc_count) {
-	hostchk->connections++;
-	DBG("Connection %d> %d\n",hostchk->conid,hostchk->connections);
-      } else
-	DBG("Connection %d= %d\n",hostchk->conid,hostchk->connections);
-      break;
-    }
-  }
-  if (!hostchk) {
-    hostchk = malloc(sizeof(struct _host_list));
-    hostchk->conid = conid;
-    hostchk->connections = inc_count ? 1 : 0;
-    hostchk->time = dbid ? time(0) : 0;
-    hostchk->next = host_list;
-    host_list = hostchk;
-  }
-  HOST_LIST_UNLOCK;
-  return conid;
-}
-
-int RemoteAccessDisconnect(int conid, int force){
-  static int (*disconnectFromMds) (int) = NULL;
-  int status = LibFindImageSymbol_C("MdsIpShr", "DisconnectFromMds", &disconnectFromMds);
-  HOST_LIST_LOCK;
-  struct _host_list *hostchk, *prev = NULL;
-  for (hostchk = host_list; hostchk && hostchk->conid != conid; prev = hostchk, hostchk = hostchk->next) ;
-  if (hostchk) {
-    hostchk->connections--;
-    DBG("Connection %d< %d\n",conid,hostchk->connections);
-    if (force || hostchk->connections <= 0) {
-      if (disconnectFromMds)
-        status = disconnectFromMds(conid);
-      if (prev) {
-	prev->next = hostchk->next;
-        free(hostchk);
-      } else {
-        host_list  = hostchk->next;
-        free(hostchk);
-      }
-    }
-  }
-  HOST_LIST_UNLOCK;
-  return status;
 }
 
 inline static int tree_open(PINO_DATABASE * dblist, int conid, const char* treearg) {
@@ -945,7 +975,7 @@ EXPORT int MdsIoRequest(int conid, mds_io_mode idx, char nargs, int* args,char* 
   return status;
 }
 
-inline static int io_open_request(int conid,int*try_again,int*enhanced,size_t sinfo,int*info,char*filename){
+inline static int io_open_request(int conid,int*enhanced,size_t sinfo,int*info,char*filename){
   int fd;
   INIT_AND_FREE_ON_EXIT(void*,msg);
   int len;
@@ -954,20 +984,16 @@ inline static int io_open_request(int conid,int*try_again,int*enhanced,size_t si
   if (STATUS_OK && sizeof(int)==len) {
     fd = *(int*)dout;
     *enhanced = status == 3;
-    *try_again = 0;
-  } else {
-    if (status==LibKEYNOTFOU) *try_again = 0;
+  } else
     fd = -1;
-  }
   FREE_NOW(msg);
   return fd;
 }
 
+
 inline static int io_open_remote(char *host, char *filename, int options, mode_t mode, int *conid, int *enhanced){
   int fd;
   IO_LOCK;
-  int try_again = 1;
-  fd = -1;
   int info[3];
   info[0] = (int)strlen(filename) + 1;
   if (O_CREAT == 0x0200) {	/* BSD */
@@ -983,15 +1009,16 @@ inline static int io_open_remote(char *host, char *filename, int options, mode_t
   if (options & O_RDONLY) info[1]|= MDS_IO_O_RDONLY;
   if (options & O_RDWR)	  info[1]|= MDS_IO_O_RDWR;
   info[2] = (int)mode;
-  do {
+  if (*conid == -1)
     *conid = RemoteAccessConnect(host, 1, 0);
-    if (*conid != -1) {
-      fd = io_open_request(*conid,&try_again,enhanced,sizeof(info)/sizeof(*info),info,filename);
-    } else {
-      fprintf(stderr, "Error connecting to host /%s/ in io_open_remote\n", host);
-      try_again = 0;
-    }
-  } while (try_again);
+  if (*conid != -1) {
+    fd = io_open_request(*conid,enhanced,sizeof(info)/sizeof(*info),info,filename);
+    if (fd<0)
+      RemoteAccessDisconnect(*conid, B_FALSE);
+  } else {
+    fd = -1;
+    fprintf(stderr, "Error connecting to host /%s/ in io_open_remote\n", host);
+  }
   IO_UNLOCK;
   return fd;
 }
@@ -1411,7 +1438,7 @@ inline static char* generate_fullpath(char* filepath,char* treename,int shot, in
   return resnam;
 }
 
-inline static int io_open_one_request(int conid,size_t sinfo,int*info,char*data,char*host,int *try_again,int *enhanced,char**fullpath,int *fd_out){
+inline static int io_open_one_request(int conid,size_t sinfo,int*info,char*data,char*host,int *enhanced,char**fullpath,int *fd_out){
   int status;
   INIT_AND_FREE_ON_EXIT(void*,msg);
   int len;
@@ -1425,46 +1452,74 @@ inline static int io_open_one_request(int conid,size_t sinfo,int*info,char*data,
       *fullpath = malloc(len-8+strlen(host)+3);
       sprintf(*fullpath,"%s::%s",host,(char*)dout);
     } else *fullpath = NULL;
-    *try_again = 0;
   } else {
-    if (status==LibKEYNOTFOU) *try_again = 0;
     *fd_out = -1;
   }
   FREE_NOW(msg);
   return status;
 }
 
-inline static int io_open_one_remote(char *host,char *filepath,char* treename,int shot,int type,int new,int edit_flag,char**fullpath,int*fd_out,int*conid,int*enhanced){
+static void getOptionsMode(int new,int edit,int*options,int*mode) {
+  if (new){
+    *options = O_RDWR | O_CREAT;
+    *mode = 0664;
+  } else {
+    *options = edit ? O_RDWR : O_RDONLY;
+    *mode = 0;
+  }
+}
+
+inline static int io_open_one_remote(char *host,char *filepath,char* treename,int shot,int type,int new,int edit,char**fullpath,int*conid,int*fd,int*enhanced){
   int status;
   IO_LOCK;
   static int (*GetConnectionVersion)(int) = NULL;
   status = LibFindImageSymbol_C("MdsIpShr","GetConnectionVersion",&GetConnectionVersion);
-  int try_again = 1;
   do {
-    *conid = RemoteAccessConnect(host, 1, 0);
+    *conid = RemoteAccessConnect(host, 1, NULL);
     if (*conid != -1) {
       if (GetConnectionVersion(*conid) < MDSIP_VERSION_OPEN_ONE) {
-	status = TreeCANCEL;
-        *fd_out = -1;
+        if (*filepath && !strstr(filepath,"::")) {
+	  INIT_AS_AND_FREE_ON_EXIT(char*,tmp,generate_fullpath(filepath,treename,shot,type));
+	  int options,mode;
+	  getOptionsMode(new,edit,&options,&mode);
+	  *fd = io_open_remote(host, tmp, options, mode, conid, enhanced);
+	  status = *fd==-1 ? TreeFAILURE : TreeSUCCESS;
+	  if ((*fd>=0) && edit && (type == TREE_TREEFILE_TYPE)) {
+	    if IS_NOT_OK(io_lock_remote((fdinfo_t){*conid,*fd,*enhanced}, 1, 1, MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0)) {
+	      status = TreeEDITTING;
+	      *fd = -2;
+	    }
+	  }
+	  if (*fd>=0) {
+	    *fullpath = malloc(strlen(host)+2+strlen(tmp));
+	    sprintf(*fullpath,"%s::%s",host,tmp);
+	  }
+	  FREE_NOW(tmp);
+	} else {
+          status = TreeCANCEL;
+          RemoteAccessDisconnect(*conid, B_FALSE);
+        }
 	break;
       }
       int len = strlen(treename);
       int totlen = strlen(filepath)+len+2;
-      char* data = malloc(totlen);
+      INIT_AS_AND_FREE_ON_EXIT(char*,data,malloc(totlen));
       strcpy(data,       treename);
       strcpy(data+len+1,filepath);
-      int info[] = {totlen,shot,type,new,edit_flag};
-      status = io_open_one_request(*conid,sizeof(info)/sizeof(*info),info,data,host,&try_again,enhanced,fullpath,fd_out);
-      free(data);
+      int info[] = {totlen,shot,type,new,edit};
+      status = io_open_one_request(*conid,sizeof(info)/sizeof(*info),info,data,host,enhanced,fullpath,fd);
+      FREE_NOW(data);
+      if (*fd<0)
+        RemoteAccessDisconnect(*conid, B_FALSE);
     } else {
       fprintf(stderr, "Error connecting to host /%s/ in io_open_one_remote\n", host);
-      try_again = 0;
-      *fd_out = -1;
+      *fd = -1;
     }
-  } while (try_again&&(status!=TreeCANCEL));
+  } while (0)
   IO_UNLOCK;
   return status;
 }
+
 extern char* MaskReplace(char*,char*,int);
 #include <ctype.h>
 EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, int type, int new, int edit, char**fullpath, int *idx_out){
@@ -1474,14 +1529,6 @@ EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, int typ
   int fd = -1;
   char treename[13];
   char *hostpart, *filepart;
-  int options,mode;
-  if (new){
-    options = O_RDWR | O_CREAT;
-    mode = 0664;
-  } else {
-    options = edit ? O_RDWR : O_RDONLY;
-    mode = 0;
-  }
   size_t i;
   char *filepath = NULL;
   if (filepath_in && strlen(filepath_in)) {
@@ -1503,22 +1550,12 @@ EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, int typ
       if (!strlen(part)) break;
       filepath[i] = 0;
       char *tmp = ParseFile(part, &hostpart,&filepart);
-      if (hostpart) {
-	status = io_open_one_remote(hostpart, filepart, treename, shot, type, new, edit, fullpath, &fd, &conid, &enhanced);
-	if (status==TreeCANCEL && *filepart && filepart[strlen(filepart)-1] != ':') {
-	  *fullpath = generate_fullpath(filepath,treename,shot,type);
-	  fd = io_open_remote(hostpart, *fullpath+strlen(hostpart)+2, options, mode, &conid, &enhanced);
-	  status = fd==-1 ? TreeFAILURE : TreeSUCCESS;
-	  if ((fd != -1) && edit && (type == TREE_TREEFILE_TYPE)) {
-
-	    if IS_NOT_OK(io_lock_remote((fdinfo_t){conid,fd,enhanced}, 1, 1, MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0)) {
-	      status = TreeEDITTING;
-	      fd = -2;
-	    }
-	  }
-	}
-      } else {
+      if (hostpart)
+	status = io_open_one_remote(hostpart, filepart, treename, shot, type, new, edit, fullpath, &conid, &fd, &enhanced);
+      else {
 	*fullpath = generate_fullpath(filepart, treename, shot, type);
+	int options,mode;
+	getOptionsMode(new,edit,&options,&mode);
 	fd = open(*fullpath, options | O_BINARY | O_RANDOM, mode);
 	if (type == TREE_DIRECTORY) {
           if (fd != -1) {
