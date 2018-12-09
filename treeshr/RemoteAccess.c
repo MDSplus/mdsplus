@@ -1361,11 +1361,11 @@ EXPORT int MDS_IO_REMOVE(char *filename_in){
 inline static int io_rename_remote(char *host, char *filename_old, char *filename_new){
   int ret;
   IO_LOCK;
-  INIT_AND_FREE_ON_EXIT(char*,names);
-  INIT_AND_FREE_ON_EXIT(void*,msg);
   int conid;
   conid = RemoteAccessConnect(host, 1, 0);
   if (conid != -1) {
+    INIT_AND_FREE_ON_EXIT(char*,names);
+    INIT_AND_FREE_ON_EXIT(void*,msg);
     int info[] = { (int)(strlen(filename_old) + 1 + strlen(filename_new) + 1) };
     names = strcpy(malloc(info[0]), filename_old);
     strcpy(&names[strlen(filename_old) + 1], filename_new);
@@ -1375,9 +1375,9 @@ inline static int io_rename_remote(char *host, char *filename_old, char *filenam
     if (STATUS_OK && len==sizeof(int))
 	 ret = *(int*)dout;
     else ret = -1;
+    FREE_NOW(msg);
+    FREE_NOW(names);
   } else ret = -1;
-  FREE_NOW(msg);
-  FREE_NOW(names);
   IO_UNLOCK;
   return ret;
 }
