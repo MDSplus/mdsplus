@@ -899,16 +899,15 @@ int OpenOne(TREE_INFO * info, int type, int new, char **filespec_out, int edit_f
 }
 
 static int MapTree(TREE_INFO * info, int edit_flag){
-  int nomap = 0;
-  int fd;
-
   /******************************************
   First we need to open the tree file.
   If successful, we create and map a global
   section on the tree file.
   *******************************************/
-  char *filespec = NULL;
-  int status = OpenOne(info, TREE_TREEFILE_TYPE, 0, &filespec, edit_flag, &fd);
+  int status, nomap, fd;
+  INIT_AND_FREE_ON_EXIT(char*,filespec);
+  nomap = 0;
+  status = OpenOne(info, TREE_TREEFILE_TYPE, 0, &filespec, edit_flag, &fd);
   if STATUS_OK {
     info->alq = (int)(MDS_IO_LSEEK(fd, 0, SEEK_END) / 512);
     if (info->alq < 1) {
@@ -925,8 +924,8 @@ static int MapTree(TREE_INFO * info, int edit_flag){
       info->filespec = filespec;
       nomap = !info->mapped;
     }
-  }
-
+  } else free_if(&filespec);
+  FREE_CANCEL(filespec);
   if (status == TreeNORMAL)
     status = MapFile(fd, info,  nomap);
   return status;

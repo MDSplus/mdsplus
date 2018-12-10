@@ -1555,6 +1555,7 @@ EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, int typ
       if (hostpart)
 	status = io_open_one_remote(hostpart, filepart, treename, shot, type, new, edit, fullpath, &conid, &fd, &enhanced);
       else {
+        free_if(fullpath);
 	*fullpath = generate_fullpath(filepart, treename, shot, type);
 	int options,mode;
 	getOptionsMode(new,edit,&options,&mode);

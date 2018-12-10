@@ -158,26 +158,31 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
 int TreeCreateTreeFiles(char *tree, int shot, int source_shot){
   if (!source_shot || (source_shot < -1)) return TreeINVSHOT;
   if (!shot        || (shot        < -1)) return TreeINVSHOT;
-  INIT_STATUS;
-  int src[] = {-1,-1,-1};
-  int dst[] = {-1,-1,-1};
-  int i;
-  for (i = 0 ; i < 3 && STATUS_OK ; i++) {
-    char *tmp = NULL;
-    status = MDS_IO_OPEN_ONE(NULL,tree,source_shot,i+TREE_TREEFILE_TYPE,0,0,&tmp,&src[i]);
+  int status,i;
+  int src[3],dst[3];
+  INIT_AND_FREE_ON_EXIT(char*,tmp);
+  status = TreeSUCCESS;
+  for (i = 0 ; i < 3 ; i++) {
     if STATUS_OK {
-      DBG("%s ->\n",tmp);
-      free(tmp);
-    }
+      status = MDS_IO_OPEN_ONE(NULL,tree,source_shot,i+TREE_TREEFILE_TYPE,0,0,&tmp,&src[i]);
+      if (tmp) {
+	if STATUS_OK DBG("%s ->\n",tmp);
+	free(tmp);
+	tmp = NULL;
+      }
+    } else  src[i] = -1;
   }
-  for (i = 0 ; i < 3 && STATUS_OK ; i++) {
-    char *tmp = NULL;
-    status = MDS_IO_OPEN_ONE(NULL,tree,shot,i+TREE_TREEFILE_TYPE,1,0,&tmp,&dst[i]);
+  for (i = 0 ; i < 3 ; i++) {
     if STATUS_OK {
-      DBG("%s <-\n",tmp);
-      free(tmp);
-    }
+      status = MDS_IO_OPEN_ONE(NULL,tree,shot,i+TREE_TREEFILE_TYPE,1,0,&tmp,&dst[i]);
+      if (tmp) {
+	if STATUS_OK DBG("%s <-\n",tmp);
+	free(tmp);
+	tmp = NULL;
+      }
+    } else dst[i] = -1;
   }
+  FREE_NOW(filespec);
   for (i = 0 ; i < 3 ; i++) {
     if STATUS_OK status = _CopyFile(src[i],dst[i],i>0);
     if (src[i]>=0) MDS_IO_CLOSE(src[i]);
