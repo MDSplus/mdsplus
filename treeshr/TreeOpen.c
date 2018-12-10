@@ -198,9 +198,6 @@ EXPORT int _TreeOpen(void **dbid, char const *tree_in, int shot_in, int read_onl
       int db_slot_status = CreateDbSlot(dblist, tree, shot, 0);
       if (db_slot_status == TreeNORMAL || db_slot_status == TreeALREADY_OPEN) {
         status = ConnectTree(*dblist, tree, 0, subtree_list);
-        if (status==TreeCANCEL)
-          if (strlen(path) > 2 && path[strlen(path) - 2] == ':' && path[strlen(path) - 1] == ':')
-            status = ConnectTreeRemote(*dblist, tree, subtree_list, path);
 	if (status == TreeNORMAL || status == TreeNOTALLSUBS) {
 	  if (db_slot_status == TreeNORMAL)
 	    (*dblist)->default_node = (*dblist)->tree_info->root;
@@ -436,26 +433,17 @@ int _TreeEditing(void *dbid)
 
 static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *subtree_list)
 {
-  int status = TreeNORMAL;
-  int ext_status;
-  int i;
-  TREE_INFO *info;
-  TREE_INFO *iptr;
-
 /***********************************************
   If the parent's usage is not subtree then
   just return success.
 ************************************************/
-
   if (parent && parent->usage != TreeUSAGE_SUBTREE)
     return TreeNORMAL;
-
 /***********************************************
   If there is a treelist (canditates) then if
   this tree is not in it then just return
-  success.
+  success notinlist.
 ************************************************/
-
   if (subtree_list) {
     char *found;
     char *tmp_list = malloc(strlen(subtree_list) + 3);
@@ -473,6 +461,12 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
       return TreeNOT_IN_LIST;
   }
 
+  int status = TreeNORMAL;
+  int ext_status;
+  int i;
+  TREE_INFO *info;
+  TREE_INFO *iptr;
+
 /***********************************************
   Get virtual memory for the tree
   information structure and zero the structure.
@@ -480,9 +474,8 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
 
   for (info = dblist->tree_info; info && strcmp(tree, info->treenam); info = info->next_info) ;
   if (!info) {
-    info = malloc(sizeof(TREE_INFO));
+    info = calloc(1,sizeof(TREE_INFO));
     if (info) {
-      memset(info, 0, sizeof(*info));
 
    /***********************************************
    Next we map the file and if successful copy
@@ -492,14 +485,14 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
       if (info->has_lock)
         pthread_rwlock_init(&info->lock,NULL);
       info->flush = (dblist->shotid == -1);
-      info->treenam = strcpy(malloc(strlen(tree) + 1), tree);
+      info->treenam = strdup(tree);
       info->shot = dblist->shotid;
-      status = MapTree(info, 0);
+      status = MapTree(info, 0, dblist->tree_info);
       if (STATUS_NOT_OK && (status == TreeFILE_NOT_FOUND || treeshr_errno == TreeFILE_NOT_FOUND)) {
 	TreeCallHookFun("TreeHook","RetrieveTree", info->treenam, info->shot, NULL);
 	status = TreeCallHook(RetrieveTree, info, 0);
 	if STATUS_OK
-	  status = MapTree(info, 0);
+	  status = MapTree(info, 0, dblist->tree_info);
       }
       if (status == TreeNORMAL) {
 	TreeCallHookFun("TreeHook", "OpenTree", tree, info->shot, NULL);
@@ -514,7 +507,7 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
       **********************************************/
 
 	info->root = info->node;
-	if (parent == 0) {
+	if (parent == 0 || !dblist->tree_info) {
 	  dblist->tree_info = info;
 	  dblist->remote = 0;
 	} else {
@@ -542,20 +535,13 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
   if (info) {
     for (i = 0; i < info->header->externals; i++) {
       NODE *external_node = info->node + swapint((char *)&info->external[i]);
-#pragma GCC diagnostic push
-#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
-    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
-#endif
-      char *subtree = strncpy(memset(malloc(sizeof(NODE_NAME) + 1), 0, sizeof(NODE_NAME) + 1),
-			      external_node->name, sizeof(NODE_NAME));
-#pragma GCC diagnostic pop
-      char *blank = strchr(subtree, 32);
+      char *subtree = strncpy(calloc(1,sizeof(NODE_NAME)+1), external_node->name, sizeof(NODE_NAME));
       subtree[sizeof(NODE_NAME)] = '\0';
-      if (blank)
-	*blank = 0;
+      char *blank = strchr(subtree, ' ');
+      if (blank) *blank = '\0';
       ext_status = ConnectTree(dblist, subtree, external_node, subtree_list);
       free(subtree);
-      if (!(ext_status & 1)) {
+      if IS_NOT_OK(ext_status) {
 	status = TreeNOTALLSUBS;
 	if (treeshr_errno == TreeCANCEL)
 	  break;
