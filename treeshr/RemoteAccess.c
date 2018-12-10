@@ -1523,8 +1523,9 @@ inline static int io_open_one_remote(char *host,char *filepath,char* treename,in
 
 extern char* MaskReplace(char*,char*,int);
 #include <ctype.h>
-EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, int type, int new, int edit, char**fullpath, int *idx_out){
+EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, int type, int new, int edit, char**filespec, int*speclen, int *idx){
   int status = TreeSUCCESS;
+  INIT_AND_FREE_ON_EXIT(char*,fullpath);
   int enhanced = 0;
   int conid = -1;
   int fd = -1;
@@ -1546,20 +1547,21 @@ EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, int typ
   if (filepath) {
     size_t pathlen = strlen(filepath);
     char *part = filepath;
-    for (i = 0 ; (i < (pathlen + 1)) && (fd == -1); i++) {
+    for (i = 0 ; i <= pathlen ; i++) {
       if (filepath[i] != ';' && filepath[i] != '\0') continue;
       while(*part == ' ') part++;
       if (!strlen(part)) break;
       filepath[i] = 0;
       char *tmp = ParseFile(part, &hostpart,&filepart);
-      if (hostpart)
-	status = io_open_one_remote(hostpart, filepart, treename, shot, type, new, edit, fullpath, &conid, &fd, &enhanced);
-      else {
-        free_if(fullpath);
-	*fullpath = generate_fullpath(filepart, treename, shot, type);
+      free_if(&fullpath);
+      if (hostpart) {
+	fullpath = NULL;
+	status = io_open_one_remote(hostpart, filepart, treename, shot, type, new, edit, &fullpath, &conid, &fd, &enhanced);
+      } else {
+	fullpath = generate_fullpath(filepart, treename, shot, type);
 	int options,mode;
 	getOptionsMode(new,edit,&options,&mode);
-	fd = open(*fullpath, options | O_BINARY | O_RANDOM, mode);
+	fd = open(fullpath, options | O_BINARY | O_RANDOM, mode);
 	if (type == TREE_DIRECTORY) {
           if (fd != -1) {
 	    close(fd);
@@ -1568,7 +1570,7 @@ EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, int typ
         } else {
 #ifndef _WIN32
           if ((fd != -1) && new)
-            set_mdsplus_file_protection(*fullpath);
+            set_mdsplus_file_protection(fullpath);
 #endif
 	  if ((fd != -1) && edit && (type == TREE_TREEFILE_TYPE)) {
 	    if IS_NOT_OK(io_lock_local((fdinfo_t){conid,fd,enhanced}, 1, 1, MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0)) {
@@ -1579,10 +1581,20 @@ EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, int typ
 	}
       }
       free(tmp);
+      if (fd != -1) {
+	if (speclen)
+	  *speclen = strlen(part);
+	if (filespec && fullpath) {
+	  *filespec = fullpath;
+	  fullpath = NULL;
+	}
+	break;
+      }
       part = &filepath[i + 1];
     }
     free(filepath);
   }
-  *idx_out = fd<0 ? fd : ADD_FD(fd, conid, enhanced);
+  *idx = fd<0 ? fd : ADD_FD(fd, conid, enhanced);
+  FREE_NOW(fullpath);
   return status;
 }

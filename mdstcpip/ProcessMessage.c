@@ -1187,7 +1187,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
         int edit_flag = message->h.dims[4];
         int fd;
         char*fullpath = NULL;
-        int status = MDS_IO_OPEN_ONE(filepath,treename,shot,type,new,edit_flag,&fullpath,&fd);
+        int status = MDS_IO_OPEN_ONE(filepath,treename,shot,type,new,edit_flag,&fullpath,NULL,&fd);
 	int msglen = fullpath ? strlen(fullpath)+9 : 8;
 	char* msg = malloc(msglen);
 	DESCRIPTOR_A(ans_d,sizeof(char),DTYPE_B,msg,msglen);

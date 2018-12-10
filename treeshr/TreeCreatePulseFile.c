@@ -164,7 +164,7 @@ int TreeCreateTreeFiles(char *tree, int shot, int source_shot){
   status = TreeSUCCESS;
   for (i = 0 ; i < 3 ; i++) {
     if STATUS_OK {
-      status = MDS_IO_OPEN_ONE(NULL,tree,source_shot,i+TREE_TREEFILE_TYPE,0,0,&tmp,&src[i]);
+      status = MDS_IO_OPEN_ONE(NULL,tree,source_shot,i+TREE_TREEFILE_TYPE,0,0,&tmp,NULL,&src[i]);
       if (tmp) {
 	if STATUS_OK DBG("%s ->\n",tmp);
 	free(tmp);
@@ -174,7 +174,7 @@ int TreeCreateTreeFiles(char *tree, int shot, int source_shot){
   }
   for (i = 0 ; i < 3 ; i++) {
     if STATUS_OK {
-      status = MDS_IO_OPEN_ONE(NULL,tree,shot,i+TREE_TREEFILE_TYPE,1,0,&tmp,&dst[i]);
+      status = MDS_IO_OPEN_ONE(NULL,tree,shot,i+TREE_TREEFILE_TYPE,1,0,&tmp,NULL,&dst[i]);
       if (tmp) {
 	if STATUS_OK DBG("%s <-\n",tmp);
 	free(tmp);
