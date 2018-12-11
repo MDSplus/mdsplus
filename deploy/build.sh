@@ -5,6 +5,7 @@
 # Build mdsplus for a selected operating system for testing or
 # generating installers.
 #
+#
 printhelp() {
     cat <<EOF
 NAME
