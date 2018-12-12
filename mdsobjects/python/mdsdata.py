@@ -53,13 +53,17 @@ class staticmethodX(object):
         if self is None: return None
         return mself.method(Data(self),*args,**kwargs)
 
-def _TdiShrFun(tdifun,treefun,errormessage,expression,*args,**kwargs):
+def _TdiShrFun(opcode,errormessage,expression,*args,**kwargs):
     def parseArguments(args):
         if len(args)==1 and isinstance(args[0],tuple):
             return parseArguments(args[0])
         return args
     args  = parseArguments(args) #  unwrap tuple style arg list
     dargs = [Data(expression)]+list(map(Data,args))  # cast to Data type
+    nargs = len(dargs)
+    argslist = (_C.c_void_p*nargs)()
+    for i in _ver.xrange(nargs):
+        argslist[i] = _C.cast(Data.pointer(dargs[i]),_C.c_void_p)
     if "tree" in kwargs:
         tree = kwargs["tree"]
     elif isinstance(expression,Data) and not expression.tree is None:
@@ -71,33 +75,32 @@ def _TdiShrFun(tdifun,treefun,errormessage,expression,*args,**kwargs):
             tree = arg.tree
             if isinstance(arg,_tre.TreeNode): break
     xd = _dsc.Descriptor_xd()
-    rargs = list(map(Data.byref,dargs))+[xd.ref,_ver.MdsEND_ARG]
     if not isinstance(tree,_tre.Tree):
-        _exc.checkStatus(tdifun(*rargs))
+        _exc.checkStatus(_TdiShr. TdiIntrinsic(          opcode,nargs,argslist,xd.ref))
     else:
-        rargs = [tree.pctx]+rargs
-        _exc.checkStatus(treefun(*rargs))
+        _exc.checkStatus(_TdiShr._TdiIntrinsic(tree.pctx,opcode,nargs,argslist,xd.ref))
     return xd._setTree(tree).value
 
 def TdiCompile(expression,*args,**kwargs):
     """Compile a TDI expression. Format: TdiCompile('expression-string')"""
-    return _TdiShrFun(_TdiShr.TdiCompile,_TdiShr._TdiCompile,"Error compiling",expression,*args,**kwargs)
-
-def TdiExecute(expression,*args,**kwargs):
-    """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
-    return _TdiShrFun(_TdiShr.TdiExecute,_TdiShr._TdiExecute,"Error executing",expression,*args,**kwargs)
-tdi=TdiExecute
-def TdiDecompile(expression,**kwargs):
-    """Decompile a TDI expression. Format: TdiDecompile(tdi_expression)"""
-    return _ver.tostr(_TdiShrFun(_TdiShr.TdiDecompile,_TdiShr._TdiDecompile,"Error decompiling",expression,**kwargs))
-
-def TdiEvaluate(expression,**kwargs):
-    """Evaluate and functions. Format: TdiEvaluate(data)"""
-    return _TdiShrFun(_TdiShr.TdiEvaluate,_TdiShr._TdiEvaluate,"Error evaluating",expression,**kwargs)
+    return _TdiShrFun(99,"Error compiling",expression,*args,**kwargs)
 
 def TdiData(expression,**kwargs):
     """Return primiitive data type. Format: TdiData(value)"""
-    return _TdiShrFun(_TdiShr.TdiData,_TdiShr._TdiData,"Error converting to data",expression,**kwargs)
+    return _TdiShrFun(112,"Error converting to data",expression,**kwargs)
+
+def TdiDecompile(expression,**kwargs):
+    """Decompile a TDI expression. Format: TdiDecompile(tdi_expression)"""
+    return _ver.tostr(_TdiShrFun(119,"Error decompiling",expression,**kwargs))
+
+def TdiEvaluate(expression,**kwargs):
+    """Evaluate and functions. Format: TdiEvaluate(data)"""
+    return _TdiShrFun(158,"Error evaluating",expression,**kwargs)
+
+def TdiExecute(expression,*args,**kwargs):
+    """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
+    return _TdiShrFun(159,"Error executing",expression,*args,**kwargs)
+tdi=TdiExecute
 
 class Data(object):
     """Superclass used by most MDSplus objects. This provides default methods if not provided by the subclasses.
