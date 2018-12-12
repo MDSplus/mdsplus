@@ -26,7 +26,7 @@
 import sys
 from time import sleep
 from re import match
-from MDSplus import Tree,Device,Connection,GetMany,Range
+from MDSplus import Tree,Device,Connection
 from MDSplus import dcl,ccl,tcl,cts,mdsExceptions as Exc
 
 def _mimport(name, level=1):
@@ -120,18 +120,6 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                 if mon or svr: sleep(1)
                 if mon: self.assertEqual(mon.poll(),None)
                 if svr: self.assertEqual(svr.poll(),None)
-                """ mdsconnect """
-                c = Connection(server)
-                self.assertEqual(c.get('1').tolist(),1)
-                self.assertEqual(c.getObject('1:3:1').__class__,Range)
-                g = GetMany(c);
-                g.append('a','1')
-                g.append('b','$',2)
-                g.append('c','$+$',1,2)
-                g.execute()
-                self.assertEqual(g.get('a'),1)
-                self.assertEqual(g.get('b'),2)
-                self.assertEqual(g.get('c'),3)
                 """ tcl dispatch """
                 self._doTCLTest('show server %s'%server,out=show_server,re=True)
                 self._testDispatchCommand(server,'set verify')
