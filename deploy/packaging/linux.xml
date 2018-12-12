@@ -872,9 +872,12 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
     <post>
       $RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh MDSplus
       pushd $RPM_INSTALL_PREFIX/mdsplus/mdsobjects/python &gt;/dev/null 2&gt;&amp;1
-      python setup.py -q install
-      rm -Rf build dist *.egg-info
-      find . -name '*\.pyc' -delete
+      for py in python python3
+      do
+        ${py} setup.py -q install &gt;/dev/null 2&gt;&amp;1
+        rm -Rf build dist *.egg-info
+        find . -name '*\.pyc' -delete
+      done
       popd &gt;/dev/null 2&gt;&amp;1
     </post>
     <preun>
@@ -889,9 +892,12 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
     <postinst>
       /usr/local/mdsplus/rpm/removePythonModule.sh MDSplus
       pushd /usr/local/mdsplus/mdsobjects/python &gt;/dev/null 2&gt;&amp;1
-      python setup.py -q install
-      rm -Rf build dist *.egg-info
-      find . -name '*\.pyc' -delete
+      for py in python python3
+      do
+        ${py} setup.py -q install &gt;/dev/null 2&gt;&amp;1
+        rm -Rf build dist *.egg-info
+        find . -name '*\.pyc' -delete
+      done
       popd &gt;/dev/null 2&gt;&amp;1
     </postinst>
     <prerm>/usr/local/mdsplus/rpm/removePythonModule.sh MDSplus</prerm>

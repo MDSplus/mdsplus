@@ -123,6 +123,17 @@ extern void MdsGlobalUnlock();
 extern int MdsXpand(int *nitems_ptr, struct descriptor_a *pack_dsc_ptr, struct descriptor_a *items_dsc_ptr, int *bit_ptr);
 extern char* Now32(char* buf);
 
+typedef struct {
+  const char *MAJOR;
+  const char *MINOR;
+  const char *RELEASE;
+  const char *BRANCH;
+  const char *RELEASE_TAG;
+  const char *COMMIT;
+  const char *DATE;
+  const char *MDSVERSION;
+} MDSplusVersionInfo;
+
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 // FREEXD

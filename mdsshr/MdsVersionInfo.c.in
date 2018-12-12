@@ -1,0 +1,99 @@
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+/*	MdsCmprs.C
+	An algorithm to compress data with small differences.
+	Only data less than 32 bits can be packed.
+	The run length may be varied up to the maximum by repeated calls.
+
+	F77: MdsCmprs(nitems, %descr(items), %descr(pack), bit)
+	F77: MdsXpand(nitems, %descr(pack), %descr(items), bit)
+
+	nitems	is number of items to use.
+	items	is a descriptor of uncompressed data.
+	pack	is a descriptor of compressed array of sufficient size to hold the result.
+	bit	is a modified longword bit offset from the beginning of pack.
+	Error if pack cannot hold all the compressed data.
+
+	Each block of information has a header and two data blocks.
+	Each block is independent, it has its own starting value.
+	The header has the number of bits (y) and the count (x) of each data block.
+	Think of the data histogrammed by its significance (y) vs. index (x).
+	Header block: yn & xn-1 & ye-1 & xe
+	Normal block: xn fields of yn each.
+	Exception block: xe fields of ye each.
+	The exception block is absent if there are no exceptions.
+	The normal block is absent if all items are zero.
+
+	The input is differenced and these numbers are checked
+	for the number of bits in their representation.
+	The data is optimally divided into normal points and exceptions.
+	The normal points have the differences except those points that
+	are exceptions are marked with the most negative twos complement
+	number for the size of the normal point.
+	Thus non-exceptional points are in a symmetric range about 0.
+	The exception list can approach 31/32 as long as the difference list.
+
+	Numerical example: items = NINT(256.*SIN(LOG(1..10)))
+	items	= [0,164,228,252,256,250,238,224,207,190]
+	diff	= [0,164, 64, 24,  4, -6,-12,-14,-17,-17]
+	i	= [0,  9,  8,  6,  4,  4,  5,  5,  6,  6]
+	y	= [1,2,3,4,5,6,7,8,9]
+	tally	= [1,0,0,2,2,3,0,1,1]
+	xsum	= [1,1,1,3,5,8,8,9,10]
+	ye = 9; yn = 6; xe = 2; xn = 10
+	for MAXX 1024:
+	pack	= [0x00880246, 0x84620800, 0x4befcb4e, 0x080a] 110 bits
+	.0...8...0...a...4...b...e...f...c...b...4...e...8...4...6...2...0...8...0...0...0...0...8...8...0...2...4...6
+	00100000001010010010111110111111001011010011101000010001100010000010000000000000000000100010000000001001000110
+	.......64......164...-17...-17...-14...-12....-6.....4....24....ex....ex.....0......xe=2.....8....xn-1=9..yn=6
+
+	On VAXstation 3100, time for 1000 items in microseconds/item (1000 trials):
+	dtype:		B	W	L	F	ANINT(F)
+	pk:		na	na	3.2 to 3.5
+	unpk:		na	na	3.0 >=10000 bits required
+	cmprs:		10.8	9.8	8.3	14.6	15.4
+	xpand:		6.0	6.0	5.7	6.7	8.2
+	bits:		2689	2671	2671	22408	17000
+	compress:	11.9	10.8	9.1	16.2	16.8
+	decompress:	6.1	6.1	5.7	6.8	8.3
+	data bytes:	337	334	334	2801	2125
+	data bits:	2696	2672	2672	22408	17000
+
+	Ken Klare, LANL P-4	(c)1990
+	Based on ideas of Thomas W. Fredian, MIT (c)1985, the DELTA method.
+	Assumes: 8-bit bytes, 32-bit long, 2's complement
+	MdsPk/MdsUnpk do right-to-left packing/unpacking, not assumed here.
+*/
+#include <mdsshr.h>
+
+EXPORT MDSplusVersionInfo MDSplusVersion =
+  {"@RELEASE_MAJOR@",
+   "@RELEASE_MINOR@",
+   "@RELEASE_RELEASE@",
+   "@RELEASE_BRANCH@",
+   "@RELEASE_TAG@",
+   "@RELEASE_COMMIT@",
+   "@RELEASE_DATE@",
+   "@RELEASE_MAJOR@.@RELEASE_MINOR@.@RELEASE_RELEASE@"};

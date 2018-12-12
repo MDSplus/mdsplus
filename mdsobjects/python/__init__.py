@@ -69,6 +69,9 @@ try:
 except:
     __version__='Unknown'
 
+_verscheck=_mimport('version_check')
+_verscheck.version_check(__version__)
+del _verscheck
 
 def load(gbls=globals()):
     def loadmod_full(name,gbls):

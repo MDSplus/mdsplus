@@ -17345,7 +17345,7 @@ ac_config_headers="$ac_config_headers include/mdsplus/mdsconfig.h"
 
 
 
-ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javatraverser2/Makefile javatraverser2/java/mds/mdslib/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdsdcl/mdsdcl_show_version.c mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/_version.py mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/testing/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile pydevices/MitDevices/_version.py pydevices/RfxDevices/_version.py pydevices/W7xDevices/_version.py remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile tditest/testing/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile treeshr/testing/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
+ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javatraverser2/Makefile javatraverser2/java/mds/mdslib/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/_version.py mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/MdsVersionInfo.c mdsshr/testing/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile pydevices/MitDevices/_version.py pydevices/RfxDevices/_version.py pydevices/W7xDevices/_version.py remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile tditest/testing/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile treeshr/testing/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -18220,7 +18220,6 @@ do
     "macosx/Makefile") CONFIG_FILES="$CONFIG_FILES macosx/Makefile" ;;
     "math/Makefile") CONFIG_FILES="$CONFIG_FILES math/Makefile" ;;
     "mdsdcl/Makefile") CONFIG_FILES="$CONFIG_FILES mdsdcl/Makefile" ;;
-    "mdsdcl/mdsdcl_show_version.c") CONFIG_FILES="$CONFIG_FILES mdsdcl/mdsdcl_show_version.c" ;;
     "mdslib/Makefile") CONFIG_FILES="$CONFIG_FILES mdslib/Makefile" ;;
     "mdslib/docs/Makefile") CONFIG_FILES="$CONFIG_FILES mdslib/docs/Makefile" ;;
     "mdslib/testing/Makefile") CONFIG_FILES="$CONFIG_FILES mdslib/testing/Makefile" ;;
@@ -18237,6 +18236,7 @@ do
     "mdsobjects/labview/Makefile") CONFIG_FILES="$CONFIG_FILES mdsobjects/labview/Makefile" ;;
     "mdsmisc/Makefile") CONFIG_FILES="$CONFIG_FILES mdsmisc/Makefile" ;;
     "mdsshr/Makefile") CONFIG_FILES="$CONFIG_FILES mdsshr/Makefile" ;;
+    "mdsshr/MdsVersionInfo.c") CONFIG_FILES="$CONFIG_FILES mdsshr/MdsVersionInfo.c" ;;
     "mdsshr/testing/Makefile") CONFIG_FILES="$CONFIG_FILES mdsshr/testing/Makefile" ;;
     "mdsshr/docs/Makefile") CONFIG_FILES="$CONFIG_FILES mdsshr/docs/Makefile" ;;
     "mdssql/Makefile") CONFIG_FILES="$CONFIG_FILES mdssql/Makefile" ;;
