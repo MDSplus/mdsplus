@@ -33,7 +33,7 @@ from numpy import ndarray as nparray
 from numpy import string_ as npbytes
 from numpy import unicode_ as npunicode
 from sys import version_info as pyver
-import os,ctypes
+import os
 ispy3 = pyver>(3,)
 ispy2 = pyver<(3,)
 isNt = os.name=='nt'
@@ -46,8 +46,6 @@ has_bytes     = 'bytes'      in __builtins__
 has_buffer    = 'buffer'     in __builtins__
 has_xrange    = 'xrange'     in __builtins__
 has_mapclass  = isinstance(map,(type,))
-
-MdsEND_ARG = ctypes.c_void_p(1) # must match include/mds_stdarg.h
 
 if pyver<(2,7):
     def bit_length(val):
