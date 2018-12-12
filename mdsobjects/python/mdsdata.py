@@ -774,17 +774,21 @@ class EmptyData(Data):
     def data(self): return None
     @staticmethod
     def fromDescriptor(d): return EmptyData
+# the old API had EmptyData as instance
 EmptyData = EmptyData()
 
-class Missing(EmptyData):
+# Missing should extend the class of EmptyData
+class Missing(EmptyData.__class__):
     """No Value aka $Missing"""
     def decompile(self): return "$Missing"
+
     @staticmethod
     def fromDescriptor(d): return Missing
 
 _dsc.dtypeToClass[0]=Missing
 _dsc.dtypeToArrayClass[0]=Missing
-_dsc.dtypeToClass[EmptyData.dtype_id]=EmptyData
+# also dtypeToClass expects its values to be classes
+_dsc.dtypeToClass[EmptyData.dtype_id]=EmptyData.__class__
 
 _cmp=_mimport('compound')
 _scr=_mimport('mdsscalar')
