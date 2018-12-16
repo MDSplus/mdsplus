@@ -24,7 +24,7 @@
 #
 
 from threading import Thread
-from MDSplus import Connection,Float32
+from MDSplus import Connection,GetMany,Float32,Range
 import time
 
 def _mimport(name, level=1):
@@ -47,6 +47,18 @@ class Tests(_UnitTest.Tests,_UnitTest.MdsIp):
                     for i in range(10):
                         self.assertEqual(c.get("[$,$,$,$,$,$,$,$,$,$]",*args).tolist(),args)
                 c = Connection(server)
+                """ mdsconnect """
+                self.assertEqual(c.get('_a=1').tolist(),1)
+                self.assertEqual(c.get('_a').tolist(),1)
+                self.assertEqual(c.getObject('1:3:1').__class__,Range)
+                g = GetMany(c);
+                g.append('a','1')
+                g.append('b','$',2)
+                g.append('c','$+$',1,2)
+                g.execute()
+                self.assertEqual(g.get('a'),1)
+                self.assertEqual(g.get('b'),2)
+                self.assertEqual(g.get('c'),3)
                 threads = [Thread(name="C%d"%i,target=requests,args=(c,i)) for i in range(10)]
                 for thread in threads: thread.start()
                 for thread in threads: thread.join()

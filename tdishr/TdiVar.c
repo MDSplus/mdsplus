@@ -75,9 +75,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <mdsshr.h>
 #include <string.h>
+#include <inttypes.h>
 #include <mdsshr_messages.h>
 
 // #define DEBUG
+#ifdef DEBUG
+# define DBG(...) do{fprintf(stderr,__VA_ARGS__);fprintf(stdout,__VA_ARGS__);}while(0)
+#else
+# define DBG(...) {}
+#endif
 
 extern unsigned short OpcEquals, OpcEqualsFirst;
 extern unsigned short OpcFun;
@@ -1066,14 +1072,14 @@ STATIC_ROUTINE int show_one(node_type * node_ptr, user_type * user_ptr)
 */
 int Tdi1ShowPrivate(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
   GET_TDITHREADSTATIC_P;
+  DBG("TdiShowPrivate: %"PRIxPTR"\n",(uintptr_t)(void*)_private.head);
   return wild((int (*)())show_one, narg, list, &_private, out_ptr);
 }
 
 /*--------------------------------------------------------------
         Display public variables.
 */
-int Tdi1ShowPublic(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
-{
+int Tdi1ShowPublic(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
   int status;
   LOCK_PUBLIC_PUSH;
   status = wild((int (*)())show_one, narg, list, &_public, out_ptr);
@@ -1091,11 +1097,11 @@ extern EXPORT int TdiSaveContext(void *ptr[6]){
   ptr[4] = _public.head_zone;
   ptr[5] = _public.data_zone;
   UNLOCK_PUBLIC;
+  DBG("TdiSaveContext: %"PRIxPTR"\n",(uintptr_t)ptr[0]);
   return 1;
 }
 
-extern EXPORT int TdiDeleteContext(void *ptr[6])
-{
+extern EXPORT int TdiDeleteContext(void *ptr[6]){
   if (ptr[1])
     LibDeleteVmZone(&ptr[1]);
   if (ptr[2])
@@ -1116,6 +1122,7 @@ extern EXPORT int TdiDeleteContext(void *ptr[6])
 */
 extern EXPORT int TdiRestoreContext(void *ptr[6]){
   GET_TDITHREADSTATIC_P;
+  DBG("TdiRestoreContext: %"PRIxPTR"\n",(uintptr_t)ptr[0]);
   _private.head = (node_type *) ptr[0];
   _private.head_zone = ptr[1];
   _private.data_zone = ptr[2];

@@ -55,6 +55,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "cvtdef.h"
 
 extern int TdiRestoreContext();
+extern void** TreeCtx();
 extern int TreePerfRead();
 extern int TreePerfWrite();
 extern int TdiSaveContext();
@@ -573,8 +574,10 @@ static void ClientEventAst(MdsEventList * e, int data_len, char *data)
   UnlockAsts();
 }
 
-typedef struct worker_args_s {
+typedef struct {
   Connection*          connection;
+  void*                dbid;
+  void*                tdicontext[6];
   struct descriptor_xd*xd_out;
   int                  status;
 #ifndef _WIN32
@@ -582,43 +585,30 @@ typedef struct worker_args_s {
 #endif
 } worker_args_t;
 
-typedef struct worker_cleanup_s {
-  Connection*connection;
-  void*      old_dbid;
-  void*      tdi_context[6];
-  struct descriptor_xd* xdp;
-#ifndef _WIN32
-  Condition* condition;
-#endif
+typedef struct {
+worker_args_t*       wa;
+struct descriptor_xd*xdp;
 } worker_cleanup_t;
-static void WorkerCleanup(void *worker_cleanup_v) {
-  worker_cleanup_t* wc = (worker_cleanup_t*)worker_cleanup_v;
+
+static void WorkerCleanup(void *args) {
+  worker_cleanup_t* wc = (worker_cleanup_t*)args;
   MdsFree1Dx(wc->xdp,NULL);
-  if (wc->connection) {
-    TdiSaveContext(wc->connection->tdicontext);
-    TdiRestoreContext(wc->tdi_context);
-    wc->connection->DBID = TreeSwitchDbid(wc->old_dbid);
-  }
+  TdiSaveContext(wc->wa->tdicontext);
+  wc->wa->dbid = TreeSwitchDbid(NULL);
+  void* tdicontext[6] = {0};
+  TdiRestoreContext(tdicontext);
 #ifndef _WIN32
-  CONDITION_SET(wc->condition);
+  CONDITION_SET(wc->wa->condition);
 #endif
 }
 
 static int WorkerThread(void *args) {
   worker_args_t* wa = (worker_args_t*)args;
   EMPTYXD(xd);
-  worker_cleanup_t wc = {NULL,NULL,{0},&xd
-#ifndef _WIN32
-  ,wa->condition
-#endif
-  };
+  worker_cleanup_t wc = {wa,&xd};
   pthread_cleanup_push(WorkerCleanup,(void*)&wc);
-  if (GetContextSwitching()) {
-    wc.connection = wa->connection;
-    wc.old_dbid = TreeSwitchDbid(wa->connection->DBID);
-    TdiSaveContext(wc.tdi_context);
-    TdiRestoreContext(wa->connection->tdicontext);
-  }
+  TreeSwitchDbid(wa->dbid);
+  TdiRestoreContext(wa->tdicontext);
   wa->status = TdiIntrinsic(OPC_EXECUTE, wa->connection->nargs, wa->connection->descrip, &xd);
   if IS_OK(wa->status)
     wa->status = TdiData(xd.pointer, wa->xd_out MDS_END_ARG);
@@ -630,14 +620,22 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
   //fprintf(stderr,"starting task for connection %d\n",connection->id);
   worker_args_t wa;
   wa.connection = connection;
-  wa.xd_out     = ans_xd;
-  wa.status     = -1;
+  wa.xd_out = ans_xd;
+  wa.status = -1;
+  if (GetContextSwitching()) {
+    wa.dbid       = connection->DBID;
+    memcpy(wa.tdicontext,connection->tdicontext,sizeof(wa.tdicontext));
+  } else {
+    wa.dbid = *TreeCtx();
+    TdiSaveContext(wa.tdicontext);
+  }
 #ifdef _WIN32
   HANDLE hWorker= CreateThread(NULL, DEFAULT_STACKSIZE*16, (void*)WorkerThread, &wa, 0, NULL);
   if (!hWorker) {
     errno = GetLastError();
     perror("ERROR CreateThread");
-    return MDSplusFATAL;
+    wa.status = MDSplusFATAL;
+    goto end;
   }
   int canceled = B_FALSE;
   while (WaitForSingleObject(hWorker, 100) == WAIT_TIMEOUT) {
@@ -649,7 +647,7 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
     canceled = B_TRUE;
   }
   WaitForSingleObject(hWorker, INFINITE);
-  if (canceled) return TdiABORT;
+  if (canceled) wa.status = TdiABORT;
 #else
   pthread_t Worker = 0;
   Condition WorkerRunning = CONDITION_INITIALIZER;
@@ -664,7 +662,8 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
     _CONDITION_UNLOCK(wa.condition);
     pthread_cond_destroy(&WorkerRunning.cond);
     pthread_mutex_destroy(&WorkerRunning.mutex);
-    return MDSplusFATAL;
+    wa.status = MDSplusFATAL;
+    goto end;
   }
   pthread_attr_destroy(&attr);
   int canceled = B_FALSE;
@@ -690,8 +689,16 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
   pthread_join(Worker,&result);
   pthread_cond_destroy(&WorkerRunning.cond);
   pthread_mutex_destroy(&WorkerRunning.mutex);
-  if (canceled && result==PTHREAD_CANCELED) return TdiABORT;
+  if (canceled && result==PTHREAD_CANCELED) wa.status = TdiABORT;
 #endif
+end:;
+  if (GetContextSwitching()) {
+    connection->DBID = wa.dbid;
+    memcpy(connection->tdicontext,wa.tdicontext,sizeof(wa.tdicontext));
+  } else {
+    *TreeCtx() = wa.dbid;
+    TdiRestoreContext(wa.tdicontext);
+  }
   return wa.status;
 }
 
