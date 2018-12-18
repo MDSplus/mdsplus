@@ -49,7 +49,6 @@
 ./usr/local/mdsplus/mdsobjects/python/tests/trees/testing_model.tree
 ./usr/local/mdsplus/mdsobjects/python/tree.py
 ./usr/local/mdsplus/mdsobjects/python/version.py
-./usr/local/mdsplus/mdsobjects/python/version_check.py
 ./usr/local/mdsplus/mdsobjects/python/widgets
 ./usr/local/mdsplus/mdsobjects/python/widgets/__init__.py
 ./usr/local/mdsplus/mdsobjects/python/widgets/mdsplusWidgets.xml
