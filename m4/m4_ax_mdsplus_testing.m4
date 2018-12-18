@@ -174,9 +174,9 @@ AC_DEFUN([TS_SELECT],[
       AS_VAR_SET([PYTHONHOME],"TS_U2WPATH([/python27])")
       AS_VAR_APPEND([TESTS_ENVIRONMENT],["WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "])
       AS_VAR_APPEND([TESTS_ENVIRONMENT],["WINEDEBUG=-all "])
-      AS_VAR_APPEND([TESTS_ENVIRONMENT],["MDSPLUS_DIR='TS_U2WPATH([${srcdir}])' "])
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],["MDSPLUS_DIR='TS_U2WPATH([${top_builddir}])' "])
       AS_VAR_APPEND([TESTS_ENVIRONMENT],["MDS_PATH='TS_U2WPATH([${srcdir}/tdi])' "])
-      AS_VAR_APPEND([TESTS_ENVIRONMENT],["MDS_PYDEVICE_PATH='TS_U2WPATH([${srcdir}/pydevices])' "])
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],["MDS_PYDEVICE_PATH='TS_U2WPATH([${top_builddir}/pydevices])' "])
       AS_VAR_APPEND([TESTS_ENVIRONMENT],["main_path='.;TS_U2WPATH([${srcdir}/trees])' "])
       AS_VAR_APPEND([TESTS_ENVIRONMENT],["subtree_path='.;TS_U2WPATH([${srcdir}/trees/subtree])' "])
       AS_VAR_IF([WINEARCH],[win64],
@@ -184,11 +184,11 @@ AC_DEFUN([TS_SELECT],[
 		 AS_VAR_APPEND([WINEPATH],["${PYTHONHOME}"])
 		 AS_VAR_APPEND([TESTS_ENVIRONMENT],["PYTHONHOME='${PYTHONHOME}' "])
 		 AS_VAR_APPEND([TESTS_ENVIRONMENT],
-		   ["PYTHONPATH='%PYTHONHOME%\\Lib;%PYTHONHOME%\\Lib\\site-packages;TS_U2WPATH([${srcdir}/testing])' "])
+		   ["PYTHONPATH='%PYTHONHOME%\\Lib;%PYTHONHOME%\\Lib\\site-packages;TS_U2WPATH([${top_builddir}/pythonpath])' "])
 		 AS_VAR_APPEND([TESTS_ENVIRONMENT],["PyLib='python27' "])
-		 AS_VAR_SET([PYTHON],["\$(abs_top_srcdir)/testing/winpython python"])
+		 AS_VAR_SET([PYTHON],["\$(top_srcdir)/testing/winpython python"])
 		 AS_VAR_APPEND([PY_LOG_COMPILER],
-		   ["\${PYTHON} -B \$(abs_top_srcdir)/testing/testing.py"])],
+		   ["\${PYTHON} -B \$(top_srcdir)/testing/testing.py"])],
 		[# WINEARCH win32
 		 TS_LOG_SKIP([PY_LOG_COMPILER])])
 	  # any wine flavor
@@ -220,11 +220,11 @@ AC_DEFUN([TS_SELECT],[
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"PATH=${MAKEBINDIR}:\${PATH} ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR=\$(abs_top_srcdir) ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH=\$(abs_top_srcdir)/tdi ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PYDEVICE_PATH=\$(abs_top_srcdir)/pydevices ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PYDEVICE_PATH=\$(top_builddir)/pydevices ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"main_path='.;\$(abs_top_srcdir)/trees' ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"subtree_path='.;\$(abs_top_srcdir)/trees/subtree' ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(top_builddir)/pythonpath\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"PyLib=${PyLib:-$DEF_PYLIB} ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHON=$PYTHON ")
    AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
