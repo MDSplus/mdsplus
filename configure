@@ -15000,9 +15000,9 @@ fi
       PYTHONHOME="$(eval winepath -w /python27 2>/dev/null)"
       as_fn_append TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
       as_fn_append TESTS_ENVIRONMENT "WINEDEBUG=-all "
-      as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR='$(eval winepath -w ${top_builddir} 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR='$(eval winepath -w ${srcdir} 2>/dev/null)' "
       as_fn_append TESTS_ENVIRONMENT "MDS_PATH='$(eval winepath -w ${srcdir}/tdi 2>/dev/null)' "
-      as_fn_append TESTS_ENVIRONMENT "MDS_PYDEVICE_PATH='$(eval winepath -w ${top_builddir}/pydevices 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "MDS_PYDEVICE_PATH='$(eval winepath -w ${builddir}/pydevices 2>/dev/null)' "
       as_fn_append TESTS_ENVIRONMENT "main_path='.;$(eval winepath -w ${srcdir}/trees 2>/dev/null)' "
       as_fn_append TESTS_ENVIRONMENT "subtree_path='.;$(eval winepath -w ${srcdir}/trees/subtree 2>/dev/null)' "
       if test "x$WINEARCH" = xwin64; then :

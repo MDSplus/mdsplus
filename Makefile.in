@@ -206,7 +206,7 @@ install: $(install_DIRS)
 		--exclude='*\.in' \
 		--exclude='Makefile\.*' \
 		-cf  - $(MISC_PARTS) | tar -C $(exec_prefix) -xf -
-	tar -C $(top_builddir) -cf - include/mdsplus/mdsconfig.h | tar -C $(exec_prefix) -xf -
+	tar -C $(top_builddir) -cf - include/mdsplus/mdsconfig.h $$(find . -name _version.py) | tar -C $(exec_prefix) -xf -
 	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > $(exec_prefix)/mdsobjects/python/mdsplus_version.py; fi
 	$(INSTALL) ${top_srcdir}/MDSplus-License.txt ${top_srcdir}/MDSplus-License.rtf $(exec_prefix)
 	(cd $(exec_prefix); chmod -R 755 $(MISC_PARTS))

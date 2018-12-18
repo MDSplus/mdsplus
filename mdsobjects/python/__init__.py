@@ -86,13 +86,14 @@ mdsshr=_ver.load_library('MdsShr')
 del _ver
 _info=_C.cast(mdsshr.MDSplusVersion,_C.POINTER(MDSplusVersionInfo)).contents
 del mdsshr
-if _info.MDSVERSION != __version__:
+_ver=str(_info.MDSVERSION.decode())
+if _ver != __version__:
     sys.stderr.write("""Warning:
   The MDSplus python module version (%s) does not match
   the version of the installed MDSplus libraries (%s).
   Upgrade the module using the mdsplus/mdsobjects/python directory of the
   MDSplus installation.
-""" % (__version__, _info.MDSVERSION ))
+""" % (__version__, _ver ))
 
 def load(gbls=globals()):
     def loadmod_full(name,gbls):
