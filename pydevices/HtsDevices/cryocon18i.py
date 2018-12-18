@@ -73,12 +73,19 @@ class CRYOCON18I(MDSplus.Device):
          'options':('write_shot','write_once','no_write_model')},
         {'path':':SEG_LENGTH',
          'type':'numeric',
-         'value':10,
+         'value':5,
          'options':('no_write_shot')},
         {'path':':MAX_SEGMENTS',
          'type':'numeric',
          'value':200,
          'options':('no_write_shot')},
+        {'path':':RATE',
+         'type':'numeric',
+         'value':.25,
+         'options':('no_write_shot')},
+        {'path':':TRIG_TIME','type':'numeric', 'options':('write_shot')},
+        {'path':':TRIG_STR','type':'text', 'options':('nowrite_shot'),
+         'valueExpr':"EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"},
         {'path':':RUNNING','type':'numeric', 'options':('no_write_model')},
         {'path':':INIT_ACTION','type':'action',
          'valueExpr':
@@ -98,7 +105,7 @@ class CRYOCON18I(MDSplus.Device):
                       'type':'TEXT',
                       'options':('no_write_shot')})
         parts.append({'path':':INPUT_%c:CALIBRATION'%(c,),
-                      'type':'NUMERIC',
+                      'type':'TEXT',
                       'options':('no_write_model', 'write_once',)})
         parts.append({'path':':INPUT_%c:TEMPERATURE'%(c,),
                       'type':'SIGNAL',
@@ -109,7 +116,7 @@ class CRYOCON18I(MDSplus.Device):
 
     def query(self, cmd):
         import pyvisa
-        rm = pyvisa.ResourceManager()
+        rm = pyvisa.ResourceManager('@py')
         instrument = rm.open_resource('TCPIP::%s'% str(self.node.data()))
         answer = instrument.query(cmd)
         print("cmd:%s\nans:%s"%(cmd,answer))
@@ -129,7 +136,7 @@ class CRYOCON18I(MDSplus.Device):
         # open the instrument
         if self.debugging():
             print("about to open cryocon device %s" % str(self.node.data()))
-        rm = pyvisa.ResourceManager()
+        rm = pyvisa.ResourceManager('@py')
         instrument = rm.open_resource('TCPIP::%s'% str(self.node.data()))
         # read and save the status commands
         status_out={}
@@ -141,6 +148,14 @@ class CRYOCON18I(MDSplus.Device):
                 print('  got back %s' % status_out[str(cmd)])
         self.status_out.record = status_out
 
+        for i in range(ord('a'), ord('h')):
+            chan = self.__getattr__('input_%c'%(chr(i),))
+            if chan.on:
+              cal = self.__getattr__('input_%c_calibration'%(chr(i),))
+              ans = instrument.query('CALCUR %c?'%(chr(i)))
+              print(ans)
+              cal.record = ans
+        print(instrument.query('CALCUR'))
         # start it streaming
         self.running.on=True
         self.stream()
@@ -162,7 +177,7 @@ class CRYOCON18I(MDSplus.Device):
         if self.debugging():
             print("about to open cryocon device %s" % str(self.node.data()))
         event_name = self.data_event.data()
-        rm = pyvisa.ResourceManager()
+        rm = pyvisa.ResourceManager('@py')
         instrument = rm.open_resource('TCPIP::%s'% str(self.node.data()))
         chans = []
         t_chans = []
@@ -214,13 +229,17 @@ class CRYOCON18I(MDSplus.Device):
         import numpy as np
         import MDSplus
 
+        try: 
+            dt = 1./float(self.rate)
+        except:
+            dt = 1
         print("starting streamer for %s %s %s\nat: %s"%
               (self.tree, self.tree.shot, self.path, datetime.datetime.now()))
         event_name = self.data_event.data()
         seg_length = self.seg_length.data()
 
         # open the instrument
-        rm = pyvisa.ResourceManager()
+        rm = pyvisa.ResourceManager('@py')
         instrument = rm.open_resource('TCPIP::%s'% str(self.node.data()))
 
         # set up arrays of data and nodes to use in the loop
@@ -250,14 +269,19 @@ class CRYOCON18I(MDSplus.Device):
         #    write the segment
         segment = 0
         start_time = time.time()
+        previous_time = 0
+        self.trig_time.record = start_time
         while self.running.on and segment < max_segments:
             if self.debugging():
                 print ("starting on segment %d" % segment)
             for sample in range(seg_length):
                 if not self.running.on:
                     break
+                if previous_time != 0:
+                    time.sleep(dt - (time.time()-previous_time))
                 ans = instrument.query(query_cmd).split(';')
-                times[sample] = time.time() - start_time
+                previous_time = time.time()
+                times[sample] = previous_time - start_time
                 for i in range(len(temps)):
                     try:
                         temps[i][sample] = float(ans[2*i].split('\x00')[0])
