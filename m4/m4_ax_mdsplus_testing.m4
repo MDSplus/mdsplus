@@ -184,11 +184,11 @@ AC_DEFUN([TS_SELECT],[
 		 AS_VAR_APPEND([WINEPATH],["${PYTHONHOME}"])
 		 AS_VAR_APPEND([TESTS_ENVIRONMENT],["PYTHONHOME='${PYTHONHOME}' "])
 		 AS_VAR_APPEND([TESTS_ENVIRONMENT],
-		   ["PYTHONPATH='%PYTHONHOME%\\Lib;%PYTHONHOME%\\Lib\\site-packages;TS_U2WPATH([${top_builddir}/pythonpath])' "])
+		   ["PYTHONPATH='%PYTHONHOME%\\Lib;%PYTHONHOME%\\Lib\\site-packages;TS_U2WPATH([${builddir}/pythonpath])' "])
 		 AS_VAR_APPEND([TESTS_ENVIRONMENT],["PyLib='python27' "])
-		 AS_VAR_SET([PYTHON],["\$(top_srcdir)/testing/winpython python"])
+		 AS_VAR_SET([PYTHON],["\$(abs_top_srcdir)/testing/winpython python"])
 		 AS_VAR_APPEND([PY_LOG_COMPILER],
-		   ["\${PYTHON} -B \$(top_srcdir)/testing/testing.py"])],
+		   ["\${PYTHON} -B \$(abs_top_srcdir)/testing/testing.py"])],
 		[# WINEARCH win32
 		 TS_LOG_SKIP([PY_LOG_COMPILER])])
 	  # any wine flavor
@@ -220,11 +220,11 @@ AC_DEFUN([TS_SELECT],[
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"PATH=${MAKEBINDIR}:\${PATH} ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR=\$(abs_top_srcdir) ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH=\$(abs_top_srcdir)/tdi ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PYDEVICE_PATH=\$(top_builddir)/pydevices ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PYDEVICE_PATH=\$(abs_top_builddir)/pydevices ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"main_path='.;\$(abs_top_srcdir)/trees' ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"subtree_path='.;\$(abs_top_srcdir)/trees/subtree' ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(top_builddir)/pythonpath\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(abs_top_builddir)/pythonpath\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"PyLib=${PyLib:-$DEF_PYLIB} ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHON=$PYTHON ")
    AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
