@@ -1950,7 +1950,9 @@ public class Signal implements WaveDataListener
             return;
         }
 
-        float currY[];
+	if(y == null || y.length == 0) 
+	    return;  
+	float currY[];
          if(type == TYPE_2D && (mode2D == MODE_XZ || mode2D == MODE_YZ))
             currY = sliceY;
         else
@@ -2338,7 +2340,7 @@ public class Signal implements WaveDataListener
         }
         if (increasing_x || type == Signal.TYPE_2D)
         {
-            if(currX == null) return -1;
+            if(currX == null || currX.length == 0) return -1;
             if(prev_idx >= currX.length)
                 prev_idx = currX.length - 1;
             if (curr_x > currX[prev_idx])
@@ -2771,6 +2773,8 @@ public class Signal implements WaveDataListener
             if(xyData == null) return;
             x = xyData.x;
             y = xyData.y;
+	    if(x == null || x.length == 0) 
+		return;
             adjustArraySizes();
             increasing_x = xyData.increasingX;
             if(increasing_x)
