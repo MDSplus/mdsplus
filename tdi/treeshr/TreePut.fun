@@ -18,6 +18,6 @@ public fun TreePut(in _nodename, in _expression, optional in _a, optional in _b,
   _treeput_ans = *;
   _status = TdiShr->TdiIntrinsic(val(BUILTIN_OPCODE("COMPILE")),val(_narg),ref(_list),xd(_treeput_ans));
   if (_status & 1)
-    _status = TreeShr->TreePutRecord(val(getnci(_nodename,"nid_number")),xd(_treeput_ans));
+    _status = TreeShr->TreePutRecord(val(getnci(_nodename,"nid_number")),xd(_treeput_ans),val(0));
   return(_status);
 }
