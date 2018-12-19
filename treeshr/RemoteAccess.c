@@ -766,14 +766,15 @@ int PutRecordRemote(PINO_DATABASE * dblist, int nid_in, struct descriptor *dsc, 
   if (status & 1) {
     char exp[512];
     struct descrip ans = empty_ans;
+    int util_upd=utility_update==1 ? 3 : utility_update;
     if (out.pointer) {
       struct descrip data = { DTYPE_B, 1, {0, 0, 0, 0, 0, 0, 0}, 1, 0 };
-      sprintf(exp, "TreePutRecord(%d, SerializeIn($), %d)", nid_in, utility_update);
+      sprintf(exp, "TreePutRecord(%d, SerializeIn($), %d)", nid_in, util_upd);
       data.dims[0] = ((struct descriptor_a *)out.pointer)->arsize;
       data.ptr = out.pointer->pointer;
       status = MdsValue1(dblist->tree_info->channel, exp, &data, &ans);
     } else {
-      sprintf(exp, "TreePutRecord(%d, *, %d)", nid_in, utility_update);
+      sprintf(exp, "TreePutRecord(%d, *, %d)", nid_in, util_upd);
       status = MdsValue0(dblist->tree_info->channel, exp, &ans);
     }
     if (ans.ptr) {

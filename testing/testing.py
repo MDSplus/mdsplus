@@ -28,9 +28,9 @@ import sys,os,ctypes
 if "LD_PRELOAD" in os.environ:
     os.environ.pop("LD_PRELOAD")
 
-#MDSplus_path=os.path.dirname(os.path.abspath(__file__))
-#if sys.path[0] != MDSplus_path:
-#    sys.path.insert(0,MDSplus_path)
+MDSplus_path=os.path.dirname(os.path.abspath(__file__))
+if sys.path[0] != MDSplus_path:
+    sys.path.insert(0,MDSplus_path)
 
 class testing(object):
     import re
