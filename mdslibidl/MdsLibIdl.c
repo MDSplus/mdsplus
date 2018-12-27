@@ -83,7 +83,7 @@ EXPORT int IdlMdsOpen(int argc, void **argv)
   int status = 0;
   if (argc == 2) {
     BlockSig(SIGALRM);
-    status = TreeOpen((char *)argv[0], ((char *)argv[1] - (char *)0), 0);
+    status = TreeOpen((char *)argv[0], ((char *)argv[1] - (char *)0) MDS_END_ARG);
     UnBlockSig(SIGALRM);
   }
   return status;
@@ -555,7 +555,7 @@ EXPORT int IdlMdsPut(int argc, void **argv)
     *(int *)&arglist[0] = argidx;
     status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
     if (status & 1) {
-      status = TreePutRecord(nid, (struct descriptor *)&tmp, 0);
+      status = TreePutRecord(nid, (struct descriptor *)&tmp MDS_END_ARG);
       MdsFree1Dx(&tmp, NULL);
     }
     for (i = 0; i < 16; i++) {
