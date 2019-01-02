@@ -35,7 +35,8 @@ def _mimport(name, level=1):
 _UnitTest=_mimport("_UnitTest")
 class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
     index = 0
-    tree = "pytree"
+    trees = ["pysub"]
+    tree  = "pytree"
     def thick(self):
         def testnci(thick,local,con,nci):
             l = local.S.__getattribute__(nci)
@@ -59,6 +60,7 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
             try:
                 con = Connection(server)
                 with Tree(self.tree,-1,"new") as local:
+                    local.addNode("pysub","SUBTREE")
                     s=local.addNode("S","SIGNAL")
                     s.addTag("tagS")
                     s.record = ADD(Float32(1),Float32(2))
@@ -67,6 +69,9 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                     t.record = t.TT
                     t.TT = "recTT"
                     local.write()
+                with Tree(self.trees[0],-1,"new") as sub:
+                    sub.addNode("OK")
+                    sub.write()
                 local.normal()
                 Tree.setCurrent(self.tree,7)
                 setenv("pytree_path","%s::"%server)
@@ -74,6 +79,8 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                 con.get("TreeShr->TreeOpen(ref($),val($),val(1))",self.tree,-1)
                 thick = Tree(self.tree,-1)
                 thick.createPulse(1)
+                thick1 = Tree(self.tree,1)
+                self.assertEqual(local.PYSUB.OK.nid,thick1.PYSUB.OK.nid)
                 self.assertEqual(local.getFileName(),thick.getFileName().split("::",2)[1]);
                 """ TreeTurnOff / TreeTurnOn """
                 thick.S.on = False;self.assertEqual(local.S.on,False)
