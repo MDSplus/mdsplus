@@ -416,8 +416,7 @@ int Tree::getCurrent(char const * treeName)
 
 void Tree::createPulse(int shot)
 {
-	int  retNids;
-	int status = _TreeCreatePulseFile(getCtx(), shot, 0, &retNids);
+	int status = _TreeCreatePulseFile(getCtx(), shot, 0, NULL);
 	if(!(status & 1))
 		throw MdsException(status);
 }

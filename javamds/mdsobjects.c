@@ -1858,10 +1858,10 @@ JNIEXPORT jint JNICALL Java_MDSplus_Tree_getCurrent(JNIEnv * env, jclass cls __a
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_createPulseFile
 (JNIEnv * env, jclass cls __attribute__ ((unused)), jint ctx1, jint ctx2, jint shot) {
-  int status, retNids;
+  int status;
   void *ctx = getCtx(ctx1, ctx2);
 
-  status = _TreeCreatePulseFile(ctx, shot, 0, &retNids);
+  status = _TreeCreatePulseFile(ctx, shot, 0, NULL);
   if STATUS_NOT_OK
     throwMdsException(env, status);
 }
