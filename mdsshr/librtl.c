@@ -38,10 +38,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <errno.h>
 #include <signal.h>
 
+//#define DEBUG
+#ifdef DEBUG
+# define DBG(...) fprintf(stderr,__VA_ARGS__)
+#else
+# define DBG(...) {}
+#endif
+
 #ifdef _WIN32
 #include <windows.h>
 #include <process.h>
 #define setenv(name,value,overwrite) _putenv_s(name,value)
+#define unsetenv(name)               _putenv_s(name,"")
 #define localtime_r(time,tm)         localtime_s(tm,time)
 #define ctime_r(tm,buf)              ctime_s(buf,32,tm)
 #else
@@ -1748,18 +1756,28 @@ unsigned short Crc(unsigned int len, unsigned char *bufptr)
   return (unsigned short)cword;
 }
 
-EXPORT int MdsPutEnv(char const *cmd)
-{
+
+EXPORT int MdsPutEnv(char const *cmd) {
+/* cmd		action
+ * name		unset name
+ * name=	set name to ""
+ * name=value   set name to value
+ */
   INIT_STATUS_ERROR;
   if (cmd != NULL) {
     if (!strstr(cmd, "MDSPLUS_SPAWN_WRAPPER") && !strstr(cmd, "MDSPLUS_LIBCALL_WRAPPER")){
-      char *tmp = strdup(cmd);
-      char *saveptr = NULL;
-      char *name = strtok_r(tmp,"=",&saveptr);
-      char *value = strtok_r(NULL,"=",&saveptr);
-      if (name != NULL && value != NULL)
-        status = setenv(name,value,1) ? MDSplusERROR : MDSplusSUCCESS;
-      free(tmp);
+      char *value, *name = strdup(cmd);
+      for (value=name ; *value && *value!='=' ; value++); // find =
+      if (*value) {
+	*(value++) = '\0';
+	DBG("setenv %s=%s\n",name,value);
+	status = setenv(name,value,1);
+      } else {
+	DBG("unsetenv %s\n",name);
+	status = unsetenv(name);
+      }
+      status = status ? MDSplusERROR : MDSplusSUCCESS;
+      free(name);
     }
   }
   return status;
