@@ -69,7 +69,7 @@ EXPORT int IdlMdsClose(int argc, void **argv)
   int status;
   BlockSig(SIGALRM);
   if (argc > 1)
-    status = TreeClose((char *)argv[0], ((char *)argv[1] - (char *)0));
+    status = TreeClose((char *)argv[0], (int)(intptr_t)argv[1]);
   else {
     status = TreeClose(0, 0);
     while (TreeClose(0, 0) & 1) ;
@@ -83,7 +83,7 @@ EXPORT int IdlMdsOpen(int argc, void **argv)
   int status = 0;
   if (argc == 2) {
     BlockSig(SIGALRM);
-    status = TreeOpen((char *)argv[0], ((char *)argv[1] - (char *)0) MDS_END_ARG);
+    status = TreeOpen((char *)argv[0], (int)(intptr_t)argv[1], 0);
     UnBlockSig(SIGALRM);
   }
   return status;
