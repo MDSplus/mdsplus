@@ -858,6 +858,9 @@ static void init_rlimit_once(){
 }
 #endif
 int OpenOne(TREE_INFO * info, TREE_INFO * root, int type, int new, int edit_flag, char**filespec, int *fd_out) {
+/*
+ * search for tree files unless filespec is preset with thick client def, i.e. ends with "::"
+ */
 #ifdef HAVE_SYS_RESOURCE_H
   RUN_FUNCTION_ONCE(init_rlimit_once);
 #endif
