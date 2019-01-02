@@ -62,6 +62,7 @@ int TreeCreatePulseFile(int shotid,int numnids, int *nids)
 #include <treeshr.h>
 #include <ctype.h>
 
+//#define DEBUG
 #ifdef DEBUG
 # define DBG(...) fprintf(stderr, __VA_ARGS__)
 #else
@@ -79,6 +80,7 @@ int TreeCreatePulseFile(int shotid, int numnids_in, int *nids_in)
   return _TreeCreatePulseFile(*TreeCtx(), shotid, numnids_in, nids_in);
 }
 
+static int TreeCreateTreeFilesOne(char *tree, int shot, int source_shot,char* treepath);
 int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
@@ -124,39 +126,42 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
     shot = shotid;
   else
     shot = TreeGetCurrentShotId(dblist->experiment);
-
-  retstatus = status;
-  if STATUS_OK {
-    for (i = 0; i < num && (retstatus & 1); i++) {
-      int skip = 0;
-      char name[13];
-      if (nids[i]) {
-	int flags;
-	NCI_ITM itmlst[] = { {sizeof(name) - 1, NciNODE_NAME, 0, 0}
-	, {4, NciGET_FLAGS, &flags, 0}
-	, {0, NciEND_OF_LIST, 0, 0}
-	};
-	itmlst[0].pointer = name;
-	status = _TreeGetNci(dbid, nids[i], itmlst);
-	if (numnids_in == 0)
-	  skip = (flags & NciM_INCLUDE_IN_PULSE) == 0;
-	name[12] = 0;
-	for (j = 11; j > 0; j--)
-	  if (name[j] == 0x20)
-	    name[j] = '\0';
-      } else {
-	strcpy(name, dblist->experiment);
-      }
-      if (STATUS_OK && !(skip))
-	status = TreeCreateTreeFiles(name, shot, source_shot);
-      if (STATUS_NOT_OK && (i == 0))
-	retstatus = status;
-    }
+  INIT_AND_FREE_ON_EXIT(char*,treepath);
+  retstatus = TreeSUCCESS;
+  TREE_INFO* info = dblist->tree_info;
+  if (info && info->filespec && info->speclen>2 && info->filespec[info->speclen-1]==':' && info->filespec[info->speclen-2]==':' ) {
+    treepath = memcpy(malloc(info->speclen+1),info->filespec,info->speclen);
+    treepath[info->speclen] = '\0';
   }
+  for (i = 0; i < num && (retstatus & 1); i++) {
+    int skip = 0;
+    char name[13];
+    if (nids[i]) {
+      int flags;
+      NCI_ITM itmlst[] = { {sizeof(name) - 1, NciNODE_NAME, 0, 0}
+      , {4, NciGET_FLAGS, &flags, 0}
+      , {0, NciEND_OF_LIST, 0, 0}
+      };
+      itmlst[0].pointer = name;
+      status = _TreeGetNci(dbid, nids[i], itmlst);
+      if (numnids_in == 0)
+	skip = (flags & NciM_INCLUDE_IN_PULSE) == 0;
+      name[12] = 0;
+      for (j = 11; j > 0; j--)
+	if (name[j] == 0x20)
+	  name[j] = '\0';
+    } else
+      strcpy(name, dblist->experiment);
+    if (STATUS_OK && !(skip))
+      status = TreeCreateTreeFilesOne(name, shot, source_shot, treepath);
+    if (STATUS_NOT_OK && (i == 0))
+      retstatus = status;
+  }
+  FREE_NOW(treepath);
   return retstatus;
 }
 
-static int TreeCreateTreeFiles(char *tree, int shot, int source_shot){
+static int TreeCreateTreeFilesOne(char *tree, int shot, int source_shot,char* treepath){
   if (!source_shot || (source_shot < -1)) return TreeINVSHOT;
   if (!shot        || (shot        < -1)) return TreeINVSHOT;
   int status,i;
@@ -165,7 +170,7 @@ static int TreeCreateTreeFiles(char *tree, int shot, int source_shot){
   status = TreeSUCCESS;
   for (i = 0 ; i < 3 ; i++) {
     if STATUS_OK {
-      status = MDS_IO_OPEN_ONE(NULL,tree,source_shot,i+TREE_TREEFILE_TYPE,0,0,&tmp,NULL,&src[i]);
+      status = MDS_IO_OPEN_ONE(treepath,tree,source_shot,i+TREE_TREEFILE_TYPE,0,0,&tmp,NULL,&src[i]);
       if (tmp) {
 	if STATUS_OK DBG("%s ->\n",tmp);
 	free(tmp);
@@ -175,7 +180,7 @@ static int TreeCreateTreeFiles(char *tree, int shot, int source_shot){
   }
   for (i = 0 ; i < 3 ; i++) {
     if STATUS_OK {
-      status = MDS_IO_OPEN_ONE(NULL,tree,shot,i+TREE_TREEFILE_TYPE,1,0,&tmp,NULL,&dst[i]);
+      status = MDS_IO_OPEN_ONE(treepath,tree,shot,i+TREE_TREEFILE_TYPE,1,0,&tmp,NULL,&dst[i]);
       if (tmp) {
 	if STATUS_OK DBG("%s <-\n",tmp);
 	free(tmp);
@@ -190,6 +195,10 @@ static int TreeCreateTreeFiles(char *tree, int shot, int source_shot){
     if (dst[i]>=0) MDS_IO_CLOSE(dst[i]);
   }
   return status;
+}
+
+int TreeCreateTreeFiles(char *tree, int shot, int source_shot) {
+  return TreeCreateTreeFilesOne(tree,shot,source_shot,NULL);
 }
 
 #define MAX_CHUNK 1024*1024*256

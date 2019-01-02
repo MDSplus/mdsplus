@@ -65,7 +65,7 @@ int TreeDeletePulseFile(int shotid,int numnids, int *nids)
 #include <sys/stat.h>
 #include <ctype.h>
 
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
 # define DBG(...) fprintf(stderr, __VA_ARGS__)
 #else
@@ -75,69 +75,20 @@ int TreeDeletePulseFile(int shotid,int numnids, int *nids)
 extern char *MaskReplace();
 
 extern void **TreeCtx();
-STATIC_ROUTINE int TreeDeleteTreeFiles(char *tree, int shot);
 
 int TreeDeletePulseFile(int shotid, int allfiles)
 {
   return _TreeDeletePulseFile(*TreeCtx(), shotid, allfiles);
 }
 
-int _TreeDeletePulseFile(void *dbid, int shotid, int allfiles __attribute__ ((unused)))
-{
-  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
-  int status = 1;
-  int retstatus = 1;
-  int num;
-  int nids[256];
-  int j;
-  int shot;
-  void *dbid_tmp = 0;
-
-/* Make sure tree is open */
-
-  if ((status = _TreeIsOpen(dblist)) != TreeOPEN)
-    return status;
-
-  status = _TreeOpen(&dbid_tmp, dblist->experiment, shotid, 0);
-  if (status & 1) {
-    void *ctx = 0;
-    shot = ((PINO_DATABASE *) dbid_tmp)->shotid;
-    for (num = 0; num < 256 && _TreeFindTagWild(dbid_tmp, "TOP", &nids[num], &ctx); num++) {
-      char name[13];
-      if (nids[num]) {
-	NCI_ITM itmlst[] = { {sizeof(name) - 1, NciNODE_NAME, 0, 0}
-	, {0, NciEND_OF_LIST, 0, 0}
-	};
-	itmlst[0].pointer = name;
-	status = _TreeGetNci(dbid_tmp, nids[num], itmlst);
-	name[12] = 0;
-	for (j = 11; j > 0; j--)
-	  if (name[j] == 0x20)
-	    name[j] = '\0';
-      } else {
-	strcpy(name, dblist->experiment);
-      }
-      if STATUS_OK
-	status = TreeDeleteTreeFiles(name, shot);
-      if STATUS_NOT_OK
-	retstatus = status;
-    }
-    _TreeClose(&dbid_tmp, dblist->experiment, shotid);
-    free(dbid_tmp);
-    TreeFindTagEnd(&ctx);
-  }
-  return retstatus;
-}
-
-static int TreeDeleteTreeFiles(char *tree, int shot){
-  if (!shot        || (shot        < -1)) return TreeINVSHOT;
+static inline int TreeDeleteTreeFilesOne(char *tree, int shot, char* treepath){
   int status,i;
   int src[3];
   char* tmp[3] = {0};
   status = TreeSUCCESS;
   for (i = 0 ; i < 3 ; i++) {
     if STATUS_OK {
-      status = MDS_IO_OPEN_ONE(NULL,tree,shot,i+TREE_TREEFILE_TYPE,0,0,&tmp[i],NULL,&src[i]);
+      status = MDS_IO_OPEN_ONE(treepath,tree,shot,i+TREE_TREEFILE_TYPE,0,0,&tmp[i],NULL,&src[i]);
       if (STATUS_OK && tmp[i]) DBG("%s -x\n",tmp[i]);
     } else  src[i] = -1;
   }
@@ -148,4 +99,56 @@ static int TreeDeleteTreeFiles(char *tree, int shot){
     if (tmp[i]) free(tmp[i]);
   }
   return retstatus ? TreeFAILURE : status;
+}
+
+static inline int _TreeDeletePulseFiles(PINO_DATABASE* dblist, int shotid, char*treepath) {
+  void *dbid_tmp = NULL;
+  int status = _TreeOpen(&dbid_tmp, dblist->experiment, shotid, 0);
+  if STATUS_NOT_OK return status;
+  void *ctx = 0;
+  // push cleanup of ctx and dbid_tmp
+  int retstatus = TreeSUCCESS;
+  int nids[256], j, num, shot = ((PINO_DATABASE *) dbid_tmp)->shotid;
+  for (num = 0; num < 256 && _TreeFindTagWild(dbid_tmp, "TOP", &nids[num], &ctx); num++) {
+    char name[13];
+    if (nids[num]) { // for subtree nodes, i.e. nid!=0
+      NCI_ITM itmlst[] = { {sizeof(name) - 1, NciNODE_NAME, 0, 0}
+      , {0, NciEND_OF_LIST, 0, 0}
+      };
+      itmlst[0].pointer = name;
+      status = _TreeGetNci(dbid_tmp, nids[num], itmlst);
+      // cut at first space and/or terminate with \0
+      for (j = 0; j < 12 && name[j] != ' ' ; j++);
+      name[j] = '\0';
+    } else
+      strcpy(name, dblist->experiment);
+    if STATUS_OK
+	status = TreeDeleteTreeFilesOne(name, shot, treepath);
+    if STATUS_NOT_OK
+	retstatus = status;
+  }
+  // pop cleanup of ctx and dbid_tmp
+  {
+    TreeFindTagEnd(&ctx);
+    _TreeClose(&dbid_tmp, dblist->experiment, shotid);
+    free(dbid_tmp);
+  }
+  return retstatus;
+}
+
+int _TreeDeletePulseFile(void *dbid, int shotid, int allfiles __attribute__ ((unused))){
+  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+/* Make sure tree is open */
+  int status = _TreeIsOpen(dblist);
+  if (status != TreeOPEN) return status;
+  if (dblist->remote)     return TreeUNSUPTHICKOP;
+  INIT_AND_FREE_ON_EXIT(char*,treepath);
+  TREE_INFO* info = dblist->tree_info;
+  if (info && info->filespec && info->speclen>2 && info->filespec[info->speclen-1]==':' && info->filespec[info->speclen-2]==':' ) {
+    treepath = memcpy(malloc(info->speclen+1),info->filespec,info->speclen);
+    treepath[info->speclen] = '\0';
+  }
+  status = _TreeDeletePulseFiles(dblist,shotid,treepath);
+  FREE_NOW(treepath);
+  return status;
 }
