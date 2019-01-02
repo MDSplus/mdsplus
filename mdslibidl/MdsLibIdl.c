@@ -555,7 +555,7 @@ EXPORT int IdlMdsPut(int argc, void **argv)
     *(int *)&arglist[0] = argidx;
     status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
     if (status & 1) {
-      status = TreePutRecord(nid, (struct descriptor *)&tmp MDS_END_ARG);
+      status = TreePutRecord(nid, (struct descriptor *)&tmp, 0);
       MdsFree1Dx(&tmp, NULL);
     }
     for (i = 0; i < 16; i++) {
