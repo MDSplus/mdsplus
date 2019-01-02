@@ -107,25 +107,32 @@ static inline int _TreeDeletePulseFiles(PINO_DATABASE* dblist, int shotid, char*
   if STATUS_NOT_OK return status;
   void *ctx = 0;
   // push cleanup of ctx and dbid_tmp
-  int retstatus = TreeSUCCESS;
-  int nids[256], j, num, shot = ((PINO_DATABASE *) dbid_tmp)->shotid;
+  status = TreeSUCCESS;
+  int shot = ((PINO_DATABASE *) dbid_tmp)->shotid;
+
+  int nids[256], j, num;
   for (num = 0; num < 256 && _TreeFindTagWild(dbid_tmp, "TOP", &nids[num], &ctx); num++) {
+    int sts;
     char name[13];
     if (nids[num]) { // for subtree nodes, i.e. nid!=0
       NCI_ITM itmlst[] = { {sizeof(name) - 1, NciNODE_NAME, 0, 0}
       , {0, NciEND_OF_LIST, 0, 0}
       };
       itmlst[0].pointer = name;
-      status = _TreeGetNci(dbid_tmp, nids[num], itmlst);
+      sts = _TreeGetNci(dbid_tmp, nids[num], itmlst);
       // cut at first space and/or terminate with \0
-      for (j = 0; j < 12 && name[j] != ' ' ; j++);
+      for (j = 0; j<12 && name[j]!=' ' ; j++);
       name[j] = '\0';
-    } else
+    } else {
       strcpy(name, dblist->experiment);
-    if STATUS_OK
-	status = TreeDeleteTreeFilesOne(name, shot, treepath);
-    if STATUS_NOT_OK
-	retstatus = status;
+      sts = 1;
+    }
+    if IS_OK(sts)
+	sts = TreeDeleteTreeFilesOne(name, shot, treepath);
+    if IS_NOT_OK(sts) {
+      status = sts;
+      break;
+    }
   }
   // pop cleanup of ctx and dbid_tmp
   {
@@ -133,7 +140,7 @@ static inline int _TreeDeletePulseFiles(PINO_DATABASE* dblist, int shotid, char*
     _TreeClose(&dbid_tmp, dblist->experiment, shotid);
     free(dbid_tmp);
   }
-  return retstatus;
+  return status;
 }
 
 int _TreeDeletePulseFile(void *dbid, int shotid, int allfiles __attribute__ ((unused))){

@@ -118,13 +118,13 @@ int TreeOpenNew(char const *tree, int shot){
 }
 
 EXPORT char *TreePath(char const *tree, char *tree_lower_out){
-  size_t len = strlen(tree);
   size_t i;
-  char tree_lower[13] = { 0 };
   char pathname[32];
   char *path;
-  for (i = 0; i < len && i < 12; ++i)
-    tree_lower[i] = (char)tolower(tree[i]);
+  char tree_lower[13];
+  for (i = 0; i < 12 && tree[i] ; ++i)
+    tree_lower[i] = tolower(tree[i]);
+  tree_lower[i] = '\0';
   strcpy(pathname, tree_lower);
   strcat(pathname, TREE_PATH_SUFFIX);
   if (tree_lower_out)

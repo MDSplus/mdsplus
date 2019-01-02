@@ -81,23 +81,26 @@ int TreeCreatePulseFile(int shotid, int numnids_in, int *nids_in)
 }
 
 static int TreeCreateTreeFilesOne(char *tree, int shot, int source_shot,char* treepath);
-int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
-{
+int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in) {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
-  INIT_STATUS, retstatus = MDSplusERROR;
-  int num;
-  int nids[256];
-  int i;
-  int j;
-  int shot;
-  int source_shot;
-
 /* Make sure tree is open */
+  int status = _TreeIsOpen(dblist);
+  if (status != TreeOPEN) return status;
+  if (dblist->remote)     return CreatePulseFileRemote(dblist, shotid, numnids_in, nids_in);
+  int shot,source_shot = dblist->shotid;
+  if (shotid)
+    shot = shotid;
+  else
+    shot = TreeGetCurrentShotId(dblist->experiment);
+  status = TreeSUCCESS;
+  TREE_INFO* info = dblist->tree_info;
+  char* treepath;
+  if (info && info->filespec && info->speclen>2 && info->filespec[info->speclen-1]==':' && info->filespec[info->speclen-2]==':' ) {
+    treepath = memcpy(malloc(info->speclen+1),info->filespec,info->speclen);
+    treepath[info->speclen] = '\0';
+  } else treepath = NULL;
 
-  if ((status = _TreeIsOpen(dblist)) != TreeOPEN)
-    return status;
-
-  source_shot = dblist->shotid;
+  int nids[256], i, j, num;
   if (numnids_in == 0) {
     void *ctx = 0;
 #ifdef OLD_VIA_USAGE
@@ -120,48 +123,38 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
 	nids[num++] = nids_in[i];
     }
   }
-  if (dblist->remote)
-    return CreatePulseFileRemote(dblist, shotid, num, nids);
-  if (shotid)
-    shot = shotid;
-  else
-    shot = TreeGetCurrentShotId(dblist->experiment);
-  INIT_AND_FREE_ON_EXIT(char*,treepath);
-  retstatus = TreeSUCCESS;
-  TREE_INFO* info = dblist->tree_info;
-  if (info && info->filespec && info->speclen>2 && info->filespec[info->speclen-1]==':' && info->filespec[info->speclen-2]==':' ) {
-    treepath = memcpy(malloc(info->speclen+1),info->filespec,info->speclen);
-    treepath[info->speclen] = '\0';
-  }
-  for (i = 0; i < num && (retstatus & 1); i++) {
-    int skip = 0;
+  for (i = 0; i < num ; i++) {
+    int sts, skip = 0;
     char name[13];
-    if (nids[i]) {
+    if (nids[i]) { // for subtree nodes, i.e. nid!=0
       int flags;
       NCI_ITM itmlst[] = { {sizeof(name) - 1, NciNODE_NAME, 0, 0}
       , {4, NciGET_FLAGS, &flags, 0}
       , {0, NciEND_OF_LIST, 0, 0}
       };
       itmlst[0].pointer = name;
-      status = _TreeGetNci(dbid, nids[i], itmlst);
+      sts = _TreeGetNci(dbid, nids[i], itmlst);
       if (numnids_in == 0)
 	skip = (flags & NciM_INCLUDE_IN_PULSE) == 0;
-      name[12] = 0;
-      for (j = 11; j > 0; j--)
-	if (name[j] == 0x20)
-	  name[j] = '\0';
-    } else
+      // cut at first space and/or terminate with \0
+      for (j = 0; j<12 && name[j]!=' ' ; j++);
+      name[j] = '\0';
+    } else {
       strcpy(name, dblist->experiment);
-    if (STATUS_OK && !(skip))
-      status = TreeCreateTreeFilesOne(name, shot, source_shot, treepath);
-    if (STATUS_NOT_OK && (i == 0))
-      retstatus = status;
+      sts = 1;
+    }
+    if (IS_OK(sts) && !(skip))
+      sts = TreeCreateTreeFilesOne(name, shot, source_shot, treepath);
+    if (IS_NOT_OK(sts) && i == 0) {
+      status = sts;
+      break;
+    }
   }
-  FREE_NOW(treepath);
-  return retstatus;
+  if (treepath) free(treepath);
+  return status;
 }
 
-static int TreeCreateTreeFilesOne(char *tree, int shot, int source_shot,char* treepath){
+static int TreeCreateTreeFilesOne(char *tree, int shot, int source_shot,char* treepath) {
   if (!source_shot || (source_shot < -1)) return TreeINVSHOT;
   if (!shot        || (shot        < -1)) return TreeINVSHOT;
   int status,i;

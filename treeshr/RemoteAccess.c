@@ -1524,8 +1524,9 @@ inline static int io_open_one_remote(char *host,char *filepath,char* treename,in
 extern char* MaskReplace(char*,char*,int);
 #include <ctype.h>
 EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, int type, int new, int edit, char**filespec, int*speclen, int *idx){
-  int status = TreeSUCCESS;
+  int status;
   INIT_AND_FREE_ON_EXIT(char*,fullpath);
+  status = TreeSUCCESS;
   int enhanced = 0;
   int conid = -1;
   int fd = -1;
@@ -1533,8 +1534,10 @@ EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, int typ
   char *hostpart, *filepart;
   size_t i;
   char *filepath = NULL;
-  if (filepath_in && strlen(filepath_in)) {
-    for (i=0 ; i<12 ; i++) treename[i] = tolower(treename_in[i]);
+  if (filepath_in && *filepath_in /*not empty*/) {
+    for (i = 0; i < 12 && treename_in[i] ; ++i)
+      treename[i] = tolower(treename_in[i]);
+    treename[i] = '\0';
     filepath = strdup(filepath_in);
   } else {
     char* tmp = TreePath(treename_in, treename);
