@@ -85,6 +85,9 @@ class MdsIp(object):
         return 'localhost:%d'%(port,),port
 
     def _testDispatchCommand(self,mdsip,command,stdout=None,stderr=None):
+        self.assertEqual(tcl('dispatch/command/wait/server=%s %s'  %(mdsip,command),1,1,1),(None,None))
+
+    def _testDispatchCommandNoWait(self,mdsip,command,stdout=None,stderr=None):
         self.assertEqual(tcl('dispatch/command/nowait/server=%s %s'  %(mdsip,command),1,1,1),(None,None))
 
     def _start_mdsip(self,server,port,logname,protocol='TCP'):
@@ -102,11 +105,13 @@ class MdsIp(object):
                 raise
             time.sleep(1)
             for envpair in self.envx.items():
-                self._testDispatchCommand(server,'env %s=%s'%envpair)
+                self._testDispatchCommandNoWait(server,'env %s=%s'%envpair)
+            self._testDispatchCommand(server,'set verify')
             return mdsip,log
         if server:
             for envpair in self.envx.items():
-                self._testDispatchCommand(server,'env %s=%s'%envpair)
+                self._testDispatchCommandNoWait(server,'env %s=%s'%envpair)
+            self._testDispatchCommand(server,'set verify')
         return None,None
 
 class TreeTests(Tests):
