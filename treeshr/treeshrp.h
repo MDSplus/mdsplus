@@ -713,7 +713,7 @@ extern int SetStackSizeRemote(PINO_DATABASE * dblist, int stack_size);
 
 extern int CloseTreeRemote(PINO_DATABASE * dblist, int call_hook);
 
-extern int CreatePulseFileRemote(PINO_DATABASE * dblist, int shotid, int *nids, int num);
+extern int CreatePulseFileRemote(PINO_DATABASE * dblist, int shotid, int num, int *nids);
 
 extern int GetNciRemote(PINO_DATABASE * dblist, int nid_in, struct nci_itm *nci_itm);
 

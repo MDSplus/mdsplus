@@ -118,7 +118,7 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
     }
   }
   if (dblist->remote)
-    return CreatePulseFileRemote(dblist, shotid, nids, num);
+    return CreatePulseFileRemote(dblist, shotid, num, nids);
   if (shotid)
     shot = shotid;
   else

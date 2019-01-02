@@ -288,9 +288,9 @@ int CloseTreeRemote(PINO_DATABASE * dblist, int call_host __attribute__ ((unused
   return status;
 }
 
-int CreatePulseFileRemote(PINO_DATABASE * dblist, int shot, int *nids, int num){
+int CreatePulseFileRemote(PINO_DATABASE * dblist, int shot, int num, int *nids){
   char exp[80];
-  sprintf(exp, "TreeShr->TreeCreatePulseFile(val(%d),ref($),val(%d))", shot, num);
+  sprintf(exp, "TreeShr->TreeCreatePulseFile(val(%d),val(%d),ref($))", shot, num);
   struct descrip arr = {DTYPE_L,1,{num},sizeof(int),(void*)nids};
   struct descrip ans = {0};
   int status = MdsValue(dblist->tree_info->channel, exp, &arr, &ans, NULL);
