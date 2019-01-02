@@ -87,6 +87,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <status name="LOCK_FAILURE" value="4598" severity="Error" text="Error locking file, perhaps NFSLOCKING not enabled on this system"/>
     <status name="FILE_NOT_FOUND" value="4597" severity="Error" text="File or Directory Not Found"/>
     <status name="CANCEL" value="4496" severity="Warning" text="User canceled operation"/>
+    <status name="UNSUPTHICKOP" value="4497" severity="Warning" text="Unsupported thick client operation"/>
     <status name="NOSEGMENTS" value="4599" severity="Error" text="No segments exist in this node"/>
     <status name="INVDTYPE" value="4600" severity="Error" text="Invalid datatype for data segment"/>
     <status name="INVSHAPE" value="4601" severity="Error" text="Invalid shape for this data segment"/>

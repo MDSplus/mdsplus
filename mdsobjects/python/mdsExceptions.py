@@ -2156,6 +2156,14 @@ class TreeCANCEL(TreeException):
 MDSplusException.statusDict[265391232] = TreeCANCEL
 
 
+class TreeUNSUPTHICKOP(TreeException):
+  status=265391240
+  message="Unsupported thick client operation"
+  msgnam="UNSUPTHICKOP"
+
+MDSplusException.statusDict[265391240] = TreeUNSUPTHICKOP
+
+
 class TreeNOSEGMENTS(TreeException):
   status=265392058
   message="No segments exist in this node"

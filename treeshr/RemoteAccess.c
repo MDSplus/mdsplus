@@ -1497,7 +1497,7 @@ inline static int io_open_one_remote(char *host,char *filepath,char* treename,in
 	  }
 	  FREE_NOW(tmp);
 	} else {
-          status = TreeCANCEL;
+          status = TreeUNSUPTHICKOP;
           RemoteAccessDisconnect(*conid, B_FALSE);
         }
 	break;
