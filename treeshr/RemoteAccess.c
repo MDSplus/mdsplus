@@ -368,10 +368,13 @@ int CreatePulseFileRemote(PINO_DATABASE * dblist, int shot, int *nids, int num)
   int status;
   char exp[8192];
   int i;
-  sprintf(exp, "TreeCreatePulseFile(%d,[", shot);
-  for (i = 0; i < num; i++)
-    sprintf(&exp[strlen(exp)], "%d,", nids[i]);
-  sprintf(&exp[strlen(exp) - 1], "],%d)", num);
+  sprintf(exp, "TreeShr->TreeCreatePulseFile(val(%d),val(%d),ref([", shot,num);
+  for (i = 0; i < num; i++) {
+    sprintf(&exp[strlen(exp)], "%d", nids[i]);
+    if (i<num-1)
+      strcat(exp,",");
+  }
+  strcat(exp,"]))");
   status = MdsValue0(dblist->tree_info->channel, exp, &ans);
   if (ans.ptr) {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
