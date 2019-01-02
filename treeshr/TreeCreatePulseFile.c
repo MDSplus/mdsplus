@@ -98,15 +98,16 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
   source_shot = dblist->shotid;
   if (numnids_in == 0) {
     void *ctx = 0;
-    for (num = 0; num < 256 && _TreeFindTagWild(dbid, "TOP", &nids[num], &ctx); num++);
-    TreeFindTagEnd(&ctx);
-    /*
+#ifdef OLD_VIA_USAGE
     nids[0] = 0;
     for (num = 1;
 	 num < 256 && (_TreeFindNodeWild(dbid, "***", &nids[num], &ctx, (1 << TreeUSAGE_SUBTREE)) & 1);
 	 num++) ;
     TreeFindNodeEnd(&ctx);
-    */
+#else //NEW_VIA_TAG faster
+    for (num = 0; num < 256 && _TreeFindTagWild(dbid, "TOP", &nids[num], &ctx); num++);
+    TreeFindTagEnd(&ctx);
+#endif
   } else {
     num = 0;
     for (i = 0; i < numnids_in; i++) {
@@ -155,7 +156,7 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
   return retstatus;
 }
 
-int TreeCreateTreeFiles(char *tree, int shot, int source_shot){
+static int TreeCreateTreeFiles(char *tree, int shot, int source_shot){
   if (!source_shot || (source_shot < -1)) return TreeINVSHOT;
   if (!shot        || (shot        < -1)) return TreeINVSHOT;
   int status,i;
@@ -182,7 +183,7 @@ int TreeCreateTreeFiles(char *tree, int shot, int source_shot){
       }
     } else dst[i] = -1;
   }
-  FREE_NOW(filespec);
+  FREE_NOW(tmp);
   for (i = 0 ; i < 3 ; i++) {
     if STATUS_OK status = _CopyFile(src[i],dst[i],i>0);
     if (src[i]>=0) MDS_IO_CLOSE(src[i]);
