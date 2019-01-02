@@ -117,7 +117,7 @@ int TreeOpenNew(char const *tree, int shot){
   return _TreeOpenNew(TreeCtx(), tree, shot);
 }
 
-EXPORT char *TreePath(char *tree, char *tree_lower_out){
+EXPORT char *TreePath(char const *tree, char *tree_lower_out){
   size_t len = strlen(tree);
   size_t i;
   char tree_lower[13] = { 0 };
@@ -131,8 +131,14 @@ EXPORT char *TreePath(char *tree, char *tree_lower_out){
     strcpy(tree_lower_out, tree_lower);
   path = TranslateLogical(pathname);
   if (path) {
-    for (i = strlen(path); i > 0 && (path[i - 1] == 32 || path[i - 1] == 9); i--)
-      path[i - 1] = 0;
+    // remove trailing spaces
+    for (i = strlen(path); i > 0 && (path[i - 1] == ' ' || path[i - 1] == 9); i--)
+      path[i - 1] = '\0';
+    if (!*path) {
+      // ignore empty path
+      free(path);
+      path = NULL;
+    }
   }
   return path;
 }
@@ -157,8 +163,7 @@ static char *ReplaceAliasTrees(char *tree_in){
       strcat(ans, ",");
       strcat(ans, tree);
     }
-    if (treepath)
-      TranslateLogicalFree(treepath);
+    free_if(&treepath);
     tree = strtok(0, ",");
   }
   free(tree_in);
