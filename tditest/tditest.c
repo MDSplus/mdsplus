@@ -104,9 +104,9 @@ int main(int argc, char **argv)
     TdiExecute((struct descriptor *)&out_unit_other, &out_d, &output_unit MDS_END_ARG);
   } else
     TdiExecute((struct descriptor *)&out_unit_stdout, &output_unit MDS_END_ARG);
-  while ((command=getExpression(f_in,NULL)) != NULL &&
-	 strcasecmp(command,"exit") != 0 &&
-	 strcasecmp(command,"quit") != 0) {
+  while ((command=getExpression(f_in,NULL))
+      && strcasecmp(command,"exit") != 0
+      && strcasecmp(command,"quit") != 0   ) {
     int comment = command[0] == '!';
     if (!comment) {
       TdiExecute((struct descriptor *)&reset_output_unit, &output_unit, &ans MDS_END_ARG);
@@ -116,17 +116,13 @@ int main(int argc, char **argv)
       expr_dsc.length = strlen(command);
       expr_dsc.pointer = command;
       status = TdiExecute((struct descriptor *)&expr_dsc, &ans MDS_END_ARG);
-      if (status&1) {
-	add_history(command);
+      add_history(command);
+      if (status&1)
 	TdiExecute((struct descriptor *)&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);
-      }
       else
 	TdiExecute((struct descriptor *)&error_out, &output_unit, &ans MDS_END_ARG);
     }
-    if (command) {
-      free(command);
-      command=NULL;
-    }
+    free(command);
   }
   if (command) {
     free(command);
