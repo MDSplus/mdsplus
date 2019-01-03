@@ -366,21 +366,19 @@ static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void 
 static void CleanupJob(int status, int jobid)
 {
   Job *j;
-  int conid;
   LOCK_JOBS;
   for (j=Jobs; j && (j->jobid != jobid) ; j=j->next);
   UNLOCK_JOBS;
   if (j) {
-    conid = j->conid;
-    DisconnectFromMds(conid);
+    int conid = j->conid;
     DoCompletionAst(j, status, 0, 1);
+    DisconnectFromMds(conid);
     for (;;) {
       LOCK_JOBS;
       for (j=Jobs ; j && (j->conid != conid) ; j=j->next);
       UNLOCK_JOBS;
-      if (j)
-        DoCompletionAst(j, status, 0, 1);
-      else break;
+      if (j) DoCompletionAst(j, status, 0, 1);
+      else   break;
     }
   }
 }
