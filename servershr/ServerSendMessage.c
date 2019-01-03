@@ -81,10 +81,11 @@ int ServerSendMessage();
 #endif
 #include <signal.h>
 
+//#define DEBUG
 #ifdef DEBUG
- #define PDEBUG(...) fprintf(stderr,__VA_ARGS__)
+ #define DBG(...) fprintf(stderr,__VA_ARGS__)
 #else
- #define PDEBUG(...)
+ #define DBG(...) {/**/}
 #endif
 
 #define IP(addr)   ((uint8_t*)&addr)
@@ -271,10 +272,12 @@ static void RemoveJob(Job *j){
   Job *jj, *prev;
   for (jj = Jobs, prev = NULL; jj && jj != j; prev=jj, jj=jj->next);
   if (jj) {
-    if (prev) prev->next = jj->next;
-    else      Jobs = jj->next;
-    if (!jj->has_condition)
+    if (!jj->has_condition) {
+      if (prev) prev->next = jj->next;
+      else      Jobs = jj->next;
+      DBG("Job #%d async done.\n",jj->jobid);
       free(jj);
+    }
   }
   UNLOCK_JOBS;
 }
@@ -310,23 +313,48 @@ static void DoCompletionAstId(int jobid, int status, char *msg, int removeJob){
 
 static void abandon(void*in) {
   Job *j = *(Job**)in;
-  if (j && j->has_condition)
-    j->has_condition = B_FALSE;
-}
-
-void ServerWait(int jobid) {
-  Job *j, *jj = NULL;
-  pthread_cleanup_push(abandon,(void*)&jj);
-  LOCK_JOBS;
-  for (j = Jobs; j && (j->jobid != jobid); j = j->next) ;
-  UNLOCK_JOBS;
   if (j && j->has_condition) {
-    jj = j;
-    CONDITION_WAIT_SET(j);
-    CONDITION_DESTROY(j,&job_conds);
-    free(j);
+    j->has_condition = B_FALSE;
+    DBG("Job #%d sync abandoned!\n",j->jobid);
   }
-  pthread_cleanup_pop(0);
+}
+static inline Job* get_job_by_conid(int conid) {
+  Job *j;
+  LOCK_JOBS;
+  for (j = Jobs; j && (j->conid != conid) ; j = j->next);
+  UNLOCK_JOBS;
+  return j;
+}
+static inline Job* get_job_by_jobid(int jobid) {
+  Job *j;
+  LOCK_JOBS;
+  for (j = Jobs; j && (j->jobid != jobid); j = j->next);
+  UNLOCK_JOBS;
+  return j;
+}
+static inline void remove_job(Job *j) {
+  LOCK_JOBS;
+  Job *jj, *prev;
+  for (jj = Jobs, prev = NULL; jj && jj != j; prev=jj, jj=jj->next);
+  if (prev) prev->next = jj->next;
+  else      Jobs = jj->next;
+  free(jj);
+  UNLOCK_JOBS;
+}
+static inline void wait_and_remove_job(Job *j) {
+  CONDITION_WAIT_SET(j);
+  CONDITION_DESTROY(j,&job_conds);
+  remove_job(j);
+}
+void ServerWait(int jobid) {
+  Job *j = get_job_by_jobid(jobid);
+  if (j && j->has_condition) {
+    DBG("Job #%d sync pending.\n",jobid);
+    pthread_cleanup_push(abandon,(void*)&j);
+    wait_and_remove_job(j);
+    pthread_cleanup_pop(0);
+    DBG("Job #%d sync done.\n",jobid);
+  } else DBG("Job #%d sync lost!\n",jobid);
 }
 
 static void DoBeforeAst(int jobid)
@@ -361,9 +389,11 @@ static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void 
     CONDITION_INIT(j);
     j->has_condition = B_TRUE;
     *msgid = j->jobid;
+    DBG("Job #%d sync registered.\n",j->jobid);
   } else {
     j->has_condition = B_FALSE;
     j->value = B_TRUE;
+    DBG("Job #%d async registered.\n",j->jobid);
   }
   j->next = Jobs;
   Jobs = j;
@@ -372,18 +402,13 @@ static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void 
 }
 
 static void CleanupJob(int status, int jobid){
-  Job *j;
-  LOCK_JOBS;
-  for (j=Jobs; j && (j->jobid != jobid) ; j=j->next);
-  UNLOCK_JOBS;
+  Job *j = get_job_by_jobid(jobid);
   if (j) {
     int conid = j->conid;
     DoCompletionAst(j, status, 0, 1);
     DisconnectFromMds(conid);
     for (;;) {
-      LOCK_JOBS;
-      for (j=Jobs ; j && (j->conid != conid) ; j=j->next);
-      UNLOCK_JOBS;
+      j = get_job_by_conid(conid);
       if (j) DoCompletionAst(j, status, 0, 1);
       else   break;
     }
@@ -411,7 +436,7 @@ static SOCKET CreatePort(uint16_t *port_out) {
       start_port = 8800;
       range_port =  256;
     }
-    PDEBUG("Receiver will be using 'MDSIP_PORT_RANGE=%u-%u'.\n",start_port,start_port+range_port-1);
+    DBG("Receiver will be using 'MDSIP_PORT_RANGE=%u-%u'.\n",start_port,start_port+range_port-1);
   }
   uint16_t port;
   static struct sockaddr_in sin;
@@ -445,7 +470,7 @@ static SOCKET CreatePort(uint16_t *port_out) {
     perror("Error from listen\n");
     return INVALID_SOCKET;
   }
-  PDEBUG("Listener opened on port %u.\n",port);
+  DBG("Listener opened on port %u.\n",port);
   *port_out = port;
   return s;
 }
@@ -482,7 +507,7 @@ static int start_receiver(uint16_t *port_out)
 }
 
 static void ReceiverExit(void *arg __attribute__ ((unused))){
-  PDEBUG("ServerSendMessage thread exitted\n");
+  DBG("ServerSendMessage thread exitted\n");
   CONDITION_RESET(&ReceiverRunning);
 }
 
@@ -497,7 +522,7 @@ static void ResetFdactive(int rep, SOCKET sock, fd_set* active){
   if (rep > 0) {
     for (c = Clients; c;) {
       if (is_broken_socket(c->reply_sock)) {
-	PDEBUG("removed client in ResetFdactive\n");
+	DBG("removed client in ResetFdactive\n");
         _RemoveClient(c);
         c = Clients;
       } else
@@ -511,7 +536,7 @@ static void ResetFdactive(int rep, SOCKET sock, fd_set* active){
       FD_SET(c->reply_sock, active);
   }
   UNLOCK_CLIENTS;
-  PDEBUG("reset fdactive in ResetFdactive\n");
+  DBG("reset fdactive in ResetFdactive\n");
 }
 
 #pragma GCC diagnostic push
@@ -598,7 +623,7 @@ static Client* get_addr_port(char* server, uint32_t*addrp, uint16_t*portp) {
   char portpart[256] = { 0 };
   int num = sscanf(server, "%[^:]:%s", hostpart, portpart);
   if (num != 2) {
-    PDEBUG("Server '%s' unknown\n", server);
+    DBG("Server '%s' unknown\n", server);
     return NULL;
   }
   addr = GetHostAddr(hostpart);
@@ -740,9 +765,7 @@ static void RemoveClient(Client * c, fd_set * fdactive) {
   int conid = get_client_conid(c,fdactive);
   Job *j;
   for (;;) {
-    LOCK_JOBS;
-    for (j = Jobs; j && (j->conid != conid) ; j = j->next);
-    UNLOCK_JOBS;
+    j = get_job_by_conid(conid);
     if (j) {
       DoCompletionAst(j, ServerPATH_DOWN, NULL, 0);
       RemoveJob(j);
@@ -788,7 +811,7 @@ static void AddClient(unsigned int addr, uint16_t port, int conid)
   else
     Clients = new;
   UNLOCK_CLIENTS;
-  PDEBUG("added connection from %u.%u.%u.%u\n",ADDR2IP(addr));
+  DBG("added connection from %u.%u.%u.%u\n",ADDR2IP(addr));
 }
 
 static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fdactive)
@@ -802,10 +825,10 @@ static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fd
   if (c) {
     c->reply_sock = reply_sock;
     FD_SET(reply_sock, fdactive);
-    PDEBUG("accepted connection from %u.%u.%u.%u\n",ADDR2IP(addr));
+    DBG("accepted connection from %u.%u.%u.%u\n",ADDR2IP(addr));
   } else {
     shutdown(reply_sock, 2);
     close(reply_sock);
-    PDEBUG("dropped connection from %u.%u.%u.%u\n",ADDR2IP(addr));
+    DBG("dropped connection from %u.%u.%u.%u\n",ADDR2IP(addr));
   }
 }
