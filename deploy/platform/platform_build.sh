@@ -8,29 +8,24 @@
 #
 set -e
 volume() {
-    if [ ! -z "$1" ]
-    then
-	echo "-v $(realpath ${1}):${2}"
-    fi
+  if [ ! -z "$1" ]
+  then echo "-v $(realpath ${1}):${2}"
+  fi
 }
-
 RED() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[31;47m"
-    fi
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[31m"
+  fi
 }
 GREEN() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[32;47m"
-    fi
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[32m"
+  fi
 }
 NORMAL() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[m"
-    fi
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[0m"
+  fi
 }
 spacedelim() {
     if [ ! -z "$1" ]
@@ -136,7 +131,7 @@ rundocker(){
 	done
         if [ ! "$status" = "0" ]
         then
-    	RED $COLOR
+    	RED
     	cat <<EOF >&2
 ======================================================
 
@@ -145,7 +140,7 @@ status when exiting from ${image}
 
 ======================================================
 EOF
-    	NORMAL $COLOR
+    	NORMAL
     	exit $status
         fi
         let idx=idx+1

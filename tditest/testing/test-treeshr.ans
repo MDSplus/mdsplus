@@ -172,7 +172,7 @@ getnci(.subtree:a12,"on")
 getnci(.subtree:a12,"rlength")
 58LU
 TreeCreatePulseFile(_shot)
-265388115
+265389633
 TreeClose('main',-1)
 265388041
 TreeOpen('main',_shot)
@@ -190,7 +190,7 @@ TreeClose('main',_shot)
 TreeOpen('main',-1,1)
 265388041
 TreeDeletePulseFile(_shot)
-1
+265389633
 TreeClose()
 265388041
 TreeOpenNew('main',_shot)
@@ -395,4 +395,4 @@ TreeClose()
 TreeOpen('main',-1,1)
 265388041
 TreeDeletePulseFile(_shot)
-1
+265389633

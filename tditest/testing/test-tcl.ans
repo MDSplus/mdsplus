@@ -139,7 +139,7 @@ Tcl('close')
 Tcl('set tree main/shot=1')
 265388067
 Tcl('create pulse 2')
-265388115
+265389633
 Tcl('set tree main/shot=2')
 265388067
 Tcl('dir ***')
@@ -157,7 +157,7 @@ Total of 13 nodes.
 Tcl('set tree main/shot=1')
 265388067
 Tcl('delete pulse 2')
-1
+265389633
 Tcl('close')
 265388041
 Tcl('clean main/shot=1/override')
@@ -275,7 +275,7 @@ mdsdcl: --> failed on line 'close          '
 Tcl('set tree main')
 265388041
 Tcl('delete pulse 1')
-1
+265389633
 _status=Tcl(['set tree main','dir','close'],_out,_err)
 265388041
 write(*,"output=",_out,"error=",_err),_status 

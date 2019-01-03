@@ -5,6 +5,21 @@
 # Build mdsplus for a selected operating system for testing or
 # generating installers.
 #
+RED() {
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[31m"
+  fi
+}
+GREEN() {
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[32m"
+  fi
+}
+NORMAL() {
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[0m"
+  fi
+}
 printhelp() {
     cat <<EOF
 NAME
@@ -449,32 +464,13 @@ Build script executing with the following combined options:
 EOF
 parsecmd "${trigger_opts} ${os_opts} ${opts}"
 
-RED() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[31;47m"
-    fi
-}
-GREEN() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[32;47m"
-    fi
-}
-NORMAL() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[m"
-    fi
-}
-
 RELEASE_VERSION="${RELEASE_VERSION-1.2.3}"
 
 if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
 then
     if [ -r $PUBLISHDIR/${DISTNAME}/${BRANCH}_${RELEASE_VERSION}_${OS} ]
     then
-	GREEN $COLOR
+	GREEN
 	cat <<EOF
 ==================================================================
 
@@ -483,7 +479,7 @@ The build will be skipped.
 
 ==================================================================
 EOF
-	NORMAL $COLOR
+	NORMAL
 	exit 0
     fi
 fi
@@ -677,7 +673,7 @@ OS=${OS} \
   ${SRCDIR}/deploy/platform/platform_build.sh
 if [ "$?" != "0" ]
 then
-    RED $COLOR
+    RED
     cat <<EOF >&2
 ============================================
 
@@ -685,10 +681,10 @@ Failure: The build was unsuccessful!
 
 ============================================
 EOF
-    NORMAL $COLOR
+    NORMAL
     exit 1
 else
-    GREEN $COLOR
+    GREEN
     cat <<EOF
 ============================================
 
@@ -696,7 +692,7 @@ Success!
 
 ============================================
 EOF
-    NORMAL $COLOR
+    NORMAL
     if [ "$PUBLISH" = "yes" ]
     then
 	touch $PUBLISHDIR/${BRANCH}_${RELEASE_VERSION}_${OS}

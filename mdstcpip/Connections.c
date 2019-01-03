@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <mdsshr.h>
 #include "mdsip_connections.h"
+#include "mdsIo.h"
 #include <pthread_port.h>
 
 #ifdef DEBUG
@@ -57,6 +58,16 @@ Connection *FindConnection(int id, Connection ** prev){
   CONNECTIONLIST_UNLOCK;
   return c;
 }
+
+EXPORT int GetConnectionVersion(int id){
+  int version;
+  CONNECTIONLIST_LOCK;
+  Connection *c = _FindConnection(id, NULL);
+  version = c ? (int)c->version : -1;
+  CONNECTIONLIST_UNLOCK;
+  return version;
+}
+
 
 Connection *FindConnectionWithLock(int id, char state){
   Connection *c;
@@ -464,7 +475,10 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     // SET COMPRESSION //
     if STATUS_OK {
       c->compression_level = m_user->h.status & 0xf;
+      c->client_type = m_user->h.client_type;
       *usr = strcpy(malloc(strlen(user_p) + 1), user_p);
+      if (m_user->h.ndims>0)
+        c->version = m_user->h.dims[0];
     } else
       *usr = NULL;
     if STATUS_NOT_OK
@@ -474,6 +488,8 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     if (user) free(user);
     m.h.status = STATUS_OK ? (1 | (c->compression_level << 1)) : 0;
     m.h.client_type = m_user ? m_user->h.client_type : 0;
+    m.h.ndims = 1;
+    m.h.dims[0] = MDSIP_VERSION;
     if (m_user)
       MdsIpFree(m_user);
     // reply to client //

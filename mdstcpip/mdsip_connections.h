@@ -82,6 +82,7 @@ typedef struct _connection {
   int compression_level;
   SOCKET readfd;
   struct _io_routines *io;
+  unsigned short version;
 } Connection;
 
 #define INVALID_CONNECTION_ID 0
@@ -647,7 +648,7 @@ EXPORT int ReuseCheck(char *hostin, char *unique, size_t buflen);
 ///
 EXPORT int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs,
                    unsigned short length, char ndims, int *dims, char *bytes);
-
+EXPORT int SendDsc(int id, unsigned char idx, unsigned char nargs, struct descriptor* dsc);
 ////////////////////////////////////////////////////////////////////////////////
 ///
 /// This is the main function that is called by user or any higher level

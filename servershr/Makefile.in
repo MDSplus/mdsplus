@@ -8,7 +8,6 @@ VPATH = @srcdir@
 
 SOURCES = \
       ServerDispatchAction.c\
-      ServerFreeDispatchTable.c\
       ServerSetDetailProc.c\
       ServerAbortServer.c\
       ServerDispatchClose.c\

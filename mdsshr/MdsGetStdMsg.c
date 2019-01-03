@@ -2491,6 +2491,16 @@ EXPORT int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_ou
         sts = 1;}
         break;
 
+/* TreeUNSUPTHICKOP */
+      case 0xfd18c88:
+        {static const char *text="Unsupported thick client operation";
+        static const char *msgnam="UNSUPTHICKOP";
+        *fac_out = FAC_TREE;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
 /* TreeNOSEGMENTS */
       case 0xfd18fb8:
         {static const char *text="No segments exist in this node";

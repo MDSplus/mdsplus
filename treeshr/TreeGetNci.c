@@ -103,7 +103,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm){
   NODE *cng_node;
   int node_exists;
   int depth;
-  int64_t rfa_l;
+  uint64_t rfa_l;
   int count = 0;
   NID *out_nids;
   NID *end_nids;
@@ -213,7 +213,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm){
       read_nci;
       set_retlen(sizeof(rfa_l));
       rfa_l = RfaToSeek(nci.DATA_INFO.DATA_LOCATION.rfa);
-      memcpy(itm->pointer, &rfa_l, minInt(sizeof(unsigned int), itm->buffer_length));
+      memcpy(itm->pointer, &rfa_l, minInt(sizeof(rfa_l), itm->buffer_length));
       break;
     case NciCONGLOMERATE_ELT:
       break_on_no_node;

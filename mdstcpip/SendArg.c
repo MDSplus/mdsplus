@@ -23,14 +23,30 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "mdsip_connections.h"
+#include "mdsIo.h"
+#include <mdsshr.h>
 #include <stdlib.h>
 #include <string.h>
 #include <status.h>
 
 
+int SendDsc(int id, unsigned char idx, unsigned char nargs, struct descriptor* dsc) {
+  int status;
+  INIT_AND_FREEXD_ON_EXIT(out);
+  status = MdsSerializeDscOut(dsc, &out);
+  if STATUS_OK {
+    struct descriptor_a* array = (struct descriptor_a*)out.pointer;
+    int dims[MAX_DIMS_R] = {0};
+    dims[0] = array->arsize;
+    status = SendArg(id, idx, DTYPE_SERIAL, nargs, 1, 1, dims, (char*)array->pointer);
+  }
+  FREEXD_NOW(out);
+  return status;
+}
 
-int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned short length, char ndims,
-	    int *dims, char *bytes){
+
+int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned short length, char ndims, int *dims, char *bytes){
+  Connection* c = idx==0 ? FindConnectionWithLock(id, CON_SENDARG) : FindConnection(id, NULL);
   INIT_STATUS_AS MDSplusERROR;
   int msglen;
   int i;
@@ -43,6 +59,10 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned
 
   if (idx > nargs) {
     /**** Special I/O message ****/
+    if (idx==MDS_IO_OPEN_ONE_K && c->version < MDSIP_VERSION_OPEN_ONE){
+      UnlockConnection(c);
+      status = MDSplusFATAL;
+    }
     nbytes = dims[0];
   } else {
     for (i = 0; i < ndims; i++)
@@ -59,15 +79,11 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned
   m->h.ndims = ndims;
 #ifdef __CRAY
   for (i = 0; i < 4; i++)
-    m->h.dims[i] =
-	((ndims > i * 2) ? (dims[i * 2] << 32) : 0) | ((ndims >
-							(i * 2 + 1)) ? (dims[i * 2 + 1]) : 0);
+    m->h.dims[i] = ((ndims>i*2) ? (dims[i*2] << 32) : 0) | ((ndims > (i*2+1)) ? (dims[i*2+1]) : 0);
 #else
-  for (i = 0; i < MAX_DIMS_R; i++)
-    m->h.dims[i] = i < ndims ? dims[i] : 0;
+  for (i = 0; i < MAX_DIMS_R; i++)  m->h.dims[i] = i < ndims ? dims[i] : 0;
 #endif
   memcpy(m->bytes, bytes, nbytes);
-  Connection* c = idx==0 ? FindConnectionWithLock(id, CON_SENDARG) : FindConnection(id, NULL);
   m->h.message_id = (idx == 0 || nargs == 0)
             ? IncrementConnectionMessageIdC(c)
             : c->message_id;
