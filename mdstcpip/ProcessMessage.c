@@ -569,9 +569,10 @@ static void WorkerCleanup(void *args) {
   worker_cleanup_t* wc = (worker_cleanup_t*)args;
   MdsFree1Dx(wc->xdp,NULL);
   TdiSaveContext(wc->wa->tdicontext);
-  wc->wa->dbid = TreeSwitchDbid(NULL);
+  wc->wa->dbid = TreeSwitchDbid(wc->wa->dbid);
   void* tdicontext[6] = {0};
   TdiRestoreContext(tdicontext);
+  TreeUsePrivateCtx(0);
 #ifndef _WIN32
   CONDITION_SET(wc->wa->condition);
 #endif
@@ -582,7 +583,8 @@ static int WorkerThread(void *args) {
   EMPTYXD(xd);
   worker_cleanup_t wc = {wa,&xd};
   pthread_cleanup_push(WorkerCleanup,(void*)&wc);
-  TreeSwitchDbid(wa->dbid);
+  TreeUsePrivateCtx(1);
+  wa->dbid = TreeSwitchDbid(wa->dbid);
   TdiRestoreContext(wa->tdicontext);
   wa->status = TdiIntrinsic(OPC_EXECUTE, wa->connection->nargs, wa->connection->descrip, &xd);
   if IS_OK(wa->status)
@@ -598,7 +600,7 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
   wa.xd_out = ans_xd;
   wa.status = -1;
   if (GetContextSwitching()) {
-    wa.dbid       = connection->DBID;
+    wa.dbid = connection->DBID;
     memcpy(wa.tdicontext,connection->tdicontext,sizeof(wa.tdicontext));
   } else {
     wa.dbid = *TreeCtx();
