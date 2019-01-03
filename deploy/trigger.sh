@@ -6,6 +6,21 @@
 # This sets build options to be imported into jenkins build jobs
 # for the various operating systems supported.
 #
+RED() {
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[31m"
+  fi
+}
+GREEN() {
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[32m"
+  fi
+}
+NORMAL() {
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[0m"
+  fi
+}
 printhelp() {
     cat <<EOF
 NAME
@@ -238,39 +253,20 @@ cmdopts="$@"
 #
 parsecmd "$cmdopts"
 
-RED() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[31;47m"
-    fi
-}
-GREEN() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[32;47m"
-    fi
-}
-NORMAL() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[m"
-    fi
-}
-
 if [ ! -z "${MAKE_JARS}" ]
 then
     if ( ! ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} --workspace=${SRCDIR} > make_jars.log 2>&1 )
     then
-	RED $COLOR
+	RED
 	cat <<EOF >&2
 ===============================================
 
-Error creating java jar files. Trigger failed. 
+Error creating java jar files. Trigger failed.
 Look at make_jars.log artifact for more info .
 
 ===============================================
 EOF
-	NORMAL $COLOR
+	NORMAL
 	exit 1
     fi
 fi
@@ -279,23 +275,23 @@ if [ ! -z "${MAKE_EPYDOCS}" ]
 then
     if ( ! ${SRCDIR}/mdsobjects/python/makedoc.sh ${SRCDIR}/mdsobjects/python/doc > make_epydocs.log 2>&1 )
     then
-	RED $COLOR
+	RED
 	cat <<EOF >&2
 ===============================================
 
-Error creating python documentation. Trigger failed. 
+Error creating python documentation. Trigger failed.
 Look at make_epydocs.log artifact for more info .
 
 ===============================================
 EOF
-	NORMAL $COLOR
+	NORMAL
 	exit 1
     fi
 fi
 
 if [ "$RELEASE" = "yes" -a "$PUBLISH" = "yes" ]
 then
-    RED $COLOR
+    RED
     cat <<EOF >&2
 ===============================================
 
@@ -308,7 +304,7 @@ FAILURE
 
 ===============================================
 EOF
-    NORMAL $COLOR
+    NORMAL
     exit 1
 fi
 
@@ -319,7 +315,7 @@ if [ "$BUILD_CAUSE" = "GHPRBCAUSE" ]
 then
   if [ $(${SRCDIR}/deploy/commit_type_check.sh origin/$ghprbTargetBranch ${SRCDIR}/deploy/inv_commit_title.msg) = "BADCOMMIT" ]
   then
-      RED $COLOR
+      RED
       cat <<EOF >&2
 =========================================================
 
@@ -327,7 +323,7 @@ WARNING: Pull request contains an invalid commit title.
 
 =========================================================
 EOF
-      NORMAL $COLOR
+      NORMAL
 #      exit 1
   fi
 fi
@@ -341,7 +337,7 @@ then
 	MINOR=$(echo $PROMOTE_RELEASE_TAG | cut -f3 -d-)
 	RELEASEV=$(echo $PROMOTE_RELEASE_TAG | cut -f4 -d-)
     else
-      RED $COLOR
+      RED
       cat <<EOF >&2
 =========================================================
 
@@ -349,7 +345,7 @@ ERROR: Problem promoting ${BRANCH} to ${PROMOTE_TO}
 
 =========================================================
 EOF
-      NORMAL $COLOR
+      NORMAL
       exit 1
     fi
 fi
@@ -393,7 +389,7 @@ then
 		NEW_RELEASE=yes
 		;;
 	    BADCOMMIT)
-		RED $COLOR
+		RED
 		cat <<EOF >&2
 =========================================================
 
@@ -401,13 +397,13 @@ WARNING: Commit contains an invalid commit title.
 
 =========================================================
 EOF
-		NORMAL $COLOR
+		NORMAL
 		#exit 1
 		NEW_RELEASE=yes
 		let RELEASEV=$RELEASEV+1
 		;;
 	    SAME)
-		GREEN $COLOR
+		GREEN
 		cat <<EOF >&2
 =========================================================
 
@@ -417,11 +413,11 @@ INFO: All commits are of category Build, Docs or Tests.
 =========================================================
 
 EOF
-		NORMAL $COLOR
+		NORMAL
 		NEW_RELEASE=no
 		;;
 	    MINOR)
-		GREEN $COLOR
+		GREEN
 		cat <<EOF >&2
 =========================================================
 
@@ -431,13 +427,13 @@ INFO: New features added. New release will be a minor
 =========================================================
 
 EOF
-		NORMAL $COLOR
+		NORMAL
 		NEW_RELEASE=yes
 		let MINOR=$MINOR+1
 		let RELEASEV=0
 		;;
 	    PATCH)
-		GREEN $COLOR
+		GREEN
 		cat <<EOF >&2
 =========================================================
 
@@ -448,7 +444,7 @@ INFO: No new features added. Fix commits added so
 =========================================================
 
 EOF
-		NORMAL $COLOR
+		NORMAL
 		NEW_RELEASE=yes
 		let RELEASEV=$RELEASEV+1
 		;;
@@ -463,7 +459,7 @@ INFO: Unknown release check return of $version_inc
 =========================================================
 
 EOF
-		NORMAL $COLOR
+		NORMAL
 	    	NEW_RELEASE=yes
 		let RELEASEV=$RELEASEV+1
 		;;
@@ -479,7 +475,7 @@ LAST_RELEASE_COMMIT=${LAST_RELEASE_COMMIT}
 RELEASE_TAG=${RELEASE_TAG}
 RELEASE_VERSION=${RELEASE_VERSION}
 EOF
-    GREEN $COLOR
+    GREEN
     cat <<EOF
 =========================================================
 
@@ -487,7 +483,7 @@ Triggering release ${RELEASE_TAG} build
 
 =========================================================
 EOF
-    NORMAL $COLOR
+    NORMAL
 fi
 if [ "$PUBLISH" = "yes" ]
 then
@@ -495,7 +491,7 @@ then
     then
 	. ${SRCDIR}/trigger.version
 	opts="$opts --publish=${RELEASE_VERSION}"
-	GREEN $COLOR
+	GREEN
 	cat <<EOF
 =========================================================
 
@@ -503,9 +499,9 @@ Triggering publish release of ${RELEASE_TAG}
 
 =========================================================
 EOF
-	NORMAL $COLOR
+	NORMAL
     else
-	RED $COLOR
+	RED
 	cat <<EOF >&2
 =========================================================
 
@@ -515,7 +511,7 @@ FAILURE
 
 =========================================================
 EOF
-	NORMAL $COLOR
+	NORMAL
 	exit 1
     fi
 fi
@@ -537,7 +533,7 @@ $(git log --decorate=full --no-merges ${LAST_RELEASE_COMMIT}..HEAD | awk '{gsub(
 EOF
 	   if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
 	   then
-	       RED $COLOR
+	       RED
 	       cat <<EOF >&2
 =========================================================
 
@@ -548,12 +544,12 @@ FAILURE
 =========================================================
 EOF
 	       cat ${WORKSPACE}/tag_release.log
-	       NORMAL $COLOR
+	       NORMAL
 	       exit 1
 	   fi
 	fi
     else
-	RED $COLOR
+	RED
 	cat <<EOF >&2
 =========================================================
 
@@ -563,7 +559,7 @@ FAILURE
 
 =========================================================
 EOF
-	NORMAL $COLOR
+	NORMAL
 	exit 1
     fi
     if [ "$PUSH_TO_PYPI" = "yes" ]

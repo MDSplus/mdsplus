@@ -9,6 +9,21 @@
 export HOME=/tmp/home
 srcdir=$(readlink -f $(dirname ${0})/../..)
 mkdir -p $HOME
+RED() {
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[31m"
+  fi
+}
+GREEN() {
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[32m"
+  fi
+}
+NORMAL() {
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[0m"
+  fi
+}
 tio(){
     :&& ${srcdir}/deploy/platform/timeout.sh "$@";
     return $?;
@@ -66,7 +81,7 @@ checkstatus(){
 # checkstatus flagname "error message" $?
         if [ ! -z "$3" -a "$3" != "0" ]
         then
-            RED $COLOR
+            RED
             if [ "$1" = "abort" ]
             then
                 ABORT="                                         Build ABORTED"
@@ -78,7 +93,7 @@ $2
 $ABORT
 ======================================================
 EOF
-            NORMAL $COLOR
+            NORMAL
             if [ "$1" = "abort" ]
             then
                 exit $3
@@ -110,9 +125,9 @@ checktests() {
             checktestarch $arch
         done
         checkstatus abort "Failure: One or more tests have failed (see above)." $failed
-        GREEN $COLOR
+        GREEN
         echo "SUCCESS"
-        NORMAL $COLOR
+        NORMAL
     fi
 }
 
@@ -181,24 +196,6 @@ normaltest() {
     fi
    fi
     popd
-}
-RED() {
-    if [ "$1" = "yes" ]
-    then
-        echo -e "\033[31;47m"
-    fi
-}
-GREEN() {
-    if [ "$1" = "yes" ]
-    then
-        echo -e "\033[32;47m"
-    fi
-}
-NORMAL() {
-    if [ "$1" = "yes" ]
-    then
-        echo -e "\033[m"
-    fi
 }
 
 main(){
