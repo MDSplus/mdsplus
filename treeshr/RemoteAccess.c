@@ -1553,27 +1553,32 @@ EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, int typ
     for (i = 0 ; i <= pathlen ; i++) {
       if (filepath[i] != ';' && filepath[i] != '\0') continue;
       while(*part == ' ') part++;
-      if (!strlen(part)) break;
+      if (*part == '\0') break;
       filepath[i] = 0;
       char *tmp = ParseFile(part, &hostpart,&filepart);
       free_if(&fullpath);
       if (hostpart) {
 	fullpath = NULL;
 	status = io_open_one_remote(hostpart, filepart, treename, shot, type, new, edit, &fullpath, &conid, &fd, &enhanced);
+	if (fd < 0) {
+	  status = TreeSUCCESS;
+	  conid = -1;
+	  enhanced = 0;
+	}
       } else {
 	fullpath = generate_fullpath(filepart, treename, shot, type);
 	int options,mode;
 	getOptionsMode(new,edit,&options,&mode);
 	fd = open(fullpath, options | O_BINARY | O_RANDOM, mode);
 	if (type == TREE_DIRECTORY) {
-          if (fd != -1) {
+	  if (fd != -1) {
 	    close(fd);
 	    fd = -3;
 	  }
-        } else {
+	} else {
 #ifndef _WIN32
-          if ((fd != -1) && new)
-            set_mdsplus_file_protection(fullpath);
+	  if ((fd != -1) && new)
+	    set_mdsplus_file_protection(fullpath);
 #endif
 	  if ((fd != -1) && edit && (type == TREE_TREEFILE_TYPE)) {
 	    if IS_NOT_OK(io_lock_local((fdinfo_t){conid,fd,enhanced}, 1, 1, MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0)) {
