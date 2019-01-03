@@ -140,27 +140,29 @@ static int GetHostAndPort(char *hostin, struct SOCKADDR_IN *sin){
   return status;
 }
 
+#if defined(__MACH__) || defined(_WIN32)
+# define GETHOSTBYADDR
+#endif
 static char *getHostInfo(SOCKET sock, char **iphostptr, char **hostnameptr){
   char *ans = NULL;
   struct SOCKADDR_IN sin;
   SOCKLEN_T len = sizeof(sin);
   if (!GETPEERNAME(sock, (struct sockaddr *)&sin, &len)) {
     GET_IPHOST(sin);
-#if defined(__MACH__) || defined(_WIN32)
+#ifdef GETHOSTBYADDR
     struct hostent* hp = gethostbyaddr((void*)&sin.SIN_ADDR,sizeof(sin.SIN_ADDR),sin.SIN_FAMILY);
 #else
     struct hostent hostbuf, *hp = NULL;
     int herr;
-    char *hp_mem = NULL;
-    FREE_ON_EXIT(hp_mem);
-    size_t memlen;
-    for ( memlen=1024,hp_mem=malloc(memlen); hp_mem && (gethostbyaddr_r((void*)&sin.SIN_ADDR,sizeof(sin.SIN_ADDR),sin.SIN_FAMILY,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE); ) {
+    INIT_AND_FREE_ON_EXIT(char*,hp_mem);
+    size_t memlen = 1024;
+    hp_mem = malloc(memlen);
+    while (hp_mem && (gethostbyaddr_r((void*)&sin.SIN_ADDR,sizeof(sin.SIN_ADDR),sin.SIN_FAMILY,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE)) {
       memlen *=2;
-#ifdef DEBUG
+# ifdef DEBUG
       fprintf(stderr,"hp_mem too small-> %d\n",(int)memlen);
-#endif
-      free(hp_mem);
-      hp_mem = (char*)malloc(memlen);
+# endif
+      hp_mem = realloc(hp_mem,memlen);
     }
 #endif
     if (hp && hp->h_name) {
@@ -180,7 +182,7 @@ static char *getHostInfo(SOCKET sock, char **iphostptr, char **hostnameptr){
       *iphostptr = (char *)malloc(strlen(iphost) + 1);
       strcpy(*iphostptr, iphost);
     }
-#if !(defined(__MACH__) || defined(_WIN32))
+#ifndef GETHOSTBYADDR
     FREE_NOW(hp_mem);
 #endif
   }
