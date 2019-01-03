@@ -140,7 +140,6 @@ static inline int isAbortInProgress(){
   return val;
 }
 
-
 STATIC_THREADSAFE Condition JobWaitC = CONDITION_INITIALIZER;
 STATIC_THREADSAFE Condition SendMonitorC = CONDITION_INITIALIZER;
 STATIC_THREADSAFE Condition CompletedC = CONDITION_INITIALIZER;
@@ -771,3 +770,31 @@ STATIC_ROUTINE void DoSendMonitor(int mode, int idx){
   CONDITION_START_THREAD(&SendMonitorRunningC, thread, , SendMonitorThread,NULL);
   if STATUS_NOT_OK perror("DoSendMonitor: pthread creation failed");
 }
+
+EXPORT int ServerFreeDispatchTable(void *vtable){
+  if (vtable) {
+   WRLOCK_TABLE;{
+    DispatchTable *table = vtable;
+    ActionInfo *actions = table->actions;
+    int num_actions = table->num;
+    int i;
+    for (i = 0; i < num_actions; i++) {
+     WRLOCK_ACTION(i,fdt);{
+      if (actions[i].referenced_by)
+	free(actions[i].referenced_by);
+      if (actions[i].path)
+	TreeFree(actions[i].path);
+      if (actions[i].event)
+	free(actions[i].event);
+      if (actions[i].condition) {
+	MdsFree1Dx((struct descriptor_xd *)actions[i].condition, 0);
+	free(actions[i].condition);
+      }
+     }UNLOCK_ACTION(i,fdt);
+    }
+    free(vtable);
+   }UNLOCK_TABLE;
+  }
+  return MDSplusSUCCESS;
+}
+
