@@ -102,7 +102,7 @@ extern int GetAnswerInfoTS();
  *  int             value;
  *} Condition;
  */
-typedef struct _Job {
+typedef struct job {
   pthread_cond_t cond;
   pthread_mutex_t mutex;
   int value; //aka done
@@ -114,7 +114,7 @@ typedef struct _Job {
   void (*before_ast) ();
   int jobid;
   int conid;
-  struct _Job *next;
+  struct job* next;
 } Job;
 static pthread_mutex_t jobs_mutex = PTHREAD_MUTEX_INITIALIZER;
 #define LOCK_JOBS   pthread_mutex_lock(&jobs_mutex);pthread_cleanup_push((void*)pthread_mutex_unlock, &jobs_mutex)
@@ -271,8 +271,8 @@ static void RemoveJob(Job *j){
   Job *jj, *prev;
   for (jj = Jobs, prev = NULL; jj && jj != j; prev=jj, jj=jj->next);
   if (jj) {
-    if (prev) prev->next = j->next;
-    else      Jobs = j->next;
+    if (prev) prev->next = jj->next;
+    else      Jobs = jj->next;
     if (!jj->has_condition)
       free(jj);
   }
@@ -308,17 +308,25 @@ static void DoCompletionAstId(int jobid, int status, char *msg, int removeJob){
   if (j) DoCompletionAst(j, status, msg, removeJob);
 }
 
-void ServerWait(int jobid)
-{
-  Job *j;
+static void abandon(void*in) {
+  Job *j = *(Job**)in;
+  if (j && j->has_condition)
+    j->has_condition = B_FALSE;
+}
+
+void ServerWait(int jobid) {
+  Job *j, *jj = NULL;
+  pthread_cleanup_push(abandon,(void*)&jj);
   LOCK_JOBS;
   for (j = Jobs; j && (j->jobid != jobid); j = j->next) ;
   UNLOCK_JOBS;
   if (j && j->has_condition) {
+    jj = j;
     CONDITION_WAIT_SET(j);
     CONDITION_DESTROY(j,&job_conds);
     free(j);
   }
+  pthread_cleanup_pop(0);
 }
 
 static void DoBeforeAst(int jobid)
@@ -363,8 +371,7 @@ static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void 
   return j->jobid;
 }
 
-static void CleanupJob(int status, int jobid)
-{
+static void CleanupJob(int status, int jobid){
   Job *j;
   LOCK_JOBS;
   for (j=Jobs; j && (j->jobid != jobid) ; j=j->next);
@@ -737,7 +744,7 @@ static void RemoveClient(Client * c, fd_set * fdactive) {
     for (j = Jobs; j && (j->conid != conid) ; j = j->next);
     UNLOCK_JOBS;
     if (j) {
-      DoCompletionAst(j, ServerPATH_DOWN, NULL, 1);
+      DoCompletionAst(j, ServerPATH_DOWN, NULL, 0);
       RemoveJob(j);
     } else break;
   }
