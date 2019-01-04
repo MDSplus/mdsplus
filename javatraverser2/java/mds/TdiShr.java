@@ -27,18 +27,18 @@ public class TdiShr extends TreeShr{
         final LibCall<List> call = new TdiCall<List>(List.class, "TdiCompile").descr(new CString(expr));
         for(final Descriptor<?> arg : args)
             call.descr(arg);
-        return call.xd("a").val(-1).finL("a", "s");
+        return call.xd("a").val(1).finL("a", "s");
     }
 
     private final static Request<List> tdiEvaluate(final Descriptor<?> dsc) {
-        return new TdiCall<List>(List.class, "TdiEvaluate").descr(dsc).xd("a").val(-1).finL("a", "s");
+        return new TdiCall<List>(List.class, "TdiEvaluate").descr(dsc).xd("a").val(1).finL("a", "s");
     }
 
     private final static Request<List> tdiExecute(final String expr, final Descriptor<?>... args) {
         final LibCall<List> call = new TdiCall<List>(List.class, "TdiExecute").descr(new CString(expr));
         for(final Descriptor<?> arg : args)
             call.descr(arg);
-        return call.xd("a").val(-1).finL("a", "s");
+        return call.xd("a").val(1).finL("a", "s");
     }
 
     public TdiShr(final Mds mds){
