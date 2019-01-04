@@ -995,7 +995,7 @@ public class TreeManager extends JPanel{
         final Mds mds;
         if(exp == null || path == null || exp.length() == 0 || path.length() == 0 || (mds = this.getMds()) == null) return;
         try{
-            mds.getAPI().setenv(new StringBuilder(16).append(exp.toLowerCase()).append("_path=").toString(), path);
+            mds.getAPI().setenv(new StringBuilder(16).append(exp.toLowerCase()).append("_path").toString(), path);
         }catch(final MdsException e){
             JOptionPane.showMessageDialog(this, "Could not set environment variable.\n" + e.getMessage(), "Error setting tree_path", JOptionPane.WARNING_MESSAGE);
         }
