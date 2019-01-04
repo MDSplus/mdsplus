@@ -280,7 +280,7 @@ public class TreeShr extends MdsShr{
         final LibCall<List> expr = new TreeCall<List>(List.class, "TreeDoMethod").val(nid).ref(CString.make(method));
         for(final Descriptor<?> arg : args)
             expr.ref(arg);
-        return expr.val(-1).xd("x").finL("x", "s");
+        return expr.val(1).xd("x").finL("x", "s");
     }
 
     public static final Request<Int32> treeEndConglomerate() {
