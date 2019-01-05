@@ -102,7 +102,7 @@ static void ABORT(int sigval __attribute__ ((unused))){
 static int GetHostAndPort(char *hostin, struct SOCKADDR_IN *sin){
   int status;
   INITIALIZESOCKETS;
-  char *host = strcpy((char *)malloc(strlen(hostin) + 1), hostin);
+  char *host = strdup(hostin);
   FREE_ON_EXIT(host);
   char *service = NULL;
   size_t i;
