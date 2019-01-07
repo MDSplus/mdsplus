@@ -11,7 +11,7 @@
 # /publish/repo   -> repository
 # /publish/$branch/DEBS/$arch/*.deb
 #
-
+set -v
 srcdir=$(readlink -e $(dirname ${0})/../..)
 
 # configure based on ARCH
@@ -131,14 +131,6 @@ buildrelease() {
     else
         component=" ${BRANCH}"
     fi
-    cat - <<EOF > /release/repo/conf/distributions
-Origin: MDSplus Development Team
-Label: MDSplus
-Codename: MDSplus
-Architectures: ${ARCHES}
-Components: alpha stable${component}
-Description: MDSplus packages
-EOF
     GPG_HOME=""
     if [ -d /sign_keys/${OS}/.gnupg ]
     then
@@ -149,9 +141,26 @@ EOF
     fi
     if [ ! -z "$GPG_HOME" ]
     then
-    	echo "SignWith: MDSplus" >> /release/repo/conf/distributions
+    	SIGN_WITH="SignWith: MDSplus"
 	rsync -a ${GPG_HOME}/.gnupg /tmp
     fi
+    cat - <<EOF > /release/repo/conf/distributions
+Origin: MDSplus Development Team
+Label: MDSplus
+Codename: MDSplus
+Architectures: ${ARCHES}
+Components: alpha stable${component}
+Description: MDSplus packages
+${SIGN_WITH}
+
+Origin: MDSplus Development Team
+Label: MDSplus-previous
+Codename: MDSplus-previous
+Architectures: ${ARCHES}
+Components: alpha stable${component}
+Description: Previous MDSplus release packages
+${SIGN_WITH}
+EOF
     pushd /release/repo
     reprepro clearvanished
     for deb in $(find /release/${BRANCH}/DEBS/${ARCH} -name "*${major}\.${minor}\.${release}_*")
@@ -168,6 +177,8 @@ EOF
   fi #abort
   fi #nomake
 }
+
+
 publish() {
     ### DO NOT CLEAN /publish as it may contain valid older release packages
     major=$(echo ${RELEASE_VERSION} | cut -d. -f1)
@@ -181,9 +192,23 @@ publish() {
 	checkstatus abort "Failure: Problem copying repo into publish area." $?
     else
 	pushd /publish/repo
+	rsync -a /release/repo/conf/distributions /publish/repo/conf/
 	reprepro clearvanished
-	:&& env HOME=/sign_keys reprepro -V --keepunused --keepunreferenced -C ${BRANCH} includedeb MDSplus ../${BRANCH}/DEBS/${ARCH}/*${major}\.${minor}\.${release}_*
+	if [ "${BRANCH}" = "stable" ]
+	then
+	    MAIN_PACKAGE="mdsplus"
+	else
+	    MAIN_PACKAGE="mdsplus-${BRANCH}"
+	fi
+	PREVIOUS_VERSION="$(reprepro -C ${BRANCH} -A ${ARCH} list MDSplus ${MAIN_PACKAGE} | awk '{print $3}' )"
+	echo "PREVIOUS_VERSION=${PREVIOUS_VERSION}"
+	:&& env HOME=/sign_keys reprepro -V --keepunused -C ${BRANCH} includedeb MDSplus ../${BRANCH}/DEBS/${ARCH}/*${major}\.${minor}\.${release}_*
        	checkstatus abort "Failure: Problem installing debian into publish repository." $?
+	if [ ! -z "$PREVIOUS_VERSION" ]
+	then
+	    :&& env HOME=/sign_keys reprepro -V --keepunused -C ${BRANCH} includedeb MDSplus-previous ../${BRANCH}/DEBS/${ARCH}/*${PREVIOUS_VERSION}_*
+       	    checkstatus abort "Failure: Problem installing debian into publish repository." $?
+	fi
 	popd
     fi
 }
