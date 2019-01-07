@@ -192,6 +192,7 @@ publish() {
 	checkstatus abort "Failure: Problem copying repo into publish area." $?
     else
 	pushd /publish/repo
+	rsync -a /release/repo/conf/distributions /publish/repo/conf/
 	reprepro clearvanished
 	if [ "${BRANCH}" = "stable" ]
 	then
