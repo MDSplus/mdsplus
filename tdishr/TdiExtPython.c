@@ -200,6 +200,7 @@ static void importMDSplus() {
   int old_state = PTHREAD_CANCEL_DISABLE;
   pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,&old_state);
   initialize_once();
+  if (!PyGILState_Ensure) return;//loading python lib failed
   PyThreadState *GIL = PyGILState_Ensure();
   PyObject *MDSplus= PyImport_ImportModule("MDSplus");
   if (MDSplus) {
