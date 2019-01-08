@@ -34,13 +34,13 @@ size(.subtree:a12:stop_trig)
 kind(.subtree:a12:stop_trig)
 52BU
 'total of '//text(size(getnci('***','nid_number','signal')))//' signals'
-"total of          389 signals"
+"total of         389 signals"
 'total of '//text(size(getnci('***','nid_number','action')))//' actions'
-"total of          100 actions"
+"total of         100 actions"
 'total of '//text(size(getnci('***','nid_number','numeric')))//' numerics'
-"total of          957 numerics"
+"total of         957 numerics"
 'total of '//text(size(_nids=getnci('***','nid_number','subtree')))//' subtrees'
-"total of            2 subtrees"
+"total of           2 subtrees"
 getnci(_nids,'fullpath')
 ["\\MAIN::TOP.SUBTREE    ","\\MAIN::TOP.SUBTREE.GUB"]
 TreeClose()
