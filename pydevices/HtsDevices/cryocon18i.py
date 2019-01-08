@@ -187,29 +187,32 @@ class CRYOCON18I(MDSplus.Device):
         for i in range(ord('a'), ord('h')):
             chan = self.__getattr__('input_%c'%(chr(i),))
             if chan.on:
-                chans.append(chan)
-                t_chans.append(self.__getattr__('input_%c_temperature' % (chr(i))))
-                query_cmd = query_cmd+'INP %c?;INP %c:SENP?;'%(chr(i), chr(i),)
-        ans = instrument.query(query_cmd).split(';')
-        for i in range(len(chans)):
-            time=time.time()
-            try:
-                temp = float(ans[2*i].split('\x00')[0])
-            except:
-                if self.debugging():
-                    print("Could not parse temperature /%s/"%
-                           ans[2*i].split('\x00')[0])
-                temp = 0.0
-            t_chans[i].putRow(1000, MDSplus.Float32(temp), MDSplus.Int64(time*1000.))
-            try:
-                resist = float(ans[2*i+1].split('\x00')[0])
-            except:
-                if self.debugging():
-                    print("Could not parse resist /%s/"%
-                           ans[2*i+1].split('\x00')[0])
-                resist = 0.0
-            chans[i].putRow(1000,MDSplus.Float32(resist), MDSplus.Int64(time*1000.))
-            MDSplus.Event.setevent(event_name)
+                t_chan=self.__getattr__('input_%c_temperature' % (chr(i)))
+                query_cmd = 'INP %c?;INP %c:SENP?;'%(chr(i), chr(i),)
+                ans = instrument.query(query_cmd).split(';')
+                t_time=time.time()
+                try:
+                    temp = float(ans[0].split('\x00')[0])
+                except:
+                    if self.debugging():
+                        print("Could not parse temperature /%s/"%
+                           ans[0].split('\x00')[0])
+                    temp = 0.0
+                t_chan.putRow(1000,
+                              MDSplus.Float32(temp),
+                               MDSplus.Int64(t_time*1000.))
+                try:
+                    resist = float(ans[1].split('\x00')[0])
+                except:
+                    if self.debugging():
+                        print("Could not parse resist /%s/"%
+                               ans[1].split('\x00')[0])
+                    resist = 0.0
+                chan.putRow(1000,
+                          MDSplus.Float32(resist),
+                          MDSplus.Int64(t_time*1000.))
+        MDSplus.Event.setevent(event_name)
+    TREND=trend
 
     def stop(self):
         '''
@@ -229,7 +232,7 @@ class CRYOCON18I(MDSplus.Device):
         import numpy as np
         import MDSplus
 
-        try: 
+        try:
             dt = 1./float(self.rate)
         except:
             dt = 1
