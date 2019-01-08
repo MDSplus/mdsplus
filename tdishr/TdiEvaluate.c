@@ -59,7 +59,7 @@ extern int TdiCall();
 extern int TdiImpose();
 extern int Tdi1Vector();
 
-EXPORT int Tdi1Evaluate(int opcode __attribute__ ((unused)),
+EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__ ((unused)),
 		 int narg __attribute__ ((unused)),
 		 struct descriptor *list[], struct descriptor_xd *out_ptr)
 // SsINTERNAL: requires MdsCopyDxXd

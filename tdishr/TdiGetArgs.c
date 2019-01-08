@@ -132,7 +132,7 @@ void UseNativeFloat(struct TdiCatStruct *cat)
 
 /*-------------------------------------------------------------------*/
 
-int TdiGetArgs(int opcode,
+int TdiGetArgs(opcode_t opcode,
 	       int narg,
 	       struct descriptor *list[],
 	       struct descriptor_xd sig[],

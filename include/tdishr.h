@@ -5,7 +5,8 @@
 #include <tdishr_messages.h>
 
 #define COM
-#define OPC(name, ...) extern const unsigned short Opc##name;
+
+#define OPC(name, ...) extern const opcode_t Opc##name;
 #include <opcbuiltins.h>
 #undef OPC
 

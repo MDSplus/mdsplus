@@ -68,12 +68,12 @@ The expansion routine "xentry":
 
 	Ken Klare, LANL CTR-7	(c)1990
 */
-#define OpcDECOMPRESS 120
 
 #include <string.h>
 #include <mdstypes.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
+#include <tdishr.h>
 #include <libroutines.h>
 #include <strroutines.h>
 #include <mdsshr_messages.h>
@@ -84,11 +84,10 @@ The expansion routine "xentry":
 #define _MOVC3(a,b,c) memcpy(c,b,(size_t)(a))
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 typedef ARRAY_COEFF(char, 1) array_coef;
-typedef RECORD(4) record_four;
-
-STATIC_CONSTANT unsigned short opcode = OpcDECOMPRESS;
-STATIC_CONSTANT record_four rec0 =
-  { sizeof(opcode), DTYPE_FUNCTION, CLASS_R, (unsigned char *)&opcode, 4,
+typedef RECORD(4) mds_decompress_t;
+static opcode_t OpcDECOMPRESS = OPC_DECOMPRESS;
+STATIC_CONSTANT mds_decompress_t rec0 =
+  { sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (uint8_t*)&OpcDECOMPRESS, 4,
     __fill_value__ {0, 0, 0, 0} };
 STATIC_CONSTANT DESCRIPTOR_A(dat0, 1, DTYPE_BU, 0, 0);
 STATIC_CONSTANT struct descriptor_d EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
@@ -107,7 +106,7 @@ STATIC_ROUTINE int compress(const struct descriptor *pcimage,
   char *pcmp, *plim;
   array_coef *pca0, *pca1;
   struct descriptor_a *pdat, *porig;
-  record_four *prec;
+  mds_decompress_t *prec;
   struct descriptor_d dximage, dxentry;
   struct descriptor *pd0, *pd1, **ppd;
   size_t asize,align_size;
@@ -163,11 +162,11 @@ STATIC_ROUTINE int compress(const struct descriptor *pcimage,
     Second is dummy for expansion function.
     ASSUME compressor fails gracefully and only changes *pdat data.
     **************************************************************/
-      prec = (record_four *) align((size_t) ((char *)pwork + asize), sizeof(void *));
+      prec = (mds_decompress_t *) align((size_t) ((char *)pwork + asize), sizeof(void *));
       pca1 = (array_coef *) ((char *)prec + sizeof(rec0));
       pdat = (struct descriptor_a *)align((size_t) ((char *)pca1 + asize), sizeof(void *));
       pcmp = (char *)pdat + sizeof(struct descriptor_a);
-      plim = porig->pointer + porig->arsize - sizeof(opcode);
+      plim = porig->pointer + porig->arsize - sizeof(opcode_t);
       if (pcmp >= plim)
 	break;
 

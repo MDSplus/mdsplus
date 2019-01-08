@@ -70,7 +70,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
-extern unsigned short OpcValue;
 
 extern int TdiGetArgs();
 extern int TdiMasterData();
@@ -97,7 +96,7 @@ typedef struct {
   int x[2];
 } quadw;
 
-int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
@@ -349,7 +348,7 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
         Each B value out of range uses extreme values of A.
         A is treated as a linear array and subscripting is to nearest integer.
 */
-int Tdi1Map(int opcode, int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Map(opcode_t opcode, int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;

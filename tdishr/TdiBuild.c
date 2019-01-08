@@ -48,7 +48,7 @@ extern int TdiMasterData();
         Return without evaluation. Passes paths, nids, and functions.
                 any = AS_IS(any)
 */
-int Tdi1AsIs(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
+int Tdi1AsIs(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 	     struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
@@ -77,7 +77,7 @@ int Tdi1AsIs(int opcode __attribute__ ((unused)), int narg __attribute__ ((unuse
                 No type checking at build time.
                 No arrays of descriptors.
 */
-int Tdi1Build(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Build(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor *ptr;
@@ -128,7 +128,7 @@ int Tdi1Build(int opcode, int narg, struct descriptor *list[], struct descriptor
                 BUILD_EVENT(string)
         WARNING: BUILD_PATH and BUILD_EVENT should be called MAKE_xxx.
 */
-int Tdi1BuildPath(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1BuildPath(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd sig[1], uni[1], dat[1];
@@ -165,7 +165,7 @@ int Tdi1BuildPath(int opcode, int narg, struct descriptor *list[], struct descri
         This can be used to pass back expressions evaluated in an outer FUN.
         So BUILD_xxx(x,y,...) is the same as MAKE_xxx(AS_IS(x),AS_IS(y),...).
 */
-int Tdi1Make(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Make(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor *ptr;

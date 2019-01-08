@@ -28,8 +28,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Ken Klare, LANL CTR-7   (c)1989,1990
 */
 
-extern unsigned short OpcSetRange;
-
 #include <mdsplus/mdsplus.h>
 #include "STATICdef.h"
 #include <stdlib.h>
@@ -98,7 +96,7 @@ DESCRIPTOR_FUNCTION_0(EMPTY_FUN, 0);
 
 int TdiYacc_BUILD(int ndesc,
 		  int nused,
-		  int opcode,
+		  opcode_t opcode,
 		  struct marker *out,
 		  struct marker *arg1,
 		  struct marker *arg2, struct marker *arg3, struct marker *arg4)
@@ -242,7 +240,7 @@ int TdiYacc_RESOLVE(struct descriptor_function **out_ptr_ptr)
       struct descriptor *tst = out_ptr->arguments[j];
       while (tst != 0 && tst->dtype == DTYPE_DSC)
 	tst = (struct descriptor *)tst->pointer;
-      if (opcode == OpcSetRange) {	/*Set_Range(value,range,...,array) */
+      if (opcode == OPC_SET_RANGE) {	/*Set_Range(value,range,...,array) */
 	if (j != ndesc - 1) {
 	  if (tst == 0 || tst->dtype == DTYPE_RANGE)
 	    continue;

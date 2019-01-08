@@ -80,7 +80,7 @@ STATIC_ROUTINE int copy(int len, int n, char *x, int incx, char *y, int incy)
   return 1;
 }
 
-int Tdi1Diagonal(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Diagonal(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   int cmode = -1, nside = 0;

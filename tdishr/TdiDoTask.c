@@ -229,7 +229,7 @@ end: ;
   return status;
 }
 
-int Tdi1DoTask(int opcode __attribute__ ((unused)),
+int Tdi1DoTask(opcode_t opcode __attribute__ ((unused)),
 	       int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;

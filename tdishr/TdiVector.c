@@ -42,15 +42,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <mdsshr.h>
 
-
-
 extern int TdiConvert();
 extern int TdiCvtArgs();
 extern int TdiGetArgs();
 extern int TdiMasterData();
 extern int Tdi2Vector();
 
-int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Vector(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   array miss = { sizeof(char), DTYPE_MISSING, CLASS_A, (char *)0, 0, 0, {0, 1, 1, 0,

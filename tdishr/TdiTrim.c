@@ -46,7 +46,7 @@ extern int TdiGetArgs();
 extern int TdiCvtArgs();
 extern int TdiMasterData();
 
-int Tdi1Trim(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Trim(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd sig[1], uni[1], dat[1];

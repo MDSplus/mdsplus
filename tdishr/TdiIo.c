@@ -131,7 +131,7 @@ STATIC_ROUTINE int TdiGetInUnit(struct descriptor *in_ptr, FILE ** unit)
         System data and time as text string.
                 string = DATE_TIME([quadword time])
 */
-int Tdi1DateTime(int opcode __attribute__ ((unused)),
+int Tdi1DateTime(opcode_t opcode __attribute__ ((unused)),
 		 int narg,
 		 struct descriptor *list[],
 		 struct descriptor_xd *out_ptr)
@@ -161,7 +161,7 @@ int Tdi1DateTime(int opcode __attribute__ ((unused)),
 /*----------------------------------------------
         Close a C file unit. (0=OK, EOF=bad)
 */
-int Tdi1Fclose(int opcode __attribute__ ((unused)),
+int Tdi1Fclose(opcode_t opcode __attribute__ ((unused)),
 	       int narg __attribute__ ((unused)),
 	       struct descriptor *list[],
 	       struct descriptor_xd *out_ptr)
@@ -180,7 +180,7 @@ int Tdi1Fclose(int opcode __attribute__ ((unused)),
         where offset is in bytes (to record for rec files.)
         and origin: 0=absolute 1=relative 2=relative to end.
 */
-int Tdi1Fseek(int opcode __attribute__ ((unused)),
+int Tdi1Fseek(opcode_t opcode __attribute__ ((unused)),
 	      int narg,
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)
@@ -205,7 +205,7 @@ int Tdi1Fseek(int opcode __attribute__ ((unused)),
         Find absolute position of file pointer.
         offset = FTELL(unit)
 */
-int Tdi1Ftell(int opcode __attribute__ ((unused)),
+int Tdi1Ftell(opcode_t opcode __attribute__ ((unused)),
 	      int narg __attribute__ ((unused)),
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)
@@ -226,7 +226,7 @@ int Tdi1Ftell(int opcode __attribute__ ((unused)),
         Mode is a lowercase string and may include
         r=read w=write a=append r+/w+/a+=update b=binary
 */
-int Tdi1Fopen(int opcode __attribute__ ((unused)),
+int Tdi1Fopen(opcode_t opcode __attribute__ ((unused)),
 	      int narg __attribute__ ((unused)),
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)
@@ -256,7 +256,7 @@ int Tdi1Fopen(int opcode __attribute__ ((unused)),
         Spawn a subprocess.
                 status = SPAWN([command_string],[input_file],[output_file])
 */
-int Tdi1Spawn(int opcode __attribute__ ((unused)),
+int Tdi1Spawn(opcode_t opcode __attribute__ ((unused)),
 	      int narg,
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)
@@ -284,7 +284,7 @@ int Tdi1Spawn(int opcode __attribute__ ((unused)),
         WAIT a given number of seconds.
                 float = WAIT(wait-time)
 */
-int Tdi1Wait(int opcode __attribute__ ((unused)),
+int Tdi1Wait(opcode_t opcode __attribute__ ((unused)),
 	     int narg __attribute__ ((unused)), struct descriptor *list[],
 	     struct descriptor_xd *out_ptr __attribute__ ((unused)))
 {
@@ -309,7 +309,7 @@ int Tdi1Wait(int opcode __attribute__ ((unused)),
         Other types (including signals and with units)
         are decompiled and start and end with a new row.
 */
-int Tdi1Write(int opcode __attribute__ ((unused)),
+int Tdi1Write(opcode_t opcode __attribute__ ((unused)),
 	      int narg,
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)
@@ -412,7 +412,7 @@ int Tdi1Write(int opcode __attribute__ ((unused)),
         Unit * is standard input.
 
 */
-int Tdi1Read(int opcode __attribute__ ((unused)),
+int Tdi1Read(opcode_t opcode __attribute__ ((unused)),
 	     int narg __attribute__ ((unused)),
 	     struct descriptor *list[],
 	     struct descriptor_xd *out_ptr)
