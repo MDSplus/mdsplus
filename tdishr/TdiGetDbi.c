@@ -93,7 +93,7 @@ STATIC_ROUTINE int compare(struct descriptor *s1, struct item s2[1])
   return cmp;
 }
 
-int Tdi1GetDbi(int opcode __attribute__ ((unused)),
+int Tdi1GetDbi(opcode_t opcode __attribute__ ((unused)),
 	       int narg,
 	       struct descriptor *list[],
 	       struct descriptor_xd *out_ptr)
@@ -195,7 +195,7 @@ STATIC_ROUTINE int fixup_path(struct descriptor *pin,
   return MDSplusERROR;
 }
 
-int Tdi1Using(int opcode __attribute__ ((unused)),
+int Tdi1Using(opcode_t opcode __attribute__ ((unused)),
 	      int narg,
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)

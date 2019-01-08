@@ -34,6 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr.h>
 
 #define COM
-#define OPC(name,NAME, ...) EXPORT const unsigned short Opc##name = OPC_##NAME;
+#define OPC(name,NAME, ...) EXPORT const opcode_t Opc##name = OPC_##NAME;
 #include "opcbuiltins.h"
 #undef OPC
+#undef COM

@@ -54,7 +54,7 @@ extern int TdiGetShape();
 extern int TdiMasterData();
 extern int TdiFaultHandler();
 
-int Tdi1Same(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Same(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd sig[3], uni[3], dat[3];

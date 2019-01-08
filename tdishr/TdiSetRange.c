@@ -57,7 +57,7 @@ extern int TdiGetLong();
 extern int TdiConvert();
 extern int TdiMasterData();
 
-int Tdi1SetRange(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1SetRange(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   STATIC_CONSTANT DESCRIPTOR_A(arr0, 1, DTYPE_BU, 0, 1);

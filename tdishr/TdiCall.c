@@ -54,13 +54,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <STATICdef.h>
 
-
-
-extern unsigned short OpcDescr;
-extern unsigned short OpcRef;
-extern unsigned short OpcVal;
-extern unsigned short OpcXd;
-
 extern int TdiConcat();
 extern int TdiData();
 extern int TdiEvaluate();
@@ -73,7 +66,7 @@ extern int TdiPutIdent();
     _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
+STATIC_ROUTINE int TdiInterlude(opcode_t opcode, struct descriptor **newdsc,
 				int (*routine) (), unsigned int *(*called) (),
 				void **result, int *max)
 {
@@ -143,7 +136,7 @@ STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
   return 1;
 }
 
-int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int TdiCall(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_function *pfun;
@@ -175,12 +168,12 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
       pfun = (struct descriptor_function *)pfun->pointer;
     if (pfun && pfun->dtype == DTYPE_FUNCTION) {
       code = *(unsigned short *)pfun->pointer;
-      if (code == OpcDescr) {
+      if (code == OPC_DESCR) {
 	tmp[ntmp] = EMPTY_XD;
 	status = TdiData(pfun->arguments[0], &tmp[ntmp] MDS_END_ARG);
 	newdsc[j - 1] = (struct descriptor *)tmp[ntmp].pointer;
 	origin[ntmp++] = (unsigned char)j;
-      } else if (code == OpcRef) {
+      } else if (code == OPC_REF) {
 	tmp[ntmp] = EMPTY_XD;
 	status = TdiData(pfun->arguments[0], &tmp[ntmp] MDS_END_ARG);
 	if (tmp[ntmp].pointer) {
@@ -191,7 +184,7 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
 	  newdsc[j - 1] = (struct descriptor *)tmp[ntmp].pointer->pointer;
 	}
 	origin[ntmp++] = (unsigned char)j;
-      } else if (code == OpcVal) {
+      } else if (code == OPC_VAL) {
 	int ans;
 	EMPTYXD(xd);
 	status = TdiData(pfun->arguments[0], &xd MDS_END_ARG);
@@ -202,7 +195,7 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
 	  *(long *)&newdsc[j - 1] = ans;
 	}
 	MdsFree1Dx(&xd, 0);
-      } else if (code == OpcXd) {
+      } else if (code == OPC_XD) {
 	tmp[ntmp] = EMPTY_XD;
 	status = TdiEvaluate(pfun->arguments[0], newdsc[j - 1] = (struct descriptor *)&tmp[ntmp]
 			     MDS_END_ARG);
@@ -288,7 +281,7 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
       pfun = (struct descriptor_function *)pfun->pointer;
     if (pfun && pfun->dtype == DTYPE_FUNCTION) {
       code = *(unsigned short *)pfun->pointer;
-      if (code == OpcDescr || code == OpcRef || code == OpcXd)
+      if (code == OPC_DESCR || code == OPC_REF || code == OPC_XD)
 	pfun = (struct descriptor_function *)pfun->arguments[0];
       if (pfun && pfun->dtype == DTYPE_IDENT)
 	TdiPutIdent(pfun, &tmp[j]);

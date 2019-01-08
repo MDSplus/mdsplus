@@ -60,15 +60,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mds_stdarg.h>
 #include <STATICdef.h>
 
-
-
-extern unsigned short OpcDescr;
-extern unsigned short OpcFun;
-extern unsigned short OpcPrivate;
-extern unsigned short OpcPublic;
-extern unsigned short OpcRef;
-extern unsigned short OpcVal;
-
 extern int TdiFaultHandler();
 extern int TdiData();
 extern int TdiDoFun();
@@ -96,7 +87,7 @@ static void tmp_cleanup(void* tmp_in) {
   for (; --tmp->n >= 0;)
     MdsFree1Dx(&tmp->a[tmp->n], NULL);
 }
-int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
+int Tdi1ExtFunction(opcode_t opcode __attribute__ ((unused)),
 		    int narg,
 		    struct descriptor *list[],
 		    struct descriptor_xd *out_ptr)
@@ -145,18 +136,18 @@ int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
 	Special forms used for VMS and LIB calls.
 	****************************************/
 	  code = *(unsigned short *)pfun->pointer;
-	  if (code == OpcDescr) {
+	  if (code == OPC_DESCR) {
 	    tmp.a[tmp.n] = EMPTY_XD;
 	    status = TdiData(pfun->arguments[0], &tmp.a[tmp.n] MDS_END_ARG);
 	    new[j - 1] = (struct descriptor *)tmp.a[tmp.n++].pointer;
-	  } else if (code == OpcRef) {
+	  } else if (code == OPC_REF) {
 	    tmp.a[tmp.n] = EMPTY_XD;
 	    status = TdiData(pfun->arguments[0], &tmp.a[tmp.n] MDS_END_ARG);
             if STATUS_NOT_OK break; // .pointer == NULL
 	    new[j - 1] = (struct descriptor *)tmp.a[tmp.n++].pointer->pointer;
-	  } else if (code == OpcVal)
+	  } else if (code == OPC_VAL)
 	    status = TdiGetLong(pfun->arguments[0], &new[j - 1]);
-	  else if (code == OpcPrivate || code == OpcPublic)
+	  else if (code == OPC_PRIVATE || code == OPC_PUBLIC)
 	  goto ident;
 	} else if (pfun->dtype == DTYPE_IDENT) {
 ident: ;

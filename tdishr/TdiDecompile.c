@@ -36,9 +36,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define TdiDECOMPILE_MAX TdiThreadStatic_p->TdiDecompile_max
 
-extern unsigned short OpcDecompile;
-extern unsigned short OpcEvaluate;
-
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include <strroutines.h>
@@ -65,7 +62,7 @@ extern int TdiTrace();
 
 int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_ptr);
 
-EXPORT int Tdi1Decompile(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+EXPORT int Tdi1Decompile(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
   struct descriptor_d answer = { 0, DTYPE_T, CLASS_D, 0 };
@@ -649,7 +646,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
   case CLASS_CA:
     {
       struct descriptor_xd tmp = EMPTY_XD;
-      status = Tdi1Evaluate(OpcEvaluate, 1, &in_ptr, &tmp);
+      status = Tdi1Evaluate(OPC_EVALUATE, 1, &in_ptr, &tmp);
       if STATUS_OK
 	status = Tdi0Decompile(tmp.pointer, prec, out_ptr);
       MdsFree1Dx(&tmp, NULL);
@@ -752,6 +749,6 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
     break;
   }				/*switch class */
   if STATUS_NOT_OK
-    TdiTrace(OpcDecompile, 1, in_ptr, out_ptr);
+    TdiTrace(OPC_DECOMPILE, 1, in_ptr, out_ptr);
   return status;
 }

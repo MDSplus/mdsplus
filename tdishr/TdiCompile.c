@@ -28,9 +28,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Ken Klare, LANL CTR-7   (c)1989,1990
 */
 
-extern unsigned short OpcCompile;
-extern unsigned short OpcEvaluate;
-
 #include <stdlib.h>
 #include <string.h>
 #include <mdsdescrip.h>
@@ -66,7 +63,7 @@ extern void TdiYyReset();
         IMMEDIATE (`) must never call COMPILE. NEED to prevent this.
 */
 
-EXPORT int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[],
+EXPORT int Tdi1Compile(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[],
 		struct descriptor_xd *out_ptr)
 {
   int status;
@@ -133,15 +130,15 @@ EXPORT int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct des
   Compile and evaluate an expression.
       result = EXECUTE(string, [arg1,...])
 */
-int Tdi1Execute(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Execute(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   FREEXD_ON_EXIT(out_ptr);
   EMPTYXD(tmp);
   FREEXD_ON_EXIT(&tmp);
-  status = Tdi1Compile(OpcCompile, narg, list, &tmp);
+  status = Tdi1Compile(OPC_COMPILE, narg, list, &tmp);
   if STATUS_OK
-    status = Tdi1Evaluate(OpcEvaluate, 1, &tmp.pointer, out_ptr);
+    status = Tdi1Evaluate(OPC_EVALUATE, 1, &tmp.pointer, out_ptr);
   FREEXD_NOW(&tmp);
   if STATUS_NOT_OK MdsFree1Dx(out_ptr, NULL);
   FREE_CANCEL(out_ptr);

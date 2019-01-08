@@ -62,6 +62,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <tdishr_messages.h>
 #include <tdishr.h>
 #include <treeshr.h>
 #include <mdsshr.h>
@@ -125,7 +126,7 @@ STATIC_ROUTINE void numb(int count)
 /***************************************************
 Danger: this routine is used by DECOMPILE to report.
 ***************************************************/
-int TdiTrace(int opcode __attribute__ ((unused)),
+int TdiTrace(opcode_t opcode __attribute__ ((unused)),
 	     int narg __attribute__ ((unused)),
 	     struct descriptor *list[] __attribute__ ((unused)),
 	     struct descriptor_xd *out_ptr)
@@ -145,7 +146,7 @@ int TdiTrace(int opcode __attribute__ ((unused)),
   return MDSplusSUCCESS;
 }
 
-static inline void TRACE(int opcode, int narg,
+static inline void TRACE(opcode_t opcode, int narg,
 	  struct descriptor *list[],
 	  struct descriptor_xd *out_ptr __attribute__ ((unused)))
 {
@@ -155,7 +156,7 @@ static inline void TRACE(int opcode, int narg,
   unsigned short now = message->length;
   int j;
   struct descriptor_d text = { 0, DTYPE_T, CLASS_D, 0 };
-  if (opcode >= 0 && opcode < TdiFUNCTION_MAX) {
+  if (opcode < TdiFUNCTION_MAX) {
     struct TdiFunctionStruct *pfun = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
     if (narg < pfun->m1 || narg > pfun->m2) {
       add("%TDI Requires");
@@ -413,7 +414,7 @@ EXPORT int _TdiIntrinsic(void** ctx, int opcode, int narg, struct descriptor *li
                 4 to clear the message buffer
 		8 return message before clear
 */
-int Tdi1Debug(int opcode __attribute__ ((unused)),
+int Tdi1Debug(opcode_t opcode __attribute__ ((unused)),
 	      int narg,
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)

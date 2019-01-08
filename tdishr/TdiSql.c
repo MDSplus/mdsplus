@@ -39,7 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Note for calculated select, name will be just "_".
         Note same names from different tables will be folded together.
 
-        The SQL string sElEcT is a blob write. 
+        The SQL string sElEcT is a blob write.
         Ken Klare, LANL P-4     (c)1991,1992
 */
 #include <mdstypes.h>
@@ -612,7 +612,7 @@ ARGLIST *arg;
 }
 
 /*********************************************************/
-int Tdi1Dsql(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Dsql(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   int rows = 0;
@@ -709,21 +709,21 @@ int Tdi1IsqlSet()
 STATIC_CONSTANT DESCRIPTOR(const msg,
 			   "Sybase support not compiled into TDI.  Did you want to MDSConnect ?");
 
-int Tdi1Dsql(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), const struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
+int Tdi1Dsql(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), const struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   status = MdsCopyDxXd((struct descriptor *)&msg, out_ptr);
   return status;
 }
 
-int Tdi1Isql(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), const struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
+int Tdi1Isql(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), const struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   status = MdsCopyDxXd((struct descriptor *)&msg, out_ptr);
   return status;
 }
 
-int Tdi1IsqlSet(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), const struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
+int Tdi1IsqlSet(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), const struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   status = MdsCopyDxXd((struct descriptor *)&msg, out_ptr);

@@ -69,9 +69,6 @@ extern int IsRoprand();
 
 STATIC_CONSTANT struct descriptor tdiItoXSpecial;
 struct descriptor *TdiItoXSpecial = &tdiItoXSpecial;
-extern unsigned short OpcItoX;
-extern unsigned short OpcVector;
-extern unsigned short OpcValue;
 
 extern int TdiGetData();
 extern int TdiGetLong();
@@ -102,6 +99,7 @@ extern int TdiFloor();
 extern int TdiMax();
 extern int TdiMultiply();
 
+extern unsigned short OpcValue;
 STATIC_CONSTANT DESCRIPTOR_FUNCTION_0(value, &OpcValue);
 STATIC_CONSTANT float big = (float)1.e37;
 STATIC_CONSTANT float mbig = (float)-1.e37;
@@ -118,8 +116,9 @@ STATIC_CONSTANT struct descriptor done = { sizeof(one), DTYPE_L, CLASS_S, (char 
 
 STATIC_CONSTANT DESCRIPTOR_A(duo, sizeof(int), DTYPE_L, 0, 2 * sizeof(int));
 STATIC_CONSTANT DESCRIPTOR_RANGE(fake0, 0, 0, 0);
+extern unsigned short OpcVector;
 STATIC_CONSTANT DESCRIPTOR_FUNCTION_0(vector0, &OpcVector);
-int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
@@ -130,7 +129,7 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
   int big_beg, big_end, nran, tslo;
   int nseg, jseg, kseg;
   struct descriptor *pmode;
-  int cmode = -1, flag = (opcode == OpcItoX);
+  int cmode = -1, flag = (opcode == OPC_I_TO_X);
   char *plogical;
   struct descriptor_dimension *pdim;
   struct descriptor_window *pwin = 0;

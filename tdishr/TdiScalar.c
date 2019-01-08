@@ -33,7 +33,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
-extern unsigned short OpcDotProduct;
 #include <mdsplus/mdsplus.h>
 #include <STATICdef.h>
 #include "tdirefcat.h"
@@ -61,7 +60,7 @@ extern int TdiPower();
 
 #define _factor ((float).30103)
 
-int Tdi1Scalar(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Scalar(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd sig[2], uni[2], dat[2];
@@ -107,7 +106,7 @@ int Tdi1Scalar(int opcode, int narg, struct descriptor *list[], struct descripto
       break;
     }
 
-  if (STATUS_OK && (opcode == OpcDotProduct || fun_ptr->f2 == Tdi2Keep))
+  if (STATUS_OK && (opcode == OPC_DOT_PRODUCT || fun_ptr->f2 == Tdi2Keep))
     status = TdiMasterData(0, sig, uni, &cmode, out_ptr);
 
 	/********************

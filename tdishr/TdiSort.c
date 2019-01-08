@@ -60,7 +60,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
-extern unsigned short OpcVector;
 
 extern int TdiGetArgs();
 extern int TdiCvtArgs();
@@ -267,7 +266,7 @@ STATIC_ROUTINE int GTR_T(unsigned char *a, unsigned char *b, int len)
   return (*--pa - *--pb);
 }
 
-int Tdi1Bsearch(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Bsearch(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   int inc, hi, lo = -2, mid, *poutput;
@@ -489,7 +488,7 @@ int Tdi1Bsearch(int opcode, int narg, struct descriptor *list[], struct descript
         Limitation: does not preserve order of equal values, no n*log2(n) does, I think.
         It could be done by sorting indices of equal value elements.
 */
-int Tdi1Sort(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Sort(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   STATIC_THREADSAFE int64_t ran = 0;
@@ -681,7 +680,7 @@ int Tdi1Sort(int opcode, int narg, struct descriptor *list[], struct descriptor_
         Sort in place.
         Method: MAP(array, SORT(array, [upcase]))
 */
-int Tdi1SortVal(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1SortVal(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -701,13 +700,13 @@ int Tdi1SortVal(int opcode __attribute__ ((unused)), int narg, struct descriptor
         There may any number or arguments.
         The signality is removed and units are joined by VECTOR.
 */
-int Tdi1Union(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Union(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   int j, n, len;
   char *pi, *po;
 
-  status = TdiIntrinsic(OpcVector, narg, list, out_ptr);
+  status = TdiIntrinsic(OPC_VECTOR, narg, list, out_ptr);
   if STATUS_OK
     status = TdiSortVal(out_ptr, out_ptr MDS_END_ARG);
   if STATUS_OK {
@@ -799,7 +798,7 @@ int Tdi1Union(int opcode __attribute__ ((unused)), int narg, struct descriptor *
         list    vector of valid values
         upcase  compare in uppercase (for text only)
 */
-int Tdi1IsIn(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1IsIn(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor *pupcase = narg > 2 ? list[2] : 0;
