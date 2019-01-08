@@ -64,7 +64,7 @@ extern int Tdi3Add();
 extern int TdiConvert();
 extern int CvtConvertFloat();
 
-extern int Tdi1Array(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+extern int Tdi1Array(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   array_coeff arr = { 1, DTYPE_B, CLASS_A, (char *)0, 0, 0, {0, 1, 1, 1, 0}, MAXDIM, 0, 0, {0}};
@@ -170,7 +170,7 @@ int Tdi3Ramp(struct descriptor *out_ptr)
 #define LoadRampF(type,dtype,native) { type *ptr = (type *)out_ptr->pointer; type tmp; \
                                        for (i=0;i<n;i++) {tmp = (type)i; \
                                             if (native == dtype) ptr[i] = tmp; \
-                                            else CvtConvertFloat(&tmp,native,&ptr[i],dtype,0);} break;}
+                                            else CvtConvertFloat(&tmp,native,&ptr[i],dtype);} break;}
 
   N_ELEMENTS(out_ptr, n);
   switch (out_ptr->dtype) {
@@ -269,7 +269,7 @@ int Tdi3Random(struct descriptor_a *out_ptr){
     break;
 
 #define LoadRandom(type,randx) {type *ptr = (type *)out_ptr->pointer; for (i=0;i<n;i++) ptr[i] = (type)randx(&bit);}
-#define LoadRandomFloat(dtype,type,value) { type *ptr = (type *)out_ptr->pointer; for (i=0;i<n;i++) {double val = value; CvtConvertFloat(&val,DTYPE_NATIVE_DOUBLE,&ptr[i],dtype,0);}}
+#define LoadRandomFloat(dtype,type,value) { type *ptr = (type *)out_ptr->pointer; for (i=0;i<n;i++) {double val = value; CvtConvertFloat(&val,DTYPE_NATIVE_DOUBLE,&ptr[i],dtype);}}
   case DTYPE_O:
   case DTYPE_OU:
     n *= 2; // use 2 random int64

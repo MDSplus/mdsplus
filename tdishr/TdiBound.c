@@ -50,11 +50,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <STATICdef.h>
 
 
-
 extern struct descriptor *TdiItoXSpecial;
-
-extern unsigned short
- OpcEshape, OpcEsize, OpcShape, OpcSize, OpcVector;
 
 extern int TdiGetArgs();
 extern int TdiGetLong();
@@ -67,7 +63,7 @@ STATIC_CONSTANT DESCRIPTOR_A(adsc0, sizeof(int), DTYPE_L, 0, 0);
 STATIC_CONSTANT unsigned char dtype_l = DTYPE_L;
 STATIC_CONSTANT unsigned short size_l = sizeof(int);
 
-int Tdi1Bound(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Bound(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   array_bounds *pa = 0;
@@ -82,7 +78,7 @@ int Tdi1Bound(int opcode, int narg, struct descriptor *list[], struct descriptor
       switch (pa->class) {
       case CLASS_D:
       case CLASS_S:
-	if (opcode == OpcShape || opcode == OpcEshape)
+	if (opcode == OPC_SHAPE || opcode == OPC_ESHAPE)
 	  rank = 0;
 	else
 	  rank = 1;
@@ -103,7 +99,7 @@ int Tdi1Bound(int opcode, int narg, struct descriptor *list[], struct descriptor
       status = TdiBAD_INDEX;
     if STATUS_OK
       status = MdsGet1DxS(&size_l, &dtype_l, out_ptr);
-  } else if (opcode == OpcSize) {
+  } else if (opcode == OPC_SIZE) {
     dim = -1;
     if STATUS_OK
       status = MdsGet1DxS(&size_l, &dtype_l, out_ptr);
@@ -242,7 +238,7 @@ void Tdi3Ubound(array_bounds * pa, int dim, int *pbound)
 /***************************************************************
         Non-F90 inquiry for Effective bounds.
 */
-int Tdi1Ebound(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Ebound(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   array_bounds *pa = 0;
@@ -287,8 +283,8 @@ int Tdi1Ebound(int opcode, int narg, struct descriptor *list[], struct descripto
 	new[dim] = (struct descriptor *)&outs[dim];
       }
       if STATUS_OK
-	status = TdiIntrinsic(OpcVector, rank, new, out_ptr);
-      if (opcode == OpcEsize && STATUS_OK)
+	status = TdiIntrinsic(OPC_VECTOR, rank, new, out_ptr);
+      if (opcode == OPC_ESIZE && STATUS_OK)
 	status = TdiProduct(out_ptr, out_ptr MDS_END_ARG);
       for (; (int)--dim >= 0;)
 	MdsFree1Dx(&outs[dim], NULL);

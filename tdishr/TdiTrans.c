@@ -83,10 +83,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 
-
-extern unsigned short
- OpcAccumulate, OpcFirstLoc, OpcLastLoc, OpcProduct, OpcReplicate, OpcSpread;
-
 #include "tdinelements.h"
 #include "tdirefcat.h"
 #include "tdireffunction.h"
@@ -162,7 +158,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
   if (pfun->f2 == Tdi2Mask3 || pfun->f2 == Tdi2Mask3L) {
     if (narg > 2 && cats[2].in_dtype != DTYPE_MISSING)
       pmask = dat[2].pointer;
-  } else if (opcode == OpcReplicate || opcode == OpcSpread) {
+  } else if (opcode == OPC_REPLICATE || opcode == OPC_SPREAD) {
     if STATUS_OK
       status = TdiGetLong(dat[2].pointer, &ncopies);
     if (ncopies < 0)
@@ -185,7 +181,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
       }
 		/** Array with multipliers **/
       else if (pa->aflags.coeff) {
-	if (dim < rank || (dim <= rank && opcode == OpcSpread)) {
+	if (dim < rank || (dim <= rank && opcode == OPC_SPREAD)) {
 	  for (j = 0; j < dim; ++j)
 	    count_bef *= pa->m[j];
 	  if (j < rank)
@@ -198,7 +194,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 		/** Simple vector. A mistake for some? **/
       else {
 	j = (int)pa->arsize / (int)pa->length;
-	if (dim == 1 && opcode == OpcSpread)
+	if (dim == 1 && opcode == OPC_SPREAD)
 	  count_bef = j;
 	else if (dim > 0)
 	  status = TdiBAD_INDEX;
@@ -209,7 +205,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     case CLASS_S:
     case CLASS_D:
       rank = 0;
-      if (dim > 0 || (dim > 1 && opcode == OpcSpread)) {
+      if (dim > 0 || (dim > 1 && opcode == OPC_SPREAD)) {
 	status = TdiBAD_INDEX;
       }
       break;
@@ -229,7 +225,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 		/************
                 Optimization.
                 ************/
-    if (dim == 0 && opcode != OpcReplicate && opcode != OpcSpread) {
+    if (dim == 0 && opcode != OPC_REPLICATE && opcode != OPC_SPREAD) {
       count_bef = count_aft;
       count_aft = 1;
       step_bef = step_aft;
@@ -256,7 +252,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     ndim = psig->ndesc - 2;
   else
     ndim = -1;
-  if (opcode == OpcFirstLoc || opcode == OpcLastLoc) {
+  if (opcode == OPC_FIRSTLOC || opcode == OPC_LASTLOC) {
     status = MdsGet1DxA((struct descriptor_a *)pa, &digits, &out_dtype, out_ptr);
     if STATUS_OK
       status = TdiConvert(&zero, out_ptr->pointer MDS_END_ARG);
@@ -264,7 +260,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 	/***************************
         Shape multiplied for DIM-th.
         ***************************/
-  else if (opcode == OpcReplicate) {
+  else if (opcode == OPC_REPLICATE) {
     if (dim < ndim)
       psig->dimensions[dim] = 0;
     pmask = (struct descriptor *)&ncopies;
@@ -282,7 +278,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 	/*************************************
         Shape gets new dimension after DIM-th.
         *************************************/
-  else if (opcode == OpcSpread) {
+  else if (opcode == OPC_SPREAD) {
     if (ndim > dim) {
       EMPTYXD(tmpxd);
       *(struct descriptor_signal *)&tmpsig = *psig;
@@ -333,7 +329,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 	/***************
         Overwrite input.
         ***************/
-  else if (opcode == OpcAccumulate) {
+  else if (opcode == OPC_ACCUMULATE) {
     MdsFree1Dx(out_ptr, NULL);
     *out_ptr = dat[0];
   }
@@ -422,9 +418,9 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
       } else
 	*pout++ = 0;
     }
-  } else if (opcode == OpcAccumulate)
+  } else if (opcode == OPC_ACCUMULATE)
     dat[0] = EMPTY_XD;
-  else if (opcode == OpcProduct)
+  else if (opcode == OPC_PRODUCT)
     MdsFree1Dx(&uni[0], NULL);
 
   status = TdiMasterData(psig != 0, sig, uni, &cmode, out_ptr);

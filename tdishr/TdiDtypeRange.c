@@ -36,8 +36,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         NEED faster code for longs and maybe floats.
 */
 
-extern unsigned short OpcValue;
-
 #include <STATICdef.h>
 #include "tdinelements.h"
 #include "tdirefcat.h"
@@ -73,7 +71,7 @@ extern int TdiNint();
 
 extern struct descriptor *TdiItoXSpecial;
 
-int Tdi1DtypeRange(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1DtypeRange(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
@@ -100,7 +98,7 @@ int Tdi1DtypeRange(int opcode, int narg, struct descriptor *list[], struct descr
         * x:y:z is normal range with missing computed.
         **********************************************/
   if (new[2]
-      && new[2]->dtype == DTYPE_FUNCTION && *(unsigned short *)new[2]->pointer == OpcValue) {
+      && new[2]->dtype == DTYPE_FUNCTION && *(unsigned short *)new[2]->pointer == OPC_$VALUE) {
     DESCRIPTOR_RANGE(range, 0, 0, 0);
     range.begin = &dx0;
     range.ending = &dx1;

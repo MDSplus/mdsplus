@@ -46,8 +46,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <STATICdef.h>
 
 
-extern unsigned short OpcValue;
-
 extern struct descriptor *TdiItoXSpecial;
 
 extern int TdiGetData();
@@ -63,6 +61,7 @@ extern int TdiItoX();
 extern int TdiGetLong();
 extern int Tdi2Range();
 
+extern unsigned short OpcValue;
 STATIC_CONSTANT DESCRIPTOR_FUNCTION_0(value, &OpcValue);
 STATIC_CONSTANT DESCRIPTOR_RANGE(EMPTY_RANGEE, 0, 0, (struct descriptor *)&value);
 
@@ -186,7 +185,7 @@ STATIC_ROUTINE int rextend(struct descriptor *pnew,
         Going to find out who is naughty and nice.
 */
 STATIC_ROUTINE int work(int rroutine(struct descriptor *, struct descriptor_a *, struct descriptor_a *),
-		int opcode, int narg, struct descriptor *list[3], struct descriptor_xd *out_ptr) {
+		opcode_t opcode, int narg, struct descriptor *list[3], struct descriptor_xd *out_ptr) {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
   struct descriptor_xd in = EMPTY_XD, tmp = EMPTY_XD, units = EMPTY_XD;
@@ -348,13 +347,13 @@ STATIC_ROUTINE int work(int rroutine(struct descriptor *, struct descriptor_a *,
 }
 
 /***********************************************/
-int Tdi1Cull(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Cull(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   return work(rcull, opcode, narg, list, out_ptr);
 }
 
 /***********************************************/
-int Tdi1Extend(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Extend(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   return work(rextend, opcode, narg, list, out_ptr);
 }

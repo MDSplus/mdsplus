@@ -39,9 +39,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern int TdiData();
 extern int TdiEvaluate();
-extern unsigned short OpcComma;
 int unwrapCommaCount(int ndesc, struct descriptor *list[]) {
-  if (list[0] && list[0]->class==CLASS_R && list[0]->dtype==DTYPE_FUNCTION && list[0]->length==2 && *(short*)list[0]->pointer==OpcComma)
+  if (list[0] && list[0]->class==CLASS_R && list[0]->dtype==DTYPE_FUNCTION && list[0]->length==2 && *(short*)list[0]->pointer==OPC_COMMA)
     return unwrapCommaCount(((struct descriptor_r*)list[0])->ndesc, ((struct descriptor_r*)list[0])->dscptrs) + ndesc-1;
   return ndesc;
 }
@@ -49,7 +48,7 @@ int unwrapCommaCount(int ndesc, struct descriptor *list[]) {
 int UnwrapCommaDesc(int ndesc, struct descriptor *list[], int *nout, struct descriptor *list_out[]){
   INIT_STATUS;
   struct descriptor_xd xd = EMPTY_XD;
-  if (list[0] && list[0]->class==CLASS_R && list[0]->dtype==DTYPE_FUNCTION && list[0]->length==2 && *(short*)list[0]->pointer==OpcComma)
+  if (list[0] && list[0]->class==CLASS_R && list[0]->dtype==DTYPE_FUNCTION && list[0]->length==2 && *(short*)list[0]->pointer==OPC_COMMA)
     status = UnwrapCommaDesc(((struct descriptor_r*)list[0])->ndesc, ((struct descriptor_r*)list[0])->dscptrs, nout, list_out);
   else {
     status = TdiData(list[0], &xd MDS_END_ARG);
@@ -128,12 +127,12 @@ free_alist :;
   return status;
 }
 
-int Tdi1List(int opcode __attribute__((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+int Tdi1List(opcode_t opcode __attribute__((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
    return Tdi1Apd(DTYPE_LIST, narg, list, out_ptr);
 }
-int Tdi1Tuple(int opcode __attribute__((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+int Tdi1Tuple(opcode_t opcode __attribute__((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
    return Tdi1Apd(DTYPE_TUPLE, narg, list, out_ptr);
 }
-int Tdi1Dict(int opcode __attribute__((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+int Tdi1Dict(opcode_t opcode __attribute__((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
    return Tdi1Apd(DTYPE_DICTIONARY, narg, list, out_ptr);
 }

@@ -50,7 +50,7 @@ extern int Tdi2Vector();
 extern int TdiFindImageSymbol();
 extern int TdiMasterData();
 
-int Tdi1Decompress(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Decompress(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd sig[4], uni[4], dat[4];

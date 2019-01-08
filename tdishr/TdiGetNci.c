@@ -65,9 +65,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdirefstandard.h"
 #include "tdinelements.h"
 
-
-extern unsigned short OpcVector;
-
 extern int TdiGetData();
 extern int TdiData();
 extern int TdiUpcase();
@@ -229,7 +226,7 @@ inline static int treefindnode(char *dat_ptr, int len, int *nid) {
   return status;
 }
 
-int Tdi1GetNci(int opcode __attribute__ ((unused)),
+int Tdi1GetNci(opcode_t opcode __attribute__ ((unused)),
 	       int narg,
 	       struct descriptor *list[],
 	       struct descriptor_xd *out_ptr)
@@ -538,7 +535,7 @@ int Tdi1GetNci(int opcode __attribute__ ((unused)),
 	hold_ptr = holda_ptr->pointer;
 	for (j = outcount; --j >= 0; hold_ptr += step)
 	  *xd_ptr++ = hold_ptr;
-	status = Tdi1Vector(OpcVector, outcount, tmp.pointer->pointer, out_ptr);
+	status = Tdi1Vector(OPC_VECTOR, outcount, tmp.pointer->pointer, out_ptr);
       }
       MdsFree1Dx(&tmp, NULL);
     }

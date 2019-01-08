@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-int Tdi1Constant(int opcode, int narg __attribute__ ((unused)),
+int Tdi1Constant(opcode_t opcode, int narg __attribute__ ((unused)),
 		 struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
 
