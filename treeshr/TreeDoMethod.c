@@ -151,10 +151,10 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     }
     goto end;
   }
+  const DESCRIPTOR(underunder, "__");
+  StrConcat((struct descriptor *)&method, conglom_ptr->model, (struct descriptor *)&underunder, method_ptr MDS_END_ARG);
   /**** Try lib call ***/
   if (conglom_ptr->image) {
-    const DESCRIPTOR(underunder, "__");
-    StrConcat((struct descriptor *)&method, conglom_ptr->model, (struct descriptor *)&underunder, method_ptr MDS_END_ARG);
     for (i = 0; i < method.length; i++)
       method.pointer[i] = (char)tolower(method.pointer[i]);
     if (conglom_ptr->image && conglom_ptr->image->dtype != DTYPE_T) {
