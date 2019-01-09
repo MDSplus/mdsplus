@@ -21,5 +21,4 @@ struct TdiFunctionStruct {
   unsigned int token;		/*YACC-LEX token for this entry */
 };
 
-extern const int TdiFUNCTION_MAX;
 extern const struct TdiFunctionStruct TdiRefFunction[];

@@ -33,9 +33,6 @@ typedef int SOCKET;
 #define DTYPE_COMPLEX_DOUBLE 13
 #define DTYPE_CSTRING 14
 #define DTYPE_EVENT_NOTIFY   99
-#ifndef DTYPE_EVENT
-#define DTYPE_EVENT DTYPE_EVENT_NOTIFY
-#endif
 #define DTYPE_SERIAL 24
 
 struct descrip {

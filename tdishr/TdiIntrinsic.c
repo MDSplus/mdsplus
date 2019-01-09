@@ -155,7 +155,7 @@ static inline void TRACE(int opcode, int narg,
   unsigned short now = message->length;
   int j;
   struct descriptor_d text = { 0, DTYPE_T, CLASS_D, 0 };
-  if (opcode >= 0 && opcode <= TdiFUNCTION_MAX) {
+  if (opcode >= 0 && opcode < TdiFUNCTION_MAX) {
     struct TdiFunctionStruct *pfun = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
     if (narg < pfun->m1 || narg > pfun->m2) {
       add("%TDI Requires");
@@ -243,7 +243,7 @@ void cleanup_list(void* fixed_in) {
 	free(fixed->a[fixed->n]);
 }
 
-EXPORT int TdiIntrinsic(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status;
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
@@ -396,7 +396,7 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, struct descriptor *list[], st
   FREE_CANCEL(a_begin);
   return status;
 }
-EXPORT int _TdiIntrinsic(void** ctx, opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+EXPORT int _TdiIntrinsic(void** ctx, int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
   int status;
   CTX_PUSH(ctx);
   status = TdiIntrinsic(opcode, narg, list, out_ptr);

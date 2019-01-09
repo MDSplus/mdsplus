@@ -77,5 +77,3 @@ const struct TdiFunctionStruct TdiRefFunction[] = {
 #undef OPC
   {0}
 };
-
-const int TdiFUNCTION_MAX = sizeof(TdiRefFunction) / sizeof(struct TdiFunctionStruct) - 1;

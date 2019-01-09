@@ -67,13 +67,6 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 
 extern void **TreeCtx();
 
-#define COM
-#define OPC(name,NAME,...) OPC_##NAME,
-typedef enum opcode_e {
-#include <opcbuiltins.h>
-OPC_INVALID=-1
-} opcode_t;
-
 static int (*_TdiIntrinsic)() = NULL;
 
 int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...) {
