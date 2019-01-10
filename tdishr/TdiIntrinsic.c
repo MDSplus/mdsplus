@@ -252,7 +252,7 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, struct descriptor *list[], st
   FREEXD_ON_EXIT(&tmp);
   FREEXD_ON_EXIT(out_ptr);
   FREEBEGIN_ON_EXIT();
-  int stat1 = status = MDSplusSUCCESS;
+  status = MDSplusSUCCESS;
   struct descriptor *dsc_ptr;
   TdiThreadStatic_p->TdiIntrinsic_recursion_count++;
   if (narg < fun_ptr->m1)
@@ -278,6 +278,7 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, struct descriptor *list[], st
   if (STATUS_OK || status == TdiBREAK || status == TdiCONTINUE || status == TdiGOTO || status == TdiRETURN) {
     if (!out_ptr)
       goto notmp;
+    int stat1 = MDSplusSUCCESS;
     switch (out_ptr->class) {
     default:
       status = TdiINVCLADSC;
