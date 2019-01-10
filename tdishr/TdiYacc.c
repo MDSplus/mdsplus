@@ -104,19 +104,20 @@ extern int TdiYacc_ARG();
 extern int TdiLexPath();
 
 #define YYMAXDEPTH      250
-#define __RUN(method)				do{if IS_NOT_OK(method) tdiyyerror(0); else TdiRefZone.l_ok = TdiRefZone.a_cur - TdiRefZone.a_begin;}while(0)
+#define __RUN(method) do{if IS_NOT_OK(method) tdiyyerror(0); else TdiRefZone.l_ok = TdiRefZone.a_cur - TdiRefZone.a_begin;}while(0)
+
 #define _RESOLVE(arg)   			__RUN(TdiYacc_RESOLVE(&arg.rptr))
 
-#define _FULL1(opcode,arg1,out)                 __RUN(TdiYacc_BUILD(255, 1, opcode, &out, &arg1))
-#define _FULL2(opcode,arg1,arg2,out)            __RUN(TdiYacc_BUILD(255, 2, opcode, &out, &arg1, &arg2))
+#define _FULL1(opcode,arg1,out)                 __RUN(TdiYacc_BUILD(255, 1, opcode, &out, &arg1, NULL , NULL , NULL ))
+#define _FULL2(opcode,arg1,arg2,out)            __RUN(TdiYacc_BUILD(255, 2, opcode, &out, &arg1, &arg2, NULL , NULL ))
 	/*****************************
         Two args for image->routine.
         *****************************/
-#define _JUST0(opcode,out)                      __RUN(TdiYacc_BUILD(2, 0, opcode, &out))
-#define _JUST1(opcode,arg1,out)                 __RUN(TdiYacc_BUILD(3, 1, opcode, &out, &arg1))
-#define _JUST2(opcode,arg1,arg2,out)            __RUN(TdiYacc_BUILD(2, 2, opcode, &out, &arg1, &arg2))
-#define _JUST3(opcode,arg1,arg2,arg3,out)       __RUN(TdiYacc_BUILD(3, 3, opcode, &out, &arg1, &arg2, &arg3))
-#define _JUST4(opcode,arg1,arg2,arg3,arg4,out)  __RUN(TdiYacc_BUILD(4, 4, opcode, &out, &arg1, &arg2, &arg3, &arg4))
+#define _JUST0(opcode,out)                      __RUN(TdiYacc_BUILD(  2, 0, opcode, &out, NULL , NULL , NULL , NULL ))
+#define _JUST1(opcode,arg1,out)                 __RUN(TdiYacc_BUILD(  3, 1, opcode, &out, &arg1, NULL , NULL , NULL ))
+#define _JUST2(opcode,arg1,arg2,out)            __RUN(TdiYacc_BUILD(  2, 2, opcode, &out, &arg1, &arg2, NULL , NULL ))
+#define _JUST3(opcode,arg1,arg2,arg3,out)       __RUN(TdiYacc_BUILD(  3, 3, opcode, &out, &arg1, &arg2, &arg3, NULL ))
+#define _JUST4(opcode,arg1,arg2,arg3,arg4,out)  __RUN(TdiYacc_BUILD(  4, 4, opcode, &out, &arg1, &arg2, &arg3, &arg4))
 
 STATIC_THREADSAFE struct marker _EMPTY_MARKER = { 0 };
 
@@ -434,10 +435,6 @@ __YYSCLASS tdiyytabelem tdiyydef[] = {
   84, 103, 0, 78, 104
 };
 
-typedef struct {
-  char *t_name;
-  int t_val;
-} tdiyytoktype;
 
 
 //#define YYDEBUG
@@ -445,6 +442,11 @@ typedef struct {
 #define YYDEBUG_STATE
 #define YYDEBUG_(msg)
 #else
+typedef struct {
+  char *t_name;
+  int t_val;
+} tdiyytoktype;
+
 #define YYDEBUG_TOKEN \
   if (tdiyychar == 0)\
     printf("end-of-file\n");\
@@ -609,7 +611,9 @@ __YYSCLASS char *tdiyyreds[] = {
   "program : ERROR",
   "program : error",
 };
-#endif				/* YYDEBUG */
+#endif	/* YYDEBUG */
+
+
 
 #define YYFLAG  (-3000)
 /* @(#) $Revision$ */
