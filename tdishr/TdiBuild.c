@@ -84,8 +84,8 @@ int Tdi1Build(int opcode, int narg, struct descriptor *list[], struct descriptor
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   DESCRIPTOR_FUNCTION(build, 0, 255);
   int j, k, modif;
-  unsigned short modif_s;
-  unsigned char modif_c;
+  opcode_t modif_s;
+  dtype_t  modif_c;
 
   build.length = 0;
   build.dtype = fun_ptr->o1;
