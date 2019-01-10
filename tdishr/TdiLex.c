@@ -151,13 +151,6 @@ extern unsigned short Opcdollar, OpcZero,
     OpcPower, OpcPreDec, OpcPreInc, OpcPromote, OpcDtypeRange,
     OpcShiftLeft, OpcShiftRight, OpcSubtract;
 
-extern int
- LEX_ERROR, LEX_IDENT, LEX_VBL, LEX_TEXT, LEX_VALUE,
- LEX_IN, LEX_LAND, LEX_LEQ, LEX_LEQV, LEX_LGE, LEX_LOR, LEX_MUL,
- LEX_ADD, LEX_CONCAT, LEX_IAND, LEX_INC, LEX_IOR,
- LEX_POINT, LEX_POWER, LEX_PROMO, LEX_RANGE, LEX_SHIFT, LEX_BINEQ,
- LEX_LANDS, LEX_LEQS, LEX_LGES, LEX_LORS, LEX_MULS, LEX_UNARYS;
-
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 STATIC_ROUTINE int TdiLexBinEq(int token);
 
