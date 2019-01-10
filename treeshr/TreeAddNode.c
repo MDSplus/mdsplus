@@ -178,7 +178,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 	    new_ptr->usage = usage == TreeUSAGE_SUBTREE ? TreeUSAGE_SUBTREE : TreeUSAGE_STRUCTURE;
 	  } else {
 	    status = TreeInsertMember(parent, new_ptr, dblist->tree_info->header->sort_members);
-	    new_ptr->usage = (unsigned char)(((usage <= TreeUSAGE_MAXIMUM) && (usage >= 0)) ? usage : TreeUSAGE_ANY);
+	    new_ptr->usage = (unsigned char)(((usage < TreeUSAGE_MAXIMUM) && (usage >= 0)) ? usage : TreeUSAGE_ANY);
 	  }
 	  *nid_out = node_to_nid(dblist, new_ptr, 0);
 	}
