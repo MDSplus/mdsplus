@@ -57,70 +57,8 @@
 ///@{
 ///
 /// DESCRIPTORS CODE DEFINITIONS
-
-
-#define DTYPE_BU 2
-#define DTYPE_WU 3
-#define DTYPE_LU 4
-#define DTYPE_QU 5
-#define DTYPE_OU 25
-#define DTYPE_B 6
-#define DTYPE_W 7
-#define DTYPE_L 8
-#define DTYPE_Q 9
-#define DTYPE_O 26
-#define DTYPE_FLOAT 52
-#define DTYPE_DOUBLE 53
-#define DTYPE_F	10
-#define DTYPE_D	11
-#define DTYPE_G	27
-#define DTYPE_H	28
-#define DTYPE_FSC 54
-#define DTYPE_FTC 55
-#define DTYPE_T 14
-#define DTYPE_IDENT 191
-#define DTYPE_NID 192
-#define DTYPE_PATH 193
-#define DTYPE_PARAM 194
-#define DTYPE_SIGNAL 195
-#define DTYPE_DIMENSION 196
-#define DTYPE_WINDOW 197
-#define DTYPE_SLOPE 198
-#define DTYPE_FUNCTION 199
-#define DTYPE_CONGLOM 200
-#define DTYPE_RANGE 201
-#define DTYPE_ACTION 202
-#define DTYPE_DISPATCH 203
-#define DTYPE_PROGRAM 204
-#define DTYPE_ROUTINE 205
-#define DTYPE_PROCEDURE 206
-#define DTYPE_METHOD 207
-#define DTYPE_DEPENDENCY 208
-#define DTYPE_CONDITION 209
-#define DTYPE_EVENT 210
-#define DTYPE_WITH_UNITS 211
-#define DTYPE_CALL 212
-#define DTYPE_WITH_ERROR 213
-#define DTYPE_LIST 214
-#define DTYPE_TUPLE 215
-#define DTYPE_DICTIONARY 216
-#define DTYPE_POINTER 51
-#define DTYPE_DSC	24
-
+#include <mdsdescrip.h>
 ///@}
-
-
-#define TreeNEGATE_CONDITION 	7
-#define TreeIGNORE_UNDEFINED 	8
-#define TreeIGNORE_STATUS	9
-#define TreeDEPENDENCY_AND	10
-#define TreeDEPENDENCY_OR	11
-#define CLASS_S 1
-#define CLASS_D 2
-#define CLASS_A 4
-#define CLASS_R 194
-#define CLASS_APD 196
-#define MAX_DIMS 32
 
 extern "C" char *MdsGetMsg(int status);
 
