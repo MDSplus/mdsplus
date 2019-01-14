@@ -22,15 +22,7 @@ extern "C" {
 extern int treeshr_errno;
 extern int TREE_BLOCKID;
 
-
-
-
-#ifndef MDSDESCRIP_H_DEFINED
-  struct descriptor;
-  struct descriptor_a;
-  struct descriptor_r;
-  struct descriptor_xd;
-#endif
+#include <mdsdescrip.h>
 
 #ifndef DBIDEF_H
   struct dbi_itm;
