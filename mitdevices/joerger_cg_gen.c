@@ -34,13 +34,14 @@ EXPORT int joerger_cg__add(struct descriptor *name_d_ptr, struct descriptor *dum
   int curr_nid, old_nid, head_nid, status;
   long int flags = NciM_WRITE_ONCE;
   NCI_ITM flag_itm[] = { {2, NciSET_FLAGS, 0, 0}, {0, 0, 0, 0} };
-  char *name_ptr = strncpy(malloc(name_d_ptr->length + 1), name_d_ptr->pointer, name_d_ptr->length);
-  flag_itm[0].pointer = (unsigned char *)&flags;
-  name_ptr[name_d_ptr->length] = 0;
   status = TreeStartConglomerate(JOERGER_CG_K_CONG_NODES);
   if (!(status & 1))
     return status;
+  char *name_ptr = strncpy(malloc(name_d_ptr->length + 1), name_d_ptr->pointer, name_d_ptr->length);
+  flag_itm[0].pointer = (unsigned char *)&flags;
+  name_ptr[name_d_ptr->length] = 0;
   status = TreeAddNode(name_ptr, &head_nid, usage);
+  free(name_ptr);
   if (!(status & 1))
     return status;
   *nid_ptr = head_nid;

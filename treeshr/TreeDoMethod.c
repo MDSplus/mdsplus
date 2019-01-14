@@ -67,13 +67,6 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 
 extern void **TreeCtx();
 
-#define COM
-#define OPC(name,NAME,...) OPC_##NAME,
-typedef enum opcode_e {
-#include <opcbuiltins.h>
-OPC_INVALID=-1
-} opcode_t;
-
 static int (*_TdiIntrinsic)() = NULL;
 
 int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...) {
@@ -151,31 +144,33 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     }
     goto end;
   }
-  /**** Try lib call ***/
   const DESCRIPTOR(underunder, "__");
   StrConcat((struct descriptor *)&method, conglom_ptr->model, (struct descriptor *)&underunder, method_ptr MDS_END_ARG);
-  for (i = 0; i < method.length; i++)
-    method.pointer[i] = (char)tolower(method.pointer[i]);
-  if (conglom_ptr->image && conglom_ptr->image->dtype != DTYPE_T) {
-    status = TdiINVDTYDSC;
-    goto end;
-  }
-  void (*addr) ();
-  status = LibFindImageSymbol(conglom_ptr->image, &method, &addr);
-  if STATUS_OK {
-    CTX_PUSH(&dbid);
-    status = (int)(intptr_t)LibCallg(arglist, addr);
-    CTX_POP(&dbid);
-    if (arglist[nargs]) {
-      struct descriptor *ans = (struct descriptor *)arglist[nargs];
-      if (ans->class == CLASS_XD) {
-	DESCRIPTOR_LONG(status_d, 0);
-	status_d.pointer = (char *)&status;
-	MdsCopyDxXd(&status_d, (struct descriptor_xd *)ans);
-      } else if ((ans->dtype == DTYPE_L) && (ans->length == 4) && (ans->pointer))
-	*(int*)ans->pointer = status;
+  /**** Try lib call ***/
+  if (conglom_ptr->image) {
+    for (i = 0; i < method.length; i++)
+      method.pointer[i] = (char)tolower(method.pointer[i]);
+    if (conglom_ptr->image && conglom_ptr->image->dtype != DTYPE_T) {
+      status = TdiINVDTYDSC;
+      goto end;
     }
-    goto end;
+    void (*addr) ();
+    status = LibFindImageSymbol(conglom_ptr->image, &method, &addr);
+    if STATUS_OK {
+      CTX_PUSH(&dbid);
+      status = (int)(intptr_t)LibCallg(arglist, addr);
+      CTX_POP(&dbid);
+      if (arglist[nargs]) {
+	struct descriptor *ans = (struct descriptor *)arglist[nargs];
+	if (ans->class == CLASS_XD) {
+	  DESCRIPTOR_LONG(status_d, 0);
+	  status_d.pointer = (char *)&status;
+	  MdsCopyDxXd(&status_d, (struct descriptor_xd *)ans);
+	} else if ((ans->dtype == DTYPE_L) && (ans->length == 4) && (ans->pointer))
+	  *(int*)ans->pointer = status;
+      }
+      goto end;
+    }
   }
   /**** Try tdi fun ***/
   status = LibFindImageSymbol_C("TdiShr","_TdiIntrinsic",&_TdiIntrinsic);

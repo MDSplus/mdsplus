@@ -44,8 +44,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define P_ARG           88
 #define P_SUBS          0
 
-
-extern unsigned int LEX_CONST;
 extern int Tdi0Decompile();
 extern int TdiSingle();
 

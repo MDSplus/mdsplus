@@ -129,7 +129,7 @@ EXPORT int MdsCompareXd(const struct descriptor *dsc1_ptr, const struct descript
 		(memcmp(a1->m, a2->m, sizeof(a1->m[0]) * a1->dimct) == 0);
 	      if (isequal && a1->aflags.bounds) {
 		isequal = memcmp(a1->m + a1->dimct, a2->m + a2->dimct,
-				sizeof(a1->bounds[0]) * a1->dimct) == 0;
+				sizeof(bound_t) * a1->dimct) == 0;
 	      }
 	    }
 	    if (isequal) {

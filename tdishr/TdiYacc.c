@@ -104,19 +104,20 @@ extern int TdiYacc_ARG();
 extern int TdiLexPath();
 
 #define YYMAXDEPTH      250
-#define __RUN(method)				do{if IS_NOT_OK(method) tdiyyerror(0); else TdiRefZone.l_ok = TdiRefZone.a_cur - TdiRefZone.a_begin;}while(0)
+#define __RUN(method) do{if IS_NOT_OK(method) tdiyyerror(0); else TdiRefZone.l_ok = TdiRefZone.a_cur - TdiRefZone.a_begin;}while(0)
+
 #define _RESOLVE(arg)   			__RUN(TdiYacc_RESOLVE(&arg.rptr))
 
-#define _FULL1(opcode,arg1,out)                 __RUN(TdiYacc_BUILD(255, 1, opcode, &out, &arg1))
-#define _FULL2(opcode,arg1,arg2,out)            __RUN(TdiYacc_BUILD(255, 2, opcode, &out, &arg1, &arg2))
+#define _FULL1(opcode,arg1,out)                 __RUN(TdiYacc_BUILD(255, 1, opcode, &out, &arg1, NULL , NULL , NULL ))
+#define _FULL2(opcode,arg1,arg2,out)            __RUN(TdiYacc_BUILD(255, 2, opcode, &out, &arg1, &arg2, NULL , NULL ))
 	/*****************************
         Two args for image->routine.
         *****************************/
-#define _JUST0(opcode,out)                      __RUN(TdiYacc_BUILD(2, 0, opcode, &out))
-#define _JUST1(opcode,arg1,out)                 __RUN(TdiYacc_BUILD(3, 1, opcode, &out, &arg1))
-#define _JUST2(opcode,arg1,arg2,out)            __RUN(TdiYacc_BUILD(2, 2, opcode, &out, &arg1, &arg2))
-#define _JUST3(opcode,arg1,arg2,arg3,out)       __RUN(TdiYacc_BUILD(3, 3, opcode, &out, &arg1, &arg2, &arg3))
-#define _JUST4(opcode,arg1,arg2,arg3,arg4,out)  __RUN(TdiYacc_BUILD(4, 4, opcode, &out, &arg1, &arg2, &arg3, &arg4))
+#define _JUST0(opcode,out)                      __RUN(TdiYacc_BUILD(  2, 0, opcode, &out, NULL , NULL , NULL , NULL ))
+#define _JUST1(opcode,arg1,out)                 __RUN(TdiYacc_BUILD(  3, 1, opcode, &out, &arg1, NULL , NULL , NULL ))
+#define _JUST2(opcode,arg1,arg2,out)            __RUN(TdiYacc_BUILD(  2, 2, opcode, &out, &arg1, &arg2, NULL , NULL ))
+#define _JUST3(opcode,arg1,arg2,arg3,out)       __RUN(TdiYacc_BUILD(  3, 3, opcode, &out, &arg1, &arg2, &arg3, NULL ))
+#define _JUST4(opcode,arg1,arg2,arg3,arg4,out)  __RUN(TdiYacc_BUILD(  4, 4, opcode, &out, &arg1, &arg2, &arg3, &arg4))
 
 STATIC_THREADSAFE struct marker _EMPTY_MARKER = { 0 };
 
@@ -146,61 +147,6 @@ typedef int tdiyytabelem;
 #define YYERRCODE 256
 
 //#line 468 "TdiYacc.y"
-
-const int
-    LEX_ERROR = ERROR,
-    LEX_IDENT = IDENT,
-    LEX_POINT = POINT,
-    LEX_TEXT = TEXT,
-    LEX_VALUE = VALUE,
-    LEX_ARG = ARG,
-    LEX_BREAK = BREAK,
-    LEX_CASE = CASE,
-    LEX_COND = COND,
-    LEX_DEFAULT = DEFAULT,
-    LEX_DO = DO,
-    LEX_ELSE = ELSE,
-    LEX_ELSEW = ELSEW,
-    LEX_FOR = FOR,
-    LEX_GOTO = GOTO,
-    LEX_IF = IF,
-    LEX_LABEL = LABEL,
-    LEX_RETURN = RETURN,
-    LEX_SIZEOF = SIZEOF,
-    LEX_SWITCH = SWITCH,
-    LEX_USING = USING,
-    LEX_WHERE = WHERE,
-    LEX_WHILE = WHILE,
-    LEX_CAST = CAST,
-    LEX_CONST = CONST,
-    LEX_INC = INC,
-    LEX_ADD = ADD,
-    LEX_BINEQ = BINEQ,
-    LEX_CONCAT = CONCAT,
-    LEX_IAND = IAND,
-    LEX_IN = IN,
-    LEX_IOR = IOR,
-    LEX_IXOR = IXOR,
-    LEX_LEQV = LEQV,
-    LEX_POWER = POWER,
-    LEX_PROMO = PROMO,
-    LEX_RANGE = RANGE,
-    LEX_SHIFT = SHIFT,
-    LEX_LAND = LAND,
-    LEX_LEQ = LEQ,
-    LEX_LGE = LGE,
-    LEX_LOR = LOR,
-    LEX_MUL = MUL,
-    LEX_UNARY = UNARY,
-    LEX_LANDS = LANDS,
-    LEX_LEQS = LEQS,
-    LEX_LGES = LGES,
-    LEX_LORS = LORS,
-    LEX_MULS = MULS,
-    LEX_UNARYS = UNARYS,
-    LEX_FUN = FUN,
-    LEX_VBL = VBL,
-    LEX_MODIF = MODIF;
 
 YYSTYPE *TdiYylvalPtr = &tdiyylval;
 __YYSCLASS tdiyytabelem tdiyyexca[] = {
@@ -489,10 +435,6 @@ __YYSCLASS tdiyytabelem tdiyydef[] = {
   84, 103, 0, 78, 104
 };
 
-typedef struct {
-  char *t_name;
-  int t_val;
-} tdiyytoktype;
 
 
 //#define YYDEBUG
@@ -500,6 +442,11 @@ typedef struct {
 #define YYDEBUG_STATE
 #define YYDEBUG_(msg)
 #else
+typedef struct {
+  char *t_name;
+  int t_val;
+} tdiyytoktype;
+
 #define YYDEBUG_TOKEN \
   if (tdiyychar == 0)\
     printf("end-of-file\n");\
@@ -528,59 +475,9 @@ typedef struct {
 }
 //"
 __YYSCLASS tdiyytoktype tdiyytoks[] = {
- {"ERROR", 257},
- {"IDENT", 258},
- {"POINT", 259},
- {"TEXT", 260},
- {"VALUE", 261},
- {"BREAK", 262},
- {"CASE", 263},
- {"COND", 264},
- {"DEFAULT", 265},
- {"DO", 266},
- {"ELSE", 267},
- {"ELSEW", 268},
- {"FOR", 269},
- {"GOTO", 270},
- {"IF", 271},
- {"LABEL", 272},
- {"RETURN", 273},
- {"SIZEOF", 274},
- {"SWITCH", 275},
- {"USING", 276},
- {"WHERE", 277},
- {"WHILE", 278},
- {"ARG", 279},
- {"CAST", 280},
- {"CONST", 281},
- {"INC", 282},
- {"ADD", 283},
- {"CONCAT", 284},
- {"IAND", 285},
- {"IN", 286},
- {"IOR", 287},
- {"IXOR", 288},
- {"LEQV", 289},
- {"POWER", 290},
- {"PROMO", 291},
- {"RANGE", 292},
- {"SHIFT", 293},
- {"BINEQ", 294},
- {"LAND", 295},
- {"LEQ", 296},
- {"LGE", 297},
- {"LOR", 298},
- {"MUL", 299},
- {"UNARY", 300},
- {"LANDS", 301},
- {"LEQS", 302},
- {"LGES", 303},
- {"LORS", 304},
- {"MULS", 305},
- {"UNARYS", 306},
- {"FUN", 307},
- {"MODIF", 308},
- {"VBL", 309},
+#define DEFINE(NAME,value) {#NAME, value},
+#include "lexdef.h"
+#undef DEFINE
  {",", 44},
  {"`", 96},
  {"=", 61},
@@ -714,7 +611,9 @@ __YYSCLASS char *tdiyyreds[] = {
   "program : ERROR",
   "program : error",
 };
-#endif				/* YYDEBUG */
+#endif	/* YYDEBUG */
+
+
 
 #define YYFLAG  (-3000)
 /* @(#) $Revision$ */
@@ -1460,17 +1359,17 @@ int TdiYacc(){
 	if (tdiyyval.mark.builtin < 0) {
 	  tdiyyval.mark.rptr->dtype = DTYPE_IDENT;
 	} else {
-	  if ((TdiRefFunction[tdiyyval.mark.builtin].token & LEX_M_TOKEN) == (unsigned int)LEX_ARG) {
+	  if ((TdiRefFunction[tdiyyval.mark.builtin].token & LEX_M_TOKEN) == LEX_ARG) {
 	    if (!((TdiRefZone.l_status = TdiYacc_ARG(&tdiyyval.mark)) & 1))
 	      tdiyyerror(0);
 	  } else {
-	    if ((TdiRefFunction[tdiyyval.mark.builtin].token & LEX_M_TOKEN) == (unsigned int)LEX_CONST)
+	    if ((TdiRefFunction[tdiyyval.mark.builtin].token & LEX_M_TOKEN) == LEX_CONST)
 	      _JUST0(tdiyypvt[-0].mark.builtin, tdiyyval.mark);
 	  }
 	}
       } else if (*tdiyyval.mark.rptr->pointer == '_')
 	tdiyyval.mark.rptr->dtype = DTYPE_IDENT;
-      else if (TdiLexPath(tdiyypvt[-0].mark.rptr->length, tdiyypvt[-0].mark.rptr->pointer, &tdiyyval.mark) == ERROR) {
+      else if (TdiLexPath(tdiyypvt[-0].mark.rptr->length, tdiyypvt[-0].mark.rptr->pointer, &tdiyyval.mark) == LEX_ERROR) {
 	TdiRefZone.l_ok = tdiyypvt[-1].mark.w_ok;
 	TdiRefZone.a_cur = TdiRefZone.a_begin + TdiRefZone.l_ok + tdiyypvt[-0].mark.rptr->length;
         return MDSplusERROR;
@@ -1507,7 +1406,7 @@ int TdiYacc(){
     {
       int j;
       tdiyyval.mark = tdiyypvt[-1].mark;
-      tdiyyval.mark.rptr->pointer = (unsigned char *)&OpcFun;
+      tdiyyval.mark.rptr->pointer = (uint8_t *)&OpcFun;
       for (j = tdiyyval.mark.rptr->ndesc; --j >= 0;)
 	tdiyyval.mark.rptr->dscptrs[j + 2] = tdiyyval.mark.rptr->dscptrs[j];
       tdiyyval.mark.rptr->dscptrs[0] = (struct descriptor *)tdiyypvt[-3].mark.rptr;

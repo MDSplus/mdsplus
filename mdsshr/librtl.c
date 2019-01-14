@@ -1663,8 +1663,8 @@ STATIC_ROUTINE char *_FindNextFile(FindFileCtx * ctx, int recursively, int caseB
     dp = readdir(ctx->dir_ptr);
     if (dp != NULL) {
       struct descriptor_d upname = { 0, DTYPE_T, CLASS_D, 0 };
-      DESCRIPTOR_FROM_CSTRING(filename, dp->d_name)
-	  if (caseBlind) {
+      DESCRIPTOR_FROM_CSTRING(filename, dp->d_name);
+      if (caseBlind) {
 	    StrUpcase((struct descriptor *)&upname, &filename);
       } else {
 	    StrCopyDx((struct descriptor *)&upname, &filename);

@@ -7,7 +7,7 @@
 #include <mdsdescrip.h>
 #include <mdstypes.h>
 #include <stdio.h>
-
+#include <usagedef.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -108,10 +108,10 @@ extern int MDSEventAst(const char *eventName, void (*astadr) (void *, int, char 
 extern int MDSEventCan(int eventid);
 extern int MDSWfevent(const char *evname, int buflen, char *data, int *datlen);
 extern int MDSWfeventTimed(const char *evname, int buflen, char *data, int *datlen, int timeout);
-extern char *MdsDtypeString(const unsigned char id);
-extern char *MdsClassString(const unsigned char id);
+extern char *MdsDtypeString(const dtype_t id);
+extern char *MdsClassString(const class_t id);
+extern char *MdsUsageString(const usage_t id);
 extern int MDSprintf(const char *fmt, ...);
-extern char *MdsUsageString(const unsigned char id);
 extern char *TranslateLogical(const char *name);
 extern void TranslateLogicalFree(char *value);
 extern int TranslateLogicalXd(const struct descriptor *in, struct descriptor_xd *out);

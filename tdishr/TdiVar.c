@@ -676,6 +676,8 @@ int TdiDoFun(struct descriptor *ident_ptr,
           MdsFree1Dx(&tmp, NULL);
         }
       }
+      if STATUS_NOT_OK // unable to load python method try tdi alternative
+	status = compile_fun(ident_ptr);
     } else // not a python method, load tdi fun
       status = compile_fun(ident_ptr);
     FREE_NOW(dirspec);

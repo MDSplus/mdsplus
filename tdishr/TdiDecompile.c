@@ -502,7 +502,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
     case DTYPE_QU:
     case DTYPE_O:
     case DTYPE_OU:
-      cdsc.length = (unsigned short)(in_ptr->length * 2.4 + 1.6);
+      cdsc.length = (unsigned short)(TdiREF_CAT[dtype].digits);
       status = TdiConvert(in_ptr, &cdsc);
       if STATUS_OK
 	status = noblanks(&cdsc);
@@ -510,9 +510,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 	struct descriptor sdsc = { 0, DTYPE_T, CLASS_S, 0 };
 	sdsc.length = (unsigned short)strlen(TdiREF_CAT[dtype].name);
 	sdsc.pointer = TdiREF_CAT[dtype].name;
-	status =
-	    StrConcat((struct descriptor *)out_ptr,
-		      (struct descriptor *)out_ptr, &cdsc, &sdsc MDS_END_ARG);
+	status = StrConcat((struct descriptor *)out_ptr,(struct descriptor *)out_ptr, &cdsc, &sdsc MDS_END_ARG);
       }
       break;
     case DTYPE_D:
@@ -521,7 +519,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
     case DTYPE_H:
     case DTYPE_FS:
     case DTYPE_FT:
-      cdsc.length = (unsigned short)((in_ptr->length - 1) * 8 * .30103 + 6.8);
+      cdsc.length = (unsigned short)(TdiREF_CAT[dtype].digits);
       status = closeup((char)TdiREF_CAT[dtype].fname[0], in_ptr, &cdsc);
       if STATUS_OK
 	status = StrAppend(out_ptr, (struct descriptor *)&cdsc);

@@ -4,22 +4,9 @@
 #include <status.h>
 #include <tdishr_messages.h>
 
-#ifdef COM
-#undef COM
-#endif
 #define COM
-
-
-#define COM
-#define OPC(name,NAME, ...) OPC_##NAME,
-typedef enum opcode_e {
+#define OPC(name, ...) extern const unsigned short Opc##name;
 #include <opcbuiltins.h>
-  OPC_INVALID=-1
-} opcode_t;
-#undef OPC
-
-# define OPC(name, ...) extern const unsigned short Opc##name;
-# include <opcbuiltins.h>
 #undef OPC
 
 #define OPC(name, ...) extern int Tdi##name(struct descriptor* first, ...);

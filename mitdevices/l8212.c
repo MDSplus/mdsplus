@@ -347,10 +347,7 @@ static int L8212__STORE(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
   static DESCRIPTOR_FLOAT(coef_d, &coefficient);
   static short offset = 0;
   static struct descriptor_s offset_d = { 2, DTYPE_W, CLASS_S, (char *)&offset };
-#define DESCRIPTOR_VALUE(name)\
-  struct descriptor_function_0 { RECORD_HEAD } name =\
-   {2, DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcValue, 0}
-  static DESCRIPTOR_VALUE(value);
+  static DESCRIPTOR_FUNCTION_0(value,&OpcValue);
   static DESCRIPTOR_FUNCTION_2(add_exp, (unsigned char *)&OpcAdd, &offset_d, &value);
   static DESCRIPTOR_FUNCTION_2(mult_exp, (unsigned char *)&OpcMultiply, &coef_d, &add_exp);
   static DESCRIPTOR(volts_str, "volts");

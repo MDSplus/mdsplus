@@ -28,6 +28,6 @@ struct TdiCatStruct_table {
   unsigned char digits;		/*size of text conversion */
   char *fname;			/*exponent name for floating decompile */
 };
-
+#include <inttypes.h>
 extern const unsigned char TdiCAT_MAX;
 extern const struct TdiCatStruct_table TdiREF_CAT[];
