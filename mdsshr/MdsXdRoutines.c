@@ -66,9 +66,7 @@ inline static char *_align(char *ptr, size_t offset, size_t size) {
 void MdsFixDscLength(struct descriptor *in);
 //static void _checkAlign(struct descriptor *in);
 
-EXPORT int MdsGet1Dx(l_length_t const *length_ptr, dtype_t const *dtype_ptr, struct descriptor_xd *dsc_ptr,
-	      void **zone)
-{
+EXPORT int MdsGet1Dx(const l_length_t *length_ptr, dtype_t const *dtype_ptr, struct descriptor_xd *dsc_ptr, void **zone){
   int status;
   if (dsc_ptr->class == CLASS_XD) {
     if (*length_ptr != dsc_ptr->l_length) {
@@ -79,7 +77,7 @@ EXPORT int MdsGet1Dx(l_length_t const *length_ptr, dtype_t const *dtype_ptr, str
 	status = 1;
       if STATUS_OK
 	status =
-	  LibGetVm((l_length_t*)length_ptr, (void *)&dsc_ptr->pointer, zone);
+	  LibGetVm((unsigned int *)length_ptr, (void *)&dsc_ptr->pointer, zone);
     } else
       status = 1;
     if STATUS_OK {
@@ -107,11 +105,16 @@ EXPORT int MdsFree1Dx(struct descriptor_xd *dsc_ptr, void **zone)
       dsc_ptr->l_length = 0;
     }
   } else if (dsc_ptr->class == CLASS_D)
-    status = LibSFree1Dd((struct descriptor *)dsc_ptr);
+    status = StrFree1Dx((struct descriptor_d *)dsc_ptr);
   else
     status = LibINVSTRDES;
   return status;
 }
+
+typedef struct _bounds {
+  int l;
+  int u;
+} BOUNDS;
 
 STATIC_ROUTINE struct descriptor *FixedArray();
 
@@ -351,15 +354,14 @@ EXPORT int MdsCopyDxXdZ(const struct descriptor *in_dsc_ptr, struct descriptor_x
 		 void *fixup_path_arg)
 {
   unsigned int size;
-  int status;
-  STATIC_CONSTANT dtype_t dsc_dtype = DTYPE_DSC;
+  static dtype_t dsc_dtype = DTYPE_DSC;
 /************************************************
 * Get the total size of the thing to copy so that
 * a contiguous descriptor can be allocated.
 * If something to copy then do it, else clear.
 ************************************************/
   int compressible = 0;
-  status =
+  int status =
       copy_dx((struct descriptor_xd *)in_dsc_ptr, 0, &size, fixup_nid, fixup_nid_arg, fixup_path,
 	      fixup_path_arg, &compressible);
   if (STATUS_OK && size) {
@@ -380,7 +382,7 @@ STATIC_ROUTINE struct descriptor *FixedArray(struct descriptor *in)
 
   array_coeff *a = (array_coeff *) in;
   unsigned int dsize = (unsigned int)sizeof(struct descriptor_a) + 4u + 12u * a->dimct;
-  bound_t *bounds = (bound_t *) & a->m[a->dimct];
+  BOUNDS *bounds = (BOUNDS *) & a->m[a->dimct];
   array_coeff *answer = (array_coeff *) memcpy(malloc(dsize), a, dsize);
   answer->class = CLASS_A;
   answer->aflags.column = 1;
@@ -393,13 +395,11 @@ STATIC_ROUTINE struct descriptor *FixedArray(struct descriptor *in)
   return (struct descriptor *)answer;
 }
 
-EXPORT int MdsCopyDxXd(struct descriptor const *in, struct descriptor_xd *out)
-{
+EXPORT int MdsCopyDxXd(struct descriptor const *in, struct descriptor_xd *out){
   return MdsCopyDxXdZ(in, out, NULL, NULL, NULL, NULL, NULL);
 }
 
-void MdsFixDscLength(struct descriptor *in)
-{
+void MdsFixDscLength(struct descriptor *in){
   switch (in->dtype) {
   default:
     break;

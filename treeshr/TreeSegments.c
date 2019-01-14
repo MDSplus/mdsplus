@@ -1491,15 +1491,14 @@ int TreePutDsc(TREE_INFO * tinfo, int nid_in, struct descriptor *dsc, int64_t * 
 {
   EMPTYXD(xd);
   int compressible;
-  unsigned int dlen;
-  unsigned int reclen;
+  l_length_t ddlen, reclen;
   dtype_t dtype;
   class_t class;
   int data_in_altbuf;
   NID *nid = (NID *) & nid_in;
   unsigned char tree = nid->tree;
   int status = MdsSerializeDscOutZ(dsc, &xd, TreeFixupNid, &tree, 0, 0, compress,
-                                   &compressible, &dlen, &reclen, &dtype, &class, 0, 0,
+                                   &compressible, &ddlen, &reclen, &dtype, &class, 0, 0,
                                    &data_in_altbuf);
   if (STATUS_OK && xd.pointer && xd.pointer->class == CLASS_A && xd.pointer->pointer) {
     struct descriptor_a *ap = (struct descriptor_a *)xd.pointer;

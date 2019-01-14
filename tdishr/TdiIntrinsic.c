@@ -244,7 +244,7 @@ void cleanup_list(void* fixed_in) {
 	free(fixed->a[fixed->n]);
 }
 
-EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+EXPORT int TdiIntrinsic(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status;
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
@@ -397,7 +397,7 @@ EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct 
   FREE_CANCEL(a_begin);
   return status;
 }
-EXPORT int _TdiIntrinsic(void** ctx, int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+EXPORT int _TdiIntrinsic(void** ctx, opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
   int status;
   CTX_PUSH(ctx);
   status = TdiIntrinsic(opcode, narg, list, out_ptr);

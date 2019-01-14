@@ -44,13 +44,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 int Tdi3MdsDefault(struct descriptor *in_ptr __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
   char value[4096];
-  STATIC_CONSTANT dtype_t dtype = (unsigned char)DTYPE_T;
+  STATIC_CONSTANT dtype_t dtype = DTYPE_T;
   int retlen, status;
-  struct dbi_itm lst[] = { {sizeof(value), DbiDEFAULT, 0, 0}
-			   , {0, DbiEND_OF_LIST, 0, 0}
+  struct dbi_itm lst[] = { {sizeof(value), DbiDEFAULT, 0, 0} , {0, DbiEND_OF_LIST, 0, 0}
   };
   length_t len;
-  lst[0].pointer = (unsigned char *)value;
+  lst[0].pointer = (uint8_t *)value;
   lst[0].return_length_address = &retlen;
   status = TreeGetDbi(lst);
   if STATUS_OK {

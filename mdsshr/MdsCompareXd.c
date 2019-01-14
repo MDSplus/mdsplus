@@ -73,7 +73,7 @@ EXPORT int MdsCompareXd(const struct descriptor *dsc1_ptr, const struct descript
     if (d1->dtype == d2->dtype) {
       switch (d1->class) {
       default:
-	return 0;
+	return 0; // TODO: handle missing classes
       case CLASS_S:
       case CLASS_D:
 	if (((d2->class == CLASS_S) || (d2->class == CLASS_D)) && (d1->length == d2->length))
@@ -138,7 +138,7 @@ EXPORT int MdsCompareXd(const struct descriptor *dsc1_ptr, const struct descript
 	      else if (d1->class == CLASS_CA)
 		isequal = MdsCompareXd((struct descriptor *)a1->pointer,(struct descriptor *)a2->pointer);
 	      else {//d1->class == CLASS_APD
-		unsigned int i, nelts = a1->arsize / a1->length;
+		l_length_t i, nelts = a1->arsize / a1->length;
 		struct descriptor *ptr1 = (struct descriptor *)a1->pointer;
 		struct descriptor *ptr2 = (struct descriptor *)a2->pointer;
 		for (i = 0; isequal && (i < nelts);) {

@@ -3,7 +3,6 @@
 #else
 #ifndef TDITHREADSAFE_H
 #define TDITHREADSAFE_H
-#include <mdsdescrip.h>
 #include <pthread_port.h>
 
 typedef struct _thread_static {

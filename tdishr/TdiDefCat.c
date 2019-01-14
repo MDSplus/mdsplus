@@ -106,4 +106,4 @@ const struct TdiCatStruct_table TdiREF_CAT[] = {
   {"FTC", 0x9707, 16, 48, FT_SYM}	/*55 ieee double floating complex */
 };
 
-const unsigned char TdiCAT_MAX = sizeof(TdiREF_CAT) / sizeof(struct TdiCatStruct_table);
+const tdicat_t TdiCAT_MAX = sizeof(TdiREF_CAT) / sizeof(struct TdiCatStruct_table);

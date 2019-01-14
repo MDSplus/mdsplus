@@ -34,8 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libroutines.h>
 #include <tdishr.h>
 
-extern int TdiIntrinsic();
-extern int _TdiIntrinsic();
 #define COM
 #define OPC(name,NAME, ...) \
 extern EXPORT int Tdi##name ( struct descriptor *first, ... ){\

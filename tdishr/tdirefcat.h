@@ -15,21 +15,21 @@
 #define TdiCAT_F		(0x8000 | TdiCAT_FLOAT | 3)
 #define TdiCAT_D		(0x8000 | TdiCAT_FLOAT | 7)
 #define TdiCAT_FC		(TdiCAT_COMPLEX | TdiCAT_F)
-
+typedef uint16_t tdicat_t;
 struct TdiCatStruct {
-  unsigned short in_cat;
+  tdicat_t in_cat;
   dtype_t in_dtype;
-  unsigned short out_cat;
+  tdicat_t out_cat;
   dtype_t out_dtype;
-  unsigned short digits;
+  length_t digits;
 };
 struct TdiCatStruct_table {
   char *name;			/*text for decompile */
-  unsigned short cat;		/*category code */
-  unsigned char length;		/*size in bytes */
+  tdicat_t cat;			/*category code */
+  length_t length;		/*size in bytes */
   unsigned char digits;		/*size of text conversion */
   char *fname;			/*exponent name for floating decompile */
 };
 #include <inttypes.h>
-extern const unsigned char TdiCAT_MAX;
+extern const tdicat_t TdiCAT_MAX;
 extern const struct TdiCatStruct_table TdiREF_CAT[];

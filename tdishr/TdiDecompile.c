@@ -377,7 +377,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
   char c0[85], *cptr, *bptr;
   struct descriptor cdsc = { 11, DTYPE_T, CLASS_S, 0 };
   struct descriptor t2 = { 0, DTYPE_T, CLASS_S, 0 };
-  int status = MDSplusSUCCESS, j, dtype, n1, n2;
+  int status = MDSplusSUCCESS, j, n1, n2;
   char n1c;
   cdsc.pointer = c0;
 	/******************
@@ -386,7 +386,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
   if (!in_ptr)
     return StrAppend(out_ptr, (struct descriptor *)&STAR);
 
-  dtype = in_ptr->dtype;
+  dtype_t dtype = (dtype_t)in_ptr->dtype;
   switch (in_ptr->class) {
   default:
     status = StrAppend(out_ptr, (struct descriptor *)&CLASS);
