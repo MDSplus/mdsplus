@@ -4,6 +4,7 @@
 #ifndef WINDOWS_H
 #include <mdsplus/mdsconfig.h>
 #endif
+#include <usagedef.h>
 #include <mdsdescrip.h>
 #include <mdstypes.h>
 #include <stdio.h>
@@ -69,23 +70,17 @@ extern "C" {
 /// \return status value. Either 1 for success or LibSTRTRU status code if data is not compressible
 ///
 
-extern int MdsCompress(const struct descriptor *cimage, const struct descriptor *centry,
-		       const struct descriptor *in, struct descriptor_xd *out);
+extern int MdsCompress(const struct descriptor *cimage, const struct descriptor *centry, const struct descriptor *in, struct descriptor_xd *out);
 extern int MdsCompareXd(const struct descriptor *dsc1_ptr, const struct descriptor *dsc2_ptr);
 extern int MdsDecompress(const struct descriptor_r *rec_ptr, struct descriptor_xd *out_ptr);
 extern int MdsCopyDxXd(const struct descriptor *in, struct descriptor_xd *out);
-extern int MdsCopyDxXdZ(const struct descriptor *in, struct descriptor_xd *out, void **zone,
-				 int (*fixup_nid) (), void *fixup_nid_arg, int (*fixup_path) (),
-				 void *fixup_path_arg);
+extern int MdsCopyDxXdZ(const struct descriptor *in, struct descriptor_xd *out, void **zone, int (*fixup_nid) (), void *fixup_nid_arg, int (*fixup_path) (), void *fixup_path_arg);
 extern char *MdsDescrToCstring(const struct descriptor *string_dsc);
 extern int MDSfprintf(FILE * fp, char const *fmt, ...);
 extern void MdsFree(void *);
-extern int MdsGet1Dx(const unsigned int *len, const unsigned char *dtype, struct descriptor_xd *dsc,
-			      void **zone);
-extern int MdsGet1DxA(const struct descriptor_a *in, const unsigned short *len, const unsigned char *dtype,
-			       struct descriptor_xd *out);
-extern int MdsGet1DxS(const unsigned short *len, const unsigned char *dtype,
-			       struct descriptor_xd *out);
+extern int MdsGet1Dx(const l_length_t *len, const dtype_t *dtype, struct descriptor_xd *dsc, void **zone);
+extern int MdsGet1DxA(const struct descriptor_a *in, const length_t *len, const dtype_t *dtype, struct descriptor_xd *out);
+extern int MdsGet1DxS(const length_t *len, const dtype_t *dtype, struct descriptor_xd *out);
 extern char *MdsGetMsg(int sts);
 extern void MdsGetMsgDsc(int status, struct descriptor *out);
 extern int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, const char **text_out);
@@ -97,14 +92,13 @@ extern int MdsSerializeDscIn(const char *in, struct descriptor_xd *out);
 extern int MdsSerializeDscOutZ(const struct descriptor *in, struct descriptor_xd *out,
 					int (*fixupNid) (), void *fixupNidArg, int (*fixupPath) (),
 					void *fixupPathArg, int compress, int *compressible,
-					unsigned int *length, unsigned int *reclen,
-					unsigned char *dtype, unsigned char *classType,
+					l_length_t *length, l_length_t *reclen,
+					dtype_t  *dtype,  class_t *classType,
 					int altbuflen, void *altbuf, int *data_in_altbuf);
 extern int MdsSerializeDscOut(const struct descriptor *in, struct descriptor_xd *out);
 extern int MDSSetEventTimeout(int seconds);
 extern int MDSEvent(const char *eventName, int num_bytes, char *data);
-extern int MDSEventAst(const char *eventName, void (*astadr) (void *, int, char *),
-				void *astprm, int *eventid);
+extern int MDSEventAst(const char *eventName, void (*astadr) (void *, int, char *), void *astprm, int *eventid);
 extern int MDSEventCan(int eventid);
 extern int MDSWfevent(const char *evname, int buflen, char *data, int *datlen);
 extern int MDSWfeventTimed(const char *evname, int buflen, char *data, int *datlen, int timeout);

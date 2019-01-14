@@ -76,8 +76,8 @@ STATIC_CONSTANT struct item {
   unsigned int item_mask;
   unsigned int item_test;
   char item_code;
-  unsigned char item_dtype;
-  unsigned short item_length;
+  dtype_t item_dtype;
+  length_t item_length;
 } table[] = {
   {
   "BROTHER", 0, 0, NciBROTHER, DTYPE_NID, 4}, {
@@ -160,7 +160,7 @@ STATIC_CONSTANT struct item {
 
 STATIC_CONSTANT struct usage_item {
   char *usage_name;
-  char usage_code;
+  usage_t usage_code;
 } usage_table[] = {
   {
   "ACTION", TreeUSAGE_ACTION,}, {
@@ -432,8 +432,8 @@ int Tdi1GetNci(opcode_t opcode __attribute__ ((unused)),
                 First get size, then data.
                 *************************/
     else if (key_ptr->item_test) {
-      const uint8_t  dtype = (unsigned char)DTYPE_NID;
-      const uint16_t dlen  = sizeof(nid);
+      const dtype_t  dtype = DTYPE_NID;
+      const length_t dlen  = (length_t)sizeof(nid);
       array arr = *(array *) & arr0;
       NCI_ITM tested[2] = { {sizeof(int), 0, 0, 0}, EOL };
       tested[0].code = key_ptr->item_test;
@@ -511,7 +511,7 @@ int Tdi1GetNci(opcode_t opcode __attribute__ ((unused)),
       status = MdsCopyDxXd((struct descriptor *)holda_ptr->pointer, out_ptr);
     else if (maxlen > 0) {
       array arr = *(array *) & arr0;
-      unsigned char dtype = DTYPE_T;
+      dtype_t dtype = DTYPE_T;
       arr.arsize = outcount;
       status =
 	  MdsGet1DxA((struct descriptor_a *)&arr, &maxlen, &dtype, (struct descriptor_xd *)out_ptr);
@@ -527,8 +527,8 @@ int Tdi1GetNci(opcode_t opcode __attribute__ ((unused)),
       }
 
     } else {
-      unsigned short dlen = sizeof(int *);
-      unsigned char dtype = (unsigned char)DTYPE_L;
+      length_t dlen = (length_t)sizeof(int *);
+      dtype_t dtype = DTYPE_L;
       status = MdsGet1DxA(holda_ptr, &dlen, &dtype, &tmp);
       if STATUS_OK {
 	char **xd_ptr = (char **)tmp.pointer->pointer;

@@ -562,6 +562,7 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
   STATIC_CONSTANT octaword_aligned zero = { {0} };
 
   switch (in1->dtype) {
+  default:break;
   case DTYPE_FC:
   case DTYPE_FSC:
   case DTYPE_DC:
@@ -575,6 +576,7 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
   if STATUS_NOT_OK
     return status;
   switch (in1->dtype) {
+  default:break;
   case DTYPE_BU:
     out->dtype = DTYPE_B;
     break;

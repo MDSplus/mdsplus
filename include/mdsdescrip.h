@@ -17,15 +17,23 @@
 #define __fill_name__
 #define __fill_value__
 #endif				/* _WINDOWS */
+
+#ifdef MDSOBJECTSCPPSHRVS_EXPORTS
+# define TYPEDEF(bytes) enum
+# define ENDDEF(type,name) ;typedef type name;
+#else
+# define TYPEDEF(bytes) typedef enum __attribute__((__packed__))
+# define ENDDEF(type,name) name;
+#endif
+
 typedef uint16_t length_t;
 
-enum{
+TYPEDEF(1) {
 #define DEFINE(NAME,value) DTYPE_##NAME = value,
 # include "dtypedef.h"
 #undef DEFINE
   DTYPE_UNDEFINED=0
-};
-typedef uint8_t dtype_t;
+} ENDDEF(uint8_t,dtype_t);
 
 #define DTYPE_Z DTYPE_MISSING
 #define DTYPE_NATIVE_FLOAT DTYPE_FS
@@ -41,24 +49,21 @@ typedef uint8_t dtype_t;
 #define DTYPE_DOUBLE DTYPE_NATIVE_DOUBLE
 #endif
 
-
-enum{
+TYPEDEF(1) {
 #define DEFINE(NAME,value) CLASS_##NAME = value,
 # include "classdef.h"
 #undef DEFINE
   CLASS_MISSING=0
-};
-typedef uint8_t class_t;
+} ENDDEF(uint8_t,class_t);
 
-enum{ //align(2)
+TYPEDEF(2) {
 #define COM
 #define OPC(name,NAME, ...) OPC_##NAME,
 # include "opcbuiltins.h"
 #undef OPC
 #undef COM
   TdiFUNCTION_MAX
-};
-typedef uint16_t opcode_t;
+} ENDDEF(uint16_t,opcode_t);
 
 #ifdef __cplusplus
 # define MDSDSC_HEAD(ptr_type)	\
@@ -435,13 +440,12 @@ typedef struct descriptor_action {
 /*****************************************************
   So far three types of scheduling are supported.
 *****************************************************/
-enum {
+TYPEDEF(1) {
 TreeSCHED_NONE	=0,
 TreeSCHED_ASYNC	=1,
 TreeSCHED_SEQ	=2,
-TreeSCHED_COND	=3,
-};
-typedef uint8_t treesched_t;
+TreeSCHED_COND	=3
+} ENDDEF(uint8_t,treesched_t);
 
 typedef struct descriptor_dispatch {
   RECORD_HEAD(treesched_t)
@@ -537,11 +541,10 @@ typedef struct descriptor_method {
   name = {0, DTYPE_METHOD, CLASS_R, 0, 3, __fill_value__\
 	(mdsdsc_t *)timeout, (mdsdsc_t *)method, (mdsdsc_t *)object}
 
-enum {
+TYPEDEF(1) {
 TreeDEPENDENCY_AND     =10,
 TreeDEPENDENCY_OR      =11
-};
-typedef uint8_t treedep_t;
+} ENDDEF(uint8_t,treedep_t);
 
 typedef struct descriptor_dependency {
   RECORD_HEAD(treedep_t)
@@ -552,12 +555,11 @@ typedef struct descriptor_dependency {
   name = {(length_t)sizeof(treedep_t), DTYPE_DEPENDENCY, CLASS_R, (treedep_t*)mode_ptr, 2, __fill_value__\
 	(mdsdsc_t *)arg_1, (mdsdsc_t *)arg_2}
 
-enum {
+TYPEDEF(1) {
 TreeNEGATE_CONDITION   =7,
 TreeIGNORE_UNDEFINED   =8,
 TreeIGNORE_STATUS      =9,
-};
-typedef uint8_t treecond_t;
+} ENDDEF(uint8_t,treecond_t);
 
 typedef struct descriptor_condition {
   RECORD_HEAD(treecond_t)
@@ -655,4 +657,6 @@ typedef ARRAY(int) array_int;
 typedef ARRAY(mdsdsc_t*) array_desc;
 typedef SIGNAL(MAXDIM) signal_maxdim;
 
+#undef TYPEDEF
+#undef ENDDEF
 #endif

@@ -1244,9 +1244,9 @@ int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *v
       if (vars->local_nci.flags2 & NciM_DATA_IN_ATT_BLOCK) {
         EMPTYXD(dsc);
         struct descriptor *dptr;
-        unsigned char dsc_dtype = DTYPE_DSC;
-        int dlen = vars->local_nci.length - 8;
-        unsigned int ddlen = dlen + sizeof(struct descriptor);
+        dtype_t dsc_dtype = DTYPE_DSC;
+        length_t dlen = vars->local_nci.length - 8;
+        l_length_t ddlen = dlen + sizeof(struct descriptor);
         status = MdsGet1Dx(&ddlen, &dsc_dtype, &dsc, 0);
         dptr = dsc.pointer;
         dptr->length = dlen;
@@ -1493,7 +1493,8 @@ int TreePutDsc(TREE_INFO * tinfo, int nid_in, struct descriptor *dsc, int64_t * 
   int compressible;
   unsigned int dlen;
   unsigned int reclen;
-  unsigned char dtype, class;
+  dtype_t dtype;
+  class_t class;
   int data_in_altbuf;
   NID *nid = (NID *) & nid_in;
   unsigned char tree = nid->tree;

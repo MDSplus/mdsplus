@@ -45,8 +45,8 @@ typedef struct nci {
   unsigned char spare;
   int64_t time_inserted;
   unsigned int owner_identifier;
-  unsigned char class;
-  unsigned char dtype;
+  class_t class;
+  dtype_t dtype;
   unsigned int length;
   unsigned char spare2;
   unsigned int status;
@@ -76,9 +76,11 @@ typedef struct extended_attributes {
   int facility_length[FACILITIES_PER_EA];
 } EXTENDED_ATTRIBUTES;
 
-#define STANDARD_RECORD_FACILITY  0
-#define SEGMENTED_RECORD_FACILITY 1
-#define NAMED_ATTRIBUTES_FACILITY 2
+enum{
+STANDARD_RECORD_FACILITY  =0,
+SEGMENTED_RECORD_FACILITY =1,
+NAMED_ATTRIBUTES_FACILITY =2
+};
 
 typedef struct segment_header {
   unsigned char dtype;

@@ -121,7 +121,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
   int step_bef = 0, step_dim = 0, step_aft = 0;
   int count_bef = 1, count_dim = 1, count_aft = 1;
   unsigned short digits, head;
-  unsigned char out_dtype;
+  dtype_t out_dtype;
 
 	/******************************************
         Fetch signals and data and data's category.

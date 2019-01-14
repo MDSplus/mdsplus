@@ -47,8 +47,8 @@ STATIC_CONSTANT DESCRIPTOR(coloncolon, "::");
 STATIC_CONSTANT struct item {
   char *item_name;
   char item_code;
-  unsigned char item_dtype;
-  unsigned char item_length;
+  dtype_t item_dtype;
+  uint8_t item_length;
 } table[] = {
   {
   "DEFAULT", DbiDEFAULT, DTYPE_T, 0}, {
@@ -136,7 +136,7 @@ int Tdi1GetDbi(opcode_t opcode __attribute__ ((unused)),
   if STATUS_OK {
     lst[1].code = key_ptr->item_code;
     if ((lst[1].buffer_length = key_ptr->item_length) != 0) {
-      status = MdsGet1DxS((unsigned short *)&lst[1].buffer_length, &key_ptr->item_dtype, out_ptr);
+      status = MdsGet1DxS((length_t*)&lst[1].buffer_length, &key_ptr->item_dtype, out_ptr);
       if STATUS_OK {
 	lst[1].pointer = (unsigned char *)out_ptr->pointer->pointer;
 	status = TreeGetDbi(lst);

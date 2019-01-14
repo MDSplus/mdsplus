@@ -482,7 +482,7 @@ static char *recGetUnits(struct descriptor *dsc, int isX)
 	    rDsc = (struct descriptor_r *)dsc;
 	    if(rDsc->ndesc == 1)
 		return recGetUnits(rDsc->dscptrs[0], isX);
-	    if(rDsc->dtype == DTYPE_FUNCTION && rDsc->pointer && (*(short *)rDsc->pointer == OpcAdd || *(short *)rDsc->pointer == OpcSubtract))
+	    if(rDsc->dtype == DTYPE_FUNCTION && rDsc->pointer && (*(opcode_t*)rDsc->pointer == OPC_ADD || *(opcode_t*)rDsc->pointer == OPC_SUBTRACT))
 	    {
 		units = recGetUnits(rDsc->dscptrs[0], isX);
 		if(!units) return NULL;
@@ -499,9 +499,9 @@ static char *recGetUnits(struct descriptor *dsc, int isX)
 		}
 		return units;
 	    }
-	    if(rDsc->dtype == DTYPE_FUNCTION && rDsc->pointer && (*(short *)rDsc->pointer == OpcMultiply || *(short *)rDsc->pointer == OpcDivide))
+	    if(rDsc->dtype == DTYPE_FUNCTION && rDsc->pointer && (*(opcode_t*)rDsc->pointer == OPC_MULTIPLY || *(opcode_t*)rDsc->pointer == OPC_DIVIDE))
 	    {
-		mulDiv = (*(short *)rDsc->pointer == OpcMultiply)?"*":"/";
+		mulDiv = (*(opcode_t*)rDsc->pointer == OPC_MULTIPLY)?"*":"/";
 		unitsArr = (char **)malloc(sizeof(char *) * rDsc->ndesc);
 		unitsLen = rDsc->ndesc;
 	    	for(i = 0; i < rDsc->ndesc; i++)

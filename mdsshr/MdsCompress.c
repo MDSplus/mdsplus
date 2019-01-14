@@ -260,7 +260,7 @@ EXPORT int MdsCompress(const struct descriptor *cimage_ptr,
 {
   int status = 1;
   struct descriptor_xd work;
-  STATIC_CONSTANT unsigned char dsc_dtype = DTYPE_DSC;
+  STATIC_CONSTANT dtype_t dsc_dtype = DTYPE_DSC;
   if (in_ptr == 0)
     return MdsFree1Dx(out_ptr, NULL);
   switch (in_ptr->class) {

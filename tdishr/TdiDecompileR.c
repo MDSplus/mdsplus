@@ -49,7 +49,7 @@ extern int TdiSingle();
 
 STATIC_CONSTANT struct op_rec {
   char *symbol;
-  short opcode;
+  opcode_t opcode;
   char prec, lorr;
 } binary[] = {
   {
@@ -443,7 +443,7 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	r_ptr = (struct descriptor_r *)pin;
 	newone = (int)opcode;
  first:for (pop = binary; pop->opcode; pop++)
-	  if (pop->opcode == newone)
+	  if ((int)pop->opcode == newone)
 	    break;
 	newone = pop->prec;
 	lorr = pop->lorr;

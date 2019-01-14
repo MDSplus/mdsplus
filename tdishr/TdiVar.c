@@ -150,8 +150,8 @@ struct descriptor *Tdi3Narg(){
 */
 int TdiPutLogical(unsigned char data, struct descriptor_xd *out_ptr){
   INIT_STATUS;
-  unsigned short len = (unsigned short)sizeof(unsigned char);
-  unsigned char dtype = (unsigned char)DTYPE_BU;
+  length_t len = (length_t)sizeof(unsigned char);
+  dtype_t dtype = DTYPE_BU;
   if (!out_ptr)
     return TdiNULL_PTR;
   status = MdsGet1DxS(&len, &dtype, out_ptr);
