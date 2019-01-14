@@ -208,7 +208,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 
 #define ADD_NODE_EXPR(name, usage)\
     {   DESCRIPTOR(expr_d, expr);\
-	int curr_usage = usage;\
+	usage_t curr_usage = usage;\
 	struct descriptor_xd comp_expr_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};\
 	status = TdiCompile((struct descriptor *)&expr_d, &comp_expr_xd MDS_END_ARG);\
 	if(!(status & 1)) {TreeSetDefaultNid(old_nid); return status;}\
