@@ -125,16 +125,6 @@ typedef struct named_attributes_index {
   NAMED_ATTRIBUTE attribute[NAMED_ATTRIBUTES_PER_INDEX];
 } NAMED_ATTRIBUTES_INDEX;
 
-#if defined(__GNUC__) || defined(__APPLE__)
-#define PACK_ATTR __attribute__ ((__packed__))
-#define PACK_START
-#define PACK_STOP
-#else
-#define PACK_ATTR
-#define PACK_START #pragma pack(1)
-#define PACK_STOP   #pragma pack(4)
-#endif
-
 #if defined(WORDS_BIGENDIAN)
 
 #define swapquad(ptr) ( (((int64_t)((unsigned char *)ptr)[7]) << 56) | (((int64_t)((unsigned char *)ptr)[6]) << 48) | \
@@ -215,11 +205,6 @@ typedef struct nid {
 
 typedef char NODE_NAME[12];
 
-#ifdef _WIN32
-#pragma pack(push,1)
-#else
-PACK_START
-#endif
 /*********************************************
  Linkages to other nodes via parent, brother,
  member and child node links are expressed in
@@ -228,6 +213,7 @@ PACK_START
  -sizeof(NODE). To connect to the following
  node it should be set to sizeof(NODE) etc.
 *********************************************/
+#pragma pack(push,1)
 typedef struct node {
   NODE_NAME name;
   int parent;
@@ -235,10 +221,11 @@ typedef struct node {
   int brother;
   int child;
   unsigned char usage;
-  unsigned short conglomerate_elt PACK_ATTR;
+  unsigned short conglomerate_elt;
   char fill;
   int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
 } NODE;
+#pragma pack(pop)
 
 #ifdef EMPTY_NODE
 static NODE empty_node = { {'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' ', ' '} ,
@@ -327,17 +314,13 @@ typedef struct {
 RECORD_HEADER
 VFC portion of file.
 ***************************************/
+#pragma pack(push,1)
 typedef struct record_header {
-  unsigned short rlength PACK_ATTR;
-  int node_number PACK_ATTR;
+  unsigned short rlength;
+  int node_number;
   RFA rfa;
 } RECORD_HEADER;
-
-#ifdef _WIN32
 #pragma pack(pop)
-#else
-PACK_STOP
-#endif
 
 /*****************************************************
 *     New Search structures
