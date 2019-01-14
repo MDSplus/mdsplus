@@ -31,6 +31,7 @@
 ./usr/local/mdsplus/mdsobjects/python/tests/dclUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/devices
 ./usr/local/mdsplus/mdsobjects/python/tests/devices/TestDevice.py
+./usr/local/mdsplus/mdsobjects/python/tests/devices/TestDeviceCodeIn.py
 ./usr/local/mdsplus/mdsobjects/python/tests/devicesUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/exceptionUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/images

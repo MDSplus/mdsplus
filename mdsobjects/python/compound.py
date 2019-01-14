@@ -291,6 +291,11 @@ class Conglom(Compound):
             raise _exc.DevNOT_A_PYDEVICE
         model = str(self.model)
         safe_env = {}
+        try:
+            exec '\n'.join(map(str,self.name.data())) in globals()
+            return globals()[model](*args,**kwargs)
+        except:
+            pass
         qualifiers = self.qualifiers.data()
         if isinstance(qualifiers,_N.generic): qualifiers = qualifiers.tolist()
         if isinstance(qualifiers,list):       qualifiers = ';'.join(qualifiers)  # make it a list of statements

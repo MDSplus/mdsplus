@@ -3114,7 +3114,10 @@ If you did intend to write to a subnode of the device you should check the prope
         if isinstance(name,_scr.Ident):
             name=name.data()
         head=parent.addNode(name,'DEVICE')
-        head.record=_cmp.Conglom('__python__',cls.__name__,None,cls.getImportString())
+        if hasattr(cls,'devcode'):
+            head.record=_cmp.Conglom('__python__',cls.__name__,cls.devcode.split('\n'),None)
+        else:
+            head.record=_cmp.Conglom('__python__',cls.__name__,None,cls.getImportString())
         head=TreeNode(head)
         head.write_once=True
         glob = _mimport('__init__').load({})

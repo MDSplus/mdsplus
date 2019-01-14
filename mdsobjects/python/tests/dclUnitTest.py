@@ -65,6 +65,7 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
     def interface(self):
         with Tree(self.tree,self.shot,'new') as pytree:
             Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE')
+            Device.PyDevice('TestDeviceCodeIn').Add(pytree,'CI_DEVICE')
             pytree.write()
         self.assertEqual(dcl('help set verify',1,1,0)[1],None)
         self.assertEqual(tcl('help set tree',1,1,0)[1],None)
@@ -80,9 +81,13 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         self._doTCLTest('edit PYTREE/shot=%d'%(self.shot,))
         self._doTCLTest('add node TCL_NUM/usage=numeric')
         self._doTCLTest('add node TCL_PY_DEV/model=TESTDEVICE')
+        self._doTCLTest('add node TCL_PY_DEV_2/model=TESTDEVICECODEIN')
         self._doTCLTest('do TESTDEVICE:TASK_TEST')
         self._doExceptionTest('do TESTDEVICE:TASK_ERROR1',Exc.DevUNKOWN_STATE)
         self._doExceptionTest('do TESTDEVICE:TASK_ERROR2',Exc.DevUNKOWN_STATE)
+        self._doTCLTest('do CI_DEVICE:TASK_TEST')
+        self._doExceptionTest('do CI_DEVICE:TASK_ERROR1',Exc.DevUNKOWN_STATE)
+        self._doExceptionTest('do CI_DEVICE:TASK_ERROR2',Exc.DevUNKOWN_STATE)
         self._doExceptionTest('close',Exc.TreeWRITEFIRST)
         self._doTCLTest('write')
         self._doTCLTest('close')
@@ -103,6 +108,7 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         shot = self.shot+1
         with Tree(self.tree,shot,'new') as pytree:
             Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE')
+            Device.PyDevice('TestDeviceCodeIn').Add(pytree,'CI_DEVICE')
             pytree.write()
         monitor,monitor_port = self._setup_mdsip('ACTION_MONITOR','MONITOR_PORT',7010+self.index,False)
         monitor_opt = "/monitor=%s"%monitor if monitor_port>0 else ""
@@ -111,6 +117,8 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         pytree.normal()
         pytree.TESTDEVICE.ACTIONSERVER.no_write_shot = False
         pytree.TESTDEVICE.ACTIONSERVER.record = server
+        pytree.CI_DEVICE.ACTIONSERVER.no_write_shot = False
+        pytree.CI_DEVICE.ACTIONSERVER.record = server
         """ using dispatcher """
         mon,mon_log,svr,svr_log = (None,None,None,None)
         try:
@@ -155,6 +163,7 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
             self._doTCLTest('close/all')
         pytree.readonly()
         self.assertTrue(pytree.TESTDEVICE.INIT1_DONE.record <= pytree.TESTDEVICE.INIT2_DONE.record)
+        self.assertTrue(pytree.CI_DEVICE.INIT1_DONE.record <= pytree.CI_DEVICE.INIT2_DONE.record)
 
     def timeout(self,full=False):
         def test_timeout(c,expr,to):
