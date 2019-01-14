@@ -47,7 +47,7 @@ typedef struct nci {
   unsigned int owner_identifier;
   class_t class;
   dtype_t dtype;
-  unsigned int length;
+  l_length_t length;
   unsigned char spare2;
   unsigned int status;
   union {
@@ -83,10 +83,10 @@ NAMED_ATTRIBUTES_FACILITY =2,
 };
 
 typedef struct segment_header {
-  unsigned char dtype;
+  dtype_t dtype;
   char dimct;
   int dims[8];
-  short length;
+  length_t length;
   int idx;
   int next_row;
   int64_t index_offset;

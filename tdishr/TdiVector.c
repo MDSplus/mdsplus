@@ -170,8 +170,7 @@ int Tdi1Vector(opcode_t opcode, int narg, struct descriptor *list[], struct desc
         ***************************/
   if STATUS_OK
     status =
-	MdsGet1DxA((struct descriptor_a *)&arr, &(*pcats)[narg].digits,
-		   &(*pcats)[narg].out_dtype, out_ptr);
+	MdsGet1DxA((struct descriptor_a *)&arr, &(*pcats)[narg].digits, &(*pcats)[narg].out_dtype, out_ptr);
 
 	/*********************************
         Accumulate all arrays and scalars.

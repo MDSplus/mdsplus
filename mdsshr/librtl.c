@@ -687,8 +687,7 @@ EXPORT int StrPosition(struct descriptor *source, struct descriptor *substring, 
   return answer;
 }
 
-EXPORT int StrCopyR(struct descriptor *dest, const unsigned short *len, char *source)
-{
+EXPORT int StrCopyR(struct descriptor *dest, const length_t *len, char *source){
   const struct descriptor s = { *len, DTYPE_T, CLASS_S, source };
   return StrCopyDx(dest, &s);
 }
@@ -708,7 +707,7 @@ EXPORT int StrLenExtr(struct descriptor *dest, struct descriptor *source, int *s
   return status;
 }
 
-EXPORT int StrGet1Dx(const unsigned short *len, struct descriptor_d *out)
+EXPORT int StrGet1Dx(const length_t *len, struct descriptor_d *out)
 {
   if (out->class != CLASS_D)
     return LibINVSTRDES;
@@ -730,8 +729,7 @@ EXPORT int StrGet1Dx(const unsigned short *len, struct descriptor_d *out)
 //  return 1;
 //}
 
-int LibSFree1Dd(struct descriptor_d *out)
-{
+int LibSFree1Dd(struct descriptor_d *out){
   return StrFree1Dx(out);
 }
 
@@ -770,8 +768,7 @@ EXPORT int StrCopyDx(struct descriptor *out, const struct descriptor *in)
   return MDSplusSUCCESS;
 }
 
-EXPORT int StrCompare(struct descriptor *str1, struct descriptor *str2)
-{
+EXPORT int StrCompare(struct descriptor *str1, struct descriptor *str2){
   char *str1c = MdsDescrToCstring(str1);
   char *str2c = MdsDescrToCstring(str2);
   int ans;
@@ -781,8 +778,7 @@ EXPORT int StrCompare(struct descriptor *str1, struct descriptor *str2)
   return ans;
 }
 
-EXPORT int StrUpcase(struct descriptor *out, struct descriptor *in)
-{
+EXPORT int StrUpcase(struct descriptor *out, struct descriptor *in){
   unsigned int outlength,i;
   StrCopyDx(out, in);
   outlength = (out->class == CLASS_A) ? ((struct descriptor_a *)out)->arsize : out->length;
@@ -1622,9 +1618,9 @@ STATIC_ROUTINE int FindFileStart(struct descriptor *filespec, FindFileCtx ** ctx
   memset(*ctx, 0, sizeof(FindFileCtx));
   lctx = *ctx;
 
-  CSTRING_FROM_DESCRIPTOR(fspec, filespec)
+  CSTRING_FROM_DESCRIPTOR(fspec, filespec);
 
-      lctx->next_index = lctx->next_dir_index = 0;
+  lctx->next_index = lctx->next_dir_index = 0;
   colon = strchr(fspec, ':');
   if (colon == 0) {
     lctx->env = 0;
@@ -1706,12 +1702,11 @@ STATIC_ROUTINE char *_FindNextFile(FindFileCtx * ctx, int recursively, int caseB
     if (dp != NULL) {
       struct descriptor_d upname = { 0, DTYPE_T, CLASS_D, 0 };
       DESCRIPTOR_FROM_CSTRING(filename, dp->d_name);
-      if (caseBlind) {
-	    StrUpcase((struct descriptor *)&upname, &filename);
-      } else {
-	    StrCopyDx((struct descriptor *)&upname, &filename);
-      }
-      found = StrMatchWild((struct descriptor *)&upname, &ctx->wild_descr) & 1;
+      if (caseBlind)
+	StrUpcase((struct descriptor *)&upname, &filename);
+      else
+	StrCopyDx((struct descriptor *)&upname, &filename);
+      found = IS_OK(StrMatchWild((struct descriptor *)&upname, &ctx->wild_descr));
       StrFree1Dx(&upname);
       if (recursively) {
 	if ((strcmp(dp->d_name, ".") != 0) && (strcmp(dp->d_name, "..") != 0)) {

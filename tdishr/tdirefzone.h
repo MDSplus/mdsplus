@@ -1,5 +1,6 @@
 #ifndef TDIREFZONE_H
 #define TDIREFZONE_H
+#include <mdsdescrip.h>
 /*	tdirefzone.h
 	References to zone used by Tdi1BUILD_FUNCTION, TdiYacc, and TdiLex_... .
 

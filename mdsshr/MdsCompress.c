@@ -97,8 +97,7 @@ STATIC_CONSTANT EMPTYXD(EMPTY_XD);
 	The inner routine scans some classes and tries to compress arrays.
 	If successful returns 1, if unsuccessful returns NORMAL.
 */
-STATIC_ROUTINE int compress(const struct descriptor *pcimage,
-			    const struct descriptor *pcentry, int64_t delta, struct descriptor *pwork)
+STATIC_ROUTINE int compress(const struct descriptor *pcimage, const struct descriptor *pcentry, int64_t delta, struct descriptor *pwork)
 {
   int j, stat1, status = 1;
   unsigned int bit = 0;
