@@ -292,7 +292,7 @@ class Conglom(Compound):
         model = str(self.model)
         safe_env = {}
         try:
-            exec '\n'.join(map(str,self.name.data())) in globals()
+            exec('\n'.join(map(str,self.name.data())),globals())
             return globals()[model](*args,**kwargs)
         except:
             pass
