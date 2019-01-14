@@ -27,13 +27,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <string.h>
 #include <mdsplus/mdsconfig.h>
-
-struct descriptor {
-  unsigned short length;
-  char dtype;
-  char class;
-  void *pointer;
-};
+#include <mdsdescrip.h>
 
 short RemCamLastIosb[4];
 

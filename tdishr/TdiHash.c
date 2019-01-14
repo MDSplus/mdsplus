@@ -37,6 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TdiHASH_MAX 991
 
 STATIC_THREADSAFE short TdiREF_HASH[TdiHASH_MAX];
+#include "tdirefcat.h"
 #include "tdireffunction.h"
 #include <string.h>
 #include <stdio.h>
