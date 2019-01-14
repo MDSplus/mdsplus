@@ -166,11 +166,8 @@ STATIC_ROUTINE int TDISQL_LINK(char *name, int (**routine) ())
 #ifdef __APPLE__
   STATIC_CONSTANT DESCRIPTOR(dimage2, "sybdb");
 #endif
-  struct descriptor dname = { 0, DTYPE_T, CLASS_S, 0 };
-  INIT_STATUS;
-  dname.length = (unsigned short)strlen(name);
-  dname.pointer = name;
-  status = TdiFindImageSymbol(&dimage, &dname, routine);
+  DESCRIPTOR_FROM_CSTRING(dname,name);
+  int status = TdiFindImageSymbol(&dimage, &dname, routine);
 #ifdef __APPLE__
   if STATUS_NOT_OK
     status = TdiFindImageSymbol(&dimage2, &dname, routine);
@@ -185,11 +182,8 @@ STATIC_ROUTINE int TDISQL_LINKCPTR(char *name, char *(**routine) ())
 #ifdef __APPLE__
   STATIC_CONSTANT DESCRIPTOR(dimage2, "sybdb");
 #endif
-  struct descriptor dname = { 0, DTYPE_T, CLASS_S, 0 };
-  INIT_STATUS;
-  dname.length = (unsigned short)strlen(name);
-  dname.pointer = name;
-  status = TdiFindImageSymbol(&dimage, &dname, routine);
+  DESCRIPTOR_FROM_CSTRING(dname,name);
+  int status = TdiFindImageSymbol(&dimage, &dname, routine);
 #ifdef __APPLE__
   if (STATUS_NOT_OK)
     status = TdiFindImageSymbol(&dimage2, &dname, routine);
