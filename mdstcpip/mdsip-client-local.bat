@@ -1,2 +1,2 @@
 @echo off
-mdsip -P ssh
+mdsip -P local
