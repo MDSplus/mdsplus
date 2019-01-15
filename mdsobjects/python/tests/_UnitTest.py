@@ -26,6 +26,7 @@
 from unittest import TestCase,TestSuite,TextTestRunner
 from MDSplus import Tree,getenv,setenv,tcl
 from threading import RLock
+from re import match
 import gc,os,sys,time
 
 class Tests(TestCase):
@@ -90,6 +91,34 @@ class MdsIp(object):
     def _testDispatchCommandNoWait(self,mdsip,command,stdout=None,stderr=None):
         self.assertEqual(tcl('dispatch/command/nowait/server=%s %s'  %(mdsip,command),1,1,1),(None,None))
 
+    def _doTCLTest(self,expr,out=None,err=None,re=False,tcl=tcl):
+        def checkre(pattern,string):
+            if pattern is None:
+                self.assertEqual(string is None,True)
+            else:
+                self.assertEqual(string is None,False)
+                self.assertEqual(match(pattern,str(string)) is None,False,'"%s"\nnot matched by\n"%s"'%(string,pattern))
+        if Tests.debug: sys.stderr.write("TCL(%s)\n"%(expr,));
+        outerr = tcl(expr,True,True,True)
+        if not re:
+            self.assertEqual(outerr,(out,err))
+        else:
+            checkre(out,outerr[0])
+            checkre(err,outerr[1])
+
+    def _checkIdle(self,server):
+        show_server = "Checking server: %s\n[^,]+, [^,]+, logging enabled, Inactive\n"%server
+        self._doTCLTest('show server %s'%server,out=show_server,re=True)
+
+    def _doExceptionTest(self,expr,exc):
+        if Tests.debug: sys.stderr.write("TCL(%s) # expected exception: %s\n"%(expr,exc.__name__));
+        try:
+            tcl(expr,True,True,True)
+        except Exception as e:
+            self.assertEqual(e.__class__,exc)
+            return
+        self.fail("TCL: '%s' should have signaled an exception"%expr)
+
     def _start_mdsip(self,server,port,logname,protocol='TCP'):
         if port>0:
             from subprocess import Popen,STDOUT
@@ -104,11 +133,13 @@ class MdsIp(object):
                 log.close()
                 raise
             time.sleep(1)
+            self._checkIdle(server)
             for envpair in self.envx.items():
                 self._testDispatchCommandNoWait(server,'env %s=%s'%envpair)
             self._testDispatchCommand(server,'set verify')
             return mdsip,log
         if server:
+            self._checkIdle(server)
             for envpair in self.envx.items():
                 self._testDispatchCommandNoWait(server,'env %s=%s'%envpair)
             self._testDispatchCommand(server,'set verify')

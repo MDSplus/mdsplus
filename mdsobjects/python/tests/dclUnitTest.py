@@ -25,7 +25,6 @@
 
 import sys
 from time import sleep
-from re import match
 from MDSplus import Tree,Device,Connection
 from MDSplus import dcl,ccl,tcl,cts,mdsExceptions as Exc
 
@@ -38,29 +37,6 @@ _UnitTest=_mimport("_UnitTest")
 class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
     shotinc = 1
     tree = 'pytree'
-    def _doTCLTest(self,expr,out=None,err=None,re=False,tcl=tcl):
-        def checkre(pattern,string):
-            if pattern is None:
-                self.assertEqual(string is None,True)
-            else:
-                self.assertEqual(string is None,False)
-                self.assertEqual(match(pattern,str(string)) is None,False,'"%s"\nnot matched by\n"%s"'%(string,pattern))
-        if Tests.debug: sys.stderr.write("TCL(%s)\n"%(expr,));
-        outerr = tcl(expr,True,True,True)
-        if not re:
-            self.assertEqual(outerr,(out,err))
-        else:
-            checkre(out,outerr[0])
-            checkre(err,outerr[1])
-
-    def _doExceptionTest(self,expr,exc):
-        if Tests.debug: sys.stderr.write("TCL(%s) # expected exception: %s\n"%(expr,exc.__name__));
-        try:
-            tcl(expr,True,True,True)
-        except Exception as e:
-            self.assertEqual(e.__class__,exc)
-            return
-        self.fail("TCL: '%s' should have signaled an exception"%expr)
 
     def interface(self):
         with Tree(self.tree,self.shot,'new') as pytree:
@@ -107,7 +83,6 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         monitor,monitor_port = self._setup_mdsip('ACTION_MONITOR','MONITOR_PORT',7010+self.index,False)
         monitor_opt = "/monitor=%s"%monitor if monitor_port>0 else ""
         server ,server_port  = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT',7000+self.index,True)
-        show_server = "Checking server: %s\n[^,]+, [^,]+, logging enabled, Inactive\n"%server
         pytree.normal()
         pytree.TESTDEVICE.ACTIONSERVER.no_write_shot = False
         pytree.TESTDEVICE.ACTIONSERVER.record = server
@@ -120,20 +95,18 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                 if mon: self.assertEqual(mon.poll(),None)
                 if svr: self.assertEqual(svr.poll(),None)
                 """ tcl dispatch """
-                self._doTCLTest('show server %s'%server,out=show_server,re=True)
-                self._testDispatchCommand(server,'set verify')
                 self._testDispatchCommand(server,'type test')
                 self._doTCLTest('set tree pytree/shot=%d'%shot)
                 self._doTCLTest('dispatch/build%s'%monitor_opt)
                 self._doTCLTest('dispatch/phase%s INIT'%monitor_opt)
                 sleep(.1)
-                self._doTCLTest('show server %s'%server,out=show_server,re=True)
+                self._checkIdle(server)
                 self._doTCLTest('dispatch/phase%s PULSE'%monitor_opt)
                 sleep(.1)
-                self._doTCLTest('show server %s'%server,out=show_server,re=True)
+                self._checkIdle(server)
                 self._doTCLTest('dispatch/phase%s STORE'%monitor_opt)
                 sleep(.1)
-                self._doTCLTest('show server %s'%server,out=show_server,re=True)
+                self._checkIdle(server)
                 """ tcl exceptions """
                 self._doExceptionTest('dispatch/command/server=%s '%server,Exc.MdsdclIVVERB)
                 """ tcl check if still alive """
