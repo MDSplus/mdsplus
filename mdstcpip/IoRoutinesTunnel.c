@@ -265,6 +265,7 @@ err: ;
 #endif
 }
 
+#ifndef _WIN32
 static void tunnel_server_cleanup(int signum __attribute__ ((unused)) ) {
   int id;
   void *ctx = (void *)-1;
@@ -276,6 +277,7 @@ static void tunnel_server_cleanup(int signum __attribute__ ((unused)) ) {
   signal(SIGTERM, SIG_DFL);
   raise(SIGTERM);
 }
+#endif
 
 static int tunnel_listen(int argc __attribute__ ((unused)), char **argv __attribute__ ((unused))){
   int id, status;
