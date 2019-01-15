@@ -265,6 +265,18 @@ err: ;
 #endif
 }
 
+static void tunnel_server_cleanup(int signum __attribute__ ((unused)) ) {
+  int id;
+  void *ctx = (void *)-1;
+  close(0);
+  while ((id = NextConnection(&ctx, 0, 0, 0)) != INVALID_CONNECTION_ID) {
+    DisconnectConnection(id);
+    ctx = 0;
+  }
+  signal(SIGTERM, SIG_DFL);
+  raise(SIGTERM);
+}
+
 static int tunnel_listen(int argc __attribute__ ((unused)), char **argv __attribute__ ((unused))){
   int id, status;
   INIT_AND_FREE_ON_EXIT(char*,username);
@@ -274,11 +286,15 @@ static int tunnel_listen(int argc __attribute__ ((unused)), char **argv __attrib
   p.out   = GetStdHandle(STD_INPUT_HANDLE);
   p.hProcess = NULL;
 #else
+  struct sigaction action;
+  memset(&action, 0, sizeof(struct sigaction));
+  action.sa_handler = tunnel_server_cleanup;
+  sigaction(SIGTERM, &action, NULL);
   tunnel_pipes_t p = { 0, 1, 0 };
   p.out = dup(0);
   p.in  = dup(1);
   close(1);
-  close(0);
+  //  close(0);
   dup2(2, 1);
 #endif
   status = AcceptConnection(GetProtocol(), "tunnel", 0, &p, sizeof(p), &id, &username);
