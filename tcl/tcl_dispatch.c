@@ -145,12 +145,12 @@ static void cln_act(void* cin) {
   }
 }
 EXPORT int TclDispatch(void *ctx, char **error, char **output __attribute__ ((unused))){
-  int status, IOS;
+  int status, sync, IOS;
   cln_act_t c = {0};
   pthread_cleanup_push(cln_act,(void*)&c);
   status = TclNORMAL;
-  int nid;
-  int sync = cli_present(ctx, "WAIT") != MdsdclNEGATED;
+  sync = cli_present(ctx, "WAIT") != MdsdclNEGATED;
+  IOS = SsINTERNAL;
   if IS_NOT_OK(cli_get_value(ctx, "NODE", &c.treenode)){
     status = MdsdclERROR;
     *error = strdup("Error: Missing node path.\n");
@@ -158,6 +158,7 @@ EXPORT int TclDispatch(void *ctx, char **error, char **output __attribute__ ((un
   }
   EMPTYXD(xd);c.xd=&xd;
   struct descriptor_d svr = {0,DTYPE_T,CLASS_S,0};c.svr=&svr;
+  int nid;
   status = TreeFindNode(c.treenode, &nid);
   if STATUS_OK {
     struct descriptor niddsc = { 4, DTYPE_NID, CLASS_S, (char *)&nid };
@@ -188,9 +189,11 @@ EXPORT int TclDispatch(void *ctx, char **error, char **output __attribute__ ((un
     char *msg = MdsGetMsg(status);
     *error = malloc(strlen(msg) + strlen(c.treenode) + 100);
     sprintf(*error, "Error dispatching node %s\n" "Error message was: %s\n", c.treenode, msg);
-  } else if (sync) status = IOS;
+  }
 cleanup: ;
   pthread_cleanup_pop(1);
+  if (STATUS_OK && sync)
+    return IOS;
   return status;
 }
 
@@ -418,9 +421,12 @@ static void cln_cmd(void* cin) {
     free(c->cmd);
 }
 EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribute__ ((unused))){
-  INIT_TCLSTATUS, IOS;
+  int status, sync, IOS;
   cln_cmd_t c = {0};
   pthread_cleanup_push(cln_cmd,(void*)&c);
+  status = TclNORMAL;
+  sync = 0;
+  IOS = SsINTERNAL;
   if IS_NOT_OK(cli_get_value(ctx, "SERVER", &c.svr)){
     status = MdsdclERROR;
     *error = strdup("Error: Missing server ident.\n");
@@ -430,11 +436,11 @@ EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribut
   cli_get_value(ctx, "TABLE", &c.tab);
   cli_get_value(ctx, "P1", &c.cmd->command);
   if(c.cmd->command){
-    int sync = IS_OK(cli_present(ctx, "WAIT"));
+    sync = IS_OK(cli_present(ctx, "WAIT"));
     int *iostatusp;
     if (sync) {
       c.sid = calloc(1,sizeof(int));
-      IOS = c.cmd->status = SsINTERNAL;
+      c.cmd->status = IOS;
       iostatusp = &IOS;
     } else {
       c.cmd->status = ServerPATH_DOWN;
@@ -445,12 +451,14 @@ EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribut
       char *msg = MdsGetMsg(status);
       *error = malloc(100 + strlen(msg));
       sprintf(*error, "Error: Problem dispatching async command.\n" "Error message was: %s\n", msg);
-    } else if (sync) status = IOS;
+    }
     c.cmd = NULL;
   } else
     status = MdsdclMISSING_VALUE;
 cleanup: ;
   pthread_cleanup_pop(1);
+  if (STATUS_OK && sync)
+    return IOS;
   return status;
 }
 
