@@ -85,10 +85,17 @@ static int tunnel_disconnect(Connection* c){
     CloseHandle(p->out);
     CloseHandle(p->hProcess);
 #else
-    kill(p->pid, SIGTERM);
-    waitpid(p->pid, NULL, WNOHANG);
     close(p->in);
     close(p->out);
+    int p_pid = p->pid;
+    int pid = fork();
+    if (pid==0) {
+      int i;
+      for (i = 30 ; !waitpid(p_pid, NULL, WNOHANG) && i-->0 ;) usleep(100000);
+      if (!i) kill(p_pid, SIGTERM);
+      exit(0);
+    }
+    if (pid<0) kill(p->pid, SIGTERM);
 #endif
   }
   return C_OK;
@@ -232,8 +239,8 @@ err: ;
     p.out = pipe_p2c.wr;
     p.in  = pipe_c2p.rd;
     p.pid = pid;
-    close(pipe_c2p.wr);
-    close(pipe_p2c.rd);
+    close(pipe_c2p.wr);fcntl(pipe_c2p.rd,F_SETFD,FD_CLOEXEC);
+    close(pipe_p2c.rd);fcntl(pipe_p2c.wr,F_SETFD,FD_CLOEXEC);
     struct sigaction handler;
     handler.sa_handler = ChildSignalHandler;
     handler.sa_flags = SA_RESTART;
@@ -250,13 +257,13 @@ err: ;
     char *remotecmd = strcpy((char *)malloc(strlen(protocol) + 16), "mdsip-server-");strcat(remotecmd, protocol);
     char *arglist[] = { localcmd, host, remotecmd, 0 };
     signal(SIGCHLD, SIG_IGN);
+    close(0);
+    close(1);
     dup2(pipe_p2c.rd, 0);
-    close(pipe_p2c.rd);
     dup2(pipe_c2p.wr, 1);
-    close(pipe_c2p.wr);
+    close(pipe_p2c.wr);fcntl(pipe_p2c.rd,F_SETFD,FD_CLOEXEC);
+    close(pipe_c2p.rd);fcntl(pipe_c2p.wr,F_SETFD,FD_CLOEXEC);
     int err = execvp(localcmd, arglist) ? errno : 0;
-    close(pipe_p2c.wr);
-    close(pipe_c2p.rd);
     if (err==2) {
       char* c = protocol;
       for (;*c;c++) *c = toupper(*c);
@@ -279,9 +286,10 @@ static int tunnel_listen(int argc __attribute__ ((unused)), char **argv __attrib
   tunnel_pipes_t p = { 0, 1, 0 };
   p.in  = dup(0);
   p.out = dup(1);
-  close(1);
-  close(0);
-  dup2(2, 1);
+  fcntl(p.in ,F_SETFD,FD_CLOEXEC);
+  fcntl(p.out,F_SETFD,FD_CLOEXEC);
+  fcntl(0,F_SETFD,FD_CLOEXEC);
+  fcntl(1,F_SETFD,FD_CLOEXEC);
 #endif
   status = AcceptConnection(GetProtocol(), "tunnel", 0, &p, sizeof(p), &id, &username);
   FREE_NOW(username);
