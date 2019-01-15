@@ -125,7 +125,7 @@ static ssize_t tunnel_recv_to(Connection* c, void *buffer, size_t buflen, int to
   if (to_msec>=0) { // don't time out if to_msec < 0
     struct timeval timeout;
     timeout.tv_sec  = to_msec / 1000;
-    timeout.tv_usec = to_msec % 1000;
+    timeout.tv_usec =(to_msec % 1000) * 1000;
     fd_set set;
     FD_ZERO(&set); /* clear the set */
     FD_SET(p->in, &set); /* add our file descriptor to the set */
