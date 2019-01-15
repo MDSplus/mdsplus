@@ -250,7 +250,7 @@ ifeq ($(enable_valgrind),yes)
 _print_valgrind_hello = \
   echo ""; \
   echo "---------------------------------------------------------------------------"; \
-  echo " [vagrind $(VALGRIND_TOOL)] "; \
+  echo " [valgrind $(VALGRIND_TOOL)] "; \
   echo " active tool options   :  $(valgrind_$(VALGRIND_TOOL)_flags) "; \
   echo " active valgrind flags : $(VALGRIND_FLAGS) "; \
   echo " active suppressions   : "; \
