@@ -2608,7 +2608,7 @@ diagonal([1,2,3])
 !
 ! Functions implemented in TdiMaxVal.c
 !
-maxloc([2,4,6])
+maxloc([2,4,6.])
 minloc([2,4,6])
 maxval([2,4,6])
 minval([2,4,6])
