@@ -6154,13 +6154,13 @@ TUPLE   OPC$TUPLE           457
 LIST   OPC$LIST           458
 *
 kind(_u=fopen('tditst.tmp','w'))
-14BU
+51BU
 write(_u,"This is a test")
 15
 fclose(_u)
 0
 kind(_u=fopen('tditst.tmp','r'))
-14BU
+51BU
 fseek(_u,5,0)
 0
 ftell(_u)
