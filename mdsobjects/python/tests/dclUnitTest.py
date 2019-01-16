@@ -173,7 +173,7 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         def test_timeout(c,expr,to):
             with c:
                 try: # break out of sleep
-                    c.get('write(2,"tic: "//"%s");%s;write(2,"toc: "//"%s")'%(expr,expr,expr),timeout=to)
+                    c.get('write(,"tic: "//"%s");%s;write(,"toc: "//"%s")'%(expr,expr,expr),timeout=to)
                     self.fail('Connection.get("%s") should have timed out.'%expr)
                 except Exc.MDSplusException as e:
                     self.assertEqual(e.__class__,Exc.TdiTIMEOUT)
