@@ -82,9 +82,8 @@ int TdiPutLong(int *data, struct descriptor_xd *out_ptr)
 */
 STATIC_ROUTINE int TdiPutUnit(FILE * unit, struct descriptor_xd *out_ptr)
 {
-  struct descriptor unit_d = { 0, DTYPE_T, CLASS_S, 0 };
-  unit_d.length = unit != 0 ? sizeof(unit) : 0;
-  unit_d.pointer = unit != 0 ? (char *)&unit : 0;
+  if (!unit) return MdsCopyDxXd(NULL, out_ptr);
+  struct descriptor unit_d = { sizeof(void*), DTYPE_POINTER, CLASS_S, (char*)&unit };
   return MdsCopyDxXd(&unit_d, out_ptr);
 }
 
@@ -93,14 +92,21 @@ STATIC_ROUTINE int TdiPutUnit(FILE * unit, struct descriptor_xd *out_ptr)
 */
 STATIC_ROUTINE int TdiGetOutUnit(struct descriptor *in_ptr, FILE ** unit)
 {
-  INIT_STATUS;
-  struct descriptor_d unit_d = { 0, DTYPE_T, CLASS_D, 0 };
-  status = TdiEvaluate(in_ptr, &unit_d MDS_END_ARG);
-  if (unit_d.length != sizeof(*unit))
-    *unit = stdout;
-  else
-    *unit = *(FILE **) unit_d.pointer;
-  StrFree1Dx(&unit_d);
+  int status;
+  INIT_AND_FREEXD_ON_EXIT(xd);
+  status = TdiEvaluate(in_ptr, &xd MDS_END_ARG);
+  struct descriptor *unit_d = xd.pointer;
+  if (unit_d->class == CLASS_S) {
+    if (unit_d->dtype == DTYPE_L || unit_d->dtype == DTYPE_LU) {
+      if (*(int*)unit_d->pointer == 2)
+        *unit = stderr;
+      else
+        *unit = stdout;
+    } else if ((unit_d->dtype == DTYPE_POINTER || unit_d->dtype == DTYPE_T) && unit_d->length == sizeof(void*) )
+      *unit = *(FILE **) unit_d->pointer;
+    else *unit = stdout;
+  } else *unit = stdout;
+  FREEXD_NOW();
   return status;
 }
 
@@ -109,14 +115,15 @@ STATIC_ROUTINE int TdiGetOutUnit(struct descriptor *in_ptr, FILE ** unit)
 */
 STATIC_ROUTINE int TdiGetInUnit(struct descriptor *in_ptr, FILE ** unit)
 {
-  INIT_STATUS;
-  struct descriptor_d unit_d = { 0, DTYPE_T, CLASS_D, 0 };
-  status = TdiEvaluate(in_ptr, &unit_d MDS_END_ARG);
-  if (unit_d.length != sizeof(*unit))
-    *unit = stdin;
-  else
-    *unit = *(FILE **) unit_d.pointer;
-  StrFree1Dx(&unit_d);
+  int status;
+  INIT_AND_FREEXD_ON_EXIT(xd);
+  status = TdiEvaluate(in_ptr, &xd MDS_END_ARG);
+  struct descriptor *unit_d = xd.pointer;
+  if (unit_d->class == CLASS_S
+    && ((unit_d->dtype == DTYPE_POINTER || unit_d->dtype == DTYPE_T) && unit_d->length == sizeof(void*) ))
+      *unit = *(FILE **)unit_d->pointer;
+  else *unit = stdin;
+  FREEXD_NOW();
   return status;
 }
 
