@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         type logical output, scalar for no DIM or vector input, else rank (n-1) with DIM-th dimension missing.
 
                 result = xx(ARRAY, [DIM], [MASK])
-        MASK3:  MAXVAL MEAN MINVAL PRODUCT RMS STD_DEV SUM MAXLOC MINLOC
+        MASK3:  MAXVAL MEAN MINVAL PRODUCT RMS STD_DEV SUM
         type numeric output, scalar for no DIM or vector input, else rank (n-1) with DIM-th dimension missing.
 
                 result = xx(ARRAY, [DIM], [MASK])
@@ -57,7 +57,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         type same as ARRAY, rank n+1, spreads and jams in a dimension before DIM-th, DIM = 0..rank.
 
                 rank1 = xx(ARRAY, [MASK])
-        MASK2:  MAXLOC MINLOC
+        MASK3L:  MAXLOC MINLOC
         vector offsets from first element.
 
         For logical array V[3,4,5], steps in unit sizes:
@@ -98,6 +98,7 @@ extern unsigned short
 
 extern int Tdi2Mask2();
 extern int Tdi2Mask3();
+extern int Tdi2Mask3L();
 extern int Tdi2Sign();
 extern int TdiGetArgs();
 extern int TdiCvtArgs();
@@ -158,7 +159,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
   } else if (pfun->f2 == Tdi2Sign)
     status = TdiBAD_INDEX;
 
-  if (pfun->f2 == Tdi2Mask3) {
+  if (pfun->f2 == Tdi2Mask3 || pfun->f2 == Tdi2Mask3L) {
     if (narg > 2 && cats[2].in_dtype != DTYPE_MISSING)
       pmask = dat[2].pointer;
   } else if (opcode == OpcReplicate || opcode == OpcSpread) {
