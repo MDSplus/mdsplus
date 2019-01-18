@@ -2236,15 +2236,17 @@ int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, 
   RETURN_IF_NOT_OK(get_segment(vars));
   if (vars->sinfo->data_offset == -1)
     return TreeFAILURE;
-  *dtype = vars->shead.dtype;
-  *dimct = vars->shead.dimct;
-  memcpy(dims, vars->shead.dims, sizeof(vars->shead.dims));
-  if (vars->idx == vars->shead.idx)
-    *next_row = vars->shead.next_row;
-  else if (vars->sinfo->rows < 1)
-    return get_compressed_segment_rows(vars->tinfo, vars->sinfo->data_offset, next_row);
-  else
-    *next_row = vars->sinfo->rows;
+  if (dtype) *dtype = vars->shead.dtype;
+  if (dimct) *dimct = vars->shead.dimct;
+  if (dims)  memcpy(dims, vars->shead.dims, sizeof(vars->shead.dims));
+  if (next_row) {
+    if (vars->idx == vars->shead.idx)
+      *next_row = vars->shead.next_row;
+    else if (vars->sinfo->rows < 1)
+      return get_compressed_segment_rows(vars->tinfo, vars->sinfo->data_offset, next_row);
+    else
+      *next_row = vars->sinfo->rows;
+  }
   return status;
 }
 
