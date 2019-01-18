@@ -1518,7 +1518,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                                      _C.c_char_p(str.encode(tag))))
 
     def beginSegment(self,start,end,dim,array,idx=-1):
-        """Begin a record segment
+        """Begin a record segment, rows_filled = 0
         @param start: Index of first row of data
         @type start: Data
         @param end: Index of last row of data
@@ -2255,7 +2255,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         """
         return self.write_once
 
-    def makeSegment(self,start,end,dim,array,idx=-1):
+    def makeSegment(self,start,end,dim,array,idx=-1,rows_filled=-1):
         """Make a record segment
         @param start: Index of first row of data
         @type start: Data
@@ -2265,10 +2265,15 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         @type dim: Dimension
         @param array: Contents of segment
         @type array: Array
+        @param idx: Target segment index, defaults to -1, i.e. append
+        @type idx: int
+        @param idx: Rows filled, defaults to array.shape[0], i.e. full
+        @type idx: int
         @rtype: None
         """
         start,end,dim,array = map(_dat.Data,(start,end,dim,array))
-        shape = 1 if isinstance(array,_cmp.Compound) else array.shape[0]
+        if rows_filled<0:
+          rows_filled = 1 if isinstance(array,_cmp.Compound) else array.shape[0]
         _exc.checkStatus(
                 _TreeShr._TreeMakeSegment(self.ctx,
                                           self._nid,
@@ -2277,7 +2282,7 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
                                           _dat.Data.byref(dim),
                                           _dat.Data.byref(array),
                                           _C.c_int32(int(idx)),
-                                          _C.c_int32(shape)))
+                                          _C.c_int32(int(rows_filled))))
 
     def move(self,parent,newname=None):
         """Move node to another location in the tree and optionally rename the node
