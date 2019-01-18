@@ -963,7 +963,7 @@ int _TreePutTimestampedSegment(void *dbid, int nid, int64_t * timestamp, struct 
     status = put_segment_header(vars->tinfo, &vars->shead, &vars->attr.facility_offset[SEGMENTED_RECORD_FACILITY]);
     TreeCallHookFun("TreeNidHook","PutTimestampedSegment",vars->tinfo->treenam,
 		    vars->tinfo->shot,*vars->nid_ptr,NULL);
-    DESCRIPTOR_A(dimension, sizeof(int64_t), DTYPE_Q, timestamp, rows_to_insert * sizeof(int64_t)); 
+    DESCRIPTOR_A(dimension, sizeof(int64_t), DTYPE_Q, timestamp, rows_to_insert * sizeof(int64_t));
     SIGNAL(1) signal = {0, DTYPE_SIGNAL, CLASS_R, 0, 3, __fill_value__ \
 			(struct descriptor *)data_in, NULL, {(struct descriptor *)&dimension}};
     TreeCallHookFun("TreeNidDataHook","PutTimestampedSegmentFull",vars->tinfo->treenam,
@@ -1121,7 +1121,6 @@ int _TreeGetNumSegments(void *dbid, int nid, int *num){
   return status;
 }
 
-static int (*TdiExecute) () = NULL;
 static int read_segment(TREE_INFO* tinfo, int nid, SEGMENT_HEADER* shead, SEGMENT_INFO* sinfo,
                        int idx, struct descriptor_xd *segment, struct descriptor_xd *dim){
   INIT_TREESUCCESS;
@@ -1172,24 +1171,12 @@ static int read_segment(TREE_INFO* tinfo, int nid, SEGMENT_HEADER* shead, SEGMEN
         }
         MdsCopyDxXd((struct descriptor *)&dim2, dim);
         free(dim_ptr);
-      } else {
-	if (sinfo->dimension_length != -1) {
+      } else if (sinfo->dimension_length != -1)
           TreeGetDsc(tinfo, nid, sinfo->dimension_offset, sinfo->dimension_length, dim);
-          if (idx == shead->idx && shead->next_row != sinfo->rows) {
-	    status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
-	    if STATUS_OK {
-		STATIC_CONSTANT DESCRIPTOR(expression, "data($)[0:($-1)]");
-		DESCRIPTOR_LONG(row_d, &shead->next_row);
-		status = (*TdiExecute)(&expression,dim,&row_d,dim MDS_END_ARG);
-	      }
-	  }
-	}
-      }
       if (ans_ptr)
         MdsCopyDxXd((struct descriptor *)&ans, segment);
-    } else {
+    } else
       status = TreeFAILURE;
-    }
     if (ans_ptr)
       free(ans_ptr);
   } else {
@@ -2218,6 +2205,27 @@ inline static int get_segment(vars_t* vars) {
   return status;
 }
 
+static int (*_TdiExecute) () = NULL;
+/* checks last segment and trims it down to last written row if necessary */
+static int trim_last_segment(vars_t* vars, struct descriptor_xd *dim){
+  INIT_TREESUCCESS;
+  if (!dim || !dim->pointer) return status;
+  if (vars->idx != vars->shead.idx) return status; //only last segment
+  int rows;
+  if (vars->sinfo->rows<0) return status; // compressed TODO: check if we should trim comressed as well
+  //  status = get_compressed_segment_rows(vars->tinfo, vars->sinfo->data_offset, &rows);
+  //else
+    rows = vars->sinfo->rows & 0x7fffffff;
+  if (STATUS_OK && vars->shead.next_row != rows) {
+    status = LibFindImageSymbol_C("TdiShr", "_TdiExecute", &_TdiExecute);
+    if STATUS_OK {
+      STATIC_CONSTANT DESCRIPTOR(expression, "data($)[0:($-1)]");
+      DESCRIPTOR_LONG(row_d, &vars->shead.next_row);
+      status = _TdiExecute(&vars->dblist,&expression,dim,&row_d,dim MDS_END_ARG);
+    }
+  }
+  return status;
+}
 int _TreeGetSegmentLimits(void *dbid, int nid, int idx, struct descriptor_xd *retStart, struct descriptor_xd *retEnd){
   INIT_VARS;vars->idx=idx;
   RETURN_IF_NOT_OK(get_segment(vars));
@@ -2228,6 +2236,7 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
   INIT_VARS;vars->idx=idx;
   RETURN_IF_NOT_OK(get_segment(vars));
   status = read_segment(vars->tinfo, nid, &vars->shead, vars->sinfo, vars->idx, segment, dim);
+  if STATUS_OK status = trim_last_segment(vars,dim);
   return status;
 }
 
@@ -2254,7 +2263,7 @@ inline static int is_segment_in_range(vars_t* vars, struct descriptor *start, st
   int ans = B_FALSE;
   if ((start && start->pointer) || (end && end->pointer)) {
     INIT_TREESUCCESS;
-    status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
+    status = LibFindImageSymbol_C("TdiShr", "_TdiExecute", &_TdiExecute);
     if STATUS_OK {
       EMPTYXD(segstart);
       EMPTYXD(segend);
@@ -2263,14 +2272,14 @@ inline static int is_segment_in_range(vars_t* vars, struct descriptor *start, st
       if STATUS_OK {
         if ((start && start->pointer) && (end && end->pointer)) {
           STATIC_CONSTANT DESCRIPTOR(expression, "($ <= $) && ($ >= $)");
-          status = (*TdiExecute)(&expression,start,&segend,end,&segstart,&ans_d MDS_END_ARG);
+          status = _TdiExecute(&vars->dblist,&expression,start,&segend,end,&segstart,&ans_d MDS_END_ARG);
         } else {
           if (start && start->pointer) {
             STATIC_CONSTANT DESCRIPTOR(expression, "($ <= $)");
-            status = (*TdiExecute)(&expression,start,&segend,&ans_d MDS_END_ARG);
+            status = _TdiExecute(&vars->dblist,&expression,start,&segend,&ans_d MDS_END_ARG);
           } else {
             STATIC_CONSTANT DESCRIPTOR(expression, "($ >= $)");
-            status = (*TdiExecute)(&expression,end,&segstart,&ans_d MDS_END_ARG);
+            status = _TdiExecute(&vars->dblist,&expression,end,&segstart,&ans_d MDS_END_ARG);
           }
         }
       }
@@ -2310,6 +2319,7 @@ int _TreeGetSegments(void *dbid, int nid, struct descriptor *start, struct descr
           apd.pointer[apd_idx] = malloc(sizeof(struct descriptor_xd));
           memcpy(apd.pointer[apd_idx++], &segment, sizeof(struct descriptor_xd));
           apd.pointer[apd_idx] = malloc(sizeof(struct descriptor_xd));
+          status = trim_last_segment(vars,&dim);
           memcpy(apd.pointer[apd_idx++], &dim, sizeof(struct descriptor_xd));
         } else {
           MdsFree1Dx(&segment, 0);
