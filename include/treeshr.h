@@ -184,6 +184,8 @@ extern int TREE_BLOCKID;
 				     struct descriptor_a *initialData, int idx, int filled);
   extern EXPORT int TreePutSegment(int nid, const int rowidx, struct descriptor_a *data);
   extern EXPORT int _TreePutSegment(void *dbid, int nid, const int rowidx, struct descriptor_a *data);
+  extern EXPORT int TreeSetRowsFilled(int nid, int rows_filled);
+  extern EXPORT int _TreeSetRowsFilled(void *dbid, int nid, int rows_filled);
   extern EXPORT int TreeUpdateSegment(int nid, struct descriptor *start, struct descriptor *end,
 				      struct descriptor *dim, int idx);
   extern EXPORT int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start,

@@ -2612,6 +2612,18 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         """
         self.write_once=flag
 
+    def setRowsFilled(self,rows_filled=-1):
+        """ updates the rows_filled value; influences the length of the last segment
+        @param rows_filled: length of last segment
+        @type rows_filled: int
+        @rtype: None
+        """
+        _exc.checkStatus(
+                _TreeShr._TreeSetRowsFilled(self.ctx,
+                                            self._nid,
+                                            _C.c_int32(int(rows_filled))))
+
+
     def updateSegment(self,start,end,dim,idx):
         """Update a segment
         @param start: index of first row of segment
