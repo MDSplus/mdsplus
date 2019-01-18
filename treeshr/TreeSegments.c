@@ -191,7 +191,10 @@ int _TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct desc
 int TreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dimension, struct descriptor_a *initialValue, int idx){
   return _TreeBeginSegment(*TreeCtx(), nid, start, end, dimension, initialValue, idx);
 }
-
+int _TreeSetRowsFilled(void *dbid, int nid, int rows_filled);
+int TreeSetRowsFilled(int nid, int rows_filled){
+  return _TreeSetRowsFilled(*TreeCtx(), nid, rows_filled);
+}
 int _TreeMakeTimestampedSegment(void *dbid, int nid, int64_t * timestamps, struct descriptor_a *initialValue, int idx, int rows_filled);
 int TreeMakeTimestampedSegment(int nid, int64_t * timestamps, struct descriptor_a *initialValue, int idx, int rows_filled){
   return _TreeMakeTimestampedSegment(*TreeCtx(), nid, timestamps, initialValue, idx, rows_filled);
@@ -796,9 +799,31 @@ end: ;
   return status;
 }
 
-int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end,
-                       struct descriptor *dimension, int idx)
-{
+int _TreeSetRowsFilled(void *dbid, int nid, int rows_filled) {
+  const int idx = -1;
+  INIT_WRITE_VARS;
+  CLEANUP_NCI_PUSH;
+  GOTO_END_ON_ERROR(open_datafile_write0(vars));
+  GOTO_END_ON_ERROR(open_datafile_write1(vars));
+  IF_NO_EXTENDED_NCI   {status = TreeNOSEGMENTS;goto end;}
+  IF_NO_SEGMENT_HEADER {status = TreeNOSEGMENTS;goto end;}
+  IF_NO_SEGMENT_INDEX  {status = TreeFAILURE;goto end;}
+  if (rows_filled < 0) {
+    vars->sinfo = &vars->sindex.segment[vars->shead.idx % SEGMENTS_PER_INDEX];
+    if (vars->sinfo->rows<0) // compressed
+      status = get_compressed_segment_rows(vars->tinfo, vars->sinfo->data_offset, &vars->shead.next_row);
+    else
+      vars->shead.next_row = vars->sinfo->rows &0x7fffffff;
+  } else
+    vars->shead.next_row = rows_filled;
+  if STATUS_OK
+    status = put_segment_header(vars->tinfo, &vars->shead, &vars->attr.facility_offset[SEGMENTED_RECORD_FACILITY]);
+end: ;
+  CLEANUP_NCI_POP;
+  return status;
+}
+
+int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dimension, int idx){
   INIT_VARS;vars->idx=idx;
   CLEANUP_NCI_PUSH;
   GOTO_END_ON_ERROR(open_datafile_write0(vars));
@@ -1549,7 +1574,6 @@ static int put_segment_header(TREE_INFO * tinfo, SEGMENT_HEADER * hdr, int64_t *
   INIT_TREESUCCESS;
   int64_t loffset;
   int j;
-  char *next_row_fix = getenv("NEXT_ROW_FIX");
   char buffer[2 * sizeof(char) + 1 * sizeof(short) + 10 * sizeof(int) +
                        3 * sizeof(int64_t)], *bptr = buffer;
   if (*offset == -1) {
@@ -1573,6 +1597,8 @@ static int put_segment_header(TREE_INFO * tinfo, SEGMENT_HEADER * hdr, int64_t *
   bptr += sizeof(short);
   LoadInt(hdr->idx, bptr);
   bptr += sizeof(int);
+  /* What a hack
+  char *next_row_fix = getenv("NEXT_ROW_FIX");
   if (next_row_fix != 0) {
     int fix = atoi(next_row_fix);
     if (fix > 0) {
@@ -1583,6 +1609,7 @@ static int put_segment_header(TREE_INFO * tinfo, SEGMENT_HEADER * hdr, int64_t *
         printf("next row not adjusted, requested=%d, next_row=%d\n", fix, hdr->next_row);
     }
   }
+  */
   LoadInt(hdr->next_row, bptr);
   bptr += sizeof(int);
   LoadQuad(hdr->index_offset, bptr);
