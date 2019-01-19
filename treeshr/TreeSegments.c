@@ -1165,64 +1165,60 @@ int _TreeGetNumSegments(void *dbid, int nid, int *num){
 
 static int read_segment(TREE_INFO* tinfo, int nid, SEGMENT_HEADER* shead, SEGMENT_INFO* sinfo,
                        int idx, struct descriptor_xd *segment, struct descriptor_xd *dim){
+  if (sinfo->data_offset == -1) return TreeFAILURE;//copy_segment_index expects TreeFAILURE;
   INIT_TREESUCCESS;
-  if (sinfo->data_offset != -1) {
-    int i,compressed_segment = sinfo->rows < 0;
-    DESCRIPTOR_A(dim2, 8, DTYPE_Q, 0, 0);
-    DESCRIPTOR_A_COEFF(ans, 0, 0, 0, 8, 0);
-    void *ans_ptr = NULL, *dim_ptr;
-    if (segment){
-      ans.pointer = 0;
-      ans.dtype = shead->dtype;
-      ans.length = shead->length;
+  int filled_rows;
+  int compressed_segment = sinfo->rows < 0;
+  int rows;
+  if (compressed_segment) {
+    if IS_NOT_OK(get_compressed_segment_rows(tinfo, sinfo->data_offset, &rows))
+      rows = 1;
+  } else
+    rows = sinfo->rows;
+  if (sinfo->dimension_offset != -1 && sinfo->dimension_length == 0) {
+    DESCRIPTOR_A(ans, 8, DTYPE_Q, 0, 0);
+    ans.arsize = rows * sizeof(int64_t);
+    void *ans_ptr = ans.pointer = malloc(ans.arsize);
+    status = read_property(tinfo,sinfo->dimension_offset, ans.pointer, (ssize_t)ans.arsize);
+    CHECK_ENDIAN(ans.pointer,ans.arsize,sizeof(int64_t),);
+    if (idx == shead->idx)
+      filled_rows = shead->next_row;
+    else
+      filled_rows = get_filled_rows_ts(shead,sinfo,idx,(int64_t*)ans.pointer);
+    if (dim) {
+      ans.arsize = filled_rows * sizeof(int64_t);
+      if (ans.arsize==0) ans.pointer = NULL;
+      MdsCopyDxXd((struct descriptor *)&ans, dim);
+    }
+    free(ans_ptr);
+  } else if (sinfo->dimension_length != -1) {
+    filled_rows =  (idx == shead->idx) ? shead->next_row : rows;
+    if (dim) status = TreeGetDsc(tinfo, nid, sinfo->dimension_offset, sinfo->dimension_length, dim);
+    //TODO: merge back in trim_last_segment
+  } else
+    filled_rows = rows;
+  if (STATUS_OK && segment){
+    if (compressed_segment) {
+      int data_length = sinfo->rows & 0x7fffffff;
+      status = TreeGetDsc(tinfo, nid, sinfo->data_offset, data_length, segment);
+    } else {
+      DESCRIPTOR_A_COEFF(ans, shead->length, shead->dtype, NULL, 8, 0);
       ans.dimct = shead->dimct;
       memcpy(ans.m, shead->dims, sizeof(shead->dims));
-      ans.m[shead->dimct - 1] = (idx == shead->idx) ? shead->next_row : sinfo->rows;
+      ans.m[shead->dimct - 1] = filled_rows;
+      int i;
       ans.arsize = ans.length;
       for (i = 0; i < ans.dimct; i++)
-        ans.arsize *= ans.m[i];
-      if (compressed_segment) {
-        int data_length = sinfo->rows & 0x7fffffff;
-        status = TreeGetDsc(tinfo, nid, sinfo->data_offset, data_length, segment);
-      } else {
-        ans_ptr = ans.pointer = ans.a0 = malloc(ans.arsize);
-        status = read_property(tinfo,sinfo->data_offset, ans.pointer, (ssize_t)ans.arsize);
+	ans.arsize *= ans.m[i];
+      void *ans_ptr = ans.pointer = ans.a0 = malloc(ans.arsize);
+      status = read_property(tinfo,sinfo->data_offset, ans.pointer, (ssize_t)ans.arsize);
+      if STATUS_OK {
+	CHECK_ENDIAN(ans.pointer,ans.arsize,ans.length,ans.dtype);
+	if (ans.arsize==0) ans.pointer = NULL;
+	MdsCopyDxXd((struct descriptor *)&ans, segment);
       }
-      if (STATUS_OK && !compressed_segment)
-        CHECK_ENDIAN(ans.pointer,ans.arsize,ans.length,ans.dtype);
-    }
-    if STATUS_OK {
-      if (sinfo->dimension_offset != -1 && sinfo->dimension_length == 0) {
-        dim2.arsize = sinfo->rows * sizeof(int64_t);
-        dim_ptr = dim2.pointer = malloc(dim2.arsize);
-        status = read_property(tinfo,sinfo->dimension_offset, dim2.pointer, (ssize_t)dim2.arsize);
-        CHECK_ENDIAN(dim2.pointer,dim2.arsize,8,);
-        if (!compressed_segment) {
-          int filled_rows = get_filled_rows_ts(shead,sinfo,idx,(int64_t*)dim2.pointer);
-          dim2.arsize = filled_rows * sizeof(int64_t);
-          if (segment) {
-            ans.m[shead->dimct - 1] = filled_rows;
-            ans.arsize = ans.length;
-            for (i = 0; i < ans.dimct; i++)
-              ans.arsize *= ans.m[i];
-          }
-        }
-        if (dim2.arsize==0){
-          if (segment) ans.pointer = NULL;
-          dim2.pointer = NULL;
-        }
-        MdsCopyDxXd((struct descriptor *)&dim2, dim);
-        free(dim_ptr);
-      } else if (sinfo->dimension_length != -1)
-          TreeGetDsc(tinfo, nid, sinfo->dimension_offset, sinfo->dimension_length, dim);
-      if (ans_ptr)
-        MdsCopyDxXd((struct descriptor *)&ans, segment);
-    } else
-      status = TreeFAILURE;
-    if (ans_ptr)
       free(ans_ptr);
-  } else {
-    status = TreeFAILURE;
+    }
   }
   return status;
 }
@@ -2399,30 +2395,30 @@ int _TreeGetSegments(void *dbid, int nid, struct descriptor *start, struct descr
   RETURN_IF_NOT_OK(open_header_read(vars));
   int numsegs = vars->shead.idx + 1;
   int segfound = B_FALSE;
-  int apd_idx = 0;
+  int apd_off = numsegs;
   struct descriptor **dptr = malloc(sizeof(struct descriptor *) * numsegs * 2);
   DESCRIPTOR_APD(apd, DTYPE_LIST, dptr, numsegs * 2);
   memset(dptr, 0, sizeof(struct descriptor *) * numsegs * 2);
   status = get_segment_index(vars->tinfo, vars->shead.index_offset, &vars->sindex);
-  for (vars->idx = numsegs; STATUS_OK && vars->idx > 0; vars->idx--) {
-    int segidx = vars->idx - 1;
-    while (STATUS_OK && segidx < vars->sindex.first_idx && vars->sindex.previous_offset > 0)
+  for (vars->idx = numsegs; STATUS_OK && vars->idx-- > 0; ) {
+    while (STATUS_OK && vars->idx < vars->sindex.first_idx && vars->sindex.previous_offset > 0)
       status = get_segment_index(vars->tinfo, vars->sindex.previous_offset, &vars->sindex);
     if STATUS_NOT_OK
       break;
     else {
-      vars->sinfo = &vars->sindex.segment[segidx % SEGMENTS_PER_INDEX];
+      vars->sinfo = &vars->sindex.segment[vars->idx % SEGMENTS_PER_INDEX];
       if (is_segment_in_range(vars, start, end)) {
+	apd_off = vars->idx;
         EMPTYXD(segment);
         EMPTYXD(dim);
         segfound = B_TRUE;
         status = read_segment(vars->tinfo, nid, &vars->shead, vars->sinfo, vars->idx, &segment, &dim);
         if STATUS_OK {
-          apd.pointer[apd_idx] = malloc(sizeof(struct descriptor_xd));
-          memcpy(apd.pointer[apd_idx++], &segment, sizeof(struct descriptor_xd));
-          apd.pointer[apd_idx] = malloc(sizeof(struct descriptor_xd));
+          apd.pointer[vars->idx*2] = malloc(sizeof(struct descriptor_xd));
+          memcpy(apd.pointer[vars->idx*2], &segment, sizeof(struct descriptor_xd));
           status = trim_last_segment(vars,&dim);
-          memcpy(apd.pointer[apd_idx++], &dim, sizeof(struct descriptor_xd));
+          apd.pointer[vars->idx*2+1] = malloc(sizeof(struct descriptor_xd));
+          memcpy(apd.pointer[vars->idx*2+1], &dim, sizeof(struct descriptor_xd));
         } else {
           MdsFree1Dx(&segment, 0);
           MdsFree1Dx(&dim, 0);
@@ -2432,25 +2428,17 @@ int _TreeGetSegments(void *dbid, int nid, struct descriptor *start, struct descr
     }
   }
   if STATUS_OK {
-    apd.arsize = apd_idx * sizeof(struct descriptor *);
-    int i;
-    for (i = 0; i < apd_idx / 2 / 2; i++) {
-      struct descriptor *data = apd.pointer[i * 2], *dim = apd.pointer[i * 2 + 1];
-      apd.pointer[i * 2] = apd.pointer[apd_idx - i * 2 - 2];
-      apd.pointer[i * 2 + 1] = apd.pointer[apd_idx - i * 2 - 1];
-      apd.pointer[apd_idx - i * 2 - 2] = data;
-      apd.pointer[apd_idx - i * 2 - 1] = dim;
-    }
+    apd.arsize = (numsegs - apd_off) * 2 * sizeof(struct descriptor *);
+    apd.pointer = &apd.pointer[apd_off * 2];
     status = MdsCopyDxXd((struct descriptor *)&apd, out);
   }
-  for (vars->idx = 0; vars->idx < apd_idx; vars->idx++) {
-    if (apd.pointer[vars->idx] != NULL) {
-      MdsFree1Dx((struct descriptor_xd *)apd.pointer[vars->idx], 0);
-      free(apd.pointer[vars->idx]);
+  for (vars->idx = apd_off<<1; vars->idx < numsegs<<1; vars->idx++) {
+    if (dptr[vars->idx] != NULL) {
+      MdsFree1Dx((struct descriptor_xd *)dptr[vars->idx], 0);
+      free(dptr[vars->idx]);
     }
   }
-  if (apd.pointer)
-    free(apd.pointer);
+  free(dptr);
   return status;
 }
 
