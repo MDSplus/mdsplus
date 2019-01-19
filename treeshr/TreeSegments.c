@@ -2116,52 +2116,34 @@ inline static int get_opaque_list(void *dbid, int nid, struct descriptor_xd *out
     if (data_type != DTYPE_OPAQUE) return 0;
   }
   INIT_VARS;
-  EMPTYXD(segdata);
-  EMPTYXD(segdim);
-  status = _TreeGetSegment(dbid, nid, 0, &segdata, &segdim);
-  MdsFree1Dx(&segdata, 0);
-  MdsFree1Dx(&segdim, 0);
-  if STATUS_OK {
-    RETURN_IF_NOT_OK(open_header_read(vars));
-    int numsegs = vars->shead.idx + 1;
-    int apd_idx = 0;
-    struct descriptor **dptr = malloc(sizeof(struct descriptor *) * numsegs);
-    DESCRIPTOR_APD(apd, DTYPE_LIST, dptr, numsegs);
-    memset(dptr, 0, sizeof(struct descriptor *) * numsegs);
-    status = get_segment_index(vars->tinfo, vars->shead.index_offset, &vars->sindex);
-    int idx;
-    for (idx = numsegs; STATUS_OK && idx > 0; idx--) {
-      int segidx = idx - 1;
-      while (STATUS_OK && segidx < vars->sindex.first_idx && vars->sindex.previous_offset > 0)
-        status = get_segment_index(vars->tinfo, vars->sindex.previous_offset, &vars->sindex);
-      if STATUS_NOT_OK
-        break;
-      else {
-        vars->sinfo = &vars->sindex.segment[segidx % SEGMENTS_PER_INDEX];
-        EMPTYXD(segment);
-        EMPTYXD(dim);
-        status = read_segment(vars->tinfo, *(int*)vars->nid_ptr, &vars->shead, vars->sinfo, idx, &segment, &dim);
-        if STATUS_OK {
-          apd.pointer[apd_idx] = malloc(sizeof(struct descriptor_xd));
-          memcpy(apd.pointer[apd_idx++], &segment, sizeof(struct descriptor_xd));
-        } else {
-          MdsFree1Dx(&segment, 0);
-          MdsFree1Dx(&dim, 0);
-        }
-      }
-    }
+  RETURN_IF_NOT_OK(open_header_read(vars));
+  int numsegs = vars->shead.idx + 1;
+  struct descriptor **dptr = calloc(sizeof(struct descriptor *) , numsegs);
+  DESCRIPTOR_APD(apd, DTYPE_LIST, dptr, numsegs);
+  status = get_segment_index(vars->tinfo, vars->shead.index_offset, &vars->sindex);
+  int idx;
+  for (idx = numsegs; STATUS_OK && idx-- > 0;) {
+    while (STATUS_OK && idx < vars->sindex.first_idx && vars->sindex.previous_offset > 0)
+      status = get_segment_index(vars->tinfo, vars->sindex.previous_offset, &vars->sindex);
+    if STATUS_NOT_OK break;
+    vars->sinfo = &vars->sindex.segment[idx % SEGMENTS_PER_INDEX];
+    EMPTYXD(segment);
+    status = read_segment(vars->tinfo, *(int*)vars->nid_ptr, &vars->shead, vars->sinfo, idx, &segment, NULL);
     if STATUS_OK {
-	status = MdsCopyDxXd((struct descriptor *)&apd, out);
-    }
-    for (idx = 0; idx < apd_idx; idx++) {
-      if (apd.pointer[idx] != NULL) {
-	MdsFree1Dx((struct descriptor_xd *)apd.pointer[idx], 0);
-	free(apd.pointer[idx]);
-      }
-    }
-    if (apd.pointer)
-      free(apd.pointer);
+      dptr[idx] = malloc(sizeof(struct descriptor_xd));
+      memcpy(dptr[idx], &segment, sizeof(struct descriptor_xd));
+      segment.pointer = NULL;
+    } else
+      MdsFree1Dx(&segment, 0);
   }
+  if STATUS_OK status = MdsCopyDxXd((struct descriptor *)&apd, out);
+  for (idx=0 ; idx < numsegs; idx++) {
+    if (dptr[idx]) {
+      MdsFree1Dx((struct descriptor_xd *)dptr[idx], 0);
+      free(dptr[idx]);
+    }
+  }
+  free(dptr);
   return status;
 }
 
