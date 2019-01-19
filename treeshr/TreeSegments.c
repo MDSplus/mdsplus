@@ -182,34 +182,48 @@ static int get_segment_index(TREE_INFO * tinfo, int64_t offset, SEGMENT_INDEX * 
 static int get_named_attributes_index(TREE_INFO * tinfo, int64_t offset, NAMED_ATTRIBUTES_INDEX * index);
 
 int _TreeMakeSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dimension, struct descriptor_a *initialValue, int idx, int rows_filled);
+/* write new segment with prefilled rows range of valid data can be defined by rows_filled
+ */
 int TreeMakeSegment(int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dimension, struct descriptor_a *initialValue, int idx, int rows_filled){
   return _TreeMakeSegment(*TreeCtx(), nid, start, end, dimension, initialValue, idx, rows_filled);
 }
 int _TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dimension, struct descriptor_a *initialValue, int idx){
+/* write new EMPTY segment so data can be added row by row with _TreePutSegment
+ * like _TreeMakeSegment but rows_filled will be initialized with 0
+ */
   return _TreeMakeSegment(dbid, nid, start, end, dimension, initialValue, idx, 0);
 }
 int TreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dimension, struct descriptor_a *initialValue, int idx){
   return _TreeBeginSegment(*TreeCtx(), nid, start, end, dimension, initialValue, idx);
 }
+
 int _TreeSetRowsFilled(void *dbid, int nid, int rows_filled);
+/* allows to correct the rows filled property of a segmented node
+ * e.g. after it has been written to using beginSegment instead of makeSegment
+ */
 int TreeSetRowsFilled(int nid, int rows_filled){
   return _TreeSetRowsFilled(*TreeCtx(), nid, rows_filled);
 }
 int _TreeMakeTimestampedSegment(void *dbid, int nid, int64_t * timestamps, struct descriptor_a *initialValue, int idx, int rows_filled);
+/* write new timestamped (int64_t) segment with prefilled rows range of valid data can be defined by rows_filled
+ */
 int TreeMakeTimestampedSegment(int nid, int64_t * timestamps, struct descriptor_a *initialValue, int idx, int rows_filled){
   return _TreeMakeTimestampedSegment(*TreeCtx(), nid, timestamps, initialValue, idx, rows_filled);
 }
 int _TreeBeginTimestampedSegment(void *dbid, int nid, struct descriptor_a *initialValue, int idx){
+/* write new EMPTY timestamped (int64_t) segment so data can be added row by row
+ * like _TreeMakeSegment but rows_filled will be initialized with 0
+ */
   return _TreeMakeTimestampedSegment(dbid, nid, 0, initialValue, idx, 0);
 }
 int TreeBeginTimestampedSegment(int nid, struct descriptor_a *initialValue, int idx){
   return _TreeBeginTimestampedSegment(*TreeCtx(), nid, initialValue, idx);
 }
 
-int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end,
-                       struct descriptor *dimension, int idx);
-int TreeUpdateSegment(int nid, struct descriptor *start, struct descriptor *end,
-                      struct descriptor *dimension, int idx){
+int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dimension, int idx);
+/* allows to correct the dimension and limits of a segment without touchng the data part
+ */
+int TreeUpdateSegment(int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dimension, int idx){
   return _TreeUpdateSegment(*TreeCtx(), nid, start, end, dimension, idx);
 }
 
@@ -229,11 +243,16 @@ int TreeGetSegmentTimes(int nid, int *nsegs, int64_t ** times){
 }
 
 int _TreeGetNumSegments(void *dbid, int nid, int *num);
+/* returns the number of segments stored in the node
+ */
 int TreeGetNumSegments(int nid, int *num){
   return _TreeGetNumSegments(*TreeCtx(), nid, num);
 }
 
 int TreeGetSegment(int nid, int idx, struct descriptor_xd *segment, struct descriptor_xd *dim){
+/* returns data and dimension of the requested segment idx
+ * if segment is NULL loading the data part will be skipped for better performance
+ */
   return _TreeGetSegment(*TreeCtx(), nid, idx, segment, dim);
 }
 
@@ -768,9 +787,7 @@ end: ;
   return status;
 }
 
-int _TreeMakeTimestampedSegment(void *dbid, int nid,
-        int64_t * timestamps,
-        struct descriptor_a *initValIn, int idx, int rows_filled){
+int _TreeMakeTimestampedSegment(void *dbid, int nid, int64_t * timestamps, struct descriptor_a *initValIn, int idx, int rows_filled){
   INIT_WRITE_VARS;
   CLEANUP_NCI_PUSH;
   struct descriptor_a* initialValue = initValIn;
@@ -1210,8 +1227,7 @@ static int read_segment(TREE_INFO* tinfo, int nid, SEGMENT_HEADER* shead, SEGMEN
   return status;
 }
 
-static int get_segment_limits(vars_t* vars,
-                            struct descriptor_xd *retStart, struct descriptor_xd *retEnd){
+static int get_segment_limits(vars_t* vars, struct descriptor_xd *retStart, struct descriptor_xd *retEnd){
   INIT_TREESUCCESS;
   struct descriptor q_d = { 8, DTYPE_Q, CLASS_S, 0 };
   if (vars->sinfo->dimension_offset != -1 && vars->sinfo->dimension_length == 0) {
