@@ -2239,16 +2239,75 @@ static int trim_last_segment(vars_t* vars, struct descriptor_xd *dim){
   if (!dim || !dim->pointer) return status;
   if (vars->idx != vars->shead.idx) return status; //only last segment
   int rows;
-  if (vars->sinfo->rows<0) return status; // compressed TODO: check if we should trim comressed as well
-  //  status = get_compressed_segment_rows(vars->tinfo, vars->sinfo->data_offset, &rows);
-  //else
+  if (vars->sinfo->rows<0) // compressed TODO: check if we should trim comressed as well
+    status = get_compressed_segment_rows(vars->tinfo, vars->sinfo->data_offset, &rows);
+  else
     rows = vars->sinfo->rows & 0x7fffffff;
   if (STATUS_OK && vars->shead.next_row != rows) {
+    mdsdsc_t *tmp = dim->pointer;
+    while (tmp->class == CLASS_R && tmp->dtype != DTYPE_WINDOW && ((mds_function_t*)tmp)->ndesc>0)
+      tmp = ((mds_function_t*)tmp)->arguments[0];
+    mdsdsc_s_t *begin, *end;
+    if (tmp->class == CLASS_R && tmp->dtype == DTYPE_WINDOW
+     && (begin = (mdsdsc_s_t*)((mds_function_t*)tmp)->arguments[0])->class == CLASS_S
+     && (end   = (mdsdsc_s_t*)((mds_function_t*)tmp)->arguments[1])->class == CLASS_S) {
+      int64_t begin_i;
+      double  begin_d;
+      switch(begin->dtype){
+	case DTYPE_B:
+	case DTYPE_BU:
+	  begin_d = begin_i = *(int8_t *)begin->pointer;break;
+	case DTYPE_W:
+	case DTYPE_WU:
+	  begin_d = begin_i = *(int16_t*)begin->pointer;break;
+	case DTYPE_L:
+	case DTYPE_LU:
+	  begin_d = begin_i = *(int32_t*)begin->pointer;break;
+	case DTYPE_Q:
+	case DTYPE_QU:
+	  begin_d = begin_i = *(int64_t*)begin->pointer;break;
+        case DTYPE_FS:
+          begin_i = begin_d = *(float  *)begin->pointer;break;
+        case DTYPE_FT:
+          begin_i = begin_d = *(double *)begin->pointer;break;
+        default:
+          goto fallback;
+      }
+      switch(end->dtype){
+	case DTYPE_B:
+	case DTYPE_BU:
+	  *(int8_t *)end->pointer = (int8_t )(begin_i+vars->shead.next_row-1);break;
+	case DTYPE_W:
+	case DTYPE_WU:
+	  *(int16_t*)end->pointer = (int16_t)(begin_i+vars->shead.next_row-1);break;
+	case DTYPE_L:
+	case DTYPE_LU:
+	  *(int32_t*)end->pointer = (int32_t)(begin_i+vars->shead.next_row-1);break;
+	case DTYPE_Q:
+	case DTYPE_QU:
+	  *(int64_t*)end->pointer =          (begin_i+vars->shead.next_row-1);break;
+        case DTYPE_FS:
+	  *(float  *)end->pointer = (float  )(begin_i+vars->shead.next_row-1);break;
+        case DTYPE_FT:
+	  *(double *)end->pointer =          (begin_d+vars->shead.next_row-1);break;
+        default:
+          goto fallback;
+      }
+      return status;
+    }
+    if (tmp->class == CLASS_A) {
+      if (((mdsdsc_a_t*)tmp)->aflags.coeff)
+        ((array_coeff*)tmp)->m[0] = vars->shead.next_row;
+      else
+        ((mdsdsc_a_t*)tmp)->arsize = tmp->length * vars->shead.next_row;
+      return status;
+    }
+fallback: ;
     status = LibFindImageSymbol_C("TdiShr", "_TdiExecute", &_TdiExecute);
     if STATUS_OK {
-      STATIC_CONSTANT DESCRIPTOR(expression, "data($)[0:($-1)]");
+      STATIC_CONSTANT DESCRIPTOR(expression, "_=lbound($,-1);$[_ : _+$-1]");
       DESCRIPTOR_LONG(row_d, &vars->shead.next_row);
-      status = _TdiExecute(&vars->dblist,&expression,dim,&row_d,dim MDS_END_ARG);
+      status = _TdiExecute(&vars->dblist,&expression,dim,dim,&row_d,dim MDS_END_ARG);
     }
   }
   return status;
