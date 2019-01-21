@@ -482,8 +482,7 @@ static void get_add_rtn_c(void* in){
   free_if(&c->model);
   free_if(&c->image);
 }
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wclobbered"
+
 static inline int get_add_rtn(char const *congtype, int (**add)()){
   static int (*TdiExecute) () = NULL;
   int status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
@@ -495,15 +494,15 @@ static inline int get_add_rtn(char const *congtype, int (**add)()){
   status = TdiExecute(&expdsc,&xd MDS_END_ARG);
   if STATUS_NOT_OK return status;
   get_add_rtn_t c = {&xd,NULL,NULL,NULL};
-  pthread_cleanup_push(get_add_rtn_c,(void*)&c);
-  struct descriptor_a *list = (struct descriptor_a*)xd.pointer;
-  unsigned int j,i = (int)strlen(congtype);
+  uint32_t j,i = (uint32_t)strlen(congtype);
   c.rtn   = malloc(i+6);
   c.model = malloc(i+1);
   for (i=0; congtype[i] && congtype[i]!=' ' ; i++) {
     c.rtn[i] = congtype[i];
     c.model[i] = toupper(congtype[i]);
   }
+  pthread_cleanup_push(get_add_rtn_c,(void*)&c);
+  struct descriptor_a *list = (struct descriptor_a*)xd.pointer;
   strcpy(&c.rtn[i],"__add");
   c.model[i] = '\0';
   char* tmp;
@@ -523,7 +522,6 @@ static inline int get_add_rtn(char const *congtype, int (**add)()){
   pthread_cleanup_pop(1);
   return status;
 }
-#pragma GCC diagnostic pop
 
 int _TreeAddConglom(void *dbid, char const *path, char const *congtype, int *nid){
   if (!IS_OPEN_FOR_EDIT(((PINO_DATABASE *)dbid))) return TreeNOEDIT;

@@ -539,8 +539,6 @@ static void ResetFdactive(int rep, SOCKET sock, fd_set* active){
   DBG("reset fdactive in ResetFdactive\n");
 }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wclobbered"
 static void ReceiverThread(void *sockptr){
   atexit((void*)ReceiverExit);
   CONDITION_SET(&ReceiverRunning);
@@ -594,7 +592,6 @@ static void ReceiverThread(void *sockptr){
   fprintf(stderr,"Cannot recover from select errors in ServerSendMessage, exitting\n");
   pthread_exit(0);
 }
-#pragma GCC diagnostic pop
 
 int is_broken_socket(SOCKET socket)
 {
