@@ -739,7 +739,7 @@ static int get_compressed_segment_rows(TREE_INFO * tinfo, const int64_t offset, 
   char buffer[60];
   status = read_property_safe(tinfo,offset, buffer, length);
   if STATUS_OK {
-    if ((unsigned char)buffer[3] == CLASS_CA || (unsigned char)buffer[3] == CLASS_A) {
+    if ((class_t)buffer[3] == CLASS_CA || (class_t)buffer[3] == CLASS_A) {
       char dimct = buffer[11];
       if (dimct == 1) {
         int arsize = swapint(buffer + 12);
@@ -1946,48 +1946,35 @@ static int copy_segment(TREE_INFO *tinfo_in, TREE_INFO *tinfo_out, int nid, SEGM
   return status;
 }
 
-typedef struct indexlist {
-  struct indexlist* next;
-  int64_t           offset;
-} indexlist_t;
-static inline int copy_segment_index(TREE_INFO * tinfo_in, TREE_INFO * tinfo_out, int nid, SEGMENT_HEADER * shead,
-        int64_t * index_offset,
-        int64_t * data_offset __attribute__((unused)), int64_t * dim_offset __attribute__((unused)),
-        int compress){
-  INIT_TREESUCCESS;
-  indexlist_t *tlist, *list = NULL;
-  int64_t offset = *index_offset;
-  while (offset>=0 && STATUS_OK) {
-    tlist = malloc(sizeof(indexlist_t));
-    tlist->next   = list;
-    tlist->offset = offset;
-    list          = tlist;
+static inline int copy_segment_index(TREE_INFO * tinfo_in, TREE_INFO * tinfo_out, int nid, SEGMENT_HEADER * shead, int compress){
+  int status;
+  INIT_AND_FREE_ON_EXIT(int64_t*,offsets);
+  status = TreeSUCCESS;
+  int64_t offset = shead->index_offset;
+  int i,ioff, noff = ((shead->idx-1) / SEGMENTS_PER_INDEX) + 1;
+  // First read all offsets as they have to be read last-one-first.
+  offsets = malloc(noff*sizeof(int64_t));
+  for (ioff = noff ; ioff --> 0 && STATUS_OK;) {
+    offsets[ioff] = offset;
     status = read_property(tinfo_in, offset, (char*)&offset, sizeof(offset));
-#ifdef WORDS_BIGENDIAN
     offset = swapquad((char*)&offset);
-#endif
-    if (list->offset==offset)
+    if (offsets[ioff]==offset) {
+      fprintf(stderr, "segment data malformed: offset[i]==offset[i+1]\n");
+      status = MDSplusFATAL;
       break;
-  }
-  *index_offset = -1;
-  while (list) {
-    if STATUS_OK {
-      SEGMENT_INDEX sindex;
-      status = get_segment_index(tinfo_in, list->offset, &sindex);
-      if STATUS_OK {
-	int i;
-	for (i = 0; (i < SEGMENTS_PER_INDEX) && STATUS_OK; i++) {
-	  SEGMENT_INFO* sinfo = &sindex.segment[i];
-	  status = copy_segment(tinfo_in, tinfo_out, nid, shead, sinfo, i,compress);
-	}
-	sindex.previous_offset = *index_offset;	*index_offset = -1; // append
-	status = put_segment_index(tinfo_out, &sindex, index_offset);
-      }
     }
-    tlist = list;
-    list  = list->next;
-    free(tlist);
   }
+  shead->index_offset = -1;
+  for (ioff = 0; ioff < noff && STATUS_OK ; ioff++) {
+    SEGMENT_INDEX sindex;
+    status = get_segment_index(tinfo_in, offsets[ioff], &sindex);
+    for (i = 0; (i < SEGMENTS_PER_INDEX) && STATUS_OK; i++)
+      status = copy_segment(tinfo_in, tinfo_out, nid, shead, &sindex.segment[i], i, compress);
+    // status is not ok if sindex is not full in last sindex
+    sindex.previous_offset = shead->index_offset;shead->index_offset = -1; // append
+    status = put_segment_index(tinfo_out, &sindex, &shead->index_offset);
+  }
+  FREE_NOW(offsets);
   return status;
 }
 
@@ -2026,7 +2013,7 @@ inline static int copy_segmented_records(TREE_INFO * tinfo_in, TREE_INFO * tinfo
   INIT_STATUS_AS get_segment_header(tinfo_in, *offset, &header);
   if STATUS_OK {
     *length=0;
-    status = copy_segment_index(tinfo_in, tinfo_out, nid, &header, &header.index_offset, &header.data_offset, &header.dim_offset, compress);
+    status = copy_segment_index(tinfo_in, tinfo_out, nid, &header, compress);
     *offset = -1;
     status = put_segment_header(tinfo_out, &header, offset);
   }
