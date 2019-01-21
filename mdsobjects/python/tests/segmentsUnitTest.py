@@ -310,7 +310,7 @@ class Tests(_UnitTest.TreeTests):
         te = DateToQuad("now")
         sampperseg = 50
         data = ZERO(Int32Array([sampperseg]),Int32(0))
-        numsegs = 513
+        numsegs = 128
         for i in range(numsegs):
             t0=te+1;te=t0+sampperseg-1
             node.makeSegment(t0,te,Int64Array(range(t0,te+1)),data+Int32(i))
