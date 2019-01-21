@@ -125,13 +125,13 @@ int TreeGetRecord(int nid_in, struct descriptor_xd *dsc){
 		  if (dptr->dtype != DTYPE_T) {
 		    switch (dptr->length) {
 		    case 2:
-		      *(short *)dptr->pointer = swapshort(dptr->pointer);
+		      *(int16_t*)dptr->pointer = swapint16(dptr->pointer);
 		      break;
 		    case 4:
-		      *(int *)dptr->pointer = swapint(dptr->pointer);
+		      *(int32_t*)dptr->pointer = swapint32(dptr->pointer);
 		      break;
 		    case 8:
-		      *(int64_t *) dptr->pointer = swapquad(dptr->pointer);
+		      *(int64_t*)dptr->pointer = swapint64(dptr->pointer);
 		      break;
 		    }
 		  }
@@ -321,8 +321,8 @@ EXPORT int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_
 	  status = TreeReopenDatafile(info);
       }
       if STATUS_OK {
-	unsigned int partlen = min(swapshort((char *)&hdr.rlength) - 10, buffer_space);
-	int nidx = swapint((char *)&hdr.node_number);
+	unsigned int partlen = min(swapint16(&hdr.rlength) - 10, buffer_space);
+	int nidx = swapint32(&hdr.node_number);
 	if (first)
 	  *nodenum = nidx;
 	else if (*nodenum != nidx) {
@@ -375,7 +375,7 @@ EXPORT int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_
 	if (STATUS_OK && deleted)
 	  status = TreeReopenDatafile(info);
       }
-      *nodenum = swapint((char *)&((RECORD_HEADER *) buffer)->node_number);
+      loadint32(nodenum,&((RECORD_HEADER *) buffer)->node_number);
       for (bptr_in = buffer, bptr = record + *buffer_size, bytes_remaining = *buffer_size;
 	   bytes_remaining;) {
 	int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_remaining);
