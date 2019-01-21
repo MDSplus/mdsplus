@@ -1662,9 +1662,6 @@ int TreeGetDsc(TREE_INFO * tinfo, const int nid, int64_t offset, int length, str
 static int put_segment_header(TREE_INFO * tinfo, SEGMENT_HEADER * hdr, int64_t * offset){
   INIT_TREESUCCESS;
   int64_t loffset;
-  int j;
-  char buffer[2 * sizeof(char) + 1 * sizeof(short) + 10 * sizeof(int) +
-                       3 * sizeof(int64_t)], *bptr = buffer;
   if (*offset == -1) {
     TreeLockDatafile(tinfo, 0, 0);
     *offset = MDS_IO_LSEEK(tinfo->data_file->put, 0, SEEK_END);
@@ -1674,18 +1671,6 @@ static int put_segment_header(TREE_INFO * tinfo, SEGMENT_HEADER * hdr, int64_t *
     loffset = *offset;
     MDS_IO_LSEEK(tinfo->data_file->put, *offset, SEEK_SET);
   }
-  *bptr = hdr->dtype;
-  bptr++;
-  *bptr = hdr->dimct;
-  bptr++;
-  for (j = 0; j < 8; j++) {
-    LoadInt(hdr->dims[j], bptr);
-    bptr += sizeof(int);
-  }
-  LoadShort(hdr->length, bptr);
-  bptr += sizeof(short);
-  LoadInt(hdr->idx, bptr);
-  bptr += sizeof(int);
   /* What a hack
   char *next_row_fix = getenv("NEXT_ROW_FIX");
   if (next_row_fix != 0) {
@@ -1699,27 +1684,26 @@ static int put_segment_header(TREE_INFO * tinfo, SEGMENT_HEADER * hdr, int64_t *
     }
   }
   */
-  LoadInt(hdr->next_row, bptr);
-  bptr += sizeof(int);
-  LoadQuad(hdr->index_offset, bptr);
-  bptr += sizeof(int64_t);
-  LoadQuad(hdr->data_offset, bptr);
-  bptr += sizeof(int64_t);
-  LoadQuad(hdr->dim_offset, bptr);
-  bptr += sizeof(int64_t);
-  status = MDS_IO_WRITE(tinfo->data_file->put, buffer, sizeof(buffer))
-        == sizeof(buffer) ? TreeSUCCESS : TreeFAILURE;
+#ifdef WORDS_BIGENDIAN_off
+  int i;for (i = 0; i < MAXDIM; i++)
+    hdr->dims[i]	= swapint  (&hdr->dims[i]	);
+  hdr->length   	= swapshort(&hdr->length	);
+  hdr->idx,		= swapint  (&hdr->idx		);
+  hdr->next_row		= swapint  (&hdr->next_row	);
+  hdr->index_offset	= swapquad (&hdr->index_offset	);
+  hdr->data_offset	= swapquad (&hdr->data_offset	);
+  hdr->dim_offset	= swapquad (&hdr->dim_offset	);
+#endif
+  status = MDS_IO_WRITE(tinfo->data_file->put, (char*)hdr, sizeof(SEGMENT_HEADER))
+	== sizeof(SEGMENT_HEADER) ? TreeSUCCESS : TreeFAILURE;
+
   TreeUnLockDatafile(tinfo, 0, loffset);
   return status;
 }
 
 static int put_segment_index(TREE_INFO * tinfo, SEGMENT_INDEX * idx, int64_t * offset){
   INIT_TREESUCCESS;
-  int i;
   int64_t loffset;
-  char buffer[sizeof(int64_t) + sizeof(int) +
-                       SEGMENTS_PER_INDEX * (6 * sizeof(int64_t) + 4 * sizeof(int))], *bptr =
-      buffer;
   if (*offset == -1) {
     TreeLockDatafile(tinfo, 0, 0);
     loffset = 0;
@@ -1729,44 +1713,31 @@ static int put_segment_index(TREE_INFO * tinfo, SEGMENT_INDEX * idx, int64_t * o
     loffset = *offset;
     MDS_IO_LSEEK(tinfo->data_file->put, *offset, SEEK_SET);
   }
-  LoadQuad(idx->previous_offset, bptr);
-  bptr += sizeof(int64_t);
-  LoadInt(idx->first_idx, bptr);
-  bptr += sizeof(int);
-  for (i = 0; i < SEGMENTS_PER_INDEX; i++) {
-    LoadQuad(idx->segment[i].start, bptr);
-    bptr += sizeof(int64_t);
-    LoadQuad(idx->segment[i].end, bptr);
-    bptr += sizeof(int64_t);
-    LoadQuad(idx->segment[i].start_offset, bptr);
-    bptr += sizeof(int64_t);
-    LoadInt(idx->segment[i].start_length, bptr);
-    bptr += sizeof(int);
-    LoadQuad(idx->segment[i].end_offset, bptr);
-    bptr += sizeof(int64_t);
-    LoadInt(idx->segment[i].end_length, bptr);
-    bptr += sizeof(int);
-    LoadQuad(idx->segment[i].dimension_offset, bptr);
-    bptr += sizeof(int64_t);
-    LoadInt(idx->segment[i].dimension_length, bptr);
-    bptr += sizeof(int);
-    LoadQuad(idx->segment[i].data_offset, bptr);
-    bptr += sizeof(int64_t);
-    LoadInt(idx->segment[i].rows, bptr);
-    bptr += sizeof(int);
+#ifdef WORDS_BIGENDIAN_off
+  idx->previous_offset			= swapquad(&buffer.previous_offset		);
+  idx->first_idx			= swapint (&buffer.first_idx			);
+  int i;for (i = 0; i < SEGMENTS_PER_INDEX; i++) {
+    idx->segment[i].start		= swapquad(&buffer.segment[i].start		);
+    idx->segment[i].end			= swapquad(&buffer.segment[i].end		);
+    idx->segment[i].start_offset	= swapquad(&buffer.segment[i].start_offset	);
+    idx->segment[i].start_length	= swapint (&buffer.segment[i].start_length	);
+    idx->segment[i].end_offset		= swapquad(&buffer.segment[i].end_offset	);
+    idx->segment[i].end_length		= swapint (&buffer.segment[i].end_length	);
+    idx->segment[i].dimension_offset	= swapquad(&buffer.segment[i].dimension_offset	);
+    idx->segment[i].dimension_length	= swapint (&buffer.segment[i].dimension_length	);
+    idx->segment[i].data_offset		= swapquad(&buffer.segment[i].data_offset	);
+    idx->segment[i].rows		= swapint (&buffer.segment[i].rows		);
   }
-  status = MDS_IO_WRITE(tinfo->data_file->put, buffer, sizeof(buffer))
-        == sizeof(buffer) ? TreeSUCCESS : TreeFAILURE;
+#endif
+  status = MDS_IO_WRITE(tinfo->data_file->put, (char*)idx, sizeof(SEGMENT_INDEX))
+	== sizeof(SEGMENT_INDEX) ? TreeSUCCESS : TreeFAILURE;
   TreeUnLockDatafile(tinfo, 0, loffset);
   return status;
 }
 
 int TreePutExtendedAttributes(TREE_INFO * tinfo, EXTENDED_ATTRIBUTES * att, int64_t * offset){
   INIT_TREESUCCESS;
-  int i;
   int64_t loffset;
-  char buffer[sizeof(int64_t) + FACILITIES_PER_EA * (sizeof(int64_t) + sizeof(int))],
-      *bptr = buffer;
   if (*offset == -1) {
     TreeLockDatafile(tinfo, 0, 0);
     loffset = 0;
@@ -1776,28 +1747,22 @@ int TreePutExtendedAttributes(TREE_INFO * tinfo, EXTENDED_ATTRIBUTES * att, int6
     loffset = *offset;
     MDS_IO_LSEEK(tinfo->data_file->put, *offset, SEEK_SET);
   }
-  LoadQuad(att->next_ea_offset, bptr);
-  bptr += sizeof(int64_t);
-  for (i = 0; i < FACILITIES_PER_EA; i++) {
-    LoadQuad(att->facility_offset[i], bptr);
-    bptr += sizeof(int64_t);
+#ifdef WORDS_BIGENDIAN_off
+  att->next_ea_offset       = swapquad(&att->next_ea_offset);
+  int i;for (i = 0; i < FACILITIES_PER_EA; i++) {
+    att->facility_offset[i] = swapquad(&att->facility_offset[i])
+    att->facility_length[i] = swapint (&att->facility_length[i])
   }
-  for (i = 0; i < FACILITIES_PER_EA; i++) {
-    LoadInt(att->facility_length[i], bptr);
-    bptr += sizeof(int);
-  }
-  status = MDS_IO_WRITE(tinfo->data_file->put, buffer, sizeof(buffer))
-        == sizeof(buffer) ? TreeSUCCESS : TreeFAILURE;
+#endif
+  status = MDS_IO_WRITE(tinfo->data_file->put, (char*)att, sizeof(EXTENDED_ATTRIBUTES))
+	== sizeof(EXTENDED_ATTRIBUTES) ? TreeSUCCESS : TreeFAILURE;
   TreeUnLockDatafile(tinfo, 0, loffset);
   return status;
 }
 
-static int put_named_attributes_index(TREE_INFO * tinfo, NAMED_ATTRIBUTES_INDEX * index,
-                                   int64_t * offset){
+static int put_named_attributes_index(TREE_INFO * tinfo, NAMED_ATTRIBUTES_INDEX * index, int64_t * offset){
   INIT_TREESUCCESS;
-  int i;
   int64_t loffset;
-  char buffer[sizeof(int64_t) + NAMED_ATTRIBUTES_PER_INDEX * (NAMED_ATTRIBUTE_NAME_SIZE + sizeof(int64_t) + sizeof(int))], *bptr = buffer;
   if (*offset == -1) {
     TreeLockDatafile(tinfo, 0, 0);
     loffset = 0;
@@ -1807,18 +1772,15 @@ static int put_named_attributes_index(TREE_INFO * tinfo, NAMED_ATTRIBUTES_INDEX 
     loffset = *offset;
     MDS_IO_LSEEK(tinfo->data_file->put, *offset, SEEK_SET);
   }
-  LoadQuad(index->previous_offset, bptr);
-  bptr += sizeof(int64_t);
-  for (i = 0; i < NAMED_ATTRIBUTES_PER_INDEX; i++) {
-    memcpy(bptr, index->attribute[i].name, NAMED_ATTRIBUTE_NAME_SIZE);
-    bptr += NAMED_ATTRIBUTE_NAME_SIZE;
-    LoadQuad(index->attribute[i].offset, bptr);
-    bptr += sizeof(int64_t);
-    LoadInt(index->attribute[i].length, bptr);
-    bptr += sizeof(int);
+#ifdef WORDS_BIGENDIAN_off
+  index->previous_offset	= swapquad(&index->previous_offset	);
+  int i;for (i = 0; i < NAMED_ATTRIBUTES_PER_INDEX; i++) {
+    index->attribute[i].offset	= swapquad(&index->attribute[i].offset	);
+    index->attribute[i].length	= swapint (&index->attribute[i].length	);
   }
-  status = MDS_IO_WRITE(tinfo->data_file->put, buffer, sizeof(buffer))
-        == sizeof(buffer) ? TreeSUCCESS : TreeFAILURE;
+#endif
+  status = MDS_IO_WRITE(tinfo->data_file->put, (char*)index, sizeof(NAMED_ATTRIBUTES_INDEX))
+	== sizeof(NAMED_ATTRIBUTES_INDEX) ? TreeSUCCESS : TreeFAILURE;
   TreeUnLockDatafile(tinfo, 0, loffset);
   return status;
 }
@@ -1838,124 +1800,82 @@ static int put_dimension_value(TREE_INFO *tinfo, int64_t * timestamps, int rows_
     MDS_IO_LSEEK(tinfo->data_file->put, *offset, SEEK_SET);
   }
   length = length * dims[ndims - 1] - (sizeof(int64_t) * rows_filled);
-  if (length > 0) {
-    buffer = malloc(length);
-    memset(buffer, 0, length);
-  }
+  if (length > 0) buffer = calloc(1, length);
   if (rows_filled > 0)
     status = MDS_IO_WRITE(tinfo->data_file->put, timestamps, rows_filled * sizeof(int64_t))
           == (int)(rows_filled * sizeof(int64_t)) ? TreeSUCCESS : TreeFAILURE;
   if (STATUS_OK && length > 0)
     status = MDS_IO_WRITE(tinfo->data_file->put, buffer, length) == length ? TreeSUCCESS : TreeFAILURE;
-  if (buffer)
-    free(buffer);
+  if (buffer) free(buffer);
   TreeUnLockDatafile(tinfo, 0, loffset);
   return status;
 }
 
 static int get_segment_header(TREE_INFO * tinfo, const int64_t offset, SEGMENT_HEADER * hdr){
-  INIT_TREESUCCESS;
-  char buffer[2 * sizeof(char) + 1 * sizeof(short) + 10 * sizeof(int) + 3 * sizeof(int64_t)], *bptr;
-  status = read_property_safe(tinfo,offset, buffer, sizeof(buffer));
+  int status = read_property_safe(tinfo, offset, (char*)hdr, sizeof(SEGMENT_HEADER));
+#ifdef WORDS_BIGENDIAN_off
   if (status == TreeSUCCESS) {
-    bptr = buffer;
-    hdr->dtype = *bptr++;
-    hdr->dimct = *bptr++;
-    int i;
-    for (i = 0; i < 8; i++, bptr += sizeof(int))
-      hdr->dims[i] = swapint(bptr);
-    hdr->length = swapshort(bptr);
-    bptr += sizeof(short);
-    hdr->idx = swapint(bptr);
-    bptr += sizeof(int);
-    hdr->next_row = swapint(bptr);
-    bptr += sizeof(int);
-    hdr->index_offset = swapquad(bptr);
-    bptr += sizeof(int64_t);
-    hdr->data_offset = swapquad(bptr);
-    bptr += sizeof(int64_t);
-    hdr->dim_offset = swapquad(bptr);
-    bptr += sizeof(int64_t);
+    int i;for (i = 0; i < MAXDIM; i++)
+      hdr->dims[i]	= swapint  (&hdr->dims[i]     );
+    hdr->length		= swapshort(&hdr->length      );
+    hdr->idx		= swapint  (&hdr->idx         );
+    hdr->next_row	= swapint  (&hdr->next_row    );
+    hdr->index_offset	= swapquad (&hdr->index_offset);
+    hdr->data_offset	= swapquad (&hdr->data_offset );
+    hdr->dim_offset	= swapquad (&hdr->dim_offset  );
   }
+#endif
   return status;
 }
 
 static int get_segment_index(TREE_INFO * tinfo, const int64_t offset, SEGMENT_INDEX * idx){
-  INIT_TREESUCCESS;
-  char buffer[sizeof(int64_t) + sizeof(int) + SEGMENTS_PER_INDEX * (6 * sizeof(int64_t) + 4 * sizeof(int))], *bptr;
-  status = read_property_safe(tinfo, offset, buffer, sizeof(buffer));
+  int status = read_property_safe(tinfo, offset, (char*)idx, sizeof(SEGMENT_INDEX));
+#ifdef WORDS_BIGENDIAN_off
   if (status == TreeSUCCESS) {
-    bptr = buffer;
-    idx->previous_offset = swapquad(bptr);
-    bptr += sizeof(int64_t);
-    idx->first_idx = swapint(bptr);
-    bptr += sizeof(int);
-    int i;
-    for (i = 0; i < SEGMENTS_PER_INDEX; i++) {
-      idx->segment[i].start = swapquad(bptr);
-      bptr += sizeof(int64_t);
-      idx->segment[i].end = swapquad(bptr);
-      bptr += sizeof(int64_t);
-      idx->segment[i].start_offset = swapquad(bptr);
-      bptr += sizeof(int64_t);
-      idx->segment[i].start_length = swapint(bptr);
-      bptr += sizeof(int);
-      idx->segment[i].end_offset = swapquad(bptr);
-      bptr += sizeof(int64_t);
-      idx->segment[i].end_length = swapint(bptr);
-      bptr += sizeof(int);
-      idx->segment[i].dimension_offset = swapquad(bptr);
-      bptr += sizeof(int64_t);
-      idx->segment[i].dimension_length = swapint(bptr);
-      bptr += sizeof(int);
-      idx->segment[i].data_offset = swapquad(bptr);
-      bptr += sizeof(int64_t);
-      idx->segment[i].rows = swapint(bptr);
-      bptr += sizeof(int);
+    idx->previous_offset	= swapquad(&idx->previous_offset);
+    idx->first_idx		= swapint (&idx->previous_offset);
+    int i;for (i = 0; i < SEGMENTS_PER_INDEX; i++) {
+      idx->segment[i].start		= swapquad(&idx->segment[i].start		);
+      idx->segment[i].end		= swapquad(&idx->segment[i].end			);
+      idx->segment[i].start_offset	= swapquad(&idx->segment[i].start_offset	);
+      idx->segment[i].start_length	= swapint (&idx->segment[i].start_length	);
+      idx->segment[i].end_offset	= swapquad(&idx->segment[i].end_offset		);
+      idx->segment[i].end_length	= swapint (&idx->segment[i].end_length		);
+      idx->segment[i].dimension_offset	= swapquad(&idx->segment[i].dimension_offset	);
+      idx->segment[i].dimension_length	= swapint (&idx->segment[i].dimension_length	);
+      idx->segment[i].data_offset	= swapquad(&idx->segment[i].data_offset		);
+      idx->segment[i].rows		= swapint (&idx->segment[i].start		);
     }
   }
+#endif
   return status;
 }
 
 int TreeGetExtendedAttributes(TREE_INFO * tinfo, const int64_t offset, EXTENDED_ATTRIBUTES * att){
-  INIT_TREESUCCESS;
-  char buffer[sizeof(int64_t) + FACILITIES_PER_EA * (sizeof(int64_t) + sizeof(int))], *bptr;
-  status = read_property_safe(tinfo,offset, buffer, sizeof(buffer));
+  int status = read_property_safe(tinfo, offset, (char*)att, sizeof(EXTENDED_ATTRIBUTES));
+#ifdef WORDS_BIGENDIAN_off
   if (status == TreeSUCCESS) {
-    bptr = buffer;
-    att->next_ea_offset = swapquad(bptr);
-    bptr += sizeof(int64_t);
-    int i;
-    for (i = 0; i < FACILITIES_PER_EA; i++) {
-      att->facility_offset[i] = swapquad(bptr);
-      bptr += sizeof(int64_t);
-    }
-    for (i = 0; i < FACILITIES_PER_EA; i++) {
-      att->facility_length[i] = swapint(bptr);
-      bptr += sizeof(int);
+    att->next_ea_offset		= swapquad(&att->next_ea_offset    );
+    int i;for (i = 0; i < FACILITIES_PER_EA; i++) {
+      att->facility_offset[i]	= swapquad(&att->facility_offset[i]);
+      att->facility_length[i]	= swapint (&att->facility_offset[i]);
     }
   }
+#endif
   return status;
 }
 
 static int get_named_attributes_index(TREE_INFO * tinfo, const int64_t offset, NAMED_ATTRIBUTES_INDEX * index){
-  INIT_TREESUCCESS;
-  char buffer[sizeof(int64_t) + NAMED_ATTRIBUTES_PER_INDEX * (sizeof(int64_t) + sizeof(int) + NAMED_ATTRIBUTE_NAME_SIZE)], *bptr;
-  status = read_property_safe(tinfo,offset, buffer, sizeof(buffer));
+  int status = read_property_safe(tinfo, offset, (char*)index, sizeof(NAMED_ATTRIBUTES_INDEX));
+#ifdef WORDS_BIGENDIAN_off
   if (status == TreeSUCCESS) {
-    bptr = buffer;
-    index->previous_offset = swapquad(bptr);
-    bptr += sizeof(int64_t);
-    int i;
-    for (i = 0; i < NAMED_ATTRIBUTES_PER_INDEX; i++) {
-      memcpy(index->attribute[i].name, bptr, NAMED_ATTRIBUTE_NAME_SIZE);
-      bptr += NAMED_ATTRIBUTE_NAME_SIZE;
-      index->attribute[i].offset = swapquad(bptr);
-      bptr += sizeof(int64_t);
-      index->attribute[i].length = swapint(bptr);
-      bptr += sizeof(int);
+    index->previous_offset = swapquad(&index->previous_offset);
+    int i;for (i = 0; i < NAMED_ATTRIBUTES_PER_INDEX; i++) {
+      index->attribute[i].offset = swapquad(&index->attribute[i].offset);
+      index->attribute[i].length = swapint (&index->attribute[i].length);
     }
   }
+#endif
   return status;
 }
 
