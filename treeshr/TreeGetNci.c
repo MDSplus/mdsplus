@@ -57,7 +57,7 @@ static inline int minInt(int a, int b) { return a < b ? a : b; }
     if STATUS_NOT_OK break;\
  }
 #define break_on_no_node if (!node_exists) {status = TreeNNF; break; }
-#define set_retlen(length) if (itm->buffer_length < (int)length) { status = TreeBUFFEROVF; break; } else retlen=length
+#define set_retlen(length) if (itm->buffer_length < (int)(length)) { status = TreeBUFFEROVF; break; } else retlen=(length)
 
 static char *getPath(PINO_DATABASE * dblist, NODE * node, int remove_tree_refs);
 static const char *nonode = "<no-node>   ";
@@ -218,10 +218,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm){
     case NciCONGLOMERATE_ELT:
       break_on_no_node;
       set_retlen(sizeof(node->conglomerate_elt));
-      if (swapshort((char *)&node->conglomerate_elt))
-	*(unsigned short *)itm->pointer = swapshort((char *)&node->conglomerate_elt);
-      else
-	*(unsigned short *)itm->pointer = 0;
+      loadint16(itm->pointer,&node->conglomerate_elt);
       break;
     case NciPARENT:
       break_on_no_node;
@@ -267,18 +264,17 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm){
       break;
     case NciCONGLOMERATE_NIDS:
       break_on_no_node;
-      if (swapshort((char *)&node->conglomerate_elt)) {
+      if (node->conglomerate_elt) {
 	out_nid = nid;
-	out_nid.node -= (swapshort((char *)&node->conglomerate_elt) - 1);
-	cng_node = node - swapshort((char *)&node->conglomerate_elt) + 1;
-	for (i = 0;
-	     (i < itm->buffer_length / 4) && (swapshort((char *)&cng_node->conglomerate_elt) > i);
-	     i++) {
-	  set_retlen((sizeof(NID) * (i + 1)));
+	out_nid.node -= (swapint16(&node->conglomerate_elt) - 1);
+	cng_node = node - swapint16(&node->conglomerate_elt) + 1;
+        int len = itm->buffer_length>>2;// /4;
+	for (i=0 ; i<len && i< swapint16(&cng_node->conglomerate_elt) ; i++) {
 	  *((NID *) (itm->pointer) + i) = out_nid;
 	  cng_node++;
 	  out_nid.node++;
 	}
+        set_retlen(sizeof(NID)*i);
       } else
 	retlen = 0;
       break;
@@ -303,9 +299,8 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm){
     case NciNUMBER_OF_ELTS:
       break_on_no_node;
       set_retlen(sizeof(count));
-      count = 0;
-      cng_node = node - swapshort((char *)&node->conglomerate_elt) + 1;
-      for (count = 0; swapshort((char *)&cng_node->conglomerate_elt) > count; count++, cng_node++) ;
+      cng_node = node - swapint16(&node->conglomerate_elt) + 1;
+      for (count = 0; swapint16(&cng_node->conglomerate_elt) > count; count++, cng_node++) ;
       *(int *)(itm->pointer) = count;
       break;
     case NciCHILDREN_NIDS:
@@ -351,7 +346,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm){
       break;
     case NciORIGINAL_PART_NAME:
       break_on_no_node;
-      if (swapshort((char *)&node->conglomerate_elt)) {
+      if (node->conglomerate_elt) {
 	struct descriptor_d string_d = { 0, DTYPE_T, CLASS_D, 0 };
 	DESCRIPTOR_NID(nid_dsc, 0);
 	DESCRIPTOR(part_name, "PART_NAME");

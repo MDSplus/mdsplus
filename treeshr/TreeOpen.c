@@ -541,7 +541,7 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
   }
   if (info) {
     for (i = 0; i < info->header->externals; i++) {
-      NODE *external_node = info->node + swapint((char *)&info->external[i]);
+      NODE *external_node = info->node + swapint32(&info->external[i]);
       char *subtree = strncpy(calloc(1,sizeof(NODE_NAME)+1), external_node->name, sizeof(NODE_NAME));
       subtree[sizeof(NODE_NAME)] = '\0';
       char *blank = strchr(subtree, ' ');
