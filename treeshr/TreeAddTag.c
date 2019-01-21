@@ -135,7 +135,7 @@ the tag name specified does not already exist.
   if (tags > 0) {
     newtag_idx = 0;
     for (tidx = 0; tidx < tags; tidx++) {
-      int idx = swapint((char *)(old_tags_ptr + tidx));
+      int idx = swapint32((old_tags_ptr + tidx));
       char *defined_tag = (char *)(dblist->tree_info->tag_info + idx)->name;
       int cmp = strncmp(tag, defined_tag, sizeof(TAG_NAME));
       if (cmp == 0)
@@ -178,7 +178,7 @@ the tag name specified does not already exist.
     memcpy(new_tags_ptr, old_tags_ptr, (size_t)newtag_idx * sizeof(int));
     memcpy(new_tags_ptr + newtag_idx + 1, old_tags_ptr + newtag_idx,
 	   (size_t)(tags - newtag_idx) * sizeof(int));
-    *(new_tags_ptr + newtag_idx) = swapint((char *)&tags);
+    *(new_tags_ptr + newtag_idx) = swapint32(&tags);
     if (dblist->tree_info->edit->tags_pages > 0)
       free(old_tags_ptr);
     dblist->tree_info->tags = new_tags_ptr;
@@ -196,7 +196,7 @@ the tag name specified does not already exist.
 
     memmove(old_tags_ptr + newtag_idx + 1, old_tags_ptr + newtag_idx,
 	    (size_t)(tags - newtag_idx) * sizeof(int));
-    *(old_tags_ptr + newtag_idx) = swapint((char *)&tags);	/* Load new */
+    *(old_tags_ptr + newtag_idx) = swapint32(&tags);	/* Load new */
   }
 
 /*********************************************
@@ -206,7 +206,7 @@ the tag name specified does not already exist.
 
   memcpy(tag_info.name, tag, sizeof(tag));
   tmp = (int)(node_ptr - dblist->tree_info->node);
-  tag_info.node_idx = swapint((char *)&tmp);
+  tag_info.node_idx = swapint32(&tmp);
   tag_info.tag_link = node_ptr->tag_link;
 
 /*******************************************************
@@ -257,7 +257,7 @@ the tag name specified does not already exist.
 ******************************************/
 
   tags++;
-  node_ptr->tag_link = swapint((char *)&tags);
+  node_ptr->tag_link = swapint32(&tags);
   dblist->tree_info->header->tags = tags;
   dblist->modified = 1;
   return TreeNORMAL;

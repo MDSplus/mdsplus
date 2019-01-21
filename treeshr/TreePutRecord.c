@@ -466,7 +466,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
     } else {
       buffer = (char *)malloc(blen);
       bptr = buffer;
-      LoadInt(nodenum, (char *)&info->data_file->record_header->node_number);
+      loadint32(&info->data_file->record_header->node_number,&nodenum);
       bitassign_c(0, nci_ptr->flags2, NciM_NON_VMS);
       memset(&info->data_file->record_header->rfa, 0, sizeof(RFA));
       while (bytes_to_put && (status & 1)) {
@@ -486,7 +486,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 	int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
 	unsigned short rlength = bytes_this_time + 10;
 	bytes_to_put -= bytes_this_time;
-	LoadShort(rlength, (char *)&info->data_file->record_header->rlength);
+	loadint16(&info->data_file->record_header->rlength,&rlength);
 	memcpy(bptr, (void *)info->data_file->record_header, sizeof(RECORD_HEADER));
 	bptr += sizeof(RECORD_HEADER);
 	bptr += bytes_this_time;
@@ -540,7 +540,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
   int status = TreeNORMAL;
   int bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
 
-  LoadInt(nodenum, (char *)&info->data_file->record_header->node_number);
+  loadint32(&info->data_file->record_header->node_number,&nodenum);
   memset(&info->data_file->record_header->rfa, 0, sizeof(RFA));
   while (bytes_to_put && (status & 1)) {
     int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
@@ -551,7 +551,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
       unsigned short rlength = bytes_this_time + 10;
       eof = MDS_IO_LSEEK(info->data_file->put, 0, SEEK_END);
       bytes_to_put -= bytes_this_time;
-      LoadShort(rlength, (char *)&info->data_file->record_header->rlength);
+      loadint16(&info->data_file->record_header->rlength,&rlength);
       status =
 	  (MDS_IO_WRITE
 	   (info->data_file->put, (void *)info->data_file->record_header,
@@ -593,7 +593,7 @@ static int UpdateDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 {
   int status = TreeNORMAL;
   unsigned int bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
-  LoadInt(nodenum, (char *)&info->data_file->record_header->node_number);
+  loadint32(&info->data_file->record_header->node_number,&nodenum);
   memset(&info->data_file->record_header->rfa, 0, sizeof(RFA));
   while (bytes_to_put && (status & 1)) {
     int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
@@ -601,9 +601,8 @@ static int UpdateDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
     status = TreeLockDatafile(info, 0, rfa_l);
     if (status & 1) {
       bytes_to_put -= bytes_this_time;
-      info->data_file->record_header->rlength = (unsigned short)(bytes_this_time + 10);
-      info->data_file->record_header->rlength =
-	  swapshort((char *)&info->data_file->record_header->rlength);
+      uint16_t tmp = bytes_this_time + 10;
+      loadint16(&info->data_file->record_header->rlength,&tmp);
       MDS_IO_LSEEK(info->data_file->put, rfa_l, SEEK_SET);
       status =
 	  (MDS_IO_WRITE
