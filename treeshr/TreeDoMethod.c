@@ -80,13 +80,18 @@ int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
   return (int)(intptr_t)LibCallg(arglist, _TreeDoMethod);
 }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wclobbered"
-
 inline static int strdcmp(const struct descriptor* strd, const char* cmp){
   return strd
      && strd->length == strlen(cmp)
      && strncmp(strd->pointer, cmp, strlen(cmp)) == 0;
+}
+
+static inline int _LibCallg(void** ctx,void** arglist,void*addr) {
+  int status;
+  CTX_PUSH(ctx);
+  status = (int)(intptr_t)LibCallg(arglist, addr);
+  CTX_POP(ctx);
+  return status;
 }
 
 int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *method_ptr, ...){
@@ -157,9 +162,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     void (*addr) ();
     status = LibFindImageSymbol(conglom_ptr->image, &method, &addr);
     if STATUS_OK {
-      CTX_PUSH(&dbid);
-      status = (int)(intptr_t)LibCallg(arglist, addr);
-      CTX_POP(&dbid);
+      status = (int)(intptr_t)_LibCallg(&dbid,arglist, addr);
       if (arglist[nargs]) {
 	struct descriptor *ans = (struct descriptor *)arglist[nargs];
 	if (ans->class == CLASS_XD) {
@@ -186,5 +189,4 @@ end: ;
   FREEXD_NOW(xd);
   return status;
 }
-#pragma GCC diagnostic pop
 

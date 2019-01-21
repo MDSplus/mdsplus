@@ -696,14 +696,9 @@ inline static int ReadProperty_safe(TREE_INFO *tinfo, const int64_t offset,char 
 //#define CLEANUP_NCI_PUSH
 //#define CLEANUP_NCI_POP  unlock_nci(vars)
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wclobbered"
-
-int _TreeMakeSegment(void *dbid, int nid,
-        struct descriptor *start, struct descriptor *end, struct descriptor *dimension,
-        struct descriptor_a *initValIn, int idx, int rows_filled){
+int _TreeMakeSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dimension, struct descriptor_a *initValIn, int idx, int rows_filled){
   INIT_WRITE_VARS;
-  pthread_cleanup_push(unlock_nci,(void*)vars);
+  CLEANUP_NCI_PUSH;
   struct descriptor_a* initialValue = initValIn;
   GOTO_END_ON_ERROR(open_datafile_write0(vars));
   GOTO_END_ON_ERROR(check_input(&initialValue));
@@ -724,7 +719,7 @@ int _TreeMakeSegment(void *dbid, int nid,
 		  vars->tinfo->shot,*vars->nid_ptr,&signal,NULL);
   status = begin_finish(vars);
 end: ;
-  pthread_cleanup_pop(vars->nci_locked);
+  CLEANUP_NCI_POP;
   return status;
 }
 
@@ -936,8 +931,6 @@ end: ;
   CLEANUP_NCI_POP;
   return status;
 }
-
-#pragma GCC diagnostic pop
 
 ///// GET SEGMENT TIMES /////
 
