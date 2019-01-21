@@ -482,8 +482,7 @@ static void get_add_rtn_c(void* in){
   free_if(&c->model);
   free_if(&c->image);
 }
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wclobbered"
+
 static inline int get_add_rtn(char const *congtype, int (**add)()){
   static int (*TdiExecute) () = NULL;
   int status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
@@ -523,7 +522,6 @@ static inline int get_add_rtn(char const *congtype, int (**add)()){
   pthread_cleanup_pop(1);
   return status;
 }
-#pragma GCC diagnostic pop
 
 int _TreeAddConglom(void *dbid, char const *path, char const *congtype, int *nid){
   if (!IS_OPEN_FOR_EDIT(((PINO_DATABASE *)dbid))) return TreeNOEDIT;
