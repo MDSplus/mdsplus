@@ -134,40 +134,40 @@ static void lock_nci(void* vars_in) {
 }
 
 #ifdef WORDS_BIGENDIAN
- #define ALLOCATE_BUFFER(SIZE,BUFFER) char *BUFFER = malloc(SIZE);
+ #define ALLOCATE_BUFFER(SIZE,BUFFER) char *BUFFER = malloc(SIZE)
  inline static void endianTransfer(const char* buffer_in, const size_t size, const int length, char* buffer_out) {
     char *bptr;
     int i;
     switch (length) {
     case 2:
-      for (i = 0, bptr = (char*)buffer_out; i < (int)size / length; i++, bptr += sizeof(short))
-        LoadShort(((short *)buffer_in)[i], bptr);
+      for (i = 0, bptr = (char*)buffer_out; i < (int)size / length; i++, bptr += length)
+        LoadShort(((int16_t*)buffer_in)[i], bptr);
       break;
     case 4:
-      for (i = 0, bptr = (char*)buffer_out; i < (int)size / length; i++, bptr += sizeof(int))
-        LoadInt(((int *)buffer_in)[i], bptr);
+      for (i = 0, bptr = (char*)buffer_out; i < (int)size / length; i++, bptr += length)
+        LoadInt  (((int32_t*)buffer_in)[i], bptr);
       break;
     case 8:
-      for (i = 0, bptr = (char*)buffer_out; i < (int)size / length; i++, bptr += sizeof(int64_t))
-        LoadQuad(((int64_t *) buffer_in)[i], bptr);
+      for (i = 0, bptr = (char*)buffer_out; i < (int)size / length; i++, bptr += length)
+        LoadQuad (((int64_t*)buffer_in)[i], bptr);
       break;
     }
  }
- #define CHECK_ENDIAN(POINTER,SIZE,LENGTH,DTYPE){
-  if (LENGTH > 1 && DTYPE+0 != DTYPE_T && DTYPE+0 != DTYPE_IDENT && DTYPE+0 != DTYPE_PATH)
-    endianTransfer((char*)BUFFER,SIZE,LENGTH,(char*)BUFFER);
- }
- #define CHECK_ENDIAN_TRANSFER(BUFFER_IN,SIZE,LENGTH,DTYPE,BUFFER_OUT){
-  if (LENGTH > 1 && DTYPE+0 != DTYPE_T && DTYPE+0 != DTYPE_IDENT && DTYPE+0 != DTYPE_PATH)
-    endianTransfer((char*)BUFFER_IN,SIZE,LENGTH,BUFFER_OUT);
-  else memcpy(BUFFER_OUT,BUFFER_IN,SIZE);
- }
- #define FREE_BUFFER(BUFFER) free(BUFFER);
+ #define CHECK_ENDIAN(BUFFER,SIZE,LENGTH,DTYPE) do{\
+  if (LENGTH > 1 && DTYPE != DTYPE_T && DTYPE != DTYPE_IDENT && DTYPE != DTYPE_PATH) \
+    endianTransfer((char*)BUFFER,SIZE,LENGTH,(char*)BUFFER); \
+ }while(0)
+ #define CHECK_ENDIAN_TRANSFER(BUFFER_IN,SIZE,LENGTH,DTYPE,BUFFER_OUT) do{ \
+  if (LENGTH > 1 && DTYPE != DTYPE_T && DTYPE != DTYPE_IDENT && DTYPE != DTYPE_PATH) \
+    endianTransfer((char*)BUFFER_IN,SIZE,LENGTH,BUFFER_OUT); \
+  else memcpy(BUFFER_OUT,BUFFER_IN,SIZE); \
+ }while(0)
+ #define FREE_BUFFER(BUFFER) free(BUFFER)
 #else
- #define ALLOCATE_BUFFER(SIZE,BUFFER) char *BUFFER;
- #define CHECK_ENDIAN(POINTER,SIZE,LENGTH,DTYPE) {}
- #define CHECK_ENDIAN_TRANSFER(BUFFER_IN,SIZE,LENGTH,DTYPE,BUFFER_OUT) BUFFER_OUT = (char*)BUFFER_IN;
- #define FREE_BUFFER(BUFFER) {}
+ #define ALLOCATE_BUFFER(SIZE,BUFFER) char *BUFFER
+ #define CHECK_ENDIAN(BUFFER,SIZE,LENGTH,DTYPE) {/**/}
+ #define CHECK_ENDIAN_TRANSFER(BUFFER_IN,SIZE,LENGTH,DTYPE,BUFFER_OUT) BUFFER_OUT = (char*)BUFFER_IN
+ #define FREE_BUFFER(BUFFER) {/**/}
 #endif
 
 
@@ -554,8 +554,8 @@ inline static int put_initialvalue(TREE_INFO *tinfo, int *dims, struct descripto
   }
   for (i = 0; i < array->dimct; i++)
     length = length * dims[i];
-  ALLOCATE_BUFFER(length,buffer)
-  CHECK_ENDIAN_TRANSFER(array->pointer,length,array->length,array->dtype,buffer)
+  ALLOCATE_BUFFER(length,buffer);
+  CHECK_ENDIAN_TRANSFER(array->pointer,length,array->length,array->dtype,buffer);
   status = (MDS_IO_WRITE(tinfo->data_file->put, buffer, length) == length) ? TreeSUCCESS : TreeFAILURE;
   FREE_BUFFER(buffer);
   TreeUnLockDatafile(tinfo, 0, loffset);
@@ -910,7 +910,7 @@ int _TreePutSegment(void *dbid, int nid, const int startIdx, struct descriptor_a
     {status = TreeBUFFEROVF;goto end;}
   int64_t offset = vars->shead.data_offset + start_idx * bytes_per_row;
   /*PUTSEG_PUTDATA*/{
-    ALLOCATE_BUFFER(bytes_to_insert,buffer)
+    ALLOCATE_BUFFER(bytes_to_insert,buffer);
     CHECK_ENDIAN_TRANSFER(data->pointer,bytes_to_insert,vars->shead.length,data->dtype,buffer);
     TreeLockDatafile(vars->tinfo, 0, offset);
     MDS_IO_LSEEK(vars->tinfo->data_file->put, offset, SEEK_SET);
@@ -995,7 +995,7 @@ int _TreePutTimestampedSegment(void *dbid, int nid, int64_t * timestamp, struct 
   FREE_BUFFER(buffer);
   MDS_IO_LSEEK(vars->tinfo->data_file->put, vars->shead.dim_offset + start_idx * sizeof(int64_t), SEEK_SET);
   ALLOCATE_BUFFER(rows_to_insert,times);
-  CHECK_ENDIAN_TRANSFER(timestamp,rows_to_insert,8,,times);
+  CHECK_ENDIAN_TRANSFER(timestamp,rows_to_insert,sizeof(int64_t),0,times);
   status = (MDS_IO_WRITE(vars->tinfo->data_file->put, times, sizeof(int64_t) * rows_to_insert) == (int)(sizeof(int64_t) * rows_to_insert)) ? TreeSUCCESS : TreeFAILURE;
   FREE_BUFFER(times);
   TreeUnLockDatafile(vars->tinfo, 0, offset);
@@ -1252,7 +1252,7 @@ static int read_segment(void* dbid, int nid, SEGMENT_HEADER* shead, SEGMENT_INFO
     ans.arsize = rows * sizeof(int64_t);
     void *ans_ptr = ans.pointer = malloc(ans.arsize);
     status = read_property(tinfo,sinfo->dimension_offset, ans.pointer, (ssize_t)ans.arsize);
-    CHECK_ENDIAN(ans.pointer,ans.arsize,sizeof(int64_t),);
+    CHECK_ENDIAN(ans.pointer,ans.arsize,sizeof(int64_t),0);
     if (trim) {
       if (idx == shead->idx)
         filled_rows = shead->next_row;

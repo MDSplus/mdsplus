@@ -1091,9 +1091,11 @@ inline static off_t io_lseek_remote(int conid,int fd, off_t offset, int whence) 
   int info[] = { 0, fd, 0, 0, whence };
   *(off_t *) (&info[2]) = offset;
 #ifdef WORDS_BIGENDIAN
-  status = info[2];
-  info[2] = info[3];
-  info[3] = status;
+  {
+    int tmp = info[2];
+    info[2] = info[3];
+    info[3] = tmp;
+  }
 #endif
   int len;
   char *dout;

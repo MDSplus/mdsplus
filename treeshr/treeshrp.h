@@ -82,10 +82,11 @@ SEGMENTED_RECORD_FACILITY =1,
 NAMED_ATTRIBUTES_FACILITY =2
 };
 
+#define MAXDIM 8
 typedef struct segment_header {
   dtype_t dtype;
   char dimct;
-  int dims[8];
+  int dims[MAXDIM];
   length_t length;
   int idx;
   int next_row;
@@ -127,23 +128,33 @@ typedef struct named_attributes_index {
   NAMED_ATTRIBUTE attribute[NAMED_ATTRIBUTES_PER_INDEX];
 } NAMED_ATTRIBUTES_INDEX;
 
-#if defined(WORDS_BIGENDIAN)
+#define SCI(outp,in,O,I) ((char*)(outp))[O] = ((char*)&in)[I]
+// #define WORDS_BIGENDIAN // use for testing
+#ifdef WORDS_BIGENDIAN
+static inline int64_t swapquad(const void *buf) {
+  return (((int64_t)((uint8_t*)buf)[7]) << 56) | (((int64_t)((uint8_t*)buf)[6]) << 48) |
+	 (((int64_t)((uint8_t*)buf)[5]) << 40) | (((int64_t)((uint8_t*)buf)[4]) << 32) |
+	 (((int64_t)((uint8_t*)buf)[3]) << 24) | (((int64_t)((uint8_t*)buf)[2]) << 16) |
+	 (((int64_t)((uint8_t*)buf)[1]) <<  8) | (((int64_t)((uint8_t*)buf)[0])      ) ;
+}
+static inline int32_t swapint(const void *buf) {
+  return (((int32_t)((uint8_t*)buf)[3]) << 24) | (((int32_t)((uint8_t*)buf)[2]) << 16) |
+	 (((int32_t)((uint8_t*)buf)[1]) <<  8) | (((int32_t)((uint8_t*)buf)[0])      ) ;
+}
+static inline int16_t swapshort(const void *buf) {
+  return (int16_t) ( (((int32_t)((uint8_t*)buf)[1]) << 8)  | (((int32_t)((uint8_t*)buf)[0]) ) ) ;
+}
 
-#define swapquad(ptr) ( (((int64_t)((unsigned char *)ptr)[7]) << 56) | (((int64_t)((unsigned char *)ptr)[6]) << 48) | \
-                        (((int64_t)((unsigned char *)ptr)[5]) << 40) | (((int64_t)((unsigned char *)ptr)[4]) << 32) | \
-                        (((int64_t)((unsigned char *)ptr)[3]) << 24) | (((int64_t)((unsigned char *)ptr)[2]) << 16) | \
-                        (((int64_t)((unsigned char *)ptr)[1]) <<  8) | (((int64_t)((unsigned char *)ptr)[0]) ))
-#define swapint(ptr) ( (((int)((unsigned char *)(ptr))[3]) << 24) | (((int)((unsigned char *)(ptr))[2]) << 16) | \
-                       (((int)((unsigned char *)(ptr))[1]) <<  8) | (((int)((unsigned char *)(ptr))[0]) ))
-#define swapshort(ptr) ( (((int)((unsigned char *)ptr)[1]) << 8) | (((int)((unsigned char *)ptr)[0]) ))
-
-#define LoadShort(in,outp) ((char *)(outp))[0] = ((char *)&in)[1]; ((char *)(outp))[1] = ((char *)&in)[0]
-#define LoadInt(in,outp)   ((char *)(outp))[0] = ((char *)&in)[3]; ((char *)(outp))[1] = ((char *)&in)[2]; \
-                           ((char *)(outp))[2] = ((char *)&in)[1]; ((char *)(outp))[3] = ((char *)&in)[0]
-#define LoadQuad(in,outp)  (outp)[0] = ((char *)&in)[7]; (outp)[1] = ((char *)&in)[6]; \
-                           (outp)[2] = ((char *)&in)[5]; (outp)[3] = ((char *)&in)[4]; \
-                           (outp)[4] = ((char *)&in)[3]; (outp)[5] = ((char *)&in)[2]; \
-                           (outp)[6] = ((char *)&in)[1]; (outp)[7] = ((char *)&in)[0]
+#define LoadShort(in,outp) \
+ SCI(outp,in,0,1);SCI(outp,in,1,0);
+#define LoadInt(in,outp) \
+ SCI(outp,in,0,3);SCI(outp,in,1,2);\
+ SCI(outp,in,2,1);SCI(outp,in,3,0);
+#define LoadQuad(in,outp) \
+ SCI(outp,in,0,7);SCI(outp,in,1,6);\
+ SCI(outp,in,2,5);SCI(outp,in,3,4);\
+ SCI(outp,in,4,3);SCI(outp,in,5,2);\
+ SCI(outp,in,6,1);SCI(outp,in,7,0);
 #else
 
 static inline int64_t swapquad(const void *buf) {
@@ -161,14 +172,16 @@ static inline int16_t swapshort(const void *buf) {
   memcpy(&ans,buf,sizeof(ans));
   return ans;
 }
-
-#define LoadShort(in,outp) ((char *)(outp))[0] = ((char *)&in)[0]; ((char *)(outp))[1] = ((char *)&in)[1]
-#define LoadInt(in,outp)   ((char *)(outp))[0] = ((char *)&in)[0]; ((char *)(outp))[1] = ((char *)&in)[1]; \
-                           ((char *)(outp))[2] = ((char *)&in)[2]; ((char *)(outp))[3] = ((char *)&in)[3]
-#define LoadQuad(in,outp)  (outp)[0] = ((char *)&in)[0]; (outp)[1] = ((char *)&in)[1]; \
-                           (outp)[2] = ((char *)&in)[2]; (outp)[3] = ((char *)&in)[3]; \
-                           (outp)[4] = ((char *)&in)[4]; (outp)[5] = ((char *)&in)[5]; \
-                           (outp)[6] = ((char *)&in)[6]; (outp)[7] = ((char *)&in)[7]
+#define LoadShort(in,outp) \
+ SCI(outp,in,0,0);SCI(outp,in,1,1);
+#define LoadInt(in,outp) \
+ SCI(outp,in,0,0);SCI(outp,in,1,1);\
+ SCI(outp,in,2,2);SCI(outp,in,3,3);
+#define LoadQuad(in,outp) \
+ SCI(outp,in,0,0);SCI(outp,in,1,1);\
+ SCI(outp,in,2,2);SCI(outp,in,3,3);\
+ SCI(outp,in,4,4);SCI(outp,in,5,5);\
+ SCI(outp,in,6,6);SCI(outp,in,7,7);
 #endif
 
 #define bitassign(bool,value,mask)   value = (bool) ? (value) | (unsigned)(mask) : (value) & ~(unsigned)(mask)
@@ -723,8 +736,8 @@ extern int GetDefaultNidRemote(PINO_DATABASE * dblist, int *nid);
 #ifdef _WIN32
 #include <windows.h>
 #endif
-extern int64_t RfaToSeek(unsigned char *rfa);
-void SeekToRfa(int64_t seek, unsigned char *rfa);
+extern int64_t RfaToSeek(uint8_t*rfa);
+void SeekToRfa(int64_t seek, uint8_t*rfa);
 extern int SetParentState(PINO_DATABASE * db, NODE * node, unsigned int state);
 extern void TreeCallHookFun(char *hookType, char *hookName, ...);
 extern int TreeMakeNidsLocal(struct descriptor *dsc_ptr, int nid);
@@ -747,7 +760,7 @@ int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, const c
 extern int TreeCallHook(TreeshrHookType operation, TREE_INFO * info, int nid);
 extern void _TreeDeleteNodesWrite(void *dbid);
 extern void _TreeDeleteNodesDiscard(void *dbid);
-extern int TreeGetDatafile(TREE_INFO * info_ptr, unsigned char *rfa, int *buffer_size, char *record,
+extern int TreeGetDatafile(TREE_INFO * info_ptr, uint8_t*rfa, int *buffer_size, char *record,
 			   int *retsize, int *nodenum, unsigned char flags);
 extern int TreeEstablishRundownEvent(TREE_INFO * info);
 extern int TreeGetDsc(TREE_INFO * info, const int nid, const int64_t offset, const int length,
