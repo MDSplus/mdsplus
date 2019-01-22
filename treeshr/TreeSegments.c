@@ -1039,28 +1039,28 @@ int _TreePutSegment(void *dbid, int nid, const int startIdx, struct descriptor_a
       {status = TreeBUFFEROVF;goto end;}
     else start_idx = startIdx;
   }
-  int rows_to_insert;
   int bytes_per_row,i;
   for (bytes_per_row = vars->shead.length, i = 0; i < vars->shead.dimct - 1;
        bytes_per_row *= vars->shead.dims[i], i++) ;
-  if (data->dimct < vars->shead.dimct) {
+  int rows_to_insert;
+  if (data->dimct < vars->shead.dimct)
     rows_to_insert = 1;
-  } else {
-    rows_to_insert = (data->dimct == 1) ? data->arsize / data->length : a_coeff->m[a_coeff->dimct - 1];
-  }
-  int rows_in_segment = vars->shead.dims[vars->shead.dimct - 1];
-  unsigned int bytes_to_insert = ((rows_to_insert > (rows_in_segment - start_idx)) ? (rows_in_segment - start_idx) : rows_to_insert) * bytes_per_row;
-  if (bytes_to_insert < data->arsize)
+  else if (data->dimct == 1)
+    rows_to_insert = data->arsize / data->length;
+  else
+    rows_to_insert = a_coeff->m[a_coeff->dimct - 1];
+  int remaining_rows_in_segment = vars->shead.dims[vars->shead.dimct - 1] - start_idx;
+  // trunk to fit in current segment; TODO: dynamically increase number of segments
+  rows_to_insert = rows_to_insert > remaining_rows_in_segment ? remaining_rows_in_segment : rows_to_insert;
+  uint32_t bytes_to_insert = rows_to_insert * bytes_per_row;
+  if (bytes_to_insert < data->arsize) // segment does not fit array size (shape?)
     {status = TreeBUFFEROVF;goto end;}
   int64_t offset = vars->shead.data_offset + start_idx * bytes_per_row;
   /*PUTSEG_PUTDATA*/{
     ALLOCATE_BUFFER(bytes_to_insert,buffer);
     CHECK_ENDIAN_TRANSFER(data->pointer,bytes_to_insert,vars->shead.length,data->dtype,buffer);
-    TreeLockDatafile(vars->tinfo, 0, offset);
-    MDS_IO_LSEEK(vars->tinfo->data_file->put, offset, SEEK_SET);
-    status = (MDS_IO_WRITE(vars->tinfo->data_file->put, buffer, bytes_to_insert) == (ssize_t)bytes_to_insert) ? TreeSUCCESS : TreeFAILURE;
+    status = write_property(vars->tinfo, &offset, buffer, bytes_to_insert);
     FREE_BUFFER(buffer);
-    TreeUnLockDatafile(vars->tinfo, 0, offset);
   }
   if (start_idx == vars->shead.next_row)
     vars->shead.next_row += bytes_to_insert / bytes_per_row;
@@ -1097,63 +1097,56 @@ int _TreePutTimestampedSegment(void *dbid, int nid, int64_t * timestamp, struct 
   if (data == NULL || data->class != CLASS_A || data->dimct < 1 || data->dimct > 8)
     {status = TreeINVDTYPE; goto end;}
   GOTO_END_ON_ERROR(open_datafile_write1(vars));
-  int start_idx;
-  int rows_to_insert = -1;
-  int bytes_per_row;
-  int rows_in_segment;
-  int bytes_to_insert;
-  int64_t offset;
-  int i;
   IF_NO_EXTENDED_NCI   {status = TreeNOSEGMENTS;goto end;};
   IF_NO_SEGMENT_HEADER {status = TreeNOSEGMENTS;goto end;};
   if (data->dtype != vars->shead.dtype)
     {status = TreeINVDTYPE; goto end;}
-  if ((a_coeff->dimct == 1)
-   &&!(a_coeff->dimct == vars->shead.dimct)
-   &&!(a_coeff->dimct == vars->shead.dimct - 1))
-    {status = TreeINVSHAPE; goto end;}
-  if (a_coeff->dimct > 1 && memcmp(vars->shead.dims, a_coeff->m,(vars->shead.dimct - 1) * sizeof(int)))
-    {status = TreeINVSHAPE; goto end;}
-  if (a_coeff->dimct == 1 && a_coeff->arsize / a_coeff->length != 1
-   && (unsigned int)vars->shead.dims[0] < a_coeff->arsize / a_coeff->length)
-    {status = TreeINVSHAPE; goto end;}
-  start_idx = vars->shead.next_row;
+  /*CHECK_DATA_DIMCT*/{
+    if (data->dtype != vars->shead.dtype
+    || (data->dimct != vars->shead.dimct && data->dimct != vars->shead.dimct - 1)
+    || (data->dimct > 1 && memcmp(vars->shead.dims, a_coeff->m, (data->dimct - 1) * sizeof(int))))
+      {status = TreeFAILURE;goto end;}
+  }
+  int start_idx = vars->shead.next_row;
+  int bytes_per_row,i;
   for (bytes_per_row = vars->shead.length, i = 0; i < vars->shead.dimct - 1;
        bytes_per_row *= vars->shead.dims[i], i++) ;
+  int rows_to_insert;
   if (data->dimct < vars->shead.dimct)
     rows_to_insert = 1;
+  else if (data->dimct == 1)
+    rows_to_insert = data->arsize / data->length;
   else
-    rows_to_insert = (data->dimct == 1) ? data->arsize / data->length : a_coeff->m[a_coeff->dimct - 1];
-  if (rows_to_insert <= 0)
-    {status = TreeINVSHAPE; goto end;}
-  rows_in_segment = vars->shead.dims[vars->shead.dimct - 1];
-  bytes_to_insert = ((rows_to_insert > (rows_in_segment - start_idx)) ? (rows_in_segment - start_idx) : rows_to_insert) * bytes_per_row;
-  if (bytes_to_insert < 1)
-    {status = TreeBUFFEROVF; goto end;}
-  offset = vars->shead.data_offset + start_idx * bytes_per_row;
-  ALLOCATE_BUFFER(bytes_to_insert,buffer);
-  CHECK_ENDIAN_TRANSFER(data->pointer,bytes_to_insert,vars->shead.length,data->dtype,buffer);
-  TreeLockDatafile(vars->tinfo, 0, offset);
-  MDS_IO_LSEEK(vars->tinfo->data_file->put, offset, SEEK_SET);
-  status =(MDS_IO_WRITE(vars->tinfo->data_file->put, buffer, bytes_to_insert) == bytes_to_insert) ? TreeSUCCESS : TreeFAILURE;
-  FREE_BUFFER(buffer);
-  MDS_IO_LSEEK(vars->tinfo->data_file->put, vars->shead.dim_offset + start_idx * sizeof(int64_t), SEEK_SET);
-  ALLOCATE_BUFFER(rows_to_insert,times);
-  CHECK_ENDIAN_TRANSFER(timestamp,rows_to_insert,sizeof(int64_t),0,times);
-  status = (MDS_IO_WRITE(vars->tinfo->data_file->put, times, sizeof(int64_t) * rows_to_insert) == (int)(sizeof(int64_t) * rows_to_insert)) ? TreeSUCCESS : TreeFAILURE;
-  FREE_BUFFER(times);
-  TreeUnLockDatafile(vars->tinfo, 0, offset);
-  vars->shead.next_row = start_idx + bytes_to_insert / bytes_per_row;
+    rows_to_insert = a_coeff->m[a_coeff->dimct - 1];
+  int remaining_rows_in_segment = vars->shead.dims[vars->shead.dimct - 1] - start_idx;
+  // trunk to fit in current segment; TODO: dynamically increase number of segments
+  rows_to_insert = rows_to_insert > remaining_rows_in_segment ? remaining_rows_in_segment : rows_to_insert;
+/*if STATUS_OK*/{
+    int64_t  offset = vars->shead.data_offset + start_idx * bytes_per_row;
+    uint32_t bytes_to_insert = rows_to_insert * bytes_per_row;
+    if (bytes_to_insert < data->arsize) // segment does not fit array size (shape?)
+      {status = TreeBUFFEROVF;goto end;}
+    ALLOCATE_BUFFER(bytes_to_insert,buffer);
+    CHECK_ENDIAN_TRANSFER(data->pointer,bytes_to_insert,vars->shead.length,data->dtype,buffer);
+    status = write_property(vars->tinfo,&offset,buffer,bytes_to_insert);
+    FREE_BUFFER(buffer);
+  }
   if STATUS_OK {
+    int64_t  offset = vars->shead.dim_offset + start_idx * sizeof(int64_t);
+    uint32_t bytes_to_insert = rows_to_insert * sizeof(int64_t);
+    ALLOCATE_BUFFER(bytes_to_insert,buffer);
+    CHECK_ENDIAN_TRANSFER(timestamp,rows_to_insert,sizeof(int64_t),0,buffer);
+    status = write_property(vars->tinfo,&offset,buffer,bytes_to_insert);
+    FREE_BUFFER(buffer);
+  }
+  if STATUS_OK {
+    vars->shead.next_row = start_idx + rows_to_insert;
     status = put_segment_header(vars->tinfo, &vars->shead, &vars->attr.facility_offset[SEGMENTED_RECORD_FACILITY]);
-    TreeCallHookFun("TreeNidHook","PutTimestampedSegment",vars->tinfo->treenam,
-		    vars->tinfo->shot,*vars->nid_ptr,NULL);
+    TreeCallHookFun("TreeNidHook","PutTimestampedSegment",vars->tinfo->treenam, vars->tinfo->shot,*vars->nid_ptr,NULL);
     DESCRIPTOR_A(dimension, sizeof(int64_t), DTYPE_Q, timestamp, rows_to_insert * sizeof(int64_t));
-    SIGNAL(1) signal = {0, DTYPE_SIGNAL, CLASS_R, 0, 3, __fill_value__ \
-			(struct descriptor *)data_in, NULL, {(struct descriptor *)&dimension}};
-    TreeCallHookFun("TreeNidDataHook","PutTimestampedSegmentFull",vars->tinfo->treenam,
-		    vars->tinfo->shot,*vars->nid_ptr,&signal,NULL);
-    }
+    SIGNAL(1) signal = {0, DTYPE_SIGNAL, CLASS_R, 0, 3, __fill_value__ (struct descriptor *)data_in, NULL, {(struct descriptor *)&dimension}};
+    TreeCallHookFun("TreeNidDataHook","PutTimestampedSegmentFull",vars->tinfo->treenam,vars->tinfo->shot,*vars->nid_ptr,&signal,NULL);
+  }
 end: ;
   CLEANUP_NCI_POP;
   return status;
