@@ -699,23 +699,12 @@ inline static int put_initialvalue(TREE_INFO *tinfo, int *dims, struct descripto
   int status;
   int length = array->length;
   int i;
-  int64_t loffset;
-  if (*offset == -1) {
-    TreeLockDatafile(tinfo, 0, 0);
-    loffset = 0;
-    *offset = MDS_IO_LSEEK(tinfo->data_file->put, 0, SEEK_END);
-  } else {
-    TreeLockDatafile(tinfo, 0, *offset);
-    loffset = *offset;
-    MDS_IO_LSEEK(tinfo->data_file->put, *offset, SEEK_SET);
-  }
   for (i = 0; i < array->dimct; i++)
     length = length * dims[i];
   ALLOCATE_BUFFER(length,buffer);
   CHECK_ENDIAN_TRANSFER(array->pointer,length,array->length,array->dtype,buffer);
-  status = (MDS_IO_WRITE(tinfo->data_file->put, buffer, length) == length) ? TreeSUCCESS : TreeFAILURE;
+  status = write_property(tinfo, offset, buffer, length);
   FREE_BUFFER(buffer);
-  TreeUnLockDatafile(tinfo, 0, loffset);
   return status;
 }
 
@@ -1791,11 +1780,8 @@ int TreePutDsc(TREE_INFO * tinfo, int nid_in, struct descriptor *dsc, int64_t * 
                                    &data_in_altbuf);
   if (STATUS_OK && xd.pointer && xd.pointer->class == CLASS_A && xd.pointer->pointer) {
     struct descriptor_a *ap = (struct descriptor_a *)xd.pointer;
-    TreeLockDatafile(tinfo, 0, 0);
-    *offset = MDS_IO_LSEEK(tinfo->data_file->put, 0, SEEK_END);
-    status = MDS_IO_WRITE(tinfo->data_file->put, ap->pointer, ap->arsize)
-          == (ssize_t)ap->arsize ? TreeSUCCESS : TreeFAILURE;
-    TreeUnLockDatafile(tinfo, 0, 0);
+    *offset = -1;
+    status  = write_property(tinfo, offset, ap->pointer, ap->arsize);
     *length = ap->arsize;
     MdsFree1Dx(&xd, 0);
   }
@@ -1814,20 +1800,18 @@ int TreeGetDsc(TREE_INFO * tinfo, const int nid, int64_t offset, int length, str
   return status;
 }
 
-static int data_copy(TREE_INFO * tinfo, TREE_INFO * tinfo_out, int64_t offset_in, int length_in, int64_t * offset_out){
+static int data_copy(TREE_INFO * tinfo_in, TREE_INFO * tinfo_out, int64_t offset_in, int length_in, int64_t * offset_out){
   INIT_TREESUCCESS;
+  *offset_out = -1;
   if (offset_in != -1 && length_in >= 0) {
     char *data = malloc(length_in);
-    status = read_property(tinfo,offset_in, data, length_in);
-    if (STATUS_OK) {
-      *offset_out = MDS_IO_LSEEK(tinfo_out->data_file->put, 0, SEEK_END);
-      status = MDS_IO_WRITE(tinfo_out->data_file->put, data, length_in) == length_in;
-    }
+    status = read_property(tinfo_in, offset_in, data, length_in);
+    if STATUS_OK
+      status = write_property(tinfo_out, offset_out, data, length_in);
     free(data);
     if STATUS_NOT_OK
       *offset_out = -1;
-  } else
-    *offset_out = -1;
+  }
   return status;
 }
 
