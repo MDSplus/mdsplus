@@ -289,7 +289,8 @@ static int tunnel_listen(int argc __attribute__ ((unused)), char **argv __attrib
   fcntl(p.in ,F_SETFD,FD_CLOEXEC);
   fcntl(p.out,F_SETFD,FD_CLOEXEC);
   fcntl(0,F_SETFD,FD_CLOEXEC);
-  fcntl(1,F_SETFD,FD_CLOEXEC);
+  close(1);//fcntl(1,F_SETFD,FD_CLOEXEC);
+  dup2(2,1);
 #endif
   status = AcceptConnection(GetProtocol(), "tunnel", 0, &p, sizeof(p), &id, &username);
   FREE_NOW(username);
