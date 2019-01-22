@@ -484,6 +484,7 @@ static void get_add_rtn_c(void* in){
 }
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wclobbered"
+// fc21 claims that '__cancel_routine' is clobbered pthread_cleanup_push(get_add_rtn_c,(void*)&c);
 static inline int get_add_rtn(char const *congtype, int (**add)()){
   static int (*TdiExecute) () = NULL;
   int status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
