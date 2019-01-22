@@ -76,10 +76,6 @@ EXPORT int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct des
     fprintf(stderr, "Error: Recursive calls to TDI Compile is not supported");
     return TdiRECURSIVE;
   }
-  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER; // TODO: try to avoid
-  pthread_mutex_lock(&lock);
-  pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
-
   EMPTYXD(tmp);
   FREEXD_ON_EXIT(&tmp);
   status = Tdi1Evaluate(-1, 1, list, &tmp);// using Tdi1Evaluate over TdiEvaluate saves 3 stack levels
@@ -89,6 +85,9 @@ EXPORT int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct des
   if STATUS_OK {
     if (text_ptr->length > 0) {
       TdiThreadStatic_p->compiler_recursing = 1;
+      static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER; // TODO: try to avoid
+      pthread_mutex_lock(&lock);
+      pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
       if (!TdiRefZone.l_zone)
 	status = LibCreateVmZone(&TdiRefZone.l_zone);
       /****************************************
@@ -119,13 +118,13 @@ EXPORT int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct des
 	  status = MdsCopyDxXd((struct descriptor *)TdiRefZone.a_result, out_ptr);
       }
       LibResetVmZone(&TdiRefZone.l_zone);
+      pthread_cleanup_pop(1);
       TdiThreadStatic_p->compiler_recursing = 0;
     }
   }
   FREEXD_NOW(&tmp);
   if STATUS_NOT_OK MdsFree1Dx(out_ptr, NULL);
 
-  pthread_cleanup_pop(1);
   return status;
 }
 
