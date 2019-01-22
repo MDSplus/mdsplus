@@ -128,35 +128,42 @@ typedef struct named_attributes_index {
   NAMED_ATTRIBUTE attribute[NAMED_ATTRIBUTES_PER_INDEX];
 } NAMED_ATTRIBUTES_INDEX;
 
-#define SCI(out,in,O,I) ((char*)(out))[O] = ((char*)in)[I]
 // #define WORDS_BIGENDIAN // use for testing
 #ifdef WORDS_BIGENDIAN
+static inline void SWP(void* out, const void* in, const int a, const int b) {
+ char t=((char*)out)[O];	// in and out could be the same
+        ((char*)in )[O]=((char*)out)[I];
+                        ((char*)in )[I]=t;
+}
 static inline void loadint16(void* out, const void* in) {
- SCI(out,in,0,1);SCI(out,in,1,0);
+ SWP(out,in,0,1);
 }
 static inline void loadint32(void* out, const void* in) {
- SCI(out,in,0,3);SCI(out,in,1,2);
- SCI(out,in,2,1);SCI(out,in,3,0);
+ SWP(out,in,0,3);
+ SWP(out,in,2,1);
 }
 static inline void loadint64(void* out, const void* in) {
- SCI(out,in,0,7);SCI(out,in,1,6);
- SCI(out,in,2,5);SCI(out,in,3,4);
- SCI(out,in,4,3);SCI(out,in,5,2);
- SCI(out,in,6,1);SCI(out,in,7,0);
+ SWP(out,in,0,7);
+ SWP(out,in,2,5);
+ SWP(out,in,4,3);
+ SWP(out,in,6,1);
 }
 #else
+static inline void CPY(void* out, const void* in, const int idx) {
+  ((char*)out)[idx] = ((char*)in)[idx];
+}
 static inline void loadint16(void* out, const void* in) {
- SCI(out,in,0,0);SCI(out,in,1,1);
+ CPY(out,in,0);CPY(out,in,1);
 }
 static inline void loadint32(void* out, const void* in) {
- SCI(out,in,0,0);SCI(out,in,1,1);
- SCI(out,in,2,2);SCI(out,in,3,3);
+ CPY(out,in,0);CPY(out,in,1);
+ CPY(out,in,2);CPY(out,in,3);
 }
 static inline void loadint64(void* out, const void* in) {
- SCI(out,in,0,0);SCI(out,in,1,1);
- SCI(out,in,2,2);SCI(out,in,3,3);
- SCI(out,in,4,4);SCI(out,in,5,5);
- SCI(out,in,6,6);SCI(out,in,7,7);
+ CPY(out,in,0);CPY(out,in,1);
+ CPY(out,in,2);CPY(out,in,3);
+ CPY(out,in,4);CPY(out,in,5);
+ CPY(out,in,6);CPY(out,in,7);
 }
 #endif
 static inline int16_t swapint16(const void *buf) {
