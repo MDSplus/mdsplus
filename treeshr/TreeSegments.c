@@ -305,6 +305,7 @@ int TreeSetSegmentScale(int nid, struct descriptor *value) {
 #endif
 
 static int read_property(TREE_INFO * tinfo, const int64_t offset, char *buffer, const int length){
+  if (!tinfo->data_file) return MDSplusFATAL;
   INIT_TREESUCCESS;
   int deleted = B_TRUE;
   while STATUS_OK {
@@ -331,6 +332,7 @@ static void unlock_datafile(void* c) {
     TreeUnLockDatafile(s->tinfo, 0, s->offset);
 }
 static int write_property(TREE_INFO * tinfo, int64_t *offset, const char *buffer, const int length) {
+  if (!tinfo->data_file) return MDSplusFATAL;
   int status;
   write_cleanup_t c = {tinfo,-1};
   pthread_cleanup_push(unlock_datafile,&c);
