@@ -36,6 +36,7 @@ _dsc=_mimport('descriptor')
 _dat=_mimport('mdsdata')
 _scr=_mimport('mdsscalar')
 _arr=_mimport('mdsarray')
+_tre=_mimport('tree')
 _ver=_mimport('version')
 
 class Apd(_arr.Array):
@@ -94,13 +95,11 @@ class Apd(_arr.Array):
         descs = [_dsc.pointerToObject(dptr,d.tree) for dptr in dptrs]
         return cls(descs)._setTree(d.tree)
 
-
     def __hasBadTreeReferences__(self,tree):
         for desc in self.descs:
             if isinstance(desc,_dat.Data) and desc.__hasBadTreeReferences__(tree):
                 return True
         return False
-
 
     def __fixTreeReferences__(self,tree):
         for idx in range(len(self.descs)):
@@ -135,19 +134,31 @@ class Apd(_arr.Array):
         except:
             return
 
+    def __updateTree(self,*args):
+        """pass first valid .tree from args to all descs"""
+        for arg in args:
+            if isinstance(arg,_dat.Data) and isinstance(arg.tree,_tre.Tree):
+                self.__setTree(arg.tree)
+                break
+        return args
+
     def __setitem__(self,idx,value):
         """Set descriptor. x.__setitem__(idx,value) <==> x[idx]=value
         @rtype: None
         """
-        diff = 1+idx-len(self._descs)
-        if diff>0:
-            self._descs+=[None]*diff
-        if isinstance(value,_dat.Data):
-            if self.tree is None:
-                self._setTree(value.tree)
+        if isinstance(idx,slice):
+            indices = idx.indices(255) # max ndesc
+            last = indices[0]+len(value)*indices[2]
+            if len(self._args) <= last:
+                self._args+=[None]*(last-len(self._args)+1)
+            self._args[idx] = value
+            self.__updateTree(*value)
         else:
-            value = _dat.Data(value)
-        self._descs[idx]=value
+            diff = 1+idx-len(self._descs)
+            if diff>0:
+                self._descs+=[None]*diff
+            self._descs[idx]=_dat.Data(value)
+            self.__updateTree(value)
 
     def getDescs(self):
         """Returns the descs of the Apd.
