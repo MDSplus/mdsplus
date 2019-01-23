@@ -218,9 +218,10 @@ static double toDouble(void *ptr, int type)
 	case DTYPE_Q:
 	case DTYPE_QU:
 	    return (double)(*(int64_t *)ptr);
+	default:
+	    printf("Unsupported Type in getData\n");
+	    return 0;
     }
-    printf("Unsupported Type in getData\n");
-    return 0;
 }
 
 
@@ -842,10 +843,18 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
 	for(i = 0; i < nSamples; i++)
 	{
 	    switch(yArrD->dtype) {
+		default:
+		    err = "Cannot Convert Y data dtype";
+		    MdsFree1Dx(&xXd, 0);
+		    MdsFree1Dx(&yXd, 0);
+		    errD.length = strlen(err);
+		    errD.pointer = err;
+		    MdsCopyDxXd(&errD, &retXd);
+		    return &retXd;
 	    	case DTYPE_B:
 	    	case DTYPE_BU:
 		    y[i] = *((char *)(&yArrD->pointer[i*yArrD->length]));
-		break;
+		    break;
 	    	case DTYPE_W:
 	    	case DTYPE_WU:
 		    y[i] = *((short *)(&yArrD->pointer[i*yArrD->length]));
@@ -881,9 +890,6 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     else
 	xSampleSize = sizeof(int);
 
-
-
-
     retSize = sizeof(float) + sizeof(int) + 1 + retSamples * (sizeof(float) + xSampleSize);
 //Add rool for title and labels
     retSize += 3 * sizeof(int);
@@ -917,6 +923,15 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     for(i = 0; i < retSamples; i++)
     {
 	switch(xArrD->dtype) {
+	    default:
+		err = "Cannot Convert X data dtype";
+		free(retArr);
+		MdsFree1Dx(&xXd, 0);
+		MdsFree1Dx(&yXd, 0);
+		errD.length = strlen(err);
+		errD.pointer = err;
+		MdsCopyDxXd(&errD, &retXd);
+		return &retXd;
 	    case DTYPE_B:
 	    case DTYPE_BU:
 		*((float *)&retArr[idx]) = *((char *)(&xArrD->pointer[i*xArrD->length]));
@@ -1150,6 +1165,14 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
 	for(i = 0; i < nSamples; i++)
 	{
 	    switch(yArrD->dtype) {
+		default:
+		    err = "Cannot Convert Y data dtype";
+		    MdsFree1Dx(&xXd, 0);
+		    MdsFree1Dx(&yXd, 0);
+		    errD.length = strlen(err);
+		    errD.pointer = err;
+		    MdsCopyDxXd(&errD, &retXd);
+		    return &retXd;
 	    	case DTYPE_B:
 	    	case DTYPE_BU:
 		    y[i] = *((char *)(&yArrD->pointer[i*yArrD->length]));
@@ -1224,6 +1247,15 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     for(i = 0; i < retSamples; i++)
     {
 	switch(xArrD->dtype) {
+	    default:
+		err = "Cannot Convert X data dtype";
+		free(retArr);
+		MdsFree1Dx(&xXd, 0);
+		MdsFree1Dx(&yXd, 0);
+		errD.length = strlen(err);
+		errD.pointer = err;
+		MdsCopyDxXd(&errD, &retXd);
+		return &retXd;
 	    case DTYPE_B:
 	    case DTYPE_BU:
 		*((float *)&retArr[idx]) = *((char *)(&xArrD->pointer[i*xArrD->length]));
@@ -1433,6 +1465,14 @@ EXPORT struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXM
 	for(i = 0; i < nSamples; i++)
 	{
 	    switch(yArrD->dtype) {
+		default:
+		    err = "Cannot Convert Y data dtype";
+		    MdsFree1Dx(&xXd, 0);
+		    MdsFree1Dx(&yXd, 0);
+		    errD.length = strlen(err);
+		    errD.pointer = err;
+		    MdsCopyDxXd(&errD, &retXd);
+		    return &retXd;
 	    	case DTYPE_B:
 	    	case DTYPE_BU:
 		    y[i] = *((char *)(&yArrD->pointer[i*yArrD->length]));
@@ -1640,6 +1680,14 @@ EXPORT struct descriptor_xd *GetXYWaveLongTimes(char *sigName, int64_t *inXMin, 
 	for(i = 0; i < nSamples; i++)
 	{
 	    switch(yArrD->dtype) {
+		default:
+		    err = "Cannot Convert Y data dtype";
+		    MdsFree1Dx(&xXd, 0);
+		    MdsFree1Dx(&yXd, 0);
+		    errD.length = strlen(err);
+		    errD.pointer = err;
+		    MdsCopyDxXd(&errD, &retXd);
+		    return &retXd;
 	    	case DTYPE_B:
 	    	case DTYPE_BU:
 		    y[i] = *((char *)(&yArrD->pointer[i*yArrD->length]));
