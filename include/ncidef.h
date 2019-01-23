@@ -7,18 +7,15 @@
     TreeGetNci
     TreeSetNci
 **************************************/
-//#ifdef MDSOBJECTSCPPSHRVS_EXPORTS
-/* uses int types for typedef
- * enum types would require switch statements to handle all cases
- * this would require more changes in other files and is left as TODO for now
- */
 #include <inttypes.h>
+#ifdef MDSOBJECTSCPPSHRVS_EXPORTS
+// visual studio uses int types for typedef
 # define TYPEDEF(bytes) enum
 # define ENDDEF(type,name) ;typedef type name
-//#else
-//# define TYPEDEF(bytes) typedef enum __attribute__((__packed__))
-//# define ENDDEF(type,name) name
-//#endif
+#else
+# define TYPEDEF(bytes) typedef enum __attribute__((__packed__))
+# define ENDDEF(type,name) name
+#endif
 
 TYPEDEF(4){
 NciM_STATE	         =0x00000001,
@@ -85,9 +82,10 @@ NciUSAGE_STR             =39,
 NciCLASS_STR             =40,
 NciVERSION               =41,
 } ENDDEF(int16_t,nci_t);
-
+#undef TYPEDEF
+#undef ENDDEF
 typedef struct nci_itm {
-  short int buffer_length;
+  int16_t buffer_length;
   nci_t code;
   void *pointer;
   int *return_length_address;
