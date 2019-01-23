@@ -1173,6 +1173,7 @@ static struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc
   dtype = dsc->dtype;
 
   switch (dtype) {
+  default:break;
   case DTYPE_NATIVE_FLOAT:
     dtype = DTYPE_FLOAT;
     break;
@@ -1250,6 +1251,8 @@ static char *MdsValueRemoteExpression(char *expression, struct descriptor *dsc)
    */
 
   switch (DTYPE_NATIVE_FLOAT) {
+  default:
+  //  printf("Unknown DTYPE_NATIVE_FLOAT: %d.  Using FS_FLOAT.\n", DTYPE_NATIVE_FLOAT);
   case DTYPE_FS:
     native_float_str = "FS_FLOAT";
     native_complex_str = "FS_COMPLEX";
@@ -1258,14 +1261,11 @@ static char *MdsValueRemoteExpression(char *expression, struct descriptor *dsc)
     native_float_str = "F_FLOAT";
     native_complex_str = "F_COMPLEX";
     break;
-  default:
-    printf("Unknown DTYPE_NATIVE_FLOAT: %d.  Using FS_FLOAT.\n", DTYPE_NATIVE_FLOAT);
-    native_float_str = "FS_FLOAT";
-    native_complex_str = "FS_COMPLEX";
-    break;
   }
 
   switch (DTYPE_NATIVE_DOUBLE) {
+  default:
+  //  printf("Unknown DTYPE_NATIVE_DOUBLE: %d.  Using FT_FLOAT.\n", DTYPE_NATIVE_DOUBLE);
   case DTYPE_FT:
     native_double_str = "FT_FLOAT";
     native_double_complex_str = "FT_COMPLEX";
@@ -1278,18 +1278,13 @@ static char *MdsValueRemoteExpression(char *expression, struct descriptor *dsc)
     native_double_str = "G_FLOAT";
     native_double_complex_str = "G_COMPLEX";
     break;
-  default:
-    printf("Unknown DTYPE_NATIVE_DOUBLE: %d.  Using FT_FLOAT.\n", DTYPE_NATIVE_DOUBLE);
-    native_double_str = "FT_FLOAT";
-    native_double_complex_str = "FT_COMPLEX";
-    break;
   }
 
   /*  The DTYPE of the incoming descriptor will be one of the values in ipdesc.h.
    *  The switch clause below therefore does not need to support NATIVE_FLOAT etc.
    */
 
-  switch (dsc->dtype) {
+  switch ((int)dsc->dtype) {
   case DTYPE_UCHAR:
     strcpy(newexpression, "BYTE_UNSIGNED");
     break;
