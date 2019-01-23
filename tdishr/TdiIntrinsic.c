@@ -217,7 +217,7 @@ static inline void ADD_COMPILE_INFO() {
   if (bx+xc+ce > MAXLINE)
     bx = MINMAX(0, bx, MAXFRAC);
   int len = bx+xc+2;
-  struct descriptor marker = { len+1, DTYPE_T, CLASS_S, memset(malloc(len+1),' ',len) };
+  struct descriptor marker = { len, DTYPE_T, CLASS_S, memset(malloc(len+1),' ',len) };
   struct descriptor region = { bx+xc+ce, DTYPE_T, CLASS_S, x-bx };
   marker.pointer[bx]='^';
   marker.pointer[0] = marker.pointer[len-1]='\n';
