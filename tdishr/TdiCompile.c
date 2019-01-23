@@ -53,7 +53,6 @@ extern void UnlockMdsShrMutex(pthread_mutex_t *);
 extern int TdiEvaluate();
 extern int TdiYacc();
 extern int TdiIntrinsic();
-extern void TdiYyReset();
 /*-------------------------------------------------------
         Interface to compiler/parser.
                 expression = COMPILE(string, [arg1,...])
@@ -137,7 +136,6 @@ static inline int tdi_compile(ThreadStatic * TdiThreadStatic_p,struct descriptor
   TdiRefZone.l_narg = narg - 1;
   TdiRefZone.l_iarg = 0;
   TdiRefZone.a_list = &list[0];
-  TdiYyReset();
   if (IS_NOT_OK(TdiYacc()) && IS_OK(TdiRefZone.l_status))
     status = TdiSYNTAX;
   else
