@@ -338,6 +338,7 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
 #endif
 /* Make up the correct packet for SendArg */
     switch (tdiarg->class) {
+    default:break;
     case CLASS_S:		/* fixed-length descriptor */
       ndims = 0;
       num = 1;
