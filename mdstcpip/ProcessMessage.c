@@ -1002,6 +1002,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	}
       }
       switch (d->dtype) {
+      default:break;
       case DTYPE_FLOAT:
 	d->dtype = DTYPE_FS;
 	break;

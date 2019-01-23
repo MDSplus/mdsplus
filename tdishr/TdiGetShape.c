@@ -46,11 +46,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int TdiGetShape(int narg,
 		struct descriptor_xd dat[1],
-		unsigned short length,
-		unsigned char dtype, int *cmode_ptr, struct descriptor_xd *out_ptr)
+		length_t length,
+		dtype_t dtype, int *cmode_ptr, struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  unsigned short ulen;
+  length_t ulen;
   int cmode = -1, count = 0x7fffffff, j, len, nelem;
   struct descriptor_a *aptr;
 
@@ -83,7 +83,7 @@ int TdiGetShape(int narg,
   if STATUS_OK {
     if ((len = length) == 0 && dtype < TdiCAT_MAX)
       len = TdiREF_CAT[dtype].length;
-    ulen = (unsigned short)len;
+    ulen = (length_t)len;
     if (cmode < 0)
       status = MdsGet1DxS(&ulen, &dtype, out_ptr);
     else

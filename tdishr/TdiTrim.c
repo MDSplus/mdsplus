@@ -101,14 +101,14 @@ int Tdi3Trim(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 */
 int Tdi3OpcodeBuiltin(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 {
-  unsigned int ind = 0xffffffff;
+  int ind = TdiFUNCTION_MAX;
   INIT_STATUS;
-  STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_T;
+  STATIC_CONSTANT dtype_t dtype = DTYPE_T;
   status = TdiGetLong(in_ptr, &ind);
-  if (STATUS_OK && ind < (unsigned int)TdiFUNCTION_MAX) {
+  if (STATUS_OK && ind < (int)TdiFUNCTION_MAX) {
     char *name_ptr = TdiRefFunction[ind].name;
     struct descriptor str2 = { 0, DTYPE_T, CLASS_S, 0 };
-    str2.length = (unsigned short)strlen(name_ptr);
+    str2.length = (length_t)strlen(name_ptr);
     str2.pointer = name_ptr;
     status = MdsGet1DxS(&str2.length, &dtype, out_ptr);
     if STATUS_OK
@@ -124,17 +124,17 @@ int Tdi3OpcodeBuiltin(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 int Tdi3OpcodeString(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 {
   STATIC_CONSTANT DESCRIPTOR(str1, "OPC" "$");
-  unsigned int ind = 0xffffffff;
+  int ind = TdiFUNCTION_MAX;
   INIT_STATUS;
-  STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_T;
+  STATIC_CONSTANT dtype_t dtype = DTYPE_T;
   status = TdiGetLong(in_ptr, &ind);
-  if (STATUS_OK && ind < (unsigned int)TdiFUNCTION_MAX) {
+  if (STATUS_OK && ind < TdiFUNCTION_MAX) {
     char *name_ptr = TdiRefFunction[ind].name;
     struct descriptor str2 = { 0, DTYPE_T, CLASS_S, 0 };
-    unsigned short total;
-    str2.length = (unsigned short)strlen(name_ptr);
+    length_t total;
+    str2.length = (length_t)strlen(name_ptr);
     str2.pointer = name_ptr;
-    total = (unsigned short)(str1.length + str2.length);
+    total = (length_t)(str1.length + str2.length);
     status = MdsGet1DxS(&total, &dtype, out_ptr);
     if STATUS_OK
       status =

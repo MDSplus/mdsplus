@@ -84,8 +84,8 @@ int Tdi1Build(opcode_t opcode, int narg, struct descriptor *list[], struct descr
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   DESCRIPTOR_FUNCTION(build, 0, 255);
   int j, k, modif;
-  opcode_t modif_s;
-  dtype_t  modif_c;
+  uint16_t modif_s;
+  uint8_t  modif_c;
 
   build.length = 0;
   build.dtype = fun_ptr->o1;
@@ -95,13 +95,13 @@ int Tdi1Build(opcode_t opcode, int narg, struct descriptor *list[], struct descr
     switch (fun_ptr->o2) {
     case DTYPE_BU:
       build.length = 1;
-      modif_c = (unsigned char)modif;
-      build.pointer = &modif_c;
+      modif_c = (uint8_t)modif;
+      build.pointer = (uint8_t*)&modif_c;
       break;
     case DTYPE_WU:
       build.length = 2;
-      modif_s = (unsigned short)modif;
-      build.pointer = (unsigned char *)&modif_s;
+      modif_s = (uint16_t)modif;
+      build.pointer = (uint8_t*)&modif_s;
       break;
     default:
       status = TdiINVDTYDSC;

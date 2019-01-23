@@ -45,8 +45,8 @@ typedef struct nci {
   unsigned char spare;
   int64_t time_inserted;
   unsigned int owner_identifier;
-  unsigned char class;
-  unsigned char dtype;
+  class_t class;
+  dtype_t dtype;
   unsigned int length;
   unsigned char spare2;
   unsigned int status;

@@ -75,6 +75,7 @@ int TdiImpose();
 static void FixupDollarNodes(int nid, struct descriptor *out_ptr) {
   if (out_ptr) {
     switch (out_ptr->class) {
+      default: break;
       case CLASS_S:
       case CLASS_D:
         if ((out_ptr->dtype == DTYPE_IDENT) &&

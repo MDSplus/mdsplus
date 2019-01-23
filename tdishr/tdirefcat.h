@@ -3,6 +3,7 @@
 
 	Ken Klare, LANL CTR-7	(c)1989,1990
 */
+#include <mdsdescrip.h>
 #define TdiCAT_COMPLEX	0x1000
 #define TdiCAT_WIDE_EXP	0x0800
 #define TdiCAT_FLOAT		0x0700
@@ -14,11 +15,12 @@
 #define TdiCAT_F		(0x8000 | TdiCAT_FLOAT | 3)
 #define TdiCAT_D		(0x8000 | TdiCAT_FLOAT | 7)
 #define TdiCAT_FC		(TdiCAT_COMPLEX | TdiCAT_F)
+
 struct TdiCatStruct {
   unsigned short in_cat;
-  unsigned char in_dtype;
+  dtype_t in_dtype;
   unsigned short out_cat;
-  unsigned char out_dtype;
+  dtype_t out_dtype;
   unsigned short digits;
 };
 struct TdiCatStruct_table {
