@@ -154,13 +154,6 @@ extern unsigned short Opcdollar, OpcZero,
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 STATIC_ROUTINE int TdiLexBinEq(int token);
 
-extern void TdiYyReset()
-{
-/*
-  tdiyy_reset();
-*/
-}
-
 extern int TdiHash();
 
 STATIC_ROUTINE void upcase(unsigned char *str, int str_len)
