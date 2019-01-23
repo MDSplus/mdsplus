@@ -5,17 +5,14 @@ Node Usage definitions
 
 **************************************************/
 #include <inttypes.h>
-//#ifdef MDSOBJECTSCPPSHRVS_EXPORTS
-/* uses int types for typedef
- * enum types would require switch statements to handle all cases
- * this would require more changes in other files and is left as TODO for now
- */
+#ifdef MDSOBJECTSCPPSHRVS_EXPORTS
+// visual studio uses int types for typedef
 # define TYPEDEF(bytes) enum
 # define ENDDEF(type,name) ;typedef type name
-//#else
-//# define TYPEDEF(bytes) typedef enum __attribute__((__packed__))
-//# define ENDDEF(type,name) name
-//#endif
+#else
+# define TYPEDEF(bytes) typedef enum __attribute__((__packed__))
+# define ENDDEF(type,name) name
+#endif
 TYPEDEF(1) {
 TreeUSAGE_ANY		=0,
 TreeUSAGE_STRUCTURE	=1,
