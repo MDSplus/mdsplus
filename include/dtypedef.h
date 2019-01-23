@@ -6,7 +6,7 @@
  *	codes 192-255 are reserved for DIGITAL's Computer Special Systems Group
  *	  and for customers for their own use.
  */
-DEFINE(MISSING	,0)
+DEFINE(MISSING		,0)
 DEFINE(BU		,2)	/* byte (unsigned);  8-bit unsigned quantity */
 DEFINE(WU		,3)	/* word (unsigned);  16-bit unsigned quantity */
 DEFINE(LU		,4)	/* longword (unsigned);  32-bit unsigned quantity */
@@ -43,10 +43,10 @@ DEFINE(VU		,34)	/* unaligned bit string */
 /*
  *	IEEE data types:
  */
-DEFINE(FS  	,52)	/* IEEE float basic single S */
-DEFINE(FT  	,53)	/* IEEE float basic double T */
-DEFINE(FSC 	,54)	/* IEEE float basic single S complex */
-DEFINE(FTC 	,55)	/* IEEE float basic double T complex */
+DEFINE(FS		,52)	/* IEEE float basic single S */
+DEFINE(FT		,53)	/* IEEE float basic double T */
+DEFINE(FSC		,54)	/* IEEE float basic single S complex */
+DEFINE(FTC		,55)	/* IEEE float basic double T complex */
 /*
  *	Miscellaneous data types:
  */
@@ -56,34 +56,34 @@ DEFINE(DSC		,24)	/* descriptor */
 DEFINE(BPV		,32)	/* bound procedure value */
 DEFINE(BLV		,33)	/* bound label value */
 DEFINE(ADT		,35)	/* absolute date and time */
-DEFINE(POINTER	,51)
+DEFINE(POINTER		,51)
 /*
  *	class R
  */
-DEFINE(LIST	,214)
-DEFINE(TUPLE	,215)
+DEFINE(LIST		,214)
+DEFINE(TUPLE		,215)
 DEFINE(DICTIONARY	,216)
-DEFINE(IDENT	,191)
+DEFINE(IDENT		,191)
 DEFINE(NID		,192)
-DEFINE(PATH	,193)
-DEFINE(PARAM	,194)
-DEFINE(SIGNAL	,195)
+DEFINE(PATH		,193)
+DEFINE(PARAM		,194)
+DEFINE(SIGNAL		,195)
 DEFINE(DIMENSION	,196)
-DEFINE(WINDOW	,197)
-DEFINE(SLOPE	,198)	/* Do not use this deprecated type */
-DEFINE(FUNCTION	,199)
-DEFINE(CONGLOM	,200)
-DEFINE(RANGE	,201)
-DEFINE(ACTION	,202)
-DEFINE(DISPATCH	,203)
-DEFINE(PROGRAM	,204)
-DEFINE(ROUTINE	,205)
+DEFINE(WINDOW		,197)
+DEFINE(SLOPE		,198)	/* Do not use this deprecated type */
+DEFINE(FUNCTION		,199)
+DEFINE(CONGLOM		,200)
+DEFINE(RANGE		,201)
+DEFINE(ACTION		,202)
+DEFINE(DISPATCH		,203)
+DEFINE(PROGRAM		,204)
+DEFINE(ROUTINE		,205)
 DEFINE(PROCEDURE	,206)
-DEFINE(METHOD	,207)
+DEFINE(METHOD		,207)
 DEFINE(DEPENDENCY	,208)
 DEFINE(CONDITION	,209)
-DEFINE(EVENT	,210)
+DEFINE(EVENT		,210)
 DEFINE(WITH_UNITS	,211)
-DEFINE(CALL	,212)
+DEFINE(CALL		,212)
 DEFINE(WITH_ERROR	,213)
-DEFINE(OPAQUE	,217)
+DEFINE(OPAQUE		,217)

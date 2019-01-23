@@ -4,16 +4,19 @@
 Node Usage definitions
 
 **************************************************/
-
-#ifdef MDSOBJECTSCPPSHRVS_EXPORTS
-# define TYPEDEF enum
-# define ENDDEF ;typedef uint8_t
-#else
-# define TYPEDEF typedef enum __attribute__((__packed__))
-# define ENDDEF
-#endif
-
-TYPEDEF{ //align(1)
+#include <inttypes.h>
+//#ifdef MDSOBJECTSCPPSHRVS_EXPORTS
+/* uses int types for typedef
+ * enum types would require switch statements to handle all cases
+ * this would require more changes in other files and is left as TODO for now
+ */
+# define TYPEDEF(bytes) enum
+# define ENDDEF(type,name) ;typedef type name
+//#else
+//# define TYPEDEF(bytes) typedef enum __attribute__((__packed__))
+//# define ENDDEF(type,name) name
+//#endif
+TYPEDEF(1) {
 TreeUSAGE_ANY		=0,
 TreeUSAGE_STRUCTURE	=1,
 TreeUSAGE_ACTION	=2,
@@ -32,8 +35,7 @@ TreeUSAGE_MAXIMUM,
 /* Runtime only special usage */
 TreeUSAGE_SUBTREE_REF,
 TreeUSAGE_SUBTREE_TOP
-} ENDDEF usage_t;
+} ENDDEF(uint8_t,usage_t);
 #undef TYPEDEF
 #undef ENDDEF
-
 #define TreeUSAGE_NONE TreeUSAGE_STRUCTURE
