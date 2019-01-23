@@ -58,9 +58,6 @@ class Compound(_dat.Data):
             if k in self.fields:
                 self.setDescAt(self._fields[k],v)
 
-    def _str_bad_ref(self):
-        return '%s(%s)'%(self.__class__.__name__,','.join([str(d) for d in self.getDescs()]))
-
     @property
     def deref(self):
         for i in range(self.getNumDescs()):
@@ -69,32 +66,17 @@ class Compound(_dat.Data):
                 self.setDescAt(i,ans.deref)
         return self
 
-    @property
-    def tree(self):
-        for arg in self._args:
+    def __passTree(self,*args):
+        for arg in args:
             if isinstance(arg,_dat.Data):
-                tree=arg.tree
-                if tree is not None:
-                    return tree
-        return None
-    @tree.setter
-    def tree(self,tree):
-        for arg in self._args:
-            if isinstance(arg,_dat.Data):
-                arg._setTree(tree)
-
-    def __hasBadTreeReferences__(self,tree):
-        for arg in self._args:
-            if isinstance(arg,_dat.Data) and arg.__hasBadTreeReferences__(tree):
-                return True
-        return False
-
-    def __fixTreeReferences__(self,tree):
-        for idx in range(len(self._args)):
-          arg=self._args[idx]
-          if isinstance(arg,_dat.Data) and arg.__hasBadTreeReferences__(tree):
-              self._args[idx]=arg.__fixTreeReferences__(tree)
-        return self
+                arg._setTree(self.tree)
+        return args
+    def __updateTree(self,*args):
+        for arg in args:
+            if isinstance(arg,_dat.Data) and isinstance(arg.tree,_tre.Tree):
+                self.__setTree(arg.tree)
+                break
+        return args
 
     def __getattr__(self,name):
         if name == '_fields':
@@ -103,7 +85,7 @@ class Compound(_dat.Data):
             return self.getDescAt(self._fields[name])
         elif name.startswith('get') and name[3:].lower() in self._fields:
             def getter():
-                return self._args[self._fields[name[3:].lower()]]
+                return self.__passTree(self._args[self._fields[name[3:].lower()]])[0]
             return getter
         elif name.startswith('set') and name[3:].lower() in self._fields:
             def setter(value):
@@ -141,16 +123,16 @@ class Compound(_dat.Data):
         @rtype: Data
         """
         if isinstance(idx, (slice,)):
-            return tuple(self._args[idx])
+            return self.__passTree(*self._args[idx])
         if idx<len(self._args) or idx>255:
-            return self._args[idx]
+            return self.__passTree(self._args[idx])[0]
         return None
 
     def getDescs(self):
         """Return descriptors or None if no descriptors
         @rtype: tuple,None
         """
-        return tuple(self._args)
+        return self.__passTree(*self._args)
 
     def getNumDescs(self):
        """Return number of descriptors
@@ -172,26 +154,39 @@ class Compound(_dat.Data):
     def setDescAt(self,idx,value):
         """Set descriptor at index idx (indexes start at 0)"""
         if isinstance(idx,slice):
-            indices=idx.indices(idx.start+len(value))
-            idx = 0
-            for i in range(indices[0],indices[1],indices[2]):
-                self.setDescAt(i,value[idx])
-                idx += 1
+            indices = idx.indices(255) # max ndesc
+            last = indices[0]+len(value)*indices[2]
+            if len(self._args) <= last:
+                self._args+=[None]*(last-len(self._args)+1)
+            self._args[idx] = value
+            self.__updateTree(*value)
         else:
+            last = idx
             if value is None:
                 if len(self._args) > idx:
                     self._args[idx] = None
+                else: last = -1
             else:
                 if len(self._args) <= idx:
                     self._args+=[None]*(idx-len(self._args)+1)
                 self._args[idx]=_dat.Data(value)
+                self.__updateTree(value)
         return self
+
+    def removeTail(self):
+       """ removes tailing None args """
+       if len(self._args) <= self._argOffset: return
+       for last in range(len(self._args)-1,self._argOffset-1,-1):
+           if self._args[last] is not None: break
+       if last < len(self._args):
+           self._args = self._args[:last+1]
 
     def setDescs(self,args):
         """Set descriptors
         @type args: tuple
         """
         self._args = [_dat.Data(arg) for arg in args]
+        self.__updateTree(args)
         while self.getNumDescs()<self._argOffset:
             self._args.append(None)
 
