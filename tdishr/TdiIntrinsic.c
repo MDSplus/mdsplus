@@ -228,7 +228,7 @@ EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct 
 	fixed.f[fixed.n] = 0;
 	fixed.a[fixed.n] = list[fixed.n];
       }
-    status = interlude(fun_ptr->f1, opcode, narg, fixed.a, &tmp);
+    status = fun_ptr->f1(opcode, narg, fixed.a, &tmp);
     pthread_cleanup_pop(1);
   }
   if (STATUS_OK || status == TdiBREAK || status == TdiCONTINUE || status == TdiGOTO || status == TdiRETURN) {
