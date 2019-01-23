@@ -457,6 +457,7 @@ EXPORT int IdlMdsValue(int argc, void **argv)
         dims[strlen(dims)-1]='\0';
 	strcat(dims,")");
 	switch (mdsValueAnswer.pointer->dtype) {
+	default:break;
 	case DTYPE_B:
 	  strcpy((char *)argv[2], "if max(answer) gt 127 then answer = fix(answer)-256");
 	  MDS_ATTR_FALLTHROUGH

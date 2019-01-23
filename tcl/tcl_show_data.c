@@ -356,6 +356,7 @@ static int CvtDxT(struct descriptor *in_dsc_ptr, int depth, char **error, char *
 {
   int sts=0;
   switch (in_dsc_ptr->class) {
+  default:break;
   case CLASS_XD:
   case CLASS_XS:
     {
