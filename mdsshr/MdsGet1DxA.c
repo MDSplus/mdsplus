@@ -76,7 +76,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 
-EXPORT int MdsGet1DxA(struct descriptor_a const *in_ptr, unsigned short const *length_ptr, unsigned char const *dtype_ptr,
+EXPORT int MdsGet1DxA(struct descriptor_a const *in_ptr, unsigned short const *length_ptr, dtype_t const *dtype_ptr,
 	       struct descriptor_xd *out_xd)
 {
   array_coeff *in_dsc = (array_coeff *) in_ptr;
@@ -87,7 +87,7 @@ EXPORT int MdsGet1DxA(struct descriptor_a const *in_ptr, unsigned short const *l
   int i;
   unsigned int align_size;
   array_coeff *out_dsc;
-  unsigned char dsc_dtype = DTYPE_DSC;
+  dtype_t dsc_dtype = DTYPE_DSC;
   if ((in_dsc->length == 0) || (*length_ptr == 0))
     new_arsize = 0;
   else

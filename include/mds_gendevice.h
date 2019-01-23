@@ -235,7 +235,9 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 	DESCRIPTOR(method_d, STRING_LITERAL(method_in));\
 	DESCRIPTOR(server_d, STRING_LITERAL(server));\
 	char *compl = completion_in;\
-	int tim = timout, seq = sequence, disp_mode = TreeSCHED_SEQ, curr_usage = usage;\
+	int tim = timout, seq = sequence;\
+	treesched_t disp_mode = TreeSCHED_SEQ;\
+	usage_t curr_usage = usage;\
 	struct descriptor sequence_d = {4, DTYPE_L, CLASS_S, 0},\
 	    timout_d = {4, DTYPE_L, CLASS_S, 0},\
 	    completion_d = {0, DTYPE_T, CLASS_S, 0},\
@@ -247,7 +249,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 	sequence_d.pointer = (char *)&seq;\
 	timout_d.pointer = (char *)&tim;\
 	object_d.pointer = (char *)&head_nid;\
-	dispatch_d.pointer = (unsigned char *)&disp_mode;\
+	dispatch_d.pointer = &disp_mode;\
 	dispatch_d.ident = (struct descriptor *)&server_d;\
 	dispatch_d.phase = (struct descriptor *)&phase_d;\
 	dispatch_d.when = &sequence_d;\

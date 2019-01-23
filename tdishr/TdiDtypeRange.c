@@ -75,8 +75,8 @@ int Tdi1DtypeRange(opcode_t opcode, int narg, struct descriptor *list[], struct 
 {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
-  unsigned short len;
-  unsigned char dtype;
+  length_t len;
+  dtype_t dtype;
   int cmode = -1, j, nseg = 0, nnew = narg;
   int *pl, tot = 0;
   struct descriptor *new[3];

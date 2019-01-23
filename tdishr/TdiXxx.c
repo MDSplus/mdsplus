@@ -311,6 +311,7 @@ int Tdi2Cmplx(int narg, struct descriptor_xd uni[1],
     cats[0].out_cat = cats[1].out_cat = cats[narg].out_cat;
   } else if (narg == 1) {
     switch (cats[0].out_dtype) {
+    default:break;
     case DTYPE_F:
       cats[0].out_dtype = DTYPE_FC;
       cats[0].out_cat = TdiREF_CAT[cats[0].out_dtype].cat;

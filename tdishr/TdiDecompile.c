@@ -521,36 +521,29 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
       if STATUS_OK
 	status = StrAppend(out_ptr, (struct descriptor *)&cdsc);
       break;
-
     case DTYPE_DC:
+      dtype = DTYPE_D;
+      goto complex;
     case DTYPE_FC:
+      dtype = DTYPE_F;
+      goto complex;
     case DTYPE_GC:
+      dtype = DTYPE_G;
+      goto complex;
     case DTYPE_HC:
+      dtype = DTYPE_H;
+      goto complex;
     case DTYPE_FSC:
+      dtype = DTYPE_FS;
+      goto complex;
     case DTYPE_FTC:
       {
-	struct descriptor temp = *in_ptr;
+      dtype = DTYPE_FT;
+      goto complex;
+complex: ;
+        struct descriptor temp = *in_ptr;
+	temp.dtype = dtype;
 	StrAppend(out_ptr, (struct descriptor *)&CMPLX);
-	switch (temp.dtype) {
-	case DTYPE_DC:
-	  temp.dtype = DTYPE_D;
-	  break;
-	case DTYPE_FC:
-	  temp.dtype = DTYPE_F;
-	  break;
-	case DTYPE_GC:
-	  temp.dtype = DTYPE_G;
-	  break;
-	case DTYPE_HC:
-	  temp.dtype = DTYPE_H;
-	  break;
-	case DTYPE_FSC:
-	  temp.dtype = DTYPE_FS;
-	  break;
-	case DTYPE_FTC:
-	  temp.dtype = DTYPE_FT;
-	  break;
-	}
 	temp.length /= 2;
 	Tdi0Decompile(&temp, P_ARG, out_ptr);
 	StrAppend(out_ptr, (struct descriptor *)&COMMA);

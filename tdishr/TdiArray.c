@@ -71,8 +71,8 @@ extern int Tdi1Array(opcode_t opcode, int narg, struct descriptor *list[], struc
   array_int cvt = { sizeof(int), DTYPE_L, CLASS_A, (int *)0, 0, 0, {0, 1, 1, 0, 0}, 1, 0};
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   struct descriptor_xd tmp = EMPTY_XD;
-  unsigned short length;
-  unsigned char dtype;
+  length_t length;
+  dtype_t dtype;
   int j, ndim = 0;
 
 	/****************************************

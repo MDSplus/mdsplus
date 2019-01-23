@@ -66,8 +66,8 @@ extern int TdiDecompile();
 int TdiPutLong(int *data, struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_L;
-  STATIC_CONSTANT unsigned short len = sizeof(int);
+  STATIC_CONSTANT dtype_t dtype = DTYPE_L;
+  STATIC_CONSTANT length_t len = (length_t)sizeof(int);
 
   if (out_ptr == 0)
     return 1;
@@ -138,9 +138,9 @@ int Tdi1DateTime(opcode_t opcode __attribute__ ((unused)),
 {
   INIT_STATUS;
   int time[2] = { 0, 0 }, *ptime;
-  unsigned short len;
-  STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_T;
-  STATIC_CONSTANT unsigned short length = 23;
+  length_t len;
+  STATIC_CONSTANT dtype_t dtype = DTYPE_T;
+  STATIC_CONSTANT length_t length = 23;
 
   if (narg > 0 && list[0]) {
     struct descriptor dtime = { sizeof(time), DTYPE_Q, CLASS_S, 0 };

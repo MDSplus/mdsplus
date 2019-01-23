@@ -112,9 +112,9 @@ int TreeGetRecord(int nid_in, struct descriptor_xd *dsc){
 		  status = TreeBADRECORD;
 	      } else {
 		if (nci.flags2 & NciM_DATA_IN_ATT_BLOCK) {
-		  unsigned char dsc_dtype = DTYPE_DSC;
-		  int dlen = nci.length - 8;
-		  unsigned int ddlen = dlen + sizeof(struct descriptor);
+		  dtype_t dsc_dtype = DTYPE_DSC;
+		  length_t dlen = nci.length - 8;
+		  l_length_t ddlen = dlen + sizeof(struct descriptor);
 		  status = MdsGet1Dx(&ddlen, &dsc_dtype, dsc, 0);
 		  dptr = dsc->pointer;
 		  dptr->length = dlen;

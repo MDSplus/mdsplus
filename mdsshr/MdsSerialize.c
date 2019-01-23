@@ -466,10 +466,10 @@ EXPORT int MdsSerializeDscIn(char const *in, struct descriptor_xd *out)
   unsigned int size_out;
   unsigned int size_in;
   int status;
-  STATIC_CONSTANT const unsigned char dsc_dtype = DTYPE_DSC;
+  STATIC_CONSTANT const dtype_t dsc_dtype = DTYPE_DSC;
   status = copy_rec_dx(in, 0, &size_out, &size_in);
   if (STATUS_OK && size_out) {
-    status = MdsGet1Dx(&size_out, (unsigned char *)&dsc_dtype, out, 0);
+    status = MdsGet1Dx(&size_out, &dsc_dtype, out, 0);
     if STATUS_OK
       status = copy_rec_dx(in, (struct descriptor_xd *)out->pointer, &size_out, &size_in);
   } else
@@ -808,14 +808,14 @@ STATIC_ROUTINE int Dsc2Rec(struct descriptor const *inp, struct descriptor_xd *o
   unsigned int size_out;
   unsigned int size_in;
   int status;
-  STATIC_CONSTANT const unsigned char dsc_dtype = DTYPE_B;
+  STATIC_CONSTANT const dtype_t dsc_dtype = DTYPE_B;
   status = copy_dx_rec((struct descriptor *)inp, 0, &size_out, &size_in);
   if (status & 1 && size_out) {
     unsigned short nlen = 1;
     array out_template = { 1, DTYPE_B, CLASS_A, 0, 0, 0, {0, 1, 1, 0, 0}, 1, 0 };
     out_template.arsize = *reclen = size_out;
     status =
-	MdsGet1DxA((struct descriptor_a *)&out_template, &nlen, (unsigned char *)&dsc_dtype,
+	MdsGet1DxA((struct descriptor_a *)&out_template, &nlen, &dsc_dtype,
 		   out_dsc_ptr);
     if (status & 1) {
       memset(out_dsc_ptr->pointer->pointer, 0, size_out);
@@ -929,10 +929,10 @@ EXPORT int MdsSerializeDscOutZ(struct descriptor const *in,
 			void *fixupPathArg,
 			int compress,
 			int *compressible_out,
-			unsigned int *length_out,
-			unsigned int *reclen_out,
-			unsigned char *dtype_out,
-			unsigned char *class_out,
+			l_length_t *length_out,
+			l_length_t *reclen_out,
+			dtype_t *dtype_out,
+			class_t *class_out,
 			int altbuflen, void *altbuf, int *data_in_altbuf_out)
 {
   int status;

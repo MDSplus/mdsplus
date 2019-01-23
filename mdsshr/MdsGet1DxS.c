@@ -71,7 +71,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 
-EXPORT int MdsGet1DxS(unsigned short const *length_ptr, unsigned char const *dtype_ptr,
+EXPORT int MdsGet1DxS(length_t const *length_ptr, dtype_t const *dtype_ptr,
 	       struct descriptor_xd *out_dsc_ptr)
 {
 
@@ -79,7 +79,7 @@ EXPORT int MdsGet1DxS(unsigned short const *length_ptr, unsigned char const *dty
   unsigned int dsc_size = (unsigned int)sizeof(struct descriptor);
   unsigned int align_size = (*dtype_ptr == DTYPE_T) ? 1 : *length_ptr;
   unsigned int length;
-  STATIC_CONSTANT unsigned char dsc_dtype = DTYPE_DSC;
+  STATIC_CONSTANT dtype_t dsc_dtype = DTYPE_DSC;
   dsc_size = align(dsc_size, align_size);
   length = dsc_size + *length_ptr;
   status = MdsGet1Dx(&length, &dsc_dtype, out_dsc_ptr, NULL);
