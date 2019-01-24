@@ -16,6 +16,9 @@ TreeClose
 TreeCompressDatafile
 TreeCreatePulseFile
 TreeCreateTreeFiles
+TreeCtx
+TreeCtxPush
+TreeCtxPop
 TreeDbid
 TreeDeleteNodeExecute
 TreeDeleteNodeGetNid

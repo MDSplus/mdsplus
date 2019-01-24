@@ -1332,14 +1332,14 @@ EXPORT int TreeFileName(char *tree, int shot, struct descriptor_xd* out_ptr){
   return _TreeFileName(*TreeCtx(), tree, shot, out_ptr);
 }
 
-EXPORT void* ctx_push(void** ctx){
+EXPORT void* TreeCtxPush(void** ctx){
   void* ps = malloc(sizeof(pushstate_t));
   ((pushstate_t*)ps)->priv = TreeUsePrivateCtx(1);
   ((pushstate_t*)ps)->dbid = TreeSwitchDbid(*ctx);
   ((pushstate_t*)ps)->ctx  = ctx;
   return ps;
 }
-EXPORT void  ctx_pop(void *ps){
+EXPORT void  TreeCtxPop(void *ps){
   *((pushstate_t*)ps)->ctx = TreeSwitchDbid(    ((pushstate_t*)ps)->dbid);
                              TreeUsePrivateCtx( ((pushstate_t*)ps)->priv);
   free(ps);
