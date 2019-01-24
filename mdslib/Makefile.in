@@ -12,7 +12,7 @@ MDSLIB_LIBS=-lTdiShr -lTreeShr -lMdsShr
 
 SOURCES = MdsLib.c
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = MdsLib.export
+EXPORTS = MdsLib.exports
 
 OBJECTS_CLIENT = MdsLib_client.o
 

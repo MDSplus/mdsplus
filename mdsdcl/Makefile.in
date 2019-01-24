@@ -4,7 +4,7 @@ srcdir=@srcdir@
 builddir=@builddir@
 VPATH = @srcdir@
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@Mdsdcl.dll.a
-@MINGW_TRUE@ DEF=${srcdir}/mdsdclshr.def
+@MINGW_TRUE@ DEF=${srcdir}/Mdsdcl.def
 @MINGW_TRUE@ XML_LIBS=-Wl,-Bstatic -lxml2 -lz @LIBLZMA@ -Wl,-Bdynamic -liconv @LIBDL@ $(LIBSOCKET)
 @MINGW_FALSE@ XML_LIBS=@XML_LIBS@ @LIBDL@
 
@@ -21,7 +21,7 @@ mdsdcl_show_version.c
 
 OBJECTS = $(SOURCES:.c=.o)
 
-EXPORTS = mdsdclshr.export
+EXPORTS = Mdsdcl.export
 
 all: @MAKELIBDIR@ @MAKEBINDIR@ @MAKELIBDIR@@LIBPRE@Mdsdcl.a @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB) @MAKEBINDIR@mdsdcl$(EXE)
 

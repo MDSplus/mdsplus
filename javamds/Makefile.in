@@ -3,13 +3,13 @@ include @top_builddir@/Makefile.inc
 srcdir=@srcdir@
 builddir=@builddir@
 VPATH = @srcdir@
-@MINGW_TRUE@ DEF=${srcdir}/javamds.def
+@MINGW_TRUE@ DEF=${srcdir}/JavaMds.def
 
 CFLAGS += -I /media/sf_FedoraShared/include/ -I /media/sf_FedoraShared/include/win32 $(THREAD) @JDK_CFLAGS@
 
 SOURCES = javamds.c ServerSupport.c JavaData.c JavaTrav.c mdsobjects.c
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = javamds.export
+EXPORTS = JavaMds.export
 
 all: 	@MAKELIBDIR@ @MAKELIBDIR@@LIBPRE@JavaMds@SHARETYPEJNI@
 

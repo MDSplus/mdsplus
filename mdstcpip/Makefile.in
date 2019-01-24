@@ -7,7 +7,7 @@ VPATH = @srcdir@
 @MINGW_TRUE@ IMPLIB_MdsIpShr=@MAKELIBDIR@MdsIpShr.dll.a
 @MINGW_TRUE@ IMPLIB_MdsIpSrvShr=@MAKELIBDIR@MdsIpSrvShr.dll.a
 @MINGW_TRUE@ WIN=.win
-@MINGW_TRUE@ DEF=${srcdir}/mdsipshr.def
+@MINGW_TRUE@ DEF=${srcdir}/MdsIpShr.def
 
 COMPRESSION_SOURCES = zlib/adler32.c \
                       zlib/compress.c \
@@ -109,7 +109,7 @@ endif #GLOBUS_FLAVOR
 
 PROGRAMS = $(bin_SCRIPTS) $(MDSIPSD) @MAKEBINDIR@mdsip$(EXE) @MAKEBINDIR@mdsiptest$(EXE) $(MDSIP_SERVICE)
 
-EXPORTS = mdsipshr.export
+EXPORTS = MdsIpShr.exports
 
 all : primary
 	$(MAKE) secundary @MAKEFLAG_J@  @MAKEFLAG_O@

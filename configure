@@ -8157,7 +8157,6 @@ case "$host" in
 *mingw*)
        MAKEFLAG_J=""
        MAKEFLAG_O=""
-       IDLMDSEVENT=""
        LIBPRE=""
        CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields -DWIN32 -D_WIN32 ";
        LD="$CXX -static-libgcc"

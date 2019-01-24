@@ -42,7 +42,7 @@ XmdsXdBoxDialogButton.c \
 XmdsXdBoxOnOffButton.c
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = xmdsshr.export
+EXPORTS = XmdsShr.exports
 
 all:    @MAKEUIDDIR@ \
         @MAKEUIDDIR@xmds_usage_icons.uid \

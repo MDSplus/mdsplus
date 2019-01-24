@@ -4,7 +4,7 @@ srcdir=@srcdir@
 builddir=@builddir@
 VPATH = @srcdir@
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsServerShr.dll.a
-@MINGW_TRUE@ DEF=${srcdir}/servershr.def
+@MINGW_TRUE@ DEF=${srcdir}/MdsServerShr.def
 
 SOURCES = \
       ServerDispatchAction.c\
@@ -27,7 +27,7 @@ SOURCES = \
       ServerQAction.c
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = servershr.export
+EXPORTS = MdsServerShr.exports
 
 all: @MAKELIBDIR@ @MAKESHLIBDIR@@LIBPRE@MdsServerShr@SHARETYPE@ @MAKELIBDIR@@LIBPRE@MdsServerShr.a
 
