@@ -62,12 +62,12 @@ def _TdiShrFun(function,errormessage,expression,*args,**kwargs):
     dargs = [Data(expression)]+list(map(Data,args))  # cast to Data type
     if "tree" in kwargs:
         tree = kwargs["tree"]
-    elif isinstance(expression,Data) and not expression.tree is None:
+    elif isinstance(expression,TreeRef) and isinstance(expression.tree,_tre.Tree):
         tree = expression.tree
     else:
         tree = None
         for arg in args:
-            if not isinstance(arg,Data) or arg.tree is None: continue
+            if not isinstance(arg,TreeRef) or arg.tree is None: continue
             tree = arg.tree
             if isinstance(arg,_tre.TreeNode): break
     xd = _dsc.Descriptor_xd()
@@ -99,7 +99,75 @@ def TdiData(expression,**kwargs):
     """Return primiitive data type. Format: TdiData(value)"""
     return _TdiShrFun(_TdiShr.TdiData,"Error converting to data",expression,**kwargs)
 
-class Data(object):
+class NoTreeRef(object):
+    @property
+    def tree(self): return
+    @tree.setter
+    def tree(self,val): return
+    def _setTree(self,*a,**kw): return self
+    def __hasBadTreeReferences__(self,tree):
+        return False
+    def __fixTreeReferences__(self,tree):
+        return self
+
+class TreeRef(object):
+    tree = None
+    def _setTree(self,tree):
+        if isinstance(tree,_tre.Tree): self.tree=tree
+        return self
+    def __hasBadTreeReferences__(self,tree):
+       return self.tree != tree
+    def __fixTreeReferences__(self,tree):
+        self.tree = tree
+
+class TreeRefX(TreeRef):
+    @property
+    def tree(self):
+        for desc in self._descs:
+            if isinstance(desc,Data):
+                tree=desc.tree
+                if tree is not None:
+                    return tree
+        return None
+    @tree.setter
+    def tree(self,tree):
+        for desc in self._descs:
+            if isinstance(desc,Data):
+                desc._setTree(tree)
+    def __hasBadTreeReferences__(self,tree):
+        for desc in self._descs:
+            if isinstance(desc,TreeRef) and desc.__hasBadTreeReferences__(tree):
+                return True
+        return False
+    def __fixTreeReferences__(self,tree):
+        for idx,d in enumerate(self._descs):
+            if isinstance(d,Data) and d.__hasBadTreeReferences__(tree):
+                self._descs[idx]=d.__fixTreeReferences__(tree)
+        return self
+    def setDescAt(self,idx,value):
+        """Set descriptor at index idx (indexes start at 0)"""
+        if isinstance(idx,slice):
+            indices = idx.indices(255) # max ndesc
+            last = indices[0]+len(value)*indices[2]
+            diff = 1+last-len(self._descs)
+            if diff>0:
+                self._descs+=[None]*diff
+            self._descs[idx] = tuple(Data(val) for val in value)
+        else:
+            last = idx
+            if value is None:
+                if len(self._descs) > idx:
+                    self._descs[idx] = None
+                else: last = -1
+            else:
+                diff = 1+idx-len(self._descs)
+                if diff>0:
+                    self._descs+=[None]*diff
+                self._descs[idx]=Data(value)
+        return self
+
+
+class Data(NoTreeRef):
     """Superclass used by most MDSplus objects. This provides default methods if not provided by the subclasses.
     """
     __array_priority__ = 100. ##### Needed to force things like numpy-array * mdsplus-data to use our __rmul__
@@ -147,10 +215,6 @@ class Data(object):
         else:
             raise TypeError('Cannot make MDSplus data type from type: %s' % (value.__class__,))
         return cls.__new__(cls,value)
-
-    def _setTree(self,tree):
-        if isinstance(tree,_tre.Tree): self.tree=tree
-        return self
 
     def __getattr__(self,name):
         def getXxx():
@@ -375,12 +439,6 @@ class Data(object):
         return _cmp.UNARY_PLUS(self)._setTree(self.tree).evaluate()
     def __nonzero__(self):
         return Data.__bool(self != 0)
-
-    def __hasBadTreeReferences__(self,tree):
-        return False
-
-    def __fixTreeReferences__(self,tree):
-        return self
 
     def decompile(self):
         """Return string representation
@@ -784,7 +842,7 @@ _dsc.dtypeToArrayClass[0]=Missing
 _dsc.dtypeToClass[EmptyData.dtype_id]=EmptyData
 
 _cmp=_mimport('compound')
-_scr=_mimport('mdsscalar')
 _arr=_mimport('mdsarray')
+_scr=_mimport('mdsscalar')
 _tre=_mimport('tree')
 _apd=_mimport('apd')

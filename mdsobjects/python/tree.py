@@ -41,6 +41,7 @@ _dat=_mimport('mdsdata')
 _exc=_mimport('mdsExceptions')
 _arr=_mimport('mdsarray')
 _scr=_mimport('mdsscalar')
+_apd=_mimport('apd')
 _dcl=_mimport('mdsdcl')
 _cmp=_mimport('compound')
 _dsc=_mimport('descriptor')
@@ -1128,7 +1129,7 @@ class Tree(object):
         kwargs['tree'] = self.tree
         return _dat.TdiData(arg,**kwargs)
 
-class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32 some day)
+class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32 some day)
     """Class to represent an MDSplus node reference (nid).
     @ivar nid: node index of this node.
     @type nid: int
@@ -1142,13 +1143,12 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
     _validation=None
     _nid=None
     _path=None
-    _setTree = _dat.Data._setTree
 
     @property
     def ctx(self): return _C.c_void_p(_TreeCtx.getDbid()) if self.tree is None else self.tree.ctx
     @property
     def _lock(self): return self.tree._lock
-    _setTree = _dat.Data._setTree
+
 
     def __new__(cls,nid,tree=None,head=None,*a,**kw):
         """Create class instance. Initialize part_dict class attribute if necessary.
@@ -1560,11 +1560,10 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
     ### End of Node Properties
     ########################################
 
-    def __hasBadTreeReferences__(self,tree):
-       return self.tree != tree
-
     def __deepcopy__(self,dummy):
        return self
+    def __hasBadTreeReferences__(self,tree):
+       return self.tree != tree
 
     def __fixTreeReferences__(self,tree):
         if self.tree == None:
@@ -1595,13 +1594,12 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
             return self.getExtendedAttribute(name[2:])
         try:   return _getNodeByAttr(self,name)
         except (_exc.TreeNNF,_exc.TreePARSEERR): pass
-        try:   return super(TreeNode,self).__getattr__(name)
-        except AttributeError: pass
+        return super(TreeNode,self).__getattr__(name)
         #if name=='length':
         #    raise AttributeError
         #if self.length>0:
         #    return self.record.__getattr__(name)
-        raise AttributeError('No such attribute: '+name)
+        #raise AttributeError('No such attribute: '+name)
 
     def __setattr__(self,name,value):
         """ Enables the setting of node attributes using
@@ -2487,9 +2485,10 @@ class TreeNode(_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32
         if value is None:
             ref = _C.c_void_p(0)
         else:
-            data = _dat.Data(value)
-            if data.__hasBadTreeReferences__(self.tree):
-                data = data.__fixTreeReferences__(self.tree)
+            if isinstance(value,_dat.TreeRef) and value.__hasBadTreeReferences__(self.tree):
+                data = value.__fixTreeReferences__(self.tree)
+            else:
+                data = _dat.Data(value)
             ref = _dat.Data.byref(data)
         _exc.checkStatus(
                 _TreeShr._TreePutRecord(self.ctx,
@@ -2866,8 +2865,7 @@ class TreePath(TreeNode): # HINT: TreePath begin
         return cls(_ver.tostr(_C.cast(d.pointer,_C.POINTER(_C.c_char*d.length)).contents.value),d.tree)
 
 
-class TreeNodeArray(_arr.Int32Array): # HINT: TreeNodeArray begin
-    _setTree = _dat.Data._setTree
+class TreeNodeArray(_dat.TreeRef,_arr.Int32Array): # HINT: TreeNodeArray begin
     def __new__(cls,nids,*tree,**kw):
         return super(TreeNodeArray,cls).__new__(cls,nids)
     def __init__(self,nids,*tree,**kw):
@@ -3013,7 +3011,7 @@ class TreeNodeArray(_arr.Int32Array): # HINT: TreeNodeArray begin
                 val = val.data()
             ans.append(val)
         try:    return _arr.Array(ans)
-        except: return _apt.List(*ans)
+        except: return _apd.List(*ans)
 
 class Device(TreeNode): # HINT: Device begin
     """Used for device support classes. Provides ORIGINAL_PART_NAME, PART_NAME and Add methods and allows referencing of subnodes as conglomerate node attributes.
