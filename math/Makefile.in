@@ -53,7 +53,7 @@ OBJECTS = $(SOURCES:.f=.o) boxsmooth.o
 umach.o : umach.f
 	$(COMPILE.f) $< $(OUTPUT_OPTION) -Wno-conversion
 
-EXPORTS = MdsMath.export
+EXPORTS = MdsMath.exports
 
 local@LIBPRE@MdsMath = @LIBPRE@MdsMath@SHARETYPE@
 

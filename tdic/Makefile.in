@@ -3,7 +3,7 @@ include @top_builddir@/Makefile.inc
 srcdir=@srcdir@
 builddir=@builddir@
 VPATH = @srcdir@
-@MINGW_TRUE@ DEF=${srcdir}/tdishrext.def
+@MINGW_TRUE@ DEF=${srcdir}/TdiShrExt.def
 
 LIBS=@LIBS@ -L@MAKESHLIBDIR@ -lMdsIpShr -lTdiShr -lMdsShr -lTreeShr
 TDIC_LIBS= $(LIBS) -ldl @LIBREADLINE@
@@ -12,7 +12,7 @@ SOURCES = \
         TdiShrExt.c
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = tdishrext.exports
+EXPORTS = TdiShrExt.exports
 
 all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEBINDIR@ @MAKESHLIBDIR@@LIBPRE@TdiShrExt@SHARETYPE@ @MAKELIBDIR@@LIBPRE@TdiShrExt.a @MAKEBINDIR@tdic$(EXE)
 

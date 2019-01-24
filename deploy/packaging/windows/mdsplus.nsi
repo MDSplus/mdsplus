@@ -318,7 +318,7 @@ SetOutPath "$INSTDIR\devtools\lib64\mingw"
 File "/oname=mdsshr.lib" bin_x86_64/MdsShr.dll.a
 File "/oname=treeshr.lib" bin_x86_64/TreeShr.dll.a
 File "/oname=tdishr.lib" bin_x86_64/TdiShr.dll.a
-File "/oname=mdsdcl.lib" bin_x86_64/MdsDcl.dll.a
+File "/oname=mdsdcl.lib" bin_x86_64/Mdsdcl.dll.a
 File "/oname=mdsipshr.lib" bin_x86_64/MdsIpShr.dll.a
 File "/oname=mdslib.lib" bin_x86_64/MdsLib.dll.a
 File "/oname=mdsobjectscppshr.lib" bin_x86_64/MdsObjectsCppShr.dll.a
@@ -329,7 +329,7 @@ SetOutPath "$INSTDIR\devtools\lib64\visual_studio"
 File "/oname=mdsshr.lib" bin_x86_64/MdsShr.lib
 File "/oname=treeshr.lib" bin_x86_64/TreeShr.lib
 File "/oname=tdishr.lib" bin_x86_64/TdiShr.lib
-File "/oname=mdsdcl.lib" bin_x86_64/MdsDcl.lib
+File "/oname=mdsdcl.lib" bin_x86_64/Mdsdcl.lib
 File "/oname=mdsipshr.lib" bin_x86_64/MdsIpShr.lib
 File "/oname=mdslib.lib" bin_x86_64/MdsLib.lib
 File "/oname=mdsobjectscppshr-vs.lib" bin_x86_64/MdsObjectsCppShr-VS.lib
@@ -340,7 +340,7 @@ SetOutPath "$INSTDIR\devtools\lib32\mingw"
 File "/oname=mdsshr.lib" bin_x86/MdsShr.dll.a
 File "/oname=treeshr.lib" bin_x86/TreeShr.dll.a
 File "/oname=tdishr.lib" bin_x86/TdiShr.dll.a
-File "/oname=mdsdcl.lib" bin_x86/MdsDcl.dll.a
+File "/oname=mdsdcl.lib" bin_x86/Mdsdcl.dll.a
 File "/oname=mdsipshr.lib" bin_x86/MdsIpShr.dll.a
 File "/oname=mdslib.lib" bin_x86/MdsLib.dll.a
 File "/oname=mdsobjectscppshr.lib" bin_x86/MdsObjectsCppShr.dll.a

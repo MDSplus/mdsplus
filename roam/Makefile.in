@@ -3,7 +3,7 @@ include @top_builddir@/Makefile.inc
 VPATH = @srcdir@
 CFLAGS+=$$(pkg-config --cflags globus-xio globus-gridmap-callout-error)
 LDFLAGS = @LDFLAGS@ $$(pkg-config --libs globus-xio globus-gridmap-callout-error globus-gssapi-gsi globus-gss-assist globus-gssapi-error globus-common) -L@MAKESHLIBDIR@ -lMdsShr -lTdiShr -lcurl
-EXPORTS = mdsipshr.export
+EXPORTS = 
 
 ifeq "@SHARETYPEMOD@" "@SHARETYPE@"
 	modules =
