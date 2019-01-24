@@ -120,53 +120,6 @@ class TreeRef(object):
     def __fixTreeReferences__(self,tree):
         self.tree = tree
 
-class TreeRefX(TreeRef):
-    @property
-    def tree(self):
-        for desc in self._descs:
-            if isinstance(desc,Data):
-                tree=desc.tree
-                if tree is not None:
-                    return tree
-        return None
-    @tree.setter
-    def tree(self,tree):
-        for desc in self._descs:
-            if isinstance(desc,Data):
-                desc._setTree(tree)
-    def __hasBadTreeReferences__(self,tree):
-        for desc in self._descs:
-            if isinstance(desc,TreeRef) and desc.__hasBadTreeReferences__(tree):
-                return True
-        return False
-    def __fixTreeReferences__(self,tree):
-        for idx,d in enumerate(self._descs):
-            if isinstance(d,Data) and d.__hasBadTreeReferences__(tree):
-                self._descs[idx]=d.__fixTreeReferences__(tree)
-        return self
-    def setDescAt(self,idx,value):
-        """Set descriptor at index idx (indexes start at 0)"""
-        if isinstance(idx,slice):
-            indices = idx.indices(255) # max ndesc
-            last = indices[0]+len(value)*indices[2]
-            diff = 1+last-len(self._descs)
-            if diff>0:
-                self._descs+=[None]*diff
-            self._descs[idx] = tuple(Data(val) for val in value)
-        else:
-            last = idx
-            if value is None:
-                if len(self._descs) > idx:
-                    self._descs[idx] = None
-                else: last = -1
-            else:
-                diff = 1+idx-len(self._descs)
-                if diff>0:
-                    self._descs+=[None]*diff
-                self._descs[idx]=Data(value)
-        return self
-
-
 class Data(NoTreeRef):
     """Superclass used by most MDSplus objects. This provides default methods if not provided by the subclasses.
     """
@@ -836,6 +789,86 @@ class Missing(EmptyData):
     def decompile(self): return "$Missing"
     @staticmethod
     def fromDescriptor(d): return Missing
+
+class DataX(Data):
+    """Data with a list of childs in descs"""
+    def setDescAt(self,idx,value):
+        """Set descriptor at index idx (indexes start at 0)"""
+        if isinstance(idx,slice):
+            indices = idx.indices(self.maxdesc) # max ndesc
+            last = indices[0]+len(value)*indices[2]
+            diff = 1+last-len(self._descs)
+            if diff>0:
+                self._descs+=[None]*diff
+            self._descs[idx] = tuple(Data(val) for val in value)
+        else:
+            last = idx
+            if value is None:
+                if len(self._descs) > idx:
+                    self._descs[idx] = None
+                else: last = -1
+            else:
+                diff = 1+idx-len(self._descs)
+                if diff>0:
+                    self._descs+=[None]*diff
+                self._descs[idx]=Data(value)
+        return self
+
+    def __getitem__(self,idx):
+        return self.getDescAt(idx)
+
+    def __setitem__(self,idx,value):
+        return self.setDescAt(idx,value)
+
+    def getDescAt(self,idx):
+        """Return descriptor with index idx (first descriptor is 0)
+        @rtype: Data
+        """
+        if isinstance(idx, (slice,)):
+            return self._descs[idx]
+        if idx<len(self.descs):
+            return self._descs[idx]
+        return None
+    def getDescs(self):
+        """Return descriptors or None if no descriptors
+        @rtype: tuple,None
+        """
+        return self.descs
+    @property
+    def descs(self):
+        return self._descs
+
+    def getNumDescs(self):
+       """Return number of descriptors
+       @rtype: int
+       """
+       return len(self._descs)
+
+class TreeRefX(TreeRef,DataX):
+    """TreeRef depending on DataX child descs"""
+    @property
+    def tree(self):
+        for desc in self._descs:
+            if isinstance(desc,Data):
+                tree=desc.tree
+                if tree is not None:
+                    return tree
+        return None
+    @tree.setter
+    def tree(self,tree):
+        for desc in self._descs:
+            if isinstance(desc,Data):
+                desc._setTree(tree)
+    def __hasBadTreeReferences__(self,tree):
+        for desc in self._descs:
+            if isinstance(desc,TreeRef) and desc.__hasBadTreeReferences__(tree):
+                return True
+        return False
+    def __fixTreeReferences__(self,tree):
+        for idx,d in enumerate(self._descs):
+            if isinstance(d,Data) and d.__hasBadTreeReferences__(tree):
+                self._descs[idx]=d.__fixTreeReferences__(tree)
+        return self
 
 _dsc.dtypeToClass[0]=Missing
 _dsc.dtypeToArrayClass[0]=Missing
