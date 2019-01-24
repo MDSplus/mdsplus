@@ -44,7 +44,7 @@ class Apd(_dat.TreeRefX,_arr.Array):
     """
     mdsclass=196
     dtype_id=24
-
+    maxdesc = 1<<31
     @property
     def _descriptor(self):
         descs=self.descs
@@ -96,60 +96,8 @@ class Apd(_dat.TreeRefX,_arr.Array):
 
     def __len__(self):
         """Return the number of descriptors in the apd"""
-        return len(self._descs)
+        return self.getNumDescs()
 
-    def __getitem__(self,idx):
-        """Return descriptor(s) x.__getitem__(idx) <==> x[idx]
-        @rtype: Data|tuple
-        """
-        try:
-            return self.descs[idx]._setTree(self.tree)
-        except:
-            return
-
-    def __updateTree(self,*args):
-        """pass first valid .tree from args to all descs"""
-        for arg in args:
-            if isinstance(arg,_dat.Data) and isinstance(arg.tree,_tre.Tree):
-                self.__setTree(arg.tree)
-                break
-        return args
-
-    def __setitem__(self,idx,value):
-        """Set descriptor. x.__setitem__(idx,value) <==> x[idx]=value
-        @rtype: None
-        """
-        if isinstance(idx,slice):
-            indices = idx.indices(255) # max ndesc
-            last = indices[0]+len(value)*indices[2]
-            if len(self._args) <= last:
-                self._args+=[None]*(last-len(self._args)+1)
-            self._args[idx] = value
-            self.__updateTree(*value)
-        else:
-            diff = 1+idx-len(self._descs)
-            if diff>0:
-                self._descs+=[None]*diff
-            self._descs[idx]=_dat.Data(value)
-            self.__updateTree(value)
-
-    def getDescs(self):
-        """Returns the descs of the Apd.
-        @rtype: tuple
-        """
-        return self._descs
-
-    def getDescAt(self,idx=0):
-        """Return the descriptor indexed by idx. (indexes start at 0).
-        @rtype: Data
-        """
-        return self[idx]._setTree(self.tree)
-
-    def setDescAt(self,idx,value):
-        """Set a descriptor in the Apd
-        """
-        self[idx]=value
-        return self
 
     def append(self,value):
         """Append a value to apd"""
@@ -160,17 +108,11 @@ class Apd(_dat.TreeRefX,_arr.Array):
     def value(self):
         return _N.array(self.descs,object)
 
-    @property
-    def descs(self):
-        """Returns the descs of the Apd.
-        @rtype: tuple
-        """
-        return tuple(self._descs)
 
     @property
     def _value(self):
         """Returns native representation of the List"""
-        return _N.asarray(tuple(d.value for d in self.descs),'object')
+        return _N.asarray(tuple(d.value for d in self._descs),'object')
 
 
 class Dictionary(dict,Apd):
