@@ -53,7 +53,7 @@ class staticmethodX(object):
         if self is None: return None
         return mself.method(Data(self),*args,**kwargs)
 
-def _TdiShrFun(opcode,errormessage,expression,*args,**kwargs):
+def _TdiIntrinsic(opcode,errormessage,expression,*args,**kwargs):
     def parseArguments(args):
         if len(args)==1 and isinstance(args[0],tuple):
             return parseArguments(args[0])
@@ -83,23 +83,23 @@ def _TdiShrFun(opcode,errormessage,expression,*args,**kwargs):
 
 def TdiCompile(expression,*args,**kwargs):
     """Compile a TDI expression. Format: TdiCompile('expression-string')"""
-    return _TdiShrFun(99,"Error compiling",expression,*args,**kwargs)
+    return _TdiIntrinsic(99,"Error compiling",expression,*args,**kwargs)
 
 def TdiData(expression,**kwargs):
     """Return primiitive data type. Format: TdiData(value)"""
-    return _TdiShrFun(112,"Error converting to data",expression,**kwargs)
+    return _TdiIntrinsic(112,"Error converting to data",expression,**kwargs)
 
 def TdiDecompile(expression,**kwargs):
     """Decompile a TDI expression. Format: TdiDecompile(tdi_expression)"""
-    return _ver.tostr(_TdiShrFun(119,"Error decompiling",expression,**kwargs))
+    return _ver.tostr(_TdiIntrinsic(119,"Error decompiling",expression,**kwargs))
 
 def TdiEvaluate(expression,**kwargs):
     """Evaluate and functions. Format: TdiEvaluate(data)"""
-    return _TdiShrFun(158,"Error evaluating",expression,**kwargs)
+    return _TdiIntrinsic(158,"Error evaluating",expression,**kwargs)
 
 def TdiExecute(expression,*args,**kwargs):
     """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
-    return _TdiShrFun(159,"Error executing",expression,*args,**kwargs)
+    return _TdiIntrinsic(159,"Error executing",expression,*args,**kwargs)
 tdi=TdiExecute
 
 class Data(object):
