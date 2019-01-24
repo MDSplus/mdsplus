@@ -1125,9 +1125,10 @@ static int dtype_length(struct descriptor *d)
 }
 
 
-#if !defined(_CLIENT_ONLY)
-extern EXPORT int *cdescr(int dtype, void *data, ...)
-{
+#ifdef _CLIENT_ONLY
+extern EXPORT int *cdescr() {return NULL;}
+#else
+extern EXPORT int *cdescr(int dtype, void *data, ...) {
   void *arglist[MAXARGS];
   va_list incrmtr;
   int dsc;
