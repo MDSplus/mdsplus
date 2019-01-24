@@ -38,7 +38,8 @@ _dat=_mimport('mdsdata')
 _tre=_mimport('tree')
 _exc=_mimport('mdsExceptions')
 
-class Compound(_dat.Data):
+class Compound(_dat.DataX):
+    maxdesc = 255
     fields = tuple()
     def __dir__(self):
         """used for tab completion"""
@@ -66,18 +67,6 @@ class Compound(_dat.Data):
                 self.setDescAt(i,ans.deref)
         return self
 
-    def __passTree(self,*args):
-        for arg in args:
-            if isinstance(arg,_dat.TreeRef):
-                arg._setTree(self.tree)
-        return args
-    def __updateTree(self,*args):
-        for arg in args:
-            if isinstance(arg,_dat.TreeRef) and isinstance(arg.tree,_tre.Tree):
-                self._setTree(arg.tree)
-                break
-        return args
-
     def __getattr__(self,name):
         if name == '_fields':
             return {}
@@ -94,17 +83,11 @@ class Compound(_dat.Data):
         return super(Compound,self).__getattr__(name)
         #raise AttributeError("No such attribute '%s' in %s"%(name,self.__class__.__name__))
 
-    def __getitem__(self,idx):
-        return self.getDescAt(idx)
-
     def __setattr__(self,name,value):
         if name in self._fields:
             self.setDescAt(self._fields[name],value)
         else:
             super(Compound,self).__setattr__(name,value)
-
-    def __setitem__(self,idx,value):
-        return self.setDescAt(idx,value)
 
     def getArgumentAt(self,idx):
         """Return argument at index idx (indexes start at 0)
@@ -117,30 +100,6 @@ class Compound(_dat.Data):
         @rtype: Data,None
         """
         return self.getDescAt(slice(self._argOffset,None))
-
-    def getDescAt(self,idx):
-        """Return descriptor with index idx (first descriptor is 0)
-        @rtype: Data
-        """
-        if isinstance(idx, (slice,)):
-            return self.__passTree(*self._descs[idx])
-        if idx<len(self._descs) or idx>255:
-            return self.__passTree(self._descs[idx])[0]
-        return None
-
-    def getDescs(self):
-        """Return descriptors or None if no descriptors
-        @rtype: tuple,None
-        """
-        return self.descs
-    @property
-    def descs(self):
-        return self.__passTree(*self._descs)
-    def getNumDescs(self):
-       """Return number of descriptors
-       @rtype: int
-       """
-       return len(self._descs)
 
     def setArgumentAt(self,idx,value):
         """Set argument at index idx (indexes start at 0)"""
