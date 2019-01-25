@@ -68,7 +68,14 @@ class testing(object):
         m = imp.load_source(class_name, file_name)
         getattr(m, method_name)()
 
-    check_load_lib=ctypes.CDLL
+    @staticmethod
+    def check_load_lib(lib):
+        try:    ctypes.CDLL(lib)
+        except:
+            if sys.platform.startswith('win'):
+                ctypes.CDLL("%s.dll"%lib)
+            else:
+                ctypes.CDLL("lib%s.so"%lib)
 
     def skip_test(self, module_name, message):
         # TODO: fix this
@@ -147,10 +154,7 @@ def check_arch(file_name):
     if not ts.check_unittest_version(module_name):
         ts.skip_test(module_name,'Unfit unittest version < 2.7')
     try:
-        if sys.platform.startswith('win'):
-            ts.check_load_lib("MdsShr.dll")
-        else:
-            ts.check_load_lib("libMdsShr.so")
+        ts.check_load_lib("MdsShr")
     except:
         ts.skip_test(module_name,'Unable to load mdsplus lib "MdsShr"')
     if module_name.startswith('dcl'):
