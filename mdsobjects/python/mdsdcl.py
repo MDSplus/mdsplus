@@ -37,12 +37,15 @@ _ver=_mimport('version')
 _exc=_mimport('mdsExceptions')
 _dsc=_mimport('descriptor')
 _tre=_mimport('tree')
-
-_mdsdcl=_ver.load_library('Mdsdcl')
-_mdsdcl. mdsdcl_do_command_dsc.argtypes=[            _C.c_char_p, _dsc.Descriptor_xd.PTR, _dsc.Descriptor_xd.PTR]
-_mdsdcl._mdsdcl_do_command_dsc.argtypes=[_C.c_void_p,_C.c_char_p, _dsc.Descriptor_xd.PTR, _dsc.Descriptor_xd.PTR]
-
-def dcl(command,return_out=False,return_error=False,raise_exception=False,tree=None,setcommand='mdsdcl'):
+try:
+    _mdsdcl=_ver.load_library('Mdsdcl')
+    _mdsdcl. mdsdcl_do_command_dsc.argtypes=[            _C.c_char_p, _dsc.Descriptor_xd.PTR, _dsc.Descriptor_xd.PTR]
+    _mdsdcl._mdsdcl_do_command_dsc.argtypes=[_C.c_void_p,_C.c_char_p, _dsc.Descriptor_xd.PTR, _dsc.Descriptor_xd.PTR]
+except:
+ def dcl(*a,**kw):
+    raise _exc.LibNOTFOU("Mdsdcl")
+else:
+ def dcl(command,return_out=False,return_error=False,raise_exception=False,tree=None,setcommand='mdsdcl'):
     """Execute a dcl command
     @param command: command expression to execute
     @type command: str
