@@ -1607,9 +1607,9 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
             raise TreeNodeException("Node does not contain an action description")
         else:
             if wait:
-                _dcl.tcl("dispatch/wait %s"%(self.fullpath,),0,0,1)
+                self.tree.tcl("dispatch/wait %s"%(self.fullpath,),0,0,1)
             else:
-                _dcl.tcl("dispatch %s"     %(self.fullpath,),0,0,1)
+                self.tree.tcl("dispatch %s"     %(self.fullpath,),0,0,1)
 
     @property
     def deref(self):
