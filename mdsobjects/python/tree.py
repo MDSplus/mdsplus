@@ -3120,7 +3120,7 @@ If you did intend to write to a subnode of the device you should check the prope
         head.record=_cmp.Conglom('__python__',cls.__name__,None,cls.getImportString())
         head=TreeNode(head)
         head.write_once=True
-        glob = _mimport('__init__').load({})
+        glob = _mimport('__init__').load_package({})
         glob['tree'] = tree
         glob['path'] = head.path
         glob['head'] = head
