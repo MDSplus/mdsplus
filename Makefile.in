@@ -75,16 +75,15 @@ NON_JAR = \
 	@LV@ \
 	LabView \
 	@MACOSX@
-
 @MINGW_TRUE@ NON_JAR += icons
 @ENABLE_TESTS_TRUE@ NON_JAR += testing
 
 PARTS = $(NON_JAR) @JAVA_JAR@
 endif
 
-.PHONY: all $(PARTS) PYTHON
+.PHONY: all $(PARTS)
 all: ##@build build all active submodules
-all: $(PARTS) PYTHON
+all: $(PARTS)
 
 DIRECTORIES = $(sort @MAKEBINDIR@ @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEUIDDIR@)
 
@@ -100,25 +99,12 @@ docs:   ##@docs build documentation using doxygen (ref to docs directory)
 	$(MAKE) -C docs install
 
 
-PYTHON: # copy src python to builddir
-	tar -C $(top_srcdir) \
-		--exclude='.gitignore' \
-		--exclude='*.pyc' \
-		--exclude=__pycache__ \
-		--exclude=build \
-		--exclude='*egg-info' \
-		--exclude='*\.in' \
-		-cf  - mdsobjects/python pydevices | tar -C $(top_builddir) -xf -
-	mkdir -p ${top_builddir}/pythonpath
-	ln -sf $(top_builddir)/mdsobjects/python $(top_builddir)/pythonpath/MDSplus
-	ln -sf $(top_builddir)/pydevices/* $(top_builddir)/pythonpath/
-
 
 clean_DIRS = $(addprefix clean_, $(PARTS))
 
 .PHONY: clean
 clean: ##@build recusively clean all built objects in submodules
-clean: $(clean_DIRS) clean_TESTS clean_DOCS clean_PYTHON
+clean: $(clean_DIRS) clean_TESTS clean_DOCS
 
 .PHONY: $(clean_DIRS)
 $(clean_DIRS):
@@ -126,10 +112,6 @@ $(clean_DIRS):
 
 clean_DOCS: ##@docs clean generated documentation
 	$(MAKE) -C docs clean
-
-clean_PYTHON:
-	find mdsobjects/python pydevices -type f ! -name _version.py -o -name Makefile -delete
-	rm -Rf $(top_builddir)/pythonpath
 
 .PHONY: distclean
 
@@ -196,7 +178,7 @@ install: $(install_DIRS)
 	$(MKDIR_P) $(prefix)/local/tdi
 	$(MKDIR_P) $(prefix)/java
 	- find $(prefix)/java -name '*.class' -delete #### No need to include class files
-	tar -C $(top_srcdir) \
+	tar -C ${top_srcdir} \
 		--exclude='.gitignore' \
 		--exclude='*.pyc' \
 		--exclude=__pycache__ \
@@ -205,8 +187,9 @@ install: $(install_DIRS)
 		--exclude='*egg-info' \
 		--exclude='*\.in' \
 		--exclude='Makefile\.*' \
-		-cf  - $(MISC_PARTS) | tar -C $(exec_prefix) -xf -
-	tar -C $(top_builddir) -cf - include/mdsplus/mdsconfig.h $$(find . -name _version.py) | tar -C $(exec_prefix) -xf -
+		-cf  - $(MISC_PARTS) | (cd $(exec_prefix); tar -xf -)
+	find . -name '_version\.py' -not -path "./$(realpath --relative-to=$(pwd) $(exec_prefix))/*" -exec cp {} $(exec_prefix)/{} \;
+	tar -C ${top_builddir} -cf - include/mdsplus/mdsconfig.h | (cd $(exec_prefix); tar -xf -) ## TODO: remove this and config.h from headers ...
 	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > $(exec_prefix)/mdsobjects/python/mdsplus_version.py; fi
 	$(INSTALL) ${top_srcdir}/MDSplus-License.txt ${top_srcdir}/MDSplus-License.rtf $(exec_prefix)
 	(cd $(exec_prefix); chmod -R 755 $(MISC_PARTS))
