@@ -35,6 +35,8 @@ Information about the B{I{MDSplus Data System}} can be found at U{the MDSplus Ho
 @license: GNU GPL
 
 """
+import os as _os
+
 def _mimport(name, level=1):
     try:
         if not __package__:
@@ -67,28 +69,29 @@ try:
     release_tag=_mvers.release_tag
     del _mvers
 except:
-    import os
-    print("PYTHONPATH was set to: %s and unable to import version information" % os.environ['PYTHONPATH'])
+    if 'MDS_DIS_VCHK' not in _os.environ:
+      print("PYTHONPATH was set to: %s and unable to import version information" % _os.environ['PYTHONPATH'])
     __version__='Unknown'
 
-import sys,ctypes as _C
-class MDSplusVersionInfo(_C.Structure):
-    _fields_= [("MAJOR",_C.c_char_p),
-               ("MINOR",_C.c_char_p),
-               ("RELEASE",_C.c_char_p),
-               ("BRANCH",_C.c_char_p),
-               ("RELEASE_TAG",_C.c_char_p),
-               ("COMMIT",_C.c_char_p),
-               ("DATE",_C.c_char_p),
-               ("MDSVERSION",_C.c_char_p)]
-_ver=_mimport('version')
-mdsshr=_ver.load_library('MdsShr')
-del _ver
-_info=_C.cast(mdsshr.MDSplusVersion,_C.POINTER(MDSplusVersionInfo)).contents
-del mdsshr
-_ver=str(_info.MDSVERSION.decode())
-if _ver != __version__:
-    sys.stderr.write("""Warning:
+if 'MDS_DIS_VCHK' not in _os.environ:
+  import sys,ctypes as _C
+  class MDSplusVersionInfo(_C.Structure):
+      _fields_= [("MAJOR",_C.c_char_p),
+                 ("MINOR",_C.c_char_p),
+                 ("RELEASE",_C.c_char_p),
+                 ("BRANCH",_C.c_char_p),
+                 ("RELEASE_TAG",_C.c_char_p),
+                 ("COMMIT",_C.c_char_p),
+                 ("DATE",_C.c_char_p),
+                 ("MDSVERSION",_C.c_char_p)]
+  _ver=_mimport('version')
+  mdsshr=_ver.load_library('MdsShr')
+  del _ver
+  _info=_C.cast(mdsshr.MDSplusVersion,_C.POINTER(MDSplusVersionInfo)).contents
+  del mdsshr
+  _ver=str(_info.MDSVERSION.decode())
+  if _ver != __version__:
+      sys.stderr.write("""Warning:
   The MDSplus python module version (%s) does not match
   the version of the installed MDSplus libraries (%s).
   Upgrade the module using the mdsplus/mdsobjects/python directory of the

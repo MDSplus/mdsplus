@@ -7,7 +7,7 @@
 
 TEST_CFLAGS = -I${top_srcdir}/testing
 TEST_LIBS   = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
-
+TESTS_ENVIRONMENT += MDS_DIS_VCHK=yes
 
 # ///  select test form env variable  //////////////////////////////////////// #
 
