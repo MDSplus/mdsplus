@@ -125,6 +125,7 @@ class Compound(_dat.DataX):
         @type args: tuple
         """
         self._descs = [_dat.Data(arg) for arg in args]
+        self._setTree(*args)
         while self.getNumDescs()<self._argOffset:
             self._descs.append(None)
 
