@@ -98,17 +98,17 @@ STATIC_ROUTINE void WaitForActions(int conditionals, int first_g, int last_g, in
 // STATIC_CONSTANT const int zero = 0;
 
 typedef struct _complete {
-  int idx;
   struct _complete *next;
+  int idx;
 } Complete;
 
 STATIC_THREADSAFE Complete *CompletedQueueHead = NULL;
 STATIC_THREADSAFE Complete *CompletedQueueTail = NULL;
 
 typedef struct _send_monitor {
+  struct _send_monitor *next;
   int idx;
   int mode;
-  struct _send_monitor *next;
 } SendMonitorInfo;
 
 STATIC_THREADSAFE SendMonitorInfo *SendMonitorQueueHead = NULL;
@@ -660,6 +660,7 @@ STATIC_ROUTINE int DequeueCompletedAction(int *i)
       free(c);
       pthread_mutex_unlock(&completed_queue_mutex);
     } else {
+      CONDITION_RESET(&CompletedC); // reset list state
       pthread_mutex_unlock(&completed_queue_mutex);
       WaitForActionDoneQueue();
     }
