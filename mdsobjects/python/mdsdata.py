@@ -39,7 +39,6 @@ MDSplusException = _exc.MDSplusException
 #### Load Shared Libraries Referenced #######
 #
 _MdsShr=_ver.load_library('MdsShr')
-_TdiShr=_ver.load_library('TdiShr')
 #
 #############################################
 class staticmethodX(object):
@@ -53,51 +52,30 @@ class staticmethodX(object):
         if self is None: return None
         return mself.method(Data(self),*args,**kwargs)
 
-def _TdiShrFun(function,errormessage,expression,*args,**kwargs):
-    def parseArguments(args):
-        if len(args)==1 and isinstance(args[0],tuple):
-            return parseArguments(args[0])
-        return args
-    args  = parseArguments(args) #  unwrap tuple style arg list
-    dargs = [Data(expression)]+list(map(Data,args))  # cast to Data type
-    if "tree" in kwargs:
-        tree = kwargs["tree"]
-    elif isinstance(expression,TreeRef) and isinstance(expression.tree,_tre.Tree):
-        tree = expression.tree
-    else:
-        tree = None
-        for arg in args:
-            if not isinstance(arg,TreeRef) or arg.tree is None: continue
-            tree = arg.tree
-            if isinstance(arg,_tre.TreeNode): break
-    xd = _dsc.Descriptor_xd()
-    rargs = list(map(Data.byref,dargs))+[xd.ref,_C.c_void_p(-1)]
-    _tre._TreeCtx.pushTree(tree)
-    try:
-        _exc.checkStatus(function(*rargs))
-    finally:
-        _tre._TreeCtx.popTree()
-    return xd._setTree(tree).value
-
+def _unwrap(args):
+    if len(args)==1 and isinstance(args[0],tuple):
+        return _unwrap(args[0])
+    return args
 def TdiCompile(expression,*args,**kwargs):
     """Compile a TDI expression. Format: TdiCompile('expression-string')"""
-    return _TdiShrFun(_TdiShr.TdiCompile,"Error compiling",expression,*args,**kwargs)
+    return _cmp.COMPILE(expression,*_unwrap(args))._setTree(**kwargs).evaluate()
+
+def TdiData(mdsobject,**kwargs):
+    """Convert MDSplus object into primitive data type. Format: TdiData(mdsobject)"""
+    return _cmp.DATA(mdsobject)._setTree(**kwargs).evaluate()
+
+def TdiDecompile(mdsobject,**kwargs):
+    """Decompile an MDSplus object. Format: TdiDecompile(mdsobject)"""
+    return _ver.tostr(_cmp.DECOMPILE(mdsobject)._setTree(**kwargs).evaluate())
+
+def TdiEvaluate(mdsobject,**kwargs):
+    """Evaluate an MDSplus object. Format: TdiEvaluate(mdsobject)"""
+    return _cmp.EVALUATE(mdsobject)._setTree(**kwargs).evaluate()
 
 def TdiExecute(expression,*args,**kwargs):
-    """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
-    return _TdiShrFun(_TdiShr.TdiExecute,"Error executing",expression,*args,**kwargs)
+    """Compile and evaluate a TDI expression. Format: TdiExecute('expression-string')"""
+    return _cmp.EXECUTE(expression,*_unwrap(args))._setTree(**kwargs).evaluate()
 tdi=TdiExecute
-def TdiDecompile(expression,**kwargs):
-    """Decompile a TDI expression. Format: TdiDecompile(tdi_expression)"""
-    return _ver.tostr(_TdiShrFun(_TdiShr.TdiDecompile,"Error decompiling",expression,**kwargs))
-
-def TdiEvaluate(expression,**kwargs):
-    """Evaluate and functions. Format: TdiEvaluate(data)"""
-    return _TdiShrFun(_TdiShr.TdiEvaluate,"Error evaluating",expression,**kwargs)
-
-def TdiData(expression,**kwargs):
-    """Return primiitive data type. Format: TdiData(value)"""
-    return _TdiShrFun(_TdiShr.TdiData,"Error converting to data",expression,**kwargs)
 
 class NoTreeRef(object):
     @property
@@ -128,6 +106,7 @@ class TreeRef(object):
        return self.tree != tree
     def __fixTreeReferences__(self,tree):
         self.tree = tree
+        return self
 
 class Data(NoTreeRef):
     """Superclass used by most MDSplus objects. This provides default methods if not provided by the subclasses.
@@ -785,11 +764,14 @@ class EmptyData(Data):
     def data(self): return None
     @staticmethod
     def fromDescriptor(d): return EmptyData
+# the old API had EmptyData as instance
 EmptyData = EmptyData()
 
-class Missing(EmptyData):
+# Missing should extend the class of EmptyData
+class Missing(EmptyData.__class__):
     """No Value aka $Missing"""
     def decompile(self): return "$Missing"
+
     @staticmethod
     def fromDescriptor(d): return Missing
 
@@ -878,7 +860,8 @@ class TreeRefX(TreeRef,DataX):
 
 _dsc.dtypeToClass[0]=Missing
 _dsc.dtypeToArrayClass[0]=Missing
-_dsc.dtypeToClass[EmptyData.dtype_id]=EmptyData
+# also dtypeToClass expects its values to be classes
+_dsc.dtypeToClass[EmptyData.dtype_id]=EmptyData.__class__
 
 _cmp=_mimport('compound')
 _arr=_mimport('mdsarray')
