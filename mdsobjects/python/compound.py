@@ -961,7 +961,7 @@ class COMMA(_dat.TreeRefX,Function):
     min_args = 2
     max_args = 254
 
-class COMPILE(_dat.TreeRefX,Function):
+class COMPILE(_dat.TreeRef,Function):
     opcode = 99
     min_args = 1
     max_args = 254
@@ -1258,7 +1258,7 @@ class EVALUATE(_dat.TreeRefX,Function):
     min_args = 1
     max_args = 1
 
-class EXECUTE(_dat.TreeRefX,Function):
+class EXECUTE(_dat.TreeRef,Function):
     opcode = 159
     min_args = 1
     max_args = 254
