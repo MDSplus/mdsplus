@@ -273,6 +273,8 @@ class Dispatch(_dat.TreeRefX,Compound):
         super(Dispatch,self).__init__(*args,**kwargs)
 _dsc.addDtypeToClass(Dispatch)
 
+_TdiShr=_ver.load_library('TdiShr')
+
 class Function(Compound):
     """A Function object is used to reference builtin MDSplus functions. For example the expression 1+2
     is represented in as Function instance created by Function(opcode='ADD',args=(1,2))
@@ -303,11 +305,21 @@ class Function(Compound):
         if cls.__name__.startswith('d'):
             return '$%s'%cls.__name__[1:]
         return cls.__name__
+
     def evaluate(self):
-        if isinstance(self,_dat.TreeRef) and isinstance(self.tree,_tre.Tree):
+        dargs = self._descs
+        nargs = len(dargs)
+        argslist = (_C.c_void_p*nargs)()
+        for i in _ver.xrange(nargs):
+            argslist[i] = _C.cast(_dat.Data.pointer(dargs[i]),_C.c_void_p)
+        xd = _dsc.Descriptor_xd()
+        if isinstance(self,_dat.TreeRef):
             tree = self.tree
-        else: tree = None
-        return _dat._TdiIntrinsic(self,"Error evaluating %s"%self.__class__.__name__,*self._descs,tree=tree)
+            if isinstance(tree,_tre.Tree):
+                _exc.checkStatus(_TdiShr._TdiIntrinsic(tree.pctx,self.opcode,nargs,argslist,xd.ref))
+                return xd._setTree(tree).value
+        _exc.checkStatus(_TdiShr. TdiIntrinsic(               self.opcode,nargs,argslist,xd.ref))
+        return xd.value
 _dsc.addDtypeToClass(Function)
 
 class Method(_dat.TreeRefX,Compound):
