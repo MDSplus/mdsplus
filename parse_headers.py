@@ -4,6 +4,7 @@ forceref = ('$EXPT','$SHOT','$SHOTNAME','$DEFAULT','GETNCI',
   'MAKE_PROCEDURE','BUILD_PROCEDURE',
   'MAKE_ROUTINE','BUILD_ROUTINE',
   'MAKE_CALL','BUILD_CALL',
+  'COMPILE','EXECUTE',
 )
 filepath = './include/opcbuiltins.h'
 import sys
