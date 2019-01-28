@@ -769,8 +769,8 @@ class Tree(object):
 
     @classmethodX
     def getTimeContext(self):
-        """Get time context for retrieving segmented records
-        @rtype tuple: (begin,end,delta)
+        """Get time context for retrieving segmented records (begin,end,delta)
+        @rtype: tuple
         """
         begin=_dsc.Descriptor_xd()
         end  =_dsc.Descriptor_xd()
@@ -1426,9 +1426,8 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
 
     def __setattr__(self,name,value):
         """ Enables the setting of node attributes using
-        then format:
-
-           node.__MYATTRIBUTE=value
+            then format:
+            node.__MYATTRIBUTE=value
         """
         if (name.startswith('__') and
             not name.endswith('__') and
@@ -2265,8 +2264,8 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         @type array: Array
         @param idx: Target segment index, defaults to -1, i.e. append
         @type idx: int
-        @param idx: Rows filled, defaults to array.shape[0], i.e. full
-        @type idx: int
+        @param rows_filled: Rows filled, defaults to array.shape[0], i.e. full
+        @type rows_filled: int
         @rtype: None
         """
         start,end,dim,array = map(_dat.Data,(start,end,dim,array))
