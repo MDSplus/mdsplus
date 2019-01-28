@@ -115,8 +115,14 @@ class NoTreeRef(object):
 
 class TreeRef(object):
     tree = None
-    def _setTree(self,tree):
-        if isinstance(tree,_tre.Tree): self.tree=tree
+    def _setTree(self,*args,**kwargs):
+        if 'tree' in kwargs and isinstance(kwargs['tree'],_tre.Tree):
+            self.tree = kwargs['tree']
+            return self
+        for arg in args:
+            if isinstance(arg,TreeRef) and isinstance(arg.tree,_tre.Tree):
+                self.tree = arg.tree
+                return self
         return self
     def __hasBadTreeReferences__(self,tree):
        return self.tree != tree
@@ -807,6 +813,7 @@ class DataX(Data):
             if diff>0:
                 self._descs+=[None]*diff
             self._descs[idx] = tuple(Data(val) for val in value)
+            self._setTree(*value)
         else:
             last = idx
             if value is None:
@@ -818,6 +825,7 @@ class DataX(Data):
                 if diff>0:
                     self._descs+=[None]*diff
                 self._descs[idx]=Data(value)
+                self._setTree(value)
         return self
 
     def __getitem__(self,idx):
