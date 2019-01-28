@@ -306,7 +306,7 @@ class Function(Compound):
         if isinstance(self,_dat.TreeRef) and isinstance(self.tree,_tre.Tree):
             tree = self.tree
         else: tree = None
-        return _dat._TdiIntrinsic(self.opcode,"Error evaluating %s"%self.__class__.__name__,*self._descs,tree=tree)
+        return _dat._TdiIntrinsic(self,"Error evaluating %s"%self.__class__.__name__,*self._descs,tree=tree)
 _dsc.addDtypeToClass(Function)
 
 class Method(_dat.TreeRefX,Compound):
