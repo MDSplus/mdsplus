@@ -46,11 +46,11 @@ import os,sys,numpy,ctypes,ctypes.util # importing required packages
 if sys.version_info < (2,6):
     raise Exception("Python version 2.6 or higher is now required to use the MDSplus python package.")
 # importing libs for convenience and to early check if we have what we need in place
-version = _mimport("version")
+_ver = _mimport("version")
 class libs:
-    MdsShr = version.load_library('MdsShr')
-    TreeShr= version.load_library('TreeShr')
-    TdiShr = version.load_library('TdiShr')
+    MdsShr = _ver.load_library('MdsShr')
+    TreeShr= _ver.load_library('TreeShr')
+    TdiShr = _ver.load_library('TdiShr')
     try:   Mdsdcl = version.load_library('Mdsdcl')
     except:Mdsdcl = None
     try:   MdsIpShr = version.load_library('MdsIpShr')
@@ -101,7 +101,7 @@ if version_check:
   MDSplus installation.
 ''' % (__version__, _ver ))
     version_check()
-del version_check
+del version_check, _ver
 
 def load_package(gbls={},version_check=False):
     def loadmod_full(name,gbls):
@@ -109,8 +109,9 @@ def load_package(gbls={},version_check=False):
         for key in mod.__dict__:
             if not key.startswith('_'):
                 gbls[key]=mod.__dict__[key]
-    for name in ('os','sys','numpy','ctypes','libs','__version__','version'):
+    for name in ('os','sys','numpy','ctypes','libs','__version__'):
         gbls[name] = globals()[name]
+    loadmod_full('version',gbls)
     loadmod_full('mdsdata',gbls)
     loadmod_full('mdsscalar',gbls)
     loadmod_full('mdsarray',gbls)
