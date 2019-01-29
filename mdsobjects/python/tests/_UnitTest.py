@@ -33,11 +33,46 @@ class Tests(TestCase):
     debug = False
     inThread = False
     index = 0
+    @property
+    def module(self): return self.__module__.split('.')[-1]
     def runTest(self):
-        sys.stdout.write("\n")
-        for test in self.getTests():
-            sys.stdout.write("### %s ###\n"%test);sys.stdout.flush()
-            self.__getattribute__(test)()
+        stdout,stderr = sys.stdout,sys.stderr
+        try:
+            with open("%s-out.log"%self.module,"w+") as sys.stdout:
+                sys.stderr = sys.stdout
+                for test in self.getTests():
+                    sys.stdout.write("### %s ###\n"%test);sys.stdout.flush()
+                    self.__getattribute__(test)()
+        finally:
+            sys.stdout,sys.stderr = stdout,stderr
+    def _doTCLTest(self,expr,out=None,err=None,re=False,verify=False):
+        def checkre(pattern,string):
+            if pattern is None:
+                self.assertEqual(string is None,True)
+            else:
+                self.assertEqual(string is None,False)
+                self.assertEqual(match(pattern,str(string)) is None,False,'"%s"\nnot matched by\n"%s"'%(string,pattern))
+        sys.stderr.write("TCL> %s\n"%(expr,));
+        outo,erro = tcl(expr,True,True,True)
+        if verify:
+            ver,erro = erro.split('\n',2)
+            self.assertEqual(ver.endswith("%s"%expr),True)
+            if len(erro)==0: erro = None 
+        if not re:
+            self.assertEqual(outo,out)
+            self.assertEqual(erro,err)
+        else:
+            checkre(out,outo)
+            checkre(err,erro)
+    def _doExceptionTest(self,expr,exc):
+        if Tests.debug: sys.stderr.write("TCL(%s) # expected exception: %s\n"%(expr,exc.__name__));
+        try:
+            tcl(expr,True,True,True)
+        except Exception as e:
+            self.assertEqual(e.__class__,exc)
+            return
+        self.fail("TCL: '%s' should have signaled an exception"%expr)
+
     @classmethod
     def getTestCases(cls,tests=None):
         if tests is None: tests = cls.getTests()
@@ -86,43 +121,19 @@ class MdsIp(object):
         return 'localhost:%d'%(port,),port
 
     def _testDispatchCommand(self,mdsip,command,stdout=None,stderr=None):
-        self.assertEqual(tcl('dispatch/command/wait/server=%s %s'  %(mdsip,command),1,1,1),(None,None))
+        self._doTCLTest('dispatch/command/wait/server=%s %s'  %(mdsip,command))
 
     def _testDispatchCommandNoWait(self,mdsip,command,stdout=None,stderr=None):
-        self.assertEqual(tcl('dispatch/command/nowait/server=%s %s'  %(mdsip,command),1,1,1),(None,None))
-
-    def _doTCLTest(self,expr,out=None,err=None,re=False,tcl=tcl):
-        def checkre(pattern,string):
-            if pattern is None:
-                self.assertEqual(string is None,True)
-            else:
-                self.assertEqual(string is None,False)
-                self.assertEqual(match(pattern,str(string)) is None,False,'"%s"\nnot matched by\n"%s"'%(string,pattern))
-        if Tests.debug: sys.stderr.write("TCL(%s)\n"%(expr,));
-        outerr = tcl(expr,True,True,True)
-        if not re:
-            self.assertEqual(outerr,(out,err))
-        else:
-            checkre(out,outerr[0])
-            checkre(err,outerr[1])
+        self._doTCLTest('dispatch/command/nowait/server=%s %s'  %(mdsip,command))
 
     def _checkIdle(self,server):
         show_server = "Checking server: %s\n[^,]+, [^,]+, logging enabled, Inactive\n"%server
         self._doTCLTest('show server %s'%server,out=show_server,re=True)
 
-    def _doExceptionTest(self,expr,exc):
-        if Tests.debug: sys.stderr.write("TCL(%s) # expected exception: %s\n"%(expr,exc.__name__));
-        try:
-            tcl(expr,True,True,True)
-        except Exception as e:
-            self.assertEqual(e.__class__,exc)
-            return
-        self.fail("TCL: '%s' should have signaled an exception"%expr)
-
     def _start_mdsip(self,server,port,logname,protocol='TCP'):
         if port>0:
             from subprocess import Popen,STDOUT
-            logfile = '%s_%d.log'%(logname,self.index)
+            logfile = '%s-%s%d.log'%(self.module,logname,self.index)
             log = open(logfile,'w')
             try:
                 hosts = '%s/mdsip.hosts'%self.root
