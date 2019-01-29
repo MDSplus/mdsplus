@@ -40,8 +40,6 @@ _exc=_mimport('mdsExceptions')
 
 class Scalar(_dat.Data):
     _value = None
-    def _setTree(self,*a,**kw): return self;
-
     def __new__(cls,*value):
         if len(value)==0:
             return object.__new__(cls)

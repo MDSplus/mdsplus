@@ -114,7 +114,6 @@ class Data(NoTreeRef):
     _help=None
     _validation=None
     __descriptor=None
-    tree=None
     @property  # used by numpy.array
     def __array_interface__(self):
         data = self.data()
