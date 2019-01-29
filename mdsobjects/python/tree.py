@@ -1067,9 +1067,7 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
     ### Node Properties
     ###################################
 
-    def _getNci(self,items,returnDict=True):
-        """Return dictionary of nci items"""
-        class NCI_ITEMS(_C.Structure):
+    class _NCI_ITEMS(_C.Structure):
             _fields_=list()
             for idx in range(50):
                 _fields_+=[("buflen%d"%idx,_C.c_ushort),
@@ -1106,6 +1104,8 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
                 self.__setattr__('pointer%d'%len(items),_C.c_void_p(0))
                 self.__setattr__('retlen%d'%len(items),_C.cast(_C.c_void_p(0),_C.POINTER(_C.c_int32)))
 
+    def _getNci(self,items,returnDict=True):
+        """Return dictionary of nci items"""
         if isinstance(items,str):
             items=[items]
         elif isinstance(items,tuple):
@@ -1123,7 +1123,7 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
                 ans[item]=(flags & FLAGS.__dict__[item.upper()]) != 0
         for item in flag_items:
             items.remove(item)
-        itmlst=NCI_ITEMS(items)
+        itmlst=TreeNode._NCI_ITEMS(items)
         if len(items) > 0:
             _exc.checkStatus(_TreeShr._TreeGetNci(self.ctx,
                                                   self._nid,
