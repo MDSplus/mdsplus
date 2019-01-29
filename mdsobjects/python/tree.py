@@ -113,11 +113,11 @@ class Dbi(object):
     OPEN_FOR_EDIT    = ( 4,bool, 4)
     INDEX            = ( 5,int,  4)
     NUMBER_OPENED    = ( 6,int,  4)
-    MAX_OPEN         = ( 7,int,  4)
+    MAX_OPEN         = ( 7,int,  4)#settable
     DEFAULT          = ( 8,str,256)
     OPEN_READONLY    = ( 9,bool, 4)
-    VERSIONS_IN_MODEL= (10,bool, 4)
-    VERSIONS_IN_PULSE= (11,bool, 4)
+    VERSIONS_IN_MODEL= (10,bool, 4)#settable
+    VERSIONS_IN_PULSE= (11,bool, 4)#settable
     DISPATCH_TABLE   = (13,bool, 4)
 
     class _dbi_item(_C.Structure):
@@ -135,10 +135,15 @@ class Dbi(object):
         super(Dbi._DBI_ITEM,self).__init__(4,code,pointer,_C.c_void_p(_C.c_int32(0)),0,0,0,0)
 
     @staticmethod
-    def _dbiProp(info,doc=None):
+    def _dbiProp(info,doc=None,settable=False):
         def getter(self):
             return self._getDbi(info)
-        return property(getter,doc=doc)
+        if settable:
+            def setter(self,value):
+                return self._setDbi(info,value)
+            if isinstance(doc,str): doc = "%s (settable)"%doc
+        else: setter = None
+        return property(getter,setter,doc=doc)
 
 ############### Node Characteristic Options ######
 #
@@ -505,7 +510,7 @@ class Tree(object):
         """Return dbi data"""
         code,rtype,buflen = info
         if rtype is str:
-            ans = _C.c_char_p(b' '*buflen)
+            ans     = _C.c_char_p(b' '*buflen)
             pointer = ans
         else:
             ans     = _C.c_int32()
@@ -516,6 +521,20 @@ class Tree(object):
         if rtype is str:
             return _ver.tostr(ans.value)
         return rtype(ans.value)
+    def _setDbi(self,info,value):
+        code,rtype,buflen = info
+        if rtype is str:
+            value   = _ver.tobytes(value)
+            ans     = _C.c_char_p(value)
+            pointer = ans
+            buflen  = len(value)+1
+        else:
+            if rtype == bool:
+                value = 1 if value else 0
+            ans     = _C.c_int32(int(value))
+            pointer = _C.cast(_C.pointer(ans),_C.c_char_p)
+        item  = Dbi._dbi_item(buflen,code,pointer)
+        _exc.checkStatus(_TreeShr._TreeSetDbi(self.ctx,_C.byref(item)))
 
     name=expt=treename=Dbi._dbiProp(Dbi.NAME,             "Tree name")
     shotid            =Dbi._dbiProp(Dbi.SHOTID,           "Shot number of tree")
@@ -523,11 +542,10 @@ class Tree(object):
     open_for_edit     =Dbi._dbiProp(Dbi.OPEN_FOR_EDIT,    "True if tree is opened for edit")
     index             =Dbi._dbiProp(Dbi.INDEX,            "Index of tree to use for subsequent information requests")
     number_opened     =Dbi._dbiProp(Dbi.NUMBER_OPENED,    "Number of open trees on tree stack")
-    max_open          =Dbi._dbiProp(Dbi.MAX_OPEN,         "Max number of trees to keep open on stack")#set
+    max_open          =Dbi._dbiProp(Dbi.MAX_OPEN,         "Max number of trees to keep open on stack")
     open_readonly     =Dbi._dbiProp(Dbi.OPEN_READONLY,    "True of tree is open readonly")
-    versions_in_model =Dbi._dbiProp(Dbi.VERSIONS_IN_MODEL,"Support versioning of data in model.")#set
-    versions_in_pulse =Dbi._dbiProp(Dbi.VERSIONS_IN_PULSE,"Support versioning of data in pulse.")#set
-    dispatch_table    =Dbi._dbiProp(Dbi.DISPATCH_TABLE,   "True if tree has dispatch table loaded")
+    versions_in_model =Dbi._dbiProp(Dbi.VERSIONS_IN_MODEL,"Support versioning of data in model.",True)
+    versions_in_pulse =Dbi._dbiProp(Dbi.VERSIONS_IN_PULSE,"Support versioning of data in pulse.",True)
 
     @property
     def default(self):
