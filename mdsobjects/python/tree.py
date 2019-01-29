@@ -501,44 +501,33 @@ class Tree(object):
         """
         _exc.checkStatus(_TreeShr._TreeClose(self.pctx,0,0))
 
+    def _getDbi(self,info):
+        """Return dbi data"""
+        code,rtype,buflen = info
+        if rtype is str:
+            ans = _C.c_char_p(b' '*buflen)
+            pointer = ans
+        else:
+            ans     = _C.c_int32()
+            pointer = _C.cast(_C.pointer(ans),_C.c_char_p)
+        item  = Dbi._dbi_item(buflen,code,pointer)
+        _exc.checkStatus(_TreeShr._TreeGetDbi(self.ctx,_C.byref(item)))
 
-########### Tree instance properties #######################
-    @property
-    def name(self):
-        "Tree name"
-        return self.getDbi("name")
-    treename=name
-    expt=name
-    #tree=name
+        if rtype is str:
+            return _ver.tostr(ans.value)
+        return rtype(ans.value)
 
-    @property
-    def shotid(self):
-        "Shot number of tree"
-        return self.getDbi("shotid")
-    #shot=shotid
-
-    @property
-    def modified(self):
-        "True if open for edit and modifications made to tree structure."
-        return self.getDbi("modified")
-
-    @property
-    def open_for_edit(self):
-        "True if tree is opened for edit"
-        return self.getDbi("open_for_edit")
-
-    @property
-    def number_opened(self):
-        "Number of open trees on tree stack"
-        return self.getDbi("number_opened")
-
-    @property
-    def max_open(self):
-        "Max number of trees to keep open on stack (settable)"
-        return self.getDbi("max_open")
-    @max_open.setter
-    def max_open(self,value):
-        self.setDbi("max_open",value)
+    name=expt=treename=Dbi._dbiProp(Dbi.NAME,             "Tree name")
+    shotid            =Dbi._dbiProp(Dbi.SHOTID,           "Shot number of tree")
+    modified          =Dbi._dbiProp(Dbi.MODIFIED,         "True if open for edit and modifications made to tree structure.")
+    open_for_edit     =Dbi._dbiProp(Dbi.OPEN_FOR_EDIT,    "True if tree is opened for edit")
+    index             =Dbi._dbiProp(Dbi.INDEX,            "Index of tree to use for subsequent information requests")
+    number_opened     =Dbi._dbiProp(Dbi.NUMBER_OPENED,    "Number of open trees on tree stack")
+    max_open          =Dbi._dbiProp(Dbi.MAX_OPEN,         "Max number of trees to keep open on stack")#set
+    open_readonly     =Dbi._dbiProp(Dbi.OPEN_READONLY,    "True of tree is open readonly")
+    versions_in_model =Dbi._dbiProp(Dbi.VERSIONS_IN_MODEL,"Support versioning of data in model.")#set
+    versions_in_pulse =Dbi._dbiProp(Dbi.VERSIONS_IN_PULSE,"Support versioning of data in pulse.")#set
+    dispatch_table    =Dbi._dbiProp(Dbi.DISPATCH_TABLE,   "True if tree has dispatch table loaded")
 
     @property
     def default(self):
@@ -547,75 +536,6 @@ class Tree(object):
     @default.setter
     def default(self,treenode):
         self.setDefault(treenode)
-
-    @property
-    def open_readonly(self):
-        "True of tree is open readonly"
-        return self.getDbi("open_readonly")
-
-    @property
-    def versions_in_model(self):
-        "Support versioning of data in model. (settable)"
-        return self.getDbi("versions_in_model")
-    @versions_in_model.setter
-    def versions_in_model(self,value):
-        self.setDbi("versions_in_model",value)
-
-    @property
-    def versions_in_pulse(self):
-        "Support versioning of data in pulse. (settable)"
-        return self.getDbi("versions_in_pulse")
-    @versions_in_pulse.setter
-    def versions_in_pulse(self,value):
-        self.setDbi("versions_in_pulse",value)
-
-    def getDbi(self,itemname):
-        """
-        Get tree information such as:
-
-        treename/name/expt - name of the tree
-        shotid/shot        - shot number
-        default/pwd        - default node
-        modified           - true if modified during edit
-        open_for_edit      - true if tree is opened for edit
-        open_readonly      - true if tree is opened readonly
-        versions_in_model  - true if data versions is enabled in the model
-        versions_in_pulse  - true if data versions is enabled in the pulse
-
-        itemname can be a single string or a list/tuple of strings
-        """
-        if isinstance(itemname,(list,tuple)):
-            ans={}
-            for item in itemname:
-                ans[item]=self.getDbi(item)
-            return ans
-        else:
-            itemlist={'NAME':(1,str,12),'EXPT':(1,str,12),
-                      'SHOTID':(2,int),'SHOT':(2,int),
-                      'MODIFIED':(3,bool),
-                      'OPEN_FOR_EDIT':(4,bool),
-                      'DEFAULT':(8,str,256),
-                      'OPEN_READONLY':(9,bool),
-                      'VERSIONS_IN_MODEL':(10,bool),
-                      'VERSIONS_IN_PULSE':(11,bool)}
-            try:
-                item=itemlist[itemname.upper()]
-            except KeyError:
-                raise KeyError('Item name must be one of %s' % list(itemlist.keys()))
-            if item[1] is str:
-                ans=_C.c_char_p(_ver.tobytes('x'.rjust(item[2])))
-                retlen=_C.c_int32(0)
-                itmlst=_DBI_ITM_CHAR(item[0],item[2],ans,retlen)
-            else:
-                ans=_C.c_int32(0)
-                itmlst=_DBI_ITM_INT(item[0],ans)
-            _exc.checkStatus(
-                    _TreeShr._TreeGetDbi(self.ctx,
-                                         _C.byref(itmlst)))
-            if item[1] is str:
-                return _ver.tostr(ans.value)
-            else:
-                return item[1](ans.value)
 
     @property
     def top(self):  # compatibility
