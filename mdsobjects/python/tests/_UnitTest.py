@@ -27,7 +27,16 @@ from unittest import TestCase,TestSuite,TextTestRunner
 from MDSplus import Tree,getenv,setenv,tcl
 from threading import RLock
 from re import match
-import gc,os,sys,time
+import gc,os,sys,time,io
+
+class logger(io.FileIO):
+    def __new__(self,filename):
+        return open(filename,'w+')
+    def write(self,*a,**kv):
+        super(logger,self).write(*a,**kv)
+        self.flush()
+    def __enter__(self,*a,**kv): return self
+    def __exit__(self,*a,**kv):  return self.close()
 
 class Tests(TestCase):
     debug = False
@@ -35,10 +44,15 @@ class Tests(TestCase):
     index = 0
     @property
     def module(self): return self.__module__.split('.')[-1]
+    def assertEqual(self,fst,snd,*a,**kv):
+        if isinstance(fst,str):
+            sys.stderr.write('%s\n'%str(fst))
+        super(Tests,self).assertEqual(fst,snd,*a,**kv)
     def runTest(self):
+        import traceback
         stdout,stderr = sys.stdout,sys.stderr
         try:
-            with open("%s-out.log"%self.module,"w+") as sys.stdout:
+            with logger("%s-out.log"%self.module) as sys.stdout:
                 sys.stderr = sys.stdout
                 for test in self.getTests():
                     sys.stdout.write("### %s ###\n"%test);sys.stdout.flush()
