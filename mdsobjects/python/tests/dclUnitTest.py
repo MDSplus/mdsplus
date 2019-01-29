@@ -90,7 +90,7 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         mon,mon_log,svr,svr_log = (None,None,None,None)
         try:
             mon,mon_log = self._start_mdsip(monitor,monitor_port,'monitor')
-            svr,svr_log = self._start_mdsip(server ,server_port ,'server')
+            svr,svr_log = self._start_mdsip(server ,server_port ,'dispatcher')
             try:
                 if mon: self.assertEqual(mon.poll(),None)
                 if svr: self.assertEqual(svr.poll(),None)
