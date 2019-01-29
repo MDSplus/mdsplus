@@ -93,44 +93,6 @@ def trace():
         frame = frame.f_back
     return s
 
-class _DBI_ITM_INT(_C.Structure): # HINT: _DBI_ITM_INT begin
-
-    """ Ctype structure class for making calls into _TreeGetDbi() for integer values """
-
-    _fields_=[("buffer_length",_C.c_ushort),("code",_C.c_ushort),("pointer",_C.POINTER(_C.c_int32)),
-              ("retlen",_C.c_void_p),
-              ("buffer_length2",_C.c_ushort),("code2",_C.c_ushort),("pointer2",_C.c_void_p),
-              ("retlen2",_C.c_void_p),]
-
-    def __init__(self,code,value):
-        self.buffer_length=_C.c_ushort(4)
-        self.code=_C.c_ushort(code)
-        self.pointer=_C.pointer(value)
-        self.retlen=_C.c_void_p(0)
-        self.buffer_length2=0
-        self.code2=0
-        self.pointer2=_C.c_void_p(0)
-        self.retlen2=_C.c_void_p(0)
-
-class _DBI_ITM_CHAR(_C.Structure): # HINT: _DBI_ITM_CHAR begin
-
-    """ Ctype structure class for making calls into _TreeGetDbi() for string values """
-
-    _fields_=[("buffer_length",_C.c_ushort),("code",_C.c_ushort),("pointer",_C.c_char_p),
-              ("retlen",_C.POINTER(_C.c_int32)),
-              ("buffer_length2",_C.c_ushort),("code2",_C.c_ushort),("pointer2",_C.c_void_p),
-              ("retlen2",_C.c_void_p),]
-
-    def __init__(self,code,buflen,string_p,retlen_p):
-        self.buffer_length=_C.c_ushort(buflen)
-        self.code=_C.c_ushort(code)
-        self.pointer=string_p
-        self.retlen=_C.pointer(retlen_p)
-        self.buffer_length2=0
-        self.code2=0
-        self.pointer2=_C.c_void_p(0)
-        self.retlen2=_C.c_void_p(0)
-
 def _getNodeByAttr(self,name):
     if name.startswith('_'):
         namesplit = name.split('__',1)
@@ -141,6 +103,177 @@ def _getNodeByAttr(self,name):
     elif name.upper() == name:
         return self.getNode(name)
     raise _exc.TreeNNF
+
+############### DBI Options ######
+
+class Dbi(object):
+    NAME             = ( 1,str, 12)
+    SHOTID           = ( 2,int,  4)
+    MODIFIED         = ( 3,bool, 4)
+    OPEN_FOR_EDIT    = ( 4,bool, 4)
+    INDEX            = ( 5,int,  4)
+    NUMBER_OPENED    = ( 6,int,  4)
+    MAX_OPEN         = ( 7,int,  4)
+    DEFAULT          = ( 8,str,256)
+    OPEN_READONLY    = ( 9,bool, 4)
+    VERSIONS_IN_MODEL= (10,bool, 4)
+    VERSIONS_IN_PULSE= (11,bool, 4)
+    DISPATCH_TABLE   = (13,bool, 4)
+
+    class _dbi_item(_C.Structure):
+        """ Ctype structure class for making calls into _TreeGetDbi() """
+        _fields_=[("buflen",_C.c_ushort),
+                  ("code",_C.c_ushort),
+                  ("pointer",_C.c_char_p),
+                  ("retlen",_C.c_void_p),
+                  ("end0",_C.c_ushort),
+                  ("end1",_C.c_ushort),
+                  ("ent2",_C.c_void_p),
+                  ("end3",_C.c_void_p),]
+
+    def __init__(self,code,pointer):
+        super(Dbi._DBI_ITEM,self).__init__(4,code,pointer,_C.c_void_p(_C.c_int32(0)),0,0,0,0)
+
+    @staticmethod
+    def _dbiProp(info,doc=None):
+        def getter(self):
+            return self._getDbi(info)
+        return property(getter,doc=doc)
+
+############### Node Characteristic Options ######
+#
+class Flags(object):
+    STATE            =0x00000001
+    PARENT_STATE     =0x00000002
+    ESSENTIAL        =0x00000004
+    CACHED           =0x00000008
+    VERSIONS         =0x00000010
+    SEGMENTED        =0x00000020
+    SETUP_INFORMATION=0x00000040
+    WRITE_ONCE       =0x00000080
+    COMPRESSIBLE     =0x00000100
+    DO_NOT_COMPRESS  =0x00000200
+    COMPRESS_ON_PUT  =0x00000400
+    NO_WRITE_MODEL   =0x00000800
+    NO_WRITE_SHOT    =0x00001000
+    PATH_REFERENCE   =0x00002000
+    NID_REFERENCE    =0x00004000
+    INCLUDE_IN_PULSE =0x00008000
+    COMPRESS_SEGMENTS=0x00010000
+    def __init__(self,flags):
+        self.flags = flags
+    @property
+    def state(self): return self.flags&Flags.STATE!=0
+    @property
+    def parent_state(self): return self.flags&Flags.PARENT_STATE!=0
+    @property
+    def essential(self): return self.flags&Flags.ESSENTIAL!=0
+    @property
+    def chached(self): return self.flags&Flags.CACHED!=0
+    @property
+    def versions(self): return self.flags&Flags.VERSIONS!=0
+    @property
+    def segmented(self): return self.flags&Flags.SEGMENTED!=0
+    @property
+    def setup_information(self): return self.flags&Flags.SETUP_INFORMATION!=0
+    @property
+    def write_once(self): return self.flags&Flags.WRITE_ONCE!=0
+    @property
+    def comressible(self): return self.flags&Flags.COMPRESSIBLE!=0
+    @property
+    def do_not_compress(self): return self.flags&Flags.DO_NOT_COMPRESS!=0
+    @property
+    def compress_on_put(self): return self.flags&Flags.COMPRESS_ON_PUT!=0
+    @property
+    def no_write_model(self): return self.flags&Flags.NO_WRITE_MODEL!=0
+    @property
+    def no_write_shot(self): return self.flags&Flags.NO_WRITE_SHOT!=0
+    @property
+    def path_reference(self): return self.flags&Flags.PATH_REFERENCE!=0
+    @property
+    def nid_reference(self): return self.flags&Flags.NID_REFERENCE!=0
+    @property
+    def include_in_pulse(self): return self.flags&Flags.INCLUDE_IN_PULSE!=0
+    @property
+    def compress_segments(self): return self.flags&Flags.COMPRESS_SEGMENTS!=0
+
+    @classmethod
+    def _nciFlag(cls,mask,doc=None):
+        def getter(self):
+            return (int(self.get_flags) & mask) != 0
+        if mask == cls.STATE:
+            def setter(self,value): self.on = not value
+        else:
+            def setter(self,value):
+                return self._setNciFlag(mask,value)
+        if isinstance(doc,str): doc = "%s (settable)"%doc
+        return property(getter,setter,doc=doc)
+
+class Nci(object):
+    _IS_CHILD =1
+    _IS_MEMBER=2
+    SET_FLAGS          =( 1,_C.c_uint32,4,int)
+    CLEAR_FLAGS        =( 2,_C.c_uint32,4,int)
+    TIME_INSERTED      =( 4,_C.c_uint64,8,int)
+    OWNER_ID           =( 5,_C.c_uint32,4,int)
+    CLASS              =( 6,_C.c_uint8 ,1,int)
+    DTYPE              =( 7,_C.c_uint8 ,1,int)
+    LENGTH             =( 8,_C.c_uint32,4,int)
+    STATUS             =( 9,_C.c_uint32,4,int)
+    CONGLOMERATE_ELT   =(10,_C.c_uint16,2,int)
+    GET_FLAGS          =(12,_C.c_uint32,4,int)
+    NODE_NAME          =(13,_C.c_char_p,13,str)
+    PATH               =(14,_C.c_char_p,1024,str)
+    DEPTH              =(15,_C.c_uint32,4,int)
+    PARENT             =(16,_C.c_int32,4,None)
+    BROTHER            =(17,_C.c_int32,4,None)
+    MEMBER             =(18,_C.c_int32,4,None)
+    CHILD              =(19,_C.c_int32,4,None)
+    PARENT_RELATIONSHIP=(20,_C.c_uint32,4,int)
+    CONGLOMERATE_NIDS  =(21,_C.c_int32*1024,1024*4,None)
+    ORIGINAL_PART_NAME =(22,_C.c_char_p,1024,str)
+    NUMBER_OF_MEMBERS  =(23,_C.c_uint32,4,int)
+    NUMBER_OF_CHILDREN =(24,_C.c_uint32,4,int)
+    MEMBER_NIDS        =(25,_C.c_int32*4096,4096*4,None)
+    CHILDREN_NIDS      =(26,_C.c_int32*4096,4096*4,None)
+    FULLPATH           =(27,_C.c_char_p,1024,str)
+    MINPATH            =(28,_C.c_char_p,1024,str)
+    USAGE              =(29,_C.c_uint8 , 1,int)
+    PARENT_TREE        =(30,_C.c_char_p,13,str)
+    RLENGTH            =(31,_C.c_uint32, 4,int)
+    NUMBER_OF_ELTS     =(32,_C.c_uint32, 4,int)
+    DATA_IN_NCI        =(33,_C.c_uint32, 4,bool)
+    ERROR_ON_PUT       =(34,_C.c_uint32, 4,bool)
+    RFA                =(35,_C.c_uint64, 8,int)
+    IO_STATUS          =(36,_C.c_uint32, 4,int)
+    IO_STV             =(37,_C.c_uint32, 4,int)
+    DTYPE_STR          =(38,_C.c_char_p,64,str)
+    USAGE_STR          =(39,_C.c_char_p,64,str)
+    CLASS_STR          =(40,_C.c_char_p,64,str)
+    VERSION            =(41,_C.c_uint32, 4,int)
+    class _nci_item(_C.Structure):
+         _fields_=[("buflen", _C.c_ushort),
+                   ("code",   _C.c_ushort),
+                   ("pointer",_C.c_char_p),
+                   ("retlen", _C.POINTER(_C.c_int32)),
+                   ("end0", _C.c_ushort),
+                   ("end1", _C.c_ushort),
+                   ("end2", _C.c_void_p),
+                   ("end3", _C.c_void_p)]
+         def __init__(self,buflen,code,pointer):
+             super(Nci._nci_item,self).__init__(buflen,code,pointer,_C.pointer(_C.c_int32(0)),0,0,0,0)
+
+    @staticmethod
+    def _nciProp(info,doc=None):
+        if isinstance(info,tuple):
+            def getter(self):
+                return self._getNci(info)
+        else:
+            def getter(self):
+                return (int(self.get_flags) & info) != 0
+        return property(getter,doc=doc)
+#
+#################################################################
 
 class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
@@ -956,6 +1089,7 @@ class Tree(object):
         kwargs['tree'] = self.tree
         return _dat.TdiData(arg,**kwargs)
 
+
 class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass of _scr.Int32 some day)
     """Class to represent an MDSplus node reference (nid).
     @ivar nid: node index of this node.
@@ -1067,142 +1201,88 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
     ### Node Properties
     ###################################
 
-    def _getNci(self,items,returnDict=True):
-        """Return dictionary of nci items"""
-        if isinstance(items,str):
-            items=[items]
-        elif isinstance(items,tuple):
-            items=list(items)
-        elif not isinstance(items,list):
-            raise TypeError("items must be a list,tuple or str")
-        flags=None
-        ans=dict()
-        flag_items=list()
-        for item in items:
-            if item.upper() in FLAGS.__dict__:
-                flag_items.append(item)
-                if flags is None:
-                    flags=int(self.get_flags)
-                ans[item]=(flags & FLAGS.__dict__[item.upper()]) != 0
-        for item in flag_items:
-            items.remove(item)
-        itmlst=Nci.NCI_ITEMS(items)
-        if len(items) > 0:
-            _exc.checkStatus(_TreeShr._TreeGetNci(self.ctx,self._nid,_C.byref(itmlst)))
-        for idx,item in enumerate(items):
-            val    = itmlst.ans[idx]
-            rettype= itmlst.rettype[idx]
-            retlen = itmlst[idx].retlen.contents.value
-            if  rettype is _scr.String:
-                val=_scr.String(val.value[0:retlen].rstrip())
-            elif issubclass(rettype,_scr.Scalar):
-                val=_scr.Scalar(val)
-            elif rettype is TreeNode:
-                if retlen == 4:
-                    val=TreeNode(int(val.value),self.tree)
-                else:
-                    val=None
-            elif rettype is TreeNodeArray:
-                nids=list()
-                for n in range(retlen//4):
-                    nids.append(int(val[n]))
-                val=TreeNodeArray(nids,self.tree)
-            elif rettype is bool:
-                val=val.value != 0
-            ans[item]=val
-        if not returnDict and len(ans) == 1:
-            return list(ans.values())[0]
-        return ans
+    def _getNci(self,info):
+        """Return nci data"""
+        code,ctype,buflen,rtype = info
+        if ctype is _C.c_char_p:
+            ans     = ctype((b' ')*buflen)
+            pointer = ans
+        else:
+            ans     = ctype()
+            pointer = _C.cast(_C.pointer(ans),_C.c_char_p)
+        item = Nci._nci_item(buflen,code,pointer)
+        _exc.checkStatus(_TreeShr._TreeGetNci(self.ctx,self._nid,_C.byref(item)))
+        retlen = item.retlen.contents.value
+        if rtype is str:
+            return _ver.tostr(ans.value[0:retlen].rstrip())
+        if rtype is None:
+            if ctype is _C.c_int32:
+                return TreeNode(int(ans.value),self.tree)
+            return TreeNodeArray([int(ans[i]) for i in _ver.xrange(retlen//4)],self.tree)
+        return rtype(ans.value)
 
     def _setNciFlag(self,mask,setting):
-        item=(Nci.NCI_ITEM*2)()
-        mask=_C.c_uint32(mask)
-        item[0].buflen = 0
-        item[0].code   = 1 if setting else 2
-        item[0].pointer= _C.cast(_C.pointer(mask),_C.c_void_p)
-        item[0].retlen = _C.pointer(_C.c_int32(0))
-        # end of list
-        item[1].buflen = 0
-        item[1].code   = 0
-        item[1].pointer= _C.c_void_p(0)
-        item[1].retlen = _C.POINTER(_C.c_int32)()
-        _exc.checkStatus(
-                   _TreeShr._TreeSetNci(self.ctx,
-                                        self._nid,
-                                        _C.byref(item)))
+        value   = 1 if setting else 2
+        pointer = _C.cast(_C.pointer(_C.c_uint32(mask)),_C.c_char_p)
+        item = Nci._nci_item(0,value,pointer)
+        _exc.checkStatus(_TreeShr._TreeSetNci(self.ctx, self._nid, _C.byref(item)))
 
-    def _nciProp(name,doc=None):
-        def getter(self):
-            return self._getNci(name,False)
-        return property(getter,doc=doc)
-    def _nciFlag(idx,name,doc=None):
-        mask = 1<<idx
-        def getter(self):
-            return self._getNci(name,False)
-        def setter(self,value):
-            return self._setNciFlag(mask,value)
-        if isinstance(doc,str): doc = "%s (settable)"%doc
-        return property(getter,setter,doc=doc)
+    cached              =Nci._nciProp(Flags.CACHED,"True if data is cached")
+    compress_segments   =Flags._nciFlag(Flags.COMPRESS_SEGMENTS,"should segments be compressed")
+    compressible        =Nci._nciProp(Flags.COMPRESSIBLE,"is the data stored in this node compressible")
+    essential           =Flags._nciFlag(Flags.ESSENTIAL,"essential action defined in this node")
+    do_not_compress     =Flags._nciFlag(Flags.DO_NOT_COMPRESS,"is this node set to disable any compression of data stored in it")
+    compress_on_put     =Flags._nciFlag(Flags.COMPRESS_ON_PUT,"should data be compressed when stored in this node")
+    include_in_pulse    =Flags._nciFlag(Flags.INCLUDE_IN_PULSE,"include subtree in pulse")
+    nid_reference       =Nci._nciProp(Flags.NID_REFERENCE,"node data contains nid references")
+    no_write_model      =Flags._nciFlag(Flags.NO_WRITE_MODEL,"is storing data in this node disabled if model tree")
+    no_write_shot       =Flags._nciFlag(Flags.NO_WRITE_SHOT,"is storing data in this node disabled if not model tree")
+    parent_state        =Nci._nciProp(Flags.PARENT_STATE,"is parent disabled")
+    path_reference      =Nci._nciProp(Flags.PATH_REFERENCE,"node data contains path references")
+    segmented           =Nci._nciProp(Flags.SEGMENTED,"is data segmented")
+    setup_information=setup=Nci._nciProp(Flags.SETUP_INFORMATION,"was this data present in the model");
+    state               =Flags._nciFlag(Flags.STATE,"Use on property instead. on/off state of this node. False=on,True=off.")
+    versions            =Nci._nciProp(Flags.VERSIONS,"does the data contain versions")
+    write_once          =Flags._nciFlag(Flags.WRITE_ONCE,"is no write once")
 
+    brother             =Nci._nciProp(Nci.BROTHER,"brother node of this node")
+    child               =Nci._nciProp(Nci.CHILD,"child node of this node")
+    class_str           =Nci._nciProp(Nci.CLASS_STR,"class name of the data stored in this node")
+    conglomerate_elt    =Nci._nciProp(Nci.CONGLOMERATE_ELT,"what element of a conglomerate is this node")
+    conglomerate_nids   =Nci._nciProp(Nci.CONGLOMERATE_NIDS,"what are the nodes of the conglomerate this node belongs to")
+    data_in_nci         =Nci._nciProp(Nci.DATA_IN_NCI,"is the data of this node stored in its nci")
+    depth               =Nci._nciProp(Nci.DEPTH,"what is the depth of this node in the tree structure")
+    dtype               =Nci._nciProp(Nci.DTYPE,"the numeric value of the data type stored in this node")
+    dtype_str           =Nci._nciProp(Nci.DTYPE_STR,"the name of the data type stored in this node")
+    error_on_put        =Nci._nciProp(Nci.ERROR_ON_PUT,"was there an error storing data for this node")
+    fullpath            =Nci._nciProp(Nci.FULLPATH,"full node path")
+    get_flags           =Nci._nciProp(Nci.GET_FLAGS,"numeric flags mask for this node")
+    length              =Nci._nciProp(Nci.LENGTH,"length of data stored in this node (uncompressed)")
+    mclass=_class       =Nci._nciProp(Nci.CLASS,"class of the data stored in this node")
+    member              =Nci._nciProp(Nci.MEMBER,"first member immediate descendant of this node")
+    minpath             =Nci._nciProp(Nci.MINPATH,"minimum path string for this node based on current default node")
+    node_name=name      =Nci._nciProp(Nci.NODE_NAME,"node name")
+    number_of_children  =Nci._nciProp(Nci.NUMBER_OF_CHILDREN,"number of children")
+    number_of_elts      =Nci._nciProp(Nci.NUMBER_OF_ELTS,"number of nodes in a conglomerate")
+    number_of_members   =Nci._nciProp(Nci.NUMBER_OF_MEMBERS,"number of members")
+    original_part_name  =Nci._nciProp(Nci.ORIGINAL_PART_NAME,"original part name of this node")
+    owner_id            =Nci._nciProp(Nci.OWNER_ID,"id of the last person to write to this node")
+    parent              =Nci._nciProp(Nci.PARENT,"parent node of this node")
+    parent_relationship =Nci._nciProp(Nci.PARENT_RELATIONSHIP,"parent relationship")
+    rfa                 =Nci._nciProp(Nci.RFA,"data offset in datafile")
+    rlength             =Nci._nciProp(Nci.RLENGTH,"length of data in node")
+    status              =Nci._nciProp(Nci.STATUS,"status of action execution")
+    time_inserted       =Nci._nciProp(Nci.TIME_INSERTED,"64-bit timestamp when data was stored")
+    usage_str           =Nci._nciProp(Nci.USAGE_STR,"formal name of the usage of this node")
+    __children_nids     =Nci._nciProp(Nci.CHILDREN_NIDS)
+    __member_nids       =Nci._nciProp(Nci.MEMBER_NIDS)
 
-    essential           =_nciFlag( 2,"essential","essential action defined in this node")
-    write_once          =_nciFlag( 7,"write_once","is no write once")
-    do_not_compress     =_nciFlag( 9,"do_not_compress","is this node set to disable any compression of data stored in it")
-    compress_on_put     =_nciFlag(10,"compress_on_put","should data be compressed when stored in this node")
-    no_write_model      =_nciFlag(11,"no_write_model","is storing data in this node disabled if model tree")
-    no_write_shot       =_nciFlag(12,"no_write_shot","is storing data in this node disabled if not model tree")
-    include_in_pulse    =_nciFlag(15,"include_in_pulse","include subtree in pulse")
-    compress_segments   =_nciFlag(16,"compress_segments","should segments be compressed")
-
-    brother             =_nciProp("brother","brother node of this node")
-    child               =_nciProp("child","child node of this node")
-    class_str           =_nciProp("class_str","class name of the data stored in this node")
-    compressible        =_nciProp("compressible","is the data stored in this node compressible")
-    conglomerate_elt    =_nciProp("conglomerate_elt","what element of a conglomerate is this node")
-    conglomerate_nids   =_nciProp("conglomerate_nids","what are the nodes of the conglomerate this node belongs to")
-    data_in_nci         =_nciProp("data_in_nci","is the data of this node stored in its nci")
-    depth               =_nciProp("depth","what is the depth of this node in the tree structure")
-    dtype               =_nciProp("dtype","the numeric value of the data type stored in this node")
-    dtype_str           =_nciProp("dtype_str","the name of the data type stored in this node")
-    error_on_put        =_nciProp("error_on_put","was there an error storing data for this node")
-    fullpath            =_nciProp("fullpath","full node path")
-    get_flags           =_nciProp("get_flags","numeric flags mask for this node")
-    length              =_nciProp("length","length of data stored in this node (uncompressed)")
-    mclass=_class       =_nciProp("class","class of the data stored in this node")
-    member              =_nciProp("member","first member immediate descendant of this node")
-    minpath             =_nciProp("minpath","minimum path string for this node based on current default node")
-    nid_reference       =_nciProp("nid_reference","node data contains nid references")
-    node_name=name      =_nciProp("node_name","node name")
-    number_of_children  =_nciProp("number_of_children","number of children")
-    number_of_elts      =_nciProp("number_of_elts","number of nodes in a conglomerate")
-    number_of_members   =_nciProp("number_of_members","number of members")
-    original_part_name  =_nciProp("original_part_name","original part name of this node")
-    owner_id            =_nciProp("owner_id","id of the last person to write to this node")
-    parent              =_nciProp("parent","parent node of this node")
-    parent_relationship =_nciProp("parent_relationship","parent relationship")
-    parent_state        =_nciProp("parent_state","is parent disabled")
-    path_reference      =_nciProp("path_reference","node data contains path references")
-    rfa                 =_nciProp("rfa","data offset in datafile")
-    rlength             =_nciProp("rlength","length of data in node")
-    segmented           =_nciProp("segmented","is data segmented")
-    setup_information   =_nciProp("setup_information","was this data present in the model");setup=setup_information
-    state               =_nciProp("state","Use on property instead. on/off state of this node. False=on,True=off. (settable)")
-    status              =_nciProp("status","status of action execution")
-    time_inserted       =_nciProp("time_inserted","64-bit timestamp when data was stored")
-    usage_str           =_nciProp("usage_str","formal name of the usage of this node")
-    versions            =_nciProp("version","does the data contain versions")
-
-    @state.setter
-    def state(self,value): self.on=not value
-
-    __children_nids     =_nciProp("children_nids")
     @property
     def children_nids(self):
         """children nodes of this node"""
         try:    return self.__children_nids
         except _exc.TreeNNF: return TreeNodeArray([],self.tree)
 
-    __member_nids       =_nciProp("member_nids")
     @property
     def member_nids(self):
         """all member immediate descendants of this node"""
@@ -1221,8 +1301,8 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
 
     @property
     def disabled(self):
-      "is this node disabled (settable)"
-      return self.isDisabled()
+        "is this node disabled (settable)"
+        return self.isDisabled()
     @disabled.setter
     def disabled(self,value): self.setOn(not value)
 
@@ -1291,7 +1371,7 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
     def path(self):
         """path to this node"""
         try:
-            self._path = self._getNci("path",False)
+            self._path = self._getNci(Nci.PATH)
         except _exc.TreeNOT_OPEN:
             return '%s /*tree closed*/'%self._path
         return self._path
@@ -2966,7 +3046,7 @@ class Device(TreeNode): # HINT: Device begin
             part = self.parts[int(self.conglomerate_elt)-2]
             msg = ['%s\n'%('-'*64)]
             msg.append('original part:     %-10s <HEAD>%s'%(part['type'].upper(),part['path'].upper()))
-            flags = FLAGS(self.get_flags)
+            flags = Flags(self.get_flags)
             if flags.no_write_model and flags.no_write_shot:
                 msg.append('node is read only.')
             elif not flags.write_once:
@@ -3274,141 +3354,6 @@ If you did intend to write to a subnode of the device you should check the prope
         if len(cls_list)>1:
             print ("Error adding device %s: Name ambiguous (%s)"%(model,','.join(cls_list)))
         raise _exc.DevPYDEVICE_NOT_FOUND
-
-############### Node Characteristic Options ######
-#
-
-class Nci(object):
-    _IS_CHILD =1
-    _IS_MEMBER=2
-    END_OF_LIST        =(0,_C.c_void_p,4,None)
-    SET_FLAGS          =(1,_C.c_int32,4,_scr.Uint32)
-    CLEAR_FLAGS        =(2,_C.c_int32,4,_scr.Uint32)
-    TIME_INSERTED      =(4,_C.c_uint64,8,_scr.Uint64)
-    OWNER_ID           =(5,_C.c_int32,4,_scr.Uint8)
-    CLASS              =(6,_C.c_uint8,1,_scr.Uint8)
-    DTYPE              =(7,_C.c_uint8,1,_scr.Uint8)
-    LENGTH             =(8,_C.c_int32,4,_scr.Int32)
-    STATUS             =(9,_C.c_uint32,4,_scr.Uint32)
-    CONGLOMERATE_ELT   =(10,_C.c_uint16,2,_scr.Uint16)
-    GET_FLAGS          =(12,_C.c_uint32,4,_scr.Uint32)
-    NODE_NAME          =(13,_C.c_char_p,13,_scr.String)
-    PATH               =(14,_C.c_char_p,1024,_scr.String)
-    DEPTH              =(15,_C.c_int32,4,_scr.Int32)
-    PARENT             =(16,_C.c_uint32,4,TreeNode)
-    BROTHER            =(17,_C.c_uint32,4,TreeNode)
-    MEMBER             =(18,_C.c_uint32,4,TreeNode)
-    CHILD              =(19,_C.c_uint32,4,TreeNode)
-    PARENT_RELATIONSHIP=(20,_C.c_uint32,4,_scr.Uint32)
-    CONGLOMERATE_NIDS  =(21,_C.c_uint32*1024,1024*4,TreeNodeArray)
-    ORIGINAL_PART_NAME =(22,_C.c_char_p,1024,_scr.String)
-    NUMBER_OF_MEMBERS  =(23,_C.c_uint32,4,_scr.Uint32)
-    NUMBER_OF_CHILDREN =(24,_C.c_uint32,4,_scr.Uint32)
-    MEMBER_NIDS        =(25,_C.c_uint32*4096,4096*4,TreeNodeArray)
-    CHILDREN_NIDS      =(26,_C.c_uint32*4096,4096*4,TreeNodeArray)
-    FULLPATH           =(27,_C.c_char_p,1024,_scr.String)
-    MINPATH            =(28,_C.c_char_p,1024,_scr.String)
-    USAGE              =(29,_C.c_uint8,1,_scr.Uint8)
-    PARENT_TREE        =(30,_C.c_char_p,13,_scr.String)
-    RLENGTH            =(31,_C.c_int32,4,_scr.Int32)
-    NUMBER_OF_ELTS     =(32,_C.c_uint32,4,_scr.Uint32)
-    DATA_IN_NCI        =(33,_C.c_bool,4,bool)
-    ERROR_ON_PUT       =(34,_C.c_uint32,4,bool)
-    RFA                =(35,_C.c_uint64,8,_scr.Uint64)
-    IO_STATUS          =(36,_C.c_uint32,4,_scr.Uint32)
-    IO_STV             =(37,_C.c_uint32,4,_scr.Uint32)
-    DTYPE_STR          =(38,_C.c_char_p,64,_scr.String)
-    USAGE_STR          =(39,_C.c_char_p,64,_scr.String)
-    CLASS_STR          =(40,_C.c_char_p,64,_scr.String)
-    VERSION            =(41,_C.c_uint32,4,_scr.Uint32)
-    class NCI_ITEM(_C.Structure):
-         _fields_=[("buflen", _C.c_ushort),
-                   ("code",   _C.c_ushort),
-                   ("pointer",_C.c_void_p),
-                   ("retlen", _C.POINTER(_C.c_int32))]
-    @staticmethod
-    def NCI_ITEMS(items):
-        length = len(items)
-        self = (Nci.NCI_ITEM*(length+1))()
-        self.ans     = [None]*length
-        self.rettype = [None]*length
-        for i,item in enumerate(items):
-            item_info=Nci.__dict__[item.upper()]
-            self[i].buflen  = _C.c_ushort(item_info[2])
-            self[i].code    = _C.c_ushort(item_info[0])
-            item_type=item_info[1]
-            if item_type == _C.c_char_p:
-                self.ans[i] = item_type(str.encode(' ')*item_info[2])
-                self[i].pointer = _C.cast(self.ans[i],_C.c_void_p)
-            else:
-                self.ans[i] = item_type()
-                self[i].pointer = _C.cast(_C.pointer(self.ans[i]),_C.c_void_p)
-            self.rettype[i] = item_info[3]
-            self[i].retlen  = _C.pointer(_C.c_int32(0))
-        # end of list
-        self[length].buflen  = 0
-        self[length].code    = 0
-        self[length].pointer = 0
-        self[length].retlen  = _C.POINTER(_C.c_int32)()
-        return self
-
-class FLAGS(object):
-    STATE            =0x00000001
-    PARENT_STATE     =0x00000002
-    ESSENTIAL        =0x00000004
-    CACHED           =0x00000008
-    VERSIONS         =0x00000010
-    SEGMENTED        =0x00000020
-    SETUP_INFORMATION=0x00000040
-    WRITE_ONCE       =0x00000080
-    COMPRESSIBLE     =0x00000100
-    DO_NOT_COMPRESS  =0x00000200
-    COMPRESS_ON_PUT  =0x00000400
-    NO_WRITE_MODEL   =0x00000800
-    NO_WRITE_SHOT    =0x00001000
-    PATH_REFERENCE   =0x00002000
-    NID_REFERENCE    =0x00004000
-    INCLUDE_IN_PULSE =0x00008000
-    COMPRESS_SEGMENTS=0x00010000
-    def __init__(self,flags):
-        self.flags = flags
-    @property
-    def state(self): return self.flags&FLAGS.STATE!=0
-    @property
-    def parent_state(self): return self.flags&FLAGS.PARENT_STATE!=0
-    @property
-    def essential(self): return self.flags&FLAGS.ESSENTIAL!=0
-    @property
-    def chached(self): return self.flags&FLAGS.CACHED!=0
-    @property
-    def versions(self): return self.flags&FLAGS.VERSIONS!=0
-    @property
-    def segmented(self): return self.flags&FLAGS.SEGMENTED!=0
-    @property
-    def setup_information(self): return self.flags&FLAGS.SETUP_INFORMATION!=0
-    @property
-    def write_once(self): return self.flags&FLAGS.WRITE_ONCE!=0
-    @property
-    def comressible(self): return self.flags&FLAGS.COMPRESSIBLE!=0
-    @property
-    def do_not_compress(self): return self.flags&FLAGS.DO_NOT_COMPRESS!=0
-    @property
-    def compress_on_put(self): return self.flags&FLAGS.COMPRESS_ON_PUT!=0
-    @property
-    def no_write_model(self): return self.flags&FLAGS.NO_WRITE_MODEL!=0
-    @property
-    def no_write_shot(self): return self.flags&FLAGS.NO_WRITE_SHOT!=0
-    @property
-    def path_reference(self): return self.flags&FLAGS.PATH_REFERENCE!=0
-    @property
-    def nid_reference(self): return self.flags&FLAGS.NID_REFERENCE!=0
-    @property
-    def include_in_pulse(self): return self.flags&FLAGS.INCLUDE_IN_PULSE!=0
-    @property
-    def compress_segments(self): return self.flags&FLAGS.COMPRESS_SEGMENTS!=0
-
-#
-#################################################################
 
 ############# dtype to classes ##################################
 #
