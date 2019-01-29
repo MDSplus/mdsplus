@@ -1067,43 +1067,6 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
     ### Node Properties
     ###################################
 
-    class _NCI_ITEMS(_C.Structure):
-            _fields_=list()
-            for idx in range(50):
-                _fields_+=[("buflen%d"%idx,_C.c_ushort),
-                           ("code%d"%idx,_C.c_ushort),
-                           ("pointer%d"%idx,_C.c_void_p),
-                           ("retlen%d"%idx,_C.POINTER(_C.c_int32))]
-            def __init__(self,items):
-                self.ans=list()
-                self.retlen=list()
-                self.rettype=list()
-                if not isinstance(items,(list,tuple)):
-                    items=tuple(items)
-                for idx in range(len(items)):
-                    item="Nci%s"%(items[idx].upper(),)
-                    item_info=Nci.__dict__[item]
-                    code=item_info[0]
-                    item_type=item_info[1]
-                    item_length=item_info[2]
-                    self.retlen.append(_C.c_int32(0))
-                    self.rettype.append(item_info[3])
-                    if item_type == _C.c_char_p:
-                        self.ans.append(item_type(str.encode(' ')*item_length))
-                        self.__setattr__('pointer%d'%idx,
-                                         _C.cast(self.ans[idx],_C.c_void_p))
-                    else:
-                        self.ans.append(item_type())
-                        self.__setattr__('pointer%d'%idx,
-                                         _C.cast(_C.pointer(self.ans[idx]),_C.c_void_p))
-                    self.__setattr__('buflen%d'%idx,_C.c_ushort(item_length))
-                    self.__setattr__('code%d'%idx,_C.c_ushort(code))
-                    self.__setattr__('retlen%d'%idx,_C.pointer(self.retlen[idx]))
-                self.__setattr__('buflen%d'%len(items),_C.c_ushort(0))
-                self.__setattr__('code%d'%len(items),_C.c_ushort(Nci.NciEND_OF_LIST[0]))
-                self.__setattr__('pointer%d'%len(items),_C.c_void_p(0))
-                self.__setattr__('retlen%d'%len(items),_C.cast(_C.c_void_p(0),_C.POINTER(_C.c_int32)))
-
     def _getNci(self,items,returnDict=True):
         """Return dictionary of nci items"""
         if isinstance(items,str):
@@ -1123,15 +1086,13 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
                 ans[item]=(flags & FLAGS.__dict__[item.upper()]) != 0
         for item in flag_items:
             items.remove(item)
-        itmlst=TreeNode._NCI_ITEMS(items)
+        itmlst=Nci.NCI_ITEMS(items)
         if len(items) > 0:
-            _exc.checkStatus(_TreeShr._TreeGetNci(self.ctx,
-                                                  self._nid,
-                                                  _C.byref(itmlst)))
-        for idx in range(len(items)):
-            val=itmlst.ans[idx]
-            rettype=itmlst.rettype[idx]
-            retlen=itmlst.retlen[idx].value
+            _exc.checkStatus(_TreeShr._TreeGetNci(self.ctx,self._nid,_C.byref(itmlst)))
+        for idx,item in enumerate(items):
+            val    = itmlst.ans[idx]
+            rettype= itmlst.rettype[idx]
+            retlen = itmlst[idx].retlen.contents.value
             if  rettype is _scr.String:
                 val=_scr.String(val.value[0:retlen].rstrip())
             elif issubclass(rettype,_scr.Scalar):
@@ -1148,27 +1109,23 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
                 val=TreeNodeArray(nids,self.tree)
             elif rettype is bool:
                 val=val.value != 0
-            ans[items[idx]]=val
+            ans[item]=val
         if not returnDict and len(ans) == 1:
             return list(ans.values())[0]
         return ans
 
     def _setNciFlag(self,mask,setting):
-        class NCI_ITEM(_C.Structure):
-            _fields_=[("buflen",_C.c_ushort),("code",_C.c_ushort),
-                      ("pointer",_C.POINTER(_C.c_uint32)),("retlen",_C.c_void_p),
-                      ("buflen_e",_C.c_ushort),("code_e",_C.c_ushort),
-                      ("pointer_e",_C.c_void_p),("retlen_e",_C.c_void_p)]
-        item=NCI_ITEM()
+        item=(Nci.NCI_ITEM*2)()
         mask=_C.c_uint32(mask)
-        item.buflen=0
-        item.code=1 if setting else 2
-        item.pointer=_C.pointer(mask)
-        item.retlen=0
-        item.buflen_e=0
-        item.code_e=0
-        item.pointer_e=0
-        item.retlen_e=0
+        item[0].buflen = 0
+        item[0].code   = 1 if setting else 2
+        item[0].pointer= _C.cast(_C.pointer(mask),_C.c_void_p)
+        item[0].retlen = _C.pointer(_C.c_int32(0))
+        # end of list
+        item[1].buflen = 0
+        item[1].code   = 0
+        item[1].pointer= _C.c_void_p(0)
+        item[1].retlen = _C.POINTER(_C.c_int32)()
         _exc.checkStatus(
                    _TreeShr._TreeSetNci(self.ctx,
                                         self._nid,
@@ -3320,49 +3277,81 @@ If you did intend to write to a subnode of the device you should check the prope
 
 ############### Node Characteristic Options ######
 #
+
 class Nci(object):
     _IS_CHILD =1
     _IS_MEMBER=2
-    NciEND_OF_LIST        =(0,_C.c_void_p,4,None)
-    NciSET_FLAGS          =(1,_C.c_int32,4,_scr.Uint32)
-    NciCLEAR_FLAGS        =(2,_C.c_int32,4,_scr.Uint32)
-    NciTIME_INSERTED      =(4,_C.c_uint64,8,_scr.Uint64)
-    NciOWNER_ID           =(5,_C.c_int32,4,_scr.Uint8)
-    NciCLASS              =(6,_C.c_uint8,1,_scr.Uint8)
-    NciDTYPE              =(7,_C.c_uint8,1,_scr.Uint8)
-    NciLENGTH             =(8,_C.c_int32,4,_scr.Int32)
-    NciSTATUS             =(9,_C.c_uint32,4,_scr.Uint32)
-    NciCONGLOMERATE_ELT   =(10,_C.c_uint16,2,_scr.Uint16)
-    NciGET_FLAGS          =(12,_C.c_uint32,4,_scr.Uint32)
-    NciNODE_NAME          =(13,_C.c_char_p,13,_scr.String)
-    NciPATH               =(14,_C.c_char_p,1024,_scr.String)
-    NciDEPTH              =(15,_C.c_int32,4,_scr.Int32)
-    NciPARENT             =(16,_C.c_uint32,4,TreeNode)
-    NciBROTHER            =(17,_C.c_uint32,4,TreeNode)
-    NciMEMBER             =(18,_C.c_uint32,4,TreeNode)
-    NciCHILD              =(19,_C.c_uint32,4,TreeNode)
-    NciPARENT_RELATIONSHIP=(20,_C.c_uint32,4,_scr.Uint32)
-    NciCONGLOMERATE_NIDS  =(21,_C.c_uint32*1024,1024*4,TreeNodeArray)
-    NciORIGINAL_PART_NAME =(22,_C.c_char_p,1024,_scr.String)
-    NciNUMBER_OF_MEMBERS  =(23,_C.c_uint32,4,_scr.Uint32)
-    NciNUMBER_OF_CHILDREN =(24,_C.c_uint32,4,_scr.Uint32)
-    NciMEMBER_NIDS        =(25,_C.c_uint32*4096,4096*4,TreeNodeArray)
-    NciCHILDREN_NIDS      =(26,_C.c_uint32*4096,4096*4,TreeNodeArray)
-    NciFULLPATH           =(27,_C.c_char_p,1024,_scr.String)
-    NciMINPATH            =(28,_C.c_char_p,1024,_scr.String)
-    NciUSAGE              =(29,_C.c_uint8,1,_scr.Uint8)
-    NciPARENT_TREE        =(30,_C.c_char_p,13,_scr.String)
-    NciRLENGTH            =(31,_C.c_int32,4,_scr.Int32)
-    NciNUMBER_OF_ELTS     =(32,_C.c_uint32,4,_scr.Uint32)
-    NciDATA_IN_NCI        =(33,_C.c_bool,4,bool)
-    NciERROR_ON_PUT       =(34,_C.c_uint32,4,bool)
-    NciRFA                =(35,_C.c_uint64,8,_scr.Uint64)
-    NciIO_STATUS          =(36,_C.c_uint32,4,_scr.Uint32)
-    NciIO_STV             =(37,_C.c_uint32,4,_scr.Uint32)
-    NciDTYPE_STR          =(38,_C.c_char_p,64,_scr.String)
-    NciUSAGE_STR          =(39,_C.c_char_p,64,_scr.String)
-    NciCLASS_STR          =(40,_C.c_char_p,64,_scr.String)
-    NciVERSION            =(41,_C.c_uint32,4,_scr.Uint32)
+    END_OF_LIST        =(0,_C.c_void_p,4,None)
+    SET_FLAGS          =(1,_C.c_int32,4,_scr.Uint32)
+    CLEAR_FLAGS        =(2,_C.c_int32,4,_scr.Uint32)
+    TIME_INSERTED      =(4,_C.c_uint64,8,_scr.Uint64)
+    OWNER_ID           =(5,_C.c_int32,4,_scr.Uint8)
+    CLASS              =(6,_C.c_uint8,1,_scr.Uint8)
+    DTYPE              =(7,_C.c_uint8,1,_scr.Uint8)
+    LENGTH             =(8,_C.c_int32,4,_scr.Int32)
+    STATUS             =(9,_C.c_uint32,4,_scr.Uint32)
+    CONGLOMERATE_ELT   =(10,_C.c_uint16,2,_scr.Uint16)
+    GET_FLAGS          =(12,_C.c_uint32,4,_scr.Uint32)
+    NODE_NAME          =(13,_C.c_char_p,13,_scr.String)
+    PATH               =(14,_C.c_char_p,1024,_scr.String)
+    DEPTH              =(15,_C.c_int32,4,_scr.Int32)
+    PARENT             =(16,_C.c_uint32,4,TreeNode)
+    BROTHER            =(17,_C.c_uint32,4,TreeNode)
+    MEMBER             =(18,_C.c_uint32,4,TreeNode)
+    CHILD              =(19,_C.c_uint32,4,TreeNode)
+    PARENT_RELATIONSHIP=(20,_C.c_uint32,4,_scr.Uint32)
+    CONGLOMERATE_NIDS  =(21,_C.c_uint32*1024,1024*4,TreeNodeArray)
+    ORIGINAL_PART_NAME =(22,_C.c_char_p,1024,_scr.String)
+    NUMBER_OF_MEMBERS  =(23,_C.c_uint32,4,_scr.Uint32)
+    NUMBER_OF_CHILDREN =(24,_C.c_uint32,4,_scr.Uint32)
+    MEMBER_NIDS        =(25,_C.c_uint32*4096,4096*4,TreeNodeArray)
+    CHILDREN_NIDS      =(26,_C.c_uint32*4096,4096*4,TreeNodeArray)
+    FULLPATH           =(27,_C.c_char_p,1024,_scr.String)
+    MINPATH            =(28,_C.c_char_p,1024,_scr.String)
+    USAGE              =(29,_C.c_uint8,1,_scr.Uint8)
+    PARENT_TREE        =(30,_C.c_char_p,13,_scr.String)
+    RLENGTH            =(31,_C.c_int32,4,_scr.Int32)
+    NUMBER_OF_ELTS     =(32,_C.c_uint32,4,_scr.Uint32)
+    DATA_IN_NCI        =(33,_C.c_bool,4,bool)
+    ERROR_ON_PUT       =(34,_C.c_uint32,4,bool)
+    RFA                =(35,_C.c_uint64,8,_scr.Uint64)
+    IO_STATUS          =(36,_C.c_uint32,4,_scr.Uint32)
+    IO_STV             =(37,_C.c_uint32,4,_scr.Uint32)
+    DTYPE_STR          =(38,_C.c_char_p,64,_scr.String)
+    USAGE_STR          =(39,_C.c_char_p,64,_scr.String)
+    CLASS_STR          =(40,_C.c_char_p,64,_scr.String)
+    VERSION            =(41,_C.c_uint32,4,_scr.Uint32)
+    class NCI_ITEM(_C.Structure):
+         _fields_=[("buflen", _C.c_ushort),
+                   ("code",   _C.c_ushort),
+                   ("pointer",_C.c_void_p),
+                   ("retlen", _C.POINTER(_C.c_int32))]
+    @staticmethod
+    def NCI_ITEMS(items):
+        length = len(items)
+        self = (Nci.NCI_ITEM*(length+1))()
+        self.ans     = [None]*length
+        self.rettype = [None]*length
+        for i,item in enumerate(items):
+            item_info=Nci.__dict__[item.upper()]
+            self[i].buflen  = _C.c_ushort(item_info[2])
+            self[i].code    = _C.c_ushort(item_info[0])
+            item_type=item_info[1]
+            if item_type == _C.c_char_p:
+                self.ans[i] = item_type(str.encode(' ')*item_info[2])
+                self[i].pointer = _C.cast(self.ans[i],_C.c_void_p)
+            else:
+                self.ans[i] = item_type()
+                self[i].pointer = _C.cast(_C.pointer(self.ans[i]),_C.c_void_p)
+            self.rettype[i] = item_info[3]
+            self[i].retlen  = _C.pointer(_C.c_int32(0))
+        # end of list
+        self[length].buflen  = 0
+        self[length].code    = 0
+        self[length].pointer = 0
+        self[length].retlen  = _C.POINTER(_C.c_int32)()
+        return self
+
 class FLAGS(object):
     STATE            =0x00000001
     PARENT_STATE     =0x00000002
