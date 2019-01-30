@@ -24,8 +24,8 @@
 #
 
 import os,gc
-from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,Device,tree,tcl,Int32,TreeNOEDIT
-
+from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,Device,tree,tcl,Int32
+from MDSplus import TreeNOEDIT,ADD,COMPILE
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
@@ -324,6 +324,10 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(ip.versions,ip.containsVersions())
         self.assertEqual(ip.getNumSegments(),0)
         self.assertEqual(ip.getSegment(0),None)
+        pytree.normal()
+        ip.record = ADD(1,COMPILE("\\BTOR"))
+        self.assertEqual(ip.record.decompile(),'1 + COMPILE("\\\\BTOR")')
+        self.assertEqual(ip.record.data().tolist(),(pytree.getNode("\\BTOR").data()+1).tolist())
 
     def getCompression(self):
         with Tree('pytree',self.shot+9,'new') as pytree:
