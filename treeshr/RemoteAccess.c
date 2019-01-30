@@ -491,14 +491,14 @@ char *FindTagWildRemote(PINO_DATABASE * dblist, const char *wildarg, int *nidout
 void FindTagEndRemote(void **ctx_inout)
 {
   TAG_SEARCH **ctx = (TAG_SEARCH **) ctx_inout;
-  struct descrip ans = {0};
   if (*ctx) {
     if ((*ctx)->remote_tag) free((*ctx)->remote_tag);
     if ((*ctx)->ctx) {
       char exp[128];
       sprintf(exp,"TreeShr->TreeFindTagEnd(val(0x%"PRIx64"QU))",(*ctx)->ctx);
+      struct descrip ans = {0};
       MdsValue((*ctx)->conid, exp, &ans, NULL);
-      if (ans.ptr) MdsIpFree(ans.ptr);
+      free_if(&ans.ptr);
     }
     free(*ctx);
     *ctx = NULL;
