@@ -603,14 +603,15 @@ void FindTagEndRemote(void **ctx_inout)
 {
   TAG_SEARCH **ctx = (TAG_SEARCH **) ctx_inout;
   struct descrip ans = empty_ans;
-  if (*ctx != (TAG_SEARCH *) 0) {
+  if (*ctx) {
     if ((*ctx)->remote_tag)
       MdsIpFree((*ctx)->remote_tag);
     MdsValue0((*ctx)->socket, "TreeFindTagEnd(_remftwctx)", &ans);
     if (ans.ptr)
       MdsIpFree(ans.ptr);
+    free(*ctx);
+    *ctx = NULL;
   }
-  *ctx = (TAG_SEARCH *) 0;
 }
 
 int GetNciRemote(PINO_DATABASE * dblist, int nid_in, struct nci_itm *nci_itm)
