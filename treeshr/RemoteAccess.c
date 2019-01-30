@@ -279,11 +279,19 @@ int CloseTreeRemote(PINO_DATABASE * dblist, int call_host __attribute__ ((unused
     MdsIpFree(ans.ptr);
   }
   RemoteAccessDisconnect(dblist->tree_info->channel, 0);
-  if (dblist->tree_info && dblist->tree_info->treenam)
-    free(dblist->tree_info->treenam);
-  if (dblist->tree_info)
+  if (dblist->tree_info) {
+    free_if(&dblist->tree_info->treenam);
     free(dblist->tree_info);
-  dblist->tree_info = 0;
+    dblist->tree_info = NULL;
+  }
+  if (dblist->experiment) {
+    free(dblist->experiment);
+    dblist->experiment = NULL;
+  }
+  if (dblist->main_treenam) {
+    free(dblist->main_treenam);
+    dblist->main_treenam = NULL;
+  }
   dblist->remote = 0;
   return status;
 }
