@@ -106,6 +106,7 @@ class TreeRef(object):
        return self.tree != tree
     def __fixTreeReferences__(self,tree):
         self.tree = tree
+        return self
 
 class Data(NoTreeRef):
     """Superclass used by most MDSplus objects. This provides default methods if not provided by the subclasses.
