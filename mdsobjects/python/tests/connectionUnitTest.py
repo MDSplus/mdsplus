@@ -170,6 +170,6 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
 
     @staticmethod
     def getTests():
-        return ['threadsTcp','threadsLocal'] #,'thick'] # alpha
+        return ['threadsTcp','threadsLocal','thick'] # alpha
 
 Tests.main(__name__)
