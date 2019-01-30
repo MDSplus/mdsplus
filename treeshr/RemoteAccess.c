@@ -342,6 +342,7 @@ int SetStackSizeRemote(PINO_DATABASE *dbid __attribute__ ((unused)), int stack_s
 }
 
 int CloseTreeRemote(PINO_DATABASE * dblist, int call_host __attribute__ ((unused))){
+  if (!dblist->tree_info) return TreeNOTOPEN;
   struct descrip ans = empty_ans;
   int status;
   char exp[512];
