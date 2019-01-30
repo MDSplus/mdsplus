@@ -749,6 +749,7 @@ int GetNciRemote(PINO_DATABASE * dblist, int nid_in, struct nci_itm *nci_itm)
 	    memcpy(itm->pointer, ans.ptr, min(itm->buffer_length, length));
 /*            if (itm->buffer_length < length) status = TreeBUFFEROVF; */
 	  }
+          free_if(&ans.ptr);
 	} else
 	  status = 0;
       }
