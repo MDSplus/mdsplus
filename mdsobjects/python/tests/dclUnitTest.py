@@ -25,8 +25,7 @@
 
 import sys
 from time import sleep
-from re import match
-from MDSplus import Tree,Device,Connection,GetMany,Range
+from MDSplus import Tree,Device,Connection
 from MDSplus import dcl,ccl,tcl,cts,mdsExceptions as Exc
 
 def _mimport(name, level=1):
@@ -38,29 +37,6 @@ _UnitTest=_mimport("_UnitTest")
 class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
     shotinc = 1
     tree = 'pytree'
-    def _doTCLTest(self,expr,out=None,err=None,re=False,tcl=tcl):
-        def checkre(pattern,string):
-            if pattern is None:
-                self.assertEqual(string is None,True)
-            else:
-                self.assertEqual(string is None,False)
-                self.assertEqual(match(pattern,str(string)) is None,False,'"%s"\nnot matched by\n"%s"'%(string,pattern))
-        if Tests.debug: sys.stderr.write("TCL(%s)\n"%(expr,));
-        outerr = tcl(expr,True,True,True)
-        if not re:
-            self.assertEqual(outerr,(out,err))
-        else:
-            checkre(out,outerr[0])
-            checkre(err,outerr[1])
-
-    def _doExceptionTest(self,expr,exc):
-        if Tests.debug: sys.stderr.write("TCL(%s) # expected exception: %s\n"%(expr,exc.__name__));
-        try:
-            tcl(expr,True,True,True)
-        except Exception as e:
-            self.assertEqual(e.__class__,exc)
-            return
-        self.fail("TCL: '%s' should have signaled an exception"%expr)
 
     def interface(self):
         with Tree(self.tree,self.shot,'new') as pytree:
@@ -92,7 +68,8 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         pytree = Tree()
         self.assertEqual(str(pytree),'Tree("PYTREE",%d,"Normal")'%self.shot)
         self._doTCLTest('close pytree/shot=%d'%(self.shot,))
-        self.assertEqual(str(pytree),'Tree("PYTREE",%d,"Closed")'%self.shot)
+        # self.assertEqual(str(pytree),'Tree("?",?,"Closed")') # alpha
+        self.assertEqual(str(pytree),'Tree("PYTREE",%d,"Closed")'%self.shot) # stable
         if self.inThread: Tree.usePrivateCtx(0)
         """ tcl exceptions """
         self._doExceptionTest('close',Exc.TreeNOT_OPEN)
@@ -107,7 +84,6 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         monitor,monitor_port = self._setup_mdsip('ACTION_MONITOR','MONITOR_PORT',7010+self.index,False)
         monitor_opt = "/monitor=%s"%monitor if monitor_port>0 else ""
         server ,server_port  = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT',7000+self.index,True)
-        show_server = "Checking server: %s\n[^,]+, [^,]+, logging enabled, Inactive\n"%server
         pytree.normal()
         pytree.TESTDEVICE.ACTIONSERVER.no_write_shot = False
         pytree.TESTDEVICE.ACTIONSERVER.record = server
@@ -115,38 +91,23 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         mon,mon_log,svr,svr_log = (None,None,None,None)
         try:
             mon,mon_log = self._start_mdsip(monitor,monitor_port,'monitor')
-            svr,svr_log = self._start_mdsip(server ,server_port ,'server',self.env)
+            svr,svr_log = self._start_mdsip(server ,server_port ,'dispatcher')
             try:
-                if mon or svr: sleep(1)
                 if mon: self.assertEqual(mon.poll(),None)
                 if svr: self.assertEqual(svr.poll(),None)
-                """ mdsconnect """
-                c = Connection(server)
-                self.assertEqual(c.get('1').tolist(),1)
-                self.assertEqual(c.getObject('1:3:1').__class__,Range)
-                g = GetMany(c);
-                g.append('a','1')
-                g.append('b','$',2)
-                g.append('c','$+$',1,2)
-                g.execute()
-                self.assertEqual(g.get('a'),1)
-                self.assertEqual(g.get('b'),2)
-                self.assertEqual(g.get('c'),3)
                 """ tcl dispatch """
-                self._doTCLTest('show server %s'%server,out=show_server,re=True)
-                self._testDispatchCommand(server,'set verify')
                 self._testDispatchCommand(server,'type test')
                 self._doTCLTest('set tree pytree/shot=%d'%shot)
                 self._doTCLTest('dispatch/build%s'%monitor_opt)
                 self._doTCLTest('dispatch/phase%s INIT'%monitor_opt)
                 sleep(.1)
-                self._doTCLTest('show server %s'%server,out=show_server,re=True)
+                self._checkIdle(server)
                 self._doTCLTest('dispatch/phase%s PULSE'%monitor_opt)
                 sleep(.1)
-                self._doTCLTest('show server %s'%server,out=show_server,re=True)
+                self._checkIdle(server)
                 self._doTCLTest('dispatch/phase%s STORE'%monitor_opt)
                 sleep(.1)
-                self._doTCLTest('show server %s'%server,out=show_server,re=True)
+                self._checkIdle(server)
                 """ tcl exceptions """
                 self._doExceptionTest('dispatch/command/server=%s '%server,Exc.MdsdclIVVERB)
                 """ tcl check if still alive """
@@ -173,20 +134,25 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         def test_timeout(c,expr,to):
             with c:
                 try: # break out of sleep
-                    c.get('write(,"tic: "//"%s");%s;write(,"toc: "//"%s")'%(expr,expr,expr),timeout=to)
+                    c.get('write(2,"tic: "//"%s");%s;write(2,"toc: "//"%s")'%(expr,expr,expr),timeout=to)
                     self.fail('Connection.get("%s") should have timed out.'%expr)
                 except Exc.MDSplusException as e:
                     self.assertEqual(e.__class__,Exc.TdiTIMEOUT)
         server,server_port  = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT',7000+self.index,True)
         svr = svr_log = None
         try:
-            svr,svr_log = self._start_mdsip(server ,server_port ,'timeout',self.env)
+            svr,svr_log = self._start_mdsip(server ,server_port ,'timeout')
             try:
                 if svr:
-                    sleep(1)
                     self.assertEqual(svr.poll(),None)
                 c = Connection(server)
+                c.get("py('1')") # preload MDSplus on server
                 test_timeout(c,"wait(3)",1000) # break tdi wait
+                test_timeout(c,"py('from time import sleep;sleep(3)')",1500) # break python sleep
+                if full: # timing too unreliable for standard test
+                    test_timeout(c,"for(;1;) ;",100) # break tdi inf.loop
+                    test_timeout(c,"py('while 1: pass')",500) # break python inf.loop
+                c.get("1")
             finally:
                 if svr and svr.poll() is None:
                     svr.terminate()
@@ -200,7 +166,7 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         lst = ['interface']
         if Tests.inThread: return lst
         lst.append('dispatcher')
-        if not sys.platform.startswith('win'):
+        if sys.platform.startswith('win') or sys.maxsize > 1<<32:
             lst.append('timeout')
         return lst
 

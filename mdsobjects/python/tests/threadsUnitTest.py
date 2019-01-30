@@ -57,7 +57,8 @@ class Tests(_UnitTest.Tests):
     def doThreadsTestCase(self,testclass,test,numthreads):
         numsuccess= 0
         stack_size(0x100000) # 1MB
-        threads = [ threadJob(testclass,test,i) for i in range(numthreads) ]
+        # start at idx=1 in case its running in parallel to single test
+        threads = [ threadJob(testclass,test,i+1) for i in range(numthreads) ]
         for i,t in enumerate(threads):
             t.start()
         for i,t in enumerate(threads):
