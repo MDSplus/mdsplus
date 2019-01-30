@@ -327,6 +327,7 @@ class Tests(_UnitTest.TreeTests):
             node.updateSegment(srt,end,dim,i)
             if i%16==0:
                 self.assertEqual(dim.decompile(),node.getSegmentDim(i).decompile())
+        ptree.close() # stable
         ptree.compressDatafile()
         ptree.readonly()
         self.assertEqual(numsegs,node1.getNumSegments())
