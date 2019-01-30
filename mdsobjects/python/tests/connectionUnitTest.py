@@ -77,15 +77,15 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                 print(con.get("getenv($//'_path')",self.tree))
                 con.get("TreeShr->TreeOpen(ref($),val($),val(1))",self.tree,-1)
                 thick = Tree(self.tree,-1)
-                return
                 thick.createPulse(1)
                 thick1 = Tree(self.tree,1)
                 self.assertEqual(local.PYSUB.OK.nid,thick1.PYSUB.OK.nid)
                 #self.assertEqual(local.getFileName(),thick.getFileName().split("::",2)[1]) # alpha
                 """ TreeTurnOff / TreeTurnOn """
-                thick.S.on = False;self.assertEqual(local.S.on,False)
-                thick.S.on = True; self.assertEqual(local.S.on,True )
-                return
+                #thick.S.on = False;self.assertEqual(local.S.on,False) # alpha
+                thick.S.on = False;self.assertEqual(thick.S.on,False) # stable
+                #thick.S.on = True; self.assertEqual(local.S.on,True ) # alpha
+                thick.S.on = True; self.assertEqual(thick.S.on,True ) # stable
                 """ TreeSetCurrentShotId / TreeGetCurrentShotId """
                 Tree.setCurrent(self.tree,1)
                 self.assertEqual(Tree.getCurrent(self.tree),1)
@@ -93,8 +93,9 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                 self.assertEqual(str(local.S.record), "1. + 2.")
                 self.assertEqual(str(thick.S.record), "1. + 2.")
                 thick.S.record = ADD(Float32(2),Float32(4))
-                self.assertEqual(str(local.S.record), "2. + 4.")
-                self.assertEqual(str(thick.S.record), "2. + 4.")
+                #self.assertEqual(str(local.S.record), "2. + 4.") # alpha
+                #self.assertEqual(str(thick.S.record), "2. + 4.") # alpha
+                self.assertEqual(str(thick.S.record.evaluate()), "2. + 4.") # stable
                 self.assertEqual(str(local.T.record), str(thick.T.record))
                 """ GetDefaultNid / SetDefaultNid """
                 self.assertEqual(thick.getDefault(),thick.top)
@@ -108,8 +109,8 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                 """ nci """
                 thick.S.write_once = True
                 self.assertEqual(thick.S.write_once,True)
-                for nci in ('on','depth','usage_str','dtype','length','rlength','fullpath','minpath','member_nids','children_nids','rfa','write_once'):
-                    testnci(thick,local,con,nci)
+                #for nci in ('on','depth','usage_str','dtype','length','rlength','fullpath','minpath','member_nids','children_nids','rfa','write_once'):
+                #    testnci(thick,local,con,nci) # alpha
                 """ new stuff """
                 self.assertEqual(local.getFileName(),con.get("treefilename($,-1)",self.tree))
             finally:
