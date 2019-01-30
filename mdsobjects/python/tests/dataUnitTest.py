@@ -360,9 +360,12 @@ class Tests(_UnitTest.Tests):
         self._doTdiTest("Py('a=None','a')",None)
         self._doTdiTest("Py('a=123','a')",123)
         self._doTdiTest("Py('import MDSplus;a=MDSplus.Uint8(-1)','a')",m.Uint8(255))
+        #self._doTdiTest('addfun("test","import __main__\n_file_=__main__.__file__\nstatic=[0]\ndef test():\n static[0]+=1\n return [1 if __main__.__file__==_file_ else 0]+static")',"TEST") # alpha
+        #if not self.inThread: self._doTdiTest("TEST()",m.Array([1, 1])) # alpha
         self._doTdiTest("pyfun('Uint8','MDSplus',-1)",m.Uint8(255))
         self._doTdiTest("pyfun('Uint8',*,-1)",m.Uint8(255))
         self._doTdiTest("pyfun('str',*,123)",m.String("123"))
+        #if not self.inThread: self._doTdiTest("TEST()",m.Array([1, 2])) # alpha
 
     def decompile(self):
         self.assertEqual(str(m.Uint8(123)),'123BU')

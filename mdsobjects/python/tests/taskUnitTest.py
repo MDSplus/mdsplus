@@ -25,7 +25,7 @@
 
 import sys
 from re import match
-from MDSplus import Tree,setenv,tcl,mdsExceptions as Exc
+from MDSplus import Tree,tcl,mdsExceptions as Exc
 
 def _mimport(name, level=1):
     try:
@@ -36,29 +36,6 @@ _UnitTest=_mimport("_UnitTest")
 class Tests(_UnitTest.TreeTests):
     shotinc = 1
     tree = 'pytree'
-    def _doTCLTest(self,expr,out=None,err=None,re=False,tcl=tcl):
-        def checkre(pattern,string):
-            if pattern is None:
-                self.assertEqual(string is None,True)
-            else:
-                self.assertEqual(string is None,False)
-                self.assertEqual(match(pattern,str(string)) is None,False,'"%s"\nnot matched by\n"%s"'%(string,pattern))
-        if Tests.debug: sys.stderr.write("TCL(%s)\n"%(expr,));
-        outerr = tcl(expr,True,True,True)
-        if not re:
-            self.assertEqual(outerr,(out,err))
-        else:
-            checkre(out,outerr[0])
-            checkre(err,outerr[1])
-
-    def _doExceptionTest(self,expr,exc):
-        if Tests.debug: sys.stderr.write("TCL(%s) # expected exception: %s\n"%(expr,exc.__name__));
-        try:
-            tcl(expr,True,True,True)
-        except Exception as e:
-            self.assertEqual(e.__class__,exc)
-            return
-        self.fail("TCL: '%s' should have signaled an exception"%expr)
 
     def dotask_timeout(self):
       def test():
