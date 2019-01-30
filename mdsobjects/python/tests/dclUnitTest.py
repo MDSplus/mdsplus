@@ -166,7 +166,8 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         lst = ['interface']
         if Tests.inThread: return lst
         lst.append('dispatcher')
-        if sys.platform.startswith('win') or sys.maxsize > 1<<32:
+        # if sys.platform.startswith('win') or sys.maxsize > 1<<32: # alpha
+        if not sys.platform.startswith('win') and sys.maxsize > 1<<32: # stable
             lst.append('timeout')
         return lst
 
