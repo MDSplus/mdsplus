@@ -94,6 +94,9 @@ class TreeRef(object):
         if 'tree' in kwargs and isinstance(kwargs['tree'],_tre.Tree):
             self.tree = kwargs['tree']
             return self
+        if len(args) == 1 and isinstance(args[0],_tre.Tree):
+            self.tree = args[0]
+            return self
         for arg in args:
             if isinstance(arg,TreeRef) and isinstance(arg.tree,_tre.Tree):
                 self.tree = arg.tree
@@ -754,12 +757,7 @@ class EmptyData(Data):
     dtype_id=24
     """No Value aka *"""
     def __init__(self,*value): pass
-    def _setTree(self,*a,**kw): return self
     def decompile(self): return "*"
-    @property
-    def tree(self): return None
-    @tree.setter
-    def tree(self,value): return
     @property
     def value(self): return None
     def data(self): return None
@@ -837,13 +835,14 @@ class TreeRefX(TreeRef,DataX):
     @property
     def tree(self):
         for desc in self._descs:
-            if isinstance(desc,Data):
+            if isinstance(desc,TreeRef):
                 tree=desc.tree
                 if tree is not None:
                     return tree
         return None
     @tree.setter
     def tree(self,tree):
+        if not isinstance(tree,_tre.Tree): return
         for desc in self._descs:
             if isinstance(desc,Data):
                 desc._setTree(tree)
