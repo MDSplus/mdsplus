@@ -299,12 +299,13 @@ STATIC_ROUTINE int TdiFindIdent(int search,
       else if (code == OpcEquals || code == OpcEqualsFirst
                || code == OpcPostDec || code == OpcPreDec
                || code == OpcPostInc || code == OpcPreInc) {
-        struct descriptor_xd tmp = EMPTY_XD;
+        INIT_AND_FREEXD_ON_EXIT(tmp);
         status = TdiEvaluate(ident_ptr, &tmp MDS_END_ARG);
         if STATUS_OK
           status = TdiFindIdent(search,
                            (struct descriptor_r *)ident_ptr->dscptrs[0],
 			   &key_dsc, &node_ptr, block_ptr_ptr);
+        FREEXD_NOW(tmp);
       } else if (code == OpcVar) {
         name_dsc = EMPTY_D;
         status = TdiData(ident_ptr->dscptrs[0], &name_dsc MDS_END_ARG);
