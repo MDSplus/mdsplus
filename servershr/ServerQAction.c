@@ -437,9 +437,12 @@ static int DoSrvAction(SrvJob * job_in){
   INIT_STATUS_ERROR;
   SrvActionJob *job = (SrvActionJob *) job_in;
   char *job_text, *old_job_text;
-  sprintf((job_text =
-	   (char *)malloc(100)), "Doing nid %d in %s shot %d", job->nid, job->tree, job->shot);
+  sprintf((job_text = (char*)malloc(100)), "Doing nid %d in %s shot %d", job->nid, job->tree, job->shot);
   current_job_text = job_text;
+  void* dbid = NULL;
+  status = _TreeNewDbid(&dbid);
+  if STATUS_NOT_OK goto end;
+  void *pc   = TreeCtxPush(&dbid);
   status = TreeOpen(job->tree, job->shot, 0);
   if STATUS_OK {
     int retstatus;
@@ -479,6 +482,9 @@ static int DoSrvAction(SrvJob * job_in){
     if STATUS_OK
       status = retstatus;
   }
+  TreeCtxPop(pc);
+end: ;
+  TreeFreeDbid(dbid);
   if (job_in->h.addr)
     SendReply(job_in, SrvJobFINISHED, status, 0, 0);
   return status;
