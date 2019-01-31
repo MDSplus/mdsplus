@@ -47,6 +47,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <errno.h>
 #include <mdsshr.h>
 #include <treeshr.h>
+#include <signal.h>
 
 extern int TdiGetFloat();
 extern int TdiGetLong();
@@ -115,69 +116,120 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
   return status;
 }
 
-typedef struct{
-  Condition                 *pcond;
-  int                       *pstatus;
-  struct descriptor_xd      *task_xd;
-  void                     **ctx;
-  struct descriptor_xd      *out_ptr;
-  void                      *pc;
-} WorkerArgs;
+/* The following implementation of a cancelable worker is used in:
+ * tdishr/TdiDoTask.c
+ * mdstcpip/ProcessMessage.c
+ * Problems with the implementation are likely to be fixed in all locations.
+ */
+typedef struct {
+  void      **ctx;
+  int       status;
+#ifndef _WIN32
+  Condition *const condition;
+#endif
+  struct descriptor_xd *const task_xd;
+} worker_args_t;
+
+typedef struct {
+  worker_args_t        *const wa;
+  struct descriptor_xd *const xdp;
+  void                 *pc;
+} worker_cleanup_t;
 
 
-pthread_mutex_t worker_destroy = PTHREAD_MUTEX_INITIALIZER;
-static void WorkerExit(void *args){
-  WorkerArgs* const wa = (WorkerArgs*)args;
-  free_xd(wa->task_xd);
-  if (wa->out_ptr)
-    free_xd(wa->out_ptr);
-  if (wa->pc) TreeCtxPop(wa->pc);
-  pthread_mutex_lock(&worker_destroy);pthread_cleanup_push((void*)pthread_mutex_unlock, &worker_destroy);
-  CONDITION_RESET(wa->pcond);
-  pthread_cleanup_pop(1);
+static void WorkerCleanup(void *args){
+  worker_cleanup_t* const wc = (worker_cleanup_t*)args;
+  if (wc->pc) TreeCtxPop(wc->pc);
+#ifndef _WIN32
+  CONDITION_SET(wc->wa->condition);
+#endif
+  free_xd(wc->xdp);
+  free_xd(wc->wa->task_xd);
 }
 
-static void WorkerThread(void *args){
-  CONDITION_SET(((WorkerArgs*)args)->pcond);
-  WorkerArgs* const wa = (WorkerArgs*)args;
-  pthread_cleanup_push(WorkerExit, args);
-  wa->pc = TreeCtxPush(wa->ctx);
-  EMPTYXD(out_xd);
-  wa->out_ptr = &out_xd;
-  struct descriptor_routine* ptask = (struct descriptor_routine *)wa->task_xd->pointer;
-  *wa->pstatus = Doit(ptask,&out_xd);
-  if IS_OK(*wa->pstatus) *wa->pstatus = *(int*)out_xd.pointer->pointer;
+static int WorkerThread(void *args){
+  EMPTYXD(xd);
+  worker_cleanup_t wc = {(worker_args_t*)args,&xd,NULL};
+  pthread_cleanup_push(WorkerCleanup, (void*)&wc);
+  wc.pc = TreeCtxPush(wc.wa->ctx);
+  struct descriptor_routine* ptask = (struct descriptor_routine *)wc.wa->task_xd->pointer;
+  wc.wa->status = Doit(ptask,wc.xdp);
+  if IS_OK(wc.wa->status) wc.wa->status = *(int*)xd.pointer->pointer;
   pthread_cleanup_pop(1);
+  return wc.wa->status;
 }
 
 STATIC_ROUTINE int StartWorker(struct descriptor_xd *task_xd, struct descriptor_xd *out_ptr, const float timeout){
-  INIT_STATUS, t_status = MDSplusERROR;
-  pthread_t Worker;
+  INIT_STATUS;
+#ifdef _WIN32
+  worker_args_t wa = {
+#else
   Condition WorkerRunning = CONDITION_INITIALIZER;
-  WorkerArgs args = { &WorkerRunning, &t_status, task_xd, TreeCtx(), NULL, NULL};
-  _CONDITION_LOCK(&WorkerRunning);
-  CREATE_DETACHED_THREAD(Worker, *8, WorkerThread,(void*)&args);
-  if (c_status) {
-    perror("Error creating pthread");
+  worker_args_t wa = {.condition = &WorkerRunning,
+#endif
+  .ctx = TreeCtx(), .status = -1, .task_xd = task_xd};
+#ifdef _WIN32
+  HANDLE hWorker= CreateThread(NULL, DEFAULT_STACKSIZE*16, (void*)WorkerThread, &wa, 0, NULL);
+  if (!hWorker) {
+    errno = GetLastError();
+    perror("ERROR CreateThread");
     status = MDSplusFATAL;
-  } else {
-    _CONDITION_WAIT_SET(&WorkerRunning);
-    struct timespec tp;
-    clock_gettime(CLOCK_REALTIME, &tp);
-    uint64_t ns = tp.tv_nsec + (uint64_t)(timeout*1E9);
-    tp.tv_nsec = ns % 1000000000;
-    tp.tv_sec += (time_t)(ns/1000000000);
-    int err = pthread_cond_timedwait(&WorkerRunning.cond,&WorkerRunning.mutex,&tp);
-    if (err) {
-      pthread_cancel(Worker);
-      status = err==ETIMEDOUT ? TdiTIMEOUT : MDSplusERROR;
-    } else // only populate out_ptr if task finished in time
-      status = TdiPutLong(&t_status, out_ptr);
-    if (WorkerRunning.value)
-      _CONDITION_WAIT(&WorkerRunning);
+    goto end;
+  }
+  int canceled = B_FALSE;
+  if (WaitForSingleObject(hWorker, (int)(timeout*1000)) == WAIT_TIMEOUT) {
+    fflush(stdout);fprintf(stderr, "Timeout, terminating Worker\n");
+    TerminateThread(hWorker,2);
+    canceled = B_TRUE;
+  }
+  WaitForSingleObject(hWorker, INFINITE);
+  if (canceled)
+    status = TdiTIMEOUT;
+#else
+  pthread_t Worker = 0;
+  _CONDITION_LOCK(wa.condition);
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setstacksize(&attr, DEFAULT_STACKSIZE*16);
+  if ((errno=pthread_create(&Worker, &attr, (void *)WorkerThread, &wa))) {
+    perror("ERROR pthread_create");
+    pthread_attr_destroy(&attr);
+    _CONDITION_UNLOCK(wa.condition);
+    pthread_cond_destroy(&WorkerRunning.cond);
+    pthread_mutex_destroy(&WorkerRunning.mutex);
+    status = MDSplusFATAL;
+    goto end;
+  }
+  pthread_attr_destroy(&attr);
+  struct timespec tp;
+  clock_gettime(CLOCK_REALTIME, &tp);
+  uint64_t ns = tp.tv_nsec + (uint64_t)(timeout*1E9);
+  tp.tv_nsec = ns % 1000000000;
+  tp.tv_sec += (time_t)(ns/1000000000);
+  int err = pthread_cond_timedwait(&WorkerRunning.cond,&WorkerRunning.mutex,&tp);
+  if (err) {
+    fflush(stdout);fprintf(stderr, "Timeout, terminating Worker ..");
+    pthread_cancel(Worker);
+    _CONDITION_WAIT_1SEC(wa.condition,);
+    fflush(stdout);
+    if (WorkerRunning.value) {
+      fprintf(stderr," ok\n");
+    } else {
+      fprintf(stderr," failed - sending SIGCHLD\n");
+      pthread_kill(Worker,SIGCHLD);
+    }
   }
   _CONDITION_UNLOCK(&WorkerRunning);
-  CONDITION_DESTROY(&WorkerRunning,&worker_destroy);
+  void* result;
+  pthread_join(Worker,&result);
+  pthread_cond_destroy(&WorkerRunning.cond);
+  pthread_mutex_destroy(&WorkerRunning.mutex);
+  if (err && result==PTHREAD_CANCELED)
+    status = err==ETIMEDOUT ? TdiTIMEOUT : MDSplusFATAL;
+#endif
+  else // only populate out_ptr if task finished in time
+    status = TdiPutLong(&wa.status, out_ptr);
+end: ;
   return status;
 }
 
