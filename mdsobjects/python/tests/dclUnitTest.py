@@ -133,10 +133,14 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         def test_timeout(c,expr,to):
             with c:
                 try: # break out of sleep
+                    print(expr)
                     c.get('write(2,"tic: "//"%s");%s;write(2,"toc: "//"%s")'%(expr,expr,expr),timeout=to)
                     self.fail('Connection.get("%s") should have timed out.'%expr)
                 except Exc.MDSplusException as e:
                     self.assertEqual(e.__class__,Exc.TdiTIMEOUT)
+        def test_normal(c,expr,**kv):
+            print(expr)
+            c.get(expr,**kv)
         server,server_port  = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT',7000+self.index,True)
         svr = svr_log = None
         try:
@@ -145,13 +149,14 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                 if svr:
                     self.assertEqual(svr.poll(),None)
                 c = Connection(server)
-                c.get("py('1')") # preload MDSplus on server
+                test_normal(c,"py('1')") # preload MDSplus on server
                 test_timeout(c,"wait(3)",1000) # break tdi wait
                 test_timeout(c,"py('from time import sleep;sleep(3)')",1500) # break python sleep
                 if full: # timing too unreliable for standard test
                     test_timeout(c,"for(;1;) ;",100) # break tdi inf.loop
                     test_timeout(c,"py('while 1: pass')",500) # break python inf.loop
-                c.get("1")
+                test_normal(c,"1",timeout=1000)
+                test_normal(c,"py('1')",timeout=1000) # verify locks are released
             finally:
                 if svr and svr.poll() is None:
                     svr.terminate()
