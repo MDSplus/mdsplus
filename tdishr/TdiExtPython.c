@@ -94,7 +94,7 @@ static PyObject *pointerToObject = NULL;
 static PyObject *makeData = NULL;
 static PyObject *MDSplusException = NULL;
 
-static void initialize(){
+inline static void initialize(){
   int old_state = PTHREAD_CANCEL_DISABLE;
   pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,&old_state);
   void *handle;
@@ -191,16 +191,11 @@ static void initialize(){
     pthread_setcancelstate(old_state,NULL);
 }
 
-static inline void initialize_once() {
-  static pthread_once_t once = PTHREAD_ONCE_INIT;
-  pthread_once(&once,&initialize);
-}
-
-static void importMDSplus() {
+static void importMDSplus() {// used in once
   int old_state = PTHREAD_CANCEL_DISABLE;
   pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,&old_state);
-  initialize_once();
-  if (!PyGILState_Ensure) return;//loading python lib failed
+  initialize();
+  if (!PyGILState_Ensure) goto end_import;//loading python lib failed
   PyThreadState *GIL = PyGILState_Ensure();
   PyObject *MDSplus= PyImport_ImportModule("MDSplus");
   if (MDSplus) {
@@ -224,6 +219,7 @@ static void importMDSplus() {
     if (PyErr_Occurred()) PyErr_Print();
   }
   PyGILState_Release(GIL);
+end_import: ;
   if (old_state != PTHREAD_CANCEL_DISABLE)
     pthread_setcancelstate(old_state,NULL);
 }
