@@ -549,61 +549,67 @@ static void ClientEventAst(MdsEventList * e, int data_len, char *data)
   UnlockAsts();
 }
 
+/* The following implementation of a cancelable worker is used in:
+ * tdishr/TdiDoTask.c
+ * mdstcpip/ProcessMessage.c
+ * Problems with the implementation are likely to be fixed in all locations.
+ */
 typedef struct {
-  Connection*          connection;
-  void*                dbid;
-  void*                tdicontext[6];
-  struct descriptor_xd*xd_out;
-  int                  status;
+  void      **ctx;
+  int       status;
 #ifndef _WIN32
-  Condition* condition;
+  Condition *const condition;
 #endif
+  Connection           *const connection;
+  struct descriptor_xd *const xd_out;
+  void                 *tdicontext[6];
 } worker_args_t;
 
 typedef struct {
-worker_args_t*       wa;
-struct descriptor_xd*xdp;
+  worker_args_t        *const wa;
+  struct descriptor_xd *const xdp;
+  void                 *pc;
 } worker_cleanup_t;
 
 static void WorkerCleanup(void *args) {
-  worker_cleanup_t* wc = (worker_cleanup_t*)args;
-  MdsFree1Dx(wc->xdp,NULL);
+  worker_cleanup_t* const wc = (worker_cleanup_t*)args;
+  if (wc->pc) TreeCtxPop(wc->pc);
   TdiSaveContext(wc->wa->tdicontext);
-  wc->wa->dbid = TreeSwitchDbid(wc->wa->dbid);
-  void* tdicontext[6] = {0};
-  TdiRestoreContext(tdicontext);
-  TreeUsePrivateCtx(0);
 #ifndef _WIN32
   CONDITION_SET(wc->wa->condition);
 #endif
+  free_xd(wc->xdp);
+  void* tdicontext[6] = {0};
+  TdiRestoreContext(tdicontext);
 }
 
 static int WorkerThread(void *args) {
-  worker_args_t* wa = (worker_args_t*)args;
   EMPTYXD(xd);
-  worker_cleanup_t wc = {wa,&xd};
+  worker_cleanup_t wc = {(worker_args_t*)args,&xd,NULL};
   pthread_cleanup_push(WorkerCleanup,(void*)&wc);
-  TreeUsePrivateCtx(1);
-  wa->dbid = TreeSwitchDbid(wa->dbid);
-  TdiRestoreContext(wa->tdicontext);
-  wa->status = TdiIntrinsic(OPC_EXECUTE, wa->connection->nargs, wa->connection->descrip, &xd);
-  if IS_OK(wa->status)
-    wa->status = TdiData(xd.pointer, wa->xd_out MDS_END_ARG);
+  wc.pc = TreeCtxPush(wc.wa->ctx);
+  TdiRestoreContext(wc.wa->tdicontext);
+  wc.wa->status = TdiIntrinsic(OPC_EXECUTE, wc.wa->connection->nargs, wc.wa->connection->descrip, &xd);
+  if IS_OK(wc.wa->status)
+    wc.wa->status = TdiData(xd.pointer, wc.wa->xd_out MDS_END_ARG);
   pthread_cleanup_pop(1);
-  return wa->status;
+  return wc.wa->status;
 }
 
 static inline int executeCommand(Connection* connection, struct descriptor_xd* ans_xd) {
   //fprintf(stderr,"starting task for connection %d\n",connection->id);
-  worker_args_t wa;
-  wa.connection = connection;
-  wa.xd_out = ans_xd;
-  wa.status = -1;
+#ifdef _WIN32
+  worker_args_t wa = {
+#else
+  Condition WorkerRunning = CONDITION_INITIALIZER;
+  worker_args_t wa = {.condition = &WorkerRunning,
+#endif
+  .status = -1, .connection = connection, .xd_out = ans_xd};
   if (GetContextSwitching()) {
-    wa.dbid = connection->DBID;
+    wa.ctx = &connection->DBID;
     memcpy(wa.tdicontext,connection->tdicontext,sizeof(wa.tdicontext));
   } else {
-    wa.dbid = *TreeCtx();
+    wa.ctx = TreeCtx();
     TdiSaveContext(wa.tdicontext);
   }
 #ifdef _WIN32
@@ -615,20 +621,18 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
     goto end;
   }
   int canceled = B_FALSE;
-  while (WaitForSingleObject(hWorker, 100) == WAIT_TIMEOUT) {
-    if (canceled) continue;     //skip check if already canceled
-    if (!connection->io->check) continue; // if no io->check def
+  if (connection->io->check)
+   while (WaitForSingleObject(hWorker, 100) == WAIT_TIMEOUT) {
     if (!connection->io->check(connection)) continue;
     fflush(stdout);fprintf(stderr, "Client disconnected, terminating Worker\n");
     TerminateThread(hWorker,2);
     canceled = B_TRUE;
+    break;
   }
   WaitForSingleObject(hWorker, INFINITE);
   if (canceled) wa.status = TdiABORT;
 #else
   pthread_t Worker = 0;
-  Condition WorkerRunning = CONDITION_INITIALIZER;
-  wa.condition  = &WorkerRunning;
   _CONDITION_LOCK(wa.condition);
   pthread_attr_t attr;
   pthread_attr_init(&attr);
@@ -654,12 +658,14 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
     pthread_cancel(Worker);
     canceled = B_TRUE;
     _CONDITION_WAIT_1SEC(wa.condition,);
-    if (WorkerRunning.value) {
+    fflush(stdout);
+    if (WorkerRunning.value)
       fprintf(stderr," ok\n");
-      break;
+    else {
+      fprintf(stderr," failed - sending SIGCHLD\n");
+      pthread_kill(Worker,SIGCHLD);
     }
-    fflush(stdout);fprintf(stderr," failed - sending SIGCHLD\n");
-    pthread_kill(Worker,SIGCHLD);
+    break;
   }
   _CONDITION_UNLOCK(wa.condition);
   void* result;
@@ -670,10 +676,8 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
 #endif
 end:;
   if (GetContextSwitching()) {
-    connection->DBID = wa.dbid;
     memcpy(connection->tdicontext,wa.tdicontext,sizeof(wa.tdicontext));
   } else {
-    *TreeCtx() = wa.dbid;
     TdiRestoreContext(wa.tdicontext);
   }
   return wa.status;
