@@ -121,17 +121,17 @@ typedef struct{
   struct descriptor_xd      *task_xd;
   void                     **ctx;
   struct descriptor_xd      *out_ptr;
+  void                      *pc;
 } WorkerArgs;
 
 
 pthread_mutex_t worker_destroy = PTHREAD_MUTEX_INITIALIZER;
 static void WorkerExit(void *args){
   WorkerArgs* const wa = (WorkerArgs*)args;
-  void* dbid = TreeSwitchDbid(NULL);
   free_xd(wa->task_xd);
   if (wa->out_ptr)
     free_xd(wa->out_ptr);
-  if (dbid) *wa->ctx = dbid;
+  if (wa->pc) TreeCtxPop(wa->pc);
   pthread_mutex_lock(&worker_destroy);pthread_cleanup_push((void*)pthread_mutex_unlock, &worker_destroy);
   CONDITION_RESET(wa->pcond);
   pthread_cleanup_pop(1);
@@ -141,8 +141,7 @@ static void WorkerThread(void *args){
   CONDITION_SET(((WorkerArgs*)args)->pcond);
   WorkerArgs* const wa = (WorkerArgs*)args;
   pthread_cleanup_push(WorkerExit, args);
-  TreeUsePrivateCtx(1);
-  TreeSwitchDbid(*wa->ctx);
+  wa->pc = TreeCtxPush(wa->ctx);
   EMPTYXD(out_xd);
   wa->out_ptr = &out_xd;
   struct descriptor_routine* ptask = (struct descriptor_routine *)wa->task_xd->pointer;
@@ -155,7 +154,7 @@ STATIC_ROUTINE int StartWorker(struct descriptor_xd *task_xd, struct descriptor_
   INIT_STATUS, t_status = MDSplusERROR;
   pthread_t Worker;
   Condition WorkerRunning = CONDITION_INITIALIZER;
-  WorkerArgs args = { &WorkerRunning, &t_status, task_xd, TreeCtx(), NULL };
+  WorkerArgs args = { &WorkerRunning, &t_status, task_xd, TreeCtx(), NULL, NULL};
   _CONDITION_LOCK(&WorkerRunning);
   CREATE_DETACHED_THREAD(Worker, *8, WorkerThread,(void*)&args);
   if (c_status) {

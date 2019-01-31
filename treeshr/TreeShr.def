@@ -100,9 +100,7 @@ TreeRemoveNodesTags
 TreeRemoveTag
 TreeRenameNode
 TreeRestoreContext
-TreeRestorePrivateCtx
 TreeSaveContext
-TreeSavePrivateCtx
 TreeSetCurrentShotId
 TreeSetDbi
 TreeSetDbiItm

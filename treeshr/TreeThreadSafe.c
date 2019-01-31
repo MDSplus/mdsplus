@@ -29,11 +29,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "treethreadsafe.h"
 #include <stdlib.h>
 #include <mdsshr.h>
+#include <treeshr.h>
 #include <strroutines.h>
 #include <string.h>
 
 extern int _TreeNewDbid(void** dblist);
-extern int TreeFreeDbid(PINO_DATABASE *db);
 static pthread_rwlock_t treectx_lock = PTHREAD_RWLOCK_INITIALIZER;
 static void *DBID = NULL, *G_DBID = NULL;
 
@@ -128,23 +128,30 @@ EXPORT int TreeUsingPrivateCtx(){
   return p->privateCtx;
 }
 
-struct private_ctx{
-  void *dbid;
-  int  upc;
-} PRIVATE_CTX;
-
-EXPORT void* TreeSavePrivateCtx(void* dbid){
-  struct private_ctx* pctx = (struct private_ctx*)malloc(sizeof(struct private_ctx));
-  pctx->dbid = TreeDbid();
-  pctx->upc  = TreeUsePrivateCtx(1);
-  TreeSwitchDbid(dbid);
-  return pctx;
+typedef struct {
+  void* dbid;
+  void**ctx;
+  int   priv;
+} pushstate_t;
+EXPORT void* TreeCtxPush(void** ctx){
+/* switch to private context and use dbid
+ */
+  TreeThreadStatic *p = TreeGetThreadStatic();
+  void* ps = malloc(sizeof(pushstate_t));
+  ((pushstate_t*)ps)->priv = p->privateCtx;
+  ((pushstate_t*)ps)->dbid = p->DBID;
+  ((pushstate_t*)ps)->ctx  = ctx;
+  p->privateCtx = 1;
+  p->DBID       = *ctx;
+  return ps;
 }
 
-EXPORT void* TreeRestorePrivateCtx(void* _pctx){
-  struct private_ctx* pctx = (struct private_ctx*)_pctx;
-  void* dbid = TreeSwitchDbid(pctx->dbid);
-  TreeUsePrivateCtx(pctx->upc);
-  free(pctx);
-  return dbid;
+EXPORT void  TreeCtxPop(void *ps){
+/* done using dbid in private context, restore state
+ */
+  TreeThreadStatic *p = TreeGetThreadStatic();
+  *((pushstate_t*)ps)->ctx = p->DBID;
+  p->privateCtx = ((pushstate_t*)ps)->priv;
+  p->DBID       = ((pushstate_t*)ps)->dbid;
+  free(ps);
 }
