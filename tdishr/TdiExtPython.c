@@ -214,6 +214,7 @@ static void importMDSplus() {// used in once
       fprintf(stderr,"Error loading class MDSplus.MDSplusException; only limited error handling\n");
       if (PyErr_Occurred()) PyErr_Print();
     }
+    Py_DecRef(MDSplus); // release file lock
   } else {
     fprintf(stderr,"Error loading package MDSplus, check your PYTHONPATH; very limited functionality\n");
     if (PyErr_Occurred()) PyErr_Print();
