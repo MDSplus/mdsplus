@@ -525,3 +525,12 @@
    fun:_PyEval_EvalFrameDefault
    obj:/usr/lib*/libpython3.6.so.1.0
 }
+
+{
+   PyImport_ImportModule does not release file lock (py2.7 on fc26)
+   Helgrind:Misc
+   ...
+   fun:fread
+   ...
+   fun:PyImport_ImportModule
+}
