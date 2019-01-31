@@ -67,7 +67,7 @@ extern int TdiData();
 extern int TdiUpcase();
 extern int TdiGetData();
 extern int TdiGetLong();
-extern int TdiEvaluate();
+extern int _TdiEvaluate();
 
 STATIC_ROUTINE int compare(struct descriptor *s1, struct item s2[1])
 {
@@ -201,7 +201,6 @@ int Tdi1Using(int opcode __attribute__ ((unused)),
 	      struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  void *pctx = NULL;
   int nid, shot;
   unsigned short stat1;
   struct descriptor_d def = { 0, DTYPE_T, CLASS_D, 0 }, expt = def;
@@ -250,6 +249,7 @@ int Tdi1Using(int opcode __attribute__ ((unused)),
 	*def.pointer = '\\';
     }
   }
+  void *dbid = NULL, **ctx = TreeCtx();
   if ((narg > 2) && ((list[2] != 0) || ((narg > 3) && (list[3] != 0)))
       && STATUS_OK) {
     if (list[2])
@@ -281,8 +281,8 @@ int Tdi1Using(int opcode __attribute__ ((unused)),
                 *********************/
     if STATUS_OK {
       char *tree = MdsDescrToCstring((struct descriptor *)&expt);
-      pctx = TreeSavePrivateCtx(NULL);
-      status = TreeOpen(tree, shot, 1);
+      ctx = &dbid;
+      status = _TreeOpen(ctx, tree, shot, 1);
       MdsFree(tree);
     }
   }
@@ -300,13 +300,13 @@ int Tdi1Using(int opcode __attribute__ ((unused)),
         ***********************/
   if STATUS_OK {
     struct descriptor_xd tmp = EMPTY_XD;
-    status = TdiEvaluate(list[0], &tmp MDS_END_ARG);
+    status = _TdiEvaluate(ctx, list[0], &tmp MDS_END_ARG);
     if STATUS_OK
       status = MdsCopyDxXdZ((struct descriptor *)&tmp, out_ptr, NULL,
 			    fixup_nid, NULL, fixup_path, NULL);
     MdsFree1Dx(&tmp, NULL);
   }
-  if (pctx)
-    TreeFreeDbid(TreeRestorePrivateCtx(pctx));
+  if (dbid)
+    TreeFreeDbid(dbid);
   return status;
 }

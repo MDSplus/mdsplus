@@ -277,11 +277,6 @@ extern int TREE_BLOCKID;
   extern EXPORT int _TreeDecompile(void *dbid, ...);
   extern EXPORT int _TreeCompile(void *dbid, ...);
 
-  typedef struct pushstate_s{
-  void* dbid;
-  void**ctx;
-  int   priv;
-  } pushstate_t;
   extern EXPORT void* TreeCtxPush(void** ctx);
   extern EXPORT void  TreeCtxPop(void* ps);
   #define CTX_PUSH(ctx) pthread_cleanup_push(TreeCtxPop,TreeCtxPush(ctx))
