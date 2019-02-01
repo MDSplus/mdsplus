@@ -297,19 +297,25 @@ int _TreeClose(void **dbid, char const *tree, int shot)
   return status;
 }
 
-static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
-{
-  TREE_INFO *local_info = dblist ? dblist->tree_info : NULL;
-  TREE_INFO *previous_info;
-  int status;
-
-  status = TreeNORMAL;
-  if (dblist) {
-    if (dblist->remote) {
-      status = CloseTreeRemote(dblist, call_hook);
-      if (status == TreeNOT_OPEN)   /**** Remote server might have already closed the tree ****/
-	status = TreeNORMAL;
-    } else if (local_info) {
+static int CloseTopTree(PINO_DATABASE * dblist, int call_hook) {
+  int status = TreeNORMAL;
+  if (!dblist) return status;
+  if (dblist->dispatch_table) {
+    static int (*ServerFreeDispatchTable) () = NULL;
+    status = LibFindImageSymbol_C("MdsServerShr", "ServerFreeDispatchTable", &ServerFreeDispatchTable);
+    if STATUS_OK {
+      status = ServerFreeDispatchTable(dblist->dispatch_table);
+      dblist->dispatch_table = NULL;
+    }
+  }
+  if (dblist->remote) {
+    status = CloseTreeRemote(dblist, call_hook);
+    if (status == TreeNOT_OPEN)   /**** Remote server might have already closed the tree ****/
+      status = TreeNORMAL;
+    return status;
+  }
+  TREE_INFO *previous_info, *local_info = dblist->tree_info;
+  if (local_info) {
     /************************************************
      We check the BLOCKID just to make sure that what
      we were passed in indeed was a tree info block.
@@ -344,12 +350,6 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
           if (local_info->edit->deleted_nid_list)
             free(local_info->edit->deleted_nid_list);
 	  free(local_info->edit);
-	}
-	if (local_info->dispatch_table) {
-	  static int (*ServerFreeDispatchTable) () = NULL;
-	  status = LibFindImageSymbol_C("MdsServerShr", "ServerFreeDispatchTable", &ServerFreeDispatchTable);
-	  if STATUS_OK
-	      status = (*ServerFreeDispatchTable)(local_info->dispatch_table);
 	}
 
        /********************************************************
@@ -423,7 +423,6 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
       free(dblist->main_treenam);
       dblist->main_treenam = NULL;
     }
-  }
   return status;
 }
 

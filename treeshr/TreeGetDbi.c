@@ -97,9 +97,10 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
 	for (count = 0, db_tmp = (PINO_DATABASE *) dbid; db_tmp ? db_tmp->open : 0;
 	     count++, db_tmp = db_tmp->next) ;
 	memset(lst->pointer, 0, (size_t)lst->buffer_length);
-	memcpy(lst->pointer, &count, (size_t)minInt(lst->buffer_length, sizeof(int)));
+        int length = minInt(lst->buffer_length, sizeof(int));
+	memcpy(lst->pointer, &count, (size_t)length);
 	if (lst->return_length_address)
-	  *lst->return_length_address = minInt(lst->buffer_length, sizeof(int));
+	  *lst->return_length_address = length;
 	break;
       }
 
@@ -108,9 +109,10 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
       {
 	int count = db->stack_size;
 	memset(lst->pointer, 0, (size_t)lst->buffer_length);
-	memcpy(lst->pointer, &count, (size_t)minInt(lst->buffer_length, sizeof(int)));
+        int length = minInt(lst->buffer_length, sizeof(int));
+	memcpy(lst->pointer, &count, (size_t)length);
 	if (lst->return_length_address)
-	  *lst->return_length_address = minInt(lst->buffer_length, sizeof(int));
+	  *lst->return_length_address = length;
 	break;
       }
 
@@ -129,9 +131,10 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
       {
 	int value = db->tree_info->header->versions_in_model;
 	memset(lst->pointer, 0, (size_t)lst->buffer_length);
-	memcpy(lst->pointer, &value, (size_t)minInt(lst->buffer_length, sizeof(int)));
+        int length = minInt(lst->buffer_length, sizeof(int));
+	memcpy(lst->pointer, &value, (size_t)length);
 	if (lst->return_length_address)
-	  *lst->return_length_address = minInt(lst->buffer_length, sizeof(int));
+	  *lst->return_length_address = length;
 	break;
       }
 
@@ -140,22 +143,24 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
       {
 	int value = db->tree_info->header->versions_in_pulse;
 	memset(lst->pointer, 0, (size_t)lst->buffer_length);
-	memcpy(lst->pointer, &value, (size_t)minInt(lst->buffer_length, sizeof(int)));
+        int length = minInt(lst->buffer_length, sizeof(int));
+	memcpy(lst->pointer, &value, (size_t)length);
 	if (lst->return_length_address)
-	  *lst->return_length_address = minInt(lst->buffer_length, sizeof(int));
+	  *lst->return_length_address = length;
 	break;
       }
 
     case DbiDISPATCH_TABLE:
       CheckOpen(db);
       {
+        int value = db->dispatch_table != NULL;
 	memset(lst->pointer, 0, (size_t)lst->buffer_length);
-	memcpy(lst->pointer, &db->tree_info->dispatch_table, (size_t)minInt(lst->buffer_length, sizeof(void *)));
+        int length = minInt(lst->buffer_length, sizeof(int));
+	memcpy(lst->pointer, &value, (size_t)length);
 	if (lst->return_length_address)
-	  *lst->return_length_address = minInt(lst->buffer_length, sizeof(void *));
+	  *lst->return_length_address = length;
 	break;
       }
-	
 
     default:
       status = TreeILLEGAL_ITEM;
