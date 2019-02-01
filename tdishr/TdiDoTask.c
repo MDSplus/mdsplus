@@ -188,19 +188,15 @@ STATIC_ROUTINE int StartWorker(struct descriptor_xd *task_xd, struct descriptor_
 #else
   pthread_t Worker = 0;
   _CONDITION_LOCK(wa.condition);
-  pthread_attr_t attr;
-  pthread_attr_init(&attr);
-  pthread_attr_setstacksize(&attr, DEFAULT_STACKSIZE*16);
-  if ((errno=pthread_create(&Worker, &attr, (void *)WorkerThread, &wa))) {
+  CREATE_THREAD(Worker, *16, WorkerThread, &wa);
+  if (c_status) {
     perror("ERROR pthread_create");
-    pthread_attr_destroy(&attr);
     _CONDITION_UNLOCK(wa.condition);
     pthread_cond_destroy(&WorkerRunning.cond);
     pthread_mutex_destroy(&WorkerRunning.mutex);
     status = MDSplusFATAL;
     goto end;
   }
-  pthread_attr_destroy(&attr);
   struct timespec tp;
   clock_gettime(CLOCK_REALTIME, &tp);
   uint64_t ns = tp.tv_nsec + (uint64_t)(timeout*1E9);

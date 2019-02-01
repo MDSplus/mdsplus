@@ -632,21 +632,17 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
   WaitForSingleObject(hWorker, INFINITE);
   if (canceled) wa.status = TdiABORT;
 #else
-  pthread_t Worker = 0;
+  pthread_t Worker;
   _CONDITION_LOCK(wa.condition);
-  pthread_attr_t attr;
-  pthread_attr_init(&attr);
-  pthread_attr_setstacksize(&attr, DEFAULT_STACKSIZE*16);
-  if ((errno=pthread_create(&Worker, &attr, (void *)WorkerThread, &wa))) {
+  CREATE_THREAD(Worker, *16, WorkerThread, &wa);
+  if (c_status) {
     perror("ERROR pthread_create");
-    pthread_attr_destroy(&attr);
     _CONDITION_UNLOCK(wa.condition);
     pthread_cond_destroy(&WorkerRunning.cond);
     pthread_mutex_destroy(&WorkerRunning.mutex);
     wa.status = MDSplusFATAL;
     goto end;
   }
-  pthread_attr_destroy(&attr);
   int canceled = B_FALSE;
   for (;;) {
     _CONDITION_WAIT_1SEC(wa.condition,);
