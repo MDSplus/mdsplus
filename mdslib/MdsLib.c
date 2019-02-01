@@ -28,6 +28,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MDSLIB_NO_PROTOS
 #include "mdslib.h"
 #include <stdint.h>
+#include <mdsshr.h>
+#include <strroutines.h>
 static int MdsCONNECTION = -1;
 #define NDESCRIP_CACHE 1024
 #ifndef _CLIENT_ONLY
@@ -63,6 +65,15 @@ static void MdsValueSet(struct descriptor *outdsc, struct descriptor *indsc, int
 static pthread_key_t buffer_key;
 /* Free the thread-specific buffer */
 static void buffer_destroy(void *buf){
+  int i;
+  struct descriptor **d = (struct descriptor **)buf;
+  for (i=0 ; i<NDESCRIP_CACHE ; i++) {
+    if (d[i]) {
+      if      (d[i]->class == CLASS_XD) free_xd(d[i]);
+      else if (d[i]->class == CLASS_D ) free_d (d[i]);
+      free(d[i]);
+    }
+  }
   free(buf);
 }
 static void buffer_key_alloc(){
@@ -71,13 +82,12 @@ static void buffer_key_alloc(){
 /* Return the thread-specific buffer */
 static struct descriptor **GetDescriptorCache(){
   RUN_FUNCTION_ONCE(buffer_key_alloc);
-  struct descriptor **p = (struct descriptor **) pthread_getspecific(buffer_key);
-  if (!p) {
-    p = (struct descriptor **) memset(malloc(sizeof(struct descriptor *)*NDESCRIP_CACHE), \
-				      0, sizeof(struct descriptor *)*NDESCRIP_CACHE);
-    pthread_setspecific(buffer_key, (void *)p);
+  void *buf = pthread_getspecific(buffer_key);
+  if (!buf) {
+    buf = calloc(NDESCRIP_CACHE,sizeof(struct descriptor *));
+    pthread_setspecific(buffer_key, buf);
   }
-  return p;
+  return (struct descriptor **)buf;
 }
 
 extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
