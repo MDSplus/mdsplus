@@ -543,9 +543,10 @@ class Tree(object):
     index             =Dbi._dbiProp(Dbi.INDEX,            "Index of tree to use for subsequent information requests")
     number_opened     =Dbi._dbiProp(Dbi.NUMBER_OPENED,    "Number of open trees on tree stack")
     max_open          =Dbi._dbiProp(Dbi.MAX_OPEN,         "Max number of trees to keep open on stack")
-    open_readonly     =Dbi._dbiProp(Dbi.OPEN_READONLY,    "True of tree is open readonly")
+    open_readonly     =Dbi._dbiProp(Dbi.OPEN_READONLY,    "True if tree is open readonly")
     versions_in_model =Dbi._dbiProp(Dbi.VERSIONS_IN_MODEL,"Support versioning of data in model.",True)
     versions_in_pulse =Dbi._dbiProp(Dbi.VERSIONS_IN_PULSE,"Support versioning of data in pulse.",True)
+    dispatch_table    =Dbi._dbiProp(Dbi.DISPATCH_TABLE,   "True if dispatch table is built")
 
     @property
     def default(self):
