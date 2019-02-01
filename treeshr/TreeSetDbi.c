@@ -84,7 +84,7 @@ int _TreeSetDbi(void *dbid, DBI_ITM * dbi_itm_ptr)
 
  Executable:
 */
-  
+
   if (dblist->remote)
     return SetDbiRemote(dbid, dbi_itm_ptr);
   for (itm_ptr = dbi_itm_ptr; itm_ptr->code != NciEND_OF_LIST && status & 1; itm_ptr++) {
@@ -102,10 +102,6 @@ int _TreeSetDbi(void *dbid, DBI_ITM * dbi_itm_ptr)
     case DbiREADONLY:
       dblist->tree_info->header->readonly = (*(unsigned int *)itm_ptr->pointer) != 0;
       dblist->modified = 1;
-      break;
-    case DbiDISPATCH_TABLE:
-      if (dblist && dblist->tree_info)
-	dblist->tree_info->dispatch_table=itm_ptr->pointer;
       break;
     default:
       status = TreeILLEGAL_ITEM;
