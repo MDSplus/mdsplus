@@ -147,19 +147,25 @@
 {
    ADDRESS_IN_RANGE/Invalid read of size 4
    Memcheck:Addr4
-   fun:PyObject_Realloc
+   fun:PyObject_Realloc*
 }
 
 {
    ADDRESS_IN_RANGE/Invalid read of size 4
    Memcheck:Value4
-   fun:PyObject_Realloc
+   fun:PyObject_Realloc*
+}
+
+{
+   ADDRESS_IN_RANGE/Invalid read of size 8
+   Memcheck:Value8
+   fun:PyObject_Realloc*
 }
 
 {
    ADDRESS_IN_RANGE/Conditional jump or move depends on uninitialised value
    Memcheck:Cond
-   fun:PyObject_Realloc
+   fun:PyObject_Realloc*
 }
 
 
@@ -472,4 +478,126 @@
    Helgrind:Race
    ...
    fun:OPENSSL_cleanup
+}
+
+{
+   python 32bit problem during thead after fork and fc25
+   Helgrind:Race
+   fun:blas_shutdown_
+}
+
+{
+   Exiting thread still holds 1 lock python on fc25
+   Helgrind:Misc
+   obj:/usr/lib64/libc-2.24.so
+   fun:_IO_file_xsgetn
+   fun:fread
+   obj:/usr/lib*/libpython2.7.so.1.0
+}
+
+{
+   fc28 and python36m
+   Helgrind:Race
+   ...
+   fun:_PyFunction_FastCallDict
+   fun:_PyObject_FastCallDict
+   fun:_PyObject_Call_Prepend
+   fun:PyObject_Call
+}
+
+{
+   fc28 and python36m Thread Locks
+   Helgrind:Race
+   fun:PyEval_RestoreThread
+}
+
+{
+   fc28 and python36m internals
+   Helgrind:Race
+   obj:/usr/lib*/libpython3.6.so.1.0
+   fun:PyEval_AcquireThread
+   obj:/usr/lib*/libpython3.6.so.1.0
+}
+
+{
+   fc28 and python36m internals
+   Helgrind:Race
+   fun:_PyEval_EvalFrameDefault
+   obj:/usr/lib*/libpython3.6.so.1.0
+}
+
+{
+   PyImport_ImportModule does not release file lock (py2.7 on fc26)
+   Helgrind:Misc
+   ...
+   fun:fread
+   ...
+   fun:PyImport_ImportModule
+}
+
+{
+   python 3.7 on fc29
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_PyMem_RawWcsdup
+}
+
+{
+   python 3.7 on fc29
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:PyMem_Malloc
+}
+
+{
+   python 3.7 on fc29
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:realloc
+   ...
+   fun:PyObject_Realloc
+}
+
+{
+   python 3.7 on fc29
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:dl_open_worker
+   fun:_dl_catch_exception
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+}
+
+{
+   python 3.7 on fc29
+   Memcheck:Param
+   sched_getaffinity(mask)
+   fun:sched_getaffinity@@GLIBC_2.3.4
+}
+
+{
+   python 3.7 on fc29
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:allocate_dtv
+   fun:_dl_allocate_tls
+   fun:pthread_create@@GLIBC_2.2.5
+}
+
+{
+   python 3.7 on fc29
+   Helgrind:Misc
+   fun:read
+   fun:_Py_read
+   obj:*/libpython3.7m.so*
+   ...
+   fun:_PyMethodDef_RawFastCallKeywords
 }
