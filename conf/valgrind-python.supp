@@ -534,3 +534,70 @@
    ...
    fun:PyImport_ImportModule
 }
+
+{
+   python 3.7 on fc29
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_PyMem_RawWcsdup
+}
+
+{
+   python 3.7 on fc29
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:PyMem_Malloc
+}
+
+{
+   python 3.7 on fc29
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:realloc
+   ...
+   fun:PyObject_Realloc
+}
+
+{
+   python 3.7 on fc29
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:dl_open_worker
+   fun:_dl_catch_exception
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+}
+
+{
+   python 3.7 on fc29
+   Memcheck:Param
+   sched_getaffinity(mask)
+   fun:sched_getaffinity@@GLIBC_2.3.4
+}
+
+{
+   python 3.7 on fc29
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:allocate_dtv
+   fun:_dl_allocate_tls
+   fun:pthread_create@@GLIBC_2.2.5
+}
+
+{
+   python 3.7 on fc29
+   Helgrind:Misc
+   fun:read
+   fun:_Py_read
+   obj:*/libpython3.7m.so*
+   ...
+   fun:_PyMethodDef_RawFastCallKeywords
+}
