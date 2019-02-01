@@ -328,31 +328,7 @@ int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf){
 
   memset((char *)&sin, 0, sizeof(sin));
   sin.sin_family = AF_INET;
-#if defined(__MACH__) || defined(_WIN32)
-  struct hostent* hp = gethostbyname(multiIp);
-  if (!hp) {
-    int addr = inet_addr(multiIp);
-    if (addr != -1)  hp = gethostbyaddr(((void *)&addr),sizeof(int),AF_INET);
-  }
-  if (hp) memcpy(&sin.sin_addr, hp->h_addr_list[0], (size_t)hp->h_length);
-#else
-  size_t memlen;
-  struct hostent hostbuf, *hp = NULL;
-  int herr;
-  char *hp_mem = NULL;
-  FREE_ON_EXIT(hp_mem);
-  for ( memlen=1024, hp_mem=malloc(memlen);
-        hp_mem && (gethostbyname_r(multiIp,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE);
-        memlen *= 2, free(hp_mem), hp_mem = malloc(memlen));
-  if (!hp) {
-    int addr = (int)inet_addr(multiIp);
-    for (;
-        hp_mem && (gethostbyaddr_r(((void *)&addr),sizeof(int),AF_INET,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE);
-        memlen *=2, free(hp_mem), hp_mem = (char*)malloc(memlen));
-  }
-  if (hp) memcpy(&sin.sin_addr, hp->h_addr_list[0], (size_t)hp->h_length);
-  FREE_NOW(hp_mem);
-#endif
+  *(int*)&sin.sin_addr = LibGetHostAddr(multiIp);
   UdpEventGetPort(&port);
   sin.sin_port = htons(port);
   nameLen = (unsigned int)strlen(eventName);

@@ -18,6 +18,7 @@ LibFindImageSymbol
 LibFindImageSymbolErrString
 LibFindImageSymbol_C
 LibFreeVm
+LibGetHostAddr
 LibGetVm
 LibInsertTree
 LibLookupTree
