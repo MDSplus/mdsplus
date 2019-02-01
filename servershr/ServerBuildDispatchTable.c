@@ -172,8 +172,8 @@ static void LinkConditions()
   }
 }
 
-EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name, void **table)
-{
+EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name, void **table) {
+  if (*table) ServerFreeDispatchTable(*table);
   DispatchTable **table_ptr = (DispatchTable **) table;
   void *ctx = 0;
   int i;

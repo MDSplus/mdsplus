@@ -62,8 +62,10 @@ static char *Server(char *out, char *srv){
   out[i] = 0;
   return out;
 }
-
+extern void serverDisarmDispatchTable(void *vtable);
 EXPORT int ServerDispatchClose(void *vtable){
+  if (!vtable) return MDSplusSUCCESS;
+  serverDisarmDispatchTable(vtable);
   char server[33];
   DispatchTable *table = (DispatchTable *) vtable;
   ActionInfo *action = table->actions;
