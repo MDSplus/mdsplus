@@ -36,6 +36,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libroutines.h>
 #include <strroutines.h>
 
+//#define DEBUG
+#ifdef DEBUG
+# define DBG(...) fprintf(stderr,__VA_ARGS__)
+#define DEBUG_GIL_CHECK if (PyGILState_Check)fprintf(stderr,"INFO: thread 0x%"PRIxPTR" holds GIL 0x%"PRIxPTR": %c\n",(uintptr_t)pthread_self(), (uintptr_t)GIL, "ny"[PyGILState_Check()!=0]);
+#else
+# define DBG(...) {/**/}
+#define DEBUG_GIL_CHECK
+#endif
+
 #ifdef _WIN32
 #define USE_EXECFILE	/* windows cannot use PyRun_File because if crashes on _lockfile */
 #else
@@ -64,6 +73,7 @@ static void          (*PyErr_Print) () = NULL;
 static PyObject*     (*PyImport_ImportModule) () = NULL;
 static PyThreadState*(*PyGILState_Ensure)() = NULL;
 static void          (*PyGILState_Release)(PyThreadState *) = NULL;
+static int           (*PyGILState_Check)() = NULL; // new in python 3.4 and required for 3.7
 
 //loadPyFunction
 static int       (*PyCallable_Check) () = NULL;
@@ -185,18 +195,37 @@ inline static void initialize(){
   loadrtn(_Py_fopen_obj, 0);
   loadrtn(PyRun_SimpleFileExFlags, 1);
 #endif
+  loadrtn(PyGILState_Check, 0);
   loadrtn(PyGILState_Release, 1);
   loadrtn(PyGILState_Ensure, 1);
   if (old_state != PTHREAD_CANCEL_DISABLE)
     pthread_setcancelstate(old_state,NULL);
 }
 
+static void PyGILState_Cleanup(void *GIL){
+  DBG("PyGILState_Cleanup(0x%"PRIxPTR") 0x%"PRIxPTR"\n",(uintptr_t)GIL,(uintptr_t)pthread_self());
+  if (PyGILState_Check && PyGILState_Check()) {
+    fprintf(stderr,"FATAL: thread 0x%"PRIxPTR" still holds 0xGIL %"PRIxPTR"; ABORT\n",(uintptr_t)pthread_self(),(uintptr_t)GIL);
+    abort();
+  }
+}
+
+#define PYTHON_OPEN \
+if (PyGILState_Ensure) { \
+  PyThreadState* GIL = PyGILState_Ensure();\
+  DBG("PyGILState_Ensured(0x%"PRIxPTR") 0x%"PRIxPTR"\n",(uintptr_t)GIL,(uintptr_t)pthread_self());\
+  pthread_cleanup_push(PyGILState_Cleanup,(void*)GIL);//"
+
+#define PYTHON_CLOSE \
+  PyGILState_Release(GIL);\
+  DBG("PyGILState_Released(0x%"PRIxPTR") 0x%"PRIxPTR"\n",(uintptr_t)GIL,(uintptr_t)pthread_self());\
+  pthread_cleanup_pop(0);\
+  DEBUG_GIL_CHECK;\
+}//"
+
 static void importMDSplus() {// used in once
-  int old_state = PTHREAD_CANCEL_DISABLE;
-  pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,&old_state);
   initialize();
-  if (!PyGILState_Ensure) goto end_import;//loading python lib failed
-  PyThreadState *GIL = PyGILState_Ensure();
+  PYTHON_OPEN{
   PyObject *MDSplus= PyImport_ImportModule("MDSplus");
   if (MDSplus) {
     pointerToObject  = PyObject_GetAttrString(MDSplus, "pointerToObject");
@@ -219,10 +248,7 @@ static void importMDSplus() {// used in once
     fprintf(stderr,"Error loading package MDSplus, check your PYTHONPATH; very limited functionality\n");
     if (PyErr_Occurred()) PyErr_Print();
   }
-  PyGILState_Release(GIL);
-end_import: ;
-  if (old_state != PTHREAD_CANCEL_DISABLE)
-    pthread_setcancelstate(old_state,NULL);
+  }PYTHON_CLOSE;
 }
 
 static inline void importMDSplus_once() {
@@ -473,28 +499,20 @@ static inline int callPyFunction_(char *filename,int nargs, struct descriptor **
   return MDSplusSUCCESS;
 }
 
-#define PYTHON_OPEN \
-importMDSplus_once();\
-if (PyGILState_Ensure) { \
-  PyThreadState* GIL = PyGILState_Ensure();
-
-#define PYTHON_CLOSE \
-  PyGILState_Release(GIL);\
-} else status = LibNOTFOU;
-
-
 int loadPyFunction(const char *dirspec,const char *filename) {
   int status;
+  importMDSplus_once();
   PYTHON_OPEN;
     status = loadPyFunction_(dirspec,filename);
-  PYTHON_CLOSE;
+  PYTHON_CLOSE else status = LibNOTFOU;
   return status;
 }
 
 int callPyFunction(char *filename,int nargs, struct descriptor **args, struct descriptor_xd *out_ptr) {
   int status;
+  importMDSplus_once();
   PYTHON_OPEN;
     status = callPyFunction_(filename,nargs,args,out_ptr);
-  PYTHON_CLOSE;
+  PYTHON_CLOSE else status = LibNOTFOU;
   return status;
 }
