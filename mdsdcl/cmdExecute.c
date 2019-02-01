@@ -1043,6 +1043,10 @@ STATIC_THREADSAFE pthread_mutex_t SdclDocs_lock   = PTHREAD_MUTEX_INITIALIZER;
   \param error [out] An error message if trouble finding and/or parsing
                      the xml command definition file.
 */
+inline static void xmlInitParser_supp() {
+  // so it can targeted for valgrind suppression
+  xmlInitParser();
+}
 EXPORT int mdsdclAddCommands(const char *name_in, char **error)
 {
   size_t i;
@@ -1101,7 +1105,7 @@ EXPORT int mdsdclAddCommands(const char *name_in, char **error)
   }
 
   /* Initialize the xml parser */
-  xmlInitParser();
+  xmlInitParser_supp();
 
   /* Look for command definitions in $MDSPLUS_DIR/xml/ */
 

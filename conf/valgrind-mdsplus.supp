@@ -100,3 +100,12 @@
    fun:__run_exit_handlers
    fun:exit
 }
+
+{
+   fc29 xmlInitParser
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:xmlInitParser_supp
+}

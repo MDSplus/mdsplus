@@ -240,13 +240,17 @@ static const char *getProperty(xmlDocPtr doc, const char *settings, const char *
   return ans;
 }
 
+inline static void xmlInitParser_supp() {
+  // so it can targeted for valgrind suppression
+  xmlInitParser();
+}
 EXPORT void InitializeEventSettings()
 {
   pthread_mutex_lock(&init_lock);
   pthread_cleanup_push((void*)pthread_mutex_unlock,&init_lock);
   INITIALIZESOCKETS;
   int i, missing=0;
-  xmlInitParser();
+  xmlInitParser_supp();
   for (i=0;i<NUM_SETTINGS;i++) {
     settings[i]=getenv(environ_var[i]);
     if (settings[i]==NULL)
