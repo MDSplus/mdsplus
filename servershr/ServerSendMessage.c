@@ -64,6 +64,7 @@ int ServerSendMessage();
 #include <servershr.h>
 #include <mds_stdarg.h>
 #include <mdsshr.h>
+#include <libroutines.h>
 #define _NO_SERVER_SEND_MESSAGE_PROTO
 #include "servershrp.h"
 #include <stdio.h>
@@ -152,7 +153,6 @@ static void CleanupJob(int status, int jobid);
 static void ReceiverThread(void *sockptr);
 static void DoMessage(Client * c, fd_set * fdactive);
 static void RemoveClient(Client * c, fd_set * fdactive);
-static uint32_t GetHostAddr(char *host);
 static void AddClient(uint32_t addr, uint16_t port, int send_sock);
 static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fdactive);
 
@@ -627,7 +627,7 @@ static Client* get_addr_port(char* server, uint32_t*addrp, uint16_t*portp) {
     DBG("Server '%s' unknown\n", server);
     return NULL;
   }
-  addr = GetHostAddr(hostpart);
+  addr = LibGetHostAddr(hostpart);
   if (!addr) return NULL;
   if (atoi(portpart) == 0) {
     struct servent *sp = getservbyname(portpart, "tcp");
@@ -772,28 +772,6 @@ static void RemoveClient(Client * c, fd_set * fdactive) {
       RemoveJob(j);
     } else break;
   }
-}
-
-static uint32_t GetHostAddr(char *name)
-{
-  INITIALIZESOCKETS;
-  uint32_t addr = 0;
-#if defined(__MACH__) || defined(_WIN32)
-  struct hostent* hp = gethostbyname(name);
-  addr = hp ? *(int *)hp->h_addr_list[0] : (int)inet_addr(name);
-#else
-  size_t memlen;
-  struct hostent hostbuf, *hp = NULL;
-  int herr;
-  char *hp_mem = NULL;
-  FREE_ON_EXIT(hp_mem);
-  for ( memlen=1024, hp_mem=malloc(memlen);
-	hp_mem && (gethostbyname_r(name,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE);
-	memlen *= 2, free(hp_mem), hp_mem = malloc(memlen));
-  addr = hp ? *(uint32_t *)hp->h_addr_list[0] : (uint32_t)inet_addr(name);
-  FREE_NOW(hp_mem);
-#endif
-  return addr == 0xffffffff ? 0 : addr;
 }
 
 static void AddClient(unsigned int addr, uint16_t port, int conid)

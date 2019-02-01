@@ -24,6 +24,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #define _XOPEN_SOURCE_EXTENDED
 #define _GNU_SOURCE		/* glibc2 needs this */
+#define LOAD_INITIALIZESOCKETS
+#include <pthread_port.h>
+
+#ifdef _WIN32
+#include <ws2tcpip.h>
+#else
+#include <netinet/in.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <netinet/tcp.h>
+#endif
+
 #include <mdsplus/mdsconfig.h>
 #include <sys/time.h>
 #include <time.h>
@@ -42,7 +54,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef DEBUG
 # define DBG(...) fprintf(stderr,__VA_ARGS__)
 #else
-# define DBG(...) {}
+# define DBG(...) {/**/}
 #endif
 
 #ifdef _WIN32
@@ -300,6 +312,36 @@ EXPORT void *LibCallg(void **arglist, void *(*routine) ()) {
     printf("Error - currently no more than 32 arguments supported on external calls\n");
   }
   return 0;
+}
+
+EXPORT uint32_t LibGetHostAddr(char *name){
+  INITIALIZESOCKETS;
+  int addr = 0;
+#if defined(__MACH__) || defined(_WIN32)
+  struct hostent* hp = gethostbyname(name);
+  if (!hp) {
+    addr = inet_addr(name);
+    if (addr != -1)  hp = gethostbyaddr(((void *)&addr),sizeof(int),AF_INET);
+  }
+  if (hp) addr = *(int*)hp->h_addr_list[0];
+#else
+  size_t memlen;
+  struct hostent hostbuf, *hp = NULL;
+  int herr;
+  INIT_AND_FREE_ON_EXIT(void*,hp_mem);
+  for ( memlen=1024, hp_mem=malloc(memlen);
+	hp_mem && (gethostbyname_r(name,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE);
+	memlen *= 2, hp_mem = realloc(hp_mem, memlen));
+  if (!hp) {
+    addr = (int)inet_addr(name);
+    if (addr != -1) for (;
+        hp_mem && (gethostbyaddr_r(((void*)&addr),sizeof(int),AF_INET,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE);
+	memlen *= 2, hp_mem = realloc(hp_mem, memlen));
+  }
+  if (hp) addr = *(int*)hp->h_addr_list[0];
+  FREE_NOW(hp_mem);
+#endif
+  return addr == -1 ? 0 : (uint32_t)addr;
 }
 
 #ifdef _WIN32

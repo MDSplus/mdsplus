@@ -8,6 +8,7 @@ LibFindFileRecurseCaseBlind
 LibFindImageSymbol
 LibFindImageSymbolErrString
 LibFreeVm
+LibGetHostAddr
 LibGetVm
 LibInsertTree
 LibLookupTree
