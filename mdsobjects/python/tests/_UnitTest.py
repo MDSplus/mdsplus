@@ -27,16 +27,18 @@ from unittest import TestCase,TestSuite,TextTestRunner
 from MDSplus import Tree,getenv,setenv,tcl
 from threading import RLock
 from re import match
-import gc,os,sys,time,io
+import gc,os,sys,time
 
-class logger(io.FileIO):
-    def __new__(self,filename):
-        return open(filename,'w+')
+class logger(object):
+    """wrapper class to force flush on each write"""
+    def __init__(self,filename):
+        self.__f = open(filename,'w+')
     def write(self,*a,**kv):
-        super(logger,self).write(*a,**kv)
-        self.flush()
+        self.__f.write(*a,**kv)
+        self.__f.flush()
     def __enter__(self,*a,**kv): return self
     def __exit__(self,*a,**kv):  return self.close()
+    def __getattr__(self,name):  return self.__f.__getattribute__(name)
 
 class Tests(TestCase):
     debug = False
