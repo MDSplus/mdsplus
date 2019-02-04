@@ -442,10 +442,12 @@ in doing I/O to the tree files.
 
 #define DATAF_C_MAX_RECORD_SIZE (32765u - sizeof(RECORD_HEADER))
 
-#define TREE_DIRECTORY     0 // just directory
-#define TREE_TREEFILE_TYPE 1 //".tree"
-#define TREE_NCIFILE_TYPE  2 //".characteristics"
-#define TREE_DATAFILE_TYPE 3 //".datafile"
+typedef enum{
+TREE_DIRECTORY     =0, // just directory
+TREE_TREEFILE_TYPE =1,//".tree"
+TREE_NCIFILE_TYPE  =2, //".characteristics"
+TREE_DATAFILE_TYPE =3, //".datafile"
+} tree_type_t;
 #define TREE_TREEFILE_EXT  ".tree"
 #define TREE_NCIFILE_EXT   ".characteristics"
 #define TREE_DATAFILE_EXT  ".datafile"
@@ -837,6 +839,6 @@ extern int MDS_IO_EXISTS(char *filename);
 extern int MDS_IO_REMOVE(char *filename);
 extern int MDS_IO_RENAME(char *oldname, char *newname);
 extern ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *deleted);
-extern int MDS_IO_OPEN_ONE(char* filepath_in,char* treename,int shot, int type, int new, int edit_flag, char**fullpath, int*speclen, int *fd_out);
+extern int MDS_IO_OPEN_ONE(char* filepath_in,char* treename,int shot, tree_type_t type, int new, int edit_flag, char**fullpath, int*speclen, int *fd_out);
 
 #endif
