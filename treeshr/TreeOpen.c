@@ -856,7 +856,7 @@ static void init_rlimit_once(){
   }
 }
 #endif
-int OpenOne(TREE_INFO * info, TREE_INFO * root, int type, int new, int edit_flag, char**filespec, int *fd_out) {
+int OpenOne(TREE_INFO * info, TREE_INFO * root, tree_type_t type, int new, int edit_flag, char**filespec, int *fd_out) {
 /*
  * search for tree files unless filespec is preset with thick client def, i.e. ends with "::"
  */

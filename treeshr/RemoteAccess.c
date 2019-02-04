@@ -1402,15 +1402,17 @@ EXPORT int MDS_IO_RENAME(char *filename_old, char *filename_new){
 ///////////////////////////////////////////////////////////////////
 
 
-inline static char* generate_fullpath(char* filepath,char* treename,int shot, int type) {
+inline static char* generate_fullpath(char* filepath,char* treename,int shot, tree_type_t type) {
   const char treeext[] = TREE_TREEFILE_EXT;
   const char nciext[]  = TREE_NCIFILE_EXT;
   const char dataext[] = TREE_DATAFILE_EXT;
   char* ext;
-  if     (type==TREE_TREEFILE_TYPE) ext = (char*)treeext;
-  else if(type==TREE_NCIFILE_TYPE ) ext = (char*)nciext;
-  else if(type==TREE_DATAFILE_TYPE) ext = (char*)dataext;
-  else  return strdup(filepath);
+  switch(type) {
+    case TREE_TREEFILE_TYPE:	ext = (char*)treeext;	break;
+    case TREE_NCIFILE_TYPE:	ext = (char*)nciext;	break;
+    case TREE_DATAFILE_TYPE:	ext = (char*)dataext;	break;
+    default:  return strdup(filepath);
+  }
   char name[40];
   if (shot > 999)
     sprintf(name, "%s_%d", treename, shot);
@@ -1462,7 +1464,7 @@ static void getOptionsMode(int new,int edit,int*options,int*mode) {
   }
 }
 
-inline static int io_open_one_remote(char *host,char *filepath,char* treename,int shot,int type,int new,int edit,char**fullpath,int*conid,int*fd,int*enhanced){
+inline static int io_open_one_remote(char *host,char *filepath,char* treename,int shot,tree_type_t type,int new,int edit,char**fullpath,int*conid,int*fd,int*enhanced){
   int status;
   static int (*GetConnectionVersion)(int) = NULL;
   status = LibFindImageSymbol_C("MdsIpShr","GetConnectionVersion",&GetConnectionVersion);
@@ -1513,7 +1515,7 @@ inline static int io_open_one_remote(char *host,char *filepath,char* treename,in
 
 extern char* MaskReplace(char*,char*,int);
 #include <ctype.h>
-EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, int type, int new, int edit, char**filespec, int*speclen, int *idx){
+EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, tree_type_t type, int new, int edit, char**filespec, int*speclen, int *idx){
   int status;
   INIT_AND_FREE_ON_EXIT(char*,fullpath);
   status = TreeSUCCESS;
