@@ -46,4 +46,29 @@ typedef enum {
 #define MDSIP_VERSION_OPEN_ONE 2
 #define MDSIP_VERSION MDSIP_VERSION_OPEN_ONE
 
+#define MAX_DIMS_R 7
+
+
+typedef union{
+int dims[MAX_DIMS_R];
+uint32_t length;
+struct{uint32_t length;int options;int mode;}			open;
+struct{uint32_t length;int fd;}					close;
+struct{uint32_t length;int fd;int64_t offset;int whence;}	lseek;
+struct{uint32_t length;int fd;uint32_t count;}			read;
+struct{uint32_t count;int fd;}					write;
+struct{uint32_t length;int fd;int64_t offset;uint32_t size;int mode;} lock;
+struct{uint32_t length;}					exists;
+struct{uint32_t length;}					remove;
+struct{uint32_t length;}					rename;
+struct{uint32_t length;int fd;int64_t offset;uint32_t count;}	read_x;
+struct{uint32_t length;}					parallel;
+struct{uint32_t length;int shot;int type;int new;int edit;}	open_one;
+} mdsio_t;
+
+#ifdef WORDS_BIGENDIAN
+#define SWAP_INT_IF_BIGENDIAN(pointer) {int*ptr=(int*)(pointer),tmp=ptr[0];ptr[0]=ptr[1];ptr[0]=tmp;}
+#else
+#define SWAP_INT_IF_BIGENDIAN(...) {/**/}
+#endif
 #endif // DOXYGEN end of hidden code

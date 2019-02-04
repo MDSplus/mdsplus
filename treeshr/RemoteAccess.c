@@ -957,11 +957,12 @@ EXPORT int MDS_IO_FD(int idx){
 
 static int (*SendArg)() = NULL;
 static int (*GetAnswerInfoTS)() = NULL;
-static inline int mds_io_request(int conid, mds_io_mode idx, char nargs, int* args,char* din,int*bytes,char**dout,void**m){
+static inline int mds_io_request(int conid, mds_io_mode idx, size_t size, mdsio_t* mdsio,char* din,int*bytes,char**dout,void**m){
   int status;
   static pthread_mutex_t io_lock = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_lock(&io_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&io_lock);
-  status = SendArg(conid, (int)idx, 0, 0, 0, nargs, args, din);
+  char nargs = size/sizeof(int);
+  status = SendArg(conid, (int)idx, 0, 0, 0, nargs, mdsio->dims, din);
   if STATUS_NOT_OK {
     if (idx!=MDS_IO_CLOSE_K) fprintf(stderr, "Error in SendArg: mode = %d, status = %d\n", idx, status);
     RemoteAccessDisconnect(conid, 1);
@@ -977,20 +978,20 @@ static inline int mds_io_request(int conid, mds_io_mode idx, char nargs, int* ar
   return status;
 }
 
-EXPORT int MdsIoRequest(int conid, mds_io_mode idx, char nargs, int* args,char* din,int*bytes,char**dout,void**m){
+EXPORT int MdsIoRequest(int conid, mds_io_mode idx, size_t size, mdsio_t* mdsio,char* din,int*bytes,char**dout,void**m){
   int status = LibFindImageSymbol_C("MdsIpShr", "SendArg", &SendArg);
   if STATUS_NOT_OK return status;
   status = LibFindImageSymbol_C("MdsIpShr", "GetAnswerInfoTS", &GetAnswerInfoTS);
   if STATUS_NOT_OK return status;
-  return mds_io_request(conid,idx,nargs,args,din,bytes,dout,m);
+  return mds_io_request(conid,idx,size,mdsio,din,bytes,dout,m);
 }
 
-inline static int io_open_request(int conid,int*enhanced,size_t sinfo,int*info,char*filename){
+inline static int io_open_request(int conid,int*enhanced,size_t size,mdsio_t*mdsio,char*filename){
   int fd;
   INIT_AND_FREE_ON_EXIT(void*,msg);
   int len;
   char *dout;
-  int status = MdsIoRequest(conid, MDS_IO_OPEN_K,sinfo,info,filename,&len,&dout,&msg);
+  int status = MdsIoRequest(conid, MDS_IO_OPEN_K,size,mdsio,filename,&len,&dout,&msg);
   if (STATUS_OK && sizeof(int)==len) {
     fd = *(int*)dout;
     *enhanced = status == 3;
@@ -1003,25 +1004,22 @@ inline static int io_open_request(int conid,int*enhanced,size_t sinfo,int*info,c
 
 inline static int io_open_remote(char *host, char *filename, int options, mode_t mode, int *conid, int *enhanced){
   int fd;
-  int info[3];
-  info[0] = (int)strlen(filename) + 1;
+  mdsio_t mdsio = { .open={ .length=strlen(filename)+1, .options=0, .mode=mode } };
   if (O_CREAT == 0x0200) {	/* BSD */
     if (options & O_CREAT) options = (options & ~O_CREAT) | 0100;
     if (options & O_TRUNC) options = (options & ~O_TRUNC) | 01000;
     if (options & O_EXCL)  options = (options & ~O_EXCL)  | 0200;
   }
-  info[1] = 0;
-  if (options & O_CREAT)  info[1]|= MDS_IO_O_CREAT;
-  if (options & O_TRUNC)  info[1]|= MDS_IO_O_TRUNC;
-  if (options & O_EXCL)	  info[1]|= MDS_IO_O_EXCL;
-  if (options & O_WRONLY) info[1]|= MDS_IO_O_WRONLY;
-  if (options & O_RDONLY) info[1]|= MDS_IO_O_RDONLY;
-  if (options & O_RDWR)	  info[1]|= MDS_IO_O_RDWR;
-  info[2] = (int)mode;
+  if (options & O_CREAT)  mdsio.open.options|= MDS_IO_O_CREAT;
+  if (options & O_TRUNC)  mdsio.open.options|= MDS_IO_O_TRUNC;
+  if (options & O_EXCL)	  mdsio.open.options|= MDS_IO_O_EXCL;
+  if (options & O_WRONLY) mdsio.open.options|= MDS_IO_O_WRONLY;
+  if (options & O_RDONLY) mdsio.open.options|= MDS_IO_O_RDONLY;
+  if (options & O_RDWR)   mdsio.open.options|= MDS_IO_O_RDWR;
   if (*conid == -1)
     *conid = RemoteAccessConnect(host, 1, 0);
   if (*conid != -1) {
-    fd = io_open_request(*conid,enhanced,sizeof(info)/sizeof(*info),info,filename);
+    fd = io_open_request(*conid,enhanced,sizeof(mdsio.open),&mdsio,filename);
     if (fd<0)
       RemoteAccessDisconnect(*conid, B_FALSE);
   } else {
@@ -1072,8 +1070,8 @@ inline static int io_close_remote(int conid,int fd){
   INIT_AND_FREE_ON_EXIT(void*,msg);
   int len;
   char *dout;
-  int info[] = { 0, fd };
-  int status = MdsIoRequest(conid, MDS_IO_CLOSE_K,sizeof(info)/sizeof(*info),info,NULL,&len,&dout,&msg);
+  mdsio_t mdsio = { .close = { .fd=fd } };
+  int status = MdsIoRequest(conid, MDS_IO_CLOSE_K,sizeof(mdsio.close),&mdsio,NULL,&len,&dout,&msg);
   if (STATUS_OK) RemoteAccessDisconnect(conid, 0);
   if (STATUS_OK && sizeof(int)==len) {
     ret = *(int*)dout;
@@ -1093,18 +1091,11 @@ EXPORT int MDS_IO_CLOSE(int idx){
 inline static off_t io_lseek_remote(int conid,int fd, off_t offset, int whence) {
   off_t ret;
   INIT_AND_FREE_ON_EXIT(void*,msg);
-  int info[] = { 0, fd, 0, 0, whence };
-  *(off_t *) (&info[2]) = offset;
-#ifdef WORDS_BIGENDIAN
-  {
-    int tmp = info[2];
-    info[2] = info[3];
-    info[3] = tmp;
-  }
-#endif
+  mdsio_t mdsio = { .lseek = { .fd=fd, .offset=offset, .whence=whence } };
+  SWAP_INT_IF_BIGENDIAN(&mdsio.lseek.offset);
   int len;
   char *dout;
-  int status = MdsIoRequest(conid, MDS_IO_LSEEK_K,sizeof(info)/sizeof(*info),info,NULL,&len,&dout,&msg);
+  int status = MdsIoRequest(conid, MDS_IO_LSEEK_K,sizeof(mdsio.lseek),&mdsio,NULL,&len,&dout,&msg);
   if (STATUS_OK)
          if (sizeof(int32_t)==len)      ret = (off_t)*(int32_t*)dout;
     else if (sizeof(int64_t)==len)      ret = (off_t)*(int64_t*)dout;
@@ -1124,10 +1115,10 @@ EXPORT off_t MDS_IO_LSEEK(int idx, off_t offset, int whence){
 inline static ssize_t io_write_remote(int conid, int fd, void *buff, size_t count){
   ssize_t ret;
   INIT_AND_FREE_ON_EXIT(void*,msg);
-  int info[] = { (int)count, fd };
+  mdsio_t mdsio = { .write = { .fd=fd, .count=count } };
   int len;
   char *dout;
-  int status =  MdsIoRequest(conid, MDS_IO_WRITE_K,sizeof(info)/sizeof(*info),info,buff,&len,&dout,&msg);
+  int status =  MdsIoRequest(conid, MDS_IO_WRITE_K,sizeof(mdsio.write),&mdsio,buff,&len,&dout,&msg);
   if STATUS_OK {
          if(len==sizeof(int32_t))	ret = (ssize_t)*(int32_t*)dout;
     else if(len==sizeof(int64_t))	ret = (ssize_t)*(int64_t*)dout;
@@ -1151,10 +1142,10 @@ EXPORT ssize_t MDS_IO_WRITE(int idx, void *buff, size_t count){
 inline static ssize_t io_read_remote(int conid, int fd, void *buff, size_t count){
   ssize_t ret;
   INIT_AND_FREE_ON_EXIT(void*,msg);
-  int info[] = { 0, fd, (int)count };
+  mdsio_t mdsio = { .read = { .fd=fd, .count=count } };
   int len;
   char*dout;
-  int status =  MdsIoRequest(conid, MDS_IO_READ_K,sizeof(info)/sizeof(*info),info,NULL,&len,&dout,&msg);
+  int status =  MdsIoRequest(conid, MDS_IO_READ_K,sizeof(mdsio.read),&mdsio,NULL,&len,&dout,&msg);
   if STATUS_OK {
     ret = (ssize_t) len;
     memcpy(buff, dout, ret);
@@ -1171,23 +1162,17 @@ EXPORT ssize_t MDS_IO_READ(int idx, void *buff, size_t count){
 #ifdef USE_PERF
   TreePerfRead(count);
 #endif
-  return read(i.fd, buff, (unsigned int)count);
+  return read(i.fd, buff, count);
 }
 
 inline static ssize_t io_read_x_remote(int conid, int fd, off_t offset, void *buff, size_t count, int *deleted){
   ssize_t ret;
   INIT_AND_FREE_ON_EXIT(void*,msg);
-  int info[] = { 0, fd, 0, 0, (int)count};
-  int status;
-  *(off_t *) (&info[2]) = offset;
-#ifdef WORDS_BIGENDIAN
-  status = info[2];
-  info[2] = info[3];
-  info[3] = status;
-#endif
+  mdsio_t mdsio = { .read_x = { .fd=fd, .offset=offset, .count=count } };
+  SWAP_INT_IF_BIGENDIAN(&mdsio.read_x.offset);
   int len;
   char*dout;
-  status =  MdsIoRequest(conid, MDS_IO_READ_X_K,sizeof(info)/sizeof(*info),info,NULL,&len,&dout,&msg);
+  int status =  MdsIoRequest(conid, MDS_IO_READ_X_K,sizeof(mdsio.read_x),&mdsio,NULL,&len,&dout,&msg);
   if STATUS_OK {
     if (deleted) *deleted = status == 3;
     ret = (ssize_t)len;
@@ -1227,17 +1212,11 @@ EXPORT ssize_t MDS_IO_READ_X(int idx, off_t offset, void *buff, size_t count, in
 inline static int io_lock_remote(fdinfo_t fdinfo, off_t offset, size_t size, int mode, int *deleted){
   int ret;
   INIT_AND_FREE_ON_EXIT(void*,msg);
-  int info[] = { 0, fdinfo.fd, 0, 0, (int)size, mode };
-  int status;
-  *(off_t *) (&info[2]) = offset;
-#ifdef WORDS_BIGENDIAN
-  status = info[2];
-  info[2] = info[3];
-  info[3] = status;
-#endif
+  mdsio_t mdsio = { .lock = { .fd=fdinfo.fd, .offset=offset, .size=size, .mode=mode } };
+  SWAP_INT_IF_BIGENDIAN(&mdsio.lock.offset);
   int len;
   char*dout;
-  status =  MdsIoRequest(fdinfo.conid, MDS_IO_LOCK_K,sizeof(info)/sizeof(*info),info,NULL,&len,&dout,&msg);
+  int status =  MdsIoRequest(fdinfo.conid, MDS_IO_LOCK_K,sizeof(mdsio.lock),&mdsio,NULL,&len,&dout,&msg);
   if (STATUS_OK && len==sizeof(ret)) {
     if (deleted) *deleted = status == 3;
     ret = *(int*)dout;
@@ -1295,10 +1274,10 @@ inline static int io_exists_remote(char *host, char *filename){
   INIT_AND_FREE_ON_EXIT(void*,msg);
   int conid = RemoteAccessConnect(host, 1, 0);
   if (conid != -1) {
-    int info[] = { (int)strlen(filename) + 1 };
+    mdsio_t mdsio = { .exists = { .length = strlen(filename) + 1 } };
     int len;
     char*dout;
-    int status = MdsIoRequest(conid,MDS_IO_EXISTS_K,sizeof(info)/sizeof(*info),info,filename,&len,&dout,&msg);
+    int status = MdsIoRequest(conid,MDS_IO_EXISTS_K,sizeof(mdsio.exists),&mdsio,filename,&len,&dout,&msg);
     if (STATUS_OK && len==sizeof(int))
 	 ret = *(int*)dout;
     else ret = 0;
@@ -1329,10 +1308,10 @@ inline static int io_remove_remote(char *host, char *filename){
   INIT_AND_FREE_ON_EXIT(void*,msg);
   int conid = RemoteAccessConnect(host, 1, 0);
   if (conid != -1) {
-    int info[] = { (int)strlen(filename) + 1 };
+    mdsio_t mdsio = { .remove = { .length = strlen(filename) + 1 } };
     int len;
     char*dout;
-    int status = MdsIoRequest(conid,MDS_IO_REMOVE_K,sizeof(info)/sizeof(*info),info,filename,&len,&dout,&msg);
+    int status = MdsIoRequest(conid,MDS_IO_REMOVE_K,sizeof(mdsio.remove),&mdsio,filename,&len,&dout,&msg);
     if (STATUS_OK && len==sizeof(int))
 	 ret = *(int*)dout;
     else ret = -1;
@@ -1361,12 +1340,12 @@ inline static int io_rename_remote(char *host, char *filename_old, char *filenam
   if (conid != -1) {
     INIT_AND_FREE_ON_EXIT(char*,names);
     INIT_AND_FREE_ON_EXIT(void*,msg);
-    int info[] = { (int)(strlen(filename_old) + 1 + strlen(filename_new) + 1) };
-    names = strcpy(malloc(info[0]), filename_old);
+    mdsio_t mdsio = { .rename = { .length = strlen(filename_old) + 1 + strlen(filename_new) + 1 } };
+    names = strcpy(malloc(mdsio.length), filename_old);
     strcpy(&names[strlen(filename_old) + 1], filename_new);
     int len;
     char*dout;
-    int status = MdsIoRequest(conid,MDS_IO_RENAME_K,sizeof(info)/sizeof(*info),info,names,&len,&dout,&msg);
+    int status = MdsIoRequest(conid,MDS_IO_RENAME_K,sizeof(mdsio.rename),&mdsio,names,&len,&dout,&msg);
     if (STATUS_OK && len==sizeof(int))
 	 ret = *(int*)dout;
     else ret = -1;
@@ -1433,12 +1412,12 @@ inline static char* generate_fullpath(char* filepath,char* treename,int shot, tr
   return resnam;
 }
 
-inline static int io_open_one_request(int conid,size_t sinfo,int*info,char*data,char*host,int *enhanced,char**fullpath,int *fd_out){
+inline static int io_open_one_request(int conid,size_t size,mdsio_t*mdsio,char*data,char*host,int *enhanced,char**fullpath,int *fd_out){
   int status;
   INIT_AND_FREE_ON_EXIT(void*,msg);
   int len;
   int*dout;
-  status = MdsIoRequest(conid,MDS_IO_OPEN_ONE_K,sinfo,info,data,&len,(char**)&dout,&msg);
+  status = MdsIoRequest(conid,MDS_IO_OPEN_ONE_K,size,mdsio,data,&len,(char**)&dout,&msg);
   if (STATUS_OK && len>=8) {
     *enhanced = status == 3;
     status = *(dout++);
@@ -1500,8 +1479,8 @@ inline static int io_open_one_remote(char *host,char *filepath,char* treename,in
       INIT_AS_AND_FREE_ON_EXIT(char*,data,malloc(totlen));
       strcpy(data,       treename);
       strcpy(data+len+1,filepath);
-      int info[] = {totlen,shot,type,new,edit};
-      status = io_open_one_request(*conid,sizeof(info)/sizeof(*info),info,data,host,enhanced,fullpath,fd);
+      mdsio_t mdsio = { .open_one = { .length=totlen , .shot=shot , .type=(int)type, .new=new, .edit=edit } };
+      status = io_open_one_request(*conid,sizeof(mdsio.open_one),&mdsio,data,host,enhanced,fullpath,fd);
       FREE_NOW(data);
       if (*fd<0)
         RemoteAccessDisconnect(*conid, B_FALSE);
