@@ -261,10 +261,6 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
       case DTYPE_L:
 	int_ris[0] = *((int *)xd.pointer->pointer);
 	break;
-      case DTYPE_OU:
-      case DTYPE_O:
-	int_ris[0] = (int)*((int64_t*)xd.pointer->pointer);
-	break;
       case DTYPE_F:
       case DTYPE_FS:
 	int_ris[0] = *((int *)xd.pointer->pointer);
