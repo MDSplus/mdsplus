@@ -1097,10 +1097,10 @@ inline static off_t io_lseek_remote(int conid,int fd, off_t offset, int whence) 
   char *dout;
   int status = MdsIoRequest(conid, MDS_IO_LSEEK_K,sizeof(mdsio.lseek),&mdsio,NULL,&len,&dout,&msg);
   if (STATUS_OK)
-         if (sizeof(int32_t)==len)      ret = (off_t)*(int32_t*)dout;
-    else if (sizeof(int64_t)==len)      ret = (off_t)*(int64_t*)dout;
-    else                                ret = -1;
-  else                                  ret = -1;
+         if(len==sizeof(int32_t)){	ret = (off_t)*(int32_t*)dout; fprintf(stderr, "Server return 4 byte offset. Please update MDSplus on server if possible.");}
+    else if(len==sizeof(int64_t))	ret = (off_t)*(int64_t*)dout;
+    else				ret = -1;
+  else					ret = -1;
   FREE_NOW(msg);
   return ret;
 }

@@ -1029,12 +1029,13 @@ Message *ProcessMessage(Connection * connection, Message * message)
   else {
 
     connection->client_type = message->h.client_type;
+    const mdsio_t* mdsio = (mdsio_t*)message->h.dims;
     switch (message->h.descriptor_idx) {
     case MDS_IO_OPEN_K:
       {
 	char *filename = (char *)message->bytes;
-	int options = message->h.dims[1];
-	mode_t mode = message->h.dims[2];
+	int options = mdsio->open.options;
+	mode_t mode = mdsio->open.mode;
 	int fopts = 0;
 	if (options & MDS_IO_O_CREAT)	fopts|= O_CREAT;
 	if (options & MDS_IO_O_TRUNC)	fopts|= O_TRUNC;
@@ -1043,51 +1044,43 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	if (options & MDS_IO_O_RDONLY)fopts|= O_RDONLY;
 	if (options & MDS_IO_O_RDWR)	fopts|= O_RDWR;
 	int fd = MDS_IO_OPEN(filename, fopts , mode);
-        DESCRIPTOR_LONG(fd_d, (char *)&fd);
-        ans = BuildResponse(connection->client_type, connection->message_id, 3, (struct descriptor *)&fd_d);
+        struct descriptor ans_d = { 4, DTYPE_L, CLASS_S, (char *)&fd};
+        ans = BuildResponse(connection->client_type, connection->message_id, 3, &ans_d);
 	break;
       }
     case MDS_IO_CLOSE_K:
       {
-	int stat = MDS_IO_CLOSE(message->h.dims[1]);
-	DESCRIPTOR_LONG(stat_d, (char *)&stat);
-	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&stat_d);
+	int fd = mdsio->close.fd;
+	int ans_o = MDS_IO_CLOSE(fd);
+	struct descriptor ans_d = { 4, DTYPE_L, CLASS_S, (char *)&ans_o};
+	ans = BuildResponse(connection->client_type, connection->message_id, 1, &ans_d);
 	break;
       }
     case MDS_IO_LSEEK_K:
       {
-	int fd = message->h.dims[1];
-	off_t offset;
-	int whence = message->h.dims[4];
-	int64_t ans_o;
+	int fd = mdsio->lseek.fd;
+        int64_t offset = mdsio->lseek.offset;
+        SWAP_INT_IF_BIGENDIAN(&offset);
+	int whence = mdsio->lseek.whence;
+	int64_t ans_o = MDS_IO_LSEEK(fd, offset, whence);
 	struct descriptor ans_d = { 8, DTYPE_Q, CLASS_S, 0 };
-#ifdef WORDS_BIGENDIAN
-	int tmp;
-	tmp = message->h.dims[2];
-	message->h.dims[2] = message->h.dims[3];
-	message->h.dims[3] = tmp;
-#endif
-	offset = (off_t) * (int64_t *) & message->h.dims[2];
-	ans_o = MDS_IO_LSEEK(fd, offset, whence);
 	ans_d.pointer = (char *)&ans_o;
 	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&ans_d);
+	SWAP_INT_IF_BIGENDIAN(ans_d.pointer);
 	break;
       }
     case MDS_IO_READ_K:
       {
-	int fd = message->h.dims[1];
-	void *buf = malloc(message->h.dims[2]);
-	size_t num = (size_t) message->h.dims[2];
-	ssize_t nbytes = MDS_IO_READ(fd, buf, num);
+        int fd = mdsio->read.fd;
+	size_t count =  mdsio->read.count;
+	void *buf = malloc(count);
+	ssize_t nbytes = MDS_IO_READ(fd, buf, count);
 #ifdef USE_PERF
 	TreePerfRead(nbytes);
 #endif
 	if (nbytes > 0) {
-	  DESCRIPTOR_A(ans_d, 1, DTYPE_B, 0, 0);
-	  if ((size_t)nbytes != num)
-	    perror("READ_K wrong byte count");
-	  ans_d.pointer = buf;
-	  ans_d.arsize = nbytes;
+	  DESCRIPTOR_A(ans_d, 1, DTYPE_B, buf, nbytes);
+	  if ((size_t)nbytes != count) perror("READ_K wrong byte count");
 	  ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&ans_d);
 	} else {
 	  DESCRIPTOR(ans_d, "");
@@ -1098,80 +1091,67 @@ Message *ProcessMessage(Connection * connection, Message * message)
       }
     case MDS_IO_WRITE_K:
       {
-	ssize_t nbytes = MDS_IO_WRITE(message->h.dims[1], message->bytes, (size_t) message->h.dims[0]);
-	DESCRIPTOR_LONG(ans_d, 0);
-	ans_d.pointer = (char *)&nbytes;
-	if (nbytes != (ssize_t) message->h.dims[0])
-	  perror("WRITE_K wrong byte count");
-	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&ans_d);
+	int fd = mdsio->write.fd;
+	size_t count = mdsio->write.count;
+	int64_t ans_o = (int64_t)MDS_IO_WRITE(fd, message->bytes, count);
+	struct descriptor ans_d = { 8, DTYPE_Q, CLASS_S, (char*)&ans_o };
+	SWAP_INT_IF_BIGENDIAN(ans_d.pointer);
+	if (ans_o != (int64_t)count) perror("WRITE_K wrong byte count");
+	ans = BuildResponse(connection->client_type, connection->message_id, 1, &ans_d);
 	break;
       }
     case MDS_IO_LOCK_K:
       {
-	int fd = message->h.dims[1];
-	int64_t offset;
-	int size = message->h.dims[4];
-	int mode_in = message->h.dims[5];
-	int mode = mode_in & 0x3;
-	int nowait = mode_in & 0x8;
+	int fd = mdsio->lock.fd;
+	off_t offset= mdsio->lock.offset;
+	SWAP_INT_IF_BIGENDIAN(&offset);
+	int size    = mdsio->lock.size;
+	int mode_in = mdsio->lock.mode;
+	int mode    = mode_in & 0x3;
+	int nowait  = mode_in & 0x8;
 	int deleted;
-	DESCRIPTOR_LONG(ans_d, 0);
-#ifdef WORDS_BIGENDIAN
-	offset = ((int64_t) message->h.dims[2]) << 32 | message->h.dims[3];
-#else
-	offset = ((int64_t) message->h.dims[3]) << 32 | message->h.dims[2];
-#endif
-	int status = MDS_IO_LOCK(fd, offset, size, mode | nowait, &deleted);
-	ans_d.pointer = (char *)&status;
-	ans = BuildResponse(connection->client_type, connection->message_id, deleted ? 3 : 1, (struct descriptor *)&ans_d);
+	int ans_o = MDS_IO_LOCK(fd, offset, size, mode | nowait, &deleted);
+	struct descriptor ans_d = { 4, DTYPE_L, CLASS_S, (char*)&ans_o };
+	ans = BuildResponse(connection->client_type, connection->message_id, deleted ? 3 : 1, &ans_d);
 	break;
       }
     case MDS_IO_EXISTS_K:
       {
 	char *filename = message->bytes;
-	int status = MDS_IO_EXISTS(filename);
-	DESCRIPTOR_LONG(status_d, 0);
-	status_d.pointer = (char *)&status;
-	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&status_d);
+	int ans_o = MDS_IO_EXISTS(filename);
+	struct descriptor ans_d = { 4, DTYPE_L, CLASS_S, (char*)&ans_o };
+	ans = BuildResponse(connection->client_type, connection->message_id, 1, &ans_d);
 	break;
       }
     case MDS_IO_REMOVE_K:
       {
-	char *filename=message->bytes;
-	int status = MDS_IO_REMOVE(filename);
-	DESCRIPTOR_LONG(status_d, 0);
-	status_d.pointer = (char *)&status;
-	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&status_d);
+	char *filename = message->bytes;
+	int ans_o = MDS_IO_REMOVE(filename);
+	struct descriptor ans_d = { 4, DTYPE_L, CLASS_S, (char*)&ans_o };
+	ans = BuildResponse(connection->client_type, connection->message_id, 1, &ans_d);
 	break;
       }
     case MDS_IO_RENAME_K:
       {
-	DESCRIPTOR_LONG(status_d, 0);
 	char *old = message->bytes;
 	char *new = message->bytes + strlen(old) + 1;
-	int status = MDS_IO_RENAME(old,new);
-	status_d.pointer = (char *)&status;
-	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&status_d);
+	int ans_o = MDS_IO_RENAME(old,new);
+	struct descriptor ans_d = { 4, DTYPE_L, CLASS_S, (char*)&ans_o };
+	ans = BuildResponse(connection->client_type, connection->message_id, 1, &ans_d);
 	break;
       }
     case MDS_IO_READ_X_K:
       {
-	int fd = message->h.dims[1];
-	off_t offset;
-	void *buf = malloc(message->h.dims[4]);
-	size_t num = (size_t) message->h.dims[4];
-	ssize_t nbytes;
+	int fd = mdsio->read_x.fd;
+	off_t offset = mdsio->read_x.offset;
+	SWAP_INT_IF_BIGENDIAN(&offset);
+	size_t count = mdsio->read_x.count;
+	void *buf = malloc(count);
 	int deleted;
-#ifdef WORDS_BIGENDIAN
-        offset = ((int64_t) message->h.dims[2]) << 32 | message->h.dims[3];
-#else
-        offset = ((int64_t) message->h.dims[3]) << 32 | message->h.dims[2];
-#endif
-        nbytes = MDS_IO_READ_X(fd, offset,buf,num,&deleted);
+        size_t nbytes = MDS_IO_READ_X(fd, offset,buf,count,&deleted);
 	if (nbytes > 0) {
-	  DESCRIPTOR_A(ans_d, 1, DTYPE_B, 0, 0);
-	  ans_d.pointer = buf;
-	  ans_d.arsize = nbytes;
+	  DESCRIPTOR_A(ans_d, 1, DTYPE_B, buf, nbytes);
+	  if ((size_t)nbytes != count) perror("READ_X_K wrong byte count");
 	  ans = BuildResponse(connection->client_type, connection->message_id, deleted ? 3 : 1, (struct descriptor *)&ans_d);
 	} else {
 	  DESCRIPTOR(ans_d, "");
@@ -1184,10 +1164,10 @@ Message *ProcessMessage(Connection * connection, Message * message)
       {
         char *treename= message->bytes;
         char *filepath= message->bytes+strlen(treename)+1;
-        int shot      = message->h.dims[1];
-        int type      = message->h.dims[2];
-        int new       = message->h.dims[3];
-        int edit_flag = message->h.dims[4];
+        int shot = mdsio->open_one.shot;
+        tree_type_t type = (tree_type_t)mdsio->open_one.type;
+        int new =  mdsio->open_one.new;
+        int edit_flag = mdsio->open_one.edit;
         int fd;
         char*fullpath = NULL;
         int status = MDS_IO_OPEN_ONE(filepath,treename,shot,type,new,edit_flag,&fullpath,NULL,&fd);
@@ -1206,10 +1186,9 @@ Message *ProcessMessage(Connection * connection, Message * message)
       }
     default:
       {
-	DESCRIPTOR_LONG(status_d, 0);
-	int status = 0;
-	status_d.pointer = (char *)&status;
-	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&status_d);
+	int ans_o = 0;
+	struct descriptor ans_d = { 4, DTYPE_L, CLASS_S, (char*)&ans_o };
+	ans = BuildResponse(connection->client_type, connection->message_id, 1, &ans_d);
 	break;
       }
     }
