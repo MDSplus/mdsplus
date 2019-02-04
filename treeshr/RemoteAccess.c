@@ -28,7 +28,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # include <wspiapi.h>
 # include <windows.h>
 #endif
-#include "treeshrp.h"
 #include <mdsplus/mdsconfig.h>
 #include <mdstypes.h>
 #include <pthread.h>
@@ -47,6 +46,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libroutines.h>
 #include <inttypes.h>
 #include <ctype.h>
+#include "treeshrp.h"
 
 //#define DEBUG
 #ifdef DEBUG
