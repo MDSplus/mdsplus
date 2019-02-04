@@ -62,7 +62,7 @@ struct{uint32_t length;}					exists;
 struct{uint32_t length;}					remove;
 struct{uint32_t length;}					rename;
 struct{uint32_t length;int fd;int64_t offset;uint32_t count;}	read_x;
-struct{uint32_t length;}					parallel;
+//struct{uint32_t length;}					parallel;
 struct{uint32_t length;int shot;int type;int new;int edit;}	open_one;
 } mdsio_t;
 
