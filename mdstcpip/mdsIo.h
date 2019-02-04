@@ -52,18 +52,17 @@ typedef enum {
 typedef union{
 int dims[MAX_DIMS_R];
 uint32_t length;
-struct{uint32_t length;int options;int mode;}			open;
-struct{uint32_t length;int fd;}					close;
-struct{uint32_t length;int fd;int64_t offset;int whence;}	lseek;
-struct{uint32_t length;int fd;uint32_t count;}			read;
-struct{uint32_t count;int fd;}					write;
-struct{uint32_t length;int fd;int64_t offset;uint32_t size;int mode;} lock;
-struct{uint32_t length;}					exists;
-struct{uint32_t length;}					remove;
-struct{uint32_t length;}					rename;
-struct{uint32_t length;int fd;int64_t offset;uint32_t count;}	read_x;
-//struct{uint32_t length;}					parallel;
-struct{uint32_t length;int shot;int type;int new;int edit;}	open_one;
+struct __attribute__((__packed__)){uint32_t length;int options;int mode;}			open;
+struct __attribute__((__packed__)){uint32_t length;int fd;}					close;
+struct __attribute__((__packed__)){uint32_t length;int fd;int64_t offset;int whence;}		lseek;
+struct __attribute__((__packed__)){uint32_t length;int fd;uint32_t count;}			read;
+struct __attribute__((__packed__)){uint32_t count;int fd;}					write;
+struct __attribute__((__packed__)){uint32_t length;int fd;int64_t offset;uint32_t size;int mode;}lock;
+struct __attribute__((__packed__)){uint32_t length;}						exists;
+struct __attribute__((__packed__)){uint32_t length;}						remove;
+struct __attribute__((__packed__)){uint32_t length;}						rename;
+struct __attribute__((__packed__)){uint32_t length;int fd;int64_t offset;uint32_t count;}	read_x;
+struct __attribute__((__packed__)){uint32_t length;int shot;int type;int new;int edit;}		open_one;
 } mdsio_t;
 
 #ifdef WORDS_BIGENDIAN
