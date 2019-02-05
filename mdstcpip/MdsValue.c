@@ -131,3 +131,17 @@ EXPORT int MdsValueDsc(int id, const char *expression, ...){
   struct descriptor_xd *ans_ptr = (struct descriptor_xd *)arglist[nargs];
   return MdsIpGetDescriptor(id,expression,nargs,arglist,ans_ptr);
 }
+
+EXPORT void MdsIpFree(void *ptr) {
+/* for compatibility malloc memory should be freed by same module/lib
+ * use MdsIpFree to free ans.ptr returned by MdsValue
+*/
+  free(ptr);
+}
+
+EXPORT void MdsIpFreeDsc(struct descriptor_xd *xd) {
+/* for compatibility malloc memory should be freed by same module/lib
+ * use MdsIpFreeDsc to free xd returned by MdsValueDsc
+*/
+  if (xd) free_xd(xd);
+}

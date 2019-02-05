@@ -175,12 +175,6 @@ struct descrip {
   void *ptr;
 };
 
-inline static void MdsIpFree(void *ptr){
-  static void (*mdsIpFree) (void *) = NULL;
-  if IS_NOT_OK(LibFindImageSymbol_C("MdsIpShr", "MdsIpFree", &mdsIpFree)) return;
-  mdsIpFree(ptr);
-}
-
 #define STR2DESCRIP(str) (struct descrip){DTYPE_T,0,{0},strlen(str),(char*)str}
 static int MdsValue(int conid, char *exp, ...){
   static int (*_mds_value) () = NULL;
@@ -208,6 +202,20 @@ static int MdsValueDsc(int conid, char* exp, ...){
   struct descrip* arglist[256];
   VA_LIST_NULL(arglist,nargs,0,-1,exp);
   return _mds_value_dsc(conid,exp,nargs,arglist,arglist[nargs]);
+}
+
+inline static void MdsIpFree(void *ptr){
+  // used to free ans.ptr returned by MdsValue
+  static void (*mdsIpFree) (void *) = NULL;
+  if IS_NOT_OK(LibFindImageSymbol_C("MdsIpShr", "MdsIpFree", &mdsIpFree)) return;
+  mdsIpFree(ptr);
+}
+
+inline static void MdsIpFreeDsc(struct descriptor_xd *xd){
+  // used to free ans.ptr returned by MdsValueDsc
+  static void (*mdsIpFreeDsc) (struct descriptor_xd *) = NULL;
+  if IS_NOT_OK(LibFindImageSymbol_C("MdsIpShr", "MdsIpFree", (void **)&mdsIpFreeDsc)) return;
+  mdsIpFreeDsc(xd);
 }
 
 inline static int tree_open(PINO_DATABASE * dblist, int conid, const char* treearg) {
@@ -314,7 +322,15 @@ int GetRecordRemote(PINO_DATABASE * dblist, int nid_in, struct descriptor_xd *ds
   int status;
   char exp[80];
   sprintf(exp, "getnci(%d,'RECORD')", nid_in);
+#ifdef STRICT_MDSIPFREE
+  EMPTYXD(ans);
+  status = MdsValueDsc(dblist->tree_info->channel, exp, &ans, NULL);
+  if STATUS_OK
+    MdsCopyDxXd(&ans,dsc);
+  MdsIpFreeDsc(&ans);
+#else
   status = MdsValueDsc(dblist->tree_info->channel, exp, dsc, NULL);
+#endif
   if (STATUS_OK && !dsc->pointer)  status = TreeNODATA;
   return status;
 }
@@ -363,7 +379,7 @@ struct _FindNodeStruct {
 int FindNodeEndRemote(PINO_DATABASE * dblist __attribute__ ((unused)), void **ctx_inout){
   struct _FindNodeStruct *ctx = (struct _FindNodeStruct *)*ctx_inout;
   if (ctx) {
-    free(ctx->ptr);
+    MdsIpFree(ctx->ptr);
     free(ctx);
     *ctx_inout = 0;
   }
@@ -408,8 +424,9 @@ char *FindNodeTagsRemote(PINO_DATABASE * dblist, int nid_in, void **ctx_ptr __at
   char *tag = 0;
   sprintf(exp, "TreeFindNodeTags(%d)", nid_in);
   MdsValue(dblist->tree_info->channel, exp, &ans, NULL);
-  if (ans.ptr && (ans.dtype == DTYPE_BU) && (strlen(ans.ptr) > 0)) {
-    tag = strcpy(malloc(strlen(ans.ptr) + 1), ans.ptr);
+  if (ans.ptr) {
+    if ((ans.dtype == DTYPE_BU) && (strlen(ans.ptr) > 0))
+      tag = strdup(ans.ptr);
     MdsIpFree(ans.ptr);
   }
   return tag;
@@ -421,9 +438,8 @@ char *AbsPathRemote(PINO_DATABASE * dblist, char const *inpatharg){
   struct descrip inpath = STR2DESCRIP(inpatharg);
   MdsValue(dblist->tree_info->channel, "TreeAbsPath($)", &inpath, &ans, NULL);
   if (ans.ptr) {
-    if (ans.dtype == DTYPE_T && (strlen(ans.ptr) > 0)) {
+    if (ans.dtype == DTYPE_T && (strlen(ans.ptr) > 0))
       retans = strcpy(malloc(strlen(ans.ptr) + 1), ans.ptr);
-    }
     MdsIpFree(ans.ptr);
   }
   return retans;
@@ -479,10 +495,13 @@ char *FindTagWildRemote(PINO_DATABASE * dblist, const char *wildarg, int *nidout
     (*ctx)->ctx = 0;
   } else if ((*ctx)->remote_tag) free((*ctx)->remote_tag);
   struct descriptor wild = {strlen(wildarg),DTYPE_T,CLASS_S,(char*)wildarg};
-  INIT_AND_FREEXD_ON_EXIT(ans);
+  EMPTYXD(ans);
   sprintf(exp,"__a=-1;__b=0x%"PRIx64"QU;__c=*;___=TreeShr->TreeFindTagWildDsc(ref($),ref(__a),ref(__b),xd(__c));execute('deallocate(\"__*\");`list(*,___,__a,__b,__c)')",(*ctx)->ctx);
   int status = MdsValueDsc(dblist->tree_info->channel, exp, &wild, &ans, NULL);
-  if STATUS_NOT_OK return (*ctx)->remote_tag = NULL;
+  if STATUS_NOT_OK {
+    (*ctx)->remote_tag = NULL;
+    goto end;
+  }
   struct descriptor** list = (struct descriptor**)ans.pointer->pointer;
   status = *(int*)list[0]->pointer;
   if (nidout) *nidout = *(int*)list[1]->pointer;
@@ -492,7 +511,8 @@ char *FindTagWildRemote(PINO_DATABASE * dblist, const char *wildarg, int *nidout
     (*ctx)->remote_tag[list[3]->length] = '\0';
   } else
    (*ctx)->remote_tag = NULL;
-  FREEXD_NOW(ans);
+end: ;
+  MdsIpFreeDsc(&ans);
   return (*ctx)->remote_tag;
 }
 
@@ -506,7 +526,8 @@ void FindTagEndRemote(void **ctx_inout)
       sprintf(exp,"TreeShr->TreeFindTagEnd(val(0x%"PRIx64"QU))",(*ctx)->ctx);
       struct descrip ans = {0};
       MdsValue((*ctx)->conid, exp, &ans, NULL);
-      free_if(&ans.ptr);
+      if (ans.ptr)
+	MdsIpFree(ans.ptr);
     }
     free(*ctx);
     *ctx = NULL;
@@ -661,7 +682,7 @@ int GetNciRemote(PINO_DATABASE * dblist, int nid_in, struct nci_itm *nci_itm)
 int PutRecordRemote(PINO_DATABASE * dblist, int nid_in, struct descriptor *dsc, int utility_update)
 {
   int status;
-  INIT_AND_FREEXD_ON_EXIT(ans);
+  EMPTYXD(ans);
   char exp[80];
   if (dsc) {
     sprintf(exp, "TreeShr->TreePutRecord(val(%d),xd($),val(%d))", nid_in, utility_update);
@@ -677,7 +698,7 @@ int PutRecordRemote(PINO_DATABASE * dblist, int nid_in, struct descriptor *dsc, 
       status = 0;
     MdsFree1Dx(&ans,NULL);
   }
-  FREEXD_NOW(ans);
+  MdsIpFreeDsc(&ans);
   return status;
 }
 
