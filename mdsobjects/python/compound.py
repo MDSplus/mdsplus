@@ -220,28 +220,38 @@ class Conglom(_dat.TreeRefX,Compound):
     """
     fields=('image','model','name','qualifiers')
     dtype_id=200
+
+    @property
+    def __model_unique(self):
+        model = str(self.model)
+        hashval = self.name.data()
+        if hashval is None:
+            return model,None
+        return model, '%s_%016x'%(model,hashval)
+
     def getDevice(self,*args,**kwargs):
         if not self.image=='__python__':
             raise _exc.DevNOT_A_PYDEVICE
         import imp,sys
-        model = str(self.model)
-        hashval = self.name.data()
-        if hashval is None:
-            unique = model
-        else:
-            unique = '%s_%016x'%(model,hashval)
-        if unique in sys.modules:
-            module = sys.modules[unique]
-        else:
-            module= imp.new_module(unique)
+        model,unique = self.__model_unique
+        if unique is None:
+            module = imp.new_module(model)
             qualifiers = self.qualifiers.data()
-            if isinstance(qualifiers,_N.ndarray) and qualifiers.dtype == _N.uint8:
-                qualifiers = qualifiers.tostring()
-            elif isinstance(qualifiers,_N.generic):
-                qualifiers = qualifiers.tolist()
-                if isinstance(qualifiers,list):
-                    qualifiers = '\n'.join(qualifiers)  # treat as line-by-line
             if isinstance(qualifiers,_ver.basestring):
+                try:    exec(compile(qualifiers,model,'exec'),{'Device':_tre.Device},module.__dict__)
+                except: pass
+        else:
+            if unique in sys.modules:
+                module = sys.modules[unique]
+            else:
+                module = imp.new_module(unique)
+                qualifiers = self.qualifiers.data()
+                if isinstance(qualifiers,_N.ndarray) and qualifiers.dtype == _N.uint8:
+                    qualifiers = qualifiers.tostring()
+                elif isinstance(qualifiers,_N.generic):
+                    qualifiers = qualifiers.tolist()
+                    if isinstance(qualifiers,list):
+                        qualifiers = '\n'.join(qualifiers)  # treat as line-by-line
                 try:    exec(compile(qualifiers,model,'exec'),module.__dict__,module.__dict__)
                 except: pass
                 else:   sys.modules[unique] = module
