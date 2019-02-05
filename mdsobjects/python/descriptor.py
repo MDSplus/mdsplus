@@ -191,9 +191,9 @@ class Descriptor_a(Descriptor):
         _fields_ = Descriptor._structure_class._fields_ + [
                ("scale",_C.c_byte),
                ("digits",_C.c_ubyte),
-               ("",_C.c_ubyte * (0 if _ver.isNt else 2)),
+               ("",_C.c_ubyte * (0 if _ver.iswin else 2)),
                ("aflags",_C.c_ubyte),
-               ("",_C.c_ubyte * (0 if _ver.isNt else 3)),
+               ("",_C.c_ubyte * (0 if _ver.iswin else 3)),
                ("dimct",_C.c_ubyte),
                ("arsize",_C.c_uint),
                ("a0",_C.c_void_p),

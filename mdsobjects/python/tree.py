@@ -2507,7 +2507,7 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
                 method(self.ctx,
                        self._nid))
         except _exc.TreeLOCK_FAILURE:
-            if not _ver.isNt: raise
+            if not _ver.iswin: raise
         return self
 
     def setSegmentScale(self,scale):

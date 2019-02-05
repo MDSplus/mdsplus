@@ -42,7 +42,7 @@ def _mimport(name, level=1):
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
-import os,sys,numpy,ctypes,ctypes.util # importing required packages
+import os,sys,numpy,ctypes,ctypes.util,hashlib # importing required packages
 if sys.version_info < (2,6):
     raise Exception("Python version 2.6 or higher is now required to use the MDSplus python package.")
 # importing libs for convenience and to early check if we have what we need in place

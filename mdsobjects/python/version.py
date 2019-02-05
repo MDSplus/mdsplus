@@ -36,7 +36,8 @@ from sys import version_info as pyver
 import os
 ispy3 = pyver>(3,)
 ispy2 = pyver<(3,)
-isNt = os.name=='nt'
+iswin = os.sys.platform.startswith('win')
+isdarwin = os.sys.platform.startswith('darwin')
 npstr = npunicode if ispy3 else npbytes
 # __builtins__ is dict
 has_long      = 'long'       in __builtins__
@@ -56,15 +57,15 @@ else:
 
 def load_library(name):
     import ctypes as C
-    if os.sys.platform.startswith('darwin') and not os.getenv('DYLD_LIBRARY_PATH'):
+    if isdarwin and not os.getenv('DYLD_LIBRARY_PATH'):
         if os.getenv('MDSPLUS_DIR'):
             os.environ['DYLD_LIBRARY_PATH'] = os.path.join(os.getenv('MDSPLUS_DIR'),'lib')
         else:
             os.environ['DYLD_LIBRARY_PATH'] = '/usr/local/mdsplus/lib'
     try:
-        if os.sys.platform.startswith('win'):
+        if iswin:
             return C.CDLL(name)
-        if os.sys.platform.startswith('darwin'):
+        if isdarwin:
             return C.CDLL('lib%s.dylib'%name)
         return C.CDLL('lib%s.so'%name)
     except: pass
@@ -151,6 +152,11 @@ def _decode(string):
 
 def _encode(string):
     return string.encode('utf-8', 'backslashreplace')
+
+def hash64(bytes):
+    import hashlib
+    import numpy
+    return numpy.frombuffer(hashlib.md5(bytes.tostring()).digest(),numpy.uint64).sum()
 
 def _tostring(string, targ, nptarg, conv, lstres):
     if isinstance(string, targ):  # short cut
