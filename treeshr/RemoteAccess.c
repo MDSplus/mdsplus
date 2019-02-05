@@ -187,12 +187,6 @@ static struct _host_list {
 } *host_list = 0;
 #endif
 
-void MdsIpFree(void *ptr){
-  static void (*rtn) (void *) = NULL;
-  if IS_NOT_OK(FindImageSymbol("MdsIpFree", (void **)&rtn)) return;
-  (*rtn) (ptr);
-}
-
 int RemoteAccessConnect(char *host, int inc_count, void *dbid){
   int host_in_directive;
   struct _host_list *hostchk;
@@ -280,7 +274,7 @@ int MdsValue0(int socket, char *exp, struct descrip *ans){
   int status = FindImageSymbol("MdsValue", (void **)&MdsValue);
   if STATUS_NOT_OK return status;
   LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
-  status = (*MdsValue) (socket, exp, ans, NULL);
+  status = MdsValue(socket, exp, ans, NULL);
   UnlockMdsShrMutex(&IOMutex);
   return status;
 }
@@ -289,9 +283,16 @@ int MdsValue1(int socket, char *exp, struct descrip *arg1, struct descrip *ans){
   int status = FindImageSymbol("MdsValue", (void **)&MdsValue);
   if STATUS_NOT_OK return status;
   LockMdsShrMutex(&IOMutex, &IOMutex_initialized);
-  status = (*MdsValue) (socket, exp, arg1, ans, NULL);
+  status = MdsValue(socket, exp, arg1, ans, NULL);
   UnlockMdsShrMutex(&IOMutex);
   return status;
+}
+
+void MdsIpFree(void *ptr){
+  // free ans.ptr returned by MdsValue
+  static void (*MdsIpFree) (void *) = NULL;
+  if IS_NOT_OK(FindImageSymbol("MdsIpFree", (void **)&MdsIpFree)) return;
+  MdsIpFree(ptr);
 }
 
 int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *logname){
@@ -428,9 +429,7 @@ int FindNodeRemote(PINO_DATABASE * dblist, char const *path, int *outnid)
   char *exp = malloc(strlen(path) + 32);
   sprintf(exp, "getnci(%s%s,'nid_number')", path[0] == '-' ? "." : "", path);
   status = MdsValue0(dblist->tree_info->channel, exp, &ans);
-
   free(exp);
-
   if (status & 1) {
     if (ans.ptr)
       *outnid = *(int *)ans.ptr;
@@ -471,9 +470,7 @@ int FindNodeWildRemote(PINO_DATABASE * dblist, char const *path, int *nid_out, v
     else
       sprintf(exp, "TreeFindNodeWild('%s',%d)", path, usage_mask);
     status = MdsValue0(dblist->tree_info->channel, exp, &ans);
-
     free(exp);
-
     if (status & 1) {
       if (ans.ptr) {
 	ctx = malloc(sizeof(struct _FindNodeStruct));
@@ -758,7 +755,8 @@ int GetNciRemote(PINO_DATABASE * dblist, int nid_in, struct nci_itm *nci_itm)
 	    memcpy(itm->pointer, ans.ptr, min(itm->buffer_length, length));
 /*            if (itm->buffer_length < length) status = TreeBUFFEROVF; */
 	  }
-          free_if(&ans.ptr);
+          if(ans.ptr)
+	    MdsIpFree(ans.ptr);
 	} else
 	  status = 0;
       }
