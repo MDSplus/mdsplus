@@ -223,16 +223,30 @@ class Conglom(_dat.TreeRefX,Compound):
     def getDevice(self,*args,**kwargs):
         if not self.image=='__python__':
             raise _exc.DevNOT_A_PYDEVICE
+        import imp,sys
         model = str(self.model)
-        safe_env = {}
-        qualifiers = self.qualifiers.data()
-        if isinstance(qualifiers,_N.generic): qualifiers = qualifiers.tolist()
-        if isinstance(qualifiers,list):       qualifiers = ';'.join(qualifiers)  # make it a list of statements
-        if isinstance(qualifiers,_ver.basestring):
-            try:    exec(compile(qualifiers,'<string>','exec'),{'Device':_tre.Device},safe_env)
-            except: pass
-        if model in safe_env:
-            cls = safe_env[model]
+        hashval = self.name.data()
+        if hashval is None:
+            unique = model
+        else:
+            unique = '%s_%016x'%(model,hashval)
+        if unique in sys.modules:
+            module = sys.modules[unique]
+        else:
+            module= imp.new_module(unique)
+            qualifiers = self.qualifiers.data()
+            if isinstance(qualifiers,_N.ndarray) and qualifiers.dtype == _N.uint8:
+                qualifiers = qualifiers.tostring()
+            elif isinstance(qualifiers,_N.generic):
+                qualifiers = qualifiers.tolist()
+                if isinstance(qualifiers,list):
+                    qualifiers = '\n'.join(qualifiers)  # treat as line-by-line
+            if isinstance(qualifiers,_ver.basestring):
+                try:    exec(compile(qualifiers,model,'exec'),module.__dict__,module.__dict__)
+                except: pass
+                else:   sys.modules[unique] = module
+        if model in module.__dict__:
+            cls = module.__dict__[model]
         else:
             cls = _tre.Device.PyDevice(model)
         if issubclass(cls,(_tre.Device,)):
