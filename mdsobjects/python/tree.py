@@ -3087,7 +3087,28 @@ If you did intend to write to a subnode of the device you should check the prope
                 return "from %s import %s" % (cls.__module__,cls.__name__)
 
     @classmethod
-    def Add(cls,tree,name):
+    def __add_source(cls,head,sourcefile=None):
+        if sourcefile is None:
+            import inspect
+            sourcefile = inspect.getsourcefile(cls)
+        print("loading new source form file: %s"%sourcefile)
+        qualifier = _N.fromfile(sourcefile,_N.uint8)
+        if _ver.iswin: # convert to linux line-ending
+            _N.delete(qualifier,_N.argwhere(qualifier==13)) # ord('\r') == 13 
+        qualifier.flags.writeable = False
+        hashvalue = _scr.Uint64(_ver.hash64(qualifier))
+        qualifier = _arr.Uint8Array(qualifier)
+        head.record = _cmp.Conglom('__python__',cls.__name__,hashvalue,qualifier)
+
+    def _update_source(self,sourcefile=None):
+        head  = self.head
+        model = str(self.head.record.model)
+        head.write_once = False
+        try:     head.PyDevice(model).__add_source(head,sourcefile)
+        finally: head.write_once = True
+
+    @classmethod
+    def Add(cls,tree,name,add_source=False):
         """Used to add a device instance to an MDSplus tree.
         This method is invoked when a device is added to the tree when using utilities like mdstcl and the traverser.
         For this to work the device class name (uppercase only) and the package name must be returned in the MdsDevices tdi function.
@@ -3104,7 +3125,16 @@ If you did intend to write to a subnode of the device you should check the prope
         if isinstance(name,_scr.Ident):
             name=name.data()
         head=parent.addNode(name,'DEVICE')
-        head.record=_cmp.Conglom('__python__',cls.__name__,None,cls.getImportString())
+        if add_source is None:
+            add_source = _mds.getenv("PYDEVICE_ADD_SOURCE","no").lower()
+            add_source = not (add_source == "no" or add_source == "0" or add_source == "off")
+        if add_source:
+          try:   cls.__add_source(head)
+          except Exception as e:
+            _sys.stderr.write("Could not find source code for %s: %s\n"%(cls.__name__,str(e)))
+            head.record=_cmp.Conglom('__python__',cls.__name__,None,cls.getImportString())
+        else:
+            head.record=_cmp.Conglom('__python__',cls.__name__,None,cls.getImportString())
         head=TreeNode(head)
         head.write_once=True
         glob = _mimport('__init__').load_package({})
