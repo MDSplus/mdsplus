@@ -42,8 +42,12 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         with Tree(self.tree,self.shot,'new') as pytree:
             Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE_I')
             Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE_S')
-            pytree.TESTDEVICE_S._update_source()
             pytree.write()
+        pytree.normal()
+        self.assertEqual(pytree.TESTDEVICE_S.check_source(),"No source stored in record.")
+        pytree.TESTDEVICE_S._update_source()
+        self.assertEqual(pytree.TESTDEVICE_S.check_source(),"")
+        pytree.close() # needed for windows to release file lock
         self.assertEqual(dcl('help set verify',1,1,0)[1],None)
         self.assertEqual(tcl('help set tree',1,1,0)[1],None)
         self.assertEqual(ccl('help set xandq',1,1,0)[1],None)
