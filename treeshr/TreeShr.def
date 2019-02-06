@@ -37,6 +37,8 @@ TreeCtx
 TreeCtxPop
 TreeCtxPush
 TreeDbid
+TreeDbidPop
+TreeDbidPush
 TreeDeleteNodeExecute
 TreeDeleteNodeGetNid
 TreeDeleteNodeInitialize

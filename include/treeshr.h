@@ -273,6 +273,8 @@ extern int TREE_BLOCKID;
 
   extern EXPORT void* TreeCtxPush(void** ctx);
   extern EXPORT void  TreeCtxPop(void* ps);
+  extern EXPORT void* TreeDbidPush(void* dbid);
+  extern EXPORT void* TreeDbidPop(void* ps);
   #define CTX_PUSH(ctx) pthread_cleanup_push(TreeCtxPop,TreeCtxPush(ctx))
   #define CTX_POP(ctx)  pthread_cleanup_pop(1)
 
