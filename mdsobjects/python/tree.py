@@ -3087,24 +3087,41 @@ If you did intend to write to a subnode of the device you should check the prope
                 return "from %s import %s" % (cls.__module__,cls.__name__)
 
     @classmethod
-    def __add_source(cls,head,sourcefile=None):
-        if sourcefile is None:
+    def __read_source(cls,model,sourcefile=None):
+        """ sourcefile must be a string, a Device class, or None"""
+        if not isinstance(sourcefile,_ver.basestring):
+            if sourcefile is None:
+                sourcefile = cls.PyDevice(model)
             import inspect
-            sourcefile = inspect.getsourcefile(cls)
-        print("loading new source form file: %s"%sourcefile)
-        qualifier = _N.fromfile(sourcefile,_N.uint8)
+            sourcefile = inspect.getsourcefile(sourcefile)
+        source = _N.fromfile(sourcefile,_N.uint8)
         if _ver.iswin: # convert to linux line-ending
-            _N.delete(qualifier,_N.argwhere(qualifier==13)) # ord('\r') == 13 
-        qualifier.flags.writeable = False
-        hashvalue = _scr.Uint64(_ver.hash64(qualifier))
-        qualifier = _arr.Uint8Array(qualifier)
-        head.record = _cmp.Conglom('__python__',cls.__name__,hashvalue,qualifier)
+            _N.delete(source,_N.argwhere(source==13)) # ord('\r') == 13
+        return source
+
+    def check_source(self,sourcefile=None):
+        source = self.head.record.qualifiers.data()
+        if isinstance(source,_N.ndarray) and source.dtype == _N.uint8:
+            import difflib
+            inrecord = _ver.tostr(source.tostring()).splitlines(1)
+            infile = _ver.tostr(self.__read_source(self.__class__.__name__,sourcefile).tostring()).splitlines(1)
+            diff = difflib.unified_diff(inrecord,infile)
+            diff = ''.join(diff)
+            return diff
+        return "No source stored in record."
+
+    @classmethod
+    def __add_source(cls,head,model,sourcefile=None):
+        """ sourcefile must be a string, a Device class, or None"""
+        source = cls.__read_source(model,sourcefile)
+        hashvalue = _scr.Uint64(_ver.hash64(source))
+        source = _arr.Uint8Array(source)
+        head.record = _cmp.Conglom('__python__',model,hashvalue,source)
 
     def _update_source(self,sourcefile=None):
-        head  = self.head
-        model = str(self.head.record.model)
+        head = self.head
         head.write_once = False
-        try:     head.PyDevice(model).__add_source(head,sourcefile)
+        try:     self.__add_source(head,head.__class__.__name__,sourcefile)
         finally: head.write_once = True
 
     @classmethod
@@ -3119,6 +3136,7 @@ If you did intend to write to a subnode of the device you should check the prope
         And finally the dict instance can contain an 'options' key which should contain a list or tuple of strings of node attributes which will be turned
         on (i.e. write_once).
         """
+        if cls is Device: raise Exception("Cannot add super class Device.")
         parent = tree
         if isinstance(tree, TreeNode): tree = tree.tree
         _TreeShr._TreeStartConglomerate(tree.ctx,len(cls.parts)+1)
@@ -3129,7 +3147,7 @@ If you did intend to write to a subnode of the device you should check the prope
             add_source = _mds.getenv("PYDEVICE_ADD_SOURCE","no").lower()
             add_source = not (add_source == "no" or add_source == "0" or add_source == "off")
         if add_source:
-          try:   cls.__add_source(head)
+          try:   cls.__add_source(head,cls.__name__,cls)
           except Exception as e:
             _sys.stderr.write("Could not find source code for %s: %s\n"%(cls.__name__,str(e)))
             head.record=_cmp.Conglom('__python__',cls.__name__,None,cls.getImportString())
