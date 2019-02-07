@@ -51,20 +51,17 @@ import mds.data.descriptor_s.Pointer;
 public class MdsIp extends Mds{
     private final class MRT extends Thread // mds Receive Thread
     {
-        private boolean               killed = false;
-        private final Vector<Message> messages;
+        private boolean killed = false;
+        private Message message;
 
         public MRT(){
             super(MdsIp.this.getName("MRT"));
             this.setDaemon(true);
-            this.messages = new Vector<Message>(MdsIp.MAX_MSGS);
-            for(int i = 0; i < MdsIp.MAX_MSGS; i++)
-                this.messages.addElement(null);
+            this.message = null;
         }
 
         public Message getMessage(final byte mid) throws MdsAbortException {
             if(DEBUG.D) System.out.println("getMessage()");
-            final int id = mid % MdsIp.MAX_MSGS;
             long time;
             if(DEBUG.D) time = System.nanoTime();
             Message msg = null;
@@ -72,10 +69,8 @@ public class MdsIp extends Mds{
                 synchronized(this){
                     for(;;){
                         if(this.killed) return null;
-                        synchronized(this.messages){
-                            msg = this.messages.get(id);
-                            this.messages.set(id, null);
-                        }
+                        msg = this.message;
+                        this.message = null;
                         if(msg != null) break;
                         this.wait(1000);
                     }
@@ -98,10 +93,8 @@ public class MdsIp extends Mds{
                         PmdsEvent.setEventid(new_message.body.get(12));
                         PmdsEvent.start();
                     }else{
-                        synchronized(this.messages){
-                            this.messages.set(new_message.message_id % MdsIp.MAX_MSGS, new_message);
-                        }
                         synchronized(this){
+                            this.message = new_message;
                             this.notifyAll();
                         }
                     }
@@ -481,7 +474,7 @@ public class MdsIp extends Mds{
             final Matcher m = MdsIp.dollar.matcher(req.expr);
             int pos = 0;
             for(int i = 0; i < args.length && m.find(); i++){
-                cmd.append(req.expr.substring(pos, m.start())).append(notatomic[i] ? "`__serin($)" : "$"); // HINT: __serin
+                cmd.append(req.expr.substring(pos, m.start())).append(notatomic[i] ? "`__$si($)" : "$");
                 pos = m.end();
             }
             cmd.append(req.expr.substring(pos));
@@ -491,7 +484,7 @@ public class MdsIp extends Mds{
 
     private static final StringBuilder getMessageNestSerial(final StringBuilder cmd, final Descriptor<?>[] args, final Request<?> req, final boolean serialize) {
         if(!serialize) return MdsIp.getMessageNestExpr(cmd, args, req);
-        cmd.append("__serout((");
+        cmd.append("__$so((");
         MdsIp.getMessageNestExpr(cmd, args, req);
         cmd.append(";))");
         return cmd;
@@ -590,11 +583,11 @@ public class MdsIp extends Mds{
             }
             final ByteBuffer b = ByteBuffer.allocate(8 + msg.body.capacity());
             b.putShort(msg.length);
-            b.put(msg.dtype);
+            b.put(msg.dtype.toByte());
             return (T)new Int32(msg.asIntArray()[0]);
         }
         final StringBuilder sb = new StringBuilder().append("List(*,(");
-        sb.append(req.expr).append(";),__restore(`_ctc_=__save($)))");
+        sb.append(req.expr).append(";),__$sw(`_$c_=__$sw($)))");
         final Vector<Descriptor<?>> vec = new Vector<Descriptor<?>>();
         vec.addAll(Arrays.asList(req.args));
         vec.add(ctx.getDbid());
@@ -606,7 +599,7 @@ public class MdsIp extends Mds{
         if(DEBUG.N) System.err.println(String.format(">>> %.3f <<<", Float.valueOf(((float)(System.currentTimeMillis() - tictoc)) / 1000)));
         if(msg.dtype == DTYPE.T){
             if(DEBUG.N) System.err.println("<<< Exc: " + msg.toString());
-            final Message ans = this.getMessage(new Request<Pointer>(Pointer.class, "__restore(_ctx_)"), false);
+            final Message ans = this.getMessage(new Request<Pointer>(Pointer.class, "__$sw(_$c_)"), false);
             ctx.getDbid().setAddress(ans.body);
             throw new MdsException(msg.toString());
         }
@@ -830,8 +823,8 @@ public class MdsIp extends Mds{
         if(MdsIp.open_connections.contains(this)) MdsIp.open_connections.remove(this);
     }
 
-    private final void sendArg(final byte descr_idx, final byte dtype, final byte nargs, final int dims[], final byte body[], final byte msgid) throws MdsException {
-        final Message msg = new Message(descr_idx, dtype, nargs, dims, body, msgid);
+    private final void sendArg(final byte descr_idx, final DTYPE bu, final byte nargs, final int dims[], final byte body[], final byte msgid) throws MdsException {
+        final Message msg = new Message(descr_idx, bu, nargs, dims, body, msgid);
         try{
             msg.send(this.dos);
         }catch(final IOException e){
@@ -841,11 +834,11 @@ public class MdsIp extends Mds{
     }
 
     private final void setup() throws MdsException {
-        this.defineFunctions("public fun __save(in _in){return(TreeShr->TreeSavePrivateCtx:P(val(_in)));}", //
-                "public fun __restore(in _in){return(TreeShr->TreeRestorePrivateCtx:P(val(_in)));}", //
-                "public fun __serout(optional in _in){_out=*;MdsShr->MdsSerializeDscOut(xd(_in),xd(_out));return(_out);}", //
-                "public fun __serin(in _in){_out=*;MdsShr->MdsSerializeDscIn(ref(_in),xd(_out));return(_out);}");
-        this.getAPI().treeSetPrivateCtx(true);
+        this.defineFunctions("TreeShr->TreeUsePrivateCtx(val(1))", // always use private context
+                "public fun __$sw(in _in){return(TreeShr->TreeSwitchDbid:P(val(_in)));}", // compatible with almost ever server
+                "public fun __$so(optional in _in){_out=*;MdsShr->MdsSerializeDscOut(xd(_in),xd(_out));return(_out);}", // 'optional' to support $Missing
+                "public fun __$si(in _in){_out=*;MdsShr->MdsSerializeDscIn(ref(_in),xd(_out));return(_out);}");
+        this.getAPI().treeUsePrivateCtx(true);
     }
 
     @Override

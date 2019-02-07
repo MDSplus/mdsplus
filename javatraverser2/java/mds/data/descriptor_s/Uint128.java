@@ -67,7 +67,7 @@ public final class Uint128 extends INTEGER_UNSIGNED<BigInteger>{
 
     @Override
     protected final byte getRankBits() {
-        return 16;
+        return 0x0F;
     }
 
     public final BigInteger getValue() {
@@ -129,8 +129,8 @@ public final class Uint128 extends INTEGER_UNSIGNED<BigInteger>{
     }
 
     @Override
-    public final CString text() {
-        return new CString(String.format("0x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x", this.getAtomic().toByteArray()));
+    public final StringDsc text() {
+        return new StringDsc(String.format("0x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x", this.getAtomic().toByteArray()));
     }
 
     @Override

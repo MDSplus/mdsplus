@@ -15,17 +15,17 @@ public class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
     public static final String name  = "APD";
 
     public static Descriptor_APD deserialize(final ByteBuffer b) throws MdsException {
-        switch(b.get(Descriptor._typB)){
-            case DTYPE.DICTIONARY:
+        switch(Descriptor.getDtype(b)){
+            case DICTIONARY:
                 return new Dictionary(b);
-            case DTYPE.LIST:
+            case LIST:
                 return new List(b);
             default:
                 return new Descriptor_APD(b);
         }
     }
 
-    private static ByteBuffer makeBuffer(final byte dtype, final Descriptor<?>[] descs, final int[] shape) {
+    private static ByteBuffer makeBuffer(final DTYPE dtype, final Descriptor<?>[] descs, final int[] shape) {
         int offset = shape.length > 1 ? ARRAY._dmsIa : ARRAY._a0I;
         offset += shape.length * Integer.BYTES;
         final int pointer = offset;
@@ -37,9 +37,9 @@ public class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
             offset += descs[i].getSize();
         }
         final ByteBuffer b = ByteBuffer.allocate(offset).order(Descriptor.BYTEORDER);
-        b.putInt(Descriptor._lenS, (short)4);
-        b.putInt(Descriptor._typB, dtype);
-        b.putInt(Descriptor._clsB, Descriptor_APD.CLASS);
+        b.putShort(Descriptor._lenS, (short)4);
+        b.put(Descriptor._typB, dtype.toByte());
+        b.put(Descriptor._clsB, Descriptor_APD.CLASS);
         b.putInt(Descriptor._ptrI, pointer);
         if(shape.length > 1){
             b.put(ARRAY._dmctB, (byte)shape.length);
@@ -54,13 +54,17 @@ public class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
         b.asIntBuffer().put(dscptrs);
         for(int i = 0; i < descs.length; i++){
             b.position(dscptrs[i]);
-            b.put(descs[i].b);
+            b.put(descs[i].b.duplicate());
         }
         b.rewind();
         return b;
     }
 
-    public Descriptor_APD(final byte dtype, final Descriptor<?>[] descs, final int... shape){
+    protected Descriptor_APD(final ByteBuffer b){
+        super(b);
+    }
+
+    public Descriptor_APD(final DTYPE dtype, final Descriptor<?>[] descs, final int... shape){
         super(Descriptor_APD.makeBuffer(dtype, descs, shape));
         boolean local = true;
         for(final Descriptor<?> dsc : descs)
@@ -71,10 +75,6 @@ public class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
         if(local) this.setLocal();
     }
 
-    protected Descriptor_APD(final ByteBuffer b){
-        super(b);
-    }
-
     @Override
     protected final StringBuilder decompile(final StringBuilder pout, final Descriptor<?> t) {
         return t == null ? pout.append("*") : t.decompile(Descriptor.P_STMT, pout, Descriptor.DECO_NRM);
@@ -82,7 +82,7 @@ public class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
 
     @Override
     public final String getDTypeName() {
-        return DTYPE.getName(this.dtype());
+        return this.dtype().label;
     }
 
     @Override

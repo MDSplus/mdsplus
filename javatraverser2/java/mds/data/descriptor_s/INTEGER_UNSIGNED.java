@@ -2,30 +2,31 @@ package mds.data.descriptor_s;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import mds.data.DTYPE;
 
 public abstract class INTEGER_UNSIGNED<T extends Number>extends INTEGER<T>{
-    public INTEGER_UNSIGNED(final byte ou, final BigInteger value){
+    protected INTEGER_UNSIGNED(final ByteBuffer b){
+        super(b);
+    }
+
+    public INTEGER_UNSIGNED(final DTYPE ou, final BigInteger value){
         super(ou, value);
     }
 
-    public INTEGER_UNSIGNED(final byte bu, final byte value){
+    public INTEGER_UNSIGNED(final DTYPE bu, final byte value){
         super(bu, value);
     }
 
-    public INTEGER_UNSIGNED(final byte lu, final int value){
+    public INTEGER_UNSIGNED(final DTYPE lu, final int value){
         super(lu, value);
     }
 
-    public INTEGER_UNSIGNED(final byte qu, final long value){
+    public INTEGER_UNSIGNED(final DTYPE qu, final long value){
         super(qu, value);
     }
 
-    public INTEGER_UNSIGNED(final byte wu, final short value){
+    public INTEGER_UNSIGNED(final DTYPE wu, final short value){
         super(wu, value);
-    }
-
-    protected INTEGER_UNSIGNED(final ByteBuffer b){
-        super(b);
     }
 
     @Override

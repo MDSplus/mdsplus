@@ -93,7 +93,7 @@ public final class Message extends Object{
     private final byte      client_type;
     private final byte      descr_idx;
     private final int       dims[];
-    protected final byte    dtype;
+    protected final DTYPE   dtype;
     public final ByteBuffer header;
     protected final short   length;
     protected final byte    message_id;
@@ -107,31 +107,31 @@ public final class Message extends Object{
         this.verify();
     }
 
-    public Message(final byte descr_idx, final byte dtype, final byte nargs, final int dims[], final byte body[], final byte mid){
-        this(descr_idx, dtype, nargs, dims, (dims == null) ? (byte)0 : (byte)dims.length, body, Message.JAVA_CLIENT, 0, mid);
+    public Message(final byte descr_idx, final DTYPE bu, final byte nargs, final int dims[], final byte body[], final byte mid){
+        this(descr_idx, bu, nargs, dims, (dims == null) ? (byte)0 : (byte)dims.length, body, Message.JAVA_CLIENT, 0, mid);
     }
 
-    public Message(final byte descr_idx, final byte dtype, final byte nargs, final int dims[], final byte ndims, final byte body[], final byte client_type, final int status, final byte mid){
+    public Message(final byte descr_idx, final DTYPE bu, final byte nargs, final int dims[], final byte ndims, final byte body[], final byte client_type, final int status, final byte mid){
         final int body_size = body == null ? 0 : body.length;
         this.msglen = Message.HEADER_SIZE + body_size;
         this.status = status;
         this.message_id = mid;
-        this.length = Descriptor.getDataSize(dtype, body_size);
+        this.length = Descriptor.getDataSize(bu, body_size);
         this.client_type = client_type;
         this.nargs = nargs;
         this.descr_idx = descr_idx;
-        this.ndims = (ndims > ARRAY.MAX_DIM) ? ARRAY.MAX_DIM : ndims;
-        if(dims == null || dims.length != ARRAY.MAX_DIM){
-            this.dims = new int[ARRAY.MAX_DIM];
+        this.ndims = (ndims > ARRAY.MAX_DIMS) ? ARRAY.MAX_DIMS : ndims;
+        if(dims == null || dims.length != ARRAY.MAX_DIMS){
+            this.dims = new int[ARRAY.MAX_DIMS];
             if(dims != null) System.arraycopy(dims, 0, this.dims, 0, this.ndims < dims.length ? this.ndims : dims.length);
         }else this.dims = dims;
-        this.dtype = dtype;
+        this.dtype = bu;
         this.body = ByteBuffer.wrap(body);
         if(this.isLittleEndian()) this.body.order(ByteOrder.LITTLE_ENDIAN);
         this.header = this.getHeader();
     }
 
-    public Message(final byte descr_idx, final byte dtype, final byte nargs, final int dims[], final byte ndims, final ByteBuffer body, final int status, final byte mid){
+    public Message(final byte descr_idx, final DTYPE dtype, final byte nargs, final int dims[], final byte ndims, final ByteBuffer body, final int status, final byte mid){
         final int body_size = body == null ? 0 : body.limit();
         this.msglen = Message.HEADER_SIZE + body_size;
         this.status = status;
@@ -139,9 +139,9 @@ public final class Message extends Object{
         this.length = Descriptor.getDataSize(dtype, body_size);
         this.nargs = nargs;
         this.descr_idx = descr_idx;
-        this.ndims = (ndims > ARRAY.MAX_DIM) ? ARRAY.MAX_DIM : ndims;
-        if(dims == null || dims.length != ARRAY.MAX_DIM){
-            this.dims = new int[ARRAY.MAX_DIM];
+        this.ndims = (ndims > ARRAY.MAX_DIMS) ? ARRAY.MAX_DIMS : ndims;
+        if(dims == null || dims.length != ARRAY.MAX_DIMS){
+            this.dims = new int[ARRAY.MAX_DIMS];
             if(dims != null) System.arraycopy(dims, 0, this.dims, 0, this.ndims < dims.length ? this.ndims : dims.length);
         }else this.dims = dims;
         this.dtype = dtype;
@@ -150,7 +150,7 @@ public final class Message extends Object{
         this.header = this.getHeader();
     }
 
-    public Message(final byte descr_idx, final byte dtype, final byte nargs, final int dims[], final ByteBuffer body, final byte mid){
+    public Message(final byte descr_idx, final DTYPE dtype, final byte nargs, final int dims[], final ByteBuffer body, final byte mid){
         this(descr_idx, dtype, nargs, dims, (dims == null) ? (byte)0 : (byte)dims.length, body, 0, mid);
     }
 
@@ -161,11 +161,11 @@ public final class Message extends Object{
         this.nargs = header.get();
         this.descr_idx = header.get();
         this.message_id = header.get();
-        this.dtype = header.get();
+        this.dtype = DTYPE.get(header.get());
         this.client_type = (byte)(header.get() & 0x1F);
         this.ndims = header.get();
-        this.dims = new int[ARRAY.MAX_DIM];
-        for(int i = 0; i < ARRAY.MAX_DIM; i++)
+        this.dims = new int[ARRAY.MAX_DIMS];
+        for(int i = 0; i < ARRAY.MAX_DIMS; i++)
             this.dims[i] = header.getInt();
         this.header = header;
         this.body = body;
@@ -251,6 +251,10 @@ public final class Message extends Object{
         return out;
     }
 
+    public DTYPE dtype() {
+        return DTYPE.get(this.header.get(Message._typB));
+    }
+
     private final ByteBuffer getHeader() {
         final ByteBuffer new_header = ByteBuffer.allocate(Message.HEADER_SIZE).order(this.body.order());
         new_header.putInt(this.msglen);
@@ -259,7 +263,7 @@ public final class Message extends Object{
         new_header.put(this.getNargs());
         new_header.put(this.descr_idx);
         new_header.put(this.message_id);
-        new_header.put(this.dtype);
+        new_header.put(this.dtype.toByte());
         new_header.put(this.client_type);
         new_header.put(this.ndims);
         for(final int dm : this.dims)
@@ -294,7 +298,7 @@ public final class Message extends Object{
         try{
             return Descriptor.readMessage(this).toString();
         }catch(final Exception e){
-            return DTYPE.getName(this.dtype) + "(" + this.msglen + "Bytes)";
+            return this.dtype.label + "(" + this.msglen + "Bytes)";
         }
     }
 

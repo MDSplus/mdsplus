@@ -10,7 +10,13 @@ import mds.data.DTYPE;
 import mds.data.TREE;
 import mds.data.descriptor_a.Int8Array;
 import mds.data.descriptor_r.Function;
-import mds.data.descriptor_s.CString;
+import mds.data.descriptor_s.StringDsc;
+import mds.data.descriptor_s.Float32;
+import mds.data.descriptor_s.Float64;
+import mds.data.descriptor_s.Int16;
+import mds.data.descriptor_s.Int32;
+import mds.data.descriptor_s.Int64;
+import mds.data.descriptor_s.Int8;
 import mds.data.descriptor_s.Missing;
 import mds.data.descriptor_s.NUMBER;
 import mds.mdsip.Message;
@@ -121,36 +127,36 @@ public abstract class Descriptor<T>{
     }
 
     /** Returns the element length of the given dtype **/
-    public static final short getDataSize(final byte dtype, final int length) {
-        switch(dtype){
+    public static final short getDataSize(final DTYPE bu, final int length) {
+        switch(bu){
             default:
-            case DTYPE.T:
+            case T:
                 return (short)length;
-            case DTYPE.BU:
-            case DTYPE.B:
+            case BU:
+            case B:
                 return 1;
-            case DTYPE.WU:
-            case DTYPE.W:
+            case WU:
+            case W:
                 return 2;
-            case DTYPE.NID:
-            case DTYPE.LU:
-            case DTYPE.L:
-            case DTYPE.F:
-            case DTYPE.FS:
+            case NID:
+            case LU:
+            case L:
+            case F:
+            case FS:
                 return 4;
-            case DTYPE.Q:
-            case DTYPE.QU:
-            case DTYPE.FC:
-            case DTYPE.FSC:
-            case DTYPE.D:
-            case DTYPE.FT:
-            case DTYPE.G:
+            case Q:
+            case QU:
+            case FC:
+            case FSC:
+            case D:
+            case FT:
+            case G:
                 return 8;
-            case DTYPE.O:
-            case DTYPE.OU:
-            case DTYPE.DC:
-            case DTYPE.FTC:
-            case DTYPE.GC:
+            case O:
+            case OU:
+            case DC:
+            case FTC:
+            case GC:
                 return 16;
         }
     }
@@ -179,6 +185,10 @@ public abstract class Descriptor<T>{
         }
     }
 
+    public static DTYPE getDtype(final ByteBuffer b) {
+        return DTYPE.get(b.get(Descriptor._typB));
+    }
+
     public static final Descriptor<?> getLocal(final FLAG local, final Descriptor<?> dsc) {
         if(dsc == null || dsc.isLocal()) return dsc;
         return dsc.getLocal(local);
@@ -202,15 +212,43 @@ public abstract class Descriptor<T>{
 
     public static final Descriptor<?> NEW(final Object obj) throws MdsException {
         if(obj == null) return Missing.NEW;
-        if(obj instanceof String) return new CString((String)obj);
+        if(obj instanceof String) return new StringDsc((String)obj);
         if(obj instanceof Number) return NUMBER.NEW((Number)obj);
         throw new MdsException("Conversion form " + obj.getClass().getName() + " not yet implemented.");
     }
 
     /** Returns Descriptor contained in Message **/
     public static Descriptor<?> readMessage(final Message msg) throws MdsException {
-        if(msg.header.get(Message._typB) == DTYPE.T) return new CString(msg.body.array());
+        if(msg.dtype() == DTYPE.T) return new StringDsc(msg.body.array());
         return Descriptor_A.readMessage(msg);
+    }
+
+    public static final Int8 valueOf(final byte val) {
+        return new Int8(val);
+    }
+
+    public static final Float64 valueOf(final double val) {
+        return new Float64(val);
+    }
+
+    public static final Float32 valueOf(final float val) {
+        return new Float32(val);
+    }
+
+    public static final Int32 valueOf(final int val) {
+        return new Int32(val);
+    }
+
+    public static final Int64 valueOf(final long val) {
+        return new Int64(val);
+    }
+
+    public static final Int16 valueOf(final short val) {
+        return new Int16(val);
+    }
+
+    public static final Descriptor<?> valueOf(final String val) {
+        return val == null ? Missing.NEW : new StringDsc(val);
     }
     protected TREE             tree;
     protected Mds              mds;
@@ -225,14 +263,14 @@ public abstract class Descriptor<T>{
         this.p = ((ByteBuffer)this.b.duplicate().position(this.pointer() == 0 ? this.b.limit() : this.pointer())).slice().order(this.b.order());
     }
 
-    public Descriptor(final short length, final byte dtype, final byte dclass, final ByteBuffer data, final int pointer, int size){
+    public Descriptor(final short length, final DTYPE dtype, final byte dclass, final ByteBuffer data, final int pointer, int size){
         this.tree = TREE.getActiveTree();
         this.mds = this.tree == null ? Mds.getActiveMds() : this.getMds();
         size += pointer;
         if(data != null) size += data.limit();
         this.b = ByteBuffer.allocate(size).order(Descriptor.BYTEORDER);
         this.b.putShort(Descriptor._lenS, length);
-        this.b.put(Descriptor._typB, dtype);
+        this.b.put(Descriptor._typB, (byte)dtype.ordinal());
         this.b.put(Descriptor._clsB, dclass);
         if(data == null){
             this.b.putInt(Descriptor._ptrI, 0);
@@ -261,7 +299,7 @@ public abstract class Descriptor<T>{
     public StringBuilder decompile(final int prec, final StringBuilder pout, final int mode) {
         pout.append("<Descriptor(");
         pout.append(this.length() & 0xFFFF).append(',');
-        pout.append(this.dtype() & 0xFF).append(',');
+        pout.append(this.dtype().ordinal()).append(',');
         pout.append(this.dclass() & 0xFF).append(',');
         pout.append(this.pointer() & 0xFFFFFFFFl);
         return pout.append(")>");
@@ -273,8 +311,8 @@ public abstract class Descriptor<T>{
     }
 
     /** (2,b) data type code **/
-    public final byte dtype() {
-        return this.b.get(Descriptor._typB);
+    public final DTYPE dtype() {
+        return Descriptor.getDtype(this.b);
     }
 
     @Override
@@ -293,7 +331,7 @@ public abstract class Descriptor<T>{
         if(this instanceof DATA) return this;
         try{
             if(this.isLocal()) return this.evaluate_lib();
-            return this.mds.getAPI().tdiEvaluate(this.tree, this).data;
+            return this.mds.getAPI().tdiEvaluate(this.tree, this).getData();
         }catch(final MdsException e){
             return Missing.NEW;
         }
@@ -301,8 +339,8 @@ public abstract class Descriptor<T>{
 
     public Descriptor<?> evaluate_lib() throws MdsException {
         if(this instanceof DATA) return this;
-        if(MdsLib.lib_loaded == null) return Descriptor.mdslib.getAPI().tdiEvaluate(null, this.getLocal()).data;
-        return this.mds.getAPI().tdiEvaluate(this.tree, this).data;
+        if(MdsLib.lib_loaded == null && !(this.mds instanceof MdsLib)) return Descriptor.mdslib.getAPI().tdiEvaluate(null, this.getLocal()).getData();
+        return this.mds.getAPI().tdiEvaluate(this.tree, this).getData();
     }
 
     /** Returns the value<T> of the body directed to by pointer **/
@@ -320,7 +358,7 @@ public abstract class Descriptor<T>{
      **/
     public DATA<?> getData() throws MdsException {
         if(this instanceof DATA) return (DATA<?>)this;
-        if(MdsLib.lib_loaded == null) return (DATA<?>)Descriptor.mdslib.getDescriptor(this.tree, "DATA($)", this.getLocal());
+        if(MdsLib.lib_loaded == null && !(this.mds instanceof MdsLib)) return (DATA<?>)Descriptor.mdslib.getDescriptor(this.tree, "DATA($)", this.getLocal());
         return this.getData_();
     }
 
@@ -357,7 +395,7 @@ public abstract class Descriptor<T>{
 
     /** Returns the dtype name of the Descriptor **/
     public String getDTypeName() {
-        return DTYPE.getName(this.dtype());
+        return this.dtype().label;
     }
 
     final public Descriptor<?> getLocal() {

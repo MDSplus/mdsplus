@@ -14,7 +14,7 @@ import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
 
 public final class MdsLib extends Mds{
-    public static final String lib_loaded = MdsLib.loadLibraryFromJar("JavaMdsLib");
+    public static String lib_loaded = MdsLib.loadLibraryFromJar("JavaMdsLib");
 
     public static native byte[] evaluate(String expr, byte[]... args) throws MdsException;
 
@@ -78,7 +78,7 @@ public final class MdsLib extends Mds{
     private static final String testLib(final String libname) {
         try{
             final MdsLib mdslib = new MdsLib();
-            mdslib.getAPI().treeSetPrivateCtx(true);
+            // mdslib.getAPI().treeSetPrivateCtx(true);
             if(1 != mdslib.getInteger("1BU")) return "Library does not work properly.";
         }catch(final Exception e){
             return "Library is broken " + libname + ": " + e.toString();

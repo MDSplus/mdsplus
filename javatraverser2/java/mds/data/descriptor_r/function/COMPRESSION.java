@@ -50,11 +50,11 @@ public abstract class COMPRESSION extends Function{
         return items;
     }
 
-    public static final boolean coversOpCode(final short opcode) {
+    public static final boolean coversOpCode(final OPC opcode) {
         switch(opcode){
             default:
                 return false;
-            case OPC.OpcDecompress:
+            case OpcDecompress:
                 return true;
         }
     }
@@ -85,12 +85,13 @@ public abstract class COMPRESSION extends Function{
     }
 
     public static COMPRESSION deserialize(final ByteBuffer b) throws MdsException {
-        final short opcode = b.getShort(b.getInt(Descriptor._ptrI));
+        final OPC opcode = OPC.get(b.getShort(b.getInt(Descriptor._ptrI)));
         switch(opcode){
-            case OPC.OpcDecompress:
+            case OpcDecompress:
                 return new Decompress(b);
+            default:
+                throw new MdsException(MdsException.TdiINV_OPC);
         }
-        throw new MdsException(MdsException.TdiINV_OPC);
     }
 
     /**
@@ -178,7 +179,7 @@ public abstract class COMPRESSION extends Function{
         bout.put((ByteBuffer)items_dsc.serialize().limit(items_dsc.pointer())); // fill header up to body
         bout.put(Descriptor._clsB, Descriptor_A.CLASS); // override class
         final int limit = pack_dsc.arsize() * 8;
-        final int dtype = items_dsc.dtype();
+        final DTYPE dtype = items_dsc.dtype();
         int step, j = 0;
         int ye, xe, yn, xn, xhead;
         final IntBuffer n = IntBuffer.allocate(COMPRESSION.MAXX);
@@ -246,7 +247,7 @@ public abstract class COMPRESSION extends Function{
         super(b);
     }
 
-    private COMPRESSION(final short opcode, final Descriptor<?>... args){
+    private COMPRESSION(final OPC opcode, final Descriptor<?>... args){
         super(opcode, args);
     }
 }

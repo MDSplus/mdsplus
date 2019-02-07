@@ -6,7 +6,6 @@ import mds.data.DATA;
 import mds.data.DTYPE;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_R;
-import mds.data.descriptor_s.CString;
 
 public final class Param extends Descriptor_R<Number> implements PARAMETER{
     public Param(final ByteBuffer b){
@@ -22,7 +21,7 @@ public final class Param extends Descriptor_R<Number> implements PARAMETER{
     }
 
     public Param(final Descriptor<?> value, final String help, final Descriptor<?> valid){
-        this(value, new CString(help), valid);
+        this(value, Descriptor.valueOf(help), valid);
     }
 
     @Override

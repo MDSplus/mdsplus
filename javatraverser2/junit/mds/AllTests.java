@@ -16,6 +16,7 @@ import mds.mdslib.MdsLib;
 @RunWith(Suite.class)
 @SuiteClasses({TREE_Test.class, CONST_Test.class, Mds_Test.class, TreeShr_Test.class, MdsShr_Test.class, Function_Test.class, Descriptor_S_Test.class, Descriptor_A_Test.class}) // , Editors_Test.class})
 public class AllTests{
+    private static boolean       mdslib     = false;
     private static boolean       local      = false;
     private static boolean       mdsip      = true;
     private static final boolean remote_win = false;
@@ -30,6 +31,7 @@ public class AllTests{
     private static final String  host       = AllTests.local ? "localhost" : "mds-data-1";                                      // "gate.rzg.mpg.de"; //
     private static final String  killcmd    = AllTests.local_win ? "taskkill /im mdsip.exe /F" : "kill -s 9 $pidof mdsip";
     static{// clean up test files
+        if(!AllTests.mdslib) MdsLib.lib_loaded = "use disabled";
         if(AllTests.mdsip && AllTests.local){
             try{
                 Runtime.getRuntime().exec(AllTests.killcmd).waitFor();

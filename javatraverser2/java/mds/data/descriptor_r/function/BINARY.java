@@ -22,7 +22,7 @@ import mds.data.descriptor_a.Uint32Array;
 import mds.data.descriptor_a.Uint64Array;
 import mds.data.descriptor_a.Uint8Array;
 import mds.data.descriptor_r.Function;
-import mds.data.descriptor_s.CString;
+import mds.data.descriptor_s.StringDsc;
 import mds.data.descriptor_s.Complex32;
 import mds.data.descriptor_s.Complex64;
 import mds.data.descriptor_s.Float32;
@@ -82,7 +82,7 @@ public class BINARY extends Function{
             final StringBuilder str = new StringBuilder(1024);
             for(final DATA<?> dsc : args)
                 str.append(dsc.text());
-            return new CString(str.toString());
+            return new StringDsc(str.toString());
         }
     }
     public static class Divide extends BINARY{
@@ -231,7 +231,8 @@ public class BINARY extends Function{
 
         @Override
         protected final Descriptor<?> method(final DATA<?>[] args) throws MdsException {
-            if(args[1] instanceof Descriptor_A<?>) return Descriptor_A.deserialize(args[0].serialize()).getData().power(args[0].toDescriptor(), args[1].toDescriptor());
+            if(args[1] instanceof Descriptor_A<?> & !(args[0] instanceof Descriptor_A<?>)) //
+                return Descriptor_A.deserialize(args[0].serialize()).getData().power(args[0].toDescriptor(), args[1].toDescriptor());
             return args[0].power(args[0].toDescriptor(), args[1].toDescriptor());
         }
     }
@@ -338,75 +339,75 @@ public class BINARY extends Function{
             new op_rec(" ^ ", OPC.OpcPower, (byte)16, (byte)1), // 30 : a ** b == a ^ b
     };
 
-    public static final boolean coversOpCode(final short opcode) {
+    public static final boolean coversOpCode(final OPC opcode) {
         switch(opcode){
             default:
                 return false;
-            case OPC.OpcEqualsFirst:
-            case OPC.OpcPower:
-            case OPC.OpcDivide:
-            case OPC.OpcMultiply:
-            case OPC.OpcAdd:
-            case OPC.OpcSubtract:
-            case OPC.OpcShiftLeft:
-            case OPC.OpcShiftRight:
-            case OPC.OpcConcat:
-            case OPC.OpcIsIn:
-            case OPC.OpcGe:
-            case OPC.OpcGt:
-            case OPC.OpcLe:
-            case OPC.OpcLt:
-            case OPC.OpcEq:
-            case OPC.OpcNe:
-            case OPC.OpcAnd:
-            case OPC.OpcNand:
-            case OPC.OpcOr:
-            case OPC.OpcNor:
-            case OPC.OpcEqv:
-            case OPC.OpcNeqv:
-            case OPC.OpcPromote:
-            case OPC.OpcEquals:
-            case OPC.OpcDtypeRange:
-            case OPC.OpcComma:
-            case OPC.OpcConditional:
+            case OpcEqualsFirst:
+            case OpcPower:
+            case OpcDivide:
+            case OpcMultiply:
+            case OpcAdd:
+            case OpcSubtract:
+            case OpcShiftLeft:
+            case OpcShiftRight:
+            case OpcConcat:
+            case OpcIsIn:
+            case OpcGe:
+            case OpcGt:
+            case OpcLe:
+            case OpcLt:
+            case OpcEq:
+            case OpcNe:
+            case OpcAnd:
+            case OpcNand:
+            case OpcOr:
+            case OpcNor:
+            case OpcEqv:
+            case OpcNeqv:
+            case OpcPromote:
+            case OpcEquals:
+            case OpcDtypeRange:
+            case OpcComma:
+            case OpcConditional:
                 return true;
         }
     }
 
     public static BINARY deserialize(final ByteBuffer b) throws MdsException {
-        final short opcode = b.getShort(b.getInt(Descriptor._ptrI));
+        final OPC opcode = OPC.get(b.getShort(b.getInt(Descriptor._ptrI)));
         switch(opcode){
             default:
                 return new BINARY(b);
-            case OPC.OpcGe:
+            case OpcGe:
                 return new Ge(b);
-            case OPC.OpcGt:
+            case OpcGt:
                 return new Gt(b);
-            case OPC.OpcLe:
+            case OpcLe:
                 return new Le(b);
-            case OPC.OpcLt:
+            case OpcLt:
                 return new Lt(b);
-            case OPC.OpcEq:
+            case OpcEq:
                 return new Eq(b);
-            case OPC.OpcNe:
+            case OpcNe:
                 return new Ne(b);
-            case OPC.OpcAdd:
+            case OpcAdd:
                 return new Add(b);
-            case OPC.OpcDivide:
+            case OpcDivide:
                 return new Divide(b);
-            case OPC.OpcConcat:
+            case OpcConcat:
                 return new Concat(b);
-            case OPC.OpcEquals:
+            case OpcEquals:
                 return new Equals(b);
-            case OPC.OpcMultiply:
+            case OpcMultiply:
                 return new Multiply(b);
-            case OPC.OpcPower:
+            case OpcPower:
                 return new Power(b);
-            case OPC.OpcShiftLeft:
+            case OpcShiftLeft:
                 return new Shift_Left(b);
-            case OPC.OpcShiftRight:
+            case OpcShiftRight:
                 return new Shift_Right(b);
-            case OPC.OpcSubtract:
+            case OpcSubtract:
                 return new Subtract(b);
         }
         // throw new MdsException(MdsException.TdiINV_OPC);
@@ -416,15 +417,13 @@ public class BINARY extends Function{
         byte rank = 0;
         for(final DATA<?> arg : args){
             rank = (byte)(rank | arg.getRank());
-            if(rank == -1) return Missing.NEW;
+            if(rank == -1) break;
         }
         return BINARY.getDscByRank(rank);
     }
 
     private static DATA<?> getDscByRank(final byte rank) {
         switch(rank & 0xFF){
-            case 0xFF:
-                return Missing.NEW;
             case 0x00:
                 return new Uint8();
             case 0x01:
@@ -448,10 +447,12 @@ public class BINARY extends Function{
             case 0x33:
                 return new Float32();
             case 0x37:
+            case 0x3F:
                 return new Float64();
             case 0x73:
                 return new Complex32();
             case 0x77:
+            case 0x7F:
                 return new Complex64();
             case 0x80:
                 return new Uint8Array();
@@ -476,10 +477,12 @@ public class BINARY extends Function{
             case 0xB3:
                 return new Float32Array();
             case 0xB7:
+            case 0xBF:
                 return new Float64Array();
             case 0xF3:
                 return new Complex32Array();
             case 0xF7:
+            case 0xFF:
                 return new Complex64Array();
         }
         return Missing.NEW;
@@ -489,17 +492,17 @@ public class BINARY extends Function{
         super(b);
     }
 
-    public BINARY(final short opcode, final Descriptor<?>... args){
+    public BINARY(final OPC opcode, final Descriptor<?>... args){
         super(opcode, args[0], args[1]);
     }
 
-    public BINARY(final short opcode, final Descriptor<?> a, final Descriptor<?> b){
+    public BINARY(final OPC opcode, final Descriptor<?> a, final Descriptor<?> b){
         super(opcode, a, b);
     }
 
     @Override
     public final StringBuilder decompile(final int prec, final StringBuilder pout, final int mode) {
-        final short opcode = this.getOpCode();
+        final OPC opcode = this.getOpCode();
         Function r_ptr;
         Descriptor<?> ptr;
         if(opcode == OPC.OpcEqualsFirst) try{

@@ -1,6 +1,7 @@
 package mds.data.descriptor_a;
 
 import java.nio.ByteBuffer;
+import mds.data.DTYPE;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_s.FLOAT;
 
@@ -17,20 +18,20 @@ public abstract class FLOATArray<T extends Number>extends NUMBERArray<T>{
         return b;
     }
 
-    public FLOATArray(final byte dtype, final ByteBuffer data, final int[] shape){
+    protected FLOATArray(final ByteBuffer b){
+        super(b);
+    }
+
+    public FLOATArray(final DTYPE dtype, final ByteBuffer data, final int[] shape){
         super(dtype, data, shape);
     }
 
-    protected FLOATArray(final byte dtype, final double[] values, final int... shape){
+    protected FLOATArray(final DTYPE dtype, final double[] values, final int... shape){
         super(dtype, FLOATArray.toByteBuffer(values), shape.length == 0 ? new int[]{values.length} : shape);
     }
 
-    protected FLOATArray(final byte dtype, final float[] values, final int... shape){
+    protected FLOATArray(final DTYPE dtype, final float[] values, final int... shape){
         super(dtype, FLOATArray.toByteBuffer(values), shape.length == 0 ? new int[]{values.length} : shape);
-    }
-
-    protected FLOATArray(final ByteBuffer b){
-        super(b);
     }
 
     @Override

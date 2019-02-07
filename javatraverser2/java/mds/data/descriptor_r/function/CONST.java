@@ -7,7 +7,7 @@ import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_r.Function;
 import mds.data.descriptor_r.With_Error;
 import mds.data.descriptor_r.With_Units;
-import mds.data.descriptor_s.CString;
+import mds.data.descriptor_s.StringDsc;
 import mds.data.descriptor_s.Complex32;
 import mds.data.descriptor_s.Float32;
 import mds.data.descriptor_s.Int32;
@@ -40,7 +40,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new With_Error(new Float32(5.29177249e-11f), new Float32(0.00000024e-11f)), new CString("m"));
+            return new With_Units(new With_Error(new Float32(5.29177249e-11f), new Float32(0.00000024e-11f)), new StringDsc("m"));
         }
     }
     public static final class dAlpha extends CONST{
@@ -68,7 +68,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new With_Error(new Float32(1.6605402e-27f), new Float32(0.0000010e-27f)), new CString("kg"));
+            return new With_Units(new With_Error(new Float32(1.6605402e-27f), new Float32(0.0000010e-27f)), new StringDsc("kg"));
         }
     }
     public static final class dAtm extends CONST{
@@ -82,7 +82,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new Float32(101325.f), new CString("Pa"));
+            return new With_Units(new Float32(101325.f), new StringDsc("Pa"));
         }
     }
     public static final class dC extends CONST{
@@ -96,7 +96,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new Float32(299792458.f), new CString("m/s"));
+            return new With_Units(new Float32(299792458.f), new StringDsc("m/s"));
         }
     }
     public static final class dCal extends CONST{
@@ -110,7 +110,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new Float32(4.1868f), new CString("J"));
+            return new With_Units(new Float32(4.1868f), new StringDsc("J"));
         }
     }
     public static final class dDefault extends CONST{
@@ -123,11 +123,11 @@ public abstract class CONST extends Function{
         }
 
         @Override
-        public final CString evaluate() {
+        public final StringDsc evaluate() {
             try{
-                return this.mds.getDescriptor(this.tree, "$DEFAULT", CString.class);
+                return this.mds.getDescriptor(this.tree, "$DEFAULT", StringDsc.class);
             }catch(final MdsException e){
-                return new CString(this.tree.getDefaultC().decompile());
+                return new StringDsc(this.tree.getDefaultC().decompile());
             }
         }
     }
@@ -156,7 +156,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new Float32(8.854187817e-12f), new CString("F/m"));
+            return new With_Units(new Float32(8.854187817e-12f), new StringDsc("F/m"));
         }
     }
     public static final class dEv extends CONST{
@@ -170,7 +170,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new With_Error(new Float32(1.60217733e-19f), new Float32(0.00000049e-19f)), new CString("J/eV"));
+            return new With_Units(new With_Error(new Float32(1.60217733e-19f), new Float32(0.00000049e-19f)), new StringDsc("J/eV"));
         }
     }
     public static final class dExpt extends CONST{
@@ -183,8 +183,8 @@ public abstract class CONST extends Function{
         }
 
         @Override
-        public final CString evaluate() {
-            return new CString(this.tree.expt);
+        public final StringDsc evaluate() {
+            return new StringDsc(this.tree.expt);
         }
     }
     public static final class dFalse extends CONST{
@@ -212,7 +212,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new With_Error(new Float32(9.6485309e4f), new Float32(0.0000029e4f)), new CString("C/mol"));
+            return new With_Units(new With_Error(new Float32(9.6485309e4f), new Float32(0.0000029e4f)), new StringDsc("C/mol"));
         }
     }
     public static final class dG extends CONST{
@@ -226,7 +226,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new With_Error(new Float32(6.67259e-11f), new Float32(0.00085f)), new CString("m^3/s^2/kg"));
+            return new With_Units(new With_Error(new Float32(6.67259e-11f), new Float32(0.00085f)), new StringDsc("m^3/s^2/kg"));
         }
     }
     public static final class dGas extends CONST{
@@ -240,7 +240,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new With_Error(new Float32(8.314510f), new Float32(0.000070f)), new CString("J/K/mol"));
+            return new With_Units(new With_Error(new Float32(8.314510f), new Float32(0.000070f)), new StringDsc("J/K/mol"));
         }
     }
     public static final class dGn extends CONST{
@@ -254,7 +254,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new Float32(9.80665f), new CString("m/s^2"));
+            return new With_Units(new Float32(9.80665f), new StringDsc("m/s^2"));
         }
     }
     public static final class dH extends CONST{
@@ -268,7 +268,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new With_Error(new Float32(6.6260755e-34f), new Float32(0.0000040f)), new CString("J*s"));
+            return new With_Units(new With_Error(new Float32(6.6260755e-34f), new Float32(0.0000040f)), new StringDsc("J*s"));
         }
     }
     public static final class dHbar extends CONST{
@@ -282,7 +282,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new With_Error(new Float32(1.05457266e-34f), new Float32(0.00000063f)), new CString("J*s"));
+            return new With_Units(new With_Error(new Float32(1.05457266e-34f), new Float32(0.00000063f)), new StringDsc("J*s"));
         }
     }
     public static final class dI extends CONST{
@@ -310,7 +310,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new With_Error(new Float32(1.380658e-23f), new Float32(0.000012e-23f)), new CString("J/K"));
+            return new With_Units(new With_Error(new Float32(1.380658e-23f), new Float32(0.000012e-23f)), new StringDsc("J/K"));
         }
     }
     public static final class dMe extends CONST{
@@ -324,7 +324,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new With_Error(new Float32(9.1093897e-31f), new Float32(0.0000054e-31f)), new CString("kg"));
+            return new With_Units(new With_Error(new Float32(9.1093897e-31f), new Float32(0.0000054e-31f)), new StringDsc("kg"));
         }
     }
     public static final class dMissing extends CONST{
@@ -352,7 +352,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new With_Error(new Float32(1.6726231e-27f), new Float32(0.0000010e-27f)), new CString("kg"));
+            return new With_Units(new With_Error(new Float32(1.6726231e-27f), new Float32(0.0000010e-27f)), new StringDsc("kg"));
         }
     }
     public static final class dMu0 extends CONST{
@@ -366,7 +366,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new Float32(12.566370614e-7f), new CString("N/A^2"));
+            return new With_Units(new Float32(12.566370614e-7f), new StringDsc("N/A^2"));
         }
     }
     public static final class dN0 extends CONST{
@@ -380,7 +380,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new With_Error(new Float32(2.686763e25f), new Float32(0.000023e25f)), new CString("/m^3"));
+            return new With_Units(new With_Error(new Float32(2.686763e25f), new Float32(0.000023e25f)), new StringDsc("/m^3"));
         }
     }
     public static final class dNa extends CONST{
@@ -394,7 +394,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new With_Error(new Float32(6.0221367e23f), new Float32(0.0000036e23f)), new CString("/mol"));
+            return new With_Units(new With_Error(new Float32(6.0221367e23f), new Float32(0.0000036e23f)), new StringDsc("/mol"));
         }
     }
     public static final class dNarg extends CONST{
@@ -426,7 +426,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new Float32(1.01325e5f), new CString("Pa"));
+            return new With_Units(new Float32(1.01325e5f), new StringDsc("Pa"));
         }
     }
     public static final class dPi extends CONST{
@@ -454,7 +454,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new With_Error(new Float32(1.60217733e-19f), new Float32(0.000000493e-19f)), new CString("C"));
+            return new With_Units(new With_Error(new Float32(1.60217733e-19f), new Float32(0.000000493e-19f)), new StringDsc("C"));
         }
     }
     public static final class dRe extends CONST{
@@ -468,7 +468,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new With_Error(new Float32(2.81794092e-15f), new Float32(0.00000038e-15f)), new CString("m"));
+            return new With_Units(new With_Error(new Float32(2.81794092e-15f), new Float32(0.00000038e-15f)), new StringDsc("m"));
         }
     }
     public static final class dRoprand extends CONST{
@@ -496,7 +496,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new With_Error(new Float32(1.0973731534e7f), new Float32(0.0000000013e7f)), new CString("/m"));
+            return new With_Units(new With_Error(new Float32(1.0973731534e7f), new Float32(0.0000000013e7f)), new StringDsc("/m"));
         }
     }
     public static final class dShot extends CONST{
@@ -523,9 +523,9 @@ public abstract class CONST extends Function{
         }
 
         @Override
-        public final CString evaluate() {
-            if(this.tree.shot == -1) return new CString("MODEL");
-            return new CString(String.valueOf(this.tree.shot));
+        public final StringDsc evaluate() {
+            if(this.tree.shot == -1) return new StringDsc("MODEL");
+            return new StringDsc(String.valueOf(this.tree.shot));
         }
     }
     public static final class dT0 extends CONST{
@@ -539,7 +539,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new Float32(273.16f), new CString("K"));
+            return new With_Units(new Float32(273.16f), new StringDsc("K"));
         }
     }
     public static final class dThis extends CONST{
@@ -562,7 +562,7 @@ public abstract class CONST extends Function{
 
         @Override
         public final With_Units evaluate() {
-            return new With_Units(new Float32(1.3332e2f), new CString("Pa"));
+            return new With_Units(new Float32(1.3332e2f), new StringDsc("Pa"));
         }
     }
     public static final class dTrue extends CONST{
@@ -623,149 +623,150 @@ public abstract class CONST extends Function{
     public static final dQe      $QE      = new dQe();
     public static final dRe      $RE      = new dRe();
 
-    public static final boolean coversOpCode(final short opcode) {
+    public static final boolean coversOpCode(final OPC opcode) {
         switch(opcode){
             default:
                 return false;
-            case OPC.OpcA0:
-            case OPC.OpcAlpha:
-            case OPC.OpcAmu:
-            case OPC.OpcC:
-            case OPC.OpcCal:
-            case OPC.OpcDegree:
-            case OPC.OpcEv:
-            case OPC.OpcFalse:
-            case OPC.OpcFaraday:
-            case OPC.OpcG:
-            case OPC.OpcGas:
-            case OPC.OpcH:
-            case OPC.OpcHbar:
-            case OPC.OpcI:
-            case OPC.OpcK:
-            case OPC.OpcMe:
-            case OPC.OpcMissing:
-            case OPC.OpcMp:
-            case OPC.OpcN0:
-            case OPC.OpcNa:
-            case OPC.OpcP0:
-            case OPC.OpcPi:
-            case OPC.OpcQe:
-            case OPC.OpcRe:
-            case OPC.OpcRoprand:
-            case OPC.OpcRydberg:
-            case OPC.OpcT0:
-            case OPC.OpcTorr:
-            case OPC.OpcTrue:
-            case OPC.OpcValue:
-            case OPC.Opc2Pi:
-            case OPC.OpcNarg:
-            case OPC.OpcMdsDefault:
-            case OPC.OpcExpt:
-            case OPC.OpcShot:
-            case OPC.OpcThis:
-            case OPC.OpcAtm:
-            case OPC.OpcEpsilon0:
-            case OPC.OpcGn:
-            case OPC.OpcMu0:
-            case OPC.OpcShotname:
+            case OpcA0:
+            case OpcAlpha:
+            case OpcAmu:
+            case OpcC:
+            case OpcCal:
+            case OpcDegree:
+            case OpcEv:
+            case OpcFalse:
+            case OpcFaraday:
+            case OpcG:
+            case OpcGas:
+            case OpcH:
+            case OpcHbar:
+            case OpcI:
+            case OpcK:
+            case OpcMe:
+            case OpcMissing:
+            case OpcMp:
+            case OpcN0:
+            case OpcNa:
+            case OpcP0:
+            case OpcPi:
+            case OpcQe:
+            case OpcRe:
+            case OpcRoprand:
+            case OpcRydberg:
+            case OpcT0:
+            case OpcTorr:
+            case OpcTrue:
+            case OpcValue:
+            case Opc2Pi:
+            case OpcNarg:
+            case OpcMdsDefault:
+            case OpcExpt:
+            case OpcShot:
+            case OpcThis:
+            case OpcAtm:
+            case OpcEpsilon0:
+            case OpcGn:
+            case OpcMu0:
+            case OpcShotname:
                 return true;
         }
     }
 
     public static CONST deserialize(final ByteBuffer b) throws MdsException {
-        final short opcode = b.getShort(b.getInt(Descriptor._ptrI));
+        final OPC opcode = OPC.get(b.getShort(b.getInt(Descriptor._ptrI)));
         switch(opcode){
-            case OPC.OpcA0:
+            case OpcA0:
                 return new dA0(b);
-            case OPC.OpcAlpha:
+            case OpcAlpha:
                 return new dAlpha(b);
-            case OPC.OpcAmu:
+            case OpcAmu:
                 return new dAmu(b);
-            case OPC.OpcC:
+            case OpcC:
                 return new dC(b);
-            case OPC.OpcCal:
+            case OpcCal:
                 return new dCal(b);
-            case OPC.OpcDegree:
+            case OpcDegree:
                 return new dDegree(b);
-            case OPC.OpcEv:
+            case OpcEv:
                 return new dEv(b);
-            case OPC.OpcFalse:
+            case OpcFalse:
                 return new dFalse(b);
-            case OPC.OpcFaraday:
+            case OpcFaraday:
                 return new dFaraday(b);
-            case OPC.OpcG:
+            case OpcG:
                 return new dG(b);
-            case OPC.OpcGas:
+            case OpcGas:
                 return new dGas(b);
-            case OPC.OpcH:
+            case OpcH:
                 return new dH(b);
-            case OPC.OpcHbar:
+            case OpcHbar:
                 return new dHbar(b);
-            case OPC.OpcI:
+            case OpcI:
                 return new dI(b);
-            case OPC.OpcK:
+            case OpcK:
                 return new dK(b);
-            case OPC.OpcMe:
+            case OpcMe:
                 return new dMe(b);
-            case OPC.OpcMissing:
+            case OpcMissing:
                 return new dMissing(b);
-            case OPC.OpcMp:
+            case OpcMp:
                 return new dMp(b);
-            case OPC.OpcN0:
+            case OpcN0:
                 return new dN0(b);
-            case OPC.OpcNa:
+            case OpcNa:
                 return new dNa(b);
-            case OPC.OpcP0:
+            case OpcP0:
                 return new dP0(b);
-            case OPC.OpcPi:
+            case OpcPi:
                 return new dPi(b);
-            case OPC.OpcQe:
+            case OpcQe:
                 return new dQe(b);
-            case OPC.OpcRe:
+            case OpcRe:
                 return new dRe(b);
-            case OPC.OpcRoprand:
+            case OpcRoprand:
                 return new dRoprand(b);
-            case OPC.OpcRydberg:
+            case OpcRydberg:
                 return new dRydberg(b);
-            case OPC.OpcT0:
+            case OpcT0:
                 return new dT0(b);
-            case OPC.OpcTorr:
+            case OpcTorr:
                 return new dTorr(b);
-            case OPC.OpcTrue:
+            case OpcTrue:
                 return new dTrue(b);
-            case OPC.OpcValue:
+            case OpcValue:
                 return new dValue(b);
-            case OPC.Opc2Pi:
+            case Opc2Pi:
                 return new d2Pi(b);
-            case OPC.OpcNarg:
+            case OpcNarg:
                 return new dNarg(b);
-            case OPC.OpcMdsDefault:
+            case OpcMdsDefault:
                 return new dDefault(b);
-            case OPC.OpcExpt:
+            case OpcExpt:
                 return new dExpt(b);
-            case OPC.OpcShot:
+            case OpcShot:
                 return new dShot(b);
-            case OPC.OpcThis:
+            case OpcThis:
                 return new dThis(b);
-            case OPC.OpcAtm:
+            case OpcAtm:
                 return new dAtm(b);
-            case OPC.OpcEpsilon0:
+            case OpcEpsilon0:
                 return new dEpsilon0(b);
-            case OPC.OpcGn:
+            case OpcGn:
                 return new dGn(b);
-            case OPC.OpcMu0:
+            case OpcMu0:
                 return new dMu0(b);
-            case OPC.OpcShotname:
+            case OpcShotname:
                 return new dShotname(b);
+            default:
+                throw new MdsException(MdsException.TdiINV_OPC);
         }
-        throw new MdsException(MdsException.TdiINV_OPC);
     }
 
     public CONST(final ByteBuffer b){
         super(b);
     }
 
-    private CONST(final short opcode, final Descriptor<?>... args){
+    private CONST(final OPC opcode, final Descriptor<?>... args){
         super(opcode);
     }
 

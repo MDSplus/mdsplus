@@ -1,7 +1,6 @@
 package mds;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -13,6 +12,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
+import jtraverser.editor.Editor;
 import mds.data.descriptor_s.Pointer;
 import mds.mdslib.MdsLib;
 
@@ -23,11 +23,14 @@ public final class TCL{
     public final static JPanel getComponent(final Mds mds) {
         final TCL tcl = mds.getTCL();
         final JPanel panel = new JPanel(new BorderLayout());
-        final JTextField tf = new JTextField(128);
-        final JTextArea ta = new JTextArea();
+        final JTextField tf = new JTextField(48);
+        tf.setComponentPopupMenu(Editor.newTextEditorPopup(true));
+        final JTextArea ta = new JTextArea(16, 48);
+        ta.setComponentPopupMenu(Editor.newTextEditorPopup(false));
         ta.setEditable(false);
         panel.add(tf, BorderLayout.SOUTH);
-        panel.add(new JScrollPane(ta), BorderLayout.CENTER);
+        final JScrollPane sp = new JScrollPane(ta);
+        panel.add(sp, BorderLayout.CENTER);
         tf.requestFocus();
         final Listener listen = new Listener(){
             int pos = 0;
@@ -74,7 +77,6 @@ public final class TCL{
         final JFrame d = new JFrame();
         d.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         d.setContentPane(TCL.getComponent(mds));
-        d.setPreferredSize(new Dimension(360, 360));
         d.setTitle("MdsTCL @ " + mds.toString());
         d.pack();
         return d;

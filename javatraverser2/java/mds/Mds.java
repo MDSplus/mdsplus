@@ -14,7 +14,7 @@ import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_A;
 import mds.data.descriptor.Descriptor_S;
 import mds.data.descriptor_a.Uint8Array;
-import mds.data.descriptor_s.CString;
+import mds.data.descriptor_s.StringDsc;
 import mds.data.descriptor_s.Missing;
 
 public abstract class Mds{
@@ -98,6 +98,7 @@ public abstract class Mds{
     protected transient Hashtable<Integer, EventItem> hashEventId   = new Hashtable<Integer, EventItem>();
     protected transient Hashtable<String, EventItem>  hashEventName = new Hashtable<String, EventItem>();
     protected transient HashSet<String>               defined_funs  = new HashSet<String>();
+    private int                                       mds_end_arg   = 0;
 
     /**
      * getDescriptor
@@ -205,7 +206,7 @@ public abstract class Mds{
 
     private final Descriptor<?> getDataArray(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         final Descriptor<?> desc = this.getDescriptor(ctx, expr, args);
-        if(desc instanceof CString){
+        if(desc instanceof StringDsc){
             if(desc.length() > 0) throw new MdsException(desc.toString(), 0);
             return Missing.NEW;
         }
@@ -416,6 +417,19 @@ public abstract class Mds{
      * @return String
      */
     public abstract String isReady();
+
+    protected final int MdsEND_ARG() {
+        if(this.mds_end_arg == 0){
+            try{
+                if(this.getDescriptor("TdiShr->TdiPi(val(0),val(1))").toLong() == 1) //
+                    this.mds_end_arg = 1;
+                else this.mds_end_arg = -1;
+            }catch(final MdsException e){
+                this.mds_end_arg = -1;
+            }
+        }
+        return this.mds_end_arg;
+    }
 
     /**
      * registers an Event Listener

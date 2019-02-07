@@ -3,6 +3,7 @@ package jtraverser;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -12,8 +13,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import devices.Device;
 import mds.MdsException;
 import mds.data.DTYPE;
 import mds.data.TREE;
@@ -21,7 +24,6 @@ import mds.data.TREE.NodeInfo;
 import mds.data.TREE.RecordInfo;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_r.Action;
-import mds.data.descriptor_r.Signal;
 import mds.data.descriptor_s.NODE;
 import mds.data.descriptor_s.NODE.Flags;
 import mds.data.descriptor_s.Nid;
@@ -377,12 +379,8 @@ public class Node{
     }
 
     public final Descriptor<?> getData() throws MdsException {
-        if(this.isSegmented()){
-            final Signal seg = this.nid.getSegment(0);
-            final Descriptor<?> scale = this.nid.getSegmentScale();
-            if(Descriptor.isMissing(scale)) return seg;
-            return new Signal(scale, seg.getValue(), seg.getDimension());
-        }
+        if(this.isSegmented())//
+            return this.nid.getSegment(0);
         return this.nid.getRecord();
     }
 
@@ -791,6 +789,15 @@ public class Node{
     public final DefaultMutableTreeNode setTreeNode(final DefaultMutableTreeNode treenode) {
         if(!this.is_leaf) treenode.add(this.dummy = new DefaultMutableTreeNode(new JLabel("loading...")));
         return this.treenode = treenode;
+    }
+
+    public final void setupDevice(final boolean editable) {
+        try{
+            Device.getEditor((Frame)SwingUtilities.getRoot(this.treeview), this.nid, editable).showDialog();
+        }catch(final Exception e){
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this.treeview, e + "\n" + e.getMessage(), "Error opening device setup", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     /**

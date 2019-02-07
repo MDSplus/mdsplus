@@ -6,7 +6,7 @@ import java.nio.ByteOrder;
 import java.util.Iterator;
 import mds.MdsException;
 import mds.data.DTYPE;
-import mds.data.descriptor_a.CStringArray;
+import mds.data.descriptor_a.StringArray;
 import mds.data.descriptor_a.Complex32Array;
 import mds.data.descriptor_a.Complex64Array;
 import mds.data.descriptor_a.EmptyArray;
@@ -75,49 +75,50 @@ public abstract class Descriptor_A<T>extends ARRAY<T[]> implements Iterable<T>{
     public static final byte     CLASS  = 4;
 
     public static Descriptor_A<?> deserialize(final ByteBuffer b) throws MdsException {
-        switch(b.get(Descriptor._typB)){
-            case DTYPE.NID:
+        switch(DTYPE.get(b.get(Descriptor._typB))){
+            case NID:
                 return new NidArray(b);
-            case DTYPE.BU:
+            case BU:
                 return new Uint8Array(b);
-            case DTYPE.WU:
+            case WU:
                 return new Uint16Array(b);
-            case DTYPE.LU:
+            case LU:
                 return new Uint32Array(b);
-            case DTYPE.QU:
+            case QU:
                 return new Uint64Array(b);
-            case DTYPE.OU:
+            case OU:
                 return new Uint128Array(b);
-            case DTYPE.B:
+            case B:
                 return new Int8Array(b);
-            case DTYPE.W:
+            case W:
                 return new Int16Array(b);
-            case DTYPE.L:
+            case L:
                 return new Int32Array(b);
-            case DTYPE.Q:
+            case Q:
                 return new Int64Array(b);
-            case DTYPE.O:
+            case O:
                 return new Int128Array(b);
-            case DTYPE.F:
-            case DTYPE.FS:
+            case F:
+            case FS:
                 return new Float32Array(b);
-            case DTYPE.FC:
-            case DTYPE.FSC:
+            case FC:
+            case FSC:
                 return new Complex32Array(b);
-            case DTYPE.D:
-            case DTYPE.G:
-            case DTYPE.FT:
+            case D:
+            case G:
+            case FT:
                 return new Float64Array(b);
-            case DTYPE.DC:
-            case DTYPE.GC:
-            case DTYPE.FTC:
+            case DC:
+            case GC:
+            case FTC:
                 return new Complex64Array(b);
-            case DTYPE.T:
-                return new CStringArray(b);
-            case DTYPE.MISSING:
+            case T:
+                return new StringArray(b);
+            case Z:
                 return new EmptyArray(b);
+            default:
+                throw new MdsException(String.format("Unsupported dtype %s for class %s", DTYPE.getName(b.get(Descriptor._typB)), Descriptor.getDClassName(b.get(Descriptor._clsB))), 0);
         }
-        throw new MdsException(String.format("Unsupported dtype %s for class %s", DTYPE.getName(b.get(Descriptor._typB)), Descriptor.getDClassName(b.get(Descriptor._clsB))), 0);
     }
 
     public static final Descriptor_A<?> readMessage(final Message msg) throws MdsException {
@@ -147,12 +148,12 @@ public abstract class Descriptor_A<T>extends ARRAY<T[]> implements Iterable<T>{
         return Descriptor_A.deserialize(b);
     }
 
-    public Descriptor_A(final byte dtype, final ByteBuffer byteBuffer, final int... shape){
-        super(dtype, Descriptor_A.CLASS, byteBuffer, shape);
-    }
-
     protected Descriptor_A(final ByteBuffer b){
         super(b);
+    }
+
+    public Descriptor_A(final DTYPE dtype, final ByteBuffer byteBuffer, final int... shape){
+        super(dtype, Descriptor_A.CLASS, byteBuffer, shape);
     }
 
     public final byte[] asByteArray() {

@@ -96,19 +96,19 @@ public class TreeShr_Test{
             AllTests.testStatus(MdsException.TreeNORMAL, TreeShr_Test.treeshr.treeAddConglom(TreeShr_Test.ctx, "C", "E1429").status);
             final int nid = 40;
             AllTests.testStatus(MdsException.TreeNORMAL, TreeShr_Test.treeshr.treeStartConglomerate(TreeShr_Test.ctx, 11));
-            Assert.assertEquals(nid, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "D", NODE.USAGE_DEVICE).data);
-            Assert.assertEquals(nid, TreeShr_Test.treeshr.treeSetDefault(TreeShr_Test.ctx, "D").data);
-            Assert.assertEquals(nid, TreeShr_Test.treeshr.treeGetDefaultNid(TreeShr_Test.ctx).data);
-            Assert.assertEquals(nid + 1, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "ACTION", NODE.USAGE_ACTION).data);
-            Assert.assertEquals(nid + 2, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "ANY", NODE.USAGE_ANY).data);
-            Assert.assertEquals(nid + 3, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "AXIS", NODE.USAGE_AXIS).data);
-            Assert.assertEquals(nid + 4, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "COMPOUND", NODE.USAGE_COMPOUND_DATA).data);
-            Assert.assertEquals(nid + 5, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "DISPATCH", NODE.USAGE_DISPATCH).data);
-            Assert.assertEquals(nid + 6, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "NUMERIC", NODE.USAGE_NUMERIC).data);
-            Assert.assertEquals(nid + 7, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "SIGNAL", NODE.USAGE_SIGNAL).data);
-            Assert.assertEquals(nid + 8, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "STRUCTURE", NODE.USAGE_STRUCTURE).data);
-            Assert.assertEquals(nid + 9, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "TASK", NODE.USAGE_TASK).data);
-            Assert.assertEquals(nid + 10, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "TEXT", NODE.USAGE_TEXT).data);
+            Assert.assertEquals(nid, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "D", NODE.USAGE_DEVICE).getData());
+            Assert.assertEquals(nid, TreeShr_Test.treeshr.treeSetDefault(TreeShr_Test.ctx, "D").getData());
+            Assert.assertEquals(nid, TreeShr_Test.treeshr.treeGetDefaultNid(TreeShr_Test.ctx).getData());
+            Assert.assertEquals(nid + 1, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "ACTION", NODE.USAGE_ACTION).getData());
+            Assert.assertEquals(nid + 2, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "ANY", NODE.USAGE_ANY).getData());
+            Assert.assertEquals(nid + 3, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "AXIS", NODE.USAGE_AXIS).getData());
+            Assert.assertEquals(nid + 4, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "COMPOUND", NODE.USAGE_COMPOUND_DATA).getData());
+            Assert.assertEquals(nid + 5, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "DISPATCH", NODE.USAGE_DISPATCH).getData());
+            Assert.assertEquals(nid + 6, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "NUMERIC", NODE.USAGE_NUMERIC).getData());
+            Assert.assertEquals(nid + 7, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "SIGNAL", NODE.USAGE_SIGNAL).getData());
+            Assert.assertEquals(nid + 8, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "STRUCTURE", NODE.USAGE_STRUCTURE).getData());
+            Assert.assertEquals(nid + 9, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "TASK", NODE.USAGE_TASK).getData());
+            Assert.assertEquals(nid + 10, TreeShr_Test.treeshr.treeAddNode(TreeShr_Test.ctx, "TEXT", NODE.USAGE_TEXT).getData());
             AllTests.testStatus(MdsException.TreeNORMAL, TreeShr_Test.treeshr.treeEndConglomerate(TreeShr_Test.ctx));
             Assert.assertEquals("ANY", TreeShr_Test.treeshr.treeGetMinimumPath(TreeShr_Test.ctx, nid + 2));
             AllTests.testStatus(MdsException.TreeNORMAL, TreeShr_Test.treeshr.treeSetDefaultNid(TreeShr_Test.ctx, 0));
@@ -154,6 +154,7 @@ public class TreeShr_Test{
         }
     }
 
+    /*
     @Test
     public final void test116TreeUsePrivateCtx() throws MdsException {
         final boolean before = TreeShr_Test.treeshr.treeGetPrivateCtx();
@@ -162,13 +163,13 @@ public class TreeShr_Test{
         Assert.assertTrue(TreeShr_Test.treeshr.treeSetPrivateCtx(before));
         Assert.assertTrue(before == TreeShr_Test.treeshr.treeGetPrivateCtx());
     }
-
+    */
     @Test
     public final void test122TreeDeleteNode() throws MdsException {
         AllTests.testStatus(MdsException.TreeNORMAL, TreeShr_Test.treeshr.treeOpenEdit(TreeShr_Test.ctx, TreeShr_Test.expt, TreeShr_Test.model));
         try{
-            Assert.assertEquals(37, TreeShr_Test.treeshr.treeDeleteNodeInitialize(TreeShr_Test.ctx, 3).data);
-            Assert.assertEquals(3, TreeShr_Test.treeshr.treeDeleteNodeGetNid(TreeShr_Test.ctx, 0).data);
+            Assert.assertEquals(37, TreeShr_Test.treeshr.treeDeleteNodeInitialize(TreeShr_Test.ctx, 3).getData());
+            Assert.assertEquals(3, TreeShr_Test.treeshr.treeDeleteNodeGetNid(TreeShr_Test.ctx, 0).getData());
             AllTests.testStatus(MdsException.TreeNORMAL, TreeShr_Test.treeshr.treeDeleteNodeExecute(TreeShr_Test.ctx));
         }finally{
             AllTests.testStatus(MdsException.TreeNORMAL, TreeShr_Test.treeshr.treeQuitTree(TreeShr_Test.ctx, TreeShr_Test.expt, TreeShr_Test.model));
@@ -207,7 +208,7 @@ public class TreeShr_Test{
         TreeShr_Test.treeshr.treeOpenEdit(TreeShr_Test.ctx, TreeShr_Test.expt, TreeShr_Test.model);
         try{
             AllTests.testStatus(MdsException.TreeNORMAL, TreeShr_Test.treeshr.treeRemoveNodesTags(TreeShr_Test.ctx, 2));
-            // Assert.assertNull(TreeShr_Test.treeshr.treeFindTagWild(TreeShr_Test.ctx, "DEVICE", TagRefStatus.init).data);
+            // Assert.assertNull(TreeShr_Test.treeshr.treeFindTagWild(TreeShr_Test.ctx, "DEVICE", TagRefStatus.init).getData());
         }finally{
             AllTests.testStatus(MdsException.TreeNORMAL, TreeShr_Test.treeshr.treeQuitTree(TreeShr_Test.ctx, TreeShr_Test.expt, TreeShr_Test.model));
         }
@@ -218,7 +219,7 @@ public class TreeShr_Test{
         TreeShr_Test.treeshr.treeOpen(TreeShr_Test.ctx, TreeShr_Test.expt, TreeShr_Test.model, false);
         try{
             AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeSetXNci(TreeShr_Test.ctx, 1, "myattr", CONST.$HBAR));
-            Assert.assertEquals("[\"myattr\"]", TreeShr_Test.treeshr.treeGetXNci(TreeShr_Test.ctx, 1).data.decompile());
+            Assert.assertEquals("[\"myattr\"]", TreeShr_Test.treeshr.treeGetXNci(TreeShr_Test.ctx, 1).getData().decompile());
         }finally{
             TreeShr_Test.treeshr.treeClose(TreeShr_Test.ctx, TreeShr_Test.expt, TreeShr_Test.model);
         }
@@ -287,17 +288,17 @@ public class TreeShr_Test{
                 dim[i] = t0 + i * 1000000l;
             AllTests.testStatus(MdsException.TreeNORMAL, TreeShr_Test.treeshr.treeMakeTimestampedSegment(TreeShr_Test.ctx, 1, dim, new Float32Array(.0f, .1f, .2f, .3f, .4f, .5f, .6f, .7f, .8f, Float.NaN), -1, 9));
             AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treePutRow(TreeShr_Test.ctx, 1, 1 << 10, 1000009000000l, new Float32Array(.9f)));
-            Assert.assertEquals(1, TreeShr_Test.treeshr.treeGetNumSegments(TreeShr_Test.ctx, 1).data);
+            Assert.assertEquals(1, TreeShr_Test.treeshr.treeGetNumSegments(TreeShr_Test.ctx, 1).getData());
             for(int i = 0; i < 10; i++)
                 dim[i] = t0 + i * 1000000l + 10000000l;
             AllTests.testStatus(MdsException.TreeNORMAL, TreeShr_Test.treeshr.treeMakeTimestampedSegment(TreeShr_Test.ctx, 1, dim, new Float32Array(1.0f, 1.1f, 1.2f, 1.3f, 1.4f, 1.5f, 1.6f, 1.7f, 1.8f, 1.9f), -1, 10));
-            Assert.assertEquals(2, TreeShr_Test.treeshr.treeGetNumSegments(TreeShr_Test.ctx, 1).data);
+            Assert.assertEquals(2, TreeShr_Test.treeshr.treeGetNumSegments(TreeShr_Test.ctx, 1).getData());
             for(int i = 0; i < 10; i++)
                 dim[i] = t0 + i * 1000000l + 20000000l;
             AllTests.testStatus(MdsException.TreeNORMAL, TreeShr_Test.treeshr.treeMakeTimestampedSegment(TreeShr_Test.ctx, 1, dim, new Float32Array(2.0f, 2.1f, 2.2f, 2.3f, 2.4f, 2.5f, 2.6f, 2.7f, 2.8f, 2.9f), -1, 10));
-            Assert.assertEquals(3, TreeShr_Test.treeshr.treeGetNumSegments(TreeShr_Test.ctx, 1).data);
-            Assert.assertEquals("[1000010000000Q,1000019000000Q]", TreeShr_Test.treeshr.treeGetSegmentLimits(TreeShr_Test.ctx, 1, 1).data.decompile());
-            Assert.assertEquals("[1000000000000Q,1000010000000Q,1000020000000Q]", ((List)TreeShr_Test.treeshr.treeGetSegmentTimesXd(TreeShr_Test.ctx, 1).data).get(1).decompile());
+            Assert.assertEquals(3, TreeShr_Test.treeshr.treeGetNumSegments(TreeShr_Test.ctx, 1).getData());
+            Assert.assertEquals("[1000010000000Q,1000019000000Q]", TreeShr_Test.treeshr.treeGetSegmentLimits(TreeShr_Test.ctx, 1, 1).getData().decompile());
+            Assert.assertEquals("[1000000000000Q,1000010000000Q,1000020000000Q]", ((List)TreeShr_Test.treeshr.treeGetSegmentTimesXd(TreeShr_Test.ctx, 1).getData()).get(1).decompile());
             AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeUpdateSegment(TreeShr_Test.ctx, 1, Missing.NEW, Missing.NEW, new Range(1000010100000l, 1000019100000l, 1000000l).getDataD(), 1));
             Assert.assertEquals("[1000010100000Q,1000011100000Q,1000012100000Q,1000013100000Q,1000014100000Q,1000015100000Q,1000016100000Q,1000017100000Q,1000018100000Q,1000019100000Q]", TreeShr_Test.treeshr.treeGetSegment(TreeShr_Test.ctx, 1, 1).getDimension().decompile());
             AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeSetSegmentScale(TreeShr_Test.ctx, 1, new BINARY.Add(new BINARY.Multiply(CONST.$VALUE, new Float32(0.5f)), new Float32(0.1f))));
@@ -369,8 +370,6 @@ public class TreeShr_Test{
             AllTests.testStatus(MdsException.TreeNORMAL, TreeShr_Test.treeshr.treePutRecord(TreeShr_Test.ctx, 47, signal));
             Assert.assertEquals(signal.decompile(), signal.serializeDsc().deserialize().decompile());
             final String dec = "Build_Signal(Long_Unsigned(Set_Range(4,5,4,5,4,3,2,1,0LU /*** etc. ***/)), *, [1000000000000QU])";
-            Assert.assertEquals(dec, TreeShr_Test.mds.getString(TreeShr_Test.ctx, "_a=*;_s=TdiShr->TdiDecompile(xd($),xd(_a),val(-1));_a", signal));
-            Assert.assertEquals(dec, TreeShr_Test.mds.getString(TreeShr_Test.ctx, "_a=GETNCI(47,'RECORD');_s=TdiShr->TdiDecompile(xd(_a),xd(_a),val(-1));_a"));
             Assert.assertEquals(dec, TreeShr_Test.treeshr.treeGetRecord(TreeShr_Test.ctx, 47).decompile());
         }finally{
             AllTests.testStatus(MdsException.TreeNORMAL, TreeShr_Test.treeshr.treeClose(TreeShr_Test.ctx, TreeShr_Test.expt, TreeShr_Test.shot));

@@ -2,6 +2,7 @@ package mds;
 
 import java.util.ArrayList;
 import mds.Mds.Request;
+import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_apd.List;
 import mds.data.descriptor_s.Pointer;
@@ -39,6 +40,18 @@ public abstract class Shr{
                 this.sb.append(o);
             this.nargs++;
             return this;
+        }
+
+        public final LibCall<T> ctx(final Pointer ctx) {
+            this.descr.insert(0, "__c=$;");
+            this.args.add(0, ctx);
+            return this.arg("val(__c)");
+        }
+
+        public final LibCall<T> ctxp(final Pointer ctxp) {
+            this.descr.insert(0, "__c=$;");
+            this.args.add(0, ctxp);
+            return this.arg("ref(__c)");
         }
 
         public final LibCall<T> descr(final Descriptor<?> d) {
@@ -114,6 +127,10 @@ public abstract class Shr{
 
         protected abstract String getImage();
 
+        public final LibCall<T> MdsEND_ARG(final Mds mds) {
+            return this.val(mds.MdsEND_ARG());
+        }
+
         public final LibCall<T> miss() {
             this.sep().append('*');
             this.nargs++;
@@ -175,10 +192,6 @@ public abstract class Shr{
             return this;
         }
 
-        public final LibCall val(final String string) {
-            return this;
-        }
-
         public final LibCall<T> xd(final Descriptor<?> d) {
             if(Descriptor.isMissing(d)) return this.miss();
             this.args.add(d);
@@ -236,6 +249,12 @@ public abstract class Shr{
         public final String toString() {
             return new StringBuilder(this.data.length() + 16).append(this.data).append(";").append(this.status).toString();
         }
+    }
+
+    public static List getCtx(final CTX ctx, final List ans) {
+        final Pointer nctx = (Pointer)ans.get(ans.getLength() - 1);
+        ctx.getDbid().setAddress(nctx.getAddress());
+        return ans;
     }
     protected final Mds mds;
 

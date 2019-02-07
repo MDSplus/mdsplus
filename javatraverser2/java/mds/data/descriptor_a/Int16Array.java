@@ -6,12 +6,12 @@ import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_s.Int16;
 
 public final class Int16Array extends INTEGERArray<Short>{
-    public Int16Array(final byte dtype, final ByteBuffer data, final int shape[]){
-        super(DTYPE.W, data, shape);
-    }
-
     public Int16Array(final ByteBuffer b){
         super(b);
+    }
+
+    public Int16Array(final DTYPE dtype, final ByteBuffer data, final int shape[]){
+        super(DTYPE.W, data, shape);
     }
 
     public Int16Array(final int shape[], final short... values){
@@ -52,7 +52,7 @@ public final class Int16Array extends INTEGERArray<Short>{
 
     @Override
     protected final byte getRankBits() {
-        return 2;
+        return 0x01;
     }
 
     @Override
@@ -109,6 +109,6 @@ public final class Int16Array extends INTEGERArray<Short>{
 
     @Override
     public final Uint16Array wordu() {
-        return new Uint16Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.WU));
+        return new Uint16Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.WU.toByte()));
     }
 }

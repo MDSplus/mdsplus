@@ -27,12 +27,12 @@ public abstract class NUMBER<T extends Number>extends Descriptor_S<T> implements
         return new Float32(value.floatValue());// default
     }
 
-    public NUMBER(final byte dtype, final ByteBuffer b){
-        super(dtype, b);
-    }
-
     protected NUMBER(final ByteBuffer b){
         super(b);
+    }
+
+    public NUMBER(final DTYPE dtype, final ByteBuffer b){
+        super(dtype, b);
     }
 
     @Override
@@ -55,7 +55,7 @@ public abstract class NUMBER<T extends Number>extends Descriptor_S<T> implements
 
     @Override
     public final byte getRank() {
-        return (byte)(this.getRankClass() | (this.getRankBits() - 1));
+        return (byte)(this.getRankClass() | this.getRankBits());
     }
 
     protected abstract byte getRankBits();
@@ -63,7 +63,7 @@ public abstract class NUMBER<T extends Number>extends Descriptor_S<T> implements
     protected abstract byte getRankClass();
 
     protected final String getSuffix() {
-        return DTYPE.getSuffix(this.dtype());
+        return this.dtype().suffix;
     }
 
     @Override
@@ -101,8 +101,8 @@ public abstract class NUMBER<T extends Number>extends Descriptor_S<T> implements
     }
 
     @Override
-    public CString text() {// 4,8,12,20,36
-        return new CString((int)((this.length() - 1) * 8 * .30103 + 6.8), this.getAtomic().toString());
+    public StringDsc text() {// 4,6,11,20,40
+        return new StringDsc((int)(this.length() * 2.4 + 1.6), this.getAtomic().toString());
     }
 
     @Override

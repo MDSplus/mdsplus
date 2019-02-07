@@ -1,554 +1,476 @@
 package mds.data;
 
-public final class OPC{
-    public static final String[] Names                  = new String[]{                              // 0
-            "$", "$A0", "$ALPHA", "$AMU", "$C",                                                      // 5
-            "$CAL", "$DEGREE", "$EV", "$FALSE", "$FARADAY",                                          // 10
-            "$G", "$GAS", "$H", "$HBAR", "$I",                                                       // 15
-            "$K", "$ME", "$MISSING", "$MP", "$N0",                                                   // 20
-            "$NA", "$P0", "$PI", "$QE", "$RE",                                                       // 25
-            "$ROPRAND", "$RYDBERG", "$T0", "$TORR", "$TRUE",                                         // 30
-            "$VALUE", "ABORT", "ABS", "ABS1", "ABSSQ",                                               // 35
-            "ACHAR", "ACOS", "ACOSD", "ADD", "ADJUSTL",                                              // 40
-            "ADJUSTR", "AIMAG", "AINT", "ALL", "ALLOCATED",                                          // 45
-            "AND", "AND_NOT", "ANINT", "ANY", "ARG",                                                 // 50
-            "ARGD", "ARG_OF", "ARRAY", "ASIN", "ASIND",                                              // 55
-            "AS_IS", "ATAN", "ATAN2", "ATAN2D", "ATAND",                                             // 60
-            "ATANH", "AXIS_OF", "BACKSPACE", "IBCLR", "BEGIN_OF",                                    // 65
-            "IBITS", "BREAK", "BSEARCH", "IBSET", "BTEST",                                           // 70
-            "BUILD_ACTION", "BUILD_CONDITION", "BUILD_CONGLOM", "BUILD_DEPENDENC", "BUILD_DIM",      // 75
-            "BUILD_DISPATCH", "BUILD_EVENT", "BUILD_FUNCTION", "BUILD_METHOD", "BUILD_PARAM",        // 80
-            "BUILD_PATH", "BUILD_PROCEDURE", "BUILD_PROGRAM", "BUILD_RANGE", "BUILD_ROUTINE",        // 85
-            "BUILD_SIGNAL", "BUILD_SLOPE", "BUILD_WINDOW", "BUILD_WITH_UNIT", "BUILTIN_OPCODE",      // 90
-            "BYTE", "BYTE_UNSIGNED", "CASE", "CEILING", "CHAR",                                      // 95
-            "CLASS", "FCLOSE", "CMPLX", "COMMA", "COMPILE",                                          // 100
-            "COMPLETION_OF", "CONCAT", "CONDITIONAL", "CONJG", "CONTINUE",                           // 105
-            "CONVOLVE", "COS", "COSD", "COSH", "COUNT",                                              // 110
-            "CSHIFT", "CVT", "DATA", "DATE_AND_TIME", "DATE_TIME",                                   // 115
-            "DBLE", "DEALLOCATE", "DEBUG", "DECODE", "DECOMPILE",                                    // 120
-            "DECOMPRESS", "DEFAULT", "DERIVATIVE", "DESCR", "DIAGONAL",                              // 125
-            "DIGITS", "DIM", "DIM_OF", "DISPATCH_OF", "DIVIDE",                                      // 130
-            "LBOUND", "DO", "DOT_PRODUCT", "DPROD", "DSCPTR",                                        // 135
-            "SHAPE", "SIZE", "KIND", "UBOUND", "D_COMPLEX",                                          // 140
-            "D_FLOAT", "RANGE", "PRECISION", "ELBOUND", "ELSE",                                      // 145
-            "ELSEWHERE", "ENCODE", "ENDFILE", "END_OF", "EOSHIFT",                                   // 150
-            "EPSILON", "EQ", "EQUALS", "EQUALS_FIRST", "EQV",                                        // 155
-            "ESHAPE", "ESIZE", "EUBOUND", "EVALUATE", "EXECUTE",                                     // 160
-            "EXP", "EXPONENT", "EXT_FUNCTION", "FFT", "FIRSTLOC",                                    // 165
-            "FIT", "FIX_ROPRAND", "FLOAT", "FLOOR", "FOR",                                           // 170
-            "FRACTION", "FUN", "F_COMPLEX", "F_FLOAT", "GE",                                         // 175
-            "GETNCI", "GOTO", "GT", "G_COMPLEX", "G_FLOAT",                                          // 180
-            "HELP_OF", "HUGE", "H_COMPLEX", "H_FLOAT", "IACHAR",                                     // 185
-            "IAND", "IAND_NOT", "ICHAR", "IDENT_OF", "IF",                                           // 190
-            "IF_ERROR", "IMAGE_OF", "IN", "INAND", "INAND_NOT",                                      // 195
-            "INDEX", "INOR", "INOR_NOT", "INOT", "INOUT",                                            // 200
-            "INQUIRE", "INT", "INTEGRAL", "INTERPOL", "INTERSECT",                                   // 205
-            "INT_UNSIGNED", "INVERSE", "IOR", "IOR_NOT", "IS_IN",                                    // 210
-            "IEOR", "IEOR_NOT", "LABEL", "LAMINATE", "LANGUAGE_OF",                                  // 215
-            "LASTLOC", "LE", "LEN", "LEN_TRIM", "LGE",                                               // 220
-            "LGT", "LLE", "LLT", "LOG", "LOG10",                                                     // 225
-            "LOG2", "LOGICAL", "LONG", "LONG_UNSIGNED", "LT",                                        // 230
-            "MATMUL", "MAT_ROT", "MAT_ROT_INT", "MAX", "MAXEXPONENT",                                // 235
-            "MAXLOC", "MAXVAL", "MEAN", "MEDIAN", "MERGE",                                           // 240
-            "METHOD_OF", "MIN", "MINEXPONENT", "MINLOC", "MINVAL",                                   // 245
-            "MOD", "MODEL_OF", "MULTIPLY", "NAME_OF", "NAND",                                        // 250
-            "NAND_NOT", "NDESC", "NE", "NEAREST", "NEQV",                                            // 255
-            "NINT", "NOR", "NOR_NOT", "NOT", "OBJECT_OF",                                            // 260
-            "OCTAWORD", "OCTAWORD_UNSIGNED", "ON_ERROR", "OPCODE_BUILTIN", "OPCODE_STRING",          // 265
-            "FOPEN", "OPTIONAL", "OR", "OR_NOT", "OUT",                                              // 270
-            "PACK", "PHASE_OF", "POST_DEC", "POST_INC", "POWER",                                     // 275
-            "PRESENT", "PRE_DEC", "PRE_INC", "PRIVATE", "PROCEDURE_OF",                              // 280
-            "PRODUCT", "PROGRAM_OF", "PROJECT", "PROMOTE", "PUBLIC",                                 // 285
-            "QUADWORD", "QUADWORD_UNSIGNED", "QUALIFIERS_OF", "RADIX",                               // 290
-            "RAMP", "RANDOM", "RANDOM_SEED", "DTYPE_RANGE", "RANK",                                  // 295
-            "RAW_OF", "READ", "REAL", "REBIN", "REF", "REPEAT",                                      // 300
-            "REPLICATE", "RESHAPE", "RETURN", "REWIND", "RMS",                                       // 305
-            "ROUTINE_OF", "RRSPACING", "SCALE", "SCAN", "FSEEK",                                     // 310
-            "SET_EXPONENT", "SET_RANGE", "ISHFT", "ISHFTC", "SHIFT_LEFT",                            // 315
-            "SHIFT_RIGHT", "SIGN", "SIGNED", "SIN", "SIND",                                          // 320
-            "SINH", "SIZEOF", "SLOPE_OF", "SMOOTH", "SOLVE",                                         // 325
-            "SORTVAL", "SPACING", "SPAWN", "SPREAD", "SQRT",                                         // 330
-            "SQUARE", "STATEMENT", "STD_DEV", "STRING", "STRING_OPCODE",                             // 335
-            "SUBSCRIPT", "SUBTRACT", "SUM", "SWITCH", "SYSTEM_CLOCK",                                // 340
-            "TAN", "TAND", "TANH", "TASK_OF", "TEXT",                                                // 345
-            "TIME_OUT_OF", "TINY", "TRANSFER", "TRANSPOSE_", "TRIM",                                 // 350
-            "UNARY_MINUS", "UNARY_PLUS", "UNION", "UNITS", "UNITS_OF",                               // 355
-            "UNPACK", "UNSIGNED", "VAL", "VALIDATION_OF", "VALUE_OF",                                // 360
-            "VAR", "VECTOR", "VERIFY", "WAIT", "WHEN_OF",                                            // 365
-            "WHERE", "WHILE", "WINDOW_OF", "WORD", "WORD_UNSIGNED",                                  // 370
-            "WRITE", "ZERO", "$2PI", "$NARG", "ELEMENT",                                             // 375
-            "RC_DROOP", "RESET_PRIVATE", "RESET_PUBLIC", "SHOW_PRIVATE",                             // 380
-            "SHOW_PUBLIC", "SHOW_VM", "TRANSLATE", "TRANSPOSE_MUL", "UPCASE",                        // 385
-            "USING", "VALIDATION", "$DEFAULT", "$EXPT", "$SHOT",                                     // 390
-            "GETDBI", "CULL", "EXTEND", "I_TO_X", "X_TO_I",                                          // 395
-            "MAP", "COMPILE_DEPENDENCY", "DECOMPILE_DEPENDENCY", "BUILD_CALL", "ERRORLOGS_OF",       // 400
-            "PERFORMANCE_OF", "XD", "CONDITION_OF", "SORT", "$THIS",                                 // 405
-            "DATA_WITH_UNITS", "$ATM", "$EPSILON0", "$GN", "$MU0",                                   // 410
-            "EXTRACT", "FINITE", "BIT_SIZE", "MODULO", "SELECTED_INT_KIND",                          // 415
-            "SELECTED_REAL_KIND", "DSQL", "ISQL", "FTELL", "MAKE_ACTION",                            // 420
-            "MAKE_CONDITION", "MAKE_CONGLOM", "MAKE_DEPENDENCY", "MAKE_DIM", "MAKE_DISPATCH",        // 425
-            "MAKE_FUNCTION", "MAKE_METHOD", "MAKE_PARAM", "MAKE_PROCEDURE", "MAKE_PROGRAM",          // 430
-            "MAKE_RANGE", "MAKE_ROUTINE", "MAKE_SIGNAL", "MAKE_WINDOW", "MAKE_WITH_UNITS",           // 435
-            "MAKE_CALL", "CLASS_OF", "DSCPTR_OF", "KIND_OF", "NDESC_OF",                             // 440
-            "ACCUMULATE", "MAKE_SLOPE", "REM", "COMPLETION_MESSAGE_OF",                              // 445
-            "INTERRUPT_OF", "$SHOTNAME", "BUILD_WITH_ERROR", "ERROR_OF", "MAKE_WITH_ERROR",          // 450
-            "DO_TASK", "ISQL_SET", "FS_FLOAT", "FS_COMPLEX", "FT_FLOAT",                             // 455
-            "FT_COMPLEX", "BUILD_OPAQUE", "MAKE_OPAQUE", "DICT", "TUPLE",                            // 460
-            "LIST"};
-    public static final short    Opcdollar              = 0;
-    public static final short    OpcA0                  = 1;
-    public static final short    OpcAlpha               = 2;
-    public static final short    OpcAmu                 = 3;
-    public static final short    OpcC                   = 4;
-    public static final short    OpcCal                 = 5;
-    public static final short    OpcDegree              = 6;
-    public static final short    OpcEv                  = 7;
-    public static final short    OpcFalse               = 8;
-    public static final short    OpcFaraday             = 9;
-    public static final short    OpcG                   = 10;
-    public static final short    OpcGas                 = 11;
-    public static final short    OpcH                   = 12;
-    public static final short    OpcHbar                = 13;
-    public static final short    OpcI                   = 14;
-    public static final short    OpcK                   = 15;
-    public static final short    OpcMe                  = 16;
-    public static final short    OpcMissing             = 17;
-    public static final short    OpcMp                  = 18;
-    public static final short    OpcN0                  = 19;
-    public static final short    OpcNa                  = 20;
-    public static final short    OpcP0                  = 21;
-    public static final short    OpcPi                  = 22;
-    public static final short    OpcQe                  = 23;
-    public static final short    OpcRe                  = 24;
-    public static final short    OpcRoprand             = 25;
-    public static final short    OpcRydberg             = 26;
-    public static final short    OpcT0                  = 27;
-    public static final short    OpcTorr                = 28;
-    public static final short    OpcTrue                = 29;
-    public static final short    OpcValue               = 30;
-    public static final short    OpcAbort               = 31;
-    public static final short    OpcAbs                 = 32;
-    public static final short    OpcAbs1                = 33;
-    public static final short    OpcAbsSq               = 34;
-    public static final short    OpcAchar               = 35;
-    public static final short    OpcAcos                = 36;
-    public static final short    OpcAcosd               = 37;
-    public static final short    OpcAdd                 = 38;
-    public static final short    OpcAdjustl             = 39;
-    public static final short    OpcAdjustr             = 40;
-    public static final short    OpcAimag               = 41;
-    public static final short    OpcAint                = 42;
-    public static final short    OpcAll                 = 43;
-    public static final short    OpcAllocated           = 44;
-    public static final short    OpcAnd                 = 45;
-    public static final short    OpcAndNot              = 46;
-    public static final short    OpcAnint               = 47;
-    public static final short    OpcAny                 = 48;
-    public static final short    OpcArg                 = 49;
-    public static final short    OpcArgd                = 50;
-    public static final short    OpcArgOf               = 51;
-    public static final short    OpcArray               = 52;
-    public static final short    OpcAsin                = 53;
-    public static final short    OpcAsind               = 54;
-    public static final short    OpcAsIs                = 55;
-    public static final short    OpcAtan                = 56;
-    public static final short    OpcAtan2               = 57;
-    public static final short    OpcAtan2d              = 58;
-    public static final short    OpcAtand               = 59;
-    public static final short    OpcAtanh               = 60;
-    public static final short    OpcAxisOf              = 61;
-    public static final short    OpcBackspace           = 62;
-    public static final short    OpcIbclr               = 63;
-    public static final short    OpcBeginOf             = 64;
-    public static final short    OpcIbits               = 65;
-    public static final short    OpcBreak               = 66;
-    public static final short    OpcBsearch             = 67;
-    public static final short    OpcIbset               = 68;
-    public static final short    OpcBtest               = 69;
-    public static final short    OpcBuildAction         = 70;
-    public static final short    OpcBuildCondition      = 71;
-    public static final short    OpcBuildConglom        = 72;
-    public static final short    OpcBuildDependency     = 73;
-    public static final short    OpcBuildDim            = 74;
-    public static final short    OpcBuildDispatch       = 75;
-    public static final short    OpcBuildEvent          = 76;
-    public static final short    OpcBuildFunction       = 77;
-    public static final short    OpcBuildMethod         = 78;
-    public static final short    OpcBuildParam          = 79;
-    public static final short    OpcBuildPath           = 80;
-    public static final short    OpcBuildProcedure      = 81;
-    public static final short    OpcBuildProgram        = 82;
-    public static final short    OpcBuildRange          = 83;
-    public static final short    OpcBuildRoutine        = 84;
-    public static final short    OpcBuildSignal         = 85;
-    public static final short    OpcBuildSlope          = 86;
-    public static final short    OpcBuildWindow         = 87;
-    public static final short    OpcBuildWithUnits      = 88;
-    public static final short    OpcBuiltinOpcode       = 89;
-    public static final short    OpcByte                = 90;
-    public static final short    OpcByteUnsigned        = 91;
-    public static final short    OpcCase                = 92;
-    public static final short    OpcCeiling             = 93;
-    public static final short    OpcChar                = 94;
-    public static final short    OpcClass               = 95;
-    public static final short    OpcFclose              = 96;
-    public static final short    OpcCmplx               = 97;
-    public static final short    OpcComma               = 98;
-    public static final short    OpcCompile             = 99;
-    public static final short    OpcCompletionOf        = 100;
-    public static final short    OpcConcat              = 101;
-    public static final short    OpcConditional         = 102;
-    public static final short    OpcConjg               = 103;
-    public static final short    OpcContinue            = 104;
-    public static final short    OpcConvolve            = 105;
-    public static final short    OpcCos                 = 106;
-    public static final short    OpcCosd                = 107;
-    public static final short    OpcCosh                = 108;
-    public static final short    OpcCount               = 109;
-    public static final short    OpcCshift              = 110;
-    public static final short    OpcCvt                 = 111;
-    public static final short    OpcData                = 112;
-    public static final short    OpcDateAndTime         = 113;
-    public static final short    OpcDateTime            = 114;
-    public static final short    OpcDble                = 115;
-    public static final short    OpcDeallocate          = 116;
-    public static final short    OpcDebug               = 117;
-    public static final short    OpcDecode              = 118;
-    public static final short    OpcDecompile           = 119;
-    public static final short    OpcDecompress          = 120;
-    public static final short    OpcDefault             = 121;
-    public static final short    OpcDerivative          = 122;
-    public static final short    OpcDescr               = 123;
-    public static final short    OpcDiagonal            = 124;
-    public static final short    OpcDigits              = 125;
-    public static final short    OpcDim                 = 126;
-    public static final short    OpcDimOf               = 127;
-    public static final short    OpcDispatchOf          = 128;
-    public static final short    OpcDivide              = 129;
-    public static final short    OpcLbound              = 130;
-    public static final short    OpcDo                  = 131;
-    public static final short    OpcDotProduct          = 132;
-    public static final short    OpcDprod               = 133;
-    public static final short    OpcDscptr              = 134;
-    public static final short    OpcShape               = 135;
-    public static final short    OpcSize                = 136;
-    public static final short    OpcKind                = 137;
-    public static final short    OpcUbound              = 138;
-    public static final short    OpcDComplex            = 139;
-    public static final short    OpcDFloat              = 140;
-    public static final short    OpcRange               = 141;
-    public static final short    OpcPrecision           = 142;
-    public static final short    OpcElbound             = 143;
-    public static final short    OpcElse                = 144;
-    public static final short    OpcElsewhere           = 145;
-    public static final short    OpcEncode              = 146;
-    public static final short    OpcEndfile             = 147;
-    public static final short    OpcEndOf               = 148;
-    public static final short    OpcEoshift             = 149;
-    public static final short    OpcEpsilon             = 150;
-    public static final short    OpcEq                  = 151;
-    public static final short    OpcEquals              = 152;
-    public static final short    OpcEqualsFirst         = 153;
-    public static final short    OpcEqv                 = 154;
-    public static final short    OpcEshape              = 155;
-    public static final short    OpcEsize               = 156;
-    public static final short    OpcEubound             = 157;
-    public static final short    OpcEvaluate            = 158;
-    public static final short    OpcExecute             = 159;
-    public static final short    OpcExp                 = 160;
-    public static final short    OpcExponent            = 161;
-    public static final short    OpcExtFunction         = 162;
-    public static final short    OpcFft                 = 163;
-    public static final short    OpcFirstLoc            = 164;
-    public static final short    OpcFit                 = 165;
-    public static final short    OpcFixRoprand          = 166;
-    public static final short    OpcFloat               = 167;
-    public static final short    OpcFloor               = 168;
-    public static final short    OpcFor                 = 169;
-    public static final short    OpcFraction            = 170;
-    public static final short    OpcFun                 = 171;
-    public static final short    OpcFComplex            = 172;
-    public static final short    OpcFFloat              = 173;
-    public static final short    OpcGe                  = 174;
-    public static final short    OpcGetNci              = 175;
-    public static final short    OpcGoto                = 176;
-    public static final short    OpcGt                  = 177;
-    public static final short    OpcGComplex            = 178;
-    public static final short    OpcGFloat              = 179;
-    public static final short    OpcHelpOf              = 180;
-    public static final short    OpcHuge                = 181;
-    public static final short    OpcHComplex            = 182;
-    public static final short    OpcHFloat              = 183;
-    public static final short    OpcIachar              = 184;
-    public static final short    OpcIand                = 185;
-    public static final short    OpcIandNot             = 186;
-    public static final short    OpcIchar               = 187;
-    public static final short    OpcIdentOf             = 188;
-    public static final short    OpcIf                  = 189;
-    public static final short    OpcIfError             = 190;
-    public static final short    OpcImageOf             = 191;
-    public static final short    OpcIn                  = 192;
-    public static final short    OpcInand               = 193;
-    public static final short    OpcInandNot            = 194;
-    public static final short    OpcIndex               = 195;
-    public static final short    OpcInor                = 196;
-    public static final short    OpcInorNot             = 197;
-    public static final short    OpcInot                = 198;
-    public static final short    OpcInOut               = 199;
-    public static final short    OpcInquire             = 200;
-    public static final short    OpcInt                 = 201;
-    public static final short    OpcIntegral            = 202;
-    public static final short    OpcInterpol            = 203;
-    public static final short    OpcIntersect           = 204;
-    public static final short    OpcIntUnsigned         = 205;
-    public static final short    OpcInverse             = 206;
-    public static final short    OpcIor                 = 207;
-    public static final short    OpcIorNot              = 208;
-    public static final short    OpcIsIn                = 209;
-    public static final short    OpcIeor                = 210;
-    public static final short    OpcIeorNot             = 211;
-    public static final short    OpcLabel               = 212;
-    public static final short    OpcLaminate            = 213;
-    public static final short    OpcLanguageOf          = 214;
-    public static final short    OpcLastLoc             = 215;
-    public static final short    OpcLe                  = 216;
-    public static final short    OpcLen                 = 217;
-    public static final short    OpcLenTrim             = 218;
-    public static final short    OpcLge                 = 219;
-    public static final short    OpcLgt                 = 220;
-    public static final short    OpcLle                 = 221;
-    public static final short    OpcLlt                 = 222;
-    public static final short    OpcLog                 = 223;
-    public static final short    OpcLog10               = 224;
-    public static final short    OpcLog2                = 225;
-    public static final short    OpcLogical             = 226;
-    public static final short    OpcLong                = 227;
-    public static final short    OpcLongUnsigned        = 228;
-    public static final short    OpcLt                  = 229;
-    public static final short    OpcMatmul              = 230;
-    public static final short    OpcMatRot              = 231;
-    public static final short    OpcMatRotInt           = 232;
-    public static final short    OpcMax                 = 233;
-    public static final short    OpcMaxExponent         = 234;
-    public static final short    OpcMaxLoc              = 235;
-    public static final short    OpcMaxVal              = 236;
-    public static final short    OpcMean                = 237;
-    public static final short    OpcMedian              = 238;
-    public static final short    OpcMerge               = 239;
-    public static final short    OpcMethodOf            = 240;
-    public static final short    OpcMin                 = 241;
-    public static final short    OpcMinExponent         = 242;
-    public static final short    OpcMinLoc              = 243;
-    public static final short    OpcMinVal              = 244;
-    public static final short    OpcMod                 = 245;
-    public static final short    OpcModelOf             = 246;
-    public static final short    OpcMultiply            = 247;
-    public static final short    OpcNameOf              = 248;
-    public static final short    OpcNand                = 249;
-    public static final short    OpcNandNot             = 250;
-    public static final short    OpcNdesc               = 251;
-    public static final short    OpcNe                  = 252;
-    public static final short    OpcNearest             = 253;
-    public static final short    OpcNeqv                = 254;
-    public static final short    OpcNint                = 255;
-    public static final short    OpcNor                 = 256;
-    public static final short    OpcNorNot              = 257;
-    public static final short    OpcNot                 = 258;
-    public static final short    OpcObjectOf            = 259;
-    public static final short    OpcOctaword            = 260;
-    public static final short    OpcOctawordUnsigned    = 261;
-    public static final short    OpcOnError             = 262;
-    public static final short    OpcOpcodeBuiltin       = 263;
-    public static final short    OpcOpcodeString        = 264;
-    public static final short    OpcFopen               = 265;
-    public static final short    OpcOptional            = 266;
-    public static final short    OpcOr                  = 267;
-    public static final short    OpcOrNot               = 268;
-    public static final short    OpcOut                 = 269;
-    public static final short    OpcPack                = 270;
-    public static final short    OpcPhaseOf             = 271;
-    public static final short    OpcPostDec             = 272;
-    public static final short    OpcPostInc             = 273;
-    public static final short    OpcPower               = 274;
-    public static final short    OpcPresent             = 275;
-    public static final short    OpcPreDec              = 276;
-    public static final short    OpcPreInc              = 277;
-    public static final short    OpcPrivate             = 278;
-    public static final short    OpcProcedureOf         = 279;
-    public static final short    OpcProduct             = 280;
-    public static final short    OpcProgramOf           = 281;
-    public static final short    OpcProject             = 282;
-    public static final short    OpcPromote             = 283;
-    public static final short    OpcPublic              = 284;
-    public static final short    OpcQuadword            = 285;
-    public static final short    OpcQuadwordUnsigned    = 286;
-    public static final short    OpcQualifiersOf        = 287;
-    public static final short    OpcRadix               = 288;
-    public static final short    OpcRamp                = 289;
-    public static final short    OpcRandom              = 290;
-    public static final short    OpcRandomSeed          = 291;
-    public static final short    OpcDtypeRange          = 292;
-    public static final short    OpcRank                = 293;
-    public static final short    OpcRawOf               = 294;
-    public static final short    OpcRead                = 295;
-    public static final short    OpcReal                = 296;
-    public static final short    OpcRebin               = 297;
-    public static final short    OpcRef                 = 298;
-    public static final short    OpcRepeat              = 299;
-    public static final short    OpcReplicate           = 300;
-    public static final short    OpcReshape             = 301;
-    public static final short    OpcReturn              = 302;
-    public static final short    OpcRewind              = 303;
-    public static final short    OpcRms                 = 304;
-    public static final short    OpcRoutineOf           = 305;
-    public static final short    OpcRrSpacing           = 306;
-    public static final short    OpcScale               = 307;
-    public static final short    OpcScan                = 308;
-    public static final short    OpcFseek               = 309;
-    public static final short    OpcSetExponent         = 310;
-    public static final short    OpcSetRange            = 311;
-    public static final short    OpcIshft               = 312;
-    public static final short    OpcIshftc              = 313;
-    public static final short    OpcShiftLeft           = 314;
-    public static final short    OpcShiftRight          = 315;
-    public static final short    OpcSign                = 316;
-    public static final short    OpcSigned              = 317;
-    public static final short    OpcSin                 = 318;
-    public static final short    OpcSind                = 319;
-    public static final short    OpcSinh                = 320;
-    public static final short    OpcSizeOf              = 321;
-    public static final short    OpcSlopeOf             = 322;
-    public static final short    OpcSmooth              = 323;
-    public static final short    OpcSolve               = 324;
-    public static final short    OpcSortVal             = 325;
-    public static final short    OpcSpacing             = 326;
-    public static final short    OpcSpawn               = 327;
-    public static final short    OpcSpread              = 328;
-    public static final short    OpcSqrt                = 329;
-    public static final short    OpcSquare              = 330;
-    public static final short    OpcStatement           = 331;
-    public static final short    OpcStdDev              = 332;
-    public static final short    OpcString              = 333;
-    public static final short    OpcStringOpcode        = 334;
-    public static final short    OpcSubscript           = 335;
-    public static final short    OpcSubtract            = 336;
-    public static final short    OpcSum                 = 337;
-    public static final short    OpcSwitch              = 338;
-    public static final short    OpcSystemClock         = 339;
-    public static final short    OpcTan                 = 340;
-    public static final short    OpcTand                = 341;
-    public static final short    OpcTanh                = 342;
-    public static final short    OpcTaskOf              = 343;
-    public static final short    OpcText                = 344;
-    public static final short    OpcTimeoutOf           = 345;
-    public static final short    OpcTiny                = 346;
-    public static final short    OpcTransfer            = 347;
-    public static final short    OpcTranspose_          = 348;
-    public static final short    OpcTrim                = 349;
-    public static final short    OpcUnaryMinus          = 350;
-    public static final short    OpcUnaryPlus           = 351;
-    public static final short    OpcUnion               = 352;
-    public static final short    OpcUnits               = 353;
-    public static final short    OpcUnitsOf             = 354;
-    public static final short    OpcUnpack              = 355;
-    public static final short    OpcUnsigned            = 356;
-    public static final short    OpcVal                 = 357;
-    public static final short    OpcValidationOf        = 358;
-    public static final short    OpcValueOf             = 359;
-    public static final short    OpcVar                 = 360;
-    public static final short    OpcVector              = 361;
-    public static final short    OpcVerify              = 362;
-    public static final short    OpcWait                = 363;
-    public static final short    OpcWhenOf              = 364;
-    public static final short    OpcWhere               = 365;
-    public static final short    OpcWhile               = 366;
-    public static final short    OpcWindowOf            = 367;
-    public static final short    OpcWord                = 368;
-    public static final short    OpcWordUnsigned        = 369;
-    public static final short    OpcWrite               = 370;
-    public static final short    OpcZero                = 371;
-    public static final short    Opc2Pi                 = 372;
-    public static final short    OpcNarg                = 373;
-    public static final short    OpcElement             = 374;
-    public static final short    OpcRcDroop             = 375;
-    public static final short    OpcResetPrivate        = 376;
-    public static final short    OpcResetPublic         = 377;
-    public static final short    OpcShowPrivate         = 378;
-    public static final short    OpcShowPublic          = 379;
-    public static final short    OpcShowVm              = 380;
-    public static final short    OpcTranslate           = 381;
-    public static final short    OpcTransposeMul        = 382;
-    public static final short    OpcUpcase              = 383;
-    public static final short    OpcUsing               = 384;
-    public static final short    OpcValidation          = 385;
-    public static final short    OpcMdsDefault          = 386;
-    public static final short    OpcExpt                = 387;
-    public static final short    OpcShot                = 388;
-    public static final short    OpcGetDbi              = 389;
-    public static final short    OpcCull                = 390;
-    public static final short    OpcExtend              = 391;
-    public static final short    OpcItoX                = 392;
-    public static final short    OpcXtoI                = 393;
-    public static final short    OpcMap                 = 394;
-    public static final short    OpcCompileDependency   = 395;
-    public static final short    OpcDecompileDependency = 396;
-    public static final short    OpcBuildCall           = 397;
-    public static final short    OpcErrorlogsOf         = 398;
-    public static final short    OpcPerformanceOf       = 399;
-    public static final short    OpcXd                  = 400;
-    public static final short    OpcConditionOf         = 401;
-    public static final short    OpcSort                = 402;
-    public static final short    OpcThis                = 403;
-    public static final short    OpcDataWithUnits       = 404;
-    public static final short    OpcAtm                 = 405;
-    public static final short    OpcEpsilon0            = 406;
-    public static final short    OpcGn                  = 407;
-    public static final short    OpcMu0                 = 408;
-    public static final short    OpcExtract             = 409;
-    public static final short    OpcFinite              = 410;
-    public static final short    OpcBitSize             = 411;
-    public static final short    OpcModulo              = 412;
-    public static final short    OpcSelectedIntKind     = 413;
-    public static final short    OpcSelectedRealKind    = 414;
-    public static final short    OpcDsql                = 415;
-    public static final short    OpcIsql                = 416;
-    public static final short    OpcFtell               = 417;
-    public static final short    OpcMakeAction          = 418;
-    public static final short    OpcMakeCondition       = 419;
-    public static final short    OpcMakeConglom         = 420;
-    public static final short    OpcMakeDependency      = 421;
-    public static final short    OpcMakeDim             = 422;
-    public static final short    OpcMakeDispatch        = 423;
-    public static final short    OpcMakeFunction        = 424;
-    public static final short    OpcMakeMethod          = 425;
-    public static final short    OpcMakeParam           = 426;
-    public static final short    OpcMakeProcedure       = 427;
-    public static final short    OpcMakeProgram         = 428;
-    public static final short    OpcMakeRange           = 429;
-    public static final short    OpcMakeRoutine         = 430;
-    public static final short    OpcMakeSignal          = 431;
-    public static final short    OpcMakeWindow          = 432;
-    public static final short    OpcMakeWithUnits       = 433;
-    public static final short    OpcMakeCall            = 434;
-    public static final short    OpcClassOf             = 435;
-    public static final short    OpcDscptrOf            = 436;
-    public static final short    OpcKindOf              = 437;
-    public static final short    OpcNdescOf             = 438;
-    public static final short    OpcAccumulate          = 439;
-    public static final short    OpcMakeSlope           = 440;
-    public static final short    OpcRem                 = 441;
-    public static final short    OpcCompletionMessageOf = 442;
-    public static final short    OpcInterruptOf         = 443;
-    public static final short    OpcShotname            = 444;
-    public static final short    OpcBuildWithError      = 445;
-    public static final short    OpcErrorOf             = 446;
-    public static final short    OpcMakeWithError       = 447;
-    public static final short    OpcDoTask              = 448;
-    public static final short    OpcIsqlSet             = 449;
-    public static final short    OpcFS_float            = 450;
-    public static final short    OpcFS_complex          = 451;
-    public static final short    OpcFT_float            = 452;
-    public static final short    OpcFT_complex          = 453;
-    public static final short    OpcBuildOpaque         = 454;
-    public static final short    OpcMakeOpaque          = 455;
+public enum OPC {
+    Opcdollar("$"), // 0
+    OpcA0("$A0"), // 1
+    OpcAlpha("$ALPHA"), // 2
+    OpcAmu("$AMU"), // 3
+    OpcC("$C"), // 4
+    OpcCal("$CAL"), // 5
+    OpcDegree("$DEGREE"), // 6
+    OpcEv("$EV"), // 7
+    OpcFalse("$FALSE"), // 8
+    OpcFaraday("$FARADAY"), // 9
+    OpcG("$G"), // 10
+    OpcGas("$GAS"), // 11
+    OpcH("$H"), // 12
+    OpcHbar("$HBAR"), // 13
+    OpcI("$I"), // 14
+    OpcK("$K"), // 15
+    OpcMe("$ME"), // 16
+    OpcMissing("$MISSING"), // 17
+    OpcMp("$MP"), // 18
+    OpcN0("$N0"), // 19
+    OpcNa("$NA"), // 20
+    OpcP0("$P0"), // 21
+    OpcPi("$PI"), // 22
+    OpcQe("$QE"), // 23
+    OpcRe("$RE"), // 24
+    OpcRoprand("$ROPRAND"), // 25
+    OpcRydberg("$RYDBERG"), // 26
+    OpcT0("$T0"), // 27
+    OpcTorr("$TORR"), // 28
+    OpcTrue("$TRUE"), // 29
+    OpcValue("$VALUE"), // 30
+    OpcAbort("ABORT"), // 31
+    OpcAbs("ABS"), // 32
+    OpcAbs1("ABS1"), // 33
+    OpcAbsSq("ABSSQ"), // 34
+    OpcAchar("ACHAR"), // 35
+    OpcAcos("ACOS"), // 36
+    OpcAcosd("ACOSD"), // 37
+    OpcAdd("ADD"), // 38
+    OpcAdjustl("ADJUSTL"), // 39
+    OpcAdjustr("ADJUSTR"), // 40
+    OpcAimag("AIMAG"), // 41
+    OpcAint("AINT"), // 42
+    OpcAll("ALL"), // 43
+    OpcAllocated("ALLOCATED"), // 44
+    OpcAnd("AND"), // 45
+    OpcAndNot("AND_NOT"), // 46
+    OpcAnint("ANINT"), // 47
+    OpcAny("ANY"), // 48
+    OpcArg("ARG"), // 49
+    OpcArgd("ARGD"), // 50
+    OpcArgOf("ARG_OF"), // 51
+    OpcArray("ARRAY"), // 52
+    OpcAsin("ASIN"), // 53
+    OpcAsind("ASIND"), // 54
+    OpcAsIs("AS_IS"), // 55
+    OpcAtan("ATAN"), // 56
+    OpcAtan2("ATAN2"), // 57
+    OpcAtan2d("ATAN2D"), // 58
+    OpcAtand("ATAND"), // 59
+    OpcAtanh("ATANH"), // 60
+    OpcAxisOf("AXIS_OF"), // 61
+    OpcBackspace("BACKSPACE"), // 62
+    OpcIbclr("IBCLR"), // 63
+    OpcBeginOf("BEGIN_OF"), // 64
+    OpcIbits("IBITS"), // 65
+    OpcBreak("BREAK"), // 66
+    OpcBsearch("BSEARCH"), // 67
+    OpcIbset("IBSET"), // 68
+    OpcBtest("BTEST"), // 69
+    OpcBuildAction("BUILD_ACTION"), // 70
+    OpcBuildCondition("BUILD_CONDITION"), // 71
+    OpcBuildConglom("BUILD_CONGLOM"), // 72
+    OpcBuildDependency("BUILD_DEPENDENCY"), // 73
+    OpcBuildDim("BUILD_DIM"), // 74
+    OpcBuildDispatch("BUILD_DISPATCH"), // 75
+    OpcBuildEvent("BUILD_EVENT"), // 76
+    OpcBuildFunction("BUILD_FUNCTION"), // 77
+    OpcBuildMethod("BUILD_METHOD"), // 78
+    OpcBuildParam("BUILD_PARAM"), // 79
+    OpcBuildPath("BUILD_PATH"), // 80
+    OpcBuildProcedure("BUILD_PROCEDURE"), // 81
+    OpcBuildProgram("BUILD_PROGRAM"), // 82
+    OpcBuildRange("BUILD_RANGE"), // 83
+    OpcBuildRoutine("BUILD_ROUTINE"), // 84
+    OpcBuildSignal("BUILD_SIGNAL"), // 85
+    OpcBuildSlope("BUILD_SLOPE"), // 86
+    OpcBuildWindow("BUILD_WINDOW"), // 87
+    OpcBuildWithUnits("BUILD_WITH_UNITS"), // 88
+    OpcBuiltinOpcode("BUILTIN_OPCODE"), // 89
+    OpcByte("BYTE"), // 90
+    OpcByteUnsigned("BYTE_UNSIGNED"), // 91
+    OpcCase("CASE"), // 92
+    OpcCeiling("CEILING"), // 93
+    OpcChar("CHAR"), // 94
+    OpcClass("CLASS"), // 95
+    OpcFclose("FCLOSE"), // 96
+    OpcCmplx("CMPLX"), // 97
+    OpcComma("COMMA"), // 98
+    OpcCompile("COMPILE"), // 99
+    OpcCompletionOf("COMPLETION_OF"), // 100
+    OpcConcat("CONCAT"), // 101
+    OpcConditional("CONDITIONAL"), // 102
+    OpcConjg("CONJG"), // 103
+    OpcContinue("CONTINUE"), // 104
+    OpcConvolve("CONVOLVE"), // 105
+    OpcCos("COS"), // 106
+    OpcCosd("COSD"), // 107
+    OpcCosh("COSH"), // 108
+    OpcCount("COUNT"), // 109
+    OpcCshift("CSHIFT"), // 110
+    OpcCvt("CVT"), // 111
+    OpcData("DATA"), // 112
+    OpcDateAndTime("DATE_AND_TIME"), // 113
+    OpcDateTime("DATE_TIME"), // 114
+    OpcDble("DBLE"), // 115
+    OpcDeallocate("DEALLOCATE"), // 116
+    OpcDebug("DEBUG"), // 117
+    OpcDecode("DECODE"), // 118
+    OpcDecompile("DECOMPILE"), // 119
+    OpcDecompress("DECOMPRESS"), // 120
+    OpcDefault("DEFAULT"), // 121
+    OpcDerivative("DERIVATIVE"), // 122
+    OpcDescr("DESCR"), // 123
+    OpcDiagonal("DIAGONAL"), // 124
+    OpcDigits("DIGITS"), // 125
+    OpcDim("DIM"), // 126
+    OpcDimOf("DIM_OF"), // 127
+    OpcDispatchOf("DISPATCH_OF"), // 128
+    OpcDivide("DIVIDE"), // 129
+    OpcLbound("LBOUND"), // 130
+    OpcDo("DO"), // 131
+    OpcDotProduct("DOT_PRODUCT"), // 132
+    OpcDprod("DPROD"), // 133
+    OpcDscptr("DSCPTR"), // 134
+    OpcShape("SHAPE"), // 135
+    OpcSize("SIZE"), // 136
+    OpcKind("KIND"), // 137
+    OpcUbound("UBOUND"), // 138
+    OpcDComplex("D_COMPLEX"), // 139
+    OpcDFloat("D_FLOAT"), // 140
+    OpcRange("RANGE"), // 141
+    OpcPrecision("PRECISION"), // 142
+    OpcElbound("ELBOUND"), // 143
+    OpcElse("ELSE"), // 144
+    OpcElsewhere("ELSEWHERE"), // 145
+    OpcEncode("ENCODE"), // 146
+    OpcEndfile("ENDFILE"), // 147
+    OpcEndOf("END_OF"), // 148
+    OpcEoshift("EOSHIFT"), // 149
+    OpcEpsilon("EPSILON"), // 150
+    OpcEq("EQ"), // 151
+    OpcEquals("EQUALS"), // 152
+    OpcEqualsFirst("EQUALS_FIRST"), // 153
+    OpcEqv("EQV"), // 154
+    OpcEshape("ESHAPE"), // 155
+    OpcEsize("ESIZE"), // 156
+    OpcEubound("EUBOUND"), // 157
+    OpcEvaluate("EVALUATE"), // 158
+    OpcExecute("EXECUTE"), // 159
+    OpcExp("EXP"), // 160
+    OpcExponent("EXPONENT"), // 161
+    OpcExtFunction("EXT_FUNCTION"), // 162
+    OpcFft("FFT"), // 163
+    OpcFirstLoc("FIRSTLOC"), // 164
+    OpcFit("FIT"), // 165
+    OpcFixRoprand("FIX_ROPRAND"), // 166
+    OpcFloat("FLOAT"), // 167
+    OpcFloor("FLOOR"), // 168
+    OpcFor("FOR"), // 169
+    OpcFraction("FRACTION"), // 170
+    OpcFun("FUN"), // 171
+    OpcFComplex("F_COMPLEX"), // 172
+    OpcFFloat("F_FLOAT"), // 173
+    OpcGe("GE"), // 174
+    OpcGetNci("GETNCI"), // 175
+    OpcGoto("GOTO"), // 176
+    OpcGt("GT"), // 177
+    OpcGComplex("G_COMPLEX"), // 178
+    OpcGFloat("G_FLOAT"), // 179
+    OpcHelpOf("HELP_OF"), // 180
+    OpcHuge("HUGE"), // 181
+    OpcHComplex("H_COMPLEX"), // 182
+    OpcHFloat("H_FLOAT"), // 183
+    OpcIachar("IACHAR"), // 184
+    OpcIand("IAND"), // 185
+    OpcIandNot("IAND_NOT"), // 186
+    OpcIchar("ICHAR"), // 187
+    OpcIdentOf("IDENT_OF"), // 188
+    OpcIf("IF"), // 189
+    OpcIfError("IF_ERROR"), // 190
+    OpcImageOf("IMAGE_OF"), // 191
+    OpcIn("IN"), // 192
+    OpcInand("INAND"), // 193
+    OpcInandNot("INAND_NOT"), // 194
+    OpcIndex("INDEX"), // 195
+    OpcInor("INOR"), // 196
+    OpcInorNot("INOR_NOT"), // 197
+    OpcInot("INOT"), // 198
+    OpcInOut("INOUT"), // 199
+    OpcInquire("INQUIRE"), // 200
+    OpcInt("INT"), // 201
+    OpcIntegral("INTEGRAL"), // 202
+    OpcInterpol("INTERPOL"), // 203
+    OpcIntersect("INTERSECT"), // 204
+    OpcIntUnsigned("INT_UNSIGNED"), // 205
+    OpcInverse("INVERSE"), // 206
+    OpcIor("IOR"), // 207
+    OpcIorNot("IOR_NOT"), // 208
+    OpcIsIn("IS_IN"), // 209
+    OpcIeor("IEOR"), // 210
+    OpcIeorNot("IEOR_NOT"), // 211
+    OpcLabel("LABEL"), // 212
+    OpcLaminate("LAMINATE"), // 213
+    OpcLanguageOf("LANGUAGE_OF"), // 214
+    OpcLastLoc("LASTLOC"), // 215
+    OpcLe("LE"), // 216
+    OpcLen("LEN"), // 217
+    OpcLenTrim("LEN_TRIM"), // 218
+    OpcLge("LGE"), // 219
+    OpcLgt("LGT"), // 220
+    OpcLle("LLE"), // 221
+    OpcLlt("LLT"), // 222
+    OpcLog("LOG"), // 223
+    OpcLog10("LOG10"), // 224
+    OpcLog2("LOG2"), // 225
+    OpcLogical("LOGICAL"), // 226
+    OpcLong("LONG"), // 227
+    OpcLongUnsigned("LONG_UNSIGNED"), // 228
+    OpcLt("LT"), // 229
+    OpcMatmul("MATMUL"), // 230
+    OpcMatRot("MAT_ROT"), // 231
+    OpcMatRotInt("MAT_ROT_INT"), // 232
+    OpcMax("MAX"), // 233
+    OpcMaxExponent("MAXEXPONENT"), // 234
+    OpcMaxLoc("MAXLOC"), // 235
+    OpcMaxVal("MAXVAL"), // 236
+    OpcMean("MEAN"), // 237
+    OpcMedian("MEDIAN"), // 238
+    OpcMerge("MERGE"), // 239
+    OpcMethodOf("METHOD_OF"), // 240
+    OpcMin("MIN"), // 241
+    OpcMinExponent("MINEXPONENT"), // 242
+    OpcMinLoc("MINLOC"), // 243
+    OpcMinVal("MINVAL"), // 244
+    OpcMod("MOD"), // 245
+    OpcModelOf("MODEL_OF"), // 246
+    OpcMultiply("MULTIPLY"), // 247
+    OpcNameOf("NAME_OF"), // 248
+    OpcNand("NAND"), // 249
+    OpcNandNot("NAND_NOT"), // 250
+    OpcNdesc("NDESC"), // 251
+    OpcNe("NE"), // 252
+    OpcNearest("NEAREST"), // 253
+    OpcNeqv("NEQV"), // 254
+    OpcNint("NINT"), // 255
+    OpcNor("NOR"), // 256
+    OpcNorNot("NOR_NOT"), // 257
+    OpcNot("NOT"), // 258
+    OpcObjectOf("OBJECT_OF"), // 259
+    OpcOctaword("OCTAWORD"), // 260
+    OpcOctawordUnsigned("OCTAWORD_UNSIGNED"), // 261
+    OpcOnError("ON_ERROR"), // 262
+    OpcOpcodeBuiltin("OPCODE_BUILTIN"), // 263
+    OpcOpcodeString("OPCODE_STRING"), // 264
+    OpcFopen("FOPEN"), // 265
+    OpcOptional("OPTIONAL"), // 266
+    OpcOr("OR"), // 267
+    OpcOrNot("OR_NOT"), // 268
+    OpcOut("OUT"), // 269
+    OpcPack("PACK"), // 270
+    OpcPhaseOf("PHASE_OF"), // 271
+    OpcPostDec("POST_DEC"), // 272
+    OpcPostInc("POST_INC"), // 273
+    OpcPower("POWER"), // 274
+    OpcPresent("PRESENT"), // 275
+    OpcPreDec("PRE_DEC"), // 276
+    OpcPreInc("PRE_INC"), // 277
+    OpcPrivate("PRIVATE"), // 278
+    OpcProcedureOf("PROCEDURE_OF"), // 279
+    OpcProduct("PRODUCT"), // 280
+    OpcProgramOf("PROGRAM_OF"), // 281
+    OpcProject("PROJECT"), // 282
+    OpcPromote("PROMOTE"), // 283
+    OpcPublic("PUBLIC"), // 284
+    OpcQuadword("QUADWORD"), // 285
+    OpcQuadwordUnsigned("QUADWORD_UNSIGNED"), // 286
+    OpcQualifiersOf("QUALIFIERS_OF"), // 287
+    OpcRadix("RADIX"), // 288
+    OpcRamp("RAMP"), // 289
+    OpcRandom("RANDOM"), // 290
+    OpcRandomSeed("RANDOM_SEED"), // 291
+    OpcDtypeRange("DTYPE_RANGE"), // 292
+    OpcRank("RANK"), // 293
+    OpcRawOf("RAW_OF"), // 294
+    OpcRead("READ"), // 295
+    OpcReal("REAL"), // 296
+    OpcRebin("REBIN"), // 297
+    OpcRef("REF"), // 298
+    OpcRepeat("REPEAT"), // 299
+    OpcReplicate("REPLICATE"), // 300
+    OpcReshape("RESHAPE"), // 301
+    OpcReturn("RETURN"), // 302
+    OpcRewind("REWIND"), // 303
+    OpcRms("RMS"), // 304
+    OpcRoutineOf("ROUTINE_OF"), // 305
+    OpcRrSpacing("RRSPACING"), // 306
+    OpcScale("SCALE"), // 307
+    OpcScan("SCAN"), // 308
+    OpcFseek("FSEEK"), // 309
+    OpcSetExponent("SET_EXPONENT"), // 310
+    OpcSetRange("SET_RANGE"), // 311
+    OpcIshft("ISHFT"), // 312
+    OpcIshftc("ISHFTC"), // 313
+    OpcShiftLeft("SHIFT_LEFT"), // 314
+    OpcShiftRight("SHIFT_RIGHT"), // 315
+    OpcSign("SIGN"), // 316
+    OpcSigned("SIGNED"), // 317
+    OpcSin("SIN"), // 318
+    OpcSind("SIND"), // 319
+    OpcSinh("SINH"), // 320
+    OpcSizeOf("SIZEOF"), // 321
+    OpcSlopeOf("SLOPE_OF"), // 322
+    OpcSmooth("SMOOTH"), // 323
+    OpcSolve("SOLVE"), // 324
+    OpcSortVal("SORTVAL"), // 325
+    OpcSpacing("SPACING"), // 326
+    OpcSpawn("SPAWN"), // 327
+    OpcSpread("SPREAD"), // 328
+    OpcSqrt("SQRT"), // 329
+    OpcSquare("SQUARE"), // 330
+    OpcStatement("STATEMENT"), // 331
+    OpcStdDev("STD_DEV"), // 332
+    OpcString("STRING"), // 333
+    OpcStringOpcode("STRING_OPCODE"), // 334
+    OpcSubscript("SUBSCRIPT"), // 335
+    OpcSubtract("SUBTRACT"), // 336
+    OpcSum("SUM"), // 337
+    OpcSwitch("SWITCH"), // 338
+    OpcSystemClock("SYSTEM_CLOCK"), // 339
+    OpcTan("TAN"), // 340
+    OpcTand("TAND"), // 341
+    OpcTanh("TANH"), // 342
+    OpcTaskOf("TASK_OF"), // 343
+    OpcText("TEXT"), // 344
+    OpcTimeoutOf("TIME_OUT_OF"), // 345
+    OpcTiny("TINY"), // 346
+    OpcTransfer("TRANSFER"), // 347
+    OpcTranspose_("TRANSPOSE_"), // 348
+    OpcTrim("TRIM"), // 349
+    OpcUnaryMinus("UNARY_MINUS"), // 350
+    OpcUnaryPlus("UNARY_PLUS"), // 351
+    OpcUnion("UNION"), // 352
+    OpcUnits("UNITS"), // 353
+    OpcUnitsOf("UNITS_OF"), // 354
+    OpcUnpack("UNPACK"), // 355
+    OpcUnsigned("UNSIGNED"), // 356
+    OpcVal("VAL"), // 357
+    OpcValidationOf("VALIDATION_OF"), // 358
+    OpcValueOf("VALUE_OF"), // 359
+    OpcVar("VAR"), // 360
+    OpcVector("VECTOR"), // 361
+    OpcVerify("VERIFY"), // 362
+    OpcWait("WAIT"), // 363
+    OpcWhenOf("WHEN_OF"), // 364
+    OpcWhere("WHERE"), // 365
+    OpcWhile("WHILE"), // 366
+    OpcWindowOf("WINDOW_OF"), // 367
+    OpcWord("WORD"), // 368
+    OpcWordUnsigned("WORD_UNSIGNED"), // 369
+    OpcWrite("WRITE"), // 370
+    OpcZero("ZERO"), // 371
+    Opc2Pi("$2PI"), // 372
+    OpcNarg("$NARG"), // 373
+    OpcElement("ELEMENT"), // 374
+    OpcRcDroop("RC_DROOP"), // 375
+    OpcResetPrivate("RESET_PRIVATE"), // 376
+    OpcResetPublic("RESET_PUBLIC"), // 377
+    OpcShowPrivate("SHOW_PRIVATE"), // 378
+    OpcShowPublic("SHOW_PUBLIC"), // 379
+    OpcShowVm("SHOW_VM"), // 380
+    OpcTranslate("TRANSLATE"), // 381
+    OpcTransposeMul("TRANSPOSE_MUL"), // 382
+    OpcUpcase("UPCASE"), // 383
+    OpcUsing("USING"), // 384
+    OpcValidation("VALIDATION"), // 385
+    OpcMdsDefault("$DEFAULT"), // 386
+    OpcExpt("$EXPT"), // 387
+    OpcShot("$SHOT"), // 388
+    OpcGetDbi("GETDBI"), // 389
+    OpcCull("CULL"), // 390
+    OpcExtend("EXTEND"), // 391
+    OpcItoX("I_TO_X"), // 392
+    OpcXtoI("X_TO_I"), // 393
+    OpcMap("MAP"), // 394
+    OpcCompileDependency("COMPILE_DEPENDENCY"), // 395
+    OpcDecompileDependency("DECOMPILE_DEPENDENCY"), // 396
+    OpcBuildCall("BUILD_CALL"), // 397
+    OpcErrorlogsOf("ERRORLOGS_OF"), // 398
+    OpcPerformanceOf("PERFORMANCE_OF"), // 399
+    OpcXd("XD"), // 400
+    OpcConditionOf("CONDITION_OF"), // 401
+    OpcSort("SORT"), // 402
+    OpcThis("$THIS"), // 403
+    OpcDataWithUnits("DATA_WITH_UNITS"), // 404
+    OpcAtm("$ATM"), // 405
+    OpcEpsilon0("$EPSILON0"), // 406
+    OpcGn("$GN"), // 407
+    OpcMu0("$MU0"), // 408
+    OpcExtract("EXTRACT"), // 409
+    OpcFinite("FINITE"), // 410
+    OpcBitSize("BIT_SIZE"), // 411
+    OpcModulo("MODULO"), // 412
+    OpcSelectedIntKind("SELECTED_INT_KIND"), // 413
+    OpcSelectedRealKind("SELECTED_REAL_KIND"), // 414
+    OpcDsql("DSQL"), // 415
+    OpcIsql("ISQL"), // 416
+    OpcFtell("FTELL"), // 417
+    OpcMakeAction("MAKE_ACTION"), // 418
+    OpcMakeCondition("MAKE_CONDITION"), // 419
+    OpcMakeConglom("MAKE_CONGLOM"), // 420
+    OpcMakeDependency("MAKE_DEPENDENCY"), // 421
+    OpcMakeDim("MAKE_DIM"), // 422
+    OpcMakeDispatch("MAKE_DISPATCH"), // 423
+    OpcMakeFunction("MAKE_FUNCTION"), // 424
+    OpcMakeMethod("MAKE_METHOD"), // 425
+    OpcMakeParam("MAKE_PARAM"), // 426
+    OpcMakeProcedure("MAKE_PROCEDURE"), // 427
+    OpcMakeProgram("MAKE_PROGRAM"), // 428
+    OpcMakeRange("MAKE_RANGE"), // 429
+    OpcMakeRoutine("MAKE_ROUTINE"), // 430
+    OpcMakeSignal("MAKE_SIGNAL"), // 431
+    OpcMakeWindow("MAKE_WINDOW"), // 432
+    OpcMakeWithUnits("MAKE_WITH_UNITS"), // 433
+    OpcMakeCall("MAKE_CALL"), // 434
+    OpcClassOf("CLASS_OF"), // 435
+    OpcDscptrOf("DSCPTR_OF"), // 436
+    OpcKindOf("KIND_OF"), // 437
+    OpcNdescOf("NDESC_OF"), // 438
+    OpcAccumulate("ACCUMULATE"), // 439
+    OpcMakeSlope("MAKE_SLOPE"), // 440
+    OpcRem("REM"), // 441
+    OpcCompletionMessageOf("COMPLETION_MESSAGE_OF"), // 442
+    OpcInterruptOf("INTERRUPT_OF"), // 443
+    OpcShotname("$SHOTNAME"), // 444
+    OpcBuildWithError("BUILD_WITH_ERROR"), // 445
+    OpcErrorOf("ERROR_OF"), // 446
+    OpcMakeWithError("MAKE_WITH_ERROR"), // 447
+    OpcDoTask("DO_TASK"), // 448
+    OpcIsqlSet("ISQL_SET"), // 449
+    OpcFS_float("FS_FLOAT"), // 450
+    OpcFS_complex("FS_COMPLEX"), // 451
+    OpcFT_float("FT_FLOAT"), // 452
+    OpcFT_complex("FT_COMPLEX"), // 453
+    OpcBuildOpaque("BUILD_OPAQUE"), // 454
+    OpcMakeOpaque("MAKE_OPAQUE"), // 455
+    OpcDict("DICT"), // 456
+    OpcTuple("TUPLE"), // 457
+    OpcList("LIST"), // 458
+    ;
+    public static OPC get(final short opc) {
+        return OPC.values()[opc & 0xFFFF];
+    }
+    public final String label;
+
+    private OPC(final String label){
+        this.label = label;
+    }
+
+    public short toShort() {
+        return (short)this.ordinal();
+    }
 }

@@ -23,7 +23,7 @@ import mds.data.descriptor_r.Range;
 import mds.data.descriptor_r.Signal;
 import mds.data.descriptor_r.With_Units;
 import mds.data.descriptor_r.function.CONST;
-import mds.data.descriptor_s.CString;
+import mds.data.descriptor_s.StringDsc;
 import mds.data.descriptor_s.Int32;
 
 public class Editors_Test{
@@ -93,7 +93,7 @@ public class Editors_Test{
         this.p.add(e = new ExprEditor(false, null, true, true));
         e.setData(Editors_Test.rangewp);
         this.p.add(Editor.addLabel("TEST", e = new ExprEditor(true, null, true, true)));
-        e.setData(new CString("teststring"));
+        e.setData(new StringDsc("teststring"));
     }
 
     @SuppressWarnings("static-method")

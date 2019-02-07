@@ -7,8 +7,8 @@ import mds.data.DTYPE;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_S;
 
-public final class CString extends Descriptor_S<String> implements DATA<String>{
-    private static final String addQuotes(final String str) {
+public final class StringDsc extends Descriptor_S<String> implements DATA<String>{
+    public static final String addQuotes(final String str) {
         if(str.contains("\"")){
             if(str.contains("'")) return "\"" + str.replaceAll("\"", "\\\\\"") + "\"";
             return "'" + str + "'";
@@ -17,11 +17,7 @@ public final class CString extends Descriptor_S<String> implements DATA<String>{
     }
 
     public static final String decompile(final String str) {
-        return CString.addQuotes(str).replaceAll("\\\\", "\\\\\\\\");
-    }
-
-    public static final Descriptor<?> make(final String in) {
-        return in == null ? Missing.NEW : new CString(in);
+        return StringDsc.addQuotes(str).replaceAll("\\\\", "\\\\\\\\");
     }
 
     public static byte[] pad(final int len, final byte[] value, final byte c) {
@@ -37,19 +33,19 @@ public final class CString extends Descriptor_S<String> implements DATA<String>{
                         .getBytes());
     }
 
-    public CString(final byte[] array){
+    public StringDsc(final byte[] array){
         super(DTYPE.T, ByteBuffer.wrap(array).order(Descriptor.BYTEORDER));
     }
 
-    public CString(final ByteBuffer b){
+    public StringDsc(final ByteBuffer b){
         super(b);
     }
 
-    public CString(final int len, final String value){
-        this(CString.pad(len, value.getBytes(), (byte)' '));
+    public StringDsc(final int len, final String value){
+        this(StringDsc.pad(len, value.getBytes(), (byte)' '));
     }
 
-    public CString(final String value){
+    public StringDsc(final String value){
         this(value.getBytes());
     }
 
@@ -65,7 +61,7 @@ public final class CString extends Descriptor_S<String> implements DATA<String>{
 
     @Override
     public final StringBuilder decompile(final int prec, final StringBuilder pout, final int mode) {
-        return pout.append(((mode & Descriptor.DECO_STR) == 0) ? CString.decompile(this.getAtomic()) : this.getAtomic());
+        return pout.append(((mode & Descriptor.DECO_STR) == 0) ? StringDsc.decompile(this.getAtomic()) : this.getAtomic());
     }
 
     @Override
@@ -86,7 +82,7 @@ public final class CString extends Descriptor_S<String> implements DATA<String>{
     }
 
     @Override
-    public final CString getLocal_(final FLAG local) {
+    public final StringDsc getLocal_(final FLAG local) {
         return this;
     }
 
@@ -148,7 +144,7 @@ public final class CString extends Descriptor_S<String> implements DATA<String>{
     }
 
     @Override
-    public final CString text() {
+    public final StringDsc text() {
         return this;
     }
 }

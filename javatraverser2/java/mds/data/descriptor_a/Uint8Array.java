@@ -11,12 +11,12 @@ public final class Uint8Array extends INTEGER_UNSIGNEDArray<UByte>{
         super(DTYPE.BU, values);
     }
 
-    public Uint8Array(final byte dtype, final ByteBuffer data, final int shape[]){
-        super(DTYPE.BU, data, shape);
-    }
-
     public Uint8Array(final ByteBuffer b){
         super(b);
+    }
+
+    public Uint8Array(final DTYPE dtype, final ByteBuffer data, final int shape[]){
+        super(DTYPE.BU, data, shape);
     }
 
     public Uint8Array(final int shape[], final byte... values){
@@ -35,7 +35,7 @@ public final class Uint8Array extends INTEGER_UNSIGNEDArray<UByte>{
 
     @Override
     public final Int8Array bytes() {
-        return new Int8Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.B));
+        return new Int8Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.B.toByte()));
     }
 
     @Override
@@ -60,7 +60,7 @@ public final class Uint8Array extends INTEGER_UNSIGNEDArray<UByte>{
 
     @Override
     protected final byte getRankBits() {
-        return 1;
+        return 0x00;
     }
 
     @Override

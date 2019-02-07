@@ -7,12 +7,12 @@ import mds.data.descriptor_s.Uint64;
 import mds.data.descriptor_s.Uint64.ULong;
 
 public final class Uint64Array extends INTEGER_UNSIGNEDArray<ULong>{
-    public Uint64Array(final byte dtype, final ByteBuffer data, final int shape[]){
-        super(DTYPE.QU, data, shape);
-    }
-
     public Uint64Array(final ByteBuffer b){
         super(b);
+    }
+
+    public Uint64Array(final DTYPE dtype, final ByteBuffer data, final int shape[]){
+        super(DTYPE.QU, data, shape);
     }
 
     public Uint64Array(final int shape[], final long... values){
@@ -55,7 +55,7 @@ public final class Uint64Array extends INTEGER_UNSIGNEDArray<ULong>{
 
     @Override
     protected final byte getRankBits() {
-        return 8;
+        return 0x07;
     }
 
     @Override
@@ -91,7 +91,7 @@ public final class Uint64Array extends INTEGER_UNSIGNEDArray<ULong>{
 
     @Override
     public final Int64Array quadwords() {
-        return new Int64Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.Q));
+        return new Int64Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.Q.toByte()));
     }
 
     @Override

@@ -7,10 +7,10 @@ import mds.data.DATA;
 import mds.data.DTYPE;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_A;
-import mds.data.descriptor_s.CString;
+import mds.data.descriptor_s.StringDsc;
 import mds.data.descriptor_s.Missing;
 
-public final class CStringArray extends Descriptor_A<String> implements DATA<String[]>{
+public final class StringArray extends Descriptor_A<String> implements DATA<String[]>{
     private static final ByteBuffer toBytes(final int length, final Object[] lines, final boolean prepend) {
         final ByteBuffer b = ByteBuffer.allocate(length * lines.length).order(Descriptor.BYTEORDER);
         for(final Object line : lines){
@@ -28,23 +28,23 @@ public final class CStringArray extends Descriptor_A<String> implements DATA<Str
         int max = 0;
         for(final String line : lines)
             if(max < line.length()) max = line.length();
-        return CStringArray.toBytes(max, lines, false);
+        return StringArray.toBytes(max, lines, false);
     }
 
-    public CStringArray(final ByteBuffer b){
+    public StringArray(final ByteBuffer b){
         super(b);
     }
 
-    public CStringArray(final int length, final Object... lines){
-        super(DTYPE.T, CStringArray.toBytes(length, lines, true), lines.length);
+    public StringArray(final int length, final Object... lines){
+        super(DTYPE.T, StringArray.toBytes(length, lines, true), lines.length);
     }
 
-    public CStringArray(final int shape[], final String... lines){
-        super(DTYPE.T, CStringArray.toBytes(lines), shape);
+    public StringArray(final int shape[], final String... lines){
+        super(DTYPE.T, StringArray.toBytes(lines), shape);
     }
 
-    public CStringArray(final String... lines){
-        super(DTYPE.T, CStringArray.toBytes(lines), lines.length);
+    public StringArray(final String... lines){
+        super(DTYPE.T, StringArray.toBytes(lines), lines.length);
     }
 
     @Override
@@ -85,7 +85,7 @@ public final class CStringArray extends Descriptor_A<String> implements DATA<Str
     }
 
     @Override
-    public final CStringArray getLocal_(final FLAG local) {
+    public final StringArray getLocal_(final FLAG local) {
         return this;
     }
 
@@ -95,8 +95,8 @@ public final class CStringArray extends Descriptor_A<String> implements DATA<Str
     }
 
     @Override
-    public CString getScalar(final int idx) {
-        return new CString(this.getElement(idx));
+    public StringDsc getScalar(final int idx) {
+        return new StringDsc(this.getElement(idx));
     }
 
     @Override
@@ -176,7 +176,7 @@ public final class CStringArray extends Descriptor_A<String> implements DATA<Str
     }
 
     @Override
-    public final CStringArray text() {
+    public final StringArray text() {
         return this;
     }
 
