@@ -59,6 +59,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/resource.h>
 #endif
 
+//#define DEBUG
+#ifdef DEBUG
+# define DBG(...) fprintf(stderr, __VA_ARGS__)
+#else
+# define DBG(...) {/**/}
+#endif
+
 int treeshr_errno = 0;
 extern int MDSEventCan();
 static void RemoveBlanksAndUpcase(char *out, char const *in);
@@ -566,17 +573,18 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
 
 
 EXPORT int _TreeNewDbid(void** dblist){
-  PINO_DATABASE *db = *(PINO_DATABASE **)dblist;
-  *dblist = calloc(1,sizeof(PINO_DATABASE));
-  if (*dblist) {
-    (*(PINO_DATABASE **)dblist)->next = db;
-    (*(PINO_DATABASE **)dblist)->timecontext.start.dtype = DTYPE_DSC;
-    (*(PINO_DATABASE **)dblist)->timecontext.start.class = CLASS_XD;
-    (*(PINO_DATABASE **)dblist)->timecontext.end.dtype = DTYPE_DSC;
-    (*(PINO_DATABASE **)dblist)->timecontext.end.class = CLASS_XD;
-    (*(PINO_DATABASE **)dblist)->timecontext.delta.dtype = DTYPE_DSC;
-    (*(PINO_DATABASE **)dblist)->timecontext.delta.class = CLASS_XD;
-    (*(PINO_DATABASE **)dblist)->stack_size = 8;
+  PINO_DATABASE *db = (PINO_DATABASE *)calloc(1,sizeof(PINO_DATABASE));
+  if (db) {
+    DBG("Created DB %"PRIxPTR"\n",(uintptr_t)db);
+    db->timecontext.start.dtype = DTYPE_DSC;
+    db->timecontext.start.class = CLASS_XD;
+    db->timecontext.end.dtype = DTYPE_DSC;
+    db->timecontext.end.class = CLASS_XD;
+    db->timecontext.delta.dtype = DTYPE_DSC;
+    db->timecontext.delta.class = CLASS_XD;
+    db->stack_size = DEFAULT_STACK_LIMIT;
+    db->next = *(PINO_DATABASE **)dblist;
+    *dblist = (void*)db;
     return TreeNORMAL;
   }
   return TreeFAILURE;
@@ -590,7 +598,7 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
   PINO_DATABASE *saved_prev_db;
   PINO_DATABASE *useable_db = 0;
   int count;
-  int stack_size = 8;
+  int stack_size = DEFAULT_STACK_LIMIT;
   enum options {
     MOVE_TO_TOP, CLOSE, ERROR_DIRTY, OPEN_NEW
   };
@@ -681,23 +689,20 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
   return status;
 }
 
-int _TreeGetStackSize(void *dbid)
-{
+int _TreeGetStackSize(void *dbid){
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   return dblist->stack_size;
 }
 
-int _TreeSetStackSize(void **dbid, int size)
-{
+int _TreeSetStackSize(void **dbid, int size){
   PINO_DATABASE *dblist = *(PINO_DATABASE **) dbid;
-  int new_size = size > 0 ? (size < 11 ? size : 10) : 1;
-  int old_size = dblist ? dblist->stack_size : 8;
-  if (!dblist)
-    CreateDbSlot((PINO_DATABASE **) dbid, "", 987654321, 0);
-  for (dblist = *(PINO_DATABASE **) dbid; dblist; dblist = dblist->next)
+  int new_size = size > 0 ? size : 1;
+  int old_size = dblist->stack_size;
+  for (; dblist; dblist = dblist->next) {
     dblist->stack_size = new_size;
-  if (dblist && dblist->remote)
-    SetStackSizeRemote(dblist, new_size);
+    if (dblist && dblist->remote)
+      SetStackSizeRemote(dblist, new_size);
+  }
   return old_size;
 }
 
@@ -1284,10 +1289,10 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
   return status;
 }
 
-void TreeFreeDbid(void *dbid)
-{
-  PINO_DATABASE *db = (PINO_DATABASE *) dbid;
-  if (db) {
+void TreeFreeDbid(void *dbid){
+  if (dbid) {
+    DBG("Destroyed DB %"PRIxPTR"\n",(uintptr_t)dbid);
+    PINO_DATABASE *db = (PINO_DATABASE *) dbid;
     TreeFreeDbid(db->next);
     CloseTopTree(db, 1);
     free_xd(&db->timecontext.start);

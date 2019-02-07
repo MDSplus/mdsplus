@@ -235,6 +235,7 @@ typedef struct nid {
 #endif
 
 #define MAX_SUBTREES 256	/* since there are only 8 bits of tree number in a nid */
+#define DEFAULT_STACK_LIMIT 8
 
 /********************************************
    NODE
