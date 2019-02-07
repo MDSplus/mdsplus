@@ -1,5 +1,5 @@
 #!/bin/sh
-#
+
 getModDir() {
     if ( $2 -s -c 'import site' 2>/dev/null )
     then
@@ -13,7 +13,7 @@ getModDir() {
     echo $mdir
 }
 
-for py in python python3
+for py in python2 python3
 do
   mdir=$(getModDir $1 ${py})
   while [ ! -z "$mdir" ]
@@ -23,9 +23,9 @@ do
 	if ( rm -Rf $mdir )
 	then
 	    mdir=$(getModDir $1 ${py})
-	else
-	    mdir=""
+            continue # check if there is more
 	fi
     fi
+    break # out of while loop
   done
 done
