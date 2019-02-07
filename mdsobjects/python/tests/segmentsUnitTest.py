@@ -258,8 +258,8 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(Tree.getTimeContext(),(1,2,3))
         tdi('treeclose()')
         self.assertEqual(Tree.getTimeContext(),(2,3,4))
-        tdi('treeclose()',self.tree,self.shot+5)
-        self.assertEqual(Tree.getTimeContext(),(1,2,3))
+        tdi('treeclose()')
+        self.assertEqual(Tree.getTimeContext(),(2,3,4))
 
     def ScaledSegments(self):
         from MDSplus import Tree,Int64,Int64Array,Int16Array
