@@ -174,9 +174,9 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
       array_coeff *adsc = (array_coeff *) dsc;
       adsc->class = CLASS_A;
 
-      if (ndim > MAXDIM) {
-	ndim = MAXDIM;
-	printf("(descr.c) WARNING: requested ndim>MAXDIM, forcing to MAXDIM\n");
+      if (ndim > MAX_DIMS) {
+	ndim = MAX_DIMS;
+	printf("(descr.c) WARNING: requested ndim>MAX_DIMS, forcing to MAX_DIMS\n");
       }
       adsc->dimct = ndim;
       adsc->scale = 0;
@@ -194,7 +194,7 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
 	adsc->m[i] = *(va_arg(incrmtr, int *));
 	totsize = totsize * adsc->m[i];
       }
-      for (i = ndim; i < MAXDIM; i++) {
+      for (i = ndim; i < MAX_DIMS; i++) {
 	adsc->m[i] = 0;
       }
       adsc->arsize = totsize * adsc->length;
@@ -303,9 +303,9 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
       array_coeff *adsc = (array_coeff *) dsc;
       adsc->class = CLASS_A;
 
-      if (ndim > MAXDIM) {
-	ndim = MAXDIM;
-	printf("(descr.c) WARNING: requested ndim>MAXDIM, forcing to MAXDIM\n");
+      if (ndim > MAX_DIMS) {
+	ndim = MAX_DIMS;
+	printf("(descr.c) WARNING: requested ndim>MAX_DIMS, forcing to MAX_DIMS\n");
       }
       adsc->dimct = ndim;
 
@@ -322,7 +322,7 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
 	adsc->m[i] = *(va_arg(incrmtr, int *));
 	totsize = totsize * adsc->m[i];
       }
-      for (i = ndim; i < MAXDIM; i++) {
+      for (i = ndim; i < MAX_DIMS; i++) {
 	adsc->m[i] = 0;
       }
       adsc->arsize = totsize * adsc->length;
@@ -1198,14 +1198,14 @@ static struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc
   } else {
     int i;
     array_coeff *adsc = (array_coeff *) dsc;
-    int dims[MAXDIM];
+    int dims[MAX_DIMS];
     unsigned int num = adsc->arsize / adsc->length;
     unsigned int *m = &num;
     if (adsc->dimct > 1)
       m = adsc->m;
     for (i = 0; i < adsc->dimct; i++)
       dims[i] = m[i];
-    for (i = adsc->dimct; i < MAXDIM; i++)
+    for (i = adsc->dimct; i < MAX_DIMS; i++)
       dims[i] = 0;
     if (dsc->length)
       arg =

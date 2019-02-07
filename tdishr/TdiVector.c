@@ -55,11 +55,11 @@ int Tdi1Vector(opcode_t opcode, int narg, struct descriptor *list[], struct desc
 									 0}, 1, 0
   };
   array_coeff arr = { sizeof(char), DTYPE_BU, CLASS_A, (char *)0, 0, 0, {0, 1, 1, 1, 0},
-		      MAXDIM, 0, 0, {0}
+		      MAX_DIMS, 0, 0, {0}
   };
   struct descriptor_xd (*psig)[], (*puni)[] = 0, (*pdat)[] = 0;
   struct TdiCatStruct (*pcats)[] = 0;
-  int cmode = -1, j, n, (*pnelem)[] = 0, jd, mind = MAXDIM, maxd = 0, nmiss = 0;
+  int cmode = -1, j, n, (*pnelem)[] = 0, jd, mind = MAX_DIMS, maxd = 0, nmiss = 0;
   int virt =
       (sizeof(struct descriptor_xd) * 3 + sizeof(int *)) * narg +
       sizeof(struct TdiCatStruct) * (narg + 1);
@@ -120,7 +120,7 @@ int Tdi1Vector(opcode_t opcode, int narg, struct descriptor *list[], struct desc
         Shape: [[3],[3,4]] is [3,5].
         ********************************/
  if (STATUS_OK) {
-  if (mind > 0 && mind >= maxd - 1 && mind < MAXDIM && nmiss == 0) {
+  if (mind > 0 && mind >= maxd - 1 && mind < MAX_DIMS && nmiss == 0) {
     n = 0;
     for (j = 0; j < narg; ++j) {
       array_coeff *pnew = (array_coeff *) (*pdat)[j].pointer;

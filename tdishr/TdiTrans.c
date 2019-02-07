@@ -173,7 +173,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     switch (pa->class) {
     case CLASS_A:
       rank = pa->aflags.coeff ? pa->dimct : 1;
-      if (rank > MAXDIM)
+      if (rank > MAX_DIMS)
 	status = TdiNDIM_OVER;
 		/** Whole array. Unrestricted. Product of multipliers == size, unchecked **/
       else if (dim < 0) {
@@ -300,7 +300,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 		/** scalar to simple vector **/
     if (rank == 0)
       _MOVC3(head, (char *)pa, (char *)&arr);
-    else if (rank >= MAXDIM)
+    else if (rank >= MAX_DIMS)
       status = TdiNDIM_OVER;
 		/** coefficient vector **/
     else if (pa->aflags.coeff) {

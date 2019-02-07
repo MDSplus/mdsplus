@@ -35,7 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Unlikely example, ARRAY([COMPLEX(2,11),[3,4,5],6.7],1d0)
         returns an array of doubles of dimensions [2,3,4,5,6].
 
-        Limitation: number of dimensions must not exceed MAXDIM.
+        Limitation: number of dimensions must not exceed MAX_DIMS.
         Limitation: product of dimensions must not exceed virtual-memory paging space.
         Ken Klare, LANL CTR-7   (c)1989,1990
 */
@@ -67,7 +67,7 @@ extern int CvtConvertFloat();
 extern int Tdi1Array(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  array_coeff arr = { 1, DTYPE_B, CLASS_A, (char *)0, 0, 0, {0, 1, 1, 1, 0}, MAXDIM, 0, 0, {0}};
+  array_coeff arr = { 1, DTYPE_B, CLASS_A, (char *)0, 0, 0, {0, 1, 1, 1, 0}, MAX_DIMS, 0, 0, {0}};
   array_int cvt = { sizeof(int), DTYPE_L, CLASS_A, (int *)0, 0, 0, {0, 1, 1, 0, 0}, 1, 0};
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   struct descriptor_xd tmp = EMPTY_XD;
@@ -88,7 +88,7 @@ extern int Tdi1Array(opcode_t opcode, int narg, struct descriptor *list[], struc
       arr.dimct = (unsigned char)ndim;
       arr.aflags.coeff = (unsigned char)(tmp.pointer->class == CLASS_A);
       arr.a0 = 0;
-      if (ndim > MAXDIM)
+      if (ndim > MAX_DIMS)
 	status = TdiNDIM_OVER;
       else {
 	cvt.pointer = (int *)&arr.m[0];
