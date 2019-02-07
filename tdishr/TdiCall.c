@@ -66,16 +66,16 @@ extern int TdiPutIdent();
     _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-STATIC_ROUTINE int TdiInterlude(opcode_t opcode, struct descriptor **newdsc,
+STATIC_ROUTINE int TdiInterlude(dtype_t rtype, struct descriptor **newdsc,
 				int (*routine) (), unsigned int *(*called) (),
 				void **result, int *max)
 {
 #ifdef __ALPHA
   int f_regs = (*(int *)routine == 0x23FF0000) ? 0 : 1;
 #else
-  int f_regs = 1;		/*(opcode == 0) */
+  int f_regs = 1;		/*(rtype == 0) i.e. no return value */
 #endif
-  switch (opcode) {
+  switch (rtype) {
   case DTYPE_F:
   case DTYPE_FS:
     if (f_regs) {
@@ -136,7 +136,7 @@ STATIC_ROUTINE int TdiInterlude(opcode_t opcode, struct descriptor **newdsc,
   return 1;
 }
 
-int TdiCall(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int TdiCall(dtype_t rtype, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_function *pfun;
@@ -147,7 +147,7 @@ int TdiCall(opcode_t opcode, int narg, struct descriptor *list[], struct descrip
   struct descriptor *newdsc[256];
   struct descriptor dx = { 0, 0, CLASS_S, 0 };
   unsigned char origin[255];
-  dx.dtype = (unsigned char)opcode;
+  dx.dtype = rtype;
   dx.pointer = (char *)result;
   memset(newdsc, 0, sizeof(newdsc));
   if (narg > 255 + 2)
@@ -224,11 +224,11 @@ int TdiCall(opcode_t opcode, int narg, struct descriptor *list[], struct descrip
     }
   }
   if STATUS_OK
-    status = TdiInterlude(opcode, newdsc, routine, (void *)LibCallg, (void **)result, &max);
+    status = TdiInterlude(rtype, newdsc, routine, (void *)LibCallg, (void **)result, &max);
   if (!out_ptr)
     goto skip;
   if STATUS_OK
-    switch (opcode) {
+    switch (rtype) {
     case DTYPE_DSC:
       dx.pointer = (char *)result[0];
       if (result[0])
@@ -266,13 +266,14 @@ int TdiCall(opcode_t opcode, int narg, struct descriptor *list[], struct descrip
       //  dx.dtype = DTYPE_LU;
       break;
 
-    default:
-      if (opcode < TdiCAT_MAX) {
-	if ((dx.length = TdiREF_CAT[opcode].length) > max)
+    default: {
+      if ((int)rtype < TdiCAT_MAX) {
+	if ((dx.length = TdiREF_CAT[(int)rtype].length) > max)
 	  status = TdiTOO_BIG;
       } else
 	status = TdiINVDTYDSC;
     }
+  }
   if STATUS_OK
     status = MdsCopyDxXd(&dx, out_ptr);
  skip:
