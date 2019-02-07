@@ -59,6 +59,7 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
             svr,svr_log = self._start_mdsip(server ,server_port ,'thick')
             try:
                 con = Connection(server)
+                self.assertEqual(con.get("zero([1,1,1,1,1,1,1,1],1)").tolist(),[[[[[[[[0]]]]]]]])
                 with Tree(self.tree,-1,"new") as local:
                     local.addNode("pysub","SUBTREE")
                     s=local.addNode("S","SIGNAL")
