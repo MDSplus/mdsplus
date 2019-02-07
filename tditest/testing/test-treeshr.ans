@@ -185,9 +185,11 @@ TreePutRecord(member,build_with_units(1:1000,'volts'))
 265389633
 member
 Build_With_Units(1 : 1000, "volts")
-TreeClose('main',_shot)
-265388041
 TreeOpen('main',-1,1)
+265388041
+TreeOpenEdit('main',_shot)
+265388041
+TreeClose('main',_shot)
 265388041
 TreeDeletePulseFile(_shot)
 265389633
