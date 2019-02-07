@@ -645,17 +645,17 @@ typedef struct descriptor_opaque {
  * array typedefs
  */
 
-#define MAXDIM 8
+#define MAX_DIMS 8
 /* ARRAY_COEFF(a,b*x) acts like ARRAY_BOUNDS(a,b)
  * but bounds and m are merged into m
  */
-typedef ARRAY_COEFF(char, MAXDIM) array_coeff;
-typedef ARRAY_COEFF(char, MAXDIM*3) array_bounds;
-typedef ARRAY_COEFF(mdsdsc_t*, MAXDIM*3) array_bounds_desc;
+typedef ARRAY_COEFF(char, MAX_DIMS) array_coeff;
+typedef ARRAY_COEFF(char, MAX_DIMS*3) array_bounds;
+typedef ARRAY_COEFF(mdsdsc_t*, MAX_DIMS*3) array_bounds_desc;
 typedef ARRAY(char) array;
 typedef ARRAY(int) array_int;
 typedef ARRAY(mdsdsc_t*) array_desc;
-typedef SIGNAL(MAXDIM) signal_maxdim;
+typedef SIGNAL(MAX_DIMS) signal_maxdim;
 
 typedef union {
 mdsdsc_t	dsc;
