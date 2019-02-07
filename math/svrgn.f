@@ -50,7 +50,7 @@
                   jstack = jstack-2
             Enddo
             ran = mod(ran*211+1663,7875)
-            i = l + (r-l+1)*ran/7875
+            i = l + int((int(r-l+1,8)*ran)/7875,4)
             If (perm) kperm = iperm(i)
             If (perm) iperm(i) = iperm(l)
             keep = rb(i)
@@ -140,7 +140,7 @@
                   jstack = jstack-2
             Enddo
             ran = mod(ran*211+1663,7875)
-            i = l + (r-l+1)*ran/7875
+            i = l + int((int(r-l+1,8)*ran)/7875,4)
             If (perm) kperm = iperm(i)
             If (perm) iperm(i) = iperm(l)
             keep = rb(i)
