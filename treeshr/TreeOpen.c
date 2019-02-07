@@ -1166,7 +1166,7 @@ int _TreeOpenEdit(void **dbid, char const *tree_in, int shot_in)
 	    memset(info->edit, 0, sizeof(TREE_EDIT));
 	    info->root = info->node;
 	    status = TreeOpenNciW(info, 0);
-	    if (status & 1) {
+	    if STATUS_OK {
 	      (*dblist)->tree_info = info;
 	      (*dblist)->open = 1;
 	      (*dblist)->open_for_edit = 1;
@@ -1180,7 +1180,10 @@ int _TreeOpenEdit(void **dbid, char const *tree_in, int shot_in)
 	  free(info->treenam);
 	  free(info);
 	}
-      }
+      } else
+	status = TreeMEMERR;
+      if STATUS_NOT_OK
+	free_top_db(dblist);
     }
   }
   return status;
@@ -1277,6 +1280,8 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
 	  free(tree);
       } else
 	status = TreeMEMERR;
+      if STATUS_NOT_OK
+	free_top_db(dblist);
     }
   }
   if STATUS_OK
