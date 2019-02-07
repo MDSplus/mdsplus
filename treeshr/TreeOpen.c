@@ -634,7 +634,7 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
 
   case CLOSE:
     move_to_top(prev_db, db);
-    _TreeClose((void **)dblist, 0, 0);
+    CloseTopTree(*dblist, 1);
     status = TreeNORMAL;
     break;
   case ERROR_DIRTY:
@@ -656,7 +656,7 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
       if (count >= stack_size) {
 	if (useable_db) {
 	  move_to_top(saved_prev_db, useable_db);
-	  _TreeClose((void **)dblist, 0, 0);
+	  CloseTopTree(*dblist, 1);
 	  move_to_top(saved_prev_db, useable_db);
 	  status = TreeNORMAL;
 	} else {
