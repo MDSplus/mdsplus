@@ -179,6 +179,15 @@ static char *ReplaceAliasTrees(char *tree_in){
   return ans;
 }
 
+static void free_top_db(PINO_DATABASE ** dblist) {
+  if ((*dblist)->next) {
+    PINO_DATABASE *db = *dblist;
+    *dblist = (*dblist)->next;
+    db->next = NULL;
+    TreeFreeDbid(db);
+  }
+}
+
 EXPORT int _TreeOpen(void **dbid, char const *tree_in, int shot_in, int read_only_flag){
   int status;
   int shot;
@@ -218,15 +227,8 @@ EXPORT int _TreeOpen(void **dbid, char const *tree_in, int shot_in, int read_onl
 	    (*dblist)->default_node = (*dblist)->tree_info->root;
 	  (*dblist)->open = 1;
 	  (*dblist)->open_readonly = read_only_flag!=0;
-	} else {
-	  PINO_DATABASE *db;
-	  for (db = *dblist; db->next; db = db->next) ;
-	  if (db) {
-	    db->next = *dblist;
-	    *dblist = (*dblist)->next;
-	    db->next->next = 0;
-	  }
-	}
+	} else
+	  free_top_db(dblist);
       }
       else {
 	status = db_slot_status;
@@ -288,15 +290,8 @@ int _TreeClose(void **dbid, char const *tree, int shot)
 	status = TreeWRITEFIRST;
       } else if ((*dblist)->open) {
 	status = CloseTopTree(*dblist, 1);
-	if (status & 1) {
-	  for (prev_db = 0, db = *dblist; db; prev_db = db, db = db->next) ;
-	  if (prev_db && (*dblist)->next) {
-	    db = (*dblist)->next;
-	    (*dblist)->next = 0;
-	    prev_db->next = *dblist;
-	    *dblist = db;
-	  }
-	}
+	if STATUS_OK
+	  free_top_db(dblist);
       } else
 	status = TreeNOT_OPEN;
     }
