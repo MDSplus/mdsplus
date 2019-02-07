@@ -93,8 +93,8 @@ public final class Missing extends Descriptor_S<Object> implements DATA<Object>{
     }
 
     @Override
-    public final CString text() {
-        return new CString("");
+    public final StringDsc text() {
+        return new StringDsc("");
     }
 
     @Override

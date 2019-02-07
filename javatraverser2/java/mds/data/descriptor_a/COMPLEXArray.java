@@ -3,6 +3,7 @@ package mds.data.descriptor_a;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
+import mds.data.DTYPE;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_s.COMPLEX;
 import mds.data.descriptor_s.COMPLEX.Complex;
@@ -39,32 +40,32 @@ public abstract class COMPLEXArray<T extends Number>extends NUMBERArray<Complex<
         return b;
     }
 
-    public COMPLEXArray(final byte dtype, final ByteBuffer data, final int[] shape){
+    protected COMPLEXArray(final ByteBuffer b){
+        super(b);
+    }
+
+    public COMPLEXArray(final DTYPE dtype, final ByteBuffer data, final int[] shape){
         super(dtype, data, shape);
     }
 
-    protected COMPLEXArray(final byte dtype, final Complex<Number>[] values, final int... shape){
+    protected COMPLEXArray(final DTYPE dtype, final Complex<Number>[] values, final int... shape){
         super(dtype, COMPLEXArray.toByteBuffer(values), shape.length == 0 ? new int[]{values.length} : shape);
     }
 
-    protected COMPLEXArray(final byte dtype, final double[] values, final int... shape){
+    protected COMPLEXArray(final DTYPE dtype, final double[] values, final int... shape){
         super(dtype, FLOATArray.toByteBuffer(values), shape.length == 0 ? new int[]{values.length / 2} : shape);
     }
 
-    protected COMPLEXArray(final byte dtype, final double[][] values, final int... shape){
+    protected COMPLEXArray(final DTYPE dtype, final double[][] values, final int... shape){
         super(dtype, COMPLEXArray.toByteBuffer(values), shape.length == 0 ? new int[]{values.length} : shape);
     }
 
-    protected COMPLEXArray(final byte dtype, final float[] values, final int... shape){
+    protected COMPLEXArray(final DTYPE dtype, final float[] values, final int... shape){
         super(dtype, FLOATArray.toByteBuffer(values), shape.length == 0 ? new int[]{values.length / 2} : shape);
     }
 
-    protected COMPLEXArray(final byte dtype, final float[][] values, final int... shape){
+    protected COMPLEXArray(final DTYPE dtype, final float[][] values, final int... shape){
         super(dtype, COMPLEXArray.toByteBuffer(values), shape.length == 0 ? new int[]{values.length} : shape);
-    }
-
-    protected COMPLEXArray(final ByteBuffer b){
-        super(b);
     }
 
     @Override

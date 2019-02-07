@@ -4,7 +4,6 @@ import java.nio.ByteBuffer;
 import mds.data.DTYPE;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_R;
-import mds.data.descriptor_s.CString;
 
 public final class Call extends Descriptor_R<Byte>{
     public static final class def_cat{
@@ -92,14 +91,6 @@ public final class Call extends Descriptor_R<Byte>{
             new def_cat("FTC", (short)0x9707, (byte)16, (byte)48, "D"),// 55
     };
 
-    public Call(final byte type, final Descriptor<?> image, final Descriptor<?> routine, final Descriptor<?>... args){
-        super(DTYPE.CALL, ByteBuffer.allocate(Byte.BYTES).order(Descriptor.BYTEORDER).put(type), args, image, routine);
-    }
-
-    public Call(final byte type, final String image, final String routine, final Descriptor<?>... args){
-        this(type, new CString(image), new CString(routine), args);
-    }
-
     public Call(final ByteBuffer b){
         super(b);
     }
@@ -108,8 +99,12 @@ public final class Call extends Descriptor_R<Byte>{
         super(DTYPE.CALL, null, arguments);
     }
 
-    public Call(final int type, final String image, final String routine, final Descriptor<?>... args){
-        this((byte)type, image, routine, args);
+    public Call(final DTYPE type, final Descriptor<?> image, final Descriptor<?> routine, final Descriptor<?>... args){
+        super(DTYPE.CALL, ByteBuffer.allocate(Byte.BYTES).order(Descriptor.BYTEORDER).put(type.toByte()), args, image, routine);
+    }
+
+    public Call(final DTYPE type, final String image, final String routine, final Descriptor<?>... args){
+        this(type, Descriptor.valueOf(image), Descriptor.valueOf(routine), args);
     }
 
     @Override

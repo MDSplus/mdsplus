@@ -3,12 +3,13 @@ package mds;
 import java.util.ArrayList;
 import mds.Mds.Request;
 import mds.data.CTX;
+import mds.data.OPC;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_S;
 import mds.data.descriptor_apd.List;
-import mds.data.descriptor_s.CString;
 import mds.data.descriptor_s.Int32;
 import mds.data.descriptor_s.Missing;
+import mds.data.descriptor_s.StringDsc;
 
 public class TdiShr extends TreeShr{
     @SuppressWarnings("rawtypes")
@@ -23,29 +24,48 @@ public class TdiShr extends TreeShr{
         }
     }
 
-    private final static Request<List> tdiCompile(final String expr, final Descriptor<?>... args) {
-        final LibCall<List> call = new TdiCall<List>(List.class, "TdiCompile").descr(new CString(expr));
-        for(final Descriptor<?> arg : args)
-            call.descr(arg);
-        return call.xd("a").val(1).finL("a", "s");
-    }
-
-    private final static Request<List> tdiEvaluate(final Descriptor<?> dsc) {
-        return new TdiCall<List>(List.class, "TdiEvaluate").descr(dsc).xd("a").val(1).finL("a", "s");
-    }
-
-    private final static Request<List> tdiExecute(final String expr, final Descriptor<?>... args) {
-        final LibCall<List> call = new TdiCall<List>(List.class, "TdiExecute").descr(new CString(expr));
-        for(final Descriptor<?> arg : args)
-            call.descr(arg);
-        return call.xd("a").val(1).finL("a", "s");
-    }
-
     public TdiShr(final Mds mds){
         super(mds);
     }
 
-    public final int[] getShotDB(final CString expt, final Descriptor_S<?> path, final Int32 lower, final Int32 upper) throws MdsException {
+    public final DescriptorStatus _tdiCompile(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
+        if(expr == null || expr.isEmpty()) return new DescriptorStatus(Missing.NEW, MdsException.MDSplusSUCCESS);
+        return this._tdiIntrinsic(ctx, OPC.OpcCompile, Descriptor.valueOf(expr), args);
+    }
+
+    public final String _tdiDecompile(final CTX ctx, final Descriptor<?> dsc) throws MdsException {
+        return this._tdiIntrinsic(ctx, OPC.OpcDecompile, dsc).getData().toString();
+    }
+
+    public final DescriptorStatus _tdiEvaluate(final CTX ctx, final Descriptor<?> dsc) throws MdsException {
+        if(Descriptor.isMissing(dsc)) return new DescriptorStatus(Missing.NEW, MdsException.MDSplusSUCCESS);
+        return this._tdiIntrinsic(ctx, OPC.OpcEvaluate, dsc);
+    }
+
+    public final DescriptorStatus _tdiExecute(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
+        if(expr == null || expr.isEmpty()) return new DescriptorStatus(Missing.NEW, MdsException.MDSplusSUCCESS);
+        return this._tdiIntrinsic(ctx, OPC.OpcExecute, Descriptor.valueOf(expr), args);
+    }
+
+    public final DescriptorStatus _tdiIntrinsic(final CTX ctx, final OPC opcode, final Descriptor<?>... args) throws MdsException {
+        final Request<List> request = new TdiCall<List>(List.class, "_TdiIntrinsic").ctxp(ctx.getDbid()).val(opcode.ordinal())//
+                .val(args.length).ref(new List(args)).xd("a").finL("a", "s", "c");
+        return new DescriptorStatus(this.mds.getDescriptor(null, request));
+    }
+
+    public final DescriptorStatus _tdiIntrinsic(final CTX ctx, final OPC opcode, final Descriptor<?> arg) throws MdsException {
+        return this._tdiIntrinsic(ctx, opcode, new Descriptor[]{arg});
+    }
+
+    public final DescriptorStatus _tdiIntrinsic(final CTX ctx, final OPC opcode, final Descriptor<?> arg0, final Descriptor<?>... args1) throws MdsException {
+        final Descriptor<?>[] args = new Descriptor<?>[args1.length + 1];
+        args[0] = arg0;
+        for(int i = 0; i < args1.length; i++)
+            args[i + 1] = args1[i];
+        return this._tdiIntrinsic(ctx, opcode, args);
+    }
+
+    public final int[] getShotDB(final StringDsc expt, final Descriptor_S<?> path, final Int32 lower, final Int32 upper) throws MdsException {
         final ArrayList<Descriptor<?>> args = new ArrayList<Descriptor<?>>(4);
         final StringBuilder expr = new StringBuilder(32).append("getShotDB($");
         args.add(expt);
@@ -66,26 +86,43 @@ public class TdiShr extends TreeShr{
 
     public final DescriptorStatus tdiCompile(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         if(expr == null || expr.isEmpty()) return new DescriptorStatus(Missing.NEW, MdsException.MDSplusSUCCESS);
-        return new DescriptorStatus(this.mds.getDescriptor(ctx, TdiShr.tdiCompile(expr, args)));
+        return this.tdiIntrinsic(ctx, OPC.OpcCompile, Descriptor.valueOf(expr), args);
     }
 
     public final String tdiDecompile(final CTX ctx, final Descriptor<?> dsc) throws MdsException {
-        return this.tdiDecompile(ctx, "$", dsc);
+        return this.tdiIntrinsic(ctx, OPC.OpcDecompile, dsc).getData().toString();
     }
 
     public final String tdiDecompile(final CTX ctx, final String exec, final Descriptor<?>... dsc) throws MdsException {
-        final DescriptorStatus result = this.tdiExecute(ctx, "Decompile(`(" + exec + ";))", dsc);
-        MdsException.handleStatus(result.status);
-        return result.data.toString();
+        return this.tdiExecute(ctx, "Decompile(`(" + exec + ";))", dsc).getData().toString();
     }
 
     public final DescriptorStatus tdiEvaluate(final CTX ctx, final Descriptor<?> dsc) throws MdsException {
         if(Descriptor.isMissing(dsc)) return new DescriptorStatus(Missing.NEW, MdsException.MDSplusSUCCESS);
-        return new DescriptorStatus(this.mds.getDescriptor(ctx, TdiShr.tdiEvaluate(dsc)));
+        return this.tdiIntrinsic(ctx, OPC.OpcEvaluate, dsc);
     }
 
     public final DescriptorStatus tdiExecute(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         if(expr == null || expr.isEmpty()) return new DescriptorStatus(Missing.NEW, MdsException.MDSplusSUCCESS);
-        return new DescriptorStatus(this.mds.getDescriptor(ctx, TdiShr.tdiExecute(expr, args)));
+        return this.tdiIntrinsic(ctx, OPC.OpcExecute, Descriptor.valueOf(expr), args);
+    }
+
+    public final DescriptorStatus tdiIntrinsic(final CTX ctx, final OPC opcode, final Descriptor<?> arg) throws MdsException {
+        return this.tdiIntrinsic(ctx, opcode, new Descriptor[]{arg});
+    }
+
+    public final DescriptorStatus tdiIntrinsic(final CTX ctx, final OPC opcode, final Descriptor<?>... args) throws MdsException {
+        if(ctx != null && this.mds.MdsEND_ARG() > 0) return this._tdiIntrinsic(ctx, opcode, args);
+        final Request<List> request = new TdiCall<List>(List.class, "TdiIntrinsic").val(opcode.ordinal())//
+                .val(args.length).ref(new List(args)).xd("a").finL("a", "s");
+        return new DescriptorStatus(this.mds.getDescriptor(ctx, request));
+    }
+
+    public final DescriptorStatus tdiIntrinsic(final CTX ctx, final OPC opcode, final Descriptor<?> arg0, final Descriptor<?>... args1) throws MdsException {
+        final Descriptor<?>[] args = new Descriptor<?>[args1.length + 1];
+        args[0] = arg0;
+        for(int i = 0; i < args1.length; i++)
+            args[i + 1] = args1[i];
+        return this.tdiIntrinsic(ctx, opcode, args);
     }
 }

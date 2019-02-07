@@ -1,152 +1,137 @@
 package mds.data;
 
-public final class DTYPE{
-    private static final String[] _name          = new String[256];
-    private static final String[] _suffix        = new String[256];
-    public static final byte      MISSING        = 0;
-    public static final byte      BU             = 2;
-    public static final byte      WU             = 3;
-    public static final byte      LU             = 4;
-    public static final byte      QU             = 5;
-    public static final byte      B              = 6;
-    public static final byte      W              = 7;
-    public static final byte      L              = 8;
-    public static final byte      Q              = 9;
-    public static final byte      F              = 10;             // VMS
-    public static final byte      D              = 11;             // VMS
-    public static final byte      FC             = 12;             // VMS
-    public static final byte      DC             = 13;             // VMS
-    public static final byte      T              = 14;
-    public static final byte      DSC            = 24;
-    public static final byte      OU             = 25;
-    public static final byte      O              = 26;
-    public static final byte      G              = 27;
-    public static final byte      H              = 28;
-    public static final byte      GC             = 29;             // IEEE
-    public static final byte      HC             = 30;             // 128bit
-    public static final byte      POINTER        = 51;
-    public static final byte      FS             = 52;             // IEEE
-    public static final byte      FT             = 53;             // IEEE
-    public static final byte      FSC            = 54;             // IEEE
-    public static final byte      FTC            = 55;             // IEEE
-    public static final byte      IDENT          = -65;            // 191
-    public static final byte      NID            = -64;            // 192
-    public static final byte      PATH           = -63;            // 193
-    public static final byte      PARAM          = -62;            // 194
-    public static final byte      SIGNAL         = -61;            // 195
-    public static final byte      DIMENSION      = -60;            // 196
-    public static final byte      WINDOW         = -59;            // 197
-    public static final byte      SLOPE          = -58;            // 198
-    public static final byte      FUNCTION       = -57;            // 199
-    public static final byte      CONGLOM        = -56;            // 200
-    public static final byte      RANGE          = -55;            // 201
-    public static final byte      ACTION         = -54;            // 202
-    public static final byte      DISPATCH       = -53;            // 203
-    public static final byte      PROGRAM        = -52;            // 204
-    public static final byte      ROUTINE        = -51;            // 205
-    public static final byte      PROCEDURE      = -50;            // 206
-    public static final byte      METHOD         = -49;            // 207
-    public static final byte      DEPENDENCY     = -48;            // 208
-    public static final byte      CONDITION      = -47;            // 209
-    public static final byte      EVENT          = -46;            // 210
-    public static final byte      WITH_UNITS     = -45;            // 211
-    public static final byte      CALL           = -44;            // 212
-    public static final byte      WITH_ERROR     = -43;            // 213
-    public static final byte      LIST           = -42;            // 214
-    public static final byte      TUPLE          = -41;            // 215
-    public static final byte      DICTIONARY     = -40;            // 216
-    public static final byte      OPAQUE         = -39;            // 217
-    public static final byte      FLOAT          = DTYPE.FS;
-    public static final byte      DOUBLE         = DTYPE.FT;
-    public static final byte      COMPLEX_FLOAT  = DTYPE.FSC;
-    public static final byte      COMPLEX_DOUBLE = DTYPE.FTC;
-    static{
-        DTYPE._name[DTYPE.B & 0xFF] = "Byte";
-        DTYPE._name[DTYPE.W & 0xFF] = "Word";
-        DTYPE._name[DTYPE.L & 0xFF] = "Long";
-        DTYPE._name[DTYPE.Q & 0xFF] = "Quadword";
-        DTYPE._name[DTYPE.O & 0xFF] = "Octaword";
-        DTYPE._name[DTYPE.BU & 0xFF] = "Byte_Unsigned";
-        DTYPE._name[DTYPE.WU & 0xFF] = "Word_Unsigned";
-        DTYPE._name[DTYPE.LU & 0xFF] = "Long_Unsigned";
-        DTYPE._name[DTYPE.QU & 0xFF] = "Quadword_Unsigned";
-        DTYPE._name[DTYPE.OU & 0xFF] = "Octaword_Unsigned";
-        DTYPE._name[DTYPE.D & 0xFF] = "D_Float";
-        DTYPE._name[DTYPE.DC & 0xFF] = "D_Complex";
-        DTYPE._name[DTYPE.F & 0xFF] = "F_Float";
-        DTYPE._name[DTYPE.FC & 0xFF] = "F_Complex";
-        DTYPE._name[DTYPE.FS & 0xFF] = "FS_Float";
-        DTYPE._name[DTYPE.FSC & 0xFF] = "FSC_Complex";
-        DTYPE._name[DTYPE.FT & 0xFF] = "FT_Float";
-        DTYPE._name[DTYPE.FTC & 0xFF] = "FT_Complex";
-        DTYPE._name[DTYPE.G & 0xFF] = "G_Float";
-        DTYPE._name[DTYPE.GC & 0xFF] = "G_Complex";
-        DTYPE._name[DTYPE.H & 0xFF] = "H_Float";
-        DTYPE._name[DTYPE.HC & 0xFF] = "H_Complex";
-        DTYPE._name[DTYPE.T & 0xFF] = "Text";
-        DTYPE._name[DTYPE.IDENT & 0xFF] = "Ident";
-        DTYPE._name[DTYPE.POINTER & 0xFF] = "Pointer";
-        DTYPE._name[DTYPE.EVENT & 0xFF] = "Event";
-        DTYPE._name[DTYPE.NID & 0xFF] = "Nid";
-        DTYPE._name[DTYPE.PATH & 0xFF] = "Path";
-        DTYPE._name[DTYPE.DSC & 0xFF] = "Dsc";
-        DTYPE._name[DTYPE.DICTIONARY & 0xFF] = "Dictionary";
-        DTYPE._name[DTYPE.TUPLE & 0xFF] = "Tuple";
-        DTYPE._name[DTYPE.LIST & 0xFF] = "List";
-        DTYPE._name[DTYPE.ACTION & 0xFF] = "Action";
-        DTYPE._name[DTYPE.CALL & 0xFF] = "Call";
-        DTYPE._name[DTYPE.CONDITION & 0xFF] = "Condition";
-        DTYPE._name[DTYPE.CONGLOM & 0xFF] = "Conglom";
-        DTYPE._name[DTYPE.DEPENDENCY & 0xFF] = "Dependency";
-        DTYPE._name[DTYPE.DIMENSION & 0xFF] = "Dim";
-        DTYPE._name[DTYPE.DISPATCH & 0xFF] = "Dispatch";
-        DTYPE._name[DTYPE.FUNCTION & 0xFF] = "Function";
-        DTYPE._name[DTYPE.METHOD & 0xFF] = "Method";
-        DTYPE._name[DTYPE.MISSING & 0xFF] = "$Missing";
-        DTYPE._name[DTYPE.OPAQUE & 0xFF] = "Opaque";
-        DTYPE._name[DTYPE.PARAM & 0xFF] = "Param";
-        DTYPE._name[DTYPE.PROCEDURE & 0xFF] = "Procedure";
-        DTYPE._name[DTYPE.PROGRAM & 0xFF] = "Program";
-        DTYPE._name[DTYPE.RANGE & 0xFF] = "Range";
-        DTYPE._name[DTYPE.ROUTINE & 0xFF] = "Routine";
-        DTYPE._name[DTYPE.SIGNAL & 0xFF] = "Signal";
-        DTYPE._name[DTYPE.SLOPE & 0xFF] = "Slope";
-        DTYPE._name[DTYPE.WINDOW & 0xFF] = "Window";
-        DTYPE._name[DTYPE.WITH_ERROR & 0xFF] = "With_Error";
-        DTYPE._name[DTYPE.WITH_UNITS & 0xFF] = "With_Units";
-    }
-    static{
-        DTYPE._suffix[DTYPE.B & 0xFF] = "B";
-        DTYPE._suffix[DTYPE.W & 0xFF] = "W";
-        DTYPE._suffix[DTYPE.L & 0xFF] = "L";
-        DTYPE._suffix[DTYPE.Q & 0xFF] = "Q";
-        DTYPE._suffix[DTYPE.O & 0xFF] = "O";
-        DTYPE._suffix[DTYPE.BU & 0xFF] = "BU";
-        DTYPE._suffix[DTYPE.WU & 0xFF] = "WU";
-        DTYPE._suffix[DTYPE.LU & 0xFF] = "LU";
-        DTYPE._suffix[DTYPE.QU & 0xFF] = "QU";
-        DTYPE._suffix[DTYPE.OU & 0xFF] = "OU";
-        DTYPE._suffix[DTYPE.D & 0xFF] = "V";
-        DTYPE._suffix[DTYPE.DC & 0xFF] = "V";
-        DTYPE._suffix[DTYPE.F & 0xFF] = "F";
-        DTYPE._suffix[DTYPE.FC & 0xFF] = "F";
-        DTYPE._suffix[DTYPE.FS & 0xFF] = "E";
-        DTYPE._suffix[DTYPE.FSC & 0xFF] = "E";
-        DTYPE._suffix[DTYPE.FT & 0xFF] = "D";
-        DTYPE._suffix[DTYPE.FTC & 0xFF] = "D";
-        DTYPE._suffix[DTYPE.G & 0xFF] = "G";
-        DTYPE._suffix[DTYPE.GC & 0xFF] = "G";
-        DTYPE._suffix[DTYPE.H & 0xFF] = "H";
-        DTYPE._suffix[DTYPE.HC & 0xFF] = "H";
+public enum DTYPE {
+    Z("$Missing"), // 0
+    V, // 1 aligned bit string
+    BU("Byte_Unsigned", "BU"), // 2
+    WU("Word_Unsigned", "WU"), // 3
+    LU("Long_Unsigned", "LU"), // 4
+    QU("Quadword_Unsigned", "QU"), // 5
+    B("Byte", "B"), // 6
+    W("Word", "W"), // 7
+    L("Long", "L"), // 8
+    Q("Quadword", "Q"), // 9
+    F("F_Float", "F"), // 10 VMS
+    D("D_Float", "V"), // 11 VMS
+    FC("F_Complex", "F"), // 12 VMS
+    DC("D_Complex", "V"), // 13 VMS
+    T("Text"), // 14
+    NU, // 15 numeric string, unsigned
+    NL, // 16 numeric string, left separate sign
+    NLO, // 17 numeric string, left overpunched sign
+    NR, // 18 numeric string, right separate sign
+    NRO, // 19 numeric string, right overpunched sign
+    NZ, // 20 numeric string, zoned sign
+    P, // 21 packed decimal string
+    ZI, // 22 sequence of instructions
+    ZEM, // 23 procedure entry mask
+    DSC("Dsc"), // 24
+    OU("Octaword_Unsigned", "OU"), // 25
+    O("Octaword", "O"), // 26
+    G("G_Float", "G"), // 27
+    H("H_Float", "H"), // 28
+    GC("G_Complex", "G"), // 29 IEEE
+    HC("H_Complex", "H"), // 30 128bit
+    CIT, // 31 COBOL Intermediate Temporary
+    BPV, // 32 bound procedure value
+    BLV, // 33 bound label value
+    DVU, // 34 unaligned bit string
+    ADT, // 35 absolute date and time
+    d36, //
+    VT, // 37 varying character string; 16-bit count, followed by a string
+    d38, d39, //
+    d40, d41, d42, d43, d44, d45, d46, d47, d48, d49, //
+    d50, //
+    POINTER("Pointer"), // 51
+    FS("FS_Float", "S"), // 52 IEEE
+    FT("FT_Float", "D"), // 53 IEEE
+    FSC("FS_Complex", "S"), // 54 IEEE
+    FTC("FT_Complex", "D"), // 55 IEEE
+    d56, d57, d58, d59, //
+    d60, d61, d62, d63, d64, d65, d66, d67, d68, d69, //
+    d70, d71, d72, d73, d74, d75, d76, d77, d78, d79, //
+    d80, d81, d82, d83, d84, d85, d86, d87, d88, d89, //
+    d90, d91, d92, d93, d94, d95, d96, d97, d98, d99, //
+    d100, d101, d102, d103, d104, d105, d106, d107, d108, d109, //
+    d110, d111, d112, d113, d114, d115, d116, d117, d118, d119, //
+    d120, d121, d122, d123, d124, d125, d126, d127, d128, d129, //
+    d130, d131, d132, d133, d134, d135, d136, d137, d138, d139, //
+    d140, d141, d142, d143, d144, d145, d146, d147, d148, d149, //
+    d150, d151, d152, d153, d154, d155, d156, d157, d158, d159, //
+    d160, d161, d162, d163, d164, d165, d166, d167, d168, d169, //
+    d170, d171, d172, d173, d174, d175, d176, d177, d178, d179, //
+    d180, d181, d182, d183, d184, d185, d186, d187, d188, d189, //
+    d190, //
+    IDENT("Ident"), // 191
+    NID("Nid"), // 192
+    PATH("Path"), // 193
+    PARAM("Param"), // 194
+    SIGNAL("Signal"), // 195
+    DIMENSION("Dim"), // 196
+    WINDOW("Window"), // 197
+    SLOPE("Slope"), // 198
+    FUNCTION("Function"), // 199
+    CONGLOM("Conglom"), // 200
+    RANGE("Range"), // 201
+    ACTION("Action"), // 202
+    DISPATCH("Dispatch"), // 203
+    PROGRAM("Program"), // 204
+    ROUTINE("Routine"), // 205
+    PROCEDURE("Procedure"), // 206
+    METHOD("Method"), // 207
+    DEPENDENCY("Dependency"), // 208
+    CONDITION("Condition"), // 209
+    EVENT("Event"), // 210
+    WITH_UNITS("With_Units"), // 211
+    CALL("Call"), // 212
+    WITH_ERROR("With_Error"), // 213
+    LIST("List"), // 214
+    TUPLE("Tuple"), // 215
+    DICTIONARY("Dictionary"), // 216
+    OPAQUE("Opaque"), // 217
+    d218, d219, //
+    d220, d221, d222, d223, d224, d225, d226, d227, d228, d229, //
+    d230, d231, d232, d233, d234, d235, d236, d237, d238, d239, //
+    d240, d241, d242, d243, d244, d245, d246, d247, d248, d249, //
+    d250, d251, d252, d253, d254, d255, //
+    ;
+    public static final DTYPE FLOAT          = DTYPE.FS;
+    public static final DTYPE DOUBLE         = DTYPE.FT;
+    public static final DTYPE COMPLEX_FLOAT  = DTYPE.FSC;
+    public static final DTYPE COMPLEX_DOUBLE = DTYPE.FTC;
+
+    public static DTYPE get(final byte c) {
+        return DTYPE.values()[c & 0xFF];
     }
 
     public static final String getName(final byte dtype) {
-        final int idx = dtype & 0xFF;
-        if(idx < DTYPE._name.length) return DTYPE._name[idx];
-        return new StringBuffer(9).append("DTYPE_").append(idx).toString();
+        final String ans = DTYPE.values()[dtype & 0xFF].label;
+        if(ans != null) return ans;
+        return new StringBuffer(9).append("DTYPE_").append(dtype & 0xFF).toString();
     }
 
     public static final String getSuffix(final byte dtype) {
-        return DTYPE._suffix[dtype & 0xFF];
+        return DTYPE.values()[dtype & 0xFF].suffix;
+    }
+    public final String suffix;
+    public final String label;
+
+    private DTYPE(){
+        this.label = null;
+        this.suffix = null;
+    }
+
+    private DTYPE(final String label){
+        this.label = label;
+        this.suffix = null;
+    }
+
+    private DTYPE(final String label, final String suffix){
+        this.label = label;
+        this.suffix = suffix;
+    }
+
+    public final byte toByte() {
+        return (byte)this.ordinal();
     }
 }

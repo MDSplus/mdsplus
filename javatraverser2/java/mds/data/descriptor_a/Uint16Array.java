@@ -7,12 +7,12 @@ import mds.data.descriptor_s.Uint16;
 import mds.data.descriptor_s.Uint16.UShort;
 
 public final class Uint16Array extends INTEGER_UNSIGNEDArray<UShort>{
-    public Uint16Array(final byte dtype, final ByteBuffer data, final int shape[]){
-        super(DTYPE.WU, data, shape);
-    }
-
     public Uint16Array(final ByteBuffer b){
         super(b);
+    }
+
+    public Uint16Array(final DTYPE dtype, final ByteBuffer data, final int shape[]){
+        super(DTYPE.WU, data, shape);
     }
 
     public Uint16Array(final int shape[], final short... values){
@@ -50,7 +50,7 @@ public final class Uint16Array extends INTEGER_UNSIGNEDArray<UShort>{
 
     @Override
     protected final byte getRankBits() {
-        return 2;
+        return 0x01;
     }
 
     @Override
@@ -102,7 +102,7 @@ public final class Uint16Array extends INTEGER_UNSIGNEDArray<UShort>{
 
     @Override
     public final Int16Array words() {
-        return new Int16Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.W));
+        return new Int16Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.W.toByte()));
     }
 
     @Override

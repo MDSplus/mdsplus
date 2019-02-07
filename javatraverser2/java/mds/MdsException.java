@@ -261,7 +261,6 @@ public class MdsException extends IOException{
     public static final int TreeLOCK_FAILURE                  = 01764307662;
     public static final int TreeFILE_NOT_FOUND                = 01764307652;
     public static final int TreeCANCEL                        = 01764306200;
-    public static final int TreeUNSUPTHICKOP                  = 01764306210;
     public static final int TreeNOSEGMENTS                    = 01764307672;
     public static final int TreeINVDTYPE                      = 01764307702;
     public static final int TreeINVSHAPE                      = 01764307712;
@@ -861,8 +860,6 @@ public class MdsException extends IOException{
                 return "%TREE-E-FILE_NOT_FOUND, File or Directory Not Found";
             case TreeCANCEL:
                 return "%TREE-W-CANCEL, User canceled operation";
-            case TreeUNSUPTHICKOP:
-                return "%TREE-W-UNSUPTHICKOP, Unsupported thick client operation";
             case TreeNOSEGMENTS:
                 return "%TREE-E-NOSEGMENTS, No segments exist in this node";
             case TreeINVDTYPE:

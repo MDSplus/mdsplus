@@ -18,8 +18,9 @@ import mds.data.descriptor_a.Uint64Array;
 import mds.data.descriptor_r.function.BINARY;
 import mds.data.descriptor_r.function.CAST;
 import mds.data.descriptor_r.function.CONST;
-import mds.data.descriptor_s.CString;
+import mds.data.descriptor_s.StringDsc;
 import mds.data.descriptor_s.Uint16;
+import mds.mdslib.MdsLib;
 
 @SuppressWarnings("static-method")
 public final class Function_Test{
@@ -45,12 +46,12 @@ public final class Function_Test{
 
     @Test
     public final void test_$a0() throws MdsException {
-        Assert.assertEquals(Function_Test.tdi.tdiExecute(null, "$A0").data.decompile(), CONST.$A0.evaluate().decompile());// , Function.$A0()));
+        Assert.assertEquals(Function_Test.tdi.tdiExecute(null, "$A0").getData().decompile(), CONST.$A0.evaluate().decompile());// , Function.$A0()));
     }
 
     @Test
     public final void test_$p0() throws MdsException {
-        Assert.assertEquals("Build_With_Units(101325., \"Pa\")", Function_Test.tdi.tdiCompile(null, "$P0").data.evaluate().decompile());
+        Assert.assertEquals("Build_With_Units(101325., \"Pa\")", Function_Test.tdi.tdiCompile(null, "$P0").getData().evaluate().decompile());
     }
 
     @Test
@@ -63,9 +64,9 @@ public final class Function_Test{
     @Test
     public final void test_add() throws MdsException {
         this.testdecoeval("-2QU+3BU");
-        /*this.testdecoeval("2+[1,2,3,4]");
+        this.testdecoeval("2+[1,2,3,4]");
         this.testdecoeval("[1BU,2BU,3BU,4BU]+2");
-        this.testdecoeval("[1W,2W,3W,4W]+[4,3,2,1]");*/
+        this.testdecoeval("[1W,2W,3W,4W]+[4,3,2,1]");
     }
 
     @Test
@@ -76,7 +77,7 @@ public final class Function_Test{
         this.testdecoeval("16QU*16Q*15O");
         this.testdecoeval("16WU<<4");
         this.testdecoeval("16WU>>2");
-        this.testdecoeval("1 Is_In [1,2,3]");
+        if(MdsLib.lib_loaded == null) this.testdecoeval("1 Is_In [1,2,3]");
         this.test_binary_compare("Eqv");
         this.test_binary_compare("Neqv");
         this.test_binary_compare("==");
@@ -102,10 +103,10 @@ public final class Function_Test{
     @Test
     public final void test_concat() throws MdsException {
         Function fun;
-        Assert.assertEquals("\"str\" // 12345WU", (fun = new BINARY.Concat(new CString("str"), new Uint16((short)12345))).decompile());
-        Assert.assertEquals("\"str   12345\"", fun.getData().decompile());
-        Assert.assertEquals("\"test\" // TEXT(1) // \"test\"", (fun = (Function)Function_Test.tdi.tdiCompile(null, "'test'//text(1)//\"test\"").data).decompile());
-        Assert.assertEquals("\"test           1test\"", fun.getData().decompile());// tdi produces length12
+        Assert.assertEquals("\"str\" // 12345WU", (fun = new BINARY.Concat(new StringDsc("str"), new Uint16((short)12345))).decompile());
+        Assert.assertEquals("\"str 12345\"", fun.getData().decompile());
+        Assert.assertEquals("\"test\" // TEXT(1) // \"test\"", (fun = (Function)Function_Test.tdi.tdiCompile(null, "'test'//text(1)//\"test\"").getData()).decompile());
+        Assert.assertEquals("\"test          1test\"", fun.getData().decompile());// tdi produces length12
     }
 
     @Test
@@ -173,13 +174,17 @@ public final class Function_Test{
     }
 
     private final Descriptor<?> testdeco(final String expr) throws MdsException {
-        final Descriptor<?> dsc = Function_Test.tdi.tdiCompile(null, expr).data;
+        final Descriptor<?> dsc = Function_Test.tdi.tdiCompile(null, expr).getData();
         Assert.assertEquals(Function_Test.tdi.tdiDecompile(null, dsc), dsc.decompile());
         return dsc;
     }
 
     private final void testdecoeval(final String expr) throws MdsException {
         final Descriptor<?> dsc = this.testdeco(expr);
-        Assert.assertEquals(Function_Test.tdi.tdiEvaluate(null, dsc).data.decompile(), dsc.evaluate().decompile());
+        final Descriptor<?> mdsipdsc = Function_Test.tdi.tdiEvaluate(null, dsc).getData();
+        final String mdsipstr = mdsipdsc.decompile();
+        final Descriptor<?> localdsc = dsc.evaluate();
+        final String localstr = localdsc.decompile();
+        Assert.assertEquals(mdsipstr, localstr);
     }
 }

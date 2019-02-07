@@ -45,7 +45,7 @@ public final class Int8 extends INTEGER<Byte>{
 
     @Override
     protected final byte getRankBits() {
-        return 1;
+        return 0x00;
     }
 
     @Override

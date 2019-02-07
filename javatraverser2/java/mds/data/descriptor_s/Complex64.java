@@ -69,7 +69,7 @@ public final class Complex64 extends COMPLEX<Double>{
 
     @Override
     protected final byte getRankBits() {
-        return 0x70;
+        return 0x07;
     }
 
     @Override

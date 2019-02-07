@@ -53,10 +53,10 @@ public class TREE_Test{
         Assert.assertTrue(node.makeSegment(new Float32(.1f), new Float32(.3f), new Float32Array(.1f, .2f, .3f), new Float64Array(1., 2., 3.), -1, 3).isSegmented());
         Assert.assertEquals(2, node.makeSegment(new Float32Array(.4f, .5f, .6f), new Float64Array(4., 5., 6.)).getNumSegments());
         Assert.assertArrayEquals(new double[]{6., 4., 3.}, node.putSegment(0, new Float64Array(6., 4., 3.)).getSegment(1).getValue().toDoubleArray(), 1e-9);
-        Assert.assertArrayEquals(new double[]{7., 8., 0.}, node.makeSegment(new Float32(.7f), new Float32(.9f), new Float32Array(.7f, .8f, .9f), new Float64Array(7., 8., 0.), -1, 2).getSegment(2).getValue().toDoubleArray(), 1e-9);
+        Assert.assertArrayEquals(new double[]{7., 8.}, node.makeSegment(new Float32(.7f), new Float32(.9f), new Float32Array(.7f, .8f, .9f), new Float64Array(7., 8., 0.), -1, 2).getSegment(2).getValue().toDoubleArray(), 1e-9);
         Assert.assertArrayEquals(new double[]{7., 8., 9.}, node.putRow(0, new Float64Array(9.)).getSegment(2).getValue().toDoubleArray(), 1e-9);
         Assert.assertArrayEquals(new double[]{.7, .9}, node.getSegmentLimits(2).toDoubleArray(), 1e-6);
-        Assert.assertEquals("53;1;3,0,0,0,0,0,0,0,3;265389633", node.getSegmentInfo(2).toString());
+        Assert.assertEquals("FT;1;3,0,0,0,0,0,0,0,3;265389633", node.getSegmentInfo(2).toString());
         Assert.assertEquals("[\\TEST::TOP.STRUCT]", tree.getTop().getNciChildrenNids().toString());
         Assert.assertEquals("[\\TEST::TOP:DATA]", tree.getTop().getNciMemberNids().toString());
         Assert.assertEquals("[]", node.getNciChildrenNids().toString());
@@ -67,6 +67,8 @@ public class TREE_Test{
         Assert.assertEquals(node.getNciMinPath(), node1.followReference().getNciMinPath());
         Assert.assertEquals("\\TEST::TOP:SIGNAL", node.setPath(":SIGNAL").toPath().toString());
         Assert.assertEquals("Build_Conglom(*, \"E1429\", *, *)", new Path(".STRUCT").addConglom("E1429", "E1429").getRecord().decompile());
+        Assert.assertEquals("[]", Arrays.toString(node.getTags()));
+        Assert.assertEquals("[]", Arrays.toString(node.getTagsLL()));
         Assert.assertEquals("[DAT, SIG]", Arrays.toString(node.addTag("SIG").addTag("DAT").getTags()));
         Assert.assertEquals("[SIG, DAT]", Arrays.toString(node.setTags("SIG", "DAT").getTags()));
         Assert.assertEquals("[SIG, DAT]", Arrays.toString(node.getTagsLL()));

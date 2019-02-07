@@ -56,7 +56,6 @@ import jtraverser.dialogs.SubTreeList;
 import jtraverser.dialogs.TagsDialog;
 import jtraverser.tools.DecompileTree;
 import mds.Mds;
-import mds.MdsApi;
 import mds.MdsException;
 import mds.TCL;
 import mds.data.TREE;
@@ -189,6 +188,23 @@ public class TreeManager extends JPanel{
     }
     // XXX: DisplayMenu
     public static final class DisplayMenu extends Menu{
+        public final class DeviceSetup implements ActionListener{
+            @Override
+            public final void actionPerformed(final ActionEvent e) {
+                DisplayMenu.this.treeman.dispatchJob(new Job(){
+                    @Override
+                    public final void program() {
+                        try{
+                            final Node currnode = DisplayMenu.this.treeman.getCurrentNode();
+                            if(currnode == null) return;
+                            currnode.setupDevice(false);
+                        }catch(final Exception ex){
+                            ex.printStackTrace();
+                        }
+                    }
+                });
+            }
+        }
         public final class DisplayDataMenu extends Menu{
             private class EvalActionListener implements ActionListener{
                 private final String evalexpr;
@@ -211,7 +227,7 @@ public class TreeManager extends JPanel{
                         aedata = de.getMessage();
                     }
                     Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(aedata), null);
-                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "<html><body><p style='width: 360px;'>" + aedata + "</p></body></html>", this.evalexpr.replace("$", currnode.getFullPath()), JOptionPane.PLAIN_MESSAGE);
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "<html><body><p style='width: 360px;'>" + DisplayMenu.escapeHTML(aedata) + "</p></body></html>", this.evalexpr.replace("$", currnode.getFullPath()), JOptionPane.PLAIN_MESSAGE);
                 }
             }
 
@@ -294,12 +310,28 @@ public class TreeManager extends JPanel{
                 }
             }
         }
+
+        static String escapeHTML(final String s) {
+            final StringBuilder out = new StringBuilder(Math.max(16, s.length()));
+            for(int i = 0; i < s.length(); i++){
+                final char c = s.charAt(i);
+                if(c > 127 || c == '"' || c == '<' || c == '>' || c == '&'){
+                    out.append("&#");
+                    out.append((int)c);
+                    out.append(';');
+                }else{
+                    out.append(c);
+                }
+            }
+            return out.toString();
+        }
         private final DisplayDataMenu displaydatamenu;
 
         public DisplayMenu(final TreeManager treeman, final JComponent menu, final int column){
             super(treeman, menu, column);
             this.addMenuItem("Display Data", new Menu.DataPanelAL(false));
             this.addMenuItem((this.displaydatamenu = new DisplayDataMenu(treeman)).getMenu(), null);
+            this.addMenuItem("Device Setup", new DeviceSetup());
             this.addSeparator();
             this.addMenuItem("Display Nci", new DisplayNci());
             this.addMenuItem("Display Flags", new ModifyFlags());
@@ -316,7 +348,8 @@ public class TreeManager extends JPanel{
             if(node != null){
                 final int usage = node.getUsage();
                 final boolean enable = !(usage == NODE.USAGE_STRUCTURE || usage == NODE.USAGE_SUBTREE);
-                mask = new boolean[]{enable, enable, true, true, true, true};
+                final boolean device = usage == NODE.USAGE_DEVICE;
+                mask = new boolean[]{enable, enable, device, true, true, true, true};
             }
             for(int i = 0; i < mask.length; i++)
                 this.items.get(i).setEnabled(mask[i]);
@@ -440,18 +473,10 @@ public class TreeManager extends JPanel{
         public final class ShowDatabase implements ActionListener{
             @Override
             public final void actionPerformed(final ActionEvent e) {
-                try{
-                    final Mds mds = ExtrasMenu.this.treeman.getMds();
-                    final MdsApi api = mds.getAPI();
-                    final TCL tcl = mds.getTCL();
-                    final boolean wasprivate = api.treeSetPrivateCtx(false);
-                    final StringBuilder msg = new StringBuilder(256).append("Public:\n");
-                    msg.append(tcl.showDatabase());
-                    api.treeSetPrivateCtx(true);
-                    msg.append("\nPrivate:\n").append(tcl.showDatabase());
-                    api.treeSetPrivateCtx(wasprivate);
-                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), msg.toString(), mds.toString(), JOptionPane.PLAIN_MESSAGE);
-                }catch(final MdsException ex){/**/}
+                final Mds mds = ExtrasMenu.this.treeman.getMds();
+                final TCL tcl = mds.getTCL();
+                final String msg = tcl.showDatabase();
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), msg, mds.toString(), JOptionPane.PLAIN_MESSAGE);
             }
         }
         public final class ShowSubTreeList implements ActionListener{
@@ -649,7 +674,7 @@ public class TreeManager extends JPanel{
                     @Override
                     public final void program() {
                         try{
-                            DataDialog.open(currnode, DataPanelAL.this.editable);
+                            DataDialog.open(currnode.nid, DataPanelAL.this.editable);
                         }catch(final Exception ex){
                             ex.printStackTrace();
                         }
@@ -719,6 +744,23 @@ public class TreeManager extends JPanel{
                 ModifyMenu.this.treeman.dialogs.modifyFlags.open();
             }
         }
+        public final class SetupDevice implements ActionListener{
+            @Override
+            public final void actionPerformed(final ActionEvent e) {
+                ModifyMenu.this.treeman.dispatchJob(new Job(){
+                    @Override
+                    public final void program() {
+                        try{
+                            final Node currnode = ModifyMenu.this.treeman.getCurrentNode();
+                            if(currnode == null) return;
+                            currnode.setupDevice(true);
+                        }catch(final Exception ex){
+                            ex.printStackTrace();
+                        }
+                    }
+                });
+            }
+        }
         private final class TurnOnOff implements ActionListener{
             private final boolean on;
 
@@ -744,6 +786,7 @@ public class TreeManager extends JPanel{
             this.addMenuItem("Turn On", new TurnOnOff(true));
             this.addMenuItem("Turn Off", new TurnOnOff(false));
             this.addSeparator();
+            this.addMenuItem("Setup Device", new SetupDevice());
             this.addMenuItem("Do Action", new DoAction());
         }
 
@@ -755,7 +798,8 @@ public class TreeManager extends JPanel{
                 final int usage = node.getUsage();
                 final boolean isst = usage == NODE.USAGE_STRUCTURE || usage == NODE.USAGE_SUBTREE;
                 final boolean isact = usage == NODE.USAGE_ACTION || usage == NODE.USAGE_TASK;
-                mask = new boolean[]{!isst, true, true, true, isact};
+                final boolean isdev = usage == NODE.USAGE_DEVICE;
+                mask = new boolean[]{!isst, true, true, true, isdev, isact};
             }
             for(int i = 0; i < mask.length; i++)
                 this.items.get(i).setEnabled(mask[i]);

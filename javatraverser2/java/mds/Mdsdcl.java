@@ -4,7 +4,6 @@ import mds.Mds.Request;
 import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_apd.List;
-import mds.data.descriptor_s.CString;
 
 public class Mdsdcl extends TdiShr{
     @SuppressWarnings("rawtypes")
@@ -57,16 +56,13 @@ public class Mdsdcl extends TdiShr{
         }
     }
 
-    private final static Request<List> mdsdcl_do_command_dsc(final String expr) {
-        return new DclCall<List>(List.class, "mdsdcl_do_command_dsc").ref(CString.make(expr)).xd("e").xd("o").finL("o", "e", "s");
-    }
-
     public Mdsdcl(final Mds mds){
         super(mds);
     }
 
     public final DclStatus mdsdcl_do_command_dsc(final CTX ctx, final String expr) throws MdsException {
         if(expr == null || expr.isEmpty()) return new DclStatus(null, null, 1);
-        return new DclStatus(this.mds.getDescriptor(ctx, Mdsdcl.mdsdcl_do_command_dsc(expr)));
+        final Request<List> request = new DclCall<List>(List.class, "mdsdcl_do_command_dsc").ref(Descriptor.valueOf(expr)).xd("e").xd("o").finL("o", "e", "s");
+        return new DclStatus(this.mds.getDescriptor(ctx, request));
     }
 }

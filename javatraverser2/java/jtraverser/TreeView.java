@@ -163,10 +163,11 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
         final DefaultTreeModel model = (DefaultTreeModel)this.getModel();
         final Node top_node = new Node(this, this.tree.getTop());
         top_node.setTreeNode(this.top = new DefaultMutableTreeNode(top_node));
-        this.loadSubnodes(this.top, false);
+        this.loadSubnodes(this.top);
         model.setRoot(this.top);
         this.setCellRenderer(new MDSCellRenderer());
         this.setCurrentNode(0);
+        this.expandRow(0);
         try{
             this.updateDefault();
         }catch(final MdsException e1){/**/}
@@ -199,11 +200,8 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 
     private final DefaultMutableTreeNode addTreeNode(final DefaultMutableTreeNode treenode, final Node node) {
         final DefaultMutableTreeNode new_node = new DefaultMutableTreeNode(node);
-        final int num_children = treenode.getChildCount();
-        final DefaultTreeModel tree_model = (DefaultTreeModel)TreeView.this.getModel();
-        tree_model.insertNodeInto(new_node, treenode, num_children);
         node.setTreeNode(new_node);
-        treenode.add(new_node);
+        ((DefaultTreeModel)TreeView.this.getModel()).insertNodeInto(new_node, treenode, treenode.getChildCount());
         return new_node;
     }
 
@@ -348,29 +346,29 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
         return this.tree.is_readonly();
     }
 
-    private final void loadSubnodes(final DefaultMutableTreeNode tree_node, final boolean force) {
+    private final void loadSubnodes(final DefaultMutableTreeNode tree_node) {
         final Node currnode = Node.getNode(tree_node);
-        if(currnode.dummy != null || force){
-            DefaultMutableTreeNode last_node = null;
-            try{
-                currnode.expand();
-            }catch(final Exception exc){
-                MdsException.stderr("Error expanding tree", exc);
-                exc.printStackTrace();
-            }
-            final Node[] children = currnode.getChildren();
-            final Node[] members = currnode.getMembers();
-            for(final Node member : members)
-                last_node = this.addTreeNode(tree_node, member);
-            for(final Node child : children)
-                last_node = this.addTreeNode(tree_node, child);
-            if(last_node != null) this.expandPath(new TreePath(tree_node.getPath()));
-            final DefaultTreeModel tree_model = (DefaultTreeModel)this.getModel();
-            if(currnode.dummy != null){
-                tree_model.removeNodeFromParent(currnode.dummy);
+        final DefaultMutableTreeNode dummy = currnode.dummy;
+        if(dummy != null) synchronized(dummy){
+            if(currnode.dummy == dummy){
+                DefaultMutableTreeNode last_node = null;
+                try{
+                    currnode.expand();
+                }catch(final Exception exc){
+                    MdsException.stderr("Error expanding tree", exc);
+                    exc.printStackTrace();
+                }
+                final Node[] children = currnode.getChildren();
+                final Node[] members = currnode.getMembers();
+                for(final Node member : members)
+                    last_node = this.addTreeNode(tree_node, member);
+                for(final Node child : children)
+                    last_node = this.addTreeNode(tree_node, child);
+                if(last_node != null) this.expandPath(new TreePath(tree_node.getPath()));
+                ((DefaultTreeModel)this.getModel()).removeNodeFromParent(currnode.dummy);
                 currnode.dummy = null;
+                TreeView.this.treeDidChange();
             }
-            TreeView.this.treeDidChange();
         }
     }
 
@@ -424,17 +422,17 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
     public void reset() {
         this.top.removeAllChildren();
         try{
-            this.tree.close();
+            // this.tree.close();
             this.tree.open();
-        }catch(final MdsException e1){
-            e1.printStackTrace();
+        }catch(final MdsException e){
+            e.printStackTrace();
         }
         final Node topnode = ((Node)this.top.getUserObject());
         topnode.update();
         this.setCurrentNode(-1);
-        this.loadSubnodes(this.top, true);
+        topnode.setTreeNode(this.top);
+        this.loadSubnodes(this.top);
         this.setCurrentNode(0);
-        this.expandRow(0);
         try{
             topnode.setDefault();
         }catch(final MdsException e){/**/}
@@ -480,7 +478,7 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 
             @Override
             public final void run() {
-                TreeView.this.loadSubnodes((DefaultMutableTreeNode)e.getPath().getLastPathComponent(), false);
+                TreeView.this.loadSubnodes((DefaultMutableTreeNode)e.getPath().getLastPathComponent());
             }
         };
         thread.start();

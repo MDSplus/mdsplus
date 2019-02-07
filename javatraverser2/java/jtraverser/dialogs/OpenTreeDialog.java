@@ -28,7 +28,7 @@ import jtraverser.TreeView;
 import mds.Mds;
 import mds.MdsException;
 import mds.data.TREE;
-import mds.data.descriptor_s.CString;
+import mds.data.descriptor_s.StringDsc;
 
 @SuppressWarnings("serial")
 public class OpenTreeDialog extends JDialog{
@@ -166,7 +166,7 @@ public class OpenTreeDialog extends JDialog{
                     final String exp = OpenTreeDialog.this.expt.getText().trim();
                     final Mds mds = OpenTreeDialog.this.treeman == null ? null : OpenTreeDialog.this.treeman.getMds();
                     OpenTreeDialog.this.setTreePath(exp);
-                    shots = mds == null ? new int[0] : mds.getIntegerArray("getShotDB($)", new CString(exp));
+                    shots = mds == null ? new int[0] : mds.getIntegerArray("getShotDB($)", new StringDsc(exp));
                 }catch(final MdsException exc){
                     MdsException.stderr("getShotDB", exc);
                     shots = new int[0];

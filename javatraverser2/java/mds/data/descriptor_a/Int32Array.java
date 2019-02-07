@@ -19,12 +19,12 @@ public final class Int32Array extends INTEGERArray<Integer>{
         super(DTYPE.L, new int[0]);
     }
 
-    public Int32Array(final byte dtype, final ByteBuffer data, final int shape[]){
-        super(DTYPE.L, data, shape);
-    }
-
     public Int32Array(final ByteBuffer b){
         super(b);
+    }
+
+    public Int32Array(final DTYPE dtype, final ByteBuffer data, final int shape[]){
+        super(DTYPE.L, data, shape);
     }
 
     public Int32Array(final int... values){
@@ -69,7 +69,7 @@ public final class Int32Array extends INTEGERArray<Integer>{
 
     @Override
     protected final byte getRankBits() {
-        return 4;
+        return 0x03;
     }
 
     @Override
@@ -97,7 +97,7 @@ public final class Int32Array extends INTEGERArray<Integer>{
 
     @Override
     public final Uint32Array longu() {
-        return new Uint32Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.LU));
+        return new Uint32Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.LU.toByte()));
     }
 
     @Override

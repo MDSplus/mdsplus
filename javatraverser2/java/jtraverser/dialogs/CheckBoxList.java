@@ -194,7 +194,7 @@ public abstract class CheckBoxList extends JDialog{
                     tree.holdDbid();
                     try{
                         NodeRefStatus ref = NodeRefStatus.init;
-                        while((ref = tree.treeshr.treeFindNodeWild(null, "***", usage_mask, ref)).ok()){
+                        while((ref = tree.api.treeFindNodeWild(null, "***", usage_mask, ref)).ok()){
                             final Nid nid = new Nid(ref.data, tree);
                             try{
                                 this.addCheckBox(nid, nid.getNciFullPath());

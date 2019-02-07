@@ -39,60 +39,62 @@ public class X_OF extends Function{
         }
     }
 
-    public static final boolean coversOpCode(final short opcode) {
+    public static final boolean coversOpCode(final OPC opcode) {
         switch(opcode){
-            case OPC.OpcArgOf:
-            case OPC.OpcAxisOf:
-            case OPC.OpcBeginOf:
-            case OPC.OpcClassOf:
-            case OPC.OpcCompletionMessageOf:
-            case OPC.OpcCompletionOf:
-            case OPC.OpcConditionOf:
-            case OPC.OpcDimOf:
-            case OPC.OpcDispatchOf:
-            case OPC.OpcDscptrOf:
-            case OPC.OpcEndOf:
-            case OPC.OpcErrorlogsOf:
-            case OPC.OpcErrorOf:
-            case OPC.OpcHelpOf:
-            case OPC.OpcIdentOf:
-            case OPC.OpcImageOf:
-            case OPC.OpcInterruptOf:
-            case OPC.OpcKindOf:
-            case OPC.OpcLanguageOf:
-            case OPC.OpcMethodOf:
-            case OPC.OpcModelOf:
-            case OPC.OpcNameOf:
-            case OPC.OpcNdescOf:
-            case OPC.OpcObjectOf:
-            case OPC.OpcPerformanceOf:
-            case OPC.OpcPhaseOf:
-            case OPC.OpcProcedureOf:
-            case OPC.OpcProgramOf:
-            case OPC.OpcQualifiersOf:
-            case OPC.OpcRawOf:
-            case OPC.OpcRoutineOf:
-            case OPC.OpcSizeOf:
-            case OPC.OpcSlopeOf:
-            case OPC.OpcTaskOf:
-            case OPC.OpcTimeoutOf:
-            case OPC.OpcUnitsOf:
-            case OPC.OpcValidationOf:
-            case OPC.OpcValueOf:
-            case OPC.OpcWhenOf:
-            case OPC.OpcWindowOf:
+            case OpcArgOf:
+            case OpcAxisOf:
+            case OpcBeginOf:
+            case OpcClassOf:
+            case OpcCompletionMessageOf:
+            case OpcCompletionOf:
+            case OpcConditionOf:
+            case OpcDimOf:
+            case OpcDispatchOf:
+            case OpcDscptrOf:
+            case OpcEndOf:
+            case OpcErrorlogsOf:
+            case OpcErrorOf:
+            case OpcHelpOf:
+            case OpcIdentOf:
+            case OpcImageOf:
+            case OpcInterruptOf:
+            case OpcKindOf:
+            case OpcLanguageOf:
+            case OpcMethodOf:
+            case OpcModelOf:
+            case OpcNameOf:
+            case OpcNdescOf:
+            case OpcObjectOf:
+            case OpcPerformanceOf:
+            case OpcPhaseOf:
+            case OpcProcedureOf:
+            case OpcProgramOf:
+            case OpcQualifiersOf:
+            case OpcRawOf:
+            case OpcRoutineOf:
+            case OpcSizeOf:
+            case OpcSlopeOf:
+            case OpcTaskOf:
+            case OpcTimeoutOf:
+            case OpcUnitsOf:
+            case OpcValidationOf:
+            case OpcValueOf:
+            case OpcWhenOf:
+            case OpcWindowOf:
                 return true;
+            default:
+                return false;
         }
-        return false;
     }
 
     public static final X_OF deserialize(final ByteBuffer b) {
-        switch(b.getShort(b.getInt(Descriptor._ptrI))){
-            case OPC.OpcDimOf:
+        final OPC opcode = OPC.get(b.getShort(b.getInt(Descriptor._ptrI)));
+        switch(opcode){
+            case OpcDimOf:
                 return new DimOf(b);
-            case OPC.OpcHelpOf:
+            case OpcHelpOf:
                 return new HelpOf(b);
-            case OPC.OpcUnitsOf:
+            case OpcUnitsOf:
                 return new UnitsOf(b);
             default:
                 return new X_OF(b);
@@ -103,11 +105,11 @@ public class X_OF extends Function{
         super(b);
     }
 
-    private X_OF(final short opcode, final Descriptor<?> arg){
+    private X_OF(final OPC opcode, final Descriptor<?> arg){
         super(opcode, arg);
     }
 
-    private X_OF(final short opcode, final Descriptor<?> arg, final int idx){
+    private X_OF(final OPC opcode, final Descriptor<?> arg, final int idx){
         super(opcode, arg, new Int32(idx));
     }
 }

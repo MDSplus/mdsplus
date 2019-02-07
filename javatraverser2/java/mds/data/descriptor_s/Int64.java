@@ -51,7 +51,7 @@ public final class Int64 extends INTEGER<Long>{
 
     @Override
     protected final byte getRankBits() {
-        return 8;
+        return 0x07;
     }
 
     @Override

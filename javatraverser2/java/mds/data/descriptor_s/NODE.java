@@ -4,7 +4,6 @@ import java.nio.ByteBuffer;
 import debug.DEBUG;
 import mds.MdsException;
 import mds.TCL;
-import mds.TreeShr.DescriptorStatus;
 import mds.TreeShr.SegmentInfo;
 import mds.data.DATA;
 import mds.data.DTYPE;
@@ -204,13 +203,15 @@ public abstract class NODE<T>extends Descriptor_S<T>{
                 return "COMPOUND_DATA";
         }
     }
-
-    public NODE(final byte dtype, final ByteBuffer data){
-        super(dtype, data);
-    }
+    private RecordInfo record_info = null;
+    private NodeInfo   node_info   = null;
 
     public NODE(final ByteBuffer b){
         super(b);
+    }
+
+    public NODE(final DTYPE dtype, final ByteBuffer data){
+        super(dtype, data);
     }
 
     public final Nid addConglom(final String name, final String model) throws MdsException {
@@ -253,9 +254,7 @@ public abstract class NODE<T>extends Descriptor_S<T>{
     }
 
     public final Descriptor<?> doDeviceMethod(final String method, final Descriptor<?>... args) throws MdsException {
-        final DescriptorStatus ans = this.tree.treeshr.treeDoMethod(this.tree.ctx, this.getNidNumber(), method, args);
-        MdsException.handleStatus(ans.status);
-        return ans.data;
+        return this.tree.api.treeDoMethod(this.tree.ctx, this.getNidNumber(), method, args).getData();
     }
 
     public final NODE<T> doDeviceMethod(final String method, final String arg) throws MdsException {
@@ -264,7 +263,7 @@ public abstract class NODE<T>extends Descriptor_S<T>{
     }
 
     public final NODE<?> followReference() throws MdsException {
-        final byte rec_dtype = this.getNciDType();
+        final DTYPE rec_dtype = DTYPE.get(this.getNciDType());
         if(rec_dtype == DTYPE.NID || rec_dtype == DTYPE.PATH) return ((NODE<?>)this.getNciRecord()).followReference();
         return this;
     }
@@ -452,6 +451,11 @@ public abstract class NODE<T>extends Descriptor_S<T>{
     }
 
     public NodeInfo getNodeInfo() throws MdsException {
+        return(this.node_info = this.tree.getNodeInfo(this));
+    }
+
+    public NodeInfo getNodeInfoC() throws MdsException {
+        if(this.node_info != null) return this.node_info;
         return this.tree.getNodeInfo(this);
     }
 
@@ -464,6 +468,11 @@ public abstract class NODE<T>extends Descriptor_S<T>{
     }
 
     public RecordInfo getRecordInfo() throws MdsException {
+        return(this.record_info = this.tree.getRecordInfo(this));
+    }
+
+    public RecordInfo getRecordInfoC() throws MdsException {
+        if(this.record_info != null) return this.record_info;
         return this.tree.getRecordInfo(this);
     }
 
@@ -578,6 +587,10 @@ public abstract class NODE<T>extends Descriptor_S<T>{
     public final NODE<T> setFlags(final int flags) throws MdsException {
         this.tree.setFlags(this.getNidNumber(), flags);
         return this;
+    }
+
+    public void setNodeInfoC(final NodeInfo info) {
+        this.node_info = info;
     }
 
     public final NODE<T> setNoSubtree() throws MdsException {
