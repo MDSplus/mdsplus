@@ -46,11 +46,11 @@ typedef enum {
 #define MDSIP_VERSION_OPEN_ONE 2
 #define MDSIP_VERSION MDSIP_VERSION_OPEN_ONE
 
-#define MAX_DIMS_R 7
+#define MAX_DIMS 8
 
 
 typedef union{
-int dims[MAX_DIMS_R];
+int dims[MAX_DIMS];
 uint32_t length;
 struct __attribute__((__packed__)){uint32_t length;int options;int mode;}			open;
 struct __attribute__((__packed__)){uint32_t length;int fd;}					close;

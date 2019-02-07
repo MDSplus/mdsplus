@@ -456,7 +456,7 @@ static inline int MdsValueVargs(va_list incrmtr, int connection, char *expressio
 
       if (status & 1) {
 	int ansdescr;
-	int dims[MAX_DIMS_R];
+	int dims[MAX_DIMS];
 	int null = 0;
 	int dtype = arg->dtype;
 	int dlen = len;
@@ -683,7 +683,7 @@ static inline int MdsValue2Vargs(va_list incrmtr, int connection, char *expressi
 
       if (status & 1) {
 	int ansdescr;
-	int dims[MAX_DIMS_R];
+	int dims[MAX_DIMS];
 	int null = 0;
 	int dtype = arg->dtype;
 	int dlen = len;
@@ -880,7 +880,7 @@ static inline int MdsPutVargs(va_list incrmtr, int connection, char *pathname, c
 
     if (status & 1) {
       char dtype;
-      int dims[MAX_DIMS_R];
+      int dims[MAX_DIMS];
       char ndims;
       short len;
       int numbytes;
@@ -1005,7 +1005,7 @@ EXPORT int MdsPut2Vargs(va_list incrmtr, int connection, char *pathname, char *e
 
     if (status & 1) {
       char dtype;
-      int dims[MAX_DIMS_R];
+      int dims[MAX_DIMS];
       char ndims;
       short len;
       int numbytes;
