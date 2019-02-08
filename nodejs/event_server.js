@@ -60,7 +60,7 @@ function getArrayOfSignals(inputString) {
   return signals;
 }
 
-var server = app.listen(ssePort, function () {
+  var server = app.listen(ssePort, function () {
    var host = server.address().address
    var port = server.address().port
    sse = new SSE(server);
@@ -152,8 +152,6 @@ function handleNewConnection(name, listener)
 function handleNewConnectionList(signals, listener) {
    signals.map(x => handleNewConnection(x, listener));
 }
-
-
 ////////////////EVENT STUFF////////////////////
 const dgram = require('dgram');
 const eventServer = dgram.createSocket({
