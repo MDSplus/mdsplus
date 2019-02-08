@@ -31,7 +31,6 @@ class MARTE2_COMPONENT(Device):
     MODE_INPUT = 2
     MODE_SYNCH_INPUT = 3
     MODE_OUTPUT = 4
-    print('MARTE2_COMPONENT')
     @classmethod
     def buildParameters(cls, parts):
       parts.append({'path':'.PARAMETERS', 'type': 'structure'})
@@ -161,14 +160,12 @@ class MARTE2_COMPONENT(Device):
       name1 = name[:12]
       if not name1 in nameList:
 	nameList.append(name1)
-	print(name1)
         return name1
       i = 0
       while name1 in nameList:
 	name1 = name[:10]+str(i)
 	i = i+1
       nameList.append(name1)
-      print(name1)
       return name1
 
 
@@ -186,7 +183,6 @@ class MARTE2_COMPONENT(Device):
 
       paramDicts = []
       for parameter in self.getNode('parameters').getChildren():
-	print(parameter)
         paramDict = {}
         try:
           paramDict['name'] = parameter.getNode('name').data()
@@ -314,7 +310,6 @@ class MARTE2_COMPONENT(Device):
           
     def getMarteGamInfo(self, threadMap, gams, dataSources, gamList):
       configDict = self.getGamInfo()
-      print(configDict)
       gamName = configDict['gamName'] 
       gamClass = configDict['gamClass']
       timebase = configDict['timebase']
@@ -489,7 +484,6 @@ class MARTE2_COMPONENT(Device):
         if 'type' in inputDict:
           gamText += '        Type = '+inputDict['type']+'\n'
         if 'dimensions' in inputDict:
-	  print('*****3.1')
 	  print(inputDict['dimensions'])
 	  dimensions = inputDict['dimensions']
           if dimensions == 0:
@@ -500,10 +494,8 @@ class MARTE2_COMPONENT(Device):
             numberOfElements = 1
             for currDim in inputDict['dimensions']:
               numberOfElements *= currDim
-	  print('*****3.2')
           gamText += '        NumberOfDimensions = '+str(numberOfDimensions)+'\n' 
           gamText += '        NumberOfElements = '+str(numberOfElements)+'\n' 
-	  print('*****4')
           gamText = self.addSignalParameters(inputDict['value_nid'].getParent().getNode('parameters'), gamText)
         gamText += '      }\n'
       gamText += '    }\n'
@@ -515,8 +507,6 @@ class MARTE2_COMPONENT(Device):
         dataSourceText += '    TreeName = "'+self.getTree().name+'"\n'
         dataSourceText += '    ShotNumber = '+str(self.getTree().shot)+'\n'
         currTimebase = self.getNode('timebase').evaluate()
-        print('CURR TIMEBASE')
-        print(currTimebase)
         if isinstance(currTimebase, Range):
           startTime = currTimebase.getBegin().data()
           period = currTimebase.getDelta().data()
@@ -1126,7 +1116,6 @@ class MARTE2_COMPONENT(Device):
             if 'type' in inputDict:
               gamText += '        Type = '+inputDict['type']+'\n'
             if 'dimensions' in inputDict:
-	      print(inputDict['dimensions'])
 	      dimensions = inputDict['dimensions']
               if dimensions == 0:
                 numberOfElements = 1
@@ -1237,9 +1226,6 @@ class MARTE2_COMPONENT(Device):
       dataSources.append(dataSourceText)
  
 
-    def prova(self):
-      print('CACCA')
-      return 1
 
     def getMarteInfo(self, threadMap, gams, dataSources, gamList):
       self.prepareMarteInfo()

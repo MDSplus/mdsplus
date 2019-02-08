@@ -26,11 +26,9 @@
 from MDSplus import *
 from MARTE2_COMPONENT import *
 class MARTE2_OUT(MARTE2_COMPONENT):
-    print('MARTE2_OUT')
     MARTE2_COMPONENT.inputs = [{'name': 'Uscita1', 'type': 'float32', 'dimensions': 0, 'parameters':{}}, {'name': 'Uscita2', 'type': 'int32', 'dimensions': [10],'parameters':{}}]
     MARTE2_COMPONENT.parameters = [{'name':'Parameter1', 'type': 'float32'}, {'name':'Parameter2', 'type': 'string'}] 
 
     parts = []
     MARTE2_COMPONENT.buildGam(parts, 'TestOut', MARTE2_COMPONENT.MODE_OUTPUT)
-    print('MARTE2_OUT FATTA')
     

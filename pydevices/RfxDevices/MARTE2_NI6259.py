@@ -26,7 +26,6 @@
 from MDSplus import *
 from MARTE2_COMPONENT import *
 class MARTE2_NI6259(MARTE2_COMPONENT):
-    print('MARTE2_NI6259')
     MARTE2_COMPONENT.outputs = [
       {'name': 'Counter', 'type':'uint32', 'dimensions': 0, 'parameters':[]},
       {'name': 'Time', 'type':'uint32', 'dimensions': 0, 'parameters':[]},
@@ -50,8 +49,7 @@ class MARTE2_NI6259(MARTE2_COMPONENT):
 
     parts = []
     MARTE2_COMPONENT.buildGam(parts, 'NI6259ADC', MARTE2_COMPONENT.MODE_SYNCH_INPUT, 'build_range(0, 1000000, 1./build_path(".parameters:parameter_1:value"))')
-    print('MARTE2_NI6259 FATTA')
-
+ 
     def prepareMarteInfo(self):
       print('0:1000000 : 1. / build_path("\\'+self.getFullPath()+'.parameters:parameter_1:value")' )
       self.timebase.putData(Data.compile('0:1000000 : 1. / build_path("\\'+self.getFullPath()+'.parameters:parameter_1:value")'))

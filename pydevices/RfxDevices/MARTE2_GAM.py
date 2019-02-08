@@ -26,7 +26,6 @@
 from MDSplus import *
 from MARTE2_COMPONENT import *
 class MARTE2_GAM(MARTE2_COMPONENT):
-    print('MARTE2_GAM')
     MARTE2_COMPONENT.name = 'TestGAM'
     MARTE2_COMPONENT.inputs = [{'name': 'Ingresso1', 'type': 'float32', 'dimensions': 0, 'parameters':{}}, {'name': 'Ingresso2', 'type': 'int32', 'dimensions': [10], 'parameters':{}}]
     MARTE2_COMPONENT.outputs = [{'name': 'PrimaUscita', 'type': 'float32', 'dimensions': 0, 'parameters':{}}, {'name': 'SecondaUscita', 'type': 'int32', 'dimensions': [10],'parameters':{}}]
@@ -34,5 +33,4 @@ class MARTE2_GAM(MARTE2_COMPONENT):
 
     parts = []
     MARTE2_COMPONENT.buildGam(parts, 'TestGAM', MARTE2_COMPONENT.MODE_GAM)
-    print('MARTE2_GAM FATTA')
     
