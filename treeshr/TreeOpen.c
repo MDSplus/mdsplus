@@ -660,7 +660,6 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
 	if (useable_db) {
 	  move_to_top(saved_prev_db, useable_db);
 	  CloseTopTree(*dblist, 1);
-	  move_to_top(saved_prev_db, useable_db);
 	  status = TreeNORMAL;
 	} else {
 	  status = TreeMAXOPENEDIT;
