@@ -68,8 +68,9 @@ void _test_tree_open(const char *prot, const unsigned short port, const char* mo
       usleep(500000);
     }
     std::cout << "success: starting test\n" << std::flush;
-    // test client-server communication //
-    unique_ptr<Data> data = cnx_get(cnx,"ZERO(10)");
+    // test client-server communication with max 8 dims//
+    unique_ptr<Data> data = cnx_get(cnx,"zero([1,1,1,1,1,1,1,1],1)");
+    TEST1( AutoString(data->getString()).string == "[[[[[[[[0]]]]]]]]");
 
     data = cnx_get(cnx,"DECOMPILE(`TreeShr->TreeDbid:P())");
     TEST0( AutoString(data->getString()).string == "Pointer(0)");

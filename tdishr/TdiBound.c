@@ -244,8 +244,8 @@ int Tdi1Ebound(opcode_t opcode, int narg, struct descriptor *list[], struct desc
   array_bounds *pa = 0;
   struct descriptor_xd sig[1], uni[1], dat[1];
   struct TdiCatStruct cats[2];
-  struct descriptor_xd outs[MAXDIM];
-  struct descriptor *new[MAXDIM];
+  struct descriptor_xd outs[MAX_DIMS];
+  struct descriptor *new[MAX_DIMS];
   unsigned int dim, rank = 0;
 
   status = TdiGetArgs(opcode, 1, list, sig, uni, dat, cats);
@@ -274,7 +274,7 @@ int Tdi1Ebound(opcode_t opcode, int narg, struct descriptor *list[], struct desc
     if STATUS_OK
       status = (*TdiRefFunction[opcode].f3) (sig[0].pointer, pa, dim, out_ptr);
   } else {
-    if (STATUS_OK && rank > MAXDIM)
+    if (STATUS_OK && rank > MAX_DIMS)
       status = TdiNDIM_OVER;
     else {
       for (dim = 0; STATUS_OK && dim < rank; ++dim) {

@@ -71,9 +71,6 @@ extern char* MaskReplace();
 #undef max
 #endif
 #define max(a,b) (((a) > (b)) ? (a) : (b))
-#define MAKE_DESC(name) (struct descriptor*)memcpy(malloc(sizeof(name)),&name,sizeof(name))
-
-typedef ARRAY_COEFF(char, 7) ARRAY_7;
 
 static void ConvertBinary(int num, int sign_extend, short in_length, char *in_ptr, short out_length, char *out_ptr){
   int i;
@@ -157,7 +154,7 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
     return m;
   }
   */
-  int nbytes = (d->class == CLASS_S) ? d->length : ((ARRAY_7 *) d)->arsize;
+  int nbytes = (d->class == CLASS_S) ? d->length : ((array_coeff *) d)->arsize;
   int num = nbytes / ((d->length < 1) ? 1 : d->length);
   short length = d->length;
   if (CType(client_type) == CRAY_CLIENT) {
@@ -213,11 +210,11 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
     array_coeff *a = (array_coeff *) d;
     m->h.ndims = a->dimct;
     if (a->aflags.coeff)
-      for (i = 0; i < m->h.ndims && i < 7; i++)
+      for (i = 0; i < m->h.ndims && i < MAX_DIMS; i++)
 	m->h.dims[i] = a->m[i];
     else
       m->h.dims[0] = a->length ? a->arsize / a->length : 0;
-    for (i = m->h.ndims; i < 7; i++)
+    for (i = m->h.ndims; i < MAX_DIMS; i++)
       m->h.dims[i] = 0;
   }
   switch (CType(client_type)) {
@@ -800,6 +797,8 @@ static inline char *replaceBackslashes(char *filename) {
 }
 
 
+
+
 ///
 /// Handle message from server listen routine. A new descriptor instance is created
 /// with the message buffer size and the message memory is copyed inside. A proper
@@ -838,61 +837,32 @@ Message *ProcessMessage(Connection * connection, Message * message)
     // set connection to the message client_type  //
     connection->client_type = message->h.client_type;
 
+#define COPY_DESC(name, GENERATOR, ...) do{const GENERATOR(__VA_ARGS__);*(void**)&d = memcpy(malloc(sizeof(tmp)),&tmp,sizeof(tmp));}while(0)
+
     // d -> reference to curent idx argument desctriptor  //
     struct descriptor *d = connection->descrip[message->h.descriptor_idx];
-    static EMPTYXD(empty);
     if (message->h.dtype == DTYPE_SERIAL) {
       if (d && d->class != CLASS_XD) {
         if (d->class == CLASS_D && d->pointer)
           free(d->pointer);
         free(d);
       }
-      d = MAKE_DESC(empty);
+      COPY_DESC(d,EMPTYXD,tmp);
       connection->descrip[message->h.descriptor_idx] = d;
       return ans;
     }
     if (!d) {
       // instance the connection descriptor field //
-      static short lengths[] = { 0, 0, 1, 2, 4, 8, 1, 2, 4, 8, 4, 8, 8, 16, 0 };
-      switch (message->h.ndims) {
-	static struct descriptor scalar = { 0, 0, CLASS_S, 0 };
-	static DESCRIPTOR_A_COEFF(array_1, 0, 0, 0, 1, 0);
-	static DESCRIPTOR_A_COEFF(array_2, 0, 0, 0, 2, 0);
-	static DESCRIPTOR_A_COEFF(array_3, 0, 0, 0, 3, 0);
-	static DESCRIPTOR_A_COEFF(array_4, 0, 0, 0, 4, 0);
-	static DESCRIPTOR_A_COEFF(array_5, 0, 0, 0, 5, 0);
-	static DESCRIPTOR_A_COEFF(array_6, 0, 0, 0, 6, 0);
-	static DESCRIPTOR_A_COEFF(array_7, 0, 0, 0, 7, 0);
-      case 0:
-	d = MAKE_DESC(scalar);
-	break;
-      case 1:
-	d = MAKE_DESC(array_1);
-	break;
-      case 2:
-	d = MAKE_DESC(array_2);
-	break;
-      case 3:
-	d = MAKE_DESC(array_3);
-	break;
-      case 4:
-	d = MAKE_DESC(array_4);
-	break;
-      case 5:
-	d = MAKE_DESC(array_5);
-	break;
-      case 6:
-	d = MAKE_DESC(array_6);
-	break;
-      case 7:
-	d = MAKE_DESC(array_7);
-	break;
-      }
-      d->length =
-	  message->h.dtype < DTYPE_CSTRING ? lengths[message->h.dtype] : message->h.length;
+      const short lengths[] = { 0, 0, 1, 2, 4, 8, 1, 2, 4, 8, 4, 8, 8, 16, 0 };
+      if (message->h.ndims == 0) {
+        d = calloc(1,sizeof(struct descriptor_s));
+        d->class = CLASS_S;
+      } else
+        COPY_DESC(d,DESCRIPTOR_A_COEFF, tmp, 0, 0, 0, MAX_DIMS, 0);
+      d->length = message->h.dtype < DTYPE_CSTRING ? lengths[message->h.dtype] : message->h.length;
       d->dtype = message->h.dtype;
       if (d->class == CLASS_A) {
-	ARRAY_7 *a = (ARRAY_7 *) d;
+	array_coeff *a = (array_coeff *) d;
 	int num = 1;
 	int i;
 	for (i = 0; i < message->h.ndims; i++) {
@@ -910,7 +880,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
         // have valid connection descriptor instance     //
         // copy the message buffer into the descriptor   //
 
-      int dbytes = d->class == CLASS_S ? (int)d->length : (int)((ARRAY_7 *) d)->arsize;
+      int dbytes = d->class == CLASS_S ? (int)d->length : (int)((array_coeff *) d)->arsize;
       int num = dbytes / max(1, d->length);
 
       switch (CType(connection->client_type)) {

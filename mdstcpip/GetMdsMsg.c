@@ -89,7 +89,7 @@ Message *GetMdsMsgTOC(Connection* c, int *status, int to_msec){
 	 header.message_id, header.dtype);
     printf("client_type = %d\nndims = %d\n", header.client_type, header.ndims);
 #endif
-    if (CType(header.client_type) > CRAY_CLIENT || header.ndims > MAX_DIMS_R) {
+    if (CType(header.client_type) > CRAY_CLIENT || header.ndims > MAX_DIMS) {
       fprintf(stderr,
 	      "\rGetMdsMsg shutdown connection %d: bad msg header, header.ndims=%d, client_type=%d\n",
 	      c->id, header.ndims, CType(header.client_type));

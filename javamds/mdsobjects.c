@@ -3145,7 +3145,7 @@ static char getNDims(struct descriptor *dsc)
 
 static void getDims(struct descriptor *dsc, int *dims)
 {
-  ARRAY_BOUNDS(char *, MAX_DIMS_R) * arrPtr;
+  ARRAY_BOUNDS(char *, MAX_DIMS) * arrPtr;
   int i;
 
   if (dsc->class != CLASS_A)
@@ -3182,11 +3182,11 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Connection_get
   char dtype, nDims;
   short length;
   void *ptr;
-  int dims[MAX_DIMS_R];
+  int dims[MAX_DIMS];
   int numBytes;
   void *mem = 0;
   struct descriptor scalarDsc = { 0, 0, CLASS_S, 0 };
-  DESCRIPTOR_A_COEFF(arrayDsc, 0, 0, 0, MAX_DIMS_R, 0);
+  DESCRIPTOR_A_COEFF(arrayDsc, 0, 0, 0, MAX_DIMS, 0);
 
   expr = (*env)->GetStringUTFChars(env, jExpr, 0);
   nArgs = (*env)->GetArrayLength(env, jargs);
@@ -3336,7 +3336,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Connection_put
   char dtype, nDims;
   short length;
   void *ptr;
-  int dims[MAX_DIMS_R];
+  int dims[MAX_DIMS];
   int numBytes, varIdx;
   void *mem = 0;
 

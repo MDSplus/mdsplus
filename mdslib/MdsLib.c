@@ -174,9 +174,9 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
       array_coeff *adsc = (array_coeff *) dsc;
       adsc->class = CLASS_A;
 
-      if (ndim > MAXDIM) {
-	ndim = MAXDIM;
-	printf("(descr.c) WARNING: requested ndim>MAXDIM, forcing to MAXDIM\n");
+      if (ndim > MAX_DIMS) {
+	ndim = MAX_DIMS;
+	printf("(descr.c) WARNING: requested ndim>MAX_DIMS, forcing to MAX_DIMS\n");
       }
       adsc->dimct = ndim;
       adsc->scale = 0;
@@ -194,7 +194,7 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
 	adsc->m[i] = *(va_arg(incrmtr, int *));
 	totsize = totsize * adsc->m[i];
       }
-      for (i = ndim; i < MAXDIM; i++) {
+      for (i = ndim; i < MAX_DIMS; i++) {
 	adsc->m[i] = 0;
       }
       adsc->arsize = totsize * adsc->length;
@@ -303,9 +303,9 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
       array_coeff *adsc = (array_coeff *) dsc;
       adsc->class = CLASS_A;
 
-      if (ndim > MAXDIM) {
-	ndim = MAXDIM;
-	printf("(descr.c) WARNING: requested ndim>MAXDIM, forcing to MAXDIM\n");
+      if (ndim > MAX_DIMS) {
+	ndim = MAX_DIMS;
+	printf("(descr.c) WARNING: requested ndim>MAX_DIMS, forcing to MAX_DIMS\n");
       }
       adsc->dimct = ndim;
 
@@ -322,7 +322,7 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
 	adsc->m[i] = *(va_arg(incrmtr, int *));
 	totsize = totsize * adsc->m[i];
       }
-      for (i = ndim; i < MAXDIM; i++) {
+      for (i = ndim; i < MAX_DIMS; i++) {
 	adsc->m[i] = 0;
       }
       adsc->arsize = totsize * adsc->length;
@@ -456,7 +456,7 @@ static inline int MdsValueVargs(va_list incrmtr, int connection, char *expressio
 
       if (status & 1) {
 	int ansdescr;
-	int dims[MAX_DIMS_R];
+	int dims[MAX_DIMS];
 	int null = 0;
 	int dtype = arg->dtype;
 	int dlen = len;
@@ -683,7 +683,7 @@ static inline int MdsValue2Vargs(va_list incrmtr, int connection, char *expressi
 
       if (status & 1) {
 	int ansdescr;
-	int dims[MAX_DIMS_R];
+	int dims[MAX_DIMS];
 	int null = 0;
 	int dtype = arg->dtype;
 	int dlen = len;
@@ -880,7 +880,7 @@ static inline int MdsPutVargs(va_list incrmtr, int connection, char *pathname, c
 
     if (status & 1) {
       char dtype;
-      int dims[MAX_DIMS_R];
+      int dims[MAX_DIMS];
       char ndims;
       short len;
       int numbytes;
@@ -1005,7 +1005,7 @@ EXPORT int MdsPut2Vargs(va_list incrmtr, int connection, char *pathname, char *e
 
     if (status & 1) {
       char dtype;
-      int dims[MAX_DIMS_R];
+      int dims[MAX_DIMS];
       char ndims;
       short len;
       int numbytes;
@@ -1198,14 +1198,14 @@ static struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc
   } else {
     int i;
     array_coeff *adsc = (array_coeff *) dsc;
-    int dims[MAXDIM];
+    int dims[MAX_DIMS];
     unsigned int num = adsc->arsize / adsc->length;
     unsigned int *m = &num;
     if (adsc->dimct > 1)
       m = adsc->m;
     for (i = 0; i < adsc->dimct; i++)
       dims[i] = m[i];
-    for (i = adsc->dimct; i < MAXDIM; i++)
+    for (i = adsc->dimct; i < MAX_DIMS; i++)
       dims[i] = 0;
     if (dsc->length)
       arg =

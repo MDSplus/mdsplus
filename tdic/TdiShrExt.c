@@ -296,7 +296,7 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
   int status = 1;
   struct descriptor *tdiarg;
   struct descriptor_a *desca;
-  int dims[MAX_DIMS + 1];	/* dimensions of an array */
+  int dims[MAX_DIMS];	/* dimensions of an array */
   char dtype;
   char ndims;
   unsigned char *ptr;

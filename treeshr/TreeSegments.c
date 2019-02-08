@@ -354,7 +354,7 @@ static int write_property(TREE_INFO * tinfo, int64_t *offset, const char *buffer
   char *ptr = buf; int i;\
   swap_inplace(dir,int8 ,ptr,	hdr->dtype	);\
   swap_inplace(dir,int8 ,ptr,	hdr->dimct	);\
-  for (i = 0; i < MAXDIM; i++)\
+  for (i = 0; i < MAX_DIMS; i++)\
     swap_inplace(dir,int32,ptr,	hdr->dims[i]	);\
   swap_inplace(dir,int16,ptr,	hdr->length	);\
   swap_inplace(dir,int32,ptr,	hdr->idx	);\
@@ -363,7 +363,7 @@ static int write_property(TREE_INFO * tinfo, int64_t *offset, const char *buffer
   swap_inplace(dir,int64,ptr,	hdr->data_offset);\
   swap_inplace(dir,int64,ptr,	hdr->dim_offset	);\
 }
-#define SEGMENT_HEADER_SIZE 1+1 + MAXDIM*4 + 2+4+4+8+8+8
+#define SEGMENT_HEADER_SIZE 1+1 + MAX_DIMS*4 + 2+4+4+8+8+8
 static int put_segment_header(TREE_INFO * tinfo, const SEGMENT_HEADER * hdr, int64_t * offset){
   /* What a hack
   char *next_row_fix = getenv("NEXT_ROW_FIX");

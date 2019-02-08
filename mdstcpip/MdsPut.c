@@ -55,7 +55,7 @@ int MdsPut(int id, char *node, char *expression, ...) {
   free(putexpr);
   if STATUS_OK {
     char dtype;
-    int dims[MAX_DIMS_R];
+    int dims[MAX_DIMS];
     char ndims;
     short len;
     int numbytes;

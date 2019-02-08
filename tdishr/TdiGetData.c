@@ -114,7 +114,7 @@ int TdiImpose(struct descriptor_a *in_ptr, struct descriptor_xd *out_ptr)
   case CLASS_A:
   case CLASS_CA:
     dimct = in_ptr->dimct;
-    if (dimct > MAXDIM)
+    if (dimct > MAX_DIMS)
       return TdiNDIM_OVER;
     in_size = sizeof(struct descriptor_a);
     if (in_ptr->aflags.coeff) {

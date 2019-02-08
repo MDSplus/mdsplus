@@ -170,7 +170,7 @@ int RemoteAccessDisconnect(int conid, int force){
 struct descrip {
   char dtype;
   char ndims;
-  int dims[MAX_DIMS_R];
+  int dims[MAX_DIMS];
   int length;
   void *ptr;
 };
@@ -988,7 +988,7 @@ static inline int mds_io_request(int conid, mds_io_mode idx, size_t size, mdsio_
     if (idx!=MDS_IO_CLOSE_K) fprintf(stderr, "Error in SendArg: mode = %d, status = %d\n", idx, status);
     RemoteAccessDisconnect(conid, 1);
   } else {
-    int d[MAX_DIMS_R];
+    int d[MAX_DIMS];
     status = GetAnswerInfoTS(conid, (char*)d, (short*)d, (char*)d, d, bytes, (void**)dout, m);
     if STATUS_NOT_OK {
       if (idx!=MDS_IO_CLOSE_K) fprintf(stderr, "Error in GetAnswerInfoTS: mode = %d, status = %d\n", idx, status);

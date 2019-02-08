@@ -78,11 +78,11 @@ SEGMENTED_RECORD_FACILITY =1,
 NAMED_ATTRIBUTES_FACILITY =2,
 };
 
-#define MAXDIM 8
+#define MAX_DIMS 8
 typedef struct segment_header {
   dtype_t dtype;
   char dimct;
-  int dims[MAXDIM];
+  int dims[MAX_DIMS];
   length_t length;
   int idx;
   int next_row;

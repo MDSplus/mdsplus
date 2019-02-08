@@ -73,7 +73,7 @@ EXPORT int MdsIpGetDescriptor(int id, const char* expression, int nargs, struct 
   if STATUS_OK {
     char ndims;
     void *mem = 0;
-    int dims[MAX_DIMS_R] = {0};
+    int dims[MAX_DIMS] = {0};
     struct descriptor_a ser = {0};
     status = GetAnswerInfoTS(id, (char*)&ser.dtype, (short int*)&ser.length, &ndims, dims, (int*)&ser.arsize, (void**)&ser.pointer, &mem);
     ser.class=CLASS_A;

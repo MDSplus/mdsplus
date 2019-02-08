@@ -302,7 +302,7 @@ int Tdi1ConditionOf(opcode_t opcode __attribute__ ((unused)), int narg __attribu
 
 /*--------------------------------------------------------------
         Return a dimension of a signal or array.
-        Dimension number is 1 to MAXDIM, default is first.
+        Dimension number is 1 to MAX_DIMS, default is first.
                 subscript_range = DIM_OF(array, [dim_num])
                 dimension_field = DIM_OF(signal, [dim_num])
                 same = DIM_OF(dimension)
