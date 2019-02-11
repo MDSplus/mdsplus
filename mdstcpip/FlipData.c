@@ -34,8 +34,8 @@ void FlipData(Message * m)
   int num = 1;
   int i;
   char *ptr;
-  int dims[MAX_DIMS_R];
-  for (i = 0; i < MAX_DIMS_R; i++) {
+  int dims[MAX_DIMS];
+  for (i = 0; i < MAX_DIMS; i++) {
 #ifdef __CRAY
     dims[i] = i % 2 ? m->h.dims[i / 2] & 0xffffffff : m->h.dims[i / 2] >> 32;
 #else

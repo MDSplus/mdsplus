@@ -71,9 +71,6 @@ extern char* MaskReplace();
 #undef max
 #endif
 #define max(a,b) (((a) > (b)) ? (a) : (b))
-#define MAKE_DESC(name) (struct descriptor*)memcpy(malloc(sizeof(name)),&name,sizeof(name))
-
-typedef ARRAY_COEFF(char, 7) ARRAY_7;
 
 static void ConvertBinary(int num, int sign_extend, short in_length, char *in_ptr, short out_length, char *out_ptr){
   int i;
@@ -157,7 +154,7 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
     return m;
   }
   */
-  int nbytes = (d->class == CLASS_S) ? d->length : ((ARRAY_7 *) d)->arsize;
+  int nbytes = (d->class == CLASS_S) ? d->length : ((array_coeff *) d)->arsize;
   int num = nbytes / ((d->length < 1) ? 1 : d->length);
   short length = d->length;
   if (CType(client_type) == CRAY_CLIENT) {
@@ -213,11 +210,11 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
     array_coeff *a = (array_coeff *) d;
     m->h.ndims = a->dimct;
     if (a->aflags.coeff)
-      for (i = 0; i < m->h.ndims && i < 7; i++)
+      for (i = 0; i < m->h.ndims && i < MAX_DIMS; i++)
 	m->h.dims[i] = a->m[i];
     else
       m->h.dims[0] = a->length ? a->arsize / a->length : 0;
-    for (i = m->h.ndims; i < 7; i++)
+    for (i = m->h.ndims; i < MAX_DIMS; i++)
       m->h.dims[i] = 0;
   }
   switch (CType(client_type)) {
@@ -549,61 +546,67 @@ static void ClientEventAst(MdsEventList * e, int data_len, char *data)
   UnlockAsts();
 }
 
+/* The following implementation of a cancelable worker is used in:
+ * tdishr/TdiDoTask.c
+ * mdstcpip/ProcessMessage.c
+ * Problems with the implementation are likely to be fixed in all locations.
+ */
 typedef struct {
-  Connection*          connection;
-  void*                dbid;
-  void*                tdicontext[6];
-  struct descriptor_xd*xd_out;
-  int                  status;
+  void      **ctx;
+  int       status;
 #ifndef _WIN32
-  Condition* condition;
+  Condition *const condition;
 #endif
+  Connection           *const connection;
+  struct descriptor_xd *const xd_out;
+  void                 *tdicontext[6];
 } worker_args_t;
 
 typedef struct {
-worker_args_t*       wa;
-struct descriptor_xd*xdp;
+  worker_args_t        *const wa;
+  struct descriptor_xd *const xdp;
+  void                 *pc;
 } worker_cleanup_t;
 
 static void WorkerCleanup(void *args) {
-  worker_cleanup_t* wc = (worker_cleanup_t*)args;
-  MdsFree1Dx(wc->xdp,NULL);
+  worker_cleanup_t* const wc = (worker_cleanup_t*)args;
+  if (wc->pc) TreeCtxPop(wc->pc);
   TdiSaveContext(wc->wa->tdicontext);
-  wc->wa->dbid = TreeSwitchDbid(wc->wa->dbid);
-  void* tdicontext[6] = {0};
-  TdiRestoreContext(tdicontext);
-  TreeUsePrivateCtx(0);
 #ifndef _WIN32
   CONDITION_SET(wc->wa->condition);
 #endif
+  free_xd(wc->xdp);
+  void* tdicontext[6] = {0};
+  TdiRestoreContext(tdicontext);
 }
 
 static int WorkerThread(void *args) {
-  worker_args_t* wa = (worker_args_t*)args;
   EMPTYXD(xd);
-  worker_cleanup_t wc = {wa,&xd};
+  worker_cleanup_t wc = {(worker_args_t*)args,&xd,NULL};
   pthread_cleanup_push(WorkerCleanup,(void*)&wc);
-  TreeUsePrivateCtx(1);
-  wa->dbid = TreeSwitchDbid(wa->dbid);
-  TdiRestoreContext(wa->tdicontext);
-  wa->status = TdiIntrinsic(OPC_EXECUTE, wa->connection->nargs, wa->connection->descrip, &xd);
-  if IS_OK(wa->status)
-    wa->status = TdiData(xd.pointer, wa->xd_out MDS_END_ARG);
+  wc.pc = TreeCtxPush(wc.wa->ctx);
+  TdiRestoreContext(wc.wa->tdicontext);
+  wc.wa->status = TdiIntrinsic(OPC_EXECUTE, wc.wa->connection->nargs, wc.wa->connection->descrip, &xd);
+  if IS_OK(wc.wa->status)
+    wc.wa->status = TdiData(xd.pointer, wc.wa->xd_out MDS_END_ARG);
   pthread_cleanup_pop(1);
-  return wa->status;
+  return wc.wa->status;
 }
 
 static inline int executeCommand(Connection* connection, struct descriptor_xd* ans_xd) {
   //fprintf(stderr,"starting task for connection %d\n",connection->id);
-  worker_args_t wa;
-  wa.connection = connection;
-  wa.xd_out = ans_xd;
-  wa.status = -1;
+#ifdef _WIN32
+  worker_args_t wa = {
+#else
+  Condition WorkerRunning = CONDITION_INITIALIZER;
+  worker_args_t wa = {.condition = &WorkerRunning,
+#endif
+  .status = -1, .connection = connection, .xd_out = ans_xd};
   if (GetContextSwitching()) {
-    wa.dbid = connection->DBID;
+    wa.ctx = &connection->DBID;
     memcpy(wa.tdicontext,connection->tdicontext,sizeof(wa.tdicontext));
   } else {
-    wa.dbid = *TreeCtx();
+    wa.ctx = TreeCtx();
     TdiSaveContext(wa.tdicontext);
   }
 #ifdef _WIN32
@@ -615,34 +618,28 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
     goto end;
   }
   int canceled = B_FALSE;
-  while (WaitForSingleObject(hWorker, 100) == WAIT_TIMEOUT) {
-    if (canceled) continue;     //skip check if already canceled
-    if (!connection->io->check) continue; // if no io->check def
+  if (connection->io->check)
+   while (WaitForSingleObject(hWorker, 100) == WAIT_TIMEOUT) {
     if (!connection->io->check(connection)) continue;
     fflush(stdout);fprintf(stderr, "Client disconnected, terminating Worker\n");
     TerminateThread(hWorker,2);
     canceled = B_TRUE;
+    break;
   }
   WaitForSingleObject(hWorker, INFINITE);
   if (canceled) wa.status = TdiABORT;
 #else
-  pthread_t Worker = 0;
-  Condition WorkerRunning = CONDITION_INITIALIZER;
-  wa.condition  = &WorkerRunning;
+  pthread_t Worker;
   _CONDITION_LOCK(wa.condition);
-  pthread_attr_t attr;
-  pthread_attr_init(&attr);
-  pthread_attr_setstacksize(&attr, DEFAULT_STACKSIZE*16);
-  if ((errno=pthread_create(&Worker, &attr, (void *)WorkerThread, &wa))) {
+  CREATE_THREAD(Worker, *16, WorkerThread, &wa);
+  if (c_status) {
     perror("ERROR pthread_create");
-    pthread_attr_destroy(&attr);
     _CONDITION_UNLOCK(wa.condition);
     pthread_cond_destroy(&WorkerRunning.cond);
     pthread_mutex_destroy(&WorkerRunning.mutex);
     wa.status = MDSplusFATAL;
     goto end;
   }
-  pthread_attr_destroy(&attr);
   int canceled = B_FALSE;
   for (;;) {
     _CONDITION_WAIT_1SEC(wa.condition,);
@@ -654,12 +651,14 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
     pthread_cancel(Worker);
     canceled = B_TRUE;
     _CONDITION_WAIT_1SEC(wa.condition,);
-    if (WorkerRunning.value) {
+    fflush(stdout);
+    if (WorkerRunning.value)
       fprintf(stderr," ok\n");
-      break;
+    else {
+      fprintf(stderr," failed - sending SIGCHLD\n");
+      pthread_kill(Worker,SIGCHLD);
     }
-    fflush(stdout);fprintf(stderr," failed - sending SIGCHLD\n");
-    pthread_kill(Worker,SIGCHLD);
+    break;
   }
   _CONDITION_UNLOCK(wa.condition);
   void* result;
@@ -670,10 +669,8 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
 #endif
 end:;
   if (GetContextSwitching()) {
-    connection->DBID = wa.dbid;
     memcpy(connection->tdicontext,wa.tdicontext,sizeof(wa.tdicontext));
   } else {
-    *TreeCtx() = wa.dbid;
     TdiRestoreContext(wa.tdicontext);
   }
   return wa.status;
@@ -800,6 +797,8 @@ static inline char *replaceBackslashes(char *filename) {
 }
 
 
+
+
 ///
 /// Handle message from server listen routine. A new descriptor instance is created
 /// with the message buffer size and the message memory is copyed inside. A proper
@@ -838,61 +837,32 @@ Message *ProcessMessage(Connection * connection, Message * message)
     // set connection to the message client_type  //
     connection->client_type = message->h.client_type;
 
+#define COPY_DESC(name, GENERATOR, ...) do{const GENERATOR(__VA_ARGS__);*(void**)&d = memcpy(malloc(sizeof(tmp)),&tmp,sizeof(tmp));}while(0)
+
     // d -> reference to curent idx argument desctriptor  //
     struct descriptor *d = connection->descrip[message->h.descriptor_idx];
-    static EMPTYXD(empty);
     if (message->h.dtype == DTYPE_SERIAL) {
       if (d && d->class != CLASS_XD) {
         if (d->class == CLASS_D && d->pointer)
           free(d->pointer);
         free(d);
       }
-      d = MAKE_DESC(empty);
+      COPY_DESC(d,EMPTYXD,tmp);
       connection->descrip[message->h.descriptor_idx] = d;
       return ans;
     }
     if (!d) {
       // instance the connection descriptor field //
-      static short lengths[] = { 0, 0, 1, 2, 4, 8, 1, 2, 4, 8, 4, 8, 8, 16, 0 };
-      switch (message->h.ndims) {
-	static struct descriptor scalar = { 0, 0, CLASS_S, 0 };
-	static DESCRIPTOR_A_COEFF(array_1, 0, 0, 0, 1, 0);
-	static DESCRIPTOR_A_COEFF(array_2, 0, 0, 0, 2, 0);
-	static DESCRIPTOR_A_COEFF(array_3, 0, 0, 0, 3, 0);
-	static DESCRIPTOR_A_COEFF(array_4, 0, 0, 0, 4, 0);
-	static DESCRIPTOR_A_COEFF(array_5, 0, 0, 0, 5, 0);
-	static DESCRIPTOR_A_COEFF(array_6, 0, 0, 0, 6, 0);
-	static DESCRIPTOR_A_COEFF(array_7, 0, 0, 0, 7, 0);
-      case 0:
-	d = MAKE_DESC(scalar);
-	break;
-      case 1:
-	d = MAKE_DESC(array_1);
-	break;
-      case 2:
-	d = MAKE_DESC(array_2);
-	break;
-      case 3:
-	d = MAKE_DESC(array_3);
-	break;
-      case 4:
-	d = MAKE_DESC(array_4);
-	break;
-      case 5:
-	d = MAKE_DESC(array_5);
-	break;
-      case 6:
-	d = MAKE_DESC(array_6);
-	break;
-      case 7:
-	d = MAKE_DESC(array_7);
-	break;
-      }
-      d->length =
-	  message->h.dtype < DTYPE_CSTRING ? lengths[message->h.dtype] : message->h.length;
+      const short lengths[] = { 0, 0, 1, 2, 4, 8, 1, 2, 4, 8, 4, 8, 8, 16, 0 };
+      if (message->h.ndims == 0) {
+        d = calloc(1,sizeof(struct descriptor_s));
+        d->class = CLASS_S;
+      } else
+        COPY_DESC(d,DESCRIPTOR_A_COEFF, tmp, 0, 0, 0, MAX_DIMS, 0);
+      d->length = message->h.dtype < DTYPE_CSTRING ? lengths[message->h.dtype] : message->h.length;
       d->dtype = message->h.dtype;
       if (d->class == CLASS_A) {
-	ARRAY_7 *a = (ARRAY_7 *) d;
+	array_coeff *a = (array_coeff *) d;
 	int num = 1;
 	int i;
 	for (i = 0; i < message->h.ndims; i++) {
@@ -910,7 +880,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
         // have valid connection descriptor instance     //
         // copy the message buffer into the descriptor   //
 
-      int dbytes = d->class == CLASS_S ? (int)d->length : (int)((ARRAY_7 *) d)->arsize;
+      int dbytes = d->class == CLASS_S ? (int)d->length : (int)((array_coeff *) d)->arsize;
       int num = dbytes / max(1, d->length);
 
       switch (CType(connection->client_type)) {
@@ -1002,6 +972,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	}
       }
       switch (d->dtype) {
+      default:break;
       case DTYPE_FLOAT:
 	d->dtype = DTYPE_FS;
 	break;
@@ -1028,12 +999,13 @@ Message *ProcessMessage(Connection * connection, Message * message)
   else {
 
     connection->client_type = message->h.client_type;
+    const mdsio_t* mdsio = (mdsio_t*)message->h.dims;
     switch (message->h.descriptor_idx) {
     case MDS_IO_OPEN_K:
       {
 	char *filename = (char *)message->bytes;
-	int options = message->h.dims[1];
-	mode_t mode = message->h.dims[2];
+	int options = mdsio->open.options;
+	mode_t mode = mdsio->open.mode;
 	int fopts = 0;
 	if (options & MDS_IO_O_CREAT)	fopts|= O_CREAT;
 	if (options & MDS_IO_O_TRUNC)	fopts|= O_TRUNC;
@@ -1042,51 +1014,43 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	if (options & MDS_IO_O_RDONLY)fopts|= O_RDONLY;
 	if (options & MDS_IO_O_RDWR)	fopts|= O_RDWR;
 	int fd = MDS_IO_OPEN(filename, fopts , mode);
-        DESCRIPTOR_LONG(fd_d, (char *)&fd);
-        ans = BuildResponse(connection->client_type, connection->message_id, 3, (struct descriptor *)&fd_d);
+        struct descriptor ans_d = { 4, DTYPE_L, CLASS_S, (char *)&fd};
+        ans = BuildResponse(connection->client_type, connection->message_id, 3, &ans_d);
 	break;
       }
     case MDS_IO_CLOSE_K:
       {
-	int stat = MDS_IO_CLOSE(message->h.dims[1]);
-	DESCRIPTOR_LONG(stat_d, (char *)&stat);
-	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&stat_d);
+	int fd = mdsio->close.fd;
+	int ans_o = MDS_IO_CLOSE(fd);
+	struct descriptor ans_d = { 4, DTYPE_L, CLASS_S, (char *)&ans_o};
+	ans = BuildResponse(connection->client_type, connection->message_id, 1, &ans_d);
 	break;
       }
     case MDS_IO_LSEEK_K:
       {
-	int fd = message->h.dims[1];
-	off_t offset;
-	int whence = message->h.dims[4];
-	int64_t ans_o;
+	int fd = mdsio->lseek.fd;
+        int64_t offset = mdsio->lseek.offset;
+        SWAP_INT_IF_BIGENDIAN(&offset);
+	int whence = mdsio->lseek.whence;
+	int64_t ans_o = MDS_IO_LSEEK(fd, offset, whence);
 	struct descriptor ans_d = { 8, DTYPE_Q, CLASS_S, 0 };
-#ifdef WORDS_BIGENDIAN
-	int tmp;
-	tmp = message->h.dims[2];
-	message->h.dims[2] = message->h.dims[3];
-	message->h.dims[3] = tmp;
-#endif
-	offset = (off_t) * (int64_t *) & message->h.dims[2];
-	ans_o = MDS_IO_LSEEK(fd, offset, whence);
 	ans_d.pointer = (char *)&ans_o;
 	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&ans_d);
+	SWAP_INT_IF_BIGENDIAN(ans_d.pointer);
 	break;
       }
     case MDS_IO_READ_K:
       {
-	int fd = message->h.dims[1];
-	void *buf = malloc(message->h.dims[2]);
-	size_t num = (size_t) message->h.dims[2];
-	ssize_t nbytes = MDS_IO_READ(fd, buf, num);
+        int fd = mdsio->read.fd;
+	size_t count =  mdsio->read.count;
+	void *buf = malloc(count);
+	ssize_t nbytes = MDS_IO_READ(fd, buf, count);
 #ifdef USE_PERF
 	TreePerfRead(nbytes);
 #endif
 	if (nbytes > 0) {
-	  DESCRIPTOR_A(ans_d, 1, DTYPE_B, 0, 0);
-	  if ((size_t)nbytes != num)
-	    perror("READ_K wrong byte count");
-	  ans_d.pointer = buf;
-	  ans_d.arsize = nbytes;
+	  DESCRIPTOR_A(ans_d, 1, DTYPE_B, buf, nbytes);
+	  if ((size_t)nbytes != count) perror("READ_K wrong byte count");
 	  ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&ans_d);
 	} else {
 	  DESCRIPTOR(ans_d, "");
@@ -1097,80 +1061,67 @@ Message *ProcessMessage(Connection * connection, Message * message)
       }
     case MDS_IO_WRITE_K:
       {
-	ssize_t nbytes = MDS_IO_WRITE(message->h.dims[1], message->bytes, (size_t) message->h.dims[0]);
-	DESCRIPTOR_LONG(ans_d, 0);
-	ans_d.pointer = (char *)&nbytes;
-	if (nbytes != (ssize_t) message->h.dims[0])
-	  perror("WRITE_K wrong byte count");
-	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&ans_d);
+	int fd = mdsio->write.fd;
+	size_t count = mdsio->write.count;
+	int64_t ans_o = (int64_t)MDS_IO_WRITE(fd, message->bytes, count);
+	struct descriptor ans_d = { 8, DTYPE_Q, CLASS_S, (char*)&ans_o };
+	SWAP_INT_IF_BIGENDIAN(ans_d.pointer);
+	if (ans_o != (int64_t)count) perror("WRITE_K wrong byte count");
+	ans = BuildResponse(connection->client_type, connection->message_id, 1, &ans_d);
 	break;
       }
     case MDS_IO_LOCK_K:
       {
-	int fd = message->h.dims[1];
-	int64_t offset;
-	int size = message->h.dims[4];
-	int mode_in = message->h.dims[5];
-	int mode = mode_in & 0x3;
-	int nowait = mode_in & 0x8;
+	int fd = mdsio->lock.fd;
+	off_t offset= mdsio->lock.offset;
+	SWAP_INT_IF_BIGENDIAN(&offset);
+	int size    = mdsio->lock.size;
+	int mode_in = mdsio->lock.mode;
+	int mode    = mode_in & 0x3;
+	int nowait  = mode_in & 0x8;
 	int deleted;
-	DESCRIPTOR_LONG(ans_d, 0);
-#ifdef WORDS_BIGENDIAN
-	offset = ((int64_t) message->h.dims[2]) << 32 | message->h.dims[3];
-#else
-	offset = ((int64_t) message->h.dims[3]) << 32 | message->h.dims[2];
-#endif
-	int status = MDS_IO_LOCK(fd, offset, size, mode | nowait, &deleted);
-	ans_d.pointer = (char *)&status;
-	ans = BuildResponse(connection->client_type, connection->message_id, deleted ? 3 : 1, (struct descriptor *)&ans_d);
+	int ans_o = MDS_IO_LOCK(fd, offset, size, mode | nowait, &deleted);
+	struct descriptor ans_d = { 4, DTYPE_L, CLASS_S, (char*)&ans_o };
+	ans = BuildResponse(connection->client_type, connection->message_id, deleted ? 3 : 1, &ans_d);
 	break;
       }
     case MDS_IO_EXISTS_K:
       {
 	char *filename = message->bytes;
-	int status = MDS_IO_EXISTS(filename);
-	DESCRIPTOR_LONG(status_d, 0);
-	status_d.pointer = (char *)&status;
-	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&status_d);
+	int ans_o = MDS_IO_EXISTS(filename);
+	struct descriptor ans_d = { 4, DTYPE_L, CLASS_S, (char*)&ans_o };
+	ans = BuildResponse(connection->client_type, connection->message_id, 1, &ans_d);
 	break;
       }
     case MDS_IO_REMOVE_K:
       {
-	char *filename=message->bytes;
-	int status = MDS_IO_REMOVE(filename);
-	DESCRIPTOR_LONG(status_d, 0);
-	status_d.pointer = (char *)&status;
-	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&status_d);
+	char *filename = message->bytes;
+	int ans_o = MDS_IO_REMOVE(filename);
+	struct descriptor ans_d = { 4, DTYPE_L, CLASS_S, (char*)&ans_o };
+	ans = BuildResponse(connection->client_type, connection->message_id, 1, &ans_d);
 	break;
       }
     case MDS_IO_RENAME_K:
       {
-	DESCRIPTOR_LONG(status_d, 0);
 	char *old = message->bytes;
 	char *new = message->bytes + strlen(old) + 1;
-	int status = MDS_IO_RENAME(old,new);
-	status_d.pointer = (char *)&status;
-	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&status_d);
+	int ans_o = MDS_IO_RENAME(old,new);
+	struct descriptor ans_d = { 4, DTYPE_L, CLASS_S, (char*)&ans_o };
+	ans = BuildResponse(connection->client_type, connection->message_id, 1, &ans_d);
 	break;
       }
     case MDS_IO_READ_X_K:
       {
-	int fd = message->h.dims[1];
-	off_t offset;
-	void *buf = malloc(message->h.dims[4]);
-	size_t num = (size_t) message->h.dims[4];
-	ssize_t nbytes;
+	int fd = mdsio->read_x.fd;
+	off_t offset = mdsio->read_x.offset;
+	SWAP_INT_IF_BIGENDIAN(&offset);
+	size_t count = mdsio->read_x.count;
+	void *buf = malloc(count);
 	int deleted;
-#ifdef WORDS_BIGENDIAN
-        offset = ((int64_t) message->h.dims[2]) << 32 | message->h.dims[3];
-#else
-        offset = ((int64_t) message->h.dims[3]) << 32 | message->h.dims[2];
-#endif
-        nbytes = MDS_IO_READ_X(fd, offset,buf,num,&deleted);
+        size_t nbytes = MDS_IO_READ_X(fd, offset,buf,count,&deleted);
 	if (nbytes > 0) {
-	  DESCRIPTOR_A(ans_d, 1, DTYPE_B, 0, 0);
-	  ans_d.pointer = buf;
-	  ans_d.arsize = nbytes;
+	  DESCRIPTOR_A(ans_d, 1, DTYPE_B, buf, nbytes);
+	  if ((size_t)nbytes != count) perror("READ_X_K wrong byte count");
 	  ans = BuildResponse(connection->client_type, connection->message_id, deleted ? 3 : 1, (struct descriptor *)&ans_d);
 	} else {
 	  DESCRIPTOR(ans_d, "");
@@ -1183,10 +1134,10 @@ Message *ProcessMessage(Connection * connection, Message * message)
       {
         char *treename= message->bytes;
         char *filepath= message->bytes+strlen(treename)+1;
-        int shot      = message->h.dims[1];
-        int type      = message->h.dims[2];
-        int new       = message->h.dims[3];
-        int edit_flag = message->h.dims[4];
+        int shot = mdsio->open_one.shot;
+        tree_type_t type = (tree_type_t)mdsio->open_one.type;
+        int new =  mdsio->open_one.new;
+        int edit_flag = mdsio->open_one.edit;
         int fd;
         char*fullpath = NULL;
         int status = MDS_IO_OPEN_ONE(filepath,treename,shot,type,new,edit_flag,&fullpath,NULL,&fd);
@@ -1205,10 +1156,9 @@ Message *ProcessMessage(Connection * connection, Message * message)
       }
     default:
       {
-	DESCRIPTOR_LONG(status_d, 0);
-	int status = 0;
-	status_d.pointer = (char *)&status;
-	ans = BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)&status_d);
+	int ans_o = 0;
+	struct descriptor ans_d = { 4, DTYPE_L, CLASS_S, (char*)&ans_o };
+	ans = BuildResponse(connection->client_type, connection->message_id, 1, &ans_d);
 	break;
       }
     }

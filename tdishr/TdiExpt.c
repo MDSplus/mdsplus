@@ -44,17 +44,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 int Tdi3MdsDefault(struct descriptor *in_ptr __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
   char value[4096];
-  STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_T;
+  STATIC_CONSTANT dtype_t dtype = DTYPE_T;
   int retlen, status;
-  struct dbi_itm lst[] = { {sizeof(value), DbiDEFAULT, 0, 0}
-			   , {0, DbiEND_OF_LIST, 0, 0}
+  struct dbi_itm lst[] = { {sizeof(value), DbiDEFAULT, 0, 0} , {0, DbiEND_OF_LIST, 0, 0}
   };
-  unsigned short len;
-  lst[0].pointer = (unsigned char *)value;
+  length_t len;
+  lst[0].pointer = (uint8_t *)value;
   lst[0].return_length_address = &retlen;
   status = TreeGetDbi(lst);
   if STATUS_OK {
-    len = (unsigned short)retlen;
+    len = (length_t)retlen;
     status = MdsGet1DxS(&len, &dtype, out_ptr);
   }
   if STATUS_OK
@@ -69,16 +68,16 @@ int Tdi3Expt(struct descriptor *in_ptr __attribute__ ((unused)), struct descript
 {
   char value[39 - 7];
   int retlen, status;
-  STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_T;
+  STATIC_CONSTANT dtype_t dtype = DTYPE_T;
   struct dbi_itm lst[] = { {sizeof(value), DbiNAME, 0, 0}
 			   , {0, DbiEND_OF_LIST, 0, 0}
   };
-  unsigned short len;
+  length_t len;
   lst[0].pointer = (unsigned char *)value;
   lst[0].return_length_address = &retlen;
   status = TreeGetDbi(lst);
   if STATUS_OK {
-    len = (unsigned short)retlen;
+    len = (length_t)retlen;
     status = MdsGet1DxS(&len, &dtype, out_ptr);
   }
   if STATUS_OK
@@ -93,16 +92,16 @@ int Tdi3Shot(struct descriptor *in_ptr __attribute__ ((unused)), struct descript
 {
   int value;
   int retlen, status;
-  STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_L;
+  STATIC_CONSTANT dtype_t dtype = DTYPE_L;
   struct dbi_itm lst[] = { {sizeof(value), DbiSHOTID, 0, 0}
 			   , {0, DbiEND_OF_LIST, 0,  0}
   };
-  unsigned short len;
+  length_t len;
   lst[0].pointer = (unsigned char *)&value;
   lst[0].return_length_address = &retlen;
   status = TreeGetDbi(lst);
   if STATUS_OK {
-    len = (unsigned short)retlen;
+    len = (length_t)retlen;
     status = MdsGet1DxS(&len, &dtype, out_ptr);
   }
   if STATUS_OK

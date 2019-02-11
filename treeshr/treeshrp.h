@@ -14,11 +14,7 @@
 #include <sys/types.h>
 #endif
 #include <pthread_port.h>
-#define MDS_IO_LOCK_RD  0x01
-#define MDS_IO_LOCK_WRT 0x02
-#define MDS_IO_LOCK_NONE 0x00
-#define MDS_IO_LOCK_NOWAIT 0x08
-#define MDS_IO_LOCK_MASK 0x03
+#include "../mdstcpip/mdsIo.h"
 
 /********************************************
   NCI
@@ -45,9 +41,9 @@ typedef struct nci {
   unsigned char spare;
   int64_t time_inserted;
   unsigned int owner_identifier;
-  unsigned char class;
-  unsigned char dtype;
-  unsigned int length;
+  class_t class;
+  dtype_t dtype;
+  l_length_t length;
   unsigned char spare2;
   unsigned int status;
   union {
@@ -76,15 +72,18 @@ typedef struct extended_attributes {
   int facility_length[FACILITIES_PER_EA];
 } EXTENDED_ATTRIBUTES;
 
-#define STANDARD_RECORD_FACILITY  0
-#define SEGMENTED_RECORD_FACILITY 1
-#define NAMED_ATTRIBUTES_FACILITY 2
+enum{
+STANDARD_RECORD_FACILITY  =0,
+SEGMENTED_RECORD_FACILITY =1,
+NAMED_ATTRIBUTES_FACILITY =2,
+};
 
+#define MAX_DIMS 8
 typedef struct segment_header {
-  unsigned char dtype;
+  dtype_t dtype;
   char dimct;
-  int dims[8];
-  short length;
+  int dims[MAX_DIMS];
+  length_t length;
   int idx;
   int next_row;
   int64_t index_offset;
@@ -125,59 +124,90 @@ typedef struct named_attributes_index {
   NAMED_ATTRIBUTE attribute[NAMED_ATTRIBUTES_PER_INDEX];
 } NAMED_ATTRIBUTES_INDEX;
 
-#if defined(__GNUC__) || defined(__APPLE__)
-#define PACK_ATTR __attribute__ ((__packed__))
-#define PACK_START
-#define PACK_STOP
+// #define WORDS_BIGENDIAN // use for testing
+#ifdef WORDS_BIGENDIAN
+static inline void SWP(void* out, const void* in, const int a, const int b) {
+ char t=((char*)out)[O];	// in and out could be the same
+        ((char*)in )[O]=((char*)out)[I];
+                        ((char*)in )[I]=t;
+}
+static inline void loadint16(void* out, const void* in) {
+ SWP(out,in,0,1);
+}
+static inline void loadint32(void* out, const void* in) {
+ SWP(out,in,0,3);
+ SWP(out,in,2,1);
+}
+static inline void loadint64(void* out, const void* in) {
+ SWP(out,in,0,7);
+ SWP(out,in,2,5);
+ SWP(out,in,4,3);
+ SWP(out,in,6,1);
+}
 #else
-#define PACK_ATTR
-#define PACK_START #pragma pack(1)
-#define PACK_STOP   #pragma pack(4)
+static inline void CPY(void* out, const void* in, const int idx) {
+  ((char*)out)[idx] = ((char*)in)[idx];
+}
+static inline void loadint16(void* out, const void* in) {
+ CPY(out,in,0);CPY(out,in,1);
+}
+static inline void loadint32(void* out, const void* in) {
+ CPY(out,in,0);CPY(out,in,1);
+ CPY(out,in,2);CPY(out,in,3);
+}
+static inline void loadint64(void* out, const void* in) {
+ CPY(out,in,0);CPY(out,in,1);
+ CPY(out,in,2);CPY(out,in,3);
+ CPY(out,in,4);CPY(out,in,5);
+ CPY(out,in,6);CPY(out,in,7);
+}
 #endif
-
-#if defined(WORDS_BIGENDIAN)
-
-#define swapquad(ptr) ( (((int64_t)((unsigned char *)ptr)[7]) << 56) | (((int64_t)((unsigned char *)ptr)[6]) << 48) | \
-                        (((int64_t)((unsigned char *)ptr)[5]) << 40) | (((int64_t)((unsigned char *)ptr)[4]) << 32) | \
-                        (((int64_t)((unsigned char *)ptr)[3]) << 24) | (((int64_t)((unsigned char *)ptr)[2]) << 16) | \
-                        (((int64_t)((unsigned char *)ptr)[1]) <<  8) | (((int64_t)((unsigned char *)ptr)[0]) ))
-#define swapint(ptr) ( (((int)((unsigned char *)(ptr))[3]) << 24) | (((int)((unsigned char *)(ptr))[2]) << 16) | \
-                       (((int)((unsigned char *)(ptr))[1]) <<  8) | (((int)((unsigned char *)(ptr))[0]) ))
-#define swapshort(ptr) ( (((int)((unsigned char *)ptr)[1]) << 8) | (((int)((unsigned char *)ptr)[0]) ))
-
-#define LoadShort(in,outp) ((char *)(outp))[0] = ((char *)&in)[1]; ((char *)(outp))[1] = ((char *)&in)[0]
-#define LoadInt(in,outp)   ((char *)(outp))[0] = ((char *)&in)[3]; ((char *)(outp))[1] = ((char *)&in)[2]; \
-                           ((char *)(outp))[2] = ((char *)&in)[1]; ((char *)(outp))[3] = ((char *)&in)[0]
-#define LoadQuad(in,outp)  (outp)[0] = ((char *)&in)[7]; (outp)[1] = ((char *)&in)[6]; \
-                           (outp)[2] = ((char *)&in)[5]; (outp)[3] = ((char *)&in)[4]; \
-                           (outp)[4] = ((char *)&in)[3]; (outp)[5] = ((char *)&in)[2]; \
-                           (outp)[6] = ((char *)&in)[1]; (outp)[7] = ((char *)&in)[0]
-#else
-
-static inline int64_t swapquad(const void *buf) {
-  int64_t ans;
-  memcpy(&ans,buf,sizeof(ans));
-  return ans;
-}
-static inline int32_t swapint(const void *buf) {
-  int32_t ans;
-  memcpy(&ans,buf,sizeof(ans));
-  return ans;
-}
-static inline int16_t swapshort(const void *buf) {
+static inline int16_t swapint16(const void *buf) {
   int16_t ans;
-  memcpy(&ans,buf,sizeof(ans));
+  loadint16(&ans,buf);
   return ans;
 }
+static inline int32_t swapint32(const void *buf) {
+  int32_t ans;
+  loadint32(&ans,buf);
+  return ans;
+}
+static inline int64_t swapint64(const void *buf) {
+  int64_t ans;
+  loadint64(&ans,buf);
+  return ans;
+}
+static inline void getchars(char **buf, void *ans, int n) {
+  memcpy(ans,*buf,n);*buf+=n;
+}
+static inline void getint8 (char **buf, const void *ans) {
+  *(char*)ans = **buf;*buf+=sizeof(int8_t );
+}
+static inline void getint16(char **buf, void *ans) {
+  loadint16(ans,*buf);*buf+=sizeof(int16_t);
+}
+static inline void getint32(char **buf, void *ans) {
+  loadint32(ans,*buf);*buf+=sizeof(int32_t);
+}
+static inline void getint64(char **buf, void *ans) {
+  loadint64(ans,*buf);*buf+=sizeof(int64_t);
+}
+static inline void putchars(char **buf, const void *ans, int n) {
+  memcpy(*buf,ans,n);*buf+=n;
+}
+static inline void putint8 (char **buf, const void *ans) {
+  **buf = *(char*)ans;*buf+=sizeof(int8_t );
+}
+static inline void putint16(char **buf, const void *ans) {
+  loadint16(*buf,ans);*buf+=sizeof(int16_t);
+}
+static inline void putint32(char **buf, const void *ans) {
+  loadint32(*buf,ans);*buf+=sizeof(int32_t);
+}
+static inline void putint64(char **buf, const void *ans) {
+  loadint64(*buf,ans);*buf+=sizeof(int64_t);
+}
 
-#define LoadShort(in,outp) ((char *)(outp))[0] = ((char *)&in)[0]; ((char *)(outp))[1] = ((char *)&in)[1]
-#define LoadInt(in,outp)   ((char *)(outp))[0] = ((char *)&in)[0]; ((char *)(outp))[1] = ((char *)&in)[1]; \
-                           ((char *)(outp))[2] = ((char *)&in)[2]; ((char *)(outp))[3] = ((char *)&in)[3]
-#define LoadQuad(in,outp)  (outp)[0] = ((char *)&in)[0]; (outp)[1] = ((char *)&in)[1]; \
-                           (outp)[2] = ((char *)&in)[2]; (outp)[3] = ((char *)&in)[3]; \
-                           (outp)[4] = ((char *)&in)[4]; (outp)[5] = ((char *)&in)[5]; \
-                           (outp)[6] = ((char *)&in)[6]; (outp)[7] = ((char *)&in)[7]
-#endif
 
 #define bitassign(bool,value,mask)   value = (bool) ? (value) | (unsigned)(mask) : (value) & ~(unsigned)(mask)
 #define bitassign_c(bool,value,mask) value = (unsigned char)(( (bool) ? (value) |  (unsigned)(mask) : (value) & ~(unsigned)(mask) )&0xFF)
@@ -205,6 +235,7 @@ typedef struct nid {
 #endif
 
 #define MAX_SUBTREES 256	/* since there are only 8 bits of tree number in a nid */
+#define DEFAULT_STACK_LIMIT 8
 
 /********************************************
    NODE
@@ -215,11 +246,6 @@ typedef struct nid {
 
 typedef char NODE_NAME[12];
 
-#ifdef _WIN32
-#pragma pack(push,1)
-#else
-PACK_START
-#endif
 /*********************************************
  Linkages to other nodes via parent, brother,
  member and child node links are expressed in
@@ -228,17 +254,19 @@ PACK_START
  -sizeof(NODE). To connect to the following
  node it should be set to sizeof(NODE) etc.
 *********************************************/
+#pragma pack(push,1)
 typedef struct node {
   NODE_NAME name;
   int parent;
   int member;
   int brother;
   int child;
-  unsigned char usage;
-  unsigned short conglomerate_elt PACK_ATTR;
+  unsigned char usage;			//packed! is aligned(32bit)
+  unsigned short conglomerate_elt;	//packed! is not aligned
   char fill;
   int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
 } NODE;
+#pragma pack(pop)
 
 #ifdef EMPTY_NODE
 static NODE empty_node = { {'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' ', ' '} ,
@@ -251,7 +279,7 @@ static inline int node_offset(NODE * a, NODE * b)
   int ans = 0;
   if (a && b) {
     ans = (int)((char *)a - (char *)b);
-    ans = swapint((char *)&ans);
+    ans = swapint32(&ans);
   }
   return ans;
 }
@@ -294,7 +322,7 @@ typedef struct tree_header {
   unsigned:3;
 #else
   unsigned char sort_children:1;	/* Sort children flag */
-  unsigned char sort_members:1;	/* Sort members  flag */
+  unsigned char sort_members:1;		/* Sort members  flag */
   unsigned char versions_in_model:1;
   unsigned char versions_in_pulse:1;
   unsigned char readonly:1;
@@ -327,18 +355,13 @@ typedef struct {
 RECORD_HEADER
 VFC portion of file.
 ***************************************/
+#pragma pack(push,1)
 typedef struct record_header {
-  unsigned short rlength PACK_ATTR;
-  int node_number PACK_ATTR;
+  unsigned short rlength;	//packed! is aligned
+  int node_number;		//packed! is not aligned
   RFA rfa;
 } RECORD_HEADER;
-
-#ifdef _WIN32
 #pragma pack(pop)
-#else
-PACK_STOP
-#endif
-
 /*****************************************************
 *     New Search structures
 *****************************************************/
@@ -416,10 +439,12 @@ in doing I/O to the tree files.
 
 #define DATAF_C_MAX_RECORD_SIZE (32765u - sizeof(RECORD_HEADER))
 
-#define TREE_DIRECTORY     0 // just directory
-#define TREE_TREEFILE_TYPE 1 //".tree"
-#define TREE_NCIFILE_TYPE  2 //".characteristics"
-#define TREE_DATAFILE_TYPE 3 //".datafile"
+typedef enum{
+TREE_DIRECTORY     =0, // just directory
+TREE_TREEFILE_TYPE =1,//".tree"
+TREE_NCIFILE_TYPE  =2, //".characteristics"
+TREE_DATAFILE_TYPE =3, //".datafile"
+} tree_type_t;
 #define TREE_TREEFILE_EXT  ".tree"
 #define TREE_NCIFILE_EXT   ".characteristics"
 #define TREE_DATAFILE_EXT  ".datafile"
@@ -498,7 +523,6 @@ typedef struct tree_info {
   NCI_FILE *nci_file;		/* Pointer to nci file block (if open)              */
   DATA_FILE *data_file;		/* Pointer to a datafile access block               */
   pthread_rwlock_t lock;
-  void *dispatch_table; 	/* pointer to dispatch table generated by dispatch/build */
 } TREE_INFO;
 
 #define RDLOCKINFO(info) if (info->has_lock) pthread_rwlock_rdlock(&info->lock)
@@ -515,7 +539,7 @@ always passed as an argument to tree traversal
 routines.
 *********************************************/
 
-typedef struct _timecontext_t{
+typedef struct {
 struct descriptor_xd start;
 struct descriptor_xd end;
 struct descriptor_xd delta;
@@ -534,11 +558,11 @@ typedef struct pino_database {
   unsigned modified:1;		/* Flag indicating tree structure modified */
   unsigned setup_info:1;	/* Flag indicating setup info is being added */
   unsigned remote:1;		/* Flag indicating tree is on remote system */
-
   int stack_size;
   timecontext_t timecontext;
   int delete_list_vm;
   unsigned char* delete_list;
+  void *dispatch_table; 	/* pointer to dispatch table generated by dispatch/build */
 } PINO_DATABASE;
 
 static inline NODE *nid_to_node(PINO_DATABASE * dbid, NID * nid)
@@ -557,7 +581,7 @@ static inline NODE *parent_of(PINO_DATABASE * dbid, NODE * a)
     if (a->usage == TreeUSAGE_SUBTREE_TOP) {
       ans = nid_to_node(dbid, (NID *) & a->parent);
     } else if (a->parent) {
-      ans = (NODE *) ((char *)a + swapint((char *)&a->parent));
+      ans = (NODE *) ((char *)a + swapint32(&a->parent));
     }
   }
   return ans;
@@ -567,7 +591,7 @@ static inline NODE *member_of(NODE * a)
 {
   NODE *ans = 0;
   if (a && a->member) {
-    ans = (NODE *) ((char *)a + swapint((char *)&a->member));
+    ans = (NODE *) ((char *)a + swapint32(&a->member));
   }
   return ans;
 }
@@ -585,7 +609,7 @@ static inline NODE *child_of(PINO_DATABASE * dbid, NODE * a)
     if (a->usage == TreeUSAGE_SUBTREE_REF) {
       ans = nid_to_node(dbid, (NID *) & a->child);
     } else {
-      ans = (NODE *) ((char *)a + swapint((char *)&a->child));
+      ans = (NODE *) ((char *)a + swapint32(&a->child));
     }
   }
   if (ans && ans->usage == TreeUSAGE_SUBTREE_REF)
@@ -600,7 +624,7 @@ static inline NODE *brother_of(PINO_DATABASE * dbid, NODE * a)
     if (a->usage == TreeUSAGE_SUBTREE_TOP) {
       ans = nid_to_node(dbid, (NID *) & a->brother);
     } else {
-      ans = (NODE *) ((char *)a + swapint((char *)&a->brother));
+      ans = (NODE *) ((char *)a + swapint32(&a->brother));
       if (ans->usage == TreeUSAGE_SUBTREE_REF)
 	ans = nid_to_node(dbid, (NID *) & ans->child);
     }
@@ -738,8 +762,8 @@ extern int GetDefaultNidRemote(PINO_DATABASE * dblist, int *nid);
 #ifdef _WIN32
 #include <windows.h>
 #endif
-extern int64_t RfaToSeek(unsigned char *rfa);
-void SeekToRfa(int64_t seek, unsigned char *rfa);
+extern int64_t RfaToSeek(uint8_t*rfa);
+void SeekToRfa(int64_t seek, uint8_t*rfa);
 extern int SetParentState(PINO_DATABASE * db, NODE * node, unsigned int state);
 extern void TreeCallHookFun(char *hookType, char *hookName, ...);
 extern int TreeMakeNidsLocal(struct descriptor *dsc_ptr, int nid);
@@ -762,7 +786,7 @@ int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, const c
 extern int TreeCallHook(TreeshrHookType operation, TREE_INFO * info, int nid);
 extern void _TreeDeleteNodesWrite(void *dbid);
 extern void _TreeDeleteNodesDiscard(void *dbid);
-extern int TreeGetDatafile(TREE_INFO * info_ptr, unsigned char *rfa, int *buffer_size, char *record,
+extern int TreeGetDatafile(TREE_INFO * info_ptr, uint8_t*rfa, int *buffer_size, char *record,
 			   int *retsize, int *nodenum, unsigned char flags);
 extern int TreeEstablishRundownEvent(TREE_INFO * info);
 extern int TreeGetDsc(TREE_INFO * info, const int nid, const int64_t offset, const int length,
@@ -786,8 +810,8 @@ extern int TreePutDsc(TREE_INFO * info_ptr, int nid, struct descriptor *dsc, int
 		      int *length, int compress);
 extern int TreePutExtendedAttributes(TREE_INFO * info_ptr, EXTENDED_ATTRIBUTES * att,
 				     int64_t * offset);
-extern void TreeSerializeNciIn(char *in, struct nci *out);
-extern void TreeSerializeNciOut(struct nci *in, char *out);
+extern void TreeSerializeNciIn(const char *in, NCI *out);
+extern void TreeSerializeNciOut(const NCI *in, char *out);
 extern int64_t TreeTimeInserted();
 extern int TreeSetTemplateNci(NCI * nci);
 extern int TreeLockNci(TREE_INFO * info, int readonly, int nodenum, int *deleted);
@@ -812,6 +836,6 @@ extern int MDS_IO_EXISTS(char *filename);
 extern int MDS_IO_REMOVE(char *filename);
 extern int MDS_IO_RENAME(char *oldname, char *newname);
 extern ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *deleted);
-extern int MDS_IO_OPEN_ONE(char* filepath_in,char* treename,int shot, int type, int new, int edit_flag, char**fullpath, int*speclen, int *fd_out);
+extern int MDS_IO_OPEN_ONE(char* filepath_in,char* treename,int shot, tree_type_t type, int new, int edit_flag, char**fullpath, int*speclen, int *fd_out);
 
 #endif

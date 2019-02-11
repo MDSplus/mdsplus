@@ -56,9 +56,10 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         server,server_port  = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT',7100+self.index,True)
         svr = svr_log = None
         try:
-            svr,svr_log = self._start_mdsip(server ,server_port ,'connection_thick')
+            svr,svr_log = self._start_mdsip(server ,server_port ,'thick')
             try:
                 con = Connection(server)
+                self.assertEqual(con.get("zero([1,1,1,1,1,1,1,1],1)").tolist(),[[[[[[[[0]]]]]]]])
                 with Tree(self.tree,-1,"new") as local:
                     local.addNode("pysub","SUBTREE")
                     s=local.addNode("S","SIGNAL")
@@ -122,7 +123,7 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         server,server_port  = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT',7100+self.index,True)
         svr = svr_log = None
         try:
-            svr,svr_log = self._start_mdsip(server ,server_port ,'connectionTCP')
+            svr,svr_log = self._start_mdsip(server ,server_port ,'tcp')
             try:
                 if svr is not None: time.sleep(1)
                 def requests(c,idx):

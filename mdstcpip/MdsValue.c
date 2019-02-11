@@ -73,7 +73,7 @@ EXPORT int MdsIpGetDescriptor(int id, const char* expression, int nargs, struct 
   if STATUS_OK {
     char ndims;
     void *mem = 0;
-    int dims[MAX_DIMS_R] = {0};
+    int dims[MAX_DIMS] = {0};
     struct descriptor_a ser = {0};
     status = GetAnswerInfoTS(id, (char*)&ser.dtype, (short int*)&ser.length, &ndims, dims, (int*)&ser.arsize, (void**)&ser.pointer, &mem);
     ser.class=CLASS_A;
@@ -130,4 +130,18 @@ EXPORT int MdsValueDsc(int id, const char *expression, ...){
   VA_LIST_NULL(arglist,nargs,0,-1,expression);
   struct descriptor_xd *ans_ptr = (struct descriptor_xd *)arglist[nargs];
   return MdsIpGetDescriptor(id,expression,nargs,arglist,ans_ptr);
+}
+
+EXPORT void MdsIpFree(void *ptr) {
+/* for compatibility malloc memory should be freed by same module/lib
+ * use MdsIpFree to free ans.ptr returned by MdsValue
+*/
+  free(ptr);
+}
+
+EXPORT void MdsIpFreeDsc(struct descriptor_xd *xd) {
+/* for compatibility malloc memory should be freed by same module/lib
+ * use MdsIpFreeDsc to free xd returned by MdsValueDsc
+*/
+  if (xd) free_xd(xd);
 }

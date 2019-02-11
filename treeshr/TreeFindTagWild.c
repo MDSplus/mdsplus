@@ -142,7 +142,7 @@ static int findtag(PINO_DATABASE *dblist, TAG_SEARCH **ctx) {
 	for (; !done && ((*ctx)->next_tag < (*ctx)->this_tree_info->header->tags);) {
 	  unsigned short len;
 	  s_tag_dsc.pointer = (char *)(*ctx)->this_tree_info->tag_info[
-			swapint((char *)&(*ctx)->this_tree_info->tags[(*ctx)->next_tag])
+			swapint32(&(*ctx)->this_tree_info->tags[(*ctx)->next_tag])
 			].name;
 	  StrTrim((struct descriptor *)&tag_dsc, (struct descriptor *)&s_tag_dsc, &len);
 	  if IS_OK(StrMatchWild((struct descriptor *)&tag_dsc,(struct descriptor *)&((*ctx)->search_tag))) {
@@ -201,12 +201,12 @@ char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout)
       struct descriptor_s tag_name = { sizeof(TAG_NAME), DTYPE_T, CLASS_S, tagname };
       unsigned short len;
       s_tag_name.pointer = (char *)(*ctx)->this_tree_info->tag_info[
-		swapint((char *)&(*ctx)->this_tree_info->tags[(*ctx)->next_tag])
+		swapint32(&(*ctx)->this_tree_info->tags[(*ctx)->next_tag])
 		].name;
       StrTrim((struct descriptor *)&tag_name, (struct descriptor *)&s_tag_name, &len);
       tagname[len] = '\0';
-      nptr += swapint(&(*ctx)->this_tree_info->tag_info[
-		swapint((char *)&(*ctx)->this_tree_info->tags[(*ctx)->next_tag])
+      nptr += swapint32(&(*ctx)->this_tree_info->tag_info[
+		swapint32(&(*ctx)->this_tree_info->tags[(*ctx)->next_tag])
 		].node_idx);
     } else
       strcpy(tagname, "TOP");

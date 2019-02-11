@@ -59,7 +59,7 @@ extern int TdiCall();
 extern int TdiImpose();
 extern int Tdi1Vector();
 
-EXPORT int Tdi1Evaluate(int opcode __attribute__ ((unused)),
+EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__ ((unused)),
 		 int narg __attribute__ ((unused)),
 		 struct descriptor *list[], struct descriptor_xd *out_ptr)
 // SsINTERNAL: requires MdsCopyDxXd
@@ -81,8 +81,7 @@ EXPORT int Tdi1Evaluate(int opcode __attribute__ ((unused)),
     real stuff, we can just copy its descriptor.
     Release any lingering output unless it is our input.
     ***************************************************/
-    switch (list[0]->dtype) {
-    case DTYPE_DSC:
+    if (list[0]->dtype == DTYPE_DSC) {
       if (list[0]->pointer == 0)
 	return TdiNULL_PTR;
       switch (((struct descriptor *)(list[0]->pointer))->dtype) {
@@ -105,7 +104,6 @@ EXPORT int Tdi1Evaluate(int opcode __attribute__ ((unused)),
 	  return status;
 	}
       }
-      break;
     }
     MDS_ATTR_FALLTHROUGH
 

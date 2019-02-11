@@ -107,7 +107,7 @@ OPC (	BuildProcedure,	BUILD_PROCEDURE ,Build,	undef,		undef, XX,YY,PROCEDURE,PRO
 OPC (	BuildProgram,	BUILD_PROGRAM ,	Build,	undef,		undef, XX,YY,PROGRAM,PROGRAM,	2,2,	OK+I	)/*;mds	(timeout,program)	*/
 OPC (	BuildRange,	BUILD_RANGE ,	Build,	undef,		undef, XX,YY,RANGE,RANGE,	2,3,	OK+I	)/*;mds	([low],[high],[step])	*/
 OPC (	BuildRoutine,	BUILD_ROUTINE ,	Build,	undef,		undef, XX,YY,ROUTINE,ROUTINE,	3,254,	OK+I	)/*;mds	(timeout,image,rout,..)	*/
-OPC (	BuildSignal,	BUILD_SIGNAL ,	Build,	undef,		undef, XX,YY,SIGNAL,SIGNAL,	2,2+MAXDIM,OK+I	)/*;mds	(data,raw,[dim...])	*/
+OPC (	BuildSignal,	BUILD_SIGNAL ,	Build,	undef,		undef, XX,YY,SIGNAL,SIGNAL,	2,2+MAX_DIMS,OK+I	)/*;mds	(data,raw,[dim...])	*/
 OPC (	BuildSlope,	BUILD_SLOPE ,	Build,	undef,		undef, XX,YY,SLOPE,SLOPE,	1,254,	OK+I	)/*;mds	(slope,[begin,end]...)	*/
 OPC (	BuildWindow,	BUILD_WINDOW ,	Build,	undef,		undef, XX,YY,WINDOW,WINDOW,	3,3,	OK+I	)/*;mds	(istart,iend,x_at_0)	*/
 OPC (	BuildWithUnits,	BUILD_WITH_UNITS,Build, undef,		undef, XX,YY,WITH_UNITS,WITH_UNITS,2,2,	OK+I	)/*;mds	(data,units)		*/
@@ -257,7 +257,7 @@ OPC (	MatRot,		MAT_ROT ,	Matrix, undef,		MatRot,	F,HC,	F,HC,	2,5,	OK	)/*;	(mat,a
 OPC (	MatRotInt,	MAT_ROT_INT ,	Matrix, undef,		MatRotInt,	F,HC,	F,HC,	2,5,	OK	)/*;	(mat,angle,mag,x0,y0)	*/
 OPC (	Max,		MAX ,		MinMax, Add,		Max,		BU,HC,	BU,HC,	2,254,	OK	)/*;f9	(x,y..)			*/
 OPC (	MaxExponent,	MAXEXPONENT ,	Scalar,Any,		MaxExponent,	F,HC,	L,L,	1,1,	OK	)/*;f9	(model)			*/
-OPC (	MaxLoc,		MAXLOC ,		Trans,	Mask3,		MaxLoc,	T,HC,SUBSCRIPT,SUBSCRIPT,1,3,	OK	)/*;f9	(x,[dim],[mask])		*/
+OPC (	MaxLoc,		MAXLOC ,		Trans,	Mask3L,		MaxLoc,	T,HC,SUBSCRIPT,SUBSCRIPT,1,3,	OK	)/*;f9	(x,[dim],[mask])		*/
 OPC (	MaxVal,		MAXVAL ,		Trans,	Mask3,		MaxVal,		T,HC,	T,HC,	1,3,	OK	)/*;f9	(x,[dim],[mask])	*/
 OPC (	Mean,		MEAN ,		Trans,	Mask3,		Mean,		BU,HC,	F,HC,	1,3,	OK	)/*;	(x,[dim],[mask])	*/
 OPC (	Median,		MEDIAN ,		Same,	Long2,		Median,		BU,HC,	BU,HC,	2,2,	OK	)/*;	(a,width)		*/
@@ -265,7 +265,7 @@ OPC (	Merge,		MERGE ,		Same,	Merge,		Merge,		XX,YY,	XX,YY,	3,3,	OK	)/*;f9	(tsour
 OPC (	MethodOf,	METHOD_OF ,	MethodOf, undef,	undef, METHOD,METHOD,	XX,YY,	1,1,	OK+I	)/*;mds	(method)		*/
 OPC (	Min,		MIN ,		MinMax,Add,		Min,		BU,HC,	BU,HC,	2,254,	OK	)/*;f9	(x,y..)			*/
 OPC (	MinExponent,	MINEXPONENT ,	Scalar,Any,		MinExponent,	F,HC,	L,L,	1,1,	OK	)/*;f9	(model)			*/
-OPC (	MinLoc,		MINLOC ,		Trans,	Mask3,		MinLoc,	T,HC,SUBSCRIPT,SUBSCRIPT,1,3,	OK	)/*;f9	(x,[dim], [mask])		*/
+OPC (	MinLoc,		MINLOC ,		Trans,	Mask3L,		MinLoc,	T,HC,SUBSCRIPT,SUBSCRIPT,1,3,	OK	)/*;f9	(x,[dim], [mask])		*/
 OPC (	MinVal,		MINVAL ,		Trans,	Mask3,		MinVal,		T,HC,	T,HC,	1,3,	OK	)/*;f9	(x,[dim],[mask])	*/
 OPC (	Mod,		MOD ,		Same,	Add,		Mod,		BU,HC,	BU,HC,	2,2,	MUL+N	)/*;f9	(a,p)			*/
 OPC (	ModelOf,	MODEL_OF ,	ModelOf, undef,		undef, CONGLOM,CONGLOM,	XX,YY,	1,1,	OK+I	)/*;mds	(conglom)		*/
@@ -333,7 +333,7 @@ OPC (	Scale,		SCALE ,		Same,	Long2,		Scale,		F,HC,	F,HC,	2,2,	OK	)/*;f9	(r,i)			
 OPC (	Scan,		SCAN ,		Same,	Ttb,		Scan,	T,T,SUBSCRIPT,SUBSCRIPT,2,3,	OK	)/*;f9	(string,set,[back])	*/
 OPC (	Fseek,		FSEEK ,		Fseek,	undef,		undef,		L,L,	L,L,	1,3,	OK+U	)/*;%cc	(unit,[offset],[origin])*/
 OPC (	SetExponent,	SET_EXPONENT ,	Same,	Long2,		SetExponent,	F,HC,	F,HC,	2,2,	OK	)/*;f9	(x,i)			*/
-OPC (	SetRange,	SET_RANGE ,	SetRange, undef,	undef,		XX,YY,	XX,YY,	2,1+MAXDIM,OK+I	)/*;%	(range...,name)		*/
+OPC (	SetRange,	SET_RANGE ,	SetRange, undef,	undef,		XX,YY,	XX,YY,	2,1+MAX_DIMS,OK+I	)/*;%	(range...,name)		*/
 OPC (	Ishft,		ISHFT ,		Same,	Shft,		Ishft,		BU,O,	BU,O,	2,2,	OK	)/*;f9	(a,shift)		*/
 OPC (	Ishftc,		ISHFTC ,		Same,	Shft,		Ishftc,		BU,O,	BU,O,	3,3,	OK	)/*;f9	(a,shift,size)		*/
 OPC (	ShiftLeft,	SHIFT_LEFT ,	Same,	Shft,		ShiftLeft,	BU,O,	BU,O,	2,2,	SHIFT+S	)/*;%cc	i<<j			*/
@@ -357,7 +357,7 @@ OPC (	Statement,	STATEMENT ,	Statement, undef,	undef,		XX,YY,	XX,YY,	0,254,	OK+S
 OPC (	StdDev,		STD_DEV ,	Trans,	Mask3,		StdDev,	F,HC,	F,HC,	1,3,	OK	)/*;	(array,[dim],[mask])	*/
 OPC (	String,		STRING ,		String,	undef,		undef,		XX,YY,	T,T,	1,254,	OK	)/*;	(a,...[format])		*/
 OPC (	StringOpcode,	STRING_OPCODE ,	Same,	None,		StringOpcode,	T,T,	W,W,	1,1,	OK	)/*;mds	(string)		*/
-OPC (	Subscript,	SUBSCRIPT ,	Subscript, undef,	undef,		XX,YY,	XX,YY,	1,1+MAXDIM,OK+S	)/*;%cc	a[b..] range list sig	*/
+OPC (	Subscript,	SUBSCRIPT ,	Subscript, undef,	undef,		XX,YY,	XX,YY,	1,1+MAX_DIMS,OK+S	)/*;%cc	a[b..] range list sig	*/
 OPC (	Subtract,	SUBTRACT ,	Same,	Add,		Subtract,	BU,HC,	BU,HC,	2,2,	ADD+S	)/*;%	a-b			*/
 OPC (	Sum,		SUM ,		Trans,	Mask3,		Sum,		BU,HC,	BU,HC,	1,3,	OK	)/*;f9	(array,[dim],[mask])	*/
 OPC (	Switch,		SWITCH ,		Switch,	undef,		undef,		XX,YY,	XX,YY,	2,254,	SWITCH+N )/*;%cc SWITCH(expr)stmt	*/
@@ -453,7 +453,7 @@ OPC (	MakeProcedure,	MAKE_PROCEDURE ,	Make,	undef,		undef, XX,YY,PROCEDURE,PROCE
 OPC (	MakeProgram,	MAKE_PROGRAM ,	Make,	undef,		undef, XX,YY,PROGRAM,PROGRAM,	2,2,	OK+I	)/*;mds	(timeout,program)	*/
 OPC (	MakeRange,	MAKE_RANGE ,	Make,	undef,		undef, XX,YY,RANGE,RANGE,	2,3,	OK+I	)/*;mds	([low],[high],[step])	*/
 OPC (	MakeRoutine,	MAKE_ROUTINE ,	Make,	undef,		undef, XX,YY,ROUTINE,ROUTINE,	3,254,	OK+I	)/*;mds	(timeout,image,rout,..)	*/
-OPC (	MakeSignal,	MAKE_SIGNAL ,	Make,	undef,		undef, XX,YY,SIGNAL,SIGNAL,	2,2+MAXDIM,OK+I	)/*;mds	(data,raw,[dim...])	*/
+OPC (	MakeSignal,	MAKE_SIGNAL ,	Make,	undef,		undef, XX,YY,SIGNAL,SIGNAL,	2,2+MAX_DIMS,OK+I	)/*;mds	(data,raw,[dim...])	*/
 OPC (	MakeWindow,	MAKE_WINDOW ,	Make,	undef,		undef, XX,YY,WINDOW,WINDOW,	3,3,	OK+I	)/*;mds	(istart,iend,x_at_0)	*/
 OPC (	MakeWithUnits,	MAKE_WITH_UNITS ,Make,	undef,		undef, XX,YY,WITH_UNITS,WITH_UNITS,	2,2,OK+I)/*;mds	(data,units)		*/
 OPC (	MakeCall,	MAKE_CALL ,	Make,	undef,		undef, XX,YY,CALL,BU,		3,254,	OK+I	)/*;mds	(type,imag,rout,[arg]..)*/

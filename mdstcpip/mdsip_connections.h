@@ -120,10 +120,9 @@ typedef struct _msghdr {
   signed char client_type;
   unsigned char ndims;
 #if defined(__CRAY) || defined(CRAY)
-  long dims[(MAX_DIMS_R + 1) / 2];
+  long dims[MAX_DIMS / 2];
 #else
-  int dims[MAX_DIMS_R];
-  int fill;
+  int dims[MAX_DIMS];
 #endif
 } MsgHdr;
 
@@ -605,6 +604,7 @@ EXPORT int MdsSetDefault(int id, char *node);
 /// \return the evaluation exit status of the expression.
 ///
 EXPORT int MdsValue(int id, char *exp, ...);
+EXPORT void MdsIpFree(void* ptr); // used to free ans.ptr returned by MdsValue
 
 EXPORT int NextConnection(void **ctx, char **info_name, void **info,
                           size_t *info_len);
@@ -747,7 +747,7 @@ EXPORT int MdsSetCompression(int conid, int level);
 EXPORT int GetConnectionCompression(int conid);
 
 ////////////////////////////////////////////////////////////////////////////////
-/// 
+///
 /// Creates new Connection instance, the proper ioRoutines is loaded selecting
 /// the protocol from input argument. The created Connection is added to the
 /// static ConnectionList using a thread safe lock. The new Connection is

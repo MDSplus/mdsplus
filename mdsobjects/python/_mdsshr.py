@@ -33,7 +33,7 @@ def _mimport(name, level=1):
         return __import__(name, globals())
 
 _ver=_mimport('version')
-_data=_mimport('mdsdata')
+_dat=_mimport('mdsdata')
 _exc=_mimport('mdsExceptions')
 _mds=_ver.load_library('MdsShr')
 
@@ -75,5 +75,5 @@ def DateToQuad(date):
     status = _mds.LibConvertDateString(_C.c_char_p(_ver.tobytes(date)),_C.pointer(ans))
     if not (status & 1):
         raise MdsshrException("Cannot parse %s as date. Use dd-mon-yyyy hh:mm:ss.hh format or \"now\",\"today\",\"yesterday\"." % (date,))
-    return _data.Data(_N.uint64(ans.value))
+    return _dat.Data(_N.uint64(ans.value))
 

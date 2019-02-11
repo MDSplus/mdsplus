@@ -1,9 +1,0 @@
-LIBRARY	MdsLibIdl
-EXPORTS
-;
-IdlGetAns
-IdlMdsClose
-IdlMdsOpen
-IdlMdsPut
-IdlMdsSetDefault
-IdlMdsValue

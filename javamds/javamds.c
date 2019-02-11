@@ -246,6 +246,9 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
     if (type != FLOAT && type != DOUBLE) {	/*Legal only if used to retrieve the shot number */
       int_ris = malloc(sizeof(int));
       switch (xd.pointer->dtype) {
+      default:
+	strcpy(error_message, "Invalid array dtype");
+	return 0;
       case DTYPE_BU:
       case DTYPE_B:
 	int_ris[0] = *((char *)xd.pointer->pointer);

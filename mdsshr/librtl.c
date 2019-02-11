@@ -24,6 +24,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #define _XOPEN_SOURCE_EXTENDED
 #define _GNU_SOURCE		/* glibc2 needs this */
+#define LOAD_INITIALIZESOCKETS
+#include <pthread_port.h>
+
+#ifdef _WIN32
+#include <ws2tcpip.h>
+#else
+#include <netinet/in.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <netinet/tcp.h>
+#endif
+
 #include <mdsplus/mdsconfig.h>
 #include <sys/time.h>
 #include <time.h>
@@ -42,7 +54,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef DEBUG
 # define DBG(...) fprintf(stderr,__VA_ARGS__)
 #else
-# define DBG(...) {}
+# define DBG(...) {/**/}
 #endif
 
 #ifdef _WIN32
@@ -300,6 +312,36 @@ EXPORT void *LibCallg(void **arglist, void *(*routine) ()) {
     printf("Error - currently no more than 32 arguments supported on external calls\n");
   }
   return 0;
+}
+
+EXPORT uint32_t LibGetHostAddr(char *name){
+  INITIALIZESOCKETS;
+  int addr = 0;
+#if defined(__MACH__) || defined(_WIN32)
+  struct hostent* hp = gethostbyname(name);
+  if (!hp) {
+    addr = inet_addr(name);
+    if (addr != -1)  hp = gethostbyaddr(((void *)&addr),sizeof(int),AF_INET);
+  }
+  if (hp) addr = *(int*)hp->h_addr_list[0];
+#else
+  size_t memlen;
+  struct hostent hostbuf, *hp = NULL;
+  int herr;
+  INIT_AND_FREE_ON_EXIT(void*,hp_mem);
+  for ( memlen=1024, hp_mem=malloc(memlen);
+	hp_mem && (gethostbyname_r(name,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE);
+	memlen *= 2, hp_mem = realloc(hp_mem, memlen));
+  if (!hp) {
+    addr = (int)inet_addr(name);
+    if (addr != -1) for (;
+        hp_mem && (gethostbyaddr_r(((void*)&addr),sizeof(int),AF_INET,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE);
+	memlen *= 2, hp_mem = realloc(hp_mem, memlen));
+  }
+  if (hp) addr = *(int*)hp->h_addr_list[0];
+  FREE_NOW(hp_mem);
+#endif
+  return addr == -1 ? 0 : (uint32_t)addr;
 }
 
 #ifdef _WIN32
@@ -645,8 +687,7 @@ EXPORT int StrPosition(struct descriptor *source, struct descriptor *substring, 
   return answer;
 }
 
-EXPORT int StrCopyR(struct descriptor *dest, const unsigned short *len, char *source)
-{
+EXPORT int StrCopyR(struct descriptor *dest, const length_t *len, char *source){
   const struct descriptor s = { *len, DTYPE_T, CLASS_S, source };
   return StrCopyDx(dest, &s);
 }
@@ -666,7 +707,7 @@ EXPORT int StrLenExtr(struct descriptor *dest, struct descriptor *source, int *s
   return status;
 }
 
-EXPORT int StrGet1Dx(const unsigned short *len, struct descriptor_d *out)
+EXPORT int StrGet1Dx(const length_t *len, struct descriptor_d *out)
 {
   if (out->class != CLASS_D)
     return LibINVSTRDES;
@@ -688,8 +729,7 @@ EXPORT int StrGet1Dx(const unsigned short *len, struct descriptor_d *out)
 //  return 1;
 //}
 
-int LibSFree1Dd(struct descriptor_d *out)
-{
+int LibSFree1Dd(struct descriptor_d *out){
   return StrFree1Dx(out);
 }
 
@@ -728,8 +768,7 @@ EXPORT int StrCopyDx(struct descriptor *out, const struct descriptor *in)
   return MDSplusSUCCESS;
 }
 
-EXPORT int StrCompare(struct descriptor *str1, struct descriptor *str2)
-{
+EXPORT int StrCompare(struct descriptor *str1, struct descriptor *str2){
   char *str1c = MdsDescrToCstring(str1);
   char *str2c = MdsDescrToCstring(str2);
   int ans;
@@ -739,8 +778,7 @@ EXPORT int StrCompare(struct descriptor *str1, struct descriptor *str2)
   return ans;
 }
 
-EXPORT int StrUpcase(struct descriptor *out, struct descriptor *in)
-{
+EXPORT int StrUpcase(struct descriptor *out, struct descriptor *in){
   unsigned int outlength,i;
   StrCopyDx(out, in);
   outlength = (out->class == CLASS_A) ? ((struct descriptor_a *)out)->arsize : out->length;
@@ -1580,9 +1618,9 @@ STATIC_ROUTINE int FindFileStart(struct descriptor *filespec, FindFileCtx ** ctx
   memset(*ctx, 0, sizeof(FindFileCtx));
   lctx = *ctx;
 
-  CSTRING_FROM_DESCRIPTOR(fspec, filespec)
+  CSTRING_FROM_DESCRIPTOR(fspec, filespec);
 
-      lctx->next_index = lctx->next_dir_index = 0;
+  lctx->next_index = lctx->next_dir_index = 0;
   colon = strchr(fspec, ':');
   if (colon == 0) {
     lctx->env = 0;
@@ -1664,12 +1702,11 @@ STATIC_ROUTINE char *_FindNextFile(FindFileCtx * ctx, int recursively, int caseB
     if (dp != NULL) {
       struct descriptor_d upname = { 0, DTYPE_T, CLASS_D, 0 };
       DESCRIPTOR_FROM_CSTRING(filename, dp->d_name);
-      if (caseBlind) {
-	    StrUpcase((struct descriptor *)&upname, &filename);
-      } else {
-	    StrCopyDx((struct descriptor *)&upname, &filename);
-      }
-      found = StrMatchWild((struct descriptor *)&upname, &ctx->wild_descr) & 1;
+      if (caseBlind)
+	StrUpcase((struct descriptor *)&upname, &filename);
+      else
+	StrCopyDx((struct descriptor *)&upname, &filename);
+      found = IS_OK(StrMatchWild((struct descriptor *)&upname, &ctx->wild_descr));
       StrFree1Dx(&upname);
       if (recursively) {
 	if ((strcmp(dp->d_name, ".") != 0) && (strcmp(dp->d_name, "..") != 0)) {

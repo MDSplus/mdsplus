@@ -26,18 +26,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <mdsdescrip.h>
 #include <mdsplus/mdsconfig.h>
 
 #ifndef min
 #define min(a,b) ((a) < (b)) ? (a) : (b)
 #endif
-
-struct descriptor {
-  unsigned short length;
-  char dtype;
-  char class;
-  void *pointer;
-};
 
 extern short RemCamLastIosb[4];
 extern int RemoteServerId();

@@ -229,8 +229,7 @@ static inline void uint128_avgdiv(const char* in, const int count, char* out){
   uint128_div((uint128_t*)in,&cnt,(uint128_t*)out);
 }
 
-static inline void operateIloc(void* start,int testit(const char*,const char*),args_t*a) {
-  char* result = malloc(a->length);
+static inline void operateIloc(char* start,int testit(const char*,const char*),args_t*a) {
   int* outp= (int*)a->outp;
   int ja, jb, jd;
   char *pid, *pib, *pia;
@@ -238,18 +237,17 @@ static inline void operateIloc(void* start,int testit(const char*,const char*),a
   for (ja=0;    pia=a->inp,pma=a->maskp,ja < a->cnt_aft; ja++, pia+=a->stp_aft, pma+=a->stpm_aft) {                  // LOOP_AFTER
     for (jb=0,  pib= pia,  pmb= pma;    jb++ < a->cnt_bef; pib += a->stp_bef, pmb += a->stpm_bef, outp++) {          // LOOP_BEFORE_LOC
       *outp = -1;
-      memcpy(result,start, a->length);
+      char* result = start;
       for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
         if (*pmd & 1 && testit(pid,result)){
-          *outp = jd;
-          memcpy(result,pid, a->length);
+          result = pid;
+          *outp  = jd;
         }
       }
     }
   }
-  free(result);
 }
-#define OperateIloc(type,start,testit) do{type strt=start;operateIloc(&strt,testit,&args);}while(0)
+#define OperateIloc(type,start,testit) do{type strt=start;operateIloc((char*)&strt,testit,&args);}while(0)
 static inline void OperateFloc(char dtype, double start, int operator(const double,const double),args_t* a) {
   int* outp= (int*)a->outp;
   int ja, jb, jd;
@@ -349,25 +347,23 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
   return 1;
 }
 
-static inline void operateIval(void* start,int testit(const char*,const char*),args_t*a) {
-  char* result = malloc(a->length);
+static inline void operateIval(char* start,int testit(const char*,const char*),args_t*a) {
   char *outp = a->outp;
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
   for (ja=0;    pia=a->inp,pma=a->maskp,ja < a->cnt_aft; ja++, pia+=a->stp_aft, pma+=a->stpm_aft) {                  // LOOP_AFTER
     for (jb=0,  pib= pia,  pmb= pma;    jb < a->cnt_bef; jb++, pib+=a->stp_bef, pmb+=a->stpm_bef, outp+=a->length) { // LOOP_BEFORE_VAL
-      memcpy(result,start, a->length);
+      char* result = start;
       for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
         if (*pmd & 1 && testit(pid,result))
-          memcpy(result,pid, a->length);
+          result = pid;
       }
       memcpy(outp, result, a->length);
     }
   }
-  free(result);
 }
-#define OperateIval(type,start,testit) do{type strt=start;operateIval(&strt,testit,&args);}while(0)
+#define OperateIval(type,start,testit) do{type strt=start;operateIval((char*)&strt,testit,&args);}while(0)
 static inline void OperateFval(char dtype, double start, int operator(const double,const double),args_t* a) {
   char *outp = a->outp;
   int ja, jb, jd;

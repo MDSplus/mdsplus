@@ -22,15 +22,7 @@ extern "C" {
 extern int treeshr_errno;
 extern int TREE_BLOCKID;
 
-
-
-
-#ifndef MDSDESCRIP_H_DEFINED
-  struct descriptor;
-  struct descriptor_a;
-  struct descriptor_r;
-  struct descriptor_xd;
-#endif
+#include <mdsdescrip.h>
 
 #ifndef DBIDEF_H
   struct dbi_itm;
@@ -60,6 +52,7 @@ extern int TREE_BLOCKID;
   extern EXPORT int TreeCreatePulseFile(int shot, int numnids, int *nids);
   extern EXPORT int _TreeCreatePulseFile(void *dbid, int shot, int numnids, int *nids);
   extern EXPORT int TreeCreateTreeFiles(char *tree, int shot, int source_shot);
+  extern EXPORT void **TreeCtx();
   extern EXPORT void *TreeDbid();
   extern EXPORT void *_TreeDbid(void **dbid);
   extern EXPORT void TreeDeleteNodeExecute(void);
@@ -192,6 +185,8 @@ extern int TREE_BLOCKID;
 				     struct descriptor_a *initialData, int idx, int filled);
   extern EXPORT int TreePutSegment(int nid, const int rowidx, struct descriptor_a *data);
   extern EXPORT int _TreePutSegment(void *dbid, int nid, const int rowidx, struct descriptor_a *data);
+  extern EXPORT int TreeSetRowsFilled(int nid, int rows_filled);
+  extern EXPORT int _TreeSetRowsFilled(void *dbid, int nid, int rows_filled);
   extern EXPORT int TreeUpdateSegment(int nid, struct descriptor *start, struct descriptor *end,
 				      struct descriptor *dim, int idx);
   extern EXPORT int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start,
@@ -276,14 +271,11 @@ extern int TREE_BLOCKID;
   extern EXPORT int _TreeDecompile(void *dbid, ...);
   extern EXPORT int _TreeCompile(void *dbid, ...);
 
-  typedef struct pushstate_s{
-  int   priv;
-  void* dbid;
-  void**ctx;
-  } pushstate_t;
-  extern EXPORT void* ctx_push(void** ctx);
-  extern EXPORT void  ctx_pop(void* ps);
-  #define CTX_PUSH(ctx) pthread_cleanup_push(ctx_pop,ctx_push(ctx))
+  extern EXPORT void* TreeCtxPush(void** ctx);
+  extern EXPORT void  TreeCtxPop(void* ps);
+  extern EXPORT void* TreeDbidPush(void* dbid);
+  extern EXPORT void* TreeDbidPop(void* ps);
+  #define CTX_PUSH(ctx) pthread_cleanup_push(TreeCtxPop,TreeCtxPush(ctx))
   #define CTX_POP(ctx)  pthread_cleanup_pop(1)
 
 #ifdef __cplusplus

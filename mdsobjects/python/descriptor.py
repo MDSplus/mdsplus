@@ -64,8 +64,15 @@ class Descriptor(object):
         _tre = _mimport('tree')
         if isinstance(tree,_tre.Tree): self.tree=tree
         return self
+    @property
+    def dtype_name(self):
+        if self.dtype in dclassToClass:
+            return dtypeToClass[self.dtype].__name__
+        if self.dtype in dtypeToArrayClass:
+            return dtypeToArrayClass[self.dtype].__name__
+        return "Unknown-%d"%int(self.dtype)
     def __str__(self):
-       return "%s(%d,%s,%d,0x%x)"%(self.__class__.__name__,self.length,dtypeToClass[self.dtype].__name__,self.dclass,self.pointer)
+        return "%s(%d,%s,%d,0x%x)"%(self.__class__.__name__,self.length,self.dtype_name,self.dclass,0 if self.pointer is None else self.pointer)
     def __repr__(self): return str(self)
     @property
     def desc_class(self):
@@ -114,11 +121,11 @@ class Descriptor(object):
     def __getattr__(self,name):
         if name is not '_structure' and name in dict(self._structure._fields_):
             return self._structure.__getattribute__(name)
-        super(Descriptor,self).__getattr__(name)
+        return super(Descriptor,self).__getattr__(name)
     def __setattr__(self,name,value):
         if name is not '_structure' and name in dict(self._structure._fields_):
             return self._structure.__setattr__(name,value)
-        super(Descriptor,self).__setattr__(name,value)
+        return super(Descriptor,self).__setattr__(name,value)
 
     @property
     def addressof(self):
@@ -184,9 +191,9 @@ class Descriptor_a(Descriptor):
         _fields_ = Descriptor._structure_class._fields_ + [
                ("scale",_C.c_byte),
                ("digits",_C.c_ubyte),
-               ("",_C.c_ubyte * (0 if _ver.isNt else 2)),
+               ("",_C.c_ubyte * (0 if _ver.iswin else 2)),
                ("aflags",_C.c_ubyte),
-               ("",_C.c_ubyte * (0 if _ver.isNt else 3)),
+               ("",_C.c_ubyte * (0 if _ver.iswin else 3)),
                ("dimct",_C.c_ubyte),
                ("arsize",_C.c_uint),
                ("a0",_C.c_void_p),
@@ -269,6 +276,6 @@ dclassToClass={Descriptor_s.dclass_id : Descriptor_s,
                Descriptor_apd.dclass_id : Descriptor_apd}
 
 dtypeToClass={}
-def addDtypeToClass(Class):       dtypeToClass[Class.dtype_id]=Class
+def addDtypeToClass(Class):      dtypeToClass[Class.dtype_id]=Class
 dtypeToArrayClass={}
-def addDtypeToArrayClass(Class):  dtypeToArrayClass[Class.dtype_id]=Class
+def addDtypeToArrayClass(Class): dtypeToArrayClass[Class.dtype_id]=Class

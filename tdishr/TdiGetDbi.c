@@ -47,8 +47,8 @@ STATIC_CONSTANT DESCRIPTOR(coloncolon, "::");
 STATIC_CONSTANT struct item {
   char *item_name;
   char item_code;
-  unsigned char item_dtype;
-  unsigned char item_length;
+  dtype_t item_dtype;
+  uint8_t item_length;
 } table[] = {
   {
   "DEFAULT", DbiDEFAULT, DTYPE_T, 0}, {
@@ -67,7 +67,7 @@ extern int TdiData();
 extern int TdiUpcase();
 extern int TdiGetData();
 extern int TdiGetLong();
-extern int TdiEvaluate();
+extern int _TdiEvaluate();
 
 STATIC_ROUTINE int compare(struct descriptor *s1, struct item s2[1])
 {
@@ -93,7 +93,7 @@ STATIC_ROUTINE int compare(struct descriptor *s1, struct item s2[1])
   return cmp;
 }
 
-int Tdi1GetDbi(int opcode __attribute__ ((unused)),
+int Tdi1GetDbi(opcode_t opcode __attribute__ ((unused)),
 	       int narg,
 	       struct descriptor *list[],
 	       struct descriptor_xd *out_ptr)
@@ -136,7 +136,7 @@ int Tdi1GetDbi(int opcode __attribute__ ((unused)),
   if STATUS_OK {
     lst[1].code = key_ptr->item_code;
     if ((lst[1].buffer_length = key_ptr->item_length) != 0) {
-      status = MdsGet1DxS((unsigned short *)&lst[1].buffer_length, &key_ptr->item_dtype, out_ptr);
+      status = MdsGet1DxS((length_t*)&lst[1].buffer_length, &key_ptr->item_dtype, out_ptr);
       if STATUS_OK {
 	lst[1].pointer = (unsigned char *)out_ptr->pointer->pointer;
 	status = TreeGetDbi(lst);
@@ -195,13 +195,12 @@ STATIC_ROUTINE int fixup_path(struct descriptor *pin,
   return MDSplusERROR;
 }
 
-int Tdi1Using(int opcode __attribute__ ((unused)),
+int Tdi1Using(opcode_t opcode __attribute__ ((unused)),
 	      int narg,
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  void *pctx = NULL;
   int nid, shot;
   unsigned short stat1;
   struct descriptor_d def = { 0, DTYPE_T, CLASS_D, 0 }, expt = def;
@@ -250,6 +249,7 @@ int Tdi1Using(int opcode __attribute__ ((unused)),
 	*def.pointer = '\\';
     }
   }
+  void *dbid = NULL, **ctx = TreeCtx();
   if ((narg > 2) && ((list[2] != 0) || ((narg > 3) && (list[3] != 0)))
       && STATUS_OK) {
     if (list[2])
@@ -281,8 +281,8 @@ int Tdi1Using(int opcode __attribute__ ((unused)),
                 *********************/
     if STATUS_OK {
       char *tree = MdsDescrToCstring((struct descriptor *)&expt);
-      pctx = TreeSavePrivateCtx(NULL);
-      status = TreeOpen(tree, shot, 1);
+      ctx = &dbid;
+      status = _TreeOpen(ctx, tree, shot, 1);
       MdsFree(tree);
     }
   }
@@ -300,13 +300,13 @@ int Tdi1Using(int opcode __attribute__ ((unused)),
         ***********************/
   if STATUS_OK {
     struct descriptor_xd tmp = EMPTY_XD;
-    status = TdiEvaluate(list[0], &tmp MDS_END_ARG);
+    status = _TdiEvaluate(ctx, list[0], &tmp MDS_END_ARG);
     if STATUS_OK
       status = MdsCopyDxXdZ((struct descriptor *)&tmp, out_ptr, NULL,
 			    fixup_nid, NULL, fixup_path, NULL);
     MdsFree1Dx(&tmp, NULL);
   }
-  if (pctx)
-    TreeFreeDbid(TreeRestorePrivateCtx(pctx));
+  if (dbid)
+    TreeFreeDbid(dbid);
   return status;
 }

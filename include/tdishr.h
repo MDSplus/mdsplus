@@ -5,7 +5,8 @@
 #include <tdishr_messages.h>
 
 #define COM
-#define OPC(name, ...) extern const unsigned short Opc##name;
+
+#define OPC(name, ...) extern const opcode_t Opc##name;
 #include <opcbuiltins.h>
 #undef OPC
 
@@ -22,6 +23,6 @@
 extern int TdiGetLong(struct descriptor *indsc, int *out_int);
 extern int TdiGetFloat(struct descriptor *index, float *out_float);
 extern int TdiConvert();
-extern int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr);
-extern int _TdiIntrinsic(void** ctx, int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr);
+extern int  TdiIntrinsic(            opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr);
+extern int _TdiIntrinsic(void** ctx, opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr);
 extern int CvtConvertFloat(void *invalue, uint32_t indtype, void *outvalue, uint32_t outdtype, uint32_t options);

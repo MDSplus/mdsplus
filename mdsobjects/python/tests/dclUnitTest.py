@@ -25,7 +25,6 @@
 
 import sys
 from time import sleep
-from re import match
 from MDSplus import Tree,Device,Connection
 from MDSplus import dcl,ccl,tcl,cts,mdsExceptions as Exc
 
@@ -38,34 +37,17 @@ _UnitTest=_mimport("_UnitTest")
 class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
     shotinc = 1
     tree = 'pytree'
-    def _doTCLTest(self,expr,out=None,err=None,re=False,tcl=tcl):
-        def checkre(pattern,string):
-            if pattern is None:
-                self.assertEqual(string is None,True)
-            else:
-                self.assertEqual(string is None,False)
-                self.assertEqual(match(pattern,str(string)) is None,False,'"%s"\nnot matched by\n"%s"'%(string,pattern))
-        if Tests.debug: sys.stderr.write("TCL(%s)\n"%(expr,));
-        outerr = tcl(expr,True,True,True)
-        if not re:
-            self.assertEqual(outerr,(out,err))
-        else:
-            checkre(out,outerr[0])
-            checkre(err,outerr[1])
-
-    def _doExceptionTest(self,expr,exc):
-        if Tests.debug: sys.stderr.write("TCL(%s) # expected exception: %s\n"%(expr,exc.__name__));
-        try:
-            tcl(expr,True,True,True)
-        except Exception as e:
-            self.assertEqual(e.__class__,exc)
-            return
-        self.fail("TCL: '%s' should have signaled an exception"%expr)
 
     def interface(self):
         with Tree(self.tree,self.shot,'new') as pytree:
-            Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE')
+            Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE_I')
+            Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE_S')
             pytree.write()
+        pytree.normal()
+        self.assertEqual(pytree.TESTDEVICE_S.check_source(),"No source stored in record.")
+        pytree.TESTDEVICE_S._update_source()
+        self.assertEqual(pytree.TESTDEVICE_S.check_source(),"")
+        pytree.close() # needed for windows to release file lock
         self.assertEqual(dcl('help set verify',1,1,0)[1],None)
         self.assertEqual(tcl('help set tree',1,1,0)[1],None)
         self.assertEqual(ccl('help set xandq',1,1,0)[1],None)
@@ -80,9 +62,12 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         self._doTCLTest('edit PYTREE/shot=%d'%(self.shot,))
         self._doTCLTest('add node TCL_NUM/usage=numeric')
         self._doTCLTest('add node TCL_PY_DEV/model=TESTDEVICE')
-        self._doTCLTest('do TESTDEVICE:TASK_TEST')
-        self._doExceptionTest('do TESTDEVICE:TASK_ERROR1',Exc.DevUNKOWN_STATE)
-        self._doExceptionTest('do TESTDEVICE:TASK_ERROR2',Exc.DevUNKOWN_STATE)
+        self._doTCLTest('do TESTDEVICE_I:TASK_TEST')
+        self._doTCLTest('do TESTDEVICE_S:TASK_TEST')
+        self._doExceptionTest('do TESTDEVICE_I:TASK_ERROR1',Exc.DevUNKOWN_STATE) # w/o timeout
+        self._doExceptionTest('do TESTDEVICE_S:TASK_ERROR1',Exc.DevUNKOWN_STATE) # w/o timeout
+        self._doExceptionTest('do TESTDEVICE_I:TASK_ERROR2',Exc.DevUNKOWN_STATE) # w/  timeout
+        self._doExceptionTest('do TESTDEVICE_S:TASK_ERROR2',Exc.DevUNKOWN_STATE) # w/  timeout
         self._doExceptionTest('close',Exc.TreeWRITEFIRST)
         self._doTCLTest('write')
         self._doTCLTest('close')
@@ -102,38 +87,38 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
     def dispatcher(self):
         shot = self.shot+1
         with Tree(self.tree,shot,'new') as pytree:
-            Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE')
+            Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE_I')
+            Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE_S',add_source=True)
             pytree.write()
         monitor,monitor_port = self._setup_mdsip('ACTION_MONITOR','MONITOR_PORT',7010+self.index,False)
         monitor_opt = "/monitor=%s"%monitor if monitor_port>0 else ""
         server ,server_port  = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT',7000+self.index,True)
-        show_server = "Checking server: %s\n[^,]+, [^,]+, logging enabled, Inactive\n"%server
         pytree.normal()
-        pytree.TESTDEVICE.ACTIONSERVER.no_write_shot = False
-        pytree.TESTDEVICE.ACTIONSERVER.record = server
+        pytree.TESTDEVICE_I.ACTIONSERVER.no_write_shot = False
+        pytree.TESTDEVICE_I.ACTIONSERVER.record = server
+        pytree.TESTDEVICE_S.ACTIONSERVER.no_write_shot = False
+        pytree.TESTDEVICE_S.ACTIONSERVER.record = server
         """ using dispatcher """
         mon,mon_log,svr,svr_log = (None,None,None,None)
         try:
             mon,mon_log = self._start_mdsip(monitor,monitor_port,'monitor')
-            svr,svr_log = self._start_mdsip(server ,server_port ,'server')
+            svr,svr_log = self._start_mdsip(server ,server_port ,'dispatcher')
             try:
                 if mon: self.assertEqual(mon.poll(),None)
                 if svr: self.assertEqual(svr.poll(),None)
                 """ tcl dispatch """
-                self._doTCLTest('show server %s'%server,out=show_server,re=True)
-                self._testDispatchCommand(server,'set verify')
                 self._testDispatchCommand(server,'type test')
                 self._doTCLTest('set tree pytree/shot=%d'%shot)
                 self._doTCLTest('dispatch/build%s'%monitor_opt)
                 self._doTCLTest('dispatch/phase%s INIT'%monitor_opt)
                 sleep(.1)
-                self._doTCLTest('show server %s'%server,out=show_server,re=True)
+                self._checkIdle(server)
                 self._doTCLTest('dispatch/phase%s PULSE'%monitor_opt)
                 sleep(.1)
-                self._doTCLTest('show server %s'%server,out=show_server,re=True)
+                self._checkIdle(server)
                 self._doTCLTest('dispatch/phase%s STORE'%monitor_opt)
                 sleep(.1)
-                self._doTCLTest('show server %s'%server,out=show_server,re=True)
+                self._checkIdle(server)
                 """ tcl exceptions """
                 self._doExceptionTest('dispatch/command/server=%s '%server,Exc.MdsdclIVVERB)
                 """ tcl check if still alive """
@@ -154,16 +139,21 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
             if mon_log: mon_log.close()
             self._doTCLTest('close/all')
         pytree.readonly()
-        self.assertTrue(pytree.TESTDEVICE.INIT1_DONE.record <= pytree.TESTDEVICE.INIT2_DONE.record)
+        self.assertTrue(pytree.TESTDEVICE_I.INIT1_DONE.record <= pytree.TESTDEVICE_I.INIT2_DONE.record)
+        self.assertTrue(pytree.TESTDEVICE_S.INIT1_DONE.record <= pytree.TESTDEVICE_S.INIT2_DONE.record)
 
     def timeout(self,full=False):
         def test_timeout(c,expr,to):
             with c:
                 try: # break out of sleep
+                    print(expr)
                     c.get('write(2,"tic: "//"%s");%s;write(2,"toc: "//"%s")'%(expr,expr,expr),timeout=to)
                     self.fail('Connection.get("%s") should have timed out.'%expr)
                 except Exc.MDSplusException as e:
                     self.assertEqual(e.__class__,Exc.TdiTIMEOUT)
+        def test_normal(c,expr,**kv):
+            print(expr)
+            c.get(expr,**kv)
         server,server_port  = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT',7000+self.index,True)
         svr = svr_log = None
         try:
@@ -172,13 +162,15 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                 if svr:
                     self.assertEqual(svr.poll(),None)
                 c = Connection(server)
-                c.get("py('1')") # preload MDSplus on server
+                test_normal(c,"py('1')") # preload MDSplus on server
                 test_timeout(c,"wait(3)",1000) # break tdi wait
                 test_timeout(c,"py('from time import sleep;sleep(3)')",1500) # break python sleep
                 if full: # timing too unreliable for standard test
                     test_timeout(c,"for(;1;) ;",100) # break tdi inf.loop
                     test_timeout(c,"py('while 1: pass')",500) # break python inf.loop
-                c.get("1")
+                test_normal(c,"1",timeout=1000)
+                if sys.version_info < (3,7): # TODO: make this work under fc29 (python3.7?)
+                    test_normal(c,"py('1')",timeout=1000) # verify locks are released
             finally:
                 if svr and svr.poll() is None:
                     svr.terminate()

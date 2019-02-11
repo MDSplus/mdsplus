@@ -38,13 +38,13 @@ _scr=_mimport('mdsscalar')
 _arr=_mimport('mdsarray')
 _ver=_mimport('version')
 
-class Apd(_arr.Array):
+class Apd(_dat.TreeRefX,_arr.Array):
     """The Apd class represents the Array of Pointers to Descriptors structure.
     This structure provides a mechanism for storing an array of non-primitive items.
     """
     mdsclass=196
     dtype_id=24
-
+    maxdesc = 1<<31
     @property
     def _descriptor(self):
         descs=self.descs
@@ -73,19 +73,6 @@ class Apd(_arr.Array):
             d.pointer=_C.cast(_C.pointer(descs_ptrs),_C.c_void_p)
         d.a0=d.pointer
         return _compound.Compound._descriptorWithProps(self,d)
-    @property
-    def tree(self):
-        for desc in self.descs:
-            if isinstance(desc,_dat.Data):
-                tree=desc.tree
-                if tree is not None:
-                    return tree
-        return None
-    @tree.setter
-    def tree(self,tree):
-        for desc in self.descs:
-            if isinstance(desc,_dat.Data):
-                desc._setTree(tree)
 
     @classmethod
     def fromDescriptor(cls,d):
@@ -93,21 +80,6 @@ class Apd(_arr.Array):
         dptrs = _C.cast(d.pointer,_C.POINTER(_C.c_void_p*num)).contents
         descs = [_dsc.pointerToObject(dptr,d.tree) for dptr in dptrs]
         return cls(descs)._setTree(d.tree)
-
-
-    def __hasBadTreeReferences__(self,tree):
-        for desc in self.descs:
-            if isinstance(desc,_dat.Data) and desc.__hasBadTreeReferences__(tree):
-                return True
-        return False
-
-
-    def __fixTreeReferences__(self,tree):
-        for idx in range(len(self.descs)):
-            d=self.descs[idx]
-            if isinstance(d,_dat.Data) and d.__hasBadTreeReferences__(tree):
-                self.descs[idx]=d.__fixTreeReferences__(tree)
-        return self
 
     def __init__(self,value=None,dtype=0):
         """Initializes a Apd instance
@@ -124,64 +96,8 @@ class Apd(_arr.Array):
 
     def __len__(self):
         """Return the number of descriptors in the apd"""
-        return len(self._descs)
+        return self.getNumDescs()
 
-    def __getitem__(self,idx):
-        """Return descriptor(s) x.__getitem__(idx) <==> x[idx]
-        @rtype: Data|tuple
-        """
-        try:
-            return self.descs[idx]._setTree(self.tree)
-        except:
-            return
-
-    def __setitem__(self,idx,value):
-        """Set descriptor. x.__setitem__(idx,value) <==> x[idx]=value
-        @rtype: None
-        """
-        diff = 1+idx-len(self._descs)
-        if diff>0:
-            self._descs+=[None]*diff
-        if isinstance(value,_dat.Data):
-            if self.tree is None:
-                self._setTree(value.tree)
-        else:
-            value = _dat.Data(value)
-        self._descs[idx]=value
-
-    def getDescs(self):
-        """Returns the descs of the Apd.
-        @rtype: tuple
-        """
-        return self._descs
-
-    def getDescAt(self,idx=0):
-        """Return the descriptor indexed by idx. (indexes start at 0).
-        @rtype: Data
-        """
-        return self[idx]._setTree(self.tree)
-
-    def setDescs(self,descs):
-        """Set the descriptors of the Apd.
-        @type descs: tuple
-        @rtype: None
-        """
-        if isinstance(descs,(tuple,list,_ver.mapclass,_ver.generator,_N.ndarray)):
-            descs=list(map(_dat.Data,descs))
-            self._descs = descs
-            for desc in descs:
-                if not desc.tree is None:
-                    self.setTree(desc.tree)
-                    break
-        else:
-            raise TypeError("must provide tuple")
-        return self
-
-    def setDescAt(self,idx,value):
-        """Set a descriptor in the Apd
-        """
-        self[idx]=value
-        return self
 
     def append(self,value):
         """Append a value to apd"""
@@ -192,17 +108,11 @@ class Apd(_arr.Array):
     def value(self):
         return _N.array(self.descs,object)
 
-    @property
-    def descs(self):
-        """Returns the descs of the Apd.
-        @rtype: tuple
-        """
-        return tuple(self._descs)
 
     @property
     def _value(self):
         """Returns native representation of the List"""
-        return _N.asarray(tuple(d.value for d in self.descs),'object')
+        return _N.asarray(tuple(d.value for d in self._descs),'object')
 
 
 class Dictionary(dict,Apd):
@@ -280,7 +190,9 @@ class Dictionary(dict,Apd):
         """Returns the descs of the Apd.
         @rtype: tuple
         """
-        return sum(self.items(),())
+        return self._descs
+    @property
+    def _descs(self): return sum(self.items(),())
 
 class List(list,Apd):
     """list class"""
@@ -303,8 +215,14 @@ class List(list,Apd):
         """
         return tuple(self)
 
+    @property
+    def _descs(self): return self
+
 descriptor=_mimport('descriptor')
+descriptor.dtypeToClass[Apd.dtype_id]=Apd
+descriptor.dtypeToClass[List.dtype_id]=List
+descriptor.dtypeToClass[Dictionary.dtype_id]=Dictionary
 descriptor.dtypeToArrayClass[Apd.dtype_id]=Apd
 descriptor.dtypeToArrayClass[List.dtype_id]=List
 descriptor.dtypeToArrayClass[Dictionary.dtype_id]=Dictionary
-
+_tre=_mimport('tree')

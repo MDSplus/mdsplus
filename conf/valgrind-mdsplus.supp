@@ -63,3 +63,49 @@
    fun:*CUDTUnited*checkBrokenSockets*
    fun:*CUDTUnited*garbageCollect*
 }
+
+{
+   fc29 gcc (not sure why it is called during test)
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:/usr/bin/gcc
+   obj:/usr/bin/gcc
+   obj:/usr/bin/gcc
+   ...
+   obj:/usr/bin/gcc
+}
+
+{
+   fc29 gethostbyaddr_r@@GLIBC_2.2.5
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:__libc_alloc_buffer_allocate
+   fun:__resolv_conf_allocate
+   fun:__resolv_conf_load
+   fun:__resolv_conf_get_current
+   fun:__res_vinit
+   fun:context_get.part.1
+   fun:gethostby*_r@@GLIBC_2.2.5
+}
+
+{
+   fc29 exit in MdsExceptionTest
+   Memcheck:Addr1
+   fun:check_free
+   fun:__dlerror_main_freeres
+   fun:__libc_freeres
+   fun:_vgnU_freeres
+   fun:__run_exit_handlers
+   fun:exit
+}
+
+{
+   fc29 xmlInitParser
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:xmlInitParser_supp
+}

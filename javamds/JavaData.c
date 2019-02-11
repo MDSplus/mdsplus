@@ -910,6 +910,7 @@ EXPORT void FreeDescrip(struct descriptor *desc)
 /*printf("FreeDescrip class %d dtype %d\n", desc->class, desc->dtype);*/
 
   switch (desc->class) {
+  default:break;
   case CLASS_S:
     if (desc->pointer)
       free(desc->pointer);

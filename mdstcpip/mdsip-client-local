@@ -1,2 +1,2 @@
 #!/bin/sh
-exec mdsip -P ssh 2>> ~/mdsip-local.log
+exec mdsip -P local 2>> ~/mdsip-local.log

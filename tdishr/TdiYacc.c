@@ -70,31 +70,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 #include <mds_stdarg.h>
 
-extern unsigned short
- OpcAbort,
- OpcAdd,
- OpcCase,
- OpcComma,
- OpcConditional,
- OpcConcat,
- OpcDefault,
- OpcEquals,
- OpcEqualsFirst,
- OpcExtFunction,
- OpcFun,
- OpcInT,
- OpcInT_UNSIGNED,
- OpcLabel,
- OpcMultiply,
- OpcPostDec,
- OpcPostInc,
- OpcPreInc,
- OpcStatement,
- OpcSubscript,
- OpcUnaryMinus,
- OpcUnaryPlus,
- OpcUsing,
- OpcVector;
+extern unsigned short OpcSubscript, OpcExtFunction, OpcFun, OpcUsing;
 
 extern int TdiYacc_RESOLVE();
 extern int TdiLex();
@@ -937,7 +913,7 @@ int TdiYacc(){
   case 33:
 //#line 203 "TdiYacc.y"
     {
-      _JUST2(OpcEquals, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
+      _JUST2(OPC_EQUALS, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 34:
@@ -945,7 +921,7 @@ int TdiYacc(){
     {
       struct marker tmp;	/*binary operation and assign */
       _JUST2(tdiyypvt[-1].mark.builtin, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tmp);
-      _JUST1(OpcEqualsFirst, tmp, tdiyyval.mark);
+      _JUST1(OPC_EQUALS_FIRST, tmp, tdiyyval.mark);
     } break;
   case 35:
 //#line 207 "TdiYacc.y"
@@ -976,7 +952,7 @@ int TdiYacc(){
   case 36:
 //#line 226 "TdiYacc.y"
     {
-      _JUST3(OpcConditional, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyypvt[-4].mark, tdiyyval.mark);
+      _JUST3(OPC_CONDITIONAL, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyypvt[-4].mark, tdiyyval.mark);
     }
     break;
   case 37:
@@ -1069,7 +1045,7 @@ int TdiYacc(){
       if (tdiyyval.mark.rptr == 0)
 	tdiyyval.mark = tdiyypvt[-0].mark;
       else if (tdiyyval.mark.rptr->dtype == DTYPE_FUNCTION
-	       && *(unsigned short *)tdiyyval.mark.rptr->pointer == OpcConcat
+	       && *(unsigned short *)tdiyyval.mark.rptr->pointer == OPC_CONCAT
 	       && tdiyyval.mark.rptr->ndesc < 250) {
 	tdiyyval.mark.rptr->dscptrs[tdiyyval.mark.rptr->ndesc++] =
 	    (struct descriptor *)tdiyypvt[-0].mark.rptr;
@@ -1106,7 +1082,7 @@ int TdiYacc(){
   case 56:
 //#line 253 "TdiYacc.y"
     {
-      _JUST2(OpcMultiply, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
+      _JUST2(OPC_MULTIPLY, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 57:
@@ -1125,10 +1101,10 @@ int TdiYacc(){
 //#line 258 "TdiYacc.y"
     {
       int j;
-      if (tdiyypvt[-1].mark.builtin == OpcAdd)
-	j = OpcUnaryPlus;
+      if (tdiyypvt[-1].mark.builtin == OPC_ADD)
+	j = OPC_UNARY_PLUS;
       else
-	j = OpcUnaryMinus;
+	j = OPC_UNARY_MINUS;
       _JUST1(j, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
@@ -1153,13 +1129,13 @@ int TdiYacc(){
   case 65:
 //#line 272 "TdiYacc.y"
     {
-      _FULL1(OpcVector, tdiyypvt[-0].mark, tdiyyval.mark);
+      _FULL1(OPC_VECTOR, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 66:
 //#line 273 "TdiYacc.y"
     {
-      _JUST0(OpcVector, tdiyyval.mark);
+      _JUST0(OPC_VECTOR, tdiyyval.mark);
     }
     break;
   case 67:
@@ -1167,7 +1143,7 @@ int TdiYacc(){
     {
       if (tdiyyval.mark.rptr->ndesc >= 250) {
 	_RESOLVE(tdiyypvt[-2].mark);
-	_FULL1(OpcVector, tdiyypvt[-2].mark, tdiyyval.mark);
+	_FULL1(OPC_VECTOR, tdiyypvt[-2].mark, tdiyyval.mark);
       }
       tdiyyval.mark.rptr->dscptrs[tdiyyval.mark.rptr->ndesc++] = (struct descriptor *)tdiyypvt[-0].mark.rptr;
     } break;
@@ -1177,12 +1153,12 @@ int TdiYacc(){
       if (tdiyyval.mark.rptr	/*comma is left-to-right weakest */
 	  && tdiyyval.mark.builtin != -2
 	  && tdiyyval.mark.rptr->dtype == DTYPE_FUNCTION
-	  && *(unsigned short *)tdiyyval.mark.rptr->pointer == OpcComma
+	  && *(unsigned short *)tdiyyval.mark.rptr->pointer == OPC_COMMA
 	  && tdiyyval.mark.rptr->ndesc < 250)
 	tdiyyval.mark.rptr->dscptrs[tdiyyval.mark.rptr->ndesc++] =
 	    (struct descriptor *)tdiyypvt[-0].mark.rptr;
       else
-	_FULL2(OpcComma, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);	/*first comma */
+	_FULL2(OPC_COMMA, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);	/*first comma */
     }
     break;
   case 70:
@@ -1191,15 +1167,15 @@ int TdiYacc(){
       if (tdiyyval.mark.rptr
 	  && tdiyyval.mark.builtin != -2
 	  && tdiyyval.mark.rptr->dtype == DTYPE_FUNCTION
-	  && *(unsigned short *)tdiyyval.mark.rptr->pointer == OpcComma) ;
+	  && *(unsigned short *)tdiyyval.mark.rptr->pointer == OPC_COMMA) ;
       else
-	_JUST1(OpcAbort, tdiyypvt[-0].mark, tdiyyval.mark);
+	_JUST1(OPC_ABORT, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 71:
 //#line 296 "TdiYacc.y"
     {
-      _JUST0(OpcAbort, tdiyyval.mark);
+      _JUST0(OPC_ABORT, tdiyyval.mark);
     }
     break;
   case 72:
@@ -1225,14 +1201,14 @@ int TdiYacc(){
   case 75:
 //#line 303 "TdiYacc.y"
     {
-      _FULL2(OpcAbort, tdiyypvt[-3].mark, tdiyypvt[-1].mark, tdiyyval.mark);
+      _FULL2(OPC_ABORT, tdiyypvt[-3].mark, tdiyypvt[-1].mark, tdiyyval.mark);
       --TdiRefZone.l_rel_path;
     }
     break;
   case 76:
 //#line 304 "TdiYacc.y"
     {
-      _FULL2(OpcAbort, tdiyypvt[-2].mark, _EMPTY_MARKER, tdiyyval.mark);
+      _FULL2(OPC_ABORT, tdiyypvt[-2].mark, _EMPTY_MARKER, tdiyyval.mark);
       --TdiRefZone.l_rel_path;
     }
     break;
@@ -1257,7 +1233,7 @@ int TdiYacc(){
   case 81:
 //#line 322 "TdiYacc.y"
     {
-      int j = tdiyypvt[-0].mark.builtin == OpcPreInc ? OpcPostInc : OpcPostDec;
+      int j = tdiyypvt[-0].mark.builtin == OPC_PRE_INC ? OPC_POST_INC :  OPC_POST_DEC;
       _JUST1(j, tdiyypvt[-1].mark, tdiyyval.mark);
     } break;
   case 82:
@@ -1328,7 +1304,7 @@ int TdiYacc(){
   case 86:
 //#line 369 "TdiYacc.y"
     {
-      _JUST2(OpcUsing, tdiyypvt[-3].mark, tdiyypvt[-1].mark, tdiyyval.mark);
+      _JUST2(OPC_USING, tdiyypvt[-3].mark, tdiyypvt[-1].mark, tdiyyval.mark);
       --TdiRefZone.l_rel_path;
     }
     break;
@@ -1465,7 +1441,7 @@ int TdiYacc(){
   case 108:
 //#line 431 "TdiYacc.y"
     {
-      _FULL2(OpcLabel, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
+      _FULL2(OPC_LABEL, tdiyypvt[-2].mark, tdiyypvt[-0].mark, tdiyyval.mark);
     }
     break;
   case 109:
@@ -1526,12 +1502,12 @@ int TdiYacc(){
       else if (tdiyyval.mark.rptr->dtype == DTYPE_FUNCTION
 	       && tdiyyval.mark.rptr->ndesc < 250
 	       && ((opcode = *(unsigned short *)tdiyyval.mark.rptr->pointer)
-		   == OpcStatement || opcode == OpcCase
-		   || opcode == OpcDefault || opcode == OpcLabel)) {
+		   == OPC_STATEMENT || opcode == OPC_CASE
+		   || opcode == OPC_DEFAULT || opcode == OPC_LABEL)) {
 	tdiyyval.mark.rptr->dscptrs[tdiyyval.mark.rptr->ndesc++] =
 	    (struct descriptor *)tdiyypvt[-0].mark.rptr;
       } else {
-	_FULL2(OpcStatement, tdiyypvt[-1].mark, tdiyypvt[-0].mark, tdiyyval.mark);
+	_FULL2(OPC_STATEMENT, tdiyypvt[-1].mark, tdiyypvt[-0].mark, tdiyyval.mark);
       }
     }
     break;

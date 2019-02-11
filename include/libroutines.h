@@ -11,10 +11,10 @@
 #define FindFileCtx void
 #endif
 
-
-#ifdef WINDOWS_H
-#include <stdint.h>
-#endif
+#include <inttypes.h>
+//#ifdef WINDOWS_H
+//#include <stdint.h>
+//#endif
 
 
 /// @{
@@ -50,6 +50,7 @@ extern int LibTraverseTree(LibTreeNode **treehead, int (*user_rtn) (), void *use
 extern int LibWait(const float *secs);
 extern int LibTimeToVMSTime(const time_t * time_in, int64_t * time_out);
 extern int libffs(int *position, int *size, char *base, int *find_position);
+extern uint32_t LibGetHostAddr(char *host);
 
 /// @}
 

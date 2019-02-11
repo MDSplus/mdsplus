@@ -36,9 +36,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define TdiDECOMPILE_MAX TdiThreadStatic_p->TdiDecompile_max
 
-extern unsigned short OpcDecompile;
-extern unsigned short OpcEvaluate;
-
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include <strroutines.h>
@@ -65,7 +62,7 @@ extern int TdiTrace();
 
 int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_ptr);
 
-EXPORT int Tdi1Decompile(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+EXPORT int Tdi1Decompile(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
   struct descriptor_d answer = { 0, DTYPE_T, CLASS_D, 0 };
@@ -380,7 +377,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
   char c0[85], *cptr, *bptr;
   struct descriptor cdsc = { 11, DTYPE_T, CLASS_S, 0 };
   struct descriptor t2 = { 0, DTYPE_T, CLASS_S, 0 };
-  int status = MDSplusSUCCESS, j, dtype, n1, n2;
+  int status = MDSplusSUCCESS, j, n1, n2;
   char n1c;
   cdsc.pointer = c0;
 	/******************
@@ -389,7 +386,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
   if (!in_ptr)
     return StrAppend(out_ptr, (struct descriptor *)&STAR);
 
-  dtype = in_ptr->dtype;
+  dtype_t dtype = (dtype_t)in_ptr->dtype;
   switch (in_ptr->class) {
   default:
     status = StrAppend(out_ptr, (struct descriptor *)&CLASS);
@@ -524,36 +521,29 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
       if STATUS_OK
 	status = StrAppend(out_ptr, (struct descriptor *)&cdsc);
       break;
-
     case DTYPE_DC:
+      dtype = DTYPE_D;
+      goto complex;
     case DTYPE_FC:
+      dtype = DTYPE_F;
+      goto complex;
     case DTYPE_GC:
+      dtype = DTYPE_G;
+      goto complex;
     case DTYPE_HC:
+      dtype = DTYPE_H;
+      goto complex;
     case DTYPE_FSC:
+      dtype = DTYPE_FS;
+      goto complex;
     case DTYPE_FTC:
       {
-	struct descriptor temp = *in_ptr;
+      dtype = DTYPE_FT;
+      goto complex;
+complex: ;
+        struct descriptor temp = *in_ptr;
+	temp.dtype = dtype;
 	StrAppend(out_ptr, (struct descriptor *)&CMPLX);
-	switch (temp.dtype) {
-	case DTYPE_DC:
-	  temp.dtype = DTYPE_D;
-	  break;
-	case DTYPE_FC:
-	  temp.dtype = DTYPE_F;
-	  break;
-	case DTYPE_GC:
-	  temp.dtype = DTYPE_G;
-	  break;
-	case DTYPE_HC:
-	  temp.dtype = DTYPE_H;
-	  break;
-	case DTYPE_FSC:
-	  temp.dtype = DTYPE_FS;
-	  break;
-	case DTYPE_FTC:
-	  temp.dtype = DTYPE_FT;
-	  break;
-	}
 	temp.length /= 2;
 	Tdi0Decompile(&temp, P_ARG, out_ptr);
 	StrAppend(out_ptr, (struct descriptor *)&COMMA);
@@ -649,7 +639,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
   case CLASS_CA:
     {
       struct descriptor_xd tmp = EMPTY_XD;
-      status = Tdi1Evaluate(OpcEvaluate, 1, &in_ptr, &tmp);
+      status = Tdi1Evaluate(OPC_EVALUATE, 1, &in_ptr, &tmp);
       if STATUS_OK
 	status = Tdi0Decompile(tmp.pointer, prec, out_ptr);
       MdsFree1Dx(&tmp, NULL);
@@ -752,6 +742,6 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
     break;
   }				/*switch class */
   if STATUS_NOT_OK
-    TdiTrace(OpcDecompile, 1, in_ptr, out_ptr);
+    TdiTrace(OPC_DECOMPILE, 1, in_ptr, out_ptr);
   return status;
 }

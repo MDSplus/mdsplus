@@ -227,9 +227,10 @@ Buildarch: noarch
         try:
             cmd="/bin/sh -c 'rsync -a /sign_keys /tmp/; HOME=/tmp/sign_keys rpmsign --addsign /release/%(branch)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
             child = pexpect.spawn(cmd,timeout=60,logfile=sys.stdout)
-            child.expect("Enter pass phrase: ")
-            child.sendline("")
-            child.expect(pexpect.EOF)
+            index = child.expect(["Enter pass phrase: ",pexpect.EOF])
+            if index == 0:
+                child.sendline("")
+                child.expect(pexpect.EOF)
             child.close()
             if child.status != 0:
                 sys.stdout.flush()

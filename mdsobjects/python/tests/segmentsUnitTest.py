@@ -77,6 +77,11 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(str(node.getSegment(0)),"Build_Signal([1,7], *, [-1Q,0Q])")
 
     def WriteSegments(self):
+        def check_signal(node,dim,dat):
+            signal = node.record
+            self.assertEqual(dim,signal.dim_of().tolist())
+            self.assertEqual(dat,signal.data()  .tolist())
+
         from MDSplus import Tree
         from numpy import array,zeros,int32
         with Tree(self.tree,self.shot+2,'NEW') as ptree:
@@ -100,32 +105,28 @@ class Tests(_UnitTest.TreeTests):
         for i in range(0,length,seglen):
             node.makeSegment(dim[i]-1,dim[i+seglen-1]+1,ndim[i:i+seglen],ndat[i:i+seglen])
         self.assertEqual(node.getSegmentLimits(1),(3,5))
-        self.assertEqual(node.record.dim_of().tolist(),dim)
-        self.assertEqual(node.record.data().tolist(),dat)
+        check_signal(node,dim,dat)
         ### makeSegment multidim ###
         node = ptree.MS_MD
         seglen = 4
         for i in range(0,length,seglen):
             node.makeSegment(dim[i]-1,dim[i+seglen-1]+1,ndim[i:i+seglen],ndat[i:i+seglen])
         self.assertEqual(node.getSegmentLimits(1),(9,17))
-        self.assertEqual(node.record.dim_of().tolist(),dim)
-        self.assertEqual(node.record.data().tolist(),dat)
+        check_signal(node,dim,dat)
         ### makeTimestampedSegment ###
         node = ptree.MTS
         seglen = 1
         for i in range(0,length,seglen):
             node.makeTimestampedSegment(ndim[i:i+seglen],ndat[i:i+seglen],-1,seglen)
         self.assertEqual(node.getSegmentLimits(1),(4,4))
-        self.assertEqual(node.record.dim_of().tolist(),dim)
-        self.assertEqual(node.record.data().tolist(),dat)
+        check_signal(node,dim,dat)
         ### makeTimestampedSegment multidim ###
         node = ptree.MTS_MD
         seglen = 4
         for i in range(0,length,seglen):
             node.makeTimestampedSegment(ndim[i:i+seglen],ndat[i:i+seglen],-1,seglen)
         self.assertEqual(node.getSegmentLimits(1),(10,16))
-        self.assertEqual(node.record.dim_of().tolist(),dim)
-        self.assertEqual(node.record.data().tolist(),dat)
+        check_signal(node,dim,dat)
         ### putSegment ###
         node = ptree.PS
         seglen = 4
@@ -133,18 +134,17 @@ class Tests(_UnitTest.TreeTests):
         for i in range(0,length,seglen):
             node.beginSegment(dim[i]-1,dim[i+seglen-1]+1,ndim[i:i+seglen],segbuf)
             for j in range(seglen):
+                check_signal(node,dim[0:i+j],dat[0:i+j])
                 node.putSegment(ndat[i+j:i+j+1],j)
         self.assertEqual(node.getSegmentLimits(1),(9,17))
-        self.assertEqual(node.record.dim_of().tolist(),dim)
-        self.assertEqual(node.record.data().tolist(),dat)
+        check_signal(node,dim,dat)
         node = ptree.PR
         seglen = 4
         for i in range(0,length,seglen):
             for j in range(seglen):
                 node.putRow(seglen,ndat[i+j],dim[i+j])
         self.assertEqual(node.getSegmentLimits(1),(10,16))
-        self.assertEqual(node.record.dim_of().tolist(),dim)
-        self.assertEqual(node.record.data().tolist(),dat)
+        check_signal(node,dim,dat)
         node = ptree.PTS
         seglen = 4
         for i in range(0,length,seglen):
@@ -152,8 +152,7 @@ class Tests(_UnitTest.TreeTests):
             for j in range(seglen):
                 node.putTimestampedSegment(dim[i+j:i+j+1],ndat[i+j:i+j+1])
         self.assertEqual(node.getSegmentLimits(1),(10,16))
-        self.assertEqual(node.record.dim_of().tolist(),dim)
-        self.assertEqual(node.record.data().tolist(),dat)
+        check_signal(node,dim,dat)
 
     def WriteOpaque(self):
         from MDSplus import Tree,Opaque
@@ -259,8 +258,8 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(Tree.getTimeContext(),(1,2,3))
         tdi('treeclose()')
         self.assertEqual(Tree.getTimeContext(),(2,3,4))
-        tdi('treeclose()',self.tree,self.shot+5)
-        self.assertEqual(Tree.getTimeContext(),(1,2,3))
+        tdi('treeclose()')
+        self.assertEqual(Tree.getTimeContext(),(2,3,4))
 
     def ScaledSegments(self):
         from MDSplus import Tree,Int64,Int64Array,Int16Array
@@ -311,7 +310,8 @@ class Tests(_UnitTest.TreeTests):
         te = DateToQuad("now")
         sampperseg = 50
         data = ZERO(Int32Array([sampperseg]),Int32(0))
-        for i in range(513):
+        numsegs = 128
+        for i in range(numsegs):
             t0=te+1;te=t0+sampperseg-1
             node.makeSegment(t0,te,Int64Array(range(t0,te+1)),data+Int32(i))
         node.compress_segments=True
@@ -321,13 +321,17 @@ class Tests(_UnitTest.TreeTests):
         node1  = ptree1.S
         self.assertEqual(True,(node.record==node1.record).all())
         self.assertEqual(True,ptree.getDatafileSize()>ptree1.getDatafileSize())
-        for i in range(node.getNumSegments()):
-            str,end = node.getSegmentLimits(i)
-            node.updateSegment(str,end,Range(str,end),i)
+        for i in range(numsegs):
+            srt,end = node.getSegmentLimits(i)
+            dim = Range(srt,end)
+            node.updateSegment(srt,end,dim,i)
+            if i%16==0:
+                self.assertEqual(dim.decompile(),node.getSegmentDim(i).decompile())
         ptree.compressDatafile()
         ptree.readonly()
+        self.assertEqual(numsegs,node1.getNumSegments())
         self.assertEqual(True,ptree.getDatafileSize()<ptree1.getDatafileSize())
-        for i in range(node1.getNumSegments()):
+        for i in range(numsegs):
             self.assertEqual(node.getSegmentDim(i).data().tolist(),node1.getSegmentDim(i).data().tolist())
 
     @staticmethod

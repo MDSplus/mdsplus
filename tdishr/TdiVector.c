@@ -42,26 +42,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <mdsshr.h>
 
-
-
 extern int TdiConvert();
 extern int TdiCvtArgs();
 extern int TdiGetArgs();
 extern int TdiMasterData();
 extern int Tdi2Vector();
 
-int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Vector(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   array miss = { sizeof(char), DTYPE_MISSING, CLASS_A, (char *)0, 0, 0, {0, 1, 1, 0,
 									 0}, 1, 0
   };
   array_coeff arr = { sizeof(char), DTYPE_BU, CLASS_A, (char *)0, 0, 0, {0, 1, 1, 1, 0},
-		      MAXDIM, 0, 0, {0}
+		      MAX_DIMS, 0, 0, {0}
   };
   struct descriptor_xd (*psig)[], (*puni)[] = 0, (*pdat)[] = 0;
   struct TdiCatStruct (*pcats)[] = 0;
-  int cmode = -1, j, n, (*pnelem)[] = 0, jd, mind = MAXDIM, maxd = 0, nmiss = 0;
+  int cmode = -1, j, n, (*pnelem)[] = 0, jd, mind = MAX_DIMS, maxd = 0, nmiss = 0;
   int virt =
       (sizeof(struct descriptor_xd) * 3 + sizeof(int *)) * narg +
       sizeof(struct TdiCatStruct) * (narg + 1);
@@ -122,7 +120,7 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
         Shape: [[3],[3,4]] is [3,5].
         ********************************/
  if (STATUS_OK) {
-  if (mind > 0 && mind >= maxd - 1 && mind < MAXDIM && nmiss == 0) {
+  if (mind > 0 && mind >= maxd - 1 && mind < MAX_DIMS && nmiss == 0) {
     n = 0;
     for (j = 0; j < narg; ++j) {
       array_coeff *pnew = (array_coeff *) (*pdat)[j].pointer;
@@ -172,8 +170,7 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
         ***************************/
   if STATUS_OK
     status =
-	MdsGet1DxA((struct descriptor_a *)&arr, &(*pcats)[narg].digits,
-		   &(*pcats)[narg].out_dtype, out_ptr);
+	MdsGet1DxA((struct descriptor_a *)&arr, &(*pcats)[narg].digits, &(*pcats)[narg].out_dtype, out_ptr);
 
 	/*********************************
         Accumulate all arrays and scalars.

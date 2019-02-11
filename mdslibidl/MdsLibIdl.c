@@ -393,6 +393,7 @@ EXPORT int IdlMdsValue(int argc, void **argv)
       ((char *)argv[2])[0] = 0;
       if (mdsValueAnswer.pointer->class == CLASS_S) {
 	switch (mdsValueAnswer.pointer->dtype) {
+	default:break; // TODO: handle invalid dtypes
 	case DTYPE_B:
 	  strcpy((char *)argv[2], "if answer gt 127 then answer = fix(answer)-256");
 	  MDS_ATTR_FALLTHROUGH
@@ -457,6 +458,7 @@ EXPORT int IdlMdsValue(int argc, void **argv)
         dims[strlen(dims)-1]='\0';
 	strcat(dims,")");
 	switch (mdsValueAnswer.pointer->dtype) {
+	default:break; // TODO: handle invalid dtypes
 	case DTYPE_B:
 	  strcpy((char *)argv[2], "if max(answer) gt 127 then answer = fix(answer)-256");
 	  MDS_ATTR_FALLTHROUGH

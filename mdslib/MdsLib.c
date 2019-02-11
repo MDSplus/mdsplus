@@ -28,6 +28,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MDSLIB_NO_PROTOS
 #include "mdslib.h"
 #include <stdint.h>
+#include <mdsshr.h>
+#include <strroutines.h>
 static int MdsCONNECTION = -1;
 #define NDESCRIP_CACHE 1024
 #ifndef _CLIENT_ONLY
@@ -63,6 +65,15 @@ static void MdsValueSet(struct descriptor *outdsc, struct descriptor *indsc, int
 static pthread_key_t buffer_key;
 /* Free the thread-specific buffer */
 static void buffer_destroy(void *buf){
+  int i;
+  struct descriptor **d = (struct descriptor **)buf;
+  for (i=0 ; i<NDESCRIP_CACHE ; i++) {
+    if (d[i]) {
+      if      (d[i]->class == CLASS_XD) free_xd(d[i]);
+      else if (d[i]->class == CLASS_D ) free_d (d[i]);
+      free(d[i]);
+    }
+  }
   free(buf);
 }
 static void buffer_key_alloc(){
@@ -71,13 +82,12 @@ static void buffer_key_alloc(){
 /* Return the thread-specific buffer */
 static struct descriptor **GetDescriptorCache(){
   RUN_FUNCTION_ONCE(buffer_key_alloc);
-  struct descriptor **p = (struct descriptor **) pthread_getspecific(buffer_key);
-  if (!p) {
-    p = (struct descriptor **) memset(malloc(sizeof(struct descriptor *)*NDESCRIP_CACHE), \
-				      0, sizeof(struct descriptor *)*NDESCRIP_CACHE);
-    pthread_setspecific(buffer_key, (void *)p);
+  void *buf = pthread_getspecific(buffer_key);
+  if (!buf) {
+    buf = calloc(NDESCRIP_CACHE,sizeof(struct descriptor *));
+    pthread_setspecific(buffer_key, buf);
   }
-  return p;
+  return (struct descriptor **)buf;
 }
 
 extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
@@ -164,9 +174,9 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
       array_coeff *adsc = (array_coeff *) dsc;
       adsc->class = CLASS_A;
 
-      if (ndim > MAXDIM) {
-	ndim = MAXDIM;
-	printf("(descr.c) WARNING: requested ndim>MAXDIM, forcing to MAXDIM\n");
+      if (ndim > MAX_DIMS) {
+	ndim = MAX_DIMS;
+	printf("(descr.c) WARNING: requested ndim>MAX_DIMS, forcing to MAX_DIMS\n");
       }
       adsc->dimct = ndim;
       adsc->scale = 0;
@@ -184,7 +194,7 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
 	adsc->m[i] = *(va_arg(incrmtr, int *));
 	totsize = totsize * adsc->m[i];
       }
-      for (i = ndim; i < MAXDIM; i++) {
+      for (i = ndim; i < MAX_DIMS; i++) {
 	adsc->m[i] = 0;
       }
       adsc->arsize = totsize * adsc->length;
@@ -293,9 +303,9 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
       array_coeff *adsc = (array_coeff *) dsc;
       adsc->class = CLASS_A;
 
-      if (ndim > MAXDIM) {
-	ndim = MAXDIM;
-	printf("(descr.c) WARNING: requested ndim>MAXDIM, forcing to MAXDIM\n");
+      if (ndim > MAX_DIMS) {
+	ndim = MAX_DIMS;
+	printf("(descr.c) WARNING: requested ndim>MAX_DIMS, forcing to MAX_DIMS\n");
       }
       adsc->dimct = ndim;
 
@@ -312,7 +322,7 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
 	adsc->m[i] = *(va_arg(incrmtr, int *));
 	totsize = totsize * adsc->m[i];
       }
-      for (i = ndim; i < MAXDIM; i++) {
+      for (i = ndim; i < MAX_DIMS; i++) {
 	adsc->m[i] = 0;
       }
       adsc->arsize = totsize * adsc->length;
@@ -446,7 +456,7 @@ static inline int MdsValueVargs(va_list incrmtr, int connection, char *expressio
 
       if (status & 1) {
 	int ansdescr;
-	int dims[MAX_DIMS_R];
+	int dims[MAX_DIMS];
 	int null = 0;
 	int dtype = arg->dtype;
 	int dlen = len;
@@ -673,7 +683,7 @@ static inline int MdsValue2Vargs(va_list incrmtr, int connection, char *expressi
 
       if (status & 1) {
 	int ansdescr;
-	int dims[MAX_DIMS_R];
+	int dims[MAX_DIMS];
 	int null = 0;
 	int dtype = arg->dtype;
 	int dlen = len;
@@ -870,7 +880,7 @@ static inline int MdsPutVargs(va_list incrmtr, int connection, char *pathname, c
 
     if (status & 1) {
       char dtype;
-      int dims[MAX_DIMS_R];
+      int dims[MAX_DIMS];
       char ndims;
       short len;
       int numbytes;
@@ -995,7 +1005,7 @@ EXPORT int MdsPut2Vargs(va_list incrmtr, int connection, char *pathname, char *e
 
     if (status & 1) {
       char dtype;
-      int dims[MAX_DIMS_R];
+      int dims[MAX_DIMS];
       char ndims;
       short len;
       int numbytes;
@@ -1125,9 +1135,10 @@ static int dtype_length(struct descriptor *d)
 }
 
 
-#if !defined(_CLIENT_ONLY)
-extern EXPORT int *cdescr(int dtype, void *data, ...)
-{
+#ifdef _CLIENT_ONLY
+extern EXPORT int *cdescr() {return NULL;}
+#else
+extern EXPORT int *cdescr(int dtype, void *data, ...) {
   void *arglist[MAXARGS];
   va_list incrmtr;
   int dsc;
@@ -1162,6 +1173,7 @@ static struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc
   dtype = dsc->dtype;
 
   switch (dtype) {
+  default:break;
   case DTYPE_NATIVE_FLOAT:
     dtype = DTYPE_FLOAT;
     break;
@@ -1186,14 +1198,14 @@ static struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc
   } else {
     int i;
     array_coeff *adsc = (array_coeff *) dsc;
-    int dims[MAXDIM];
+    int dims[MAX_DIMS];
     unsigned int num = adsc->arsize / adsc->length;
     unsigned int *m = &num;
     if (adsc->dimct > 1)
       m = adsc->m;
     for (i = 0; i < adsc->dimct; i++)
       dims[i] = m[i];
-    for (i = adsc->dimct; i < MAXDIM; i++)
+    for (i = adsc->dimct; i < MAX_DIMS; i++)
       dims[i] = 0;
     if (dsc->length)
       arg =
@@ -1239,6 +1251,8 @@ static char *MdsValueRemoteExpression(char *expression, struct descriptor *dsc)
    */
 
   switch (DTYPE_NATIVE_FLOAT) {
+  default:
+  //  printf("Unknown DTYPE_NATIVE_FLOAT: %d.  Using FS_FLOAT.\n", DTYPE_NATIVE_FLOAT);
   case DTYPE_FS:
     native_float_str = "FS_FLOAT";
     native_complex_str = "FS_COMPLEX";
@@ -1247,14 +1261,11 @@ static char *MdsValueRemoteExpression(char *expression, struct descriptor *dsc)
     native_float_str = "F_FLOAT";
     native_complex_str = "F_COMPLEX";
     break;
-  default:
-    printf("Unknown DTYPE_NATIVE_FLOAT: %d.  Using FS_FLOAT.\n", DTYPE_NATIVE_FLOAT);
-    native_float_str = "FS_FLOAT";
-    native_complex_str = "FS_COMPLEX";
-    break;
   }
 
   switch (DTYPE_NATIVE_DOUBLE) {
+  default:
+  //  printf("Unknown DTYPE_NATIVE_DOUBLE: %d.  Using FT_FLOAT.\n", DTYPE_NATIVE_DOUBLE);
   case DTYPE_FT:
     native_double_str = "FT_FLOAT";
     native_double_complex_str = "FT_COMPLEX";
@@ -1267,18 +1278,13 @@ static char *MdsValueRemoteExpression(char *expression, struct descriptor *dsc)
     native_double_str = "G_FLOAT";
     native_double_complex_str = "G_COMPLEX";
     break;
-  default:
-    printf("Unknown DTYPE_NATIVE_DOUBLE: %d.  Using FT_FLOAT.\n", DTYPE_NATIVE_DOUBLE);
-    native_double_str = "FT_FLOAT";
-    native_double_complex_str = "FT_COMPLEX";
-    break;
   }
 
   /*  The DTYPE of the incoming descriptor will be one of the values in ipdesc.h.
    *  The switch clause below therefore does not need to support NATIVE_FLOAT etc.
    */
 
-  switch (dsc->dtype) {
+  switch ((int)dsc->dtype) {
   case DTYPE_UCHAR:
     strcpy(newexpression, "BYTE_UNSIGNED");
     break;

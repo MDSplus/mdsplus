@@ -57,9 +57,6 @@ COMPILE*/
 #include <inttypes.h>
 #include <mdsshr.h>
 #include <status.h>
-#ifdef DTYPE_EVENT
-#undef DTYPE_EVENT
-#endif
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
 extern int MdsOpen(int conid, char *tree, int shot);
@@ -299,7 +296,7 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
   int status = 1;
   struct descriptor *tdiarg;
   struct descriptor_a *desca;
-  int dims[MAX_DIMS + 1];	/* dimensions of an array */
+  int dims[MAX_DIMS];	/* dimensions of an array */
   char dtype;
   char ndims;
   unsigned char *ptr;
@@ -341,6 +338,7 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
 #endif
 /* Make up the correct packet for SendArg */
     switch (tdiarg->class) {
+    default:break;
     case CLASS_S:		/* fixed-length descriptor */
       ndims = 0;
       num = 1;
@@ -513,21 +511,6 @@ static int MdsToIp(struct descriptor **tdiarg, short *len)
     dtype = 0;
     *len = 0;
     break;
-  case DTYPE_H:		/*      28              H_floating;  128-bit quadruple-precision floating point */
-  case DTYPE_OU:		/*      25              octaword (unsigned);  128-bit unsigned quantity */
-  case DTYPE_O:		/*      26              octaword integer (signed);  128-bit signed 2's-complement integer */
-  case DTYPE_HC:		/*      30              H_floating complex */
-  case DTYPE_CIT:		/*      31              COBOL Intermediate Temporary */
-  case DTYPE_VT:		/*      37              varying character string;  16-bit count, followed by a string */
-  case DTYPE_NU:		/*      15              numeric string, unsigned */
-  case DTYPE_NL:		/*      16              numeric string, left separate sign */
-  case DTYPE_NLO:		/*      17              numeric string, left overpunched sign */
-  case DTYPE_NR:		/*      18              numeric string, right separate sign */
-  case DTYPE_NRO:		/*      19              numeric string, right overpunched sign */
-  case DTYPE_NZ:		/*      20              numeric string, zoned sign */
-  case DTYPE_P:		/*      21              packed decimal string */
-  case DTYPE_V:		/*      1               aligned bit string */
-  case DTYPE_VU:		/*      34              unaligned bit string */
   default:
     printf("Descriptor type [%d]\n not handled\n", (*tdiarg)->dtype);
     *len = dtype = 0;

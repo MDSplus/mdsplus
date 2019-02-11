@@ -26,17 +26,69 @@
 from unittest import TestCase,TestSuite,TextTestRunner
 from MDSplus import Tree,getenv,setenv,tcl
 from threading import RLock
+from re import match
 import gc,os,sys,time
+
+class logger(object):
+    """wrapper class to force flush on each write"""
+    def __init__(self,filename):
+        self.__f = open(filename,'w+')
+    def write(self,*a,**kv):
+        self.__f.write(*a,**kv)
+        self.__f.flush()
+    def __enter__(self,*a,**kv): return self
+    def __exit__(self,*a,**kv):  return self.close()
+    def __getattr__(self,name):  return self.__f.__getattribute__(name)
 
 class Tests(TestCase):
     debug = False
     inThread = False
     index = 0
+    @property
+    def module(self): return self.__module__.split('.')[-1]
+    def assertEqual(self,fst,snd,*a,**kv):
+        if isinstance(fst,str):
+            sys.stderr.write('%s\n'%str(fst))
+        super(Tests,self).assertEqual(fst,snd,*a,**kv)
     def runTest(self):
-        sys.stdout.write("\n")
-        for test in self.getTests():
-            sys.stdout.write("### %s ###\n"%test);sys.stdout.flush()
-            self.__getattribute__(test)()
+        import traceback
+        stdout,stderr = sys.stdout,sys.stderr
+        try:
+            with logger("%s-out.log"%self.module) as sys.stdout:
+                sys.stderr = sys.stdout
+                for test in self.getTests():
+                    sys.stdout.write("### %s ###\n"%test);sys.stdout.flush()
+                    self.__getattribute__(test)()
+        finally:
+            sys.stdout,sys.stderr = stdout,stderr
+    def _doTCLTest(self,expr,out=None,err=None,re=False,verify=False):
+        def checkre(pattern,string):
+            if pattern is None:
+                self.assertEqual(string is None,True)
+            else:
+                self.assertEqual(string is None,False)
+                self.assertEqual(match(pattern,str(string)) is None,False,'"%s"\nnot matched by\n"%s"'%(string,pattern))
+        sys.stderr.write("TCL> %s\n"%(expr,));
+        outo,erro = tcl(expr,True,True,True)
+        if verify:
+            ver,erro = erro.split('\n',2)
+            self.assertEqual(ver.endswith("%s"%expr),True)
+            if len(erro)==0: erro = None 
+        if not re:
+            self.assertEqual(outo,out)
+            self.assertEqual(erro,err)
+        else:
+            checkre(out,outo)
+            checkre(err,erro)
+    def _doExceptionTest(self,expr,exc):
+        if Tests.debug: sys.stderr.write("TCL(%s) # expected exception: %s\n"%(expr,exc.__name__));
+        try:
+            tcl(expr,True,True,True)
+        except Exception as e:
+            self.assertEqual(e.__class__,exc)
+            return
+        self.fail("TCL: '%s' should have signaled an exception"%expr)
+
     @classmethod
     def getTestCases(cls,tests=None):
         if tests is None: tests = cls.getTests()
@@ -85,15 +137,19 @@ class MdsIp(object):
         return 'localhost:%d'%(port,),port
 
     def _testDispatchCommand(self,mdsip,command,stdout=None,stderr=None):
-        self.assertEqual(tcl('dispatch/command/wait/server=%s %s'  %(mdsip,command),1,1,1),(None,None))
+        self._doTCLTest('dispatch/command/wait/server=%s %s'  %(mdsip,command))
 
     def _testDispatchCommandNoWait(self,mdsip,command,stdout=None,stderr=None):
-        self.assertEqual(tcl('dispatch/command/nowait/server=%s %s'  %(mdsip,command),1,1,1),(None,None))
+        self._doTCLTest('dispatch/command/nowait/server=%s %s'  %(mdsip,command))
+
+    def _checkIdle(self,server):
+        show_server = "Checking server: %s\n[^,]+, [^,]+, logging enabled, Inactive\n"%server
+        self._doTCLTest('show server %s'%server,out=show_server,re=True)
 
     def _start_mdsip(self,server,port,logname,protocol='TCP'):
         if port>0:
             from subprocess import Popen,STDOUT
-            logfile = '%s_%d.log'%(logname,self.index)
+            logfile = '%s-%s%d.log'%(self.module,logname,self.index)
             log = open(logfile,'w')
             try:
                 hosts = '%s/mdsip.hosts'%self.root
@@ -104,11 +160,13 @@ class MdsIp(object):
                 log.close()
                 raise
             time.sleep(1)
+            self._checkIdle(server)
             for envpair in self.envx.items():
                 self._testDispatchCommandNoWait(server,'env %s=%s'%envpair)
             self._testDispatchCommand(server,'set verify')
             return mdsip,log
         if server:
+            self._checkIdle(server)
             for envpair in self.envx.items():
                 self._testDispatchCommandNoWait(server,'env %s=%s'%envpair)
             self._testDispatchCommand(server,'set verify')

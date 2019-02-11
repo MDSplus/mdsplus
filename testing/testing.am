@@ -7,7 +7,7 @@
 
 TEST_CFLAGS = -I${top_srcdir}/testing
 TEST_LIBS   = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
-
+TESTS_ENVIRONMENT += MDSPLUS_VERSION_CHECK=off
 
 # ///  select test form env variable  //////////////////////////////////////// #
 

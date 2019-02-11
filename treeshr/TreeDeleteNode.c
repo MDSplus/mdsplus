@@ -142,14 +142,14 @@ STATIC_ROUTINE void check_nid(PINO_DATABASE * dblist, NID * nid, int *count)
       node_to_nid(dblist, descendent, (&nid));
       check_nid(dblist, &nid, count);
     }
-    if (swapshort((char *)&node->conglomerate_elt)) {
+    if (swapint16(&node->conglomerate_elt)) {
       NID elt_nid;
       NODE *elt_node;
       unsigned short elt_num = 1;
-      elt_nid.node = (unsigned)(nid->node - swapshort((char *)&node->conglomerate_elt) + 1)&0xFFFFFF;
+      elt_nid.node = (unsigned)(nid->node - swapint16(&node->conglomerate_elt) + 1)&0xFFFFFF;
       elt_nid.tree = nid->tree;
       elt_node = nid_to_node(dblist, &elt_nid);
-      for (; swapshort((char *)&elt_node->conglomerate_elt) == elt_num;
+      for (; swapint16(&elt_node->conglomerate_elt) == elt_num;
 	   elt_nid.node++, elt_num++, elt_node++)
 	check_nid(dblist, &elt_nid, count);
     }
@@ -255,7 +255,7 @@ extern void _TreeDeleteNodeExecute(void *dbid)
     else
       memset(edit->nci + nid.node - edit->first_in_mem, 0, sizeof(struct nci));
     memcpy(node->name, "deleted node", sizeof(node->name));
-    LoadShort(zero, &node->conglomerate_elt);
+    loadint16(&node->conglomerate_elt,&zero);
     node->member = 0;
     node->brother = 0;
     node->usage = 0;
@@ -283,20 +283,20 @@ void _TreeDeleteNodesWrite(void *dbid) {
     if (prevnode) {
       int tmp;
       prevnode->parent = node_offset(node, prevnode);
-      tmp = -swapint((char *)&prevnode->parent);
-      node->child = swapint((char *)&tmp);
+      tmp = -swapint32(&prevnode->parent);
+      node->child = swapint32(&tmp);
     } else {
       int tmp;
       tmp = node_offset(node, dblist->tree_info->node);
-      dblist->tree_info->header->free = swapint((char *)&tmp);
+      dblist->tree_info->header->free = swapint32(&tmp);
       node->child = 0;
     }
     prevnode = node;
     if (firstempty) {
       int tmp;
       node->parent = node_offset(firstempty, node);
-      tmp = -swapint((char *)&node->parent);
-      firstempty->child = swapint((char *)&tmp);
+      tmp = -swapint32(&node->parent);
+      firstempty->child = swapint32(&tmp);
     } else
       node->parent = 0;
     nidx = nid.node;

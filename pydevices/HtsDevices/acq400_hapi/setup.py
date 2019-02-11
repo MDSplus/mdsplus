@@ -49,7 +49,7 @@ setupkw = {
       'Environment :: Console',
       'Topic :: Scientific/Engineering',
       ],
-      'keywords'     : ('data acquisition','hardware','digital to analog'),
+      'keywords'     : ['data acquisition','hardware','digital to analog'],
 #       install_requires=['numpy','ctypes'],
     }
 

@@ -42,80 +42,100 @@ def _mimport(name, level=1):
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
-try:
-    @property
-    def gub(self):
-        return 42
-    @gub.setter
-    def gub(self,value):
-        self._gub=value
-    del gub
-except:
+import os,sys,numpy,ctypes,ctypes.util,hashlib # importing required packages
+if sys.version_info < (2,6):
     raise Exception("Python version 2.6 or higher is now required to use the MDSplus python package.")
+# importing libs for convenience and to early check if we have what we need in place
+_ver = _mimport("version")
+class libs:
+    MdsShr = _ver.load_library('MdsShr')
+    TreeShr= _ver.load_library('TreeShr')
+    TdiShr = _ver.load_library('TdiShr')
+    try:   Mdsdcl = version.load_library('Mdsdcl')
+    except:Mdsdcl = None
+    try:   MdsIpShr = version.load_library('MdsIpShr')
+    except:MdsIpShr = None
 
-
+# check version
+if __name__=="MDSplus":
+    version_check = os.getenv("MDSPLUS_VERSION_CHECK","on").lower()
+    version_check = not (version_check == "0" or version_check == "off" or version_check == "no")
+else:
+    version_check = False
 try:
-    _mvers=_mimport('_version')
-    __version__=_mvers.version
-    __doc__=__doc__+"Version: %s\nBranch: %s\nCommit: %s\nRelease tag: %s\n" % (_mvers.version,
-                                                                              _mvers.branch,
-                                                                              _mvers.commit,
-                                                                              _mvers.release_tag)
-    __doc__=__doc__+"Release: %s\n" % _mvers.release_date
-    branch=_mvers.branch
-    commit=_mvers.commit
-    release_tag=_mvers.release_tag
-    del _mvers
+    _version = _mimport('_version')
+    __version__ = _version.version
+    branch      = _version.branch
+    commit      = _version.commit
+    release_tag = _version.release_tag
+    __doc__ = """%s
+Version: %s\nBranch: %s\nCommit: %s\nRelease tag: %s
+Release: %s
+""" % (__doc__,__version__,branch,commit,release_tag,_version.release_date)
 except:
-    import os
-    print("PYTHONPATH was set to: %s and unable to import version information" % os.environ['PYTHONPATH'])
+    if version_check:
+        sys.stderr.write("PYTHONPATH was set to: %s and unable to import version information\n" % os.environ['PYTHONPATH'])
     __version__='Unknown'
 
-import sys,ctypes as _C
-class MDSplusVersionInfo(_C.Structure):
-    _fields_= [("MAJOR",_C.c_char_p),
-               ("MINOR",_C.c_char_p),
-               ("RELEASE",_C.c_char_p),
-               ("BRANCH",_C.c_char_p),
-               ("RELEASE_TAG",_C.c_char_p),
-               ("COMMIT",_C.c_char_p),
-               ("DATE",_C.c_char_p),
-               ("MDSVERSION",_C.c_char_p)]
-_ver=_mimport('version')
-mdsshr=_ver.load_library('MdsShr')
-del _ver
-_info=_C.cast(mdsshr.MDSplusVersion,_C.POINTER(MDSplusVersionInfo)).contents
-del mdsshr
-_ver=str(_info.MDSVERSION.decode())
-if _ver != __version__:
-    sys.stderr.write("""Warning:
+if version_check:
+    def version_check():
+        class MDSplusVersionInfo(ctypes.Structure):
+            _fields_= [("MAJOR",ctypes.c_char_p),
+                       ("MINOR",ctypes.c_char_p),
+                       ("RELEASE",ctypes.c_char_p),
+                       ("BRANCH",ctypes.c_char_p),
+                       ("RELEASE_TAG",ctypes.c_char_p),
+                       ("COMMIT",ctypes.c_char_p),
+                       ("DATE",ctypes.c_char_p),
+                       ("MDSVERSION",ctypes.c_char_p)]
+        try:
+            _info=ctypes.cast(libs.MdsShr.MDSplusVersion,ctypes.POINTER(MDSplusVersionInfo)).contents
+            _ver = version.tostr(_info.MDSVERSION.decode())
+        except:
+            _ver = "Unknown"
+        if _ver != __version__ or _ver == "Unknown":
+            sys.stderr.write('''Warning:
   The MDSplus python module version (%s) does not match
   the version of the installed MDSplus libraries (%s).
   Upgrade the module using the mdsplus/mdsobjects/python directory of the
   MDSplus installation.
-""" % (__version__, _ver ))
+''' % (__version__, _ver ))
+    version_check()
+del version_check, _ver
 
-def load(gbls=globals()):
+def load_package(gbls={},version_check=False):
     def loadmod_full(name,gbls):
         mod=_mimport(name)
         for key in mod.__dict__:
             if not key.startswith('_'):
                 gbls[key]=mod.__dict__[key]
-    for mod in ('mdsdata','mdsscalar','mdsarray','compound','descriptor',
-                'apd','event','tree','scope','_mdsshr',
-                'connection','mdsdcl','mdsExceptions'):
-        loadmod_full(mod,gbls)
+    for name in ('os','sys','numpy','ctypes','libs','__version__'):
+        gbls[name] = globals()[name]
+    loadmod_full('version',gbls)
+    loadmod_full('mdsdata',gbls)
+    loadmod_full('mdsscalar',gbls)
+    loadmod_full('mdsarray',gbls)
+    loadmod_full('compound',gbls)
+    loadmod_full('descriptor',gbls)
+    loadmod_full('apd',gbls)
+    loadmod_full('event',gbls)
+    loadmod_full('tree',gbls)
+    loadmod_full('scope',gbls)
+    loadmod_full('_mdsshr',gbls)
+    loadmod_full('mdsExceptions',gbls)
+    loadmod_full('mdsdcl',gbls)
+    if libs.MdsIpShr is not None:
+        loadmod_full('connection',gbls)
+    gbls["PyLib"] = os.getenv("PyLib")
     return gbls
 
 if __name__==__package__:
-    load()
-    def getPyLib():
-        from ctypes.util import find_library
-        import sys
-        libname = ('python%d%d' if sys.platform.startswith('win') else 'python%d.%d')%sys.version_info[0:2]
-        try:   return find_library(libname)
-        except:return None
-    if not "PyLib" in globals():
-        PyLib = getPyLib()
-        if   PyLib:globals()['setenv']("PyLib",PyLib)
-        else:PyLib=globals()['getenv']("PyLib")
+    PyLib = ('python%d%d' if sys.platform.startswith('win') else 'python%d.%d')%sys.version_info[0:2]
+    try:
+        PyLib = ctypes.util.find_library(PyLib)
+    except:
+        PyLib = os.getenv("PyLib",PyLib)
+    else:
+        libs.MdsShr.MdsPutEnv(version.tobytes("%s=%s"%("PyLib",PyLib)))
+    load_package(globals(),True)
+    del load_package

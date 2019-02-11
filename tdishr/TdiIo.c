@@ -66,8 +66,8 @@ extern int TdiDecompile();
 int TdiPutLong(int *data, struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_L;
-  STATIC_CONSTANT unsigned short len = sizeof(int);
+  STATIC_CONSTANT dtype_t dtype = DTYPE_L;
+  STATIC_CONSTANT length_t len = (length_t)sizeof(int);
 
   if (out_ptr == 0)
     return 1;
@@ -82,9 +82,8 @@ int TdiPutLong(int *data, struct descriptor_xd *out_ptr)
 */
 STATIC_ROUTINE int TdiPutUnit(FILE * unit, struct descriptor_xd *out_ptr)
 {
-  struct descriptor unit_d = { 0, DTYPE_T, CLASS_S, 0 };
-  unit_d.length = unit != 0 ? sizeof(unit) : 0;
-  unit_d.pointer = unit != 0 ? (char *)&unit : 0;
+  if (!unit) return MdsCopyDxXd(NULL, out_ptr);
+  struct descriptor unit_d = { sizeof(void*), DTYPE_POINTER, CLASS_S, (char*)&unit };
   return MdsCopyDxXd(&unit_d, out_ptr);
 }
 
@@ -93,14 +92,21 @@ STATIC_ROUTINE int TdiPutUnit(FILE * unit, struct descriptor_xd *out_ptr)
 */
 STATIC_ROUTINE int TdiGetOutUnit(struct descriptor *in_ptr, FILE ** unit)
 {
-  INIT_STATUS;
-  struct descriptor_d unit_d = { 0, DTYPE_T, CLASS_D, 0 };
-  status = TdiEvaluate(in_ptr, &unit_d MDS_END_ARG);
-  if (unit_d.length != sizeof(*unit))
-    *unit = stdout;
-  else
-    *unit = *(FILE **) unit_d.pointer;
-  StrFree1Dx(&unit_d);
+  int status;
+  INIT_AND_FREEXD_ON_EXIT(xd);
+  status = TdiEvaluate(in_ptr, &xd MDS_END_ARG);
+  struct descriptor *unit_d = xd.pointer;
+  if (unit_d->class == CLASS_S) {
+    if (unit_d->dtype == DTYPE_L || unit_d->dtype == DTYPE_LU) {
+      if (*(int*)unit_d->pointer == 2)
+        *unit = stderr;
+      else
+        *unit = stdout;
+    } else if ((unit_d->dtype == DTYPE_POINTER || unit_d->dtype == DTYPE_T) && unit_d->length == sizeof(void*) )
+      *unit = *(FILE **) unit_d->pointer;
+    else *unit = stdout;
+  } else *unit = stdout;
+  FREEXD_NOW();
   return status;
 }
 
@@ -109,14 +115,15 @@ STATIC_ROUTINE int TdiGetOutUnit(struct descriptor *in_ptr, FILE ** unit)
 */
 STATIC_ROUTINE int TdiGetInUnit(struct descriptor *in_ptr, FILE ** unit)
 {
-  INIT_STATUS;
-  struct descriptor_d unit_d = { 0, DTYPE_T, CLASS_D, 0 };
-  status = TdiEvaluate(in_ptr, &unit_d MDS_END_ARG);
-  if (unit_d.length != sizeof(*unit))
-    *unit = stdin;
-  else
-    *unit = *(FILE **) unit_d.pointer;
-  StrFree1Dx(&unit_d);
+  int status;
+  INIT_AND_FREEXD_ON_EXIT(xd);
+  status = TdiEvaluate(in_ptr, &xd MDS_END_ARG);
+  struct descriptor *unit_d = xd.pointer;
+  if (unit_d->class == CLASS_S
+    && ((unit_d->dtype == DTYPE_POINTER || unit_d->dtype == DTYPE_T) && unit_d->length == sizeof(void*) ))
+      *unit = *(FILE **)unit_d->pointer;
+  else *unit = stdin;
+  FREEXD_NOW();
   return status;
 }
 
@@ -124,16 +131,16 @@ STATIC_ROUTINE int TdiGetInUnit(struct descriptor *in_ptr, FILE ** unit)
         System data and time as text string.
                 string = DATE_TIME([quadword time])
 */
-int Tdi1DateTime(int opcode __attribute__ ((unused)),
+int Tdi1DateTime(opcode_t opcode __attribute__ ((unused)),
 		 int narg,
 		 struct descriptor *list[],
 		 struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   int time[2] = { 0, 0 }, *ptime;
-  unsigned short len;
-  STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_T;
-  STATIC_CONSTANT unsigned short length = 23;
+  length_t len;
+  STATIC_CONSTANT dtype_t dtype = DTYPE_T;
+  STATIC_CONSTANT length_t length = 23;
 
   if (narg > 0 && list[0]) {
     struct descriptor dtime = { sizeof(time), DTYPE_Q, CLASS_S, 0 };
@@ -154,7 +161,7 @@ int Tdi1DateTime(int opcode __attribute__ ((unused)),
 /*----------------------------------------------
         Close a C file unit. (0=OK, EOF=bad)
 */
-int Tdi1Fclose(int opcode __attribute__ ((unused)),
+int Tdi1Fclose(opcode_t opcode __attribute__ ((unused)),
 	       int narg __attribute__ ((unused)),
 	       struct descriptor *list[],
 	       struct descriptor_xd *out_ptr)
@@ -173,7 +180,7 @@ int Tdi1Fclose(int opcode __attribute__ ((unused)),
         where offset is in bytes (to record for rec files.)
         and origin: 0=absolute 1=relative 2=relative to end.
 */
-int Tdi1Fseek(int opcode __attribute__ ((unused)),
+int Tdi1Fseek(opcode_t opcode __attribute__ ((unused)),
 	      int narg,
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)
@@ -198,7 +205,7 @@ int Tdi1Fseek(int opcode __attribute__ ((unused)),
         Find absolute position of file pointer.
         offset = FTELL(unit)
 */
-int Tdi1Ftell(int opcode __attribute__ ((unused)),
+int Tdi1Ftell(opcode_t opcode __attribute__ ((unused)),
 	      int narg __attribute__ ((unused)),
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)
@@ -219,7 +226,7 @@ int Tdi1Ftell(int opcode __attribute__ ((unused)),
         Mode is a lowercase string and may include
         r=read w=write a=append r+/w+/a+=update b=binary
 */
-int Tdi1Fopen(int opcode __attribute__ ((unused)),
+int Tdi1Fopen(opcode_t opcode __attribute__ ((unused)),
 	      int narg __attribute__ ((unused)),
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)
@@ -249,7 +256,7 @@ int Tdi1Fopen(int opcode __attribute__ ((unused)),
         Spawn a subprocess.
                 status = SPAWN([command_string],[input_file],[output_file])
 */
-int Tdi1Spawn(int opcode __attribute__ ((unused)),
+int Tdi1Spawn(opcode_t opcode __attribute__ ((unused)),
 	      int narg,
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)
@@ -277,7 +284,7 @@ int Tdi1Spawn(int opcode __attribute__ ((unused)),
         WAIT a given number of seconds.
                 float = WAIT(wait-time)
 */
-int Tdi1Wait(int opcode __attribute__ ((unused)),
+int Tdi1Wait(opcode_t opcode __attribute__ ((unused)),
 	     int narg __attribute__ ((unused)), struct descriptor *list[],
 	     struct descriptor_xd *out_ptr __attribute__ ((unused)))
 {
@@ -302,7 +309,7 @@ int Tdi1Wait(int opcode __attribute__ ((unused)),
         Other types (including signals and with units)
         are decompiled and start and end with a new row.
 */
-int Tdi1Write(int opcode __attribute__ ((unused)),
+int Tdi1Write(opcode_t opcode __attribute__ ((unused)),
 	      int narg,
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)
@@ -405,7 +412,7 @@ int Tdi1Write(int opcode __attribute__ ((unused)),
         Unit * is standard input.
 
 */
-int Tdi1Read(int opcode __attribute__ ((unused)),
+int Tdi1Read(opcode_t opcode __attribute__ ((unused)),
 	     int narg __attribute__ ((unused)),
 	     struct descriptor *list[],
 	     struct descriptor_xd *out_ptr)

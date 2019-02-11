@@ -502,7 +502,7 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
       return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-     default: 
+     default:
       sprintf(message, "Datatype %d not supported for class CLASS_A", desc->dtype);
       exc = (*env)->FindClass(env, "MdsException");
       (*env)->ThrowNew(env, exc, message);
@@ -518,9 +518,20 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 
     record_d = (struct descriptor_r *)desc;
 //printf("CLASS_R %d\n", record_d->dtype);
-    if (record_d->dtype != DTYPE_PARAM && record_d->dtype != DTYPE_WITH_UNITS
-	&& record_d->dtype != DTYPE_WITH_ERROR) {
-      switch (record_d->dtype) {
+    switch (record_d->dtype) {
+      case DTYPE_PARAM:
+	return DescripToObject(env, record_d->dscptrs[0],
+			       DescripToObject(env, record_d->dscptrs[1], 0, 0, 0, 0),
+			       unitsObj, errorObj, DescripToObject(env, record_d->dscptrs[2], 0, 0,
+								   0, 0));
+      case DTYPE_WITH_UNITS:
+	return DescripToObject(env, record_d->dscptrs[0], helpObj,
+			       DescripToObject(env, record_d->dscptrs[1], 0, 0, 0, 0), errorObj,
+			       validationObj);
+      case DTYPE_WITH_ERROR:
+	return DescripToObject(env, record_d->dscptrs[0],
+			       helpObj, unitsObj, DescripToObject(env, record_d->dscptrs[1], 0, 0,
+								  0, 0), validationObj);
       case DTYPE_SIGNAL:
 	cls = (*env)->FindClass(env, "MDSplus/Signal");
 	constr =
@@ -612,7 +623,7 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	    (*env)->GetStaticMethodID(env, cls, "getData",
 				      "(LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Range;");
 	break;
-      default: 
+      default:
 	sprintf(message, "Datatype %d not supported for class CLASS_R", desc->dtype);
 	exc = (*env)->FindClass(env, "MdsException");
 	(*env)->ThrowNew(env, exc, message);
@@ -621,8 +632,7 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
       obj = (*env)->CallStaticObjectMethodA(env, cls, constr, args);
       data_cls = (*env)->FindClass(env, "MDSplus/Data");
       jobjects = (*env)->NewObjectArray(env, record_d->ndesc, data_cls, 0);
-      if(jobjects)
-      {
+      if(jobjects) {
 	for (i = count = 0; count < record_d->ndesc; i++, count++) {
 	  (*env)->SetObjectArrayElement(env, jobjects, i,
 					DescripToObject(env, record_d->dscptrs[i], 0, 0, 0, 0));
@@ -649,25 +659,7 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	}
 	(*env)->SetIntField(env, obj, opcode_fid, opcode);
       }
-    } else {
-      switch (record_d->dtype) {
-      case DTYPE_PARAM:
-	return DescripToObject(env, record_d->dscptrs[0],
-			       DescripToObject(env, record_d->dscptrs[1], 0, 0, 0, 0),
-			       unitsObj, errorObj, DescripToObject(env, record_d->dscptrs[2], 0, 0,
-								   0, 0));
-      case DTYPE_WITH_UNITS:
-	return DescripToObject(env, record_d->dscptrs[0], helpObj,
-			       DescripToObject(env, record_d->dscptrs[1], 0, 0, 0, 0), errorObj,
-			       validationObj);
-      case DTYPE_WITH_ERROR:
-	return DescripToObject(env, record_d->dscptrs[0],
-			       helpObj, unitsObj, DescripToObject(env, record_d->dscptrs[1], 0, 0,
-								  0, 0), validationObj);
-      }
-    }
-    return obj;
-
+      return obj;
   case CLASS_APD:
     args[1].l = helpObj;
     args[2].l = unitsObj;
@@ -701,7 +693,7 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
     }
     args[0].l = jobjects;
     return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-  default: 
+  default:
       sprintf(message, "class %d not supported", desc->class);
       exc = (*env)->FindClass(env, "MdsException");
       (*env)->ThrowNew(env, exc, message);
@@ -1131,6 +1123,7 @@ static void FreeDescrip(struct descriptor *desc)
 /*printf("FreeDescrip class %d dtype %d\n", desc->class, desc->dtype);*/
 
   switch (desc->class) {
+  default:break;
   case CLASS_S:
     if (desc->pointer)
       free(desc->pointer);
@@ -3152,7 +3145,7 @@ static char getNDims(struct descriptor *dsc)
 
 static void getDims(struct descriptor *dsc, int *dims)
 {
-  ARRAY_BOUNDS(char *, MAX_DIMS_R) * arrPtr;
+  ARRAY_BOUNDS(char *, MAX_DIMS) * arrPtr;
   int i;
 
   if (dsc->class != CLASS_A)
@@ -3189,11 +3182,11 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Connection_get
   char dtype, nDims;
   short length;
   void *ptr;
-  int dims[MAX_DIMS_R];
+  int dims[MAX_DIMS];
   int numBytes;
   void *mem = 0;
   struct descriptor scalarDsc = { 0, 0, CLASS_S, 0 };
-  DESCRIPTOR_A_COEFF(arrayDsc, 0, 0, 0, MAX_DIMS_R, 0);
+  DESCRIPTOR_A_COEFF(arrayDsc, 0, 0, 0, MAX_DIMS, 0);
 
   expr = (*env)->GetStringUTFChars(env, jExpr, 0);
   nArgs = (*env)->GetArrayLength(env, jargs);
@@ -3343,7 +3336,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Connection_put
   char dtype, nDims;
   short length;
   void *ptr;
-  int dims[MAX_DIMS_R];
+  int dims[MAX_DIMS];
   int numBytes, varIdx;
   void *mem = 0;
 

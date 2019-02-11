@@ -25,7 +25,7 @@
 
 import os,gc
 from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,Device,tree,tcl,Int32
-
+from MDSplus import TreeNOEDIT,ADD,COMPILE
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
@@ -42,6 +42,14 @@ class Tests(_UnitTest.TreeTests):
                 raise Exception("Shot number changed! tree.shot=%d, thread.shot=%d" % (pytree.shot, self.shot+0))
             pytree.default.addNode('pytreesub','subtree').include_in_pulse=True
             pytree.write()
+            self.assertEqual(pytree.versions_in_model,False)
+            self.assertEqual(pytree.versions_in_pulse,False)
+            pytree.versions_in_model = True
+            self.assertEqual(pytree.versions_in_model,True)
+            self.assertEqual(pytree.versions_in_pulse,False)
+            pytree.versions_in_pulse = 1
+            self.assertEqual(pytree.versions_in_model,True)
+            self.assertEqual(pytree.versions_in_pulse,True)
         with Tree('pytreesub',self.shot+0,'new') as pytreesub:
             if pytreesub.shot != self.shot+0:
                 raise Exception("Shot number changed! tree.shot=%d, thread.shot=%d" % (pytreesub.shot, self.shot+0))
@@ -69,10 +77,24 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(pytree.getFileName(), filepath)
         self.assertEqual(str(pytree),'Tree("PYTREE",%d,"Normal")'%(self.shot+1,))
         pytree.createPulse(self.shot+2)
+        self.assertEqual(pytree.number_opened,1)
         if not Tests.inThread:
             Tree.setCurrent('pytree',self.shot+2)
             pytree2=Tree('pytree',0)
             self.assertEqual(str(pytree2),'Tree("PYTREE",%d,"Normal")'%(self.shot+2,))
+        else:
+            pytree2=Tree('pytree',self.shot+2)
+        self.assertEqual(pytree2.number_opened,1)
+        self.assertEqual(pytree.shotid,pytree.shot)
+        self.assertEqual(pytree.tree,pytree.expt)
+        self.assertEqual(pytree.max_open,8)
+        try:  pytree.versions_in_model = True
+        except TreeNOEDIT: pass
+        else: self.assertEqual("TreeSUCCESS","TreeNOEDIT")
+        try:  pytree.versions_in_pulse = True
+        except TreeNOEDIT: pass
+        else: self.assertEqual("TreeSUCCESS","TreeNOEDIT")
+
 
     def getNode(self):
         with Tree('pytree',self.shot+3,'new') as pytree:
@@ -292,6 +314,7 @@ class Tests(_UnitTest.TreeTests):
             ip.tag="ip"
             rec=pytreesub.tdiCompile("Build_Signal(Build_With_Units(\\MAG_ROGOWSKI.SIGNALS:ROG_FG + 2100. * \\BTOR, 'ampere'), *, DIM_OF(\\BTOR))")
             ip.record=rec
+            pytreesub.versions_in_pulse = True
             pytreesub.write()
         pytree.readonly()
         ip=pytree.getNode('\\ip')
@@ -300,8 +323,14 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(str(ip.record),str(ip.getData()))
         self.assertEqual(ip.segmented,ip.isSegmented())
         self.assertEqual(ip.versions,ip.containsVersions())
+        self.assertEqual(ip.versions,False)
         self.assertEqual(ip.getNumSegments(),0)
         self.assertEqual(ip.getSegment(0),None)
+        pytree.normal()
+        ip.record = ADD(1,COMPILE("\\BTOR"))
+        self.assertEqual(ip.versions,True)
+        self.assertEqual(ip.record.decompile(),'1 + COMPILE("\\\\BTOR")')
+        self.assertEqual(ip.record.data().tolist(),(pytree.getNode("\\BTOR").data()+1).tolist())
 
     def getCompression(self):
         with Tree('pytree',self.shot+9,'new') as pytree:

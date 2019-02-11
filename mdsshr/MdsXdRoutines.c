@@ -66,9 +66,7 @@ inline static char *_align(char *ptr, size_t offset, size_t size) {
 void MdsFixDscLength(struct descriptor *in);
 //static void _checkAlign(struct descriptor *in);
 
-EXPORT int MdsGet1Dx(unsigned int const *length_ptr, unsigned char const *dtype_ptr, struct descriptor_xd *dsc_ptr,
-	      void **zone)
-{
+EXPORT int MdsGet1Dx(const l_length_t *length_ptr, dtype_t const *dtype_ptr, struct descriptor_xd *dsc_ptr, void **zone){
   int status;
   if (dsc_ptr->class == CLASS_XD) {
     if (*length_ptr != dsc_ptr->l_length) {
@@ -107,7 +105,7 @@ EXPORT int MdsFree1Dx(struct descriptor_xd *dsc_ptr, void **zone)
       dsc_ptr->l_length = 0;
     }
   } else if (dsc_ptr->class == CLASS_D)
-    status = LibSFree1Dd((struct descriptor *)dsc_ptr);
+    status = StrFree1Dx((struct descriptor_d *)dsc_ptr);
   else
     status = LibINVSTRDES;
   return status;
@@ -356,19 +354,18 @@ EXPORT int MdsCopyDxXdZ(const struct descriptor *in_dsc_ptr, struct descriptor_x
 		 void *fixup_path_arg)
 {
   unsigned int size;
-  int status;
-  STATIC_CONSTANT unsigned char dsc_dtype = DTYPE_DSC;
+  static dtype_t dsc_dtype = DTYPE_DSC;
 /************************************************
 * Get the total size of the thing to copy so that
 * a contiguous descriptor can be allocated.
 * If something to copy then do it, else clear.
 ************************************************/
   int compressible = 0;
-  status =
+  int status =
       copy_dx((struct descriptor_xd *)in_dsc_ptr, 0, &size, fixup_nid, fixup_nid_arg, fixup_path,
 	      fixup_path_arg, &compressible);
   if (STATUS_OK && size) {
-    status = MdsGet1Dx(&size, (unsigned char *)&dsc_dtype, out_dsc_ptr, zone);
+    status = MdsGet1Dx(&size, &dsc_dtype, out_dsc_ptr, zone);
     if STATUS_OK
       status = copy_dx((struct descriptor_xd *)in_dsc_ptr,
 		       (struct descriptor_xd *)out_dsc_ptr->pointer,
@@ -398,14 +395,14 @@ STATIC_ROUTINE struct descriptor *FixedArray(struct descriptor *in)
   return (struct descriptor *)answer;
 }
 
-EXPORT int MdsCopyDxXd(struct descriptor const *in, struct descriptor_xd *out)
-{
+EXPORT int MdsCopyDxXd(struct descriptor const *in, struct descriptor_xd *out){
   return MdsCopyDxXdZ(in, out, NULL, NULL, NULL, NULL, NULL);
 }
 
-void MdsFixDscLength(struct descriptor *in)
-{
+void MdsFixDscLength(struct descriptor *in){
   switch (in->dtype) {
+  default:
+    break;
   case DTYPE_B:
   case DTYPE_BU:
     in->length = 1;

@@ -70,7 +70,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
-extern unsigned short OpcValue;
 
 extern int TdiGetArgs();
 extern int TdiMasterData();
@@ -97,7 +96,7 @@ typedef struct {
   int x[2];
 } quadw;
 
-int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
@@ -105,14 +104,14 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
   int bounded = 0, cmode = -1, dimct, highest = 0, highdim = 0, row;
   int dim;
   register int j, len;
-  int stride[MAXDIM + 1], *px[MAXDIM], count[MAXDIM];
+  int stride[MAX_DIMS + 1], *px[MAX_DIMS], count[MAX_DIMS];
   struct descriptor_signal *psig;
   struct descriptor_dimension *pdim;
   struct descriptor_xd *keeps = TdiThreadStatic_p->TdiSELF_PTR;
   array_coeff *pdat, *pdi = 0;
-  array_coeff arr = {1,DTYPE_B,CLASS_A,0,0,0,{0,1,1,1,0},MAXDIM,1,0,{0}};
+  array_coeff arr = {1,DTYPE_B,CLASS_A,0,0,0,{0,1,1,1,0},MAX_DIMS,1,0,{0}};
   struct descriptor ddim = { sizeof(dim), DTYPE_L, CLASS_S, 0 };
-  struct descriptor_xd ii[MAXDIM], xx[MAXDIM];
+  struct descriptor_xd ii[MAX_DIMS], xx[MAX_DIMS];
   struct descriptor_xd sig[1], uni[1], dat[1];
   struct TdiCatStruct cats[2];
   ddim.pointer = (char *)&dim;
@@ -156,7 +155,7 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
   case CLASS_A:
     if ((bounded = pdat->aflags.bounds) == 1)
       pin = pdat->a0;
-    if ((dimct = pdat->dimct) > MAXDIM) {
+    if ((dimct = pdat->dimct) > MAX_DIMS) {
       status = TdiNDIM_OVER;
       goto baddat;
     } else if (pdat->aflags.coeff)
@@ -282,8 +281,8 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
     for (j = psig->ndesc; --j >= 0;)
       psig->dimensions[j] = xx[j].pointer;
   if (highest <= 0) {
-    unsigned short llen = (unsigned short)0;
-    unsigned char dtype = (unsigned char)DTYPE_MISSING;
+    length_t llen = 0;
+    dtype_t dtype = DTYPE_MISSING;
     if (arr.arsize)
       status = MdsGet1DxS(&pdat->length, &pdat->dtype, out_ptr);
     else
@@ -291,7 +290,7 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
     if STATUS_OK
       _MOVC3(len, pin, out_ptr->pointer->pointer);
   } else {
-    arr.dimct = (unsigned char)highest;
+    arr.dimct = (dimct_t)highest;
     arr.aflags.coeff = (unsigned char)(highest > 1);
     status = MdsGet1DxA((struct descriptor_a *)&arr, &pdat->length, &pdat->dtype, out_ptr);
     if (STATUS_NOT_OK)
@@ -349,7 +348,7 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
         Each B value out of range uses extreme values of A.
         A is treated as a linear array and subscripting is to nearest integer.
 */
-int Tdi1Map(int opcode, int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Map(opcode_t opcode, int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
@@ -382,13 +381,9 @@ int Tdi1Map(int opcode, int narg __attribute__ ((unused)), struct descriptor *li
   len = pa->length;
   abase = pa->pointer;
   left = 0;
-  switch (pa->class) {
-  case CLASS_A:
-    if (pa->aflags.bounds) {
-      abase = pa->a0;
-      left = (pa->pointer - abase) / len;
-    }
-    break;
+  if (pa->class == CLASS_A && pa->aflags.bounds) {
+    abase = pa->a0;
+    left = (pa->pointer - abase) / len;
   }
   N_ELEMENTS(pa, right);
   right += left - 1;

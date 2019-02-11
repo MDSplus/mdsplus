@@ -58,7 +58,7 @@ extern int TdiCvtArgs();
 extern int Tdi2Pack();
 extern int TdiConvert();
 
-int Tdi1Pack(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Pack(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   int lena, lenm, numa, numm, numv = 0, bytes, j, cmode = -1;

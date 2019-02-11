@@ -116,7 +116,7 @@ static int doOpen(int streams, char *name, int options, int mode, struct mdsfile
       char dtype;
       short length;
       char ndims;
-      int dims[7];
+      int dims[MAX_DIMS];
       int numbytes;
       void *dptr;
       void *msg = 0;
@@ -172,7 +172,7 @@ off_t getSize(struct mdsfile * file)
       char dtype;
       unsigned short length;
       char ndims;
-      int dims[7];
+      int dims[MAX_DIMS];
       int numbytes;
       void *dptr;
       void *msg = 0;
@@ -190,7 +190,7 @@ off_t getSize(struct mdsfile * file)
       char dtype;
       unsigned short length;
       char ndims;
-      int dims[7];
+      int dims[MAX_DIMS];
       int numbytes;
       void *dptr;
       void *msg = 0;
@@ -224,7 +224,7 @@ off_t doRead(struct mdsfile * file, off_t count, void *buff)
       char dtype;
       unsigned short length;
       char ndims;
-      int dims[7];
+      int dims[MAX_DIMS];
       int numbytes;
       void *dptr;
       void *msg = 0;
@@ -256,7 +256,7 @@ static off_t doWrite(struct mdsfile *file, off_t count, void *buff)
       char dtype;
       unsigned short length;
       char ndims;
-      int dims[7];
+      int dims[MAX_DIMS];
       int numbytes;
       void *dptr;
       void *msg = 0;
@@ -285,7 +285,7 @@ static int doClose(struct mdsfile *file)
       char dtype;
       short length;
       char ndims;
-      int dims[7];
+      int dims[MAX_DIMS];
       int numbytes;
       void *dptr;
       void *msg = 0;

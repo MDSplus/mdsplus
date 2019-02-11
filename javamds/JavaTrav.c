@@ -977,14 +977,14 @@ EXPORT int doAction(int nid)
   int method_nid, i;
   struct descriptor nid_d = { sizeof(int), DTYPE_NID, CLASS_S, 0 };
   struct descriptor retStatus_d = { sizeof(int), DTYPE_L, CLASS_S, (char *)&retStatus };
-  char type = DTYPE_L;
+  dtype_t type = DTYPE_L;
   DESCRIPTOR_CALL(call_d, 0, 253, 0, 0);
   struct descriptor_d *decArgs;
   char *currPtr;
   int argLen, numArgs;
 
   nid_d.pointer = (char *)&method_nid;
-  call_d.pointer = (unsigned char *)&type;
+  call_d.pointer = &type;
   status = TreeGetRecord(nid, &xd);
   if (!(status & 1))
     return status;

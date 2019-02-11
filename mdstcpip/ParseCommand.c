@@ -27,6 +27,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 #include "mdsip_connections.h"
+#include <pthread_port.h>
 
 void PrintHelp(char *option)
 {
@@ -59,12 +60,11 @@ void PrintHelp(char *option)
 ///
 /// Parse standard input command options.
 ///
-void ParseCommand(int argc, char **argv, Options options[], int more, int *rem_argc,
-		  char ***rem_argv)
+void ParseCommand(int argc, char **argv, Options options[], int more, int *rem_argc, char ***rem_argv)
 {
+  INIT_AS_AND_FREE_ON_EXIT(char**,extra_argv,malloc(argc * sizeof(char *)));
   int i;
   int extra_argc = 1;
-  char **extra_argv = malloc(argc * sizeof(char *));
   extra_argv[0] = argv[0];
   for (i = 1; i < argc; i++) {
     char *arg = argv[i];
@@ -125,6 +125,7 @@ void ParseCommand(int argc, char **argv, Options options[], int more, int *rem_a
     *rem_argv = extra_argv;
   } else
      free(extra_argv);
+  FREE_CANCEL();
 }
 
 ///
@@ -132,7 +133,7 @@ void ParseCommand(int argc, char **argv, Options options[], int more, int *rem_a
 ///
 void ParseStdArgs(int argc, char **argv, int *extra_argc, char ***extra_argv)
 {
-  Options options[] = { 
+  Options options[] = {
       {"P", "protocol", 1, 0, 0},
       {"h", "hostfile", 1, 0, 0},
       {"s", "server", 0, 0, 0},

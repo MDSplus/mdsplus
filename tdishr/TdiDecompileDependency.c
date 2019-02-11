@@ -89,7 +89,7 @@ STATIC_ROUTINE int DependencyGet(int prec, struct descriptor_r *pin, struct desc
     status = StrAppend(pout, (struct descriptor *)pin);
     break;
   case DTYPE_DEPENDENCY:
-    switch (*(short *)pin->pointer) {
+    switch (*(treedep_t*)pin->pointer) {
     case TreeDEPENDENCY_AND:
       now = P_AND;
       pwhich = (struct descriptor *)&AND;
@@ -114,7 +114,7 @@ STATIC_ROUTINE int DependencyGet(int prec, struct descriptor_r *pin, struct desc
       status = StrAppend(pout, (struct descriptor *)&RIGHT_PAREN);
     break;
   case DTYPE_CONDITION:
-    switch (*((short *)pin->pointer)) {
+    switch (*((treecond_t*)pin->pointer)) {
     case TreeNEGATE_CONDITION:
       pwhich = (struct descriptor *)&NEGATE;
       break;
@@ -141,7 +141,7 @@ STATIC_ROUTINE int DependencyGet(int prec, struct descriptor_r *pin, struct desc
 }
 
 /*------------------------------------------------------------------*/
-int Tdi1DecompileDependency(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
+int Tdi1DecompileDependency(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 			    struct descriptor *list[],
 			    struct descriptor_xd *out_ptr)
 {

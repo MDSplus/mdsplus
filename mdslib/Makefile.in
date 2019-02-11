@@ -12,7 +12,7 @@ MDSLIB_LIBS=-lTdiShr -lTreeShr -lMdsShr
 
 SOURCES = MdsLib.c
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = MdsLib.export
+EXPORTS = MdsLib.exports
 
 OBJECTS_CLIENT = MdsLib_client.o
 
@@ -42,7 +42,7 @@ MdsLib = @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ $(IMPLIB_MdsLib)
 
 @MINGW_TRUE@ MAKE_IMPLIB_MdsLib=-Wl,--out-implib,$(IMPLIB_MdsLib)
 $(MdsLib): $(OBJECTS) $(DEF)
-	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKELIBDIR@ -lMdsIpShr -L@MAKESHLIBDIR@ $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS) $(MAKE_IMPLIB_MdsLib)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKELIBDIR@ -lMdsShr -lMdsIpShr -L@MAKESHLIBDIR@ $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS) $(MAKE_IMPLIB_MdsLib)
 
 @MAKELIBDIR@@LIBPRE@MdsLib.a: $(OBJECTS)
 	$(AR) -cr $@ $^
@@ -50,7 +50,7 @@ $(MdsLib): $(OBJECTS) $(DEF)
 
 @MINGW_TRUE@ MAKE_IMPLIB_MdsLib_client=-Wl,--out-implib,$(IMPLIB_MdsLib_client)
 @MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ : $(OBJECTS_CLIENT) $(DEF)
-	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKELIBDIR@ -lMdsIpShr $(LIBS) $(GLOBUS_LDFLAGS) $(MAKE_IMPLIB_MdsLib_client)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKELIBDIR@ -lMdsShr -lMdsIpShr $(LIBS) $(GLOBUS_LDFLAGS) $(MAKE_IMPLIB_MdsLib_client)
 
 @MAKELIBDIR@@LIBPRE@MdsLib_client.a : $(OBJECTS_CLIENT) 
 	$(AR) -cr $@ $^
@@ -63,14 +63,14 @@ MdsLib_client.o : MdsLib.c
 	$(COMPILE.c) $< $(OUTPUT_OPTION) -DFILENAME=MdsLib.c -D_CLIENT_ONLY
 
 @MAKEBINDIR@dtype_test : dtype_test.c $(MdsLib)
-	$(LINK.c) $(OUTPUT_OPTION) $< -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
+	$(LINK.c) $(OUTPUT_OPTION) $< -L@MAKESHLIBDIR@ -lMdsLib -lMdsShr -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
 	
 @MAKEBINDIR@mdslib_ctest : mdslib_ctest.c $(MdsLib)
-	$(LINK.c) $(OUTPUT_OPTION) $< -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) @LIBM@ $(GLOBUS_LDFLAGS)
+	$(LINK.c) $(OUTPUT_OPTION) $< -L@MAKESHLIBDIR@ -lMdsLib -lMdsShr -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) @LIBM@ $(GLOBUS_LDFLAGS)
 
 @MAKEBINDIR@mdslib_ftest : mdslib_ftest.f $(MdsLib)
-	$(LINK.F) $(OUTPUT_OPTION) $< @FEXECLIBDIR@@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
+	$(LINK.F) $(OUTPUT_OPTION) $< @FEXECLIBDIR@@MAKESHLIBDIR@ -lMdsLib -lMdsShr -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
 
 @MAKEBINDIR@mdslib_fremotetest : mdslib_fremotetest.f $(MdsLib)
-	$(LINK.F) $(OUTPUT_OPTION) $< @FEXECLIBDIR@@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
+	$(LINK.F) $(OUTPUT_OPTION) $< @FEXECLIBDIR@@MAKESHLIBDIR@ -lMdsLib -lMdsShr -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
 

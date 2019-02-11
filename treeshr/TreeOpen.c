@@ -59,6 +59,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/resource.h>
 #endif
 
+//#define DEBUG
+#ifdef DEBUG
+# define DBG(...) fprintf(stderr, __VA_ARGS__)
+#else
+# define DBG(...) {/**/}
+#endif
+
 int treeshr_errno = 0;
 extern int MDSEventCan();
 static void RemoveBlanksAndUpcase(char *out, char const *in);
@@ -172,6 +179,15 @@ static char *ReplaceAliasTrees(char *tree_in){
   return ans;
 }
 
+static void free_top_db(PINO_DATABASE ** dblist) {
+  if ((*dblist)->next) {
+    PINO_DATABASE *db = *dblist;
+    *dblist = (*dblist)->next;
+    db->next = NULL;
+    TreeFreeDbid(db);
+  }
+}
+
 EXPORT int _TreeOpen(void **dbid, char const *tree_in, int shot_in, int read_only_flag){
   int status;
   int shot;
@@ -211,15 +227,8 @@ EXPORT int _TreeOpen(void **dbid, char const *tree_in, int shot_in, int read_onl
 	    (*dblist)->default_node = (*dblist)->tree_info->root;
 	  (*dblist)->open = 1;
 	  (*dblist)->open_readonly = read_only_flag!=0;
-	} else {
-	  PINO_DATABASE *db;
-	  for (db = *dblist; db->next; db = db->next) ;
-	  if (db) {
-	    db->next = *dblist;
-	    *dblist = (*dblist)->next;
-	    db->next->next = 0;
-	  }
-	}
+	} else
+	  free_top_db(dblist);
       }
       else {
 	status = db_slot_status;
@@ -281,15 +290,8 @@ int _TreeClose(void **dbid, char const *tree, int shot)
 	status = TreeWRITEFIRST;
       } else if ((*dblist)->open) {
 	status = CloseTopTree(*dblist, 1);
-	if (status & 1) {
-	  for (prev_db = 0, db = *dblist; db; prev_db = db, db = db->next) ;
-	  if (prev_db && (*dblist)->next) {
-	    db = (*dblist)->next;
-	    (*dblist)->next = 0;
-	    prev_db->next = *dblist;
-	    *dblist = db;
-	  }
-	}
+	if STATUS_OK
+	  free_top_db(dblist);
       } else
 	status = TreeNOT_OPEN;
     }
@@ -297,19 +299,25 @@ int _TreeClose(void **dbid, char const *tree, int shot)
   return status;
 }
 
-static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
-{
-  TREE_INFO *local_info = dblist ? dblist->tree_info : NULL;
-  TREE_INFO *previous_info;
-  int status;
-
-  status = TreeNORMAL;
-  if (dblist) {
-    if (dblist->remote) {
-      status = CloseTreeRemote(dblist, call_hook);
-      if (status == TreeNOT_OPEN)   /**** Remote server might have already closed the tree ****/
-	status = TreeNORMAL;
-    } else if (local_info) {
+static int CloseTopTree(PINO_DATABASE * dblist, int call_hook) {
+  int status = TreeNORMAL;
+  if (!dblist) return status;
+  if (dblist->dispatch_table) {
+    static int (*ServerFreeDispatchTable) () = NULL;
+    status = LibFindImageSymbol_C("MdsServerShr", "ServerFreeDispatchTable", &ServerFreeDispatchTable);
+    if STATUS_OK {
+      status = ServerFreeDispatchTable(dblist->dispatch_table);
+      dblist->dispatch_table = NULL;
+    }
+  }
+  if (dblist->remote) {
+    status = CloseTreeRemote(dblist, call_hook);
+    if (status == TreeNOT_OPEN)   /**** Remote server might have already closed the tree ****/
+      status = TreeNORMAL;
+    return status;
+  }
+  TREE_INFO *previous_info, *local_info = dblist->tree_info;
+  if (local_info) {
     /************************************************
      We check the BLOCKID just to make sure that what
      we were passed in indeed was a tree info block.
@@ -344,12 +352,6 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
           if (local_info->edit->deleted_nid_list)
             free(local_info->edit->deleted_nid_list);
 	  free(local_info->edit);
-	}
-	if (local_info->dispatch_table) {
-	  static int (*ServerFreeDispatchTable) () = NULL;
-	  status = LibFindImageSymbol_C("MdsServerShr", "ServerFreeDispatchTable", &ServerFreeDispatchTable);
-	  if STATUS_OK
-	      status = (*ServerFreeDispatchTable)(local_info->dispatch_table);
 	}
 
        /********************************************************
@@ -423,7 +425,6 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
       free(dblist->main_treenam);
       dblist->main_treenam = NULL;
     }
-  }
   return status;
 }
 
@@ -542,7 +543,7 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
   }
   if (info) {
     for (i = 0; i < info->header->externals; i++) {
-      NODE *external_node = info->node + swapint((char *)&info->external[i]);
+      NODE *external_node = info->node + swapint32(&info->external[i]);
       char *subtree = strncpy(calloc(1,sizeof(NODE_NAME)+1), external_node->name, sizeof(NODE_NAME));
       subtree[sizeof(NODE_NAME)] = '\0';
       char *blank = strchr(subtree, ' ');
@@ -567,17 +568,18 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
 
 
 EXPORT int _TreeNewDbid(void** dblist){
-  PINO_DATABASE *db = *(PINO_DATABASE **)dblist;
-  *dblist = calloc(1,sizeof(PINO_DATABASE));
-  if (*dblist) {
-    (*(PINO_DATABASE **)dblist)->next = db;
-    (*(PINO_DATABASE **)dblist)->timecontext.start.dtype = DTYPE_DSC;
-    (*(PINO_DATABASE **)dblist)->timecontext.start.class = CLASS_XD;
-    (*(PINO_DATABASE **)dblist)->timecontext.end.dtype = DTYPE_DSC;
-    (*(PINO_DATABASE **)dblist)->timecontext.end.class = CLASS_XD;
-    (*(PINO_DATABASE **)dblist)->timecontext.delta.dtype = DTYPE_DSC;
-    (*(PINO_DATABASE **)dblist)->timecontext.delta.class = CLASS_XD;
-    (*(PINO_DATABASE **)dblist)->stack_size = 8;
+  PINO_DATABASE *db = (PINO_DATABASE *)calloc(1,sizeof(PINO_DATABASE));
+  if (db) {
+    DBG("Created DB %"PRIxPTR"\n",(uintptr_t)db);
+    db->timecontext.start.dtype = DTYPE_DSC;
+    db->timecontext.start.class = CLASS_XD;
+    db->timecontext.end.dtype = DTYPE_DSC;
+    db->timecontext.end.class = CLASS_XD;
+    db->timecontext.delta.dtype = DTYPE_DSC;
+    db->timecontext.delta.class = CLASS_XD;
+    db->stack_size = DEFAULT_STACK_LIMIT;
+    db->next = *(PINO_DATABASE **)dblist;
+    *dblist = (void*)db;
     return TreeNORMAL;
   }
   return TreeFAILURE;
@@ -591,7 +593,7 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
   PINO_DATABASE *saved_prev_db;
   PINO_DATABASE *useable_db = 0;
   int count;
-  int stack_size = 8;
+  int stack_size = DEFAULT_STACK_LIMIT;
   enum options {
     MOVE_TO_TOP, CLOSE, ERROR_DIRTY, OPEN_NEW
   };
@@ -635,7 +637,7 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
 
   case CLOSE:
     move_to_top(prev_db, db);
-    _TreeClose((void **)dblist, 0, 0);
+    CloseTopTree(*dblist, 1);
     status = TreeNORMAL;
     break;
   case ERROR_DIRTY:
@@ -657,8 +659,7 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
       if (count >= stack_size) {
 	if (useable_db) {
 	  move_to_top(saved_prev_db, useable_db);
-	  _TreeClose((void **)dblist, 0, 0);
-	  move_to_top(saved_prev_db, useable_db);
+	  CloseTopTree(*dblist, 1);
 	  status = TreeNORMAL;
 	} else {
 	  status = TreeMAXOPENEDIT;
@@ -682,23 +683,20 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
   return status;
 }
 
-int _TreeGetStackSize(void *dbid)
-{
+int _TreeGetStackSize(void *dbid){
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   return dblist->stack_size;
 }
 
-int _TreeSetStackSize(void **dbid, int size)
-{
+int _TreeSetStackSize(void **dbid, int size){
   PINO_DATABASE *dblist = *(PINO_DATABASE **) dbid;
-  int new_size = size > 0 ? (size < 11 ? size : 10) : 1;
-  int old_size = dblist ? dblist->stack_size : 8;
-  if (!dblist)
-    CreateDbSlot((PINO_DATABASE **) dbid, "", 987654321, 0);
-  for (dblist = *(PINO_DATABASE **) dbid; dblist; dblist = dblist->next)
+  int new_size = size > 0 ? size : 1;
+  int old_size = dblist->stack_size;
+  for (; dblist; dblist = dblist->next) {
     dblist->stack_size = new_size;
-  if (dblist && dblist->remote)
-    SetStackSizeRemote(dblist, new_size);
+    if (dblist && dblist->remote)
+      SetStackSizeRemote(dblist, new_size);
+  }
   return old_size;
 }
 
@@ -857,7 +855,7 @@ static void init_rlimit_once(){
   }
 }
 #endif
-int OpenOne(TREE_INFO * info, TREE_INFO * root, int type, int new, int edit_flag, char**filespec, int *fd_out) {
+int OpenOne(TREE_INFO * info, TREE_INFO * root, tree_type_t type, int new, int edit_flag, char**filespec, int *fd_out) {
 /*
  * search for tree files unless filespec is preset with thick client def, i.e. ends with "::"
  */
@@ -1167,7 +1165,7 @@ int _TreeOpenEdit(void **dbid, char const *tree_in, int shot_in)
 	    memset(info->edit, 0, sizeof(TREE_EDIT));
 	    info->root = info->node;
 	    status = TreeOpenNciW(info, 0);
-	    if (status & 1) {
+	    if STATUS_OK {
 	      (*dblist)->tree_info = info;
 	      (*dblist)->open = 1;
 	      (*dblist)->open_for_edit = 1;
@@ -1181,7 +1179,10 @@ int _TreeOpenEdit(void **dbid, char const *tree_in, int shot_in)
 	  free(info->treenam);
 	  free(info);
 	}
-      }
+      } else
+	status = TreeMEMERR;
+      if STATUS_NOT_OK
+	free_top_db(dblist);
     }
   }
   return status;
@@ -1278,6 +1279,8 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
 	  free(tree);
       } else
 	status = TreeMEMERR;
+      if STATUS_NOT_OK
+	free_top_db(dblist);
     }
   }
   if STATUS_OK
@@ -1285,10 +1288,10 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
   return status;
 }
 
-void TreeFreeDbid(void *dbid)
-{
-  PINO_DATABASE *db = (PINO_DATABASE *) dbid;
-  if (db) {
+void TreeFreeDbid(void *dbid){
+  if (dbid) {
+    DBG("Destroyed DB %"PRIxPTR"\n",(uintptr_t)dbid);
+    PINO_DATABASE *db = (PINO_DATABASE *) dbid;
     TreeFreeDbid(db->next);
     CloseTopTree(db, 1);
     free_xd(&db->timecontext.start);
@@ -1330,17 +1333,4 @@ EXPORT int _TreeFileName(void* dbid, char *tree, int shot, struct descriptor_xd*
 
 EXPORT int TreeFileName(char *tree, int shot, struct descriptor_xd* out_ptr){
   return _TreeFileName(*TreeCtx(), tree, shot, out_ptr);
-}
-
-EXPORT void* ctx_push(void** ctx){
-  void* ps = malloc(sizeof(pushstate_t));
-  ((pushstate_t*)ps)->priv = TreeUsePrivateCtx(1);
-  ((pushstate_t*)ps)->dbid = TreeSwitchDbid(*ctx);
-  ((pushstate_t*)ps)->ctx  = ctx;
-  return ps;
-}
-EXPORT void  ctx_pop(void *ps){
-  *((pushstate_t*)ps)->ctx = TreeSwitchDbid(    ((pushstate_t*)ps)->dbid);
-                             TreeUsePrivateCtx( ((pushstate_t*)ps)->priv);
-  free(ps);
 }

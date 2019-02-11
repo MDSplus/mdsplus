@@ -60,9 +60,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int TdiGetRecord(int nid, struct descriptor_xd *out);
 
-extern unsigned short OpcDtypeRange;
-extern unsigned short OpcVector;
-
 extern int TdiEvaluate();
 extern int TdiGetIdent();
 extern int TdiItoX();
@@ -78,6 +75,7 @@ int TdiImpose();
 static void FixupDollarNodes(int nid, struct descriptor *out_ptr) {
   if (out_ptr) {
     switch (out_ptr->class) {
+      default: break;
       case CLASS_S:
       case CLASS_D:
         if ((out_ptr->dtype == DTYPE_IDENT) &&
@@ -116,7 +114,7 @@ int TdiImpose(struct descriptor_a *in_ptr, struct descriptor_xd *out_ptr)
   case CLASS_A:
   case CLASS_CA:
     dimct = in_ptr->dimct;
-    if (dimct > MAXDIM)
+    if (dimct > MAX_DIMS)
       return TdiNDIM_OVER;
     in_size = sizeof(struct descriptor_a);
     if (in_ptr->aflags.coeff) {
@@ -304,11 +302,11 @@ int TdiGetData(const unsigned char omits[], struct descriptor *their_ptr, struct
 	    struct descriptor *args[]={*(pin->dscptrs+(seg*3+1)),
 				       *(pin->dscptrs+(seg*3+2)),
 				       *(pin->dscptrs+(seg*3))};
-	    status = TdiIntrinsic(OpcDtypeRange, 3, &args, &times);
+	    status = TdiIntrinsic(OPC_DTYPE_RANGE, 3, &args, &times);
 	    if (status & 1) {
 	      args[0]=(struct descriptor *)&hold;
 	      args[1]=(struct descriptor *)&times;
-	      status = TdiIntrinsic(OpcVector, 2, &args, &hold);
+	      status = TdiIntrinsic(OPC_VECTOR, 2, &args, &hold);
 	    }
 	  }
 	  goto redo;
@@ -320,7 +318,7 @@ int TdiGetData(const unsigned char omits[], struct descriptor *their_ptr, struct
                 Range can have 2 or 3 args.
                 **************************/
 	case DTYPE_RANGE:
-	  status = TdiIntrinsic(OpcDtypeRange, pin->ndesc, &pin->dscptrs[0], &hold);
+	  status = TdiIntrinsic(OPC_DTYPE_RANGE, pin->ndesc, &pin->dscptrs[0], &hold);
 	  goto redo;
 	case DTYPE_WITH_UNITS:
 	  status = TdiGetData(omits, (struct descriptor *)((struct descriptor_with_units *)
@@ -543,7 +541,7 @@ extern EXPORT int TdiGetNid(struct descriptor *in_ptr, int *nid_ptr)
         WARNING: $THIS is only defined within the subexpressions.
         WARNING: Use of $THIS or $VALUE can be infinitely recursive.
 */
-int Tdi1This(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
+int Tdi1This(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 	     struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
@@ -561,7 +559,7 @@ int Tdi1This(int opcode __attribute__ ((unused)), int narg __attribute__ ((unuse
         This allows the data field of signals to reference the raw field of a signal
         and the validation field of params to reference the value field of a param.
 */
-int Tdi1Value(int opcode __attribute__ ((unused)) , int narg __attribute__ ((unused)),
+int Tdi1Value(opcode_t opcode __attribute__ ((unused)) , int narg __attribute__ ((unused)),
 	      struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
@@ -590,7 +588,7 @@ int Tdi1Value(int opcode __attribute__ ((unused)) , int narg __attribute__ ((unu
         A major entry point for evaluation of the data of expressions.
                 status = TdiData(&in, &out MDS_END_ARG)
 */
-int Tdi1Data(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
+int Tdi1Data(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 	     struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
@@ -609,7 +607,7 @@ int Tdi1Data(int opcode __attribute__ ((unused)), int narg __attribute__ ((unuse
                 UNITS(other)            UNITS(DATA(other) not stripping above)
                 UNITS(other)            " "     (single blank to keep IDL happy)
 */
-int Tdi1Units(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Units(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_r *rptr;
@@ -672,7 +670,7 @@ int Tdi1Units(int opcode __attribute__ ((unused)), int narg, struct descriptor *
         Caution. The units field may be null.
                 status = TdiDataWithUnits(&in, &out MDS_END_ARG)
 */
-int Tdi1DataWithUnits(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
+int Tdi1DataWithUnits(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 		      struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
@@ -710,7 +708,7 @@ int Tdi1DataWithUnits(int opcode __attribute__ ((unused)), int narg __attribute_
         Note that $VALUE would not be defined in that form.
         Need we check that result is logical scalar?
 */
-int Tdi1Validation(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
+int Tdi1Validation(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 		   struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;

@@ -5,7 +5,6 @@
 #include <mdsplus/mdsconfig.h>
 #endif
 #define MAX_DIMS   8
-#define MAX_DIMS_R 7 //remote access only supports 7
 
 #ifdef _WIN32
 #define __char_align__ char
@@ -17,15 +16,24 @@
 #define __fill_name__
 #define __fill_value__
 #endif				/* _WINDOWS */
+
+#ifdef MDSOBJECTSCPPSHRVS_EXPORTS
+// visual studio uses int types for typedef
+# define TYPEDEF(bytes) enum
+# define ENDDEF(type,name) ;typedef type name
+#else
+# define TYPEDEF(bytes) typedef enum __attribute__((__packed__))
+# define ENDDEF(type,name) name
+#endif
+
 typedef uint16_t length_t;
 
-enum{
+TYPEDEF(1) {
 #define DEFINE(NAME,value) DTYPE_##NAME = value,
 # include "dtypedef.h"
 #undef DEFINE
   DTYPE_UNDEFINED=0
-};
-typedef uint8_t dtype_t;
+} ENDDEF(uint8_t,dtype_t);
 
 #define DTYPE_Z DTYPE_MISSING
 #define DTYPE_NATIVE_FLOAT DTYPE_FS
@@ -41,24 +49,21 @@ typedef uint8_t dtype_t;
 #define DTYPE_DOUBLE DTYPE_NATIVE_DOUBLE
 #endif
 
-
-enum{
+TYPEDEF(1) {
 #define DEFINE(NAME,value) CLASS_##NAME = value,
 # include "classdef.h"
 #undef DEFINE
   CLASS_MISSING=0
-};
-typedef uint8_t class_t;
+} ENDDEF(uint8_t,class_t);
 
-enum{ //align(2)
+TYPEDEF(2) {
 #define COM
 #define OPC(name,NAME, ...) OPC_##NAME,
 # include "opcbuiltins.h"
 #undef OPC
 #undef COM
   TdiFUNCTION_MAX
-};
-typedef uint16_t opcode_t;
+} ENDDEF(uint16_t,opcode_t);
 
 #ifdef __cplusplus
 # define MDSDSC_HEAD(ptr_type)	\
@@ -435,13 +440,12 @@ typedef struct descriptor_action {
 /*****************************************************
   So far three types of scheduling are supported.
 *****************************************************/
-enum {
+TYPEDEF(1) {
 TreeSCHED_NONE	=0,
 TreeSCHED_ASYNC	=1,
 TreeSCHED_SEQ	=2,
-TreeSCHED_COND	=3,
-};
-typedef uint8_t treesched_t;
+TreeSCHED_COND	=3
+} ENDDEF(uint8_t,treesched_t);
 
 typedef struct descriptor_dispatch {
   RECORD_HEAD(treesched_t)
@@ -537,11 +541,10 @@ typedef struct descriptor_method {
   name = {0, DTYPE_METHOD, CLASS_R, 0, 3, __fill_value__\
 	(mdsdsc_t *)timeout, (mdsdsc_t *)method, (mdsdsc_t *)object}
 
-enum {
+TYPEDEF(1) {
 TreeDEPENDENCY_AND     =10,
 TreeDEPENDENCY_OR      =11
-};
-typedef uint8_t treedep_t;
+} ENDDEF(uint8_t,treedep_t);
 
 typedef struct descriptor_dependency {
   RECORD_HEAD(treedep_t)
@@ -552,12 +555,11 @@ typedef struct descriptor_dependency {
   name = {(length_t)sizeof(treedep_t), DTYPE_DEPENDENCY, CLASS_R, (treedep_t*)mode_ptr, 2, __fill_value__\
 	(mdsdsc_t *)arg_1, (mdsdsc_t *)arg_2}
 
-enum {
+TYPEDEF(1) {
 TreeNEGATE_CONDITION   =7,
 TreeIGNORE_UNDEFINED   =8,
 TreeIGNORE_STATUS      =9,
-};
-typedef uint8_t treecond_t;
+} ENDDEF(uint8_t,treecond_t);
 
 typedef struct descriptor_condition {
   RECORD_HEAD(treecond_t)
@@ -643,16 +645,49 @@ typedef struct descriptor_opaque {
  * array typedefs
  */
 
-#define MAXDIM 8
+#define MAX_DIMS 8
 /* ARRAY_COEFF(a,b*x) acts like ARRAY_BOUNDS(a,b)
  * but bounds and m are merged into m
  */
-typedef ARRAY_COEFF(char, MAXDIM) array_coeff;
-typedef ARRAY_COEFF(char, MAXDIM*3) array_bounds;
-typedef ARRAY_COEFF(mdsdsc_t*, MAXDIM*3) array_bounds_desc;
+typedef ARRAY_COEFF(char, MAX_DIMS) array_coeff;
+typedef ARRAY_COEFF(char, MAX_DIMS*3) array_bounds;
+typedef ARRAY_COEFF(mdsdsc_t*, MAX_DIMS*3) array_bounds_desc;
 typedef ARRAY(char) array;
 typedef ARRAY(int) array_int;
 typedef ARRAY(mdsdsc_t*) array_desc;
-typedef SIGNAL(MAXDIM) signal_maxdim;
+typedef SIGNAL(MAX_DIMS) signal_maxdim;
 
+typedef union {
+mdsdsc_t	dsc;
+// grep '} mdsdsc_' include/mdsdescrip.h | perl -n -e '/mdsdsc_([a-z]+)_t;/ && print "mdsdsc_$1_t\t$1;\n"'
+mdsdsc_s_t      s;
+mdsdsc_d_t      d;
+mdsdsc_a_t      a;
+mdsdsc_xd_t     xd;
+mdsdsc_xs_t     xs;
+mdsdsc_r_t      r;
+// grep '} mds_' include/mdsdescrip.h | perl -n -e '/mds_([a-z]+)_t;/ && print "mds_$1_t\t$1;\n"'
+mds_param_t     param;
+mds_signal_t    signal;
+mds_dimension_t dimension;
+mds_window_t    window;
+mds_axis_t      axis;
+mds_slope_t     slope;
+mds_function_t  function;
+mds_conglom_t   conglom;
+mds_range_t     range;
+mds_action_t    action;
+mds_dispatch_t  dispatch;
+mds_program_t   program;
+mds_routine_t   routine;
+mds_procedure_t procedure;
+mds_method_t    method;
+mds_dependency_t        dependency;
+mds_condition_t condition;
+mds_call_t      call;
+mds_opaque_t    opaque;
+} mdsobj_t;
+
+#undef TYPEDEF
+#undef ENDDEF
 #endif

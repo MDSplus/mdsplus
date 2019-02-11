@@ -98,17 +98,17 @@ STATIC_ROUTINE void WaitForActions(int conditionals, int first_g, int last_g, in
 // STATIC_CONSTANT const int zero = 0;
 
 typedef struct _complete {
-  int idx;
   struct _complete *next;
+  int idx;
 } Complete;
 
 STATIC_THREADSAFE Complete *CompletedQueueHead = NULL;
 STATIC_THREADSAFE Complete *CompletedQueueTail = NULL;
 
 typedef struct _send_monitor {
+  struct _send_monitor *next;
   int idx;
   int mode;
-  struct _send_monitor *next;
 } SendMonitorInfo;
 
 STATIC_THREADSAFE SendMonitorInfo *SendMonitorQueueHead = NULL;
@@ -190,7 +190,7 @@ void SendMonitor(int mode, int idx){
     char tree[13];
     char *cptr;
     int i;
-    RDLOCK_TABLE;{
+    RDLOCK_TABLE;if (table){ // if no table prevent seg fault
     for (i = 0, cptr = table->tree; i < 12; i++)
       if (cptr[i] == (char)32)
 	break;
@@ -215,7 +215,7 @@ STATIC_ROUTINE void ActionDone(int idx){
   int i;
   char logmsg[1024];
   if (idx >= 0) {
-    RDLOCK_TABLE;{
+    RDLOCK_TABLE;if (table){// if no table prevent seg fault
     RDLOCK_ACTION(idx,ad);
     ActionInfo *actions = table->actions;
     if (actions[idx].event)
@@ -276,7 +276,7 @@ STATIC_ROUTINE void ActionDone(int idx){
 }
 
 STATIC_ROUTINE void Before(int idx){
-  RDLOCK_TABLE;{
+  RDLOCK_TABLE;if (table) {// if no table prevent seg fault
   WRLOCK_ACTION(idx,b);{
   ActionInfo *actions = table->actions;
   char logmsg[1024];
@@ -309,7 +309,7 @@ UNLOCK_ACTION(i,fna_##info);\
 
 STATIC_ROUTINE void SetActionRanges(int phase, int *first_c, int *last_c){
   int i;
-  RDLOCK_TABLE;{
+  RDLOCK_TABLE;if (table) {// if no table prevent seg fault
   ActionInfo *actions = table->actions;
 #ifdef DEBUG
   PRINT_ACTIONS;
@@ -332,11 +332,12 @@ STATIC_ROUTINE void SetActionRanges(int phase, int *first_c, int *last_c){
       first_s = last_s = table->num;
     FIND_NEXT_ACTION_END(table->num,sar);
   } else {
-    *first_c = table->num;
-    *last_c = table->num;
-    first_s = table->num;
-    last_s = table->num;
+    *first_c = first_s = table->num;
+    *last_c  = last_s = table->num;
   }
+  } else {
+    *first_c = first_s = 0;
+    *last_c  = last_s  = 0;
   }UNLOCK_TABLE;
 #ifdef DEBUG
   fprintf(stderr,"ActionRange: %d,%d,%d,%d\n",*first_c, *last_c, first_s, last_s);
@@ -367,7 +368,7 @@ STATIC_ROUTINE void SetGroup(int sync, int first_g, int *last_g){
   }
   int i;
   int group;
-  RDLOCK_TABLE;{
+  RDLOCK_TABLE;if (table) {// if no table prevent seg fault
   ActionInfo *actions = table->actions;
   sync = (sync < 1) ? 1 : sync;
   RDLOCK_ACTION(first_g,sg);
@@ -375,7 +376,7 @@ STATIC_ROUTINE void SetGroup(int sync, int first_g, int *last_g){
   UNLOCK_ACTION(first_g,sg);
   FIND_NEXT_ACTION(first_g+1, last_s, (actions[i].sequence / sync) != group,sg);
   FIND_NEXT_ACTION_END(last_s,sg);
-  }UNLOCK_TABLE;
+  }else{ i=first_g-1; }UNLOCK_TABLE;
   *last_g = i;
 }
 
@@ -393,7 +394,7 @@ STATIC_ROUTINE int NoOutstandingActions(const int s, const int e){
 STATIC_ROUTINE void RecordStatus(int s, int e)
 {
   int i;
-  RDLOCK_TABLE;{
+  RDLOCK_TABLE;if (table) {// if no table prevent seg fault
   ActionInfo *actions = table->actions;
   for (i = s; i < e; i++) {
     WRLOCK_ACTION(i,rs);
@@ -444,12 +445,13 @@ STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g, int first_c
 }
 
 STATIC_ROUTINE char *DetailProc(int full){
+  char *msg;
+  RDLOCK_TABLE;if (table) {// if no table prevent seg fault
+  msg = NULL;
   int i;
   int doing;
   char msg1[1024];
-  char *msg = NULL;
   unsigned int msglen = 4096;
-  RDLOCK_TABLE;{
   ActionInfo *actions = table->actions;
   for (doing = 1; doing > (full ? -1 : 0); doing--) {
     for (i = 0; i < table->num; i++) {
@@ -474,6 +476,8 @@ STATIC_ROUTINE char *DetailProc(int full){
         UNLOCK_ACTION(i,dp_e);
     }
   }
+  }else{
+  msg = NULL;
   }UNLOCK_TABLE;
   return msg;
 }
@@ -495,25 +499,25 @@ static inline void setMonitor(const char* monitor){
 }
 
 EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, char *phasenam, char noact_in, int sync, void (*output_rtn) (), const char *monitor){
+  WRLOCK_TABLE;{
+  table = vtable;
+  if (table) table->failed_essential = B_FALSE;
+  }UNLOCK_TABLE;
+  if (!vtable) return TreeSUCCESS;
   int i;
-  int status;
   int phase;
   int first_g, last_g = 0, first_c, last_c;
   DESCRIPTOR_LONG(phase_d, 0);
   STATIC_CONSTANT DESCRIPTOR(phase_lookup, "PHASE_NUMBER_LOOKUP($)");
   struct descriptor phasenam_d = { 0, DTYPE_T, CLASS_S, 0 };
   phase_d.pointer = (char *)&phase;
-  WRLOCK_TABLE;{
-  table = vtable;
-  table->failed_essential = 0;
-  }UNLOCK_TABLE;
   Output = output_rtn;
   noact = noact_in;
   setAbortInProgress(0);
   phasenam_d.length = strlen(phasenam);
   phasenam_d.pointer = phasenam;
   ProgLoc = 6005;
-  status = TdiExecute(&phase_lookup, &phasenam_d, &phase_d MDS_END_ARG);
+  int status = TdiExecute(&phase_lookup, &phasenam_d, &phase_d MDS_END_ARG);
   ProgLoc = 6006;
   if (STATUS_OK && (phase > 0)) {
     setMonitor(monitor);
@@ -543,7 +547,7 @@ EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, c
     WaitForActions(1, first_g, last_g, first_c, last_c);
     ProgLoc = 6015;
     setAbortInProgress(1);
-    RDLOCK_TABLE;{
+    RDLOCK_TABLE;if(table){
     ActionInfo *actions = table->actions;
     for (i = first_c; i < last_c; i++) {
       RDLOCK_ACTION(i,sdp);
@@ -571,21 +575,23 @@ EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, c
 }
 
 EXPORT int ServerFailedEssential(void *vtable, int reset){
+  // returns B_FALSE if no table
   int failed;
-  WRLOCK_TABLE;{
-  DispatchTable *table = vtable;
-  failed = table ? table->failed_essential : 0;
-  if (table && reset)
-    table->failed_essential = 0;
+  WRLOCK_TABLE;if (vtable) {
+  DispatchTable *table = (DispatchTable *)vtable;
+  failed =   table->failed_essential;
+  if (reset) table->failed_essential = B_FALSE;
+  }else{
+  failed = B_FALSE;
   }UNLOCK_TABLE;
   return failed;
 }
 
 STATIC_ROUTINE void Dispatch(int i){
-  INIT_STATUS;
+  RDLOCK_TABLE;if(table){
+  int status;
   char logmsg[1024];
   char server[33];
-  RDLOCK_TABLE;{
   WRLOCK_ACTION(i,d);{
     ActionInfo *actions = table->actions;
     actions[i].done = 0;
@@ -660,6 +666,7 @@ STATIC_ROUTINE int DequeueCompletedAction(int *i)
       free(c);
       pthread_mutex_unlock(&completed_queue_mutex);
     } else {
+      CONDITION_RESET(&CompletedC); // reset list state
       pthread_mutex_unlock(&completed_queue_mutex);
       WaitForActionDoneQueue();
     }
@@ -771,29 +778,34 @@ STATIC_ROUTINE void DoSendMonitor(int mode, int idx){
   if STATUS_NOT_OK perror("DoSendMonitor: pthread creation failed");
 }
 
-EXPORT int ServerFreeDispatchTable(void *vtable){
-  if (vtable) {
-   WRLOCK_TABLE;{
-    DispatchTable *table = vtable;
-    ActionInfo *actions = table->actions;
-    int num_actions = table->num;
-    int i;
-    for (i = 0; i < num_actions; i++) {
-     WRLOCK_ACTION(i,fdt);{
-      if (actions[i].referenced_by)
-	free(actions[i].referenced_by);
-      if (actions[i].path)
-	TreeFree(actions[i].path);
-      if (actions[i].event)
-	free(actions[i].event);
-      if (actions[i].condition) {
-	MdsFree1Dx((struct descriptor_xd *)actions[i].condition, 0);
-	free(actions[i].condition);
-      }
-     }UNLOCK_ACTION(i,fdt);
+void serverDisarmDispatchTable(void *vtable) {
+  WRLOCK_TABLE;
+  if (table == vtable) table = NULL; // disarm table
+  UNLOCK_TABLE;
+}
+
+static inline void serverFreeDispatchTable(void *vtable) {
+  ActionInfo *actions = ((DispatchTable*)vtable)->actions;
+  int num_actions = ((DispatchTable*)vtable)->num;
+  int i;
+  for (i = 0; i < num_actions; i++) {
+    free_if(&actions[i].referenced_by);
+    if (actions[i].path)
+      TreeFree(actions[i].path);
+    free_if(&actions[i].event);
+    if (actions[i].condition) {
+      MdsFree1Dx((struct descriptor_xd *)actions[i].condition, 0);
+      free(actions[i].condition);
     }
-    free(vtable);
-   }UNLOCK_TABLE;
+  }
+  free(vtable);
+}
+
+EXPORT int ServerFreeDispatchTable(void *vtable) {
+  // should be called during CloseTopTree
+  if (vtable) {
+    serverDisarmDispatchTable(vtable);
+    serverFreeDispatchTable(vtable);
   }
   return MDSplusSUCCESS;
 }

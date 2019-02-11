@@ -36,7 +36,7 @@ int SendDsc(int id, unsigned char idx, unsigned char nargs, struct descriptor* d
   status = MdsSerializeDscOut(dsc, &out);
   if STATUS_OK {
     struct descriptor_a* array = (struct descriptor_a*)out.pointer;
-    int dims[MAX_DIMS_R] = {0};
+    int dims[MAX_DIMS] = {0};
     dims[0] = array->arsize;
     status = SendArg(id, idx, DTYPE_SERIAL, nargs, 1, 1, dims, (char*)array->pointer);
   }
@@ -81,7 +81,7 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned
   for (i = 0; i < 4; i++)
     m->h.dims[i] = ((ndims>i*2) ? (dims[i*2] << 32) : 0) | ((ndims > (i*2+1)) ? (dims[i*2+1]) : 0);
 #else
-  for (i = 0; i < MAX_DIMS_R; i++)  m->h.dims[i] = i < ndims ? dims[i] : 0;
+  for (i = 0; i < MAX_DIMS; i++)  m->h.dims[i] = i < ndims ? dims[i] : 0;
 #endif
   memcpy(m->bytes, bytes, nbytes);
   m->h.message_id = (idx == 0 || nargs == 0)

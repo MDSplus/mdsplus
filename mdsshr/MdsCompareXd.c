@@ -72,6 +72,8 @@ EXPORT int MdsCompareXd(const struct descriptor *dsc1_ptr, const struct descript
   if (d1 && d2) {
     if (d1->dtype == d2->dtype) {
       switch (d1->class) {
+      default:
+	return 0; // TODO: handle missing classes
       case CLASS_S:
       case CLASS_D:
 	if (((d2->class == CLASS_S) || (d2->class == CLASS_D)) && (d1->length == d2->length))
@@ -123,34 +125,26 @@ EXPORT int MdsCompareXd(const struct descriptor *dsc1_ptr, const struct descript
 	    (a1->aflags.column == a2->aflags.column) &&
 	    (a1->aflags.coeff == a2->aflags.coeff) &&
 	    (a1->aflags.bounds == a2->aflags.bounds);
-	  if (isequal ) {
+	  if (isequal) {
 	    if (a1->aflags.coeff) {
-	      isequal = (a1->pointer - a1->a0 == a2->pointer - a2->a0) &&
-		(memcmp(a1->m, a2->m, sizeof(a1->m[0]) * a1->dimct) == 0);
-	      if (isequal && a1->aflags.bounds) {
-		isequal = memcmp(a1->m + a1->dimct, a2->m + a2->dimct,
-				sizeof(bound_t) * a1->dimct) == 0;
-	      }
+	      isequal = (a1->pointer - a1->a0 == a2->pointer - a2->a0);
+	      isequal&= (memcmp(a1->m, a2->m, sizeof(a1->m[0]) * a1->dimct) == 0);
+	      if (isequal && a1->aflags.bounds)
+		isequal = memcmp(a1->m + a1->dimct, a2->m + a2->dimct,sizeof(bound_t) * a1->dimct) == 0;
 	    }
 	    if (isequal) {
-	      switch (a1->class) {
-	      case CLASS_A:
+	      if      (d1->class == CLASS_A)
 		isequal = memcmp(a1->pointer, a2->pointer, a1->arsize) == 0;
-		break;
-	      case CLASS_CA:
-		isequal = MdsCompareXd((struct descriptor *)a1->pointer,
-				      (struct descriptor *)a2->pointer);
-		break;
-	      case CLASS_APD:
-		{
-		  unsigned int i, nelts = a1->arsize / a1->length;
-		  struct descriptor *ptr1 = (struct descriptor *)a1->pointer;
-		  struct descriptor *ptr2 = (struct descriptor *)a2->pointer;
-		  for (i = 0; isequal && (i < nelts);) {
-		    isequal = MdsCompareXd(ptr1, ptr2);
-		    ptr1++;
-		    ptr2++;
-		  }
+	      else if (d1->class == CLASS_CA)
+		isequal = MdsCompareXd((struct descriptor *)a1->pointer,(struct descriptor *)a2->pointer);
+	      else {//d1->class == CLASS_APD
+		l_length_t i, nelts = a1->arsize / a1->length;
+		struct descriptor *ptr1 = (struct descriptor *)a1->pointer;
+		struct descriptor *ptr2 = (struct descriptor *)a2->pointer;
+		for (i = 0; isequal && (i < nelts);) {
+		  isequal = MdsCompareXd(ptr1, ptr2);
+		  ptr1++;
+		  ptr2++;
 		}
 	      }
 	    }

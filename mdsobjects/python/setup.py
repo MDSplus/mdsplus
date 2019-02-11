@@ -98,7 +98,7 @@ setupkw = {
       'Environment :: Console',
       'Topic :: Scientific/Engineering',
       ],
-      'keywords'     : ('physics','mdsplus',),
+      'keywords'     : ['physics','mdsplus',],
 #       install_requires=['numpy','ctypes'],
     }
 def remove():

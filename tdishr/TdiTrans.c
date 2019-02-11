@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         type logical output, scalar for no DIM or vector input, else rank (n-1) with DIM-th dimension missing.
 
                 result = xx(ARRAY, [DIM], [MASK])
-        MASK3:  MAXVAL MEAN MINVAL PRODUCT RMS STD_DEV SUM MAXLOC MINLOC
+        MASK3:  MAXVAL MEAN MINVAL PRODUCT RMS STD_DEV SUM
         type numeric output, scalar for no DIM or vector input, else rank (n-1) with DIM-th dimension missing.
 
                 result = xx(ARRAY, [DIM], [MASK])
@@ -57,7 +57,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         type same as ARRAY, rank n+1, spreads and jams in a dimension before DIM-th, DIM = 0..rank.
 
                 rank1 = xx(ARRAY, [MASK])
-        MASK2:  MAXLOC MINLOC
+        MASK3L:  MAXLOC MINLOC
         vector offsets from first element.
 
         For logical array V[3,4,5], steps in unit sizes:
@@ -83,10 +83,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 
-
-extern unsigned short
- OpcAccumulate, OpcFirstLoc, OpcLastLoc, OpcProduct, OpcReplicate, OpcSpread;
-
 #include "tdinelements.h"
 #include "tdirefcat.h"
 #include "tdireffunction.h"
@@ -98,6 +94,7 @@ extern unsigned short
 
 extern int Tdi2Mask2();
 extern int Tdi2Mask3();
+extern int Tdi2Mask3L();
 extern int Tdi2Sign();
 extern int TdiGetArgs();
 extern int TdiCvtArgs();
@@ -124,7 +121,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
   int step_bef = 0, step_dim = 0, step_aft = 0;
   int count_bef = 1, count_dim = 1, count_aft = 1;
   unsigned short digits, head;
-  unsigned char out_dtype;
+  dtype_t out_dtype;
 
 	/******************************************
         Fetch signals and data and data's category.
@@ -158,10 +155,10 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
   } else if (pfun->f2 == Tdi2Sign)
     status = TdiBAD_INDEX;
 
-  if (pfun->f2 == Tdi2Mask3) {
+  if (pfun->f2 == Tdi2Mask3 || pfun->f2 == Tdi2Mask3L) {
     if (narg > 2 && cats[2].in_dtype != DTYPE_MISSING)
       pmask = dat[2].pointer;
-  } else if (opcode == OpcReplicate || opcode == OpcSpread) {
+  } else if (opcode == OPC_REPLICATE || opcode == OPC_SPREAD) {
     if STATUS_OK
       status = TdiGetLong(dat[2].pointer, &ncopies);
     if (ncopies < 0)
@@ -176,7 +173,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     switch (pa->class) {
     case CLASS_A:
       rank = pa->aflags.coeff ? pa->dimct : 1;
-      if (rank > MAXDIM)
+      if (rank > MAX_DIMS)
 	status = TdiNDIM_OVER;
 		/** Whole array. Unrestricted. Product of multipliers == size, unchecked **/
       else if (dim < 0) {
@@ -184,7 +181,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
       }
 		/** Array with multipliers **/
       else if (pa->aflags.coeff) {
-	if (dim < rank || (dim <= rank && opcode == OpcSpread)) {
+	if (dim < rank || (dim <= rank && opcode == OPC_SPREAD)) {
 	  for (j = 0; j < dim; ++j)
 	    count_bef *= pa->m[j];
 	  if (j < rank)
@@ -197,7 +194,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 		/** Simple vector. A mistake for some? **/
       else {
 	j = (int)pa->arsize / (int)pa->length;
-	if (dim == 1 && opcode == OpcSpread)
+	if (dim == 1 && opcode == OPC_SPREAD)
 	  count_bef = j;
 	else if (dim > 0)
 	  status = TdiBAD_INDEX;
@@ -208,7 +205,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     case CLASS_S:
     case CLASS_D:
       rank = 0;
-      if (dim > 0 || (dim > 1 && opcode == OpcSpread)) {
+      if (dim > 0 || (dim > 1 && opcode == OPC_SPREAD)) {
 	status = TdiBAD_INDEX;
       }
       break;
@@ -228,7 +225,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 		/************
                 Optimization.
                 ************/
-    if (dim == 0 && opcode != OpcReplicate && opcode != OpcSpread) {
+    if (dim == 0 && opcode != OPC_REPLICATE && opcode != OPC_SPREAD) {
       count_bef = count_aft;
       count_aft = 1;
       step_bef = step_aft;
@@ -255,7 +252,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     ndim = psig->ndesc - 2;
   else
     ndim = -1;
-  if (opcode == OpcFirstLoc || opcode == OpcLastLoc) {
+  if (opcode == OPC_FIRSTLOC || opcode == OPC_LASTLOC) {
     status = MdsGet1DxA((struct descriptor_a *)pa, &digits, &out_dtype, out_ptr);
     if STATUS_OK
       status = TdiConvert(&zero, out_ptr->pointer MDS_END_ARG);
@@ -263,7 +260,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 	/***************************
         Shape multiplied for DIM-th.
         ***************************/
-  else if (opcode == OpcReplicate) {
+  else if (opcode == OPC_REPLICATE) {
     if (dim < ndim)
       psig->dimensions[dim] = 0;
     pmask = (struct descriptor *)&ncopies;
@@ -281,7 +278,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 	/*************************************
         Shape gets new dimension after DIM-th.
         *************************************/
-  else if (opcode == OpcSpread) {
+  else if (opcode == OPC_SPREAD) {
     if (ndim > dim) {
       EMPTYXD(tmpxd);
       *(struct descriptor_signal *)&tmpsig = *psig;
@@ -303,7 +300,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 		/** scalar to simple vector **/
     if (rank == 0)
       _MOVC3(head, (char *)pa, (char *)&arr);
-    else if (rank >= MAXDIM)
+    else if (rank >= MAX_DIMS)
       status = TdiNDIM_OVER;
 		/** coefficient vector **/
     else if (pa->aflags.coeff) {
@@ -332,7 +329,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 	/***************
         Overwrite input.
         ***************/
-  else if (opcode == OpcAccumulate) {
+  else if (opcode == OPC_ACCUMULATE) {
     MdsFree1Dx(out_ptr, NULL);
     *out_ptr = dat[0];
   }
@@ -421,9 +418,9 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
       } else
 	*pout++ = 0;
     }
-  } else if (opcode == OpcAccumulate)
+  } else if (opcode == OPC_ACCUMULATE)
     dat[0] = EMPTY_XD;
-  else if (opcode == OpcProduct)
+  else if (opcode == OPC_PRODUCT)
     MdsFree1Dx(&uni[0], NULL);
 
   status = TdiMasterData(psig != 0, sig, uni, &cmode, out_ptr);

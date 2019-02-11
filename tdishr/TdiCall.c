@@ -54,13 +54,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <STATICdef.h>
 
-
-
-extern unsigned short OpcDescr;
-extern unsigned short OpcRef;
-extern unsigned short OpcVal;
-extern unsigned short OpcXd;
-
 extern int TdiConcat();
 extern int TdiData();
 extern int TdiEvaluate();
@@ -73,16 +66,16 @@ extern int TdiPutIdent();
     _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
+STATIC_ROUTINE int TdiInterlude(dtype_t rtype, struct descriptor **newdsc,
 				int (*routine) (), unsigned int *(*called) (),
 				void **result, int *max)
 {
 #ifdef __ALPHA
   int f_regs = (*(int *)routine == 0x23FF0000) ? 0 : 1;
 #else
-  int f_regs = 1;		/*(opcode == 0) */
+  int f_regs = 1;		/*(rtype == 0) i.e. no return value */
 #endif
-  switch (opcode) {
+  switch (rtype) {
   case DTYPE_F:
   case DTYPE_FS:
     if (f_regs) {
@@ -143,7 +136,7 @@ STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
   return 1;
 }
 
-int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int TdiCall(dtype_t rtype, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_function *pfun;
@@ -154,7 +147,7 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
   struct descriptor *newdsc[256];
   struct descriptor dx = { 0, 0, CLASS_S, 0 };
   unsigned char origin[255];
-  dx.dtype = (unsigned char)opcode;
+  dx.dtype = rtype;
   dx.pointer = (char *)result;
   memset(newdsc, 0, sizeof(newdsc));
   if (narg > 255 + 2)
@@ -175,12 +168,12 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
       pfun = (struct descriptor_function *)pfun->pointer;
     if (pfun && pfun->dtype == DTYPE_FUNCTION) {
       code = *(unsigned short *)pfun->pointer;
-      if (code == OpcDescr) {
+      if (code == OPC_DESCR) {
 	tmp[ntmp] = EMPTY_XD;
 	status = TdiData(pfun->arguments[0], &tmp[ntmp] MDS_END_ARG);
 	newdsc[j - 1] = (struct descriptor *)tmp[ntmp].pointer;
 	origin[ntmp++] = (unsigned char)j;
-      } else if (code == OpcRef) {
+      } else if (code == OPC_REF) {
 	tmp[ntmp] = EMPTY_XD;
 	status = TdiData(pfun->arguments[0], &tmp[ntmp] MDS_END_ARG);
 	if (tmp[ntmp].pointer) {
@@ -191,7 +184,7 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
 	  newdsc[j - 1] = (struct descriptor *)tmp[ntmp].pointer->pointer;
 	}
 	origin[ntmp++] = (unsigned char)j;
-      } else if (code == OpcVal) {
+      } else if (code == OPC_VAL) {
 	int ans;
 	EMPTYXD(xd);
 	status = TdiData(pfun->arguments[0], &xd MDS_END_ARG);
@@ -202,7 +195,7 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
 	  *(long *)&newdsc[j - 1] = ans;
 	}
 	MdsFree1Dx(&xd, 0);
-      } else if (code == OpcXd) {
+      } else if (code == OPC_XD) {
 	tmp[ntmp] = EMPTY_XD;
 	status = TdiEvaluate(pfun->arguments[0], newdsc[j - 1] = (struct descriptor *)&tmp[ntmp]
 			     MDS_END_ARG);
@@ -231,11 +224,11 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
     }
   }
   if STATUS_OK
-    status = TdiInterlude(opcode, newdsc, routine, (void *)LibCallg, (void **)result, &max);
+    status = TdiInterlude(rtype, newdsc, routine, (void *)LibCallg, (void **)result, &max);
   if (!out_ptr)
     goto skip;
   if STATUS_OK
-    switch (opcode) {
+    switch (rtype) {
     case DTYPE_DSC:
       dx.pointer = (char *)result[0];
       if (result[0])
@@ -273,13 +266,14 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
       //  dx.dtype = DTYPE_LU;
       break;
 
-    default:
-      if (opcode < TdiCAT_MAX) {
-	if ((dx.length = TdiREF_CAT[opcode].length) > max)
+    default: {
+      if ((int)rtype < TdiCAT_MAX) {
+	if ((dx.length = TdiREF_CAT[(int)rtype].length) > max)
 	  status = TdiTOO_BIG;
       } else
 	status = TdiINVDTYDSC;
     }
+  }
   if STATUS_OK
     status = MdsCopyDxXd(&dx, out_ptr);
  skip:
@@ -288,7 +282,7 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
       pfun = (struct descriptor_function *)pfun->pointer;
     if (pfun && pfun->dtype == DTYPE_FUNCTION) {
       code = *(unsigned short *)pfun->pointer;
-      if (code == OpcDescr || code == OpcRef || code == OpcXd)
+      if (code == OPC_DESCR || code == OPC_REF || code == OPC_XD)
 	pfun = (struct descriptor_function *)pfun->arguments[0];
       if (pfun && pfun->dtype == DTYPE_IDENT)
 	TdiPutIdent(pfun, &tmp[j]);

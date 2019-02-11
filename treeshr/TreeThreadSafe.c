@@ -29,11 +29,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "treethreadsafe.h"
 #include <stdlib.h>
 #include <mdsshr.h>
+#include <treeshr.h>
 #include <strroutines.h>
 #include <string.h>
 
 extern int _TreeNewDbid(void** dblist);
-extern int TreeFreeDbid(PINO_DATABASE *db);
 static pthread_rwlock_t treectx_lock = PTHREAD_RWLOCK_INITIALIZER;
 static void *DBID = NULL, *G_DBID = NULL;
 
@@ -128,23 +128,61 @@ EXPORT int TreeUsingPrivateCtx(){
   return p->privateCtx;
 }
 
-struct private_ctx{
-  void *dbid;
-  int  upc;
-} PRIVATE_CTX;
-
-EXPORT void* TreeSavePrivateCtx(void* dbid){
-  struct private_ctx* pctx = (struct private_ctx*)malloc(sizeof(struct private_ctx));
-  pctx->dbid = TreeDbid();
-  pctx->upc  = TreeUsePrivateCtx(1);
-  TreeSwitchDbid(dbid);
-  return pctx;
+typedef struct {
+  void* dbid;
+  void**ctx;
+  int   priv;
+} push_ctx_t;
+EXPORT void* TreeCtxPush(void** ctx){
+/* switch to private context and use dbid
+ * SHOULD be used with pthread_cleanup or similar constucts
+ * DONT USE this from tdi; will cause memory violation
+ */
+  TreeThreadStatic *p = TreeGetThreadStatic();
+  void* ps = malloc(sizeof(push_ctx_t));
+  ((push_ctx_t*)ps)->priv = p->privateCtx;
+  ((push_ctx_t*)ps)->dbid = p->DBID;
+  ((push_ctx_t*)ps)->ctx  = ctx;
+  p->privateCtx = 1;
+  p->DBID       = *ctx;
+  return ps;
 }
 
-EXPORT void* TreeRestorePrivateCtx(void* _pctx){
-  struct private_ctx* pctx = (struct private_ctx*)_pctx;
-  void* dbid = TreeSwitchDbid(pctx->dbid);
-  TreeUsePrivateCtx(pctx->upc);
-  free(pctx);
+EXPORT void  TreeCtxPop(void *ps){
+/* done using dbid in private context, restore state
+ */
+  TreeThreadStatic *p = TreeGetThreadStatic();
+  *((push_ctx_t*)ps)->ctx = p->DBID;
+  p->privateCtx = ((push_ctx_t*)ps)->priv;
+  p->DBID       = ((push_ctx_t*)ps)->dbid;
+  free(ps);
+}
+
+typedef struct {
+  void* dbid;
+  int   priv;
+} push_dbid_t;
+EXPORT void* TreeDbidPush(void* dbid){
+/* switch to private context and use dbid
+ * DONT USE with pthread_cleanup
+ * Useful when called from tdi
+ */
+  TreeThreadStatic *p = TreeGetThreadStatic();
+  void* ps = malloc(sizeof(push_dbid_t));
+  ((push_dbid_t*)ps)->priv = p->privateCtx;
+  ((push_dbid_t*)ps)->dbid = p->DBID;
+  p->privateCtx = 1;
+  p->DBID       = dbid;
+  return ps;
+}
+
+EXPORT void* TreeDbidPop(void *ps){
+/* done using dbid in private context, restore state
+ */
+  TreeThreadStatic *p = TreeGetThreadStatic();
+  void *dbid    = p->DBID;
+  p->privateCtx = ((push_dbid_t*)ps)->priv;
+  p->DBID       = ((push_dbid_t*)ps)->dbid;
+  free(ps);
   return dbid;
 }

@@ -103,11 +103,9 @@ union __bswap {
 
 #endif
 
-STATIC_ROUTINE int copy_rec_dx(char const *in_ptr, struct descriptor_xd *out_dsc_ptr,
-			       unsigned int *b_out, unsigned int *b_in)
-{
+STATIC_ROUTINE int copy_rec_dx(char const *in_ptr, struct descriptor_xd *out_dsc_ptr, l_length_t *b_out, l_length_t *b_in){
   int status = 1;
-  unsigned int bytes_out = 0, bytes_in = 0, i, j, size_out, size_in;
+  uint32_t bytes_out = 0, bytes_in = 0, i, j, size_out, size_in;
   if (in_ptr && (in_ptr[0] || in_ptr[1] || in_ptr[2] || in_ptr[3])) {
     switch (class()) {
     case CLASS_S:
@@ -461,15 +459,12 @@ STATIC_ROUTINE int copy_rec_dx(char const *in_ptr, struct descriptor_xd *out_dsc
   return status;
 }
 
-EXPORT int MdsSerializeDscIn(char const *in, struct descriptor_xd *out)
-{
-  unsigned int size_out;
-  unsigned int size_in;
-  int status;
-  STATIC_CONSTANT const unsigned char dsc_dtype = DTYPE_DSC;
-  status = copy_rec_dx(in, 0, &size_out, &size_in);
+EXPORT int MdsSerializeDscIn(char const *in, struct descriptor_xd *out){
+  l_length_t size_out, size_in;
+  static const dtype_t dsc_dtype = DTYPE_DSC;
+  int status = copy_rec_dx(in, 0, &size_out, &size_in);
   if (STATUS_OK && size_out) {
-    status = MdsGet1Dx(&size_out, (unsigned char *)&dsc_dtype, out, 0);
+    status = MdsGet1Dx(&size_out, &dsc_dtype, out, 0);
     if STATUS_OK
       status = copy_rec_dx(in, (struct descriptor_xd *)out->pointer, &size_out, &size_in);
   } else
@@ -477,9 +472,8 @@ EXPORT int MdsSerializeDscIn(char const *in, struct descriptor_xd *out)
   return status;
 }
 
-STATIC_ROUTINE int copy_dx_rec(struct descriptor *in_ptr, char *out_ptr, unsigned int *b_out,
-			       unsigned int *b_in)
-{ int status = MDSplusSUCCESS;
+STATIC_ROUTINE int copy_dx_rec(const struct descriptor *in_ptr, char *out_ptr, l_length_t *b_out, l_length_t *b_in){
+  int status = MDSplusSUCCESS;
   unsigned bytes_out = 0, bytes_in = 0, j, size_out, size_in, num_dsc;
   if (in_ptr)
     switch (in_ptr->class) {
@@ -802,33 +796,25 @@ STATIC_ROUTINE int copy_dx_rec(struct descriptor *in_ptr, char *out_ptr, unsigne
   return status;
 }
 
-STATIC_ROUTINE int Dsc2Rec(struct descriptor const *inp, struct descriptor_xd *out_dsc_ptr,
-			   unsigned int *reclen)
-{
-  unsigned int size_out;
-  unsigned int size_in;
-  int status;
-  STATIC_CONSTANT const unsigned char dsc_dtype = DTYPE_B;
-  status = copy_dx_rec((struct descriptor *)inp, 0, &size_out, &size_in);
+STATIC_ROUTINE int Dsc2Rec(const struct descriptor *inp, struct descriptor_xd *out_ptr, arsize_t *reclen){
+  arsize_t size_out, size_in;
+  static const dtype_t b_dtype = DTYPE_B;
+  int status = copy_dx_rec(inp, 0, &size_out, &size_in);
   if (status & 1 && size_out) {
     unsigned short nlen = 1;
     array out_template = { 1, DTYPE_B, CLASS_A, 0, 0, 0, {0, 1, 1, 0, 0}, 1, 0 };
     out_template.arsize = *reclen = size_out;
-    status =
-	MdsGet1DxA((struct descriptor_a *)&out_template, &nlen, (unsigned char *)&dsc_dtype,
-		   out_dsc_ptr);
+    status = MdsGet1DxA((struct descriptor_a*)&out_template, &nlen, &b_dtype, out_ptr);
     if (status & 1) {
-      memset(out_dsc_ptr->pointer->pointer, 0, size_out);
-      status =
-	  copy_dx_rec((struct descriptor *)inp, out_dsc_ptr->pointer->pointer, &size_out, &size_in);
+      memset(out_ptr->pointer->pointer, 0, size_out);
+      status = copy_dx_rec((struct descriptor *)inp, out_ptr->pointer->pointer, &size_out, &size_in);
     }
   } else
-    MdsFree1Dx(out_dsc_ptr, NULL);
+    MdsFree1Dx(out_ptr, NULL);
   return status;
 }
 
-STATIC_CONSTANT int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *length)
-{
+STATIC_CONSTANT int PointerToOffset(struct descriptor *dsc_ptr, l_length_t *length){
   int status = 1;
   if ((dsc_ptr->dtype == DTYPE_DSC) && (dsc_ptr->class != CLASS_A) && (dsc_ptr->class != CLASS_APD))
     status = PointerToOffset((struct descriptor *)dsc_ptr->pointer, length);
@@ -837,12 +823,12 @@ STATIC_CONSTANT int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *le
     case CLASS_S:
     case CLASS_D:
       *length += (unsigned int)sizeof(struct descriptor) + dsc_ptr->length;
-      dsc_ptr->pointer = dsc_ptr->pointer - ((char *)dsc_ptr - (char *)0);
+      dsc_ptr->pointer = dsc_ptr->pointer - (uintptr_t)dsc_ptr;
       break;
     case CLASS_XD:
     case CLASS_XS:
       *length += (unsigned int)sizeof(struct descriptor_xd) + ((struct descriptor_xd *)dsc_ptr)->l_length;
-      dsc_ptr->pointer = dsc_ptr->pointer - ((char *)dsc_ptr - (char *)0);
+      dsc_ptr->pointer = dsc_ptr->pointer - (uintptr_t)dsc_ptr;
       break;
     case CLASS_R:
       {
@@ -929,20 +915,20 @@ EXPORT int MdsSerializeDscOutZ(struct descriptor const *in,
 			void *fixupPathArg,
 			int compress,
 			int *compressible_out,
-			unsigned int *length_out,
-			unsigned int *reclen_out,
-			unsigned char *dtype_out,
-			unsigned char *class_out,
+			l_length_t *length_out,
+			l_length_t *reclen_out,
+			dtype_t *dtype_out,
+			class_t *class_out,
 			int altbuflen, void *altbuf, int *data_in_altbuf_out)
 {
   int status;
   struct descriptor *out_ptr;
   struct descriptor_xd tempxd;
   int compressible = 0;
-  unsigned int length = 0;
-  unsigned int reclen = 0;
-  unsigned char dtype = 0;
-  unsigned char class = 0;
+  l_length_t length = 0;
+  l_length_t reclen = 0;
+  dtype_t dtype = 0;
+  class_t class = 0;
   int data_in_altbuf = 0;
   status = MdsCopyDxXdZ(in, out, 0, fixupNid, fixupNidArg, fixupPath, fixupPathArg);
   if (status == MdsCOMPRESSIBLE) {
@@ -960,7 +946,7 @@ EXPORT int MdsSerializeDscOutZ(struct descriptor const *in,
   if (status & 1) {
     if (out->pointer && out->dtype == DTYPE_DSC) {
       out_ptr = out->pointer;
-      dtype = out_ptr->dtype;
+      dtype = (dtype_t)out_ptr->dtype;
       if ((out_ptr->class == CLASS_S || out_ptr->class == CLASS_D) && out_ptr->length < altbuflen) {
 	data_in_altbuf = 1;
 	class = CLASS_S;
