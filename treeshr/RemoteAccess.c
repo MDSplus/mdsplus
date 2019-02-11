@@ -1485,7 +1485,7 @@ inline static int io_open_one_remote(char *host,char *filepath,char* treename,in
 	    }
 	  }
 	  if (*fd>=0) {
-	    *fullpath = malloc(strlen(host)+2+strlen(tmp));
+	    *fullpath = malloc(strlen(host)+3+strlen(tmp));
 	    sprintf(*fullpath,"%s::%s",host,tmp);
 	  }
 	  FREE_NOW(tmp);
