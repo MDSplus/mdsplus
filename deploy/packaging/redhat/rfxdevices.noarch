@@ -8,6 +8,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/CYGNET4K.py
 ./usr/local/mdsplus/pydevices/RfxDevices/DIO2_ENCDEC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/DIO4.py
+./usr/local/mdsplus/pydevices/RfxDevices/EQUINOX_GAM.py
 ./usr/local/mdsplus/pydevices/RfxDevices/FAKECAMERA.py
 ./usr/local/mdsplus/pydevices/RfxDevices/FEMTO.py
 ./usr/local/mdsplus/pydevices/RfxDevices/FLIRSC65X.py
