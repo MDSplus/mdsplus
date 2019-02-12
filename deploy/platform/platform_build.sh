@@ -62,8 +62,8 @@ rundocker(){
         echo "Building installers for ${arch} using ${image}"
         if [ ! -z "$INTERACTIVE" ]
         then
-            echo "run ${SRCDIR}/deploy/platform/platform_docker_build.sh"
-            echo "or  NOMAKE=1 ${SRCDIR}/deploy/platform/platform_docker_build.sh"
+            echo "run ${DOCKER_SRCDIR}/deploy/platform/platform_docker_build.sh"
+            echo "or  NOMAKE=1 ${DOCKER_SRCDIR}/deploy/platform/platform_docker_build.sh"
         fi
         #
         # If there are both 32-bit and 64-bit packages for the platform
@@ -87,6 +87,7 @@ rundocker(){
             docker run --cap-add=SYS_PTRACE -t $stdio --cidfile=${WORKSPACE}/${OS}_docker-cid \
 		   -u $(id -u):$(id -g) --privileged \
 		   -h $DISTNAME \
+		   -e "srcdir=${DOCKER_SRCDIR}"\
 		   -e "ARCH=${arch}" \
 		   -e "ARCHES=${ARCH}" \
 		   -e "BRANCH" \
