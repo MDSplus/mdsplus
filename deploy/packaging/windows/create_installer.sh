@@ -1,4 +1,9 @@
 #!/bin/bash
+
+if [ -z ${MDSPLUS_DIR} ]
+then MDSPLUS_DIR=/workspace/releasebld/buildroot
+fi
+
 abort=0
 major=$(echo ${RELEASE_VERSION} | cut -d. -f1)
 minor=$(echo ${RELEASE_VERSION} | cut -d. -f2)
