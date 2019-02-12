@@ -260,8 +260,9 @@ SectionIn 1 2
 SetOutPath $INSTDIR
 File /r /x desktop java
 SetOutPath "$6"
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" '"$SYSDIR\cmd.exe"' '/c start "" javaw -cp "$INSTDIR\java\Classes\jScope.jar";"$INSTDIR\java\Classes" -Xmx1G jScope' "$6\icons.exe" 4 SW_SHOWMINIMIZED
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk" '"$SYSDIR\cmd.exe"' '/c start "" javaw -cp "$INSTDIR\java\Classes\jTraverser.jar" jTraverser' $6\icons.exe" 3 SW_SHOWMINIMIZED
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" javaw '-cp "$INSTDIR\java\Classes\jScope.jar";"$INSTDIR\java\Classes" -Xmx1G jScope' "$6\icons.exe" 4 SW_SHOWMINIMIZED
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk"  javaw '-cp "$INSTDIR\java\Classes\jTraverser.jar" jTraverser' $6\icons.exe" 3 SW_SHOWMINIMIZED
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser2.lnk" javaw '-jar "$INSTDIR\java\Classes\jTraverser2.jar"' $6\icons.exe" 3 SW_SHOWMINIMIZED
 SectionEnd
 
 
@@ -300,7 +301,7 @@ SectionEnd
 Section "python"
 SectionIn 2
 SetOutPath "$INSTDIR\mdsobjects"
-File /r /x MDSplus /x .gitignore ${srcdir}/mdsobjects/python
+File /r /x __pycache__ /x *.pyc /x _version.py.in /x Makefile.am /x Makefile.in ${srcdir}/mdsobjects/python
 SetOutPath "$INSTDIR\mdsobjects\python"
 File /workspace/releasebld/64/mdsobjects/python/_version.py
 SetOutPath "$INSTDIR\mdsobjects\python"
