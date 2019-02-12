@@ -52,6 +52,7 @@ camshr/cts_commands.c
 
 # python compiled files
 *.pyc
+__pycache__/
 
 # Compiled Object files
 *.slo
