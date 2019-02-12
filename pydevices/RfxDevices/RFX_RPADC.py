@@ -18,21 +18,22 @@ class RFX_RPADC(Device):
         {'path':':EV_SAMPLES', 'type':'numeric', 'value': 2},  		#eventy validation samples
         {'path':':PRE_SAMPLES', 'type':'numeric', 'value': 100},  	#pre trigger samples
         {'path':':POST_SAMPLES', 'type':'numeric', 'value': 100},  	#post trigger samples
-	{'path':':CHAN_A', 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  },
-	{'path':':CHAN_B', 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  },
-	{'path':':INIT_ACTION','type':'action', 
-	'valueExpr':"Action(Dispatch('CPCI_SERVER','PULSE_PREPARATION',50,None),Method(None,'init',head))",
-        'options':('no_write_shot',)},
-	{'path':':START_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'start_store',head))",
-        'options':('no_write_shot',)},
-	{'path':':STOP_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','FINISH_SHOT',50,None),Method(None,'stop_store',head))",
-        'options':('no_write_shot',)}]
+        {'path':':CHAN_A', 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  },
+        {'path':':CHAN_B', 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  },
+        {'path':':INIT_ACTION','type':'action',
+         'valueExpr':"Action(Dispatch('CPCI_SERVER','PULSE_PREPARATION',50,None),Method(None,'init',head))",
+         'options':('no_write_shot',)},
+        {'path':':START_ACTION','type':'action',
+         'valueExpr':"Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'start_store',head))",
+         'options':('no_write_shot',)},
+        {'path':':STOP_ACTION','type':'action',
+         'valueExpr':"Action(Dispatch('PXI_SERVER','FINISH_SHOT',50,None),Method(None,'stop_store',head))",
+         'options':('no_write_shot',)},
+        {'path':':START_TIME', 'type':'numeric', 'value':0}]
 
 
     class Configuration:
-      def configure(self, lib, fd, name, shot, chanANid, chanBNid, triggerNid, preSamples, postSamples, segmentSamples, decimation):
+      def configure(self, lib, fd, name, shot, chanANid, chanBNid, triggerNid, startTimeNid, preSamples, postSamples, segmentSamples, decimation):
           self.lib = lib
           self.fd = fd
           self.name = name
@@ -40,6 +41,7 @@ class RFX_RPADC(Device):
           self.chanANid = chanANid
           self.chanBNid = chanBNid
           self.triggerNid = triggerNid
+          self.startTimeNid = startTimeNid
           self.preSamples = preSamples
           self.postSamples = postSamples
           self.segmentSamples = segmentSamples
@@ -54,6 +56,7 @@ class RFX_RPADC(Device):
           self.chanANid = conf.chanANid
           self.chanBNid = conf.chanBNid
           self.triggerNid = conf.triggerNid
+          self.startTimeNid = conf.startTimeNid
           self.preSamples = conf.preSamples
           self.postSamples = conf.postSamples
           self.segmentSamples = conf.segmentSamples
@@ -61,28 +64,28 @@ class RFX_RPADC(Device):
 
 
       def run(self):
-#          print('START THREAD', self.name, self.shot)
+          print('START THREAD', self.name, self.shot)
           try:
-             self.lib.rpadcStream(c_int(self.fd), c_char_p(self.name), c_int(self.shot), c_int(self.chanANid), c_int(self.chanBNid), 
-			c_int(self.triggerNid), c_int(self.preSamples), c_int(self.postSamples), 
-			c_int(self.segmentSamples), c_double(125E6/self.decimation))
+             self.lib.rpadcStream(c_int(self.fd), c_char_p(self.name), c_int(self.shot), c_int(self.chanANid), c_int(self.chanBNid),
+                                  c_int(self.triggerNid), c_int(self.preSamples), c_int(self.postSamples),
+                                  c_int(self.segmentSamples), c_double(125E6/self.decimation))
           except ValueError:
                print(ValueError)
                raise mdsExceptions.TclFAILED_ESSENTIAL
-               
-#          print('THREAD TERMINATED')
+
+          print('THREAD TERMINATED')
       def stop(self):
           self.stopFlag = c_int(1)
 
     conf = Configuration()
     lib = None
     fd = 0
-    
-    def init(self):
 
+    def init(self):
         print('================= RPADC Init ===============')
         if self.lib is None:
             self.lib = CDLL("libredpitaya.so")
+            print('library loaded')
         try:
             if (self.ev_channel.data() == 'A'):
                 trigFromChanA = 1
@@ -102,20 +105,18 @@ class RFX_RPADC(Device):
             evSamples = self.ev_samples.data()
             decimation = self.decimation.data()
             segSize = self.seg_size.data()
-            
-            self.fd = self.lib.rpadcInit(c_int(preSamples), c_int(postSamples), c_int(trigFromChanA), 
-			  c_int(trigAboveThreshold), c_int(evLevel), c_int(evSamples), c_int(decimation)) 
+            print('openening device')
+            self.fd = self.lib.rpadcInit(c_int(preSamples), c_int(postSamples), c_int(trigFromChanA),
+                                         c_int(trigAboveThreshold), c_int(evLevel), c_int(evSamples), c_int(decimation))
             if self.fd < 0:
                 print("Error opening device")
-                return      
-
-            self.conf.configure(self.lib, self.fd, self.getTree().name, self.getTree().shot, self.chan_a.getNid(), self.chan_b.getNid(), 
-			    self.trigger.getNid(), preSamples, postSamples, segSize, decimation)
+                return
+            print('device opened')
+            self.conf.configure(self.lib, self.fd, self.getTree().name, self.getTree().shot, self.chan_a.getNid(), self.chan_b.getNid(),
+                                self.trigger.getNid(), self.start_time.getNid(), preSamples, postSamples, segSize, decimation)
         except:
             raise mdsExceptions.TclFAILED_ESSENTIAL
-	return -1
-    
-        
+        return -1
 
     def start_store(self):
         try:
@@ -125,20 +126,30 @@ class RFX_RPADC(Device):
            worker.start()
         except:
             raise mdsExceptions.TclFAILED_ESSENTIAL
-	return -1
-            
+        return -1
+
     def stop_store(self):
         try:
             self.conf.lib.rpadcStop(self.conf.fd)
         except:
             raise mdsExceptions.TclFAILED_ESSENTIAL
-	return -1
-            
+        return -1
+
     def do_trigger(self):
+        import time
         try:
+            # self.conf.lib.rpadcTrigger(self.conf.fd, self.getTree().name, self.getTree().shot, self.trigger.getNid())
             self.conf.lib.rpadcTrigger(self.conf.fd)
+            self.start_time = int(round(time.time() * 1000))
         except:
             raise mdsExceptions.TclFAILED_ESSENTIAL
-	return -1
-            
-     
+        return -1
+
+
+
+
+
+
+
+
+
