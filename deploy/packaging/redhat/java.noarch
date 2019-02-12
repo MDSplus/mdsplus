@@ -1,6 +1,7 @@
 ./usr/local/mdsplus/desktop/java
 ./usr/local/mdsplus/desktop/java/jscope.desktop
 ./usr/local/mdsplus/desktop/java/jtraverser.desktop
+./usr/local/mdsplus/desktop/java/jtraverser2.desktop
 ./usr/local/mdsplus/java
 ./usr/local/mdsplus/java/classes
 ./usr/local/mdsplus/java/classes/DeviceBeans.jar
