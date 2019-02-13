@@ -27,7 +27,6 @@ import array
 import MDSplus
 import tempfile
 import threading
-import time
 
 def threaded(fn):
     def wrapper(*args, **kwargs):
