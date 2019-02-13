@@ -32,7 +32,6 @@ def threaded(fn):
     def wrapper(*args, **kwargs):
         thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
         thread.start()
-        return thread
     return wrapper
 
 class ACQ435ST(MDSplus.Device):
@@ -67,7 +66,7 @@ class ACQ435ST(MDSplus.Device):
         {'path':':TRIG_MODE','type':'text', 'value': 'hard', 'options':('no_write_shot')},
         {'path':':EXT_CLOCK','type':'axis', 'options':('no_write_shot')},
         {'path':':FREQ','type':'numeric', 'value': 16000, 'options':('no_write_shot')},        
-        {'path':':HW_FILTER','type':'numeric', 'value':4, 'options':('no_write_shot')},
+        {'path':':HW_FILTER','type':'numeric', 'value':0, 'options':('no_write_shot')},
         {'path':':DEF_DCIM','type':'numeric', 'value': 1, 'options':('no_write_shot')},
         {'path':':SEG_LENGTH','type':'numeric', 'value': 8000, 'options':('no_write_shot')},
         {'path':':MAX_SEGMENTS','type':'numeric', 'value': 1000, 'options':('no_write_shot')},
@@ -86,7 +85,9 @@ class ACQ435ST(MDSplus.Device):
         {'path':':STOP_ACTION','type':'action',
          'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",
          'options':('no_write_shot',)},
+        {'path': ':GIVEUP_TIME', 'type': 'numeric', 'value': 180.0, 'options': ('no_write_shot')},
         ]
+
 
     for i in range(32):
         parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',),
@@ -111,6 +112,7 @@ class ACQ435ST(MDSplus.Device):
 
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('set_abort', '1')
+
         if self.ext_clock.length > 0:
             uut.s0.set_knob('SYS_CLK_FPMUX', 'FPCLK')
             uut.s0.set_knob('SIG_CLK_MB_FIN', '1000000')
@@ -130,6 +132,7 @@ class ACQ435ST(MDSplus.Device):
             uut.s1.set_knob('trg', '1,0,1')
         else:
             uut.s1.set_knob('trg', '1,1,1')
+
 #
 #  Read the coeffients and offsets
 #  for each channel
@@ -138,7 +141,8 @@ class ACQ435ST(MDSplus.Device):
 #        for chan in range(32):
 #
         coeffs =  map(float, uut.s1.AI_CAL_ESLO.split(" ")[3:] )
-        offsets =  map(float, uut.s1.AI_CAL_EOFF.split(" ")[3:] )       
+        offsets =  map(float, uut.s1.AI_CAL_EOFF.split(" ")[3:] )
+
         for i in range(32):
             coeff = self.__getattr__('input_%2.2d_coefficient'%(i+1))
             coeff.record = coeffs[i]
@@ -158,6 +162,7 @@ class ACQ435ST(MDSplus.Device):
         acq400_hapi=self.importPyDeviceModule('acq400_hapi')
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.so.set_knob('soft_trigger','1')
+
         return 1
     TRIG=trig
 
@@ -170,6 +175,7 @@ class ACQ435ST(MDSplus.Device):
         import os
         import sys
         from MDSplus import Tree,Event,Range
+        from MDSplus.mdsExceptions import DevNOT_TRIGGERED
 
         def lcm(a,b):
             from fractions import gcd
@@ -213,7 +219,28 @@ class ACQ435ST(MDSplus.Device):
 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((self.node.data(),4210))
-        s.settimeout(6)
+
+        socketTimeout = 6 #secs
+        if self.debugging():
+            print('Initial socket timeout: ' + str(socketTimeout) + ' secs')
+        seg_time      = 2**self.hw_filter.data() * seg_length / self.freq.data()
+
+        if seg_time <= socketTimeout:
+            if self.debugging():
+                print('Chosen  socket timeout: ' + str(socketTimeout)+ ' secs')
+            s.settimeout(socketTimeout)
+        else:
+            if self.debugging():
+                print('Chosen  socket timeout: ' + str(seg_time)+ ' secs')
+            s.settimeout(seg_time)
+
+        giveup_count = int(self.giveup_time.data() / s.gettimeout())
+        if self.debugging():
+            print('Ratio of (Node giveup-time)/(chosen socket-timeout): ' + str(giveup_count))
+
+        # trigger time out count initialization:
+        timeOutCount=0
+        # s.settimeout(6)
 
         chunk = 0
         segment = 0
@@ -221,8 +248,12 @@ class ACQ435ST(MDSplus.Device):
         max_segments = self.max_segments.data()
         first = True
         buf = bytearray(segment_bytes)
-        while running.on and segment < max_segments:
-            toread=segment_bytes 
+
+        while running.on and segment < max_segments and timeOutCount < giveup_count:
+           # If no trigger, then the count (timeOutCount) will continue until the
+           # maximun count is reached.
+
+            toread=segment_bytes
             try:
                 view = memoryview(buf)
                 while toread:
@@ -232,14 +263,22 @@ class ACQ435ST(MDSplus.Device):
                         first = False
                     view = view[nbytes:] # slicing views is cheap
                     toread -= nbytes
+
             except socket.timeout as e:
-                print("got a timeout")
+                # if no triggered, i.e. first=true, increase the trigger time out count.
+                if first:
+                    print('Trigger timeout tries: ' + str(timeOutCount) +
+                          ' out of ' + str(giveup_count))
+                    timeOutCount += 1
+
+                print("Got a timeout.")
                 err = e.args[0]
         # this next if/else is a bit redundant, but illustrates how the
         # timeout exception is setup
+
                 if err == 'timed out':
                     time.sleep(1)
-                    print ('recv timed out, retry later')
+                    print (' recv timed out, retry later')
                     if not running.on:
                         break
                     else:
@@ -268,13 +307,20 @@ class ACQ435ST(MDSplus.Device):
                             dims[i] = Range(dims[i].begin + seg_length*dt, dims[i].ending + seg_length*dt, dt*decim[i])
                         i += 1
                     segment += 1
-                    segment += 1
                     Event.setevent(event_name)
+
+        if timeOutCount >= giveup_count:
+            if self.debugging():
+                print('\r\nNOT TRIGGERED!, EXITING')
+            raise DevNOT_TRIGGERED()
+
         if self.log_output.on:
             print("%s\tAll Done"%(datetime.datetime.now(),))
             sys.stdout.flush()
 #            with  open(self.log_file.data(), 'r') as fd:
 #                self.log_output.record = fd.read()
+
+        return 1
 
     def debugging(self):
         import os
