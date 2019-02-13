@@ -766,7 +766,8 @@ public class MdsDataProvider
                         retData = GetByteArray(" MdsMisc->GetXYSignal:DSC", args);
                     
                 /*Decode data: Format:
-                       -retResolution(float)
+                       -retResolution(float)  ----Gabriele Feb 2019 NEW: if retResolution == 0 then the following int is the number of bytes of the 
+			    error message, followied by the error message itself. 
                        -number of samples (minumum between X and Y)
                        -type of X xamples (byte: long(1), double(2) or float(3))
                        -y samples 
@@ -777,7 +778,15 @@ public class MdsDataProvider
                     float fRes;
                     double dRes;
                     fRes = dis.readFloat();
-                    if(fRes >= 1E10)
+               //Check if an error was returned
+		    if(fRes == 0)
+		    {
+		        nSamples = dis.readInt();
+			byte [] errorBuf = new byte[nSamples];
+			dis.readFully(errorBuf);
+			throw new Exception(new String(errorBuf));
+		    }
+                   if(fRes >= 1E10)
                         dRes = Double.MAX_VALUE;
                     else
                         dRes = fRes;

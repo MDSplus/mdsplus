@@ -606,6 +606,25 @@ static int recIsSegmented(struct descriptor *dsc)
     }
 }
 
+
+static struct descriptor_xd *encodeError(char *error)
+{
+    static EMPTYXD(retXd);
+    struct descriptor errD = {0, DTYPE_T, CLASS_S, 0};
+    int errLen = strlen(error);
+    char *codedError = (char *)malloc(errLen + sizeof(float) + sizeof(int));
+    *((float *)codedError) = 0.;
+    *((int *)(codedError + sizeof(float))) = errLen;
+    memcpy(codedError + sizeof(float) + sizeof(int), error, errLen);
+
+    errD.length = errLen + sizeof(float) + sizeof(int);
+    errD.pointer = codedError;
+    MdsCopyDxXd(&errD, &retXd);
+    free((char *)codedError);
+    return &retXd;
+}
+
+
 //Check if the passed expression contains at least one segmented node
 EXPORT int IsSegmented(char *expr)
 {
@@ -658,7 +677,6 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     static char *dimExprStr = "_a = $; _s = SIZE(_a); DIM_OF(SET_RANGE(_s,_a))";
     struct  descriptor dimExpr = {strlen(dimExprStr), DTYPE_T, CLASS_S, (char *)dimExprStr};
     //struct  descriptor dimExpr = {strlen("DIM_OF($)"), DTYPE_T, CLASS_S, (char *)"DIM_OF($)"};
-    struct descriptor errD = {0, DTYPE_T, CLASS_S, 0};
     char *err;
     char swap;
     char testEndian[4] = {0, 0, 0, 1};
@@ -735,10 +753,7 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     if(!(status & 1))
     {
 	err = MdsGetMsg(status);
-	errD.length = strlen(err);
-	errD.pointer = err;
-	MdsCopyDxXd(&errD, &retXd);
-	return &retXd;
+	return(encodeError(err));
     }
 //Get X
 	if(*inX) //If an explicit expression for X has been given
@@ -761,10 +776,7 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     if(!(status & 1))
     {
 	err = MdsGetMsg(status);
-	errD.length = strlen(err);
-	errD.pointer = err;
-	MdsCopyDxXd(&errD, &retXd);
-	return &retXd;
+	return(encodeError(err));
     }
 //Check results: must be an array of either type DTYPE_B, DTYPE_BU, DTYPE_W, DTYPE_WU, DTYPE_L, DTYPE_LU, DTYPE_FLOAT, DTYPE_DOUBLE
 // Y converted to float, X to int64_t or float or double
@@ -777,10 +789,7 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     {
 	MdsFree1Dx(&xXd, 0);
 	MdsFree1Dx(&yXd, 0);
-	errD.length = strlen(err);
-	errD.pointer = err;
-	MdsCopyDxXd(&errD, &retXd);
-	return &retXd;
+	return(encodeError(err));
     }
 //Number of asmples set to minimum between X and Y
     xArrD = (struct descriptor_a *)xXd.pointer;
@@ -803,10 +812,7 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
 	    err = "Cannot Convert Y to IEEE Floating point";
 	    MdsFree1Dx(&xXd, 0);
 	    MdsFree1Dx(&yXd, 0);
-	    errD.length = strlen(err);
-	    errD.pointer = err;
-	    MdsCopyDxXd(&errD, &retXd);
-	    return &retXd;
+	    return(encodeError(err));
 	}
 	MdsFree1Dx(&yXd, 0);
 	yXd = currXd;
@@ -825,10 +831,7 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
 	    err = "Cannot Convert X to IEEE Floating point";
 	    MdsFree1Dx(&xXd, 0);
 	    MdsFree1Dx(&yXd, 0);
-	    errD.length = strlen(err);
-	    errD.pointer = err;
-	    MdsCopyDxXd(&errD, &retXd);
-	    return &retXd;
+	    return(encodeError(err));
 	}
 	MdsFree1Dx(&xXd, 0);
 	xXd = currXd;
@@ -847,10 +850,7 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
 		    err = "Cannot Convert Y data dtype";
 		    MdsFree1Dx(&xXd, 0);
 		    MdsFree1Dx(&yXd, 0);
-		    errD.length = strlen(err);
-		    errD.pointer = err;
-		    MdsCopyDxXd(&errD, &retXd);
-		    return &retXd;
+		    return(encodeError(err));
 	    	case DTYPE_B:
 	    	case DTYPE_BU:
 		    y[i] = *((char *)(&yArrD->pointer[i*yArrD->length]));
@@ -928,10 +928,7 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
 		free(retArr);
 		MdsFree1Dx(&xXd, 0);
 		MdsFree1Dx(&yXd, 0);
-		errD.length = strlen(err);
-		errD.pointer = err;
-		MdsCopyDxXd(&errD, &retXd);
-		return &retXd;
+		return(encodeError(err));
 	    case DTYPE_B:
 	    case DTYPE_BU:
 		*((float *)&retArr[idx]) = *((char *)(&xArrD->pointer[i*xArrD->length]));
@@ -1056,7 +1053,6 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     struct descriptor xMaxD = {sizeof(int64_t), DTYPE_QU, CLASS_S, (char *)inXMax};
     struct descriptor yExpr = {strlen(inY), DTYPE_T, CLASS_S, inY};
     struct descriptor xExpr = {strlen(inX), DTYPE_T, CLASS_S, inX};
-    struct descriptor errD = {0, DTYPE_T, CLASS_S, 0};
     char *err;
     char swap;
     char testEndian[4] = {0, 0, 0, 1};
@@ -1101,10 +1097,7 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     MdsFree1Dx(&xd, 0);
     if STATUS_NOT_OK {
 		err = MdsGetMsg(status);
-		errD.length = strlen(err);
-		errD.pointer = err;
-		MdsCopyDxXd(&errD, &retXd);
-		return &retXd;
+		return(encodeError(err));
     }
 //Get X
 
@@ -1129,10 +1122,7 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     if(!(status & 1))
     {
 		err = MdsGetMsg(status);
-		errD.length = strlen(err);
-		errD.pointer = err;
-		MdsCopyDxXd(&errD, &retXd);
-		return &retXd;
+		return(encodeError(err));
     }
 //Check results: must be an array of either type DTYPE_B, DTYPE_BU, DTYPE_W, DTYPE_WU, DTYPE_L, DTYPE_LU, DTYPE_FLOAT, DTYPE_DOUBLE
 // Y converted to float, X to int64_t or float or double
@@ -1145,10 +1135,7 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     {
 	MdsFree1Dx(&xXd, 0);
 	MdsFree1Dx(&yXd, 0);
-	errD.length = strlen(err);
-	errD.pointer = err;
-	MdsCopyDxXd(&errD, &retXd);
-	return &retXd;
+	return(encodeError(err));
     }
 //Number of asmples set to minimum between X and Y
     xArrD = (struct descriptor_a *)xXd.pointer;
@@ -1169,10 +1156,7 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
 		    err = "Cannot Convert Y data dtype";
 		    MdsFree1Dx(&xXd, 0);
 		    MdsFree1Dx(&yXd, 0);
-		    errD.length = strlen(err);
-		    errD.pointer = err;
-		    MdsCopyDxXd(&errD, &retXd);
-		    return &retXd;
+		    return(encodeError(err));
 	    	case DTYPE_B:
 	    	case DTYPE_BU:
 		    y[i] = *((char *)(&yArrD->pointer[i*yArrD->length]));
@@ -1252,10 +1236,7 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
 		free(retArr);
 		MdsFree1Dx(&xXd, 0);
 		MdsFree1Dx(&yXd, 0);
-		errD.length = strlen(err);
-		errD.pointer = err;
-		MdsCopyDxXd(&errD, &retXd);
-		return &retXd;
+		return(encodeError(err));
 	    case DTYPE_B:
 	    case DTYPE_BU:
 		*((float *)&retArr[idx]) = *((char *)(&xArrD->pointer[i*xArrD->length]));
