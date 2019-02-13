@@ -60,8 +60,7 @@ class ACQ435ST(MDSplus.Device):
     """
 
     parts=[
-        # {'path':':NODE','type':'text','value':'192.168.0.254', 'options':('no_write_shot')},
-        {'path': ':NODE', 'type': 'text', 'value': '198.125.178.11', 'options': ('no_write_shot')},
+        {'path':':NODE','type':'text','value':'192.168.0.254', 'options':('no_write_shot')},
         {'path':':SITE','type':'numeric', 'value': 1, 'options':('no_write_shot')},
         {'path':':COMMENT','type':'text', 'options':('no_write_shot')},
         {'path':':TRIGGER','type':'numeric', 'value': 0.0, 'options':('no_write_shot')},
@@ -87,9 +86,9 @@ class ACQ435ST(MDSplus.Device):
         {'path':':STOP_ACTION','type':'action',
          'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",
          'options':('no_write_shot',)},
+        {'path': ':GIVEUP_TIME', 'type': 'numeric', 'value': 180.0, 'options': ('no_write_shot')},
         ]
 
-    parts.append({'path': ':GIVEUP_TIME', 'type':'numeric', 'value': 120.0, 'options':('no_write_shot')})
 
     for i in range(32):
         parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',),
@@ -223,18 +222,22 @@ class ACQ435ST(MDSplus.Device):
         s.connect((self.node.data(),4210))
 
         socketTimeout = 6 #secs
-        print('Initial socket timeout: ' + str(socketTimeout) + ' secs')
+        if self.debugging():
+            print('Initial socket timeout: ' + str(socketTimeout) + ' secs')
         seg_time      = 2**self.hw_filter.data() * seg_length / self.freq.data()
 
         if seg_time <= socketTimeout:
-            print('Chosen  socket timeout: ' + str(socketTimeout)+ ' secs')
+            if self.debugging():
+                print('Chosen  socket timeout: ' + str(socketTimeout)+ ' secs')
             s.settimeout(socketTimeout)
         else:
-            print('Chosen  socket timeout: ' + str(seg_time)+ ' secs')
+            if self.debugging():
+                print('Chosen  socket timeout: ' + str(seg_time)+ ' secs')
             s.settimeout(seg_time)
 
         giveup_count = int(self.giveup_time.data() / s.gettimeout())
-        print('Ratio of (Node giveup-time)/(chosen socket-timeout): ' + str(giveup_count))
+        if self.debugging():
+            print('Ratio of (Node giveup-time)/(chosen socket-timeout): ' + str(giveup_count))
 
         # trigger time out count initialization:
         timeOutCount=0
@@ -250,7 +253,8 @@ class ACQ435ST(MDSplus.Device):
         while running.on and segment < max_segments and timeOutCount < giveup_count:
             # The following line shows a trigger time out count. If no trigger, then the count will continue
             # until the maximun count is reached.
-            print('Trigger timeout countdown: ' + str(timeOutCount) + ' out of ' + str(giveup_count))
+            if self.debugging():
+                print('Trigger timeout countdown: ' + str(timeOutCount) + ' out of ' + str(giveup_count))
 
             toread=segment_bytes
             try:
@@ -307,7 +311,8 @@ class ACQ435ST(MDSplus.Device):
                     Event.setevent(event_name)
 
         if timeOutCount >= giveup_count:
-            print('\r\nNOT TRIGGERED!, EXITING')
+            if self.debugging():
+                print('\r\nNOT TRIGGERED!, EXITING')
             raise DevNOT_TRIGGERED()
 
         if self.log_output.on:
