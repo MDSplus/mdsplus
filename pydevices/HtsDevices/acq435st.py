@@ -267,10 +267,10 @@ class ACQ435ST(MDSplus.Device):
             except socket.timeout as e:
                 # if no triggered, i.e. first=true, increase the trigger time out count.
                 if first:
-                    print('trigger timeout count ' + str(timeOutCount) + ' out of ' + str(giveup_count))
+                    print('Trigger timeout tries ' + str(timeOutCount) + ' out of ' + str(giveup_count))
                     timeOutCount += 1
 
-                print("got a timeout.")
+                print("Got a timeout.")
                 err = e.args[0]
         # this next if/else is a bit redundant, but illustrates how the
         # timeout exception is setup
