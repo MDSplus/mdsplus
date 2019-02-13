@@ -251,10 +251,7 @@ class ACQ435ST(MDSplus.Device):
         buf = bytearray(segment_bytes)
 
         while running.on and segment < max_segments and timeOutCount < giveup_count:
-            # The following line shows a trigger time out count. If no trigger, then the count will continue
-            # until the maximun count is reached.
-            if self.debugging():
-                print('Trigger timeout countdown: ' + str(timeOutCount) + ' out of ' + str(giveup_count))
+           # If no trigger, then the count (timeOutCount) will continue until the maximun count is reached.
 
             toread=segment_bytes
             try:
@@ -270,6 +267,7 @@ class ACQ435ST(MDSplus.Device):
             except socket.timeout as e:
                 # if no triggered, i.e. first=true, increase the trigger time out count.
                 if first:
+                    print('trigger timeout count ' + str(timeOutCount) + ' out of ' + str(giveup_count))
                     timeOutCount += 1
 
                 print("got a timeout.")
