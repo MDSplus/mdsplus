@@ -331,12 +331,12 @@ EXPORT uint32_t LibGetHostAddr(char *name){
   INIT_AND_FREE_ON_EXIT(void*,hp_mem);
   for ( memlen=1024, hp_mem=malloc(memlen);
 	hp_mem && (gethostbyname_r(name,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE);
-	memlen *= 2, hp_mem = realloc(hp_mem, memlen));
+	memlen *= 2, free(hp_mem), hp_mem = malloc(memlen)); // free + malloc = realloc - memcpy
   if (!hp) {
     addr = (int)inet_addr(name);
     if (addr != -1) for (;
         hp_mem && (gethostbyaddr_r(((void*)&addr),sizeof(int),AF_INET,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE);
-	memlen *= 2, hp_mem = realloc(hp_mem, memlen));
+	memlen *= 2, free(hp_mem), hp_mem = malloc(memlen));
   }
   if (hp) addr = *(int*)hp->h_addr_list[0];
   FREE_NOW(hp_mem);
