@@ -256,31 +256,21 @@ static inline void importMDSplus_once() {
   pthread_once(&once,&importMDSplus);
 }
 
-char *findModule(struct descriptor *modname_d, char **modname_out){
+extern int findfile_ext_env(mdsdsc_t *entry, const char*const ext, const char*const env, char**file);
+char *findModule(struct descriptor *modname_d, char **modname){
   /* Look for at python module in MDS_PATH. used by TdiVar*/
-  static char *mpath = "MDS_PATH:";
-  static char *ftype = ".py";
-  char *modname = MdsDescrToCstring(modname_d);
-  size_t modlen = strlen(modname);
-  char *moduleFile = alloca(strlen(modname) + strlen(mpath) + strlen(ftype) + 1);
-  sprintf(moduleFile, "%s%s%s", mpath, modname, ftype);
-  free(modname);
-  struct descriptor modfile_d = { strlen(moduleFile), DTYPE_T, CLASS_S, moduleFile };
-  struct descriptor ans_d = { 0, DTYPE_T, CLASS_D, 0 };
-  void *ctx = 0;
-  INIT_STATUS;
-  status = LibFindFileRecurseCaseBlind(&modfile_d, &ans_d, &ctx);
-  LibFindFileEnd(&ctx);
   char *dirspec = NULL;
+  int status = findfile_ext_env(modname_d,".PY","MDS_PATH",&dirspec);
   if STATUS_OK {
-    dirspec = MdsDescrToCstring((struct descriptor *)&ans_d);
-    char *modnam = (char *)malloc(modlen + 1);
-    strncpy(modnam, &dirspec[strlen(dirspec) - modlen - strlen(ftype)], modlen);
-    modnam[modlen] = 0;
-    *modname_out = modnam;
-    dirspec[strlen(dirspec) - modlen - strlen(ftype)] = 0;
+    // dirspec is "/path/to/file.py"
+    size_t pathlen = strlen(dirspec) - modname_d->length - 3;
+    modname[0] = memcpy(malloc(modname_d->length+1),&dirspec[pathlen],modname_d->length + 1);
+    modname[0][modname_d->length]='\0';
+    // modname is "file"
+    dirspec = realloc(dirspec,pathlen+1);
+    dirspec[pathlen] = '\0';
+    // dirspec is "/path/to/"
   }
-  free(ans_d.pointer);
   return dirspec;
 }
 
@@ -345,10 +335,11 @@ static inline int isNotCallable(PyObject *fun, const char* filename, const char*
 }
 
 static inline char* getFullPath(const char *dirspec,const char *filename){
-  char* fullpath = malloc(strlen(dirspec)+strlen(filename)+4);
-  strcpy(fullpath, dirspec);
-  strcat(fullpath, filename);
-  strcat(fullpath, ".py");
+  size_t dlen = strlen(dirspec), flen = strlen(filename);
+  char* fullpath = malloc(dlen+flen+4);
+  memcpy(fullpath, dirspec, dlen);
+  memcpy(fullpath+dlen, filename, flen);
+  memcpy(fullpath+dlen+flen, ".py", 4);
   return fullpath;
 }
 

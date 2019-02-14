@@ -126,6 +126,27 @@ STATIC_CONSTANT struct descriptor_xd NULL_XD = { 0, 0, 0, 0, 0 };
 STATIC_CONSTANT unsigned char true = 1;
 STATIC_CONSTANT struct descriptor true_dsc = { sizeof(true), DTYPE_BU, CLASS_S, (char *)&true };
 
+int findfile_ext_env(mdsdsc_t *entry, const char*const ext, const char*const env, char**file) {
+  int status;
+  INIT_AND_FREED_ON_EXIT(bufd,DTYPE_T);
+  {
+    size_t extlen = strlen(ext),envlen = strlen(env);
+    bufd.length = envlen+1+entry->length+extlen;
+    char *tmp = bufd.pointer = malloc(bufd.length);
+    memcpy(tmp,env,envlen);tmp+=envlen;*(tmp++) = ':';		// adds "<env>:"
+    memcpy(tmp,entry->pointer,entry->length);tmp+=entry->length;// adds "<entry>"
+    memcpy(tmp,ext,extlen);					// adds "<ext>\0"
+  }
+  void *ctx = 0;
+  status = LibFindFileRecurseCaseBlind((mdsdsc_t*)&bufd, (mdsdsc_t*)&bufd, &ctx);
+  LibFindFileEnd(&ctx);
+  if STATUS_OK {
+    *file = memcpy(malloc(bufd.length+1), bufd.pointer, bufd.length);
+    (*file)[bufd.length] = '\0';
+  }
+  FREED_NOW(bufd);
+  return status;
+}
 
 static pthread_mutex_t public_lock = PTHREAD_MUTEX_INITIALIZER;
 #define LOCK_PUBLIC pthread_mutex_lock(&public_lock)
@@ -578,45 +599,34 @@ int Tdi1Present(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 extern int TdiCompile();
 int compile_fun(struct descriptor *entry)
 {
-  static DESCRIPTOR(dnul, "\0");
-  static DESCRIPTOR(dfun, ".fun\0");
-  static DESCRIPTOR(def_path, "MDS_PATH:");
   int status;
-  struct descriptor_d file = { 0, DTYPE_T, CLASS_D, 0 };
-  struct descriptor_xd tmp = EMPTY_XD;
-  FREEXD_ON_EXIT(&tmp);
-  FREED_ON_EXIT(&file);
-  status = StrConcat((struct descriptor *)&file, (struct descriptor *)&def_path, entry, &dfun MDS_END_ARG);
-#ifdef DEBUG
-  char string[64];
-  memcpy(string,file.pointer,file.length);string[file.length] = '\0';
-  fprintf(stderr,"compile: %s\n",string);
-#endif
+  INIT_AND_FREEXD_ON_EXIT(tmp);
+  INIT_AND_FREE_ON_EXIT(char*,file);
+  status = findfile_ext_env(entry,".FUN","MDS_PATH",&file);
   if STATUS_OK {
-    void *ctx = 0;
-    struct descriptor dcs = { 0, DTYPE_T, CLASS_S, 0 };
-    LibFindFileRecurseCaseBlind((struct descriptor *)&file, (struct descriptor *)&file, &ctx);
-    LibFindFileEnd(&ctx);
-    StrAppend(&file, (struct descriptor *)&dnul);
-    FILE *unit = fopen(file.pointer, "rb");
+    DBG("compile: %s\n",file);
+    FILE *unit = fopen(file, "rb");
     if (unit) {
-      long flen,readlen;
       fseek(unit, 0, SEEK_END);
-      flen = ftell(unit);
-      flen = (flen > 0xffff) ? 0xffff : flen;
-      fseek(unit, 0, SEEK_SET);
-      dcs.pointer = (char *)malloc(flen);
-      dcs.length = (unsigned short)flen;
-      readlen = (long)fread(dcs.pointer, 1, (size_t) flen, unit);
-      if (readlen < flen)
-	perror("Error reading tdi function\n");
-      fclose(unit);
-      status = TdiCompile(&dcs, &tmp MDS_END_ARG);
-      free(dcs.pointer);
+      size_t flen = ftell(unit);
+      if (flen > 0xffff) {
+	fclose(unit);
+	status = TdiSTRTOOLON;
+      } else {
+	fseek(unit, 0, SEEK_SET);
+	mdsdsc_t dcs = { flen, DTYPE_T, CLASS_D, (char*)malloc(flen) };
+	FREED_ON_EXIT(&dcs);
+	size_t readlen = fread(dcs.pointer, 1, flen, unit);
+	if (readlen < flen)
+	  perror("Error reading tdi function\n");
+	fclose(unit);
+	status = TdiCompile(&dcs, &tmp MDS_END_ARG);
+	FREED_NOW(&dcs);
+      }
     } else
       status = TdiUNKNOWN_VAR;
-  }
-  FREED_NOW(&file);
+  } else status = TdiUNKNOWN_VAR;
+  FREE_NOW(&file);
   if STATUS_OK {
     struct descriptor_function *pfun = (struct descriptor_function *)tmp.pointer;
     if (pfun->dtype == DTYPE_FUNCTION) {
