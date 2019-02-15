@@ -388,7 +388,7 @@ void *monitorStreamInfo(void *par UNUSED_ARGUMENT)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 using namespace MDSplus;
 
-void EventStream::send(int shot, const char *name, float time, float sample)
+EXPORT void EventStream::send(int shot, const char *name, float time, float sample)
 {
     char msgBuf[strlen(name) + 256];
     sprintf(msgBuf, "%d %s F 1 %f %f", shot, name, time, sample);  
@@ -396,14 +396,14 @@ void EventStream::send(int shot, const char *name, float time, float sample)
     Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
 }
 
-void EventStream::send(int shot, const char *name, uint64_t time, float sample)
+EXPORT void EventStream::send(int shot, const char *name, uint64_t time, float sample)
 {
     char msgBuf[strlen(name) + 256];
     sprintf(msgBuf, "%d %s L 1 %lu %f", shot, name, (unsigned long)time, sample);  
     Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
 }
 
-void EventStream::send(int shot, const char *name, int numSamples, float *times, float *samples)
+EXPORT void EventStream::send(int shot, const char *name, int numSamples, float *times, float *samples)
 {
     char msgBuf[strlen(name) + numSamples * 64 + 256];
     sprintf(msgBuf, "%d %s F %d", shot, name, numSamples);
@@ -416,7 +416,7 @@ void EventStream::send(int shot, const char *name, int numSamples, float *times,
     Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
 }
 
-void EventStream::send(int shot, const char *name, int numSamples, uint64_t *times, float *samples)
+EXPORT void EventStream::send(int shot, const char *name, int numSamples, uint64_t *times, float *samples)
 {
     char msgBuf[strlen(name) + numSamples * 64 + 256];
     sprintf(msgBuf, "%d %s L %d", shot, name, numSamples);
@@ -431,7 +431,7 @@ void EventStream::send(int shot, const char *name, int numSamples, uint64_t *tim
 
 
 
-void EventStream::run()
+EXPORT void EventStream::run()
 {
     const char *eventName = getName(); //Get the name of the event
     if(strcmp(eventName, "STREAMING")) return; //Should neve return
@@ -532,7 +532,7 @@ void EventStream::run()
     delete [] samples;
     std::string nameStr(name);
     
-    for(int i = 0; i < listeners.size(); i++)
+    for(size_t i = 0; i < listeners.size(); i++)
     {
 	if(names[i] == nameStr)
 	    listeners[i]->dataReceived(samplesD, timesD, shot);
@@ -542,7 +542,7 @@ void EventStream::run()
 }
 
 
-void EventStream::registerListener(DataStreamListener *listener, const char *name)
+EXPORT void EventStream::registerListener(DataStreamListener *listener, const char *name)
 {
     listeners.push_back(listener);
     names.push_back(std::string(name));
