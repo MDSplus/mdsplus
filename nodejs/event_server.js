@@ -22,8 +22,11 @@ app.get('/streams', function(req, res) {
       res.end(data.toString());
 });
  
+var port = parseInt(process.argv[2])
+console.log(process.argv[2])
 
-var server = app.listen(8082, function () {
+var server = app.listen(port, function () {
+//var server = app.listen(8082, function () {
    var host = server.address().address
    var port = server.address().port
    sse = new SSE(server);
