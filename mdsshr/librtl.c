@@ -1776,11 +1776,17 @@ EXPORT extern int LibFindFileEnd(void **ctx){
 
 static int find_file(struct descriptor *filespec, struct descriptor *result, void **ctx,
 			    int recursively, int case_blind){
+#ifdef DEBUG
+  clock_t start = clock();
+#endif
   int status;
   if (*ctx == 0) {
     char* fspec = malloc(filespec->length+1);
     memcpy(fspec,filespec->pointer,filespec->length);fspec[filespec->length] = '\0';
     *ctx = (void*)findfilestart(fspec,recursively,case_blind);
+#ifdef DEBUG
+  fprintf(stderr, "locking for %s: ", fspec);
+#endif
     free(fspec);
     if (!*ctx) return MDSplusERROR;
   }
@@ -1793,6 +1799,9 @@ static int find_file(struct descriptor *filespec, struct descriptor *result, voi
     status = MDSplusERROR;
     LibFindFileEnd(ctx);
   }
+#ifdef DEBUG
+  fprintf(stderr, "took %fs\n", ((double)(clock()-start))/CLOCKS_PER_SEC);
+#endif
   return status;
 }
 
