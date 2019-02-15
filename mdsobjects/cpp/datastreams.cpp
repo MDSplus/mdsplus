@@ -542,7 +542,6 @@ EXPORT void EventStream::run()
 }
 
 
-
 EXPORT void EventStream::registerListener(DataStreamListener *listener, const char *name)
 {
     listeners.push_back(listener);
