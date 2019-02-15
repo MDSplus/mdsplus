@@ -1,7 +1,9 @@
 #pragma once
 #include <mdsshr_messages.h>
-#define B_TRUE  1
-#define B_FALSE 0
+#define FALSE 0
+#define TRUE  1
+#define B_TRUE  TRUE
+#define B_FALSE FALSE
 #define C_OK    0
 #define C_ERROR -1
 #define IS_OK(status)     ((status) & 1)
