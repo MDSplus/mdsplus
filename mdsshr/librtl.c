@@ -1813,6 +1813,10 @@ EXPORT int LibFindFileRecurseCaseBlind(struct descriptor *filespec, struct descr
   return find_file(filespec, result, ctx, 1, 1);
 }
 
+EXPORT int LibFindFileCaseBlind(struct descriptor *filespec, struct descriptor *result, void **ctx){
+  return find_file(filespec, result, ctx, 0, 1);
+}
+
 EXPORT void TranslateLogicalFree(char *value)
 {
   free(value);

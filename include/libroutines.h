@@ -24,10 +24,10 @@ extern int LibConvertDateString(const char *asc_time, int64_t * qtime);
 extern int LibCreateVmZone(ZoneList ** zone);
 extern time_t LibCvtTim(int *time_in, double *t);
 extern int LibDeleteVmZone(ZoneList ** zone);
-extern int LibFindFile(struct descriptor *filespec, struct descriptor *result, void **ctx);
+extern int LibFindFile(mdsdsc_t *filespec, mdsdsc_t *result, void **ctx);
+extern int LibFindFileCaseBlind(mdsdsc_t *filespec, mdsdsc_t *result, void **ctx);
 extern int LibFindFileEnd(void **ctx);
-extern int LibFindFileRecurseCaseBlind(struct descriptor *filespec,
-				       struct descriptor *result, void **ctx);
+extern int LibFindFileRecurseCaseBlind(mdsdsc_t *filespec, mdsdsc_t *result, void **ctx);
 extern int LibFindImageSymbol();
 extern int LibFindImageSymbol_C();
 extern char *LibFindImageSymbolErrString();

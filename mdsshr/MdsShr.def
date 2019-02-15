@@ -12,6 +12,7 @@ LibCreateVmZone
 LibCvtTim
 LibDeleteVmZone
 LibFindFile
+LibFindFileCaseBlind
 LibFindFileEnd
 LibFindFileRecurseCaseBlind
 LibFindImageSymbol
