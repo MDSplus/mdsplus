@@ -1681,12 +1681,31 @@ static inline void* _findfilestart(const char *envname, const char *filename, in
   ctx->stack = malloc(ctx->max_stack * sizeof(findstack_t));
   ctx->cur_stack = -1;
   char *folders;
-  if (envname && (folders = getenv(envname)))
+  if (envname && (folders = getenv(envname))) {
     ctx->folders = strdup(folders);
-  else
-    ctx->folders = calloc(1,1);
-  *(size_t*)&ctx->flen = strlen(filename);
-  ctx->filename = memcpy(malloc(ctx->flen+1),filename,ctx->flen+1);
+    *(size_t*)&ctx->flen = strlen(filename);
+    ctx->filename = memcpy(malloc(ctx->flen+1),filename,ctx->flen+1);
+  } else {
+    const size_t tlen = strlen(filename);
+    char* tmp = memcpy(malloc(tlen+1),filename,tlen+1);
+#ifdef _WIN32
+    char* sep;    // replace '/' with '\\'
+    for (sep = tmp+tlen; sep-- > tmp; ) if (*sep == '/') *sep = '\\';
+#endif
+    char *p, *c;
+    for (c=tmp,p=NULL;(c=strchr(c,SEP));p=c,c=p+1);
+    if (p) { // look in specified path
+      *(char*)p = '\0';
+      const size_t flen = p - tmp + 1;
+      *(size_t*)&ctx->flen = tlen - flen;
+      ctx->filename = strdup(p+1);
+      ctx->folders = realloc(tmp,flen);
+    } else { // look in current folder only
+      *(size_t*)&ctx->flen = tlen;
+      ctx->filename = tmp;
+      ctx->folders = calloc(1,1);
+    }
+  }
   ctx->buffer = malloc(MAX_PATH);
 #ifndef _WIN32
   ctx->buflen = MAX_PATH;
