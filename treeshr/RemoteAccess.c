@@ -136,18 +136,19 @@ int RemoteAccessDisconnect(int conid, int force){
     host->h.connections--;
     DBG("Connection %d< %d\n",conid,host->h.connections);
   } else DBG("Disconnected %d\n",conid);
-  for (host = host_list; host && host->h.conid != conid;) {
+  for (host = host_list; host ;) {
     if ((force && host->h.conid == conid) || (host->h.connections <= 0 && host->h.time < time(0)-60)) {
       DBG("Disconnecting %d: %d\n",host->h.conid,host->h.connections);
       if (disconnectFromMds)
         status = disconnectFromMds(conid);
-      if (prev==host) {
+      if (prev) {
 	prev->next = host->next;
 	free(host->h.unique);
 	free(host);
         host = prev->next;
       } else {
 	host_list  = host->next;
+	free(host->h.unique);
 	free(host);
         host = host_list;
       }
