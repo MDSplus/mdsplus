@@ -256,24 +256,6 @@ static inline void importMDSplus_once() {
   pthread_once(&once,&importMDSplus);
 }
 
-extern int findfile_ext_env(mdsdsc_t *entry, const char*const ext, const char*const env, char**file);
-char *findModule(struct descriptor *modname_d, char **modname){
-  /* Look for at python module in MDS_PATH. used by TdiVar*/
-  char *dirspec = NULL;
-  int status = findfile_ext_env(modname_d,".PY","MDS_PATH",&dirspec);
-  if STATUS_OK {
-    // dirspec is "/path/to/file.py"
-    size_t pathlen = strlen(dirspec) - modname_d->length - 3;
-    modname[0] = memcpy(malloc(modname_d->length+1),&dirspec[pathlen],modname_d->length + 1);
-    modname[0][modname_d->length]='\0';
-    // modname is "file"
-    dirspec = realloc(dirspec,pathlen+1);
-    dirspec[pathlen] = '\0';
-    // dirspec is "/path/to/"
-  }
-  return dirspec;
-}
-
 static inline PyObject *argsToTuple(int nargs, struct descriptor **args){
   /* Convert descriptor argument list to a tuple of python objects. */
   if (!pointerToObject) return PyTuple_New(0); // no arguments
@@ -320,27 +302,18 @@ static inline void getAnswer(PyObject * value, struct descriptor_xd *outptr){
   Py_DecRef(descrPtr);
 }
 
-static inline int isNotCallable(PyObject *fun, const char* filename, const char* fullpath) {
+static inline int is_callable(PyObject *fun, const char* funname, const char* fullpath) {
   if (!fun) {
-    printf("Error finding function called '%s' in module %s\n", filename, filename);
+    printf("Error finding function called '%s' in module %s\n", funname, funname);
     if (PyErr_Occurred()) PyErr_Print();
-    return 1;
+    return FALSE;
   }
   if (!PyCallable_Check(fun)) {
-    printf("Error, item called '%s' in '%s' is not callable\n", filename, fullpath);
+    printf("Error, item called '%s' in '%s' is not callable\n", funname, fullpath);
     Py_DecRef(fun);
-    return 1;
+    return FALSE;
   }
-  return 0;
-}
-
-static inline char* getFullPath(const char *dirspec,const char *filename){
-  size_t dlen = strlen(dirspec), flen = strlen(filename);
-  char* fullpath = malloc(dlen+flen+4);
-  memcpy(fullpath, dirspec, dlen);
-  memcpy(fullpath+dlen, filename, flen);
-  memcpy(fullpath+dlen+flen, ".py", 4);
-  return fullpath;
+  return TRUE;
 }
 
 #ifdef USE_EXECFILE
@@ -372,7 +345,7 @@ static inline void add__file__FUN(PyObject *tdi_functions, const char* filename,
   free(__file__fun);
 }
 
-static inline int loadPyFunction_(const char *dirspec,const char *filename) {
+static inline int loadPyFunction_(const char *fullpath, char** funname) {
   // get __main__
   PyObject *__main__ = PyImport_AddModule("__main__");
   if (!__main__) {
@@ -384,8 +357,6 @@ static inline int loadPyFunction_(const char *dirspec,const char *filename) {
   PyObject *execfile = getExecFile(__main__);
   if (!execfile) return MDSplusERROR;
 #endif
-  // build fullpath
-  char* fullpath = getFullPath(dirspec,filename);
   // add __file__=<fullpath> to globals
   if (PyModule_AddObject(__main__,"__file__", PyString_FromString(fullpath))) { // no need to deref PyString
     fprintf(stderr,"Failed adding __file__='%s'\n",fullpath);
@@ -406,7 +377,6 @@ static inline int loadPyFunction_(const char *dirspec,const char *filename) {
     fp = fopen(fullpath, "r");
   if (!fp) {
     fprintf(stderr,"Error opening file '%s'\n",fullpath);
-    free(fullpath);
     Py_DecRef(__file__);
     return MDSplusERROR;
   }
@@ -417,27 +387,34 @@ static inline int loadPyFunction_(const char *dirspec,const char *filename) {
 # endif
     fprintf(stderr,"Error compiling file '%s'\n",fullpath);
     if (PyErr_Occurred()) PyErr_Print();
-    free(fullpath);
     Py_DecRef(__file__);
     return TdiUNKNOWN_VAR;
   }
-  PyObject *pyFunction = PyObject_GetAttrString(__main__,filename);
-  if (isNotCallable(pyFunction,filename,fullpath)) {
-    free(fullpath);
+  const char *c,*p = fullpath;
+  for (;(c=strchr(p,'/'));p=c+1);
+#ifdef _WIN32
+  for (;(c=strchr(p,'\\'));p=c+1);
+#endif
+  const size_t mlen = strlen(p)-3;
+  *funname = memcpy(malloc(mlen+1),p,mlen);funname[0][mlen] = '\0';
+  PyObject *pyFunction = PyObject_GetAttrString(__main__,*funname);
+  if (!is_callable(pyFunction,*funname,fullpath)) {
+    free(*funname);
+    *funname = NULL;
     Py_DecRef(__file__);
     return TdiUNKNOWN_VAR;
   }
-  free(fullpath);
   PyObject *tdi_functions = PyImport_AddModule("tdi_functions"); // from sys.modules or new
   // add __file__<filename> to module
-  add__file__FUN(tdi_functions, filename, __file__);
+  add__file__FUN(tdi_functions, *funname, __file__);
   // add function to module
-  int status = PyModule_AddObject(tdi_functions, filename, pyFunction) ? MDSplusERROR : MDSplusSUCCESS;
-  // Py_DecRef(pyFunction);  //PyModule_AddObject: This steals a reference to value
-  return status;
+  //PyModule_AddObject: This steals a reference to value - no Py_DecRef(pyFunction)
+  if (PyModule_AddObject(tdi_functions, *funname, pyFunction))
+    return MDSplusERROR;
+  return MDSplusSUCCESS;
 }
 
-static inline int callPyFunction_(char *filename,int nargs, struct descriptor **args, struct descriptor_xd *out_ptr) {
+static inline int callPyFunction_(const char*filename,int nargs,mdsdsc_t **args,mdsdsc_xd_t *out_ptr) {
   PyObject *tdi_functions = PyImport_AddModule("tdi_functions");
   if (tdi_functions) {
     PyObject *__main__ = PyImport_AddModule("__main__");
@@ -490,16 +467,16 @@ static inline int callPyFunction_(char *filename,int nargs, struct descriptor **
   return MDSplusSUCCESS;
 }
 
-int loadPyFunction(const char *dirspec,const char *filename) {
+int loadPyFunction(const char *filepath, char** funname) {
   int status;
   importMDSplus_once();
   PYTHON_OPEN;
-    status = loadPyFunction_(dirspec,filename);
+    status = loadPyFunction_(filepath,funname);
   PYTHON_CLOSE else status = LibNOTFOU;
   return status;
 }
 
-int callPyFunction(char *filename,int nargs, struct descriptor **args, struct descriptor_xd *out_ptr) {
+int callPyFunction(const char*filename,int nargs,mdsdsc_t **args,mdsdsc_xd_t *out_ptr) {
   int status;
   importMDSplus_once();
   PYTHON_OPEN;
