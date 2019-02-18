@@ -1562,10 +1562,10 @@ typedef struct {
 #define ISDIRECTORY(ctx) (ctx->fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 #define REALLOCBUF(ctx,extra)
 static inline void FINDFILECLOSE_OS(ctx_t* ctx){
-    FindClose(ctx->stack[ctx->cur_stack].h);
+  FindClose(ctx->stack[ctx->cur_stack].h);
 }
 static inline int FINDFILENEXT_OS(ctx_t* ctx){
-    return FindNextFile(ctx->stack[ctx->cur_stack].h, &ctx->fd);
+  return FindNextFile(ctx->stack[ctx->cur_stack].h, &ctx->fd);
 }
 static inline int FINDFILEFIRST_OS(ctx_t* ctx){
   ctx->stack[ctx->cur_stack].h = FindFirstFile(ctx->buffer, &ctx->fd);
@@ -1602,9 +1602,13 @@ static inline int FINDFILENEXT_OS(ctx_t* ctx){
 }
 static inline int FINDFILEFIRST_OS(ctx_t* ctx){
     ctx->stack[ctx->cur_stack].h = opendir(ctx->buffer);
-    if (!ctx->stack[ctx->cur_stack].h) return FALSE;
+    if (!ctx->stack[ctx->cur_stack].h) {
+      ctx->cur_stack--;
+      return FALSE;
+    }
     if (!FINDFILENEXT_OS(ctx)) {
       FINDFILECLOSE_OS(ctx);
+      ctx->cur_stack--;
       return FALSE;
     }
     return TRUE;
@@ -1634,10 +1638,8 @@ static int findfileloopstart(ctx_t *ctx) {
 
 static size_t findfileloop(ctx_t *ctx) {
   if (ctx->stack[ctx->cur_stack].h == INVALID_HANDLE_VALUE) {
-    if (!findfileloopstart(ctx)) {
-      ctx->cur_stack--;
+    if (!findfileloopstart(ctx))
       return 0;
-    }
   } else if (!FINDFILENEXT_OS(ctx))
     goto close;
   do {
@@ -1670,7 +1672,7 @@ static size_t findfileloop(ctx_t *ctx) {
   } while (FINDFILENEXT_OS(ctx));
 close:
   FINDFILECLOSE_OS(ctx);
-        ctx->cur_stack--;
+  ctx->cur_stack--;
   return 0;
 }
 
@@ -1740,12 +1742,12 @@ static inline void* findfilestart(const char *filename, int recursive, int case_
 }
 
 static inline char* findfilenext(ctx_t *ctx) {
-  size_t len = 0; // length of valid data if fullpath, i.e. the result
   if (ctx->cur_stack >= 0) do {
-    len = findfileloop(ctx);
-  } while (len == 0 && ctx->cur_stack >= 0);
-  if (ctx->cur_stack != -1) abort();
-  for (; len == 0 && ctx->cptr; ctx->ptr = ctx->cptr + 1) {
+    if (findfileloop(ctx)>0)
+      return ctx->buffer;
+  } while (ctx->cur_stack >= 0);
+  if (ctx->cur_stack != -1) fprintf(stderr,"ctx_stack = %d != -1\n", ctx->cur_stack);
+  for (; ctx->cptr; ctx->ptr = ctx->cptr + 1) {
     const size_t wlen = ((ctx->cptr = strchr(ctx->ptr, ';')) == NULL) ? (int)strlen(ctx->ptr) : (int)(ctx->cptr - ctx->ptr);
     if (wlen == 0 && ctx->recursive) continue; // if path empty and recursive, skip
     // start search in first folder
@@ -1766,9 +1768,9 @@ static inline char* findfilenext(ctx_t *ctx) {
         ctx->stack[ctx->cur_stack].wlen--;
     }
      // ctx->buffer can enter findfileloop w/o \0 termination
-    len = findfileloop(ctx);
+    if (findfileloop(ctx)>0)
+      return ctx->buffer;
   }
-  if (len) return ctx->buffer;
   ctx->buffer[0] = '\0';
   return NULL;
 }
