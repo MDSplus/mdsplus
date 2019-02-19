@@ -83,13 +83,13 @@ class TSDataProvider extends MdsDataProvider
 protected String GetDefaultXLabel(String in_y)  throws IOException
 {
 	error= null;
-	return GetString("GetTSUnit(0)");
+	return GetString("GetTSUnit(0)", -1, -1, -1);
 }
         
 protected String GetDefaultYLabel()  throws IOException
 {
 	error= null;
-	return GetString("GetTSUnit(1)");
+	return GetString("GetTSUnit(1)", -1, -1, -1);
 }
 
 public boolean SupportsCompression(){return false;}

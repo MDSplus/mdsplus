@@ -49,12 +49,12 @@ class NotConnectedDataProvider implements DataProvider
     {
     }
 
-    public String GetString(String in)
+    public String GetString(String in, int row, int col, int index)
     {
         return "";
     }
 
-    public double GetFloat(String in)
+    public double GetFloat(String in, int row, int col, int index)
     {
         return Double.parseDouble(in);
     }

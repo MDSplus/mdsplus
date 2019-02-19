@@ -402,13 +402,13 @@ class ASCIIDataProvider implements DataProvider
         curr_shot = s;
     }
 
-    public String GetString(String in)
+    public String GetString(String in, int row, int col, int index)
     {
         error = null;
         return new String(in);
     }
 
-    public double GetFloat(String in)
+    public double GetFloat(String in, int row, int col, int index)
     {
         error = null;
         return Double.parseDouble(in);

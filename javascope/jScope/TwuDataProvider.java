@@ -39,8 +39,8 @@ class TwuDataProvider
     public void    SetCompression(boolean state){}
     public void    SetEnvironment(String s) {}
     public void    Dispose(){}
-    public String  GetString(String in) {return in; }
-    public double  GetFloat(String in) { return Double.parseDouble(in); }
+    public String  GetString(String in, int row, int col, int index) {return in; }
+    public double  GetFloat(String in, int row, int col, int index) { return Double.parseDouble(in); }
     public String  ErrorString() { return error_string; }
     public void    AddUpdateEventListener   (UpdateEventListener l, String event){}
     public void    RemoveUpdateEventListener(UpdateEventListener l, String event){}

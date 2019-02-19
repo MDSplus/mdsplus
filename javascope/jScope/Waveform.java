@@ -176,9 +176,7 @@ public class Waveform
       this.end_ys = end_ys;
     }
   }
-  int row, column, index;
 
-  static int ixxxx = 0;
   public Waveform(Signal s) {
     this();
     waveform_signal = s;
@@ -187,7 +185,6 @@ public class Waveform
   }
 
   public Waveform() {
-    setName("Waveform_" + (ixxxx++));
     setBorder(BorderFactory.createLoweredBevelBorder());
     setSelectBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED,
         Color.red,
@@ -224,15 +221,24 @@ public class Waveform
     SetDefaultColors();
 
     }
-    public void setIndexes(int row, int col, int index)
-    {
-	this.row = row;
-	this.column = col;
-	this.index = index;
+    public int getRow() 
+    { 
+        RowColumnContainer rwc = (RowColumnContainer)getParent();
+	Point p = rwc.getComponentPosition(this);
+	return p.y - 1;
     }
-    public int getRow() { return row;}
-    public int getColumn() { return column;}
-    public int getIndex() { return index;}
+
+    public int getColumn()     
+    { 
+        RowColumnContainer rwc = (RowColumnContainer)getParent();
+	Point p = rwc.getComponentPosition(this);
+	return p.x - 1;
+    }
+    public int getIndex()
+    { 
+        RowColumnContainer rwc = (RowColumnContainer)getParent();
+	return rwc.getComponentIndex(this) - 1;
+    }
 
 
 

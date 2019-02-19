@@ -54,7 +54,7 @@ public interface DataProvider
          * @param in The specification of the label or title.
          * @return The evaluated label or title.
          */
-        public String  GetString(String in) throws IOException;
+        public String  GetString(String in, int row, int col, int index) throws IOException;
 
         /**
          * Method GetFloat is called by jScope to evaluate x min, x max, y min, y max when defined
@@ -67,7 +67,7 @@ public interface DataProvider
          * @param in The specification of the value.
          * @return The evaluated value.
          */
-        public double   GetFloat(String in) throws IOException;
+        public double   GetFloat(String in, int row, int col, int index) throws IOException;
 
         /**
          * Method GetWaveData called by jScope when a waveform has to be evaluated and only the Y

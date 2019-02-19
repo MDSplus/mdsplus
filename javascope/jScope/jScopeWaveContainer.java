@@ -246,7 +246,7 @@ class jScopeWaveContainer
             return "";
         try
         {
-            String t = dp.GetString(title);
+            String t = dp.GetString(title, -1, -1, -1);
             String err = dp.ErrorString();
             if (err == null || err.length() == 0)
                 return t;
@@ -1128,7 +1128,6 @@ remove 28/06/2005
         ResetDrawPanel(read_rows);
         jScopeMultiWave w;
 
-	int index = 0;
         for (int c = 0, k = 0; c < 4; c++)
         {
             for (int r = 0; r < read_rows[c]; r++)
@@ -1138,13 +1137,8 @@ remove 28/06/2005
                     "Scope.plot_" + (r + 1) + "_" + (c + 1) , cmd);
                 ( (MdsWaveInterface) w.wi).mapColorIndex(colorMapping);
                 SetWaveParams(w);
-
-//GABRIELE Feb 2019
-		w.setIndexes(r, c, index + r);
-
                 k++;
             }
-	    index += read_rows[c];
         }
 
         //Evaluate real number of columns

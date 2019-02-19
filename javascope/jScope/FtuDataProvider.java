@@ -147,7 +147,7 @@ protected String GetDefaultTitle(String in_y)   throws IOException
 	if(first_sig == null) return null;
 	String parsed ="ftuyl("+shot+",\""+first_sig+"\")"; 
 //	System.out.println(parsed);	
-	return GetString(parsed);
+	return GetString(parsed, -1, -1,-1);
 }
         
 protected String GetDefaultXLabel(String in_y)  throws IOException
@@ -157,7 +157,7 @@ protected String GetDefaultXLabel(String in_y)  throws IOException
 	if(first_sig == null) return null;
 	if(first_sig != null && first_sig.startsWith("$"))
 	    first_sig = "_"+first_sig.substring(1);
-	return GetString("ftuxl("+shot+",\""+first_sig+"\")");
+	return GetString("ftuxl("+shot+",\""+first_sig+"\")", -1, -1, -1);
 }
         
 protected String GetDefaultYLabel()  throws IOException

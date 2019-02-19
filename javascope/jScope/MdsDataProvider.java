@@ -1405,13 +1405,19 @@ public class MdsDataProvider
 
     public void resetPrevious()  //Will be used by subclass MdsSreaminDataProvider to close previous  connections
     {}
-    public synchronized String GetString(String in) throws IOException
+    public synchronized String GetString(String _in, int row, int col, int index) throws IOException
     {
-        if (in == null)
+
+        if (_in == null)
             return null;
 
+	String in;
+	if(row != -1)
+	  in = "_ROW = " + row +"; _COLUMN = " + col + "; _INDEX = " + index +"; "+_in;
+	else
+	  in = _in;
         error = null;
-
+    
         if (NotYetString(in))
         {
             if (!CheckOpen())
@@ -1545,7 +1551,7 @@ public class MdsDataProvider
         return javaTime;
     }
  
-    public synchronized double GetFloat(String in) throws IOException
+    public synchronized double GetFloat(String in, int row, int col, int index) throws IOException
     {
         error = null;
 
@@ -1571,7 +1577,12 @@ public class MdsDataProvider
         {
             if (!CheckOpen())
                 return 0;
-            Descriptor desc = mds.MdsValue(in);
+            Descriptor desc;
+	    if(row != -1)
+		desc= mds.MdsValue("_ROW = " + row +"; _COLUMN = " + col + "; _INDEX = " + index +"; "+in);
+	    else
+		desc= mds.MdsValue(in);
+
             if (desc.error != null)
                 error = desc.error;
             switch (desc.dtype)
@@ -2052,7 +2063,7 @@ public class MdsDataProvider
 
     protected String GetStringValue(String expr) throws IOException
     {
-        String out = GetString(expr);
+        String out = GetString(expr, -1, -1, -1);
         if (out == null || out.length() == 0 || error != null)
         {
             error = null;

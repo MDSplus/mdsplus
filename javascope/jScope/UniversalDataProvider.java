@@ -159,16 +159,16 @@ class UniversalDataProvider implements DataProvider
         defaultProvider.Update(exp, s);
     }
 
-    public String GetString(String in)
+    public String GetString(String in, int row, int col, int index)
     {
         try {
-            return defaultProvider.GetString(in);
+            return defaultProvider.GetString(in, row, col, index);
         }catch(Exception exc){return null;}
     }
-    public double GetFloat(String in)
+    public double GetFloat(String in, int row, int col, int index)
     {
          try {
-            return defaultProvider.GetFloat(in);
+            return defaultProvider.GetFloat(in, row, col, index);
         }catch(Exception exc) 
         {
             error = ""+exc; 
