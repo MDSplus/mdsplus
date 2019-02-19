@@ -736,7 +736,7 @@ complex: ;
 		/*********************************
                 Specify data of array. [value,...]
                 *********************************/
-      if (count > TdiDECOMPILE_MAX) {
+      if (more) {
 	if STATUS_OK {
 	  if (in_ptr->class == CLASS_APD) {
 	    status = Tdi0Decompile(((mdsdsc_t**)in_ptr->pointer)[0], P_ARG, out_ptr);
