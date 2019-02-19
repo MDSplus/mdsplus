@@ -28,12 +28,6 @@ import MDSplus
 import tempfile
 import threading
 
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
-        thread.start()
-    return wrapper
-
 class ACQ435ST(MDSplus.Device):
     """
     D-Tacq ACQ435 Digitizer real time streaming support.
@@ -77,15 +71,17 @@ class ACQ435ST(MDSplus.Device):
         {'path':':TRIG_STR','type':'text', 'options':('nowrite_shot'),
          'valueExpr':"EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"},
         {'path':':RUNNING','type':'numeric', 'options':('no_write_model')},
-        {'path':':LOG_FILE','type':'text', 'options':('write_once')},
+        {'path':':PARENT_PID','type':'numeric', 'options':('no_write_model')},
+        {'path':':TMP_FILE','type':'text', 'options':('no_write_model', 'write_once', 'write_shot',)},
+        {'path':':LOG_FILE','type':'text', 'options':('no_write_model', 'write_once', 'write_shot',)},
         {'path':':LOG_OUTPUT','type':'text', 'options':('no_write_model', 'write_once', 'write_shot',)},
+        {'path': ':GIVEUP_TIME', 'type': 'numeric', 'value': 180.0, 'options': ('no_write_shot')},
         {'path':':INIT_ACTION','type':'action',
          'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))",
          'options':('no_write_shot',)},
         {'path':':STOP_ACTION','type':'action',
          'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",
          'options':('no_write_shot',)},
-        {'path': ':GIVEUP_TIME', 'type': 'numeric', 'value': 180.0, 'options': ('no_write_shot')},
         ]
 
 
@@ -107,8 +103,12 @@ class ACQ435ST(MDSplus.Device):
         chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT,MDSplus.dVALUE()),chan.OFFSET))
 
     def init(self):
+        import os
+        import sys
         acq400_hapi=self.importPyDeviceModule('acq400_hapi')
         from threading import Thread
+        import tempfile
+        import subprocess
 
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('set_abort', '1')
@@ -149,12 +149,39 @@ class ACQ435ST(MDSplus.Device):
             offset = self.__getattr__('input_%2.2d_offset'%(i+1))
             offset.record = offsets[i]
         self.running.on=True
-        self.stream()
+        fd = tempfile.NamedTemporaryFile(mode='w', suffix='.py', prefix='tmp', dir='/tmp', delete=False)
+        self.tmp_file.record = fd.name
+        logfd = tempfile.NamedTemporaryFile(mode='w', suffix='.log', prefix='tmp', dir='/tmp', delete=False)
+        self.log_file.record = logfd.name
+        umask = os.umask(0)
+        os.umask(umask)
+        os.chmod(fd.name, 0o777 & ~umask)
+        self.parent_pid.record = os.getpid()
+        fd.write('#!%s\n'%sys.executable)
+        fd.write('from MDSplus import Tree\n')
+        fd.write('ans = Tree("%s", %d).getNode(r"%s").stream()\n' % (self.tree.name, self.tree.shot, self.path))
+        fd.write('exit()\n')
+        print(fd.name)
+        fd.flush()
+        fd.close()
+        try:
+            logfile =str(self.log_file.data())
+            logfd = open(logfile, 'a')
+            logfd.write('\n---------------------------------------------------------------------\n')
+            logfd.write('\tACQ435ST\n')
+            pid = subprocess.Popen(["%s"%fd.name], shell=True, stdout=logfd, stderr=logfd).pid
+        except Exception,e:
+            print (e)
+            pid = subprocess.Popen(["%s"%fd.name], shell=True).pid
+        print(pid)
+        fd.close()
+        logfd.close()
         return 1
     INIT=init
 
     def stop(self):
         self.running.on = False
+        logfile = str(self.log_file.data())
         return 1
     STOP=stop
 
@@ -162,11 +189,9 @@ class ACQ435ST(MDSplus.Device):
         acq400_hapi=self.importPyDeviceModule('acq400_hapi')
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.so.set_knob('soft_trigger','1')
-
         return 1
     TRIG=trig
 
-    @threaded
     def stream(self):
         import socket
         import numpy as np
@@ -186,9 +211,6 @@ class ACQ435ST(MDSplus.Device):
             for e in arr:
                 ans = lcm(ans, e)
             return int(ans)
-
-#        os.dup2(self.outputfd.fileno(), sys.stdout.fileno())
-#        os.dup2(self.outputfd.fileno(), sys.stderr.fileno())
 
         print("starting streamer for %s %s %s\nat: %s"%(self.tree, self.tree.shot, self.path, datetime.datetime.now()))
 
@@ -240,7 +262,6 @@ class ACQ435ST(MDSplus.Device):
 
         # trigger time out count initialization:
         timeOutCount=0
-        # s.settimeout(6)
 
         chunk = 0
         segment = 0
@@ -248,8 +269,11 @@ class ACQ435ST(MDSplus.Device):
         max_segments = self.max_segments.data()
         first = True
         buf = bytearray(segment_bytes)
-
-        while running.on and segment < max_segments and timeOutCount < giveup_count:
+        ppid = self.parent_pid.data()
+        while running.on and \
+              segment < max_segments and \
+              timeOutCount < giveup_count and \
+              os.getppid() == ppid:
            # If no trigger, then the count (timeOutCount) will continue until the
            # maximun count is reached.
 
@@ -297,12 +321,9 @@ class ACQ435ST(MDSplus.Device):
                 else:
                     buffer = np.right_shift(np.frombuffer(buf, dtype='int32') , 8)
                     i = 0
-#                    coeff = (0.00000119209/2.0)*0.00137093615
-#                    coeff = 0.00000119209/2.0
                     for c in chans:
                         if c.on:
                             b = buffer[i::32*decim[i]]
-#                            b = np.where(b & 0x400000, b | 0xFF000000, b)
                             c.makeSegment(dims[i].begin, dims[i].ending, dims[i], b)
                             dims[i] = Range(dims[i].begin + seg_length*dt, dims[i].ending + seg_length*dt, dt*decim[i])
                         i += 1
@@ -314,11 +335,12 @@ class ACQ435ST(MDSplus.Device):
                 print('\r\nNOT TRIGGERED!, EXITING')
             raise DevNOT_TRIGGERED()
 
-        if self.log_output.on:
-            print("%s\tAll Done"%(datetime.datetime.now(),))
-            sys.stdout.flush()
-#            with  open(self.log_file.data(), 'r') as fd:
-#                self.log_output.record = fd.read()
+        print("%s\tAll Done"%(datetime.datetime.now(),))
+        sys.stdout.flush()
+        logfile = str(self.log_file.data())
+        self.log_output.record = open(logfile, 'r').read()
+        os.remove(logfile)
+        os.remove(str(self.tmp_file.data()))
 
         return 1
 
