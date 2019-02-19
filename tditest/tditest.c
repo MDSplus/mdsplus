@@ -27,14 +27,95 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#if defined(__APPLE__) || defined(__MACH__)
+#define _MACOSX;
+#endif
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
 #define MAXEXPR 16384
 #include <tdishr.h>
 #include <mdsshr.h>
+#include <libroutines.h>
+#include <ctype.h>
 
 static char *history_file=NULL;
 
+#define COM
+#define OPC(name,NAME,...) #NAME,
+const char* builtins[] = {
+#include <opcbuiltins.h>
+};
+#undef OPC
+#undef COM
+
+static char ** character_names = NULL;
+char *character_name_generator(const char *text, int state){
+  // default to filepath completion if we are doing strings
+#ifndef _MACOSX
+  if (rl_completion_quote_character) return NULL;
+#endif
+  if (!character_names) {
+    void* ctx = NULL;
+    uint16_t i;
+    char req[] = "MDS_PATH:*.*";
+    mdsdsc_t rqd = { sizeof(req), DTYPE_T, CLASS_S, req };
+    mdsdsc_t ans = { 0 , DTYPE_T, CLASS_D, NULL};
+    size_t maxlen = 512, curlen = sizeof(builtins)/sizeof(void*);
+    character_names = malloc(sizeof(void*)*maxlen);
+    memcpy(character_names,builtins,sizeof(builtins));
+    int status;
+    for (;;) {
+      status = LibFindFileRecurseCaseBlind(&rqd,&ans,&ctx);
+      if (STATUS_NOT_OK || !ctx || ans.length<4) break;
+      ans.pointer = realloc(ans.pointer, ans.length+1);ans.pointer[ans.length] = '\0';
+      char *c,*p = ans.pointer;
+      for (;(c=strchr(p,'/'));p=c+1);
+#ifdef _WIN32
+      for (;(c=strchr(p,'\\'));p=c+1);
+#endif
+      size_t mlen = strlen(p);
+      for (i=0 ; i<mlen ; i++)
+        p[i] = tolower(p[i]);
+      if      (strcmp(&p[mlen-3],".py" )==0) mlen-= 3;
+      else if (strcmp(&p[mlen-4],".fun")==0) mlen-= 4;
+      else continue;
+      p[mlen] = '\0';
+      if (curlen>=maxlen) {
+        maxlen *= 2;
+        character_names = realloc(character_names,sizeof(void*)*maxlen);
+      }
+      character_names[curlen++] = strdup(p);
+    }
+    character_names = realloc(character_names,sizeof(void*)*(curlen+1));
+    character_names[curlen] = NULL;
+    LibFindFileEnd(&ctx);
+    if (ans.pointer)
+      free(ans.pointer);
+  }
+  static int list_index, len;
+  char *name;
+  if (!state) {
+    list_index = 0;
+    len = strlen(text);
+  }
+  // use case sensitivity to distinguish between builtins and tdi.funs
+  while ((name = character_names[list_index++]))
+    if (strncmp(name, text, len) == 0) {
+      size_t len = strlen(name);
+      char *match = memcpy(malloc(len+2),name,len);
+      match[len]='(';match[len+1]='\0';
+      return match;
+    }
+  return NULL;
+}
+
+char **character_name_completion(const char *text,
+    int start __attribute__((__unused__)), int end __attribute__((__unused__))){
+#ifndef _MACOSX
+  rl_attempted_completion_over = !rl_completion_quote_character;
+#endif
+  return rl_completion_matches(text, character_name_generator);
+}
 
 static char *getExpression(FILE *f_in) {
   char buf[MAXEXPR] = {0};
@@ -90,6 +171,9 @@ int main(int argc, char **argv)
   FILE *f_in = NULL;
   FILE *f_out= NULL;
   int status = 1;
+  rl_attempted_completion_function = character_name_completion;
+  rl_completer_quote_characters = "\"'";
+  rl_completer_word_break_characters = " ,;[{(+-*\\/^<>=:&|!?~";
   struct descriptor expr_dsc = { 0, DTYPE_T, CLASS_S, 0};
   EMPTYXD(ans);
   char *command=NULL;
