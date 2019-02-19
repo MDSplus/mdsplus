@@ -246,7 +246,7 @@ class jScopeWaveContainer
             return "";
         try
         {
-            String t = dp.GetString(title);
+            String t = dp.GetString(title, -1, -1, -1);
             String err = dp.ErrorString();
             if (err == null || err.length() == 0)
                 return t;

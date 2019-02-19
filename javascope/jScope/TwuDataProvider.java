@@ -39,8 +39,8 @@ class TwuDataProvider
     public void    SetCompression(boolean state){}
     public void    SetEnvironment(String s) {}
     public void    Dispose(){}
-    public String  GetString(String in) {return in; }
-    public double  GetFloat(String in) { return Double.parseDouble(in); }
+    public String  GetString(String in, int row, int col, int index) {return in; }
+    public double  GetFloat(String in, int row, int col, int index) { return Double.parseDouble(in); }
     public String  ErrorString() { return error_string; }
     public void    AddUpdateEventListener   (UpdateEventListener l, String event){}
     public void    RemoveUpdateEventListener(UpdateEventListener l, String event){}
@@ -63,12 +63,12 @@ class TwuDataProvider
     }
 
     //  ---------------------------------------------------
-    public synchronized WaveData GetWaveData (String in)
+    public synchronized WaveData GetWaveData (String in, int row, int col, int index)
     {
-        return GetWaveData (in, null);
+        return GetWaveData (in, null, 0, 0, 0);
     }
 
-    public synchronized WaveData GetWaveData (String in_y, String in_x)
+    public synchronized WaveData GetWaveData (String in_y, String in_x, int row, int col, int index)
     {
         TwuWaveData find = FindWaveData (in_y, in_x);
         find.setFullFetch() ;
@@ -116,7 +116,7 @@ class TwuDataProvider
         if(in.startsWith("TIME:", 0))
             in = in.substring(5);
 
-        TwuWaveData wd   = (TwuWaveData)GetWaveData  (in) ;
+        TwuWaveData wd   = (TwuWaveData)GetWaveData  (in, 0, 0, 0) ;
         float [] data = null ;
         try
         {
@@ -138,7 +138,7 @@ class TwuDataProvider
     public synchronized float[]
     GetFloatArray (String in, boolean is_time) throws IOException
     {
-        TwuWaveData wd = (TwuWaveData)GetWaveData(in) ; // TwuAccess wants to get the full signal data .
+        TwuWaveData wd = (TwuWaveData)GetWaveData(in, 0, 0, 0) ; // TwuAccess wants to get the full signal data .
         return is_time ? wd.GetXData() : wd.GetYData() ;
     }
 
@@ -147,7 +147,7 @@ class TwuDataProvider
     
     public synchronized String GetSignalProperty (String prop, String in) throws IOException
     {
-        TwuWaveData wd = (TwuWaveData) GetWaveData(in) ;
+        TwuWaveData wd = (TwuWaveData) GetWaveData(in, 0, 0, 0) ;
         return wd.getTWUProperties().getProperty(prop);
     }
 

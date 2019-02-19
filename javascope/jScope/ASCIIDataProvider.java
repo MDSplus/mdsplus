@@ -358,12 +358,12 @@ class ASCIIDataProvider implements DataProvider
         public void getDataAsync(double lowerBound, double upperBound, int numPoints){}
     }
 
-    public WaveData GetWaveData(String in)
+    public WaveData GetWaveData(String in, int row, int col, int index)
     {
         return new SimpleWaveData(in);
     }
 
-    public WaveData GetWaveData(String in_y, String in_x)
+    public WaveData GetWaveData(String in_y, String in_x, int row, int col, int index)
     {
         return new SimpleWaveData(in_y, in_x);
     }
@@ -402,13 +402,13 @@ class ASCIIDataProvider implements DataProvider
         curr_shot = s;
     }
 
-    public String GetString(String in)
+    public String GetString(String in, int row, int col, int index)
     {
         error = null;
         return new String(in);
     }
 
-    public double GetFloat(String in)
+    public double GetFloat(String in, int row, int col, int index)
     {
         error = null;
         return Double.parseDouble(in);
@@ -562,7 +562,7 @@ class ASCIIDataProvider implements DataProvider
     public static void main(String args[])
     {      
         ASCIIDataProvider p = new ASCIIDataProvider();
-        p.GetWaveData("c:\\test.txt");
+        p.GetWaveData("c:\\test.txt", 0, 0, 0);
 
     }
  }

@@ -177,7 +177,6 @@ public class Waveform
     }
   }
 
-  static int ixxxx = 0;
   public Waveform(Signal s) {
     this();
     waveform_signal = s;
@@ -186,7 +185,6 @@ public class Waveform
   }
 
   public Waveform() {
-    setName("Waveform_" + (ixxxx++));
     setBorder(BorderFactory.createLoweredBevelBorder());
     setSelectBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED,
         Color.red,
@@ -223,6 +221,26 @@ public class Waveform
     SetDefaultColors();
 
     }
+    public int getRow() 
+    { 
+        RowColumnContainer rwc = (RowColumnContainer)getParent();
+	Point p = rwc.getComponentPosition(this);
+	return p.y - 1;
+    }
+
+    public int getColumn()     
+    { 
+        RowColumnContainer rwc = (RowColumnContainer)getParent();
+	Point p = rwc.getComponentPosition(this);
+	return p.x - 1;
+    }
+    public int getIndex()
+    { 
+        RowColumnContainer rwc = (RowColumnContainer)getParent();
+	return rwc.getComponentIndex(this) - 1;
+    }
+
+
 
   static String ConvertToString(double f, boolean is_log) {
     double curr_f;

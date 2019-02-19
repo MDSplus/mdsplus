@@ -74,8 +74,8 @@ class JetDataProvider implements DataProvider
     public void enableAsyncUpdate(boolean enable){}
     public void    SetEnvironment(String s) {}
     public void    Dispose(){}
-    public String  GetString(String in) {return in; }
-    public double  GetFloat(String in) { return Double.parseDouble(in); }
+    public String  GetString(String in, int row, int col, int index) {return in; }
+    public double  GetFloat(String in, int row, int col, int index) { return Double.parseDouble(in); }
     public String  ErrorString() { return error_string; }
     public void    AddUpdateEventListener(UpdateEventListener l, String event){}
     public void    RemoveUpdateEventListener(UpdateEventListener l, String event){}
@@ -174,11 +174,11 @@ class JetDataProvider implements DataProvider
 
    }
 
-    public WaveData GetWaveData(String in)
+    public WaveData GetWaveData(String in, int row, int col, int index)
     {
         return new SimpleWaveData(in);
     }
-    public WaveData GetWaveData(String in_y, String in_x)
+    public WaveData GetWaveData(String in_y, String in_x, int row, int col, int index)
     {
         return new SimpleWaveData(in_y, in_x);
     }

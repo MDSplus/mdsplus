@@ -54,7 +54,7 @@ public interface DataProvider
          * @param in The specification of the label or title.
          * @return The evaluated label or title.
          */
-        public String  GetString(String in) throws IOException;
+        public String  GetString(String in, int row, int col, int index) throws IOException;
 
         /**
          * Method GetFloat is called by jScope to evaluate x min, x max, y min, y max when defined
@@ -67,7 +67,7 @@ public interface DataProvider
          * @param in The specification of the value.
          * @return The evaluated value.
          */
-        public double   GetFloat(String in) throws IOException;
+        public double   GetFloat(String in, int row, int col, int index) throws IOException;
 
         /**
          * Method GetWaveData called by jScope when a waveform has to be evaluated and only the Y
@@ -75,12 +75,15 @@ public interface DataProvider
          * to the data provider implementation to retrieve X and Y axis.
          * The evaluated signal is not directly returned as a vector, rather as a object implementing
          * the WaveData interface. 
-          * @param in The specification of the signal, typed in the Y axis field of the setup data source
+         * @param in The specification of the signal, typed in the Y axis field of the setup data source
          * popup form, or in the lower right window of jScope.
+         * @param row Row number of the corresponding panel
+         * @param col Column number of the corresponding panel
+         * @param index Index the corresponding panel
          * @return The evaluated signal embedded in a WaveData object, or null if an error is encountered.
          * @see WaveData
          */
-        public WaveData GetWaveData(String in);
+        public WaveData GetWaveData(String in, int row, int col, int index);
 
         /**
          * Method GetWaveData called by jScope when a waveform has to be evaluated and both X and
@@ -90,10 +93,13 @@ public interface DataProvider
          *
          * @param in_y Y axis specification as typed in the setup data source popupo dialog.
          * @param in_x X axis specification as typed in the setup data source popupo dialog.
+         * @param row Row number of the corresponding panel
+         * @param col Column number of the corresponding panel
+         * @param index Index the corresponding panel
          * @return The evaluated signal, embedded in a WaveData object, or null if an error is encountered.
          * @see WaveData
          */
-        public WaveData GetWaveData(String in_y, String in_x);
+        public WaveData GetWaveData(String in_y, String in_x, int row, int col, int index);
 
 
         /** 
