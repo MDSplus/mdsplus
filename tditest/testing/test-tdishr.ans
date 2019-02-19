@@ -6249,3 +6249,9 @@ eq(0x60000000QU,0x60000000QU)
 1BU
 compile(text(vms()))
 0
+list(,1,2,3)
+List(,1,2,3)
+tuple(,1,2,3)
+Tuple(,1,2,3)
+dict(,1,2,3,4)
+Dict(, 1,2, 3,4)
