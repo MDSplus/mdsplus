@@ -151,13 +151,13 @@ class jScopeWaveContainer
     protected Component[] CreateWaveComponents(int num)
     {
         Component c[] = new Component[num];
-        jScopeMultiWave waves[] = new jScopeMultiWave[num];
+        jScopeMultiWave wave = null;
         for (int i = 0; i < c.length; i++)
         {
-            waves[i] = BuildjScopeMultiWave(dp, def_vals);
-            waves[i].addWaveformListener(this);
-            SetWaveParams(waves[i]);
-            c[i] = waves[i];
+            wave = BuildjScopeMultiWave(dp, def_vals);
+            wave.addWaveformListener(this);
+            SetWaveParams(wave);
+            c[i] = wave;
         }
         return c;
     }
