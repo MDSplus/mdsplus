@@ -69,7 +69,7 @@ else:
     else:
         status = _mdsdcl.mdsdcl_do_command_dsc(_ver.tobytes(command), error_p, out_p)
     if (return_out or return_error) and raise_exception:
-        if raise_exception: _exc.checkStatus(status)
+        if raise_exception: _exc.checkStatus(status,message=xd_error.value)
     if return_out and return_error:
         return (xd_output.value,xd_error.value)
     elif return_out:

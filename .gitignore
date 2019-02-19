@@ -94,3 +94,6 @@ autom4te.cache
 # python version module
 _version.py
 *.log
+
+testing/MDSplus/
+testing/*Devices/

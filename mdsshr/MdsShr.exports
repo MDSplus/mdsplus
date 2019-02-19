@@ -3,6 +3,7 @@ LibCallg
 LibConvertDateString
 LibCreateVmZone
 LibFindFile
+LibFindFileCaseBlind
 LibFindFileEnd
 LibFindFileRecurseCaseBlind
 LibFindImageSymbol

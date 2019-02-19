@@ -40,7 +40,8 @@ enum { ALWAYS = 1,		// ... well, almost always -- for debug printout
 #define	DETAILS		 	 9
 #endif
 
-enum { FALSE = 0, TRUE };
+#define FALSE 0
+#define TRUE 1
 enum { TO_CAMAC, FROM_CAMAC };	// ie WRITE and READ
 enum { STATUS_BAD, STATUS_GOOD };
 enum { CTS_DB, CRATE_DB };

@@ -74,6 +74,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <mdsshr.h>
 #include <string.h>
+#include <ctype.h>
 #include <inttypes.h>
 #include <mdsshr_messages.h>
 
@@ -125,7 +126,6 @@ STATIC_CONSTANT struct descriptor_xd NULL_XD = { 0, 0, 0, 0, 0 };
 
 STATIC_CONSTANT unsigned char true = 1;
 STATIC_CONSTANT struct descriptor true_dsc = { sizeof(true), DTYPE_BU, CLASS_S, (char *)&true };
-
 
 static pthread_mutex_t public_lock = PTHREAD_MUTEX_INITIALIZER;
 #define LOCK_PUBLIC pthread_mutex_lock(&public_lock)
@@ -575,48 +575,91 @@ int Tdi1Present(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 /***************************************************************
         Execute a function. Set up the arguments.
 */
-extern int TdiCompile();
-int compile_fun(struct descriptor *entry)
-{
-  static DESCRIPTOR(dnul, "\0");
-  static DESCRIPTOR(dfun, ".fun\0");
-  static DESCRIPTOR(def_path, "MDS_PATH:");
+typedef enum {
+EXT_NONE,EXT_FUN,EXT_PY
+} ext_t;
+
+static inline ext_t matchext(const mdsdsc_d_t* file){
+  if (file->length<4) return EXT_NONE;
+  char* p = file->pointer+file->length-4;
+  char ext[5] = {p[0],toupper(p[1]),toupper(p[2]),toupper(p[3]),'\0'};
+  if (strcmp(ext,".FUN")==0) return EXT_FUN;
+  if (strcmp(ext+1,".PY")==0) return EXT_PY;
+  return EXT_NONE;
+}
+static inline int findfile_fun(mdsdsc_t *entry, char**funfile,char** pyfile) {
   int status;
-  struct descriptor_d file = { 0, DTYPE_T, CLASS_D, 0 };
-  struct descriptor_xd tmp = EMPTY_XD;
-  FREEXD_ON_EXIT(&tmp);
-  FREED_ON_EXIT(&file);
-  status = StrConcat((struct descriptor *)&file, (struct descriptor *)&def_path, entry, &dfun MDS_END_ARG);
-#ifdef DEBUG
-  char string[64];
-  memcpy(string,file.pointer,file.length);string[file.length] = '\0';
-  fprintf(stderr,"compile: %s\n",string);
-#endif
+  INIT_AND_FREED_ON_EXIT(bufd,DTYPE_T);
+  ext_t isext = EXT_NONE;
+  {
+    const char ext[] = ".*";
+    const char env[] = "MDS_PATH:";
+    const size_t extlen = sizeof(ext)-1 , envlen = sizeof(env)-1;
+    bufd.length = envlen+entry->length+extlen;
+    char *tmp = bufd.pointer = malloc(bufd.length);
+    memcpy(tmp,env,envlen);tmp+=envlen;            		// adds "<env>:"
+    memcpy(tmp,entry->pointer,entry->length);tmp+=entry->length;// adds "<entry>"
+    memcpy(tmp,ext,extlen);					// adds "<ext>\0"
+  }
+  void *ctx = 0;
+  do{
+    status = LibFindFileRecurseCaseBlind((mdsdsc_t*)&bufd, (mdsdsc_t*)&bufd, &ctx);
+  } while(STATUS_OK && (isext=matchext(&bufd)) == EXT_NONE);
+  LibFindFileEnd(&ctx);
   if STATUS_OK {
-    void *ctx = 0;
-    struct descriptor dcs = { 0, DTYPE_T, CLASS_S, 0 };
-    LibFindFileRecurseCaseBlind((struct descriptor *)&file, (struct descriptor *)&file, &ctx);
+    char* file = memcpy(malloc(bufd.length+1), bufd.pointer, bufd.length);
+    file[bufd.length] = '\0';
+    if (isext == EXT_PY) {
+      *pyfile = file;
+      isext = EXT_FUN;
+      bufd.pointer = realloc(bufd.pointer,++bufd.length);
+      memcpy(bufd.pointer+bufd.length-4,".FUN",4);
+    } else {
+      *funfile = file;
+      isext = EXT_PY;
+      bufd.pointer = realloc(bufd.pointer,--bufd.length);
+      memcpy(bufd.pointer+bufd.length-3,".PY",3);
+    }
+    if IS_OK(LibFindFileCaseBlind((mdsdsc_t*)&bufd, (mdsdsc_t*)&bufd, &ctx)) {
+      file = memcpy(malloc(bufd.length+1), bufd.pointer, bufd.length);
+      file[bufd.length] = '\0';
+      if (isext == EXT_PY)
+        *pyfile = file;
+      else
+        *funfile = file;
+    }
     LibFindFileEnd(&ctx);
-    StrAppend(&file, (struct descriptor *)&dnul);
-    FILE *unit = fopen(file.pointer, "rb");
-    if (unit) {
-      long flen,readlen;
-      fseek(unit, 0, SEEK_END);
-      flen = ftell(unit);
-      flen = (flen > 0xffff) ? 0xffff : flen;
+  }
+  FREED_NOW(bufd);
+  return status;
+}
+
+extern int TdiCompile();
+int compile_fun(mdsdsc_t *entry,char *file) {
+  if (!file) return  TdiUNKNOWN_VAR;
+  int status;
+  INIT_AND_FREEXD_ON_EXIT(tmp);
+  DBG("compile: %s\n",file);
+  FILE *unit = fopen(file, "rb");
+  if (unit) {
+    fseek(unit, 0, SEEK_END);
+    size_t flen = ftell(unit);
+    if (flen > 0xffff) {
+      fclose(unit);
+      status = TdiSTRTOOLON;
+    } else {
       fseek(unit, 0, SEEK_SET);
-      dcs.pointer = (char *)malloc(flen);
-      dcs.length = (unsigned short)flen;
-      readlen = (long)fread(dcs.pointer, 1, (size_t) flen, unit);
+      mdsdsc_t dcs = { flen, DTYPE_T, CLASS_D, (char*)malloc(flen) };
+      FREED_ON_EXIT(&dcs);
+      size_t readlen = fread(dcs.pointer, 1, flen, unit);
       if (readlen < flen)
-	perror("Error reading tdi function\n");
+        perror("Error reading tdi function\n");
       fclose(unit);
       status = TdiCompile(&dcs, &tmp MDS_END_ARG);
-      free(dcs.pointer);
-    } else
-      status = TdiUNKNOWN_VAR;
-  }
-  FREED_NOW(&file);
+      FREED_NOW(&dcs);
+    }
+  } else
+    status = TdiUNKNOWN_VAR;
   if STATUS_OK {
     struct descriptor_function *pfun = (struct descriptor_function *)tmp.pointer;
     if (pfun->dtype == DTYPE_FUNCTION) {
@@ -638,12 +681,9 @@ int compile_fun(struct descriptor *entry)
   return status;
 }
 
-extern char* findModule();
-extern int loadPyFunction(char*dirspec,char*filename);
-extern int callPyFunction(char*filename,int nargs,struct descriptor_r **args,struct descriptor_xd *out_ptr);
-int TdiDoFun(struct descriptor *ident_ptr,
-	     int nactual, struct descriptor_r *actual_arg_ptr[], struct descriptor_xd *out_ptr)
-{
+extern int loadPyFunction(const char*filepath,char**funname);
+extern int callPyFunction(const char*filename,int nargs,mdsdsc_r_t **args,mdsdsc_xd_t *out_ptr);
+int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mdsdsc_xd_t *out_ptr) {
   node_type *node_ptr;
 	/******************************************
         Get name of function to do. Check its type.
@@ -655,28 +695,29 @@ int TdiDoFun(struct descriptor *ident_ptr,
   pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
   status = TdiFindIdent(7, (struct descriptor_r *)ident_ptr, 0, &node_ptr, 0);
   if (status==TdiUNKNOWN_VAR) {
-    char *filename = NULL, *dirspec = NULL;
-    FREE_ON_EXIT(filename);
-    FREE_ON_EXIT(dirspec);
-    // check if method is python
-    dirspec = findModule(ident_ptr,&filename);
-    if (dirspec) {
-      status = loadPyFunction(dirspec,filename);
+    INIT_AND_FREE_ON_EXIT(char*,pyfile);
+    INIT_AND_FREE_ON_EXIT(char*,funfile);
+    // check if we can find method as either .py or .fun
+    status = findfile_fun(ident_ptr, &funfile, &pyfile);
+    if (pyfile) {
+      char *funname;
+      status = loadPyFunction(pyfile,&funname);
       if STATUS_OK {
-        struct descriptor function = {(short)strlen(filename),DTYPE_T,CLASS_S,filename};
+        struct descriptor function = {strlen(funname),DTYPE_T,CLASS_S,funname};
         struct descriptor_xd tmp = EMPTY_XD;
         status = MdsCopyDxXd((struct descriptor *)&function, &tmp);
+        free(funname);
         if STATUS_OK {
           status = TdiPutIdent((struct descriptor_r *)ident_ptr, &tmp);
           MdsFree1Dx(&tmp, NULL);
         }
       }
       if STATUS_NOT_OK // unable to load python method try tdi alternative
-	status = compile_fun(ident_ptr);
+	status = compile_fun(ident_ptr,funfile);
     } else // not a python method, load tdi fun
-      status = compile_fun(ident_ptr);
-    FREE_NOW(dirspec);
-    FREE_NOW(filename);
+      status = compile_fun(ident_ptr,funfile);
+    FREE_NOW(funfile);
+    FREE_NOW(pyfile);
     if STATUS_OK status = TdiFindIdent(7, (struct descriptor_r *)ident_ptr, 0, &node_ptr, 0);
   }
   pthread_cleanup_pop(1);
