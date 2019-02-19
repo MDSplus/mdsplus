@@ -83,7 +83,7 @@ class UniversalDataProvider implements DataProvider
         return subStr3.substring(pos3+1);
      }
     
-    public WaveData GetWaveData(String in)
+    public WaveData GetWaveData(String in, int row, int col, int index)
     {
         MdsDataProvider currProvider = getProvider(in);
         if(currProvider == null)
@@ -102,10 +102,10 @@ class UniversalDataProvider implements DataProvider
             }
         }
         try {
-            return currProvider.GetWaveData(getExpr(in));
+            return currProvider.GetWaveData(getExpr(in), row, col, index);
         }catch(Exception exc) {return null; }
     }
-    public WaveData GetWaveData(String in_y, String in_x)
+    public WaveData GetWaveData(String in_y, String in_x, int row, int col, int index)
     {
         MdsDataProvider currProvider = getProvider(in_y);
         if(currProvider == null)
@@ -124,7 +124,7 @@ class UniversalDataProvider implements DataProvider
             }
         }
         try {
-            return currProvider.GetWaveData(getExpr(in_y), getExpr(in_x));
+            return currProvider.GetWaveData(getExpr(in_y), getExpr(in_x), row, col, index);
         }catch(Exception exc) 
         {
             error = ""+exc; 

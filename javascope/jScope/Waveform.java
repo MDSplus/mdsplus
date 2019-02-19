@@ -176,6 +176,7 @@ public class Waveform
       this.end_ys = end_ys;
     }
   }
+  int row, column, index;
 
   static int ixxxx = 0;
   public Waveform(Signal s) {
@@ -223,6 +224,17 @@ public class Waveform
     SetDefaultColors();
 
     }
+    public void setIndexes(int row, int col, int index)
+    {
+	this.row = row;
+	this.column = col;
+	this.index = index;
+    }
+    public int getRow() { return row;}
+    public int getColumn() { return column;}
+    public int getIndex() { return index;}
+
+
 
   static String ConvertToString(double f, boolean is_log) {
     double curr_f;

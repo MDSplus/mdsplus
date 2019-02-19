@@ -239,7 +239,7 @@ public class MdsDataProvider
                 else
                 {
                   //all_times = MdsDataProvider.this.GetWaveData(in_x).GetFloatData();
-                    all_times = MdsDataProvider.this.GetWaveData(in_x).getData(MAX_PIXELS).y;
+                    all_times = MdsDataProvider.this.GetWaveData(in_x, 0, 0, 0).getData(MAX_PIXELS).y;
                 }
                 
                 header_size = 16 + 4 * n_frame;
@@ -265,7 +265,7 @@ public class MdsDataProvider
                     all_times = MdsDataProvider.this.GetFrameTimes(in_y);
                 else
                   //all_times = MdsDataProvider.this.GetWaveData(in_x).GetFloatData();
-                    all_times = MdsDataProvider.this.GetWaveData(in_x).getData(MAX_PIXELS).y;
+                    all_times = MdsDataProvider.this.GetWaveData(in_x, 0, 0, 0).getData(MAX_PIXELS).y;
 
                 if (all_times == null)
                 {
@@ -1602,14 +1602,14 @@ public class MdsDataProvider
         return 0;
     }
 
-    public WaveData GetWaveData(String in)
+    public WaveData GetWaveData(String in, int row, int col, int index)
     {
-        return new SimpleWaveData(in, experiment, shot);
+        return new SimpleWaveData("_ROW = " + row +"; _COLUMN = " + col + "; _INDEX = " + index +"; "+in, experiment, shot);
     }
 
-    public WaveData GetWaveData(String in_y, String in_x)
+    public WaveData GetWaveData(String in_y, String in_x, int col, int row, int index)
     {
-        return new SimpleWaveData(in_y, in_x, experiment, shot);
+        return new SimpleWaveData("_ROW = " + row +"; _COLUMN = " + col + "; _INDEX = " + index +"; "+in_y, in_x, experiment, shot);
     }
 
     public float[] GetFloatArray(String in) throws IOException

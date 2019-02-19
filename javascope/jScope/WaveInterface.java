@@ -1294,7 +1294,9 @@ public class WaveInterface
         if ( in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() != 0 )
         {
 
-            wd = dp.GetWaveData(in_y[curr_wave], in_x[curr_wave]);
+System.out.println("ROW: " + wave.getRow()+ " COL: " + wave.getColumn()); 
+
+            wd = dp.GetWaveData(in_y[curr_wave], in_x[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
             if (wd != null)
             {
                 xlabel = wd.GetXLabel();
@@ -1305,48 +1307,35 @@ public class WaveInterface
                 in_up_err[curr_wave] != null &&
                 (in_up_err[curr_wave].trim()).length() != 0)
             {
-                up_err = dp.GetWaveData(in_up_err[curr_wave]);
+                up_err = dp.GetWaveData(in_up_err[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
             }
 
             if (in_low_err != null &&
                 in_low_err[curr_wave] != null &&
                 (in_low_err[curr_wave].trim()).length() != 0)
             {
-                low_err = dp.GetWaveData(in_low_err[curr_wave]);
+                low_err = dp.GetWaveData(in_low_err[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
             }
         }
         else // X field not defined
         {
+System.out.println("ROW: " + wave.getRow()+ " COL: " + wave.getColumn() + "  INDEX: " + wave.getIndex()); 
             if (wd == null)
-                wd = dp.GetWaveData(in_y[curr_wave]);
-/*            
-            if (yDimension > 1)
-            {
-                if (wd == null)
-                    wd = dp.GetWaveData(in_y[curr_wave]);
-            }
-            else
-            {
-                if(wd == null)
-                {
-                    wd = dp.GetWaveData(in_y[curr_wave]);
-                }
-            }
-*/ 
+                wd = dp.GetWaveData(in_y[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
             if (yDimension == 1)
             {
                 if (in_up_err != null &&
                     in_up_err[curr_wave] != null
                     && (in_up_err[curr_wave].trim()).length() != 0)
                 {
-                    up_err = dp.GetWaveData(in_up_err[curr_wave]);
+                    up_err = dp.GetWaveData(in_up_err[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
                 }
 
                 if (in_low_err != null &&
                     in_low_err[curr_wave] != null &&
                     (in_low_err[curr_wave].trim()).length() != 0)
                 {
-                    low_err = dp.GetWaveData(in_low_err[curr_wave]);
+                    low_err = dp.GetWaveData(in_low_err[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
                 }
             }
         }
@@ -1358,7 +1347,7 @@ public class WaveInterface
         //Check for bidimensional X axis
         if(in_x[curr_wave] != null)
         {
-            xwd = dp.GetWaveData(in_x[curr_wave]);
+            xwd = dp.GetWaveData(in_x[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
             if(xwd.getNumDimension() == 1)
                 xwd = null; //xwd is different from null ONLY for bidimensional X axis 
         }

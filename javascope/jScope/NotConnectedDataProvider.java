@@ -14,11 +14,11 @@ class NotConnectedDataProvider implements DataProvider
     final String error = "Not Connected";
 
 
-    public WaveData GetWaveData(String in)
+    public WaveData GetWaveData(String in, int row, int col, int index)
     {
         return null;
     }
-    public WaveData GetWaveData(String in_y, String in_x)
+    public WaveData GetWaveData(String in_y, String in_x, int row, int col, int index)
     {
         return null;
     }

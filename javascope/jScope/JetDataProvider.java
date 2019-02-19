@@ -174,11 +174,11 @@ class JetDataProvider implements DataProvider
 
    }
 
-    public WaveData GetWaveData(String in)
+    public WaveData GetWaveData(String in, int row, int col, int index)
     {
         return new SimpleWaveData(in);
     }
-    public WaveData GetWaveData(String in_y, String in_x)
+    public WaveData GetWaveData(String in_y, String in_x, int row, int col, int index)
     {
         return new SimpleWaveData(in_y, in_x);
     }

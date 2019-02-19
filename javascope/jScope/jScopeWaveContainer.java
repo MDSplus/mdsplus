@@ -151,13 +151,13 @@ class jScopeWaveContainer
     protected Component[] CreateWaveComponents(int num)
     {
         Component c[] = new Component[num];
-        jScopeMultiWave wave = null;
+        jScopeMultiWave waves[] = new jScopeMultiWave[num];
         for (int i = 0; i < c.length; i++)
         {
-            wave = BuildjScopeMultiWave(dp, def_vals);
-            wave.addWaveformListener(this);
-            SetWaveParams(wave);
-            c[i] = wave;
+            waves[i] = BuildjScopeMultiWave(dp, def_vals);
+            waves[i].addWaveformListener(this);
+            SetWaveParams(waves[i]);
+            c[i] = waves[i];
         }
         return c;
     }
@@ -1128,6 +1128,7 @@ remove 28/06/2005
         ResetDrawPanel(read_rows);
         jScopeMultiWave w;
 
+	int index = 0;
         for (int c = 0, k = 0; c < 4; c++)
         {
             for (int r = 0; r < read_rows[c]; r++)
@@ -1137,8 +1138,13 @@ remove 28/06/2005
                     "Scope.plot_" + (r + 1) + "_" + (c + 1) , cmd);
                 ( (MdsWaveInterface) w.wi).mapColorIndex(colorMapping);
                 SetWaveParams(w);
+
+//GABRIELE Feb 2019
+		w.setIndexes(r, c, index + r);
+
                 k++;
             }
+	    index += read_rows[c];
         }
 
         //Evaluate real number of columns
