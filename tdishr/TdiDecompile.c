@@ -134,8 +134,9 @@ STATIC_ROUTINE int tdi_vector(struct descriptor *in_ptr,
       a_ptr->aflags.coeff ? a_ptr->m[level] : (int)a_ptr->arsize /
       max((unsigned int)1, a_ptr->length);
   int j, status;
-
-  status = StrAppend(out_ptr, (struct descriptor *)&LEFT_BRACKET);
+  if (in_ptr->class != CLASS_APD)
+     status = StrAppend(out_ptr, (struct descriptor *)&LEFT_BRACKET);
+  else status = MDSplusSUCCESS;
   if (level > 0)
     for (j = n; --j >= 0 && STATUS_OK;) {
       status = tdi_vector(in_ptr, level - 1, item_ptr_ptr, out_ptr);
@@ -169,12 +170,16 @@ STATIC_ROUTINE int tdi_vector(struct descriptor *in_ptr,
 	  status = Tdi0Decompile(&one, P_ARG, out_ptr);
 	  break;
 	}
-      if (++j < n && STATUS_OK)
-	status = StrAppend(out_ptr, (struct descriptor *)&COMMA);
+      if (++j < n && STATUS_OK) {
+	if (j&1 || a_ptr->dtype != DTYPE_DICTIONARY)
+	  status = StrAppend(out_ptr, (struct descriptor *)&COMMA);
+	else
+	  status = StrAppend(out_ptr, (struct descriptor *)&COMMA_SPACE);
+      }
     }
     *item_ptr_ptr = pitem;
   }
-  if STATUS_OK
+  if (STATUS_OK && in_ptr->class != CLASS_APD)
     status = StrAppend(out_ptr, (struct descriptor *)&RIGHT_BRACKET);
   return status;
 }
@@ -678,6 +683,15 @@ complex: ;
       case DTYPE_W:
 	bptr = "Word(";
 	break;
+      case DTYPE_LIST:
+	bptr = "List(,";
+	break;
+      case DTYPE_TUPLE:
+	bptr = "Tuple(,";
+	break;
+      case DTYPE_DICTIONARY:
+	bptr = "Dict(, ";
+	break;
       default:
 	bptr = 0;
 	break;
@@ -693,7 +707,6 @@ complex: ;
                 Specify bounds of array. SET_RANGE(l:u,...
                 *****************************************/
       if (a_ptr->aflags.bounds) {
-	more = 1;
 	status = StrAppend(out_ptr, (struct descriptor *)&SET_RANGE);
 	for (j = 0; j < dimct; ++j) {
 	  if STATUS_OK
@@ -710,7 +723,7 @@ complex: ;
 		/******************************************
                 Specify shape of array. SET_RANGE(size, ...
                 ******************************************/
-      else if (more) {
+      else if (more && in_ptr->class != CLASS_APD) {
 	status = StrAppend(out_ptr, (struct descriptor *)&SET_RANGE);
 	for (j = 0; j < dimct; ++j) {
 	  if STATUS_OK
@@ -724,23 +737,33 @@ complex: ;
                 Specify data of array. [value,...]
                 *********************************/
       if (count > TdiDECOMPILE_MAX) {
-	struct descriptor one = *in_ptr;
-	one.class = CLASS_S;
-	if STATUS_OK
-	  status = Tdi0Decompile(&one, P_ARG, out_ptr);
+	if STATUS_OK {
+	  if (in_ptr->class == CLASS_APD) {
+	    status = Tdi0Decompile(((mdsdsc_t**)in_ptr->pointer)[0], P_ARG, out_ptr);
+	    if (in_ptr->dtype == DTYPE_DICTIONARY && STATUS_OK) {
+	      status = StrAppend(out_ptr, (mdsdsc_t*)&COMMA);
+	      if STATUS_OK
+		status = Tdi0Decompile(((mdsdsc_t**)in_ptr->pointer)[1], P_ARG, out_ptr);
+	    }
+	  } else {
+	    struct descriptor one = *in_ptr;
+	    one.class = CLASS_S;
+	    status = Tdi0Decompile(&one, P_ARG, out_ptr);
+	  }
+	}
 	if STATUS_OK
 	  status = StrAppend(out_ptr, (struct descriptor *)&MORE);
       } else {
 	char *pitem = (char *)a_ptr->pointer;
 	status = tdi_vector((struct descriptor *)a_ptr, dimct - 1, &pitem, out_ptr);
       }
-      if (more && STATUS_OK)
+      if ((more || a_ptr->aflags.bounds) && in_ptr->class != CLASS_APD && STATUS_OK)
 	status = StrAppend(out_ptr, (struct descriptor *)&RIGHT_PAREN);
       if (bptr && STATUS_OK)
 	status = StrAppend(out_ptr, (struct descriptor *)&RIGHT_PAREN);
     }
     break;
-  }				/*switch class */
+  }	/*switch class */
   if STATUS_NOT_OK
     TdiTrace(OPC_DECOMPILE, 1, in_ptr, out_ptr);
   return status;
