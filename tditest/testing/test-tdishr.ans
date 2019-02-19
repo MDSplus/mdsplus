@@ -6249,9 +6249,17 @@ eq(0x60000000QU,0x60000000QU)
 1BU
 compile(text(vms()))
 0
-list(,1,2,3)
-List(,1,2,3)
-tuple(,1,2,3)
-Tuple(,1,2,3)
-dict(,1,2,3,4)
-Dict(, 1,2, 3,4)
+list(,"a",1,"b",2)
+List(,"a",1,"b",2)
+tuple(,"a",1,"b",2)
+Tuple(,"a",1,"b",2)
+dict(,"a",1,"b",2)
+Dict(, "a",1, "b",2)
+decompile(`list(,"a",1,"b",2),1)
+'List(,"a" /*** etc. ***/)'
+decompile(`tuple(,"a",1,"b",2),1)
+'Tuple(,"a" /*** etc. ***/)'
+decompile(`dict(,"a",1,"b",2),1)
+'Dict(, "a",1 /*** etc. ***/)'
+decompile(`zero(32758,1))
+"Set_Range(32758,0 /*** etc. ***/)"
