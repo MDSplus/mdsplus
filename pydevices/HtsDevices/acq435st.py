@@ -71,7 +71,7 @@ class ACQ435ST(MDSplus.Device):
         {'path':':TRIG_STR','type':'text', 'options':('nowrite_shot'),
          'valueExpr':"EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"},
         {'path':':RUNNING','type':'any', 'options':('no_write_model')},
-        {'path':':LOG_OUTPUT','type':'any', 'options':('no_write_model', 'write_once', 'write_shot',)},
+        {'path':':LOG_OUTPUT','type':'text', 'options':('no_write_model', 'write_once', 'write_shot',)},
         {'path': ':GIVEUP_TIME', 'type': 'numeric', 'value': 180.0, 'options': ('no_write_shot')},
         {'path':':INIT_ACTION','type':'action',
          'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))",
@@ -342,7 +342,7 @@ class ACQ435ST(MDSplus.Device):
             print('on exit real parent pid is %d, comparing against %d'% (psutil.Process().parent().ppid(), ppid))
         sys.stdout.flush()
         txt =  open(str(rundata['log_file']), 'r').read()
-        self.log_output.record = txt.split('\n')
+        self.log_output.record = np.array(txt.split('\n'))
         os.remove(str(rundata['log_file']))
         os.remove(str(rundata['tmp_file']))
 
