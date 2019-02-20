@@ -1,0 +1,29 @@
+TR
+TRANSFER(       TRANSPOSE_(     TRIM(           
+TRANSLATE(      TRANSPOSE_MUL(  
+TR
+%TREE-W-NOT_OPEN, Tree not currently open
+%TDI Error compiling region marked by ^
+TR
+ ^
+%TDI Error in EXECUTE("TR")
+
+tree
+tree_from_tag(         treefindnodewild(      treeput(
+treeabspath(           treefindtagend(        treeputrecord(
+treeaddnode(           treefindtagwild(       treequit(
+treeaddtag(            treeflushoff(          treesetcurrentshot(
+treeclose(             treeflushreset(        treesetdbiitm(
+treecreatepulsefile(   treegetcurrentshot(    treesetdefault(
+treedeletepulsefile(   treegetrecord(         treesetnciitm(
+treedirname(           treegetsource(         treesetsource(
+treefilename(          treeopen(              treeturnoff(
+treefindnodetags(      treeopenedit(          treeturnon(
+treefindnodetagsjeff(  treeopennew(           treewrite(
+tree
+%TREE-W-NOT_OPEN, Tree not currently open
+%TDI Error compiling region marked by ^
+tree
+   ^
+%TDI Error in EXECUTE("tree")
+
