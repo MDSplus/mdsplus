@@ -238,6 +238,9 @@ class Tests(_UnitTest.TreeTests):
         pytree.readonly()
         self.assertEqual(pytree.TESTDEVICE.__class__,Device.PyDevice('TESTDEVICE'))
         self.assertEqual(pytree.CYGNET4K.__class__,Device.PyDevice('CYGNET4K'))
+        pytree.CYGNET4K.persistent = {}
+        pytree.CYGNET4K.persistent['a'] = 1
+        self.assertEqual(pytree.getNode('CYGNET4K').frames.persistent['a'], 1)
         ip=pytree.getNode('\\ip')
         self.assertEqual(ip.getUsage(),'SIGNAL')
         self.assertEqual(ip.usage,ip.getUsage())
