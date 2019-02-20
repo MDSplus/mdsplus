@@ -3030,6 +3030,16 @@ class Device(TreeNode): # HINT: Device begin
     @property
     def deref(self): return self
 
+    @property
+    def _unique(self): return "%s:%d:%d"%(self.tree.tree,self.tree.shot,self.head.nid)
+    _persistent = dict()
+    @property
+    def persistent(self):return self._persistent.get(self._unique,None)
+    @persistent.setter
+    def persistent(self,value):
+        if value is None: del(self._persistent[self._unique])
+        else: self._persistent[self._unique] = value
+
     def __getattr__(self,name):
         """Return TreeNode of subpart if name matches mangled node name.
         @param name: part name. Node path with colons and periods replaced by underscores.
