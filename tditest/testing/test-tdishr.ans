@@ -6249,6 +6249,12 @@ eq(0x60000000QU,0x60000000QU)
 1BU
 compile(text(vms()))
 0
+list()
+List()
+tuple()
+Tuple()
+dict()
+Dict()
 list(,"a",1,"b",2)
 List(,"a",1,"b",2)
 tuple(,"a",1,"b",2)
