@@ -831,7 +831,6 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
 
   <package name="htsdevices" arch="noarch" summary="Support for HTS data acquisition devices" description="Support for HTS data acquisition devices">
     <requires package="python"/>
-    <requires package="psutil" external="True"/>
     <include dir="/usr/local/mdsplus/pydevices/HtsDevices"/>
     <!-- rpm scripts -->
     <pre>$RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh HtsDevices</pre>
@@ -971,14 +970,12 @@ AutoReqProv: yes
    <numpy/>
    <xinetd/>
    <java/>
-   <psutil package="python2-psutil.x86_64"/>
  </external_packages>
  <external_packages platform="alpine">
    <python-devel package="python-dev"/>
    <setuptools package="py-setuptools"/>
    <numpy package="py-numpy"/>
    <java package="openjdk8"/>
-   <psutil package="python-psutil"/>
  </external_packages>
  <external_packages platform="debian">
    <python-devel package="python-dev"/>
@@ -986,6 +983,5 @@ AutoReqProv: yes
    <numpy package="python-numpy"/>
    <xinetd package="busybox"/>
    <java package="default-jre"/>
-   <psutil package="python-psutil"/>
  </external_packages>
 </deploy>

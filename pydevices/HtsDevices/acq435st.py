@@ -151,11 +151,6 @@ class ACQ435ST(MDSplus.Device):
         rundata['tmp_file'] = fd.name
         logfd = tempfile.NamedTemporaryFile(mode='w', suffix='.log', prefix='tmp', dir='/tmp', delete=False)
         rundata['log_file'] = logfd.name
-        umask = os.umask(0)
-        os.umask(umask)
-        os.chmod(fd.name, 0o777 & ~umask)
-        rundata['ppid'] = os.getpid()
-        fd.write('#!%s\n'%sys.executable)
         fd.write('from MDSplus import Tree\n')
         fd.write('ans = Tree("%s", %d).getNode(r"%s").stream()\n' % (self.tree.name, self.tree.shot, self.path))
         fd.write('exit()\n')
@@ -165,10 +160,14 @@ class ACQ435ST(MDSplus.Device):
         logfd = open(rundata['log_file'], 'w')
         logfd.write('\n---------------------------------------------------------------------\n')
         logfd.write('\tACQ435ST\n')
-        pid = subprocess.Popen(["%s"%fd.name], shell=True, stdout=logfd, stderr=logfd).pid
+        pid = subprocess.Popen("%s %s %d" % 
+                               (sys.executable, fd.name, os.getpid()), 
+                                shell=True, 
+                                stdout=logfd, 
+                                stderr=logfd).pid
         if self.debugging():
             print('The streaming pid is %d' % pid)
-        rundata['pid'] = pid
+            print('Parent Pid is %d' % os.getpid())
         fd.close()
         logfd.close()
         self.running.record = rundata
@@ -194,7 +193,6 @@ class ACQ435ST(MDSplus.Device):
         import time
         import os
         import sys
-        import psutil
         from MDSplus import Tree,Event,Range
         from MDSplus.mdsExceptions import DevNOT_TRIGGERED
 
@@ -266,16 +264,15 @@ class ACQ435ST(MDSplus.Device):
         first = True
         buf = bytearray(segment_bytes)
         rundata = self.running.record
-        ppid = int(rundata['ppid'])
+        ppid = int(sys.argv[1])
         Event.setevent(event_name)
         if self.debugging():
-            print('parent = %d, ppid = %d, boolean = '%(psutil.Process().parent().ppid(), ppid), my_ppid == ppid)
-            self.ppid(psutil.Process())
+            print('parent = %d, ppid = %d, boolean = '%(os.getppid(), ppid), (os.getppid(), ppid) == ppid)
 
         while running.on and \
               segment < max_segments and \
               timeOutCount < giveup_count and \
-              psutil.Process().parent().ppid() == ppid:
+              os.getppid() == ppid:
            # If no trigger, then the count (timeOutCount) will continue until the
            # maximun count is reached.
 
@@ -339,12 +336,14 @@ class ACQ435ST(MDSplus.Device):
 
         print("%s\tAll Done"%(datetime.datetime.now(),))
         if self.debugging():
-            print('on exit real parent pid is %d, comparing against %d'% (psutil.Process().parent().ppid(), ppid))
+            print('on exit real parent pid is %d, comparing against %d'% 
+                   (os.getppid(), ppid))
         sys.stdout.flush()
         txt =  open(str(rundata['log_file']), 'r').read()
         self.log_output.record = np.array(txt.split('\n'))
-        os.remove(str(rundata['log_file']))
-        os.remove(str(rundata['tmp_file']))
+        if  not self.debugging():
+            os.remove(str(rundata['log_file']))
+            os.remove(str(rundata['tmp_file']))
 
         return 1
 
@@ -353,9 +352,3 @@ class ACQ435ST(MDSplus.Device):
         if self.debug == None:
             self.debug=os.getenv("DEBUG_DEVICES")
         return(self.debug)
-
-    def ppid(self, proc):
-        print proc
-        if proc:
-            self.ppid(proc.parent())
-
