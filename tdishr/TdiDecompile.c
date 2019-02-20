@@ -684,13 +684,13 @@ complex: ;
 	bptr = "Word(";
 	break;
       case DTYPE_LIST:
-	bptr = "List(,";
+	bptr = "List(";
 	break;
       case DTYPE_TUPLE:
-	bptr = "Tuple(,";
+	bptr = "Tuple(";
 	break;
       case DTYPE_DICTIONARY:
-	bptr = "Dict(, ";
+	bptr = "Dict(";
 	break;
       default:
 	bptr = 0;
@@ -702,11 +702,18 @@ complex: ;
 	text.pointer = bptr;
 	status = StrAppend(out_ptr, (struct descriptor *)&text);
       }
-
+      if (in_ptr->class == CLASS_APD) {
+	if (count>0 && STATUS_OK){
+	  if (in_ptr->dtype == DTYPE_DICTIONARY)
+	    status = StrAppend(out_ptr, (struct descriptor *)&COMMA_SPACE);
+	  else
+	    status = StrAppend(out_ptr, (struct descriptor *)&COMMA);
+	}
+      }
 		/*****************************************
                 Specify bounds of array. SET_RANGE(l:u,...
                 *****************************************/
-      if (a_ptr->aflags.bounds) {
+      else if (a_ptr->aflags.bounds) {
 	status = StrAppend(out_ptr, (struct descriptor *)&SET_RANGE);
 	for (j = 0; j < dimct; ++j) {
 	  if STATUS_OK
@@ -723,7 +730,7 @@ complex: ;
 		/******************************************
                 Specify shape of array. SET_RANGE(size, ...
                 ******************************************/
-      else if (more && in_ptr->class != CLASS_APD) {
+      else if (more) {
 	status = StrAppend(out_ptr, (struct descriptor *)&SET_RANGE);
 	for (j = 0; j < dimct; ++j) {
 	  if STATUS_OK
