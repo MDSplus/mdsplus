@@ -373,6 +373,7 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
 #ifdef DEBUG
     printf("Reply status[%d],dtype[%d],len[%d],ndims[%d],numbytes[%d],ans[%d]\n", status, dtype, len, ndims, numbytes, *(int *)dptr);
 #endif
+   if STATUS_OK {
 /* Remap the descriptor types */
     dtype = IpToMds(dtype);
 /* Copy the Josh way ( see his example in MdsRemote.c ) */
@@ -398,6 +399,9 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
       }
       MdsCopyDxXd((struct descriptor *)&a_dsc, &ans_xd);	/* Copy the arrival data to xd output */
     }
+   } else {
+     MdsFree1Dx(&ans_xd, 0);
+   }
   } else {
     MdsFree1Dx(&ans_xd, 0);
     rMdsDisconnect(id);
