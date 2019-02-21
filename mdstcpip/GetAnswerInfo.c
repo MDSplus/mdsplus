@@ -80,15 +80,25 @@ int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims, int *dims, 
     return status;
   }
   int datalen = (int)(m->h.msglen - sizeof(MsgHdr));
+  *numbytes = m->h.length;
   if (m->h.ndims) {
-    *numbytes = m->h.length;
     for (i = 0; i < m->h.ndims; i++) {
 #ifdef __CRAY
       dims[i] = i % 2 ? m->h.dims[i / 2] & 0xffffffff : (*m)->h.dims[i / 2] >> 32;
 #else
-      dims[i] = m->h.dims[i];
-      if (i==7 && dims[i]==0 && (datalen%*numbytes)==0)
-        dims[i] = datalen/(*numbytes); // connected to old server with MAX_DIMS_R = 7
+      if (m->h.dims[i])
+        dims[i] = m->h.dims[i];
+      else {
+        if (datalen>*numbytes && datalen%*numbytes) {
+          dims[i] = datalen/ *numbytes;
+          m->h.ndims = i+1;
+        } else if (datalen==*numbytes && m->h.ndims == i+1) {
+          dims[i] = 1;
+        } else {
+          m->h.ndims = i;
+          break; // dont mult numbytes
+        }
+      }
 #endif
       *numbytes *= dims[i];
 #ifdef DEBUG
@@ -98,7 +108,6 @@ int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims, int *dims, 
     for (i = m->h.ndims; i < MAX_DIMS; i++)
       dims[i] = 0;
   } else {
-    *numbytes = m->h.length;
     for (i = 0; i < MAX_DIMS; i++)
       dims[i] = 0;
   }
