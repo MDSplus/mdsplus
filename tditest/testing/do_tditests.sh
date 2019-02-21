@@ -25,6 +25,14 @@ status=0
 if [ ! -z $1 ]
 then
 
+if [[ "$test" == *"tab"* ]]
+then
+ cmd="$TDITEST <    $srcdir/$test.tdi"
+ # fixes [?1034h for old readline verisons, rhel5/6/7, fc17/18/20
+ export TERM=vt100
+else
+ cmd="$TDITEST $zdrv$srcdir/$test.tdi"
+fi
 tmpdir=$(mktemp -d)
 trap 'rm -Rf ${tmpdir}' EXIT
 export main_path="${tmpdir};$(readlink -f ${srcdir}/../../trees)"
@@ -50,13 +58,13 @@ then
   then echo no libMitDevices.so;exit 77
   fi
 fi
-if [ -e ./shotid.sys ]; then rm -f ./shotid.sys; fi
-if [ -e ./tditst.tmp ] ;then rm -f ./tditst.tmp; fi
+if [ -e ./shotid.sys ];then rm -f ./shotid.sys; fi
+if [ -e ./tditst.tmp ];then rm -f ./tditst.tmp; fi
 LSAN_OPTIONS="$LSAN_OPTIONS,print_suppressions=0" \
 
 if [ "$2" == "update" ]
  then
-  $TDITEST $zdrv$srcdir/$test.tdi 2>&1 \
+  eval $cmd 2>&1 \
    | grep -v 'Data inserted:' \
    | grep -v 'Length:' \
    > ${srcdir}/$test.ans
@@ -64,13 +72,13 @@ if [ "$2" == "update" ]
   unset ok
   if diff --help | grep side-by-side &>/dev/null
   then
-   $TDITEST $zdrv$srcdir/$test.tdi 2>&1 | tee ${test}-out.log \
+   eval $cmd 2>&1 | tee ${test}-out.log \
    | grep -v 'Data inserted:' \
    | grep -v 'Length:' \
    | diff $DIFF_Z --side-by-side -W128 /dev/stdin $srcdir/$test.ans \
    | expand | grep -E -C3 '^.{61} ([|>]\s|<$)' || ok=1
   else
-   $TDITEST $zdrv$srcdir/$test.tdi 2>&1 \
+   eval $cmd 2>&1 \
    | grep -v 'Data inserted:' \
    | grep -v 'Length:' \
    | diff $DIFF_Z /dev/stdin $srcdir/$test.ans && ok=1

@@ -1,0 +1,13 @@
+mdsconnect("local://1")
+! 0 dims ; TODO: locks up next mdsvalue: CONNECTIONLIST_LOCK
+!mdsvalue("$",[])
+! 1 dim
+mdsvalue("$",[1,2,3])
+! 2 dims; deco
+mdsvalue("DECOMPILE($)",[[1,2],[3,4]])
+! 7 dims
+mdsvalue("$",[[[[[[[1]]]]]]])
+! 8 dims dim[i] == 1 for all i<8
+mdsvalue("$",[[[[[[[[1]]]]]]]])
+! 8 dims dim[i] != 1 for first and last
+mdsvalue("$",[[[[[[[[1,2]]]]]]],[[[[[[[3,4]]]]]]]])
