@@ -100,7 +100,6 @@ class ACQ435ST(MDSplus.Device):
             # make a thread safe copy of the device node with a non-global context
             self.dev = dev.copy()
         def run(self):
-            self.dev.tree.normal()
             self.dev.stream()
 
     debug=None
