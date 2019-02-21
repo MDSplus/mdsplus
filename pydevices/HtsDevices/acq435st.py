@@ -90,8 +90,20 @@ class ACQ435ST(MDSplus.Device):
         parts.append({'path':':INPUT_%2.2d:OFFSET'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
     del i
 
+    class Worker(threading.Thread):
+        """An async worker should be a proper class
+           This ensures that the methods remian in memory
+           It should at least take one argument: teh device node  
+        """
+        def __init__(self,dev):
+            super(ACQ435ST.Worker,self).__init__(name=dev.path)
+            # make a thread safe copy of the device node with a non-global context
+            self.dev = dev.copy()
+        def run(self):
+            self.dev.tree.normal()
+            self.dev.stream()
+
     debug=None
-    data_socket = -1
 
     trig_types=[ 'hard', 'soft', 'automatic']
 
@@ -145,32 +157,9 @@ class ACQ435ST(MDSplus.Device):
             coeff.record = coeffs[i]
             offset = self.__getattr__('input_%2.2d_offset'%(i+1))
             offset.record = offsets[i]
-        rundata = {}
         self.running.on=True
-        fd = tempfile.NamedTemporaryFile(mode='w', suffix='.py', prefix='tmp', dir='/tmp', delete=False)
-        rundata['tmp_file'] = fd.name
-        logfd = tempfile.NamedTemporaryFile(mode='w', suffix='.log', prefix='tmp', dir='/tmp', delete=False)
-        rundata['log_file'] = logfd.name
-        fd.write('from MDSplus import Tree\n')
-        fd.write('ans = Tree("%s", %d).getNode(r"%s").stream()\n' % (self.tree.name, self.tree.shot, self.path))
-        fd.write('exit()\n')
-        if self.debugging():
-            print('script name is %s' % fd.name)
-        fd.close()
-        logfd = open(rundata['log_file'], 'w')
-        logfd.write('\n---------------------------------------------------------------------\n')
-        logfd.write('\tACQ435ST\n')
-        pid = subprocess.Popen("%s %s %d" % 
-                               (sys.executable, fd.name, os.getpid()), 
-                                shell=True, 
-                                stdout=logfd, 
-                                stderr=logfd).pid
-        if self.debugging():
-            print('The streaming pid is %d' % pid)
-            print('Parent Pid is %d' % os.getpid())
-        fd.close()
-        logfd.close()
-        self.running.record = rundata
+        thread = self.Worker(self)
+        thread.start()
         return 1
     INIT=init
 
@@ -263,16 +252,10 @@ class ACQ435ST(MDSplus.Device):
         max_segments = self.max_segments.data()
         first = True
         buf = bytearray(segment_bytes)
-        rundata = self.running.record
-        ppid = int(sys.argv[1])
-        Event.setevent(event_name)
-        if self.debugging():
-            print('parent = %d, ppid = %d, boolean = '%(os.getppid(), ppid), (os.getppid(), ppid) == ppid)
 
         while running.on and \
               segment < max_segments and \
-              timeOutCount < giveup_count and \
-              os.getppid() == ppid:
+              timeOutCount < giveup_count:
            # If no trigger, then the count (timeOutCount) will continue until the
            # maximun count is reached.
 
@@ -335,15 +318,11 @@ class ACQ435ST(MDSplus.Device):
             raise DevNOT_TRIGGERED()
 
         print("%s\tAll Done"%(datetime.datetime.now(),))
-        if self.debugging():
-            print('on exit real parent pid is %d, comparing against %d'% 
-                   (os.getppid(), ppid))
         sys.stdout.flush()
-        txt =  open(str(rundata['log_file']), 'r').read()
-        self.log_output.record = np.array(txt.split('\n'))
-        if  not self.debugging():
-            os.remove(str(rundata['log_file']))
-            os.remove(str(rundata['tmp_file']))
+#        txt =  open(str(rundata['log_file']), 'r').read()
+#        self.log_output.record = np.array(txt.split('\n'))
+#        if  not self.debugging():
+#            os.remove(str(rundata['log_file']))
 
         return 1
 
