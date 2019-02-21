@@ -141,6 +141,10 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         pytree.readonly()
         self.assertTrue(pytree.TESTDEVICE_I.INIT1_DONE.record <= pytree.TESTDEVICE_I.INIT2_DONE.record)
         self.assertTrue(pytree.TESTDEVICE_S.INIT1_DONE.record <= pytree.TESTDEVICE_S.INIT2_DONE.record)
+        self.assertTrue(pytree.TESTDEVICE_I.INIT2_DONE.record <= pytree.TESTDEVICE_I.STORE_DONE.record)
+        self.assertTrue(pytree.TESTDEVICE_S.INIT2_DONE.record <= pytree.TESTDEVICE_S.STORE_DONE.record)
+        self.assertEqual(pytree.TESTDEVICE_I.DATA.data().tolist(),[0,1,2,3,4,5,6,7,8,9])
+        self.assertEqual(pytree.TESTDEVICE_S.DATA.data().tolist(),[0,1,2,3,4,5,6,7,8,9])
 
     def timeout(self,full=False):
         def test_timeout(c,expr,to):
