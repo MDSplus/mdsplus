@@ -702,6 +702,7 @@ TESTS = \
 	test-tcl.tdi \
 	test-tdishr.tdi \
 	test-treeshr.tdi \
+	test-mdsip.tdi \
 	test-dev-py.tdi
 
 
@@ -712,6 +713,7 @@ VALGRIND_TESTS = \
 	test-tcl.tdi \
 	test-tdishr.tdi \
 	test-treeshr.tdi \
+	test-mdsip.tdi \
 	test-dev-py.tdi
 
 

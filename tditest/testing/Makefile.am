@@ -16,6 +16,7 @@ TESTS = \
 	test-tcl.tdi \
 	test-tdishr.tdi \
 	test-treeshr.tdi \
+	test-mdsip.tdi \
 	test-dev-py.tdi
 
 # if VALGRIND_TESTS is defined this list is executed with valgrind
@@ -25,6 +26,7 @@ VALGRIND_TESTS = \
 	test-tcl.tdi \
 	test-tdishr.tdi \
 	test-treeshr.tdi \
+	test-mdsip.tdi \
 	test-dev-py.tdi
 
 # DISABLE PYTHON LEAK DETECTION: This suppression file shall be removed when
