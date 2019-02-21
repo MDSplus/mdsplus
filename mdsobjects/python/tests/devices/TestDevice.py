@@ -49,8 +49,13 @@ class TestDevice(Device):
         {'path': ':DATA',                       'type': 'SIGNAL',  'options':('no_write_model','write_once')},
     ]
     class Worker(threading.Thread):
+        """An async worker should be a proper class
+           This ensures that the methods remian in memory
+           It should at least take one argument: teh device node  
+        """
         def __init__(self,dev):
             super(TestDevice.Worker,self).__init__(name=dev.path)
+            # make a thread safe copy of the device node with a non-global context
             self.dev = dev.copy()
         def run(self):
             self.dev.tree.normal()
@@ -61,14 +66,19 @@ class TestDevice(Device):
     def init1(self):
         self.init1_done.record = time.time()       
     def init2(self):
+        """start async worker"""
         thread = self.Worker(self)
         thread.start()
+        # store thread reference in persistent field
         self.persistent = {'thread':thread}
         self.init2_done.record = time.time()
     def pulse(self):
         self.pulse_done.record = time.time()
     def store(self):
+        """joins async worker"""
         self.persistent['thread'].join()
+        # cleanup thread reference
+        self.persistent = None
         self.store_done.record = time.time()
     def test(self):
         return 'TEST'
