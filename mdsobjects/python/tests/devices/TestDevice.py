@@ -24,8 +24,8 @@
 #
 
 import time
-
-from MDSplus import Device,DevUNKOWN_STATE
+import threading
+from MDSplus import Device,DevUNKOWN_STATE,Int32Array
 
 class TestDevice(Device):
     parts=[
@@ -46,14 +46,29 @@ class TestDevice(Device):
         {'path': ':INIT2_DONE',                 'type': 'NUMERIC', 'options':('no_write_model','write_once')},
         {'path': ':PULSE_DONE',                 'type': 'NUMERIC', 'options':('no_write_model','write_once')},
         {'path': ':STORE_DONE',                 'type': 'NUMERIC', 'options':('no_write_model','write_once')},
+        {'path': ':DATA',                       'type': 'SIGNAL',  'options':('no_write_model','write_once')},
     ]
+    class Worker(threading.Thread):
+        def __init__(self,dev):
+            super(TestDevice.Worker,self).__init__(name=dev.path)
+            self.dev = dev.copy()
+        def run(self):
+            self.dev.tree.normal()
+            self.dev.DATA.beginSegment(0,9,Int32Array(range(10)),Int32Array([0]*10))
+            for i in range(10):
+                time.sleep(.1)
+                self.dev.DATA.putSegment(Int32Array([i]),i)
     def init1(self):
-        self.init1_done.record = time.time()
+        self.init1_done.record = time.time()       
     def init2(self):
+        thread = self.Worker(self)
+        thread.start()
+        self.persistent = {'thread':thread}
         self.init2_done.record = time.time()
     def pulse(self):
         self.pulse_done.record = time.time()
     def store(self):
+        self.persistent['thread'].join()
         self.store_done.record = time.time()
     def test(self):
         return 'TEST'
