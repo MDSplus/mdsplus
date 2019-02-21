@@ -865,7 +865,8 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	array_coeff *a = (array_coeff *) d;
 	int num = 1;
 	int i;
-	for (i = 0; i < message->h.ndims; i++) {
+	a->dimct = message->h.ndims;
+	for (i = 0; i < a->dimct ; i++) {
 	  a->m[i] = message->h.dims[i];
 	  num *= a->m[i];
 	}
