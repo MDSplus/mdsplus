@@ -409,7 +409,13 @@ class Tree(object):
                 _TreeShr.TreeFileName(
                     treeref,_C.c_int32(int(shot)),xd.ref))
         return _ver.tostr(xd.value)
-
+    def copy(self,mode='NORMAL'):
+        """returns a local private instance of the tree opend in specified mode
+        @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
+        @type mode: str         
+        @rtype: Tree
+        """
+        return Tree(self.tree,self.shot,mode)
     def readonly(self):
         self.open('READONLY')
     def edit(self):
@@ -1049,7 +1055,6 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
     @property
     def _lock(self): return self.tree._lock
 
-
     def __new__(cls,nid,tree=None,head=None,*a,**kw):
         """Create class instance. Initialize part_dict class attribute if necessary.
         @param nid: Node of device
@@ -1088,6 +1093,14 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
             else:
                 self.tree = Tree()
             self._head = head
+
+    def copy(self,mode='NORMAL'):
+        """returns the node with a local private instance of the tree opend in specified mode
+        @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
+        @type mode: str         
+        @rtype: TreeNode
+        """
+        return self.__class__(self.nid,self.tree.copy(mode))
 
     _head=None
     @property
@@ -2654,9 +2667,16 @@ class TreePath(TreeNode): # HINT: TreePath begin
             self._nid=None
         return
 
+    def copy(self,mode='NORMAL'):
+        """returns the node with a local private instance of the tree opend in specified mode
+        @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
+        @type mode: str         
+        @rtype: TreeNode
+        """
+        return self.__class__(self.tree_path,self.tree.copy(mode))
+
     def __hasBadTreeReferences__(self,tree):
        return False
-
 
     def __str__(self):
         """Convert path to string."""
@@ -2696,6 +2716,14 @@ class TreeNodeArray(_dat.TreeRef,_arr.Int32Array): # HINT: TreeNodeArray begin
             self.tree=tree[0]
         else:
             self.tree=Tree(*tree)
+
+    def copy(self,mode='NORMAL'):
+        """returns the node array with a local private instance of the tree opend in specified mode
+        @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
+        @type mode: str         
+        @rtype: TreeNodeArray
+        """
+        return self.__class__(self._value,self.tree.copy(mode))
 
     def __eq__(self,obj):
         if isinstance(obj,(TreeNodeArray,)):
