@@ -36,30 +36,46 @@ static char *history_file=NULL;
 
 static void tdiputs(char *line);
 
-static char *getExpression(FILE *f_in, char *command) {
+static char *getExpression(FILE *f_in) {
   char line_in[MAXEXPR] = {0};
-  char *ans;
-  if ( f_in == NULL ) {
-    ans = readline("");
-  } else {
-    ans = fgets(line_in, MAXEXPR-1, f_in);
-    if (ans) {
-      if (ans[strlen(ans)-1]=='\n')
-	ans[strlen(ans)-1]='\0';
-      ans=strdup(ans);
+  char  *ans = NULL;
+  size_t alen = 0;
+  int append;
+  do {
+    char  *next;
+    size_t nlen;
+    if ( f_in == NULL ) {
+      next = readline("");
+      nlen = strlen(next);
+    } else {
+      next = fgets(line_in, MAXEXPR-1, f_in);
+      if (next) {
+	nlen = strlen(next);
+	if (next[nlen-1]=='\n')
+	  next[--nlen]='\0';
+	next = strdup(next);
+      } else nlen = 0;
     }
-  }
-  if (ans && strlen(ans) > 0 && ans[strlen(ans)-1] == '\\' ) {
-    ans[strlen(ans)-1]='\0';
-    ans = getExpression(f_in, ans);
-  }
-  if (command) {
-    char *newcmd=strcpy(malloc(strlen(command)+strlen(ans)+1),command);
-    strcat(newcmd,ans);
-    free(command);
-    free(ans);
-    ans = newcmd;
-  }
+    if (nlen<=0) {
+      if (next) free(next);
+      next = ans;
+      break;
+    }
+    append = next[nlen-1] == '\\';
+    if (append) next[--nlen]='\0';
+    if (ans) {
+      if (nlen>0) {
+	ans = realloc(ans,alen+nlen+1);
+	memcpy(ans+alen,next,nlen+1);
+	alen = alen + nlen;
+      }
+      free(next);
+      next = ans;
+    } else {
+      ans = next;
+      alen = nlen;
+    }
+  } while (append);
   return ans;
 }
 
@@ -104,7 +120,7 @@ int main(int argc, char **argv)
     TdiExecute((struct descriptor *)&out_unit_other, &out_d, &output_unit MDS_END_ARG);
   } else
     TdiExecute((struct descriptor *)&out_unit_stdout, &output_unit MDS_END_ARG);
-  while ((command=getExpression(f_in,NULL))
+  while ((command=getExpression(f_in))
       && strcasecmp(command,"exit") != 0
       && strcasecmp(command,"quit") != 0   ) {
     int comment = command[0] == '!';
