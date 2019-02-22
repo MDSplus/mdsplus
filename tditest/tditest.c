@@ -34,7 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static char *history_file=NULL;
 
-static void tdiputs(char *line);
 
 static char *getExpression(FILE *f_in) {
   char line_in[MAXEXPR] = {0};
@@ -82,51 +81,55 @@ static char *getExpression(FILE *f_in) {
 int main(int argc, char **argv)
 {
   FILE *f_in = NULL;
+  FILE *f_out= NULL;
   int status = 1;
-  static struct descriptor expr_dsc = { 0, DTYPE_T, CLASS_S, 0};
-  static EMPTYXD(ans);
-  static EMPTYXD(output_unit);
-  static DESCRIPTOR(out_unit_stdout, "PUBLIC _OUTPUT_UNIT=*");
-  static DESCRIPTOR(out_unit_other, "PUBLIC _OUTPUT_UNIT=FOPEN($,'w')");
-  static DESCRIPTOR(reset_output_unit, "PUBLIC _OUTPUT_UNIT=$");
+  struct descriptor expr_dsc = { 0, DTYPE_T, CLASS_S, 0};
+  EMPTYXD(ans);
   char *command=NULL;
-  static DESCRIPTOR(error_out, "WRITE($,DEBUG(13))");
-  static DESCRIPTOR(clear_errors, "WRITE($,DECOMPILE($)),DEBUG(4)");
+  DESCRIPTOR(error_out, "WRITE($,DEBUG(13))");
+  DESCRIPTOR(clear_errors, "WRITE($,DECOMPILE($)),DEBUG(4)");
   if (argc > 1) {
     f_in = fopen(argv[1], "r");
-    if (f_in == (FILE *) 0) {
+    if (!f_in) {
       printf("Error opening input file /%s/\n", argv[1]);
-      return 1;
+      exit(1);
     }
   } else {
 #ifdef _WIN32
     char *home = getenv("USERPROFILE");
-    char *sep = "\\";
+#define S_SEP_S "%s\\%s"
 #else
     char *home = getenv("HOME");
-    char *sep = "/";
+#define S_SEP_S "%s/%s"
 #endif
     if (home) {
       char *history = ".tditest";
-      history_file = malloc(strlen(history) + strlen(home) + strlen(history) + 1);
-      sprintf(history_file, "%s%s%s", home, sep, history);
+      history_file = malloc(strlen(history) + strlen(home) + 2);
+      sprintf(history_file, S_SEP_S, home, history);
       read_history(history_file);
     }
   }
+  mdsdsc_t output_unit = {0, 0, CLASS_S, 0};
   if (argc > 2) {
-    struct descriptor out_d = { 0, DTYPE_T, CLASS_S, 0 };
-    out_d.length = (unsigned short)strlen(argv[2]);
-    out_d.pointer = argv[2];
-    TdiExecute((struct descriptor *)&out_unit_other, &out_d, &output_unit MDS_END_ARG);
+    f_out = fopen(argv[2],"w");
+    if (!f_out) {
+      printf("Error opening input file /%s/\n", argv[2]);
+      exit(1);
+    }
+    output_unit.length  = sizeof(void*);
+    output_unit.dtype   = DTYPE_POINTER;
+    output_unit.pointer = (char*)&f_out;
   } else
-    TdiExecute((struct descriptor *)&out_unit_stdout, &output_unit MDS_END_ARG);
+    f_out = stdout;
   while ((command=getExpression(f_in))
       && strcasecmp(command,"exit") != 0
       && strcasecmp(command,"quit") != 0   ) {
     int comment = command[0] == '!';
     if (!comment) {
-      TdiExecute((struct descriptor *)&reset_output_unit, &output_unit, &ans MDS_END_ARG);
-      if (f_in) tdiputs(command);
+      if (f_in) {
+        fprintf(f_out,"%s\n",command);
+        fflush(f_out);
+      }
     }
     if (!comment) {
       expr_dsc.length = strlen(command);
@@ -137,28 +140,14 @@ int main(int argc, char **argv)
 	TdiExecute((struct descriptor *)&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);
       else
 	TdiExecute((struct descriptor *)&error_out, &output_unit, &ans MDS_END_ARG);
+      fflush(f_out);
     }
     free(command);
   }
-  if (command) {
-    free(command);
-  }
+  if (command) free(command);
   if (history_file) {
     write_history(history_file);
     free(history_file);
   }
   return !(status&1);
-}
-
-static void tdiputs(char *line)
-{
-  static EMPTYXD(ans);
-  static DESCRIPTOR(write_it, "WRITE(_OUTPUT_UNIT,$)");
-  struct descriptor line_d = { 0, DTYPE_T, CLASS_S, 0 };
-  line_d.length = (unsigned short)strlen(line);
-  line_d.pointer = line;
-  if (line[line_d.length - 1] == '\n')
-    line_d.length--;
-  TdiExecute((struct descriptor *)&write_it, &line_d, &ans MDS_END_ARG);
-  fflush(stdout);
 }
