@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mds_stdarg.h>
 #define MAXEXPR 16384
 #include <tdishr.h>
+#include <mdsshr.h>
 
 static char *history_file=NULL;
 
@@ -145,6 +146,7 @@ int main(int argc, char **argv)
     free(command);
   }
   if (command) free(command);
+  MdsFree1Dx(&ans,NULL);
   if (history_file) {
     write_history(history_file);
     free(history_file);
