@@ -1,6 +1,8 @@
 include @top_builddir@/Makefile.inc
 
 VPATH = @srcdir@
+MKDIR_P=@MKDIR_P@
+
 LD=@CXX@
 CFLAGS+=-I@LV_CINTOOLS@ -fPIC @TARGET_ARCH@
 CXXFLAGS=-Wno-deprecated -fPIC @CFLAGS@ -I@LV_CINTOOLS@ @TARGET_ARCH@ @CXXFLAGS@

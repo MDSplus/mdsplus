@@ -3,6 +3,7 @@ include @top_builddir@/Makefile.inc
 srcdir=@srcdir@
 builddir=@builddir@ 
 VPATH = @srcdir@
+MKDIR_P=@MKDIR_P@
 
 @MINGW_TRUE@ IMPLIB_MdsIpShr=@MAKELIBDIR@MdsIpShr.dll.a
 @MINGW_TRUE@ IMPLIB_MdsIpSrvShr=@MAKELIBDIR@MdsIpSrvShr.dll.a

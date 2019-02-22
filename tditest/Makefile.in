@@ -1,6 +1,7 @@
 include @top_builddir@/Makefile.inc
 
 VPATH = @srcdir@
+MKDIR_P=@MKDIR_P@
 
 SOURCES = tditest.c
 
