@@ -140,7 +140,7 @@ EXPORT int TclDispatch(void *ctx, char **error, char **output __attribute__ ((un
     goto cleanup;
   }
   EMPTYXD(xd);c.xd=&xd;
-  struct descriptor_d svr = {0,DTYPE_T,CLASS_S,0};c.svr=&svr;
+  struct descriptor_d svr = {0,DTYPE_T,CLASS_D,0};c.svr=&svr;
   int nid;
   status = TreeFindNode(c.treenode, &nid);
   if STATUS_OK {
