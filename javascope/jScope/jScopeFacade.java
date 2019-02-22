@@ -2923,8 +2923,10 @@ remove 28/06/2005
 
     static boolean IsNewJVMVersion()
     {
-        String ver = System.getProperty("java.version");
-        return (! (ver.indexOf("1.0") != -1 || ver.indexOf("1.1") != -1));
+        //String ver = System.getProperty("java.version");
+        boolean isGreater = ( Float.valueOf(System.getProperty("java.specification.version")) >= 1.2 );
+        return (isGreater);
+        // return (! (ver.indexOf("1.0") != -1 || ver.indexOf("1.1") != -1));
     }
 
     public static void main(String args[])
@@ -2980,9 +2982,10 @@ remove 28/06/2005
         if (IsNewJVMVersion())
             win = new jScopeFacade(100, 100, propertiesFile);
         else
-        {
+        {			
             System.out.println(
                 "jScope application required JDK version 1.2 or later");
+            System.out.println("Your version is " + System.getProperty("java.specification.version"));
             System.exit(1);
         }
 
