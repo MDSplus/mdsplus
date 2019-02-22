@@ -38,6 +38,9 @@ class TestDevice(Device):
         {'path': ':ACTIONSERVER:STORE',         'type': 'ACTION',  'options':('no_write_shot','write_once'), 'valueExpr':'Action(node.DISPATCH,node.TASK)'},
         {'path': ':ACTIONSERVER:STORE:DISPATCH','type': 'DISPATCH','options':('no_write_shot','write_once'), 'valueExpr':'Dispatch(head.ACTIONSERVER,"STORE",10)'},
         {'path': ':ACTIONSERVER:STORE:TASK',    'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(None,"store",head)'},
+        {'path': ':ACTIONSERVER:MANUAL',        'type': 'ACTION',  'options':('no_write_shot','write_once'), 'valueExpr':'Action(node.DISPATCH,node.TASK)'},
+        {'path': ':ACTIONSERVER:MANUAL:DISPATCH','type':'DISPATCH','options':('no_write_shot','write_once'), 'valueExpr':'Dispatch(head.ACTIONSERVER,"MANUAL",10)'},
+        {'path': ':ACTIONSERVER:MANUAL:TASK',   'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(None,"manual",head)'},
         {'path': ':TASK_TEST',                  'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(None,"test",head)'},
         {'path': ':TASK_ERROR1',                'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(None,"error",head)'},
         {'path': ':TASK_TIMEOUT',               'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(1.,"timeout",head)'},
@@ -46,6 +49,7 @@ class TestDevice(Device):
         {'path': ':INIT2_DONE',                 'type': 'NUMERIC', 'options':('no_write_model','write_once')},
         {'path': ':PULSE_DONE',                 'type': 'NUMERIC', 'options':('no_write_model','write_once')},
         {'path': ':STORE_DONE',                 'type': 'NUMERIC', 'options':('no_write_model','write_once')},
+        {'path': ':MANUAL_DONE',                'type': 'NUMERIC', 'options':('no_write_model','write_once')},
         {'path': ':DATA',                       'type': 'SIGNAL',  'options':('no_write_model','write_once')},
     ]
     class Worker(threading.Thread):
@@ -80,6 +84,8 @@ class TestDevice(Device):
         # cleanup thread reference
         self.persistent = None
         self.store_done.record = time.time()
+    def manual(self):
+        self.manual_done.record = time.time()
     def test(self):
         return 'TEST'
     def error(self):

@@ -64,6 +64,7 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
         self._doTCLTest('add node TCL_PY_DEV/model=TESTDEVICE')
         self._doTCLTest('do TESTDEVICE_I:TASK_TEST')
         self._doTCLTest('do TESTDEVICE_S:TASK_TEST')
+        self._doTCLTest('do TESTDEVICE_S:ACTIONSERVER:MANUAL')
         self._doExceptionTest('do TESTDEVICE_I:TASK_ERROR1',Exc.DevUNKOWN_STATE) # w/o timeout
         self._doExceptionTest('do TESTDEVICE_S:TASK_ERROR1',Exc.DevUNKOWN_STATE) # w/o timeout
         self._doExceptionTest('do TESTDEVICE_I:TASK_ERROR2',Exc.DevUNKOWN_STATE) # w/  timeout
@@ -109,6 +110,7 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                 """ tcl dispatch """
                 self._testDispatchCommand(server,'type test')
                 self._doTCLTest('set tree pytree/shot=%d'%shot)
+                self._doTCLTest('dispatch TESTDEVICE_S:ACTIONSERVER:MANUAL')
                 self._doTCLTest('dispatch/build%s'%monitor_opt)
                 self._doTCLTest('dispatch/phase%s INIT'%monitor_opt)
                 sleep(.1)
@@ -139,6 +141,7 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
             if mon_log: mon_log.close()
             self._doTCLTest('close/all')
         pytree.readonly()
+        self.assertTrue(pytree.TESTDEVICE_S.MANUAL_DONE.record<= pytree.TESTDEVICE_S.INIT1_DONE.record)
         self.assertTrue(pytree.TESTDEVICE_I.INIT1_DONE.record <= pytree.TESTDEVICE_I.INIT2_DONE.record)
         self.assertTrue(pytree.TESTDEVICE_S.INIT1_DONE.record <= pytree.TESTDEVICE_S.INIT2_DONE.record)
         self.assertTrue(pytree.TESTDEVICE_I.INIT2_DONE.record <= pytree.TESTDEVICE_I.STORE_DONE.record)
