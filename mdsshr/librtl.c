@@ -1110,19 +1110,21 @@ EXPORT int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_i
 
 EXPORT int StrAppend(struct descriptor_d *out, struct descriptor *tail)
 {
-  if (tail->length != 0 && tail->pointer != NULL) {
+  if (tail->length > 0 && tail->pointer) {
     int len = (int)out->length + (int)tail->length;
-    if (len > 0xffff)
-      return StrSTRTOOLON;
-    struct descriptor_d new = { 0, DTYPE_T, CLASS_D, 0 };
-    unsigned short us_len = (unsigned short)len;
-    StrGet1Dx(&us_len, &new);
+    if (len > 0xffff) return StrSTRTOOLON;
+    char *old = out->pointer;
+    if (out->pointer)
+      out->pointer = realloc(out->pointer, len);
+    else
+      out->pointer = malloc(len);
     if (out->pointer) {
-      memcpy(new.pointer, out->pointer, out->length);
+      memcpy(out->pointer + out->length, tail->pointer, tail->length);
+      out->length = len;
+    } else {
+      out->pointer = old;
+      return LibINSVIRMEM;
     }
-    memcpy(new.pointer + out->length, tail->pointer, tail->length);
-    StrFree1Dx(out);
-    *out = new;
   }
   return MDSplusSUCCESS;
 }
