@@ -18,13 +18,21 @@ public class MdsConnectionSSH extends MdsConnection
         host = getProviderHost();
         port = 0;
         user = "";
+//        ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/C", "start", "mdsip-client-ssh", host, "mdsip-server-ssh");
 	ProcessBuilder pb = new ProcessBuilder("mdsip-client-ssh", host, "mdsip-server-ssh");
 //	pb.redirectInput(ProcessBuilder.Redirect.PIPE);
 //	pb.redirectOutput(ProcessBuilder.Redirect.PIPE);
 //	pb.redirectError(ProcessBuilder.Redirect.PIPE);
-	Process p = pb.start();
-	dis = new BufferedInputStream(p.getInputStream());
-	dos = new DataOutputStream(new BufferedOutputStream(p.getOutputStream()));
+        try {
+            Process p = pb.start();
+            dis = new BufferedInputStream(p.getInputStream());
+            dos = new DataOutputStream(new BufferedOutputStream(p.getOutputStream()));
+        }catch(Exception exc){
+            pb = new ProcessBuilder("mdsip-client-ssh.bat", host, "mdsip-server-ssh");  //Windows
+            Process p = pb.start();
+            dis = new BufferedInputStream(p.getInputStream());
+            dos = new DataOutputStream(new BufferedOutputStream(p.getOutputStream()));
+       }
    }  
     public String getProvider() { return "ssh";}
  //   public void setProvider(String provider){}
