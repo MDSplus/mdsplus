@@ -3,6 +3,7 @@ include @top_builddir@/Makefile.inc
 srcdir=@srcdir@
 builddir=@builddir@ 
 VPATH=@srcdir@
+MKDIR_P=@MKDIR_P@
 
 CFLAGS += $(THREAD) @GLOBUS_CFLAGS@ @XML_CPPFLAGS@
 LDFLAGS += $(THREAD)
