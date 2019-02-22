@@ -42,7 +42,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <STATICdef.h>
-#define _MOVC3(a,b,c) memcpy(c,b,a)
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include <tdishr_messages.h>
@@ -93,21 +92,21 @@ int Tdi1Pack(opcode_t opcode, int narg, struct descriptor *list[], struct descri
       lenm = dat[1].pointer->length;
       numa = bytes / lena;
       numm = (int)((struct descriptor_a *)dat[1].pointer)->arsize / lenm;
-      pi = parr->pointer;
 #ifdef WORDS_BIGENDIAN
       pm = dat[1].pointer->pointer + lenm - 1;
 #else
       pm = dat[1].pointer->pointer;
 #endif
-      po = pi;
-
       if (numa < numm)
 	numm = numa;
       if (numv >= 0 && numm > numv)
 	numm = numv;
+      pi = parr->pointer;
+      po = pi;
       for (; --numm >= 0; pm += lenm, pi += lena)
 	if (*pm & 1) {
-	  _MOVC3(lena, pi, po);
+	  if (po<pi) // only copy if memory does not overlap
+            memcpy(po, pi,lena);
 	  po += lena;
 	};
       bytes = po - dat[0].pointer->pointer;
