@@ -5682,14 +5682,14 @@ spread([2,3,4],0,3)
 [[2,2,2], [3,3,3], [4,4,4]]
 trim(' A B  ')
 " A B"
-(public fun showopcodes(){  for (_i=0;1;_i++) {   _s=if_error(OPCODE_BUILTIN(_i)," ");   if (_s == " ") break;   write(PUBLIC _output_unit,_s//"   "//OPCODE_STRING(_i)//"   "//text(_i));  };})
+(public fun showopcodes(){  for (_i=0;1;_i++) {   _s=if_error(OPCODE_BUILTIN(_i)," ");   if (_s == " ") break;   write(,_s//"   "//OPCODE_STRING(_i)//"   "//text(_i));  };})
 Fun PUBLIC showopcodes () {
 	For (_i = 0; 1; _i++) {
 		_s = IF_ERROR(OPCODE_BUILTIN(_i), " ");
 		If (_s == " ") {
 			BREAK;
 		}
-		WRITE(PUBLIC _output_unit, _s // "   " // OPCODE_STRING(_i) // "   " // TEXT(_i));
+		WRITE(*, _s // "   " // OPCODE_STRING(_i) // "   " // TEXT(_i));
 	}
 }
 showopcodes()
