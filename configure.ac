@@ -4,6 +4,7 @@ AC_PREREQ([2.69])
 AC_INIT([MDSplus], [7a], [mdsplus@lists.psfc.mit.edu])
 AC_CONFIG_AUX_DIR([conf])
 AC_CONFIG_SRCDIR([include/mdsdescrip.h])
+AC_PREFIX_DEFAULT([/usr/local/mdsplus])
 
 dnl docker helpers
 AX_DOCKER_BUILD
@@ -12,7 +13,6 @@ AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE([1.15 foreign subdir-objects])
 AM_MAINTAINER_MODE
-
 
 dnl AS_IS_RELEASE //////////////////////////////////////////////////////////////
 dnl see: http://www.gnu.org/software/autoconf-archive/ax_is_release.html
@@ -226,7 +226,9 @@ AC_SUBST([JAVAVERSION])
 
 AS_CASE([$enable_java],
         [yes], [AC_MSG_CHECKING([for presence of Java Development Kit])
-                AS_IF([test ! -d $with_jdk/jre],
+                ## AS_IF([test ! -d $with_jdk/jre], ##
+		## AS_IF([test ! -d $with_jdk], ##
+		AS_IF([test ! -d $with_jdk ${JRE}],
                       [AC_MSG_RESULT([not found])
                        AC_MSG_WARN([YOU NEED TO SPECIFY THE JAVA JDK DIRECTORY OR DISABLE JAVA])
                        AC_MSG_WARN([The jdk directory can be specified by either defining a JDK_DIR environment])
@@ -369,6 +371,10 @@ then
 else
   MAKEFLAG_J="-j -l 1"
 fi
+
+test "${exec_prefix}" = "NONE" && exec_prefix=${ac_default_prefix}
+test "${prefix}" = "NONE" && prefix=${ac_defaut_prefix}
+
 MAKEFLAG_O="$(if ${MAKE:=make} -v -O&>/dev/null; then echo -O; fi)"
 MAKEUIDDIR="\$(top_builddir)/uid/"
 MAKESHLIBDIR="\$(top_builddir)/lib/"
@@ -387,6 +393,8 @@ THREAD="-pthread"
 MITDEVICESIO_TARGETS=""
 case "$host" in
 *mingw*)
+       JRE = "/jre";
+       UIL = "/usr/bin/X11";
        MAKEFLAG_J=""
        MAKEFLAG_O=""
        LIBPRE=""
@@ -424,6 +432,8 @@ case "$host" in
        jni_md_inc_dir="$with_jdk/include/win32";;
 
 *86*linux*)
+       JRE = "/jre";
+       UIL = "/usr/bin/X11";
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing ";
        FORLD="$FC";
        LD="gcc"
@@ -478,6 +488,8 @@ case "$host" in
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";
        ;;
 *arm-xilinx-linux-gnueabi) echo "configuring for Xylinx zynq board (arm cortex a9)";
+       JRE = "/jre";
+       UIL = "/usr/bin/X11";
        CC=arm-xilinx-linux-gnueabi-gcc;
        LD=arm-xilinx-linux-gnueabi-ld;
        AR=arm-xilinx-linux-gnueabi-ar;
@@ -507,6 +519,8 @@ case "$host" in
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing";
+       JRE = "/jre";
+       UIL = "/usr/bin/X11";
        FCFLAGS="$FCFLAGS -fno-range-check";
        FORLD="$FC"
        FOR_LDFLAGS="-lg2c"
@@ -526,6 +540,8 @@ case "$host" in
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X";
+       JRE = "";
+       UIL = "/usr/bin/uil";
        THREAD=""
        MACOSX="macosx"
        CFLAGS="$CFLAGS -arch x86_64 -dynamic -Wno-error=unused-command-line-argument -Wno-missing-field-initializers -Wno-parentheses-equality";
@@ -962,7 +978,8 @@ if test $UILCMD = uil32
 then
   X_LIBS=`echo $X_LIBS | sed s/lib64/lib/`
 fi
-AC_PATH_PROG(UIL,$UILCMD,$UILCMD,$UILPATH:/usr/bin/X11:$PATH:/usr/dt/bin)
+## AC_PATH_PROG(UIL,$UILCMD,$UILCMD,$UILPATH:/usr/bin/X11:$PATH:/usr/dt/bin) ##
+AC_PATH_PROG(UIL,$UILCMD,$UILCMD,$UILPATH:${UIL}:$PATH:/usr/dt/bin)
 AC_MSG_CHECKING(for uil command)
 if test ! "$MINGW" = "yes" && ( which $UIL &>/dev/null )
 then
@@ -1311,6 +1328,8 @@ AC_SUBST(DC1394_SUPPORT2)
 AC_SUBST(VS)
 AC_SUBST(VS_ARCH)
 AC_SUBST(VS_DIR)
+AC_SUBST(JRE)
+AC_SUBST(UIL)
 AC_CONFIG_HEADER(include/mdsplus/mdsconfig.h)
 
 
