@@ -21,9 +21,17 @@ public class MdsConnectionLocal extends MdsConnection
 	ProcessBuilder pb = new ProcessBuilder("mdsip-client-local", "mdsip-client-local");
 //	pb.redirectInput(ProcessBuilder.Redirect.PIPE);
 //	pb.redirectOutput(ProcessBuilder.Redirect.PIPE);
-	Process p = pb.start();
-	dis = new BufferedInputStream(p.getInputStream());
-	dos = new DataOutputStream(new BufferedOutputStream(p.getOutputStream()));
+        try {
+            Process p = pb.start();
+            dis = new BufferedInputStream(p.getInputStream());
+            dos = new DataOutputStream(new BufferedOutputStream(p.getOutputStream()));
+        }catch(Exception e)   
+        {
+            pb = new ProcessBuilder("mdsip-client-local.bat", "mdsip-client-local");  //Windows
+            Process p = pb.start();
+            dis = new BufferedInputStream(p.getInputStream());
+            dos = new DataOutputStream(new BufferedOutputStream(p.getOutputStream()));
+        }
     }  
     public String getProvider() { return "local";}
     public void setProvider(String provider){}
