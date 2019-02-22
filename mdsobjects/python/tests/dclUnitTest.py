@@ -111,6 +111,8 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                 self._doTCLTest('set tree pytree/shot=%d'%shot)
                 self._doTCLTest('dispatch/build%s'%monitor_opt)
                 self._doTCLTest('dispatch/phase%s INIT'%monitor_opt)
+                """ make sure we can dispatch an action node"""
+                self._doTCLTest('dispatch TESTDEVICE_I:ACTIONSERVER:INIT1%s'%monitor_opt)
                 sleep(.1)
                 self._checkIdle(server)
                 self._doTCLTest('dispatch/phase%s PULSE'%monitor_opt)
