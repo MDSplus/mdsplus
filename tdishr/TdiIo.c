@@ -96,7 +96,7 @@ STATIC_ROUTINE int TdiGetOutUnit(struct descriptor *in_ptr, FILE ** unit)
   INIT_AND_FREEXD_ON_EXIT(xd);
   status = TdiEvaluate(in_ptr, &xd MDS_END_ARG);
   struct descriptor *unit_d = xd.pointer;
-  if (unit_d->class == CLASS_S) {
+  if (unit_d && unit_d->class == CLASS_S) {
     if (unit_d->dtype == DTYPE_L || unit_d->dtype == DTYPE_LU) {
       if (*(int*)unit_d->pointer == 2)
         *unit = stderr;
