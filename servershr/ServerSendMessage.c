@@ -160,10 +160,12 @@ extern void *GetConnectionInfo();
 static SOCKET getSocket(int conid)
 {
   size_t len;
-  char *info_name;
-  SOCKET readfd;
+  char *info_name = NULL;
+  SOCKET readfd = INVALID_SOCKET;
   GetConnectionInfo(conid, &info_name, &readfd, &len);
-  return (info_name && strcmp(info_name, "tcp") == 0) ? readfd : INVALID_SOCKET;
+  if (info_name && (strcmp(info_name, "tcp") == 0))
+    return readfd;
+  return INVALID_SOCKET;
 }
 
 int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_rwlock_t *lock, int *conid_out,
