@@ -23,14 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import MDSplus
-
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        import threading
-        thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
-        thread.start()
-        return thread
-    return wrapper
+import threading
 
 class Acq2106_423st(MDSplus.Device):
     """
@@ -94,6 +87,18 @@ class Acq2106_423st(MDSplus.Device):
             ans.append({'path':':INPUT_%3.3d:OFFSET'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
         return ans
 
+    class Worker(threading.Thread):
+        """An async worker should be a proper class
+           This ensures that the methods remian in memory
+           It should at least take one argument: teh device node  
+        """
+        def __init__(self,dev):
+            super(ACQ2106_423ST.Worker,self).__init__(name=dev.path)
+            # make a thread safe copy of the device node with a non-global context
+            self.dev = dev.copy()
+        def run(self):
+            self.dev.stream()
+
     def init(self):
         acq400_hapi=self.importPyDeviceModule('acq400_hapi')
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
@@ -124,7 +129,8 @@ class Acq2106_423st(MDSplus.Device):
                 offset = self.__getattr__('input_%3.3d_offset'%(card*32+i+1))
                 offset.record = offsets[i]
         self.running.on=True
-        self.stream()
+        thread = self.Worker(self)
+        thread.start()
         return 1
     INIT=init
 
@@ -136,11 +142,10 @@ class Acq2106_423st(MDSplus.Device):
     def trig(self):
         acq400_hapi=self.importPyDeviceModule('acq400_hapi')
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
-        uut.so.set_knob('soft_trigger','1')
+        uut.s0.set_knob('soft_trigger','1')
         return 1
     TRIG=trig
 
-    @threaded
     def stream(self):
         import socket
         import numpy as np
@@ -238,9 +243,8 @@ class Acq2106_423st(MDSplus.Device):
                         i += 1
                     segment += 1
                     Event.setevent(event_name)
-        if self.log_output.on:
-            print("%s\tAll Done"%(datetime.datetime.now(),))
-            sys.stdout.flush()
+        print("%s\tAll Done"%(datetime.datetime.now(),))
+        sys.stdout.flush()
 
     def setChanScale(self,num):
         chan=self.__getattr__('INPUT_%3.3d' % num)
