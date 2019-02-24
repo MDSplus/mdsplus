@@ -170,7 +170,7 @@ class ACQ435ST(MDSplus.Device):
     def trig(self):
         acq400_hapi=self.importPyDeviceModule('acq400_hapi')
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
-        uut.so.set_knob('soft_trigger','1')
+        uut.s0.set_knob('soft_trigger','1')
         return 1
     TRIG=trig
 
