@@ -4,8 +4,20 @@
  #include <mdsdescrip.h>
  #include <pthread_port.h>
  #ifdef _WIN32
+  typedef int socklen_t;
   #include <time.h>
+  #define random rand
+  #define MSG_DONTWAIT 0 // TODO: implement workaround usiing select
+  #define SOCKERROR(...) do{errno = WSAGetLastError();fprintf (stderr, __VA_ARGS__);}while (0)
+  #define close closesocket
  #else
+  typedef int SOCKET;
+  #define INVALID_SOCKET -1
+  #define SOCKERROR(...) fprintf (stderr, __VA_ARGS__)
+  #include <sys/socket.h>
+  #include <netinet/in.h>
+  #include <netdb.h>
+  #include <arpa/inet.h>
   #ifndef HAVE_PTHREAD_LOCK_GLOBAL_NP
    extern void pthread_lock_global_np();
    extern void pthread_unlock_global_np();
@@ -20,6 +32,9 @@
 # define TYPEDEF(bytes) typedef enum __attribute__((__packed__))
 # define ENDDEF(type,name) name
 #endif
+
+#define IP(addr)   ((uint8_t*)&addr)
+#define ADDR2IP(a) IP(a)[0],IP(a)[1],IP(a)[2],IP(a)[3]
 
 TYPEDEF(4) {
 SrvNoop        =0,	   /**** Used to start server ****/
@@ -64,7 +79,7 @@ typedef struct {
   struct _SrvJob *previous;
   unsigned int addr;
   unsigned int port;
-  int sock;
+  SOCKET sock;
   int length;
   int op;
   int flags;
