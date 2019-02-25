@@ -126,6 +126,9 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                 """ tcl check if still alive """
                 if mon: self.assertEqual(mon.poll(),None)
                 if svr: self.assertEqual(svr.poll(),None)
+                """ tcl QuitServer """
+                self._doTCLTest('stop server %s'%server)
+                self._doTCLTest('stop server %s'%monitor)
             finally:
                 if svr and svr.poll() is None:
                     svr.terminate()
