@@ -73,6 +73,13 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phas
 #include <errno.h>
 #include <sys/time.h>
 
+#define DEBUG
+#ifdef DEBUG
+#define DBG(...) fprintf(stderr,__VA_ARGS__)
+#else
+#define DBG(...) {/**/}
+#endif
+
 extern int TdiCompletionOf();
 extern int TdiExecute();
 extern int TdiErrorlogsOf();
@@ -612,7 +619,7 @@ STATIC_ROUTINE void Dispatch(int i){
     } else {
       UNLOCK_ACTION(i,d_w);
       status = ServerDispatchAction(0, Server(server, actions[i].server), table->tree, table->shot,
-				    actions[i].nid, DoActionDone, i + (char *)0, &actions[i].status, &actions[i].lock,
+				    actions[i].nid, DoActionDone, (char*)(intptr_t)i, &actions[i].status, &actions[i].lock,
 				    &actions[i].netid, Before);
       WRLOCK_ACTION(i,d_w);
       ProgLoc = 7003;
@@ -693,6 +700,7 @@ STATIC_ROUTINE void ActionDoneThread(){
 }
 
 STATIC_ROUTINE void DoActionDone(int i){
+  DBG("DoActionDone(%d)\n",i);
   INIT_STATUS;
   pthread_t thread;
   QueueCompletedAction(i); /***** must be done before starting thread ****/

@@ -24,44 +24,33 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsplus/mdsconfig.h>
 #include <servershr.h>
-#include "servershrp.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
 #include <mds_stdarg.h>
-#include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <strroutines.h>
 #include <treeshr.h>
-#include <pthread_port.h>
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#ifdef _WIN32
-#include <windows.h>
- #define MSG_DONTWAIT 0 // TODO: implement workaround usiing select
-#else
- typedef int SOCKET;
- #define INVALID_SOCKET -1
- #include <sys/socket.h>
- #include <netinet/in.h>
- #include <signal.h>
+# include <unistd.h>
 #endif
 #include <sys/time.h>
+#include <signal.h>
+#include "servershrp.h"
+
+#define DEBUG
+#ifdef DEBUG
+#define DBG(...) fprintf(stderr,__VA_ARGS__)
+#else
+#define DBG(...) {/**/}
+#endif
 
 typedef struct _MonitorList {
   uint32_t addr;
   uint16_t port;
   struct _MonitorList *next;
 } MonitorList;
-
-typedef struct _ClientList {
-  uint32_t addr;
-  uint16_t port;
-  SOCKET sock;
-  struct _ClientList *next;
-} ClientList;
 
 extern int TdiDoTask();
 extern int TdiGetNci();
@@ -77,10 +66,8 @@ static int DoSrvClose(SrvJob * job_in);
 static int DoSrvCreatePulse(SrvJob * job_in);
 static void DoSrvMonitor(SrvJob * job_in);
 
-static void RemoveClient(SrvJob * job);
 extern uint32_t MdsGetClientAddr();
 extern char *MdsGetServerPortname();
-static ClientList *Clients = NULL;
 
 static MonitorList *Monitors = NULL;
 
@@ -284,7 +271,38 @@ static void AbortJob(SrvJob * job){
   }
 }
 // main
+static SOCKET AttachPort(uint32_t addr, uint16_t port){
+  SOCKET sock;
+  struct sockaddr_in sin;
+  sin.sin_port = htons(port);
+  sin.sin_family = AF_INET;
+  *(uint32_t *)(&sin.sin_addr) = addr;
+  sock = socket(AF_INET, SOCK_STREAM, 0);
+  if (sock == INVALID_SOCKET) {
+    perror("Error creating tcp socket");
+    return INVALID_SOCKET;
+  }
+  if (connect(sock, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
+    shutdown(sock, 2);
+    close(sock);
+    perror("Error establishing reply connection to mdstcl client (i.e. dispatcher)");
+    return INVALID_SOCKET;
+  }
+  socklen_t slen = sizeof(sin);
+  if (getsockname(sock, (struct sockaddr *)&sin, &slen)) {
+    shutdown(sock, 2);
+    close(sock);
+    perror("Error reading socket information");
+    return INVALID_SOCKET;
+  }
+  DBG("Connected to %u.%u.%u.%u:%u\n",ADDR2IP(sin.sin_addr),sin.sin_port);
+  return sock;
+}
+// main
 static int QJob(SrvJob * job){
+  job->h.sock = AttachPort(job->h.addr, job->h.port);
+  int status = SendReply(job, SrvJobCHECKEDIN, MDSplusSUCCESS, 0, 0);
+  if STATUS_NOT_OK return status;
   SrvJob *qjob = (SrvJob *) memcpy(malloc(job->h.length), job, job->h.length);
   QUEUE_LOCK;
   if (JobQueueNext)
@@ -500,7 +518,8 @@ static int DoSrvClose(SrvJob * job_in){
     SendReply(job_in, SrvJobFINISHED, status, 0, 0);
   return status;
 }
-// thread
+
+/////////BEGIN DoSrvCreatePulse////////////////////////////////////////////////
 static int DoSrvCreatePulse(SrvJob * job_in){
   INIT_STATUS_ERROR;
   SrvCreatePulseJob *job = (SrvCreatePulseJob *) job_in;
@@ -513,7 +532,9 @@ static int DoSrvCreatePulse(SrvJob * job_in){
     SendReply(job_in, SrvJobFINISHED, status, 0, 0);
   return status;
 }
-// thread
+/////////END   DoSrvCreatePulse////////////////////////////////////////////////
+
+/////////BEGIN DoSrvCommand////////////////////////////////////////////////////
 static int DoSrvCommand(SrvJob * job_in){
   INIT_STATUS_ERROR;
   SrvCommandJob *job = (SrvCommandJob *) job_in;
@@ -541,21 +562,10 @@ static int DoSrvCommand(SrvJob * job_in){
   ProgLoc = 70;
   return status;
 }
-// thread
-static int AddMonitorClient(SrvJob * job){
-  MonitorList *mlist;
-  for (mlist = Monitors ; mlist ; mlist = mlist->next)
-    if (job->h.addr == mlist->addr && job->h.port == mlist->port)
-      return MDSplusSUCCESS;
-  mlist = (MonitorList *) malloc(sizeof(MonitorList));
-  mlist->addr = job->h.addr;
-  mlist->port = job->h.port;
-  mlist->next = Monitors;
-  Monitors = mlist;
-  return MDSplusSUCCESS;
-}
-// thread
-static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in){
+/////////END   DoSrvCommand////////////////////////////////////////////////////
+
+/////////BEGIN DoSrvMonitor////////////////////////////////////////////////////
+static inline void send_to_monitor(MonitorList *m, MonitorList *prev, SrvJob *job_in){
   INIT_STATUS_ERROR;
   SrvMonitorJob *job = (SrvMonitorJob *) job_in;
   char *msg = NULL;// char msg[1024];
@@ -598,8 +608,19 @@ static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in){
     free(m);
   }
 }
-// thread
-static int SendToMonitors(SrvJob * job){
+static inline int add_monitor(SrvJob * job){
+  MonitorList *mlist;
+  for (mlist = Monitors ; mlist ; mlist = mlist->next)
+    if (job->h.addr == mlist->addr && job->h.port == mlist->port)
+      return MDSplusSUCCESS;
+  mlist = (MonitorList *) malloc(sizeof(MonitorList));
+  mlist->addr = job->h.addr;
+  mlist->port = job->h.port;
+  mlist->next = Monitors;
+  Monitors = mlist;
+  return MDSplusSUCCESS;
+}
+static inline int send_to_monitors(SrvJob * job){
   MonitorList *m, *prev, *next;
   uint32_t prev_addr = job->h.addr;
   uint16_t prev_port = job->h.port;
@@ -607,20 +628,20 @@ static int SendToMonitors(SrvJob * job){
     job->h.addr = m->addr;
     job->h.port = m->port;
     next = m->next;
-    SendToMonitor(m, prev, job);
+    send_to_monitor(m, prev, job);
   }
   job->h.addr = prev_addr;
   job->h.port = prev_port;
   return MDSplusSUCCESS;
 }
-// thread
 static void DoSrvMonitor(SrvJob * job_in){
   INIT_STATUS_ERROR;
   SrvMonitorJob *job = (SrvMonitorJob *) job_in;
-  status = (job->mode == MonitorCheckin) ? AddMonitorClient(job_in) : SendToMonitors(job_in);
+  status = (job->mode == MonitorCheckin) ? add_monitor(job_in) : send_to_monitors(job_in);
   SendReply(job_in, (job->mode == MonitorCheckin) ? SrvJobCHECKEDIN : SrvJobFINISHED, status, 0, 0);
 }
-// thread
+/////////END   DoSrvMonitor////////////////////////////////////////////////////
+
 static void WorkerExit(void *arg __attribute__ ((unused))){
   if (QueueLocked) UnlockQueue();
   CONDITION_RESET(&WorkerRunning);
@@ -695,90 +716,35 @@ static void KillWorker(){
   }
   _CONDITION_UNLOCK(&WorkerRunning);
 }
-
-// both
-static SOCKET AttachPort(uint32_t addr, uint16_t port){
-  SOCKET sock;
-  struct sockaddr_in sin;
-  ClientList *l, *new;
-  for (l = Clients; l; l = l->next)
-    if (l->addr == addr && l->port == port) {
-      if (is_broken_socket(l->sock)) {
-	SrvJob job;
-	job.h.addr = l->addr;
-	job.h.port = l->port;
-	RemoveClient(&job);
-	break;
-      } else
-	return l->sock;
-    }
-  sin.sin_port = htons(port);
-  sin.sin_family = AF_INET;
-  *(uint32_t *)(&sin.sin_addr) = addr;
-  sock = socket(AF_INET, SOCK_STREAM, 0);
-  if (sock != INVALID_SOCKET) {
-    if (connect(sock, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
-      shutdown(sock, 2);
-      close(sock);
-      perror("Error establishing reply connection to mdstcl client (i.e. dispatcher)");
-      return INVALID_SOCKET;
-    }
-    new = (ClientList *) malloc(sizeof(ClientList));
-    l = Clients;
-    Clients = new;
-    new->addr = addr;
-    new->port = port;
-    new->sock = sock;
-    new->next = l;
-  }
-  return sock;
-}
-// both
-static void RemoveClient(SrvJob * job){
-  ClientList *l, *prev;
-  for (prev = 0, l = Clients; l;) {
-    if (job->h.addr == l->addr && job->h.port == l->port) {
-      shutdown(l->sock, 2);
-      close(l->sock);
-      if (prev)
-	prev->next = l->next;
-      else
-	Clients = l->next;
-      free(l);
-      break;
-    } else {
-      prev = l;
-      l = l->next;
-    }
-  }
-}
 // both
 static int SendReply(SrvJob * job, int replyType, int status_in, int length, char *msg){
   INIT_STATUS_ERROR;
-  SOCKET sock;
 #ifndef _WIN32
   signal(SIGPIPE, SIG_IGN);
 #endif
-  sock = AttachPort(job->h.addr, (uint16_t)job->h.port);
-  if (sock != INVALID_SOCKET) {
+  if (job->h.sock != INVALID_SOCKET) {
     char reply[60];
     int bytes;
     memset(reply, 0, 60);
     sprintf(reply, "%d %d %d %ld", job->h.jobid, replyType, status_in, msg ? (long)strlen(msg) : 0);
-    bytes = send(sock, reply, 60, MSG_DONTWAIT);
+#ifdef DEBUG
+    struct sockaddr_in sin = {0};
+    socklen_t slen = sizeof(sin);
+    getsockname(job->h.sock, (struct sockaddr *)&sin, &slen);
+    DBG("Sending to %u.%u.%u.%u:%u Job #%s: %s\n", ADDR2IP(sin.sin_addr), sin.sin_port, reply, msg);
+#endif
+    bytes = send(job->h.sock, reply, 60, MSG_DONTWAIT);
     if (bytes == 60) {
       if (length) {
-	bytes = send(sock, msg, length, MSG_DONTWAIT);
+	bytes = send(job->h.sock, msg, length, MSG_DONTWAIT);
 	if (bytes == length)
 	  status = MDSplusSUCCESS;
       } else
 	status = MDSplusSUCCESS;
     }
     if STATUS_NOT_OK {
-      char* ip = (char*)&job->h.addr;
       char now[32];Now32(now);
-      printf("%s: Dropped connection to %u.%u.%u.%u:%u\n", now, ip[0],ip[1],ip[2],ip[3], job->h.port);
-      RemoveClient(job);
+      printf("%s: Dropped connection to %u.%u.%u.%u:%u\n", now, ADDR2IP(job->h.addr), job->h.port);
     }
   }
 #ifndef _WIN32
