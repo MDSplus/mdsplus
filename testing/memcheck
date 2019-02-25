@@ -1,0 +1,10 @@
+exec valgrind --tool=memcheck --leak-check=full --show-reachable=no\
+ --gen-suppressions=all --num-callers=30\
+ --trace-children-skip='*/ld,*/collect2,*/ldconfig,*/sh'\
+ --trace-children=yes --child-silent-after-fork=yes\
+ --trace-children-skip-by-arg='*SetMdsplusFileProtection*'\
+ --suppressions=$MDSPLUS_DIR/conf/valgrind-python.supp\
+ --suppressions=$MDSPLUS_DIR/conf/valgrind-mdsplus.supp\
+ --suppressions=$MDSPLUS_DIR/conf/valgrind-python.supp\
+ --suppressions=$MDSPLUS_DIR/conf/valgrind-python-disableleak.supp\
+ "$@"
