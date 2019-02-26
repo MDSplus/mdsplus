@@ -176,7 +176,7 @@ AC_DEFUN([TS_SELECT],[
       AS_VAR_APPEND([TESTS_ENVIRONMENT],["WINEDEBUG=-all "])
       AS_VAR_APPEND([TESTS_ENVIRONMENT],["MDSPLUS_DIR='TS_U2WPATH([${srcdir}])' "])
       AS_VAR_APPEND([TESTS_ENVIRONMENT],["MDS_PATH='TS_U2WPATH([${srcdir}/tdi])' "])
-      AS_VAR_APPEND([TESTS_ENVIRONMENT],["MDS_PYDEVICE_PATH='TS_U2WPATH([${srcdir}/pydevices])' "])
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],["MDS_PYDEVICE_PATH='TS_U2WPATH([${srcdir}/pydevices]);TS_U2WPATH([${srcdir}/mdsobjects/python/tests/devices])' "])
       AS_VAR_APPEND([TESTS_ENVIRONMENT],["main_path='.;TS_U2WPATH([${srcdir}/trees])' "])
       AS_VAR_APPEND([TESTS_ENVIRONMENT],["subtree_path='.;TS_U2WPATH([${srcdir}/trees/subtree])' "])
       AS_VAR_IF([WINEARCH],[win64],
@@ -220,7 +220,7 @@ AC_DEFUN([TS_SELECT],[
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"PATH=${MAKEBINDIR}:\${PATH} ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR=\$(abs_top_srcdir) ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH=\$(abs_top_srcdir)/tdi ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PYDEVICE_PATH=\$(abs_top_srcdir)/pydevices ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PYDEVICE_PATH='\$(abs_top_srcdir)/pydevices;\$(abs_top_srcdir)/mdsobjects/python/tests/devices' ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"main_path='.;\$(abs_top_srcdir)/trees' ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"subtree_path='.;\$(abs_top_srcdir)/trees/subtree' ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) ")
