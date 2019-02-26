@@ -1,3 +1,1 @@
-#!/bin/sh
-fdir=`echo $0 | sed s/mdstcl//`
-`echo $0 | sed s/mdstcl//`mdsdcl -prep 'set command tcl_commands -history=".tcl"' $1 $2 $3 $4 $5 $6 $7 $8
+exec mdsdcl -prep 'set command tcl_commands -history=".tcl"' "$@"
