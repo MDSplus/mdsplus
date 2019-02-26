@@ -289,7 +289,7 @@ int Tdi1Using(opcode_t opcode __attribute__ ((unused)),
   if (narg > 1) {
     char *path = MdsDescrToCstring((struct descriptor *)&def);
     if STATUS_OK
-      status = TreeSetDefault(path, &nid);
+      status = _TreeSetDefault(*ctx,path, &nid);
     MdsFree(path);
     if (narg > 2)
       StrFree1Dx(&expt);
