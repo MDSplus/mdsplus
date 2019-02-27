@@ -113,14 +113,11 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                 self._doTCLTest('dispatch TESTDEVICE_S:ACTIONSERVER:MANUAL')
                 self._doTCLTest('dispatch/build%s'%monitor_opt)
                 self._doTCLTest('dispatch/phase%s INIT'%monitor_opt)
-                sleep(.1)
-                self._checkIdle(server)
+                self._waitIdle(server,1)
                 self._doTCLTest('dispatch/phase%s PULSE'%monitor_opt)
-                sleep(.1)
-                self._checkIdle(server)
+                self._waitIdle(server,1)
                 self._doTCLTest('dispatch/phase%s STORE'%monitor_opt)
-                sleep(.1)
-                self._checkIdle(server)
+                self._waitIdle(server,1)
                 """ tcl exceptions """
                 self._doExceptionTest('dispatch/command/server=%s '%server,Exc.MdsdclIVVERB)
                 """ tcl check if still alive """
@@ -181,6 +178,7 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                 test_normal(c,"1",timeout=1000)
                 if sys.version_info < (3,7): # TODO: make this work under fc29 (python3.7?)
                     test_normal(c,"py('1')",timeout=1000) # verify locks are released
+                self._doTCLTest('stop server %s'%server)
             finally:
                 if svr and svr.poll() is None:
                     svr.terminate()

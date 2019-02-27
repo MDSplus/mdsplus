@@ -146,6 +146,19 @@ class MdsIp(object):
         show_server = "Checking server: %s\n[^,]+, [^,]+, logging enabled, Inactive\n"%server
         self._doTCLTest('show server %s'%server,out=show_server,re=True)
 
+    def _waitIdle(self,server,timeout):
+        timeout = time.time()+timeout
+        while 1:
+            time.sleep(.1)
+            try:
+                self._checkIdle(server)
+            except:
+                if time.time()<timeout:
+                    continue
+                raise
+            else:
+                break
+
     def _start_mdsip(self,server,port,logname,protocol='TCP'):
         if port>0:
             from subprocess import Popen,STDOUT
