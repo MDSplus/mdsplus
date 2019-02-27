@@ -768,7 +768,7 @@ static void RemoveClient(Client * c, fd_set * fdactive) {
   for (;;) {
     j = get_job_by_conid(conid);
     if (j) {
-      DoCompletionAst(j, ServerPATH_DOWN, NULL, 0);
+      //      DoCompletionAst(j, ServerPATH_DOWN, NULL, 0);
       RemoveJob(j);
     } else break;
   }
