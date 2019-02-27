@@ -73,7 +73,7 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phas
 #include <errno.h>
 #include <sys/time.h>
 
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
 #define DBG(...) fprintf(stderr,__VA_ARGS__)
 #else

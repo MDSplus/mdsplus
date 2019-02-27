@@ -39,12 +39,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <signal.h>
 #include "servershrp.h"
 
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
 #define DBG(...) fprintf(stderr,__VA_ARGS__)
 #else
 #define DBG(...) {/**/}
 #endif
+
+//#define SEND_FLAGS MSG_DONTWAIT
+#define SEND_FLAGS 0
 
 typedef struct _MonitorList {
   uint32_t addr;
@@ -173,7 +176,7 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags, in
   case SrvClose:
     {
       SrvCloseJob job;
-      job.h.addr = MdsGetClientAddr();
+      job.h.addr = addr ? *addr : MdsGetClientAddr();
       job.h.port = *port;
       job.h.op = *op;
       job.h.length = sizeof(job);
@@ -188,7 +191,7 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags, in
   case SrvCreatePulse:
     {
       SrvCreatePulseJob job;
-      job.h.addr = MdsGetClientAddr();
+      job.h.addr = addr ? *addr : MdsGetClientAddr();
       job.h.port = *port;
       job.h.op = *op;
       job.h.length = sizeof(job);
@@ -211,7 +214,7 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags, in
   case SrvCommand:
     {
       SrvCommandJob job;
-      job.h.addr = MdsGetClientAddr();
+      job.h.addr = addr ? *addr : MdsGetClientAddr();
       job.h.port = *port;
       job.h.op = *op;
       job.h.length = sizeof(job);
@@ -228,7 +231,7 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags, in
   case SrvMonitor:
     {
       SrvMonitorJob job;
-      job.h.addr = MdsGetClientAddr();
+      job.h.addr = addr ? *addr : MdsGetClientAddr();
       job.h.port = *port;
       job.h.op = *op;
       job.h.length = sizeof(job);
@@ -266,7 +269,7 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags, in
 // main
 static void AbortJob(SrvJob * job){
   if (job) {
-    SendReply(job, SrvJobFINISHED, ServerABORT, 0, 0);
+    SendReply(job, SrvJobFINISHED, ServerABORT, 0, NULL);
     FreeJob(job);
   }
 }
@@ -301,7 +304,7 @@ static SOCKET AttachPort(uint32_t addr, uint16_t port){
 // main
 static int QJob(SrvJob * job){
   job->h.sock = AttachPort(job->h.addr, job->h.port);
-  int status = SendReply(job, SrvJobCHECKEDIN, MDSplusSUCCESS, 0, 0);
+  int status = SendReply(job, SrvJobCHECKEDIN, MDSplusSUCCESS, 0, NULL);
   if STATUS_NOT_OK return status;
   SrvJob *qjob = (SrvJob *) memcpy(malloc(job->h.length), job, job->h.length);
   QUEUE_LOCK;
@@ -504,7 +507,7 @@ static int DoSrvAction(SrvJob * job_in){
 end: ;
   TreeFreeDbid(dbid);
   if (job_in->h.addr)
-    SendReply(job_in, SrvJobFINISHED, status, 0, 0);
+    SendReply(job_in, SrvJobFINISHED, status, 0, NULL);
   return status;
 }
 // thread
@@ -515,7 +518,7 @@ static int DoSrvClose(SrvJob * job_in){
   while IS_OK(status = TreeClose(0, 0));
   status = (status == TreeNOT_OPEN) ? TreeNORMAL : status;
   if (job_in->h.addr)
-    SendReply(job_in, SrvJobFINISHED, status, 0, 0);
+    SendReply(job_in, SrvJobFINISHED, status, 0, NULL);
   return status;
 }
 
@@ -529,7 +532,7 @@ static int DoSrvCreatePulse(SrvJob * job_in){
   current_job_text = job_text;
   status = TreeCreateTreeFiles(job->tree, job->shot, -1);
   if (job_in->h.addr)
-    SendReply(job_in, SrvJobFINISHED, status, 0, 0);
+    SendReply(job_in, SrvJobFINISHED, status, 0, NULL);
   return status;
 }
 /////////END   DoSrvCreatePulse////////////////////////////////////////////////
@@ -558,7 +561,7 @@ static int DoSrvCommand(SrvJob * job_in){
   }
   ProgLoc = 69;
   if (job_in->h.addr)
-    SendReply(job_in, SrvJobFINISHED, status, 0, 0);
+    SendReply(job_in, SrvJobFINISHED, status, 0, NULL);
   ProgLoc = 70;
   return status;
 }
@@ -638,7 +641,7 @@ static void DoSrvMonitor(SrvJob * job_in){
   INIT_STATUS_ERROR;
   SrvMonitorJob *job = (SrvMonitorJob *) job_in;
   status = (job->mode == MonitorCheckin) ? add_monitor(job_in) : send_to_monitors(job_in);
-  SendReply(job_in, (job->mode == MonitorCheckin) ? SrvJobCHECKEDIN : SrvJobFINISHED, status, 0, 0);
+  SendReply(job_in, (job->mode == MonitorCheckin) ? SrvJobCHECKEDIN : SrvJobFINISHED, status, 0, NULL);
 }
 /////////END   DoSrvMonitor////////////////////////////////////////////////////
 
@@ -664,7 +667,7 @@ static void WorkerThread(void *arg __attribute__ ((unused)) ){
     ProgLoc = 4;
     if ((job->h.flags & SrvJobBEFORE_NOTIFY) != 0) {
       ProgLoc = 5;
-      SendReply(job, SrvJobSTARTING, 1, 0, 0);
+      SendReply(job, SrvJobSTARTING, 1, 0, NULL);
     }
     ProgLoc = 6;
     switch (job->h.op) {
@@ -733,10 +736,10 @@ static int SendReply(SrvJob * job, int replyType, int status_in, int length, cha
     getsockname(job->h.sock, (struct sockaddr *)&sin, &slen);
     DBG("Sending to %u.%u.%u.%u:%u Job #%s: %s\n", ADDR2IP(sin.sin_addr), sin.sin_port, reply, msg);
 #endif
-    bytes = send(job->h.sock, reply, 60, MSG_DONTWAIT);
+    bytes = send(job->h.sock, reply, 60, SEND_FLAGS);
     if (bytes == 60) {
       if (length) {
-	bytes = send(job->h.sock, msg, length, MSG_DONTWAIT);
+	bytes = send(job->h.sock, msg, length, SEND_FLAGS);
 	if (bytes == length)
 	  status = MDSplusSUCCESS;
       } else
@@ -752,4 +755,3 @@ static int SendReply(SrvJob * job, int replyType, int status_in, int length, cha
 #endif
   return status;
 }
-
