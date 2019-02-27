@@ -693,7 +693,7 @@ static void DoMessage(Client * c, fd_set * fdactive)
   int msglen;
   int num;
   int nbytes;
-  nbytes = recv(c->reply_sock, reply, 60, 0);
+  nbytes = recv(c->reply_sock, reply, 60, MSG_WAITALL);
   if (nbytes != 60) {
     RemoveClient(c, fdactive);
     return;
@@ -707,7 +707,7 @@ static void DoMessage(Client * c, fd_set * fdactive)
   if (msglen != 0) {
     msg = (char *)malloc(msglen + 1);
     msg[msglen] = 0;
-    nbytes = recv(c->reply_sock, msg, msglen, 0);
+    nbytes = recv(c->reply_sock, msg, msglen, MSG_WAITALL);
     if (nbytes != msglen) {
       free(msg);
       RemoveClient(c, fdactive);
