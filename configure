@@ -15070,7 +15070,7 @@ fi
 
    ENABLE_TESTS=yes
    $as_echo "Set tests environment for linux->linux"
-   as_fn_append TESTS_ENVIRONMENT "PATH=${MAKEBINDIR}:\${PATH} "
+   as_fn_append TESTS_ENVIRONMENT "PATH=${MAKEBINDIR}:\$(abs_top_srcdir)/testing:\${PATH} "
    as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
    as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
    as_fn_append TESTS_ENVIRONMENT "MDS_PYDEVICE_PATH=\$(abs_top_srcdir)/pydevices "
