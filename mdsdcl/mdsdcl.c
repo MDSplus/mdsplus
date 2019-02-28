@@ -59,8 +59,9 @@ static void flushError(char *error)
   error[0] = 0;
 }
 
-void handle_signals(int signo __attribute__ ((unused)))
-{
+void handle_signals(int signo){
+ (void)signo;
+ fprintf(stderr,"received signal %d",signo);
 }
 
 int main(int argc, char const *argv[])
@@ -117,6 +118,26 @@ int main(int argc, char const *argv[])
 
   /* If other options on command line */
 
+  if ((argc > 2) && (strcmp("-f", argv[1]) == 0)) {
+    FILE * fp = fopen(argv[2],"r");
+    if (fp == NULL)
+        exit(EXIT_FAILURE);
+    char * line = NULL;
+    size_t llen = 0;
+    ssize_t read;
+    while ((read = getline(&line, &llen, fp)) != -1) {
+        size_t len = strlen(line);
+        while(len>0 && (line[len-1]=='\n' || line[len-1]=='\r')) line[--len] = '\0';
+        if (len==0) continue;
+	if (mdsdcl_do_command(line) == MdsdclEXIT)
+	  break;
+    }
+    fclose(fp);
+    if (line)
+        free(line);
+    exit(EXIT_SUCCESS);
+  }
+
   if (argc > 1) {
 
     /* Concatenate rest of line into a mdsdcl command string */
@@ -140,7 +161,7 @@ int main(int argc, char const *argv[])
 
   prompt = mdsdclGetPrompt();
 
-  signal(SIGINT, handle_signals);
+  //signal(SIGINT, handle_signals);
 
   /* While more commands to be entered */
 
@@ -186,7 +207,6 @@ int main(int argc, char const *argv[])
 	command[strlen(command) - 1] = '\0';
 	if (prompt)
 	  free(prompt);
-	prompt = 0;
 	prompt = strdup("Continue: ");
 	continue;
       }
