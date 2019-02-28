@@ -93,7 +93,7 @@ class Acq2106_423st(MDSplus.Device):
            It should at least take one argument: teh device node  
         """
         def __init__(self,dev):
-            super(ACQ2106_423ST.Worker,self).__init__(name=dev.path)
+            super(Acq2106_423st.Worker,self).__init__(name=dev.path)
             # make a thread safe copy of the device node with a non-global context
             self.dev = dev.copy()
         def run(self):
@@ -128,6 +128,11 @@ class Acq2106_423st(MDSplus.Device):
                 coeff.record = coeffs[i]
                 offset = self.__getattr__('input_%3.3d_offset'%(card*32+i+1))
                 offset.record = offsets[i]
+        if self.trig_mode.data() == 'hard':
+            uut.s1.set_knob('trg', '1,0,1')
+        else:
+            uut.s1.set_knob('trg', '1,1,1')
+
         self.running.on=True
         thread = self.Worker(self)
         thread.start()

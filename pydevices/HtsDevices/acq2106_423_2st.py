@@ -62,3 +62,6 @@ class ACQ2106_423_2ST(Acq2106_423st):
                      'type':'NUMERIC', 
                      'value':1, 
                      'options':('no_write_shot')})
+    def __getnewargs__(self):#this line
+        return (ACQ2106_423_2ST.__str__(self),)
+
