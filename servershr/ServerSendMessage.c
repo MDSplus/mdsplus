@@ -147,23 +147,22 @@ static inline Client *new_client(int conid, uint32_t addr, uint16_t port) {
   }
 }
 
-static inline Client *add_client(Client *n) {
+static inline Client *add_client(Client *in) {
+  Client *out;
   ClientList *c;
   LOCK_JOBS;
   for (c = Clients; c && (Client*)c!=n ; c = c->next) ;
   if (!c) {
     ClientList *new = realloc(n,sizeof(ClientList));
     new->next  = NULL;
-    for (c = Clients; c && c->next != 0; c = c->next) ;
-    if (c)
-      c->next = new;
-    else
-      Clients = new;
-    n = (Client*)new;
+    for (c = Clients; c && c->next ; c = c->next) ;
+    if (c) c->next = new;
+    else   Clients = new;
+    out = (Client*)new;
     DBG("stored old client %d %u.%u.%u.%u:%u\n",n->conid,ADDR2IP(n->addr),n->port);
-  }
+  } else out = in;
   UNLOCK_JOBS;
-  return n;
+  return out;
 }
 
 static int MonJob = 0;
@@ -257,7 +256,8 @@ static inline Job* pop_job_by_jobid(int jobid) {
 static void cleanup_job(int status, int jobid, int freejob){
   Job *j = pop_job_by_jobid(jobid);
   if (j) {
-    DisconnectFromMds(j->c->conid);
+    if (j->c->version>=MDSIP_VERSION_SERVER_JOBS)
+      DisconnectFromMds(j->c->conid);
     do_completion_ast(j, status, NULL, FALSE);
     if (j->c->sock != INVALID_SOCKET && j->c->version>=MDSIP_VERSION_SERVER_JOBS) {
       LOCK_JOBS;
@@ -310,9 +310,6 @@ static inline int send_request(Client *client, uint32_t addr, uint16_t port, int
   for (i = 0; i < numargs; i++) {
     strcat(cmd, ",");
     struct descrip *arg = va_arg(*vlist, struct descrip *);
-    if (op == SrvMonitor && numargs == 8 && i == 5 && arg->dtype == DTYPE_LONG
-        && *(int *)arg->ptr == MonitorCheckin)
-      MonJob = jobid;
     switch (arg->dtype) {
       case DTYPE_CSTRING: {
         int j, k;
@@ -329,6 +326,8 @@ static inline int send_request(Client *client, uint32_t addr, uint16_t port, int
         break;
       }
       case DTYPE_LONG:
+        if (op == SrvMonitor && numargs == 8 && i == 5 && *(int *)arg->ptr == MonitorCheckin)
+          MonJob = jobid;
         sprintf(&cmd[strlen(cmd)], "%d", *(int *)arg->ptr);
         break;
       case DTYPE_CHAR:
@@ -803,7 +802,10 @@ static Client* server_connect(char* server_in) {
 
 EXPORT int ServerConnect(char *server_in) {
   Client *c = server_connect(server_in);
-  if (c) return c->conid;
+  if (c) {
+    c = add_client(c);
+    return c->conid;
+  }
   return -1;
 }
 EXPORT int ServerDisconnect(char *server_in) {
@@ -813,13 +815,27 @@ EXPORT int ServerDisconnect(char *server_in) {
   char *server = srv ? srv : server_in;
   c = get_addr_port(server,NULL,NULL);
   FREE_NOW(srv);
-  if (c)
-    return DisconnectFromMds(c->conid);
+  if (c) {
+    ClientList *cl,*p;
+    int conid;
+    LOCK_JOBS;
+    for (cl = Clients, p=NULL; cl && (Client*)cl!=c ; p=cl, cl=cl->next);
+    if (cl) {
+      conid = cl->conid;
+      if (p) p->next = cl->next;
+      else   Clients = cl->next;
+      free(cl);
+    } else conid = -1;
+    UNLOCK_JOBS;
+    if (conid!=-1)
+      return DisconnectFromMds(c->conid);
+  }
   return MDSplusSUCCESS;
 }
 
 int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_rwlock_t *lock, int *conid_out,
 		      void (*ast) (), void *astparam, void (*before_ast) (), int numargs, ...){
+  DBG("op=%d\n",op);
   uint16_t port = 0;
   if (start_receiver(&port)) {
     if (ast && astparam)
@@ -827,6 +843,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
     return MDSplusFATAL;
   }
   Client * client = server_connect(server);
+  const int conid = client->version<MDSIP_VERSION_SERVER_JOBS ? -1 : client->conid;
   if (!client) {
     if (ast && astparam)
       ast(astparam);
@@ -859,16 +876,14 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
   if STATUS_NOT_OK {
     perror("Error sending message to server");
     cleanup_job(status, jobid, TRUE);
-    if (client->version>=MDSIP_VERSION_SERVER_JOBS)
-      DisconnectFromMds(client->conid);
+    if (conid>=0)  DisconnectFromMds(conid);
     return status;
   }
   status = receive_answer(client,jobid,op);
   if STATUS_NOT_OK {
     perror("Error receiving answer from server");
     cleanup_job(status, jobid, TRUE);
-    if (client->version>=MDSIP_VERSION_SERVER_JOBS)
-      DisconnectFromMds(client->conid);
+    if (conid>=0)  DisconnectFromMds(conid);
     return status;
   }
 #ifdef DEBUG
@@ -878,7 +893,6 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
   UNLOCK_JOBS;
   DBG("Job #%d linked with 0x%"PRIxPTR"\n",jobid,(uintptr_t)j);
 #endif
-  if (client->version>=MDSIP_VERSION_SERVER_JOBS)
-     DisconnectFromMds(client->conid);
+  if (conid>=0)  DisconnectFromMds(conid);
   return status;
 }
