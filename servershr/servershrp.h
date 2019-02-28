@@ -8,12 +8,12 @@
   #include <time.h>
   #define random rand
   #define MSG_DONTWAIT 0 // TODO: implement workaround usiing select
-  #define SOCKERROR(...) do{errno = WSAGetLastError();fprintf (stderr, __VA_ARGS__);}while (0)
+  #define SOCKERROR(...) do{errno = WSAGetLastError();perror("");fprintf(stderr, __VA_ARGS__);}while (0)
   #define close closesocket
  #else
   typedef int SOCKET;
   #define INVALID_SOCKET -1
-  #define SOCKERROR(...) fprintf (stderr, __VA_ARGS__)
+  #define SOCKERROR(...) do{perror("");fprintf(stderr, __VA_ARGS__);}while(0)
   #include <sys/socket.h>
   #include <netinet/in.h>
   #include <netdb.h>
