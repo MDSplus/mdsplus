@@ -65,10 +65,6 @@ static int GetBytesTO(Connection* c, void *buffer, size_t bytes_to_recv, int to_
   return MDSplusERROR;
 }
 
-static int GetBytes(Connection* c, void* buffer, size_t bytes_to_recv){
-  return GetBytesTO(c, buffer, bytes_to_recv, -1);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 //  GetMdsMsg  /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -99,7 +95,7 @@ Message *GetMdsMsgTOC(Connection* c, int *status, int to_msec){
     msglen = header.msglen;
     msg = malloc(header.msglen);
     msg->h = header;
-    *status = GetBytes(c, msg->bytes, msglen - sizeof(MsgHdr));
+    *status = GetBytesTO(c, msg->bytes, msglen - sizeof(MsgHdr), 1000);
     if (IS_OK(*status) && IsCompressed(header.client_type)) {
       Message *m;
       unsigned long dlen;
