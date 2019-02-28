@@ -702,16 +702,8 @@ static SOCKET AttachPort(uint32_t addr, uint16_t port){
   struct sockaddr_in sin;
   ClientList *l, *new;
   for (l = Clients; l; l = l->next)
-    if (l->addr == addr && l->port == port) {
-      if (is_broken_socket(l->sock)) {
-	SrvJob job;
-	job.h.addr = l->addr;
-	job.h.port = l->port;
-	RemoveClient(&job);
-	break;
-      } else
-	return l->sock;
-    }
+    if (l->addr == addr && l->port == port)
+      return l->sock;
   sin.sin_port = htons(port);
   sin.sin_family = AF_INET;
   *(uint32_t *)(&sin.sin_addr) = addr;
@@ -759,14 +751,17 @@ static int SendReply(SrvJob * job, int replyType, int status_in, int length, cha
 #ifndef _WIN32
   signal(SIGPIPE, SIG_IGN);
 #endif
-  sock = AttachPort(job->h.addr, (uint16_t)job->h.port);
-  if (sock != INVALID_SOCKET) {
+  int try_again = TRUE;
+  do{
+    sock = AttachPort(job->h.addr, (uint16_t)job->h.port);
+    if (sock == INVALID_SOCKET) break;
     char reply[60];
     int bytes;
     memset(reply, 0, 60);
     sprintf(reply, "%d %d %d %ld", job->h.jobid, replyType, status_in, msg ? (long)strlen(msg) : 0);
     bytes = send(sock, reply, 60, MSG_DONTWAIT);
     if (bytes == 60) {
+      try_again = FALSE;
       if (length) {
 	bytes = send(sock, msg, length, MSG_DONTWAIT);
 	if (bytes == length)
@@ -780,7 +775,7 @@ static int SendReply(SrvJob * job, int replyType, int status_in, int length, cha
       printf("%s: Dropped connection to %u.%u.%u.%u:%u\n", now, ip[0],ip[1],ip[2],ip[3], job->h.port);
       RemoveClient(job);
     }
-  }
+  } while(try_again--);
 #ifndef _WIN32
   signal(SIGPIPE, SIG_DFL);
 #endif
