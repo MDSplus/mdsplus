@@ -257,8 +257,10 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
     if STATUS_NOT_OK {
       status = MDSplusSUCCESS;
       CleanupJob(status, jobid);
-    } else
+    } else {
       status = MDSplusERROR;
+      CleanupJob(status, jobid);
+    }
   } else {
     if STATUS_NOT_OK {
       perror("Error: no response from server");
@@ -363,8 +365,10 @@ static void RemoveClient(Client * c, fd_set * fdactive) {
   int conid = get_client_conid(c,fdactive);
   for (;;) {
     Job *j = pop_job_by_conid(conid);
-    if (j) doCompletionAst(j, ServerPATH_DOWN, NULL, FALSE);
-    else break;
+    if (j) {
+      doCompletionAst(j, ServerPATH_DOWN, NULL, FALSE);
+      free(j);
+    } else   break;
   }
 }
 static void CleanupJob(int status, int jobid){
@@ -373,10 +377,13 @@ static void CleanupJob(int status, int jobid){
     const int conid = j->conid;
     DisconnectFromMds(conid);
     doCompletionAst(j, status, NULL, FALSE);
+    free(j);
     for (;;) {
       j = pop_job_by_conid(conid);
-      if (j) doCompletionAst(j, status, NULL, FALSE);
-      else   break;
+      if (j) {
+	doCompletionAst(j, status, NULL, FALSE);
+	free(j);
+      } else   break;
     }
   }
 }
