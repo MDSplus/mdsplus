@@ -83,7 +83,7 @@ static void DoOpenTree(LinkedEvent * event);
 //#define min(a,b) ( ((a)<(b)) ? (a) : (b) )
 //#define max(a,b) ( ((a)>(b)) ? (a) : (b) )
 
-static char *current_tree = NULL;
+static char current_tree[13] = {0};
 static int current_shot = -9999;
 static int current_phase = -9999;
 static int current_node_entry;
@@ -203,15 +203,13 @@ inline static void _EventUpdate(LinkedEvent * event){
   }
 }
 
-inline static void _DoOpenTree(LinkedEvent * event)
-{
+inline static void _DoOpenTree(LinkedEvent * event){
   current_node_entry = 0;
   current_on = -1;
   current_phase = 9999;
   if ((event->shot != current_shot) || strcmp(event->tree, current_tree)) {
     current_shot = event->shot;
-    current_tree = realloc(current_tree, strlen(event->tree) + 1);
-    strcpy(current_tree, event->tree);
+    if (event->tree) strncpy(current_tree,event->tree,12);
     PutLog(event->time, "NEW SHOT", (char *)asterisks, (char *)asterisks, current_tree);
   }
 }
