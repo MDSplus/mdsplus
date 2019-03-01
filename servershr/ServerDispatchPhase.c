@@ -602,9 +602,9 @@ STATIC_ROUTINE void Dispatch(int i){
       sprintf(logmsg,"%s, Dispatching node %s to %s",now,actions[i].path,Server(server,actions[i].server));
       (*Output) (logmsg);
     }
-    ProgLoc = 7001;
+    //ProgLoc = 7001;
     DoSendMonitor(MonitorDispatched, i);
-    ProgLoc = 7002;
+    //ProgLoc = 7002;
     if (noact) {
       actions[i].dispatched = 1;
       actions[i].status = status = 1;
@@ -615,16 +615,16 @@ STATIC_ROUTINE void Dispatch(int i){
 				    actions[i].nid, DoActionDone, i + (char *)0, &actions[i].status, &actions[i].lock,
 				    &actions[i].netid, Before);
       WRLOCK_ACTION(i,d_w);
-      ProgLoc = 7003;
+      //ProgLoc = 7003;
       if STATUS_OK
         actions[i].dispatched = 1;
     }
-    ProgLoc = 7004;
+    //ProgLoc = 7004;
     if STATUS_NOT_OK {
       actions[i].status = status;
       DoActionDone(i);
     }
-    ProgLoc = 7005;
+    //ProgLoc = 7005;
   }UNLOCK_ACTION(i,d);
   }UNLOCK_TABLE;
 }
