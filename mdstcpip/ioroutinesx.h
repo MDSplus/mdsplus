@@ -162,7 +162,7 @@ static char *getHostInfo(SOCKET sock, char **iphostptr, char **hostnameptr){
 # ifdef DEBUG
       fprintf(stderr,"hp_mem too small-> %d\n",(int)memlen);
 # endif
-      hp_mem = realloc(hp_mem,memlen);
+      free(hp_mem);hp_mem = malloc(memlen);
     }
 #endif
     if (hp && hp->h_name) {
