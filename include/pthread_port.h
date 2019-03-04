@@ -122,6 +122,14 @@ pthread_cond_destroy(&(input)->cond);\
 pthread_mutex_destroy(&(input)->mutex);\
 pthread_mutex_unlock(destroy_lock);\
 } while(0)
+#define CONDITION_DESTROY_PTR(input,destroy_lock) do{\
+pthread_mutex_lock(destroy_lock);\
+if (input){\
+pthread_cond_destroy(&(input)->cond);\
+pthread_mutex_destroy(&(input)->mutex);\
+free(input);(input)=NULL;}\
+pthread_mutex_unlock(destroy_lock);\
+} while(0)
 #define CREATE_THREAD(thread, stacksize, target, args)\
 pthread_attr_t attr;\
 pthread_attr_init(&attr);\

@@ -96,8 +96,7 @@ int ServerSendMessage();
 extern short ArgLen();
 
 extern int GetAnswerInfoTS();
-
-/* Job must be a subclass of Condition
+/*
  *typedef struct _Condition {
  *  pthread_cond_t  cond;
  *  pthread_mutex_t mutex;
@@ -105,18 +104,15 @@ extern int GetAnswerInfoTS();
  *} Condition;
  */
 typedef struct job {
-  pthread_cond_t cond;
-  pthread_mutex_t mutex;
-  int value; //aka done
-  int has_condition;
+  struct job* next;
+  int jobid;
+  int conid;
   int *retstatus;
   pthread_rwlock_t *lock;
+  Condition        *cond;
   void (*ast) ();
   void *astparam;
   void (*before_ast) ();
-  int jobid;
-  int conid;
-  struct job* next;
 } Job;
 pthread_mutex_t jobs_mutex = PTHREAD_MUTEX_INITIALIZER;
 #define LOCK_JOBS   pthread_mutex_lock(&jobs_mutex);pthread_cleanup_push((void*)pthread_mutex_unlock, &jobs_mutex)
@@ -274,6 +270,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
 }
 
 static inline void remove_job(Job *j_i) {
+  // only call this when cond is NULL
   LOCK_JOBS;
   Job *j, *p;
   for (j = Jobs, p = NULL; j && j != j_i ; p=j, j=j->next);
@@ -292,14 +289,14 @@ static void doCompletionAst(Job *j, int status, char *msg, int removeJob){
   if (j->lock) pthread_rwlock_unlock(j->lock);
   if (j->ast) (*j->ast) (j->astparam, msg);
   /**** If job has a condition, RemoveJob will not remove it. ***/
-  if (j->has_condition){
-    pthread_mutex_lock(&job_conds);pthread_cleanup_push((void*)pthread_mutex_unlock, &job_conds);
-    CONDITION_SET(j);
-    pthread_cleanup_pop(1);
+  pthread_mutex_lock(&job_conds);pthread_cleanup_push((void*)pthread_mutex_unlock, &job_conds);
+  if (j->cond){
+    CONDITION_SET(j->cond);
   } else if (removeJob && j->jobid != MonJob) {
     remove_job(j);
-    DBG("Job #%d async done.\n",jj->jobid);
+    DBG("Job #%d async done.\n",j->jobid);
   }
+  pthread_cleanup_pop(1);
 }
 static inline Job* get_job_by_jobid(int jobid) {
   Job *j;
@@ -389,19 +386,21 @@ static void CleanupJob(int status, int jobid){
 }
 static void abandon(void*in) {
   Job *j = *(Job**)in;
-  if (j && j->has_condition) {
-    j->has_condition = B_FALSE;
+  pthread_mutex_lock(&job_conds);pthread_cleanup_push((void*)pthread_mutex_unlock, &job_conds);
+  if (j && j->cond) {
+    CONDITION_DESTROY_PTR(j->cond,&job_conds);
     DBG("Job #%d sync abandoned!\n",j->jobid);
   }
+  pthread_cleanup_pop(1);
 }
 static inline void wait_and_remove_job(Job *j) {
-  CONDITION_WAIT_SET(j);
-  CONDITION_DESTROY(j,&job_conds);
+  CONDITION_WAIT_SET(j->cond);
+  CONDITION_DESTROY_PTR(j->cond,&job_conds);
   remove_job(j);
 }
 void ServerWait(int jobid) {
   Job *j = get_job_by_jobid(jobid);
-  if (j && j->has_condition) {
+  if (j && j->cond) {
     DBG("Job #%d sync pending.\n",jobid);
     pthread_cleanup_push(abandon,(void*)&j);
     wait_and_remove_job(j);
@@ -439,13 +438,12 @@ static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void 
   LOCK_JOBS;
   j->jobid = ++JobId;
   if (msgid) {
-    CONDITION_INIT(j);
-    j->has_condition = B_TRUE;
+    j->cond = malloc(sizeof(Condition));
+    CONDITION_INIT(j->cond);
     *msgid = j->jobid;
     DBG("Job #%d sync registered.\n",j->jobid);
   } else {
-    j->has_condition = B_FALSE;
-    j->value = B_TRUE;
+    j->cond  = NULL;
     DBG("Job #%d async registered.\n",j->jobid);
   }
   j->next = Jobs;
