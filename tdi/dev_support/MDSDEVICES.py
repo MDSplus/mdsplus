@@ -17,7 +17,7 @@ def MDSDEVICES():
         if tdidev is None: return ans
         tdidev = [[k.rstrip(), v.rstrip()] for k,v in tdidev.value.reshape((int(tdidev.value.size/2),2)).tolist()]
         return tdidev+ans
-    ans = [[version.tobytes(d),b'pydevice'] for d in Device.findPyDevices()]
+    ans = [[version.tobytes(d),b'pydevice'] for d in Device.findPyDevices().keys()]
     mdsdevs=getenv('MDS_DEVICES')
     if mdsdevs is not None:
       modules=mdsdevs.split(':')
