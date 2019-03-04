@@ -8,16 +8,15 @@ def _devHelpDevtype(devtype, full):
   if _device_list is None:
     alldevices=Data.execute('MDSDEVICES()')
     _device_list=[item[0].strip() for item in alldevices]
-  devnames=[]
   if ('*' in devtype) or ('?' in devtype):
+    devnames=[]
     for device in _device_list:
       if (Data.execute('MdsShr->StrMatchWild(descr($),descr($))',(device.upper(),devtype.upper())) & 1) == 1:
         devnames.append(DevHelp(device,-1))
     return '\n'.join(devnames)
   else:
     try: 
-        dmod = Device.importPyDeviceModule(devtype)
-        cls = eval('dmod.%s' % dmod.__name__.upper())
+        cls = Device.PyDevice(devtype)
         if full == 1:
           return TextDoc().docclass(cls)
         elif full == -1:
@@ -32,19 +31,16 @@ def _devHelpDevtype(devtype, full):
 
 def _devHelpNode(node,full):
   try:
-    elt=int(node.conglomerate_elt)
+    elt = int(node.conglomerate_elt)
     if elt == 0:
       return ""
     if elt == 1:
       return DevHelp(node.record.model,full)
     else:
-      devtype=str(TreeNode(node.nid-elt+1,node.tree).record[1])
-      dmod = Device.importPyDeviceModule(str(devtype))
-      cls = eval('dmod.%s' % dmod.__name__.upper())
-      return cls.parts[elt-2]['help']
-  except Exception:
-    pass
-  return ""
+      cls = node.head.record.getDevice()
+      return cls.parts[elt-2].get('help',"")
+  except Exception as e:
+    return "ERROR: %s"%(str(e),)
 
 def DevHelp(dev,full=0):
   if isinstance(dev,TreeNode):
