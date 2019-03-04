@@ -107,10 +107,11 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
             try:
                 if mon: self.assertEqual(mon.poll(),None)
                 if svr: self.assertEqual(svr.poll(),None)
+                #Connection(server).get("""py("MDSplus.Device.PyDevice('TestDevice')","None")""")
                 """ tcl dispatch """
                 self._testDispatchCommand(server,'type test')
                 self._doTCLTest('set tree pytree/shot=%d'%shot)
-                self._doTCLTest('dispatch TESTDEVICE_S:ACTIONSERVER:MANUAL')
+                #self._doTCLTest('dispatch TESTDEVICE_S:ACTIONSERVER:MANUAL')
                 self._doTCLTest('dispatch/build%s'%monitor_opt)
                 self._doTCLTest('dispatch/phase%s INIT'%monitor_opt)
                 self._waitIdle(server,3)
@@ -141,7 +142,7 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
             if mon_log: mon_log.close()
             self._doTCLTest('close/all')
         pytree.readonly()
-        self.assertTrue(pytree.TESTDEVICE_S.MANUAL_DONE.record<= pytree.TESTDEVICE_S.INIT1_DONE.record)
+        #self.assertTrue(pytree.TESTDEVICE_S.MANUAL_DONE.record<= pytree.TESTDEVICE_S.INIT1_DONE.record)
         self.assertTrue(pytree.TESTDEVICE_I.INIT1_DONE.record <= pytree.TESTDEVICE_I.INIT2_DONE.record)
         self.assertTrue(pytree.TESTDEVICE_S.INIT1_DONE.record <= pytree.TESTDEVICE_S.INIT2_DONE.record)
         self.assertTrue(pytree.TESTDEVICE_I.INIT2_DONE.record <= pytree.TESTDEVICE_I.STORE_DONE.record)
