@@ -3273,13 +3273,11 @@ If you did intend to write to a subnode of the device you should check the prope
         import sys,os
         path = _mds.getenv("MDS_PYDEVICE_PATH")
         if not path == Device.__cached_mds_pydevice_path:
-            Device.__cached_py_device_modules   = {}
             Device.__cached_py_device_not_found = []
             Device.__cached_mds_pydevice_path = path
             Device.__cached_py_devices = None
         return sys,os,path
 
-    __cached_py_device_modules = {}
     __cached_mds_pydevice_path = ""
     __cached_py_device_not_found = []
     __cached_py_devices = None
@@ -3288,39 +3286,11 @@ If you did intend to write to a subnode of the device you should check the prope
     def importPyDeviceModule(cls,name):
         """Find a device support module with a case insensitive lookup of
         'model'.py in the MDS_PYDEVICE_PATH environment variable search list."""
-        with cls.__cached_lock:
-          sys,os,path = Device.__cached()
-          name = name.lower()
-          if name in Device.__cached_py_device_modules:
-            return Device.__cached_py_device_modules[name]
-          if name in Device.__cached_py_device_modules:
-            raise _exc.DevPYDEVICE_NOT_FOUND
-          if path is not None:
-            check_name=name+".py"
-            parts=path.split(';')
-            for part in parts:
-              w=os.walk(part)
-              for dp,dn,fn in w:
-                devname=None
-                for d in dn:
-                    if d.lower() == name:
-                        devname=d
-                        break
-                if devname is None:
-                    for fname in fn:
-                        if fname.lower() == check_name:
-                            devname=fname[:-3]
-                            break
-                if devname is not None:
-                    sys.path.insert(0,dp)
-                    try:
-                      device = __import__(devname)
-                      Device.__cached_py_device_modules[name] = device
-                      return device
-                    finally:
-                      sys.path.remove(dp)
-          Device.__cached_py_device_not_found.append(name)
-          raise _exc.DevPYDEVICE_NOT_FOUND
+        name = name.upper()
+        py_devices = cls.findPyDevices()
+        if name in py_devices:
+            return py_devices[name]
+        raise _exc.DevPYDEVICE_NOT_FOUND
 
     @classmethod
     def findPyDevices(cls):
@@ -3328,7 +3298,7 @@ If you did intend to write to a subnode of the device you should check the prope
         with cls.__cached_lock:
           sys,os,path = Device.__cached()
           if Device.__cached_py_devices is None:
-            ans=list()
+            ans=dict()
             if path is not None:
               parts=path.split(';')
               for part in parts:
@@ -3336,13 +3306,22 @@ If you did intend to write to a subnode of the device you should check the prope
                   sys.path.insert(0,dp)
                   try:
                     for fname in fn:
-                      if fname.endswith('.py'):
-                        try:
-                          devnam=fname[:-3].upper()
-                          __import__(fname[:-3]).__dict__[devnam]
-                          ans.append(devnam)
-                        except:
-                          pass
+                      if fname == "__init__.py": continue
+                      if not fname.endswith('.py'): continue
+                      try:
+                          modname = fname[:-3]
+                          module = __import__(modname)
+                          for k,v in module.__dict__.items():
+                            try:
+                              if k.startswith("_"):                     continue # filter: no private classes
+                              if not isinstance(v,(Device.__class__,)): continue # filter: only classes
+                              if not issubclass(v,Device):              continue # filter: only device classes
+                              if not v.__module__ == modname:           continue # filter: no super classes
+                              kupper = k.upper()
+                              if not kupper in ans: ans[kupper] = v
+                              else: _sys.stderr.write("Device '%s' from '%s' already imported from '%s'\n"%(k,modname,ans[k].__module__))
+                            except Exception as e: print(str(e))
+                      except: pass
                   finally:
                     sys.path.remove(dp)
             Device.__cached_py_devices = ans
@@ -3374,7 +3353,7 @@ If you did intend to write to a subnode of the device you should check the prope
                         return __import__(package).__dict__[modname]
                     except ImportError: pass
                     except KeyError: pass
-            module = Device.importPyDeviceModule(model)
+            return Device.importPyDeviceModule(model)
         else:
             MODEL = model.upper()
             module = __import__(module)
