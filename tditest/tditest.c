@@ -59,8 +59,12 @@ static char *getExpression(FILE *f_in) {
       } else nlen = 0;
     }
     if (nlen<=0) {
-      if (next) free(next);
-      next = ans;
+      if (ans) {
+        if (next)
+          free(next);
+        next = ans;
+      } else
+        ans = next;
       break;
     }
     append = next[nlen-1] == '\\';
