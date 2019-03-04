@@ -528,7 +528,8 @@ class Parameter(_dat.TreeRefX,Compound):
     dtype_id=194
 _dsc.addDtypeToClass(Parameter)
 
-MAXDIM = 8
+### parse_header.py ###
+MAX_DIMS = 8
 class d(Function):
     opcode = 0
     max_args = 0
@@ -931,7 +932,7 @@ class BUILD_ROUTINE(_dat.TreeRef,Function):
 class BUILD_SIGNAL(_dat.TreeRefX,Function):
     opcode = 85
     min_args = 2
-    max_args = 2+MAXDIM
+    max_args = 2+MAX_DIMS
 
 class BUILD_SLOPE(_dat.TreeRefX,Function):
     opcode = 86
@@ -1894,7 +1895,9 @@ class PRIVATE(_dat.TreeRefX,Function):
     opcode = 278
     min_args = 1
     max_args = 1
-
+    def assign(self,value):
+        EQUALS(self,value).evaluate()
+        return self
 class PROCEDURE_OF(_dat.TreeRefX,Function):
     opcode = 279
     min_args = 1
@@ -1924,7 +1927,9 @@ class PUBLIC(_dat.TreeRefX,Function):
     opcode = 284
     min_args = 1
     max_args = 1
-
+    def assign(self,value):
+        EQUALS(self,value).evaluate()
+        return self
 class QUADWORD(_dat.TreeRefX,Function):
     opcode = 285
     min_args = 1
@@ -2058,7 +2063,7 @@ class SET_EXPONENT(_dat.TreeRefX,Function):
 class SET_RANGE(_dat.TreeRefX,Function):
     opcode = 311
     min_args = 2
-    max_args = 1+MAXDIM
+    max_args = 1+MAX_DIMS
 
 class ISHFT(_dat.TreeRefX,Function):
     opcode = 312
@@ -2178,7 +2183,7 @@ class STRING_OPCODE(_dat.TreeRefX,Function):
 class SUBSCRIPT(_dat.TreeRefX,Function):
     opcode = 335
     min_args = 1
-    max_args = 1+MAXDIM
+    max_args = 1+MAX_DIMS
 
 class SUBTRACT(_dat.TreeRefX,Function):
     opcode = 336
@@ -2652,7 +2657,7 @@ class MAKE_ROUTINE(_dat.TreeRef,Function):
 class MAKE_SIGNAL(_dat.TreeRefX,Function):
     opcode = 431
     min_args = 2
-    max_args = 2+MAXDIM
+    max_args = 2+MAX_DIMS
 
 class MAKE_WINDOW(_dat.TreeRefX,Function):
     opcode = 432
@@ -2788,8 +2793,9 @@ class LIST(_dat.TreeRefX,Function):
     min_args = 0
     max_args = 254
 
-from inspect import isclass as _isclass
-_c=None
+
+_c = None
 for _c in globals().values():
-    if _isclass(_c) and issubclass(_c,Function) and _c.__name__ != 'Function':
+    if isinstance(_c,Function.__class__) and issubclass(_c,Function) and _c is not Function:
         Function.opcodeToClass[_c.opcode]=_c
+del(_c)
