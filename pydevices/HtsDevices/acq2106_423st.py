@@ -25,7 +25,7 @@
 import MDSplus
 import threading
 
-class Acq2106_423st(MDSplus.Device):
+class _ACQ2106_423ST(MDSplus.Device):
     """
     D-Tacq ACQ2106 with ACQ423 Digitizers (up to 6)  real time streaming support.
 
@@ -47,31 +47,25 @@ class Acq2106_423st(MDSplus.Device):
     """
 
     carrier_parts=[
-        {'path':':NODE','type':'text','value':'192.168.0.254', 'options':('no_write_shot')},
-        {'path':':COMMENT','type':'text', 'options':('no_write_shot')},
-        {'path':':TRIGGER','type':'numeric', 'value': 0.0, 'options':('no_write_shot')},
-        {'path':':TRIG_MODE','type':'text', 'value': 'hard', 'options':('no_write_shot')},
-        {'path':':EXT_CLOCK','type':'axis', 'options':('no_write_shot')},
-        {'path':':FREQ','type':'numeric', 'value': 16000, 'options':('no_write_shot')},        
-        {'path':':DEF_DECIMATE','type':'numeric', 'value': 1, 'options':('no_write_shot')},
-        {'path':':SEG_LENGTH','type':'numeric', 'value': 8000, 'options':('no_write_shot')},
-        {'path':':MAX_SEGMENTS','type':'numeric', 'value': 1000, 'options':('no_write_shot')},
-        {'path':':SEG_EVENT','type':'text', 'value': 'STREAM', 'options':('no_write_shot')},
-        {'path':':TRIG_TIME','type':'numeric', 'options':('write_shot')},
-        {'path':':TRIG_STR','type':'text', 'options':('nowrite_shot'),
-         'valueExpr':"EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"},
-        {'path':':RUNNING','type':'numeric', 'options':('no_write_model')},
-        {'path':':LOG_FILE','type':'text', 'options':('write_once')},
-        {'path':':LOG_OUTPUT','type':'text', 'options':('no_write_model', 'write_once', 'write_shot',)},
-        {'path':':INIT_ACTION','type':'action',
-         'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))",
-         'options':('no_write_shot',)},
-        {'path':':STOP_ACTION','type':'action',
-         'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",
-         'options':('no_write_shot',)},
-        ]
+        {'path':':NODE',        'type':'text',                     'options':('no_write_shot',)},
+        {'path':':COMMENT',     'type':'text',                     'options':('no_write_shot',)},
+        {'path':':TRIGGER',     'type':'numeric', 'value': 0.0,    'options':('no_write_shot',)},
+        {'path':':TRIG_MODE',   'type':'text', 'value': 'hard',    'options':('no_write_shot',)},
+        {'path':':EXT_CLOCK',   'type':'axis',                     'options':('no_write_shot',)},
+        {'path':':FREQ',        'type':'numeric', 'value': 16000,  'options':('no_write_shot',)},
+        {'path':':DEF_DECIMATE','type':'numeric', 'value': 1,      'options':('no_write_shot',)},
+        {'path':':SEG_LENGTH',  'type':'numeric', 'value': 8000,   'options':('no_write_shot',)},
+        {'path':':MAX_SEGMENTS','type':'numeric', 'value': 1000,   'options':('no_write_shot',)},
+        {'path':':SEG_EVENT',   'type':'text',   'value': 'STREAM','options':('no_write_shot',)},
+        {'path':':TRIG_TIME',   'type':'numeric',                  'options':('write_shot',)},
+        {'path':':TRIG_STR',    'type':'text',   'valueExpr':"EXT_FUNCTION(None,'ctime',head.TRIG_TIME)",'options':('nowrite_shot',)},
+        {'path':':RUNNING',     'type':'numeric',                  'options':('no_write_model',)},
+        {'path':':LOG_FILE',    'type':'text',   'options':('write_once',)},
+        {'path':':LOG_OUTPUT',  'type':'text',   'options':('no_write_model', 'write_once', 'write_shot',)},
+        {'path':':INIT_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))",'options':('no_write_shot',)},
+        {'path':':STOP_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",      'options':('no_write_shot',)},
+    ]
 
-    debug=None
     data_socket = -1
 
     trig_types=[ 'hard', 'soft', 'automatic']
@@ -93,7 +87,7 @@ class Acq2106_423st(MDSplus.Device):
            It should at least take one argument: teh device node  
         """
         def __init__(self,dev):
-            super(ACQ2106_423ST.Worker,self).__init__(name=dev.path)
+            super(_ACQ2106_423ST.Worker,self).__init__(name=dev.path)
             # make a thread safe copy of the device node with a non-global context
             self.dev = dev.copy()
         def run(self):
@@ -255,8 +249,28 @@ class Acq2106_423st(MDSplus.Device):
         chan=self.__getattr__('INPUT_%3.3d' % num)
         chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT,MDSplus.dVALUE()),chan.OFFSET))
 
-    def debugging(self):
-        import os
-        if self.debug == None:
-            self.debug=os.getenv("DEBUG_DEVICES")
-        return(self.debug)
+
+def assemble(cls):
+    cls.parts = list(_ACQ2106_423ST.carrier_parts)
+    for i in range(cls.sites*32):
+       cls.parts += [
+         {'path':':INPUT_%3.3d'%(i+1,),            'type':'SIGNAL', 'valueExpr':'head.setChanScale(%d)' %(i+1,),'options':('no_write_model','write_once',)},
+         {'path':':INPUT_%3.3d:DECIMATE'%(i+1,),   'type':'NUMERIC','valueExpr':'head.def_decimate',            'options':('no_write_shot',)},
+         {'path':':INPUT_%3.3d:COEFFICIENT'%(i+1,),'type':'NUMERIC','value':1,                                  'options':('no_write_shot',)},
+         {'path':':INPUT_%3.3d:OFFSET'%(i+1,),     'type':'NUMERIC','value':1,                                  'options':('no_write_shot',)},
+       ]
+
+class ACQ2106_423_1ST(_ACQ2106_423ST): sites=1
+assemble(ACQ2106_423_1ST)
+class ACQ2106_423_2ST(_ACQ2106_423ST): sites=2
+assemble(ACQ2106_423_2ST)
+class ACQ2106_423_3ST(_ACQ2106_423ST): sites=3
+assemble(ACQ2106_423_3ST)
+class ACQ2106_423_4ST(_ACQ2106_423ST): sites=4
+assemble(ACQ2106_423_4ST)
+class ACQ2106_423_5ST(_ACQ2106_423ST): sites=5
+assemble(ACQ2106_423_5ST)
+class ACQ2106_423_6ST(_ACQ2106_423ST): sites=6
+assemble(ACQ2106_423_6ST)
+
+del(assemble)

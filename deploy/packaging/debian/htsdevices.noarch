@@ -1,9 +1,3 @@
-./usr/local/mdsplus/pydevices/HtsDevices/acq2106_423_1st.py
-./usr/local/mdsplus/pydevices/HtsDevices/acq2106_423_2st.py
-./usr/local/mdsplus/pydevices/HtsDevices/acq2106_423_3st.py
-./usr/local/mdsplus/pydevices/HtsDevices/acq2106_423_4st.py
-./usr/local/mdsplus/pydevices/HtsDevices/acq2106_423_5st.py
-./usr/local/mdsplus/pydevices/HtsDevices/acq2106_423_6st.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq2106_423st.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/README
 ./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/__init__.py
