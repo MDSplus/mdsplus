@@ -23,10 +23,13 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import numpy
-import array
 import MDSplus
-import tempfile
 import threading
+
+try:
+    acq400_hapi = __import__('acq400_hapi', globals(), level=1)
+except:
+    acq400_hapi = __import__('acq400_hapi', globals())
 
 class ACQ435ST(MDSplus.Device):
     """
@@ -48,31 +51,30 @@ class ACQ435ST(MDSplus.Device):
 
     Settable segment length in number of samples
 
-    debugging() - is debugging enabled.  Controlled by environment variable DEBUG_DEVICES
+    debug - is debugging enabled.  Controlled by environment variable DEBUG_DEVICES
 
     """
 
     parts=[
-        {'path':':NODE','type':'text','value':'192.168.0.254', 'options':('no_write_shot')},
-        {'path':':SITE','type':'numeric', 'value': 1, 'options':('no_write_shot')},
-        {'path':':COMMENT','type':'text', 'options':('no_write_shot')},
-        {'path':':TRIGGER','type':'numeric', 'value': 0.0, 'options':('no_write_shot')},
-        {'path':':TRIG_MODE','type':'text', 'value': 'hard', 'options':('no_write_shot')},
-        {'path':':EXT_CLOCK','type':'axis', 'options':('no_write_shot')},
-        {'path':':FREQ','type':'numeric', 'value': 16000, 'options':('no_write_shot')},        
-        {'path':':HW_FILTER','type':'numeric', 'value':0, 'options':('no_write_shot')},
-        {'path':':DEF_DCIM','type':'numeric', 'value': 1, 'options':('no_write_shot')},
-        {'path':':SEG_LENGTH','type':'numeric', 'value': 8000, 'options':('no_write_shot')},
-        {'path':':MAX_SEGMENTS','type':'numeric', 'value': 1000, 'options':('no_write_shot')},
-        {'path':':SEG_EVENT','type':'text', 'value': 'STREAM', 'options':('no_write_shot')},
+        {'path':':NODE','type':'text','value':'192.168.0.254', 'options':('no_write_shot',)},
+        {'path':':SITE','type':'numeric', 'value': 1, 'options':('no_write_shot',)},
+        {'path':':COMMENT','type':'text', 'options':('no_write_shot',)},
+        {'path':':TRIGGER','type':'numeric', 'value': 0.0, 'options':('no_write_shot',)},
+        {'path':':TRIG_MODE','type':'text', 'value': 'hard', 'options':('no_write_shot',)},
+        {'path':':EXT_CLOCK','type':'axis', 'options':('no_write_shot',)},
+        {'path':':FREQ','type':'numeric', 'value': 16000, 'options':('no_write_shot',)},        
+        {'path':':HW_FILTER','type':'numeric', 'value':0, 'options':('no_write_shot',)},
+        {'path':':DEF_DCIM','type':'numeric', 'value': 1, 'options':('no_write_shot',)},
+        {'path':':SEG_LENGTH','type':'numeric', 'value': 8000, 'options':('no_write_shot',)},
+        {'path':':MAX_SEGMENTS','type':'numeric', 'value': 1000, 'options':('no_write_shot',)},
+        {'path':':SEG_EVENT','type':'text', 'value': 'STREAM', 'options':('no_write_shot',)},
         {'path':':STATUS_CMDS','type':'text','value':MDSplus.makeArray(['cat /proc/cmdline', 'get.d-tacq.release']),'options':('no_write_shot',)},
         {'path':':STATUS_OUT','type':'signal','options':('write_shot',)},
-        {'path':':TRIG_TIME','type':'numeric', 'options':('write_shot')},
-        {'path':':TRIG_STR','type':'text', 'options':('nowrite_shot'),
-         'valueExpr':"EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"},
-        {'path':':RUNNING','type':'any', 'options':('no_write_model')},
-        {'path':':LOG_OUTPUT','type':'text', 'options':('no_write_model', 'write_once', 'write_shot',)},
-        {'path': ':GIVEUP_TIME', 'type': 'numeric', 'value': 180.0, 'options': ('no_write_shot')},
+        {'path':':TRIG_TIME','type':'numeric', 'options':('write_shot',)},
+        {'path':':TRIG_STR','type':'text', 'options':('nowrite_shot',),'valueExpr':"EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"},
+        {'path':':RUNNING','type':'any', 'options':('no_write_model',)},
+        {'path':':LOG_OUTPUT','type':'text', 'options':('no_write_model','write_once','write_shot')},
+        {'path': ':GIVEUP_TIME', 'type': 'numeric', 'value': 180.0, 'options': ('no_write_shot',)},
         {'path':':INIT_ACTION','type':'action',
          'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))",
          'options':('no_write_shot',)},
@@ -98,7 +100,7 @@ class ACQ435ST(MDSplus.Device):
         def __init__(self,dev):
             super(ACQ435ST.Worker,self).__init__(name=dev.path)
             # make a thread safe copy of the device node with a non-global context
-            self.dev = MDSplus.TreeNode.copy(dev)
+            self.dev = dev.copy()
         def run(self):
             self.dev.stream()
 
@@ -113,7 +115,6 @@ class ACQ435ST(MDSplus.Device):
     def init(self):
         import os
         import sys
-        acq400_hapi=self.importPyDeviceModule('acq400_hapi')
         from threading import Thread
         import tempfile
         import subprocess
@@ -159,19 +160,15 @@ class ACQ435ST(MDSplus.Device):
         self.running.on=True
         thread = self.Worker(self)
         thread.start()
-        return 1
     INIT=init
 
     def stop(self):
         self.running.on = False
-        return 1
     STOP=stop
 
     def trig(self):
-        acq400_hapi=self.importPyDeviceModule('acq400_hapi')
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('soft_trigger','1')
-        return 1
     TRIG=trig
 
     def stream(self):
@@ -225,21 +222,21 @@ class ACQ435ST(MDSplus.Device):
         s.connect((self.node.data(),4210))
 
         socketTimeout = 6 #secs
-        if self.debugging():
+        if self.debug:
             print('Initial socket timeout: ' + str(socketTimeout) + ' secs')
         seg_time      = 2**self.hw_filter.data() * seg_length / self.freq.data()
 
         if seg_time <= socketTimeout:
-            if self.debugging():
+            if self.debug:
                 print('Chosen  socket timeout: ' + str(socketTimeout)+ ' secs')
             s.settimeout(socketTimeout)
         else:
-            if self.debugging():
+            if self.debug:
                 print('Chosen  socket timeout: ' + str(seg_time)+ ' secs')
             s.settimeout(seg_time)
 
         giveup_count = int(self.giveup_time.data() / s.gettimeout())
-        if self.debugging():
+        if self.debug:
             print('Ratio of (Node giveup-time)/(chosen socket-timeout): ' + str(giveup_count))
 
         # trigger time out count initialization:
@@ -312,7 +309,7 @@ class ACQ435ST(MDSplus.Device):
                     Event.setevent(event_name)
 
         if timeOutCount >= giveup_count:
-            if self.debugging():
+            if self.debug:
                 print('\r\nNOT TRIGGERED!, EXITING')
             raise DevNOT_TRIGGERED()
 
@@ -320,13 +317,5 @@ class ACQ435ST(MDSplus.Device):
         sys.stdout.flush()
 #        txt =  open(str(rundata['log_file']), 'r').read()
 #        self.log_output.record = np.array(txt.split('\n'))
-#        if  not self.debugging():
+#        if  not self.debug:
 #            os.remove(str(rundata['log_file']))
-
-        return 1
-
-    def debugging(self):
-        import os
-        if self.debug == None:
-            self.debug=os.getenv("DEBUG_DEVICES")
-        return(self.debug)
