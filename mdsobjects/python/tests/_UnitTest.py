@@ -68,7 +68,8 @@ class Tests(TestCase):
             else:
                 self.assertEqual(string is None,False)
                 self.assertEqual(match(pattern,str(string)) is None,False,'"%s"\nnot matched by\n"%s"'%(string,pattern))
-        sys.stderr.write("TCL> %s\n"%(expr,));
+        if not quiet:
+            sys.stderr.write("TCL> %s\n"%(expr,))
         outo,erro = tcl(expr,True,True,True)
         if verify:
             ver,erro = erro.split('\n',2)
@@ -149,7 +150,7 @@ class MdsIp(object):
     def _waitIdle(self,server,timeout):
         timeout = time.time()+timeout
         while 1:
-            time.sleep(.1)
+            time.sleep(.3)
             try:
                 self._checkIdle(server)
             except:
@@ -158,6 +159,49 @@ class MdsIp(object):
                 raise
             else:
                 break
+    def _wait(self,svr,to):
+        if to<=0:
+            return svr.poll()
+        if sys.version_info<(3,3):
+            for i in range(int(10*to)):
+                rtn = svr.poll()
+                if rtn is not None:
+                    break
+                time.sleep(.1)
+            return rtn
+        try:    svr.wait(to)
+        except: return None
+        else:   return svr.poll()
+    def _stop_mdsip(self,*procs_in):
+        for svr,server in procs_in:
+            if svr is None: # close trees on externals
+                try: self._doTCLTest('dispatch/command/wait/server=%s close/all'%server)
+                except: pass
+        procs = [(svr,server) for svr,server in procs_in if svr is not None] # filter external mdsip
+        procs = [(svr,server) for svr,server in procs if svr.poll() is None] # filter terminated
+        if len(procs)==0: return
+        # stop server
+        for svr,server in procs:
+            try:    self._doTCLTest('stop server %s'%server)
+            except: pass
+        t = time.time()+6
+        procs = [(svr,server) for svr,server in procs if self._wait(svr,t-time.time()) is None]
+        if len(procs)==0: return
+        # terminate server
+        for svr,server in procs:
+            sys.stderr.write("sending SIGTERM to %s"%server)
+            svr.terminate()
+        t = time.time()+3
+        procs = [(svr,server) for svr,server in procs if self._wait(svr,t-time.time()) is None]
+        if len(procs)==0: return
+        # kill server
+        for svr,server in procs:
+            sys.stderr.write("sending SIGKILL to %s"%server)
+            svr.kill()
+        t = time.time()+3
+        procs = [server for svr,server in procs if self._wait(svr,t-time.time()) is None]
+        if len(procs)==0: return
+        raise Exception("FALIED cleaning up mdsips: %s"%(", ".join(procs),))
 
     def _start_mdsip(self,server,port,logname,protocol='TCP'):
         if port>0:
