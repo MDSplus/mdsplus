@@ -93,9 +93,11 @@ class Acq2106_423st(MDSplus.Device):
            It should at least take one argument: teh device node  
         """
         def __init__(self,dev):
+            print(MDSplus.__file__)
+            print(MDSplus.__version__)
             super(Acq2106_423st.Worker,self).__init__(name=dev.path)
             # make a thread safe copy of the device node with a non-global context
-            self.dev = dev.copy()
+            self.dev = MDSplus.TreeNode.copy(dev)
         def run(self):
             self.dev.stream()
 

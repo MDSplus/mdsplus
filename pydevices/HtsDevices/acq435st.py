@@ -98,7 +98,7 @@ class ACQ435ST(MDSplus.Device):
         def __init__(self,dev):
             super(ACQ435ST.Worker,self).__init__(name=dev.path)
             # make a thread safe copy of the device node with a non-global context
-            self.dev = dev.copy()
+            self.dev = MDSplus.TreeNode.copy(dev)
         def run(self):
             self.dev.stream()
 
