@@ -124,19 +124,8 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                 """ tcl check if still alive """
                 if mon: self.assertEqual(mon.poll(),None)
                 if svr: self.assertEqual(svr.poll(),None)
-                """ tcl QuitServer """
-                self._doTCLTest('stop server %s'%server)
-                self._doTCLTest('stop server %s'%monitor)
             finally:
-                if svr and svr.poll() is None:
-                    svr.terminate()
-                    svr.wait()
-                else:
-                    try: self._doTCLTest('dispatch/command/wait/server=%s close/all'%server)
-                    except: pass
-                if mon and mon.poll() is None:
-                    mon.terminate()
-                    mon.wait()
+                self._stop_mdsip((svr,server),(mon,monitor))
         finally:
             if svr_log: svr_log.close()
             if mon_log: mon_log.close()
@@ -181,9 +170,7 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                     test_normal(c,"py('1')",timeout=1000) # verify locks are released
                 self._doTCLTest('stop server %s'%server)
             finally:
-                if svr and svr.poll() is None:
-                    svr.terminate()
-                    svr.wait()
+                self._stop_mdsip((svr,server))
         finally:
             if svr_log: svr_log.close()
     def timeoutfull(self): self.timeout(full=True)

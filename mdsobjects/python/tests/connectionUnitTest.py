@@ -113,9 +113,7 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                 """ new stuff """
                 self.assertEqual(local.getFileName(),con.get("treefilename($,-1)",self.tree))
             finally:
-                if svr and svr.poll() is None:
-                    svr.terminate()
-                    svr.wait()
+                self._stop_mdsip((svr,server))
         finally:
             if svr_log: svr_log.close()
 
