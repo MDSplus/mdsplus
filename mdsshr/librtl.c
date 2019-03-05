@@ -1745,18 +1745,22 @@ static inline void* findfilestart(const char *filename, int recursive, int case_
 
 static inline char* findfilenext(ctx_t *ctx) {
   if (ctx->cur_stack >= 0) do {
-    if (findfileloop(ctx)>0)
-      return ctx->buffer;
-  } while (ctx->cur_stack >= 0);
+      if (findfileloop(ctx)>0)
+        return ctx->buffer;
+    } while (ctx->cur_stack >= 0);
   if (ctx->cur_stack != -1) fprintf(stderr,"ctx_stack = %d != -1\n", ctx->cur_stack);
-  for (; ctx->cptr; ctx->ptr = ctx->cptr + 1) {
+  while(ctx->cptr) {
     const size_t wlen = ((ctx->cptr = strchr(ctx->ptr, ';')) == NULL) ? (int)strlen(ctx->ptr) : (int)(ctx->cptr - ctx->ptr);
-    if (wlen == 0 && ctx->recursive) continue; // if path empty and recursive, skip
+    if (wlen == 0) {
+      ctx->ptr = ctx->cptr + 1; // set ptr to start of next path
+      continue; // if path empty, skip
+    }
     // start search in first folder
     ctx->stack[ctx->cur_stack = 0].h = INVALID_HANDLE_VALUE;
     ctx->stack[ctx->cur_stack].wlen = wlen;
     REALLOCBUF(ctx,3); // +3 for "./\0" - would be 4 for win but MAX_PATH
     memcpy(ctx->buffer, ctx->ptr, wlen);
+    ctx->ptr = ctx->cptr + 1; // set ptr to start of next path
 #ifdef _WIN32
     char* sep;    // replace '/' with '\\'
     for (sep = ctx->buffer+wlen; sep-- > ctx->buffer; ) if (*sep == '/') *sep = '\\';
@@ -1769,7 +1773,7 @@ static inline char* findfilenext(ctx_t *ctx) {
       while (ctx->stack[ctx->cur_stack].wlen>0 && ctx->buffer[ctx->stack[ctx->cur_stack].wlen-1] == SEP)
         ctx->stack[ctx->cur_stack].wlen--;
     }
-     // ctx->buffer can enter findfileloop w/o \0 termination
+    // ctx->buffer can enter findfileloop w/o \0 termination
     if (findfileloop(ctx)>0)
       return ctx->buffer;
   }
@@ -1823,7 +1827,7 @@ static int find_file(struct descriptor *filespec, struct descriptor *result, voi
     LibFindFileEnd(ctx);
   }
 #ifdef DEBUG
-  fprintf(stderr, "took %fs\n", ((double)(clock()-start))/CLOCKS_PER_SEC);
+  fprintf(stderr, "took %fs: %s\n", ((double)(clock()-start))/CLOCKS_PER_SEC,ans);
 #endif
   return status;
 }
