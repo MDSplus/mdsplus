@@ -23,14 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import MDSplus
-
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        import threading
-        thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
-        thread.start()
-        return thread
-    return wrapper
+import threading
 
 class CRYOCON18I(MDSplus.Device):
     """
@@ -123,6 +116,18 @@ class CRYOCON18I(MDSplus.Device):
         return 1
     QUERY=query
 
+    class Worker(threading.Thread):
+        """An async worker should be a proper class
+           This ensures that the methods remian in memory
+           It should at least take one argument: teh device node
+        """
+        def __init__(self,dev):
+            super(CRYOCON18I.Worker,self).__init__(name=dev.path)
+            # make a thread safe copy of the device node with a non-global context
+            self.dev = dev.copy()
+        def run(self):
+            self.dev.stream()
+
     def init(self):
         '''
         init method for cryocon 18i
@@ -158,7 +163,9 @@ class CRYOCON18I(MDSplus.Device):
         print(instrument.query('CALCUR'))
         # start it streaming
         self.running.on=True
-        self.stream()
+        # self.stream()
+        thread = self.Worker(self)
+        thread.start()
         return 1
     INIT=init
 
@@ -224,7 +231,6 @@ class CRYOCON18I(MDSplus.Device):
         return 1
     STOP=stop
 
-    @threaded
     def stream(self):
         import pyvisa
         import datetime
