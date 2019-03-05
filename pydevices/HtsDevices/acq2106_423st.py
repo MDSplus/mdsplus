@@ -256,8 +256,8 @@ def assemble(cls):
        cls.parts += [
          {'path':':INPUT_%3.3d'%(i+1,),            'type':'SIGNAL', 'valueExpr':'head.setChanScale(%d)' %(i+1,),'options':('no_write_model','write_once',)},
          {'path':':INPUT_%3.3d:DECIMATE'%(i+1,),   'type':'NUMERIC','valueExpr':'head.def_decimate',            'options':('no_write_shot',)},
-         {'path':':INPUT_%3.3d:COEFFICIENT'%(i+1,),'type':'NUMERIC','value':1,                                  'options':('no_write_shot',)},
-         {'path':':INPUT_%3.3d:OFFSET'%(i+1,),     'type':'NUMERIC','value':1,                                  'options':('no_write_shot',)},
+         {'path':':INPUT_%3.3d:COEFFICIENT'%(i+1,),'type':'NUMERIC','value':1,                                  'options':('no_write_model', 'write_once',)},
+         {'path':':INPUT_%3.3d:OFFSET'%(i+1,),     'type':'NUMERIC','value':1,                                  'options':('no_write_model', 'write_once',)},
        ]
 
 class ACQ2106_423_1ST(_ACQ2106_423ST): sites=1
