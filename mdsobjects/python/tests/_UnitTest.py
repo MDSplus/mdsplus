@@ -42,6 +42,7 @@ class logger(object):
 
 class Tests(TestCase):
     debug = False
+    in_valgrind = 'VALGRIND' in os.environ
     inThread = False
     index = 0
     @property

@@ -111,7 +111,12 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
                 """ tcl dispatch """
                 self._testDispatchCommand(server,'type test')
                 self._doTCLTest('set tree pytree/shot=%d'%shot)
-                #self._doTCLTest('dispatch TESTDEVICE_S:ACTIONSERVER:MANUAL')
+                #if not self.in_valgrind:
+                #    self._doTCLTest('dispatch TESTDEVICE_S:ACTIONSERVER:MANUAL')
+                #    self._waitIdle(server,3)
+                #else:
+                #    sys.stdout.write("VALGRIND: skipping 'dispatch TESTDEVICE_S:ACTIONSERVER:MANUAL'\n")
+                #    sys.stdout.flush()
                 self._doTCLTest('dispatch/build%s'%monitor_opt)
                 self._doTCLTest('dispatch/phase%s INIT'%monitor_opt)
                 self._waitIdle(server,3)
@@ -131,7 +136,8 @@ class Tests(_UnitTest.TreeTests,_UnitTest.MdsIp):
             if mon_log: mon_log.close()
             self._doTCLTest('close/all')
         pytree.readonly()
-        #self.assertTrue(pytree.TESTDEVICE_S.MANUAL_DONE.record<= pytree.TESTDEVICE_S.INIT1_DONE.record)
+        #if not self.in_valgrind:
+        #    self.assertTrue(pytree.TESTDEVICE_S.MANUAL_DONE.record<= pytree.TESTDEVICE_S.INIT1_DONE.record)
         self.assertTrue(pytree.TESTDEVICE_I.INIT1_DONE.record <= pytree.TESTDEVICE_I.INIT2_DONE.record)
         self.assertTrue(pytree.TESTDEVICE_S.INIT1_DONE.record <= pytree.TESTDEVICE_S.INIT2_DONE.record)
         self.assertTrue(pytree.TESTDEVICE_I.INIT2_DONE.record <= pytree.TESTDEVICE_I.STORE_DONE.record)
