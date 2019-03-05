@@ -134,18 +134,15 @@ class _ACQ2106_423ST(MDSplus.Device):
         self.running.on=True
         thread = self.Worker(self)
         thread.start()
-        return 1
     INIT=init
 
     def stop(self):
         self.running.on = False
-        return 1
     STOP=stop
 
     def trig(self):
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('soft_trigger','1')
-        return 1
     TRIG=trig
 
     def stream(self):
