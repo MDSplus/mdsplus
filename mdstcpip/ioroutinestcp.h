@@ -244,12 +244,16 @@ static int io_listen(int argc, char **argv){
     exit(EXIT_FAILURE);
   }
   // LISTEN LOOP ///////////////////////////////////////////////////////////
+  struct timeval readto, timeout = {1,0};
   int error_count = 0;
   fd_set readfds;
   for(;;) {
     readfds = fdactive;
-    // SELECT select read ready from socket list //
-    if (select(FD_SETSIZE, &readfds, 0, 0, 0) != -1) {
+    readto = timeout;
+    int num = select(FD_SETSIZE, &readfds, NULL, NULL, &readto);
+    if (num == 0) continue; // timeout
+    if (num > 0) {
+      // read ready from socket list //
       error_count = 0;
       if (FD_ISSET(ssock, &readfds)) {
         socklen_t len = sizeof(sin);
