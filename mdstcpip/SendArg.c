@@ -46,7 +46,7 @@ int SendDsc(int id, unsigned char idx, unsigned char nargs, struct descriptor* d
 
 
 int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned short length, char ndims, int *dims, char *bytes){
-  Connection* c = idx==0 ? FindConnectionWithLock(id, CON_SENDARG) : FindConnection(id, NULL);
+  Connection* c = (idx==0 || idx>nargs) ? FindConnectionWithLock(id, CON_SENDARG) : FindConnection(id, NULL);
   INIT_STATUS_AS MDSplusERROR;
   int msglen;
   int i;
