@@ -534,8 +534,12 @@ static void *loadLib(const char *dirspec, const char *filename, char *errorstr) 
   } else {
     strcpy(full_filename,filename);
   }
-  handle = dlopen(full_filename, RTLD_NOW);
-  if (handle == NULL) {
+#ifndef _WIN32
+  handle = dlopen(full_filename, RTLD_NOLOAD | RTLD_LAZY);
+  if (!handle)
+#endif
+    handle = dlopen(full_filename,             RTLD_LAZY);
+  if (!handle) {
     snprintf(errorstr + strlen(errorstr), 4096 - strlen(errorstr), "Error loading %s: %s\n", full_filename, dlerror());
   }
   return handle;
