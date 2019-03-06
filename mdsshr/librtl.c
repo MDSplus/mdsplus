@@ -1578,7 +1578,7 @@ static inline int FINDFILEFIRST_OS(ctx_t* ctx){
 
 #define SEP    '/'
 #define INVALID_HANDLE_VALUE NULL
-#define MAX_PATH 0
+#define MAX_PATH 1 // at least fit empty string
 #define FILENAME(ctx) ctx->fd->d_name
 static inline void REALLOCBUF(ctx_t *const ctx, const size_t extra) {
   const size_t required = ctx->stack[ctx->cur_stack].wlen + extra;
