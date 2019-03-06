@@ -55,18 +55,19 @@ inline int GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims, int 
 
 int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims, int *dims, int *numbytes,
 		    void **dptr, void **mout, int timeout_msec){
+  Connection* c = FindConnectionSending(id);
+  if (!c) return MDSplusERROR;
   INIT_STATUS;
   int i;
   Message *m;
   *mout = 0;
   *numbytes = 0;
-  Connection* c = FindConnection(id,NULL);
   m = GetMdsMsgTOC(c, &status, timeout_msec);
+  UnlockConnection(c);
   if (!m && status == SsINTERNAL) {
-    DisconnectConnectionC(c);
+    DisconnectConnection(id);
     status = MDSplusERROR;
   } else
-    UnlockConnection(c);
   if STATUS_NOT_OK {
     *dtype = 0;
     *length = 0;

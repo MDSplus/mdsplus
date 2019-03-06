@@ -727,7 +727,7 @@ static Message *ExecuteMessage(Connection * connection) {
       newe->info_len = 0;
       newe->jeventid = *connection->descrip[2]->pointer;
     } else {
-      newe->info = (struct _eventinfo *)memcpy(malloc(info->arsize), info->pointer, info->arsize);
+      newe->info = (MdsEventInfo *)memcpy(malloc(info->arsize), info->pointer, info->arsize);
       newe->info_len = info->arsize;
       newe->info->eventid = newe->eventid;
     }
