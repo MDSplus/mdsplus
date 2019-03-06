@@ -120,3 +120,19 @@
    fun:allocate_stack
    fun:pthread_create*
 }
+
+{
+   dont complain about loaded libs in loadLib 
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_dl_map_object_deps
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen*
+   fun:loadLib
+}
