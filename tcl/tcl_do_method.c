@@ -43,9 +43,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 ************************************************************************/
 
-extern int TdiExecute();
-extern int TdiCompile();
-
+extern int TdiIntrinsic();
+extern void TdiGetLong();
 	/****************************************************************
 	 * TclDoMethod:
 	 ****************************************************************/
@@ -53,65 +52,61 @@ EXPORT int TclDoMethod(void *ctx, char **error, char **output __attribute__ ((un
 {
   int i;
   int argc;
-  int sts;
+  int status;
   unsigned char do_it;
-  struct descriptor_xd xdarg[255];
   int nid;
   unsigned short boolVal;
   struct descriptor_s bool_dsc = { sizeof(boolVal), DTYPE_W, CLASS_S, (char *)&boolVal };
   struct descriptor nid_dsc = { 4, DTYPE_NID, CLASS_S, (char *)&nid };
-  struct descriptor_xd empty_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
   char *arg = 0;
   char *if_clause = 0;
   char *method = 0;
   char *object = 0;
   struct descriptor method_dsc = { 0, DTYPE_T, CLASS_S, 0 };
-  void *arglist[256] = { (void *)2, &nid_dsc, &method_dsc };
 
   cli_get_value(ctx, "OBJECT", &object);
-  sts = TreeFindNode(object, &nid);
-  if (sts & 1) {
+  status = TreeFindNode(object, &nid);
+  if STATUS_OK {
     do_it = (TreeIsOn(nid) | cli_present(ctx, "OVERRIDE")) & 1;
-    if (cli_present(ctx, "IF") & 1) {
+    if (IS_OK(cli_present(ctx, "IF"))) {
       struct descriptor if_clause_dsc = { 0, DTYPE_T, CLASS_S, 0 };
       cli_get_value(ctx, "IF", &if_clause);
       if_clause_dsc.length = strlen(if_clause);
       if_clause_dsc.pointer = if_clause;
-      sts = TdiExecute(&if_clause_dsc, &bool_dsc MDS_END_ARG);
+      status = TdiIntrinsic(OPC_EXECUTE,1,&if_clause_dsc,&bool_dsc);
       free(if_clause);
-      if (sts & 1)
+      if STATUS_OK
 	do_it = do_it && boolVal;
       else
 	do_it = 0;
     }
     if (do_it) {
-      int dometh_stat;
-      DESCRIPTOR_LONG(dometh_stat_d, 0);
       cli_get_value(ctx, "METHOD", &method);
       method_dsc.length = strlen(method);
       method_dsc.pointer = method;
       argc = 0;
-      if (cli_present(ctx, "ARGUMENT") & 1) {
-	while (cli_get_value(ctx, "ARGUMENT", &arg) & 1) {
+      mdsdsc_xd_t xdarg[255];
+      mdsdsc_t *arglist[255];
+      EMPTYXD(xd);
+      if (IS_OK(cli_present(ctx, "ARGUMENT"))) {
+	while (argc<255 && IS_OK(cli_get_value(ctx, "ARGUMENT", &arg))) {
 	  struct descriptor arg_dsc = { strlen(arg), DTYPE_T, CLASS_S, arg };
-	  xdarg[argc] = empty_xd;
-	  sts = TdiCompile(&arg_dsc, &xdarg[argc] MDS_END_ARG);
+	  xdarg[argc] = xd; // empty_xd
+	  status = TdiIntrinsic(OPC_COMPILE,1,&arg_dsc,&xdarg[argc]);
 	  free(arg);
-	  if (sts & 1) {
-	    arglist[argc + 3] = xdarg[argc].pointer;
+	  if STATUS_OK {
+	    arglist[argc] = xdarg[argc].pointer;
 	    argc++;
 	  } else
 	    break;
 	}
       }
-      if (sts & 1) {
-	dometh_stat_d.pointer = (char *)&dometh_stat;
-	arglist[argc + 3] = &dometh_stat_d;
-	arglist[argc + 4] = MdsEND_ARG;
-	arglist[0] = (argc + 4) + (char *)0;
-	sts = (int)(intptr_t)LibCallg(arglist, TreeDoMethod);
-	if (sts & 1)
-	  sts = dometh_stat;
+      if STATUS_OK {
+        status = TreeDoMethodA(&nid_dsc,&method_dsc,argc,arglist,&xd);
+	if (STATUS_OK && xd.pointer) {
+	  TdiGetLong(&xd,&status);
+          MdsFree1Dx(&xd, NULL);
+        }
       }
       if (method)
 	free(method);
@@ -121,10 +116,10 @@ EXPORT int TclDoMethod(void *ctx, char **error, char **output __attribute__ ((un
   }
   if (object)
     free(object);
-  if (!(sts & 1)) {
-    char *msg = MdsGetMsg(sts);
+  if STATUS_NOT_OK {
+    char *msg = MdsGetMsg(status);
     *error = malloc(strlen(msg) + 100);
     sprintf(*error, "Error executing device method\n" "Error message was: %s\n", msg);
   }
-  return sts;
+  return status;
 }
