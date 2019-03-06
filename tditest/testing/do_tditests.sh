@@ -33,12 +33,15 @@ then
 else
  cmd="$TDITEST $zdrv$srcdir/$test.tdi"
 fi
-tmpdir=$(mktemp -d)
-trap 'rm -Rf ${tmpdir}' EXIT
-export main_path="${tmpdir};$(readlink -f ${srcdir}/../../trees)"
-export subtree_path="${tmpdir};$(readlink -f ${srcdir}/../../trees/subtree)"
-export MDS_PATH="${tmpdir};$(readlink -f ${srcdir}/../../tdi)"
-export MDS_PYDEVICE_PATH="${tmpdir};$(readlink -f ${srcdir}/../../pydevices)"
+
+if [ -z ${MDSPLUS_DIR} ]
+then MDSPLUS_DIR=$(readlink -f ${srcdir}/../..)
+fi
+MDS_PATH=".;${MDSPLUS_DIR}/tdi;."
+MDS_PYDEVICE_PATH="${MDSPLUS_DIR}/pydevices;${MDSPLUS_DIR}/mdsobjects/python/tests/devices"
+subtree_path=".;${MDSPLUS_DIR}/trees/subtree"
+main_path=".;${MDSPLUS_DIR}/trees"
+
 if [[ $test == *"py"* ]]
 then
   LD_PRELOAD="$TMP_LD_PRELOAD"
