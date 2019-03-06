@@ -32,15 +32,14 @@ enum _mdsip_client_types {
   CRAY_CLIENT = 8
 };
 
-
-typedef struct _eventinfo {
+typedef struct {
   char data[12];
   int eventid;
   void (*astadr)(void *, int, char *);
   void *astprm;
 } MdsEventInfo;
 
-typedef struct _jeventinfo {
+typedef struct {
   char data[12];
   char eventid;
 } JMdsEventInfo;
@@ -54,7 +53,7 @@ typedef struct _eventlist {
   struct _eventlist *next;
 } MdsEventList;
 
-typedef struct _options {
+typedef struct {
   char *short_name;
   char *long_name;
   int expects_value;
@@ -62,11 +61,13 @@ typedef struct _options {
   char *value;
 } Options;
 
+typedef uint8_t con_t;
+
 typedef struct _connection {
   int id; // unique connection id
   struct _connection *next;
   pthread_cond_t cond;
-  char state;
+  con_t state;
   char *protocol;
   char *info_name;
   void *info;
@@ -76,7 +77,7 @@ typedef struct _connection {
   int client_type;
   int nargs;
   struct descriptor *descrip[MDSIP_MAX_ARGS]; // list of descriptors for the message arguments
-  struct _eventlist *event;
+  MdsEventList *event;
   void *tdicontext[6];
   int addr;
   int compression_level;
@@ -87,15 +88,15 @@ typedef struct _connection {
 
 #define INVALID_CONNECTION_ID 0
 
-#define CON_IDLE	0x00
-#define CON_CONNECT	0x01
-#define CON_AUTHORIZE	0x02
-#define CON_SEND	0x04
-#define CON_FLUSH	0x08
-#define CON_RECV	0x10
-#define CON_SENDARG	0x20
-#define CON_USER	0x40
-#define CON_DISCONNECT	0x80
+#define CON_IDLE	(con_t)0x00
+#define CON_CONNECT	(con_t)0x01
+#define CON_AUTHORIZE	(con_t)0x02
+#define CON_SEND	(con_t)0x04
+#define CON_FLUSH	(con_t)0x08
+#define CON_RECV	(con_t)0x10
+#define CON_SENDARG	(con_t)0x20
+#define CON_USER	(con_t)0x40
+#define CON_DISCONNECT	(con_t)0x80
 
 #if defined(__CRAY) || defined(CRAY)
 int errno = 0;
@@ -109,7 +110,7 @@ int errno = 0;
 ///
 /// \brief Header of Message structure.
 ///
-typedef struct _msghdr {
+typedef struct {
   int msglen bits32;
   int status bits32;
   short length bits16;
@@ -129,7 +130,7 @@ typedef struct _msghdr {
 ///
 /// \brief Message structure for passing data through connections
 ///
-typedef struct _mds_message {
+typedef struct {
   MsgHdr h;
   char bytes[1];
 } Message, *MsgPtr;
@@ -762,7 +763,8 @@ void DisconnectConnectionC(Connection* c);
 unsigned char IncrementConnectionMessageIdC(Connection* c);
 int AddConnection(Connection* c);
 
-Connection *FindConnectionWithLock(int id, char state);
+Connection *FindConnectionWithLock(int id, con_t state);
+Connection *FindConnectionSending(int id);
 void UnlockConnection(Connection* c);
 
 EXPORT int SendToConnection(int id, const void *buffer, size_t buflen, int nowait);

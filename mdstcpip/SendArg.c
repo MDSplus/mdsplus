@@ -46,8 +46,9 @@ int SendDsc(int id, unsigned char idx, unsigned char nargs, struct descriptor* d
 
 
 int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned short length, char ndims, int *dims, char *bytes){
-  Connection* c = (idx==0 || idx>nargs) ? FindConnectionWithLock(id, CON_SENDARG) : FindConnection(id, NULL);
-  INIT_STATUS_AS MDSplusERROR;
+  Connection* c = (idx==0 || idx>nargs) ? FindConnectionWithLock(id, CON_SENDARG) : FindConnectionSending(id);
+  if (!c) return MDSplusERROR;  // both methods will leave connection id unlocked
+
   int msglen;
   int i;
   int nbytes = length;
@@ -61,7 +62,7 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned
     /**** Special I/O message ****/
     if (idx==MDS_IO_OPEN_ONE_K && c->version < MDSIP_VERSION_OPEN_ONE){
       UnlockConnection(c);
-      status = MDSplusFATAL;
+      return MDSplusFATAL;
     }
     nbytes = dims[0];
   } else {
@@ -87,7 +88,7 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned
   m->h.message_id = (idx == 0 || nargs == 0)
             ? IncrementConnectionMessageIdC(c)
             : c->message_id;
-  status = m->h.message_id ? SendMdsMsgC(c, m, 0) : MDSplusERROR;
+  int status = m->h.message_id ? SendMdsMsgC(c, m, 0) : MDSplusERROR;
   free(m);
   if STATUS_NOT_OK UnlockConnection(c);
   return status;
