@@ -316,32 +316,19 @@ EXPORT void *LibCallg(void **arglist, void *(*routine) ()) {
 
 EXPORT uint32_t LibGetHostAddr(char *name){
   INITIALIZESOCKETS;
-  int addr = 0;
-#if defined(__MACH__) || defined(_WIN32)
-  struct hostent* hp = gethostbyname(name);
-  if (!hp) {
-    addr = inet_addr(name);
-    if (addr != -1)  hp = gethostbyaddr(((void *)&addr),sizeof(int),AF_INET);
+  uint32_t addr = 0;
+  struct addrinfo *entry,*info = NULL;
+  struct addrinfo hints = { 0, AF_INET, SOCK_STREAM, 0, 0, NULL, NULL, NULL };
+  int err = 0;
+  if (!(err = getaddrinfo(name, NULL, &hints, &info))) {
+    for (entry = info ; entry && !entry->ai_addr ; entry = entry->ai_next);
+    if (entry) {
+      struct sockaddr_in* addrin = (struct sockaddr_in*)entry->ai_addr;
+      addr = *(uint32_t*)&addrin->sin_addr;
+    }
+    if (info) freeaddrinfo(info);
   }
-  if (hp) addr = *(int*)hp->h_addr_list[0];
-#else
-  size_t memlen;
-  struct hostent hostbuf, *hp = NULL;
-  int herr;
-  INIT_AND_FREE_ON_EXIT(void*,hp_mem);
-  for ( memlen=1024, hp_mem=malloc(memlen);
-	hp_mem && (gethostbyname_r(name,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE);
-	memlen *= 2, free(hp_mem), hp_mem = malloc(memlen)); // free + malloc = realloc - memcpy
-  if (!hp) {
-    addr = (int)inet_addr(name);
-    if (addr != -1) for (;
-        hp_mem && (gethostbyaddr_r(((void*)&addr),sizeof(int),AF_INET,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE);
-	memlen *= 2, free(hp_mem), hp_mem = malloc(memlen));
-  }
-  if (hp) addr = *(int*)hp->h_addr_list[0];
-  FREE_NOW(hp_mem);
-#endif
-  return addr == -1 ? 0 : (uint32_t)addr;
+  return addr == 0xffffffff ? 0 : addr;
 }
 
 #ifdef _WIN32
