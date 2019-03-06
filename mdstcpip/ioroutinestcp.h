@@ -271,7 +271,7 @@ static int io_listen(int argc, char **argv){
           client->next = ClientList;
           client->username = username;
           client->addr = ((struct sockaddr_in*)&sin)->sin_addr.s_addr;
-          client->host = getHostInfo(sock, &client->iphost, NULL);
+          client->iphost = getHostInfo(sock, &client->host);
           ClientList = client;
           // add socket to active sockets //
           FD_SET(sock, &fdactive);

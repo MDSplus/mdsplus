@@ -24,14 +24,18 @@ static IoRoutines io_routines = {
 #else
  #include <poll.h>
 #endif
+
+#define IP(addr)   ((uint8_t*)&addr)
+#define ADDR2IP(a) IP(a)[0],IP(a)[1],IP(a)[2],IP(a)[3]
+
 // Connected client definition for client list
 typedef struct _client {
   SOCKET sock;
-  int id;
-  char *username;
-  unsigned long addr;
-  char *host;
-  char *iphost;
+  int      id;
+  char     *username;
+  uint32_t addr;
+  char     *host;
+  char     *iphost;
   struct _client *next;
 } Client;
 
@@ -140,53 +144,30 @@ static int GetHostAndPort(char *hostin, struct SOCKADDR_IN *sin){
   return status;
 }
 
-#if defined(__MACH__) || defined(_WIN32)
-# define GETHOSTBYADDR
-#endif
-static char *getHostInfo(SOCKET sock, char **iphostptr, char **hostnameptr){
-  char *ans = NULL;
+static char *getHostInfo(SOCKET sock, char **hostnameptr){
   struct SOCKADDR_IN sin;
+  int err = 0;
   SOCKLEN_T len = sizeof(sin);
   if (!GETPEERNAME(sock, (struct sockaddr *)&sin, &len)) {
     GET_IPHOST(sin);
-#ifdef GETHOSTBYADDR
-    struct hostent* hp = gethostbyaddr((void*)&sin.SIN_ADDR,sizeof(sin.SIN_ADDR),sin.SIN_FAMILY);
-#else
-    struct hostent hostbuf, *hp = NULL;
-    int herr;
-    INIT_AND_FREE_ON_EXIT(char*,hp_mem);
-    size_t memlen = 1024;
-    hp_mem = malloc(memlen);
-    while (hp_mem && (gethostbyaddr_r((void*)&sin.SIN_ADDR,sizeof(sin.SIN_ADDR),sin.SIN_FAMILY,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE)) {
-      memlen *=2;
-# ifdef DEBUG
-      fprintf(stderr,"hp_mem too small-> %d\n",(int)memlen);
-# endif
-      free(hp_mem);hp_mem = malloc(memlen);
-    }
-#endif
-    if (hp && hp->h_name) {
-      ans = (char *)malloc(strlen(iphost) + strlen(hp->h_name) + 4);
-      sprintf(ans, "%s [%s]", hp->h_name, iphost);
-      if (hostnameptr) {
-        *hostnameptr = (char *)malloc(strlen(hp->h_name) + 1);
-        strcpy(*hostnameptr, hp->h_name);
+    if (hostnameptr) {
+      struct addrinfo *entry,*info = NULL;
+      struct addrinfo hints = { AI_CANONNAME , AF_T, SOCK_STREAM, 0, 0, NULL, NULL, NULL };
+      if (!(err = getaddrinfo(iphost, NULL, &hints, &info))) {
+        for (entry = info ; entry && !entry->ai_canonname ; entry = entry->ai_next);
+        if (entry) *hostnameptr = strdup(entry->ai_canonname);
+        if (info) freeaddrinfo(info);
       }
-    } else {
-      if (hostnameptr)
-        *hostnameptr = NULL;
-      ans = (char *)malloc(strlen(iphost) + 1);
-      strcpy(ans, iphost);
     }
-    if (iphostptr) {
-      *iphostptr = (char *)malloc(strlen(iphost) + 1);
-      strcpy(*iphostptr, iphost);
+    if (err) {
+      fprintf(stderr,"Error resolving ip '%s': error=%s\n", iphost, gai_strerror(err));
+      return NULL;
     }
-#ifndef GETHOSTBYADDR
-    FREE_NOW(hp_mem);
-#endif
+    return strdup(iphost);
+  } else {
+    fprintf(stderr,"Error resolving ip of socket %d, ", (int)sock);perror("error");
   }
-  return ans;
+  return NULL;
 }
 
 #ifdef _WIN32
@@ -257,17 +238,15 @@ static void ChildSignalHandler(int num __attribute__ ((unused))){
 
 static int io_authorize(Connection* c, char *username){
   int ans;
-  char *iphost = NULL,*hoststr = NULL ,*info = NULL;
+  char *iphost = NULL,*hoststr = NULL;
   FREE_ON_EXIT(iphost);
   FREE_ON_EXIT(hoststr);
-  FREE_ON_EXIT(info);
   ans = C_OK;
   SOCKET sock = getSocket(c);
   char now[32];Now32(now);
-  info = getHostInfo(sock, &iphost, &hoststr);
-  if (info) {
-    printf("%s (%d) (pid %d) Connection received from %s@%s\r\n",
-           now, (int)sock, getpid(), username, info);
+  if ((iphost = getHostInfo(sock, &hoststr))) {
+    printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n",
+           now, (int)sock, getpid(), username, hoststr, iphost );
     char *matchString[2] = { NULL, NULL };
     FREE_ON_EXIT(matchString[0]);
     FREE_ON_EXIT(matchString[1]);
@@ -286,7 +265,6 @@ static int io_authorize(Connection* c, char *username){
     FREE_NOW(matchString[0]);
   } else
     PERROR("error getting hostinfo");
-  FREE_NOW(info);
   FREE_NOW(iphost);
   FREE_NOW(hoststr);
   fflush(stdout);
@@ -396,10 +374,7 @@ static int io_disconnect(Connection* con){
 	udt_epoll_remove_usock(server_epoll, sock);
 #endif
         printf("%s (%d) (pid %d) Connection disconnected from %s@%s [%s]\r\n",
-               now, (int)sock, getpid(),
-               c->username ? c->username : "?",
-               c->host     ? c->host     : "?",
-               c->iphost   ? c->iphost   : "?");
+               now, (int)sock, getpid(), c->username, c->host, c->iphost);
       }
       if (c->username) free(c->username);
       if (c->iphost) free(c->iphost);
@@ -443,7 +418,7 @@ int runServerMode(Options *options  __attribute__((unused))){
   client->sock = sock;
   client->next = ClientList;
   client->username = username;
-  client->host = getHostInfo(sock, &client->iphost, NULL);
+  client->iphost = getHostInfo(sock, &client->host);
   ClientList = client;
 #ifdef _TCP
   FD_SET(sock, &fdactive);
