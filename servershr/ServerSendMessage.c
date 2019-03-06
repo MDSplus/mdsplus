@@ -183,7 +183,6 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
   uint32_t addr = 0;
   char cmd[4096];
   unsigned char numargs = max(0, min(numargs_in, 8));
-  unsigned char idx = 0;
   char dtype;
   char ndims;
   int dims[8];
@@ -242,7 +241,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
     }
   }
   strcat(cmd, ")");
-  status = SendArg(conid, idx++, DTYPE_CSTRING, 1, (short)strlen(cmd), 0, 0, cmd);
+  status = SendArg(conid, 0, DTYPE_CSTRING, 1, (short)strlen(cmd), 0, 0, cmd);
   if STATUS_NOT_OK {
       perror("Error sending message to server");
       CleanupJob(status, jobid);
