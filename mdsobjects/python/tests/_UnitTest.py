@@ -62,7 +62,7 @@ class Tests(TestCase):
                     self.__getattribute__(test)()
         finally:
             sys.stdout,sys.stderr = stdout,stderr
-    def _doTCLTest(self,expr,out=None,err=None,re=False,verify=False):
+    def _doTCLTest(self,expr,out=None,err=None,re=False,verify=False,quiet=False):
         def checkre(pattern,string):
             if pattern is None:
                 self.assertEqual(string is None,True)
@@ -144,16 +144,16 @@ class MdsIp(object):
     def _testDispatchCommandNoWait(self,mdsip,command,stdout=None,stderr=None):
         self._doTCLTest('dispatch/command/nowait/server=%s %s'  %(mdsip,command))
 
-    def _checkIdle(self,server):
+    def _checkIdle(self,server,**opt):
         show_server = "Checking server: %s\n[^,]+, [^,]+, logging enabled, Inactive\n"%server
-        self._doTCLTest('show server %s'%server,out=show_server,re=True)
+        self._doTCLTest('show server %s'%server,out=show_server,re=True,**opt)
 
     def _waitIdle(self,server,timeout):
         timeout = time.time()+timeout
         while 1:
             time.sleep(.3)
             try:
-                self._checkIdle(server)
+                self._checkIdle(server,quiet=True)
             except:
                 if time.time()<timeout:
                     continue
@@ -217,8 +217,8 @@ class MdsIp(object):
             except:
                 log.close()
                 raise
-            time.sleep(1)
-            self._checkIdle(server)
+            time.sleep(.3)
+            self._waitIdle(server,10) # allow mdsip to launch
             for envpair in self.envx.items():
                 self._testDispatchCommandNoWait(server,'env %s=%s'%envpair)
             self._testDispatchCommand(server,'set verify')
