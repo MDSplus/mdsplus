@@ -163,8 +163,7 @@ void ParseStdArgs(int argc, char **argv, int *extra_argc, char ***extra_argv)
     SetContextSwitching(1);
   }
   if (options[4].present && options[4].value)
-    SetCompressionLevel(atoi(options[4].value));
+    SetCompressionLevel(strtol(options[4].value,NULL,0));
   if (options[5].present)
     PrintHelp(0);
-
 }

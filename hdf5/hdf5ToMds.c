@@ -555,7 +555,7 @@ int main(int argc, const char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  status = TreeOpenNew((char *)tree, atoi(shot));
+  status = TreeOpenNew((char *)tree, strtol(shot,NULL,0));
   if (!status & 1) {
     printf("Error creating new tree for treename /%s/, shot number /%s/\n", tree, shot);
     exit(EXIT_FAILURE);

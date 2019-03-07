@@ -61,7 +61,7 @@ int MSGLVL(int level)
 
   c = getenv(DEBUG_VAR_NAME);	// get debug variable
   if (c) {			// if not NULL ...
-    dbglvl = atoi(c);		// convert to numeric
+    dbglvl = strtol(c,NULL,0);		// convert to numeric
     return (dbglvl >= level) ? TRUE : FALSE;
   } else			// ... is not set
     return FALSE;

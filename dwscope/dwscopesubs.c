@@ -637,21 +637,21 @@ void GetWaveFromDb(XrmDatabase db, String prefix, int row, int col, WaveInfo * i
   ReplaceString(&info->x, FixupBARS(GetPlotResource(db, prefix, row, col, "x", "")), 1);
   ReplaceString(&info->y, FixupBARS(GetPlotResource(db, prefix, row, col, "y", "")), 1);
   ReplaceString(&info->event, GetPlotResource(db, prefix, row, col, "event", ""), 0);
-  info->update = atoi(GetPlotResource(db, prefix, row, col, "update", "1"));
+  info->update = strtol(GetPlotResource(db, prefix, row, col, "update", "1"),NULL,0);
   ReplaceString(&info->title, GetPlotResource(db, prefix, row, col, "title", ""), 0);
   ReplaceString(&info->print_title, GetPlotResource(db, prefix, row, col, "print_title", ""), 0);
   ReplaceString(&info->pad_label, GetPlotResource(db, prefix, row, col, "label", ""), 0);
-  info->x_grid_labels = atoi(GetPlotResource(db, prefix, row, col, "x.grid_labels", "1"));
-  info->y_grid_labels = atoi(GetPlotResource(db, prefix, row, col, "y.grid_labels", "1"));
-  info->show_mode = atoi(GetPlotResource(db, prefix, row, col, "show_mode", "0"));
-  info->step_plot = atoi(GetPlotResource(db, prefix, row, col, "step_plot", "0"));
-  info->x_grid_lines = atoi(GetPlotResource(db, prefix, row, col, "x.grid_lines", "4"));
-  info->y_grid_lines = atoi(GetPlotResource(db, prefix, row, col, "y.grid_lines", "4"));
+  info->x_grid_labels = strtol(GetPlotResource(db, prefix, row, col, "x.grid_labels", "1"),NULL,0);
+  info->y_grid_labels = strtol(GetPlotResource(db, prefix, row, col, "y.grid_labels", "1"),NULL,0);
+  info->show_mode = strtol(GetPlotResource(db, prefix, row, col, "show_mode", "0"),NULL,0);
+  info->step_plot = strtol(GetPlotResource(db, prefix, row, col, "step_plot", "0"),NULL,0);
+  info->x_grid_lines = strtol(GetPlotResource(db, prefix, row, col, "x.grid_lines", "4"),NULL,0);
+  info->y_grid_lines = strtol(GetPlotResource(db, prefix, row, col, "y.grid_lines", "4"),NULL,0);
   ReplaceString(&info->xmin, GetPlotResource(db, prefix, row, col, "xmin", ""), 0);
   ReplaceString(&info->xmax, GetPlotResource(db, prefix, row, col, "xmax", ""), 0);
   ReplaceString(&info->ymin, GetPlotResource(db, prefix, row, col, "ymin", ""), 0);
   ReplaceString(&info->ymax, GetPlotResource(db, prefix, row, col, "ymax", ""), 0);
-  info->height = atoi(GetPlotResource(db, prefix, row, col, "height", "0"));
+  info->height = strtol(GetPlotResource(db, prefix, row, col, "height", "0"),NULL,0);
   info->_global.global_defaults =
       FlipBitsIfNecessary(atoi
 			  (GetPlotResource

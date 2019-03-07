@@ -368,7 +368,7 @@ static int put_segment_header(TREE_INFO * tinfo, const SEGMENT_HEADER * hdr, int
   /* What a hack
   char *next_row_fix = getenv("NEXT_ROW_FIX");
   if (next_row_fix != 0) {
-    int fix = atoi(next_row_fix);
+    int fix = strtol(next_row_fix,NULL,0);
     if (fix > 0) {
       if (fix <= hdr->next_row) {
         hdr->next_row -= fix;

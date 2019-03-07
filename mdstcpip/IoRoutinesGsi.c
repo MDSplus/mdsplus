@@ -94,7 +94,7 @@ static short GetPort(char *pname)
   struct servent *sp;
   if (name == 0 || strcmp(name, "mdsip") == 0)
     name = "mdsips";
-  port = htons((short)atoi(name));
+  port = htons((short)strtol(name,NULL,0));
   if (port == 0) {
     sp = getservbyname(name, "tcp");
     if (sp == NULL) {

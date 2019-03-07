@@ -530,7 +530,7 @@ ViStatus hpe1429_statusUpdate(ViSession vi, struct hpe1429_globals *thisPtr, ViS
     if (errStatus < VI_SUCCESS)
       return VI_ERROR_SYSTEM_ERROR;
 
-    eventQ = atoi(lc);
+    eventQ = strtol(lc,NULL,0);
 
     if ((0x04			/* Query Error */
 	 | 0x08			/* Device Dependent Error */
@@ -824,7 +824,7 @@ ViStatus _VI_FUNC hpe1429_init(ViRsrc InstrDesc, ViBoolean id_query, ViBoolean d
 	if (memcmp(InstrDesc, "GPIB-VXI", 8) || InstrDesc[8] < '0' || InstrDesc[8] > '9')
 	  num = 0;		/* Problem with InstrDesc */
 	else
-	  num = (ViUInt16) atoi(InstrDesc + 8);
+	  num = (ViUInt16) strtol(InstrDesc + 8,NULL,0);
 	sprintf(thisPtr->cmdAddr, "GPIB-VXI%hu::0", num);
 	if (viGetAttribute(*vi, VI_ATTR_GPIB_SECONDARY_ADDR, &secondary) < VI_SUCCESS) {
 	  viGetAttribute(*vi, VI_ATTR_VXI_LA, &secondary);
@@ -834,7 +834,7 @@ ViStatus _VI_FUNC hpe1429_init(ViRsrc InstrDesc, ViBoolean id_query, ViBoolean d
 	if (memcmp(InstrDesc, "GPIB", 4) || InstrDesc[4] < '0' || InstrDesc[4] > '9')
 	  num = 0;		/* Problem with InstrDesc */
 	else
-	  num = (ViUInt16) atoi(InstrDesc + 4);
+	  num = (ViUInt16) strtol(InstrDesc + 4,NULL,0);
 	viGetAttribute(*vi, VI_ATTR_GPIB_PRIMARY_ADDR, &primary);
 	viGetAttribute(*vi, VI_ATTR_GPIB_SECONDARY_ADDR, &secondary);
 	sprintf(thisPtr->cmdAddr, "GPIB%hu::%hu::0", num, primary);
@@ -1568,7 +1568,7 @@ ViStatus _VI_FUNC hpe1429_operEvent_Q(ViSession vi, ViPInt32 val)
     if (errStatus < VI_SUCCESS)
       hpe1429_LOG_STATUS(vi, thisPtr, errStatus);
     buf[count] = '\0';
-    *val = atoi(buf);
+    *val = strtol(buf,NULL,0);
   }
   hpe1429_LOG_STATUS(vi, thisPtr, VI_SUCCESS);
 }
@@ -1592,7 +1592,7 @@ ViStatus _VI_FUNC hpe1429_operCond_Q(ViSession vi, ViPInt32 val)
     if (errStatus < VI_SUCCESS)
       hpe1429_LOG_STATUS(vi, thisPtr, errStatus);
     buf[count] = '\0';
-    *val = atoi(buf);
+    *val = strtol(buf,NULL,0);
   }
   thisPtr->controler |= 8192;	/* Flag LOG_STATUS to not clear bits */
   hpe1429_LOG_STATUS(vi, thisPtr, VI_SUCCESS);
@@ -1617,7 +1617,7 @@ ViStatus _VI_FUNC hpe1429_quesEvent_Q(ViSession vi, ViPInt32 val)
     if (errStatus < VI_SUCCESS)
       hpe1429_LOG_STATUS(vi, thisPtr, errStatus);
     buf[count] = '\0';
-    *val = atoi(buf);
+    *val = strtol(buf,NULL,0);
   }
   hpe1429_LOG_STATUS(vi, thisPtr, VI_SUCCESS);
 }
@@ -1641,7 +1641,7 @@ ViStatus _VI_FUNC hpe1429_quesCond_Q(ViSession vi, ViPInt32 val)
     if (errStatus < VI_SUCCESS)
       hpe1429_LOG_STATUS(vi, thisPtr, errStatus);
     buf[count] = '\0';
-    *val = atoi(buf);
+    *val = strtol(buf,NULL,0);
   }
   hpe1429_LOG_STATUS(vi, thisPtr, VI_SUCCESS);
 }

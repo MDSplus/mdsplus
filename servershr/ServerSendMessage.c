@@ -460,8 +460,8 @@ static SOCKET CreatePort(uint16_t *port_out) {
       for (dash=range; *dash && *dash!='-' ; dash++);
       if (dash)
         *(dash++)=0;
-      start_port = (uint16_t)(atoi(range)&0xffff);
-      int end = atoi(dash);
+      start_port = (uint16_t)(strtol(range,NULL,0)&0xffff);
+      int end = strtol(dash,NULL,0);
       if (end>0 && end<65536)
         range_port = (uint16_t)end-start_port+1;
       else
@@ -665,17 +665,17 @@ static Client* get_addr_port(char* server, uint32_t*addrp, uint16_t*portp) {
   }
   addr = LibGetHostAddr(hostpart);
   if (!addr) return NULL;
-  if (atoi(portpart) == 0) {
+  if (strtol(portpart,NULL,0) == 0) {
     struct servent *sp = getservbyname(portpart, "tcp");
     if (sp)
       port = sp->s_port;
     else {
       char *portnam = getenv(portpart);
       portnam = (!portnam) ? ((hostpart[0] == '_') ? "8200" : "8000") : portnam;
-      port = htons((uint16_t)atoi(portnam));
+      port = htons((uint16_t)strtol(portnam,NULL,0));
     }
   } else
-    port = htons((uint16_t)atoi(portpart));
+    port = htons((uint16_t)strtol(portpart,NULL,0));
   if (addrp) *addrp=addr;
   if (portp) *portp=port;
   return get_client(addr,port);

@@ -117,7 +117,7 @@ static int GetHostAndPort(char *hostin, struct SOCKADDR_IN *sin){
   } else {
     service = "mdsip";
   }
-  if (atoi(service) == 0) {
+  if (strtol(service,NULL,0) == 0) {
     if (!getservbyname(service, "tcp")) {
       char *env_service = getenv(service);
       if ( (env_service == NULL) ) {

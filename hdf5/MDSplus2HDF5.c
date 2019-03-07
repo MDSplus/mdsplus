@@ -248,7 +248,7 @@ static void parse_cmdline(int argc, const char *argv[])
     exit(0);
   }
   tree = (char *)argv[1];
-  shot = atoi(argv[2]);
+  shot = strtol(argv[2],NULL,0);
 }
 
 static hid_t CreateHDF5(char *tree, int shot)

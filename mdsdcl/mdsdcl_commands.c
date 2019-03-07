@@ -640,7 +640,7 @@ EXPORT int mdsdcl_do_macro(void *ctx, char **error, char **output)
     int time;
     int failed = 0;
     if (times_s) {
-      times = atoi(times_s);
+      times = strtol(times_s,NULL,0);
       free(times_s);
     }
     for (time = 0; (failed == 0) && (time < times); time++) {
