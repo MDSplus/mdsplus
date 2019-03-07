@@ -214,7 +214,7 @@ STATIC_ROUTINE int ConvertFloating(struct descriptor_s *str, struct descriptor_r
     double tmp;
     struct descriptor tmp_d = { sizeof(double), DTYPE_NATIVE_DOUBLE, CLASS_S, 0 };
     tmp_d.pointer = (char *)&tmp;
-    tmp = atof(str_c);
+    tmp = strtod(str_c,NULL);
     return TdiConvert(&tmp_d, out_d);
   } else {
     float tmp;

@@ -664,22 +664,22 @@ Boolean GetWaveZoomFromDb(XrmDatabase db, String prefix, int row, int col, float
   String limit;
   limit = GetPlotResource(db, prefix, row, col, "xmin_zoom", "");
   if (limit && strlen(limit) > 0)
-    zoom[0] = (float)atof(limit);
+    zoom[0] = (float)strtod(limit,NULL);
   else
     return FALSE;
   limit = GetPlotResource(db, prefix, row, col, "xmax_zoom", "");
   if (limit && strlen(limit) > 0)
-    zoom[1] = (float)atof(limit);
+    zoom[1] = (float)strtod(limit,NULL);
   else
     return FALSE;
   limit = GetPlotResource(db, prefix, row, col, "ymin_zoom", "");
   if (limit && strlen(limit) > 0)
-    zoom[2] = (float)atof(limit);
+    zoom[2] = (float)strtod(limit,NULL);
   else
     return FALSE;
   limit = GetPlotResource(db, prefix, row, col, "ymax_zoom", "");
   if (limit && strlen(limit) > 0)
-    zoom[3] = (float)atof(limit);
+    zoom[3] = (float)strtod(limit,NULL);
   else
     return FALSE;
   return TRUE;
