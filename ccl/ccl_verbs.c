@@ -291,7 +291,7 @@ EXPORT int ccl_show_data(void *ctx, char **error __attribute__ ((unused)), char 
   char *format;
   char outline[256];
   char *value = 0;
-  first = (cli_get_value(ctx, "START", &value) & 1) ? atoi(value) : 1;
+  first = (cli_get_value(ctx, "START", &value) & 1) ? strtol(value,NULL,0) : 1;
   if (value)
     free(value);
   value = 0;
@@ -299,7 +299,7 @@ EXPORT int ccl_show_data(void *ctx, char **error __attribute__ ((unused)), char 
     first = 1;
   if (first > maxsmps)
     first = maxsmps;
-  last = (cli_get_value(ctx, "END", &value) & 1) ? atoi(value) : first + 99;
+  last = (cli_get_value(ctx, "END", &value) & 1) ? strtol(value,NULL,0) : first + 99;
   if (value)
     free(value);
   value = 0;

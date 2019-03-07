@@ -100,7 +100,7 @@ int main(int argc, char **args)
     if (argc < 2) {
         iterations=3;
     } else {
-        iterations=atoi(args[1]);
+        iterations=strtol(args[1],NULL,0);
         printf("Doing %d iterations\n",iterations);
     }
 

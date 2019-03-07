@@ -545,7 +545,7 @@ ViStatus hpe1564_statusUpdate(ViSession vi, hpe1564_globals * thisPtr, ViStatus 
       if (errStatus < VI_SUCCESS)
 	return VI_ERROR_SYSTEM_ERROR;
 
-      eventQ = atoi(lc);
+      eventQ = strtol(lc,NULL,0);
 
       if ((0x04			/* Query Error */
 	   | 0x08		/* Device Dependent Error */

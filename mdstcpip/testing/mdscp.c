@@ -323,7 +323,7 @@ int main(int argc, char **argv)
     case 0:
       switch (option_index) {
       case 0:
-	streams = atoi(optarg);
+	streams = strtol(optarg,NULL,0);
 	if (streams < 1 || streams > 32) {
 	  printf("Invalid number of streams specified.");
 	  error = 1;

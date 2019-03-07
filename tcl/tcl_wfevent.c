@@ -52,7 +52,7 @@ EXPORT int TclWfevent(void *ctx, char **error, char **output __attribute__ ((unu
   int status;
   cli_get_value(ctx, "EVENT", &event);
   cli_get_value(ctx, "TIMEOUT", &timeout);
-  seconds = atoi(timeout);
+  seconds = strtol(timeout,NULL,0);
   free(timeout);
   if (event) {
     if (seconds > 0) {

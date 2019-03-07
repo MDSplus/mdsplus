@@ -137,7 +137,7 @@ static int OpenScsi(int scsiDevice, char **buff_out)
 	if (MAXBUF[scsiDevice] < MIN_MAXBUF) {
 	  char *env = getenv("CAMAC_BUFFSIZE");
 	  if (env)
-	    MAXBUF[scsiDevice] = atoi(env);
+	    MAXBUF[scsiDevice] = strtol(env,NULL,0);
 	  if (MAXBUF[scsiDevice] < MIN_MAXBUF)
 	    MAXBUF[scsiDevice] = MIN_MAXBUF;
 	}

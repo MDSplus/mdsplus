@@ -848,12 +848,12 @@ BEGIN has_day;
 case 3:
 YY_RULE_SETUP
 #line 20 "mdsdclDeltatimeToSeconds.x"
-day=atoi(mdsdclDelta_text); BEGIN INITIAL;
+day=strtol(mdsdclDelta_text,NULL,0); BEGIN INITIAL;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 21 "mdsdclDeltatimeToSeconds.x"
-times[idx]=atoi(mdsdclDelta_text);
+times[idx]=strtol(mdsdclDelta_text,NULL,0);
 	YY_BREAK
 case 5:
 YY_RULE_SETUP

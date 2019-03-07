@@ -213,7 +213,7 @@ static short GetPort()
   short port;
   char *name = GetPortname();
   struct servent *sp;
-  port = htons((short)atoi(name));
+  port = htons((short)strtol(name,NULL,0));
   if (port == 0) {
     sp = getservbyname(name, "tcp");
     if (sp == NULL) {

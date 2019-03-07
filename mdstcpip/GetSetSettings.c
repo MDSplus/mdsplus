@@ -174,7 +174,7 @@ static pthread_mutex_t timeout_mutex = PTHREAD_MUTEX_INITIALIZER;
 static void timeout_init() {
   char *timeout=getenv("MDSIP_CONNECT_TIMEOUT");
   if (timeout)
-    timeout_value = atoi(timeout);
+    timeout_value = strtol(timeout,NULL,0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -102,7 +102,7 @@ int paragon_rpt___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
                       {
                         static int val;
                         static DESCRIPTOR_LONG(val_d,&val);
-                        val = atoi(value);
+                        val = strtol(value,NULL,0);
                         if (digital_names.l_length)
                         {
                           TdiVector(&digital_names,&name_d,&digital_names MDS_END_ARG);

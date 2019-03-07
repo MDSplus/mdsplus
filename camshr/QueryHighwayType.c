@@ -134,7 +134,7 @@ int QueryHighwayType(char *serial_hwy_driver)
 	if (strstr(tmpModel, "73A"))
 	  highwayType = JORWAY_73A;
 	else {
-	  if (atoi(tmpRev) >= 12)
+	  if (strtol(tmpRev,NULL,0) >= 12)
 	    highwayType = JORWAY;
 	  else
 	    highwayType = JORWAY_OLD;
