@@ -33,9 +33,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <pthread_port.h>
 
 #ifdef DEBUG
- #define PDEBUG(...) fprintf(stderr,__VA_ARGS__)
+ #define DBG(...) fprintf(stderr,__VA_ARGS__)
 #else
- #define PDEBUG(...)
+ #define DBG(...) {/**/}
 #endif
 
 static Connection *ConnectionList = NULL;
@@ -67,7 +67,7 @@ Connection *FindConnectionSending(int id){
   if (c && c->state != CON_SENDARG) {
     if (c->state & CON_SENDARG) {
       c->state &= CON_DISCONNECT; // preserve CON_DISCONNECT
-      PDEBUG("Connection %02d -> %02x unlocked\n",c->id,c->state);
+      DBG("Connection %02d -> %02x unlocked\n",c->id,c->state);
       pthread_cond_signal(&c->cond);
     }
     c = NULL;
@@ -92,14 +92,14 @@ Connection *FindConnectionWithLock(int id, con_t state){
   c = _FindConnection(id, NULL);
   if (c) {
     while (c->state && !(c->state & CON_DISCONNECT)) {
-      PDEBUG("Connection %02d -- %02x waiting\n",c->id,state);
+      DBG("Connection %02d -- %02x waiting\n",c->id,state);
       pthread_cond_wait(&c->cond,&connection_mutex);
     }
     if (c->state & CON_DISCONNECT) {
       pthread_cond_signal(&c->cond); // pass on signal
       c = NULL;
     } else {
-      PDEBUG("Connection %02d -> %02x   locked\n",c->id,state);
+      DBG("Connection %02d -> %02x   locked\n",c->id,state);
       c->state = state;
     }
   }
@@ -107,14 +107,16 @@ Connection *FindConnectionWithLock(int id, con_t state){
   return c;
 }
 
-void UnlockConnection(Connection* c) {
+void UnlockConnection(Connection* c_in) {
+  CONNECTIONLIST_LOCK;
+  Connection *c; // check if not yet freed
+  for (c = ConnectionList; c && c != c_in; c = c->next);
   if (c) {
-    CONNECTIONLIST_LOCK;
     c->state &= CON_DISCONNECT; // preserve CON_DISCONNECT
-    PDEBUG("Connection %02d -> %02x unlocked\n",c->id,c->state);
+    DBG("Connection %02d -> %02x unlocked\n",c->id,c->state);
     pthread_cond_signal(&c->cond);
-    CONNECTIONLIST_UNLOCK;
   }
+  CONNECTIONLIST_UNLOCK;
 }
 
 #define CONNECTION_UNLOCK_PUSH(c) pthread_cleanup_push((void*)UnlockConnection,(void*)c)
