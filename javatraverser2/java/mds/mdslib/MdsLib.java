@@ -19,9 +19,9 @@ public final class MdsLib extends Mds{
     public static native byte[] evaluate(String expr, byte[]... args) throws MdsException;
 
     public static byte[] execute(final String expr, final byte[]... args) throws MdsException {
-        System.err.print(expr + " ..");
+        if(DEBUG.ON) System.err.print(expr + " ..");
         final byte[] bytes = MdsLib.evaluate(expr, args);
-        System.err.println(". ok");
+        if(DEBUG.ON) System.err.println(". ok");
         return bytes;
     }
 
