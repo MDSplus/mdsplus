@@ -139,7 +139,7 @@ static int OpenShotIdFile(char *experiment, int mode)
 int TreeGetCurrentShotId(char const *experiment)
 {
   int shot = 0;
-  int status = 0;
+  int status = TreeFAILURE;
   char *path = 0;
   char *exp = strcpy(malloc(strlen(experiment) + 6), experiment);
   int i;
@@ -172,12 +172,12 @@ int TreeGetCurrentShotId(char const *experiment)
   if (path)
     TranslateLogicalFree(path);
   free(exp);
-  return (status & 1) ? shot : 0;
+  return STATUS_OK ? shot : 0;
 }
 
 int TreeSetCurrentShotId(char const *experiment, int shot)
 {
-  int status = 0;
+  int status = TreeFAILURE;
   char *path = 0;
   char *exp = strcpy(malloc(strlen(experiment) + 6), experiment);
   size_t slen;
