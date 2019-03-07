@@ -103,9 +103,12 @@ EXPORT int TclDoMethod(void *ctx, char **error, char **output __attribute__ ((un
       }
       if STATUS_OK {
         status = TreeDoMethodA(&nid_dsc,&method_dsc,argc,arglist,&xd);
-	if (STATUS_OK && xd.pointer) {
-	  TdiGetLong(&xd,&status);
-          MdsFree1Dx(&xd, NULL);
+	if STATUS_OK {
+          if (xd.pointer) {
+	    TdiGetLong(&xd,&status);
+            MdsFree1Dx(&xd, NULL);
+          } else
+            status = SsSUCCESS;
         }
       }
       if (method)
