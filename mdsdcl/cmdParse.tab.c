@@ -1641,13 +1641,13 @@ EXPORT int mdsdcl_do_command_extra_args(char const* command, char **prompt, char
   yyscan_t yyscanner;
   YY_BUFFER_STATE cmd_state;
   int result,status=MdsdclIVVERB;
-  if (error && *error) {
+  if (error) {
     free(*error);
-    *error = 0;
+    *error = NULL;
   }
-  if (output && *output) {
+  if (output) {
     free(*output);
-    *error = 0;
+    *output = NULL;
   }
   dclLock();
   dcl_lex_init(&yyscanner);
@@ -1665,4 +1665,4 @@ EXPORT int mdsdcl_do_command_extra_args(char const* command, char **prompt, char
   }
   return status;
 }
-  
+
