@@ -7,6 +7,8 @@ import mds.data.descriptor.Descriptor_APD;
 
 /** Tuple (215 : -41) **/
 public class Tuple extends Descriptor_APD{
+    public static final String prefix = "Tupel";
+
     public Tuple(final ByteBuffer b){
         super(b);
     }
@@ -17,6 +19,11 @@ public class Tuple extends Descriptor_APD{
 
     public final Descriptor<?> get(final int idx) {
         return this.getScalar(idx);
+    }
+
+    @Override
+    protected final String getPrefix() {
+        return Tuple.prefix;
     }
 
     public final Descriptor<?>[] toArray() {

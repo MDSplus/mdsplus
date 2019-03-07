@@ -53,10 +53,10 @@ public class TreeShr_Test{
     @After
     public void tearDown() throws Exception {/*stub*/}
 
-    // @Test
+    @Test
     @SuppressWarnings({"unchecked", "rawtypes"})
     public final void test000TreeCall() {
-        Assert.assertEquals("__a=*;__b=0Q;_s=TreeShr->TreeDoMethod(ref($),ref(0Q),ref(__b),val(1),xd($),xd(__a),descr($));__a", new TreeShr.TreeCall(null, "TreeDoMethod").ref(new Int32(1)).ref(0l).ref("b", "0Q").val(1).xd(new Int32(1)).xd("a").descr(new Int32(1)).expr("__a"));
+        Assert.assertEquals("__a=*;__b=0Q;__s=TreeShr->TreeDoMethod(ref($),ref(0Q),ref(__b),val(1),xd(as_is($)),xd(__a),descr($));execute(\"deallocate('__*');as_is(`(__a;))\")", new TreeShr.TreeCall(null, "TreeDoMethod").ref(new Int32(1)).ref(0l).ref("b", "0Q").val(1).xd(new Int32(1)).xd("a").descr(new Int32(1)).expr("__a"));
     }
 
     @Test
@@ -297,8 +297,8 @@ public class TreeShr_Test{
                 dim[i] = t0 + i * 1000000l + 20000000l;
             AllTests.testStatus(MdsException.TreeNORMAL, TreeShr_Test.treeshr.treeMakeTimestampedSegment(TreeShr_Test.ctx, 1, dim, new Float32Array(2.0f, 2.1f, 2.2f, 2.3f, 2.4f, 2.5f, 2.6f, 2.7f, 2.8f, 2.9f), -1, 10));
             Assert.assertEquals(3, TreeShr_Test.treeshr.treeGetNumSegments(TreeShr_Test.ctx, 1).getData());
-            Assert.assertEquals("[1000010000000Q,1000019000000Q]", TreeShr_Test.treeshr.treeGetSegmentLimits(TreeShr_Test.ctx, 1, 1).getData().decompile());
-            Assert.assertEquals("[1000000000000Q,1000010000000Q,1000020000000Q]", ((List)TreeShr_Test.treeshr.treeGetSegmentTimesXd(TreeShr_Test.ctx, 1).getData()).get(1).decompile());
+            Assert.assertEquals("List(,1000010000000Q,1000019000000Q)", TreeShr_Test.treeshr.treeGetSegmentLimits(TreeShr_Test.ctx, 1, 1).getData().decompile());
+            Assert.assertEquals("List(,1000000000000Q,1000010000000Q,1000020000000Q)", ((List)TreeShr_Test.treeshr.treeGetSegmentTimesXd(TreeShr_Test.ctx, 1).getData()).get(1).decompile());
             AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeUpdateSegment(TreeShr_Test.ctx, 1, Missing.NEW, Missing.NEW, new Range(1000010100000l, 1000019100000l, 1000000l).getDataD(), 1));
             Assert.assertEquals("[1000010100000Q,1000011100000Q,1000012100000Q,1000013100000Q,1000014100000Q,1000015100000Q,1000016100000Q,1000017100000Q,1000018100000Q,1000019100000Q]", TreeShr_Test.treeshr.treeGetSegment(TreeShr_Test.ctx, 1, 1).getDimension().decompile());
             AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeSetSegmentScale(TreeShr_Test.ctx, 1, new BINARY.Add(new BINARY.Multiply(CONST.$VALUE, new Float32(0.5f)), new Float32(0.1f))));

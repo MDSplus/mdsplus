@@ -45,7 +45,7 @@ public class Descriptor_CA extends ARRAY<ByteBuffer>{
                 pout.append(Integer.toString(this.dims(i))).append(',');
             that.decompile(pout, that.getElement(0));
             if(that.format()) pout.append(that.getSuffix());
-            pout.append(" /*** etc. ***/)");
+            pout.append(ARRAY.ETC);
             if(that.format()) pout.append(')');
             return pout;
         }catch(final MdsException e){

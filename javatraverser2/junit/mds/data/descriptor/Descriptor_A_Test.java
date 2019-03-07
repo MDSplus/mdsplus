@@ -51,6 +51,7 @@ public final class Descriptor_A_Test{
     public final void testARRAY() throws MdsException {
         final Descriptor_A<?> test = new Uint64Array(1000000000000l);
         Signal signal;
+        Assert.assertEquals("[[[[[[[[0]]]]]]]]", Descriptor_A_Test.mds.getDescriptor("zero([1,1,1,1,1,1,1,1],8)").decompile());
         Assert.assertEquals("[1000000000000QU]", Descriptor_A_Test.mds.getString("DECOMPILE($)", test));
         Assert.assertEquals("[1,2,3,4,5,6,7,8,9,10]", Descriptor.deserialize(new byte[]{4, 0, 8, 4, 16, 0, 0, 0, 0, 0, 48, 1, 40, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0, 5, 0, 0, 0, 6, 0, 0, 0, 7, 0, 0, 0, 8, 0, 0, 0, 9, 0, 0, 0, 10, 0, 0, 0}).toString());
         Assert.assertArrayEquals(new byte[]{8, 0, 5, 4, 16, 0, 0, 0, 0, 0, 48, 1, 8, 0, 0, 0, 0, 16, -91, -44, -24, 0, 0, 0}, test.serializeArray());
@@ -67,12 +68,13 @@ public final class Descriptor_A_Test{
         final Signal signal = new Signal(CONST.$VALUE, new Int32Array(new int[]{2, 2}, 1, 2, 3, 4), new Int32Array(1, 2));
         final Descriptor<?>[] args = new Descriptor<?>[]{new Uint8(1), new Int64(1), new Uint8(2), signal};
         // HINT: tdi 'Dict' converts keys into int as they can only be native python types
-        final Dictionary dict = Descriptor_A_Test.mds.getDescriptor("Dict(*,1BU,1Q,2BU,Build_Signal($VALUE,[[1,2],[3,4]],[1,2]))", Dictionary.class);
-        Assert.assertEquals("[1BU,1Q,2BU,Build_Signal($VALUE, [[1,2],[3,4]], [1,2])]", dict.decompile());
+        final Dictionary dict = Descriptor_A_Test.mds.getDescriptor("Dict(,1BU,1Q,2BU,Build_Signal($VALUE,[[1,2],[3,4]],[1,2]))", Dictionary.class);
+        Assert.assertEquals("Dict(, 1BU,1Q, 2BU,Build_Signal($VALUE, [[1,2],[3,4]], [1,2]))", dict.decompile());
         final Dictionary dict2 = Descriptor_A_Test.mds.getDescriptor("Dict(*,$,$,$,$)", Dictionary.class, args);
         Assert.assertArrayEquals(dict.serializeArray(), dict2.serializeArray());
         final Dictionary dict3 = new Dictionary(args);
-        Assert.assertEquals("[1BU,1Q,2BU,Build_Signal($VALUE, [[1,2],[3,4]], [1,2])]", Descriptor_A_Test.mds.getDescriptor("$", dict3).decompile());
+        Assert.assertEquals("Dict(, 1BU,1Q, 2BU,Build_Signal($VALUE, [[1,2],[3,4]], [1,2]))", Descriptor_A_Test.mds.getDescriptor("$", dict3).decompile());
+        Assert.assertEquals("Dict()", new Dictionary().decompile());
     }
 
     @Test
@@ -110,10 +112,11 @@ public final class Descriptor_A_Test{
 
     @Test
     public final void testList() throws MdsException {
-        Assert.assertEquals("[1BU,1Q,2BU,Build_Signal(1, 2, 3)]", Descriptor_A_Test.mds.getDescriptor("List(*,1BU,1Q,2BU,Build_Signal(1,2,3))").decompile());
-        Assert.assertEquals("[1BU,1Q,2BU,Build_Signal(1, 2, 3)]", Descriptor_A_Test.mds.getDescriptor("List(*,$,$,$,$)", new Uint8(1), new Int64(1), new Uint8(2), new Signal(new Int32(1), new Int32(2), new Int32(3))).decompile());
-        final List list = new List(new Uint8(1), new Int64(1), new Uint8(2), new Signal(new Int32(1), new Int32(2), new Int32(3)));
-        Assert.assertEquals("[1BU,1Q,2BU,Build_Signal(1, 2, 3)]", list.decompile());
-        Assert.assertEquals("[1BU,1Q,2BU,Build_Signal(1, 2, 3)]", Descriptor_A_Test.mds.getDescriptor("EVALUATE($)", list).decompile());
+        Assert.assertEquals("List(,1BU,1Q,2BU,Build_Signal(1, 2, 3))", Descriptor_A_Test.mds.getDescriptor("List(,1BU,1Q,2BU,Build_Signal(1,2,3))").decompile());
+        Assert.assertEquals("List(,1BU,1Q,2BU,Build_Signal(1, 2, 3))", Descriptor_A_Test.mds.getDescriptor("List(,$,$,$,$)", new Uint8(1), new Int64(1), new Uint8(2), new Signal(new Int32(1), new Int32(2), new Int32(3))).decompile());
+        final List list1 = new List(new Uint8(1), new Int64(1), new Uint8(2), new Signal(new Int32(1), new Int32(2), new Int32(3)));
+        Assert.assertEquals("List(,1BU,1Q,2BU,Build_Signal(1, 2, 3))", list1.decompile());
+        Assert.assertEquals("List(,1BU,1Q,2BU,Build_Signal(1, 2, 3))", Descriptor_A_Test.mds.getDescriptor("EVALUATE($)", list1).decompile());
+        Assert.assertEquals("List()", new List().decompile());
     }
 }

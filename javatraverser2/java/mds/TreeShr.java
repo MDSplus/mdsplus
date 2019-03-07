@@ -398,11 +398,8 @@ public class TreeShr extends MdsShr{
     }
 
     public final DescriptorStatus treeDoMethod(final CTX ctx, final int nid, final String method, final Descriptor<?>... args) throws MdsException {
-        final LibCall<List> expr = new TreeCall<List>(List.class, "TreeDoMethod")//
-                .val(nid).ref(Descriptor.valueOf(method));
-        for(final Descriptor<?> arg : args)
-            expr.ref(arg);
-        final Request<List> request = expr.xd("x").MdsEND_ARG(this.mds).finL("x", "s");
+        final Request<List> request = new TreeCall<List>(List.class, "TreeDoMethodA")//
+                .val(nid).ref(Descriptor.valueOf(method)).val(args.length).ref(new List(args)).xd("x").finL("x", "s");
         return new DescriptorStatus(this.mds.getDescriptor(ctx, request));
     }
 

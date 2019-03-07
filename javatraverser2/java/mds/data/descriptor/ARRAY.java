@@ -75,7 +75,8 @@ public abstract class ARRAY<T>extends Descriptor<T>{
     protected static final aflags f_array  = new aflags(false, true, true, false, false);
     protected static final aflags f_bounds = new aflags(false, true, true, true, true);
     protected static final aflags f_coeff  = new aflags(false, true, true, true, false);
-    public static final byte      MAX_DIMS  = 8;
+    public static final byte      MAX_DIMS = 8;
+    public static final String    ETC      = " /*** etc. ***/)";
 
     /** Returns the ARRAY deserialized from the given ByteBuffer **/
     public static ARRAY<?> deserialize(final ByteBuffer bi) throws MdsException {

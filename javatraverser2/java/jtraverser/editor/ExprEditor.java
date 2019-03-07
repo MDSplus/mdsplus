@@ -13,6 +13,7 @@ import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 import mds.MdsException;
 import mds.data.CTX;
+import mds.data.descriptor.ARRAY;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_s.StringDsc;
 
@@ -121,7 +122,7 @@ public class ExprEditor extends Editor{
             this.remove(this.left);
             this.remove(this.right);
         }
-        if(this.expr != null && this.expr.contains("/*** etc. ***/")){
+        if(this.expr != null && this.expr.contains(ARRAY.ETC)){
             this.text_edit.setBackground(Color.PINK);
             this.text_edit.setForeground(Color.RED);
         }else{
