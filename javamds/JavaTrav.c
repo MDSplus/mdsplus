@@ -750,7 +750,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getSons
     (*env)->SetObjectArrayElement(env, jnids, i, jnid);
   }
   if (num_nids > 0)
-    free((char *)nids);
+    free(nids);
   /*
      //printf("\nEnd getSons"); */
   return jnids;

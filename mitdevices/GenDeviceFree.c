@@ -47,7 +47,7 @@ EXPORT int GenDeviceFree(CommonInStruct * in_struct)
   for (i = 0; (status & 1) && (i < in_struct->num_xds); i++)
     status = MdsFree1Dx(&in_struct->xds[i], 0);
   if (in_struct->num_xds) {
-    free((char *)in_struct->xds);
+    free(in_struct->xds);
     in_struct->num_xds = 0;
   }
   return status;

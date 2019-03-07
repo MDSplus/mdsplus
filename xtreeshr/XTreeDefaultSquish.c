@@ -105,9 +105,9 @@ static inline int checkShapes(struct descriptor_a *signalsApd, int *totShapes, i
 
   // Free shape stuff
   for(i = 0; i < numSignals; i++)
-    free((char *)shapes[i]);
-  free((char *)shapes);
-  free((char *)numShapes);
+    free(shapes[i]);
+  free(shapes);
+  free(numShapes);
   return status;
 }
 
@@ -321,16 +321,16 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
   free(outDataBuf);
   if (canDoMergeRanges) {
     if (numSignals > 1) {
-      if (beginArrD   .pointer) free(beginArrD   .pointer);
-      if (endingArrD  .pointer) free(endingArrD  .pointer);
-      if (deltavalArrD.pointer) free(deltavalArrD.pointer);
+      free(beginArrD   .pointer);
+      free(endingArrD  .pointer);
+      free(deltavalArrD.pointer);
     }
   } else {
     for (i = 0; i < numSignals; i++)
       MdsFree1Dx(&dimensionsXd[i], 0);
-    if (dimensionsXd) free((char *)dimensionsXd);
-    if (outDimBuf) free(outDimBuf);
-    if (arraysBuf) free(arraysBuf);
+    free(dimensionsXd);
+    free(outDimBuf);
+    free(arraysBuf);
   }
   return status;
 }

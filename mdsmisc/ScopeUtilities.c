@@ -523,7 +523,7 @@ static char *recGetUnits(struct descriptor *dsc, int isX)
 			free(unitsArr[i]);
 		    }
 		}
-		free((char *)unitsArr);
+		free(unitsArr);
 		return units;
 	    }
 	    return NULL;
@@ -620,7 +620,7 @@ static struct descriptor_xd *encodeError(char *error)
     errD.length = errLen + sizeof(float) + sizeof(int);
     errD.pointer = codedError;
     MdsCopyDxXd(&errD, &retXd);
-    free((char *)codedError);
+    free(codedError);
     return &retXd;
 }
 
@@ -1030,7 +1030,7 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     retArrD.arsize = retSize;
     retArrD.pointer = retArr;
     if(yArrD->dtype != DTYPE_FLOAT)
-	free((char *)y);
+	free(y);
     MdsCopyDxXd((struct descriptor *)&retArrD, &retXd);
     MdsFree1Dx(&xXd, 0);
     MdsFree1Dx(&yXd, 0);
@@ -1338,7 +1338,7 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     retArrD.arsize = retSize;
     retArrD.pointer = retArr;
     if(yArrD->dtype != DTYPE_FLOAT)
-	free((char *)y);
+	free(y);
     MdsCopyDxXd((struct descriptor *)&retArrD, &retXd);
     MdsFree1Dx(&xXd, 0);
     MdsFree1Dx(&yXd, 0);

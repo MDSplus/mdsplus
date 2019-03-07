@@ -232,8 +232,8 @@ EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
   dataDsc.pointer = (char *)outData;
   dataDsc.arsize = 2 * outIdx * sizeof(float);
   MdsCopyDxXd((struct descriptor *)&retSigDsc, &xd);
-  free((char *)outTimes);
-  free((char *)outData);
+  free(outTimes);
+  free(outData);
   return &xd;
 }
 

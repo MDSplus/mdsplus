@@ -96,7 +96,7 @@ static inline int TreeDeleteTreeFilesOne(char *tree, int shot, char* treepath){
   for (i = 0 ; i < 3 ; i++) {
     if (src[i]>=0) MDS_IO_CLOSE(src[i]);
     if STATUS_OK retstatus = MDS_IO_REMOVE(tmp[i]);
-    if (tmp[i]) free(tmp[i]);
+    free(tmp[i]);
   }
   return retstatus ? TreeFAILURE : status;
 }

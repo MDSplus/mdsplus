@@ -505,7 +505,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
       fprintf(stderr, "Access denied: %s\n",user_p);
     else
       fprintf(stderr, "Connected: %s\n",user_p);
-    if (user) free(user);
+    free(user);
     m.h.status = STATUS_OK ? (1 | (c->compression_level << 1)) : 0;
     m.h.client_type = m_user ? m_user->h.client_type : 0;
     m.h.ndims = 1;

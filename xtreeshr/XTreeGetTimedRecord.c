@@ -236,8 +236,8 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
   }
   actNumSegments = endIdx - startIdx +1;
 
-  free((char *)startTimes);
-  free((char *)endTimes);
+  free(startTimes);
+  free(endTimes);
 
   signals = (struct descriptor_signal **)malloc(actNumSegments * sizeof(struct descriptor_signal *));
   signalsApd.pointer = (struct descriptor **)signals;
@@ -261,15 +261,15 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
       MdsFree1Dx(&compressed, 0);
     }
     if STATUS_NOT_OK {
-      free((char *)signals);
+      free(signals);
       for(i = 0; i < actNumSegments; i++) {
         MdsFree1Dx(&resampledXds[i], 0);
         MdsFree1Dx(&dataXds[i], 0);
         MdsFree1Dx(&dimensionXds[i], 0);
       }
-      free((char *)resampledXds);
-      free((char *)dataXds);
-      free((char *)dimensionXds);
+      free(resampledXds);
+      free(dataXds);
+      free(dimensionXds);
       return status;
     }
 
@@ -314,15 +314,15 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
     }
 
     if STATUS_NOT_OK {
-      free((char *)signals);
+      free(signals);
       for(i = 0; i < actNumSegments; i++){
         MdsFree1Dx(&resampledXds[i], 0);
         MdsFree1Dx(&dataXds[i], 0);
         MdsFree1Dx(&dimensionXds[i], 0);
       }
-      free((char *)resampledXds);
-      free((char *)dataXds);
-      free((char *)dimensionXds);
+      free(resampledXds);
+      free(dataXds);
+      free(dimensionXds);
       return status;
     }
 
@@ -353,13 +353,13 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
     status = XTreeDefaultSquish((struct descriptor_a *)&signalsApd, startD, endD, minDeltaD, outSignal);
 
 //Free stuff
-  free((char *)signals);
+  free(signals);
   for (i = 0; i < actNumSegments; i++) {
     MdsFree1Dx(&resampledXds[i], NULL);
   }
-  free((char *)resampledXds);
-  free((char *)dataXds);
-  free((char *)dimensionXds);
+  free(resampledXds);
+  free(dataXds);
+  free(dimensionXds);
   if (outSignal->pointer && (_TreeGetSegmentScale(dbid, inNid, &xd)&1)){
     if (xd.pointer) {
       struct descriptor_signal* sig = (struct descriptor_signal*)outSignal->pointer;

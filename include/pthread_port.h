@@ -58,7 +58,7 @@ typedef struct _Condition_p {
 
 // FREE
 static void __attribute__((unused)) free_if(void *ptr){
-  if (*(void**)ptr) free(*(void**)ptr);
+  free(*(void**)ptr);
 }
 #define FREE_ON_EXIT(ptr)   pthread_cleanup_push(free_if, (void*)&ptr)
 #define FREE_IF(ptr,c)      pthread_cleanup_pop(c);

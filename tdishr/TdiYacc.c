@@ -1559,9 +1559,9 @@ STATIC_ROUTINE int allocate_stacks()
 STATIC_ROUTINE void free_stacks()
 {
   if (tdiyys != 0)
-    free((char *)tdiyys);
+    free(tdiyys);
   if (tdiyyv != 0)
-    free((char *)tdiyyv);
+    free(tdiyyv);
 }
 
 #endif				/* defined(__RUNTIME_YYMAXDEPTH) */

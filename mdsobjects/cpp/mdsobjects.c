@@ -831,7 +831,7 @@ static void freeDescrip(struct descriptor *desc)
       freeDescrip(((struct descriptor **)array_d->pointer)[i]);
     break;
   }
-  free((char *)desc);
+  free(desc);
 }
 
 /*
@@ -860,7 +860,7 @@ JNIEXPORT jstring JNICALL Java_mdsdata_Data_decompile(JNIEnv * env, jobject obj)
   buf[dec_d->length] = 0;
   MdsFree1Dx(&out_xd, NULL);
   ris = (*env)->NewStringUTF(env, buf);
-  free((char *)buf);
+  free(buf);
   return ris;
 
 }
@@ -1171,7 +1171,7 @@ JNIEXPORT jintArray JNICALL Java_mdstree_MdsTree_findWild
   }
   jnids = (*env)->NewIntArray(env, numNids);
   (*env)->SetIntArrayRegion(env, jnids, 0, numNids, (jint *) nids);
-  free((char *)nids);
+  free(nids);
   return jnids;
 }
 
@@ -1209,7 +1209,7 @@ JNIEXPORT jintArray JNICALL Java_mdstree_MdsTree_getMembersOf(JNIEnv * env, jcla
   }
   jnids = (*env)->NewIntArray(env, numNids);
   (*env)->SetIntArrayRegion(env, jnids, 0, numNids, (jint *) nids);
-  free((char *)nids);
+  free(nids);
   return jnids;
 }
 
@@ -1247,7 +1247,7 @@ JNIEXPORT jintArray JNICALL Java_mdstree_MdsTree_getChildrenOf(JNIEnv * env, jcl
   }
   jnids = (*env)->NewIntArray(env, numNids);
   (*env)->SetIntArrayRegion(env, jnids, 0, numNids, (jint *) nids);
-  free((char *)nids);
+  free(nids);
   return jnids;
 }
 

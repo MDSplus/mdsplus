@@ -261,7 +261,7 @@ EXPORT int IDLMdsEvent(int argc, void * *argv)
     }
     UnBlockSig(SIGALRM);
   }
-  /*  free((char *)e); */
+  /*  free(e); */
   return -1;
 }
 

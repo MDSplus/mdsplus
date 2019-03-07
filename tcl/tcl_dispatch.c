@@ -119,7 +119,7 @@ typedef struct {
 } cln_act_t;
 static void cln_act(void* cin) {
   cln_act_t* c = (cln_act_t*)cin;
-  if (c->treenode) free(c->treenode);
+  free(c->treenode);
   if (c->svr) free_d(c->svr);
   if (c->xd) free_xd(c->xd);
   if (c->sid) {
@@ -329,7 +329,7 @@ EXPORT int TclDispatch_show_server(void *ctx, char **error __attribute__ ((unuse
   return status;
 }
 
-static void printIt(char *output){
+static inline void printIt(char *output){
   fprintf(stdout, "%s\n", output);
 }
 
@@ -393,13 +393,13 @@ typedef struct {
 } cln_cmd_t;
 static void cln_cmd(void* cin) {
   cln_cmd_t* c = (cln_cmd_t*)cin;
-  if (c->svr) free(c->svr);
-  if (c->tab) free(c->tab);
+  free(c->svr);
+  free(c->tab);
   if (c->sid) {
     syncwait(c->sid);
     free(c->sid);
-  } else if (c->cmd)
-    free(c->cmd);
+  } else
+   free(c->cmd);
 }
 EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribute__ ((unused))){
   int status, sync, IOS;

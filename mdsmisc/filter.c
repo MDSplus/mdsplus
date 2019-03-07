@@ -181,10 +181,10 @@ EXPORT void DoFilterResample(Filter * filter, float *in, float *out, int *n_s, i
 /* Free storage */
   for (i = 0; i < filter->num_parallels; i++)
     if (filter->units[i].den_degree > 0)
-      free((char *)history[i]);
-  free((char *)history);
-  free((char *)curr_out);
-  free((char *)curr_idx);
+      free(history[i]);
+  free(history);
+  free(curr_out);
+  free(curr_idx);
 
 /* First sample equal for input and output */
   if (start == 0)
@@ -258,10 +258,10 @@ EXPORT void DoFilterResampleVME(Filter * filter, short *in, float *out, int *n_s
 /* Free storage */
   for (i = 0; i < filter->num_parallels; i++)
     if (filter->units[i].den_degree > 0)
-      free((char *)history[i]);
-  free((char *)history);
-  free((char *)curr_out);
-  free((char *)curr_idx);
+      free(history[i]);
+  free(history);
+  free(curr_out);
+  free(curr_idx);
 /* First sample equal for input and output */
   if (start == 0)
     out[0] = in[start];
@@ -350,12 +350,12 @@ EXPORT void FreeFilter(Filter * filter)
   int i;
 
   for (i = 0; i < filter->num_parallels; i++) {
-    free((char *)filter->units[i].num);
+    free(filter->units[i].num);
     if (filter->units[i].den_degree)
-      free((char *)filter->units[i].den);
+      free(filter->units[i].den);
   }
-  free((char *)filter->units);
-  free((char *)filter);
+  free(filter->units);
+  free(filter);
 }
 
 static void NormalizeFilter(Filter * filter)

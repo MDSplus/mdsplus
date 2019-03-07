@@ -637,11 +637,11 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   }
 
   MdsCopyDxXd((struct descriptor *)&outSignalD, outSignalXd);
-  free((char *)timebase64);
-  free((char *)outDim);
+  free(timebase64);
+  free(outDim);
   if (isFloat)
-    free((char *)timebaseDouble);
-  free((char *)outData);
+    free(timebaseDouble);
+  free(outData);
   //MdsFree1Dx(&shapeXd, 0);
   MdsFree1Dx(&dataXd, 0);
 
