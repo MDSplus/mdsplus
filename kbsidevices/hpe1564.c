@@ -1996,7 +1996,7 @@ ViStatus hpe1564_scan16(ViSession vi,
 
     length_str[digits] = '\0';	/* null terminate the string */
 
-    n_bytes = atol(length_str);
+    n_bytes = strtol(length_str,NULL,0);
 
     /* Verify that caller's array is big enough. */
     if (n_bytes > (max_length * 2))
@@ -2074,7 +2074,7 @@ ViStatus hpe1564_readHeader(ViSession vi, ViPInt32 num_bytes)
 
     length_str[digits] = '\0';	/* null terminate the string */
 
-    n_bytes = atol(length_str);
+    n_bytes = strtol(length_str,NULL,0);
 
   } else {			/* Indefinite Arbitrary Block, we don't handle, so error */
 
@@ -5121,7 +5121,7 @@ ViStatus hpe1564_scan64(ViSession vi,
       return (rtn_code);
 
     length_str[digits] = '\0';	/* null terminate the string */
-    nbytes = atol(length_str);
+    nbytes = strtol(length_str,NULL,0);
 
     /* Verify that caller's array is big enough. */
     if ((max_length * 8) < nbytes)
