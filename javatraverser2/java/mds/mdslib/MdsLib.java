@@ -18,6 +18,13 @@ public final class MdsLib extends Mds{
 
     public static native byte[] evaluate(String expr, byte[]... args) throws MdsException;
 
+    public static byte[] execute(final String expr, final byte[]... args) throws MdsException {
+        System.err.print(expr + " ..");
+        final byte[] bytes = MdsLib.evaluate(expr, args);
+        System.err.println(". ok");
+        return bytes;
+    }
+
     private static final String loadLibraryFromJar(final String libname) {
         if(libname == null || libname.length() < 3) return "The libname has to be at least 3 characters long: " + libname;
         final boolean is64bit = System.getenv("ProgramFiles(x86)") != null;
@@ -93,16 +100,16 @@ public final class MdsLib extends Mds{
         synchronized(this){
             byte[] tmpctx = null;
             if(ctx != null) //
-                tmpctx = MdsLib.evaluate("TreeShr->TreeSwitchDbid:P(val($))", ctx.getDbid().serializeArray());
+                tmpctx = MdsLib.execute("TreeShr->TreeSwitchDbid:P(val($))", ctx.getDbid().serializeArray());
             final byte[][] args = new byte[request.args.length][];
             for(int i = 0; i < args.length; i++)
                 args[i] = request.args[i].serializeArray();
             try{
                 if(DEBUG.N) System.out.println(request.expr + ", " + Arrays.toString(request.args));
-                buffer = MdsLib.evaluate(request.expr, args);
+                buffer = MdsLib.execute(request.expr, args);
             }finally{
                 if(ctx != null){
-                    tmpctx = MdsLib.evaluate("TreeShr->TreeSwitchDbid:P(val($))", tmpctx);
+                    tmpctx = MdsLib.execute("TreeShr->TreeSwitchDbid:P(val($))", tmpctx);
                     ctx.getDbid().setAddress(((ByteBuffer)ByteBuffer.wrap(tmpctx).position(8)).slice().order(Descriptor.BYTEORDER));
                 }
             }

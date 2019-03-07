@@ -6,22 +6,54 @@ import mds.MdsException;
 import mds.data.DTYPE;
 import mds.data.descriptor_apd.Dictionary;
 import mds.data.descriptor_apd.List;
+import mds.data.descriptor_apd.Tuple;
 import mds.data.descriptor_s.Missing;
 
 /** Array of Descriptor (-60 : 196) **/
-public class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
+public abstract class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
+    protected final class AStringBuilder{
+        private final int           length;
+        private final StringBuilder pout;
+        private final ByteBuffer    bp;
+
+        private AStringBuilder(final StringBuilder pout){
+            this.bp = Descriptor_APD.this.getBuffer();
+            this.length = Descriptor_APD.this.getLength();
+            this.pout = pout;
+        }
+
+        public final void deco() {
+            if(this.length > 0){
+                this.bp.rewind();
+                int j = 0;
+                final boolean isdict = Descriptor_APD.this.dtype() == DTYPE.DICTIONARY;
+                if(this.length >= 1000) this.pout.append("/*** ").append(this.length).append(" ***/)");
+                for(; j < this.length && this.length < 1000; j++){
+                    this.pout.append(',');
+                    if(isdict && (j & 1) == 0) this.pout.append(' ');
+                    Descriptor_APD.this.decompile(this.pout, Descriptor_APD.this.getElement(this.bp));
+                }
+            }
+        }
+
+        @Override
+        public final String toString() {
+            return this.pout.toString();
+        }
+    }
     @SuppressWarnings("hiding")
     public static final byte   CLASS = -60;
     public static final String name  = "APD";
 
     public static Descriptor_APD deserialize(final ByteBuffer b) throws MdsException {
         switch(Descriptor.getDtype(b)){
-            case DICTIONARY:
-                return new Dictionary(b);
+            default:
             case LIST:
                 return new List(b);
-            default:
-                return new Descriptor_APD(b);
+            case TUPLE:
+                return new Tuple(b);
+            case DICTIONARY:
+                return new Dictionary(b);
         }
     }
 
@@ -76,6 +108,19 @@ public class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
     }
 
     @Override
+    public StringBuilder decompile(final int prec, final StringBuilder pout, final int mode) {
+        pout.ensureCapacity(1024);
+        pout.append(this.getPrefix()).append('(');
+        if((mode & Descriptor.DECO_STR) != 0 && this.arsize() > 255){
+            // pout.append("/*** ").append(this.getLength()).append(" ***/");
+            this.decompile(pout, this.getElement(0));
+            pout.append(ARRAY.ETC);
+        }else new AStringBuilder(pout).deco();
+        pout.append(')');
+        return pout;
+    }
+
+    @Override
     protected final StringBuilder decompile(final StringBuilder pout, final Descriptor<?> t) {
         return t == null ? pout.append("*") : t.decompile(Descriptor.P_STMT, pout, Descriptor.DECO_NRM);
     }
@@ -113,8 +158,18 @@ public class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
         for(int i = 0; i < apd.length; i++)
             apd[i] = this.getScalar(i).getLocal(mylocal);
         if(FLAG.and(local, mylocal.flag)) return (Descriptor_APD)this.setLocal();
-        return (Descriptor_APD)new Descriptor_APD(this.dtype(), apd, this.getShape()).setLocal();
+        switch(this.dtype()){
+            default:
+            case LIST:
+                return (Descriptor_APD)new List(apd).setLocal();
+            case TUPLE:
+                return (Descriptor_APD)new Tuple(apd).setLocal();
+            case DICTIONARY:
+                return (Descriptor_APD)new Dictionary(apd).setLocal();
+        }
     }
+
+    protected abstract String getPrefix();
 
     @Override
     public Descriptor<?> getScalar(final int idx) {

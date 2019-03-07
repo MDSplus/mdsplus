@@ -6,7 +6,6 @@ import java.nio.ByteOrder;
 import java.util.Iterator;
 import mds.MdsException;
 import mds.data.DTYPE;
-import mds.data.descriptor_a.StringArray;
 import mds.data.descriptor_a.Complex32Array;
 import mds.data.descriptor_a.Complex64Array;
 import mds.data.descriptor_a.EmptyArray;
@@ -19,6 +18,7 @@ import mds.data.descriptor_a.Int64Array;
 import mds.data.descriptor_a.Int8Array;
 import mds.data.descriptor_a.NUMBERArray;
 import mds.data.descriptor_a.NidArray;
+import mds.data.descriptor_a.StringArray;
 import mds.data.descriptor_a.Uint128Array;
 import mds.data.descriptor_a.Uint16Array;
 import mds.data.descriptor_a.Uint32Array;
@@ -29,7 +29,7 @@ import mds.mdsip.Message;
 /** Array Descriptor (4) **/
 public abstract class Descriptor_A<T>extends ARRAY<T[]> implements Iterable<T>{
     private final class AStringBuilder{
-        private final int           length, i = 0;
+        private final int           length;
         private final StringBuilder pout;
         private final ByteBuffer    bp;
 
@@ -55,12 +55,11 @@ public abstract class Descriptor_A<T>extends ARRAY<T[]> implements Iterable<T>{
             this.pout.append("[");
             int j = 0;
             final int len = Descriptor_A.this.dims(l - 1);
-            for(; j < len && this.i < 1000; j++){
+            if(len >= 1000) this.pout.append("/*** ").append(len).append(" ***/)");
+            for(; j < len && j < 1000; j++){
                 if(j > 0) this.pout.append(',');
                 this.level(l - 1);
             }
-            j = len - j;
-            if(j > 0 || this.i >= 1000) this.pout.append(",...(").append(len).append(')');
             this.pout.append(']');
         }
 
@@ -208,7 +207,7 @@ public abstract class Descriptor_A<T>extends ARRAY<T[]> implements Iterable<T>{
             }
             pout.append("Set_Range(").append(size).append(',');
             this.decompile(pout, this.getElement(0));
-            pout.append(" /*** etc. ***/)");
+            pout.append(ARRAY.ETC);
         }else new AStringBuilder(pout).deco();
         if(this.format()) pout.append(')');
         return pout;

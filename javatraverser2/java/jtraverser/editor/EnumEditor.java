@@ -10,6 +10,7 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import mds.MdsException;
 import mds.data.CTX;
+import mds.data.descriptor.ARRAY;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_s.Int32;
 import mds.data.descriptor_s.StringDsc;
@@ -118,7 +119,7 @@ public class EnumEditor extends Editor{
             this.expr = this.data.decompile();
             this.updateItems();
         }
-        if(this.expr != null && this.expr.contains("/*** etc. ***/")){
+        if(this.expr != null && this.expr.contains(ARRAY.ETC)){
             this.combo.setBackground(Color.PINK);
             this.combo.setForeground(Color.RED);
         }else{
