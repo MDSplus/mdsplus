@@ -55,6 +55,7 @@ Connection *FindConnection(int id, Connection ** prev){
   Connection *c;
   CONNECTIONLIST_LOCK;
   c = _FindConnection(id, prev);
+  if (c && c->state & CON_DISCONNECT) c = NULL;
   CONNECTIONLIST_UNLOCK;
   return c;
 }
