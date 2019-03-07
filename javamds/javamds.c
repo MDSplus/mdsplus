@@ -310,7 +310,7 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
 	int_ris[i] = ((char *)arr_ptr->pointer)[i];
 	break;
       case QUADWORD:
-	free((char *)quad_ris);
+	free(quad_ris);
 	MdsFree1Dx(&xd, NULL);
 	return NULL;
 	break;
@@ -334,7 +334,7 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
 	int_ris[i] = ((int *)arr_ptr->pointer)[i];
 	break;
       case QUADWORD:
-	free((char *)quad_ris);
+	free(quad_ris);
 	MdsFree1Dx(&xd, NULL);
 	return NULL;
 	break;
@@ -358,7 +358,7 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
 	int_ris[i] = ((int *)arr_ptr->pointer)[i];
 	break;
       case QUADWORD:
-	free((char *)quad_ris);
+	free(quad_ris);
 	MdsFree1Dx(&xd, NULL);
 	return NULL;
 	break;
@@ -382,7 +382,7 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
 	int_ris[i] = ((float *)arr_ptr->pointer)[i];
 	break;
       case QUADWORD:
-	free((char *)quad_ris);
+	free(quad_ris);
 	MdsFree1Dx(&xd, NULL);
 	return NULL;
 	break;
@@ -405,7 +405,7 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
 	int_ris[i] = ((double *)arr_ptr->pointer)[i];
 	break;
       case QUADWORD:
-	free((char *)quad_ris);
+	free(quad_ris);
 	MdsFree1Dx(&xd, NULL);
 	return NULL;
 	break;
@@ -506,7 +506,7 @@ JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_GetFloatArrayNative(
   }
   jarr = (*env)->NewFloatArray(env, dim);
   (*env)->SetFloatArrayRegion(env, jarr, 0, dim, out_ptr);
-  free((char *)out_ptr);
+  free(out_ptr);
   return jarr;
 }
 
@@ -529,7 +529,7 @@ JNIEXPORT jdoubleArray JNICALL Java_jScope_LocalDataProvider_GetDoubleArrayNativ
   }
   jarr = (*env)->NewDoubleArray(env, dim);
   (*env)->SetDoubleArrayRegion(env, jarr, 0, dim, out_ptr);
-  free((char *)out_ptr);
+  free(out_ptr);
   return jarr;
 }
 
@@ -550,7 +550,7 @@ JNIEXPORT jdoubleArray JNICALL Java_jScope_LocalDataProvider_GetLongArrayNative(
   }
   jarr = (*env)->NewLongArray(env, dim);
   (*env)->SetLongArrayRegion(env, jarr, 0, dim, (const jlong *)out_ptr);
-  free((char *)out_ptr);
+  free(out_ptr);
   return jarr;
 }
 
@@ -573,7 +573,7 @@ JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_GetIntArray(JNIEnv * e
   jarr = (*env)->NewIntArray(env, dim);
   (*env)->SetIntArrayRegion(env, jarr, 0, dim, (const jint *)out_ptr);
 
-  free((char *)out_ptr);
+  free(out_ptr);
   return jarr;
 }
 
@@ -594,7 +594,7 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_GetByteArray(JNIEnv *
   }
   jarr = (*env)->NewByteArray(env, dim);
   (*env)->SetByteArrayRegion(env, jarr, 0, dim, (const jbyte *)out_ptr);
-  free((char *)out_ptr);
+  free(out_ptr);
   return jarr;
 }
 
@@ -1118,7 +1118,7 @@ JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_getSegmentTimes
     }
     jarr = (*env)->NewFloatArray(env, actSegments);
     (*env)->SetFloatArrayRegion(env, jarr, 0, actSegments, farr);
-    free((char *)farr);
+    free(farr);
     return jarr;
   } else {
     for (idx = 0; idx < actSegments; idx++) {
@@ -1154,7 +1154,7 @@ JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_getSegmentTimes
       }
       MdsFree1Dx(&timesXds[idx], 0);
     }
-    free((char *)timesXds);
+    free(timesXds);
     return jarr;
   }
 }
@@ -1250,8 +1250,8 @@ JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_getSegmentIdxs
   }
   jarr = (*env)->NewIntArray(env, nRows);
   (*env)->SetIntArrayRegion(env, jarr, 0, nRows, (const jint *)arr);
-  free((char *)arr);
-  free((char *)dims);
+  free(arr);
+  free(dims);
   return jarr;
 }
 

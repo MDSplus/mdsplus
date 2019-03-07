@@ -478,9 +478,9 @@ typedef struct {void* xd;char *rtn, *model, *image;} get_add_rtn_t;
 static void get_add_rtn_c(void* in){
   get_add_rtn_t* c = (get_add_rtn_t*)in;
   free_xd(c->xd);
-  free_if(&c->rtn);
-  free_if(&c->model);
-  free_if(&c->image);
+  free(c->rtn);
+  free(c->model);
+  free(c->image);
 }
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wclobbered"

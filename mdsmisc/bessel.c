@@ -465,8 +465,8 @@ EXPORT double **Bessel(int mc_max, int ms_max, int l_max, int num_chords, double
   }
 /* free temporary storage */
   for (c = 0; c < m_max; c++)
-    free((char *)w_temp[c]);
-  free((char *)w_temp);
+    free(w_temp[c]);
+  free(w_temp);
 
   return w;
 }
@@ -537,8 +537,8 @@ EXPORT void BesselEndRebuild(double **j_temp, int mc_max, int ms_max)
 
   m_max = maximum(mc_max, ms_max) + 1;
   for (m = 0; m < m_max; m++)
-    free((char *)j_temp[m]);
-  free((char *)j_temp);
+    free(j_temp[m]);
+  free(j_temp);
 }
 
 static double bess_delay;

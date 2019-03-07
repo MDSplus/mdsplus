@@ -56,7 +56,7 @@ int ServerSendMonitor(char *monitor, char *tree, int shot, int phase,
 			  actstatus, path ? path : "unknown", now, status_text);
     eventmsg[msglen]=0;
     int status = MDSEvent(event,msglen+1,eventmsg);
-    if (path) free(path);
+    free(path);
     return status;
   }//else
   struct descrip p1, p2, p3, p4, p5, p6, p7, p8;

@@ -226,7 +226,7 @@ static void Phase(LinkedEvent * event){
       StrCopyDx((struct descriptor *)&phase, (struct descriptor *)&unknown);
     char *str = MdsDescrToCstring(&phase);
     PutLog(event->time, "PHASE", (char *)asterisks, (char *)asterisks, str);
-    if (str) free(str);
+    free(str);
     current_phase = event->phase;
   }
 }

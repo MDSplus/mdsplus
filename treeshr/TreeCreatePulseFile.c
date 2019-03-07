@@ -150,7 +150,7 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in) {
       break;
     }
   }
-  if (treepath) free(treepath);
+  free(treepath);
   return status;
 }
 

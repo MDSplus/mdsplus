@@ -100,8 +100,8 @@ static void freeResources(struct descriptor_xd *startTimeXds, struct descriptor_
     MdsFree1Dx(&startTimeXds[i], 0);
     MdsFree1Dx(&endTimeXds[i], 0);
   }
-  free((char *)startTimeXds);
-  free((char *)endTimeXds);
+  free(startTimeXds);
+  free(endTimeXds);
 }
 
 EXPORT int _XTreeGetSegmentList(void *dbid, int nid, struct descriptor *startDsc,

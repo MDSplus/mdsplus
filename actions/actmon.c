@@ -483,7 +483,7 @@ static void Done(LinkedEvent * event){
   int *items;
   int num;
   XmListGetSelectedPos(LogWidget, &items, &num);
-  if (items) free(items);
+  free(items);
   for (prev = 0, doing = DoingList; doing && (doing->nid != event->nid);
        prev = doing, doing = doing->next) ;
   if (doing) {

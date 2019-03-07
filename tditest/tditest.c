@@ -237,7 +237,7 @@ int main(int argc, char **argv)
     }
     free(command);
   }
-  if (command) free(command);
+  free(command);
   MdsFree1Dx(&ans,NULL);
   if (history_file) {
     write_history(history_file);

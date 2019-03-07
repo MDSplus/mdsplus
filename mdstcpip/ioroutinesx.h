@@ -376,9 +376,9 @@ static int io_disconnect(Connection* con){
         printf("%s (%d) (pid %d) Connection disconnected from %s@%s [%s]\r\n",
                now, (int)sock, getpid(), c->username, c->host, c->iphost);
       }
-      if (c->username) free(c->username);
-      if (c->iphost) free(c->iphost);
-      if (c->host) free(c->host);
+      free(c->username);
+      free(c->iphost);
+      free(c->host);
       free(c);
     }
 #ifdef _TCP

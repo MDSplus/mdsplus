@@ -623,7 +623,7 @@ STATIC_ROUTINE NODELIST *Filter(NODELIST *list, int usage_mask) {
         previous->next=ptr->next;
         ptr = ptr->next;
       }
-      if (tmp) free(tmp);
+      free(tmp);
     }
     else {
       previous = ptr;

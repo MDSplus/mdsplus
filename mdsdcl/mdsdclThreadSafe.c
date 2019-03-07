@@ -35,8 +35,8 @@ STATIC_THREADSAFE pthread_key_t buffer_key;
 STATIC_ROUTINE void buffer_destroy(void *buf){
   ThreadStatic *ThreadStatic_p = (ThreadStatic *)buf;
   if (ThreadStatic_p) {
-    if (PROMPT) free(PROMPT);
-    if (DEF_FILE) free(DEF_FILE);
+    free(PROMPT);
+    free(DEF_FILE);
     dclDocListPtr next,dcl = DCLDOCS;
     for (;dcl;) {
       next = dcl->next;
@@ -63,7 +63,7 @@ ThreadStatic *mdsdclGetThreadStatic(){
 
 EXPORT void mdsdclSetPrompt(const char *prompt){
   GET_THREADSTATIC_P;
-  if (PROMPT) free(PROMPT);
+  free(PROMPT);
   PROMPT = strdup(prompt);
 }
 
@@ -78,7 +78,7 @@ EXPORT char *mdsdclGetPrompt(){
 
 void mdsdclSetDefFile(const char *deffile){
   GET_THREADSTATIC_P;
-  if (DEF_FILE) free(DEF_FILE);
+  free(DEF_FILE);
   if (deffile[0] == '*')
     DEF_FILE = strdup(deffile + 1);
   else

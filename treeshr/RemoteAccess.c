@@ -289,7 +289,7 @@ int CloseTreeRemote(PINO_DATABASE * dblist, int call_host __attribute__ ((unused
   }
   RemoteAccessDisconnect(dblist->tree_info->channel, 0);
   if (dblist->tree_info) {
-    free_if(&dblist->tree_info->treenam);
+    free(dblist->tree_info->treenam);
     free(dblist->tree_info);
     dblist->tree_info = NULL;
   }
@@ -494,7 +494,7 @@ char *FindTagWildRemote(PINO_DATABASE * dblist, const char *wildarg, int *nidout
     (*ctx)->remote = 1;
     (*ctx)->conid = dblist->tree_info->channel;
     (*ctx)->ctx = 0;
-  } else if ((*ctx)->remote_tag) free((*ctx)->remote_tag);
+  } else free((*ctx)->remote_tag);
   struct descriptor wild = {strlen(wildarg),DTYPE_T,CLASS_S,(char*)wildarg};
   EMPTYXD(ans);
   sprintf(exp,"__a=-1;__b=0x%"PRIx64"QU;__c=*;___=TreeShr->TreeFindTagWildDsc(ref($),ref(__a),ref(__b),xd(__c));execute('deallocate(\"__*\");`list(*,___,__a,__b,__c)')",(*ctx)->ctx);
@@ -521,7 +521,7 @@ void FindTagEndRemote(void **ctx_inout)
 {
   TAG_SEARCH **ctx = (TAG_SEARCH **) ctx_inout;
   if (*ctx) {
-    if ((*ctx)->remote_tag) free((*ctx)->remote_tag);
+    free((*ctx)->remote_tag);
     if ((*ctx)->ctx) {
       char exp[128];
       sprintf(exp,"TreeShr->TreeFindTagEnd(val(0x%"PRIx64"QU))",(*ctx)->ctx);
@@ -671,7 +671,7 @@ int GetNciRemote(PINO_DATABASE * dblist, int nid_in, struct nci_itm *nci_itm)
 	    memcpy(itm->pointer, ans.ptr, min(itm->buffer_length, length));
 /*            if (itm->buffer_length < length) status = TreeBUFFEROVF; */
 	  }
-          free_if(&ans.ptr);
+          free(ans.ptr);
 	} else
 	  status = 0;
       }
@@ -1549,7 +1549,7 @@ EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, tree_ty
       if (*part == '\0') break;
       filepath[i] = 0;
       char *tmp = ParseFile(part, &hostpart,&filepart);
-      free_if(&fullpath);
+      free(fullpath);
       if (hostpart) {
 	fullpath = NULL;
 	status = io_open_one_remote(hostpart, filepart, treename, shot, type, new, edit, &fullpath, &conid, &fd, &enhanced);

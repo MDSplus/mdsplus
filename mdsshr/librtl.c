@@ -1730,7 +1730,7 @@ static inline void* findfilestart(const char *filename, int recursive, int case_
     ctx = NULL;
   else
       ctx = _findfilestart(env, colon, recursive, case_blind);
-  if (env) free(env);
+  free(env);
   return ctx;
 }
 

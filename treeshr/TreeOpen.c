@@ -170,7 +170,7 @@ static char *ReplaceAliasTrees(char *tree_in){
       strcat(ans, ",");
       strcat(ans, tree);
     }
-    free_if(&treepath);
+    free(treepath);
     tree = strtok(0, ",");
   }
   free(tree_in);
@@ -1297,7 +1297,7 @@ void TreeFreeDbid(void *dbid){
     free_xd(&db->timecontext.start);
     free_xd(&db->timecontext.end);
     free_xd(&db->timecontext.delta);
-    if (db->delete_list) free(db->delete_list);
+    free(db->delete_list);
     free(db);
   }
 }

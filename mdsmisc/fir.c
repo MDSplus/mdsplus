@@ -118,7 +118,7 @@ static Filter *Fir(double fc, double s_f, int n, void (*Window) (double *, int))
       filter->units[0].num[i] = w[i] * sin(wc * (i - alpha)) / (PI * (i - alpha));
     else
       filter->units[0].num[i] = wc / PI;
-  free((char *)w);
+  free(w);
   return filter;
 }
 

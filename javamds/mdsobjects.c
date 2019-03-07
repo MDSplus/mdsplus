@@ -454,7 +454,7 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
       jfloats = (*env)->NewFloatArray(env, length);
       if(jfloats)
 	(*env)->SetFloatArrayRegion(env, jfloats, 0, length, (jfloat *) float_buf);
-      free((char *)float_buf);
+      free(float_buf);
       args[0].l = jfloats;
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
@@ -475,7 +475,7 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
       jdoubles = (*env)->NewDoubleArray(env, length);
       if(jdoubles)
 	(*env)->SetDoubleArrayRegion(env, jdoubles, 0, length, (jdouble *) double_buf);
-      free((char *)double_buf);
+      free(double_buf);
       args[0].l = jdoubles;
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
@@ -1145,7 +1145,7 @@ static void FreeDescrip(struct descriptor *desc)
       FreeDescrip(((struct descriptor **)array_d->pointer)[i]);
     break;
   }
-  free((char *)desc);
+  free(desc);
 }
 
 /*
@@ -1286,7 +1286,7 @@ JNIEXPORT jstring JNICALL Java_MDSplus_Data_decompile(JNIEnv * env, jobject obj)
   buf[decD->length] = 0;
   MdsFree1Dx(&outXd, NULL);
   ris = (*env)->NewStringUTF(env, buf);
-  free((char *)buf);
+  free(buf);
   return ris;
 }
 
@@ -1696,7 +1696,7 @@ JNIEXPORT jintArray JNICALL Java_MDSplus_Tree_getWild
   jnids = (*env)->NewIntArray(env, numNids);
   if(jnids)
     (*env)->SetIntArrayRegion(env, jnids, 0, numNids, (const jint *)nids);
-  free((char *)nids);
+  free(nids);
   return jnids;
 }
 
@@ -2169,7 +2169,7 @@ JNIEXPORT jintArray JNICALL Java_MDSplus_TreeNode_getNciNids
   jnids = (*env)->NewIntArray(env, nNids);
   if(jnids)
     (*env)->SetIntArrayRegion(env, jnids, 0, nNids, (const jint *)nids);
-  free((char *)nids);
+  free(nids);
   return jnids;
 
 }
@@ -2941,7 +2941,7 @@ static jobject releaseEventDescr(int64_t eventId)
     else
       eventDescrHead = currDescr->nxt;
     retObj = currDescr->eventObj;
-    free((char *)currDescr);
+    free(currDescr);
   }
   UnlockMdsShrMutex(&eventMutex);
   return retObj;
@@ -3207,14 +3207,14 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Connection_get
     status = SendArg(sockId, i + 1, dtype, nArgs + 1, length, nDims, dims, ptr);
     FreeDescrip(dscs[i]);
     if STATUS_NOT_OK {
-      free((char *)dscs);
+      free(dscs);
       exc = (*env)->FindClass(env, "MDSplus/MdsException");
       (*env)->ThrowNew(env, exc, MdsGetMsg(status));
       return NULL;
     }
   }
 
-  free((char *)dscs);
+  free(dscs);
   status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, dims, &numBytes, &ptr, &mem);
   if STATUS_NOT_OK {
     exc = (*env)->FindClass(env, "MDSplus/MdsException");
@@ -3382,13 +3382,13 @@ JNIEXPORT void JNICALL Java_MDSplus_Connection_put
     status = SendArg(sockId, i + 1, dtype, nArgs + 1, length, nDims, dims, ptr);
     FreeDescrip(dscs[i]);
     if STATUS_NOT_OK {
-      free((char *)dscs);
+      free(dscs);
       exc = (*env)->FindClass(env, "MDSplus/MdsException");
       (*env)->ThrowNew(env, exc, MdsGetMsg(status));
       return;
     }
   }
-  free((char *)dscs);
+  free(dscs);
   status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, dims, &numBytes, &ptr, &mem);
   if STATUS_NOT_OK {
     exc = (*env)->FindClass(env, "MDSplus/MdsException");
