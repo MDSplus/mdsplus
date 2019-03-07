@@ -101,6 +101,8 @@ char *character_name_generator(const char *text, int state){
   // use case sensitivity to distinguish between builtins and tdi.funs
   while ((name = character_names[list_index++]))
     if (strncmp(name, text, len) == 0) {
+      if (name[0] == '$') // constants like $PI
+        return strdup(name);
       size_t len = strlen(name);
       char *match = memcpy(malloc(len+2),name,len);
       match[len]='(';match[len+1]='\0';
