@@ -364,9 +364,9 @@ def doScopepanel(self):
         if name in self.args:
             try:
                 if t == None:
-		    response_headers.append((name,str(Data.execute(self.args[name][-1]).data())))
-		else:
-		    response_headers.append((name,str(t.tdiExecute(self.args[name][-1]).data())))
+                    response_headers.append((name,str(Data.execute(self.args[name][-1]).data())))
+                else:
+                    response_headers.append((name,str(t.tdiExecute(self.args[name][-1]).data())))
             except Exception:
                 response_headers.append((name + '_error',str(sys.exc_info())))
 
