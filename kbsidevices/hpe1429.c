@@ -872,7 +872,7 @@ ViStatus _VI_FUNC hpe1429_init(ViRsrc InstrDesc, ViBoolean id_query, ViBoolean d
 		if (errStatus >= VI_SUCCESS) {
 		  if (retbytes < 31) {
 		    length_str[retbytes] = 0;
-		    thisPtr->a24_addr = atol(length_str) * 256;
+		    thisPtr->a24_addr = strtol(length_str,NULL,0) * 256;
 		    thisPtr->controler = 1;	/* passed all the tests */
 		  }
 		}
@@ -1978,7 +1978,7 @@ ViStatus _VI_FUNC hpe1429_cmdReal64Arr_Q(ViSession vi,
     }
     lc[cnt] = '\0';
 
-    ArrSize = atol(lc);
+    ArrSize = strtol(lc,NULL,0);
 
 #ifdef WIN32
     Array = (char *)malloc(ArrSize);
@@ -2081,7 +2081,7 @@ ViStatus _VI_FUNC hpe1429_cmdReal32Arr_Q(ViSession vi,
     }
 
     lc[cnt] = '\0';
-    ArrSize = atol(lc);
+    ArrSize = strtol(lc,NULL,0);
 #ifdef WIN32
     Array = (char *)malloc(ArrSize);
 #else
@@ -2181,7 +2181,7 @@ ViStatus _VI_FUNC hpe1429_cmdInt16Arr_Q(ViSession vi,
     }
 
     lc[cnt] = '\0';
-    ArrSize = atol(lc);
+    ArrSize = strtol(lc,NULL,0);
 
 #ifdef WIN32
     Array = (char *)malloc(ArrSize);
@@ -2282,7 +2282,7 @@ ViStatus _VI_FUNC hpe1429_cmdInt32Arr_Q(ViSession vi,
     }
 
     lc[cnt] = '\0';
-    ArrSize = atol(lc);
+    ArrSize = strtol(lc,NULL,0);
 
 #ifdef WIN32
     Array = (char *)malloc(ArrSize);
@@ -2628,7 +2628,7 @@ ViStatus hpe1429_fetcE1406(ViSession vi, ViInt16 chan, ViInt32 arrayLength, ViUI
   }
 
   length_str[digits] = '\0';	/* null terminate the string */
-  *nbytes = atol(length_str);
+  *nbytes = strtol(length_str,NULL,0);
 
   /* Verify that caller's array is big enough. */
   if (((ViUInt32) arrayLength * 2) < *nbytes) {
@@ -2714,7 +2714,7 @@ ViStatus hpe1429_fetcSCPI(ViSession vi, ViInt16 chan, ViInt32 arrayLength, ViUIn
   }
 
   length_str[digits] = '\0';	/* null terminate the string */
-  *nbytes = atol(length_str);
+  *nbytes = strtol(length_str,NULL,0);
 
   /* Verify that caller's array is big enough. */
   if (((ViUInt32) arrayLength * 2) < *nbytes) {
@@ -5499,7 +5499,7 @@ ViStatus _VI_FUNC hpe1429_fetcScal_Q(ViSession vi,
       errStatus = viScanf(vi, "%#c", &digits, length_str);
       if (errStatus >= VI_SUCCESS) {
 	length_str[digits] = '\0';	/* null terminate the string */
-	nbytes = atol(length_str);
+	nbytes = strtol(length_str,NULL,0);
 
 	/* Verify that caller's array is big enough. */
 	if (((ViUInt32) arrayLength * 8) < nbytes) {
@@ -6500,7 +6500,7 @@ ViStatus _VI_FUNC hpe1429_recover_Q(ViSession vi,
 
       if (errStatus >= VI_SUCCESS) {
 	length_str[digits] = '\0';	/* null terminate the string */
-	nbytes = atol(length_str);
+	nbytes = strtol(length_str,NULL,0);
 
 	/* Verify that caller's array is big enough. */
 	if (((ViUInt32) arrayLength * 2) < nbytes) {
