@@ -118,7 +118,10 @@ Function install_core_pre
 		WriteRegStr HKCU "${ENVREG_USR}" MDSPLUS_DIR "$INSTDIR"
 	${ENDIF}
 
-	File /r /x local  tdi xml
+	SetOutPath "$INSTDIR\tdi"
+	File /r /x local /x MitDevices /x RfxDevices /x KbsiDevices tdi/*.*
+	SetOutPath "$INSTDIR\xml"
+	File /r xml\*.*
 
 	${IF} $7 == 1
 		FileOpen $0 "$INSTDIR\installer.dat" w
@@ -268,6 +271,23 @@ SectionEnd ; 32 bit
 
 SectionGroupEnd ; core
 
+SectionGroup devices
+Section KBSI
+	SectionIn 2
+	SetOutPath "$INSTDIR\tdi"
+	File /r /x local tdi/KbsiDevices
+SectionEnd ; KBSI
+Section MIT
+	SectionIn 2
+	SetOutPath "$INSTDIR\tdi"
+	File /r /x local tdi/MitDevices
+SectionEnd ; MIT
+Section RFX
+	SectionIn 2
+	SetOutPath "$INSTDIR\tdi"
+	File /r /x local tdi/RfxDevices
+SectionEnd ; RFX
+SectionGroupEnd ; devices
 
 Section "Java"
 SectionIn 1 2
