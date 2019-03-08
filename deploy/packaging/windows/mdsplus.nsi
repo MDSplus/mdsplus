@@ -104,32 +104,96 @@ ${Else}
 ${EndIf}
 !macroend
 
- 
-Section
-SectionIn 1 2 3 RO
-SetOutPath "$INSTDIR"
-File "/oname=ChangeLog.rtf" ChangeLog
-File ${srcdir}/mdsplus.ico
-File ${srcdir}/MDSplus-License.rtf
-writeUninstaller "$INSTDIR\uninstall.exe"
-${If} $7 == 1
-	WriteRegStr HKLM "${ENVREG_ALL}" MDS_PATH "$INSTDIR\tdi"
-	WriteRegStr HKLM "${ENVREG_ALL}" MDSPLUS_DIR "$INSTDIR"
-${ELSE}
-	WriteRegStr HKCU "${ENVREG_USR}" MDS_PATH "$INSTDIR\tdi"
-	WriteRegStr HKCU "${ENVREG_USR}" MDSPLUS_DIR "$INSTDIR"
-${ENDIF}
+Function install_core_pre
+	SetOutPath "$INSTDIR"
+	File "/oname=ChangeLog.rtf" ChangeLog
+	File ${srcdir}/mdsplus.ico
+	File ${srcdir}/MDSplus-License.rtf
+	writeUninstaller "$INSTDIR\uninstall.exe"
+	${If} $7 == 1
+		WriteRegStr HKLM "${ENVREG_ALL}" MDS_PATH "$INSTDIR\tdi"
+		WriteRegStr HKLM "${ENVREG_ALL}" MDSPLUS_DIR "$INSTDIR"
+	${ELSE}
+		WriteRegStr HKCU "${ENVREG_USR}" MDS_PATH "$INSTDIR\tdi"
+		WriteRegStr HKCU "${ENVREG_USR}" MDSPLUS_DIR "$INSTDIR"
+	${ENDIF}
 
-File /r /x local  tdi xml
+	File /r /x local  tdi xml
 
-${IF} $7 == 1
-	FileOpen $0 "$INSTDIR\installer.dat" w
-	StrCpy $5 "$SYSDIR"
-	StrCpy $6 "$SYSDIR"
-${ELSE}
-	StrCpy $6 "$INSTDIR\bin_x86"
-${ENDIF}
-${If} ${RunningX64}
+	${IF} $7 == 1
+		FileOpen $0 "$INSTDIR\installer.dat" w
+		StrCpy $5 "$SYSDIR"
+		StrCpy $6 "$SYSDIR"
+	${ELSE}
+		StrCpy $6 "$INSTDIR\bin_x86"
+	${ENDIF}
+FunctionEnd
+
+Function install_core_post
+	SetOutPath "$6"
+	CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}"
+	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Tdi.lnk" "$6\tditest.exe" "" "$6\icons.exe" 0
+	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" '"$6\mdsdcl"' '-prep "set command tcl"' "$6\icons.exe" 1
+	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\View ChangeLog.lnk" "$INSTDIR\ChangeLog.rtf"
+	${IF} $7 == 1
+		CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer"
+		CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip action server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\mdsip.hosts$\""
+		CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip data server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-i -p 8000 -h $\"C:\mdsip.hosts$\""
+		CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8100"
+		CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8000"
+	${ENDIF}
+
+	SetOutPath "\"
+	SetOverWrite off
+	File etc\mdsip.hosts
+	SetOverWrite on
+
+	# Registry information for add/remove programs
+	${IF} $7 == 1
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayName" "MDSplus${FLAVOR}"
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "UninstallString" "$INSTDIR\uninstall.exe"
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "QuietUninstallString" "$INSTDIR\uninstall.exe /S"
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "InstallLocation" "$INSTDIR"
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayIcon" "INSTDIR\mdsplus.ico"
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "Publisher" "MDSplus Collaboratory"
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "HelpLink" "${HELPURL}"
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "InstallSource" "https://github.com/MDSplus/mdsplus/archive/${BRANCH}_release-${MAJOR}.${MINOR}-${RELEASE}.zip"
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "URLUpdateInfo" "${UPDATEURL}"
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "URLInfoAbout" "${ABOUTURL}"
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayVersion" "${MAJOR}.${MINOR}.${RELEASE}"
+		WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "VersionMajor" ${MAJOR}
+		WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "VersionMinor" ${MINOR}
+		# There is no option for modifying or repairing the install
+		WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "NoModify" 1
+		WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "NoRepair" 1
+		# Set the INSTALLSIZE constant (!defined at the top of this script) so Add/Remove Programs can accurately report the size
+		WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "EstimatedSize" ${INSTALLSIZE}
+	${ELSE}
+		WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayName" "MDSplus${FLAVOR}"
+		WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "UninstallString" "$INSTDIR\uninstall.exe"
+		WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "QuietUninstallString" "$INSTDIR\uninstall.exe /S"
+		WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "InstallLocation" "$INSTDIR"
+		WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayIcon" "INSTDIR\mdsplus.ico"
+		WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "Publisher" "MDSplus Collaboratory"
+		WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "HelpLink" "${HELPURL}"
+		WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "InstallSource" "https://github.com/MDSplus/mdsplus/archive/${BRANCH}_release-${MAJOR}.${MINOR}-${RELEASE}.zip"
+		WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "URLUpdateInfo" "${UPDATEURL}"
+		WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "URLInfoAbout" "${ABOUTURL}"
+		WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayVersion" "${MAJOR}.${MINOR}.${RELEASE}"
+		WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "VersionMajor" ${MAJOR}
+		WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "VersionMinor" ${MINOR}
+		# There is no option for modifying or repairing the install
+		WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "NoModify" 1
+		WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "NoRepair" 1
+		# Set the INSTALLSIZE constant (!defined at the top of this script) so Add/Remove Programs can accurately report the size
+		WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "EstimatedSize" ${INSTALLSIZE}
+	${ENDIF}
+FunctionEnd
+
+SectionGroup "!core"
+Section "64 bit" bin64
+	SectionIn RO
+	Call install_core_pre
 	StrCpy $5 "$WINDIR\SysWOW64"
 	SetOutPath "$INSTDIR\bin_x86_64"
 	File /x *.a bin_x86_64/*
@@ -162,98 +226,47 @@ ${If} ${RunningX64}
 		StrCpy $6 "$INSTDIR\bin_x86_64"
 	${ENDIF}
 	${EnableX64FSRedirection}
-	SetOutPath "$INSTDIR"
+        Call install_core_post
+SectionEnd ; 64 bit
+
+Section "32 bit" bin32
+${IfNot} ${RunningX64}
+        Call install_core_pre
 ${EndIf}
+	SetOutPath "$INSTDIR\bin_x86"
+	File /x *.a bin_x86/*
+	File ${MINGWLIB32}/${PTHREADLIB}
+	File ${MINGWLIB32}/${GCC_S_SJLJ_LIB}
+	File ${MINGWLIB32}/${DLLIB}
+	File ${MINGWLIB32}/${READLINELIB}
+	File ${MINGWLIB32}/${TERMCAPLIB}
+	File ${MINGWLIB32}/${GCC_STDCPP_LIB}
+	File ${MINGWLIB32}/${GFORTRAN_LIB}
+	File ${MINGWLIB32}/${QUADMATH_LIB}
+	File ${MINGWLIB32}/${LIBXML2_LIB}
+	File ${MINGWLIB32}/${ICONV_LIB}
+	File ${MINGWLIB32}/${ZLIB1_LIB}
+	${IF} $7 == 1
+		FindFirst $1 $2 "$INSTDIR\bin_x86\*"
+		loop_32:
+			StrCmp $2 "" done_32
+			FileWrite $0 "$5\$2$\n"
+			Rename "$5\$2" "$5\$2-inuse"
+			Delete "$5\$2-inuse"
+			Rename "$INSTDIR\bin_x86\$2" "$5\$2"
+			FindNext $1 $2
+			Goto loop_32
+		done_32:
+		FindClose $1
+		RMDir "$INSTDIR\bin_x86"
+		FileClose $0
+	${ENDIF}
+${IfNot} ${RunningX64}
+	Call install_core_post
+${EndIf}
+SectionEnd ; 32 bit
 
-SetOutPath "$INSTDIR\bin_x86"
-File /x *.a bin_x86/*
-File ${MINGWLIB32}/${PTHREADLIB}
-File ${MINGWLIB32}/${GCC_S_SJLJ_LIB}
-File ${MINGWLIB32}/${DLLIB}
-File ${MINGWLIB32}/${READLINELIB}
-File ${MINGWLIB32}/${TERMCAPLIB}
-File ${MINGWLIB32}/${GCC_STDCPP_LIB}
-File ${MINGWLIB32}/${GFORTRAN_LIB}
-File ${MINGWLIB32}/${QUADMATH_LIB}
-File ${MINGWLIB32}/${LIBXML2_LIB}
-File ${MINGWLIB32}/${ICONV_LIB}
-File ${MINGWLIB32}/${ZLIB1_LIB}
-${IF} $7 == 1
-	FindFirst $1 $2 "$INSTDIR\bin_x86\*"
-	loop_32:
-		StrCmp $2 "" done_32
-		FileWrite $0 "$5\$2$\n"
-		Rename "$5\$2" "$5\$2-inuse"
-		Delete "$5\$2-inuse"
-		Rename "$INSTDIR\bin_x86\$2" "$5\$2"
-		FindNext $1 $2
-		Goto loop_32
-	done_32:
-	FindClose $1
-	RMDir "$INSTDIR\bin_x86"
-	FileClose $0
-${ENDIF}
-
-SetOutPath "$6"
-CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}"
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Tdi.lnk" "$6\tditest.exe" "" "$6\icons.exe" 0
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" '"$6\mdsdcl"' '-prep "set command tcl"' "$6\icons.exe" 1
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\View ChangeLog.lnk" "$INSTDIR\ChangeLog.rtf"
-${IF} $7 == 1
-	CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer"
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip action server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\mdsip.hosts$\""
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip data server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-i -p 8000 -h $\"C:\mdsip.hosts$\""
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8100"
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8000"
-${ENDIF}
-
-SetOutPath "\"
-SetOverWrite off
-File etc\mdsip.hosts
-SetOverWrite on
-
-# Registry information for add/remove programs
-${IF} $7 == 1
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayName" "MDSplus${FLAVOR}"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "UninstallString" "$INSTDIR\uninstall.exe"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "QuietUninstallString" "$INSTDIR\uninstall.exe /S"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "InstallLocation" "$INSTDIR"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayIcon" "INSTDIR\mdsplus.ico"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "Publisher" "MDSplus Collaboratory"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "HelpLink" "${HELPURL}"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "InstallSource" "https://github.com/MDSplus/mdsplus/archive/${BRANCH}_release-${MAJOR}.${MINOR}-${RELEASE}.zip"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "URLUpdateInfo" "${UPDATEURL}"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "URLInfoAbout" "${ABOUTURL}"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayVersion" "${MAJOR}.${MINOR}.${RELEASE}"
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "VersionMajor" ${MAJOR}
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "VersionMinor" ${MINOR}
-	# There is no option for modifying or repairing the install
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "NoModify" 1
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "NoRepair" 1
-	# Set the INSTALLSIZE constant (!defined at the top of this script) so Add/Remove Programs can accurately report the size
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "EstimatedSize" ${INSTALLSIZE}
-${ELSE}
-	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayName" "MDSplus${FLAVOR}"
-	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "UninstallString" "$INSTDIR\uninstall.exe"
-	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "QuietUninstallString" "$INSTDIR\uninstall.exe /S"
-	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "InstallLocation" "$INSTDIR"
-	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayIcon" "INSTDIR\mdsplus.ico"
-	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "Publisher" "MDSplus Collaboratory"
-	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "HelpLink" "${HELPURL}"
-	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "InstallSource" "https://github.com/MDSplus/mdsplus/archive/${BRANCH}_release-${MAJOR}.${MINOR}-${RELEASE}.zip"
-	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "URLUpdateInfo" "${UPDATEURL}"
-	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "URLInfoAbout" "${ABOUTURL}"
-	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayVersion" "${MAJOR}.${MINOR}.${RELEASE}"
-	WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "VersionMajor" ${MAJOR}
-	WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "VersionMinor" ${MINOR}
-	# There is no option for modifying or repairing the install
-	WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "NoModify" 1
-	WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "NoRepair" 1
-	# Set the INSTALLSIZE constant (!defined at the top of this script) so Add/Remove Programs can accurately report the size
-	WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "EstimatedSize" ${INSTALLSIZE}
-${ENDIF}
-
-SectionEnd
+SectionGroupEnd ; core
 
 
 Section "Java"
@@ -264,21 +277,21 @@ SetOutPath "$6"
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" javaw '-cp "$INSTDIR\java\Classes\jScope.jar";"$INSTDIR\java\Classes" -Xmx1G jScope' "$6\icons.exe" 4 SW_SHOWMINIMIZED
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk"  javaw '-cp "$INSTDIR\java\Classes\jTraverser.jar" jTraverser' $6\icons.exe" 3 SW_SHOWMINIMIZED
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser2.lnk" javaw '-jar "$INSTDIR\java\Classes\jTraverser2.jar"' $6\icons.exe" 3 SW_SHOWMINIMIZED
-SectionEnd
+SectionEnd ; Java
 
 
 Section "EPICS"
 SectionIn 2
 SetOutPath "$INSTDIR"
 File /r epics
-SectionEnd
+SectionEnd ; EPICS
 
 
 Section "IDL"
 SectionIn 2
 SetOutPath "$INSTDIR"
 File /r idl
-SectionEnd
+SectionEnd ; IDL
 
 
 Section "LabView"
@@ -289,17 +302,17 @@ SetOutPath "$INSTDIR\mdsobjects\LabView"
 File /r LabView/MDSplus
 File /r LabView/MDSplus_LV2012
 File /r LabView/MDSplus_LV2015
-SectionEnd
+SectionEnd ; LabView
 
 
 Section "MATLAB"
 SectionIn 2
 SetOutPath "$INSTDIR"
 File /r matlab
-SectionEnd
+SectionEnd ; MATLAB
 
 
-SubSection /e "python" python
+SectionGroup /e "!python" python
 
 Section "mdsobjects\python" python_cp
 SectionIn 1 2
@@ -307,32 +320,15 @@ SetOutPath "$INSTDIR\mdsobjects"
 File /r /x __pycache__ /x *.pyc /x _version.py.in /x Makefile.am /x Makefile.in ${srcdir}/mdsobjects/python
 SetOutPath "$INSTDIR\mdsobjects\python"
 File /workspace/releasebld/64/mdsobjects/python/_version.py
-SectionEnd
+SectionEnd ; python_cp
 
 Section "python setup.py install" python_su
 SectionIn 2
 SetOutPath "$INSTDIR\mdsobjects\python"
 Exec "python setup.py install" 
-SectionEnd
+SectionEnd ; python_su
 
-SubSectionEnd
-
-Function .onSelChange
-${Switch} $0
-  ${Case} ${python_cp}
-    ${IfNot} ${SectionIsSelected} ${python_cp}
-      SectionSetFlags ${python_su} 0
-    ${EndIf}
-    ${Break}
-  ${Case} ${python_su}
-    ${If}    ${SectionIsSelected} ${python_su}
-      SectionSetFlags ${python_cp} ${SF_SELECTED}
-    ${EndIf}
-    ${Break}
-  ${Default}
-    ${Break}
-${EndSwitch}
-FunctionEnd
+SectionGroupEnd ; python
 
 Section "devel"
 SectionIn 2
@@ -412,8 +408,35 @@ WriteRegStr HKCU "${ENVREG_USR}" "PATH" "$6"
 done_path:
 SectionEnd
 
+Function .onSelChange
+${Switch} $0
+  ${Case} ${python_cp}
+    ${IfNot} ${SectionIsSelected} ${python_cp}
+      SectionSetFlags ${python_su} 0
+    ${EndIf}
+    ${Break}
+  ${Case} ${python_su}
+    ${If}    ${SectionIsSelected} ${python_su}
+      SectionSetFlags ${python_cp} ${SF_SELECTED}
+    ${EndIf}
+    ${Break}
+  ${Default}
+    ${Break}
+${EndSwitch}
+FunctionEnd
 
-function .onInit
+Function .onInit
+${If} ${RunningX64}
+	SectionSetInstTypes ${bin32} 2 ; include 32bit in full
+	SectionSetInstTypes ${bin64} 7 ; always include 64bit
+${Else}
+	Push $0
+	IntOp $0 ${SF_SELECTED} | ${SF_RO}
+	SectionSetFlags ${bin32} $0     ; select and make read_only
+	SectionSetInstTypes ${bin32} 7 ; always include 32bit
+	Pop $0
+	SectionSetInstTypes ${bin64} 0 ; never include 64bit
+${EndIf}
 	!insertmacro VerifyUserIsAdmin
 	${If} $7 == 1
 		ReadRegStr $R0 HKLM ${UNINSTALL_KEY} ${UNINSTALL_VAL}
@@ -428,7 +451,7 @@ function .onInit
 	previous version or `Cancel` to cancel this upgrade." \
 	IDOK uninst
 	Abort
- 
+
 ;Run the uninstaller
 uninst:
 	ClearErrors
