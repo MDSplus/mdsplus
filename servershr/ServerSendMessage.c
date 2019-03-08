@@ -682,11 +682,9 @@ static Client* get_addr_port(char* server, uint32_t*addrp, uint16_t*portp) {
 
 EXPORT int ServerDisconnect(char *server_in) {
   char *srv = TranslateLogical(server_in);
-  Client* c;
-  FREE_ON_EXIT(srv);
   char *server = srv ? srv : server_in;
-  c = get_addr_port(server,NULL,NULL);
-  FREE_NOW(srv);
+  Client *c = get_addr_port(server,NULL,NULL);
+  free(srv);
   if (c) {
     RemoveClient(c, NULL);
     return MDSplusSUCCESS;
@@ -695,10 +693,8 @@ EXPORT int ServerDisconnect(char *server_in) {
 }
 
 EXPORT int ServerConnect(char *server_in) {
-  int conid;
+  int conid = -1;
   char *srv = TranslateLogical(server_in);
-  FREE_ON_EXIT(srv);
-  conid = -1;
   char *server = srv ? srv : server_in;
   uint32_t addr;
   uint16_t port = 0;
@@ -714,7 +710,7 @@ EXPORT int ServerConnect(char *server_in) {
     if (conid>=0)
       AddClient(addr, port, conid);
   }
-  FREE_NOW(srv);
+  free(srv);
   return conid;
 }
 
