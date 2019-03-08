@@ -130,12 +130,17 @@ def load_package(gbls={},version_check=False):
     return gbls
 
 if __name__==__package__:
-    PyLib = ('python%d%d' if sys.platform.startswith('win') else 'python%d.%d')%sys.version_info[0:2]
-    try:
-        PyLib = ctypes.util.find_library(PyLib)
-    except:
-        PyLib = os.getenv("PyLib",PyLib)
-    else:
-        libs.MdsShr.MdsPutEnv(version.tobytes("%s=%s"%("PyLib",PyLib)))
+    def PyLib():
+        name = ('python%d%d' if sys.platform.startswith('win') else 'python%d.%d')%sys.version_info[0:2]
+        try:    lib = ctypes.util.find_library(name)
+        except:	lib = None
+        if lib is None:
+            lib = os.getenv("PyLib",None)
+            if lib is not None:
+                return lib
+            lib = name
+        libs.MdsShr.MdsPutEnv(version.tobytes("%s=%s"%("PyLib",lib)))
+        return lib
+    PyLib = PyLib()
     load_package(globals(),True)
     del load_package

@@ -102,29 +102,50 @@ setupkw = {
 #       install_requires=['numpy','ctypes'],
     }
 def remove():
+    import shutil
     "Remove installed MDSplus package"
-    def _findPackageDir():
-        _f=__file__.split(os.sep)
+    oldpath = list(sys.path)
+    try:
+        pypath = os.getenv("PYTHONPATH","")
+        for p in pypath.split(";"):
+            if len(p)>0 and p in sys.path:
+                sys.path.remove(p)
+        if "" in sys.path:
+            sys.path.remove("")
+        try: import MDSplus
+        except:
+            print("Error removing MDSplus: package not found")
+            return False
+        _f=MDSplus.__file__.split(os.sep)
         while len(_f) > 1 and _f[-1] != 'MDSplus':
             _f=_f[:-1]
-        if _f[-1] != 'MDSplus':
-            return None
-        if 'egg' in _f[-2]:
+        if len(_f) <= 1 and _f[-2].endswith('.egg'):
             _f=_f[:-1]
-        return os.sep.join(_f)      
-    packagedir=_findPackageDir()
-    try:
-        import shutil
-        shutil.rmtree(packagedir)
-    except Exception as exc:
-        print("Error removing %s: %s" % (packagedir,exc))
+        if len(_f) == 0:
+            print("Error removing MDSplus: invalid package path\n '%s'"%(MDSplus.__file__,))
+            return False
+        packagedir = os.sep.join(_f)
+        sys.stdout.write("Removing '%s' ..."%packagedir)
+        try:
+            shutil.rmtree(packagedir)
+            _f[-1] = "mdsplus-*.egg-info"
+            import glob
+            egginfos = glob.glob(os.sep.join(_f))
+            for egginfo in egginfos:
+                if os.path.isdir(egginfo):
+                    shutil.rmtree(egginfo)
+        except Exception as exc:
+            print(" error: %s" % (exc,))
+            return False
+        else:
+            print(" ok")
+            return True
+    finally:
+        sys.path = oldpath
 
-try:
-    from setuptools import setup
-    setupkw['include_package_data'] = True
-    setupkw['test_suite'] = 'tests.test_all'
-    setupkw['zip_safe']   = False
-except:
+if __name__=='__main__':
+  try:
+    print("use distutils.core")
     from distutils.core import setup
     from distutils.cmd import Command
     class TestCommand(Command):
@@ -148,4 +169,11 @@ except:
         def run(self):
             remove()
     setupkw['cmdclass'] = {'test': TestCommand,'remove': RemoveCommand}
-setup(**setupkw)
+  except:
+    from setuptools import setup
+    print("use setuptools")
+    setupkw['include_package_data'] = True
+    setupkw['test_suite'] = 'tests.test_all'
+    setupkw['zip_safe']   = False
+  setup(**setupkw)
+
