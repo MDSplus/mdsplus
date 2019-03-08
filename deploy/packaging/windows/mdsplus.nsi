@@ -42,6 +42,7 @@ FunctionEnd
 !macroend
  
 !define StrContains '!insertmacro "_StrContainsConstructor"'
+###############################
 
 InstType "Typical" 
 InstType "Full"
@@ -266,7 +267,7 @@ CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser2.lnk" javaw '-jar "$INSTD
 SectionEnd
 
 
-Section EPICS
+Section "EPICS"
 SectionIn 2
 SetOutPath "$INSTDIR"
 File /r epics
@@ -280,7 +281,7 @@ File /r idl
 SectionEnd
 
 
-Section LabView
+Section "LabView"
 SectionIn 2
 SetOutPath "$INSTDIR\LabView"
 File LabView/*.vi
@@ -298,16 +299,40 @@ File /r matlab
 SectionEnd
 
 
-Section "python"
-SectionIn 2
+SubSection /e "python" python
+
+Section "mdsobjects\python" python_cp
+SectionIn 1 2
 SetOutPath "$INSTDIR\mdsobjects"
 File /r /x __pycache__ /x *.pyc /x _version.py.in /x Makefile.am /x Makefile.in ${srcdir}/mdsobjects/python
 SetOutPath "$INSTDIR\mdsobjects\python"
 File /workspace/releasebld/64/mdsobjects/python/_version.py
+SectionEnd
+
+Section "python setup.py install" python_su
+SectionIn 2
 SetOutPath "$INSTDIR\mdsobjects\python"
 Exec "python setup.py install" 
 SectionEnd
 
+SubSectionEnd
+
+Function .onSelChange
+${Switch} $0
+  ${Case} ${python_cp}
+    ${IfNot} ${SectionIsSelected} ${python_cp}
+      SectionSetFlags ${python_su} 0
+    ${EndIf}
+    ${Break}
+  ${Case} ${python_su}
+    ${If}    ${SectionIsSelected} ${python_su}
+      SectionSetFlags ${python_cp} ${SF_SELECTED}
+    ${EndIf}
+    ${Break}
+  ${Default}
+    ${Break}
+${EndSwitch}
+FunctionEnd
 
 Section "devel"
 SectionIn 2
@@ -438,8 +463,10 @@ function un.onGUIEnd
 functionEnd
  
 section "uninstall"
-IfFileExists "$INSTDIR\mdsobjects\python" 0 +2
-  Exec 'python -c "import MDSplus; MDSplus.remove()"'
+IfFileExists "$INSTDIR\mdsobjects\python" 0 skip_python_remove
+SetOutPath "$INSTDIR\mdsobjects\python"
+Exec 'python setup.py remove'
+skip_python_remove:
 SetOutPath "$INSTDIR"
 delete ChangeLog.rtf
 delete MDSplus-License.rtf
