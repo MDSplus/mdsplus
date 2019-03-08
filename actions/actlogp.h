@@ -153,8 +153,7 @@ inline static void _DoTimer(){
   //while (sleep(100)==0)
   while ((ev = GetQEvent())) {
     EventUpdate(ev);
-    if (ev->msg)
-      free(ev->msg);
+    free(ev->msg);
     free(ev);
   }
 }
@@ -177,8 +176,7 @@ static void MessageAst(void* dummy __attribute__ ((unused)), char *reply){
     QEvent(event);
     return;
   }
-  if (event->msg)
-    free(event->msg);
+  free(event->msg);
   free(event);
   CheckIn(0);
 }

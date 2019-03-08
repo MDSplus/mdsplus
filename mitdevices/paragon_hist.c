@@ -193,10 +193,8 @@ static int Store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStore
 	if (TreeIsOn(value_nid) & 1)
 	  StoreSignal(value_nid, nums[i], vals[i], tims[i], &limits[i], sort);
       }
-      if (vals[i])
-	free(vals[i]);
-      if (tims[i])
-	free(tims[i]);
+      free(vals[i]);
+      free(tims[i]);
     }
     PARAGON_FTP_DELETE(setup->report_name, TreeIsOn(delete_file_nid));
   }

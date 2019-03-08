@@ -811,8 +811,7 @@ static void freeDescrip(struct descriptor *desc)
 
   switch (desc->class) {
   case CLASS_S:
-    if (desc->pointer)
-      free(desc->pointer);
+    free(desc->pointer);
     break;
   case CLASS_A:
     if (desc->pointer)

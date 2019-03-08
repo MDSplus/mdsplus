@@ -92,8 +92,7 @@ sprintf(info, "%s%.*s = %s\n", nodename, (int)(40 - strlen(nodename)),
     grand_total += sub_total;
     sprintf(text, "Total of %d tags\n", sub_total);
     tclAppend(output, text);
-    if (tagnam)
-      free(tagnam);
+    free(tagnam);
   }
   if (grand_total != sub_total) {
     sprintf(text, "Grand Total of %d tags\n", sub_total);

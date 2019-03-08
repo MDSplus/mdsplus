@@ -221,8 +221,7 @@ STATIC_ROUTINE int _CopyFile(int src_fd, int dst_fd, int lock_it)
 	  }
 	  bytes_to_go -= io_size;
 	}
-	if (buff)
-	  free(buff);
+	free(buff);
 	if (bytes_to_go == 0)
 	  status = TreeSUCCESS;
       } else

@@ -68,8 +68,7 @@ void freeParameter(dclParameterPtr * p_in){
       free(p->restOfLine);
     for (i = 0; i < p->value_count; i++)
       free(p->values[i]);
-    if (p->values)
-      free(p->values);
+    free(p->values);
     free(p);
     *p_in = 0;
   }
@@ -84,14 +83,10 @@ static void freeQualifier(dclQualifierPtr * q_in){
     dclQualifierPtr q = *q_in;
     if (q) {
       int i;
-      if (q->name)
-	free(q->name);
-      if (q->defaultValue)
-	free(q->defaultValue);
-      if (q->type)
-	free(q->type);
-      if (q->syntax)
-	free(q->syntax);
+      free(q->name);
+      free(q->defaultValue);
+      free(q->type);
+      free(q->syntax);
       if (q->values) {
 	for (i = 0; i < q->value_count; i++)
 	  free(q->values[i]);
@@ -135,14 +130,10 @@ static void freeCommand(dclCommandPtr * cmd_in){
   if (cmd_in) {
     dclCommandPtr cmd = *cmd_in;
     if (cmd) {
-      if (cmd->verb)
-	free(cmd->verb);
-      if (cmd->routine)
-	free(cmd->routine);
-      if (cmd->image)
-	free(cmd->image);
-      if (cmd->command_line)
-	free(cmd->command_line);
+      free(cmd->verb);
+      free(cmd->routine);
+      free(cmd->image);
+      free(cmd->command_line);
       freeCommandParamsAndQuals(cmd);
       free(cmd);
       *cmd_in = 0;
@@ -402,14 +393,12 @@ static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd){
 
   } else if (node->name && (strcasecmp((const char *)node->name, "routine") == 0)) {
     if (node->properties && node->properties->children && node->properties->children->content) {
-      if (cmd->routine)
-	free(cmd->routine);
+      free(cmd->routine);
       cmd->routine = strdup((const char *)node->properties->children->content);
     }
   } else if (node->name && (strcasecmp((const char *)node->name, "image") == 0)) {
     if (node->properties && node->properties->children && node->properties->children->content) {
-      if (cmd->image)
-	free(cmd->image);
+      free(cmd->image);
       cmd->image = strdup((const char *)node->properties->children->content);
     }
   }
@@ -715,11 +704,9 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
   /* Replace any parameter names and labels with the real command definition parameter names. */
 
   for (i = 0; i < cmd->parameter_count; i++) {
-    if (cmd->parameters[i]->name)
-      free(cmd->parameters[i]->name);
+    free(cmd->parameters[i]->name);
     cmd->parameters[i]->name = strdup(cmdDef->parameters[i]->name);
-    if (cmd->parameters[i]->label)
-      free(cmd->parameters[i]->label);
+    free(cmd->parameters[i]->label);
     cmd->parameters[i]->label =
 	(cmdDef->parameters[i]->label) ? strdup(cmdDef->parameters[i]->label) : 0;
   }
@@ -765,8 +752,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
 
 	/* set the qualifier name to the realname */
 
-	if (cmd->qualifiers[i]->name)
-	  free(cmd->qualifiers[i]->name);
+	free(cmd->qualifiers[i]->name);
 	cmd->qualifiers[i]->name = strdup(realname);
 	free(negated);
 	break;
@@ -788,8 +774,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
     fprintf(stderr, "Command not supported\n");
     return MdsdclIVVERB;
   } else {
-    if (cmd->routine)
-      free(cmd->routine);
+    free(cmd->routine);
     cmd->routine = strdup(cmdDef->routine);
   }
 
@@ -932,8 +917,7 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in, dclCommandPtr 
 			verbNode = list.nodes[0];
 			findVerbInfo(((xmlNodePtr) (list.nodes[0]))->children, cmdDef);
 		      }
-		      if (list.nodes)
-			free(list.nodes);
+		      free(list.nodes);
 		      goto REDO;
 		    }
 		  }
@@ -979,8 +963,7 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in, dclCommandPtr 
 	      redo = 1;
 	      verbNode = list.nodes[0];
 	    }
-	    if (list.nodes)
-	      free(list.nodes);
+	    free(list.nodes);
 	    free(negated);
 	    goto REDO;
 	  }
@@ -1243,8 +1226,7 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
 	  processCommand(doc_l, matchingVerbs.nodes[0], cmd, cmdDef, &prompt,
 			 &error_tmp, &output_tmp, getline, getlineinfo);
       if (status & 1) {
-	if (error)
-	  free(error);
+	free(error);
 	error = error_tmp;
       } else {
 	if (error_tmp) {

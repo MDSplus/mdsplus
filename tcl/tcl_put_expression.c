@@ -87,8 +87,7 @@ EXPORT int TclPutExpression(void *ctx, char **error, char **output __attribute__
 	if (use_lf)
 	  tclAppend(&ascValue, "\n");
       }
-      if (line)
-	free(line);
+      free(line);
     } else
       cli_get_value(ctx, "VALUE", &ascValue);
     dsc_ascValue.length=strlen(ascValue);
@@ -100,10 +99,8 @@ EXPORT int TclPutExpression(void *ctx, char **error, char **output __attribute__
       sts = TreePutRecord(nid, (struct descriptor *)&value_xd, 0);
     }
   }
-  if (ascValue)
-    free(ascValue);
-  if (nodnam)
-    free(nodnam);
+  free(ascValue);
+  free(nodnam);
   MdsFree1Dx(&value_xd, NULL);
   if (~sts & 1) {
     char *msg = MdsGetMsg(sts);

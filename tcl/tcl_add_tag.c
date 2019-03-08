@@ -59,9 +59,7 @@ EXPORT int TclAddTag(void *ctx, char **error, char **output __attribute__ ((unus
     *error = malloc(strlen(tagnam) + strlen(msg) + 100);
     sprintf(*error, "Error adding tag %s\nError message was: %s\n", tagnam, msg);
   }
-  if (nodnam)
-    free(nodnam);
-  if (tagnam)
-    free(tagnam);
+  free(nodnam);
+  free(tagnam);
   return sts;
 }

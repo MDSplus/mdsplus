@@ -142,8 +142,7 @@ EXPORT int roam_check_access(char *host, int https, char *resource, char *permit
       free(accnt.pointer);
     }
   }
-  if (ans)
-    free(ans);
+  free(ans);
   globus_xio_attr_destroy(attr);
   globus_xio_close(xio_handle, NULL);
   return status;
@@ -210,8 +209,7 @@ EXPORT int roam_check_access(char *host, int https, char *resource, char *permit
   } else {
     status = -1;
   }
-  if (buf.ptr)
-    free(buf.ptr);
+  free(buf.ptr);
   return status;
 }
 #endif

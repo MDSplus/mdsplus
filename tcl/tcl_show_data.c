@@ -343,8 +343,7 @@ static int CvtAdscT(struct descriptor_a *in_dsc_ptr, int depth, char **output)
   }
   strcat(out_str, " ]\n");
   tclAppend(output, out_str);
-  if (out_str)
-    free(out_str);
+  free(out_str);
   free(dstr);
   return 1;
 }
@@ -425,7 +424,6 @@ EXPORT int TclShowData(void *ctx, char **error, char **output)
     }
     TreeFindNodeEnd(&ctx1);
   }
-  if (nodnam)
-    free(nodnam);
+  free(nodnam);
   return 1;
 }

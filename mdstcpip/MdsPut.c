@@ -64,8 +64,7 @@ int MdsPut(int id, char *node, char *expression, ...) {
     status = GetAnswerInfoTS(id, &dtype, &len, &ndims, dims, &numbytes, &dptr, &mem);
     if (STATUS_OK && dtype == DTYPE_LONG && ndims == 0 && numbytes == sizeof(int))
       memcpy(&status, dptr, numbytes);
-    if (mem)
-      free(mem);
+    free(mem);
   }
   return status;
 }

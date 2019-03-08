@@ -221,8 +221,7 @@ EXPORT int incaa6___store(struct descriptor *niddsc_ptr __attribute__ ((unused))
   }
   max_idx = setup->ptsc - 1 - actual_ptsc;
   min_idx = setup->ptsc - samps_per_chan - actual_ptsc;
-  if (raw.pointer)
-    free(raw.pointer);
+  free(raw.pointer);
   raw.pointer = malloc(samps_per_chan * 2);
   for (chan = start; ((chan < MAX_CHANS) && (status & 1)); chan += inc) {
     int data_nid =

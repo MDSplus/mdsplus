@@ -237,8 +237,7 @@ EXPORT int TclDirectory(void *ctx, char **error __attribute__ ((unused)), char *
       mdsdclFlushOutput(*output);
     }
     TreeFindNodeEnd(&ctx1);
-    if (nodnam)
-      free(nodnam);
+    free(nodnam);
   }
   sprintf(msg, "%s\nTotal of %d node%s.\n", full ? "" : "\n", found,
 	  ((found > 1) || (found == 0)) ? "s" : "");

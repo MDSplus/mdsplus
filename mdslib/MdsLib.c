@@ -106,8 +106,7 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
     return -1;
   }
 
-  if (GetDescriptorCache()[next])
-    free(GetDescriptorCache()[next]);
+  free(GetDescriptorCache()[next]);
 
   /* decide what type of descriptor is needed (descriptor, descriptor_a, array_coeff) */
 
@@ -234,8 +233,7 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
   int totsize = *dim1;
   int retval;
 
-  if (GetDescriptorCache()[next])
-    free(GetDescriptorCache()[next]);
+  free(GetDescriptorCache()[next]);
 
   /* decide what type of descriptor is needed (descriptor, descriptor_a, array_coeff) */
 
@@ -517,8 +515,7 @@ static inline int MdsValueVargs(va_list incrmtr, int connection, char *expressio
         if (status & 1)
 	  MdsValueSet(dscAnswer, GetDescriptorCache()[ansdescr - 1], length);
       }
-      if (dnew)
-	free(dnew);
+      free(dnew);
     }
 
   } else
@@ -744,8 +741,7 @@ static inline int MdsValue2Vargs(va_list incrmtr, int connection, char *expressi
 	if (status & 1)
 	  MdsValueSet(dscAnswer, GetDescriptorCache()[ansdescr - 1], length);
       }
-      if (dnew)
-	free(dnew);
+      free(dnew);
     }
 
   } else

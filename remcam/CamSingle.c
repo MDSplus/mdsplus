@@ -68,8 +68,7 @@ static void getiosb(int serverid, short *iosb)
     if (iosb)
       memcpy(iosb, ans_d.ptr, 8);
   }
-  if (ans_d.ptr)
-    free(ans_d.ptr);
+  free(ans_d.ptr);
 }
 
 static void getdata(int serverid, void *data)
@@ -79,8 +78,7 @@ static void getdata(int serverid, void *data)
   status = MdsValue(serverid, "_data", &ans_d, 0);
   if (status & 1 && (ans_d.dtype == DTYPE_USHORT || ans_d.dtype == DTYPE_LONG) && ans_d.ptr)
     memcpy(data, ans_d.ptr, (ans_d.dtype == DTYPE_USHORT) ? 2 : 4);
-  if (ans_d.ptr)
-    free(ans_d.ptr);
+  free(ans_d.ptr);
 }
 
 static int CamSingle(char *routine, char *name, int a, int f, void *data, int mem, short *iosb)

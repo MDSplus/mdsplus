@@ -197,8 +197,7 @@ static void registerHandler(){
 void DisconnectConnectionC(Connection *c){
   // connection should not be in list at this point
   c->io->disconnect(c);
-  if (c->info)
-    free(c->info);
+  free(c->info);
   FreeDescriptors(c);
   free(c->protocol);
   free(c->info_name);
@@ -265,8 +264,7 @@ void FreeDescriptors(Connection * c){
     for (i = 0; i < MDSIP_MAX_ARGS; i++) {
       if (c->descrip[i]) {
 	if (c->descrip[i] != MdsEND_ARG) {
-	  if (c->descrip[i]->pointer)
-	    free(c->descrip[i]->pointer);
+	  free(c->descrip[i]->pointer);
 	  free(c->descrip[i]);
 	}
 	c->descrip[i] = NULL;
@@ -477,8 +475,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     SetConnectionInfoC(c, info_name, readfd, info, info_len);
     m_user = GetMdsMsgTOC(c, &status, 10000);
     if (!m_user || STATUS_NOT_OK) {
-      if (m_user)
-	free(m_user);
+      free(m_user);
       if (usr) *usr = NULL;
       DisconnectConnectionC(c);
       return MDSplusERROR;

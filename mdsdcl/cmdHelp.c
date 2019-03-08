@@ -212,7 +212,6 @@ int mdsdcl_do_help(const char *command, char **error, char **output)
     *output =
 	strcat(realloc(*output, strlen(*output) + 80),
 	       "Type 'help command-name' for more info\n\n");
-  if (docs)
-    free(docs);
+  free(docs);
   return 1;
 }

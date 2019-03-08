@@ -89,8 +89,7 @@ char *character_name_generator(const char *text, int state){
     character_names = realloc(character_names,sizeof(void*)*(curlen+1));
     character_names[curlen] = NULL;
     LibFindFileEnd(&ctx);
-    if (ans.pointer)
-      free(ans.pointer);
+    free(ans.pointer);
   }
   static int list_index, len;
   char *name;
@@ -143,8 +142,7 @@ static char *getExpression(FILE *f_in) {
     }
     if (nlen<=0) {
       if (ans) {
-        if (next)
-          free(next);
+        free(next);
         next = ans;
       } else
         ans = next;

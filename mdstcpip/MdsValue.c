@@ -108,8 +108,7 @@ EXPORT int _MdsValue(int id, int nargs, struct descrip** arglist, struct descrip
         memcpy(ans_arg->ptr, dptr, numbytes);
     } else
       ans_arg->ptr = NULL;
-    if (mem)
-      free(mem);
+    free(mem);
   } else
     ans_arg->ptr = NULL;
   return status;

@@ -588,8 +588,7 @@ static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in){
 	    job->nid, job->on, job->mode, job->server, job->status, now, status_text);
   }
   status = SendReply(job_in, SrvJobFINISHED, 1, strlen(msg), msg);
-  if (msg)
-    free(msg);
+  free(msg);
   if STATUS_NOT_OK {
     if (prev)
         prev->next = m->next;
@@ -670,8 +669,7 @@ static void WorkerThread(void *arg __attribute__ ((unused)) ){
     ProgLoc = 9;
     save_text = current_job_text;
     current_job_text = 0;
-    if (save_text)
-      free(save_text);
+    free(save_text);
     ProgLoc = 10;
     if (Debug) fprintf(stderr,"job done.\n");
   }

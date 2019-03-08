@@ -486,12 +486,10 @@ static inline void setMonitor(const char* monitor){
     MONITOR_QUEUE_LOCK;
     if (monitor) {
       MonitorOn = B_TRUE;
-      if (Monitor)
-	free(Monitor);
+      free(Monitor);
       Monitor = strdup(monitor);
     } else {
-      if (Monitor)
-	free(Monitor);
+      free(Monitor);
       Monitor = NULL;
       MonitorOn = B_FALSE;
     }

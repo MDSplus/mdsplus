@@ -91,13 +91,11 @@ static int ParseQualifiers(void *ctx, char **error)
   char *module = 0;
   char *value = 0;
   if (cli_get_value(ctx,"module",&module)&1) {
-    if (Name)
-      free(Name);
+    free(Name);
     Name = module;
   } else {
     if (DefName) {
-      if (Name)
-	free(Name);
+      free(Name);
       Name = strdup(DefName);
     }
     else {
@@ -153,8 +151,7 @@ static int ParseQualifiers(void *ctx, char **error)
     }
     free(value);
   }
-  if (D)
-    free(D);
+  free(D);
   D = malloc(Count * ((Mem == 24) ? 4 : 2));
   d16 = (short *)D;
   d32 = (int *)D;
@@ -292,16 +289,14 @@ EXPORT int ccl_show_data(void *ctx, char **error __attribute__ ((unused)), char 
   char outline[256];
   char *value = 0;
   first = (cli_get_value(ctx, "START", &value) & 1) ? strtol(value,NULL,0) : 1;
-  if (value)
-    free(value);
+  free(value);
   value = 0;
   if (first < 1)
     first = 1;
   if (first > maxsmps)
     first = maxsmps;
   last = (cli_get_value(ctx, "END", &value) & 1) ? strtol(value,NULL,0) : first + 99;
-  if (value)
-    free(value);
+  free(value);
   value = 0;
   if (last < first)
     last = first;

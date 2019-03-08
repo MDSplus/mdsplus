@@ -50,8 +50,7 @@ int DoMessage(int id){
     CloseConnection(id);
     status = 0; // will cause tunnel to terminate
   }
-  if (msgptr)
-    free(msgptr);
+  free(msgptr);
   return status;
 }
 

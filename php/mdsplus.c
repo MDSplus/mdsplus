@@ -122,8 +122,7 @@ static void php_mdsplus_init_globals(zend_mdsplus_globals *mdsplus_globals)
 /* }}} */
 static void mdsplus_replace_error(char *msg, int do_not_copy)
 {
-  if (mdsplus_error_msg)
-    free(mdsplus_error_msg);
+  free(mdsplus_error_msg);
   if (do_not_copy)
     mdsplus_error_msg = msg;
   else
@@ -488,8 +487,7 @@ PHP_FUNCTION(mdsplus_value)
 	  memcpy(ans.ptr, dptr, numbytes);
       } else
 	ans.ptr = NULL;
-      if (mem)
-	free(mem);
+      free(mem);
     }
 
   }
@@ -553,8 +551,7 @@ PHP_FUNCTION(mdsplus_value)
 		  ans.dtype);
 	  mdsplus_replace_error(error, 0);
 	  RETVAL_FALSE;
-	  if (ans.ptr)
-	    free(ans.ptr);
+	  free(ans.ptr);
 	  return;
 	}
       }
@@ -573,8 +570,7 @@ PHP_FUNCTION(mdsplus_value)
     mdsplus_replace_error(error, 1);
     RETVAL_FALSE;
   }
-  if (ans.ptr)
-    free(ans.ptr);
+  free(ans.ptr);
 }
 
 /* }}} */
@@ -675,8 +671,7 @@ PHP_FUNCTION(mdsplus_put)
 	  memcpy(ans.ptr, dptr, numbytes);
       } else
 	ans.ptr = NULL;
-      if (mem)
-	free(mem);
+      free(mem);
     }
 
   }
@@ -701,8 +696,7 @@ PHP_FUNCTION(mdsplus_put)
     mdsplus_replace_error(error, 1);
   }
  done_mdsplus_put:
-  if (ans.ptr)
-    free(ans.ptr);
+  free(ans.ptr);
   if (status & 1) {
     RETURN_TRUE;
   } else {

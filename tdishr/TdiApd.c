@@ -71,8 +71,7 @@ int UnwrapComma(int narg, struct descriptor *list[], int *nout_p, struct descrip
   if STATUS_NOT_OK {
     int i;
     for ( i=0 ; i<nout ; i++ )
-      if ((*list_ptr)[i])
-        free((*list_ptr)[i]);
+      free((*list_ptr)[i]);
     free(*list_ptr);
   }
   return status;
@@ -121,8 +120,7 @@ int Tdi1Apd(int dtype, int narg, struct descriptor *list[], struct descriptor_xd
 free_alist :;
   int i;
   for ( i=0 ; i<alen ; i++ )
-    if (alist[i])
-      free(alist[i]);
+    free(alist[i]);
   free(alist);
   return status;
 }

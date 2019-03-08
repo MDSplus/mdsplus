@@ -130,8 +130,7 @@ static int doOpen(int streams, char *name, int options, int mode, struct mdsfile
 	printf("Err in GetAnswerInfoTS in io_open_remote: status = %d, length = %d\n", sts, length);
 	status = -1;
       }
-      if (msg)
-	free(msg);
+      free(msg);
     } else {
       fprintf(stderr, "Error opening file: %s\n", name);
       status = -1;
@@ -181,8 +180,7 @@ off_t getSize(struct mdsfile * file)
 	ret = 0;
 	memcpy(&ret, dptr, (length > sizeof(ret)) ? sizeof(ret) : length);
       }
-      if (msg)
-	free(msg);
+      free(msg);
       info[4] = SEEK_SET;
     }
     status = SendArg(sock, MDS_IO_LSEEK_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);
@@ -200,8 +198,7 @@ off_t getSize(struct mdsfile * file)
 	dumret = 0;
 	memcpy(&dumret, dptr, (length > sizeof(dumret)) ? sizeof(dumret) : length);
       }
-      if (msg)
-	free(msg);
+      free(msg);
     }
     return ret;
   }
@@ -233,8 +230,7 @@ off_t doRead(struct mdsfile * file, off_t count, void *buff)
 	if (ret)
 	  memcpy(buff, dptr, ret);
       }
-      if (msg)
-	free(msg);
+      free(msg);
     }
     return ret;
   }
@@ -263,8 +259,7 @@ static off_t doWrite(struct mdsfile *file, off_t count, void *buff)
       if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)) {
 	ret = (off_t) * (int *)dptr;
       }
-      if (msg)
-	free(msg);
+      free(msg);
     }
     return ret;
   }
@@ -292,8 +287,7 @@ static int doClose(struct mdsfile *file)
       if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)
 	  && (length == sizeof(ret)))
 	memcpy(&ret, dptr, sizeof(ret));
-      if (msg)
-	free(msg);
+      free(msg);
     }
     return ret;
   }

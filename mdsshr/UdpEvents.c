@@ -366,8 +366,7 @@ int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf){
     status = 0;
   } else
     status = 1;
-  if (msg)
-    free(msg);
+  free(msg);
   pthread_mutex_unlock(&sendEventMutex);
   return status;
 }

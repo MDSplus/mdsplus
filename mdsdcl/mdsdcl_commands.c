@@ -219,8 +219,7 @@ EXPORT int mdsdcl_set_verify(void *ctx, char **error __attribute__ ((unused)), c
   char *verify = 0;
   cli_get_value(ctx, "P1", &verify);
   MDSDCL_VERIFY = verify && (toupper(verify[0]) == 'V');
-  if (verify)
-    free(verify);
+  free(verify);
   return MdsdclSUCCESS;
 }
 

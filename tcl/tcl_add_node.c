@@ -113,19 +113,14 @@ EXPORT int TclAddNode(void *ctx, char **error, char **output __attribute__ ((unu
     TclNodeTouched(nid, new);
   else {
     char *msg = MdsGetMsg(sts);
-    if (*error)
-      free(*error);
+    free(*error);
     *error = malloc(strlen(nodnam) + strlen(msg) + 100);
     sprintf(*error, "Error adding node %s\nError was: %s\n", nodnam, MdsGetMsg(sts));
   }
  done:
-  if (nodnam)
-    free(nodnam);
-  if (modelType)
-    free(modelType);
-  if (qualifiers)
-    free(qualifiers);
-  if (usageStr)
-    free(usageStr);
+  free(nodnam);
+  free(modelType);
+  free(qualifiers);
+  free(usageStr);
   return sts;
 }

@@ -208,8 +208,7 @@ int joerger_tr612___store(struct descriptor *niddsc __attribute__ ((unused)), In
     time.data = burst_dimension.pointer;
   } else
     time.data = (struct descriptor *)&dimension;
-  if (channel_data)
-    free(channel_data);
+  free(channel_data);
   channel_data = malloc(max_samples * sizeof(short));
   min_idx = -1 * reg1.pretrig * max_samples / 8 + 1;
   max_idx = max_samples + min_idx - 1;

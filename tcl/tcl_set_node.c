@@ -235,7 +235,6 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
   TreeFindNodeEnd(&ctx1);
   if (status == TreeNMN)
     status = 1;
-  if (nodename)
-    free(nodename);
+  free(nodename);
   return status;
 }

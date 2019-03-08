@@ -263,8 +263,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
       return status;
     }
   }
-  if (mem)
-    free(mem);
+  free(mem);
   return status;
 }
 
