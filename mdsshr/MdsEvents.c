@@ -363,8 +363,7 @@ STATIC_ROUTINE void handleRemoteEvent(int conid)
     MdsEventInfo *event = (MdsEventInfo *) m->bytes;
     ((void (*)())(*event->astadr)) (event->astprm, 12, event->data);
   }
-  if (m)
-    free(m);
+  free(m);
 }
 
 #else// GLOBUS
@@ -841,8 +840,7 @@ STATIC_ROUTINE int sendRemoteEvent(char const *evname, int data_len, char *data)
 	  i--;
 	}
       }
-      if (ansarg.ptr)
-	free(ansarg.ptr);
+      free(ansarg.ptr);
     }
   }
   return status;

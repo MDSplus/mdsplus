@@ -199,10 +199,8 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
 
  cleanup:
 
-  if (upcase_name)
-    free(upcase_name);
-  if (newnode_name)
-    free(newnode_name);
+  free(upcase_name);
+  free(newnode_name);
   return status;
 }
 

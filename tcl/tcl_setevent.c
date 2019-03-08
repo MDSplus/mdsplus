@@ -47,7 +47,6 @@ EXPORT int TclSetEvent(void *ctx)
   int status;
   cli_get_value(ctx, "EVENT", &event);
   status = MDSEvent(event, 0, 0);
-  if (event)
-    free(event);
+  free(event);
   return status;
 }

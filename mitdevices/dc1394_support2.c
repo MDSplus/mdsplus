@@ -355,16 +355,14 @@ EXPORT int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mo
   bytes =
       (bits_per_pixel <= 8) ? 1 : ((bits_per_pixel <= 16) ? 2 : ((bits_per_pixel <= 24) ? 3 : 4));
 
-  if (buf)
-    free(buf);
+  free(buf);
   framesize = width * height * bytes;
   buf = (unsigned char *)malloc(framesize * max_frames);
   if (buf == NULL) {
     fprintf(stderr, "Failed to allocate frame memory - restarting server\n");
     exit(0);
   }
-  if (frame_times)
-    free(frame_times);
+  free(frame_times);
   frame_times = (double *)malloc(max_frames * sizeof(double));
   if (frame_times == NULL) {
     fprintf(stderr, "Failed to allocate times memory - restarting server\n");

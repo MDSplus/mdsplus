@@ -149,8 +149,7 @@ int main(int argc, char const *argv[])
 
     status = mdsdcl_do_command(cmd);
     add_history(cmd);
-    if (cmd)
-      free(cmd);
+    free(cmd);
     goto done;
 
   }
@@ -203,8 +202,7 @@ int main(int argc, char const *argv[])
       /* If line ends in hyphen it is a continuation. Go get rest of line */
       if ( strlen(command)>1 ) if (command[strlen(command) - 1] == '-') {
 	command[strlen(command) - 1] = '\0';
-	if (prompt)
-	  free(prompt);
+	free(prompt);
 	prompt = strdup("Continue: ");
 	continue;
       }
@@ -229,8 +227,7 @@ int main(int argc, char const *argv[])
 	  }
 
 	  command = strcat(realloc(command, strlen(command) + 2), " ");
-	  if (prompt)
-	    free(prompt);
+	  free(prompt);
 	  prompt = strcpy(malloc(strlen(prompt_more) + 10), "_");
 	  strcat(prompt, prompt_more);
 	  strcat(prompt, ": ");
@@ -243,8 +240,7 @@ int main(int argc, char const *argv[])
 	  free(error);
 	  error = 0;
 	}
-	if (prompt)
-	  free(prompt);
+	free(prompt);
 	prompt = 0;
 	if (status == MdsdclEXIT) {
 	  free(command);
@@ -260,12 +256,9 @@ int main(int argc, char const *argv[])
     }
   }
  done:
-  if (output)
-    free(output);
-  if (prompt)
-    free(prompt);
-  if (error)
-    free(error);
+  free(output);
+  free(prompt);
+  free(error);
   history_file = mdsdclGetHistoryFile();
   if (history_file)
     write_history(history_file);

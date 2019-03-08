@@ -237,8 +237,7 @@ EXPORT int _TreeOpen(void **dbid, char const *tree_in, int shot_in, int read_onl
     } else
       status = TreeNOPATH;
   }
-  if (subtree_list)
-    free(subtree_list);
+  free(subtree_list);
   free(tree);
   return status;
 }
@@ -349,8 +348,7 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook) {
 	    free(local_info->tag_info);
 	  if (local_info->edit->external_pages)
 	    free(local_info->external);
-          if (local_info->edit->deleted_nid_list)
-            free(local_info->edit->deleted_nid_list);
+          free(local_info->edit->deleted_nid_list);
 	  free(local_info->edit);
 	}
 
@@ -375,8 +373,7 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook) {
 	      if (local_info->mapped)
 		munmap(local_info->section_addr[0], (size_t)local_info->alq * 512);
 #endif
-	      if (local_info->vm_addr)
-		free(local_info->vm_addr);
+	      free(local_info->vm_addr);
 	    }
 	    TreeWait(local_info);
 	    if (local_info->data_file) {
@@ -400,10 +397,8 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook) {
 	      TreeCallHookFun("TreeHook","CloseTree",local_info->treenam, local_info->shot,NULL);
 	      TreeCallHook(CloseTree, local_info, 0);
 	    }
-	    if (local_info->filespec)
-	      free(local_info->filespec);
-	    if (local_info->treenam)
-	      free(local_info->treenam);
+	    free(local_info->filespec);
+	    free(local_info->treenam);
             if (local_info->has_lock)
               pthread_rwlock_destroy(&local_info->lock);
 	    previous_info = local_info;
@@ -534,8 +529,7 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
       *************************************************/
       }
       if (STATUS_NOT_OK && info) {
-	if (info->treenam)
-	  free(info->treenam);
+	free(info->treenam);
 	free(info);
 	info = 0;
       }
@@ -672,11 +666,9 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
   if (status == TreeNORMAL) {
     (*dblist)->shotid = shot;
     (*dblist)->setup_info = (shot == -1);
-    if ((*dblist)->experiment)
-      free((*dblist)->experiment);
+    free((*dblist)->experiment);
     (*dblist)->experiment = strcpy(malloc(strlen(tree) + 1), tree);
-    if ((*dblist)->main_treenam)
-      free((*dblist)->main_treenam);
+    free((*dblist)->main_treenam);
     (*dblist)->main_treenam = strcpy(malloc(strlen(tree) + 1), tree);
     (*dblist)->stack_size = stack_size;
   }
@@ -1004,8 +996,7 @@ static int MapFile(int fd, TREE_INFO * info, int nomap)
 		  ((info->header->tags * (int)sizeof(TAG_INFO) + 511) / 512) * 512);
       TreeEstablishRundownEvent(info);
       status = TreeNORMAL;
-    } else if (info->vm_addr)
-      free(info->vm_addr);
+    } else free(info->vm_addr);
   }
   return status;
 }
@@ -1275,8 +1266,7 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
 	  free(info->treenam);
 	  free(info);
 	}
-	if (tree)
-	  free(tree);
+	free(tree);
       } else
 	status = TreeMEMERR;
       if STATUS_NOT_OK

@@ -52,7 +52,6 @@ int MdsEventAst(int id, char *eventnam, void (*astadr) (), void *astprm, int *ev
   if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) {
     *eventid = *(int *)ansarg.ptr;
   }
-  if (ansarg.ptr)
-    free(ansarg.ptr);
+  free(ansarg.ptr);
   return status;
 }

@@ -1564,8 +1564,7 @@ void CreateAddDevice(Widget w, XtPointer client_data __attribute__ ((unused)), X
 	free(devnames[i]);
 	XtManageChild(w);
       }
-      if (devnames)
-	free(devnames);
+      free(devnames);
       devices_loaded = True;
     }
     XtManageChild(top);

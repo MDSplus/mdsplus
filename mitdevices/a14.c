@@ -271,8 +271,7 @@ EXPORT int a14___store(struct descriptor *niddsc __attribute__ ((unused)), InSto
     start_addr = 0;
     break;
   }
-  if (raw.pointer)
-    free(raw.pointer);
+  free(raw.pointer);
   raw.pointer = malloc((max_idx - min_idx + 1) * sizeof(short));
   for (i = 0; i < 6 && status & 1; i++, range = range >> 3) {
     int chan_nid = setup->head_nid + (A14_N_INPUT_2 - A14_N_INPUT_1) * i + A14_N_INPUT_1;

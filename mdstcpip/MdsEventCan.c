@@ -38,7 +38,6 @@ int MdsEventCan(int id, int eventid)
       MdsValue(id, EVENTCANREQUEST,
 	       MakeDescrip((struct descrip *)&eventarg, DTYPE_LONG, 0, 0, &eventid),
 	       (struct descrip *)&ansarg, (struct descrip *)NULL);
-  if (ansarg.ptr)
-    free(ansarg.ptr);
+  free(ansarg.ptr);
   return status;
 }

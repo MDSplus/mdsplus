@@ -47,8 +47,7 @@ static void freemove(void* move_p) {
 }
 static void treeclose(void* dbid_p) {
   _TreeClose(dbid_p, 0, 0);
-  if (*(void**)dbid_p)
-    free(*(void**)dbid_p);
+  free(*(void**)dbid_p);
 }
 STATIC_ROUTINE int RewriteDatafile(char *tree, int shot, int compress)
 {

@@ -868,8 +868,7 @@ EXPORT int LibFreeVm(unsigned int *len, void **vm, ZoneList ** zone)
   }
   if (len && *len && vm && *vm)
     free(*vm);
-  if (list)
-    free(list);
+  free(list);
   return MDSplusSUCCESS;
 }
 
@@ -1123,8 +1122,7 @@ EXPORT int StrAppend(struct descriptor_d *out, struct descriptor *tail)
 EXPORT int StrFree1Dx(struct descriptor_d *out)
 {
   if (out->class == CLASS_D) {
-    if (out->pointer)
-      free(out->pointer);
+    free(out->pointer);
     out->pointer = NULL;
     out->length = 0;
   }

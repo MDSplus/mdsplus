@@ -73,9 +73,7 @@ EXPORT int TclClose(void *ctx, char **error, char **output __attribute__ ((unuse
   }
   if (sts & 1)
     TclNodeTouched(0, tree);
-  if (exp)
-    free(exp);
-  if (shotidstr)
-    free(shotidstr);
+  free(exp);
+  free(shotidstr);
   return sts;
 }

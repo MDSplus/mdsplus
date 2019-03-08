@@ -79,8 +79,7 @@ static void getiosb(int serverid, short *iosb)
     if (iosb)
       memcpy(iosb, ans_d.ptr, 8);
   }
-  if (ans_d.ptr)
-    free(ans_d.ptr);
+  free(ans_d.ptr);
 }
 
 static void getdata(int serverid, void *data)
@@ -90,8 +89,7 @@ static void getdata(int serverid, void *data)
   status = MdsValue(serverid, "_data", &ans_d, NULL);
   if (status & 1 && (ans_d.dtype == DTYPE_USHORT || ans_d.dtype == DTYPE_LONG) && ans_d.ptr)
     memcpy(data, ans_d.ptr, ((ans_d.dtype == DTYPE_USHORT) ? 2 : 4) * ans_d.dims[0]);
-  if (ans_d.ptr)
-    free(ans_d.ptr);
+  free(ans_d.ptr);
 }
 
 static int DoCamMulti(char *routine, char *name, int a, int f, int count, void *data, int mem,

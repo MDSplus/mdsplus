@@ -63,8 +63,7 @@ EXPORT int TclSetCurrent(void *ctx, char **error, char **output __attribute__ ((
   } else {
     cli_get_value(ctx, "SHOT", &shotasc);
     sts = tclStringToShot(shotasc,&shot, error);
-    if (shotasc)
-      free(shotasc);
+    free(shotasc);
     sts = TreeSetCurrentShotId(experiment, shot);
   }
 
@@ -74,7 +73,6 @@ EXPORT int TclSetCurrent(void *ctx, char **error, char **output __attribute__ ((
     sprintf(*error, "Error: Unable to change current shot\n"
 	    "Error message was: %s\n",msg);
   }
-  if (experiment)
-    free(experiment);
+  free(experiment);
   return sts;
 }

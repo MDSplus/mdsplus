@@ -451,8 +451,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm){
 	    path_string = string;
 	    string = temp;
 	  }
-	  if (path_string)
-	    free(path_string);
+	  free(path_string);
 	  free(part);
 	}
       } else
@@ -763,8 +762,7 @@ int _TreeOpenNciR(TREE_INFO * info)
 
 void TreeFree(void *ptr)
 {
-  if (ptr)
-    free(ptr);
+  free(ptr);
 }
 
 int64_t RfaToSeek(unsigned char *rfa)

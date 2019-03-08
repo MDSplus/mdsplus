@@ -555,8 +555,7 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd)
 
 static void FreeObj(h5item * item)
 {
-  if (item->name)
-    free(item->name);
+  free(item->name);
   if (item->item_type == H5G_DATASET && item->obj != 0)
     H5Dclose(item->obj);
   else if (item->item_type == -1 && item->obj != 0)

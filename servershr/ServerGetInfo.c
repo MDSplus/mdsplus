@@ -95,8 +95,7 @@ EXPORT char *ServerGetInfo(int full __attribute__ ((unused)), char *server){
     len = strlen(ans);
   }
   ansret = strncpy((char *)malloc(len + 1), ans, len);
-  if (mem)
-    free(mem);
+  free(mem);
   ansret[len] = 0;
   return (ansret);
 }

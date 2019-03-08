@@ -57,7 +57,6 @@ EXPORT int TclRemoveTag(void *ctx, char **error, char **output __attribute__ ((u
     sprintf(*error,"Error: Failed to remove tag '%s'\n"
 	    "Error message was: %s\n",tagnam,msg);
   }
-  if (tagnam)
-    free(tagnam);
+  free(tagnam);
   return sts;
 }

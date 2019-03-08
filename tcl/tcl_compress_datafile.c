@@ -63,9 +63,7 @@ EXPORT int TclCompressDatafile(void *ctx, char **error, char **output __attribut
 	      filnam, shot, msg);
     }
   }
-  if (filnam)
-    free(filnam);
-  if (asciiShot)
-    free(asciiShot);
+  free(filnam);
+  free(asciiShot);
   return sts;
 }

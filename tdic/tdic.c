@@ -378,8 +378,7 @@ char *bfgets(char *s, int size, FILE * stream, char *prompt)
     if (rep && *rep)		/* Add to history if interesting */
       Badd_history(rep);
 #endif
-    if (rep)
-      free(rep);
+    free(rep);
     s[size - 1] = '\0';		/* null terminate if necessary */
     return (s);
   } else

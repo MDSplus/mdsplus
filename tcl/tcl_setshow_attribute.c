@@ -108,10 +108,8 @@ EXPORT int TclShowAttribute(void *ctx, char **error, char **output)
     sprintf(*error,"Error: Unable to get attributes for node '%s'\n"
 	    "Error message was: %s\n",node, msg);
   }
-  if (node)
-    free(node);
-  if (attr)
-    free(attr);
+  free(node);
+  free(attr);
   return status;
 }
 
@@ -149,8 +147,7 @@ EXPORT int TclSetAttribute(void *ctx, char **error, char **output __attribute__ 
 	if (use_lf)
 	  tclAppend(&ascValue, "\n");
       }
-      if (line)
-	free(line);
+      free(line);
     } else
       cli_get_value(ctx, "VALUE", &ascValue);
     dsc_ascValue.length = strlen(ascValue);
@@ -169,11 +166,8 @@ EXPORT int TclSetAttribute(void *ctx, char **error, char **output __attribute__ 
     sprintf(*error,"Error: Unable to set attribute on node '%s'\n"
 	    "Error message was: %s\n", nodnam, msg);
   }
-  if (nodnam)
-    free(nodnam);
-  if (attname)
-    free(attname);
-  if (ascValue)
-    free(ascValue);
+  free(nodnam);
+  free(attname);
+  free(ascValue);
   return sts;
 }

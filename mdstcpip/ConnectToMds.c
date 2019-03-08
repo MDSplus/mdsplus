@@ -113,8 +113,7 @@ static int doLogin(Connection* c)
       c->client_type = m->h.client_type;
       if (m->h.ndims>0) c->version = m->h.dims[0];
     }
-    if (m)
-      free(m);
+    free(m);
   } else {
     fprintf(stderr,"Error connecting to server (DoLogin)\n");
     fflush(stderr);
@@ -148,10 +147,8 @@ int ReuseCheck(char *hostin, char *unique, size_t buflen)
     }
   } else
     memset(unique, 0, buflen);
-  if (protocol)
-    free(protocol);
-  if (host)
-    free(host);
+  free(protocol);
+  free(host);
   return ok;
 }
 
@@ -180,9 +177,7 @@ int ConnectToMds(char *hostin)
       }
     }
   }
-  if (host)
-    free(host);
-  if (protocol)
-    free(protocol);
+  free(host);
+  free(protocol);
   return id;
 }

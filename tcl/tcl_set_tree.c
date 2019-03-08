@@ -105,9 +105,7 @@ EXPORT int TclSetTree(void *ctx, char **error, char **output __attribute__ ((unu
 	      "Error message was: %s\n", filnam, shot, msg);
     }
   }
-  if (filnam)
-    free(filnam);
-  if (asciiShot)
-    free(asciiShot);
+  free(filnam);
+  free(asciiShot);
   return sts;
 }

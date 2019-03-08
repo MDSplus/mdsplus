@@ -115,8 +115,7 @@ EXPORT int TclCreatePulse(void *ctx, char **error, char **output __attribute__ (
   int sts;
   cli_get_value(ctx, "SHOT", &asciiShot);
   sts = tclStringToShot(asciiShot, &shot, error);
-  if (asciiShot)
-    free(asciiShot);
+  free(asciiShot);
   if (sts & 1) {
     if (include | exclude | nomain | conditional | dispatch) {
       int nids[256] = { 0 };
