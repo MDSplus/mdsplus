@@ -302,15 +302,15 @@ SectionEnd ; Java
 
 Section "EPICS"
 SectionIn 2
-SetOutPath "$INSTDIR"
-File /r epics
+SetOutPath "$INSTDIR\epics"
+File /r epics/*.*
 SectionEnd ; EPICS
 
 
 Section "IDL"
 SectionIn 2
-SetOutPath "$INSTDIR"
-File /r idl
+SetOutPath "$INSTDIR\idl"
+File /r idl/*.*
 SectionEnd ; IDL
 
 
@@ -327,8 +327,8 @@ SectionEnd ; LabView
 
 Section "MATLAB"
 SectionIn 2
-SetOutPath "$INSTDIR"
-File /r matlab
+SetOutPath "$INSTDIR\matlab"
+File /r matlab/*.*
 SectionEnd ; MATLAB
 
 
@@ -336,9 +336,8 @@ SectionGroup /e "!python" python
 
 Section "mdsobjects\python" python_cp
 SectionIn 1 2
-SetOutPath "$INSTDIR\mdsobjects"
-File /r /x __pycache__ /x *.pyc /x _version.py.in /x Makefile.am /x Makefile.in ${srcdir}/mdsobjects/python
 SetOutPath "$INSTDIR\mdsobjects\python"
+File /r /x makedoc.sh /x __pycache__ /x *.pyc /x _version.py.in /x Makefile.am /x Makefile.in ${srcdir}/mdsobjects/python/*.*
 File /workspace/releasebld/64/mdsobjects/python/_version.py
 SectionEnd ; python_cp
 
@@ -402,7 +401,6 @@ SectionEnd
 
 Section "sample trees"
 SectionIn 2
-SetOutPath "$INSTDIR"
 ${IF} $7 == 1
 	WriteRegStr HKLM "${ENVREG_ALL}" "main_path" "$INSTDIR\trees"
 	WriteRegStr HKLM "${ENVREG_ALL}" "subtree_path" "$INSTDIR\trees\subtree"
@@ -410,7 +408,8 @@ ${ELSE}
 	WriteRegStr HKCU "${ENVREG_USR}" "main_path" "$INSTDIR\trees"
 	WriteRegStr HKCU "${ENVREG_USR}" "subtree_path" "$INSTDIR\trees\subtree"
 ${ENDIF}
-File /r trees
+SetOutPath "$INSTDIR\trees"
+File /r trees/*.*
 SectionEnd
 
  
