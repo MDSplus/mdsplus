@@ -347,6 +347,32 @@ SetOutPath "$INSTDIR\mdsobjects\python"
 Exec "python setup.py install" 
 SectionEnd ; python_su
 
+SectionGroup "pydevices" python_pd
+Section "HTS"
+	SectionIn 2
+	SetOutPath "$INSTDIR\pydevices\HtsDevices"
+	File /r /x __pycache__ /x *.pyc /x _version.py.in ${srcdir}/pydevices/HtsDevices/*.*
+SectionEnd ; HTS
+Section "MIT"
+	SectionIn 2
+	SetOutPath "$INSTDIR\pydevices\MitDevices"
+	File /r /x __pycache__ /x *.pyc /x _version.py.in ${srcdir}/pydevices/MitDevices/*.*
+	File /workspace/releasebld/64/pydevices/MitDevices/_version.py
+SectionEnd ; MIT
+Section "RFX"
+	SectionIn 2
+	SetOutPath "$INSTDIR\pydevices\RfxDevices"
+	File /r /x __pycache__ /x *.pyc /x _version.py.in ${srcdir}/pydevices/RfxDevices/*.*
+	File /workspace/releasebld/64/pydevices/RfxDevices/_version.py
+SectionEnd ; RFX
+Section "W7X"
+	SectionIn 2
+	SetOutPath "$INSTDIR\pydevices\W7xDevices"
+	File /r /x __pycache__ /x *.pyc /x _version.py.in ${srcdir}/pydevices/W7xDevices/*.*
+	File /workspace/releasebld/64/pydevices/W7xDevices/_version.py
+SectionEnd ; W7X
+SectionGroupEnd ; python_pd
+
 SectionGroupEnd ; python
 
 Section "devel"
@@ -432,10 +458,17 @@ ${Switch} $0
   ${Case} ${python_cp}
     ${IfNot} ${SectionIsSelected} ${python_cp}
       SectionSetFlags ${python_su} 0
+      SectionSetFlags ${python_pd} 0
     ${EndIf}
     ${Break}
   ${Case} ${python_su}
     ${If}    ${SectionIsSelected} ${python_su}
+      SectionSetFlags ${python_cp} ${SF_SELECTED}
+    ${EndIf}'''
+
+    ${Break}
+  ${Case} ${python_pd}
+    ${If}    ${SectionIsSelected} ${python_pd}
       SectionSetFlags ${python_cp} ${SF_SELECTED}
     ${EndIf}
     ${Break}
