@@ -491,7 +491,7 @@ SectionGroup /e "!APIs" apis
 	File /workspace/releasebld/64/mdsobjects/python/_version.py
   SectionEnd ; python_cp
   Section "add to PYTHONPATH" python_pp
-	SectionIn 2
+	SectionIn 1 2
 	${AddToPath} "PYTHONPATH" "$INSTDIR\python"
   SectionEnd ; python_pp
   Section "run 'python setup.py install'" python_su
@@ -508,7 +508,7 @@ SectionGroup development
 	SectionIn 2
 	SetOutPath "$INSTDIR\include"
 	File /r include/*.*
- SecitonEnd ; headers
+ SectionEnd ; headers
  SectionGroup devtools
   Section mingw
 	SectionIn 2
