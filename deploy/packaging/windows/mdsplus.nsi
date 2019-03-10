@@ -617,11 +617,12 @@ Function .onInit
 		SectionSetInstTypes ${bin64} 0 ; never include 64bit
 	${EndIf}
 	${VerifyUserIsAdmin}
-	${If} $7 == 1
+	${If} $R0 UserIs admin
 		ReadRegStr $R0 HKLM ${UNINSTALL_KEY} ${UNINSTALL_VAL}
 		SectionSetFlags ${appendpath} ${SF_RO}
 	${Else}
 		ReadRegStr $R0 HKCU ${UNINSTALL_KEY} ${UNINSTALL_VAL}
+		SectionSetInstTypes ${appendpath} 7 ; always include on user level
 		SectionSetFlags ${appendpath} ${SF_SELECTED}
 	${EndIf}
 	${IfNot}  $R0 == ""
