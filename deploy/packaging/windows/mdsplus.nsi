@@ -15,7 +15,6 @@
   Pop $0
   StrCmp $0 "" `${ElseCase}` `${IfCase}`
 !macroend
- 
 Function StrStr
   Exch $R0 ; SubString	(input)
   Exch	; next
@@ -86,7 +85,7 @@ ${UnStrTrimNewLines}
  
 !macro VerifyUserIsAdmin
 	UserInfo::GetAccountType
-	pop $0
+	Pop $0
 	${If} $0 == "admin"
 	        SetShellVarContext all
 	        ${If} ${RunningX64}
@@ -234,6 +233,9 @@ SectionGroup "!core"
  Section "32 bit" bin32
 	${IfNot} ${RunningX64}
 	        Call install_core_pre
+	${Else}
+		FileOpen $0 "$INSTDIR\installer.dat" a
+		FileSeek $0 0 END
 	${EndIf}
 	SetOutPath "$INSTDIR\bin_x86"
 	File /x *.a bin_x86/*
@@ -389,7 +391,7 @@ SectionGroup /e "!APIs"
   Section "MDSplus package" python_cp
 	SectionIn 1 2
 	SetOutPath "$INSTDIR\python\MDSplus"
-	File /r mdsobjects/python/*.*
+	File /r /x makedoc.sh mdsobjects/python/*.*
 	File /workspace/releasebld/64/mdsobjects/python/_version.py
   SectionEnd ; python_cp
   Section "run 'python setup.py install'" python_su
@@ -594,4 +596,3 @@ Section "uninstall"
 	SetOutPath "$SYSDIR"
 	RMDir /r "$INSTDIR"
 SectionEnd
-
