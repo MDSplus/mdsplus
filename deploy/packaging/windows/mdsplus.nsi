@@ -130,9 +130,9 @@ ${UnStrTrimNewLines}
 !macro DeleteKey key
 	Push $R0
 	${If} $R0 UserIs admin
-		DeleteRegKey HKLM `${key}` `${name}`
+		DeleteRegKey HKLM `${key}`
 	${Else}
-		DeleteRegKey HKCU `${key}` `${name}`
+		DeleteRegKey HKCU `${key}`
 	${EndIf}
 	Pop $R0
 !macroend ; DeleteKey
@@ -190,11 +190,11 @@ ${UnStrTrimNewLines}
 
 Function AddToPath ; name value
 	Push $R0
-	${ReadEnv} $R0 $0
+	${ReadEnv} $R0 "$0"
 	${If} $R0 == ""
-		${WriteEnv} $0 $1
-	${ElseIfNot} $1 in $R0
-		${WriteEnv} $0 "$R0;$1"
+		${WriteEnv} "$0" "$1"
+	${ElseIfNot} "$1" in "$R0"
+		${WriteEnv} "$0" "$R0;$1"
 	${EndIf}
 	Pop $R0
 FunctionEnd ; AddToPath
@@ -209,6 +209,17 @@ FunctionEnd ; AddToPath
 	Pop $0
 !macroend ; AddToPath
 !define AddToPath '!insertmacro "AddToPath"'
+
+!macro GetBinDir var
+	${If} `${var}` UserIs admin
+		StrCpy `${var}` "$SYSDIR"
+	${ElseIf} ${RunningX64}
+		StrCpy `${var}` "$INSTDIR\bin_x86_64"
+	${Else}
+		StrCpy `${var}` "$INSTDIR\bin_x86"
+	${EndIf}
+!macroend
+!define GetBinDir '!insertmacro "GetBinDir"'
 
 Function install_core_pre
 	Push $R0
@@ -225,28 +236,24 @@ Function install_core_pre
 	File /r xml\*.*
 	${IF} $R0 UserIs admin
 		FileOpen $7 "$INSTDIR\installer.dat" w
-		StrCpy $5 "$SYSDIR"
-		StrCpy $6 "$SYSDIR"
-	${ELSE}
-		StrCpy $6 "$INSTDIR\bin_x86"
 	${ENDIF}
 	Pop $R0
 FunctionEnd
 
 Function install_core_post
 	Push $R0
-	SetOutPath "$6"
-	CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}"
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Tdi.lnk" "$6\tditest.exe" "" "$6\icons.exe" 0
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" '"$6\mdsdcl"' '-prep "set command tcl"' "$6\icons.exe" 1
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\View ChangeLog.lnk" "$INSTDIR\ChangeLog.rtf"
-	${IF} $R0 UserIs admin
+	${If} $R0 UserIs admin
 		CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer"
 		CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip action server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\mdsip.hosts$\""
 		CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip data server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-i -p 8000 -h $\"C:\mdsip.hosts$\""
 		CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8100"
 		CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8000"
-	${ENDIF}
+	${EndIf}
+	${GetBinDir} $R0
+	CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}"
+	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Tdi.lnk" "$R0\tditest.exe" "" "$R0\icons.exe" 0
+	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" '"$R0\mdsdcl"' '-prep "set command tcl"' "$R0\icons.exe" 1
+	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\View ChangeLog.lnk" "$INSTDIR\ChangeLog.rtf"
 
 	SetOutPath "\"
 	SetOverWrite off
@@ -280,7 +287,6 @@ SectionGroup "!core"
 	Push $R0
 	SectionIn RO
 	Call install_core_pre
-	StrCpy $5 "$WINDIR\SysWOW64"
 	SetOutPath "$INSTDIR\bin_x86_64"
 	File /x *.a bin_x86_64/*
 	File ${MINGWLIB64}/${PTHREADLIB}
@@ -295,13 +301,12 @@ SectionGroup "!core"
 	File ${MINGWLIB64}/${ICONV_LIB}
 	File ${MINGWLIB64}/${ZLIB1_LIB}
 	${DisableX64FSRedirection}
-	${IF} $R0 UserIs admin
+	${If} $R0 UserIs admin
 		FindFirst $1 $2 "$INSTDIR\bin_x86_64\*"
 		loop_64:
 			StrCmp $2 "" done_64
 			FileWrite $7 "$SYSDIR\$2$\n"
-			Rename "$SYSDIR\$2" "$SYSDIR\$2-inuse"
-			Delete "$SYSDIR\$2-inuse"
+			Delete "$SYSDIR\$2"
 			Rename "$INSTDIR\bin_x86_64\$2" "$SYSDIR\$2"
 			FindNext $1 $2
 			Goto loop_64
@@ -309,9 +314,7 @@ SectionGroup "!core"
 		FindClose $1
 		FileClose $7
 		RMDir "$INSTDIR\bin_x86_64"
-	${ELSE}
-		StrCpy $6 "$INSTDIR\bin_x86_64"
-	${ENDIF}
+	${EndIf}
 	${EnableX64FSRedirection}
         Call install_core_post
 	Pop $R0
@@ -319,6 +322,8 @@ SectionGroup "!core"
 
  Section "32 bit" bin32
 	Push $R0
+	Push $R1
+	Push $R2
 	${IfNot} ${RunningX64}
 	        Call install_core_pre
 	${Else}
@@ -339,27 +344,35 @@ SectionGroup "!core"
 	File ${MINGWLIB32}/${ICONV_LIB}
 	File ${MINGWLIB32}/${ZLIB1_LIB}
 	${IF} $R0 UserIs admin
-		FindFirst $1 $2 "$INSTDIR\bin_x86\*"
+		${If} ${RunningX64}
+			StrCpy $R0 "$WINDIR\SysWOW64"
+		${Else}
+			StrCpy $R0 "$SYSDIR"
+		${EndIf}
+		FindFirst $R1 $R2 "$INSTDIR\bin_x86\*"
 		loop_32:
-			StrCmp $2 "" done_32
-			FileWrite $7 "$5\$2$\n"
-			Rename "$5\$2" "$5\$2-inuse"
-			Delete "$5\$2-inuse"
-			Rename "$INSTDIR\bin_x86\$2" "$5\$2"
-			FindNext $1 $2
+			StrCmp $R2 "" done_32
+			FileWrite $7 "$R0\$R2$\n"
+			Rename "$INSTDIR\bin_x86\$R2" "$R0\$2"
+			FindNext $R1 $R2
 			Goto loop_32
 		done_32:
-		FindClose $1
+		FindClose $R1
 		FileClose $7
 		RMDir "$INSTDIR\bin_x86"
-	${ENDIF}
+	${EndIf}
 	${IfNot} ${RunningX64}
 		Call install_core_post
 	${EndIf}
+	Pop $R2
+	Pop $R1
 	Pop $R0
  SectionEnd ; 32 bit
  Section "add to PATH" appendpath
-	${AddToPath} "PATH" "$6"
+	Push $R0
+	${GetBinDir} $R0
+	${AddToPath} "PATH" "$R0"
+	Pop $R0
  SectionEnd
 SectionGroupEnd ; core
 
@@ -424,9 +437,12 @@ Section "java tools"
 	SectionIn 1 2
 	SetOutPath $INSTDIR/java
 	File /r java/classes
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" javaw '-cp "$INSTDIR\java\Classes\jScope.jar";"$INSTDIR\java\Classes" -Xmx1G jScope' "$6\icons.exe" 4 SW_SHOWMINIMIZED
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk"  javaw '-cp "$INSTDIR\java\Classes\jTraverser.jar" jTraverser' $6\icons.exe" 3 SW_SHOWMINIMIZED
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser2.lnk" javaw '-jar "$INSTDIR\java\Classes\jTraverser2.jar"' $6\icons.exe" 3 SW_SHOWMINIMIZED
+	Push $R0
+	${GetBinDir} $R0
+	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" javaw '-cp "$INSTDIR\java\Classes\jScope.jar";"$INSTDIR\java\Classes" -Xmx1G jScope' "$0\icons.exe" 4 SW_SHOWMINIMIZED
+	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk"  javaw '-cp "$INSTDIR\java\Classes\jTraverser.jar" jTraverser' $0\icons.exe" 3 SW_SHOWMINIMIZED
+	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser2.lnk" javaw '-jar "$INSTDIR\java\Classes\jTraverser2.jar"' $0\icons.exe" 3 SW_SHOWMINIMIZED
+	Pop $R0
 SectionEnd ; java
 
 SectionGroup /e "!APIs" apis
