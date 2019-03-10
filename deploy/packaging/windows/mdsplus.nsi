@@ -117,7 +117,7 @@ Function install_core_pre
 	${ENDIF}
 
 	SetOutPath "$INSTDIR\tdi"
-	File /r /x local /x MitDevices /x RfxDevices /x KbsiDevices tdi/*.*
+	File /r /x local /x MitDevices /x RfxDevices /x KbsiDevices /x d3d tdi/*.*
 	SetOutPath "$INSTDIR\xml"
 	File /r xml\*.*
 
@@ -340,14 +340,22 @@ SectionGroup devices devices
  SectionGroupEnd ; pydevices
 SectionGroupEnd ; devices
 
-Section "Java"
+SectionGroup "site specifics"
+ Section D3D
+	SetOutPath "$INSTDIR\tdi"
+	File /r tdi/d3d
+ SectionEnd ; D3D
+SectionGroupEnd ; site specifics"
+
+
+Section "java tools"
 	SectionIn 1 2
 	SetOutPath $INSTDIR/java
 	File /r java/classes
 	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" javaw '-cp "$INSTDIR\java\Classes\jScope.jar";"$INSTDIR\java\Classes" -Xmx1G jScope' "$6\icons.exe" 4 SW_SHOWMINIMIZED
 	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk"  javaw '-cp "$INSTDIR\java\Classes\jTraverser.jar" jTraverser' $6\icons.exe" 3 SW_SHOWMINIMIZED
 	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser2.lnk" javaw '-jar "$INSTDIR\java\Classes\jTraverser2.jar"' $6\icons.exe" 3 SW_SHOWMINIMIZED
-SectionEnd ; Java
+SectionEnd ; java
 
 SectionGroup /e "!APIs" apis
  Section "EPICS"
