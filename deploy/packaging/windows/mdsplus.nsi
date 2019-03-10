@@ -503,13 +503,17 @@ SectionGroup /e "!APIs" apis
  SectionGroupEnd ; python
 SectionGroupEnd ; APIs
 
-Section "devel"
+SectionGroup development
+ Section headers
 	SectionIn 2
 	SetOutPath "$INSTDIR\include"
 	File /r include/*.*
+ SecitonEnd ; headers
+ SectionGroup devtools
+  Section mingw
+	SectionIn 2
 	${If} ${RunningX64}
-		CreateDirectory "$INSTDIR\devtools\lib64\mingw"
-		SetOutPath "$INSTDIR\devtools\lib64\mingw"
+		SetOutPath "$INSTDIR\devtools\mingw\lib64"
 		File "/oname=mdsshr.lib" bin_x86_64/MdsShr.dll.a
 		File "/oname=treeshr.lib" bin_x86_64/TreeShr.dll.a
 		File "/oname=tdishr.lib" bin_x86_64/TdiShr.dll.a
@@ -519,19 +523,8 @@ Section "devel"
 		File "/oname=mdsobjectscppshr.lib" bin_x86_64/MdsObjectsCppShr.dll.a
 		File "/oname=mdsservershr.lib" bin_x86_64/MdsServerShr.dll.a
 		File "/oname=xtreeshr.lib" bin_x86_64/XTreeShr.dll.a
-		CreateDirectory "$INSTDIR\devtools\lib64\visual_studio"
-		SetOutPath "$INSTDIR\devtools\lib64\visual_studio"
-		File "/oname=mdsshr.lib" bin_x86_64/MdsShr.lib
-		File "/oname=treeshr.lib" bin_x86_64/TreeShr.lib
-		File "/oname=tdishr.lib" bin_x86_64/TdiShr.lib
-		File "/oname=mdsdcl.lib" bin_x86_64/Mdsdcl.lib
-		File "/oname=mdsipshr.lib" bin_x86_64/MdsIpShr.lib
-		File "/oname=mdslib.lib" bin_x86_64/MdsLib.lib
-		File "/oname=mdsobjectscppshr-vs.lib" bin_x86_64/MdsObjectsCppShr-VS.lib
-		File "/oname=mdsservershr.lib" bin_x86_64/MdsServerShr.lib
 	${EndIf}
-	CreateDirectory "$INSTDIR\devtools\lib32\mingw"
-	SetOutPath "$INSTDIR\devtools\lib32\mingw"
+	SetOutPath "$INSTDIR\devtools\mingw\lib32"
 	File "/oname=mdsshr.lib" bin_x86/MdsShr.dll.a
 	File "/oname=treeshr.lib" bin_x86/TreeShr.dll.a
 	File "/oname=tdishr.lib" bin_x86/TdiShr.dll.a
@@ -541,8 +534,21 @@ Section "devel"
 	File "/oname=mdsobjectscppshr.lib" bin_x86/MdsObjectsCppShr.dll.a
 	File "/oname=mdsservershr.lib" bin_x86/MdsServerShr.dll.a
 	File "/oname=xtreeshr.lib" bin_x86/XTreeShr.dll.a
-	CreateDirectory "$INSTDIR\devtools\lib32\visual_studio"
-	SetOutPath "$INSTDIR\devtools\lib32\visual_studio"
+  SectionEnd ; mingw
+  Section visual_studio
+	SectionIn 2
+	${If} ${RunningX64}
+		SetOutPath "$INSTDIR\devtools\visual_studio\lib64"
+		File "/oname=mdsshr.lib" bin_x86_64/MdsShr.lib
+		File "/oname=treeshr.lib" bin_x86_64/TreeShr.lib
+		File "/oname=tdishr.lib" bin_x86_64/TdiShr.lib
+		File "/oname=mdsdcl.lib" bin_x86_64/Mdsdcl.lib
+		File "/oname=mdsipshr.lib" bin_x86_64/MdsIpShr.lib
+		File "/oname=mdslib.lib" bin_x86_64/MdsLib.lib
+		File "/oname=mdsobjectscppshr-vs.lib" bin_x86_64/MdsObjectsCppShr-VS.lib
+		File "/oname=mdsservershr.lib" bin_x86_64/MdsServerShr.lib
+	${EndIf}
+	SetOutPath "$INSTDIR\devtools\visual_studio\lib32"
 	File "/oname=mdsshr.lib" bin_x86/MdsShr.lib
 	File "/oname=treeshr.lib" bin_x86/TreeShr.lib
 	File "/oname=tdishr.lib" bin_x86/TdiShr.lib
@@ -550,7 +556,9 @@ Section "devel"
 	File "/oname=mdsipshr.lib" bin_x86/mdsipshr.lib
 	File "/oname=mdslib.lib" bin_x86/MdsLib.lib
 	File "/oname=mdsservershr.lib" bin_x86/MdsServerShr.lib
-SectionEnd
+  SectionEnd ; visual_studio
+ SectionGroupEnd ; devtools
+SectionGroupEnd
 
 Section "sample trees"
 	SectionIn 2
