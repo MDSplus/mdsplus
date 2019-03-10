@@ -271,7 +271,7 @@ SectionGroup "!core"
  SectionEnd ; 32 bit
 SectionGroupEnd ; core
 
-SectionGroup devices
+SectionGroup devices devices
  SectionGroup tdi
   Section KBSI
 	SectionIn 2
@@ -349,7 +349,7 @@ Section "Java"
 	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser2.lnk" javaw '-jar "$INSTDIR\java\Classes\jTraverser2.jar"' $6\icons.exe" 3 SW_SHOWMINIMIZED
 SectionEnd ; Java
 
-SectionGroup /e "!APIs"
+SectionGroup /e "!APIs" apis
  Section "EPICS"
 	SectionIn 2
 	SetOutPath "$INSTDIR\epics"
@@ -479,28 +479,70 @@ Section "add to PATH" appendpath
 	done_path:
 SectionEnd
 
+!macro _is sec flag t f
+	FileWrite $R1 "${sec} is ${flag} ? ${t} : ${f}$\n"
+	Push `${sec}`
+	Push `${flag}`
+	Call isfun
+	Pop $0
+	StrCmp $0 "" `${f}` `${t}`
+!macroend
+Function isfun
+	Pop $1
+	Pop $0
+	!insertmacro SectionFlagIsSet $0 $1 true false
+	true:
+	Push "ok"
+	Goto done
+	false:
+	Push ""
+	done:
+FunctionEnd
+
 Function .onSelChange
+	Push $0
+	Pop $R0
 	; pydevices depend on python
-	${If} $0 == ${python_cp}
-		${IfNot} ${python_cp} SectionFlagIsSet ${SF_SELECTED}
+	${If}   $R0 == ${apis}
+	${OrIf} $R0 == ${python}
+	${OrIf} $R0 == ${python_cp}
+		${IfNot}    $R0 is ${SF_SELECTED}
+		${AndIfNot} $R0 is ${SF_PSELECTED}
 			${UnselectSection} ${python_su}
 			${UnselectSection} ${pydevices}
 		${EndIf}
-	${Else}
-		${If}   ${python_su} SectionFlagIsSet ${SF_PSELECTED}
-		${OrIf} ${pydevices} SectionFlagIsSet ${SF_PSELECTED}
-			${SelectSection} ${python_cp}
+	${ElseIf} $R0 == ${devices}
+	${OrIf}	  $R0 == ${pydevices}
+		${If}   $R0 is ${SF_SELECTED}
+		${OrIf} $R0 is ${SF_PSELECTED}
+			${ClearSectionFlag} ${pydevpath} ${SF_RO}
+			${SelectSection}    ${pydevpath}
+			${SelectSection}    ${python_cp}
+		${Else}
+			Goto lock_pydevpath
+		${EndIf}
+	${ElseIf} $R0 == ${pydevices_hts}
+	${OrIf}   $R0 == ${pydevices_mit}
+	${OrIf}   $R0 == ${pydevices_rfx}
+	${OrIf}   $R0 == ${pydevices_w7x}
+		${IfNot}    $R0 is ${SF_SELECTED}
+		${AndIfNot} ${pydevices_hts} is ${SF_SELECTED}
+		${AndIfNot} ${pydevices_mit} is ${SF_SELECTED}
+		${AndIfNot} ${pydevices_rfx} is ${SF_SELECTED}
+		${AndIfNot} ${pydevices_w7x} is ${SF_SELECTED}
+			lock_pydevpath:
+			${UnselectSection}  ${pydevpath}
+			${SetSectionFlag}   ${pydevpath} ${SF_RO}
+		${Else} ;unlock_pydevpath:
+			${ClearSectionFlag} ${pydevpath} ${SF_RO}
+			${SelectSection}    ${python_cp}
+		${EndIf}
+	${ElseIf} $R0 == ${python_su}
+		${If} $R0 is ${SF_SELECTED}
+			${SelectSection}    ${python_cp}
 		${EndIf}
 	${EndIf}
-	${If}   ${pydevices_hts} SectionFlagIsSet ${SF_SELECTED}
-	${OrIf} ${pydevices_mit} SectionFlagIsSet ${SF_SELECTED}
-	${OrIf} ${pydevices_rfx} SectionFlagIsSet ${SF_SELECTED}
-	${OrIf} ${pydevices_w7x} SectionFlagIsSet ${SF_SELECTED}
-		${ClearSectionFlag}  ${pydevpath} ${SF_RO}
-	${Else}
-		${UnselectSection} ${pydevpath}
-		${SetSectionFlag}  ${pydevpath} ${SF_RO}
-	${EndIf}
+	FileClose $R1
 FunctionEnd
 
 Function .onInit
