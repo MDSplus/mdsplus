@@ -1,1 +1,1 @@
-exec mdsdcl -prep 'set command tcl_commands -history=".tcl"' "$@"
+exec mdsdcl -prep "set command tcl_commands -history=.tcl" "$@"
