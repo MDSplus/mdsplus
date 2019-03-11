@@ -435,7 +435,7 @@ SectionGroupEnd ; site specifics"
 
 Section "java tools"
 	SectionIn 1 2
-	SetOutPath $INSTDIR/java
+	SetOutPath $INSTDIR\java
 	File /r java/classes
 	Push $R0
 	${GetBinDir} $R0
