@@ -10,18 +10,18 @@
 
 Var ISVAR
 !macro _in substr string t f
-	StrCpy $ISVAR 0
+	StrCpy $ISVAR -1
 	Push $R0 ; substr len
 	Push $R1 ; string len
 	Push $R2 ; char pos
 	Push $R3 ; tmpstr
 	Push $R4 ; substr;
 	Push $R5 ; string;
-	StrCpy $R4 "`${substr}`;"
-	StrCpy $R5 "`${string}`;"
-	FileOpen  $R0 "M:\in.log" a
+	StrCpy $R4 `${substr};`
+	StrCpy $R5 `${string};`
+	FileOpen  $R0 `$INSTDIR\in.log` a
 	FileSeek  $R0 0 END
-	FileWrite $R0 "$R4 in $R5$\n"
+	FileWrite $R0 `$R4 in $R5$\n`
 	FileClose $R0
 	StrLen $R0 $4
 	StrLen $R1 $5
@@ -30,7 +30,7 @@ Var ISVAR
 		${IfThen} $R2 >= $R1 ${|} ${ExitDo} ${|}	;Check if end of "string"
 		StrCpy $R3 $R5 $R0 $R2				;Trim "tmpstr" to len of "substr"
 		${If} $R3 == $R4				;Compare "tmpStr" with "substr"
-			StrCpy $ISVAR 1				;set found flag
+			StrCpy $ISVAR $R2			;set found flag
 			${ExitDo}
 		${EndIf}
 		IntOp $R2 $R2 + 1				;If not, continue the loop
@@ -41,7 +41,7 @@ Var ISVAR
 	Pop $R2
 	Pop $R1
 	Pop $R0
-	StrCmp $ISVAR 0 `${t}` `${f}`
+	IntCmp $ISVAR 0 `${t}` `${f}` `${t}`
 !macroend ; _in
 
 !macro _is sec flag t f
@@ -54,7 +54,7 @@ Var ISVAR
 	Pop $ISVAR
 	Pop $1
 	Pop $0
-	StrCmp $ISVAR 0 `${f}` `${t}`
+	IntCmp $ISVAR 0 `${f}` `${t}` `${t}`
 !macroend ; _is
 Function isfun
 	!insertmacro SectionFlagIsSet $0 $1 true false
