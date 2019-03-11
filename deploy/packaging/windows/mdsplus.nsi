@@ -591,12 +591,14 @@ Section "java tools" java
 	SectionIn 1 2
 	SetOutPath $INSTDIR\java
 	File /r java/classes
-	Push $R0
-	${GetBinDir} $R0
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" javaw '-cp "$INSTDIR\java\classes\jScope.jar";"$INSTDIR\java\Classes" -Xmx1G jScope' "$0\icons.exe" 4 SW_SHOWMINIMIZED
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk"  javaw '-cp "$INSTDIR\java\classes\jTraverser.jar" jTraverser' $0\icons.exe" 3 SW_SHOWMINIMIZED
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser2.lnk" javaw '-jar "$INSTDIR\java\classes\jTraverser2.jar"' $0\icons.exe" 3 SW_SHOWMINIMIZED
-	Pop $R0
+	!insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+		Push $R0
+		${GetBinDir} $R0
+		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Scope.lnk"      javaw '-cp "$INSTDIR\java\classes\jScope.jar";"$INSTDIR\java\Classes" -Xmx1G jScope' "$R0\icons.exe" 4 SW_SHOWMINIMIZED
+		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Traverser.lnk"  javaw '-cp "$INSTDIR\java\classes\jTraverser.jar" jTraverser' $R0\icons.exe" 3 SW_SHOWMINIMIZED
+		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Traverser2.lnk" javaw '-jar "$INSTDIR\java\classes\jTraverser2.jar"' $R0\icons.exe" 3 SW_SHOWMINIMIZED
+		Pop $R0
+	!insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd ; java
 
 SectionGroup /e "!APIs" apis
