@@ -53,7 +53,7 @@ Name "MDSplus${FLAVOR} ${MAJOR}.${MINOR}-${RELEASE}"
 Icon mdsplus.ico
 UninstallIcon mdsplus.ico
 
-RequestExecutionLevel highest
+RequestExecutionLevel user ; highest
 OutFile ${OUTDIR}/MDSplus${FLAVOR}-${MAJOR}.${MINOR}-${RELEASE}.exe
 !define HELPURL "mailto:mdsplus@psfc.mit.edu" # "Support Information" link
 !define UPDATEURL "http://www.mdsplus.org" # "Product Updates" link
