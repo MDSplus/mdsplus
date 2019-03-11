@@ -48,7 +48,7 @@ Var ISVAR
 	IntOp  $R1 $R1 - $R0
 	StrCpy $R2 0				;init char pos
 	${Do}					;Loop until "substr" is found or "string" reaches its end
-		${If} $R2 >= $R1
+		${If} $R2 > $R1
 			${ToLog} `not found "$0" $ISVAR$\n`
 			${ExitDo} ;Check if end of "string"
 		${EndIf}
@@ -193,6 +193,7 @@ ${UnStrTrimNewLines}
 !define DeleteKey '!insertmacro "DeleteKey"'
 
 !macro DeleteEnv name
+	${ToLog} `DEL "${name}"$\n`
 	Push $R0
 	${If} $R0 UserIs admin
 		Pop $R0
@@ -205,6 +206,7 @@ ${UnStrTrimNewLines}
 !define DeleteEnv '!insertmacro "DeleteEnv"'
 
 !macro WriteEnv name value
+	${ToLog} `SET "${name}"="${value}"$\n`
 	Push $R0
 	${If} $R0 UserIs admin
 		Pop $R0
@@ -222,25 +224,9 @@ ${UnStrTrimNewLines}
 	${Else}
 		ReadRegStr ${var} HKCU "${ENVREG_USR}" `${name}`
 	${EndIf}
+	${ToLog} `GET "${name}"="${var}"$\n`
 !macroend ; ReadEnv
 !define ReadEnv '!insertmacro "ReadEnv"'
-
-!macro VerifyUserIsAdmin
-	Push $R0
-	${If} $R0 UserIs admin
-	        SetShellVarContext all
-	        ${If} ${RunningX64}
-			StrCpy $INSTDIR $PROGRAMFILES64\MDSplus
-	        ${Else}
-			StrCpy $INSTDIR $PROGRAMFILES32\MDSplus
-	        ${EndIf}
-	${Else}
-		SetShellVarContext current
-		StrCpy $INSTDIR $PROFILE\MDSplus
-	${EndIf}
-	Pop $R0
-!macroend
-!define VerifyUserIsAdmin '!insertmacro "VerifyUserIsAdmin"'
 
 !macro FileLowerExt pathin extin pathout extout
 	; exchange ok because callers dont use vars
@@ -293,11 +279,15 @@ Function AddToEnv ; name value
 	${ReadEnv} $R0 `$0`
 	${If} `$R0` == ""
 		${WriteEnv} `$0` `$1`
-	${ElseIfNot} `$1;` in `$R0;`
-		${ToLog} `$1 not found $ISVAR$\n`
-		${WriteEnv} `$0` `$R0;$1`
-	${Else}
-		${ToLog} `$1 found $ISVAR$\n`
+	${ElseIfNot} `;$1;` in `;$R0;`
+		Push $R1
+		StrCpy $R1 $R0 1 -1
+		${If} `$R1` == ";" ; preserve tailing ;
+			${WriteEnv} `$0` `$R0$1;`
+		${Else}
+			${WriteEnv} `$0` `$R0;$1`
+		${EndIf}
+		Pop $R1
 	${EndIf}
 	Pop $R0
 FunctionEnd ; AddToEnv
@@ -315,29 +305,39 @@ FunctionEnd ; AddToEnv
 !macroend ; RemoveFromEnv
 Function un.RemoveFromEnv ; name value
 	Push $R0
-	Push $R1
 	${ReadEnv} $R0 `$0`
 	${If}   `$R0` == ""
 	${OrIf} `$R0` == `$1`
 	${OrIf} `$R0` == `$1;`
-		${ToLog} `$1 is only$\n`
 		${DeleteEnv} `$0`
-	${ElseIf} `$1;` in `$R0;`
-		${ToLog} `$1 found $ISVAR$\n`
-		StrLen $R1 $1
-		IntOp  $R1 $R1 + 1
-		StrLen $R2 $R0
-		${If} $ISVAR == 0
-			StrCpy $R0 $R0 $R2 $R1
-		${Else}
-			IntOp  $R1 $R1 + $ISVAR
-			StrCpy $R0 $R0 $R2 $R1
-		${EndIf}
-		${WriteEnv} `$0` `$R0`
 	${Else}
-		${ToLog} `$1 not found $ISVAR$\n`
+		Push $R1
+		Push $R2
+		Push $R3
+		StrLen $R1 $1
+		${If} `;$1;` in `;$R0;`
+			${Do}
+				${ToLog} `$1 found $ISVAR$\n`
+				${If} $ISVAR == 0 ; remove <value>;
+					StrLen $R2 $R0
+					IntOp  $ISVAR $R1 + 1
+					StrCpy $R0 $R0 $R2 $ISVAR	; post
+				${Else} ; remove ;<value>
+					IntOp  $R2 $ISVAR - 1
+					StrCpy $R3 $R0 $R2		; pre
+					IntOp  $ISVAR $R1 + $ISVAR	; off post
+					StrLen $R2 $R0
+					StrCpy $R0 $R0 $R2 $ISVAR	; post
+					StrCpy $R0 `$R3$R0`		; strcat
+				${EndIf}
+				${IfNotThen} `;$1;` in `;$R0;` ${|} ${ExitDo} ${|}
+			${Loop}
+			${WriteEnv} `$0` `$R0`
+		${EndIf}
+		Pop $R3
+		Pop $R2
+		Pop $R1
 	${EndIf}
-	Pop $R1
 	Pop $R0
 FunctionEnd ; RemoveFromEnv
 !define RemoveFromEnv '!insertmacro "RemoveFromEnv"'
@@ -729,11 +729,24 @@ Function .onInit
 		SectionSetInstTypes ${bin32} 7 ; always include 32bit
 		SectionSetInstTypes ${bin64} 0 ; never include 64bit
 	${EndIf}
-	${VerifyUserIsAdmin}
 	${If} $R0 UserIs admin
+		SetShellVarContext all
+		ReadRegStr $INSTDIR HKLM "${ENVREG_ALL}" MDSPLUS_DIR
+		${If} `$INSTDIR` == ""
+			${If} ${RunningX64}
+				StrCpy $INSTDIR $PROGRAMFILES64\MDSplus
+			${Else}
+				StrCpy $INSTDIR $PROGRAMFILES32\MDSplus
+			${EndIf}
+		${EndIf}
 		ReadRegStr $R0 HKLM ${UNINSTALL_KEY} ${UNINSTALL_VAL}
 		SectionSetFlags ${appendpath} ${SF_RO}
 	${Else}
+		SetShellVarContext current
+		ReadRegStr $INSTDIR HKCU "${ENVREG_USR}" MDSPLUS_DIR
+		${If} $INSTDIR == ""
+			StrCpy $INSTDIR $PROFILE\MDSplus
+		${EndIf}
 		ReadRegStr $R0 HKCU ${UNINSTALL_KEY} ${UNINSTALL_VAL}
 		SectionSetInstTypes ${appendpath} 7 ; always include on user level
 		SectionSetFlags ${appendpath} ${SF_SELECTED}
@@ -763,7 +776,6 @@ Function un.onInit
 	MessageBox MB_OKCANCEL "Permanantly remove MDSplus${FLAVOR}?" IDOK next
 		Abort
 	next:
-	${VerifyUserIsAdmin}
 functionEnd
 
 Function un.onGUIEnd
@@ -781,8 +793,8 @@ Section "uninstall"
 	skip_python_remove:
 	SetOutPath "$INSTDIR"
 	Delete uninstall.exe
-	RMDir /r "$SMPROGRAMS\MDSplus${FLAVOR}"
 	${IF} $R0 UserIs admin
+		SetShellVarContext all
 		nsExec::ExecToLog /OEM /timeout=5000 '"$SYSDIR\mdsip_service.exe" "-r -p 8100"'
 		Pop $R0
 		nsExec::ExecToLog /OEM /timeout=5000 '"$SYSDIR\mdsip_service.exe" "-r -p 8000"'
@@ -800,9 +812,11 @@ Section "uninstall"
 		${EnableX64FSRedirection}
 		Delete installer.dat
 	${Else}
+		SetShellVarContext current
 		${GetBinDir} $R0
 		${RemoveFromEnv}	PATH			"$R0"
 	${EndIf}
+	RMDir /r "$SMPROGRAMS\MDSplus${FLAVOR}"
 	${DeleteEnv}		MDSPLUS_DIR
 	${RemoveFromEnv}	MDS_PATH		"${MDS_PATH}"
 	${RemoveFromEnv}	main_path		"${main_path}"
