@@ -583,12 +583,12 @@ Section "java tools"
 SectionEnd ; java
 
 SectionGroup /e "!APIs" apis
- Section "EPICS"
+ Section EPICS
 	SectionIn 2
 	SetOutPath "$INSTDIR\epics"
 	File /r epics/*
  SectionEnd ; EPICS
- Section "IDL"
+ Section IDL
 	SectionIn 2
 	SetOutPath "$INSTDIR\idl"
 	File /r idl/*
@@ -596,26 +596,32 @@ SectionGroup /e "!APIs" apis
  SectionGroup "LabView"
   Section "!LV2017 (17.0)"
 	SectionIn 2
-	SetOutPath "$INSTDIR\LabView\LV2017\MDSplus"
-	File /r LabView/MDSplus/*
-  SectionEnd ; LV2010
-  Section "LV2015 (15.0)"
-	SectionIn 2
-	SetOutPath "$INSTDIR\LabView\LV2015\MDSplus"
-	File /r LabView/MDSplus_LV2015/*
+	SetOutPath "$INSTDIR\LabView"
+	File /r LabView/MDSplus
+  SectionEnd ; LV2017
+  Section "LV2015 (15.0) via github"
+	MessageBox MB_OK "Older versions of the LabView plugins are available on GitHub.$\n\
+	https://github.com/MDSplus/mdsplus/tree/${BRANCH}/mdsobjects/labview/MDSplus_LV2015"
+;	SectionIn 2
+;	SetOutPath "$INSTDIR\LabView\LV2015\MDSplus"
+;	File /r LabView/MDSplus_LV2015/*
   SectionEnd ; LV2015
-  Section "LV2012 (12.0)"
-	SectionIn 2
-	SetOutPath "$INSTDIR\LabView\LV2012\MDSplus"
-	File /r LabView/MDSplus_LV2012/*
+  Section "LV2012 (12.0) via github"
+	MessageBox MB_OK "Older versions of the LabView plugins are available on GitHub.$\n\
+	https://github.com/MDSplus/mdsplus/tree/${BRANCH}/mdsobjects/labview/MDSplus_LV2012"
+;	SectionIn 2
+;	SetOutPath "$INSTDIR\LabView\LV2012\MDSplus"
+;	File /r LabView/MDSplus_LV2012/*
   SectionEnd ; LV2012
-  Section "LV2000 (<=6.0)"
-	SectionIn 2
-	SetOutPath "$INSTDIR\LabView\LV2000\MDSplus"
-	File LabView/*.vi
+  Section "LV2001 (<=6.1) via github"
+	MessageBox MB_OK "Older versions of the LabView plugins are available on GitHub.$\n\
+	https://github.com/MDSplus/mdsplus/tree/${BRANCH}/LabView"
+;	SectionIn 2
+;	SetOutPath "$INSTDIR\LabView\LV2000\MDSplus"
+;	File LabView/*.vi
   SectionEnd ; LV2000
  SectionGroupEnd ; LabView
- Section "MATLAB"
+ Section MATLAB
 	SectionIn 2
 	SetOutPath "$INSTDIR\matlab"
 	File /r matlab/*
