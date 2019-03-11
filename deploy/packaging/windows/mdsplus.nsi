@@ -19,8 +19,8 @@ Var ISVAR
 	Push $R5 ; string;
 	StrCpy $R4 "`${substr}`;"
 	StrCpy $R5 "`${string}`;"
-	FileOpen  $R0 "in" a
-	FileSeek  $R0 0 End
+	FileOpen  $R0 "M:\in.log" a
+	FileSeek  $R0 0 END
 	FileWrite $R0 "$R4 in $R5$\n"
 	FileClose $R0
 	StrLen $R0 $4
@@ -198,6 +198,50 @@ ${UnStrTrimNewLines}
 !macroend
 !define VerifyUserIsAdmin '!insertmacro "VerifyUserIsAdmin"'
 
+!macro FileLowerExt pathin extin pathout extout
+	Push ${pathout}
+	Exch $0
+	Push ${extin}
+	Exch $1
+	Push ${extout}
+	Exch $2
+	SetOutPath "${pathout}"
+	File "${pathin}/*${extin}"
+	Call FileLowerExt
+	Pop $2
+	Pop $1
+	Pop $0
+!macroend ; FileLowerExt
+Function FileLowerExt ; path extin extout
+	Push $R0		; find handle
+	Push $R1		; source file name
+	Push $R2
+	StrLen $R2 $1
+	IntOp $R2 0 - $R2	; - len of extin
+	FindFirst $R0 $R1 "$0\*$1"
+	${Do}
+		${IfThen} $R1 == "" ${|} ${ExitDo} ${|}
+		StrCpy $1 $R1 $R2	; remove 'extin'
+		System::Call "User32::CharLowerA(t r1 r1)t"
+		Rename "$0\$R1" "$0\$1$2"
+		FindNext $R0 $R1
+	${Loop}
+	FindClose $R0
+	Pop $R2
+	Pop $R1
+	Pop $R0
+FunctionEnd ; FileLowerExt
+!define FileLowerExt '!insertmacro "FileLowerExt"'
+
+!macro AddToPath name value
+	Push ${name}
+	Exch $0
+	Push ${value}
+	Exch $1
+	Call AddToPath
+	Pop $1
+	Pop $0
+!macroend ; AddToPath
 Function AddToPath ; name value
 	Push $R0
 	${ReadEnv} $R0 "$0"
@@ -208,16 +252,6 @@ Function AddToPath ; name value
 	${EndIf}
 	Pop $R0
 FunctionEnd ; AddToPath
-
-!macro AddToPath name value
-	Push `${name}`
-	Exch $0
-	Push `${value}`
-	Exch $1
-	Call AddToPath
-	Pop $1
-	Pop $0
-!macroend ; AddToPath
 !define AddToPath '!insertmacro "AddToPath"'
 
 !macro GetBinDir var
@@ -297,7 +331,7 @@ SectionGroup "!core"
 	SectionIn RO
 	Call install_core_pre
 	SetOutPath "$INSTDIR\bin_x86_64"
-	File /x *.a bin_x86_64/*
+	File /x *.a /x *.lib bin_x86_64/*
 	File ${MINGWLIB64}/${PTHREADLIB}
 	File ${MINGWLIB64}/${DLLIB}
 	File ${MINGWLIB64}/${READLINELIB}
@@ -524,53 +558,20 @@ SectionGroup development
 	File /r include/*
  SectionEnd ; headers
  SectionGroup devtools
-  Section mingw
+  Section MinGW
 	SectionIn 2
 	${If} ${RunningX64}
-		SetOutPath "$INSTDIR\devtools\mingw\lib64"
-		File "/oname=mdsshr.lib" bin_x86_64/MdsShr.dll.a
-		File "/oname=treeshr.lib" bin_x86_64/TreeShr.dll.a
-		File "/oname=tdishr.lib" bin_x86_64/TdiShr.dll.a
-		File "/oname=mdsdcl.lib" bin_x86_64/Mdsdcl.dll.a
-		File "/oname=mdsipshr.lib" bin_x86_64/MdsIpShr.dll.a
-		File "/oname=mdslib.lib" bin_x86_64/MdsLib.dll.a
-		File "/oname=mdsobjectscppshr.lib" bin_x86_64/MdsObjectsCppShr.dll.a
-		File "/oname=mdsservershr.lib" bin_x86_64/MdsServerShr.dll.a
-		File "/oname=xtreeshr.lib" bin_x86_64/XTreeShr.dll.a
+		${FileLowerExt} bin_x86_64 .dll.a "$INSTDIR\devtools\mingw\lib64" .lib
 	${EndIf}
-	SetOutPath "$INSTDIR\devtools\mingw\lib32"
-	File "/oname=mdsshr.lib" bin_x86/MdsShr.dll.a
-	File "/oname=treeshr.lib" bin_x86/TreeShr.dll.a
-	File "/oname=tdishr.lib" bin_x86/TdiShr.dll.a
-	File "/oname=mdsdcl.lib" bin_x86/Mdsdcl.dll.a
-	File "/oname=mdsipshr.lib" bin_x86/MdsIpShr.dll.a
-	File "/oname=mdslib.lib" bin_x86/MdsLib.dll.a
-	File "/oname=mdsobjectscppshr.lib" bin_x86/MdsObjectsCppShr.dll.a
-	File "/oname=mdsservershr.lib" bin_x86/MdsServerShr.dll.a
-	File "/oname=xtreeshr.lib" bin_x86/XTreeShr.dll.a
-  SectionEnd ; mingw
-  Section visual_studio
+	${FileLowerExt} bin_x86 .dll.a "$INSTDIR\devtools\mingw\lib32" .lib
+  SectionEnd ; MinGW
+  Section "Visual Studio"
 	SectionIn 2
 	${If} ${RunningX64}
-		SetOutPath "$INSTDIR\devtools\visual_studio\lib64"
-		File "/oname=mdsshr.lib" bin_x86_64/MdsShr.lib
-		File "/oname=treeshr.lib" bin_x86_64/TreeShr.lib
-		File "/oname=tdishr.lib" bin_x86_64/TdiShr.lib
-		File "/oname=mdsdcl.lib" bin_x86_64/Mdsdcl.lib
-		File "/oname=mdsipshr.lib" bin_x86_64/MdsIpShr.lib
-		File "/oname=mdslib.lib" bin_x86_64/MdsLib.lib
-		File "/oname=mdsobjectscppshr-vs.lib" bin_x86_64/MdsObjectsCppShr-VS.lib
-		File "/oname=mdsservershr.lib" bin_x86_64/MdsServerShr.lib
+		${FileLowerExt} bin_x86_64 .lib "$INSTDIR\devtools\visual_studio\lib64" .lib
 	${EndIf}
-	SetOutPath "$INSTDIR\devtools\visual_studio\lib32"
-	File "/oname=mdsshr.lib" bin_x86/MdsShr.lib
-	File "/oname=treeshr.lib" bin_x86/TreeShr.lib
-	File "/oname=tdishr.lib" bin_x86/TdiShr.lib
-	File "/oname=mdsdcl.lib" bin_x86/mdsdcl.lib
-	File "/oname=mdsipshr.lib" bin_x86/mdsipshr.lib
-	File "/oname=mdslib.lib" bin_x86/MdsLib.lib
-	File "/oname=mdsservershr.lib" bin_x86/MdsServerShr.lib
-  SectionEnd ; visual_studio
+	${FileLowerExt} bin_x86 .lib "$INSTDIR\devtools\visual_studio\lib32" .lib
+  SectionEnd ; Visual Studio
  SectionGroupEnd ; devtools
 SectionGroupEnd
 
