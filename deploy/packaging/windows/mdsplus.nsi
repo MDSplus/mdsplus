@@ -563,6 +563,7 @@ SectionGroupEnd ; devices
 
 SectionGroup "site specifics"
  Section D3D
+	SectionIn 2
 	SetOutPath "$INSTDIR\tdi"
 	File /r tdi/d3d
  SectionEnd ; D3D
