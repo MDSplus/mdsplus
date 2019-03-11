@@ -594,26 +594,26 @@ SectionGroup /e "!APIs" apis
 	File /r idl/*
  SectionEnd ; IDL
  SectionGroup "LabView"
-  Section "LV 5/6 (1998-2000)"
+  Section "!LV2017 (17.0)"
 	SectionIn 2
-	SetOutPath "$INSTDIR\LabView\MDSplus"
-	File LabView/*.vi
-  SectionEnd ; LV 5/6 (1998-2000)
-  Section "LV2010"
-	SectionIn 2
-	SetOutPath "$INSTDIR\LabView\MDSplus_LV2010"
+	SetOutPath "$INSTDIR\LabView\LV2017\MDSplus"
 	File /r LabView/MDSplus/*
   SectionEnd ; LV2010
-  Section "LV2012"
+  Section "LV2015 (15.0)"
 	SectionIn 2
-	SetOutPath "$INSTDIR\LabView"
-	File /r LabView/MDSplus_LV2012
-  SectionEnd ; LV2012
-  Section "LV2015"
-	SectionIn 2
-	SetOutPath "$INSTDIR\LabView"
-	File /r LabView/MDSplus_LV2015
+	SetOutPath "$INSTDIR\LabView\LV2015\MDSplus"
+	File /r LabView/MDSplus_LV2015/*
   SectionEnd ; LV2015
+  Section "LV2012 (12.0)"
+	SectionIn 2
+	SetOutPath "$INSTDIR\LabView\LV2012\MDSplus"
+	File /r LabView/MDSplus_LV2012/*
+  SectionEnd ; LV2012
+  Section "LV2000 (<=6.0)"
+	SectionIn 2
+	SetOutPath "$INSTDIR\LabView\LV2000\MDSplus"
+	File LabView/*.vi
+  SectionEnd ; LV2000
  SectionGroupEnd ; LabView
  Section "MATLAB"
 	SectionIn 2
