@@ -15,19 +15,29 @@ Var ISVAR
 	Push $R1 ; string len
 	Push $R2 ; char pos
 	Push $R3 ; tmpstr
-	StrLen $R0 $0
-	StrLen $R1 $1
+	Push $R4 ; substr;
+	Push $R5 ; string;
+	StrCpy $R4 "`${substr}`;"
+	StrCpy $R5 "`${string}`;"
+	FileOpen  $R0 "in" a
+	FileSeek  $R0 0 End
+	FileWrite $R0 "$R4 in $R5$\n"
+	FileClose $R0
+	StrLen $R0 $4
+	StrLen $R1 $5
 	StrCpy $R2 0				;init char pos
 	${Do}					;Loop until "substr" is found or "string" reaches its end
 		${IfThen} $R2 >= $R1 ${|} ${ExitDo} ${|}	;Check if end of "string"
-		StrCpy $R3 `${string}` $R0 $R2			;Trim "tmpstr" to len of "substr"
-		${If} $R3 == `${substr}`			;Compare "tmpStr" with "substr"
+		StrCpy $R3 $R5 $R0 $R2				;Trim "tmpstr" to len of "substr"
+		${If} $R3 == $R4				;Compare "tmpStr" with "substr"
 			StrCpy $ISVAR 1				;set found flag
 			${ExitDo}
 		${EndIf}
 		IntOp $R2 $R2 + 1				;If not, continue the loop
 	${Loop}
-	Pop $R3 ; cleanup
+	Pop $R5 ; cleanup
+	Pop $R4
+	Pop $R3
 	Pop $R2
 	Pop $R1
 	Pop $R0
