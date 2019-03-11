@@ -134,6 +134,9 @@ OutFile ${OUTDIR}/MDSplus${FLAVOR}-${MAJOR}.${MINOR}-${RELEASE}.exe
 !define UNINSTALL_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus"
 !define UNINSTALL_VAL "UninstallString"
 
+!define BINDIR32		"$INSTDIR\bin32"
+!define BINDIR64		"$INSTDIR\bin64"
+
 !define MDSPLUS_DIR		"$INSTDIR"
 !define MDS_PATH		"$INSTDIR\tdi"
 !define MDS_PYDEVICE_PATH	"$INSTDIR\pydevices"
@@ -344,9 +347,9 @@ FunctionEnd ; RemoveFromEnv
 	${If} ${var} UserIs admin
 		StrCpy ${var} "$SYSDIR"
 	${ElseIf} ${RunningX64}
-		StrCpy ${var} "$INSTDIR\bin_x86_64"
+		StrCpy ${var} "${BINDIR64}"
 	${Else}
-		StrCpy ${var} "$INSTDIR\bin_x86"
+		StrCpy ${var} "${BINDIR32}"
 	${EndIf}
 !macroend
 !define GetBinDir '!insertmacro "GetBinDir"'
@@ -416,8 +419,8 @@ SectionGroup "!core"
 	Push $R2
 	SectionIn RO
 	Call install_core_pre
-	SetOutPath "$INSTDIR\bin_x86_64"
-	File /x *.a /x *.lib bin_x86_64/*
+	SetOutPath "${BINDIR64}"
+	File /x *.a /x *.lib /x build_test.exe bin_x86_64/*
 	File ${MINGWLIB64}/${PTHREADLIB}
 	File ${MINGWLIB64}/${DLLIB}
 	File ${MINGWLIB64}/${READLINELIB}
@@ -432,18 +435,18 @@ SectionGroup "!core"
 	${DisableX64FSRedirection}
 	${If} $R0 UserIs admin
 		FileOpen $R0 "$INSTDIR\installer.dat" w
-		FindFirst $R1 $R2 "$INSTDIR\bin_x86_64\*"
+		FindFirst $R1 $R2 "${BINDIR64}\*"
 		loop_64:
 			StrCmp $R2 "" done_64
 			FileWrite $R0 "$SYSDIR\$R2$\n"
 			Delete "$SYSDIR\$R2"
-			Rename "$INSTDIR\bin_x86_64\$R2" "$SYSDIR\$R2"
+			Rename "${BINDIR64}\$R2" "$SYSDIR\$R2"
 			FindNext $R1 $R2
 			Goto loop_64
 		done_64:
 		FindClose $R1
 		FileClose $R0
-		RMDir "$INSTDIR\bin_x86_64"
+		RMDir "${BINDIR64}"
 	${EndIf}
 	${EnableX64FSRedirection}
         Call install_core_post
@@ -460,8 +463,8 @@ SectionGroup "!core"
 	${IfNot} ${RunningX64}
 	        Call install_core_pre
 	${EndIf}
-	SetOutPath "$INSTDIR\bin_x86"
-	File /x *.a /x *.lib bin_x86/*
+	SetOutPath "${BINDIR32}"
+	File /x *.a /x *.lib /x build_test.exe bin_x86/*
 	File ${MINGWLIB32}/${PTHREADLIB}
 	File ${MINGWLIB32}/${GCC_S_SJLJ_LIB}
 	File ${MINGWLIB32}/${DLLIB}
@@ -482,17 +485,16 @@ SectionGroup "!core"
 			StrCpy $R3 "$SYSDIR"
 			FileOpen $R0 "$INSTDIR\installer.dat" w
 		${EndIf}
-		FindFirst $R1 $R2 "$INSTDIR\bin_x86\*"
-		loop_32:
-			StrCmp $R2 "" done_32
+		FindFirst $R1 $R2 "${BINDIR32}\*"
+		${Do}
+			${IfThen} $R2 == "" ${|} ${ExitDo} ${|}
 			FileWrite $R0 "$R3\$R2$\n"
-			Rename "$INSTDIR\bin_x86\$R2" "$R3\$R2"
+			Rename "${BINDIR32}\$R2" "$R3\$R2"
 			FindNext $R1 $R2
-			Goto loop_32
-		done_32:
+		${Loop}
 		FindClose $R1
 		FileClose $R0
-		RMDir "$INSTDIR\bin_x86"
+		RMDir "${BINDIR32}"
 	${EndIf}
 	${IfNot} ${RunningX64}
 		Call install_core_post
