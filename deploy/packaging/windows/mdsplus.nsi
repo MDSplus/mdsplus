@@ -1,13 +1,38 @@
+Name   "MDSplus${FLAVOR} ${MAJOR}.${MINOR}-${RELEASE}"
+OutFile ${OUTDIR}/MDSplus${FLAVOR}-${MAJOR}.${MINOR}-${RELEASE}.exe
+
+!include "MUI2.nsh"
+!define MUI_ABORTWARNING
+!define MUI_COMPONENTSPAGE_SMALLDESC
+!define MUI_ICON mdsplus.ico
+!define MUI_UnICON mdsplus.ico
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER "MDSplus"
+!define MUI_FINISHPAGE_LINK "mdsplus.org"
+!define MUI_FINISHPAGE_LINK_LOCATION "http://mdsplus.org"
+
+ShowInstDetails show
+
 !include Sections.nsh
 !include LogicLib.nsh
 !include x64.nsh
 !include StrFunc.nsh
 !include WinMessages.nsh
+
+SetCompressor /FINAL LZMA
+
+Var StartMenuFolder
+!insertmacro MUI_PAGE_LICENSE "MDSplus-License.rtf"
+!insertmacro MUI_PAGE_DIRECTORY
+!insertmacro MUI_PAGE_COMPONENTS
+!insertmacro MUI_PAGE_STARTMENU "Application" $StartMenuFolder
+!insertmacro MUI_PAGE_INSTFILES
+
+!insertmacro MUI_LANGUAGE "English"
+
 !define SelectSection    '!insertmacro "SelectSection"'
 !define UnselectSection  '!insertmacro "UnselectSection"'
 !define ClearSectionFlag '!insertmacro "ClearSectionFlag"'
 !define SetSectionFlag   '!insertmacro "SetSectionFlag"'
-
 ;Var LOG
 !macro ToLog line
 ;	Push `${line}`
@@ -102,14 +127,9 @@ FunctionEnd
 InstType "Typical" 
 InstType "Full"
 InstType "Minimal"
-SetCompressor /FINAL LZMA
 
-Name "MDSplus${FLAVOR} ${MAJOR}.${MINOR}-${RELEASE}"
-Icon mdsplus.ico
-UninstallIcon mdsplus.ico
 
 RequestExecutionLevel user ; highest
-OutFile ${OUTDIR}/MDSplus${FLAVOR}-${MAJOR}.${MINOR}-${RELEASE}.exe
 !define HELPURL "mailto:mdsplus@psfc.mit.edu" # "Support Information" link
 !define UPDATEURL "http://www.mdsplus.org" # "Product Updates" link
 !define ABOUTURL "http://www.mdsplus.org" # "Publisher" link
@@ -143,12 +163,6 @@ OutFile ${OUTDIR}/MDSplus${FLAVOR}-${MAJOR}.${MINOR}-${RELEASE}.exe
 !define PYTHONPATH		"$INSTDIR\python"
 !define main_path		"$INSTDIR\trees"
 !define subtree_path		"$INSTDIR\trees\subtree"
-
-LicenseData "MDSplus-License.rtf"
-Page license
-Page directory
-Page components /ENABLECANCEL
-Page instfiles
 
 ${UnStrTrimNewLines} 
 
@@ -356,8 +370,22 @@ FunctionEnd ; RemoveFromEnv
 
 Function install_core_pre
 	Push $R0
+	!insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+	CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
+	${If} $R0 UserIs admin
+		CreateDirectory "$SMPROGRAMS\$StartMenuFolder\DataServer"
+		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Install mdsip action server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\mdsip.hosts$\""
+		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Install mdsip data server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-i -p 8000 -h $\"C:\mdsip.hosts$\""
+		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Remove mdsip server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8100"
+		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Remove mdsip server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8000"
+	${EndIf}
+	${GetBinDir} $R0
+	CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\Tdi.lnk" "$R0\tditest.exe" "" "$R0\icons.exe" 0
+	CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\TCL.lnk" "$R0\mdsdcl" `-prep 'set command tcl_commands -history=".tcl"'` "$R0\icons.exe" 1
+	;CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\View ChangeLog.lnk" "$INSTDIR\ChangeLog.rtf"
+	!insertmacro MUI_STARTMENU_WRITE_END
 	SetOutPath "$INSTDIR"
-	File "/oname=ChangeLog.rtf" ChangeLog
+	;File "/oname=ChangeLog.rtf" ChangeLog
 	File ${srcdir}/mdsplus.ico
 	File ${srcdir}/MDSplus-License.rtf
 	writeUninstaller "$INSTDIR\uninstall.exe"
@@ -372,24 +400,10 @@ FunctionEnd
 
 Function install_core_post
 	Push $R0
-	${If} $R0 UserIs admin
-		CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer"
-		CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip action server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\mdsip.hosts$\""
-		CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip data server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-i -p 8000 -h $\"C:\mdsip.hosts$\""
-		CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8100"
-		CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8000"
-	${EndIf}
-	${GetBinDir} $R0
-	CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}"
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Tdi.lnk" "$R0\tditest.exe" "" "$R0\icons.exe" 0
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" '"$R0\mdsdcl"' '-prep "set command tcl"' "$R0\icons.exe" 1
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\View ChangeLog.lnk" "$INSTDIR\ChangeLog.rtf"
-
 	SetOutPath "\"
 	SetOverWrite off
 	File etc\mdsip.hosts
 	SetOverWrite on
-
 	# Registry information for add/remove programs
 	${WriteKeyStr} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayName" "MDSplus${FLAVOR}"
 	${WriteKeyStr} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "UninstallString" "$INSTDIR\uninstall.exe"
@@ -412,7 +426,7 @@ Function install_core_post
 	Pop $R0
 FunctionEnd
 
-SectionGroup "!core"
+SectionGroup "!core" core
  Section "64 bit" bin64
 	Push $R0
 	Push $R1
@@ -446,6 +460,7 @@ SectionGroup "!core"
 		done_64:
 		FindClose $R1
 		FileClose $R0
+		SetOutPath "$INSTDIR"
 		RMDir "${BINDIR64}"
 	${EndIf}
 	${EnableX64FSRedirection}
@@ -494,6 +509,7 @@ SectionGroup "!core"
 		${Loop}
 		FindClose $R1
 		FileClose $R0
+		SetOutPath "$INSTDIR"
 		RMDir "${BINDIR32}"
 	${EndIf}
 	${IfNot} ${RunningX64}
@@ -515,7 +531,7 @@ SectionGroup "!core"
 SectionGroupEnd ; core
 
 SectionGroup devices devices
- SectionGroup tdi
+ SectionGroup tdi tdidevices
   Section KBSI
 	SectionIn 2
 	SetOutPath "$INSTDIR\tdi"
@@ -532,7 +548,7 @@ SectionGroup devices devices
 	File /r tdi/RfxDevices
   SectionEnd ; RFX
  SectionGroupEnd ; tdi
- SectionGroup "pydevices" pydevices
+ SectionGroup pydevices pydevices
   Section HTS pydevices_hts
 	SectionIn 2
 	SetOutPath "$INSTDIR\pydevices\HtsDevices"
@@ -564,66 +580,63 @@ SectionGroup devices devices
 SectionGroupEnd ; devices
 
 SectionGroup "site specifics"
- Section D3D
+ Section D3D d3d
 	SectionIn 2
 	SetOutPath "$INSTDIR\tdi"
 	File /r tdi/d3d
  SectionEnd ; D3D
 SectionGroupEnd ; site specifics"
 
-
-Section "java tools"
+Section "java tools" java
 	SectionIn 1 2
 	SetOutPath $INSTDIR\java
 	File /r java/classes
 	Push $R0
 	${GetBinDir} $R0
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" javaw '-cp "$INSTDIR\java\Classes\jScope.jar";"$INSTDIR\java\Classes" -Xmx1G jScope' "$0\icons.exe" 4 SW_SHOWMINIMIZED
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk"  javaw '-cp "$INSTDIR\java\Classes\jTraverser.jar" jTraverser' $0\icons.exe" 3 SW_SHOWMINIMIZED
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser2.lnk" javaw '-jar "$INSTDIR\java\Classes\jTraverser2.jar"' $0\icons.exe" 3 SW_SHOWMINIMIZED
+	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" javaw '-cp "$INSTDIR\java\classes\jScope.jar";"$INSTDIR\java\Classes" -Xmx1G jScope' "$0\icons.exe" 4 SW_SHOWMINIMIZED
+	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk"  javaw '-cp "$INSTDIR\java\classes\jTraverser.jar" jTraverser' $0\icons.exe" 3 SW_SHOWMINIMIZED
+	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser2.lnk" javaw '-jar "$INSTDIR\java\classes\jTraverser2.jar"' $0\icons.exe" 3 SW_SHOWMINIMIZED
 	Pop $R0
 SectionEnd ; java
 
 SectionGroup /e "!APIs" apis
- Section EPICS
+ Section EPICS epics
 	SectionIn 2
 	SetOutPath "$INSTDIR\epics"
 	File /r epics/*
  SectionEnd ; EPICS
- Section IDL
+ Section IDL idl
 	SectionIn 2
 	SetOutPath "$INSTDIR\idl"
 	File /r idl/*
  SectionEnd ; IDL
- SectionGroup "LabView"
-  Section "!LV2017 (17.0)"
+ SectionGroup LabView LabView
+  Section "LV2017 (17.0)" LV2017
 	SectionIn 2
 	SetOutPath "$INSTDIR\LabView"
 	File /r LabView/MDSplus
   SectionEnd ; LV2017
-  Section "LV2015 (15.0) via github"
-	MessageBox MB_OK "Older versions of the LabView plugins are available on GitHub.$\n\
-	https://github.com/MDSplus/mdsplus/tree/${BRANCH}/mdsobjects/labview/MDSplus_LV2015"
-;	SectionIn 2
+  !define LVOLD_DESC "https://github.com/MDSplus/mdsplus/$\n"
+  Section "LV2015 (15.0) on GitHub" LV2015
+	!define LV2015_DESC "mdsobjects/labview/MDSplus_LV2015"
+	SectionIn RO
 ;	SetOutPath "$INSTDIR\LabView\LV2015\MDSplus"
 ;	File /r LabView/MDSplus_LV2015/*
   SectionEnd ; LV2015
-  Section "LV2012 (12.0) via github"
-	MessageBox MB_OK "Older versions of the LabView plugins are available on GitHub.$\n\
-	https://github.com/MDSplus/mdsplus/tree/${BRANCH}/mdsobjects/labview/MDSplus_LV2012"
-;	SectionIn 2
+  Section "LV2012 (12.0) on GitHub" LV2012
+	!define LV2012_DESC "mdsobjects/labview/MDSplus_LV2012"
+	SectionIn RO
 ;	SetOutPath "$INSTDIR\LabView\LV2012\MDSplus"
 ;	File /r LabView/MDSplus_LV2012/*
   SectionEnd ; LV2012
-  Section "LV2001 (<=6.1) via github"
-	MessageBox MB_OK "Older versions of the LabView plugins are available on GitHub.$\n\
-	https://github.com/MDSplus/mdsplus/tree/${BRANCH}/LabView"
-;	SectionIn 2
-;	SetOutPath "$INSTDIR\LabView\LV2000\MDSplus"
+  Section "LV2001 (<=6.1) on GitHub" LV2001
+	!define LV2001_DESC "LabView"
+	SectionIn RO
+;	SetOutPath "$INSTDIR\LabView\LV2001\MDSplus"
 ;	File LabView/*.vi
   SectionEnd ; LV2000
  SectionGroupEnd ; LabView
- Section MATLAB
+ Section MATLAB MATLAB
 	SectionIn 2
 	SetOutPath "$INSTDIR\matlab"
 	File /r matlab/*
@@ -648,21 +661,21 @@ SectionGroup /e "!APIs" apis
  SectionGroupEnd ; python
 SectionGroupEnd ; APIs
 
-SectionGroup development
- Section headers
+SectionGroup development devel
+ Section headers headers
 	SectionIn 2
 	SetOutPath "$INSTDIR\include"
 	File /r include/*
  SectionEnd ; headers
- SectionGroup devtools
-  Section MinGW
+ SectionGroup devtools devtools
+  Section MinGW mingw
 	SectionIn 2
 	${If} ${RunningX64}
 		${FileLowerExt} bin_x86_64 .dll.a "$INSTDIR\devtools\mingw\lib64" .lib
 	${EndIf}
 	${FileLowerExt} bin_x86 .dll.a "$INSTDIR\devtools\mingw\lib32" .lib
   SectionEnd ; MinGW
-  Section "Visual Studio"
+  Section "Visual Studio" vs
 	SectionIn 2
 	${If} ${RunningX64}
 		${FileLowerExt} bin_x86_64 .lib "$INSTDIR\devtools\visual_studio\lib64" .lib
@@ -679,6 +692,36 @@ Section "sample trees"
 	SetOutPath "$INSTDIR\trees"
 	File /r trees/*
 SectionEnd
+
+!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+	!insertmacro MUI_DESCRIPTION_TEXT ${core}	"Install binaries and kernel tdi functions."
+	!insertmacro MUI_DESCRIPTION_TEXT ${bin64}	"Copy binaries for 64bit architecture."
+	!insertmacro MUI_DESCRIPTION_TEXT ${bin32}	"Copy binaries for 32bit architecture."
+	!insertmacro MUI_DESCRIPTION_TEXT ${appendpath}	"Add '.\bin*' to user's PATH env."
+	!insertmacro MUI_DESCRIPTION_TEXT ${devices}	"Copy device classes implemented in tdi or as pydevices"
+	!insertmacro MUI_DESCRIPTION_TEXT ${tdidevices}	"Copy device classes implemented in tdi to '.\tdi'"
+	!insertmacro MUI_DESCRIPTION_TEXT ${pydevices}	"Copy python device classes to '.\pydevices'"
+	!insertmacro MUI_DESCRIPTION_TEXT ${pydevpath}	"Add '.\pydevices' to MDS_PYDEVICE_PATH env."
+	!insertmacro MUI_DESCRIPTION_TEXT ${d3d}	"Copy site-specific tdi routines to '.\tdi\d3d'"
+	!insertmacro MUI_DESCRIPTION_TEXT ${java}	"Copy jTraverser, jTraverser2, jScope, etc. to '.\java\classes'"
+	!insertmacro MUI_DESCRIPTION_TEXT ${epics}	"Copy EPICS Plugin to './epics'"
+	!insertmacro MUI_DESCRIPTION_TEXT ${idl}	"Copy IDL Plugin to './idl'"
+	!insertmacro MUI_DESCRIPTION_TEXT ${LabView}	"Older versions of LabView are available on github.com"
+	!insertmacro MUI_DESCRIPTION_TEXT ${LV2017}	"Copy LabView plugin to '.\LabView'; manually copy content to the 'vi.lib' folder."
+	!insertmacro MUI_DESCRIPTION_TEXT ${LV2015}	"${LVOLD_DESC}${LV2015_DESC}"
+	!insertmacro MUI_DESCRIPTION_TEXT ${LV2012}	"${LVOLD_DESC}${LV2012_DESC}"
+	!insertmacro MUI_DESCRIPTION_TEXT ${LV2001}	"${LVOLD_DESC}${LV2001_DESC}"
+	!insertmacro MUI_DESCRIPTION_TEXT ${MATLAB}	"Copy MATLAB plugin to '.\matlab'"
+	!insertmacro MUI_DESCRIPTION_TEXT ${python}	"Setup the python package"
+	!insertmacro MUI_DESCRIPTION_TEXT ${python_cp}	"Copy MDSplus package to install folder to '.\python'"
+	!insertmacro MUI_DESCRIPTION_TEXT ${python_pp}	"Add '.\python' to PYTHONPATH env."
+	!insertmacro MUI_DESCRIPTION_TEXT ${python_su}	"Install MDSplus package via python's setup method"
+	!insertmacro MUI_DESCRIPTION_TEXT ${devel}	"Copy headers and '*.lib' files for MinGW and VS projects"
+	!insertmacro MUI_DESCRIPTION_TEXT ${headers}	"Copy headers to '.\include'"
+	!insertmacro MUI_DESCRIPTION_TEXT ${devtools}	"Copy '*.lib' files for MinGW and VS projects to '.\devtools'"
+	!insertmacro MUI_DESCRIPTION_TEXT ${mingw}	"Copy '*.lib' files for MinGW projects to '.\devtools\mingw'"
+	!insertmacro MUI_DESCRIPTION_TEXT ${vs}		"Copy '*.lib' files for VS projects to '.\devtools\visual_studio'"
+!insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 Function .onSelChange
 	; pydevices depend on python
@@ -741,6 +784,9 @@ Function .onInit
 		SectionSetInstTypes ${bin32} 7 ; always include 32bit
 		SectionSetInstTypes ${bin64} 0 ; never include 64bit
 	${EndIf}
+	SectionSetInstTypes ${LV2015} 0
+	SectionSetInstTypes ${LV2012} 0
+	SectionSetInstTypes ${LV2001} 0
 	${If} $R0 UserIs admin
 		SetShellVarContext all
 		ReadRegStr $INSTDIR HKLM "${ENVREG_ALL}" MDSPLUS_DIR
@@ -829,7 +875,8 @@ Section "uninstall"
 		${GetBinDir} $R0
 		${RemoveFromEnv}	PATH			"$R0"
 	${EndIf}
-	RMDir /r "$SMPROGRAMS\MDSplus${FLAVOR}"
+	!insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
+	RMDir /r "$SMPROGRAMS\$StartMenuFolder"
 	${DeleteEnv}		MDSPLUS_DIR
 	${RemoveFromEnv}	MDS_PATH		"${MDS_PATH}"
 	${RemoveFromEnv}	main_path		"${main_path}"
