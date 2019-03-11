@@ -241,12 +241,9 @@ Function install_core_pre
 	${AddToPath} MDS_PATH    "$INSTDIR\tdi"
 	${WriteEnv} MDSPLUS_DIR "$INSTDIR"
 	SetOutPath "$INSTDIR\tdi"
-	File /r /x local /x MitDevices /x RfxDevices /x KbsiDevices /x d3d tdi/*.*
+	File /r /x local /x MitDevices /x RfxDevices /x KbsiDevices /x d3d tdi/*
 	SetOutPath "$INSTDIR\xml"
-	File /r xml\*.*
-	${IF} $R0 UserIs admin
-		FileOpen $7 "$INSTDIR\installer.dat" w
-	${ENDIF}
+	File /r xml\*
 	Pop $R0
 FunctionEnd
 
@@ -295,6 +292,8 @@ FunctionEnd
 SectionGroup "!core"
  Section "64 bit" bin64
 	Push $R0
+	Push $R1
+	Push $R2
 	SectionIn RO
 	Call install_core_pre
 	SetOutPath "$INSTDIR\bin_x86_64"
@@ -312,21 +311,24 @@ SectionGroup "!core"
 	File ${MINGWLIB64}/${ZLIB1_LIB}
 	${DisableX64FSRedirection}
 	${If} $R0 UserIs admin
-		FindFirst $1 $2 "$INSTDIR\bin_x86_64\*"
+		FileOpen $R0 "$INSTDIR\installer.dat" w
+		FindFirst $R1 $R2 "$INSTDIR\bin_x86_64\*"
 		loop_64:
-			StrCmp $2 "" done_64
-			FileWrite $7 "$SYSDIR\$2$\n"
-			Delete "$SYSDIR\$2"
-			Rename "$INSTDIR\bin_x86_64\$2" "$SYSDIR\$2"
-			FindNext $1 $2
+			StrCmp $R2 "" done_64
+			FileWrite $R0 "$SYSDIR\$R2$\n"
+			Delete "$SYSDIR\$R2"
+			Rename "$INSTDIR\bin_x86_64\$R2" "$SYSDIR\$R2"
+			FindNext $R1 $R2
 			Goto loop_64
 		done_64:
-		FindClose $1
-		FileClose $7
+		FindClose $R1
+		FileClose $R0
 		RMDir "$INSTDIR\bin_x86_64"
 	${EndIf}
 	${EnableX64FSRedirection}
         Call install_core_post
+	Pop $R2
+	Pop $R1
 	Pop $R0
  SectionEnd ; 64 bit
 
@@ -334,14 +336,12 @@ SectionGroup "!core"
 	Push $R0
 	Push $R1
 	Push $R2
+	Push $R3
 	${IfNot} ${RunningX64}
 	        Call install_core_pre
-	${Else}
-		FileOpen $7 "$INSTDIR\installer.dat" a
-		FileSeek $7 0 END
 	${EndIf}
 	SetOutPath "$INSTDIR\bin_x86"
-	File /x *.a bin_x86/*
+	File /x *.a /x *.lib bin_x86/*
 	File ${MINGWLIB32}/${PTHREADLIB}
 	File ${MINGWLIB32}/${GCC_S_SJLJ_LIB}
 	File ${MINGWLIB32}/${DLLIB}
@@ -355,25 +355,29 @@ SectionGroup "!core"
 	File ${MINGWLIB32}/${ZLIB1_LIB}
 	${IF} $R0 UserIs admin
 		${If} ${RunningX64}
-			StrCpy $R0 "$WINDIR\SysWOW64"
+			StrCpy $R3 "$WINDIR\SysWOW64"
+			FileOpen $R0 "$INSTDIR\installer.dat" a
+			FileSeek $R0 0 END
 		${Else}
-			StrCpy $R0 "$SYSDIR"
+			StrCpy $R3 "$SYSDIR"
+			FileOpen $R0 "$INSTDIR\installer.dat" w
 		${EndIf}
 		FindFirst $R1 $R2 "$INSTDIR\bin_x86\*"
 		loop_32:
 			StrCmp $R2 "" done_32
-			FileWrite $7 "$R0\$R2$\n"
-			Rename "$INSTDIR\bin_x86\$R2" "$R0\$2"
+			FileWrite $R0 "$R3\$R2$\n"
+			Rename "$INSTDIR\bin_x86\$R2" "$R3\$R2"
 			FindNext $R1 $R2
 			Goto loop_32
 		done_32:
 		FindClose $R1
-		FileClose $7
+		FileClose $R0
 		RMDir "$INSTDIR\bin_x86"
 	${EndIf}
 	${IfNot} ${RunningX64}
 		Call install_core_post
 	${EndIf}
+	Pop $R3
 	Pop $R2
 	Pop $R1
 	Pop $R0
@@ -408,24 +412,24 @@ SectionGroup devices devices
   Section HTS pydevices_hts
 	SectionIn 2
 	SetOutPath "$INSTDIR\pydevices\HtsDevices"
-	File /r pydevices/HtsDevices/*.*
+	File /r pydevices/HtsDevices/*
   SectionEnd ; HTS
   Section MIT pydevices_mit
 	SectionIn 2
 	SetOutPath "$INSTDIR\pydevices\MitDevices"
-	File /r pydevices/MitDevices/*.*
+	File /r pydevices/MitDevices/*
 	File /workspace/releasebld/64/pydevices/MitDevices/_version.py
   SectionEnd ; MIT
   Section RFX pydevices_rfx
 	SectionIn 2
 	SetOutPath "$INSTDIR\pydevices\RfxDevices"
-	File /r pydevices/RfxDevices/*.*
+	File /r pydevices/RfxDevices/*
 	File /workspace/releasebld/64/pydevices/RfxDevices/_version.py
   SectionEnd ; RFX
   Section W7X pydevices_w7x
 	SectionIn 2
 	SetOutPath "$INSTDIR\pydevices\W7xDevices"
-	File /r pydevices/W7xDevices/*.*
+	File /r pydevices/W7xDevices/*
 	File /workspace/releasebld/64/pydevices/W7xDevices/_version.py
   SectionEnd ; W7X
   Section "setup MDS_PYDEVICE_PATH" pydevpath
@@ -459,12 +463,12 @@ SectionGroup /e "!APIs" apis
  Section "EPICS"
 	SectionIn 2
 	SetOutPath "$INSTDIR\epics"
-	File /r epics/*.*
+	File /r epics/*
  SectionEnd ; EPICS
  Section "IDL"
 	SectionIn 2
 	SetOutPath "$INSTDIR\idl"
-	File /r idl/*.*
+	File /r idl/*
  SectionEnd ; IDL
  SectionGroup "LabView"
   Section "LV 5/6 (1998-2000)"
@@ -475,7 +479,7 @@ SectionGroup /e "!APIs" apis
   Section "LV2010"
 	SectionIn 2
 	SetOutPath "$INSTDIR\LabView\MDSplus_LV2010"
-	File /r LabView/MDSplus/*.*
+	File /r LabView/MDSplus/*
   SectionEnd ; LV2010
   Section "LV2012"
 	SectionIn 2
@@ -491,13 +495,13 @@ SectionGroup /e "!APIs" apis
  Section "MATLAB"
 	SectionIn 2
 	SetOutPath "$INSTDIR\matlab"
-	File /r matlab/*.*
+	File /r matlab/*
  SectionEnd ; MATLAB
  SectionGroup /e "!python" python
   Section "MDSplus package" python_cp
 	SectionIn 1 2
 	SetOutPath "$INSTDIR\python\MDSplus"
-	File /r /x makedoc.sh mdsobjects/python/*.*
+	File /r /x makedoc.sh mdsobjects/python/*
 	File /workspace/releasebld/64/mdsobjects/python/_version.py
   SectionEnd ; python_cp
   Section "add to PYTHONPATH" python_pp
@@ -517,7 +521,7 @@ SectionGroup development
  Section headers
 	SectionIn 2
 	SetOutPath "$INSTDIR\include"
-	File /r include/*.*
+	File /r include/*
  SectionEnd ; headers
  SectionGroup devtools
   Section mingw
@@ -575,7 +579,7 @@ Section "sample trees"
 	${WriteEnv} "main_path" "$INSTDIR\trees"
 	${WriteEnv} "subtree_path" "$INSTDIR\trees\subtree"
 	SetOutPath "$INSTDIR\trees"
-	File /r trees/*.*
+	File /r trees/*
 SectionEnd
 
 Function .onSelChange
