@@ -8,16 +8,18 @@
 !define ClearSectionFlag '!insertmacro "ClearSectionFlag"'
 !define SetSectionFlag   '!insertmacro "SetSectionFlag"'
 
+;Var LOG
 !macro ToLog line
-	Push `${line}`
-	Exch $0
-	Push $R0
-	FileOpen  $R0 `$INSTDIR\log.log` a
-	FileSeek  $R0 0 END
-	FileWrite $R0 `$0`
-	FileClose $R0
-	Pop $R0
-	Pop $0
+;	Push `${line}`
+;	Exch $0
+;	Push $R0
+;	;StrCpy $LOG `$LOG$0`
+;	FileOpen  $R0 `$INSTDIR\log.log` a
+;	FileSeek  $R0 0 END
+;	FileWrite $R0 `$0`
+;	FileClose $R0
+;	Pop $R0
+;	Pop $0
 !macroend ; ToLog
 !define ToLog '!insertmacro "ToLog"'
 
@@ -42,20 +44,17 @@ Var ISVAR
 	Push $R1 ; string len
 	Push $R2 ; char pos
 	Push $R3 ; tmpstr
-	${ToLog} "$0 in $1$\n"
 	StrLen $R0 $0
 	StrLen $R1 $1
 	IntOp  $R1 $R1 - $R0
 	StrCpy $R2 0				;init char pos
 	${Do}					;Loop until "substr" is found or "string" reaches its end
 		${If} $R2 > $R1
-			${ToLog} `not found "$0" $ISVAR$\n`
 			${ExitDo} ;Check if end of "string"
 		${EndIf}
 		StrCpy $R3 `$1` $R0 $R2	;Trim "tmpstr" to len of "substr"
 		${If} $R3 == `$0`	;Compare "tmpStr" with "substr"
 			StrCpy $ISVAR $R2	;set found flag
-			${ToLog} `found "$0" at $ISVAR$\n`
 			${ExitDo}
 		${EndIf}
 		IntOp $R2 $R2 + 1				;If not, continue the loop
@@ -317,7 +316,6 @@ Function un.RemoveFromEnv ; name value
 		StrLen $R1 $1
 		${If} `;$1;` in `;$R0;`
 			${Do}
-				${ToLog} `$1 found $ISVAR$\n`
 				${If} $ISVAR == 0 ; remove <value>;
 					StrLen $R2 $R0
 					IntOp  $ISVAR $R1 + 1
@@ -363,9 +361,9 @@ Function install_core_pre
 	${AddToEnv} MDS_PATH	"${MDS_PATH}"
 	${WriteEnv} MDSPLUS_DIR	"${MDSPLUS_DIR}"
 	SetOutPath "$INSTDIR\tdi"
-	;File /r /x local /x MitDevices /x RfxDevices /x KbsiDevices /x d3d tdi/*
+	File /r /x local /x MitDevices /x RfxDevices /x KbsiDevices /x d3d tdi/*
 	SetOutPath "$INSTDIR\xml"
-	;File /r xml\*
+	File /r xml\*
 	Pop $R0
 FunctionEnd
 
@@ -419,18 +417,18 @@ SectionGroup "!core"
 	SectionIn RO
 	Call install_core_pre
 	SetOutPath "$INSTDIR\bin_x86_64"
-	;File /x *.a /x *.lib bin_x86_64/*
-	;File ${MINGWLIB64}/${PTHREADLIB}
-	;File ${MINGWLIB64}/${DLLIB}
-	;File ${MINGWLIB64}/${READLINELIB}
-	;File ${MINGWLIB64}/${TERMCAPLIB}
-	;File ${MINGWLIB64}/${GCC_STDCPP_LIB}
-	;File ${MINGWLIB64}/${GCC_S_SEH_LIB}
-	;File ${MINGWLIB64}/${GFORTRAN_LIB}
-	;File ${MINGWLIB64}/${QUADMATH_LIB}
-	;File ${MINGWLIB64}/${LIBXML2_LIB}
-	;File ${MINGWLIB64}/${ICONV_LIB}
-	;File ${MINGWLIB64}/${ZLIB1_LIB}
+	File /x *.a /x *.lib bin_x86_64/*
+	File ${MINGWLIB64}/${PTHREADLIB}
+	File ${MINGWLIB64}/${DLLIB}
+	File ${MINGWLIB64}/${READLINELIB}
+	File ${MINGWLIB64}/${TERMCAPLIB}
+	File ${MINGWLIB64}/${GCC_STDCPP_LIB}
+	File ${MINGWLIB64}/${GCC_S_SEH_LIB}
+	File ${MINGWLIB64}/${GFORTRAN_LIB}
+	File ${MINGWLIB64}/${QUADMATH_LIB}
+	File ${MINGWLIB64}/${LIBXML2_LIB}
+	File ${MINGWLIB64}/${ICONV_LIB}
+	File ${MINGWLIB64}/${ZLIB1_LIB}
 	${DisableX64FSRedirection}
 	${If} $R0 UserIs admin
 		FileOpen $R0 "$INSTDIR\installer.dat" w
@@ -463,18 +461,18 @@ SectionGroup "!core"
 	        Call install_core_pre
 	${EndIf}
 	SetOutPath "$INSTDIR\bin_x86"
-	;File /x *.a /x *.lib bin_x86/*
-	;File ${MINGWLIB32}/${PTHREADLIB}
-	;File ${MINGWLIB32}/${GCC_S_SJLJ_LIB}
-	;File ${MINGWLIB32}/${DLLIB}
-	;File ${MINGWLIB32}/${READLINELIB}
-	;File ${MINGWLIB32}/${TERMCAPLIB}
-	;File ${MINGWLIB32}/${GCC_STDCPP_LIB}
-	;File ${MINGWLIB32}/${GFORTRAN_LIB}
-	;File ${MINGWLIB32}/${QUADMATH_LIB}
-	;File ${MINGWLIB32}/${LIBXML2_LIB}
-	;File ${MINGWLIB32}/${ICONV_LIB}
-	;File ${MINGWLIB32}/${ZLIB1_LIB}
+	File /x *.a /x *.lib bin_x86/*
+	File ${MINGWLIB32}/${PTHREADLIB}
+	File ${MINGWLIB32}/${GCC_S_SJLJ_LIB}
+	File ${MINGWLIB32}/${DLLIB}
+	File ${MINGWLIB32}/${READLINELIB}
+	File ${MINGWLIB32}/${TERMCAPLIB}
+	File ${MINGWLIB32}/${GCC_STDCPP_LIB}
+	File ${MINGWLIB32}/${GFORTRAN_LIB}
+	File ${MINGWLIB32}/${QUADMATH_LIB}
+	File ${MINGWLIB32}/${LIBXML2_LIB}
+	File ${MINGWLIB32}/${ICONV_LIB}
+	File ${MINGWLIB32}/${ZLIB1_LIB}
 	${IF} $R0 UserIs admin
 		${If} ${RunningX64}
 			StrCpy $R3 "$WINDIR\SysWOW64"
@@ -519,41 +517,41 @@ SectionGroup devices devices
   Section KBSI
 	SectionIn 2
 	SetOutPath "$INSTDIR\tdi"
-	;File /r tdi/KbsiDevices
+	File /r tdi/KbsiDevices
   SectionEnd ; KBSI
   Section MIT
 	SectionIn 2
 	SetOutPath "$INSTDIR\tdi"
-	;File /r tdi/MitDevices
+	File /r tdi/MitDevices
   SectionEnd ; MIT
   Section RFX
 	SectionIn 2
 	SetOutPath "$INSTDIR\tdi"
-	;File /r tdi/RfxDevices
+	File /r tdi/RfxDevices
   SectionEnd ; RFX
  SectionGroupEnd ; tdi
  SectionGroup "pydevices" pydevices
   Section HTS pydevices_hts
 	SectionIn 2
 	SetOutPath "$INSTDIR\pydevices\HtsDevices"
-	;File /r pydevices/HtsDevices/*
+	File /r pydevices/HtsDevices/*
   SectionEnd ; HTS
   Section MIT pydevices_mit
 	SectionIn 2
 	SetOutPath "$INSTDIR\pydevices\MitDevices"
-	;File /r pydevices/MitDevices/*
+	File /r pydevices/MitDevices/*
 	File /workspace/releasebld/64/pydevices/MitDevices/_version.py
   SectionEnd ; MIT
   Section RFX pydevices_rfx
 	SectionIn 2
 	SetOutPath "$INSTDIR\pydevices\RfxDevices"
-	;File /r pydevices/RfxDevices/*
+	File /r pydevices/RfxDevices/*
 	File /workspace/releasebld/64/pydevices/RfxDevices/_version.py
   SectionEnd ; RFX
   Section W7X pydevices_w7x
 	SectionIn 2
 	SetOutPath "$INSTDIR\pydevices\W7xDevices"
-	;File /r pydevices/W7xDevices/*
+	File /r pydevices/W7xDevices/*
 	File /workspace/releasebld/64/pydevices/W7xDevices/_version.py
   SectionEnd ; W7X
   Section "setup MDS_PYDEVICE_PATH" pydevpath
@@ -566,7 +564,7 @@ SectionGroupEnd ; devices
 SectionGroup "site specifics"
  Section D3D
 	SetOutPath "$INSTDIR\tdi"
-	;File /r tdi/d3d
+	File /r tdi/d3d
  SectionEnd ; D3D
 SectionGroupEnd ; site specifics"
 
@@ -574,7 +572,7 @@ SectionGroupEnd ; site specifics"
 Section "java tools"
 	SectionIn 1 2
 	SetOutPath $INSTDIR\java
-	;File /r java/classes
+	File /r java/classes
 	Push $R0
 	${GetBinDir} $R0
 	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" javaw '-cp "$INSTDIR\java\Classes\jScope.jar";"$INSTDIR\java\Classes" -Xmx1G jScope' "$0\icons.exe" 4 SW_SHOWMINIMIZED
@@ -587,12 +585,12 @@ SectionGroup /e "!APIs" apis
  Section "EPICS"
 	SectionIn 2
 	SetOutPath "$INSTDIR\epics"
-	;File /r epics/*
+	File /r epics/*
  SectionEnd ; EPICS
  Section "IDL"
 	SectionIn 2
 	SetOutPath "$INSTDIR\idl"
-	;File /r idl/*
+	File /r idl/*
  SectionEnd ; IDL
  SectionGroup "LabView"
   Section "LV 5/6 (1998-2000)"
@@ -603,29 +601,29 @@ SectionGroup /e "!APIs" apis
   Section "LV2010"
 	SectionIn 2
 	SetOutPath "$INSTDIR\LabView\MDSplus_LV2010"
-	;File /r LabView/MDSplus/*
+	File /r LabView/MDSplus/*
   SectionEnd ; LV2010
   Section "LV2012"
 	SectionIn 2
 	SetOutPath "$INSTDIR\LabView"
-	;File /r LabView/MDSplus_LV2012
+	File /r LabView/MDSplus_LV2012
   SectionEnd ; LV2012
   Section "LV2015"
 	SectionIn 2
 	SetOutPath "$INSTDIR\LabView"
-	;File /r LabView/MDSplus_LV2015
+	File /r LabView/MDSplus_LV2015
   SectionEnd ; LV2015
  SectionGroupEnd ; LabView
  Section "MATLAB"
 	SectionIn 2
 	SetOutPath "$INSTDIR\matlab"
-	;File /r matlab/*
+	File /r matlab/*
  SectionEnd ; MATLAB
  SectionGroup /e "!python" python
   Section "MDSplus package" python_cp
 	SectionIn 1 2
 	SetOutPath "$INSTDIR\python\MDSplus"
-	;File /r /x makedoc.sh mdsobjects/python/*
+	File /r /x makedoc.sh mdsobjects/python/*
 	File /workspace/releasebld/64/mdsobjects/python/_version.py
   SectionEnd ; python_cp
   Section "add to PYTHONPATH" python_pp
@@ -645,7 +643,7 @@ SectionGroup development
  Section headers
 	SectionIn 2
 	SetOutPath "$INSTDIR\include"
-	;File /r include/*
+	File /r include/*
  SectionEnd ; headers
  SectionGroup devtools
   Section MinGW
@@ -670,7 +668,7 @@ Section "sample trees"
 	${AddToEnv} "main_path"		"${main_path}"
 	${AddToEnv} "subtree_path"	"${subtree_path}"
 	SetOutPath "$INSTDIR\trees"
-	;File /r trees/*
+	File /r trees/*
 SectionEnd
 
 Function .onSelChange
@@ -765,6 +763,7 @@ Function .onInit
 FunctionEnd
 
 Function .onGUIEnd
+	;MessageBox MB_OK $LOG
 	SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
 FunctionEnd
 
@@ -825,17 +824,9 @@ Section "uninstall"
 	${RemoveFromEnv}        MDS_PYDEVICE_PATH	"${MDS_PYDEVICE_PATH}"
 	${DeleteKey} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus"
 	SetOutPath "$SYSDIR"
-	FileOpen  $R0 "$INSTDIR\log.log" r
-	StrCpy $R2 ""
-	${Do}
-		FileRead $R0 $R1
-		${IfThen} $R1 == "" ${|} ${ExitDo} ${|}
-		StrCpy $R2 "$R2$R1"
-	${Loop}
-	FileClose $R0
-	MessageBox MB_OK $R2
 	RMDir /r "$INSTDIR"
 	Pop $R2
 	Pop $R1
 	Pop $R0
+	;MessageBox MB_OK $LOG
 SectionEnd
