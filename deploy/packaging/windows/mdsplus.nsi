@@ -719,6 +719,11 @@ FunctionEnd
 
 Function .onInit
 	Push $R0
+	System::Call 'kernel32::CreateMutex(i 0, i 0, t "MDSplus-installer") ?e'
+	Pop $R0
+	StrCmp $R0 0 +3
+	    MessageBox MB_OK "The installer is already running."
+	    Abort
 	${If} ${RunningX64}
 		SectionSetInstTypes ${bin32} 2 ; include 32bit in full
 		SectionSetInstTypes ${bin64} 7 ; always include 64bit
