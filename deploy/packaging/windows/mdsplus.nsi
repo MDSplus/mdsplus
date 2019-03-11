@@ -381,7 +381,7 @@ Function install_core_pre
 	${EndIf}
 	${GetBinDir} $R0
 	CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\Tdi.lnk" "$R0\tditest.exe" "" "$R0\icons.exe" 0
-	CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\TCL.lnk" "$R0\mdsdcl" `-prep 'set command tcl_commands -history=".tcl"'` "$R0\icons.exe" 1
+	CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\TCL.lnk" "$R0\mdsdcl.exe" `-prep "set command tcl_commands -history=.tcl"` "$R0\icons.exe" 1
 	;CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\View ChangeLog.lnk" "$INSTDIR\ChangeLog.rtf"
 	!insertmacro MUI_STARTMENU_WRITE_END
 	SetOutPath "$INSTDIR"
