@@ -440,7 +440,7 @@ class Pointer(Scalar):
         return cls(value.value,is64)
 _dsc.addDtypeToClass(Pointer)
 
-class Ident(_dat.Data):
+class Ident(_dat.TreeRef,_dat.Data):
     """Reference to MDSplus Ken Variable"""
     dtype_id=191
     def __init__(self,name):
