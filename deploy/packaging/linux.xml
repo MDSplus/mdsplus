@@ -444,11 +444,12 @@ fi
     <include file="/usr/local/mdsplus/desktop/mdsplus.directory"/>
     <include file="/usr/local/mdsplus/desktop/mdsplus.menu"/>
     <include dir="/usr/local/mdsplus/desktop/kernel"/>
+    <include file="/usr/local/mdsplus/pixmaps/mdstcl.png"/>
     <include file="/usr/local/mdsplus/pixmaps/small_mdsplus_logo.jpg"/>
-    <include file="/usr/local/mdsplus/pixmaps/Tcl.png"/>
-    <include file="/usr/local/mdsplus/pixmaps/Tdi.png"/>
+    <include file="/usr/local/mdsplus/pixmaps/tdi.png"/>
     <include file="/usr/local/mdsplus/pixmaps/dwscope.png"/>
     <include file="/usr/local/mdsplus/pixmaps/traverser.png"/>
+    <include file="/usr/local/mdsplus/pixmaps/traverser2.png"/>
     <include dir="/usr/local/mdsplus/nodejs"/>
     <exclude dir="/usr/local/mdsplus/tdi/MitDevices"/>
     <exclude dir="/usr/local/mdsplus/pydevices"/>
