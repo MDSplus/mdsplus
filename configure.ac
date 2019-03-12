@@ -1410,7 +1410,6 @@ AC_OUTPUT(Makefile.inc
           wfevent/Makefile
           xmdsshr/Makefile
           xtreeshr/Makefile
-          icons/Makefile
 )
 
 
