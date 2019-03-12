@@ -433,7 +433,7 @@ fi
     <include dironly="/usr/local/mdsplus/idl"/>
     <include dironly="/usr/local/mdsplus/mdsobjects"/>
     <include file="/usr/local/mdsplus/MDSplus-License.txt"/>
-    <include file="/usr/local/mdsplus/ChangeLog"/>
+<!--    <include file="/usr/local/mdsplus/ChangeLog"/> -->
     <include dir="/usr/local/mdsplus/etc"/>
     <include dir="/usr/local/mdsplus/share"/>
     <include dir="/usr/local/mdsplus/rpm"/>
