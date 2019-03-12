@@ -46,6 +46,7 @@ SOURCES = 			\
 	tcl_verify_tree.c	\
 	tcl_wfevent.c \
 	tcl_write.c
+@MINGW_TRUE@ SOURCES += icon.o
 
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = tcl_commands.export

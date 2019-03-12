@@ -4,6 +4,7 @@ VPATH = @srcdir@
 MKDIR_P=@MKDIR_P@
 
 SOURCES = tditest.c
+@MINGW_TRUE@ SOURCES += icon.o
 
 all : @MAKEBINDIR@ @MAKEBINDIR@tditest$(EXE)
 

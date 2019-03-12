@@ -13,8 +13,12 @@ COMON_LIBS = -lTdiShr -lTreeShr -lMdsShr $(LIBS)
 SERVER_LIBS = -lMdsIpShr -lMdsdcl -lMdsServerShr
 @HAVE_MOTIF_TRUE@MOTIF_LIBS = -lXmdsShr -lMrm -lXm -lXt -lX11 $(X_PRE_LIBS) $(X_LIBS) $(X_EXTRA_LIBS)
 
-@MAKEBINDIR@actlog$(EXE) : actlog.o
-	$(CC) -o $@ $(CFLAGS) actlog.o -L@MAKESHLIBDIR@ $(COMON_LIBS) $(SERVER_LIBS)
+SOURCES = actlog.c
+@MINGW_TRUE@ SOURCES += icon.o
+OBJECTS = $(SOURCES:.c=.o)
+
+@MAKEBINDIR@actlog$(EXE) : $(OBJECTS)
+	$(CC) -o $@ $(CFLAGS) $^ -L@MAKESHLIBDIR@ $(COMON_LIBS) $(SERVER_LIBS)
 @HAVE_MOTIF_TRUE@@MAKEBINDIR@actmon : actmon.o
 @HAVE_MOTIF_TRUE@	$(CC) -o $@ $(CFLAGS) actmon.o -L@MAKESHLIBDIR@ $(COMON_LIBS) $(SERVER_LIBS) $(MOTIF_LIBS)
 @HAVE_MOTIF_TRUE@@MAKEBINDIR@actions : actions.o
@@ -40,5 +44,5 @@ clean :
 @HAVE_MOTIF_TRUE@all : @MAKEBINDIR@ @MAKEBINDIR@actlog @MAKEBINDIR@actmon @MAKEBINDIR@actions @MAKEUIDDIR@actmon.uid @MAKEUIDDIR@actions.uid
 
 depend:
-@HAVE_MOTIF_FALSE@	@makedepend -- $(CFLAGS) -- actlog.c
-@HAVE_MOTIF_TRUE@	@makedepend -- $(CFLAGS) -- actlog.c actmon.c actions.c
+@HAVE_MOTIF_FALSE@	@makedepend -- $(CFLAGS) -- $(SOURCES)
+@HAVE_MOTIF_TRUE@	@makedepend -- $(CFLAGS) -- $(SOURCES) actmon.c actions.c
