@@ -484,6 +484,7 @@ Function install_core_post
 	Pop $R0
 FunctionEnd
 
+!define binexclude "/x *.a /x *.lib /x build_test.exe /x mdsiptest.exe"
 SectionGroup "!core" core
  Section "64 bit" bin64
 	Push $R0
@@ -492,7 +493,7 @@ SectionGroup "!core" core
 	SectionIn RO
 	Call install_core_pre
 	SetOutPath "${BINDIR64}"
-	File /x *.a /x *.lib /x build_test.exe bin_x86_64/*
+	File ${binexclude} bin_x86_64/*
 	File ${MINGWLIB64}/${PTHREADLIB}
 	File ${MINGWLIB64}/${DLLIB}
 	File ${MINGWLIB64}/${READLINELIB}
@@ -537,7 +538,7 @@ SectionGroup "!core" core
 	        Call install_core_pre
 	${EndIf}
 	SetOutPath "${BINDIR32}"
-	File /x *.a /x *.lib /x build_test.exe bin_x86/*
+	File ${binexclude} bin_x86/*
 	File ${MINGWLIB32}/${PTHREADLIB}
 	File ${MINGWLIB32}/${GCC_S_SJLJ_LIB}
 	File ${MINGWLIB32}/${DLLIB}
