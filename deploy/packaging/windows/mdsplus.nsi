@@ -1,141 +1,18 @@
 Name   "MDSplus${FLAVOR} ${MAJOR}.${MINOR}-${RELEASE}"
 OutFile ${OUTDIR}/MDSplus${FLAVOR}-${MAJOR}.${MINOR}-${RELEASE}.exe
-
-!include "MUI2.nsh"
-!define MUI_ABORTWARNING
-!define MUI_COMPONENTSPAGE_SMALLDESC
-!define MUI_ICON mdsplus.ico
-!define MUI_UnICON mdsplus.ico
-!define MUI_STARTMENUPAGE_DEFAULTFOLDER "MDSplus"
-!define MUI_FINISHPAGE_LINK "mdsplus.org"
-!define MUI_FINISHPAGE_LINK_LOCATION "http://mdsplus.org"
-
-ShowInstDetails show
-
-!include Sections.nsh
-!include LogicLib.nsh
-!include x64.nsh
-!include StrFunc.nsh
-!include WinMessages.nsh
-
+RequestExecutionLevel user ; highest
 SetCompressor /FINAL LZMA
-
-Var StartMenuFolder
-!insertmacro MUI_PAGE_LICENSE "MDSplus-License.rtf"
-!insertmacro MUI_PAGE_DIRECTORY
-!insertmacro MUI_PAGE_COMPONENTS
-!insertmacro MUI_PAGE_STARTMENU "Application" $StartMenuFolder
-!insertmacro MUI_PAGE_INSTFILES
-
-!insertmacro MUI_LANGUAGE "English"
-
-!define SelectSection    '!insertmacro "SelectSection"'
-!define UnselectSection  '!insertmacro "UnselectSection"'
-!define ClearSectionFlag '!insertmacro "ClearSectionFlag"'
-!define SetSectionFlag   '!insertmacro "SetSectionFlag"'
-;Var LOG
-!macro ToLog line
-;	Push `${line}`
-;	Exch $0
-;	Push $R0
-;	;StrCpy $LOG `$LOG$0`
-;	FileOpen  $R0 `$INSTDIR\log.log` a
-;	FileSeek  $R0 0 END
-;	FileWrite $R0 `$0`
-;	FileClose $R0
-;	Pop $R0
-;	Pop $0
-!macroend ; ToLog
-!define ToLog '!insertmacro "ToLog"'
-
-Var ISVAR
-!macro _in substr string t f
-	; workaround bug in LogicLib.nsh
-	!ifdef _c=false
-	!define _c=false_
-	!undef _c=false
-	!endif
-	!ifdef _c=true
-	!define _c=true_
-	!undef _c=true
-	!endif
-	StrCpy $ISVAR -1
-	Push `${string}`
-	Push `${substr}`
-	Exch $0
-	Exch
-	Exch $1
-	Push $R0 ; substr len
-	Push $R1 ; string len
-	Push $R2 ; char pos
-	Push $R3 ; tmpstr
-	StrLen $R0 $0
-	StrLen $R1 $1
-	IntOp  $R1 $R1 - $R0
-	StrCpy $R2 0				;init char pos
-	${Do}					;Loop until "substr" is found or "string" reaches its end
-		${If} $R2 > $R1
-			${ExitDo} ;Check if end of "string"
-		${EndIf}
-		StrCpy $R3 `$1` $R0 $R2	;Trim "tmpstr" to len of "substr"
-		${If} $R3 == `$0`	;Compare "tmpStr" with "substr"
-			StrCpy $ISVAR $R2	;set found flag
-			${ExitDo}
-		${EndIf}
-		IntOp $R2 $R2 + 1				;If not, continue the loop
-	${Loop}
-	Pop $R3
-	Pop $R2
-	Pop $R1
-	Pop $R0
-	Pop $1
-	Pop $0
-	!ifdef _c=false_
-	!define _c=false
-	!undef _c=false_
-	!endif
-	!ifdef _c=true_
-	!define _c=true
-	!undef _c=true_
-	!endif
-	IntCmp $ISVAR 0 `${t}` `${f}` `${t}`
-!macroend ; _in
-
-!macro _is sec flag t f
-	Push `${flag}`
-	Push `${sec}`
-	Exch $0
-	Exch
-	Exch $1
-	Call isfun
-	Pop $ISVAR
-	Pop $1
-	Pop $0
-	IntCmp $ISVAR 0 `${f}` `${t}` `${t}`
-!macroend ; _is
-Function isfun
-	!insertmacro SectionFlagIsSet $0 $1 true false
-	true:
-	Push 1
-	Goto done
-	false:
-	Push 0
-	done:
-FunctionEnd
-###############################
-
+ShowInstDetails show
 InstType "Typical" 
 InstType "Full"
 InstType "Minimal"
 
 
-RequestExecutionLevel user ; highest
-!define HELPURL "mailto:mdsplus@psfc.mit.edu" # "Support Information" link
-!define UPDATEURL "http://www.mdsplus.org" # "Product Updates" link
-!define ABOUTURL "http://www.mdsplus.org" # "Publisher" link
-!define INSTALLSIZE 90000
-!define ENVREG_ALL "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
-!define ENVREG_USR "Environment"
+!define HELPURL "mailto:mdsplus@psfc.mit.edu"	# "Support Information" link
+!define UPDATEURL "http://www.mdsplus.org"	# "Product Updates" link
+!define ABOUTURL "http://www.mdsplus.org"	# "Publisher" link
+!define INSTALLSOURCE "https://github.com/MDSplus/mdsplus/archive/${BRANCH}_release-${MAJOR}.${MINOR}-${RELEASE}.zip"
+!define INSTALLSIZE 145000			# Install data + safty
 !define MINGWLIB64 /usr/x86_64-w64-mingw32/sys-root/mingw/bin
 !define MINGWLIB32 /usr/i686-w64-mingw32/sys-root/mingw/bin
 !define PTHREADLIB libwinpthread-1.dll
@@ -164,95 +41,360 @@ RequestExecutionLevel user ; highest
 !define main_path		"$INSTDIR\trees"
 !define subtree_path		"$INSTDIR\trees\subtree"
 
-${UnStrTrimNewLines} 
+;; MUI2 include and definitions determine the design of the installer
+!include "MUI2.nsh"
+!define MUI_ABORTWARNING
+!define MUI_COMPONENTSPAGE_SMALLDESC
+!define MUI_ICON			mdsplus.ico
+!define MUI_UnICON			mdsplus.ico
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER	"MDSplus"
+!define MUI_FINISHPAGE_LINK		"mdsplus.org"
+!define MUI_FINISHPAGE_LINK_LOCATION	${ABOUTURL}
+Var StartMenuFolder
+!insertmacro MUI_PAGE_LICENSE "MDSplus-License.rtf"
+!insertmacro MUI_PAGE_DIRECTORY
+!insertmacro MUI_PAGE_COMPONENTS
+!insertmacro MUI_PAGE_STARTMENU "Application" $StartMenuFolder
+!insertmacro MUI_PAGE_INSTFILES
+!insertmacro MUI_LANGUAGE "English"
 
-!macro _UserIs var type t f
+;; ToLog can be used for debugging
+;; It simply appends the passed string to $INSTDIR\log.log
+;Var LOG
+!macro ToLog line
+;	Push `${line}`
+;	Exch $0
+;	Push $R0
+;	;StrCpy $LOG `$LOG$0`
+;	FileOpen  $R0 `$INSTDIR\log.log` a
+;	FileSeek  $R0 0 END
+;	FileWrite $R0 `$0`
+;	FileClose $R0
+;	Pop $R0
+;	Pop $0
+!macroend ; ToLog
+!define ToLog '!insertmacro "ToLog"'
+
+;; tools for If and Loop logics
+!include LogicLib.nsh
+
+;; 64bit detection and handling
+!include x64.nsh
+
+;; string manipulation; defines ${UnStrTrimNewLines}
+!include StrFunc.nsh
+${UnStrTrimNewLines}  ; implements ${UnStrTrimNewLines}
+
+
+
+### BEGIN _in ###
+;; looks for substring in string and stores starting pos in INPOS
+;; INPOS == -1 if substring not found in string
+;; ${If} "${needle}" in "${haystack}"
+Var INPOS
+!macro _in substr string t f
+	; work around bug in LogicLib.nsh
+	; these definitions need to be disables temporarely
+	!ifdef _c=false
+	!define _c=false_
+	!undef _c=false
+	!endif
+	!ifdef _c=true
+	!define _c=true_
+	!undef _c=true
+	!endif
+	Push `${string}`	;; In order to process two args without
+	Push `${substr}`	;; destroying the content of $0 or $1,
+	Exch $0  ; substr	;; we push the args to the stack FiLo
+	Exch			;; exchange 1st, swap stack, exchange 2nd.
+	Exch $1  ; string	;; stack: BOTTOM <= $0, $1 = TOP
+	Push $R0 ; substr_len
+	Push $R1 ; max_inpos	;; last possible inpos that would fit substr
+	Push $R2 ; tmpstr
+	StrLen $R0 $0				; get length of substr
+	StrLen $R1 $1				; get length of string
+	IntOp  $R1 $R1 - $R0			; get max_inpos
+	StrCpy $INPOS 0				; init search pos
+	${Do}					; Loop until "substr" is found or "string" reaches its end
+		${If} $INPOS > $R1 		; Check if end of "string"
+			StrCpy $INPOS -1	; set INPOS to NOT_FOUND
+			${ExitDo}
+		${EndIf}
+		StrCpy $R2 `$1` $R0 $INPOS	; Trim "tmpstr" to len of "substr"
+		${If} $R2 == `$0`		; Compare "tmpStr" with "substr"
+			${ExitDo}
+		${EndIf}
+		IntOp $INPOS $INPOS + 1		; If not, $INPOS++ and continue the loop
+	${Loop}
+	Pop $R2			; restore registers
+	Pop $R1
+	Pop $R0
+	${ToLog} `IN("$0", "$1") = $INPOS$\n`
+	Pop $1
+	Pop $0
+	!ifdef _c=false_	; restore definitions of the LogicLib
+	!define _c=false
+	!undef _c=false_
+	!endif
+	!ifdef _c=true_
+	!define _c=true
+	!undef _c=true_
+	!endif
+	; perform the jump so it will work as If operator
+	IntCmp $INPOS 0 `${t}` `${f}` `${t}`	; $INPOS>=0
+!macroend ; _in
+### END _in ###
+
+
+
+;; tools to manipulate component selection used e.g. in .onSelChange
+!include Sections.nsh
+!define SelectSection    '!insertmacro "SelectSection"'
+!define UnselectSection  '!insertmacro "UnselectSection"'
+!define ClearSectionFlag '!insertmacro "ClearSectionFlag"'
+!define SetSectionFlag   '!insertmacro "SetSectionFlag"'
+### BEGIN _is ###
+;; If operator to check whether section has a flag set
+;; ${If} ${setion} is ${SF_SELECTED}
+Var ISVAR
+!macro _is section flag t f
+	Push `${flag}`		;; In order to process two args without
+	Push `${section}`	;; destroying the content of $0 or $1,
+	Exch $0 ; substr	;; we push the args to the stack FiLo
+	Exch			;; exchange 1st, swap stack, exchange 2nd.
+	Exch $1 ; string	;; stack: BOTTOM <= $0, $1 = TOP
+	Call isfun
+	;${ToLog} `IS($0,$1) = $ISVAR$\n`
+	Pop $1
+	Pop $0
+	; perform the jump so it will work as If operator
+	IntCmp $ISVAR 0 `${f}` `${t}` `${t}`	; $ISVAR != 0
+!macroend ; _is
+; this helper function is required to isolate the jump markers
+; SectionFlagIsSet does not support relative jumps that may be passes by If
+Function isfun
+	!insertmacro SectionFlagIsSet $0 $1 true false
+true:	StrCpy $ISVAR 1
+	Goto +2		;done
+false:	StrCpy $ISVAR 0
+FunctionEnd
+### END _is ###
+
+
+
+### BEGIN _UserIs ###
+;; If operator to check whether execution level is of a given type e.g. admin
+;; ${if} "" UserIs admin
+!macro _UserIs dummy type t f
 	UserInfo::GetAccountType
-	Pop ${var}
-	StrCmp `${var}` `${type}` `${t}` `${f}`
+	Pop $ISVAR
+	StrCmp `$ISVAR` `${type}` `${t}` `${f}`
 !macroend ; _UserIs
+### END _UserIs ###
 
+
+
+### BEGIN REGISTRY MANIPULATION ###
+;; the root HKLM or HKCU must be a constant as it is interpreted at compiletime
+;; these macros write to the corresponding root (and key) base on UserIs admin
 !macro WriteKeyStr key name value
-	Push $R0
-	${If} $R0 UserIs admin
-		Pop $R0
+	${If} "" UserIs admin
 		WriteRegStr HKLM `${key}` `${name}` `${value}`
 	${Else}
-		Pop $R0
 		WriteRegStr HKCU `${key}` `${name}` `${value}`
 	${EndIf}
 !macroend ; WriteKeyStr
 !define WriteKeyStr '!insertmacro "WriteKeyStr"'
-
 !macro WriteKeyDWORD key name value
-	Push $R0
-	${If} $R0 UserIs admin
-		Pop $R0
+	${If} "" UserIs admin
 		WriteRegDWORD HKLM `${key}` `${name}` `${value}`
 	${Else}
-		Pop $R0
 		WriteRegDWORD HKCU `${key}` `${name}` `${value}`
 	${EndIf}
 !macroend ; WriteKeyDWORD
 !define WriteKeyDWORD '!insertmacro "WriteKeyDWORD"'
-
 !macro DeleteKey key
-	Push $R0
-	${If} $R0 UserIs admin
-		Pop $R0
+	${If} "" UserIs admin
 		DeleteRegKey HKLM `${key}`
 	${Else}
-		Pop $R0
 		DeleteRegKey HKCU `${key}`
 	${EndIf}
 !macroend ; DeleteKey
 !define DeleteKey '!insertmacro "DeleteKey"'
 
-!macro DeleteEnv name
-	${ToLog} `DEL "${name}"$\n`
-	Push $R0
-	${If} $R0 UserIs admin
-		Pop $R0
-		DeleteRegValue HKLM "${ENVREG_ALL}" `${name}`
-	${Else}
-		Pop $R0
-		DeleteRegValue HKCU "${ENVREG_USR}" `${name}`
-	${EndIf}
-!macroend ; DeleteEnv
-!define DeleteEnv '!insertmacro "DeleteEnv"'
 
+## BEGIN ENVIRONMENT MANIPULATION ##
+;; The key which hold the evironment variables is different for HKLM and HKCU
+!define ENVREG_ALL "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
+!define ENVREG_USR "Environment"
+
+# BEGIN WriteEnv #
+;; create or overwrite environment var
 !macro WriteEnv name value
-	${ToLog} `SET "${name}"="${value}"$\n`
-	Push $R0
-	${If} $R0 UserIs admin
-		Pop $R0
+	${ToLog} `SET_ENV ${name} "${value}"$\n`
+	${If} "" UserIs admin
 		WriteRegStr HKLM "${ENVREG_ALL}" `${name}` `${value}`
 	${Else}
-		Pop $R0
 		WriteRegStr HKCU "${ENVREG_USR}" `${name}` `${value}`
 	${EndIf}
 !macroend ; WriteEnv
 !define WriteEnv '!insertmacro "WriteEnv"'
+# END WriteEnv #
 
+# BEGIN ReadEnv #
+;; read environment var into var
 !macro ReadEnv var name
-	${If} ${var} UserIs admin
+	${If} "" UserIs admin
 		ReadRegStr ${var} HKLM "${ENVREG_ALL}" `${name}`
 	${Else}
 		ReadRegStr ${var} HKCU "${ENVREG_USR}" `${name}`
 	${EndIf}
-	${ToLog} `GET "${name}"="${var}"$\n`
+	${ToLog} `GET_ENV ${name} "${var}"$\n`
 !macroend ; ReadEnv
 !define ReadEnv '!insertmacro "ReadEnv"'
+# END ReadEnv #
 
+# BEGIN DeleteEnv #
+;; delete environment var
+!macro DeleteEnv name
+	${ToLog} `DEL_ENV ${name}$\n`
+	${If} "" UserIs admin
+		DeleteRegValue HKLM "${ENVREG_ALL}" `${name}`
+	${Else}
+		DeleteRegValue HKCU "${ENVREG_USR}" `${name}`
+	${EndIf}
+!macroend ; DeleteEnv
+!define DeleteEnv '!insertmacro "DeleteEnv"'
+# END DeleteEnv #
+
+# BEGIN AddToEnv #
+;; AddToEnv creates the environment var <name> with <value> if not existent
+;; Otherwise, it will check is env contains <value> given env is a ';'-separated list
+;; It will only append <value> to env list if entry not found
+;; It will preserve any tailing ';' if present
+!macro AddToEnv name value
+	Push `${value}`	;; In order to process two args without
+	Push `${name}`	;; destroying the content of $0 or $1,
+	Exch $0 ; name	;; we push the args to the stack FiLo
+	Exch		;; exchange 1st, swap stack, exchange 2nd.
+	Exch $1 ; value	;; stack: BOTTOM <= $0, $1 = TOP
+	Call AddToEnv
+	Pop $1
+	Pop $0
+!macroend ; AddToEnv
+Function AddToEnv ; name value
+	Push $R0
+	${ReadEnv} $R0 `$0`
+	${If} `$R0` == "" 		; if env did not exist or was empty
+		${WriteEnv} `$0` `$1`
+	${ElseIfNot} `;$1;` in `;$R0;`	; if env does not contain <value>
+		Push $R1
+		StrCpy $R1 $R0 1 -1	; last char of env
+		${If} `$R1` == ";"			;; if env terminates on ';'
+			${WriteEnv} `$0` `$R0$1;`	;; append <value> and terminate with ';'
+		${Else}					;; otherwise
+			${WriteEnv} `$0` `$R0;$1`	;; append separator ';' and <value>
+		${EndIf}
+		Pop $R1
+	${EndIf}
+	Pop $R0
+FunctionEnd ; AddToEnv
+!define AddToEnv '!insertmacro "AddToEnv"'
+# END AddToEnv #
+
+# BEGIN RemoveFromEnv #
+;; reverts AddToEnv
+;; checks if enironment var is present
+;; if present it will check if env contains <value> given env is a ';'-separated list
+;; if <value> is contained in env it will cut <value>
+;; it will continue until env does not contain any more <value>
+;; It will preserve any tailing ';' if present
+!macro RemoveFromEnv name value
+	Push `${value}`	;; In order to process two args without
+	Push `${name}`	;; destroying the content of $0 or $1,
+	Exch $0 ; name	;; we push the args to the stack FiLo
+	Exch		;; exchange 1st, swap stack, exchange 2nd.
+	Exch $1 ; value	;; stack: BOTTOM <= $0, $1 = TOP
+	Call un.RemoveFromEnv
+	Pop $1
+	Pop $0
+!macroend ; RemoveFromEnv
+Function un.RemoveFromEnv ; name value
+	Push $R0
+	${ReadEnv} $R0 `$0`
+	${If}   `$R0` == ""	; env is empty or not present
+	${OrIf} `$R0` == `$1`	; env contains only <value>
+	${OrIf} `$R0` == `$1;`	; env contains only <value> and a terminating ';'
+		${DeleteEnv} `$0`	; then delete env (is NOP if not present)
+	${Else}			; otherwise remove any occurence of <value> in env
+		Push $R1 ; value_len
+		Push $R2 ; env_len
+		Push $R3 ; tmpstr to hold pre part
+		StrLen $R1 $1
+		${If} `;$1;` in `;$R0;`	;; adding ';' helps isolating <value> as element
+			${Do}			; $INPOS points to start pos of found <value> in env
+				StrLen $R2 $R0		; current len of env
+				${If} $INPOS == 0		; remove <value> and ';' from head
+					IntOp  $INPOS $R1 + 1		;; offset = value_len + 1 for ';'
+					StrCpy $R0 $R0 $R2 $INPOS	;; cut head
+				${Else} 			; remove ';' and <value> from env at $INPOS
+					IntOp  $R3 $INPOS - 1		;; set pre len so it will exclude the ';' before <value>
+					StrCpy $R3 $R0 $R3		;; store pre part in tmpstr
+					IntOp  $INPOS $R1 + $INPOS	;; set post offset to $INPOS + value_len 
+					StrLen $R2 $R0			;; maxlen of env
+					StrCpy $R0 $R0 $R2 $INPOS	;; store post part
+					StrCpy $R0 `$R3$R0`		;; strcat pre and post for new env
+				${EndIf}	; update INPOS and abort loop if <value> no longer be found in env
+				${IfNotThen} `;$1;` in `;$R0;` ${|} ${ExitDo} ${|}
+			${Loop} ; finally update env in registry
+			${WriteEnv} `$0` `$R0`
+		${EndIf}
+		Pop $R3
+		Pop $R2
+		Pop $R1
+	${EndIf}
+	Pop $R0
+FunctionEnd ; RemoveFromEnv
+!define RemoveFromEnv '!insertmacro "RemoveFromEnv"'
+# END RemoveFromEnv #
+
+## END ENVIRONMENT MANIPULATION ##
+
+
+### END REGISTRY MANIPULATION ###
+
+
+
+### BEGIN GetBinDir ###
+;; stores the location of the native binaries in var
+;; the localtion depends on privileges and architecture
+!macro GetBinDir var
+	${If} "" UserIs admin
+		StrCpy ${var} "$SYSDIR"
+	${ElseIf} ${RunningX64}
+		StrCpy ${var} "${BINDIR64}"
+	${Else}
+		StrCpy ${var} "${BINDIR32}"
+	${EndIf}
+!macroend
+!define GetBinDir '!insertmacro "GetBinDir"'
+### END GetBinDir ###
+
+
+
+### BEGIN FileLowerExt ###
+;; the devtools filenames require a cast to lower case
+;; and in case of the mings a change of the extension
+;; this marco copies all files of extin in pathin to pathout
+;; then it renames the files to the desired format
 !macro FileLowerExt pathin extin pathout extout
-	; exchange ok because callers dont use vars
-	Push ${pathout}
-	Exch $0
-	Push ${extin}
-	Exch $1
-	Push ${extout}
-	Exch $2
-	SetOutPath "${pathout}"
+	Push ${pathout}		;; !!! this macro expects the arguments to be constants !!!
+	Exch $0			;; We can push argument and then exchange with a register
+	Push ${extin}		;; Given that: $0 not used in extin
+	Exch $1			;; stack: BOTTOM <= $0, $1 = TOP
+	Push ${extout}		;; Given that: $0 and $1 not used in extout
+	Exch $2			;; stack: BOTTOM <= $0, $1, $2 = TOP
+	SetOutPath "${pathout}"	;; Given that: $0, $1, and $2 not used in pathout
 	File "${pathin}/*${extin}"
 	Call FileLowerExt
 	Pop $2
@@ -279,100 +421,16 @@ Function FileLowerExt ; path extin extout
 	Pop $R0
 FunctionEnd ; FileLowerExt
 !define FileLowerExt '!insertmacro "FileLowerExt"'
+### END FileLowerExt ###
 
-!macro AddToEnv name value
-	Push `${value}`
-	Push `${name}`
-	Exch $0
-	Exch
-	Exch $1
-	Call AddToEnv
-	Pop $1
-	Pop $0
-!macroend ; AddToEnv
-Function AddToEnv ; name value
-	Push $R0
-	${ReadEnv} $R0 `$0`
-	${If} `$R0` == ""
-		${WriteEnv} `$0` `$1`
-	${ElseIfNot} `;$1;` in `;$R0;`
-		Push $R1
-		StrCpy $R1 $R0 1 -1
-		${If} `$R1` == ";" ; preserve tailing ;
-			${WriteEnv} `$0` `$R0$1;`
-		${Else}
-			${WriteEnv} `$0` `$R0;$1`
-		${EndIf}
-		Pop $R1
-	${EndIf}
-	Pop $R0
-FunctionEnd ; AddToEnv
-!define AddToEnv '!insertmacro "AddToEnv"'
 
-!macro RemoveFromEnv name value
-	Push ${value}
-	Push ${name}
-	Exch $0
-	Exch
-	Exch $1
-	Call un.RemoveFromEnv
-	Pop $1
-	Pop $0
-!macroend ; RemoveFromEnv
-Function un.RemoveFromEnv ; name value
-	Push $R0
-	${ReadEnv} $R0 `$0`
-	${If}   `$R0` == ""
-	${OrIf} `$R0` == `$1`
-	${OrIf} `$R0` == `$1;`
-		${DeleteEnv} `$0`
-	${Else}
-		Push $R1
-		Push $R2
-		Push $R3
-		StrLen $R1 $1
-		${If} `;$1;` in `;$R0;`
-			${Do}
-				${If} $ISVAR == 0 ; remove <value>;
-					StrLen $R2 $R0
-					IntOp  $ISVAR $R1 + 1
-					StrCpy $R0 $R0 $R2 $ISVAR	; post
-				${Else} ; remove ;<value>
-					IntOp  $R2 $ISVAR - 1
-					StrCpy $R3 $R0 $R2		; pre
-					IntOp  $ISVAR $R1 + $ISVAR	; off post
-					StrLen $R2 $R0
-					StrCpy $R0 $R0 $R2 $ISVAR	; post
-					StrCpy $R0 `$R3$R0`		; strcat
-				${EndIf}
-				${IfNotThen} `;$1;` in `;$R0;` ${|} ${ExitDo} ${|}
-			${Loop}
-			${WriteEnv} `$0` `$R0`
-		${EndIf}
-		Pop $R3
-		Pop $R2
-		Pop $R1
-	${EndIf}
-	Pop $R0
-FunctionEnd ; RemoveFromEnv
-!define RemoveFromEnv '!insertmacro "RemoveFromEnv"'
 
-!macro GetBinDir var
-	${If} ${var} UserIs admin
-		StrCpy ${var} "$SYSDIR"
-	${ElseIf} ${RunningX64}
-		StrCpy ${var} "${BINDIR64}"
-	${Else}
-		StrCpy ${var} "${BINDIR32}"
-	${EndIf}
-!macroend
-!define GetBinDir '!insertmacro "GetBinDir"'
-
+### BEGIN SECTIONS ###
 Function install_core_pre
 	Push $R0
 	!insertmacro MUI_STARTMENU_WRITE_BEGIN Application
 	CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
-	${If} $R0 UserIs admin
+	${If} "" UserIs admin
 		CreateDirectory "$SMPROGRAMS\$StartMenuFolder\DataServer"
 		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Install mdsip action server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\mdsip.hosts$\""
 		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Install mdsip data server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-i -p 8000 -h $\"C:\mdsip.hosts$\""
@@ -405,24 +463,24 @@ Function install_core_post
 	File etc\mdsip.hosts
 	SetOverWrite on
 	# Registry information for add/remove programs
-	${WriteKeyStr} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayName" "MDSplus${FLAVOR}"
-	${WriteKeyStr} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "UninstallString" "$INSTDIR\uninstall.exe"
-	${WriteKeyStr} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "QuietUninstallString" "$INSTDIR\uninstall.exe /S"
-	${WriteKeyStr} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "InstallLocation" "$INSTDIR"
-	${WriteKeyStr} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayIcon" "INSTDIR\mdsplus.ico"
-	${WriteKeyStr} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "Publisher" "MDSplus Collaboratory"
-	${WriteKeyStr} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "HelpLink" "${HELPURL}"
-	${WriteKeyStr} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "InstallSource" "https://github.com/MDSplus/mdsplus/archive/${BRANCH}_release-${MAJOR}.${MINOR}-${RELEASE}.zip"
-	${WriteKeyStr} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "URLUpdateInfo" "${UPDATEURL}"
-	${WriteKeyStr} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "URLInfoAbout" "${ABOUTURL}"
-	${WriteKeyStr} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayVersion" "${MAJOR}.${MINOR}.${RELEASE}"
-	${WriteKeyDWORD} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "VersionMajor" ${MAJOR}
-	${WriteKeyDWORD} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "VersionMinor" ${MINOR}
+	${WriteKeyStr} "${UNINSTALL_KEY}" "DisplayName" "MDSplus${FLAVOR}"
+	${WriteKeyStr} "${UNINSTALL_KEY}" "UninstallString" "$INSTDIR\uninstall.exe"
+	${WriteKeyStr} "${UNINSTALL_KEY}" "QuietUninstallString" "$INSTDIR\uninstall.exe /S"
+	${WriteKeyStr} "${UNINSTALL_KEY}" "InstallLocation" "$INSTDIR"
+	${WriteKeyStr} "${UNINSTALL_KEY}" "DisplayIcon"	"$INSTDIR\mdsplus.ico"
+	${WriteKeyStr} "${UNINSTALL_KEY}" "Publisher" "MDSplus Collaboratory"
+	${WriteKeyStr} "${UNINSTALL_KEY}" "HelpLink" "${HELPURL}"
+	${WriteKeyStr} "${UNINSTALL_KEY}" "InstallSource" "${INSTALLSOURCE}"
+	${WriteKeyStr} "${UNINSTALL_KEY}" "URLUpdateInfo" "${UPDATEURL}"
+	${WriteKeyStr} "${UNINSTALL_KEY}" "URLInfoAbout" "${ABOUTURL}"
+	${WriteKeyStr} "${UNINSTALL_KEY}" "DisplayVersion" "${MAJOR}.${MINOR}.${RELEASE}"
+	${WriteKeyDWORD} "${UNINSTALL_KEY}" "VersionMajor" ${MAJOR}
+	${WriteKeyDWORD} "${UNINSTALL_KEY}" "VersionMinor" ${MINOR}
 	# There is no option for modifying or repairing the install
-	${WriteKeyDWORD} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "NoModify" 1
-	${WriteKeyDWORD} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "NoRepair" 1
+	${WriteKeyDWORD} "${UNINSTALL_KEY}" "NoModify" 1
+	${WriteKeyDWORD} "${UNINSTALL_KEY}" "NoRepair" 1
 	# Set the INSTALLSIZE constant (!defined at the top of this script) so Add/Remove Programs can accurately report the size
-	${WriteKeyDWORD} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "EstimatedSize" ${INSTALLSIZE}
+	${WriteKeyDWORD} "${UNINSTALL_KEY}" "EstimatedSize" ${INSTALLSIZE}
 	Pop $R0
 FunctionEnd
 
@@ -447,7 +505,7 @@ SectionGroup "!core" core
 	File ${MINGWLIB64}/${ICONV_LIB}
 	File ${MINGWLIB64}/${ZLIB1_LIB}
 	${DisableX64FSRedirection}
-	${If} $R0 UserIs admin
+	${If} "" UserIs admin
 		FileOpen $R0 "$INSTDIR\installer.dat" w
 		FindFirst $R1 $R2 "${BINDIR64}\*"
 		loop_64:
@@ -460,7 +518,7 @@ SectionGroup "!core" core
 		done_64:
 		FindClose $R1
 		FileClose $R0
-		SetOutPath "$INSTDIR"
+		SetOutPath "$INSTDIR"  ; avoid access to ${BINDIR64} so it may be deleted
 		RMDir "${BINDIR64}"
 	${EndIf}
 	${EnableX64FSRedirection}
@@ -491,7 +549,7 @@ SectionGroup "!core" core
 	File ${MINGWLIB32}/${LIBXML2_LIB}
 	File ${MINGWLIB32}/${ICONV_LIB}
 	File ${MINGWLIB32}/${ZLIB1_LIB}
-	${IF} $R0 UserIs admin
+	${IF} "" UserIs admin
 		${If} ${RunningX64}
 			StrCpy $R3 "$WINDIR\SysWOW64"
 			FileOpen $R0 "$INSTDIR\installer.dat" a
@@ -509,7 +567,7 @@ SectionGroup "!core" core
 		${Loop}
 		FindClose $R1
 		FileClose $R0
-		SetOutPath "$INSTDIR"
+		SetOutPath "$INSTDIR"	; avoid access to ${BINDIR32} so it may be deleted
 		RMDir "${BINDIR32}"
 	${EndIf}
 	${IfNot} ${RunningX64}
@@ -522,7 +580,7 @@ SectionGroup "!core" core
  SectionEnd ; 32 bit
  Section "add to PATH" appendpath
 	Push $R0
-	${IfNot} $R0 UserIs admin
+	${IfNot} "" UserIs admin
 		${GetBinDir} $R0
 		${AddToEnv} "PATH" "$R0"
 	${EndIf}
@@ -694,7 +752,11 @@ Section "sample trees"
 	SetOutPath "$INSTDIR\trees"
 	File /r trees/*
 SectionEnd
+### END SECTIONS ###
 
+
+
+### BEGIN SECTION DESCRIPTION
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
 	!insertmacro MUI_DESCRIPTION_TEXT ${core}	"Install binaries and kernel tdi functions."
 	!insertmacro MUI_DESCRIPTION_TEXT ${bin64}	"Copy binaries for 64bit architecture."
@@ -724,7 +786,11 @@ SectionEnd
 	!insertmacro MUI_DESCRIPTION_TEXT ${mingw}	"Copy '*.lib' files for MinGW projects to '.\devtools\mingw'"
 	!insertmacro MUI_DESCRIPTION_TEXT ${vs}		"Copy '*.lib' files for VS projects to '.\devtools\visual_studio'"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
+### END SECTION DESCRIPTION ###
 
+
+
+### BEGIN SECTION LOGIC ###
 Function .onSelChange
 	; pydevices depend on python
 	${If}   $0 == ${apis}
@@ -769,7 +835,11 @@ Function .onSelChange
 		${EndIf}
 	${EndIf}
 FunctionEnd
+### END SECTION LOGIC ###
 
+
+
+### BEGIN INSTALLER ###
 Function .onInit
 	Push $R0
 	System::Call 'kernel32::CreateMutex(i 0, i 0, t "MDSplus-installer") ?e'
@@ -789,7 +859,7 @@ Function .onInit
 	SectionSetInstTypes ${LV2015} 0
 	SectionSetInstTypes ${LV2012} 0
 	SectionSetInstTypes ${LV2001} 0
-	${If} $R0 UserIs admin
+	${If} "" UserIs admin
 		SetShellVarContext all
 		ReadRegStr $INSTDIR HKLM "${ENVREG_ALL}" MDSPLUS_DIR
 		${If} `$INSTDIR` == ""
@@ -828,10 +898,11 @@ Function .onGUIEnd
 	;MessageBox MB_OK $LOG
 	SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
 FunctionEnd
+### END INSTALLER ###
 
 
-# Uninstaller
- 
+
+### BEGIN UNINSTALLER ###
 Function un.onInit
 	#Verify the uninstaller - last chance to back out
 	MessageBox MB_OKCANCEL "Permanantly remove MDSplus${FLAVOR}?" IDOK next
@@ -854,7 +925,7 @@ Section "uninstall"
 	skip_python_remove:
 	SetOutPath "$INSTDIR"
 	Delete uninstall.exe
-	${IF} $R0 UserIs admin
+	${IF} "" UserIs admin
 		SetShellVarContext all
 		nsExec::ExecToLog /OEM /timeout=5000 '"$SYSDIR\mdsip_service.exe" "-r -p 8100"'
 		Pop $R0
@@ -885,11 +956,12 @@ Section "uninstall"
 	${RemoveFromEnv}	subtree_path		"${subtree_path}"
 	${RemoveFromEnv}	PYTHONPATH		"${PYTHONPATH}"
 	${RemoveFromEnv}        MDS_PYDEVICE_PATH	"${MDS_PYDEVICE_PATH}"
-	${DeleteKey} "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus"
-	SetOutPath "$SYSDIR"
+	${DeleteKey} "${UNINSTALL_KEY}"
+	SetOutPath "$SYSDIR" ; avoid access to $INSTDIR so it may be deleted
 	RMDir /r "$INSTDIR"
 	Pop $R2
 	Pop $R1
 	Pop $R0
 	;MessageBox MB_OK $LOG
 SectionEnd
+### END UNINSTALLER ###
