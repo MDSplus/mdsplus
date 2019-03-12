@@ -85,6 +85,8 @@ abs_top_srcdir = @abs_top_srcdir@
 top_builddir = @abs_top_builddir@
 top_srcdir = @abs_top_srcdir@
 
+@MINGW_TRUE@icon.o : icon.rc
+@MINGW_TRUE@	@WINDRES@ $^ -o $@
 
 $(sort @MAKEBINDIR@ @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEETCDIR@ @MAKEUIDDIR@ @uiddir@ $(bindir) $(libdir) $(sysconfdir)):
 	$(MKDIR_P) $@
