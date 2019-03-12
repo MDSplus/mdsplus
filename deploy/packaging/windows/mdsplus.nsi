@@ -45,8 +45,8 @@ InstType "Minimal"
 !include "MUI2.nsh"
 !define MUI_ABORTWARNING
 !define MUI_COMPONENTSPAGE_SMALLDESC
-!define MUI_ICON			mdsplus.ico
-!define MUI_UnICON			mdsplus.ico
+!define MUI_ICON			icons/mdsplus.ico
+!define MUI_UnICON			icons/mdsplus.ico
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER	"MDSplus"
 !define MUI_FINISHPAGE_LINK		"mdsplus.org"
 !define MUI_FINISHPAGE_LINK_LOCATION	${ABOUTURL}
@@ -438,14 +438,15 @@ Function install_core_pre
 		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Remove mdsip server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8000"
 	${EndIf}
 	${GetBinDir} $R0
-	CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\Tdi.lnk" "$R0\tditest.exe" "" "$R0\icons.exe" 0
-	CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\TCL.lnk" "$R0\mdsdcl.exe" `-prep "set command tcl_commands -history=.tcl"` "$R0\icons.exe" 1
-	;CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\View ChangeLog.lnk" "$INSTDIR\ChangeLog.rtf"
+	CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\ActLog.lnk" "$R0\actlog.exe"  "" "$R0\actlog.exe"  0
+	CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\TDI.lnk"    "$R0\tditest.exe" "" "$R0\tditest.exe" 0
+	CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\TCL.lnk"    "$R0\mdsdcl.exe" `-prep "set command tcl_commands -history=.tcl"` "$R0\tcl_commands.dll" 0
+;	CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\View ChangeLog.lnk" "$INSTDIR\ChangeLog.rtf"
 	!insertmacro MUI_STARTMENU_WRITE_END
 	SetOutPath "$INSTDIR"
-	;File "/oname=ChangeLog.rtf" ChangeLog
-	File ${srcdir}/mdsplus.ico
-	File ${srcdir}/MDSplus-License.rtf
+;	File "/oname=ChangeLog.rtf" ChangeLog
+	File icons/mdsplus.ico
+	File MDSplus-License.rtf
 	writeUninstaller "$INSTDIR\uninstall.exe"
 	${AddToEnv} MDS_PATH	"${MDS_PATH}"
 	${WriteEnv} MDSPLUS_DIR	"${MDSPLUS_DIR}"
@@ -650,13 +651,13 @@ Section "java tools" java
 	SectionIn 1 2
 	SetOutPath $INSTDIR\java
 	File /r java/classes
+	File icons/scope.ico
+	File icons/traverser.ico
+	File icons/traverser2.ico
 	!insertmacro MUI_STARTMENU_WRITE_BEGIN Application
-		Push $R0
-		${GetBinDir} $R0
-		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Scope.lnk"      javaw '-cp "$INSTDIR\java\classes\jScope.jar";"$INSTDIR\java\Classes" -Xmx1G jScope' "$R0\icons.exe" 4 SW_SHOWMINIMIZED
-		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Traverser.lnk"  javaw '-cp "$INSTDIR\java\classes\jTraverser.jar" jTraverser' $R0\icons.exe" 3 SW_SHOWMINIMIZED
-		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Traverser2.lnk" javaw '-jar "$INSTDIR\java\classes\jTraverser2.jar"' $R0\icons.exe" 3 SW_SHOWMINIMIZED
-		Pop $R0
+		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Scope.lnk"      javaw '-cp "$INSTDIR\java\classes\jScope.jar";"$INSTDIR\java\Classes" -Xmx1G jScope'	"$INSTDIR\java\scope.ico"	0 SW_SHOWMINIMIZED
+		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Traverser.lnk"  javaw '-cp "$INSTDIR\java\classes\jTraverser.jar" jTraverser'				"$INSTDIR\java\traverser.ico"	0 SW_SHOWMINIMIZED
+		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Traverser2.lnk" javaw '-jar "$INSTDIR\java\classes\jTraverser2.jar"'					"$INSTDIR\java\traverser2.ico"	0 SW_SHOWMINIMIZED
 	!insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd ; java
 
