@@ -533,6 +533,17 @@ $(git log --decorate=full --no-merges ${LAST_RELEASE_COMMIT}..HEAD | awk '{gsub(
 EOF
 	   if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
 	   then
+	   curl --data @- "https://api.github.com/repos/MDSplus/mdsplus/releases?access_token=$(cat $KEYS/.git_token)" > ${WORKSPACE}/tag_release.log 2>&1 <<EOF
+{
+  "tag_name":"${RELEASE_TAG}",
+  "target_commitish":"${BRANCH}",
+  "name":"${RELEASE_TAG}",
+  "body":"New release. Commit messages could not be included"
+}
+EOF
+	   fi
+	   if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
+	   then 
 	       RED
 	       cat <<EOF >&2
 =========================================================
