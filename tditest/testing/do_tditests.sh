@@ -37,10 +37,13 @@ fi
 if [ -z ${MDSPLUS_DIR} ]
 then MDSPLUS_DIR=$(readlink -f ${srcdir}/../..)
 fi
+# use tmpdir tobisolate shotdb.sys
+tmpdir=$(mktemp -d)
+trap 'rm -Rf ${tmpdir}' EXIT
 MDS_PATH=".;${MDSPLUS_DIR}/tdi;."
 MDS_PYDEVICE_PATH="${MDSPLUS_DIR}/pydevices;${MDSPLUS_DIR}/mdsobjects/python/tests/devices"
-subtree_path=".;${MDSPLUS_DIR}/trees/subtree"
-main_path=".;${MDSPLUS_DIR}/trees"
+subtree_path="${tmpdir};${MDSPLUS_DIR}/trees/subtree"
+main_path="${tmpdir};${MDSPLUS_DIR}/trees"
 
 if [[ $test == *"py"* ]]
 then
