@@ -1,5 +1,9 @@
 ./usr/local/mdsplus/desktop/motif
+./usr/local/mdsplus/desktop/motif/actmon.desktop
 ./usr/local/mdsplus/desktop/motif/dwpad.desktop
 ./usr/local/mdsplus/desktop/motif/dwscope.desktop
 ./usr/local/mdsplus/desktop/motif/traverser.desktop
+./usr/local/mdsplus/pixmaps/actlog.png
 ./usr/local/mdsplus/pixmaps/dwpad.png
+./usr/local/mdsplus/pixmaps/dwscope.png
+./usr/local/mdsplus/pixmaps/traverser.png
