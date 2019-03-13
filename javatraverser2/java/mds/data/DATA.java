@@ -63,7 +63,7 @@ public interface DATA<T extends Object>{
      *
      * @return byte
      */
-    public byte dtype();
+    public DTYPE dtype();
 
     /**
      * returns the data cast to ffloat

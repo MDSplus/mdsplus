@@ -81,7 +81,7 @@ public final class Uint16 extends INTEGER_UNSIGNED<UShort>{
 
     @Override
     protected final byte getRankBits() {
-        return 2;
+        return 0x01;
     }
 
     public final UShort getValue() {

@@ -20,16 +20,16 @@ public final class Float64 extends FLOAT<Double>{
         this(0);
     }
 
-    protected Float64(final byte dtype, final double value){
-        super(dtype, value);
-    }
-
     public Float64(final ByteBuffer b){
         super(b);
     }
 
     public Float64(final double value){
         this(DTYPE.DOUBLE, value);
+    }
+
+    protected Float64(final DTYPE dtype, final double value){
+        super(dtype, value);
     }
 
     @Override
@@ -65,7 +65,7 @@ public final class Float64 extends FLOAT<Double>{
 
     @Override
     protected final byte getRankBits() {
-        return 8;
+        return 0x07;
     }
 
     public final double getValue() {
@@ -98,7 +98,7 @@ public final class Float64 extends FLOAT<Double>{
     }
 
     @Override
-    public final CString text() {
-        return new CString(String.format("%32.15E", this.getAtomic()).replace("E", this.getSuffix()));
+    public final StringDsc text() {
+        return new StringDsc(String.format("%32.15E", this.getAtomic()).replace("E", this.getSuffix()));
     }
 }

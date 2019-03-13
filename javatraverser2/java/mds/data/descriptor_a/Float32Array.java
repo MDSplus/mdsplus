@@ -23,16 +23,16 @@ public final class Float32Array extends FLOATArray<Float>{
         return new Float32Array(DTYPE.FS, values, shape);
     }
 
-    public Float32Array(final byte dtype, final ByteBuffer data, final int[] shape){
+    public Float32Array(final ByteBuffer b){
+        super(b);
+    }
+
+    public Float32Array(final DTYPE dtype, final ByteBuffer data, final int[] shape){
         super(dtype, data, shape);
     }
 
-    private Float32Array(final byte dtype, final float[] values, final int... shape){
+    private Float32Array(final DTYPE dtype, final float[] values, final int... shape){
         super(dtype, values, shape);
-    }
-
-    public Float32Array(final ByteBuffer b){
-        super(b);
     }
 
     public Float32Array(final float... values){
@@ -59,13 +59,13 @@ public final class Float32Array extends FLOATArray<Float>{
     @Override
     public final Float32Array ffloat() {
         if(this.dtype() == DTYPE.F) return this;
-        return new Float32Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.F));
+        return new Float32Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.F.toByte()));
     }
 
     @Override
     public final Float32Array fsfloat() {
         if(this.dtype() == DTYPE.FS) return this;
-        return new Float32Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.FS));
+        return new Float32Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.FS.toByte()));
     }
 
     @Override
@@ -80,7 +80,7 @@ public final class Float32Array extends FLOATArray<Float>{
 
     @Override
     protected byte getRankBits() {
-        return 4;
+        return 0x03;
     }
 
     @Override

@@ -4,7 +4,6 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import mds.MdsException;
 import mds.data.DATA;
-import mds.data.DTYPE;
 import mds.data.TREE;
 import mds.data.descriptor_a.EmptyArray;
 import mds.data.descriptor_r.function.COMPRESSION;
@@ -36,7 +35,7 @@ public class Descriptor_CA extends ARRAY<ByteBuffer>{
     @SuppressWarnings("unchecked")
     public final StringBuilder decompile(final int prec, final StringBuilder pout, final int mode) {
         if(this.payload() == null) return this.substitute(pout);
-        try{
+        if(this.getLength() > 256) try{
             @SuppressWarnings("rawtypes")
             final Descriptor_A that = COMPRESSION.decompress(this, 1);
             if(that.format()) pout.append(this.getDTypeName()).append('(');
@@ -46,13 +45,14 @@ public class Descriptor_CA extends ARRAY<ByteBuffer>{
                 pout.append(Integer.toString(this.dims(i))).append(',');
             that.decompile(pout, that.getElement(0));
             if(that.format()) pout.append(that.getSuffix());
-            pout.append(" /*** etc. ***/)");
+            pout.append(ARRAY.ETC);
             if(that.format()) pout.append(')');
             return pout;
         }catch(final MdsException e){
             e.printStackTrace();
             return this.payload().decompile(prec, pout, mode);
         }
+        return this.unpack().decompile(prec, pout, mode);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class Descriptor_CA extends ARRAY<ByteBuffer>{
     }
 
     private final StringBuilder substitute(final StringBuilder pout) {
-        return pout.append("ZERO(").append(this.arsize() / this.length()).append(", 0").append(DTYPE.getSuffix(this.dtype())).append(')');
+        return pout.append("ZERO(").append(this.arsize() / this.length()).append(", 0").append(this.dtype().suffix).append(')');
     }
 
     @Override

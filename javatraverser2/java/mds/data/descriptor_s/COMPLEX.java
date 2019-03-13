@@ -3,6 +3,7 @@ package mds.data.descriptor_s;
 import java.nio.ByteBuffer;
 import mds.MdsException;
 import mds.data.DATA;
+import mds.data.DTYPE;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_s.COMPLEX.Complex;
 
@@ -38,11 +39,10 @@ public abstract class COMPLEX<T extends Number>extends NUMBER<Complex<T>>{
         }
     }
 
-    public static final <T extends Number> StringBuilder decompile(final StringBuilder pout, final Complex<T> complex, final byte dtype, final int mode) {
-        final byte realdtype = (byte)(dtype - 2);
+    public static final <T extends Number> StringBuilder decompile(final StringBuilder pout, final Complex<T> t, final DTYPE dtype, final int mode) {
         pout.append("Cmplx(");
-        pout.append(FLOAT.decompile(complex.real, realdtype, mode)).append(',');
-        pout.append(FLOAT.decompile(complex.imag, realdtype, mode)).append(')');
+        pout.append(FLOAT.decompile(t.real, dtype, mode)).append(',');
+        pout.append(FLOAT.decompile(t.imag, dtype, mode)).append(')');
         return pout;
     }
 
@@ -64,20 +64,20 @@ public abstract class COMPLEX<T extends Number>extends NUMBER<Complex<T>>{
         return (X instanceof COMPLEX) ? ((COMPLEX<Number>)X).getAtomic() : new Complex(Double.valueOf(X.toDouble()), Double.valueOf(0.));
     }
 
-    protected COMPLEX(final byte dtype, final Complex<?> value){
+    protected COMPLEX(final ByteBuffer b){
+        super(b);
+    }
+
+    protected COMPLEX(final DTYPE dtype, final Complex<?> value){
         super(dtype, COMPLEX.toByteBuffer(value));
     }
 
-    public COMPLEX(final byte dtype, final double real, final double imag){
+    public COMPLEX(final DTYPE dtype, final double real, final double imag){
         super(dtype, COMPLEX.toByteBuffer(real, imag));
     }
 
-    public COMPLEX(final byte dtype, final float real, final float imag){
+    public COMPLEX(final DTYPE dtype, final float real, final float imag){
         super(dtype, COMPLEX.toByteBuffer(real, imag));
-    }
-
-    protected COMPLEX(final ByteBuffer b){
-        super(b);
     }
 
     @Override
@@ -106,7 +106,7 @@ public abstract class COMPLEX<T extends Number>extends NUMBER<Complex<T>>{
 
     @Override
     protected byte getRankClass() {
-        return 8;
+        return 0x70;
     }
 
     public final T getReal() {

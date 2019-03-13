@@ -189,12 +189,12 @@ public abstract class CheckBoxList extends JDialog{
                 this.checkboxes.clear();
                 this.checklist.readonly = true;
                 final TREE tree = this.treeview.getTree();
-                if(tree.mds.isLowLatency()) synchronized(tree.mds){
+                if(tree.getMds().isLowLatency()) synchronized(tree.getMds()){
                     final int usage_mask = 1 << usage;
                     tree.holdDbid();
                     try{
                         NodeRefStatus ref = NodeRefStatus.init;
-                        while((ref = tree.treeshr.treeFindNodeWild(null, "***", usage_mask, ref)).ok()){
+                        while((ref = tree.api.treeFindNodeWild(null, "***", usage_mask, ref)).ok()){
                             final Nid nid = new Nid(ref.data, tree);
                             try{
                                 this.addCheckBox(nid, nid.getNciFullPath());
@@ -208,7 +208,7 @@ public abstract class CheckBoxList extends JDialog{
                 }
                 else{
                     final Nid[] nid = tree.findNodesWild(usage);
-                    final String[] fp = tree.mds.getStringArray(tree.ctx, "GETNCI($,'FULLPATH')", new NidArray(nid));
+                    final String[] fp = tree.getMds().getStringArray(tree.ctx, "GETNCI($,'FULLPATH')", new NidArray(nid));
                     for(int i = 0; i < nid.length; i++)
                         this.addCheckBox(nid[i], fp[i]);
                 }

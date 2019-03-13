@@ -2,6 +2,7 @@ package mds.data.descriptor;
 
 import java.nio.ByteBuffer;
 import mds.MdsException;
+import mds.data.DTYPE;
 import mds.data.descriptor_a.EmptyArray;
 import mds.data.descriptor_a.Float32Array;
 import mds.data.descriptor_a.Float64Array;
@@ -74,7 +75,8 @@ public abstract class ARRAY<T>extends Descriptor<T>{
     protected static final aflags f_array  = new aflags(false, true, true, false, false);
     protected static final aflags f_bounds = new aflags(false, true, true, true, true);
     protected static final aflags f_coeff  = new aflags(false, true, true, true, false);
-    public static final byte      MAX_DIM  = 8;
+    public static final byte      MAX_DIMS = 8;
+    public static final String    ETC      = " /*** etc. ***/)";
 
     /** Returns the ARRAY deserialized from the given ByteBuffer **/
     public static ARRAY<?> deserialize(final ByteBuffer bi) throws MdsException {
@@ -91,7 +93,7 @@ public abstract class ARRAY<T>extends Descriptor<T>{
         throw new MdsException(Descriptor.getDClassName(b.get(Descriptor._clsB)) + " is not an ARRAY", 0);
     }
 
-    private static final short getLength(final int[] shape, final byte dtype, final int size) {
+    private static final short getLength(final int[] shape, final DTYPE dtype, final int size) {
         if(shape == null || shape.length == 0 || shape[0] == 0) return Descriptor.getDataSize(dtype, 0);
         int arrlen = shape[0];
         for(int i = 1; i < shape.length; i++)
@@ -99,7 +101,11 @@ public abstract class ARRAY<T>extends Descriptor<T>{
         return (short)(size / arrlen);
     }
 
-    protected ARRAY(final byte dtype, final byte dclass, final ByteBuffer byteBuffer, final int... shape){
+    protected ARRAY(final ByteBuffer b){
+        super(b);
+    }
+
+    protected ARRAY(final DTYPE dtype, final byte dclass, final ByteBuffer byteBuffer, final int... shape){
         super(ARRAY.getLength(shape, dtype, byteBuffer.limit()), dtype, dclass, byteBuffer, shape.length > 1 ? ARRAY._dmsIa + shape.length * Integer.BYTES : ARRAY._a0I, 0);
         this.b.put(ARRAY._afsB, (shape.length > 1 ? ARRAY.f_coeff : ARRAY.f_array).toByte());
         this.b.put(ARRAY._dmctB, (byte)shape.length);
@@ -109,10 +115,6 @@ public abstract class ARRAY<T>extends Descriptor<T>{
             this.b.asIntBuffer().put(shape);
             this.b.position(0);
         }
-    }
-
-    protected ARRAY(final ByteBuffer b){
-        super(b);
     }
 
     /** (16,i) a0 **/

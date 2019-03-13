@@ -2,15 +2,19 @@ package mds;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Vector;
+import mds.Mdsdcl.DclStatus;
 import mds.data.CTX;
+import mds.data.TREE;
 import mds.data.descriptor.ARRAY;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_A;
 import mds.data.descriptor.Descriptor_S;
-import mds.data.descriptor_s.CString;
+import mds.data.descriptor_a.Uint8Array;
+import mds.data.descriptor_s.StringDsc;
 import mds.data.descriptor_s.Missing;
 
 public abstract class Mds{
@@ -93,6 +97,8 @@ public abstract class Mds{
     protected transient boolean[]                     event_flags   = new boolean[Mds.MAX_NUM_EVENTS];
     protected transient Hashtable<Integer, EventItem> hashEventId   = new Hashtable<Integer, EventItem>();
     protected transient Hashtable<String, EventItem>  hashEventName = new Hashtable<String, EventItem>();
+    protected transient HashSet<String>               defined_funs  = new HashSet<String>();
+    private int                                       mds_end_arg   = 0;
 
     /**
      * getDescriptor
@@ -121,8 +127,10 @@ public abstract class Mds{
         return eventid;
     }
 
-    synchronized public final void addMdsListener(final MdsListener l) {
-        if(l != null) this.mdslisteners.add(l);
+    public final void addMdsListener(final MdsListener l) {
+        if(l != null) synchronized(this.mdslisteners){
+            this.mdslisteners.add(l);
+        }
     }
 
     @SuppressWarnings("static-method")
@@ -134,16 +142,27 @@ public abstract class Mds{
         return this.getInteger(null, "DEALLOCATE('*')");
     }
 
-    synchronized protected final void dispatchMdsEvent(final MdsEvent e) {
-        if(this.mdslisteners != null) for(final MdsListener listener : this.mdslisteners)
-            listener.processMdsEvent(e);
+    public boolean defineFunctions(final String... funs) throws MdsException {
+        final Collection<String> col = Arrays.asList(funs);
+        if(this.defined_funs.containsAll(col)) return false;
+        this.execute(String.join(";", funs));
+        this.defined_funs.addAll(col);
+        return this.defined_funs.addAll(col);
     }
 
-    synchronized private final void dispatchUpdateEvent(final EventItem eventItem) {
-        final Vector<UpdateEventListener> eventListener = eventItem.listener;
+    protected final void dispatchMdsEvent(final MdsEvent e) {
+        synchronized(this.mdslisteners){
+            if(this.mdslisteners != null) for(final MdsListener listener : this.mdslisteners)
+                listener.processMdsEvent(e);
+        }
+    }
+
+    private final void dispatchUpdateEvent(final EventItem eventItem) {
         final UpdateEvent e = new UpdateEvent(this, eventItem.name);
-        for(int i = 0; i < eventListener.size(); i++)
-            eventListener.elementAt(i).processUpdateEvent(e);
+        synchronized(eventItem.listener){
+            for(final UpdateEventListener el : eventItem.listener)
+                el.processUpdateEvent(e);
+        }
     }
 
     protected final void dispatchUpdateEvent(final int eventid) {
@@ -153,6 +172,12 @@ public abstract class Mds{
 
     protected final void dispatchUpdateEvent(final String eventName) {
         if(this.hashEventName.containsKey(eventName)) this.dispatchUpdateEvent(this.hashEventName.get(eventName));
+    }
+
+    public abstract void execute(final String expr, final Descriptor<?>... args) throws MdsException;
+
+    public MdsApi getAPI() {
+        return new MdsApi(this);
     }
 
     public final byte getByte(final CTX ctx, final Request<Descriptor<?>> req) throws MdsException {
@@ -167,8 +192,8 @@ public abstract class Mds{
         return this.getByte(null, expr, args);
     }
 
-    public final byte[] getByteArray(final CTX ctx, final Request<Descriptor<?>> req) throws MdsException {
-        return this.getByteArray(ctx, req.expr, req.args);
+    public final byte[] getByteArray(final CTX ctx, final Request<Uint8Array> request) throws MdsException {
+        return this.getByteArray(ctx, request.expr, request.args);
     }
 
     public final byte[] getByteArray(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
@@ -181,7 +206,7 @@ public abstract class Mds{
 
     private final Descriptor<?> getDataArray(final CTX ctx, final String expr, final Descriptor<?>... args) throws MdsException {
         final Descriptor<?> desc = this.getDescriptor(ctx, expr, args);
-        if(desc instanceof CString){
+        if(desc instanceof StringDsc){
             if(desc.length() > 0) throw new MdsException(desc.toString(), 0);
             return Missing.NEW;
         }
@@ -192,7 +217,9 @@ public abstract class Mds{
     public final <T extends Descriptor> T getDescriptor(final CTX ctx, final Request<T> req) throws MdsException {
         final Mds mds = Mds.getActiveMds();
         try{
-            return this.setActive()._getDescriptor(ctx, req);
+            final T dsc = this.setActive()._getDescriptor(ctx, req);
+            if(ctx instanceof TREE) dsc.setTree((TREE)ctx);
+            return dsc;
         }catch(final MdsException exc){
             Mds.active = mds;
             throw exc;
@@ -371,6 +398,10 @@ public abstract class Mds{
         return this.getStringArray(null, expr, args);
     }
 
+    public final TCL getTCL() {
+        return new TCL(this);
+    }
+
     /**
      * returns true if the interface features a low latency
      * This will allow more atomic operations without significant performance issues
@@ -386,6 +417,19 @@ public abstract class Mds{
      * @return String
      */
     public abstract String isReady();
+
+    protected final int MdsEND_ARG() {
+        if(this.mds_end_arg == 0){
+            try{
+                if(this.getDescriptor("TdiShr->TdiPi(val(0),val(1))").toLong() == 1) //
+                    this.mds_end_arg = 1;
+                else this.mds_end_arg = -1;
+            }catch(final MdsException e){
+                this.mds_end_arg = -1;
+            }
+        }
+        return this.mds_end_arg;
+    }
 
     /**
      * registers an Event Listener
@@ -410,9 +454,11 @@ public abstract class Mds{
         return eventid;
     }
 
-    synchronized public final void removeMdsListener(final MdsListener l) {
+    public final void removeMdsListener(final MdsListener l) {
         if(l == null) return;
-        this.mdslisteners.remove(l);
+        synchronized(this.mdslisteners){
+            this.mdslisteners.remove(l);
+        }
     }
 
     public final Mds setActive() {
@@ -426,7 +472,11 @@ public abstract class Mds{
         this.mdsSetEvent(event, eventid);
     }
 
-    public final String tcl(final String tclcmd) throws MdsException {
-        return this.getString("_a=*;TCL($,_a);_a", new CString(tclcmd)).trim();
+    public final String tcl(final CTX ctx, final String tclcmd) throws MdsException {
+        final DclStatus res = this.getAPI().mdsdcl_do_command_dsc(ctx, tclcmd);
+        MdsException.handleStatus(res.status);
+        final String err = res.getErrString();
+        if(err != null) throw new Mdsdcl.DclException(err);
+        return res.getOutString();
     }
 }

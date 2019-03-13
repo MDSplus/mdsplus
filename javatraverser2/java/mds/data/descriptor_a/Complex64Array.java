@@ -14,10 +14,6 @@ public final class Complex64Array extends COMPLEXArray<Double>{
         super(DTYPE.COMPLEX_DOUBLE, new double[0]);
     }
 
-    public Complex64Array(final byte dtype, final ByteBuffer data, final int[] shape){
-        super(DTYPE.COMPLEX_DOUBLE, data, shape);
-    }
-
     public Complex64Array(final ByteBuffer b){
         super(b);
     }
@@ -68,7 +64,7 @@ public final class Complex64Array extends COMPLEXArray<Double>{
 
     @Override
     protected final byte getRankBits() {
-        return 8;
+        return 0x07;
     }
 
     @Override

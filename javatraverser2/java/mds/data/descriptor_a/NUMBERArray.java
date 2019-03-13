@@ -19,12 +19,12 @@ import mds.data.descriptor_r.function.BINARY.Subtract.double_subtract;
 import mds.data.descriptor_s.Missing;
 
 public abstract class NUMBERArray<T extends Number>extends Descriptor_A<T> implements DATA<T[]>{
-    public NUMBERArray(final byte dtype, final ByteBuffer data, final int[] shape){
-        super(dtype, data, shape);
-    }
-
     protected NUMBERArray(final ByteBuffer b){
         super(b);
+    }
+
+    public NUMBERArray(final DTYPE dtype, final ByteBuffer data, final int[] shape){
+        super(dtype, data, shape);
     }
 
     @Override
@@ -52,13 +52,13 @@ public abstract class NUMBERArray<T extends Number>extends Descriptor_A<T> imple
         final ByteBuffer buf;
         if(X instanceof NUMBERArray){
             shape = ((NUMBERArray<?>)X).getShape();
-            final int elements = ((NUMBERArray<?>)X).arsize() / ((NUMBERArray<?>)X).length();
+            final int elements = ((NUMBERArray<?>)X).getLength();
             final ByteBuffer xbuf = X.getBuffer();
             buf = ByteBuffer.allocate(elements * this.length()).order(Descriptor.BYTEORDER);
             if(Y instanceof NUMBERArray){
                 final ByteBuffer ybuf = Y.getBuffer();
                 for(int i = 0; i < elements; i++)
-                    this.buildBuffer(buf, method.method(((NUMBERArray<Number>)X).getElement(xbuf).doubleValue(), ((NUMBERArray<Number>)X).getElement(ybuf).doubleValue()));
+                    this.buildBuffer(buf, method.method(((NUMBERArray<Number>)X).getElement(xbuf).doubleValue(), ((NUMBERArray<Number>)Y).getElement(ybuf).doubleValue()));
             }else{
                 final double ys = Y.toDouble();
                 for(int i = 0; i < elements; i++)
@@ -66,12 +66,12 @@ public abstract class NUMBERArray<T extends Number>extends Descriptor_A<T> imple
             }
         }else{
             shape = ((NUMBERArray<?>)Y).getShape();
-            final int elements = ((NUMBERArray<?>)Y).arsize() / ((NUMBERArray<?>)Y).length();
+            final int elements = ((NUMBERArray<?>)Y).getLength();
             final double xs = X.toDouble();
             final ByteBuffer ybuf = Y.getBuffer();
             buf = ByteBuffer.allocate(elements * this.length()).order(Descriptor.BYTEORDER);
             for(int i = 0; i < elements; i++)
-                this.buildBuffer(buf, method.method(xs, ((NUMBERArray<Number>)X).getElement(ybuf).doubleValue()));
+                this.buildBuffer(buf, method.method(xs, ((NUMBERArray<Number>)Y).getElement(ybuf).doubleValue()));
         }
         return this.newType(this.dtype(), buf, shape);
     }
@@ -87,7 +87,7 @@ public abstract class NUMBERArray<T extends Number>extends Descriptor_A<T> imple
 
     @Override
     public final byte getRank() {
-        return (byte)(0x80 | this.getRankClass() | (this.getRankBits() - 1));
+        return (byte)(0x80 | this.getRankClass() | this.getRankBits());
     }
 
     protected abstract byte getRankBits();
@@ -96,7 +96,7 @@ public abstract class NUMBERArray<T extends Number>extends Descriptor_A<T> imple
 
     @Override
     protected final String getSuffix() {
-        return DTYPE.getSuffix(this.dtype());
+        return this.dtype().suffix;
     }
 
     @Override
@@ -135,9 +135,9 @@ public abstract class NUMBERArray<T extends Number>extends Descriptor_A<T> imple
         return this.double_binary(X, Y, new double_multiply());
     }
 
-    protected final Descriptor<?> newType(final byte dtype, final ByteBuffer buf, final int[] shape) {
+    protected final Descriptor<?> newType(final DTYPE dtype, final ByteBuffer buf, final int[] shape) {
         try{
-            return this.getClass().getConstructor(byte.class, ByteBuffer.class, int[].class).newInstance(Byte.valueOf(dtype), buf.rewind(), shape);
+            return this.getClass().getConstructor(DTYPE.class, ByteBuffer.class, int[].class).newInstance(dtype, buf.rewind(), shape);
         }catch(final Exception e){
             e.printStackTrace();
             return Missing.NEW;
@@ -174,8 +174,8 @@ public abstract class NUMBERArray<T extends Number>extends Descriptor_A<T> imple
     }
 
     @Override
-    public final CStringArray text() {
-        return new CStringArray((int)(this.length() * 2.4 + 1.6), (Object[])this.getAtomic());
+    public final StringArray text() {
+        return new StringArray((int)(this.length() * 2.4 + 1.6), (Object[])this.getAtomic());
     }
 
     @Override

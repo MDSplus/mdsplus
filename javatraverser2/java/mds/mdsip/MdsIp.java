@@ -1,6 +1,7 @@
 package mds.mdsip;
 
-import java.awt.EventQueue;
+import java.awt.Window;
+import java.io.Closeable;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
@@ -9,18 +10,28 @@ import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.ArrayList;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
+import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Logger;
+import com.jcraft.jsch.OpenSSHConfig;
 import com.jcraft.jsch.Session;
+import com.jcraft.jsch.UIKeyboardInteractive;
 import com.jcraft.jsch.UserInfo;
 import debug.DEBUG;
 import mds.Mds;
@@ -28,110 +39,47 @@ import mds.MdsEvent;
 import mds.MdsException;
 import mds.MdsException.MdsAbortException;
 import mds.MdsListener;
-import mds.TreeShr;
 import mds.UpdateEventListener;
 import mds.data.CTX;
 import mds.data.DTYPE;
 import mds.data.descriptor.Descriptor;
+import mds.data.descriptor_apd.List;
 import mds.data.descriptor_s.Int32;
 import mds.data.descriptor_s.Missing;
 import mds.data.descriptor_s.Pointer;
 
 public class MdsIp extends Mds{
-    private final class MdsConnect extends Thread{
-        private boolean close = false;
-        private boolean tried = false;
-
-        public MdsConnect(){
-            super(MdsIp.this.getName("MdsConnect"));
-            this.setDaemon(true);
-        }
-
-        synchronized public final void close() {
-            this.close = true;
-            this.notify();
-        }
-
-        synchronized public void retry() {
-            this.tried = false;
-            this.notify();
-        }
-
-        @Override
-        public final void run() {
-            try{
-                for(;;)
-                    try{
-                        if(this.close) return;
-                        MdsIp.this.connectToServer();
-                        this.setTried(true);
-                        synchronized(this){
-                            if(this.close) return;
-                            this.wait();
-                        }
-                    }catch(final IOException ce){
-                        this.setTried(true);
-                        try{
-                            Thread.sleep(3000);
-                        }catch(final InterruptedException ie){
-                            System.err.println(this.getName() + ": isInterrupted1");
-                        }
-                    }
-            }catch(final InterruptedException ie){
-                System.err.println(this.getName() + ": isInterrupted2");
-                this.close = true;
-            }
-            this.setTried(true);
-        }
-
-        synchronized private void setTried(final boolean tried) {
-            this.tried = tried;
-            if(tried) MdsIp.this.notifyTried();
-        }
-
-        synchronized public void update() {
-            this.notifyAll();
-        }
-    }
     private final class MRT extends Thread // mds Receive Thread
     {
-        private boolean               killed = false;
-        private final Vector<Message> messages;
+        private boolean killed = false;
+        private Message message;
 
         public MRT(){
             super(MdsIp.this.getName("MRT"));
             this.setDaemon(true);
-            this.messages = new Vector<Message>(MdsIp.MAX_MSGS);
-            for(int i = 0; i < MdsIp.MAX_MSGS; i++)
-                this.messages.addElement(null);
+            this.message = null;
         }
 
         public Message getMessage(final byte mid) throws MdsAbortException {
             if(DEBUG.D) System.out.println("getMessage()");
-            final int id = mid & 0xFF;
             long time;
             if(DEBUG.D) time = System.nanoTime();
             Message msg = null;
             try{
-                for(;;)
-                    synchronized(this){
-                        this.wait(1000);
+                synchronized(this){
+                    for(;;){
                         if(this.killed) return null;
-                        synchronized(this.messages){
-                            msg = this.messages.get(id);
-                            this.messages.set(id, null);
-                        }
-                        if(msg == null) continue;
-                        if(DEBUG.N) System.err.println(id + "v");
-                        break;
+                        msg = this.message;
+                        this.message = null;
+                        if(msg != null) break;
+                        this.wait(1000);
                     }
+                }
             }catch(final InterruptedException e){
-                try{
-                    MdsIp.this.sock.shutdownInput();
-                }catch(final IOException ioe){/**/}
+                MdsIp.this.lostConnection();
                 throw new MdsException.MdsAbortException();
             }
-            if(DEBUG.D) System.out.println(msg.msglen + "B in " + (System.nanoTime() - time) / 1e9 + "sec" + (msg.body.capacity() == 0 ? "" : " (" + msg.asString().substring(0, (msg.body.capacity() < 64) ? msg.body.capacity() : 64) + ")"));
+            if(DEBUG.D) if(msg != null) System.out.println(msg.msglen + "B in " + (System.nanoTime() - time) / 1e9 + "sec" + (msg.body.capacity() == 0 ? "" : " (" + msg.asString().substring(0, (msg.body.capacity() < 64) ? msg.body.capacity() : 64) + ")"));
             return msg;
         }
 
@@ -146,7 +94,7 @@ public class MdsIp extends Mds{
                         PmdsEvent.start();
                     }else{
                         synchronized(this){
-                            this.messages.set(new_message.message_id, new_message);
+                            this.message = new_message;
                             this.notifyAll();
                         }
                     }
@@ -207,7 +155,7 @@ public class MdsIp extends Mds{
         public static final int    DEFAULT_PORT = 8000;
         public static final String DEFAULT_USER = System.getProperty("user.name");
         public final String        host;
-        public final int           port;
+        private final int          port;
         public final String        user;
         private boolean            use_ssh;
         private final String       password;
@@ -226,13 +174,13 @@ public class MdsIp extends Mds{
             if(provider == null || provider.length() == 0){
                 this.user = Provider.DEFAULT_USER;
                 this.host = Provider.DEFAULT_HOST;
-                this.port = Provider.DEFAULT_PORT;
+                this.port = 0;
             }else{
                 final int at = provider.indexOf("@");
                 final int cn = provider.indexOf(":");
                 this.user = at < 0 ? Provider.DEFAULT_USER : provider.substring(0, at);
                 this.host = cn < 0 ? provider.substring(at + 1) : provider.substring(at + 1, cn);
-                this.port = cn < 0 ? Provider.DEFAULT_PORT : Short.parseShort(provider.substring(cn + 1));
+                this.port = cn < 0 ? 0 : Short.parseShort(provider.substring(cn + 1));
             }
             this.use_ssh = sshstr || use_ssh;
             this.password = password;
@@ -249,7 +197,7 @@ public class MdsIp extends Mds{
         private Provider(final String host, final int port, final String user, final boolean use_ssh, final String password){
             this.user = user;
             this.host = host == null ? Provider.DEFAULT_HOST : host;
-            this.port = port == 0 ? Provider.DEFAULT_PORT : port;
+            this.port = port;
             this.use_ssh = use_ssh;
             this.password = password;
         }
@@ -278,6 +226,10 @@ public class MdsIp extends Mds{
             return this.password;
         }
 
+        public int getPort() {
+            return this.port != 0 ? this.port : (this.use_ssh ? 22 : Provider.DEFAULT_PORT);
+        }
+
         @Override
         public final int hashCode() {
             return this.host.toLowerCase().hashCode() + this.port;
@@ -285,9 +237,11 @@ public class MdsIp extends Mds{
 
         @Override
         public final String toString() {
-            final StringBuilder sb = new StringBuilder(this.user.length() + this.host.length() + (this.use_ssh ? 23 : 17));
+            final StringBuilder sb = new StringBuilder(this.user.length() + this.host.length() + 16);
             if(this.use_ssh) sb.append("ssh://");
-            return sb.append(this.user).append('@').append(this.host).append(':').append(this.port).toString();
+            sb.append(this.user).append('@').append(this.host);
+            if(this.port != 0) sb.append(':').append(this.port);
+            return sb.toString();
         }
 
         public final boolean useSSH() {
@@ -298,11 +252,65 @@ public class MdsIp extends Mds{
             this.use_ssh = usessh;
         }
     }
-    private static final class SSHSocket extends Socket{
-        private static final class SshUserInfo implements UserInfo{
-            private final JTextField passphraseField = new JPasswordField(20);
-            private final JTextField passwordField   = new JPasswordField(20);
-            public boolean           tried_pw        = false;
+    static class SshLogger implements Logger{
+        public SshLogger(){}
+
+        @Override
+        public boolean isEnabled(final int level) {
+            return level >= Logger.INFO;
+        }
+
+        @Override
+        public void log(final int level, final String message) {
+            final String type;
+            switch(level){
+                case Logger.INFO:
+                    type = "INFO";
+                    break;
+                case Logger.ERROR:
+                    type = "ERROR";
+                    break;
+                case Logger.FATAL:
+                    type = "FATAL";
+                    break;
+                case Logger.WARN:
+                    type = "WARN";
+                    break;
+                case Logger.DEBUG:
+                    type = "DEBUG";
+                    break;
+                default:
+                    type = "DEFAULT";
+            }
+            System.out.println(String.format("%s: %s", type, message));
+        }
+    }
+    private static final class SSHSocket implements Closeable{
+        private static final class SshUserInfo implements UserInfo, UIKeyboardInteractive{
+            static HashMap<String, String[]>    keyboard_ans         = new HashMap<String, String[]>();
+            static HashMap<String, SshUserInfo> keyboard_this        = new HashMap<String, SshUserInfo>();
+            private final JTextField            passphraseField      = new JPasswordField(20);
+            private final JTextField            passwordField        = new JPasswordField(20);
+            public boolean                      tried_pw             = false;
+            private final AncestorListener      RequestFocusListener = new AncestorListener(){
+                                                                         @Override
+                                                                         public void ancestorAdded(final AncestorEvent e) {
+                                                                             final JComponent component = ((JComponent)e.getSource());
+                                                                             component.grabFocus();
+                                                                             final Window win = (Window)component.getTopLevelAncestor();
+                                                                             win.setAlwaysOnTop(true);
+                                                                         }
+
+                                                                         @Override
+                                                                         public void ancestorMoved(final AncestorEvent arg0) {/**/}
+
+                                                                         @Override
+                                                                         public void ancestorRemoved(final AncestorEvent arg0) {/**/}
+                                                                     };
+            {
+                this.passphraseField.addAncestorListener(this.RequestFocusListener);
+                this.passwordField.addAncestorListener(this.RequestFocusListener);
+            }
 
             @Override
             public final String getPassphrase() {
@@ -312,6 +320,28 @@ public class MdsIp extends Mds{
             @Override
             public final String getPassword() {
                 return this.passwordField.getText();
+            }
+
+            @Override
+            public String[] promptKeyboardInteractive(final String destination, final String name, final String instruction, final String[] prompt, final boolean[] echo) {
+                final SshUserInfo old = SshUserInfo.keyboard_this.putIfAbsent(destination, this);
+                if(old != null && !this.equals(old)) return SshUserInfo.keyboard_ans.get(destination).clone();
+                final Object[] ob = new Object[prompt.length * 2 + 2];
+                ob[0] = name;
+                ob[1] = instruction;
+                for(int i = 0; i < prompt.length; i++){
+                    ob[i * 2 + 2] = prompt[i];
+                    ob[i * 2 + 3] = echo[i] ? new JTextField(20) : new JPasswordField(20);
+                }
+                if(prompt.length > 0) ((JTextField)ob[3]).addAncestorListener(this.RequestFocusListener);
+                final int result = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), ob, destination, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                if(result != JOptionPane.OK_OPTION) return null;
+                final String[] ans = new String[prompt.length];
+                for(int i = 0; i < prompt.length; i++)
+                    ans[i] = ((JTextField)ob[i * 2 + 3]).getText();
+                SshUserInfo.keyboard_ans.put(destination, ans.clone());
+                SshUserInfo.keyboard_this.put(destination, this);
+                return ans;
             }
 
             @Override
@@ -352,55 +382,69 @@ public class MdsIp extends Mds{
                 JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), message);
             }
         }
-        private static final String localhost = "localhost";
         private static final Object jsch;
         static{
             JSch _jsch;
             try{
                 _jsch = new JSch();
                 final File dotssh = new File(System.getProperty("user.home"), ".ssh");
-                final File known_hosts = new File(System.getProperty("user.home"), ".ssh/known_hosts");
-                if(dotssh.exists()){
-                    final File rsa = new File(System.getProperty("user.home"), ".ssh/id_rsa");
-                    if(rsa.exists()) _jsch.addIdentity(rsa.getAbsolutePath());
-                    if(!known_hosts.exists()) known_hosts.createNewFile();
-                }else{
-                    dotssh.mkdirs();
-                    known_hosts.createNewFile();
+                final File known_hosts = new File(dotssh, "known_hosts");
+                final File id_rsa = new File(dotssh, "id_rsa");
+                final File config = new File(dotssh, "config");
+                if(!dotssh.exists()) dotssh.mkdirs();
+                if(known_hosts.exists()) try{
+                    _jsch.setKnownHosts(known_hosts.getAbsolutePath());
+                }catch(final JSchException e){
+                    e.printStackTrace();
                 }
-                _jsch.setKnownHosts(known_hosts.getAbsolutePath());
+                else try{
+                    known_hosts.createNewFile();
+                }catch(final IOException e){
+                    e.printStackTrace();
+                }
+                if(id_rsa.exists()) try{
+                    _jsch.addIdentity(id_rsa.getAbsolutePath());
+                }catch(final JSchException e){
+                    e.printStackTrace();
+                }
+                if(config.exists()) try{
+                    _jsch.setConfigRepository(OpenSSHConfig.parseFile(config.getAbsolutePath()));
+                }catch(final IOException e){
+                    e.printStackTrace();
+                }
             }catch(final Exception e){
-                System.err.println(e.getMessage());
+                System.err.println("Error loading JSch, no ssh support!");
                 _jsch = null;
             }
             jsch = _jsch;
         }
-        private final Session session;
+        private final Session     session;
+        private final ChannelExec channel;
 
-        private SSHSocket(final Session session, final int local_port) throws IOException{
-            super(SSHSocket.localhost, local_port);
+        private SSHSocket(final Session session, final ChannelExec channel){
             this.session = session;
+            this.channel = channel;
         }
 
         @Override
         synchronized public void close() throws IOException {
             try{
-                super.close();
-            }finally{
                 try{
+                    this.channel.disconnect();
+                }finally{
                     this.session.disconnect();
-                }catch(final Exception e){
-                    if(e instanceof IOException) throw(IOException)e;
-                    throw new IOException(e.toString());
                 }
+            }catch(final Exception e){
+                if(e instanceof IOException) throw(IOException)e;
+                throw new IOException(e.toString());
             }
         }
     }
-    private static final List<MdsIp> open_connections = Collections.synchronizedList(new ArrayList<MdsIp>());
-    public static final int          LOGIN_OK         = 1, LOGIN_ERROR = 2, LOGIN_CANCEL = 3;
-    private static final String      NOT_CONNECTED    = "Not Connected.";
-    private static final byte        MAX_MSGS         = 8;
-    private static final Pattern     dollar           = Pattern.compile("\\$");
+    private static final Set<MdsIp> open_connections = Collections.synchronizedSet(new HashSet<MdsIp>());
+    public static final int         LOGIN_OK         = 1, LOGIN_ERROR = 2, LOGIN_CANCEL = 3;
+    private static final String     NOT_CONNECTED    = "Not Connected.";
+    private static final byte       MAX_MSGS         = 8;
+    private static final Pattern    dollar           = Pattern.compile("\\$");
 
     public static final boolean addSharedConnection(final MdsIp con) {
         synchronized(MdsIp.open_connections){
@@ -414,13 +458,6 @@ public class MdsIp extends Mds{
         final int size = MdsIp.open_connections.size();
         MdsIp.open_connections.clear();
         return size;
-    }
-
-    private static final StringBuilder getMessageNestCtx_new(final StringBuilder cmd, final Descriptor<?>[] args, final Pointer ctx, final Request<?> req, final boolean serialize) {
-        if(ctx == null) return MdsIp.getMessageNestSerial(cmd, args, req, serialize);
-        cmd.append("__ctx=__save($);");
-        MdsIp.getMessageNestSerial(cmd, args, req, serialize);
-        return cmd;
     }
 
     private final static StringBuilder getMessageNestExpr(final StringBuilder cmd, final Descriptor<?>[] args, final Request<?> req) {
@@ -437,7 +474,7 @@ public class MdsIp extends Mds{
             final Matcher m = MdsIp.dollar.matcher(req.expr);
             int pos = 0;
             for(int i = 0; i < args.length && m.find(); i++){
-                cmd.append(req.expr.substring(pos, m.start())).append(notatomic[i] ? "`__serin($)" : "$"); // TODO: __serin
+                cmd.append(req.expr.substring(pos, m.start())).append(notatomic[i] ? "`__$si($)" : "$");
                 pos = m.end();
             }
             cmd.append(req.expr.substring(pos));
@@ -447,7 +484,7 @@ public class MdsIp extends Mds{
 
     private static final StringBuilder getMessageNestSerial(final StringBuilder cmd, final Descriptor<?>[] args, final Request<?> req, final boolean serialize) {
         if(!serialize) return MdsIp.getMessageNestExpr(cmd, args, req);
-        cmd.append("__serout((");
+        cmd.append("__$so((");
         MdsIp.getMessageNestExpr(cmd, args, req);
         cmd.append(";))");
         return cmd;
@@ -456,13 +493,19 @@ public class MdsIp extends Mds{
     private static final SSHSocket newSSHSocket(final SSHSocket.SshUserInfo userinfo, final Provider provider) throws IOException {
         if(SSHSocket.jsch == null) throw new IOException("JSch not found! SSH connection not available.");
         try{
-            final Session session_out = ((JSch)SSHSocket.jsch).getSession(provider.user, provider.host);
+            final Session session_out = ((JSch)SSHSocket.jsch).getSession(provider.user, provider.host, provider.getPort());
             session_out.setUserInfo(userinfo);
             session_out.setPassword(provider.getPassword());
             userinfo.tried_pw = false;
-            session_out.connect();
-            final int localport = session_out.setPortForwardingL(0, SSHSocket.localhost, provider.port);
-            return new SSHSocket(session_out, localport);
+            if(debug.DEBUG.ON){
+                final SshLogger logger = new SshLogger();
+                JSch.setLogger(logger);
+            }
+            session_out.connect(10000);// timeout in ms
+            final ChannelExec channelExec = (ChannelExec)session_out.openChannel("exec");
+            channelExec.setCommand("/bin/sh -l -c mdsip-server-ssh");
+            channelExec.connect();
+            return new SSHSocket(session_out, channelExec);
         }catch(final Exception e){
             if(e instanceof IOException) throw(IOException)e;
             throw new ConnectException(e.toString());
@@ -498,17 +541,17 @@ public class MdsIp extends Mds{
         return MdsIp.sharedConnection(new Provider(provider, usessh));
     }
     private boolean               connected       = false;
-    private MdsConnect            connectThread   = null;
     private InputStream           dis             = null;
     private OutputStream          dos             = null;
     private final Provider        provider;
     private MRT                   receiveThread   = null;
-    private Socket                sock            = null;
-    private boolean               use_compression = true;
+    private Closeable             connection      = null;
+    private boolean               use_compression = false;
     private final Object          mutex           = new Object();
     private SSHSocket.SshUserInfo userinfo;
     private boolean               isLowLatency    = false;
     private byte                  msg_id          = 0;
+    public String                 last_error;
 
     public MdsIp(final Provider provider){
         this(provider, null);
@@ -529,42 +572,59 @@ public class MdsIp extends Mds{
     }
 
     @Override
-    @SuppressWarnings({"rawtypes"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected final <T extends Descriptor> T _getDescriptor(final CTX ctx, final Request<T> req) throws MdsException {
-        final boolean serialize = (req.props & Request.PROP_ATOMIC_RESULT) == 0;
-        final Message msg = this.getMessage(ctx == null ? null : ctx.getDbid(), req, serialize);
-        if(msg.dtype == DTYPE.T) throw new MdsException(msg.toString());
-        if(serialize) return Mds.bufferToClass(msg.body, req.cls);
-        return null; // TODO: deserialize from msg Discriptor_A.readMessage()
+        if(ctx == null){
+            final boolean serialize = ((req.props & Request.PROP_ATOMIC_RESULT) == 0);
+            final Message msg = this.getMessage(req, serialize);
+            if(serialize){
+                if(msg.dtype == DTYPE.T) throw new MdsException(msg.toString());
+                return Mds.bufferToClass(msg.body, req.cls);
+            }
+            final ByteBuffer b = ByteBuffer.allocate(8 + msg.body.capacity());
+            b.putShort(msg.length);
+            b.put(msg.dtype.toByte());
+            return (T)new Int32(msg.asIntArray()[0]);
+        }
+        final StringBuilder sb = new StringBuilder().append("List(*,(");
+        sb.append(req.expr).append(";),__$sw(`_$c_=__$sw($)))");
+        final Vector<Descriptor<?>> vec = new Vector<Descriptor<?>>();
+        vec.addAll(Arrays.asList(req.args));
+        vec.add(ctx.getDbid());
+        final Request<List> nreq = new Request<List>(List.class, sb.toString(), vec.toArray(req.args));
+        if(DEBUG.N) System.err.println(">>> " + nreq);
+        long tictoc;
+        if(DEBUG.N) tictoc = System.currentTimeMillis();
+        final Message msg = this.getMessage(nreq, true);
+        if(DEBUG.N) System.err.println(String.format(">>> %.3f <<<", Float.valueOf(((float)(System.currentTimeMillis() - tictoc)) / 1000)));
+        if(msg.dtype == DTYPE.T){
+            if(DEBUG.N) System.err.println("<<< Exc: " + msg.toString());
+            final Message ans = this.getMessage(new Request<Pointer>(Pointer.class, "__$sw(_$c_)"), false);
+            ctx.getDbid().setAddress(ans.body);
+            throw new MdsException(msg.toString());
+        }
+        final Descriptor<?> dsc = Mds.bufferToClass(msg.body, nreq.cls);
+        if(DEBUG.N) System.err.println("<<< " + dsc.toString());
+        final Pointer nctx = (Pointer)((List)dsc).get(1);
+        ctx.getDbid().setAddress(nctx.getAddress());
+        return (T)((List)dsc).get(0);
     }
 
     /** disconnect from server and close **/
     @Override
     public final boolean close() {
-        if(this.connectThread != null) this.connectThread.close();
-        this.connectThread = null;
         this.disconnectFromServer();
-        if(this.receiveThread != null) this.receiveThread.waitExited();
-        this.receiveThread = null;
-        this.dos = null;
-        this.dis = null;
         return true;
     }
 
     /** re-/connects to the servers mdsip service **/
     public final boolean connect() {
         if(this.connected) return true;
-        if(this.connectThread == null || !this.connectThread.isAlive()){
-            this.connectThread = new MdsConnect();
-            this.connectThread.start();
-        }
-        this.connectThread.retry();
-        if(!Thread.currentThread().getName().startsWith("AWT-EventQueue-")) this.waitTried();
-        if(this.connected) try{
-            this.setup();
-        }catch(final MdsException e){
-            e.printStackTrace();
-            this.close();
+        try{
+            this.connectToServer();
+        }catch(final IOException e){
+            this.last_error = "connect: " + e.getMessage();
+            return false;
         }
         return this.connected;
     }
@@ -575,39 +635,51 @@ public class MdsIp extends Mds{
         return this.connect();
     }
 
+    @SuppressWarnings("resource")
     synchronized private final void connectToServer() throws IOException {
+        if(this.connected) return;
         /* connect to server */
+        this.defined_funs.clear();
         if(this.provider.useSSH()){
             if(this.userinfo == null) this.userinfo = new SSHSocket.SshUserInfo();
-            this.sock = MdsIp.newSSHSocket(this.userinfo, this.provider);
-        }else this.sock = new Socket(this.provider.host, this.provider.port);
-        if(DEBUG.D) System.out.println(this.sock.toString());
-        this.sock.setTcpNoDelay(true);
-        this.dis = this.sock.getInputStream();
-        this.dos = this.sock.getOutputStream();
+            SSHSocket sshcon;
+            this.connection = sshcon = MdsIp.newSSHSocket(this.userinfo, this.provider);
+            this.dis = sshcon.channel.getInputStream();
+            this.dos = sshcon.channel.getOutputStream();
+        }else{
+            Socket sock;
+            this.connection = sock = new Socket(this.provider.host, this.provider.getPort());
+            this.dis = sock.getInputStream();
+            this.dos = sock.getOutputStream();
+            sock.setTcpNoDelay(true);
+            sock.setSoTimeout(3000);
+        }
+        if(DEBUG.D) System.out.println(this.connection.toString());
         /* connect to mdsip */
         final Message message = new Message(this.provider.user, this.getMsgId());
         message.useCompression(this.use_compression);
-        this.sock.setSoTimeout(3000);
-        long tick = -System.nanoTime();
+        long tictoc = -System.nanoTime();
         message.send(this.dos);
         final Message msg = Message.receive(this.dis, null);
-        tick += System.nanoTime();
-        if(DEBUG.N) System.out.println(tick);
-        this.isLowLatency = tick < 50000000;// if response is faster than 50ms
-        this.sock.setSoTimeout(0);
+        tictoc += System.nanoTime();
+        if(DEBUG.N) System.out.println(tictoc);
+        this.isLowLatency = tictoc < 50000000;// if response is faster than 50ms
+        if(this.connection instanceof Socket) ((Socket)this.connection).setSoTimeout(0);
         if(msg.header.get(4) == 0){
             this.close();
             return;
         }
         this.receiveThread = new MRT();
-        this.receiveThread.start();
         this.connected = true;
+        this.receiveThread.start();
+        this.setup();
         MdsIp.this.dispatchMdsEvent(new MdsEvent(this, MdsEvent.HAVE_CONTEXT, "Connected to " + this.provider.toString()));
     }
 
     private final void disconnectFromServer() {
         try{
+            this.connected = false;
+            this.defined_funs.clear();
             if(this.dos != null) this.dos.close();
         }catch(final IOException e){
             System.err.println("The closing of data output stream failed:\n" + e.getMessage());
@@ -618,7 +690,7 @@ public class MdsIp extends Mds{
             System.err.println("The closing of data input stream failed:\n" + e.getMessage());
         }
         try{
-            if(this.sock != null) this.sock.close();
+            if(this.connection != null) this.connection.close();
         }catch(final IOException e){
             System.err.println("The closing of socket failed:\n" + e.getMessage());
         }
@@ -627,12 +699,14 @@ public class MdsIp extends Mds{
     }
 
     @Override
+    public final void execute(final String expr, final Descriptor<?>... args) throws MdsException {
+        this.getMessage(new Request<Int32>(Int32.class, expr + ";1", args), false);
+    }
+
+    @Override
     protected void finalize() throws Throwable {
-        try{
-            this.close();
-        }finally{
-            super.finalize();
-        }
+        if(this.connected) System.err.println(this + " was still connected.");
+        this.close();
     }
 
     private final Message getAnswer(final byte mid) throws MdsException {
@@ -649,52 +723,32 @@ public class MdsIp extends Mds{
         return this.provider.host;
     }
 
-    public final Message getMessage(final Pointer ctx, final Request<?> req, final boolean serialize) throws MdsException {
-        if(DEBUG.M) System.out.println("MdsIp.getMessage(" + ctx + ", \"" + req.expr + "\", " + req.args + ", " + serialize + ")");
+    public final Message getMessage(final Request<?> req, final boolean serialize) throws MdsException {
+        if(DEBUG.M) System.out.println("MdsIp.getMessage(\"" + req.expr + "\", " + req.args + ", " + serialize + ")");
         if(!this.connected) throw new MdsException(MdsIp.NOT_CONNECTED);
         final Message msg;
         byte idx = 0;
         final StringBuilder cmd = new StringBuilder(req.expr.length() + 128);
         final Descriptor<?>[] args = new Descriptor<?>[req.args.length];
-        MdsIp.getMessageNestCtx_new(cmd, args, ctx, req, serialize);
-        if(DEBUG.N) System.out.println("Execute(\"" + cmd + "\"," + Arrays.toString(args));
+        MdsIp.getMessageNestSerial(cmd, args, req, serialize);
         synchronized(this.mutex){
-            long tick;
-            if(DEBUG.N) tick = -System.nanoTime();
             final byte mid = this.getMsgId();
-            final byte midctx = ctx == null ? 0 : this.getMsgId();
+            final byte totalarg = (byte)(args.length + 1);
             /** enter exclusive communication **/
             try{
-                /** execute main request **/
-                final byte totalarg = (byte)(args.length + (ctx == null ? 1 : 2));
-                if(totalarg > 1){
+                if(totalarg > 1){ /** execute main request **/
                     this.sendArg(idx++, DTYPE.T, totalarg, null, cmd.toString().getBytes(), mid);
-                    if(ctx != null) ctx.toMessage(idx++, totalarg, mid).send(this.dos);
-                    for(final Descriptor<?> d : args){
+                    for(final Descriptor<?> d : args)
                         d.toMessage(idx++, totalarg, mid).send(this.dos);
-                    }
                 }else new Message(cmd.toString(), mid).send(this.dos);
+                this.dispatchMdsEvent(new MdsEvent(this, MdsEvent.TRANSFER, "waiting for server"));
                 msg = this.getAnswer(mid);
+                if(msg == null) throw new MdsException("Could not get IO for " + this.provider.host, 0);
             }finally{
-                /** save new tree context if ctx was provided **/
-                if(ctx != null){
-                    try{
-                        new Message("__restore(__ctx)", midctx).send(this.dos);
-                        final Message ctx_msg = this.getAnswer(midctx);
-                        ctx.setAddress(ctx_msg.body);
-                    }catch(final IOException e){
-                        ctx.setAddress(0);
-                    }
-                }
+                this.dispatchMdsEvent(new MdsEvent(this));
             }
-            if(DEBUG.N) System.out.println(tick + System.nanoTime());
         }
-        if(msg == null) throw new MdsException("Could not get IO for " + this.provider.host, 0);
         return msg;
-    }
-
-    public final Message getMessage(final Request<?> req, final boolean serialize) throws MdsException {
-        return this.getMessage(null, req, serialize);
     }
 
     private final byte getMsgId() {
@@ -703,11 +757,11 @@ public class MdsIp extends Mds{
     }
 
     private final String getName(final String classname) {
-        return new StringBuilder(128).append(classname).append('(').append(this.provider.user).append('@').append(this.provider.host).append(':').append(this.provider.port).append(')').toString();
+        return new StringBuilder(128).append(classname).append('(').append(this.provider.toString()).append(')').toString();
     }
 
     public final int getPort() {
-        return this.provider.port;
+        return this.provider.getPort();
     }
 
     public final Provider getProvider() {
@@ -729,17 +783,13 @@ public class MdsIp extends Mds{
 
     @Override
     public final String isReady() {
-        this.waitTried();
-        if(!this.isConnected()) return MdsIp.NOT_CONNECTED;
-        return null;
+        if(this.isConnected()) return null;
+        return MdsIp.NOT_CONNECTED;
     }
 
     public void lostConnection() {
-        this.connected = false;
         this.disconnectFromServer();
-        // (new Thread(){ @Override public void run() {} }).start();
         MdsIp.this.dispatchMdsEvent(new MdsEvent(MdsIp.this, MdsEvent.LOST_CONTEXT, "Lost connection from " + MdsIp.this.provider.host));
-        if(this.connectThread != null && this.connectThread.tried) this.connectThread.update();
     }
 
     synchronized public final void mdsRemoveEvent(final UpdateEventListener l, final String event) {
@@ -755,7 +805,7 @@ public class MdsIp extends Mds{
     }
 
     @Override
-    synchronized protected final void mdsSetEvent(final String event, final int eventid) {
+    protected synchronized final void mdsSetEvent(final String event, final int eventid) {
         final byte mid = this.getMsgId();
         try{
             this.sendArg((byte)0, DTYPE.T, (byte)3, null, Message.EVENTASTREQUEST.getBytes(), mid);
@@ -766,16 +816,15 @@ public class MdsIp extends Mds{
         }
     }
 
-    synchronized private void notifyTried() {
+    /*synchronized private void notifyTried() {
         this.notifyAll();
-    }
-
+    }*/
     public final void removeFromShare() {
         if(MdsIp.open_connections.contains(this)) MdsIp.open_connections.remove(this);
     }
 
-    private final void sendArg(final byte descr_idx, final byte dtype, final byte nargs, final int dims[], final byte body[], final byte msgid) throws MdsException {
-        final Message msg = new Message(descr_idx, dtype, nargs, dims, body, msgid);
+    private final void sendArg(final byte descr_idx, final DTYPE bu, final byte nargs, final int dims[], final byte body[], final byte msgid) throws MdsException {
+        final Message msg = new Message(descr_idx, bu, nargs, dims, body, msgid);
         try{
             msg.send(this.dos);
         }catch(final IOException e){
@@ -784,20 +833,12 @@ public class MdsIp extends Mds{
         }
     }
 
-    private final void setup() throws MdsException { // TODO: setup
-        this.simpleExpr("public fun __save(in _in) {return(TreeShr->TreeSavePrivateCtx:P(val(_in)));};"//
-                + "public fun __restore(in _in) {return(TreeShr->TreeRestorePrivateCtx:P(val(_in)));};"//
-                + "public fun __serout(optional in _in) {_out=*;MdsShr->MdsSerializeDscOut(xd(_in),xd(_out));return(_out);};"//
-                + "public fun __serin(in _in) {_out=*;MdsShr->MdsSerializeDscIn(ref(_in),xd(_out));return(_out);};1");
-        new TreeShr(this).treeSetPrivateCtx(true);
-    }
-
-    public final int simpleExpr(final String expr, final Descriptor<?>... args) {
-        try{
-            return this.getMessage(new Request<Int32>(Int32.class, expr, args), false).asIntArray()[0];
-        }catch(final MdsException e){
-            return 0;
-        }
+    private final void setup() throws MdsException {
+        this.defineFunctions("TreeShr->TreeUsePrivateCtx(val(1))", // always use private context
+                "public fun __$sw(in _in){return(TreeShr->TreeSwitchDbid:P(val(_in)));}", // compatible with almost ever server
+                "public fun __$so(optional in _in){_out=*;MdsShr->MdsSerializeDscOut(xd(_in),xd(_out));return(_out);}", // 'optional' to support $Missing
+                "public fun __$si(in _in){_out=*;MdsShr->MdsSerializeDscIn(ref(_in),xd(_out));return(_out);}");
+        this.getAPI().treeUsePrivateCtx(true);
     }
 
     @Override
@@ -808,15 +849,5 @@ public class MdsIp extends Mds{
 
     public final void useSSH(final boolean usessh) {
         this.provider.useSSH(usessh);
-    }
-
-    synchronized private void waitTried() {
-        if(this.connectThread == null) return;
-        if(!this.connectThread.tried) try{
-            if(EventQueue.isDispatchThread()) Thread.sleep(5000);
-            else this.wait();
-        }catch(final InterruptedException e){
-            Thread.currentThread().interrupt();
-        }
     }
 }

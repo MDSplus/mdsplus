@@ -48,8 +48,8 @@ public class ActionList extends CheckBoxList{
             int[] status;
             try{
                 final TREE tree = this.treeview.getTree();
-                isoff = tree.mds.getByteArray(this.treeview.getTree().ctx, "_n=$;OR(GETNCI(_n,'PARENT_STATE'),GETNCI(_n,'STATE'))", new Int32Array(nid));
-                status = tree.mds.getIntegerArray(this.treeview.getTree().ctx, "GETNCI($,'STATUS')", new Int32Array(nid));
+                isoff = tree.getMds().getByteArray(this.treeview.getTree().ctx, "_n=$;OR(GETNCI(_n,'PARENT_STATE'),GETNCI(_n,'STATE'))", new Int32Array(nid));
+                status = tree.getMds().getIntegerArray(this.treeview.getTree().ctx, "GETNCI($,'STATUS')", new Int32Array(nid));
                 for(int i = 0; i < this.checkboxes.size(); i++){
                     final JCheckBox cb = this.checkboxes.getElementAt(i);
                     cb.setSelected(isoff[i] == 0);

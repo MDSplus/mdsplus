@@ -77,7 +77,7 @@ public final class Uint32 extends INTEGER_UNSIGNED<UInteger>{
 
     @Override
     protected final byte getRankBits() {
-        return 4;
+        return 0x03;
     }
 
     @Override

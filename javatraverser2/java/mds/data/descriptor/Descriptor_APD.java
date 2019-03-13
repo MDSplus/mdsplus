@@ -6,26 +6,58 @@ import mds.MdsException;
 import mds.data.DTYPE;
 import mds.data.descriptor_apd.Dictionary;
 import mds.data.descriptor_apd.List;
+import mds.data.descriptor_apd.Tuple;
 import mds.data.descriptor_s.Missing;
 
 /** Array of Descriptor (-60 : 196) **/
-public class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
+public abstract class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
+    protected final class AStringBuilder{
+        private final int           length;
+        private final StringBuilder pout;
+        private final ByteBuffer    bp;
+
+        private AStringBuilder(final StringBuilder pout){
+            this.bp = Descriptor_APD.this.getBuffer();
+            this.length = Descriptor_APD.this.getLength();
+            this.pout = pout;
+        }
+
+        public final void deco() {
+            if(this.length > 0){
+                this.bp.rewind();
+                int j = 0;
+                final boolean isdict = Descriptor_APD.this.dtype() == DTYPE.DICTIONARY;
+                if(this.length >= 1000) this.pout.append("/*** ").append(this.length).append(" ***/)");
+                for(; j < this.length && this.length < 1000; j++){
+                    this.pout.append(',');
+                    if(isdict && (j & 1) == 0) this.pout.append(' ');
+                    Descriptor_APD.this.decompile(this.pout, Descriptor_APD.this.getElement(this.bp));
+                }
+            }
+        }
+
+        @Override
+        public final String toString() {
+            return this.pout.toString();
+        }
+    }
     @SuppressWarnings("hiding")
     public static final byte   CLASS = -60;
     public static final String name  = "APD";
 
     public static Descriptor_APD deserialize(final ByteBuffer b) throws MdsException {
-        switch(b.get(Descriptor._typB)){
-            case DTYPE.DICTIONARY:
-                return new Dictionary(b);
-            case DTYPE.LIST:
-                return new List(b);
+        switch(Descriptor.getDtype(b)){
             default:
-                return new Descriptor_APD(b);
+            case LIST:
+                return new List(b);
+            case TUPLE:
+                return new Tuple(b);
+            case DICTIONARY:
+                return new Dictionary(b);
         }
     }
 
-    private static ByteBuffer makeBuffer(final byte dtype, final Descriptor<?>[] descs, final int[] shape) {
+    private static ByteBuffer makeBuffer(final DTYPE dtype, final Descriptor<?>[] descs, final int[] shape) {
         int offset = shape.length > 1 ? ARRAY._dmsIa : ARRAY._a0I;
         offset += shape.length * Integer.BYTES;
         final int pointer = offset;
@@ -37,9 +69,9 @@ public class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
             offset += descs[i].getSize();
         }
         final ByteBuffer b = ByteBuffer.allocate(offset).order(Descriptor.BYTEORDER);
-        b.putInt(Descriptor._lenS, (short)4);
-        b.putInt(Descriptor._typB, dtype);
-        b.putInt(Descriptor._clsB, Descriptor_APD.CLASS);
+        b.putShort(Descriptor._lenS, (short)4);
+        b.put(Descriptor._typB, dtype.toByte());
+        b.put(Descriptor._clsB, Descriptor_APD.CLASS);
         b.putInt(Descriptor._ptrI, pointer);
         if(shape.length > 1){
             b.put(ARRAY._dmctB, (byte)shape.length);
@@ -54,18 +86,38 @@ public class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
         b.asIntBuffer().put(dscptrs);
         for(int i = 0; i < descs.length; i++){
             b.position(dscptrs[i]);
-            b.put(descs[i].b);
+            b.put(descs[i].b.duplicate());
         }
         b.rewind();
         return b;
     }
 
-    public Descriptor_APD(final byte dtype, final Descriptor<?>[] descs, final int... shape){
-        super(Descriptor_APD.makeBuffer(dtype, descs, shape));
-    }
-
     protected Descriptor_APD(final ByteBuffer b){
         super(b);
+    }
+
+    public Descriptor_APD(final DTYPE dtype, final Descriptor<?>[] descs, final int... shape){
+        super(Descriptor_APD.makeBuffer(dtype, descs, shape));
+        boolean local = true;
+        for(final Descriptor<?> dsc : descs)
+            if(!Descriptor.isMissing(dsc) && !dsc.isLocal()){
+                local = false;
+                break;
+            }
+        if(local) this.setLocal();
+    }
+
+    @Override
+    public StringBuilder decompile(final int prec, final StringBuilder pout, final int mode) {
+        pout.ensureCapacity(1024);
+        pout.append(this.getPrefix()).append('(');
+        if((mode & Descriptor.DECO_STR) != 0 && this.arsize() > 255){
+            // pout.append("/*** ").append(this.getLength()).append(" ***/");
+            this.decompile(pout, this.getElement(0));
+            pout.append(ARRAY.ETC);
+        }else new AStringBuilder(pout).deco();
+        pout.append(')');
+        return pout;
     }
 
     @Override
@@ -75,7 +127,7 @@ public class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
 
     @Override
     public final String getDTypeName() {
-        return DTYPE.getName(this.dtype());
+        return this.dtype().label;
     }
 
     @Override
@@ -84,7 +136,7 @@ public class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
         if(dscptr == 0) return Missing.NEW;
         final int max = this.getLength() * Integer.BYTES;
         int pos = b_ptr.position();
-        for(; pos < max && b_ptr.getInt(pos) == 0; pos += Integer.BYTES){/*cond*/}
+        for(; pos < max && b_ptr.getInt(pos) == 0; pos += Integer.BYTES){/*NOP*/}
         final int next = pos < max ? b_ptr.getInt(pos) : this.b.limit();
         try{
             return Descriptor.deserialize(((ByteBuffer)this.b.duplicate().position(dscptr).limit(next)).slice().order(this.b.order())).setTree(this.tree).VALUE(this);
@@ -106,8 +158,18 @@ public class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
         for(int i = 0; i < apd.length; i++)
             apd[i] = this.getScalar(i).getLocal(mylocal);
         if(FLAG.and(local, mylocal.flag)) return (Descriptor_APD)this.setLocal();
-        return (Descriptor_APD)new Descriptor_APD(this.dtype(), apd, this.getShape()).setLocal();
+        switch(this.dtype()){
+            default:
+            case LIST:
+                return (Descriptor_APD)new List(apd).setLocal();
+            case TUPLE:
+                return (Descriptor_APD)new Tuple(apd).setLocal();
+            case DICTIONARY:
+                return (Descriptor_APD)new Dictionary(apd).setLocal();
+        }
     }
+
+    protected abstract String getPrefix();
 
     @Override
     public Descriptor<?> getScalar(final int idx) {

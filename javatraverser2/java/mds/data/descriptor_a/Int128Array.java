@@ -12,12 +12,12 @@ public final class Int128Array extends INTEGERArray<BigInteger>{
         super(DTYPE.O, values);
     }
 
-    public Int128Array(final byte dtype, final ByteBuffer data, final int shape[]){
-        super(DTYPE.O, data, shape);
-    }
-
     public Int128Array(final ByteBuffer b){
         super(b);
+    }
+
+    public Int128Array(final DTYPE dtype, final ByteBuffer data, final int shape[]){
+        super(DTYPE.O, data, shape);
     }
 
     public Int128Array(final int shape[], final BigInteger... values){
@@ -53,7 +53,7 @@ public final class Int128Array extends INTEGERArray<BigInteger>{
 
     @Override
     protected final byte getRankBits() {
-        return 16;
+        return 0x0F;
     }
 
     @Override
@@ -89,7 +89,7 @@ public final class Int128Array extends INTEGERArray<BigInteger>{
 
     @Override
     public final Uint128Array octawordu() {
-        return new Uint128Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.OU));
+        return new Uint128Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.OU.toByte()));
     }
 
     @Override

@@ -86,7 +86,7 @@ public final class Uint8 extends INTEGER_UNSIGNED<UByte>{
 
     @Override
     protected final byte getRankBits() {
-        return 1;
+        return 0x00;
     }
 
     @Override

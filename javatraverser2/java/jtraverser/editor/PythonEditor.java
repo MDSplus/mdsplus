@@ -12,10 +12,10 @@ import mds.MdsException;
 import mds.data.CTX;
 import mds.data.OPC;
 import mds.data.descriptor.Descriptor;
-import mds.data.descriptor_a.CStringArray;
+import mds.data.descriptor_a.StringArray;
 import mds.data.descriptor_r.Function;
 import mds.data.descriptor_r.function.Fun;
-import mds.data.descriptor_s.CString;
+import mds.data.descriptor_s.StringDsc;
 
 @SuppressWarnings("serial")
 public final class PythonEditor extends Editor{
@@ -25,7 +25,7 @@ public final class PythonEditor extends Editor{
         if(data instanceof Function && ((Function)data).getOpCode() == OPC.OpcFun){
             final Descriptor<?>[] args = ((Function)data).getArguments();
             try{
-                if(args != null && args.length > 2 && args[1] != null && (args[1] instanceof CString) && ((CString)args[1]).toString() != null && ((CString)args[1]).toString().toUpperCase().equals("PY")) return true;
+                if(args != null && args.length > 2 && args[1] != null && (args[1] instanceof StringDsc) && ((StringDsc)args[1]).toString() != null && ((StringDsc)args[1]).toString().toUpperCase().equals("PY")) return true;
             }catch(final Exception exc){
                 MdsException.stderr("DataEditor.checkUsrData", exc);
             }
@@ -98,11 +98,11 @@ public final class PythonEditor extends Editor{
             for(int j = 0; j < maxLen - len; j++)
                 lines[i] += " ";
         }
-        final CStringArray stArr = new CStringArray(lines);
+        final StringArray stArr = new StringArray(lines);
         final String retVarTxt = this.text_field.getText();
         Descriptor<?> Args[];
-        if(retVarTxt == null || retVarTxt.equals("")) Args = new Descriptor[]{null, new CString("Py"), stArr};
-        else Args = new Descriptor[]{null, new CString("Py"), stArr, new CString(retVarTxt)};
+        if(retVarTxt == null || retVarTxt.equals("")) Args = new Descriptor[]{null, new StringDsc("Py"), stArr};
+        else Args = new Descriptor[]{null, new StringDsc("Py"), stArr, new StringDsc(retVarTxt)};
         return new Fun(Args);
     }
 
@@ -111,7 +111,7 @@ public final class PythonEditor extends Editor{
         if(args.length <= 2 || args[2] == null) this.retVar = "";
         else this.retVar = args[2].toString();
         if(args.length <= 1 || args[1] == null) this.program = "";
-        else if(args[1] instanceof CStringArray) this.program = ((CStringArray)args[2]).join_by("\n");
+        else if(args[1] instanceof StringArray) this.program = ((StringArray)args[2]).join_by("\n");
         else this.program = args[1].toString();
     }
 

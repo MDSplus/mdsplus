@@ -3,29 +3,27 @@ package jtraverser;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.lang.reflect.Method;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import devices.Device;
 import mds.MdsException;
 import mds.data.DTYPE;
 import mds.data.TREE;
 import mds.data.TREE.NodeInfo;
 import mds.data.TREE.RecordInfo;
 import mds.data.descriptor.Descriptor;
-import mds.data.descriptor_apd.List;
 import mds.data.descriptor_r.Action;
-import mds.data.descriptor_r.Conglom;
-import mds.data.descriptor_r.Signal;
-import mds.data.descriptor_s.CString;
 import mds.data.descriptor_s.NODE;
 import mds.data.descriptor_s.NODE.Flags;
 import mds.data.descriptor_s.Nid;
@@ -106,14 +104,14 @@ public class Node{
                 if(!(data instanceof Action)) toNode.setData(data);
             }
         }catch(final MdsException exc){/**/}
-        for(int i = 0; i < fromNode.sons.length; i++)
-            Node.copySubtreeContent(fromNode.sons[i], toNode.sons[i]);
+        for(int i = 0; i < fromNode.children.length; i++)
+            Node.copySubtreeContent(fromNode.children[i], toNode.children[i]);
         for(int i = 0; i < fromNode.members.length; i++)
             Node.copySubtreeContent(fromNode.members[i], toNode.members[i]);
     }
 
     public static final Node getNode(final DefaultMutableTreeNode treenode) {
-        return (Node)treenode.getUserObject();
+        return treenode.getUserObject() instanceof Node ? (Node)treenode.getUserObject() : null;
     }
 
     public static final Node getNode(final javax.swing.tree.TreeNode treenode) {
@@ -156,7 +154,7 @@ public class Node{
     private Node[]                 members;
     public final Nid               nid;
     private Node                   parent;
-    private Node[]                 sons;
+    private Node[]                 children;
     public final TreeView          treeview;
     private DefaultMutableTreeNode treenode;
     private boolean                needsOnCheck;
@@ -184,7 +182,7 @@ public class Node{
         this.treeview = treeview;
         this.nid = nid;
         this.parent = parent;
-        this.sons = new Node[0];
+        this.children = new Node[0];
         this.members = new Node[0];
         this.update();
         if(info == null) try{
@@ -229,10 +227,10 @@ public class Node{
             newNodes[this.members.length] = newNode;
             this.members = newNodes;
         }else{
-            final Node[] newNodes = new Node[this.sons.length + 1];
-            System.arraycopy(this.sons, 0, newNodes, 0, this.sons.length);
-            newNodes[this.sons.length] = newNode;
-            this.sons = newNodes;
+            final Node[] newNodes = new Node[this.children.length + 1];
+            System.arraycopy(this.children, 0, newNodes, 0, this.children.length);
+            newNodes[this.children.length] = newNode;
+            this.children = newNodes;
         }
         newNode.setTreeNode(new DefaultMutableTreeNode(newNode));
         this.treeview.addNodeToParent(newNode.getTreeNode(), this.getTreeNode());
@@ -357,35 +355,32 @@ public class Node{
     public final void expand() {
         if(this.is_leaf) return;
         try{
-            int i;
-            Nid sons_nid[] = this.nid.getNciChildrenNids().toArray();
-            if(sons_nid == null) sons_nid = new Nid[0];
-            final NodeInfo[] sons_info = this.nid.getTree().getNodeInfos(sons_nid);
-            this.sons = new Node[sons_nid.length];
-            for(i = 0; i < sons_nid.length; i++)
-                this.sons[i] = new Node(this.treeview, sons_nid[i], this, sons_info[i]);
-            Nid members_nid[] = this.nid.getNciMemberNids().toArray();
-            if(members_nid == null) members_nid = new Nid[0];
-            final NodeInfo[] members_info = this.nid.getTree().getNodeInfos(members_nid);
-            this.members = new Node[members_nid.length];
-            for(i = 0; i < members_nid.length; i++)
-                this.members[i] = new Node(this.treeview, members_nid[i], this, members_info[i]);
-            if(this.members.length + this.sons.length == 0) this.is_leaf = true;
+            final TREE tree = this.nid.getTree();
+            final NodeInfo[][] infos = NodeInfo.getNodeInfos(this.nid);
+            final NodeInfo[] children_info = infos[0];
+            this.children = new Node[children_info.length];
+            for(int i = 0; i < children_info.length; i++)
+                this.children[i] = new Node(this.treeview, new Nid(children_info[i].nid_number, tree), this, children_info[i]);
+            final NodeInfo[] members_info = infos[1];
+            this.members = new Node[members_info.length];
+            for(int i = 0; i < members_info.length; i++)
+                this.members[i] = new Node(this.treeview, new Nid(members_info[i].nid_number, tree), this, members_info[i]);
+            if(this.members.length + this.children.length == 0) this.is_leaf = true;
         }catch(final MdsException e){
             MdsException.stderr("expand", e);
             e.printStackTrace();
             this.members = new Node[0];
-            this.sons = new Node[0];
+            this.children = new Node[0];
         }
     }
 
+    public final Node[] getChildren() {
+        return this.children;
+    }
+
     public final Descriptor<?> getData() throws MdsException {
-        if(this.isSegmented()){
-            final List seg = this.nid.getSegment(0);
-            final Descriptor<?> scale = this.nid.getSegmentScale();
-            if(Descriptor.isMissing(scale)) return new Signal(seg.get(0), null, seg.get(1));
-            return new Signal(scale, seg.get(0), seg.get(1));
-        }
+        if(this.isSegmented())//
+            return this.nid.getSegment(0);
         return this.nid.getRecord();
     }
 
@@ -505,10 +500,6 @@ public class Node{
         return res.getRecord();
     }
 
-    public final Node[] getSons() {
-        return this.sons;
-    }
-
     public int getStatus() {
         if(this.status == -1) return this.readStatus();
         return this.status;
@@ -537,11 +528,10 @@ public class Node{
             String text = null;
             final String info = this.getInfoTextBox();
             final int lusage = this.getUsage();
-            if(lusage == NODE.USAGE_STRUCTURE || lusage == NODE.USAGE_SUBTREE) this.tooltip_text = info;
+            if(lusage == NODE.USAGE_STRUCTURE || lusage == NODE.USAGE_SUBTREE || this.getLength() == 0) this.tooltip_text = info;
             else{
                 try{
                     final Descriptor<?> data = this.getData();
-                    if(data == null) return info;
                     text = data.toStringX().replace("<", "&lt;").replace(">", "&gt;").replace("\t", "&nbsp&nbsp&nbsp&nbsp ").replace("\n", "<br>");
                 }catch(final MdsException e){
                     text = e.getMessage();
@@ -780,8 +770,8 @@ public class Node{
     public final void setOnUnchecked() {
         this.needsOnCheck = true;
         this.flags = null;
-        for(final Node son : this.sons)
-            son.setOnUnchecked();
+        for(final Node child : this.children)
+            child.setOnUnchecked();
         for(final Node member : this.members)
             member.setOnUnchecked();
     }
@@ -801,34 +791,13 @@ public class Node{
         return this.treenode = treenode;
     }
 
-    public final void setupDevice() {
-        Conglom conglom = null;
+    public final void setupDevice(final boolean editable) {
         try{
-            conglom = (Conglom)this.nid.getRecord();
-        }catch(final MdsException e){
-            JOptionPane.showMessageDialog(this.treeview, e.getMessage(), "Error in device setup 1", JOptionPane.WARNING_MESSAGE);
+            Device.getEditor((Frame)SwingUtilities.getRoot(this.treeview), this.nid, editable).showDialog();
+        }catch(final Exception e){
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this.treeview, e + "\n" + e.getMessage(), "Error opening device setup", JOptionPane.WARNING_MESSAGE);
         }
-        if(conglom != null){
-            final CString model = (CString)conglom.getModel();
-            if(model != null){
-                try{
-                    final Class<?> Devices = Class.forName("devicebeans.DeviceSetup");
-                    final Method DeviceSetup = Devices.getMethod("setup", Node.class, String.class);
-                    DeviceSetup.invoke(null, this, model.toString());
-                    return;
-                }catch(final Exception e){
-                    try{
-                        this.nid.doDeviceMethod("dw_setup");
-                        return;
-                    }catch(final MdsException exc){
-                        JOptionPane.showMessageDialog(this.treeview, e.getMessage(), "Error in device setup 2: " + e, JOptionPane.WARNING_MESSAGE);
-                        e.printStackTrace();
-                        return;
-                    }
-                }
-            }
-        }
-        JOptionPane.showMessageDialog(this.treeview, "Missing model in descriptor", "Error in device setup 3", JOptionPane.WARNING_MESSAGE);
     }
 
     /**

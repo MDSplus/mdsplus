@@ -5,13 +5,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
-import jtraverser.Node;
 import jtraverser.editor.Editor;
 import jtraverser.editor.SegmentEditor;
 import jtraverser.editor.usage.ActionEditor;
@@ -25,12 +25,17 @@ import jtraverser.editor.usage.TextEditor;
 import jtraverser.editor.usage.WindowEditor;
 import mds.MdsException;
 import mds.data.CTX;
+import mds.data.TREE.RecordInfo;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_s.NODE;
 
 @SuppressWarnings("serial")
 public class DataDialog extends JDialog{
-    public static final DataDialog open(final Node node, final boolean editable) {
+    public interface UpdateListener{
+        public abstract void update(Descriptor<?> data);
+    }
+
+    public static final DataDialog open(final NODE<?> node, final boolean editable) throws MdsException {
         final DataDialog dialog = new DataDialog(node, editable);
         Dialogs.setLocation(dialog);
         dialog.setVisible(true);
@@ -41,14 +46,15 @@ public class DataDialog extends JDialog{
         if(tags == null || tags.length == 0) return "<no tags>";
         return String.join(", ", tags);
     }
-    private final Node    node;
-    private final Editor  edit;
-    private final boolean editable;
-    private final JButton ok_b, apply_b, reset_b, cancel_b;
-    private final JLabel  onoff;
-    private final JLabel  tags;
+    private Vector<UpdateListener> listener = null;
+    private final NODE<?>          node;
+    private final Editor           edit;
+    private final boolean          editable;
+    private final JButton          ok_b, apply_b, reset_b, cancel_b;
+    private final JLabel           onoff;
+    private final JLabel           tags;
 
-    private DataDialog(final Node node, final boolean editable){
+    private DataDialog(final NODE<?> node, final boolean editable) throws MdsException{
         super(JOptionPane.getRootFrame());
         this.node = node;
         this.editable = editable;
@@ -58,22 +64,23 @@ public class DataDialog extends JDialog{
         ip.add(new JLabel("Tags: "));
         ip.add(this.tags = new JLabel(""));
         this.add(ip, BorderLayout.PAGE_START);
-        if(node.isSegmented()) this.edit = new SegmentEditor(node, this.editable, this);
+        final RecordInfo ri = node.getRecordInfoC();
+        if(ri.num_segments > 0) this.edit = new SegmentEditor(node, this.editable, this);
         else{
             Descriptor<?> data = null;
             try{
-                data = this.node.getData();
+                data = this.node.getRecord();
             }catch(final MdsException e){
                 MdsException.stderr("DataDialog.getData", e);
                 e.printStackTrace();
             }
-            final CTX ctx = node.nid.getTree();
-            switch(node.getUsage()){
+            final CTX ctx = node.getTree();
+            switch(node.getNciUsage()){
                 case NODE.USAGE_SIGNAL:
                     this.edit = new SignalEditor(data, this.editable, ctx, this);
                     break;
                 case NODE.USAGE_ACTION:
-                    this.edit = new ActionEditor(data, this.editable, ctx, this, node.getStatus(), node.treeview.isModel());
+                    this.edit = new ActionEditor(data, this.editable, ctx, this, ri.status, node.getTree().shot == -1);
                     break;
                 case NODE.USAGE_DISPATCH:
                     this.edit = new DispatchEditor(data, this.editable, ctx, this);
@@ -159,11 +166,18 @@ public class DataDialog extends JDialog{
         jp.add(this.cancel_b);
         if(node.isOn()) this.onoff.setText("Node is On   ");
         else this.onoff.setText("Node is Off  ");
-        if(this.editable) this.setTitle("Modify data of " + node.getFullPath());
-        else this.setTitle("Display data of " + node.getFullPath());
+        if(this.editable) this.setTitle("Modify data of " + node.getNciFullPath());
+        else this.setTitle("Display data of " + node.getNciFullPath());
         this.tags.setText(DataDialog.tagList(node.getTags()));
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.pack();
+    }
+
+    public void addUpdateListener(final UpdateListener l) {
+        if(this.listener == null) this.listener = new Vector<UpdateListener>(1);
+        synchronized(this.listener){
+            this.listener.add(l);
+        }
     }
 
     private final boolean apply() {
@@ -171,7 +185,11 @@ public class DataDialog extends JDialog{
         try{
             final Descriptor<?> data = this.edit.getData();
             if(data == null && !this.edit.isNull()) throw new Exception("Could not compile expression.");
-            this.node.setData(data);
+            this.node.putRecord(data);
+            if(this.listener != null) synchronized(this.listener){
+                for(final UpdateListener l : this.listener)
+                    l.update(data);
+            }
         }catch(final Exception e){
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), e.getMessage(), "Error writing datafile", JOptionPane.ERROR_MESSAGE);
             return false;
@@ -197,7 +215,7 @@ public class DataDialog extends JDialog{
     private final void updateData() {
         final SegmentEditor segedit = (SegmentEditor)this.edit;
         try{
-            this.node.nid.putSegment(segedit.getSegmentIdx(), segedit.getSegmentData());
+            this.node.putSegment(segedit.getSegmentIdx(), segedit.getSegmentData());
         }catch(final Exception e){
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), e.getMessage(), "Error updating segment", JOptionPane.ERROR_MESSAGE);
         }
@@ -208,7 +226,7 @@ public class DataDialog extends JDialog{
         try{
             final Descriptor<?> dim = segedit.getSegmentDim();
             if(dim == null) throw new Exception("Could not compile dimension expression.");
-            this.node.nid.updateSegment(segedit.getSegmentStart(), segedit.getSegmentEnd(), dim, segedit.getSegmentIdx());
+            this.node.updateSegment(segedit.getSegmentStart(), segedit.getSegmentEnd(), dim, segedit.getSegmentIdx());
         }catch(final Exception e){
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), e.getMessage(), "Error updating segment", JOptionPane.ERROR_MESSAGE);
         }

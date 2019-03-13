@@ -6,7 +6,6 @@ import mds.data.DATA;
 import mds.data.DTYPE;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_R;
-import mds.data.descriptor_s.CString;
 
 public final class With_Units extends Descriptor_R<Number> implements PARAMETER{
     public With_Units(final ByteBuffer b){
@@ -22,7 +21,7 @@ public final class With_Units extends Descriptor_R<Number> implements PARAMETER{
     }
 
     public With_Units(final Descriptor<?> value, final String units){
-        this(value, new CString(units));
+        this(value, Descriptor.valueOf(units));
     }
 
     @Override

@@ -11,12 +11,12 @@ public final class Int8Array extends INTEGERArray<Byte>{
         super(DTYPE.B, values);
     }
 
-    public Int8Array(final byte dtype, final ByteBuffer data, final int shape[]){
-        super(DTYPE.B, data, shape);
-    }
-
     public Int8Array(final ByteBuffer b){
         super(b);
+    }
+
+    public Int8Array(final DTYPE dtype, final ByteBuffer data, final int shape[]){
+        super(DTYPE.B, data, shape);
     }
 
     public Int8Array(final int shape[], final byte... values){
@@ -43,7 +43,7 @@ public final class Int8Array extends INTEGERArray<Byte>{
 
     @Override
     public final Uint8Array byteu() {
-        return new Uint8Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.BU));
+        return new Uint8Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.BU.toByte()));
     }
 
     public final Descriptor<?> deserialize() throws MdsException {
@@ -67,7 +67,7 @@ public final class Int8Array extends INTEGERArray<Byte>{
 
     @Override
     protected final byte getRankBits() {
-        return 1;
+        return 0x00;
     }
 
     @Override
