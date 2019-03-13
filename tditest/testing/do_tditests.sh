@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 TMP_LD_PRELOAD="$LD_PRELOAD"
 unset LD_PRELOAD
 test=$(basename "$1")
