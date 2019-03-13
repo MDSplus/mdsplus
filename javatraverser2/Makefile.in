@@ -848,8 +848,8 @@ $(MANIFEST): $(srcdir)/JTMANIFEST.mf
 @USE_JARS_DIR_FALSE@	mkdir -p $(JAVAROOT)/jtraverser &&\
 @USE_JARS_DIR_FALSE@	cp -f $(TRAV_GIFS) $(JAVAROOT)/jtraverser &&\
 @USE_JARS_DIR_FALSE@	cp -f $(JSCH) "$(abs_builddir)/jTraverser2.jar" &&\
-@USE_JARS_DIR_FALSE@	pushd $(JAVAROOT) &&\
-@USE_JARS_DIR_FALSE@	($(JAR) u0fm "$(abs_builddir)/jTraverser2.jar" $(MANIFEST) $(java_JAR) $(TRAV_GIF) ;	popd)
+@USE_JARS_DIR_FALSE@	cd $(JAVAROOT) &&\
+@USE_JARS_DIR_FALSE@	$(JAR) u0fm "$(abs_builddir)/jTraverser2.jar" $(MANIFEST) $(java_JAR) $(TRAV_GIF)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -57,8 +57,8 @@ jTraverser2.jar: $(JSCH) $(MANIFEST)
 	mkdir -p $(JAVAROOT)/jtraverser &&\
 	cp -f $(TRAV_GIFS) $(JAVAROOT)/jtraverser &&\
 	cp -f $(JSCH) "$(abs_builddir)/jTraverser2.jar" &&\
-	pushd $(JAVAROOT) &&\
-	($(JAR) u0fm "$(abs_builddir)/jTraverser2.jar" $(MANIFEST) $(java_JAR) $(TRAV_GIF) ;	popd)
+	cd $(JAVAROOT) &&\
+	$(JAR) u0fm "$(abs_builddir)/jTraverser2.jar" $(MANIFEST) $(java_JAR) $(TRAV_GIF)
 
 endif
 
