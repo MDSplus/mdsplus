@@ -39,6 +39,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <include dir="/usr/local/mdsplus/java"/>
     <include dir="/usr/local/mdsplus/desktop/java"/>
     <exclude file="/usr/local/mdsplus/java/classes/jDevices.jar"/>
+    <include file="/usr/local/mdsplus/pixmaps/jscope.png"/>
+    <include file="/usr/local/mdsplus/pixmaps/jtraverser.png"/>
+    <include file="/usr/local/mdsplus/pixmaps/jtraverser2.png"/>
 
     <!-- rpm scripts -->
     <post>
@@ -262,7 +265,10 @@ fi
     <requires package="motif_bin"/>
     <requires package="kernel"/>
     <include dir="/usr/local/mdsplus/desktop/motif"/>
+    <include file="/usr/local/mdsplus/pixmaps/actlog.png"/>
     <include file="/usr/local/mdsplus/pixmaps/dwpad.png"/>
+    <include file="/usr/local/mdsplus/pixmaps/dwscope.png"/>
+    <include file="/usr/local/mdsplus/pixmaps/traverser.png"/>
 
     <!-- rpm scripts -->
     <post>
@@ -447,9 +453,6 @@ fi
     <include file="/usr/local/mdsplus/pixmaps/mdstcl.png"/>
     <include file="/usr/local/mdsplus/pixmaps/small_mdsplus_logo.jpg"/>
     <include file="/usr/local/mdsplus/pixmaps/tdi.png"/>
-    <include file="/usr/local/mdsplus/pixmaps/dwscope.png"/>
-    <include file="/usr/local/mdsplus/pixmaps/traverser.png"/>
-    <include file="/usr/local/mdsplus/pixmaps/traverser2.png"/>
     <include dir="/usr/local/mdsplus/nodejs"/>
     <exclude dir="/usr/local/mdsplus/tdi/MitDevices"/>
     <exclude dir="/usr/local/mdsplus/pydevices"/>

@@ -651,13 +651,13 @@ Section "java tools" java
 	SectionIn 1 2
 	SetOutPath $INSTDIR\java
 	File /r java/classes
-	File icons/scope.ico
-	File icons/traverser.ico
-	File icons/traverser2.ico
+	File icons/jscope.ico
+	File icons/jtraverser.ico
+	File icons/jtraverser2.ico
 	!insertmacro MUI_STARTMENU_WRITE_BEGIN Application
-		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Scope.lnk"      javaw '-cp "$INSTDIR\java\classes\jScope.jar";"$INSTDIR\java\Classes" -Xmx1G jScope'	"$INSTDIR\java\scope.ico"	0 SW_SHOWMINIMIZED
-		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Traverser.lnk"  javaw '-cp "$INSTDIR\java\classes\jTraverser.jar" jTraverser'				"$INSTDIR\java\traverser.ico"	0 SW_SHOWMINIMIZED
-		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Traverser2.lnk" javaw '-jar "$INSTDIR\java\classes\jTraverser2.jar"'					"$INSTDIR\java\traverser2.ico"	0 SW_SHOWMINIMIZED
+		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\jScope.lnk"      javaw '-cp "$INSTDIR\java\classes\jScope.jar";"$INSTDIR\java\Classes" -Xmx1G jScope'	"$INSTDIR\java\jscope.ico"	0 SW_SHOWMINIMIZED
+		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\jTraverser.lnk"  javaw '-cp "$INSTDIR\java\classes\jTraverser.jar" jTraverser'				"$INSTDIR\java\jtraverser.ico"	0 SW_SHOWMINIMIZED
+		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\jTraverser2.lnk" javaw '-jar "$INSTDIR\java\classes\jTraverser2.jar"'					"$INSTDIR\java\jtraverser2.ico"	0 SW_SHOWMINIMIZED
 	!insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd ; java
 
