@@ -1,6 +1,5 @@
 Name   "MDSplus${FLAVOR} ${MAJOR}.${MINOR}-${RELEASE}"
 OutFile ${OUTDIR}/MDSplus${FLAVOR}-${MAJOR}.${MINOR}-${RELEASE}.exe
-RequestExecutionLevel user ; highest
 SetCompressor /FINAL LZMA
 ShowInstDetails show
 InstType "Typical" 
@@ -41,6 +40,14 @@ InstType "Minimal"
 !define main_path		"$INSTDIR\trees"
 !define subtree_path		"$INSTDIR\trees\subtree"
 
+;;allows admins to decide if the want to install for current or allusers
+!define MULTIUSER_EXECUTIONLEVEL Highest
+!define MULTIUSER_MUI
+!define MULTIUSER_INSTALLMODE_INSTDIR MDSplus
+!define MULTIUSER_INSTALLMODE_COMMANDLINE
+!define MULTIUSER_INSTALLMODE_FUNCTION   Init
+!include MultiUser.nsh
+
 ;; MUI2 include and definitions determine the design of the installer
 !include "MUI2.nsh"
 !define MUI_ABORTWARNING
@@ -52,28 +59,44 @@ InstType "Minimal"
 !define MUI_FINISHPAGE_LINK_LOCATION	${ABOUTURL}
 Var StartMenuFolder
 !insertmacro MUI_PAGE_LICENSE "MDSplus-License.rtf"
+!insertmacro MULTIUSER_PAGE_INSTALLMODE
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_STARTMENU "Application" $StartMenuFolder
 !insertmacro MUI_PAGE_INSTFILES
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES
+!insertmacro MUI_UNPAGE_FINISH
 !insertmacro MUI_LANGUAGE "English"
 
-;; ToLog can be used for debugging
-;; It simply appends the passed string to $INSTDIR\log.log
+
+
+### BEGIN DEBUG TOOLS ###
 ;Var LOG
+;; ShowLog show an OK_BOX with $LOG if $LOG is not empty
+!macro ShowLog
+;	StrCmp $LOG "" +3 +1
+;	MessageBox MB_OK $LOG
+;	StrCpy $LOG ""
+!macroend ; ToLog
+!define ShowLog '!insertmacro "ShowLog"'
+;; ToLog appends the passed string to $INSTDIR\log.log or $LOG
 !macro ToLog line
 ;	Push `${line}`
 ;	Exch $0
 ;	Push $R0
-;	;StrCpy $LOG `$LOG$0`
+;	StrCpy $LOG `$LOG$0$\n`
 ;	FileOpen  $R0 `$INSTDIR\log.log` a
 ;	FileSeek  $R0 0 END
-;	FileWrite $R0 `$0`
+;	FileWrite $R0 `$0$\n`
 ;	FileClose $R0
 ;	Pop $R0
 ;	Pop $0
 !macroend ; ToLog
 !define ToLog '!insertmacro "ToLog"'
+### END DEBUG TOOLS ###
+
+
 
 ;; tools for If and Loop logics
 !include LogicLib.nsh
@@ -129,7 +152,7 @@ Var INPOS
 	Pop $R2			; restore registers
 	Pop $R1
 	Pop $R0
-	${ToLog} `IN("$0", "$1") = $INPOS$\n`
+	${ToLog} `IN("$0", "$1") = $INPOS`
 	Pop $1
 	Pop $0
 	!ifdef _c=false_	; restore definitions of the LogicLib
@@ -164,7 +187,7 @@ Var ISVAR
 	Exch			;; exchange 1st, swap stack, exchange 2nd.
 	Exch $1 ; string	;; stack: BOTTOM <= $0, $1 = TOP
 	Call isfun
-	;${ToLog} `IS($0,$1) = $ISVAR$\n`
+	;${ToLog} `IS($0,$1) = $ISVAR`
 	Pop $1
 	Pop $0
 	; perform the jump so it will work as If operator
@@ -182,23 +205,22 @@ FunctionEnd
 
 
 
-### BEGIN _UserIs ###
+### BEGIN _AllUsers ###
 ;; If operator to check whether execution level is of a given type e.g. admin
-;; ${if} "" UserIs admin
-!macro _UserIs dummy type t f
-	UserInfo::GetAccountType
-	Pop $ISVAR
-	StrCmp `$ISVAR` `${type}` `${t}` `${f}`
-!macroend ; _UserIs
-### END _UserIs ###
+;; ${if} for AllUsers ?
+!macro _AllUsers dummy1 dummy2 t f
+	${ToLog} `InstallMode $MultiUser.InstallMode`
+	StrCmp `$MultiUser.InstallMode` AllUsers `${t}` `${f}`
+!macroend ; _AllUsers
+### END _AllUsers ###
 
 
 
 ### BEGIN REGISTRY MANIPULATION ###
 ;; the root HKLM or HKCU must be a constant as it is interpreted at compiletime
-;; these macros write to the corresponding root (and key) base on UserIs admin
+;; these macros write to the corresponding root (and key) base on AllUsers admin
 !macro WriteKeyStr key name value
-	${If} "" UserIs admin
+	${If} for AllUsers ?
 		WriteRegStr HKLM `${key}` `${name}` `${value}`
 	${Else}
 		WriteRegStr HKCU `${key}` `${name}` `${value}`
@@ -206,15 +228,23 @@ FunctionEnd
 !macroend ; WriteKeyStr
 !define WriteKeyStr '!insertmacro "WriteKeyStr"'
 !macro WriteKeyDWORD key name value
-	${If} "" UserIs admin
+	${If} for AllUsers ?
 		WriteRegDWORD HKLM `${key}` `${name}` `${value}`
 	${Else}
 		WriteRegDWORD HKCU `${key}` `${name}` `${value}`
 	${EndIf}
 !macroend ; WriteKeyDWORD
 !define WriteKeyDWORD '!insertmacro "WriteKeyDWORD"'
+!macro ReadKeyStr var key name
+	${If} for AllUsers ?
+		ReadRegStr ${var} HKLM `${key}` `${name}`
+	${Else}
+		ReadRegStr ${var} HKCU `${key}` `${name}`
+	${EndIf}
+!macroend ; ReadKeyStr
+!define ReadKeyStr '!insertmacro "ReadKeyStr"'
 !macro DeleteKey key
-	${If} "" UserIs admin
+	${If} for AllUsers ?
 		DeleteRegKey HKLM `${key}`
 	${Else}
 		DeleteRegKey HKCU `${key}`
@@ -231,8 +261,8 @@ FunctionEnd
 # BEGIN WriteEnv #
 ;; create or overwrite environment var
 !macro WriteEnv name value
-	${ToLog} `SET_ENV ${name} "${value}"$\n`
-	${If} "" UserIs admin
+	${ToLog} `SET_ENV ${name} "${value}"`
+	${If} for AllUsers ?
 		WriteRegStr HKLM "${ENVREG_ALL}" `${name}` `${value}`
 	${Else}
 		WriteRegStr HKCU "${ENVREG_USR}" `${name}` `${value}`
@@ -244,12 +274,12 @@ FunctionEnd
 # BEGIN ReadEnv #
 ;; read environment var into var
 !macro ReadEnv var name
-	${If} "" UserIs admin
+	${If} for AllUsers ?
 		ReadRegStr ${var} HKLM "${ENVREG_ALL}" `${name}`
 	${Else}
 		ReadRegStr ${var} HKCU "${ENVREG_USR}" `${name}`
 	${EndIf}
-	${ToLog} `GET_ENV ${name} "${var}"$\n`
+	${ToLog} `GET_ENV ${name} "${var}"`
 !macroend ; ReadEnv
 !define ReadEnv '!insertmacro "ReadEnv"'
 # END ReadEnv #
@@ -257,8 +287,8 @@ FunctionEnd
 # BEGIN DeleteEnv #
 ;; delete environment var
 !macro DeleteEnv name
-	${ToLog} `DEL_ENV ${name}$\n`
-	${If} "" UserIs admin
+	${ToLog} `DEL_ENV ${name}`
+	${If} for AllUsers ?
 		DeleteRegValue HKLM "${ENVREG_ALL}" `${name}`
 	${Else}
 		DeleteRegValue HKCU "${ENVREG_USR}" `${name}`
@@ -369,7 +399,7 @@ FunctionEnd ; RemoveFromEnv
 ;; stores the location of the native binaries in var
 ;; the localtion depends on privileges and architecture
 !macro GetBinDir var
-	${If} "" UserIs admin
+	${If} for AllUsers ?
 		StrCpy ${var} "$SYSDIR"
 	${ElseIf} ${RunningX64}
 		StrCpy ${var} "${BINDIR64}"
@@ -430,7 +460,7 @@ Function install_core_pre
 	Push $R0
 	!insertmacro MUI_STARTMENU_WRITE_BEGIN Application
 	CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
-	${If} "" UserIs admin
+	${If} for AllUsers ?
 		CreateDirectory "$SMPROGRAMS\$StartMenuFolder\DataServer"
 		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Install mdsip action server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\mdsip.hosts$\""
 		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Install mdsip data server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-i -p 8000 -h $\"C:\mdsip.hosts$\""
@@ -465,8 +495,8 @@ Function install_core_post
 	SetOverWrite on
 	# Registry information for add/remove programs
 	${WriteKeyStr} "${UNINSTALL_KEY}" "DisplayName" "MDSplus${FLAVOR}"
-	${WriteKeyStr} "${UNINSTALL_KEY}" "UninstallString" "$INSTDIR\uninstall.exe"
-	${WriteKeyStr} "${UNINSTALL_KEY}" "QuietUninstallString" "$INSTDIR\uninstall.exe /S"
+	${WriteKeyStr} "${UNINSTALL_KEY}" "UninstallString" "$INSTDIR\uninstall.exe /$MultiUser.InstallMode"
+	${WriteKeyStr} "${UNINSTALL_KEY}" "QuietUninstallString" "$INSTDIR\uninstall.exe /S /$MultiUser.InstallMode"
 	${WriteKeyStr} "${UNINSTALL_KEY}" "InstallLocation" "$INSTDIR"
 	${WriteKeyStr} "${UNINSTALL_KEY}" "DisplayIcon"	"$INSTDIR\mdsplus.ico"
 	${WriteKeyStr} "${UNINSTALL_KEY}" "Publisher" "MDSplus Collaboratory"
@@ -507,7 +537,7 @@ SectionGroup "!core" core
 	File ${MINGWLIB64}/${ICONV_LIB}
 	File ${MINGWLIB64}/${ZLIB1_LIB}
 	${DisableX64FSRedirection}
-	${If} "" UserIs admin
+	${If} for AllUsers ?
 		FileOpen $R0 "$INSTDIR\installer.dat" w
 		FindFirst $R1 $R2 "${BINDIR64}\*"
 		loop_64:
@@ -551,7 +581,7 @@ SectionGroup "!core" core
 	File ${MINGWLIB32}/${LIBXML2_LIB}
 	File ${MINGWLIB32}/${ICONV_LIB}
 	File ${MINGWLIB32}/${ZLIB1_LIB}
-	${IF} "" UserIs admin
+	${IF} for AllUsers ?
 		${If} ${RunningX64}
 			StrCpy $R3 "$WINDIR\SysWOW64"
 			FileOpen $R0 "$INSTDIR\installer.dat" a
@@ -582,7 +612,7 @@ SectionGroup "!core" core
  SectionEnd ; 32 bit
  Section "add to PATH" appendpath
 	Push $R0
-	${IfNot} "" UserIs admin
+	${IfNot} for AllUsers ?
 		${GetBinDir} $R0
 		${AddToEnv} "PATH" "$R0"
 	${EndIf}
@@ -681,19 +711,16 @@ SectionGroup /e "!APIs" apis
   !define LVOLD_DESC "https://github.com/MDSplus/mdsplus/$\n"
   Section "LV2015 (15.0) on GitHub" LV2015
 	!define LV2015_DESC "mdsobjects/labview/MDSplus_LV2015"
-	SectionIn RO
 ;	SetOutPath "$INSTDIR\LabView\LV2015\MDSplus"
 ;	File /r LabView/MDSplus_LV2015/*
   SectionEnd ; LV2015
   Section "LV2012 (12.0) on GitHub" LV2012
 	!define LV2012_DESC "mdsobjects/labview/MDSplus_LV2012"
-	SectionIn RO
 ;	SetOutPath "$INSTDIR\LabView\LV2012\MDSplus"
 ;	File /r LabView/MDSplus_LV2012/*
   SectionEnd ; LV2012
   Section "LV2001 (<=6.1) on GitHub" LV2001
 	!define LV2001_DESC "LabView"
-	SectionIn RO
 ;	SetOutPath "$INSTDIR\LabView\LV2001\MDSplus"
 ;	File LabView/*.vi
   SectionEnd ; LV2000
@@ -842,13 +869,22 @@ FunctionEnd
 
 
 ### BEGIN INSTALLER ###
-Function .onInit
+Function Init
+	${ToLog} "BEGIN INIT"
 	Push $R0
-	System::Call 'kernel32::CreateMutex(i 0, i 0, t "MDSplus-installer") ?e'
+	${ReadkeyStr} $R0 ${UNINSTALL_KEY} ${UNINSTALL_VAL}
+	${ReadEnv} $INSTDIR MDSPLUS_DIR
+	${IfNot}  $R0 == ""
+		MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
+		"MDSplus is already installed. $\n$\nClick `OK` to remove the \
+		previous version or `Cancel` to cancel this upgrade." IDOK uninst
+			Abort
+		; Run the uninstaller
+		uninst:
+		ClearErrors
+		ExecWait '$R0 _?=$INSTDIR' ;Do not copy the uninstaller to a temp file
+	${EndIf}
 	Pop $R0
-	StrCmp $R0 0 +3
-	    MessageBox MB_OK "The installer is already running."
-	    Abort
 	${If} ${RunningX64}
 		SectionSetInstTypes ${bin32} 2 ; include 32bit in full
 		SectionSetInstTypes ${bin64} 7 ; always include 64bit
@@ -858,12 +894,7 @@ Function .onInit
 		SectionSetInstTypes ${bin32} 7 ; always include 32bit
 		SectionSetInstTypes ${bin64} 0 ; never include 64bit
 	${EndIf}
-	SectionSetInstTypes ${LV2015} 0
-	SectionSetInstTypes ${LV2012} 0
-	SectionSetInstTypes ${LV2001} 0
-	${If} "" UserIs admin
-		SetShellVarContext all
-		ReadRegStr $INSTDIR HKLM "${ENVREG_ALL}" MDSPLUS_DIR
+	${If} for AllUsers ?
 		${If} `$INSTDIR` == ""
 			${If} ${RunningX64}
 				StrCpy $INSTDIR $PROGRAMFILES64\MDSplus
@@ -871,34 +902,28 @@ Function .onInit
 				StrCpy $INSTDIR $PROGRAMFILES32\MDSplus
 			${EndIf}
 		${EndIf}
-		ReadRegStr $R0 HKLM ${UNINSTALL_KEY} ${UNINSTALL_VAL}
 		SectionSetFlags ${appendpath} ${SF_RO}
 	${Else}
-		SetShellVarContext current
-		ReadRegStr $INSTDIR HKCU "${ENVREG_USR}" MDSPLUS_DIR
 		${If} $INSTDIR == ""
 			StrCpy $INSTDIR $PROFILE\MDSplus
 		${EndIf}
-		ReadRegStr $R0 HKCU ${UNINSTALL_KEY} ${UNINSTALL_VAL}
 		SectionSetInstTypes ${appendpath} 7 ; always include on user level
 		SectionSetFlags ${appendpath} ${SF_SELECTED}
 	${EndIf}
-	${IfNot}  $R0 == ""
-		MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
-		"MDSplus is already installed. $\n$\nClick `OK` to remove the \
-		previous version or `Cancel` to cancel this upgrade." IDOK uninst
-			Abort
-		; Run the uninstaller
-		uninst:
-		ClearErrors
-  		ExecWait '$R0 _?=$INSTDIR' ;Do not copy the uninstaller to a temp file
-	${EndIf}
-	Pop $R0
-FunctionEnd
+	SectionSetFlags ${LV2015} ${SF_RO}
+	SectionSetFlags ${LV2012} ${SF_RO}
+	SectionSetFlags ${LV2001} ${SF_RO}
+	${ToLog} "END INIT"
+FunctionEnd ; Init
+Function .onInit
+	${ToLog} "BEGIN .onInit"
+	!insertmacro MULTIUSER_INIT
+	${ToLog} "END .onInit"
+FunctionEnd ; .onInit
 
 Function .onGUIEnd
-	;MessageBox MB_OK $LOG
 	SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
+	${ShowLog}
 FunctionEnd
 ### END INSTALLER ###
 
@@ -906,29 +931,25 @@ FunctionEnd
 
 ### BEGIN UNINSTALLER ###
 Function un.onInit
-	#Verify the uninstaller - last chance to back out
-	MessageBox MB_OKCANCEL "Permanantly remove MDSplus${FLAVOR}?" IDOK next
-		Abort
-	next:
-functionEnd
+	!insertmacro MULTIUSER_UNINIT
+functionEnd ; un.onInit
 
 Function un.onGUIEnd
 	SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
 FunctionEnd
  
-Section "uninstall"
+Section uninstall
 	Push $R0
 	Push $R1
 	Push $R2
-	IfFileExists "$INSTDIR\mdsobjects\python" 0 skip_python_remove
-	SetOutPath "$INSTDIR\mdsobjects\python"
+	IfFileExists "$INSTDIR\python\MDSplus" 0 skip_python_remove
+	SetOutPath "$INSTDIR\python\MDSplus"
 	nsExec::ExecToLog /OEM /TIMEOUT=10000 'python setup.py remove'
 	Pop $R0
 	skip_python_remove:
 	SetOutPath "$INSTDIR"
 	Delete uninstall.exe
-	${IF} "" UserIs admin
-		SetShellVarContext all
+	${IF} for AllUsers ?
 		nsExec::ExecToLog /OEM /timeout=5000 '"$SYSDIR\mdsip_service.exe" "-r -p 8100"'
 		Pop $R0
 		nsExec::ExecToLog /OEM /timeout=5000 '"$SYSDIR\mdsip_service.exe" "-r -p 8000"'
@@ -946,9 +967,8 @@ Section "uninstall"
 		${EnableX64FSRedirection}
 		Delete installer.dat
 	${Else}
-		SetShellVarContext current
 		${GetBinDir} $R0
-		${RemoveFromEnv}	PATH			"$R0"
+		${RemoveFromEnv}	PATH		"$R0"
 	${EndIf}
 	!insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
 	RMDir /r "$SMPROGRAMS\$StartMenuFolder"
@@ -964,6 +984,6 @@ Section "uninstall"
 	Pop $R2
 	Pop $R1
 	Pop $R0
-	;MessageBox MB_OK $LOG
+	${ShowLog}
 SectionEnd
 ### END UNINSTALLER ###
