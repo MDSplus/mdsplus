@@ -28,7 +28,7 @@ import jtraverser.TreeView;
 import mds.Mds;
 import mds.MdsException;
 import mds.data.TREE;
-import mds.data.descriptor_s.CString;
+import mds.data.descriptor_s.StringDsc;
 
 @SuppressWarnings("serial")
 public class OpenTreeDialog extends JDialog{
@@ -166,7 +166,7 @@ public class OpenTreeDialog extends JDialog{
                     final String exp = OpenTreeDialog.this.expt.getText().trim();
                     final Mds mds = OpenTreeDialog.this.treeman == null ? null : OpenTreeDialog.this.treeman.getMds();
                     OpenTreeDialog.this.setTreePath(exp);
-                    shots = mds == null ? new int[0] : mds.getIntegerArray("getShotDB($)", new CString(exp));
+                    shots = mds == null ? new int[0] : mds.getIntegerArray("getShotDB($)", new StringDsc(exp));
                 }catch(final MdsException exc){
                     MdsException.stderr("getShotDB", exc);
                     shots = new int[0];
@@ -192,6 +192,7 @@ public class OpenTreeDialog extends JDialog{
         final JPanel buttons = new JPanel();
         JButton but;
         buttons.add(but = new JButton("Ok"));
+        this.getRootPane().setDefaultButton(but);
         but.setSelected(true);
         but.addActionListener(new ActionListener(){
             @Override
@@ -251,9 +252,8 @@ public class OpenTreeDialog extends JDialog{
             final TREE tree = TREE.getActiveTree();
             if(tree != null) this.setFields(tree.expt, tree.shot);
         }
-        // * seems like it might also work on remotes
-        // final Mds mds = this.treeman == null ? null : this.treeman.getMds();
-        // this.expt_path.setEnabled(mds instanceof MdsLib);
+        if(this.expt.getText().length() > 0) this.shot_list.grabFocus();
+        else this.expt.grabFocus();
         this.setVisible(true);
     }
 

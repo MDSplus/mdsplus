@@ -2,6 +2,7 @@ package mds.data.descriptor_s;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import mds.data.DTYPE;
 import mds.data.descriptor.Descriptor;
 
 public abstract class INTEGER<T extends Number>extends NUMBER<T>{
@@ -29,28 +30,28 @@ public abstract class INTEGER<T extends Number>extends NUMBER<T>{
         return ByteBuffer.allocate(Short.BYTES).order(Descriptor.BYTEORDER).putShort(0, value);
     }
 
-    protected INTEGER(final byte dtype, final BigInteger value){
-        super(dtype, INTEGER.toByteBuffer(value));
-    }
-
-    protected INTEGER(final byte dtype, final byte value){
-        super(dtype, INTEGER.toByteBuffer(value));
-    }
-
-    protected INTEGER(final byte dtype, final int value){
-        super(dtype, INTEGER.toByteBuffer(value));
-    }
-
-    protected INTEGER(final byte dtype, final long value){
-        super(dtype, INTEGER.toByteBuffer(value));
-    }
-
-    protected INTEGER(final byte dtype, final short value){
-        super(dtype, INTEGER.toByteBuffer(value));
-    }
-
     protected INTEGER(final ByteBuffer b){
         super(b);
+    }
+
+    protected INTEGER(final DTYPE dtype, final BigInteger value){
+        super(dtype, INTEGER.toByteBuffer(value));
+    }
+
+    protected INTEGER(final DTYPE dtype, final byte value){
+        super(dtype, INTEGER.toByteBuffer(value));
+    }
+
+    protected INTEGER(final DTYPE dtype, final int value){
+        super(dtype, INTEGER.toByteBuffer(value));
+    }
+
+    protected INTEGER(final DTYPE dtype, final long value){
+        super(dtype, INTEGER.toByteBuffer(value));
+    }
+
+    protected INTEGER(final DTYPE dtype, final short value){
+        super(dtype, INTEGER.toByteBuffer(value));
     }
 
     @Override

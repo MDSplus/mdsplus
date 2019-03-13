@@ -14,10 +14,6 @@ public final class Complex32Array extends COMPLEXArray<Float>{
         super(DTYPE.COMPLEX_FLOAT, new float[0]);
     }
 
-    public Complex32Array(final byte dtype, final ByteBuffer data, final int[] shape){
-        super(DTYPE.COMPLEX_FLOAT, data, shape);
-    }
-
     public Complex32Array(final ByteBuffer b){
         super(b);
     }
@@ -68,7 +64,7 @@ public final class Complex32Array extends COMPLEXArray<Float>{
 
     @Override
     protected final byte getRankBits() {
-        return 4;
+        return 0x03;
     }
 
     @Override

@@ -31,20 +31,20 @@ public final class Float64Array extends FLOATArray<Double>{
         return new Float64Array(DTYPE.G, values, shape);
     }
 
-    public Float64Array(final byte dtype, final ByteBuffer data, final int[] shape){
-        super(dtype, data, shape);
-    }
-
-    public Float64Array(final byte dtype, final double[] values, final int... shape){
-        super(dtype, values, shape);
-    }
-
     public Float64Array(final ByteBuffer b){
         super(b);
     }
 
     public Float64Array(final double... values){
         this(DTYPE.DOUBLE, values);
+    }
+
+    public Float64Array(final DTYPE dtype, final ByteBuffer data, final int[] shape){
+        super(dtype, data, shape);
+    }
+
+    public Float64Array(final DTYPE dtype, final double[] values, final int... shape){
+        super(dtype, values, shape);
     }
 
     public Float64Array(final int[] shape, final double... values){
@@ -67,13 +67,13 @@ public final class Float64Array extends FLOATArray<Double>{
     @Override
     public final Float64Array dfloat() {
         if(this.dtype() == DTYPE.D) return this;
-        return new Float64Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.D));
+        return new Float64Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.D.toByte()));
     }
 
     @Override
     public final Float64Array ftfloat() {
         if(this.dtype() == DTYPE.FT) return this;
-        return new Float64Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.FT));
+        return new Float64Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.FT.toByte()));
     }
 
     @Override
@@ -88,7 +88,7 @@ public final class Float64Array extends FLOATArray<Double>{
 
     @Override
     protected final byte getRankBits() {
-        return 8;
+        return 0x07;
     }
 
     @Override
@@ -99,7 +99,7 @@ public final class Float64Array extends FLOATArray<Double>{
     @Override
     public final Float64Array gfloat() {
         if(this.dtype() == DTYPE.G) return this;
-        return new Float64Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.G));
+        return new Float64Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.G.toByte()));
     }
 
     @Override

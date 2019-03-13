@@ -23,7 +23,7 @@ import mds.data.descriptor_r.Range;
 import mds.data.descriptor_r.Signal;
 import mds.data.descriptor_r.With_Units;
 import mds.data.descriptor_r.function.CONST;
-import mds.data.descriptor_s.CString;
+import mds.data.descriptor_s.StringDsc;
 import mds.data.descriptor_s.Int32;
 
 public class Editors_Test{
@@ -42,7 +42,7 @@ public class Editors_Test{
         }
         array = tarray;
         ndarray = new Uint64Array(new int[]{100, 100}, Editors_Test.array.toLongArray());
-        signal = new Signal(CONST.$VALUE(), Editors_Test.ndarray, Editors_Test.range);
+        signal = new Signal(CONST.$VALUE, Editors_Test.ndarray, Editors_Test.range);
     }
 
     @AfterClass
@@ -66,34 +66,34 @@ public class Editors_Test{
         this.d.setVisible(true);
     }
 
-    // @Test
+    @Test
     public void testAnyEditor() {
         final Editor e;
-        this.p.add(e = new AnyEditor(true, this.d));
+        this.p.add(e = new AnyEditor(true, null, this.d));
         e.setData(Editors_Test.signal);
     }
 
     @Test
     public void testArrayEditor() {
         final Editor e;
-        this.p.add(e = new ArrayEditor(true));
+        this.p.add(e = new ArrayEditor(true, null));
         e.setData(Editors_Test.ndarray);
     }
 
     @Test
     public void testAxisEditor() {
         final Editor e;
-        this.p.add(e = new AxisEditor(true, this.d));
+        this.p.add(e = new AxisEditor(true, null, this.d));
         e.setData(Editors_Test.rangewp);
     }
 
-    // @Test
+    @Test
     public void testExprEditor() {
         Editor e;
-        this.p.add(e = new ExprEditor(true, false, true));
+        this.p.add(e = new ExprEditor(false, null, true, true));
         e.setData(Editors_Test.rangewp);
-        this.p.add(Editor.addLabel("TEST", e = new ExprEditor(true, true, true)));
-        e.setData(new CString("teststring"));
+        this.p.add(Editor.addLabel("TEST", e = new ExprEditor(true, null, true, true)));
+        e.setData(new StringDsc("teststring"));
     }
 
     @SuppressWarnings("static-method")
@@ -102,13 +102,13 @@ public class Editors_Test{
         GraphPanel.newPlot(new Signal(new Float32Array(0, 3, 4, 3, 0, -3, -4, -3, 0, 3), null, new Float32Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)), null, "my title");
     }
 
-    // @Test
+    @Test
     public void testNumericEditor() {
-        this.p.add(new NumericEditor(Editors_Test.ndarray, true, this.d, "test"));
+        this.p.add(new NumericEditor(Editors_Test.ndarray, true, null, this.d, "test"));
     }
 
-    // @Test
+    @Test
     public void testSignalEditor() {
-        this.p.add(new SignalEditor(Editors_Test.signal, true, this.d));
+        this.p.add(new SignalEditor(Editors_Test.signal, true, null, this.d));
     }
 }

@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import mds.MdsException;
 import mds.data.DTYPE;
-import mds.data.descriptor_s.CString;
+import mds.data.descriptor_s.StringDsc;
 import mds.data.descriptor_s.Complex32;
 import mds.data.descriptor_s.Complex64;
 import mds.data.descriptor_s.Event;
@@ -34,61 +34,58 @@ public abstract class Descriptor_S<T>extends Descriptor<T>{
     private static final boolean atomic = true;
 
     public static final Descriptor_S<?> deserialize(final ByteBuffer b) throws MdsException {
-        switch(b.get(Descriptor._typB)){
-            case DTYPE.NID:
+        switch(Descriptor.getDtype(b)){
+            case NID:
                 return new Nid(b);
-            case DTYPE.BU:
+            case BU:
                 return new Uint8(b);
-            case DTYPE.WU:
+            case WU:
                 return new Uint16(b);
-            case DTYPE.LU:
+            case LU:
                 return new Uint32(b);
-            case DTYPE.QU:
+            case QU:
                 return new Uint64(b);
-            case DTYPE.OU:
+            case OU:
                 return new Uint128(b);
-            case DTYPE.B:
+            case B:
                 return new Int8(b);
-            case DTYPE.W:
+            case W:
                 return new Int16(b);
-            case DTYPE.L:
+            case L:
                 return new Int32(b);
-            case DTYPE.Q:
+            case Q:
                 return new Int64(b);
-            case DTYPE.O:
+            case O:
                 return new Int128(b);
-            case DTYPE.F:
-            case DTYPE.FS:
+            case F:
+            case FS:
                 return new Float32(b);
-            case DTYPE.FC:
-            case DTYPE.FSC:
+            case FC:
+            case FSC:
                 return new Complex32(b);
-            case DTYPE.D:
-            case DTYPE.G:
-            case DTYPE.FT:
+            case D:
+            case G:
+            case FT:
                 return new Float64(b);
-            case DTYPE.DC:
-            case DTYPE.GC:
-            case DTYPE.FTC:
+            case DC:
+            case GC:
+            case FTC:
                 return new Complex64(b);
-            case DTYPE.T:
-                return new CString(b);
-            case DTYPE.POINTER:
+            case T:
+                return new StringDsc(b);
+            case POINTER:
                 return new Pointer(b);
-            case DTYPE.IDENT:
+            case IDENT:
                 return new Ident(b);
-            case DTYPE.PATH:
+            case PATH:
                 return new Path(b);
-            case DTYPE.MISSING:
+            case Z:
                 return Missing.NEW;
-            case DTYPE.EVENT:
+            case EVENT:
                 return new Event(b);
+            default:
+                throw new MdsException(String.format("Unsupported dtype %s for class %s", DTYPE.getName(b.get(Descriptor._typB)), Descriptor.getDClassName(b.get(Descriptor._clsB))), 0);
         }
-        throw new MdsException(String.format("Unsupported dtype %s for class %s", DTYPE.getName(b.get(Descriptor._typB)), Descriptor.getDClassName(b.get(Descriptor._clsB))), 0);
-    }
-
-    public Descriptor_S(final byte dtype, final ByteBuffer data){
-        this((short)data.limit(), dtype, data);
     }
 
     public Descriptor_S(final ByteBuffer b){
@@ -96,7 +93,11 @@ public abstract class Descriptor_S<T>extends Descriptor<T>{
         this.b.limit(this.pointer() + this.length());
     }
 
-    public Descriptor_S(final short length, final byte dtype, final ByteBuffer value){
+    public Descriptor_S(final DTYPE dtype, final ByteBuffer data){
+        this((short)data.limit(), dtype, data);
+    }
+
+    public Descriptor_S(final short length, final DTYPE dtype, final ByteBuffer value){
         super(length, dtype, Descriptor_S.CLASS, value, Descriptor.BYTES, 0);
     }
 

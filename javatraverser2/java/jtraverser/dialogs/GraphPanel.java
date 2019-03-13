@@ -17,6 +17,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import mds.MdsException;
+import mds.MdsMisc;
+import mds.MdsMisc.DataStruct;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_r.Signal;
 import mds.data.descriptor_s.NODE;
@@ -141,6 +143,17 @@ public class GraphPanel extends JPanel{
     }
 
     public static final void plotNode(final NODE<?> node, final Frame frame, final String title) {
+        try{
+            final MdsMisc misc = new MdsMisc(node.getTree().getMds());
+            final String expr = node.decompile();
+            final DataStruct ds = misc.miscGetXYSignalLongTimes(node.getTree(), expr, "DIM_OF(" + expr + ")", Long.MIN_VALUE, Long.MAX_VALUE, 3200);
+            GraphPanel.newPlot(ds.y, ds.to_float(), frame, title);
+        }catch(final MdsException.MdsAbortException e){/**/}catch(final MdsException e){
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), e.getMessage(), "Display Signal", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static final void plotNodeSig(final NODE<?> node, final Frame frame, final String title) {
         try{
             final NODE<?> datanode = node.followReference();
             final Descriptor<?> sig = datanode.getRecord();

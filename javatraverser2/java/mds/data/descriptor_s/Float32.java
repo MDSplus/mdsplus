@@ -16,12 +16,12 @@ public final class Float32 extends FLOAT<Float>{
         this(0);
     }
 
-    Float32(final byte dtype, final float value){
-        super(dtype, value);
-    }
-
     public Float32(final ByteBuffer b){
         super(b);
+    }
+
+    Float32(final DTYPE dtype, final float value){
+        super(dtype, value);
     }
 
     public Float32(final float value){
@@ -61,7 +61,7 @@ public final class Float32 extends FLOAT<Float>{
 
     @Override
     protected final byte getRankBits() {
-        return 4;
+        return 0x03;
     }
 
     public final float getValue() {
@@ -88,7 +88,7 @@ public final class Float32 extends FLOAT<Float>{
     }
 
     @Override
-    public final CString text() {
-        return new CString(String.format("%16.5E", this.getAtomic()).replace("E", this.getSuffix()));
+    public final StringDsc text() {
+        return new StringDsc(String.format("%16.5E", this.getAtomic()).replace("E", this.getSuffix()));
     }
 }

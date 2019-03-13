@@ -125,6 +125,7 @@ public class DecompileTree{
             final Transformer transformer = transFactory.newTransformer();
             final DOMSource source = new DOMSource(etree);
             final File newXML = new File(filename);
+            @SuppressWarnings("resource")
             final FileOutputStream os = new FileOutputStream(newXML);
             try{
                 final StreamResult result = new StreamResult(os);

@@ -143,56 +143,57 @@ public abstract class UNARY extends Function{
             new op_rec("++", OPC.OpcPostInc, (byte)4, (byte)-1), // 7
     };
 
-    public static final boolean coversOpCode(final short opcode) {
+    public static final boolean coversOpCode(final OPC opcode) {
         switch(opcode){
             default:
                 return false;
-            case OPC.OpcInot:
-            case OPC.OpcNot:
-            case OPC.OpcPreDec:
-            case OPC.OpcPreInc:
-            case OPC.OpcUnaryMinus:
-            case OPC.OpcUnaryPlus:
-            case OPC.OpcPostDec:
-            case OPC.OpcPostInc:
+            case OpcInot:
+            case OpcNot:
+            case OpcPreDec:
+            case OpcPreInc:
+            case OpcUnaryMinus:
+            case OpcUnaryPlus:
+            case OpcPostDec:
+            case OpcPostInc:
                 return true;
         }
     }
 
     public static UNARY deserialize(final ByteBuffer b) throws MdsException {
-        final short opcode = b.getShort(b.getInt(Descriptor._ptrI));
+        final OPC opcode = OPC.get(b.getShort(b.getInt(Descriptor._ptrI)));
         switch(opcode){
-            case OPC.OpcInot:
+            case OpcInot:
                 return new Inot(b);
-            case OPC.OpcNot:
+            case OpcNot:
                 return new Not(b);
-            case OPC.OpcPostDec:
+            case OpcPostDec:
                 return new Post_Dec(b);
-            case OPC.OpcPostInc:
+            case OpcPostInc:
                 return new Post_Inc(b);
-            case OPC.OpcPreDec:
+            case OpcPreDec:
                 return new Pre_Dec(b);
-            case OPC.OpcPreInc:
+            case OpcPreInc:
                 return new Pre_Dec(b);
-            case OPC.OpcUnaryMinus:
+            case OpcUnaryMinus:
                 return new Unary_Minus(b);
-            case OPC.OpcUnaryPlus:
+            case OpcUnaryPlus:
                 return new Unary_Plus(b);
+            default:
+                throw new MdsException(MdsException.TdiINV_OPC);
         }
-        throw new MdsException(MdsException.TdiINV_OPC);
     }
 
     public UNARY(final ByteBuffer b){
         super(b);
     }
 
-    public UNARY(final short opcode, final Descriptor<?> arg){
-        super(opcode, arg);
+    public UNARY(final OPC opcnot, final Descriptor<?> arg){
+        super(opcnot, arg);
     }
 
     @Override
     public final StringBuilder decompile(final int prec, final StringBuilder pout, final int mode) {
-        final short opcode = this.getOpCode();
+        final OPC opcode = this.getOpCode();
         op_rec pop = null;
         for(final op_rec element : UNARY.unary)
             if(element.opcode == opcode){

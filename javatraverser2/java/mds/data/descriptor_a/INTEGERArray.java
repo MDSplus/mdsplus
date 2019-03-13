@@ -3,6 +3,7 @@ package mds.data.descriptor_a;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import mds.MdsException;
+import mds.data.DTYPE;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_r.function.BINARY.Add.long_add;
 import mds.data.descriptor_r.function.BINARY.Divide.long_divide;
@@ -43,32 +44,32 @@ public abstract class INTEGERArray<T extends Number>extends NUMBERArray<T>{
         return b;
     }
 
-    protected INTEGERArray(final byte dtype, final BigInteger[] values, final int... shape){
+    protected INTEGERArray(final ByteBuffer b){
+        super(b);
+    }
+
+    protected INTEGERArray(final DTYPE dtype, final BigInteger[] values, final int... shape){
         super(dtype, INTEGERArray.toByteBuffer(values), shape.length == 0 ? new int[]{values.length} : shape);
     }
 
-    protected INTEGERArray(final byte dtype, final byte[] values, final int... shape){
+    protected INTEGERArray(final DTYPE dtype, final byte[] values, final int... shape){
         super(dtype, ByteBuffer.wrap(values).order(Descriptor.BYTEORDER), shape.length == 0 ? new int[]{values.length} : shape);
     }
 
-    public INTEGERArray(final byte dtype, final ByteBuffer data, final int[] shape){
+    public INTEGERArray(final DTYPE dtype, final ByteBuffer data, final int[] shape){
         super(dtype, data, shape);
     }
 
-    protected INTEGERArray(final byte dtype, final int[] values, final int... shape){
+    protected INTEGERArray(final DTYPE dtype, final int[] values, final int... shape){
         super(dtype, INTEGERArray.toByteBuffer(values), shape.length == 0 ? new int[]{values.length} : shape);
     }
 
-    protected INTEGERArray(final byte dtype, final long[] values, final int... shape){
+    protected INTEGERArray(final DTYPE dtype, final long[] values, final int... shape){
         super(dtype, INTEGERArray.toByteBuffer(values), shape.length == 0 ? new int[]{values.length} : shape);
     }
 
-    protected INTEGERArray(final byte dtype, final short[] values, final int... shape){
+    protected INTEGERArray(final DTYPE dtype, final short[] values, final int... shape){
         super(dtype, INTEGERArray.toByteBuffer(values), shape.length == 0 ? new int[]{values.length} : shape);
-    }
-
-    protected INTEGERArray(final ByteBuffer b){
-        super(b);
     }
 
     @Override

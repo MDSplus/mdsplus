@@ -7,12 +7,12 @@ import mds.data.descriptor_s.Uint32;
 import mds.data.descriptor_s.Uint32.UInteger;
 
 public final class Uint32Array extends INTEGER_UNSIGNEDArray<UInteger>{
-    public Uint32Array(final byte dtype, final ByteBuffer data, final int shape[]){
-        super(DTYPE.LU, data, shape);
-    }
-
     public Uint32Array(final ByteBuffer b){
         super(b);
+    }
+
+    public Uint32Array(final DTYPE dtype, final ByteBuffer data, final int shape[]){
+        super(DTYPE.LU, data, shape);
     }
 
     public Uint32Array(final int... values){
@@ -50,7 +50,7 @@ public final class Uint32Array extends INTEGER_UNSIGNEDArray<UInteger>{
 
     @Override
     protected final byte getRankBits() {
-        return 4;
+        return 0x03;
     }
 
     @Override
@@ -73,7 +73,7 @@ public final class Uint32Array extends INTEGER_UNSIGNEDArray<UInteger>{
 
     @Override
     public final Int32Array longs() {
-        return new Int32Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.L));
+        return new Int32Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.L.toByte()));
     }
 
     @Override

@@ -36,7 +36,7 @@ public final class Int16 extends INTEGER<Short>{
 
     @Override
     protected final byte getRankBits() {
-        return 2;
+        return 0x01;
     }
 
     public final short getValue() {

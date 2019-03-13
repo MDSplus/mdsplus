@@ -20,13 +20,13 @@ import mds.data.descriptor_r.function.UNARY;
 /** Function 199 (-57) **/
 public class Function extends Descriptor_R<Short>{
     public static final class op_rec{
-        public final short  opcode;
+        public final OPC    opcode;
         public final byte   prec, lorr;
         public final String symbol;
 
-        public op_rec(final String symbol, final short opcode, final byte prec, final byte lorr){
+        public op_rec(final String symbol, final OPC opc, final byte prec, final byte lorr){
             this.symbol = symbol;
-            this.opcode = opcode;
+            this.opcode = opc;
             this.prec = prec;
             this.lorr = lorr;
         }
@@ -100,7 +100,7 @@ public class Function extends Descriptor_R<Short>{
     }
 
     public static Function deserialize(final ByteBuffer b) throws MdsException {
-        final short opcode = b.getShort(b.getInt(Descriptor._ptrI));
+        final OPC opcode = OPC.get(b.getShort(b.getInt(Descriptor._ptrI)));
         if(BUILD.coversOpCode(opcode)) return BUILD.deserialize(b);
         if(CAST.coversOpCode(opcode)) return CAST.deserialize(b);
         if(COMPRESSION.coversOpCode(opcode)) return COMPRESSION.deserialize(b);
@@ -111,7 +111,7 @@ public class Function extends Descriptor_R<Short>{
         switch(opcode){
             default:
                 return new Function(b);
-            case OPC.OpcFun:
+            case OpcFun:
                 return new Fun(b);
         }
     }
@@ -128,8 +128,8 @@ public class Function extends Descriptor_R<Short>{
         super(DTYPE.FUNCTION, null, arguments);
     }
 
-    protected Function(final short mode, final Descriptor<?>... args){
-        super(DTYPE.FUNCTION, ByteBuffer.allocate(Short.BYTES).order(Descriptor.BYTEORDER).putShort(0, mode), args);
+    protected Function(final OPC mode, final Descriptor<?>... args){
+        super(DTYPE.FUNCTION, ByteBuffer.allocate(Short.BYTES).order(Descriptor.BYTEORDER).putShort(0, mode.toShort()), args);
     }
 
     protected final StringBuilder deco_case(final int prec, final StringBuilder pout, final int mode) {
@@ -162,9 +162,9 @@ public class Function extends Descriptor_R<Short>{
     }
 
     protected final StringBuilder deco_exp_stmt(final int prec, final StringBuilder pout, final int mode) {
-        final short opcode = this.getOpCode();
+        final OPC opcode = this.getOpCode();
         if(prec < Descriptor.P_STMT) pout.append('(');
-        final String name = OPC.Names[opcode];
+        final String name = opcode.label;
         pout.append(name.charAt(0)).append(name.substring(1).toLowerCase()).append(" (");
         this.getDescriptor(0).decompile(Descriptor.P_STMT, pout, mode & ~Descriptor.DECO_X);
         pout.append(") ");
@@ -181,7 +181,7 @@ public class Function extends Descriptor_R<Short>{
 
     protected final StringBuilder deco_extfunction(final int prec, final StringBuilder pout, final int mode) {
         if(!Descriptor.isMissing(this.getDescriptor(0)) || Descriptor.isMissing(this.getDescriptor(1)) || this.getDescriptor(1).dtype() != DTYPE.T){
-            pout.append(OPC.Names[this.getAtomic().shortValue()]);
+            pout.append(OPC.get(this.getAtomic().shortValue()).label);
             this.addArguments(0, "(", ")", pout, mode);
             return pout;
         }
@@ -260,8 +260,8 @@ public class Function extends Descriptor_R<Short>{
 
     @Override
     public StringBuilder decompile(final int prec, final StringBuilder pout, final int mode) {
-        final short opcode = this.getOpCode();
-        if(DEBUG.D) System.out.println(OPC.Names[opcode]);
+        final OPC opcode = this.getOpCode();
+        if(DEBUG.D) System.out.println(opcode.label);
         try{
             if(CAST.coversOpCode(opcode)) return CAST.deserialize(this.b).decompile(prec, pout, mode);
             if(CONST.coversOpCode(opcode)) return CONST.deserialize(this.b).decompile(prec, pout, mode);
@@ -279,35 +279,35 @@ public class Function extends Descriptor_R<Short>{
                 this.addArguments(0, "(", ")", pout, mode);
                 return pout;
             }
-            case OPC.OpcExtFunction: /*_label(arg, ...)*/
+            case OpcExtFunction: /*_label(arg, ...)*/
                 return this.deco_extfunction(prec, pout, mode);
-            case OPC.OpcSubscript: /*postfix[subscript, ...] */
+            case OpcSubscript: /*postfix[subscript, ...] */
                 return this.deco_subscript(prec, pout, mode);
-            case OPC.OpcVector: /*[elem, ...] */
+            case OpcVector: /*[elem, ...] */
                 return this.deco_vector(prec, pout, mode);
-            case OPC.OpcBreak: /*break; */
-            case OPC.OpcContinue: /*continue; */
+            case OpcBreak: /*break; */
+            case OpcContinue: /*continue; */
                 return this.deco_loop(prec, pout, mode);
-            case OPC.OpcCase: /*case (xxx) stmt ... */
+            case OpcCase: /*case (xxx) stmt ... */
                 return this.deco_case(prec, pout, mode);
-            case OPC.OpcDefault: /*case default stmt ... */
+            case OpcDefault: /*case default stmt ... */
                 return this.deco_default(prec, pout, mode);
-            case OPC.OpcDo: /*do {stmt} while (exp); Note argument order is (exp,stmt,...) */
+            case OpcDo: /*do {stmt} while (exp); Note argument order is (exp,stmt,...) */
                 return this.deco_do(prec, pout, mode);
-            case OPC.OpcFor:/*for (init;test;step) stmt */
+            case OpcFor:/*for (init;test;step) stmt */
                 return this.deco_for(prec, pout, mode);
-            case OPC.OpcGoto: /*goto xxx; */
+            case OpcGoto: /*goto xxx; */
                 return this.deco_goto(prec, pout, mode);
-            case OPC.OpcSwitch: /*switch (exp) stmt */
-            case OPC.OpcWhile: /*while (exp) stmt */
-            case OPC.OpcIf: /*if (exp) stmt else stmt */
-            case OPC.OpcWhere: /*where (exp) stmt elsewhere stmt */
+            case OpcSwitch: /*switch (exp) stmt */
+            case OpcWhile: /*while (exp) stmt */
+            case OpcIf: /*if (exp) stmt else stmt */
+            case OpcWhere: /*where (exp) stmt elsewhere stmt */
                 return this.deco_exp_stmt(prec, pout, mode);
-            case OPC.OpcLabel: /*xxx : stmt ... */
+            case OpcLabel: /*xxx : stmt ... */
                 return this.deco_label(prec, pout, mode);
-            case OPC.OpcReturn: /*return (optional-exp); */
+            case OpcReturn: /*return (optional-exp); */
                 return this.deco_return(prec, pout, mode);
-            case OPC.OpcStatement: /*{stmt ...} */
+            case OpcStatement: /*{stmt ...} */
                 return this.deco_stmt(prec, pout, mode);
         }
     }
@@ -344,7 +344,7 @@ public class Function extends Descriptor_R<Short>{
 
     @Override
     public Descriptor<?> getLocal_(final FLAG local) {
-        final short opc = this.getOpCode();
+        final OPC opc = this.getOpCode();
         if(!FLAG.and(local, opc != OPC.OpcExtFunction && opc != OPC.OpcDefault && opc != OPC.OpcShot && opc != OPC.OpcExpt)) return this.evaluate().setLocal();
         final FLAG mylocal = new FLAG();
         final Descriptor<?>[] args = Descriptor.getLocals(mylocal, this.getArguments());
@@ -353,11 +353,11 @@ public class Function extends Descriptor_R<Short>{
     }
 
     protected final String getName() {
-        return OPC.Names[this.getOpCode()];
+        return this.getOpCode().label;
     }
 
-    public final short getOpCode() {
-        return this.getAtomic().shortValue();
+    public final OPC getOpCode() {
+        return OPC.get(this.getAtomic().shortValue());
     }
 
     @Override

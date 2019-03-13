@@ -330,101 +330,102 @@ public abstract class CAST extends Function{
         }
     }
 
-    public static final boolean coversOpCode(final short opcode) {
+    public static final boolean coversOpCode(final OPC opcode) {
         switch(opcode){
             default:
                 return false;
-            case OPC.OpcText:
-            case OPC.OpcDble:
-            case OPC.OpcByte:
-            case OPC.OpcByteUnsigned:
-            case OPC.OpcWord:
-            case OPC.OpcWordUnsigned:
-            case OPC.OpcLong:
-            case OPC.OpcLongUnsigned:
-            case OPC.OpcQuadword:
-            case OPC.OpcQuadwordUnsigned:
-            case OPC.OpcOctaword:
-            case OPC.OpcOctawordUnsigned:
-            case OPC.OpcFloat:
-            case OPC.OpcDFloat:
-            case OPC.OpcFFloat:
-            case OPC.OpcFS_float:
-            case OPC.OpcFT_float:
-            case OPC.OpcGFloat:
-            case OPC.OpcHFloat:
-            case OPC.OpcDComplex:
-            case OPC.OpcFComplex:
-            case OPC.OpcFS_complex:
-            case OPC.OpcFT_complex:
-            case OPC.OpcGComplex:
-            case OPC.OpcHComplex:
+            case OpcText:
+            case OpcDble:
+            case OpcByte:
+            case OpcByteUnsigned:
+            case OpcWord:
+            case OpcWordUnsigned:
+            case OpcLong:
+            case OpcLongUnsigned:
+            case OpcQuadword:
+            case OpcQuadwordUnsigned:
+            case OpcOctaword:
+            case OpcOctawordUnsigned:
+            case OpcFloat:
+            case OpcDFloat:
+            case OpcFFloat:
+            case OpcFS_float:
+            case OpcFT_float:
+            case OpcGFloat:
+            case OpcHFloat:
+            case OpcDComplex:
+            case OpcFComplex:
+            case OpcFS_complex:
+            case OpcFT_complex:
+            case OpcGComplex:
+            case OpcHComplex:
                 return true;
         }
     }
 
     public static CAST deserialize(final ByteBuffer b) throws MdsException {
-        final short opcode = b.getShort(b.getInt(Descriptor._ptrI));
+        final OPC opcode = OPC.get(b.getShort(b.getInt(Descriptor._ptrI)));
         switch(opcode){
-            case OPC.OpcText:
+            case OpcText:
                 return new Text(b);
-            case OPC.OpcDble:
+            case OpcDble:
                 return new Dble(b);
-            case OPC.OpcByte:
+            case OpcByte:
                 return new Byte(b);
-            case OPC.OpcByteUnsigned:
+            case OpcByteUnsigned:
                 return new Byte_Unsigned(b);
-            case OPC.OpcWord:
+            case OpcWord:
                 return new Word(b);
-            case OPC.OpcWordUnsigned:
+            case OpcWordUnsigned:
                 return new Word_Unsigned(b);
-            case OPC.OpcLong:
+            case OpcLong:
                 return new Long(b);
-            case OPC.OpcLongUnsigned:
+            case OpcLongUnsigned:
                 return new Long_Unsigned(b);
-            case OPC.OpcQuadword:
+            case OpcQuadword:
                 return new Quadword(b);
-            case OPC.OpcQuadwordUnsigned:
+            case OpcQuadwordUnsigned:
                 return new Quadword_Unsigned(b);
-            case OPC.OpcOctaword:
+            case OpcOctaword:
                 return new Octaword(b);
-            case OPC.OpcOctawordUnsigned:
+            case OpcOctawordUnsigned:
                 return new Octaword_Unsigned(b);
-            case OPC.OpcFloat:
+            case OpcFloat:
                 return new Float(b);
-            case OPC.OpcDFloat:
+            case OpcDFloat:
                 return new D_Float(b);
-            case OPC.OpcFFloat:
+            case OpcFFloat:
                 return new F_Float(b);
-            case OPC.OpcFS_float:
+            case OpcFS_float:
                 return new FS_Float(b);
-            case OPC.OpcFT_float:
+            case OpcFT_float:
                 return new FT_Float(b);
-            case OPC.OpcGFloat:
+            case OpcGFloat:
                 return new G_Float(b);
-            case OPC.OpcHFloat:
+            case OpcHFloat:
                 return new H_Float(b);
-            case OPC.OpcDComplex:
+            case OpcDComplex:
                 return new Octaword(b);
-            case OPC.OpcFComplex:
+            case OpcFComplex:
                 return new Octaword(b);
-            case OPC.OpcFS_complex:
+            case OpcFS_complex:
                 return new Octaword(b);
-            case OPC.OpcFT_complex:
+            case OpcFT_complex:
                 return new Octaword(b);
-            case OPC.OpcGComplex:
+            case OpcGComplex:
                 return new Octaword(b);
-            case OPC.OpcHComplex:
+            case OpcHComplex:
                 return new Octaword(b);
+            default:
+                throw new MdsException(MdsException.TdiINV_OPC);
         }
-        throw new MdsException(MdsException.TdiINV_OPC);
     }
 
     protected CAST(final ByteBuffer b){
         super(b);
     }
 
-    private CAST(final short opcode, final Descriptor<?> arg){
+    private CAST(final OPC opcode, final Descriptor<?> arg){
         super(opcode, arg);
     }
 

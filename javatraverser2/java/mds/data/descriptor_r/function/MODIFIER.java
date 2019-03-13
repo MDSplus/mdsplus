@@ -72,39 +72,40 @@ public abstract class MODIFIER extends Function{
         }
     }
 
-    public static final boolean coversOpCode(final short opcode) {
+    public static final boolean coversOpCode(final OPC opcode) {
         switch(opcode){
+            case OpcIn: /*input argument */
+            case OpcInOut: /*input and output argument */
+            case OpcOptional: /*optional argument */
+            case OpcOut: /*output argument */
+            case OpcPrivate: /*private ident */
+            case OpcPublic: /*public ident */
+                return true;
             default:
                 return false;
-            case OPC.OpcIn: /*input argument */
-            case OPC.OpcInOut: /*input and output argument */
-            case OPC.OpcOptional: /*optional argument */
-            case OPC.OpcOut: /*output argument */
-            case OPC.OpcPrivate: /*private ident */
-            case OPC.OpcPublic: /*public ident */
-                return true;
         }
     }
 
     public static MODIFIER deserialize(final ByteBuffer b) throws MdsException {
-        final short opcode = b.getShort(b.getInt(Descriptor._ptrI));
+        final OPC opcode = OPC.get(b.getShort(b.getInt(Descriptor._ptrI)));
         switch(opcode){
-            case OPC.OpcAsIs:
+            case OpcAsIs:
                 return new AsIs(b);
-            case OPC.OpcIn:
+            case OpcIn:
                 return new In(b);
-            case OPC.OpcInOut:
+            case OpcInOut:
                 return new InOut(b);
-            case OPC.OpcOptional:
+            case OpcOptional:
                 return new Optional(b);
-            case OPC.OpcOut:
+            case OpcOut:
                 return new Out(b);
-            case OPC.OpcPrivate:
+            case OpcPrivate:
                 return new Public(b);
-            case OPC.OpcPublic:
+            case OpcPublic:
                 return new Public(b);
+            default:
+                throw new MdsException(MdsException.TdiINV_OPC);
         }
-        throw new MdsException(MdsException.TdiINV_OPC);
     }
 
     public static final MODIFIER In(final Descriptor<?> ident) {
@@ -135,7 +136,7 @@ public abstract class MODIFIER extends Function{
         super(b);
     }
 
-    private MODIFIER(final short opcode, final Descriptor<?> ident){
+    private MODIFIER(final OPC opcode, final Descriptor<?> ident){
         super(opcode, ident);
     }
 

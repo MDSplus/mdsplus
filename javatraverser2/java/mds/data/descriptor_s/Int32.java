@@ -8,16 +8,16 @@ public class Int32 extends INTEGER<Integer>{
         this(0);
     }
 
-    protected Int32(final byte dtype, final int value){
-        super(dtype, value);
-    }
-
     public Int32(final ByteBuffer b){
         super(b);
     }
 
     public Int32(final double value){
         this((int)value);
+    }
+
+    protected Int32(final DTYPE dtype, final int value){
+        super(dtype, value);
     }
 
     public Int32(final int value){
@@ -41,7 +41,7 @@ public class Int32 extends INTEGER<Integer>{
 
     @Override
     protected final byte getRankBits() {
-        return 4;
+        return 0x03;
     }
 
     public final int getValue() {

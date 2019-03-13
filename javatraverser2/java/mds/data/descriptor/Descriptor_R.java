@@ -44,49 +44,50 @@ public abstract class Descriptor_R<T extends Number>extends Descriptor<T>{
     }
 
     public static Descriptor_R<?> deserialize(final ByteBuffer b) throws MdsException {
-        switch(b.get(Descriptor._typB)){
-            case DTYPE.ACTION:
+        switch(Descriptor.getDtype(b)){
+            case ACTION:
                 return new Action(b);
-            case DTYPE.CALL:
+            case CALL:
                 return new Call(b);
-            case DTYPE.CONGLOM:
+            case CONGLOM:
                 return new Conglom(b);
-            case DTYPE.DIMENSION:
+            case DIMENSION:
                 return new Dim(b);
-            case DTYPE.DISPATCH:
+            case DISPATCH:
                 return new Dispatch(b);
-            case DTYPE.FUNCTION:
+            case FUNCTION:
                 return Function.deserialize(b);
-            case DTYPE.METHOD:
+            case METHOD:
                 return new Method(b);
-            case DTYPE.OPAQUE:
+            case OPAQUE:
                 return new Opaque(b);
-            case DTYPE.PARAM:
+            case PARAM:
                 return new Param(b);
-            case DTYPE.RANGE:
+            case RANGE:
                 return new Range(b);
-            case DTYPE.ROUTINE:
+            case ROUTINE:
                 return new Routine(b);
-            case DTYPE.SIGNAL:
+            case SIGNAL:
                 return new Signal(b);
-            case DTYPE.WINDOW:
+            case WINDOW:
                 return new Window(b);
-            case DTYPE.WITH_ERROR:
+            case WITH_ERROR:
                 return new With_Error(b);
-            case DTYPE.WITH_UNITS:
+            case WITH_UNITS:
                 return new With_Units(b);
-            case DTYPE.CONDITION:
+            case CONDITION:
                 return new Condition(b);
-            case DTYPE.DEPENDENCY:
+            case DEPENDENCY:
                 return new Dependency(b);
-            case DTYPE.PROCEDURE:
+            case PROCEDURE:
                 return new Procedure(b);
-            case DTYPE.PROGRAM:
+            case PROGRAM:
                 return new Program(b);
-            case DTYPE.SLOPE:
+            case SLOPE:
                 return new Slope(b);
+            default:
+                throw new MdsException(String.format("Unsupported dtype %s for class %s", DTYPE.getName(b.get(Descriptor._typB)), Descriptor.getDClassName(b.get(Descriptor._clsB))), 0);
         }
-        throw new MdsException(String.format("Unsupported dtype %s for class %s", DTYPE.getName(b.get(Descriptor._typB)), Descriptor.getDClassName(b.get(Descriptor._clsB))), 0);
     }
 
     private static final Descriptor<?>[] joinArrays(final Descriptor<?>[] args0, final Descriptor<?>[] args1) {
@@ -106,10 +107,15 @@ public abstract class Descriptor_R<T extends Number>extends Descriptor<T>{
         return size;
     }
 
-    public Descriptor_R(final byte dtype, final ByteBuffer data, final Descriptor<?>... args){
+    public Descriptor_R(final ByteBuffer b){
+        super(b);
+    }
+
+    public Descriptor_R(final DTYPE dtype, final ByteBuffer data, final Descriptor<?>... args){
         super((short)(data == null ? 0 : data.limit()), dtype, Descriptor_R.CLASS, data, Descriptor_R._dscoffIa + (args == null ? 0 : args.length * Integer.BYTES), Descriptor_R.joinSize(args));
         int getNargs;
         this.b.put(Descriptor_R._ndesc, (byte)(getNargs = args == null ? 0 : args.length));
+        boolean local = true;
         if(args != null && args.length > 0){
             int offset = Descriptor_R._dscoffIa + this.length() + args.length * Integer.BYTES;
             for(int i = 0; i < getNargs; i++){
@@ -118,20 +124,18 @@ public abstract class Descriptor_R<T extends Number>extends Descriptor<T>{
                 else{
                     this.b.putInt(pos, offset);
                     offset += args[i].getSize();
+                    if(!args[i].isLocal()) local = false;
                 }
             }
             for(int i = 0; i < getNargs; i++){
                 if(this.desc_ptr(i) != 0) ((ByteBuffer)this.b.position(this.desc_ptr(i))).put(args[i].b.duplicate()).position(0);
             }
         }
+        if(local) this.setLocal();
     }
 
-    protected Descriptor_R(final byte dtype, final ByteBuffer data, final Descriptor<?>[] args1, final Descriptor<?>... args0){
+    protected Descriptor_R(final DTYPE dtype, final ByteBuffer data, final Descriptor<?>[] args1, final Descriptor<?>... args0){
         this(dtype, data, Descriptor_R.joinArrays(args0, args1));
-    }
-
-    public Descriptor_R(final ByteBuffer b){
-        super(b);
     }
 
     protected void addArguments(final int first, final String left, final String right, final StringBuilder pout, final int mode) {

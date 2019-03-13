@@ -97,7 +97,7 @@ public final class Uint64 extends INTEGER_UNSIGNED<ULong>{
 
     @Override
     protected final byte getRankBits() {
-        return 8;
+        return 0x07;
     }
 
     @Override

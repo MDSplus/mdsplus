@@ -7,6 +7,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.Vector;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
@@ -40,7 +41,7 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
             if(!(comp instanceof TreeView)) return null;
             final TreeView tree = ((TreeView)comp);
             final Node node = tree.getCurrentNode();
-            switch(tree.getTreeManager().copy_format){
+            switch(tree.copy_format){
                 case TreeManager.ExtrasMenu.CopyFormat.FULLPATH:
                     return new StringSelection(node.getFullPath());
                 case TreeManager.ExtrasMenu.CopyFormat.PATH:
@@ -59,8 +60,6 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
         }
     }
     private final class MDSCellRenderer extends DefaultTreeCellRenderer{
-        private boolean was_selected;
-
         @Override
         public Component getTreeCellRendererComponent(final JTree jtree, final Object value, final boolean is_selected, final boolean expanded, final boolean has_focus, final int row, final boolean leaf) {
             final Object usrObj = ((DefaultMutableTreeNode)value).getUserObject();
@@ -77,8 +76,7 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
                     node.getTreeNode().setUserObject(node);
                 }
             }else node = (Node)usrObj;
-            if(!this.was_selected && is_selected) TreeView.this.getTreeManager().dialogs.update();
-            return node.getIcon(this.was_selected = is_selected);
+            return node.getIcon(is_selected);
         }
     }
 
@@ -104,23 +102,32 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
     public static final String decompile(final Descriptor<?> data) {
         return data.toString();
     }
+    Vector<Job>                    change_report_listeners = new Vector<Job>();
+    private int                    copy_format;
     private Node                   curr_node;
     private final TREE             tree;
-    private final Mds              mds;
     private String                 lastName;
     private DefaultMutableTreeNode top;
-    public final MdsView           mdsview;
+
+    public TreeView(final Mds mds, final String expt, final int shot, final int mode) throws MdsException{
+        this(new TREE(mds, expt, shot, mode));
+    }
 
     public TreeView(final MdsView mdsview, final String expt, final int shot, final int mode) throws MdsException{
+        this(mdsview.getMds(), expt, shot, mode);
+        this.addMouseListener(mdsview.treeman.getContextMenu());
+    }
+
+    public TreeView(final TREE tree) throws MdsException{
         super();
-        this.mdsview = mdsview;
-        this.mds = mdsview.getMds();
-        this.tree = new TREE(this.mds, expt, shot, mode);
+        this.tree = tree;
         try{
             this.tree.open();
         }catch(final MdsException me){
-            if(mode != TREE.EDITABLE || me.getStatus() != MdsException.TreeFOPENW) throw me;
-            final int n = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), "Tree " + expt + " cannot be opened in edit mode. Create new instead?", "Editing Tree ", JOptionPane.YES_NO_OPTION);
+            if(tree.getMode() != TREE.EDITABLE || me.getStatus() != MdsException.TreeFOPENW) throw me;
+            final int n = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), //
+                    String.format("Tree %s cannot be opened in edit mode. Create new instead?", tree.expt), //
+                    "Editing Tree", JOptionPane.YES_NO_OPTION);
             if(n != JOptionPane.YES_OPTION) throw me;
             this.tree.open(TREE.NEW);
         }
@@ -128,10 +135,9 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
         this.setDragEnabled(true);
         /////////////////////////////
         ToolTipManager.sharedInstance().registerComponent(this);
-        this.setEditable(this.tree.isEditable());
+        this.setEditable(this.tree.is_editable());
         this.addTreeSelectionListener(this);
         this.addTreeWillExpandListener(this);
-        this.addMouseListener(mdsview.treeman.getContextMenu());
         this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         this.addKeyListener(new KeyAdapter(){
             @Override
@@ -151,17 +157,24 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
                 }catch(final MdsException exc){
                     MdsException.stderr("SetDefault", exc);
                 }
-                TreeView.this.getTreeManager().reportChange();
+                TreeView.this.dispatchChangeReport();
             }
         });
         final DefaultTreeModel model = (DefaultTreeModel)this.getModel();
         final Node top_node = new Node(this, this.tree.getTop());
         top_node.setTreeNode(this.top = new DefaultMutableTreeNode(top_node));
-        this.loadChildren(this.top, false);
+        this.loadSubnodes(this.top);
         model.setRoot(this.top);
         this.setCellRenderer(new MDSCellRenderer());
         this.setCurrentNode(0);
-        this.updateDefault();
+        this.expandRow(0);
+        try{
+            this.updateDefault();
+        }catch(final MdsException e1){/**/}
+    }
+
+    public void addChangeReportListener(final Job job) {
+        this.change_report_listeners.add(job);
     }
 
     public Node addNode(final byte usage, final String name) {
@@ -187,11 +200,8 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 
     private final DefaultMutableTreeNode addTreeNode(final DefaultMutableTreeNode treenode, final Node node) {
         final DefaultMutableTreeNode new_node = new DefaultMutableTreeNode(node);
-        final int num_children = treenode.getChildCount();
-        final DefaultTreeModel tree_model = (DefaultTreeModel)TreeView.this.getModel();
-        tree_model.insertNodeInto(new_node, treenode, num_children);
         node.setTreeNode(new_node);
-        treenode.add(new_node);
+        ((DefaultTreeModel)TreeView.this.getModel()).insertNodeInto(new_node, treenode, treenode.getChildCount());
         return new_node;
     }
 
@@ -202,7 +212,7 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
         }catch(final Exception e){
             boolean leditable = false;
             String name = null;
-            leditable = this.tree.isEditable();
+            leditable = this.tree.is_editable();
             name = this.tree.expt;
             if(leditable && !quit){
                 final int n = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), "Tree " + name + " open in edit mode has been changed: Write it before closing?", "Closing Tree ", JOptionPane.YES_NO_OPTION);
@@ -227,7 +237,7 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 
     @Override
     public void dataChanged(final DataChangeEvent e) {
-        this.mdsview.reportChange();
+        this.dispatchChangeReport();
     }
 
     public final void deleteNode() {
@@ -250,6 +260,11 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
             final DefaultTreeModel tree_model = (DefaultTreeModel)this.getModel();
             tree_model.removeNodeFromParent(delNode.getTreeNode());
         }
+    }
+
+    public void dispatchChangeReport() {
+        for(final Job job : this.change_report_listeners)
+            job.program();
     }
 
     public final DefaultMutableTreeNode findNid(final Nid nid) {
@@ -301,8 +316,14 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
         return this.tree.expt;
     }
 
+    public String getLabel() {
+        final String mode = this.tree.is_editable() ? "!" : (this.tree.is_readonly() ? "?" : "");
+        if(this.tree.shot == -1) return String.format("%s_model%s", this.tree.expt.toLowerCase(), mode);
+        return String.format("%s_%03d%s", this.tree.expt.toLowerCase(), Long.valueOf(0xffffffffl & this.tree.shot), mode);
+    }
+
     public final Mds getMds() {
-        return this.mds;
+        return this.tree.getMds();
     }
 
     public final int getMode() {
@@ -317,42 +338,37 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
         return this.tree;
     }
 
-    private final TreeManager getTreeManager() {
-        return this.mdsview.getTreeManager();
-    }
-
     public final boolean isModel() {
         return this.tree.shot == -1;
     }
 
     public final boolean isReadOnly() {
-        return this.tree.isReadonly();
+        return this.tree.is_readonly();
     }
 
-    private final void loadChildren(final DefaultMutableTreeNode tree_node, final boolean force) {
+    private final void loadSubnodes(final DefaultMutableTreeNode tree_node) {
         final Node currnode = Node.getNode(tree_node);
-        if(currnode.dummy != null || force){
-            Node sons[], members[];
-            DefaultMutableTreeNode last_node = null;
-            try{
-                currnode.expand();
-            }catch(final Exception exc){
-                MdsException.stderr("Error expanding tree", exc);
-                exc.printStackTrace();
-            }
-            sons = currnode.getSons();
-            members = currnode.getMembers();
-            final DefaultTreeModel tree_model = (DefaultTreeModel)this.getModel();
-            if(currnode.dummy != null){
-                tree_model.removeNodeFromParent(currnode.dummy);
+        final DefaultMutableTreeNode dummy = currnode.dummy;
+        if(dummy != null) synchronized(dummy){
+            if(currnode.dummy == dummy){
+                DefaultMutableTreeNode last_node = null;
+                try{
+                    currnode.expand();
+                }catch(final Exception exc){
+                    MdsException.stderr("Error expanding tree", exc);
+                    exc.printStackTrace();
+                }
+                final Node[] children = currnode.getChildren();
+                final Node[] members = currnode.getMembers();
+                for(final Node member : members)
+                    last_node = this.addTreeNode(tree_node, member);
+                for(final Node child : children)
+                    last_node = this.addTreeNode(tree_node, child);
+                if(last_node != null) this.expandPath(new TreePath(tree_node.getPath()));
+                ((DefaultTreeModel)this.getModel()).removeNodeFromParent(currnode.dummy);
                 currnode.dummy = null;
+                TreeView.this.treeDidChange();
             }
-            for(final Node member : members)
-                last_node = this.addTreeNode(tree_node, member);
-            for(final Node son : sons)
-                last_node = this.addTreeNode(tree_node, son);
-            if(last_node != null) this.expandPath(new TreePath(tree_node.getPath()));
-            TreeView.this.treeDidChange();
         }
     }
 
@@ -360,11 +376,11 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
         final DefaultMutableTreeNode savedTreeNode = this.getCurrTreeNode();
         try{
             fromNode.expand();
-            final String[] usedNames = new String[toNode.getSons().length + toNode.getMembers().length];
+            final String[] usedNames = new String[toNode.getChildren().length + toNode.getMembers().length];
             // collect names used so far
             int idx = 0;
-            for(final Node son : toNode.getSons())
-                usedNames[idx++] = son.getName();
+            for(final Node child : toNode.getChildren())
+                usedNames[idx++] = child.getName();
             for(final Node member : toNode.getMembers())
                 usedNames[idx++] = member.getName();
             if(fromNode.getUsage() == NODE.USAGE_DEVICE){
@@ -380,8 +396,8 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
                     final Descriptor<?> data = fromNode.getData();
                     if(data != null && fromNode.getUsage() != NODE.USAGE_ACTION) newNode.setData(data);
                 }catch(final MdsException exc){/**/}
-                for(final Node son : fromNode.getSons()){
-                    this.pasteSubtree(son, newNode, false);
+                for(final Node child : fromNode.getChildren()){
+                    this.pasteSubtree(child, newNode, false);
                 }
                 for(final Node member : fromNode.getMembers()){
                     this.pasteSubtree(member, newNode, true);
@@ -393,24 +409,38 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
         this.setCurrentNode(savedTreeNode);
     }
 
+    public void removeChangeReportListener(final Job job) {
+        this.change_report_listeners.remove(job);
+    }
+
     synchronized public final void reportChange() {
         this.treeDidChange();
         this.updateUI();
-        this.mdsview.reportChange();
+        this.dispatchChangeReport();
     }
 
     public void reset() {
         this.top.removeAllChildren();
+        try{
+            // this.tree.close();
+            this.tree.open();
+        }catch(final MdsException e){
+            e.printStackTrace();
+        }
         final Node topnode = ((Node)this.top.getUserObject());
         topnode.update();
         this.setCurrentNode(-1);
-        this.loadChildren(this.top, true);
+        topnode.setTreeNode(this.top);
+        this.loadSubnodes(this.top);
         this.setCurrentNode(0);
-        this.expandRow(0);
         try{
             topnode.setDefault();
         }catch(final MdsException e){/**/}
         this.reportChange();
+    }
+
+    public void set_copy_format(final int format) {
+        this.copy_format = format;
     }
 
     public final void setCurrentNode(final DefaultMutableTreeNode treenode) {
@@ -441,12 +471,17 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 
     @Override
     public void treeWillExpand(final TreeExpansionEvent e) throws ExpandVetoException {
-        this.getTreeManager().dispatchJob(new Job(){
-            @Override
-            public final void program() {
-                TreeView.this.loadChildren((DefaultMutableTreeNode)e.getPath().getLastPathComponent(), false);
+        final Thread thread = new Thread("expand"){
+            {
+                this.setDaemon(true);
             }
-        });
+
+            @Override
+            public final void run() {
+                TreeView.this.loadSubnodes((DefaultMutableTreeNode)e.getPath().getLastPathComponent());
+            }
+        };
+        thread.start();
     }
 
     public final void updateDefault() throws MdsException {
