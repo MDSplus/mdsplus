@@ -25,10 +25,15 @@
 #
 import subprocess,os,sys,xml.etree.ElementTree as ET,fnmatch,tempfile,shutil
 
-srcdir=os.path.realpath(os.path.dirname(os.path.realpath(__file__))+'/../../..')
-      
+linux_xml      = "%s/linux.xml"%(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),)
+pkg_exclusions = ('repo','gsi','gsi_bin','idl','idl_bin','labview','labview_bin','php','d3d','matlab')
+
+update_abuildrepo_index = "update_abuildrepo_index() {\nreturn 0;\n}\n"
+signkeys = os.getenv("signkeys","")
+signkeys = (len(signkeys) > 0) and os.path.exists(signkeys)
+     
 def getPackageFiles(buildroot,includes,excludes):
-    files=list()
+    files=[]
     for f in includes:
         f = buildroot+f
         if os.path.isdir(f):
@@ -57,13 +62,13 @@ def getPackageFiles(buildroot,includes,excludes):
         hasuid=False
         for exclude in excludes:
             if '/xuid' in exclude:
-                print "excluding: %s" % exclude
+                print("excluding: %s" % exclude)
                 hasuid=True
         excludefiles=getPackageFiles(buildroot,excludes,[])
         if hasuid:
             print "Found %d" % len(excludefiles)
             for exclude in excludefiles:
-                print "excluding: %s" % exclude
+                print("excluding: %s" % exclude)
         for exclude in excludefiles:
             if exclude in files:
                 files.remove(exclude)
@@ -88,144 +93,125 @@ def doRequire(info, out, root, require):
             os.write(out,"Requires: %s\n" % pkg)
     else:
         info['reqpkg']=require.attrib['package']
-    os.write(out,"Depends: mdsplus%(BNAME)s-%(reqpkg)s (>= %(major)d.%(minor)d.%(release)d\n" % info)
+    os.write(out,"Depends: mdsplus%(rflavor)s-%(reqpkg)s (>= %(major)d.%(minor)d.%(release)d\n" % info)
+def getInfo():
+    version = os.environ['RELEASE_VERSION'].split('.')
+    branch  = os.environ['BRANCH']
+    return {
+        'major'     : int(version[0]),
+        'minor'     : int(version[1]),
+        'release'   : int(version[2]),
+        'buildroot' : os.environ['BUILDROOT'],
+        'dist'      : os.environ['DISTNAME'],
+        'flavor'    : branch,
+        'rflavor'   : "-%s"%branch if not branch=="stable" else "",
+    }
 
-def buildApks():
-    info=dict()
-    info['buildroot']=os.environ['BUILDROOT']
-    info['BRANCH']=os.environ['BRANCH']
-    version=os.environ['RELEASE_VERSION'].split('.')
-    info['dist']=os.environ['DISTNAME']
-    info['flavor']=info['BRANCH']
-    info['major']=int(version[0])
-    info['minor']=int(version[1])
-    info['release']=int(version[2])
-    if info['BRANCH']=="stable":
-        info['BNAME']=""
-    else:
-        info['BNAME']="-%s" % info['BRANCH']
-    info['rflavor']=info['BNAME']
-    tree=ET.parse(srcdir+'/deploy/packaging/linux.xml')
-    root=tree.getroot()
-    apks=list()
-    pkg_exclusions=('repo','gsi','gsi_bin','idl','idl_bin',
-                    'labview','labview_bin','php','d3d','matlab')
-    for package in root.getiterator('package'):
-        subprocess.Popen("rm -Rf package_files *.*-install *.*-deinstall *.*-upgrade APKBUILD",
-                         shell=True,cwd="/workspace").wait()
-        pkg = package.attrib['name']
-        if pkg in pkg_exclusions:
-            continue
-        if pkg=='MDSplus':
-            info['packagename']=""
-        else:
-            info['packagename']="-%s" % pkg
-        info['description']=package.attrib['description']
-        info['pkg_arch']=package.attrib['arch']
-        if info['pkg_arch']=='bin':
-            info['pkg_arch']=os.environ['ARCH']
-        includes=list()
-        for inc in package.getiterator('include'):
-            for inctype in inc.attrib:
-                include=inc.attrib[inctype]
-                if inctype != "dironly":
-                    includes.append(include)
-        excludes=list()
-        for exc in package.getiterator('exclude'):
-            for exctype in exc.attrib:
-                excludes.append(exc.attrib[exctype])
-        if package.find("exclude_staticlibs") is not None:
-            excludes.append("/usr/local/mdsplus/lib/*.a")
-        if package.find("include_staticlibs") is not None:
-            includes.append("/usr/local/mdsplus/lib/*.a")
-        files=getPackageFiles(info['buildroot'],includes,excludes)
-        for f in files:
-            info['file']=f[len("%(buildroot)s/"%info)-1:].replace(' ','\\ ').replace('$','\\$')\
-                                        .replace('(','\\(').replace(')','\\)')
-            if subprocess.Popen("""
-set -o verbose
-set -e
-dn=$(dirname %(file)s)
-mkdir -p "./package_files/${dn}"
-cp -dR %(buildroot)s/%(file)s "./package_files${dn}/"
-                
-""" % info,shell=True,cwd="/workspace").wait() != 0:
-                raise Exception("Error building apk")
-            sys.stdout.flush()
-        depends=list()
+def run_cmd(cmd,quiet=False):
+    if not quiet: print(cmd)
+    status = subprocess.Popen(cmd,shell=True,cwd="/workspace").wait()
+    sys.stdout.flush()
+    return status == 0
+
+def clean_ws():
+    run_cmd("rm -Rf package_files *-install *-deinstall *-upgrade APKBUILD")
+
+def getFiles(info,package):
+    includes=[]
+    for inc in package.getiterator('include'):
+        for inctype in inc.attrib:
+            include=inc.attrib[inctype]
+            if inctype != "dironly":
+                includes.append(include)
+    excludes=[]
+    for exc in package.getiterator('exclude'):
+        for exctype in exc.attrib:
+            excludes.append(exc.attrib[exctype])
+    if package.find("exclude_staticlibs") is not None:
+       excludes.append("/usr/local/mdsplus/lib/*.a")
+    if package.find("include_staticlibs") is not None:
+        includes.append("/usr/local/mdsplus/lib/*.a")
+    return getPackageFiles(info['buildroot'],includes,excludes)
+
+def collectFiles(info,package):
+    files = getFiles(info,package)
+    cmd = 'dn=$(dirname %%s)&&mkdir -p "./package_files/${dn}"&&cp -dR %(buildroot)s/%%s "./package_files/${dn}/"'% info
+    clean_ws()
+    for f in files:
+        file = f[len("%(buildroot)s/"%info):].replace(' ','\\ ').replace('$','\\$').replace('(','\\(').replace(')','\\)')
+        if not run_cmd(cmd%(file,file),True):
+            raise Exception("Error collecting apk: %s"%(f,))
+
+def getDependencies(info, root, package):
+        depends=[]
         for require in package.getiterator("requires"):
             if 'external' in require.attrib:
-                pkg=externalPackage(info,root,require.attrib['package'])
+                pkg = externalPackage(info,root,require.attrib['package'])
                 if pkg is not None:
                     depends.append(pkg)
             else:
                 depends.append("mdsplus%s-%s" % (info['rflavor'],require.attrib['package'].replace('_','-')))
-        if len(depends)==0:
-            info['depends']=''
-        else:
-            info['depends']=' '.join(depends)
-        info['name']=info['packagename'].replace('_','-')
-        info['scripts']=""
-        scripts=[]
-        for s in ("pre-install","post-install","pre-deinstall","post-deinstall",
-                  "pre-upgrade","post-upgrade"):
-            script=package.find(s)
-            if script is not None and ("type" not in script.attrib or script.attrib["type"]!="rpm"):
-                info['script-type']=s
-                info['script']="mdsplus%(BNAME)s%(name)s.%(script-type)s" % info
-                scripts.append(info['script'])
-                f=open("/workspace/%(script)s" % info,"w")
+        return ' '.join(depends)
+
+def getScripts(info, package):
+    scriptname = "mdsplus%(rflavor)s%(name)s.%%s"%info
+    scripts = []
+    for s in ("pre-install","post-install","pre-deinstall","post-deinstall","pre-upgrade","post-upgrade"):
+        scriptcls = package.find(s)
+        if scriptcls is not None and ("type" not in scriptcls.attrib or scriptcls.attrib["type"]!="rpm"):
+            script = scriptname%s
+            scripts.append(script)
+            with open("/workspace/%s" % script,"w+") as f:
                 f.write("#!/bin/sh\n")
-                f.write(script.text)
-                f.close()
-                os.chmod("/workspace/%(script)s" % info,0775)
-        if len(scripts) > 0:
-            info['scripts']='install="%s"' % " ".join(scripts)
-        f=open("/workspace/APKBUILD","w")
-        f.write("""
-# Contributor: MDSplus Developer Team
-#Maintainer: Tom Fredian <twf@mdsplus.org> 
-pkgname=mdsplus%(BNAME)s%(name)s
-pkgver=%(major)d.%(minor)d.%(release)d
-pkgrel=0
-pkgdesc="%(description)s"
-        url="http://www.mdsplus.org/%(dist)s/%(BRANCH)s"
-arch="%(pkg_arch)s"
-license="MIT"
-depends="%(depends)s"
-depends_dev=""
-makedepends=""
-source=""
+                f.write(scriptcls.text)
+            os.chmod("/workspace/%s" % script,0775)
+    return 'install="%s"' % " ".join(scripts)
 
-build() {
-  return 0;
+def buildApks():
+    info = getInfo()
+    tree = ET.parse(linux_xml)
+    root = tree.getroot()
+    apks=[]
+    for package in root.getiterator('package'):
+        pkg = package.attrib['name']
+        if pkg in pkg_exclusions: continue
+        info['packagename'] = "-%s"%pkg if not pkg=='MDSplus' else ""
+        info['description'] = package.attrib['description']
+        info['pkg_arch']    = package.attrib['arch']
+        if info['pkg_arch']=='bin': info['pkg_arch']=os.environ['ARCH']
+        collectFiles(info,package)
+        info['depends'] = getDependencies(info, root, package)
+        info['name']    = info['packagename'].replace('_','-')
+        scripts = getScripts(info, package)
+        with open("/workspace/APKBUILD","w+") as f:
+            f.write("# Contributor: MDSplus Developer Team\n")
+            f.write("#Maintainer: Tom Fredian <twf@mdsplus.org>\n")
+            f.write("pkgname=mdsplus%(rflavor)s%(name)s\n"%info)
+            f.write("pkgver=%(major)d.%(minor)d.%(release)d\n"%info)
+            f.write("pkgrel=0\n")
+            f.write('pkgdesc="%(description)s"\n'%info)
+            f.write('url="http://www.mdsplus.org/%(dist)s/%(flavor)s"\n'%info)
+            f.write('arch="%(pkg_arch)s"\n'%info)
+            f.write('license="MIT"\n')
+            f.write('depends="%(depends)s"\n'%info)
+            f.write('depends_dev=""\n')
+            f.write('makedepends=""\n')
+            f.write('source=""\n')
+            if not signkeys: f.write(update_abuildrepo_index)
+            f.write('build() {\nreturn 0;\n}\n')
+            f.write('check() {\nreturn 0;\n}\n')
+            f.write('git() {\nreturn 0;\n}\n')
+            f.write("""package() {
+mkdir -p "$pkgdir"
+  if [ -r /workspace/package_files/usr/local/mdsplus ]
+  then rsync -a /workspace/package_files/usr/local/mdsplus "$pkgdir"
+  fi
 }
-
-check() {
-  return 0;
-}
-
-package() {
-        mkdir -p "$pkgdir"
-        if [ -r /workspace/package_files/usr/local/mdsplus ]
-        then
-          rsync -a /workspace/package_files/usr/local/mdsplus "$pkgdir"
-        fi
-}
-
-%(scripts)s
-
-""" % info)
-        f.close()
-        if subprocess.Popen("""
-abuild checksum >/dev/null 2>&1
-        abuild -q -d -P /release/%(BRANCH)s  2>&1 | grep -vi git | grep -v whoami
-status=$?
-rm -Rf package_files *.*-install *.*-deinstall *.*-upgrade APKBUILD
-exit $status
-        """ % info,shell=True,cwd="/workspace").wait() != 0:
+""") #""" for nano
+            f.write(scripts)
+        if not run_cmd("abuild checksum && abuild -cqdP /release/%(flavor)s" % info):
             raise Exception("Problem building package")
-        sys.stdout.flush()
+    clean_ws()
 
 
 buildApks()
