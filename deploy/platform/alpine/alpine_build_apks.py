@@ -198,8 +198,11 @@ depends_dev=""
 makedepends=""
 source=""
 
-
 build() {
+  return 0;
+}
+
+check() {
   return 0;
 }
 
