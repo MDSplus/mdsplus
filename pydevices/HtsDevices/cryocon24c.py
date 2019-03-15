@@ -144,9 +144,6 @@ class CRYOCON24C_TREND(CRYOCON24C):
            socket
         '''
 
-        # start it trending
-        self.running.on=True
-
         # self.stream()
         thread = self.Worker(self)
         thread.start()
@@ -166,190 +163,190 @@ class CRYOCON24C_TREND(CRYOCON24C):
             self.dev = MDSplus.TreeNode.copy(dev)
 
         def run(self):
-            max_segments = self.max_segments.data()
+            self.dev.stream()
 
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((str(self.node.data()), 5000))
+    def run(self):
+        # start it trending
+        self.running.on=True
 
-            # open the instrument
+        max_segments = self.max_segments.data()
+
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((str(self.node.data()), 5000))
+
+        # open the instrument
+        if self.debugging():
+            print("about to open cryocon device %s" % str(self.node.data()))
+        event_name = self.data_event.data()
+
+        # read and save the status commands
+        status_out={}
+
+        for cmd in self.status_cmds:
             if self.debugging():
-                print("about to open cryocon device %s" % str(self.node.data()))
-            event_name = self.data_event.data()
+                print('about to send %s' % cmd)
 
-            # read and save the status commands
-            status_out={}
+            # status_out[str(cmd)] = instrument.query(str(cmd))
+            status_out[str(cmd)] = self.queryCommand(s, str(cmd))
 
-            for cmd in self.status_cmds:
+            if self.debugging():
+                print('  got back %s' % status_out[str(cmd)])
+
+        self.status_out.record = status_out
+
+        # Control Loop PID values Numeric Entry The Pgain, Igain and Dgain lines correspond to the Proportional,
+        # Integral and Derivative coefficients of the control loop. Pman is the output power that will be applied
+        # to the load if the manual control mode is selected.
+        # Values for the Proportional, or P, gain term range from zero to 1000. This is a unit- less gain term
+        # that is applied to the control loop. Gain is scaled to reflect the actual heater range and the load resistance.
+        # Integrator gain values range from zero to 10,000. The units of this term are Seconds. A value of zero
+        # turns the integration function off.
+        # Derivative gain values have units of inverse Seconds and may have values from zero to 1000. A value of
+        # zero turns the Derivative control function off.
+
+        for i in range(ord('a'), ord('e')):
+            # Proportional gain, or P term for PID control.
+            # This is a numeric field that is a percent of full scale.
+            pgain_chan = self.__getattr__('input_%c_propor_gain' % (chr(i)))
+            query_cmd = 'LOOP %c:PGA?' % (chr(i),)
+
+            ansQuery = self.queryCommand(s, query_cmd)
+
+            try:
+                print("Parsing Proportional Gain /%s/" % ansQuery)
+                pgain = float(ansQuery)
+            except:
                 if self.debugging():
-                    print('about to send %s' % cmd)
+                    print("Could not Proportional Gain /%s/" % ansQuery)
+                pgain = 0.0
 
-                # status_out[str(cmd)] = instrument.query(str(cmd))
-                status_out[str(cmd)] = self.queryCommand(s, str(cmd))
+            pgain_chan.record = MDSplus.Float32(pgain)
 
+            # Integrator gain term, in Seconds, for PID control.
+            # This is a numeric field that is a percent of full scale.
+            igain_chan = self.__getattr__('input_%c_integr_gain' % (chr(i)))
+            query_cmd = 'LOOP %c:IGA?' % (chr(i),)
+
+            ansQuery = self.queryCommand(s, query_cmd)
+
+            try:
+                print("Parsing Integral Gain /%s/" % ansQuery)
+                igain = float(ansQuery)
+            except:
                 if self.debugging():
-                    print('  got back %s' % status_out[str(cmd)])
+                    print("Could not Integral Gain /%s/" % ansQuery)
+                igain = 0.0
 
-            self.status_out.record = status_out
+            igain_chan.record = MDSplus.Float32(igain)
 
-            # Control Loop PID values Numeric Entry The Pgain, Igain and Dgain lines correspond to the Proportional,
-            # Integral and Derivative coefficients of the control loop. Pman is the output power that will be applied
-            # to the load if the manual control mode is selected.
-            # Values for the Proportional, or P, gain term range from zero to 1000. This is a unit- less gain term
-            # that is applied to the control loop. Gain is scaled to reflect the actual heater range and the load resistance.
-            # Integrator gain values range from zero to 10,000. The units of this term are Seconds. A value of zero
-            # turns the integration function off.
-            # Derivative gain values have units of inverse Seconds and may have values from zero to 1000. A value of
-            # zero turns the Derivative control function off.
+            # Derivative gain term, in inverse-Seconds, for PID control.
+            # This is a numeric field that is a percent of full scale.
+            dgain_chan = self.__getattr__('input_%c_deriva_gain' % (chr(i)))
+            query_cmd = 'LOOP %c:DGA?' % (chr(i),)
 
+            ansQuery = self.queryCommand(s, query_cmd)
+
+            try:
+                print("Parsing Derivative Gain /%s/" % ansQuery)
+                dgain = float(ansQuery)
+            except:
+                if self.debugging():
+                    print("Could not Derivative Gain /%s/" % ansQuery)
+                dgain = 0.0
+
+            dgain_chan.record = MDSplus.Float32(dgain)
+
+        # For the storage of calibration curves
+        index    = 1
+        caltable = []
+        strCalcur= ''
+
+        query_cmd = ''
+        answer    = []
+
+        segment = 0
+        while self.running.on and segment < max_segments:
             for i in range(ord('a'), ord('e')):
-                # Proportional gain, or P term for PID control.
-                # This is a numeric field that is a percent of full scale.
-                pgain_chan = self.__getattr__('input_%c_propor_gain' % (chr(i)))
-                query_cmd = 'LOOP %c:PGA?' % (chr(i),)
+                chan = self.__getattr__('input_%c' % (chr(i),))
+                if chan.on:
 
-                ansQuery = self.queryCommand(s, query_cmd)
+                    # Calibrartion Curve storage
+                    cal = self.__getattr__('input_%c_calibration' % (chr(i),))
+                    self.sendCommand(s, 'CALCUR %d?' % (index))
 
-                try:
-                    print("Parsing Proportional Gain /%s/" % ansQuery)
-                    pgain = float(ansQuery)
-                except:
-                    if self.debugging():
-                        print("Could not Proportional Gain /%s/" % ansQuery)
-                    pgain = 0.0
+                    while ';' not in strCalcur:
+                        ans = self.recvResponse(s)
+                        print('Answer: ', ans)
+                        caltable.append(ans)
 
-                pgain_chan.putRow(1000,
-                                  MDSplus.Float32(pgain),
-                                  MDSplus.Int64(t_time * 1000.))
+                    ans = 1 #Disable for now
+                    cal.record = ans
 
-                # Integrator gain term, in Seconds, for PID control.
-                # This is a numeric field that is a percent of full scale.
-                igain_chan = self.__getattr__('input_%c_integr_gain' % (chr(i)))
-                query_cmd = 'LOOP %c:IGA?' % (chr(i),)
+                    # Temperature reading
+                    temp_chan = self.__getattr__('input_%c_temperature' % (chr(i)))
+                    query_cmd = 'INP %c:TEMP?;UNIT?' % (chr(i),)
 
-                ansQuery = self.queryCommand(s, query_cmd)
+                    ansQuery = self.queryCommand(s, query_cmd)
+                    answer = ansQuery.split(';')
+                    print(answer)
 
-                try:
-                    print("Parsing Integral Gain /%s/" % ansQuery)
-                    igain = float(ansQuery)
-                except:
-                    if self.debugging():
-                        print("Could not Integral Gain /%s/" % ansQuery)
-                    igain = 0.0
+                    t_time = time.time()
+                    try:
+                        print("Parsing temperature /%s/" % ans[0])
+                        temp = float(answer[0])
+                    except:
+                        if self.debugging():
+                            print("Could not parse temperature /%s/" % answer[0])
+                        temp = 0.0
 
-                igain_chan.putRow(1000,
-                                  MDSplus.Float32(igain),
-                                  MDSplus.Int64(t_time * 1000.))
-
-                # Derivative gain term, in inverse-Seconds, for PID control.
-                # This is a numeric field that is a percent of full scale.
-                dgain_chan = self.__getattr__('input_%c_deriva_gain' % (chr(i)))
-                query_cmd = 'LOOP %c:DGA?' % (chr(i),)
-
-                ansQuery = self.queryCommand(s, query_cmd)
-
-                try:
-                    print("Parsing Derivative Gain /%s/" % ansQuery)
-                    dgain = float(ansQuery)
-                except:
-                    if self.debugging():
-                        print("Could not Derivative Gain /%s/" % ansQuery)
-                    dgain = 0.0
-
-                dgain_chan.putRow(1000,
-                                  MDSplus.Float32(dgain),
-                                  MDSplus.Int64(t_time * 1000.))
-
-            # For the storage of calibration curves
-            index    = 1
-            caltable = []
-            strCalcur= ''
-
-            query_cmd = ''
-            answer    = []
-
-            segment = 0
-            while self.running.on and segment < max_segments:
-                for i in range(ord('a'), ord('e')):
-                    chan = self.__getattr__('input_%c' % (chr(i),))
-                    if chan.on:
-
-                        # Calibrartion Curve storage
-                        cal = self.__getattr__('input_%c_calibration' % (chr(i),))
-                        self.sendCommand(s, 'CALCUR %d?' % (index))
-
-                        while ';' not in strCalcur:
-                            ans = self.recvResponse(s)
-                            print('Answer: ', ans)
-                            caltable.append(ans)
-
-                        ans = 1 #Disable for now
-                        cal.record = ans
-
-                        # Temperature reading
-                        temp_chan = self.__getattr__('input_%c_temperature' % (chr(i)))
-                        query_cmd = 'INP %c:TEMP?;UNIT?' % (chr(i),)
-
-                        ansQuery = self.queryCommand(s, query_cmd)
-                        answer = ansQuery.split(';')
-                        print(answer)
-
-                        t_time = time.time()
-                        try:
-                            print("Parsing temperature /%s/" % ans[0])
-                            temp = float(answer[0])
-                        except:
-                            if self.debugging():
-                                print("Could not parse temperature /%s/" % answer[0])
-                            temp = 0.0
-
-                        temp_chan.putRow(1000,
-                                      MDSplus.Float32(temp),
-                                      MDSplus.Int64(t_time * 1000.))
-
-
-                        # Resistence reading
-                        resist_chan = self.__getattr__('input_%c_resistence' % (chr(i)))
-                        query_cmd = 'INP %c:SENP?' % (chr(i),)
-
-                        ansQuery = self.queryCommand(s, query_cmd)
-
-                        try:
-                            print("Parsing resistance /%s/" % ansQuery)
-                            resist = float(ansQuery)
-                        except:
-                            if self.debugging():
-                                print("Could not parse resist /%s/" % ansQuery)
-                            resist = 0.0
-
-                        resist_chan.putRow(1000,
-                                    MDSplus.Float32(resist),
+                    temp_chan.putRow(1000,
+                                    MDSplus.Float32(temp),
                                     MDSplus.Int64(t_time * 1000.))
 
 
-                        # Output Power reading: Queries the output power of the selected control loop.
-                        # This is a numeric field that is a percent of full scale.
-                        outp_chan = self.__getattr__('input_%c_output_power' % (chr(i)))
-                        query_cmd = 'LOOP %c:OUTP?' % (chr(i),)
+                    # Resistence reading
+                    resist_chan = self.__getattr__('input_%c_resistence' % (chr(i)))
+                    query_cmd = 'INP %c:SENP?' % (chr(i),)
 
-                        ansQuery = self.queryCommand(s, query_cmd)
+                    ansQuery = self.queryCommand(s, query_cmd)
 
-                        try:
-                            print("Parsing output power /%s/" % ansQuery)
-                            outpower = float(ansQuery)
-                        except:
-                            if self.debugging():
-                                print("Could not parse output power /%s/" % ansQuery)
-                            outpower = 0.0
+                    try:
+                        print("Parsing resistance /%s/" % ansQuery)
+                        resist = float(ansQuery)
+                    except:
+                        if self.debugging():
+                            print("Could not parse resist /%s/" % ansQuery)
+                        resist = 0.0
 
-                        outp_chan.putRow(1000,
-                                    MDSplus.Float32(outpower),
-                                    MDSplus.Int64(t_time * 1000.))
+                    resist_chan.putRow(1000,
+                                MDSplus.Float32(resist),
+                                MDSplus.Int64(t_time * 1000.))
 
 
-                s.close()
+                    # Output Power reading: Queries the output power of the selected control loop.
+                    # This is a numeric field that is a percent of full scale.
+                    outp_chan = self.__getattr__('input_%c_output_power' % (chr(i)))
+                    query_cmd = 'LOOP %c:OUTP?' % (chr(i),)
 
-            MDSplus.Event.setevent(event_name)
+                    ansQuery = self.queryCommand(s, query_cmd)
 
+                    try:
+                        print("Parsing output power /%s/" % ansQuery)
+                        outpower = float(ansQuery)
+                    except:
+                        if self.debugging():
+                            print("Could not parse output power /%s/" % ansQuery)
+                        outpower = 0.0
+
+                    outp_chan.putRow(1000,
+                                MDSplus.Float32(outpower),
+                                MDSplus.Int64(t_time * 1000.))
+
+
+            s.close()
+
+        MDSplus.Event.setevent(event_name)
+    RUN=run
 
     def stop(self):
         '''
