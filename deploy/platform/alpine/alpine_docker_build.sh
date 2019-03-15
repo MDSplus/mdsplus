@@ -40,9 +40,6 @@ makelist(){
 
 buildrelease() {
     ### Build release version of MDSplus and then construct installer debs
-    major=$(echo ${RELEASE_VERSION} | cut -d. -f1)
-    minor=$(echo ${RELEASE_VERSION} | cut -d. -f2)
-    release=$(echo ${RELEASE_VERSION} | cut -d. -f3)
     set -e
     MDSPLUS_DIR=/workspace/releasebld/buildroot/usr/local/mdsplus
     mkdir -p ${MDSPLUS_DIR}
@@ -55,13 +52,8 @@ buildrelease() {
       $MAKE install
     fi
     popd;
-  if [ -z "$NOMAKE" ]; then
-    BUILDROOT=/workspace/releasebld/buildroot \
-    BRANCH=${BRANCH} \
-    RELEASE_VERSION=${RELEASE_VERSION} \
-    ARCH=${ARCH} \
-    DISTNAME=${DISTNAME} \
-    HOME=/ ${srcdir}/deploy/platform/alpine/alpine_build_apks.py
+  if [ -z "$NOMAKE" ]
+  then ${srcdir}/deploy/packaging/alpine/build_apks.sh
   fi
 }
 
