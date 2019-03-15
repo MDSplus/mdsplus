@@ -978,8 +978,8 @@ AutoReqProv: yes
  <external_packages platform="alpine">
    <python-devel package="python-dev"/>
    <setuptools package="py-setuptools"/>
-   <numpy package="py-numpy"/>
-   <java package="openjdk8"/>
+   <numpy/>
+   <java/>
  </external_packages>
  <external_packages platform="debian">
    <python-devel package="python-dev"/>
