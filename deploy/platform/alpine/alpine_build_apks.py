@@ -78,8 +78,7 @@ def externalPackage(info, root, package):
             if pkg is not None:
                 if 'package' in pkg.attrib:
                     ans = pkg.attrib['package']
-                else:
-                    ans = package
+            break
     return ans
 
 def doRequire(info, out, root, require):
