@@ -6,9 +6,7 @@
 #
 # Build script from within a docker image
 #
-export HOME=/tmp/home
 srcdir=$(readlink -f $(dirname ${0})/../..)
-mkdir -p $HOME
 RED() {
   if [ "$COLOR" = "yes" ]
   then echo -e "\033[31m"
