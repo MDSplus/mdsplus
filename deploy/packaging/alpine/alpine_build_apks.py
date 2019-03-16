@@ -28,9 +28,24 @@ import subprocess,os,sys,xml.etree.ElementTree as ET,fnmatch,tempfile,shutil
 linux_xml      = "%s/linux.xml"%(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),)
 pkg_exclusions = ('repo','gsi','gsi_bin','idl','idl_bin','labview','labview_bin','php','d3d','matlab')
 
-update_abuildrepo_index = "update_abuildrepo_index() {\nreturn 0;\n}\n"
-signkeys = os.getenv("signkeys","")
-signkeys = (len(signkeys) > 0) and os.path.exists(signkeys)
+
+def signkeys():
+    with open("/workspace/.abuild/abuild.conf","r") as f:
+        line = f.readline()
+        while len(line)>0:
+            if line.startswith("PACKAGER_PRIVKEY="):
+                line = line.split("=",2)[1].strip('"\n')
+                if os.path.exists(line):
+                    print("Found private key: %s"%line)
+                    line = "/etc/apk/keys/%s.pub"%os.path.basename(line)
+                    if os.path.exists(line):
+                        print("Found public key: %s"%line)
+                        return True
+                break
+            line = f.readline()
+        return False
+
+signkeys = signkeys()
      
 def getPackageFiles(buildroot,includes,excludes):
     files=[]
@@ -197,7 +212,8 @@ def buildApks():
             f.write('depends_dev=""\n')
             f.write('makedepends=""\n')
             f.write('source=""\n')
-            if not signkeys: f.write(update_abuildrepo_index)
+            if not signkeys: # if keys not installed, override indexing method to avoid ERROR
+                f.write("update_abuildrepo_index() {\necho 'Skipping update_abuildrepo_index()'\nreturn 0;\n}\n")
             f.write('build() {\nreturn 0;\n}\n')
             f.write('check() {\nreturn 0;\n}\n')
             f.write('git() {\nreturn 0;\n}\n')
