@@ -1,3 +1,4 @@
+
 #!/bin/bash
 #
 # alphine_docker_build is used to build, test, package and add apk's to a
@@ -44,7 +45,7 @@ buildrelease() {
     MDSPLUS_DIR=/workspace/releasebld/buildroot/usr/local/mdsplus
     mkdir -p ${MDSPLUS_DIR}
     mkdir -p /workspace/releasebld/${ARCH}
-#    rm -Rf /workspace/releasebld/${ARCH}/*
+    rm -Rf /workspace/releasebld/${ARCH}/*
     pushd /workspace/releasebld/${ARCH}
     config ${ARCH} ${host} bin lib $(getjava ${ARCH})
     if [ -z "$NOMAKE" ]; then
