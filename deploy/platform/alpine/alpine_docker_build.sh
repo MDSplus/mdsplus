@@ -18,10 +18,6 @@ gethost() {
     esac
 }
 
-getjava() {
-    if [ "$ARCH" = "armhfxxxxx" ]; then echo "--disable-java"; fi
-}
-
 if [ -z "$host" ]
 then
     host=$(gethost ${ARCH})
@@ -31,7 +27,7 @@ export CFLAGS="-DASSERT_LINE_TYPE=int"
 export CPPFLAGS="-DASSERT_LINE_TYPE=int"
 
 runtests() {
-    testarch ${ARCH} ${host} bin lib $(getjava ${ARCH})
+    testarch ${ARCH} ${host} bin lib
     checktests
 }
 
@@ -47,7 +43,7 @@ buildrelease() {
     mkdir -p /workspace/releasebld/${ARCH}
     rm -Rf /workspace/releasebld/${ARCH}/*
     pushd /workspace/releasebld/${ARCH}
-    config ${ARCH} ${host} bin lib $(getjava ${ARCH})
+    config ${ARCH} ${host} bin lib
     if [ -z "$NOMAKE" ]; then
       $MAKE
       $MAKE install
@@ -61,5 +57,3 @@ buildrelease() {
 publish() {
     rsync -a /release/${BRANCH} /publish/
 }
-
-
