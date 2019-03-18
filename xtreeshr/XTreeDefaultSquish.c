@@ -263,21 +263,20 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
 	|| currSignalD->dimensions[0]->dtype != DTYPE_RANGE)
       allDimensionsAreRanges = 0;
     //Check also that the dtype for start, end, delta are the same
-    if (i > 0) {
+    else if (i > 0) {
       rangeD = (struct descriptor_range *)currSignalD->dimensions[0];
-      prevRangeD =
-	  (struct descriptor_range *)((((struct descriptor_signal **)signalsApd->pointer)[i - 1])->
-				      dimensions[0]);
+      prevRangeD = (struct descriptor_range *)((((struct descriptor_signal **)signalsApd->pointer)[i - 1])->dimensions[0]);
       if (!rangeD->begin || rangeD->begin->class != CLASS_S || prevRangeD->begin->class != CLASS_S
 	  || rangeD->begin->dtype != prevRangeD->begin->dtype)
 	allDimensionsAreRanges = 0;
-      if (!rangeD->ending || rangeD->ending->class != CLASS_S
+      else if (!rangeD->ending || rangeD->ending->class != CLASS_S
 	  || prevRangeD->ending->class != CLASS_S
 	  || rangeD->ending->dtype != prevRangeD->ending->dtype)
 	allDimensionsAreRanges = 0;
-      if (!rangeD->deltaval || rangeD->deltaval->class != CLASS_S
+      else if (rangeD->ndesc==3 && (
+             !rangeD->deltaval || rangeD->deltaval->class != CLASS_S
 	  || prevRangeD->deltaval->class != CLASS_S
-	  || rangeD->deltaval->dtype != prevRangeD->deltaval->dtype)
+	  || rangeD->deltaval->dtype != prevRangeD->deltaval->dtype))
 	allDimensionsAreRanges = 0;
     }
   }
@@ -355,11 +354,12 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
       endingArrD.dtype = rangeD->ending->dtype;
       endingArrD.arsize = rangeD->ending->length * numSignals;
       endingArrD.pointer = endingPtr;
+     if (outSignalD.ndesc==3) {
       deltavalArrD.length = rangeD->deltaval->length;
       deltavalArrD.dtype = rangeD->deltaval->dtype;
       deltavalArrD.arsize = rangeD->deltaval->length * numSignals;
       deltavalArrD.pointer = deltavalPtr;
-
+     }
       for (i = 0; i < numSignals; i++) {
 	rangeD =
 	    (struct descriptor_range *)((((struct descriptor_signal **)signalsApd->pointer)[i])->
@@ -367,8 +367,10 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
 	memcpy(&beginPtr[i * rangeD->begin->length], rangeD->begin->pointer, rangeD->begin->length);
 	memcpy(&endingPtr[i * rangeD->ending->length], rangeD->ending->pointer,
 	       rangeD->ending->length);
+       if (outSignalD.ndesc==3) {
 	memcpy(&deltavalPtr[i * rangeD->deltaval->length], rangeD->deltaval->pointer,
 	       rangeD->deltaval->length);
+       }
       }
       outSignalD.dimensions[0] = (struct descriptor *)&outRangeD;
     }
