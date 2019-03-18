@@ -180,7 +180,9 @@ TreePutRecord(window,build_window(1,40,-4.))
 window
 TreePutRecord(axis,1E-4 : 20E-4 : 1E-4)
 axis
-MakeSegment(segs,1,10,1:10,data(1:10),*,10)
+MakeSegment(segs, 1,10, 1:10,data(1:10),*,10)
+segs
+MakeSegment(segs,11,20,11:20,data(1:10),*, 9)
 segs
 TreePutRecord(segs,)
 BeginSegment(segs,0.,99.,0.:99.,data(0:99))
