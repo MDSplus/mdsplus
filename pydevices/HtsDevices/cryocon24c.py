@@ -2,6 +2,8 @@ import MDSplus
 import threading
 import socket
 import time
+import datetime
+import numpy as np
 
 class CRYOCON24C(MDSplus.Device):
     """
@@ -133,7 +135,7 @@ class CRYOCON24C(MDSplus.Device):
 
 class CRYOCON24C_TREND(CRYOCON24C):
     '''
-    trend class for cryocon 24c
+    streamming "trend" class for cryocon 24c
 
     Store one sample for each of the channels that is on using
     putRow.  The timestamp will be time since the unix EPOCH in msec
@@ -163,7 +165,7 @@ class CRYOCON24C_TREND(CRYOCON24C):
             self.dev = MDSplus.TreeNode.copy(dev)
 
         def run(self):
-            self.dev.stream()
+            self.dev.run()
 
     def run(self):
         # start it trending
@@ -261,91 +263,123 @@ class CRYOCON24C_TREND(CRYOCON24C):
         caltable = []
         strCalcur= ''
 
-        query_cmd = ''
         answer    = []
 
+        # set up arrays of data and nodes to use in the loop
+        seg_length = int(self.seg_length.data())
+        max_segments = self.max_segments.data()
+        times = np.zeros(seg_length)
+        query_cmd = ''
+
+        temps   = []
+        resists = []
+        outpower= []
+        r_chans = []
+        t_chans = []
+        p_chans = []
+
         segment = 0
-        while self.running.on and segment < max_segments:
+        start_time = time.time()
+        previous_time = 0
+        self.trig_time.record = start_time
+
+        for i in range(ord('a'), ord('e')):
+            temps.append(np.zeros(seg_length))
+            resists.append(np.zeros(seg_length))
+            outpower.append(np.zeros(seg_length))
+            t_chans.append(self.__getattr__('input_%c_temperature' % (chr(i))))
+            r_chans.append(self.__getattr__('input_%c_resistence' % (chr(i))))
+            p_chans.append(self.__getattr__('input_%c_output_power' % (chr(i))))
+
+        print(temps)
+        print(resists)
+        print(outpower)
+        chan_index=0
+        # Run until the STOP function is externally triggerd
+        while self.running.on:
             for i in range(ord('a'), ord('e')):
                 chan = self.__getattr__('input_%c' % (chr(i),))
                 if chan.on:
+                    for sample in range(seg_length):
+                        times[sample] = previous_time - start_time     
 
-                    # Calibrartion Curve storage
-                    cal = self.__getattr__('input_%c_calibration' % (chr(i),))
-                    self.sendCommand(s, 'CALCUR %d?' % (index))
+                        # Cleaning cryocon buffer? The following seems to work with 
+                        # the answer from Cryocon is NAK. By asking ';' the answers
+                        # are back to normal:
+                        # ansQuery = self.queryCommand(s, ';')
 
-                    while ';' not in strCalcur:
-                        ans = self.recvResponse(s)
-                        print('Answer: ', ans)
-                        caltable.append(ans)
-
-                    ans = 1 #Disable for now
-                    cal.record = ans
-
-                    # Temperature reading
-                    temp_chan = self.__getattr__('input_%c_temperature' % (chr(i)))
-                    query_cmd = 'INP %c:TEMP?;UNIT?' % (chr(i),)
-
-                    ansQuery = self.queryCommand(s, query_cmd)
-                    answer = ansQuery.split(';')
-                    print(answer)
-
-                    t_time = time.time()
-                    try:
-                        print("Parsing temperature /%s/" % ans[0])
-                        temp = float(answer[0])
-                    except:
-                        if self.debugging():
-                            print("Could not parse temperature /%s/" % answer[0])
-                        temp = 0.0
-
-                    temp_chan.putRow(1000,
-                                    MDSplus.Float32(temp),
-                                    MDSplus.Int64(t_time * 1000.))
+                        # Calibrartion Curve storage
+                        # cal = self.__getattr__('input_%c_calibration' % (chr(i),))
+                        # self.sendCommand(s, 'CALCUR %d?' % (index))
+                        # while ';' not in strCalcur:
+                        #     ans = self.recvResponse(s)
+                        #     print('Answer: ', ans)
+                        #     caltable.append(ans)
+                        # ans = 1 #Disable for now
+                        # cal.record = ans
 
 
-                    # Resistence reading
-                    resist_chan = self.__getattr__('input_%c_resistence' % (chr(i)))
-                    query_cmd = 'INP %c:SENP?' % (chr(i),)
+                        # Temperature reading
+                        self.__getattr__('input_%c_temperature' % (chr(i)))
+                        query_cmd = 'INP %c:TEMP?;UNIT?' % (chr(i),)
+                        ansQuery = self.queryCommand(s, query_cmd)
+                        answer = ansQuery.split(';')
 
-                    ansQuery = self.queryCommand(s, query_cmd)
+                        try:
+                            print("Parsing temperature /%s/" % answer[0])
+                            temps[chan_index][sample] = float(answer[0])
+                        except:
+                            if self.debugging():
+                                print("Could not parse temperature /%s/" % answer[0])
 
-                    try:
-                        print("Parsing resistance /%s/" % ansQuery)
-                        resist = float(ansQuery)
-                    except:
-                        if self.debugging():
-                            print("Could not parse resist /%s/" % ansQuery)
-                        resist = 0.0
+                        # Resistence reading
+                        self.__getattr__('input_%c_resistence' % (chr(i)))
+                        query_cmd = 'INP %c:SENP?' % (chr(i),)
+                        ansQuery = self.queryCommand(s, query_cmd)
 
-                    resist_chan.putRow(1000,
-                                MDSplus.Float32(resist),
-                                MDSplus.Int64(t_time * 1000.))
+                        try:
+                            print("Parsing resistance /%s/" % ansQuery)
+                            resists[chan_index][sample] = float(ansQuery)
+                        except:
+                            if self.debugging():
+                                print("Could not parse resist /%s/" % ansQuery)
+                            
 
+                        # Output Power reading: Queries the output power of the selected control loop.
+                        # This is a numeric field that is a percent of full scale.
+                        self.__getattr__('input_%c_output_power' % (chr(i)))
+                        query_cmd = 'LOOP %c:OUTP?' % (chr(i),)
+                        ansQuery = self.queryCommand(s, query_cmd)
 
-                    # Output Power reading: Queries the output power of the selected control loop.
-                    # This is a numeric field that is a percent of full scale.
-                    outp_chan = self.__getattr__('input_%c_output_power' % (chr(i)))
-                    query_cmd = 'LOOP %c:OUTP?' % (chr(i),)
+                        try:
+                            print("Parsing output power /%s/" % ansQuery)
+                            if 'NAK' not in ansQuery:
+                                outpower[chan_index][sample] = float(ansQuery)
+                            else:
+                                outpower[chan_index][sample] = float(-9999.0)
+                        except:
+                            if self.debugging():
+                                print("Could not parse output power /%s/" % ansQuery)
 
-                    ansQuery = self.queryCommand(s, query_cmd)
+                    print(temps)
+                    print(resists)
+                    print(outpower)
 
-                    try:
-                        print("Parsing output power /%s/" % ansQuery)
-                        outpower = float(ansQuery)
-                    except:
-                        if self.debugging():
-                            print("Could not parse output power /%s/" % ansQuery)
-                        outpower = 0.0
+                chan_index+=1
 
-                    outp_chan.putRow(1000,
-                                MDSplus.Float32(outpower),
-                                MDSplus.Int64(t_time * 1000.))
-
-
-            s.close()
-
-        MDSplus.Event.setevent(event_name)
+            if sample != seg_length-1:
+                for i in range(len(temps)):
+                    times = times[0:sample]
+                    temps[i] = temps[i][0:sample]
+                    resists[i] = resists[i][0:sample]
+                    outpower[i] = outpower[i][0:sample]
+            for i in range(len(temps)):            
+                t_chans[i].makeSegment(times[0], times[-1], times, temps[i])
+                r_chans[i].makeSegment(times[0], times[-1], times, resists[i])
+                p_chans[i].makeSegment(times[0], times[-1], times, outpower[i])
+                MDSplus.Event.setevent(event_name)
+            segment +=1
+        s.close()
     RUN=run
 
     def stop(self):
@@ -382,11 +416,13 @@ def main():
     #Executing the experiment:
     print('Running INIT from cryocon24c using MDS-TCL')
     tree = MDSplus.Tree('cryocon24c', -1)
-    tree.tcl('set tree cryocon24c/shot=-1')
-    tree.tcl('set current cryocon24c/increment')
-    tree.tcl('create pulse 0')
-    tree.tcl('set tree cryocon24c/shot=0')
-    tree.tcl('do /meth CRYOCON24C INIT')
+    tree.setCurrent('cryocon24c', tree.getCurrent('cryocon24c') + 1)
+    tree.createPulse(0)
+    tree = MDSplus.Tree('cryocon24c', 0)
+    dev = tree.getNode('cryocon24c')
+    dev.init()
+    time.sleep(20)
+    dev.stop()
     return 1
 
 if __name__ == '__main__':
