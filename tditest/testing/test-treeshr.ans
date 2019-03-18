@@ -372,6 +372,16 @@ TreePutRecord(axis,1E-4 : 20E-4 : 1E-4)
 265388041
 axis
 .0001 : .002 : .0001
+MakeSegment(segs, 1,10, 1:10,data(1:10),*,10)
+265388041
+segs
+Build_Signal([1,2,3,4,5,6,7,8,9,10], *, 1 : 10)
+MakeSegment(segs,11,20,11:20,data(1:10),*, 9)
+265388041
+segs
+Build_Signal([1,2,3,4,5,6,7,8,9,10,1,2,3,4,5,6,7,8,9], *, [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19])
+TreePutRecord(segs,)
+265389633
 BeginSegment(segs,0.,99.,0.:99.,zero(100,0))
 265388041
 putsegment(segs,-1,data(0:9))
