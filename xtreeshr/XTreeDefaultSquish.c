@@ -134,9 +134,10 @@ static inline int checkRanges(struct descriptor_a *signalsApd){
   if ( firstRangeD->class != CLASS_R
     || firstRangeD->dtype != DTYPE_RANGE
     ||!firstRangeD->begin    || firstRangeD->begin   ->class != CLASS_S
-    ||!firstRangeD->ending   || firstRangeD->ending  ->class != CLASS_S
-    ||!firstRangeD->deltaval || firstRangeD->deltaval->class != CLASS_S)
+    ||!firstRangeD->ending   || firstRangeD->ending  ->class != CLASS_S)
     return B_FALSE;
+  if (firstRangeD->ndesc==3 && (!firstRangeD->begin || firstRangeD->begin->class != CLASS_S))
+    return B_FALSE; // delta given but invalid
   int i,numSignals = signalsApd->arsize / signalsApd->length;
   for (i = 1; i < numSignals; i++) {
     currSignalD = ((struct descriptor_signal **)signalsApd->pointer)[i];
@@ -144,12 +145,14 @@ static inline int checkRanges(struct descriptor_a *signalsApd){
     //Check if dimension is of type RANGE
     if ( currRangeD->class != CLASS_R
       || currRangeD->dtype != DTYPE_RANGE
+      || currRangeD->ndesc != firstRangeD->ndesc // either all have delta or none
       ||!currRangeD->begin    || currRangeD->begin   ->class != CLASS_S
       ||!currRangeD->ending   || currRangeD->ending  ->class != CLASS_S
-      ||!currRangeD->deltaval || currRangeD->deltaval->class != CLASS_S
       || currRangeD->begin   ->dtype != firstRangeD->begin   ->dtype
       || currRangeD->ending  ->dtype != firstRangeD->ending  ->dtype
-      || currRangeD->deltaval->dtype != firstRangeD->deltaval->dtype)
+      ||(currRangeD->ndesc==3 // check delta if given
+         && ( !currRangeD->deltaval || currRangeD->deltaval->class != CLASS_S
+            || currRangeD->deltaval->dtype != firstRangeD->deltaval->dtype )))
       return B_FALSE;
   }
   return B_TRUE;
@@ -171,16 +174,20 @@ static inline struct descriptor* mergeRanges(struct descriptor_a *signalsApd,str
   ((struct descriptor_a*)outRangeD->ending  )->dtype  = rangeD->ending->dtype;
   ((struct descriptor_a*)outRangeD->ending  )->arsize = rangeD->ending->length * numSignals;
   ((struct descriptor_a*)outRangeD->ending  )->pointer= malloc(rangeD->ending->length * numSignals);
-  ((struct descriptor_a*)outRangeD->deltaval)->length = rangeD->deltaval->length;
-  ((struct descriptor_a*)outRangeD->deltaval)->dtype  = rangeD->deltaval->dtype;
-  ((struct descriptor_a*)outRangeD->deltaval)->arsize = rangeD->deltaval->length * numSignals;
-  ((struct descriptor_a*)outRangeD->deltaval)->pointer= malloc(rangeD->deltaval->length * numSignals);
+  if (rangeD->ndesc>2) {
+    ((struct descriptor_a*)outRangeD->deltaval)->length = rangeD->deltaval->length;
+    ((struct descriptor_a*)outRangeD->deltaval)->dtype  = rangeD->deltaval->dtype;
+    ((struct descriptor_a*)outRangeD->deltaval)->arsize = rangeD->deltaval->length * numSignals;
+    ((struct descriptor_a*)outRangeD->deltaval)->pointer= malloc(rangeD->deltaval->length * numSignals);
+  } else
+    outRangeD->ndesc=2;
   int i;
   for (i = 0; i < numSignals; i++) {
     rangeD = (struct descriptor_range *)((((struct descriptor_signal **)signalsApd->pointer)[i])->dimensions[0]);
     memcpy(&(((struct descriptor_a*)outRangeD->begin   )->pointer)[i * rangeD->begin   ->length], rangeD->begin   ->pointer, rangeD->begin   ->length);
     memcpy(&(((struct descriptor_a*)outRangeD->ending  )->pointer)[i * rangeD->ending  ->length], rangeD->ending  ->pointer, rangeD->ending  ->length);
-    memcpy(&(((struct descriptor_a*)outRangeD->deltaval)->pointer)[i * rangeD->deltaval->length], rangeD->deltaval->pointer, rangeD->deltaval->length);
+    if (outRangeD->ndesc>2)
+      memcpy(&(((struct descriptor_a*)outRangeD->deltaval)->pointer)[i * rangeD->deltaval->length], rangeD->deltaval->pointer, rangeD->deltaval->length);
   }
   return (struct descriptor *)outRangeD;
 }
@@ -275,7 +282,6 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
     if STATUS_OK
       outSignalD.dimensions[0] = (struct descriptor *)&outDimD;
     else {
-      
       numDimensions = 0;
     }
   }
