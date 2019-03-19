@@ -671,7 +671,8 @@ inline static int begin_sinfo(vars_t*vars,struct descriptor_a *initialValue,int 
       memcpy(vars->shead.dims, ((A_COEFF_TYPE *)initialValue)->m, initialValue->dimct * sizeof(int));
   }
   vars->shead.next_row = vars->rows_filled;
-  /* If not the first segment, see if we can reuse the previous segment storage space and compress the previous segment. */
+  /* If not the first segment, see if we can reuse the previous segment storage space
+   * and compress the previous segment. */
   if (((vars->shead.idx % SEGMENTS_PER_INDEX) > 0) &&
       (previous_length == (int64_t)vars->add_length) && vars->compress) {
     EMPTYXD(xd_data);
@@ -1386,6 +1387,7 @@ static int read_segment(void* dbid, TREE_INFO * tinfo, int nid, SEGMENT_HEADER* 
   } else
     rows = sinfo->rows;
   if (sinfo->dimension_offset != -1 && sinfo->dimension_length == 0) {
+    // this is a timestamped segment node, i.e. dim is array of int64_t
     DESCRIPTOR_A(ans, 8, DTYPE_Q, 0, 0);
     ans.arsize = rows * sizeof(int64_t);
     void *ans_ptr = ans.pointer = malloc(ans.arsize);
@@ -1410,8 +1412,10 @@ static int read_segment(void* dbid, TREE_INFO * tinfo, int nid, SEGMENT_HEADER* 
       if (STATUS_OK && dbid && dim->pointer && idx == shead->idx && shead->next_row != rows)
 	status = trim_last_segment(dbid,dim,filled_rows);
     }
-  } else
+  } else { // no dim is stored, set filled_rows to next_row or full
     filled_rows = (dbid && idx == shead->idx) ? shead->next_row : rows;
+    if (!segment) segment = dim; // if segment is not requested, read it as dim
+  }
   if (STATUS_OK && segment){
     if (compressed_segment) {
       int data_length = sinfo->rows & 0x7fffffff;
@@ -1434,6 +1438,10 @@ static int read_segment(void* dbid, TREE_INFO * tinfo, int nid, SEGMENT_HEADER* 
       }
       free(ans_ptr);
     }
+  }
+  if (STATUS_OK && dim && dim != segment && (sinfo->dimension_offset == -1 && sinfo->dimension_length == -1)) {
+    // dim is requested, but no dim is stored. segment was also requested, so we make a copy of segment.
+    MdsCopyDxXd((struct descriptor *)segment, dim);
   }
   return status;
 }
