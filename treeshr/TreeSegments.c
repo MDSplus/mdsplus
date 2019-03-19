@@ -1406,14 +1406,14 @@ static int read_segment(void* dbid, TREE_INFO * tinfo, int nid, SEGMENT_HEADER* 
     } else filled_rows = rows;
     free(ans_ptr);
   } else if (sinfo->dimension_length != -1) {
-    filled_rows =  (dbid && idx == shead->idx) ? shead->next_row : rows;
+    filled_rows = (idx == shead->idx) ? shead->next_row : rows;
     if (dim) {
       status = TreeGetDsc(tinfo, nid, sinfo->dimension_offset, sinfo->dimension_length, dim);
       if (STATUS_OK && dbid && dim->pointer && idx == shead->idx && shead->next_row != rows)
 	status = trim_last_segment(dbid,dim,filled_rows);
     }
   } else { // no dim is stored, set filled_rows to next_row or full
-    filled_rows = (dbid && idx == shead->idx) ? shead->next_row : rows;
+    filled_rows = (idx == shead->idx) ? shead->next_row : rows;
     if (!segment) segment = dim; // if segment is not requested, read it as dim
   }
   if (STATUS_OK && segment){
@@ -1820,17 +1820,22 @@ static int copy_segment(TREE_INFO *tinfo_in, TREE_INFO *tinfo_out, int nid, SEGM
   INIT_TREESUCCESS;
   if (compress) {
     int length;
-    EMPTYXD(data_xd);
-    EMPTYXD(dim_xd);
-    status = read_segment(NULL,tinfo_in, nid, header, sinfo, idx, &data_xd, &dim_xd);
+    EMPTYXD(xd);
+    status = read_segment(NULL,tinfo_in, nid, header, sinfo, idx, &xd, NULL);
     if STATUS_OK {
-      status = TreePutDsc(tinfo_out, nid, data_xd.pointer, &sinfo->data_offset, &length, compress);
+      status = TreePutDsc(tinfo_out, nid, xd.pointer, &sinfo->data_offset, &length, compress);
       if STATUS_OK {
+	if (sinfo->dimension_offset != -1 || sinfo->dimension_length != -1) {
+	  // dim is present
+	  status = read_segment(NULL,tinfo_in, nid, header, sinfo, idx, NULL, &xd);
+          if STATUS_OK
+            status = TreePutDsc(tinfo_out, nid, xd.pointer, &sinfo->dimension_offset, &sinfo->dimension_length, compress);
+	}
+	if (idx == header->idx) // finalize last segment
+	  header->dims[header->dimct - 1] = header->next_row;
         sinfo->rows = length | 0x80000000;
-        status = TreePutDsc(tinfo_out, nid, dim_xd.pointer, &sinfo->dimension_offset, &sinfo->dimension_length, compress);
-        MdsFree1Dx(&dim_xd,0);
       }
-      MdsFree1Dx(&data_xd,0);
+      MdsFree1Dx(&xd,NULL);
     }
   } else {
     int length;
