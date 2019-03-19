@@ -2326,12 +2326,12 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
                                      _C.byref(_C.c_int64(int(timestamp))),
                                      _dat.Data.byref(data)))
 
-    def putSegment(self,data,idx):
+    def putSegment(self,data,idx=-1):
         """Load a segment in a node
         @param data: data to load into segment
         @type data: Array or Scalar
         @param idx: index into segment to load data
-        @type idx: int
+        @type idx: int (default: append)
         @rtype: None
         """
         data = _dat.Data(data)
