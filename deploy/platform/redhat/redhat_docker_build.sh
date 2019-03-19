@@ -138,9 +138,9 @@ publish(){
         use_deltas="--deltas"
     fi
     tmpdir=$(mktemp -d)
+    trap 'rm -Rf ${tmpdir}' EXIT
     :&& createrepo -q --update --cachedir /publish/${BRANCH}/cache ${use_deltas} -o ${tmpdir} /publish/${BRANCH}/RPMS
-    stat=$?
+    checkstatus abort "Failure: Problem creating rpm repository in publish area!" $?
     :&& rsync -a ${tmpdir}/repodata /public/${BRANCH}/RPMS/
-    rm -Rf ${tmpdir}
-    checkstatus abort "Failure: Problem creating rpm repository in publish area!" $stat
+    checkstatus abort "Failure: Problem rsyncing rpm repository with publish area!" $?
 }
