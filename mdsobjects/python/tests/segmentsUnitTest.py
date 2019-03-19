@@ -292,12 +292,14 @@ class Tests(_UnitTest.TreeTests):
         len = 100;dt=.001
         node = ptree.S
         for i in range(0,1000,len):
-            node.beginSegment(i*dt,(i+len-1)*dt,None,Float32Array(range(i,i+len)))
-        seg0 = Float32Array(range(0,len))
+            seg = Float32Array(range(i,i+len))*dt
+            start, end = seg[0],seg[len-1]
+            if i == 0: seg0 = seg
+            node.beginSegment(start, end, None, seg)
         self.assertEqual(node.getSegment(0).data().tolist(),seg0.tolist(),1e-5)
         self.assertEqual(node.record.data()[0:100].tolist(),seg0.tolist(),1e-5)
         ptree.setTimeContext(.12,.13,None) # interval contained in segment 1 
-        self.assertEqual(node.record.data().tolist(),node.getSegment(1).data().tolist(),1e-5)
+        self.assertEqual(node.record.data().tolist(),node.getSegment(1).data().tolist()[20:31],1e-5)
 
     def CompressSegments(self):
         from MDSplus import Tree,DateToQuad,ZERO,Int32,Int32Array,Int64Array,Range
