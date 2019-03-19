@@ -1032,14 +1032,11 @@ int _TreePutSegment(void *dbid, int nid, const int startIdx, struct descriptor_a
     || (data->dimct > 1 && memcmp(vars->shead.dims, a_coeff->m, (data->dimct - 1) * sizeof(int))))
       {status = TreeFAILURE;goto end;}
   }
-  int start_idx;
-  /*CHECK_STARTIDX*/{
-    if (startIdx == -1)
-      start_idx = vars->shead.next_row;
-    else if (startIdx < -1 || startIdx > vars->shead.dims[vars->shead.dimct - 1])
-      {status = TreeBUFFEROVF;goto end;}
-    else start_idx = startIdx;
-  }
+  /*CHECK_STARTIDX*/
+  const int start_idx = (startIdx == -1) ? vars->shead.next_row : startIdx;
+  if (start_idx < 0 || start_idx >= vars->shead.dims[vars->shead.dimct - 1])
+    {status = TreeBUFFEROVF;goto end;}
+  /*CHECK_DATA_SIZE*/
   int bytes_per_row,i;
   for (bytes_per_row = vars->shead.length, i = 0; i < vars->shead.dimct - 1;
        bytes_per_row *= vars->shead.dims[i], i++) ;
