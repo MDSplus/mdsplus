@@ -1366,9 +1366,9 @@ static int trim_last_segment(void* dbid, struct descriptor_xd *dim, int filled_r
 fallback: ;
     status = LibFindImageSymbol_C("TdiShr", "_TdiExecute", &_TdiExecute);
     if STATUS_OK {
-      STATIC_CONSTANT DESCRIPTOR(expression, "_=lbound($,-1);$[_ : _+$-1]");
+      STATIC_CONSTANT DESCRIPTOR(expression, "execute('$1[$2 : $2+$3-1]',$1,lbound($1,-1),$2)");
       DESCRIPTOR_LONG(row_d, &filled_rows);
-      status = _TdiExecute(&dbid,&expression,dim,dim,&row_d,dim MDS_END_ARG);
+      status = _TdiExecute(&dbid,&expression,dim,&row_d,dim MDS_END_ARG);
     }
   return status;
 }
