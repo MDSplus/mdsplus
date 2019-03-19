@@ -284,22 +284,35 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(ptree.tdiExecute("S").decompile(),"Build_Signal($VALUE + 1D0, Word([-1000,0,1000]), [-1000Q,0Q,1000Q])")
 
     def DimensionlessSegments(self):
-        from MDSplus import Tree,Float32Array
+        from MDSplus import Tree,Int32Array,numpy,TreeBUFFEROVF
         with Tree(self.tree,self.shot+8,'NEW') as ptree:
             ptree.addNode('S')
             ptree.write()
         ptree.normal()
-        len = 100;dt=.001
         node = ptree.S
-        for i in range(0,1000,len):
-            seg = Float32Array(range(i,i+len))*dt
+        len = 10
+        seg0 = Int32Array(numpy.array(range(len)))
+        for i in range(10):
+            seg = seg0 + i*len
             start, end = seg[0],seg[len-1]
-            if i == 0: seg0 = seg
-            node.beginSegment(start, end, None, seg)
-        self.assertEqual(node.getSegment(0).data().tolist(),seg0.tolist(),1e-5)
-        self.assertEqual(node.record.data()[0:100].tolist(),seg0.tolist(),1e-5)
-        ptree.setTimeContext(.12,.13,None) # interval contained in segment 1 
-        self.assertEqual(node.record.data().tolist(),node.getSegment(1).data().tolist()[20:31],1e-5)
+            node.makeSegment(start, end, None, seg)
+        seg = seg0 + 10*len
+        start, end = seg[0],seg[len-1]
+        node.beginSegment(start, end, None, seg)
+        node.putSegment(seg[0:1])
+        self.assertEqual(node.record.data()[-5:].tolist(),[96,97,98,99,100])
+        node.putSegment(seg[1:2])
+        self.assertEqual(node.record.data()[-5:].tolist(),[97,98,99,100,101])
+        self.assertEqual(node.getSegment(0).data().tolist(),seg0.tolist())
+        self.assertEqual(node.record.data()[:10].tolist(),seg0.tolist())
+        ptree.compressDatafile()
+        ptree.normal()
+        self.assertEqual(node.record.data()[-5:].tolist(),[97,98,99,100,101])
+        try:   node.putSegment(seg[2:3]) # compress finalizes last segment, putSegment cannot put
+        except TreeBUFFEROVF: pass
+        else:  self.assertEqual(None,TreeBUFFEROVF)
+        ptree.setTimeContext(17,21,None) # interval contained in segment 1 and 2
+        self.assertEqual(node.record.data().tolist(),[17,18,19,20,21])
 
     def CompressSegments(self):
         from MDSplus import Tree,DateToQuad,ZERO,Int32,Int32Array,Int64Array,Range
