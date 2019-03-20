@@ -734,15 +734,38 @@ SectionGroup /e "!APIs" apis
   Section "MDSplus package" python_cp
 	SectionIn 1 2
 	SetOutPath "$INSTDIR\python\MDSplus"
-	File /r /x makedoc.sh mdsobjects/python/*
+	File /x magic.py /x mdsplus_wsgi.py /x modpython.py /x setup.py mdsobjects/python/*.py
 	File /workspace/releasebld/64/mdsobjects/python/_version.py
   SectionEnd ; python_cp
+  Section "tests" python_tst
+	SectionIn 2
+	SetOutPath "$INSTDIR\python\MDSplus"
+	File /r mdsobjects/python/tests
+  SectionEnd ; python_tst
+  Section "WSGI" python_wsgi
+	SectionIn 2
+	SetOutPath "$INSTDIR\python\MDSplus"
+	File /r mdsobjects/python/wsgi
+	File mdsobjects/python/mdsplus_wsgi.py
+  SectionEnd ; python_wsgi
+;  Section "glade idgets" python_wdg
+;	SectionIn 2
+;	SetOutPath "$INSTDIR\python\MDSplus"
+;	File /r mdsobjects/python/widgets
+;  SectionEnd ; python_wdg
+;  Section "modpython" python_mod
+;	SectionIn 2
+;	SetOutPath "$INSTDIR\python\MDSplus"
+;	File mdsobjects/python/magic.py
+;	File mdsobjects/python/modpython.py
+;  SectionEnd ; python_mod
   Section "add to PYTHONPATH" python_pp
 	SectionIn 1 2
 	${AddToEnv} "PYTHONPATH" "${PYTHONPATH}"
   SectionEnd ; python_pp
   Section "run 'python setup.py install'" python_su
 	SetOutPath "$INSTDIR\python\MDSplus"
+	File mdsobjects/python/setup.py
 	nsExec::Exec /OEM /TIMEOUT=10000 "python setup.py install"
 	Exch $R0
 	Pop  $R0
@@ -828,6 +851,10 @@ Function .onSelChange
 		${IfNot}    $0 is ${SF_SELECTED}
 		${AndIfNot} $0 is ${SF_PSELECTED}
 			${UnselectSection} ${pydevices}
+			${UnselectSection} ${python_tst}
+			${UnselectSection} ${python_wsgi}
+;			${UnselectSection} ${python_wdg}
+;			${UnselectSection} ${python_mod}
 			${UnselectSection} ${python_pp}
 			${UnselectSection} ${python_su}
 		${EndIf}
@@ -857,6 +884,10 @@ Function .onSelChange
 			${ClearSectionFlag} ${pydevpath} ${SF_RO}
 			${SelectSection}    ${python_cp}
 		${EndIf}
+	${ElseIf} $0 == ${python_tst}
+	${ElseIf} $0 == ${python_wsgi}
+;	${ElseIf} $0 == ${python_wdg}
+;	${ElseIf} $0 == ${python_mod}
 	${ElseIf} $0 == ${python_pp}
 	${ElseIf} $0 == ${python_su}
 		${If} $0 is ${SF_SELECTED}

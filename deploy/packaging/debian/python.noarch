@@ -1,4 +1,3 @@
-./usr/local/mdsplus/mdsobjects/python/MDSobjects-epydoc.prj
 ./usr/local/mdsplus/mdsobjects/python/__init__.py
 ./usr/local/mdsplus/mdsobjects/python/_mdsshr.py
 ./usr/local/mdsplus/mdsobjects/python/_version.py
@@ -10,7 +9,6 @@
 ./usr/local/mdsplus/mdsobjects/python/html/scope.html
 ./usr/local/mdsplus/mdsobjects/python/js/mdsScope.js
 ./usr/local/mdsplus/mdsobjects/python/magic.py
-./usr/local/mdsplus/mdsobjects/python/makedoc.sh
 ./usr/local/mdsplus/mdsobjects/python/mdsExceptions.py
 ./usr/local/mdsplus/mdsobjects/python/mdsarray.py
 ./usr/local/mdsplus/mdsobjects/python/mdsdata.py
@@ -28,9 +26,9 @@
 ./usr/local/mdsplus/mdsobjects/python/tests/devices/TestDevice.py
 ./usr/local/mdsplus/mdsobjects/python/tests/devicesUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/exceptionUnitTest.py
-./usr/local/mdsplus/mdsobjects/python/tests/images/mdsplus_logo.jpg
-./usr/local/mdsplus/mdsobjects/python/tests/images/test-mpeg.gif
-./usr/local/mdsplus/mdsobjects/python/tests/images/test-mpeg.mpg
+./usr/local/mdsplus/mdsobjects/python/tests/images/test.jpg
+./usr/local/mdsplus/mdsobjects/python/tests/images/test.gif
+./usr/local/mdsplus/mdsobjects/python/tests/images/test.mpg
 ./usr/local/mdsplus/mdsobjects/python/tests/mdsip.hosts
 ./usr/local/mdsplus/mdsobjects/python/tests/segmentsUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/simulateSegfault.py
