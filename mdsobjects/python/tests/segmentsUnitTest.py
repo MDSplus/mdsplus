@@ -163,18 +163,18 @@ class Tests(_UnitTest.TreeTests):
         ptree.normal()
         node = ptree.JPG
         root = os.path.dirname(os.path.realpath(__file__))
-        node.record=Opaque.fromFile(root+'/images/mdsplus_logo.jpg')
+        node.record=Opaque.fromFile(root+'/images/test.jpg')
         opq = node.record
         try:
             opq.image
         except ImportError as e:
             print(e)  # Image module not found
         node = ptree.JPGS
-        node.makeSegment(None,None,None,Opaque.fromFile(root+'/images/mdsplus_logo.jpg'))
-        node.makeSegment(None,None,None,Opaque.fromFile(root+'/images/test-mpeg.mpg'))
-        node.makeSegment(None,None,None,Opaque.fromFile(root+'/images/test-mpeg.gif'))
+        node.makeSegment(None,None,None,Opaque.fromFile(root+'/images/test.jpg'))
+        node.makeSegment(None,None,None,Opaque.fromFile(root+'/images/test.mpg'))
+        node.makeSegment(None,None,None,Opaque.fromFile(root+'/images/test.gif'))
         self.assertEqual(len(node.record),3)
-        lens=(54851,706564,77013)
+        lens=(5977,10240,4292)
         for i in range(3):
             seg = node.getSegment(i)
             self.assertEqual(len(seg.value.value.data()),lens[i])
