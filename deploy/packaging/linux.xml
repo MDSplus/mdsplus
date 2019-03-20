@@ -871,6 +871,7 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
     <requires external="True" package="python-devel"/>
     <requires external="true" package="numpy"/>
     <include dir="/usr/local/mdsplus/mdsobjects/python"/>
+    <exclude file="/usr/local/mdsplus/mdsobjects/python/makedoc.sh"/>
 
     <!-- rpm scripts -->
     <post>
