@@ -23,12 +23,21 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from __future__ import print_function
+"""
+MDSplus.magic
+
+Once activated with 'import MDSplus.magic' this will add the magic
+'%tcl' and '%tdi' to ipython
+"""
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
 from IPython.core.magic import register_line_cell_magic
-import MDSplus as _M
 import sys
-
-
+_dcl = _mimport("mdsdcl")
+_dat = _mimport("mdsdata")
 @register_line_cell_magic
 def tcl(line,cell=None):
     """
@@ -53,7 +62,7 @@ def tcl(line,cell=None):
     def doit(line,toOut,toError):
         if len(line) == 0:
             return
-        out,error=_M.tcl(line,return_out=True,return_error=True)
+        out,error=_dcl.tcl(line,return_out=True,return_error=True)
         if error is not None and len(str(error)) > 0:
             toError.append(str(error))
         if out is not None and len(str(out)) > 0:
@@ -67,7 +76,7 @@ def tcl(line,cell=None):
     if len(toOut) > 0:
         print('\n'.join(toOut))
     if len(toError) > 0:
-        print('\n'.join(toError),file=sys.stderr)
+        sys.stderr.write('\n'.join(toError+['']))
 
 @register_line_cell_magic
 def tdi(line,cell=None):
@@ -94,17 +103,16 @@ def tdi(line,cell=None):
         if len(line) == 0:
             return
         try:
-            toOut.append(str(_M.Data.execute(line)))
+            toOut.append(str(_dat.tdi(line)))
         except Exception as e:
             toError.append(str(e))
         
     if cell is None:
         doit(line,toOut,toError)
     else:
-        doit(cell,toOut,toError)
-#        for line in cell.split('\n'):
-#            doit(line,toOut,toError)
+        for line in cell.split('\n'):
+            doit(cell,toOut,toError)
     if len(toOut) > 0:
         print('\n'.join(toOut))
     if len(toError) > 0:
-        print('\n'.join(toError),file=sys.stderr)
+        sys.stderr.write('\n'.join(toError+['']))
