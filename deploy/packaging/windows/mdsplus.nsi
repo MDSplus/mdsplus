@@ -731,10 +731,10 @@ SectionGroup /e "!APIs" apis
 	File /r matlab/*
  SectionEnd ; MATLAB
  SectionGroup /e "!python" python
-  Section "MDSplus package" python_cp
+  Section "!MDSplus package" python_cp
 	SectionIn 1 2
 	SetOutPath "$INSTDIR\python\MDSplus"
-	File /x magic.py /x mdsplus_wsgi.py /x modpython.py /x setup.py mdsobjects/python/*.py
+	File /x mdsplus_wsgi.py /x modpython.py /x setup.py mdsobjects/python/*.py
 	File /workspace/releasebld/64/mdsobjects/python/_version.py
   SectionEnd ; python_cp
   Section "tests" python_tst
@@ -745,20 +745,19 @@ SectionGroup /e "!APIs" apis
   Section "WSGI" python_wsgi
 	SectionIn 2
 	SetOutPath "$INSTDIR\python\MDSplus"
-	File /r mdsobjects/python/wsgi
 	File mdsobjects/python/mdsplus_wsgi.py
+	File /r mdsobjects/python/wsgi
   SectionEnd ; python_wsgi
-;  Section "glade idgets" python_wdg
-;	SectionIn 2
-;	SetOutPath "$INSTDIR\python\MDSplus"
-;	File /r mdsobjects/python/widgets
-;  SectionEnd ; python_wdg
-;  Section "modpython" python_mod
-;	SectionIn 2
-;	SetOutPath "$INSTDIR\python\MDSplus"
-;	File mdsobjects/python/magic.py
-;	File mdsobjects/python/modpython.py
-;  SectionEnd ; python_mod
+  Section "glade widgets" python_wdg
+	SectionIn 2
+	SetOutPath "$INSTDIR\python\MDSplus"
+	File /r mdsobjects/python/widgets
+  SectionEnd ; python_wdg
+  Section "mod_python" python_mod
+	SectionIn 2
+	SetOutPath "$INSTDIR\python\MDSplus"
+	File mdsobjects/python/modpython.py
+  SectionEnd ; python_mod
   Section "add to PYTHONPATH" python_pp
 	SectionIn 1 2
 	${AddToEnv} "PYTHONPATH" "${PYTHONPATH}"
@@ -829,7 +828,11 @@ SectionEnd
 	!insertmacro MUI_DESCRIPTION_TEXT ${LV2001}	"${LVOLD_DESC}${LV2001_DESC}"
 	!insertmacro MUI_DESCRIPTION_TEXT ${MATLAB}	"Copy MATLAB plugin to '.\matlab'"
 	!insertmacro MUI_DESCRIPTION_TEXT ${python}	"Setup the python package"
-	!insertmacro MUI_DESCRIPTION_TEXT ${python_cp}	"Copy MDSplus package to install folder to '.\python'"
+	!insertmacro MUI_DESCRIPTION_TEXT ${python_cp}	"Copy MDSplus package to '.\python'"
+	!insertmacro MUI_DESCRIPTION_TEXT ${python_tst}	"Copy MDSplus test suite to '.\python\MDSplus\tests'"
+	!insertmacro MUI_DESCRIPTION_TEXT ${python_wsgi} "Copy WSGI server support to '.\python\MDSplus[\wsgi]'"
+	!insertmacro MUI_DESCRIPTION_TEXT ${python_wdg}	"Copy glade widgets for device setups to '.\python\MDSplus\widgets'"
+	!insertmacro MUI_DESCRIPTION_TEXT ${python_mod}	"Copy mod_python module for apache to '.\python\MDSplus'"
 	!insertmacro MUI_DESCRIPTION_TEXT ${python_pp}	"Add '.\python' to PYTHONPATH env."
 	!insertmacro MUI_DESCRIPTION_TEXT ${python_su}	"Install MDSplus package via python's setup method"
 	!insertmacro MUI_DESCRIPTION_TEXT ${devel}	"Copy headers and '*.lib' files for MinGW and VS projects"
@@ -850,13 +853,13 @@ Function .onSelChange
 	${OrIf} $0 == ${python_cp}
 		${IfNot}    $0 is ${SF_SELECTED}
 		${AndIfNot} $0 is ${SF_PSELECTED}
-			${UnselectSection} ${pydevices}
-			${UnselectSection} ${python_tst}
-			${UnselectSection} ${python_wsgi}
-;			${UnselectSection} ${python_wdg}
-;			${UnselectSection} ${python_mod}
-			${UnselectSection} ${python_pp}
-			${UnselectSection} ${python_su}
+			${UnselectSection}  ${pydevices}
+			${UnselectSection}  ${python_mod}
+			${UnselectSection}  ${python_pp}
+			${UnselectSection}  ${python_su}
+			${UnselectSection}  ${python_tst}
+			${UnselectSection}  ${python_wdg}
+			${UnselectSection}  ${python_wsgi}
 		${EndIf}
 	${ElseIf} $0 == ${devices}
 	${OrIf}	  $0 == ${pydevices}
@@ -884,14 +887,25 @@ Function .onSelChange
 			${ClearSectionFlag} ${pydevpath} ${SF_RO}
 			${SelectSection}    ${python_cp}
 		${EndIf}
-	${ElseIf} $0 == ${python_tst}
-	${ElseIf} $0 == ${python_wsgi}
-;	${ElseIf} $0 == ${python_wdg}
-;	${ElseIf} $0 == ${python_mod}
-	${ElseIf} $0 == ${python_pp}
+	${ElseIf} $0 == ${python_mod}
+	${OrIf}   $0 == ${python_pp}
+		${If} $0 is ${SF_SELECTED}
+			${SelectSection}    ${python_cp}
+		${EndIf}
 	${ElseIf} $0 == ${python_su}
 		${If} $0 is ${SF_SELECTED}
 			${SelectSection}    ${python_cp}
+			${SelectSection}    ${python_tst}
+			${SelectSection}    ${python_wdg}
+			${SelectSection}    ${python_wsgi}
+		${EndIf}
+	${ElseIf} $0 == ${python_tst}
+	${OrIf}   $0 == ${python_wdg}
+	${OrIf}   $0 == ${python_wsgi}
+		${If} $0 is ${SF_SELECTED}
+			${SelectSection}    ${python_cp}
+		${Else}
+			${UnselectSection}  ${python_su}
 		${EndIf}
 	${EndIf}
 FunctionEnd
