@@ -143,4 +143,6 @@ if __name__==__package__:
         return lib
     PyLib = PyLib()
     load_package(globals(),True)
+    try:    _mimport("magic") # load ipython magic
+    except: pass
     del load_package
