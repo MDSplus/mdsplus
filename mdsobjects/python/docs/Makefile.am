@@ -15,11 +15,6 @@ DX_PAGES = .. \
            index.md
 
 DX_EXCLUDE_PAGES = \
-                   ../yacc.py \
-                   ../lex.py \
-                   ../tdiparsetab.py \
-                   ../tdilextab.py \
-                   ../tdicompile.py \
                    ../mdsExceptions.py \
                    ../setup.py \
                    ../__init__.py
