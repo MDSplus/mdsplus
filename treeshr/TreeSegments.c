@@ -1304,8 +1304,9 @@ static int (*_TdiExecute) () = NULL;
 static int trim_last_segment(void* dbid, struct descriptor_xd *dim, int filled_rows){
   INIT_TREESUCCESS;
     mdsdsc_t *tmp = dim->pointer;
-    while (tmp->class == CLASS_R && tmp->dtype != DTYPE_WINDOW && ((mds_function_t*)tmp)->ndesc>0)
+    while (tmp && tmp->class == CLASS_R && tmp->dtype != DTYPE_WINDOW && ((mds_function_t*)tmp)->ndesc>0)
       tmp = ((mds_function_t*)tmp)->arguments[0];
+    if (!tmp) goto fallback;
     mdsdsc_s_t *begin, *end;
     if (tmp->class == CLASS_R && tmp->dtype == DTYPE_WINDOW
      && (begin = (mdsdsc_s_t*)((mds_function_t*)tmp)->arguments[0])->class == CLASS_S
