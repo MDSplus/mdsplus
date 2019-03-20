@@ -91,7 +91,7 @@ setupkw = {
                   pname+'.widgets',
                   pname+'.wsgi',
                   ],
-      'package_data' : {'':['doc/*.*','widgets/*.glade','js/*.js','html/*.html','wsgi/*.tbl']},
+      'package_data' : {'':['doc/*.*','widgets/*.xml','js/*.js','html/*.html','wsgi/*.tbl']},
       'classifiers'  : [
       'Programming Language :: Python',
       'Intended Audience :: Science/Research',
