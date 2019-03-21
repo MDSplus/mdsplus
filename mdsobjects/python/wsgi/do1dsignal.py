@@ -23,17 +23,21 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import makeData,Data
+from MDSplus import DATA,DIM_OF,tdi
 import sys
 
 def do1dsignal(self):
     if len(self.path_parts) > 2:
-        self.openTree(self.path_parts[1],self.path_parts[2])
-    expr=self.args['expr'][-1]
+        tree = self.openTree(self.path_parts[1],self.path_parts[2])
+        _tdi = tree.tdiExecute
+    else:
+        tree = None
+        _tdi = tdi
+    expr = self.args['expr'][-1]
     try:
-        sig=Data.execute(expr)
-        y=makeData(sig.data())
-        x=makeData(sig.dim_of().data())
+        sig = _tdi(expr)
+        y   = DATA(sig).evaluate()
+        x   = DATA(DIM_OF(sig)).evaluate()
     except Exception:
         raise Exception("Error evaluating expression: '%s', error: %s" % (expr,sys.exc_info()))
     response_headers=list()
@@ -43,9 +47,9 @@ def do1dsignal(self):
     response_headers.append(('YDTYPE',y.__class__.__name__))
     response_headers.append(('XLENGTH',str(len(x))))
     response_headers.append(('YLENGTH',str(len(y))))
-    if self.tree is not None:
-        response_headers.append(('TREE',self.tree))
-        response_headers.append(('SHOT',self.shot))
+    if tree is not None:
+        response_headers.append(('TREE',tree.tree))
+        response_headers.append(('SHOT',tree.shot))
     output=str(x.data().data)+str(y.data().data)
     status = '200 OK'
     return (status, response_headers, output)

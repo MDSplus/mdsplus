@@ -23,15 +23,18 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import Data
+from MDSplus import tdi
 import sys
 
 def doImage(self):
     if len(self.path_parts) > 2:
-        self.openTree(self.path_parts[1],self.path_parts[2])
+        tree = self.openTree(self.path_parts[1],self.path_parts[2])
+        _tdi = tree.tdiExecute
+    else:
+        _tdi = tdi
     expr=self.args['expr'][-1]
     try:
-        d=Data.execute(expr)
+        d = _tdi(expr)
         try:
             im=d.getImage()
         except:
@@ -44,7 +47,7 @@ def doImage(self):
             response_headers=[('Content-type','image/jpeg'),('Content-Disposition','inline; filename="%s.jpeg"' % (expr,))]
         else:
             raise Exception("not an known image type")
-        output=str(d.getData().data().data)
+        output=str(d.data().data)
     except Exception:
         raise Exception("Error evaluating expression: '%s', error: %s" % (expr,sys.exc_info()))
     status = '200 OK'

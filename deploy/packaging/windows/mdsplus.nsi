@@ -734,7 +734,7 @@ SectionGroup /e "!APIs" apis
   Section "!MDSplus package" python_cp
 	SectionIn 1 2
 	SetOutPath "$INSTDIR\python\MDSplus"
-	File /x mdsplus_wsgi.py /x modpython.py /x setup.py mdsobjects/python/*.py
+	File /x modpython.py /x setup.py mdsobjects/python/*.py
 	File /workspace/releasebld/64/mdsobjects/python/_version.py
   SectionEnd ; python_cp
   Section "tests" python_tst
@@ -745,7 +745,6 @@ SectionGroup /e "!APIs" apis
   Section "WSGI" python_wsgi
 	SectionIn 2
 	SetOutPath "$INSTDIR\python\MDSplus"
-	File mdsobjects/python/mdsplus_wsgi.py
 	File /r mdsobjects/python/wsgi
   SectionEnd ; python_wsgi
   Section "glade widgets" python_wdg
