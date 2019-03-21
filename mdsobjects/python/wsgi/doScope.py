@@ -334,7 +334,7 @@ def doScope(self):
   else:
     ans=('400 NOT FOUND',[('Content-type','text/text'),],'')
     try:
-      f=open(os.path.dirname(__file__)+'/../html/scope.html',"r")
+      f=open(os.path.dirname(__file__)+'/html/scope.html',"r")
       contents=f.read()
       f.close()
       ans = ('200 OK',[('Content-type','text/html'),],contents)

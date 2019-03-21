@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,8 +23,19 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-def doGetnid(self):
-    tree = self.openTree(self.path_parts[1],self.path_parts[2])
-    output=str(tree.getNode(self.args['node'][-1]).nid)
-    return ('200 OK',[('Content-type','text/text')],output)
-
+from MDSplus import Tree,DATA,tcl
+import sys
+def doDir(self):
+    if len(self.path_parts) > 2:
+        tree = self.openTree(self.path_parts[1],self.path_parts[2])
+    else: return (("500 BAD REQUEST", [('Content-type','text/plain')], "Missing expt and/or shot"))
+    tree.setDefault(tree.getNode(":".join(self.path_parts[3:])))
+    if "full" in self.args and int(self.args["full"][-1]):
+         cmd = "dir/full"
+    else:cmd = "dir"
+    try: o,e = tree.tcl(cmd,1,1,0)
+    except Exception as e:
+        raise Exception("Error getting %s: error: %s" % (cmd,e))
+    output = str(o if e is None else e)
+    status = '200 OK'
+    return (status, [('Content-type','text/plain')], output)

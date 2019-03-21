@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,15 +23,17 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import makeData,Data
+from MDSplus import DATA,tdi
 import sys
-    
 def do1darray(self):
     if len(self.path_parts) > 2:
-        self.openTree(self.path_parts[1],self.path_parts[2])
-    expr=self.args['expr'][-1]
-    try:
-        a=makeData(Data.execute(expr).data())
+        tree = self.openTree(self.path_parts[1],self.path_parts[2])
+        _tdi = tree.tdiExecute
+    else:
+        tree = None
+        _tdi = tdi
+    expr = self.args['expr'][-1]
+    try: a = DATA(_tdi(expr)).evaluate()
     except Exception:
         raise Exception("Error evaluating expression: '%s', error: %s" % (expr,sys.exc_info()))
     response_headers=list()
@@ -39,9 +41,9 @@ def do1darray(self):
     response_headers.append(('Pragma','no-cache'))
     response_headers.append(('DTYPE',a.__class__.__name__))
     response_headers.append(('LENGTH',str(len(a))))
-    if self.tree is not None:
-        response_headers.append(('TREE',self.tree))
-        response_headers.append(('SHOT',self.shot))
+    if tree is not None:
+        response_headers.append(('TREE',tree.tree))
+        response_headers.append(('SHOT',tree.shot))
     output=str(a.data().data)
     status = '200 OK'
     return (status, response_headers, output)
