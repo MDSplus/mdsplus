@@ -375,21 +375,10 @@ class CRYOCON24C_SHOT(CRYOCON24C):
     def init(self):
         self.t1.record = time.time()
 
-        # tree_name = self.trend_tree.data()
-        # shot_number = self.trend_shot.data()
-        # trend_device_name = self.trend_device.data()
-
-        # trend_tree = MDSplus.Tree(tree_name, shot_number, 'NORMAL')
-        # trend = trend_tree.getNode(trend_device_name)
         trend_tree = self.trendTree()
         trend = trend_tree.getNode(self.trend_device.data())
         trend.rate.record = self.shot_rate.data()
-        
-        # trend_temp_node = trend.__getattr__('input_a_temperature')
-        # trend_temp = trend_tree.getNode(trend_temp_node)
-        # temps = trend_temp.data()
-        # times = trend_temp.dim_of().data()
-        # print(temps,times)
+ 
 
     def trendTree(self):
         tree_name         = self.trend_tree.data()
@@ -405,9 +394,6 @@ class CRYOCON24C_SHOT(CRYOCON24C):
         
         self.t2.record = time.time()
         delta_shot= self.t2.data() - self.t1.data()
-
-        # trend_tree = MDSplus.Tree('cryocon24c', 0, 'NORMAL')
-        # trend = trend_tree.getNode('cryo24_trend')
  
         trend_tree = self.trendTree()
         trend = trend_tree.getNode(self.trend_device.data())
@@ -415,6 +401,8 @@ class CRYOCON24C_SHOT(CRYOCON24C):
         # Resetting the original rate:
         trend.rate.record = trend.trend_rate.data()
     
+
+
         trend_temp_node = trend.__getattr__('input_a_temperature')
         trend_temp = trend_tree.getNode(trend_temp_node)
         temps = trend_temp.data()
