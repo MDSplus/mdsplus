@@ -65,10 +65,10 @@ def doPlot(self):
             first_pix = 0
             pix_inc = span
             val_inc = 0
-        return {"divisions":divs_out,
+        return {"divisions":int(divs_out),
                 "first_pixel":first_pix, "pixel_increment":pix_inc, 
                 "first_value":first_val, "value_increment":val_inc,
-                "resolution":res}
+                "resolution":int(res)}
           
     if len(self.path_parts) > 2:
         tree = self.openTree(self.path_parts[1],self.path_parts[2])
@@ -81,8 +81,9 @@ def doPlot(self):
         sig = _tdi(expr)
         y = DATA(sig).evaluate()
         x = DATA(DIM_OF(sig)).evaluate()
-    except Exception:
-        raise Exception("Error evaluating expression: '%s', error: %s" % (expr,sys.get_info()))
+        print(sig,y,x)
+    except Exception as e:
+        raise Exception("Error evaluating expression: '%s', error: %s" % (expr,e))
     response_headers=list()
     response_headers.append(('Cache-Control','no-store, no-cache, must-revalidate'))
     response_headers.append(('Pragma','no-cache'))
@@ -94,7 +95,6 @@ def doPlot(self):
     if tree is not None:
         response_headers.append(('TREE',tree.tree))
         response_headers.append(('SHOT',str(tree.shot)))
-        
     output="""<?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
 "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
