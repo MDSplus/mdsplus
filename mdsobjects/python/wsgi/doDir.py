@@ -24,18 +24,34 @@
 #
 
 from MDSplus import Tree,DATA,tcl
-import sys
+import os,sys
 def doDir(self):
     if len(self.path_parts) > 2:
         tree = self.openTree(self.path_parts[1],self.path_parts[2])
     else: return (("500 BAD REQUEST", [('Content-type','text/plain')], "Missing expt and/or shot"))
-    tree.setDefault(tree.getNode(":".join(self.path_parts[3:])))
-    if "full" in self.args and int(self.args["full"][-1]):
-         cmd = "dir/full"
-    else:cmd = "dir"
-    try: o,e = tree.tcl(cmd,1,1,0)
-    except Exception as e:
-        raise Exception("Error getting %s: error: %s" % (cmd,e))
-    output = str(o if e is None else e)
-    status = '200 OK'
-    return (status, [('Content-type','text/plain')], output)
+    req_uri= self.environ["REQUEST_URI"]
+    post   = self.environ["PATH_INFO"]
+    root   = req_uri[:(-len(post))]
+    pre1da = '/'.join([root,'1darray']+self.path_parts[1:3])
+    topstr = "\\%s::TOP"%(tree.tree,)
+    if len(self.path_parts)>3 and len(self.path_parts[3])>0:
+       node = tree.getNode(":".join(self.path_parts[3:]))
+       pretop = '/'.join([root,'dir']+self.path_parts[1:3])
+       body = [
+           '<a href="%s"> %s</a>'%(pretop,topstr),
+           '<a href="%s"> up</a>'%os.path.dirname(req_uri)
+       ]
+    else:
+       node = tree.top
+       body = [topstr]
+    predir = '%s/'%self.path_parts[-1] if req_uri[-1] != "/" else ""     
+    title  = node.fullpath
+    for subnode in node.descendants:
+        nn_hi = subnode.node_name
+        nn_lo = nn_hi.lower()
+        record = '<a href="%s?expr=DECOMPILE(`%s)"> RECORD</a>'%(pre1da,subnode.path) if subnode.length>0 else "RECORD"
+        link   = '<a href="%s%s"> %s</a>'%(predir,nn_lo,nn_hi) if subnode.number_of_descendants>0 else nn_hi
+        body.append('%s %s'%(record,link))
+    body = '<br/>'.join(body)
+    output = '<!DOCTYPE html>\n<title>%s</title>\n<html>\n<body>\n%s\n</body>\n</html>'%(title,body)
+    return ('200 OK', [('Content-type','text/html')], output)
