@@ -49,7 +49,7 @@ def do1dsignal(self):
     response_headers.append(('YLENGTH',str(len(y))))
     if tree is not None:
         response_headers.append(('TREE',tree.tree))
-        response_headers.append(('SHOT',tree.shot))
+        response_headers.append(('SHOT',str(tree.shot)))
     output=str(x.data().data)+str(y.data().data)
     status = '200 OK'
     return (status, response_headers, output)

@@ -23,7 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import Data,makeData
+from MDSplus import DATA,DIM_OF,tdi
 import sys
 
 def doPlot(self):
@@ -71,12 +71,16 @@ def doPlot(self):
                 "resolution":res}
           
     if len(self.path_parts) > 2:
-        self.openTree(self.path_parts[1],self.path_parts[2])
+        tree = self.openTree(self.path_parts[1],self.path_parts[2])
+        _tdi = tree.tdiExecute
+    else:
+        tree = None
+        _tdi = tdi
     expr=self.args['expr'][-1]
     try:
-        sig=Data.execute(expr)
-        y=makeData(sig.data()).data()
-        x=makeData(sig.dim_of().data()).data()
+        sig = _tdi(expr)
+        y = DATA(sig).evaluate()
+        x = DATA(DIM_OF(sig)).evaluate()
     except Exception:
         raise Exception("Error evaluating expression: '%s', error: %s" % (expr,sys.get_info()))
     response_headers=list()
@@ -87,9 +91,9 @@ def doPlot(self):
     response_headers.append(('XLENGTH',str(len(x))))
     response_headers.append(('YLENGTH',str(len(y))))
     response_headers.append(('Content-type','text/xml'))
-    if self.tree is not None:
-        response_headers.append(('TREE',self.tree))
-        response_headers.append(('SHOT',self.shot))
+    if tree is not None:
+        response_headers.append(('TREE',tree.tree))
+        response_headers.append(('SHOT',str(tree.shot)))
         
     output="""<?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 

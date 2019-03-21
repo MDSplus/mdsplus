@@ -43,7 +43,7 @@ def do1darray(self):
     response_headers.append(('LENGTH',str(len(a))))
     if tree is not None:
         response_headers.append(('TREE',tree.tree))
-        response_headers.append(('SHOT',tree.shot))
+        response_headers.append(('SHOT',str(tree.shot)))
     output=str(a.data().data)
     status = '200 OK'
     return (status, response_headers, output)
