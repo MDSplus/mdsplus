@@ -31,8 +31,8 @@ class CRYOCON24C(MDSplus.Device):
     parts = [
         {'path': ':COMMENT', 'type': 'text', 'options': ('no_write_shot')},
         {'path': ':SEG_LENGTH', 'type': 'numeric', 'value': 5, 'options': ('no_write_shot')},
-        {'path': ':TRIG_TIME', 'type': 'numeric', 'options': ('write_shot')},
-        {'path': ':TRIG_STR', 'type': 'text', 'options': ('nowrite_shot'), 'valueExpr': "EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"},
+        {'path': ':SHOT_TIMES', 'type': 'numeric', 'options': ('write_shot')},
+        {'path': ':TRIG_STR', 'type': 'text', 'options': ('nowrite_shot'), 'valueExpr': "EXT_FUNCTION(None,'ctime',head.SHOT_TIMES)"},
         {'path': ':INIT_ACTION', 'type': 'action', 'valueExpr': "Action(Dispatch('S','INIT',50,None),Method(None,'INIT',head))",'options': ('no_write_shot',)},
         {'path': ':STOP_ACTION', 'type': 'action', 'valueExpr': "Action(Dispatch('S','STORE',50,None),Method(None,'STOP',head))",'options': ('no_write_shot',)},
         {'path': ':RUNNING', 'type': 'numeric', 'options': ('no_write_model')},
@@ -222,7 +222,6 @@ class CRYOCON24C_TREND(CRYOCON24C):
         # set up arrays of data and nodes to use in the loop
         seg_length = int(self.seg_length.data())
         times = np.zeros(seg_length)
-        query_cmd = ''
 
         temps   = []
         resists = []
@@ -231,102 +230,98 @@ class CRYOCON24C_TREND(CRYOCON24C):
         t_chans = []
         p_chans = []
 
-        segment = 0
         start_time = time.time()
         previous_time = 0
-        self.trig_time.record = start_time
 
+        # trend_tree = MDSplus.Tree('cryocon24c', 0, 'NORMAL')
+        # shot = trend_tree.getNode('cryo24_shot')
+        # shotRate = shot.shot_rate.data()
+
+        query_cmd = []
         for i in range(ord('a'), ord('e')):
-            temps.append(np.zeros(seg_length))
-            resists.append(np.zeros(seg_length))
-            outpower.append(np.zeros(seg_length))
-            t_chans.append(self.__getattr__('input_%c_temperature' % (chr(i))))
-            r_chans.append(self.__getattr__('input_%c_resistence' % (chr(i))))
-            p_chans.append(self.__getattr__('input_%c_output_power' % (chr(i))))
-        
+            chan = self.__getattr__('input_%c' % (chr(i),))
+            if chan.on:
+                temps.append(np.zeros(seg_length))
+                resists.append(np.zeros(seg_length))
+                outpower.append(np.zeros(seg_length))
+                t_chans.append(self.__getattr__('input_%c_temperature' % (chr(i))))
+                r_chans.append(self.__getattr__('input_%c_resistence' % (chr(i))))
+                p_chans.append(self.__getattr__('input_%c_output_power' % (chr(i))))
+                query_cmd.append('INP %c:TEMP?;SENP?;OUTP?' % (chr(i),))
 
-        chan_index=0
         # Run until the STOP function is externally triggerd
         while self.running.on:
-            for i in range(ord('a'), ord('e')):
-                chan = self.__getattr__('input_%c' % (chr(i),))
-                if chan.on:
-                    for sample in range(seg_length):
-                        times[sample] = previous_time - start_time     
+            shotTimes = []
+            for sample in range(seg_length):
+                previous_time = time.time()
+                times[sample] = previous_time - start_time     
 
-                        # Cleaning cryocon buffer? The following seems to work with 
-                        # the answer from Cryocon is NAK. By asking ';' the answers
-                        # are back to normal:
-                        # ansQuery = self.queryCommand(s, ';')
+                # Cleaning cryocon buffer? The following seems to work with 
+                # the answer from Cryocon is NAK. By asking ';' the answers
+                # are back to normal:
+                # ansQuery = self.queryCommand(s, ';')
 
-                        # Calibrartion Curve storage
-                        # cal = self.__getattr__('input_%c_calibration' % (chr(i),))
-                        # self.sendCommand(s, 'CALCUR %d?' % (index))
-                        # while ';' not in strCalcur:
-                        #     ans = self.recvResponse(s)
-                        #     print('Answer: ', ans)
-                        #     caltable.append(ans)
-                        # ans = 1 #Disable for now
-                        # cal.record = ans
+                # Calibrartion Curve storage
+                # cal = self.__getattr__('input_%c_calibration' % (chr(i),))
+                # self.sendCommand(s, 'CALCUR %d?' % (index))
+                # while ';' not in strCalcur:
+                #     ans = self.recvResponse(s)
+                #     print('Answer: ', ans)
+                #     caltable.append(ans)
+                # ans = 1 #Disable for now
+                # cal.record = ans
 
+                for i in range(len(temps)):
+                    ansQuery = self.queryCommand(s, query_cmd[i])
+                    # print(ansQuery)
+                    answer = ansQuery.split(';')
 
-                        # Temperature reading
-                        self.__getattr__('input_%c_temperature' % (chr(i)))
-                        query_cmd = 'INP %c:TEMP?;UNIT?' % (chr(i),)
-                        ansQuery = self.queryCommand(s, query_cmd)
-                        answer = ansQuery.split(';')
+                    # Temperature reading
+                    try:
+                        # print("Parsing temperature /%s/" % answer[0])
+                        temps[i][sample] = float(answer[0])
+                        is_digit = True
+                    except ValueError:
+                        is_digit= False
+                        if self.debugging():
+                            print("Could not parse temperature /%s/" % answer[0])
+                    if not is_digit:
+                        temps[i][sample] = -9999.0
 
-                        try:
-                            print("Parsing temperature /%s/" % answer[0])
-                            temps[chan_index][sample] = float(answer[0])
-                        except Exception as e:
-                            print(e)
-                            if self.debugging():
-                                print("Could not parse temperature /%s/" % answer[0])
+                    # Resistence reading
+                    try:
+                        # print("Parsing resistance /%s/" % ansQuery)                            
+                        resists[i][sample] = float(answer[1])
+                        is_digit=True                                
+                    except ValueError:
+                        is_digit=False
+                        if self.debugging():
+                            print("Could not parse resist /%s/" % answer)
+                    if not is_digit:
+                        resists[i][sample] = -9999.0
+                        
+                    # Output Power reading: Queries the output power of the selected control loop.
+                    # This is a numeric field that is a percent of full scale.
+                    try:
+                        # print("Parsing output power /%s/" % ansQuery)
+                        if 'NAK' not in ansQuery:
+                            outpower[i][sample] = float(answer[2])
+                        else:
+                            outpower[i][sample] = float(-9999.0)
+                    except ValueError:
+                        if self.debugging():
+                            print("Could not parse output power /%s/" % answer)
+                                
+                try:
+                    dt = 1./float(self.rate.data())
+                except:
+                    dt = 1
+                time.sleep(dt)
 
-                        # Resistence reading
-                        self.__getattr__('input_%c_resistence' % (chr(i)))
-                        query_cmd = 'INP %c:SENP?' % (chr(i),)
-                        ansQuery = self.queryCommand(s, query_cmd)
-
-                        try:
-                            print("Parsing resistance /%s/" % ansQuery)
-                            resists[chan_index][sample] = float(ansQuery)
-                        except Exception as e:
-                            print(e)
-                            if self.debugging():
-                                print("Could not parse resist /%s/" % ansQuery)
-                            
-
-                        # Output Power reading: Queries the output power of the selected control loop.
-                        # This is a numeric field that is a percent of full scale.
-                        self.__getattr__('input_%c_output_power' % (chr(i)))
-                        query_cmd = 'LOOP %c:OUTP?' % (chr(i),)
-                        ansQuery = self.queryCommand(s, query_cmd)
-
-                        try:
-                            print("Parsing output power /%s/" % ansQuery)
-                            if 'NAK' not in ansQuery:
-                                outpower[chan_index][sample] = float(ansQuery)
-                            else:
-                                outpower[chan_index][sample] = float(-9999.0)
-                        except Exception as e:
-                            print(e)
-                            if self.debugging():
-                                print("Could not parse output power /%s/" % ansQuery)
-                                        
-                        try:
-                            dt = 1./float(self.rate.data())
-                        except:
-                            dt = 1
-                        time.sleep(dt)
-
-                    print(temps)
-                    print(resists)
-                    print(outpower)
-
-                chan_index+=1
-
+                if self.rate.data() != self.trend_rate.data():
+                    shotTimes.append(float(times[sample]))
+                    print('Shot Sample-Time ', times[sample])
+                
             if sample != seg_length-1:
                 for i in range(len(temps)):
                     times = times[0:sample]
@@ -340,7 +335,14 @@ class CRYOCON24C_TREND(CRYOCON24C):
                 p_chans[i].makeSegment(times[0], times[-1], times, outpower[i])
                 
                 # MDSplus.Event.setevent(event_name)
-            segment +=1
+            # if len(shotTimes) != 0:
+            #     tree = MDSplus.Tree('cryocon24c', 0, 'NORMAL')
+            #     shot_node = tree.getNode('cryo24_shot')
+            #     shot_temp_node = shot_node.__getattr__('input_a_temperature')
+            #     shot_temp = shot_node.getNode(shot_temp_node)
+            #     shotsig = Signal(makeArray(shotTimes), None, makeArray(shotTimes))
+            #     shot_temp.record = shotsig
+
         s.close()
     RUN=run
 
@@ -357,24 +359,55 @@ class CRYOCON24C_TREND(CRYOCON24C):
 class CRYOCON24C_SHOT(CRYOCON24C):
     parts = copy.copy(CRYOCON24C.parts)
     # SHOT_RATE in Hz. Choosen long trend rate.     
-    parts.append({'path': ':T1', 'type': 'text', 'value': '','options': ('no_write_shot')})
-    parts.append({'path': ':T2', 'type': 'numeric', 'value': 1,'options': ('no_write_shot')})
+    parts.append({'path': ':T1', 'type': 'numeric', 'value': 0.,'options': ('no_write_shot')})
+    parts.append({'path': ':T2', 'type': 'numeric', 'value': 0,'options': ('no_write_shot')})
     parts.append({'path': ':SHOT_RATE', 'type': 'numeric', 'value': 100,'options': ('no_write_shot')})
     parts.append({'path': ':SHOT_NUM', 'type': 'numeric', 'value': 0,'options': ('no_write_shot')})
 
     def init(self):
+        self.t1.record = time.time()
         trend_tree = MDSplus.Tree('cryocon24c', 0, 'NORMAL')
         trend = trend_tree.getNode('cryo24_trend')
         trend.rate.record = self.shot_rate.data()
         
     def stop(self):
-        trend_tree = MDSplus.Tree('cryocon24c', 0, 'NORMAL')
+        times   = []
+        temps   = []
+        resists = []
+        outpower= []
+        
         self.t2.record = time.time()
+        delta_shot= self.t2.data() - self.t1.data()
+
+        trend_tree = MDSplus.Tree('cryocon24c', 0, 'NORMAL')
         trend = trend_tree.getNode('cryo24_trend')
         trend.rate.record = trend.trend_rate.data()
 
 
+        trend_temp_node = trend.__getattr__('input_a_temperature')
+        trend_temp = trend_tree.getNode(trend_temp_node)
+        temps = trend_temp.data()
+        times = trend_temp.dim_of().data()
 
+        trend_resis_node = trend.__getattr__('input_a_resistence')
+        trend_resis = trend_tree.getNode(trend_resis_node)
+        resists = trend_resis.data()
+
+        trend_outpower_node = trend.__getattr__('input_a_output_power')
+        trend_outpower = trend_tree.getNode(trend_outpower_node)
+        outpower = trend_outpower.data() 
+
+        print(temps)
+        print(times)
+        print(resists)
+        print(outpower)
+
+        print('Writing data into shot node')
+        # for i in np.arange(0, delta_shot, 1./float(self.shot_rate.data())):
+
+        #     self.temperature.record = trend_temp.data()    
+        #     self.resistence.record = trend_resis.data() 
+        #     self.output_power.record = trend_outpower.data()
 
 
 def main():
@@ -396,22 +429,22 @@ def main():
     tree_model.close()
 
     #Executing the experiment:
-    print('Running INIT from cryocon24c using MDS-TCL')
+    print('Running INIT from cryocon24c using Python calls')
     tree = MDSplus.Tree('cryocon24c', -1)
     tree.setCurrent('cryocon24c', tree.getCurrent('cryocon24c') + 1)
     tree.createPulse(0)
     tree = MDSplus.Tree('cryocon24c', 0)
     dev_trend = tree.getNode('cryo24_trend')
     dev_trend.init()
-
-    time.sleep(60)
+    time.sleep(20)
 
     dev_shot = tree.getNode('cryo24_shot')
     dev_shot.init()
-    time.sleep(60)
+
+    time.sleep(20)
     dev_shot.stop()
 
-    time.sleep(60)
+    time.sleep(20)
     dev_trend.stop()
     return 1
 
