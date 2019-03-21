@@ -987,7 +987,7 @@ Section uninstall
 	Push $R0
 	Push $R1
 	Push $R2
-	IfFileExists "$INSTDIR\python\MDSplus" 0 skip_python_remove
+	IfFileExists "$INSTDIR\python\MDSplus\setup.py" 0 skip_python_remove
 	SetOutPath "$INSTDIR\python\MDSplus"
 	nsExec::ExecToLog /OEM /TIMEOUT=10000 'python setup.py remove'
 	Pop $R0
