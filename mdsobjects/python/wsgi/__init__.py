@@ -36,18 +36,16 @@ Where mdsplus.wsgi contains something like:
 
 from MDSplus.mdsplus_wsgi import application
 
-The application class in this module will add the directory where the mdsplus.wsgi file resides to the python
-path and then try to import a module named mdsplus_wsgi_config. If you provide a file called
-mdsplus_wsgi_config.py in the same directory as the mdsplus.wsgi then you can perform some environment
+The mdsplus.wsgi file should configure the environment
 initialization such as defining tree paths, UDP_EVENT settings etc.
 
-As sample mdsplus_wsgi_config.py file might contain:
+e.g. :
 
-    import os
-    os.environ['MDS_PATH']='/usr/local/mdsplus/tdi'
-    os.environ['mytree_path']='/mytree-directory-path'
-    os.environ['mytree2_path']='/mytree2-directory-path'
-    os.environ['UDP_EVENTS']='YES'
+    from MDSplus import setenv
+    setenv('MDS_PATH',     '/usr/local/mdsplus/tdi')
+    setenv('mytree_path',  '/mytree-directory-path')
+    setenv('mytree2_path', '/mytree2-directory-path')
+    setenv('UDP_EVENTS',   'YES')
 
 
 Once the mdsplus.wsgi is configured the web server will serve requests with the following format:
@@ -161,21 +159,24 @@ for m in os.listdir(os.path.dirname(__file__)):
 
 try:   glob = globals().__dict__
 except:glob = globals()
+
 class application:
     def __init__(self, environ, start_response):
         self.environ = environ
         self.start = start_response
         self.args=parse_qs(self.environ['QUERY_STRING'],keep_blank_values=1)
         self.path_parts=self.environ['PATH_INFO'].split('/')[1:]
-        doername='do'+self.path_parts[0].capitalize()
-        try:   self.doer = glob[doername].__getattribute__(doername)
-        except:self.doer = None
+        if len(self.path_parts)>0:
+            doername='do'+self.path_parts[0].capitalize()
+            try:   self.doer = glob[doername].__getattribute__(doername)
+            except:self.doer = None
+        else:      self.doer = None
 
     def __iter__(self):
         try:
             if self.doer is None:
                 self.start('500 BAD_REQUEST',[('Content-type','text/plain')])
-                output="Unsupported request type: "+self.path_parts[0]
+                output="Unsupported request: '%s'"%("/".join(self.path_parts),)
             else:
                 status, response_headers,output = self.doer(self)
                 self.start(status,response_headers)
@@ -193,4 +194,3 @@ class application:
         try: return Tree(tree,shot,"ReadOnly")
         except Exception:
             raise Exception("Error opening tree named %s for shot %d<br /><br />Error: %s" % (tree,shot,sys.exc_info()))
-
