@@ -61,6 +61,7 @@
 ./usr/local/mdsplus/mdsobjects/python/widgets/mdsplusxdbox.py
 ./usr/local/mdsplus/mdsobjects/python/widgets/mdsplusxdboxbutton.py
 ./usr/local/mdsplus/mdsobjects/python/wsgi/__init__.py
+./usr/local/mdsplus/mdsobjects/python/wsgi/conf/25-mdsplus.conf
 ./usr/local/mdsplus/mdsobjects/python/wsgi/conf/mdsplus.conf
 ./usr/local/mdsplus/mdsobjects/python/wsgi/conf/mdsplus.wsgi
 ./usr/local/mdsplus/mdsobjects/python/wsgi/colors1.tbl
