@@ -1118,7 +1118,7 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
     def copy(self,mode='NORMAL'):
         """returns the node with a local private instance of the tree opend in specified mode
         @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
-        @type mode: str         
+        @type mode: str
         @rtype: TreeNode
         """
         return self.__class__(self.nid,self.tree.copy(mode))
@@ -1148,9 +1148,10 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         @return: Part name of this node
         @rtype: str
         """
-        if self.head is self: return ""
+        if self.head is self or not isinstance(self.head,Device): return ""
         if self._original_part_name is None:
-            self._original_part_name = self.head.__class__.parts[self.nid-self.head.nid-1]['path']
+            try:   self._original_part_name = self.head.__class__.parts[self.nid-self.head.nid-1]['path']
+            except:self._original_part_name = ""
         return self._original_part_name
     PART_NAME=ORIGINAL_PART_NAME
 
