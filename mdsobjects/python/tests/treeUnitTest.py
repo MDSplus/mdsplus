@@ -82,6 +82,10 @@ class Tests(_UnitTest.TreeTests):
             Tree.setCurrent('pytree',self.shot+2)
             pytree2=Tree('pytree',0)
             self.assertEqual(str(pytree2),'Tree("PYTREE",%d,"Normal")'%(self.shot+2,))
+            self.assertEqual(pytree2.incrementCurrent(1000),self.shot+1002)
+            self.assertEqual(pytree2.getCurrent(),self.shot+1002)
+            pytree2.setCurrent()
+            self.assertEqual(Tree.getCurrent('pytree'),self.shot+2)
         else:
             pytree2=Tree('pytree',self.shot+2)
         self.assertEqual(pytree2.number_opened,1)
