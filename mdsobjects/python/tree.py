@@ -874,6 +874,16 @@ class Tree(object):
             raise _exc.MDSplusException(status)
         return _scr.Uint64(dt.value).date
 
+    @staticmethod
+    def increment(treename):
+        """Increment the current shot number for the specified treename
+        @param treename: Name of tree
+        @type treename: str
+        @rtype None
+        """
+        shot = _TreeShr.TreeGetCurrentShotId(_ver.tobytes(treename))
+        Tree.setCurrent(treename, shot + 1)
+
     def isModified(self):
         """Check to see if tree is open for edit and has been modified
         @return: True if tree structure has been modified.
