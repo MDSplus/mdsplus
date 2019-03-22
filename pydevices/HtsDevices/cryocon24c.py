@@ -97,7 +97,7 @@ class CRYOCON24C_TREND(CRYOCON24C):
     parts.append({'path': ':TREND_RATE', 'type': 'numeric', 'value': 1,'options': ('no_write_shot')})
     parts.append({'path': ':SHOT_STIME', 'type': 'numeric', 'value': 0,'options': ('no_write_shot')})
     parts.append({'path': ':SHOT_ETIME', 'type': 'numeric', 'value': 0,'options': ('no_write_shot')})
-
+    parts.append({'path': ':T1', 'type': 'numeric', 'value': 0,'options': ('no_write_shot')})
 
     def init(self):
         '''start the stream
@@ -252,9 +252,9 @@ class CRYOCON24C_TREND(CRYOCON24C):
                 query_cmd.append('INP %c:TEMP?;SENP?;OUTP?' % (chr(i),))
         
         shotTimes = []
+        countStartShot = 0        
         # Run until the STOP function is externally triggerd
         while self.running.on:
-            
             for sample in range(seg_length):
                 previous_time = time.time()
                 times[sample] = previous_time - start_time
@@ -328,8 +328,12 @@ class CRYOCON24C_TREND(CRYOCON24C):
                     dt = 1
                 time.sleep(dt)
                 
-                if self.rate.data() != self.trend_rate.data():
-                    shotTimes.append(MDSplus.Int64(time.time()*1000.))
+                if self.rate.data() != self.trend_rate.data() and countStartShot == 0:
+                    self.t1.record = MDSplus.Int64(time.time()*1000.)
+                    # shotTimes.append(MDSplus.Int64(time.time()*1000.))
+                    print('Start of Shot Sample-Time at SHOT rate ', times[sample], MDSplus.Int64(time.time()*1000.))
+                    countStartShot +=1
+                elif self.rate.data() != self.trend_rate.data():
                     print('Shot Sample-Time at SHOT rate ', times[sample], MDSplus.Int64(time.time()*1000.))
                 else:
                     print('Shot Sample-Time at trend rate ', times[sample], MDSplus.Int64(time.time()*1000.))
@@ -365,7 +369,7 @@ class CRYOCON24C_TREND(CRYOCON24C):
 class CRYOCON24C_SHOT(CRYOCON24C):
     parts = copy.copy(CRYOCON24C.parts)
     # SHOT_RATE in Hz. Choosen long trend rate.     
-    parts.append({'path': ':T1', 'type': 'numeric', 'value': 0.,'options': ('no_write_shot')})
+    # parts.append({'path': ':T1', 'type': 'numeric', 'value': 0,'options': ('no_write_shot')})
     parts.append({'path': ':T2', 'type': 'numeric', 'value': 0,'options': ('no_write_shot')})
     parts.append({'path': ':SHOT_RATE', 'type': 'numeric', 'value': 2,'options': ('no_write_shot')})
     parts.append({'path': ':TREND_TREE', 'type': 'text', 'options': ('no_write_shot')})
@@ -373,8 +377,6 @@ class CRYOCON24C_SHOT(CRYOCON24C):
     parts.append({'path': ':TREND_SHOT', 'type': 'numeric', 'value': 0,'options': ('no_write_shot')})
 
     def init(self):
-        self.t1.record = time.time()
-
         trend_tree = self.trendTree()
         trend = trend_tree.getNode(self.trend_device.data())
         trend.rate.record = self.shot_rate.data()
@@ -387,21 +389,39 @@ class CRYOCON24C_SHOT(CRYOCON24C):
         return trend_tree
 
     def stop(self):
-        times   = []
+        timeStamps   = []
         temps   = []
         resists = []
         outpower= []
         
-        self.t2.record = time.time()
-        delta_shot= self.t2.data() - self.t1.data()
- 
+        self.t2.record = MDSplus.Int64(time.time()*1000.)
         trend_tree = self.trendTree()
         trend = trend_tree.getNode(self.trend_device.data())
 
         # Resetting the original rate:
         trend.rate.record = trend.trend_rate.data()
-    
 
+        # Getting T1 from TREND:
+        t1 = trend.t1.data()
+        deltaT1T2 = abs(self.t2.data() - t1)
+        print('Delta Times ' + str(deltaT1T2))
+
+        trend_temp_node = trend.__getattr__('input_a_temperature')
+        trend_temp = trend_tree.getNode(trend_temp_node)
+
+        # print(trend_temp.getSegment(0).data())
+        # print(trend_temp.getSegment(0).dim_of().data())
+
+        temps      = trend_temp.getSegment(0).data()
+        timeStamps = trend_temp.getSegment(0).dim_of().data()
+
+        # get the SHOT chunk of data from T1 to T2:
+        print('SHOT chunk of data from T1 to T2')
+        trend_temp.getSegmentList(t1, self.t2.data())
+        print(trend_temp.getSegmentList(t1, self.t2.data()))
+
+        #Set Time Context
+        trend_tree.setTimeContext(t1, self.t2.data())
 
         trend_temp_node = trend.__getattr__('input_a_temperature')
         trend_temp = trend_tree.getNode(trend_temp_node)
@@ -460,12 +480,15 @@ def main():
     #Executing the experiment:
     print('Running INIT from cryocon24c using Python calls')
     tree = MDSplus.Tree('cryocon24c', -1)
+    tree.setCurrent('cryocon24c', 1)
     tree.setCurrent('cryocon24c', tree.getCurrent('cryocon24c') + 1)
     tree.createPulse(0)
     tree = MDSplus.Tree('cryocon24c', 0)
+    
     dev_trend = tree.getNode('cryo24_trend')
     dev_trend.init()
     time.sleep(10)
+
 
     dev_shot = tree.getNode('cryo24_shot')
     dev_shot.init()
