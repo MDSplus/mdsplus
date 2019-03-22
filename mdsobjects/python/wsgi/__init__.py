@@ -166,7 +166,7 @@ class application:
         return '<!DOCTYPE html>\n<title>%s</title>\n<html>\n<body>\n%s\n</body>\n</html>'%(title,body)
     @staticmethod
     def body_linebreak(input):
-        return input.replace('\n','<br>\n')
+        return input.replace('\n','<br/>\n')
     @staticmethod
     def table_header(entries):
         return '<tr><th align="left">%s</th></tr>'%('</th><th align="left">'.join(map(str,entries)),)
@@ -214,9 +214,8 @@ class application:
             yield output
         except Exception:
             import traceback
-            self.start('500 BAD REQUEST',[('Content-Type','text/plain')])
-            yield '<?xml version="1.0" encoding="ISO-8859-1" ?>'+"\n<exception>%s</exception>" % (str(traceback.format_exc()),)
-
+            self.start('500 BAD REQUEST',[('Content-Type','text/html')])
+            yield '<?xml version="1.0" encoding="ISO-8859-1" ?>'+"\n<exception>%s</exception>" % (self.body_linebreak(traceback.format_exc()),)
 
     def openTree(self,tree,shot):
         try: shot=int(shot)
