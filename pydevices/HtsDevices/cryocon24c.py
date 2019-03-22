@@ -389,11 +389,7 @@ class CRYOCON24C_SHOT(CRYOCON24C):
         return trend_tree
 
     def stop(self):
-        timeStamps   = []
-        temps   = []
-        resists = []
-        outpower= []
-        
+
         self.t2.record = MDSplus.Int64(time.time()*1000.)
         trend_tree = self.trendTree()
         trend = trend_tree.getNode(self.trend_device.data())
@@ -403,50 +399,29 @@ class CRYOCON24C_SHOT(CRYOCON24C):
 
         # Getting T1 from TREND:
         t1 = trend.t1.data()
-        deltaT1T2 = abs(self.t2.data() - t1)
-        print('Delta Times ' + str(deltaT1T2))
-
-        trend_temp_node = trend.__getattr__('input_a_temperature')
-        trend_temp = trend_tree.getNode(trend_temp_node)
-
-        # print(trend_temp.getSegment(0).data())
-        # print(trend_temp.getSegment(0).dim_of().data())
-
-        temps      = trend_temp.getSegment(0).data()
-        timeStamps = trend_temp.getSegment(0).dim_of().data()
-
-        # get the SHOT chunk of data from T1 to T2:
-        print('SHOT chunk of data from T1 to T2')
-        trend_temp.getSegmentList(t1, self.t2.data())
-        print(trend_temp.getSegmentList(t1, self.t2.data()))
 
         #Set Time Context
         trend_tree.setTimeContext(t1, self.t2.data())
-
-        trend_temp_node = trend.__getattr__('input_a_temperature')
-        trend_temp = trend_tree.getNode(trend_temp_node)
-        temps = trend_temp.data()
-        times = trend_temp.dim_of().data()
-
-        trend_resis_node = trend.__getattr__('input_a_resistence')
-        trend_resis = trend_tree.getNode(trend_resis_node)
-        resists = trend_resis.data()
-
-        trend_outpower_node = trend.__getattr__('input_a_output_power')
-        trend_outpower = trend_tree.getNode(trend_outpower_node)
-        outpower = trend_outpower.data() 
-
-        print(temps)
-        print(times)
-        print(resists)
-        print(outpower)
-
+        
         print('Writing data into shot node')
-        # for i in np.arange(0, delta_shot, 1./float(self.shot_rate.data())):
+        for i in range(ord('a'), ord('e')):
+            trend_temp_node     = trend.__getattr__('input_%c_temperature'% (chr(i)))
+            trend_resis_node    = trend.__getattr__('input_%c_resistence'%  (chr(i)))
+            trend_outpower_node = trend.__getattr__('input_%c_output_power'% (chr(i)))
+            
+            trend_temp     = trend_tree.getNode(trend_temp_node)
+            trend_resis    = trend_tree.getNode(trend_resis_node)
+            trend_outpower = trend_tree.getNode(trend_outpower_node)
+            
+            times    = trend_temp.dim_of().data()
+            temps    = trend_temp.data()
+            resists  = trend_resis.data()
+            outpower = trend_outpower.data()
 
-        #     self.temperature.record = trend_temp.data()    
-        #     self.resistence.record = trend_resis.data() 
-        #     self.output_power.record = trend_outpower.data()
+            for j in range(len(times)):
+                (self.__getattr__('input_%c_temperature' % (chr(i)))).putRow(1000, temps, times[j])
+                (self.__getattr__('input_%c_resistence' % (chr(i)))).putRow(1000, resists, times[j])
+                (self.__getattr__('input_%c_output_power' % (chr(i)))).putRow(1000, outpower, times[j])
 
 
 def main():
