@@ -31,8 +31,6 @@ class CRYOCON24C(MDSplus.Device):
     parts = [
         {'path': ':COMMENT', 'type': 'text', 'options': ('no_write_shot')},
         {'path': ':SEG_LENGTH', 'type': 'numeric', 'value': 5, 'options': ('no_write_shot')},
-        {'path': ':SHOT_TIMES', 'type': 'numeric', 'options': ('write_shot')},
-        {'path': ':TRIG_STR', 'type': 'text', 'options': ('nowrite_shot'), 'valueExpr': "EXT_FUNCTION(None,'ctime',head.SHOT_TIMES)"},
         {'path': ':INIT_ACTION', 'type': 'action', 'valueExpr': "Action(Dispatch('S','INIT',50,None),Method(None,'INIT',head))",'options': ('no_write_shot',)},
         {'path': ':STOP_ACTION', 'type': 'action', 'valueExpr': "Action(Dispatch('S','STORE',50,None),Method(None,'STOP',head))",'options': ('no_write_shot',)},
         {'path': ':RUNNING', 'type': 'numeric', 'options': ('no_write_model')},
@@ -95,8 +93,6 @@ class CRYOCON24C_TREND(CRYOCON24C):
     parts.append({'path': ':STATUS_OUT', 'type': 'any','options': ('write_shot', 'write_once', 'no_write_model')})
     parts.append({'path': ':RATE', 'type': 'numeric', 'value': 1,'options': ('no_write_shot')})        
     parts.append({'path': ':TREND_RATE', 'type': 'numeric', 'value': 1,'options': ('no_write_shot')})
-    parts.append({'path': ':SHOT_STIME', 'type': 'numeric', 'value': 0,'options': ('no_write_shot')})
-    parts.append({'path': ':SHOT_ETIME', 'type': 'numeric', 'value': 0,'options': ('no_write_shot')})
     parts.append({'path': ':T1', 'type': 'numeric', 'value': 0,'options': ('no_write_shot')})
 
     def init(self):
@@ -215,16 +211,15 @@ class CRYOCON24C_TREND(CRYOCON24C):
             dgain_chan.record = MDSplus.Float32(dgain)
 
         # For the storage of calibration curves
-        index    = 1
-        caltable = []
-        strCalcur= ''
-
-        answer    = []
+        # index    = 1
+        # caltable = []
+        # strCalcur= ''
 
         # set up arrays of data and nodes to use in the loop
         seg_length = int(self.seg_length.data())
         times = np.zeros(seg_length)
 
+        answer  = []
         temps   = []
         resists = []
         outpower= []
@@ -251,7 +246,6 @@ class CRYOCON24C_TREND(CRYOCON24C):
                 p_chans.append(self.__getattr__('input_%c_output_power' % (chr(i))))
                 query_cmd.append('INP %c:TEMP?;SENP?;OUTP?' % (chr(i),))
         
-        shotTimes = []
         countStartShot = 0        
         # Run until the STOP function is externally triggerd
         while self.running.on:
@@ -330,28 +324,12 @@ class CRYOCON24C_TREND(CRYOCON24C):
                 
                 if self.rate.data() != self.trend_rate.data() and countStartShot == 0:
                     self.t1.record = MDSplus.Int64(time.time()*1000.)
-                    # shotTimes.append(MDSplus.Int64(time.time()*1000.))
                     print('Start of Shot Sample-Time at SHOT rate ', times[sample], MDSplus.Int64(time.time()*1000.))
                     countStartShot +=1
                 elif self.rate.data() != self.trend_rate.data():
                     print('Shot Sample-Time at SHOT rate ', times[sample], MDSplus.Int64(time.time()*1000.))
                 else:
                     print('Shot Sample-Time at trend rate ', times[sample], MDSplus.Int64(time.time()*1000.))
-
-
-            # if sample != seg_length-1:
-            #     for i in range(len(temps)):
-            #         times = times[0:sample]
-            #         temps[i] = temps[i][0:sample]
-            #         resists[i] = resists[i][0:sample]
-            #         outpower[i] = outpower[i][0:sample]
-            
-            # for i in range(len(temps)):            
-            #     t_chans[i].makeSegment(times[0], times[-1], times, temps[i])
-            #     r_chans[i].makeSegment(times[0], times[-1], times, resists[i])
-            #     p_chans[i].makeSegment(times[0], times[-1], times, outpower[i])
-                
-                # MDSplus.Event.setevent(event_name)
 
         s.close()
     RUN=run
