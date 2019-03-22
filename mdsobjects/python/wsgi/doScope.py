@@ -23,10 +23,11 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-import os
-import sys
+import os,sys
 from doEvent import noCache
 from MDSplus import Data
+
+example = '/scope?user=user&dir=/home/user/scopes&tree=expt&shot=123'
 
 def getValue(lines, key):
     i = 0;

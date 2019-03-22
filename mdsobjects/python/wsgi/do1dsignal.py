@@ -24,7 +24,9 @@
 #
 
 from MDSplus import DATA,DIM_OF,tdi
-import sys
+import os,sys
+
+example = '/1dsignal?expr=make_signal(sin((0:1:.01)*$2pi),*,0:1:.01)'
 
 def do1dsignal(self):
     if len(self.path_parts) > 2:
@@ -33,13 +35,10 @@ def do1dsignal(self):
     else:
         tree = None
         _tdi = tdi
-    expr = self.args['expr'][-1]
-    try:
-        sig = _tdi(expr)
-        y   = DATA(sig).evaluate()
-        x   = DATA(DIM_OF(sig)).evaluate()
-    except Exception:
-        raise Exception("Error evaluating expression: '%s', error: %s" % (expr,sys.exc_info()))
+    expr= self.args['expr'][-1]
+    sig = _tdi(expr)
+    y   = DATA(sig).evaluate()
+    x   = DATA(DIM_OF(sig)).evaluate()
     response_headers=list()
     response_headers.append(('Cache-Control','no-store, no-cache, must-revalidate'))
     response_headers.append(('Pragma','no-cache'))

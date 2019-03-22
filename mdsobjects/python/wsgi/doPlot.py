@@ -24,23 +24,17 @@
 #
 
 from MDSplus import DATA,DIM_OF,tdi
-import sys
+import os,sys
 
-def doPlot(self):
+example = '/plot?expr=make_signal(sin((0:1:.01)*$2pi),*,0:1:.01)'
 
-    viewbox=[0,0,10000,10000];
-    def scale(xmin,ymin,xmax,ymax,xmin_s,ymin_s,xmax_s,ymax_s,x,y):
-        px=(x-xmin)*(xmax_s-xmin_s)/(xmax-xmin)
-        py=(y-ymin)*(ymax_s-ymin_s)/(ymax-ymin)
-        return " %d %d" % (int(round(px)),int(round(py)))
-
-    def gridScaling(min_in,max_in,divisions,span):
+def gridScaling(min_in,max_in,divisions,span):
         from math import log10,pow,fabs,ceil,floor,modf
         resdivlog = log10(fabs(max_in-min_in))
         if resdivlog < 0:
-            res = pow(10,ceil(resdivlog) - 4)
+            res = int(pow(10,ceil(resdivlog) - 4))
         else:
-            res = pow(10,floor(resdivlog) - 4)
+            res = int(pow(10,floor(resdivlog) - 4))
         divlog = log10(fabs(max_in - min_in) / divisions)
         fractpart,wholepart = modf(divlog)
         intinc = pow(10,fabs(fractpart))
@@ -54,8 +48,8 @@ def doPlot(self):
             val_inc = pow(10,-log10(intinc) + wholepart)
         else:
             val_inc = pow(10,log10(intinc) + wholepart)
-        grid=ceil(min_in/val_inc) * val_inc
-        divs_out = floor((max_in - grid + val_inc) / val_inc)
+        grid = ceil(min_in/val_inc) * val_inc
+        divs_out = int(floor((max_in - grid + val_inc) / val_inc))
         if max_in > min_in:
             first_pix = span * ((grid - min_in) / (max_in - min_in))
             pix_inc = span * val_inc / (max_in - min_in);
@@ -65,11 +59,13 @@ def doPlot(self):
             first_pix = 0
             pix_inc = span
             val_inc = 0
-        return {"divisions":int(divs_out),
+        return {"divisions":  divs_out,
                 "first_pixel":first_pix, "pixel_increment":pix_inc, 
                 "first_value":first_val, "value_increment":val_inc,
-                "resolution":int(res)}
-          
+                "resolution": res}       
+
+def doPlot(self):
+    viewbox=[0,0,10000,10000];
     if len(self.path_parts) > 2:
         tree = self.openTree(self.path_parts[1],self.path_parts[2])
         _tdi = tree.tdiExecute
@@ -95,54 +91,36 @@ def doPlot(self):
     if tree is not None:
         response_headers.append(('TREE',tree.tree))
         response_headers.append(('SHOT',str(tree.shot)))
-    output="""<?xml version="1.0" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
-"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg viewBox="%d %d %d %d"
-     xmlns="http://www.w3.org/2000/svg" version="1.1">
-""" % (viewbox[0],viewbox[1],viewbox[2],viewbox[3])
-    output += "<title>Plot of %s </title>" % (expr,)
-    output += """
-  <path fill="none" stroke="black" stroke-width="30" d="M """
-    xmin=float(min(x))
-    xmax=float(max(x))
-    ymin=float(min(y))
-    ymax=float(max(y))
-    xmin_s=float(viewbox[0])
-    ymin_s=float(viewbox[1])
-    xmax_s=float(viewbox[2])
-    ymax_s=float(viewbox[3])
-    for i in range(len(x)):
-        output += scale(xmin-(xmax-xmin)*.1,
-                        ymin-(ymax-ymin)*.1,
-                        xmax+(xmax-xmin)*.1,
-                        ymax+(ymax-ymin)*.1,xmin_s,ymin_s,xmax_s,ymax_s,x[i],y[i])
-    output +=""" " />
-"""
-    scaling=gridScaling(xmin,xmax,5,viewbox[2]-viewbox[0])
+    output  = '<?xml version="1.0" standalone="no"?>'
+    output += '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">'
+    output += '<svg viewBox="%d %d %d %d" xmlns="http://www.w3.org/2000/svg" version="1.1">' % (viewbox[0],viewbox[1],viewbox[2],viewbox[3])
+    output += '<title>Plot of %s </title>' % (expr,)
+    output += '<path fill="none" stroke="black" stroke-width="30" d="M '
+    xmin,  xmax   = float(min(x)),float(max(x))
+    ymin,  ymax   = float(min(y)),float(max(y))
+    xmin_s,ymin_s = float(viewbox[0]),float(viewbox[1])
+    xmax_s,ymax_s = float(viewbox[2]),float(viewbox[3])
+    # scale
+    x =  (x-xmin)*(xmax_s-xmin_s)/(xmax-xmin)
+    y =  viewbox[3]-(y-ymin)*(ymax_s-ymin_s)/(ymax-ymin)
+    for i in range(len(x)): output += " %d %d" % (int(x[i]),int(y[i]))
+    output += ' " />\n'
+    scaling = gridScaling(xmin,xmax,5,viewbox[2]-viewbox[0])
     for i in range(scaling['divisions']):
-        output +="""<text text-anchor="middle" x="%d" y="%d" font-size="300" >%g</text>
-<path fill="none" stroke="black" stroke-width="5" stroke-dasharray="200,100,50,50,50,100" d="M%d %d %d %d" />
-""" % (scaling["first_pixel"]+i*scaling["pixel_increment"],
-       viewbox[2]-200,
-       round(scaling['first_value']+i*scaling["value_increment"],scaling["resolution"]),
-       scaling["first_pixel"]+i*scaling["pixel_increment"],
-       viewbox[2],
-       scaling["first_pixel"]+i*scaling["pixel_increment"],
-       viewbox[0])
-        
-    scaling=gridScaling(ymin,ymax,5,viewbox[3]-viewbox[1])
+        output += '<text text-anchor="middle" x="%d" y="%d" font-size="300" >%g</text>' % (
+            scaling["first_pixel"]+i*scaling["pixel_increment"], viewbox[2]-200,
+            scaling['first_value']+i*scaling["value_increment"])
+        output += '<path fill="none" stroke="black" stroke-width="5" stroke-dasharray="200,100,50,50,50,100" d="M%d %d %d %d" />' % ( 
+            scaling["first_pixel"]+i*scaling["pixel_increment"], viewbox[2],
+            scaling["first_pixel"]+i*scaling["pixel_increment"], viewbox[0])   
+    scaling = gridScaling(ymin,ymax,5,viewbox[3]-viewbox[1])
     for i in range(scaling['divisions']):
-        output +="""<text text-anchor="left" x="%d" y="%d" font-size="300" >%g</text>
-<path fill="none" stroke="black" stroke-width="5" stroke-dasharray="200,100,50,50,50,100" d="M%d %d %d %d" />
-""" % (100,
-       scaling["first_pixel"]+i*scaling["pixel_increment"],
-       round(scaling['first_value']+i*scaling["value_increment"],scaling["resolution"]),
-       0,
-       scaling["first_pixel"]+i*scaling["pixel_increment"],
-       10000,
-       scaling["first_pixel"]+i*scaling["pixel_increment"])
-    output +="""</svg>
-"""
+        output += '<text text-anchor="left" x="%d" y="%d" font-size="300" >%g</text>' % (
+            100, viewbox[3]-(scaling["first_pixel"]+i*scaling["pixel_increment"]),
+            scaling['first_value']+i*scaling["value_increment"])
+        output += '<path fill="none" stroke="black" stroke-width="5" stroke-dasharray="200,100,50,50,50,100" d="M%d %d %d %d" />' % (
+            viewbox[1], viewbox[3]-(scaling["first_pixel"]+i*scaling["pixel_increment"]),
+            viewbox[3], viewbox[3]-(scaling["first_pixel"]+i*scaling["pixel_increment"]) )
+    output += '</svg>\n'
     status = '200 OK'
     return (status, response_headers, output)

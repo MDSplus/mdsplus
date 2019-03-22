@@ -24,7 +24,9 @@
 #
 
 from MDSplus import TdiCompile,TreeNode
-import sys,numpy
+import os,sys,numpy
+
+example = '/image/%s/-1?expr=ADD(ZERO([100,100],0WU),2000WU)&bit=12'%os.environ.get('EXPT','main')
 
 def doImage(self):
     if len(self.path_parts) > 2:
@@ -33,50 +35,45 @@ def doImage(self):
     else:
         _tdi = TdiCompile
     expr=self.args['expr'][-1]
+    obj = _tdi(expr)
+    if 'idx' in self.args and isinstance(obj,TreeNode) and obj.getNumSegments()>0:
+        i = int(self.args['idx'][-1])
+        d = obj.getSegment(i)
+    else:
+        d = obj.evaluate()
     try:
-        obj = _tdi(expr)
+        im = d.getImage()
     except:
-        import traceback
-        raise Exception("Error evaluating expression: '%s', error: %s" % (expr,traceback.format_exc()))
-    try:
-        if 'idx' in self.args and isinstance(obj,TreeNode) and obj.getNumSegments()>0:
-            i = int(self.args['idx'][-1])
-            d = obj.getSegment(i)
+        from PIL import Image
+        import io
+        raw = d.data()
+        if 'bit' in self.args:
+            bit = 8-int(self.args['bit'][-1])
+            if bit != 0:
+                if raw.itemsize==1:
+                    raw = raw.astype('uint16')
+                if   bit>0: raw = (((raw+1)<<( bit))-1).astype('uint8')
+                elif bit<0: raw = (((raw-1)>>(-bit))+1).astype('uint8')
         else:
-            d = obj.evaluate()
-        try:
-            im = d.getImage()
-        except:
-            from PIL import Image
-            import io
-            raw = d.data()
-            if 'bit' in self.args:
-                bit = int(self.args['bit'][-1])
-                raw.astype("uint32")
-                raw = (raw>>(raw.itemsize*8-bit)).astype('uint8')
-            else:
-                raw.astype("uint8")
-            if raw.ndim==3 and raw.shape[0] == 1:
-                raw = raw[0]
-            if raw.ndim==2:
-                img = Image.new("L",raw.T.shape,"gray")
-            elif raw.ndim==3:
-                img = Image.new("RGB",raw.T.shape[:2])
-                raw = numpy.rollaxis(raw,0,3)
-            else: raise
-            img.frombytes(raw.tostring())
-            stream = io.BytesIO()
-            img.save(stream, format='PNG')
-            return ('200 OK', [('Content-type','image/png')], stream.getvalue())
-        else:
-            if im.format == "MPEG":
-                response_headers=[('Content-type','video/mpeg'),('Content-Disposition','inline; filename="%s.mpeg"' % (expr,))]
-            else: # covers gif, jpeg, and png
-                fmt = im.format.lower()
-                response_headers=[('Content-type','image/%s'%fmt),('Content-Disposition','inline; filename="%s.%s"' % (expr,fmt))]
-        output=str(d.data().data)
-    except:
-        import traceback
-        raise Exception("Error getting image: '%s', error: %s" % (str(obj),traceback.format_exc()))
+            raw.astype("uint8")
+        if raw.ndim==3 and raw.shape[0] == 1:
+            raw = raw[0]
+        if raw.ndim==2:
+            img = Image.new("L",raw.T.shape,"gray")
+        elif raw.ndim==3:
+            img = Image.new("RGB",raw.T.shape[:2])
+            raw = numpy.rollaxis(raw,0,3)
+        else: raise
+        img.frombytes(raw.tostring())
+        stream = io.BytesIO()
+        img.save(stream, format='PNG')
+        return ('200 OK', [('Content-type','image/png')], stream.getvalue())
+    else:
+        if im.format == "MPEG":
+            response_headers=[('Content-type','video/mpeg'),('Content-Disposition','inline; filename="%s.mpeg"' % (expr,))]
+        else: # covers gif, jpeg, and png
+            fmt = im.format.lower()
+            response_headers=[('Content-type','image/%s'%fmt),('Content-Disposition','inline; filename="%s.%s"' % (expr,fmt))]
+    output=str(d.data().data)
     status = '200 OK'
     return (status, response_headers, output)
