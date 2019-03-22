@@ -25,6 +25,24 @@
 
 from MDSplus import Tree,DATA,tcl
 import os,sys
+
+def toplink(self,root,tree):
+    node = tree.top
+    path = node.fullpath
+    href = '/'.join([root,'dir']+self.path_parts[1:3])
+    parts = [self.link(href,path)]
+    lenp = len(path)
+    for i in range(3,len(self.path_parts)):
+        node = node.getNode(self.path_parts[i])
+        text = node.fullpath[lenp:]
+        lenp+= len(text)
+        if len(self.path_parts) <= i+1 or len(self.path_parts[i+1])==0:
+            parts.append(text)
+            break
+        href = '%s/%s'%(href,self.path_parts[i])
+        parts.append(self.link(href,text))
+    return ''.join(parts)
+
 def doDir(self):
     if len(self.path_parts) > 2:
         tree = self.openTree(self.path_parts[1],self.path_parts[2])
@@ -33,25 +51,23 @@ def doDir(self):
     post   = self.environ["PATH_INFO"]
     root   = req_uri[:(-len(post))]
     pre1da = '/'.join([root,'1darray']+self.path_parts[1:3])
-    topstr = "\\%s::TOP"%(tree.tree,)
     if len(self.path_parts)>3 and len(self.path_parts[3])>0:
-       node = tree.getNode(":".join(self.path_parts[3:]))
-       pretop = '/'.join([root,'dir']+self.path_parts[1:3])
-       body = [
-           '<a href="%s"> %s</a>'%(pretop,topstr),
-           '<a href="%s"> up</a>'%os.path.dirname(req_uri)
-       ]
+       node  = tree.getNode(":".join(self.path_parts[3:]))
+       title = node.fullpath
+       top   = toplink(self,root,tree)
     else:
-       node = tree.top
-       body = [topstr]
+       node  = tree.top
+       title = node.fullpath
+       top   = title
     predir = '%s/'%self.path_parts[-1] if req_uri[-1] != "/" else ""     
-    title  = node.fullpath
+    rows = []
     for subnode in node.descendants:
         nn_hi = subnode.node_name
         nn_lo = nn_hi.lower()
-        record = '<a href="%s?expr=DECOMPILE(`%s)"> RECORD</a>'%(pre1da,subnode.path) if subnode.length>0 else "RECORD"
-        link   = '<a href="%s%s"> %s</a>'%(predir,nn_lo,nn_hi) if subnode.number_of_descendants>0 else nn_hi
-        body.append('%s %s'%(record,link))
-    body = '<br/>'.join(body)
-    output = '<!DOCTYPE html>\n<title>%s</title>\n<html>\n<body>\n%s\n</body>\n</html>'%(title,body)
+        record = self.link('%s?expr=DECOMPILE(`GETNCI(%d,&quot;RECORD&quot;))'%(pre1da,subnode.nid),'RECORD') if subnode.length>0 else '&lt;NODATA&gt;'
+        data   = self.link('%s?expr=DECOMPILE(`DATA(GETNCI(%d,&quot;RECORD&quot;)))'%(pre1da,subnode.nid),'DATA($)') if subnode.length>0 else '&lt;NODATA&gt;'
+        link   = self.link(predir+nn_lo,nn_hi) if subnode.number_of_descendants>0 else nn_hi
+        rows.append((link,subnode.usage,record,data))
+    body = '%s<hr>%s'%(top,self.table_frame(('name','usage','record','data'),rows))
+    output = self.html_frame(title,body)
     return ('200 OK', [('Content-type','text/html')], output)

@@ -161,16 +161,47 @@ try:   glob = globals().__dict__
 except:glob = globals()
 
 class application:
+    @staticmethod
+    def html_frame(title,body):
+        return '<!DOCTYPE html>\n<title>%s</title>\n<html>\n<body>\n%s\n</body>\n</html>'%(title,body)
+    @staticmethod
+    def body_linebreak(input):
+        return input.replace('\n','<br>\n')
+    @staticmethod
+    def table_header(entries):
+        return '<tr><th align="left">%s</th></tr>'%('</th><th align="left">'.join(map(str,entries)),)
+    @staticmethod
+    def table_row(entries,width=None):
+        if width is None:
+            return '<tr><td>%s</td></tr>'%('</td><td>'.join(map(str,entries)),)
+        return '<tr><td width=%d%% align="center">%s</td></tr>'%(width,('</td><td width=%d%% align="center">'%width).join(map(str,entries)),)
+    @classmethod
+    def table_frame(cls,header,rows):
+        head = cls.table_header(header)
+        body = '\n'.join([cls.table_row(row) for row in rows])
+        return '<table>\n%s\n%s\n</table>'%(head,body)
+    @classmethod
+    def table(title,header,rows):
+        return cls.html_frame(title,table_frame(header,rows))
+    @staticmethod
+    def link(href,text):
+        return '<a href="%s">%s</a>'%(href,text)
+    @staticmethod
+    def doIndex(self):
+        title  = "MDSplus WSGI"
+        body   = "LIST"
+        output = self.html_frame(title,body)
+        return ('200 OK', [('Content-type','text/html')], output)
     def __init__(self, environ, start_response):
         self.environ = environ
         self.start = start_response
         self.args=parse_qs(self.environ['QUERY_STRING'],keep_blank_values=1)
         self.path_parts=self.environ['PATH_INFO'].split('/')[1:]
-        if len(self.path_parts)>0:
+        if len(self.path_parts)>0 and len(self.path_parts[0])>0:
             doername='do'+self.path_parts[0].capitalize()
             try:   self.doer = glob[doername].__getattribute__(doername)
             except:self.doer = None
-        else:      self.doer = None
+        else:      self.doer = self.doIndex
 
     def __iter__(self):
         try:
@@ -178,7 +209,7 @@ class application:
                 self.start('500 BAD_REQUEST',[('Content-type','text/plain')])
                 output="Unsupported request: '%s'"%("/".join(self.path_parts),)
             else:
-                status, response_headers,output = self.doer(self)
+                status, response_headers, output = self.doer(self)
                 self.start(status,response_headers)
             yield output
         except Exception:
