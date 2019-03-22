@@ -133,6 +133,8 @@ class Tests(_UnitTest.TreeTests):
         pytree.setDefault(pytree._MYTAG)
         self.assertEqual(str(pytree.getDefault()),'\\PYTREESUB::MYTAG')
         self.assertEqual(str(pytree2.getDefault()),'\\PYTREE::TOP')
+        pytree.getNode("\\PYTREESUB::TOP").setDefault()
+        self.assertEqual(str(pytree.getDefault()),'\\PYTREESUB::TOP')
 
     def nodeLinkage(self):
         with Tree('pytree',self.shot+6,'new') as pytree:
