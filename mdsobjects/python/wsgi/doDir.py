@@ -26,6 +26,9 @@
 from MDSplus import Tree,DATA,tcl
 import os,sys
 
+example = "/dir/%s/-1/"%os.environ.get("EXPT","main")
+
+
 def toplink(self,root,tree):
     node = tree.top
     path = node.fullpath

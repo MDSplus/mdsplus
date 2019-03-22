@@ -24,7 +24,11 @@
 #
 
 from MDSplus import DATA,tdi
-import sys
+import os,sys
+
+example = '/1darray/%s/-1?expr=&quot;TREE(&quot;//$EXPT//$SHOT//&quot;)&quot;'%os.environ.get("EXPT","main")
+
+
 def do1darray(self):
     if len(self.path_parts) > 2:
         tree = self.openTree(self.path_parts[1],self.path_parts[2])
@@ -33,9 +37,7 @@ def do1darray(self):
         tree = None
         _tdi = tdi
     expr = self.args['expr'][-1]
-    try: a = DATA(_tdi(expr)).evaluate()
-    except Exception:
-        raise Exception("Error evaluating expression: '%s', error: %s" % (expr,sys.exc_info()))
+    a    = DATA(_tdi(expr)).evaluate()
     response_headers=list()
     response_headers.append(('Cache-Control','no-store, no-cache, must-revalidate'))
     response_headers.append(('Pragma','no-cache'))

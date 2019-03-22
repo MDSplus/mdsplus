@@ -188,8 +188,20 @@ class application:
         return '<a href="%s">%s</a>'%(href,text)
     @staticmethod
     def doIndex(self):
-        title  = "MDSplus WSGI"
-        body   = "LIST"
+        title   = "MDSplus WSGI"
+        service = self.environ["REQUEST_URI"].strip("/")
+        rows    = []
+        for k,v in glob.items():
+            if not k.startswith("do"): continue
+            try: link = v.example
+            except AttributeError:
+                 link = "/"+k[2:].lower()
+            link = "/%s%s"%(service,link)
+            example = self.link(link,self.environ["HTTP_HOST"]+link)
+            rows.append((k,example))
+        rows.sort()
+        #body   = self.table_frame(("name","value"),self.environ.items())
+        body   = self.table_frame(("module","example"),rows)
         output = self.html_frame(title,body)
         return ('200 OK', [('Content-type','text/html')], output)
     def __init__(self, environ, start_response):

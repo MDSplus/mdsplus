@@ -24,6 +24,8 @@
 #
 
 import os
+example = '/javascripts/mdsScope.js'
+
 def doJavascripts(self):
   jsfile = self.path_parts[1]
   try:
