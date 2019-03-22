@@ -2456,6 +2456,12 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         """
         self.compress_segments=flag
 
+    def setDefault(self):
+        """Set compress segments state of this node
+        @rtype: None
+        """
+        self.tree.setDefault(self)
+
     def setDoNotCompress(self,flag):
         """Set do not compress state of this node
         @param flag: True do disable compression, False to enable compression
