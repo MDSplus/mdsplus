@@ -215,7 +215,7 @@ class application:
         except Exception:
             import traceback
             self.start('500 BAD REQUEST',[('Content-Type','text/html')])
-            yield '<?xml version="1.0" encoding="ISO-8859-1" ?>'+"\n<exception>%s</exception>" % (self.body_linebreak(traceback.format_exc()),)
+            yield self.html_frame("EXCEPTION",'<PRE>\n%s\n</PRE>'%traceback.format_exc(),)
 
     def openTree(self,tree,shot):
         try: shot=int(shot)
