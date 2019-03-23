@@ -175,30 +175,30 @@ class Data(NoTreeRef):
     def value_of(self):
         """Return value part of object
         @rtype: Data"""
-        return _cmp.VALUE_OF(self)._setTree(self.tree).evaluate()
+        return _cmp.VALUE_OF(self).evaluate()
 
     def raw_of(self):
         """Return raw part of object
         @rtype: Data"""
-        return _cmp.RAW_OF(self)._setTree(self.tree).evaluate()
+        return _cmp.RAW_OF(self).evaluate()
 
     def units_of(self):
         """Return units of object
         @rtype: Data"""
-        return _cmp.UNITS_OF(self)._setTree(self.tree).evaluate()
+        return _cmp.UNITS_OF(self).evaluate()
 
     def getDimensionAt(self,idx=0):
         """Return dimension of object
         @param idx: Index of dimension
         @type idx: int
         @rtype: Data"""
-        return _cmp.DIM_OF(self,idx)._setTree(self.tree).evaluate()
+        return _cmp.DIM_OF(self,idx).evaluate()
     dim_of=getDimensionAt
 
     @property
     def units(self):
         """units associated with this data."""
-        return _cmp.UNITS(self)._setTree(self.tree).evaluate()
+        return _cmp.UNITS(self).evaluate()
     @units.setter
     def units(self,units):
         if units is None:
@@ -210,7 +210,7 @@ class Data(NoTreeRef):
     @property
     def error(self):
         """error property of this data."""
-        return _cmp.ERROR_OF(self)._setTree(self.tree).evaluate()
+        return _cmp.ERROR_OF(self).evaluate()
     @error.setter
     def error(self,error):
         if error is None:
@@ -222,7 +222,7 @@ class Data(NoTreeRef):
     @property
     def help(self):
         """help property of this node."""
-        return _cmp.HELP_OF(self)._setTree(self.tree).evaluate()
+        return _cmp.HELP_OF(self).evaluate()
     @help.setter
     def help(self,help):
         if help is None:
@@ -234,7 +234,7 @@ class Data(NoTreeRef):
     @property
     def validation(self):
         """Validation property of this node"""
-        return _cmp.VALIDATION_OF(self)._setTree(self.tree).evaluate()
+        return _cmp.VALIDATION_OF(self).evaluate()
     @validation.setter
     def validation(self,validation):
         if validation is None:
@@ -253,51 +253,51 @@ class Data(NoTreeRef):
         return bool(data)
 
     def __lt__(self,y):
-        return _cmp.LT(self,y)._setTree(self.tree).evaluate().bool()
+        return _cmp.LT(self,y).evaluate().bool()
     def __rlt__(self,y):
         return  Data(y)<self
 
     def __le__(self,y):
-        return _cmp.LE(self,y)._setTree(self.tree).evaluate().bool()
+        return _cmp.LE(self,y).evaluate().bool()
     def __rle__(self,y):
         return  Data(y)<=self
 
     def __eq__(self,y):
-        return _cmp.EQ(self,y)._setTree(self.tree).evaluate().bool()
+        return _cmp.EQ(self,y).evaluate().bool()
     def __req__(self,y):
         return  Data(y)==self
 
     def __ne__(self,y):
-        return _cmp.NE(self,y)._setTree(self.tree).evaluate().bool()
+        return _cmp.NE(self,y).evaluate().bool()
     def __rne__(self,y):
         return Data(y)!=self
 
     def __gt__(self,y):
-        return _cmp.GT(self,y)._setTree(self.tree).evaluate().bool()
+        return _cmp.GT(self,y).evaluate().bool()
     def __rgt__(self,y):
         return  Data(y)>self
 
     def __ge__(self,y):
-        return _cmp.GE(self,y)._setTree(self.tree).evaluate().bool()
+        return _cmp.GE(self,y).evaluate().bool()
     def __rge__(self,y):
         return  Data(y)>=self
 
     def __add__(self,y):
-        return _cmp.ADD(self,y)._setTree(self.tree).evaluate()
+        return _cmp.ADD(self,y).evaluate()
     def __radd__(self,y):
         return Data(y)+self
     def __iadd__(self,y):
         self._value = (self+y)._value
 
     def __and__(self,y):
-        return _cmp.IAND(self,y)._setTree(self.tree).evaluate()
+        return _cmp.IAND(self,y).evaluate()
     def __rand__(self,y):
         return Data(y)&self
     def __iand__(self,y):
         self._value = (self&y)._value
 
     def __div__(self,y):
-        return _cmp.DIVIDE(self,y)._setTree(self.tree).evaluate()
+        return _cmp.DIVIDE(self,y).evaluate()
     def __rdiv__(self,y):
         return Data(y)/self
     def __idiv__(self,y):
@@ -307,88 +307,88 @@ class Data(NoTreeRef):
     __itruediv__=__idiv__
 
     def __floordiv__(self,y):
-        return _cmp.FLOOR(_cmp.DIVIDE(self,y))._setTree(self.tree).evaluate()
+        return _cmp.FLOOR(_cmp.DIVIDE(self,y)).evaluate()
     def __rfloordiv__(self,y):
         return Data(y)//self
     def __ifloordiv__(self,y):
         self._value = (self//y)._value
 
     def __lshift__(self,y):
-        return _cmp.SHIFT_LEFT(self,y)._setTree(self.tree).evaluate()
+        return _cmp.SHIFT_LEFT(self,y).evaluate()
     def __rlshift__(self,y):
         return Data(y)<<self
     def __ilshift__(self,y):
         self._value = (self<<y)._value
 
     def __mod__(self,y):
-        return _cmp.MOD(self,y)._setTree(self.tree).evaluate()
+        return _cmp.MOD(self,y).evaluate()
     def __rmod__(self,y):
         return Data(y)%self
     def __imod__(self,y):
         self._value = (self%y)._value
 
     def __sub__(self,y):
-        return _cmp.SUBTRACT(self,y)._setTree(self.tree).evaluate()
+        return _cmp.SUBTRACT(self,y).evaluate()
     def __rsub__(self,y):
         return Data(y)-self
     def __isub__(self,y):
         self._value = (self-y)._value
 
     def __rshift__(self,y):
-        return _cmp.SHIFT_RIGHT(self,y)._setTree(self.tree).evaluate()
+        return _cmp.SHIFT_RIGHT(self,y).evaluate()
     def __rrshift__(self,y):
         return Data(y)>>self
     def __irshift__(self,y):
         self._value = (self>>y)._value
 
     def __mul__(self,y):
-        return _cmp.MULTIPLY(self,y)._setTree(self.tree).evaluate()
+        return _cmp.MULTIPLY(self,y).evaluate()
     def __rmul__(self,y):
         return Data(y)*self
     def __imul__(self,y):
         self._value = (self*y)._value
 
     def __or__(self,y):
-        return _cmp.IOR(self,y)._setTree(self.tree).evaluate()
+        return _cmp.IOR(self,y).evaluate()
     def __ror__(self,y):
         return Data(y)|self
     def __ior__(self,y):
         self._value = (self|y)._value
 
     def __pow__(self,y):
-        return _cmp.POWER(self,y)._setTree(self.tree).evaluate()
+        return _cmp.POWER(self,y).evaluate()
     def __rpow__(self,y):
         return Data(y)**self
     def __ipow__(self,y):
         self._value = (self**y)._value
 
     def __xor__(self,y):
-        return _cmp.MULTIPLY(self,y)._setTree(self.tree).evaluate()
+        return _cmp.MULTIPLY(self,y).evaluate()
     def __rxor__(self,y):
         return Data(y)^self
     def __ixor__(self,y):
         self._value = (self^y)._value
 
     def __abs__(self):
-        return _cmp.ABS(self)._setTree(self.tree).evaluate()
+        return _cmp.ABS(self).evaluate()
     def __invert__(self):
-        return _cmp.INOT(self)._setTree(self.tree).evaluate()
+        return _cmp.INOT(self).evaluate()
     def __neg__(self):
-        return _cmp.UNARY_MINUS(self)._setTree(self.tree).evaluate()
+        return _cmp.UNARY_MINUS(self).evaluate()
     def __pos__(self):
-        return _cmp.UNARY_PLUS(self)._setTree(self.tree).evaluate()
+        return _cmp.UNARY_PLUS(self).evaluate()
     def __nonzero__(self):
         return Data.__bool(self != 0)
 
     def decompile(self):
         """Return string representation
         @rtype: string"""
-        return str(_cmp.DECOMPILE(self)._setTree(self.tree).evaluate())
+        return str(_cmp.DECOMPILE(self).evaluate())
 
     def __getitem__(self,y):
         """Subscript: x.__getitem__(y) <==> x[y]
         @rtype: Data"""
-        ans = _cmp.SUBSCRIPT(self,y)._setTree(self.tree).evaluate()
+        ans = _cmp.SUBSCRIPT(self,y).evaluate()
         if isinstance(ans,_arr.Array) and ans.shape[0]==0:
             raise IndexError
         return ans
@@ -415,7 +415,7 @@ class Data(NoTreeRef):
         """Length: x.__len__() <==> len(x)
         @rtype: Data
         """
-        return int(_cmp.SIZE(self)._setTree(self.tree).data())
+        return int(_cmp.SIZE(self).data())
 
     def __long__(self):
         """Convert this object to python long
@@ -518,7 +518,7 @@ class Data(NoTreeRef):
         @rtype: numpy or native type
         """
         try:
-            data = _cmp.DATA(self)._setTree(self.tree).evaluate()
+            data = _cmp.DATA(self).evaluate()
             return data.value if isinstance(data,Data) else data
         except _exc.TreeNODATA:
             if len(altvalue):
@@ -562,7 +562,7 @@ class Data(NoTreeRef):
         @rtype: Scalar,Array
         """
         try:
-            return _cmp.DATA(self)._setTree(self.tree).evaluate()
+            return _cmp.DATA(self).evaluate()
         except _exc.TreeNODATA:
             if len(altvalue):
                 return altvalue[0]
@@ -573,7 +573,7 @@ class Data(NoTreeRef):
         @rtype: Int8
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=_cmp.BYTE(self)._setTree(self.tree).evaluate()
+        ans=_cmp.BYTE(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
@@ -583,7 +583,7 @@ class Data(NoTreeRef):
         @rtype: Int16
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=_cmp.WORD(self)._setTree(self.tree).evaluate()
+        ans=_cmp.WORD(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
@@ -595,7 +595,7 @@ class Data(NoTreeRef):
         @rtype: Int32
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=_cmp.LONG(self)._setTree(self.tree).evaluate()
+        ans=_cmp.LONG(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
@@ -605,7 +605,7 @@ class Data(NoTreeRef):
         @rtype: Int64
         @raise TypeError: if data is not a scalar value
         """
-        ans=_cmp.QUADWORD(self)._setTree(self.tree).evaluate()
+        ans=_cmp.QUADWORD(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
@@ -615,7 +615,7 @@ class Data(NoTreeRef):
         @rtype: Float32
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=_cmp.FLOAT(self)._setTree(self.tree).evaluate()
+        ans=_cmp.FLOAT(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
@@ -625,7 +625,7 @@ class Data(NoTreeRef):
         @rtype: Float64
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=_cmp.FT_FLOAT(self)._setTree(self.tree).evaluate()
+        ans=_cmp.FT_FLOAT(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
@@ -634,43 +634,43 @@ class Data(NoTreeRef):
         """Convert this data into a float32.
         @rtype: Float32
         """
-        return _cmp.FLOAT(self)._setTree(self.tree).evaluate()
+        return _cmp.FLOAT(self).evaluate()
 
     def getDoubleArray(self):
         """Convert this data into a float64.
         @rtype: Float64
         """
-        return _cmp.FT_FLOAT(self)._setTree(self.tree).evaluate()
+        return _cmp.FT_FLOAT(self).evaluate()
 
     def getShape(self):
         """Get the array dimensions as an integer array.
         @rtype: Int32Array
         """
-        return _cmp.SHAPE(self)._setTree(self.tree).evaluate()
+        return _cmp.SHAPE(self).evaluate()
 
     def getByteArray(self):
         """Convert this data into a byte array.
         @rtype: Int8Array
         """
-        return _cmp.BYTE(self)._setTree(self.tree).evaluate()
+        return _cmp.BYTE(self).evaluate()
 
     def getShortArray(self):
         """Convert this data into a short array.
         @rtype: Int16Array
         """
-        return _cmp.WORD(self)._setTree(self.tree).evaluate()
+        return _cmp.WORD(self).evaluate()
 
     def getIntArray(self):
         """Convert this data into a int array.
         @rtype: Int32Array
         """
-        return _cmp.LONG(self)._setTree(self.tree).evaluate()
+        return _cmp.LONG(self).evaluate()
 
     def getLongArray(self):
         """Convert this data into a long array.
         @rtype: Int64Array
         """
-        return _cmp.QUADWORD(self)._setTree(self.tree).evaluate()
+        return _cmp.QUADWORD(self).evaluate()
 
     def getString(self):
         """Convert this data into a STRING. Implemented at this class level by returning
@@ -678,7 +678,7 @@ class Data(NoTreeRef):
         generates an exception.
         @rtype: String
         """
-        return str(_cmp.TEXT(self)._setTree(self.tree).evaluate())
+        return str(_cmp.TEXT(self).evaluate())
 
     def hasNodeReference(self):
         """Return True if data item contains a tree reference
@@ -694,14 +694,11 @@ class Data(NoTreeRef):
             for arg in self.getDescs():
                 if isinstance(arg,Data) and arg.hasNodeReference():
                     return True
+        elif isinstance(self,_scr.Ident):
+            return None # treated as False but is uncertain
         return False
 
-    def mayHaveChanged(self):
-        """return true if the represented data could have been changed since the last time
-        this method has been called.
-        @rtype: Bool
-        """
-        return True
+    def mayHaveChanged(self): return True #deprecated
 
     def plot(self,title='',scope=None,row=1,col=1):
         """Plot this data item
@@ -717,14 +714,14 @@ class Data(NoTreeRef):
         """
         if scope is None:
             scope=_mimport('scope').Scope(title)
-        scope.plot(self,self.dim_of(0),row,col)
+        scope.plot(self,self.dim_of(),row,col)
         scope.show()
 
     def sind(self):
         """Return sin() of data assuming data is in degrees
         @rtype: Float32Array
         """
-        return _cmp.SIND(self)._setTree(self.tree).evaluate()
+        return _cmp.SIND(self).evaluate()
 
     def serialize(self):
         """Return Uint8Array binary representation.
