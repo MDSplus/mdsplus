@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -101,7 +101,7 @@ def gridScaling(min_in,max_in,divisions,span):
         first_pix = 0
         pix_inc = span
         val_inc = 0
-    return res,(first_pix, pix_inc),(first_val,val_inc),divs_out       
+    return res,(first_pix, pix_inc),(first_val,val_inc),divs_out
 
 def doPlot(self):
     viewbox = (0,0,10000,10000);
@@ -143,9 +143,9 @@ def doPlot(self):
     for i in range(div):
         output += '<text text-anchor="middle" x="%d" y="%d" font-size="300">%g</text>\n' % (
             pix[0]+i*pix[1]+1000, viewbox[2]-200, val[0]+i*val[1])
-        output += '<path fill="none" stroke="black" stroke-width="5" stroke-dasharray="200,100,50,50,50,100" d="M%d %d %d %d"/>\n' % ( 
+        output += '<path fill="none" stroke="black" stroke-width="5" stroke-dasharray="200,100,50,50,50,100" d="M%d %d %d %d"/>\n' % (
             pix[0]+i*pix[1]+1000, viewbox[2],
-            pix[0]+i*pix[1]+1000, viewbox[0])   
+            pix[0]+i*pix[1]+1000, viewbox[0])
     res,pix,val,div = gridScaling(ymin,ymax,5,viewbox[3]-viewbox[1]-1200)
     for i in range(div):
         output += '<text text-anchor="left" x="%d" y="%d" font-size="300">%g</text>\n' % (

@@ -70,8 +70,9 @@ def doDir(self):
         record = self.link('%s?expr=DECOMPILE(`GETNCI(%d,&quot;RECORD&quot;))'%(predo%'1darray',subnode.nid),'RECORD') if subnode.length>0 else '&lt;NODATA&gt;'
         data   = self.link('%s?expr=DECOMPILE(`DATA(GETNCI(%d,&quot;RECORD&quot;)))'%(predo%'1darray',subnode.nid),'DATA($)') if subnode.length>0 else '&lt;NODATA&gt;'
         image  = self.link('%s?expr=%s&idx=0&bit=12'%(predo%'image',subnode.fullpath),'IMAGE($)') if subnode.length>0 else '&lt;NODATA&gt;'
+        plot   = self.link('%s?expr=%s'%(predo%'plot',subnode.fullpath),'PLOT($)') if subnode.length>0 else '&lt;NODATA&gt;'
         link   = self.link(predir+nn_lo,nn_hi) if subnode.number_of_descendants>0 else nn_hi
-        rows.append((link,subnode.usage,record,data,image))
-    body = '%s<hr>%s'%(top,self.table_frame(('name','usage','record','data','image'),rows))
+        rows.append((link,subnode.usage,record,data,plot,image))
+    body = '%s<hr>%s'%(top,self.table_frame(('name','usage','record','data','plot','image'),rows))
     output = self.html_frame(title,body)
     return ('200 OK', [('Content-type','text/html')], output)
