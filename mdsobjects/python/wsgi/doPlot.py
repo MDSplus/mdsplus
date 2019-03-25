@@ -37,7 +37,7 @@ def getXYSignal(expr,num):
     cmax = ctypes.c_float( float('inf'))
     xd   = _MdsMisc.GetXYSignal(ctypes.c_char_p(y),ctypes.c_char_p(x),ctypes.byref(cmin),ctypes.byref(cmax),ctypes.byref(cnum))
     d    = Descriptor_xd(xd.contents).value
-    if isinstance(d,String): raise Exception(d.data())
+    if isinstance(d,String): raise Exception(d.data()[8:])
     bt  = d.data().tostring()
     off = 0
     fmt = '!fib'
