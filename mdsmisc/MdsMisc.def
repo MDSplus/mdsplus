@@ -36,7 +36,9 @@ GetNidArray
 GetReferenceCount
 GetReferences
 GetXYSignal
+GetXYSignalXd
 GetXYSignalLongTimes
+GetXYSignalLongTimesXd
 GetXYWave
 GetXYWaveLongTimes
 Invariant
