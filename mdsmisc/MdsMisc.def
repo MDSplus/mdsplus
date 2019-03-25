@@ -5,6 +5,7 @@
 ;
 LIBRARY "mdsmisc.dll"
 EXPORTS
+_GetXYSignalXd
 AddC
 BessCRoots
 BessInvar
@@ -38,8 +39,8 @@ GetReferences
 GetXYSignal
 GetXYSignalXd
 GetXYSignalLongTimes
-GetXYSignalLongTimesXd
 GetXYWave
+GetXYWaveXd
 GetXYWaveLongTimes
 Invariant
 IsSegmented
