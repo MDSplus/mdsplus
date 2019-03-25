@@ -234,19 +234,9 @@ return_neg1: ;
   return -1;
 }
 
-
-static void compressDataLongX(float *y, int64_t *x, int nSamples, int reqPoints, int64_t xMin, int64_t xMax, int *retPoints, float *retResolution);
-
-
-
-//Perform possible compression on site (do not realloc arrays) return the actual number of points
+//Perform trim on site (do not realloc arrays) return the actual number of points
 //the type of X array is unknown, element size is passed in xSize
-static void compressData(float *y, char *x, int xSize, int xType, int nSamples, int reqPoints, float xMin, float xMax, int *retPoints, float *retResolution)
-{
-  int deltaSamples, actSamples, currSamples;
-  int i, outIdx, startIdx, endIdx;
-  float minY, maxY;
-  double deltaTime, startXDouble, currXDouble;
+static void trimData(float *y, char *x, int xSize, int xType, int nSamples, int reqPoints, float xMin, float xMax, int *retPoints, float *retResolution) {
   if(nSamples < 10 * reqPoints) {
     //Does not perform any compression
     *retResolution = 1E12;
@@ -254,52 +244,101 @@ static void compressData(float *y, char *x, int xSize, int xType, int nSamples, 
     return;
   }
   //From here, consider xMin and xMax
-  for(startIdx = 0; startIdx < nSamples && to_double(&x[startIdx * xSize], xType) < xMin; startIdx++);
+  int startIdx, endIdx;
+  for(startIdx = 0;        startIdx < nSamples && to_double(&x[startIdx * xSize], xType) < xMin; startIdx++);
   if(startIdx == nSamples) startIdx--;
-  for(endIdx = startIdx; endIdx < nSamples && to_double(&x[endIdx * xSize], xType) < xMax; endIdx++);
-  if(endIdx == nSamples) endIdx--;
-  if((endIdx - startIdx) < 10 * reqPoints)
-    deltaSamples = 1;
-  else { // Adjust to a number of samples close to 2 * reqPoints
-    deltaSamples = (endIdx - startIdx + 1) / reqPoints;
-    deltaTime = (xMax - xMin)/(double)reqPoints;
-  }
-  currSamples = 0;
-  outIdx = 0;
-  if(deltaSamples == 1)
+  for(  endIdx = startIdx;   endIdx < nSamples && to_double(&x[  endIdx * xSize], xType) < xMax;   endIdx++);
+  if(  endIdx == nSamples)   endIdx--;
+
+  const int deltaSamples = ((endIdx - startIdx) < 10 * reqPoints) ? 1 : (endIdx - startIdx + 1) / reqPoints;
+
+  int currSamples = startIdx;
+  int outIdx = 0;
+  if(deltaSamples == 1) {
     *retResolution = 1E12;
-  else {
+    while (currSamples < endIdx) {
+      memcpy(&x[outIdx * xSize], &x[currSamples * xSize], xSize);
+      y[outIdx++] = y[currSamples++];
+    }
+  } else {
     *retResolution = reqPoints/(to_double(&x[endIdx * xSize], xType) - to_double(&x[startIdx * xSize], xType));
     // printf("Resolution: %f, points: %d, interval: %f\n", *retResolution, reqPoints, (to_double(&x[endIdx * xSize], xType) - to_double(&x[startIdx * xSize], xType)));
-  }
-  currSamples = startIdx;
-  while(currSamples < endIdx) {
-    if(deltaSamples == 1) {
-      y[outIdx] = y[currSamples];
-      memcpy(&x[outIdx * xSize], &x[currSamples * xSize], xSize);
-      currSamples++;
-      outIdx++;
-    } else {
+    const double deltaTime = (deltaSamples == 1) ? 0 : (xMax - xMin)/(double)reqPoints;
+    double currXDouble;
+    float minY, maxY;
+    while(currSamples < endIdx) {
       minY = maxY = y[currSamples];
-      startXDouble = to_double(&x[currSamples * xSize], xType);
-      actSamples = 0;
+      int i,actSamples = 0;
+      const double endXDouble = to_double(&x[currSamples * xSize], xType) + deltaTime;
       for(i = currSamples; i < nSamples && i < currSamples + deltaSamples; i++, actSamples++) {
 	currXDouble = to_double(&x[i * xSize], xType);
-	if((currXDouble - startXDouble) > deltaTime) break; //Handle dual speed clocks
+	if(currXDouble > endXDouble) break; //Handle dual speed clocks
 	if(y[i] < minY) minY = y[i];
 	if(y[i] > maxY) maxY = y[i];
       }
-      y[outIdx] = minY;
-      y[outIdx+1] = maxY;
       memcpy(&x[outIdx * xSize], &x[currSamples * xSize], xSize);
-      memcpy(&x[(outIdx+1) * xSize], &x[currSamples * xSize], xSize);
+      y[outIdx++] = minY;
+      memcpy(&x[outIdx * xSize], &x[currSamples * xSize], xSize);
+      y[outIdx++] = maxY;
       currSamples += actSamples;
-      outIdx += 2;
     }
   }
   *retPoints = outIdx;
 }
 
+//Perform trim on site (do not realloc arrays) return the actual number of points
+//the type of X array is unknown, element size is passed in xSize
+static void trimDataLongX(float *y, int64_t *x, int nSamples, int reqPoints, int64_t xMin, int64_t xMax, int *retPoints, float *retResolution) {
+  if(nSamples < 10 * reqPoints) {
+    //Does not perform any compression
+    *retResolution = 1E12;
+    *retPoints = nSamples;
+    return;
+  }
+  //From here, consider xMin and xMax
+  int startIdx, endIdx;
+  if(xMin == 0) // this is bad
+    startIdx = 0;
+  else {
+    for(startIdx = 0;        startIdx < nSamples && x[startIdx] < xMin; startIdx++);
+    if(startIdx == nSamples) startIdx--;
+  }
+  if(xMax == 0) // this is bad
+    endIdx = nSamples - 1;
+  else {
+    for(  endIdx = startIdx;   endIdx < nSamples && x[  endIdx] < xMax;   endIdx++);
+    if(  endIdx == nSamples)   endIdx--;
+  }
+
+  const int deltaSamples = ((endIdx - startIdx) < 10 * reqPoints) ? 1 : (endIdx - startIdx + 1) / reqPoints;
+
+  int currSamples = startIdx;
+  int outIdx = 0;
+  if(deltaSamples == 1) {
+    *retResolution = 1E12;
+    while(currSamples < endIdx) {
+      memcpy(&x[outIdx], &x[currSamples], sizeof(int64_t));
+      y[outIdx++] = y[currSamples++];
+    }
+  } else {
+    *retResolution = reqPoints/(double)(x[endIdx] - x[startIdx]);
+    float minY, maxY;
+    int i;
+    while(currSamples < endIdx) {
+      minY = maxY = y[currSamples];
+      for(i = currSamples; i < nSamples && i < currSamples + deltaSamples; i++) {
+	if(y[i] < minY) minY = y[i];
+	if(y[i] > maxY) maxY = y[i];
+      }
+      memcpy(&x[outIdx], &x[currSamples], sizeof(int64_t));
+      y[outIdx++] = minY;
+      memcpy(&x[outIdx], &x[currSamples], sizeof(int64_t));
+      y[outIdx++] = maxY;
+      currSamples += deltaSamples;
+    }
+  }
+  *retPoints = outIdx;
+}
 
 static char *recGetHelp(mdsdsc_t *dsc) {
   int nid, numSegments, status, i;
@@ -747,7 +786,7 @@ EXPORT mdsdsc_xd_t*GetXYSignal(char *inY, char *inX, float *inXMin, float *inXMa
       }
   }
     }
-    compressData(y, xArrD->pointer, xArrD->length, xArrD->dtype, nSamples, *reqNSamples, *inXMin, *inXMax, &retSamples, &retResolution);
+    trimData(y, xArrD->pointer, xArrD->length, xArrD->dtype, nSamples, *reqNSamples, *inXMin, *inXMax, &retSamples, &retResolution);
 
 
 /*Assemble result. Format:
@@ -1053,7 +1092,7 @@ EXPORT mdsdsc_xd_t*GetXYSignalLongTimes(char *inY, char *inX, int64_t *inXMin, i
       }
   }
     }
-    compressDataLongX(y, (int64_t *)xArrD->pointer, nSamples, *reqNSamples, *inXMin, *inXMax, &retSamples, &retResolution);
+    trimDataLongX(y, (int64_t *)xArrD->pointer, nSamples, *reqNSamples, *inXMin, *inXMax, &retSamples, &retResolution);
 
 /*Assemble result. Format:
 -retResolution(float)
@@ -1350,7 +1389,7 @@ EXPORT mdsdsc_xd_t*GetXYWave(char *sigName, float *inXMin, float *inXMax, int *r
       }
   }
     }
-    compressData(y, xArrD->pointer, xArrD->length, xArrD->dtype, nSamples, *reqNSamples, *inXMin, *inXMax, &retSamples, &retResolution);
+    trimData(y, xArrD->pointer, xArrD->length, xArrD->dtype, nSamples, *reqNSamples, *inXMin, *inXMax, &retSamples, &retResolution);
 
     retDataD.pointer = (char *)y;
     retDataD.arsize = sizeof(float ) * retSamples;
@@ -1364,86 +1403,6 @@ EXPORT mdsdsc_xd_t*GetXYWave(char *sigName, float *inXMin, float *inXMax, int *r
     MdsFree1Dx(&yXd, 0);
     return &retXd;
 }
-
-
-
-
-//Perform possible compression on site (do not realloc arrays) return the actual number of points
-//the type of X array is unknown, element size is passed in xSize
-static void compressDataLongX(float *y, int64_t *x, int nSamples, int reqPoints, int64_t xMin, int64_t xMax, int *retPoints, float *retResolution)
-{
-    int deltaSamples, currSamples;
-    int i, outIdx, startIdx, endIdx;
-    float minY, maxY;
-    if(nSamples < 10 * reqPoints)
-    {
-//Does not perform any compression
-  *retResolution = 1E12;
-  *retPoints = nSamples;
-  return;
-    }
-
-//From here, consider xMin and xMax
-    if(xMin == 0)
-      startIdx = 0;
-    else
-    {
-      for(startIdx = 0; startIdx < nSamples && x[startIdx] < xMin; startIdx++);
-    }
-    if(startIdx == nSamples) startIdx--;
-    if(xMax == 0)
-      endIdx = nSamples - 1;
-    else
-    {
-      for(endIdx = startIdx; endIdx < nSamples && x[endIdx] < xMax; endIdx++);
-    }
-    if(endIdx == nSamples) endIdx--;
-    if((endIdx - startIdx) < 10 * reqPoints)
-  deltaSamples = 1;
-    else
-
-//Adjust to a number of samples close to 2 * reqPoints
-      deltaSamples = (endIdx - startIdx + 1) / reqPoints;
-    currSamples = 0;
-    outIdx = 0;
-    if(deltaSamples == 1)
-  *retResolution = 1E12;
-    else
-    {
-      *retResolution = reqPoints/(double)(x[endIdx] - x[startIdx]);
-    }
-    currSamples = startIdx;
-    while(currSamples < endIdx)
-    {
-  if(deltaSamples == 1)
-  {
-      y[outIdx] = y[currSamples];
-      memcpy(&x[outIdx], &x[currSamples], sizeof(int64_t));
-      currSamples++;
-      outIdx++;
-  }
-  else
-  {
-      minY = maxY = y[currSamples];
-      for(i = currSamples; i < nSamples && i < currSamples + deltaSamples; i++)
-      {
-        if(y[i] < minY) minY = y[i];
-        if(y[i] > maxY) maxY = y[i];
-      }
-      y[outIdx] = minY;
-      y[outIdx+1] = maxY;
-      memcpy(&x[outIdx], &x[currSamples], sizeof(int64_t));
-      memcpy(&x[(outIdx+1)], &x[currSamples], sizeof(int64_t));
-      currSamples += deltaSamples;
-      outIdx += 2;
-  }
-    }
-    *retPoints = outIdx;
-}
-
-
-
-
 
 EXPORT mdsdsc_xd_t*GetXYWaveLongTimes(char *sigName, int64_t *inXMin, int64_t *inXMax, int *reqNSamples)
 {
@@ -1565,7 +1524,7 @@ EXPORT mdsdsc_xd_t*GetXYWaveLongTimes(char *sigName, int64_t *inXMin, int64_t *i
       }
   }
     }
-    compressDataLongX(y, (int64_t *)xArrD->pointer, nSamples, *reqNSamples, *inXMin, *inXMax, &retSamples, &retResolution);
+    trimDataLongX(y, (int64_t *)xArrD->pointer, nSamples, *reqNSamples, *inXMin, *inXMax, &retSamples, &retResolution);
 
     retDataD.pointer = (char *)y;
     retDataD.arsize = sizeof(float ) * retSamples;
