@@ -186,10 +186,12 @@ class application:
     @staticmethod
     def link(href,text):
         return '<a href="%s">%s</a>'%(href,text)
+    def getReqURI(self):
+        return self.environ["REQUEST_URI"].split('?',2)[0]
     @staticmethod
     def doIndex(self):
         title   = "MDSplus WSGI"
-        service = self.environ["REQUEST_URI"].strip("/")
+        service = self.getReqURI().strip("/")
         rows    = []
         for k,v in glob.items():
             if not k.startswith("do"): continue
