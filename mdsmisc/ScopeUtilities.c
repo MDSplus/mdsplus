@@ -131,6 +131,7 @@ static int recIsSegmented(mdsdsc_t *dsc) {
     case CLASS_XD:
       if (dsc->pointer)
 	return recIsSegmented((mdsdsc_t*)dsc->pointer);
+      break;
     case CLASS_R: {
       rDsc = (mdsdsc_r_t*)dsc;
       for(i = 0; i < rDsc->ndesc; i++) {
@@ -851,12 +852,12 @@ EXPORT mdsdsc_xd_t* GetXYSignal(char *inY, char *inX, float *inXMin, float *inXM
   EMPTYXD(yXd);
   EMPTYXD(xXd);
   double xMin, *pXMin, xMax, *pXMax;
-  if (inXMin && *inXMin < -MAX_LIMIT) {
+  if (inXMin && *inXMin > -MAX_LIMIT) {
     xMin = (double)*inXMin;
     pXMin= &xMin;
   } else
     pXMin= NULL;
-  if (inXMax && *inXMin >  MAX_LIMIT) {
+  if (inXMax && *inXMax <  MAX_LIMIT) {
     xMax = (double)*inXMax;
     pXMax= &xMax;
   } else
@@ -865,7 +866,7 @@ EXPORT mdsdsc_xd_t* GetXYSignal(char *inY, char *inX, float *inXMin, float *inXM
     mdsdsc_t expY = {strlen(inY), DTYPE_T, CLASS_S, inY};
     status = TdiCompile(&expY, &yXd MDS_END_ARG);
   }
-  if (STATUS_OK && inX){
+  if (STATUS_OK && inX && *inX){
     mdsdsc_t expX = {strlen(inX), DTYPE_T, CLASS_S, inX};
     status = TdiCompile(&expX, &xXd MDS_END_ARG);
   }
@@ -876,17 +877,18 @@ EXPORT mdsdsc_xd_t* GetXYSignal(char *inY, char *inX, float *inXMin, float *inXM
   return &retXd;
 }
 
+#define MAX64 0x7FFFFFFFFFFFFFFFL
 EXPORT mdsdsc_xd_t* GetXYSignalLongTimes(char *inY, char *inX, int64_t *inXMin, int64_t *inXMax, int *reqNSamples) {
   static EMPTYXD(retXd);
   EMPTYXD(yXd);
   EMPTYXD(xXd);
   double xMin, *pXMin, xMax, *pXMax;
-  if (inXMin && *inXMin) {
+  if (inXMin && *inXMin && *inXMin > -MAX64) {
     xMin = ((double)*inXMin)/1e9;
     pXMin= &xMin;
   } else
     pXMin= NULL;
-  if (inXMax && *inXMax) {
+  if (inXMax && *inXMax && *inXMax <  MAX64) {
     xMax = ((double)*inXMax)/1e9;
     pXMax= &xMax;
   } else
@@ -895,7 +897,7 @@ EXPORT mdsdsc_xd_t* GetXYSignalLongTimes(char *inY, char *inX, int64_t *inXMin, 
     mdsdsc_t expY = {strlen(inY), DTYPE_T, CLASS_S, inY};
     status = TdiCompile(&expY, &yXd MDS_END_ARG);
   }
-  if (STATUS_OK && inX){
+  if (STATUS_OK && inX && *inX){
     mdsdsc_t expX = {strlen(inX), DTYPE_T, CLASS_S, inX};
     status = TdiCompile(&expX, &xXd MDS_END_ARG);
   }
@@ -908,21 +910,21 @@ EXPORT mdsdsc_xd_t* GetXYSignalLongTimes(char *inY, char *inX, int64_t *inXMin, 
 
 EXPORT mdsdsc_xd_t* GetXYWave(char *sigName, float *inXMin, float *inXMax, int *reqNSamples) {
   static EMPTYXD(retXd);
-  size_t len = sigName ? strlen(sigName) : 0;
+  const size_t len = sigName ? strlen(sigName) : 0;
   if (len==0) return(encodeError("Signal must not be NULL or empty.",__LINE__,&retXd));
-  EMPTYXD(xd);
   double xMin, *pXMin, xMax, *pXMax;
-  if (inXMin && *inXMin < -MAX_LIMIT) {
+  if (inXMin && *inXMin > -MAX_LIMIT) {
     xMin = (double)*inXMin;
     pXMin= &xMin;
   } else
     pXMin= NULL;
-  if (inXMax && *inXMin >  MAX_LIMIT) {
+  if (inXMax && *inXMax <  MAX_LIMIT) {
     xMax = (double)*inXMax;
     pXMax= &xMax;
   } else
     pXMax= NULL;
   mdsdsc_t exp = {len, DTYPE_T, CLASS_S, sigName};
+  EMPTYXD(xd);
   int status = TdiCompile(&exp, &xd MDS_END_ARG);
   if STATUS_OK GetXYWaveXd(xd.pointer,pXMin,pXMax,*reqNSamples,&retXd);
   MdsFree1Dx(&xd, NULL);
@@ -932,21 +934,21 @@ EXPORT mdsdsc_xd_t* GetXYWave(char *sigName, float *inXMin, float *inXMax, int *
 
 EXPORT mdsdsc_xd_t* GetXYWaveLongTimes(char *sigName, int64_t *inXMin, int64_t *inXMax, int *reqNSamples) {
   static EMPTYXD(retXd);
-  size_t len = sigName ? strlen(sigName) : 0;
+  const size_t len = sigName ? strlen(sigName) : 0;
   if (len==0) return(encodeError("Signal must not be NULL or empty.",__LINE__,&retXd));
-  EMPTYXD(xd);
   double xMin, *pXMin, xMax, *pXMax;
-  if (inXMin && *inXMin) {
+  if (inXMin && *inXMin && *inXMin >  -MAX64) {
     xMin = ((double)*inXMin)/1e9;
     pXMin= &xMin;
   } else
     pXMin= NULL;
-  if (inXMax && *inXMax) {
+  if (inXMax && *inXMax && *inXMax < MAX64) {
     xMax = ((double)*inXMax)/1e9;
     pXMax= &xMax;
   } else
     pXMax= NULL;
   mdsdsc_t exp = {len, DTYPE_T, CLASS_S, sigName};
+  EMPTYXD(xd);
   int status = TdiCompile(&exp, &xd MDS_END_ARG);
   if STATUS_OK GetXYWaveXd(xd.pointer,pXMin,pXMax,*reqNSamples,&retXd);
   MdsFree1Dx(&xd, NULL);
