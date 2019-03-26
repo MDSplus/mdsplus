@@ -55,28 +55,32 @@ static inline void swap8(char *buf) {
   swap4(buf+2);
 }
 #endif
-static double to_double(void *ptr, dtype_t dtype) {
+static double to_doublex(const void *ptr, const dtype_t dtype, const double defval, const int is_time) {
   switch(dtype) {
     case DTYPE_FLOAT:
-      return (double)(*( float  *)ptr);
+      return (double)*( float  *)ptr;
     case DTYPE_DOUBLE:
-      return          *( double *)ptr;
+      return         *( double *)ptr;
     case DTYPE_B:
     case DTYPE_BU:
-      return (double)(*( int8_t *)ptr);
+      return (double)*( int8_t *)ptr;
     case DTYPE_W:
     case DTYPE_WU:
-      return (double)(*(int16_t *)ptr);
+      return (double)*(int16_t *)ptr;
     case DTYPE_L:
     case DTYPE_LU:
-      return (double)(*(int32_t *)ptr);
+      return (double)*(int32_t *)ptr;
     case DTYPE_Q:
     case DTYPE_QU:
-      return (double)(*(int64_t *)ptr);
+      if (is_time) return ((double)*(int64_t *)ptr)/1e9;
+      return (double)*(int64_t *)ptr;
     default:
       printf("Unsupported Type in getData\n");
-      return 0;
+      return defval;
   }
+}
+inline static double to_double(const void *ptr, const dtype_t dtype) {
+  return to_doublex(ptr,dtype,0,FALSE);
 }
 static int recIsSegmented(mdsdsc_t *dsc) {
 /* returns nid of the first segmented node found
@@ -164,12 +168,13 @@ static inline int getSegmentedNid(char *expr){
 * when online minmax reasampling is deemed not necessary. If the number
 **/
 
-inline static int64_t estimateNumSamples(mdsdsc_t *dsc, double *xMin, double *xMax, int *estimatedSegmentSamples, double *estimatedDuration) {
+#define MAX64 0x7FFFFFFFFFFFFFFFL
+inline static int64_t estimateNumSamples(mdsdsc_t *dsc, mdsdsc_t *xMin, mdsdsc_t *xMax, int *estimatedSegmentSamples, double *dMin, double *dMax) {
 /* return the number of samples the signal holds based on meta information
    or -1 if something went wrong
  */
   int numSegments, startIdx, endIdx;
-  int64_t startTime, endTime = INT64_MAX, currStartTime, currEndTime;
+  int64_t startTime = -MAX64-1, endTime = MAX64, currStartTime, currEndTime;
   char dtype, dimct;
   int dims[64];
   int nextRow, segmentSamples, numActSegments, segmentIdx;
@@ -179,8 +184,8 @@ inline static int64_t estimateNumSamples(mdsdsc_t *dsc, double *xMin, double *xM
   int status = TreeGetNumSegments(nid, &numSegments);
   if STATUS_NOT_OK return -1;
   if(xMin != NULL || xMax != NULL) {
-    if(xMin) startTime = (int64_t) (*xMin * 1e9);
-    if(xMax)   endTime = (int64_t) (*xMax * 1e9);
+    if(xMin) XTreeConvertToLongTime(xMin, &startTime);
+    if(xMax) XTreeConvertToLongTime(xMax,   &endTime);
     if(numSegments < NUM_SEGMENTS_THRESHOLD) return -1;
     startIdx = 0; //If no start time specified, take all initial segments
     if(xMin) {
@@ -222,16 +227,16 @@ inline static int64_t estimateNumSamples(mdsdsc_t *dsc, double *xMin, double *xM
   segmentSamples = dims[dimct - 1];
   //Compute duration
   status = TreeGetSegmentLimits(nid, startIdx, &xd, NULL);
-  if STATUS_OK status = TdiData( (mdsdsc_t*)&xd, &xd MDS_END_ARG);
-  if STATUS_OK status = TdiFloat((mdsdsc_t*)&xd, &xd MDS_END_ARG);
+  if STATUS_OK status = TdiData((mdsdsc_t*)&xd, &xd MDS_END_ARG);
   if STATUS_NOT_OK goto return_neg1;
-  const double startSig = to_double(xd.pointer->pointer,xd.pointer->dtype);
+  const double xmin = to_doublex(xd.pointer->pointer,xd.pointer->dtype,-INFINITY,TRUE);
   status = TreeGetSegmentLimits(nid, endIdx, NULL, &xd);
-  if STATUS_OK status = TdiData( (mdsdsc_t*)&xd, &xd MDS_END_ARG);
-  if STATUS_OK status = TdiFloat((mdsdsc_t*)&xd, &xd MDS_END_ARG);
-  const double endSig = to_double(xd.pointer->pointer,xd.pointer->dtype);
+  if STATUS_OK status = TdiData((mdsdsc_t*)&xd, &xd MDS_END_ARG);
+  if STATUS_NOT_OK goto return_neg1;
+  const double xmax = to_doublex(xd.pointer->pointer,xd.pointer->dtype, INFINITY,TRUE);
   MdsFree1Dx(&xd, NULL);
-  *estimatedDuration = endSig - startSig;
+  *dMin = xmin;
+  *dMax = xmax;
   *estimatedSegmentSamples = segmentSamples;
   return segmentSamples * (int64_t)numActSegments;
 return_neg1: ;
@@ -265,7 +270,7 @@ static void trimData(float *y, mdsdsc_a_t *x, int nSamples, int reqPoints, doubl
       y[outIdx++] = y[currSamples++];
     }
   } else {
-    *retResolution = reqPoints/(to_double(&x->pointer[endIdx * x->length], x->dtype) - to_double(&x->pointer[startIdx * x->length], x->dtype));
+    *retResolution = reqPoints/(to_doublex(&x->pointer[endIdx * x->length], x->dtype,INFINITY,TRUE) - to_doublex(&x->pointer[startIdx * x->length], x->dtype,-INFINITY,TRUE));
     const double deltaTime = (deltaSamples == 1) ? 0 : (xMax - xMin)/(double)reqPoints;
     double currXDouble;
     float minY, maxY;
@@ -508,7 +513,7 @@ EXPORT int IsSegmented(char *expr) {
   if IS_NOT_OK(TdiCompile(&exprD, &xd MDS_END_ARG)) return FALSE;
   int segNid = recIsSegmented(xd.pointer);
   MdsFree1Dx(&xd, NULL);
-  return segNid != -1;
+  return segNid != 0;
 }
 
 EXPORT int TestGetHelp(char *expr) {
@@ -527,35 +532,35 @@ EXPORT int TestGetUnits(char *expr) {
   return TRUE;
 }
 
-static inline int pack_meta(char*title,char*xLabel,char*yLabel,float res,char*retArr,int idx) {
+static inline int pack_meta(mdsdsc_t*title,mdsdsc_t*xLabel,mdsdsc_t*yLabel,float res,char*retArr,int idx) {
 //idx is the current index in retArr
 //Write title, xLabel, yLabel as length followed by chars
   if(title) {
-    *(int *)&retArr[idx] = strlen(title);
+    *(int *)&retArr[idx] = title->length;
     swap4(&retArr[idx]);
     idx += sizeof(int);
-    memcpy(&retArr[idx], title, strlen(title));
-    idx += strlen(title);
+    memcpy(&retArr[idx], title->pointer, title->length);
+    idx += title->length;
   } else {
     *(int *)&retArr[idx] = 0; //no swap required
     idx += 4;
   }
   if(xLabel) {
-    *(int *)&retArr[idx] = strlen(xLabel);
+    *(int *)&retArr[idx] = xLabel->length;
     swap4(&retArr[idx]);
     idx += sizeof(int);
-    memcpy(&retArr[idx], xLabel, strlen(xLabel));
-    idx += strlen(xLabel);
+    memcpy(&retArr[idx], xLabel->pointer, xLabel->length);
+    idx += xLabel->length;
   } else {
     *(int *)&retArr[idx] = 0; //no swap required
     idx += 4;
   }
   if(yLabel) {
-    *(int *)&retArr[idx] = strlen(yLabel);
+    *(int *)&retArr[idx] = yLabel->length;
     swap4(&retArr[idx]);
     idx += sizeof(int);
-    memcpy(&retArr[idx], yLabel, strlen(yLabel));
-    idx += strlen(yLabel);
+    memcpy(&retArr[idx], yLabel->pointer, yLabel->length);
+    idx += yLabel->length;
   } else {
     *(int *)&retArr[idx] = 0; //no swap required
     idx += 4;
@@ -684,38 +689,32 @@ static inline int getXArray(mdsdsc_a_t *xArrD, int retSamples, char *retArr, int
   return idx;
 }
 
-EXPORT mdsdsc_xd_t* GetXYSignalXd(mdsdsc_t* inY, mdsdsc_t* inX, double *inXMin, double *inXMax, int reqNSamples, mdsdsc_xd_t* retXd) {
-  if (!inY) return(encodeError("Y data must not be NULL",__LINE__,retXd));
+EXPORT int GetXYSignalXd(mdsdsc_t *inY, mdsdsc_t *inX, mdsdsc_t *inXMin, mdsdsc_t *inXMax, int reqNSamples, mdsdsc_xd_t* retXd) {
+  if (!inY) return TdiNULL_PTR;
   EMPTYXD(yXd);
   EMPTYXD(xXd);
   int estimatedSegmentSamples = 0;
-  double estimatedDuration = 0;
-  int64_t estimatedSamples = estimateNumSamples(inY, inXMin, inXMax, &estimatedSegmentSamples, &estimatedDuration);
-  //printf("Estimated Samples: %d\n", estimatedSamples);
-  //printf("Estimated SegmentSamples: %d\n", estimatedSegmentSamples);
-  //printf("Estimated Durations: %f\n", estimatedDuration);
-  double delta;
-  mdsdsc_t deltaD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)&delta};
-  mdsdsc_t xMinD  = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)inXMin};
-  mdsdsc_t xMaxD  = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)inXMax};
-  mdsdsc_t *xMinP, *xMaxP, *deltaP;
+  double xmin = -INFINITY, xmax = INFINITY, delta;
+  mdsdsc_t *xMinP,*xMaxP,*deltaP, deltaD = {0, 0, CLASS_S, 0};
+  int64_t estimatedSamples = estimateNumSamples(inY, inXMin, inXMax, &estimatedSegmentSamples, &xmin, &xmax);
+  const double estimatedDuration = xmax - xmin;
+  xMinP = (xmin > -INFINITY) ? inXMin : NULL;
+  xMaxP = (xmax <  INFINITY) ? inXMax : NULL;
   if (estimatedSamples > NUM_SAMPLES_THRESHOLD) {
-    //First guess on delta  G
+    //First guess on delta
     delta = 100 * estimatedSamples/NUM_SAMPLES_THRESHOLD;
     //Now delta represents the number of samples to be compressed in a min-max mair
     if (delta > estimatedSegmentSamples/10.)
       delta = estimatedSegmentSamples/10.;
     //In any case don't make it too big in respect of the single segment size (at minimum 10 samples )pairs) per segment
     delta *= (estimatedDuration/estimatedSamples);
-    deltaP = &deltaD;
+    deltaP = (delta>1e-9) ? &deltaD : NULL;
   } else deltaP = NULL;
   //Set limits if any
-  xMinP = inXMin ? &xMinD : NULL;
-  xMaxP = inXMax ? &xMaxD : NULL;
   int status = TreeSetTimeContext(xMinP,xMaxP,deltaP);
   char *title, *xLabel, *yLabel;
   status = TdiEvaluate(inY, &yXd MDS_END_ARG);
-  if STATUS_NOT_OK {encodeError(MdsGetMsg(status),__LINE__,retXd);goto return_err;}
+  if STATUS_NOT_OK goto return_err;
   // Get Y, title, and yLabel, if any
   title  = recGetHelp(yXd.pointer);
   yLabel = recGetUnits(yXd.pointer, 0);
@@ -724,18 +723,18 @@ EXPORT mdsdsc_xd_t* GetXYSignalXd(mdsdsc_t* inY, mdsdsc_t* inX, double *inXMin, 
     status = TdiDimOf(yXd.pointer, &xXd MDS_END_ARG);
   else //Get xLabel, if any
     status = TdiEvaluate(inX, &xXd MDS_END_ARG);
-  if STATUS_NOT_OK {encodeError(MdsGetMsg(status),__LINE__,retXd);goto return_err;}
+  if STATUS_NOT_OK goto return_err;
   xLabel = recGetUnits(xXd.pointer, 1);
-  status = TdiData((mdsdsc_t *)&xXd, &xXd MDS_END_ARG);
-  if STATUS_NOT_OK {encodeError(MdsGetMsg(status),__LINE__,retXd);goto return_err;}
+  if STATUS_OK status = TdiData((mdsdsc_t *)&xXd, &xXd MDS_END_ARG);
   status = TdiData((mdsdsc_t *)&yXd, &yXd MDS_END_ARG);
-  if STATUS_NOT_OK {encodeError(MdsGetMsg(status),__LINE__,retXd);goto return_err;}
+  if STATUS_NOT_OK goto return_err;
   //Check results: must be an array of either type DTYPE_B, DTYPE_BU, DTYPE_W, DTYPE_WU, DTYPE_L, DTYPE_LU, DTYPE_FLOAT, DTYPE_DOUBLE
   // Y converted to float, X to int64_t or float or double
   char *err = NULL;
   int nSamples = getNSamples(&yXd,&xXd,&err);
   if (err) {
     encodeError(err,nSamples,retXd);
+    status = MDSplusERROR;
     goto return_err;
   }
   mdsdsc_a_t *xArrD = (mdsdsc_a_t *)xXd.pointer;
@@ -743,7 +742,40 @@ EXPORT mdsdsc_xd_t* GetXYSignalXd(mdsdsc_t* inY, mdsdsc_t* inX, double *inXMin, 
   float *y = getFloatArray(yArrD,nSamples);
   int retSamples;
   float retResolution;
-  trimData(y, xArrD, nSamples, reqNSamples, inXMin ? *inXMin : -INFINITY, inXMax ? *inXMax : INFINITY, &retSamples, &retResolution);
+  trimData(y, xArrD, nSamples, reqNSamples, xmin, xmax, &retSamples, &retResolution);
+
+  DESCRIPTOR_A(yData, sizeof(float), DTYPE_FLOAT, (char *)y,     sizeof(float ) * retSamples);
+  mdsdsc_t yUnits = {yLabel ? strlen(yLabel) : 0,DTYPE_T,CLASS_S,yLabel};
+  DESCRIPTOR_WITH_UNITS(yDataU,&yData,&yUnits);
+  mdsdsc_t *yObj = yLabel ? (mdsdsc_t *)&yDataU : (mdsdsc_t *)&yData;
+
+  DESCRIPTOR_A(xData, xArrD->length, xArrD->dtype, xArrD->pointer, xArrD->length * retSamples);
+  mdsdsc_t xUnits = {xLabel ? strlen(xLabel) : 0,DTYPE_T,CLASS_S,xLabel};
+  DESCRIPTOR_WITH_UNITS(xDataU,&xData,&xUnits);
+  mdsdsc_t *xObj = xLabel ? (mdsdsc_t *)&xDataU : (mdsdsc_t *)&xData;
+  mdsdsc_t resD  = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char*)&retResolution};
+  DESCRIPTOR_SIGNAL_1(Signal, yObj, &resD, xObj);
+  mdsdsc_t Help = {title ? strlen(title) : 0,DTYPE_T,CLASS_S,title};
+  DESCRIPTOR_PARAM(SignalH,&Signal,&Help,NULL);
+  mdsdsc_t *signal = title ? (mdsdsc_t *)&SignalH : (mdsdsc_t *)&Signal;
+
+  MdsCopyDxXd(signal, retXd);
+  if ((float*)yArrD->pointer != y) free(y);
+return_err: ;
+  MdsFree1Dx(&xXd, NULL);
+  MdsFree1Dx(&yXd, NULL);
+  return status;
+}
+EXPORT int _GetXYSignalXd(void**ctx, mdsdsc_t *y,  mdsdsc_t *x, mdsdsc_t *xmin, mdsdsc_t *xmax, int num, mdsdsc_xd_t *retXd) {
+  int status;
+  void* ps = TreeCtxPush(ctx);
+  pthread_cleanup_push(TreeCtxPop,ps);
+  status = GetXYSignalXd(y, x, xmin, xmax, num, retXd);
+  pthread_cleanup_pop(1);
+  return status;
+}
+
+static mdsdsc_xd_t*getPackedDsc(mdsdsc_xd_t*retXd){
 /*Assemble result. Format:
 -retResolution(float)
 -number of samples (minumum between X and Y)
@@ -751,207 +783,137 @@ EXPORT mdsdsc_xd_t* GetXYSignalXd(mdsdsc_t* inY, mdsdsc_t* inX, double *inXMin, 
 -y samples (float - big endian)
 -x Samples
 */
+  mdsdsc_t *title, *xLabel, *yLabel;
+  mdsdsc_t const *sig = retXd->pointer;
+  if (sig->dtype == DTYPE_PARAM) {
+    title = ((mdsdsc_r_t*)sig)->dscptrs[1];
+    sig   = ((mdsdsc_r_t*)sig)->dscptrs[0];
+  } else
+    title = NULL;
+  mdsdsc_t const *dat = ((mdsdsc_r_t*)sig)->dscptrs[0];
+  if (dat->dtype == DTYPE_WITH_UNITS) {
+    yLabel = ((mdsdsc_r_t*)dat)->dscptrs[1];
+    dat    = ((mdsdsc_r_t*)dat)->dscptrs[0];
+  } else
+    yLabel = NULL;
+  mdsdsc_t const *dim = ((mdsdsc_r_t*)sig)->dscptrs[2];
+  if (dim->dtype == DTYPE_WITH_UNITS) {
+    xLabel = ((mdsdsc_r_t*)dim)->dscptrs[1];
+    dim    = ((mdsdsc_r_t*)dim)->dscptrs[0];
+  } else
+    xLabel = NULL;
+  float retResolution = *(float*)(((mdsdsc_r_t*)sig)->dscptrs[1]->pointer);
+  const int retSamples = ((mdsdsc_a_t*)dat)->arsize/dat->length;
   int xSampleSize;
-  if(xArrD->dtype == DTYPE_Q || xArrD->dtype == DTYPE_QU || xArrD->dtype == DTYPE_DOUBLE)
+  if(dim->dtype == DTYPE_Q || dim->dtype == DTYPE_QU || dim->dtype == DTYPE_DOUBLE)
     xSampleSize = sizeof(int64_t);
   else
     xSampleSize = sizeof(int);
   int retSize = sizeof(float) + sizeof(int) + 1 + retSamples * (sizeof(float) + xSampleSize);
   //Add rool for title and labels
   retSize += 3 * sizeof(int);
-  if(title)  retSize += strlen(title);
-  if(xLabel) retSize += strlen(xLabel);
-  if(yLabel) retSize += strlen(yLabel);
+  if(title)  retSize += title->length;
+  if(xLabel) retSize += xLabel->length;
+  if(yLabel) retSize += yLabel->length;
   char *retArr = malloc(retSize);
   *((int *)&retArr[4]) = retSamples;
   swap4(&retArr[4]);
-  if(xArrD->dtype == DTYPE_Q || xArrD->dtype == DTYPE_QU)
+  if(dim->dtype == DTYPE_Q || dim->dtype == DTYPE_QU)
     retArr[8] = 1;
-  else if(xArrD->dtype == DTYPE_DOUBLE)
+  else if(dim->dtype == DTYPE_DOUBLE)
     retArr[8] = 2;
   else
     retArr[8] = 3;
   int i,idx = 9;
-  for(i = 0; i < retSamples; i++) {
-    *((float *)&retArr[idx]) = y[i];
+  for(i = 0; i < retSamples; i++, idx += sizeof(float)) {
+    *((float *)&retArr[idx]) = ((float *)dat->pointer)[i];
     swap4(&retArr[idx]);
-    idx += sizeof(float);
   }
-
-  idx = getXArray(xArrD, retSamples, retArr, idx);
+  idx = getXArray((mdsdsc_a_t*)dim, retSamples, retArr, idx);
   if (idx<0) {
     encodeError("Cannot Convert X data dtype",__LINE__,retXd);
-    goto return_err_y;
+     return retXd;
   }
-
   idx = pack_meta(title,xLabel,yLabel,retResolution,retArr,idx);
-
   DESCRIPTOR_A(retArrD, 1, DTYPE_B, retArr, retSize);
   MdsCopyDxXd((mdsdsc_t *)&retArrD, retXd);
-return_err_y: ;
-  if ((void*)yArrD->pointer != (void*)y) free(y);
-  free(retArr);
-return_err: ;
-  MdsFree1Dx(&xXd, NULL);
-  MdsFree1Dx(&yXd, NULL);
-  return retXd;
-}
-EXPORT mdsdsc_xd_t*_GetXYSignalXd(void**ctx, mdsdsc_t *y,  mdsdsc_t *x, double *xmin, double *xmax, int num, mdsdsc_xd_t *retXd) {
-  void* ps = TreeCtxPush(ctx);
-  pthread_cleanup_push(TreeCtxPop,ps);
-  GetXYSignalXd(y, x, xmin, xmax, num, retXd);
-  pthread_cleanup_pop(1);
   return retXd;
 }
 
-EXPORT mdsdsc_xd_t*GetXYWaveXd(mdsdsc_t *sig, double *inXMin, double *inXMax, int reqNSamples, mdsdsc_xd_t *retXd) {
-  EMPTYXD(yXd);
-  EMPTYXD(xXd);
-  mdsdsc_t xMinD  = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)inXMin};
-  mdsdsc_t xMaxD  = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)inXMax};
-  mdsdsc_t *xMinP, *xMaxP;
-  xMinP = inXMin ? &xMinD : NULL;
-  xMaxP = inXMax ? &xMaxD : NULL;
-  int status = TreeSetTimeContext(xMinP,xMaxP,NULL);
-  if STATUS_OK status = TdiEvaluate(sig, &yXd MDS_END_ARG);
-  if STATUS_OK status = TdiDimOf((mdsdsc_t *)&yXd, &xXd MDS_END_ARG);
-  if STATUS_OK status = TdiData( (mdsdsc_t *)&xXd, &xXd MDS_END_ARG);
-  if STATUS_OK status = TdiData( (mdsdsc_t *)&yXd, &yXd MDS_END_ARG);
-  char *err = NULL;
-  if STATUS_NOT_OK err = MdsGetMsg(status);
-  int nSamples;
-  if (!err) nSamples = getNSamples(&yXd,&xXd,&err);
-  if (err) {
-    mdsdsc_t errD = {0, DTYPE_T, CLASS_S, 0};
-    errD.length = strlen(err);
-    errD.pointer = err;
-    MdsCopyDxXd(&errD, retXd);
-    goto return_err;
-  }
-  mdsdsc_a_t *xArrD = (mdsdsc_a_t *)xXd.pointer;
-  mdsdsc_a_t *yArrD = (mdsdsc_a_t *)yXd.pointer;
-  float *y = getFloatArray(yArrD,nSamples);
-  int retSamples;
-  float retResolution;
-  trimData(y, xArrD, nSamples, reqNSamples, *inXMin, *inXMax, &retSamples, &retResolution);
-
-  DESCRIPTOR_A(retDataD, sizeof(float), DTYPE_FLOAT, (char *)y,     sizeof(float ) * retSamples);
-  DESCRIPTOR_A(retDimD, xArrD->length, xArrD->dtype, xArrD->pointer, xArrD->length * retSamples);
-  DESCRIPTOR_SIGNAL_1(retSignalD, &retDataD, 0, &retDimD);
-  MdsCopyDxXd((mdsdsc_t *)&retSignalD, retXd);
-  if ((float*)yArrD->pointer != y) free(y);
-return_err: ;
-  MdsFree1Dx(&xXd, 0);
-  MdsFree1Dx(&yXd, 0);
-  return retXd;
+EXPORT int GetXYWaveXd(mdsdsc_t *sig,  mdsdsc_t *xmin, mdsdsc_t *xmax, int num, mdsdsc_xd_t *retXd) {
+  return GetXYSignalXd(sig, NULL, xmin, xmax, num, retXd);
 }
 
-#define MAX_LIMIT 1E10
 EXPORT mdsdsc_xd_t* GetXYSignal(char *inY, char *inX, float *inXMin, float *inXMax, int *reqNSamples) {
   static EMPTYXD(retXd);
+  const size_t len = strlen(inY);
+  if (len==0) return(encodeError("Y data must not be NULL or empty.",__LINE__,&retXd));
   EMPTYXD(yXd);
   EMPTYXD(xXd);
-  double xMin, *pXMin, xMax, *pXMax;
-  if (inXMin && *inXMin > -MAX_LIMIT) {
-    xMin = (double)*inXMin;
-    pXMin= &xMin;
-  } else
-    pXMin= NULL;
-  if (inXMax && *inXMax <  MAX_LIMIT) {
-    xMax = (double)*inXMax;
-    pXMax= &xMax;
-  } else
-    pXMax= NULL;
+  mdsdsc_t xMinD  = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)inXMin};
+  mdsdsc_t xMaxD  = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)inXMax};
   int status;{
-    mdsdsc_t expY = {strlen(inY), DTYPE_T, CLASS_S, inY};
+    mdsdsc_t expY = {len, DTYPE_T, CLASS_S, inY};
     status = TdiCompile(&expY, &yXd MDS_END_ARG);
   }
   if (STATUS_OK && inX && *inX){
     mdsdsc_t expX = {strlen(inX), DTYPE_T, CLASS_S, inX};
     status = TdiCompile(&expX, &xXd MDS_END_ARG);
   }
-  if STATUS_OK GetXYSignalXd(yXd.pointer,xXd.pointer,pXMin,pXMax,*reqNSamples,&retXd);
+  if STATUS_OK status = GetXYSignalXd(yXd.pointer,xXd.pointer,inXMin ? &xMinD : NULL,inXMax ? &xMaxD : NULL,*reqNSamples,&retXd);
   MdsFree1Dx(&yXd, NULL);
   MdsFree1Dx(&xXd, NULL);
   if STATUS_NOT_OK return(encodeError(MdsGetMsg(status),__LINE__,&retXd));
-  return &retXd;
+  return getPackedDsc(&retXd);
 }
 
-#define MAX64 0x7FFFFFFFFFFFFFFFL
 EXPORT mdsdsc_xd_t* GetXYSignalLongTimes(char *inY, char *inX, int64_t *inXMin, int64_t *inXMax, int *reqNSamples) {
-  static EMPTYXD(retXd);
+  static EMPTYXD(xd);
+  const size_t len = strlen(inY);
+  if (len==0) return(encodeError("Y data must not be NULL or empty.",__LINE__,&xd));
   EMPTYXD(yXd);
-  EMPTYXD(xXd);
-  double xMin, *pXMin, xMax, *pXMax;
-  if (inXMin && *inXMin && *inXMin > -MAX64) {
-    xMin = ((double)*inXMin)/1e9;
-    pXMin= &xMin;
-  } else
-    pXMin= NULL;
-  if (inXMax && *inXMax && *inXMax <  MAX64) {
-    xMax = ((double)*inXMax)/1e9;
-    pXMax= &xMax;
-  } else
-    pXMax= NULL;
+  mdsdsc_t xMinD  = {sizeof(int64_t), DTYPE_Q, CLASS_S, (char *)inXMin};
+  mdsdsc_t xMaxD  = {sizeof(int64_t), DTYPE_Q, CLASS_S, (char *)inXMax};
   int status;{
-    mdsdsc_t expY = {strlen(inY), DTYPE_T, CLASS_S, inY};
+    mdsdsc_t expY = {len, DTYPE_T, CLASS_S, inY};
     status = TdiCompile(&expY, &yXd MDS_END_ARG);
   }
   if (STATUS_OK && inX && *inX){
     mdsdsc_t expX = {strlen(inX), DTYPE_T, CLASS_S, inX};
-    status = TdiCompile(&expX, &xXd MDS_END_ARG);
+    status = TdiCompile(&expX, &xd MDS_END_ARG);
   }
-  if STATUS_OK GetXYSignalXd(yXd.pointer,xXd.pointer,pXMin,pXMax,*reqNSamples,&retXd);
+  if STATUS_OK status = GetXYSignalXd(yXd.pointer,xd.pointer,inXMin ? &xMinD : NULL,inXMax ? &xMaxD : NULL,*reqNSamples,&xd);
   MdsFree1Dx(&yXd, NULL);
-  MdsFree1Dx(&xXd, NULL);
-  if STATUS_NOT_OK return(encodeError(MdsGetMsg(status),__LINE__,&retXd));
-  return &retXd;
+  if STATUS_NOT_OK return(encodeError(MdsGetMsg(status),__LINE__,&xd));
+  return getPackedDsc(&xd);
 }
 
-EXPORT mdsdsc_xd_t* GetXYWave(char *sigName, float *inXMin, float *inXMax, int *reqNSamples) {
-  static EMPTYXD(retXd);
-  const size_t len = sigName ? strlen(sigName) : 0;
-  if (len==0) return(encodeError("Signal must not be NULL or empty.",__LINE__,&retXd));
-  double xMin, *pXMin, xMax, *pXMax;
-  if (inXMin && *inXMin > -MAX_LIMIT) {
-    xMin = (double)*inXMin;
-    pXMin= &xMin;
-  } else
-    pXMin= NULL;
-  if (inXMax && *inXMax <  MAX_LIMIT) {
-    xMax = (double)*inXMax;
-    pXMax= &xMax;
-  } else
-    pXMax= NULL;
-  mdsdsc_t exp = {len, DTYPE_T, CLASS_S, sigName};
-  EMPTYXD(xd);
-  int status = TdiCompile(&exp, &xd MDS_END_ARG);
-  if STATUS_OK GetXYWaveXd(xd.pointer,pXMin,pXMax,*reqNSamples,&retXd);
-  MdsFree1Dx(&xd, NULL);
-  if STATUS_NOT_OK return(encodeError(MdsGetMsg(status),__LINE__,&retXd));
-  return &retXd;
+EXPORT mdsdsc_xd_t* GetXYWave(char *inY, float *inXMin, float *inXMax, int *reqNSamples) {
+  static EMPTYXD(xd);
+  const size_t len = strlen(inY);
+  if (len==0) return(encodeError("Y data must not be NULL or empty.",__LINE__,&xd));
+  mdsdsc_t xMinD  = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)inXMin};
+  mdsdsc_t xMaxD  = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)inXMax};
+  int status;{
+    mdsdsc_t expY = {len, DTYPE_T, CLASS_S, inY};
+    status = TdiCompile(&expY, &xd MDS_END_ARG);
+  }
+  if STATUS_OK status = GetXYSignalXd(xd.pointer,NULL,inXMin ? &xMinD : NULL,inXMax ? &xMaxD : NULL,*reqNSamples,&xd);
+  if STATUS_NOT_OK return(encodeError(MdsGetMsg(status),__LINE__,&xd));
+  return &xd;
 }
 
-EXPORT mdsdsc_xd_t* GetXYWaveLongTimes(char *sigName, int64_t *inXMin, int64_t *inXMax, int *reqNSamples) {
-  static EMPTYXD(retXd);
-  const size_t len = sigName ? strlen(sigName) : 0;
-  if (len==0) return(encodeError("Signal must not be NULL or empty.",__LINE__,&retXd));
-  double xMin, *pXMin, xMax, *pXMax;
-  if (inXMin && *inXMin && *inXMin >  -MAX64) {
-    xMin = ((double)*inXMin)/1e9;
-    pXMin= &xMin;
-  } else
-    pXMin= NULL;
-  if (inXMax && *inXMax && *inXMax < MAX64) {
-    xMax = ((double)*inXMax)/1e9;
-    pXMax= &xMax;
-  } else
-    pXMax= NULL;
-  mdsdsc_t exp = {len, DTYPE_T, CLASS_S, sigName};
-  EMPTYXD(xd);
-  int status = TdiCompile(&exp, &xd MDS_END_ARG);
-  if STATUS_OK GetXYWaveXd(xd.pointer,pXMin,pXMax,*reqNSamples,&retXd);
-  MdsFree1Dx(&xd, NULL);
-  if STATUS_NOT_OK return(encodeError(MdsGetMsg(status),__LINE__,&retXd));
-  return &retXd;
+EXPORT mdsdsc_xd_t* GetXYWaveLongTimes(char *inY, int64_t *inXMin, int64_t *inXMax, int *reqNSamples) {
+  static EMPTYXD(xd);
+  const size_t len = strlen(inY);
+  if (len==0) return(encodeError("Y data must not be NULL or empty.",__LINE__,&xd));
+  mdsdsc_t xMinD  = {sizeof(int64_t), DTYPE_Q, CLASS_S, (char *)inXMin};
+  mdsdsc_t xMaxD  = {sizeof(int64_t), DTYPE_Q, CLASS_S, (char *)inXMax};
+  int status;{
+    mdsdsc_t expY = {len, DTYPE_T, CLASS_S, inY};
+    status = TdiCompile(&expY, &xd MDS_END_ARG);
+  }
+  if STATUS_OK status = GetXYSignalXd(xd.pointer,NULL,inXMin ? &xMinD : NULL,inXMax ? &xMaxD : NULL,*reqNSamples,&xd);
+  if STATUS_NOT_OK return(encodeError(MdsGetMsg(status),__LINE__,&xd));
+  return &xd;
 }

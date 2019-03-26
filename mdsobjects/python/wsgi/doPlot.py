@@ -28,7 +28,6 @@ import os,sys,ctypes,numpy,struct
 
 example = '/plot?expr=make_signal(sin((0:1:.01)*$2pi),*,0:1:.01)'
 
-_MdsMisc = version.load_library('MdsMisc')
 def getXYSignal(obj,num):
     sig = obj.getXYSignal(num=num)
     return sig.dim_of().data(),sig.data()
