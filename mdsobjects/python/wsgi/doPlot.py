@@ -23,52 +23,15 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import tdi,version,String,Descriptor_xd
+from MDSplus import Data,TdiCompile,version,String,Descriptor_xd
 import os,sys,ctypes,numpy,struct
 
 example = '/plot?expr=make_signal(sin((0:1:.01)*$2pi),*,0:1:.01)'
 
 _MdsMisc = version.load_library('MdsMisc')
-def getXYSignal(expr,num):
-    _MdsMisc.GetXYSignal.restype = ctypes.POINTER(Descriptor_xd._structure_class)
-    y,x = '`(__misc__=(%s;);)'%expr,'`DIM_OF(__misc__)'
-    cnum = ctypes.c_int32(num)
-    cmin = ctypes.c_float(-float('inf'))
-    cmax = ctypes.c_float( float('inf'))
-    xd   = _MdsMisc.GetXYSignal(ctypes.c_char_p(y),ctypes.c_char_p(x),ctypes.byref(cmin),ctypes.byref(cmax),ctypes.byref(cnum))
-    d    = Descriptor_xd(xd.contents).value
-    if isinstance(d,String): raise Exception(d.data()[8:])
-    bt  = d.data().tostring()
-    off = 0
-    fmt = '!fib'
-    res,length,typ = struct.unpack_from(fmt,bt,off)
-    off += struct.calcsize(fmt)
-    fmt = '!'+('f'*length)
-    y = numpy.array(struct.unpack_from(fmt,bt,off),'float32')
-    off += struct.calcsize(fmt)
-    if   typ == 1: # int64
-        typ = 'int64'
-        fmt = '!'+('q'*length)
-    elif typ == 2: # float64
-        typ = 'float64'
-        fmt = '!'+('d'*length)
-    else:          # float32
-        typ = 'float32'
-        #fmt = '!'+('f'*length)
-    x = numpy.array(struct.unpack_from(fmt,bt,off),typ)
-    title = xlabel = ylabel = ""
-    off += struct.calcsize(fmt)
-    fmt = '!I'
-    llen = struct.unpack_from(fmt,bt,off)[0]
-    off += struct.calcsize(fmt)+llen
-    title = bt[off-llen:off]
-    llen = struct.unpack_from(fmt,bt,off)[0]
-    off += struct.calcsize(fmt)+llen
-    ylabel = bt[off-llen:off]
-    llen = struct.unpack_from(fmt,bt,off)[0]
-    off += struct.calcsize(fmt)+llen
-    xlabel = bt[off-llen:off]
-    return length,x,y,title,xlabel,ylabel
+def getXYSignal(obj,num):
+    sig = obj.getXYSignal(num=num)
+    return sig.dim_of().data(),sig.data()
 
 def gridScaling(min_in,max_in,divisions,span):
     from math import log10,pow,fabs,ceil,floor,modf
@@ -107,24 +70,24 @@ def doPlot(self):
     viewbox = (0,0,10000,10000);
     expr = self.args['expr'][-1]
     if len(self.path_parts) > 2:
-        tdi('treeopen("%s",%s)'%tuple(self.path_parts[1:3]))
-    try:
-        length,x,y,title,xlabel,ylabel = getXYSignal(expr,viewbox[2])
-    finally:
-        if len(self.path_parts) > 2:
-            tdi('treeclose("%s",%s)'%tuple(self.path_parts[1:3]))
+        tree = self.openTree(self.path_parts[1],self.path_parts[2])
+        obj = tree.tdiCompile(expr)
+    else:
+        tree = None
+        obj = TdiCompile(expr)
+    x,y = getXYSignal(obj,viewbox[2])
     response_headers = [
         ('Cache-Control','no-store, no-cache, must-revalidate'),
         ('Pragma','no-cache'),
         ('XDTYPE',x.__class__.__name__),
         ('YDTYPE',y.__class__.__name__),
-        ('XLENGTH',str(length)),
-        ('YLENGTH',str(length)),
+        ('XLENGTH',str(x.shape[0])),
+        ('YLENGTH',str(y.shape[0])),
         ('Content-type','text/xml'),
     ]
-    if len(self.path_parts) > 2:
-        response_headers.append(('TREE',self.path_parts[1].upper()))
-        response_headers.append(('SHOT',self.path_parts[2]))
+    if tree is not None:
+        response_headers.append(('TREE',tree.tree))
+        response_headers.append(('SHOT',str(tree.shot)))
     output  = '<?xml version="1.0" standalone="no"?>\n'
     output += '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n'
     output += '<svg viewBox="%d %d %d %d" xmlns="http://www.w3.org/2000/svg" version="1.1">\n' % viewbox
