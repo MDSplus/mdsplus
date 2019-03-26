@@ -228,7 +228,7 @@ class application:
             yield output
         except Exception:
             import traceback
-            self.start('500 BAD REQUEST',[('Content-Type','text/html')])
+            self.start('500 BAD_REQUEST',[('Content-Type','text/html')])
             yield self.html_frame("EXCEPTION",'<PRE>\n%s\n</PRE>'%traceback.format_exc(),)
 
     def openTree(self,tree,shot):
