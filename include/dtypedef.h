@@ -2,7 +2,7 @@
  *	atomic data types 0 - 37, 51-55
  */
 DEFINE(MISSING		,0)	/* no data */
-DEFINE(V_depricated	,1)	/* aligned bit string */
+DEFINE(V_deprecated	,1)	/* aligned bit string */
 DEFINE(BU		,2)	/* byte (unsigned);  8-bit unsigned quantity */
 DEFINE(WU		,3)	/* word (unsigned);  16-bit unsigned quantity */
 DEFINE(LU		,4)	/* longword (unsigned);  32-bit unsigned quantity */
@@ -16,15 +16,15 @@ DEFINE(D		,11)	/* D_floating;	64-bit double-precision floating point */
 DEFINE(FC		,12)	/* F_floating complex */
 DEFINE(DC		,13)	/* D_floating complex */
 DEFINE(T		,14)	/* character string;  a single 8-bit character or a sequence of characters */
-DEFINE(NU_depricated	,15)	/* numeric string) unsigned */
-DEFINE(NL_depricated	,16)	/* numeric string) left separate sign */
-DEFINE(NLO_depricated	,17)	/* numeric string) left overpunched sign */
-DEFINE(NR_depricated	,18)	/* numeric string) right separate sign */
-DEFINE(NRO_depricated	,19)	/* numeric string) right overpunched sign */
-DEFINE(NZ_depricated	,20)	/* numeric string) zoned sign */
-DEFINE(P_depricated	,21)	/* packed decimal string */
-DEFINE(ZI_depricated	,22)	/* sequence of instructions */
-DEFINE(ZEM_depricated	,23)	/* procedure entry mask */
+DEFINE(NU_deprecated	,15)	/* numeric string) unsigned */
+DEFINE(NL_deprecated	,16)	/* numeric string) left separate sign */
+DEFINE(NLO_deprecated	,17)	/* numeric string) left overpunched sign */
+DEFINE(NR_deprecated	,18)	/* numeric string) right separate sign */
+DEFINE(NRO_deprecated	,19)	/* numeric string) right overpunched sign */
+DEFINE(NZ_deprecated	,20)	/* numeric string) zoned sign */
+DEFINE(P_deprecated	,21)	/* packed decimal string */
+DEFINE(ZI_deprecated	,22)	/* sequence of instructions */
+DEFINE(ZEM_deprecated	,23)	/* procedure entry mask */
 DEFINE(DSC		,24)	/* descriptor */
 DEFINE(OU		,25)	/* octaword (unsigned);  128-bit unsigned quantity */
 DEFINE(O		,26)	/* octaword integer (signed);  128-bit signed 2's-complement integer */
@@ -32,12 +32,12 @@ DEFINE(G		,27)	/* G_floating;	64-bit double-precision floating point */
 DEFINE(H		,28)	/* H_floating;	128-bit quadruple-precision floating point */
 DEFINE(GC		,29)	/* G_floating complex */
 DEFINE(HC		,30)	/* H_floating complex */
-DEFINE(CIT_depricated	,31)	/* COBOL Intermediate Temporary */
-DEFINE(BPV_depricated	,32)	/* bound procedure value */
-DEFINE(BLV_depricated	,33)	/* bound label value */
-DEFINE(VU_depricated	,34)	/* unaligned bit string */
-DEFINE(ADT_depricated	,35)	/* absolute date and time */
-DEFINE(VT_depricated	,37)	/* varying character string;  16-bit count) followed by a string */
+DEFINE(CIT_deprecated	,31)	/* COBOL Intermediate Temporary */
+DEFINE(BPV_deprecated	,32)	/* bound procedure value */
+DEFINE(BLV_deprecated	,33)	/* bound label value */
+DEFINE(VU_deprecated	,34)	/* unaligned bit string */
+DEFINE(ADT_deprecated	,35)	/* absolute date and time */
+DEFINE(VT_deprecated	,37)	/* varying character string;  16-bit count) followed by a string */
 /*
  *	38 - 50 might have been used for RESERVED purposes
  */
