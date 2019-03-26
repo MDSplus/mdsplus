@@ -32,7 +32,7 @@ class CRYOCON24C(MDSplus.Device):
         {'path': ':COMMENT', 'type': 'text', 'options': ('no_write_shot')},
         {'path': ':SEG_LENGTH', 'type': 'numeric', 'value': 5, 'options': ('no_write_shot')},
         {'path': ':INIT_ACTION', 'type': 'action', 'valueExpr': "Action(Dispatch('S','INIT',50,None),Method(None,'INIT',head))",'options': ('no_write_shot',)},
-        {'path': ':STOP_ACTION', 'type': 'action', 'valueExpr': "Action(Dispatch('S','STORE',50,None),Method(None,'STOP',head))",'options': ('no_write_shot',)},
+        {'path': ':STOP_ACTION', 'type': 'action', 'valueExpr': "Action(Dispatch('S','STOP',50,None),Method(None,'STOP',head))",'options': ('no_write_shot',)},
         {'path': ':RUNNING', 'type': 'numeric', 'options': ('no_write_model')},
     ]
 
@@ -40,31 +40,12 @@ class CRYOCON24C(MDSplus.Device):
         parts.append({'path': ':INPUT_%c' %(c,), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
         parts.append({'path': ':INPUT_%c:SERIAL_NO' %(c,), 'type': 'TEXT', 'options': ('no_write_shot')})
         parts.append({'path': ':INPUT_%c:CALIBRATION' %(c,), 'type': 'TEXT', 'options': ('no_write_model', 'write_once',)})
-        parts.append({'path': ':INPUT_%c:TEMPERATURE' %(c,), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
+        #parts.append({'path': ':INPUT_%c:TEMPERATURE' %(c,), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
         parts.append({'path': ':INPUT_%c:RESISTENCE' %(c,), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
         parts.append({'path': ':INPUT_%c:OUTPUT_POWER' %(c,), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
         
     del c
     debug = None
-
-    def sendCommand(self,s,cmd):
-        s.send(cmd + "\r\n")
-
-    def recvResponse(self,s):
-        msg = ""
-        while True:
-            c = s.recv(1)
-            if c == "\r":
-                continue
-            if c == "\n":
-                break
-            msg += c
-        return msg
-
-    def queryCommand(self,s,cmd):
-        self.sendCommand(s,cmd)
-        return self.recvResponse(s)
-
 
     def debugging(self):
         import os
@@ -86,20 +67,41 @@ class CRYOCON24C_TREND(CRYOCON24C):
         parts.append({'path': ':INPUT_%c:INTEGR_GAIN' %(c,), 'type': 'NUMERIC', 'options': ('no_write_model')})
         parts.append({'path': ':INPUT_%c:DERIVA_GAIN' %(c,), 'type': 'NUMERIC', 'options': ('no_write_model')})
 
+    parts.append({'path': ':DATA_EVENT', 'type': 'text', 'value': 'CRYOCON24C_DATA', 'options': ('no_write_shot')})
+    parts.append({'path': ':NODE', 'type': 'text', 'value': '192.168.0.254', 'options': ('no_write_shot')})
+    # *IDN = The identification string of the device
+    # SYSTEM:HWREV = The hardware revision number
+    # SYSTEM:FWREV = The firmware revision number
+    # SYSTEM:AMBIENT = 
+    parts.append({'path': ':STATUS_CMDS', 'type': 'text', 'value': MDSplus.makeArray(['*IDN?','SYSTem:HWRev?','SYSTem:FWREV?','SYSTem:AMBient?']),'options': ('no_write_shot')})
+    parts.append({'path': ':STATUS_OUT', 'type': 'any','options': ('write_shot', 'write_once', 'no_write_model')})
     # RATE in Hz. Base rate of the stream.
     # TREND_RATE in Hz. 
-    parts.append({'path': ':NODE', 'type': 'text', 'value': '192.168.0.254', 'options': ('no_write_shot')})
-    parts.append({'path': ':STATUS_CMDS', 'type': 'text', 'value': MDSplus.makeArray(['*IDN?','SYSTem:HWRev?','SYSTem:FWREV?','SYSTem:AMBient?']),'options': ('no_write_shot',)})
-    parts.append({'path': ':STATUS_OUT', 'type': 'any','options': ('write_shot', 'write_once', 'no_write_model')})
     parts.append({'path': ':RATE', 'type': 'numeric', 'value': 1,'options': ('no_write_shot')})        
     parts.append({'path': ':TREND_RATE', 'type': 'numeric', 'value': 1,'options': ('no_write_shot')})
-    parts.append({'path': ':T1', 'type': 'numeric', 'value': 0,'options': ('no_write_shot')})
+
+    def sendCommand(self,s,cmd):
+        s.send(cmd + "\r\n")
+
+    def recvResponse(self,s):
+        msg = ""
+        while True:
+            c = s.recv(1)
+            if c == "\r":
+                continue
+            if c == "\n":
+                break
+            msg += c
+        return msg
+
+    def queryCommand(self,s,cmd):
+        self.sendCommand(s,cmd)
+        return self.recvResponse(s)
 
     def init(self):
         '''start the stream
            socket
         '''
-        # self.stream()
         thread = self.Worker(self)
         thread.start()
         return 1
@@ -131,7 +133,8 @@ class CRYOCON24C_TREND(CRYOCON24C):
         # open the instrument
         if self.debugging():
             print("about to open cryocon device %s" % str(self.node.data()))
-        # event_name = self.data_event.data()
+
+        event_name = self.data_event.data()
 
         # read and save the status commands
         status_out={}
@@ -230,10 +233,6 @@ class CRYOCON24C_TREND(CRYOCON24C):
         start_time = time.time()
         previous_time = 0
 
-        # trend_tree = MDSplus.Tree('cryocon24c', 0, 'NORMAL')
-        # shot = trend_tree.getNode('cryo24_shot')
-        # shotRate = shot.shot_rate.data()
-
         query_cmd = []
         for i in range(ord('a'), ord('e')):
             chan = self.__getattr__('input_%c' % (chr(i),))
@@ -241,7 +240,8 @@ class CRYOCON24C_TREND(CRYOCON24C):
                 temps.append(np.zeros(seg_length))
                 resists.append(np.zeros(seg_length))
                 outpower.append(np.zeros(seg_length))
-                t_chans.append(self.__getattr__('input_%c_temperature' % (chr(i))))
+                #t_chans.append(self.__getattr__('input_%c_temperature' % (chr(i))))
+                t_chans.append(self.__getattr__('input_%c' % (chr(i))))
                 r_chans.append(self.__getattr__('input_%c_resistence' % (chr(i))))
                 p_chans.append(self.__getattr__('input_%c_output_power' % (chr(i))))
                 query_cmd.append('INP %c:TEMP?;SENP?;OUTP?' % (chr(i),))
@@ -253,11 +253,6 @@ class CRYOCON24C_TREND(CRYOCON24C):
                 previous_time = time.time()
                 times[sample] = previous_time - start_time
                 timestamp = time.time()
-
-                # Cleaning cryocon buffer? The following seems to work with 
-                # the answer from Cryocon is NAK. By asking ';' the answers
-                # are back to normal:
-                # ansQuery = self.queryCommand(s, ';')
 
                 # Calibrartion Curve storage
                 # cal = self.__getattr__('input_%c_calibration' % (chr(i),))
@@ -271,12 +266,10 @@ class CRYOCON24C_TREND(CRYOCON24C):
 
                 for i in range(len(temps)):
                     ansQuery = self.queryCommand(s, query_cmd[i])
-                    # print(ansQuery)
                     answer = ansQuery.split(';')
 
                     # Temperature reading
                     try:
-                        # print("Parsing temperature /%s/" % answer[0])
                         temps[i][sample] = float(answer[0])
                         is_digit = True
                     except ValueError:
@@ -290,7 +283,6 @@ class CRYOCON24C_TREND(CRYOCON24C):
 
                     # Resistence reading
                     try:
-                        # print("Parsing resistance /%s/" % ansQuery)                            
                         resists[i][sample] = float(answer[1])
                         is_digit=True                                
                     except ValueError:
@@ -316,20 +308,19 @@ class CRYOCON24C_TREND(CRYOCON24C):
                     
                     p_chans[i].putRow(1000, MDSplus.Float32(outpower[i][sample]), MDSplus.Int64(timestamp*1000.))
                                 
+                MDSplus.Event.setevent(event_name)
+
                 try:
                     dt = 1./float(self.rate.data())
                 except:
                     dt = 1
                 time.sleep(dt)
-                
-                if self.rate.data() != self.trend_rate.data() and countStartShot == 0:
-                    self.t1.record = MDSplus.Int64(time.time()*1000.)
-                    print('Start of Shot Sample-Time at SHOT rate ', times[sample], MDSplus.Int64(time.time()*1000.))
-                    countStartShot +=1
-                elif self.rate.data() != self.trend_rate.data():
-                    print('Shot Sample-Time at SHOT rate ', times[sample], MDSplus.Int64(time.time()*1000.))
-                else:
-                    print('Shot Sample-Time at trend rate ', times[sample], MDSplus.Int64(time.time()*1000.))
+               
+                if self.debugging():
+                    if self.rate.data() != self.trend_rate.data():
+		        print('Shot Sample-Time at SHOT rate ---->', times[sample], MDSplus.Int64(time.time()*1000.))
+                    else:
+                        print('Shot Sample-Time at trend rate ', times[sample], MDSplus.Int64(time.time()*1000.))
 
         s.close()
     RUN=run
@@ -346,61 +337,66 @@ class CRYOCON24C_TREND(CRYOCON24C):
 
 class CRYOCON24C_SHOT(CRYOCON24C):
     parts = copy.copy(CRYOCON24C.parts)
-    # SHOT_RATE in Hz. Choosen long trend rate.     
-    # parts.append({'path': ':T1', 'type': 'numeric', 'value': 0,'options': ('no_write_shot')})
-    parts.append({'path': ':T2', 'type': 'numeric', 'value': 0,'options': ('no_write_shot')})
-    parts.append({'path': ':SHOT_RATE', 'type': 'numeric', 'value': 2,'options': ('no_write_shot')})
+    parts.append({'path': ':T1', 'type': 'numeric', 'options': ('no_write_shot'), 'help': 'The time in milliseconds that the shot began taking data'})
+    parts.append({'path': ':T2', 'type': 'numeric', 'value': 0,'options': ('write_shot')})
+    # SHOT_RATE in Hz.     
+    parts.append({'path': ':SHOT_RATE', 'type': 'numeric', 'value': 5,'options': ('no_write_shot')})
     parts.append({'path': ':TREND_TREE', 'type': 'text', 'options': ('no_write_shot')})
     parts.append({'path': ':TREND_DEVICE', 'type': 'text', 'options': ('no_write_shot')})
-    parts.append({'path': ':TREND_SHOT', 'type': 'numeric', 'value': 0,'options': ('no_write_shot')})
+    parts.append({'path': ':TREND_SHOT', 'type': 'numeric', 'options': ('write_shot'), 'help': 'The record of the shot number of the trend this data came from'})
 
-    def init(self):
-        trend_tree = self.trendTree()
-        trend = trend_tree.getNode(self.trend_device.data())
-        trend.rate.record = self.shot_rate.data()
- 
-
-    def trendTree(self):
-        tree_name         = self.trend_tree.data()
-        shot_number       = self.trend_shot.data()
-        trend_tree = MDSplus.Tree(tree_name, shot_number, 'NORMAL')
+    def getTrendTree(self):
+        tree_name    = self.trend_tree.data()
+        shot_number  = self.trend_shot.data()
+        trend_tree   = MDSplus.Tree(tree_name, shot_number, 'NORMAL')
         return trend_tree
 
-    def stop(self):
+    def init(self):
+        trend_tree = self.getTrendTree()
+        trend_dev = trend_tree.getNode(self.trend_device.data())
+        trend_dev.rate.record = self.shot_rate.data()
 
+    def stop(self):
         self.t2.record = MDSplus.Int64(time.time()*1000.)
-        trend_tree = self.trendTree()
-        trend = trend_tree.getNode(self.trend_device.data())
+        trend_tree = self.getTrendTree()
+        trend_dev = trend_tree.getNode(self.trend_device.data())
 
         # Resetting the original rate:
-        trend.rate.record = trend.trend_rate.data()
+        trend_dev.rate.record = trend_dev.trend_rate.data()
 
         # Getting T1 from TREND:
-        t1 = trend.t1.data()
+	t1 = MDSplus.Int64(self.t1.data())
 
+        #Saving TREND shot number information into the tree:
+        self.trend_shot.record = trend_tree.getCurrent(self.trend_tree.data())
+        
         #Set Time Context
         trend_tree.setTimeContext(t1, self.t2.data())
         
         print('Writing data into shot node')
         for i in range(ord('a'), ord('e')):
-            trend_temp_node     = trend.__getattr__('input_%c_temperature'% (chr(i)))
-            trend_resis_node    = trend.__getattr__('input_%c_resistence'%  (chr(i)))
-            trend_outpower_node = trend.__getattr__('input_%c_output_power'% (chr(i)))
+            trend_temp_node     = trend_dev.__getattr__('input_%c'% (chr(i)))
+            trend_resis_node    = trend_dev.__getattr__('input_%c_resistence'%  (chr(i)))
+            trend_outpower_node = trend_dev.__getattr__('input_%c_output_power'% (chr(i)))
             
             trend_temp     = trend_tree.getNode(trend_temp_node)
             trend_resis    = trend_tree.getNode(trend_resis_node)
             trend_outpower = trend_tree.getNode(trend_outpower_node)
-            
+
             times    = trend_temp.dim_of().data()
             temps    = trend_temp.data()
             resists  = trend_resis.data()
             outpower = trend_outpower.data()
 
+            # Might be able to improve
+            start_time = times[0]
             for j in range(len(times)):
-                (self.__getattr__('input_%c_temperature' % (chr(i)))).putRow(1000, temps, times[j])
-                (self.__getattr__('input_%c_resistence' % (chr(i)))).putRow(1000, resists, times[j])
-                (self.__getattr__('input_%c_output_power' % (chr(i)))).putRow(1000, outpower, times[j])
+                times[j] -= start_time
+                times[j] = float(times[j]) / 1000.
 
+            self.__getattr__('input_%c' % (char(i))).record = MDSplus.Signal(temps, None, times)
+            self.__getattr__('input_%c_resistence' % (char(i))).record = MDSplus.Signal(temps, None, times)
+            self.__getattr__('input_%c_output_power' % (char(i))).record = MDSplus.Signal(temps, None, times)
 
 def main():
 
@@ -409,14 +405,16 @@ def main():
     print('Creating Device CRYO24_TREND')
     CRYOCON24C_TREND.Add(tree_model, 'CRYO24_TREND')
     node = tree_model.getNode('\CRYOCON24C::TOP:CRYO24_TREND:NODE')
-    node.putData('198.125.182.159')
-    print('Writing Tree for device ' + '198.125.182.159')
+    ipaddress = '172.20.240.110'
+    # node.putData('198.125.182.159')
+    node.putData(ipaddress)
+    print('Writing Tree for device ' + ipaddress)
     tree_model.write()
 
     print('Creating Device CRYO24_SHOT')
     CRYOCON24C_SHOT.Add(tree_model, 'CRYO24_SHOT')
 
-    print('Writing Tree Node TREND_TREE name called ' + 'cryocon24c')
+    print('Writing Tree Node TREND_TREE called ' + 'cryocon24c')
     node = tree_model.getNode('\CRYOCON24C::TOP:CRYO24_SHOT:TREND_TREE')
     node.putData('cryocon24c')
 
@@ -434,7 +432,9 @@ def main():
     print('Running INIT from cryocon24c using Python calls')
     tree = MDSplus.Tree('cryocon24c', -1)
     tree.setCurrent('cryocon24c', 1)
+    
     tree.setCurrent('cryocon24c', tree.getCurrent('cryocon24c') + 1)
+    
     tree.createPulse(0)
     tree = MDSplus.Tree('cryocon24c', 0)
     
