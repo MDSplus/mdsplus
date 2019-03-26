@@ -39,6 +39,7 @@ MDSplusException = _exc.MDSplusException
 #### Load Shared Libraries Referenced #######
 #
 _MdsShr=_ver.load_library('MdsShr')
+_MdsMisc=_ver.load_library('MdsMisc')
 #
 #############################################
 class staticmethodX(object):
@@ -155,6 +156,55 @@ class Data(NoTreeRef):
         else:
             raise TypeError('Cannot make MDSplus data type from type: %s' % (value.__class__,))
         return cls.__new__(cls,value)
+
+    def getXYSignal(self,x=None,xmin=None,xmax=None,num=2048):
+        num = _C.c_int32(num)
+        if xmin is not None:
+            dmin = _C.c_double(xmin)
+            xmin = _C.byref(dmin)
+        if xmax is not None:
+            dmax = _C.c_double(xmax)
+            xmax = _C.byref(dmax)
+        xd = _dsc.Descriptor_xd()
+        if self.tree is None:
+          _MdsMisc. GetXYSignalXd(               self.ref,Data.byref(x),xmin,xmax,num,xd.ref)
+        else:
+          _MdsMisc._GetXYSignalXd(self.tree.pctx,self.ref,Data.byref(x),xmin,xmax,num,xd.ref)
+        d    = xd.value
+        if isinstance(d,_scr.String): raise Exception(d.data()[8:])
+        bt    = d.data().tostring()
+        import struct
+        off = 0
+        fmt = '!fib'
+        res,length,typ = struct.unpack_from(fmt,bt,off)
+        off += struct.calcsize(fmt)
+        fmt = '!'+('f'*length)
+        Arr = _arr.Float32Array
+        y = Arr(struct.unpack_from(fmt,bt,off))
+        off += struct.calcsize(fmt)
+        if   typ == 1: # int64
+            fmt = '!'+('q'*length)
+            Arr = _arr.Int64Array
+        elif typ == 2: # float64
+            fmt = '!'+('d'*length)
+            Arr = _arr.Float64Array
+        else:          # float32
+            pass #fmt = '!'+('f'*length)
+        x = Arr(struct.unpack_from(fmt,bt,off))
+        off += struct.calcsize(fmt)
+        fmt = '!I'
+        llen = struct.unpack_from(fmt,bt,off)[0]
+        off += struct.calcsize(fmt)+llen
+        title = bt[off-llen:off]
+        llen = struct.unpack_from(fmt,bt,off)[0]
+        off += struct.calcsize(fmt)+llen
+        if (llen>0): x.units = bt[off-llen:off]
+        llen = struct.unpack_from(fmt,bt,off)[0]
+        off += struct.calcsize(fmt)+llen
+        if (llen>0): y.units = bt[off-llen:off]
+        sig = _cmp.Signal(y,None,x)
+        if len(title)>0: sig.help = title
+        return sig
 
     def __getattr__(self,name):
         def getXxx():

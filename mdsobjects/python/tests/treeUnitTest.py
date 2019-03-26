@@ -23,8 +23,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-import os,gc
-from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,Device,tree,tcl,Int32
+import os,gc,numpy
+from MDSplus import Tree,TreeNode,Data,Array,Signal,Range,Device,tree,tcl,Int32,Float32Array
 from MDSplus import TreeNOEDIT,ADD,COMPILE
 def _mimport(name, level=1):
     try:
@@ -34,7 +34,7 @@ def _mimport(name, level=1):
 _UnitTest=_mimport("_UnitTest")
 class Tests(_UnitTest.TreeTests):
     trees = ['pytree','pytreesub']
-    shotinc = 10
+    shotinc = 11
 
     def extAttr(self):
         with Tree('pytree',self.shot+0,'new') as pytree:
@@ -98,7 +98,6 @@ class Tests(_UnitTest.TreeTests):
         try:  pytree.versions_in_pulse = True
         except TreeNOEDIT: pass
         else: self.assertEqual("TreeSUCCESS","TreeNOEDIT")
-
 
     def getNode(self):
         with Tree('pytree',self.shot+3,'new') as pytree:
@@ -179,7 +178,7 @@ class Tests(_UnitTest.TreeTests):
         x=array(int32(0)).repeat(len(members)+len(children))
         x[0:len(children)]=children.nid_number.data()
         x[len(children):]=members.nid_number.data()
-        self.assertEqual((makeArray(x)==top.descendants.nid_number).all(),True)
+        self.assertEqual((Array(x)==top.descendants.nid_number).all(),True)
         self.assertEqual((top.descendants.nid_number==top.getDescendants().nid_number).all(),True)
         self.assertEqual(top.child.child.depth,3)
         self.assertEqual(top.getNumDescendants(),len(x))
@@ -191,7 +190,7 @@ class Tests(_UnitTest.TreeTests):
         devs=pytree.getNodeWild('\\PYTREESUB::TOP.***','DEVICE')
         dev=devs[0].conglomerate_nids
         self.assertEqual((dev.nid_number==devs[0].getConglomerateNodes().nid_number).all(),True)
-        self.assertEqual((dev.conglomerate_elt==makeArray(array(range(len(dev)))+1)).all(),True)
+        self.assertEqual((dev.conglomerate_elt==Array(array(range(len(dev)))+1)).all(),True)
         for idx in range(len(dev)):
             self.assertEqual(dev[idx].conglomerate_elt,idx+1)
             self.assertEqual(dev[idx].getConglomerateElt(),idx+1)
@@ -298,7 +297,7 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(ip.setup_information,ip.isSetup())
         self.assertEqual(ip.status,0)
         self.assertEqual(ip.status,ip.getStatus())
-        self.assertEqual((ip.tags==makeArray(['IP','MAGNETICS_IP','MAG_IP','MAGNETICS_PLASMA_CURRENT','MAG_PLASMA_CURRENT'])).all(),True)
+        self.assertEqual((ip.tags==Array(['IP','MAGNETICS_IP','MAG_IP','MAGNETICS_PLASMA_CURRENT','MAG_PLASMA_CURRENT'])).all(),True)
         self.assertEqual((ip.tags==ip.getTags()).all(),True)
         self.assertEqual(ip.time_inserted,ip.getTimeInserted())
 
@@ -341,8 +340,20 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(ip.record.decompile(),'1 + COMPILE("\\\\BTOR")')
         self.assertEqual(ip.record.data().tolist(),(pytree.getNode("\\BTOR").data()+1).tolist())
 
-    def getCompression(self):
+    def getXYSignal(self):
         with Tree('pytree',self.shot+9,'new') as pytree:
+            node = pytree.addNode('SIG', 'signal')
+            pytree.write()
+        pytree.normal()
+        dim = numpy.array(range(100000),'float32')/10000
+        pytree.SIG.record = Signal(Float32Array(numpy.sin(dim)).setUnits("ylabel"),None,Float32Array(dim).setUnits("xlabel")).setHelp('title')
+        sig = node.getXYSignal(num=100)
+        self.assertEqual(sig.units,"ylabel")
+        self.assertEqual(sig.dim_of().units,"xlabel")
+        self.assertEqual(sig.help,"title")
+
+    def getCompression(self):
+        with Tree('pytree',self.shot+10,'new') as pytree:
             node = pytree.addNode('SIG_CMPRS', 'signal')
             node.compress_on_put = True
             pytree.write()
@@ -354,6 +365,6 @@ class Tests(_UnitTest.TreeTests):
                              msg="Error writing compressed signal%s"%node)
     @staticmethod
     def getTests():
-        return ['extAttr','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','getCompression']
+        return ['extAttr','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','getXYSignal','getCompression']
 
 Tests.main(__name__)
