@@ -375,14 +375,10 @@ class CRYOCON24C_SHOT(CRYOCON24C):
         
         print('Writing data into shot node')
         for i in range(ord('a'), ord('e')):
-            trend_temp_node     = trend_dev.__getattr__('input_%c'% (chr(i)))
-            trend_resis_node    = trend_dev.__getattr__('input_%c_resistence'%  (chr(i)))
-            trend_outpower_node = trend_dev.__getattr__('input_%c_output_power'% (chr(i)))
+            trend_temp     = trend_dev.__getattr__('input_%c'% (chr(i)))
+            trend_resis    = trend_dev.__getattr__('input_%c_resistence'%  (chr(i)))
+            trend_outpower = trend_dev.__getattr__('input_%c_output_power'% (chr(i)))
             
-            trend_temp     = trend_tree.getNode(trend_temp_node)
-            trend_resis    = trend_tree.getNode(trend_resis_node)
-            trend_outpower = trend_tree.getNode(trend_outpower_node)
-
             times    = trend_temp.dim_of().data()
             temps    = trend_temp.data()
             resists  = trend_resis.data()
@@ -393,65 +389,12 @@ class CRYOCON24C_SHOT(CRYOCON24C):
             for j in range(len(times)):
                 times[j] -= start_time
                 times[j] = float(times[j]) / 1000.
+            
+            shot_temp     = self.__getattr__('input_%c' % (char(i)))
+            shot_resis    = self.__getattr__('input_%c_resistence' % (char(i)))
+            shot_outpower = self.__getattr__('input_%c_output_power' % (char(i)))
 
-            self.__getattr__('input_%c' % (char(i))).record = MDSplus.Signal(temps, None, times)
-            self.__getattr__('input_%c_resistence' % (char(i))).record = MDSplus.Signal(temps, None, times)
-            self.__getattr__('input_%c_output_power' % (char(i))).record = MDSplus.Signal(temps, None, times)
+            shot_temp.record     = MDSplus.Signal(temps, None, times)
+            shot_resis.record    = MDSplus.Signal(temps, None, times)
+            shot_outpower.record = MDSplus.Signal(temps, None, times)
 
-def main():
-
-    # create tree model
-    tree_model = MDSplus.Tree('cryocon24c', -1, 'NEW')
-    print('Creating Device CRYO24_TREND')
-    CRYOCON24C_TREND.Add(tree_model, 'CRYO24_TREND')
-    node = tree_model.getNode('\CRYOCON24C::TOP:CRYO24_TREND:NODE')
-    ipaddress = '172.20.240.110'
-    # node.putData('198.125.182.159')
-    node.putData(ipaddress)
-    print('Writing Tree for device ' + ipaddress)
-    tree_model.write()
-
-    print('Creating Device CRYO24_SHOT')
-    CRYOCON24C_SHOT.Add(tree_model, 'CRYO24_SHOT')
-
-    print('Writing Tree Node TREND_TREE called ' + 'cryocon24c')
-    node = tree_model.getNode('\CRYOCON24C::TOP:CRYO24_SHOT:TREND_TREE')
-    node.putData('cryocon24c')
-
-    print('Writing Tree Node TREND_DEVICE with the device called ' + 'cryo24_trend')
-    node = tree_model.getNode('\CRYOCON24C::TOP:CRYO24_SHOT:TREND_DEVICE')
-    node.putData('cryo24_trend')
-
-    print('Writing the Tree')
-    tree_model.write()
-
-    print('Closing the Tree')
-    tree_model.close()
-
-    #Executing the experiment:
-    print('Running INIT from cryocon24c using Python calls')
-    tree = MDSplus.Tree('cryocon24c', -1)
-    tree.setCurrent('cryocon24c', 1)
-    
-    tree.setCurrent('cryocon24c', tree.getCurrent('cryocon24c') + 1)
-    
-    tree.createPulse(0)
-    tree = MDSplus.Tree('cryocon24c', 0)
-    
-    dev_trend = tree.getNode('cryo24_trend')
-    dev_trend.init()
-    time.sleep(10)
-
-
-    dev_shot = tree.getNode('cryo24_shot')
-    dev_shot.init()
-
-    time.sleep(10)
-    dev_shot.stop()
-
-    time.sleep(10)
-    dev_trend.stop()
-    return 1
-
-if __name__ == '__main__':
-    main()
