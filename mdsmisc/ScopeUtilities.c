@@ -90,10 +90,6 @@ static int recIsSegmented(mdsdsc_t *dsc) {
   int nid, numSegments, status, i;
   char *path;
   int retClassLen, retDtypeLen;
-  unsigned int nciClass, nciDtype;
-  struct nci_itm nciList[] = {{1, NciCLASS, &nciClass, &retClassLen},
-    {1, NciDTYPE, &nciDtype, &retDtypeLen},
-    {NciEND_OF_LIST, 0, 0, 0}};
   EMPTYXD(xd);
   mdsdsc_r_t *rDsc;
   switch (dsc->class) {
@@ -104,6 +100,12 @@ static int recIsSegmented(mdsdsc_t *dsc) {
 	if (STATUS_OK && numSegments > 0)
 	  return nid;
 	//Now check if the node contains an expression or a direct nid reference
+	unsigned int nciClass = 0, nciDtype = 0;
+	struct nci_itm nciList[] = {
+	  {1, NciCLASS, &nciClass, &retClassLen},
+	  {1, NciDTYPE, &nciDtype, &retDtypeLen},
+	  {NciEND_OF_LIST, 0, 0, 0}
+	};
 	status = TreeGetNci(nid, nciList);
 	if (STATUS_OK
          &&( nciClass == CLASS_R
@@ -259,37 +261,41 @@ static void trimData(float *y, mdsdsc_a_t *x, int nSamples, int reqPoints, doubl
   if(startIdx == nSamples) startIdx--;
   for(  endIdx = startIdx;   endIdx < nSamples && to_double(&x->pointer[  endIdx * x->length], x->dtype) < xMax;   endIdx++);
   if(  endIdx == nSamples)   endIdx--;
-  const int deltaSamples = ((endIdx - startIdx) < 10 * reqPoints) ? 1 : (endIdx - startIdx + 1) / reqPoints;
+  const int deltaIdx = ((endIdx - startIdx) < 10 * reqPoints) ? 1 : (endIdx - startIdx + 1) / reqPoints;
 
-  int currSamples = startIdx;
+  int curIdx = startIdx;
   int outIdx = 0;
-  if(deltaSamples == 1) {
+  if(deltaIdx == 1) {
     *retResolution = 1E12;
-    while (currSamples < endIdx) {
-      memcpy(&x->pointer[outIdx * x->length], &x->pointer[currSamples * x->length], x->length);
-      y[outIdx++] = y[currSamples++];
+    if (outIdx < curIdx) { // check if not src == dst
+      while (curIdx < endIdx) {
+	memcpy(&x->pointer[outIdx * x->length], &x->pointer[curIdx * x->length], x->length);
+	y[outIdx++] = y[curIdx++];
+      }
     }
   } else {
     *retResolution = reqPoints/(to_doublex(&x->pointer[endIdx * x->length], x->dtype,INFINITY,TRUE) - to_doublex(&x->pointer[startIdx * x->length], x->dtype,-INFINITY,TRUE));
-    const double deltaTime = (deltaSamples == 1) ? 0 : (xMax - xMin)/(double)reqPoints;
-    double currXDouble;
+    const double deltaTime = (deltaIdx == 1) ? 0 : (xMax - xMin)/(double)reqPoints;
     float minY, maxY;
-    while(currSamples < endIdx) {
-      minY = maxY = y[currSamples];
+    char *xtmp = malloc(x->length);
+    while(curIdx < endIdx) {
+      minY = maxY = y[curIdx];
       int i,actSamples = 0;
-      const double endXDouble = to_double(&x->pointer[currSamples * x->length], x->dtype) + deltaTime;
-      for(i = currSamples; i < nSamples && i < currSamples + deltaSamples; i++, actSamples++) {
-	currXDouble = to_double(&x->pointer[i * x->length], x->dtype);
-	if(currXDouble > endXDouble) break; //Handle dual speed clocks
+      const double endXDouble = to_double(&x->pointer[curIdx * x->length], x->dtype) + deltaTime;
+      for(i = curIdx; i < nSamples && i < curIdx + deltaIdx; i++, actSamples++) {
+	if(to_double(&x->pointer[i * x->length], x->dtype) > endXDouble) break; //Handle dual speed clocks
 	if(y[i] < minY) minY = y[i];
 	if(y[i] > maxY) maxY = y[i];
       }
-      memcpy(&x->pointer[outIdx * x->length], &x->pointer[currSamples * x->length], x->length);
+      curIdx += (actSamples+1)/2; // half step ensures outIdx != curIdx
+      memcpy(&x->pointer[outIdx * x->length], &x->pointer[curIdx * x->length], x->length);
       y[outIdx++] = minY;
-      memcpy(&x->pointer[outIdx * x->length], &x->pointer[currSamples * x->length], x->length);
+      if (outIdx<curIdx)
+        memcpy(&x->pointer[outIdx * x->length], &x->pointer[curIdx * x->length], x->length);
       y[outIdx++] = maxY;
-      currSamples += actSamples;
+      curIdx +=  actSamples/2;
     }
+    free(xtmp);
   }
   *retPoints = outIdx;
 }
