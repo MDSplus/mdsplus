@@ -332,18 +332,17 @@ class CRYOCON24C_TREND(CRYOCON24C):
         '''
         self.running.on = False
         return 1
-
     STOP = stop
 
 class CRYOCON24C_SHOT(CRYOCON24C):
     parts = copy.copy(CRYOCON24C.parts)
-    parts.append({'path': ':T1', 'type': 'numeric', 'options': ('no_write_shot'), 'help': 'The time in milliseconds that the shot began taking data'})
+    parts.append({'path': ':T1', 'type': 'numeric', 'options': ('no_write_shot'), 'help': 'The time in seconds that the shot began taking data'})
     parts.append({'path': ':T2', 'type': 'numeric', 'value': 0,'options': ('write_shot')})
     # SHOT_RATE in Hz.     
     parts.append({'path': ':SHOT_RATE', 'type': 'numeric', 'value': 5,'options': ('no_write_shot')})
     parts.append({'path': ':TREND_TREE', 'type': 'text', 'options': ('no_write_shot')})
     parts.append({'path': ':TREND_DEVICE', 'type': 'text', 'options': ('no_write_shot')})
-    parts.append({'path': ':TREND_SHOT', 'type': 'numeric', 'options': ('write_shot'), 'help': 'The record of the shot number of the trend this data came from'})
+    parts.append({'path': ':TREND_SHOT', 'type': 'numeric', 'value': 0, 'options': ('write_shot'), 'help': 'The record of the shot number of the trend this data came from'})
 
     def getTrendTree(self):
         tree_name    = self.trend_tree.data()
@@ -355,6 +354,7 @@ class CRYOCON24C_SHOT(CRYOCON24C):
         trend_tree = self.getTrendTree()
         trend_dev = trend_tree.getNode(self.trend_device.data())
         trend_dev.rate.record = self.shot_rate.data()
+    INIT=init
 
     def stop(self):
         self.t2.record = MDSplus.Int64(time.time()*1000.)
@@ -365,7 +365,7 @@ class CRYOCON24C_SHOT(CRYOCON24C):
         trend_dev.rate.record = trend_dev.trend_rate.data()
 
         # Getting T1 from TREND:
-	t1 = MDSplus.Int64(self.t1.data())
+	t1 = MDSplus.Int64(self.t1.data()*1000.)
 
         #Saving TREND shot number information into the tree:
         self.trend_shot.record = trend_tree.getCurrent(self.trend_tree.data())
@@ -390,11 +390,11 @@ class CRYOCON24C_SHOT(CRYOCON24C):
                 times[j] -= start_time
                 times[j] = float(times[j]) / 1000.
             
-            shot_temp     = self.__getattr__('input_%c' % (char(i)))
-            shot_resis    = self.__getattr__('input_%c_resistence' % (char(i)))
-            shot_outpower = self.__getattr__('input_%c_output_power' % (char(i)))
+            shot_temp     = self.__getattr__('input_%c' % (chr(i)))
+            shot_resis    = self.__getattr__('input_%c_resistence' % (chr(i)))
+            shot_outpower = self.__getattr__('input_%c_output_power' % (chr(i)))
 
             shot_temp.record     = MDSplus.Signal(temps, None, times)
             shot_resis.record    = MDSplus.Signal(temps, None, times)
             shot_outpower.record = MDSplus.Signal(temps, None, times)
-
+    STOP=stop
