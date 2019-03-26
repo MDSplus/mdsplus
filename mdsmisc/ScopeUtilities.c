@@ -176,7 +176,7 @@ inline static int64_t estimateNumSamples(mdsdsc_t *dsc, mdsdsc_t *xMin, mdsdsc_t
    or -1 if something went wrong
  */
   int numSegments, startIdx, endIdx;
-  int64_t startTime = -MAX64-1, endTime = MAX64, currStartTime, currEndTime;
+  int64_t startTime = -MAX64-1, endTime = MAX64, currEnd;
   char dtype, dimct;
   int dims[64];
   int nextRow, segmentSamples, numActSegments, segmentIdx;
@@ -192,11 +192,11 @@ inline static int64_t estimateNumSamples(mdsdsc_t *dsc, mdsdsc_t *xMin, mdsdsc_t
     startIdx = 0; //If no start time specified, take all initial segments
     if(xMin) {
       while(startIdx < numSegments) {
-        status = TreeGetSegmentLimits(nid, startIdx, &xd, NULL);
+        status = TreeGetSegmentLimits(nid, startIdx, NULL, &xd);
         if STATUS_NOT_OK goto return_neg1;
-        status = XTreeConvertToLongTime(xd.pointer, &currStartTime);
+        status = XTreeConvertToLongTime(xd.pointer, &currEnd);
         if STATUS_NOT_OK goto return_neg1;
-        if(currStartTime > startTime) //First overlapping segment
+        if(currEnd >= startTime) //First overlapping segment
           break;
         startIdx++;
       }
@@ -209,9 +209,9 @@ inline static int64_t estimateNumSamples(mdsdsc_t *dsc, mdsdsc_t *xMin, mdsdsc_t
       while(segmentIdx < numSegments) {
         status = TreeGetSegmentLimits(nid, segmentIdx, NULL, &xd);
         if STATUS_NOT_OK goto return_neg1;
-        status = XTreeConvertToLongTime(xd.pointer, &currEndTime);
+        status = XTreeConvertToLongTime(xd.pointer, &currEnd);
         if STATUS_NOT_OK goto return_neg1;
-        if(currEndTime >= endTime) //Last overlapping segment
+        if(currEnd >= endTime) //Last overlapping segment
           break;
         segmentIdx++;
       }
@@ -257,9 +257,9 @@ static void trimData(float *y, mdsdsc_a_t *x, int nSamples, int reqPoints, doubl
   }
   //From here, consider xMin and xMax
   int startIdx, endIdx;
-  for(startIdx = 0;        startIdx < nSamples && to_double(&x->pointer[startIdx * x->length], x->dtype) < xMin; startIdx++);
+  for(startIdx = 0;        startIdx < nSamples && to_doublex(&x->pointer[startIdx * x->length], x->dtype,xMin,TRUE) <= xMin; startIdx++);
   if(startIdx == nSamples) startIdx--;
-  for(  endIdx = startIdx;   endIdx < nSamples && to_double(&x->pointer[  endIdx * x->length], x->dtype) < xMax;   endIdx++);
+  for(  endIdx = startIdx;   endIdx < nSamples && to_doublex(&x->pointer[  endIdx * x->length], x->dtype,xMax,TRUE) <  xMax;   endIdx++);
   if(  endIdx == nSamples)   endIdx--;
   const int deltaIdx = ((endIdx - startIdx) < 10 * reqPoints) ? 1 : (endIdx - startIdx + 1) / reqPoints;
 
@@ -277,25 +277,24 @@ static void trimData(float *y, mdsdsc_a_t *x, int nSamples, int reqPoints, doubl
     *retResolution = reqPoints/(to_doublex(&x->pointer[endIdx * x->length], x->dtype,INFINITY,TRUE) - to_doublex(&x->pointer[startIdx * x->length], x->dtype,-INFINITY,TRUE));
     const double deltaTime = (deltaIdx == 1) ? 0 : (xMax - xMin)/(double)reqPoints;
     float minY, maxY;
-    char *xtmp = malloc(x->length);
     while(curIdx < endIdx) {
       minY = maxY = y[curIdx];
       int i,actSamples = 0;
-      const double endXDouble = to_double(&x->pointer[curIdx * x->length], x->dtype) + deltaTime;
+      const double endXDouble = to_doublex(&x->pointer[curIdx * x->length], x->dtype,INFINITY,TRUE) + deltaTime;
       for(i = curIdx; i < nSamples && i < curIdx + deltaIdx; i++, actSamples++) {
-	if(to_double(&x->pointer[i * x->length], x->dtype) > endXDouble) break; //Handle dual speed clocks
+	if(to_doublex(&x->pointer[i * x->length], x->dtype,-INFINITY,TRUE) > endXDouble) break; //Handle dual speed clocks
 	if(y[i] < minY) minY = y[i];
 	if(y[i] > maxY) maxY = y[i];
       }
       curIdx += (actSamples+1)/2; // half step ensures outIdx != curIdx
-      memcpy(&x->pointer[outIdx * x->length], &x->pointer[curIdx * x->length], x->length);
+      if (outIdx<curIdx)
+        memcpy(&x->pointer[outIdx * x->length], &x->pointer[curIdx * x->length], x->length);
       y[outIdx++] = minY;
       if (outIdx<curIdx)
         memcpy(&x->pointer[outIdx * x->length], &x->pointer[curIdx * x->length], x->length);
       y[outIdx++] = maxY;
       curIdx +=  actSamples/2;
     }
-    free(xtmp);
   }
   *retPoints = outIdx;
 }
@@ -718,10 +717,10 @@ EXPORT int GetXYSignalXd(mdsdsc_t *inY, mdsdsc_t *inX, mdsdsc_t *inXMin, mdsdsc_
   } else deltaP = NULL;
   //Set limits if any
   int status = TreeSetTimeContext(xMinP,xMaxP,deltaP);
-  char *title, *xLabel, *yLabel;
-  status = TdiEvaluate(inY, &yXd MDS_END_ARG);
+  if STATUS_OK status = TdiEvaluate(inY, &yXd MDS_END_ARG);
   if STATUS_NOT_OK goto return_err;
   // Get Y, title, and yLabel, if any
+  char *title, *xLabel, *yLabel;
   title  = recGetHelp(yXd.pointer);
   yLabel = recGetUnits(yXd.pointer, 0);
   //Get X
@@ -732,7 +731,7 @@ EXPORT int GetXYSignalXd(mdsdsc_t *inY, mdsdsc_t *inX, mdsdsc_t *inXMin, mdsdsc_
   if STATUS_NOT_OK goto return_err;
   xLabel = recGetUnits(xXd.pointer, 1);
   if STATUS_OK status = TdiData((mdsdsc_t *)&xXd, &xXd MDS_END_ARG);
-  status = TdiData((mdsdsc_t *)&yXd, &yXd MDS_END_ARG);
+  if STATUS_OK status = TdiData((mdsdsc_t *)&yXd, &yXd MDS_END_ARG);
   if STATUS_NOT_OK goto return_err;
   //Check results: must be an array of either type DTYPE_B, DTYPE_BU, DTYPE_W, DTYPE_WU, DTYPE_L, DTYPE_LU, DTYPE_FLOAT, DTYPE_DOUBLE
   // Y converted to float, X to int64_t or float or double
