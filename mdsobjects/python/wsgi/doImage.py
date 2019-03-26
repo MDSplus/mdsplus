@@ -64,10 +64,11 @@ def doImage(self):
             img = Image.new("RGB",raw.T.shape[:2])
             raw = numpy.rollaxis(raw,0,3)
         else: raise
+        fmt = self.args['format'][-1].lower() if 'format' in self.args else 'jpeg'
         img.frombytes(raw.tostring())
         stream = io.BytesIO()
-        img.save(stream, format='PNG')
-        return ('200 OK', [('Content-type','image/png')], stream.getvalue())
+        img.save(stream, format=fmt.upper())
+        return ('200 OK', [('Content-type','image/%s'%fmt)], stream.getvalue())
     else:
         if im.format == "MPEG":
             response_headers=[('Content-type','video/mpeg'),('Content-Disposition','inline; filename="%s.mpeg"' % (expr,))]
