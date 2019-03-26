@@ -34,12 +34,12 @@ def getXYSignal(obj,num):
 
 def gridScaling(min_in,max_in,divisions,span):
     from math import log10,pow,fabs,ceil,floor,modf
-    resdivlog = log10(fabs(max_in-min_in))
+    resdivlog = log10(max(fabs(max_in),fabs(min_in)))
     if resdivlog < 0:
-        res = int(pow(10,ceil(resdivlog) - 4))
+        res = int(ceil(resdivlog)) + 5
     else:
-        res = int(pow(10,floor(resdivlog) - 4))
-    divlog = log10(fabs(max_in - min_in) / divisions)
+        res = int(floor(resdivlog)) + 5
+    divlog = log10(fabs(max_in-min_in) / divisions)
     fractpart,wholepart = modf(divlog)
     intinc = pow(10,fabs(fractpart))
     if intinc < 1.3333333:
@@ -56,14 +56,16 @@ def gridScaling(min_in,max_in,divisions,span):
     divs_out = int(floor((max_in - grid + val_inc) / val_inc))
     if max_in > min_in:
         first_pix = span * ((grid - min_in) / (max_in - min_in))
-        pix_inc = span * val_inc / (max_in - min_in);
-        first_val = (first_pix * ((max_in - min_in)/span)) + min_in
+        pix_inc   = span * val_inc / (max_in - min_in);
+        first_val = numpy.round(first_pix * ((max_in - min_in)/span) + min_in,res)
+        val_inc   = numpy.round(val_inc,res)
     else:
-        divs_out = 2
+        divs_out  = 2
         first_pix = 0
-        pix_inc = span
-        val_inc = 0
-    return res,(first_pix, pix_inc),(first_val,val_inc),divs_out
+        pix_inc   = span
+        val_inc   = 0
+        first_val = max_in
+    return (first_pix, pix_inc),(first_val,val_inc),divs_out
 
 def doPlot(self):
     viewbox = (0,0,10000,10000);
@@ -101,16 +103,16 @@ def doPlot(self):
     y =  (ymax-y)*((ymax_s-ymin_s-1200)/(ymax-ymin))+200
     for i in range(len(x)): output += "%d %d\n" % (int(x[i]),int(y[i]))
     output += '"/>\n'
-    res,pix,val,div = gridScaling(xmin,xmax,5,viewbox[2]-viewbox[0]-1200)
+    pix,val,div = gridScaling(xmin,xmax,5,viewbox[2]-viewbox[0]-1200)
     for i in range(div):
-        output += '<text text-anchor="middle" x="%d" y="%d" font-size="300">%g</text>\n' % (
+        output += '<text text-anchor="middle" x="%d" y="%d" font-size="300">%.5g</text>\n' % (
             pix[0]+i*pix[1]+1000, viewbox[2]-200, val[0]+i*val[1])
         output += '<path fill="none" stroke="black" stroke-width="5" stroke-dasharray="200,100,50,50,50,100" d="M%d %d %d %d"/>\n' % (
             pix[0]+i*pix[1]+1000, viewbox[2],
             pix[0]+i*pix[1]+1000, viewbox[0])
-    res,pix,val,div = gridScaling(ymin,ymax,5,viewbox[3]-viewbox[1]-1200)
+    pix,val,div = gridScaling(ymin,ymax,5,viewbox[3]-viewbox[1]-1200)
     for i in range(div):
-        output += '<text text-anchor="left" x="%d" y="%d" font-size="300">%g</text>\n' % (
+        output += '<text text-anchor="left" x="%d" y="%d" font-size="300">%.5g</text>\n' % (
             100, viewbox[3]-(pix[0]+i*pix[1]+1000), val[0]+i*val[1])
         output += '<path fill="none" stroke="black" stroke-width="5" stroke-dasharray="200,100,50,50,50,100" d="M%d %d %d %d"/>\n' % (
             viewbox[1], viewbox[3]-(pix[0]+i*pix[1]+1000),
