@@ -5,7 +5,7 @@
 extern int StrAppend(struct descriptor_d *out, struct descriptor *tail);
 extern int StrCaseBlindCompare(struct descriptor *one, struct descriptor *two);
 extern int StrCompare(struct descriptor *str1, struct descriptor *str2);
-extern int StrConcat(struct descriptor *out, struct descriptor *first, ...);
+extern int StrConcat(struct descriptor *out, ...);
 extern int StrCopyDx(struct descriptor *out, const struct descriptor *in);
 extern int StrCopyR(struct descriptor *dest, const unsigned short *len, char *source);
 extern int StrElement(struct descriptor *dest, int *num, struct descriptor *delim, struct descriptor *src);
