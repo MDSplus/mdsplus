@@ -446,15 +446,14 @@ again: ;
 	  goto status_out;
 	}
 	if (*(opcode_t*)rDsc->pointer == OPC_MULTIPLY || *(opcode_t*)rDsc->pointer == OPC_DIVIDE) {
-	  mdsdsc_d_t da = {0, DTYPE_T, CLASS_D, NULL};
+	  mdsdsc_t da = {0, DTYPE_T, CLASS_D, NULL};
 	  char mulDivC = (*(opcode_t*)rDsc->pointer == OPC_MULTIPLY)?'*':'/';
 	  mdsdsc_t mulDiv = {1, DTYPE_T, CLASS_S, &mulDivC};
 	  for(i = 0; i < rDsc->ndesc; i++) {
 	    status = recGetUnits(rDsc->dscptrs[i], isX, &xd);
 	    if STATUS_OK {
 	      if (da.pointer) {
-                status = StrAppend(&da,&mulDiv);
-		if STATUS_OK StrAppend(&da,xd.pointer);
+                status = StrConcat(&da,&da,&mulDiv,xd.pointer MDS_END_ARG);
 		if STATUS_NOT_OK goto status_not_ok_out;
 	      } else {
 		da.length  = xd.pointer->length;
