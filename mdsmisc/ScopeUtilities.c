@@ -30,10 +30,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <mdsshr.h>
 #include <stdlib.h>
+#include <strroutines.h>
 #include <mdstypes.h>
 #include <tdishr.h>
 #include <xtreeshr.h>
 #include <ncidef.h>
+
+#ifndef INFINITY
+#define INFINITY 1.0/0.0
+#endif
 
 #ifdef WORD_BIGENDIAN
 #define swap2(...)
@@ -88,7 +93,6 @@ static int recIsSegmented(mdsdsc_t *dsc) {
  */
   if(!dsc) return 0;
   int nid, numSegments, status, i;
-  char *path;
   int retClassLen, retDtypeLen;
   EMPTYXD(xd);
   mdsdsc_r_t *rDsc;
@@ -121,10 +125,11 @@ static int recIsSegmented(mdsdsc_t *dsc) {
 	  }
 	}
       } else if(dsc->dtype == DTYPE_PATH) {
-	path = malloc(dsc->length + 1);
+	char *path = malloc(dsc->length + 1);
 	memcpy(path, dsc->pointer, dsc->length);
 	path[dsc->length] = 0;
 	status = TreeFindNode(path, &nid);
+        free(path);
 	if STATUS_OK
 	  status = TreeGetNumSegments(nid, &numSegments);
 	if (STATUS_OK && numSegments > 0)
@@ -150,16 +155,6 @@ static int recIsSegmented(mdsdsc_t *dsc) {
       break;
   }
   return 0;
-}
-
-static inline int getSegmentedNid(char *expr){
-  int nid;
-  INIT_AND_FREEXD_ON_EXIT(xd);
-  mdsdsc_t exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
-  const int status = TdiCompile(&exprD, &xd MDS_END_ARG);
-  nid = STATUS_OK ? recIsSegmented(xd.pointer) : 0;
-  FREEXD_NOW(xd);
-  return nid;
 }
 
 #define NUM_SEGMENTS_THRESHOLD 10
@@ -299,216 +294,195 @@ static void trimData(float *y, mdsdsc_a_t *x, int nSamples, int reqPoints, doubl
   *retPoints = outIdx;
 }
 
-static char *recGetHelp(mdsdsc_t *dsc) {
-  int nid, numSegments, status, i;
-  char *path, *help;
-  EMPTYXD(xd);
-  mdsdsc_r_t *rDsc;
-  mds_param_t *pDsc;
-  if(!dsc) return NULL;
+static int recGetHelp(mdsdsc_t *dsc, mdsdsc_xd_t* xd_out) {
+again: ;
+  if(!dsc) return MDSplusERROR;
+  int status;
   switch (dsc->class) {
     case CLASS_S:
-      if(dsc->dtype == DTYPE_NID) {
-	nid = *(int *)dsc->pointer;
-	status = TreeGetNumSegments(nid, &numSegments);
-	if(STATUS_NOT_OK || numSegments > 0)
-	  return NULL;
-	status = TreeGetRecord(nid, &xd);
-	if STATUS_OK {
-	  help = recGetHelp(xd.pointer);
-	  MdsFree1Dx(&xd, 0);
-	  return help;
-	}
-	return NULL;
-      } else if(dsc->dtype == DTYPE_PATH) {
-	path = malloc(dsc->length + 1);
-	memcpy(path, dsc->pointer, dsc->length);
-	path[dsc->length] = 0;
-	status = TreeFindNode(path, &nid);
-	if STATUS_NOT_OK
-	  return NULL;
+      if(dsc->dtype == DTYPE_NID || dsc->dtype == DTYPE_PATH) {
+	int nid;
+        if(dsc->dtype == DTYPE_NID)
+	  nid = *(int *)dsc->pointer;
+        else {//if(dsc->dtype == DTYPE_PATH)
+	  char* path = malloc(dsc->length + 1);
+	  memcpy(path, dsc->pointer, dsc->length);
+	  path[dsc->length] = 0;
+	  status = TreeFindNode(path, &nid);
+          free(path);
+	  if STATUS_NOT_OK goto status_not_ok_out;
+        }
+	int numSegments;
 	status = TreeGetNumSegments(nid, &numSegments);
 	if (STATUS_NOT_OK || numSegments > 0)
-	  return NULL;
-	status = TreeGetRecord(nid, &xd);
-	if STATUS_OK {
-	  help = recGetHelp(xd.pointer);
-	  MdsFree1Dx(&xd, 0);
-	  return help;
-	}
-	return NULL;
+	  goto error_out;
+	EMPTYXD(xd);
+	             status = TreeGetRecord(nid, &xd);
+	if STATUS_OK status = recGetHelp(xd.pointer,xd_out);
+	MdsFree1Dx(&xd, NULL);
+	goto status_out;
       }
-      return NULL;
+      break;
     case CLASS_A:
-      return NULL;
+      break;
     case CLASS_XD:
-      if(!dsc->pointer) return NULL;
-      return recGetHelp((mdsdsc_t*)dsc->pointer);
+      if(!dsc->pointer) break;
+      dsc = (mdsdsc_t*)dsc->pointer;
+      goto again;
     case CLASS_R:
       if(dsc->dtype == DTYPE_PARAM) {
-	help = NULL;
-	pDsc = (mds_param_t *)dsc;
+	  mds_param_t *pDsc = (mds_param_t *)dsc;
 	if(pDsc->help) {
-	  status = TdiData(pDsc->help, &xd MDS_END_ARG);
-	  if (STATUS_OK && xd.pointer && xd.pointer->class == CLASS_S && xd.pointer->dtype == DTYPE_T) {
-	    help = malloc(xd.pointer->length + 1);
-	    memcpy(help, xd.pointer->pointer, xd.pointer->length);
-	    help[xd.pointer->length] = 0;
-	  }
-	  MdsFree1Dx(&xd, 0);
+	  status = TdiData(pDsc->help, xd_out MDS_END_ARG);
+	  if STATUS_NOT_OK goto status_not_ok_out;
+	  if (xd_out->pointer
+	   && xd_out->pointer->class == CLASS_S
+	   && xd_out->pointer->dtype == DTYPE_T)
+	    goto status_out;
 	}
-	return help;
+	break;
       }
-      rDsc = (mdsdsc_r_t *)dsc;
+      mdsdsc_r_t *rDsc = (mdsdsc_r_t *)dsc;
+      int i;
       for(i = 0; i < rDsc->ndesc; i++) {
-	if((help = recGetHelp(rDsc->dscptrs[i]))!=NULL)
-	return help;
+        status = recGetHelp(rDsc->dscptrs[i],xd_out);
+	if STATUS_OK goto status_out;
       }
-      return NULL;
+      break;
     default:
-      return NULL;
+      break;
   }
+error_out: ;
+  status = MDSplusERROR;
+status_not_ok_out: ;
+  MdsFree1Dx(xd_out, NULL);
+status_out: ;
+  return status;
 }
 
-static char *recGetUnits(mdsdsc_t *dsc, int isX) {
-  if(!dsc) return NULL;
-  int nid, numSegments, status, i, unitsLen;
-  char *path, *units, *currUnits;
-  char **unitsArr;
-  char *mulDiv;
+static int recGetUnits(mdsdsc_t *dsc, int isX, mdsdsc_xd_t* xd_out) {
   EMPTYXD(xd);
-  mdsdsc_r_t *rDsc;
-  mds_with_units_t *uDsc;
-  mds_signal_t *sDsc;
-  mds_param_t *pDsc;
+again: ;
+  if(!dsc) return MDSplusERROR;
+  int status;
   switch (dsc->class) {
     case CLASS_S:
-      if(dsc->dtype == DTYPE_NID) {
-	nid = *(int *)dsc->pointer;
+      if(dsc->dtype == DTYPE_NID || dsc->dtype == DTYPE_PATH) {
+	int nid;
+        if(dsc->dtype == DTYPE_NID)
+	  nid = *(int *)dsc->pointer;
+        else {//if(dsc->dtype == DTYPE_PATH)
+	  char* path = malloc(dsc->length + 1);
+	  memcpy(path, dsc->pointer, dsc->length);
+	  path[dsc->length] = 0;
+	  status = TreeFindNode(path, &nid);
+          free(path);
+	  if STATUS_NOT_OK goto status_not_ok_out;
+        }
+	int numSegments;
 	status = TreeGetNumSegments(nid, &numSegments);
 	if (STATUS_NOT_OK || numSegments > 0)
-	  return NULL;
+	  goto error_out;
 	status = TreeGetRecord(nid, &xd);
 	if STATUS_OK {
-	  units = recGetUnits(xd.pointer, isX);
-	  MdsFree1Dx(&xd, 0);
-	  return units;
-	}
-      } else if(dsc->dtype == DTYPE_PATH) {
-	path = malloc(dsc->length + 1);
-	memcpy(path, dsc->pointer, dsc->length);
-	path[dsc->length] = 0;
-	status = TreeFindNode(path, &nid);
-	if STATUS_NOT_OK
-	  return NULL;
-	status = TreeGetNumSegments(nid, &numSegments);
-	if (STATUS_NOT_OK || numSegments > 0)
-	  return NULL;
-	status = TreeGetRecord(nid, &xd);
-	if STATUS_OK {
-	  units = recGetUnits(xd.pointer, isX);
-	  MdsFree1Dx(&xd, 0);
+	  status = recGetUnits(xd.pointer, isX, xd_out);
+	  goto status_out;
 	}
       }
-      return NULL;
+      break;
     case CLASS_A:
-      return NULL;
+      break;
     case CLASS_XD:
-      if(!dsc->pointer) return NULL;
-      return recGetUnits((mdsdsc_t*)dsc->pointer, isX);
+      if(!dsc->pointer) break;
+      dsc = (mdsdsc_t*)dsc->pointer;
+      goto again;
     case CLASS_R:
       if(dsc->dtype == DTYPE_WITH_UNITS) {
-	units = NULL;
-	uDsc = (mds_with_units_t*)dsc;
+	mds_with_units_t *uDsc = (mds_with_units_t*)dsc;
 	if(uDsc->units) {
-	  status = TdiData(uDsc->units, &xd MDS_END_ARG);
-	  if(STATUS_OK && xd.pointer && xd.pointer->class == CLASS_S && xd.pointer->dtype == DTYPE_T) {
-	    units = malloc(xd.pointer->length + 1);
-	    memcpy(units, xd.pointer->pointer, xd.pointer->length);
-	    units[xd.pointer->length] = 0;
-	  }
-	  MdsFree1Dx(&xd, 0);
+	  status = TdiData(uDsc->units, xd_out MDS_END_ARG);
+	  if STATUS_NOT_OK goto status_not_ok_out;
+	  if (xd_out->pointer
+	   && xd_out->pointer->class == CLASS_S
+	   && xd_out->pointer->dtype == DTYPE_T)
+	    goto status_out;
 	}
-	return units;
+	break;
       }
       if(dsc->dtype == DTYPE_SIGNAL) {
-	sDsc = (mds_signal_t *)dsc;
-	if(isX)
-	  return (sDsc->ndesc > 2) ? recGetUnits(sDsc->dimensions[0], isX) : NULL;
-	if(sDsc->data)
-	  return recGetUnits(sDsc->data, isX);
-	return recGetUnits(sDsc->raw, isX);
+	mds_signal_t *sDsc = (mds_signal_t *)dsc;
+	if(isX) {
+	  if (sDsc->ndesc < 3) break;
+	  dsc = sDsc->dimensions[0];
+	  isX = FALSE;
+	} else if (sDsc->data)
+	  dsc = sDsc->data;
+        else
+	  dsc = sDsc->raw;
+	goto again;
       }
       if(dsc->dtype == DTYPE_PARAM) {
-	pDsc = (mds_param_t *)dsc;
-	return recGetUnits(pDsc->value, isX);
+	mds_param_t *pDsc = (mds_param_t *)dsc;
+	dsc = pDsc->value;
+	goto again;
       }
-      rDsc = (mdsdsc_r_t *)dsc;
-      if(rDsc->ndesc == 1)
-	return recGetUnits(rDsc->dscptrs[0], isX);
-      if(rDsc->dtype == DTYPE_FUNCTION && rDsc->pointer
-       && (*(opcode_t*)rDsc->pointer == OPC_ADD || *(opcode_t*)rDsc->pointer == OPC_SUBTRACT)) {
-	units = recGetUnits(rDsc->dscptrs[0], isX);
-	if(!units) return NULL;
-        for(i = 1; i < rDsc->ndesc; i++) {
-	  currUnits = recGetUnits(rDsc->dscptrs[i], isX);
-	  if(!currUnits || strcmp(units, currUnits)) {//Different units
-	    free(units);
-	    free(currUnits);
-	    return NULL;
+      mdsdsc_r_t *rDsc = (mdsdsc_r_t *)dsc;
+      if(rDsc->ndesc == 1) {
+	dsc = rDsc->dscptrs[0];
+	goto again;
+      }
+      if (rDsc->dtype == DTYPE_FUNCTION && rDsc->pointer) {
+        int i;
+	if (*(opcode_t*)rDsc->pointer == OPC_ADD || *(opcode_t*)rDsc->pointer == OPC_SUBTRACT) {
+	  status = recGetUnits(rDsc->dscptrs[0], isX, xd_out);
+	  if STATUS_NOT_OK goto status_not_ok_out;
+          for(i = 1; i < rDsc->ndesc; i++) {
+	    status = recGetUnits(rDsc->dscptrs[i], isX, &xd);
+	    if(STATUS_NOT_OK
+            || xd.pointer->length != xd_out->pointer->length
+            || strncmp(xd.pointer->pointer, xd_out->pointer->pointer, xd.pointer->length))
+	      goto error_out;//Different units
 	  }
-	  free(currUnits);
+	  goto status_out;
 	}
-	return units;
-      }
-      if(rDsc->dtype == DTYPE_FUNCTION && rDsc->pointer
-       && (*(opcode_t*)rDsc->pointer == OPC_MULTIPLY || *(opcode_t*)rDsc->pointer == OPC_DIVIDE)) {
-	mulDiv = (*(opcode_t*)rDsc->pointer == OPC_MULTIPLY)?"*":"/";
-	unitsArr = (char **)malloc(sizeof(char *) * rDsc->ndesc);
-	unitsLen = rDsc->ndesc;
-	for(i = 0; i < rDsc->ndesc; i++) {
-	  unitsArr[i] = recGetUnits(rDsc->dscptrs[i], isX);
-	  if(unitsArr[i])
-	    unitsLen += strlen(unitsArr[i]);
-	}
-	units = malloc(unitsLen+1);
-	units[0] = 0;
-	for(i = 0; i < rDsc->ndesc; i++) {
-	  if(unitsArr[i]) {
-	    if(strlen(units) > 0)
-	      sprintf(&units[strlen(units)], "%s%s", mulDiv, unitsArr[i]);
-	    else
-	      sprintf(&units[strlen(units)], "%s", unitsArr[i]);
-	    free(unitsArr[i]);
+	if (*(opcode_t*)rDsc->pointer == OPC_MULTIPLY || *(opcode_t*)rDsc->pointer == OPC_DIVIDE) {
+	  mdsdsc_d_t da = {0, DTYPE_T, CLASS_D, NULL};
+	  char mulDivC = (*(opcode_t*)rDsc->pointer == OPC_MULTIPLY)?'*':'/';
+	  mdsdsc_t mulDiv = {1, DTYPE_T, CLASS_S, &mulDivC};
+	  for(i = 0; i < rDsc->ndesc; i++) {
+	    status = recGetUnits(rDsc->dscptrs[i], isX, &xd);
+	    if STATUS_OK {
+	      if (da.pointer) {
+                status = StrAppend(&da,&mulDiv);
+		if STATUS_OK StrAppend(&da,xd.pointer);
+		if STATUS_NOT_OK goto status_not_ok_out;
+	      } else {
+		da.length  = xd.pointer->length;
+		da.pointer = strdup(xd.pointer->pointer);
+	      }
+	    }
 	  }
-	}
-	free(unitsArr);
-	return units;
+	  if (da.pointer) {
+	    da.class = CLASS_S;
+	    MdsCopyDxXd((mdsdsc_t*)&da, xd_out);
+	    free(da.pointer);
+	    goto success;
+	  }
+        }
       }
-      return NULL;
-    default: return NULL;
+      break;
+    default: break;
   }
-}
-
-static mdsdsc_xd_t *encodeError(char *error, int line, mdsdsc_xd_t *out_xd) {
-/* converts message to packed error message (float res,int len,char msg[len])
- */
-  typedef struct __attribute__((__packed__)) {
-    int   line;
-    int   len;
-    char  msg[0];
-  } jerr_t;
-  const size_t err_ln = strlen(error);
-  const size_t err_sz = err_ln + sizeof(jerr_t);
-  jerr_t *jerr = malloc(err_sz);{
-    jerr->line= line;
-    jerr->len = err_ln;
-    memcpy(jerr->msg, error, err_ln);
-  }
-  mdsdsc_t err_d = {err_sz, DTYPE_T, CLASS_S, (char*)jerr};
-  MdsCopyDxXd(&err_d, out_xd);
-  free(jerr);
-  return out_xd;
+error_out: ;
+  status = MDSplusERROR;
+status_not_ok_out: ;
+  MdsFree1Dx(xd_out, NULL);
+status_out: ;
+  MdsFree1Dx(&xd, NULL);
+  return status;
+success: ;
+  MdsFree1Dx(&xd, NULL);
+  return MDSplusSUCCESS;
 }
 
 //Check if the passed expression contains at least one segmented node
@@ -575,34 +549,22 @@ static inline int pack_meta(mdsdsc_t*title,mdsdsc_t*xLabel,mdsdsc_t*yLabel,float
   return idx;
 }
 
-static int getNSamples(mdsdsc_xd_t*yXd,mdsdsc_xd_t*xXd,char**err) {
-  // Check results: must be an array of either type DTYPE_B, DTYPE_BU, DTYPE_W, DTYPE_WU, DTYPE_L, DTYPE_LU, DTYPE_FLOAT, DTYPE_DOUBLE
-  // Y converted to float, X to int64_t or float or double
-  if(yXd->pointer->class != CLASS_A) {
-    *err = "Y is not an array";
-    return __LINE__;
-  }
-  if(xXd->pointer->class != CLASS_A) {
-    *err = "Y is not an array";
-    return __LINE__;
-  }
-  //Handle old DTYPE_F format
+inline static int getNSamples(mdsdsc_xd_t*yXd,mdsdsc_xd_t*xXd,int *nSamples) {
+  if(yXd->pointer->class != CLASS_A) return TdiINVCLADSC;
+  if(xXd->pointer->class != CLASS_A) return TdiINVCLADSC;
   if(yXd->pointer->dtype == DTYPE_F) {
-    if IS_NOT_OK(TdiFloat(yXd->pointer, &yXd MDS_END_ARG)) {
-      *err = "Cannot Convert Y to IEEE Floating point";
-      return __LINE__;
-    }
+    const int status = TdiFloat((mdsdsc_t *)yXd, yXd MDS_END_ARG);
+    if STATUS_NOT_OK return status;
   }
   if(xXd->pointer->dtype == DTYPE_F) {
-    if IS_NOT_OK(TdiFloat(xXd->pointer, &xXd MDS_END_ARG)) {
-      *err = "Cannot Convert X to IEEE Floating point";
-      return __LINE__;
-    }
+    const int status = TdiFloat((mdsdsc_t *)xXd, xXd MDS_END_ARG);
+    if STATUS_NOT_OK return status;
   }
   //Number of samples set to minimum between X and Y
   const int ySamples = ((mdsdsc_a_t*)yXd->pointer)->arsize/yXd->pointer->length;
   const int xSamples = ((mdsdsc_a_t*)xXd->pointer)->arsize/xXd->pointer->length;
-  return xSamples<ySamples ? xSamples : ySamples;
+  *nSamples = xSamples<ySamples ? xSamples : ySamples;
+  return MDSplusSUCCESS;
 }
 
 static float* getFloatArray(mdsdsc_a_t *yArrD, int nSamples) {
@@ -720,28 +682,21 @@ EXPORT int GetXYSignalXd(mdsdsc_t *inY, mdsdsc_t *inX, mdsdsc_t *inXMin, mdsdsc_
   if STATUS_OK status = TdiEvaluate(inY, &yXd MDS_END_ARG);
   if STATUS_NOT_OK goto return_err;
   // Get Y, title, and yLabel, if any
-  char *title, *xLabel, *yLabel;
-  title  = recGetHelp(yXd.pointer);
-  yLabel = recGetUnits(yXd.pointer, 0);
+  EMPTYXD(title);EMPTYXD(xLabel);EMPTYXD(yLabel);
+  recGetHelp(yXd.pointer,&title);
+  recGetUnits(yXd.pointer, 0,&yLabel);
   //Get X
   if (!inX) //If an explicit expression for X has been given
     status = TdiDimOf(yXd.pointer, &xXd MDS_END_ARG);
   else //Get xLabel, if any
     status = TdiEvaluate(inX, &xXd MDS_END_ARG);
   if STATUS_NOT_OK goto return_err;
-  xLabel = recGetUnits(xXd.pointer, 1);
+  recGetUnits(xXd.pointer, 1, &xLabel);
   if STATUS_OK status = TdiData((mdsdsc_t *)&xXd, &xXd MDS_END_ARG);
   if STATUS_OK status = TdiData((mdsdsc_t *)&yXd, &yXd MDS_END_ARG);
+  int nSamples;
+  if STATUS_OK status = getNSamples(&yXd,&xXd,&nSamples);
   if STATUS_NOT_OK goto return_err;
-  //Check results: must be an array of either type DTYPE_B, DTYPE_BU, DTYPE_W, DTYPE_WU, DTYPE_L, DTYPE_LU, DTYPE_FLOAT, DTYPE_DOUBLE
-  // Y converted to float, X to int64_t or float or double
-  char *err = NULL;
-  int nSamples = getNSamples(&yXd,&xXd,&err);
-  if (err) {
-    encodeError(err,nSamples,retXd);
-    status = MDSplusERROR;
-    goto return_err;
-  }
   mdsdsc_a_t *xArrD = (mdsdsc_a_t *)xXd.pointer;
   mdsdsc_a_t *yArrD = (mdsdsc_a_t *)yXd.pointer;
   float *y = getFloatArray(yArrD,nSamples);
@@ -749,24 +704,24 @@ EXPORT int GetXYSignalXd(mdsdsc_t *inY, mdsdsc_t *inX, mdsdsc_t *inXMin, mdsdsc_
   float retResolution;
   trimData(y, xArrD, nSamples, reqNSamples, xmin, xmax, &retSamples, &retResolution);
 
-  DESCRIPTOR_A(yData, sizeof(float), DTYPE_FLOAT, (char *)y,     sizeof(float ) * retSamples);
-  mdsdsc_t yUnits = {yLabel ? strlen(yLabel) : 0,DTYPE_T,CLASS_S,yLabel};
-  DESCRIPTOR_WITH_UNITS(yDataU,&yData,&yUnits);
-  mdsdsc_t *yObj = yLabel ? (mdsdsc_t *)&yDataU : (mdsdsc_t *)&yData;
+  DESCRIPTOR_A(yData, sizeof(float), DTYPE_FLOAT,  (char *)y,     sizeof(float ) * retSamples);
+  DESCRIPTOR_WITH_UNITS(yDataU,&yData,yLabel.pointer);
+  mdsdsc_t *yObj = yLabel.pointer ? (mdsdsc_t *)&yDataU : (mdsdsc_t *)&yData;
 
   DESCRIPTOR_A(xData, xArrD->length, xArrD->dtype, xArrD->pointer, xArrD->length * retSamples);
-  mdsdsc_t xUnits = {xLabel ? strlen(xLabel) : 0,DTYPE_T,CLASS_S,xLabel};
-  DESCRIPTOR_WITH_UNITS(xDataU,&xData,&xUnits);
-  mdsdsc_t *xObj = xLabel ? (mdsdsc_t *)&xDataU : (mdsdsc_t *)&xData;
+  DESCRIPTOR_WITH_UNITS(xDataU,&xData,xLabel.pointer);
+  mdsdsc_t *xObj = xLabel.pointer ? (mdsdsc_t *)&xDataU : (mdsdsc_t *)&xData;
   mdsdsc_t resD  = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char*)&retResolution};
   DESCRIPTOR_SIGNAL_1(Signal, yObj, &resD, xObj);
-  mdsdsc_t Help = {title ? strlen(title) : 0,DTYPE_T,CLASS_S,title};
-  DESCRIPTOR_PARAM(SignalH,&Signal,&Help,NULL);
-  mdsdsc_t *signal = title ? (mdsdsc_t *)&SignalH : (mdsdsc_t *)&Signal;
+  DESCRIPTOR_PARAM(SignalH,&Signal,title.pointer,NULL);
+  mdsdsc_t *signal = title.pointer ? (mdsdsc_t *)&SignalH : (mdsdsc_t *)&Signal;
 
   MdsCopyDxXd(signal, retXd);
   if ((float*)yArrD->pointer != y) free(y);
 return_err: ;
+  MdsFree1Dx(&title, NULL);
+  MdsFree1Dx(&xLabel, NULL);
+  MdsFree1Dx(&yLabel, NULL);
   MdsFree1Dx(&xXd, NULL);
   MdsFree1Dx(&yXd, NULL);
   return status;
@@ -778,6 +733,30 @@ EXPORT int _GetXYSignalXd(void**ctx, mdsdsc_t *y,  mdsdsc_t *x, mdsdsc_t *xmin, 
   status = GetXYSignalXd(y, x, xmin, xmax, num, retXd);
   pthread_cleanup_pop(1);
   return status;
+}
+EXPORT int GetXYWaveXd(mdsdsc_t *sig,  mdsdsc_t *xmin, mdsdsc_t *xmax, int num, mdsdsc_xd_t *retXd) {
+  return GetXYSignalXd(sig, NULL, xmin, xmax, num, retXd);
+}
+
+static mdsdsc_xd_t *encodeError(char *error, int line, mdsdsc_xd_t *out_xd) {
+/* converts message to packed error message (float res,int len,char msg[len])
+ */
+  typedef struct __attribute__((__packed__)) {
+    int   line;
+    int   len;
+    char  msg[0];
+  } jerr_t;
+  const size_t err_ln = strlen(error);
+  const size_t err_sz = err_ln + sizeof(jerr_t);
+  jerr_t *jerr = malloc(err_sz);{
+    jerr->line= line;
+    jerr->len = err_ln;
+    memcpy(jerr->msg, error, err_ln);
+  }
+  mdsdsc_t err_d = {err_sz, DTYPE_T, CLASS_S, (char*)jerr};
+  MdsCopyDxXd(&err_d, out_xd);
+  free(jerr);
+  return out_xd;
 }
 
 static mdsdsc_xd_t*getPackedDsc(mdsdsc_xd_t*retXd){
@@ -836,17 +815,13 @@ static mdsdsc_xd_t*getPackedDsc(mdsdsc_xd_t*retXd){
   }
   idx = getXArray((mdsdsc_a_t*)dim, retSamples, retArr, idx);
   if (idx<0) {
-    encodeError("Cannot Convert X data dtype",__LINE__,retXd);
+     encodeError("Cannot Convert X data dtype",__LINE__,retXd);
      return retXd;
   }
   idx = pack_meta(title,xLabel,yLabel,retResolution,retArr,idx);
   DESCRIPTOR_A(retArrD, 1, DTYPE_B, retArr, retSize);
   MdsCopyDxXd((mdsdsc_t *)&retArrD, retXd);
   return retXd;
-}
-
-EXPORT int GetXYWaveXd(mdsdsc_t *sig,  mdsdsc_t *xmin, mdsdsc_t *xmax, int num, mdsdsc_xd_t *retXd) {
-  return GetXYSignalXd(sig, NULL, xmin, xmax, num, retXd);
 }
 
 EXPORT mdsdsc_xd_t* GetXYSignal(char *inY, char *inX, float *inXMin, float *inXMax, int *reqNSamples) {
