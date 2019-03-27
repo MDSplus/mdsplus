@@ -35,7 +35,8 @@ if __name__ == '__main__':
         WSGIServer(application).run()
     else:
         from wsgiref.simple_server import make_server
-        httpd = make_server('', 8080, application)
-        print("Serving on port 8080...")
+        port = int(os.sys.argv[1]) if len(os.sys.argv)>1 else 8080
+        httpd = make_server('', port, application)
+        print("Serving on port %d..."%port)
         # Serve until process is killed
         httpd.serve_forever()
