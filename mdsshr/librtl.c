@@ -633,37 +633,40 @@ EXPORT int LibFindImageSymbol(struct descriptor *filename, struct descriptor *sy
   free(c_symbol);
   return status;
 }
-/*******************************************************
- TODO: StrConcat fails when any of the varargs is out
- *******************************************************/
-EXPORT int StrConcat(struct descriptor *out, struct descriptor *first, ...)
+
+EXPORT int StrConcat(struct descriptor *out, ...)
 {
-  int i,nargs;
+  int i,nargs,len;
   struct descriptor * arglist[256];
-  VA_LIST_MDS_END_ARG(arglist,nargs,0,0,first)
-  int status = StrCopyDx(out, first);
-  if STATUS_OK {
-    if (out->class == CLASS_D) {
-      for (i = 0; STATUS_OK && i<nargs ; i++)
-	status = StrAppend((struct descriptor_d *)out, arglist[i]);
-    } else if (out->class == CLASS_S) {
-      struct descriptor temp = *out;
-      for (i = 0,
-	   temp.length = (unsigned short)(out->length - first->length),
-	   temp.pointer = out->pointer + first->length;
-	   i<nargs && STATUS_OK && temp.length > 0;
-	   temp.length = (unsigned short)(temp.length - arglist[i]->length),
-	   temp.pointer += arglist[i]->length,
-           i++) {
-	if (arglist[i])
-	  status = StrCopyDx(&temp, arglist[i]);
-	else
-	  break;
-      }
-    } else
-      status = MDSplusERROR;
+  VA_LIST_MDS_END_ARG(arglist,nargs,0,0,out);
+  char *new;
+  if (out->class == CLASS_D) {
+    len = 0;
+    for (i = 0; i<nargs && arglist[i] && len<0xFFFF; i++)
+      len += (int)arglist[i]->length;
+    if (len>0xFFFF) return StrSTRTOOLON;
+    new = malloc(len);
+  } else if (out->class == CLASS_S)
+    new = malloc(len = (int)out->length);
+  else
+    return LibINVSTRDES;
+  // concat the strings
+  char *p = new, *e = new + len, *p2, *e2;
+  for (i = 0 ; i<nargs && arglist[i] && p<e ; i++) {
+    p2 = arglist[i]->pointer;
+    e2 = arglist[i]->pointer + (int)arglist[i]->length;
+    while (p<e && p2<e2) *p++ = *p2++;
   }
-  return status;
+  if (out->class == CLASS_S) {
+    memcpy(out->pointer,new,p-new);
+    memset(p,' ',e-p);
+    free(new);
+  } else {
+    free(out->pointer);
+    out->pointer = new;
+    out->length = len;
+  }
+  return MDSplusSUCCESS;
 }
 
 EXPORT int StrPosition(struct descriptor *source, struct descriptor *substring, int *start)
@@ -690,7 +693,7 @@ EXPORT int StrLenExtr(struct descriptor *dest, struct descriptor *source, int *s
   struct descriptor_d s = { 0, DTYPE_T, CLASS_D, 0 };
   int status = StrGet1Dx(&len, &s);
   int i, j;
-  memset(s.pointer, 32, len);
+  memset(s.pointer, ' ', len);
   for (i = start - 1, j = 0; ((i < source->length) && (j < len)); i++, j++)
     s.pointer[j] = source->pointer[i];
   status = StrCopyDx(dest, (struct descriptor *)&s);
@@ -730,7 +733,7 @@ EXPORT int StrTrim(struct descriptor *out, struct descriptor *in, unsigned short
   struct descriptor s = { 0, DTYPE_T, CLASS_S, 0 };
   unsigned short i;
   for (i = in->length; i > 0; i--)
-    if (in->pointer[i - 1] != 32 && in->pointer[i - 1] != 9)
+    if (in->pointer[i - 1] != ' ' && in->pointer[i - 1] != 9)
       break;
   StrCopyDx((struct descriptor *)&tmp, in);
   s.length = i;
@@ -746,15 +749,15 @@ EXPORT int StrCopyDx(struct descriptor *out, const struct descriptor *in)
   if (out->class == CLASS_D && (in->length != out->length))
     StrGet1Dx(&in->length, (struct descriptor_d *)out);
   if (out->length && out->pointer != NULL) {
-    unsigned int outlength = (out->class == CLASS_A) ? ((struct descriptor_a *)out)->arsize : out->length;
-    unsigned int inlength = (in->class == CLASS_A) ? ((struct descriptor_a *)in)->arsize : in->length;
-    unsigned int len = outlength > inlength ? inlength : outlength;
+    const uint32_t outlength = (out->class == CLASS_A) ? ((struct descriptor_a *)out)->arsize : out->length;
+    const uint32_t inlength = (in->class == CLASS_A) ? ((struct descriptor_a *)in)->arsize : in->length;
+    const uint32_t len = outlength > inlength ? inlength : outlength;
     char *p1, *p2;
     unsigned int i;
     for (i = 0, p1 = out->pointer, p2 = in->pointer; i < len; i++)
       *p1++ = *p2++;
     if (outlength > inlength)
-      memset(out->pointer + inlength, 32, outlength - inlength);
+      memset(out->pointer + inlength, ' ', outlength - inlength);
   }
   return MDSplusSUCCESS;
 }
@@ -1104,10 +1107,7 @@ EXPORT int StrAppend(struct descriptor_d *out, struct descriptor *tail)
     int len = (int)out->length + (int)tail->length;
     if (len > 0xffff) return StrSTRTOOLON;
     char *old = out->pointer;
-    if (out->pointer)
-      out->pointer = realloc(out->pointer, len);
-    else
-      out->pointer = malloc(len);
+    out->pointer = realloc(out->pointer, len);
     if (out->pointer) {
       memcpy(out->pointer + out->length, tail->pointer, tail->length);
       out->length = len;
