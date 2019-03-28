@@ -28,6 +28,7 @@ import threading
 import Queue
 import time
 import socket
+import math
 import numpy as np
 
 try:
@@ -119,6 +120,9 @@ class _ACQ2106_423ST(MDSplus.Device):
                     ans = lcm(ans, e)
                 return int(ans)
 
+            def truncate(f, n):
+                return math.floor(f * 10 ** n) / 10 ** n
+
             if self.dev.debug:
                 print("MDSWorker running")
 
@@ -133,7 +137,7 @@ class _ACQ2106_423ST(MDSplus.Device):
 
             self.dims = []
             for i in range(self.nchans):
-                self.dims.append(Range(0., (self.seg_length-1)*dt, dt*self.decim[i]))
+                self.dims.append(Range(0., truncate((self.seg_length-1)*dt,3), dt*self.decim[i]))
 
             self.device_thread.start()
 
@@ -157,7 +161,7 @@ class _ACQ2106_423ST(MDSplus.Device):
                     if c.on:
                         b = buffer[i::self.nchans*self.decim[i]]
                         c.makeSegment(self.dims[i].begin, self.dims[i].ending, self.dims[i], b)
-                        self.dims[i] = Range(self.dims[i].begin + self.seg_length*dt, self.dims[i].ending + self.seg_length*dt, dt*self.decim[i])
+                        self.dims[i] = Range(self.dims[i].begin + truncate(self.seg_length*dt,3), self.dims[i].ending + truncate(self.seg_length*dt,3), dt*self.decim[i])
                     i += 1
                 segment += 1
                 Event.setevent(event_name)
