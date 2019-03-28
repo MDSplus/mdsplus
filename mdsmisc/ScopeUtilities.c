@@ -60,7 +60,7 @@ static inline void swap8(char *buf) {
   swap4(buf+2);
 }
 #endif
-static double to_doublex(const void *ptr, const dtype_t dtype, const double defval, const int is_time) {
+static double to_doublex(const void *const ptr, const dtype_t dtype, const double defval, const int is_time) {
   switch(dtype) {
     case DTYPE_FLOAT:
       return (double)*( float  *)ptr;
@@ -84,10 +84,10 @@ static double to_doublex(const void *ptr, const dtype_t dtype, const double defv
       return defval;
   }
 }
-inline static double to_double(const void *ptr, const dtype_t dtype) {
+inline static double to_double(const void *const ptr, const dtype_t dtype) {
   return to_doublex(ptr,dtype,0,FALSE);
 }
-static int recIsSegmented(mdsdsc_t *dsc) {
+static int recIsSegmented(const mdsdsc_t *const dsc) {
 /* returns nid of the first segmented node found
  * or 0 if none found
  */
@@ -166,7 +166,7 @@ static int recIsSegmented(mdsdsc_t *dsc) {
 **/
 
 #define MAX64 0x7FFFFFFFFFFFFFFFL
-inline static int64_t estimateNumSamples(mdsdsc_t *dsc, mdsdsc_t *xMin, mdsdsc_t *xMax, int *estimatedSegmentSamples, double *dMin, double *dMax) {
+inline static int64_t estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *const xMin, mdsdsc_t *const xMax, int *const estimatedSegmentSamples, double *const dMin, double *const dMax) {
 /* return the number of samples the signal holds based on meta information
    or -1 if something went wrong
  */
@@ -243,7 +243,7 @@ return_neg1: ;
 
 //Perform trim on site (do not realloc arrays) return the actual number of points
 //the type of X array is unknown, element size is passed in xSize
-static void trimData(float *y, mdsdsc_a_t *x, int nSamples, int reqPoints, double xMin, double xMax, int *retPoints, float *retResolution) {
+static inline void trimData(float *const y, mdsdsc_a_t *const x, const int nSamples, const int reqPoints, const double xMin, const double xMax, int *const retPoints, float *const retResolution) {
   if(nSamples < 10 * reqPoints) {
     //Does not perform any compression
     *retResolution = 1E12;
@@ -294,7 +294,8 @@ static void trimData(float *y, mdsdsc_a_t *x, int nSamples, int reqPoints, doubl
   *retPoints = outIdx;
 }
 
-static int recGetXxxx(const mdsdsc_t *dsc, mdsdsc_xd_t* xd_out, const int getHelp) {
+static int recGetXxxx(const mdsdsc_t *const dsc_in, mdsdsc_xd_t *const xd_out, const int getHelp) {
+const mdsdsc_t *dsc = dsc_in;
 again: ;
   if(!dsc) return MDSplusERROR;
   int status;
@@ -383,9 +384,9 @@ again: ;
 	    EMPTYXD(xd);
             for(i = 1; i < rDsc->ndesc; i++) {
 	      status = recGetXxxx(rDsc->dscptrs[i], &xd, getHelp);
-	      if(STATUS_NOT_OK
-              || xd.pointer->length != xd_out->pointer->length
-              || strncmp(xd.pointer->pointer, xd_out->pointer->pointer, xd.pointer->length)) {
+	      if (STATUS_NOT_OK
+	       || xd.pointer->length != xd_out->pointer->length
+               || strncmp(xd.pointer->pointer, xd_out->pointer->pointer, xd.pointer->length)) {
 		MdsFree1Dx(&xd, NULL);
 		goto error_out;//Different units
 	      }
@@ -436,16 +437,16 @@ success: ;
   return MDSplusSUCCESS;
 }
 
-static inline int recGetHelp(const mdsdsc_t *dsc, mdsdsc_xd_t* xd_out) {
+static inline int recGetHelp(const mdsdsc_t *const dsc, mdsdsc_xd_t *const xd_out) {
   return recGetXxxx(dsc,xd_out,TRUE);
 }
 
-static inline int recGetUnits(const mdsdsc_t *dsc, mdsdsc_xd_t* xd_out) {
+static inline int recGetUnits(const mdsdsc_t *const dsc, mdsdsc_xd_t *const xd_out) {
   return recGetXxxx(dsc,xd_out,FALSE);
 }
 
 //Check if the passed expression contains at least one segmented node
-EXPORT int IsSegmented(char *expr) {
+EXPORT int IsSegmented(char *const expr) {
   EMPTYXD(xd);
   mdsdsc_t exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
   if IS_NOT_OK(TdiCompile(&exprD, &xd MDS_END_ARG)) return FALSE;
@@ -454,7 +455,7 @@ EXPORT int IsSegmented(char *expr) {
   return segNid != 0;
 }
 
-EXPORT int TestGetHelp(char *expr) {
+EXPORT int TestGetHelp(char *const expr) {
   EMPTYXD(xd);
   mdsdsc_t exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
   if IS_NOT_OK(TdiCompile(&exprD, &xd MDS_END_ARG)) return FALSE;
@@ -462,7 +463,7 @@ EXPORT int TestGetHelp(char *expr) {
   return TRUE;
 }
 
-EXPORT int TestGetUnits(char *expr) {
+EXPORT int TestGetUnits(char *const expr) {
   EMPTYXD(xd);
   mdsdsc_t exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
   if IS_NOT_OK(TdiCompile(&exprD, &xd MDS_END_ARG)) return FALSE;
@@ -470,7 +471,7 @@ EXPORT int TestGetUnits(char *expr) {
   return TRUE;
 }
 
-static inline int pack_meta(mdsdsc_t*title,mdsdsc_t*xLabel,mdsdsc_t*yLabel,float res,char*retArr,int idx) {
+static inline int pack_meta(const mdsdsc_t *const title, const mdsdsc_t *const xLabel,const mdsdsc_t *const yLabel, const float res, char *const retArr, int idx) {
 //idx is the current index in retArr
 //Write title, xLabel, yLabel as length followed by chars
   if(title) {
@@ -508,7 +509,7 @@ static inline int pack_meta(mdsdsc_t*title,mdsdsc_t*xLabel,mdsdsc_t*yLabel,float
   return idx;
 }
 
-inline static int getNSamples(const mdsdsc_xd_t *yXd, const mdsdsc_xd_t *xXd,int *nSamples) {
+inline static int getNSamples(const mdsdsc_xd_t *const yXd, const mdsdsc_xd_t *const xXd,int *const nSamples) {
   if(yXd->pointer->class != CLASS_A) return TdiINVCLADSC;
   if(xXd->pointer->class != CLASS_A) return TdiINVCLADSC;
   if(yXd->pointer->dtype == DTYPE_F) {
@@ -526,7 +527,7 @@ inline static int getNSamples(const mdsdsc_xd_t *yXd, const mdsdsc_xd_t *xXd,int
   return MDSplusSUCCESS;
 }
 
-static float* getFloatArray(const mdsdsc_a_t *yArrD, const int nSamples) {
+inline static float* getFloatArray(const mdsdsc_a_t *const yArrD, const int nSamples) {
   int i;
   float *y;
   switch(yArrD->dtype) {
@@ -566,7 +567,7 @@ static float* getFloatArray(const mdsdsc_a_t *yArrD, const int nSamples) {
   }
 }
 
-static inline int getXArray(const mdsdsc_a_t *xArrD, const int retSamples, char *retArr, int idx) {
+static inline int getXArray(const mdsdsc_a_t *const xArrD, const int retSamples, char *const retArr, int idx) {
   int i;
   switch(xArrD->dtype) {
     default:
@@ -615,7 +616,7 @@ static inline int getXArray(const mdsdsc_a_t *xArrD, const int retSamples, char 
   return idx;
 }
 
-EXPORT int GetXYSignalXd(mdsdsc_t *inY, mdsdsc_t *inX, mdsdsc_t *inXMin, mdsdsc_t *inXMax, int reqNSamples, mdsdsc_xd_t* retXd) {
+EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX, mdsdsc_t *const inXMin, mdsdsc_t *const inXMax, const int reqNSamples, mdsdsc_xd_t *const retXd) {
   if (!inY) return TdiNULL_PTR;
   EMPTYXD(yXd);
   EMPTYXD(xXd);
@@ -642,7 +643,7 @@ EXPORT int GetXYSignalXd(mdsdsc_t *inY, mdsdsc_t *inX, mdsdsc_t *inXMin, mdsdsc_
   if STATUS_NOT_OK goto return_err;
   // Get Y, title, and yLabel, if any
   EMPTYXD(title);EMPTYXD(xLabel);EMPTYXD(yLabel);
-  recGetHelp(yXd.pointer,&title);
+  recGetHelp (yXd.pointer, &title);
   recGetUnits(yXd.pointer, &yLabel);
   //Get X
   if (!inX) //If an explicit expression for X has been given
@@ -685,7 +686,7 @@ return_err: ;
   MdsFree1Dx(&yXd, NULL);
   return status;
 }
-EXPORT int _GetXYSignalXd(void**ctx, mdsdsc_t *y,  mdsdsc_t *x, mdsdsc_t *xmin, mdsdsc_t *xmax, int num, mdsdsc_xd_t *retXd) {
+EXPORT int _GetXYSignalXd(void**const ctx, mdsdsc_t *const y,  mdsdsc_t *const x, mdsdsc_t *const xmin, mdsdsc_t *const xmax, const int num, mdsdsc_xd_t *const retXd) {
   int status;
   void* ps = TreeCtxPush(ctx);
   pthread_cleanup_push(TreeCtxPop,ps);
