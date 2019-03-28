@@ -53,10 +53,10 @@ class CRYOCON18I(MDSplus.Device):
         {'path':':COMMENT','type':'text', 'options':('no_write_shot')},
         {'path':':TREND_EVENT','type':'text', 'value': 'CRYOCON_TREND',
          'options':('no_write_shot')},
-        {'path':':DATA_EVENT','type':'text', 'value': 'CRYOCCON_STREAM',
+        {'path':':DATA_EVENT','type':'text', 'value': 'CRYOCON_STREAM',
          'options':('no_write_shot')},
         {'path':':STATUS_CMDS','type':'text',
-         'value':MDSplus.makeArray(['IDN?',
+         'value':MDSplus.makeArray(['*IDN?',
                                     'SYSTem:HWRev?',
                                     'SYSTem:FWREV?',
                                     'SYSTem:AMBient?']),
@@ -90,7 +90,7 @@ class CRYOCON18I(MDSplus.Device):
          'options':('no_write_shot',)},
         ]
 
-    for c in range(ord('A'), ord('H')):
+    for c in range(ord('A'), ord('I')):
         parts.append({'path':':INPUT_%c'%(c,),
                       'type':'signal',
                       'options':('no_write_model','write_once',)})
@@ -100,7 +100,7 @@ class CRYOCON18I(MDSplus.Device):
         parts.append({'path':':INPUT_%c:CALIBRATION'%(c,),
                       'type':'TEXT',
                       'options':('no_write_model', 'write_once',)})
-        parts.append({'path':':INPUT_%c:TEMPERATURE'%(c,),
+        parts.append({'path':':INPUT_%c:RESISTENCE'%(c,),
                       'type':'SIGNAL',
                       'options':('no_write_model', 'write_once',)})
     del c
@@ -122,11 +122,9 @@ class CRYOCON18I(MDSplus.Device):
            It should at least take one argument: teh device node
         """
         def __init__(self,dev):
-            print(MDSplus.__file__)
-            print(MDSplus.__version__)
             super(CRYOCON18I.Worker,self).__init__(name=dev.path)
             # make a thread safe copy of the device node with a non-global context
-            self.dev = MDSplus.TreeNode.copy(dev)
+            self.dev = dev.copy()
         def run(self):
             self.dev.stream()
 
@@ -155,7 +153,7 @@ class CRYOCON18I(MDSplus.Device):
                 print('  got back %s' % status_out[str(cmd)])
         self.status_out.record = status_out
 
-        for i in range(ord('a'), ord('h')):
+        for i in range(ord('a'), ord('i')):
             chan = self.__getattr__('input_%c'%(chr(i),))
             if chan.on:
               cal = self.__getattr__('input_%c_calibration'%(chr(i),))
@@ -185,7 +183,7 @@ class CRYOCON18I(MDSplus.Device):
         # open the instrument
         if self.debugging():
             print("about to open cryocon device %s" % str(self.node.data()))
-        event_name = self.data_event.data()
+        event_name = self.trend_event.data()
         rm = pyvisa.ResourceManager('@py')
         instrument = rm.open_resource('TCPIP::%s'% str(self.node.data()))
         chans = []
@@ -193,10 +191,9 @@ class CRYOCON18I(MDSplus.Device):
         resists = []
         temps = []
         query_cmd = ''
-        for i in range(ord('a'), ord('h')):
+        for i in range(ord('a'), ord('i')):
             chan = self.__getattr__('input_%c'%(chr(i),))
             if chan.on:
-                t_chan=self.__getattr__('input_%c_temperature' % (chr(i)))
                 query_cmd = 'INP %c?;INP %c:SENP?;'%(chr(i), chr(i),)
                 ans = instrument.query(query_cmd).split(';')
                 t_time=time.time()
@@ -207,9 +204,10 @@ class CRYOCON18I(MDSplus.Device):
                         print("Could not parse temperature /%s/"%
                            ans[0].split('\x00')[0])
                     temp = 0.0
-                t_chan.putRow(1000,
-                              MDSplus.Float32(temp),
-                               MDSplus.Int64(t_time*1000.))
+                chan.putRow(1000,
+                            MDSplus.Float32(temp),
+                            MDSplus.Int64(t_time*1000.))
+                r_chan=self.__getattr__('input_%c_resistence' % (chr(i)))
                 try:
                     resist = float(ans[1].split('\x00')[0])
                 except:
@@ -217,7 +215,7 @@ class CRYOCON18I(MDSplus.Device):
                         print("Could not parse resist /%s/"%
                                ans[1].split('\x00')[0])
                     resist = 0.0
-                chan.putRow(1000,
+                r_chan.putRow(1000,
                           MDSplus.Float32(resist),
                           MDSplus.Int64(t_time*1000.))
         MDSplus.Event.setevent(event_name)
@@ -256,19 +254,19 @@ class CRYOCON18I(MDSplus.Device):
         # set up arrays of data and nodes to use in the loop
         seg_length = int(self.seg_length.data())
         max_segments = self.max_segments.data()
-        chans = []
+        r_chans = []
         t_chans = []
         resists = []
         temps = []
         times = np.zeros(seg_length)
         query_cmd = ''
-        for i in range(ord('a'), ord('h')):
+        for i in range(ord('a'), ord('i')):
             chan = self.__getattr__('input_%c'%(chr(i),))
             if chan.on:
                 temps.append(np.zeros(seg_length))
                 resists.append(np.zeros(seg_length))
-                chans.append(chan)
-                t_chans.append(self.__getattr__('input_%c_temperature' % (chr(i))))
+                t_chans.append(chan)
+                r_chans.append(self.__getattr__('input_%c_resistence' % (chr(i))))
                 query_cmd = query_cmd+'INP %c?;INP %c:SENP?;'%(chr(i), chr(i),)
         # note the time
         # while not stopped and not done
@@ -315,7 +313,7 @@ class CRYOCON18I(MDSplus.Device):
                     temps[i] = temps[i][0:sample]
                     resists[i] = resists[i][0:sample]
             for i in range(len(temps)):
-                chans[i].makeSegment(times[0],
+                r_chans[i].makeSegment(times[0],
                                      times[-1],
                                      times,
                                      resists[i])
