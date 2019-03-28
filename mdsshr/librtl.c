@@ -83,7 +83,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 typedef struct {
   char *env;
   char *file;
-  struct descriptor wild_descr;
+  mdsdsc_t wild_descr;
   char **env_strs;
   int num_env;
   int next_index;
@@ -351,7 +351,7 @@ STATIC_ROUTINE char *GetRegistry(HKEY where, const char *pathname)
 }
 
 
-EXPORT int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag __attribute__ ((unused))){
+EXPORT int LibSpawn(mdsdsc_t *cmd, int waitFlag, int notifyFlag __attribute__ ((unused))){
   char *cmd_c = MdsDescrToCstring(cmd);
   int status;
   void *arglist[255];
@@ -398,7 +398,7 @@ STATIC_ROUTINE void child_done(int sig   )
   return;
 }
 
-EXPORT int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
+EXPORT int LibSpawn(mdsdsc_t *cmd, int waitflag, int notifyFlag)
 {
   char *sh = "/bin/sh";
   pid_t pid, xpid;
@@ -465,7 +465,7 @@ EXPORT int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
 
 #endif
 
-EXPORT char *TranslateLogical(char const *pathname)
+EXPORT char *TranslateLogical(const char *pathname)
 {
   char *tpath = getenv(pathname);
   if (tpath) return strdup(tpath);
@@ -479,14 +479,14 @@ EXPORT char *TranslateLogical(char const *pathname)
 }
 
 
-EXPORT int TranslateLogicalXd(struct descriptor const *in, struct descriptor_xd *out)
+EXPORT int TranslateLogicalXd(mdsdsc_t const *in, mdsdsc_xd_t *out)
 {
-  struct descriptor out_dsc = { 0, DTYPE_T, CLASS_S, 0 };
+  mdsdsc_t out_dsc = { 0, DTYPE_T, CLASS_S, 0 };
   int status = 0;
   char *in_c = MdsDescrToCstring(in);
   char *out_c = TranslateLogical(in_c);
   if (out_c) {
-    out_dsc.length = (unsigned short)strlen(out_c);
+    out_dsc.length = (uint16_t)strlen(out_c);
     out_dsc.pointer = out_c;
     status = 1;
   }
@@ -502,7 +502,7 @@ EXPORT void MdsFree(void *ptr)
   free(ptr);
 }
 
-EXPORT char *MdsDescrToCstring(struct descriptor const *in)
+EXPORT char *MdsDescrToCstring(const mdsdsc_t *const in)
 {
   char *out = malloc((size_t)in->length + 1);
   memcpy(out, in->pointer, in->length);
@@ -623,7 +623,7 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
   return status;
 }
 
-EXPORT int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
+EXPORT int LibFindImageSymbol(mdsdsc_t *filename, mdsdsc_t *symbol, void **symbol_value)
 {
   char *c_filename = MdsDescrToCstring(filename);
   char *c_symbol = MdsDescrToCstring(symbol);
@@ -634,10 +634,10 @@ EXPORT int LibFindImageSymbol(struct descriptor *filename, struct descriptor *sy
   return status;
 }
 
-EXPORT int StrConcat(struct descriptor *out, ...)
+EXPORT int StrConcat(mdsdsc_t *const out, ...)
 {
   int i,nargs,len;
-  struct descriptor * arglist[256];
+  mdsdsc_t * arglist[256];
   VA_LIST_MDS_END_ARG(arglist,nargs,0,0,out);
   char *new;
   if (out->class == CLASS_D) {
@@ -669,7 +669,7 @@ EXPORT int StrConcat(struct descriptor *out, ...)
   return MDSplusSUCCESS;
 }
 
-EXPORT int StrPosition(struct descriptor *source, struct descriptor *substring, int *start)
+EXPORT int StrPosition(const mdsdsc_t *const source, const mdsdsc_t *const substring, const int *const start)
 {
   char *source_c = MdsDescrToCstring(source);
   char *substring_c = MdsDescrToCstring(substring);
@@ -681,27 +681,28 @@ EXPORT int StrPosition(struct descriptor *source, struct descriptor *substring, 
   return answer;
 }
 
-EXPORT int StrCopyR(struct descriptor *dest, const length_t *len, char *source){
-  const struct descriptor s = { *len, DTYPE_T, CLASS_S, source };
-  return StrCopyDx(dest, &s);
+EXPORT int StrCopyR(mdsdsc_t *const out, const length_t *const len, char *const in){
+  const mdsdsc_t in_d = { *len, DTYPE_T, CLASS_S, in };
+  return StrCopyDx(out, &in_d);
 }
 
-EXPORT int StrLenExtr(struct descriptor *dest, struct descriptor *source, int *start_in, int *len_in)
+EXPORT int StrLenExtr(mdsdsc_t *const out, const mdsdsc_t *const in, const int *const start_in, const int *const len_in)
 {
-  unsigned short len = (unsigned short)((*len_in < 0) ? 0 : *len_in & 0xffff);
-  unsigned short start = (unsigned short)((*start_in > 1) ? *start_in & 0xffff : 1);
-  struct descriptor_d s = { 0, DTYPE_T, CLASS_D, 0 };
-  int status = StrGet1Dx(&len, &s);
-  int i, j;
-  memset(s.pointer, ' ', len);
-  for (i = start - 1, j = 0; ((i < source->length) && (j < len)); i++, j++)
-    s.pointer[j] = source->pointer[i];
-  status = StrCopyDx(dest, (struct descriptor *)&s);
-  StrFree1Dx(&s);
+  const length_t len  = (length_t)((*len_in   < 0) ? 0 : *len_in & 0xffff);
+  const length_t start= (length_t)((*start_in > 1) ? (*start_in & 0xffff)-1 : 0);
+  const length_t span = (in->length > start) ? in->length - start : 0;
+  const length_t tspan= span<len ? span : len;
+  mdsdsc_t s = { len, DTYPE_T, CLASS_S, malloc(len) };
+  if (!s.pointer) return LibINSVIRMEM;
+  memcpy(s.pointer,in->pointer+start,tspan);
+  if (span<len)
+    memset(s.pointer+span, ' ', len-span);
+  int status = StrCopyDx(out, &s);
+  free(s.pointer);
   return status;
 }
 
-EXPORT int StrGet1Dx(const length_t *len, struct descriptor_d *out)
+EXPORT int StrGet1Dx(const length_t *const len, mdsdsc_d_t *const out)
 {
   if (out->class != CLASS_D)
     return LibINVSTRDES;
@@ -714,28 +715,19 @@ EXPORT int StrGet1Dx(const length_t *len, struct descriptor_d *out)
   return MDSplusSUCCESS;
 }
 
-//int LibEmul(int *m1, int *m2, int *add, int64_t * prod)
-//{
-//  int64_t m1_64 = *m1;
-//  int64_t m2_64 = *m2;
-//  int64_t add_64 = *add;
-//  *prod = m1_64 * m2_64 + add_64;
-//  return 1;
-//}
-
-int LibSFree1Dd(struct descriptor_d *out){
+int LibSFree1Dd(mdsdsc_d_t *const out){
   return StrFree1Dx(out);
 }
 
-EXPORT int StrTrim(struct descriptor *out, struct descriptor *in, unsigned short *lenout)
+EXPORT int StrTrim(mdsdsc_t *const out, const mdsdsc_t *const in, length_t *const lenout)
 {
-  struct descriptor_d tmp = { 0, DTYPE_T, CLASS_D, 0 };
-  struct descriptor s = { 0, DTYPE_T, CLASS_S, 0 };
-  unsigned short i;
+  mdsdsc_d_t tmp = { 0, DTYPE_T, CLASS_D, 0 };
+  mdsdsc_t s = { 0, DTYPE_T, CLASS_S, 0 };
+  uint16_t i;
   for (i = in->length; i > 0; i--)
     if (in->pointer[i - 1] != ' ' && in->pointer[i - 1] != 9)
       break;
-  StrCopyDx((struct descriptor *)&tmp, in);
+  StrCopyDx((mdsdsc_t *)&tmp, in);
   s.length = i;
   s.pointer = tmp.pointer;
   if (lenout != NULL)
@@ -744,16 +736,16 @@ EXPORT int StrTrim(struct descriptor *out, struct descriptor *in, unsigned short
   return StrFree1Dx(&tmp);
 }
 
-EXPORT int StrCopyDx(struct descriptor *out, const struct descriptor *in)
+EXPORT int StrCopyDx(mdsdsc_t *const out, const mdsdsc_t *const in)
 {
   if (out->class == CLASS_D && (in->length != out->length))
-    StrGet1Dx(&in->length, (struct descriptor_d *)out);
+    StrGet1Dx(&in->length, (mdsdsc_d_t *)out);
   if (out->length && out->pointer != NULL) {
-    const uint32_t outlength = (out->class == CLASS_A) ? ((struct descriptor_a *)out)->arsize : out->length;
-    const uint32_t inlength = (in->class == CLASS_A) ? ((struct descriptor_a *)in)->arsize : in->length;
-    const uint32_t len = outlength > inlength ? inlength : outlength;
+    const length_t outlength = (out->class == CLASS_A) ? ((mdsdsc_a_t *)out)->arsize : out->length;
+    const length_t inlength = (in->class == CLASS_A) ? ((mdsdsc_a_t *)in)->arsize : in->length;
+    const length_t len = outlength > inlength ? inlength : outlength;
     char *p1, *p2;
-    unsigned int i;
+    uint32_t i;
     for (i = 0, p1 = out->pointer, p2 = in->pointer; i < len; i++)
       *p1++ = *p2++;
     if (outlength > inlength)
@@ -762,31 +754,46 @@ EXPORT int StrCopyDx(struct descriptor *out, const struct descriptor *in)
   return MDSplusSUCCESS;
 }
 
-EXPORT int StrCompare(struct descriptor *str1, struct descriptor *str2){
-  char *str1c = MdsDescrToCstring(str1);
-  char *str2c = MdsDescrToCstring(str2);
-  int ans;
-  ans = strcmp(str1c, str2c);
-  free(str1c);
-  free(str2c);
-  return ans;
+EXPORT int StrCompare(const mdsdsc_t *const str1, const mdsdsc_t *const str2)
+{
+  const int len = str1->length < str2->length ? str1->length : str2->length;
+  const int ans = strncmp(str1->pointer,str2->pointer,len);
+  if (ans) return ans;
+  if (str1->length > str2->length)
+    return  (str1->pointer[len]&0xFF);
+  if (str2->length > str1->length)
+    return -(str2->pointer[len]&0xFF);
+  return 0;
 }
 
-EXPORT int StrUpcase(struct descriptor *out, struct descriptor *in){
-  unsigned int outlength,i;
-  StrCopyDx(out, in);
-  outlength = (out->class == CLASS_A) ? ((struct descriptor_a *)out)->arsize : out->length;
+EXPORT int StrCaseBlindCompare(const mdsdsc_t *const str1, const mdsdsc_t *const str2)
+{
+  const int len = str1->length < str2->length ? str1->length : str2->length;
+  const int ans = strncasecmp(str1->pointer,str2->pointer,len);
+  if (ans) return ans;
+  if (str1->length > str2->length)
+    return  (str1->pointer[len]&0xFF);
+  if (str2->length > str1->length)
+    return -(str2->pointer[len]&0xFF);
+  return 0;
+}
+
+EXPORT int StrUpcase(mdsdsc_t *const out, const mdsdsc_t *const in){
+  int status = StrCopyDx(out, in);
+  if STATUS_NOT_OK return status;
+  const int outlength = (out->class == CLASS_A) ? ((mdsdsc_a_t *)out)->arsize : out->length;
+  int i;
   for (i = 0; i < outlength; i++)
     out->pointer[i] = (char)toupper(out->pointer[i]);
   return MDSplusSUCCESS;
 }
 
-EXPORT int StrRight(struct descriptor *out, struct descriptor *in, unsigned short *start)
+EXPORT int StrRight(mdsdsc_t *const out, const mdsdsc_t *const in, const length_t *const start)
 {
-  struct descriptor_d tmp = { 0, DTYPE_T, CLASS_D, 0 };
-  struct descriptor s = { 0, DTYPE_T, CLASS_S, 0 };
-  StrCopyDx((struct descriptor *)&tmp, in);
-  s.length = (unsigned short)((int)in->length - *start + 1);
+  mdsdsc_d_t tmp = { 0, DTYPE_T, CLASS_D, 0 };
+  mdsdsc_t s = { 0, DTYPE_T, CLASS_S, 0 };
+  StrCopyDx((mdsdsc_t *)&tmp, in);
+  s.length = (length_t)((int)in->length - *start + 1);
   s.pointer = tmp.pointer + (*start - 1);
   StrCopyDx(out, &s);
   return StrFree1Dx(&tmp);
@@ -799,7 +806,7 @@ ZoneList *MdsZones = NULL;
 #define   LOCK_ZONE(zone) pthread_mutex_lock(&(zone)->lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&(zone)->lock)
 #define UNLOCK_ZONE(zone) pthread_cleanup_pop(1);
 
-EXPORT int LibCreateVmZone(ZoneList ** zone)
+EXPORT int LibCreateVmZone(ZoneList **const zone)
 {
   ZoneList *list;
   *zone = malloc(sizeof(ZoneList));
@@ -817,7 +824,7 @@ EXPORT int LibCreateVmZone(ZoneList ** zone)
   return (*zone != NULL);
 }
 
-EXPORT int LibDeleteVmZone(ZoneList ** zone)
+EXPORT int LibDeleteVmZone(ZoneList **const zone)
 {
   int found;
   ZoneList *list, *prev;
@@ -842,10 +849,10 @@ EXPORT int LibDeleteVmZone(ZoneList ** zone)
   return found;
 }
 
-EXPORT int LibResetVmZone(ZoneList ** zone)
+EXPORT int LibResetVmZone(ZoneList **const zone)
 {
   VmList *list;
-  unsigned int len = 1;
+  const uint32_t len = 1;
   LOCK_ZONES;
   while ((list = zone ? (*zone ? (*zone)->vm : NULL) : NULL) != NULL)
     LibFreeVm(&len, &list->ptr, zone);
@@ -853,7 +860,7 @@ EXPORT int LibResetVmZone(ZoneList ** zone)
   return MDSplusSUCCESS;
 }
 
-EXPORT int LibFreeVm(unsigned int *len, void **vm, ZoneList ** zone)
+EXPORT int LibFreeVm(const uint32_t *const len, void **const vm, ZoneList **const zone)
 {
   VmList *list = NULL;
   if (zone) {
@@ -874,18 +881,14 @@ EXPORT int LibFreeVm(unsigned int *len, void **vm, ZoneList ** zone)
   free(list);
   return MDSplusSUCCESS;
 }
-
-EXPORT int libfreevm_(unsigned int *len, void **vm, ZoneList ** zone)
-{
-  return (LibFreeVm(len, vm, zone));
+EXPORT int libfreevm_(const uint32_t *const len, void **const vm, ZoneList **const zone){
+  return LibFreeVm(len, vm, zone);
+}
+EXPORT int libfreevm(const uint32_t *const len, void **const vm, ZoneList **const zone){
+  return LibFreeVm(len, vm, zone);
 }
 
-EXPORT int libfreevm(unsigned int *len, void **vm, ZoneList ** zone)
-{
-  return (LibFreeVm(len, vm, zone));
-}
-
-EXPORT int LibGetVm(unsigned int *len, void **vm, ZoneList ** zone)
+EXPORT int LibGetVm(const uint32_t *const len, void **const vm, ZoneList **const zone)
 {
   *vm = malloc(*len);
   if (*vm == NULL) {
@@ -906,15 +909,11 @@ EXPORT int LibGetVm(unsigned int *len, void **vm, ZoneList ** zone)
   }
   return (*vm != NULL);
 }
-
-EXPORT int libgetvm_(unsigned int *len, void **vm, ZoneList ** zone)
-{
-  return (LibGetVm(len, vm, zone));
+EXPORT int libgetvm_(const uint32_t *const len, void **const vm, ZoneList **const zone){
+  return LibGetVm(len, vm, zone);
 }
-
-EXPORT int libgetvm(unsigned int *len, void **vm, ZoneList ** zone)
-{
-  return (LibGetVm(len, vm, zone));
+EXPORT int libgetvm(const uint32_t *const len, void **const vm, ZoneList **const zone){
+  return LibGetVm(len, vm, zone);
 }
 
 //int LibEstablish()
@@ -980,7 +979,7 @@ EXPORT int LibConvertDateString(const char *asc_time, int64_t * qtime)
     {
       struct tm tm = { 0 };
 #ifdef _WIN32
-      unsigned int day, year, hour, minute, second;
+      uint32_t day, year, hour, minute, second;
       char month[4];
       char *months[] =
 	  { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC" };
@@ -1053,10 +1052,10 @@ EXPORT time_t LibCvtTim(int *time_in, double *t)
   return (bintim);
 }
 
-EXPORT int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
+EXPORT int LibSysAscTim(uint16_t *len, mdsdsc_t *str, int *time_in)
 {
   char time_out[24];
-  unsigned short slen = sizeof(time_out)-1;
+  uint16_t slen = sizeof(time_out)-1;
   time_t bintim = LibCvtTim(time_in, 0);
   int64_t chunks = time_in ? *(int64_t *)time_in % 10000000 : 0;
   char time_str[32];time_str[0]='\0';
@@ -1094,14 +1093,14 @@ EXPORT int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_i
   return MDSplusSUCCESS;
 }
 
-//int LibGetDvi(int *code, void *dummy1, struct descriptor *device, int *ans,
-//	      struct descriptor *ans_string, int *len)
+//int LibGetDvi(int *code, void *dummy1, mdsdsc_t *device, int *ans,
+//	      mdsdsc_t *ans_string, int *len)
 //{
 //  *ans = 132;
 //  return 1;
 //}
 
-EXPORT int StrAppend(struct descriptor_d *out, struct descriptor *tail)
+EXPORT int StrAppend(mdsdsc_d_t *const out, const mdsdsc_t *const tail)
 {
   if (tail->length > 0 && tail->pointer) {
     int len = (int)out->length + (int)tail->length;
@@ -1119,7 +1118,7 @@ EXPORT int StrAppend(struct descriptor_d *out, struct descriptor *tail)
   return MDSplusSUCCESS;
 }
 
-EXPORT int StrFree1Dx(struct descriptor_d *out)
+EXPORT int StrFree1Dx(mdsdsc_d_t *out)
 {
   if (out->class == CLASS_D) {
     free(out->pointer);
@@ -1129,7 +1128,7 @@ EXPORT int StrFree1Dx(struct descriptor_d *out)
   return MDSplusSUCCESS;
 }
 
-EXPORT int StrFindFirstNotInSet(struct descriptor *source, struct descriptor *set)
+EXPORT int StrFindFirstNotInSet(const mdsdsc_t *const source, const mdsdsc_t *const set)
 {
   int ans = 0;
   if (source->length > 0) {
@@ -1144,7 +1143,7 @@ EXPORT int StrFindFirstNotInSet(struct descriptor *source, struct descriptor *se
   return ans;
 }
 
-EXPORT int StrFindFirstInSet(struct descriptor *source, struct descriptor *set)
+EXPORT int StrFindFirstInSet(const mdsdsc_t *const source, const mdsdsc_t *const set)
 {
   int ans = 0;
   if (source->length > 0) {
@@ -1364,21 +1363,6 @@ STATIC_ROUTINE int MdsTraverseTree(int (*user_rtn) (), void *user_data, struct n
   return MDSplusSUCCESS;
 }
 
-EXPORT int StrCaseBlindCompare(struct descriptor *one, struct descriptor *two)
-{
-  int ans=0;
-  if (one->length != two->length) {
-    char *one_c = MdsDescrToCstring(one);
-    char *two_c = MdsDescrToCstring(two);
-    ans = strcasecmp(one_c, two_c);
-    free(one_c);
-    free(two_c);
-  } else {
-    ans = strncasecmp(one->pointer, two->pointer, (size_t)one->length);
-  }
-  return ans;
-}
-
 static int match_wild(const char*cand_ptr, const int cand_len, const char *pat_ptr, const int pat_len){
   struct descr {
     const char *ptr;
@@ -1428,86 +1412,85 @@ static int match_wild(const char*cand_ptr, const int cand_len, const char *pat_p
   return FALSE;
 }
 
-EXPORT unsigned int StrMatchWild(struct descriptor *candidate, struct descriptor *pattern){
+EXPORT int StrMatchWild(const mdsdsc_t *const candidate, const mdsdsc_t *const pattern){
   if (match_wild(candidate->pointer,candidate->length,pattern->pointer,pattern->length))
     return StrMATCH;
   return StrNOMATCH;
 }
 
-EXPORT int StrElement(struct descriptor *dest, int *num, struct descriptor *delim, struct descriptor *src)
+EXPORT int StrElement(mdsdsc_t *const out, const int *const num, const mdsdsc_t *const delim, const mdsdsc_t *const in)
 {
-  char *src_ptr = src->pointer;
-  char *se_ptr = src_ptr + src->length;
+  char *in_ptr = in->pointer;
+  char *se_ptr = in_ptr + in->length;
   char *e_ptr;
-  unsigned short len;
+  uint16_t len;
   int cnt;
   int status;
   if (delim->length != 1)
     return StrINVDELIM;
-  for (cnt = 0; (cnt < *num) && (src_ptr < se_ptr); src_ptr++)
-    if (*src_ptr == *delim->pointer)
+  for (cnt = 0; (cnt < *num) && (in_ptr < se_ptr); in_ptr++)
+    if (*in_ptr == *delim->pointer)
       cnt++;
   if (cnt < *num)
     return StrNOELEM;
-  for (e_ptr = src_ptr; src_ptr < se_ptr; src_ptr++)
-    if (*src_ptr == *delim->pointer)
+  for (e_ptr = in_ptr; in_ptr < se_ptr; in_ptr++)
+    if (*in_ptr == *delim->pointer)
       break;
-  len = (unsigned short)(src_ptr - e_ptr);
-  status = StrCopyR(dest, &len, e_ptr);
+  len = (uint16_t)(in_ptr - e_ptr);
+  status = StrCopyR(out, &len, e_ptr);
   return status;
 }
 
-EXPORT int StrTranslate(struct descriptor *dest, struct descriptor *src, struct descriptor *tran,
-		 struct descriptor *match){
+EXPORT int StrTranslate(mdsdsc_t *const out, const mdsdsc_t *const in, const mdsdsc_t *const tran, mdsdsc_t *const match){
   int status = 0;
-  if (src->class == CLASS_S || src->class == CLASS_D) {
-    char *dst = (char *)malloc(src->length);
+  if (in->class == CLASS_S || in->class == CLASS_D) {
+    char *dst = (char *)malloc(in->length);
     int i;
-    for (i = 0; i < src->length; i++) {
+    for (i = 0; i < in->length; i++) {
       int j;
       int next = 1;
       for (j = 0; next && j < match->length; j += next)
-	next = (match->pointer[j] != src->pointer[i]) ? 1 : 0;
-      dst[i] = (char)(next ? src->pointer[i] : ((j < tran->length) ? tran->pointer[j] : ' '));
+	next = (match->pointer[j] != in->pointer[i]) ? 1 : 0;
+      dst[i] = (char)(next ? in->pointer[i] : ((j < tran->length) ? tran->pointer[j] : ' '));
     }
-    status = StrCopyR(dest, &src->length, dst);
+    status = StrCopyR(out, &in->length, dst);
     free(dst);
-  } else if ((src->class == CLASS_A) && (dest->class == CLASS_A) && (src->length > 0)
-	     && (dest->length > 0)
-	     && (((struct descriptor_a *)src)->arsize / src->length ==
-		 ((struct descriptor_a *)dest)->arsize / dest->length)) {
-    struct descriptor outdsc = { 0, DTYPE_T, CLASS_S, 0 };
-    struct descriptor indsc = { 0, DTYPE_T, CLASS_S, 0 };
-    unsigned int num = ((struct descriptor_a *)src)->arsize / src->length;
-    unsigned int i;
-    outdsc.length = dest->length;
-    outdsc.pointer = dest->pointer;
-    indsc.length = src->length;
-    indsc.pointer = src->pointer;
+  } else if ((in->class == CLASS_A) && (out->class == CLASS_A) && (in->length > 0)
+	     && (out->length > 0)
+	     && (((mdsdsc_a_t *)in)->arsize / in->length ==
+		 ((mdsdsc_a_t *)out)->arsize / out->length)) {
+    mdsdsc_t outdsc = { 0, DTYPE_T, CLASS_S, 0 };
+    mdsdsc_t indsc = { 0, DTYPE_T, CLASS_S, 0 };
+    uint32_t num = ((mdsdsc_a_t *)in)->arsize / in->length;
+    uint32_t i;
+    outdsc.length = out->length;
+    outdsc.pointer = out->pointer;
+    indsc.length = in->length;
+    indsc.pointer = in->pointer;
     for (i = 0; i < num; i++, outdsc.pointer += outdsc.length, indsc.pointer += indsc.length)
       status = StrTranslate(&outdsc, &indsc, tran, match);
   }
   return status;
 }
 
-EXPORT int StrReplace(struct descriptor *dest, struct descriptor *src, int *start_idx, int *end_idx, struct descriptor *rep)
+EXPORT int StrReplace(mdsdsc_t *const out, const mdsdsc_t *const in, const int *const start_idx,  const int *const end_idx, const mdsdsc_t *const rep)
 {
   int status;
   int start;
   int end;
-  unsigned short int dstlen;
+  uint16_t dstlen;
   char *dst;
   char *sptr;
   char *dptr;
 #define minmax(l,x,u) (  ((x)<(l)) ? (l) : ( ((x)>(u)) ? (u) : (x) )  )
-  start = minmax(1, *start_idx, src->length);
-  end   = minmax(1, *end_idx,   src->length);
-  dstlen = (unsigned short)(start - 1 + rep->length + src->length - end + 1);
+  start = minmax(1, *start_idx, in->length);
+  end   = minmax(1, *end_idx,   in->length);
+  dstlen = (uint16_t)(start - 1 + rep->length + in->length - end + 1);
   dst = (char *)malloc(dstlen);
-  for (sptr = src->pointer, dptr = dst; (dptr - dst) < (start - 1); *dptr++ = *sptr++) ;
+  for (sptr = in->pointer, dptr = dst; (dptr - dst) < (start - 1); *dptr++ = *sptr++) ;
   for (sptr = rep->pointer; (sptr - rep->pointer) < rep->length; *dptr++ = *sptr++) ;
-  for (sptr = src->pointer + end; (sptr - src->pointer) < src->length; *dptr++ = *sptr++) ;
-  status = StrCopyR(dest, &dstlen, dst);
+  for (sptr = in->pointer + end; (sptr - in->pointer) < in->length; *dptr++ = *sptr++) ;
+  status = StrCopyR(out, &dstlen, dst);
   free(dst);
   return status;
 }
@@ -1790,7 +1773,7 @@ EXPORT extern int LibFindFileEnd(void **ctx){
   return MDSplusSUCCESS;
 }
 
-static int find_file(struct descriptor *filespec, struct descriptor *result, void **ctx,
+static int find_file(mdsdsc_t *filespec, mdsdsc_t *result, void **ctx,
 			    int recursively, int case_blind){
 #ifdef DEBUG
   clock_t start = clock();
@@ -1821,15 +1804,15 @@ static int find_file(struct descriptor *filespec, struct descriptor *result, voi
   return status;
 }
 
-EXPORT int LibFindFile(struct descriptor *filespec, struct descriptor *result, void **ctx){
+EXPORT int LibFindFile(mdsdsc_t *filespec, mdsdsc_t *result, void **ctx){
   return find_file(filespec, result, ctx, 0, 0);
 }
 
-EXPORT int LibFindFileRecurseCaseBlind(struct descriptor *filespec, struct descriptor *result, void **ctx){
+EXPORT int LibFindFileRecurseCaseBlind(mdsdsc_t *filespec, mdsdsc_t *result, void **ctx){
   return find_file(filespec, result, ctx, 1, 1);
 }
 
-EXPORT int LibFindFileCaseBlind(struct descriptor *filespec, struct descriptor *result, void **ctx){
+EXPORT int LibFindFileCaseBlind(mdsdsc_t *filespec, mdsdsc_t *result, void **ctx){
   return find_file(filespec, result, ctx, 0, 1);
 }
 
@@ -1847,10 +1830,10 @@ EXPORT void TranslateLogicalFree(char *value)
 #define LOBYTE(x) ((x) & 0xFF)
 #define HIBYTE(x) (((x) >> 8) & 0xFF)
 
-STATIC_ROUTINE unsigned short icrc1(unsigned short crc)
+STATIC_ROUTINE uint16_t icrc1(uint16_t crc)
 {
   int i;
-  unsigned int ans = crc;
+  uint32_t ans = crc;
   for (i = 0; i < 8; i++) {
     if (ans & 0x8000) {
       ans <<= 1;
@@ -1858,13 +1841,13 @@ STATIC_ROUTINE unsigned short icrc1(unsigned short crc)
     } else
       ans <<= 1;
   }
-  return (unsigned short)ans;
+  return (uint16_t)ans;
 }
 
-unsigned short Crc(unsigned int len, unsigned char *bufptr)
+uint16_t Crc(uint32_t len, unsigned char *bufptr)
 {
   STATIC_THREADSAFE pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-  STATIC_THREADSAFE unsigned short icrctb[256], init = 0;
+  STATIC_THREADSAFE uint16_t icrctb[256], init = 0;
   pthread_mutex_lock(&mutex);
   //  STATIC_THREADSAFE unsigned char rchr[256];
   //STATIC_CONSTANT unsigned it[16] = { 0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15 };
@@ -1872,16 +1855,16 @@ unsigned short Crc(unsigned int len, unsigned char *bufptr)
     init = 1;
     int i;
     for (i = 0; i < 256; i++) {
-      icrctb[i] = icrc1((unsigned short)(i << 8));
+      icrctb[i] = icrc1((uint16_t)(i << 8));
       //  rchr[i] = (unsigned char)(it[i & 0xF] << 4 | it[i >> 4]);
     }
   }
   int cword = 0;
-  unsigned int j;
+  uint32_t j;
   for (j = 0; j < len; j++)
     cword = icrctb[bufptr[j] ^ HIBYTE(cword)] ^ LOBYTE(cword) << 8;
   pthread_mutex_unlock(&mutex);
-  return (unsigned short)cword;
+  return (uint16_t)cword;
 }
 
 
@@ -1932,10 +1915,10 @@ EXPORT const char *MdsRelease()
   return RELEASE;
 }
 
-EXPORT struct descriptor *MdsReleaseDsc()
+EXPORT mdsdsc_t *MdsReleaseDsc()
 {
-  static struct descriptor RELEASE_D = { 0, DTYPE_T, CLASS_S, 0 };
-  RELEASE_D.length = (unsigned short)strlen(RELEASE);
+  static mdsdsc_t RELEASE_D = { 0, DTYPE_T, CLASS_S, 0 };
+  RELEASE_D.length = (uint16_t)strlen(RELEASE);
   RELEASE_D.pointer = (char *)RELEASE;
   return &RELEASE_D;
 }
