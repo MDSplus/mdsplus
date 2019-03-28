@@ -21,9 +21,9 @@
 
 extern void *LibCallg();
 extern int LibConvertDateString(const char *asc_time, int64_t * qtime);
-extern int LibCreateVmZone(ZoneList ** zone);
+extern int LibCreateVmZone(ZoneList **const zone);
 extern time_t LibCvtTim(int *time_in, double *t);
-extern int LibDeleteVmZone(ZoneList ** zone);
+extern int LibDeleteVmZone(ZoneList **const zone);
 extern int LibFindFile(mdsdsc_t *filespec, mdsdsc_t *result, void **ctx);
 extern int LibFindFileCaseBlind(mdsdsc_t *filespec, mdsdsc_t *result, void **ctx);
 extern int LibFindFileEnd(void **ctx);
@@ -31,12 +31,12 @@ extern int LibFindFileRecurseCaseBlind(mdsdsc_t *filespec, mdsdsc_t *result, voi
 extern int LibFindImageSymbol();
 extern int LibFindImageSymbol_C();
 extern char *LibFindImageSymbolErrString();
-extern int LibFreeVm(unsigned int *len, void **vm, ZoneList ** zone);
-extern int libfreevm_(unsigned int *len, void **vm, ZoneList ** zone);
-extern int libfreevm(unsigned int *len, void **vm, ZoneList ** zone);
-extern int LibGetVm(unsigned int *len, void **vm, ZoneList ** zone);
-extern int libgetvm_(unsigned int *len, void **vm, ZoneList ** zone);
-extern int Libgetvm(unsigned int *len, void **vm, ZoneList ** zone);
+extern int LibFreeVm (const uint32_t *const len, void **const vm, ZoneList **const zone);
+extern int libfreevm_(const uint32_t *const len, void **const vm, ZoneList **const zone);
+extern int libfreevm (const uint32_t *const len, void **const vm, ZoneList **const zone);
+extern int LibGetVm (const uint32_t *const len, void **const vm, ZoneList **const zone);
+extern int libgetvm_(const uint32_t *const len, void **const vm, ZoneList **const zone);
+extern int Libgetvm (const uint32_t *const len, void **const vm, ZoneList **const zone);
 extern int LibInsertTree(LibTreeNode **treehead, void *symbol_ptr, int *control_flags,
 			 int (*compare_rtn) (), int (*alloc_rtn) (), LibTreeNode **blockaddr,
 			 void *user_data);
