@@ -145,8 +145,8 @@ static int recIsSegmented(mdsdsc_t *dsc) {
       break;
     case CLASS_R: {
       rDsc = (mdsdsc_r_t*)dsc;
-      for(i = 0; i < rDsc->ndesc; i++) {
-	if(rDsc->dscptrs[i] && (nid = recIsSegmented(rDsc->dscptrs[i])))
+      for (i = 0; i < rDsc->ndesc; i++) {
+	if (rDsc->dscptrs[i] && (nid = recIsSegmented(rDsc->dscptrs[i])))
 	  return nid;
       }
       break;
@@ -294,7 +294,7 @@ static void trimData(float *y, mdsdsc_a_t *x, int nSamples, int reqPoints, doubl
   *retPoints = outIdx;
 }
 
-static int recGetHelp(mdsdsc_t *dsc, mdsdsc_xd_t* xd_out) {
+static int recGetXxxx(const mdsdsc_t *dsc, mdsdsc_xd_t* xd_out, const int getHelp) {
 again: ;
   if(!dsc) return MDSplusERROR;
   int status;
@@ -318,7 +318,7 @@ again: ;
 	  goto error_out;
 	EMPTYXD(xd);
 	             status = TreeGetRecord(nid, &xd);
-	if STATUS_OK status = recGetHelp(xd.pointer,xd_out);
+	if STATUS_OK status = recGetXxxx(xd.pointer,xd_out,getHelp);
 	MdsFree1Dx(&xd, NULL);
 	goto status_out;
       }
@@ -330,142 +330,96 @@ again: ;
       dsc = (mdsdsc_t*)dsc->pointer;
       goto again;
     case CLASS_R:
-      if(dsc->dtype == DTYPE_PARAM) {
+      if (getHelp) {
+	if(dsc->dtype == DTYPE_PARAM) {
 	  mds_param_t *pDsc = (mds_param_t *)dsc;
-	if(pDsc->help) {
-	  status = TdiData(pDsc->help, xd_out MDS_END_ARG);
-	  if STATUS_NOT_OK goto status_not_ok_out;
-	  if (xd_out->pointer
-	   && xd_out->pointer->class == CLASS_S
-	   && xd_out->pointer->dtype == DTYPE_T)
-	    goto status_out;
-	}
-	break;
-      }
-      mdsdsc_r_t *rDsc = (mdsdsc_r_t *)dsc;
-      int i;
-      for(i = 0; i < rDsc->ndesc; i++) {
-        status = recGetHelp(rDsc->dscptrs[i],xd_out);
-	if STATUS_OK goto status_out;
-      }
-      break;
-    default:
-      break;
-  }
-error_out: ;
-  status = MDSplusERROR;
-status_not_ok_out: ;
-  MdsFree1Dx(xd_out, NULL);
-status_out: ;
-  return status;
-}
-
-static int recGetUnits(mdsdsc_t *dsc, int isX, mdsdsc_xd_t* xd_out) {
-  EMPTYXD(xd);
-again: ;
-  if(!dsc) return MDSplusERROR;
-  int status;
-  switch (dsc->class) {
-    case CLASS_S:
-      if(dsc->dtype == DTYPE_NID || dsc->dtype == DTYPE_PATH) {
-	int nid;
-        if(dsc->dtype == DTYPE_NID)
-	  nid = *(int *)dsc->pointer;
-        else {//if(dsc->dtype == DTYPE_PATH)
-	  char* path = malloc(dsc->length + 1);
-	  memcpy(path, dsc->pointer, dsc->length);
-	  path[dsc->length] = 0;
-	  status = TreeFindNode(path, &nid);
-          free(path);
-	  if STATUS_NOT_OK goto status_not_ok_out;
-        }
-	int numSegments;
-	status = TreeGetNumSegments(nid, &numSegments);
-	if (STATUS_NOT_OK || numSegments > 0)
-	  goto error_out;
-	status = TreeGetRecord(nid, &xd);
-	if STATUS_OK {
-	  status = recGetUnits(xd.pointer, isX, xd_out);
-	  goto status_out;
-	}
-      }
-      break;
-    case CLASS_A:
-      break;
-    case CLASS_XD:
-      if(!dsc->pointer) break;
-      dsc = (mdsdsc_t*)dsc->pointer;
-      goto again;
-    case CLASS_R:
-      if(dsc->dtype == DTYPE_WITH_UNITS) {
-	mds_with_units_t *uDsc = (mds_with_units_t*)dsc;
-	if(uDsc->units) {
-	  status = TdiData(uDsc->units, xd_out MDS_END_ARG);
-	  if STATUS_NOT_OK goto status_not_ok_out;
-	  if (xd_out->pointer
-	   && xd_out->pointer->class == CLASS_S
-	   && xd_out->pointer->dtype == DTYPE_T)
-	    goto status_out;
-	}
-	break;
-      }
-      if(dsc->dtype == DTYPE_SIGNAL) {
-	mds_signal_t *sDsc = (mds_signal_t *)dsc;
-	if(isX) {
-	  if (sDsc->ndesc < 3) break;
-	  dsc = sDsc->dimensions[0];
-	  isX = FALSE;
-	} else if (sDsc->data)
-	  dsc = sDsc->data;
-        else
-	  dsc = sDsc->raw;
-	goto again;
-      }
-      if(dsc->dtype == DTYPE_PARAM) {
-	mds_param_t *pDsc = (mds_param_t *)dsc;
-	dsc = pDsc->value;
-	goto again;
-      }
-      mdsdsc_r_t *rDsc = (mdsdsc_r_t *)dsc;
-      if(rDsc->ndesc == 1) {
-	dsc = rDsc->dscptrs[0];
-	goto again;
-      }
-      if (rDsc->dtype == DTYPE_FUNCTION && rDsc->pointer) {
-        int i;
-	if (*(opcode_t*)rDsc->pointer == OPC_ADD || *(opcode_t*)rDsc->pointer == OPC_SUBTRACT) {
-	  status = recGetUnits(rDsc->dscptrs[0], isX, xd_out);
-	  if STATUS_NOT_OK goto status_not_ok_out;
-          for(i = 1; i < rDsc->ndesc; i++) {
-	    status = recGetUnits(rDsc->dscptrs[i], isX, &xd);
-	    if(STATUS_NOT_OK
-            || xd.pointer->length != xd_out->pointer->length
-            || strncmp(xd.pointer->pointer, xd_out->pointer->pointer, xd.pointer->length))
-	      goto error_out;//Different units
+	  if(pDsc->help) {
+	    status = TdiData(pDsc->help, xd_out MDS_END_ARG);
+	    if STATUS_NOT_OK goto status_not_ok_out;
+	    if (xd_out->pointer
+	     && xd_out->pointer->class == CLASS_S
+	     && xd_out->pointer->dtype == DTYPE_T)
+	      goto status_out;
 	  }
-	  goto status_out;
+	  break;
 	}
-	if (*(opcode_t*)rDsc->pointer == OPC_MULTIPLY || *(opcode_t*)rDsc->pointer == OPC_DIVIDE) {
-	  mdsdsc_t da = {0, DTYPE_T, CLASS_D, NULL};
-	  char mulDivC = (*(opcode_t*)rDsc->pointer == OPC_MULTIPLY)?'*':'/';
-	  mdsdsc_t mulDiv = {1, DTYPE_T, CLASS_S, &mulDivC};
-	  for(i = 0; i < rDsc->ndesc; i++) {
-	    status = recGetUnits(rDsc->dscptrs[i], isX, &xd);
-	    if STATUS_OK {
-	      if (da.pointer) {
-                status = StrConcat(&da,&da,&mulDiv,xd.pointer MDS_END_ARG);
-		if STATUS_NOT_OK goto status_not_ok_out;
-	      } else {
-		da.length  = xd.pointer->length;
-		da.pointer = strdup(xd.pointer->pointer);
+	mdsdsc_r_t *rDsc = (mdsdsc_r_t *)dsc;
+	int i;
+	for(i = 0; i < rDsc->ndesc; i++) {
+	  status = recGetXxxx(rDsc->dscptrs[i],xd_out,getHelp);
+	  if STATUS_OK goto status_out;
+	}
+      } else {
+	if(dsc->dtype == DTYPE_WITH_UNITS) {
+	  mds_with_units_t *uDsc = (mds_with_units_t*)dsc;
+	  if(uDsc->units) {
+	    status = TdiData(uDsc->units, xd_out MDS_END_ARG);
+	    if STATUS_NOT_OK goto status_not_ok_out;
+	    if (xd_out->pointer
+	     && xd_out->pointer->class == CLASS_S
+	     && xd_out->pointer->dtype == DTYPE_T)
+	      goto status_out;
+	  }
+	  break;
+	}
+	if(dsc->dtype == DTYPE_PARAM) {
+	  dsc = ((mds_param_t*)dsc)->value;;
+	  goto again;
+	}
+	if(dsc->dtype == DTYPE_SIGNAL) {
+	  dsc = ((mds_signal_t*)dsc)->data;
+	  goto again;
+	}
+	mdsdsc_r_t *rDsc = (mdsdsc_r_t *)dsc;
+	if(rDsc->ndesc == 1) {
+	  dsc = rDsc->dscptrs[0];
+	  goto again;
+	}
+	if (rDsc->dtype == DTYPE_FUNCTION && rDsc->pointer) {
+	  int i;
+	  if (*(opcode_t*)rDsc->pointer == OPC_ADD || *(opcode_t*)rDsc->pointer == OPC_SUBTRACT) {
+	    status = recGetXxxx(rDsc->dscptrs[0], xd_out, getHelp);
+	    if STATUS_NOT_OK goto status_not_ok_out;
+	    EMPTYXD(xd);
+            for(i = 1; i < rDsc->ndesc; i++) {
+	      status = recGetXxxx(rDsc->dscptrs[i], &xd, getHelp);
+	      if(STATUS_NOT_OK
+              || xd.pointer->length != xd_out->pointer->length
+              || strncmp(xd.pointer->pointer, xd_out->pointer->pointer, xd.pointer->length)) {
+		MdsFree1Dx(&xd, NULL);
+		goto error_out;//Different units
 	      }
 	    }
+	    MdsFree1Dx(&xd, NULL);
+	    goto status_out;
 	  }
-	  if (da.pointer) {
-	    da.class = CLASS_S;
-	    MdsCopyDxXd((mdsdsc_t*)&da, xd_out);
-	    free(da.pointer);
-	    goto success;
+	  if (*(opcode_t*)rDsc->pointer == OPC_MULTIPLY || *(opcode_t*)rDsc->pointer == OPC_DIVIDE) {
+	    mdsdsc_t da = {0, DTYPE_T, CLASS_D, NULL};
+	    char mulDivC = (*(opcode_t*)rDsc->pointer == OPC_MULTIPLY)?'*':'/';
+	    mdsdsc_t mulDiv = {1, DTYPE_T, CLASS_S, &mulDivC};
+	    EMPTYXD(xd);
+	    for(i = 0; i < rDsc->ndesc; i++) {
+	      status = recGetXxxx(rDsc->dscptrs[i], &xd, getHelp);
+	      if STATUS_OK {
+		if (da.pointer) {
+		  status = StrConcat(&da,&da,&mulDiv,xd.pointer MDS_END_ARG);
+		  if STATUS_NOT_OK {
+		    MdsFree1Dx(&xd, NULL);
+		    goto status_not_ok_out;
+		  }
+		} else {
+		  da.length  = xd.pointer->length;
+		  da.pointer = strdup(xd.pointer->pointer);
+		}
+	      }
+	    }
+	    MdsFree1Dx(&xd, NULL);
+	    if (da.pointer) {
+	      da.class = CLASS_S;
+	      MdsCopyDxXd((mdsdsc_t*)&da, xd_out);
+	      free(da.pointer);
+	      goto success;
+	    }
 	  }
         }
       }
@@ -477,11 +431,17 @@ error_out: ;
 status_not_ok_out: ;
   MdsFree1Dx(xd_out, NULL);
 status_out: ;
-  MdsFree1Dx(&xd, NULL);
   return status;
 success: ;
-  MdsFree1Dx(&xd, NULL);
   return MDSplusSUCCESS;
+}
+
+static inline int recGetHelp(const mdsdsc_t *dsc, mdsdsc_xd_t* xd_out) {
+  return recGetXxxx(dsc,xd_out,TRUE);
+}
+
+static inline int recGetUnits(const mdsdsc_t *dsc, mdsdsc_xd_t* xd_out) {
+  return recGetXxxx(dsc,xd_out,FALSE);
 }
 
 //Check if the passed expression contains at least one segmented node
@@ -548,7 +508,7 @@ static inline int pack_meta(mdsdsc_t*title,mdsdsc_t*xLabel,mdsdsc_t*yLabel,float
   return idx;
 }
 
-inline static int getNSamples(mdsdsc_xd_t*yXd,mdsdsc_xd_t*xXd,int *nSamples) {
+inline static int getNSamples(const mdsdsc_xd_t *yXd, const mdsdsc_xd_t *xXd,int *nSamples) {
   if(yXd->pointer->class != CLASS_A) return TdiINVCLADSC;
   if(xXd->pointer->class != CLASS_A) return TdiINVCLADSC;
   if(yXd->pointer->dtype == DTYPE_F) {
@@ -566,7 +526,7 @@ inline static int getNSamples(mdsdsc_xd_t*yXd,mdsdsc_xd_t*xXd,int *nSamples) {
   return MDSplusSUCCESS;
 }
 
-static float* getFloatArray(mdsdsc_a_t *yArrD, int nSamples) {
+static float* getFloatArray(const mdsdsc_a_t *yArrD, const int nSamples) {
   int i;
   float *y;
   switch(yArrD->dtype) {
@@ -606,7 +566,7 @@ static float* getFloatArray(mdsdsc_a_t *yArrD, int nSamples) {
   }
 }
 
-static inline int getXArray(mdsdsc_a_t *xArrD, int retSamples, char *retArr, int idx) {
+static inline int getXArray(const mdsdsc_a_t *xArrD, const int retSamples, char *retArr, int idx) {
   int i;
   switch(xArrD->dtype) {
     default:
@@ -683,14 +643,14 @@ EXPORT int GetXYSignalXd(mdsdsc_t *inY, mdsdsc_t *inX, mdsdsc_t *inXMin, mdsdsc_
   // Get Y, title, and yLabel, if any
   EMPTYXD(title);EMPTYXD(xLabel);EMPTYXD(yLabel);
   recGetHelp(yXd.pointer,&title);
-  recGetUnits(yXd.pointer, 0,&yLabel);
+  recGetUnits(yXd.pointer, &yLabel);
   //Get X
   if (!inX) //If an explicit expression for X has been given
     status = TdiDimOf(yXd.pointer, &xXd MDS_END_ARG);
   else //Get xLabel, if any
     status = TdiEvaluate(inX, &xXd MDS_END_ARG);
   if STATUS_NOT_OK goto return_err;
-  recGetUnits(xXd.pointer, 1, &xLabel);
+  recGetUnits(xXd.pointer, &xLabel);
   if STATUS_OK status = TdiData((mdsdsc_t *)&xXd, &xXd MDS_END_ARG);
   if STATUS_OK status = TdiData((mdsdsc_t *)&yXd, &yXd MDS_END_ARG);
   int nSamples;
@@ -737,7 +697,7 @@ EXPORT int GetXYWaveXd(mdsdsc_t *sig,  mdsdsc_t *xmin, mdsdsc_t *xmax, int num, 
   return GetXYSignalXd(sig, NULL, xmin, xmax, num, retXd);
 }
 
-static mdsdsc_xd_t *encodeError(char *error, int line, mdsdsc_xd_t *out_xd) {
+static mdsdsc_xd_t *encodeError(const char *error, const int line, mdsdsc_xd_t *out_xd) {
 /* converts message to packed error message (float res,int len,char msg[len])
  */
   typedef struct __attribute__((__packed__)) {
