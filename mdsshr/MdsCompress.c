@@ -90,31 +90,31 @@ STATIC_CONSTANT mds_decompress_t rec0 =
   { sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (uint8_t*)&OpcDECOMPRESS, 4,
     __fill_value__ {0, 0, 0, 0} };
 STATIC_CONSTANT DESCRIPTOR_A(dat0, 1, DTYPE_BU, 0, 0);
-STATIC_CONSTANT struct descriptor_d EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
+STATIC_CONSTANT mdsdsc_d_t  EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
 
 STATIC_CONSTANT EMPTYXD(EMPTY_XD);
 /*--------------------------------------------------------------------------
 	The inner routine scans some classes and tries to compress arrays.
 	If successful returns 1, if unsuccessful returns NORMAL.
 */
-STATIC_ROUTINE int compress(const struct descriptor *pcimage, const struct descriptor *pcentry, int64_t delta, struct descriptor *pwork)
+STATIC_ROUTINE int compress(const mdsdsc_t *const pcimage, const mdsdsc_t *const pcentry, const int64_t delta, mdsdsc_t *const pwork)
 {
   int j, stat1, status = 1;
   unsigned int bit = 0;
   int nitems, (*symbol) ();
   char *pcmp, *plim;
   array_coef *pca0, *pca1;
-  struct descriptor_a *pdat, *porig;
+  mdsdsc_a_t  *pdat, *porig;
   mds_decompress_t *prec;
-  struct descriptor_d dximage, dxentry;
-  struct descriptor *pd0, *pd1, **ppd;
+  mdsdsc_d_t  dximage, dxentry;
+  mdsdsc_t *pd0, *pd1, **ppd;
   size_t asize,align_size;
   if (pwork)
     switch (pwork->class) {
     case CLASS_APD:
-//      pd1 = (struct descriptor *) pwork->pointer;
-      ppd = (struct descriptor **)pwork->pointer;
-      j = (int)(((struct descriptor_a *)pwork)->arsize / pwork->length);
+//      pd1 = (mdsdsc_t *) pwork->pointer;
+      ppd = (mdsdsc_t **)pwork->pointer;
+      j = (int)(((mdsdsc_a_t  *)pwork)->arsize / pwork->length);
       while ((--j >= 0) && STATUS_OK)
 //      if ((stat1 = compress(pcimage, pcentry, delta, pd1++)) != 1)
 	if ((stat1 = compress(pcimage, pcentry, delta, *ppd++)) != 1)
@@ -122,11 +122,11 @@ STATIC_ROUTINE int compress(const struct descriptor *pcimage, const struct descr
       break;
     case CLASS_CA:
       if (pwork->pointer)
-	status = compress(pcimage, pcentry, delta, (struct descriptor *)pwork->pointer);
+	status = compress(pcimage, pcentry, delta, (mdsdsc_t *)pwork->pointer);
       break;
     case CLASS_R:
-      ppd = &((struct descriptor_r *)pwork)->dscptrs[0];
-      j = ((struct descriptor_r *)pwork)->ndesc;
+      ppd = &((mdsdsc_r_t *)pwork)->dscptrs[0];
+      j = ((mdsdsc_r_t *)pwork)->ndesc;
       while ((--j >= 0) && (status & 1))
 	if ((stat1 = compress(pcimage, pcentry, delta, *(ppd++))) != 1)
 	  status = stat1;
@@ -148,8 +148,8 @@ STATIC_ROUTINE int compress(const struct descriptor *pcimage, const struct descr
     opcode added by final COPY_DXXD.
     *************************************************/
     case CLASS_A:
-      porig = (struct descriptor_a *)((char *)pwork + delta);
-      asize = sizeof(struct descriptor_a) +
+      porig = (mdsdsc_a_t  *)((char *)pwork + delta);
+      asize = sizeof(mdsdsc_a_t ) +
 	  (porig->aflags.coeff ? sizeof(void *) + porig->dimct * sizeof(int) : 0) +
 	  (porig->aflags.bounds ? (size_t)(porig->dimct * 2) * sizeof(int) : 0);
       align_size = (porig->dtype == DTYPE_T) ? 1 : porig->length;
@@ -163,8 +163,8 @@ STATIC_ROUTINE int compress(const struct descriptor *pcimage, const struct descr
     **************************************************************/
       prec = (mds_decompress_t *) align((size_t) ((char *)pwork + asize), sizeof(void *));
       pca1 = (array_coef *) ((char *)prec + sizeof(rec0));
-      pdat = (struct descriptor_a *)align((size_t) ((char *)pca1 + asize), sizeof(void *));
-      pcmp = (char *)pdat + sizeof(struct descriptor_a);
+      pdat = (mdsdsc_a_t  *)align((size_t) ((char *)pca1 + asize), sizeof(void *));
+      pcmp = (char *)pdat + sizeof(mdsdsc_a_t );
       plim = porig->pointer + porig->arsize - sizeof(opcode_t);
       if (pcmp >= plim)
 	break;
@@ -175,7 +175,7 @@ STATIC_ROUTINE int compress(const struct descriptor *pcimage, const struct descr
       pwork->pointer += delta;
 
       *prec = rec0;
-      *pdat = *(struct descriptor_a *)&dat0;
+      *pdat = *(mdsdsc_a_t  *)&dat0;
       pdat->pointer = pcmp;
       pdat->arsize = (unsigned int)(plim - pcmp);
 
@@ -187,12 +187,12 @@ STATIC_ROUTINE int compress(const struct descriptor *pcimage, const struct descr
 	if (status & 1)
 	  status = (*symbol) (&nitems, pwork, pdat, &bit, &dximage, &dxentry);
 	pdat->arsize = (bit + 7) / 8;
-	pd0 = (struct descriptor *)(pdat->pointer + pdat->arsize);
+	pd0 = (mdsdsc_t *)(pdat->pointer + pdat->arsize);
 	if (dximage.pointer) {
 	  pd1 = &pd0[1] + dximage.length;
 	  if ((char *)pd1 < (char *)plim) {
 	    prec->dscptrs[0] = pd0;
-	    *pd0 = *(struct descriptor *)&dximage;
+	    *pd0 = *(mdsdsc_t *)&dximage;
 	    _MOVC3(dximage.length, dximage.pointer, pd0->pointer = (char *)&pd0[1]);
 	  }
 	  pd0 = pd1;
@@ -202,7 +202,7 @@ STATIC_ROUTINE int compress(const struct descriptor *pcimage, const struct descr
 	  pd1 = &pd0[1] + dxentry.length;
 	  if ((char *)pd1 < (char *)plim) {
 	    prec->dscptrs[1] = pd0;
-	    *pd0 = *(struct descriptor *)&dxentry;
+	    *pd0 = *(mdsdsc_t *)&dxentry;
 	    _MOVC3(dxentry.length, dxentry.pointer, pd0->pointer = (char *)&pd0[1]);
 	  }
 	  pd0 = pd1;
@@ -222,7 +222,7 @@ STATIC_ROUTINE int compress(const struct descriptor *pcimage, const struct descr
     /********************
     Standard compression.
     ********************/
-      status = MdsCmprs(&nitems, (struct descriptor_a *)pwork, pdat, (int*)&bit);
+      status = MdsCmprs(&nitems, (mdsdsc_a_t  *)pwork, pdat, (int*)&bit);
       pdat->arsize = (bit + 7) / 8;
       if ((status & 1) && (status != LibSTRTRU))
 	goto good;
@@ -241,8 +241,8 @@ STATIC_ROUTINE int compress(const struct descriptor *pcimage, const struct descr
       pca0->pointer = (char *)prec;
       pca1->pointer = 0;
 
-      prec->dscptrs[2] = (struct descriptor *)pca1;
-      prec->dscptrs[3] = (struct descriptor *)pdat;
+      prec->dscptrs[2] = (mdsdsc_t *)pca1;
+      prec->dscptrs[3] = (mdsdsc_t *)pdat;
       break;
     default:
       break;
@@ -253,22 +253,20 @@ STATIC_ROUTINE int compress(const struct descriptor *pcimage, const struct descr
 /*--------------------------------------------------------------------------
 	The outside routine.
 */
-EXPORT int MdsCompress(const struct descriptor *cimage_ptr,
-		const struct descriptor *centry_ptr,
-		const struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
+EXPORT int MdsCompress(const mdsdsc_t *const cimage_ptr, const mdsdsc_t *const centry_ptr, const mdsdsc_t *const in_ptr, mdsdsc_xd_t *const out_ptr)
 {
   int status = 1;
-  struct descriptor_xd work;
+  mdsdsc_xd_t work;
   STATIC_CONSTANT dtype_t dsc_dtype = DTYPE_DSC;
   if (in_ptr == 0)
     return MdsFree1Dx(out_ptr, NULL);
   switch (in_ptr->class) {
   case CLASS_XD:
-    work = *(struct descriptor_xd *)in_ptr;
-    *(struct descriptor_xd *)in_ptr = EMPTY_XD;
+    work = *(mdsdsc_xd_t *)in_ptr;
+    *(mdsdsc_xd_t *)in_ptr = EMPTY_XD;
     break;
   case CLASS_R:
-    if (((struct descriptor_r *)in_ptr)->ndesc == 0)
+    if (((mdsdsc_r_t *)in_ptr)->ndesc == 0)
       return MdsCopyDxXd(in_ptr, out_ptr);
     MDS_ATTR_FALLTHROUGH
   case CLASS_A:
@@ -324,24 +322,24 @@ Compact/copy from work.
 
 		status = MdsDecompress(%ref(class_ca or r_function), %ref(output_xd))
 */
-EXPORT int MdsDecompress(const struct descriptor_r *rec_ptr, struct descriptor_xd *out_ptr)
+EXPORT int MdsDecompress(const mdsdsc_r_t *rec_ptr, mdsdsc_xd_t *out_ptr)
 {
-  const struct descriptor_r *prec = rec_ptr;
+  const mdsdsc_r_t *prec = rec_ptr;
   int status, (*symbol) ();
   if (prec == 0) {
     MdsFree1Dx(out_ptr, NULL);
     return 1;
   }
   if (rec_ptr->class == CLASS_XD && rec_ptr->dtype == DTYPE_DSC)
-    return MdsDecompress((struct descriptor_r *)rec_ptr->pointer, out_ptr);
+    return MdsDecompress((mdsdsc_r_t *)rec_ptr->pointer, out_ptr);
   if (prec->class == CLASS_CA && prec->pointer)
-    prec = (struct descriptor_r *)prec->pointer;
+    prec = (mdsdsc_r_t *)prec->pointer;
   if (prec->class != CLASS_R
       || prec->dtype != DTYPE_FUNCTION
       || prec->pointer == 0 || *(unsigned short *)prec->pointer != OpcDECOMPRESS)
-    status = MdsCopyDxXd((struct descriptor *)prec, out_ptr);
+    status = MdsCopyDxXd((mdsdsc_t *)prec, out_ptr);
   else {
-    struct descriptor_a *pa = (struct descriptor_a *)prec->dscptrs[2];
+    mdsdsc_a_t  *pa = (mdsdsc_a_t  *)prec->dscptrs[2];
     int nitems = (int)pa->arsize / (int)pa->length;
     int bit = 0;
     if (prec->dscptrs[1]) {
@@ -357,7 +355,7 @@ EXPORT int MdsDecompress(const struct descriptor_r *rec_ptr, struct descriptor_x
     if (status & 1) {
       if (prec->dscptrs[3]->class == CLASS_CA) {
 	EMPTYXD(tmp_xd);
-	status = MdsDecompress((struct descriptor_r *)prec->dscptrs[3], &tmp_xd);
+	status = MdsDecompress((mdsdsc_r_t *)prec->dscptrs[3], &tmp_xd);
 	if (status & 1)
 	  status = (*symbol) (&nitems, tmp_xd.pointer, out_ptr->pointer, &bit);
 	MdsFree1Dx(&tmp_xd, 0);

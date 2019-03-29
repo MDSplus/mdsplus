@@ -122,8 +122,7 @@ struct HEADER {
 STATIC_CONSTANT signed char FIELDSY = BITSY + BITSX;
 STATIC_CONSTANT int FIELDSX = 2;
 
-int MdsCmprs(int const *nitems_ptr,
-	     struct descriptor_a const *items_dsc_ptr, struct descriptor_a *pack_dsc_ptr, int *bit_ptr)
+int MdsCmprs(const int *const nitems_ptr, const mdsdsc_a_t *const items_dsc_ptr, mdsdsc_a_t *const pack_dsc_ptr, int *const bit_ptr)
 {
   int nitems = *nitems_ptr;
   int step = items_dsc_ptr->length;
@@ -339,8 +338,7 @@ Do this in runs.
 	MdsXpand.C
 	Expand compressed data.
 */
-EXPORT int MdsXpand(int *nitems_ptr,
-	     struct descriptor_a *pack_dsc_ptr, struct descriptor_a *items_dsc_ptr, int *bit_ptr)
+EXPORT int MdsXpand(int *const nitems_ptr, const mdsdsc_a_t *const pack_dsc_ptr, mdsdsc_a_t *const items_dsc_ptr, int *const bit_ptr)
 {
   int nitems = *nitems_ptr;
   char *ppack =

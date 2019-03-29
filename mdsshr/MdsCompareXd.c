@@ -36,8 +36,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
        Purpose: Routine to compare two things pased by descriptor.
 
        Call sequence:
-	       struct descriptor *dsc1_ptr;
-	       struct descriptor *dsc2_ptr;
+	       mdsdsc_t *dsc1_ptr;
+	       mdsdsc_t *dsc2_ptr;
 
 	       isequal = MdsCompareXd(dsc1_ptr, dsc2_ptr);
        returns:
@@ -55,10 +55,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 
-EXPORT int MdsCompareXd(const struct descriptor *dsc1_ptr, const struct descriptor *dsc2_ptr)
+EXPORT int MdsCompareXd(const mdsdsc_t *const dsc1_ptr, const mdsdsc_t *const dsc2_ptr)
 {
-  const struct descriptor *d1 = dsc1_ptr;
-  const struct descriptor *d2 = dsc2_ptr;
+  const mdsdsc_t *d1 = dsc1_ptr;
+  const mdsdsc_t *d2 = dsc2_ptr;
   int isequal = 0;
 /**************************
   Strip off any extrainous
@@ -66,9 +66,9 @@ EXPORT int MdsCompareXd(const struct descriptor *dsc1_ptr, const struct descript
   the inputs.
 ***************************/
   while (d1 && d1->dtype == DTYPE_DSC)
-    d1 = (const struct descriptor *)d1->pointer;
+    d1 = (const mdsdsc_t *)d1->pointer;
   while (d2 && d2->dtype == DTYPE_DSC)
-    d2 = (const struct descriptor *)d2->pointer;
+    d2 = (const mdsdsc_t *)d2->pointer;
   if (d1 && d2) {
     if (d1->dtype == d2->dtype) {
       switch (d1->class) {
@@ -83,8 +83,8 @@ EXPORT int MdsCompareXd(const struct descriptor *dsc1_ptr, const struct descript
       case CLASS_XD:
       case CLASS_XS:
 	if ((d2->class == CLASS_XS) || (d2->class == CLASS_XD)) {
-	  struct descriptor_xd *xd1 = (struct descriptor_xd *)d1;
-	  struct descriptor_xd *xd2 = (struct descriptor_xd *)d2;
+	  mdsdsc_xd_t *xd1 = (mdsdsc_xd_t *)d1;
+	  mdsdsc_xd_t *xd2 = (mdsdsc_xd_t *)d2;
 	  if (xd1->l_length == xd2->l_length)
 	    isequal = memcmp(xd1->pointer, xd2->pointer, xd1->l_length) == 0;
 	}
@@ -92,8 +92,8 @@ EXPORT int MdsCompareXd(const struct descriptor *dsc1_ptr, const struct descript
 
       case CLASS_R:
 	if (d2->class == CLASS_R) {
-	  struct descriptor_r *r1 = (struct descriptor_r *)d1;
-	  struct descriptor_r *r2 = (struct descriptor_r *)d2;
+	  mdsdsc_r_t *r1 = (mdsdsc_r_t *)d1;
+	  mdsdsc_r_t *r2 = (mdsdsc_r_t *)d2;
 	  int i;
 	  isequal = (r1->length == r2->length) && (r1->ndesc == r2->ndesc);
 	  if (isequal) {
@@ -136,11 +136,11 @@ EXPORT int MdsCompareXd(const struct descriptor *dsc1_ptr, const struct descript
 	      if      (d1->class == CLASS_A)
 		isequal = memcmp(a1->pointer, a2->pointer, a1->arsize) == 0;
 	      else if (d1->class == CLASS_CA)
-		isequal = MdsCompareXd((struct descriptor *)a1->pointer,(struct descriptor *)a2->pointer);
+		isequal = MdsCompareXd((mdsdsc_t *)a1->pointer,(mdsdsc_t *)a2->pointer);
 	      else {//d1->class == CLASS_APD
 		l_length_t i, nelts = a1->arsize / a1->length;
-		struct descriptor *ptr1 = (struct descriptor *)a1->pointer;
-		struct descriptor *ptr2 = (struct descriptor *)a2->pointer;
+		mdsdsc_t *ptr1 = (mdsdsc_t *)a1->pointer;
+		mdsdsc_t *ptr2 = (mdsdsc_t *)a2->pointer;
 		for (i = 0; isequal && (i < nelts);) {
 		  isequal = MdsCompareXd(ptr1, ptr2);
 		  ptr1++;

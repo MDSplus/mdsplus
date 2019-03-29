@@ -78,7 +78,7 @@ STATIC_THREADSAFE int (*MDSvfprintf) () = vfprintf;	/* not really threadsafe but
 	/******************************************************************
 	 * MDSprintf:
 	 ******************************************************************/
-EXPORT int MDSprintf(char const *fmt, ...)
+EXPORT int MDSprintf(const char *const fmt, ...)
 {
   va_list ap;
 
@@ -91,7 +91,7 @@ EXPORT int MDSprintf(char const *fmt, ...)
 	/******************************************************************
 	 * MDSfprintf:
 	 ******************************************************************/
-int MDSfprintf(FILE * fp, char const *fmt, ...)
+int MDSfprintf(FILE *const fp, const char *const fmt, ...)
 {
   va_list ap;
 
@@ -107,16 +107,15 @@ int MDSfprintf(FILE * fp, char const *fmt, ...)
 	 * MdsSetOutputFunctions:
 	 * MdsGetOutputFunctions:
 	 ***************************************************************/
-void MdsSetOutputFunctions(int (*NEWvprintf) (const char *, void *)
-			   , int (*NEWvfprintf) (FILE *, const char *, void *)
-    )
+void MdsSetOutputFunctions(int (*const NEWvprintf)         (const char *, void *),
+			   int (*const NEWvfprintf)(FILE *, const char *, void *))
 {
   MDSvprintf = ((void *)NEWvprintf == (void *)-1) ? (int (*)())vprintf : (int (*)())NEWvprintf;
   MDSvfprintf = ((void *)NEWvfprintf == (void *)-1) ? (int (*)())vfprintf : (int (*)())NEWvfprintf;
   return;
 }
 
-void MdsGetOutputFunctions(void **CURvprintf, void **CURvfprintf)
+void MdsGetOutputFunctions(void **const CURvprintf, void **const CURvfprintf)
 {
   if (CURvprintf)
     *CURvprintf = (void *)MDSvprintf;
@@ -130,7 +129,7 @@ void MdsGetOutputFunctions(void **CURvprintf, void **CURvfprintf)
 	 * main:
 	 ****************************************************************/
 
-STATIC_ROUTINE int woof(char *fmt, va_list ap)
+STATIC_ROUTINE int woof(const char *const fmt, va_list ap)
 {
   char xxfmt[80];
 
@@ -138,7 +137,7 @@ STATIC_ROUTINE int woof(char *fmt, va_list ap)
   return (vprintf(xxfmt, ap));
 }
 
-STATIC_ROUTINE int tweet(FILE * fp, char *fmt, va_list ap)
+STATIC_ROUTINE int tweet(FILE * fp, const char *const fmt, va_list ap)
 {
   char xxfmt[80];
 
