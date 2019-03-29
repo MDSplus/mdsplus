@@ -24,7 +24,7 @@
 #
 
 from unittest import TestCase,TestSuite,TextTestRunner
-from MDSplus import Tree,getenv,setenv,tcl
+from MDSplus import Tree,getenv,setenv,tcl,TreeWRITEFIRST,TreeNOT_OPEN
 from threading import RLock
 from re import match
 import gc,os,sys,time
@@ -282,8 +282,9 @@ class TreeTests(Tests):
                 return False
         trees = [o for o in gc.get_objects() if isTree(o)]
         for t in trees:
-             try: edit = t.open_for_edit
-             except: pass
-             else:
-                 if edit: t.quit()
-                 else:    t.close()
+             try:
+                 t.close()
+             except TreeWRITEFIRST:
+                 t.quit()
+             except TreeNOT_OPEN:
+                 pass
