@@ -150,8 +150,8 @@ def _mimport(name, level=1):
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
-from MDSplus import Tree
-import os, sys
+from MDSplus import Tree,TreeFOPENR
+import os, sys, numpy
 from cgi import parse_qs
 for m in os.listdir(os.path.dirname(__file__)):
     if m.startswith("do") and m.endswith(".py"):
@@ -161,6 +161,7 @@ try:   glob = globals().__dict__
 except:glob = globals()
 
 class application:
+    class Exception(Exception): pass
     @staticmethod
     def html_frame(title,body):
         return '<!DOCTYPE html>\n<title>%s</title>\n<html>\n<body>\n%s\n</body>\n</html>'%(title,body)
@@ -226,15 +227,25 @@ class application:
                 status, response_headers, output = self.doer(self)
                 self.start(status,response_headers)
             yield output
+        except self.Exception as e:
+            self.start('500 BAD_REQUEST',[('Content-Type','text/html')])
+            yield self.html_frame("ERROR",self.body_linebreak(str(e)))
         except Exception:
             import traceback
             self.start('500 BAD_REQUEST',[('Content-Type','text/html')])
-            yield self.html_frame("EXCEPTION",'<PRE>\n%s\n</PRE>'%traceback.format_exc(),)
+            yield self.html_frame("EXCEPTION",'<PRE>\n%s\n</PRE>'%traceback.format_exc())
 
     def openTree(self,tree,shot):
         try: shot=int(shot)
         except Exception:
             raise Exception("Invalid shot specified, must be an integer value: %s<br /><br />Error: %s" % (shot,sys.exc_info()))
         try: return Tree(tree,shot,"ReadOnly")
-        except Exception:
-            raise Exception("Error opening tree named %s for shot %d<br /><br />Error: %s" % (tree,shot,sys.exc_info()))
+        except TreeFOPENR:
+            shots  = numpy.array(Tree.getShotDB(tree))
+            lshots = len(shots)
+            idx = numpy.searchsorted(shots, shot, side="left")
+            raise self.Exception('\n'.join(["Shot not found; Shots nearby:",
+                                 ', '.join([str(shots[i]) for i in range(idx-5,idx) if i>=0]),
+                                 ', '.join([str(shots[i]) for i in range(idx,idx+5) if i<lshots])]))
+        except: pass
+        raise self.Exception("Error opening tree named %s for shot %d\nError: %s" % (tree,shot,sys.exc_info()))
