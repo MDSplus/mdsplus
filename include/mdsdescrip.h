@@ -1,6 +1,7 @@
 #ifndef MDSDESCRIP_H_DEFINED
 #define MDSDESCRIP_H_DEFINED
 #include <inttypes.h>
+#include <status.h>
 #ifndef WINDOWS_H
 #include <mdsplus/mdsconfig.h>
 #endif
