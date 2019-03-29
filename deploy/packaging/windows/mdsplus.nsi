@@ -802,6 +802,12 @@ Section "sample trees"
 	SetOutPath "$INSTDIR\trees"
 	File /r trees/*
 SectionEnd
+
+Section "change log"
+	SectionIn 2
+	SetOutPath "$INSTDIR"
+	File ChangeLog
+SectionEnd
 ### END SECTIONS ###
 
 
