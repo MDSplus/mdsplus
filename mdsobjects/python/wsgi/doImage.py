@@ -36,11 +36,13 @@ def doImage(self):
         _tdi = TdiCompile
     expr=self.args['expr'][-1]
     obj = _tdi(expr)
-    if 'idx' in self.args and isinstance(obj,TreeNode) and obj.getNumSegments()>0:
-        i = int(self.args['idx'][-1])
-        d = obj.getSegment(i)
+    idx = int(self.args['idx'][-1]) if 'idx' in self.args else 0
+    if isinstance(obj,TreeNode) and obj.getNumSegments()>0:
+        d = obj.getSegment(idx)
+        isseg = True
     else:
         d = obj.evaluate()
+        isseg = False
     try:
         im = d.getImage()
     except:
@@ -56,8 +58,8 @@ def doImage(self):
                 elif bit<0: raw = (((raw-1)>>(-bit))+1).astype('uint8')
         else:
             raw.astype("uint8")
-        if raw.ndim==3 and raw.shape[0] == 1:
-            raw = raw[0]
+        if raw.ndim>2 and ((not isseg) or raw.shape[0]):
+            raw = raw[0] if isseg else raw[idx]
         if raw.ndim==2:
             img = Image.new("L",raw.T.shape,"gray")
         elif raw.ndim==3:
