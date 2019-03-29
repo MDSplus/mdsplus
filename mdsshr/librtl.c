@@ -119,14 +119,14 @@ typedef struct node {
  */
 time_t ntimezone_;
 int daylight_;
-static void tzset_(){
+inline static void tzset_(){
   tzset();
   ntimezone_ = - timezone;
   daylight_ = daylight;
 }
 #endif
 
-static time_t get_tz_offset(time_t* time){
+static inline time_t get_tz_offset(time_t *const time){
   struct tm tmval;
   localtime_r(time, &tmval);
 #ifdef USE_TM_GMTOFF
@@ -145,7 +145,7 @@ STATIC_CONSTANT int64_t VMS_TIME_OFFSET = LONG_LONG_CONSTANT(0x7c95674beb4000);
 /// \param secs the address of a constant floating point number representing the time to wait
 /// \return 1 if successful, 0 if failed or interrupted.
 ///
-EXPORT int LibWait(const float *secs)
+EXPORT int LibWait(const float *const secs)
 {
   struct timespec ts;
   ts.tv_sec = (unsigned int)*secs;
@@ -153,7 +153,7 @@ EXPORT int LibWait(const float *secs)
   return nanosleep(&ts, 0) == 0;
 }
 
-EXPORT char *Now32(char* buf){
+EXPORT char *Now32(char *const buf){
   time_t tim = time(0);
   ctime_r(&tim,buf);
   buf[strlen(buf) - 1] = '\0';
@@ -166,148 +166,91 @@ EXPORT char *Now32(char* buf){
 /// \param routine address of the routine to call
 /// \return the value returned by the routine as a void *
 ///
-EXPORT void *LibCallg(void **arglist, void *(*routine) ()) {
+EXPORT void *LibCallg(void **const a, void* (*const routine)()) {
   if (!routine) abort(); // intercept definite stack corruption
-  switch (*(int*)&arglist[0] & 0xff) {
+  switch (*(int*)a & 0xff) {
   case 0:
-    return (*routine) ();
+    return routine();
   case 1:
-    return (*routine) (arglist[1]);
+    return routine(a[1]);
   case 2:
-    return (*routine) (arglist[1], arglist[2]);
+    return routine(a[1],a[2]);
   case 3:
-    return (*routine) (arglist[1], arglist[2], arglist[3]);
+    return routine(a[1],a[2],a[3]);
   case 4:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4]);
+    return routine(a[1],a[2],a[3],a[4]);
   case 5:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5]);
+    return routine(a[1],a[2],a[3],a[4],a[5]);
   case 6:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6]);
   case 7:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7]);
   case 8:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8]);
   case 9:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9]);
   case 10:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10]);
   case 11:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11]);
   case 12:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12]);
   case 13:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13]);
   case 14:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14]);
   case 15:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15]);
   case 16:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16]);
   case 17:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17]);
   case 18:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17],
-		       arglist[18]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18]);
   case 19:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19]);
   case 20:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20]);
   case 21:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21]);
   case 22:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22]);
   case 23:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23]);
   case 24:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23],
-		       arglist[24]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24]);
   case 25:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25]);
   case 26:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25],a[26]);
   case 27:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25],a[26],a[27]);
   case 28:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25],a[26],a[27],a[28]);
   case 29:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25],a[26],a[27],a[28],a[29]);
   case 30:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29],
-		       arglist[30]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25],a[26],a[27],a[28],a[29],a[30]);
   case 31:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29], arglist[30],
-		       arglist[31]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25],a[26],a[27],a[28],a[29],a[30],a[31]);
   case 32:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29], arglist[30],
-		       arglist[31], arglist[32]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25],a[26],a[27],a[28],a[29],a[30],a[31],a[32]);
   default:
     printf("Error - currently no more than 32 arguments supported on external calls\n");
   }
