@@ -177,19 +177,7 @@ static char *eventName(const char *const eventnam_in) {
   return eventnam;
 }
 
-#ifdef HAVE_VXWORKS_H
-int MDSEventAst(char const *eventnam, void (*astadr) (), void *astprm, int *eventid)
-{
-}
-
-int MDSEventCan(void *eventid)
-{
-}
-
-int MDSEvent(char const *evname)
-{
-}
-#else
+#ifndef HAVE_VXWORKS_H
 
 #ifdef _WIN32
  #include "../servershr/servershrp.h"
