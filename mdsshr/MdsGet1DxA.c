@@ -76,7 +76,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 
-EXPORT int MdsGet1DxA(const struct descriptor_a *in_ptr, const length_t *length_ptr, const dtype_t *dtype_ptr, struct descriptor_xd *out_xd){
+EXPORT int MdsGet1DxA(const mdsdsc_a_t *const in_ptr, const length_t *const length_ptr, const dtype_t *const dtype_ptr, mdsdsc_xd_t *const out_xd){
   array_coeff *in_dsc = (array_coeff *) in_ptr;
   l_length_t new_arsize;
   l_length_t dsc_size;
@@ -90,16 +90,16 @@ EXPORT int MdsGet1DxA(const struct descriptor_a *in_ptr, const length_t *length_
     new_arsize = 0;
   else
     new_arsize = (in_dsc->arsize / in_dsc->length) * (*length_ptr);
-  dsc_size = (l_length_t)(sizeof(struct descriptor_a)
+  dsc_size = (l_length_t)(sizeof(mdsdsc_a_t)
            + ((in_dsc->aflags.coeff || (new_arsize == 0)) ? sizeof(void*) + sizeof(int) * in_dsc->dimct : 0)
            + ( in_dsc->aflags.bounds                      ? sizeof(int) * (size_t)(in_dsc->dimct * 2)   : 0));
   align_size = (*dtype_ptr == DTYPE_T) ? 1 : *length_ptr;
   dsc_size = align(dsc_size, align_size);
   new_size = dsc_size + new_arsize;
   status = MdsGet1Dx(&new_size, &dsc_dtype, out_xd, NULL);
-  if (status & 1) {
+  if STATUS_OK {
     out_dsc = (array_coeff *) out_xd->pointer;
-    *(struct descriptor_a *)out_dsc = *(struct descriptor_a *)in_dsc;
+    *(mdsdsc_a_t *)out_dsc = *(mdsdsc_a_t *)in_dsc;
     out_dsc->length = *length_ptr;
     out_dsc->dtype = *dtype_ptr;
     out_dsc->pointer = (char *)out_dsc + align(dsc_size, align_size);
@@ -123,12 +123,8 @@ EXPORT int MdsGet1DxA(const struct descriptor_a *in_ptr, const length_t *length_
 	out_dsc->m[0]=in_dsc->arsize;
       }
       if (in_dsc->aflags.bounds) {
-	struct bound {
-	  int l;
-	  int u;
-	};
-	struct bound *new_bound_ptr = (struct bound *)&out_dsc->m[out_dsc->dimct];
-	struct bound *a_bound_ptr = (struct bound *)&in_dsc->m[in_dsc->dimct];
+	bound_t *new_bound_ptr = (bound_t *)&out_dsc->m[out_dsc->dimct];
+	bound_t *a_bound_ptr = (bound_t *)&in_dsc->m[in_dsc->dimct];
 	for (i = 0; i < out_dsc->dimct; i++)
 	  new_bound_ptr[i] = a_bound_ptr[i];
       }
