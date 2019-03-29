@@ -154,7 +154,7 @@ EXPORT int LibWait(const float *const secs)
 }
 
 EXPORT char *Now32(char *const buf){
-  time_t tim = time(0);
+  const time_t tim = time(0);
   ctime_r(&tim,buf);
   buf[strlen(buf) - 1] = '\0';
   return buf;
@@ -257,16 +257,15 @@ EXPORT void *LibCallg(void **const a, void* (*const routine)()) {
   return 0;
 }
 
-EXPORT uint32_t LibGetHostAddr(char *name){
+EXPORT uint32_t LibGetHostAddr(const char *const name){
   INITIALIZESOCKETS;
   uint32_t addr = 0;
   struct addrinfo *entry,*info = NULL;
-  struct addrinfo hints = { 0, AF_INET, SOCK_STREAM, 0, 0, NULL, NULL, NULL };
-  int err = 0;
-  if (!(err = getaddrinfo(name, NULL, &hints, &info))) {
+  const struct addrinfo hints = { 0, AF_INET, SOCK_STREAM, 0, 0, NULL, NULL, NULL };
+  if (!getaddrinfo(name, NULL, &hints, &info)) {
     for (entry = info ; entry && !entry->ai_addr ; entry = entry->ai_next);
     if (entry) {
-      struct sockaddr_in* addrin = (struct sockaddr_in*)entry->ai_addr;
+      const struct sockaddr_in* addrin = (struct sockaddr_in*)entry->ai_addr;
       addr = *(uint32_t*)&addrin->sin_addr;
     }
     if (info) freeaddrinfo(info);
@@ -276,7 +275,7 @@ EXPORT uint32_t LibGetHostAddr(char *name){
 
 #ifdef _WIN32
 
-STATIC_ROUTINE char *GetRegistry(HKEY where, const char *pathname)
+static char *GetRegistry(const HKEY where, const char *const pathname)
 {
   HKEY regkey;
   unsigned char *path = NULL;
@@ -294,7 +293,7 @@ STATIC_ROUTINE char *GetRegistry(HKEY where, const char *pathname)
 }
 
 
-EXPORT int LibSpawn(mdsdsc_t *cmd, int waitFlag, int notifyFlag __attribute__ ((unused))){
+EXPORT int LibSpawn(const mdsdsc_t *const cmd, const int waitFlag, const int notifyFlag __attribute__ ((unused))){
   char *cmd_c = MdsDescrToCstring(cmd);
   int status;
   void *arglist[255];
@@ -322,7 +321,7 @@ EXPORT int LibSpawn(mdsdsc_t *cmd, int waitFlag, int notifyFlag __attribute__ ((
 #else	/* _WIN32 */
 
 
-STATIC_ROUTINE char const *nonblank(char *p)
+static char const *nonblank(const char *p)
 {
   if (!p)
     return (0);
@@ -331,7 +330,7 @@ STATIC_ROUTINE char const *nonblank(char *p)
 }
 
 
-STATIC_ROUTINE void child_done(int sig   )
+static void child_done(int sig   )
 {
   if (sig == SIGCHLD)
     fprintf(stdout, "--> Process completed\n");
@@ -341,7 +340,7 @@ STATIC_ROUTINE void child_done(int sig   )
   return;
 }
 
-EXPORT int LibSpawn(mdsdsc_t *cmd, int waitflag, int notifyFlag)
+EXPORT int LibSpawn(const mdsdsc_t *const cmd, const int waitFlag, const int notifyFlag)
 {
   char *sh = "/bin/sh";
   pid_t pid, xpid;
@@ -356,13 +355,13 @@ EXPORT int LibSpawn(mdsdsc_t *cmd, int waitflag, int notifyFlag)
     free(oldcmdstring);
     TranslateLogicalFree(spawn_wrapper);
   }
-  signal(SIGCHLD, notifyFlag ? child_done : (waitflag ? SIG_DFL : SIG_IGN));
+  signal(SIGCHLD, notifyFlag ? child_done : (waitFlag ? SIG_DFL : SIG_IGN));
   pid = fork();
   if (!pid) {
   /*-------------> child process: execute cmd	*/
     char const *arglist[4];
     int i = 0;
-    if (!waitflag) {
+    if (!waitFlag) {
       pid = fork();
       if (pid != -1 && pid != 0)
 	_exit(0);
@@ -408,7 +407,7 @@ EXPORT int LibSpawn(mdsdsc_t *cmd, int waitflag, int notifyFlag)
 
 #endif
 
-EXPORT char *TranslateLogical(const char *pathname)
+EXPORT char *TranslateLogical(const char *const pathname)
 {
   char *tpath = getenv(pathname);
   if (tpath) return strdup(tpath);
@@ -422,7 +421,7 @@ EXPORT char *TranslateLogical(const char *pathname)
 }
 
 
-EXPORT int TranslateLogicalXd(mdsdsc_t const *in, mdsdsc_xd_t *out)
+EXPORT int TranslateLogicalXd(const mdsdsc_t *const in, mdsdsc_xd_t *const out)
 {
   mdsdsc_t out_dsc = { 0, DTYPE_T, CLASS_S, 0 };
   int status = 0;
@@ -440,7 +439,7 @@ EXPORT int TranslateLogicalXd(mdsdsc_t const *in, mdsdsc_xd_t *out)
   return status;
 }
 
-EXPORT void MdsFree(void *ptr)
+EXPORT void MdsFree(void *const ptr)
 {
   free(ptr);
 }
@@ -465,7 +464,7 @@ EXPORT char *LibFindImageSymbolErrString()
   return FIS_Error;
 }
 
-static void *loadLib(const char *dirspec, const char *filename, char *errorstr) {
+static void *loadLib(const char *const dirspec, const char *const filename, char *errorstr) {
   void *handle = NULL;
   char *full_filename = alloca( strlen(dirspec) + strlen(filename) + 10);
   if (strlen(dirspec)>0) {
@@ -488,7 +487,7 @@ static void *loadLib(const char *dirspec, const char *filename, char *errorstr) 
   return handle;
 }
 
-EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, void **symbol_value)
+EXPORT int LibFindImageSymbol_C(const char *const filename_in, const char *const symbol, void **symbol_value)
 {
   int status;
   static pthread_mutex_t dlopen_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -566,7 +565,7 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
   return status;
 }
 
-EXPORT int LibFindImageSymbol(mdsdsc_t *filename, mdsdsc_t *symbol, void **symbol_value)
+EXPORT int LibFindImageSymbol(const mdsdsc_t *const filename, const mdsdsc_t *const symbol, void **const symbol_value)
 {
   char *c_filename = MdsDescrToCstring(filename);
   char *c_symbol = MdsDescrToCstring(symbol);
@@ -866,7 +865,7 @@ EXPORT int libgetvm(const uint32_t *const len, void **const vm, ZoneList **const
 
 #define SEC_PER_DAY (60*60*24)
 
-EXPORT int LibConvertDateString(const char *asc_time, int64_t * qtime)
+EXPORT int LibConvertDateString(const char *asc_time, int64_t *const qtime)
 {
   time_t tim = 0;
   char time_out[24];
@@ -959,7 +958,7 @@ EXPORT int LibConvertDateString(const char *asc_time, int64_t * qtime)
   return tim > 0;
 }
 
-EXPORT int LibTimeToVMSTime(const time_t * time_in, int64_t * time_out)
+EXPORT int LibTimeToVMSTime(const time_t *const time_in, int64_t *const time_out)
 {
   time_t time_to_use = time_in ? *time_in : time(NULL);
   struct timeval tv;
@@ -972,7 +971,7 @@ EXPORT int LibTimeToVMSTime(const time_t * time_in, int64_t * time_out)
   return MDSplusSUCCESS;
 }
 
-EXPORT time_t LibCvtTim(int *time_in, double *t)
+EXPORT time_t LibCvtTim(const int *const time_in, double *const t)
 {
   double t_out;
   time_t bintim = time(&bintim);
@@ -995,7 +994,7 @@ EXPORT time_t LibCvtTim(int *time_in, double *t)
   return (bintim);
 }
 
-EXPORT int LibSysAscTim(uint16_t *len, mdsdsc_t *str, int *time_in)
+EXPORT int LibSysAscTim(length_t *const len, mdsdsc_t *const str, const int *const time_in)
 {
   char time_out[24];
   uint16_t slen = sizeof(time_out)-1;
@@ -1061,7 +1060,7 @@ EXPORT int StrAppend(mdsdsc_d_t *const out, const mdsdsc_t *const tail)
   return MDSplusSUCCESS;
 }
 
-EXPORT int StrFree1Dx(mdsdsc_d_t *out)
+EXPORT int StrFree1Dx(mdsdsc_d_t *const out)
 {
   if (out->class == CLASS_D) {
     free(out->pointer);
@@ -1113,11 +1112,10 @@ struct bbtree_info {
   void *user_context;
 };
 
-STATIC_ROUTINE int MdsInsertTree();
+static int MdsInsertTree();
 
-EXPORT int LibInsertTree(LibTreeNode **treehead, void *symbol_ptr, int *control_flags,
-		  int (*compare_rtn) (), int (*alloc_rtn) (), LibTreeNode **blockaddr,
-		  void *user_data)
+EXPORT int LibInsertTree(LibTreeNode **const treehead, void *const symbol_ptr, int *const control_flags,
+	int (*const compare_rtn)(), int (*const alloc_rtn)(), LibTreeNode **const blockaddr, void *const user_data)
 {
   struct bbtree_info bbtree;
   bbtree.currentnode = *treehead;
@@ -1135,7 +1133,7 @@ EXPORT int LibInsertTree(LibTreeNode **treehead, void *symbol_ptr, int *control_
   return bbtree.foundintree;
 }
 
-STATIC_ROUTINE int MdsInsertTree(struct bbtree_info *bbtree_ptr)
+static int MdsInsertTree(struct bbtree_info *const bbtree_ptr)
 {
 
 #define currentNode (bbtree_ptr->currentnode)
@@ -1259,13 +1257,13 @@ STATIC_ROUTINE int MdsInsertTree(struct bbtree_info *bbtree_ptr)
 
 #undef currentNode
 
-EXPORT int LibLookupTree(LibTreeNode **treehead, void *symbolstring, int (*compare_rtn) (),
-		  LibTreeNode **blockaddr)
+EXPORT int LibLookupTree(LibTreeNode **const treehead, void *const symbol_ptr,
+	int (*const compare_rtn)(), LibTreeNode **const blockaddr)
 {
   int ch_result;
   struct node *currentnode = *treehead;
   while (currentnode != 0) {
-    if ((ch_result = (*compare_rtn) (symbolstring, currentnode)) == 0) {
+    if ((ch_result = compare_rtn(symbol_ptr, currentnode)) == 0) {
       *blockaddr = currentnode;
       return MDSplusSUCCESS;
     } else if (ch_result < 0)
@@ -1276,14 +1274,7 @@ EXPORT int LibLookupTree(LibTreeNode **treehead, void *symbolstring, int (*compa
   return LibKEYNOTFOU;
 }
 
-STATIC_ROUTINE int MdsTraverseTree(int (*user_rtn) (), void *user_data, struct node *currentnode);
-
-EXPORT int LibTraverseTree(LibTreeNode **treehead, int (*user_rtn) (), void *user_data)
-{
-  return MdsTraverseTree(user_rtn, user_data, *treehead);
-}
-
-STATIC_ROUTINE int MdsTraverseTree(int (*user_rtn) (), void *user_data, struct node *currentnode)
+inline static int MdsTraverseTree(int (*const user_rtn)(), void *const user_data, struct node *const currentnode)
 {
   struct node *right_subtree;
   int status;
@@ -1291,22 +1282,24 @@ STATIC_ROUTINE int MdsTraverseTree(int (*user_rtn) (), void *user_data, struct n
     return MDSplusSUCCESS;
   if (left_of(currentnode)) {
     status = MdsTraverseTree(user_rtn, user_data, left_of(currentnode));
-    if (!(status & 1))
-      return status;
+    if STATUS_NOT_OK return status;
   }
   right_subtree = right_of(currentnode);
-  status = (*user_rtn) (currentnode, user_data);
-  if (!(status & 1))
-    return status;
+  status = user_rtn(currentnode, user_data);
+  if STATUS_NOT_OK return status;
   if (right_subtree) {
     status = MdsTraverseTree(user_rtn, user_data, right_subtree);
-    if (!(status & 1))
-      return status;
+    if STATUS_NOT_OK return status;
   }
   return MDSplusSUCCESS;
 }
+EXPORT int LibTraverseTree(LibTreeNode **treehead, int (*user_rtn)(), void *user_data)
+{
+  return MdsTraverseTree(user_rtn, user_data, *treehead);
+}
 
-static int match_wild(const char*cand_ptr, const int cand_len, const char *pat_ptr, const int pat_len){
+
+static int match_wild(const char *const cand_ptr, const int cand_len, const char *const pat_ptr, const int pat_len){
   struct descr {
     const char *ptr;
     int length;
@@ -1416,7 +1409,7 @@ EXPORT int StrTranslate(mdsdsc_t *const out, const mdsdsc_t *const in, const mds
   return status;
 }
 
-EXPORT int StrReplace(mdsdsc_t *const out, const mdsdsc_t *const in, const int *const start_idx,  const int *const end_idx, const mdsdsc_t *const rep)
+EXPORT int StrReplace(mdsdsc_t *const out, const mdsdsc_t *const in, const int *const start_idx, const int *const end_idx, const mdsdsc_t *const rep)
 {
   int status;
   int start;
@@ -1478,13 +1471,13 @@ typedef struct {
 #define FILENAME(ctx) ctx->fd.cFileName
 #define ISDIRECTORY(ctx) (ctx->fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 #define REALLOCBUF(ctx,extra)
-static inline void FINDFILECLOSE_OS(ctx_t* ctx){
+static inline void FINDFILECLOSE_OS(const ctx_t *const ctx){
   FindClose(ctx->stack[ctx->cur_stack].h);
 }
-static inline int FINDFILENEXT_OS(ctx_t* ctx){
+static inline int FINDFILENEXT_OS(ctx_t *const ctx){
   return FindNextFile(ctx->stack[ctx->cur_stack].h, &ctx->fd);
 }
-static inline int FINDFILEFIRST_OS(ctx_t* ctx){
+static inline int FINDFILEFIRST_OS(ctx_t *const ctx){
   ctx->stack[ctx->cur_stack].h = FindFirstFile(ctx->buffer, &ctx->fd);
   return ctx->stack[ctx->cur_stack].h != INVALID_HANDLE_VALUE;
 }
@@ -1505,19 +1498,19 @@ static inline void REALLOCBUF(ctx_t *const ctx, const size_t extra) {
   }
 }
 #include <sys/stat.h>
-static inline int ISDIRECTORY(ctx_t *ctx){
+static inline int ISDIRECTORY(const ctx_t *const ctx){
    struct stat statbuf;
    if (stat(ctx->buffer, &statbuf) != 0)
        return FALSE;
    return S_ISDIR(statbuf.st_mode);
 }
-static inline void FINDFILECLOSE_OS(ctx_t* ctx){
+static inline void FINDFILECLOSE_OS(const ctx_t *const ctx){
   closedir(ctx->stack[ctx->cur_stack].h);
 }
-static inline int FINDFILENEXT_OS(ctx_t* ctx){
+static inline int FINDFILENEXT_OS(ctx_t *const ctx){
     return (ctx->fd = readdir(ctx->stack[ctx->cur_stack].h)) != NULL;
 }
-static inline int FINDFILEFIRST_OS(ctx_t* ctx){
+static inline int FINDFILEFIRST_OS(ctx_t *const ctx){
     ctx->stack[ctx->cur_stack].h = opendir(ctx->buffer);
     if (!ctx->stack[ctx->cur_stack].h) {
       ctx->cur_stack--;
@@ -1533,7 +1526,7 @@ static inline int FINDFILEFIRST_OS(ctx_t* ctx){
 
 #endif
 
-static int findfileloopstart(ctx_t *ctx) {
+static int findfileloopstart(ctx_t *const ctx) {
   ctx->buffer[ctx->stack[ctx->cur_stack].wlen++] = SEP;
 #ifdef _WIN32
   // after this wlen will mark the last SEP so we can simply attach the filename
@@ -1553,7 +1546,7 @@ static int findfileloopstart(ctx_t *ctx) {
   return FINDFILEFIRST_OS(ctx);
 }
 
-static size_t findfileloop(ctx_t *ctx) {
+static size_t findfileloop(ctx_t *const ctx) {
   if (ctx->stack[ctx->cur_stack].h == INVALID_HANDLE_VALUE) {
     if (!findfileloopstart(ctx))
       return 0;
@@ -1593,7 +1586,7 @@ close:
   return 0;
 }
 
-static inline void* _findfilestart(const char *envname, const char *filename, int recursive, int case_blind) {
+static inline void* _findfilestart(const char *const envname, const char *const filename, const int recursive, const int case_blind) {
   DBG("looking for '%s' in '%s'\n", filename, envname);
   ctx_t*ctx = (ctx_t*)malloc(sizeof(ctx_t));
   ctx->max_stack = recursive ? 8 : 1;
@@ -1639,7 +1632,7 @@ static inline void* _findfilestart(const char *envname, const char *filename, in
   return ctx;
 }
 
-static inline void* findfilestart(const char *filename, int recursive, int case_blind) {
+static inline void* findfilestart(const char *const filename, const int recursive, const int case_blind) {
   char* env;
   const char* colon = strchr(filename, ':');
   if (colon) {
@@ -1658,7 +1651,7 @@ static inline void* findfilestart(const char *filename, int recursive, int case_
   return ctx;
 }
 
-static inline char* findfilenext(ctx_t *ctx) {
+static inline char* findfilenext(ctx_t *const ctx) {
   if (ctx->cur_stack >= 0) do {
       if (findfileloop(ctx)>0)
         return ctx->buffer;
@@ -1696,7 +1689,7 @@ static inline char* findfilenext(ctx_t *ctx) {
   return NULL;
 }
 
-static inline void findfileend(void* ctx_i) {
+static inline void findfileend(void *const ctx_i) {
   if (!ctx_i) return;
   ctx_t* ctx = (ctx_t*)ctx_i;
   while (ctx->cur_stack >= 0) {
@@ -1710,14 +1703,14 @@ static inline void findfileend(void* ctx_i) {
   free(ctx);
 }
 
-EXPORT extern int LibFindFileEnd(void **ctx){
+EXPORT extern int LibFindFileEnd(void **const ctx){
   findfileend(*ctx);
   *ctx = NULL;
   return MDSplusSUCCESS;
 }
 
-static int find_file(mdsdsc_t *filespec, mdsdsc_t *result, void **ctx,
-			    int recursively, int case_blind){
+static int find_file(const mdsdsc_t *const filespec, mdsdsc_t *const result, void **const ctx,
+	const int recursively, int const case_blind){
 #ifdef DEBUG
   clock_t start = clock();
 #endif
@@ -1747,19 +1740,19 @@ static int find_file(mdsdsc_t *filespec, mdsdsc_t *result, void **ctx,
   return status;
 }
 
-EXPORT int LibFindFile(mdsdsc_t *filespec, mdsdsc_t *result, void **ctx){
+EXPORT int LibFindFile(const mdsdsc_t *const filespec, mdsdsc_t *const result, void **const ctx){
   return find_file(filespec, result, ctx, 0, 0);
 }
 
-EXPORT int LibFindFileRecurseCaseBlind(mdsdsc_t *filespec, mdsdsc_t *result, void **ctx){
+EXPORT int LibFindFileRecurseCaseBlind(const mdsdsc_t *const filespec, mdsdsc_t *const result, void **const ctx){
   return find_file(filespec, result, ctx, 1, 1);
 }
 
-EXPORT int LibFindFileCaseBlind(mdsdsc_t *filespec, mdsdsc_t *result, void **ctx){
+EXPORT int LibFindFileCaseBlind(const mdsdsc_t *const filespec, mdsdsc_t *const result, void **const ctx){
   return find_file(filespec, result, ctx, 0, 1);
 }
 
-EXPORT void TranslateLogicalFree(char *value)
+EXPORT void TranslateLogicalFree(char *const value)
 {
   free(value);
 }
@@ -1773,7 +1766,9 @@ EXPORT void TranslateLogicalFree(char *value)
 #define LOBYTE(x) ((x) & 0xFF)
 #define HIBYTE(x) (((x) >> 8) & 0xFF)
 
-STATIC_ROUTINE uint16_t icrc1(uint16_t crc)
+/*
+// Cyclic redundancy check but seems unused
+static uint16_t icrc1(const uint16_t crc)
 {
   int i;
   uint32_t ans = crc;
@@ -1786,8 +1781,7 @@ STATIC_ROUTINE uint16_t icrc1(uint16_t crc)
   }
   return (uint16_t)ans;
 }
-
-uint16_t Crc(uint32_t len, unsigned char *bufptr)
+uint16_t Crc(const uint32_t len, uint8_t *const bufptr)
 {
   STATIC_THREADSAFE pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
   STATIC_THREADSAFE uint16_t icrctb[256], init = 0;
@@ -1809,9 +1803,9 @@ uint16_t Crc(uint32_t len, unsigned char *bufptr)
   pthread_mutex_unlock(&mutex);
   return (uint16_t)cword;
 }
+*/
 
-
-EXPORT int MdsPutEnv(char const *cmd) {
+EXPORT int MdsPutEnv(const char *const cmd) {
 /* cmd		action
  * name		unset name
  * name=	set name to ""
@@ -1837,7 +1831,7 @@ EXPORT int MdsPutEnv(char const *cmd) {
   return status;
 }
 
-EXPORT int libffs(int *position, int *size, char *base, int *find_position)
+EXPORT int libffs(const int *const position, const int *const size, const char *const base, int *const find_position)
 {
   INIT_STATUS_ERROR;
   int i;
