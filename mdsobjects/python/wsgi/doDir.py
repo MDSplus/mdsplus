@@ -49,7 +49,7 @@ def toplink(self,root,tree,args):
 def doDir(self):
     if len(self.path_parts) > 2:
         tree = self.openTree(self.path_parts[1],self.path_parts[2])
-    else: return (("500 BAD REQUEST", [('Content-type','text/plain')], "Missing expt and/or shot"))
+    else: raise self.Exception("Missing expt and/or shot")
     args = "?%s"%("&".join(["=".join([k,v[-1]]) for k,v in self.args.items()]),) if len(self.args)>0 else ""
     req_uri= self.getReqURI()
     post   = self.environ["PATH_INFO"]
