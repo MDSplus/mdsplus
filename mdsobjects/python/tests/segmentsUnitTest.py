@@ -242,7 +242,7 @@ class Tests(_UnitTest.TreeTests):
         Tree.setTimeContext(1,2,3)
         self.assertEqual(node.tree.getTimeContext(),(30,70,20))
         self.assertEqual(Tree.getTimeContext(),(1,2,3))
-        self.assertEqual(node.record.data().tolist(),[3,5]+[6])  # delta is applied per segment
+        self.assertEqual(node.record.data().tolist(),[3.,4.5,6.,7.5])  # delta is applied per segment
         node.tree.setTimeContext()
         self.assertEqual(node.tree.getTimeContext(),(None,None,None))
         self.assertEqual(node.record.data().tolist(),list(range(-9,9)))
