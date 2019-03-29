@@ -81,15 +81,15 @@ extern char *MdsDescrToCstring(const mdsdsc_t *const string_dsc);
 extern int MDSfprintf(FILE *const fp, const char *const fmt, ...);
 extern void MdsFree(void *const ptr);
 extern int MdsGet1Dx(const l_length_t *const len, const dtype_t *const dtype, mdsdsc_xd_t *const dsc, void **const zone);
-extern int MdsGet1DxA(const mdsdsc_a_t *in, const length_t *len, const dtype_t *dtype, mdsdsc_xd_t *out);
-extern int MdsGet1DxS(const length_t *len, const dtype_t *dtype, mdsdsc_xd_t *out);
-extern char *MdsGetMsg(int sts);
-extern void MdsGetMsgDsc(int status, mdsdsc_t *out);
-extern int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, const char **text_out);
-extern int MdsFree1Dx(mdsdsc_xd_t *dsc, void **zone);
-extern int MdsMsg(int sts, const char *fmt, ...);
-extern int MDSQueueEvent(const char *event, int *eventid);
-extern int MDSGetEventQueue(int eventid, int timeout, int *data_len, char **data);
+extern int MdsGet1DxA(const mdsdsc_a_t *const in, const length_t *const len, const dtype_t *const dtype, mdsdsc_xd_t *const out);
+extern int MdsGet1DxS(const length_t *const len, const dtype_t *const dtype, mdsdsc_xd_t *const out);
+extern char *MdsGetMsg(const int status);
+extern void MdsGetMsgDsc(const int status, mdsdsc_t *const out);
+extern int MdsGetStdMsg(const int status, const char **fac_out, const char **msgnam_out, const char **text_out);
+extern int MdsFree1Dx(mdsdsc_xd_t *const dsc, void **const zone);
+extern int MdsMsg(const int status, const char *const fmt, ...);
+extern int MDSQueueEvent(const char *const event, int *const eventid);
+extern int MDSGetEventQueue(const int eventid, const int timeout, int *const data_len, char **const data);
 extern int MdsSerializeDscIn(const char *const in, mdsdsc_xd_t *const out);
 extern int MdsSerializeDscOutZ(const mdsdsc_t *const in, mdsdsc_xd_t *const out,
 	int (*const fixupNid) (),void *const fixupNidArg,
