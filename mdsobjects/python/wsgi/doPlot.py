@@ -26,11 +26,18 @@
 from MDSplus import Data,TdiCompile,version,String,Descriptor_xd
 import os,sys,ctypes,numpy,struct
 
-example = '/plot?expr=make_signal(sin((0:1:.01)*$2pi),*,0:1:.01)'
+example = '/plot?expr=make_param(make_signal(make_with_units(sin((0:1:.01)*$2pi),"ylabel"),,make_with_units(0:1:.01,"xlabel")),"title",)'
 
 def getXYSignal(obj,num):
     sig = obj.getXYSignal(num=num)
-    return sig.dim_of().data(),sig.data()
+    dim = sig.dim_of()
+    try:   title = str(sig.help)
+    except:title = None
+    try:   ylabel= str(sig.units)
+    except:ylabel= None
+    try:   xlabel= str(dim.units)
+    except:xlabel= None
+    return dim.data(),sig.data(),title,ylabel,xlabel
 
 def gridScaling(min_in,max_in,divisions,span):
     from math import log10,pow,fabs,ceil,floor,modf
@@ -68,7 +75,6 @@ def gridScaling(min_in,max_in,divisions,span):
     return (first_pix, pix_inc),(first_val,val_inc),divs_out
 
 def doPlot(self):
-    viewbox = (0,0,10000,10000);
     expr = self.args['expr'][-1]
     if len(self.path_parts) > 2:
         tree = self.openTree(self.path_parts[1],self.path_parts[2])
@@ -76,7 +82,10 @@ def doPlot(self):
     else:
         tree = None
         obj = TdiCompile(expr)
-    x,y = getXYSignal(obj,viewbox[2])
+    viewbox = (0,0,10000,10000);    # x0,y0,x1,y1
+    x,y,title,ylabel,xlabel = getXYSignal(obj,viewbox[2])
+    margin  = [1000,1000,200,1000]; # x0,y0,x1,y1
+    if title is None: margin[1] = 200
     response_headers = [
         ('Cache-Control','no-store, no-cache, must-revalidate'),
         ('Pragma','no-cache'),
@@ -93,30 +102,39 @@ def doPlot(self):
     output += '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n'
     output += '<svg viewBox="%d %d %d %d" xmlns="http://www.w3.org/2000/svg" version="1.1">\n' % viewbox
     output += '<title>Plot of %s</title>\n' % (expr,)
+    if title is not None:
+        output += '<text text-anchor="middle" x="%d" y="%d" font-size="400">%s</text>\n' % (
+            (viewbox[2]-viewbox[0])/2, 500, title)
+    if xlabel is not None:
+        output += '<text text-anchor="middle" x="%d" y="%d" font-size="300">%s</text>\n' % (
+            (viewbox[2]-viewbox[0])/2, viewbox[3]-100, xlabel)
+    if ylabel is not None:
+        output += '<text transform="rotate(-90)" style="text-anchor:middle;" x="%d" y="%d" font-size="300">%s</text>\n' % (
+            (viewbox[1]-viewbox[3])/2, 100, ylabel)
     output += '<path fill="none" stroke="black" stroke-width="30" d="M\n'
-    xmin,  xmax   = float(min(x)),float(max(x))
-    ymin,  ymax   = float(min(y)),float(max(y))
-    xmin_s,ymin_s = float(viewbox[0]),float(viewbox[1])
-    xmax_s,ymax_s = float(viewbox[2]),float(viewbox[3])
+    xmin,xmax = float(min(x)),float(max(x))
+    ymin,ymax = float(min(y)),float(max(y))
+    xvspan,xmspan = viewbox[2]-viewbox[0], margin[2]+margin[0]
+    yvspan,ymspan = viewbox[3]-viewbox[1], margin[3]+margin[1]
     # scale
-    x =  (x-xmin)*((xmax_s-xmin_s-1200)/(xmax-xmin))+1000
-    y =  (ymax-y)*((ymax_s-ymin_s-1200)/(ymax-ymin))+200
+    x =  (x-xmin)*((xvspan-xmspan)/(xmax-xmin))+margin[0]
+    y =  (ymax-y)*((yvspan-ymspan)/(ymax-ymin))+margin[1]
     for i in range(len(x)): output += "%d %d\n" % (int(x[i]),int(y[i]))
     output += '"/>\n'
-    pix,val,div = gridScaling(xmin,xmax,5,viewbox[2]-viewbox[0]-1200)
+    pix,val,div = gridScaling(xmin,xmax,5,xvspan-xmspan)
     for i in range(div):
         output += '<text text-anchor="middle" x="%d" y="%d" font-size="300">%.5g</text>\n' % (
-            pix[0]+i*pix[1]+1000, viewbox[2]-200, val[0]+i*val[1])
+            pix[0]+i*pix[1]+margin[0], viewbox[2]-margin[2]-200, val[0]+i*val[1])
         output += '<path fill="none" stroke="black" stroke-width="5" stroke-dasharray="200,100,50,50,50,100" d="M%d %d %d %d"/>\n' % (
-            pix[0]+i*pix[1]+1000, viewbox[2],
-            pix[0]+i*pix[1]+1000, viewbox[0])
-    pix,val,div = gridScaling(ymin,ymax,5,viewbox[3]-viewbox[1]-1200)
+            pix[0]+i*pix[1]+margin[0], viewbox[2],
+            pix[0]+i*pix[1]+margin[0], viewbox[0])
+    pix,val,div = gridScaling(ymin,ymax,5,yvspan-ymspan)
     for i in range(div):
         output += '<text text-anchor="left" x="%d" y="%d" font-size="300">%.5g</text>\n' % (
-            100, viewbox[3]-(pix[0]+i*pix[1]+1000), val[0]+i*val[1])
+            300, viewbox[3]-(pix[0]+i*pix[1]+margin[3]), val[0]+i*val[1])
         output += '<path fill="none" stroke="black" stroke-width="5" stroke-dasharray="200,100,50,50,50,100" d="M%d %d %d %d"/>\n' % (
-            viewbox[1], viewbox[3]-(pix[0]+i*pix[1]+1000),
-            viewbox[3], viewbox[3]-(pix[0]+i*pix[1]+1000) )
+            viewbox[1], viewbox[3]-(pix[0]+i*pix[1]+margin[3]),
+            viewbox[3], viewbox[3]-(pix[0]+i*pix[1]+margin[3]) )
     output += '</svg>\n'
     status = '200 OK'
     return (status, response_headers, output)

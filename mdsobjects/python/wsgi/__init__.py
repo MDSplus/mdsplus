@@ -185,7 +185,7 @@ class application:
         return cls.html_frame(title,table_frame(header,rows))
     @staticmethod
     def link(href,text):
-        return '<a href="%s">%s</a>'%(href,text)
+        return '<a href="%s">%s</a>'%(href.replace('"',"&quot;"),text)
     def getReqURI(self):
         return self.environ["REQUEST_URI"].split('?',2)[0]
     @staticmethod
