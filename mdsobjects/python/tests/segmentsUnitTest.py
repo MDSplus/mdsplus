@@ -31,6 +31,8 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 _UnitTest=_mimport("_UnitTest")
+from MDSplus import setenv
+setenv("MDSPLUS_DEFAULT_RESAMPLE_MODE","interp")
 class Tests(_UnitTest.TreeTests):
     shotinc = 12
     tree    =  'segments'
@@ -242,6 +244,12 @@ class Tests(_UnitTest.TreeTests):
         Tree.setTimeContext(1,2,3)
         self.assertEqual(Tree.getTimeContext(),(1,2,3))
         self.assertEqual(node.tree.getTimeContext(),(30,70,15))
+
+        sig = node.record # interp as set by env
+        self.assertEqual(sig.data().tolist(),[3,4.5,6])
+        self.assertEqual(sig.dim_of().data().tolist(),[30,45,60])
+
+        node.setExtendedAttribute("ResampleMode","Average")
         sig = node.record
         self.assertEqual(sig.data().tolist(),[3.5,5.,6.5])
         self.assertEqual(sig.dim_of().data().tolist(),[37,52,67]) # 35,45,65

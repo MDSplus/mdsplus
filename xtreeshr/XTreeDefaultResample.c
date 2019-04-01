@@ -27,6 +27,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <mdstypes.h>
 #include <mdsdescrip.h>
+#include <pthread_port.h>
 #include <mds_stdarg.h>
 #include <mdsshr.h>
 #include <treeshr.h>
@@ -133,12 +134,32 @@ EXPORT mdsdsc_xd_t *XTreeResamplePrevious(mds_signal_t *inSignalD, mdsdsc_t*star
   return &retXd;
 }
 
+static res_mode_t default_mode = AVERAGE;
+static void get_default() {
+  char *resampleMode = TranslateLogical("MDSPLUS_DEFAULT_RESAMPLE_MODE");
+       if(!strcasecmp(resampleMode, "Average"))
+    default_mode = AVERAGE;
+  else if(!strcasecmp(resampleMode, "MinMax"))
+    default_mode = MINMAX;
+  else if(!strcasecmp(resampleMode, "Interp"))
+    default_mode = INTERPOLATION;
+  else if(!strcasecmp(resampleMode, "Closest"))
+    default_mode = CLOSEST;
+  else if(!strcasecmp(resampleMode, "Previous"))
+    default_mode = PREVIOUS;
+  TranslateLogicalFree(resampleMode);
+}
+int XTreeDefaultResample(mds_signal_t *inSignalD, mdsdsc_t*startD, mdsdsc_t*endD, mdsdsc_t*deltaD, mdsdsc_xd_t *outSignalXd){
+  static pthread_once_t once = PTHREAD_ONCE_INIT;
+  pthread_once(&once,get_default);
+  return XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, default_mode, outSignalXd);
+}
+
 #define RESAMPLE_FUN(name,mode) \
 int name(mds_signal_t *inSignalD, mdsdsc_t*startD, mdsdsc_t*endD, mdsdsc_t*deltaD, mdsdsc_xd_t *outSignalXd){\
   return XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, mode, outSignalXd);}
 
-
-EXPORT RESAMPLE_FUN(XTreeDefaultResample, AVERAGE)
+EXPORT RESAMPLE_FUN(XTreeAverageResample, AVERAGE)
 EXPORT RESAMPLE_FUN(XTreeClosestResample, CLOSEST)
 EXPORT RESAMPLE_FUN(XTreePreviousResample,PREVIOUS)
 EXPORT RESAMPLE_FUN(XTreeInterpResample,  INTERPOLATION)
@@ -146,9 +167,8 @@ EXPORT RESAMPLE_FUN(XTreeMinMaxResample,  MINMAX)
 
 extern int getShape(mdsdsc_t*dataD, int *dims, int *numDims);
 
-static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t*startD,
-	    mdsdsc_t*endD, mdsdsc_t*deltaD, const res_mode_t mode,
-	    mdsdsc_xd_t *outSignalXd)
+static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t*startD, mdsdsc_t*endD, mdsdsc_t*deltaD,
+	const res_mode_t mode, mdsdsc_xd_t *outSignalXd)
 {
   int status;
 

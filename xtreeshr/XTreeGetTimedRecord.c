@@ -42,6 +42,7 @@ static int timedAccessFlag = 0;
 #endif
 extern int XTreeConvertToLongTime(mdsdsc_t *timeD, int64_t * converted);
 #define RESAMPLE_FUN(name) int name(mds_signal_t *inSignalD,mdsdsc_t *startD, mdsdsc_t *endD, mdsdsc_t *deltaD, mdsdsc_xd_t  *outSignalXd)
+extern RESAMPLE_FUN(XTreeAverageResample);
 extern RESAMPLE_FUN(XTreeMinMaxResample);
 extern RESAMPLE_FUN(XTreeInterpResample);
 extern RESAMPLE_FUN(XTreeClosestResample);
@@ -306,6 +307,8 @@ EXPORT int XTreeGetTimedRecord(int inNid, mdsdsc_t *startD,
       status = TdiEvaluate((mdsdsc_t *)&resampleFunD, &resampledXds[currSegIdx] MDS_END_ARG);
     } else if((!startD && !endD && !minDeltaD) || currSignalD.ndesc == 1) //If no resampling required
       status = MdsCopyDxXd((const mdsdsc_t *)&currSignalD, &resampledXds[currSegIdx]);
+    else if(!strcasecmp(resampleMode, "Average"))
+      status = XTreeAverageResample((mds_signal_t *)&currSignalD, startD, endD, minDeltaD, &resampledXds[currSegIdx]);
     else if(!strcasecmp(resampleMode, "MinMax"))
       status = XTreeMinMaxResample((mds_signal_t *)&currSignalD, startD, endD, minDeltaD, &resampledXds[currSegIdx]);
     else if(!strcasecmp(resampleMode, "Interp"))
