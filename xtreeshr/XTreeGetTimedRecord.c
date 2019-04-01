@@ -40,8 +40,7 @@ static int timedAccessFlag = 0;
 #ifdef _WIN32
 #define EXPORT __declspec(dllexport)
 #endif
-extern int XTreeConvertToLongTime(struct descriptor *timeD,
-          int64_t * converted);
+extern int XTreeConvertToLongTime(struct descriptor *timeD, int64_t * converted);
 extern int XTreeMinMaxResample(struct descriptor_signal *inSignalD,
              struct descriptor *startD,
              struct descriptor *endD,
@@ -57,7 +56,7 @@ EXPORT int XTreeTestTimedAccessFlag(){
 
 
 //Check if resampled versions of this node exist in case a sampling interval is specified
-static int checkResampledVersion(void *dbid, int nid, struct descriptor *deltaD)
+static int checkResampledVersion(int nid, struct descriptor *deltaD)
 {
   EMPTYXD(xd);
   EMPTYXD(startXd);
@@ -74,13 +73,13 @@ static int checkResampledVersion(void *dbid, int nid, struct descriptor *deltaD)
   if(deltaD == 0)  return nid;
   status = XTreeConvertToLongTime(deltaD, &deltaNs);
   if STATUS_NOT_OK return nid;
-  status = (dbid) ? _TreeGetXNci(dbid, nid, "ResampleFactor", &xd) : TreeGetXNci(nid, "ResampleFactor", &xd);
+  status = TreeGetXNci(nid, "ResampleFactor", &xd);
   if STATUS_NOT_OK return nid;
   status = TdiGetLong((struct descriptor *)&xd,&resampleFactor);
 
   MdsFree1Dx(&xd, 0);
 
-  status = (dbid)?_TreeGetSegmentLimits(dbid, nid, 0, &startXd, &endXd):TreeGetSegmentLimits(nid, 0, &startXd, &endXd);
+  status = TreeGetSegmentLimits(nid, 0, &startXd, &endXd);
   if STATUS_NOT_OK
     return nid;
   status = XTreeConvertToLongTime(startXd.pointer, &startNs);
@@ -90,7 +89,7 @@ static int checkResampledVersion(void *dbid, int nid, struct descriptor *deltaD)
   if STATUS_NOT_OK
     return nid;
 
-  status = (dbid)?_TreeGetSegmentInfo(dbid, nid, 0, &dtype, &dimct, dims, &nextRow):TreeGetSegmentInfo(nid, 0, &dtype, &dimct, dims, &nextRow);
+  status = TreeGetSegmentInfo(nid, 0, &dtype, &dimct, dims, &nextRow);
   if STATUS_NOT_OK
     return nid;
   numRows = dims[dimct-1];
@@ -99,7 +98,7 @@ static int checkResampledVersion(void *dbid, int nid, struct descriptor *deltaD)
                 return nid;
   if((int)(deltaNs / actDeltaNs) < resampleFactor)
     return nid;
-  status = (dbid) ? _TreeGetXNci(dbid, nid, "ResampleNid", &xd) : TreeGetXNci(nid, "ResampleNid", &xd);
+  status = TreeGetXNci(nid, "ResampleNid", &xd);
     if (STATUS_NOT_OK || !xd.pointer || xd.pointer->class != CLASS_S || xd.pointer->dtype != DTYPE_NID)
     {
     MdsFree1Dx(&xd, 0);
@@ -110,7 +109,7 @@ static int checkResampledVersion(void *dbid, int nid, struct descriptor *deltaD)
   return outNid;
 }
 
-EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD,
+EXPORT int XTreeGetTimedRecord(int inNid, struct descriptor *startD,
         			struct descriptor *endD, struct descriptor *minDeltaD,
 				struct descriptor_xd *outSignal){
   int status, nid;
@@ -143,11 +142,11 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 //printf("GET TIMED RECORD\n");
 
   //Check for possible resampled versions
-  nid = checkResampledVersion(dbid, inNid, minDeltaD);
+  nid = checkResampledVersion(inNid, minDeltaD);
 
   timedAccessFlag = 1;
   //Get names for (possible) user defined  resample and squish funs
-  status = (dbid) ? _TreeGetXNci(dbid, nid, "ResampleFun", &xd) : TreeGetXNci(nid, "ResampleFun", &xd);
+  status = TreeGetXNci(nid, "ResampleFun", &xd);
   if (STATUS_OK && xd.pointer) {//If a user defined fun exists
     nameLen = xd.pointer->length;
     if (nameLen >= MAX_FUN_NAMELEN)
@@ -158,7 +157,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
   } else
     resampleFunName[0] = 0;
 
-  status = (dbid) ? _TreeGetXNci(dbid, nid, "SquishFun", &xd) : TreeGetXNci(nid, "SquishFun", &xd);
+  status = TreeGetXNci(nid, "SquishFun", &xd);
   if (STATUS_OK & 1 && xd.pointer) {//If a user defined fun exists
     nameLen = xd.pointer->length;
     if (nameLen >= MAX_FUN_NAMELEN)
@@ -169,7 +168,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
   } else
     squishFunName[0] = 0;
 
-  status = (dbid) ? _TreeGetXNci(dbid, nid, "ResampleMode", &xd) : TreeGetXNci(nid, "ResampleMode", &xd);
+  status = TreeGetXNci(nid, "ResampleMode", &xd);
   if (STATUS_OK && xd.pointer) {//If a user defined fun exists
     nameLen = xd.pointer->length;
     if (nameLen >= MAX_FUN_NAMELEN)
@@ -192,7 +191,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 
 //Get segment limits. If not evaluated to 64 bit int, make the required conversion.
 // New management based on TreeGetSegmentLimits()
-  status = (dbid)?_TreeGetSegmentTimesXd(dbid, nid, &numSegments, &startTimesXd, &endTimesXd):TreeGetSegmentTimesXd(nid, &numSegments, &startTimesXd, &endTimesXd);
+  status = TreeGetSegmentTimesXd(nid, &numSegments, &startTimesXd, &endTimesXd);
   if STATUS_NOT_OK return status;
   // Convert read times into 64 bit representation
   if(startTimesXd.pointer == 0 || endTimesXd.pointer == 0)
@@ -252,7 +251,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
   }
 
   for(currIdx = startIdx, currSegIdx = 0; currIdx <= endIdx; currIdx++, currSegIdx++){
-    status = (dbid)?_TreeGetSegment(dbid, nid, currIdx, &dataXds[currSegIdx], &dimensionXds[currSegIdx]):TreeGetSegment(nid, currIdx, &dataXds[currSegIdx], &dimensionXds[currSegIdx]);
+    status = TreeGetSegment(nid, currIdx, &dataXds[currSegIdx], &dimensionXds[currSegIdx]);
     // decompress if compressed
     if (STATUS_OK && dataXds[currSegIdx].pointer->class == CLASS_CA) {
       struct descriptor_xd compressed = dataXds[currSegIdx];
@@ -360,7 +359,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
   free(resampledXds);
   free(dataXds);
   free(dimensionXds);
-  if (outSignal->pointer && (_TreeGetSegmentScale(dbid, inNid, &xd)&1)){
+  if (outSignal->pointer && (TreeGetSegmentScale(inNid, &xd)&1)){
     if (xd.pointer) {
       struct descriptor_signal* sig = (struct descriptor_signal*)outSignal->pointer;
       emptyXd = *outSignal;
@@ -375,6 +374,10 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
   return status;
 }
 
-EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descriptor *endD, struct descriptor *minDeltaD, struct descriptor_xd *outSignal){
-  return _XTreeGetTimedRecord(0, nid, startD, endD, minDeltaD, outSignal);
+EXPORT int _XTreeGetTimedRecord(void* dbid, int nid, struct descriptor *startD, struct descriptor *endD, struct descriptor *minDeltaD, struct descriptor_xd *outSignal){
+  int status;
+  CTX_PUSH(&dbid);
+  status = XTreeGetTimedRecord(nid, startD, endD, minDeltaD, outSignal);
+  CTX_POP(&dbid);
+  return status;
 }
