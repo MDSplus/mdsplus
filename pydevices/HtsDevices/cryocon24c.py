@@ -42,8 +42,11 @@ class CRYOCON24C(MDSplus.Device):
         parts.append({'path': ':INPUT_%c:CALIBRATION' %(c,), 'type': 'TEXT', 'options': ('no_write_model', 'write_once',)})
         #parts.append({'path': ':INPUT_%c:TEMPERATURE' %(c,), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
         parts.append({'path': ':INPUT_%c:RESISTENCE' %(c,), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
-        parts.append({'path': ':INPUT_%c:OUTPUT_POWER' %(c,), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
+        #parts.append({'path': ':INPUT_%c:OUTPUT_POWER' %(c,), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
         
+    for i in range(0,4):
+        parts.append({'path': ':LOOP_%c' %(str(i+1),), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
+
     del c
     debug = None
 
@@ -62,10 +65,15 @@ class CRYOCON24C_TREND(CRYOCON24C):
     putRow.  The timestamp will be time since the unix EPOCH in msec
     '''
     parts = copy.copy(CRYOCON24C.parts)
-    for c in range(ord('A'), ord('E')):
-        parts.append({'path': ':INPUT_%c:PROPOR_GAIN' %(c,), 'type': 'NUMERIC', 'options': ('no_write_model')})
-        parts.append({'path': ':INPUT_%c:INTEGR_GAIN' %(c,), 'type': 'NUMERIC', 'options': ('no_write_model')})
-        parts.append({'path': ':INPUT_%c:DERIVA_GAIN' %(c,), 'type': 'NUMERIC', 'options': ('no_write_model')})
+    #for c in range(ord('A'), ord('E')):
+    #    parts.append({'path': ':INPUT_%c:PROPOR_GAIN' %(c,), 'type': 'NUMERIC', 'options': ('no_write_model')})
+    #    parts.append({'path': ':INPUT_%c:INTEGR_GAIN' %(c,), 'type': 'NUMERIC', 'options': ('no_write_model')})
+    #    parts.append({'path': ':INPUT_%c:DERIVA_GAIN' %(c,), 'type': 'NUMERIC', 'options': ('no_write_model')})
+    
+    for c in range(0, 4):
+        parts.append({'path': ':LOOP_%c:PROPOR_GAIN' %(str(c+1),), 'type': 'NUMERIC', 'options': ('no_write_model')})
+        parts.append({'path': ':LOOP_%c:INTEGR_GAIN' %(str(c+1),), 'type': 'NUMERIC', 'options': ('no_write_model')})
+        parts.append({'path': ':LOOP_%c:DERIVA_GAIN' %(str(c+1),), 'type': 'NUMERIC', 'options': ('no_write_model')})
 
     parts.append({'path': ':DATA_EVENT', 'type': 'text', 'value': 'CRYOCON24C_TREND', 'options': ('no_write_shot')})
     parts.append({'path': ':NODE', 'type': 'text', 'value': '192.168.0.254', 'options': ('no_write_shot')})
@@ -161,11 +169,12 @@ class CRYOCON24C_TREND(CRYOCON24C):
         # Derivative gain values have units of inverse Seconds and may have values from zero to 1000. A value of
         # zero turns the Derivative control function off.
 
-        for i in range(ord('a'), ord('e')):
+        #for i in range(ord('a'), ord('e')):
+        for i in range(0,4):
             # Proportional gain, or P term for PID control.
             # This is a numeric field that is a percent of full scale.
-            pgain_chan = self.__getattr__('input_%c_propor_gain' % (chr(i)))
-            query_cmd = 'LOOP %c:PGA?' % (chr(i),)
+            pgain_chan = self.__getattr__('loop_%c_propor_gain' % (str(i+1)))
+            query_cmd = 'LOOP %c:PGA?' % (str(i+1),)
 
             ansQuery = self.queryCommand(s, query_cmd)
 
@@ -181,8 +190,8 @@ class CRYOCON24C_TREND(CRYOCON24C):
 
             # Integrator gain term, in Seconds, for PID control.
             # This is a numeric field that is a percent of full scale.
-            igain_chan = self.__getattr__('input_%c_integr_gain' % (chr(i)))
-            query_cmd = 'LOOP %c:IGA?' % (chr(i),)
+            igain_chan = self.__getattr__('loop_%c_integr_gain' % (str(i+1)))
+            query_cmd = 'LOOP %c:IGA?' % (str(i+1),)
 
             ansQuery = self.queryCommand(s, query_cmd)
 
@@ -198,8 +207,8 @@ class CRYOCON24C_TREND(CRYOCON24C):
 
             # Derivative gain term, in inverse-Seconds, for PID control.
             # This is a numeric field that is a percent of full scale.
-            dgain_chan = self.__getattr__('input_%c_deriva_gain' % (chr(i)))
-            query_cmd = 'LOOP %c:DGA?' % (chr(i),)
+            dgain_chan = self.__getattr__('loop_%c_deriva_gain' % (str(i+1)))
+            query_cmd = 'LOOP %c:DGA?' % (str(i+1),)
 
             ansQuery = self.queryCommand(s, query_cmd)
 
@@ -244,10 +253,16 @@ class CRYOCON24C_TREND(CRYOCON24C):
                 outpower.append(np.zeros(seg_length))
                 t_chans.append(self.__getattr__('input_%c' % (chr(i))))
                 r_chans.append(self.__getattr__('input_%c_resistence' % (chr(i))))
-                p_chans.append(self.__getattr__('input_%c_output_power' % (chr(i))))
                 query_cmd_temp.append('INP %c:TEMP?;SENP?' % (chr(i),))
-                query_cmd_outp.append('LOOP %c:OUTP?' % (chr(i),))
         
+        for i in range(0,4):
+            chan = self.__getattr__('loop_%c' % (str(i+1),))
+            if chan.on:
+                outpower.append(np.zeros(seg_length))
+                p_chans.append(self.__getattr__('loop_%c' % (str(i+1))))
+                query_cmd_outp.append('LOOP %c:HTRRead?' % (str(i+1),))
+
+
         # Run until the STOP function is externally triggerd
         while self.running.on:
             for sample in range(seg_length):
@@ -269,7 +284,7 @@ class CRYOCON24C_TREND(CRYOCON24C):
                     ansQueryTemp = self.queryCommand(s, query_cmd_temp[i])
                     ansQueryOutp = self.queryCommand(s, query_cmd_outp[i])
                     answerTemp = ansQueryTemp.split(';')
-                    answerOutp = ansQueryOutp
+                    answerOutp = ansQueryOutp[:-1] #remove the '%' at the end of the number
 
                     # Temperature reading
                     try:
@@ -302,7 +317,7 @@ class CRYOCON24C_TREND(CRYOCON24C):
                     try:
                         # print("Parsing output power /%s/" % ansQuery)
                         if 'NAK' not in ansQueryOutp:
-                            outpower[i][sample] = float(answerOutp[2])
+                            outpower[i][sample] = float(answerOutp)
                         else:
                             outpower[i][sample] = float(-9999.0)
                     except ValueError:
@@ -382,13 +397,11 @@ class CRYOCON24C_SHOT(CRYOCON24C):
         for i in range(ord('a'), ord('e')):
             trend_temp     = trend_dev.__getattr__('input_%c'% (chr(i)))
             trend_resis    = trend_dev.__getattr__('input_%c_resistence'%  (chr(i)))
-            trend_outpower = trend_dev.__getattr__('input_%c_output_power'% (chr(i)))
-            
+                        
             times    = trend_temp.dim_of().data()
             temps    = trend_temp.data()
             resists  = trend_resis.data()
-            outpower = trend_outpower.data()
-
+            
             # Might be able to improve
             start_time = times[0]
             for j in range(len(times)):
@@ -397,12 +410,24 @@ class CRYOCON24C_SHOT(CRYOCON24C):
             
             shot_temp     = self.__getattr__('input_%c' % (chr(i)))
             shot_resis    = self.__getattr__('input_%c_resistence' % (chr(i)))
-            shot_outpower = self.__getattr__('input_%c_output_power' % (chr(i)))
-
+            
             shot_temp.record     = MDSplus.Signal(temps, None, times)
-            shot_resis.record    = MDSplus.Signal(temps, None, times)
-            shot_outpower.record = MDSplus.Signal(temps, None, times)
-        
+            shot_resis.record    = MDSplus.Signal(resists, None, times)
+                    
+        for i in range(0,4):
+                trend_outpower = trend_dev.__getattr__('loop_%c'% (str(i+1)))
+                times    = trend_outpower.dim_of().data()
+                outpower = trend_outpower.data()
+
+                start_time = times[0]
+                for j in range(len(times)):
+                    times[j] -= start_time
+                    times[j] = float(times[j]) / 1000.
+
+                shot_outpower = self.__getattr__('loop_%c' % (str(i+1)))
+                shot_outpower.record = MDSplus.Signal(outpower, None, times)
+
+
         MDSplus.Event.setevent(event_name)
 
     STOP=stop
