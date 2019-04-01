@@ -44,8 +44,9 @@ extern int XTreeConvertToLongTime(mdsdsc_t *timeD, int64_t * converted);
 #define RESAMPLE_FUN(name) int name(mds_signal_t *inSignalD,mdsdsc_t *startD, mdsdsc_t *endD, mdsdsc_t *deltaD, mdsdsc_xd_t  *outSignalXd)
 extern RESAMPLE_FUN(XTreeMinMaxResample);
 extern RESAMPLE_FUN(XTreeInterpResample);
-extern RESAMPLE_FUN(XTreeResampleClosest);
-extern RESAMPLE_FUN(XTreeResamplePrevious);
+extern RESAMPLE_FUN(XTreeClosestResample);
+extern RESAMPLE_FUN(XTreePreviousResample);
+extern RESAMPLE_FUN(XTreeDefaultResample);
 
 
 EXPORT void XTreeResetTimedAccessFlag(){
@@ -310,9 +311,9 @@ EXPORT int XTreeGetTimedRecord(int inNid, mdsdsc_t *startD,
     else if(!strcasecmp(resampleMode, "Interp"))
       status = XTreeInterpResample((mds_signal_t *)&currSignalD, startD, endD, minDeltaD, &resampledXds[currSegIdx]);
     else if(!strcasecmp(resampleMode, "Closest"))
-      status = XTreeResampleClosest((mds_signal_t *)&currSignalD, startD, endD, minDeltaD, &resampledXds[currSegIdx]);
+      status = XTreeClosestResample((mds_signal_t *)&currSignalD, startD, endD, minDeltaD, &resampledXds[currSegIdx]);
     else if(!strcasecmp(resampleMode, "Previous"))
-      status = XTreeResamplePrevious((mds_signal_t *)&currSignalD, startD, endD, minDeltaD, &resampledXds[currSegIdx]);
+      status = XTreePreviousResample((mds_signal_t *)&currSignalD, startD, endD, minDeltaD, &resampledXds[currSegIdx]);
     else
       status = XTreeDefaultResample((mds_signal_t *)&currSignalD, startD, endD, minDeltaD, &resampledXds[currSegIdx]);
 

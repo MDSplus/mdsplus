@@ -35,27 +35,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 typedef enum{
 AVERAGE,
 INTERPOLATION,
-CLOSEST_SAMPLE,
-PREVIOUS_SAMPLE,
+CLOSEST,
+PREVIOUS,
 MINMAX,
 } res_mode_t;
 
-//static int lessThan(struct descriptor *in1D, struct descriptor *in2D, char *less);
-//static int getMinMax(struct descriptor *dimD, char isMin, struct descriptor_xd *outXd);
+//static int lessThan(mdsdsc_t*in1D, mdsdsc_t*in2D, char *less);
+//static int getMinMax(mdsdsc_t*dimD, char isMin, mdsdsc_xd_t *outXd);
 extern int TdiDecompile();
 extern int TdiCompile();
 extern int TdiData();
 extern int TdiFloat();
 extern int TdiEvaluate();
-extern int XTreeConvertToLongTime(struct descriptor *timeD, int64_t * converted);
+extern int XTreeConvertToLongTime(mdsdsc_t*timeD, int64_t * converted);
 
-static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct descriptor *startD,
-	    struct descriptor *endD, struct descriptor *deltaD, const res_mode_t mode,
-	    struct descriptor_xd *outSignalXd);
+static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t*startD,
+	    mdsdsc_t*endD, mdsdsc_t*deltaD, const res_mode_t mode,
+	    mdsdsc_xd_t *outSignalXd);
 
 //The default resample handles int64 timebases
 //return 0 if the conversion is  not possible
-inline static int64_t *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int *outSamples, int *isFloat){
+inline static int64_t *convertTimebaseToInt64(mds_signal_t *inSignalD, int *outSamples, int *isFloat){
   if (inSignalD->ndesc<3) {
     ARRAY_COEFF(char *, MAX_DIMS) *dataD = (void*)inSignalD->data;
     if (dataD->dimct == 1)
@@ -119,52 +119,36 @@ inline static int64_t *convertTimebaseToInt64(struct descriptor_signal *inSignal
   return outPtr;
 }
 
-EXPORT struct descriptor_xd *XTreeResampleClosest(struct descriptor_signal *inSignalD,
-			  struct descriptor *startD,
-			  struct descriptor *endD,
-			  struct descriptor *deltaD)
-{
+EXPORT mdsdsc_xd_t *XTreeResampleClosest(mds_signal_t *inSignalD, mdsdsc_t*startD, mdsdsc_t*endD, mdsdsc_t*deltaD)
+{// deprecated
   static EMPTYXD(retXd);
-  XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, CLOSEST_SAMPLE, &retXd);
+  XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, CLOSEST, &retXd);
   return &retXd;
 }
 
-EXPORT struct descriptor_xd *XTreeResamplePrevious(struct descriptor_signal *inSignalD,
-			   struct descriptor *startD,
-			   struct descriptor *endD,
-			   struct descriptor *deltaD)
-{
+EXPORT mdsdsc_xd_t *XTreeResamplePrevious(mds_signal_t *inSignalD, mdsdsc_t*startD, mdsdsc_t*endD, mdsdsc_t*deltaD)
+{// deprecated
   static EMPTYXD(retXd);
-  XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, PREVIOUS_SAMPLE, &retXd);
+  XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, PREVIOUS, &retXd);
   return &retXd;
 }
 
-EXPORT int XTreeDefaultResample(struct descriptor_signal *inSignalD, struct descriptor *startD,
-	struct descriptor *endD, struct descriptor *deltaD,
-	struct descriptor_xd *outSignalXd)
-{
-  return XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, AVERAGE, outSignalXd);
-}
+#define RESAMPLE_FUN(name,mode) \
+int name(mds_signal_t *inSignalD, mdsdsc_t*startD, mdsdsc_t*endD, mdsdsc_t*deltaD, mdsdsc_xd_t *outSignalXd){\
+  return XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, mode, outSignalXd);}
 
-EXPORT int XTreeInterpResample(struct descriptor_signal *inSignalD, struct descriptor *startD,
-	struct descriptor *endD, struct descriptor *deltaD,
-	struct descriptor_xd *outSignalXd)
-{
-  return XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, INTERPOLATION, outSignalXd);
-}
 
-EXPORT int XTreeMinMaxResample(struct descriptor_signal *inSignalD, struct descriptor *startD,
-	struct descriptor *endD, struct descriptor *deltaD,
-	struct descriptor_xd *outSignalXd)
-{
-  return XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, MINMAX, outSignalXd);
-}
+EXPORT RESAMPLE_FUN(XTreeDefaultResample, AVERAGE)
+EXPORT RESAMPLE_FUN(XTreeClosestResample, CLOSEST)
+EXPORT RESAMPLE_FUN(XTreePreviousResample,PREVIOUS)
+EXPORT RESAMPLE_FUN(XTreeInterpResample,  INTERPOLATION)
+EXPORT RESAMPLE_FUN(XTreeMinMaxResample,  MINMAX)
 
-extern int getShape(struct descriptor *dataD, int *dims, int *numDims);
+extern int getShape(mdsdsc_t*dataD, int *dims, int *numDims);
 
-static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct descriptor *startD,
-	    struct descriptor *endD, struct descriptor *deltaD, const res_mode_t mode,
-	    struct descriptor_xd *outSignalXd)
+static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t*startD,
+	    mdsdsc_t*endD, mdsdsc_t*deltaD, const res_mode_t mode,
+	    mdsdsc_xd_t *outSignalXd)
 {
   int status;
 
@@ -180,7 +164,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   }
   int dims[MAX_DIMS];
   int numDims;
-  status = getShape((struct descriptor *)dataD, dims, &numDims);
+  status = getShape((mdsdsc_t*)dataD, dims, &numDims);
   if STATUS_NOT_OK {
     MdsFree1Dx(&dataXd, 0);
     return status;
@@ -193,7 +177,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   fulltimebase = convertTimebaseToInt64(inSignalD, &numTimebase, &isFloat);
   if (!fulltimebase) {
     MdsFree1Dx(&dataXd, 0);
-    MdsCopyDxXd((struct descriptor *)&inSignalD, outSignalXd);
+    MdsCopyDxXd((mdsdsc_t*)&inSignalD, outSignalXd);
     return 3;	//Cannot convert timebase to 64 bit int
   }
 
@@ -219,16 +203,6 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
     if STATUS_NOT_OK return status;
   } else delta = 0;
 
-  int outSamples;
-  if (startIdx == numTimebase) {  //Not possible in any case
-    outSamples = 0;
-  } else if (delta<=0) {
-    // Count number of copied samples
-    for (outSamples = startIdx ; outSamples < numTimebase && fulltimebase[outSamples] <= end; outSamples++) ;
-    outSamples = outSamples - startIdx;
-  } else
-    outSamples = (end - start +1) / delta + 1;
-
   int i, j;
   double prevData, nextData, currData;
   int itemSize = dataD->arsize/numData;
@@ -243,15 +217,24 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   // Make sure enough room is allocated
   char    *outData;
   int64_t *outDim;
-
   int timebaseIdx = 0;
   int timebaseSamples = numTimebase - startIdx;
   int64_t *timebase = &fulltimebase[startIdx];
   char *data = &dataD->pointer[startIdx * itemSize];
-  int64_t refTime = start;
-  if (delta>0) {
-    if (mode == AVERAGE && delta>0) {// use FLOAT or DOUBLE
-      outSamples ++;
+  int outSamples = 0;
+  if (delta>0 && startIdx < numTimebase) {
+    int64_t refTime = start;
+    int64_t delta1 = (delta+1)/2;
+    int64_t delta2 = delta+delta1;
+    switch (mode) {
+      case MINMAX:
+      case AVERAGE:
+	refTime += delta;
+	end     += delta;
+      break;default:break;
+    }
+    int reqSamples = (end - start) / delta + 1;
+    if (mode == AVERAGE) {// use FLOAT or DOUBLE
       if (dataD->length<8) {
 	outDataArray.length = sizeof(float);
 	outDataArray.dtype  = DTYPE_FLOAT;
@@ -261,39 +244,27 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
       }
       outItemSize = itemSize*outDataArray.length/dataD->length;
     } else {
-      if (mode == MINMAX) outSamples *=2;//Make enough room for MINMAX mode
+      if (mode == MINMAX) reqSamples *=2;//Make enough room for MINMAX mode
       outItemSize = itemSize;
       outDataArray.length = dataD->length;
       outDataArray.dtype = dataD->dtype;
     }
-    outData =  malloc(outSamples * outItemSize);
-    outDim  =  malloc(outSamples * sizeof(int64_t));
-    outSamples = 0;
-    int64_t delta1 = (delta  )/2;
-    int64_t delta2 = delta+delta1;
-    switch (mode) {
-      case INTERPOLATION:
-      case MINMAX:
-      case AVERAGE:
-	refTime += delta1;
-	end     += delta;
-      break;default:break;
-    }
+    outData =  malloc(reqSamples * outItemSize);
+    outDim  =  malloc(reqSamples * sizeof(int64_t));
     int prevTimebaseIdx = timebaseIdx;
     while (refTime <= end) {
       while (timebaseIdx < timebaseSamples && timebase[timebaseIdx] < refTime)
 	timebaseIdx++;
       switch (mode) {
-	case CLOSEST_SAMPLE: // Select closest sample
-	  if (timebaseIdx > 0 && timebaseIdx < timebaseSamples) {
+	case CLOSEST: // Select closest sample
+	  if (timebaseIdx > 0) {
 	    delta1 = timebase[timebaseIdx] - refTime;
 	    delta2 = refTime - timebase[timebaseIdx - 1];
-	    if (delta2 < delta1)
-	      timebaseIdx--;
+	    if (delta2 < delta1) timebaseIdx--;
 	  }
 	  memcpy(&outData[outSamples * outItemSize], &data[timebaseIdx * itemSize], itemSize);
 	  break;
-	case PREVIOUS_SAMPLE: //Select closest sample
+	case PREVIOUS: //Select closest sample
 	  if (timebaseIdx > 0 && timebaseIdx < timebaseSamples)
 	    timebaseIdx--;
 	  memcpy(&outData[outSamples * outItemSize], &data[timebaseIdx * itemSize], itemSize);
@@ -329,8 +300,8 @@ for(j = prevTimebaseIdx + 1; j < timebaseIdx && j<numTimebase ; j++){ \
   if(currData > maxData) maxData = currData; \
   if(currData < minData) minData = currData; \
 } \
-((type *)(&outData[outSamples * outItemSize]))[i] = minData; \
-((type *)(&outData[(outSamples+1) * itemSize]))[i] = maxData; \
+((type *)(&outData[(outSamples  ) * outItemSize]))[i] = minData; \
+((type *)(&outData[(outSamples+1) * outItemSize]))[i] = maxData; \
 }
 	  switch (dataD->dtype) {
 	    case DTYPE_BU:	MINMAX_FORLOOP( uint8_t);break;
@@ -375,7 +346,6 @@ const int range = (timebaseIdx-prevTimebaseIdx); \
 	  break;
       }
       switch (mode) {
-	case INTERPOLATION:
 	case MINMAX:
 	case AVERAGE:
 	refTime -= delta1;
@@ -428,7 +398,7 @@ const int range = (timebaseIdx-prevTimebaseIdx); \
     outDimArray.pointer = outDataArray.a0 = (char *)outDim;
   }
 
-  MdsCopyDxXd((struct descriptor *)&outSignalD, outSignalXd);
+  MdsCopyDxXd((mdsdsc_t*)&outSignalD, outSignalXd);
   free(fulltimebase);
   free(timebaseDouble);
   if (delta>0) {
