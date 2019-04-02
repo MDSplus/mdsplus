@@ -151,12 +151,18 @@ static char *getHostInfo(SOCKET sock, char **hostnameptr){
   if (!GETPEERNAME(sock, (struct sockaddr *)&sin, &len)) {
     GET_IPHOST(sin);
     if (hostnameptr) {
-      struct addrinfo *entry,*info = NULL;
-      struct addrinfo hints = { AI_CANONNAME , AF_T, SOCK_STREAM, 0, 0, NULL, NULL, NULL };
-      if (!(err = getaddrinfo(iphost, NULL, &hints, &info))) {
-        for (entry = info ; entry && !entry->ai_canonname ; entry = entry->ai_next);
-        if (entry) *hostnameptr = strdup(entry->ai_canonname);
-        if (info) freeaddrinfo(info);
+      char hbuf[NI_MAXHOST];
+      if (getnameinfo((struct sockaddr *)&sin, len, hbuf, sizeof(hbuf),NULL, 0, NI_NAMEREQD) == 0) {
+        *hostnameptr=strdup(hbuf);
+      } else
+      {
+        struct addrinfo *entry,*info = NULL;
+        struct addrinfo hints = { AI_CANONNAME , AF_T, SOCK_STREAM, 0, 0, NULL, NULL, NULL };
+        if (!(err = getaddrinfo(iphost, NULL, &hints, &info))) {
+          for (entry = info ; entry && !entry->ai_canonname ; entry = entry->ai_next);
+          if (entry) *hostnameptr = strdup(entry->ai_canonname);
+          if (info) freeaddrinfo(info);
+        }
       }
     }
     if (err) {
