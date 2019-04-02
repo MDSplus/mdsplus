@@ -9,7 +9,7 @@
    fun:__resolv_conf_get_current
    fun:__res_vinit
    fun:__resolv_context_get
-   fun:gethostbyaddr_r@@GLIBC_2.2.5
+   fun:gethostbyaddr_r@@GLIBC_*
    fun:gni_host_inet_name.isra.1
    fun:getnameinfo
 }
