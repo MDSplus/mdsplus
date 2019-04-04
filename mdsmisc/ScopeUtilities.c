@@ -616,8 +616,8 @@ static inline int getXArray(const mdsdsc_a_t *const xArrD, const int retSamples,
       for(i = 0; i < retSamples; i++, idx += 8) {
 	*((double *)&retArr[idx]) = *((double *)(&xArrD->pointer[i*xArrD->length]));
 	swap8(&retArr[idx]);
-	break;
       }
+      break;
   }
   return idx;
 }
