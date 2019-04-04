@@ -137,6 +137,7 @@ EXPORT mdsdsc_xd_t *XTreeResamplePrevious(mds_signal_t *inSignalD, mdsdsc_t*star
 static res_mode_t default_mode = AVERAGE;
 static void get_default() {
   char *resampleMode = TranslateLogical("MDSPLUS_DEFAULT_RESAMPLE_MODE");
+  if(!resampleMode) return;
        if(!strcasecmp(resampleMode, "Average"))
     default_mode = AVERAGE;
   else if(!strcasecmp(resampleMode, "MinMax"))
