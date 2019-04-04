@@ -177,13 +177,13 @@ inline static int64_t estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *co
   int nextRow, segmentSamples, numActSegments, segmentIdx;
   EMPTYXD(xd);
   int nid = recIsSegmented(dsc);
-  if(!nid) return -1;
+  if(!nid) goto return_neg1;
   int status = TreeGetNumSegments(nid, &numSegments);
-  if STATUS_NOT_OK return -1;
+  if STATUS_NOT_OK goto return_neg1;
   if(xMin != NULL || xMax != NULL) {
     if(xMin) XTreeConvertToLongTime(xMin, &startTime);
     if(xMax) XTreeConvertToLongTime(xMax,   &endTime);
-    if(numSegments < NUM_SEGMENTS_THRESHOLD) return -1;
+    if(numSegments < NUM_SEGMENTS_THRESHOLD) goto return_neg1;
     startIdx = 0; //If no start time specified, take all initial segments
     if(xMin) {
       while(startIdx < numSegments) {
@@ -237,6 +237,12 @@ inline static int64_t estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *co
   *estimatedSegmentSamples = segmentSamples;
   return segmentSamples * (int64_t)numActSegments;
 return_neg1: ;
+  if (xMin && IS_OK(TdiData(xMin, &xd MDS_END_ARG)))
+    *dMin = to_doublex(xd.pointer->pointer,xd.pointer->dtype,-INFINITY,TRUE);
+  else *dMin = -INFINITY;
+  if (xMax && IS_OK(TdiData(xMax, &xd MDS_END_ARG)))
+    *dMax = to_doublex(xd.pointer->pointer,xd.pointer->dtype, INFINITY,TRUE);
+  else *dMax =  INFINITY;
   MdsFree1Dx(&xd, NULL);
   return -1;
 }
