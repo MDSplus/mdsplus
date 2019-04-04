@@ -39,22 +39,25 @@ public class RFX_RPADCSetup extends DeviceSetup {
         deviceChoice1 = new DeviceChoice();
         deviceChoice2 = new DeviceChoice();
         deviceChoice3 = new DeviceChoice();
-        jPanel5 = new javax.swing.JPanel();
-        deviceField5 = new DeviceField();
-        deviceField6 = new DeviceField();
+        jPanel7 = new javax.swing.JPanel();
+        deviceChoice4 = new DeviceChoice();
+        deviceField9 = new DeviceField();
         jPanel6 = new javax.swing.JPanel();
         deviceField7 = new DeviceField();
         deviceField8 = new DeviceField();
         deviceField10 = new DeviceField();
+        jPanel5 = new javax.swing.JPanel();
+        deviceField5 = new DeviceField();
+        deviceField6 = new DeviceField();
 
-        setDeviceProvider("spilds.rfx.local");
+        setDeviceProvider("spilds.rfx.local:8001");
         setDeviceTitle("RedPitaya ADC");
         setDeviceType("RFX_RPADC");
         setHeight(300);
         setWidth(700);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel1.setLayout(new java.awt.GridLayout(5, 1));
+        jPanel1.setLayout(new java.awt.GridLayout(6, 1));
 
         deviceField1.setIdentifier("");
         deviceField1.setLabelString("Comment:");
@@ -83,7 +86,7 @@ public class RFX_RPADCSetup extends DeviceSetup {
 
         jPanel1.add(jPanel3);
 
-        deviceChoice1.setChoiceItems(new String[] {"STREAMING", "EVENT_STREAMING"});
+        deviceChoice1.setChoiceItems(new String[] {"STREAMING", "EVENT_STREAMING", "EVENT_SINGLE", "TRIGGER_STREAMING", "TRIGGER_SINGLE"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Mode:");
         deviceChoice1.setOffsetNid(7);
@@ -106,19 +109,20 @@ public class RFX_RPADCSetup extends DeviceSetup {
 
         jPanel1.add(jPanel4);
 
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("Trigger: ");
-        deviceField5.setNumCols(30);
-        deviceField5.setOffsetNid(5);
-        jPanel5.add(deviceField5);
+        deviceChoice4.setChoiceItems(new String[] {"INTERNAL", "TRIG_EXTERNAL", "EXTERNAL"});
+        deviceChoice4.setIdentifier("");
+        deviceChoice4.setLabelString("Clock Mode:");
+        deviceChoice4.setOffsetNid(14);
+        deviceChoice4.setUpdateIdentifier("");
+        jPanel7.add(deviceChoice4);
 
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Event Samples: ");
-        deviceField6.setNumCols(4);
-        deviceField6.setOffsetNid(11);
-        jPanel5.add(deviceField6);
+        deviceField9.setIdentifier("");
+        deviceField9.setLabelString("Ext. Clock:");
+        deviceField9.setNumCols(25);
+        deviceField9.setOffsetNid(15);
+        jPanel7.add(deviceField9);
 
-        jPanel1.add(jPanel5);
+        jPanel1.add(jPanel7);
 
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Pre Samples: ");
@@ -137,6 +141,20 @@ public class RFX_RPADCSetup extends DeviceSetup {
 
         jPanel1.add(jPanel6);
 
+        deviceField5.setIdentifier("");
+        deviceField5.setLabelString("Trigger: ");
+        deviceField5.setNumCols(30);
+        deviceField5.setOffsetNid(5);
+        jPanel5.add(deviceField5);
+
+        deviceField6.setIdentifier("");
+        deviceField6.setLabelString("Event Samples: ");
+        deviceField6.setNumCols(4);
+        deviceField6.setOffsetNid(11);
+        jPanel5.add(deviceField6);
+
+        jPanel1.add(jPanel5);
+
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -146,6 +164,7 @@ public class RFX_RPADCSetup extends DeviceSetup {
     private DeviceChoice deviceChoice1;
     private DeviceChoice deviceChoice2;
     private DeviceChoice deviceChoice3;
+    private DeviceChoice deviceChoice4;
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
@@ -156,11 +175,13 @@ public class RFX_RPADCSetup extends DeviceSetup {
     private DeviceField deviceField6;
     private DeviceField deviceField7;
     private DeviceField deviceField8;
+    private DeviceField deviceField9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     // End of variables declaration//GEN-END:variables
 }
