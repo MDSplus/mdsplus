@@ -35,7 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 //Convert a time expression to 64 bit integer
-
+#define L9223372036854775807L 0x7fffffffffffffffL
 EXPORT int XTreeConvertToLongTime(struct descriptor *timeD, int64_t * retTime)
 {
   int status;
@@ -46,16 +46,34 @@ EXPORT int XTreeConvertToLongTime(struct descriptor *timeD, int64_t * retTime)
   if (!xd.pointer || xd.pointer->class != CLASS_S)
     status = MDSplusERROR;//InvalidTimeFormat
   else switch (xd.pointer->dtype) {
-    case DTYPE_Q:
-    case DTYPE_QU: *retTime =          *( int64_t *) xd.pointer->pointer;break;
+    case DTYPE_B:  *retTime =((int64_t)*(  int8_t *)xd.pointer->pointer)*1000000000L;break;
+    case DTYPE_BU: *retTime =((int64_t)*( uint8_t *)xd.pointer->pointer)*1000000000L;break;
+    case DTYPE_W:  *retTime =((int64_t)*( int16_t *)xd.pointer->pointer)*1000000000L;break;
+    case DTYPE_WU: *retTime =((int64_t)*(uint16_t *)xd.pointer->pointer)*1000000000L;break;
+    case DTYPE_L:  *retTime =((int64_t)*( int32_t *)xd.pointer->pointer)*1000000000L;break;
+    case DTYPE_LU: *retTime =((int64_t)*(uint32_t *)xd.pointer->pointer)*1000000000L;break;
+    case DTYPE_Q:  *retTime =          *( int64_t *)xd.pointer->pointer;             break;
+    case DTYPE_QU:
+      if ((*(uint64_t *)xd.pointer->pointer)>L9223372036854775807L)
+	*retTime = L9223372036854775807L;
+      else
+	*retTime = *( int64_t *)xd.pointer->pointer;
+      break;
     default: {
       //Not a 64 bit integer, try to convert it via float or double * 1e9
       status = TdiFloat((struct descriptor *)&xd, &xd MDS_END_ARG);
       if STATUS_OK {
-        if (xd.pointer->dtype == DTYPE_DOUBLE)
-          *retTime = (int64_t)(*(double*)xd.pointer->pointer * 1e9);
-        else
-          *retTime = (int64_t)(*(float *)xd.pointer->pointer * 1e9);
+	double dbl;
+	if (xd.pointer->dtype == DTYPE_DOUBLE)
+	  dbl = *(double*)xd.pointer->pointer;
+	else
+	  dbl = *(float *)xd.pointer->pointer;
+	if      (dbl < -9223372036.854775807)
+	  *retTime = -L9223372036854775807L-1;
+	else if (dbl >  9223372036.854775806)
+	  *retTime =  L9223372036854775807L;
+	else
+	  *retTime = (int64_t)(dbl*1e9) ;
       }
     }
   }
