@@ -616,8 +616,8 @@ static inline int getXArray(const mdsdsc_a_t *const xArrD, const int retSamples,
       for(i = 0; i < retSamples; i++, idx += 8) {
 	*((double *)&retArr[idx]) = *((double *)(&xArrD->pointer[i*xArrD->length]));
 	swap8(&retArr[idx]);
-	break;
       }
+      break;
   }
   return idx;
 }
@@ -628,7 +628,7 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX, mdsdsc_t *con
   EMPTYXD(xXd);
   int estimatedSegmentSamples = 0;
   double xmin = -INFINITY, xmax = INFINITY, delta;
-  mdsdsc_t *xMinP,*xMaxP,*deltaP, deltaD = {0, 0, CLASS_S, 0};
+  mdsdsc_t *xMinP,*xMaxP,*deltaP, deltaD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char* )&delta};
   int64_t estimatedSamples = estimateNumSamples(inY, inXMin, inXMax, &estimatedSegmentSamples, &xmin, &xmax);
   const double estimatedDuration = xmax - xmin;
   xMinP = (xmin > -INFINITY) ? inXMin : NULL;
