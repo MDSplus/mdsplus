@@ -48,15 +48,13 @@ extern int TdiCompile();
 extern int TdiData();
 extern int TdiFloat();
 extern int TdiEvaluate();
-extern int XTreeConvertToLongTime(mdsdsc_t*timeD, int64_t * converted);
+extern int XTreeConvertToDouble(mdsdsc_t*timeD, double *converted);
 
 static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t*startD,
 	    mdsdsc_t*endD, mdsdsc_t*deltaD, const res_mode_t mode,
 	    mdsdsc_xd_t *outSignalXd);
 
-//The default resample handles int64 timebases
-//return 0 if the conversion is  not possible
-inline static int64_t *convertTimebaseToInt64(mds_signal_t *inSignalD, int *outSamples, int *isFloat){
+inline static double *convertTimebaseToDouble(mds_signal_t *inSignalD, int *outSamples, dtype_t *isQ){
   if (inSignalD->ndesc<3) {
     ARRAY_COEFF(char *, MAX_DIMS) *dataD = (void*)inSignalD->data;
     if (dataD->dimct == 1)
@@ -65,58 +63,51 @@ inline static int64_t *convertTimebaseToInt64(mds_signal_t *inSignalD, int *outS
       *outSamples = dataD->m[dataD->dimct-1];
     return NULL;
   }
-  int64_t *outPtr;
+  double *outPtr = NULL;
   EMPTYXD(currXd);
-  double *doublePtr;
-  float *floatPtr;
-  int numSamples, i, status;
-  struct descriptor_a *currDim = (struct descriptor_a *)inSignalD->dimensions[0];
-  //If timebase already using 64 bit int
-  if (currDim->class == CLASS_A && (currDim->dtype == DTYPE_Q || currDim->dtype == DTYPE_QU)) {
+  int numSamples, i;
+  mdsdsc_a_t *currDim = (mdsdsc_a_t *)inSignalD->dimensions[0];
+  if (currDim->class != CLASS_A) {
+    if IS_NOT_OK(TdiData(currDim, &currXd MDS_END_ARG))
+      goto return_out;
+    currDim = (mdsdsc_a_t *)currXd.pointer;
+  }
+  if (currDim->class != CLASS_A || currDim->arsize == 0)
+    goto return_out;
+  if (currDim->dtype == DTYPE_DOUBLE) {
+    numSamples = currDim->arsize / currDim->length;
+    outPtr = malloc(currDim->arsize);
+    memcpy(outPtr,currDim->pointer,currDim->arsize);
+    *outSamples = numSamples;
+    goto return_out;
+  }
+  if (currDim->dtype == DTYPE_Q || currDim->dtype == DTYPE_QU) {
+    *isQ = currDim->dtype;
     outPtr = malloc(currDim->arsize);
     numSamples = currDim->arsize / currDim->length;
     for (i = 0; i < numSamples; i++)
-      outPtr[i] = ((int64_t *) currDim->pointer)[i];
+      outPtr[i] = ((double)((int64_t *)currDim->pointer)[i]) / 1e9;
     *outSamples = numSamples;
-    return outPtr;
+    goto return_out;
   }
-
-  //otherwise evaluate it
-  status = TdiData(currDim, &currXd MDS_END_ARG);
-  if (status & 1) {
-    currDim = (struct descriptor_a *)currXd.pointer;
-    if (currDim->class == CLASS_A && (currDim->dtype == DTYPE_Q || currDim->dtype == DTYPE_QU)) {
-      outPtr = malloc(currDim->arsize);
-      numSamples = currDim->arsize / currDim->length;
-      for (i = 0; i < numSamples; i++)
-	outPtr[i] = ((int64_t *) currDim->pointer)[i];
-      *outSamples = numSamples;
-      MdsFree1Dx(&currXd, 0);
-      return outPtr;
-    }
-    *isFloat = 1;
-    status = TdiFloat(&currXd, &currXd MDS_END_ARG);
+  if (currDim->dtype != DTYPE_FLOAT) {
+    if IS_NOT_OK(TdiFloat(currDim, &currXd MDS_END_ARG))
+      goto return_out;
+    currDim = (mdsdsc_a_t *)currXd.pointer;
   }
-  currDim = (struct descriptor_a *)currXd.pointer;
-  if (STATUS_NOT_OK || currDim->class != CLASS_A
-      || (currDim->dtype != DTYPE_FLOAT && currDim->dtype != DTYPE_DOUBLE)) {
-    //Cannot perform conversion
-    MdsFree1Dx(&currXd, 0);
-    return NULL;
-  }
+  if (currDim->class != CLASS_A || (currDim->dtype != DTYPE_FLOAT && currDim->dtype != DTYPE_DOUBLE))
+    goto return_out; //Cannot perform conversion
   numSamples = currDim->arsize / currDim->length;
-  outPtr = malloc(8 * numSamples);
+  outPtr = malloc(sizeof(double) * numSamples);
   if (currDim->dtype == DTYPE_FLOAT) {
-    floatPtr = (float *)currDim->pointer;
+    const float *floatPtr = (float *)currDim->pointer;
     for (i = 0; i < numSamples; i++)
-      outPtr[i] = (int64_t)(floatPtr[i]*1e9);
-  } else {//currDim->dtype == DTYPE_DOUBLE)
-    doublePtr = (double *)currDim->pointer;
-    for (i = 0; i < numSamples; i++)
-      outPtr[i] = (int64_t)(doublePtr[i]*1e9);
-  }
+      outPtr[i] = floatPtr[i];
+  } else //currDim->dtype == DTYPE_DOUBLE)
+    memcpy(outPtr,currDim->pointer,currDim->arsize);
   *outSamples = numSamples;
-  MdsFree1Dx(&currXd, 0);
+return_out: ;
+  MdsFree1Dx(&currXd, NULL);
   return outPtr;
 }
 
@@ -175,13 +166,13 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t*startD, md
 
   // Get shapes(dimensions) for data
   EMPTYXD(dataXd);
-  struct descriptor_a *dataD;
+  mdsdsc_a_t *dataD;
   if (inSignalD->data->class == CLASS_A) {
-    dataD = (struct descriptor_a *)inSignalD->data;
+    dataD = (mdsdsc_a_t *)inSignalD->data;
   } else {
     status = TdiData(inSignalD->data, &dataXd MDS_END_ARG);
     if STATUS_NOT_OK return status;
-    dataD = (struct descriptor_a *)dataXd.pointer;
+    dataD = (mdsdsc_a_t *)dataXd.pointer;
   }
   int dims[MAX_DIMS];
   int numDims;
@@ -192,10 +183,10 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t*startD, md
   }
 
   // get timebase
-  int isFloat = FALSE;
-  int64_t start, end, delta, *fulltimebase;
+  dtype_t isQ = 0;
+  double start, end, delta, *fulltimebase;
   int numTimebase, numData = (numDims <= 1) ? (int)(dataD->arsize/dataD->length) : dims[numDims-1];
-  fulltimebase = convertTimebaseToInt64(inSignalD, &numTimebase, &isFloat);
+  fulltimebase = convertTimebaseToDouble(inSignalD, &numTimebase, &isQ);
   if (!fulltimebase) {
     MdsFree1Dx(&dataXd, 0);
     MdsCopyDxXd((mdsdsc_t*)&inSignalD, outSignalXd);
@@ -207,20 +198,20 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t*startD, md
 
   int startIdx = 0;
   if (startD) {
-    status = XTreeConvertToLongTime(startD, &start);
+    status = XTreeConvertToDouble(startD, &start);
     if STATUS_NOT_OK return status;
     if (start < fulltimebase[0])
       start = fulltimebase[0];
     for (; startIdx < numTimebase && fulltimebase[startIdx] < start ; startIdx++);
   } else start = fulltimebase[0];
   if (endD) {
-    status = XTreeConvertToLongTime(endD, &end);
+    status = XTreeConvertToDouble(endD, &end);
     if STATUS_NOT_OK return status;
     if (end > fulltimebase[numTimebase - 1])
       end = fulltimebase[numTimebase - 1];
   } else end = fulltimebase[numTimebase - 1];
   if (deltaD) {
-    status = XTreeConvertToLongTime(deltaD, &delta);
+    status = XTreeConvertToDouble(deltaD, &delta);
     if STATUS_NOT_OK return status;
   } else delta = 0;
 
@@ -237,16 +228,16 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t*startD, md
   }
   // Make sure enough room is allocated
   char    *outData;
-  int64_t *outDim;
+  double *outDim;
   int timebaseIdx = 0;
   int timebaseSamples = numTimebase - startIdx;
-  int64_t *timebase = &fulltimebase[startIdx];
+  double *timebase = &fulltimebase[startIdx];
   char *data = &dataD->pointer[startIdx * itemSize];
   int outSamples = 0;
   if (delta>0 && startIdx < numTimebase) {
-    int64_t refTime = start;
-    int64_t delta1 = (delta+1)/2;
-    int64_t delta2 = delta+delta1;
+    double refTime = start;
+    double delta1 = delta/2;
+    double delta2 = delta+delta1;
     switch (mode) {
       case MINMAX:
       case AVERAGE:
@@ -402,26 +393,26 @@ const int range = (timebaseIdx-prevTimebaseIdx); \
     outDataArray.m[i] = dims[i];
   outDataArray.m[numDims - 1] = outSamples;
   //If originally float, convert  dimension to float
-  double *timebaseDouble;
-  if (isFloat) {
-    timebaseDouble = (double *)malloc(outSamples * sizeof(double));
+  int64_t *timebaseQ;
+  if (isQ) {
+    timebaseQ = (int64_t *)malloc(outSamples * sizeof(int64_t));
     for (i = 0; i < outSamples; i++)
-      timebaseDouble[i] = (double)outDim[i] / 1e9;
+      timebaseQ[i] = (int64_t)((outDim[i] * 1e9) +0.5);
+    outDimArray.length = sizeof(int64_t);
+    outDimArray.arsize = sizeof(int64_t) * outSamples;
+    outDimArray.dtype = isQ;
+    outDimArray.pointer = outDataArray.a0 = (char *)timebaseQ;
+  } else {
+    timebaseQ = NULL;
     outDimArray.length = sizeof(double);
     outDimArray.arsize = sizeof(double) * outSamples;
     outDimArray.dtype = DTYPE_DOUBLE;
-    outDimArray.pointer = outDataArray.a0 = (char *)timebaseDouble;
-  } else {
-    timebaseDouble = NULL;
-    outDimArray.length = sizeof(int64_t);
-    outDimArray.arsize = sizeof(int64_t) * outSamples;
-    outDimArray.dtype = DTYPE_Q;
     outDimArray.pointer = outDataArray.a0 = (char *)outDim;
   }
 
   MdsCopyDxXd((mdsdsc_t*)&outSignalD, outSignalXd);
   free(fulltimebase);
-  free(timebaseDouble);
+  free(timebaseQ);
   if (delta>0) {
     free(outDim);
     free(outData);
