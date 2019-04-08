@@ -453,7 +453,7 @@ class MARTE2_COMPONENT(Device):
       treeInputs = False
       nonGamInputNodes = []
       for inputDict in inputDicts:
-        if inputDict['value'].getName() == 'TIMEBASE' and inputDict['value'].getParent().getNid() == self.getNid(): #This is a Time field referring to this timebase
+        if inputDict['value'].getName() == 'TIMEBASE' and inputDict['value'].getParent().getParent() == self: #This is a Time field referring to this timebase
           gamText += '      Time = {\n'
           gamText += '      DataSource = '+ timerDDB+'\n'
         else:  #Normal reference
@@ -1054,8 +1054,6 @@ class MARTE2_COMPONENT(Device):
         gams.append(gamText)
        
         timerDDB = dataSourceName+'_Timer_DDB'
-        print('TIMER DDB:  ' + timerDDB)
-        print('DATA SOURDE NAME:  ' + dataSourceName)
 
       elif isinstance(timebase, TreeNode) or isinstance(timebase, TreePath):  #Link to other component up in the chain
         prevTimebase = timebase
@@ -1066,19 +1064,16 @@ class MARTE2_COMPONENT(Device):
           else:
             prevTimebase = TreeNode(timebase, self.getTree())
             timebase = prevTimebase.getData()
-        origName = self.convertPath(prevTimebase.getParent().getFullPath().data())
+        origName = prevTimebase.getParent().getFullPath().data()
         #Check whether the synchronization source is a Sunch Input. Only in this case, the origin DDB is its output DDB
         originMode = prevTimebase.getParent().getNode('mode').data()
         if originMode == MARTE2_COMPONENT.MODE_SYNCH_INPUT:
           timerDDB = origName+'_Output_DDB'
         else:
           timerDDB = origName+'_Timer_DDB'
-          
       else:
         print('ERROR: Invalid timebase definition')
         return 0
-     
-     
      
  #Head and parameters
       gamList.append(dataSourceName+'_IOGAM')
@@ -1091,11 +1086,7 @@ class MARTE2_COMPONENT(Device):
       nonGamInputNodes = []
       signalNames = []
       for inputDict in inputDicts:
-	print('INGRESSO: ' + inputDict['value'].getName())
-	print(inputDict['value'].getName())
-	print(inputDict['value'].getParent())
-        if inputDict['value'].getName() == 'TIMEBASE' and inputDict['value'].getParent().getNid() == self.getNid(): #This is a Time field referring to this timebase
-          print('TIMEBASE!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+        if inputDict['value'].getName() == 'TIMEBASE' and inputDict['value'].getParent().getParent() == self: #This is a Time field referring to this timebase
 	  signalNames.append('Time')
           gamText += '      Time = {\n'
           gamText += '      DataSource = '+ timerDDB+'\n'
@@ -1207,12 +1198,6 @@ class MARTE2_COMPONENT(Device):
  #Head and parameters
       dataSourceText = '  +'+dataSourceName+' = {\n'
       dataSourceText += '    Class = '+dataSourceClass+'\n'
-      for paramDict in paramDicts:
-	if paramDict['is_text']:
-          dataSourceText += '    '+paramDict['name']+' = "'+str(paramDict['value'])+'"\n'
-        else:
-          dataSourceText += '    '+paramDict['name']+' = '+str(paramDict['value'])+'\n'
-
 
 #input Signals
       dataSourceText += '    Signals = {\n'
