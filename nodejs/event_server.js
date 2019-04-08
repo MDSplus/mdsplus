@@ -11,30 +11,58 @@ var app = express();
 var fs = require("fs");
 var sse;
 
-var pendingName; //Name of pending name, valid from the extablishment of a new /stream connection and the activation of the corresponding SSE
-
 app.get('/streams', function(req, res) {
-      console.log('REQUEST FOR NAME: '+req.query.name); 
-      pendingName = req.query.name;
-      var data = fs.readFileSync('sample_display.html', 'utf8');
+      //console.log('REQUEST FOR NAME: '+req.query.name); 
+//      var data = fs.readFileSync('scope/sample_display.html', 'utf8');
+      var data = fs.readFileSync('scope/index.html', 'utf8');
       //console.log(data);
       res.writeHead(404, {'Content-Type': 'text/html'});
       res.end(data.toString());
 });
- 
-var port = parseInt(process.argv[2])
-console.log(process.argv[2])
 
-var server = app.listen(port, function () {
-//var server = app.listen(8082, function () {
+app.get('/', function(req, res) {
+      console.log('REQUEST FOR NAME: /'); 
+      var data = fs.readFileSync('scope/index-demo.html', 'utf8');
+      res.writeHead(404, {'Content-Type': 'text/html'});
+      res.end(data.toString());
+});
+
+app.get('/w', function(req, res) {
+      console.log('REQUEST FOR NAME: /'); 
+      var data = fs.readFileSync('scope/index.html', 'utf8');
+      res.writeHead(404, {'Content-Type': 'text/html'});
+      res.end(data.toString());
+});
+
+
+
+function parseGetRequest(inputString) {
+
+  
+}
+ 
+function getArrayOfSignals(inputString) {
+  var pathAndParams = inputString.split("?");
+  var signalsString = pathAndParams[1].split("=")[1];
+  var signals = signalsString.split(",");
+  return signals;
+}
+
+var server = app.listen(8082, function () {
    var host = server.address().address
    var port = server.address().port
    sse = new SSE(server);
    sse.on('connection', function(client) {
-      console.log('RECEIVED CONNECTION for '+pendingName);
-      if(pendingName != undefined)
-	  handleNewConnection(pendingName, client); });
-      pendingName = undefined;
+      // console.log(client.req);
+      // url is something like: /sse?par1=val1&par2=var2  
+      // we use: /sse?signals=s1,s2,s3
+      console.log('RECEIVED CONNECTION - URL: ' + client.req.url);
+
+      var signals = getArrayOfSignals(client.req.url);
+      console.log(signals);
+
+      if(signals != undefined)
+	  handleNewConnectionList(signals, client); });
    console.log("Example app listening at http://%s:%s", host, port)
 })
 
@@ -42,6 +70,7 @@ var server = app.listen(port, function () {
 
 function addSamples(name, shot, times, samples, isAbsoluteTime)
 {
+    // console.log("addSample: ", name, times, samples);
     if(history[name] == undefined || history[name].shot != shot)
     {
         history[name] = {shot: shot, isAbsoluteTime: isAbsoluteTime, times: times, samples: samples};
@@ -67,6 +96,7 @@ function handleEventReception(evMessage)
       var samples = [];
       for(var i = 0; i < numSamples; i++)
       {
+	  //console.log("XXXX", evItems[4+i], parseFloat(evItems[4+i]));
 	  times.push(parseFloat(evItems[4+i]));
 	  samples.push(parseFloat(evItems[4+numSamples+i]));
       }
@@ -75,7 +105,7 @@ function handleEventReception(evMessage)
       {
 	  for(var i = 0; i < connections[name].listeners.length; i++)
 	  {
-	      console.log('Spedisco '+ connections[name].timestamp.toString() + ' '+ evMessage);
+	      console.log('Sending '+ connections[name].timestamp.toString() + ' '+ evMessage);
 	      connections[name].listeners[i].send(connections[name].timestamp.toString() + ' '+ evMessage);
 	  }
 	  connections[name].timestamp++;
@@ -101,8 +131,14 @@ function handleNewConnection(name, listener)
         for(var i = 0; i < history[name].samples.length; i++)
 	    msg = msg + ' '+ history[name].samples[i].toString();
         console.log("New Connection: " + msg);
+//console.log(history[name].times);
         listener.send(connections[name].timestamp.toString() + ' '+ msg);
     }
+}
+
+
+function handleNewConnectionList(signals, listener) {
+   signals.map(x => handleNewConnection(x, listener));
 }
 
 
@@ -132,9 +168,9 @@ function handleEvent(msg, rinfo)
   var eventName =  msg.toString('ascii', 4,4+len);
   var eventData = msg.toString('ascii', 4+len+4);
   
-  console.log('Event from ' + rinfo.address+':'+rinfo.port+'   '+len + '   '+ eventName + '  '+dataLen);
-  if(dataLen > 0)
-      console.log(eventData);
+//  console.log('Event from ' + rinfo.address+':'+rinfo.port+'   '+len + '   '+ eventName + '  '+dataLen);
+//  if(dataLen > 0)
+//      console.log(eventData);
   
   if(eventName == 'STREAMING')
   {
