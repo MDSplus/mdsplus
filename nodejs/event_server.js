@@ -11,7 +11,6 @@ var app = express();
 var fs = require("fs");
 var sse;
 
-<<<<<<< HEAD
 //check arguments
 if(process.argv.length != 4)
 {
@@ -24,8 +23,6 @@ if(process.argv.length != 4)
 var eventPort = parseInt(process.argv[2]);
 var ssePort = parseInt(process.argv[3]); 
 
-=======
->>>>>>> Feature:Support for data streaming
 app.get('/streams', function(req, res) {
       //console.log('REQUEST FOR NAME: '+req.query.name); 
 //      var data = fs.readFileSync('scope/sample_display.html', 'utf8');
@@ -155,11 +152,6 @@ function handleNewConnection(name, listener)
 function handleNewConnectionList(signals, listener) {
    signals.map(x => handleNewConnection(x, listener));
 }
-<<<<<<< HEAD
-=======
-
-
->>>>>>> Feature:Support for data streaming
 ////////////////EVENT STUFF////////////////////
 const dgram = require('dgram');
 const eventServer = dgram.createSocket({
