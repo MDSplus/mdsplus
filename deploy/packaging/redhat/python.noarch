@@ -27,8 +27,8 @@
 ./usr/local/mdsplus/mdsobjects/python/tests/devicesUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/exceptionUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/images
-./usr/local/mdsplus/mdsobjects/python/tests/images/test.jpg
 ./usr/local/mdsplus/mdsobjects/python/tests/images/test.gif
+./usr/local/mdsplus/mdsobjects/python/tests/images/test.jpg
 ./usr/local/mdsplus/mdsobjects/python/tests/images/test.mpg
 ./usr/local/mdsplus/mdsobjects/python/tests/mdsip.hosts
 ./usr/local/mdsplus/mdsobjects/python/tests/segmentsUnitTest.py
@@ -68,11 +68,11 @@
 ./usr/local/mdsplus/mdsobjects/python/widgets/mdsplusxdboxbutton.py
 ./usr/local/mdsplus/mdsobjects/python/wsgi
 ./usr/local/mdsplus/mdsobjects/python/wsgi/__init__.py
+./usr/local/mdsplus/mdsobjects/python/wsgi/colors1.tbl
 ./usr/local/mdsplus/mdsobjects/python/wsgi/conf
 ./usr/local/mdsplus/mdsobjects/python/wsgi/conf/25-mdsplus.conf
 ./usr/local/mdsplus/mdsobjects/python/wsgi/conf/mdsplus.conf
 ./usr/local/mdsplus/mdsobjects/python/wsgi/conf/mdsplus.wsgi
-./usr/local/mdsplus/mdsobjects/python/wsgi/colors1.tbl
 ./usr/local/mdsplus/mdsobjects/python/wsgi/do1darray.py
 ./usr/local/mdsplus/mdsobjects/python/wsgi/do1dsignal.py
 ./usr/local/mdsplus/mdsobjects/python/wsgi/doDir.py

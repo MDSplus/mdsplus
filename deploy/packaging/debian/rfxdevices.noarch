@@ -17,6 +17,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_IN.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_NI6259.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_OUT.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_STREAM.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SUPERVISOR.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SYNCH_IN.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_BREAKDOWN.py
