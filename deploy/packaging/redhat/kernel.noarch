@@ -11,10 +11,12 @@
 ./usr/local/mdsplus/idl
 ./usr/local/mdsplus/mdsobjects
 ./usr/local/mdsplus/nodejs
+./usr/local/mdsplus/nodejs/event_server.js
+./usr/local/mdsplus/nodejs/index.html
 ./usr/local/mdsplus/nodejs/mdsipRest-multi.js
 ./usr/local/mdsplus/pixmaps/mdstcl.png
-./usr/local/mdsplus/pixmaps/tdi.png
 ./usr/local/mdsplus/pixmaps/small_mdsplus_logo.jpg
+./usr/local/mdsplus/pixmaps/tdi.png
 ./usr/local/mdsplus/rpm
 ./usr/local/mdsplus/rpm/mdsipd.xinetd
 ./usr/local/mdsplus/rpm/mdsipsd.xinetd

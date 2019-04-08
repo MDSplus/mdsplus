@@ -488,10 +488,10 @@ EXPORT void EventStream::run()
     }
     else
     {
-	unsigned long *times = new unsigned long[numSamples];
+	uint64_t *times = new uint64_t[numSamples];
 	for(int i = 0; i < numSamples; i++)
 	{
-	    sscanf(&str[j], "%lu", &times[i]);
+	    sscanf(&str[j], "%lu", (unsigned long *)&times[i]);
 	    while(j < len && str[j] != ' ')  
 		j++;
 	    if(i < numSamples - 1 && j == len)
