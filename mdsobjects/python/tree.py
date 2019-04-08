@@ -3140,17 +3140,20 @@ If you did intend to write to a subnode of the device you should check the prope
     def getImportString(cls):
         try:
             import_string = "from %s import %s" % (cls.__module__.split('.',1)[0],cls.__name__)
-            # test if this would work
-            exec(compile(import_string,'<string>','exec'),{},{})
-            return import_string
+            # test if this would import same class
+            env = {}
+            exec(compile(import_string,'<string>','exec'),{},env)
+            if env.get(cls.__name__,None) == cls:
+                return import_string
         except ImportError:
-            try:
-                Device.PyDevice(cls.__module__,cls.__name__)
-                if cls.__module__.lower()!=cls.__name__.lower():
-                    return "Device.PyDevice('%s','%s')"%(cls.__module__,cls.__name__)
-                else: return None
-            except _exc.DevPYDEVICE_NOT_FOUND:
-                return "from %s import %s" % (cls.__module__,cls.__name__)
+            pass
+        try:
+            Device.PyDevice(cls.__module__,cls.__name__)
+            if cls.__module__.lower()!=cls.__name__.lower():
+                return "Device.PyDevice('%s','%s')"%(cls.__module__,cls.__name__)
+            else: return None
+        except _exc.DevPYDEVICE_NOT_FOUND:
+            return "from %s import %s" % (cls.__module__,cls.__name__)
 
     @classmethod
     def __read_source(cls,model,sourcefile=None):
