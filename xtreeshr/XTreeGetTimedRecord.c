@@ -41,6 +41,7 @@ static int timedAccessFlag = 0;
 #define EXPORT __declspec(dllexport)
 #endif
 extern int XTreeConvertToLongTime(mdsdsc_t *timeD, int64_t * converted);
+extern int XTreeConvertToDouble(mdsdsc_t *timeD, double * converted);
 #define RESAMPLE_FUN(name) int name(mds_signal_t *inSignalD,mdsdsc_t *startD, mdsdsc_t *endD, mdsdsc_t *deltaD, mdsdsc_xd_t  *outSignalXd)
 extern RESAMPLE_FUN(XTreeAverageResample);
 extern RESAMPLE_FUN(XTreeMinMaxResample);
@@ -123,7 +124,7 @@ EXPORT int XTreeGetTimedRecord(int inNid, mdsdsc_t *startD,
   char resampleMode[MAX_FUN_NAMELEN];
   EMPTYXD(startTimesXd);
   EMPTYXD(endTimesXd);
-  int64_t *startTimes, *endTimes, start, end;
+  double *startTimes, *endTimes, start, end;
 
   mdsdsc_t resampleFunNameD = { 0, DTYPE_T, CLASS_S, resampleFunName };
   mdsdsc_t squishFunNameD = { 0, DTYPE_T, CLASS_S, squishFunName };
@@ -183,16 +184,6 @@ EXPORT int XTreeGetTimedRecord(int inNid, mdsdsc_t *startD,
   } else
     resampleMode[0] = 0;
 
-//Evaluate start, end to int64
-  if(startD) {
-    status = XTreeConvertToLongTime(startD, &start);
-    if STATUS_NOT_OK return status;
-  }
-  if(endD){
-    status = XTreeConvertToLongTime(endD, &end);
-    if STATUS_NOT_OK return status;
-  }
-
 //Get segment limits. If not evaluated to 64 bit int, make the required conversion.
 // New management based on TreeGetSegmentLimits()
   status = TreeGetSegmentTimesXd(nid, &numSegments, &startTimesXd, &endTimesXd);
@@ -202,17 +193,31 @@ EXPORT int XTreeGetTimedRecord(int inNid, mdsdsc_t *startD,
     return 0; //Internal error
   startTimesApd = (struct descriptor_a *)startTimesXd.pointer;
   endTimesApd = (struct descriptor_a *)endTimesXd.pointer;
+
+  status = TdiData(*(mdsdsc_t **)startTimesApd->pointer,&xd MDS_END_ARG);
+  if STATUS_NOT_OK return status;
+  MdsFree1Dx(&xd, 0);
+//Evaluate start, end to int64
+  if(startD) {
+    status = XTreeConvertToDouble(startD, &start);
+    if STATUS_NOT_OK return status;
+  }
+  if(endD){
+    status = XTreeConvertToDouble(endD, &end);
+    if STATUS_NOT_OK return status;
+  }
+
   if((int)(startTimesApd->arsize/startTimesApd->length) != numSegments)
     return 0; //Internal error
   if((int)(endTimesApd->arsize/endTimesApd->length) != numSegments)
     return 0; //Internal error
-  startTimes = (int64_t *)malloc(numSegments * sizeof(int64_t));
-  endTimes = (int64_t *)malloc(numSegments * sizeof(int64_t));
+  startTimes = (double *)malloc(numSegments * sizeof(double));
+  endTimes = (double *)malloc(numSegments * sizeof(double));
   for(currSegIdx = 0; currSegIdx < numSegments; currSegIdx++)
   {
-    status = XTreeConvertToLongTime(((mdsdsc_t **)(startTimesApd->pointer))[currSegIdx], &startTimes[currSegIdx]);
+    status = XTreeConvertToDouble(((mdsdsc_t **)(startTimesApd->pointer))[currSegIdx], &startTimes[currSegIdx]);
     if STATUS_NOT_OK return status;
-    status = XTreeConvertToLongTime(((mdsdsc_t **)(endTimesApd->pointer))[currSegIdx], &endTimes[currSegIdx]);
+    status = XTreeConvertToDouble(((mdsdsc_t **)(endTimesApd->pointer))[currSegIdx], &endTimes[currSegIdx]);
     if STATUS_NOT_OK return status;
   }
   MdsFree1Dx(&startTimesXd, 0);
