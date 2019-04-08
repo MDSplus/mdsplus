@@ -97,8 +97,11 @@ class MARTE2_SUPERVISOR(Device):
       info['gams'] = retGams
       info['data_sources'] = retData
       info['name'] = self.getNode('name').data()
-
-      print('FINITO GET INFO')      
+      
+      print('#######################')
+      print(info)
+      print('@@@@@@@@@@@@@@@@@@@@@@@')
+      print(threadMap)
       return info, threadMap
     
                     
