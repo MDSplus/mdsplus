@@ -11,6 +11,18 @@ var app = express();
 var fs = require("fs");
 var sse;
 
+//check arguments
+if(process.argv.length != 4)
+{
+    console.log('Usage: mode event_server.js  <Event Port>  <SSE Port>');
+    process.exit();
+}
+
+
+
+var eventPort = parseInt(process.argv[2]);
+var ssePort = parseInt(process.argv[3]); 
+
 app.get('/streams', function(req, res) {
       //console.log('REQUEST FOR NAME: '+req.query.name); 
 //      var data = fs.readFileSync('scope/sample_display.html', 'utf8');
@@ -48,7 +60,7 @@ function getArrayOfSignals(inputString) {
   return signals;
 }
 
-var server = app.listen(8082, function () {
+var server = app.listen(ssePort, function () {
    var host = server.address().address
    var port = server.address().port
    sse = new SSE(server);
@@ -179,7 +191,7 @@ function handleEvent(msg, rinfo)
 }
 
 
-eventServer.bind(4000, function(){
+eventServer.bind(eventPort, function(){
     eventServer.setBroadcast(true);
     eventServer.setMulticastTTL(128);
 	eventServer.addMembership("224.0.0.175");
