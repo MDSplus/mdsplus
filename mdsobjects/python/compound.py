@@ -74,7 +74,7 @@ class Compound(_dat.DataX):
             return self.getDescAt(self._fields[name])
         elif name.startswith('get') and name[3:].lower() in self._fields:
             def getter():
-                return self.__passTree(self._descs[self._fields[name[3:].lower()]])[0]
+                return self._descs[self._fields[name[3:].lower()]]
             return getter
         elif name.startswith('set') and name[3:].lower() in self._fields:
             def setter(value):
