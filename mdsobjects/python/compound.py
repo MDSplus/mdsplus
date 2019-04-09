@@ -238,7 +238,10 @@ class Conglom(_dat.TreeRefX,Compound):
             module = imp.new_module(model)
             qualifiers = self.qualifiers.data()
             if isinstance(qualifiers,_ver.basestring):
-                try:    exec(compile(qualifiers,model,'exec'),{'Device':_tre.Device},module.__dict__)
+                try:
+                    if qualifiers.startswith("Device.PyDevice("):
+                        module.__dict__[model] = eval(compile(qualifiers,model,'eval'),{'Device':_tre.Device},module.__dict__)
+                    else:                        exec(compile(qualifiers,model,'exec'),{},module.__dict__)
                 except: pass
         else:
             if unique in sys.modules:
