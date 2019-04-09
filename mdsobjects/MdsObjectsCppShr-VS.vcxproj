@@ -150,6 +150,7 @@
     <ClCompile Include="cpp\mdsipobjects.cpp" />
     <ClCompile Include="cpp\mdstree.c" />
     <ClCompile Include="cpp\mdstreeobjects.cpp" />
+    <ClCompile Include="cpp\datastreams.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -27,6 +27,9 @@
     <ClCompile Include="cpp\mdstreeobjects.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cpp\datastreams.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="cpp\mdsdata.c">
       <Filter>Source Files</Filter>
     </ClCompile>
