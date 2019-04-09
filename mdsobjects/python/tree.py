@@ -412,7 +412,7 @@ class Tree(object):
     def copy(self,mode='NORMAL'):
         """returns a local private instance of the tree opend in specified mode
         @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
-        @type mode: str         
+        @type mode: str
         @rtype: Tree
         """
         return Tree(self.tree,self.shot,mode)
@@ -574,7 +574,7 @@ class Tree(object):
         t = Tree('mytree',shot)
         node = t.NODENAME
 
-        If the tree has a top leve child or member with
+        If the tree has a top level child or member with
         the name "NODENAME" t.NODENAME will return a
         TreeNode instance."""
         if name == "tree": return self.name
@@ -2698,7 +2698,7 @@ class TreePath(TreeNode): # HINT: TreePath begin
     def copy(self,mode='NORMAL'):
         """returns the node with a local private instance of the tree opend in specified mode
         @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
-        @type mode: str         
+        @type mode: str
         @rtype: TreeNode
         """
         return self.__class__(self.tree_path,self.tree.copy(mode))
@@ -2748,7 +2748,7 @@ class TreeNodeArray(_dat.TreeRef,_arr.Int32Array): # HINT: TreeNodeArray begin
     def copy(self,mode='NORMAL'):
         """returns the node array with a local private instance of the tree opend in specified mode
         @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
-        @type mode: str         
+        @type mode: str
         @rtype: TreeNodeArray
         """
         return self.__class__(self._value,self.tree.copy(mode))
@@ -3138,8 +3138,9 @@ If you did intend to write to a subnode of the device you should check the prope
 
     @classmethod
     def getImportString(cls):
+        basemodule = cls.__module__.split('.',2)[0]
         try:
-            import_string = "from %s import %s" % (cls.__module__.split('.',1)[0],cls.__name__)
+            import_string = "from %s import %s" % (basemodule,cls.__name__)
             # test if this would import same class
             env = {}
             exec(compile(import_string,'<string>','exec'),{},env)
@@ -3148,9 +3149,9 @@ If you did intend to write to a subnode of the device you should check the prope
         except ImportError:
             pass
         try:
-            Device.PyDevice(cls.__module__,cls.__name__)
-            if cls.__module__.lower()!=cls.__name__.lower():
-                return "Device.PyDevice('%s','%s')"%(cls.__module__,cls.__name__)
+            Device.PyDevice(basemodule,cls.__name__)
+            if basemodule.lower()!=cls.__name__.lower():
+                return "Device.PyDevice('%s','%s')"%(basemodule,cls.__name__)
             else: return None
         except _exc.DevPYDEVICE_NOT_FOUND:
             return "from %s import %s" % (cls.__module__,cls.__name__)
@@ -3304,19 +3305,19 @@ If you did intend to write to a subnode of the device you should check the prope
         import sys,os
         path = _mds.getenv("MDS_PYDEVICE_PATH")
         if not path == Device.__cached_mds_pydevice_path:
-            Device.__cached_py_device_not_found = []
             Device.__cached_mds_pydevice_path = path
             Device.__cached_py_devices = None
         return sys,os,path
 
     __cached_mds_pydevice_path = ""
-    __cached_py_device_not_found = []
     __cached_py_devices = None
     __cached_lock = _threading.Lock()
     @classmethod
-    def importPyDeviceModule(cls,name):
+    def importPyDeviceClass(cls,name):
         """Find a device support module with a case insensitive lookup of
-        'model'.py in the MDS_PYDEVICE_PATH environment variable search list."""
+        'model'.py in the MDS_PYDEVICE_PATH environment variable search list.
+        @rtype: Device subclass
+        """
         name = name.upper()
         py_devices = cls.findPyDevices()
         if name in py_devices:
@@ -3325,7 +3326,9 @@ If you did intend to write to a subnode of the device you should check the prope
 
     @classmethod
     def findPyDevices(cls):
-        """Find all device support modules in the MDS_PYDEVICE_PATH environment variable search list."""
+        """Find all device support models in the MDS_PYDEVICE_PATH environment variable search list.
+        @rtype: dict of device_name:device_class
+        """
         with cls.__cached_lock:
           sys,os,path = Device.__cached()
           if Device.__cached_py_devices is None:
@@ -3358,8 +3361,8 @@ If you did intend to write to a subnode of the device you should check the prope
             Device.__cached_py_devices = ans
           return Device.__cached_py_devices
 
-    @staticmethod
-    def PyDevice(module,model=None):
+    @classmethod
+    def PyDevice(cls,module,model=None):
         """Find a python device class by:
           1. finding the model in the list defined by
            the tdi function, MdsDevices.
@@ -3367,11 +3370,12 @@ If you did intend to write to a subnode of the device you should check the prope
         The StringArray returned by MdsDevices() contains String instances
         containing blank filled values containing an \0 character embedded.
         These Strings have to be manipulated to produce simple str() values.
+        @rtype: Device subclass
         """
         cls_list = []
         if model is None:
-            model=module
-            MODEL=model.upper()
+            model = module
+            MODEL = model.upper()
             models = _dat.Data.execute('MdsDevices()').data()
             for idx in range(len(models)):
                 modname = models[idx][0].rstrip()
@@ -3384,22 +3388,20 @@ If you did intend to write to a subnode of the device you should check the prope
                         return __import__(package).__dict__[modname]
                     except ImportError: pass
                     except KeyError: pass
-            return Device.importPyDeviceModule(model)
-        else:
-            MODEL = model.upper()
-            module = __import__(module)
+            return cls.importPyDeviceClass(model)
+        MODEL = model.upper()
+        module = __import__(module)
         if module is None:
             raise _exc.DevPYDEVICE_NOT_FOUND
-        if model in module.__dict__:
-            return module.__dict__[model]
-        cls_list = [k for k,v in module.__dict__.items()
+        cls_list = [v for k,v in module.__dict__.items()
                     if isinstance(v,(Device.__class__,))
                    and issubclass(v,Device)
                    and k.upper() == MODEL]
         if len(cls_list)==1:
-            return module.__dict__[cls_list[0]]
+            return cls_list[0]
         if len(cls_list)>1:
-            print ("Error adding device %s: Name ambiguous (%s)"%(model,','.join(cls_list)))
+            print ("Error pydevice %s: Name ambiguous (%s)"%(model,','.join(cls_list)))
+            return cls_list[0]
         raise _exc.DevPYDEVICE_NOT_FOUND
 
 ############# dtype to classes ##################################
