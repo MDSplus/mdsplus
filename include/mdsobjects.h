@@ -4031,7 +4031,7 @@ public:
         wait(secs); return getRaw(size);
     }
 
-    virtual void run() {}
+    virtual void run();
 
     static void setEvent(const char *evName) { setEventRaw(evName, 0, NULL); }
     static void setEventRaw(const char *evName, int bufLen, char *buf);
@@ -4230,12 +4230,12 @@ public:
     void show();
 };
 
-
+#ifndef WINDOWS_H
 class EXPORT EventStream:public Event {
   std::vector<DataStreamListener *> listeners;
   std::vector<std::string> names;
 public:
-  void run();
+  virtual void run();
   EventStream():Event("STREAMING"){}
   static void send(int shot, const char *name, float time, float sample);
   static void send(int shot, const char *name, uint64_t time, float sample);
@@ -4244,7 +4244,7 @@ public:
   static void send(int shot, const char *name, Data *timeData, Data *valueData);
   void registerListener(DataStreamListener *listener, const char *name);
 };  
-  
+#endif
 
 
 //////////////Support functions////////
