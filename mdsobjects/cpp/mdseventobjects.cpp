@@ -69,6 +69,7 @@ void Event::disconnectFromEvents()
         throw MdsException("failed to close event listener");
 }
 
+void Event::run(){}
 
 Event::Event(const char *name) :
     eventName(name),
