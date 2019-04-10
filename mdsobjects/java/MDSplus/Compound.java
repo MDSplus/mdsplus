@@ -33,16 +33,16 @@ public class Compound extends Data {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param idx
 	 */
 	public Data getDescAt(int idx)
-        {   
+        {
             return descs[idx];
 	}
 
 	/**
-	 * 
+	 *
 	 * @param idx
 	 */
 	public void setDescAt(int idx, Data desc)
@@ -57,14 +57,14 @@ public class Compound extends Data {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param dscs
 	 */
 	public void setDescs(Data[] dscs)
         {
             this.descs = dscs;
 	}
-        
+
         protected void resizeDescs(int newDim)
         {
             if(descs == null)

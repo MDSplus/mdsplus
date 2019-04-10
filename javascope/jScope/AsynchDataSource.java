@@ -8,7 +8,7 @@ package jScope;
  *
  * @author manduchi
  */
-public interface AsynchDataSource 
+public interface AsynchDataSource
 {
     void startGeneration(String expression);
     void addDataListener(WaveDataListener listener);

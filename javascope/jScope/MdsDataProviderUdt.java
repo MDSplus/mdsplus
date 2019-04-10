@@ -12,9 +12,9 @@ package jScope;
  */
 public class MdsDataProviderUdt extends MdsDataProvider
 {
-     protected MdsConnection getConnection() 
+     protected MdsConnection getConnection()
     {
         return new MdsConnectionUdt();
     }
-   
+
 }

@@ -332,13 +332,13 @@ class jDispatcherIp
             Server server = new ActionServer("", server_ip.trim(),
                                              server_class.trim(),
                                              server_subtree, useJavaServer, watchdogPort);
-           
+
             servers.addElement(server);
             dispatcher.addServer(server);
             i++;
         }
         i = 1;
-        
+
         while (true) {
             String monitor_port = properties.getProperty("jDispatcher.monitor_" +
                 i +
@@ -357,7 +357,7 @@ class jDispatcherIp
                 break;
             }
         }
-/*        
+/*
         String actionsMonitorPort = properties.getProperty("jDispatcher.actions_monitor_port");
         if (actionsMonitorPort != null)
         {
@@ -370,7 +370,7 @@ class jDispatcherIp
             catch (Exception exc) {}
             System.out.println("Start done actions monitor on port : " + actionsMonitorPort);
         }
-*/        
+*/
         String default_server = properties.getProperty(
             "jDispatcher.default_server_idx");
         try {
@@ -386,7 +386,7 @@ class jDispatcherIp
          */
 
         i = 1;
-        while (true) 
+        while (true)
         {
             String phaseName = properties.getProperty("jDispatcher.phase_" + i + ".name");
             if (phaseName == null)

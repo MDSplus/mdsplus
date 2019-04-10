@@ -10,7 +10,7 @@
  *
  * @author  taliercio
  */
-public class EM_EQU_TEST_NEWSetup extends DeviceSetup { 
+public class EM_EQU_TEST_NEWSetup extends DeviceSetup {
 
     /** Creates new form EM_EQU_TEST_NEWSetup */
     public EM_EQU_TEST_NEWSetup() {

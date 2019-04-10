@@ -88,8 +88,8 @@ class CUDPBlast: public CCC
 public:
    CUDPBlast()
    {
-      m_dPktSndPeriod = 1000000; 
-      m_dCWndSize = 83333.0; 
+      m_dPktSndPeriod = 1000000;
+      m_dCWndSize = 83333.0;
    }
 
 public:

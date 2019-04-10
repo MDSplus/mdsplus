@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@ class MDSplusDtypeSelWidget(object):
         if no_show:
             menu.set_no_show_all(True)
         return ans
-    
+
     def dtype_changed(self,cb):
         self.reset()
         self.show_dtype()

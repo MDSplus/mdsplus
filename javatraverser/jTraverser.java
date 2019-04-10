@@ -36,7 +36,7 @@ public class jTraverser extends JFrame implements ActionListener
      */
     public static void main(String args[]) {
 
-    /* the original font is either ugly or defaults to an ugly font if not found 
+    /* the original font is either ugly or defaults to an ugly font if not found
     if(System.getProperty("os.name").equals("Linux"))
     {
 	    UIManager.put("Label.font", new FontUIResource(new Font("FreeSerif", Font.BOLD, 11)));

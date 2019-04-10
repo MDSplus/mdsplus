@@ -277,7 +277,7 @@ public class WaveformEvent extends AWTEvent
                                 //format.setTimeZone(new SimpleTimeZone(0, "GMT"));
                                 Date date = new Date();
                                 date.setTime(dateValue + (long)time_value);
-                                 * 
+                                 *
                                  */
                                 xt_string = ", T = " + getFormattedDate( /*dateValue*/ + (long)time_value , "d-MMM-yyyy HH:mm:ss.SSS" );// format.format(date).toString();
                                 showXasDate = false;

@@ -70,7 +70,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  CMS REPLACEMENT HISTORY, Element BESSEL.C */
 /*------------------------------------------------------------------------------
 
-	Name:	BESSEL   
+	Name:	BESSEL
 
 	Type:   C function
 
@@ -627,16 +627,16 @@ double BessPol(float x, float y, float *parameters)
     m = parameters[0] + 0.5;
     l = parameters[1] + 0.5;
     is_cosine = parameters[2];
-    if(m > MAX_BESSEL_IDX) 
+    if(m > MAX_BESSEL_IDX)
     {
 	printf("M is too high\n");
-	return 0;   
+	return 0;
     }
 
-    if(l > NUM_ROOTS) 
+    if(l > NUM_ROOTS)
     {
 	printf("L is too high\n");
-	return 0;   
+	return 0;
     }
 
     if(!ConvertCoord(x, y, &r, &th))
@@ -672,5 +672,5 @@ double BesselTotalPower(double *a, int l_max)
     }
     return result;
 }
-    
+
 */

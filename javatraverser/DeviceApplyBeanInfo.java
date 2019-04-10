@@ -3,7 +3,7 @@ import java.awt.*;
 
 public class DeviceApplyBeanInfo extends SimpleBeanInfo
 {
-    public PropertyDescriptor [] getPropertyDescriptors()  
+    public PropertyDescriptor [] getPropertyDescriptors()
     {
         return new PropertyDescriptor[] {};
     }

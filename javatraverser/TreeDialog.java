@@ -5,7 +5,7 @@ class TreeDialog extends JFrame
 {
     boolean in_use;
     NodeEditor node_editor;
-	
+
     public TreeDialog(NodeEditor editor)
     {
 	in_use = true;
@@ -30,5 +30,5 @@ class TreeDialog extends JFrame
     public final void setUsed(boolean used)
     {
 	in_use = used;
-    }  
+    }
 }

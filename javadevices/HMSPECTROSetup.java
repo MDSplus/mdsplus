@@ -9,12 +9,12 @@
  * @author  taliercio
  */
 public class HMSPECTROSetup extends DeviceSetup {
-    
+
     /** Creates new form HMSPECTROSetup */
     public HMSPECTROSetup() {
         initComponents();
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -145,8 +145,8 @@ public class HMSPECTROSetup extends DeviceSetup {
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
     }// </editor-fold>//GEN-END:initComponents
-    
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
@@ -167,5 +167,5 @@ public class HMSPECTROSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     // End of variables declaration//GEN-END:variables
-    
+
 }

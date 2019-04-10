@@ -9,11 +9,11 @@ package MDSplus;
  *
  * @author manduchi
  */
-public class TreeNodeArray 
+public class TreeNodeArray
 {
     TreeNode [] treeNodes;
     Tree tree;
-    
+
     public TreeNodeArray(int [] nids, Tree tree) throws MdsException
     {
         treeNodes = new TreeNode[nids.length];
@@ -28,7 +28,7 @@ public class TreeNodeArray
     public TreeNode getElementAt(int idx)
     {
 	return treeNodes[idx];
-    }   
+    }
     public java.lang.String [] getPath() throws MdsException
     {
         java.lang.String path[] = new java.lang.String[treeNodes.length];
@@ -139,5 +139,5 @@ public class TreeNodeArray
             usages[i] = treeNodes[i].getUsage();
         return usages;
     }
-    
+
 }

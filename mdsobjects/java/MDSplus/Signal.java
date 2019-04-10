@@ -6,7 +6,7 @@ package MDSplus;
  * @version 1.0
  * @updated 30-mar-2009 13.44.42
  */
-public class Signal extends Compound 
+public class Signal extends Compound
 {
 	public Signal(Data data, Data raw, Data[] dimensions,
                 Data help, Data units, Data error, Data validation)
@@ -35,7 +35,7 @@ public class Signal extends Compound
             dtype = DTYPE_SIGNAL;
             descs = new Data[2];
         }
-       
+
         public static Signal getData(Data help, Data units, Data error, Data validation)
         {
             return new Signal(help, units, error, validation);
@@ -43,7 +43,7 @@ public class Signal extends Compound
 
 
 	/**
-	 * 
+	 *
 	 * @param raw
 	 */
 	public void setData(Data data)
@@ -57,7 +57,7 @@ public class Signal extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param raw
 	 */
 	public void setRaw(Data raw)
@@ -71,7 +71,7 @@ public class Signal extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public Data[] getDimensions()
@@ -83,7 +83,7 @@ public class Signal extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param idx
 	 */
 	public Data getDimensionAt(int idx)
@@ -92,7 +92,7 @@ public class Signal extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setDimensions(Data[] dims)
@@ -103,7 +103,7 @@ public class Signal extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param arg
 	 * @param idx
 	 */

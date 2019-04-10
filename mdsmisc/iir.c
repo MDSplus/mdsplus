@@ -44,7 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  DEC/CMS REPLACEMENT HISTORY, Element IIR.C */
 /*------------------------------------------------------------------------------
 
-	Name:	IIR   
+	Name:	IIR
 
 	Type:   C function
 

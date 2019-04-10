@@ -15,7 +15,7 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
     Data data;
     boolean editable = true;
     TreeDialog dialog;
-    
+
     public TaskEditor(Data data, TreeDialog dialog)
     {
 	this.dialog = dialog;
@@ -25,10 +25,10 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
 	else
 	{
 	    switch(data.dtype) {
-		case Data.DTYPE_METHOD: dtype_idx = 1; break; 
-		case Data.DTYPE_ROUTINE: dtype_idx = 2; break; 
-		case Data.DTYPE_PROCEDURE: dtype_idx = 3; break; 
-		case Data.DTYPE_PROGRAM: dtype_idx = 4; break; 
+		case Data.DTYPE_METHOD: dtype_idx = 1; break;
+		case Data.DTYPE_ROUTINE: dtype_idx = 2; break;
+		case Data.DTYPE_PROCEDURE: dtype_idx = 3; break;
+		case Data.DTYPE_PROGRAM: dtype_idx = 4; break;
 		default: dtype_idx  = 5;
 	    }
 	}
@@ -45,46 +45,46 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
 	add(jp, BorderLayout.PAGE_START);
 	addEditor();
     }
-    
+
     private void addEditor()
     {
 	switch(curr_dtype_idx) {
 	    case 0: return;
-	    case 1: 
-		if(dtype_idx == curr_dtype_idx) 
+	    case 1:
+		if(dtype_idx == curr_dtype_idx)
 		    method_edit = new MethodEditor((MethodData)data);
 		else
 		    method_edit = new MethodEditor(null);
 		add(method_edit);
 		break;
-	    case 2: 
-		if(dtype_idx == curr_dtype_idx) 
+	    case 2:
+		if(dtype_idx == curr_dtype_idx)
 		    routine_edit = new RoutineEditor((RoutineData)data);
 		else
 		    routine_edit = new RoutineEditor(null);
 		add(routine_edit);
 		break;
-	    case 3: 
-		if(dtype_idx == curr_dtype_idx) 
+	    case 3:
+		if(dtype_idx == curr_dtype_idx)
 		    procedure_edit = new ProcedureEditor((ProcedureData)data);
 		else
 		    procedure_edit = new ProcedureEditor(null);
 		add(procedure_edit);
 		break;
-	    case 4: 
-		if(dtype_idx == curr_dtype_idx) 
+	    case 4:
+		if(dtype_idx == curr_dtype_idx)
 		    program_edit = new ProgramEditor((ProgramData)data);
 		else
 		    program_edit = new ProgramEditor(null);
 		add(program_edit);
 		break;
-	    case 5: 
+	    case 5:
         expr_edit = new LabeledExprEditor(data);
 		add(expr_edit);
 		break;
 	}
-    } 
-    
+    }
+
     public void actionPerformed(ActionEvent e)
     {
 	if(!editable)
@@ -107,7 +107,7 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
 	dialog.repack();
 	repaint();
     }
-    
+
     public void reset()
     {
 	switch(curr_dtype_idx)  {
@@ -122,20 +122,20 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
 	validate();
 	repaint();
     }
-    
+
     public Data getData()
     {
 	switch(curr_dtype_idx)  {
 	    case 0: return null;
-	    case 1: return method_edit.getData(); 
-	    case 2: return routine_edit.getData(); 
-	    case 3: return procedure_edit.getData(); 
-	    case 4: return program_edit.getData(); 
-	    case 5: return expr_edit.getData(); 
+	    case 1: return method_edit.getData();
+	    case 2: return routine_edit.getData();
+	    case 3: return procedure_edit.getData();
+	    case 4: return program_edit.getData();
+	    case 5: return expr_edit.getData();
 	}
 	return null;
     }
-    
+
     public void setData(Data data)
     {
     	this.data = data;
@@ -144,16 +144,16 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
 	else
 	{
 	    switch(data.dtype) {
-		case Data.DTYPE_METHOD: dtype_idx = 1; break; 
-		case Data.DTYPE_ROUTINE: dtype_idx = 2; break; 
-		case Data.DTYPE_PROCEDURE: dtype_idx = 3; break; 
-		case Data.DTYPE_PROGRAM: dtype_idx = 4; break; 
+		case Data.DTYPE_METHOD: dtype_idx = 1; break;
+		case Data.DTYPE_ROUTINE: dtype_idx = 2; break;
+		case Data.DTYPE_PROCEDURE: dtype_idx = 3; break;
+		case Data.DTYPE_PROGRAM: dtype_idx = 4; break;
 		default: dtype_idx  = 5;
 	    }
 	}
 	reset();
     }
-    
+
     public void setEditable(boolean editable)
     {
 	this.editable = editable;
@@ -165,7 +165,6 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
     }
 
 
-} 
-	  
-	  
-		    
+}
+
+

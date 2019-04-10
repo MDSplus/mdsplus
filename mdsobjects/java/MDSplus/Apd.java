@@ -33,8 +33,8 @@ public class Apd extends Data {
         {
             return new Apd(descs, help, units, error, validation);
         }
-        
-        
+
+
 	public Data[] getDescs()
         {
             Data []retDescs = new Data[nDescs];
@@ -44,7 +44,7 @@ public class Apd extends Data {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param descs
 	 */
 	public void setDescs(Data[] inDescs)
@@ -55,7 +55,7 @@ public class Apd extends Data {
             nDescs = descs.length;
         }
 	/**
-	 * 
+	 *
 	 * @param idx
 	 */
 	public Data getDescAt(int idx)
@@ -79,7 +79,7 @@ public class Apd extends Data {
             }
         }
 	/**
-	 * 
+	 *
 	 * @param idx
 	 * @param dsc
 	 */

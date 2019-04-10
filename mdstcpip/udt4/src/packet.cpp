@@ -120,9 +120,9 @@ written by
 //              Add. Info:    Error code
 //              Control Info: None
 //      0x7FFF: Explained by bits 16 - 31
-//              
+//
 //   bit 16 - 31:
-//      This space is used for future expansion or user defined control packets. 
+//      This space is used for future expansion or user defined control packets.
 //
 //    0                   1                   2                   3
 //    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -195,7 +195,7 @@ void CPacket::pack(int pkttype, void* lparam, void* rparam, int size)
       if (NULL != lparam)
          m_nHeader[1] = *(int32_t *)lparam;
 
-      // data ACK seq. no. 
+      // data ACK seq. no.
       // optional: RTT (microsends), RTT variance (microseconds) advertised flow window size (packets), and estimated link capacity (packets per second)
       m_PacketVector[1].iov_base = (char *)rparam;
       m_PacketVector[1].iov_len = size;
@@ -225,7 +225,7 @@ void CPacket::pack(int pkttype, void* lparam, void* rparam, int size)
       // but "writev" does not allow this
       m_PacketVector[1].iov_base = (char *)&__pad; //NULL;
       m_PacketVector[1].iov_len = 4; //0;
-  
+
       break;
 
    case 1: //0001 - Keep-alive
@@ -252,7 +252,7 @@ void CPacket::pack(int pkttype, void* lparam, void* rparam, int size)
       break;
 
    case 7: //0111 - Message Drop Request
-      // msg id 
+      // msg id
       m_nHeader[1] = *(int32_t *)lparam;
 
       //first seq no, last seq no

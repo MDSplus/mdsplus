@@ -352,7 +352,7 @@ public class DeviceLabel extends DeviceComponent
        return Tree.dataFromExpr("\"" + dataString + "\"");
      else
        return Tree.dataFromExpr(dataString);
- 
+
   }
 
   protected boolean getState() {

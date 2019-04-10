@@ -30,7 +30,7 @@ extern "C" {
 #define RFX_RPADC_LAST_TIME  			_IO(RFX_RPADC_IOCTL_BASE, 12)
 #define RFX_RPADC_SET_BUFSIZE  			_IO(RFX_RPADC_IOCTL_BASE, 13)
 #define RFX_RPADC_GET_BUFSIZE  			_IO(RFX_RPADC_IOCTL_BASE, 14)
-    
+
 enum AxiStreamFifo_Register {
     ISR   = 0x00,   ///< Interrupt Status Register (ISR)
     IER   = 0x04,   ///< Interrupt Enable Register (IER)

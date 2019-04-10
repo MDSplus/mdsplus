@@ -146,7 +146,7 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
       pptr->child = 0;
   }
   else {
-    for (nptr = child_of(dblist, pptr); 
+    for (nptr = child_of(dblist, pptr);
          nptr && (brother_of(dblist, nptr) != oldnode_ptr);
          nptr = brother_of(dblist, nptr)) ;
     if (nptr) {
@@ -162,7 +162,7 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
 	pptr->member = 0;
     }
     else {
-      for (nptr = member_of(pptr); 
+      for (nptr = member_of(pptr);
            nptr && (brother_of(dblist, nptr) != oldnode_ptr);
 	   nptr = brother_of(dblist, nptr)) ;
       if (nptr) {

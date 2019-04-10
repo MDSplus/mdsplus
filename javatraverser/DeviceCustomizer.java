@@ -58,7 +58,7 @@ public class DeviceCustomizer extends Panel
 		for(int i = 0; i < lastFields.length; i++)
 		    lastFields[i] = st.nextToken();
                 if(lastFields.length == 0) //If name retrieval failed
-                    JOptionPane.showMessageDialog(null, "Unable to retrieve device field names: check deviceType and deviceProvider main form properties");  
+                    JOptionPane.showMessageDialog(null, "Unable to retrieve device field names: check deviceType and deviceProvider main form properties");
 		return lastFields;
     }
 }

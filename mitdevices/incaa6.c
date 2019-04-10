@@ -119,7 +119,7 @@ EXPORT int incaa6___trigger(struct descriptor *niddsc_ptr __attribute__ ((unused
 }
 
 //static int ReadChannel(InStoreStruct * setup, int *chan_ptr, int *samples_ptr, short *data_ptr);
-// flag values to put in comment field to specify alternate gains 
+// flag values to put in comment field to specify alternate gains
 #define FIVE_V_KEY "* 5 *"
 #define TEN_V_KEY "* 10 *"
 
@@ -183,7 +183,7 @@ EXPORT int incaa6___store(struct descriptor *niddsc_ptr __attribute__ ((unused))
   if (status&1) {
     if( strncmp(comment_d.pointer, TEN_V_KEY, strlen(TEN_V_KEY)) == 0) {
       coef_d.pointer = (void *)&coefficients[1];
-    } 
+    }
     else if( strncmp(comment_d.pointer, FIVE_V_KEY, strlen(FIVE_V_KEY)) == 0) {
       coef_d.pointer = (void *)&coefficients[2];
     }

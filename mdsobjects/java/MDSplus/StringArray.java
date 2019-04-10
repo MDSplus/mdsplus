@@ -2,14 +2,14 @@ package MDSplus;
 
 /**
  * Array description for  DTYPE_T .
- * 
+ *
  * Will handle arrays of string like TDI, i.e. padding to the longest string, for
  * C++, in order to retain compatibility with CLASS_A, DTYPE_Tdescriptors.
  * @author manduchi
  * @version 1.0
  * @updated 30-mar-2009 13.44.42
  */
-public class StringArray extends Array 
+public class StringArray extends Array
 {
     java.lang.String [] datum;
     public StringArray(java.lang.String[] inDatum)
@@ -55,8 +55,8 @@ public class StringArray extends Array
                 return false;
         return true;
     }
-    
-    
+
+
     public static Data getData(java.lang.String []datum, int []dims, Data help, Data units, Data error, Data validation)
     {
         try {
@@ -70,7 +70,7 @@ public class StringArray extends Array
     {
         return new String(datum[idx]);
     }
-    
+
     public int getSize(){return datum.length;}
     protected Array getPortionAt(int startIdx, int []newDims, int newSize) throws MdsException
     {
@@ -111,13 +111,13 @@ public class StringArray extends Array
     {
         throw new MdsException("Cannot convert string array to double array");
     }
-    public java.lang.String[] getStringArray() 
+    public java.lang.String[] getStringArray()
     {
         java.lang.String retStrings[] = new java.lang.String[datum.length];
         System.arraycopy(datum, 0, retStrings, 0, datum.length);
         return retStrings;
     }
-    public int getSizeInBytes() 
+    public int getSizeInBytes()
     {
         //find longest string
         int maxLen = 0;

@@ -86,25 +86,25 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
                 int currMode = 0;
                 switch(event.eventId)
                 {
-                    case MonitorEvent.CONNECT_EVENT:    
-                        currMode = MdsMonitorEvent.MonitorServerConnected; 
+                    case MonitorEvent.CONNECT_EVENT:
+                        currMode = MdsMonitorEvent.MonitorServerConnected;
                         mds_event = new MdsMonitorEvent(this, null, 0, 0, 0, null, 1, currMode, null, event.getMessage(), 1);
                     break;
-                    case MonitorEvent.DISCONNECT_EVENT: 
-                        currMode = MdsMonitorEvent.MonitorServerDisconnected; 
+                    case MonitorEvent.DISCONNECT_EVENT:
+                        currMode = MdsMonitorEvent.MonitorServerDisconnected;
                         mds_event = new MdsMonitorEvent(this, null, 0, 0, 0, null, 1, currMode, null, event.getMessage(), 1);
                     break;
-                    case MonitorEvent.START_PHASE_EVENT: 
-                        currMode = MdsMonitorEvent.MonitorStartPhase; 
-                        mds_event = new MdsMonitorEvent(this, event.getTree(), event.getShot(), MdsHelper.toPhaseId(event.getPhase()), 0, null, 1, currMode, null, null, 1);                        
+                    case MonitorEvent.START_PHASE_EVENT:
+                        currMode = MdsMonitorEvent.MonitorStartPhase;
+                        mds_event = new MdsMonitorEvent(this, event.getTree(), event.getShot(), MdsHelper.toPhaseId(event.getPhase()), 0, null, 1, currMode, null, null, 1);
                         break;
-                    case MonitorEvent.END_PHASE_EVENT:    
-                        currMode = MdsMonitorEvent.MonitorEndPhase; 
-                        mds_event = new MdsMonitorEvent(this, event.getTree(), event.getShot(), MdsHelper.toPhaseId(event.getPhase()), 0, null, 1, currMode, null, null, 1);                        
-                        break;                 
+                    case MonitorEvent.END_PHASE_EVENT:
+                        currMode = MdsMonitorEvent.MonitorEndPhase;
+                        mds_event = new MdsMonitorEvent(this, event.getTree(), event.getShot(), MdsHelper.toPhaseId(event.getPhase()), 0, null, 1, currMode, null, null, 1);
+                        break;
                     default:
                         mds_event = new MdsMonitorEvent(this, event.getTree(), event.getShot(), 0, 0, null, 1, mode, null, null, 1);
-                }                   
+                }
             }
             else
             {
@@ -126,7 +126,7 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
             System.out.println(exc);
         }
     }
-    
+
     public synchronized void beginSequence(MonitorEvent event)
     {
         communicate(event, jDispatcher.MONITOR_BEGIN_SEQUENCE);
@@ -153,30 +153,30 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
     {
         communicate(event, jDispatcher.MONITOR_DISPATCHED);
     }
-    
+
 //    public synchronized void doing(MonitorEvent event)
     public  void doing(MonitorEvent event)
     {
         communicate(event, jDispatcher.MONITOR_DOING);
     }
-    
+
 //    public synchronized void done(MonitorEvent event)
     public  void done(MonitorEvent event)
     {
         communicate(event, jDispatcher.MONITOR_DONE);
     }
-    
+
     public synchronized void endSequence(MonitorEvent event)
     {
         communicate(event, jDispatcher.MONITOR_END_SEQUENCE);
     }
-    
+
 //    public synchronized void disconnect(MonitorEvent event)
     public  void disconnect(MonitorEvent event)
     {
         communicate( event, MonitorEvent.DISCONNECT_EVENT );
     }
-    
+
     public  void connect(MonitorEvent event)
     {
         communicate( event, MonitorEvent.CONNECT_EVENT );
@@ -186,7 +186,7 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
     {
         communicate( event, MonitorEvent.END_PHASE_EVENT );
     }
-    
+
     public  void startPhase(MonitorEvent event)
     {
         communicate( event, MonitorEvent.START_PHASE_EVENT );

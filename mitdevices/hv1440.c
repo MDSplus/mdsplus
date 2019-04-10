@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   HV1440   
+		Name:   HV1440
 
 		Type:   C function
 
@@ -32,11 +32,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Date:   12-MAY-1992
 
-    		Purpose: Support for Lecroy HV1440 power supply 
+    		Purpose: Support for Lecroy HV1440 power supply
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 		DO/METHOD module INIT
 		DO/METHOD module ON
 		DO/METHOD module STORE

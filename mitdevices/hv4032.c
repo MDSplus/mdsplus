@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   HV4032   
+		Name:   HV4032
 
 		Type:   C function
 
@@ -32,11 +32,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Date:   12-MAY-1992
 
-    		Purpose: Support for Lecroy HV4032 power supply 
+    		Purpose: Support for Lecroy HV4032 power supply
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 		DO/METHOD module INIT
 		DO/METHOD module ON
 		DO/METHOD module STORE
@@ -68,7 +68,7 @@ Assumptions:
 	              32 for chan33 (all lo-volt pods), 33 for chan43,
 	              34 for chan47 (all hi-volt pods), 35 for chan70,
 	              36 for chan70c, 37 for chan99 (ramp rate).
-	           C_S is also for switch value (on/off items, such as 
+	           C_S is also for switch value (on/off items, such as
 	              HV on/off status, etc.)
 	           V_M is mainframe number (1-16 or 0 for all), or voltage
 	              value (in volts for 3.3 kV pods, in 2volts for 7kV)
@@ -86,9 +86,9 @@ Assumptions:
  X-M-7   Preset all 3.3 kV channels (mainframe select) if HV off
              no response, waiting for V-1 data.
  C-M-8   Read demand value of addressed channel, responds V-8 data.
- X-M-9   Status request, responds one T=9 word (C-M-9), no L2, for each 
+ X-M-9   Status request, responds one T=9 word (C-M-9), no L2, for each
              failed channel in module, followed by T=5 (S-M-5) with L2.
-             S for T=5:  bit1=HV on/off, bit2=calib/regulate, 
+             S for T=5:  bit1=HV on/off, bit2=calib/regulate,
              bit3=idle down/normal.
  X-M-10  Read demand value of all 32 channels, responds 32 V-8 voltages.
  S-M-11  Enable/Disable FINISH response, no response.

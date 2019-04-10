@@ -19,7 +19,7 @@ public class PythonEditor extends JPanel implements Editor {
     boolean editable = true;
 
     static final int OPC_FUN = 162;
-    
+
     public PythonEditor(Data []dataArgs)
     {
   	JScrollPane scroll_pane;
@@ -34,7 +34,7 @@ public class PythonEditor extends JPanel implements Editor {
             program = "";
             retVar = "";
         }
-            
+
 	text_area = new JTextArea(rows,columns);
 	text_area.setText(program);
         text_field = new JTextField(10);
@@ -52,7 +52,7 @@ public class PythonEditor extends JPanel implements Editor {
         JPanel jp2 = new JPanel();
         jp2.setLayout(new BorderLayout());
         jp2.setBorder(BorderFactory.createTitledBorder("Program"));
-        scroll_pane = new JScrollPane(text_area); 
+        scroll_pane = new JScrollPane(text_area);
 	scroll_pane.setPreferredSize(d);
         jp2.add(scroll_pane);
         jp.add(jp2, "Center");
@@ -93,7 +93,7 @@ public class PythonEditor extends JPanel implements Editor {
     public Data getData()
     {
         String programTxt = text_area.getText();
-        if(programTxt == null || programTxt.equals("")) 
+        if(programTxt == null || programTxt.equals(""))
             return null;
         StringTokenizer st = new StringTokenizer(programTxt, "\n");
         String [] lines = new String[st.countTokens()];
@@ -103,7 +103,7 @@ public class PythonEditor extends JPanel implements Editor {
         {
             lines[idx] = st.nextToken();
             if(maxLen < lines[idx].length())
-                maxLen = lines[idx].length(); 
+                maxLen = lines[idx].length();
             idx++;
         }
         for(int i = 0; i < lines.length; i++)
@@ -132,14 +132,14 @@ public class PythonEditor extends JPanel implements Editor {
         }
         return new FunctionData(OPC_FUN, retArgs);
     }
-    
+
     public void setEditable(boolean editable)
     {
 	this.editable = editable;
 	if(text_area != null) text_area.setEditable(editable);
 	if(text_field != null) text_field.setEditable(editable);
-    }	
-    
+    }
+
 
 }
 

@@ -1321,11 +1321,11 @@ int Tdi1ValidationOf(opcode_t opcode __attribute__ ((unused)), int narg __attrib
 
 /*--------------------------------------------------------------
         Return data portion of signal or parameter.
-                value_field = VALUE_OF(param)   
+                value_field = VALUE_OF(param)
                 data_field = VALUE_OF(signal)
                 value_at_idx0_field = VALUE_OF(window or dimension)
                 data_field = VALUE_OF(with_units)
-                data = VALUE_OF(other)  
+                data = VALUE_OF(other)
 */
 int Tdi1ValueOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {

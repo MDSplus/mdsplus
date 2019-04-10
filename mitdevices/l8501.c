@@ -83,8 +83,8 @@ EXPORT int l8501___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
       1 -  multi frequency trigerable frequency shift.
       2 -  Interleaved clock (single frequency
       3 -  Burst mode (f2 and f2_count)
- 
-      NOTE:  No break at end of case 0.  The only difference 
+
+      NOTE:  No break at end of case 0.  The only difference
       between 0 and 1 is that 0 needs the counts.
    ****************************************************/
   switch (setup->mode_convert) {
@@ -141,7 +141,7 @@ EXPORT int l8501___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
   pio(2, 16, &range);
 
   /***************************************
-    Write the frequency control word to 
+    Write the frequency control word to
     the module.
   ***************************************/
 
@@ -212,7 +212,7 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
 
   /**************************************
     Mode 1 is Counted frequency shifts.
-    clock runs at F1 until Trigger 1 
+    clock runs at F1 until Trigger 1
     then runs at F2 for a preset number
     of pulses and then switches to F3
     for a preset number of pulses and then
@@ -240,7 +240,7 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
 	/******************************
 	 If stop trigger is wanted then
          declare an expression for the
-         time of the stop trigger and 
+         time of the stop trigger and
          write it out.
         ******************************/
       if (status & 1 && TreeIsOn(stop_out_nid) & 1) {
@@ -256,8 +256,8 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
 
   /************************************
     Mode 2 is triggered frequency shift
-    mode. 
-    clock runs at F1 until Trigger 1 
+    mode.
+    clock runs at F1 until Trigger 1
     then runs at F2 until Trigger 2
     and then switches to F3.
   *************************************/
@@ -265,7 +265,7 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
     if (TreeIsOn(clock_out_nid) & 1) {
 	/**********************************
           Read the lam register.  If there
-	  were overflows then store 
+	  were overflows then store
           information based on the triggers.
         ************************************/
       pio(2, 0, &lam);
@@ -324,7 +324,7 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
 	return_on_error(TreePutRecord(clock_out_nid, (struct descriptor *)&clock, 0), status);
 
 	  /******************************
-	   if stop trigger is wanted then 
+	   if stop trigger is wanted then
              declare an expression for the
              time of the stop trigger and
              write it out.

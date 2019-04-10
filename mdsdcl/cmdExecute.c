@@ -388,7 +388,7 @@ static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd){
     cmd->qualifiers[cmd->qualifier_count] = qualifier;
     cmd->qualifier_count++;
 
-    /* else if this is a routine node (i.e. <routine ... /> 
+    /* else if this is a routine node (i.e. <routine ... />
        duplicate the routine name into the command routine element. */
 
   } else if (node->name && (strcasecmp((const char *)node->name, "routine") == 0)) {

@@ -34,7 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 	usage:  MDSplus2HDF5 treename shot-number
 
-	This program will open the tree specified on the command line 
+	This program will open the tree specified on the command line
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -63,12 +63,12 @@ static int shot;
   Routine MemberMangle - return a new name for a member with an '_' in the front.
 
   Since MDSplus can have both members and children with the same name at any given
-  level in the tree, the possibility exists that when we try to add the data for a 
+  level in the tree, the possibility exists that when we try to add the data for a
   member to the HDF5 file, its name will already be taken.  If this is the case, try
   sticking an '_' at the back, and try again.
 
-  Note: when the '_' is put in the front, certain HDF5 readers (IDL) have trouble 
-  reading in files with an attribute called _name in them.  Hence the descision to 
+  Note: when the '_' is put in the front, certain HDF5 readers (IDL) have trouble
+  reading in files with an attribute called _name in them.  Hence the descision to
   put the '_' at the end.
 */
 static char *MemberMangle(char *name)
@@ -84,8 +84,8 @@ static char *MemberMangle(char *name)
   Routine ChildMangle - return a new name for a member with a '.' in the front.
 
   Since MDSplus can have both members and children with the same name at any given
-  level in the tree, the possibility exists that when we try to add the data for a 
-  member to the HDF5 file, its name will already be taken.  In the case of MDSplus 
+  level in the tree, the possibility exists that when we try to add the data for a
+  member to the HDF5 file, its name will already be taken.  In the case of MDSplus
   complex data structures we are adding a group, so a '.' is more appropriate.
 */
 static char *ChildMangle(char *name)
@@ -99,7 +99,7 @@ static char *ChildMangle(char *name)
 
 /*
   Routine GetNidNCI - return a Node ID given an expresion and a
-  NID to substitiute into it. 
+  NID to substitiute into it.
 
   Arguments: nid - node id to subsitute into the expression
              expr - Expression to evaluate.  For example:
@@ -166,8 +166,8 @@ static int NextSibling(int nid)
   return (GetNidNCI(nid, "GETNCI($,'brother')"));
 }
 
-/* 
-  Routine GetNidInt - routine to return an integer given an 
+/*
+  Routine GetNidInt - routine to return an integer given an
                       expression and an integer to substitute
 					  into it.
 
@@ -185,10 +185,10 @@ static int GetNidInt(int nid, char *expr)
 
  Arguments
 	nid - (int) node identifier to subsitute into the expression
-	expression (char *) - expression to evaluate returning a string. 
+	expression (char *) - expression to evaluate returning a string.
 		For example: getnci($, 'pathname')
- Returns 
-	String answer from expression or "" if error or non string 
+ Returns
+	String answer from expression or "" if error or non string
 	type.
 */
 static char *GetNidString(int nid, char *expr)
@@ -478,7 +478,7 @@ static void WriteData(hid_t parent, char *name, struct descriptor *dsc)
 
 /*
   Routine WriteDataNID - Routine to get the data from a nid and call WriteData
-		to add an attribute to the HDF5 file for it. 
+		to add an attribute to the HDF5 file for it.
 
   Arguments:
 		parent - (hid_t) The HDF5 group to add this attribute to.
@@ -486,7 +486,7 @@ static void WriteData(hid_t parent, char *name, struct descriptor *dsc)
 		nid - (int) the nid of the node to evaluate so that it can
 			be written to the file.
 
-  Note:  This routine calls WriteData to pick apart the data read back from 
+  Note:  This routine calls WriteData to pick apart the data read back from
 		the node, so that high level MDSplus structures can be recursively
 		expanded into the HDF5 file as small groups.  (Signals and With_units)
 */
@@ -504,17 +504,17 @@ static void WriteDataNID(hid_t parent, char *name, int nid)
 /*
   Routine AddBranch - main routine of the converter.  Recursively
 		traverses all of the members and children of a node creating
-		HDF5 Groups if there are descendents, recursing, and finally 
+		HDF5 Groups if there are descendents, recursing, and finally
 		adding an attribute to hold the node's data if any exisits.
 
   Arguments:
 		nid - (int) Node id to add to the HDF5 hierarchy. If node is not
-			a leaf, create a group for it and recursively add its members 
+			a leaf, create a group for it and recursively add its members
 			and children
 		parent_id - (hid_t) - The HDF5 parent structure to hang the groups and
 			attributes associated with this node from.
 
-  Note:  To handle the case that a node may have a member and a child of the 
+  Note:  To handle the case that a node may have a member and a child of the
 		same name, the name of child branches are prefixed with '.'.  In the
 		end, this may prove akward, and could be replaced by a name mangling
 		which is only done when needed.
@@ -537,8 +537,8 @@ static void AddBranch(int nid, hid_t parent_id)
 
   if (_is_child || _has_descendants) {
     g_id = H5Gcreate(parent_id, name, 0);
-    /* if it fails assume it was because 
-       the name was already taken.  Since the members are 
+    /* if it fails assume it was because
+       the name was already taken.  Since the members are
        added first, tack a '.' in the front.
      */
     if (g_id < 0) {
@@ -575,7 +575,7 @@ int main(int argc, const char *argv[])
   ExitOnMDSError(TreeOpen(tree, shot, 0), "Error opening tree");
   file_id = CreateHDF5(tree, shot);
   /*
-   * add \top and all of its members and children 
+   * add \top and all of its members and children
    */
   AddBranch(0, file_id);
   H5Fclose(file_id);

@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -20,7 +20,7 @@
 # SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
 from MDSplus import *
@@ -37,7 +37,7 @@ class MARTE2_NI6259(MARTE2_COMPONENT):
 												    {'name':'ChannelId', 'type': 'int', 'value':1},
 												    {'name':'InputPolarity', 'type':'string', 'value': 'Bipolar'},
 												    {'name': 'InputMode', 'type':'string','value':'RSE'}]}]
-    MARTE2_COMPONENT.parameters = [{'name':'SamplingFrequency', 'type': 'int32', 'value':1000000}, 
+    MARTE2_COMPONENT.parameters = [{'name':'SamplingFrequency', 'type': 'int32', 'value':1000000},
 				   {'name':'DeviceName', 'type': 'string', 'value':'/dev/pxi6259'},
 				   {'name':'BoardId', 'type': 'int32', 'value':0},
 				   {'name': 'DelayDivisor', 'type': 'int32', 'value':3},
@@ -49,7 +49,7 @@ class MARTE2_NI6259(MARTE2_COMPONENT):
 
     parts = []
     MARTE2_COMPONENT.buildGam(parts, 'NI6259ADC', MARTE2_COMPONENT.MODE_SYNCH_INPUT, 'build_range(0, 1000000, 1./build_path(".parameters:parameter_1:value"))')
- 
+
     def prepareMarteInfo(self):
       print('0:1000000 : 1. / build_path("\\'+self.getFullPath()+'.parameters:parameter_1:value")' )
       self.timebase.putData(Data.compile('0:1000000 : 1. / build_path("\\'+self.getFullPath()+'.parameters:parameter_1:value")'))

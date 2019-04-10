@@ -14,7 +14,7 @@ public class MdsAccess implements DataAccess
     MdsDataProvider np = null;
     String error = null;
     String encoded_credentials = null;
-	
+
 	String prevUrl = null;
 
 	 public static void main(String[] paramArrayOfString)
@@ -64,7 +64,7 @@ public class MdsAccess implements DataAccess
         return st.nextToken().equals("mds");
     }
 
-    
+
     public void setProvider(String url) throws IOException
     {
         if ((url != null) && (this.prevUrl != null) && (this.prevUrl.equals(url))) {

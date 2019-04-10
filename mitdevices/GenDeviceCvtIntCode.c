@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   GEN_DEVICE$CVT_INT_CODE   
+		Name:   GEN_DEVICE$CVT_INT_CODE
 
 		Type:   C function
 
@@ -37,7 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 EXPORT int GEN_DEVICE$CVT_INT_CODE( )
 

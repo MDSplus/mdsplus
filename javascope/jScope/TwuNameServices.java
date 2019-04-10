@@ -4,12 +4,12 @@ package jScope;
 // TwuNameServices
 //
 // Signalnames, and some other names, within the TEC Web-Umbrella (TWU) scheme
-// are based on URLs.  This leads sometimes to names that are overly long and 
-// verbose.  This class provides functions to translate to and from a full 
+// are based on URLs.  This leads sometimes to names that are overly long and
+// verbose.  This class provides functions to translate to and from a full
 // SignalURL and some more user orientated variants.
 //
 // $Id$
-// 
+//
 // -----------------------------------------------------------------------------
 
 
@@ -38,15 +38,15 @@ class TwuNameServices
     // Some feature tests.
     // -------------------------------------------------------------------------
 
-    public static boolean 
+    public static boolean
     catersFor ( DataProvider dp )
     {
         return ( dp instanceof TwuDataProvider ) ;
     }
 
-    public static boolean 
+    public static boolean
     isHashedURL ( String in )
-    { 
+    {
         in = in.toLowerCase();
         return in.startsWith("//") && in.indexOf("#")!=-1 ;
     }
@@ -65,7 +65,7 @@ class TwuNameServices
     // -------------------------------------------------------------------------
     // Make a URL string for the "Legend" display.
 
-    public static String 
+    public static String
     legendString ( WaveInterface wi, String signalURL, long shot )
     {
         final String startOfURL = "/" + probableExperiment ( wi )  + "/all";
@@ -81,20 +81,20 @@ class TwuNameServices
     // -------------------------------------------------------------------------
     // Take a (pseudo-)SignalURL, replace any hash-fields with the shotnumber
 
-    public static String 
+    public static String
     hashed2shot( String hashedURL, long shot )
-    { 
+    {
         if (hashedURL==null )
           return hashedURL;
 
         final int hashfield = hashedURL.indexOf("#");
-            
+
         if (hashfield ==-1 )
           return hashedURL;
-        
-        String full_url = 
-            hashedURL.substring(0,hashfield) 
-            + shot 
+
+        String full_url =
+            hashedURL.substring(0,hashfield)
+            + shot
             + hashedURL.substring(hashedURL.lastIndexOf("#")+1);
 
         return full_url ;
@@ -104,7 +104,7 @@ class TwuNameServices
     // Take a jScope internal TWU-signal name and return its URL (its Path).
 
     static
-    protected String 
+    protected String
     GetSignalPath(String internalSignalURL, long shot)
     {
         if(IsFullURL(internalSignalURL))
@@ -118,20 +118,20 @@ class TwuNameServices
             if(isHashedURL(internalSignalURL))
               return hashed2shot(internalSignalURL,shot);
 
-            // If not, then it is of the old jScope internal format 
+            // If not, then it is of the old jScope internal format
             //   url_server_address//group/signal_path
             // (Continue handling them; they could come out of .jscp files)
-            
+
             String p_url = GetURLserver(internalSignalURL);
             if(p_url == null)
               p_url = default_provider_url ;
             else
-              internalSignalURL = 
-                  internalSignalURL.substring(internalSignalURL.indexOf("//")+2, 
+              internalSignalURL =
+                  internalSignalURL.substring(internalSignalURL.indexOf("//")+2,
                                               internalSignalURL.length());
 
             StringTokenizer st = new StringTokenizer(internalSignalURL, "/");
-            String full_url = 
+            String full_url =
                 "http://"+p_url+"/"
                 + probableExperiment(null)
                 +"/"+st.nextToken()
@@ -143,9 +143,9 @@ class TwuNameServices
         }
     }
 
-    static 
+    static
     private String GetURLserver(String in)
-    { 
+    {
         // Find the servername, if it follows the (early) jScope internal
         // convention that it is encoded before the double slash.
         int idx;
@@ -176,13 +176,13 @@ class TwuNameServices
                 {
                     TwuDataProvider twudp = (TwuDataProvider) wi.dp;
                     String twudp_exp= twudp.getExperiment();
-                    
+
                     if(twudp_exp != null)
                       return twudp_exp ;
                 }
             }
         }
-        
+
 
         // Why has "Waveinterface" sometimes a null experiment name ?
         // TODO : Try to understand what's happening here !
@@ -191,7 +191,7 @@ class TwuNameServices
         // this might require adaptation at other sites. JGK 2003-07-22
 
         return default_experiment ;
-    }        
+    }
 }
 
 // -----------------------------------------------------------------------------

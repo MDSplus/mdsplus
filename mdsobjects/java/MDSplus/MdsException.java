@@ -5,5 +5,5 @@ public class MdsException extends Exception
     {
         super(msg);
     }
-            
+
 }

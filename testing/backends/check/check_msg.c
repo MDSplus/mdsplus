@@ -274,7 +274,7 @@ FILE *open_tmp_file(char **name)
     {
         char *tmp = getenv("TEMP");
         char *tmp_file = tempnam(tmp, "check_");
-        
+
         /*
          * Note, tempnam is not enough to get a unique name. Between
          * getting the name and opening the file, something else also

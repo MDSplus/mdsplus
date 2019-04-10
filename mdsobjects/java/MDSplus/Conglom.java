@@ -6,7 +6,7 @@ package MDSplus;
  * @version 1.0
  * @updated 03-ott-2008 12.23.50
  */
-public class Conglom extends Compound 
+public class Conglom extends Compound
 {
 	public Conglom(Data image, Data model, Data name, Data qualifiers,
                 Data help, Data units, Data error, Data validation)
@@ -20,7 +20,7 @@ public class Conglom extends Compound
         {
             this(image, model, name, qualifiers, null, null, null, null);
 	}
-       
+
         public static Conglom getData(Data help, Data units, Data error, Data validation)
         {
             return new Conglom(null, null, null, null, help, units, error, validation);
@@ -47,7 +47,7 @@ public class Conglom extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setImage(Data data)
@@ -56,7 +56,7 @@ public class Conglom extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setModel(Data data)
@@ -65,7 +65,7 @@ public class Conglom extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setName(Data data)
@@ -74,7 +74,7 @@ public class Conglom extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setQualifiers(Data data)

@@ -12,25 +12,25 @@ EXPORT int mdsconnect_(char *host)
 {
   return MdsConnect(host);
 }
-EXPORT int mdsclose_(char *tree, int *shot) 
+EXPORT int mdsclose_(char *tree, int *shot)
 {
-  return MdsClose(tree, shot); 
+  return MdsClose(tree, shot);
 }
-EXPORT void mdsdisconnect_() 
-{ 
+EXPORT void mdsdisconnect_()
+{
   MdsDisconnect();
 }
-EXPORT int mdsopen_(char *tree, int *shot) 
-{ 
-  return MdsOpen(tree, shot); 
+EXPORT int mdsopen_(char *tree, int *shot)
+{
+  return MdsOpen(tree, shot);
 }
-EXPORT int mdssetdefault_(char *node) 
-{ 
-  return MdsSetDefault(node); 
+EXPORT int mdssetdefault_(char *node)
+{
+  return MdsSetDefault(node);
 }
-EXPORT int mdssetsocket_(int *newsocket) 
-{ 
-  return MdsSetSocket(newsocket); 
+EXPORT int mdssetsocket_(int *newsocket)
+{
+  return MdsSetSocket(newsocket);
 }
 EXPORT int mdsput_(char *node, char *expression,
 	   int *a00, int *a01, int *a02, int *a03, int *a04, int *a05, int *a06, int *a07, int *a08,

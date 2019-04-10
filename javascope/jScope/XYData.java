@@ -11,20 +11,20 @@ package jScope;
 
 /**
  * Class XYData is the container of signals returned by WaveData instances.  Code immplementing WaveData
- * interface will use this class only via its constructor methods. 
- * Besides X and Y arrays, resolution and increasingX information is defined here. Resolution is computed 
+ * interface will use this class only via its constructor methods.
+ * Besides X and Y arrays, resolution and increasingX information is defined here. Resolution is computed
  * in jScope as NumberOfSamples/XRange and compared with the declared resolution on the XYData instance in order
- * to activate the asyncronous retrieval mechanism (that occurs when a resampled signal is zoomed and 
+ * to activate the asyncronous retrieval mechanism (that occurs when a resampled signal is zoomed and
  * more resolution is required in the zoomed region).
  * increasingX flag specifies whether the X samples are in increasing order. jScope
- * handles dynamic resampling only when this flag is true. 
+ * handles dynamic resampling only when this flag is true.
  *
  * @see WaveData
  */
- 
- 
- 
- public class XYData 
+
+
+
+ public class XYData
 {
     double resolution; //Number of points/interval
     boolean increasingX;
@@ -45,7 +45,7 @@ package jScope;
     {
        this(x, y, resolution, increasingX, x[0], x[x.length - 1]);
     }
-    
+
    /**
      * XYData Constructor
      *
@@ -66,7 +66,7 @@ package jScope;
         this.xMax = xMax;
         nSamples = (x.length < y.length)?x.length:y.length;
     }
-    
+
    /**
      * XYData Constructor with automatic derivation of increasingX flag
      *
@@ -97,7 +97,7 @@ package jScope;
             }
         }
     }
-    
+
    /**
      * XYData Constructor with absolute times and automatic derivation of increasingX flag
      *
@@ -131,7 +131,7 @@ package jScope;
             }
         }
     }
-    
+
    /**
      * XYData Constructor with absolute times
      *

@@ -101,7 +101,7 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard, uint8_t channel
     uint32_t update_period_divisor;
 
 
-    sampleRate = number_of_samples * waverate;        
+    sampleRate = number_of_samples * waverate;
     update_period_divisor = 100000000 / sampleRate;
 
 
@@ -171,7 +171,7 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard, uint8_t channel
 			1);					//   ...edge (not high level)
 	if(retval) {
 		if(!silent) printf("Error setting start trigger!\n");
-		goto out_6368;    
+		goto out_6368;
 	}
 
 
@@ -183,7 +183,7 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard, uint8_t channel
 			1);					//   ...edge (not high level)
 	if(retval) {
 		if(!silent) printf("Error setting start trigger!\n");
-		goto out_6368;    
+		goto out_6368;
 	}
 */
 
@@ -192,10 +192,10 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard, uint8_t channel
 	retval = xseries_set_ao_update_counter(&ao_conf,
 			XSERIES_AO_UPDATE_COUNTER_UI_TC,	// Derive the clock line from the Update Interval Terminal Count
 			XSERIES_AO_POLARITY_RISING_EDGE);	// Make the line active on rising edge
-	if(retval) 
-        {    
+	if(retval)
+        {
 		if(!silent) printf("Error setting update counter!\n");
-		goto out_6368;    
+		goto out_6368;
 	}
 
 	/* Program the Update Interval counter */
@@ -208,7 +208,7 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard, uint8_t channel
 	if(retval) {
 		if(!silent) printf("Error setting update interval counter!\n");
 		goto out_6368;
-	}    
+	}
 
 
 	/* Add channels */
@@ -236,7 +236,7 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard, uint8_t channel
 	for (i=0; i<number_of_channels; i++) {
 
         	switch (waveType)
-        	{        
+        	{
     	    		case TRIANGULAR : createTriangularWaveform(number_of_samples, offset, level,  write_array[i]); break;
     	    		case SQUARE : createSquareWaveform(number_of_samples, offset, level,  write_array[i]); break;
     	    		case SINUSOIDAL : createSinusoidalWaveform(number_of_samples, offset, level,  write_array[i]); break;
@@ -272,7 +272,7 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard, uint8_t channel
 					goto out_6368;
 				}
 			}
-		
+
 		}
         }
 
@@ -348,7 +348,7 @@ uint32_t generateWaveformOnOneChannel_6259 (uint8_t selectedCard, uint8_t channe
 
         float scaledWriteArray[number_of_samples];
 
-        sampleRate = number_of_samples * waverate;        
+        sampleRate = number_of_samples * waverate;
 
         periodDivisor = 20000000 / sampleRate;
 
@@ -371,7 +371,7 @@ uint32_t generateWaveformOnOneChannel_6259 (uint8_t selectedCard, uint8_t channe
 
 
         switch (waveType)
-        {        
+        {
     	    case TRIANGULAR : createTriangularWaveform(number_of_samples, offset, level,  scaledWriteArray); break;
     	    case SQUARE : createSquareWaveform(number_of_samples, offset, level,  scaledWriteArray); break;
         }
@@ -479,10 +479,10 @@ int main (int argc, char** argv){
         double minValue;
         double maxValue;
         const char *device;
-        int   waveType; 
+        int   waveType;
 
 
-        if (argc == 8 && ( !strcmp( argv[1], "6368") || !strcmp( argv[1], "6259") ) )   
+        if (argc == 8 && ( !strcmp( argv[1], "6368") || !strcmp( argv[1], "6259") ) )
         {
                 device = argv[1];
                 selectedCard = atoi(argv[2]);
@@ -497,8 +497,8 @@ int main (int argc, char** argv){
                 else  if( strcmp( argv[7], "Si" ) == 0 )
                     waveType = SINUSOIDAL;
 
-        } 
-        else if ( argc == 1 ) 
+        }
+        else if ( argc == 1 )
         {
                 device = "6368";
                 selectedCard = 0;

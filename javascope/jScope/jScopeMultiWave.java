@@ -231,7 +231,7 @@ public class jScopeMultiWave
             super.frames.setAspectRatio(wi.keep_ratio);
             super.frames.setHorizontalFlip(wi.horizontal_flip);
             super.frames.setVerticalFlip(wi.vertical_flip);
-            
+
             super.curr_point_sig_idx = 0;
 
             if (signals.size() != 0)
@@ -239,7 +239,7 @@ public class jScopeMultiWave
 
             if( wi.getModified() )
                 frame = 0;
-            
+
             not_drawn = true;
             super.Update();
             return;
@@ -292,11 +292,11 @@ public class jScopeMultiWave
             wi.in_y[i];
         String er = (wi.w_error != null && wi.w_error[i] != null) ? " ERROR " :
             "";
-        
+
         //If the legend is defined in the signal, override it
         if (signals.size() > i && signals.elementAt(i) != null && signals.elementAt(i).getLegend() != null)
             return signals.elementAt(i).getLegend();
-        
+
         if (wi.shots != null)
         {
             s = name + " " + wi.shots[i] + er;
@@ -335,7 +335,7 @@ public class jScopeMultiWave
             }
         }
 
-     
+
         return s;
     }
 
@@ -397,7 +397,7 @@ public class jScopeMultiWave
                 0F, 0F));
         }
     }
-    
+
           //Inner class ToTransferHandler to receive jTraverser info
     class ToTransferHandler extends TransferHandler
     {
@@ -417,7 +417,7 @@ public class jScopeMultiWave
             if(!canImport(support))
                 return false;
             try {
-                
+
                 String data = (String)support.getTransferable().getTransferData(DataFlavor.stringFlavor);
                StringTokenizer st = new StringTokenizer(data, ":");
                 String experiment = st.nextToken();
@@ -436,7 +436,7 @@ public class jScopeMultiWave
             return true;
         }
      }
-    
+
 
 
 }

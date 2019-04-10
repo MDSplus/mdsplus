@@ -25,7 +25,7 @@ public class ColorMap
   byte b[] = new byte[256];
 
   int bitShift = 0;
-  boolean bitClip = false;  
+  boolean bitClip = false;
 
   ColorMap()
   {

@@ -39,7 +39,7 @@ Assumes that threshold information in tree is in Volts.
 Note that the input and output levels (NIM, ECL, TTL); sign (POS, NEG);
 logic (trigger on input, trigger by CAMAC, trigger by previous channel
 hit, trigger by previous channel done); and gating (autoclr, clear by
-following channel, oneshot) are set up by HARDWARE switches inside the 
+following channel, oneshot) are set up by HARDWARE switches inside the
 module, and are not settable or readable by software.
 
 Note also that the front panel VETO and CLR inputs may inhibit action.

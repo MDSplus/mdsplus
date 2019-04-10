@@ -208,14 +208,14 @@ int CSndLossList::insert(int32_t seqno1, int32_t seqno2)
             m_iLength += CSeqNo::seqlen(m_piData2[loc], seqno2) - 1;
             m_piData2[loc] = seqno2;
          }
-         else 
+         else
             return 0;
       }
       else
          return 0;
    }
 
-   // coalesce with next node. E.g., [3, 7], ..., [6, 9] becomes [3, 9] 
+   // coalesce with next node. E.g., [3, 7], ..., [6, 9] becomes [3, 9]
    while ((-1 != m_piNext[loc]) && (-1 != m_piData2[loc]))
    {
       int i = m_piNext[loc];
@@ -501,7 +501,7 @@ void CRcvLossList::insert(int32_t seqno1, int32_t seqno2)
 bool CRcvLossList::remove(int32_t seqno)
 {
    if (0 == m_iLength)
-      return false; 
+      return false;
 
    // locate the position of "seqno" in the list
    int offset = CSeqNo::seqoff(m_piData1[m_iHead], seqno);
@@ -552,7 +552,7 @@ bool CRcvLossList::remove(int32_t seqno)
          // remove the current node
          m_piData1[loc] = -1;
          m_piData2[loc] = -1;
- 
+
          // update list pointer
          m_piNext[i] = m_piNext[loc];
          m_piPrior[i] = m_piPrior[loc];
@@ -603,7 +603,7 @@ bool CRcvLossList::remove(int32_t seqno)
       loc = (loc + 1) % m_iSize;
 
       m_piData1[loc] = CSeqNo::incseq(seqno);
-      if (CSeqNo::seqcmp(m_piData2[i], m_piData1[loc]) > 0)      
+      if (CSeqNo::seqcmp(m_piData2[i], m_piData1[loc]) > 0)
          m_piData2[loc] = m_piData2[i];
 
       // the first (original) sequence is between the original sequence start to CSeqNo::decseq(seqno)

@@ -307,7 +307,7 @@ static int pack_fail(char **buf, FailMsg * fmsg)
     pack_type(&ptr, CK_MSG_FAIL);
     pack_str(&ptr, fmsg->msg);
     pack_int(&ptr, fmsg->rtype);
-    
+
     return len;
 }
 

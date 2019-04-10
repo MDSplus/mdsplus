@@ -6,7 +6,7 @@ package MDSplus;
  * @version 1.0
  * @updated 30-mar-2009 13.44.36
  */
-public class Dispatch extends Compound 
+public class Dispatch extends Compound
 {
 	public Dispatch(Data ident, Data phase, Data when, Data completion,
                 Data help, Data units, Data error, Data validation)
@@ -24,7 +24,7 @@ public class Dispatch extends Compound
         {
             this(null, null, null, null);
         }
-        
+
         public static Dispatch getData(Data help, Data units, Data error, Data validation)
         {
             return new Dispatch(null, null, null, null, help, units, error, validation);
@@ -51,7 +51,7 @@ public class Dispatch extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setIdent(Data data)
@@ -60,7 +60,7 @@ public class Dispatch extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setPhase(Data data)
@@ -69,7 +69,7 @@ public class Dispatch extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setWhen(Data data)
@@ -78,7 +78,7 @@ public class Dispatch extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setCompletion(Data data)

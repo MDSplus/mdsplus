@@ -3,7 +3,7 @@ package jScope;
 /* $Id$ */
 import java.io.IOException;
 
-abstract class JiNcVarImp 
+abstract class JiNcVarImp
 {
 	protected JiNcVar mParent;
 	protected RandomAccessData mRFile;
@@ -13,13 +13,13 @@ abstract class JiNcVarImp
 	  mParent = parent;
 	  mRFile = in;
 	  mOffset = offset;
-	  }  
+	  }
 	public static void convertDoubles(byte[] bytes, double[] doubles)
 	  throws IOException
 	  {
 	  if (bytes.length % 8 != 0)
 	    throw new IOException();
-	  
+
 	  // Lack of unsigned types make this a real pain...
 	  int count = 0;
 	  for (int i=0; i < bytes.length; i+=8){
@@ -38,8 +38,8 @@ abstract class JiNcVarImp
 		  result |=  (long)(bytes[i+6] & 0xff);
 		  result <<= 8;
 		  result |=  (long)(bytes[i+7] & 0xff);
-		  
-/*		  
+
+/*
 	      int val1 = (((int)bytes[i] & 0xff) << 24) +
 		(((int)bytes[i+1] & 0xff) << 16) +
 		  (((int)bytes[i+2] & 0xff) << 8) +
@@ -49,10 +49,10 @@ abstract class JiNcVarImp
 		  (((int)bytes[i+6] & 0xff) << 8) +
 		    ((int)bytes[i+7] & 0xff);
 	      long result = (val2 << 32L) + (val1 & 0xFFFFFFFFL);
-*/	      
+*/
 	      doubles[count++] = Double.longBitsToDouble(result);
 	  }
-	  }  
+	  }
 	public static void convertFloats(byte[] bytes, float[] floats)
 	  throws IOException
 	  {
@@ -77,7 +77,7 @@ abstract class JiNcVarImp
                   ((int)bytes[ix++] & 0xff);
         floats[count++] = Float.intBitsToFloat(val);
        }
-	}  
+	}
 
 	public static void convertInts(byte[] bytes, int[] ints)
 	  throws IOException
@@ -93,7 +93,7 @@ abstract class JiNcVarImp
 		  (((int)bytes[i+2] & 0xff) << 8) +
 		   ((int)bytes[i+3] & 0xff);
 	  }
-	  }  
+	  }
 	public static void convertShorts(byte[] bytes, short[] shorts)
 	  throws IOException
 	  {
@@ -106,31 +106,31 @@ abstract class JiNcVarImp
 	      shorts[count++] = (short)((((int)bytes[i] & 0xff) << 8) +
 		((int)bytes[i+1] & 0xff));
 	  }
-	  }  
+	  }
 	public abstract Object read(JiDim[] dims) throws IOException;
 	public byte[] readByte(JiDim[] dims) throws IOException
 	  {
 	  return null;
-	  }  
+	  }
 	public char[] readChar(JiDim[] dims) throws IOException
 	  {
 	  return null;
-	  }  
+	  }
 	public double[] readDouble(JiDim[] dims) throws IOException
 	  {
 	  return null;
-	  }  
+	  }
 	public float[] readFloat(JiDim[] dims) throws IOException
 	  {
 	  return null;
-	  }  
+	  }
 	public int[] readInt(JiDim[] dims) throws IOException
 	  {
 	  return null;
-	  }  
+	  }
 	public short[] readShort(JiDim[] dims) throws IOException
 	  {
 	  return null;
-	  }  
+	  }
 	public abstract int sizeof();
 }

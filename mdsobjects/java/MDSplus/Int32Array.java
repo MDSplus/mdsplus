@@ -2,13 +2,13 @@ package MDSplus;
 
 /**
  * Array description for  DTYPE_L.
- * 
+ *
  * Constructors: Int32Array(int[])
  * @author manduchi
  * @version 1.0
  * @updated 30-mar-2009 13.44.39
  */
-public class Int32Array extends Array 
+public class Int32Array extends Array
 {
     int [] datum = new int[0];
     public Int32Array(int[] inDatum)
@@ -125,8 +125,8 @@ public class Int32Array extends Array
                 return false;
         return true;
     }
-    
-    
+
+
     public static Data getData(int []datum, int []dims, Data help, Data units, Data error, Data validation)
     {
         try {
@@ -137,7 +137,7 @@ public class Int32Array extends Array
     {
         return new Int32(datum[idx]);
     }
-    
+
     public int getSize(){return datum.length;}
     protected Array getPortionAt(int startIdx, int []newDims, int newSize) throws MdsException
     {
@@ -168,7 +168,7 @@ public class Int32Array extends Array
             retDatum[i] = (short)datum[i];
         return retDatum;
     }
-    public int[] getIntArray() 
+    public int[] getIntArray()
     {
         int[] retDatum = new int[datum.length];
         for(int i = 0; i < datum.length; i++)
@@ -189,7 +189,7 @@ public class Int32Array extends Array
             retDatum[i] = (float)datum[i];
         return retDatum;
     }
-    public double[] getDoubleArray() 
+    public double[] getDoubleArray()
     {
         double[] retDatum = new double[datum.length];
         for(int i = 0; i < datum.length; i++)

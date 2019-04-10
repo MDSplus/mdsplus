@@ -10,10 +10,10 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 {
 
     public static final int ACTION_NOT_FOUND = -2;
-    
+
     ServersInfoPanel serversInfoPanel = null;
     Hashtable<String, ServerInfo> serversInfo = new Hashtable<String, ServerInfo>();
-    
+
     ShotsPerformance shotsPerformance = new ShotsPerformance();
     String experiment;
 
@@ -31,7 +31,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             int status = 1;
 
             //System.out.println("-------------- Action : "+me);
-                        
+
             switch(me.mode)
             {
                 case MdsMonitorEvent.MonitorStartPhase :
@@ -40,12 +40,12 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                 case MdsMonitorEvent.MonitorEndPhase :
                     endPhase(me);
                     break;
-                
+
                 case MdsMonitorEvent.MonitorServerConnected :
                     //System.out.println(me);
                     serversInfoPanel.updateServerState(me.server_address, true);
-                break;                
-                case MdsMonitorEvent.MonitorServerDisconnected :                    
+                break;
+                case MdsMonitorEvent.MonitorServerDisconnected :
                     ServerInfo si = serversInfo.get(me.server_address);
                     String msg;
                     if(si != null)
@@ -55,7 +55,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                     }
                     else
                     {
-                        msg = "Disconnect from server class address :"+me.server_address;                        
+                        msg = "Disconnect from server class address :"+me.server_address;
                     }
                     JOptionPane.showMessageDialog(jDispatchMonitor.this, msg, "Alert", JOptionPane.ERROR_MESSAGE);
                     serversInfoPanel.updateServerState(me.server_address, false);
@@ -90,15 +90,15 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                 case MdsMonitorEvent.MonitorDoing  :
                     synchronized(executing_list)
                     {
-                        
+
                         SwingUtilities.invokeLater(new Runnable()
                         {
                             public void run()
                             {
-                                serversInfoPanel.updateServersInfoAction(me);                    
+                                serversInfoPanel.updateServersInfoAction(me);
                             }
                         });
-                                           
+
                             int idx = getIndex(me, executing_list.size());
                             if(idx == ACTION_NOT_FOUND)
                             {
@@ -108,7 +108,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                                                 JOptionPane.ERROR_MESSAGE);
                                 return;
                             }
-                            //NOTE: executing_list may be empty in case an error message 
+                            //NOTE: executing_list may be empty in case an error message
                             //has been received before a dispatched message
                             if(idx == -1 || executing_list.size() == 0)
                                 executing_list.addElement(me);
@@ -122,7 +122,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                             }
                             showUpdateAction(executingList, idx);
                     }
-                                                   
+
                     break;
              }
              counter(me);
@@ -190,7 +190,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             //you can type return new MdsMessage((Byte)<number>)
 	}
     }//End ErrorMgr class
-    
+
 
     static Font disp_font        = new Font("Platino Linotype", Font.ITALIC, 12);
     static Font doing_font       = new Font("Platino Linotype", Font.ITALIC | Font.BOLD, 12);
@@ -228,7 +228,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
     JList buildList,
           executingList,
           failedList;
-    
+
     DefaultListModel build_list = new DefaultListModel();
     DefaultListModel executing_list = new DefaultListModel();
     DefaultListModel failed_list = new DefaultListModel();
@@ -241,7 +241,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
     ErrorMgr error_mgr;
     int      info_port;
 
-    
+
     class ToolTipJList extends JList
     {
 
@@ -323,7 +323,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 
             MdsMonitorEvent me = (MdsMonitorEvent)value;
             setText(me.getMonitorString());
-            
+
             if(me.on == 0)
                 setForeground(Color.lightGray);
             else
@@ -333,13 +333,13 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             {
                 setBackground(list.getSelectionBackground());
             }
-            else 
+            else
             {
                 setBackground(list.getBackground());
             }
             return this;
         }
-    } 
+    }
     // End BuildCellRenderer class
 
 
@@ -374,8 +374,8 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
         }
     }
     // End FailedCellRenderer class
-    
-    
+
+
     class ExecutingCellRenderer extends JLabel implements ListCellRenderer
     {
         public ExecutingCellRenderer()
@@ -392,10 +392,10 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
         {
             // Setting Font
             // for a JList item in a renderer does not work.
-            
+
             if(value == null)
                 return this;
-            
+
             setFont(done_font);
 
             MdsMonitorEvent me = (MdsMonitorEvent)value;
@@ -461,27 +461,27 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 
     public jDispatchMonitor(String monitor_server, String experiment)
     {
-        
-	this.experiment = experiment;        
 
-        addWindowListener(new java.awt.event.WindowAdapter() 
-        {   
-            public void windowClosing(java.awt.event.WindowEvent e) 
-            {     
-              shotsPerformance.saveTimePhaseExecution();                       
+	this.experiment = experiment;
+
+        addWindowListener(new java.awt.event.WindowAdapter()
+        {
+            public void windowClosing(java.awt.event.WindowEvent e)
+            {
+              shotsPerformance.saveTimePhaseExecution();
             }
         });
-           
-        this.addKeyListener(new java.awt.event.KeyAdapter() 
-        {   
-            public void keyTyped(java.awt.event.KeyEvent e) 
-            {     
+
+        this.addKeyListener(new java.awt.event.KeyAdapter()
+        {
+            public void keyTyped(java.awt.event.KeyEvent e)
+            {
                 if(e.isAltDown() && e.isShiftDown() && e.getKeyChar() == 'P' )
-                    shotsPerformance.print();                       
+                    shotsPerformance.print();
             }
         });
-        
-        
+
+
         JMenuBar mb = new JMenuBar();
         this.setJMenuBar(mb);
         setWindowTitle();
@@ -516,8 +516,8 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
         this.loadServersInfo(properties);
 
         serversInfoPanel = new ServersInfoPanel();
-        serversInfoPanel.setServersInfo(this.serversInfo);        
-        
+        serversInfoPanel.setServersInfo(this.serversInfo);
+
         try
         {
             if(monitor_server != null && monitor_server.length() != 0)
@@ -528,7 +528,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             System.out.println(e.getMessage());
         }
 
-        
+
         JMenu file = new JMenu("File");
         JMenuItem open = new JMenuItem("Open Connection ...");
         open.addActionListener(new ActionListener()
@@ -730,7 +730,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                 }
             }
         );
-            
+
         do_command_menu.add(do_redispatch);
 
         do_abort = new JMenuItem("Abort");
@@ -757,8 +757,8 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                     }
                 }
         );
-        
-        do_command_menu.add(do_abort);        
+
+        do_command_menu.add(do_abort);
         executingList.addMouseListener( new MouseAdapter()
             {
                   public void mousePressed(MouseEvent e)
@@ -808,7 +808,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 
         this.getContentPane().add(dispatchMonitorPane, BorderLayout.CENTER);
         dispatchMonitorPane.addTab("Actions Monitor", desktop);
-        
+
         /*
         serversInfoPanel.addComponentListener(new ComponentAdapter()
         {
@@ -818,10 +818,10 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             }
         });
         */
-         
+
         dispatchMonitorPane.addTab("Servers Info", serversInfoPanel);
-        
-        
+
+
         p1 = new JPanel();
         p1.setBackground(Color.white);
         p1.setBorder(BorderFactory.createLoweredBevelBorder());
@@ -869,7 +869,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 
     public void exitApplication()
     {
-        
+
         shotsPerformance.saveTimePhaseExecution();
         System.exit(0);
     }
@@ -975,7 +975,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
         if(e instanceof MdsMonitorEvent)
         {
             MdsMonitorEvent me = (MdsMonitorEvent)e;
-                        
+
             UpdateList ul = new UpdateList(me);
             try
             {
@@ -1029,7 +1029,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
         }
     }
 */
-   
+
     private void counter(MdsMonitorEvent me)
     {
         switch(me.mode)
@@ -1078,7 +1078,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 	phase_failed.clear();
         if(me != null)
         {
-            shotsPerformance.saveTimePhaseExecution();         
+            shotsPerformance.saveTimePhaseExecution();
             exp_l.setText("Experiment: "+ me.tree);
             shot_l.setText("Shot: "     + me.shot);
             phase_l.setText("Phase: "   + MdsHelper.toPhaseName(me.phase));
@@ -1096,7 +1096,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             ph = me.phase = show_phase;
         else
             ph = me.phase;
-                
+
         if( phase_hash.containsKey(new Integer(ph)) )
             actions = phase_hash.get(new Integer(ph));
         else
@@ -1168,12 +1168,12 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             return -1;
         }
     }
-    
+
 
     long startPhaseTime = 0;
-    
+
     private void startPhase(MdsMonitorEvent me)
-    {        
+    {
         startPhaseTime = System.currentTimeMillis();
         System.out.println("-------------- Start phase : "+me);
 
@@ -1181,9 +1181,9 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 
         executing_list.removeAllElements();
         phase_l.setText("Phase: "+phase_st);
-        
+
         phase_m.setEnabled(false);
-        
+
         curr_phase = show_phase = me.phase;
     }
 
@@ -1195,7 +1195,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
         this.shotsPerformance.add(shot, MdsHelper.toPhaseName(me.phase), MdsMonitorEvent.msecToString( phaseDuration ) );
     }
 
-    
+
     private boolean addPhaseItem(int phase, String phase_st)
     {
 
@@ -1290,11 +1290,11 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 
         }
     }
-  
+
     private void collectServersInfo()
     {
       try
-      {            
+      {
           String address = new StringTokenizer(this.monitor_server).nextToken(":");
           if( !serversInfoPanel.checkInfoServer(address, info_port)  )
           {
@@ -1333,15 +1333,15 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 		{
 		    experiment = args[i + 1];
 		    if( args.length >= 3 )
-			monitor_server =  ( (i == 0) ? args[i+2] : args[0] );	
-	
+			monitor_server =  ( (i == 0) ? args[i+2] : args[0] );
+
 		} else {
 		    monitor_server = args[0];
 		}
 	}
 
 	System.out.println("jDispatchMonitor "+monitor_server+" "+experiment);
-	
+
 	//MdsHelper.initialization(experiment);
 
 
@@ -1359,11 +1359,11 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
         dm.setVisible(true);
     }
 
- 
 
-   
+
+
     public void loadServersInfo( Properties properties )
-    {        
+    {
         int i = 1;
         while (true) {
             String server_class = properties.getProperty("jDispatcher.server_" +
@@ -1384,44 +1384,44 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                 useJavaServer = properties.getProperty("jDispatcher.server_" + i +
                 ".use_jserver").equals("true");
             }catch(Exception exc){useJavaServer = true;}
-            
+
             int watchdogPort;
             try {
                 watchdogPort = Integer.parseInt(properties.getProperty("jDispatcher.server_" + i +
                 ".watchdog_port"));
             }catch(Exception exc){watchdogPort = -1;}
-  
+
             String startScript = properties.getProperty("jDispatcher.server_" + i +
                 ".start_script");
-            
+
             String stopScript = properties.getProperty("jDispatcher.server_" + i +
                 ".stop_script");
-            
-            ServerInfo srvInfo = new ServerInfo(server_class, server_ip, 
-                                                server_subtree, useJavaServer, 
+
+            ServerInfo srvInfo = new ServerInfo(server_class, server_ip,
+                                                server_subtree, useJavaServer,
                                                 watchdogPort, startScript, stopScript);
-            
+
             serversInfo.put(server_ip, srvInfo);
-                        
+
             i++;
         }
     }
-    
+
     public class ShotsPerformance
     {
-    
+
         PrintStream log;
-                
+
         Vector<String> labelText = new Vector<String>();
-        
+
         Hashtable<Long, Vector<String>> shotsInfo = new Hashtable<Long, Vector<String>>();
         Vector<String> phaseDuration;
-                
+
         public ShotsPerformance()
         {
             labelText.add("SHOT");
         }
-        
+
         public void saveTimePhaseExecution()
         {
             String fname = "PulsesPhasesEsecutionTime.log";
@@ -1445,7 +1445,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                          }
                          else
                             return;
-                    }                        
+                    }
                 }
                 printValues(log);
             }
@@ -1453,51 +1453,51 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             {
                 System.out.println("ShotsPerformance : " + exc);
             }
-                       
+
         }
-        
-       
+
+
         public void add(long shot, String phase, String duration )
-        {          
+        {
             if(phase == null) return;
-            
+
             Long key = new Long(shot);
-            
+
             if( !labelText.contains(phase) )
                 labelText.add(phase);
             if( !shotsInfo.containsKey(key) )
             {
                 phaseDuration = new Vector<String>();
-                shotsInfo.put(key, phaseDuration);               
+                shotsInfo.put(key, phaseDuration);
             }
             else
             {
                 phaseDuration = shotsInfo.get(key);
             }
-            phaseDuration.add(duration);            
+            phaseDuration.add(duration);
         }
-        
+
         public void printHeader(PrintStream out)
-        {               
+        {
             for(int i = 0; i < labelText.size(); i++)
                 out.print("\t"+labelText.elementAt(i));
-            out.println();      
+            out.println();
         }
-        
+
         public void printValues(PrintStream out)
         {
             Vector phDur = shotsInfo.get(new Long(shot));
-           
+
             for(int i = 0; i < phDur.size(); i++)
 			{
-				if( (i % (labelText.size() - 1)) == 0) 
+				if( (i % (labelText.size() - 1)) == 0)
 				{
-					 out.println("\t"+shot);	
+					 out.println("\t"+shot);
 				}
                 out.print("\t"+phDur.elementAt(i));
 			}
         }
-        
+
         public void print()
         {
             for(int i = 0; i < labelText.size(); i++)
@@ -1512,12 +1512,12 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                 for(int i = 0; i < phDur.size(); i++)
 				{
 					if( (i % (labelText.size() - 1)) == 0)
-					{						
+					{
 						System.out.println(shotStr);
-					}	
+					}
                     System.out.print("\t"+phDur.elementAt(i));
 				}
             }
-        }         
+        }
     }
 }

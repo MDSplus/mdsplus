@@ -2,16 +2,16 @@ package MDSplus;
 
 /**
  * Class description of DTYPE_WU
- * 
+ *
  * Constructors: Uint16(short)
  * @author manduchi
  * @version 1.0
  * @updated 30-mar-2009 13.44.51
  */
-public class Uint16 extends Scalar 
+public class Uint16 extends Scalar
 {
     short datum;
-    public Uint16(short datum)        
+    public Uint16(short datum)
     {
         this(datum, null, null, null, null);
     }
@@ -29,7 +29,7 @@ public class Uint16 extends Scalar
         return((Uint16)data).datum == datum;
     }
     public static Data getData(short datum, Data help, Data units, Data error, Data validation)
-    { 
+    {
         return new Uint16(datum, help, units, error, validation);
     }
 
@@ -94,7 +94,7 @@ public class Uint16 extends Scalar
      * Convert this data into a byte array. Implemented at this class level by
      * returning TDI data(BYTE(this)). If data() fails or the returned class is not
      * array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  byte[] getByteArray() throws MdsException
     {
@@ -106,7 +106,7 @@ public class Uint16 extends Scalar
      * Convert this data into a short array. Implemented at this class level by
      * returning TDI data(WORD(this)). If data() fails or the returned class is not
      * array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  short[] getShortArray()throws MdsException
     {
@@ -118,7 +118,7 @@ public class Uint16 extends Scalar
      * Convert this data into a int array. Implemented at this class level by
      * returning TDI data (LONG(this)). If data() fails or the returned class is not
      * array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  int[] getIntArray()throws MdsException
     {
@@ -129,7 +129,7 @@ public class Uint16 extends Scalar
      * Convert this data into a long array. Implemented at this class level by
      * returning TDI data(QUADWORD(this)). If data() fails or the returned class is
      * not array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  long[] getLongArray()throws MdsException
     {
@@ -140,7 +140,7 @@ public class Uint16 extends Scalar
      * Convert this data into a float array. Implemented at this class level by
      * returning TDI data(QUADWORD(this)). If data() fails or the returned class is
      * not array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  float[] getFloatArray()throws MdsException
     {
@@ -151,11 +151,11 @@ public class Uint16 extends Scalar
      * Convert this data into a long array. Implemented at this class level by
      * returning TDI data(QUADWORD(this)). If data() fails or the returned class is
      * not array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  double[] getDoubleArray()throws MdsException
     {
         return new double[]{(double)datum};
     }
-    public int getSizeInBytes() {return 2;}    
+    public int getSizeInBytes() {return 2;}
 }

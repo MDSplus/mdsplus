@@ -152,9 +152,9 @@ public class MdsMessage extends Object
 	        dispatchConnectionEvent(e);
         }
 
-        
+
         while(bytes_to_read > 0)
-        {                
+        {
             read_bytes     = dis.read(buf, curr_offset, bytes_to_read);
 	    if(read_bytes < 0) throw new IOException("Read Operation Failed");
 	    curr_offset   += read_bytes;
@@ -180,7 +180,7 @@ public class MdsMessage extends Object
         dos.writeByte(ndims);
         for(int i = 0; i < Descriptor.MAX_DIM; i++)
 	        dos.writeInt(dims[i]);
-        dos.write(body, 0, body.length);        
+        dos.write(body, 0, body.length);
         dos.flush();
 
         if(descr_idx == (nargs - 1)) msgid++;

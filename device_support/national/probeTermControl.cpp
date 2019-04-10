@@ -119,7 +119,7 @@ int configureOutput(int *chanOutFD, uint32_t deviceNum, uint32_t outChanRef , ui
 }
 
 
-int configureInput(int *chanInFd, uint32_t deviceNum, uint32_t inChan[], double frequency, int numChan) 
+int configureInput(int *chanInFd, uint32_t deviceNum, uint32_t inChan[], double frequency, int numChan)
 {
 	int diffMapChannel[16] = {-1,0,1,2,3,4,5,6,7,16,17,18,19,20.21,22,23};
         char filename[256];
@@ -147,7 +147,7 @@ int configureInput(int *chanInFd, uint32_t deviceNum, uint32_t inChan[], double 
 /*
 		printf("Channel conf %d\n", diffMapChannel[inChan[i]] );
 		if (pxi6259_add_ai_channel(&aiConfig, diffMapChannel[inChan[i]], AI_POLARITY_BIPOLAR, 2, AI_CHANNEL_TYPE_RSE, 0))
- 
+
 */		{
 
 		        fprintf(stderr, "Failed to configure channel %u\n", inChan[i]);
@@ -193,7 +193,7 @@ int configureInput(int *chanInFd, uint32_t deviceNum, uint32_t inChan[], double 
 
 }
 
-int main(int argc, char** argv) 
+int main(int argc, char** argv)
 {
 	static char log[5] = "|/-\\";
 	static int count = 0;
@@ -206,7 +206,7 @@ int main(int argc, char** argv)
         uint32_t outChanRef;
         uint32_t outChanOnOff;
 	uint32_t rc;
-	
+
 
 	int chanInFD[2];
 	int devInFD;
@@ -251,7 +251,7 @@ int main(int argc, char** argv)
 		perror("wake Control sem_open");
 		exit(1);
 	}
-	
+
 
 	try {
   		time_t rawtime;
@@ -262,7 +262,7 @@ int main(int argc, char** argv)
 		Tree *t;
 
   		time (&rawtime);
-  		timeinfo = localtime (&rawtime); 
+  		timeinfo = localtime (&rawtime);
 
 		sprintf(strShot, "%d%0.2d%d", 1900+timeinfo->tm_year, timeinfo->tm_mon+1, timeinfo->tm_mday);
 		shot = strtoul(strShot, NULL, 0);
@@ -287,12 +287,12 @@ int main(int argc, char** argv)
 		{
 			char path[256];
 			sprintf(path, "\\IPP_TC_TREND::TC%d", inChan[i] );
-			printf("NODO %s \n", path );		
+			printf("NODO %s \n", path );
 			node[i] = t->getNode(path);
 		}
 	}
-	catch(MdsException *exc) 
-	{	
+	catch(MdsException *exc)
+	{
 		printf("%s\n", exc->what());
 		exit(1);
 	}
@@ -326,7 +326,7 @@ int main(int argc, char** argv)
 		printf("START controll\n");
 
 		// Control tc
-		while (wakeState) 
+		while (wakeState)
 		{
 		        int n = 0;
 			int i = 0;
@@ -343,7 +343,7 @@ int main(int argc, char** argv)
 			    goto out;
 			}
 
-		
+
 			memset( scans_read, 0, sizeof(scans_read) );
 			nChRead = 0;
 			while( nChRead < numChan )
@@ -353,7 +353,7 @@ int main(int argc, char** argv)
 					//printf("read channel %d n chan %d \n", i, nChRead);
 					scans_read[i] = pxi6259_read_ai(chanInFD[i], &value[i], 1);
 
-					if (scans_read[i] < 0 ) 
+					if (scans_read[i] < 0 )
 					{
 						if( errno != EAGAIN )
 						{
@@ -380,20 +380,20 @@ int main(int argc, char** argv)
 			    goto out;
 			}
 
-			struct timeb tb; 
+			struct timeb tb;
 			int64_t currTime;
 			try
 			{
 				ftime( &tb);
-		   		currTime =  (int64_t)(tb.time * 1000 + tb.millitm); 
+		   		currTime =  (int64_t)(tb.time * 1000 + tb.millitm);
 				for(int i = 0; i < numChan; i++)
 				{
 		  			Float32 *currData = new Float32(value[i]);
 		   			node[i]->putRow(currData, &currTime);
 				}
 			}
-			catch(MdsException *exc) 
-			{	
+			catch(MdsException *exc)
+			{
 				printf("%s\n", exc->what());
 				error = 1;
 			    	goto out;
@@ -454,7 +454,7 @@ int main(int argc, char** argv)
 		        return -1;
 		}
 
-		
+
 		close(chanOutFD[0]);
 		close(chanOutFD[1]);
 		close(devOutFD);

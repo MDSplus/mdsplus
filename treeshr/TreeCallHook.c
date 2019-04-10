@@ -70,7 +70,7 @@ static int isEnabled(char *hookName) {
       (_strcasestr(hookName,"full") == NULL)) return 1;
   if ((_strcasestr(enabledHooks,"fullhooks") != NULL) &&
       (_strcasestr(hookName,"full") != NULL)) return 1;
-      
+
   char *p=enabledHooks;
   while (p) {
     p=_strcasestr(p,hookName);

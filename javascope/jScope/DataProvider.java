@@ -74,7 +74,7 @@ public interface DataProvider
          * axis is defined. In this case jScope assumes that the specification is enough and it is up
          * to the data provider implementation to retrieve X and Y axis.
          * The evaluated signal is not directly returned as a vector, rather as a object implementing
-         * the WaveData interface. 
+         * the WaveData interface.
          * @param in The specification of the signal, typed in the Y axis field of the setup data source
          * popup form, or in the lower right window of jScope.
          * @param row Row number of the corresponding panel
@@ -102,10 +102,10 @@ public interface DataProvider
         public WaveData GetWaveData(String in_y, String in_x, int row, int col, int index);
 
 
-        /** 
-         * Enable tunneling activation. Return False if no ssh tunneling required. 
+        /**
+         * Enable tunneling activation. Return False if no ssh tunneling required.
 	 * @return Tunneling flag
-	 **/ 
+	 **/
         public boolean SupportsTunneling();
 
 
@@ -173,7 +173,7 @@ public interface DataProvider
         public FrameData  GetFrameData(String in_frame, String in_times, float start_time, float end_time) throws IOException;
 
        // public void enableAsyncUpdate(boolean enable);
-        
+
         /**
          * Method Dispose is called by jScope each time a DataProvider is no more used. Unlike Object.finalize(),
          * method Dispose is guaranteed to be called at the time the DataProvider implementation is no more
@@ -245,9 +245,9 @@ public interface DataProvider
         public void    SetArgument(String arg) throws IOException;
 
         /**
-         * Evaluate the passed string to provide an array of shot numbers. 
+         * Evaluate the passed string to provide an array of shot numbers.
         *  @param inShots The shot(s) specification as typed in the "Shot" field of jScope panel
          */
         public long[]   GetShots(String inShots) throws IOException;
-        
+
      }

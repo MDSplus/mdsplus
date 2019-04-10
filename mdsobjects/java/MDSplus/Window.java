@@ -7,7 +7,7 @@ package MDSplus;
  * @version 1.0
  * @updated 03-ott-2008 12.23.45
  */
-public class Window extends Compound 
+public class Window extends Compound
 {
 	public Window(Data startidx, Data endidx, Data timeat0,
                 Data help, Data units, Data error, Data validation)
@@ -32,7 +32,7 @@ public class Window extends Compound
         {
             this(null, null, null, null);
         }
-        
+
         public static Window getData(Data help, Data units, Data error, Data validation)
         {
             return new Window(help, units, error, validation);
@@ -54,7 +54,7 @@ public class Window extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setStartIdx(Data data)
@@ -63,7 +63,7 @@ public class Window extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setEndIdx(Data data)
@@ -72,7 +72,7 @@ public class Window extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setTimeAt0(Data data)

@@ -1,4 +1,4 @@
- # 
+ #
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -61,12 +61,12 @@ class SOFT_TRIGGER(Device):
         'valueExpr':"Action(Dispatch('PXI_SERVER','PPC',50,None),Method(None,'stop',head))",
         'options':('no_write_shot',)})
 
-    syncDict = {'SYS': 'sys-conf.xml', '6682': 'nisync-6682.xml', '6683': 'nisync-6683h.xml', 'DEFAULT': "tcn-default.xml"} 
+    syncDict = {'SYS': 'sys-conf.xml', '6682': 'nisync-6682.xml', '6683': 'nisync-6683h.xml', 'DEFAULT': "tcn-default.xml"}
     tcnLib = None
 
     def debugPrint(self, msg="", obj=""):
           print( self.name + ":" + msg, obj );
- 
+
     def getAbsTime(self, relTime):
         try:
             return int((relTime - self.rel_start.data())*1000000000 + self.abs_start.data())
@@ -93,7 +93,7 @@ class SOFT_TRIGGER(Device):
                 emsg = 'Invalid Sync device'
                 Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                 raise DevBAD_PARAMETER
-       
+
             print(os.environ['TCN_CONFIG_PATH']+'/'+syncDevice)
             retVal = SOFT_TRIGGER.tcnLib.tcn_register_device(c_char_p(os.environ['TCN_CONFIG_PATH']+'/'+syncDevice))
             if retVal != 0:
@@ -144,8 +144,8 @@ class SOFT_TRIGGER(Device):
             worker = self.AsynchEvent()
             worker.daemon = True
             worker.configure(self, eventNames, eventTimes, advanceTime)
-            worker.start()  
-        return 1  
+            worker.start()
+        return 1
 
     def soft_init(self):
         self.debugPrint('=================  SOFT_TRIGGER soft_init ===============')

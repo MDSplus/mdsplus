@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   GEN_DEVICE$SIGNAL   
+		Name:   GEN_DEVICE$SIGNAL
 
 		Type:   C function
 
@@ -32,13 +32,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Date:    6-OCT-90
 
-    		Purpose: Perform device specific error handling 
+    		Purpose: Perform device specific error handling
 
 ------------------------------------------------------------------------------
-   
+
    Work done by 1999 Informatica Ricerca Sviluppo, s.c.r.l.,
    under contract from Istituto Gas Ionizzati del CNR - Padova (Italy)
-   
+
 --------------------------------------------------------------------------- */
 #include <treeshr.h>
 #include <stdio.h>

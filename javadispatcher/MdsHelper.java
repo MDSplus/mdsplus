@@ -15,7 +15,7 @@ class MdsHelper
         Properties properties = new Properties();
         try {
 
-            String propFileName; 
+            String propFileName;
             String path;
 
             path = System.getenv("MDSPLUS_DIR");
@@ -31,15 +31,15 @@ class MdsHelper
 
 
 	    //System.out.println("Configuration file " + propFileName);
-	
+
             try
             {
             	properties.load(new FileInputStream(propFileName));
             }
-            catch (Exception exc) 
+            catch (Exception exc)
             {
                                 //System.out.println("Cannot open properties file : "+ propFileName);
-		propFileName = null; 
+		propFileName = null;
             }
             if( propFileName == null )
             {
@@ -47,10 +47,10 @@ class MdsHelper
                         propFileName =  path+"jDispatcher.properties";
                         properties.load(new FileInputStream(propFileName));
                 }
-		catch (Exception exc) 
+		catch (Exception exc)
 		{
                                 //System.out.println("Cannot open properties file : "+ propFileName);
-                    propFileName = null; 
+                    propFileName = null;
                 }
                 if( propFileName == null )
                 {
@@ -58,10 +58,10 @@ class MdsHelper
                             propFileName =  "jDispatcher.properties";
                             properties.load(new FileInputStream(propFileName));
                         }
-			catch (Exception exc) 
+			catch (Exception exc)
 			{
                             System.out.println("Cannot open properties file : "+ propFileName);
-                            propFileName = null; 
+                            propFileName = null;
                         }
                 }
             }

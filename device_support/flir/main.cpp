@@ -40,9 +40,9 @@ using namespace MDSplus;
 int main(int argc, char **argv )
 {
   if((argv[1]==NULL) || (argv[2]==NULL) || (argv[3]==NULL))   // argv[4] is OPTIONAL
-  { 
-	printf("Please insert: 1)tree name 2)shot number 3)number of frame to acquire 4) Streaming Port (OPTIONAL)\n"); 
-	exit(0); 
+  {
+	printf("Please insert: 1)tree name 2)shot number 3)number of frame to acquire 4) Streaming Port (OPTIONAL)\n");
+	exit(0);
   }
 
 //MDSPLUS
@@ -51,11 +51,11 @@ int main(int argc, char **argv )
   res=camOpenTree(argv[1], atoi( argv[2] ), &treePtr);
   if(res==-1)
   {
-    printf("Error opening tree...\n"); 
-	exit(0); 
+    printf("Error opening tree...\n");
+	exit(0);
   }
 
-  Tree *tree; 
+  Tree *tree;
   TreeNode *node;
   TreeNode *nodeMeta;
   int dataNid;
@@ -63,8 +63,8 @@ int main(int argc, char **argv )
   try
   {
     tree = (Tree *)treePtr;
-    node=tree->getNode((char *)"\\CAMERAS::TOP:IRCAM_1:FRAMES");		
-    nodeMeta=tree->getNode((char *)"\\CAMERAS::TOP:IRCAM_1:FRAMES_METAD");  	
+    node=tree->getNode((char *)"\\CAMERAS::TOP:IRCAM_1:FRAMES");
+    nodeMeta=tree->getNode((char *)"\\CAMERAS::TOP:IRCAM_1:FRAMES_METAD");
     dataNid=node->getNid();						//Node id to save the acquired frames
   }catch ( MdsException *exc )
     { std::cout << "ERROR reading data" << exc->what() << "\n"; }
@@ -85,8 +85,8 @@ int main(int argc, char **argv )
 
 	  Data  *frameData;
 	  Data  *frameDataMeta;
-	  short *framePtr; 
-	  char *framePtrMeta; 
+	  short *framePtr;
+	  char *framePtrMeta;
 
 	  try
 	  {
@@ -132,21 +132,21 @@ if(argv[4]!=NULL)
 {
 
   while(canStream==-1 && i<=5) //try 5 times to open the connection
-  { 
+  {
     canStream=camOpenTcpConnection( atoi( argv[4] ), &kSockHandle, 640, 480);
 	sleep(1);
 	i++;
   }
   if(canStream==0)
-  { 
-    printf("Streaming OK!\n");  
+  {
+    printf("Streaming OK!\n");
   }
   else
-  { 
-    printf("CANNOT Streaming!\n"); 
+  {
+    printf("CANNOT Streaming!\n");
   }
 
-}    
+}
 //END STREAMING
 
 
@@ -162,7 +162,7 @@ if(argv[4]!=NULL)
 	else
     {
 		printf("Successfully connected...\n");
-	}	
+	}
 
 	int skipFrame = 0;
 	int width=0;
@@ -175,7 +175,7 @@ if(argv[4]!=NULL)
 	FlirCam->setFrameRate(fps_25, &skipFrame);  //200 100 50 25 12 6 3
 	FlirCam->setIrFormat(radiometric);  		 //radiometric linear10mK linear100mK
 	FlirCam->setMeasurementRange(2);
-	//FlirCam->setReadoutArea(0, 0, 400, 200);  //NOT TO USE. setFrameRate set also ReadoutArea! 
+	//FlirCam->setReadoutArea(0, 0, 400, 200);  //NOT TO USE. setFrameRate set also ReadoutArea!
 	FlirCam->getReadoutArea(&x, &y, &width, &height);
 	printf("Start x:%d Start y:%d Width:%d Height:%d\n", x, y, width, height);
 
@@ -183,18 +183,18 @@ if(argv[4]!=NULL)
 //	FlirCam->printAllParameters();
 	printf("\nGETTING ALL CAMERA PARAMETERS: end\n\n");
 
-    printf("TEST OF FOCUS POSITION.\n");              
-    int focusPos = 0;  
+    printf("TEST OF FOCUS POSITION.\n");
+    int focusPos = 0;
     FlirCam->getFocusAbsPosition(&focusPos);
     printf("Current Focus position: %d\n", focusPos);
     focusPos=37;
     printf("Try to set focus position @: %d\n", focusPos);
   //  FlirCam->setFocusAbsPosition(focusPos);
     FlirCam->getFocusAbsPosition(&focusPos);
-    printf("New Focus position: %d\n", focusPos);               
+    printf("New Focus position: %d\n", focusPos);
 
-                
-	FlirCam->startAcquisition(&width, &height, &payloadSize); 
+
+	FlirCam->startAcquisition(&width, &height, &payloadSize);
 
    	int status;
 	void *metaData;
@@ -214,31 +214,31 @@ if(argv[4]!=NULL)
    //     FlirCam->executeAutoFocus();
 
     for(int i=1; i<=atoi(argv[3]); i++)  //acquire i=argv[3] frames
-    { 
+    {
       frameNumber++;
-      FlirCam->getFrame(&status, frame, metaData);  
-      gettimeofday(&tv, NULL); 				  
+      FlirCam->getFrame(&status, frame, metaData);
+      gettimeofday(&tv, NULL);
       timeStamp = ((tv.tv_sec)*1000) + ((tv.tv_usec)/1000); // timeStamp [ms]
       switch(status)
-      {		 
+      {
 	 	case 1: printf("get frame %d complete @ %ld\n", frameNumber, timeStamp); break;
 	 	case 2: printf("get frame %d incomplete @ %ld\n", frameNumber, timeStamp); break;
 	 	case 3: printf("get frame %d timeout @ %ld\n", frameNumber, timeStamp); break;
 	 	case 4: printf("get frame %d complete+triggered @ %ld\n", frameNumber, timeStamp); break;
       }
 
-      if(status==1 or status==4)  
-      {  
+      if(status==1 or status==4)
+      {
 		 //SAVE FRAME IN MDSPLUS
 
 /*	     res=camSaveFrame(frame, width, height, &timeStamp, 14, treePtr, dataNid, -1, frameNumber);
     	 if(res==-1)
    		 {
-       		printf("Error in 'camSaveFrame'...\n"); 
+       		printf("Error in 'camSaveFrame'...\n");
      	 }
 		 else
    		 {
-       		printf("Frame saved...\n"); 
+       		printf("Frame saved...\n");
      	 }
 */
 		 //STREAMING
@@ -246,19 +246,19 @@ if(argv[4]!=NULL)
 		 int sendFrame = i % skipFrame;
 		 if( canStream==0 and sendFrame==0 )
    		 {
-		   //streaming is set to 640 x 480 in "camOpenTcpConnection". 
+		   //streaming is set to 640 x 480 in "camOpenTcpConnection".
 		   //It must be changed to prevent strange image transmission!
 		   unsigned int lowLim = 0;
 		   unsigned int highLim = 32000;
 		   camFrameTo8bit((unsigned short *)frame, 640, 480, (unsigned char *)frame8bit, 1, &lowLim, &highLim, 2000, 62000);
 	//	   printf("LowLim:%d HighLim:%d\n",lowLim, highLim);
 		   camSendFrameOnTcp(&kSockHandle, width, height, frame8bit);
-     	 }      		 
+     	 }
 
-	  }		
+	  }
 
    }//for
-	
+
    if(kSockHandle!=-1) camCloseTcpConnection(&kSockHandle); //close streaming
 
    FlirCam->setCalibMode(1); //auto calib

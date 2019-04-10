@@ -25,7 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*************************************************************************\
 * Copyright (c) 2010 - RFX.
 * EPICS BASE is distributed subject to a Software License Agreement found
-* in file LICENSE that is included with this distribution. 
+* in file LICENSE that is included with this distribution.
 \*************************************************************************/
 
 
@@ -80,7 +80,7 @@ static void callbackFunc(CALLBACK *pcallback)
 {
      struct dbCommon  *precord;
      rset      *prset;
-     
+
      callbackGetUser(precord,pcallback);
      prset = (rset *)(precord->rset);
      dbScanLock(precord);
@@ -117,7 +117,7 @@ static long init_record(mdsexprRecord *prec)
     }
 */
     if(strlen(prec->exp) > 0 || (prec->loc == mdsexprLOCREM_Remote)) //If an experiment name is defined, or it is remote open it
-    	prec->errs = openMds(prec->exp, prec->shot, (prec->loc == mdsexprLOCREM_Local), prec->dsip, 
+    	prec->errs = openMds(prec->exp, prec->shot, (prec->loc == mdsexprLOCREM_Local), prec->dsip,
 		0, &prec->tidx, prec->errm);
     else
 	prec->tidx = -1;
@@ -194,9 +194,9 @@ static long asynchRead(CALLBACK *pcallback)
 
 	currTime = (unsigned long)prec->time.nsec + ((unsigned long)prec->time.secPastEpoch * 1000000000L);
 
-    	prec->errs = writeMds(prec->nid, prec->bptr, prec->ftvl, prec->pre, nRows, prec->dim1, prec->dim2, prec->didx, 
+    	prec->errs = writeMds(prec->nid, prec->bptr, prec->ftvl, prec->pre, nRows, prec->dim1, prec->dim2, prec->didx,
 	    prec->prd, prec->trig, currTime, prec->errm, prec->dbg);
- 
+
         prec->didx += nRows;
     }
 */
@@ -217,25 +217,25 @@ static long read_mp(mdsexprRecord *prec)
 
 /*************************Set Intermediate result to 0 UNTIL SET BY asyncRead*********************************/
      switch(prec->ftvl) {
-	    	case DBF_CHAR: 
-	    	case DBF_UCHAR: 
+	    	case DBF_CHAR:
+	    	case DBF_UCHAR:
 		    *((char *)prec->bptr) = 0;
 		    break;
-	    	case DBF_SHORT: 
-	    	case DBF_USHORT: 
+	    	case DBF_SHORT:
+	    	case DBF_USHORT:
 		    *((short *)prec->bptr) = 0;
 		    break;
-	    	case DBF_LONG: 
-	    	case DBF_ULONG: 
+	    	case DBF_LONG:
+	    	case DBF_ULONG:
 		    *((int *)prec->bptr) = 0;
 		    break;
-	    	case DBF_FLOAT: 
+	    	case DBF_FLOAT:
 		    *((float *)prec->bptr) = 0;
 		    break;
-	    	case DBF_DOUBLE: 
+	    	case DBF_DOUBLE:
 		    *((double *)prec->bptr) = 0;
 		    break;
-	    	case DBF_STRING: 
+	    	case DBF_STRING:
 		    *((double *)prec->bptr) = 0;
 		    break;
 	}

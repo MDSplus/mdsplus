@@ -158,7 +158,7 @@ public class LoadPulse
             String basePath = "";
             try
             {
-                
+
                 StringTokenizer st = new StringTokenizer(basePathLine, " ");
                 basePath = st.nextToken();
                 currNid = tree.resolve(new PathData(basePath), 0);
@@ -184,7 +184,7 @@ public class LoadPulse
                         }
                         continue;
                     }
-                    else  //An alternate out pathname is provided in next 
+                    else  //An alternate out pathname is provided in next
                     {
                         outPath = next.toUpperCase();
                     }

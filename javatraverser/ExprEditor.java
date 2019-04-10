@@ -1,5 +1,5 @@
 //package jTraverser;
-import javax.swing.*; 
+import javax.swing.*;
 
 import java.awt.*;
 
@@ -26,7 +26,7 @@ public class ExprEditor extends JPanel implements ActionListener, Editor{
     {
 	this(null, default_to_string, 1, 20);
     }
-    public ExprEditor(Data data, boolean default_to_string, 
+    public ExprEditor(Data data, boolean default_to_string,
 	int rows, int columns)
     {
     boolean quotes_needed;
@@ -52,18 +52,18 @@ public class ExprEditor extends JPanel implements ActionListener, Editor{
 	    right.addActionListener(this);
 	    if(expr != null)
 		expr = expr.substring(1, expr.length() -1);
-	}  
+	}
 	else
 	    quotes_added = false;
     setLayout(new BorderLayout());
-	if(default_scroll) 
-	{  
+	if(default_scroll)
+	{
 	    text_area = new JTextArea(rows,columns);
 	    Dimension d = text_area.getPreferredSize();
 	    text_area.setText(expr);
 	    d.height += 20;
 	    d.width += 20;
-	    scroll_pane = new JScrollPane(text_area); 
+	    scroll_pane = new JScrollPane(text_area);
 	    scroll_pane.setPreferredSize(d);
 	    if(quotes_needed)
 	    {
@@ -140,26 +140,26 @@ public class ExprEditor extends JPanel implements ActionListener, Editor{
 	    expr = text_area.getText();
 	else
 	    expr = text_field.getText();
-	    
+
 	if(quotes_added)
 	    return Tree.dataFromExpr("\"" + expr + "\"");
 	else
 	    return Tree.dataFromExpr(expr);
     }
-    
+
     public void setData(Data data)
     {
 	this.data = data;
 	reset();
     }
-    
+
     public void setEditable(boolean editable)
     {
 	this.editable = editable;
 	if(text_area != null) text_area.setEditable(editable);
 	if(text_field != null) text_field.setEditable(editable);
-    }	
-    
+    }
+
 
 }
 

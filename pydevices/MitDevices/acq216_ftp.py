@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@ import MDSplus
 class ACQ216_FTP(ACQ_FTP):
     """
     D-Tacq ACQ216  16 channel transient recorder
-    
+
     """
 
     from copy import copy
@@ -129,7 +129,7 @@ class ACQ216_FTP(ACQ_FTP):
                     if self.debugging:
                         print "internal clock clock out is %s setDIOcmd = %s\n" % (clock_out, setDIOcmd,)
 		    fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
-		    fd.write(setDIOcmd)		
+		    fd.write(setDIOcmd)
             else:
                 if (clock_div != 1) :
                     fd.write("acqcmd setExternalClock %s %d DO2\n" % (clock_src, clock_div,))
@@ -164,7 +164,7 @@ class ACQ216_FTP(ACQ_FTP):
             return 0
 
     INITFTP=initftp
-        
+
     def storeftp(self, arg):
 
         try:
@@ -265,7 +265,7 @@ class ACQ216_FTP(ACQ_FTP):
 			dim = MDSplus.Data.compile('Map($,$)', MDSplus.Dimension(MDSplus.Window(start/inc, end/inc, self.trig_src), clock), MDSplus.Range(start, end, inc))
 		    dat = MDSplus.Data.compile(
                         '_v0=$, _v1=$, build_signal(build_with_units(( _v0+ (_v1-_v0)*($value - -32768)/(32767 - -32768 )), "V") ,build_with_units($,"Counts"),$)',
-                        vins[chan*2], vins[chan*2+1], buf,dim) 
+                        vins[chan*2], vins[chan*2+1], buf,dim)
                     exec('c=self.input_'+'%02d'%(chan+1,)+'.record=dat')
 	return 1
 

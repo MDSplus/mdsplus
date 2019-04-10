@@ -7,8 +7,8 @@ public class DeviceOkBeanInfo extends SimpleBeanInfo
     {
         return loadImage("DeviceOk.gif");
     }
-    
-    public PropertyDescriptor [] getPropertyDescriptors()  
+
+    public PropertyDescriptor [] getPropertyDescriptors()
     {
         return new PropertyDescriptor[] {};
     }

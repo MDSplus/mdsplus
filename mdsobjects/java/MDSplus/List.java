@@ -15,7 +15,7 @@ public class List extends Apd
         super(descs, help, units, error, validation);
         dtype = DTYPE_LIST;
     }
-    
+
     public static Data getData(Data [] descs, Data help, Data units, Data error, Data validation)
     {
         return new List(descs, help, units, error, validation);
@@ -24,7 +24,7 @@ public class List extends Apd
     public int len()
     {
         return nDescs;
-    }    
+    }
     public void append(Data data)
     {
         setDescAt(len(), data);
@@ -58,11 +58,11 @@ public class List extends Apd
         descs[idx] = data;
         nDescs++;
     }
-    
+
     public Data getElementAt(int idx)
     {
         if(idx < 0 || idx >= nDescs)
             return null;
         return descs[idx];
-    }    
+    }
 }

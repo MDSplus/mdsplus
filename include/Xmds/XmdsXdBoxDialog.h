@@ -14,7 +14,7 @@
 		Date:   24-FEB-1993
 
     		Purpose: Public declarations for  XdBox Widgets.
- 
+
 
 ------------------------------------------------------------------------------
    Copyright (c) 1993

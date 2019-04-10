@@ -12,7 +12,7 @@ import java.util.*;
  */
 public class MdsAsynchDataProvider extends MdsDataProvider
 {
-    //Inner class AsynchWaevdata handles the generation of the waveform 
+    //Inner class AsynchWaevdata handles the generation of the waveform
     class AsynchWaveData implements AsynchDataSource
     {
         double sinePeriod = 1;
@@ -29,7 +29,7 @@ public class MdsAsynchDataProvider extends MdsDataProvider
                 {
                     for(int i = 0; i < 100; i++)
                     {
-                        
+
                         try {
                              Thread.sleep(100);
                         }catch(InterruptedException exc){}
@@ -46,7 +46,7 @@ public class MdsAsynchDataProvider extends MdsDataProvider
                             listeners.elementAt(j).legendUpdated("CICCIO"+i);
                         }
                     }
-                    
+
                 }
             }).start();
         }
@@ -55,16 +55,15 @@ public class MdsAsynchDataProvider extends MdsDataProvider
             listeners.addElement(listener);
         }
     } //End inner class AsynchWaveData
-    
+
     boolean asynchEnabled = true;
     public void enableAsyncUpdate(boolean asynchEnabled)
     {
         asynchEnabled = asynchEnabled;
     }
-    
+
     public AsynchDataSource getAsynchSource()
     {
         return new AsynchWaveData();
     }
 }
- 

@@ -14,7 +14,7 @@
 
 		Date:   16-JAN-1992
 
-    		Purpose: Include file for XmdsSupport routines 
+    		Purpose: Include file for XmdsSupport routines
 
 ------------------------------------------------------------------------------
    Copyright (c) 1992

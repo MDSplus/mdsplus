@@ -25,7 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*************************************************************************\
 * Copyright (c) 2010 - RFX.
 * EPICS BASE is distributed subject to a Software License Agreement found
-* in file LICENSE that is included with this distribution. 
+* in file LICENSE that is included with this distribution.
 \*************************************************************************/
 
 
@@ -79,7 +79,7 @@ static void callbackFunc(CALLBACK *pcallback)
 {
      struct dbCommon  *precord;
      rset      *prset;
-     
+
      callbackGetUser(precord,pcallback);
      prset = (rset *)(precord->rset);
      dbScanLock(precord);
@@ -111,31 +111,31 @@ static long asynchRead(CALLBACK *pcallback)
      callbackGetUser(precord,pcallback);
      prec = (waveformRecord *)precord;
      switch(prec->ftvl)  {
-     	case DBF_UCHAR: 
-     	case DBF_CHAR: 
+     	case DBF_UCHAR:
+     	case DBF_CHAR:
      		elSize = 1;
      		break;
-     	case DBF_USHORT: 
-     	case DBF_SHORT: 
+     	case DBF_USHORT:
+     	case DBF_SHORT:
      		elSize = 2;
      		break;
-      	case DBF_ULONG: 
-      	case DBF_LONG: 
-      	case DBF_FLOAT: 
+      	case DBF_ULONG:
+      	case DBF_LONG:
+      	case DBF_FLOAT:
      		elSize = 4;
      		break;
-      	case DBF_DOUBLE: 
+      	case DBF_DOUBLE:
      		elSize = 8;
      		break;
-      	case DBF_STRING: 
+      	case DBF_STRING:
      		elSize = 1;
      		break;
-    	default:	
+    	default:
         	printf("Unexpected type for Waveform MDSplus event record\n");
         	return 0;
-     }	
+     }
      maxLen = prec->nelm*elSize;
-     waitMdsEvent(prec->inp.value.instio.string, prec->bptr, maxLen, &retLen); 
+     waitMdsEvent(prec->inp.value.instio.string, prec->bptr, maxLen, &retLen);
      prec->nord = retLen/elSize;
      callbackRequest(pcallback);
      return 0;

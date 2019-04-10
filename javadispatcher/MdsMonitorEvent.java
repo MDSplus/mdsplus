@@ -17,7 +17,7 @@ class MdsMonitorEvent extends MdsServerEvent
 
     static final int MonitorServerConnected      = 12;
     static final int MonitorServerDisconnected   = 13;
-    
+
     /*
     static final int MonitorServerConnected      = 10;
     static final int MonitorServerDisconnected   = 11;
@@ -43,7 +43,7 @@ class MdsMonitorEvent extends MdsServerEvent
     String error_message;
     long   execution_time; //msec
 
-    
+
     public MdsMonitorEvent(Object obj, int mode,  String msg)
     {
         super(obj, 0, 0, 1);
@@ -51,7 +51,7 @@ class MdsMonitorEvent extends MdsServerEvent
         this.error_message = msg;
    }
 
-    
+
     public MdsMonitorEvent(Object obj, int phase, int nid, String msg)
     {
         super(obj, 0, 0, 1);
@@ -85,7 +85,7 @@ class MdsMonitorEvent extends MdsServerEvent
         super(source, id, flags, status);
         date = new Date();
         try
-        {            
+        {
             StringTokenizer buf = new StringTokenizer(data);
 
             tree   = new String(buf.nextToken());
@@ -164,7 +164,7 @@ class MdsMonitorEvent extends MdsServerEvent
                "; ServerAddress="+ server_address+" ;status="+ret_status+"]");
     }
 
- 
+
     public synchronized String getMonitorString()
     {
         StringBuffer out = new StringBuffer();

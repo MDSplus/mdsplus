@@ -429,7 +429,7 @@ public class WavePopup
             }
         }
         );
-        
+
         sep3 = new JSeparator();
         saveAsText = new JMenuItem("Save as text ...");
         saveAsText.addActionListener(new ActionListener()
@@ -500,7 +500,7 @@ public class WavePopup
             {
                 maximize.setText("Maximize Panel");
             }
-        }    
+        }
 
         if (is_image)
         {

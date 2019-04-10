@@ -11,7 +11,7 @@
 
 // NOTE:
 // This class is intended as a specialized helper to inspect numeric data
-// conversion handled by the Data derived numeric types. 
+// conversion handled by the Data derived numeric types.
 
 
 //using namespace MDSplus;
@@ -59,7 +59,7 @@ class MdsDataTest {
 
     template < typename Fn, typename T >
     static void test_numeric_cast_function(mds::Data *data, Fn fn, const T value);
-    
+
 public:
     template < typename T >
     static void test_data_numerics(mds::Data *data, const T value);
@@ -77,12 +77,12 @@ public:
         char * data_str = data->getString();
         int data_getString_differs_from_test = strcmp(data_str,str);
         TEST0( data_getString_differs_from_test );
-        if(data_getString_differs_from_test) 
+        if(data_getString_differs_from_test)
             std::cout << "tdi decompile: " << data_str << "\n"
                       << "test string:   " << str << "\n";
         delete[] data_str;
-    }    
-    
+    }
+
 };
 
 
@@ -120,7 +120,7 @@ inline void MdsDataTest::test_numeric_cast_function(mds::Data *data, Fn fn, cons
         // NOTE: seems that the optimizer makes a fail in 32bit if these are not
         // volatile variables ( failing case is: test_conversion_limits<Int32> )
         volatile R casted_val = mds::numeric_cast<R>(value);
-        volatile R data_val = (data->*fn)();        
+        volatile R data_val = (data->*fn)();
         TEST1( casted_val == data_val );
     } catch(...) {} // do not throw //
 }
@@ -135,8 +135,8 @@ inline void MdsDataTest::test_numeric_cast_function(mds::Data *data, Fn fn, cons
 
 
 ///
-/// All numeric conversion implemented for MDS numeric types are tested. 
-/// 
+/// All numeric conversion implemented for MDS numeric types are tested.
+///
 /// The actual conversion is now handled by the templated
 /// test_numeric_cast_function to account the possible exception throw if the
 /// conversion is forbidden.
@@ -175,7 +175,7 @@ inline void MdsDataTest::test_data_numerics(mds::Data *data, const T value) {
 }
 
 
-/// 
+///
 /// Overload for all complex value conversions .. that in the case of a scalar
 /// value is implemented to NOT throwing an exception but converting to the real
 /// part.
@@ -223,7 +223,7 @@ inline void MdsDataTest::test_data_numerics(mds::Data *data, const std::complex<
 template <typename T >
 inline void MdsDataTest::test_data_numerics(mds::Data *data, const std::vector<T> &array) {
   TEST1( (unsigned int)data->getSize() == array.size() );
-        
+
     TEST1( data->getByteArray() == array );
     TEST1( data->getShortArray() == array );
     TEST1( data->getIntArray() == array );

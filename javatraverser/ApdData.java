@@ -3,7 +3,7 @@
 public class ApdData extends Data
 {
     Data[] descs;
-    
+
     public static Data getData(Data descs[]) {return new ApdData(descs); }
     public boolean isAtomic() {return false; }
     public ApdData()

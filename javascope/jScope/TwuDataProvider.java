@@ -142,9 +142,9 @@ class TwuDataProvider
         return is_time ? wd.GetXData() : wd.GetYData() ;
     }
 
-    
-    
-    
+
+
+
     public synchronized String GetSignalProperty (String prop, String in) throws IOException
     {
         TwuWaveData wd = (TwuWaveData) GetWaveData(in, 0, 0, 0) ;

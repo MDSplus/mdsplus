@@ -538,7 +538,7 @@ public class DeviceSetup
         }
         for (idx = 0; idx < num_expr; idx++)
         {
-			
+
             if (Data.evaluate(varExpr + expressions[idx]) == 0)
             {
                 JOptionPane.showMessageDialog(this, messages[idx],
@@ -624,7 +624,7 @@ public class DeviceSetup
         for (int i = 0; i < deviceCloseListenerV.size(); i++)
             ( (DeviceCloseListener) deviceCloseListenerV.elementAt(i)).
                 deviceClosed(isChanged(), justApplied);
-        
+
         justApplied = false;
 
     }

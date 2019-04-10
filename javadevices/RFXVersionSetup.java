@@ -9,12 +9,12 @@
  * @author  manduchi
  */
 public class RFXVersionSetup extends DeviceSetup {
-    
+
     /** Creates new form RFXVersionSetup */
     public RFXVersionSetup() {
         initComponents();
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -271,7 +271,7 @@ public class RFXVersionSetup extends DeviceSetup {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
+
     /**
      * @param args the command line arguments
      */
@@ -282,7 +282,7 @@ public class RFXVersionSetup extends DeviceSetup {
             }
         });
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceField deviceField1;
@@ -317,5 +317,5 @@ public class RFXVersionSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     // End of variables declaration//GEN-END:variables
-    
+
 }

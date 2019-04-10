@@ -39,7 +39,7 @@ extern void *convertFromDsc(void *dscPtr, void *tree);
 extern void freeDsc(void *dscPtr);
 
 /*
-extern int TreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end, 
+extern int TreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end,
 							struct descriptor *dim, struct descriptor_a *initialData, int idx);
 extern int TreePutSegment(int nid, int rowidx, struct descriptor_a *data);
 extern int TreeUpdateSegment(int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dim, int idx);

@@ -20,12 +20,12 @@ class mdsPV;
 class mdsServer;
 
 //
-// pvEntry 
+// pvEntry
 //
 // entry in the string hash table for the pvInfo
 //
 // since there may be aliases then we may end up
-// with several of this class all referencing 
+// with several of this class all referencing
 // the same pv info class
 //
 class pvEntry:public stringId, public tsSLNode < pvEntry > {

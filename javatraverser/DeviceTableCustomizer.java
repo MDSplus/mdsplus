@@ -132,7 +132,7 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
                 int oldRefMode = bean.getRefMode();
                 bean.setRefMode(modeChoice.getSelectedIndex());
                 listeners.firePropertyChange("refMode", oldRefMode, bean.getRefMode());
-              
+
                  boolean oldEditable = bean.getEditable();
                 bean.setEditable(editableC.getState());
                 listeners.firePropertyChange("editable", oldEditable, bean.getEditable());
@@ -149,9 +149,9 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
                 bean.setPreferredHeight(Integer.parseInt(preferredHeightT.getText()));
                 listeners.firePropertyChange("preferredHeight", oldPreferredHeight, bean.getPreferredHeight());
 
-                
-                
-                
+
+
+
                 StringTokenizer st = new StringTokenizer(columnNames.getText(), " ");
                 String colNames[] = new String[st.countTokens()];
                 int idx = 0;

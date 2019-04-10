@@ -2,13 +2,13 @@ package MDSplus;
 
 /**
  * Array description for  DTYPE_QU
- * 
+ *
  * Constructors:Uint64Array(long[])
  * @author manduchi
  * @version 1.0
  * @updated 30-mar-2009 13.44.52
  */
-public class Uint64Array extends Array 
+public class Uint64Array extends Array
 {
     long [] datum;
     public Uint64Array(long[] inDatum)
@@ -52,8 +52,8 @@ public class Uint64Array extends Array
                 return false;
         return true;
     }
-    
-    
+
+
     public static Data getData(long []datum, int []dims, Data help, Data units, Data error, Data validation)
     {
         try {
@@ -64,7 +64,7 @@ public class Uint64Array extends Array
     {
         return new Uint64(datum[idx]);
     }
-    
+
     public int getSize(){return datum.length;}
     protected Array getPortionAt(int startIdx, int []newDims, int newSize) throws MdsException
     {
@@ -95,7 +95,7 @@ public class Uint64Array extends Array
             retDatum[i] = (short)datum[i];
         return retDatum;
     }
-    public int[] getIntArray() 
+    public int[] getIntArray()
     {
         int[] retDatum = new int[datum.length];
         for(int i = 0; i < datum.length; i++)
@@ -116,7 +116,7 @@ public class Uint64Array extends Array
             retDatum[i] = (float)datum[i];
         return retDatum;
     }
-    public double[] getDoubleArray() 
+    public double[] getDoubleArray()
     {
         double[] retDatum = new double[datum.length];
         for(int i = 0; i < datum.length; i++)

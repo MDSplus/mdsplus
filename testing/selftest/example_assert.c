@@ -30,19 +30,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
-    BEGIN_TESTING(ok);    
+    BEGIN_TESTING(ok);
     int a=1;
     TEST1(a==1);
-    END_TESTING;    
-        
-    BEGIN_TESTING(test direct assert);    
+    END_TESTING;
+
+    BEGIN_TESTING(test direct assert);
     int a=1;
     assert( a==0 );
     assert( "test direct assert"&&0 );
-    END_TESTING;    
-    
+    END_TESTING;
+
 //    BEGIN_TESTING(test lib assert);
 //    generate_false_assert();
-//    END_TESTING;    
+//    END_TESTING;
 }
 

@@ -1,7 +1,7 @@
 package MDSplus;
 
-public class Event 
-{ 
+public class Event
+{
     long time = 0;
     Data data = null;
     byte[] dataBuf;
@@ -32,7 +32,7 @@ public class Event
               e.printStackTrace();
         }
     }
-    
+
     public Event(java.lang.String name) throws MdsException
     {
         this.name = name;
@@ -67,10 +67,10 @@ public class Event
         return getData();
     }
     public void dispose()
-    {   
+    {
         if(disposed) return;
         disposed = true;
-        unregisterEvent(eventId); 
+        unregisterEvent(eventId);
     }
 
     static public void setEvent(java.lang.String evName)

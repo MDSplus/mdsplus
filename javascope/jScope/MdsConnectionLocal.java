@@ -25,19 +25,19 @@ public class MdsConnectionLocal extends MdsConnection
             Process p = pb.start();
             dis = new BufferedInputStream(p.getInputStream());
             dos = new DataOutputStream(new BufferedOutputStream(p.getOutputStream()));
-        }catch(Exception e)   
+        }catch(Exception e)
         {
             pb = new ProcessBuilder("mdsip-client-local.bat", "mdsip-client-local");  //Windows
             Process p = pb.start();
             dis = new BufferedInputStream(p.getInputStream());
             dos = new DataOutputStream(new BufferedOutputStream(p.getOutputStream()));
         }
-    }  
+    }
     public String getProvider() { return "local";}
     public void setProvider(String provider){}
     public  int DisconnectFromMds()
     {
-	try 
+	try
 	{
 //	    dos.close();   Closing pipes charshes JVM!!!!!!!!!!!!!!!!!!!!!!!!11
 //          dis.close();

@@ -41,7 +41,7 @@ public class TreePath extends TreeNode
     {
         return new TreePath(path,  help,  units, error, validation);
     }
-    
+
     public java.lang.String getString()
     {
         return path;

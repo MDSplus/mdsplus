@@ -31,7 +31,7 @@ public class Range extends Compound
         {
             this(null, null, null, null);
         }
-        
+
         public static Range getData(Data help, Data units, Data error, Data validation)
         {
             return new Range(help, units, error, validation);
@@ -53,7 +53,7 @@ public class Range extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setBegin(Data data)
@@ -62,7 +62,7 @@ public class Range extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setEnding(Data data)
@@ -71,7 +71,7 @@ public class Range extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setdeltaVal(Data data)

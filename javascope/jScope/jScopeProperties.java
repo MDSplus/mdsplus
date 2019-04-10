@@ -9,7 +9,7 @@ import java.util.Properties;
 
 
 
-public class jScopeProperties extends Properties 
+public class jScopeProperties extends Properties
 {
     private static final String keyValueSeparators = "=: \t\r\n\f";
 
@@ -93,7 +93,7 @@ public class jScopeProperties extends Properties
             }
 	}
     }
-    
+
     /*
      * Returns true if the given line is a line that must
      * be appended to the next line

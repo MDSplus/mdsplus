@@ -181,7 +181,7 @@ public class MdsPlusDescriptor extends Object
 		int samples = data.length/size;
 		byte ans[] = new byte[data.length];
 		for (int index=0; index<samples; index++)
-			for (int idx=0;idx<size;idx++) 
+			for (int idx=0;idx<size;idx++)
 				ans[index*size+idx] = data[(index+1)*size-idx-1];
 		return ans;
 	}
@@ -227,7 +227,7 @@ public class MdsPlusDescriptor extends Object
 		}
 		return ans;
 	}
-	
+
 
 	/** returns the data as an array of shorts.
 	* @return an array of shorts.
@@ -441,9 +441,8 @@ public class MdsPlusDescriptor extends Object
                         ans = new String(data);
 		return ans;
 	}
-	
+
 
 
 }
 
-														

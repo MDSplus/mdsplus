@@ -693,7 +693,7 @@ void __test_init(const char *test_name, const char *file, const int line) {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-void __test_timeout(double seconds) {    
+void __test_timeout(double seconds) {
     default_timeout = seconds;
 }
 

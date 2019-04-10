@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   RESAMPLE   
+		Name:   RESAMPLE
 
 		Type:   C function
 
@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 struct dsc$descriptor_xd *RESAMPLE(struct dsc$descriptor *sig,struct dsc$descriptor *x);
 

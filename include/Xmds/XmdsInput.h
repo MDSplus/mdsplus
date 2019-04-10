@@ -4,7 +4,7 @@
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSINPUT.H */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsInput   
+		Name:   XmdsInput
 
 		Type:   C include file
 
@@ -12,8 +12,8 @@
 
 		Date:    24-FEB-1993
 
-    		Purpose: Defines the data structures and routines for 
-                         generic Input or Channel support. 
+    		Purpose: Defines the data structures and routines for
+                         generic Input or Channel support.
 
 --------------------------------------------------------------------------------
 

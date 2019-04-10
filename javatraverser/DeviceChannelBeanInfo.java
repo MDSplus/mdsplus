@@ -7,7 +7,7 @@ public class DeviceChannelBeanInfo extends SimpleBeanInfo
     {
         return loadImage("DeviceChannel.gif");
     }
-    
+
     public BeanDescriptor getBeanDescriptor()
     {
         BeanDescriptor desc = new BeanDescriptor(DeviceChannel.class, DeviceChannelCustomizer.class);

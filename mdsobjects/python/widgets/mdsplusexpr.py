@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -56,13 +56,13 @@ class MDSplusExprFieldWidget(propsExprField,MDSplusWidget,Entry):
     __gtype_name__ = 'MDSplusExprFieldWidget'
 
     __gproperties__ = propsExprField.__gproperties__
-    
+
     def reset(self):
         try:
             self.set_text(self.record.decompile())
         except Exception:
             self.set_text("")
-        
+
     def getValue(self):
         if self.get_text()=="":
             return None
@@ -74,14 +74,14 @@ class MDSplusExprFieldWidget(propsExprField,MDSplusWidget,Entry):
                 raise
 
     value=property(getValue)
-            
-gobject.type_register(MDSplusExprFieldWidget) 
+
+gobject.type_register(MDSplusExprFieldWidget)
 
 class MDSplusExprWidget(propsExpr,MDSplusWidget,ScrolledWindow):
 
     __gtype_name__ = 'MDSplusExprWidget'
     __gproperties__ = propsExpr.__gproperties__
-    
+
     def get_text(self):
         return self.buffer.get_text(self.buffer.get_start_iter(),self.buffer.get_end_iter())
 
@@ -93,7 +93,7 @@ class MDSplusExprWidget(propsExpr,MDSplusWidget,ScrolledWindow):
             self.set_text(self.record.decompile())
         except Exception:
             self.set_text("")
-        
+
     def getValue(self):
         if self.get_text()=="":
             return None
@@ -113,8 +113,8 @@ class MDSplusExprWidget(propsExpr,MDSplusWidget,ScrolledWindow):
         tv.set_wrap_mode(WRAP_WORD)
         self.buffer=tv.get_buffer()
         self.add(tv)
-        
-gobject.type_register(MDSplusExprWidget) 
+
+gobject.type_register(MDSplusExprWidget)
 
 if guibuilder:
     class MDSplusExprFieldWidgetAdaptor(glade.get_adaptor_for_type('GtkEntry')):

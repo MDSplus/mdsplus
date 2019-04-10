@@ -379,7 +379,7 @@ int CRcvBuffer::addData(CUnit* unit, int offset)
 
    if (NULL != m_pUnit[pos])
       return -1;
-   
+
    m_pUnit[pos] = unit;
 
    unit->m_iFlag = 1;

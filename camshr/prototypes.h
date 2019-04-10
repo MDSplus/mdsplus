@@ -24,66 +24,66 @@ int CamPiow(char *Name,		// CAMAC module name
     );
 
 int CamPioQrep(char *Name,	// CAMAC module name
-	       BYTE A,		// 
+	       BYTE A,		//
 	       BYTE F,		//
 	       void *Data,	// pointer to data buffer
-	       BYTE Mem,	// 
+	       BYTE Mem,	//
 	       TranslatedIosb * iosb	//
     );
 
 //int CamFQstop(                                        [2001.09.13]
 int CamFQstopw(char *Name,	// CAMAC module name
-	       BYTE A,		// 
+	       BYTE A,		//
 	       BYTE F,		//
 	       int Count,	//
 	       void *Data,	// pointer to data buffer
-	       BYTE Mem,	// 
+	       BYTE Mem,	//
 	       TranslatedIosb * iosb	//
     );
 
 //int CamFStop(                                         [2001.09.13]
 int CamFStopw(char *Name,	// CAMAC module name
-	      BYTE A,		// 
+	      BYTE A,		//
 	      BYTE F,		//
 	      int Count,	//
 	      void *Data,	// pointer to data buffer
-	      BYTE Mem,		// 
+	      BYTE Mem,		//
 	      TranslatedIosb * iosb	//
     );
 
 int CamQrep(char *Name,		// CAMAC module name
-	    BYTE A,		// 
+	    BYTE A,		//
 	    BYTE F,		//
 	    int Count,		//
 	    void *Data,		// pointer to data buffer
-	    BYTE Mem,		// 
+	    BYTE Mem,		//
 	    TranslatedIosb * iosb	//
     );
 
 int CamQscan(char *Name,	// CAMAC module name
-	     BYTE A,		// 
+	     BYTE A,		//
 	     BYTE F,		//
 	     int Count,		//
 	     void *Data,	// pointer to data buffer
-	     BYTE Mem,		// 
+	     BYTE Mem,		//
 	     TranslatedIosb * iosb	//
     );
 
 int CamQstopw(char *Name,	// CAMAC module name
-	      BYTE A,		// 
+	      BYTE A,		//
 	      BYTE F,		//
 	      int Count,	//
 	      void *Data,	// pointer to data buffer
-	      BYTE Mem,		// 
+	      BYTE Mem,		//
 	      TranslatedIosb * iosb	//
     );
 
 int CamStop(char *Name,		// CAMAC module name
-	    BYTE A,		// 
+	    BYTE A,		//
 	    BYTE F,		//
 	    int Count,		//
 	    void *Data,		// pointer to data buffer
-	    BYTE Mem,		// 
+	    BYTE Mem,		//
 	    TranslatedIosb * iosb	//
     );
 

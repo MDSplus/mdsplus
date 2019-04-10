@@ -75,14 +75,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Date:   26-JUN-1990
 
-    		Purpose: Evaluate data for scope program 
+    		Purpose: Evaluate data for scope program
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
-Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event, 
-                 String database, String shot, String default_node, String x, String y, 
+Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
+                 String database, String shot, String default_node, String x, String y,
                  XmdsWaveformValStruct *x_ret, XmdsWaveformValStruct *y_ret, String *error);
 
 Boolean EvaluateText(String text, String error_prefix, String *text_ret, String *error);

@@ -67,10 +67,10 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
         TEST0( strcmp(AutoArray<char>(string1->getString()),"string") );
         TEST0( strcmp(AutoArray<char>(string2->getString()),"string") );
         TEST1( string1->equals(string2) );
-        TEST0( strcmp(AutoArray<char>(string2->getString()),"string") );        
-        
+        TEST0( strcmp(AutoArray<char>(string2->getString()),"string") );
+
         AutoString c_str(string1->getString());
-        
+
         deleteData(string1);
         deleteData(string2);
         deleteData(string3);

@@ -206,7 +206,7 @@ void stdout_lfun(SRunner * sr, FILE * file, enum print_output printmode,
                  void *obj, enum cl_event evt)
 {
     Suite *s;
-    
+
     switch (evt)
     {
     case CLINITLOG_SR:
@@ -225,7 +225,7 @@ void stdout_lfun(SRunner * sr, FILE * file, enum print_output printmode,
     case CLSTART_S:
         s = (Suite *)obj;
         if(printmode > CK_SILENT)
-        {                
+        {
             fprintf(file, "    Running in suite: %s\n", s->name);
             fprintf(file,"\n -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- \n"
                          "\n");
@@ -241,7 +241,7 @@ void stdout_lfun(SRunner * sr, FILE * file, enum print_output printmode,
             fprintf(file,"\n -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- \n\n");
             srunner_fprint(file, sr, printmode);
             fprintf(file,"\n -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- \n\n");
-                         
+
         }
         break;
     case CLEND_S:
@@ -249,7 +249,7 @@ void stdout_lfun(SRunner * sr, FILE * file, enum print_output printmode,
     case CLSTART_T:
         if(printmode > CK_SILENT) {
             TCase *t = (TCase *)obj;
-            fprintf(file, " -- [%s] -- \n", t->name);            
+            fprintf(file, " -- [%s] -- \n", t->name);
         }
         break;
     case CLEND_T:
@@ -258,7 +258,7 @@ void stdout_lfun(SRunner * sr, FILE * file, enum print_output printmode,
         eprintf("Bad event type received in stdout_lfun", __FILE__,
                 __LINE__);
     }
-    
+
 
 }
 
@@ -550,7 +550,7 @@ void srunner_init_logging(SRunner * sr, enum print_output print_mode)
     FILE *f;
 
     sr->loglst = check_list_create();
-    
+
 #if ENABLE_SUBUNIT
     if(print_mode != CK_SUBUNIT)
 #endif

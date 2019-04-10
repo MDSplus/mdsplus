@@ -285,11 +285,11 @@ public class Node
                     return;
                 }
                 catch (Exception e)
-                {                   
+                {
              		try {
                 		experiment.doDeviceMethod(nid, "dw_setup", Tree.context) ;
             		}catch(Exception exc) {
-                   
+
                      	JOptionPane.showMessageDialog(FrameRepository.frame,
                                                   e.getMessage(),
                                                   "Error in device setup: " + e,
@@ -464,7 +464,7 @@ public class Node
 	    }
 	    try
         {
-            String sep = is_member ? ":" : "."; 
+            String sep = is_member ? ":" : ".";
             experiment.renameNode(nid, newParent.getFullPath()+sep+newName, Tree.context);
             info = experiment.getInfo(nid, Tree.context);
         }
@@ -475,7 +475,7 @@ public class Node
             return false;
 		}
         if (newParent!=parent)
-        {    
+        {
             parent = newParent;
 	        DefaultTreeModel tree_model = (DefaultTreeModel)Tree.curr_tree.getModel();
 	        tree_model.removeNodeFromParent(getTreeNode());

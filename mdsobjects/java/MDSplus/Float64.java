@@ -2,16 +2,16 @@ package MDSplus;
 
 /**
  * Class description of DTYPE_DOUBLE.
- * 
+ *
  * Constructor: Float64(double)
  * @author manduchi
  * @version 1.0
  * @updated 30-mar-2009 13.44.37
  */
-public class Float64 extends Scalar 
+public class Float64 extends Scalar
 {
     double datum;
-    public Float64(double datum)        
+    public Float64(double datum)
     {
         this(datum, null, null, null, null);
     }
@@ -29,7 +29,7 @@ public class Float64 extends Scalar
         return((Float64)data).datum == datum;
     }
     public static Data getData(double datum, Data help, Data units, Data error, Data validation)
-    { 
+    {
         return new Float64(datum, help, units, error, validation);
     }
 
@@ -94,7 +94,7 @@ public class Float64 extends Scalar
      * Convert this data into a byte array. Implemented at this class level by
      * returning TDI data(BYTE(this)). If data() fails or the returned class is not
      * array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  byte[] getByteArray() throws MdsException
     {
@@ -106,7 +106,7 @@ public class Float64 extends Scalar
      * Convert this data into a short array. Implemented at this class level by
      * returning TDI data(WORD(this)). If data() fails or the returned class is not
      * array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  short[] getShortArray()throws MdsException
     {
@@ -118,7 +118,7 @@ public class Float64 extends Scalar
      * Convert this data into a int array. Implemented at this class level by
      * returning TDI data (LONG(this)). If data() fails or the returned class is not
      * array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  int[] getIntArray()throws MdsException
     {
@@ -129,7 +129,7 @@ public class Float64 extends Scalar
      * Convert this data into a long array. Implemented at this class level by
      * returning TDI data(QUADWORD(this)). If data() fails or the returned class is
      * not array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  long[] getLongArray()throws MdsException
     {
@@ -140,7 +140,7 @@ public class Float64 extends Scalar
      * Convert this data into a float array. Implemented at this class level by
      * returning TDI data(QUADWORD(this)). If data() fails or the returned class is
      * not array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  float[] getFloatArray()throws MdsException
     {
@@ -151,7 +151,7 @@ public class Float64 extends Scalar
      * Convert this data into a long array. Implemented at this class level by
      * returning TDI data(QUADWORD(this)). If data() fails or the returned class is
      * not array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  double[] getDoubleArray()throws MdsException
     {

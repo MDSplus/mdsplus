@@ -23,11 +23,11 @@
 /*
  * HISTORY
  */
-/* 
- * (c) Copyright 1989, 1990, 1991, 1992 OPEN SOFTWARE FOUNDATION, INC. 
- * ALL RIGHTS RESERVED 
+/*
+ * (c) Copyright 1989, 1990, 1991, 1992 OPEN SOFTWARE FOUNDATION, INC.
+ * ALL RIGHTS RESERVED
 */
-/* 
+/*
  * Motif Release 1.2
 */
 /*   $RCSfile$ $Revision$ $Date$ */
@@ -43,7 +43,7 @@
 **
 **  ABSTRACT:
 **
-**      This include file defines the interfaces necessry to the binary 
+**      This include file defines the interfaces necessry to the binary
 **	data base in the WML & UIL compilers.
 **
 **--
@@ -73,7 +73,7 @@
 
 #define sym_k_hash_table_limit	127
 
-/* 
+/*
 **  Symbol tags.  These values are used in the tag field of every object header
 **  to identify the type of the entry.
 */
@@ -209,7 +209,7 @@
 #define		sym_k_not_processed	0
 #define		sym_k_queued		1
 #define		sym_k_emitted		2
-
+
 /*
 **	Constants to define compiler-recognized data types. It is
 **	important that the names used in .wml language descriptions
@@ -271,7 +271,7 @@
 #define sym_k_userdefined_charset	1
 
 /*
- * XmFONTLIST_DEFAULT_TAG 
+ * XmFONTLIST_DEFAULT_TAG
  */
 #define sym_k_fontlist_default_tag 	0
 

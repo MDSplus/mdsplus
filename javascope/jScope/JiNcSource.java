@@ -3,7 +3,7 @@ package jScope;
 import java.io.IOException;
 import java.io.PrintStream;
 
-public class JiNcSource implements JiDataSource 
+public class JiNcSource implements JiDataSource
 {
 	private int mRecs = 0;
 	private JiDim[] mDimArray;
@@ -12,7 +12,7 @@ public class JiNcSource implements JiDataSource
 	private RandomAccessData mInput;
 	private String mName;
 	// netCDF record size is sum of record variable lengths
-	private int mRecordSize = 0;	
+	private int mRecordSize = 0;
 
 	public static final boolean DEBUG = false;
 
@@ -25,7 +25,7 @@ public class JiNcSource implements JiDataSource
 	  mName = name;
 	  mInput = in;
 	  readHeader(in);
-	  }  
+	  }
 	public static void doPad(RandomAccessData in) throws IOException
 	  {
 	  long current = in.getFilePointer();
@@ -36,7 +36,7 @@ public class JiNcSource implements JiDataSource
 	      System.out.println(current + " " + residue);
 	  }
 	  in.skipBytes(residue);
-	  }  
+	  }
 	public void dump(PrintStream out)
 	  {
 	  out.println("netcdf " + mName + "{");
@@ -61,7 +61,7 @@ public class JiNcSource implements JiDataSource
 		  toStringVarData(out, vars[i]);
 	      }
 	  }
-	  }  
+	  }
 	private JiVar findVariable(String name, JiNcVar[] varray)
 	  {
 	  JiNcVar rval = null;
@@ -72,7 +72,7 @@ public class JiNcSource implements JiDataSource
 	      }
 	  }
 	  return rval;
-	  }  
+	  }
 	/**
 	 * Get a global attribute named 'name'
 	 *
@@ -82,7 +82,7 @@ public class JiNcSource implements JiDataSource
 	public JiVar getGlobalAtt(String name) throws IOException
 	  {
 	  return findVariable(name, mGattArray);
-	  }  
+	  }
 	/**
 	 * Get all the global attributes for this source
 	 *
@@ -95,19 +95,19 @@ public class JiNcSource implements JiDataSource
 	      rvar[i] = mGattArray[i];
 	  }
 	  return rvar;
-	  }  
+	  }
 	public RandomAccessData getInput()
 	  {
 	  return mInput;
-	  }  
+	  }
 	public int getNumRecords()
 	  {
 	  return mRecs;
-	  }  
+	  }
 	public int getRecordSize()
 	  {
 	  return mRecordSize;
-	  }  
+	  }
 	/**
 	 * Get a variable named 'name'
 	 *
@@ -117,7 +117,7 @@ public class JiNcSource implements JiDataSource
 	public JiVar getVar(String name) throws IOException
 	  {
 	  return findVariable(name, mVarArray);
-	  }  
+	  }
 	/**
 	 * Get all the variables for this source
 	 *
@@ -130,7 +130,7 @@ public class JiNcSource implements JiDataSource
 	      rvar[i] = mVarArray[i];
 	  }
 	  return rvar;
-	  }  
+	  }
 	private JiNcVar readAttribute(RandomAccessData in) throws IOException
 	  {
 	  String name = readString(in);
@@ -149,7 +149,7 @@ public class JiNcSource implements JiDataSource
 	  in.skipBytes(nvar.size());
 	  doPad(in);
 	  return nvar;
-	  }  
+	  }
 	private JiNcVar[] readAttributes(RandomAccessData in) throws IOException
 	  {
 	  int type = in.readInt();
@@ -169,7 +169,7 @@ public class JiNcSource implements JiDataSource
 	      rval[i] = readAttribute(in);
 	  }
 	  return rval;
-	  }  
+	  }
 	private void readDims(RandomAccessData in) throws IOException
 	  {
 	  int type = in.readInt();
@@ -190,7 +190,7 @@ public class JiNcSource implements JiDataSource
 	      }
 	      mDimArray[i] = new JiDim(name, 0, size);
 	  }
-	  }  
+	  }
 	private void readGatts(RandomAccessData in) throws IOException
 	  {
 	  int type = in.readInt();
@@ -208,7 +208,7 @@ public class JiNcSource implements JiDataSource
 	  for (int i=0; i < nelems; i++){
 	      mGattArray[i] = readAttribute(in);
 	  }
-	  }  
+	  }
 	private void readHeader(RandomAccessData in) throws IOException
 	  {
 	  byte b[] = new byte[4];
@@ -226,7 +226,7 @@ public class JiNcSource implements JiDataSource
 				 mRecs + " " + mRecordSize);
 	  }
 
-	  }  
+	  }
 	private String readString(RandomAccessData in) throws IOException
 	  {
 	  int nelems = in.readInt();
@@ -239,7 +239,7 @@ public class JiNcSource implements JiDataSource
 	  in.readFully(b);
 	  doPad(in);
 	  return new String(b);
-	  }  
+	  }
 	private JiNcVar readVar(RandomAccessData in) throws IOException
 	  {
 	  String name = readString(in);
@@ -270,7 +270,7 @@ public class JiNcSource implements JiDataSource
 	      mRecordSize += size;
 	  }
 	  return nvar;
-	  }  
+	  }
 	private void readVars(RandomAccessData in) throws IOException
 	  {
 	  int type = in.readInt();
@@ -288,7 +288,7 @@ public class JiNcSource implements JiDataSource
 	  for (int i=0; i < nelems; i++){
 	      mVarArray[i] = readVar(in);
 	  }
-	  }  
+	  }
 	private void toStringAtt(PrintStream out, JiVar parent, JiVar v)
 	  {
 	  if (parent == null){
@@ -298,7 +298,7 @@ public class JiNcSource implements JiDataSource
 	  }
 	  out.print(v.getName() + " = ");
 	  toStringData(out, v);
-	  }  
+	  }
 	private void toStringData(PrintStream out, JiVar v)
 	  {
 	  try {
@@ -359,11 +359,11 @@ public class JiNcSource implements JiDataSource
 			out.println();
 		  }
 		  out.println(";");
-	      } 
+	      }
 	  } catch (IOException e) {
 	      System.out.println(e);
 	  }
-	  }  
+	  }
 	private void toStringVar(PrintStream out, JiVar v)
 	  {
 	  JiDim[] dims = v.getDims();
@@ -379,10 +379,10 @@ public class JiNcSource implements JiDataSource
 		  toStringAtt(out, v, atts[i]);
 	      }
 	  }
-	  }  
+	  }
 	private void toStringVarData(PrintStream out, JiVar v)
 	  {
 	  out.print(v.getName() + " = ");
 		  toStringData(out, v);
-	  }  
+	  }
 }

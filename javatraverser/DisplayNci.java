@@ -28,7 +28,7 @@ public class DisplayNci extends NodeEditor implements ActionListener
     }
 
     public void setNode(Node node)
-    {	
+    {
 	    this.node = node;
 	    frame.setTitle("Display Nci information");
 	    try{node.getInfo();}

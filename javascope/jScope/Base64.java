@@ -5,7 +5,7 @@ class Base64
 {
     static byte []Base64Alphabet = new String("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=").getBytes();
     byte decodingTable[] = new byte[256];
-    
+
     Base64()
     {
         int i;
@@ -125,7 +125,7 @@ class Base64
 
 
 
- }   
+ }
 
 /*
 

@@ -95,7 +95,7 @@ class TreeServer extends UnicastRemoteObject implements RemoteTree
         setContext(ctx);
         tree.putData(nid, data, 0);
     }
-    
+
     public void putRow(NidData nid, Data data, long time, int ctx)  throws DatabaseException
     {
         setContext(ctx);
@@ -108,11 +108,11 @@ class TreeServer extends UnicastRemoteObject implements RemoteTree
         setContext(ctx);
         NodeInfo info = tree.getInfo(nid, 0);
         return info;
-    }    
+    }
     public void clearFlags(NidData nid, int flags) throws DatabaseException
     {
         tree.clearFlags(nid, flags);
-    }    
+    }
     public void setFlags(NidData nid, int flags) throws DatabaseException
     {
         tree.setFlags(nid, flags);

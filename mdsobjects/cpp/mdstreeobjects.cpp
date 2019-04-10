@@ -738,7 +738,7 @@ void TreeNode::setExtendedAttribute (const char *name, Data *data)
     int status = setTreeXNci(tree->getCtx(), nid, name, data->convertToDsc());
     if(!(status & 1))
 	throw MdsException(status);
-  
+
 }
 
 void TreeNode::setExtendedAttribute (std::string name, Data *data)

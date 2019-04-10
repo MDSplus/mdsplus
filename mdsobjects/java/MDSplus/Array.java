@@ -3,12 +3,12 @@ package MDSplus;
 /**
  * Common superclass for arrays (CLASS_A). It contains dimension informationThe
  * contained data is assumed to be row-first ordered.
- * 
+ *
  * Array - derived classes will hold actual data in language-specific structures.
  * This allows for a direct implementation of operations such as getElementAt()
  * and setElementAt() which would be difficult or impossible to implement via TDI.
- * 
- * 
+ *
+ *
  * For the remaining Data methods, the generic mechanism of the superclass'
  * implementation (conversion to MDSplus descriptor, TDI operation conversion back
  * to class instances) is retained.
@@ -60,7 +60,7 @@ public abstract class Array extends Data
      * single dimension i will specify the i-th row.
      * Note that this method may be implemented at this level since ArrayData has all
      * the required information about data and dimension.
-     * 
+     *
      * @param dims
      */
     public Data getElementAt(int[] getDims) throws MdsException

@@ -1,7 +1,7 @@
 package MDSplus;
 import java.util.*;
 
-public class Connection 
+public class Connection
 {
     boolean isConnected = false;
     static {
@@ -36,15 +36,15 @@ public class Connection
                 return false;
         return true;
     }
-    
+
     public Connection(){}
-   
-    
+
+
     public Connection(java.lang.String mdsipAddr) throws MdsException
     {
         initialize(mdsipAddr);
     }
-   
+
     public void initialize(java.lang.String mdsipAddr) throws MdsException
     {
         this.mdsipAddr = mdsipAddr;
@@ -53,48 +53,48 @@ public class Connection
             throw new MdsException("Cannot connect to "+ mdsipAddr);
         isConnected = true;
     }
-           
-    
-    
+
+
+
     protected void finalize()
     {
         if(sockId >= 0)
             disconnectFromMds(sockId);
         isConnected = false;
     }
-    
+
     public void openTree(java.lang.String name, int shot) throws MdsException
     {
         openTree(sockId, name, shot);
     }
-            
+
     public void closeAllTree() throws MdsException
     {
         closeTree(sockId);
     }
-    
+
     public void closeTree(java.lang.String name, int shot) throws MdsException
     {
         closeTree(sockId);
     }
-    
+
     public void setDefault(java.lang.String path) throws MdsException
     {
         setDefault(sockId, path);
     }
-    
+
     public Data get(java.lang.String expr, Data args[]) throws MdsException
     {
         if(!checkArgs(args))
             throw new MdsException("Invalid arguments: only scalars and arrays arguments can be passed to COnnection.get()");
         return get(sockId, expr, args);
     }
-    
+
     public Data get(java.lang.String expr)throws MdsException
     {
         return get(expr, new Data[0]);
     }
-    
+
     public void put(java.lang.String path, java.lang.String expr, Data args[]) throws MdsException
     {
         if(!checkArgs(args))
@@ -116,7 +116,7 @@ public class Connection
     public native void setDefault(int sockId, java.lang.String path) throws MdsException;
     public native Data get(int sockId, java.lang.String expr, Data args[]) throws MdsException;
     public native void put(int sockId, java.lang.String path, java.lang.String expr, Data args[]) throws MdsException;
- 
+
     public GetMany getMany()
     {
         return new GetManyInConnection();
@@ -125,7 +125,7 @@ public class Connection
     {
         return new PutManyInConnection();
     }
-    //////////GetMany 
+    //////////GetMany
     class GetManyInConnection extends List implements GetMany
     {
         Dictionary evalRes;
@@ -146,14 +146,14 @@ public class Connection
         {
             insert(len(), name, expr, args);
         }
-        
+
         public void insert(java.lang.String prevName, java.lang.String name, java.lang.String expr, Data [] args)
         {
             int idx;
             for(idx = 0; idx < len() && !getElementAt(idx).equals(new String(prevName)); idx++);
             insert(idx, name, expr, args);
         }
-        
+
         public void remove(java.lang.String name)
         {
             String nameStr = new String(name);
@@ -168,14 +168,14 @@ public class Connection
                 }
             }
         }
-        
+
         public void execute() throws MdsException
         {
             Data serializedIn = new Uint8Array(serialize());
             Data serializedOut = Connection.this.get("GetManyExecute($)", new Data[]{serializedIn});
             evalRes = (Dictionary)Data.deserialize(serializedOut.getByteArray());
         }
-        
+
         public Data get(java.lang.String name) throws MdsException
         {
             if(evalRes == null)
@@ -187,8 +187,8 @@ public class Connection
            return retData;
         }
     }
-    
-    
+
+
     class PutManyInConnection extends List implements PutMany
     {
         Dictionary evalRes;
@@ -209,14 +209,14 @@ public class Connection
         {
             insert(len(), path, expr, args);
         }
-        
+
         public void insert(java.lang.String prevPath, java.lang.String path, java.lang.String expr, Data [] args)
         {
             int idx;
             for(idx = 0; idx < len() && !getElementAt(idx).equals(new String(prevPath)); idx++);
             insert(idx, path, expr, args);
         }
-        
+
         public void remove(java.lang.String path)
         {
             String pathStr = new String(path);
@@ -231,14 +231,14 @@ public class Connection
                 }
             }
         }
-        
+
         public void execute() throws MdsException
         {
             Data serializedIn = new Uint8Array(serialize());
             Data serializedOut = Connection.this.get("PutManyExecute($)", new Data[]{serializedIn});
             evalRes = (Dictionary)Data.deserialize(serializedOut.getByteArray());
         }
-        
+
         public void checkStatus(java.lang.String path) throws MdsException
         {
             if(evalRes == null)
@@ -248,7 +248,7 @@ public class Connection
                throw new MdsException(retMsg.getString());
         }
     }
-    
+
 ///DataStream management
     Hashtable listenerH = new Hashtable();
     Hashtable listenerIdH = new Hashtable();
@@ -266,12 +266,12 @@ public class Connection
         int id = idInt.intValue();
         try {
             get("MdsObjectsCppShr->unregisterListener(val("+id+"))");
-        }catch(Exception exc) 
+        }catch(Exception exc)
         {
             System.out.println(exc);
         }
     }
-    
+
     public void startStreaming()
     {
         if(listenerThread == null)
@@ -285,26 +285,26 @@ public class Connection
             listenerThread.start();
         }
     }
-    
+
     public void resetConnection()
     {
         disconnectFromMds(sockId);
         sockId = connectToMds(mdsipAddr);
     }
-    
+
     public void disconnect()
     {
         disconnectFromMds(sockId);
         isConnected = false;
     }
-    
+
     void checkDataAvailability()
     {
        while(true)
        {
             try {
                 Data serData = get("MdsObjectsCppShr->getNewSamplesSerializedXd:DSC()");
-                if(!isConnected) return;  
+                if(!isConnected) return;
                 Apd apdData = (Apd)Data.deserialize(serData.getByteArray());
                 Data [] descs = apdData.getDescs();
                 for(int i = 0; i < descs.length/2; i++)
@@ -341,4 +341,4 @@ public class Connection
         }catch(Exception e){System.out.println(e); }
     }
 }
-    
+

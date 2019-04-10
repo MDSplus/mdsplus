@@ -76,12 +76,12 @@ public class DeviceTable extends DeviceComponent
                     tf.setEnabled(DeviceTable.this.isEditable(row, column));
                     return tf;
                 }
-                
+
             });
        }
      }
     public int getRefMode() { return refMode;}
-    
+
     public void setNumRows(int numRows)
     {
         this.numRows = numRows;
@@ -168,7 +168,7 @@ public class DeviceTable extends DeviceComponent
         if(rowNames.length > 0)
           displayRowNumber = true;
         table = new JTable();
-        
+
         scroll = new JScrollPane(table);
         table.setPreferredScrollableViewportSize(new Dimension(200, 70));
         label = new JLabel();
@@ -377,7 +377,7 @@ public class DeviceTable extends DeviceComponent
             return true;
        }
     }
-    
+
     public void initializeData(Data data, boolean is_on)
     {
         initializing = true;
@@ -435,7 +435,7 @@ public class DeviceTable extends DeviceComponent
                    currToken = currToken.substring(1, currToken.length() - 1);
                    currToken = currToken.trim();
                 }
-               
+
                 items[idx] += currToken;
                 if(balancedParenthesis(items[idx]))
                     idx++;
@@ -546,7 +546,7 @@ public class DeviceTable extends DeviceComponent
             }
             public boolean isCellEditable(int row, int col)
             {
-                return isEditable(row, col);    
+                return isEditable(row, col);
             }
             private String convertValue(String value)
             {
@@ -599,7 +599,7 @@ public class DeviceTable extends DeviceComponent
                           table.repaint();
                       }
                   }
-                  
+
                }
                else //refMode == NORMAL
  */              {
@@ -676,7 +676,7 @@ public class DeviceTable extends DeviceComponent
                 System.out.print(items[i*numCols+j]+" ");
             System.out.println("");
         }
-            
+
     }
 
     public void displayData(Data data, boolean is_on)

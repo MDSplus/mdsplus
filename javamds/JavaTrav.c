@@ -1037,7 +1037,7 @@ EXPORT int doAction(int nid)
 	break;
       }
       // Try to distingush between system error success execution  return  0 code
-      // and error execution should be return a code < 255 
+      // and error execution should be return a code < 255
       // and MDSplus essror code which has this convention odd number success
       // even number error with a value larger than 255
       status = *(int *)(xd1.pointer->pointer);
@@ -1128,7 +1128,7 @@ EXPORT int doAction(int nid)
 	break;
       }
       // Try to distingush between system error success execution  return  0 code
-      // and error execution should be return a code < 255 
+      // and error execution should be return a code < 255
       // and MDSplus essror code which has this convention odd number success
       // even number error with a value larger than 255
       status = *(int *)(xd1.pointer->pointer);
@@ -1230,7 +1230,7 @@ JNIEXPORT jint JNICALL Java_Database_doAction(JNIEnv * env, jobject obj __attrib
   //      RaiseException(env, (status == 0)?"Cannot execute action":MdsGetMsg(status), status);
 }
 
-//Cesare Feb 2014: Java_Database_doDeviceMethod support routine 
+//Cesare Feb 2014: Java_Database_doDeviceMethod support routine
 static char *MdsGetString(char *in)
 {
   char error_message[512];
@@ -1289,7 +1289,7 @@ JNIEXPORT void JNICALL Java_Database_doDeviceMethod
   status = TreeDoMethod(&nid_dsc, &method_dsc, &stat_d MDS_END_ARG);
   (*env)->ReleaseStringUTFChars(env, jmethod, method);
   if (!(status & 1) || !(stat & 1)) {
-//Cesare Feb 2014: Fix nethod remporte message  
+//Cesare Feb 2014: Fix nethod remporte message
 
     char outMsg[1024];
     char *lastMsg;

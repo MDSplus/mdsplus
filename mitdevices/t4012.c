@@ -132,7 +132,7 @@ EXPORT int t4012___init(struct descriptor *nid __attribute__ ((unused)), InInitS
   /* added 3/29/04 as per Ammanda hubbard,  This sequence of commands
      fixes the traqs when they get confused.
 
-     my guess is that what is really happening is AccessTraq is failing, and 
+     my guess is that what is really happening is AccessTraq is failing, and
      the remaining setup information is not being sent when the errors occur.
    */
   {

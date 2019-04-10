@@ -155,11 +155,11 @@ DWORD WINAPI monitor(LPVOID s)
          break;
       }
 
-      cout << perf.mbpsSendRate << "\t\t" 
-           << perf.msRTT << "\t" 
-           << perf.pktCongestionWindow << "\t" 
-           << perf.usPktSndPeriod << "\t\t\t" 
-           << perf.pktRecvACK << "\t" 
+      cout << perf.mbpsSendRate << "\t\t"
+           << perf.msRTT << "\t"
+           << perf.pktCongestionWindow << "\t"
+           << perf.usPktSndPeriod << "\t\t\t"
+           << perf.pktRecvACK << "\t"
            << perf.pktRecvNAK << endl;
    }
 

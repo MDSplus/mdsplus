@@ -18,7 +18,7 @@ public class DoubleArray extends ArrayData
 	        this.datum[i] = datum[i];
 	    this.flags = flags;
     }
-    public int [] getIntArray() 
+    public int [] getIntArray()
     {
 	    int ris [] = new int[datum.length];
 	    for(int i = 0; i < datum.length; i++)

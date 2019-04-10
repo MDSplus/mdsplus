@@ -5,31 +5,31 @@ import java.util.Hashtable;
 
 public class SignalBox
 {
-     
+
      class Sign
      {
         String x_expr;
         String y_expr;
-        
+
         Sign(String x_expr, String y_expr)
         {
             this.x_expr = new String(x_expr == null ? "" : x_expr);
             this.y_expr = new String(y_expr == null ? "" : y_expr);
         }
-        
+
         public String toString()
         {
             return y_expr+" "+x_expr;
         }
      }
-    
+
      Hashtable<String, Sign> signals_name = new Hashtable<>();
      Object obj[];
-     
+
      public void AddSignal(String x_expr, String y_expr)
      {
         if(x_expr == null && y_expr == null) return;
-        
+
         String s = x_expr+y_expr;
         if(!signals_name.containsKey(s))
         {
@@ -37,7 +37,7 @@ public class SignalBox
             obj = (Object[])(signals_name.values()).toArray();
         }
      }
-     
+
      public String getXexpr(int i)
      {
         return ((Sign)obj[i]).x_expr;
@@ -63,7 +63,7 @@ public class SignalBox
             obj = (Object[])(signals_name.values()).toArray();
         }
      }
-     
+
      public String toString()
      {
         if(obj == null) return "";
@@ -72,5 +72,5 @@ public class SignalBox
             out = out +"\n"+obj[i];
         return out;
      }
-    
+
 }

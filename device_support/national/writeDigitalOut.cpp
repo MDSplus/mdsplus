@@ -107,7 +107,7 @@ int test(char * device_name, int silent)
 //	}
 
 	/* Stop the segment */
-	xseries_stop_di(dio_fd);	
+	xseries_stop_di(dio_fd);
 	di_conf = xseries_static_di(dio_input_mask);
 	do_conf = xseries_static_do(dio_output_mask);
 

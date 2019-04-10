@@ -9,12 +9,12 @@
  * @author  taliercio
  */
 public class FASTCAMSetup extends DeviceSetup {
-    
+
     /** Creates new form FASTCAMSetup */
     public FASTCAMSetup() {
         initComponents();
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -264,7 +264,7 @@ public class FASTCAMSetup extends DeviceSetup {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
+
     /**
      * @param args the command line arguments
      */
@@ -275,7 +275,7 @@ public class FASTCAMSetup extends DeviceSetup {
             }
         });
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
@@ -314,5 +314,5 @@ public class FASTCAMSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     // End of variables declaration//GEN-END:variables
-    
+
 }

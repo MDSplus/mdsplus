@@ -8,9 +8,9 @@ package MDSplus;
  */
 public class Tree {
 
-   
+
 static final int  DbiNAME = 1,
-                DbiSHOTID = 2,	
+                DbiSHOTID = 2,
                 DbiMODIFIED = 3,
                 DbiOPEN_FOR_EDIT = 4,
                 DbiINDEX = 5,
@@ -35,7 +35,7 @@ static public final int  TreeUSAGE_ANY  = 0,
                 TreeUSAGE_AXIS = 10,
                 TreeUSAGE_SUBTREE = 11,
                 TreeUSAGE_COMPOUND_DATA = 1;
-  
+
         static {
             try {
               int loaded = 0;
@@ -59,14 +59,14 @@ static public final int  TreeUSAGE_ANY  = 0,
                   e.printStackTrace();
             }
 	}
-    
-    
+
+
         private int shot;
 	private java.lang.String name;
         private java.lang.String mode;
         private int ctx1, ctx2;
         private boolean open = false;
-        
+
 	public Tree(java.lang.String name, int shot) throws MdsException
         {
             this.shot = shot;
@@ -74,7 +74,7 @@ static public final int  TreeUSAGE_ANY  = 0,
             mode = "NORMAL";
             openTree(name, shot, false);
             open = true;
-            
+
 	}
 
 	public Tree(java.lang.String name, int shot, java.lang.String mode) throws MdsException
@@ -92,7 +92,7 @@ static public final int  TreeUSAGE_ANY  = 0,
             if(upMode.equals("EDIT"))
                 editTree(name, shot, false);
             open = true;
-            
+
 	}
 
         public void close() throws MdsException
@@ -118,7 +118,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 
 	/**
 	 * Set the oassed tree as the active one
-	 * 
+	 *
 	 * @param tree
 	 */
 	public static void setActiveTree(Tree tree) throws MdsException
@@ -126,7 +126,7 @@ static public final int  TreeUSAGE_ANY  = 0,
             switchDbid(tree.ctx1, tree.ctx2);
 	}
 
-        
+
         static Tree getTree(java.lang.String name, int shot) throws MdsException
         {
             return new Tree(name, shot);
@@ -170,14 +170,14 @@ static public final int  TreeUSAGE_ANY  = 0,
         public static native void deleteTreeNode(int ctx1, int ctx2, java.lang.String name) throws MdsException;
         public static native void removeTreeTag(int ctx1, int ctx2, java.lang.String tag) throws MdsException;
         public static native long getDatafileSize(int ctx1, int ctx2);
-        
-        
+
+
         public int getCtx1(){return ctx1;}
         public int getCtx2() {return ctx2;}
-        
+
 	/**
 	 * Return TreeNode for the data item corresponding to the passed pathname
-	 * 
+	 *
 	 * @param path
 	 */
 	public TreeNode getNode(java.lang.String path) throws MdsException
@@ -190,7 +190,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 	/**
 	 * Returns the TreeNode for the data  item whose internal address (nid) is passed
 	 * as argument.
-	 * 
+	 *
 	 * @param nid
 	 */
 	public TreeNode getNode(int nid) throws MdsException
@@ -200,7 +200,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 
 	/**
 	 * Return the TreeNode for the data itemspecified by the passed TreePath instance.
-	 * 
+	 *
 	 * @param path
 	 */
 	public TreeNode getNode(TreePath path) throws MdsException
@@ -211,7 +211,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 	/**
 	 * Return the TreeNode array for all the successor nodes of the specified usage
 	 * with respect of the passed path.
-	 * 
+	 *
 	 * @param path
 	 * @param usage
 	 */
@@ -237,7 +237,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 
 	/**
 	 * Set the default position in the tree.
-	 * 
+	 *
 	 * @param node
 	 */
 	public void setDefault(TreeNode node) throws MdsException
@@ -260,17 +260,17 @@ static public final int  TreeUSAGE_ANY  = 0,
             return getDbiFlag(ctx1, ctx2, DbiVERSIONS_IN_PULSE);
 	}
 
-        
+
         public void setVersionsInModel(boolean enabled) throws MdsException
         {
             setDbiFlag(ctx1, ctx2, enabled, DbiVERSIONS_IN_MODEL);
         }
-        
+
         public void setVersionsInPulse(boolean enabled) throws MdsException
         {
             setDbiFlag(ctx1, ctx2, enabled, DbiVERSIONS_IN_MODEL);
         }
-        
+
         public boolean isModified() throws MdsException
         {
             return getDbiFlag(ctx1, ctx2, DbiMODIFIED);
@@ -283,11 +283,11 @@ static public final int  TreeUSAGE_ANY  = 0,
         {
             return getDbiFlag(ctx1, ctx2, DbiOPEN_READONLY);
 	}
-                
+
 	/**
 	 * Set the version date: all read data will refer to the version active to that
 	 * date.
-	 * 
+	 *
 	 * @param date
 	 */
 	public void setViewDate(java.util.Date date) throws MdsException
@@ -298,7 +298,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 	/**
 	 * Set the current time context. Only the specified portion of segmented data will
 	 * be returned by TreeNode.getData() method
-	 * 
+	 *
 	 * @param start
 	 * @param end
 	 * @param delta
@@ -310,7 +310,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 
 	/**
 	 * Set the current tree and shot.
-	 * 
+	 *
 	 * @param shot
 	 * @param treename
 	 */
@@ -321,10 +321,10 @@ static public final int  TreeUSAGE_ANY  = 0,
 
 	/**
 	 * Return the current shot for that tree.
-	 * 
+	 *
 	 * @param treename
 	 */
-        
+
         public int getCurrent() throws MdsException
         {
             return getCurrent(name);
@@ -332,7 +332,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 
 	/**
 	 * Create a new pulse file
-	 * 
+	 *
 	 * @param shot
 	 */
 	public void createPulse(int pulseShot) throws MdsException
@@ -342,7 +342,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 
 	/**
 	 * Delete a pulse file.
-	 * 
+	 *
 	 * @param shot
 	 */
 	public void deletePulse(int pulseShot) throws MdsException
@@ -352,7 +352,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 
 	/**
 	 * Returns the list of tags matching the specified wild name.
-	 * 
+	 *
 	 * @param wild
 	 */
 	public java.lang.String[] findTags(java.lang.String wild) throws MdsException
@@ -384,7 +384,7 @@ static public final int  TreeUSAGE_ANY  = 0,
             quitTree(ctx1, ctx2, name, shot);
 	}
 
-        
+
         static int convertUsage(java.lang.String usageStr)
         {
             java.lang.String upUsageStr = usageStr.toUpperCase();
@@ -405,7 +405,7 @@ static public final int  TreeUSAGE_ANY  = 0,
         }
 	/**
 	 * Add a new node to the tree open for edit.
-	 * 
+	 *
 	 * @param name
 	 * @param usage
 	 */
@@ -416,7 +416,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 
 	/**
 	 * Add a new device instance to the tree open for edit.
-	 * 
+	 *
 	 * @param name
 	 * @param type
 	 */
@@ -427,14 +427,14 @@ static public final int  TreeUSAGE_ANY  = 0,
 
 	/**
 	 * Delete the node and its descendants from the tree open for edit.
-	 * 
+	 *
 	 * @param name
 	 */
 	public void deleteNode(java.lang.String name) throws MdsException
         {
             deleteTreeNode(ctx1, ctx2, name);
 	}
-        
+
         public void removeTag(java.lang.String tag) throws MdsException
         {
             removeTreeTag(ctx1, ctx2, tag);

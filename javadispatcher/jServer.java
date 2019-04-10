@@ -38,10 +38,10 @@ public class jServer
     ActionQueue actionQueue = new ActionQueue();
     Worker worker = new Worker();
     boolean watchdogStarted = false;
-    
-    
-   
-    
+
+
+
+
 
 //static inner class ActionDescriptor is used to keep action-related information
     static class ActionDescriptor
@@ -272,7 +272,7 @@ public class jServer
             return null;
         }
     }
-    
+
     synchronized void removeAllRetSocket()
     {
         retSocketsV.removeAllElements();
@@ -331,7 +331,7 @@ public class jServer
                         String name = new String(messages[8].body);
 
                         //  System.out.println("SrvAction " + id + " " + tree + " " + shot + " " + nid);
-                        
+
                         actionQueue.enqueueAction(new ActionDescriptor(name,
                             address, port, id,
                             tree, shot));
@@ -494,26 +494,26 @@ public class jServer
     {
         int port;
 
-        try 
+        try
         {
             System.out.println(args[0]);
             port = Integer.parseInt(args[0]);
         }
-        catch (Exception exc) 
+        catch (Exception exc)
         {
             port = 8002;
         }
-        
+
         /*
-        try 
+        try
         {
             PrintStream logFile = new PrintStream(new FileOutputStream("out_"+port+".log"));
             System.setOut(new TeeStream(System.out, logFile));
             System.setErr(new TeeStream(System.err, logFile));
         }
         catch (Exception exc) {}
-        */   
-        
+        */
+
         if (args.length > 1 ) {
             String tclBatch = args[1];
             Database tree = new Database();
@@ -539,7 +539,7 @@ public class jServer
             }
         }
         catch (Exception exc) {}
-        
+
     }
 
     String lastTree = null;
@@ -582,7 +582,7 @@ public class jServer
             System.out.println("" + new Date() + ", Doing " + name + " in " +
                                tree + " shot " + shot);
 
-            //Gabriele jan 2014: let doAction return the true status and get error message 
+            //Gabriele jan 2014: let doAction return the true status and get error message
             //via  JNI method GetMdsMessage(status)
 
             status = mdsTree.doAction(nid, 0);
@@ -590,10 +590,10 @@ public class jServer
 			{
 			   Data d = mdsTree.dataFromExpr("getLastError()");
 			   String errMsg = mdsTree.evaluateSimpleData(d, 0).getString();
-             
+
                //System.err.println("Action Execution failed: " + mdsTree.getMdsMessage(status));
 			   if( status != 0 )
-			   { 	
+			   {
                		System.out.println("" + new Date() + ", Failed " + name + " in " +
                                	tree + " shot " + shot + ": " + mdsTree.getMdsMessage(status) + " " + (errMsg == null ? "" : errMsg) );
                }
@@ -608,7 +608,7 @@ public class jServer
 			{
                System.out.println("" + new Date() + ", Done " + name + " in " + tree + " shot " + shot);
 			}
-/*             
+/*
             try {
                 mdsTree.doAction(nid, 0);
             }catch(Exception exc) {
@@ -622,8 +622,8 @@ public class jServer
                     status = 0;
                 }
             }
-*/         
-      
+*/
+
             //status = 1;
         }
         catch (Exception exc) {

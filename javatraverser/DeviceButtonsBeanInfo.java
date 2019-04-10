@@ -33,5 +33,5 @@ public class DeviceButtonsBeanInfo extends SimpleBeanInfo
             return super.getPropertyDescriptors();
         }
     }
-    
+
 }

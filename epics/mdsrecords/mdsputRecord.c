@@ -25,11 +25,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*************************************************************************\
 * Copyright (c) 2010 - RFX.
 * EPICS BASE is distributed subject to a Software License Agreement found
-* in file LICENSE that is included with this distribution. 
+* in file LICENSE that is included with this distribution.
 \*************************************************************************/
 
 /* mdsputRecord.c - Reccord support for MDSplus data storage */
-
+
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -107,7 +107,7 @@ struct mpdset {			/* mdsput dset */
 static void monitor(mdsputRecord *);
 static long readValue(mdsputRecord *);
 static void checkAlarms(mdsputRecord * prec);
-
+
 static long init_record(mdsputRecord * prec, int pass)
 {
   struct mpdset *pdset;
@@ -148,7 +148,7 @@ static long init_record(mdsputRecord * prec, int pass)
   checkAlarms(prec);
   return status;
 }
-
+
 static long process(mdsputRecord * prec)
 {
   struct mpdset *pdset = (struct mpdset *)(prec->dset);
@@ -195,7 +195,7 @@ static long cvt_dbaddr(DBADDR * paddr)
 
   return 0;
 }
-
+
 static long get_array_info(DBADDR * paddr, long *no_elements, long *offset)
 {
   mdsputRecord *prec = (mdsputRecord *) paddr->precord;
@@ -238,7 +238,7 @@ static long get_precision(DBADDR * paddr, long *precision)
 
   return 0;
 }
-
+
 static long get_graphic_double(DBADDR * paddr, struct dbr_grDouble *pgd)
 {
   mdsputRecord *prec = (mdsputRecord *) paddr->precord;
@@ -297,7 +297,7 @@ static void monitor(mdsputRecord * prec)
     db_post_events(prec, prec->bptr, monitor_mask);
   }
 }
-
+
 static long readValue(mdsputRecord * prec)
 {
   long status;

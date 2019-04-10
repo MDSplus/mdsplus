@@ -322,8 +322,8 @@ int main(int argc, char **argv)
           strcat(line_in, " = ");
 	expr_dsc.length = strlen(expr);
 /*
-      expr_dsc.length = strlen(expr)-1;    
-      expr_dsc.length = strlen(expr)-1;    
+      expr_dsc.length = strlen(expr)-1;
+      expr_dsc.length = strlen(expr)-1;
       expr[expr_dsc.length++] = ')';
       expr[expr_dsc.length++] = ')';
       expr[expr_dsc.length++] = ')';

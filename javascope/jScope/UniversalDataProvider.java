@@ -51,8 +51,8 @@ class UniversalDataProvider implements DataProvider
         String subStr4 = subStr3.substring(0, pos3);
         return Integer.parseInt(subStr4);
     }
-    
-    public UniversalDataProvider() 
+
+    public UniversalDataProvider()
     {
         defaultProvider = new MdsDataProvider();
     }
@@ -69,7 +69,7 @@ class UniversalDataProvider implements DataProvider
         while(en.hasMoreElements())
             en.nextElement().enableAsyncUpdate(enable);
     }
- 
+
     String getExpr(String spec)
     {
         if(!spec.startsWith("//"))
@@ -82,7 +82,7 @@ class UniversalDataProvider implements DataProvider
         int pos3 =  subStr3.indexOf("/");
         return subStr3.substring(pos3+1);
      }
-    
+
     public WaveData GetWaveData(String in, int row, int col, int index)
     {
         MdsDataProvider currProvider = getProvider(in);
@@ -125,10 +125,10 @@ class UniversalDataProvider implements DataProvider
         }
         try {
             return currProvider.GetWaveData(getExpr(in_y), getExpr(in_x), row, col, index);
-        }catch(Exception exc) 
+        }catch(Exception exc)
         {
-            error = ""+exc; 
-            return null; 
+            error = ""+exc;
+            return null;
         }
     }
 
@@ -169,9 +169,9 @@ class UniversalDataProvider implements DataProvider
     {
          try {
             return defaultProvider.GetFloat(in, row, col, index);
-        }catch(Exception exc) 
+        }catch(Exception exc)
         {
-            error = ""+exc; 
+            error = ""+exc;
             return 0;
         }
    }
@@ -187,10 +187,10 @@ class UniversalDataProvider implements DataProvider
     {
         return error;
     }
-    
-    
-    
-    
+
+
+
+
     public void AddUpdateEventListener(UpdateEventListener l, String event) throws IOException
     {
         defaultProvider.AddUpdateEventListener(l, event);

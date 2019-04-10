@@ -42,7 +42,7 @@ public class DataEditor
             else
                 mode_idx = 1;
           }catch(Exception exc){mode_idx = 1;}
-      } 
+      }
       else
           mode_idx = 1;
       if (data.dtype == Data.DTYPE_WITH_UNITS)
@@ -96,7 +96,7 @@ public class DataEditor
                                          new ExprEditor( _validation, false, 1, 20));
         panel.add(param_edit);
         break;
-      case 3: 
+      case 3:
         if (data != null && data instanceof FunctionData)
         {
           python_edit = new PythonEditor(((FunctionData)data).getArgs());
@@ -212,7 +212,7 @@ public class DataEditor
             else
                 mode_idx = 1;
           }catch(Exception exc){mode_idx = 1;}
-      } 
+      }
       else
         mode_idx = 1;
       if (data.dtype == Data.DTYPE_WITH_UNITS)

@@ -112,7 +112,7 @@ char *ck_strdup_printf(const char *fmt, ...)
     {
         /* Try to print in the allocated space. */
         va_start(ap, fmt);
-        n = vsnprintf(p, size, fmt, ap);        
+        n = vsnprintf(p, size, fmt, ap);
         va_end(ap);
         /* If that worked, return the string. */
         if(n > -1 && n < (int)size)

@@ -43,7 +43,7 @@ public class ParameterSetting
     boolean readOnly = false;
     static String refShotLabelText = "Ref. Shot: ";
     JLabel refShotLabel;
-    JButton timesB, poloidalControlB, axiSetupB, pcSetupB, pmSetupB, ipSetupB, 
+    JButton timesB, poloidalControlB, axiSetupB, pcSetupB, pmSetupB, ipSetupB,
         toroidalControlB, chopperSetupB, ffSetupB, inverterSetupB, tfSetupB,
         bfControlB,
         mhdControlB, viSetupB, mopB, ansaldoConfigB, unitsConfigB,
@@ -117,19 +117,19 @@ public class ParameterSetting
     Hashtable currSetupOnHash = new Hashtable();
 
     JTextField maxPMATF, maxPCATParallelF, maxPCATSeriesF, maxTFATF, maxTCCHF,
-        maxTCACF, maxPMVoltageF, 
-//	maxFillVoltageF, maxPuffVoltageF, 
+        maxTCACF, maxPMVoltageF,
+//	maxFillVoltageF, maxPuffVoltageF,
 	maxTempRoomF, maxTempSaddleF,
-        maxTempMagnetizingF, maxPOhmF, maxPrTimeF, maxTempTorF, maxI2TF, 
+        maxTempMagnetizingF, maxPOhmF, maxPrTimeF, maxTempTorF, maxI2TF,
         maxCurrSellaVF,maxCurrSellaVI0F, maxCurrSellaPF, maxFillPuffVoltageF;
     int maxPMAT, maxPCATParallel, maxPCATSeries, maxTFAT, maxTCCH, maxTCAC,
-        maxPMVoltage, 
-//	maxFillVoltage, maxPuffVoltage, 
+        maxPMVoltage,
+//	maxFillVoltage, maxPuffVoltage,
 	maxTempRoom, maxTempSaddle,
         maxTempMagnetizing, maxPOhm, maxPrTime, maxTempTor, maxI2T,
         maxCurrSellaV,maxCurrSellaVI0, maxCurrSellaP, maxFillPuffVoltage;
     JTextArea messageArea;
-/*	
+/*
 	JLabel residualI2tPMLabel;
 */
     WarningDialog checkedWd, configWd, limitsWd, versionWd;
@@ -416,7 +416,7 @@ public class ParameterSetting
             });
             jp.add(modeC);
             if(isOnline)
-               jp.add(refShotLabel = new JLabel("")); 
+               jp.add(refShotLabel = new JLabel(""));
         }
 
         buttons[0] = timesB = new JButton("Times Setup");
@@ -510,7 +510,7 @@ public class ParameterSetting
 		String limitsMsg = checkLimits();
 		System.out.println("Limint : " + limitsMsg);
 	    }
-        });	
+        });
 	jp.add(forTestB);
 */
         if (!isRt && isOnline)
@@ -531,9 +531,9 @@ public class ParameterSetting
             jp.add(applyToModelB);
         }
 
-/*		
-	jp.add(residualI2tPMLabel = new JLabel());	
-*/		
+/*
+	jp.add(residualI2tPMLabel = new JLabel());
+*/
         setupJp.add(jp, "North");
         jp = new JPanel();
         jp.setLayout(new GridLayout(1, 4));
@@ -742,10 +742,10 @@ public class ParameterSetting
                 }
             }
         });
-        
-        
-        
-////////////////////////        
+
+
+
+////////////////////////
         jp.add(jp1);
 
         jp1 = new JPanel();
@@ -1025,7 +1025,7 @@ public class ParameterSetting
                             handleDeviceClosed(11, updated);
 /*                            //Copy the same configuration to MHD BC
                             //devices[11].apply( mhdControlRoot.getInt());
-                            
+
                             //GABRIELE OTTOBRE 2008
                             //Faccio Apply solo se isChanged true
                             if(justApplied)
@@ -1036,11 +1036,11 @@ public class ParameterSetting
                                 devices[11].reset();
                                 devices[11].apply(mhdBcNid.getInt());
                             }
-                           
+
                             /////////////////////////////////////////
-                            
-                            
-                            
+
+
+
                             //Copy PAR303_VAL (measure radius), PAR304_VAL (MoNo sine excluded)
                             //and PAR305_VAL (N limits for sideband correction) into MHD_BR
                             copyData("\\MHD_AC::CONTROL.PARAMETERS:PAR303_VAL", "\\MHD_BR::CONTROL.PARAMETERS:PAR303_VAL");
@@ -1094,7 +1094,7 @@ public class ParameterSetting
                 {
 //					devices[12] = device = new RFXVISetupSetup();
 					devices[12] = device = new RFXVICONTROLSetup();
-					
+
                     device.configure(rfx, nid);
                     if (ParameterSetting.this.readOnly)
                         device.setReadOnly(true);
@@ -1912,7 +1912,7 @@ public class ParameterSetting
             setTitle("RFX Parameters  shot: " + shot);
     }
 
-    
+
     void saveSetup(Hashtable setupHash, Hashtable setupOnHash)
     {
         for (int i = 0; i < NUM_SETUP; i++)
@@ -1989,7 +1989,7 @@ public class ParameterSetting
             timesIsCB,
             timesChopperCB,
             timesInverterCB;
-        
+
         JCheckBox currFFCB;
 
         JCheckBox[] checkBoxes = new JCheckBox[NUM_SETUP-1];
@@ -2138,7 +2138,7 @@ public class ParameterSetting
             timeCheckBoxes[5].setSelected(true);
             timeCheckBoxes[5].setEnabled(false);
         }
-        
+
         void setEnabledDevices(Hashtable setupHash)
         {
             for (int i = 0; i < NUM_SETUP-1; i++)
@@ -2214,7 +2214,7 @@ public class ParameterSetting
             enable(nids, ptso_mask, 5);
             //MAY 2009 Force PTSO NOT TO BE ENABLED
             timeCheckBoxes[5].setEnabled(false);
-                    
+
             enable(nids, ptcb_mask, 6);
             enable(nids, ptct_mask, 7);
             enable(nids, gas_mask, 8);
@@ -2275,12 +2275,12 @@ public class ParameterSetting
                     boolean[] selectedTimes = loadSelected.getSelectedTimes();
                     applySetup(currSetupHash, currSetupOnHash, selectedDevices,
                                selectedTimes);
-                    
+
                     if(loadSelected.currFFSelected())
                     {
                         loadCurrFF(currLoadShot);
                     }
-                    
+
                     checkVersions();
                    loadSelected.setVisible(false);
 
@@ -2387,8 +2387,8 @@ public class ParameterSetting
         if (timeSelect[10]) saveSetup(0, is_mask, setupHash, setupOnHash);
         if (timeSelect[11]) saveSetup(0, chopper_mask, setupHash, setupOnHash);
         if (timeSelect[12]) saveSetup(0, inverter_mask, setupHash, setupOnHash);
-        
-        
+
+
     }
 
     void writeSetupToFile(String fileName)
@@ -2786,7 +2786,7 @@ public class ParameterSetting
             else
                 proceedeConfirm();
         }
-		
+
  		private String executePulseCheck()
 		{
 
@@ -2797,7 +2797,7 @@ public class ParameterSetting
 				StringTokenizer st =  new StringTokenizer(s, "#");
 				String out="";
 				while( st.hasMoreTokens() )
-				{	
+				{
 					out += st.nextToken() + "\n";
 				}
 				return out;
@@ -2807,28 +2807,28 @@ public class ParameterSetting
 				return "";
 			}
 		}
-		
+
         void proceedeConfirm()
         {
 
 			String msg = executePulseCheck();
-			
+
 			System.out.println("Messaggio = " + msg);
 
-			if (msg != null && msg.length() > 0) 
+			if (msg != null && msg.length() > 0)
 				msg = "Transitare dal PAS (Corrente Magnetizzante: " +
                 getMagnetizingCurrent() + " A)?\n\n\tATTENZIONE\n\n" + msg;
 			else
 				msg = "Transitare dal PAS (Corrente Magnetizzante: " +
                 getMagnetizingCurrent() + " A)?\n\n";
-			
+
             JOptionPane.showConfirmDialog(
                 ParameterSetting.this,
 				msg,
                 "Acknowledgement request",
                 JOptionPane.YES_OPTION);
-			
-			
+
+
 /* Taliercio 6 - 2 - 2009
             JOptionPane.showConfirmDialog(
                 ParameterSetting.this,
@@ -3605,7 +3605,7 @@ System.out.println("SAVE SETUP: " + fullPath);
                 "\\RFX::T_START_PR"), 0)).getFloat();
             float stopPR = (rfx.evaluateData(new PathData(
                 "\\RFX::T_STOP_PR"), 0)).getFloat();
-            
+
             if ( (stopPR - startPR )  > maxPrTime / 1000. )
             {
                 return "Durata di accensione di PR oltre i limiti";
@@ -3624,7 +3624,7 @@ System.out.println("SAVE SETUP: " + fullPath);
 	    {
 		float phomMax = (rfx.evaluateData(new PathData(
 			"\\RFX::IP_CONTROL.RFP:POHMMAX"), 0)).getFloat();
-		
+
 		if ( phomMax  > maxPOhm * 1e6 )
 		{
 			return "Valore di Pohm Max definita in IP_CONTROL oltre i limiti";
@@ -3640,7 +3640,7 @@ System.out.println("SAVE SETUP: " + fullPath);
         try
         {
 	    float i2tTF = (rfx.evaluateData(Data.fromExpr("computeTF_i2t()"), 0)).getFloat();
-	
+
 	    if ( i2tTF  > maxI2T * 1e6 )
 	    {
 		return "Valore di I2T su avvolgimento toroidale oltre i limiti";
@@ -4092,7 +4092,7 @@ System.out.println("SAVE SETUP: " + fullPath);
             true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
         getSetupForModel(applyHash, applyOnHash, allSelectedDevices,
                          allSelectedTimes);
-        
+
         applyToModel(applyHash, applyOnHash);
      }
 
@@ -4129,7 +4129,7 @@ System.out.println("SAVE SETUP: " + fullPath);
         applyCurrFFToModel(currFFC.getSelectedIndex() == 1);
         notifyApplySetupFinishedRt();
 
-        
+
         //Write Ref. Shot
         try {
             String refShotStr = refShotLabel.getText().substring(refShotLabelText.length());
@@ -4137,7 +4137,7 @@ System.out.println("SAVE SETUP: " + fullPath);
             int refShot = Integer.parseInt(refShotStr);
             rfx.putData(refShotNid, new IntData(refShot), 0);
         }catch(Exception exc){System.out.println("Cannot write Ref. Shot");}
-        
+
 
         try
         {
@@ -4520,7 +4520,7 @@ System.out.println("SAVE SETUP: " + fullPath);
         }
         return nidsV;
     }
-    
+
     void notifyApplySetupFinishedRt()
     {
         if (rtDos != null)
@@ -4537,10 +4537,10 @@ System.out.println("SAVE SETUP: " + fullPath);
             }
         }
     }
-    
-            
-            
-            
+
+
+
+
     void notifyChangedRt(Hashtable modifiedSetupHash, Hashtable modifiedSetupOnHash)
     {
         Vector nidsV = getModifiedNidsV(modifiedSetupHash, modifiedSetupOnHash);
@@ -4872,7 +4872,7 @@ System.out.println("SAVE SETUP: " + fullPath);
             JOptionPane.showMessageDialog(this, "Different FF setting for AC and BC");
         currFFC.setSelectedIndex(on1?1:0);
     }
-    
+
     private void setCurrFFState()
     {
         int idx = currFFC.getSelectedIndex();
@@ -4959,12 +4959,12 @@ System.out.println("SAVE SETUP: " + fullPath);
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
 	/*
     void i2tEvaluateResidualPrePulse()
     {
         try {
-		if( rfx == null ) 
+		if( rfx == null )
 		{
 			Data msgData = rfx.evaluateData( Data.fromExpr("I2t_PM('PRE_PULSE')"), 0 );
 			float out = msgData.getFloat();
@@ -4977,16 +4977,16 @@ System.out.println("SAVE SETUP: " + fullPath);
         {
             JOptionPane.showMessageDialog(ParameterSetting.this, "Error Evalating Residual I2T Magnetizing",
                     "Error", JOptionPane.ERROR_MESSAGE);
-            
+
         }
     }
-	
+
     void i2tEvaluateResidualPostPulse()
-    
+
     {
         try {
 		if( rfx != null )
-		{			
+		{
 			Data msgData = rfx.evaluateData( Data.fromExpr("I2t_PM('POST_PULSE')"), 0 );
 			float out = msgData.getFloat();
 			residualI2tPMLabel.setText( "Residual I2t PM = "+out+" A2s" );
@@ -4998,11 +4998,11 @@ System.out.println("SAVE SETUP: " + fullPath);
         {
             JOptionPane.showMessageDialog(ParameterSetting.this, "Error Evalating Residual I2T Magnetizing",
                     "Error", JOptionPane.ERROR_MESSAGE);
-            
+
         }
     }
 	*/
-	
+
     public static void main(String args[])
     {
         ParameterSetting parameterS;

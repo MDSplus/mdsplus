@@ -9,12 +9,12 @@
  * @author  taliercio
  */
 public class PELLETSetup extends DeviceSetup {
-    
+
     /** Creates new form PELLETSetup */
     public PELLETSetup() {
         initComponents();
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -610,8 +610,8 @@ public class PELLETSetup extends DeviceSetup {
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.NORTH);
     }// </editor-fold>//GEN-END:initComponents
-    
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChannel deviceChannel1;
@@ -717,7 +717,7 @@ static public void main(String args[])
     PELLETSetup ps = new PELLETSetup();
     ps.pack();
     ps.setVisible(true);
-    
+
 }
 
 }

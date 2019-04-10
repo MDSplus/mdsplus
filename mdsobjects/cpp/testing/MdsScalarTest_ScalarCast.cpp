@@ -47,10 +47,10 @@ using namespace  testing;
 // INTEGER //
 template < typename T >
 typename enable_if< numeric_limits<T>::is_integer, void >::type
-numeric_cast_test() {       
+numeric_cast_test() {
     unsigned long long int max = numeric_limits<T>::highest();
-    long long int min = numeric_limits<T>::lowest();    
-    
+    long long int min = numeric_limits<T>::lowest();
+
     long double max_f = numeric_limits<T>::highest();
     long double min_f = numeric_limits<T>::lowest();
 
@@ -91,7 +91,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
     // TEST IF ISINF IS PRESENT //
     //    TEST1(std::isinf(nume ))
 
-    
+
     TEST1( numeric_cast<char>(0) == 0 );
     TEST1( numeric_cast<char>(1) == 1 );
     TEST1( numeric_cast<char>(CHAR_MAX) == CHAR_MAX );
@@ -129,8 +129,8 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
     TEST_EXCEPTION( numeric_cast<float>(numeric_limits<double>::highest()), std::overflow_error );
     TEST_EXCEPTION( numeric_cast<float>(numeric_limits<double>::lowest()), std::underflow_error );
 
-    
-    
+
+
     // TODO: this is experimental //////////////////////////////////////////////
     //
     numeric_cast_test<bool>();

@@ -9,7 +9,7 @@ public class TwuAccess implements DataAccess
     String shot_str = null;
     String signal = null;
     TwuDataProvider tw = null;
-        
+
     public static void main(String args[])
     {
         TwuAccess access = new TwuAccess();
@@ -18,38 +18,38 @@ public class TwuAccess implements DataAccess
         {
         float y [] = access.getY(url);
         float x [] = access.getX(url);
- 
+
         for(int i = 0; i < x.length; i++)
             System.out.println(x[i] + "  " +y[i]);
-           
+
         System.out.println("Num. points: "+y.length);
         } catch (IOException exc){}
     }
-    
+
     public boolean supports(String url)
     {
         StringTokenizer st = new StringTokenizer(url, ":");
         if(st.countTokens() < 2) return false;
         return st.nextToken().equals("twu");
     }
-    
+
     public void setProvider(String url) throws IOException
     {
         signal = "http" + url.substring(url.indexOf(":"));
-        
+
         StringTokenizer st = new StringTokenizer(url, "/");
         st.nextToken();
         st.nextToken();
         st.nextToken();
         st.nextToken();
         shot_str  = st.nextToken();
-        
+
         if(tw == null)
         {
             tw = new TwuDataProvider("jScope applet (Version 7.2.2)");
-        }        
+        }
     }
-    
+
     public String getShot()
     {
         return shot_str;
@@ -71,7 +71,7 @@ public class TwuAccess implements DataAccess
     }
 
     public void close(){}
-    
+
     public void setPassword(String encoded_credentials){}
 
     public float [] getX(String url) throws IOException
@@ -80,37 +80,37 @@ public class TwuAccess implements DataAccess
         if(signal == null) return null;
         return tw.GetFloatArray(signal, true);
     }
-    
+
     public float [] getY(String url) throws IOException
     {
         setProvider(url);
         if(signal == null) return null;
         return tw.GetFloatArray(signal, false);
-    }    
-    
+    }
+
     public Signal getSignal(String url) throws IOException
     {
         setProvider(url);
         if(signal == null) return null;
         Signal s = null;
-        
+
         float y[] = tw.GetFloatArray(signal, false);
         float x[] = tw.GetFloatArray(signal, true);
-            
+
         if(x == null || y == null)
             return null;
 
         s = new Signal(x, y);
-        
+
         s.setName(tw.GetSignalProperty("SignalName", signal));
-        
+
         //System.out.println(tw.getSignalProperty("SignalName", signal));
-                
+
         return s;
     }
-    
+
     public String getError()
-    {   
+    {
         if(tw == null)
             return("Cannot create TwuDataProvider");
         return tw.ErrorString();
@@ -121,4 +121,4 @@ public class TwuAccess implements DataAccess
         return null;
     }
 }
-        
+

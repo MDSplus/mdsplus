@@ -13,4 +13,3 @@ public class PathData extends StringData implements NodeId
     }
     public boolean isResolved() {return false;}
 }
-    

@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -39,17 +39,17 @@ def getValue(lines, key):
     return None
 
 def encodeUrl(inStr):
-    urlStr = inStr.replace("%", "%25"); 
-    urlStr = urlStr.replace("/", "%2F"); 
-    urlStr = urlStr.replace("#", "%23"); 
-    urlStr = urlStr.replace("?", "%3F"); 
-    urlStr = urlStr.replace("&", "%26"); 
-    urlStr = urlStr.replace(",", "%2C"); 
-    urlStr = urlStr.replace("=", "%3D"); 
-    urlStr = urlStr.replace("@", "%40"); 
-    urlStr = urlStr.replace(";", "%3B"); 
-    urlStr = urlStr.replace("$", "%24"); 
-    urlStr = urlStr.replace("+", "%2B"); 
+    urlStr = inStr.replace("%", "%25");
+    urlStr = urlStr.replace("/", "%2F");
+    urlStr = urlStr.replace("#", "%23");
+    urlStr = urlStr.replace("?", "%3F");
+    urlStr = urlStr.replace("&", "%26");
+    urlStr = urlStr.replace(",", "%2C");
+    urlStr = urlStr.replace("=", "%3D");
+    urlStr = urlStr.replace("@", "%40");
+    urlStr = urlStr.replace(";", "%3B");
+    urlStr = urlStr.replace("$", "%24");
+    urlStr = urlStr.replace("+", "%2B");
     urlStr = urlStr.replace(" ", "%20");
     urlStr = urlStr.replace(">", "%3E");
     urlStr = urlStr.replace("<", "%3C");
@@ -101,7 +101,7 @@ def doScope(self):
           file_list=getConfigFiles(user,True,'')
           file_list.extend(getConfigFiles(user,False,''))
       if(len(file_list) == 0):
-          outStr = outStr+'No Scope configuration file found for user ' + user+'</body></html>'            
+          outStr = outStr+'No Scope configuration file found for user ' + user+'</body></html>'
           status = '200 OK'
           return (status, response_headers, outStr)
       file_list.sort(file_list_cmp)
@@ -163,13 +163,13 @@ def doScope(self):
     outStr = outStr+'</palette>'
     globalTree = getValue(lines, 'Scope.global_1_1.experiment')
     globalShot = getValue(lines, 'Scope.global_1_1.shot')
-         
+
     globalXMin = getValue(lines, 'Scope.global_1_1.xmin')
     globalXMax = getValue(lines, 'Scope.global_1_1.xmax')
     globalYMin = getValue(lines, 'Scope.global_1_1.ymin')
     globalYMax = getValue(lines, 'Scope.global_1_1.ymax')
     globalXLabel = getValue(lines, 'Scope.global_1_1.x_label')
-    globalYLabel = getValue(lines, 'Scope.global_1_1.y_label')  
+    globalYLabel = getValue(lines, 'Scope.global_1_1.y_label')
     globalEvent = getValue(lines, 'Scope.global_1_1.event')
     numCols = int(getValue(lines, 'Scope.columns'))
     outStr = outStr+'<columns>'
@@ -224,7 +224,7 @@ def doScope(self):
         if(ymax != None):
           outStr = outStr+' ymax = "'+encodeUrl(ymax)+'" '
 
-        title = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.title') 
+        title = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.title')
         if(title != None):
           title = encodeUrl(title)
           title = title.replace('"', "'")
@@ -277,8 +277,8 @@ def doScope(self):
         numExprStr = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.num_expr')
         if(numExprStr == None):
             numExpr = 1
-        else: 
-            numExpr = int(numExprStr) 
+        else:
+            numExpr = int(numExprStr)
         for exprIdx in range(1, numExpr+1):
           outStr = outStr+'<signal'
           color = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.color_'+str(exprIdx)+'_1')
@@ -478,7 +478,7 @@ def doScopepanel(self):
                 response_headers.append(('X'+sig_idx_s+'_LENGTH',str(len(x))))
                 response_headers.append(('Y'+sig_idx_s+'_LENGTH',str(len(y))))
                 output=output+str(x.data().data)+str(y.data().data)
-    else:            
+    else:
         y_idx=1
         y_idx_s='%d' % (y_idx,)
         while 'y'+y_idx_s in self.args:

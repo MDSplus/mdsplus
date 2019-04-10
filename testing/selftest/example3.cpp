@@ -42,9 +42,9 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 {
     BEGIN_TESTING(test cpp);
     std::cout << "Hello Test!\n";
-        
+
     MyTestPersonalClass obj;
     TEST1(obj.A() == 0);
-    
+
     END_TESTING;
 }

@@ -7,8 +7,8 @@ public class DeviceDispatchBeanInfo extends SimpleBeanInfo
     {
         return loadImage("DeviceDispatch.gif");
     }
-    
-    public PropertyDescriptor [] getPropertyDescriptors()  
+
+    public PropertyDescriptor [] getPropertyDescriptors()
     {
         return new PropertyDescriptor[] {};
     }

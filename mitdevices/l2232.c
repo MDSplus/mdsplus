@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   L2232$ROUTINES   
+		Name:   L2232$ROUTINES
 
 		Type:   C function
 
@@ -36,7 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 EXPORT int L2232__INIT(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct *setup)
 EXPORT int L2232__STORE(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct *setup)

@@ -24,16 +24,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-                Name:   Tdi3MATH2   
+                Name:   Tdi3MATH2
 
                 Type:   C function
 
                 Author: TOM FREDIAN
 
-                Date:   5-OCT-1993 
+                Date:   5-OCT-1993
 
                 Purpose:
- 
+
         Take two-argument arctangent or other math function of scalar or array.
         out = ATAN2(in1,in2)    arctangent in radians, 4 quadrants
         out = ATAN2D(in1,in2)   arctangent in degrees, 4 quadrants
@@ -41,7 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------------
 
-        Call sequence: 
+        Call sequence:
 
 int Tdi3Atan2(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 int Tdi3Atan2d(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)

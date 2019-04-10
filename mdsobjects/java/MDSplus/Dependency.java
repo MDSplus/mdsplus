@@ -6,10 +6,10 @@ package MDSplus;
  * @version 1.0
  * @updated 30-mar-2009 13.44.35
  */
-public class Dependency extends Compound 
+public class Dependency extends Compound
 {
 
-    public Dependency(int opcode, Data arg1, Data arg2, 
+    public Dependency(int opcode, Data arg1, Data arg2,
             Data help, Data units, Data error, Data validation)
     {
         super(help, units, error, validation);
@@ -59,7 +59,7 @@ public class Dependency extends Compound
     }
 
     /**
-     * 
+     *
      * @param data
      */
     public void setArg2(Data data)

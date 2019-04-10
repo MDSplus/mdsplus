@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   PREAMP_ADD   
+		Name:   PREAMP_ADD
 
 		Type:   C function
 
@@ -36,7 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 EXPORT int PREAMP_ADD(struct descriptor *name,
                      struct descriptor *qualifiers,

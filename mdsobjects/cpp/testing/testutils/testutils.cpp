@@ -34,7 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////
 
 extern "C" {
- 
+
 EXPORT int get_ghostbusters_phone() { return 5552368; }
 
 EXPORT int test_nextint(int *x) { return ++(*x); }

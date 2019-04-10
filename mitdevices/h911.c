@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   H911$METHODS   
+		Name:   H911$METHODS
 
 		Type:   C function
 
@@ -32,11 +32,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Date:    1-OCT-1993
 
-    		Purpose: Routines to Arm and store H911 32 channel latching scaler 
+    		Purpose: Routines to Arm and store H911 32 channel latching scaler
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 ------------------------------------------------------------------------------
    Copyright (c) 1993

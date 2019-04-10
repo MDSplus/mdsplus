@@ -857,7 +857,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
             w.Update();
         }
     }
-	
+
   private String getExpression(String paramString, boolean infoFlag) throws IOException
   {
     StringTokenizer st = new StringTokenizer(paramString, "/");
@@ -948,9 +948,9 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
     return str1;
   }
 
-  
-  
-  
+
+
+
     public void addFrames(String url, int row, int column)
     {
         Component c = null;

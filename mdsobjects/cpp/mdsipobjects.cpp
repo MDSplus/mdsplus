@@ -121,72 +121,72 @@ void *getManyObj(char *serializedIn)
 			if(argsData.get() && argsData->len() > 0)
 			{
 				MDSplus::Data **args = argsData->getDscs();
-				switch( argsData->len()) 
+				switch( argsData->len())
 				{
-				  case 1: 
+				  case 1:
 				      currAnsw = executeWithArgs(expr.get(), 1, args[0]);
 				      break;
-				  case 2: 
+				  case 2:
 //std::cout << "EXPR: " << expr.get() << std::endl;
 //std::cout << "Arg 1: " << args[0]->decompile() << std::endl;
 //std::cout << "Arg 2: " << args[1]->decompile() << std::endl << std::endl;
 
 				      currAnsw = executeWithArgs(expr.get(), 2, args[0], args[1]);
 				      break;
-				  case 3: 
+				  case 3:
 				      currAnsw = executeWithArgs(expr.get(), 3, args[0], args[1], args[2]);
 				      break;
-				  case 4: 
+				  case 4:
 				      currAnsw = executeWithArgs(expr.get(), 4, args[0], args[1], args[2], args[3]);
 				      break;
-				  case 5: 
+				  case 5:
 				      currAnsw = executeWithArgs(expr.get(), 5, args[0], args[1], args[2], args[3], args[4]);
 				      break;
-				  case 6: 
-				      currAnsw = executeWithArgs(expr.get(), 6, args[0], args[1], args[2], args[3], args[4], 
+				  case 6:
+				      currAnsw = executeWithArgs(expr.get(), 6, args[0], args[1], args[2], args[3], args[4],
 						  args[5]);
 				      break;
-				  case 7: 
-				      currAnsw = executeWithArgs(expr.get(), 7, args[0], args[1], args[2], args[3], args[4], 
+				  case 7:
+				      currAnsw = executeWithArgs(expr.get(), 7, args[0], args[1], args[2], args[3], args[4],
 						  args[5], args[6]);
 				      break;
-				  case 8: 
-				      currAnsw = executeWithArgs(expr.get(), 8, args[0], args[1], args[2], args[3], args[4], 
+				  case 8:
+				      currAnsw = executeWithArgs(expr.get(), 8, args[0], args[1], args[2], args[3], args[4],
 						  args[5], args[6], args[7]);
 				      break;
-				  case 9: 
-				      currAnsw = executeWithArgs(expr.get(), 9, args[0], args[1], args[2], args[3], args[4], 
+				  case 9:
+				      currAnsw = executeWithArgs(expr.get(), 9, args[0], args[1], args[2], args[3], args[4],
 						  args[5], args[6], args[7], args[8]);
 				      break;
-				  case 10: 
-				      currAnsw = executeWithArgs(expr.get(), 10, args[0], args[1], args[2], args[3], args[4], 
+				  case 10:
+				      currAnsw = executeWithArgs(expr.get(), 10, args[0], args[1], args[2], args[3], args[4],
 						  args[5], args[6], args[7], args[8], args[9]);
 				      break;
-				  case 11: 
-				      currAnsw = executeWithArgs(expr.get(), 11, args[0], args[1], args[2], args[3], args[4], 
+				  case 11:
+				      currAnsw = executeWithArgs(expr.get(), 11, args[0], args[1], args[2], args[3], args[4],
 						  args[5], args[6], args[7], args[8], args[9], args[10]);
 				      break;
-				  case 12: 
-				      currAnsw = executeWithArgs(expr.get(), 12, args[0], args[1], args[2], args[3], args[4], 
+				  case 12:
+				      currAnsw = executeWithArgs(expr.get(), 12, args[0], args[1], args[2], args[3], args[4],
 						  args[5], args[6], args[7], args[8], args[9], args[10], args[11]);
 				      break;
-				  case 13: 
-				      currAnsw = executeWithArgs(expr.get(), 13, args[0], args[1], args[2], args[3], args[4], 
+				  case 13:
+				      currAnsw = executeWithArgs(expr.get(), 13, args[0], args[1], args[2], args[3], args[4],
 						  args[5], args[6], args[7], args[8], args[9], args[10], args[11],
 						  args[12]);
 				      break;
-				  case 14: 
-				      currAnsw = executeWithArgs(expr.get(), 14, args[0], args[1], args[2], args[3], args[4], 
+				  case 14:
+				      currAnsw = executeWithArgs(expr.get(), 14, args[0], args[1], args[2], args[3], args[4],
 						  args[5], args[6], args[7], args[8], args[9], args[10], args[11],
 						  args[12], args[13]);
 				      break;
-				  case 15: 
-				      currAnsw = executeWithArgs(expr.get(), 15, args[0], args[2], args[3], args[4], 
+				  case 15:
+				      currAnsw = executeWithArgs(expr.get(), 15, args[0], args[2], args[3], args[4],
 						  args[5], args[6], args[7], args[8], args[9], args[10], args[11],
 						  args[12], args[13], args[14]);
 				      break;
-				  default: 
-				      currAnsw = executeWithArgs(expr.get(), 16, args[0], args[2], args[3], args[4], 
+				  default:
+				      currAnsw = executeWithArgs(expr.get(), 16, args[0], args[2], args[3], args[4],
 						  args[5], args[6], args[7], args[8], args[9], args[10], args[11],
 						  args[12], args[13], args[14], args[15]);
 				      break;
@@ -383,7 +383,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 				resData = new String(buf.c_str());
 				break;
 			}
-			default: 
+			default:
 				std::cerr << "Unexpected data type returned by mdsip: " << dtype << std::endl;
 				throw MdsException("Unexpected data type returned by mdsip");
 		}
@@ -424,7 +424,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 	}
 
 	if(mem) FreeMessage(mem);
-	return resData;	
+	return resData;
 }
 
 void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
@@ -532,7 +532,7 @@ void Connection::unregisterStreamListener(DataStreamListener *listener)
 #endif
 void Connection::checkDataAvailability()
 {
-	try  
+	try
 	{
 		while(true)
 		{
@@ -581,7 +581,7 @@ void Connection::startStreaming()
 	pthread_create(&thread, NULL, checkDataStream, this);
 }
 #endif
-    
+
 void Connection::resetConnection()
 {
     lockGlobal();

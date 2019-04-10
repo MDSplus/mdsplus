@@ -33,12 +33,12 @@ public class MdsConnectionSSH extends MdsConnection
             dis = new BufferedInputStream(p.getInputStream());
             dos = new DataOutputStream(new BufferedOutputStream(p.getOutputStream()));
        }
-   }  
+   }
     public String getProvider() { return "ssh";}
  //   public void setProvider(String provider){}
     public  int DisconnectFromMds()
     {
-	try 
+	try
 	{
 //	    dos.close();   Closing pipes charshes JVM!!!!!!!!!!!!!!!!!!!!!!!!11
 //          dis.close();

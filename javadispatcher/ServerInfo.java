@@ -10,7 +10,7 @@
 import javax.swing.JButton;
 import java.awt.event.*;
 import java.io.*;
-        
+
  public class ServerInfo
  {
         private boolean active;
@@ -23,7 +23,7 @@ import java.io.*;
         private String  stopScript;
         private MdsMonitorEvent  monitorEvent;
         private int     pos;
-      
+
         public class TableButton extends JButton
         {
             private ServerInfo serverInfo;
@@ -32,7 +32,7 @@ import java.io.*;
                 super(label);
             this.serverInfo = serverInfo;
             }
-            
+
             public ServerInfo getInfo()
             {
                 return serverInfo;
@@ -40,11 +40,11 @@ import java.io.*;
             public String toString()
             {
                 return "Class "+ serverInfo.className +" Address " + serverInfo.address;
-            } 
+            }
         }
-        
-        public ServerInfo(String className, String address, String subTree, 
-                          boolean isJava, int watchdogPort, 
+
+        public ServerInfo(String className, String address, String subTree,
+                          boolean isJava, int watchdogPort,
                           String startScript, String stopScript)
         {
             this.active = false;
@@ -55,19 +55,19 @@ import java.io.*;
             this.watchdogPort = watchdogPort;
             this.startScript = startScript;
             this.stopScript = stopScript;
-            
+
         }
-        
+
         public String getClassName()
         {
             return className;
         }
-        
+
         public String getStartScript()
         {
             return startScript;
         }
-        
+
         public String getStopScript()
         {
             return stopScript;
@@ -87,27 +87,27 @@ import java.io.*;
         {
             return watchdogPort;
         }
-  
+
         public boolean isJava()
         {
             return isJava;
         }
-        
+
         public boolean isActive()
         {
             return isJava;
         }
-        
+
         public void setActive(boolean active)
         {
             this.active = active;
         }
-        
+
         public MdsMonitorEvent getAction()
         {
             return monitorEvent;
         }
-        
+
         public void setAction(MdsMonitorEvent monitorEvent)
         {
             this.monitorEvent = monitorEvent;
@@ -115,18 +115,18 @@ import java.io.*;
 
         public int getPos(){return pos;}
         public void setPos(int pos){this.pos=pos;}
-        
+
         public Object[] getAsArray()
         {
             TableButton b;
-            
+
             Object out[] = new Object[6];
             out[0] = new Boolean(active);
             out[1] = className;
             out[2] = address;
             out[3] = monitorEvent;
 
-/*-----------------------------------------------------------------------------                      
+/*-----------------------------------------------------------------------------
             b = new TableButton ("Start", this);
             b.addMouseListener( new MouseAdapter()
             {
@@ -134,11 +134,11 @@ import java.io.*;
                 {
                     ServerInfo si = ((TableButton) e.getSource()).getInfo();
                     System.out.println("ACION Start " + si +" "+ si.getStartScript() );
-                    startServer(si);            
-                }             
-            });            
+                    startServer(si);
+                }
+            });
             out[4] = b;
-            
+
             b = new TableButton ("Stop", this);
             b.addMouseListener( new MouseAdapter()
             {
@@ -146,14 +146,14 @@ import java.io.*;
                 {
                     ServerInfo si = ((TableButton) e.getSource()).getInfo();
                     System.out.println("ACION Stop " + si +" "+ si.getStopScript() );
-                    stopServer(si);        
-                }             
+                    stopServer(si);
+                }
             });
             out[5] = b;
-------------------------------------------------------------------------------*/            
+------------------------------------------------------------------------------*/
             return out;
         }
-        
+
         public void startServer()
         {
             startServer(this);
@@ -172,10 +172,10 @@ import java.io.*;
             }
             catch(IOException exc)
             {
-                System.out.println("Start " + exc);                        
-            }           
+                System.out.println("Start " + exc);
+            }
         }
-        
+
         public void stopServer()
         {
             stopServer(this);
@@ -194,7 +194,7 @@ import java.io.*;
                 System.out.println("Stop " + exc);
             }
         }
-        
+
         public String toString()
         {
             return "Class :"+ className +"\n"+
@@ -204,7 +204,7 @@ import java.io.*;
                     "Watchdog port  : "+ watchdogPort +"\n"+
                     "Start Script : "+ startScript +"\n"+
                     "Stop  Script : "+ stopScript +"\n";
-              
+
         }
-                
+
     }// End ServerInfo class

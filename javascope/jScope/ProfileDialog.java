@@ -112,7 +112,7 @@ public class ProfileDialog extends JDialog implements WaveformListener
         //if(!name.equals(this.name))
         {
             //this.name = new String(name);
-            setTitle("Profile Dialog - " + name + " x_pix : "+ x_pixel +" y_pix : " + y_pixel + " time : " + time );           
+            setTitle("Profile Dialog - " + name + " x_pix : "+ x_pixel +" y_pix : " + y_pixel + " time : " + time );
         }
 
         if(pixels_x != null && pixels_x.length > 0)

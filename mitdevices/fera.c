@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   FERA$ROUTINES   
+		Name:   FERA$ROUTINES
 
 		Type:   C function
 
@@ -32,11 +32,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Date:   23-APR-1992
 
-    		Purpose: Support for FERA modules. 
+    		Purpose: Support for FERA modules.
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
   INIT, STORE, methods for FERA
 
@@ -48,54 +48,54 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    Management.
 ---------------------------------------------------------------------------
 
-INIT and STORE service for FERA (LeCroy Fast Encoding Readout Adc) modules:  
+INIT and STORE service for FERA (LeCroy Fast Encoding Readout Adc) modules:
 
 4300 charge sensitive (current integrating) 16-channel .25pC/count digitizers
 4301 controller (tester, fan-in, fan-out)
 4302 memories (16k words)
 ---------------------------------------------------------------------------
 
-Assumption:  all 4300 modules in use are 4300B/610.  i.e.  they are 11 bit 
-   50 Ohm modules.  (Not really important, but the valid data checks and 
+Assumption:  all 4300 modules in use are 4300B/610.  i.e.  they are 11 bit
+   50 Ohm modules.  (Not really important, but the valid data checks and
    timing notes below are for 11 bit modules).
 
-Assumption:  4300 modules and 4301 controller have command and data ECLport 
+Assumption:  4300 modules and 4301 controller have command and data ECLport
    buses connected.  Single 4300 systems have 4301 REO connected to 4300 REN,
-   and 4300 PASS connected to 4301 CLI.  Multiple 4300 systems are daisy 
+   and 4300 PASS connected to 4301 CLI.  Multiple 4300 systems are daisy
    chained:  4301 REO to first 4300 REN, first 4300 PASS to next 4300 REN, etc;
    and last 4300 PASS back to 4301 CLI.
 
-Assumption:  Only the last (furthest) 4300 has the pull down resistors 
-   installed in the ECLport buses.  All the intermediate 4300 modules have 
-   the PD resistors removed.  The front panel PD lights are on if the 
+Assumption:  Only the last (furthest) 4300 has the pull down resistors
+   installed in the ECLport buses.  All the intermediate 4300 modules have
+   the PD resistors removed.  The front panel PD lights are on if the
    resistors are installed.
 
-Assumption:  4301 controller ECLport WSO line is connected to all 4302 WSI 
-   ECL inputs.  All ECL 56 Ohm termination resistors except for the last are 
-   removed from 4302 modules.  The 4301 NIM WSO line is connected back to the 
+Assumption:  4301 controller ECLport WSO line is connected to all 4302 WSI
+   ECL inputs.  All ECL 56 Ohm termination resistors except for the last are
+   removed from 4302 modules.  The 4301 NIM WSO line is connected back to the
    4302 NIM WAI line via a 10-15 foot coax cable (15-20 nsec delay).
-The 4301 and all 4302s ECL databus are connected, and all but the last 4302 
+The 4301 and all 4302s ECL databus are connected, and all but the last 4302
    modules have the 56 Ohm termination resistors removed.
-Single 4302 systems have no additional connections.  Multiple 4302 systems are 
-   daisy chained:  the FULL-bar output from the first 4302 is connected to the 
-   VETO line of the second 4302, the FULL-bar of the second to the VETO of the 
+Single 4302 systems have no additional connections.  Multiple 4302 systems are
+   daisy chained:  the FULL-bar output from the first 4302 is connected to the
+   VETO line of the second 4302, the FULL-bar of the second to the VETO of the
    third, etc.
 
-The gating pulse for the entire system is introduced at the 4301 GAI NIM input, 
+The gating pulse for the entire system is introduced at the 4301 GAI NIM input,
    and should be of NIM signal levels.
 
-This routine will set up the system so that incoming gates to the 4301 
-   controller will generate samples on all (16 channels * number of 4300 
-   units) FERA channels, which are read over to the 4302 memory(s) in 
+This routine will set up the system so that incoming gates to the 4301
+   controller will generate samples on all (16 channels * number of 4300
+   units) FERA channels, which are read over to the 4302 memory(s) in
    8.7 + 1.6*(number of 4300s) microseconds.  After the data handshaking is
-   done, the 4300 modules will become active again, ready for the next gate.  
-   The 4301 is not retriggerable, and gates arriving during the acquisition 
+   done, the 4300 modules will become active again, ready for the next gate.
+   The 4301 is not retriggerable, and gates arriving during the acquisition
    cycle are lost.
 
-The data is dumped into the 4302 memory modules without using the hardware 
-   pedestal subtraction or zero suppression capabilities.  The memory 
-   capability is 16k per memory module, since the hardware design by LeCroy 
-   has a kludge deadspace.  The size of each module is set by switches on the 
+The data is dumped into the 4302 memory modules without using the hardware
+   pedestal subtraction or zero suppression capabilities.  The memory
+   capability is 16k per memory module, since the hardware design by LeCroy
+   has a kludge deadspace.  The size of each module is set by switches on the
    side (to 12k, 14k, 15k, or 15.5k).
 
         Jeff Casey     8/6/91 , mods 10/23/91, 5/92.

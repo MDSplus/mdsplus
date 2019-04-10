@@ -499,7 +499,7 @@ UDTSTATUS CUDTUnited::getStatus(const UDTSOCKET u)
    if (i->second->m_pUDT->m_bBroken)
       return BROKEN;
 
-   return i->second->m_Status;   
+   return i->second->m_Status;
 }
 
 int CUDTUnited::bind(const UDTSOCKET u, const sockaddr* name, int namelen)
@@ -1231,7 +1231,7 @@ void CUDTUnited::checkBrokenSockets()
    {
       if (j->second->m_pUDT->m_ullLingerExpiration > 0)
       {
-         // asynchronous close: 
+         // asynchronous close:
          if ((NULL == j->second->m_pUDT->m_pSndBuffer) || (0 == j->second->m_pUDT->m_pSndBuffer->getCurrBufSize()) || (j->second->m_pUDT->m_ullLingerExpiration <= CTimer::getTime()))
          {
             j->second->m_pUDT->m_ullLingerExpiration = 0;

@@ -63,7 +63,7 @@ def doDir(self):
        node  = tree.top
        title = node.fullpath
        top   = title
-    predir = '%s/'%self.path_parts[-1] if req_uri[-1] != "/" else ""     
+    predir = '%s/'%self.path_parts[-1] if req_uri[-1] != "/" else ""
     rows = []
     bit = self.args.get("bit",["8"])[-1]
     for subnode in node.descendants:

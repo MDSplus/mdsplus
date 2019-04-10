@@ -6,7 +6,7 @@ package MDSplus;
  * @version 1.0
  * @updated 30-mar-2009 13.44.37
  */
-public class Function extends Compound 
+public class Function extends Compound
 {
 
 	public Function(int opcode, Data [] args,
@@ -44,7 +44,7 @@ public class Function extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param idx
 	 */
 	public Data getArgumentAt(int idx)
@@ -54,7 +54,7 @@ public class Function extends Compound
 
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setArguments(Data[] args)
@@ -65,7 +65,7 @@ public class Function extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param idx
 	 * @param arg
 	 */

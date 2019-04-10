@@ -31,7 +31,7 @@ import javax.swing.JComponent;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
-public class Waveform 
+public class Waveform
     extends JComponent implements SignalListener{
 
   public static final int MAX_POINTS = 1000;
@@ -157,7 +157,7 @@ public class Waveform
   public float ly_min = Float.MIN_VALUE;
 
   protected ColorMap colorMap = new ColorMap();
-  
+
   private String properties;
   public void setProperties( String properties) { this.properties = properties;}
   public String getProperties() { return properties;}
@@ -221,21 +221,21 @@ public class Waveform
     SetDefaultColors();
 
     }
-    public int getRow() 
-    { 
+    public int getRow()
+    {
         RowColumnContainer rwc = (RowColumnContainer)getParent();
 	Point p = rwc.getComponentPosition(this);
 	return p.y - 1;
     }
 
-    public int getColumn()     
-    { 
+    public int getColumn()
+    {
         RowColumnContainer rwc = (RowColumnContainer)getParent();
 	Point p = rwc.getComponentPosition(this);
 	return p.x - 1;
     }
     public int getIndex()
-    { 
+    {
         RowColumnContainer rwc = (RowColumnContainer)getParent();
 	return rwc.getComponentIndex(this) - 1;
     }
@@ -635,7 +635,7 @@ public class Waveform
               //ReportChanges();
               repaint();
               sendUpdateEvent();
-          
+
           }
           public void keyReleased(KeyEvent e)
           {}
@@ -645,7 +645,7 @@ public class Waveform
       });
   }
 
-  
+
 
   protected void setMouse() {
 
@@ -1257,7 +1257,7 @@ public class Waveform
       if (waveform_signal != null) {
 
           //TACON MOSTRUOSO per gestire il fatto che jScope vede solo gli offsets nei times!!!!
-          
+
         xmax =  MaxXSignal();
         xmin =  MinXSignal();
         ymax =  MaxYSignal();
@@ -1451,11 +1451,11 @@ public class Waveform
         we.setXValue(s.getYinXZplot());
         we.setDataValue(s.getZValue());
         we.setIsMB2(is_mb2);
-        
-        
+
+
         if(s.isLongXForLabel())
             we.setDateValue(0);
-        
+
 
         dispatchWaveformEvent(we);
       }
@@ -1599,11 +1599,11 @@ public class Waveform
     if (execute_print) {
       return;
     }
-    
+
     Dimension d = getSize();
     paint(g, d, NO_PRINT);
-    
-    if (mode == MODE_POINT && send_profile) 
+
+    if (mode == MODE_POINT && send_profile)
         sendProfileEvent();
   }
 
@@ -1924,7 +1924,7 @@ public class Waveform
        catch (ArrayIndexOutOfBoundsException e) {
          //System.out.println("Exception on " + getName() + " " + s.getLength() + " " + idx);
        }
-     } 
+     }
    } */
     wave_point_x = x;
     wave_point_y = y;
@@ -1976,15 +1976,15 @@ public class Waveform
     Rectangle r = frames.GetZoomRect();
     Graphics2D g2 = (Graphics2D)g;
     Dimension imgDim;
-    imgDim = new Dimension(((BufferedImage)img).getWidth(),((BufferedImage)img).getHeight()); 
-    
+    imgDim = new Dimension(((BufferedImage)img).getWidth(),((BufferedImage)img).getHeight());
+
     // Turn on antialiasing.
     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
 
     if ( type != FrameData.JAI_IMAGE )
     {
-        
+
     int dx1;// the x coordinate of the first corner of the destination rectangle.
     int dy1;// the y coordinate of the first corner of the destination rectangle.
     int dx2;// the x coordinate of the second corner of the destination rectangle.
@@ -1994,19 +1994,19 @@ public class Waveform
     int sx2;// the x coordinate of the second corner of the source rectangle.
     int sy2;// the y coordinate of the second corner of the source rectangle.
 
-   
+
       dx1 = 1;
       dy1 = 1;
       dx2 = dim.width;
       dy2 = dim.height;
 
       sx1 = r == null ? 0 : r.x;
-      sy1 = r == null ? 0 : r.y;          
+      sy1 = r == null ? 0 : r.y;
       sx2 = r == null ? imgDim.width  : r.x + r.width ;
       sy2 = r == null ? imgDim.height : r.y + r.height ;
 
-    
-      if( frames.getVerticalFlip() && frames.getHorizontalFlip() )  
+
+      if( frames.getVerticalFlip() && frames.getHorizontalFlip() )
       {
         dx1 = dim.width;
         dy1 = dim.height;
@@ -2016,13 +2016,13 @@ public class Waveform
       else
       {
           if( frames.getVerticalFlip() )
-          {              
+          {
 
                 dx1 = dim.width;
                 dy1 = 1;
                 dx2 = 1;
                 dy2 = dim.height;
-              
+
           }
           else
           {
@@ -2031,14 +2031,14 @@ public class Waveform
                 dx1 = 1;
                 dy1 = dim.height;
                 dx2 = dim.width;
-                dy2 = 1;                
+                dy2 = 1;
               }
           }
       }
-          
+
       //g2.drawImage( (Image) img, 1, 1, dim.width, dim.height, this);
       g2.drawImage( (Image) img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, this);
-/*        
+/*
       if (r == null) {
         g2.drawImage( (Image) img, 1, 1, dim.width, dim.height, this);
       }
@@ -2053,11 +2053,11 @@ public class Waveform
                     r.x + r.width,
                     r.y + r.height,
                     this);
- 
+
       }
  */
     }
-    else 
+    else
     {
       g2.clearRect(0, 0, dim.width, dim.height);
       g2.drawRenderedImage( (RenderedImage) img,
@@ -2081,9 +2081,9 @@ public class Waveform
       zMin = zMax = z[0];
       for(int i = 0; i < z.length; i++)
       {
-          if(z[i] < zMin) 
+          if(z[i] < zMin)
               zMin = z[i];
-          if(z[i] > zMax) 
+          if(z[i] > zMax)
               zMax = z[i];
       }
       g.setColor(colorMap.getColor(level, zMin, zMax));
@@ -2524,7 +2524,7 @@ protected void drawMarkers(Graphics g, Vector<Polygon> segments, int marker, int
   public void SetXScaleAutoY(Waveform w) {
     if (waveform_signal == null)
       return;
- 
+
     waveform_signal.setXLimits(w.waveform_signal.getXmin(), w.waveform_signal.getXmax(), Signal.SIMPLE);
     waveform_signal.AutoscaleY();
     ReportChanges();
@@ -2798,14 +2798,14 @@ protected void drawMarkers(Graphics g, Vector<Polygon> segments, int marker, int
   void Waveform_ComponentAdded(java.awt.event.ContainerEvent event) {
     // to do: code goes here.
   }
-  
+
   public  void signalUpdated(boolean changeLimits)
   {
       change_limits = changeLimits;
       not_drawn = true;
       repaint();
   }
-  
+
   void freeze()
   {
       waveform_signal.freeze();

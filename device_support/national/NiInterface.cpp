@@ -127,19 +127,19 @@ void xseries_create_ai_conf_ptr(void **confPtr, unsigned int pre_trig_smp, unsig
 	{
             if( pre_trig_smp > 0)
             {
-	             printf("PXI 6368 Ptretrigger analog input acquisition. pre %d post %d \n", pre_trig_smp , post_trig_smp);  
+	             printf("PXI 6368 Ptretrigger analog input acquisition. pre %d post %d \n", pre_trig_smp , post_trig_smp);
 		     *conf = xseries_reference_ai(pre_trig_smp, post_trig_smp);
             }
             else
             {
 		    if(multi_trigger)
                     {
-			    printf("PXI 6368 Retriggerable finite analog input acquisition. %d \n", post_trig_smp);  
+			    printf("PXI 6368 Retriggerable finite analog input acquisition. %d \n", post_trig_smp);
 		            *conf = xseries_retriggerable_finite_ai(post_trig_smp);
 		    }
                     else
                     {
-			    printf("PXI 6368 Finite analog input acquisition. %d \n", post_trig_smp);  
+			    printf("PXI 6368 Finite analog input acquisition. %d \n", post_trig_smp);
 			    *conf = xseries_finite_ai(post_trig_smp);
                     }
              }
@@ -150,7 +150,7 @@ void xseries_create_ai_conf_ptr(void **confPtr, unsigned int pre_trig_smp, unsig
     	        *conf = xseries_continuous_ai();
 	}
 
- 
+
         *confPtr = (void *) conf;
 }
 
@@ -185,7 +185,7 @@ void openTree(char *name, int shot, void **treePtr)
     try {
 	Tree *tree = new Tree(name, shot);
 	*treePtr = (void *)tree;
-    }catch(MdsException *exc) 
+    }catch(MdsException *exc)
     {
 	printf("Cannot open tree %s %d: %s\n", name, shot, exc->what());
     }
@@ -193,7 +193,7 @@ void openTree(char *name, int shot, void **treePtr)
 
 #define SHORT 1
 #define FLOAT 2
-  
+
 
 //Support class for enqueueing storage requests
 class SaveItem {
@@ -239,7 +239,7 @@ class SaveItem {
 		TreeNode *dataNode = new TreeNode(dataNid, (Tree *)treePtr);
 		TreeNode *clockNode = new TreeNode(clockNid, (Tree *)treePtr);
 
-    		//printf("Counter = %d Sample to read = %d\n", counter, sampleToRead );	
+    		//printf("Counter = %d Sample to read = %d\n", counter, sampleToRead );
 
 		//if((counter % segmentSize) == 0 || ((int)(counter / segmentSize) * segmentSize) < counter + bufSize )
 		if( (counter % segmentSize) == 0 )
@@ -253,8 +253,8 @@ class SaveItem {
                 endIdx = new Int32(counter + sampleToRead - 1);
             else
                 endIdx = new Int32(counter + segmentSize);
-                   
-	 /*	    
+
+	 /*
             Data *startTime = compileWithArgs("$[$]", (Tree *)treePtr, 2, clockNode, startIdx);
 			Data *endTime = compileWithArgs("$[$]", (Tree *)treePtr, 2, clockNode, endIdx);
 			Data *dim = compileWithArgs("$[$ : $]", (Tree *)treePtr, 3, clockNode, startIdx, endIdx);
@@ -272,15 +272,15 @@ class SaveItem {
 			    endTime = compileWithArgs("begin_of($)+slope_of($)*$",(Tree *)treePtr, 3, clockNode,  clockNode,endIdx);
 
             //    dim = compileWithArgs("$", (Tree *)treePtr, 1, clockNode);
-			    dim = compileWithArgs("build_range(begin_of($)+slope_of($)*$, begin_of($)+slope_of($)*$, slope_of($))", 
+			    dim = compileWithArgs("build_range(begin_of($)+slope_of($)*$, begin_of($)+slope_of($)*$, slope_of($))",
                                (Tree *)treePtr, 7, clockNode, clockNode, startIdx, clockNode, clockNode, endIdx, clockNode);
             }
             else
-            {    
+            {
                 Data *timeAtIdx0 = new Float32(timeIdx0);
  			    startTime = compileWithArgs("$+slope_of($)*$",(Tree *)treePtr, 3, timeAtIdx0, clockNode, startIdx);
  			    endTime = compileWithArgs("$+slope_of($)*$",(Tree *)treePtr, 3,timeAtIdx0,  clockNode, endIdx);
- 			    dim = compileWithArgs("build_range($+slope_of($)*$, $+slope_of($)*$, slope_of($))", (Tree *)treePtr, 
+ 			    dim = compileWithArgs("build_range($+slope_of($)*$, $+slope_of($)*$, slope_of($))", (Tree *)treePtr,
                                              7, timeAtIdx0, clockNode, startIdx, timeAtIdx0, clockNode, endIdx, clockNode);
             }
 
@@ -314,7 +314,7 @@ class SaveItem {
 			deleteData(endTime);
 		 }
 
-		 try 
+		 try
 		 {
 			switch( dataType )
 			{
@@ -336,7 +336,7 @@ class SaveItem {
 				break;
 			}
  		 }
-		 catch(MdsException *exc) 
+		 catch(MdsException *exc)
 		 {
 			printf("Cannot put segment: %s\n", exc->what());
 		 }
@@ -427,7 +427,7 @@ class SaveList
 		stopReq = true;
 		pthread_cond_signal(&itemAvailable);
 		if(threadCreated)
-		{	
+		{
 			pthread_join(thread, NULL);
 			printf("SAVE THREAD TERMINATED\n");
 		}
@@ -451,7 +451,7 @@ extern "C" void startSave(void **retList)
 
 extern "C" void stopSave(void *listPtr)
 {
-    if(listPtr) 
+    if(listPtr)
     {
         SaveList *list = (SaveList *)listPtr;
         list->stop();
@@ -462,7 +462,7 @@ extern "C" void stopSave(void *listPtr)
 #define PXI6259_MAX_BUFSIZE 1000
 #define MAX_ITERATIONS 100000
 int readAndSave(int chanFd, int bufSize, int segmentSize, int counter, int dataNid, int clockNid, void *treePtr, void *saveListPtr)
-{ 
+{
     float *buffer = new float[bufSize];
     int readSamples = 0;
     int currReadSamples;
@@ -517,7 +517,7 @@ void readAiConfiguration(int fd)
 }
 
 int readAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int segmentSize, int numSamples, void *dataNidPtr, int clockNid, void *treePtr, void *saveListPtr, void *stopAcq)
-{ 
+{
     //float *buffer = new float[bufSize];
     float *buffer;
     int   *counters = new int[nChan];
@@ -547,7 +547,7 @@ int readAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int segmentS
     {
         allDataSaved = true;
         //printf("stopAcq %d\n", *(int *)stopAcq );
-        
+
         for( chan = 0; chan < nChan; chan++)
         {
             readSamples = 0;
@@ -592,16 +592,16 @@ int readAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int segmentS
                 if( readSamples != 0 )
                 {
 		    		//if( numSamples > 0 ) readSamples = 	counters[chan] + readSamples < numSamples ? readSamples : numSamples - counters[chan];
-		            if( numSamples > 0 ) 
+		            if( numSamples > 0 )
                     {
-                        if ( counters[chan] + readSamples > numSamples ) 
+                        if ( counters[chan] + readSamples > numSamples )
                             readSamples = numSamples - counters[chan];
                         sampleToRead = numSamples - counters[chan];
                     }
-          	    
+
 
                     //printf("readSamples %d counters[%d] = %d readSamples %d\n", readSamples, chan, counters[chan], readSamples );
-     
+
 //                  saveList->addItem(buffer, bufSize, segmentSize, counters[chan], dataNid[chan], clockNid, treePtr);
                     saveList->addItem(buffer, readSamples, sampleToRead, FLOAT, segmentSize, counters[chan], dataNid[chan], clockNid, NAN, treePtr);
                     counters[chan] += readSamples;
@@ -615,7 +615,7 @@ int readAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int segmentS
     }
     printf("STOP C Acquisition %d\n", *(int *)stopAcq );
     return 1;
-}   
+}
 
 extern "C" int  pxi6259_getCalibrationParams(int chanfd, int range, float *coeff);
 int pxi6259_getCalibrationParams(int chanfd, int range, float *coeffVal)
@@ -653,13 +653,13 @@ int pxi6259_getCalibrationParams(int chanfd, int range, float *coeffVal)
 */
 
 /*
-    for (j = NUM_AI_SCALING_COEFFICIENTS - 1; j >= 0; j--) 
+    for (j = NUM_AI_SCALING_COEFFICIENTS - 1; j >= 0; j--)
          printf("Coeff[%d] : %e\n",  j, coeffVal[j] );
 */
 }
 
 int pxi6259_readAndSaveAllChannels_OLD(int nChan, void *chanFdPtr, int bufSize, int segmentSize, int numSamples, void *dataNidPtr, int clockNid, void *treePtr, void *saveListPtr, void *stopAcq)
-{ 
+{
     //float *buffer = new float[bufSize];
     //float *buffer;
     short *buffer;
@@ -676,7 +676,7 @@ int pxi6259_readAndSaveAllChannels_OLD(int nChan, void *chanFdPtr, int bufSize, 
     int *dataNid =  (int *)dataNidPtr;
     bool allDataSaved;
     bool transientRec = false;
- 
+
     printf("nChan %d bufSize %d segmentSize %d numSamples %d stopAcq %d\n", nChan, bufSize, segmentSize, numSamples, *(int *)stopAcq );
 
     memset(counters, 0, sizeof(int) * nChan);
@@ -690,7 +690,7 @@ int pxi6259_readAndSaveAllChannels_OLD(int nChan, void *chanFdPtr, int bufSize, 
     {
         allDataSaved = true;
         //printf("stopAcq %d\n", *(int *)stopAcq );
-        
+
         for( chan = 0; chan < nChan; chan++)
         {
             readSamples = 0;
@@ -737,16 +737,16 @@ int pxi6259_readAndSaveAllChannels_OLD(int nChan, void *chanFdPtr, int bufSize, 
                 if( readSamples != 0 )
                 {
 		    		//if( numSamples > 0 ) readSamples = 	counters[chan] + readSamples < numSamples ? readSamples : numSamples - counters[chan];
-		            if( numSamples > 0 ) 
+		            if( numSamples > 0 )
                     {
-                        if ( counters[chan] + readSamples > numSamples ) 
+                        if ( counters[chan] + readSamples > numSamples )
                             readSamples = numSamples - counters[chan];
                         sampleToRead = numSamples - counters[chan];
                     }
-          	    
+
 
                     //printf("readSamples %d counters[%d] = %d readSamples %d\n", readSamples, chan, counters[chan], readSamples );
-     
+
 //                  saveList->addItem(buffer, bufSize, segmentSize, counters[chan], dataNid[chan], clockNid, treePtr);
                     saveList->addItem(buffer, readSamples, sampleToRead, SHORT, segmentSize, counters[chan], dataNid[chan], clockNid, NAN, treePtr);
                     counters[chan] += readSamples;
@@ -760,7 +760,7 @@ int pxi6259_readAndSaveAllChannels_OLD(int nChan, void *chanFdPtr, int bufSize, 
     }
     printf("STOP 6259 C Acquisition %d\n", *(int *)stopAcq );
     return 1;
-}   
+}
 
 
 #define XSERIES_MAX_BUFSIZE 40000
@@ -794,7 +794,7 @@ int xseries_AI_scale(int16_t *raw, float *scaled, uint32_t num_samples, float * 
     int32_t i, j;
     float rawf;
 /*
-    for (j = NUM_AI_SCALING_COEFFICIENTS - 1; j >= 0; j--) 
+    for (j = NUM_AI_SCALING_COEFFICIENTS - 1; j >= 0; j--)
          printf("Coeff[%d] : %e\n", j, coeff[j] );
 */
 
@@ -861,17 +861,17 @@ Nuova versione 5.0 codac ma sembra non funzionare
 	}
 
 /*
-    for (j = NUM_AI_SCALING_COEFFICIENTS - 1; j >= 0; j--) 
+    for (j = NUM_AI_SCALING_COEFFICIENTS - 1; j >= 0; j--)
          printf("Coeff[%d] : %e\n",  j, coeffVal[j] );
 */
     return 0;
 }
-  
+
 
 
 
 int xseriesReadAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int segmentSize, int sampleToSkip, int numSamples, void *dataNidPtr, int clockNid, float timeIdx0, float period, void *treePtr, void *saveListPtr, void *stopAcq)
-{ 
+{
     char saveConv = 0; // Acquisition format flags 0 raw data 1 convrted dta
     int  skipping = 0; // Number of samples to not save when start time is > 0
 
@@ -883,7 +883,7 @@ int xseriesReadAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int s
     SaveList *saveList = (SaveList *)saveListPtr; // Class to equeu data buffer to save in pulse file
     int *chanFd        = (int *)chanFdPtr;        // Channe file descriptor
     int *dataNid       =  (int *)dataNidPtr;      // Channel node identifier
-   
+
 
     int             readCalls[nChan]; // For statistic number of read operation pe channel
     unsigned short* buffers_s[nChan]; // Raw data buffer used when not converted data are read
@@ -893,7 +893,7 @@ int xseriesReadAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int s
     int             channelRead; // Number of channel completely read
 
     int triggered = 0;           // Module triggered flag
-    bool transientRec  = false;	// transient recorder flag	
+    bool transientRec  = false;	// transient recorder flag
 
 
     if (bufSize > XSERIES_MAX_BUFSIZE)  // Buffer size sets in mdsplus device is limited to module limit
@@ -919,8 +919,8 @@ int xseriesReadAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int s
         else
             buffers_s[chan] = new unsigned short[bufSize];
 
-    triggered = 0;	
- 
+    triggered = 0;
+
     // Start main acquisition loop
     while( !(*(int*)stopAcq) )
     {
@@ -939,10 +939,10 @@ int xseriesReadAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int s
 
         chan = 0;
         channelRead = 0;
-        //Acquisition loop on each channel of numSamples values      
+        //Acquisition loop on each channel of numSamples values
         while( channelRead != nChan )
         {
-            //Check if for the current channel has been acquired all sample 
+            //Check if for the current channel has been acquired all sample
             //and stop acquisition has not beeen asserted
             if( readChanSmp[chan] == numSamples || (*(int*)stopAcq) )
             {
@@ -951,7 +951,7 @@ int xseriesReadAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int s
                 continue;
             }
 
-            
+
             sampleToRead = numSamples - readChanSmp[chan]; // Compute the sample to read for the current channel
             if( sampleToRead < bufSize )
                 currDataToRead = sampleToRead;
@@ -991,41 +991,41 @@ int xseriesReadAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int s
                                 delete (unsigned short *)buffers_s[chan];
                         return -2;
                     }
-                }   
+                }
             }
 
             //If sample are read the module has been triggered
 	    if ( !triggered && currReadSamples > 0 )
 	    {
 		triggered = 1;
-		printf("6368 TRIGGER!!!\n");                   
+		printf("6368 TRIGGER!!!\n");
  	    }
- 
-            //Increment current data read 
-            if( saveConv )
-                bufReadChanSmp[chan] += currReadSamples;                     
-            else
-                bufReadChanSmp[chan] += ( currReadSamples >> 1 );                     
 
-            
+            //Increment current data read
+            if( saveConv )
+                bufReadChanSmp[chan] += currReadSamples;
+            else
+                bufReadChanSmp[chan] += ( currReadSamples >> 1 );
+
+
 //printf("bufReadChanSmp[%d] = %d  currDataToRead %d Request data %d read data %d \n",chan, bufReadChanSmp[chan] , currDataToRead);
 
             //Enqueue data to store in the pulse file
             if( bufReadChanSmp[chan] == currDataToRead )
             {
-		//Check if have been read more than required samples		
-                if ( readChanSmp[chan] + bufReadChanSmp[chan] > numSamples ) 
+		//Check if have been read more than required samples
+                if ( readChanSmp[chan] + bufReadChanSmp[chan] > numSamples )
                     bufReadChanSmp[chan] = numSamples - readChanSmp[chan];
 
                 //Compute the number of samples to complete segment acquisition
                 sampleToRead = numSamples - readChanSmp[chan];
-  
+
                 //printf("bufReadChanSmp[%d] = %d readChanSmp[%d] = %d readChanSmp[%d] = %d sampleToRead = %d\n", chan, bufReadChanSmp[chan], chan, readChanSmp[chan], chan, readChanSmp[chan], sampleToRead );
-    	    
+
                 if(!skipping)
                 {
-                   saveList->addItem(((saveConv) ? (void *)buffers_f[chan] : (void *)buffers_s[chan] ), 
-                                      bufReadChanSmp[chan], sampleToRead, ((saveConv) ? FLOAT  : SHORT ), segmentSize, 
+                   saveList->addItem(((saveConv) ? (void *)buffers_f[chan] : (void *)buffers_s[chan] ),
+                                      bufReadChanSmp[chan], sampleToRead, ((saveConv) ? FLOAT  : SHORT ), segmentSize,
                                       readChanSmp[chan], dataNid[chan], clockNid, timeIdx0, treePtr);
 
                    //allocate new buffer to save the next segment
@@ -1037,7 +1037,7 @@ int xseriesReadAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int s
                 //Update the number of samples read
                 readChanSmp[chan] += bufReadChanSmp[chan];
                 //Reset the the number of sample read for the next segment
-                bufReadChanSmp[chan] = 0;    
+                bufReadChanSmp[chan] = 0;
             }
             chan = (chan + 1) % nChan;
         }//End Segment acquisition loop for each channel
@@ -1060,26 +1060,26 @@ int xseriesReadAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int s
             break;
 
         numSamples = readChanSmp[0] + segmentSize;
-        
-    }//End main acquisition loop 
+
+    }//End main acquisition loop
 
 
 /*
-    for (chan=0; chan < nChan; chan++) 
-        printf("readCalls[%d] = %d readChanSmp[%d] = %d \n ",chan, readCalls[chan]); 
+    for (chan=0; chan < nChan; chan++)
+        printf("readCalls[%d] = %d readChanSmp[%d] = %d \n ",chan, readCalls[chan]);
 */
     if( readChanSmp[0] == 0 )
         return -1;
 
     printf("PXI 6368 STOP C Acquisition %d\n", *(int *)stopAcq );
     return 1;
-}   
+}
 
 //=============================
 #define PXI6259_MAX_BUFSIZE_NEW 10000
 
 int pxi6259_readAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int segmentSize, int sampleToSkip, int numSamples, void *dataNidPtr, int clockNid, float timeIdx0, float period, void *treePtr, void *saveListPtr, void *stopAcq)
-{ 
+{
     char saveConv = 1;
     int  skipping  = 0;
 
@@ -1142,19 +1142,19 @@ int pxi6259_readAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int 
     {
 
       //printf("stopAcq %d\n", *(int *)stopAcq );
-        
+
         if( !skipping && sampleToSkip > 0 )
         {
             printf("PXI 6259 Skipping data %d Nun samples %d\n", sampleToSkip, numSamples);
             skipping = numSamples;
             numSamples = sampleToSkip;
-          
+
         }
 
         memset(bufReadChanSmp, 0, sizeof(int) * nChan);
 
         chan = 0;
-        channelRead = 0;      
+        channelRead = 0;
         while( channelRead != nChan )
         {
             if( readChanSmp[chan] == numSamples || (*(int*)stopAcq) )
@@ -1200,44 +1200,44 @@ int pxi6259_readAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int 
 
                         return -2;
                     }
-                }    
-            }                    
+                }
+            }
 
 	    if (!triggered && currReadSamples > 0 )
 	    {
 		triggered = 1;
-		printf("6259 TRIGGER!!!\n");                   
+		printf("6259 TRIGGER!!!\n");
  	    }
 
             if( saveConv )
             {
                 //readChanSmp[chan] += currReadSamples;
-                bufReadChanSmp[chan] += currReadSamples;                     
+                bufReadChanSmp[chan] += currReadSamples;
             }
             else
             {
                 //readChanSmp[chan] += ( currReadSamples >> 1 );
-                bufReadChanSmp[chan] += ( currReadSamples >> 1 );                     
+                bufReadChanSmp[chan] += ( currReadSamples >> 1 );
             }
 
-            
+
             if( bufReadChanSmp[chan] == currDataToRead )
             {
 /*
-                if ( counters[chan] + bufReadChanSmp[chan] > numSamples ) 
+                if ( counters[chan] + bufReadChanSmp[chan] > numSamples )
                     bufReadChanSmp[chan] = numSamples - counters[chan];
                 sampleToRead = numSamples - counters[chan];
 */
-                if ( readChanSmp[chan] + bufReadChanSmp[chan] > numSamples ) 
+                if ( readChanSmp[chan] + bufReadChanSmp[chan] > numSamples )
                     bufReadChanSmp[chan] = numSamples - readChanSmp[chan];
                 sampleToRead = numSamples - readChanSmp[chan];
-  
+
                 //printf("bufReadChanSmp[%d] = %d readChanSmp[%d] = %d readChanSmp[%d] = %d sampleToRead = %d\n", chan, bufReadChanSmp[chan], chan, readChanSmp[chan], chan, readChanSmp[chan], sampleToRead );
-    	    
+
                 if(!skipping)
                 {
-                   saveList->addItem(((saveConv) ? (void *)buffers_f[chan] : (void *)buffers_s[chan] ), 
-                                      bufReadChanSmp[chan], sampleToRead, ((saveConv) ? FLOAT  : SHORT ), segmentSize, 
+                   saveList->addItem(((saveConv) ? (void *)buffers_f[chan] : (void *)buffers_s[chan] ),
+                                      bufReadChanSmp[chan], sampleToRead, ((saveConv) ? FLOAT  : SHORT ), segmentSize,
                                       readChanSmp[chan], dataNid[chan], clockNid, timeIdx0, treePtr);
 
                    if( saveConv )
@@ -1248,7 +1248,7 @@ int pxi6259_readAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int 
 
                 //counters[chan] += bufReadChanSmp[chan];
                 readChanSmp[chan] += bufReadChanSmp[chan];
-                bufReadChanSmp[chan] = 0;    
+                bufReadChanSmp[chan] = 0;
             }
             chan = (chan + 1) % nChan;
         }
@@ -1277,7 +1277,7 @@ int pxi6259_readAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int 
         //memset(counters, 0, sizeof(int) * nChan);
         //memset(readChanSmp, 0, sizeof(int) * nChan);
         numSamples = readChanSmp[0] + segmentSize;
-        
+
     }
 
     for( chan = 0; chan < nChan; chan++ )
@@ -1287,15 +1287,15 @@ int pxi6259_readAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int 
             delete (unsigned short *)buffers_s[chan];
 
 /*
-    for (chan=0; chan < nChan; chan++) 
-        printf("readCalls[%d] = %d \n ",chan, readCalls[chan]); 
+    for (chan=0; chan < nChan; chan++)
+        printf("readCalls[%d] = %d \n ",chan, readCalls[chan]);
 */
     if( readChanSmp[0] == 0 )
         return -1;
 
     printf("STOP C 6259 Acquisition %d\n", *(int *)stopAcq );
     return 1;
-}   
+}
 
 /**************************************************************************************/
 /*********************PROBE TEMPERATURE CONTROL ***************************************/
@@ -1438,7 +1438,7 @@ int configureOutput(int *chanOutFD, uint32_t deviceNum, uint32_t outChanRef , ui
 }
 
 
-int configureInput(int *chanInFd, uint32_t deviceNum, uint32_t inChan[], double frequency, int numChan) 
+int configureInput(int *chanInFd, uint32_t deviceNum, uint32_t inChan[], double frequency, int numChan)
 {
 	int diffMapChannel[16] = {-1,0,1,2,3,4,5,6,7,16,17,18,19,20.21,22,23};
         char filename[256];
@@ -1466,7 +1466,7 @@ int configureInput(int *chanInFd, uint32_t deviceNum, uint32_t inChan[], double 
 /*
 		printf("Channel conf %d\n", diffMapChannel[inChan[i]] );
 		if (pxi6259_add_ai_channel(&aiConfig, diffMapChannel[inChan[i]], AI_POLARITY_BIPOLAR, 2, AI_CHANNEL_TYPE_RSE, 0))
- 
+
 */		{
 
 		        fprintf(stderr, "Failed to configure channel %u\n", inChan[i]);
@@ -1523,7 +1523,7 @@ int temperatureCtrlCommand(char *cmd)
         perror("child sem_open");
         return -1;
     }
-    
+
     semWake_id = sem_open("WakeControl", O_CREAT, 0666, 0);
     if(semWake_id== SEM_FAILED) {
         perror("child sem_open");
@@ -1555,9 +1555,9 @@ int temperatureCtrlCommand(char *cmd)
 			return 0;
 		}
 */
-	}   
+	}
     }
-    
+
     if(strcmp(cmd, "start") == 0 || strcmp(cmd, "exit") == 0 )
     {
 	if(strcmp(cmd, "start") == 0)
@@ -1600,18 +1600,18 @@ int temperatureCtrlCommand(char *cmd)
 
 		if(sem_close(semWake_id ) < 0 )
 			perror("Control sem_close");
-	
+
 	}
-	   
+
     }
     printf("===============================================\n");
-    return 0; 	
+    return 0;
 }
 
 double calibTCN(double val)
 {
         double out;
-	
+
         double K  = 47.513 * 1.e-3  / 5. ;
 
 	double C1 =  3.86896e-2;
@@ -1639,8 +1639,8 @@ double calibTCN(double val)
             scaled[i] *= rawf;
             scaled[i] += scaling->c[j].f;
         }
-*/     	
-	return out;	
+*/
+	return out;
 }
 
 
@@ -1657,7 +1657,7 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
         uint32_t outChanRef;
         uint32_t outChanOnOff;
 	uint32_t rc;
-	
+
 
 	int chanInFD[numChan];
 	int devInFD;
@@ -1693,7 +1693,7 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 	    enableTcCheck = false;
 	    printf("Disable check on TC1 TC2 temperature difference\n");
  	}
-     
+
 	printf("BoardID %d\n", boardID );
 	printf("numChan %d\n", numChan );
         for(int i = 0; i < numChan; i++)
@@ -1709,7 +1709,7 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 
 
         deviceNum = boardID;
-/*    
+/*
         inChan[0] = aichan1;
 	printf("ch %d\n", inChan[0] );
         inChan[1] = aichan2;
@@ -1739,7 +1739,7 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 		perror("wake Control sem_open");
 		return -1;
 	}
-	
+
 
 	try {
   		time_t rawtime;
@@ -1750,7 +1750,7 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 		Tree *t;
 
   		time (&rawtime);
-  		timeinfo = localtime (&rawtime); 
+  		timeinfo = localtime (&rawtime);
 
 		sprintf(strShot, "%d%0.2d%0.2d", 1900+timeinfo->tm_year, timeinfo->tm_mon+1, timeinfo->tm_mday);
 		shot = strtoul(strShot, NULL, 0);
@@ -1775,7 +1775,7 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 		{
 			char path[256];
 			sprintf(path, "\\IPP_TC_TREND::TC%d", inChan[i] );
-			printf("NODO %s \n", path );		
+			printf("NODO %s \n", path );
 			node[i] = t->getNode(path);
 		}
 
@@ -1784,8 +1784,8 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 		vRefNode = t->getNode((char *)"\\IPP_TC_TREND::VREF");
 
 	}
-	catch(MdsException *exc) 
-	{	
+	catch(MdsException *exc)
+	{
 		printf("%s\n", exc->what());
 		return -1;
 	}
@@ -1824,7 +1824,7 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 		printf("START controll\n");
 
 		// Control tc
-		while (wakeState) 
+		while (wakeState)
 		{
 		        int n = 0;
 			int i = 0;
@@ -1847,7 +1847,7 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 			    error = 1;
 			    goto out;
 			}
-		
+
 			memset( scans_read, 0, sizeof(scans_read) );
 			nChRead = 0;
 			while( nChRead < numChan )
@@ -1857,7 +1857,7 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 					//printf("read channel %d n chan %d \n", i, nChRead);
 					scans_read[i] = pxi6259_read_ai(chanInFD[i], &value[i], 1);
 
-					if (scans_read[i] < 0 ) 
+					if (scans_read[i] < 0 )
 					{
 						if( errno != EAGAIN )
 						{
@@ -1876,8 +1876,8 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 		        // Start Control algorithm
 			//tempVal = 1300./5. * value[aiFdChanIdx];
 			tempVal = (float)calibTCN( (double)value[aiFdChanIdx] );
-			//printf("Temp %f V %f C \n", value[aiFdChanIdx] , tempVal);		
-			E = setPointT - tempVal; 
+			//printf("Temp %f V %f C \n", value[aiFdChanIdx] , tempVal);
+			E = setPointT - tempVal;
 			if( E >= 0)
 			{
 			   vRef = 0.2 * E;
@@ -1886,7 +1886,7 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 			}
 			else
 			   vRef = 0.0;
-			
+
 			if( fabs( value[0] - value[1] ) > 30.  && enableTcCheck )
 			{
 		    		fprintf(stderr, "Difference between TC1 and TC2 > than 30 C reset reference signal \n");
@@ -1895,7 +1895,7 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 
 			//vRef =  setPointT ;
 			//vRef = value[aiFdChanIdx];
-	
+
 			// End control algoritm
 
 			rc = pxi6259_write_ao(chanOutFD[0], &vRef, 1);
@@ -1905,13 +1905,13 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 			    goto out;
 			}
 
-			struct timeb tb; 
+			struct timeb tb;
 			int64_t currTime;
 			try
 			{
 				ftime( &tb);
 				Float32 *currData;
-		   		currTime =  (int64_t)(tb.time * 1000 + tb.millitm); 
+		   		currTime =  (int64_t)(tb.time * 1000 + tb.millitm);
 				for(int i = 0; i < numChan; i++)
 				{
 		  			currData = new Float32(value[i]);
@@ -1924,8 +1924,8 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 	  			currData = new Float32(vRef);
 	   			vRefNode->putRow(currData, &currTime);
 			}
-			catch(MdsException *exc) 
-			{	
+			catch(MdsException *exc)
+			{
 				printf("%s\n", exc->what());
 				error = 1;
 			    	goto out;
@@ -1991,7 +1991,7 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 		        fprintf(stderr, "Failed to stop generating signal!\n");
 		}
 
-		
+
 		close(chanOutFD[0]);
 		close(chanOutFD[1]);
 		close(devOutFD);
@@ -2008,9 +2008,9 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 
 	if(sem_unlink("WakeControl") < 0 )
 		perror("Control sem_close");
-	
+
 }
-	
+
 
 
 /**************************************************************************************/
@@ -2055,7 +2055,7 @@ uint32_t generateWaveformOnOneChannel_6368(int selectedCard, int channel, double
     uint32_t update_period_divisor;
 
 
-    sampleRate = number_of_samples * waverate;        
+    sampleRate = number_of_samples * waverate;
     update_period_divisor = 100000000 / sampleRate;
 
 
@@ -2071,7 +2071,7 @@ uint32_t generateWaveformOnOneChannel_6368(int selectedCard, int channel, double
 	    number_of_samples = nPoint;
 	}
 
-    	sampleRate = number_of_samples * waverate;        
+    	sampleRate = number_of_samples * waverate;
     	update_period_divisor = 100000000 / sampleRate;
 
 	int ao_fd = 0;
@@ -2144,7 +2144,7 @@ uint32_t generateWaveformOnOneChannel_6368(int selectedCard, int channel, double
 				1);					//   ...edge (not high level)
 		if(retval) {
 			if(!silent) printf("Error setting start software trigger!\n");
-			goto out_6368;    
+			goto out_6368;
 		}
 	}
         else
@@ -2158,20 +2158,20 @@ uint32_t generateWaveformOnOneChannel_6368(int selectedCard, int channel, double
 				1);					//   ...edge (not high level)
 		if(retval) {
 			if(!silent) printf("Error setting start PFI 1 trigger!\n");
-			goto out_6368;    
+			goto out_6368;
 		}
 
 	}
-	
+
 
 	/* Program the Update source */
 	retval = xseries_set_ao_update_counter(&ao_conf,
 			XSERIES_AO_UPDATE_COUNTER_UI_TC,	// Derive the clock line from the Update Interval Terminal Count
 			XSERIES_AO_POLARITY_RISING_EDGE);	// Make the line active on rising edge
-	if(retval) 
-        {    
+	if(retval)
+        {
 		if(!silent) printf("Error setting update counter!\n");
-		goto out_6368;    
+		goto out_6368;
 	}
 
 	/* Program the Update Interval counter */
@@ -2184,7 +2184,7 @@ uint32_t generateWaveformOnOneChannel_6368(int selectedCard, int channel, double
 	if(retval) {
 		if(!silent) printf("Error setting update interval counter!\n");
 		goto out_6368;
-	}    
+	}
 
 
 	/* Add channels */
@@ -2259,7 +2259,7 @@ uint32_t generateWaveformOnOneChannel_6368(int selectedCard, int channel, double
 			goto out_6368;
 		}
 	}
-	
+
 	{
 	    int semVal;
 
@@ -2276,8 +2276,8 @@ uint32_t generateWaveformOnOneChannel_6368(int selectedCard, int channel, double
 	    }
 
 	    printf("Waveform generation START\n");
-	    for( int i = 0; i < semVal+1; i++ ) 
-	    { 	
+	    for( int i = 0; i < semVal+1; i++ )
+	    {
 		if( sem_wait( semWaveGen_id ) < 0 )
 	    	{
 		     perror("sem_wait on semWaveGen_id");
@@ -2358,7 +2358,7 @@ uint32_t generateWaveformOnOneChannel_6259(int selectedCard, int channel, double
 
         float scaledWriteArray[number_of_samples];
 
-        sampleRate = number_of_samples * waverate;        
+        sampleRate = number_of_samples * waverate;
         periodDivisor = 20000000 / sampleRate;
 
 //printf("sampleRate ==== %d\n", sampleRate);
@@ -2420,38 +2420,38 @@ uint32_t generateWaveformOnOneChannel_6259(int selectedCard, int channel, double
 
 	if( softwareTrigger )
 	{
-		// Program the START1 signal (start trigger) to assert from a software rising edge 
+		// Program the START1 signal (start trigger) to assert from a software rising edge
 		if ( pxi6259_set_ao_attribute(&ao_conf, AO_START1_SOURCE_SELECT,  AO_START1_SELECT_PULSE) )
 		{
 			printf("Error setting start software trigger!\n");
-			goto out_6259;    
+			goto out_6259;
 		}
 
 		if ( pxi6259_set_ao_attribute(&ao_conf, AO_START1_POLARITY_SELECT , AO_START1_POLARITY_RISING_EDGE) )
 		{
 			printf("Error setting start software trigger!\n");
-			goto out_6259;    
+			goto out_6259;
 		}
 
 
 	}
         else
 	{
-		// Program the START1 signal (start trigger) to assert from a PFI1 rising edge 
+		// Program the START1 signal (start trigger) to assert from a PFI1 rising edge
 		if ( pxi6259_set_ao_attribute(&ao_conf, AO_START1_SOURCE_SELECT,  AO_START1_SELECT_PFI1) )
 		{
 			printf("Error setting start PFI1 trigger!\n");
-			goto out_6259;    
+			goto out_6259;
 		}
 
 		if ( pxi6259_set_ao_attribute(&ao_conf, AO_START1_POLARITY_SELECT , AO_START1_POLARITY_RISING_EDGE) )
 		{
 			printf("Error setting start PFI1 trigger!\n");
-			goto out_6259;    
+			goto out_6259;
 		}
 
 	}
-	
+
 
         retval = pxi6259_load_ao_conf(fdConfig, &ao_conf);
         if (retval) {
@@ -2484,14 +2484,14 @@ uint32_t generateWaveformOnOneChannel_6259(int selectedCard, int channel, double
 /*
 	if(softwareTrigger)
 	{
-		// pulse start trigger 
+		// pulse start trigger
 		retval = xseries_pulse_ao(ao_fd, XSERIES_START_TRIGGER);
 		if(retval) {
 			printf("Error generating start pulse!\n");
 			goto out_6368;
 		}
 	}
-*/	
+*/
 	{
 	    int semVal;
 
@@ -2508,8 +2508,8 @@ uint32_t generateWaveformOnOneChannel_6259(int selectedCard, int channel, double
 	    }
 
 	    printf("Waveform generation START\n");
-	    for( int i = 0; i < semVal+1; i++ ) 
-	    { 	
+	    for( int i = 0; i < semVal+1; i++ )
+	    {
 		if( sem_wait( semWaveGen_id ) < 0 )
 	    	{
 		     perror("sem_wait on semWaveGen_id");
@@ -2765,7 +2765,7 @@ std::cout << "SAVE LIST EXIT" << std::endl;
 	stopReq = true;
 	pthread_cond_signal(&itemAvailable);
 	if(threadCreated)
-	{	
+	{
 	    pthread_join(thread, NULL);
 	    printf("SAVE THREAD TERMINATED\n");
 	}
@@ -2777,7 +2777,7 @@ extern "C" void *handleSaveEV(void *listPtr)
 {
     SaveListEV *list = (SaveListEV *)listPtr;
     list->executeItems();
- 
+
 std::cout << "HANDLE SAVE EV TERMINATED " << std::endl;
    return NULL;
 }
@@ -2791,7 +2791,7 @@ extern "C" void startSaveEV(void **retList)
 
 extern "C" void stopSaveEV(void *listPtr)
 {
-    if(listPtr) 
+    if(listPtr)
     {
         SaveListEV *list = (SaveListEV *)listPtr;
         list->stop();
@@ -2850,7 +2850,7 @@ class BufferHandler
 	    flushBuffer();
 	}
     }
-	
+
     virtual void processSampleDelayed(short sample) = 0;
     virtual void trigger(double trigTime) = 0;
     virtual void flushBuffer() = 0;
@@ -2885,8 +2885,8 @@ class ClockBufferHandler:public BufferHandler
     bool freqSwitched;
 
 public:
-    ClockBufferHandler(MDSplus::Tree *tree, MDSplus::TreeNode *rawNode, double maxDelay, int f1Div, int f2Div, 
-	double baseFreq, int segBufSize, int segmentSize, double startTime, double preTime, 
+    ClockBufferHandler(MDSplus::Tree *tree, MDSplus::TreeNode *rawNode, double maxDelay, int f1Div, int f2Div,
+	double baseFreq, int segBufSize, int segmentSize, double startTime, double preTime,
 	double postTime, SaveListEV *saveList):BufferHandler(tree, rawNode, maxDelay, preTime, baseFreq, saveList)
     {
 	this->basePeriod = 1./baseFreq;
@@ -2916,7 +2916,7 @@ public:
 	short *initSeg = new short[segmentSize];
 	memset(initSeg, 0, sizeof(short) * segmentSize);
 	initSegData = new MDSplus::Int16Array(initSeg, segmentSize);
-	delete [] initSeg; 
+	delete [] initSeg;
 	MDSplus::Data *startSegData = new MDSplus::Float64(startTime);
 	MDSplus::Data *endSegData = new MDSplus::Float64(bufEndTime);
 	MDSplus::Data *periodData = new MDSplus::Float64(this->basePeriod * f12Div[0]);
@@ -2972,7 +2972,7 @@ std::cout << "SEGMENT FILLED" << std::endl;
 		    MDSplus::Data *startSegData = new MDSplus::Float64(bufStartTime);
 		    MDSplus::Data *endSegData = new MDSplus::Float64(bufEndTime);
 		    MDSplus::Data *periodData = new MDSplus::Float64(basePeriod * f12Div[currDivIdx]);
-		    MDSplus::Data *dimData = MDSplus::compileWithArgs("build_range($, $, $)", tree, 3, startSegData, 
+		    MDSplus::Data *dimData = MDSplus::compileWithArgs("build_range($, $, $)", tree, 3, startSegData,
 			endSegData, periodData);
 		    saveList->addItem(SEGMENT_OP_BEGIN, startSegData, endSegData, dimData, initSegData, rawNode);
 		    //rawNode->beginSegment(startSegData, endSegData, dimData, initSegData);
@@ -3011,7 +3011,7 @@ std::cout << "SEGMENT FILLED" << std::endl;
 
 
 //std::cout << "SEGMENT SIZE: " << segmentSize << "  BUFFER COUNT: " << bufferCount << "  SEG BUF SAMPLE COUNT: " << segBufSampleCount << "  PERIOD: " << basePeriod * f12Div[currDivIdx] << std::endl;
-	    bufEndTimes.push_back(switchTimes[0] + (segmentSize - (bufferCount * segBufSize + segBufSampleCount)-1) * 
+	    bufEndTimes.push_back(switchTimes[0] + (segmentSize - (bufferCount * segBufSize + segBufSampleCount)-1) *
 		basePeriod * f12Div[currDivIdx] - basePeriod * f12Div[currDivIdx]/2.);
 	    freqSwitched = true;
 	    switchTimes.erase(switchTimes.begin());
@@ -3022,7 +3022,7 @@ std::cout << "SEGMENT FILLED" << std::endl;
 	    MDSplus::Data *startTimesData = new MDSplus::Float64Array(bufStartTimes.data(), bufStartTimes.size());
 	    MDSplus::Data *endTimesData = new MDSplus::Float64Array(bufEndTimes.data(), bufEndTimes.size());
 	    MDSplus::Data *periodsData = new MDSplus::Float64Array(bufPeriods.data(), bufPeriods.size());
-	    MDSplus::Data *dimData = MDSplus::compileWithArgs("build_range($, $, $)", tree, 3, startTimesData, 
+	    MDSplus::Data *dimData = MDSplus::compileWithArgs("build_range($, $, $)", tree, 3, startTimesData,
 		endTimesData, periodsData);
 
 std::cout << "UPDATE start: " << startTimesData << std::endl;
@@ -3085,7 +3085,7 @@ class BurstBufferHandler:public BufferHandler
     unsigned long baseSampleCount, currBaseSampleCount;
 
 public:
-    BurstBufferHandler(MDSplus::Tree *tree, MDSplus::TreeNode *rawNode, double maxDelay, int freqDiv, 
+    BurstBufferHandler(MDSplus::Tree *tree, MDSplus::TreeNode *rawNode, double maxDelay, int freqDiv,
 	double baseFreq, double startTime, double preTime, double postTime, int segmentSize, SaveListEV *saveList):BufferHandler(tree, rawNode, maxDelay, preTime, baseFreq, saveList)
     {
 	this->preTime = preTime;
@@ -3117,7 +3117,7 @@ std::cout << "DISTRUTTO" << std::endl;
 //static int i = 0;
 //if(i++ % 1000 == 0)
 //    std::cout << currTime << std::endl;
-	if(startTimes.size() > 0 && startTimes[0] <= currTime) //frequencySwitched. 
+	if(startTimes.size() > 0 && startTimes[0] <= currTime) //frequencySwitched.
 	{
 	    if(!inBurst)  //Trigger considered only if not serving a previous burst
 	    {
@@ -3135,7 +3135,7 @@ std::cout << "DISTRUTTO" << std::endl;
 	    segBuffer[burstCount++] = sample;
 	    windowCount++;
 	    if(burstCount >= segmentSize)
-	    {   
+	    {
 		double segEnd = segStart + (segmentSize-1) * basePeriod * freqDiv;
 		MDSplus::Data *startSegData = new MDSplus::Float64(segStart);
 		MDSplus::Data *endSegData = new MDSplus::Float64(segEnd);
@@ -3156,7 +3156,7 @@ std::cout << "SEG DIM: " << dimData << std::endl;
 		}
 	    }
 	    else if (windowCount > windowSize) //Last piece of burst
-	    {   
+	    {
 		double segEnd = segStart + (burstCount - 1) * basePeriod * freqDiv;
 		MDSplus::Data *startSegData = new MDSplus::Float64(segStart);
 		MDSplus::Data *endSegData = new MDSplus::Float64(segEnd);
@@ -3197,7 +3197,7 @@ class EventHandler:public Event
 public:
     EventHandler(char *name, BufferHandler *buf):Event(name)
     {
-std::cout << "Created event handler for " << name <<std::endl; 
+std::cout << "Created event handler for " << name <<std::endl;
 	this->bufHandler = buf;
     }
     void run()
@@ -3211,10 +3211,10 @@ std::cout << "Created event handler for " << name <<std::endl;
     }
 };
 
-	
+
 #define ADC_BUFFER_SIZE 1000
 int pxi6259EV_readAndSaveAllChannels(int nChan, void *chanFdPtr, int *isBurst, int *f1Div, int *f2Div, double maxDelay, double baseFreq, double *preTimes, double *postTimes, double startTime, int bufSize, int segmentSize, char **eventNames, void *dataNidPtr, void *treePtr, void *saveListPtr, void *stopAcq)
-{ 
+{
     int chan;
     SaveListEV *saveList  = (SaveListEV *)saveListPtr;
     int *chanFd 	= (int *)chanFdPtr;
@@ -3248,7 +3248,7 @@ int pxi6259EV_readAndSaveAllChannels(int nChan, void *chanFdPtr, int *isBurst, i
 	if(isBurst[chan])
 	    bufferHandlers[chan] = new BurstBufferHandler((MDSplus::Tree *)treePtr, treeNodes[chan], maxDelay, f1Div[chan], baseFreq, startTime, preTimes[chan], postTimes[chan], segmentSize, saveList);
 	else
-    	    bufferHandlers[chan] = new ClockBufferHandler((MDSplus::Tree *)treePtr, treeNodes[chan], maxDelay, f1Div[chan], f2Div[chan], baseFreq, bufSize, segmentSize, 
+    	    bufferHandlers[chan] = new ClockBufferHandler((MDSplus::Tree *)treePtr, treeNodes[chan], maxDelay, f1Div[chan], f2Div[chan], baseFreq, bufSize, segmentSize,
 		startTime, preTimes[chan], postTimes[chan], saveList);
 	if(eventNames[chan][0]) //Empty string is passed for no event
 	{
@@ -3266,7 +3266,7 @@ int pxi6259EV_readAndSaveAllChannels(int nChan, void *chanFdPtr, int *isBurst, i
 	    int currReadSamples = read(chanFd[chan], buffer, ADC_BUFFER_SIZE * 2);
             if(currReadSamples <=0)
             {
-                if (errno == EAGAIN || errno == ENODATA) 
+                if (errno == EAGAIN || errno == ENODATA)
 		{
                     usleep(50);
 			        currReadSamples = 0; // No data currently available... Try again
@@ -3290,7 +3290,7 @@ int pxi6259EV_readAndSaveAllChannels(int nChan, void *chanFdPtr, int *isBurst, i
 		        delete [] bufferHandlers;
                         return -2;
                     }
-                } 
+                }
 	    }
 	    else
 	    {
@@ -3318,7 +3318,7 @@ std::cout << "STOPPED" << std::endl;
 std::cout << "TERMINATED" << std::endl;
     }
     saveList->stop();
-   
+
 
 std::cout << "DELETING eventHandlers" << std::endl;
     delete [] eventHandlers;
@@ -3328,6 +3328,6 @@ std::cout << "DELETING bufferHandlers" << std::endl;
     delete [] bufferHandlers;
     printf("STOP PXI 6259 Acquisition \n");
     return 1;
-}   
+}
 
 

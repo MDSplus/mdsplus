@@ -51,7 +51,7 @@ class Action
 
     public synchronized String getServerAddress(){return server_address;}
     public synchronized void setServerAddress(String server_address){this.server_address = server_address;}
-    
+
     synchronized void setStatus(int dispatch_status, int status, boolean verbose)
     {
         String server;

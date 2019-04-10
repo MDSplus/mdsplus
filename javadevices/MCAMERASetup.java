@@ -9,12 +9,12 @@
  * @author  taliercio
  */
 public class MCAMERASetup extends DeviceSetup {
-    
+
     /** Creates new form MCAMERASetyp */
     public MCAMERASetup() {
         initComponents();
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -817,7 +817,7 @@ public class MCAMERASetup extends DeviceSetup {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
+
     /**
      * @param args the command line arguments
      */
@@ -828,7 +828,7 @@ public class MCAMERASetup extends DeviceSetup {
             }
         });
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChannel deviceChannel1;
@@ -965,5 +965,5 @@ public class MCAMERASetup extends DeviceSetup {
     private javax.swing.JPanel jPanel9;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
-    
+
 }

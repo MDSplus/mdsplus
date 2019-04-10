@@ -15,7 +15,7 @@ def _devHelpDevtype(devtype, full):
         devnames.append(DevHelp(device,-1))
     return '\n'.join(devnames)
   else:
-    try: 
+    try:
         cls = Device.PyDevice(devtype)
         if full == 1:
           return TextDoc().docclass(cls)
@@ -47,4 +47,4 @@ def DevHelp(dev,full=0):
     return _devHelpNode(dev,int(full))
   else:
     return _devHelpDevtype(str(dev),int(full))
-    
+

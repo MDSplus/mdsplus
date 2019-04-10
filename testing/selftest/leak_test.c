@@ -41,7 +41,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
     else {
         printf(",");
     }
-    TEST1(1);    
+    TEST1(1);
     END_TESTING
 }
 

@@ -2,7 +2,7 @@ package MDSplus;
 
 /**
  * Array description for  DTYPE_WU
- * 
+ *
  * Constructors:Uint16Array(short[])
  * @author manduchi
  * @version 1.0
@@ -52,7 +52,7 @@ public class Uint16Array extends Array
                 return false;
         return true;
     }
-    
+
     public static Data getData(short []datum, int []dims, Data help, Data units, Data error, Data validation)
     {
         try {
@@ -63,7 +63,7 @@ public class Uint16Array extends Array
     {
         return new Uint16(datum[idx]);
     }
-    
+
     public int getSize(){return datum.length;}
     protected Array getPortionAt(int startIdx, int []newDims, int newSize) throws MdsException
     {
@@ -94,7 +94,7 @@ public class Uint16Array extends Array
             retDatum[i] = (short)datum[i];
         return retDatum;
     }
-    public int[] getIntArray() 
+    public int[] getIntArray()
     {
         int[] retDatum = new int[datum.length];
         for(int i = 0; i < datum.length; i++)
@@ -115,7 +115,7 @@ public class Uint16Array extends Array
             retDatum[i] = (float)datum[i];
         return retDatum;
     }
-    public double[] getDoubleArray() 
+    public double[] getDoubleArray()
     {
         double[] retDatum = new double[datum.length];
         for(int i = 0; i < datum.length; i++)

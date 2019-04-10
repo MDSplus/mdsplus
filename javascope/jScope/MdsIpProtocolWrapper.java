@@ -5,7 +5,7 @@ import java.io.*;
  *
  * MdsProtocolWrapper handles mdstcpip management for protocol plugin
  */
-public class MdsIpProtocolWrapper 
+public class MdsIpProtocolWrapper
 {
     static {
         try
@@ -46,12 +46,12 @@ public class MdsIpProtocolWrapper
         }
 
     }
-    
+
     InputStream getInputStream()
     {
         return new MdsIpInputStream();
     }
-    
+
     class MdsIpOutputStream extends OutputStream
     {
         public void write(int b) throws IOException
@@ -81,27 +81,27 @@ System.out.println("FLUSH FATTO");
                 connectionIdx = -1;
             }
         }
-        
+
     }
-    
+
     OutputStream getOutputStream()
     {
         return new MdsIpOutputStream();
     }
-    
+
     public native int connectToMds(String url);
     public native int send(int connectionId, byte[] sendBuf, boolean nowait);
     public native byte[] recv(int connectionId, int len);
     public native void flush(int connectionId);
     public native void disconnect(int connectionId);
-    
+
     public MdsIpProtocolWrapper(String url)
     {
         connectionIdx = connectToMds(url);
     }
-    
-    
-    
+
+
+
     public static void main(String args[])
     {
         MdsIpProtocolWrapper mpw = new MdsIpProtocolWrapper("tcp");

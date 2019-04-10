@@ -12,7 +12,7 @@ public class RoutineData extends CompoundData
 	    ndescs = 3 + arguments.length;
 	else
 	    ndescs = 3;
-	    
+
 	descs = new Data[ndescs];
 	descs[0] = time_out;
 	descs[1] = image;
@@ -20,7 +20,7 @@ public class RoutineData extends CompoundData
 	for(int i = 3; i < ndescs; i++)
 	    descs[i] = arguments[i-3];
     }
-    
+
     public final Data getTimeout() {return descs[0]; }
     public final Data getImage()   {return descs[1]; }
     public final Data getRoutine() {return descs[2]; }

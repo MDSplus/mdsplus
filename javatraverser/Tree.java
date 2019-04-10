@@ -85,7 +85,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	public static boolean isRemote(){return is_remote;}
     public static Node getCurrentNode(){return curr_node;}
 
-        
+
 // Temporary, to overcome Java's bugs on inner classes
     JMenuItem add_action_b, add_dispatch_b, add_numeric_b, add_signal_b, add_task_b, add_text_b,
 	add_window_b, add_axis_b, add_device_b, add_child_b, add_subtree_b, delete_node_b, modify_tags_b;
@@ -302,13 +302,13 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		        open_dialog.setVisible(false);  }});
 	        mjp.add(jp, "South");
 	        open_dialog.getContentPane().add(mjp);
-	        open_shot.addKeyListener( new KeyListener() {          
+	        open_shot.addKeyListener( new KeyListener() {
             public void keyReleased(KeyEvent e){}
             public void keyTyped(KeyEvent e){}
             public void keyPressed(KeyEvent e) {
 	            if(e.getKeyCode() == KeyEvent.VK_ENTER)
 	                open_ok(); }});
-	        open_exp.addKeyListener( new KeyListener() {          
+	        open_exp.addKeyListener( new KeyListener() {
             public void keyReleased(KeyEvent e){}
             public void keyTyped(KeyEvent e){}
             public void keyPressed(KeyEvent e) {
@@ -351,7 +351,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        JOptionPane.showMessageDialog(curr_tree, "Wrong shot number", "Error opening tree",
 		    JOptionPane.WARNING_MESSAGE);
 	        return;
-	    }                
+	    }
 	    if(open_edit.isSelected() && open_readonly.isSelected())
 	    {
 	        JOptionPane.showMessageDialog(curr_tree, "Tree cannot be open in both edit and readonly mode", "Error opening tree",
@@ -457,7 +457,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 //GAB 2014 Add DragAndDrop capability
             curr_tree.setTransferHandler(new FromTransferHandler());
             curr_tree.setDragEnabled(true);
-/////////////////////////////            
+/////////////////////////////
         ToolTipManager.sharedInstance().registerComponent(curr_tree);
         curr_tree.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
@@ -726,7 +726,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    add_node_dialog.setVisible(true);
     }
     public void addSubtree()
-    {   
+    {
         Node currnode = Tree.getCurrentNode();
 	    if(currnode == null) return;
 	    if(add_subtree_dialog == null)
@@ -1174,9 +1174,9 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
             try {
                 return new StringSelection(topExperiment + ":" + Tree.getCurrentNode().getFullPath());
             }catch(Exception exc) {return null;}
-        }    
+        }
     }
-    
+
     static class dialogs
     {
         static void update()
@@ -1189,8 +1189,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
             private static JDialog dialog;
             private static JCheckBox[] flag;
             private static boolean[] settable_flag;
-            private static JButton close_b; 
-            private static JButton update_b; 
+            private static JButton close_b;
+            private static JButton update_b;
 
             private static void construct()
 	        {
@@ -1346,7 +1346,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
                 show();
             }
         }
- 
+
         static class rename
         {
             private static JDialog dialog;
@@ -1449,7 +1449,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        else
 		        node = (Node)usrObj;
             if (isSelected)
-                Tree.dialogs.update();  
+                Tree.dialogs.update();
             return node.getIcon(isSelected);
 	    }
 	}

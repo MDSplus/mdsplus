@@ -396,7 +396,7 @@ public class RFXVConfigSetup extends DeviceSetup {
    {
        super.configure(subtree, baseNid, node);
        resetCtrlState();
-       return;       
+       return;
    }
 
    public void reset()

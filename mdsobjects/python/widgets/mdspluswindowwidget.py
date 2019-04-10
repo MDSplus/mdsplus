@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -75,7 +75,7 @@ class MDSplusWindowWidget(Table):
                 MDSplusErrorMsg('Invalid TimeAt0',msg)
                 raise
         return ans
-        
+
     def setValue(self,d):
         self._value=d
         self.reset()
@@ -98,9 +98,9 @@ class MDSplusWindowWidget(Table):
             self.startIdx.set_text('')
             self.endIdx.set_text('')
             self.timeAt0.set_text('')
-            
+
     value=property(getValue,setValue)
-        
+
     def show(self):
         old=self.get_no_show_all()
         self.set_no_show_all(False)

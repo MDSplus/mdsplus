@@ -20,7 +20,7 @@ public class CallData extends CompoundData
 	for(int i = 2; i < ndescs; i++)
 	    descs[i] = arguments[i-2];
     }
-    
+
     public final int getType() {return type; }
     public final Data getImage() {return descs[0]; }
     public final Data getRoutine() {return descs[1]; }

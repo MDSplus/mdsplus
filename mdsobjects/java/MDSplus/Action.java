@@ -6,7 +6,7 @@ package MDSplus;
  * @version 1.0
  * @updated 30-mar-2009 13.44.21
  */
-public class Action extends Compound 
+public class Action extends Compound
 {
 	public Action(Data dispatch, Data task, Data errorLog, Data completionMessage, Data performance,
                 Data help, Data units, Data error, Data validation)
@@ -31,12 +31,12 @@ public class Action extends Compound
         {
             this(null, null, null, null);
         }
-        
+
         public static Action getData(Data help, Data units, Data error, Data validation)
         {
             return new Action(help, units, error, validation);
         }
-        
+
         public Data getDispatch()
         {
             return descs[0];
@@ -63,7 +63,7 @@ public class Action extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setDispatch(Data data)
@@ -72,7 +72,7 @@ public class Action extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setTask(Data data)
@@ -81,7 +81,7 @@ public class Action extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setErrorLog(Data data)
@@ -90,7 +90,7 @@ public class Action extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setCompletionMessage(Data data)
@@ -99,7 +99,7 @@ public class Action extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setPerformance(Data data)

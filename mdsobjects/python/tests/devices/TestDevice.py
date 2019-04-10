@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@ class TestDevice(Device):
     class Worker(threading.Thread):
         """An async worker should be a proper class
            This ensures that the methods remian in memory
-           It should at least take one argument: teh device node  
+           It should at least take one argument: teh device node
         """
         def __init__(self,dev):
             super(TestDevice.Worker,self).__init__(name=dev.path)
@@ -68,7 +68,7 @@ class TestDevice(Device):
                 time.sleep(.1)
                 self.dev.DATA.putSegment(Int32Array([i]),i)
     def init1(self):
-        self.init1_done.record = time.time()       
+        self.init1_done.record = time.time()
     def init2(self):
         """start async worker"""
         thread = self.Worker(self)

@@ -111,7 +111,7 @@ EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **
     NODELIST *tail=NULL;
     ctx->default_node = dblist->default_node;
     ctx->answers = Search(dblist, ctx, ctx->terms, dblist->default_node, &tail);
-    ctx->answers = Filter(ctx->answers, usage_mask); 
+    ctx->answers = Filter(ctx->answers, usage_mask);
     if (ctx->answers && (ctx->answers->node == ctx->default_node) && wild) {
       NODELIST *tmp = ctx->answers;
       ctx->answers = ctx->answers->next;
@@ -126,7 +126,7 @@ EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **
     tmp = ctx->answers->next;
     *nid_out = node_to_nid(dblist, ctx->answers->node, (NID *)nid_out);
     free(ctx->answers);
-    ctx->answers = tmp;    
+    ctx->answers = tmp;
   }
   else {
     status = (not_first_time) ? TreeNMN : TreeNNF;
@@ -196,7 +196,7 @@ STATIC_ROUTINE NODELIST *Search(PINO_DATABASE *dblist, SEARCH_CTX *ctx, SEARCH_T
   NODELIST *nodes = term ? Find(dblist, term, start, tail) : NULL;
   if (nodes) {
     NODELIST *more_nodes = NULL;
-    NODELIST *more_tail = NULL;    
+    NODELIST *more_tail = NULL;
     if(term->next) {
       NODELIST *these_nodes = NULL;
       NODELIST *these_tail = NULL;
@@ -217,10 +217,10 @@ STATIC_ROUTINE NODELIST *Search(PINO_DATABASE *dblist, SEARCH_CTX *ctx, SEARCH_T
   }
   else{
     return NULL;
-  } 
+  }
 }
 
-STATIC_ROUTINE inline int Wild(char *term) 
+STATIC_ROUTINE inline int Wild(char *term)
 {
   return (strchr(term, '*') || strchr(term, '?') || strchr(term, '%'));
 }
@@ -346,7 +346,7 @@ STATIC_ROUTINE NODELIST *FindTags(PINO_DATABASE *dblist, TREE_INFO *info, int tr
     }
     answer = AddNodeList(answer, tail, n);
   }
-  else { 
+  else {
     for (i=0; i<info->header->tags; i++) {
       char *trimmed = Trim(tptr[i].name, sizeof(TAG_NAME));
       if(match(tagname, trimmed)) {
@@ -379,7 +379,7 @@ STATIC_ROUTINE TREE_INFO *GetDefaultTreeInfo(PINO_DATABASE *dblist, int *treenum
   int  i = 0;
   NID nid;
   node_to_nid(dblist, dblist->default_node, &nid);
-  *treenum = nid.tree; 
+  *treenum = nid.tree;
   for (info=dblist->tree_info; i < *treenum; info = info->next_info, i++);
   return info;
 
@@ -402,7 +402,7 @@ STATIC_ROUTINE NODELIST *FindTagWild(PINO_DATABASE *dblist, SEARCH_TERM *term, N
       if(match(treename, tinfo->treenam)) {
         NODELIST *tag_tail = NULL;
         answer = ConcatenateNodeLists(answer, tail, FindTags(dblist, tinfo, treenum, tagname, &tag_tail), tag_tail);
-        if(! tree_wild) 
+        if(! tree_wild)
           break;
       }
     }
@@ -417,7 +417,7 @@ STATIC_ROUTINE NODELIST *FindTagWild(PINO_DATABASE *dblist, SEARCH_TERM *term, N
     if ((!answer) || tag_wild) {
       for (treenum=0, tinfo=dblist->tree_info; tinfo; tinfo = tinfo->next_info) {
         if (tinfo != default_tinfo) {
-          NODELIST *tag_tail = NULL; 
+          NODELIST *tag_tail = NULL;
           answer = ConcatenateNodeLists(answer, tail, FindTags(dblist, tinfo, treenum, tagname, &tag_tail), tag_tail);
 	  if(answer && (!tag_wild))
             break;
@@ -568,18 +568,18 @@ STATIC_ROUTINE int match(char *first, char *second)
     // If we reach at the end of both strings, we are done
     if (*first == '\0' && *second == '\0')
         return 1;
- 
+
     // Make sure that the characters after '*' are present
     // in second string. This function assumes that the first
     // string will not contain two consecutive '*'
     if (*first == '*' && *(first+1) != '\0' && *second == '\0')
         return 0;
- 
+
     // If the first string contains '?', or current characters
     // of both strings match
     if (*first == '?' || *first == '%' || *first == *second)
         return match(first+1, second+1);
- 
+
     // If there is *, then there are two possibilities
     // a) We consider current character of second string
     // b) We ignore current character of second string.

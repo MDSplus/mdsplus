@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  CMS REPLACEMENT HISTORY, Element BOXSMOOTH.C */
 /*------------------------------------------------------------------------------
 
-		Name:   BOXSMOOTH   
+		Name:   BOXSMOOTH
 
 		Type:   C function
 
@@ -45,7 +45,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 int boxsmooth(int *num, float *in, int *width, float *out)
 

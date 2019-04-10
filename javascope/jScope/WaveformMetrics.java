@@ -262,7 +262,7 @@ public class WaveformMetrics
             if(z2D[idx] < z2D_min) z2D_min = z2D[idx];
             if(z2D[idx] > z2D_max) z2D_max = z2D[idx];
         }
-        
+
         for (i = 0; i < x2D.length  && x2D[i] < xmin; i++)
             ;
         xSt = i;
@@ -620,7 +620,7 @@ public class WaveformMetrics
         return curr_vect;
     }
 
- 
+
     public Vector<Polygon> ToPolygons(Signal sig, Dimension d)
     {
         return ToPolygons(sig, d, false);

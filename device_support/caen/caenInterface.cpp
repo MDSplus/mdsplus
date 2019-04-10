@@ -92,7 +92,7 @@ void firFixed( int16_t *coeffs,  int16_t *input, int16_t *output, int length, in
  // put the new samples at the high end of the buffer
  memcpy( &insamp[filterLength - 1], input, length * sizeof(int16_t) );
  // apply the filter to each input sample
- for ( n = 0; n < length; n++ ) 
+ for ( n = 0; n < length; n++ )
  {
  	// calculate output n
  	coeffp = coeffs;
@@ -181,10 +181,10 @@ class SaveItem {
 
   	startTime = compileWithArgs("$[$]+slope_of($)*$",(Tree *)treePtr, 4, triggerNode, segCount, clockNode, startIdx);
  	endTime =   compileWithArgs("$[$]+slope_of($)*$",(Tree *)treePtr, 4, triggerNode, segCount, clockNode, endIdx);
- 	dim = compileWithArgs("build_range($[$]+slope_of($)*$, $[$]+slope_of($)*$, slope_of($))", (Tree *)treePtr, 
+ 	dim = compileWithArgs("build_range($[$]+slope_of($)*$, $[$]+slope_of($)*$, slope_of($))", (Tree *)treePtr,
                                        9, triggerNode, segCount, clockNode, startIdx, triggerNode, segCount, clockNode, endIdx, clockNode);
 
-        try 
+        try
         {
 
 	     switch( dataType )
@@ -220,7 +220,7 @@ class SaveItem {
 	    deleteData(segCount);
 
 	}
- 	catch(MdsException *exc) 
+ 	catch(MdsException *exc)
  	{
 		printf("Cannot put segment: %s\n", exc->what());
  	}
@@ -228,7 +228,7 @@ class SaveItem {
  	delete clockNode;
  	delete triggerNode;
     }
-    
+
 };
 
 extern "C" void *handleSave(void *listPtr);
@@ -262,7 +262,7 @@ class SaveList
 		int size;
 
 		if( noFilter )
-		{			
+		{
 			memcpy(segmentc, segment, segmentSize * sizeof(short) );
 		}
 		else
@@ -282,7 +282,7 @@ printf("----Start Filter\n");
                                 cIdx += size;
 			}
 		}
-	
+
 		SaveItem *newItem = new SaveItem(segmentc, segmentSize, dataType, startIdx_c, endIdx_c, segmentCount,  dataNid, clockNid, triggerNid, treePtr);
 		pthread_mutex_lock(&mutex);
 		if(saveHead == NULL)
@@ -342,7 +342,7 @@ printf("----Start Filter\n");
 		stopReq = true;
 		pthread_cond_signal(&itemAvailable);
 		if(threadCreated)
-		{	
+		{
 			pthread_join(thread, NULL);
 			printf("SAVE THREAD TERMINATED\n");
 		}
@@ -366,7 +366,7 @@ extern "C" void startSave(void **retList)
 
 extern "C" void stopSave(void *listPtr)
 {
-    if(listPtr) 
+    if(listPtr)
     {
         SaveList *list = (SaveList *)listPtr;
         list->stop();
@@ -381,7 +381,7 @@ extern "C" void openTree(char *name, int shot, void **treePtr)
 	Tree *tree = new Tree(name, shot);
 	*treePtr = (void *)tree;
     }
-    catch(MdsException *exc) 
+    catch(MdsException *exc)
     {
 	printf("Cannot open tree %s %d: %s\n", name, shot, exc->what());
     }
@@ -408,7 +408,7 @@ extern "C" int readAndSaveSegments(int32_t handle, int32_t vmeAddress, int numCh
 
 {
 // numSegmens < 0 for Continuous acquisition , numSegmens > 0 for transient recorder acquisition
- 
+
 	    int actSegments = 0;
 	    int status;
 	    struct segment_struct segment;
@@ -419,12 +419,12 @@ extern "C" int readAndSaveSegments(int32_t handle, int32_t vmeAddress, int numCh
 	    int currStartIdx    = segmentSamples - pts + startIdx;
 	    int currEndIdx      = segmentSamples - pts + endIdx;
 	    int currChanSamples = currEndIdx - currStartIdx;
-           
+
 
 	    printf("readAndSaveSegments \n" );
 
 
-	 // Read number of buffers 
+	 // Read number of buffers
 	    status = CAENVME_ReadCycle(handle, (vmeAddress + 0x812C), &actSegments, cvA32_S_DATA, cvD32);
 	    if ( status != 0 )
 	    {
@@ -433,11 +433,11 @@ extern "C" int readAndSaveSegments(int32_t handle, int32_t vmeAddress, int numCh
 	    }
 
 	    if ( caenLibDebug ) printf("segmentCounter %d actSegments %d nActChans %d segmentSamples %d currChanSamples %d\n", segmentCounter, actSegments, nActChans, segmentSamples, currChanSamples);
-	    
+
 	    short *buff = (short *)calloc( 1, 16 + nActChans * segmentSamples * sizeof(short) );
 
 	    for(int chan = 0; chan < numChannels; chan++)
-	    {	
+	    {
 	       channels[chan] = (short *)calloc(1, currChanSamples * actSegments * sizeof(short));
 	    }
 
@@ -455,7 +455,7 @@ extern "C" int readAndSaveSegments(int32_t handle, int32_t vmeAddress, int numCh
                   return 0;
               }
 
-	      memcpy(&segment, buff, 4 * sizeof(int) );          
+	      memcpy(&segment, buff, 4 * sizeof(int) );
 
               int actSize = 4 * (segment.eventSize & 0x0fffffff);
               int counter = segment.time/2;
@@ -465,13 +465,13 @@ extern "C" int readAndSaveSegments(int32_t handle, int32_t vmeAddress, int numCh
 
     	      if( caenLibDebug ) printf( "Read actSize %d counter %d sizeInInts %d retLen %d Index %d\n", actSize, counter, sizeInInts, retLen, segment.time % actSize );
 
-	
+
             for( int  chan = 0; chan < numChannels; chan++)
 	    {
                 if ( (chanMask & (1 << chan))  != 0 )
 		{
 		    if( caenLibDebug )
-			printf("---Seg Idx %d - channels[%d][%d : %d], &buff[%d : %d]\n", segmentIdx, chan, segmentIdx * currChanSamples,  currChanSamples, 
+			printf("---Seg Idx %d - channels[%d][%d : %d], &buff[%d : %d]\n", segmentIdx, chan, segmentIdx * currChanSamples,  currChanSamples,
 											  16 + chan * chanSizeInShorts + currStartIdx, currChanSamples);
 
 		    memcpy( &channels[chan][segmentIdx * currChanSamples], &buff[16 + chan * chanSizeInShorts + currStartIdx], currChanSamples  * sizeof(short) );
@@ -489,25 +489,25 @@ extern "C" int readAndSaveSegments(int32_t handle, int32_t vmeAddress, int numCh
                  if ( (chanMask & (1 << chan)) != 0 )
 		 {
 		      for( int seg = 0; seg < actSegments; seg++ )
-		      {	
+		      {
 			  if( numSegment > 0 && segmentCounter + seg > numSegment )
 			  {
 				if( caenLibDebug )printf("skip seg %d for channel %d\n", (segmentCounter + seg), chan);
 				break;
                           }
-                      	  saveList->addItem((void *)&channels[chan][seg * currChanSamples], currChanSamples,  
-						DTYPE_W, startIdx, endIdx, (segmentCounter + seg), dataNidPtr[chan], clockNid, triggerNid, treePtr);                          
+                      	  saveList->addItem((void *)&channels[chan][seg * currChanSamples], currChanSamples,
+						DTYPE_W, startIdx, endIdx, (segmentCounter + seg), dataNidPtr[chan], clockNid, triggerNid, treePtr);
 		      }
                  }
 		free(channels[chan]);
-            } 
+            }
 	}
-       
+
         if( numSegment > 0 && segmentCounter + actSegments > numSegment )
 	    return ( numSegment );
 	else
 	    return ( segmentCounter + actSegments );
-    
+
 }
 
 

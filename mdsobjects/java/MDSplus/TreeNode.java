@@ -11,7 +11,7 @@ public class TreeNode extends Data
 
 	protected Tree tree;
         protected int nid;
-        
+
 
         static final int NciM_STATE = 0x00000001,
             NciM_PARENT_STATE = 0x00000002,
@@ -29,8 +29,8 @@ public class TreeNode extends Data
             NciM_PATH_REFERENCE = 0x00002000,
             NciM_NID_REFERENCE = 0x00004000,
             NciM_INCLUDE_IN_PULSE = 0x00008000;
-        
-        
+
+
         static final int  NciTIME_INSERTED = 4,
             NciOWNER_ID = 5,
             NciCLASS = 6,
@@ -69,8 +69,8 @@ public class TreeNode extends Data
             NciDTYPE_STR = 38,
             NciUSAGE_STR = 39,
             NciCLASS_STR = 40,
-            NciVERSION = 41;       
- 
+            NciVERSION = 41;
+
         static final int TreeUSAGE_ANY = 0,
             TreeUSAGE_STRUCTURE  = 1,
             TreeUSAGE_ACTION   =   2,
@@ -85,8 +85,8 @@ public class TreeNode extends Data
             TreeUSAGE_SUBTREE  =  11,
             TreeUSAGE_COMPOUND_DATA =  12;
 
-        
-        
+
+
         public TreeNode(int nid, Data help, Data units, Data error, Data validation) throws MdsException
         {
             super(help, units, error, validation);
@@ -128,7 +128,7 @@ public class TreeNode extends Data
         {
             return new TreeNode(nid,  help,  units, error, validation);
         }
-        
+
         protected void resolveNid() throws MdsException {}
         static native int getNci(int nid, int ctx1, int ctx2, int nciType) throws MdsException;
         static native long getNciLong(int nid, int ctx1, int ctx2, int nciType) throws MdsException;
@@ -143,7 +143,7 @@ public class TreeNode extends Data
         static native Data getData(int nid, int ctx1, int ctx2) throws MdsException;
         static native void putData(int nid, int ctx1, int ctx2, Data data) throws MdsException;
         static native void deleteData(int nid, int ctx1, int ctx2) throws MdsException;
-        static native void doMethod(int nid, int ctx1, int ctx2, java.lang.String method) throws MdsException; 
+        static native void doMethod(int nid, int ctx1, int ctx2, java.lang.String method) throws MdsException;
         static native java.lang.String[] getTags(int nid, int ctx1, int ctx2) throws MdsException;
         static native void beginSegment(int nid, int ctx1, int ctx2, Data start, Data end, Data dim, Data initData)throws MdsException;
         static native void makeSegment(int nid, int ctx1, int ctx2, Data start, Data end, Data dim, Data initData, int filledRows)throws MdsException;
@@ -168,7 +168,7 @@ public class TreeNode extends Data
         static native int addDevice(int nid, int ctx1, int ctx2,  java.lang.String name,  java.lang.String usage)throws MdsException;
         static native void setSubtree(int nid, int ctx1, int ctx2, boolean isSubtree);
         static native void moveNode(int nid, int ctx1, int ctx2, int parentNid, java.lang.String newName);
-        
+
         /**
 	 * Return true if data has to be comressed when written.
 	 */
@@ -180,7 +180,7 @@ public class TreeNode extends Data
 
 	/**
 	 * Enable compression then writing data
-	 * 
+	 *
 	 * @param flag
 	 */
 	public void setCompressOnPut(boolean flag) throws MdsException
@@ -214,7 +214,7 @@ public class TreeNode extends Data
 	public TreeNodeArray getConglomerateNodes() throws MdsException
         {
             resolveNid();
-            return new TreeNodeArray(getNciNids(nid, tree.getCtx1(), tree.getCtx2(), NciNUMBER_OF_ELTS, NciCONGLOMERATE_ELT), tree); 
+            return new TreeNodeArray(getNciNids(nid, tree.getCtx1(), tree.getCtx2(), NciNUMBER_OF_ELTS, NciCONGLOMERATE_ELT), tree);
 	}
 
         /**
@@ -246,7 +246,7 @@ public class TreeNode extends Data
 
 	/**
 	 * Set essential flag
-	 * 
+	 *
 	 * @param flag
 	 */
 	public void setEssential(boolean flag) throws MdsException
@@ -306,7 +306,7 @@ public class TreeNode extends Data
 
 	/**
 	 * Set includeInPulse flag
-	 * 
+	 *
 	 * @param flag
 	 */
 	public void setIncludedInPulse(boolean flag) throws MdsException
@@ -362,7 +362,7 @@ public class TreeNode extends Data
 	public TreeNodeArray getChildren() throws MdsException
         {
             resolveNid();
-            return new TreeNodeArray(getNciNids(nid, tree.getCtx1(), tree.getCtx2(), NciNUMBER_OF_CHILDREN, NciCHILDREN_NIDS), tree); 
+            return new TreeNodeArray(getNciNids(nid, tree.getCtx1(), tree.getCtx2(), NciNUMBER_OF_CHILDREN, NciCHILDREN_NIDS), tree);
 	}
 
 	/**
@@ -399,7 +399,7 @@ public class TreeNode extends Data
 	public TreeNodeArray getMembers() throws MdsException
         {
             resolveNid();
-            return new TreeNodeArray(getNciNids(nid, tree.getCtx1(), tree.getCtx2(), NciNUMBER_OF_MEMBERS, NciMEMBER_NIDS), tree); 
+            return new TreeNodeArray(getNciNids(nid, tree.getCtx1(), tree.getCtx2(), NciNUMBER_OF_MEMBERS, NciMEMBER_NIDS), tree);
 	}
 
 	/**
@@ -482,7 +482,7 @@ public class TreeNode extends Data
 
 	/**
 	 * Set NoWriteModel flag
-	 * 
+	 *
 	 * @param noWriteModel
 	 */
 	public void setNoWriteModel(boolean noWriteModel) throws MdsException
@@ -501,7 +501,7 @@ public class TreeNode extends Data
 	}
 
 	/**
-	 * 
+	 *
 	 * @param noWriteShot
 	 */
 	public void setNoWriteShot(boolean noWriteShot) throws MdsException
@@ -521,7 +521,7 @@ public class TreeNode extends Data
 
 	/**
 	 * Set WriteOnce flag
-	 * 
+	 *
 	 * @param writeOnce
 	 */
 	public void setWriteOnce(boolean writeOnce) throws MdsException
@@ -559,7 +559,7 @@ public class TreeNode extends Data
 
 	/**
 	 * Set on/off for that node
-	 * 
+	 *
 	 * @param on
 	 */
 	public void setOn(boolean on) throws MdsException
@@ -590,7 +590,7 @@ public class TreeNode extends Data
 
 	/**
 	 * Write data for this node
-	 * 
+	 *
 	 * @param data
 	 */
 	public void putData(Data data) throws MdsException
@@ -619,7 +619,7 @@ public class TreeNode extends Data
 
 	/**
 	 * Do specified method for this node (valid only if it belongs to a conglomerae)
-	 * 
+	 *
 	 * @param method
 	 */
 	public void doMethod(java.lang.String method) throws MdsException
@@ -670,8 +670,8 @@ public class TreeNode extends Data
             }
             return "";
 	}
-        
-        
+
+
 	/**
 	 * Get the (list of) tags for this node
 	 */
@@ -700,7 +700,7 @@ public class TreeNode extends Data
 
 	/**
 	 * Begin a new data segment
-	 * 
+	 *
 	 * @param start
 	 * @param end
 	 * @param dim
@@ -719,7 +719,7 @@ public class TreeNode extends Data
 
 	/**
 	 * Write (part of) data segment
-	 * 
+	 *
 	 * @param data
 	 * @param offset
 	 */
@@ -731,7 +731,7 @@ public class TreeNode extends Data
 
 	/**
 	 * Update start, end time and dimension for the specified segment
-	 * 
+	 *
 	 * @param start
 	 * @param end
 	 * @param dim
@@ -744,7 +744,7 @@ public class TreeNode extends Data
 
 	/**
 	 * Begin a timestamted segment
-	 * 
+	 *
 	 * @param initData
 	 */
 	public void beginTimestampedSegment(Array initData) throws MdsException
@@ -755,7 +755,7 @@ public class TreeNode extends Data
 
 	/**
 	 * Write (part of)data in a timestamped segment
-	 * 
+	 *
 	 * @param data
 	 * @param times
 	 */
@@ -772,11 +772,11 @@ public class TreeNode extends Data
 
 	/**
 	 * Writre a single row of timestamped data
-	 * 
+	 *
 	 * @param row
 	 * @param time
 	 */
-        
+
 	public void putRow(Data row, long time, int size) throws MdsException
         {
             resolveNid();
@@ -787,8 +787,8 @@ public class TreeNode extends Data
         {
             putRow(row, time, 1024);
         }
-        
-        
+
+
 	/**
 	 * Get the num,ber of segments
 	 */
@@ -800,7 +800,7 @@ public class TreeNode extends Data
 
 	/**
 	 * Get start time fopr that segment
-	 * 
+	 *
 	 * @param idx
 	 */
 	public Data getSegmentStart(int idx) throws MdsException
@@ -811,7 +811,7 @@ public class TreeNode extends Data
 
 	/**
 	 * Get end time for that segment
-	 * 
+	 *
 	 * @param idx
 	 */
 	public Data getSegmentEnd(int idx) throws MdsException
@@ -821,7 +821,7 @@ public class TreeNode extends Data
 	}
 
 	/**
-	 * 
+	 *
 	 * @param idx
 	 */
 	public Data getSegmentDim(int idx) throws MdsException
@@ -832,7 +832,7 @@ public class TreeNode extends Data
 
 	/**
 	 * Get data form the selectede segment
-	 * 
+	 *
 	 * @param idx
 	 */
 	public Array getSegment(int idx) throws MdsException
@@ -851,7 +851,7 @@ public class TreeNode extends Data
 
 	/**
 	 * set the associated Tree instance
-	 * 
+	 *
 	 * @param tree
 	 */
 	public void setTree(Tree tree)
@@ -862,7 +862,7 @@ public class TreeNode extends Data
 	/**
 	 * Add a node to the tree open for edit. The name is relative to this node
 	 * instance.
-	 * 
+	 *
 	 * @param name
 	 * @param usage
 	 */
@@ -876,7 +876,7 @@ public class TreeNode extends Data
 	/**
 	 * Removes a node and its descendands from the tree open for edit. The name is
 	 * relative to this node instance.
-	 * 
+	 *
 	 * @param name
 	 */
 	public void remove(java.lang.String name) throws MdsException
@@ -887,7 +887,7 @@ public class TreeNode extends Data
 
 	/**
 	 * Rename a node in edit.
-	 * 
+	 *
 	 * @param oldName
 	 * @param newName
 	 */
@@ -907,10 +907,10 @@ public class TreeNode extends Data
             resolveNid();
             moveNode(nid, tree.getCtx1(), tree.getCtx2(), parent.nid, getFullPath());
         }
-        
+
 	/**
 	 * Add a tag to this node in the tree open for edit.
-	 * 
+	 *
 	 * @param tagName
 	 */
 	public void addTag(java.lang.String tagName) throws MdsException
@@ -922,7 +922,7 @@ public class TreeNode extends Data
 
 	/**
 	 * Remove a tag to this node in the tree open for edit.
-	 * 
+	 *
 	 * @param tagName
 	 */
 	public void removeTag(java.lang.String tagName) throws MdsException
@@ -934,7 +934,7 @@ public class TreeNode extends Data
 	/**
 	 * Add a devive intance to the tree open for edit. The name is relative to this
 	 * node instance.
-	 * 
+	 *
 	 * @param name
 	 * @param usage
 	 */
@@ -948,7 +948,7 @@ public class TreeNode extends Data
 	/**
 	 * Derclare this node to be a reference to a (separate) subtree in the tree open
 	 * for edit.
-	 * 
+	 *
 	 * @param isSubtree
 	 */
 	public void setSubtree(boolean isSubtree) throws MdsException

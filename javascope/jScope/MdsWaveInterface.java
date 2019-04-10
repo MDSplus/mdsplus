@@ -274,21 +274,21 @@ class MdsWaveInterface
     public void UpdateShot() throws IOException
     {
         long curr_shots[] = null;
-        
-        
+
+
         String main_shot_str = ( (jScopeWaveContainer) (wave.getParent())).
             getMainShotStr();
         String c_shot_str = containMainShot(this.GetUsedShot(), main_shot_str);
-/* 12-2-2009 
+/* 12-2-2009
         if( !getModified() && in_shot != null && c_shot_str != null)
         {
-        
+
             setModified( !in_shot.equals( c_shot_str ) );
-        
+
             if(! getModified() )
                 return;
         }
- */       
+ */
         error = null;
 
 /*
@@ -864,7 +864,7 @@ Fix bug : shot expression must be always evaluated.
         //GAB 2014
         WaveInterface.WriteLine(out, prompt + "continuous_update: ", isContinuousUpdate?"1":"0");
         /////////
-        
+
         WaveInterface.WriteLine(out, prompt + "title: ", cin_title);
         WaveInterface.WriteLine(out, prompt + "global_defaults: ",
                                 "" + defaults);
@@ -968,7 +968,7 @@ Fix bug : shot expression must be always evaluated.
             return Signal.MODE_YZ;
         if (mode.equals("Image"))
             return Signal.MODE_IMAGE;
-        if(mode.equals("Contour")) 
+        if(mode.equals("Contour"))
             return Signal.MODE_CONTOUR;
         return 0;
     }
@@ -1033,7 +1033,7 @@ Fix bug : shot expression must be always evaluated.
             cin_upd_event = pr.getProperty(prompt + ".event");
 	    if(cin_upd_event != null)
 		autoDefault &= ~(1 << B_update);
-            
+
             String continuousUpdateStr = pr.getProperty(prompt + ".continuous_update");
             if(continuousUpdateStr != null && continuousUpdateStr.trim().equals("1"))
                 isContinuousUpdate = true;
@@ -1082,24 +1082,24 @@ Fix bug : shot expression must be always evaluated.
             if (prop != null)
             {
                 colorMap = cmd.getColorMap(prop);
-                
+
                 try
                 {
                     prop = pr.getProperty(prompt + ".bitShift");
                     if (prop != null)
                         colorMap.bitShift = Integer.parseInt(prop);
-                    
+
                     prop = pr.getProperty(prompt + ".bitClip");
                     if (prop != null)
                         colorMap.bitClip = new Boolean(prop).booleanValue();
                 }
                 catch(Exception exc)
                 {
-                    colorMap.bitShift = 0;    
-                    colorMap.bitClip = false;    
+                    colorMap.bitShift = 0;
+                    colorMap.bitClip = false;
                 }
             }
-            
+
             cexperiment = pr.getProperty(prompt + ".experiment");
 
             cin_shot = pr.getProperty(prompt + ".shot");
@@ -1245,7 +1245,7 @@ Fix bug : shot expression must be always evaluated.
                 defaults = Integer.parseInt(prop);
             }
 	    else
-		defaults = autoDefault;  //DWScope backward compatibility   
+		defaults = autoDefault;  //DWScope backward compatibility
             int expr_idx;
 
             for (int idx = 1; idx <= num_expr; idx++)
@@ -1376,7 +1376,7 @@ Fix bug : shot expression must be always evaluated.
         catch (Exception e)
         {}
     }
-    
+
     public void setExperiment(String experiment)
     {
         super.setExperiment(experiment);

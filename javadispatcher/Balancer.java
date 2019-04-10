@@ -28,7 +28,7 @@ Ensures action dispatching to servers, keeping load balancing.
         server_vect.addElement(server);
         server.addServerListener(this);
     }
-    
+
     public String getActServer(String serverClass)
     {
         Vector<Server> serverV = servers.get(serverClass.toUpperCase());
@@ -36,7 +36,7 @@ Ensures action dispatching to servers, keeping load balancing.
             return default_server.getServerClass();
         return serverClass;
     }
-    
+
     public boolean enqueueAction(Action action)
     {
         String server_class;
@@ -194,6 +194,6 @@ Ensures action dispatching to servers, keeping load balancing.
     public void disconnected(ServerEvent event){}
     public void connected(ServerEvent event){}
 
-   
-   
+
+
 }

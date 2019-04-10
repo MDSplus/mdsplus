@@ -9,7 +9,7 @@ class ServerEvent extends EventObject
         super(obj);
         this.action = action;
     }
-    
+
     public ServerEvent(Object obj, String message)
     {
         super(obj);
@@ -19,6 +19,6 @@ class ServerEvent extends EventObject
     public Action getAction() {return action; }
     public int getStatus() {return action.getStatus();}
     public String getMessage() {return message;}
-    
+
     //public int getTimestamp() {return action.getTimestamp();}
 }

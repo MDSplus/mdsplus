@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-                Name:   Tdi3Iand   
+                Name:   Tdi3Iand
 
                 Type:   C function
 
@@ -32,7 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
                 Date:   18-FEB-1993
 
-                Purpose: Bitwise logical operations on two operands 
+                Purpose: Bitwise logical operations on two operands
 
         For AB  = 00,01,10,11
         FALSE   = 0,0,0,0       use 0b
@@ -54,7 +54,7 @@ NEOR =  EOR_NOT = 1,0,0,1       (is EQV)
 
 ------------------------------------------------------------------------------
 
-        Call sequence: 
+        Call sequence:
 
 int Tdi3Iand(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 

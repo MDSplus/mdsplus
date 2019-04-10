@@ -283,7 +283,7 @@ int CChannel::sendto(const sockaddr* addr, CPacket& packet) const
 int CChannel::recvfrom(sockaddr* addr, CPacket& packet) const
 {
    #ifndef WIN32
-      msghdr mh;   
+      msghdr mh;
       mh.msg_name = addr;
       mh.msg_namelen = m_iSockAddrSize;
       mh.msg_iov = packet.m_PacketVector;

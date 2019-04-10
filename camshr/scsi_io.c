@@ -43,7 +43,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
      direction         - 0=control (no data), 1=read, 2=write
      scsi_cmd          - buffer containing scsi command
      scsi_cmd_len      - length of scsi_cmd in bytes
-     user_buffer       - user buffer to receive data (read) or 
+     user_buffer       - user buffer to receive data (read) or
                          containing data to write (write)
      user_buflen       - size of user buffer in bytes
      sense_data_buffer - buffer to receive sense data

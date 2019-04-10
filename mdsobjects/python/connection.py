@@ -70,7 +70,7 @@ class Connection(object):
             try:    _DisconnectFromMds(self._socket)
             except: pass
         self._socket = value
-            
+
     def __enter__(self):
         """ Used for with statement. """
         self.connect()
@@ -162,7 +162,7 @@ class Connection(object):
 
     def connect(self):
         return self.socket
-    
+
     def disconnect(self):
         self.socket = 0
 

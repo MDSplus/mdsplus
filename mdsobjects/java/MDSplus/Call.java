@@ -6,7 +6,7 @@ package MDSplus;
  * @version 1.0
  * @updated 30-mar-2009 13.44.33
  */
-public class Call extends Compound 
+public class Call extends Compound
 {
 	/**
 	 * Data type argument, used to specify the return type of the called routine
@@ -61,7 +61,7 @@ public class Call extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param idx
 	 */
 	public Data getArgumentAt(int idx)
@@ -70,7 +70,7 @@ public class Call extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setImage(Data data)
@@ -79,7 +79,7 @@ public class Call extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setRoutine(Data data)
@@ -88,7 +88,7 @@ public class Call extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setArguments(Data[] args)
@@ -98,11 +98,11 @@ public class Call extends Compound
             newDescs[0] = descs[0];
             newDescs[1] = descs[1];
             for(int i = 0; i < args.length; i++)
-                 newDescs[2+i] = args[i];   
+                 newDescs[2+i] = args[i];
 	}
 
 	/**
-	 * 
+	 *
 	 * @param idx
 	 * @param data
 	 */
@@ -118,7 +118,7 @@ public class Call extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param dtype
 	 */
 	public void setRetType(int dtype)

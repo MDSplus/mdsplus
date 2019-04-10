@@ -6,7 +6,7 @@ package MDSplus;
  * @version 1.0
  * @updated 30-mar-2009 13.44.40
  */
-public class Procedure extends Compound 
+public class Procedure extends Compound
 {
 	public Procedure(Data timeout, Data language, Data procedure, Data[] args,
                 Data help, Data units, Data error, Data validation)
@@ -32,7 +32,7 @@ public class Procedure extends Compound
             dtype = DTYPE_PROCEDURE;
             descs = new Data[3];
         }
-       
+
         public static Procedure getData(Data help, Data units, Data error, Data validation)
         {
             return new Procedure(help, units, error, validation);
@@ -61,7 +61,7 @@ public class Procedure extends Compound
             return descs[2];
         }
 	/**
-	 * 
+	 *
 	 * @param idx
 	 */
 	public Data getArgumentAt(int idx)
@@ -70,7 +70,7 @@ public class Procedure extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setArguments(Data[] args)
@@ -81,7 +81,7 @@ public class Procedure extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setTimeout(Data data)
@@ -90,7 +90,7 @@ public class Procedure extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param arg
 	 * @param idx
 	 */
@@ -105,7 +105,7 @@ public class Procedure extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setProcedure(Data data)

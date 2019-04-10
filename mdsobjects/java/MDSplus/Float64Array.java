@@ -2,13 +2,13 @@ package MDSplus;
 
 /**
  * Array description for DTYPE_DOUBLE
- * 
+ *
  * Constructors: Float64Array(double[])
  * @author manduchi
  * @version 1.0
  * @updated 30-mar-2009 13.44.37
  */
-public class Float64Array extends Array 
+public class Float64Array extends Array
 {
     double [] datum;
     public Float64Array(double[] inDatum)
@@ -125,7 +125,7 @@ public class Float64Array extends Array
                 return false;
         return true;
     }
-    
+
     public static Data getData(double []datum, int []dims, Data help, Data units, Data error, Data validation)
     {
         try {
@@ -136,7 +136,7 @@ public class Float64Array extends Array
     {
         return new Float64(datum[idx]);
     }
-    
+
     public int getSize(){return datum.length;}
     protected Array getPortionAt(int startIdx, int []newDims, int newSize) throws MdsException
     {
@@ -167,7 +167,7 @@ public class Float64Array extends Array
             retDatum[i] = (short)datum[i];
         return retDatum;
     }
-    public int[] getIntArray() 
+    public int[] getIntArray()
     {
         int[] retDatum = new int[datum.length];
         for(int i = 0; i < datum.length; i++)
@@ -188,7 +188,7 @@ public class Float64Array extends Array
             retDatum[i] = (float)datum[i];
         return retDatum;
     }
-    public double[] getDoubleArray() 
+    public double[] getDoubleArray()
     {
         double[] retDatum = new double[datum.length];
         for(int i = 0; i < datum.length; i++)

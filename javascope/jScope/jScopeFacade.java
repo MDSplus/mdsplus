@@ -99,7 +99,7 @@ import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.basic.BasicArrowButton;
 
 
-        
+
 public class jScopeFacade
     extends JFrame
     implements ActionListener, ItemListener,
@@ -117,8 +117,8 @@ public class jScopeFacade
     JWindow aboutScreen;
 
     static boolean enableNetworkSelection = true;
-    static String mdsDataServer = null; //If enableNetworkSelection == false, mdsDataServer contains the mdsio address. 
-    static String sshDataServer = null; //If enableNetworkSelection == false, either mdsDataServer or sshDataServer contains the mdsio address. 
+    static String mdsDataServer = null; //If enableNetworkSelection == false, mdsDataServer contains the mdsio address.
+    static String sshDataServer = null; //If enableNetworkSelection == false, either mdsDataServer or sshDataServer contains the mdsio address.
 			  //If enableNetworkSelection == false and mdsDataServer null and sshDataServer == null, LocalDataProvider is selected instead
 
     /**Main menu bar*/
@@ -142,7 +142,7 @@ public class jScopeFacade
 
     private JMenuItem print_i, properties_i;
     private String propertiesFilePath = null;
- 
+
     private JPanel panel, panel1;
     private ButtonGroup pointer_mode = new ButtonGroup();
     private JRadioButton zoom, point, copy, pan;
@@ -235,7 +235,7 @@ public class jScopeFacade
             long currTime =  inTime/1000000L + EPICS_BASE;
             return currTime;
         }
-        else 
+        else
             return inTime;
     }
 
@@ -564,10 +564,10 @@ public class jScopeFacade
         {
             String prop;
             int idx = 0;
-            
+
              name_list.removeAllElements();
              expr_list.removeAllElements();
-            
+
             while ( (prop = pr.getProperty(prompt + idx)) != null && idx < MAX_VARIABLE )
             {
                 StringTokenizer st = new StringTokenizer(prop, "=");
@@ -637,9 +637,9 @@ public class jScopeFacade
                 }
             });
         }
-        
+
         this.setPropertiesFile(propFile);
-        
+
         jScopeCreate(spos_x, spos_y);
 
     }
@@ -728,8 +728,8 @@ public class jScopeFacade
         setBackground(Color.lightGray);
 
         addWindowListener(this);
-        
-        
+
+
         file_diag = new JFileChooser();
 
         file_diag.addChoosableFileFilter( new  javax.swing.filechooser.FileFilter()
@@ -737,7 +737,7 @@ public class jScopeFacade
             public boolean accept(File f) {
                 return f.isDirectory() || f.getName().toLowerCase().endsWith(".dat");
             }
-    
+
             public String getDescription() {
                 return ".dat files";
             }
@@ -748,14 +748,14 @@ public class jScopeFacade
             public boolean accept(File f) {
                 return f.isDirectory() || f.getName().toLowerCase().endsWith(".jscp");
             }
-    
+
             public String getDescription() {
                 return ".jscp files";
             }
         });
 
-        
-        
+
+
         mb = new JMenuBar();
         setJMenuBar(mb);
         edit_m = new JMenu("File");
@@ -1468,7 +1468,7 @@ public class jScopeFacade
             f_name = System.getProperty("user.home") + File.separator +
             "jScope" + File.separator + "jScope.properties";
         }
-        
+
         try
         {
             if (jScopeFacade.is_debug)
@@ -1539,7 +1539,7 @@ public class jScopeFacade
                     fos.close();
                     pis.close();
                 }
-            }             
+            }
         }
 
         catch (FileNotFoundException e)
@@ -1787,7 +1787,7 @@ public class jScopeFacade
     public boolean IsShotDefinedXX()
     {
         String s = shot_t.getText();
-        
+
         if ( s != null && s.trim().length() > 0)
             return true;
         s = def_values.shot_str;
@@ -1859,16 +1859,16 @@ public class jScopeFacade
 
     public void UpdateAllWaves()
     {
-        
+
         String s = shot_t.getText();
         String s1 = def_values.shot_str;
-        
-        // Set main shot text field with 
-        // global setting shot if defined.  
-        if ( ( s == null || s.trim().length() == 0 ) && 
-              ( s1 != null && s1.trim().length() !=  0 ) ) 
+
+        // Set main shot text field with
+        // global setting shot if defined.
+        if ( ( s == null || s.trim().length() == 0 ) &&
+              ( s1 != null && s1.trim().length() !=  0 ) )
             shot_t.setText(s1);
-        
+
         executing_update = true;
         apply_b.setText("Abort");
         setPublicVariables(pub_var_diag.getPublicVar());
@@ -2138,7 +2138,7 @@ public class jScopeFacade
         if (curr_directory != null && curr_directory.trim().length() != 0)
             file_diag.setCurrentDirectory(new File(curr_directory));
 
-  
+
         javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -2812,7 +2812,7 @@ public class jScopeFacade
             color_dialog.FromFile(pr, "Scope.color_");
             pub_var_diag.fromFile(pr, "Scope.public_variable_");
             wave_panel.FromFile(pr, "Scope", color_dialog.getColorMapIndex(), colorMapDialog);
-	    wave_panel.AddAllEvents(this);	    
+	    wave_panel.AddAllEvents(this);
         }
         catch (Exception e)
         {
@@ -2900,16 +2900,16 @@ remove 28/06/2005
             config_file = new String(file);
             LoadConfiguration();
         }
-	if(!enableNetworkSelection) //Creation of DataProvider  based on command line 
+	if(!enableNetworkSelection) //Creation of DataProvider  based on command line
 	{
 	    if (mdsDataServer != null)
-		SetDataServer(new DataServerItem("mdsip connection", mdsDataServer, "JAVA_USER", 
+		SetDataServer(new DataServerItem("mdsip connection", mdsDataServer, "JAVA_USER",
                          "MdsDataProvider", null, null, null));
 	    else if (sshDataServer != null)
-		SetDataServer(new DataServerItem("mdsip connection", sshDataServer, "JAVA_USER", 
+		SetDataServer(new DataServerItem("mdsip connection", sshDataServer, "JAVA_USER",
                           "SSHDataProvider", null, null, null));
 	    else
-		SetDataServer(new DataServerItem("local access", "", "", 
+		SetDataServer(new DataServerItem("local access", "", "",
                           "LocalDataProvider", null, null, null));
 	}
 
@@ -2938,7 +2938,7 @@ remove 28/06/2005
     {
         String file = null;
         String propertiesFile = null;
- 
+
         Properties props = System.getProperties();
         String debug = props.getProperty("debug");
         if (debug != null && debug.equals("true"))
@@ -2956,7 +2956,7 @@ remove 28/06/2005
                     if( i+1 < args.length )
                         propertiesFile = args[i+1];
                     i++;
-                } 
+                }
 		else if(args[i].equals("-s") && i < args.length - 1)
 		{
 		    enableNetworkSelection = false;
@@ -2974,15 +2974,15 @@ remove 28/06/2005
 		    enableNetworkSelection = false;
 		    mdsDataServer = null;
 		}
-		else { 
+		else {
                     file = new String(args[i]);
                 }
             }
-        }    
+        }
         if (IsNewJVMVersion())
             win = new jScopeFacade(100, 100, propertiesFile);
         else
-        {			
+        {
             System.out.println(
                 "jScope application required JDK version 1.2 or later");
             System.out.println("Your version is " + System.getProperty("java.specification.version"));
@@ -2992,9 +2992,9 @@ remove 28/06/2005
         win.pack();
         win.setSize(750, 550);
 
- 
-                
-        
+
+
+
         jScopeFacade.num_scope++;
         win.startScope(file);
     }
@@ -3573,12 +3573,12 @@ class ServerDialog
                         if (srv != null)
                         {
                             Class cl = Class.forName("jScope."+srv);
-                            DataProvider dp = ( (DataProvider) cl.newInstance()); 
+                            DataProvider dp = ( (DataProvider) cl.newInstance());
                             boolean state = dp.SupportsTunneling();
                             tunneling.setEnabled(state);
                             tunnel_port.setEnabled(state);
                         }
-                    }                    
+                    }
                 }
                 catch (Exception exc)
                 {}

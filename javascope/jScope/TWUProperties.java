@@ -6,23 +6,23 @@ package jScope;
  *
  * Copyright (c) 2002...2003, J.G.krom, Forschungszentrum Juelich GmbH.
  * All rights reserved.
- * 
+ *
  * This class handles the properties 'file' as used in the TEC Web-Umbrella.
  *
  * NOTE:
- * The TWU* classes (with TWU in three capitals) are written so that they 
- * can also be used in other java based applications and not only by jScope.  
+ * The TWU* classes (with TWU in three capitals) are written so that they
+ * can also be used in other java based applications and not only by jScope.
  * Please keep the code of these separate of jScope specific elements.
  *
  * This class does not throw any exceptions; this should be left so.  This is
- * because it is also used in contexts where the handling of such exceptions 
+ * because it is also used in contexts where the handling of such exceptions
  * is somewhat troublesome. (E.g. JVMs running implicitly by matlab.)
  *
  * Author: Jon Krom, Forschungszentrum Juelich, Institut fuer Plasmaphysik.
  *
  * $Id$
  *
- * ------------------------------------------------------------------------ 
+ * ------------------------------------------------------------------------
  * Derived from (matlab-) WUProperties.java Revision 1.6 2002/02/26 hrk/jgk
  * I removed the automatic CVS log from this file; it can be read
  * directly from the CVS repository with "cvs log".
@@ -37,7 +37,7 @@ public class TWUProperties
     private   URL        signalURL   = null;
     protected Properties signalProps = new Properties();
     private   boolean    textRead    = false;
-    
+
     /* -------------------------------------------------------------------- */
     // Constructors
 
@@ -57,7 +57,7 @@ public class TWUProperties
 
         if (SigURL==null)
           return;
-                
+
         final String fullURL = CompleteURL(SigURL);
 
         try
@@ -75,7 +75,7 @@ public class TWUProperties
                 textRead = true;
             }
         }
-        catch (Exception e) 
+        catch (Exception e)
         {
             signalURL = null;
             /* No need for further action; textRead will be left false. */
@@ -102,43 +102,43 @@ public class TWUProperties
     {
         // Should handle this pseudo-numerically
         String version = signalProps.getProperty("TWU.properties.version");
-        return textRead 
-            && version!=null 
+        return textRead
+            && version!=null
             && (version.equals("0.7") || version.equals("0.8") );
     }
 
-    public int 
+    public int
     Dimensions()
     {
         String  dimstr = signalProps.getProperty("Dimensions");
         Integer dim = Integer.valueOf(dimstr==null? "0" : dimstr);
         return  dim.intValue();
     }
-    
-    public int 
+
+    public int
     Dim0Length()
     {
         String  ln0str = signalProps.getProperty("Length.dimension.0");
         Integer d0l = Integer.valueOf(ln0str==null? "0" : ln0str);
         return  d0l.intValue();
     }
-    
-    public int 
+
+    public int
     Dim1Length()
     {
         String  ln1str = signalProps.getProperty("Length.dimension.1");
         Integer d1l = Integer.valueOf(ln1str==null? "0" : ln1str);
         return  d1l.intValue();
     }
-    
-    public int 
+
+    public int
     LengthTotal()
     {
         String  ltstr = signalProps.getProperty("Length.total");
         Integer lt = Integer.valueOf(ltstr==null? "0" : ltstr);
         return  lt.intValue();
     }
-    
+
     public String
     Title()
     {
@@ -172,7 +172,7 @@ public class TWUProperties
     {
         return signalProps.getProperty("Bulkfile.URL");
     }
-    
+
     public boolean
     hasAbscissa()
     {
@@ -211,10 +211,10 @@ public class TWUProperties
     Equidistant()
     {
         return
-            (Incrementing() || Decrementing()) 
-            && 
+            (Incrementing() || Decrementing())
+            &&
             signalProps.getProperty("Signal.Minimum") !=null
-            && 
+            &&
             signalProps.getProperty("Signal.Maximum") !=null;
     }
 
@@ -235,7 +235,7 @@ public class TWUProperties
           return Double.parseDouble(max);
         return Double.NaN;
     }
-    
+
     public double
     averageStep()
     {
@@ -245,7 +245,7 @@ public class TWUProperties
           segments *= -1;
         return (segments==0 ? Double.NaN : span/segments);
     }
-    
+
     public String
     FQAbscissaName()
     {
@@ -286,25 +286,25 @@ public class TWUProperties
         catch(Exception e)
         {
             return false;
-        }   
+        }
     }
-    
+
     public boolean
     notEquals(String other_url)
     {
         return ! equals(other_url);
     }
-    
+
     /* -------------------------------------------------------------------- */
-    
-    public String 
+
+    public String
     toString()
     {
         return signalURL==null ? "" : signalURL.toString();
     }
-    
-        
-    public String 
+
+
+    public String
     summary()
     {
         return
@@ -320,21 +320,21 @@ public class TWUProperties
             "Signal.Maximum         : " + Maximum() + "\n" +
             "averageStep            : " + averageStep() + "\n" +
             "Dimension [0] length   : " + Dim0Length() + "\n" +
-            "Abscissa [0] File Name : " + 
+            "Abscissa [0] File Name : " +
             (hasAbscissa0() ? FQAbscissa0Name() : "No abscissa_0 for this signal") + "\n" +
             "Dimension [1] length   : " + Dim1Length() + "\n" +
             "Abscissa [1] File Name : " +
-            (hasAbscissa1() ? FQAbscissa1Name() : "No abscissa_1 for this signal") + "\n"; 
+            (hasAbscissa1() ? FQAbscissa1Name() : "No abscissa_1 for this signal") + "\n";
     }
-    
-    public static String 
+
+    public static String
     revision()
     {
         return "$Id$";
     }
 
-    public static void 
-    main (String a[]) 
+    public static void
+    main (String a[])
     {
         TWUProperties twup ;
 
@@ -348,8 +348,8 @@ public class TWUProperties
 //          "//localhost/textor/all/91100/vuv/spred-a/H-I_@_102,550"); // Existing
 //          "//localhost/textor/all/91100/vuv/spred-a/H-I_@_102,551"); // Non-existing
 //          ""); // Non-existing
-            null); 
-        
+            null);
+
         System.out.println(twup);
         System.out.println(twup.summary());
 
@@ -357,7 +357,7 @@ public class TWUProperties
 
         twup = new TWUProperties(
             "//localhost/textor/all/91100/vuv/spred-a/H-I_@_102,550"); // Existing
-        
+
         System.out.println(twup);
         System.out.println(twup.summary());
 

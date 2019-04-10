@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -75,8 +75,8 @@ class MDSplusXdBoxButtonWidget(props,MDSplusWidget,Button):
         MDSplusWidget.__init__(self)
         if not guibuilder:
             self.connect("clicked",self.popupXd)
-        
-gobject.type_register(MDSplusXdBoxButtonWidget) 
+
+gobject.type_register(MDSplusXdBoxButtonWidget)
 
 if guibuilder:
     class MDSplusXdBoxButtonWidgetAdaptor(glade.get_adaptor_for_type('GtkButton')):

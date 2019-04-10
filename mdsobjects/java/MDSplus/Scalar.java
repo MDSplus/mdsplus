@@ -3,8 +3,8 @@ package MDSplus;
 /**
  * Scalar is the common superclass for all scalar data types (descriptor class
  * CLASS_S).
- * 
- * 
+ *
+ *
  * Note that neither this nor the derived classes  define or implement new methods,
  * except a constructor.
  * @author manduchi

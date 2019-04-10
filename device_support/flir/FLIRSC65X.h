@@ -8,10 +8,10 @@ enum IRFMT_ENUM   { radiometric, linear10mK, linear100mK };
 enum EXPMODE_ENUM { internal_mode, external_mode };
 
 
-#ifdef __cplusplus 
-extern "C" 
-{ 
-#endif 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 // Wrapper for Python that must see the cpp class as standard C functions
 
@@ -27,13 +27,13 @@ int setFrameRateNew(int camHandle, double frameRate);
 int setIrFormat(int camHandle, IRFMT_ENUM irFormat);
 int getReadoutArea(int camHandle, int *x, int *y, int *width, int *height);
 int setReadoutArea(int camHandle, int x, int y, int width, int height);
-int setObjectParameters(int camHandle, double reflectedTemperature, double atmosphericTemperature, 
-											double objectDistance, double objectEmissivity, 
-											double relativeHumidity, double extOpticsTemperature, 
+int setObjectParameters(int camHandle, double reflectedTemperature, double atmosphericTemperature,
+											double objectDistance, double objectEmissivity,
+											double relativeHumidity, double extOpticsTemperature,
 											double extOpticsTransmission, double estimatedTransmission);
 int setMeasurementRange(int camHandle, int measRange);
 int getFocusAbsPosition(int camHandle, int *focusPos);
-int setFocusAbsPosition(int camHandle, int focusPos);   
+int setFocusAbsPosition(int camHandle, int focusPos);
 int setAcquisitionMode(int camHandle, int storeEnabled, int acqSkipFrameNumber );
 
 int executeAutoFocus(int camHandle);
@@ -55,9 +55,9 @@ int setTreeInfo( int camHandle,  void *treePtr, int framesNid, int timebaseNid, 
 
 void  getLastError(int camHandle, char *msg);
 
-#ifdef __cplusplus 
-} 
-#endif 
+#ifdef __cplusplus
+}
+#endif
 
 
 
@@ -87,21 +87,21 @@ class FLIR_SC65X
 		char     streamingServer[512];
 		int 	 streamingPort;
 		int      autoScale;
-		unsigned int lowLim; 
+		unsigned int lowLim;
 		unsigned int highLim;
-		unsigned int minLim; 
+		unsigned int minLim;
 		unsigned int maxLim;
 		bool     autoAdjustLimit;
 		char     deviceName[64];
 
-		int	 imageMode; 	
+		int	 imageMode;
 		int      acqSkipFrameNumber;
 		double   burstDuration;
 		int      numTrigger;
 
 		void*    treePtr;
-		int      framesNid; 
-		int      timebaseNid; 
+		int      framesNid;
+		int      timebaseNid;
 		int      framesMetadNid;
                 int      frame0TimeNid;
 
@@ -132,13 +132,13 @@ class FLIR_SC65X
                 int setIrFormat(IRFMT_ENUM irFormat);
                 int getReadoutArea(int *x, int *y, int *width, int *height);
                 int setReadoutArea(int x, int y, int width, int height);
-                int setObjectParameters(double reflectedTemperature, double atmosphericTemperature, 
-											double objectDistance, double objectEmissivity, 
-											double relativeHumidity, double extOpticsTemperature, 
-											double extOpticsTransmission, double estimatedTransmission);	
-                int setMeasurementRange(int measRange);	  
+                int setObjectParameters(double reflectedTemperature, double atmosphericTemperature,
+											double objectDistance, double objectEmissivity,
+											double relativeHumidity, double extOpticsTemperature,
+											double extOpticsTransmission, double estimatedTransmission);
+                int setMeasurementRange(int measRange);
                 int getFocusAbsPosition(int *focusPos);
-                int setFocusAbsPosition(int focusPos);                
+                int setFocusAbsPosition(int focusPos);
                 int setCalibMode(int calibMode);
 
 		int setAcquisitionMode( int storeEnabled, int acqSkipFrameNumber );
@@ -153,9 +153,9 @@ class FLIR_SC65X
 
 		void getLastError(char *msg);
 		void printLastError(const char *format, const char *msg);
-			
+
 		//acquisition
-                int startAcquisition(int *width, int *height, int *payloadSize);	
+                int startAcquisition(int *width, int *height, int *payloadSize);
                 int stopAcquisition();
                 int softwareTrigger();
                 int getFrame(int *status, void *frame, void *metaData);

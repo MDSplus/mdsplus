@@ -44,12 +44,12 @@ int MdsEventTriggerAndWait(char *name, char *buf, int size);
 
 namespace MDSplus {
 void eventAst(void *arg, int len, char *buf)
-{   
+{
     Event *ev = (Event *)arg;
     ev->eventBuf.assign(buf, len);
-    ev->eventTime = convertAsciiToTime("now");    
+    ev->eventTime = convertAsciiToTime("now");
     ev->run();
-    
+
     // notify all waiting threads //
     ev->notify();
 }
@@ -64,7 +64,7 @@ void Event::connectToEvents()
 }
 
 void Event::disconnectFromEvents()
-{    
+{
     if( !MDSEventCan(eventId) )
         throw MdsException("failed to close event listener");
 }
@@ -95,7 +95,7 @@ const char *Event::getRaw(size_t *size) const
 }
 
 Uint64 *Event::getTime() const
-{    
+{
     return new Uint64(eventTime);
 }
 
@@ -128,12 +128,12 @@ void Event::wait(size_t secs)
     if( !isStarted() ) start();
     if (secs == 0) condition.wait();
     else if (condition.waitTimeout(secs * 1000) == false)
-        throw MdsException("Timeout Occurred");    
+        throw MdsException("Timeout Occurred");
 }
 
 void Event::notify()
 {
-    condition.notify(); 
+    condition.notify();
 }
 
 

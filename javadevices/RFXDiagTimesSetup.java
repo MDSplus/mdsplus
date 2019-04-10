@@ -9,12 +9,12 @@
  * @author  taliercio
  */
 public class RFXDiagTimesSetup  extends DeviceSetup {
-    
+
     /** Creates new form RFXDiagTimesSetup */
     public RFXDiagTimesSetup() {
         initComponents();
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -66,7 +66,7 @@ public class RFXDiagTimesSetup  extends DeviceSetup {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
+
     /**
      * @param args the command line arguments
      */
@@ -77,7 +77,7 @@ public class RFXDiagTimesSetup  extends DeviceSetup {
             }
         });
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceField deviceField1;
@@ -87,5 +87,5 @@ public class RFXDiagTimesSetup  extends DeviceSetup {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     // End of variables declaration//GEN-END:variables
-    
+
 }

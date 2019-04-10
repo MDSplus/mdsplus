@@ -621,7 +621,7 @@ remove 28/06/2005
         }
     }
 
- 
+
     public void SetModifiedState(boolean state)
     {
         jScopeMultiWave w;
@@ -666,7 +666,7 @@ remove 28/06/2005
             else
                 abort = false;
 
-            
+
             if( def_vals != null && !def_vals.getIsEvaluated() )
             {
                 dp.SetEnvironment(def_vals.getPublicVariables());
@@ -774,7 +774,7 @@ remove 28/06/2005
                     }
                 }
             }
-            
+
             for (int i = 0, k = 0; i < 4; i++)
             {
                 for (int j = 0; j < rows[i]; j++, k++)
@@ -785,9 +785,9 @@ remove 28/06/2005
                     }
                 }
             }
-             
+
             wave_all = null;
-            
+
         }
         catch (Exception e)
         {
@@ -995,7 +995,7 @@ remove 28/06/2005
         String prop;
         int read_rows[] = {0, 0, 0, 0};
         resetMaximizeComponent();
-                
+
         prop = pr.getProperty(prompt + ".columns");
         if (prop == null)
             throw (new IOException("missing columns keyword"));
@@ -1062,7 +1062,7 @@ remove 28/06/2005
         }
         else
             reversed = false;
-            
+
         def_vals.xmax = pr.getProperty(prompt + ".global_1_1.xmax");
 
         def_vals.xmin = pr.getProperty(prompt + ".global_1_1.xmin");
@@ -1524,12 +1524,12 @@ remove 28/06/2005
         //is evaluated, in the other cases, refresh from popup menu
         //or event update, all signals in the waveform must be
         //evaluated
-        
+
         /*
         if (!add_sig)
             ( (jScopeMultiWave) w).wi.setModified(true);
         */
-        
+
         w.Refresh();
 
         if (add_sig)
@@ -1541,7 +1541,7 @@ remove 28/06/2005
         Vector<Waveform> panel = new Vector<>();
         MdsWaveInterface wi;
         jScopeMultiWave wave;
-	    
+
         if (!all &&
             (w == null || w.wi == null || w.wi.signals == null ||
              w.wi.signals.length == 0))
@@ -1757,7 +1757,7 @@ remove 28/06/2005
             }
         }
     }
-    
+
     ProgressMonitor progressMonitor;
     public void startUpdatingPanel()
     {

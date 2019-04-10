@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ def signkeys():
         return False
 
 signkeys = signkeys()
-     
+
 def getPackageFiles(buildroot,includes,excludes):
     files=[]
     for f in includes:

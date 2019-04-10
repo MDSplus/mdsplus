@@ -2997,8 +2997,8 @@ public:
     virtual Data *getExtendedAttribute(std::string name);
     virtual void setExtendedAttribute (const char *name, Data *data);
     virtual void setExtendedAttribute (std::string name, Data *data);
-    
-    
+
+
     /// Get the parent of this node.
     /// Ref to \ref getNci() with code NciPARENT
     virtual TreeNode *getParent();
@@ -4243,7 +4243,7 @@ public:
   static void send(int shot, const char *name, int numSamples, uint64_t *times, float *samples);
   static void send(int shot, const char *name, Data *timeData, Data *valueData);
   void registerListener(DataStreamListener *listener, const char *name);
-};  
+};
 #endif
 
 

@@ -35,8 +35,8 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 {
 
     setup_messaging();
-    
+
     eprintf("build",__FILE__,__LINE__);
-    
+
     return 0;
 }

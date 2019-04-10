@@ -14,7 +14,7 @@ public class DeviceChoiceBeanInfo extends SimpleBeanInfo
     {
         return loadImage("DeviceChoice.gif");
     }
-    
+
     public PropertyDescriptor [] getPropertyDescriptors()
     {
         try {

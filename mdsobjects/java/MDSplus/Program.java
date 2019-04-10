@@ -6,7 +6,7 @@ package MDSplus;
  * @version 1.0
  * @updated 30-mar-2009 13.44.41
  */
-public class Program extends Compound 
+public class Program extends Compound
 {
 	public Program(Data timeout, Data program,
                 Data help, Data units, Data error, Data validation)
@@ -31,7 +31,7 @@ public class Program extends Compound
         {
             this(null, null, null, null);
         }
-        
+
         public static Program getData(Data help, Data units, Data error, Data validation)
         {
             return new Program(help, units, error, validation);
@@ -48,7 +48,7 @@ public class Program extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setProgram(Data data)
@@ -57,7 +57,7 @@ public class Program extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setTimeout(Data data)

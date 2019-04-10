@@ -7,7 +7,7 @@ import java.util.*;
 /*
 xsltproc sdd2mds.xsl SI_4.xml > si.xml
 javac -cp /usr/local/mdsplus/java/classes/mdsobjects.jar Xml2Mds.java
-java -cp /usr/local/mdsplus/java/classes/mdsobjects.jar:. Xml2Mds si   
+java -cp /usr/local/mdsplus/java/classes/mdsobjects.jar:. Xml2Mds si
 */
 
 class Xml2Mds
@@ -52,10 +52,10 @@ class Xml2Mds
 		currVarName = st0.nextToken();
 		try {
 		    currDescription = st0.nextToken();
-		}catch(Exception exc){currDescription = null;}	
+		}catch(Exception exc){currDescription = null;}
 		try {
 		    currSignalName = st0.nextToken();
-		}catch(Exception exc){currSignalName = null;}	
+		}catch(Exception exc){currSignalName = null;}
 
 		StringTokenizer st = new StringTokenizer(currVarName, ":");
 		String firstPart = st.nextToken();
@@ -133,7 +133,7 @@ class Xml2Mds
 		//String tagName=currVarName.replaceFirst("-","");
 		//tagName=tagName.replaceFirst("-","");
 		//tagName=tagName.replaceFirst("-","_");
- 
+
 		String tagName=currVarName.replace("-","_");
 		tagName=tagName.replace(':','_').trim();
 		if(!systemName.equals("SKPC") && !systemName.equals("SPIS") )

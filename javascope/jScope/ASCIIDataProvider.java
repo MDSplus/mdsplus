@@ -9,7 +9,7 @@ class ASCIIDataProvider implements DataProvider
 {
     private boolean xPropertiesFile = false;
     private boolean yPropertiesFile = false;
-    
+
     String error = null;
     String path_exp = null;
     long   curr_shot = -1;
@@ -54,18 +54,18 @@ class ASCIIDataProvider implements DataProvider
         private String getPathValue(String in)
         {
             String out = "";
-            
+
             if(path_exp != null)
                 out = path_exp;
-            
+
             if(curr_shot > 0)
                 out = out + File.separatorChar + curr_shot;
-            
+
             if( out != null && out.length() > 0 )
                 out = out + File.separatorChar + in;
             else
                 out = in;
-            
+
             return out;
         }
 
@@ -74,31 +74,31 @@ class ASCIIDataProvider implements DataProvider
             StringTokenizer st = new StringTokenizer(val, separator);
             return ( st.countTokens() );
         }
-        
+
         private boolean isPropertiesFile(Properties prop)
         {
-            
+
             String val = prop.getProperty("Time");
-            
+
             if( val == null || numElement(val, ",") < 2 )
                 return false;
             return true;
         }
-        
+
         private float[] resizeBuffer(float[] b, int size)
         {
             float[] newB = new float[size];
             System.arraycopy(b, 0, newB, 0, size);
             return newB;
         }
-        
+
         private void loadSignalValues(String in) throws Exception
-        {                       
+        {
             BufferedReader bufR = new BufferedReader(new FileReader(in));
-            
+
             String ln;
             StringTokenizer st;
-            
+
             while (( ln = bufR.readLine() ) != null )
             {
                 st = new StringTokenizer(ln);
@@ -119,22 +119,22 @@ class ASCIIDataProvider implements DataProvider
                             maxCount = y.length;
                         }
                         x[count] = Float.parseFloat( st.nextToken() );
-                        y[count] = Float.parseFloat( st.nextToken() ); 
+                        y[count] = Float.parseFloat( st.nextToken() );
                         count++;
                     }
                     x = resizeBuffer(x, count );
-                    y = resizeBuffer(y, count );                  
+                    y = resizeBuffer(y, count );
                 }
             }
             bufR.close();
             if( x == null || y == null )
                 throw(new Exception("No data in file or file syntax error"));
         }
-        
+
         private boolean setPropValues(String in, Properties prop)
         {
             boolean propertiesFile = false;
-            
+
             try
             {
                 prop.load( new FileInputStream(in) );
@@ -166,7 +166,7 @@ class ASCIIDataProvider implements DataProvider
 
         public float[] GetFloatData() throws IOException
         {
-           if( xPropertiesFile ) 
+           if( xPropertiesFile )
                return decodeValues( x_prop.getProperty("Data") );
            else
            {
@@ -327,7 +327,7 @@ class ASCIIDataProvider implements DataProvider
             return out;
         }
                 //GAB JULY 2014 NEW WAVEDATA INTERFACE RAFFAZZONATA
-        
+
          public XYData getData(long xmin, long xmax, int numPoints) throws Exception
          {
              double x[] = GetXDoubleData();
@@ -350,7 +350,7 @@ class ASCIIDataProvider implements DataProvider
         public float[] getZ(){System.out.println("BADABUM!!"); return null;}
         public double[] getX2D(){System.out.println("BADABUM!!"); return null;}
         public long[] getX2DLong(){System.out.println("BADABUM!!"); return null;}
-        public float[] getY2D(){System.out.println("BADABUM!!"); return null;} 
+        public float[] getY2D(){System.out.println("BADABUM!!"); return null;}
         public double[] getXLimits(){System.out.println("BADABUM!!"); return null;}
         public long []getXLong(){System.out.println("BADABUM!!"); return null;}
         public boolean isXLong(){return false;}
@@ -560,7 +560,7 @@ class ASCIIDataProvider implements DataProvider
     public void enableAsyncUpdate(boolean enable){}
     public void getDataAsync(double lowerBound, double upperBound, double resolution){}
     public static void main(String args[])
-    {      
+    {
         ASCIIDataProvider p = new ASCIIDataProvider();
         p.GetWaveData("c:\\test.txt", 0, 0, 0);
 

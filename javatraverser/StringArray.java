@@ -15,7 +15,7 @@ public class StringArray extends ArrayData
 	    for(int i = 0; i < datum.length; i++)
 	        this.datum[i] = new String(datum[i]);
     }
-    public String [] getStringArray() 
+    public String [] getStringArray()
     {
 	    String ris [] = new String[datum.length];
 	    for(int i = 0; i < datum.length; i++)

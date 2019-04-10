@@ -246,8 +246,8 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 		    else
 			if(e.is_mb2)
 			    AllSameXScaleAutoY(w);
-                    //Set x to time_value allows pannels synchronization from 2D 
-                    //signal viewed in MODE_YX  
+                    //Set x to time_value allows pannels synchronization from 2D
+                    //signal viewed in MODE_YX
                     if(!Double.isNaN(e.time_value))
                         x = e.time_value;
                     UpdatePoints(x, y, (Waveform)e.getSource());
@@ -992,7 +992,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         RepaintManager currentManager = RepaintManager.currentManager(c);
         currentManager.setDoubleBufferingEnabled(true);
     }
-    
+
 
    private String getFileName(Waveform w)
    {

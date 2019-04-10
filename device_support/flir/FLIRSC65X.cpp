@@ -40,7 +40,7 @@ using namespace std;
 #include <math.h>
 #include <sys/time.h>
 
-#define BUFFER_COUNT 16 
+#define BUFFER_COUNT 16
 
 #define ERROR -1
 #define SUCCESS 0
@@ -54,10 +54,10 @@ static FLIR_SC65X *camPtr[MAX_CAM] = {0};
 static char errorOnOpen[512];
 
 
-#ifdef __cplusplus 
-extern "C" 
-{ 
-#endif 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 
 int flirOpen(const char *ipAddress, int *camHandle)
@@ -70,7 +70,7 @@ int flirOpen(const char *ipAddress, int *camHandle)
 	cam = new FLIR_SC65X(ipAddress);
 	if(!cam->checkLastOp())
 	{
-		cam->getLastError(errorOnOpen); 
+		cam->getLastError(errorOnOpen);
 		delete(cam);
 		return ERROR;
 	}
@@ -94,7 +94,7 @@ int flirOpen(const char *ipAddress, int *camHandle)
 
 int flirIsConnected( int camHandle )
 {
-	if( camHandle < 0 || camHandle >= MAX_CAM || camPtr[camHandle] == 0 ) 
+	if( camHandle < 0 || camHandle >= MAX_CAM || camPtr[camHandle] == 0 )
 	{
 		sprintf(errorOnOpen, "Camera does not connect");
 		return ERROR;
@@ -106,7 +106,7 @@ int flirClose(int camHandle)
 {
 	delete(camPtr[camHandle]);
 	camPtr[camHandle] = 0;
-	
+
 	return SUCCESS;
 }
 
@@ -173,9 +173,9 @@ int setReadoutArea(int camHandle, int x, int y, int width, int height)
 }
 
 
-int setObjectParameters(int camHandle, double reflectedTemperature, double atmosphericTemperature, 
-											double objectDistance, double objectEmissivity, 
-											double relativeHumidity, double extOpticsTemperature, 
+int setObjectParameters(int camHandle, double reflectedTemperature, double atmosphericTemperature,
+											double objectDistance, double objectEmissivity,
+											double relativeHumidity, double extOpticsTemperature,
 											double extOpticsTransmission, double estimatedTransmission)
 {
 	if( flirIsConnected( camHandle ) == SUCCESS )
@@ -291,7 +291,7 @@ int setTreeInfo( int camHandle,  void *treePtr, int framesNid, int timebaseNid, 
 	return ERROR;
 }
 
-int setStreamingMode(int camHandle, IRFMT_ENUM irFormat, int streamingEnabled, bool autoAdjustLimit, 
+int setStreamingMode(int camHandle, IRFMT_ENUM irFormat, int streamingEnabled, bool autoAdjustLimit,
 						const char *streamingServer, int streamingPort, int lowLim, int highLim, const char *deviceName)
 {
 	if( flirIsConnected( camHandle ) == SUCCESS )
@@ -324,29 +324,29 @@ void  getLastError(int camHandle, char *msg)
 }
 
 
-#ifdef __cplusplus 
-} 
-#endif 
+#ifdef __cplusplus
+}
+#endif
 
 
 
 
 FLIR_SC65X::FLIR_SC65X(const char *ipAddress)
 {
-    this->ipAddress = PvString(ipAddress); 
-/* SDK 3 
+    this->ipAddress = PvString(ipAddress);
+/* SDK 3
     this->lDevice = new PvDevice();
-    this->lResult = this->lDevice->Connect(this->ipAddress, PvAccessExclusive);	
+    this->lResult = this->lDevice->Connect(this->ipAddress, PvAccessExclusive);
 */
-    this->lDevice = PvDevice::CreateAndConnect(this->ipAddress, &this->lResult); //20160309 SDK4	 
-    if ( !this->lResult.IsOK() ) 
+    this->lDevice = PvDevice::CreateAndConnect(this->ipAddress, &this->lResult); //20160309 SDK4
+    if ( !this->lResult.IsOK() )
     {
-        printf("--------------------------------- Error Device connection: (%s)\n", this->lResult.GetCodeString().GetAscii() ); 
+        printf("--------------------------------- Error Device connection: (%s)\n", this->lResult.GetCodeString().GetAscii() );
         PvDevice::Free(this->lDevice);
     }
     else
-    {    		
-	printf("---------------------------- OK Device connection: (%s)\n", this->lResult.GetDescription().GetAscii() ); 
+    {
+	printf("---------------------------- OK Device connection: (%s)\n", this->lResult.GetDescription().GetAscii() );
     }
 }
 
@@ -361,8 +361,8 @@ FLIR_SC65X::FLIR_SC65X()  //new 25/07/2013: let to use the device without the ca
 FLIR_SC65X::~FLIR_SC65X()
 {
     this->lResult = this->lDevice->Disconnect();
-    if ( !this->lResult.IsOK() ) 
-	printLastError("Error Device disconnection !!!\n(%s)\n", lResult.GetDescription().GetAscii() ); 
+    if ( !this->lResult.IsOK() )
+	printLastError("Error Device disconnection !!!\n(%s)\n", lResult.GetDescription().GetAscii() );
     else
 	printf("FLIR_SC65X destructor class executed\n");
     //delete(this->lDevice); 	//SDK 3
@@ -373,9 +373,9 @@ FLIR_SC65X::~FLIR_SC65X()
 
 int FLIR_SC65X::checkLastOp()
 {
-	printf("Info %d (%s)\n", this->lResult.IsOK(), lResult.GetDescription().GetAscii() ); 
-	if ( !this->lResult.IsOK() ) 
-		printLastError("(%s)\n", lResult.GetDescription().GetAscii() ); 
+	printf("Info %d (%s)\n", this->lResult.IsOK(), lResult.GetDescription().GetAscii() );
+	if ( !this->lResult.IsOK() )
+		printLastError("(%s)\n", lResult.GetDescription().GetAscii() );
     return this->lResult.IsOK();
 }
 
@@ -418,7 +418,7 @@ int FLIR_SC65X::printAllParameters()
             printf( "{Not readable}\n" );
 			continue;
 		}
-		
+
 		// Get the parameter type
 		PvGenType lType;
 		lGenParameter->GetType( lType );
@@ -427,7 +427,7 @@ int FLIR_SC65X::printAllParameters()
 			// If the parameter is of type PvGenTypeInteger
 			case PvGenTypeInteger:
 				{
-					int64_t lValue;				
+					int64_t lValue;
 					static_cast<PvGenInteger *>( lGenParameter )->GetValue( lValue );
 					printf( "Integer: %d", lValue );
 				}
@@ -435,7 +435,7 @@ int FLIR_SC65X::printAllParameters()
 			// If the parameter is of type PvGenTypeEnum
 			case PvGenTypeEnum:
 				{
-					PvString lValue;				
+					PvString lValue;
 					static_cast<PvGenEnum *>( lGenParameter )->GetValue( lValue );
 					printf( "Enum: %s", lValue.GetAscii() );
 				}
@@ -443,13 +443,13 @@ int FLIR_SC65X::printAllParameters()
 			// If the parameter is of type PvGenTypeBoolean
 			case PvGenTypeBoolean:
 				{
-					bool lValue;				
+					bool lValue;
 					static_cast<PvGenBoolean *>( lGenParameter )->GetValue( lValue );
-					if( lValue ) 
+					if( lValue )
 					{
 						printf( "Boolean: TRUE" );
 					}
-					else 
+					else
 					{
 						printf( "Boolean: FALSE" );
 					}
@@ -470,7 +470,7 @@ int FLIR_SC65X::printAllParameters()
 			// If the parameter is of type PvGenTypeFloat
 			case PvGenTypeFloat:
 				{
-					double lValue;				
+					double lValue;
 					static_cast<PvGenFloat *>( lGenParameter )->GetValue( lValue );
 					printf( "Float: %f", lValue );
 				}
@@ -491,25 +491,25 @@ int FLIR_SC65X::setExposureMode(EXPMODE_ENUM exposureMode)
 	PvGenEnum *currCfg = dynamic_cast<PvGenEnum *>( lDeviceParams->Get( "CurrentIOConfig" ) );
 
 	this->lResult = currPort->SetValue( 0 );
-	if ( !this->lResult.IsOK() ) {printLastError("Error setting current port to 0!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+	if ( !this->lResult.IsOK() ) {printLastError("Error setting current port to 0!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 
 	switch(exposureMode)
 	{
 	  case internal_mode:
-usleep(3000); 	
+usleep(3000);
 		this->lResult = currCfg->SetValue( "GeneralPurpose" );
-		if ( !this->lResult.IsOK() ) 
-			{printLastError("Error setting exposure mode!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+		if ( !this->lResult.IsOK() )
+			{printLastError("Error setting exposure mode!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 		else
-			{printf("Sync. INTERNAL configured.\n");} 
+			{printf("Sync. INTERNAL configured.\n");}
 		break;
 	  case external_mode:
-usleep(3000); 
+usleep(3000);
 		this->lResult = currCfg->SetValue( "MarkImage" );
-		if ( !this->lResult.IsOK() ) 
-			{printLastError("Error setting exposure mode!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+		if ( !this->lResult.IsOK() )
+			{printLastError("Error setting exposure mode!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 		else
-			{printf("Sync. EXTERNAL configured.\n");} 
+			{printf("Sync. EXTERNAL configured.\n");}
 		break;
 	}
 
@@ -519,24 +519,24 @@ usleep(3000);
 int FLIR_SC65X::setFrameRate(double frameRate)
 {
 	FPS_ENUM fps;
-            
+
     if ( frameRate == 200.)
        fps = fps_200;
-    else if ( fabs( frameRate - 100. ) < 1.e-4 ) 
+    else if ( fabs( frameRate - 100. ) < 1.e-4 )
        fps = fps_100;
-    else if ( fabs( frameRate - 50. ) < 1.e-4 ) 
+    else if ( fabs( frameRate - 50. ) < 1.e-4 )
        fps = fps_50;
-    else if ( fabs( frameRate - 25. ) < 1.e-4 ) 
+    else if ( fabs( frameRate - 25. ) < 1.e-4 )
        fps = fps_25;
-    else if ( fabs( frameRate - 12.5) < 1.e-4 ) 
+    else if ( fabs( frameRate - 12.5) < 1.e-4 )
        fps = fps_12;
-    else if ( fabs( frameRate - 6.25) < 1.e-4 ) 
+    else if ( fabs( frameRate - 6.25) < 1.e-4 )
        fps = fps_6;
-    else if ( fabs( frameRate - 3.12) < 1.e-4 ) 
+    else if ( fabs( frameRate - 3.12) < 1.e-4 )
        fps = fps_3;
-       
+
 	this->frameRate = frameRate;
-    
+
     return ( setFrameRate(fps, &streamingSkipFrameNumber) );
 
 }
@@ -552,13 +552,13 @@ int FLIR_SC65X::setFrameRate(FPS_ENUM fps, int *frameToSkip)
 
 	switch(fps)
 	{
-		case fps_200: 
-usleep(3000);	
+		case fps_200:
+usleep(3000);
 			this->lResult = lWidth->SetValue( 640 );
-			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Width in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Width in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = lHeight->SetValue( 123 );
-			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Height in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Height in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = sFrameRate->SetValue(0);
 		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
@@ -572,10 +572,10 @@ usleep(3000);
 			*frameToSkip = 8;
 			break;
 
-		case fps_100: 
+		case fps_100:
 usleep(3000);
 			this->lResult = lWidth->SetValue( 640 );
-			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Width in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Width in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = lHeight->SetValue( 243 );
 			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Height in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
@@ -593,7 +593,7 @@ usleep(3000);
 			break;
 
 		case fps_50:
-usleep(3000);        
+usleep(3000);
 			this->lResult = sFrameRate->SetValue(0);
 		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
@@ -601,7 +601,7 @@ usleep(3000);
 		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting Windowing in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = lWidth->SetValue( 640 );
-			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Width in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Width in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = lHeight->SetValue( 483 );
 			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Height in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
@@ -612,7 +612,7 @@ usleep(3000);
 			break;
 
 		case fps_25:
-usleep(3000);        
+usleep(3000);
 			this->lResult = sFrameRate->SetValue(1);
 		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
@@ -620,7 +620,7 @@ usleep(3000);
 		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting Windowing in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = lWidth->SetValue( 640 );
-			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Width in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Width in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = lHeight->SetValue( 483 );
 			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Height in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
@@ -631,12 +631,12 @@ usleep(3000);
 			break;
 
 		case fps_12:
-usleep(3000);         
+usleep(3000);
 			this->lResult = sFrameRate->SetValue(2);
 		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = lWidth->SetValue( 640 );
-			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Width in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Width in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = lHeight->SetValue( 483 );
 			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Height in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
@@ -650,12 +650,12 @@ usleep(3000);
 			break;
 
 		case fps_6:
-usleep(3000);        
+usleep(3000);
 			this->lResult = sFrameRate->SetValue(3);
 		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = lWidth->SetValue( 640 );
-			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Width in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Width in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = lHeight->SetValue( 483 );
 			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Height in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
@@ -669,12 +669,12 @@ usleep(3000);
 			break;
 
 		case fps_3:
-usleep(3000);        
+usleep(3000);
 			this->lResult = sFrameRate->SetValue(4);
 		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = lWidth->SetValue( 640 );
-			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Width in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Width in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = lHeight->SetValue( 483 );
 			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Height in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
@@ -688,12 +688,12 @@ usleep(3000);
 			break;
 
 		default:
-			printLastError("Invalid frame rate value!!!\n", 0); 
+			printLastError("Invalid frame rate value!!!\n", 0);
 			return ERROR;
 	}
 
 usleep(3500000);
-	
+
     return SUCCESS;
 }
 
@@ -708,24 +708,24 @@ int FLIR_SC65X::setIrFormat(IRFMT_ENUM irFormat)
 	{
 		case radiometric:
 			this->lResult = sFormat->SetValue("Radiometric");
-			if ( !this->lResult.IsOK() ) 
-				{printLastError("Error setting Radiometric in setIrFormat!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+			if ( !this->lResult.IsOK() )
+				{printLastError("Error setting Radiometric in setIrFormat!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 			else
-				{printf("IR FORMAT set to radiometric.\n");} 
+				{printf("IR FORMAT set to radiometric.\n");}
 			break;
 		case linear100mK:
-			this->lResult = sFormat->SetValue("TemperatureLinear100mK"); 
-			if ( !this->lResult.IsOK() ) 
-				{printLastError("Error setting TemperatureLinear100mK!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+			this->lResult = sFormat->SetValue("TemperatureLinear100mK");
+			if ( !this->lResult.IsOK() )
+				{printLastError("Error setting TemperatureLinear100mK!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 			else
-				{printf("IR FORMAT set to TemperatureLinear100mK.\n");} 
+				{printf("IR FORMAT set to TemperatureLinear100mK.\n");}
 			break;
 		case linear10mK:
-			this->lResult = sFormat->SetValue("TemperatureLinear10mK"); 
-			if ( !this->lResult.IsOK() ) 
-				{printLastError("Error setting TemperatureLinear10mK!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+			this->lResult = sFormat->SetValue("TemperatureLinear10mK");
+			if ( !this->lResult.IsOK() )
+				{printLastError("Error setting TemperatureLinear10mK!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 			else
-				{printf("IR FORMAT set to TemperatureLinear10mK.\n");} 
+				{printf("IR FORMAT set to TemperatureLinear10mK.\n");}
 			break;
 	}
 
@@ -764,9 +764,9 @@ usleep(3000);
 	if ( !this->lResult.IsOK() ) {printLastError("Error getting OffsetY in getReadoutArea\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 
 	this->x = *x=(int)ox;
-	this->y = *y=(int)oy;  
+	this->y = *y=(int)oy;
 	this->width = *width=(int)w;
-	this->height = *height=(int)h-3;	//remove 3 lines of metadata  
+	this->height = *height=(int)h-3;	//remove 3 lines of metadata
 
 
     return SUCCESS;
@@ -801,9 +801,9 @@ usleep(3000);
 	if ( !this->lResult.IsOK() ) {printLastError("Error setting OffsetY in setReadoutArea\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 
 	this->x = x;
-	this->y = y;  
+	this->y = y;
 	this->width = width;
-	this->height = height;  
+	this->height = height;
 
 
     return SUCCESS;
@@ -811,7 +811,7 @@ usleep(3000);
 
 
 
-int FLIR_SC65X::setObjectParameters(double reflectedTemperature, double atmosphericTemperature, double objectDistance, double objectEmissivity, double relativeHumidity, double extOpticsTemperature, double extOpticsTransmission, double estimatedTransmission)	
+int FLIR_SC65X::setObjectParameters(double reflectedTemperature, double atmosphericTemperature, double objectDistance, double objectEmissivity, double relativeHumidity, double extOpticsTemperature, double extOpticsTransmission, double estimatedTransmission)
 {
     PvGenParameterArray *lDeviceParams = lDevice->GetParameters();
 	PvGenFloat *RefTemp = dynamic_cast<PvGenFloat *>( lDeviceParams->Get( "ReflectedTemperature" ) );
@@ -880,22 +880,22 @@ int FLIR_SC65X::setMeasurementRange(int measRange)
 	int64_t val = measRange;
 
     this->lResult = queryCase->SetValue(val);
-	 if ( !this->lResult.IsOK() ) {printLastError("Error: case not defined in setMeasurementRange!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+	 if ( !this->lResult.IsOK() ) {printLastError("Error: case not defined in setMeasurementRange!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 
 usleep(3000);
      this->lResult = currCase->SetValue(val);
-	 if ( !this->lResult.IsOK() ) {printLastError("Error in setMeasurementRange!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+	 if ( !this->lResult.IsOK() ) {printLastError("Error in setMeasurementRange!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 
 	double limitLow, limitHigh = 0;
 usleep(3000);
 
     this->lResult = lowLim->GetValue(limitLow);
-	if ( !this->lResult.IsOK() ) {printLastError("Error in low limit !!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+	if ( !this->lResult.IsOK() ) {printLastError("Error in low limit !!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 
 usleep(3000);
 
     this->lResult = highLim->GetValue(limitHigh);
-	if ( !this->lResult.IsOK() ) {printLastError("Error in high limit !!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+	if ( !this->lResult.IsOK() ) {printLastError("Error in high limit !!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 
 
 #ifdef debug
@@ -920,7 +920,7 @@ int FLIR_SC65X::getFocusAbsPosition(int *focusPos)
     printf("getFocusAbsPosition val: %d\n", val);
 
     *focusPos=val;
-    
+
     return SUCCESS;
 }
 
@@ -958,9 +958,9 @@ int FLIR_SC65X::executeAutoFocus()
 {
     PvGenParameterArray *lDeviceParams = lDevice->GetParameters();
     PvGenCommand *autoFocus = dynamic_cast<PvGenCommand *>( lDeviceParams->Get( "AutoFocus" ) );
-  
+
     this->lResult = autoFocus->Execute();
-	 if ( !this->lResult.IsOK() ) {printLastError("Error executing auto focus!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 	
+	 if ( !this->lResult.IsOK() ) {printLastError("Error executing auto focus!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 
 #ifdef debug
 	printf("AutoFocus Executed.\n");
@@ -977,11 +977,11 @@ int FLIR_SC65X::setCalibMode(int calMode) //0=off     1=automatic
 	PvGenEnum *calibMode = dynamic_cast<PvGenEnum *>( lDeviceParams->Get( "NUCMode" ) );
 
     this->lResult = calibMode->SetValue( calMode );
-	if ( !this->lResult.IsOK() ) 
-	  {printLastError("Error setting calibration mode!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+	if ( !this->lResult.IsOK() )
+	  {printLastError("Error setting calibration mode!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 
 	PvString lValue;
-	PvGenParameter *lGenParameter = lDeviceParams->Get( "NUCMode" );			
+	PvGenParameter *lGenParameter = lDeviceParams->Get( "NUCMode" );
 	static_cast<PvGenEnum *>( lGenParameter )->GetValue( lValue );
 
 
@@ -998,9 +998,9 @@ int FLIR_SC65X::executeAutoCalib()
 {
     PvGenParameterArray *lDeviceParams = lDevice->GetParameters();
     PvGenCommand *autoCalib = dynamic_cast<PvGenCommand *>( lDeviceParams->Get( "NUCAction" ) );
-  
+
     this->lResult = autoCalib->Execute();
-	 if ( !this->lResult.IsOK() ) {printLastError("Error executing calibration!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 	
+	 if ( !this->lResult.IsOK() ) {printLastError("Error executing calibration!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 
 #ifdef debug
 	printf("AutoCalibration Executed.\n");
@@ -1015,15 +1015,15 @@ int FLIR_SC65X::startAcquisition(int *width, int *height, int *payloadSize)
 {
     PvGenParameterArray *lDeviceParams = lDevice->GetParameters();
     PvGenInteger *lTLLocked = dynamic_cast<PvGenInteger *>( lDeviceParams->Get( "TLParamsLocked" ) );
-    PvGenInteger *lWidth = dynamic_cast<PvGenInteger *>( lDeviceParams->Get( "Width" ) ); 
+    PvGenInteger *lWidth = dynamic_cast<PvGenInteger *>( lDeviceParams->Get( "Width" ) );
     PvGenInteger *lHeight = dynamic_cast<PvGenInteger *>( lDeviceParams->Get( "Height" ) );
     PvGenInteger *lPayloadSize = dynamic_cast<PvGenInteger *>( lDeviceParams->Get( "PayloadSize" ) );
     PvGenCommand *lResetTimestamp = dynamic_cast<PvGenCommand *>( lDeviceParams->Get( "GevTimestampControlReset" ) );
     PvGenCommand *lStart = dynamic_cast<PvGenCommand *>( lDeviceParams->Get( "AcquisitionStart" ) );
     // Get stream parameters/stats
 //comment out 17-10-2016. segmentation fault with SDK4. to check!
-/* 
-    PvGenParameterArray *lStreamParams = lStream->GetParameters();   
+/*
+    PvGenParameterArray *lStreamParams = lStream->GetParameters();
     PvGenInteger *lCount = dynamic_cast<PvGenInteger *>( lStreamParams->Get( "ImagesCount" ) );
     PvGenFloat *lFrameRate = dynamic_cast<PvGenFloat *>( lStreamParams->Get( "AcquisitionRateAverage" ) );
     PvGenFloat *lBandwidth = dynamic_cast<PvGenFloat *>( lStreamParams->Get( "BandwidthAverage" ) );
@@ -1043,8 +1043,8 @@ int FLIR_SC65X::startAcquisition(int *width, int *height, int *payloadSize)
 	if ( !this->lResult.IsOK() ) {printLastError("Error getting frame width in startAcquisition!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 	this->lResult = lHeight->GetValue( h );
 	if ( !this->lResult.IsOK() ) {printLastError("Error getting frame height in startAcquisition!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
-	this->lResult = lPayloadSize->GetValue( lSize ); 
-	if ( !this->lResult.IsOK() ) {printLastError("Error getting payload size in startAcquisition!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+	this->lResult = lPayloadSize->GetValue( lSize );
+	if ( !this->lResult.IsOK() ) {printLastError("Error getting payload size in startAcquisition!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 
 	this->width = *width = (int)w;
 	this->height = *height= (int)h-3;  				//first 3 rows are metadata
@@ -1053,7 +1053,7 @@ int FLIR_SC65X::startAcquisition(int *width, int *height, int *payloadSize)
 
 
 /*
- new 09 mar 2016 for SDK4	 
+ new 09 mar 2016 for SDK4
  // If this is a GigE Vision device, configure GigE Vision specific streaming parameters
 */
     PvDeviceGEV *lDeviceGEV = static_cast<PvDeviceGEV *>( this->lDevice );
@@ -1065,11 +1065,11 @@ end new
     // Negotiate streaming packet size
     //this->lResult = lDevice->NegotiatePacketSize();  //SDK 3
 	this->lResult = lDeviceGEV->NegotiatePacketSize();  //SDK 4
-	if ( !this->lResult.IsOK() ) 
-        {  
-           printLastError("Error negotiating packet size in start acquisition!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); 
+	if ( !this->lResult.IsOK() )
+        {
+           printLastError("Error negotiating packet size in start acquisition!!!\n(%s)\n", lResult.GetDescription().GetAscii() );
            return ERROR;
-        } 
+        }
 
 
     PvGenInteger *lPacketSize = dynamic_cast<PvGenInteger *>( lDevice->GetParameters()->Get( "GevSCPSPacketSize" ) );
@@ -1078,37 +1078,37 @@ end new
     lResult = lPacketSize->GetValue( lPacketSizeValue );
     if ( !lResult.IsOK() )
     {
-		printLastError("FATAL ERROR: Unable to read packet size!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); 
-		return ERROR; 
+		printLastError("FATAL ERROR: Unable to read packet size!!!\n(%s)\n", lResult.GetDescription().GetAscii() );
+		return ERROR;
         //fprintf( stderr, "FATAL ERROR: Unable to read packet size\n" );
     }
     printf("--------> lPacketSizeValue %d\n", lPacketSizeValue);
-  
+
     // Open stream
     //this->lResult = this->lStream->Open( this->ipAddress);    //SDK 3
-    this->lStream = PvStream::CreateAndOpen(this->ipAddress, &this->lResult); //20160309 SDK4	 
+    this->lStream = PvStream::CreateAndOpen(this->ipAddress, &this->lResult); //20160309 SDK4
     if ( ( this->lStream == NULL ) || !this->lResult.IsOK() )
     {
-        printLastError("Error opening stream in start acquisition!!!\n(%s)\n", lResult.GetDescription().GetAscii() );  
+        printLastError("Error opening stream in start acquisition!!!\n(%s)\n", lResult.GetDescription().GetAscii() );
         PvStream::Free( this->lStream );
 	return ERROR;
     }
 
     // Use min of BUFFER_COUNT and how many buffers can be queued in PvStream
-    uint32_t lBufferCount = ( lStream->GetQueuedBufferMaximum() < BUFFER_COUNT ) ? 
-        lStream->GetQueuedBufferMaximum() : 
+    uint32_t lBufferCount = ( lStream->GetQueuedBufferMaximum() < BUFFER_COUNT ) ?
+        lStream->GetQueuedBufferMaximum() :
         BUFFER_COUNT;
 
- //new 17-10-2016 for SDK4	 
+ //new 17-10-2016 for SDK4
  // If this is a GigE Vision device, configure GigE Vision specific streaming parameters
     PvStreamGEV *lStreamGEV = static_cast<PvStreamGEV *>( this->lStream );
 
-     if( this->lStream->IsOpen() ) 
+     if( this->lStream->IsOpen() )
      {
         //printf("lStream OPEN Local Port %d \n",  lStream->GetLocalPort() );   //SDK 3
 	printf("lStream OPEN Local Port %u \n", lStreamGEV->GetLocalPort() );  //SDK 4 not working.... segmentation fault to check!
      }
-     else 
+     else
      {
         printf("lStream NOT OPEN\n");
      }
@@ -1140,7 +1140,7 @@ end new
     // Have to set the Device IP destination to the Stream
     //this->lResult = lDevice->SetStreamDestination( lStream->GetLocalIPAddress(), lStream->GetLocalPort() );  //SDK 3
      this->lResult = lDeviceGEV->SetStreamDestination( lStreamGEV->GetLocalIPAddress(), lStreamGEV->GetLocalPort() ); //SDK 4  - 9 mar 2016
-	if ( !this->lResult.IsOK() ) {printLastError("Error setting stream dest. in start acquisition!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+	if ( !this->lResult.IsOK() ) {printLastError("Error setting stream dest. in start acquisition!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 
      if( lStream->IsOpen() ) printf("lStream OPEN\n");
      else printf("lStream NOT OPEN\n");
@@ -1176,20 +1176,20 @@ printf("------------------------ Queued Buffer ---------------------------------
     {
 usleep(3000);
         this->lResult = lTLLocked->SetValue( 1 );
-		if ( !this->lResult.IsOK() ) {printLastError("Error setting TLParamsLocked to 1!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+		if ( !this->lResult.IsOK() ) {printLastError("Error setting TLParamsLocked to 1!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
     }
-  
+
 	//reset timestamp counter
     this->lResult = lResetTimestamp->Execute();
-	if ( !this->lResult.IsOK() ) {printLastError("Error resetting timestamp counter!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+	if ( !this->lResult.IsOK() ) {printLastError("Error resetting timestamp counter!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 
     // Tell the device to start sending images
     this->lResult = lStart->Execute();
-	if ( !this->lResult.IsOK() ) {printLastError("Error sending StartAcquisition command to device!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 	
+	if ( !this->lResult.IsOK() ) {printLastError("Error sending StartAcquisition command to device!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 
 //debug
 	triggered = 0;
-/*	
+/*
 	printf( "Get Local IP Address %s \n",  lStream->GetLocalIPAddress().GetAscii() );
 	printf( "QueuedBuffer %d \n",  lStream->GetQueuedBufferCount() );
 	printf( "QueuedBuffer Maximum %d \n",  lStream->GetQueuedBufferMaximum() );
@@ -1207,9 +1207,9 @@ usleep(3000);
 		printf( "PvStream not open \n");
 */
 
-	return SUCCESS;	
+	return SUCCESS;
 }
-  
+
 
 
 int FLIR_SC65X::stopAcquisition()
@@ -1220,14 +1220,14 @@ int FLIR_SC65X::stopAcquisition()
 
     // Tell the device to stop sending images
     this->lResult = lStop->Execute();
-	if ( !this->lResult.IsOK() ) {printLastError("Error sending AcquisitionStop command to the device!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+	if ( !this->lResult.IsOK() ) {printLastError("Error sending AcquisitionStop command to the device!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 
-    // If present reset TLParamsLocked to 0. Must be done AFTER the 
+    // If present reset TLParamsLocked to 0. Must be done AFTER the
     // streaming has been stopped
     if ( lTLLocked != NULL )
     {
         this->lResult = lTLLocked->SetValue( 0 );
-		if ( !this->lResult.IsOK() ) {printLastError("Error resetting TLParamsLocked to 0!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
+		if ( !this->lResult.IsOK() ) {printLastError("Error resetting TLParamsLocked to 0!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
     }
 
     //printf( "Aborting buffers still in stream\n" );
@@ -1273,7 +1273,7 @@ int FLIR_SC65X::getFrame(int *status, void *frame, void *metaData)
     *status=2; //frame incomplete by default
  //   ++lDoodleIndex %= 6;
 
-    // Retrieve next buffer	
+    // Retrieve next buffer
     this->lResult = lStream->RetrieveBuffer( &lBuffer, &lOperationResult, 1000 );
 
     //this->lResult = lStream->RetrieveBuffer( &lBuffer, &lOperationResult);
@@ -1294,7 +1294,7 @@ int FLIR_SC65X::getFrame(int *status, void *frame, void *metaData)
 				// Read width, height
 				lWidth  = lImage->GetWidth();
 				lHeight = lImage->GetHeight();
-				currTime = lBuffer->GetTimestamp(); 
+				currTime = lBuffer->GetTimestamp();
 
 				currIdx = lBuffer->GetBlockID();
 				//if( triggered && currIdx != lastIdx+1)
@@ -1315,18 +1315,18 @@ int FLIR_SC65X::getFrame(int *status, void *frame, void *metaData)
 				unsigned int width = lWidth;
  				unsigned int height = lHeight;
 
-		//		PvUInt8* dataPtr = lImage->GetDataPointer();  	//NO!!!!		
+		//		PvUInt8* dataPtr = lImage->GetDataPointer();  	//NO!!!!
 		//		PvUInt8* dataPtr = lBuffer->GetDataPointer();	//OK for SDK3
 				uint8_t* dataPtr = lBuffer->GetDataPointer();	//8 mar 2016 for SDK4
 
 			        //last 3 rows of the frame are metadata
 				memcpy( frame , (unsigned char *)dataPtr, width*2*(height-3) );
-				memcpy( metaData , (unsigned char *)dataPtr+(width*2*(height-3)), width*2*3 );		
-			
+				memcpy( metaData , (unsigned char *)dataPtr+(width*2*(height-3)), width*2*3 );
+
 				*status=1; //complete
 
 				FPGA_HEADER* pFPGA;
-				pFPGA = (FPGA_HEADER*)metaData;	
+				pFPGA = (FPGA_HEADER*)metaData;
 
 				//if(pFPGA->dp1_trig_state)  //NOT WORK!!!!!!!!!!
 				if(pFPGA->dp1_trig_type & FPGA_TRIG_TYPE_MARK)  //correct way :-)
@@ -1338,11 +1338,11 @@ int FLIR_SC65X::getFrame(int *status, void *frame, void *metaData)
 					triggered = 1;
 				}
 
-			}			
+			}
         }
         else  //new 28 agosto 2012
-    	{   
-	  	*status=2; //incomplete		   
+    	{
+	  	*status=2; //incomplete
       		//printf( "%c Incomplete\r", lDoodle[ lDoodleIndex ] );
 		printf("%s %d\n", lOperationResult.GetCodeString().GetAscii(), lBuffer->GetPayloadType() );
 		incompleteFrame++;
@@ -1353,10 +1353,10 @@ int FLIR_SC65X::getFrame(int *status, void *frame, void *metaData)
 		return SUCCESS;
     }
     else// Timeout
-    {   
+    {
       printf("%s (%s) \n", lResult.GetCodeString().GetAscii(), lResult.GetDescription().GetAscii()  );
       printLastError("Error reading frame!!!\n(%s)\n", lResult.GetDescription().GetAscii() );
-      *status=3; //timeout		   
+      *status=3; //timeout
 //    printf( "%c Timeout\r", lDoodle[ lDoodleIndex ] );
       return ERROR;
     }
@@ -1371,18 +1371,18 @@ int FLIR_SC65X::frameConv(unsigned short *frame, int width, int height)
 {
     short sub=0;
     switch(irFrameFormat)
-    {   
+    {
 	  case linear100mK:     sub=2731;  //1 = 100mK = 100mC -> precisione decimo di grado
                     break;
 	  case linear10mK:      sub=27315; //1 = 10mK = 10mC -> precisione centesimo di grado
-                    break;                       
+                    break;
     }
 
-    for(int i=0; i<width*height; i++) 
+    for(int i=0; i<width*height; i++)
     {
        frame[i] = frame[i] - sub;
     }
-	
+
     return SUCCESS;
 
 }
@@ -1390,7 +1390,7 @@ int FLIR_SC65X::frameConv(unsigned short *frame, int width, int height)
 int FLIR_SC65X::setStreamingMode( IRFMT_ENUM irFormat, int streamingEnabled,  bool autoAdjustLimit, const char *streamingServer, int streamingPort, unsigned int lowLim, unsigned int highLim, const char *deviceName)
 {
    this->streamingEnabled = streamingEnabled;
-	
+
    if( streamingEnabled )
    {
 		memcpy( this->streamingServer, streamingServer, strlen(streamingServer)+1 );
@@ -1407,25 +1407,25 @@ int FLIR_SC65X::setStreamingMode( IRFMT_ENUM irFormat, int streamingEnabled,  bo
 			case radiometric:
 				this->lowLim = lowLim;
 				this->highLim = highLim;
-          		        minLim= 0;            
-          		        maxLim= 32767; 
+          		        minLim= 0;
+          		        maxLim= 32767;
 				break;
 			case linear100mK:
 				this->lowLim = lowLim * 10;
 				this->highLim = highLim * 10;
-          		        minLim= 0;            
+          		        minLim= 0;
           		        maxLim= 62000-27315;  //346.85°C
 				break;
 			case linear10mK:
 				this->lowLim = lowLim * 100;
 				this->highLim = highLim * 100;
-          		        minLim= 0;            
+          		        minLim= 0;
           		        maxLim= 62000-27315; //3468.5°C
 				break;
 		}
    }
    return SUCCESS;
-} 
+}
 
 
 int FLIR_SC65X::setAcquisitionMode( int storeEnabled , int acqSkipFrameNumber)
@@ -1447,7 +1447,7 @@ int FLIR_SC65X::setTriggerMode( int triggerMode, double burstDuration, int numTr
 
 int FLIR_SC65X::softwareTrigger()
 {
-	this->startStoreTrg = 1; 
+	this->startStoreTrg = 1;
 	return SUCCESS;
 }
 
@@ -1484,7 +1484,7 @@ int FLIR_SC65X::stopFramesAcquisition()
 
 	if (acqFlag == 0)
 		return SUCCESS;
- 
+
 	acqStopped = 0;
 	acqFlag = 0;
 	while( !acqStopped & count < 10 )
@@ -1498,7 +1498,7 @@ int FLIR_SC65X::stopFramesAcquisition()
 		printLastError("Cannot stop acquisition loop", 0);
 		return ERROR;
 	}
-		
+
 
 	return SUCCESS;
 }
@@ -1528,7 +1528,7 @@ int FLIR_SC65X::startFramesAcquisition()
         struct timeval tv;  //manage frame timestamp in internal mode
         int64_t timeStamp;
         int64_t timeStamp0;
-        
+
         TreeNode *t0Node;
         try{
              t0Node = new TreeNode(frame0TimeNid, (Tree *)treePtr);
@@ -1538,7 +1538,7 @@ int FLIR_SC65X::startFramesAcquisition()
          {
             printf("Error getting frame0 time\n");
          }
-   
+
 	frameBuffer = (short *) calloc(1, width * height * sizeof(short));
 	frame8bit = (unsigned char *) calloc(1, width * height * sizeof(char));
 
@@ -1562,7 +1562,7 @@ int FLIR_SC65X::startFramesAcquisition()
         while ( acqFlag )
 	{
         getFrame( &frameStatus, frameBuffer, metaData);   //get the frame
-    
+
         if(storeEnabled)
         {
           if ( triggerMode == 1 )        // External trigger source
@@ -1571,61 +1571,61 @@ int FLIR_SC65X::startFramesAcquisition()
            	if ( (frameStatus == 4) && (startStoreTrg == 0) )       //start data storing @ 1st trigger seen (trigger is on image header!)
 		{
             	  startStoreTrg = 1;
-            	  printf("TRIGGERED:\n");	
+            	  printf("TRIGGERED:\n");
 		}
 
-           	if (frameTriggerCounter == burstNframe) 
+           	if (frameTriggerCounter == burstNframe)
 		{
 		  triggered = 0;
-		  startStoreTrg   = 0;   //disable storing                  
-		  NtriggerCount++; 
-    
-                  printf("ACQUIRED ALL FRAMES %d FOR TRIGGER : %d\n", frameTriggerCounter,  NtriggerCount );	
+		  startStoreTrg   = 0;   //disable storing
+		  NtriggerCount++;
+
+                  printf("ACQUIRED ALL FRAMES %d FOR TRIGGER : %d\n", frameTriggerCounter,  NtriggerCount );
                   frameTriggerCounter = 0;
 
                   if ( autoCalibration )    //execute calibration action @ every burst of frames (only if NO auto calibration)
-                  {  
+                  {
 			executeAutoCalib();
 		  }
 
 	          if ( NtriggerCount == numTrigger ) //stop store when all trigger will be received
-		  { 
+		  {
 	            printf("ACQUIRED ALL FRAME BURST: %d\n", numTrigger );
-                    storeEnabled=0;	
-	            //break;             
+                    storeEnabled=0;
+	            //break;
 		  }
-		 }//if (frameTriggerCounter == burstNframe) 
+		 }//if (frameTriggerCounter == burstNframe)
 
-          } 
+          }
           else //( triggerMode == 1 ) 	//Internal trigger source
-          { 
+          {
                //Multiple trigger acquisition: first trigger save 64bit timestamp
-               timebaseNid = -1;  //used in cammdsutils to use internal      
+               timebaseNid = -1;  //used in cammdsutils to use internal
 	       triggered = 1; //debug
 
                if(startStoreTrg == 1)
                {
-                  gettimeofday(&tv, NULL); 				  
+                  gettimeofday(&tv, NULL);
                   timeStamp = ((tv.tv_sec)*1000) + ((tv.tv_usec)/1000); // timeStamp [ms]
 
                   if(timeStamp0==0)
-                  {           
+                  {
                     Int64 *tsMDS = new Int64(timeStamp);
                     t0Node->putData(tsMDS);
-                    timeStamp0=timeStamp; 
+                    timeStamp0=timeStamp;
                   }
                   else
-                  {   
+                  {
                     frameTime = (float)((timeStamp-timeStamp0)/1000.0); //interval from first frame [s]
-                    //printf("frameTime: %f", frameTime);     
+                    //printf("frameTime: %f", frameTime);
                   }
-              }//if startStoreTrg == 1 
+              }//if startStoreTrg == 1
 
        	      if ( frameTriggerCounter == burstNframe )
               {
-                   startStoreTrg   = 0;   //disable storing   
+                   startStoreTrg   = 0;   //disable storing
                    frameTriggerCounter = 0;
-                   NtriggerCount++; 
+                   NtriggerCount++;
             	   printf("Stop Internal trigger acquisition %f %f %f\n", frameTime, burstDuration, frameRate);
                    //storeEnabled=0;  //infinite trigger until stop acquisition
 		   //break;
@@ -1634,7 +1634,7 @@ int FLIR_SC65X::startFramesAcquisition()
         }//if(storeEnabled)
 
 
-        if ( irFrameFormat != radiometric )         
+        if ( irFrameFormat != radiometric )
         	frameConv((unsigned short *)frameBuffer, width, height);  //convert kelvin in Celsius
 
 
@@ -1644,19 +1644,19 @@ int FLIR_SC65X::startFramesAcquisition()
 	  int frameTimeBaseIdx;
 	  frameTimeBaseIdx = NtriggerCount * burstNframe + frameTriggerCounter;
 	  //printf("SAVE Frame : %d timebase Idx : %d\n", frameTriggerCounter,  frameTimeBaseIdx);
-	
+
 	  // CT la routine camSaveFrame utilizza il frame index in acquisizione. L'indice viene
     	  // utilizzato per individuare nell'array della base temporale il tempo associato al frame.
 
 	  // Con Trigger interno viene utilizzato frameTime come tempo relativo allo 0; timebaseNid deve essere -1
 
-          camSaveFrame((void *)frameBuffer, width, height, frameTime, 14, (void *)treePtr, framesNid, timebaseNid, frameTimeBaseIdx, (void *)metaData, metaSize, framesMetadNid, saveList); 
+          camSaveFrame((void *)frameBuffer, width, height, frameTime, 14, (void *)treePtr, framesNid, timebaseNid, frameTimeBaseIdx, (void *)metaData, metaSize, framesMetadNid, saveList);
 	  enqueueFrameNumber++;
-	} 
+	}
 
         if( streamingEnabled )
 	{
-           if( tcpStreamHandle == -1) 
+           if( tcpStreamHandle == -1)
 	   {
             	rstatus = camOpenTcpConnectionNew(streamingServer, streamingPort, &tcpStreamHandle, width, height);
             	if( rstatus !=-1 )
@@ -1682,13 +1682,13 @@ int FLIR_SC65X::startFramesAcquisition()
                   testVLCsyncProblem=0;
                 }
 		camStreamingFrame( tcpStreamHandle, frameBuffer, metaData, width, height, 14, irFrameFormat, testVLCsyncProblem, &lowLim, &highLim, minLim, maxLim, this->deviceName, streamingList);
-	    }             
+	    }
 	} // if( streamingEnabled )
 
-        frameCounter++;   //never resetted, used for frame timestamp     
-        if ( startStoreTrg == 1 ) //CT incremento l'indice dei frame salvato solo se l'acquisizione e' stata triggerata 
+        frameCounter++;   //never resetted, used for frame timestamp
+        if ( startStoreTrg == 1 ) //CT incremento l'indice dei frame salvato solo se l'acquisizione e' stata triggerata
         {
-          frameTriggerCounter++;     
+          frameTriggerCounter++;
         }
     }//endwhile
 
@@ -1696,7 +1696,7 @@ int FLIR_SC65X::startFramesAcquisition()
     camStopStreaming(streamingList); // Stop asynhronous frame streaming
 
     if( tcpStreamHandle != -1 )
-      camCloseTcpConnection(&tcpStreamHandle);  
+      camCloseTcpConnection(&tcpStreamHandle);
 
     rstatus = stopAcquisition();  //stop camera acquisition
     if (rstatus < 0)
@@ -1705,7 +1705,7 @@ int FLIR_SC65X::startFramesAcquisition()
     if ( !autoCalibration )
         setCalibMode(1);  //re-enable auto calibration
 
-    
+
     free(frameBuffer);
     free(frame8bit);
     free(metaData);

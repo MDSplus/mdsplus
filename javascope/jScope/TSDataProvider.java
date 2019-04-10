@@ -11,31 +11,31 @@ class TSDataProvider extends MdsDataProvider
     {
         super();
     }
-    
+
     public TSDataProvider(String provider) throws IOException
     {
         super(provider);
     }
-    
+
     public void SetArgument(String arg) throws IOException
     {
         mds.setProvider(arg);
         mds.setUser("mdsplus");
     }
-    
+
     public synchronized void Update(String exp, long s)
 	{
 	    error = null;
 		shot = (int) s;
 	}
-	
+
 	protected String ParseExpression(String in)
 	{
 	    //if(in.startsWith("DIM_OF("))
 	    //    return in;
-	        
+
 	    String res = MdsplusParser.parseFun(in, "GetTsBase(" + shot + ", \"", "\")");
-	        
+
 /*	    StringTokenizer st = new StringTokenizer(in, ":");
         String res = "GetTSData(\"";
 	    try{
@@ -60,9 +60,9 @@ class TSDataProvider extends MdsDataProvider
         if(parsed == null) return null;
         return super.GetIntArray(parsed);
     }
-	
-	
-	
+
+
+
     public synchronized float[] GetFloatArray(String in) throws IOException
     {
         String parsed = ParseExpression(in);
@@ -79,13 +79,13 @@ class TSDataProvider extends MdsDataProvider
 	    return out_array;
     }
 
-        
+
 protected String GetDefaultXLabel(String in_y)  throws IOException
 {
 	error= null;
 	return GetString("GetTSUnit(0)", -1, -1, -1);
 }
-        
+
 protected String GetDefaultYLabel()  throws IOException
 {
 	error= null;
@@ -100,4 +100,4 @@ public int     InquireCredentials(JFrame f, DataServerItem server_item){return D
 public boolean SupportsFastNetwork(){return false;}
 public int []    GetNumDimensions(String spec) {return new int[] {1};}
 }
-								
+

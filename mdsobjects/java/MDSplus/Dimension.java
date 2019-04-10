@@ -6,10 +6,10 @@ package MDSplus;
  * @version 1.0
  * @updated 30-mar-2009 13.44.36
  */
-public class Dimension extends Compound 
+public class Dimension extends Compound
 {
 
- 	public Dimension(Data window, Data axis, 
+ 	public Dimension(Data window, Data axis,
                 Data help, Data units, Data error, Data validation)
         {
             super(help, units, error, validation);
@@ -33,7 +33,7 @@ public class Dimension extends Compound
         {
             this(null, null, null, null);
         }
-        
+
         public static Dimension getData(Data help, Data units, Data error, Data validation)
         {
             return new Dimension(help, units, error, validation);
@@ -50,7 +50,7 @@ public class Dimension extends Compound
         }
 
         /**
-         * 
+         *
          * @param data
          */
         public void setWindow(Data data)
@@ -59,7 +59,7 @@ public class Dimension extends Compound
         }
 
         /**
-         * 
+         *
          * @param data
          */
         public void setAxis(Data data)

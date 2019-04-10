@@ -6,7 +6,7 @@ package MDSplus;
  * @version 1.0
  * @updated 30-mar-2009 13.44.34
  */
-public class Condition extends Compound 
+public class Condition extends Compound
 {
     public Condition(int opcode, Data arg,
             Data help, Data units, Data error, Data validation)
@@ -48,7 +48,7 @@ public class Condition extends Compound
     }
 
     /**
-     * 
+     *
      * @param opcode
      */
     public void setOcode(int opcode)
@@ -57,7 +57,7 @@ public class Condition extends Compound
     }
 
     /**
-     * 
+     *
      * @param data
      */
     public void setArg(Data data)

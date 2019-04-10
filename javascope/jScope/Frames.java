@@ -32,7 +32,7 @@ class Frames extends Canvas
     Rectangle zoom_rect = null;
     Rectangle view_rect = null;
     private int curr_frame_idx = -1;
-  
+
     protected boolean aspect_ratio = true;
     protected int curr_grab_frame = -1;
     protected int[] pixel_array;
@@ -154,7 +154,7 @@ class Frames extends Canvas
                         right = true;
                     else
                         right = false;
-                    
+
                     bitShift = colorMap.bitShift;
 
                     //FlipFrame(buf, frameDim, 2);
@@ -519,12 +519,12 @@ class Frames extends Canvas
         byte[] buf;
         ColorModel colorModel;
         boolean right = false;
-        
+
         frame_type = new int[n_frames];
 
         if(colorMap.bitShift < 0)
             right = true;
-        
+
         int bitShift = Math.abs(colorMap.bitShift);
 
         for(int i = 0; i < n_frames; i++)
@@ -544,15 +544,15 @@ class Frames extends Canvas
                     colorModel = colorMap.getIndexColorModel(16);
                     Dimension d = fd.GetFrameDimension();
                     FlipFrame(buf, d, 2);
-                                      
+
                   int n_pix = d.width * d.height;
                   short buf_out[] = new short[n_pix];
                   float values[] = new float[n_pix];
                   ByteArrayInputStream b = new ByteArrayInputStream(buf);
                   DataInputStream din = new DataInputStream(b);
-            
+
                     if(right)
-                    {    
+                    {
                         if(colorMap.bitClip)
                             for (int j = 0; j < n_pix; j++)
                             {
@@ -582,8 +582,8 @@ class Frames extends Canvas
                                 values[j] = 0xffff & din.readShort();
                                 buf_out[j] = (short)((int)values[j] << bitShift );
                             }
-                    }                        
-                  
+                    }
+
                     frame_values.addElement(values);
                     AddBITMAPImage(buf_out, colorModel, d, t[i]);
 
@@ -640,7 +640,7 @@ class Frames extends Canvas
         Vector newFrame = new Vector();
         ColorModel colorModel;
 
-               
+
         for(int i = 0; i < frame.size(); i++)
         {
             colorModel = colorMap.getIndexColorModel(getPixelSize(i));
@@ -675,10 +675,10 @@ class Frames extends Canvas
         DataBuffer db = new DataBufferUShort(buf, buf.length);
         WritableRaster raster = Raster.createInterleavedRaster(db,
                     d.width,  d.height, d.width, 1, new int[]{0}, null);
-        
+
         img = new BufferedImage(colorModel, raster, false, null);
 
-        
+
         return AddFrame(img, t);
     }
 
@@ -703,7 +703,7 @@ class Frames extends Canvas
 /*
         if(bitShift < 0)
             right = true;
-        
+
           bitShift = Math.abs(bitShift);
 
           for( int i = 0; i < frame.size() ; i++)
@@ -717,9 +717,9 @@ class Frames extends Canvas
                 DataBuffer db = wr.getDataBuffer();
                 int numBank = db.getNumBanks();
                 int n_pix = db.getSize();
-                
+
                 if(right)
-                {    
+                {
                     if(bitClip)
                         for (int j = 0; j < n_pix; j++)
                         {
@@ -741,13 +741,13 @@ class Frames extends Canvas
                     else
                         for (int j = 0; j < n_pix; j++)
                             db.setElem(j, ((int)values[j] << bitShift ));
-                    
-                }                        
+
+                }
           }
     }
 
-   
-    
+
+
     public boolean AddAWTImage(byte[] buf, float t)
     {
         Image img;
@@ -927,15 +927,15 @@ class Frames extends Canvas
         Point p = new Point();
 
         p.x = x;
-        p.y = y;        
+        p.y = y;
         if(this.horizontal_flip)
-            p.y = this.img_height - y - 1; 
+            p.y = this.img_height - y - 1;
         if(this.vertical_flip)
-            p.x = this.img_width - x - 1; 
+            p.x = this.img_width - x - 1;
         return p;
     }
-    
-    
+
+
     public int getPixel(int idx, int x, int y)
     {
         if(!isInImage(idx, x, y))
@@ -943,9 +943,9 @@ class Frames extends Canvas
         //curr_grab_frame = idx;
         byte[] imgBuf = cache.getBufferAt(idx);
 
-         
+
         Point p = getImageBufferPoint(x,y);
-        
+
         try {
             if(imgBuf != null)
                 return (int)imgBuf[(p.y * img_width) + p.x];
@@ -960,9 +960,9 @@ class Frames extends Canvas
 
         //curr_grab_frame = idx;
         values_array = cache.getValuesAt(idx);
- 
+
         Point p = getImageBufferPoint(x,y);
- 
+
         return values_array[(p.y * img_width) + p.x];
     }
 
@@ -995,10 +995,10 @@ class Frames extends Canvas
             pixels_line = new int[2];
             p = getImageBufferPoint(st_x,st_y);
             pixels_line[0] = pixels_line[1] = pixel_array[(p.y * img_width) + p.x];
-           
+
             return pixels_line;
         }
-        
+
         pixels_line = new int[n_point];
 
         for(int i = 0; i < n_point; i++)
@@ -1017,8 +1017,8 @@ class Frames extends Canvas
         int n_point = (int) (Math.sqrt( Math.pow((double)(st_x - end_x), 2.0) + Math.pow((double)(st_y - end_y), 2.0)) + 0.5);
         int x, y;
         //float values_line[] = {values_array[(st_y * img_width) + st_x], values_array[(st_y * img_width) + st_x]};
-        float values_line[]; 
-            
+        float values_line[];
+
         grabFrame();
         if(n_point < 2)
         {
@@ -1027,7 +1027,7 @@ class Frames extends Canvas
             values_line[0] = values_line[1] = values_array[(p.y * img_width) + p.x];
             return values_line;
         }
-        
+
         values_line = new float[n_point];
 
         for(int i = 0; i < n_point; i++)
@@ -1120,7 +1120,7 @@ class Frames extends Canvas
            pixels_y = new int[end - st];
            for(int i = st, j = 0; i < end; i++, j++)
            {
-              p = getImageBufferPoint(x,i);               
+              p = getImageBufferPoint(x,i);
               //pixels_y[j] = pixel_array[(i * img_width) + x];
               pixels_y[j] = pixel_array[(p.y * img_width) + p.x];
            }
@@ -1149,7 +1149,7 @@ class Frames extends Canvas
            values_y = new float[end - st];
            for(int i = st, j = 0; i < end; i++, j++)
            {
-              p = getImageBufferPoint(x,i);               
+              p = getImageBufferPoint(x,i);
               //values_y[j] = values_array[(i * img_width) + x];
               values_y[j] = values_array[(p.y * img_width) + p.x];
            }

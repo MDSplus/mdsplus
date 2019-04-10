@@ -25,7 +25,7 @@ public class RFXDnbiSetup extends DeviceSetup {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-		
+
 		setSize(700, 400);
 
         jPanel1 = new javax.swing.JPanel();

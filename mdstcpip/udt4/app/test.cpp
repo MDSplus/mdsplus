@@ -647,7 +647,7 @@ DWORD WINAPI start_and_destroy_clients(LPVOID param)
    for (vector<UDTSOCKET>::iterator i = cli_socks.begin(); i != cli_socks.end(); ++ i)
    {
       UDT::close(*i);
-   }   
+   }
 
    return NULL;
 }

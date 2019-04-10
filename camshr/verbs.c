@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //      MIT / PSFC
 //      Cambridge, MA 02139  USA
 //
-//      This is a port of the MDSplus system software from VMS to Linux, 
+//      This is a port of the MDSplus system software from VMS to Linux,
 //      specifically:
 //                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
@@ -156,7 +156,7 @@ EXPORT int Assign(void *ctx, char **error, char *output __attribute__ ((unused))
     if (lookup_entry(CTS_DB, log_name) >= 0) {	// duplicate !
       *error = malloc(strlen(log_name)+100);
       sprintf(*error, "Error: duplicate module name '%s' -- not allowed\n", log_name);
-      
+
       status = FAILURE;		// DUPLICATE;           [2001.07.12]
       goto Assign_Exit;
     }
@@ -225,7 +225,7 @@ EXPORT int Assign(void *ctx, char **error, char *output __attribute__ ((unused))
 }
 
 //-------------------------------------------------------------------------
-// map generic scsi device names to crate table names 
+// map generic scsi device names to crate table names
 //-------------------------------------------------------------------------
 EXPORT int Autoconfig(void *ctx __attribute__ ((unused)), char **error, char **output __attribute__ ((unused)))
 {
@@ -335,7 +335,7 @@ EXPORT int Deassign(void *ctx, char **error, char **output __attribute__ ((unuse
 
     if (physical_name)		// physical name
       sprintf(db_tmp, "GK%c%d%02d:N%d", pMod->adapter + 'A', pMod->id, pMod->crate, pMod->slot);
-    else			// logical name 
+    else			// logical name
       sprintf(db_tmp, "%s", pMod->name);
 
     // prepare for 'wild' match
@@ -359,13 +359,13 @@ EXPORT int Deassign(void *ctx, char **error, char **output __attribute__ ((unuse
 
       if (physical_name)	// physical name
 	sprintf(db_tmp, "GK%c%d%02d:N%d", pMod->adapter + 'A', pMod->id, pMod->crate, pMod->slot);
-      else			// logical name 
+      else			// logical name
 	sprintf(db_tmp, "%s", pMod->name);
 
       // prepare for 'wild' match
       pattern.pointer = db_tmp;
       pattern.length = strlen(db_tmp);
-      
+
 
       if (StrMatchWild(&pattern, &wild_d) & 1) {
 	if (remove_entry(CTS_DB, i) != SUCCESS) {	// removal failed

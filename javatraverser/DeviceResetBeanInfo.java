@@ -7,8 +7,8 @@ public class DeviceResetBeanInfo extends SimpleBeanInfo
     {
         return loadImage("DeviceReset.gif");
     }
-    
-    public PropertyDescriptor [] getPropertyDescriptors()  
+
+    public PropertyDescriptor [] getPropertyDescriptors()
     {
         return new PropertyDescriptor[] {};
     }

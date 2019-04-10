@@ -100,7 +100,7 @@ public class DeviceFieldCustomizer extends DeviceCustomizer implements Customize
             bean.setIdentifier(identifier.getText());
             listeners.firePropertyChange("identifier", oldIdentifier, bean.getIdentifier());
             DeviceFieldCustomizer.this.repaint();
- 
+
          }
       });
       add(jp,"South");

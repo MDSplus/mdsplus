@@ -5,7 +5,7 @@ package jScope;
 // A "simple" implementation of "FrameData" for signals from a TEC Web-Umbrella (TWU) server.
 //
 // $Id$
-// 
+//
 // -------------------------------------------------------------------------------------------------
 import java.awt.Dimension;
 import java.io.IOException;
@@ -36,7 +36,7 @@ class TwuSimpleFrameData
         float all_times[] = null;
 
         this.provider = dp;
-        
+
         this.in_y = in_y;
         this.in_x = in_x;
         this.time_min = time_min;

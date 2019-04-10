@@ -118,7 +118,7 @@ static unsigned char charset_charsize_table_vec[] = {
 externaldef(uil_sym_glbl)
 unsigned char *charset_character_size_table = charset_charsize_table_vec;
 /*
- * All the names under which a character set may be legally named in a 
+ * All the names under which a character set may be legally named in a
  * $LANG variable (upper case).
  */
 static char *charset_lang_names_table_vec[] = {

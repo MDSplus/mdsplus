@@ -25,12 +25,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*************************************************************************\
 * Copyright (c) 2010 - RFX.
 * EPICS BASE is distributed subject to a Software License Agreement found
-* in file LICENSE that is included with this distribution. 
+* in file LICENSE that is included with this distribution.
 \*************************************************************************/
 
 /* mdsputRecord.c - Reccord support for MDSplus data storage */
 
-
+
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -107,7 +107,7 @@ struct mpdset { /* mdsexpr dset */
 static void monitor(mdsexprRecord *);
 static long readValue(mdsexprRecord *);
 static void checkAlarms(mdsexprRecord *prec);
-
+
 static long init_record(mdsexprRecord *prec, int pass)
 {
     struct mpdset *pdset;
@@ -148,7 +148,7 @@ static long init_record(mdsexprRecord *prec, int pass)
     checkAlarms(prec);
     return status;
 }
-
+
 static long process(mdsexprRecord *prec)
 {
     struct mpdset *pdset = (struct mpdset *)(prec->dset);
@@ -193,7 +193,7 @@ static long cvt_dbaddr(DBADDR *paddr)
 
     return 0;
 }
-
+
 static long get_array_info(DBADDR *paddr, long *no_elements, long *offset)
 {
     mdsexprRecord *prec = (mdsexprRecord *) paddr->precord;
@@ -236,7 +236,7 @@ static long get_precision(DBADDR *paddr, long *precision)
 
     return 0;
 }
-
+
 static long get_graphic_double(DBADDR *paddr, struct dbr_grDouble *pgd)
 {
     mdsexprRecord *prec = (mdsexprRecord *) paddr->precord;
@@ -297,7 +297,7 @@ static void monitor(mdsexprRecord *prec)
         db_post_events(prec, prec->bptr, monitor_mask);
     }
 }
-
+
 static long readValue(mdsexprRecord *prec)
 {
     long          status;

@@ -37,7 +37,7 @@ using namespace testing;
 ////////////////////////////////////////////////////////////////////////////////
 
 ///
-/// \brief Test of the Signal class object, description of DTYPE_SIGNAL 
+/// \brief Test of the Signal class object, description of DTYPE_SIGNAL
 ///
 
 //class Signal: public Compound {
@@ -67,16 +67,16 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 
     Data * raw[200];
     for(int i=0; i<200; ++i) raw[i] = new Float32(i);
-        
+
     { // CTR
         char dummy_op_code = 0;
         unique_ptr<Signal> ctr1 = new Signal(0,sizeof(dummy_op_code),&dummy_op_code,200,(char **)raw);
         unique_ptr<Signal> ctr2 = new Signal(new String("Value"), new Float32(5552368), new Float32(1));
         unique_ptr<Signal> ctr3 = new Signal(new String("Value"), new Float32(5552368), new Float32(1), new Float32(2), 0,0,0,0);
-        unique_ptr<Signal> ctr4 = new Signal(new String("Value"), new Float32(5552368), 3, (Data**)raw);        
+        unique_ptr<Signal> ctr4 = new Signal(new String("Value"), new Float32(5552368), 3, (Data**)raw);
         TEST1( ctr2->getNumDimensions() == 1 );
         TEST1( ctr3->getNumDimensions() == 2 );
-        TEST1( ctr4->getNumDimensions() == 3 );        
+        TEST1( ctr4->getNumDimensions() == 3 );
     }
 
     unique_ptr<Signal> sig = new Signal(new String("Value"), new Float32(5552368), new Float32(1), new Float32(2), 0,0,0,0);
@@ -84,14 +84,14 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
     TEST1( unique_ptr<Float32>((Float32*)sig->getRaw())->getFloat() == 5552368.);
     TEST1( unique_ptr<Float32>((Float32*)sig->getDimension())->getFloat() == 1.);
     TEST1( unique_ptr<Float32>((Float32*)sig->getDimensionAt(1))->getFloat() == 2.);
-            
+
     { // Set-Get dimensions
         sig->setDimension(new Float32(5.55));
         sig->setDimensionAt(new Float32(23.68),1);
         TEST1( unique_ptr<Float32>((Float32*)sig->getDimension())->getFloat() == (float)5.55);
         TEST1( unique_ptr<Float32>((Float32*)sig->getDimensionAt(1))->getFloat() == (float)23.68);
     }
-    
-    
+
+
     END_TESTING;
 }

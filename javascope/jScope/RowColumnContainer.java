@@ -376,7 +376,7 @@ public class RowColumnContainer extends JComponent
         maximizeC = null;
     }
 
-    
+
     public boolean isMaximize()
     {
       return ( maximizeC != null);

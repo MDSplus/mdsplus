@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   GEN_DEVICE$CVT_STRING_CODE   
+		Name:   GEN_DEVICE$CVT_STRING_CODE
 
 		Type:   C function
 
@@ -33,12 +33,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Date:   22-AUG-1989
 
-    		Purpose:  Convetr a string into module interenal code, 
+    		Purpose:  Convetr a string into module interenal code,
 		    given translation table.
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 EXPORT int GEN_DEVICE$CVT_STRING_CODE( )
 

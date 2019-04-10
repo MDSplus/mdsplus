@@ -127,7 +127,7 @@ EXPORT int IdlDisconnectFromMds(int lArgc, void * *lpvArgv)
 
 EXPORT int IdlMdsOpen(int lArgc, void * *lpvArgv)
 {
-/*  status = call_external('mdsipshr','IdlMdsOpen', connection, 'tree-name', shot, value = [1b,0b,1b]) 
+/*  status = call_external('mdsipshr','IdlMdsOpen', connection, 'tree-name', shot, value = [1b,0b,1b])
 */
   int status = 0;
   if (lArgc == 3) {
@@ -142,7 +142,7 @@ EXPORT int IdlMdsOpen(int lArgc, void * *lpvArgv)
 
 EXPORT int IdlMdsSetDefault(int lArgc, void * *lpvArgv)
 {
-/*  status = call_external('mdsipshr','IdlMdsSetDefault', connection, 'node', value = [1b,0b]) 
+/*  status = call_external('mdsipshr','IdlMdsSetDefault', connection, 'node', value = [1b,0b])
 */
   int status = 0;
   if (lArgc == 2) {
@@ -187,7 +187,7 @@ EXPORT int Idlmemcpy(int lArgc, void * *lpvArgv)
 
 EXPORT int IdlSendArg(int lArgc, void * *lpvArgv)
 {
-/*  status = call_external('mdsipshr','IdlSendArg', connection_l, idx_l, dtype_b, nargs_w, length_w, ndims_b, dims_l[7], 
+/*  status = call_external('mdsipshr','IdlSendArg', connection_l, idx_l, dtype_b, nargs_w, length_w, ndims_b, dims_l[7],
 			    bytes, value=[1b,1b,1b,1b,1b,1b,1b,0b,0b])
 */
   int status = 0;

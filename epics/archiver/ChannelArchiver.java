@@ -81,12 +81,12 @@ public class ChannelArchiver
         else throw new Exception("Unsupported DBR type");
         return data;
     }
-    
+
     static long DBR2Time(DBR dbr) throws Exception
     {
         if(!dbr.isTIME())
             throw new Exception("Time not supported");
-            
+
         if(dbr.isBYTE())
             return (long)(((DBR_TIME_Byte)dbr).getTimeStamp().asDouble()*1E9);
         if(dbr.isSHORT())
@@ -123,7 +123,7 @@ public class ChannelArchiver
     {
         return dbr.getCount();
     }
-    
+
     static int CAStatus2Severity(CAStatus status)
     {
 	CASeverity severity = status.getSeverity();
@@ -135,8 +135,8 @@ public class ChannelArchiver
 	if(severity == CASeverity.FATAL) return 5;
 	return 0;
     }
-    
-            
+
+
     static class TreeDataDescriptor
     {
         static final int BYTE = 1, SHORT = 3, INT = 4, LONG = 5, FLOAT = 6, DOUBLE = 7;
@@ -171,7 +171,7 @@ public class ChannelArchiver
     {
  	    if(idx < segmentSize)
 	    {
-               
+
                 try {
                    if(val instanceof Array)
                    {
@@ -217,14 +217,14 @@ public class ChannelArchiver
                            System.err.println("Unexpected data type");
                            return false;
                        }
-                   } 
+                   }
                    times[idx] = time;
                    idx++;
                }catch(Exception exc) {System.err.println("Internal error in data management");}
             }
             return idx == segmentSize;
     	}
-	    Array getVals() 
+	    Array getVals()
         {
             switch(type) {
                 case BYTE: return new Int8Array(byteVals);
@@ -235,7 +235,7 @@ public class ChannelArchiver
                 default: return null;
             }
         }
-	    Data getVal() 
+	    Data getVal()
         {
             if(isArray)
             {
@@ -247,7 +247,7 @@ public class ChannelArchiver
                 try {
                     array.setShape(newShape);
                     return array;
-                }catch(Exception exc){System.err.println("Cannot reshape Array"); return null;}                
+                }catch(Exception exc){System.err.println("Cannot reshape Array"); return null;}
             }
             switch(type) {
                 case BYTE: return new Int8(byteVals[0]);
@@ -262,9 +262,9 @@ public class ChannelArchiver
 	//int getDim() { return vals.length;}
         int getDim() { return idx;}
      } //End static inner class TreeDataDescriptor
- 
 
-   
+
+
     //TreeHandler Manages insertion of data into MDSplus tree
     static class TreeHandler implements Runnable
     {
@@ -287,7 +287,7 @@ public class ChannelArchiver
                 {
                     try {
                         if( tree != null )
-		                { 
+		                {
 		                    currSize = tree.getDatafileSize();
 				            if(debug) System.out.println("QUEUE SIZE: " + queue.size());
 				            if(debug) System.out.println("FILE SIZE: " + currSize);
@@ -295,7 +295,7 @@ public class ChannelArchiver
 				                ChannelArchiver.debug = true;
 				            prevSize = currSize;
                         }
-                    }catch(Exception exc){System.err.println("Cannot get Datafile Size: " + exc); 
+                    }catch(Exception exc){System.err.println("Cannot get Datafile Size: " + exc);
                     //System.exit(0);
                     }
                     try {
@@ -309,7 +309,7 @@ public class ChannelArchiver
         long currSize;
         SizeChecker sizeChecker;
         boolean terminate = false;
-	
+
         int currShot;
         int newShot;
         Tree model;
@@ -326,7 +326,7 @@ public class ChannelArchiver
             currSize = 0;
             this.switchSize = switchSize;
 
-            if( shot > 0 ) 
+            if( shot > 0 )
             {
 	            tree = new Tree(expName, shot);
 		        isTrendShot = false;
@@ -340,9 +340,9 @@ public class ChannelArchiver
 
 	        sizeChecker = new SizeChecker(tree);
 	        (new Thread(sizeChecker)).start();
-    
+
         }
-        
+
 	    public void setNewShot(int shot)
 	    {
 	        if( shot < 0 )
@@ -389,14 +389,14 @@ public class ChannelArchiver
          		        if(debug) System.out.println("REACHED FILE SIZE LIMIT: " + currSize + " " + switchSize);
 	           	        currShot++;
 		            newShot = currShot;
-		            } 
+		            }
 	                else
 	                {
 		                currShot = newShot;
 	                }
 		            try {
                         if( !isTrendShot )
-                        { 
+                        {
 	         	            System.out.println("CREATE EXP "+ expName +" NEW SHOT: " + newShot );
 		                    model.createPulse(currShot);
                         }
@@ -412,9 +412,9 @@ public class ChannelArchiver
 	         	                System.out.println("WARNING: CREATE EXP "+ expName +"   SHOT: " + newShot );
 		                        model.createPulse(currShot);
                                 tree = new Tree(expName, currShot);
-		                    } else 
+		                    } else
                                 throw(exc);
-		                } 
+		                }
 		                treeNodeHash.clear();
 		                sizeChecker.terminate();
 		                currSize = 0;
@@ -436,7 +436,7 @@ public class ChannelArchiver
 	                    node = tree.getNode(nodeName);
 	                    treeNodeHash.put(nodeName, node);
 	                }
-	                catch(Exception exc) 
+	                catch(Exception exc)
 	                {
 		                System.err.println("Error getting tree node for " + nodeName + ": " +exc + " : " + tree);
 				System.exit(0);
@@ -460,10 +460,10 @@ public class ChannelArchiver
                 currSize = 0;
                 tree = null;
                 System.err.println("Terminate TreeHandler on " + currShot );
-            
+
         }
     } //End static inner  class TreeHandler
-    
+
 
     //TreeHandlerConnection Manages insertion of data into MDSplus tree using thin client and GetMany
     static class TreeHandlerConnection implements Runnable
@@ -478,7 +478,7 @@ public class ChannelArchiver
 	        connection = new Connection(ipAddress);
 	        connection.openTree(expName, shot);
         }
-        
+
         public void terminate()
         {
               terminate = true;
@@ -502,7 +502,7 @@ public class ChannelArchiver
                     try {
                         descr = queue.take();
 		            } catch(Exception exc){System.err.println("Error dequeuing request: "+exc); System.exit(0);}
-		           
+
 		            if(descr.getDim() > 1)
 		            {
 		            	Data args[] = new Data[2];
@@ -535,12 +535,12 @@ public class ChannelArchiver
 	            if(interval < 1000)
 	            {
 	                try {
-	            	    Thread.currentThread().sleep(1000-interval); 
+	            	    Thread.currentThread().sleep(1000-interval);
 	                }catch(InterruptedException exc){}
 	            }
             }
         }
-        
+
     } //End static inner  class TreeHandlerConnection
 
     static class TreeManager
@@ -551,12 +551,12 @@ public class ChannelArchiver
         class ShotPulseDuration implements Runnable
         {
             int pulseDuration = 0;
-           
+
             ShotPulseDuration(int pulseDuration)
             {
                 this.pulseDuration = pulseDuration;
             }
- 
+
             public void run()
             {
 	            try {
@@ -565,8 +565,8 @@ public class ChannelArchiver
 		             TreeManager.this.setNewShot(-1);
 		             System.out.println("Shot duration expired : " + pulseDuration);
 	            }catch(Exception exc){
-		            System.err.println("ShotPulseDuration fatal exception : " + exc); 
-	            }     
+		            System.err.println("ShotPulseDuration fatal exception : " + exc);
+	            }
             }
 
         }//End static inner class ShotPulseDuration
@@ -577,13 +577,13 @@ public class ChannelArchiver
             boolean terminated = false;
             int shot;
             int port;
-           
+
             ShotPulseUpdater(int port)
             {
                 this.port = port;
 		        shot = -1;
             }
- 
+
             void terminate()
             {
                 terminated = true;
@@ -591,7 +591,7 @@ public class ChannelArchiver
             public void run()
             {
 	            try {
-	                ServerSocket shotServerSocket = new ServerSocket(port);             
+	                ServerSocket shotServerSocket = new ServerSocket(port);
 		            while(!terminated)
 		            {
 			            try {
@@ -610,23 +610,23 @@ public class ChannelArchiver
                                 System.out.println("Start Acquisition");
 					            TreeManager.this.setNewShot(shot);
 		                        TreeManager.this.startPulseDuration(duration);
-				            } 
-				            else 
+				            }
+				            else
 				            {
 					            if( command.equals("stop") )
 					            {
-						            TreeManager.this.setNewShot(-1);	
+						            TreeManager.this.setNewShot(-1);
 					            }
 				            }
 				            connectionSocket.close();
-				
+
 			            }catch(NumberFormatException exc){
-			                System.err.println("Cannot get shot number : " + exc); 
-			            }  
+			                System.err.println("Cannot get shot number : " + exc);
+			            }
 	                }
 	            }catch(Exception exc){
-		            System.err.println("ShotPulseUpdater fatal exception : " + exc); 
-	            }  
+		            System.err.println("ShotPulseUpdater fatal exception : " + exc);
+	            }
             }
         }//End static inner class shotPulseUpdater
 
@@ -654,7 +654,7 @@ public class ChannelArchiver
 	    public void startPulseDuration(int duration)
 	    {
 	        if( duration > 0 )
-	    	    (new Thread(new ShotPulseDuration(duration))).start();	
+	    	    (new Thread(new ShotPulseDuration(duration))).start();
         }
 
 	    public void startShotUpdater(int port)
@@ -691,11 +691,11 @@ public class ChannelArchiver
 	                System.err.println("threadTreeH Stop Thread");
 	                threadTreeH.join();
 	                System.out.println("threadTreeH Thread state " + threadTreeH.getState() );
-                } 
+                }
                 catch(Exception exc)
                 {
                     System.err.println("threadTreeH " + exc);
-                }                
+                }
 
                 threadTreeH = null;
                 nodeHash.clear();
@@ -773,7 +773,7 @@ System.out.println("Spedisco dato  " + timeUTC);
                         queue.put(descr);
                     }
                     else
-                    	System.out.println("WARNING: discarded block for " + descr.getNodeName()); 
+                    	System.out.println("WARNING: discarded block for " + descr.getNodeName());
 	    	    }
             }
             catch(Exception exc){System.err.println("Error enqueuing putRow request");}
@@ -783,9 +783,9 @@ System.out.println("Spedisco dato  " + timeUTC);
 	    {
 	       return treeH.tree;
 	    }
-        
+
     }//End inner class TreeManager
-    
+
     static class TreeManagerConnection extends TreeManager
     {
 	    TreeHandlerConnection treeHC;
@@ -819,16 +819,16 @@ System.out.println("Spedisco dato  " + timeUTC);
                         queue.put(descr);
                     }
                     else
-                    	System.out.println("WARNING: discarded block for " + descr.getNodeName()); 
+                    	System.out.println("WARNING: discarded block for " + descr.getNodeName());
 	    	    }
             }
             catch(Exception exc){System.err.println("Error enqueuing putRow request");}
         }
-        
+
     }//End inner class TreeManagerConnection
-    
-   
-    
+
+
+
     static class DataAndTime
     {
         Data data;
@@ -841,7 +841,7 @@ System.out.println("Spedisco dato  " + timeUTC);
         final Data getData(){return data;}
         final long getTime() { return time;}
     }//End static class DataAndTime
-    
+
 
     static class DataMonitor implements MonitorListener
     {
@@ -890,7 +890,7 @@ System.out.println("Spedisco dato  " + timeUTC);
 		        monitorInfo.put(treeNodeName, currCount);
 	        }
             DBR dbr = e.getDBR();
-            try 
+            try
             {
                 Data data = DBR2Data(dbr);
                 long time = DBR2Time(dbr);
@@ -903,7 +903,7 @@ System.out.println("Spedisco dato  " + timeUTC);
                 if(prevTime > 0 && ((time - prevTime)/1E12 > ignFuture)) //Too far in future
 		        {
                     System.out.println("Too far in future ignFuture " +ignFuture + "(time - prevTime)" + (time - prevTime) );
-                    return; 
+                    return;
 		        }
                 prevTime = time;
                 if(saveTree)
@@ -924,7 +924,7 @@ System.out.println("Spedisco dato  " + timeUTC);
             {
                 exc.printStackTrace();
                 System.err.println("Error writing sample: " + exc);
-            }	
+            }
         }
         public synchronized DataAndTime getDataAndTime()
         {
@@ -933,8 +933,8 @@ System.out.println("Spedisco dato  " + timeUTC);
 
 	    public synchronized void refresh()
 	    {
-	        try {                                
-		        Date now = new Date();      
+	        try {
+		        Date now = new Date();
 		        long nowTime1 = (now.getTime() * 1000000L) - POSIX_TIME_AT_EPICS_EPOCH;
 		        long nowTime = (System.currentTimeMillis()*1000000L) - POSIX_TIME_AT_EPICS_EPOCH;
 
@@ -946,16 +946,16 @@ System.out.println("Spedisco dato  " + timeUTC);
             {
                 exc.printStackTrace();
                 System.err.println("Error writing sample: " + exc);
-            }	
+            }
 	    }
 
 	    public synchronized int getSeverity() { return currSeverity;}
-        
-    }//End static class 
+
+    }//End static class
 
     static Integer _lock_ = new Integer(1);
 
-    
+
     static class DataScanner implements Runnable
     {
         static final int SCAN = 1, MONITOR = 2;
@@ -973,8 +973,8 @@ System.out.println("Spedisco dato  " + timeUTC);
         int nItems;
 	    int prevSeverity;
 	    int segmentSize;
-        
-        public DataScanner(TreeManager treeManager, java.lang.String treeNodeName, int segmentSize, java.lang.String severityNodeName, Channel chan, Context ctxt, 
+
+        public DataScanner(TreeManager treeManager, java.lang.String treeNodeName, int segmentSize, java.lang.String severityNodeName, Channel chan, Context ctxt,
                 long period, int ignFuture)
         {
             this.treeManager = treeManager;
@@ -986,9 +986,9 @@ System.out.println("Spedisco dato  " + timeUTC);
             this.period = period;
             this.ignFuture = ignFuture;
             mode = SCAN;
-            
+
         }
-        public DataScanner(TreeManager treeManager, DataMonitor monitor, java.lang.String treeNodeName, java.lang.String severityNodeName, Channel chan, 
+        public DataScanner(TreeManager treeManager, DataMonitor monitor, java.lang.String treeNodeName, java.lang.String severityNodeName, Channel chan,
                 Context ctxt, long period, int ignFutur)
         {
             this.treeManager = treeManager;
@@ -1023,7 +1023,7 @@ System.out.println("Spedisco dato  " + timeUTC);
                         {
                             if(dataType == null)
                             {
-                                //if(debug) 
+                                //if(debug)
                                 System.out.println("Starting thread for " + treeNodeName);
                                 prevTime = (System.currentTimeMillis() - 631152000000l ) * 1000000l;
                                 System.out.println("Time at thread start " + prevTime);
@@ -1055,7 +1055,7 @@ System.out.println("Spedisco dato  " + timeUTC);
 				                    throw exc;
                                 }
                                 else
-                                    System.out.print(" TIMEOUT on data  " + treeNodeName + "Used previous value");					
+                                    System.out.print(" TIMEOUT on data  " + treeNodeName + "Used previous value");
 			                    data = prevData;
                                 //time = prevTime + period * 1000000;//epics time in nano seconds
                                 time = (System.currentTimeMillis() - 631152000000l ) * 1000000l;
@@ -1065,7 +1065,7 @@ System.out.println("Spedisco dato  " + timeUTC);
                                 System.err.println("DBR get : " + exc);
                                 continue;
                             }
-                        }  
+                        }
 //!!!!!!!Apparently it is not possible to get severity from object Channel!!!!!!!!!!!
                     }
                     else //mode == MONITOR
@@ -1086,7 +1086,7 @@ System.out.println("Spedisco dato  " + timeUTC);
                     if(prevTime > 0 && ((time - prevTime)/1E12 > ignFuture)) //Too far in future
 		            {
                         System.out.println("Too far in future ignFuture " + ignFuture + "(time - prevTime)" + (time - prevTime) );
-                        continue; 
+                        continue;
 		            }
                     prevTime = time;
 
@@ -1100,7 +1100,7 @@ System.out.println("Spedisco dato  " + timeUTC);
                         System.err.println("treeManager " + treeNodeName+" : " + exc);
 		      //System.out.println("NODE " + treeNodeName + " segmentSize " + segmentSize);
                     }
- 
+
 		            if(severity != prevSeverity)
 		            {
 		               treeManager.putRow(severityNodeName, new Int8((byte)severity), time, segmentSize);
@@ -1220,7 +1220,7 @@ System.out.println("Spedisco dato  " + timeUTC);
             tree = new Tree(experiment, -1);
 	        if(createPulse)
 		        tree.createPulse(shot);
-//Get Global Parameters            
+//Get Global Parameters
             try {
                 TreeNode node = tree.getNode(":GET_TRESH");
                 getThreshold = node.getFloat();
@@ -1242,7 +1242,7 @@ System.out.println("Spedisco dato  " + timeUTC);
             {
                 fileSize = 1000000000;
             }
-            
+
 
 	        if(mdsipAddress == null)
 		        treeManager = new TreeManager(experiment, tree, shot, fileSize);
@@ -1258,7 +1258,7 @@ System.out.println("Spedisco dato  " + timeUTC);
                 {
                     java.lang.String nodeName = nodeNames[i].substring(0, nodeNames[i].length() - 9);
                     java.lang.String recName  = "";
-                    
+
                     try {
                         recName = new TreeNode(nids[i], tree).getData().getString();
 			            recName = recName.trim();
@@ -1311,10 +1311,10 @@ System.out.println("Spedisco dato  " + timeUTC);
                             }catch(Exception exc)
                             {
                                 System.err.println("Cannot get LOPR for " + recName + " Node :"+ nodeName +":LOPR : " + exc);
-                            }                        
+                            }
                         }
-                        
-                        
+
+
                         //Get SCAN mode for this channel
                         TreeNode valNode = tree.getNode(nodeName+":VAL");
                         TreeNode scanNode = tree.getNode(nodeName+":SCAN_MODE");
@@ -1328,10 +1328,10 @@ System.out.println("Spedisco dato  " + timeUTC);
                         {
 			                DataMonitor newDataMonitor;
                             if(valDbr.isENUM() || valDbr.isCTRL() || valDbr.isINT())
-                                valChan.addMonitor(DBRType.TIME_INT, 1, Monitor.VALUE, 
+                                valChan.addMonitor(DBRType.TIME_INT, 1, Monitor.VALUE,
                                	    newDataMonitor = new DataMonitor(treeManager, valNode.getFullPath(), segmentSize, severityNode.getFullPath(), ignFuture));
                             else
-                                valChan.addMonitor(DBRType.TIME_DOUBLE, 1, Monitor.VALUE, 
+                                valChan.addMonitor(DBRType.TIME_DOUBLE, 1, Monitor.VALUE,
                                     newDataMonitor = new DataMonitor(treeManager, valNode.getFullPath(), segmentSize, severityNode.getFullPath(), ignFuture));
                             ctxt.pendIO(5.);
 			                dataMonitors.addElement(newDataMonitor);
@@ -1342,7 +1342,7 @@ System.out.println("Spedisco dato  " + timeUTC);
                             TreeNode periodNode = tree.getNode(nodeName+":PERIOD");
                             float period = periodNode.getFloat();
                             long periodMs = (long)(period*1000);
-                            //if(period > getThreshold) 
+                            //if(period > getThreshold)
                             {
 				                if(debug) System.out.println("Create thread :"+ valNode.getFullPath());
                                 Thread t = new Thread( new DataScanner(treeManager, valNode.getFullPath(),  segmentSize, severityNode.getFullPath(),
@@ -1366,7 +1366,7 @@ System.out.println("Spedisco dato  " + timeUTC);
 		        java.lang.String var = (java.lang.String)vars.nextElement();
         		((Thread)scanInfo.get(var)).start();
             }
-     
+
         }catch(Exception exc)
         {
             System.err.println("Generic error: "+ exc);
@@ -1413,7 +1413,7 @@ System.out.println("Spedisco dato  " + timeUTC);
 			        Enumeration vars = monitorInfo.keys();
 			        while(vars.hasMoreElements())
 			        {
-			        index++;		    
+			        index++;
 			        java.lang.String var = (java.lang.String)vars.nextElement();
 			        int count = ((Integer)monitorInfo.get(var)).intValue();
 			        int buffSize = getBufSize(tree, tree.getNode(var));
@@ -1430,7 +1430,7 @@ System.out.println("Spedisco dato  " + timeUTC);
 		            vars = scanInfo.keys();
 			        while(vars.hasMoreElements())
 			        {
-				        index++;		    
+				        index++;
 				        java.lang.String var = (java.lang.String)vars.nextElement();
 				        Thread t = ((Thread)scanInfo.get(var));
 				        int buffSize = getBufSize(tree, tree.getNode(var));
@@ -1443,7 +1443,7 @@ System.out.println("Spedisco dato  " + timeUTC);
 			        }
                     System.out.println("Trend shot server for experiment " + experiment + " communication port " + ipPort);
          		 }
-                         
+
                  if(  archiverMode.equals("SHOT") )
 		         {
 			         if(cmd.equals("s"))
@@ -1453,7 +1453,7 @@ System.out.println("Spedisco dato  " + timeUTC);
 			            treeManager.setNewShot(shot);
 			         }
 		         }
-	        } catch(Exception exc){System.out.println("Fatal : " + exc);}	
+	        } catch(Exception exc){System.out.println("Fatal : " + exc);}
 	    }
     }
 

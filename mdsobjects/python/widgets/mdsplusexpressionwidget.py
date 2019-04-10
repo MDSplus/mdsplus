@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@ from MDSplus import Data
 import sys
 
 class MDSplusExpressionWidget(gtk.ScrolledWindow):
-    
+
     def __init__(self,value=None):
         super(MDSplusExpressionWidget,self).__init__()
         self.set_policy(gtk.POLICY_AUTOMATIC,gtk.POLICY_AUTOMATIC)
@@ -57,7 +57,7 @@ class MDSplusExpressionWidget(gtk.ScrolledWindow):
         except Exception:
             MDSplusErrorMsg('Invalid Expression','Invalid expression specified.\n\n%s\n\n%s' % (self.get_text(),sys.exc_info()))
             raise
-        
+
     def setValue(self,d):
         self._value=d
         self.reset()

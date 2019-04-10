@@ -6,7 +6,7 @@ package MDSplus;
  * @version 1.0
  * @updated 30-mar-2009 13.44.39
  */
-public class Method extends Compound 
+public class Method extends Compound
 {
 	public Method(Data timeout, Data method, Data object, Data[] args,
                 Data help, Data units, Data error, Data validation)
@@ -32,7 +32,7 @@ public class Method extends Compound
             dtype = DTYPE_METHOD;
             descs = new Data[3];
         }
-       
+
         public static Method getData(Data help, Data units, Data error, Data validation)
         {
             return new Method(help, units, error, validation);
@@ -62,7 +62,7 @@ public class Method extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param idx
 	 */
 	public Data getArgumentAt(int idx)
@@ -71,7 +71,7 @@ public class Method extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setMethod(Data data)
@@ -80,7 +80,7 @@ public class Method extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setObject(Data data)
@@ -89,7 +89,7 @@ public class Method extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setArguments(Data[] args)
@@ -100,7 +100,7 @@ public class Method extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setTimeout(Data data)
@@ -109,7 +109,7 @@ public class Method extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param arg
 	 * @param idx
 	 */

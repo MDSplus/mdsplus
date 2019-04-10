@@ -3,7 +3,7 @@ package jScope;
 /* $Id$ */
 import java.io.IOException;
 
-public class JiNcVar extends JiVarImpl 
+public class JiNcVar extends JiVarImpl
 {
 	private JiVar[] mAtts = null;	// Attributes for this variable
 	private JiDim[] mDims;	// Array of dimensions for variable
@@ -57,14 +57,14 @@ public class JiNcVar extends JiVarImpl
 	      throw new IOException("Bad variable type");
 	  }
 
-	  }  
+	  }
 	public void addAtts(JiVar[] atts)
 	  {
 	  mAtts = atts;
-	  }  
+	  }
 	/**
 	 * Get a attribute named 'name'
-	 * 
+	 *
 	 * @param name attribute name
 	 * @return the attribute named 'name'
 	 * @exception IOException
@@ -80,7 +80,7 @@ public class JiNcVar extends JiVarImpl
 	      }
 	  }
 	  return rval;
-	  }  
+	  }
 	/**
 	 * Get all the attributes for this variable
 	 *
@@ -93,10 +93,10 @@ public class JiNcVar extends JiVarImpl
 	      rvar[i] = mAtts[i];
 	  }
 	  return rvar;
-	  }  
+	  }
 	/**
 	 * Get a dimension named 'name'
-	 * 
+	 *
 	 * @param name string name
 	 * @return the dimension named 'name'
 	 * @exception IOException
@@ -112,7 +112,7 @@ public class JiNcVar extends JiVarImpl
 	      }
 	  }
 	  return rval;
-	  }  
+	  }
 	/**
 	 * Get all the dimensions for this source
 	 *
@@ -125,50 +125,50 @@ public class JiNcVar extends JiVarImpl
 	      rdim[i] = (JiDim)mDims[i].clone();
 	  }
 	  return rdim;
-	  }  
+	  }
 	public boolean isRecord()
 	  {
 	  return mIsRecord;
-	  }  
+	  }
 	public Object read(JiDim[] dims) throws IOException
 	  {
 	  return mFactory.read(dims);
-	  }  
+	  }
 	public byte[] readByte(JiDim[] dims) throws IOException
 	  {
 	  return mFactory.readByte(dims);
-	  }  
+	  }
 	public char[] readChar(JiDim[] dims) throws IOException
 	  {
 	  return mFactory.readChar(dims);
-	  }  
+	  }
 	public double[] readDouble(JiDim[] dims) throws IOException
 	  {
 	  return mFactory.readDouble(dims);
-	  }  
+	  }
 	public float[] readFloat(JiDim[] dims) throws IOException
 	  {
 	  return mFactory.readFloat(dims);
-	  }  
+	  }
 	public int[] readInt(JiDim[] dims) throws IOException
 	  {
 	  return mFactory.readInt(dims);
-	  }  
+	  }
 	public short[] readShort(JiDim[] dims) throws IOException
 	  {
 	  return mFactory.readShort(dims);
-	  }  
+	  }
 	public int size()
 	  {
 	  // mIterator init Must be deferred until all of header is read
 	  if (mIterator == null)
 	    mIterator = new JiSlabIterator((JiNcSource)mSource, this, mDims);
 	  return mIterator.size() * sizeof();
-	  }  
+	  }
 	public int sizeof()
 	  {
 	  return mFactory.sizeof();
-	  }  
+	  }
 	public void validateDims(JiDim[] dims) throws IOException
 	  {
 	  if (dims.length != mDims.length)
@@ -185,5 +185,5 @@ public class JiNcVar extends JiVarImpl
 		  throw new IOException(message);
 	      }
 	  }
-	  }  
+	  }
 }

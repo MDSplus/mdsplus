@@ -6,7 +6,7 @@ package MDSplus;
  * @version 1.0
  * @updated 30-mar-2009 13.44.41
  */
-public class Routine extends Compound 
+public class Routine extends Compound
 {
 	public Routine(Data timeout, Data image, Data routine, Data[] args,
                 Data help, Data units, Data error, Data validation)
@@ -32,7 +32,7 @@ public class Routine extends Compound
             dtype = DTYPE_ROUTINE;
             descs = new Data[3];
         }
-       
+
         public static Routine getData(Data help, Data units, Data error, Data validation)
         {
             return new Routine(help, units, error, validation);
@@ -60,7 +60,7 @@ public class Routine extends Compound
         }
 
 	/**
-	 * 
+	 *
 	 * @param idx
 	 */
 	public Data getArgumentAt(int idx)
@@ -69,7 +69,7 @@ public class Routine extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setArguments(Data[] args)
@@ -80,7 +80,7 @@ public class Routine extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setTimeout(Data data)
@@ -89,7 +89,7 @@ public class Routine extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param arg
 	 * @param idx
 	 */
@@ -104,7 +104,7 @@ public class Routine extends Compound
 	}
 
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setRoutine(Data data)

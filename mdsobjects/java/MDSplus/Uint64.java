@@ -2,17 +2,17 @@ package MDSplus;
 
 /**
  * Class description of DTYPE_QU
- * 
+ *
  * Constructors: Uint64(long)
  * @author manduchi
  * @version 1.0
  * @updated 30-mar-2009 13.44.52
  */
-public class Uint64 extends Scalar 
+public class Uint64 extends Scalar
 {
     long datum;
 
-    public Uint64(long datum)        
+    public Uint64(long datum)
     {
         this(datum, null, null, null, null);
     }
@@ -29,8 +29,8 @@ public class Uint64 extends Scalar
             return false;
         return((Uint64)data).datum == datum;
     }
-    public static Data getData(long datum, Data help, Data units, Data error, Data validation) 
-    { 
+    public static Data getData(long datum, Data help, Data units, Data error, Data validation)
+    {
         return new Uint64(datum, help, units, error, validation);
     }
     public  byte getByte() throws MdsException
@@ -94,7 +94,7 @@ public class Uint64 extends Scalar
      * Convert this data into a byte array. Implemented at this class level by
      * returning TDI data(BYTE(this)). If data() fails or the returned class is not
      * array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  byte[] getByteArray() throws MdsException
     {
@@ -106,7 +106,7 @@ public class Uint64 extends Scalar
      * Convert this data into a short array. Implemented at this class level by
      * returning TDI data(WORD(this)). If data() fails or the returned class is not
      * array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  short[] getShortArray()throws MdsException
     {
@@ -118,7 +118,7 @@ public class Uint64 extends Scalar
      * Convert this data into a int array. Implemented at this class level by
      * returning TDI data (LONG(this)). If data() fails or the returned class is not
      * array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  int[] getIntArray()throws MdsException
     {
@@ -129,7 +129,7 @@ public class Uint64 extends Scalar
      * Convert this data into a long array. Implemented at this class level by
      * returning TDI data(QUADWORD(this)). If data() fails or the returned class is
      * not array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  long[] getLongArray()throws MdsException
     {
@@ -140,7 +140,7 @@ public class Uint64 extends Scalar
      * Convert this data into a float array. Implemented at this class level by
      * returning TDI data(QUADWORD(this)). If data() fails or the returned class is
      * not array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  float[] getFloatArray()throws MdsException
     {
@@ -151,16 +151,16 @@ public class Uint64 extends Scalar
      * Convert this data into a long array. Implemented at this class level by
      * returning TDI data(QUADWORD(this)). If data() fails or the returned class is
      * not array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  double[] getDoubleArray()throws MdsException
     {
         return new double[]{(double)datum};
     }
-    
+
    public java.lang.String getDate()
    {
        return Data.convertToDate(datum);
    }
-    public int getSizeInBytes() {return 8;}   
+    public int getSizeInBytes() {return 8;}
 }

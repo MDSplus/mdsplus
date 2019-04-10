@@ -15,7 +15,7 @@ public class Dictionary extends Apd
         super(descs, help, units, error, validation);
         dtype = DTYPE_DICTIONARY;
     }
-    
+
     public static Data getData(Data [] descs, Data help, Data units, Data error, Data validation)
     {
         return new Dictionary(descs, help, units, error, validation);
@@ -23,7 +23,7 @@ public class Dictionary extends Apd
     public int len()
     {
         return nDescs/2;
-    }    
+    }
     public Data getItem(String key)
     {
         for(int i = 0; i < len(); i++)
@@ -33,7 +33,7 @@ public class Dictionary extends Apd
         }
         return null;
     }
-    
+
     public void setItem(String key, Data data)
     {
         for(int i = 0; i < len(); i++)

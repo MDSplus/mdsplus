@@ -3,7 +3,7 @@ package jScope;
 /* $Id$ */
 import java.awt.AWTEvent;
 
-public class WaveContainerEvent extends AWTEvent 
+public class WaveContainerEvent extends AWTEvent
 {
     static final int START_UPDATE   = AWTEvent.RESERVED_ID_MAX + 4;
     static final int END_UPDATE     = AWTEvent.RESERVED_ID_MAX + 5;
@@ -12,13 +12,13 @@ public class WaveContainerEvent extends AWTEvent
     String info;
     AWTEvent we;
 
-    public WaveContainerEvent (Object source, int event_id, String info) 
+    public WaveContainerEvent (Object source, int event_id, String info)
     {
         super(source, event_id);
         this.info = info;
     }
 
-    public WaveContainerEvent (Object source, AWTEvent we) 
+    public WaveContainerEvent (Object source, AWTEvent we)
     {
         super(source, WAVEFORM_EVENT);
         this.we = we;

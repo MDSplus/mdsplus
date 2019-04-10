@@ -26,14 +26,14 @@ public class TWUSignal
     // "maxSamples" samples, from the whole signal, subsampled by a simple
     // skipping algorithm.
 
-    public 
+    public
     TWUSignal (TWUProperties SigURL)
-    {    
+    {
         this(SigURL, 0, 0, 0);
     }
-    
 
-    public 
+
+    public
     TWUSignal (TWUProperties SigURL, int firstSample, int step, int maxSamples)
     {
         boolean success = false;
@@ -62,7 +62,7 @@ public class TWUSignal
     }
 
 
-    private boolean 
+    private boolean
     tryToConstruct(int firstSample, int step, int maxSamples)
     {
         final double min = twup.Minimum();
@@ -74,20 +74,20 @@ public class TWUSignal
 
         if (firstSample <0 )
           firstSample = 0;
-    
+
         if (step  <1 )
           step = 1;
-    
+
         if (maxSamples <0 )
           maxSamples = 0;
 
 
-        if (twup.Incrementing()) 
+        if (twup.Incrementing())
         {
             first = min;
             last  = max;
         }
-        else if (twup.Decrementing()) 
+        else if (twup.Decrementing())
         {
             first = max;
             last  = min;
@@ -100,22 +100,22 @@ public class TWUSignal
         final long stillToGo = lentotal - firstSample ;
         final long stepsToGo = stillToGo < 1 ? 0 : 1 + (stillToGo-1)/step;
         final long toReturn  = stepsToGo < maxSamples ? stepsToGo : maxSamples ;
-        
+
         final double span       = last-first;
         final long   segments   = lentotal -1;
 
         final double delta      = segments==0 ? 0 : span / segments;
         final double stepXdelta = step * delta ;
         final double firstValue = firstSample * delta + first;
-        
 
-        int ix=0; 
+
+        int ix=0;
         while ( ix < toReturn ) // or: (ix < maxSamples ) ???
         {
             ydata[ix] = (float)(ix * stepXdelta + firstValue);
 
 
-            /* 
+            /*
              * The following limiting tests, and looping until (ix<maxSamples)
              * were required, in some early versions of jScope; probably as an
              * artefact of the problem discussed below, at getBulkData().
@@ -123,7 +123,7 @@ public class TWUSignal
 
             if (ydata[ix] > max)
               ydata[ix] = (float)max;
-            
+
             else if (ydata[ix] < min)
               ydata[ix] = (float)min;
 
@@ -143,7 +143,7 @@ public class TWUSignal
         try
         {
             error = false ;
-            StringBuffer bulk 
+            StringBuffer bulk
                 = new StringBuffer(twup.FQBulkName() + "?start=" + firstSample );
 
             if (step>0)
@@ -161,17 +161,17 @@ public class TWUSignal
             // It seems to be more efficient, for the type of data we have in the
             // bulk files, to close the connection after the server has send all
             // the data.  In that way HTTP/1.1 servers will not "chunk" the data.
-            // This chunking doubled the amounts to transfer and the de-chunking 
+            // This chunking doubled the amounts to transfer and the de-chunking
             // on the client side took significant effort.
 
-            con.setRequestProperty("Connection", "close"); 
+            con.setRequestProperty("Connection", "close");
 
             con.connect();
 
-            instream = 
+            instream =
                 new BufferedReader(new InputStreamReader(con.getInputStream()));
         }
-        catch (Exception e) 
+        catch (Exception e)
         {
             System.out.println("TWUSignal.prepareToRead :" + e);
             error = true ;
@@ -189,7 +189,7 @@ public class TWUSignal
 
     public boolean
     error()
-    { 
+    {
         return error ;
     }
 
@@ -198,14 +198,14 @@ public class TWUSignal
     {
         int thisAttempt=0;
 
-        try 
+        try
         {
             String s=null;
 
             while ( (samples2Try > thisAttempt++)
-                    && 
-                    (samples2Read > sampleCount) 
-                    && 
+                    &&
+                    (samples2Read > sampleCount)
+                    &&
                     ((s=instream.readLine()) != null) )
             {
                 Float F = Float.valueOf(s);
@@ -218,7 +218,7 @@ public class TWUSignal
             {
                 // boolean premature_eof = (s==null);
                 // We should handle this, if it is a real problem.
-                
+
                 try { instream.close(); }
                 catch (Exception e) {}
 
@@ -236,7 +236,7 @@ public class TWUSignal
                 }
             }
         }
-        catch (Exception e) 
+        catch (Exception e)
         {
             System.out.println("TWUSignal.tryToRead :" + e);
             error = true ;
@@ -283,15 +283,15 @@ public class TWUSignal
         return ydata;
     }
 
-    public String 
+    public String
     urlstring()
     {
         return bulkURL.toString();
     }
-    
+
     /* -------------------------------------------------------------------- */
 
-    public static String 
+    public static String
     revision()
     {
         return "$Id$";

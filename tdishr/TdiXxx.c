@@ -630,7 +630,7 @@ int Tdi2Mask3(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
 
 /*---------------------------------------------------
         Fix categories for opcodes, out=long-scalar, in1=any numeric, in2=long-scalar in3=any logical:
-        MAXLOC MINLOC. 
+        MAXLOC MINLOC.
 */
 int Tdi2Mask3L(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
 	       struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1],

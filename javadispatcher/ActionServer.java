@@ -85,9 +85,9 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                 Thread.currentThread().sleep(2000); //Give time to mdsip server to start its own threads
             }
             catch (Exception exc) {}
-                    
+
             processDisconnected(ip_address);
-            
+
             java.util.Timer conn_timer = new java.util.Timer();
             conn_timer.schedule(new TimerTask()
             {
@@ -270,7 +270,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             listener.actionFinished(new ServerEvent(this, action));
         }
     }
-    
+
     protected void processDoing(Action action)
     {
         action.setServerAddress(this.ip_address);
@@ -281,7 +281,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             listener.actionStarting(new ServerEvent(this, action));
         }
     }
-    
+
     protected void processAbortedNoSynch(Action action)
     {
 
@@ -296,7 +296,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             listener.actionAborted(new ServerEvent(this, action));
         }
     }
-    
+
     protected synchronized void processAborted(Action action)
     {
         processAbortedNoSynch(action);
@@ -370,7 +370,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
     {
         return enqueued_actions.size();
     }
-    
+
     public int getDoingAction()
     {
         return this.doing_actions.size();
@@ -398,8 +398,8 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
         }
         return true;
     }
-    
-  
+
+
 
     void startServerPoll()
     {

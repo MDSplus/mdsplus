@@ -8,14 +8,14 @@ package MDSplus;
 public interface DataStreamConsumer {
 
 	/**
-	 * 
+	 *
 	 * @param seg
 	 * @param time
 	 */
 	public void acceptSegment(Array seg, Data time);
 
 	/**
-	 * 
+	 *
 	 * @param row
 	 * @param time
 	 */

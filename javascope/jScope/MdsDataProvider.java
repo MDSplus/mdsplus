@@ -31,8 +31,8 @@ public class MdsDataProvider
     SshTunneling ssh_tunneling;
     static final long RESAMPLE_TRESHOLD = 1000000000;
     static final int MAX_PIXELS = 20000;
-    
-    
+
+
     class SegmentedFrameData
         implements FrameData
     {
@@ -230,7 +230,7 @@ public class MdsDataProvider
                 dim = new Dimension(width, height);
                 if (in_x == null || in_x.length() == 0)
                 {
-                    all_times = new float[n_frame];                
+                    all_times = new float[n_frame];
                     for (i = 0; i < n_frame; i++)
                     {
                         all_times[i] = d.readFloat();
@@ -241,7 +241,7 @@ public class MdsDataProvider
                   //all_times = MdsDataProvider.this.GetWaveData(in_x).GetFloatData();
                     all_times = MdsDataProvider.this.GetWaveData(in_x, 0, 0, 0).getData(MAX_PIXELS).y;
                 }
-                
+
                 header_size = 16 + 4 * n_frame;
 
                 switch (pixel_size)
@@ -351,17 +351,17 @@ public class MdsDataProvider
                 ByteArrayInputStream b = new ByteArrayInputStream(buf);
                 DataInputStream d = new DataInputStream(b);
 
-                
+
                 if (buf == null)
                     throw (new IOException("Frames dimension not evaluated"));
 
                 int img_size = dim.width * dim.height * pixel_size / 8;
-                
+
                 d.skip(header_size + (st_idx + idx) * img_size);
 
                 if( d.available() < img_size )
                     return null;
-                
+
 
                 b_img = new byte[img_size];
                 d.readFully(b_img);
@@ -379,9 +379,9 @@ public class MdsDataProvider
         }
     }
 
-    
+
     ////////////////////////////////////////GAB JULY 2014
-     
+
     class SimpleWaveData
         implements WaveData
     {
@@ -402,7 +402,7 @@ public class MdsDataProvider
         String wd_experiment;
         long wd_shot;
         AsynchDataSource asynchSource = null;
-    
+
 
         public SimpleWaveData(String in_y, String experiment, long shot)
         {
@@ -425,13 +425,13 @@ public class MdsDataProvider
                 String fixedY = in_y.replaceAll("\\\\", "\\\\\\\\");
                 args.addElement(new Descriptor(null, fixedY));
                 try {
-                    byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);                              
+                    byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);
                     if(retData[0] > 0)
                         segmentMode = SEGMENTED_YES;
                     else
                         segmentMode = SEGMENTED_NO;
 
- /*                   
+ /*
  //                   int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
  //                   if(numSegments[0] > 0)
                         segmentMode = SEGMENTED_YES;
@@ -468,7 +468,7 @@ public class MdsDataProvider
                 String fixedY = in_y.replaceAll("\\\\", "\\\\\\\\");
                 args.addElement(new Descriptor(null, fixedY));
                 try {
-                    byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);                              
+                    byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);
                     if(retData[0] > 0)
                         segmentMode = SEGMENTED_YES;
                     else
@@ -501,10 +501,10 @@ public class MdsDataProvider
              }
             return false;
         }
-        
-        
-        
-        
+
+
+
+
 
         public int getNumDimension() throws IOException
         {
@@ -567,7 +567,7 @@ public class MdsDataProvider
 
         public String GetXLabel() throws IOException
         {
- 
+
             if(!xLabelEvaluated)
             {
                 xLabelEvaluated = true;
@@ -602,12 +602,12 @@ public class MdsDataProvider
             return xLabel;
         }
 
-        
+
         public String GetYLabel() throws IOException
         {
-                        
+
             String expr;
- 
+
             if(!yLabelEvaluated)
             {
                 yLabelEvaluated = true;
@@ -660,9 +660,9 @@ public class MdsDataProvider
         }
 
         public String GetZLabel() throws IOException
-        {            
+        {
             String expr;
-                        
+
             if (_jscope_set)
                 expr = "Units(_jscope_" + v_idx + ")";
             else
@@ -677,7 +677,7 @@ public class MdsDataProvider
 
             return out;
         }
-        
+
         //GAB JULY 2014 NEW WAVEDATA INTERFACE RAFFAZZONATA
         public XYData getData(double xmin, double xmax, int numPoints) throws Exception
         {
@@ -691,7 +691,7 @@ public class MdsDataProvider
         {
              String xExpr, yExpr;
              XYData res = null;
-             
+
              if (!CheckOpen(this.wd_experiment, this.wd_shot))
                 return null;
 
@@ -699,8 +699,8 @@ public class MdsDataProvider
              {
                 Vector<Descriptor> args = new Vector<>();
                 args.addElement(new Descriptor(null, in_y));
-                try {                 
-                    byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);                              
+                try {
+                    byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);
                     if(retData[0] > 0)
                         segmentMode = SEGMENTED_YES;
                     else
@@ -710,7 +710,7 @@ public class MdsDataProvider
                     segmentMode = SEGMENTED_NO;
                 }
             }
-             
+
             if(segmentMode == SEGMENTED_NO) //Store in TDI variable only non segmented data
             {
                 yExpr =  in_y;
@@ -721,7 +721,7 @@ public class MdsDataProvider
                     xExpr = in_x;
             }
             else
-            {                 
+            {
                 if(in_x == null)
                 {
                     yExpr =  in_y;
@@ -732,15 +732,15 @@ public class MdsDataProvider
                     yExpr =  in_y;
                     xExpr = in_x;
                 }
-            }            
-            
+            }
+
                 Vector<Descriptor> args = new Vector<>();
                 args.addElement(new Descriptor(null, yExpr));
                 if(in_x == null)
                     args.addElement(new Descriptor(null, ""));
                 else
                     args.addElement(new Descriptor(null, xExpr));
-                
+
                 if(isLong)
                 {
                     args.addElement(new Descriptor(null, new long[]{(xmin <= -Double.MAX_VALUE)?Long.MIN_VALUE:(long)xmin}));
@@ -764,14 +764,14 @@ public class MdsDataProvider
                     else
 //                      retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
                         retData = GetByteArray(" MdsMisc->GetXYSignal:DSC", args);
-                    
+
                 /*Decode data: Format:
-                       -retResolution(float)  ----Gabriele Feb 2019 NEW: if retResolution == 0 then the following int is the number of bytes of the 
-			    error message, followied by the error message itself. 
+                       -retResolution(float)  ----Gabriele Feb 2019 NEW: if retResolution == 0 then the following int is the number of bytes of the
+			    error message, followied by the error message itself.
                        -number of samples (minumum between X and Y)
                        -type of X xamples (byte: long(1), double(2) or float(3))
-                       -y samples 
-                       -x Samples 
+                       -y samples
+                       -x Samples
                */
                     ByteArrayInputStream bis = new ByteArrayInputStream(retData);
                     DataInputStream dis = new DataInputStream(bis);
@@ -796,7 +796,7 @@ public class MdsDataProvider
                         error = "No Samples returned";
                         return null;
                     }
-                    
+
                     byte type = dis.readByte();
                     float y[] = new float[nSamples];
                     for(int i = 0; i < nSamples; i++)
@@ -840,7 +840,7 @@ public class MdsDataProvider
                         dis.readFully(xLabelBuf);
                         xLabel = new String(xLabelBuf);
                     }
-                
+
                     int yLabelLen = dis.readInt();
                     if(yLabelLen > 0)
                     {
@@ -865,8 +865,8 @@ public class MdsDataProvider
              }
  //If execution arrives here probably MdsMisc->GetXYSignal() is not available on the server, so use the traditional approach
 //            float y[] = GetFloatArray("SetTimeContext(*,*,*); ("+yExpr+");");
-                
-            
+
+
             float y[] = GetFloatArray("("+yExpr+")");
             RealArray xReal = GetRealArray("("+xExpr+";)");
             if(y == null || xReal == null) return null;
@@ -880,7 +880,7 @@ public class MdsDataProvider
                 isXLong = false;
                 return new XYData(xReal.getDoubleArray(), y, 1E12);
             }
-         
+
          }
          public XYData getData(int numPoints)throws Exception
          {
@@ -893,7 +893,7 @@ public class MdsDataProvider
                 return GetFloatArray(in_y);
             }catch(Exception exc){return null;}
         }
-        
+
         private long x2DLong[];
         public double[] getX2D()
         {
@@ -918,7 +918,7 @@ public class MdsDataProvider
         {
             return x2DLong;
         }
-          
+
         public float[] getY2D()
         {
             String in = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var, 1);";
@@ -928,7 +928,7 @@ public class MdsDataProvider
         }
 
         //Cesare Mar 2015
-        
+
         public float[] getX_Z()
         {
             try {
@@ -950,8 +950,8 @@ public class MdsDataProvider
             }catch(Exception exc){return null;}
         }
         //End
-        
-        
+
+
         //public double[] getXLimits(){System.out.println("BADABUM!!"); return null;}
         //public long []getXLong(){System.out.println("BADABUM!!"); return null;}
         public boolean isXLong(){return isXLong;}
@@ -973,7 +973,7 @@ public class MdsDataProvider
         }
     } //END Inner Class SimpleWaveData
 
-    
+
     //Inner class UpdateWorker handler asynchronous requests for getting (portions of) data
     class UpdateWorker extends Thread
     {
@@ -1020,9 +1020,9 @@ public class MdsDataProvider
                         return; //Another delayed update request for that signal is already in the pending list
                 }
             }
-            requestsV.add(new UpdateDescriptor(updateLowerBound, updateUpperBound, updatePoints, 
+            requestsV.add(new UpdateDescriptor(updateLowerBound, updateUpperBound, updatePoints,
                     waveDataListenersV, simpleWaveData, isXLong, updateTime));
-            
+
             notify();
         }
         synchronized void enableAsyncUpdate(boolean enabled)
@@ -1031,20 +1031,20 @@ public class MdsDataProvider
             if(enabled)
                 notify();
         }
-        
+
         boolean stopWorker = false;
-        
+
         synchronized void stopUpdateWorker()
         {
             stopWorker = true;
             notify();
         }
-        
+
         public void run()
         {
-            
+
             this.setName("UpdateWorker");
-            
+
             while(true)
             {
                 synchronized(this)
@@ -1053,7 +1053,7 @@ public class MdsDataProvider
                         wait();
                         if(stopWorker)
                            return;
-                    }                           
+                    }
                     catch(InterruptedException exc) {}
                 }
                 if(!enabled) continue;
@@ -1062,7 +1062,7 @@ public class MdsDataProvider
                     if(!enabled) break;
                     //Take most recent request
                     UpdateDescriptor currUpdate = requestsV.elementAt(requestsV.size() - 1);
-                    try 
+                    try
                     {
                        requestsV.removeElementAt(requestsV.size() - 1);
                        int k = 0;
@@ -1073,8 +1073,8 @@ public class MdsDataProvider
                                requestsV.removeElementAt(k);
                            else
                                k++;
-                       } 
-                           
+                       }
+
                        XYData currData = currUpdate.simpleWaveData.getData(currUpdate.updateLowerBound, currUpdate.updateUpperBound, currUpdate.updatePoints, currUpdate.isXLong);
 
                        if( currData == null || currData.nSamples == 0 )
@@ -1099,7 +1099,7 @@ public class MdsDataProvider
 
     UpdateWorker updateWorker;
 
-    
+
     public MdsDataProvider()
     {
         experiment = null;
@@ -1111,17 +1111,17 @@ public class MdsDataProvider
         //updateWorker.start();
     }
 
-    protected MdsConnection getConnection() 
+    protected MdsConnection getConnection()
     {
         return new MdsConnection();
     }
-    
-    protected MdsConnection getConnection(String arg) 
+
+    protected MdsConnection getConnection(String arg)
     {
         return new MdsConnection(arg);
     }
-    
-    
+
+
     public MdsDataProvider(String provider)
     {
         setProvider(provider);
@@ -1206,12 +1206,12 @@ public class MdsDataProvider
     public FrameData GetFrameData(String in_y, String in_x, float time_min,
                                   float time_max) throws IOException
     {
-        int[] numSegments = null; 
+        int[] numSegments = null;
         try
         {
             numSegments = GetIntArray("GetNumSegments("+in_y+")");
         } catch(Exception exc){ error = null;}
-        
+
         if(numSegments != null && numSegments[0] > 0)
             return new SegmentedFrameData(in_y, in_x, time_min, time_max, numSegments[0]);
         else
@@ -1355,7 +1355,7 @@ public class MdsDataProvider
                 out_byte = dosb.toByteArray();
                 return out_byte;
             case Descriptor.DTYPE_USHORT:
-            case Descriptor.DTYPE_SHORT: // bdb hacked this to try to make profile dialog read true data values, not normalised                
+            case Descriptor.DTYPE_SHORT: // bdb hacked this to try to make profile dialog read true data values, not normalised
                 for(int i = 0; i < desc.short_data.length; i++)
                     dos.writeShort(desc.short_data[i]);
                 out_byte = dosb.toByteArray();
@@ -1385,7 +1385,7 @@ public class MdsDataProvider
     {
         Update( experiment,  shot, false);
     }
-    
+
     public synchronized void Update(String experiment, long shot, boolean resetExperiment)
     {
         this.error = null;
@@ -1417,7 +1417,7 @@ public class MdsDataProvider
 	else
 	  in = _in;
         error = null;
-    
+
         if (NotYetString(in))
         {
             if (!CheckOpen())
@@ -1464,12 +1464,12 @@ public class MdsDataProvider
             }
             return;
         }
-        
+
         if( in.indexOf("pulseSetVer") >= 0 )
         {
             open = false;
         }
-        
+
         if( environment_vars == null || !environment_vars.equalsIgnoreCase(in) )
         {
             open = false;
@@ -1490,7 +1490,7 @@ public class MdsDataProvider
     public void enableAsyncUpdate(boolean enable)
     {
         updateWorker.enableAsyncUpdate(enable);
-                  
+
     }
 
     double GetNow(String in) throws Exception
@@ -1550,7 +1550,7 @@ public class MdsDataProvider
         long javaTime = cal.getTime().getTime();
         return javaTime;
     }
- 
+
     public synchronized double GetFloat(String in, int row, int col, int index) throws IOException
     {
         error = null;
@@ -1567,7 +1567,7 @@ public class MdsDataProvider
             long javaTime = cal.getTime().getTime();
             return javaTime;
         }catch(Exception exc)
-        { 
+        {
             try {
                 return GetNow(in);
             }catch(Exception exc1){}
@@ -1844,7 +1844,7 @@ public class MdsDataProvider
                 provider);
             mds.dispatchConnectionEvent(ce);
         }
-       
+
         if( updateWorker != null && updateWorker.isAlive() )
         {
             updateWorker.stopUpdateWorker();
@@ -1875,7 +1875,7 @@ public class MdsDataProvider
     {
         return CheckOpen( this.experiment,  this.shot);
     }
-    
+
     protected synchronized boolean CheckOpen(String experiment, long shot) throws IOException
     {
         int status;
@@ -1909,7 +1909,7 @@ public class MdsDataProvider
                 def_node_changed = true;
                 this.shot = shot;
                 this.experiment = experiment;
-                
+
                 if( environment_vars != null && environment_vars.length() > 0 )
                 {
                     this.SetEnvironmentSpecific(environment_vars);
@@ -1940,7 +1940,7 @@ public class MdsDataProvider
 		    descr = mds.MdsValue("TreeSetDefault(\"\\" + default_node + "\")");
 		else
 		    descr = mds.MdsValue("TreeSetDefault(\"\\\\" + default_node + "\")");
- 
+
                if ((descr.int_data[0] & 1 ) == 0)
  //                   mds.MdsValue("TreeSetDefault(\"\\\\" + experiment + "::TOP\")");
                     mds.MdsValue("TreeSetDefault(\"\\\\::TOP\")");
@@ -2176,7 +2176,7 @@ public class MdsDataProvider
             return longArray;
         }
 
-        
+
     }
     public String getProvider()
     {

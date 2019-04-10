@@ -24,16 +24,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-                Name:   Tdi3MATH1   
+                Name:   Tdi3MATH1
 
                 Type:   C function
 
                 Author: TOM FREDIAN
 
-                Date:   5-OCT-1993 
+                Date:   5-OCT-1993
 
                 Purpose:
- 
+
         Take square root or other math function of scalar or array.
         real or complex to same: COS EXP LOG SIN SQRT
         real to real only: ACOS ACOSD AINT ASIN ASIND ATAN ATAND ATANH
@@ -42,7 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------------
 
-        Call sequence: 
+        Call sequence:
 
 int Tdi3xxx(struct descriptor *in, struct descriptor *out)
 

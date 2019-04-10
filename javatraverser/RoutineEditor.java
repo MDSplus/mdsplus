@@ -7,7 +7,7 @@ public class RoutineEditor extends JPanel implements Editor
     RoutineData routine;
     LabeledExprEditor image_edit, routine_edit, timeout_edit;
     ArgEditor arg_edit;
-    
+
     public RoutineEditor() {this(null);}
     public RoutineEditor(RoutineData routine)
     {
@@ -30,11 +30,11 @@ public class RoutineEditor extends JPanel implements Editor
 	add(jp, "North");
    	arg_edit = new ArgEditor(this.routine.getArguments());
 	add(arg_edit, "Center");
-	timeout_edit = new LabeledExprEditor("Timeout", new ExprEditor( 
+	timeout_edit = new LabeledExprEditor("Timeout", new ExprEditor(
 	    this.routine.getTimeout(), false));
 	add(timeout_edit, "South");
     }
-    
+
     public void reset()
     {
 	image_edit.reset();
@@ -42,18 +42,18 @@ public class RoutineEditor extends JPanel implements Editor
 	arg_edit.reset();
 	timeout_edit.reset();
     }
-    
+
     public Data getData()
     {
 	Data data1 = timeout_edit.getData();
 	data1 = image_edit.getData();
 	data1 = routine_edit.getData();
 	Data data[] = arg_edit.getData();
-    
+
 	return new RoutineData(timeout_edit.getData(), image_edit.getData(),
 	    routine_edit.getData(), arg_edit.getData());
     }
-    
+
     public void setData(Data data)
     {
 	this.routine = (RoutineData)data;
@@ -71,5 +71,5 @@ public class RoutineEditor extends JPanel implements Editor
 	if(arg_edit != null) arg_edit.setEditable(editable);
     }
 
-	
+
 }

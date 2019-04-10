@@ -8,4 +8,4 @@ public class ArrayData extends Data
 	dclass  = CLASS_A;
     }
     public boolean isAtomic() {return false; }
-}    
+}

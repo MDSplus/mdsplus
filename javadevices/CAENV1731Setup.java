@@ -9,12 +9,12 @@
  * @author  manduchi
  */
 public class CAENV1731Setup extends DeviceSetup {
-    
+
     /** Creates new form CAENV1731Setup */
     public CAENV1731Setup() {
         initComponents();
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -608,8 +608,8 @@ public class CAENV1731Setup extends DeviceSetup {
         getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
 
     }// </editor-fold>//GEN-END:initComponents
-    
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
@@ -709,5 +709,5 @@ public class CAENV1731Setup extends DeviceSetup {
     private javax.swing.JPanel jPanel9;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
-    
+
 }
