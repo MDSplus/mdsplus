@@ -9,42 +9,42 @@ package MDSplus;
 public class Program extends Compound
 {
 	public Program(Data timeout, Data program,
-                Data help, Data units, Data error, Data validation)
-        {
-            super(help, units, error, validation);
-            clazz = CLASS_R;
-            dtype = DTYPE_PROGRAM;
-            descs = new Data[]{timeout, program};
+	        Data help, Data units, Data error, Data validation)
+	{
+	    super(help, units, error, validation);
+	    clazz = CLASS_R;
+	    dtype = DTYPE_PROGRAM;
+	    descs = new Data[]{timeout, program};
 	}
 	public Program(Data timeout, Data program)
-        {
-            this(timeout, program, null, null, null, null);
+	{
+	    this(timeout, program, null, null, null, null);
 	}
- 	public Program(Data help, Data units, Data error, Data validation)
-        {
-            super(help, units, error, validation);
-            clazz = CLASS_R;
-            dtype = DTYPE_PROGRAM;
-            descs = new Data[2];
+	public Program(Data help, Data units, Data error, Data validation)
+	{
+	    super(help, units, error, validation);
+	    clazz = CLASS_R;
+	    dtype = DTYPE_PROGRAM;
+	    descs = new Data[2];
 	}
-        public Program()
-        {
-            this(null, null, null, null);
-        }
+	public Program()
+	{
+	    this(null, null, null, null);
+	}
 
-        public static Program getData(Data help, Data units, Data error, Data validation)
-        {
-            return new Program(help, units, error, validation);
-        }
+	public static Program getData(Data help, Data units, Data error, Data validation)
+	{
+	    return new Program(help, units, error, validation);
+	}
 
 	public Data getProgram()
-        {
-            return descs[1];
+	{
+	    return descs[1];
 	}
 
 	public Data getTimeout()
-        {
-            return descs[0];
+	{
+	    return descs[0];
 	}
 
 	/**
@@ -52,8 +52,8 @@ public class Program extends Compound
 	 * @param data
 	 */
 	public void setProgram(Data data)
-        {
-            descs[1] = data;
+	{
+	    descs[1] = data;
 	}
 
 	/**
@@ -61,8 +61,8 @@ public class Program extends Compound
 	 * @param data
 	 */
 	public void setTimeout(Data data)
-        {
-            descs[0] = data;
+	{
+	    descs[0] = data;
 	}
 
 }

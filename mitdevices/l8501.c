@@ -239,10 +239,10 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
       return_on_error(TreePutRecord(clock_out_nid, (struct descriptor *)&clock, 0), status);
 	/******************************
 	 If stop trigger is wanted then
-         declare an expression for the
-         time of the stop trigger and
-         write it out.
-        ******************************/
+	 declare an expression for the
+	 time of the stop trigger and
+	 write it out.
+	******************************/
       if (status & 1 && TreeIsOn(stop_out_nid) & 1) {
 	static DESCRIPTOR_FUNCTION_2(trig_mult_exp, (unsigned char *)&OpcMultiply, &dt3, &f3_count);
 	static DESCRIPTOR_FUNCTION_2(trig_add_exp, (unsigned char *)&OpcAdd, &fswitch,
@@ -264,10 +264,10 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
   case 1:
     if (TreeIsOn(clock_out_nid) & 1) {
 	/**********************************
-          Read the lam register.  If there
+	  Read the lam register.  If there
 	  were overflows then store
-          information based on the triggers.
-        ************************************/
+	  information based on the triggers.
+	************************************/
       pio(2, 0, &lam);
       if (lam & 6) {
 	static FUNCTION(3) r_start = {
@@ -287,18 +287,18 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
 	return_on_error(TreePutRecord(clock_out_nid, (struct descriptor *)&clock, 0), status);
 
 	  /***************************
-            write out the stop trigger
-            record.
-          ****************************/
+	    write out the stop trigger
+	    record.
+	  ****************************/
 	if (TreeIsOn(stop_out_nid) & 1) {
 	  DESCRIPTOR_WITH_UNITS(stop, &trigger3, &seconds);
 	  return_on_error(TreePutRecord(stop_out_nid, (struct descriptor *)&stop, 0), status);
 	}
       } else
 	  /****************************
-            otherwise store information
-            based on the counters.
-          *****************************/
+	    otherwise store information
+	    based on the counters.
+	  *****************************/
       {
 	static short f2_count_act;
 	//static struct descriptor f2_count_actual =
@@ -325,10 +325,10 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
 
 	  /******************************
 	   if stop trigger is wanted then
-             declare an expression for the
-             time of the stop trigger and
-             write it out.
-          ******************************/
+	     declare an expression for the
+	     time of the stop trigger and
+	     write it out.
+	  ******************************/
 	if (TreeIsOn(stop_out_nid) & 1) {
 	  static short f3_count_act;
 	  //static struct descriptor f3_count_actual =

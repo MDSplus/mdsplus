@@ -1567,12 +1567,12 @@ static size_t findfileloop(ctx_t *const ctx) {
     if (ctx->recursive && ISDIRECTORY(ctx)) {
       //DBG("path = %s\n", ctx->buffer);
       if (++ctx->cur_stack == ctx->max_stack) {
-        DBG("max_stack increased = %d\n", ctx->max_stack);
-        findstack_t* old = ctx->stack;
-        ctx->max_stack *= 2;
-        ctx->stack = malloc(sizeof(findstack_t)*ctx->max_stack);
-        memcpy(ctx->stack, old, sizeof(findstack_t)*ctx->cur_stack);
-        free(old);
+	DBG("max_stack increased = %d\n", ctx->max_stack);
+	findstack_t* old = ctx->stack;
+	ctx->max_stack *= 2;
+	ctx->stack = malloc(sizeof(findstack_t)*ctx->max_stack);
+	memcpy(ctx->stack, old, sizeof(findstack_t)*ctx->cur_stack);
+	free(old);
       }
       ctx->stack[ctx->cur_stack].h = INVALID_HANDLE_VALUE; // reset handle
       ctx->stack[ctx->cur_stack].wlen = ctx->stack[ctx->cur_stack-1].wlen + flen;
@@ -1654,7 +1654,7 @@ static inline void* findfilestart(const char *const filename, const int recursiv
 static inline char* findfilenext(ctx_t *const ctx) {
   if (ctx->cur_stack >= 0) do {
       if (findfileloop(ctx)>0)
-        return ctx->buffer;
+	return ctx->buffer;
     } while (ctx->cur_stack >= 0);
   if (ctx->cur_stack != -1) fprintf(stderr,"ctx_stack = %d != -1\n", ctx->cur_stack);
   while(ctx->cptr) {
@@ -1675,11 +1675,11 @@ static inline char* findfilenext(ctx_t *const ctx) {
 #endif
     // allow current path , i.e. wlen = 0
     if (ctx->stack[ctx->cur_stack].wlen==0)
-        ctx->buffer[ctx->stack[ctx->cur_stack].wlen++] = '.';
+	ctx->buffer[ctx->stack[ctx->cur_stack].wlen++] = '.';
     else {
       // ensure buffer is not terminated by SEP
       while (ctx->stack[ctx->cur_stack].wlen>0 && ctx->buffer[ctx->stack[ctx->cur_stack].wlen-1] == SEP)
-        ctx->stack[ctx->cur_stack].wlen--;
+	ctx->stack[ctx->cur_stack].wlen--;
     }
     // ctx->buffer can enter findfileloop w/o \0 termination
     if (findfileloop(ctx)>0)

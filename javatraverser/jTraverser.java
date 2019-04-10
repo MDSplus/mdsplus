@@ -49,7 +49,7 @@ public class jTraverser extends JFrame implements ActionListener
     else if(args.length == 2)
 		FrameRepository.frame = new jTraverser(args[0], args[1], null);
     else if(args.length == 1)
-      	FrameRepository.frame = new jTraverser(args[0], null, null);
+	FrameRepository.frame = new jTraverser(args[0], null, null);
     else
 	    FrameRepository.frame = new jTraverser(null, null, null);
 
@@ -58,12 +58,12 @@ public class jTraverser extends JFrame implements ActionListener
 
     public static void stdout(String line)
     {
-         status.setText(line);
+	 status.setText(line);
     }
     public static void stderr(String line, Exception exc)
     {
-         jTraverser.status.setText("ERROR: "+line+" ("+exc.getMessage()+")");
-         System.err.println(line+"\n"+exc);
+	 jTraverser.status.setText("ERROR: "+line+" ("+exc.getMessage()+")");
+	 System.err.println(line+"\n"+exc);
     }
 
     public jTraverser(String exp_name, String shot_name, String access)
@@ -165,7 +165,7 @@ public class jTraverser extends JFrame implements ActionListener
 	addWindowListener(new WindowAdapter() {
 	    public void windowClosing(WindowEvent e)
 	    {
-	        System.exit(0);
+		System.exit(0);
 	    }});
 	pack();
 	show();
@@ -175,7 +175,7 @@ public class jTraverser extends JFrame implements ActionListener
     public static boolean isEditable(){return editable;}
     public Point dialogLocation()
     {
-        return new Point(getLocation().x+32,getLocation().y+32);
+	return new Point(getLocation().x+32,getLocation().y+32);
     }
 
 public void actionPerformed(ActionEvent e)
@@ -221,8 +221,8 @@ public void actionPerformed(ActionEvent e)
     {
 	    if(display_data_d == null)
 	    {
-	        display_data_d = new TreeDialog(display_data = new DisplayData());
-	        display_data.setFrame(display_data_d);
+		display_data_d = new TreeDialog(display_data = new DisplayData());
+		display_data.setFrame(display_data_d);
 	    }
 	    display_data.setNode(currnode);
 	    display_data_d.pack();
@@ -231,34 +231,34 @@ public void actionPerformed(ActionEvent e)
     }
     if(source == (Object)display_nci_b)
     {
-        if(display_nci_d == null)
-        {
-            display_nci_d = new TreeDialog(display_nci = new DisplayNci());
-            display_nci.setFrame(display_nci_d);
-        }
-        display_nci.setNode(currnode);
-        display_nci_d.pack();
-        display_nci_d.setLocation(dialogLocation());
-        display_nci_d.setVisible(true);
+	if(display_nci_d == null)
+	{
+	    display_nci_d = new TreeDialog(display_nci = new DisplayNci());
+	    display_nci.setFrame(display_nci_d);
+	}
+	display_nci.setNode(currnode);
+	display_nci_d.pack();
+	display_nci_d.setLocation(dialogLocation());
+	display_nci_d.setVisible(true);
     }
     if(source == (Object)display_tags_b)
     {
-        if(display_tags_d == null)
-        {
-            display_tags_d = new TreeDialog(display_tags = new DisplayTags());
-            display_tags.setFrame(display_tags_d);
-        }
-        display_tags.setNode(currnode);
-        display_tags_d.pack();
-        display_tags_d.setLocation(dialogLocation());
-        display_tags_d.setVisible(true);
+	if(display_tags_d == null)
+	{
+	    display_tags_d = new TreeDialog(display_tags = new DisplayTags());
+	    display_tags.setFrame(display_tags_d);
+	}
+	display_tags.setNode(currnode);
+	display_tags_d.pack();
+	display_tags_d.setLocation(dialogLocation());
+	display_tags_d.setVisible(true);
     }
     if(source == (Object)modify_data_b)
     {
 	    if(modify_data_d == null)
 	    {
-	        modify_data_d = new TreeDialog(modify_data = new ModifyData());
-	        modify_data.setFrame(modify_data_d);
+		modify_data_d = new TreeDialog(modify_data = new ModifyData());
+		modify_data.setFrame(modify_data_d);
 	    }
 	    modify_data.setNode(currnode);
 	    modify_data_d.pack();
@@ -268,12 +268,12 @@ public void actionPerformed(ActionEvent e)
     if(source == (Object)set_default_b)
     {
 	    try {
-	        currnode.setDefault();
+		currnode.setDefault();
 	    }catch(Exception exc) {jTraverser.stderr("Error setting default",exc);}
 	    tree.reportChange();
     }
     if(source == (Object)setup_device_b)
-        currnode.setupDevice();
+	currnode.setupDevice();
 }
 
 void reportChange(String exp, int shot, boolean editable, boolean readonly)
@@ -287,11 +287,11 @@ void reportChange(String exp, int shot, boolean editable, boolean readonly)
     {
 	    title = "Tree: " + exp;
 	    if(editable)
-	        title = title + " (edit) ";
+		title = title + " (edit) ";
 	    if(readonly)
-	        title = title + " (readonly) ";
+		title = title + " (readonly) ";
 	    title = title + " Shot: " + shot;
-        jTraverser.stdout(title);
+	jTraverser.stdout(title);
     }
     else
     {

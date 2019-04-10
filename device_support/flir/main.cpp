@@ -196,7 +196,7 @@ if(argv[4]!=NULL)
 
 	FlirCam->startAcquisition(&width, &height, &payloadSize);
 
-   	int status;
+	int status;
 	void *metaData;
 	void *frame;
     void *frame8bit;
@@ -204,7 +204,7 @@ if(argv[4]!=NULL)
     struct timeval tv;
     int64_t timeStamp;
 
-   	frame=malloc(width*height*sizeof(short));
+	frame=malloc(width*height*sizeof(short));
 	frame8bit=malloc(width*height*sizeof(char));
 	metaData=malloc(payloadSize-(width*height*sizeof(short)));
 
@@ -221,10 +221,10 @@ if(argv[4]!=NULL)
       timeStamp = ((tv.tv_sec)*1000) + ((tv.tv_usec)/1000); // timeStamp [ms]
       switch(status)
       {
-	 	case 1: printf("get frame %d complete @ %ld\n", frameNumber, timeStamp); break;
-	 	case 2: printf("get frame %d incomplete @ %ld\n", frameNumber, timeStamp); break;
-	 	case 3: printf("get frame %d timeout @ %ld\n", frameNumber, timeStamp); break;
-	 	case 4: printf("get frame %d complete+triggered @ %ld\n", frameNumber, timeStamp); break;
+		case 1: printf("get frame %d complete @ %ld\n", frameNumber, timeStamp); break;
+		case 2: printf("get frame %d incomplete @ %ld\n", frameNumber, timeStamp); break;
+		case 3: printf("get frame %d timeout @ %ld\n", frameNumber, timeStamp); break;
+		case 4: printf("get frame %d complete+triggered @ %ld\n", frameNumber, timeStamp); break;
       }
 
       if(status==1 or status==4)
@@ -232,20 +232,20 @@ if(argv[4]!=NULL)
 		 //SAVE FRAME IN MDSPLUS
 
 /*	     res=camSaveFrame(frame, width, height, &timeStamp, 14, treePtr, dataNid, -1, frameNumber);
-    	 if(res==-1)
-   		 {
-       		printf("Error in 'camSaveFrame'...\n");
-     	 }
+	 if(res==-1)
+		 {
+		printf("Error in 'camSaveFrame'...\n");
+	 }
 		 else
-   		 {
-       		printf("Frame saved...\n");
-     	 }
+		 {
+		printf("Frame saved...\n");
+	 }
 */
 		 //STREAMING
 		 if(skipFrame==0) printf("ERROR SKIPFRAME=0\n");
 		 int sendFrame = i % skipFrame;
 		 if( canStream==0 and sendFrame==0 )
-   		 {
+		 {
 		   //streaming is set to 640 x 480 in "camOpenTcpConnection".
 		   //It must be changed to prevent strange image transmission!
 		   unsigned int lowLim = 0;
@@ -253,7 +253,7 @@ if(argv[4]!=NULL)
 		   camFrameTo8bit((unsigned short *)frame, 640, 480, (unsigned char *)frame8bit, 1, &lowLim, &highLim, 2000, 62000);
 	//	   printf("LowLim:%d HighLim:%d\n",lowLim, highLim);
 		   camSendFrameOnTcp(&kSockHandle, width, height, frame8bit);
-     	 }
+	 }
 
 	  }
 

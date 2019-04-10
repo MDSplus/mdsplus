@@ -30,59 +30,59 @@ public class TWUFetchOptions
 
     public TWUFetchOptions (int sta, int ste, int tot)
     {
-        start = sta ;
-        step  = ste ;
-        total = tot ;
+	start = sta ;
+	step  = ste ;
+	total = tot ;
     }
 
     public void clip (final int twupLengthTotal)
     {
-        final int length = twupLengthTotal;
+	final int length = twupLengthTotal;
 
-        if ( (length <= 0) || (length <= start) )
-        {
-            start = 0 ; step = 1 ; total = 0 ;
-            return ;
-        }
+	if ( (length <= 0) || (length <= start) )
+	{
+	    start = 0 ; step = 1 ; total = 0 ;
+	    return ;
+	}
 
-        if (start < 0 ) start = 0 ;
-        if (step  < 1)  step  = 1 ;
-        if (total < 0)  total = length ;
+	if (start < 0 ) start = 0 ;
+	if (step  < 1)  step  = 1 ;
+	if (total < 0)  total = length ;
 
-        final int requestedEnd  = start + (total-1)*step ;
+	final int requestedEnd  = start + (total-1)*step ;
 
-        int overshoot = requestedEnd - (length-1)  ;
-        if (overshoot > 0)
-        {
-            overshoot %= step ;
-            if(overshoot > 0)
-              overshoot -= step ;
-        }
+	int overshoot = requestedEnd - (length-1)  ;
+	if (overshoot > 0)
+	{
+	    overshoot %= step ;
+	    if(overshoot > 0)
+	      overshoot -= step ;
+	}
 
-        final int realEnd = (length-1) + overshoot ;
+	final int realEnd = (length-1) + overshoot ;
 
-        // got a valid range now :
-        total = (realEnd - start)/step + 1 ;
+	// got a valid range now :
+	total = (realEnd - start)/step + 1 ;
     }
 
     public boolean equalsForBulkData (TWUFetchOptions opt)
     {
-        // simple approach, assumes it's already been clipped
-        // or at least it's incrementing (eg. step > 0, total >= 0).
+	// simple approach, assumes it's already been clipped
+	// or at least it's incrementing (eg. step > 0, total >= 0).
 
-        return ( start == opt.start &&
-                 step  == opt.step  &&
-                 total == opt.total );
+	return ( start == opt.start &&
+	         step  == opt.step  &&
+	         total == opt.total );
     }
 
     public TWUFetchOptions NewCopy (TWUFetchOptions opt)
     {
-        return opt.NewCopy() ;
+	return opt.NewCopy() ;
     }
 
     public TWUFetchOptions NewCopy ()
     {
-        return new TWUFetchOptions (start, step, total) ;
+	return new TWUFetchOptions (start, step, total) ;
     }
 
     public int getStart()  { return start; }
@@ -91,7 +91,7 @@ public class TWUFetchOptions
 
     public String toString()
     {
-        return "TWUFetchOptions("+start+", "+step+", "+total+")" ;
+	return "TWUFetchOptions("+start+", "+step+", "+total+")" ;
     }
 }
 

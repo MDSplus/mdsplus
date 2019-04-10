@@ -138,18 +138,18 @@ struct rfx_rpadc_fifo *rpadc_get_device(const char *dev_file ) {
     static struct rfx_rpadc_fifo *dev = NULL;
     int fd;
     if(!dev) {
-        if(dev_file) fd = open(dev_file, O_RDWR | O_SYNC);
-        else fd = open("/dev/"DEVICE_NAME, O_RDWR | O_SYNC);
-        if(fd < 0) {
-            printf(" ERROR: failed to open device file\n");
-            return NULL;
-        }
-        dev = mmap(NULL, sizeof(struct rfx_rpadc_fifo), PROT_READ | PROT_WRITE, MAP_SHARED,fd,0);
+	if(dev_file) fd = open(dev_file, O_RDWR | O_SYNC);
+	else fd = open("/dev/"DEVICE_NAME, O_RDWR | O_SYNC);
+	if(fd < 0) {
+	    printf(" ERROR: failed to open device file\n");
+	    return NULL;
+	}
+	dev = mmap(NULL, sizeof(struct rfx_rpadc_fifo), PROT_READ | PROT_WRITE, MAP_SHARED,fd,0);
     }
 
     if(!dev) {
-        printf(" ERROR: failed to mmap device memory\n");
-        return NULL;
+	printf(" ERROR: failed to mmap device memory\n");
+	return NULL;
     }
     return dev;
 }
@@ -158,8 +158,8 @@ int rpadc_release_device() {
     struct rfx_rpadc_fifo *dev = rpadc_get_device(0);
     int status;
     if(dev) {
-        status = munmap(dev, sizeof(struct rfx_rpadc_fifo));
-        if(status == 0) dev = NULL;
+	status = munmap(dev, sizeof(struct rfx_rpadc_fifo));
+	if(status == 0) dev = NULL;
     }
     return status;
 }

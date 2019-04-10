@@ -12,7 +12,7 @@ public class HMSPECTROSetup extends DeviceSetup {
 
     /** Creates new form HMSPECTROSetup */
     public HMSPECTROSetup() {
-        initComponents();
+	initComponents();
     }
 
     /** This method is called from within the constructor to
@@ -22,127 +22,127 @@ public class HMSPECTROSetup extends DeviceSetup {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        deviceButtons1 = new DeviceButtons();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceDispatch1 = new DeviceDispatch();
-        jPanel3 = new javax.swing.JPanel();
-        deviceField2 = new DeviceField();
-        deviceChoice1 = new DeviceChoice();
-        deviceChoice5 = new DeviceChoice();
-        deviceField4 = new DeviceField();
-        jPanel4 = new javax.swing.JPanel();
-        deviceChoice2 = new DeviceChoice();
-        deviceChoice3 = new DeviceChoice();
-        deviceField3 = new DeviceField();
-        jPanel5 = new javax.swing.JPanel();
-        deviceChoice4 = new DeviceChoice();
-        deviceField5 = new DeviceField();
-        deviceField6 = new DeviceField();
+	deviceButtons1 = new DeviceButtons();
+	jPanel1 = new javax.swing.JPanel();
+	jPanel2 = new javax.swing.JPanel();
+	deviceField1 = new DeviceField();
+	deviceDispatch1 = new DeviceDispatch();
+	jPanel3 = new javax.swing.JPanel();
+	deviceField2 = new DeviceField();
+	deviceChoice1 = new DeviceChoice();
+	deviceChoice5 = new DeviceChoice();
+	deviceField4 = new DeviceField();
+	jPanel4 = new javax.swing.JPanel();
+	deviceChoice2 = new DeviceChoice();
+	deviceChoice3 = new DeviceChoice();
+	deviceField3 = new DeviceField();
+	jPanel5 = new javax.swing.JPanel();
+	deviceChoice4 = new DeviceChoice();
+	deviceField5 = new DeviceField();
+	deviceField6 = new DeviceField();
 
-        setDeviceProvider("localhost");
-        setDeviceTitle("Hamamatsu MiniSpectrometer");
-        setDeviceType("HMSPECTRO");
-        setHeight(300);
-        setWidth(750);
-        deviceButtons1.setCheckExpressions(new String[] {});
-        deviceButtons1.setCheckMessages(new String[] {});
-        deviceButtons1.setMethods(new String[] {"init", "arm", "store"});
-        getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
+	setDeviceProvider("localhost");
+	setDeviceTitle("Hamamatsu MiniSpectrometer");
+	setDeviceType("HMSPECTRO");
+	setHeight(300);
+	setWidth(750);
+	deviceButtons1.setCheckExpressions(new String[] {});
+	deviceButtons1.setCheckMessages(new String[] {});
+	deviceButtons1.setMethods(new String[] {"init", "arm", "store"});
+	getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
 
-        jPanel1.setLayout(new java.awt.GridLayout(4, 0));
+	jPanel1.setLayout(new java.awt.GridLayout(4, 0));
 
-        jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+	jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Comment:");
-        deviceField1.setNumCols(40);
-        deviceField1.setOffsetNid(4);
-        deviceField1.setTextOnly(true);
-        jPanel2.add(deviceField1);
+	deviceField1.setIdentifier("");
+	deviceField1.setLabelString("Comment:");
+	deviceField1.setNumCols(40);
+	deviceField1.setOffsetNid(4);
+	deviceField1.setTextOnly(true);
+	jPanel2.add(deviceField1);
 
-        jPanel2.add(deviceDispatch1);
+	jPanel2.add(deviceDispatch1);
 
-        jPanel1.add(jPanel2);
+	jPanel1.add(jPanel2);
 
-        jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+	jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Device Name :");
-        deviceField2.setOffsetNid(1);
-        deviceField2.setTextOnly(true);
-        jPanel3.add(deviceField2);
+	deviceField2.setIdentifier("");
+	deviceField2.setLabelString("Device Name :");
+	deviceField2.setOffsetNid(1);
+	deviceField2.setTextOnly(true);
+	jPanel3.add(deviceField2);
 
-        deviceChoice1.setChoiceItems(new String[] {"C9404MC", "C9405MC", "C9404GC", "C9913GC", "C9914GB", "C10082MD", "C10083MD", "C9404CA", "C9404CAH", "C9405CA", "C10082CA", "C10083CA", "C10083CA", "C10082CAH", "C10083CAH"});
-        deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("Model Type:");
-        deviceChoice1.setOffsetNid(5);
-        deviceChoice1.setUpdateIdentifier("");
-        jPanel3.add(deviceChoice1);
+	deviceChoice1.setChoiceItems(new String[] {"C9404MC", "C9405MC", "C9404GC", "C9913GC", "C9914GB", "C10082MD", "C10083MD", "C9404CA", "C9404CAH", "C9405CA", "C10082CA", "C10083CA", "C10083CA", "C10082CAH", "C10083CAH"});
+	deviceChoice1.setIdentifier("");
+	deviceChoice1.setLabelString("Model Type:");
+	deviceChoice1.setOffsetNid(5);
+	deviceChoice1.setUpdateIdentifier("");
+	jPanel3.add(deviceChoice1);
 
-        deviceChoice5.setChoiceItems(new String[] {"LOCAL", "REMOTE"});
-        deviceChoice5.setIdentifier("");
-        deviceChoice5.setLabelString("SW Mode");
-        deviceChoice5.setOffsetNid(2);
-        deviceChoice5.setUpdateIdentifier("");
-        jPanel3.add(deviceChoice5);
+	deviceChoice5.setChoiceItems(new String[] {"LOCAL", "REMOTE"});
+	deviceChoice5.setIdentifier("");
+	deviceChoice5.setLabelString("SW Mode");
+	deviceChoice5.setOffsetNid(2);
+	deviceChoice5.setUpdateIdentifier("");
+	jPanel3.add(deviceChoice5);
 
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("ip Addr.");
-        deviceField4.setOffsetNid(3);
-        jPanel3.add(deviceField4);
+	deviceField4.setIdentifier("");
+	deviceField4.setLabelString("ip Addr.");
+	deviceField4.setOffsetNid(3);
+	jPanel3.add(deviceField4);
 
-        jPanel1.add(jPanel3);
+	jPanel1.add(jPanel3);
 
-        jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+	jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        deviceChoice2.setChoiceItems(new String[] {"RISING_EDGE", "FALLING_EDGE", "NO_FUNCTION"});
-        deviceChoice2.setIdentifier("");
-        deviceChoice2.setLabelString("Trig. Type");
-        deviceChoice2.setOffsetNid(7);
-        deviceChoice2.setUpdateIdentifier("");
-        jPanel4.add(deviceChoice2);
+	deviceChoice2.setChoiceItems(new String[] {"RISING_EDGE", "FALLING_EDGE", "NO_FUNCTION"});
+	deviceChoice2.setIdentifier("");
+	deviceChoice2.setLabelString("Trig. Type");
+	deviceChoice2.setOffsetNid(7);
+	deviceChoice2.setUpdateIdentifier("");
+	jPanel4.add(deviceChoice2);
 
-        deviceChoice3.setChoiceItems(new String[] {"INTERNAL", "EDGE_TRIGGER", "GATE_TRIGGER"});
-        deviceChoice3.setIdentifier("");
-        deviceChoice3.setLabelString("Trig. Mode:");
-        deviceChoice3.setOffsetNid(6);
-        deviceChoice3.setUpdateIdentifier("");
-        jPanel4.add(deviceChoice3);
+	deviceChoice3.setChoiceItems(new String[] {"INTERNAL", "EDGE_TRIGGER", "GATE_TRIGGER"});
+	deviceChoice3.setIdentifier("");
+	deviceChoice3.setLabelString("Trig. Mode:");
+	deviceChoice3.setOffsetNid(6);
+	deviceChoice3.setUpdateIdentifier("");
+	jPanel4.add(deviceChoice3);
 
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Trig. Source:");
-        deviceField3.setNumCols(20);
-        deviceField3.setOffsetNid(8);
-        jPanel4.add(deviceField3);
+	deviceField3.setIdentifier("");
+	deviceField3.setLabelString("Trig. Source:");
+	deviceField3.setNumCols(20);
+	deviceField3.setOffsetNid(8);
+	jPanel4.add(deviceField3);
 
-        jPanel1.add(jPanel4);
+	jPanel1.add(jPanel4);
 
-        jPanel5.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 2, 5));
+	jPanel5.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 2, 5));
 
-        deviceChoice4.setChoiceItems(new String[] {"LOW", "HIGH", "NO_FUNCTION"});
-        deviceChoice4.setIdentifier("");
-        deviceChoice4.setLabelString("Gain:");
-        deviceChoice4.setOffsetNid(10);
-        deviceChoice4.setUpdateIdentifier("");
-        jPanel5.add(deviceChoice4);
+	deviceChoice4.setChoiceItems(new String[] {"LOW", "HIGH", "NO_FUNCTION"});
+	deviceChoice4.setIdentifier("");
+	deviceChoice4.setLabelString("Gain:");
+	deviceChoice4.setOffsetNid(10);
+	deviceChoice4.setUpdateIdentifier("");
+	jPanel5.add(deviceChoice4);
 
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("Integration Time:");
-        deviceField5.setNumCols(15);
-        deviceField5.setOffsetNid(11);
-        jPanel5.add(deviceField5);
+	deviceField5.setIdentifier("");
+	deviceField5.setLabelString("Integration Time:");
+	deviceField5.setNumCols(15);
+	deviceField5.setOffsetNid(11);
+	jPanel5.add(deviceField5);
 
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Num. Scan");
-        deviceField6.setNumCols(15);
-        deviceField6.setOffsetNid(9);
-        jPanel5.add(deviceField6);
+	deviceField6.setIdentifier("");
+	deviceField6.setLabelString("Num. Scan");
+	deviceField6.setNumCols(15);
+	deviceField6.setOffsetNid(9);
+	jPanel5.add(deviceField6);
 
-        jPanel1.add(jPanel5);
+	jPanel1.add(jPanel5);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
+	getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
     }// </editor-fold>//GEN-END:initComponents
 

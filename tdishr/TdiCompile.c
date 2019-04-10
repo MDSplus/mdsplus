@@ -23,9 +23,9 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Compile.C
-        The interface to compiler.
+	The interface to compiler.
 
-        Ken Klare, LANL CTR-7   (c)1989,1990
+	Ken Klare, LANL CTR-7   (c)1989,1990
 */
 
 #define MAXLINE 120
@@ -46,20 +46,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern int Tdi1Evaluate();
 extern int TdiYacc();
 /*-------------------------------------------------------
-        Interface to compiler/parser.
-                expression = COMPILE(string, [arg1,...])
-        YACC converts TdiYacc.Y to TdiYacc.C to parse TDI statements. Also YACC subroutines.
-        LEX converts TdiLex.X to TdiLex.C for lexical analysis. Also LEX subroutines.
+	Interface to compiler/parser.
+	        expression = COMPILE(string, [arg1,...])
+	YACC converts TdiYacc.Y to TdiYacc.C to parse TDI statements. Also YACC subroutines.
+	LEX converts TdiLex.X to TdiLex.C for lexical analysis. Also LEX subroutines.
 
-        Limitations:
-        For recursion must pass LEX:
-                zone status bol cur end
-                tdiyylval tdiyyval
-                tdiyytext[YYLMAX] tdiyyleng tdiyymorfg tdiyytchar tdiyyin? tdiyyout?
-        For recursion must pass YACC also:
-                tdiyydebug? tdiyyv[YYMAXDEPTH] tdiyychar tdiyynerrs tdiyyerrflag
-        Thus no recursion because the tdiyy's are built into LEX and YACC.
-        IMMEDIATE (`) must never call COMPILE. NEED to prevent this.
+	Limitations:
+	For recursion must pass LEX:
+	        zone status bol cur end
+	        tdiyylval tdiyyval
+	        tdiyytext[YYLMAX] tdiyyleng tdiyymorfg tdiyytchar tdiyyin? tdiyyout?
+	For recursion must pass YACC also:
+	        tdiyydebug? tdiyyv[YYMAXDEPTH] tdiyychar tdiyynerrs tdiyyerrflag
+	Thus no recursion because the tdiyy's are built into LEX and YACC.
+	IMMEDIATE (`) must never call COMPILE. NEED to prevent this.
 */
 
 static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;

@@ -64,8 +64,8 @@ extern int DevWait(float);
 #define min(a,b) (((a)<(b)) ? (a) : (b))
 #define max(a,b) (((a)>(b)) ? (a) : (b))
 #define arm_on_error(f,retstatus) if (!((status = f) & 1))\
-                                     { printf("T4012 - error sending setup informaiton - arming anyway\n");\
-                                       goto arm;}
+	                             { printf("T4012 - error sending setup informaiton - arming anyway\n");\
+	                               goto arm;}
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) {max_time=-1; return retstatus;}
 
 #define retry_on_error(f, retstatus) if (!((status = f) & 1)) {if (status == DEV$_BAD_MODE && retry != 0) {retry=0; goto retry;} else return retstatus;}

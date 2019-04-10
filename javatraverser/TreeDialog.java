@@ -12,7 +12,7 @@ class TreeDialog extends JFrame
 	getContentPane().add(editor);
 	node_editor = editor;
     if (editor instanceof DisplayNci)
-        setResizable(false);
+	setResizable(false);
     }
     public final boolean inUse() {return in_use; }
     public final NodeEditor getEditor() {return node_editor; }

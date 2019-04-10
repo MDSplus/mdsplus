@@ -38,8 +38,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 int main(int argc,char *argv[])
 {
     if(argc>=2) {
-        iocsh(argv[1]);
-        epicsThreadSleep(.2);
+	iocsh(argv[1]);
+	epicsThreadSleep(.2);
     }
     iocsh(NULL);
     epicsExit(0);

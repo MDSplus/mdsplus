@@ -28,11 +28,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	TOM FREDIAN
+		Author:	TOM FREDIAN
 
 		Date:   17-APR-1992
 
-    		Purpose: Build dispatch table
+		Purpose: Build dispatch table
 
 ------------------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ int ServerBuildDispatchTable( )
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -80,8 +80,8 @@ static int CompareActions(ActionInfo * a, ActionInfo * b)
 {
   return a->on==b->on
        ? (a->phase==b->phase
-         ? a->sequence - b->sequence
-         : a->phase - b->phase
+	 ? a->sequence - b->sequence
+	 : a->phase - b->phase
        ): b->on - a->on;
 }
 

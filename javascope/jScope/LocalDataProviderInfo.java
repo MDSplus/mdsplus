@@ -8,9 +8,9 @@ class LocalDataProviderInfo
 
     public LocalDataProviderInfo(int dtype, int pixelSize, int dims[])
     {
-        this.dtype = dtype;
- 	this.pixelSize = pixelSize;
-        this.dims = dims;
+	this.dtype = dtype;
+	this.pixelSize = pixelSize;
+	this.dims = dims;
     }
 }
 

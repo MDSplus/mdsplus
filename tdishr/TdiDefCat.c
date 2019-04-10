@@ -23,19 +23,19 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      TDI$$DEF_CAT.C
-        Data type information table definitions.
-        Used by Tdi1Same and others.
+	Data type information table definitions.
+	Used by Tdi1Same and others.
 
-        requirements for type matching
-        maximum real size minus 1
-        (Some significance can be lost:
-        Unsigned to signed loses 1 bit,
-        L to F and Q to D lose 7 bits,
-        Q to G loses 10 bits,
-        O to H loses 15 bits, and
-        D to G loses 3 bits.)
+	requirements for type matching
+	maximum real size minus 1
+	(Some significance can be lost:
+	Unsigned to signed loses 1 bit,
+	L to F and Q to D lose 7 bits,
+	Q to G loses 10 bits,
+	O to H loses 15 bits, and
+	D to G loses 3 bits.)
 
-        Ken Klare, LANL CTR-7   (c)1989,1990
+	Ken Klare, LANL CTR-7   (c)1989,1990
 */
 #include <STATICdef.h>
 #include "tdirefcat.h"

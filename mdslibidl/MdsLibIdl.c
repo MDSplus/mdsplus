@@ -455,7 +455,7 @@ EXPORT int IdlMdsValue(int argc, void **argv)
 		  ((ptr->arsize / ptr->length) > 0) ? (ptr->arsize / ptr->length) : 1);
 	  strcat(dims,dim);
 	}
-        dims[strlen(dims)-1]='\0';
+	dims[strlen(dims)-1]='\0';
 	strcat(dims,")");
 	switch (mdsValueAnswer.pointer->dtype) {
 	default:break; // TODO: handle invalid dtypes

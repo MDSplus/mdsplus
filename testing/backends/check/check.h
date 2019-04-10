@@ -272,9 +272,9 @@ CK_DLL_EXP TCase *CK_EXPORT tcase_create(const char *name);
   (function version -- use this when the macro won't work
 */
 CK_DLL_EXP void CK_EXPORT _tcase_add_test(TCase * tc, TFun tf,
-                                          const char *fname, int _signal,
-                                          int allowed_exit_value, int start,
-                                          int end);
+	                                  const char *fname, int _signal,
+	                                  int allowed_exit_value, int start,
+	                                  int end);
 
 /**
  * Add unchecked fixture setup/teardown functions to a test case
@@ -302,7 +302,7 @@ CK_DLL_EXP void CK_EXPORT _tcase_add_test(TCase * tc, TFun tf,
  * @since 0.8.0
  */
 CK_DLL_EXP void CK_EXPORT tcase_add_unchecked_fixture(TCase * tc, SFun setup,
-                                                      SFun teardown);
+	                                              SFun teardown);
 
 /**
  * Add checked fixture setup/teardown functions to a test case
@@ -331,7 +331,7 @@ CK_DLL_EXP void CK_EXPORT tcase_add_unchecked_fixture(TCase * tc, SFun setup,
  * @since 0.8.0
 */
 CK_DLL_EXP void CK_EXPORT tcase_add_checked_fixture(TCase * tc, SFun setup,
-                                                    SFun teardown);
+	                                            SFun teardown);
 
 /**
  * Set the timeout for all tests in a test case.
@@ -357,7 +357,7 @@ CK_DLL_EXP void CK_EXPORT tcase_set_timeout(TCase * tc, double timeout);
 
 /* Internal function to mark the start of a test function */
 CK_DLL_EXP void CK_EXPORT tcase_fn_start(const char *fname, const char *file,
-                                         int line);
+	                                 int line);
 
 /**
  * Start a unit test with START_TEST(unit_name), end with END_TEST.
@@ -417,11 +417,11 @@ static void __testname (int _i CK_ATTRIBUTE_UNUSED)\
  */
 #if defined(HAVE_FORK) && HAVE_FORK==1
 CK_DLL_EXP void CK_EXPORT _ck_assert_failed(const char *file, int line,
-                                            const char *expr,
-                                            ...) CK_ATTRIBUTE_NORETURN;
+	                                    const char *expr,
+	                                    ...) CK_ATTRIBUTE_NORETURN;
 #else
 CK_DLL_EXP void CK_EXPORT _ck_assert_failed(const char *file, int line,
-                                            const char *expr, ...);
+	                                    const char *expr, ...);
 #endif
 
 /**
@@ -791,7 +791,7 @@ enum test_result
     CK_SKIP,
     CK_FAILURE,                 /**< Test completed but failed */
     CK_ERROR                    /**< Test failed to complete
-                                   (unexpected signal or non-zero early exit) */
+	                           (unexpected signal or non-zero early exit) */
 };
 
 /**
@@ -804,10 +804,10 @@ enum print_output
     CK_NORMAL,                  /**< All failed tests */
     CK_VERBOSE,                 /**< All tests */
     CK_ENV,                     /**< Look at environment var CK_VERBOSITY
-                                     for what verbosity to use, which can be
-                                     either "silent", "minimal", "normal",
-                                     or "verbose". If the environment variable
-                                     is not set, then CK_NORMAL will be used.*/
+	                             for what verbosity to use, which can be
+	                             either "silent", "minimal", "normal",
+	                             or "verbose". If the environment variable
+	                             is not set, then CK_NORMAL will be used.*/
 #if 0
     CK_SUBUNIT,                 /**< Run as a subunit child process */
 #endif
@@ -962,7 +962,7 @@ CK_DLL_EXP void CK_EXPORT srunner_free(SRunner * sr);
  * @since 0.6.0
  */
 CK_DLL_EXP void CK_EXPORT srunner_run_all(SRunner * sr,
-                                          enum print_output print_mode);
+	                                  enum print_output print_mode);
 
 /**
  * Run a specific suite or test case from a suite runner, printing results
@@ -980,8 +980,8 @@ CK_DLL_EXP void CK_EXPORT srunner_run_all(SRunner * sr,
  * @since 0.9.9
  */
 CK_DLL_EXP void CK_EXPORT srunner_run(SRunner * sr, const char *sname,
-                                      const char *tcname,
-                                      enum print_output print_mode);
+	                              const char *tcname,
+	                              enum print_output print_mode);
 
 
 /**
@@ -1057,7 +1057,7 @@ CK_DLL_EXP TestResult **CK_EXPORT srunner_results(SRunner * sr);
  * @since 0.7.0
  */
 CK_DLL_EXP void CK_EXPORT srunner_print(SRunner * sr,
-                                        enum print_output print_mode);
+	                                enum print_output print_mode);
 
 /**
  * Set the suite runner to output the result in log format to the
@@ -1219,7 +1219,7 @@ CK_DLL_EXP enum fork_status CK_EXPORT srunner_fork_status(SRunner * sr);
  * @since 0.8.0
  */
 CK_DLL_EXP void CK_EXPORT srunner_set_fork_status(SRunner * sr,
-                                                  enum fork_status fstat);
+	                                          enum fork_status fstat);
 
 /**
  * Invoke fork() during a test and assign the child to the same

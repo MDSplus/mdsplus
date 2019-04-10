@@ -12,7 +12,7 @@
 #define FLIR_FILE_FORMAT           0x46464600               /* FFF\0 */
 #define FILE_FORMAT_VERSION        100                      /* 1.00  */
 #define FFF_EXT                  "FFF"           /* Default file name
-                                                    extention */
+	                                            extention */
 
 // Bit mask for trig types
 #define FPGA_TRIG_TYPE_MARK			0x01
@@ -31,24 +31,24 @@ typedef unsigned int   ULONG;
 
 struct _fpgaheader_t
 {
-	unsigned char		        major;
-	unsigned char		        minor;
-	unsigned char		        dp1_trig_type;		// Digital port 1, trig type
-	unsigned char		        dp2_trig_type;		// Digital port 2, trig type
-	unsigned char		        dp1_frame_ts;		// Digital port 1, frame time stamp
-	unsigned char		        dp1_line_ts_MSB;	// Digital port 1, line time stamp (MSB)
-	unsigned char		        dp1_line_ts_LSB;	// Digital port 1, line time stamp (LSB)
-	unsigned char		        dp2_frame_ts;		// Digital port 2, frame time stamp
-	unsigned char		        dp2_line_ts_MSB;		// Digital port 2, line time stamp (MSB)
-	unsigned char		        dp2_line_ts_LSB;		// Digital port 2, line time stamp (LSB)
+	unsigned char			major;
+	unsigned char			minor;
+	unsigned char			dp1_trig_type;		// Digital port 1, trig type
+	unsigned char			dp2_trig_type;		// Digital port 2, trig type
+	unsigned char			dp1_frame_ts;		// Digital port 1, frame time stamp
+	unsigned char			dp1_line_ts_MSB;	// Digital port 1, line time stamp (MSB)
+	unsigned char			dp1_line_ts_LSB;	// Digital port 1, line time stamp (LSB)
+	unsigned char			dp2_frame_ts;		// Digital port 2, frame time stamp
+	unsigned char			dp2_line_ts_MSB;		// Digital port 2, line time stamp (MSB)
+	unsigned char			dp2_line_ts_LSB;		// Digital port 2, line time stamp (LSB)
 
-	unsigned char		        dp1_trig_state;		// Digital port 1, trig state
-	unsigned char		        dp2_trig_state;		// Digital port 2, trig state
+	unsigned char			dp1_trig_state;		// Digital port 1, trig state
+	unsigned char			dp2_trig_state;		// Digital port 2, trig state
 
-	unsigned char		        frame_cnt_MSB;
-	unsigned char		        frame_cnt_LSB;
+	unsigned char			frame_cnt_MSB;
+	unsigned char			frame_cnt_LSB;
 
-	unsigned char		        reserved[18];
+	unsigned char			reserved[18];
 };
 
 typedef	struct _fpgaheader_t	    FPGA_HEADER;
@@ -69,7 +69,7 @@ typedef enum {
 
     FFF_TAGID_SubFlirFileHead = 0x1e,
     FFF_general_high = 0x1f,            /* Reserve space for other general
-                                           tags */
+	                                   tags */
 
     /* FLIR TAGs */
     FFF_TAGID_BasicData = 0x20,
@@ -79,7 +79,7 @@ typedef enum {
     FFF_TAGID_VoiceComment,
 
     FFF_TAGID_matrix_high = 0x3f,       /* reserve space for other system
-                                           image blocks */
+	                                   image blocks */
 
     /* FLIR Boston reserved TAG number series */
     FFF_TAGID_Boston_reserved = 0x40,
@@ -118,43 +118,43 @@ typedef struct tagFLIRFILEHEAD
 
 typedef struct _geometric_info_t
 {
-                                  /** Size of one pixel in unsigned chars.
-                                      Normal size is 2 unsigned chars (16 bit pixels)
-                                      or 3 (for colorized YCbCr pixels) */
+	                          /** Size of one pixel in unsigned chars.
+	                              Normal size is 2 unsigned chars (16 bit pixels)
+	                              or 3 (for colorized YCbCr pixels) */
     unsigned short pixelSize;
 
     unsigned short imageWidth;    //!< Image width in pixels
     unsigned short imageHeight;   //!< Image height in pixels
 
-                                  /** @name Upper left coordinates
-                                      X and Y coordinates for upper left corner
-                                      relative original in case this image is a
-                                      cutout, normally 0 */
-                                  /*@{*/
+	                          /** @name Upper left coordinates
+	                              X and Y coordinates for upper left corner
+	                              relative original in case this image is a
+	                              cutout, normally 0 */
+	                          /*@{*/
     unsigned short upperLeftX;
     unsigned short upperLeftY;
-                                  /*@}*/
+	                          /*@}*/
 
-                                  /** @name Valid pixels
-                                      The following four number identifies the
+	                          /** @name Valid pixels
+	                              The following four number identifies the
 				      valid pixels area within the image.
 				      Sometimes the first row and column only
 				      contains calibration pixels that should not
 				      be considered as real pixels */
-                                  /*@{*/
+	                          /*@{*/
     unsigned short firstValidX;   //!< Normally 0
     unsigned short lastValidX;    //!< Normally imageWidth - 1
     unsigned short firstValidY;   //!< Normally 0
     unsigned short lastValidY;    //!< Normally imageHeight - 1
-                                  /*@}*/
+	                          /*@}*/
     unsigned short detectorDeep;  //!< Number of bits from detector A/D
 
-                                  /** Type of detector to be able to differ
-                                      between technologies if necessary.
-                                      Defined in AppCore/core_imgflow/imgflow_state.hpp */
+	                          /** Type of detector to be able to differ
+	                              between technologies if necessary.
+	                              Defined in AppCore/core_imgflow/imgflow_state.hpp */
     unsigned short detectorID;
-                                  /**  Type of upsampling from Detector to IR pixels.
-                                       Defined in AppCore/core_imgflow/imgflow_state.hpp */
+	                          /**  Type of upsampling from Detector to IR pixels.
+	                               Defined in AppCore/core_imgflow/imgflow_state.hpp */
     unsigned short upSampling;
     unsigned short frameCtr;      //!< Image number from frame buffer
     unsigned short minMeasRadius; //!< See AppCore/core_imgflow/imgflow_state.hpp for reference
@@ -169,14 +169,14 @@ struct IMAGEINFO_T
     unsigned long imageMilliTime; //!< Milliseconds since last second
 
     short timeZoneBias;           //!< Time zone bias in minutes
-                                  //!    UTC = local time + bias
+	                          //!    UTC = local time + bias
     short swReserved1;            //!< filler == 0
     long focusPos;                //!< Focus position as counter value
     float fTSTemp[7];             //!< Temp sensor values converted to Kelvin
     float fTSTempExt[4];          //!< Lens temp sensors et.c. Converted to Kelvin
     unsigned short trigInfoType;  //!< 0 = No info, 1 = THV 900 type info
     unsigned short trigHit;       //!< hit count - microsecs from trig
-                                  //!    reference
+	                          //!    reference
     unsigned short trigFlags;     //!< trig flags, type dependent
     unsigned short reserved1;
     unsigned int   trigCount;     //!< trig counter
@@ -184,8 +184,8 @@ struct IMAGEINFO_T
     short manipFactors[5];        //!< Used average factors
     /** Detecor settings - camera type dependent */
     int  detectorPars[20];        //!< Currently used detector parameters like
-                                  //!    used bias, offsets. Usage is camera
-                                  //!    dependent
+	                          //!    used bias, offsets. Usage is camera
+	                          //!    dependent
     int  reserved[5];             //!< For future use
 
 };                                //!< sizeof struct == 184 unsigned chars
@@ -201,16 +201,16 @@ struct DISTR_DATA_T
     unsigned short distrLive;         //!< TRUE (1) when image distribution is
 				      //!	'LIVE'. FALSE (0) otherwise
     unsigned short distrRecalled;     //!< TRUE (1) when image distribution is
-                                      //!       recalled. FALSE (0) otherwise.
-                                      //!< TRUE also implies that distrLive ==
-                                      //!       FALSE
+	                              //!       recalled. FALSE (0) otherwise.
+	                              //!< TRUE also implies that distrLive ==
+	                              //!       FALSE
     int  curGlobalOffset;
     float curGlobalGain;              //!< globalOffset/Gain to generate LUT from
-                                      //!  updated continously when live only
+	                              //!  updated continously when live only
 #define regulationOn 1
     unsigned short regulMethodMask;   //!< Method used for o/g calculation
     unsigned short visualImage;       //!< TRUE (1) for TV (visual)
-                                      //!  FALSE (0) for IR image
+	                              //!  FALSE (0) for IR image
     float focusDistance;              //!< focusDistance in meters.
 				      //!    0 means not defined.
 				      //!    NOT calculated by image source
@@ -218,13 +218,13 @@ struct DISTR_DATA_T
     unsigned short StripeHeight;      //!< 0 = not striped
     unsigned short StripeStart;       //!< Striping start line if striped
     unsigned short imageFreq;         //!< Image frequency, defines the nominal
-                                      //!    image frequency in Hz
+	                              //!    image frequency in Hz
     unsigned short typePixStreamCtrlData;
-                                      //!< 0 = no such data,
-                                      //!    other types TBD
+	                              //!< 0 = no such data,
+	                              //!    other types TBD
     unsigned short PixStreamDataLine;
-                                      //!< At which line to find
-                                      //!    PixStreamCtrlData if any
+	                              //!< At which line to find
+	                              //!    PixStreamCtrlData if any
 
 #define IMGSMSK_NUC       0x20	      //!< Bit set means that NUC is in progress
 
@@ -238,7 +238,7 @@ struct DISTR_DATA_T
 
 typedef struct _pres_par_t {
     signed int  level;           /* Level as normalized pixel value (apix), Level is defined as middle of
-				                    span (in pixel units) */
+					            span (in pixel units) */
     signed int  span;            /* Span as normalized pixel value (apix) */
 	unsigned char reserved[40];
 } PRES_PAR_T;                    /* sizeof struct == 48 unsigned chars */
@@ -249,32 +249,32 @@ typedef struct _pres_par_t {
 typedef struct tagFLIRFILEINDEX
 {
    unsigned short  wMainType;    /**< Main type of index     2   2
-                              Should be one of TAG_MAIN_T        */
+	                      Should be one of TAG_MAIN_T        */
    unsigned short wSubType;      /**< Sub type of index      2   4       */
    unsigned int  dwVersion;     /**< Version for data       4   8       */
    unsigned int  dwIndexID;     /**< Index ID               4  12       */
    unsigned int  dwDataPtr;     /**< Pointer to data        4  16       */
    unsigned int  dwDataSize;    /**< Size of data           4  20       */
    unsigned int  dwParent;      /**< Parentnr               4  24
-                              may be set to 0 when not used      */
+	                      may be set to 0 when not used      */
    unsigned int  dwObjectNr;    /**< This object nr         4  28
-                              may be set to 0 when not used      */
+	                      may be set to 0 when not used      */
    unsigned int  dwChecksum;    /**< Data checksum          4  32 unsigned chars
 
-        dwChecksum is a checksum of the tag data block. It may be
-        set to 0 when not used. The algorithm is CRC32 with the
-        Ethernet polynom. */
+	dwChecksum is a checksum of the tag data block. It may be
+	set to 0 when not used. The algorithm is CRC32 with the
+	Ethernet polynom. */
 } FLIRFILEINDEX;
 
 
 struct _bidata_t
 {
 	GEOMETRIC_INFO_T    GeometricInfo; // 32 unsigned chars
-    unsigned char		        ObjectParameters[48];
-    unsigned char		        CalibParameters[132];
-    unsigned char		        CalibInfo[564];
-    unsigned char		        AdjustParameters[48];
-    PRES_PAR_T	        PresentParameters;
+    unsigned char			ObjectParameters[48];
+    unsigned char			CalibParameters[132];
+    unsigned char			CalibInfo[564];
+    unsigned char			AdjustParameters[48];
+    PRES_PAR_T		PresentParameters;
     unsigned char				DisplayParameters[28];
     IMAGEINFO_T         ImageInfo;
     DISTR_DATA_T        DistributionData;

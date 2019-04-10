@@ -79,7 +79,7 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
 		add(program_edit);
 		break;
 	    case 5:
-        expr_edit = new LabeledExprEditor(data);
+	expr_edit = new LabeledExprEditor(data);
 		add(expr_edit);
 		break;
 	}
@@ -138,7 +138,7 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
 
     public void setData(Data data)
     {
-    	this.data = data;
+	this.data = data;
 	if(data == null)
 	    dtype_idx = 0;
 	else
@@ -157,7 +157,7 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
     public void setEditable(boolean editable)
     {
 	this.editable = editable;
-        if(expr_edit != null) expr_edit.setEditable(editable);
+	if(expr_edit != null) expr_edit.setEditable(editable);
 	if(method_edit != null) method_edit.setEditable(editable);
 	if(routine_edit != null) routine_edit.setEditable(editable);
 	if(program_edit != null) program_edit.setEditable(editable);

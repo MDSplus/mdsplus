@@ -7,7 +7,7 @@ public class DeviceButtons extends JPanel
 
     public void setMethods(String methods[])
     {
-        this.methods = methods;
+	this.methods = methods;
     }
 
     public String [] getMethods() { return methods; }
@@ -15,39 +15,39 @@ public class DeviceButtons extends JPanel
 
     public DeviceButtons()
     {
-        add(ok = new DeviceOk());
-        add(apply = new DeviceApply());
-        add(new DeviceReset());
-        add(cancel = new DeviceCancel());
+	add(ok = new DeviceOk());
+	add(apply = new DeviceApply());
+	add(new DeviceReset());
+	add(cancel = new DeviceCancel());
     }
 
     public boolean check()
     {
-        return apply.check();
+	return apply.check();
     }
 
     public void setCheckExpressions(String []checkExpressions)
     {
-        apply.setCheckExpressions(checkExpressions);
-        ok.setCheckExpressions(checkExpressions);
+	apply.setCheckExpressions(checkExpressions);
+	ok.setCheckExpressions(checkExpressions);
     }
     public String [] getCheckExpressions()
     {
-        return apply.getCheckExpressions();
+	return apply.getCheckExpressions();
     }
 
     public void setCheckMessages(String []checkMessages)
     {
-        apply.setCheckMessages(checkMessages);
-        ok.setCheckMessages(checkMessages);
+	apply.setCheckMessages(checkMessages);
+	ok.setCheckMessages(checkMessages);
     }
     public String [] getCheckMessages()
     {
-        return apply.getCheckMessages();
+	return apply.getCheckMessages();
     }
     public void setCancelText(String cancelText)
     {
-        cancel.setText(cancelText);
+	cancel.setText(cancelText);
     }
 
 

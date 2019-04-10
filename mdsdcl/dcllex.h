@@ -284,7 +284,7 @@ void dcl_set_lval (YYSTYPE * yylval_param ,yyscan_t yyscanner );
 
        YYLTYPE *dcl_get_lloc (yyscan_t yyscanner );
 
-        void dcl_set_lloc (YYLTYPE * yylloc_param ,yyscan_t yyscanner );
+	void dcl_set_lloc (YYLTYPE * yylloc_param ,yyscan_t yyscanner );
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -332,10 +332,10 @@ static int yy_flex_strlen (yyconst char * ,yyscan_t yyscanner);
 #define YY_DECL_IS_OURS 1
 
 extern int dcl_lex \
-               (YYSTYPE * yylval_param,YYLTYPE * yylloc_param ,yyscan_t yyscanner);
+	       (YYSTYPE * yylval_param,YYLTYPE * yylloc_param ,yyscan_t yyscanner);
 
 #define YY_DECL int dcl_lex \
-               (YYSTYPE * yylval_param, YYLTYPE * yylloc_param , yyscan_t yyscanner)
+	       (YYSTYPE * yylval_param, YYLTYPE * yylloc_param , yyscan_t yyscanner)
 #endif /* !YY_DECL */
 
 /* yy_get_previous_state - get the state just before the EOB char was reached */

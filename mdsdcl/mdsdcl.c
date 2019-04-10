@@ -126,9 +126,9 @@ int main(int argc, char const *argv[])
     }
     char line[1024];
     while (fgets(line, sizeof(line), fp)) {
-        size_t len = strlen(line);
-        while(len>0 && (line[len-1]=='\n' || line[len-1]=='\r')) line[--len] = '\0';
-        if (len==0) continue;
+	size_t len = strlen(line);
+	while(len>0 && (line[len-1]=='\n' || line[len-1]=='\r')) line[--len] = '\0';
+	if (len==0) continue;
 	if (mdsdcl_do_command(line) == MdsdclEXIT)
 	  break;
     }
@@ -182,7 +182,7 @@ int main(int argc, char const *argv[])
     if (cmd) {
 
       /* If command continued from previous line or command need more input,
-         append line to previous command portion */
+	 append line to previous command portion */
       if (command) {
 	if (strlen(cmd) > 0) {
 	  command = (char *)realloc(command, strlen(command) + strlen(cmd) + 1);
@@ -244,7 +244,7 @@ int main(int argc, char const *argv[])
 	prompt = 0;
 	if (status == MdsdclEXIT) {
 	  free(command);
-          status=0;
+	  status=0;
 	  goto done;
 	}
       }

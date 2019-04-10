@@ -156,7 +156,7 @@ public class MHD_BR_TESTSetup
     deviceField21110.setOffsetNid(6);
     deviceField21110.setTextOnly(true);
     deviceField21110.setNumCols(25);
-        deviceField21110.setIdentifier("");
+	deviceField21110.setIdentifier("");
     flowLayout1111.setVgap(0);
     flowLayout1111.setHgap(0);
     flowLayout1111.setAlignment(FlowLayout.LEFT);
@@ -223,7 +223,7 @@ public class MHD_BR_TESTSetup
     deviceField21113.setOffsetNid(7);
     deviceField21113.setTextOnly(true);
     deviceField21113.setNumCols(25);
-        deviceField21113.setIdentifier("");
+	deviceField21113.setIdentifier("");
     jPanel2110.setLayout(flowLayout1118);
     deviceChannel119.setLayout(borderLayout119);
     deviceChannel119.setInSameLine(true);
@@ -264,8 +264,8 @@ public class MHD_BR_TESTSetup
     jPanel4.setLayout(gridLayout2);
     gridLayout2.setRows(12);
     jLabel3.setText(
-        "   CARD                                GAIN                      " +
-        "                                              ADC");
+	"   CARD                                GAIN                      " +
+	"                                              ADC");
     deviceField2127.setOffsetNid(31);
     deviceField2127.setTextOnly(true);
     deviceField2127.setNumCols(25);

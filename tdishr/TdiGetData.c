@@ -23,28 +23,28 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      TdiGetData
-        Evaluate and get data.
-        For use by TDI$$GET_ARG, Tdi1Data, ... .
-        Generally we have expressions including conversion or scaling.
-                DATA(dimension)         list of axis points
-                DATA(slope)             list of axis points without window
-                DATA(signal)            data scalar or array
-                DATA(param)             value scalar or array
-                DATA(range)             list of numbers
-                DATA(VMS)               scalar or array
-                DATA(with_units)        data scalar or array
+	Evaluate and get data.
+	For use by TDI$$GET_ARG, Tdi1Data, ... .
+	Generally we have expressions including conversion or scaling.
+	        DATA(dimension)         list of axis points
+	        DATA(slope)             list of axis points without window
+	        DATA(signal)            data scalar or array
+	        DATA(param)             value scalar or array
+	        DATA(range)             list of numbers
+	        DATA(VMS)               scalar or array
+	        DATA(with_units)        data scalar or array
 
-        status = TdiGetData(&omissions, &in, &dat)
-        omissions: use dtype code to omit resolving that code, list permitted.
-        Use this with DTYPE_SIGNAL to get signal, unresolved.
-        Use this to get RANGE or data or for WITH_UNITS or data.
-        Do not use DATA(VALUE_OF(param)), use DATA(param).
-        Do not use DATA(VALIDATION_OF(param)), use VALIDATION(param).
-        They won't work if the _OF routine returns a function because $VALUE is not defined.
+	status = TdiGetData(&omissions, &in, &dat)
+	omissions: use dtype code to omit resolving that code, list permitted.
+	Use this with DTYPE_SIGNAL to get signal, unresolved.
+	Use this to get RANGE or data or for WITH_UNITS or data.
+	Do not use DATA(VALUE_OF(param)), use DATA(param).
+	Do not use DATA(VALIDATION_OF(param)), use VALIDATION(param).
+	They won't work if the _OF routine returns a function because $VALUE is not defined.
 
-        Ken Klare, LANL P-4     (c)1989,1990,1991,1992,1994
-        NEED to think, should "TdiImpose" convert data type?
-        ASSUMES VECTOR works for any size.
+	Ken Klare, LANL P-4     (c)1989,1990,1991,1992,1994
+	NEED to think, should "TdiImpose" convert data type?
+	ASSUMES VECTOR works for any size.
 */
 #include <mdsplus/mdsplus.h>
 #include <STATICdef.h>
@@ -78,24 +78,24 @@ static void FixupDollarNodes(int nid, struct descriptor *out_ptr) {
       default: break;
       case CLASS_S:
       case CLASS_D:
-        if ((out_ptr->dtype == DTYPE_IDENT) &&
-            (out_ptr->length == 5) &&
-            (strncasecmp((const char *)out_ptr->pointer,"$node",5) == 0)) {
-          out_ptr->dtype=DTYPE_NID;
-          out_ptr->length=4;
-          *(int *)out_ptr->pointer=nid;
-        }
-        break;
+	if ((out_ptr->dtype == DTYPE_IDENT) &&
+	    (out_ptr->length == 5) &&
+	    (strncasecmp((const char *)out_ptr->pointer,"$node",5) == 0)) {
+	  out_ptr->dtype=DTYPE_NID;
+	  out_ptr->length=4;
+	  *(int *)out_ptr->pointer=nid;
+	}
+	break;
       case CLASS_XS:
       case CLASS_XD:
-        FixupDollarNodes(nid, (struct descriptor *)out_ptr->pointer);
-        break;
+	FixupDollarNodes(nid, (struct descriptor *)out_ptr->pointer);
+	break;
       case CLASS_R: {
-        struct descriptor_r *ptr = (struct descriptor_r *)out_ptr;
-        unsigned char i;
-        for (i=0;i<ptr->ndesc; i++)
-          FixupDollarNodes(nid, (struct descriptor *)ptr->dscptrs[i]);
-        break;
+	struct descriptor_r *ptr = (struct descriptor_r *)out_ptr;
+	unsigned char i;
+	for (i=0;i<ptr->ndesc; i++)
+	  FixupDollarNodes(nid, (struct descriptor *)ptr->dscptrs[i]);
+	break;
       }
     }
   }
@@ -131,8 +131,8 @@ int TdiImpose(struct descriptor_a *in_ptr, struct descriptor_xd *out_ptr)
     arr.class = pout->class;
     if (in_ptr->aflags.coeff) {
 			/*******************************
-                        For CA it is a relative pointer.
-                        *******************************/
+	                For CA it is a relative pointer.
+	                *******************************/
       if (in_ptr->class == CLASS_CA) {
 	arr.a0 = pout->pointer + *(int *)&arr.a0;
       } else
@@ -230,8 +230,8 @@ int TdiGetData(const unsigned char omits[], struct descriptor *their_ptr, struct
       case CLASS_A:
 	switch (dtype) {
 		/***********************
-                Evaluate on these types.
-                ***********************/
+	        Evaluate on these types.
+	        ***********************/
 	case DTYPE_IDENT:
 	  status = TdiGetIdent(pin, &hold);
  redo:	  if STATUS_OK
@@ -251,9 +251,9 @@ int TdiGetData(const unsigned char omits[], struct descriptor *their_ptr, struct
 	  }
 	  goto redo;
 		/*******************
-                VMS types come here.
-                Renames their XD.
-                *******************/
+	        VMS types come here.
+	        Renames their XD.
+	        *******************/
 	default:
 	  if (their_ptr->class == CLASS_XD) {
 	    hold = *(struct descriptor_xd *)their_ptr;
@@ -283,8 +283,8 @@ int TdiGetData(const unsigned char omits[], struct descriptor *their_ptr, struct
 	  break;
 	case DTYPE_SIGNAL:
 			/******************************************
-                        We must set up for reference to our $VALUE.
-                        ******************************************/
+	                We must set up for reference to our $VALUE.
+	                ******************************************/
 	  keep = (struct descriptor_signal *)TdiThreadStatic_p->TdiSELF_PTR;
 	  TdiThreadStatic_p->TdiSELF_PTR = (struct descriptor_xd *)pin;
 	  status =
@@ -293,8 +293,8 @@ int TdiGetData(const unsigned char omits[], struct descriptor *their_ptr, struct
 	  TdiThreadStatic_p->TdiSELF_PTR = (struct descriptor_xd *)keep;
 	  break;
 		/***************
-                Windowless axis.
-                ***************/
+	        Windowless axis.
+	        ***************/
 	case DTYPE_SLOPE: {
 	  int seg;
 	  EMPTYXD(times);
@@ -315,8 +315,8 @@ int TdiGetData(const unsigned char omits[], struct descriptor *their_ptr, struct
 	  status = TdiItoX(pin, &hold MDS_END_ARG);
 	  goto redo;
 		/**************************
-                Range can have 2 or 3 args.
-                **************************/
+	        Range can have 2 or 3 args.
+	        **************************/
 	case DTYPE_RANGE:
 	  status = TdiIntrinsic(OPC_DTYPE_RANGE, pin->ndesc, &pin->dscptrs[0], &hold);
 	  goto redo;
@@ -344,8 +344,8 @@ int TdiGetData(const unsigned char omits[], struct descriptor *their_ptr, struct
   }
   *recursion_count = 0;
 	/**********************************
-        Watch out for input same as output.
-        **********************************/
+	Watch out for input same as output.
+	**********************************/
   MdsFree1Dx(out_ptr, NULL);
   if STATUS_OK
     *out_ptr = hold;
@@ -355,9 +355,9 @@ int TdiGetData(const unsigned char omits[], struct descriptor *their_ptr, struct
 }
 
 /*----------------------------------------------------------------------------
-        Get a float scalar value from an expression or whatever.
-        Useful internal and external function.
-        C only: status = TdiGetFloat(&in_dsc, &float)
+	Get a float scalar value from an expression or whatever.
+	Useful internal and external function.
+	C only: status = TdiGetFloat(&in_dsc, &float)
 */
 extern EXPORT int TdiGetFloat(struct descriptor *in_ptr, float *val_ptr)
 {
@@ -371,8 +371,8 @@ extern EXPORT int TdiGetFloat(struct descriptor *in_ptr, float *val_ptr)
       if (((struct descriptor_a *)in_ptr)->arsize != in_ptr->length)
 	return TdiNOT_NUMBER;
 	/*********************
-        WARNING falls through.
-        *********************/
+	WARNING falls through.
+	*********************/
       MDS_ATTR_FALLTHROUGH
     case CLASS_S:
     case CLASS_D:
@@ -425,9 +425,9 @@ extern EXPORT int TdiGetFloat(struct descriptor *in_ptr, float *val_ptr)
 }
 
 /*----------------------------------------------------------------------------
-        Get a long scalar value from an expression or whatever.
-        Useful internal and external function.
-        C only: status = TdiGetLong(&in_dsc, &long)
+	Get a long scalar value from an expression or whatever.
+	Useful internal and external function.
+	C only: status = TdiGetLong(&in_dsc, &long)
 */
 extern EXPORT int TdiGetLong(struct descriptor *in_ptr, int *val_ptr)
 {
@@ -441,8 +441,8 @@ extern EXPORT int TdiGetLong(struct descriptor *in_ptr, int *val_ptr)
       if (((struct descriptor_a *)in_ptr)->arsize != in_ptr->length)
 	return TdiNOT_NUMBER;
 	/*********************
-        WARNING falls through.
-        *********************/
+	WARNING falls through.
+	*********************/
       MDS_ATTR_FALLTHROUGH
     case CLASS_S:
     case CLASS_D:
@@ -494,9 +494,9 @@ extern EXPORT int TdiGetLong(struct descriptor *in_ptr, int *val_ptr)
 }
 
 /*----------------------------------------------------------------------------
-        Get the Node ID for NID, PATH, or TEXT types including expressions.
-        Useful internal and external function.
-        C only: status = TdiGetNid(&in_dsc, &nid)
+	Get the Node ID for NID, PATH, or TEXT types including expressions.
+	Useful internal and external function.
+	C only: status = TdiGetNid(&in_dsc, &nid)
 */
 extern EXPORT int TdiGetNid(struct descriptor *in_ptr, int *nid_ptr)
 {
@@ -532,14 +532,14 @@ extern EXPORT int TdiGetNid(struct descriptor *in_ptr, int *nid_ptr)
 }
 
 /*----------------------------------------------------------------------------
-        Give signal, dimension, or parameter for use by lower level routines.
-        RAW_OF($THIS) = $VALUE is raw field of a signal.
-        DIM_OF($THIS, [dim]) gives a dimension of a signal.
-        VALUE_OF($THIS) = $VALUE is value field of param.
-        HELP_OF($THIS) gives help field of a param, for example, in the validation.
-        $THIS is the dimension used by ranges in complex signal subscripting.
-        WARNING: $THIS is only defined within the subexpressions.
-        WARNING: Use of $THIS or $VALUE can be infinitely recursive.
+	Give signal, dimension, or parameter for use by lower level routines.
+	RAW_OF($THIS) = $VALUE is raw field of a signal.
+	DIM_OF($THIS, [dim]) gives a dimension of a signal.
+	VALUE_OF($THIS) = $VALUE is value field of param.
+	HELP_OF($THIS) gives help field of a param, for example, in the validation.
+	$THIS is the dimension used by ranges in complex signal subscripting.
+	WARNING: $THIS is only defined within the subexpressions.
+	WARNING: Use of $THIS or $VALUE can be infinitely recursive.
 */
 int Tdi1This(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 	     struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
@@ -554,10 +554,10 @@ int Tdi1This(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((
 }
 
 /*----------------------------------------------------------------------------
-        Give value of RAW_OF(signal) for DATA(signal)
-        or VALUE_OF(param) for VALIDATION(param).
-        This allows the data field of signals to reference the raw field of a signal
-        and the validation field of params to reference the value field of a param.
+	Give value of RAW_OF(signal) for DATA(signal)
+	or VALUE_OF(param) for VALIDATION(param).
+	This allows the data field of signals to reference the raw field of a signal
+	and the validation field of params to reference the value field of a param.
 */
 int Tdi1Value(opcode_t opcode __attribute__ ((unused)) , int narg __attribute__ ((unused)),
 	      struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
@@ -583,10 +583,10 @@ int Tdi1Value(opcode_t opcode __attribute__ ((unused)) , int narg __attribute__ 
 }
 
 /*----------------------------------------------------------------------------
-        Return VMS data portion of any data type in input descriptor.
-        The output descriptor must be class XD, it will be and XD-DSC.
-        A major entry point for evaluation of the data of expressions.
-                status = TdiData(&in, &out MDS_END_ARG)
+	Return VMS data portion of any data type in input descriptor.
+	The output descriptor must be class XD, it will be and XD-DSC.
+	A major entry point for evaluation of the data of expressions.
+	        status = TdiData(&in, &out MDS_END_ARG)
 */
 int Tdi1Data(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 	     struct descriptor *list[], struct descriptor_xd *out_ptr)
@@ -599,13 +599,13 @@ int Tdi1Data(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((
 }
 
 /*----------------------------------------------------------------------------
-        Return units portion of with_units. Does not require complete evaluation.
-                UNITS(dimension)        UNITS(axis)
-                UNITS(range or slope)   combined units of arguments
-                UNITS(window)           UNITS(value_idx0)
-                UNITS(with_units)       DATA(units)
-                UNITS(other)            UNITS(DATA(other) not stripping above)
-                UNITS(other)            " "     (single blank to keep IDL happy)
+	Return units portion of with_units. Does not require complete evaluation.
+	        UNITS(dimension)        UNITS(axis)
+	        UNITS(range or slope)   combined units of arguments
+	        UNITS(window)           UNITS(value_idx0)
+	        UNITS(with_units)       DATA(units)
+	        UNITS(other)            UNITS(DATA(other) not stripping above)
+	        UNITS(other)            " "     (single blank to keep IDL happy)
 */
 int Tdi1Units(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
@@ -665,10 +665,10 @@ int Tdi1Units(opcode_t opcode __attribute__ ((unused)), int narg, struct descrip
 }
 
 /*----------------------------------------------------------------------------
-        Return VMS data portion and the units of the input descriptor.
-        Always returns a with_units descriptor with data, assuming no error.
-        Caution. The units field may be null.
-                status = TdiDataWithUnits(&in, &out MDS_END_ARG)
+	Return VMS data portion and the units of the input descriptor.
+	Always returns a with_units descriptor with data, assuming no error.
+	Caution. The units field may be null.
+	        status = TdiDataWithUnits(&in, &out MDS_END_ARG)
 */
 int Tdi1DataWithUnits(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 		      struct descriptor *list[], struct descriptor_xd *out_ptr)
@@ -702,11 +702,11 @@ int Tdi1DataWithUnits(opcode_t opcode __attribute__ ((unused)), int narg __attri
 }
 
 /*----------------------------------------------------------------------------
-        Evaluate and get validation field of a parameter.
-        Do not use DATA(VALIDATION_OF(param)), use VALIDATION(param).
-        Note VALIDATION_OF may return a function.
-        Note that $VALUE would not be defined in that form.
-        Need we check that result is logical scalar?
+	Evaluate and get validation field of a parameter.
+	Do not use DATA(VALIDATION_OF(param)), use VALIDATION(param).
+	Note VALIDATION_OF may return a function.
+	Note that $VALUE would not be defined in that form.
+	Need we check that result is logical scalar?
 */
 int Tdi1Validation(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 		   struct descriptor *list[], struct descriptor_xd *out_ptr)
@@ -724,8 +724,8 @@ int Tdi1Validation(opcode_t opcode __attribute__ ((unused)), int narg __attribut
     switch (rptr->dtype) {
     case DTYPE_PARAM:
 		/******************************************
-                We must set up for reference to our $VALUE.
-                ******************************************/
+	        We must set up for reference to our $VALUE.
+	        ******************************************/
       keep = TdiThreadStatic_p->TdiSELF_PTR;
       TdiThreadStatic_p->TdiSELF_PTR = (struct descriptor_xd *)rptr;
       status = TdiGetData(noomits, ((struct descriptor_param *)rptr)->validation, out_ptr);

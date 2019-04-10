@@ -32,8 +32,8 @@ public class ServersInfoPanel extends JPanel {
     public ServersInfoPanel() {
 //        super(parent, modal);
 //        this.setPreferredSize(new Dimension(700,500));
-        initComponents();
-        this.jTable1.setComponentPopupMenu(this.serverActionPopup);
+	initComponents();
+	this.jTable1.setComponentPopupMenu(this.serverActionPopup);
     }
 
     /** This method is called from within the constructor to
@@ -45,114 +45,114 @@ public class ServersInfoPanel extends JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        serverActionPopup = new javax.swing.JPopupMenu();
-        startServer = new javax.swing.JMenuItem();
-        stopServer = new javax.swing.JMenuItem();
-        jPanel1 = new javax.swing.JPanel();
-        update = new javax.swing.JButton();
-        startAllServer = new javax.swing.JButton();
-        killAllServer = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+	serverActionPopup = new javax.swing.JPopupMenu();
+	startServer = new javax.swing.JMenuItem();
+	stopServer = new javax.swing.JMenuItem();
+	jPanel1 = new javax.swing.JPanel();
+	update = new javax.swing.JButton();
+	startAllServer = new javax.swing.JButton();
+	killAllServer = new javax.swing.JButton();
+	jPanel2 = new javax.swing.JPanel();
+	jScrollPane1 = new javax.swing.JScrollPane();
+	jTable1 = new javax.swing.JTable();
 
-        startServer.setText("Start");
-        startServer.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                startServerActionPerformed(evt);
-            }
-        });
-        serverActionPopup.add(startServer);
+	startServer.setText("Start");
+	startServer.addActionListener(new java.awt.event.ActionListener() {
+	    public void actionPerformed(java.awt.event.ActionEvent evt) {
+	        startServerActionPerformed(evt);
+	    }
+	});
+	serverActionPopup.add(startServer);
 
-        stopServer.setText("Stop");
-        stopServer.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                stopServerActionPerformed(evt);
-            }
-        });
-        serverActionPopup.add(stopServer);
+	stopServer.setText("Stop");
+	stopServer.addActionListener(new java.awt.event.ActionListener() {
+	    public void actionPerformed(java.awt.event.ActionEvent evt) {
+	        stopServerActionPerformed(evt);
+	    }
+	});
+	serverActionPopup.add(stopServer);
 
-        setLayout(new java.awt.BorderLayout());
+	setLayout(new java.awt.BorderLayout());
 
-        update.setText("Servers State Update");
-        update.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                updateActionPerformed(evt);
-            }
-        });
-        jPanel1.add(update);
+	update.setText("Servers State Update");
+	update.addActionListener(new java.awt.event.ActionListener() {
+	    public void actionPerformed(java.awt.event.ActionEvent evt) {
+	        updateActionPerformed(evt);
+	    }
+	});
+	jPanel1.add(update);
 
-        startAllServer.setText("Start All Servers");
-        startAllServer.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                startAllServerActionPerformed(evt);
-            }
-        });
-        //jPanel1.add(startAllServer);
+	startAllServer.setText("Start All Servers");
+	startAllServer.addActionListener(new java.awt.event.ActionListener() {
+	    public void actionPerformed(java.awt.event.ActionEvent evt) {
+	        startAllServerActionPerformed(evt);
+	    }
+	});
+	//jPanel1.add(startAllServer);
 
-        killAllServer.setText("Kill All Servers");
-        killAllServer.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                killAllServerActionPerformed(evt);
-            }
-        });
-        //jPanel1.add(killAllServer);
+	killAllServer.setText("Kill All Servers");
+	killAllServer.addActionListener(new java.awt.event.ActionListener() {
+	    public void actionPerformed(java.awt.event.ActionEvent evt) {
+	        killAllServerActionPerformed(evt);
+	    }
+	});
+	//jPanel1.add(killAllServer);
 
-        add(jPanel1, java.awt.BorderLayout.PAGE_END);
+	add(jPanel1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel2.setLayout(new java.awt.BorderLayout());
+	jPanel2.setLayout(new java.awt.BorderLayout());
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
+	jTable1.setModel(new javax.swing.table.DefaultTableModel(
+	    new Object [][] {
 
-            },
-            new String [] {
-                "State", "Class Name", "Address", "Action"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false
-            };
+	    },
+	    new String [] {
+	        "State", "Class Name", "Address", "Action"
+	    }
+	) {
+	    boolean[] canEdit = new boolean [] {
+	        false, false, false, false
+	    };
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jTable1.addMouseListener(new JTableButtonMouseListener(jTable1) );
-        jScrollPane1.setViewportView(jTable1);
-        jTable1.getColumnModel().getColumn(0).setMinWidth(50);
-        jTable1.getColumnModel().getColumn(0).setPreferredWidth(50);
-        jTable1.getColumnModel().getColumn(0).setMaxWidth(50);
-        jTable1.getColumnModel().getColumn(0).setCellRenderer(new StateRenderer());
+	    public boolean isCellEditable(int rowIndex, int columnIndex) {
+	        return canEdit [columnIndex];
+	    }
+	});
+	jTable1.addMouseListener(new JTableButtonMouseListener(jTable1) );
+	jScrollPane1.setViewportView(jTable1);
+	jTable1.getColumnModel().getColumn(0).setMinWidth(50);
+	jTable1.getColumnModel().getColumn(0).setPreferredWidth(50);
+	jTable1.getColumnModel().getColumn(0).setMaxWidth(50);
+	jTable1.getColumnModel().getColumn(0).setCellRenderer(new StateRenderer());
 
-        jTable1.getColumnModel().getColumn(1).setMinWidth(180);
-        jTable1.getColumnModel().getColumn(1).setPreferredWidth(180);
-        jTable1.getColumnModel().getColumn(1).setMaxWidth(180);
+	jTable1.getColumnModel().getColumn(1).setMinWidth(180);
+	jTable1.getColumnModel().getColumn(1).setPreferredWidth(180);
+	jTable1.getColumnModel().getColumn(1).setMaxWidth(180);
 
 		jTable1.getColumnModel().getColumn(2).setMinWidth(200);
-        jTable1.getColumnModel().getColumn(2).setPreferredWidth(200);
-        jTable1.getColumnModel().getColumn(2).setMaxWidth(200);
+	jTable1.getColumnModel().getColumn(2).setPreferredWidth(200);
+	jTable1.getColumnModel().getColumn(2).setMaxWidth(200);
 
 
-        jTable1.getColumnModel().getColumn(3).setMinWidth(200);
-        jTable1.getColumnModel().getColumn(3).setPreferredWidth(200);
-        jTable1.getColumnModel().getColumn(3).setCellRenderer(new ActionRenderer());
+	jTable1.getColumnModel().getColumn(3).setMinWidth(200);
+	jTable1.getColumnModel().getColumn(3).setPreferredWidth(200);
+	jTable1.getColumnModel().getColumn(3).setCellRenderer(new ActionRenderer());
 
-        jPanel2.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+	jPanel2.add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-        add(jPanel2, java.awt.BorderLayout.CENTER);
+	add(jPanel2, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 private void updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateActionPerformed
 // TODO add your handling code here:
       try
       {
-        this.updateServersState();
+	this.updateServersState();
       }
       catch(Exception exc)
       {
-        exc.printStackTrace();
-        System.out.println("Error : "+exc);
+	exc.printStackTrace();
+	System.out.println("Error : "+exc);
       }
 }//GEN-LAST:event_updateActionPerformed
 
@@ -167,7 +167,7 @@ private void startAllServerActionPerformed(java.awt.event.ActionEvent evt) {//GE
 // TODO add your handling code here:
     Iterator<ServerInfo> i = serversInfo.values().iterator();//GEN-LAST:event_startAllServerActionPerformed
     while( i.hasNext() )
-         i.next().startServer();
+	 i.next().startServer();
 }
 
 private void startServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startServerActionPerformed
@@ -177,8 +177,8 @@ private void startServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
     for(int i = 0; i < sel.length; i++)
     {
-        String s = (String)tm.getValueAt(sel[i], 2);
-        serversInfo.get(s).startServer();
+	String s = (String)tm.getValueAt(sel[i], 2);
+	serversInfo.get(s).startServer();
     }
 
 }//GEN-LAST:event_startServerActionPerformed
@@ -190,8 +190,8 @@ private void stopServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
 
     for(int i = 0; i < sel.length; i++)
     {
-        String s = (String)tm.getValueAt(sel[i], 2);
-        serversInfo.get(s).stopServer();
+	String s = (String)tm.getValueAt(sel[i], 2);
+	serversInfo.get(s).stopServer();
     }
 
 }//GEN-LAST:event_stopServerActionPerformed
@@ -215,16 +215,16 @@ private void stopServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
    {
       try
       {
-         DefaultTableModel md = ( DefaultTableModel ) this.jTable1.getModel();
+	 DefaultTableModel md = ( DefaultTableModel ) this.jTable1.getModel();
 
-        ServerInfo si = serversInfo.get(serverAddress);
-        if(si != null)
-            md.setValueAt(new Boolean(state), si.getPos(), 0);
+	ServerInfo si = serversInfo.get(serverAddress);
+	if(si != null)
+	    md.setValueAt(new Boolean(state), si.getPos(), 0);
       }
       catch(Exception exc)
       {
-        exc.printStackTrace();
-        System.out.println("Error : "+exc);
+	exc.printStackTrace();
+	System.out.println("Error : "+exc);
       }
   }
 
@@ -242,179 +242,179 @@ private void stopServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
   public void updateServersState()  throws Exception
   {
 
-        Socket s = new Socket(address, info_port);
-        s.setSoTimeout(5000);
-        DataOutputStream dos = new DataOutputStream(s.getOutputStream());
-        DataInputStream dis = new DataInputStream(s.getInputStream());
+	Socket s = new Socket(address, info_port);
+	s.setSoTimeout(5000);
+	DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+	DataInputStream dis = new DataInputStream(s.getInputStream());
 
-        dos.writeUTF("servers");
-        int numServer = dis.readInt();
+	dos.writeUTF("servers");
+	int numServer = dis.readInt();
 
-        for(int i = 0; i < numServer; i++)
-        {
-        //System.out.println(dis.readUTF()+" "+dis.readUTF()+" "+dis.readBoolean()+" "+dis.readInt());
-        //addString(dis.readUTF(), dis.readUTF(), dis.readBoolean());
+	for(int i = 0; i < numServer; i++)
+	{
+	//System.out.println(dis.readUTF()+" "+dis.readUTF()+" "+dis.readBoolean()+" "+dis.readInt());
+	//addString(dis.readUTF(), dis.readUTF(), dis.readBoolean());
 
-            String serverClass = dis.readUTF();
-            String addressSrv = dis.readUTF();
-            boolean active = dis.readBoolean();
+	    String serverClass = dis.readUTF();
+	    String addressSrv = dis.readUTF();
+	    boolean active = dis.readBoolean();
 //            int aDoing = dis.readInt();
 
 //            System.out.println("Class :"+ serverClass +"Server :"+ addressSrv  );
 
-            if( serversInfo != null && addressSrv != null && addressSrv.length() != 0 )
-            {
-                //System.out.println(serversInfo.get(addressSrv));
-                DefaultTableModel md = ( DefaultTableModel ) this.jTable1.getModel();
+	    if( serversInfo != null && addressSrv != null && addressSrv.length() != 0 )
+	    {
+	        //System.out.println(serversInfo.get(addressSrv));
+	        DefaultTableModel md = ( DefaultTableModel ) this.jTable1.getModel();
 
-                ServerInfo si = serversInfo.get(addressSrv);
-                if( si == null)
-                {
-                    System.out.println("ERROR : Server Address "+ addressSrv +" for server class "+serverClass+" not found");
-                    continue;
-                }
+	        ServerInfo si = serversInfo.get(addressSrv);
+	        if( si == null)
+	        {
+	            System.out.println("ERROR : Server Address "+ addressSrv +" for server class "+serverClass+" not found");
+	            continue;
+	        }
 
-                si.setActive(active);
+	        si.setActive(active);
 
-                int numRow = md.getRowCount();
-                int j;
+	        int numRow = md.getRowCount();
+	        int j;
 
-                for(j = 0; j < numRow; j++)
-                {
-                    Object o = md.getValueAt(j, 2);
-                    if(o != null && o.equals(addressSrv))
-                    {
-                        md.setValueAt(new Boolean(active), j, 0);
-                        break;
-                    }
-                }
-            }
-        }
-        s.close();
+	        for(j = 0; j < numRow; j++)
+	        {
+	            Object o = md.getValueAt(j, 2);
+	            if(o != null && o.equals(addressSrv))
+	            {
+	                md.setValueAt(new Boolean(active), j, 0);
+	                break;
+	            }
+	        }
+	    }
+	}
+	s.close();
   }
 
 
   public void loadServerState(String address, int info_port) throws Exception
   {
-        this.address = address;
-        this.info_port = info_port;
+	this.address = address;
+	this.info_port = info_port;
 
-        Socket s = new Socket(address, info_port);
-        s.setSoTimeout(5000);
-        DataOutputStream dos = new DataOutputStream(s.getOutputStream());
-        DataInputStream dis = new DataInputStream(s.getInputStream());
+	Socket s = new Socket(address, info_port);
+	s.setSoTimeout(5000);
+	DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+	DataInputStream dis = new DataInputStream(s.getInputStream());
 
-        dos.writeUTF("servers");
-        int numServer = dis.readInt();
+	dos.writeUTF("servers");
+	int numServer = dis.readInt();
 
-        for(int i = 0; i < numServer; i++)
-        {
-        //System.out.println(dis.readUTF()+" "+dis.readUTF()+" "+dis.readBoolean()+" "+dis.readInt());
-        //addString(dis.readUTF(), dis.readUTF(), dis.readBoolean());
+	for(int i = 0; i < numServer; i++)
+	{
+	//System.out.println(dis.readUTF()+" "+dis.readUTF()+" "+dis.readBoolean()+" "+dis.readInt());
+	//addString(dis.readUTF(), dis.readUTF(), dis.readBoolean());
 
-            String serverClass = dis.readUTF();
-            String addressSrv = dis.readUTF();
-            boolean active = dis.readBoolean();
+	    String serverClass = dis.readUTF();
+	    String addressSrv = dis.readUTF();
+	    boolean active = dis.readBoolean();
 //            int aDoing = dis.readInt();
 
 //            System.out.println("Class :"+ serverClass +"Server :"+ addressSrv  );
 
-            if( serversInfo != null && addressSrv != null && addressSrv.length() != 0 )
-            {
-                //System.out.println(serversInfo.get(addressSrv));
-                DefaultTableModel md = ( DefaultTableModel ) this.jTable1.getModel();
+	    if( serversInfo != null && addressSrv != null && addressSrv.length() != 0 )
+	    {
+	        //System.out.println(serversInfo.get(addressSrv));
+	        DefaultTableModel md = ( DefaultTableModel ) this.jTable1.getModel();
 
-                ServerInfo si = serversInfo.get(addressSrv);
-                if( si == null)
-                {
-                    System.out.println("ERROR : Server Address "+ addressSrv +" for server class "+serverClass+" not found");
-                    continue;
-                }
+	        ServerInfo si = serversInfo.get(addressSrv);
+	        if( si == null)
+	        {
+	            System.out.println("ERROR : Server Address "+ addressSrv +" for server class "+serverClass+" not found");
+	            continue;
+	        }
 
-                si.setActive(active);
+	        si.setActive(active);
 
-                int numRow = md.getRowCount();
-                int j;
+	        int numRow = md.getRowCount();
+	        int j;
 
-                for(j = 0; j < numRow; j++)
-                {
-                    Object o = md.getValueAt(j, 2);
-                    if(o != null && o.equals(addressSrv))
-                    {
-                        md.setValueAt(new Boolean(active), j, 0);
-                        break;
-                    }
-                }
+	        for(j = 0; j < numRow; j++)
+	        {
+	            Object o = md.getValueAt(j, 2);
+	            if(o != null && o.equals(addressSrv))
+	            {
+	                md.setValueAt(new Boolean(active), j, 0);
+	                break;
+	            }
+	        }
 
-                if(j == numRow)
-                {
-                    si.setPos(j);
-                    md.addRow( si.getAsArray() );
-                }
+	        if(j == numRow)
+	        {
+	            si.setPos(j);
+	            md.addRow( si.getAsArray() );
+	        }
 
-            }
+	    }
 
-        }
-        s.close();
+	}
+	s.close();
   }
 
   public void updateServersInfoAction(MdsMonitorEvent event)
   {
-        DefaultTableModel md = ( DefaultTableModel ) this.jTable1.getModel();
+	DefaultTableModel md = ( DefaultTableModel ) this.jTable1.getModel();
 
-        int numRow = md.getRowCount();
-        ServerInfo si = serversInfo.get(event.server_address);
-        if(si != null)
-        {
-            System.out.println("Update server Action "+ event + " pos " + si.getPos());
-            md.setValueAt(event, si.getPos(), 3);
-        }
+	int numRow = md.getRowCount();
+	ServerInfo si = serversInfo.get(event.server_address);
+	if(si != null)
+	{
+	    System.out.println("Update server Action "+ event + " pos " + si.getPos());
+	    md.setValueAt(event, si.getPos(), 3);
+	}
   }
 
   public class ActionRenderer extends JLabel implements TableCellRenderer
   {
       public Component getTableCellRendererComponent(JTable table, Object value,
-                                                     boolean isSelected, boolean hasFocus,
-                                                     int row, int column)
+	                                             boolean isSelected, boolean hasFocus,
+	                                             int row, int column)
       {
-          if(value instanceof MdsMonitorEvent)
-          {
-              MdsMonitorEvent e = (MdsMonitorEvent)value;
-              switch(e.mode)
-              {
-                  case MdsMonitorEvent.MonitorDoing :
-                    setForeground(Color.BLUE);
-                  break;
-                  case MdsMonitorEvent.MonitorDone :
-                    if( (e.status & 1) != 0 )
-                        setForeground(Color.GREEN);
-                    else
-                        setForeground(Color.RED);
-                  break;
-              }
-              this.setText(e.node_path);
-          }
-          else
-              this.setText("");
-          return this;
+	  if(value instanceof MdsMonitorEvent)
+	  {
+	      MdsMonitorEvent e = (MdsMonitorEvent)value;
+	      switch(e.mode)
+	      {
+	          case MdsMonitorEvent.MonitorDoing :
+	            setForeground(Color.BLUE);
+	          break;
+	          case MdsMonitorEvent.MonitorDone :
+	            if( (e.status & 1) != 0 )
+	                setForeground(Color.GREEN);
+	            else
+	                setForeground(Color.RED);
+	          break;
+	      }
+	      this.setText(e.node_path);
+	  }
+	  else
+	      this.setText("");
+	  return this;
       }
    }
 
   public class StateRenderer extends JPanel implements TableCellRenderer
   {
       public Component getTableCellRendererComponent(JTable table, Object value,
-                                                     boolean isSelected, boolean hasFocus,
-                                                     int row, int column)
+	                                             boolean isSelected, boolean hasFocus,
+	                                             int row, int column)
       {
-          if(value instanceof Boolean)
-          {
-              Boolean b = (Boolean)value;
-              if(b.booleanValue())
-                  setBackground(Color.GREEN);
-              else
-                  setBackground(Color.RED);
-          }
-          return this;
+	  if(value instanceof Boolean)
+	  {
+	      Boolean b = (Boolean)value;
+	      if(b.booleanValue())
+	          setBackground(Color.GREEN);
+	      else
+	          setBackground(Color.RED);
+	  }
+	  return this;
       }
    }
 
@@ -423,23 +423,23 @@ private void stopServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
   {
 
       public Component getTableCellRendererComponent(JTable table, Object value,
-                                                     boolean isSelected, boolean hasFocus,
-                                                     int row, int column)
+	                                             boolean isSelected, boolean hasFocus,
+	                                             int row, int column)
       {
-          /*
-          if (isSelected)
-          {
-              setForeground(table.getSelectionForeground());
-              setBackground(table.getSelectionBackground());
-          } else{
-              setForeground(table.getForeground());
-              setBackground(UIManager.getColor("Button.background"));
-          }
-         */
+	  /*
+	  if (isSelected)
+	  {
+	      setForeground(table.getSelectionForeground());
+	      setBackground(table.getSelectionBackground());
+	  } else{
+	      setForeground(table.getForeground());
+	      setBackground(UIManager.getColor("Button.background"));
+	  }
+	 */
       //    command = value.toString();
-          //setText( (value == null) ? "" : value.toString() );
-        //  return this;
-            return (Component)value;
+	  //setText( (value == null) ? "" : value.toString() );
+	//  return this;
+	    return (Component)value;
       }
 
    }

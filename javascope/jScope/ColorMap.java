@@ -35,10 +35,10 @@ public class ColorMap
 
       for(int i = 0; i < numColors; i++)
       {
-          this.r[i] = (byte)(0xFF & i);
-          this.g[i] = (byte)(0xFF & i);
-          this.b[i] = (byte)(0xFF & i);
-          colors[i] = new Color(i, i, i);
+	  this.r[i] = (byte)(0xFF & i);
+	  this.g[i] = (byte)(0xFF & i);
+	  this.b[i] = (byte)(0xFF & i);
+	  colors[i] = new Color(i, i, i);
       }
   }
 
@@ -52,10 +52,10 @@ public class ColorMap
 
       for(int i = 0; i < numColors; i++)
       {
-          this.r[i] = (byte)(0xFF & r[i]);
-          this.g[i] = (byte)(0xFF & g[i]);
-          this.b[i] = (byte)(0xFF & b[i]);
-          colors[i] = new Color(r[i], g[i], b[i]);
+	  this.r[i] = (byte)(0xFF & r[i]);
+	  this.g[i] = (byte)(0xFF & g[i]);
+	  this.b[i] = (byte)(0xFF & b[i]);
+	  colors[i] = new Color(r[i], g[i], b[i]);
       }
   }
 
@@ -113,7 +113,7 @@ public class ColorMap
   }
 
   public void createColorMap(int numColors, int numPoints,
-                             float min, float max)
+	                     float min, float max)
   {
 
       this.max = max;
@@ -311,30 +311,30 @@ public class ColorMap
     float c1 = (v[0] - v[1]) / (p[0] - p[1]);
 
     for (int i = 0; i < nVal; i++,
-         c1 = (v[idx] - v[idx + 1]) / (p[idx] - p[idx + 1]))
+	 c1 = (v[idx] - v[idx + 1]) / (p[idx] - p[idx + 1]))
     {
       if (p[idx] == p[idx + 1])
       {
-        idx++;
-        i--;
-        continue;
+	idx++;
+	i--;
+	continue;
       }
 
       val = i * dx;
       if (val > p[idx + 1])
       {
-        idx++;
-        i--;
-        continue;
+	idx++;
+	i--;
+	continue;
       }
       out[i] =  (int)(c1 * val - p[idx] * c1 + v[idx]);
       if (out[i] > 255)
       {
-        out[i] = 255;
+	out[i] = 255;
       }
       else if (out[i] < 0)
       {
-        out[i] = 0;
+	out[i] = 0;
       }
     }
     return out;

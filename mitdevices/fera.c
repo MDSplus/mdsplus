@@ -28,11 +28,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	JOSH STILLERMAN
+		Author:	JOSH STILLERMAN
 
 		Date:   23-APR-1992
 
-    		Purpose: Support for FERA modules.
+		Purpose: Support for FERA modules.
 
 ------------------------------------------------------------------------------
 
@@ -98,7 +98,7 @@ The data is dumped into the 4302 memory modules without using the hardware
    has a kludge deadspace.  The size of each module is set by switches on the
    side (to 12k, 14k, 15k, or 15.5k).
 
-        Jeff Casey     8/6/91 , mods 10/23/91, 5/92.
+	Jeff Casey     8/6/91 , mods 10/23/91, 5/92.
 
 ------------------------------------------------------------------------------*/
 
@@ -342,7 +342,7 @@ static int Put(unsigned short int *buffer, int pts_per_chan, int chans, int cloc
   DESCRIPTOR_A_COEFF_2(a_dsc, sizeof(short), DTYPE_W, (char *)0, 0, 0, 0);
   DESCRIPTOR(expr,
 	     "BUILD_SIGNAL(BUILD_WITH_UNITS($VALUE*.25E-12,'Coulombs'), build_with_units($,'counts'), $, \
-                           build_with_units(0 : $ : 1, 'Channel'))");
+	                   build_with_units(0 : $ : 1, 'Channel'))");
   struct descriptor_s clock_nid_dsc = { sizeof(int), DTYPE_NID, CLASS_S, (char *)0 };
   int max_chan_num = chans - 1;
   struct descriptor_s num_dsc = { sizeof(int), DTYPE_L, CLASS_S, (char *)0 };

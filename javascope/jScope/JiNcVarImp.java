@@ -71,11 +71,11 @@ abstract class JiNcVarImp
       int ix = 0;
       while (ix < bytes.length)
       {
-        int val = (((int)bytes[ix++] & 0xff) << 24) +
-                  (((int)bytes[ix++] & 0xff) << 16) +
-                  (((int)bytes[ix++] & 0xff) << 8) +
-                  ((int)bytes[ix++] & 0xff);
-        floats[count++] = Float.intBitsToFloat(val);
+	int val = (((int)bytes[ix++] & 0xff) << 24) +
+	          (((int)bytes[ix++] & 0xff) << 16) +
+	          (((int)bytes[ix++] & 0xff) << 8) +
+	          ((int)bytes[ix++] & 0xff);
+	floats[count++] = Float.intBitsToFloat(val);
        }
 	}
 

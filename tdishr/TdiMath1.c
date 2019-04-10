@@ -24,25 +24,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-                Name:   Tdi3MATH1
+	        Name:   Tdi3MATH1
 
-                Type:   C function
+	        Type:   C function
 
-                Author: TOM FREDIAN
+	        Author: TOM FREDIAN
 
-                Date:   5-OCT-1993
+	        Date:   5-OCT-1993
 
-                Purpose:
+	        Purpose:
 
-        Take square root or other math function of scalar or array.
-        real or complex to same: COS EXP LOG SIN SQRT
-        real to real only: ACOS ACOSD AINT ASIN ASIND ATAN ATAND ATANH
-                COSD COSH FLOOR LOG2 LOG10 SIND SINH TAN TAND TANH
-        complex to real: ARG ARGD
+	Take square root or other math function of scalar or array.
+	real or complex to same: COS EXP LOG SIN SQRT
+	real to real only: ACOS ACOSD AINT ASIN ASIND ATAN ATAND ATANH
+	        COSD COSH FLOOR LOG2 LOG10 SIND SINH TAN TAND TANH
+	complex to real: ARG ARGD
 
 ------------------------------------------------------------------------------
 
-        Call sequence:
+	Call sequence:
 
 int Tdi3xxx(struct descriptor *in, struct descriptor *out)
 
@@ -54,7 +54,7 @@ int Tdi3xxx(struct descriptor *in, struct descriptor *out)
    Management.
 ---------------------------------------------------------------------------
 
-        Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -100,9 +100,9 @@ STATIC_CONSTANT int roprand = 0x8000;
   double in;\
   double ans;\
   while (nout--) {errno=0; \
-                  if (CvtConvertFloat(inp++,dtype,&in,DTYPE_NATIVE_DOUBLE,0)) ans = function(in); else errno=-1;\
-                  if (errno) CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0); else\
-                             CvtConvertFloat(&ans,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);} break; }
+	          if (CvtConvertFloat(inp++,dtype,&in,DTYPE_NATIVE_DOUBLE,0)) ans = function(in); else errno=-1;\
+	          if (errno) CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0); else\
+	                     CvtConvertFloat(&ans,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);} break; }
 
 #define OperateC2C(type,dtype,function) \
 { type *inp = (type *)in->pointer;\
@@ -110,15 +110,15 @@ STATIC_CONSTANT int roprand = 0x8000;
   double in[2];\
   double ans[2];\
   while (nout--) {errno=0; \
-                  if (CvtConvertFloat(&inp[0],dtype,&in[0],DTYPE_NATIVE_DOUBLE,0) &&\
-                      CvtConvertFloat(&inp[1],dtype,&in[1],DTYPE_NATIVE_DOUBLE,0))\
-                       function(in,ans); else errno=-1;\
-                  if (errno) {CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
-                              CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);} else {\
-                              CvtConvertFloat(&ans[0],DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
-                              CvtConvertFloat(&ans[1],DTYPE_NATIVE_DOUBLE,outp++,dtype,0);}\
-                  inp+=2;\
-                 } break; }
+	          if (CvtConvertFloat(&inp[0],dtype,&in[0],DTYPE_NATIVE_DOUBLE,0) &&\
+	              CvtConvertFloat(&inp[1],dtype,&in[1],DTYPE_NATIVE_DOUBLE,0))\
+	               function(in,ans); else errno=-1;\
+	          if (errno) {CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
+	                      CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);} else {\
+	                      CvtConvertFloat(&ans[0],DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
+	                      CvtConvertFloat(&ans[1],DTYPE_NATIVE_DOUBLE,outp++,dtype,0);}\
+	          inp+=2;\
+	         } break; }
 
 #define OperateC2S(type,dtype,function) \
 { type *inp = (type *)in->pointer;\
@@ -126,13 +126,13 @@ STATIC_CONSTANT int roprand = 0x8000;
   double in[2];\
   double ans;\
   while (nout--) {errno=0; \
-                  if (CvtConvertFloat(&inp[0],dtype,&in[0],DTYPE_NATIVE_DOUBLE,0) &&\
-                      CvtConvertFloat(&inp[1],dtype,&in[1],DTYPE_NATIVE_DOUBLE,0))\
-                       ans = function(in[1],in[0]); else errno=-1;\
-                  if (errno) CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0); else \
-                              CvtConvertFloat(&ans,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
-                  inp+=2;\
-                 } break; }
+	          if (CvtConvertFloat(&inp[0],dtype,&in[0],DTYPE_NATIVE_DOUBLE,0) &&\
+	              CvtConvertFloat(&inp[1],dtype,&in[1],DTYPE_NATIVE_DOUBLE,0))\
+	               ans = function(in[1],in[0]); else errno=-1;\
+	          if (errno) CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0); else \
+	                      CvtConvertFloat(&ans,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
+	          inp+=2;\
+	         } break; }
 
 #define mathsingle(name,function)\
 int Tdi3##name(struct descriptor *in, struct descriptor *out)\

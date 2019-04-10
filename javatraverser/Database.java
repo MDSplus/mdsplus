@@ -8,18 +8,18 @@ public class Database implements RemoteTree{
     boolean is_editable = false;
     boolean is_realtime = false;
     static {
-        try {
+	try {
  //           System.loadLibrary("MdsShr");
  //           System.loadLibrary("MdsIpShr");
  //           System.loadLibrary("TreeShr");
  //           System.loadLibrary("TdiShr");
-            System.loadLibrary("JavaMds");
+	    System.loadLibrary("JavaMds");
 	    }
-            catch(Exception exc)
-            {
-              jTraverser.stderr("Cannot load library ", exc);
-              exc.printStackTrace();
-            }
+	    catch(Exception exc)
+	    {
+	      jTraverser.stderr("Cannot load library ", exc);
+	      exc.printStackTrace();
+	    }
     }
     public Database() {super();}
     public Database(String name, int shot)
@@ -29,27 +29,27 @@ public class Database implements RemoteTree{
     }
     public void setTree(String name, int shot)
     {
-        this.name = name.toUpperCase();
-        this.shot = shot;
+	this.name = name.toUpperCase();
+	this.shot = shot;
     }
 
     public void setEditable(boolean editable)
     {
-        this.is_editable = editable;
+	this.is_editable = editable;
     }
 
     public void setRealtime(boolean realtime)
     {
-        this.is_realtime = realtime;
+	this.is_realtime = realtime;
     }
 
     public void setReadonly(boolean readonly)
     {
-        this.is_readonly = readonly;
+	this.is_readonly = readonly;
     }
     public Data evaluateData(Data data, int ctx) throws DatabaseException
     {
-        return evaluateSimpleData(data, ctx);
+	return evaluateSimpleData(data, ctx);
     }
     final public String getName() {return name; }
     final public int getShot() {return shot;}

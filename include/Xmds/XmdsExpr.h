@@ -17,11 +17,11 @@
 
 		Type:   C include
 
-     		Author:	Josh Stillerman
+		Author:	Josh Stillerman
 
 		Date:   23-NOV-1989
 
-    		Purpose: Public declarations for  expr widget
+		Purpose: Public declarations for  expr widget
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989

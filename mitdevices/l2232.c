@@ -28,11 +28,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	Josh Stillerman
+		Author:	Josh Stillerman
 
 		Date:   26-JUL-1993
 
-    		Purpose: Support for L2232 32 channel Differential ADC
+		Purpose: Support for L2232 32 channel Differential ADC
 
 ------------------------------------------------------------------------------
 
@@ -49,7 +49,7 @@ EXPORT int L2232__STORE(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>

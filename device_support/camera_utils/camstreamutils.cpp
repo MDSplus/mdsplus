@@ -78,7 +78,7 @@ class StreamingFrame {
 		this->highLim = highLim;
 		this->minLim = minLim;
 		this->maxLim = maxLim;
-                this->deviceName = deviceName;
+	        this->deviceName = deviceName;
 		nxt = 0;
     }
 
@@ -94,33 +94,33 @@ class StreamingFrame {
 
     void streaming()
     {
-        //printf("lowLim: %d highLim: %d minLim: %d maxLim: %d\n", *lowLim, *highLim, minLim, maxLim);
+	//printf("lowLim: %d highLim: %d minLim: %d maxLim: %d\n", *lowLim, *highLim, minLim, maxLim);
 
 	unsigned char *frame8bit = (unsigned char *) calloc(1, width * height * sizeof(char));
 
-    	//if ( irFrameFormat == radiometric )
-    	if ( irFrameFormat == 0 )
-        	flirRadiometricConv(frame, width, height, frameMetadata) ;
+	//if ( irFrameFormat == radiometric )
+	if ( irFrameFormat == 0 )
+		flirRadiometricConv(frame, width, height, frameMetadata) ;
 
-    	camFrameTo8bit((unsigned short *) frame, width, height, frame8bit, adjLimit, lowLim, highLim, minLim, maxLim);
+	camFrameTo8bit((unsigned short *) frame, width, height, frame8bit, adjLimit, lowLim, highLim, minLim, maxLim);
 
-        struct tm *tm;    //date & time used in FFMPEG_OVERLAY_***DEVICE-NAME*** file
-        time_t t;
-        char str_datetime[25];
-        t = time(NULL);
-        tm = localtime(&t);
-        strcpy(str_datetime,"");
-        strftime(str_datetime, sizeof(str_datetime), "%d-%m-%Y  %H:%M:%S", tm);
+	struct tm *tm;    //date & time used in FFMPEG_OVERLAY_***DEVICE-NAME*** file
+	time_t t;
+	char str_datetime[25];
+	t = time(NULL);
+	tm = localtime(&t);
+	strcpy(str_datetime,"");
+	strftime(str_datetime, sizeof(str_datetime), "%d-%m-%Y  %H:%M:%S", tm);
 
-        char textString[100];
-        sprintf(textString, "%s - %s - Min.:%d Max.:%d",this->deviceName, str_datetime, *lowLim, *highLim);  //text overlay example: IRCAM01 - 2017-02-06 10:08:00 - Min.:10 Max.:50
+	char textString[100];
+	sprintf(textString, "%s - %s - Min.:%d Max.:%d",this->deviceName, str_datetime, *lowLim, *highLim);  //text overlay example: IRCAM01 - 2017-02-06 10:08:00 - Min.:10 Max.:50
 
-        char filename[40];
-        sprintf(filename, "FFMPEG_OVERLAY_%s.txt", this->deviceName);
+	char filename[40];
+	sprintf(filename, "FFMPEG_OVERLAY_%s.txt", this->deviceName);
 
-        camFFMPEGoverlay(filename, textString);
+	camFFMPEGoverlay(filename, textString);
 
-    	camSendFrameOnTcp(&tcpStreamHandle, width, height, frame8bit);
+	camSendFrameOnTcp(&tcpStreamHandle, width, height, frame8bit);
 
 	free(frame8bit);
 /*
@@ -131,7 +131,7 @@ class StreamingFrame {
 	else if(pixelSize<=32)
 	    delete (int *) frame;
 */
-        delete (short *)frame;
+	delete (short *)frame;
     }
 };
 
@@ -251,9 +251,9 @@ void camStopStreaming(void *listPtr)
 {
     if(listPtr)
     {
-        StreamingFrameList *list = (StreamingFrameList *)listPtr;
-        list->stop();
-        delete list;
+	StreamingFrameList *list = (StreamingFrameList *)listPtr;
+	list->stop();
+	delete list;
     }
 }
 
@@ -267,17 +267,17 @@ void camStreamingFrame(int tcpStreamHandle, void *frame, void *frameMetadata, in
     if(pixelSize<=8)
     {
 	 bufFrame = new char[frameSize];
-    	 memcpy(bufFrame, frame, frameSize * sizeof(char));
+	 memcpy(bufFrame, frame, frameSize * sizeof(char));
     }
     else if(pixelSize<=16)
     {
 	 bufFrame = new short[frameSize];
-    	 memcpy(bufFrame, frame, frameSize * sizeof(short));
+	 memcpy(bufFrame, frame, frameSize * sizeof(short));
     }
     else if(pixelSize<=32)
     {
 	 bufFrame = new int[frameSize];
-    	 memcpy(bufFrame, frame, frameSize * sizeof(int));
+	 memcpy(bufFrame, frame, frameSize * sizeof(int));
     }
 
     bufMdata = new char[metaSize];
@@ -310,7 +310,7 @@ int camOpenTcpConnectionNew(const char *streamingServer, int StreamingPort, int 
 /* Resolve the passed name and store the resulting long representation in the struct hostent variable */
   if ((hp = gethostbyname(streamingServer)) == 0)
   {
-   	//perror("gethostbyname");
+	//perror("gethostbyname");
     return -1;
   }
 
@@ -390,15 +390,15 @@ int camSendFrameOnTcp(int *kSockHandle, int width, int height, void *frame8bit)
 
   if(*kSockHandle!=-1)
   {
-        /* Send frame */
-         if (send(*kSockHandle, frame8bit, width*height, 0) == -1)
-         {
-           camCloseTcpConnection(kSockHandle); //if send fail -> close socket
-           return -1;
-         }
+	/* Send frame */
+	 if (send(*kSockHandle, frame8bit, width*height, 0) == -1)
+	 {
+	   camCloseTcpConnection(kSockHandle); //if send fail -> close socket
+	   return -1;
+	 }
 
 #ifdef debug
-        cout << "Frame spedito su TCP.\n" << endl;
+	cout << "Frame spedito su TCP.\n" << endl;
 #endif
 
   }
@@ -417,7 +417,7 @@ int camFrameTo8bit(unsigned short *frame, int width, int height, unsigned char *
      //minLim & maxLim depend on specific camera and are used only if adjLimits==1. In this case lowLim and highLim are calculated in the frame but cannot exceed the minLim and maxLim.
      //frame8bit is the 8 bit resized version of frame using the passed or calculated min and max limits
 
-        unsigned short minpix, maxpix;
+	unsigned short minpix, maxpix;
 	if (adjLimits)
 	{
 		minpix = USHRT_MAX;

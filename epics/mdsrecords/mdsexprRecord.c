@@ -75,33 +75,33 @@ static long get_graphic_double(DBADDR *, struct dbr_grDouble *);
 static long get_control_double(DBADDR *, struct dbr_ctrlDouble *);
 #define get_alarm_double NULL
 rset mdsexprRSET={
-        RSETNUMBER,
-        report,
-        initialize,
-        init_record,
-        process,
-        special,
-        get_value,
-        cvt_dbaddr,
-        get_array_info,
-        put_array_info,
-        get_units,
-        get_precision,
-        get_enum_str,
-        get_enum_strs,
-        put_enum_str,
-        get_graphic_double,
-        get_control_double,
-        get_alarm_double
+	RSETNUMBER,
+	report,
+	initialize,
+	init_record,
+	process,
+	special,
+	get_value,
+	cvt_dbaddr,
+	get_array_info,
+	put_array_info,
+	get_units,
+	get_precision,
+	get_enum_str,
+	get_enum_strs,
+	put_enum_str,
+	get_graphic_double,
+	get_control_double,
+	get_alarm_double
 };
 epicsExportAddress(rset,mdsexprRSET);
 struct mpdset { /* mdsexpr dset */
-        long            number;
-        DEVSUPFUN       dev_report;
-        DEVSUPFUN       init;
-        DEVSUPFUN       init_record; /*returns: (-1,0)=>(failure,success)*/
-        DEVSUPFUN       get_ioint_info;
-        DEVSUPFUN       read_mp; /*returns: (-1,0)=>(failure,success)*/
+	long            number;
+	DEVSUPFUN       dev_report;
+	DEVSUPFUN       init;
+	DEVSUPFUN       init_record; /*returns: (-1,0)=>(failure,success)*/
+	DEVSUPFUN       get_ioint_info;
+	DEVSUPFUN       read_mp; /*returns: (-1,0)=>(failure,success)*/
 };
 
 static void monitor(mdsexprRecord *);
@@ -113,34 +113,34 @@ static long init_record(mdsexprRecord *prec, int pass)
     struct mpdset *pdset;
     long status;
     if (pass==0){
-        if (prec->nelm <= 0)
-            prec->nelm = 1;
-        if (prec->ftvl > DBF_ENUM)
-            prec->ftvl = DBF_UCHAR;
-        prec->bptr = callocMustSucceed(prec->nelm, dbValueSize(prec->ftvl),
-            "mdsexpr calloc failed");
-        if (prec->nelm == 1) {
-            prec->nord = 1;
-        } else {
-            prec->nord = 0;
-        }
-        return 0;
+	if (prec->nelm <= 0)
+	    prec->nelm = 1;
+	if (prec->ftvl > DBF_ENUM)
+	    prec->ftvl = DBF_UCHAR;
+	prec->bptr = callocMustSucceed(prec->nelm, dbValueSize(prec->ftvl),
+	    "mdsexpr calloc failed");
+	if (prec->nelm == 1) {
+	    prec->nord = 1;
+	} else {
+	    prec->nord = 0;
+	}
+	return 0;
     }
 
     /* wf.siml must be a CONSTANT or a PV_LINK or a DB_LINK */
     if (prec->siml.type == CONSTANT) {
-        recGblInitConstantLink(&prec->siml,DBF_USHORT,&prec->simm);
+	recGblInitConstantLink(&prec->siml,DBF_USHORT,&prec->simm);
     }
 
     /* must have dset defined */
     if (!(pdset = (struct mpdset *)(prec->dset))) {
-        recGblRecordError(S_dev_noDSET,(void *)prec,"mp: init_record");
-        return S_dev_noDSET;
+	recGblRecordError(S_dev_noDSET,(void *)prec,"mp: init_record");
+	return S_dev_noDSET;
     }
     /* must have read_wf function defined */
     if ((pdset->number < 5) || (pdset->read_mp == NULL)) {
-        recGblRecordError(S_dev_missingSup,(void *)prec,"mp: init_record");
-        return S_dev_missingSup;
+	recGblRecordError(S_dev_missingSup,(void *)prec,"mp: init_record");
+	return S_dev_missingSup;
     }
     if (! pdset->init_record) return 0;
 
@@ -156,9 +156,9 @@ static long process(mdsexprRecord *prec)
     unsigned char  pact=prec->pact;
 
     if ((pdset==NULL) || (pdset->read_mp==NULL)) {
-        prec->pact=TRUE;
-        recGblRecordError(S_dev_missingSup, (void *)prec, "read_mp");
-        return S_dev_missingSup;
+	prec->pact=TRUE;
+	recGblRecordError(S_dev_missingSup, (void *)prec, "read_mp");
+	return S_dev_missingSup;
     }
 
     if (pact && prec->busy) return 0;
@@ -210,7 +210,7 @@ static long put_array_info(DBADDR *paddr, long nNew)
 
     prec->nord = nNew;
     if (prec->nord > prec->nelm)
-        prec->nord = prec->nelm;
+	prec->nord = prec->nelm;
 
     return 0;
 }
@@ -232,7 +232,7 @@ static long get_precision(DBADDR *paddr, long *precision)
     *precision = prec->prec;
 
     if (fieldIndex != mdsexprRecordVAL)
-        recGblGetPrec(paddr, precision);
+	recGblGetPrec(paddr, precision);
 
     return 0;
 }
@@ -242,10 +242,10 @@ static long get_graphic_double(DBADDR *paddr, struct dbr_grDouble *pgd)
     mdsexprRecord *prec = (mdsexprRecord *) paddr->precord;
 
     if (dbGetFieldIndex(paddr) == mdsexprRecordVAL) {
-        pgd->upper_disp_limit = prec->hopr;
-        pgd->lower_disp_limit = prec->lopr;
+	pgd->upper_disp_limit = prec->hopr;
+	pgd->lower_disp_limit = prec->lopr;
     } else
-        recGblGetGraphicDouble(paddr, pgd);
+	recGblGetGraphicDouble(paddr, pgd);
     return 0;
 }
 
@@ -254,10 +254,10 @@ static long get_control_double(DBADDR *paddr, struct dbr_ctrlDouble *pcd)
     mdsexprRecord *prec = (mdsexprRecord *) paddr->precord;
 
     if (dbGetFieldIndex(paddr) == mdsexprRecordVAL) {
-        pcd->upper_ctrl_limit = prec->hopr;
-        pcd->lower_ctrl_limit = prec->lopr;
+	pcd->upper_ctrl_limit = prec->hopr;
+	pcd->lower_ctrl_limit = prec->lopr;
     } else
-        recGblGetControlDouble(paddr, pcd);
+	recGblGetControlDouble(paddr, pcd);
     return 0;
 }
 
@@ -269,32 +269,32 @@ static void monitor(mdsexprRecord *prec)
     monitor_mask = recGblResetAlarms(prec);
 
     if (prec->mpst == mdsexprPOST_Always)
-        monitor_mask |= DBE_VALUE;
+	monitor_mask |= DBE_VALUE;
     if (prec->apst == mdsexprPOST_Always)
-        monitor_mask |= DBE_LOG;
+	monitor_mask |= DBE_LOG;
 
     /* Calculate hash if we are interested in OnChange events. */
     if ((prec->mpst == mdsexprPOST_OnChange) ||
-        (prec->apst == mdsexprPOST_OnChange)) {
-        hash = epicsMemHash((char *)prec->bptr,
-            prec->nord * dbValueSize(prec->ftvl), 0);
+	(prec->apst == mdsexprPOST_OnChange)) {
+	hash = epicsMemHash((char *)prec->bptr,
+	    prec->nord * dbValueSize(prec->ftvl), 0);
 
-        /* Only post OnChange values if the hash is different. */
-        if (hash != prec->hash) {
-            if (prec->mpst == mdsexprPOST_OnChange)
-                monitor_mask |= DBE_VALUE;
-            if (prec->apst == mdsexprPOST_OnChange)
-                monitor_mask |= DBE_LOG;
+	/* Only post OnChange values if the hash is different. */
+	if (hash != prec->hash) {
+	    if (prec->mpst == mdsexprPOST_OnChange)
+	        monitor_mask |= DBE_VALUE;
+	    if (prec->apst == mdsexprPOST_OnChange)
+	        monitor_mask |= DBE_LOG;
 
-            /* Store hash for next process. */
-            prec->hash = hash;
-            /* Post HASH. */
-            db_post_events(prec, &prec->hash, DBE_VALUE);
-        }
+	    /* Store hash for next process. */
+	    prec->hash = hash;
+	    /* Post HASH. */
+	    db_post_events(prec, &prec->hash, DBE_VALUE);
+	}
     }
 
     if (monitor_mask) {
-        db_post_events(prec, prec->bptr, monitor_mask);
+	db_post_events(prec, prec->bptr, monitor_mask);
     }
 }
 
@@ -304,29 +304,29 @@ static long readValue(mdsexprRecord *prec)
     struct mpdset *pdset = (struct mpdset *) prec->dset;
 
     if (prec->pact == TRUE){
-        return (*pdset->read_mp)(prec);
+	return (*pdset->read_mp)(prec);
     }
 
     status = dbGetLink(&(prec->siml), DBR_ENUM, &(prec->simm),0,0);
     if (status)
-        return status;
+	return status;
 
     if (prec->simm == menuYesNoNO){
-        return (*pdset->read_mp)(prec);
+	return (*pdset->read_mp)(prec);
     }
 
     if (prec->simm == menuYesNoYES){
-        long nRequest = prec->nelm;
-        status = dbGetLink(&(prec->siol), prec->ftvl, prec->bptr, 0, &nRequest);
-        /* nord set only for db links: needed for old db_access */
-        if (prec->siol.type != CONSTANT) {
-            prec->nord = nRequest;
-            if (status == 0)
-                prec->udf=FALSE;
-        }
+	long nRequest = prec->nelm;
+	status = dbGetLink(&(prec->siol), prec->ftvl, prec->bptr, 0, &nRequest);
+	/* nord set only for db links: needed for old db_access */
+	if (prec->siol.type != CONSTANT) {
+	    prec->nord = nRequest;
+	    if (status == 0)
+	        prec->udf=FALSE;
+	}
     } else {
-        recGblSetSevr(prec, SOFT_ALARM, INVALID_ALARM);
-        return -1;
+	recGblSetSevr(prec, SOFT_ALARM, INVALID_ALARM);
+	return -1;
     }
     recGblSetSevr(prec, SIMM_ALARM, prec->sims);
 
@@ -337,12 +337,12 @@ static void checkAlarms(mdsexprRecord *prec)
 	int status = prec->errs;
 
 
-        if(prec->udf == TRUE){
-                recGblSetSevr(prec,UDF_ALARM,INVALID_ALARM);
-                return;
-        }
+	if(prec->udf == TRUE){
+	        recGblSetSevr(prec,UDF_ALARM,INVALID_ALARM);
+	        return;
+	}
 
 	if(!(status & 1))
-            recGblSetSevr(prec,WRITE_ALARM,MAJOR_ALARM);
+	    recGblSetSevr(prec,WRITE_ALARM,MAJOR_ALARM);
 }
 

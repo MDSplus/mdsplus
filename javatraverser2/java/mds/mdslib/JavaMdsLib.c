@@ -69,22 +69,22 @@ JNIEXPORT jbyteArray JNICALL Java_mds_mdslib_MdsLib_evaluate(JNIEnv * env, jobje
       //printf("11\n");
       status = MdsSerializeDscOut(xd.pointer, &xds);
       if ((status & 1)){
-        //printf("12\n");
-        struct descriptor_a* bytes_d = (struct descriptor_a*)xds.pointer;
-        if (bytes_d) {
-          //printf("13\n");
-          int size = bytes_d->arsize;
-          result = (*env)->NewByteArray(env, size);
-          if (result) {
-            //printf("14+%d\n",(int)size);
-            char* bytes = (char*)bytes_d->pointer;
-            jbyte* jbytes = malloc(size*sizeof(jbyte));
-            for (i = 0; i < size; i++)
-              jbytes[i] = bytes[i];
-            (*env)->SetByteArrayRegion(env, result, 0, size, jbytes);
-            free(jbytes);
-          }
-        }
+	//printf("12\n");
+	struct descriptor_a* bytes_d = (struct descriptor_a*)xds.pointer;
+	if (bytes_d) {
+	  //printf("13\n");
+	  int size = bytes_d->arsize;
+	  result = (*env)->NewByteArray(env, size);
+	  if (result) {
+	    //printf("14+%d\n",(int)size);
+	    char* bytes = (char*)bytes_d->pointer;
+	    jbyte* jbytes = malloc(size*sizeof(jbyte));
+	    for (i = 0; i < size; i++)
+	      jbytes[i] = bytes[i];
+	    (*env)->SetByteArrayRegion(env, result, 0, size, jbytes);
+	    free(jbytes);
+	  }
+	}
       }
       MdsFree1Dx(&xds, NULL);
     }

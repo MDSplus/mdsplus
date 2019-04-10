@@ -211,8 +211,8 @@ extern FILE *mdsdclDelta_in, *mdsdclDelta_out;
 	do \
 		{ \
 		/* Undo effects of setting up mdsdclDelta_text. */ \
-        int yyless_macro_arg = (n); \
-        YY_LESS_LINENO(yyless_macro_arg);\
+	int yyless_macro_arg = (n); \
+	YY_LESS_LINENO(yyless_macro_arg);\
 		*yy_cp = (yy_hold_char); \
 		YY_RESTORE_YY_MORE_OFFSET \
 		(yy_c_buf_p) = yy_cp = yy_bp + yyless_macro_arg - YY_MORE_ADJ; \
@@ -304,8 +304,8 @@ static YY_BUFFER_STATE * yy_buffer_stack = 0; /**< Stack as an array. */
  * Returns the top of the stack, or NULL.
  */
 #define YY_CURRENT_BUFFER ( (yy_buffer_stack) \
-                          ? (yy_buffer_stack)[(yy_buffer_stack_top)] \
-                          : NULL)
+	                  ? (yy_buffer_stack)[(yy_buffer_stack_top)] \
+	                  : NULL)
 
 /* Same as previous macro, but useful when we know that the buffer stack is not
  * NULL or when we need an lvalue. For internal use only.
@@ -354,9 +354,9 @@ void mdsdclDelta_free (void *  );
 #define yy_set_interactive(is_interactive) \
 	{ \
 	if ( ! YY_CURRENT_BUFFER ){ \
-        mdsdclDelta_ensure_buffer_stack (); \
+	mdsdclDelta_ensure_buffer_stack (); \
 		YY_CURRENT_BUFFER_LVALUE =    \
-            mdsdclDelta__create_buffer(mdsdclDelta_in,YY_BUF_SIZE ); \
+	    mdsdclDelta__create_buffer(mdsdclDelta_in,YY_BUF_SIZE ); \
 	} \
 	YY_CURRENT_BUFFER_LVALUE->yy_is_interactive = is_interactive; \
 	}
@@ -364,9 +364,9 @@ void mdsdclDelta_free (void *  );
 #define yy_set_bol(at_bol) \
 	{ \
 	if ( ! YY_CURRENT_BUFFER ){\
-        mdsdclDelta_ensure_buffer_stack (); \
+	mdsdclDelta_ensure_buffer_stack (); \
 		YY_CURRENT_BUFFER_LVALUE =    \
-            mdsdclDelta__create_buffer(mdsdclDelta_in,YY_BUF_SIZE ); \
+	    mdsdclDelta__create_buffer(mdsdclDelta_in,YY_BUF_SIZE ); \
 	} \
 	YY_CURRENT_BUFFER_LVALUE->yy_at_bol = at_bol; \
 	}
@@ -418,60 +418,60 @@ struct yy_trans_info
 static yyconst flex_int16_t yy_acclist[32] =
     {   0,
     16386,    8,    6,    7,    1,    6,    7,    7,    4,    6,
-        7,    5,    6,    7,    1,    6,    7,16386,    4,    6,
-        7,    3,    7,    1,    4,    1,16386,    4,    3, 8194,
+	7,    5,    6,    7,    1,    6,    7,16386,    4,    6,
+	7,    3,    7,    1,    4,    1,16386,    4,    3, 8194,
      8194
     } ;
 
 static yyconst flex_int16_t yy_accept[25] =
     {   0,
-        1,    1,    2,    2,    2,    3,    5,    8,    9,   12,
+	1,    1,    2,    2,    2,    3,    5,    8,    9,   12,
        15,   19,   22,   24,   25,   26,   28,   28,   28,   29,
        30,   31,   32,   32
     } ;
 
 static yyconst flex_int32_t yy_ec[256] =
     {   0,
-        1,    1,    1,    1,    1,    1,    1,    1,    2,    3,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    2,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    4,    4,    4,
-        4,    4,    4,    4,    4,    4,    4,    5,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    2,    3,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    2,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    4,    4,    4,
+	4,    4,    4,    4,    4,    4,    4,    5,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1
     } ;
 
 static yyconst flex_int32_t yy_meta[6] =
     {   0,
-        1,    2,    1,    3,    1
+	1,    2,    1,    3,    1
     } ;
 
 static yyconst flex_int16_t yy_base[29] =
     {   0,
-        0,    4,   21,   20,   23,   26,    0,   26,    0,   26,
-        7,   10,    0,    0,    0,    0,   20,   13,    0,    0,
-        0,   26,   26,   18,   14,   10,    7,    4
+	0,    4,   21,   20,   23,   26,    0,   26,    0,   26,
+	7,   10,    0,    0,    0,    0,   20,   13,    0,    0,
+	0,   26,   26,   18,   14,   10,    7,    4
     } ;
 
 static yyconst flex_int16_t yy_def[29] =
@@ -483,15 +483,15 @@ static yyconst flex_int16_t yy_def[29] =
 
 static yyconst flex_int16_t yy_nxt[32] =
     {   0,
-        6,    7,    8,    9,   10,   11,   21,   12,   16,   20,
+	6,    7,    8,    9,   10,   11,   21,   12,   16,   20,
        17,   18,   15,   19,   18,   14,   21,   22,    8,    8,
-        8,   18,   23,   13,   13,    5,   23,   23,   23,   23,
+	8,   18,   23,   13,   13,    5,   23,   23,   23,   23,
        23
     } ;
 
 static yyconst flex_int16_t yy_chk[32] =
     {   0,
-        1,    1,    1,    1,    1,    2,   28,    2,   11,   27,
+	1,    1,    1,    1,    1,    2,   28,    2,   11,   27,
        11,   12,   26,   12,   18,   25,   18,   18,   24,   24,
        24,   17,    5,    4,    3,   23,   23,   23,   23,   23,
        23
@@ -732,11 +732,11 @@ YY_DECL
 		YY_USER_INIT;
 #endif
 
-        /* Create the reject buffer large enough to save one state per allowed character. */
-        if ( ! (yy_state_buf) )
-            (yy_state_buf) = (yy_state_type *)mdsdclDelta_alloc(YY_STATE_BUF_SIZE  );
-            if ( ! (yy_state_buf) )
-                YY_FATAL_ERROR( "out of dynamic memory in mdsdclDelta_lex()" );
+	/* Create the reject buffer large enough to save one state per allowed character. */
+	if ( ! (yy_state_buf) )
+	    (yy_state_buf) = (yy_state_type *)mdsdclDelta_alloc(YY_STATE_BUF_SIZE  );
+	    if ( ! (yy_state_buf) )
+	        YY_FATAL_ERROR( "out of dynamic memory in mdsdclDelta_lex()" );
 
 		if ( ! (yy_start) )
 			(yy_start) = 1;	/* first start state */
@@ -1013,7 +1013,7 @@ ECHO;
  */
 static int yy_get_next_buffer (void)
 {
-    	register char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
+	register char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
 	register char *source = (yytext_ptr);
 	register int number_to_move, i;
 	int ret_val;
@@ -1252,9 +1252,9 @@ static int yy_get_next_buffer (void)
 {
 
 	if ( ! YY_CURRENT_BUFFER ){
-        mdsdclDelta_ensure_buffer_stack ();
+	mdsdclDelta_ensure_buffer_stack ();
 		YY_CURRENT_BUFFER_LVALUE =
-            mdsdclDelta__create_buffer(mdsdclDelta_in,YY_BUF_SIZE );
+	    mdsdclDelta__create_buffer(mdsdclDelta_in,YY_BUF_SIZE );
 	}
 
 	mdsdclDelta__init_buffer(YY_CURRENT_BUFFER,input_file );
@@ -1298,7 +1298,7 @@ static int yy_get_next_buffer (void)
 
 static void mdsdclDelta__load_buffer_state  (void)
 {
-    	(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
+	(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
 	(yytext_ptr) = (yy_c_buf_p) = YY_CURRENT_BUFFER_LVALUE->yy_buf_pos;
 	mdsdclDelta_in = YY_CURRENT_BUFFER_LVALUE->yy_input_file;
 	(yy_hold_char) = *(yy_c_buf_p);
@@ -1376,11 +1376,11 @@ extern int isatty (int );
      * In that case, we don't want to reset the lineno or column.
      */
     if (b != YY_CURRENT_BUFFER){
-        b->yy_bs_lineno = 1;
-        b->yy_bs_column = 0;
+	b->yy_bs_lineno = 1;
+	b->yy_bs_column = 0;
     }
 
-        b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
+	b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
 
 	errno = oerrno;
 }
@@ -1391,7 +1391,7 @@ extern int isatty (int );
  */
     void mdsdclDelta__flush_buffer (YY_BUFFER_STATE  b )
 {
-    	if ( ! b )
+	if ( ! b )
 		return;
 
 	b->yy_n_chars = 0;
@@ -1420,7 +1420,7 @@ extern int isatty (int );
  */
 void mdsdclDelta_push_buffer_state (YY_BUFFER_STATE new_buffer )
 {
-    	if (new_buffer == NULL)
+	if (new_buffer == NULL)
 		return;
 
 	mdsdclDelta_ensure_buffer_stack();
@@ -1450,7 +1450,7 @@ void mdsdclDelta_push_buffer_state (YY_BUFFER_STATE new_buffer )
  */
 void mdsdclDelta_pop_buffer_state (void)
 {
-    	if (!YY_CURRENT_BUFFER)
+	if (!YY_CURRENT_BUFFER)
 		return;
 
 	mdsdclDelta__delete_buffer(YY_CURRENT_BUFFER );
@@ -1476,7 +1476,7 @@ static void mdsdclDelta_ensure_buffer_stack (void)
 		/* First allocation is just for 2 elements, since we don't know if this
 		 * scanner will even need a stack. We use 2 instead of 1 to avoid an
 		 * immediate realloc on the next call.
-         */
+	 */
 		num_to_alloc = 1;
 		(yy_buffer_stack) = (struct yy_buffer_state**)mdsdclDelta_alloc
 								(num_to_alloc * sizeof(struct yy_buffer_state*)
@@ -1602,7 +1602,7 @@ YY_BUFFER_STATE mdsdclDelta__scan_bytes  (yyconst char * yybytes, int  _yybytes_
 
 static void yy_fatal_error (yyconst char* msg )
 {
-    	(void) fprintf( stderr, "%s\n", msg );
+	(void) fprintf( stderr, "%s\n", msg );
 	exit( YY_EXIT_FAILURE );
 }
 
@@ -1613,8 +1613,8 @@ static void yy_fatal_error (yyconst char* msg )
 	do \
 		{ \
 		/* Undo effects of setting up mdsdclDelta_text. */ \
-        int yyless_macro_arg = (n); \
-        YY_LESS_LINENO(yyless_macro_arg);\
+	int yyless_macro_arg = (n); \
+	YY_LESS_LINENO(yyless_macro_arg);\
 		mdsdclDelta_text[mdsdclDelta_leng] = (yy_hold_char); \
 		(yy_c_buf_p) = mdsdclDelta_text + yyless_macro_arg; \
 		(yy_hold_char) = *(yy_c_buf_p); \
@@ -1639,7 +1639,7 @@ int mdsdclDelta_get_lineno  (void)
  */
 FILE *mdsdclDelta_get_in  (void)
 {
-        return mdsdclDelta_in;
+	return mdsdclDelta_in;
 }
 
 /** Get the output stream.
@@ -1647,7 +1647,7 @@ FILE *mdsdclDelta_get_in  (void)
  */
 FILE *mdsdclDelta_get_out  (void)
 {
-        return mdsdclDelta_out;
+	return mdsdclDelta_out;
 }
 
 /** Get the length of the current token.
@@ -1655,7 +1655,7 @@ FILE *mdsdclDelta_get_out  (void)
  */
 int mdsdclDelta_get_leng  (void)
 {
-        return mdsdclDelta_leng;
+	return mdsdclDelta_leng;
 }
 
 /** Get the current token.
@@ -1664,7 +1664,7 @@ int mdsdclDelta_get_leng  (void)
 
 char *mdsdclDelta_get_text  (void)
 {
-        return mdsdclDelta_text;
+	return mdsdclDelta_text;
 }
 
 /** Set the current line number.
@@ -1685,27 +1685,27 @@ void mdsdclDelta_set_lineno (int  line_number )
  */
 void mdsdclDelta_set_in (FILE *  in_str )
 {
-        mdsdclDelta_in = in_str ;
+	mdsdclDelta_in = in_str ;
 }
 
 void mdsdclDelta_set_out (FILE *  out_str )
 {
-        mdsdclDelta_out = out_str ;
+	mdsdclDelta_out = out_str ;
 }
 
 int mdsdclDelta_get_debug  (void)
 {
-        return mdsdclDelta__flex_debug;
+	return mdsdclDelta__flex_debug;
 }
 
 void mdsdclDelta_set_debug (int  bdebug )
 {
-        mdsdclDelta__flex_debug = bdebug ;
+	mdsdclDelta__flex_debug = bdebug ;
 }
 
 static int yy_init_globals (void)
 {
-        /* Initialization is the same as for the non-reentrant scanner.
+	/* Initialization is the same as for the non-reentrant scanner.
      * This function is called from mdsdclDelta_lex_destroy(), so don't allocate here.
      */
 

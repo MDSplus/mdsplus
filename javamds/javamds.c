@@ -862,14 +862,14 @@ JNIEXPORT jobject JNICALL Java_jScope_LocalDataProvider_getInfo
     memcpy(retDims, dims, dimct * sizeof(int));
     retDtype = dtype;
     switch(dtype) {
-        case DTYPE_B:
-        case DTYPE_BU: retPixelSize = 1; break;
-        case DTYPE_W:
-        case DTYPE_WU: retPixelSize = 2; break;
-        case DTYPE_L:
-        case DTYPE_LU: retPixelSize = 4; break;
-        case DTYPE_Q:
-        case DTYPE_QU: retPixelSize = 8; break;
+	case DTYPE_B:
+	case DTYPE_BU: retPixelSize = 1; break;
+	case DTYPE_W:
+	case DTYPE_WU: retPixelSize = 2; break;
+	case DTYPE_L:
+	case DTYPE_LU: retPixelSize = 4; break;
+	case DTYPE_Q:
+	case DTYPE_QU: retPixelSize = 8; break;
 	default: retPixelSize = 1;
     }
    } else {

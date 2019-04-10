@@ -28,12 +28,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	GABRIELE MANDUCHI
+		Author:	GABRIELE MANDUCHI
 			Istituto Gas Ionizzati del CNR - Padova (Italy)
 
 		Date:   22-AUG-1989
 
-    		Purpose:  Convetr a string into module interenal code,
+		Purpose:  Convetr a string into module interenal code,
 		    given translation table.
 
 ------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ EXPORT int GEN_DEVICE$CVT_STRING_CODE( )
 
 ------------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>

@@ -70,7 +70,7 @@ void* Test(void* args){
   try {
     for (; ii<NUM_REPEATS ; ii++)
       for (; ic<ncmd ; ic++)
-        delete MDSplus::execute(cmds[ic]);
+	delete MDSplus::execute(cmds[ic]);
   } catch (MDSplus::MdsException) {
     std::cerr << "ERROR in cycle " << ii << " >> " << cmds[ic] << "\n";
     throw;
@@ -91,7 +91,7 @@ void MultiThreadTest(int ncmd, const char* cmds[]) {
     int nt;
     for (nt = 0 ; nt<NUM_THREADS ; nt++)
       if (pthread_create(&threads[nt], attrp, Test, args))
-        break;
+	break;
     if (attrp) pthread_attr_destroy(attrp);
     if (nt<NUM_THREADS) fprintf(stderr,"Could not create all %d threads\n", NUM_THREADS);
     for (; nt-->0;)

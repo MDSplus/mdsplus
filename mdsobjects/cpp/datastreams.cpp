@@ -144,7 +144,7 @@ public:
 			dataAvailable = false;
 			return NULL;
 		}
-    	segData->getInfo((char *)&clazz, (char *)&dtype);
+	segData->getInfo((char *)&clazz, (char *)&dtype);
 		if(clazz != CLASS_R || dtype != DTYPE_SIGNAL)   //Data read from segment must be a signal
 		{
 			std::cout << "Internal error: non signal returned from segmented node" << std::endl;
@@ -379,7 +379,7 @@ void *monitorStreamInfo(void *par UNUSED_ARGUMENT)
 		pthread_mutex_unlock(&mutex);
 		nanosleep(&waitTime, NULL);
 	}
-        return NULL;
+	return NULL;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -409,10 +409,10 @@ EXPORT void EventStream::send(int shot, const char *name, int numSamples, float 
     sprintf(msgBuf, "%d %s F %d", shot, name, numSamples);
     for(int i = 0; i < numSamples; i++)
     {
-        sprintf(&msgBuf[strlen(msgBuf)], " %f", times[i]);
+	sprintf(&msgBuf[strlen(msgBuf)], " %f", times[i]);
     }
     for(int i = 0; i < numSamples; i++)
-        sprintf(&msgBuf[strlen(msgBuf)], " %f", samples[i]);
+	sprintf(&msgBuf[strlen(msgBuf)], " %f", samples[i]);
     Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
 }
 
@@ -422,10 +422,10 @@ EXPORT void EventStream::send(int shot, const char *name, int numSamples, uint64
     sprintf(msgBuf, "%d %s L %d", shot, name, numSamples);
     for(int i = 0; i < numSamples; i++)
     {
-        sprintf(&msgBuf[strlen(msgBuf)], " %lu", (unsigned long)times[i]);
+	sprintf(&msgBuf[strlen(msgBuf)], " %lu", (unsigned long)times[i]);
     }
     for(int i = 0; i < numSamples; i++)
-        sprintf(&msgBuf[strlen(msgBuf)], " %f", samples[i]);
+	sprintf(&msgBuf[strlen(msgBuf)], " %f", samples[i]);
     Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
 }
 
@@ -446,8 +446,8 @@ EXPORT void EventStream::run()
     int readItems = sscanf(str, "%d %s %s %d", &shot, name, timeFormat, &numSamples);
     if(readItems < 4)
     {
-        delete [] str;
-        return; //Incorrect message
+	delete [] str;
+	return; //Incorrect message
     }
     //skip to fourth blank
     int len = strlen(str);
@@ -474,7 +474,7 @@ EXPORT void EventStream::run()
 		j++;
 	    if(i < numSamples && j == len)
 	    {
-	        delete [] times;
+		delete [] times;
 		delete [] str;
 		return; //Incorrect message
 	    }
@@ -484,7 +484,7 @@ EXPORT void EventStream::run()
 	    timesD = new Float32Array(times, numSamples);
 	else
 	    timesD = new Float32(times[0]);
-        delete [] times;
+	delete [] times;
     }
     else
     {
@@ -496,7 +496,7 @@ EXPORT void EventStream::run()
 		j++;
 	    if(i < numSamples - 1 && j == len)
 	    {
-	        delete [] times;
+		delete [] times;
 		delete [] str;
 		return; //Incorrect message
 	    }
@@ -506,7 +506,7 @@ EXPORT void EventStream::run()
 	    timesD = new Uint64Array(times, numSamples);
 	else
 	    timesD = new Uint64(times[0]);
-        delete [] times;
+	delete [] times;
     }
     Data *samplesD;
     float *samples = new float[numSamples];
@@ -525,7 +525,7 @@ EXPORT void EventStream::run()
 	j++;
     }
     if(numSamples > 1)
-        samplesD = new Float32Array(samples, numSamples);
+	samplesD = new Float32Array(samples, numSamples);
     else
 	samplesD = new Float32(samples[0]);
 

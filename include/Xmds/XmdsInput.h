@@ -8,12 +8,12 @@
 
 		Type:   C include file
 
-     		Author:	JOSH STILLERMAN
+		Author:	JOSH STILLERMAN
 
 		Date:    24-FEB-1993
 
-    		Purpose: Defines the data structures and routines for
-                         generic Input or Channel support.
+		Purpose: Defines the data structures and routines for
+	                 generic Input or Channel support.
 
 --------------------------------------------------------------------------------
 

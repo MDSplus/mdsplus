@@ -80,7 +80,7 @@ public class TRCHSetup extends DeviceSetup
 			tempString[1] = "6";
 			deviceChoice3.setChoiceItems(tempString);
 		}
-        deviceChoice3.setChoiceIntValues(new int[] {3,6});
+	deviceChoice3.setChoiceIntValues(new int[] {3,6});
 		deviceChoice3.setLabelString("Num. Channels:");
 		getContentPane().add(deviceChoice3);
 		deviceChoice3.setBounds(0,192,156,40);
@@ -91,8 +91,8 @@ public class TRCHSetup extends DeviceSetup
 			tempString[1] = "1";
 			deviceChoice4.setChoiceItems(tempString);
 		}
-        deviceChoice4.setChoiceIntValues(new int[] {0,1});
-        deviceChoice4.setLabelString("Chan.Offset:");
+	deviceChoice4.setChoiceIntValues(new int[] {0,1});
+	deviceChoice4.setLabelString("Chan.Offset:");
 		getContentPane().add(deviceChoice4);
 		deviceChoice4.setBounds(156,192,130,40);
 		deviceChoice5.setOffsetNid(9);

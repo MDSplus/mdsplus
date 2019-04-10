@@ -34,42 +34,42 @@ public class ModifyData extends NodeEditor
 	    add(jp, "South");
 	    if(is_editable)
 	    {
-	        ok_b = new JButton("Ok");
-    	    ok_b.addActionListener(new ActionListener () {
-    	        public void actionPerformed(ActionEvent e) {ok();}
-    	    });
-	        jp.add(ok_b);
-	        apply_b = new JButton("Apply");
-    	    apply_b.addActionListener(new ActionListener () {
-    	        public void actionPerformed(ActionEvent e) {apply();}
-          	});
-	        jp.add(apply_b);
-	        reset_b = new JButton("Reset");
-        	reset_b.addActionListener(new ActionListener () {
-        	    public void actionPerformed(ActionEvent e) {
-        		    reset();}
-        	});
-	        jp.add(reset_b);
-	        addKeyListener(new KeyAdapter() {
-	            public void keyTyped(KeyEvent e)
-	            {
-	                if(e.getKeyCode() == KeyEvent.VK_ENTER)
-	                    ok();
-	            }
-	        });
+		ok_b = new JButton("Ok");
+	    ok_b.addActionListener(new ActionListener () {
+		public void actionPerformed(ActionEvent e) {ok();}
+	    });
+		jp.add(ok_b);
+		apply_b = new JButton("Apply");
+	    apply_b.addActionListener(new ActionListener () {
+		public void actionPerformed(ActionEvent e) {apply();}
+	  	});
+		jp.add(apply_b);
+		reset_b = new JButton("Reset");
+		reset_b.addActionListener(new ActionListener () {
+		    public void actionPerformed(ActionEvent e) {
+			    reset();}
+		});
+		jp.add(reset_b);
+		addKeyListener(new KeyAdapter() {
+		    public void keyTyped(KeyEvent e)
+		    {
+		        if(e.getKeyCode() == KeyEvent.VK_ENTER)
+		            ok();
+		    }
+		});
 	    }
 	    cancel_b = new JButton("Cancel");
-    	cancel_b.addActionListener(new ActionListener () {
-    	    public void actionPerformed(ActionEvent e) {cancel();}
-    	});
-    	cancel_b.setSelected(true);
+	cancel_b.addActionListener(new ActionListener () {
+	    public void actionPerformed(ActionEvent e) {cancel();}
+	});
+	cancel_b.setSelected(true);
 	    jp.add(cancel_b);
     }
 
     private void replace(Editor edit)
     {
 	    if(curr_edit != null && curr_edit != edit)
-	        remove((Component)curr_edit);
+		remove((Component)curr_edit);
 	    curr_edit = edit;
 	    add((Component)edit, "Center");
 	    //add(edit);
@@ -121,10 +121,10 @@ public class ModifyData extends NodeEditor
 	    if(data instanceof RangeData)
 	    {
 		    if(range_edit == null)
-		        range_edit = new RangeEditor((RangeData)data);
+			range_edit = new RangeEditor((RangeData)data);
 		    else
-		        range_edit.setData(data);
-    		replace(range_edit);
+			range_edit.setData(data);
+		replace(range_edit);
 		    range_edit.setEditable(is_editable);
 		    break;
 		}
@@ -143,9 +143,9 @@ public class ModifyData extends NodeEditor
 	    onoff.setText("Node is Off  ");
 	try {
 	    if(is_editable)
-	        frame.setTitle("Modify data of " + node.getInfo().getFullPath());
+		frame.setTitle("Modify data of " + node.getInfo().getFullPath());
 	    else
-	        frame.setTitle("Display data of " + node.getInfo().getFullPath());
+		frame.setTitle("Display data of " + node.getInfo().getFullPath());
 	}catch(Exception exc){}
 
 	tags.setText(tagList(node.getTags()));

@@ -117,7 +117,7 @@ public class DispatchEditor extends JPanel implements ActionListener,Editor
 
     public void setData(Data data)
     {
-    	this.data = (DispatchData)data;
+	this.data = (DispatchData)data;
 	if(data == null)
 	    dtype_idx = 0;
 	else if(data.dtype == Data.DTYPE_DISPATCH)
@@ -152,9 +152,9 @@ class DispatchEdt extends JPanel
 	if(this.data == null)
 	{
 	    if(is_conditional)
-	        this.data = new DispatchData(DispatchData.SCHED_COND, null, null, null, null);
-        else
-	        this.data = new DispatchData(DispatchData.SCHED_SEQ, null, null, null, null);
+		this.data = new DispatchData(DispatchData.SCHED_COND, null, null, null, null);
+	else
+		this.data = new DispatchData(DispatchData.SCHED_SEQ, null, null, null, null);
     }
 	if(this.data.getType() == DispatchData.SCHED_SEQ)
 	    is_sequential = true;
@@ -165,7 +165,7 @@ class DispatchEdt extends JPanel
 	    sequence_edit = new LabeledExprEditor("Sequence",
 		new ExprEditor(this.data.getWhen(), false));
 	else
-    	    sequence_edit = new LabeledExprEditor("After",
+	    sequence_edit = new LabeledExprEditor("After",
 		new ExprEditor(this.data.getWhen(), false));
 
 	completion_edit = new LabeledExprEditor(  "Completion",

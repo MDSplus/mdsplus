@@ -2149,7 +2149,7 @@ EXPORT void mdsplus_treenode_makeSegment(const void *lvTreeNodePtr, const void *
 		  throw MdsException("timeDataPtrIn NULL");
 		if(!initialDataArrayPtrIn)
 		  throw MdsException("initialDataArrayPtrIn NULL");
-  		treeNodePtr->makeSegment(startDataPtrIn, endDataPtrIn, timeDataPtrIn, initialDataArrayPtrIn);
+		treeNodePtr->makeSegment(startDataPtrIn, endDataPtrIn, timeDataPtrIn, initialDataArrayPtrIn);
 	}
 	catch (const MdsException &mdsE)
 	{

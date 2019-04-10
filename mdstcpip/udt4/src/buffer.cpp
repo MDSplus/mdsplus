@@ -136,16 +136,16 @@ void CSndBuffer::addBuffer(const char* data, int len, int ttl, bool order)
    {
       int pktlen = len - i * m_iMSS;
       if (pktlen > m_iMSS)
-         pktlen = m_iMSS;
+	 pktlen = m_iMSS;
 
       memcpy(s->m_pcData, data + i * m_iMSS, pktlen);
       s->m_iLength = pktlen;
 
       s->m_iMsgNo = m_iNextMsgNo | inorder;
       if (i == 0)
-         s->m_iMsgNo |= 0x80000000;
+	 s->m_iMsgNo |= 0x80000000;
       if (i == size - 1)
-         s->m_iMsgNo |= 0x40000000;
+	 s->m_iMsgNo |= 0x40000000;
 
       s->m_OriginTime = time;
       s->m_iTTL = ttl;
@@ -178,22 +178,22 @@ int CSndBuffer::addBufferFromFile(fstream& ifs, int len)
    for (int i = 0; i < size; ++ i)
    {
       if (ifs.bad() || ifs.fail() || ifs.eof())
-         break;
+	 break;
 
       int pktlen = len - i * m_iMSS;
       if (pktlen > m_iMSS)
-         pktlen = m_iMSS;
+	 pktlen = m_iMSS;
 
       ifs.read(s->m_pcData, pktlen);
       if ((pktlen = ifs.gcount()) <= 0)
-         break;
+	 break;
 
       // currently file transfer is only available in streaming mode, message is always in order, ttl = infinite
       s->m_iMsgNo = m_iNextMsgNo | 0x20000000;
       if (i == 0)
-         s->m_iMsgNo |= 0x80000000;
+	 s->m_iMsgNo |= 0x80000000;
       if (i == size - 1)
-         s->m_iMsgNo |= 0x40000000;
+	 s->m_iMsgNo |= 0x40000000;
 
       s->m_iLength = pktlen;
       s->m_iTTL = -1;
@@ -247,12 +247,12 @@ int CSndBuffer::readData(char** data, const int offset, int32_t& msgno, int& msg
       bool move = false;
       while (msgno == (p->m_iMsgNo & 0x1FFFFFFF))
       {
-         if (p == m_pCurrBlock)
-            move = true;
-         p = p->m_pNext;
-         if (move)
-            m_pCurrBlock = p;
-         msglen ++;
+	 if (p == m_pCurrBlock)
+	    move = true;
+	 p = p->m_pNext;
+	 if (move)
+	    m_pCurrBlock = p;
+	 msglen ++;
       }
 
       return -1;
@@ -363,8 +363,8 @@ CRcvBuffer::~CRcvBuffer()
    {
       if (NULL != m_pUnit[i])
       {
-         m_pUnit[i]->m_iFlag = 0;
-         -- m_pUnitQueue->m_iCount;
+	 m_pUnit[i]->m_iFlag = 0;
+	 -- m_pUnitQueue->m_iCount;
       }
    }
 
@@ -398,25 +398,25 @@ int CRcvBuffer::readBuffer(char* data, int len)
    {
       int unitsize = m_pUnit[p]->m_Packet.getLength() - m_iNotch;
       if (unitsize > rs)
-         unitsize = rs;
+	 unitsize = rs;
 
       memcpy(data, m_pUnit[p]->m_Packet.m_pcData + m_iNotch, unitsize);
       data += unitsize;
 
       if ((rs > unitsize) || (rs == m_pUnit[p]->m_Packet.getLength() - m_iNotch))
       {
-         CUnit* tmp = m_pUnit[p];
-         m_pUnit[p] = NULL;
-         tmp->m_iFlag = 0;
-         -- m_pUnitQueue->m_iCount;
+	 CUnit* tmp = m_pUnit[p];
+	 m_pUnit[p] = NULL;
+	 tmp->m_iFlag = 0;
+	 -- m_pUnitQueue->m_iCount;
 
-         if (++ p == m_iSize)
-            p = 0;
+	 if (++ p == m_iSize)
+	    p = 0;
 
-         m_iNotch = 0;
+	 m_iNotch = 0;
       }
       else
-         m_iNotch += rs;
+	 m_iNotch += rs;
 
       rs -= unitsize;
    }
@@ -435,26 +435,26 @@ int CRcvBuffer::readBufferToFile(fstream& ofs, int len)
    {
       int unitsize = m_pUnit[p]->m_Packet.getLength() - m_iNotch;
       if (unitsize > rs)
-         unitsize = rs;
+	 unitsize = rs;
 
       ofs.write(m_pUnit[p]->m_Packet.m_pcData + m_iNotch, unitsize);
       if (ofs.fail())
-         break;
+	 break;
 
       if ((rs > unitsize) || (rs == m_pUnit[p]->m_Packet.getLength() - m_iNotch))
       {
-         CUnit* tmp = m_pUnit[p];
-         m_pUnit[p] = NULL;
-         tmp->m_iFlag = 0;
-         -- m_pUnitQueue->m_iCount;
+	 CUnit* tmp = m_pUnit[p];
+	 m_pUnit[p] = NULL;
+	 tmp->m_iFlag = 0;
+	 -- m_pUnitQueue->m_iCount;
 
-         if (++ p == m_iSize)
-            p = 0;
+	 if (++ p == m_iSize)
+	    p = 0;
 
-         m_iNotch = 0;
+	 m_iNotch = 0;
       }
       else
-         m_iNotch += rs;
+	 m_iNotch += rs;
 
       rs -= unitsize;
    }
@@ -492,7 +492,7 @@ void CRcvBuffer::dropMsg(int32_t msgno)
 {
    for (int i = m_iStartPos, n = (m_iLastAckPos + m_iMaxPos) % m_iSize; i != n; i = (i + 1) % m_iSize)
       if ((NULL != m_pUnit[i]) && (msgno == m_pUnit[i]->m_Packet.m_iMsgNo))
-         m_pUnit[i]->m_iFlag = 3;
+	 m_pUnit[i]->m_iFlag = 3;
 }
 
 int CRcvBuffer::readMsg(char* data, int len)
@@ -507,27 +507,27 @@ int CRcvBuffer::readMsg(char* data, int len)
    {
       int unitsize = m_pUnit[p]->m_Packet.getLength();
       if ((rs >= 0) && (unitsize > rs))
-         unitsize = rs;
+	 unitsize = rs;
 
       if (unitsize > 0)
       {
-         memcpy(data, m_pUnit[p]->m_Packet.m_pcData, unitsize);
-         data += unitsize;
-         rs -= unitsize;
+	 memcpy(data, m_pUnit[p]->m_Packet.m_pcData, unitsize);
+	 data += unitsize;
+	 rs -= unitsize;
       }
 
       if (!passack)
       {
-         CUnit* tmp = m_pUnit[p];
-         m_pUnit[p] = NULL;
-         tmp->m_iFlag = 0;
-         -- m_pUnitQueue->m_iCount;
+	 CUnit* tmp = m_pUnit[p];
+	 m_pUnit[p] = NULL;
+	 tmp->m_iFlag = 0;
+	 -- m_pUnitQueue->m_iCount;
       }
       else
-         m_pUnit[p]->m_iFlag = 2;
+	 m_pUnit[p]->m_iFlag = 2;
 
       if (++ p == m_iSize)
-         p = 0;
+	 p = 0;
    }
 
    if (!passack)
@@ -554,33 +554,33 @@ bool CRcvBuffer::scanMsg(int& p, int& q, bool& passack)
    {
       if (NULL == m_pUnit[m_iStartPos])
       {
-         if (++ m_iStartPos == m_iSize)
-            m_iStartPos = 0;
-         continue;
+	 if (++ m_iStartPos == m_iSize)
+	    m_iStartPos = 0;
+	 continue;
       }
 
       if ((1 == m_pUnit[m_iStartPos]->m_iFlag) && (m_pUnit[m_iStartPos]->m_Packet.getMsgBoundary() > 1))
       {
-         bool good = true;
+	 bool good = true;
 
-         // look ahead for the whole message
-         for (int i = m_iStartPos; i != m_iLastAckPos;)
-         {
-            if ((NULL == m_pUnit[i]) || (1 != m_pUnit[i]->m_iFlag))
-            {
-               good = false;
-               break;
-            }
+	 // look ahead for the whole message
+	 for (int i = m_iStartPos; i != m_iLastAckPos;)
+	 {
+	    if ((NULL == m_pUnit[i]) || (1 != m_pUnit[i]->m_iFlag))
+	    {
+	       good = false;
+	       break;
+	    }
 
-            if ((m_pUnit[i]->m_Packet.getMsgBoundary() == 1) || (m_pUnit[i]->m_Packet.getMsgBoundary() == 3))
-               break;
+	    if ((m_pUnit[i]->m_Packet.getMsgBoundary() == 1) || (m_pUnit[i]->m_Packet.getMsgBoundary() == 3))
+	       break;
 
-            if (++ i == m_iSize)
-               i = 0;
-         }
+	    if (++ i == m_iSize)
+	       i = 0;
+	 }
 
-         if (good)
-            break;
+	 if (good)
+	    break;
       }
 
       CUnit* tmp = m_pUnit[m_iStartPos];
@@ -589,7 +589,7 @@ bool CRcvBuffer::scanMsg(int& p, int& q, bool& passack)
       -- m_pUnitQueue->m_iCount;
 
       if (++ m_iStartPos == m_iSize)
-         m_iStartPos = 0;
+	 m_iStartPos = 0;
    }
 
    p = -1;                  // message head
@@ -602,42 +602,42 @@ bool CRcvBuffer::scanMsg(int& p, int& q, bool& passack)
    {
       if ((NULL != m_pUnit[q]) && (1 == m_pUnit[q]->m_iFlag))
       {
-         switch (m_pUnit[q]->m_Packet.getMsgBoundary())
-         {
-         case 3: // 11
-            p = q;
-            found = true;
-            break;
+	 switch (m_pUnit[q]->m_Packet.getMsgBoundary())
+	 {
+	 case 3: // 11
+	    p = q;
+	    found = true;
+	    break;
 
-         case 2: // 10
-            p = q;
-            break;
+	 case 2: // 10
+	    p = q;
+	    break;
 
-         case 1: // 01
-            if (p != -1)
-               found = true;
-         }
+	 case 1: // 01
+	    if (p != -1)
+	       found = true;
+	 }
       }
       else
       {
-         // a hole in this message, not valid, restart search
-         p = -1;
+	 // a hole in this message, not valid, restart search
+	 p = -1;
       }
 
       if (found)
       {
-         // the msg has to be ack'ed or it is allowed to read out of order, and was not read before
-         if (!passack || !m_pUnit[q]->m_Packet.getMsgOrderFlag())
-            break;
+	 // the msg has to be ack'ed or it is allowed to read out of order, and was not read before
+	 if (!passack || !m_pUnit[q]->m_Packet.getMsgOrderFlag())
+	    break;
 
-         found = false;
+	 found = false;
       }
 
       if (++ q == m_iSize)
-         q = 0;
+	 q = 0;
 
       if (q == m_iLastAckPos)
-         passack = true;
+	 passack = true;
    }
 
    // no msg found
@@ -645,7 +645,7 @@ bool CRcvBuffer::scanMsg(int& p, int& q, bool& passack)
    {
       // if the message is larger than the receiver buffer, return part of the message
       if ((p != -1) && ((q + 1) % m_iSize == p))
-         found = true;
+	 found = true;
    }
 
    return found;

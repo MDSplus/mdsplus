@@ -16,9 +16,9 @@ public class TreeNodeArray
 
     public TreeNodeArray(int [] nids, Tree tree) throws MdsException
     {
-        treeNodes = new TreeNode[nids.length];
-        for(int i = 0; i < nids.length; i++)
-            treeNodes[i] = new TreeNode(nids[i], tree);
+	treeNodes = new TreeNode[nids.length];
+	for(int i = 0; i < nids.length; i++)
+	    treeNodes[i] = new TreeNode(nids[i], tree);
     }
     public int size()
     {
@@ -31,113 +31,113 @@ public class TreeNodeArray
     }
     public java.lang.String [] getPath() throws MdsException
     {
-        java.lang.String path[] = new java.lang.String[treeNodes.length];
-        for(int i = 0; i < treeNodes.length; i++)
-            path[i] = treeNodes[i].getPath();
-        return path;
+	java.lang.String path[] = new java.lang.String[treeNodes.length];
+	for(int i = 0; i < treeNodes.length; i++)
+	    path[i] = treeNodes[i].getPath();
+	return path;
     }
     public java.lang.String [] getFullPath() throws MdsException
     {
-        java.lang.String path[] = new java.lang.String[treeNodes.length];
-        for(int i = 0; i < treeNodes.length; i++)
-            path[i] = treeNodes[i].getFullPath();
-        return path;
+	java.lang.String path[] = new java.lang.String[treeNodes.length];
+	for(int i = 0; i < treeNodes.length; i++)
+	    path[i] = treeNodes[i].getFullPath();
+	return path;
     }
     public int [] getNid() throws MdsException
     {
-        int nids[] = new int[treeNodes.length];
-        for(int i = 0; i < treeNodes.length; i++)
-            nids[i] = treeNodes[i].getNid();
-        return nids;
+	int nids[] = new int[treeNodes.length];
+	for(int i = 0; i < treeNodes.length; i++)
+	    nids[i] = treeNodes[i].getNid();
+	return nids;
     }
     public boolean [] isOn() throws MdsException
     {
-        boolean on[] = new boolean[treeNodes.length];
-        for(int i = 0; i < treeNodes.length; i++)
-            on[i] = treeNodes[i].isOn();
-        return on;
+	boolean on[] = new boolean[treeNodes.length];
+	for(int i = 0; i < treeNodes.length; i++)
+	    on[i] = treeNodes[i].isOn();
+	return on;
     }
     public void setOn(boolean[] on) throws MdsException
     {
-        for(int i = 0; i < treeNodes.length; i++)
-            treeNodes[i].setOn(on[i]);
+	for(int i = 0; i < treeNodes.length; i++)
+	    treeNodes[i].setOn(on[i]);
     }
     public int [] getLength() throws MdsException
     {
-        int sizes[] = new int[treeNodes.length];
-        for(int i = 0; i < treeNodes.length; i++)
-            sizes[i] = treeNodes[i].getLength();
-        return sizes;
+	int sizes[] = new int[treeNodes.length];
+	for(int i = 0; i < treeNodes.length; i++)
+	    sizes[i] = treeNodes[i].getLength();
+	return sizes;
     }
     public int [] getCompressedLength() throws MdsException
     {
-        int sizes[] = new int[treeNodes.length];
-        for(int i = 0; i < treeNodes.length; i++)
-            sizes[i] = treeNodes[i].getCompressedLength();
-        return sizes;
+	int sizes[] = new int[treeNodes.length];
+	for(int i = 0; i < treeNodes.length; i++)
+	    sizes[i] = treeNodes[i].getCompressedLength();
+	return sizes;
     }
     public boolean [] isSetup() throws MdsException
     {
-        boolean setup[] = new boolean[treeNodes.length];
-        for(int i = 0; i < treeNodes.length; i++)
-            setup[i] = treeNodes[i].isSetup();
-        return setup;
+	boolean setup[] = new boolean[treeNodes.length];
+	for(int i = 0; i < treeNodes.length; i++)
+	    setup[i] = treeNodes[i].isSetup();
+	return setup;
     }
     public boolean [] isWriteOnce() throws MdsException
     {
-        boolean wonce[] = new boolean[treeNodes.length];
-        for(int i = 0; i < treeNodes.length; i++)
-            wonce[i] = treeNodes[i].isWriteOnce();
-        return wonce;
+	boolean wonce[] = new boolean[treeNodes.length];
+	for(int i = 0; i < treeNodes.length; i++)
+	    wonce[i] = treeNodes[i].isWriteOnce();
+	return wonce;
     }
     public void setWriteOnce(boolean[] wonce) throws MdsException
     {
-        for(int i = 0; i < treeNodes.length; i++)
-            treeNodes[i].setWriteOnce(wonce[i]);
+	for(int i = 0; i < treeNodes.length; i++)
+	    treeNodes[i].setWriteOnce(wonce[i]);
     }
 
     public boolean [] isCompressOnPut() throws MdsException
     {
-        boolean compressible[] = new boolean[treeNodes.length];
-        for(int i = 0; i < treeNodes.length; i++)
-            compressible[i] = treeNodes[i].isCompressOnPut();
-        return compressible;
+	boolean compressible[] = new boolean[treeNodes.length];
+	for(int i = 0; i < treeNodes.length; i++)
+	    compressible[i] = treeNodes[i].isCompressOnPut();
+	return compressible;
     }
     public void setCompressOnPut(boolean[] compress) throws MdsException
     {
-        for(int i = 0; i < treeNodes.length; i++)
-            treeNodes[i].setCompressOnPut(compress[i]);
+	for(int i = 0; i < treeNodes.length; i++)
+	    treeNodes[i].setCompressOnPut(compress[i]);
     }
     public boolean [] isNoWriteModel() throws MdsException
     {
-        boolean wmodel[] = new boolean[treeNodes.length];
-        for(int i = 0; i < treeNodes.length; i++)
-            wmodel[i] = treeNodes[i].isNoWriteModel();
-        return wmodel;
+	boolean wmodel[] = new boolean[treeNodes.length];
+	for(int i = 0; i < treeNodes.length; i++)
+	    wmodel[i] = treeNodes[i].isNoWriteModel();
+	return wmodel;
     }
     public void isNoWriteModel(boolean[] wmodel) throws MdsException
     {
-        for(int i = 0; i < treeNodes.length; i++)
-            treeNodes[i].setNoWriteModel(wmodel[i]);
+	for(int i = 0; i < treeNodes.length; i++)
+	    treeNodes[i].setNoWriteModel(wmodel[i]);
     }
     public boolean [] isNoWriteShot() throws MdsException
     {
-        boolean wshot[] = new boolean[treeNodes.length];
-        for(int i = 0; i < treeNodes.length; i++)
-            wshot[i] = treeNodes[i].isNoWriteShot();
-        return wshot;
+	boolean wshot[] = new boolean[treeNodes.length];
+	for(int i = 0; i < treeNodes.length; i++)
+	    wshot[i] = treeNodes[i].isNoWriteShot();
+	return wshot;
     }
     public void isNoWriteShot(boolean[] wshot) throws MdsException
     {
-        for(int i = 0; i < treeNodes.length; i++)
-            treeNodes[i].setNoWriteShot(wshot[i]);
+	for(int i = 0; i < treeNodes.length; i++)
+	    treeNodes[i].setNoWriteShot(wshot[i]);
     }
     public java.lang.String [] getUsage() throws MdsException
     {
-        java.lang.String usages[] = new java.lang.String[treeNodes.length];
-        for(int i = 0; i < treeNodes.length; i++)
-            usages[i] = treeNodes[i].getUsage();
-        return usages;
+	java.lang.String usages[] = new java.lang.String[treeNodes.length];
+	for(int i = 0; i < treeNodes.length; i++)
+	    usages[i] = treeNodes[i].getUsage();
+	return usages;
     }
 
 }

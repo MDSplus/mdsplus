@@ -435,7 +435,7 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd)
 	printf("dataset is vlen ---- UNSUPPORTED\n");
 	break;
       default:
-        break;
+	break;
       }
       H5Tclose(type);
     } else {
@@ -545,7 +545,7 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd)
 	printf("dataset is vlen ---- UNSUPPORTED\n");
 	break;
       default:
-        break;
+	break;
       }
       H5Tclose(type);
     }

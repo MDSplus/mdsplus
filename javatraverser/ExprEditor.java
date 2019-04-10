@@ -86,7 +86,7 @@ public class ExprEditor extends JPanel implements ActionListener, Editor{
 	    if(quotes_needed) add(left, BorderLayout.LINE_START);
 	    text_field = new JTextField(columns);
 	    text_field.setText(expr);
-        add(text_field);
+	add(text_field);
 	    if(quotes_needed) add(right, BorderLayout.LINE_END );
 	}
     }
@@ -127,7 +127,7 @@ public class ExprEditor extends JPanel implements ActionListener, Editor{
 	{
 	    int len = expr.length();
 	    if(len >= 2)
-	        expr = expr.substring(1, len - 1);
+		expr = expr.substring(1, len - 1);
 	}
 	if(default_scroll)
 	    text_area.setText(expr);

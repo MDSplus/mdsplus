@@ -160,8 +160,8 @@ static int getNodeId(TreeNode *node, char *path, Tree *tree, int connectionId)
     nodeTable[i].connectionId = connectionId;
     if(path)
     {
-    	nodeTable[i].path = (char *)malloc(strlen(path)+1);
-    	strcpy(nodeTable[i].path, path);
+	nodeTable[i].path = (char *)malloc(strlen(path)+1);
+	strcpy(nodeTable[i].path, path);
     }
     unlock();
     return i;
@@ -188,7 +188,7 @@ static int getConnectionId(char *ipAddr, char *exp, int shot)
 	try {
 	    connectionTable[i].connection = new Connection(ipAddr);
 	    if(exp && *exp) //May be NULL or empty string if only the connection is required
-	        connectionTable[i].connection->openTree(exp, shot);
+		connectionTable[i].connection->openTree(exp, shot);
 	}catch(MdsException &exc)
 	{
 	    printf("Cannot establish mdsip connection: %s\n", exc.what());
@@ -206,9 +206,9 @@ static void updateNode(int id, int *isLocal, TreeNode **node, Connection **conn,
     lock();
     if(id < MAX_NODES)
     {
-        *node = nodeTable[id].node;
+	*node = nodeTable[id].node;
 	if(nodeTable[id].connectionId != -1)
-            *conn = connectionTable[nodeTable[id].connectionId].connection;
+	    *conn = connectionTable[nodeTable[id].connectionId].connection;
 	else
 	    *conn = 0;
 	*path = nodeTable[id].path;
@@ -228,26 +228,26 @@ int openMds(char *expName, int shot, int isLocal, char *ipAddr, char *path, unsi
     if(isLocal)
     {
 	TreeNode *node;
-    	try {
-    	    tree = new Tree(expName, shot);
+	try {
+	    tree = new Tree(expName, shot);
 	    if(path) //path == 0 means that the tree must be only open, no nid searched
-	        node = tree->getNode(path);
+		node = tree->getNode(path);
 	    else
 		node = 0;
 	}
-    	catch(MdsException &exc)
-    	{
+	catch(MdsException &exc)
+	{
 	    printf("Cannot Open tree or find node: %s\n", exc.what());
 	    strncpy(errMsg, exc.what(), 40);
 	    return 0;
-    	}
+	}
 	id = getNodeId(node, path, tree, -1);
 	if(id == -1)
 	{
 	    strcpy(errMsg, "NODE TABLE OVERFLOW");
 	    return 0;
 	}
- 	*nodeId = id;
+	*nodeId = id;
     }
     else //Remote connection
     {
@@ -272,7 +272,7 @@ int openMds(char *expName, int shot, int isLocal, char *ipAddr, char *path, unsi
 int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples, int nVals, int dim1, int dim2, int dataIdx, double period, double trigger, long  epicsTime, char *errMsg, int debug)
 {
     if(debug)
-    	printf("WriteMds: NodeId: %d, dtype: %d, nVals: %d, dim1: %d, dim2: %d\n, dataIdx: %d, epicsTime: %lX, period: %f, trigger: %f preTrigger samples: %d\n", nodeId, dtype, nVals, dim1, dim2, dataIdx, epicsTime, (float)period, (float)trigger, preTriggerSamples);
+	printf("WriteMds: NodeId: %d, dtype: %d, nVals: %d, dim1: %d, dim2: %d\n, dataIdx: %d, epicsTime: %lX, period: %f, trigger: %f preTrigger samples: %d\n", nodeId, dtype, nVals, dim1, dim2, dataIdx, epicsTime, (float)period, (float)trigger, preTriggerSamples);
     TreeNode *node;
     Tree *tree;
     Connection *conn;
@@ -282,7 +282,7 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples, int nVa
     if(!node && !conn)
     {
 	strcpy(errMsg, "Internal error: node ID not found");
-    	return 0;
+	return 0;
     }
 
 
@@ -397,11 +397,11 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples, int nVa
 		node->putRow(data, (int64_t *)&epicsTime);
 		deleteData(data);
 	    }
-    	    catch(MdsException &exc)
-    	    {
+	    catch(MdsException &exc)
+	    {
 		strncpy(errMsg, exc.what(), 40);
 		return 0;
-    	    }
+	    }
 	}
 	else
 	{
@@ -417,12 +417,12 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples, int nVa
 		deleteData(data);
 		deleteData(timeData);
 	    }
-    	    catch(MdsException &exc)
-    	    {
+	    catch(MdsException &exc)
+	    {
 		if(debug) printf("ERROR WRITING REMOTE TREE: %s\n", exc.what());
 		strncpy(errMsg, exc.what(), 40);
 		return 0;
-    	    }
+	    }
 	}
     }
     else //Multiple samples: time is now derived from trigger, dataIds and period
@@ -444,7 +444,7 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples, int nVa
 	    nDims = 3;
 	}
 	Array *data;
-    	switch(dtype) {
+	switch(dtype) {
 	    case DBF_CHAR:
 		data = new Int8Array((char *)vals, nDims, dims);
 		break;
@@ -470,22 +470,22 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples, int nVa
 		data = new Float64Array((double *)vals, nDims, dims);
 		break;
 	}
-    	Float64 *start = new Float64(trigger - preTriggerSamples * period + period * dataIdx - 0.05);
-    	Float64 *end = new Float64(trigger + period * (dataIdx + nVals)+0.05);
-    	Data *times = new Range(new Float64(trigger + period * dataIdx), new Float64(trigger + period * (dataIdx + nVals) - 0.05), new Float64(period));
+	Float64 *start = new Float64(trigger - preTriggerSamples * period + period * dataIdx - 0.05);
+	Float64 *end = new Float64(trigger + period * (dataIdx + nVals)+0.05);
+	Data *times = new Range(new Float64(trigger + period * dataIdx), new Float64(trigger + period * (dataIdx + nVals) - 0.05), new Float64(period));
 	if(isLocal)
 	{
-    	    try {
-    	    	node->makeSegment(start, end, times, data);
-	    	deleteData(data);
-	    	deleteData(times);
+	    try {
+	    	node->makeSegment(start, end, times, data);
+		deleteData(data);
+		deleteData(times);
 		deleteData(end);
-    	    }
-    	    catch(MdsException &exc)
-    	    {
-	    	strncpy(errMsg, exc.what(), 40);
-	    	return 0;
-    	    }
+	    }
+	    catch(MdsException &exc)
+	    {
+		strncpy(errMsg, exc.what(), 40);
+		return 0;
+	    }
 	}
 	else //Remote connection
 	{
@@ -508,12 +508,12 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples, int nVa
 		deleteData(args[4]);
 		deleteData(end);
 	    }
-    	    catch(MdsException &exc)
-    	    {
+	    catch(MdsException &exc)
+	    {
 		if(debug) printf("ERROR WRITING REMOTE TREE: %s\n", exc.what());
 		strncpy(errMsg, exc.what(), 40);
 		return 0;
-    	    }
+	    }
 	}
     }
     return 1;
@@ -533,78 +533,78 @@ int evaluateExpr(char *expr, int treeIdx, int nBuffers, void **buffers, int *buf
 //printf("EvaluateExpr: expr: %s, treeIdx: %d, nBuffers: %d, maxRet: %d dim1: %d dim2: %d type2: %d\n", expr, treeIdx, nBuffers, maxRetElements, bufDims[0], bufDims[1], bufTypes[0]);
 
     try {
-    	for (i = 0; i < nBuffers; i++)
-    	{
+	for (i = 0; i < nBuffers; i++)
+	{
 	    if(bufDims[i] > 1)
 	    {
-	    	switch(bufTypes[i]) {
-	    	    case DBF_CHAR:
-		    	args[i] = new Int8Array((char *)buffers[i], bufDims[i]);
-		    	break;
-	    	    case DBF_UCHAR:
-		    	args[i] = new Uint8Array((unsigned char *)buffers[i], bufDims[i]);
-		    	break;
-	    	    case DBF_SHORT:
-		    	args[i] = new Int16Array((short *)buffers[i], bufDims[i]);
-		    	break;
-	    	    case DBF_USHORT:
-		    	args[i] = new Uint16Array((unsigned short *)buffers[i], bufDims[i]);
-		    	break;
-	    	    case DBF_LONG:
-		    	args[i] = new Int32Array((int *)buffers[i], bufDims[i]);
-		    	break;
-	    	    case DBF_ULONG:
-		    	args[i] = new Uint32Array((unsigned int *)buffers[i], bufDims[i]);
-		    	break;
-	    	    case DBF_FLOAT:
-		    	args[i] = new Float32Array((float *)buffers[i], bufDims[i]);
-		    	break;
-	    	    case DBF_DOUBLE:
-		    	args[i] = new Float64Array((double *)buffers[i], bufDims[i]);
-		    	break;
+		switch(bufTypes[i]) {
+		    case DBF_CHAR:
+			args[i] = new Int8Array((char *)buffers[i], bufDims[i]);
+			break;
+		    case DBF_UCHAR:
+			args[i] = new Uint8Array((unsigned char *)buffers[i], bufDims[i]);
+			break;
+		    case DBF_SHORT:
+			args[i] = new Int16Array((short *)buffers[i], bufDims[i]);
+			break;
+		    case DBF_USHORT:
+			args[i] = new Uint16Array((unsigned short *)buffers[i], bufDims[i]);
+			break;
+		    case DBF_LONG:
+			args[i] = new Int32Array((int *)buffers[i], bufDims[i]);
+			break;
+		    case DBF_ULONG:
+			args[i] = new Uint32Array((unsigned int *)buffers[i], bufDims[i]);
+			break;
+		    case DBF_FLOAT:
+			args[i] = new Float32Array((float *)buffers[i], bufDims[i]);
+			break;
+		    case DBF_DOUBLE:
+			args[i] = new Float64Array((double *)buffers[i], bufDims[i]);
+			break;
 		}
 	    }
 	    else
 	    {
-	    	switch(bufTypes[i]) {
-	    	    case DBF_CHAR:
-		    	args[i] = new Int8(*((char *)buffers[0]));
-		    	break;
-	    	    case DBF_UCHAR:
-		    	args[i] = new Uint8(*((char *)buffers[0]));
-		    	break;
-	    	    case DBF_SHORT:
-		    	args[i] = new Int16(*((short *)buffers[0]));
-		    	break;
-	    	    case DBF_USHORT:
-		    	args[i] = new Uint16(*((short *)buffers[0]));
-		    	break;
-	    	    case DBF_LONG:
-		    	args[i] = new Int32(*((int *)buffers[0]));
-		    	break;
-	    	    case DBF_ULONG:
-		    	args[i] = new Uint32(*((int *)buffers[0]));
-		    	break;
-	    	    case DBF_FLOAT:
-		    	args[i] = new Float32(*((float *)buffers[0]));
-		    	break;
-	    	    case DBF_DOUBLE:
-		    	args[i] = new Float64( *((double *)buffers[0]));
-		    	break;
-	    	    case DBF_STRING:
-		    	args[i] = new String((char *)buffers[0]);
-		    	break;
+		switch(bufTypes[i]) {
+		    case DBF_CHAR:
+			args[i] = new Int8(*((char *)buffers[0]));
+			break;
+		    case DBF_UCHAR:
+			args[i] = new Uint8(*((char *)buffers[0]));
+			break;
+		    case DBF_SHORT:
+			args[i] = new Int16(*((short *)buffers[0]));
+			break;
+		    case DBF_USHORT:
+			args[i] = new Uint16(*((short *)buffers[0]));
+			break;
+		    case DBF_LONG:
+			args[i] = new Int32(*((int *)buffers[0]));
+			break;
+		    case DBF_ULONG:
+			args[i] = new Uint32(*((int *)buffers[0]));
+			break;
+		    case DBF_FLOAT:
+			args[i] = new Float32(*((float *)buffers[0]));
+			break;
+		    case DBF_DOUBLE:
+			args[i] = new Float64( *((double *)buffers[0]));
+			break;
+		    case DBF_STRING:
+			args[i] = new String((char *)buffers[0]);
+			break;
 		}
 	    }
-    	}
+	}
 	if(isLocal)
 	{
-    	    if(treeIdx != -1) //A Tree was defined, it must be restored
-    	    {
-     	        updateNode(treeIdx, &isLocal, &node, &conn, &currPath, &tree);
-	    	if(nBuffers > 0)
-	    	{
-	      	    switch(nBuffers) {
+	    if(treeIdx != -1) //A Tree was defined, it must be restored
+	    {
+		updateNode(treeIdx, &isLocal, &node, &conn, &currPath, &tree);
+		if(nBuffers > 0)
+		{
+		    switch(nBuffers) {
 			case 1: evaluated = executeWithArgs(expr, tree, nBuffers, args[0]); break;
 			case 2: evaluated = executeWithArgs(expr, tree, nBuffers, args[0], args[1]); break;
 			case 3: evaluated = executeWithArgs(expr, tree, nBuffers, args[0], args[1], args[2]); break;
@@ -613,16 +613,16 @@ int evaluateExpr(char *expr, int treeIdx, int nBuffers, void **buffers, int *buf
 			case 6: evaluated = executeWithArgs(expr, tree, nBuffers, args[0], args[1], args[2], args[3], args[4], args[5]); break;
 			case 7: evaluated = executeWithArgs(expr, tree, nBuffers, args[0], args[1], args[2], args[3], args[4], args[5], args[6]); break;
 			case 8: evaluated = executeWithArgs(expr, nBuffers, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]); break;
-	      	    }
-	    	}
-	    	else
+		    }
+		}
+		else
 		    evaluated = execute(expr, tree);
 	    }
 	    else //no tree open
 	    {
-	    	if(nBuffers > 0)
-	    	{
-	      	    switch(nBuffers) {
+		if(nBuffers > 0)
+		{
+		    switch(nBuffers) {
 			case 1: evaluated = executeWithArgs(expr, nBuffers, args[0]); break;
 			case 2: evaluated = executeWithArgs(expr, nBuffers, args[0], args[1]); break;
 			case 3: evaluated = executeWithArgs(expr, nBuffers, args[0], args[1], args[2]); break;
@@ -631,15 +631,15 @@ int evaluateExpr(char *expr, int treeIdx, int nBuffers, void **buffers, int *buf
 			case 6: evaluated = executeWithArgs(expr, nBuffers, args[0], args[1], args[2], args[3], args[4], args[5]); break;
 			case 7: evaluated = executeWithArgs(expr, nBuffers, args[0], args[1], args[2], args[3], args[4], args[5], args[6]); break;
 			case 8: evaluated = executeWithArgs(expr, nBuffers, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]); break;
-	      	    }
-	    	}
-	    	else
+		    }
+		}
+		else
 		    evaluated = execute(expr);
 	    }
 	}
 	else //remote
 	{
-     	    updateNode(treeIdx, &dummyLocal, &node, &conn, &currPath, &tree); //Retrieve connection
+	    updateNode(treeIdx, &dummyLocal, &node, &conn, &currPath, &tree); //Retrieve connection
 	    if(!conn)
 	    {
 		printf("Remote connection not established\n");
@@ -659,25 +659,25 @@ int evaluateExpr(char *expr, int treeIdx, int nBuffers, void **buffers, int *buf
 	{
 	    retElements = 1;
 	    switch(retType) {
-	    	case DBF_CHAR:
-	    	case DBF_UCHAR:
+		case DBF_CHAR:
+		case DBF_UCHAR:
 		    *((char *)retBuf) = evaluated->getByte();
 		    break;
-	    	case DBF_SHORT:
-	    	case DBF_USHORT:
+		case DBF_SHORT:
+		case DBF_USHORT:
 		    *((short *)retBuf) = evaluated->getShort();
 		    break;
-	    	case DBF_LONG:
-	    	case DBF_ULONG:
+		case DBF_LONG:
+		case DBF_ULONG:
 		    *((int *)retBuf) = evaluated->getInt();
 		    break;
-	    	case DBF_FLOAT:
+		case DBF_FLOAT:
 		    *((float *)retBuf) = evaluated->getFloat();
 		    break;
-	    	case DBF_DOUBLE:
+		case DBF_DOUBLE:
 		    *((double *)retBuf) = evaluated->getDouble();
 		    break;
-	    	case DBF_STRING:
+		case DBF_STRING:
 		{
 		    char *retStr = evaluated->getString();
 		    strcpy((char *)retBuf, retStr);
@@ -689,42 +689,42 @@ int evaluateExpr(char *expr, int treeIdx, int nBuffers, void **buffers, int *buf
 	else //Array
 	{
 	    switch(retType) {
-	    	case DBF_CHAR:
-	    	case DBF_UCHAR:
+		case DBF_CHAR:
+		case DBF_UCHAR:
 		    currBuf = evaluated->getByteArray(&retElements);
-	    	    if(retElements > maxRetElements)
+		    if(retElements > maxRetElements)
 			retElements = maxRetElements;
-	      	    memcpy(retBuf, currBuf, retElements);
+		    memcpy(retBuf, currBuf, retElements);
 		    deleteNativeArray((char *)currBuf);
 		    break;
-	    	case DBF_SHORT:
-	    	case DBF_USHORT:
+		case DBF_SHORT:
+		case DBF_USHORT:
 		    currBuf = evaluated->getShortArray(&retElements);
-	    	    if(retElements > maxRetElements)
+		    if(retElements > maxRetElements)
 			retElements = maxRetElements;
-	      	    memcpy(retBuf, currBuf, 2 * retElements);
+		    memcpy(retBuf, currBuf, 2 * retElements);
 		    deleteNativeArray((short *)currBuf);
 		    break;
-	    	case DBF_LONG:
-	    	case DBF_ULONG:
+		case DBF_LONG:
+		case DBF_ULONG:
 		    currBuf = evaluated->getIntArray(&retElements);
-	    	    if(retElements > maxRetElements)
+		    if(retElements > maxRetElements)
 			retElements = maxRetElements;
-	      	    memcpy(retBuf, currBuf, 4 * retElements);
+		    memcpy(retBuf, currBuf, 4 * retElements);
 		    deleteNativeArray((int *)currBuf);
 		    break;
-	    	case DBF_FLOAT:
+		case DBF_FLOAT:
 		    currBuf = evaluated->getFloatArray(&retElements);
-	    	    if(retElements > maxRetElements)
+		    if(retElements > maxRetElements)
 			retElements = maxRetElements;
-	      	    memcpy(retBuf, currBuf, 4 * retElements);
+		    memcpy(retBuf, currBuf, 4 * retElements);
 		    deleteNativeArray((float *)currBuf);
 		    break;
-	    	case DBF_DOUBLE:
+		case DBF_DOUBLE:
 		    currBuf = evaluated->getDoubleArray(&retElements);
-	    	    if(retElements > maxRetElements)
+		    if(retElements > maxRetElements)
 			retElements = maxRetElements;
-	      	    memcpy(retBuf, currBuf, 8 * retElements);
+		    memcpy(retBuf, currBuf, 8 * retElements);
 		    deleteNativeArray((double *)currBuf);
 		    break;
 	    }
@@ -773,7 +773,7 @@ void waitMdsEvent(char *eventName, char *buf, int maxLen, int *retLen)
 	return;
     }
     try {
-    	evBuf = (char *)event->waitRaw(&size, timeoutMs);
+	evBuf = (char *)event->waitRaw(&size, timeoutMs);
     } catch(MdsException &exc)
     {
 	size = 0;
@@ -803,7 +803,7 @@ int doMdsAction(char *path, int nodeId, char *errMsg)
     if(!node && !conn)
     {
 	strcpy(errMsg, "Internal error: node ID not found");
-    	return 0;
+	return 0;
     }
 //Build the data objects
     if(isLocal)
@@ -817,12 +817,12 @@ int doMdsAction(char *path, int nodeId, char *errMsg)
 	   // printf("Returned Data: %s\n", (resData)?resData->decompile():"");
 	    //if(resData) deleteData(resData);
 	}
-   	catch(MdsException &exc)
-    	{
+	catch(MdsException &exc)
+	{
 	    printf("ERROR EXECUTING ACTION: %s\n", exc.what());
 	    strncpy(errMsg, exc.what(), 40);
 	    return 0;
-    	}
+	}
     }
     else
     {
@@ -831,12 +831,12 @@ int doMdsAction(char *path, int nodeId, char *errMsg)
 	    //printf("Returned Data: %s\n", (resData)?resData->decompile():"");
 	    if(resData)deleteData(resData);
 	}
-   	catch(MdsException &exc)
-    	{
+	catch(MdsException &exc)
+	{
 	    printf("ERROR EXECUTING REMOTE ACTION: %s\n", exc.what());
 	    strncpy(errMsg, exc.what(), 40);
 	    return 0;
-    	}
+	}
     }
     delete [] expr;
     return 1;

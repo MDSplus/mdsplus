@@ -245,7 +245,7 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx)
 	/* hpe1564_error_message() */
 
 #define hpe1564_MSG_INVALID_STATUS					\
-  	"Parameter 2 is invalid"				\
+	"Parameter 2 is invalid"				\
 	"in function hpe1564_error_message()."
 	/* hpe1564_error_message() */
 
@@ -254,7 +254,7 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx)
 	/* hpe1564_error_message() */
 
 #define  hpe1564_MSG_INVALID_VI					\
-  	"Parameter 1 is invalid"				\
+	"Parameter 1 is invalid"				\
 	" in function hpe1564_error_message()"			\
 	".  Using an inactive ViSession may cause this error."	\
 	"  Was the instrument driver closed prematurely?"
@@ -448,7 +448,7 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx)
 	"Calibration not converging; exiting"
 
 #define INSTR_ERROR_BIG_VOLT_MSG      \
-        "Overloads occurring, reduce signal level."
+	"Overloads occurring, reduce signal level."
 
 #define INSTR_ERROR_TRIG_DEAD_MSG 				\
 	"Trigger source deadlock detected, data fetch aborted"
@@ -476,7 +476,7 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx)
 	/* check for NULL user data */				\
 	if( 0 == thisPtr)					\
 	{							\
- 		hpe1564_LOG_STATUS(                             	\
+		hpe1564_LOG_STATUS(                             	\
 		  vi, NULL, hpe1564_INSTR_ERROR_INV_SESSION );	\
 	}							\
 	{							\
@@ -487,12 +487,12 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx)
 			VI_ATTR_RM_SESSION, &defRM);		\
 		if( VI_SUCCESS > errStatus )			\
 		{						\
- 			hpe1564_LOG_STATUS(				\
+			hpe1564_LOG_STATUS(				\
 			  vi, NULL, hpe1564_INSTR_ERROR_UNEXPECTED );	\
 		}						\
 		if( defRM != thisPtr->defRMSession)		\
 		{						\
- 			hpe1564_LOG_STATUS(				\
+			hpe1564_LOG_STATUS(				\
 			  vi, NULL, hpe1564_INSTR_ERROR_INV_SESSION );	\
 		}						\
 	}
@@ -782,7 +782,7 @@ ViStatus hpe1564_findIndex(hpe1564_globals * thisPtr, const char *const array_of
 {\
     errStatus = viGetAttribute( vi, VI_ATTR_USER_DATA, (ViAddr) &thisPtr);\
     if( VI_SUCCESS > errStatus)\
-        hpe1564_LOG_STATUS( vi, NULL, errStatus);\
+	hpe1564_LOG_STATUS( vi, NULL, errStatus);\
 }
 
 void hpe1564_delay(long delayTime)
@@ -1066,7 +1066,7 @@ ViStatus _VI_FUNC hpe1564_init(ViRsrc InstrDesc, ViBoolean id_query, ViBoolean d
     thisPtr->e1406 = 1;
 /* mumble -- add back in when separate drivers
 		if( VI_TRUE == id_query )
-    	{
+	{
 */
     if (viClear(*vi) < VI_SUCCESS ||
 	viPrintf(*vi, "*IDN?\n") < VI_SUCCESS || viScanf(*vi, "%t", idn_buf) < VI_SUCCESS) {
@@ -1092,7 +1092,7 @@ ViStatus _VI_FUNC hpe1564_init(ViRsrc InstrDesc, ViBoolean id_query, ViBoolean d
       }
     }
 /* mumble -- add back in when split into two drivers
-    	}
+	}
 */
 
     if (VI_TRUE == do_reset) {
@@ -8428,8 +8428,8 @@ ViStatus _VI_FUNC hpe1564_sampSour_Q(ViSession vi, ViPInt16 source)
       errStatus = hpe1564_findIndex(thisPtr, hpe1564_sampSlop_Q_slope_a, slope_str, &slope);
 
       /* If we have negative slope, we need to change the
-         source to EXT_FALL.  This is
-         done by adding 1 to the current source value.
+	 source to EXT_FALL.  This is
+	 done by adding 1 to the current source value.
        */
       if (slope == hpe1564_SLOP_NEG)
 	*source = *source + 1;
@@ -8919,8 +8919,8 @@ ViStatus _VI_FUNC hpe1564_sample_Q(ViSession vi,
       errStatus = hpe1564_findIndex(thisPtr, hpe1564_sample_Q_slope_a, slope_str, &slope);
 
       /* If we have negative slope, we need to change the
-         source to EXT_FALL.  This is
-         done by adding 1 to the current source value.
+	 source to EXT_FALL.  This is
+	 done by adding 1 to the current source value.
        */
       if (slope == hpe1564_SLOP_NEG)
 	*source = *source + 1;
@@ -9626,7 +9626,7 @@ ViStatus _VI_FUNC hpe1564_trigEvent_Q(ViSession vi, ViInt16 event, ViPInt16 sour
 	hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
       /* If slope was positive, we were really _RISE and not _FALL,
-         so indicate that in the *source param.
+	 so indicate that in the *source param.
        */
       if (slope == hpe1564_SLOP_POS)
 	*source = *source + 1;
@@ -9683,7 +9683,7 @@ ViStatus _VI_FUNC hpe1564_trigEvent_Q(ViSession vi, ViInt16 event, ViPInt16 sour
 	hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
       /* If slope was negative, we were really _FALL and not _RISE,
-         so indicate that in the *source param.
+	 so indicate that in the *source param.
        */
       if (slope == hpe1564_SLOP_NEG)
 	*source = *source - 1;

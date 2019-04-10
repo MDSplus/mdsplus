@@ -246,10 +246,10 @@ Do this in runs.
  ***********/
       int32_t ans = *p32 - old;
       if ((((uint32_t)ans) == 0x80000000) || (old<0 ? ans<*p32 : ans>*p32)) {
-        *pn++=ans;
-        yy = 32;
+	*pn++=ans;
+	yy = 32;
       } else {
-        i = *pn++ = ans;
+	i = *pn++ = ans;
 	delta = (uint32_t)((i < 0) ? -i : i);
 	if (delta <= 64) {
 	  yy = signif[delta];
@@ -414,13 +414,13 @@ Note the sign-extended unpacking.
     case DTYPE_B:
     case DTYPE_BU:
 #define load(type) { type *newone;\
-                     for (newone = (type *)px; --j >= 0;pn++,newone++)\
-                     {\
-                        old += (xe && (*pn == mark)) ? *pe++ : *pn ;\
-                        *newone = (type)old;\
-                     }\
-                     px = (PF)newone;\
-                   }
+	             for (newone = (type *)px; --j >= 0;pn++,newone++)\
+	             {\
+	                old += (xe && (*pn == mark)) ? *pe++ : *pn ;\
+	                *newone = (type)old;\
+	             }\
+	             px = (PF)newone;\
+	           }
  case_BU:load(char);
       break;
     case DTYPE_W:

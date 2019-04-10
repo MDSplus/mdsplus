@@ -43,7 +43,7 @@ public long getFilePointer() {
 public void readFully(byte data[]) {
 
     for(int i = 0; i < data.length; i++)
-        data[i] = buffer[position+i];
+	data[i] = buffer[position+i];
     position += data.length;
     }
 /**

@@ -179,10 +179,10 @@ typedef struct __timer_t timer_t;
 
 CK_DLL_EXP int clock_gettime(clockid_t clk_id, struct timespec *ts);
 CK_DLL_EXP int timer_create(clockid_t clockid, struct sigevent *sevp,
-                            timer_t * timerid);
+	                    timer_t * timerid);
 CK_DLL_EXP int timer_settime(timer_t timerid, int flags,
-                             const struct itimerspec *new_value,
-                             struct itimerspec *old_value);
+	                     const struct itimerspec *new_value,
+	                     struct itimerspec *old_value);
 CK_DLL_EXP int timer_delete(timer_t timerid);
 #endif /* HAVE_LIBRT */
 

@@ -14,14 +14,14 @@ public class WaveContainerEvent extends AWTEvent
 
     public WaveContainerEvent (Object source, int event_id, String info)
     {
-        super(source, event_id);
-        this.info = info;
+	super(source, event_id);
+	this.info = info;
     }
 
     public WaveContainerEvent (Object source, AWTEvent we)
     {
-        super(source, WAVEFORM_EVENT);
-        this.we = we;
+	super(source, WAVEFORM_EVENT);
+	this.we = we;
     }
 
 }

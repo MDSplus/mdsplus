@@ -23,11 +23,11 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1MATRIX
-        Some matrix operations.
-                square_matrix = DIAGONAL([vector],[fill])
+	Some matrix operations.
+	        square_matrix = DIAGONAL([vector],[fill])
 
-        NEED signality for DIAGONAL, maybe.
-        Ken Klare, LANL CTR-7   (c)1990
+	NEED signality for DIAGONAL, maybe.
+	Ken Klare, LANL CTR-7   (c)1990
 */
 
 #include <STATICdef.h>

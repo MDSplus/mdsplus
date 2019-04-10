@@ -2,16 +2,16 @@ public class DeviceApply extends DeviceControl
 {
     public DeviceApply()
     {
-        setText("Apply");
+	setText("Apply");
     }
     void setReadOnly(boolean readOnly)
     {
-           setEnabled(!readOnly);
+	   setEnabled(!readOnly);
     }
     protected void doOperation(DeviceSetup deviceSetup)
     {
-        if(check())
-            deviceSetup.apply();
+	if(check())
+	    deviceSetup.apply();
     }
 
 }

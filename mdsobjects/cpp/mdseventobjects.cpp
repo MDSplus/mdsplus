@@ -60,13 +60,13 @@ void eventAst(void *arg, int len, char *buf)
 void Event::connectToEvents()
 {
     if ( !MDSEventAst(this->getName(), MDSplus::eventAst, this, &eventId) )
-        throw MdsException("failed to connect to event listener");
+	throw MdsException("failed to connect to event listener");
 }
 
 void Event::disconnectFromEvents()
 {
     if( !MDSEventCan(eventId) )
-        throw MdsException("failed to close event listener");
+	throw MdsException("failed to close event listener");
 }
 
 void Event::run(){}
@@ -112,8 +112,8 @@ void Event::start()
 void Event::stop()
 {
     if(eventId > -1) {
-        disconnectFromEvents();
-        eventId = -1;
+	disconnectFromEvents();
+	eventId = -1;
     }
 }
 
@@ -128,7 +128,7 @@ void Event::wait(size_t secs)
     if( !isStarted() ) start();
     if (secs == 0) condition.wait();
     else if (condition.waitTimeout(secs * 1000) == false)
-        throw MdsException("Timeout Occurred");
+	throw MdsException("Timeout Occurred");
 }
 
 void Event::notify()

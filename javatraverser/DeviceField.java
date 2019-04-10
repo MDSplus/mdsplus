@@ -173,17 +173,17 @@ public class DeviceField extends DeviceComponent
       checkB.setSelected(is_on);
       checkB.addChangeListener(new ChangeListener()
       {
-        public void stateChanged(ChangeEvent e)
-        {
-          boolean state = checkB.isSelected();
-          if (label != null)
-            label.setEnabled(state);
-          if (textF != null && editable)
-          {
-            textF.setEnabled(state);
-            textF.setEditable(state);
-          }
-        }
+	public void stateChanged(ChangeEvent e)
+	{
+	  boolean state = checkB.isSelected();
+	  if (label != null)
+	    label.setEnabled(state);
+	  if (textF != null && editable)
+	  {
+	    textF.setEnabled(state);
+	    textF.setEditable(state);
+	  }
+	}
       });
     }
     if (textF != null && isGridBag)
@@ -201,32 +201,32 @@ public class DeviceField extends DeviceComponent
     {
       public void keyTyped(KeyEvent e)
       {
-        reportingChange = true;
-        reportDataChanged(textF.getText());
-        reportingChange = false;
+	reportingChange = true;
+	reportDataChanged(textF.getText());
+	reportingChange = false;
       }
     });
 */    textF.getDocument().addDocumentListener(new DocumentListener()
     {
       public void changedUpdate(DocumentEvent e)
       {
-        reportingChange = true;
-        reportDataChanged(textF.getText());
-        reportingChange = false;
+	reportingChange = true;
+	reportDataChanged(textF.getText());
+	reportingChange = false;
       }
 
       public void insertUpdate(DocumentEvent e)
       {
-          reportingChange = true;
-          reportDataChanged(textF.getText());
-          reportingChange = false;
+	  reportingChange = true;
+	  reportDataChanged(textF.getText());
+	  reportingChange = false;
       }
 
       public void removeUpdate(DocumentEvent e)
       {
-          reportingChange = true;
-          reportDataChanged(textF.getText());
-          reportingChange = false;
+	  reportingChange = true;
+	  reportDataChanged(textF.getText());
+	  reportingChange = false;
       }
   });
 
@@ -247,12 +247,12 @@ public class DeviceField extends DeviceComponent
       return;
     try
     {
-        String textData;
+	String textData;
        if(data instanceof Data)
-          textData = Tree.dataToString((Data)data);
-        else
-          textData = (String)data;
-        textF.setText(textData);
+	  textData = Tree.dataToString((Data)data);
+	else
+	  textData = (String)data;
+	textF.setText(textData);
     }
     catch (Exception exc)
     {}
@@ -275,9 +275,9 @@ public class DeviceField extends DeviceComponent
     if (textString != null)
     {
       if (textOnly && textString.charAt(0) == '"')
-        textF.setText(textString.substring(1, textString.length() - 1));
+	textF.setText(textString.substring(1, textString.length() - 1));
       else
-        textF.setText(textString);
+	textF.setText(textString);
     }
   }
 
@@ -292,24 +292,24 @@ public class DeviceField extends DeviceComponent
       String textString;
       if (displayEvaluated)
       {
-        try
-        {
-          initialField = textString = Tree.dataToString(subtree.evaluateData(
-              data, 0));
-        }
-        catch (Exception exc)
-        {
-          textString = Tree.dataToString(data);
-        }
+	try
+	{
+	  initialField = textString = Tree.dataToString(subtree.evaluateData(
+	      data, 0));
+	}
+	catch (Exception exc)
+	{
+	  textString = Tree.dataToString(data);
+	}
       }
       else
-        textString = Tree.dataToString(data);
+	textString = Tree.dataToString(data);
       if (textString != null)
       {
-        if (textOnly && textString.charAt(0) == '"')
-          textF.setText(textString.substring(1, textString.length() - 1));
-        else
-          textF.setText(textString);
+	if (textOnly && textString.charAt(0) == '"')
+	  textF.setText(textString.substring(1, textString.length() - 1));
+	else
+	  textF.setText(textString);
       }
     }
     else
@@ -326,10 +326,10 @@ public class DeviceField extends DeviceComponent
       return null;
     if (textOnly)
     {
-        if(dataString.trim().startsWith("[")) //If it begins with a [ it is assumed to be an array of strings
-            return Tree.dataFromExpr(dataString);
-        else
-            return Tree.dataFromExpr("\"" + dataString + "\"");
+	if(dataString.trim().startsWith("[")) //If it begins with a [ it is assumed to be an array of strings
+	    return Tree.dataFromExpr(dataString);
+	else
+	    return Tree.dataFromExpr("\"" + dataString + "\"");
     }
     else
       return Tree.dataFromExpr(dataString);
@@ -364,9 +364,9 @@ public class DeviceField extends DeviceComponent
     if (!initializing)
     {
       JOptionPane.showMessageDialog(null,
-          "You cannot add a component to a Device Field. Please remove the component.",
-                                    "Error adding Device field",
-                                    JOptionPane.WARNING_MESSAGE);
+	  "You cannot add a component to a Device Field. Please remove the component.",
+	                            "Error adding Device field",
+	                            JOptionPane.WARNING_MESSAGE);
       return null;
     }
     return super.add(c);
@@ -377,9 +377,9 @@ public class DeviceField extends DeviceComponent
     if (!initializing)
     {
       JOptionPane.showMessageDialog(null,
-          "You cannot add a component to a Device Field. Please remove the component.",
-                                    "Error adding Device field",
-                                    JOptionPane.WARNING_MESSAGE);
+	  "You cannot add a component to a Device Field. Please remove the component.",
+	                            "Error adding Device field",
+	                            JOptionPane.WARNING_MESSAGE);
       return null;
     }
     return super.add(c);
@@ -390,9 +390,9 @@ public class DeviceField extends DeviceComponent
     if (!initializing)
     {
       JOptionPane.showMessageDialog(null,
-          "You cannot add a component to a Device Field. Please remove the component.",
-                                    "Error adding Device field",
-                                    JOptionPane.WARNING_MESSAGE);
+	  "You cannot add a component to a Device Field. Please remove the component.",
+	                            "Error adding Device field",
+	                            JOptionPane.WARNING_MESSAGE);
       return null;
     }
     return super.add(c);
@@ -419,7 +419,7 @@ public class DeviceField extends DeviceComponent
   protected boolean isChanged()
   {
       if (displayEvaluated)
-          return false;
+	  return false;
       return super.isChanged();
   }
 
@@ -429,38 +429,38 @@ public class DeviceField extends DeviceComponent
       Font prevTextFont = null;
       if(label != null)
       {
-          prevLabelFont = label.getFont();
-          label.setFont(new Font("Serif", Font.BOLD, 10));
+	  prevLabelFont = label.getFont();
+	  label.setFont(new Font("Serif", Font.BOLD, 10));
       }
       if(textF != null)
       {
-          prevTextFont = textF.getFont();
-          textF.setFont(new Font("Serif", Font.BOLD, 10));
+	  prevTextFont = textF.getFont();
+	  textF.setFont(new Font("Serif", Font.BOLD, 10));
       }
       super.print(g);
       if(label != null)
-          label.setFont(prevLabelFont);
+	  label.setFont(prevLabelFont);
       if(textF != null)
-          textF.setFont(prevTextFont);
+	  textF.setFont(prevTextFont);
   }
 
   public void setHighlight(boolean highlighted)
   {
       if(highlighted)
       {
-          if (label != null)
-          {
-              label.setEnabled(true);
-              label.setForeground(Color.red);
-          }
+	  if (label != null)
+	  {
+	      label.setEnabled(true);
+	      label.setForeground(Color.red);
+	  }
       }
       else
       {
-         if (label != null)
-        {
-            label.setForeground(Color.black);
-            label.setEnabled(getState());
-        }
+	 if (label != null)
+	{
+	    label.setForeground(Color.black);
+	    label.setEnabled(getState());
+	}
      }
      super.setHighlight(highlighted);
   }

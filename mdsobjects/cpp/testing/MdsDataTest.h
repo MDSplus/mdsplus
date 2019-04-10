@@ -49,9 +49,9 @@ class MdsDataTest {
 
     template < typename _Fn >
     struct ArrayFnptr {
-        typedef typename detail::FunctionTypes<_Fn>::ReturnType ReturnType;
-        typedef typename detail::remove_pointer<ReturnType>::type type;
-        typedef typename std::vector<type> VectorType;
+	typedef typename detail::FunctionTypes<_Fn>::ReturnType ReturnType;
+	typedef typename detail::remove_pointer<ReturnType>::type type;
+	typedef typename std::vector<type> VectorType;
     };
 
     template < typename Fn >
@@ -74,13 +74,13 @@ public:
     static void test_data_numerics(mds::Data *data, const std::vector<std::complex<T> > &array);
 
     static void test_data_string(mds::Data *data, const char *str) {
-        char * data_str = data->getString();
-        int data_getString_differs_from_test = strcmp(data_str,str);
-        TEST0( data_getString_differs_from_test );
-        if(data_getString_differs_from_test)
-            std::cout << "tdi decompile: " << data_str << "\n"
-                      << "test string:   " << str << "\n";
-        delete[] data_str;
+	char * data_str = data->getString();
+	int data_getString_differs_from_test = strcmp(data_str,str);
+	TEST0( data_getString_differs_from_test );
+	if(data_getString_differs_from_test)
+	    std::cout << "tdi decompile: " << data_str << "\n"
+	              << "test string:   " << str << "\n";
+	delete[] data_str;
     }
 
 };
@@ -100,7 +100,7 @@ MdsDataTest::get_vector(mds::Data *data, Fn fn)
     int size;
     R * array = (data->*fn)(&size);
     for(size_t i = 0; i<(unsigned int)size; ++i)
-        out.push_back(array[i]);
+	out.push_back(array[i]);
     delete [] array;
     return out;
 }
@@ -117,11 +117,11 @@ inline void MdsDataTest::test_numeric_cast_function(mds::Data *data, Fn fn, cons
     try { mds::numeric_cast<T>(value); }
     catch ( std::exception &e ) { TEST_STD_EXCEPTION((data->*fn)(), e.what()); }
     try {
-        // NOTE: seems that the optimizer makes a fail in 32bit if these are not
-        // volatile variables ( failing case is: test_conversion_limits<Int32> )
-        volatile R casted_val = mds::numeric_cast<R>(value);
-        volatile R data_val = (data->*fn)();
-        TEST1( casted_val == data_val );
+	// NOTE: seems that the optimizer makes a fail in 32bit if these are not
+	// volatile variables ( failing case is: test_conversion_limits<Int32> )
+	volatile R casted_val = mds::numeric_cast<R>(value);
+	volatile R data_val = (data->*fn)();
+	TEST1( casted_val == data_val );
     } catch(...) {} // do not throw //
 }
 
@@ -170,7 +170,7 @@ inline void MdsDataTest::test_data_numerics(mds::Data *data, const T value) {
     test_numeric_cast_function(data, MDS_GETNUMERIC_FUNCPT(double, getDouble), value);
 
     try { data->getComplex(); } catch (mds::MdsException &e) {
-        TEST0( strcmp(e.what(),"getComplex() not supported for non Complex data types") );
+	TEST0( strcmp(e.what(),"getComplex() not supported for non Complex data types") );
     }
 }
 
@@ -252,7 +252,7 @@ inline void MdsDataTest::test_data_numerics(mds::Data *data, const std::vector<T
 
     // see complex specialization below //
     try { data->getComplexArray(); } catch (mds::MdsException &e) {
-        TEST0( strcmp(e.what(),"getComplexArray() not supported for non Complex data types") );
+	TEST0( strcmp(e.what(),"getComplexArray() not supported for non Complex data types") );
     }
 }
 
@@ -280,8 +280,8 @@ inline void MdsDataTest::test_data_numerics(mds::Data *data, const std::vector<s
     // cast T to double as all complex in Mds are double //
     std::vector<std::complex<double> > array_d;
     for(size_t i=0; i<array.size(); ++i) {
-        const std::complex<T> &el = array[i];
-        array_d.push_back( std::complex<double>(el.real(),el.imag()) );
+	const std::complex<T> &el = array[i];
+	array_d.push_back( std::complex<double>(el.real(),el.imag()) );
     }
     TEST1( data->getComplexArray() == array_d );
     TEST1( MdsDataTest::get_vector(data, MDS_GETARRAY_FUNCPT(std::complex<double>,getComplexArray)) == array_d );

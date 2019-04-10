@@ -37,7 +37,7 @@ enum { ALWAYS = 1,		// ... well, almost always -- for debug printout
 #define	ALWAYS			 1	// ... well, almost always -- for debug printout
 #define	IMPORTANT		 2	// not fatal
 #define	FUNCTION_NAME	 5
-#define	DETAILS		 	 9
+#define	DETAILS			 9
 #endif
 
 #define FALSE 0

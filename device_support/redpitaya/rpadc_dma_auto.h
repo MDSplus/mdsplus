@@ -107,7 +107,7 @@ enum RegisterIdx {
 
 struct rpadc_dma_auto_registers
 {
-    	char command_register_enable;
+	char command_register_enable;
 	unsigned int command_register;
 	char decimator_register_enable;
 	unsigned int decimator_register;

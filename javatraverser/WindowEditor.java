@@ -24,7 +24,7 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
 	    mode_idx = 1;
 	else
 	    mode_idx = 2;
-    	curr_mode_idx = mode_idx;
+	curr_mode_idx = mode_idx;
 	String names[] = {"Undefined", "Window", "Expression"};
 	combo = new JComboBox(names);
 	combo.setEditable(false);
@@ -112,7 +112,7 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
 
     public void setData(Data data)
     {
-    	this.data = data;
+	this.data = data;
 	if(data == null)
 	    mode_idx = 0;
 	else if(data.dtype == Data.DTYPE_WINDOW)
@@ -173,7 +173,7 @@ static class WindowEdt extends JPanel
 
     public void setEditable(boolean editable)
     {
-        if(startidx_edit != null) startidx_edit.setEditable(editable);
+	if(startidx_edit != null) startidx_edit.setEditable(editable);
 	if(endidx_edit != null) endidx_edit.setEditable(editable);
 	if(value0_edit != null) value0_edit.setEditable(editable);
     }

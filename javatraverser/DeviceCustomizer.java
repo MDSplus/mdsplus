@@ -22,43 +22,43 @@ public class DeviceCustomizer extends Panel
     ".CHANNEL_4:DATA"};
     public String[] getDeviceFields()
     {
-        if(DeviceSetupBeanInfo.beanDeviceType == null)
-        {
-            DeviceSetupBeanInfo.beanDeviceType = JOptionPane.showInputDialog(
-                "Please define the device type");
+	if(DeviceSetupBeanInfo.beanDeviceType == null)
+	{
+	    DeviceSetupBeanInfo.beanDeviceType = JOptionPane.showInputDialog(
+	        "Please define the device type");
 		}
-        System.out.println("Device type: "+DeviceSetupBeanInfo.beanDeviceType);
-        System.out.println("Inquiring Device Provider...");
+	System.out.println("Device type: "+DeviceSetupBeanInfo.beanDeviceType);
+	System.out.println("Inquiring Device Provider...");
 		if(DeviceSetupBeanInfo.beanDeviceProvider == null)
-        {
-            DeviceSetupBeanInfo.beanDeviceProvider = JOptionPane.showInputDialog(
-                "Please define the IP address of the device repository");
+	{
+	    DeviceSetupBeanInfo.beanDeviceProvider = JOptionPane.showInputDialog(
+	        "Please define the IP address of the device repository");
 		}
-        System.out.println("Device Provider: "
-          + DeviceSetupBeanInfo.beanDeviceProvider );
-        System.out.println("lastDeviceType = " + lastDeviceType);
+	System.out.println("Device Provider: "
+	  + DeviceSetupBeanInfo.beanDeviceProvider );
+	System.out.println("lastDeviceType = " + lastDeviceType);
 		if(lastDeviceType != null && lastDeviceType.equals(DeviceSetupBeanInfo.beanDeviceType))
 		    return lastFields;
 		lastDeviceType = DeviceSetupBeanInfo.beanDeviceType;
 		String linFields = "";
 		if(deviceProvider == null || !deviceProvider.equals(DeviceSetupBeanInfo.beanDeviceProvider))
-        {
+	{
 		    deviceProvider = new MdsDataProvider(DeviceSetupBeanInfo.beanDeviceProvider);
 		}
-        byte[] linBytes = null;
-        try{
-            linBytes = deviceProvider.GetByteArray("JavaGetDeviceFields(\""+
-		        DeviceSetupBeanInfo.beanDeviceType + "\")");
-                   linFields = new String(linBytes);
+	byte[] linBytes = null;
+	try{
+	    linBytes = deviceProvider.GetByteArray("JavaGetDeviceFields(\""+
+			DeviceSetupBeanInfo.beanDeviceType + "\")");
+	           linFields = new String(linBytes);
 		   // linFields = deviceProvider.GetString("JavaGetDeviceFields(\""+
 		   //     DeviceSetupBeanInfo.beanDeviceType + "\")");
 		}catch(Exception exc) {JOptionPane.showMessageDialog(null, "Cannot retrieve device field names: "+ exc);}
- 		StringTokenizer st = new StringTokenizer(linFields);
+		StringTokenizer st = new StringTokenizer(linFields);
 		lastFields = new String[st.countTokens()];
 		for(int i = 0; i < lastFields.length; i++)
 		    lastFields[i] = st.nextToken();
-                if(lastFields.length == 0) //If name retrieval failed
-                    JOptionPane.showMessageDialog(null, "Unable to retrieve device field names: check deviceType and deviceProvider main form properties");
+	        if(lastFields.length == 0) //If name retrieval failed
+	            JOptionPane.showMessageDialog(null, "Unable to retrieve device field names: check deviceType and deviceProvider main form properties");
 		return lastFields;
     }
 }

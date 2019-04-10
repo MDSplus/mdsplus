@@ -111,28 +111,28 @@ static long asynchRead(CALLBACK *pcallback)
      callbackGetUser(precord,pcallback);
      prec = (waveformRecord *)precord;
      switch(prec->ftvl)  {
-     	case DBF_UCHAR:
-     	case DBF_CHAR:
-     		elSize = 1;
-     		break;
-     	case DBF_USHORT:
-     	case DBF_SHORT:
-     		elSize = 2;
-     		break;
-      	case DBF_ULONG:
-      	case DBF_LONG:
-      	case DBF_FLOAT:
-     		elSize = 4;
-     		break;
-      	case DBF_DOUBLE:
-     		elSize = 8;
-     		break;
-      	case DBF_STRING:
-     		elSize = 1;
-     		break;
-    	default:
-        	printf("Unexpected type for Waveform MDSplus event record\n");
-        	return 0;
+	case DBF_UCHAR:
+	case DBF_CHAR:
+		elSize = 1;
+		break;
+	case DBF_USHORT:
+	case DBF_SHORT:
+		elSize = 2;
+		break;
+	case DBF_ULONG:
+	case DBF_LONG:
+	case DBF_FLOAT:
+		elSize = 4;
+		break;
+	case DBF_DOUBLE:
+		elSize = 8;
+		break;
+	case DBF_STRING:
+		elSize = 1;
+		break;
+	default:
+		printf("Unexpected type for Waveform MDSplus event record\n");
+		return 0;
      }
      maxLen = prec->nelm*elSize;
      waitMdsEvent(prec->inp.value.instio.string, prec->bptr, maxLen, &retLen);
@@ -146,8 +146,8 @@ static long read_me(waveformRecord *prec)
 {
      CALLBACK *pcallback = (CALLBACK *)prec->dpvt;
      if(prec->pact) {
-          prec->udf = FALSE;
-          return 0;
+	  prec->udf = FALSE;
+	  return 0;
      }
      prec->pact=TRUE;
 

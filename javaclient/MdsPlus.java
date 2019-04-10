@@ -210,7 +210,7 @@ public class MdsPlus extends Object implements Runnable
 //		System.out.println("Successfully allocated buffer");
 		int offset;
 		int len;
-        for (offset = 0; offset < d.data.length; offset += len)
+	for (offset = 0; offset < d.data.length; offset += len)
 		{
 			len = d.data.length - offset;
 			len = Math.min(8192,len);
@@ -393,7 +393,7 @@ public class MdsPlus extends Object implements Runnable
 				{
 					Cancel(mds.m_eventHash.get(""+event_id));
 				}
-			 	byte idarr[] = new byte[1];
+				byte idarr[] = new byte[1];
 				idarr[0] = event_id;
 				mds.SendMsg((byte)0,(byte)3,EVENT_REQUEST);
 				mds.SendMsg((byte)1,(byte)3,new MdsPlusDescriptor(ev.m_name));

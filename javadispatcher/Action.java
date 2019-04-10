@@ -26,14 +26,14 @@ class Action
 
     public Action(ActionData action, int nid, String name, boolean on, boolean essental, String server_address)
     {
-        this.action = action;
-        this.nid = nid;
-        this.name = name;
-        this.on = on;
-        dispatch_status = NOT_DISPATCHED;
-        status = 0;
-        this.server_address = server_address;
-        this.essential = essential;
+	this.action = action;
+	this.nid = nid;
+	this.name = name;
+	this.on = on;
+	dispatch_status = NOT_DISPATCHED;
+	status = 0;
+	this.server_address = server_address;
+	this.essential = essential;
     }
 
   //public int getTimestamp() {return timestamp; }
@@ -54,30 +54,30 @@ class Action
 
     synchronized void setStatus(int dispatch_status, int status, boolean verbose)
     {
-        String server;
-        this.status = status;
-        this.dispatch_status = dispatch_status;
+	String server;
+	this.status = status;
+	this.dispatch_status = dispatch_status;
 
-        if(verbose)
-        {
-            try {
-                server = ((DispatchData)action.getDispatch()).getIdent().getString();
-            } catch(Exception e) {server = ""; }
-            switch(dispatch_status) {
-                case DISPATCHED : System.out.println(""+ new Date() + " Dispatching node " +
-                    name + "(" + nid+")"  +  " to " + server); break;
-                 case DOING : System.out.println(""+new Date() + " " +server +
-                        " is beginning action " + name); break;
-                 case DONE :
-                        if((status & 1) != 0)
-                            System.out.println(""+new Date() + " Action " +name + " completed  ");
-                        else
-                            System.out.println(""+new Date() + " Action " +name +
-                                " failed  " + MdsHelper.getErrorString(status));
-                        break;
-                 case ABORTED: System.out.println(""+new Date() + " Action " +name + " aborted"); break;
-            }
-        }
+	if(verbose)
+	{
+	    try {
+	        server = ((DispatchData)action.getDispatch()).getIdent().getString();
+	    } catch(Exception e) {server = ""; }
+	    switch(dispatch_status) {
+	        case DISPATCHED : System.out.println(""+ new Date() + " Dispatching node " +
+	            name + "(" + nid+")"  +  " to " + server); break;
+	         case DOING : System.out.println(""+new Date() + " " +server +
+	                " is beginning action " + name); break;
+	         case DONE :
+	                if((status & 1) != 0)
+	                    System.out.println(""+new Date() + " Action " +name + " completed  ");
+	                else
+	                    System.out.println(""+new Date() + " Action " +name +
+	                        " failed  " + MdsHelper.getErrorString(status));
+	                break;
+	         case ABORTED: System.out.println(""+new Date() + " Action " +name + " aborted"); break;
+	    }
+	}
     }
     public synchronized String toString() {return name; }
 }

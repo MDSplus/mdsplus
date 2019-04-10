@@ -55,7 +55,7 @@
 /***********************************************************************
 ****************** From UilDef.h ***************************************/
 #define _BIT_INDEX(_type)	\
-            (((unsigned int) (_type)) >> 3)
+	    (((unsigned int) (_type)) >> 3)
 
 #define _BIT_MASK(_type)	\
   (1 << (((unsigned int) (_type)) & 0x7))

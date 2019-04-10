@@ -12,29 +12,29 @@ public class Int32 extends Scalar
     int datum;
     public Int32(int datum)
     {
-        this(datum, null, null, null, null);
+	this(datum, null, null, null, null);
     }
      public Int32(int datum, Data help, Data units, Data error, Data validation)
     {
-         super(help, units, error, validation);
-        clazz = CLASS_S;
-        dtype = DTYPE_L;
-        this.datum = datum;
+	 super(help, units, error, validation);
+	clazz = CLASS_S;
+	dtype = DTYPE_L;
+	this.datum = datum;
     }
     public boolean equals(Object data)
     {
-        if(!(data instanceof Int32))
-            return false;
-        return((Int32)data).datum == datum;
+	if(!(data instanceof Int32))
+	    return false;
+	return((Int32)data).datum == datum;
     }
     public static Data getData(int datum, Data help, Data units, Data error, Data validation)
     {
-        return new Int32(datum, help, units, error, validation);
+	return new Int32(datum, help, units, error, validation);
     }
 
     public  byte getByte() throws MdsException
     {
-        return (byte)datum;
+	return (byte)datum;
     }
 
     /**
@@ -44,7 +44,7 @@ public class Int32 extends Scalar
      */
     public  short getShort() throws MdsException
     {
-        return (short)datum;
+	return (short)datum;
     }
 
     /**
@@ -54,7 +54,7 @@ public class Int32 extends Scalar
      */
     public  int getInt() throws MdsException
     {
-        return (int)datum;
+	return (int)datum;
     }
 
 
@@ -65,7 +65,7 @@ public class Int32 extends Scalar
      */
     public  long getLong() throws MdsException
     {
-        return (long)datum;
+	return (long)datum;
     }
 
     /**
@@ -75,7 +75,7 @@ public class Int32 extends Scalar
      */
     public  float getFloat()throws MdsException
     {
-        return (float)datum;
+	return (float)datum;
     }
 
     /**
@@ -85,7 +85,7 @@ public class Int32 extends Scalar
      */
     public  double getDouble()throws MdsException
     {
-        return (double)datum;
+	return (double)datum;
     }
 
 
@@ -97,7 +97,7 @@ public class Int32 extends Scalar
      */
     public  byte[] getByteArray() throws MdsException
     {
-        return new byte[]{(byte)datum};
+	return new byte[]{(byte)datum};
     }
 
 
@@ -109,7 +109,7 @@ public class Int32 extends Scalar
      */
     public  short[] getShortArray()throws MdsException
     {
-        return new short[]{(short)datum};
+	return new short[]{(short)datum};
     }
 
 
@@ -121,7 +121,7 @@ public class Int32 extends Scalar
      */
     public  int[] getIntArray()throws MdsException
     {
-        return new int[]{(int)datum};
+	return new int[]{(int)datum};
     }
 
     /**
@@ -132,7 +132,7 @@ public class Int32 extends Scalar
      */
     public  long[] getLongArray()throws MdsException
     {
-        return new long[]{(long)datum};
+	return new long[]{(long)datum};
     }
 
     /**
@@ -143,7 +143,7 @@ public class Int32 extends Scalar
      */
     public  float[] getFloatArray()throws MdsException
     {
-        return new float[]{(float)datum};
+	return new float[]{(float)datum};
     }
 
     /**
@@ -154,7 +154,7 @@ public class Int32 extends Scalar
      */
     public  double[] getDoubleArray()throws MdsException
     {
-        return new double[]{(double)datum};
+	return new double[]{(double)datum};
     }
     public int getSizeInBytes() {return 4;}
 }

@@ -18,8 +18,8 @@ public class UpdateEvent extends AWTEvent
     String name;
 
     public UpdateEvent(Object source, String event) {
-        super(source, 0);
-        name = event;
+	super(source, 0);
+	name = event;
     }
 
     public String getName() { return name;}

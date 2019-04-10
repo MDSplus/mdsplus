@@ -5,12 +5,12 @@ public class DeviceResetBeanInfo extends SimpleBeanInfo
 {
     public Image getIcon(int kind)
     {
-        return loadImage("DeviceReset.gif");
+	return loadImage("DeviceReset.gif");
     }
 
     public PropertyDescriptor [] getPropertyDescriptors()
     {
-        return new PropertyDescriptor[] {};
+	return new PropertyDescriptor[] {};
     }
 }
 

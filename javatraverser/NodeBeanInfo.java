@@ -66,7 +66,7 @@ public class NodeBeanInfo extends SimpleBeanInfo
 		return false;
     try {
 	    if(experiment.isReadonly() && (short_descr.equals("Modify Data") || short_descr.equals("Toggle On/Off")))
-	        return false;
+		return false;
 	}catch(Exception exc){return false;}
 	return true;
     }
@@ -77,12 +77,12 @@ public class NodeBeanInfo extends SimpleBeanInfo
 	try {
 		PropertyDescriptor[] props = {
 		    property("data", "Display Data"),
-            property("info", "Display Nci"),
-            property("info", "Display Tags"),
+	    property("info", "Display Nci"),
+	    property("info", "Display Tags"),
 		    property("data", "Modify Data")};
 		props[0].setPropertyEditorClass(NodeDisplayData.class);
-        props[1].setPropertyEditorClass(NodeDisplayNci.class);
-        props[2].setPropertyEditorClass(NodeDisplayTags.class);
+	props[1].setPropertyEditorClass(NodeDisplayNci.class);
+	props[2].setPropertyEditorClass(NodeDisplayTags.class);
 		props[3].setPropertyEditorClass(NodeModifyData.class);
 		return props;
 	} catch(IntrospectionException e)

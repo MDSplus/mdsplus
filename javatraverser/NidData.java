@@ -17,16 +17,16 @@ public class NidData extends IntData implements NodeId
     }
     public int getInt()
     {
-        return datum;
+	return datum;
     }
     public boolean isResolved() {return true; }
     public void incrementNid()
     {
-        datum++;
+	datum++;
     }
     public boolean equals(Object obj)
     {
-        if(!(obj instanceof NidData)) return false;
-        return datum == ((NidData)obj).datum;
+	if(!(obj instanceof NidData)) return false;
+	return datum == ((NidData)obj).datum;
     }
 }

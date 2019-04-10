@@ -11,32 +11,32 @@ class ImageTransferable implements Transferable, ClipboardOwner
 
     ImageTransferable(BufferedImage img)
     {
-        ri = img;
+	ri = img;
     }
 
     public DataFlavor[] getTransferDataFlavors() {
-        return new DataFlavor[] { DataFlavor.imageFlavor};
+	return new DataFlavor[] { DataFlavor.imageFlavor};
     }
 
     public boolean isDataFlavorSupported(DataFlavor flavor) {
-        return DataFlavor.imageFlavor.equals(flavor);
+	return DataFlavor.imageFlavor.equals(flavor);
     }
 
     public Object getTransferData(DataFlavor flavor)
-            throws IOException, UnsupportedFlavorException {
+	    throws IOException, UnsupportedFlavorException {
 
-        if(ri == null)
-            return null;
+	if(ri == null)
+	    return null;
 
-        if (!isDataFlavorSupported(flavor)) {
-            throw new UnsupportedFlavorException(flavor);
-        }
-        return ri;
+	if (!isDataFlavorSupported(flavor)) {
+	    throw new UnsupportedFlavorException(flavor);
+	}
+	return ri;
     }
 
     public void lostOwnership(Clipboard clipboard, Transferable contents)
     {
-        /*
+	/*
 	    System.out.println ("ImageTransferable lost ownership of "  +clipboard.getName());
 	    System.out.println ("data: " + contents);
 	    */

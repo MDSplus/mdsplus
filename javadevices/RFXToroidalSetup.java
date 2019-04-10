@@ -87,7 +87,7 @@ public class RFXToroidalSetup extends DeviceSetup {
     deviceTable1.setIdentifier("");
     deviceTable1.setColumnNames(new String[] {"Sect.1", "Sect.2", "Sect.3", "Sect.4", "Sect.5", "Sect.6"});
     deviceTable1.setRowNames(new String[] {"ls_ch_init_state", "ch2_lockt_ls", "irelease_ls", "hs_ch_init_state", "ch1_lockt_hs", "irelease_hs", "ith_inv_on", "s0_reg_iac",
-        "s0_reg_vac", "s0_reg_iac_lim", "s0_reg_vac_lim"});
+	"s0_reg_vac", "s0_reg_iac_lim", "s0_reg_vac_lim"});
     deviceTable1.setDisplayRowNumber(true);
     deviceTable1.setPreferredColumnWidth(70);
     deviceTable1.setPreferredHeight(100);
@@ -98,7 +98,7 @@ public class RFXToroidalSetup extends DeviceSetup {
     deviceTable2.setPreferredColumnWidth(70);
     deviceTable2.setDisplayRowNumber(true);
     deviceTable2.setRowNames(new String[] {"ls_ch_init_state", "ch2_lockt_ls", "irelease_ls", "hs_ch_init_state", "ch1_lockt_hs", "irelease_hs", "ith_inv_on", "s0_reg_iac",
-        "s0_reg_vac", "s0_reg_iac_lim", "s0_reg_vac_lim"});
+	"s0_reg_vac", "s0_reg_iac_lim", "s0_reg_vac_lim"});
     deviceTable2.setColumnNames(new String[] {"Sect.7", "Sect.8", "Sect.9", "Sect.10", "Sect.11", "Sect.12"});
     deviceTable2.setIdentifier("");
     deviceTable2.setNumRows(11);
@@ -127,13 +127,13 @@ public class RFXToroidalSetup extends DeviceSetup {
     deviceTable6.setPreferredColumnWidth(40);
     deviceTable6.setDisplayRowNumber(true);
     deviceTable6.setRowNames(new String[] {"vth_up1_slow", "vth_up2_slow", "vth_dw_slow", "ls_ch_init_state", "ch2_cnt1_la", "ch2_cnt2_ls", "timeout_ls", "tmin_on_ls",
-        "tmin_off_ls", "ch2_lockt_ls", "irelease_ls", "vth_up1_fast", "vth_up2_fast", "vtw_dw_fast", "hs_ch_init_state", "ch2_cnt1_hs",
-        "ch2_cnt2_hs", "timeout_hs", "tmin_on_hs", "tmin_off_hs", "ch1_lockt_hs", "irelease_hs", "ch1_to_hs", "kp_reg_iac", "ki_reg_iac",
-        "up_reg_iac", "lo_reg_iac", "tc_init_h", "fpga_clk", "tmin_on_h", "tmin_off_h", "tdead", "tfbon_h", "tfboff_h", "ith_inv_on", "ith_inv_end_force",
-        "imin_inv_off", "vdc_max", "vmaxload", "ih_max", "vdc_overvolt", "vdc_undevolt", "vdc_t", "spare44", "spare45", "iac_lim", "vac_lim", "spare48",
-        "kp_reg_vac", "ki_reg_vac", "s0_reg_vac", "up_reg_vac", "lo_reg_vac", "kp_rec_iac_lim", "ki_reg_iac_lim", "s0_reg_iac_lim", "up_reg_iac_lim",
-        "lo_reg_uiac_lim", "kp_reg_vac_lim", "ki_reg_vac_lim", "s0_reg_vac_lim", "up_reg_vac_lim", "lo_reg_vac_lim", "s0_reg_iac",
-        "spare1", "spare2", "spare3", "spare4", "spare5", "spare6", "spare7", "spare8", "spare9", "spare10", "spare11"});
+	"tmin_off_ls", "ch2_lockt_ls", "irelease_ls", "vth_up1_fast", "vth_up2_fast", "vtw_dw_fast", "hs_ch_init_state", "ch2_cnt1_hs",
+	"ch2_cnt2_hs", "timeout_hs", "tmin_on_hs", "tmin_off_hs", "ch1_lockt_hs", "irelease_hs", "ch1_to_hs", "kp_reg_iac", "ki_reg_iac",
+	"up_reg_iac", "lo_reg_iac", "tc_init_h", "fpga_clk", "tmin_on_h", "tmin_off_h", "tdead", "tfbon_h", "tfboff_h", "ith_inv_on", "ith_inv_end_force",
+	"imin_inv_off", "vdc_max", "vmaxload", "ih_max", "vdc_overvolt", "vdc_undevolt", "vdc_t", "spare44", "spare45", "iac_lim", "vac_lim", "spare48",
+	"kp_reg_vac", "ki_reg_vac", "s0_reg_vac", "up_reg_vac", "lo_reg_vac", "kp_rec_iac_lim", "ki_reg_iac_lim", "s0_reg_iac_lim", "up_reg_iac_lim",
+	"lo_reg_uiac_lim", "kp_reg_vac_lim", "ki_reg_vac_lim", "s0_reg_vac_lim", "up_reg_vac_lim", "lo_reg_vac_lim", "s0_reg_iac",
+	"spare1", "spare2", "spare3", "spare4", "spare5", "spare6", "spare7", "spare8", "spare9", "spare10", "spare11"});
     deviceTable6.setEditable(false);
     deviceTable6.setColumnNames(new String[] {"Sect.1", "Sect.2", "Sect.3", "Sect.4", "Sect.5", "Sect.6"});
     deviceTable6.setIdentifier("");
@@ -166,13 +166,13 @@ public class RFXToroidalSetup extends DeviceSetup {
     deviceTable8.setColumnNames(new String[] {"Sect.7", "Sect.8", "Sect.9", "Sect.10", "Sect.11", "Sect.12"});
     deviceTable8.setEditable(false);
     deviceTable8.setRowNames(new String[] {"vth_up1_slow", "vth_up2_slow", "vth_dw_slow", "ls_ch_init_state", "ch2_cnt1_la", "ch2_cnt2_ls", "timeout_ls", "tmin_on_ls",
-        "tmin_off_ls", "ch2_lockt_ls", "irelease_ls", "vth_up1_fast", "vth_up2_fast", "vtw_dw_fast", "hs_ch_init_state", "ch2_cnt1_hs",
-        "ch2_cnt2_hs", "timeout_hs", "tmin_on_hs", "tmin_off_hs", "ch1_lockt_hs", "irelease_hs", "ch1_to_hs", "kp_reg_iac", "ki_reg_iac",
-        "up_reg_iac", "lo_reg_iac", "tc_init_h", "fpga_clk", "tmin_on_h", "tmin_off_h", "tdead", "tfbon_h", "tfboff_h", "ith_inv_on", "ith_inv_end_force",
-        "imin_inv_off", "vdc_max", "vmaxload", "ih_max", "vdc_overvolt", "vdc_undevolt", "vdc_t", "spare44", "spare45", "iac_lim", "vac_lim", "spare48",
-        "kp_reg_vac", "ki_reg_vac", "s0_reg_vac", "up_reg_vac", "lo_reg_vac", "kp_rec_iac_lim", "ki_reg_iac_lim", "s0_reg_iac_lim", "up_reg_iac_lim",
-        "lo_reg_uiac_lim", "kp_reg_vac_lim", "ki_reg_vac_lim", "s0_reg_vac_lim", "up_reg_vac_lim", "lo_reg_vac_lim", "s0_reg_iac",
-        "spare1", "spare2", "spare3", "spare4", "spare5", "spare6", "spare7", "spare8", "spare9", "spare10", "spare11"});
+	"tmin_off_ls", "ch2_lockt_ls", "irelease_ls", "vth_up1_fast", "vth_up2_fast", "vtw_dw_fast", "hs_ch_init_state", "ch2_cnt1_hs",
+	"ch2_cnt2_hs", "timeout_hs", "tmin_on_hs", "tmin_off_hs", "ch1_lockt_hs", "irelease_hs", "ch1_to_hs", "kp_reg_iac", "ki_reg_iac",
+	"up_reg_iac", "lo_reg_iac", "tc_init_h", "fpga_clk", "tmin_on_h", "tmin_off_h", "tdead", "tfbon_h", "tfboff_h", "ith_inv_on", "ith_inv_end_force",
+	"imin_inv_off", "vdc_max", "vmaxload", "ih_max", "vdc_overvolt", "vdc_undevolt", "vdc_t", "spare44", "spare45", "iac_lim", "vac_lim", "spare48",
+	"kp_reg_vac", "ki_reg_vac", "s0_reg_vac", "up_reg_vac", "lo_reg_vac", "kp_rec_iac_lim", "ki_reg_iac_lim", "s0_reg_iac_lim", "up_reg_iac_lim",
+	"lo_reg_uiac_lim", "kp_reg_vac_lim", "ki_reg_vac_lim", "s0_reg_vac_lim", "up_reg_vac_lim", "lo_reg_vac_lim", "s0_reg_iac",
+	"spare1", "spare2", "spare3", "spare4", "spare5", "spare6", "spare7", "spare8", "spare9", "spare10", "spare11"});
     deviceTable8.setDisplayRowNumber(true);
     deviceTable8.setPreferredColumnWidth(40);
     deviceTable8.setPreferredHeight(100);

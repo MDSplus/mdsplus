@@ -178,12 +178,12 @@ Tree::~Tree()
 {
     if(fromActiveTree) return;
     if( isModified() ) {
-        int status = _TreeQuitTree(&ctx, name.c_str(), shot);
-        (void)status;
+	int status = _TreeQuitTree(&ctx, name.c_str(), shot);
+	(void)status;
 //        if(!(status & 1))
 //            throw MdsException(status);
     } else {
-        int status = _TreeClose(&ctx, name.c_str(), shot);
+	int status = _TreeClose(&ctx, name.c_str(), shot);
        (void)status;
 //        if(!(status & 1))
 //            throw MdsException(status);
@@ -206,9 +206,9 @@ EXPORT void Tree::operator delete(void *p)
 void Tree::edit(const bool st)
 {
     if( isReadOnly() )
-        throw MdsException("Tree is read only");
+	throw MdsException("Tree is read only");
     int status = st ? _TreeOpenEdit(&ctx, name.c_str(), shot) :
-                      _TreeOpen(&ctx, name.c_str(), shot,0);
+	              _TreeOpen(&ctx, name.c_str(), shot,0);
 	if(!(status & 1))
 		throw MdsException(status);
 }
@@ -1251,8 +1251,8 @@ void TreeNode::getSegmentAndDimension(int segIdx, Array *&segment, Data *&dimens
 	}
 	segment   = (Array *)convertFromDsc(dataDsc, tree);
 	dimension = (Data *)convertFromDsc(dataDsc, tree);
-        freeDsc(dataDsc);
-        freeDsc(timeDsc);
+	freeDsc(dataDsc);
+	freeDsc(timeDsc);
 }
 
 Data *TreeNode::getSegmentScale()
@@ -1262,10 +1262,10 @@ Data *TreeNode::getSegmentScale()
 	//if(tree) tree->lock();
 	int status = getTreeSegmentScale(tree->getCtx(), getNid(), &sclDsc);
 	//if(tree) tree->unlock();
-        if(!(status & 1)) {
-                freeDsc(sclDsc);
-                sclDsc = NULL;
-        }
+	if(!(status & 1)) {
+	        freeDsc(sclDsc);
+	        sclDsc = NULL;
+	}
 	Data *retScl = (Data *)convertFromDsc(sclDsc, tree);
 	freeDsc(sclDsc);
 	return retScl;
@@ -1273,12 +1273,12 @@ Data *TreeNode::getSegmentScale()
 
 void TreeNode::setSegmentScale(Data *scale)
 {
-        resolveNid();
-        //if(tree) tree->lock();
-        int status = setTreeSegmentScale(tree->getCtx(), getNid(), scale->convertToDsc());
-        //if(tree) tree->unlock();
-        if(!(status & 1))
-                throw MdsException(status);
+	resolveNid();
+	//if(tree) tree->lock();
+	int status = setTreeSegmentScale(tree->getCtx(), getNid(), scale->convertToDsc());
+	//if(tree) tree->unlock();
+	if(!(status & 1))
+	        throw MdsException(status);
 }
 
 void TreeNode::beginTimestampedSegment(Array *initData)

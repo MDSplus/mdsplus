@@ -28,11 +28,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	JOSH STILLERMAN
+		Author:	JOSH STILLERMAN
 
 		Date:   12-MAY-1992
 
-    		Purpose: Support for Lecroy HV1440 power supply
+		Purpose: Support for Lecroy HV1440 power supply
 
 ------------------------------------------------------------------------------
 
@@ -50,7 +50,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 service for LeCroy HV1440 High Voltage mainframe.
 module services up to 16 pods of 16 chans each.
@@ -61,11 +61,11 @@ Assumptions:
   Assumes that all modules in 1440 crate are 16 channel
   high voltage, 2500V either polarity, one frame only.
 
-               1440/2132 communication protocols:
+	       1440/2132 communication protocols:
        C is 8-bit HV channel number (0-255)                T is 3-bit tag word
        D is 8 bit data                V is 12 bit voltage (NOT 2's complement)
        S is 1 bit sign (1=positive, 0=negative)            # is 5 bit sub-data
-               writes w/ count & data:  COUNT + WRITE COMMAND + N*DATA
+	       writes w/ count & data:  COUNT + WRITE COMMAND + N*DATA
 
  C-02-T=0  select mainframe 1, channel C
  C-00-T=1  write demand voltage, count doesn't increment channel
@@ -74,26 +74,26 @@ Assumptions:
  C-03-T=1  write backup voltage, count increments channel
  S-0V-T=2  voltage data, following write
  C-00-T=3  read demand voltage, channel C
-           returns S-0V-T=2 voltage value, N times
-           returns C-02-T=3 demand buffer id after last data
+	   returns S-0V-T=2 voltage value, N times
+	   returns C-02-T=3 demand buffer id after last data
  C-04-T=3  read backup voltage, channel C
-           returns S-0V-T=2 voltage value, N times
-           returns C-03-T=3 backup buffer id after last data
+	   returns S-0V-T=2 voltage value, N times
+	   returns C-03-T=3 backup buffer id after last data
  C-08-T=3  read measured voltage, channel C
-           returns S-0V-T=2 voltage value, N times
-           returns C-02-T=4 measured buffer id after last data
+	   returns S-0V-T=2 voltage value, N times
+	   returns C-02-T=4 measured buffer id after last data
  C-12-T=3  read mainframe: non-updated channel, C ignored
-           returns C-3-T=6; C = # of non-updateable channels, 256==>255
-           followed by C-2-T=6 for up to 31 channels
+	   returns C-3-T=6; C = # of non-updateable channels, 256==>255
+	   followed by C-2-T=6 for up to 31 channels
  C-16-T=3  read mainframe: current limit pos, C ignored
-           returns D-3-T=5
+	   returns D-3-T=5
  C-20-T=3  read mainframe: current limit neg, C ignored
-           returns D-2-T=5
+	   returns D-2-T=5
  C-24-T=3  read mainframe: empty slots, C ignored
-           returns C-03-T=4;  C is lowest chan empty slot (4LSB=0), 255=full
+	   returns C-03-T=4;  C is lowest chan empty slot (4LSB=0), 255=full
  C-28-T=3  read mainframe: status, C ignored
-           returns D-00-T=0: bit0=1 HVon, =0 off; bit1=1 enabled, =0 disabled;
-                     bit2=0 1441 operating; bit3=1442 low on; bit4=1442 hi on
+	   returns D-00-T=0: bit0=1 HVon, =0 off; bit1=1 enabled, =0 disabled;
+	             bit2=0 1441 operating; bit3=1442 low on; bit4=1442 hi on
  D-00-T=4  count word:  data=0 means 256
  D-00-T=5  write current limit negative to selected mainframe
  D-16-T=5  write current limit positive to selected mainframe
@@ -107,8 +107,8 @@ Assumptions:
  D-28-T=6  enable finished response
  D-01-T=6  reboot system
      ALL tag=6 commands:  ignore D, use selected frame only
-                          will use all frames if #=#+2
-                          return D-2-1  (with D=#/4) if response enabled
+	                  will use all frames if #=#+2
+	                  return D-2-1  (with D=#/4) if response enabled
 
   at any time:  received errors (mainframe 1)
     0000 0000 0001 0111 - 1440 syntax error
@@ -116,13 +116,13 @@ Assumptions:
     xxxx xxxx xxxx 1111 - 2132 error
 
     CAMAC:   F0 A0 - read LAM register, bit0=lam1 (serious), bit1=lam2 (done)
-             F2 A0 - read DATA buffer, valid if Q
-             F9 A0 - clear buffers, LAM1, LAM2
-             F10   - clear LAM, A0 LAM1, A1 LAM2
-             F16 A0 - write to output buffer, Q if accepted, see above formats
-             F24   - disable LAM, A0 LAM1, A1 LAM2
-             F26   - enable LAM, A0 LAM1, A1 LAM2
-             F27   - test LAM, A0 LAM1, A1 LAM2, Q if on
+	     F2 A0 - read DATA buffer, valid if Q
+	     F9 A0 - clear buffers, LAM1, LAM2
+	     F10   - clear LAM, A0 LAM1, A1 LAM2
+	     F16 A0 - write to output buffer, Q if accepted, see above formats
+	     F24   - disable LAM, A0 LAM1, A1 LAM2
+	     F26   - enable LAM, A0 LAM1, A1 LAM2
+	     F27   - test LAM, A0 LAM1, A1 LAM2, Q if on
 
   Ported from Jeff Casey's FORTRAN (JAS)
 ------------------------------------------------------------------------------*/

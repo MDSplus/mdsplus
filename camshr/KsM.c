@@ -156,8 +156,8 @@ static int KsMultiIo(CamKey Key,	// module info
 	break;
       }
       if (!dptr) {
-        printf("%s = invalid reg->nb = %d\n", reg[i].name, reg[i].nb);
-        break;
+	printf("%s = invalid reg->nb = %d\n", reg[i].name, reg[i].nb);
+	break;
       }
       Command[0] = OpCodeRegisterAccess;
       Command[1] = 0;

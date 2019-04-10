@@ -15,7 +15,7 @@ public class FloatArray extends ArrayData
 	    dtype = DTYPE_FLOAT;
 	    this.datum = new float[datum.length];
 	    for(int i = 0; i < datum.length; i++)
-	        this.datum[i] = datum[i];
+		this.datum[i] = datum[i];
 	    this.flags = flags;
     }
     public int [] getIntArray()

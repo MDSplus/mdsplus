@@ -13,11 +13,11 @@ template < typename T >
 class Deleter {
 public:
     static void _delete(MDSplus::Data * ptr) {
-        MDSplus::deleteData(ptr);
+	MDSplus::deleteData(ptr);
     }
 
     static void _delete(void * ptr) {
-        delete (T*)(ptr);
+	delete (T*)(ptr);
     }
 };
 
@@ -40,15 +40,15 @@ public:
     ~unique_ptr() { _delete(); }
 
     unique_ptr & operator = (T * ref) {
-        _delete();
-        ptr = ref;
-        return *this;
+	_delete();
+	ptr = ref;
+	return *this;
     }
 
     unique_ptr & operator = (unique_ptr other) {
-        ptr = other.ptr;
-        other.ptr = NULL;
-        return *this;
+	ptr = other.ptr;
+	other.ptr = NULL;
+	return *this;
     }
 
     void _delete() { if(ptr) D::_delete(ptr); ptr=NULL; }

@@ -9,27 +9,27 @@ import mds.data.descriptor.Descriptor_R;
 @Deprecated
 public final class Program extends Descriptor_R<Number>{
     public Program(final ByteBuffer bb){
-        super(bb);
+	super(bb);
     }
 
     public Program(final Descriptor<?>... arguments){
-        super(DTYPE.PROGRAM, null, arguments);
+	super(DTYPE.PROGRAM, null, arguments);
     }
 
     public Program(final Descriptor<?> time_out, final Descriptor<?> program){
-        super(DTYPE.PROGRAM, null, time_out, program);
+	super(DTYPE.PROGRAM, null, time_out, program);
     }
 
     @Override
     public StringBuilder decompile(final int prec, final StringBuilder pout, final int mode) {
-        return Descriptor_R.decompile_build(this, prec, pout, mode);
+	return Descriptor_R.decompile_build(this, prec, pout, mode);
     }
 
     public final Descriptor<?> getProgram() {
-        return this.getDescriptor(1);
+	return this.getDescriptor(1);
     }
 
     public final Descriptor<?> getTimeOut() {
-        return this.getDescriptor(0);
+	return this.getDescriptor(0);
     }
 }

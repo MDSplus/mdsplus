@@ -31,29 +31,29 @@ public class DataEditor
     else
     {
       if (data instanceof ParameterData)
-          mode_idx = 2;
+	  mode_idx = 2;
       else if(data instanceof FunctionData && ((FunctionData)data).opcode == PythonEditor.OPC_FUN)
       {
-          Data[] args = ((FunctionData)data).getArgs();
-          try {
-          if(args != null && args.length > 2 && args[1] != null && (args[1] instanceof StringData) &&
-            args[1].getString()!= null && args[1].getString().toUpperCase().equals("PY"))
-                mode_idx = 3;
-            else
-                mode_idx = 1;
-          }catch(Exception exc){mode_idx = 1;}
+	  Data[] args = ((FunctionData)data).getArgs();
+	  try {
+	  if(args != null && args.length > 2 && args[1] != null && (args[1] instanceof StringData) &&
+	    args[1].getString()!= null && args[1].getString().toUpperCase().equals("PY"))
+	        mode_idx = 3;
+	    else
+	        mode_idx = 1;
+	  }catch(Exception exc){mode_idx = 1;}
       }
       else
-          mode_idx = 1;
+	  mode_idx = 1;
       if (data.dtype == Data.DTYPE_WITH_UNITS)
       {
-        this.data = ( (WithUnitsData) data).getDatum();
-        units = ( (WithUnitsData) data).getUnits();
+	this.data = ( (WithUnitsData) data).getDatum();
+	units = ( (WithUnitsData) data).getUnits();
       }
       else
       {
-        this.data = data;
-        units = null;
+	this.data = data;
+	units = null;
       }
     }
 
@@ -77,36 +77,36 @@ public class DataEditor
     switch (curr_mode_idx)
     {
       case 0:
-        return;
+	return;
       case 1:
-        panel.add(expr_edit = new LabeledExprEditor(data));
-        break;
+	panel.add(expr_edit = new LabeledExprEditor(data));
+	break;
       case 2:
-        Data _data, _help = null, _validation = null;
-        if (data != null && data instanceof ParameterData)
-        {
-            _data = ( (ParameterData)data).getDatum();
-            _help = ( (ParameterData)data).getHelp();
-            _validation = ( (ParameterData)data).getValidation();
-        }
-        else
-            _data = data;
-        param_edit = new ParameterEditor(new ExprEditor( _data, false, 3, 20),
-                                         new ExprEditor( _help, true, 4, 20),
-                                         new ExprEditor( _validation, false, 1, 20));
-        panel.add(param_edit);
-        break;
+	Data _data, _help = null, _validation = null;
+	if (data != null && data instanceof ParameterData)
+	{
+	    _data = ( (ParameterData)data).getDatum();
+	    _help = ( (ParameterData)data).getHelp();
+	    _validation = ( (ParameterData)data).getValidation();
+	}
+	else
+	    _data = data;
+	param_edit = new ParameterEditor(new ExprEditor( _data, false, 3, 20),
+	                                 new ExprEditor( _help, true, 4, 20),
+	                                 new ExprEditor( _validation, false, 1, 20));
+	panel.add(param_edit);
+	break;
       case 3:
-        if (data != null && data instanceof FunctionData)
-        {
-          python_edit = new PythonEditor(((FunctionData)data).getArgs());
-        }
-        else
-        {
-          python_edit = new PythonEditor(null);
-        }
-        panel.add(python_edit);
-        break;
+	if (data != null && data instanceof FunctionData)
+	{
+	  python_edit = new PythonEditor(((FunctionData)data).getArgs());
+	}
+	else
+	{
+	  python_edit = new PythonEditor(null);
+	}
+	panel.add(python_edit);
+	break;
     }
     units_edit = new LabeledExprEditor("Units", new ExprEditor(units, true));
     panel.add(units_edit, BorderLayout.NORTH);
@@ -133,7 +133,7 @@ public class DataEditor
   public void reset()
   {
     if (curr_mode_idx>0)
-        remove(panel);
+	remove(panel);
     curr_mode_idx = mode_idx;
     combo.setSelectedIndex(mode_idx);
     addEditor();
@@ -147,44 +147,44 @@ public class DataEditor
     switch (curr_mode_idx)
     {
       case 0:
-        return null;
+	return null;
       case 1:
-        units = units_edit.getData();
-        if (units != null)
-        {
-          if (units instanceof StringData &&
-              ( (StringData) units).datum.equals(""))
-            return expr_edit.getData();
-          else
-            return new WithUnitsData(expr_edit.getData(), units);
-        }
-        else
-          return expr_edit.getData();
-        case 2:
-          units = units_edit.getData();
-          if (units != null)
-          {
-            if (units instanceof StringData &&
-                ( (StringData) units).datum.equals(""))
-              return param_edit.getData();
-            else
-              return new WithUnitsData(param_edit.getData(), units);
-          }
-          else
-            return param_edit.getData();
+	units = units_edit.getData();
+	if (units != null)
+	{
+	  if (units instanceof StringData &&
+	      ( (StringData) units).datum.equals(""))
+	    return expr_edit.getData();
+	  else
+	    return new WithUnitsData(expr_edit.getData(), units);
+	}
+	else
+	  return expr_edit.getData();
+	case 2:
+	  units = units_edit.getData();
+	  if (units != null)
+	  {
+	    if (units instanceof StringData &&
+	        ( (StringData) units).datum.equals(""))
+	      return param_edit.getData();
+	    else
+	      return new WithUnitsData(param_edit.getData(), units);
+	  }
+	  else
+	    return param_edit.getData();
 
-        case 3:
-          units = units_edit.getData();
-          if (units != null)
-          {
-            if (units instanceof StringData &&
-                ( (StringData) units).datum.equals(""))
-              return python_edit.getData();
-            else
-              return new WithUnitsData(python_edit.getData(), units);
-          }
-          else
-            return python_edit.getData();
+	case 3:
+	  units = units_edit.getData();
+	  if (units != null)
+	  {
+	    if (units instanceof StringData &&
+	        ( (StringData) units).datum.equals(""))
+	      return python_edit.getData();
+	    else
+	      return new WithUnitsData(python_edit.getData(), units);
+	  }
+	  else
+	    return python_edit.getData();
     }
     return null;
   }
@@ -201,29 +201,29 @@ public class DataEditor
     else
     {
       if(data instanceof ParameterData)
-        mode_idx = 2;
+	mode_idx = 2;
       else if(data instanceof FunctionData && ((FunctionData)data).opcode == PythonEditor.OPC_FUN)
       {
-          Data[] args = ((FunctionData)data).getArgs();
-          try {
-          if(args != null && args.length > 2 && args[1] != null && (args[1] instanceof StringData) &&
-            args[1].getString()!= null && args[1].getString().toUpperCase().equals("PY"))
-                mode_idx = 3;
-            else
-                mode_idx = 1;
-          }catch(Exception exc){mode_idx = 1;}
+	  Data[] args = ((FunctionData)data).getArgs();
+	  try {
+	  if(args != null && args.length > 2 && args[1] != null && (args[1] instanceof StringData) &&
+	    args[1].getString()!= null && args[1].getString().toUpperCase().equals("PY"))
+	        mode_idx = 3;
+	    else
+	        mode_idx = 1;
+	  }catch(Exception exc){mode_idx = 1;}
       }
       else
-        mode_idx = 1;
+	mode_idx = 1;
       if (data.dtype == Data.DTYPE_WITH_UNITS)
       {
-        this.data = ( (WithUnitsData) data).getDatum();
-        units = ( (WithUnitsData) data).getUnits();
+	this.data = ( (WithUnitsData) data).getDatum();
+	units = ( (WithUnitsData) data).getUnits();
       }
       else
       {
-        this.data = data;
-        units = null;
+	this.data = data;
+	units = null;
       }
     }
     reset();

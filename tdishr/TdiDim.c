@@ -24,44 +24,44 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-                Name:   Tdi3Dim
+	        Name:   Tdi3Dim
 
-                Type:   C function
+	        Type:   C function
 
-                Author: MARK LONDON
+	        Author: MARK LONDON
 
-                Date:   5-OCT-1993
+	        Date:   5-OCT-1993
 
-                Purpose:
+	        Purpose:
 
-        Routines for bit change of data. in2 is ASSUMED long.
-        any     = IBCLR(any,L)
-        any     = IBSET(any,L)
-        BU      = BTEST(any,L)
-        Routine to join 2 real numbers into a complex number.
-        Real part of complex numbers used.
-        complex = F_COMPLEX([r or c], [r or c])
-        complex = D_COMPLEX([r or c], [r or c])
-        complex = G_COMPLEX([r or c], [r or c])
-        complex = H_COMPLEX([r or c], [r or c])
-        complex = CMPLX([r or c], [r or c], [mold])
-        Routines to diminish and find pair-wise integer/real maximum/minimum.
-        Not defined for complex numbers.
-        i or r  = DIM(i or r,same)
-        i or r  = MAX(i or r,same)
-        i or r  = MIN(i or r,same)
-        Routine to shift logical integers. in2 assumes integer, uses byte.
-        SHIFT_LEFT/RIGHT is logical unsigned or arithmetic signed.
-        integer = ISHFT(integer,byte)
-        integer = SHIFT_LEFT(integer,byte)
-        integer = SHIFT_RIGHT(integer,byte)
+	Routines for bit change of data. in2 is ASSUMED long.
+	any     = IBCLR(any,L)
+	any     = IBSET(any,L)
+	BU      = BTEST(any,L)
+	Routine to join 2 real numbers into a complex number.
+	Real part of complex numbers used.
+	complex = F_COMPLEX([r or c], [r or c])
+	complex = D_COMPLEX([r or c], [r or c])
+	complex = G_COMPLEX([r or c], [r or c])
+	complex = H_COMPLEX([r or c], [r or c])
+	complex = CMPLX([r or c], [r or c], [mold])
+	Routines to diminish and find pair-wise integer/real maximum/minimum.
+	Not defined for complex numbers.
+	i or r  = DIM(i or r,same)
+	i or r  = MAX(i or r,same)
+	i or r  = MIN(i or r,same)
+	Routine to shift logical integers. in2 assumes integer, uses byte.
+	SHIFT_LEFT/RIGHT is logical unsigned or arithmetic signed.
+	integer = ISHFT(integer,byte)
+	integer = SHIFT_LEFT(integer,byte)
+	integer = SHIFT_RIGHT(integer,byte)
 
 ------------------------------------------------------------------------------
 
-        Call sequence:
+	Call sequence:
 
 int Tdi3xxxxx(struct descriptor *in1, struct descriptor *in2,
-               struct descriptor *out)
+	       struct descriptor *out)
 
 ------------------------------------------------------------------------------
    Copyright (c) 1993
@@ -71,7 +71,7 @@ int Tdi3xxxxx(struct descriptor *in1, struct descriptor *in2,
    Management.
 ---------------------------------------------------------------------------
 
-        Description:
+	Description:
 
 
 ------------------------------------------------------------------------------*/
@@ -493,14 +493,14 @@ int Tdi3Complex(struct descriptor *in1, struct descriptor *in2, struct descripto
   {\
     case 0: \
     case 3: while (nout--) { if (CvtConvertFloat(in1p,dtype,&a,native,0) && CvtConvertFloat(in2p,dtype,&b,native,0)) \
-                             { type ans = (testit) ? a : b; CvtConvertFloat(&ans,native,outp++,dtype,0);}\
-                             else CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0); in1p++; in2p++; } break;\
+	                     { type ans = (testit) ? a : b; CvtConvertFloat(&ans,native,outp++,dtype,0);}\
+	                     else CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0); in1p++; in2p++; } break;\
     case 1: while (nout--) { if (CvtConvertFloat(in1p,dtype,&a,native,0) && CvtConvertFloat(in2p,dtype,&b,native,0)) \
-                             { type ans = (testit) ? a : b; CvtConvertFloat(&ans,native,outp++,dtype,0);}\
-                             else CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);         in2p++; } break;\
+	                     { type ans = (testit) ? a : b; CvtConvertFloat(&ans,native,outp++,dtype,0);}\
+	                     else CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);         in2p++; } break;\
     case 2: while (nout--) { if (CvtConvertFloat(in1p,dtype,&a,native,0) && CvtConvertFloat(in2p,dtype,&b,native,0)) \
-                             { type ans = (testit) ? a : b; CvtConvertFloat(&ans,native,outp++,dtype,0);}\
-                             else CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0); in1p++;         } break;\
+	                     { type ans = (testit) ? a : b; CvtConvertFloat(&ans,native,outp++,dtype,0);}\
+	                     else CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0); in1p++;         } break;\
   }\
   break;\
 }
@@ -609,13 +609,13 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
   switch (scalars)\
   {\
     case 0: while (nout--) {if (*in2p > 0) *outp++ = (type1)(*in1p++ << *in2p++); \
-            else *outp++ = (type1)(*in1p++ >> (-(*in2p++))); } break;\
+	    else *outp++ = (type1)(*in1p++ >> (-(*in2p++))); } break;\
     case 1: while (nout--) {if (*in2p > 0) *outp++ = (type1)(*in1p << *in2p++); \
-            else *outp++ = (type1)(*in1p   >> (-(*in2p++))); } break;\
+	    else *outp++ = (type1)(*in1p   >> (-(*in2p++))); } break;\
     case 2: while (nout--) {if (*in2p > 0) *outp++ = (type1)(*in1p++ << *in2p); \
-            else *outp++ = (type1)(*in1p++ >> (-(*in2p  ))); } break;\
+	    else *outp++ = (type1)(*in1p++ >> (-(*in2p  ))); } break;\
     case 3:                {if (*in2p > 0) *outp = (type1)(*in1p << *in2p); \
-            else *outp   = (type1)(*in1p   >> (-(*in2p  ))); } break;\
+	    else *outp   = (type1)(*in1p   >> (-(*in2p  ))); } break;\
   }\
   break;\
 }
@@ -657,13 +657,13 @@ int Tdi3Ishft(struct descriptor *in1, struct descriptor *in2, struct descriptor 
   switch (scalars)\
   {\
     case 0: while (nout--) {in2p_to_n(type1,type2,in2p++);\
-                            *outp++ = (type1)(*in1p++ operator n); } break;\
+	                    *outp++ = (type1)(*in1p++ operator n); } break;\
     case 1: while (nout--) {in2p_to_n(type1,type2,in2p++);\
-                            *outp++ = (type1)(*in1p   operator n); } break;\
+	                    *outp++ = (type1)(*in1p   operator n); } break;\
     case 2:                {in2p_to_n(type1,type2,in2p  );\
-            while (nout--) {*outp++ = (type1)(*in1p++ operator n); }}break;\
+	    while (nout--) {*outp++ = (type1)(*in1p++ operator n); }}break;\
     case 3:                {in2p_to_n(type1,type2,in2p  );\
-                            *outp   = (type1)(*in1p   operator n); } break;\
+	                    *outp   = (type1)(*in1p   operator n); } break;\
   }\
   break;\
 }

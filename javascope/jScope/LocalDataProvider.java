@@ -4,10 +4,10 @@ class LocalDataProvider extends MdsDataProvider
 {
     public MdsConnection getConnection()
     {
-        return new MdsConnectionLocal();
+	return new MdsConnectionLocal();
     }
     public MdsConnection getConnection(String arg)
     {
-        return new MdsConnectionLocal();
+	return new MdsConnectionLocal();
     }
 }

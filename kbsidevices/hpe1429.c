@@ -173,7 +173,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	/* hpe1429_error_message() */
 
 #define hpe1429_MSG_INVALID_STATUS					\
-  	"Parameter 2 is invalid"				\
+	"Parameter 2 is invalid"				\
 	" in function hpe1429_error_message()."
 	/* hpe1429_error_message() */
 
@@ -182,7 +182,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	/* hpe1429_error_message() */
 
 #define  hpe1429_MSG_INVALID_VI					\
-  	"Parameter 1 is invalid"				\
+	"Parameter 1 is invalid"				\
 	" in function hpe1429_error_message()"			\
 	".  Using an inactive ViSession may cause this error."	\
 	"  Was the instrument driver closed prematurely?"
@@ -301,7 +301,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	/* check for NULL user data */				\
 	if( 0 == thisPtr)					\
 	{							\
- 		hpe1429_LOG_STATUS(                             	\
+		hpe1429_LOG_STATUS(                             	\
 		  vi, NULL, hpe1429_INSTR_ERROR_INV_SESSION );	\
 	}							\
 	{							\
@@ -312,12 +312,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			VI_ATTR_RM_SESSION, &defRM);		\
 		if( VI_SUCCESS > errStatus )			\
 		{						\
- 			hpe1429_LOG_STATUS(				\
+			hpe1429_LOG_STATUS(				\
 			  vi, NULL, hpe1429_INSTR_ERROR_UNEXPECTED );	\
 		}						\
 		if( defRM != thisPtr->defRMSession)		\
 		{						\
- 			hpe1429_LOG_STATUS(				\
+			hpe1429_LOG_STATUS(				\
 			  vi, NULL, hpe1429_INSTR_ERROR_INV_SESSION );	\
 		}						\
 	}
@@ -331,13 +331,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	thisPtr->errNumber = VI_SUCCESS;			\
 	thisPtr->errMessage[0] = 0;
 
-#define hpe1429_CDE_MESSAGE( message ) 	 			\
+#define hpe1429_CDE_MESSAGE( message ) 				\
 	strcpy(thisPtr->errMessage, message)
 #else
 #define hpe1429_CDE_INIT( funcname) 				\
 	thisPtr->errNumber = VI_SUCCESS;			\
 
-#define hpe1429_CDE_MESSAGE( message ) 	 			\
+#define hpe1429_CDE_MESSAGE( message ) 				\
 	strcpy(thisPtr->errMessage, message)
 #endif
 
@@ -815,11 +815,11 @@ ViStatus _VI_FUNC hpe1429_init(ViRsrc InstrDesc, ViBoolean id_query, ViBoolean d
       char idn_buf[256];
 
       /* Can't use VI_ATTR_INTF_NUM since
-         /* HP VTL 3.0 has a defect which returns 7 instead of 0 */
+	 /* HP VTL 3.0 has a defect which returns 7 instead of 0 */
       /* Read the number from the descriptor instead, assuming
-         it's GPIB-VXIn.
-         /* Set the GPIB board number is the same had the GPIB-VXI
-         board number */
+	 it's GPIB-VXIn.
+	 /* Set the GPIB board number is the same had the GPIB-VXI
+	 board number */
       if (intf == VI_INTF_GPIB_VXI) {
 	if (memcmp(InstrDesc, "GPIB-VXI", 8) || InstrDesc[8] < '0' || InstrDesc[8] > '9')
 	  num = 0;		/* Problem with InstrDesc */
@@ -6513,7 +6513,7 @@ ViStatus _VI_FUNC hpe1429_recover_Q(ViSession vi,
 
     if (errStatus >= VI_SUCCESS) {
       /*  sprintf(fmtStr,"%%%ldc%%*t", nbytes);
-         errStatus = viScanf(vi, fmtStr, (unsigned char*)fptr); */
+	 errStatus = viScanf(vi, fmtStr, (unsigned char*)fptr); */
       errStatus = viRead(vi, (unsigned char *)fptr, nbytes, &retbytes);
       if (errStatus == VI_SUCCESS_MAX_CNT)
 	errStatus = viScanf(vi, "%*t");	/* Clear input. */

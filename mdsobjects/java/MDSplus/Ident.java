@@ -15,22 +15,22 @@ public class Ident extends Data
 
     public Ident(java.lang.String datum)
     {
-        this(datum, null, null, null, null);
+	this(datum, null, null, null, null);
     }
     public Ident(java.lang.String datum, Data help, Data units, Data error, Data validation)
     {
-        super(help, units, error, validation);
-        clazz = CLASS_S;
-        dtype = DTYPE_IDENT;
-        this.datum = datum;
+	super(help, units, error, validation);
+	clazz = CLASS_S;
+	dtype = DTYPE_IDENT;
+	this.datum = datum;
     }
     public static Data getData(java.lang.String datum, Data help, Data units, Data error, Data validation)
     {
-        return new Ident(datum, help, units, error, validation);
+	return new Ident(datum, help, units, error, validation);
     }
     public  byte getByte() throws MdsException
     {
-        throw new MdsException("Cannot convert a Ident to a byte");
+	throw new MdsException("Cannot convert a Ident to a byte");
     }
 
     /**
@@ -40,7 +40,7 @@ public class Ident extends Data
      */
     public  short getShort() throws MdsException
     {
-        throw new MdsException("Cannot convert a Ident to a short");
+	throw new MdsException("Cannot convert a Ident to a short");
     }
 
     /**
@@ -50,7 +50,7 @@ public class Ident extends Data
      */
     public  int getInt() throws MdsException
     {
-        throw new MdsException("Cannot convert a Ident to a int");
+	throw new MdsException("Cannot convert a Ident to a int");
     }
 
 
@@ -61,7 +61,7 @@ public class Ident extends Data
      */
     public  long getLong() throws MdsException
     {
-        throw new MdsException("Cannot convert a Ident to a long");
+	throw new MdsException("Cannot convert a Ident to a long");
     }
 
     /**
@@ -71,7 +71,7 @@ public class Ident extends Data
      */
     public  float getFloat()throws MdsException
     {
-        throw new MdsException("Cannot convert a Ident to a float");
+	throw new MdsException("Cannot convert a Ident to a float");
     }
 
     /**
@@ -81,7 +81,7 @@ public class Ident extends Data
      */
     public  double getDouble()throws MdsException
     {
-        throw new MdsException("Cannot convert a Ident to a double");
+	throw new MdsException("Cannot convert a Ident to a double");
     }
 
     /**
@@ -92,7 +92,7 @@ public class Ident extends Data
      */
     public  byte[] getByteArray() throws MdsException
     {
-        throw new MdsException("Cannot convert a Ident to a byte array");
+	throw new MdsException("Cannot convert a Ident to a byte array");
     }
 
 
@@ -104,7 +104,7 @@ public class Ident extends Data
      */
     public  short[] getShortArray()throws MdsException
     {
-        throw new MdsException("Cannot convert a Ident to a short array");
+	throw new MdsException("Cannot convert a Ident to a short array");
     }
 
 
@@ -116,7 +116,7 @@ public class Ident extends Data
      */
     public  int[] getIntArray()throws MdsException
     {
-        throw new MdsException("Cannot convert a Ident to a int array");
+	throw new MdsException("Cannot convert a Ident to a int array");
     }
 
     /**
@@ -127,7 +127,7 @@ public class Ident extends Data
      */
     public  long[] getLongArray()throws MdsException
     {
-        throw new MdsException("Cannot convert a Ident to a long array");
+	throw new MdsException("Cannot convert a Ident to a long array");
     }
 
     /**
@@ -138,7 +138,7 @@ public class Ident extends Data
      */
     public  float[] getFloatArray()throws MdsException
     {
-        throw new MdsException("Cannot convert a Ident to a float array");
+	throw new MdsException("Cannot convert a Ident to a float array");
     }
     /**
      * Convert this data into a long array. Implemented at this class level by
@@ -148,12 +148,12 @@ public class Ident extends Data
      */
     public  double[] getDoubleArray()throws MdsException
     {
-        throw new MdsException("Cannot convert a Ident to a double array");
+	throw new MdsException("Cannot convert a Ident to a double array");
     }
 
     public java.lang.String getString()
     {
-        return datum;
+	return datum;
     }
 
 	public Ident(){

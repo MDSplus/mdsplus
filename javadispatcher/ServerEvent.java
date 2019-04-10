@@ -6,14 +6,14 @@ class ServerEvent extends EventObject
     String message;
     public ServerEvent(Object obj, Action action)
     {
-        super(obj);
-        this.action = action;
+	super(obj);
+	this.action = action;
     }
 
     public ServerEvent(Object obj, String message)
     {
-        super(obj);
-        this.message = message;
+	super(obj);
+	this.message = message;
     }
 
     public Action getAction() {return action; }

@@ -78,7 +78,7 @@ class FLIR_SC65X
 
 		int 	 storeEnabled;
 		int 	 triggerMode;
-                int      startStoreTrg;
+	        int      startStoreTrg;
 		int      autoCalibration;
 		int      irFrameFormat;
 
@@ -103,7 +103,7 @@ class FLIR_SC65X
 		int      framesNid;
 		int      timebaseNid;
 		int      framesMetadNid;
-                int      frame0TimeNid;
+	        int      frame0TimeNid;
 
 		int	     acqFlag;
 		int      acqStopped;
@@ -117,29 +117,29 @@ class FLIR_SC65X
 
 	public:
 		//camera
-                FLIR_SC65X(const char *ipAddress);
-                FLIR_SC65X(); 			//new 23 July 2013 for test purposes
-                ~FLIR_SC65X();
+	        FLIR_SC65X(const char *ipAddress);
+	        FLIR_SC65X(); 			//new 23 July 2013 for test purposes
+	        ~FLIR_SC65X();
 
 		//info
-                int checkLastOp();
-                int printAllParameters();
+	        int checkLastOp();
+	        int printAllParameters();
 
 		//settings
-                int setExposureMode(EXPMODE_ENUM exposureMode);
-                int setFrameRate(double frameRate);
-                int setFrameRate(FPS_ENUM fps, int *frameToSkip);
-                int setIrFormat(IRFMT_ENUM irFormat);
-                int getReadoutArea(int *x, int *y, int *width, int *height);
-                int setReadoutArea(int x, int y, int width, int height);
-                int setObjectParameters(double reflectedTemperature, double atmosphericTemperature,
+	        int setExposureMode(EXPMODE_ENUM exposureMode);
+	        int setFrameRate(double frameRate);
+	        int setFrameRate(FPS_ENUM fps, int *frameToSkip);
+	        int setIrFormat(IRFMT_ENUM irFormat);
+	        int getReadoutArea(int *x, int *y, int *width, int *height);
+	        int setReadoutArea(int x, int y, int width, int height);
+	        int setObjectParameters(double reflectedTemperature, double atmosphericTemperature,
 											double objectDistance, double objectEmissivity,
 											double relativeHumidity, double extOpticsTemperature,
 											double extOpticsTransmission, double estimatedTransmission);
-                int setMeasurementRange(int measRange);
-                int getFocusAbsPosition(int *focusPos);
-                int setFocusAbsPosition(int focusPos);
-                int setCalibMode(int calibMode);
+	        int setMeasurementRange(int measRange);
+	        int getFocusAbsPosition(int *focusPos);
+	        int setFocusAbsPosition(int focusPos);
+	        int setCalibMode(int calibMode);
 
 		int setAcquisitionMode( int storeEnabled, int acqSkipFrameNumber );
 		int setStreamingMode( IRFMT_ENUM irFormat, int streamingEnabled, bool autoAdjustLimit, const char *streamingServer, int streamingPort, unsigned int lowLim, unsigned int highLim, const char *deviceName);
@@ -148,18 +148,18 @@ class FLIR_SC65X
 		int setTreeInfo( void *treePtr, int frameNid, int timebaseNid, int framesMetadNid, int frame0TimeNid);
 
 
-                int executeAutoFocus();
-                int executeAutoCalib();
+	        int executeAutoFocus();
+	        int executeAutoCalib();
 
 		void getLastError(char *msg);
 		void printLastError(const char *format, const char *msg);
 
 		//acquisition
-                int startAcquisition(int *width, int *height, int *payloadSize);
-                int stopAcquisition();
-                int softwareTrigger();
-                int getFrame(int *status, void *frame, void *metaData);
-                int frameConv(unsigned short *frame, int width, int height);
+	        int startAcquisition(int *width, int *height, int *payloadSize);
+	        int stopAcquisition();
+	        int softwareTrigger();
+	        int getFrame(int *status, void *frame, void *metaData);
+	        int frameConv(unsigned short *frame, int width, int height);
 				int startFramesAcquisition();
 				int stopFramesAcquisition();
 

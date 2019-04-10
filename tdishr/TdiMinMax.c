@@ -23,10 +23,10 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1MinMax.C
-        Multi-argument routines: MAX, MIN pairwise compared.
-                out = MAX(in1, in2, ...)
+	Multi-argument routines: MAX, MIN pairwise compared.
+	        out = MAX(in1, in2, ...)
 
-        Ken Klare, LANL CTR-7   (c)1989,1990
+	Ken Klare, LANL CTR-7   (c)1989,1990
 */
 #include <STATICdef.h>
 #include <status.h>
@@ -60,12 +60,12 @@ int Tdi1MinMax(opcode_t opcode, int narg, struct descriptor *list[], struct desc
 }
 
 /*----------------------------------------------------------------
-        Tdi1Conditional.C
-        Test for scalar conditional and return true or false source.
-                out = cond ? true : false
+	Tdi1Conditional.C
+	Test for scalar conditional and return true or false source.
+	        out = cond ? true : false
 
-        If the condition is not scalar use MERGE(true, false, cond).
-        Note that is cond is a scalar, the units and signality are not conformed.
+	If the condition is not scalar use MERGE(true, false, cond).
+	Note that is cond is a scalar, the units and signality are not conformed.
 */
 int Tdi1Conditional(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {

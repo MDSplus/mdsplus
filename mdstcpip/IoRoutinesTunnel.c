@@ -77,9 +77,9 @@ static int tunnel_disconnect(Connection* c){
     if (p->hProcess){
       DWORD exitcode;
       if (GetExitCodeProcess(p->hProcess, &exitcode) && exitcode == 9009)
-        fprintf(stderr,"Protocol is not supported.\n");
+	fprintf(stderr,"Protocol is not supported.\n");
       else
-        TerminateProcess(p->hProcess,0);
+	TerminateProcess(p->hProcess,0);
     }
     CloseHandle(p->in);
     CloseHandle(p->out);

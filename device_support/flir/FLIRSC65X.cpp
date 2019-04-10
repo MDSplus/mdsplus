@@ -80,7 +80,7 @@ int flirOpen(const char *ipAddress, int *camHandle)
 	if( cameraHandle < MAX_CAM )
 	{
 		camPtr[cameraHandle] = cam;
- 		*camHandle = cameraHandle;
+		*camHandle = cameraHandle;
 		return SUCCESS;
 	}
 	else
@@ -341,8 +341,8 @@ FLIR_SC65X::FLIR_SC65X(const char *ipAddress)
     this->lDevice = PvDevice::CreateAndConnect(this->ipAddress, &this->lResult); //20160309 SDK4
     if ( !this->lResult.IsOK() )
     {
-        printf("--------------------------------- Error Device connection: (%s)\n", this->lResult.GetCodeString().GetAscii() );
-        PvDevice::Free(this->lDevice);
+	printf("--------------------------------- Error Device connection: (%s)\n", this->lResult.GetCodeString().GetAscii() );
+	PvDevice::Free(this->lDevice);
     }
     else
     {
@@ -393,11 +393,11 @@ int FLIR_SC65X::printAllParameters()
 		// Get a parameter
 		PvGenParameter *lGenParameter = aArray->Get( x );
 
-        // Don't show invisible parameters - display everything up to Guru
-        if ( !lGenParameter->IsVisible( PvGenVisibilityGuru ) )
-        {
-            continue;
-        }
+	// Don't show invisible parameters - display everything up to Guru
+	if ( !lGenParameter->IsVisible( PvGenVisibilityGuru ) )
+	{
+	    continue;
+	}
 
 		// Get and print parameter's name
 		PvString lGenParameterName, lCategory;
@@ -405,17 +405,17 @@ int FLIR_SC65X::printAllParameters()
 		lGenParameter->GetName( lGenParameterName );
 		printf( "%s:%s, ", lCategory.GetAscii(), lGenParameterName.GetAscii() );
 
-        // Parameter available?
-        if ( !lGenParameter->IsAvailable() )
-        {
-            printf( "{Not Available}\n" );
+	// Parameter available?
+	if ( !lGenParameter->IsAvailable() )
+	{
+	    printf( "{Not Available}\n" );
 			continue;
-        }
+	}
 
 		// Parameter readable?
 		if ( !lGenParameter->IsReadable() )
 		{
-            printf( "{Not readable}\n" );
+	    printf( "{Not readable}\n" );
 			continue;
 		}
 
@@ -561,10 +561,10 @@ usleep(3000);
 			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Height in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = sFrameRate->SetValue(0);
-		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = sWindowing->SetValue("Quarter");//"Quarter"
-		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting Windowing in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Windowing in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 
 #ifdef debug
 			printf("Frame rate set to 200Hz.\n");
@@ -581,10 +581,10 @@ usleep(3000);
 			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Height in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = sFrameRate->SetValue(0);
-		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = sWindowing->SetValue("Half"); //"Half"
-		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting Windowing in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Windowing in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 
 #ifdef debug
 			printf("Frame rate set to 100Hz.\n");
@@ -595,10 +595,10 @@ usleep(3000);
 		case fps_50:
 usleep(3000);
 			this->lResult = sFrameRate->SetValue(0);
-		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = sWindowing->SetValue("Off"); //"Off"
-		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting Windowing in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Windowing in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = lWidth->SetValue( 640 );
 			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Width in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
@@ -614,10 +614,10 @@ usleep(3000);
 		case fps_25:
 usleep(3000);
 			this->lResult = sFrameRate->SetValue(1);
-		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = sWindowing->SetValue("Off"); //"Off"
-		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting Windowing in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Windowing in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = lWidth->SetValue( 640 );
 			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Width in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
@@ -633,7 +633,7 @@ usleep(3000);
 		case fps_12:
 usleep(3000);
 			this->lResult = sFrameRate->SetValue(2);
-		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = lWidth->SetValue( 640 );
 			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Width in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
@@ -642,7 +642,7 @@ usleep(3000);
 			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Height in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = sWindowing->SetValue("Off"); //"Off"
-		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting Windowing in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Windowing in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 #ifdef debug
 			printf("Frame rate set to 12.5Hz.\n");
 #endif
@@ -652,7 +652,7 @@ usleep(3000);
 		case fps_6:
 usleep(3000);
 			this->lResult = sFrameRate->SetValue(3);
-		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = lWidth->SetValue( 640 );
 			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Width in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
@@ -661,7 +661,7 @@ usleep(3000);
 			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Height in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = sWindowing->SetValue("Off"); //"Off"
-		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting Windowing in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Windowing in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 #ifdef debug
 			printf("Frame rate set to 6.25Hz.\n");
 #endif
@@ -671,7 +671,7 @@ usleep(3000);
 		case fps_3:
 usleep(3000);
 			this->lResult = sFrameRate->SetValue(4);
-		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting FrameRate in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = lWidth->SetValue( 640 );
 			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Width in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
@@ -680,7 +680,7 @@ usleep(3000);
 			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Height in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 usleep(3000);
 			this->lResult = sWindowing->SetValue("Off"); //"Off"
-		 	 if ( !this->lResult.IsOK() ) {printLastError("Error setting Windowing in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
+			 if ( !this->lResult.IsOK() ) {printLastError("Error setting Windowing in setFrameRate!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
 #ifdef debug
 			printf("Frame rate set to 3.12Hz.\n");
 #endif
@@ -1066,10 +1066,10 @@ end new
     //this->lResult = lDevice->NegotiatePacketSize();  //SDK 3
 	this->lResult = lDeviceGEV->NegotiatePacketSize();  //SDK 4
 	if ( !this->lResult.IsOK() )
-        {
-           printLastError("Error negotiating packet size in start acquisition!!!\n(%s)\n", lResult.GetDescription().GetAscii() );
-           return ERROR;
-        }
+	{
+	   printLastError("Error negotiating packet size in start acquisition!!!\n(%s)\n", lResult.GetDescription().GetAscii() );
+	   return ERROR;
+	}
 
 
     PvGenInteger *lPacketSize = dynamic_cast<PvGenInteger *>( lDevice->GetParameters()->Get( "GevSCPSPacketSize" ) );
@@ -1080,7 +1080,7 @@ end new
     {
 		printLastError("FATAL ERROR: Unable to read packet size!!!\n(%s)\n", lResult.GetDescription().GetAscii() );
 		return ERROR;
-        //fprintf( stderr, "FATAL ERROR: Unable to read packet size\n" );
+	//fprintf( stderr, "FATAL ERROR: Unable to read packet size\n" );
     }
     printf("--------> lPacketSizeValue %d\n", lPacketSizeValue);
 
@@ -1089,15 +1089,15 @@ end new
     this->lStream = PvStream::CreateAndOpen(this->ipAddress, &this->lResult); //20160309 SDK4
     if ( ( this->lStream == NULL ) || !this->lResult.IsOK() )
     {
-        printLastError("Error opening stream in start acquisition!!!\n(%s)\n", lResult.GetDescription().GetAscii() );
-        PvStream::Free( this->lStream );
+	printLastError("Error opening stream in start acquisition!!!\n(%s)\n", lResult.GetDescription().GetAscii() );
+	PvStream::Free( this->lStream );
 	return ERROR;
     }
 
     // Use min of BUFFER_COUNT and how many buffers can be queued in PvStream
     uint32_t lBufferCount = ( lStream->GetQueuedBufferMaximum() < BUFFER_COUNT ) ?
-        lStream->GetQueuedBufferMaximum() :
-        BUFFER_COUNT;
+	lStream->GetQueuedBufferMaximum() :
+	BUFFER_COUNT;
 
  //new 17-10-2016 for SDK4
  // If this is a GigE Vision device, configure GigE Vision specific streaming parameters
@@ -1105,12 +1105,12 @@ end new
 
      if( this->lStream->IsOpen() )
      {
-        //printf("lStream OPEN Local Port %d \n",  lStream->GetLocalPort() );   //SDK 3
+	//printf("lStream OPEN Local Port %d \n",  lStream->GetLocalPort() );   //SDK 3
 	printf("lStream OPEN Local Port %u \n", lStreamGEV->GetLocalPort() );  //SDK 4 not working.... segmentation fault to check!
      }
      else
      {
-        printf("lStream NOT OPEN\n");
+	printf("lStream NOT OPEN\n");
      }
      if(lDevice->IsConnected())
 	{printf( "PvDevice connect \n");}
@@ -1124,7 +1124,7 @@ end new
     this->lBuffers = new PvBuffer[ lBufferCount ];
     for ( uint32_t i = 0; i < lBufferCount; i++ )
     {
-        lResult = lBuffers[ i ].Alloc( static_cast<uint32_t>( lSize ) );
+	lResult = lBuffers[ i ].Alloc( static_cast<uint32_t>( lSize ) );
 		if ( !lResult.IsOK() )
 			printf("Error memory buffer allocation %d !!!\n(%s)\n", (i+1) , lResult.GetDescription().GetAscii() );
     }
@@ -1155,7 +1155,7 @@ end new
     for ( uint32_t i = 0; i < lBufferCount; i++ )
     {
 printf("------------------------ Queuing Buffer -----------------------------------\n");
-        lResult = lStream->QueueBuffer( &lBuffers[i] );
+	lResult = lStream->QueueBuffer( &lBuffers[i] );
 printf("------------------------ Queued Buffer -----------------------------------\n");
 		if ( !lResult.IsPending() )
 			printf("Error buffer enqueue %d !!!\n(%s, %s)\n", (i+1) , lResult.GetDescription().GetAscii(), lResult.GetCodeString().GetAscii() );
@@ -1175,7 +1175,7 @@ printf("------------------------ Queued Buffer ---------------------------------
     if ( lTLLocked != NULL )
     {
 usleep(3000);
-        this->lResult = lTLLocked->SetValue( 1 );
+	this->lResult = lTLLocked->SetValue( 1 );
 		if ( !this->lResult.IsOK() ) {printLastError("Error setting TLParamsLocked to 1!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
     }
 
@@ -1226,7 +1226,7 @@ int FLIR_SC65X::stopAcquisition()
     // streaming has been stopped
     if ( lTLLocked != NULL )
     {
-        this->lResult = lTLLocked->SetValue( 0 );
+	this->lResult = lTLLocked->SetValue( 0 );
 		if ( !this->lResult.IsOK() ) {printLastError("Error resetting TLParamsLocked to 0!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;}
     }
 
@@ -1234,10 +1234,10 @@ int FLIR_SC65X::stopAcquisition()
     lStream->AbortQueuedBuffers();
     while ( lStream->GetQueuedBufferCount() > 0 )
     {
-        PvBuffer *lBuffer = NULL;
-        PvResult lOperationResult;
-        lStream->RetrieveBuffer( &lBuffer, &lOperationResult );
-        //printf( "  Post-abort retrieved buffer: %s\n", lOperationResult.GetCodeString().GetAscii() );
+	PvBuffer *lBuffer = NULL;
+	PvResult lOperationResult;
+	lStream->RetrieveBuffer( &lBuffer, &lOperationResult );
+	//printf( "  Post-abort retrieved buffer: %s\n", lOperationResult.GetCodeString().GetAscii() );
     }
 
     //printf( "Releasing buffers\n" );
@@ -1279,8 +1279,8 @@ int FLIR_SC65X::getFrame(int *status, void *frame, void *metaData)
     //this->lResult = lStream->RetrieveBuffer( &lBuffer, &lOperationResult);
     if ( this->lResult.IsOK() )
     {
-      	if(lOperationResult.IsOK())
-       	{
+	if(lOperationResult.IsOK())
+	{
 			//lCount->GetValue( lImageCountVal );  //comment out 17-10-2016 with SDK4 segmentation fault
 			lFrameRate->GetValue( lFrameRateVal );
 			lBandwidth->GetValue( lBandwidthVal );
@@ -1313,13 +1313,13 @@ int FLIR_SC65X::getFrame(int *status, void *frame, void *metaData)
 					lBandwidthVal / 1000000.0 );
 */
 				unsigned int width = lWidth;
- 				unsigned int height = lHeight;
+				unsigned int height = lHeight;
 
 		//		PvUInt8* dataPtr = lImage->GetDataPointer();  	//NO!!!!
 		//		PvUInt8* dataPtr = lBuffer->GetDataPointer();	//OK for SDK3
 				uint8_t* dataPtr = lBuffer->GetDataPointer();	//8 mar 2016 for SDK4
 
-			        //last 3 rows of the frame are metadata
+				//last 3 rows of the frame are metadata
 				memcpy( frame , (unsigned char *)dataPtr, width*2*(height-3) );
 				memcpy( metaData , (unsigned char *)dataPtr+(width*2*(height-3)), width*2*3 );
 
@@ -1339,14 +1339,14 @@ int FLIR_SC65X::getFrame(int *status, void *frame, void *metaData)
 				}
 
 			}
-        }
-        else  //new 28 agosto 2012
-    	{
-	  	*status=2; //incomplete
-      		//printf( "%c Incomplete\r", lDoodle[ lDoodleIndex ] );
+	}
+	else  //new 28 agosto 2012
+	{
+		*status=2; //incomplete
+		//printf( "%c Incomplete\r", lDoodle[ lDoodleIndex ] );
 		printf("%s %d\n", lOperationResult.GetCodeString().GetAscii(), lBuffer->GetPayloadType() );
 		incompleteFrame++;
-    	}
+	}
 		// We have an image - do some processing (...) and VERY IMPORTANT,
 		// re-queue the buffer in the stream object
 		lStream->QueueBuffer( lBuffer );
@@ -1373,9 +1373,9 @@ int FLIR_SC65X::frameConv(unsigned short *frame, int width, int height)
     switch(irFrameFormat)
     {
 	  case linear100mK:     sub=2731;  //1 = 100mK = 100mC -> precisione decimo di grado
-                    break;
+	            break;
 	  case linear10mK:      sub=27315; //1 = 10mK = 10mC -> precisione centesimo di grado
-                    break;
+	            break;
     }
 
     for(int i=0; i<width*height; i++)
@@ -1395,32 +1395,32 @@ int FLIR_SC65X::setStreamingMode( IRFMT_ENUM irFormat, int streamingEnabled,  bo
    {
 		memcpy( this->streamingServer, streamingServer, strlen(streamingServer)+1 );
 		memcpy( this->deviceName, deviceName, strlen(deviceName)+1 );
-   		this->streamingPort = streamingPort;
+		this->streamingPort = streamingPort;
 		this->autoAdjustLimit = autoAdjustLimit;
 
 	//for FLIR 655
-  	//unsigned int minLim = 2000; // 200 K or -73 deg Celsius
-  	//unsigned int maxLim = 62000; // 6200 K or 5927 deg Celsius
+	//unsigned int minLim = 2000; // 200 K or -73 deg Celsius
+	//unsigned int maxLim = 62000; // 6200 K or 5927 deg Celsius
 
 		switch(irFormat)
 		{
 			case radiometric:
 				this->lowLim = lowLim;
 				this->highLim = highLim;
-          		        minLim= 0;
-          		        maxLim= 32767;
+	  			minLim= 0;
+	  			maxLim= 32767;
 				break;
 			case linear100mK:
 				this->lowLim = lowLim * 10;
 				this->highLim = highLim * 10;
-          		        minLim= 0;
-          		        maxLim= 62000-27315;  //346.85°C
+	  			minLim= 0;
+	  			maxLim= 62000-27315;  //346.85°C
 				break;
 			case linear10mK:
 				this->lowLim = lowLim * 100;
 				this->highLim = highLim * 100;
-          		        minLim= 0;
-          		        maxLim= 62000-27315; //3468.5°C
+	  			minLim= 0;
+	  			maxLim= 62000-27315; //3468.5°C
 				break;
 		}
    }
@@ -1457,7 +1457,7 @@ int FLIR_SC65X::setTreeInfo( void *treePtr, int framesNid, int timebaseNid, int 
 	this->framesNid = framesNid;
 	this->timebaseNid = timebaseNid;
 	this->framesMetadNid = framesMetadNid;
-        this->frame0TimeNid = frame0TimeNid;
+	this->frame0TimeNid = frame0TimeNid;
 
 	return SUCCESS;
 }
@@ -1525,19 +1525,19 @@ int FLIR_SC65X::startFramesAcquisition()
 	short *metaData;
 	unsigned char *frame8bit;
 
-        struct timeval tv;  //manage frame timestamp in internal mode
-        int64_t timeStamp;
-        int64_t timeStamp0;
+	struct timeval tv;  //manage frame timestamp in internal mode
+	int64_t timeStamp;
+	int64_t timeStamp0;
 
-        TreeNode *t0Node;
-        try{
-             t0Node = new TreeNode(frame0TimeNid, (Tree *)treePtr);
-             Data *nodeData = t0Node->getData();
-             timeStamp0 = (int64_t)nodeData->getLong();
-        }catch(MdsException *exc)
-         {
-            printf("Error getting frame0 time\n");
-         }
+	TreeNode *t0Node;
+	try{
+	     t0Node = new TreeNode(frame0TimeNid, (Tree *)treePtr);
+	     Data *nodeData = t0Node->getData();
+	     timeStamp0 = (int64_t)nodeData->getLong();
+	}catch(MdsException *exc)
+	 {
+	    printf("Error getting frame0 time\n");
+	 }
 
 	frameBuffer = (short *) calloc(1, width * height * sizeof(short));
 	frame8bit = (unsigned char *) calloc(1, width * height * sizeof(char));
@@ -1545,97 +1545,97 @@ int FLIR_SC65X::startFramesAcquisition()
 	metaSize = width * 3 * sizeof(short);
 	metaData = (short *)calloc(1, metaSize);
 
-        camStartSave(&saveList); //  # Initialize save frame Linked list reference
+	camStartSave(&saveList); //  # Initialize save frame Linked list reference
 
-   	camStartStreaming(&streamingList); //  # Initialize streaming frame Linked list reference
+	camStartStreaming(&streamingList); //  # Initialize streaming frame Linked list reference
 
 	burstNframe = (int) ( burstDuration * frameRate + 1 );
 
 	acqFlag = 1;
 	frameTriggerCounter = 0;
 	frameCounter = 0;
-        incompleteFrame = 0;
+	incompleteFrame = 0;
 	enqueueFrameNumber = 0;
 
 	startStoreTrg = 0;  //manage the mdsplus saving process. SAVE always start with a SW or HW trigger. (0=no-save; 1=save)
 
-        while ( acqFlag )
+	while ( acqFlag )
 	{
-        getFrame( &frameStatus, frameBuffer, metaData);   //get the frame
+	getFrame( &frameStatus, frameBuffer, metaData);   //get the frame
 
-        if(storeEnabled)
-        {
-          if ( triggerMode == 1 )        // External trigger source
+	if(storeEnabled)
+	{
+	  if ( triggerMode == 1 )        // External trigger source
 	  {
 
-           	if ( (frameStatus == 4) && (startStoreTrg == 0) )       //start data storing @ 1st trigger seen (trigger is on image header!)
+	   	if ( (frameStatus == 4) && (startStoreTrg == 0) )       //start data storing @ 1st trigger seen (trigger is on image header!)
 		{
-            	  startStoreTrg = 1;
-            	  printf("TRIGGERED:\n");
+	    	  startStoreTrg = 1;
+	    	  printf("TRIGGERED:\n");
 		}
 
-           	if (frameTriggerCounter == burstNframe)
+	   	if (frameTriggerCounter == burstNframe)
 		{
 		  triggered = 0;
 		  startStoreTrg   = 0;   //disable storing
 		  NtriggerCount++;
 
-                  printf("ACQUIRED ALL FRAMES %d FOR TRIGGER : %d\n", frameTriggerCounter,  NtriggerCount );
-                  frameTriggerCounter = 0;
+	          printf("ACQUIRED ALL FRAMES %d FOR TRIGGER : %d\n", frameTriggerCounter,  NtriggerCount );
+	          frameTriggerCounter = 0;
 
-                  if ( autoCalibration )    //execute calibration action @ every burst of frames (only if NO auto calibration)
-                  {
+	          if ( autoCalibration )    //execute calibration action @ every burst of frames (only if NO auto calibration)
+	          {
 			executeAutoCalib();
 		  }
 
-	          if ( NtriggerCount == numTrigger ) //stop store when all trigger will be received
+		  if ( NtriggerCount == numTrigger ) //stop store when all trigger will be received
 		  {
-	            printf("ACQUIRED ALL FRAME BURST: %d\n", numTrigger );
-                    storeEnabled=0;
-	            //break;
+		    printf("ACQUIRED ALL FRAME BURST: %d\n", numTrigger );
+	            storeEnabled=0;
+		    //break;
 		  }
 		 }//if (frameTriggerCounter == burstNframe)
 
-          }
-          else //( triggerMode == 1 ) 	//Internal trigger source
-          {
-               //Multiple trigger acquisition: first trigger save 64bit timestamp
-               timebaseNid = -1;  //used in cammdsutils to use internal
+	  }
+	  else //( triggerMode == 1 ) 	//Internal trigger source
+	  {
+	       //Multiple trigger acquisition: first trigger save 64bit timestamp
+	       timebaseNid = -1;  //used in cammdsutils to use internal
 	       triggered = 1; //debug
 
-               if(startStoreTrg == 1)
-               {
-                  gettimeofday(&tv, NULL);
-                  timeStamp = ((tv.tv_sec)*1000) + ((tv.tv_usec)/1000); // timeStamp [ms]
+	       if(startStoreTrg == 1)
+	       {
+	          gettimeofday(&tv, NULL);
+	          timeStamp = ((tv.tv_sec)*1000) + ((tv.tv_usec)/1000); // timeStamp [ms]
 
-                  if(timeStamp0==0)
-                  {
-                    Int64 *tsMDS = new Int64(timeStamp);
-                    t0Node->putData(tsMDS);
-                    timeStamp0=timeStamp;
-                  }
-                  else
-                  {
-                    frameTime = (float)((timeStamp-timeStamp0)/1000.0); //interval from first frame [s]
-                    //printf("frameTime: %f", frameTime);
-                  }
-              }//if startStoreTrg == 1
+	          if(timeStamp0==0)
+	          {
+	            Int64 *tsMDS = new Int64(timeStamp);
+	            t0Node->putData(tsMDS);
+	            timeStamp0=timeStamp;
+	          }
+	          else
+	          {
+	            frameTime = (float)((timeStamp-timeStamp0)/1000.0); //interval from first frame [s]
+	            //printf("frameTime: %f", frameTime);
+	          }
+	      }//if startStoreTrg == 1
 
-       	      if ( frameTriggerCounter == burstNframe )
-              {
-                   startStoreTrg   = 0;   //disable storing
-                   frameTriggerCounter = 0;
-                   NtriggerCount++;
-            	   printf("Stop Internal trigger acquisition %f %f %f\n", frameTime, burstDuration, frameRate);
-                   //storeEnabled=0;  //infinite trigger until stop acquisition
+	      if ( frameTriggerCounter == burstNframe )
+	      {
+	           startStoreTrg   = 0;   //disable storing
+	           frameTriggerCounter = 0;
+	           NtriggerCount++;
+	    	   printf("Stop Internal trigger acquisition %f %f %f\n", frameTime, burstDuration, frameRate);
+	           //storeEnabled=0;  //infinite trigger until stop acquisition
 		   //break;
-              }
+	      }
 	  }//else Internal trigger source
-        }//if(storeEnabled)
+	}//if(storeEnabled)
 
 
-        if ( irFrameFormat != radiometric )
-        	frameConv((unsigned short *)frameBuffer, width, height);  //convert kelvin in Celsius
+	if ( irFrameFormat != radiometric )
+		frameConv((unsigned short *)frameBuffer, width, height);  //convert kelvin in Celsius
 
 
 	//frameStatus -> status=1 complete # status=2 incomplete # status=3 timeout # status=4 triggered frame + complete
@@ -1646,50 +1646,50 @@ int FLIR_SC65X::startFramesAcquisition()
 	  //printf("SAVE Frame : %d timebase Idx : %d\n", frameTriggerCounter,  frameTimeBaseIdx);
 
 	  // CT la routine camSaveFrame utilizza il frame index in acquisizione. L'indice viene
-    	  // utilizzato per individuare nell'array della base temporale il tempo associato al frame.
+	  // utilizzato per individuare nell'array della base temporale il tempo associato al frame.
 
 	  // Con Trigger interno viene utilizzato frameTime come tempo relativo allo 0; timebaseNid deve essere -1
 
-          camSaveFrame((void *)frameBuffer, width, height, frameTime, 14, (void *)treePtr, framesNid, timebaseNid, frameTimeBaseIdx, (void *)metaData, metaSize, framesMetadNid, saveList);
+	  camSaveFrame((void *)frameBuffer, width, height, frameTime, 14, (void *)treePtr, framesNid, timebaseNid, frameTimeBaseIdx, (void *)metaData, metaSize, framesMetadNid, saveList);
 	  enqueueFrameNumber++;
 	}
 
-        if( streamingEnabled )
+	if( streamingEnabled )
 	{
-           if( tcpStreamHandle == -1)
+	   if( tcpStreamHandle == -1)
 	   {
-            	rstatus = camOpenTcpConnectionNew(streamingServer, streamingPort, &tcpStreamHandle, width, height);
-            	if( rstatus !=-1 )
-                {
-            	  printf( "Connected to FFMPEG on %s : %d\n", streamingServer, streamingPort);
-                }
+	    	rstatus = camOpenTcpConnectionNew(streamingServer, streamingPort, &tcpStreamHandle, width, height);
+	    	if( rstatus !=-1 )
+	        {
+	    	  printf( "Connected to FFMPEG on %s : %d\n", streamingServer, streamingPort);
+	        }
 		else
 		{
-            	  printf( "Cannot connect to FFMPEG on %s : %d. Disable streaming\n", streamingServer, streamingPort);
+	    	  printf( "Cannot connect to FFMPEG on %s : %d. Disable streaming\n", streamingServer, streamingPort);
 		  streamingEnabled = 0;
 		}
 	    }
 
 	    if ( (streamingSkipFrameNumber - 1 <= 0) || (frameCounter % ( streamingSkipFrameNumber - 1)) == 0 )
 	    {
-                bool testVLCsyncProblem=0;
-                if ((frameCounter % 10)==0)
-                {
-                  testVLCsyncProblem=autoAdjustLimit;
-                }
-                else
-                {
-                  testVLCsyncProblem=0;
-                }
+	        bool testVLCsyncProblem=0;
+	        if ((frameCounter % 10)==0)
+	        {
+	          testVLCsyncProblem=autoAdjustLimit;
+	        }
+	        else
+	        {
+	          testVLCsyncProblem=0;
+	        }
 		camStreamingFrame( tcpStreamHandle, frameBuffer, metaData, width, height, 14, irFrameFormat, testVLCsyncProblem, &lowLim, &highLim, minLim, maxLim, this->deviceName, streamingList);
 	    }
 	} // if( streamingEnabled )
 
-        frameCounter++;   //never resetted, used for frame timestamp
-        if ( startStoreTrg == 1 ) //CT incremento l'indice dei frame salvato solo se l'acquisizione e' stata triggerata
-        {
-          frameTriggerCounter++;
-        }
+	frameCounter++;   //never resetted, used for frame timestamp
+	if ( startStoreTrg == 1 ) //CT incremento l'indice dei frame salvato solo se l'acquisizione e' stata triggerata
+	{
+	  frameTriggerCounter++;
+	}
     }//endwhile
 
     camStopSave(saveList); // Stop asynhronous store stream
@@ -1703,7 +1703,7 @@ int FLIR_SC65X::startFramesAcquisition()
 	printf("Cannot stop camera acquisition\n");
 
     if ( !autoCalibration )
-        setCalibMode(1);  //re-enable auto calibration
+	setCalibMode(1);  //re-enable auto calibration
 
 
     free(frameBuffer);

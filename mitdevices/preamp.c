@@ -28,19 +28,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	Josh Stillerman
+		Author:	Josh Stillerman
 
 		Date:    4-JAN-1993
 
-    		Purpose: Support routines for MIT PREAMP.
+		Purpose: Support routines for MIT PREAMP.
 
 ------------------------------------------------------------------------------
 
 	Call sequence:
 
 EXPORT int PREAMP_ADD(struct descriptor *name,
-                     struct descriptor *qualifiers,
-                     int                   *head_nid)
+	             struct descriptor *qualifiers,
+	             int                   *head_nid)
 
 ------------------------------------------------------------------------------
    Copyright (c) 1993
@@ -50,7 +50,7 @@ EXPORT int PREAMP_ADD(struct descriptor *name,
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
   Support for 16 channel MIT designed preamplifier.
 

@@ -11,11 +11,11 @@
 
 		Type:   C include
 
-     		Author:	Josh Stillerman
+		Author:	Josh Stillerman
 
 		Date:   16-JAN-1992
 
-    		Purpose: Callback structure definitions;
+		Purpose: Callback structure definitions;
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989

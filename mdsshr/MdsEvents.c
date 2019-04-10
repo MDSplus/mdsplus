@@ -795,9 +795,9 @@ STATIC_ROUTINE int sendRemoteEvent(const char *const evname, const int data_len,
   struct descrip desc;
 
 /*struct descrip { char dtype;
-                 char ndims;
-                 int  dims[MAX_DIMS];
-                 int  length;
+	         char ndims;
+	         int  dims[MAX_DIMS];
+	         int  length;
 		 void *ptr;
 	       };
 */

@@ -4,11 +4,11 @@ public class DeviceCancelBeanInfo extends SimpleBeanInfo
 {
     public PropertyDescriptor [] getPropertyDescriptors()
     {
-        return new PropertyDescriptor[] {};
+	return new PropertyDescriptor[] {};
     }
     public Image getIcon(int kind)
     {
-        return loadImage("DeviceCancel.gif");
+	return loadImage("DeviceCancel.gif");
     }
 
 }

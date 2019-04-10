@@ -5,11 +5,11 @@ public class DeviceApplyBeanInfo extends SimpleBeanInfo
 {
     public PropertyDescriptor [] getPropertyDescriptors()
     {
-        return new PropertyDescriptor[] {};
+	return new PropertyDescriptor[] {};
     }
     public Image getIcon(int kind)
     {
-        return loadImage("DeviceApply.gif");
+	return loadImage("DeviceApply.gif");
     }
 }
 

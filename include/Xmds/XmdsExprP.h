@@ -11,11 +11,11 @@
 
 		Type:   C include
 
-     		Author:	Josh Stillerman
+		Author:	Josh Stillerman
 
 		Date:   23-AUG-1989
 
-    		Purpose: Private declarations for  Expr widget
+		Purpose: Private declarations for  Expr widget
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989

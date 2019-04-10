@@ -12,7 +12,7 @@ public class CAENV1731Setup extends DeviceSetup {
 
     /** Creates new form CAENV1731Setup */
     public CAENV1731Setup() {
-        initComponents();
+	initComponents();
     }
 
     /** This method is called from within the constructor to
@@ -22,590 +22,590 @@ public class CAENV1731Setup extends DeviceSetup {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        deviceButtons1 = new DeviceButtons();
-        jPanel1 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceField2 = new DeviceField();
-        deviceField13 = new DeviceField();
-        deviceDispatch1 = new DeviceDispatch();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
-        jPanel7 = new javax.swing.JPanel();
-        deviceChoice1 = new DeviceChoice();
-        deviceChoice2 = new DeviceChoice();
-        deviceChoice3 = new DeviceChoice();
-        jPanel8 = new javax.swing.JPanel();
-        deviceField4 = new DeviceField();
-        jPanel6 = new javax.swing.JPanel();
-        deviceChoice4 = new DeviceChoice();
-        deviceField5 = new DeviceField();
-        jPanel4 = new javax.swing.JPanel();
-        jPanel11 = new javax.swing.JPanel();
-        deviceChoice5 = new DeviceChoice();
-        deviceField6 = new DeviceField();
-        jPanel10 = new javax.swing.JPanel();
-        jPanel12 = new javax.swing.JPanel();
-        deviceChoice6 = new DeviceChoice();
-        deviceField8 = new DeviceField();
-        deviceChoice23 = new DeviceChoice();
-        jPanel13 = new javax.swing.JPanel();
-        deviceField9 = new DeviceField();
-        deviceField10 = new DeviceField();
-        deviceField11 = new DeviceField();
-        deviceField12 = new DeviceField();
-        jPanel5 = new javax.swing.JPanel();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel23 = new javax.swing.JPanel();
-        jPanel9 = new javax.swing.JPanel();
-        deviceChoice7 = new DeviceChoice();
-        deviceChoice8 = new DeviceChoice();
-        deviceField3 = new DeviceField();
-        jPanel14 = new javax.swing.JPanel();
-        deviceField7 = new DeviceField();
-        deviceField14 = new DeviceField();
-        jPanel24 = new javax.swing.JPanel();
-        jPanel15 = new javax.swing.JPanel();
-        deviceChoice9 = new DeviceChoice();
-        deviceChoice10 = new DeviceChoice();
-        deviceField15 = new DeviceField();
-        jPanel16 = new javax.swing.JPanel();
-        deviceField16 = new DeviceField();
-        deviceField17 = new DeviceField();
-        jPanel25 = new javax.swing.JPanel();
-        jPanel17 = new javax.swing.JPanel();
-        deviceChoice11 = new DeviceChoice();
-        deviceChoice12 = new DeviceChoice();
-        deviceField18 = new DeviceField();
-        jPanel18 = new javax.swing.JPanel();
-        deviceField19 = new DeviceField();
-        deviceField20 = new DeviceField();
-        jPanel26 = new javax.swing.JPanel();
-        jPanel19 = new javax.swing.JPanel();
-        deviceChoice13 = new DeviceChoice();
-        deviceChoice14 = new DeviceChoice();
-        deviceField21 = new DeviceField();
-        jPanel20 = new javax.swing.JPanel();
-        deviceField22 = new DeviceField();
-        deviceField23 = new DeviceField();
-        jPanel27 = new javax.swing.JPanel();
-        jPanel21 = new javax.swing.JPanel();
-        deviceChoice15 = new DeviceChoice();
-        deviceChoice16 = new DeviceChoice();
-        deviceField24 = new DeviceField();
-        jPanel22 = new javax.swing.JPanel();
-        deviceField25 = new DeviceField();
-        deviceField26 = new DeviceField();
-        jPanel28 = new javax.swing.JPanel();
-        jPanel29 = new javax.swing.JPanel();
-        deviceChoice17 = new DeviceChoice();
-        deviceChoice18 = new DeviceChoice();
-        deviceField27 = new DeviceField();
-        jPanel30 = new javax.swing.JPanel();
-        deviceField28 = new DeviceField();
-        deviceField29 = new DeviceField();
-        jPanel31 = new javax.swing.JPanel();
-        jPanel32 = new javax.swing.JPanel();
-        deviceChoice19 = new DeviceChoice();
-        deviceChoice20 = new DeviceChoice();
-        deviceField30 = new DeviceField();
-        jPanel33 = new javax.swing.JPanel();
-        deviceField31 = new DeviceField();
-        deviceField32 = new DeviceField();
-        jPanel34 = new javax.swing.JPanel();
-        jPanel35 = new javax.swing.JPanel();
-        deviceChoice21 = new DeviceChoice();
-        deviceChoice22 = new DeviceChoice();
-        deviceField33 = new DeviceField();
-        jPanel36 = new javax.swing.JPanel();
-        deviceField34 = new DeviceField();
-        deviceField35 = new DeviceField();
-
-        setDeviceProvider("localhost");
-        setDeviceTitle("CAEN V1731 Transient Recorder");
-        setDeviceType("CAENV1731");
-        setHeight(620);
-        setWidth(700);
-        getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
-
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Comment:");
-        deviceField1.setNumCols(20);
-        deviceField1.setOffsetNid(1);
-        deviceField1.setTextOnly(true);
-        jPanel1.add(deviceField1);
-
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("VME Addr.:");
-        deviceField2.setNumCols(6);
-        deviceField2.setOffsetNid(2);
-        jPanel1.add(deviceField2);
-
-        deviceField13.setIdentifier("");
-        deviceField13.setLabelString("Board Id: ");
-        deviceField13.setNumCols(2);
-        deviceField13.setOffsetNid(19);
-        jPanel1.add(deviceField13);
-
-        jPanel1.add(deviceDispatch1);
-
-        getContentPane().add(jPanel1, java.awt.BorderLayout.NORTH);
-
-        jPanel2.setLayout(new java.awt.BorderLayout());
-
-        jPanel3.setLayout(new java.awt.GridLayout(2, 1));
-
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Trigger"));
-        deviceChoice1.setChoiceItems(new String[] {"OVER TRESHOLD", "UNDER THERSHOLD"});
-        deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("Mode: ");
-        deviceChoice1.setOffsetNid(3);
-        deviceChoice1.setUpdateIdentifier("");
-        jPanel7.add(deviceChoice1);
-
-        deviceChoice2.setChoiceItems(new String[] {"ENABLED", "DISBLED"});
-        deviceChoice2.setIdentifier("");
-        deviceChoice2.setLabelString("Soft. Trig.:");
-        deviceChoice2.setOffsetNid(4);
-        deviceChoice2.setUpdateIdentifier("");
-        jPanel7.add(deviceChoice2);
-
-        deviceChoice3.setChoiceItems(new String[] {"ENABLED", "DISBLED"});
-        deviceChoice3.setIdentifier("");
-        deviceChoice3.setLabelString("Ext. Trig.:");
-        deviceChoice3.setOffsetNid(5);
-        deviceChoice3.setUpdateIdentifier("");
-        jPanel7.add(deviceChoice3);
-
-        jPanel3.add(jPanel7);
-
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Trigger time: ");
-        deviceField4.setNumCols(35);
-        deviceField4.setOffsetNid(6);
-        jPanel8.add(deviceField4);
-
-        jPanel3.add(jPanel8);
-
-        jPanel2.add(jPanel3, java.awt.BorderLayout.NORTH);
-
-        jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Clock"));
-        deviceChoice4.setChoiceItems(new String[] {"500 MHz", "1 GHz", "EXTERNAL"});
-        deviceChoice4.setIdentifier("");
-        deviceChoice4.setLabelString("Clock Mode:");
-        deviceChoice4.setOffsetNid(8);
-        deviceChoice4.setUpdateIdentifier("");
-        jPanel6.add(deviceChoice4);
-
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("Clock source:");
-        deviceField5.setNumCols(20);
-        deviceField5.setOffsetNid(9);
-        jPanel6.add(deviceField5);
-
-        jPanel2.add(jPanel6, java.awt.BorderLayout.CENTER);
-
-        jPanel4.setLayout(new java.awt.BorderLayout());
-
-        jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder("Monitor"));
-        deviceChoice5.setChoiceItems(new String[] {"MAJORITY", "SAWTOOTH", "BUF. OCCUPANCY", "SELECTED LEVEL"});
-        deviceChoice5.setIdentifier("");
-        deviceChoice5.setLabelString("Mode: ");
-        deviceChoice5.setOffsetNid(10);
-        deviceChoice5.setUpdateIdentifier("");
-        jPanel11.add(deviceChoice5);
-
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Level(V): ");
-        deviceField6.setNumCols(5);
-        deviceField6.setOffsetNid(11);
-        jPanel11.add(deviceField6);
-
-        jPanel4.add(jPanel11, java.awt.BorderLayout.NORTH);
-
-        jPanel10.setLayout(new java.awt.GridLayout(2, 1));
-
-        jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("Data"));
-        deviceChoice6.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice6.setIdentifier("");
-        deviceChoice6.setLabelString("Use Time:");
-        deviceChoice6.setOffsetNid(13);
-        deviceChoice6.setUpdateIdentifier("");
-        jPanel12.add(deviceChoice6);
-
-        deviceField8.setIdentifier("");
-        deviceField8.setLabelString("PTS");
-        deviceField8.setOffsetNid(14);
-        jPanel12.add(deviceField8);
-
-        deviceChoice23.setChoiceIntValues(new int[] {(int)1,(int)2,(int)4,(int)8,(int)16,(int)32,(int)64,(int)128,(int)256,(int)512,(int)1024});
-        deviceChoice23.setChoiceItems(new String[] {"1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024"});
-        deviceChoice23.setIdentifier("");
-        deviceChoice23.setLabelString("Num Segments: ");
-        deviceChoice23.setOffsetNid(12);
-        deviceChoice23.setUpdateIdentifier("");
-        jPanel12.add(deviceChoice23);
-
-        jPanel10.add(jPanel12);
-
-        deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Start Time: ");
-        deviceField9.setNumCols(8);
-        deviceField9.setOffsetNid(17);
-        jPanel13.add(deviceField9);
-
-        deviceField10.setIdentifier("");
-        deviceField10.setLabelString("End Time: ");
-        deviceField10.setNumCols(8);
-        deviceField10.setOffsetNid(18);
-        jPanel13.add(deviceField10);
-
-        deviceField11.setIdentifier("");
-        deviceField11.setLabelString("Start Idx: ");
-        deviceField11.setNumCols(8);
-        deviceField11.setOffsetNid(15);
-        jPanel13.add(deviceField11);
-
-        deviceField12.setIdentifier("");
-        deviceField12.setLabelString("End Idx: ");
-        deviceField12.setNumCols(8);
-        deviceField12.setOffsetNid(16);
-        jPanel13.add(deviceField12);
-
-        jPanel10.add(jPanel13);
-
-        jPanel4.add(jPanel10, java.awt.BorderLayout.CENTER);
-
-        jPanel5.setLayout(new java.awt.BorderLayout());
-
-        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Channels"));
-        jPanel23.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceChoice7.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice7.setIdentifier("");
-        deviceChoice7.setLabelString("State: ");
-        deviceChoice7.setOffsetNid(21);
-        deviceChoice7.setUpdateIdentifier("");
-        jPanel9.add(deviceChoice7);
-
-        deviceChoice8.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice8.setIdentifier("");
-        deviceChoice8.setLabelString("Trig. State: ");
-        deviceChoice8.setOffsetNid(22);
-        deviceChoice8.setUpdateIdentifier("");
-        jPanel9.add(deviceChoice8);
-
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("DAC Offset: ");
-        deviceField3.setNumCols(6);
-        deviceField3.setOffsetNid(25);
-        jPanel9.add(deviceField3);
-
-        jPanel23.add(jPanel9);
-
-        deviceField7.setIdentifier("");
-        deviceField7.setLabelString("Trig. Treshold  Level: ");
-        deviceField7.setNumCols(6);
-        deviceField7.setOffsetNid(23);
-        jPanel14.add(deviceField7);
-
-        deviceField14.setIdentifier("");
-        deviceField14.setLabelString("Trig. Treshold Samples: ");
-        deviceField14.setNumCols(6);
-        deviceField14.setOffsetNid(24);
-        jPanel14.add(deviceField14);
-
-        jPanel23.add(jPanel14);
-
-        jTabbedPane1.addTab("Ch1", jPanel23);
-
-        jPanel24.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceChoice9.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice9.setIdentifier("");
-        deviceChoice9.setLabelString("State: ");
-        deviceChoice9.setOffsetNid(28);
-        deviceChoice9.setUpdateIdentifier("");
-        jPanel15.add(deviceChoice9);
-
-        deviceChoice10.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice10.setIdentifier("");
-        deviceChoice10.setLabelString("Trig. State: ");
-        deviceChoice10.setOffsetNid(29);
-        deviceChoice10.setUpdateIdentifier("");
-        jPanel15.add(deviceChoice10);
-
-        deviceField15.setIdentifier("");
-        deviceField15.setLabelString("DAC Offset: ");
-        deviceField15.setNumCols(6);
-        deviceField15.setOffsetNid(32);
-        jPanel15.add(deviceField15);
-
-        jPanel24.add(jPanel15);
-
-        deviceField16.setIdentifier("");
-        deviceField16.setLabelString("Trig. Treshold  Level: ");
-        deviceField16.setNumCols(6);
-        deviceField16.setOffsetNid(30);
-        jPanel16.add(deviceField16);
-
-        deviceField17.setIdentifier("");
-        deviceField17.setLabelString("Trig. Treshold Samples: ");
-        deviceField17.setNumCols(6);
-        deviceField17.setOffsetNid(31);
-        jPanel16.add(deviceField17);
-
-        jPanel24.add(jPanel16);
-
-        jTabbedPane1.addTab("Ch2", jPanel24);
-
-        jPanel25.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceChoice11.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice11.setIdentifier("");
-        deviceChoice11.setLabelString("State: ");
-        deviceChoice11.setOffsetNid(35);
-        deviceChoice11.setUpdateIdentifier("");
-        jPanel17.add(deviceChoice11);
-
-        deviceChoice12.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice12.setIdentifier("");
-        deviceChoice12.setLabelString("Trig. State: ");
-        deviceChoice12.setOffsetNid(36);
-        deviceChoice12.setUpdateIdentifier("");
-        jPanel17.add(deviceChoice12);
-
-        deviceField18.setIdentifier("");
-        deviceField18.setLabelString("DAC Offset: ");
-        deviceField18.setNumCols(6);
-        deviceField18.setOffsetNid(39);
-        jPanel17.add(deviceField18);
-
-        jPanel25.add(jPanel17);
-
-        deviceField19.setIdentifier("");
-        deviceField19.setLabelString("Trig. Treshold  Level: ");
-        deviceField19.setNumCols(6);
-        deviceField19.setOffsetNid(37);
-        jPanel18.add(deviceField19);
-
-        deviceField20.setIdentifier("");
-        deviceField20.setLabelString("Trig. Treshold Samples: ");
-        deviceField20.setNumCols(6);
-        deviceField20.setOffsetNid(38);
-        jPanel18.add(deviceField20);
-
-        jPanel25.add(jPanel18);
-
-        jTabbedPane1.addTab("Ch3", jPanel25);
-
-        jPanel26.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceChoice13.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice13.setIdentifier("");
-        deviceChoice13.setLabelString("State: ");
-        deviceChoice13.setOffsetNid(42);
-        deviceChoice13.setUpdateIdentifier("");
-        jPanel19.add(deviceChoice13);
-
-        deviceChoice14.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice14.setIdentifier("");
-        deviceChoice14.setLabelString("Trig. State: ");
-        deviceChoice14.setOffsetNid(43);
-        deviceChoice14.setUpdateIdentifier("");
-        jPanel19.add(deviceChoice14);
-
-        deviceField21.setIdentifier("");
-        deviceField21.setLabelString("DAC Offset: ");
-        deviceField21.setNumCols(6);
-        deviceField21.setOffsetNid(46);
-        jPanel19.add(deviceField21);
-
-        jPanel26.add(jPanel19);
-
-        deviceField22.setIdentifier("");
-        deviceField22.setLabelString("Trig. Treshold  Level: ");
-        deviceField22.setNumCols(6);
-        deviceField22.setOffsetNid(44);
-        jPanel20.add(deviceField22);
-
-        deviceField23.setIdentifier("");
-        deviceField23.setLabelString("Trig. Treshold Samples: ");
-        deviceField23.setNumCols(6);
-        deviceField23.setOffsetNid(45);
-        jPanel20.add(deviceField23);
-
-        jPanel26.add(jPanel20);
-
-        jTabbedPane1.addTab("Ch4", jPanel26);
-
-        jPanel27.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceChoice15.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice15.setIdentifier("");
-        deviceChoice15.setLabelString("State: ");
-        deviceChoice15.setOffsetNid(49);
-        deviceChoice15.setUpdateIdentifier("");
-        jPanel21.add(deviceChoice15);
-
-        deviceChoice16.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice16.setIdentifier("");
-        deviceChoice16.setLabelString("Trig. State: ");
-        deviceChoice16.setOffsetNid(50);
-        deviceChoice16.setUpdateIdentifier("");
-        jPanel21.add(deviceChoice16);
-
-        deviceField24.setIdentifier("");
-        deviceField24.setLabelString("DAC Offset: ");
-        deviceField24.setNumCols(6);
-        deviceField24.setOffsetNid(53);
-        jPanel21.add(deviceField24);
-
-        jPanel27.add(jPanel21);
-
-        deviceField25.setIdentifier("");
-        deviceField25.setLabelString("Trig. Treshold  Level: ");
-        deviceField25.setNumCols(6);
-        deviceField25.setOffsetNid(51);
-        jPanel22.add(deviceField25);
-
-        deviceField26.setIdentifier("");
-        deviceField26.setLabelString("Trig. Treshold Samples: ");
-        deviceField26.setNumCols(6);
-        deviceField26.setOffsetNid(52);
-        jPanel22.add(deviceField26);
-
-        jPanel27.add(jPanel22);
-
-        jTabbedPane1.addTab("Ch5", jPanel27);
-
-        jPanel28.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceChoice17.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice17.setIdentifier("");
-        deviceChoice17.setLabelString("State: ");
-        deviceChoice17.setOffsetNid(56);
-        deviceChoice17.setUpdateIdentifier("");
-        jPanel29.add(deviceChoice17);
-
-        deviceChoice18.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice18.setIdentifier("");
-        deviceChoice18.setLabelString("Trig. State: ");
-        deviceChoice18.setOffsetNid(57);
-        deviceChoice18.setUpdateIdentifier("");
-        jPanel29.add(deviceChoice18);
-
-        deviceField27.setIdentifier("");
-        deviceField27.setLabelString("DAC Offset: ");
-        deviceField27.setNumCols(6);
-        deviceField27.setOffsetNid(60);
-        jPanel29.add(deviceField27);
-
-        jPanel28.add(jPanel29);
-
-        deviceField28.setIdentifier("");
-        deviceField28.setLabelString("Trig. Treshold  Level: ");
-        deviceField28.setNumCols(6);
-        deviceField28.setOffsetNid(58);
-        jPanel30.add(deviceField28);
-
-        deviceField29.setIdentifier("");
-        deviceField29.setLabelString("Trig. Treshold Samples: ");
-        deviceField29.setNumCols(6);
-        deviceField29.setOffsetNid(59);
-        jPanel30.add(deviceField29);
-
-        jPanel28.add(jPanel30);
-
-        jTabbedPane1.addTab("Ch6", jPanel28);
-
-        jPanel31.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceChoice19.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice19.setIdentifier("");
-        deviceChoice19.setLabelString("State: ");
-        deviceChoice19.setOffsetNid(63);
-        deviceChoice19.setUpdateIdentifier("");
-        jPanel32.add(deviceChoice19);
-
-        deviceChoice20.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice20.setIdentifier("");
-        deviceChoice20.setLabelString("Trig. State: ");
-        deviceChoice20.setOffsetNid(64);
-        deviceChoice20.setUpdateIdentifier("");
-        jPanel32.add(deviceChoice20);
-
-        deviceField30.setIdentifier("");
-        deviceField30.setLabelString("DAC Offset: ");
-        deviceField30.setNumCols(6);
-        deviceField30.setOffsetNid(67);
-        jPanel32.add(deviceField30);
-
-        jPanel31.add(jPanel32);
-
-        deviceField31.setIdentifier("");
-        deviceField31.setLabelString("Trig. Treshold  Level: ");
-        deviceField31.setNumCols(6);
-        deviceField31.setOffsetNid(65);
-        jPanel33.add(deviceField31);
-
-        deviceField32.setIdentifier("");
-        deviceField32.setLabelString("Trig. Treshold Samples: ");
-        deviceField32.setNumCols(6);
-        deviceField32.setOffsetNid(66);
-        jPanel33.add(deviceField32);
-
-        jPanel31.add(jPanel33);
-
-        jTabbedPane1.addTab("Ch7", jPanel31);
-
-        jPanel34.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceChoice21.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice21.setIdentifier("");
-        deviceChoice21.setLabelString("State: ");
-        deviceChoice21.setOffsetNid(70);
-        deviceChoice21.setUpdateIdentifier("");
-        jPanel35.add(deviceChoice21);
-
-        deviceChoice22.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice22.setIdentifier("");
-        deviceChoice22.setLabelString("Trig. State: ");
-        deviceChoice22.setOffsetNid(71);
-        deviceChoice22.setUpdateIdentifier("");
-        jPanel35.add(deviceChoice22);
-
-        deviceField33.setIdentifier("");
-        deviceField33.setLabelString("DAC Offset: ");
-        deviceField33.setNumCols(6);
-        deviceField33.setOffsetNid(74);
-        jPanel35.add(deviceField33);
-
-        jPanel34.add(jPanel35);
-
-        deviceField34.setIdentifier("");
-        deviceField34.setLabelString("Trig. Treshold  Level: ");
-        deviceField34.setNumCols(6);
-        deviceField34.setOffsetNid(72);
-        jPanel36.add(deviceField34);
-
-        deviceField35.setIdentifier("");
-        deviceField35.setLabelString("Trig. Treshold Samples: ");
-        deviceField35.setNumCols(6);
-        deviceField35.setOffsetNid(73);
-        jPanel36.add(deviceField35);
-
-        jPanel34.add(jPanel36);
-
-        jTabbedPane1.addTab("Ch8", jPanel34);
-
-        jPanel5.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
-        jTabbedPane1.getAccessibleContext().setAccessibleName("Ch 2");
-
-        jPanel4.add(jPanel5, java.awt.BorderLayout.SOUTH);
-
-        jPanel2.add(jPanel4, java.awt.BorderLayout.SOUTH);
-
-        getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
+	deviceButtons1 = new DeviceButtons();
+	jPanel1 = new javax.swing.JPanel();
+	deviceField1 = new DeviceField();
+	deviceField2 = new DeviceField();
+	deviceField13 = new DeviceField();
+	deviceDispatch1 = new DeviceDispatch();
+	jPanel2 = new javax.swing.JPanel();
+	jPanel3 = new javax.swing.JPanel();
+	jPanel7 = new javax.swing.JPanel();
+	deviceChoice1 = new DeviceChoice();
+	deviceChoice2 = new DeviceChoice();
+	deviceChoice3 = new DeviceChoice();
+	jPanel8 = new javax.swing.JPanel();
+	deviceField4 = new DeviceField();
+	jPanel6 = new javax.swing.JPanel();
+	deviceChoice4 = new DeviceChoice();
+	deviceField5 = new DeviceField();
+	jPanel4 = new javax.swing.JPanel();
+	jPanel11 = new javax.swing.JPanel();
+	deviceChoice5 = new DeviceChoice();
+	deviceField6 = new DeviceField();
+	jPanel10 = new javax.swing.JPanel();
+	jPanel12 = new javax.swing.JPanel();
+	deviceChoice6 = new DeviceChoice();
+	deviceField8 = new DeviceField();
+	deviceChoice23 = new DeviceChoice();
+	jPanel13 = new javax.swing.JPanel();
+	deviceField9 = new DeviceField();
+	deviceField10 = new DeviceField();
+	deviceField11 = new DeviceField();
+	deviceField12 = new DeviceField();
+	jPanel5 = new javax.swing.JPanel();
+	jTabbedPane1 = new javax.swing.JTabbedPane();
+	jPanel23 = new javax.swing.JPanel();
+	jPanel9 = new javax.swing.JPanel();
+	deviceChoice7 = new DeviceChoice();
+	deviceChoice8 = new DeviceChoice();
+	deviceField3 = new DeviceField();
+	jPanel14 = new javax.swing.JPanel();
+	deviceField7 = new DeviceField();
+	deviceField14 = new DeviceField();
+	jPanel24 = new javax.swing.JPanel();
+	jPanel15 = new javax.swing.JPanel();
+	deviceChoice9 = new DeviceChoice();
+	deviceChoice10 = new DeviceChoice();
+	deviceField15 = new DeviceField();
+	jPanel16 = new javax.swing.JPanel();
+	deviceField16 = new DeviceField();
+	deviceField17 = new DeviceField();
+	jPanel25 = new javax.swing.JPanel();
+	jPanel17 = new javax.swing.JPanel();
+	deviceChoice11 = new DeviceChoice();
+	deviceChoice12 = new DeviceChoice();
+	deviceField18 = new DeviceField();
+	jPanel18 = new javax.swing.JPanel();
+	deviceField19 = new DeviceField();
+	deviceField20 = new DeviceField();
+	jPanel26 = new javax.swing.JPanel();
+	jPanel19 = new javax.swing.JPanel();
+	deviceChoice13 = new DeviceChoice();
+	deviceChoice14 = new DeviceChoice();
+	deviceField21 = new DeviceField();
+	jPanel20 = new javax.swing.JPanel();
+	deviceField22 = new DeviceField();
+	deviceField23 = new DeviceField();
+	jPanel27 = new javax.swing.JPanel();
+	jPanel21 = new javax.swing.JPanel();
+	deviceChoice15 = new DeviceChoice();
+	deviceChoice16 = new DeviceChoice();
+	deviceField24 = new DeviceField();
+	jPanel22 = new javax.swing.JPanel();
+	deviceField25 = new DeviceField();
+	deviceField26 = new DeviceField();
+	jPanel28 = new javax.swing.JPanel();
+	jPanel29 = new javax.swing.JPanel();
+	deviceChoice17 = new DeviceChoice();
+	deviceChoice18 = new DeviceChoice();
+	deviceField27 = new DeviceField();
+	jPanel30 = new javax.swing.JPanel();
+	deviceField28 = new DeviceField();
+	deviceField29 = new DeviceField();
+	jPanel31 = new javax.swing.JPanel();
+	jPanel32 = new javax.swing.JPanel();
+	deviceChoice19 = new DeviceChoice();
+	deviceChoice20 = new DeviceChoice();
+	deviceField30 = new DeviceField();
+	jPanel33 = new javax.swing.JPanel();
+	deviceField31 = new DeviceField();
+	deviceField32 = new DeviceField();
+	jPanel34 = new javax.swing.JPanel();
+	jPanel35 = new javax.swing.JPanel();
+	deviceChoice21 = new DeviceChoice();
+	deviceChoice22 = new DeviceChoice();
+	deviceField33 = new DeviceField();
+	jPanel36 = new javax.swing.JPanel();
+	deviceField34 = new DeviceField();
+	deviceField35 = new DeviceField();
+
+	setDeviceProvider("localhost");
+	setDeviceTitle("CAEN V1731 Transient Recorder");
+	setDeviceType("CAENV1731");
+	setHeight(620);
+	setWidth(700);
+	getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
+
+	deviceField1.setIdentifier("");
+	deviceField1.setLabelString("Comment:");
+	deviceField1.setNumCols(20);
+	deviceField1.setOffsetNid(1);
+	deviceField1.setTextOnly(true);
+	jPanel1.add(deviceField1);
+
+	deviceField2.setIdentifier("");
+	deviceField2.setLabelString("VME Addr.:");
+	deviceField2.setNumCols(6);
+	deviceField2.setOffsetNid(2);
+	jPanel1.add(deviceField2);
+
+	deviceField13.setIdentifier("");
+	deviceField13.setLabelString("Board Id: ");
+	deviceField13.setNumCols(2);
+	deviceField13.setOffsetNid(19);
+	jPanel1.add(deviceField13);
+
+	jPanel1.add(deviceDispatch1);
+
+	getContentPane().add(jPanel1, java.awt.BorderLayout.NORTH);
+
+	jPanel2.setLayout(new java.awt.BorderLayout());
+
+	jPanel3.setLayout(new java.awt.GridLayout(2, 1));
+
+	jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Trigger"));
+	deviceChoice1.setChoiceItems(new String[] {"OVER TRESHOLD", "UNDER THERSHOLD"});
+	deviceChoice1.setIdentifier("");
+	deviceChoice1.setLabelString("Mode: ");
+	deviceChoice1.setOffsetNid(3);
+	deviceChoice1.setUpdateIdentifier("");
+	jPanel7.add(deviceChoice1);
+
+	deviceChoice2.setChoiceItems(new String[] {"ENABLED", "DISBLED"});
+	deviceChoice2.setIdentifier("");
+	deviceChoice2.setLabelString("Soft. Trig.:");
+	deviceChoice2.setOffsetNid(4);
+	deviceChoice2.setUpdateIdentifier("");
+	jPanel7.add(deviceChoice2);
+
+	deviceChoice3.setChoiceItems(new String[] {"ENABLED", "DISBLED"});
+	deviceChoice3.setIdentifier("");
+	deviceChoice3.setLabelString("Ext. Trig.:");
+	deviceChoice3.setOffsetNid(5);
+	deviceChoice3.setUpdateIdentifier("");
+	jPanel7.add(deviceChoice3);
+
+	jPanel3.add(jPanel7);
+
+	deviceField4.setIdentifier("");
+	deviceField4.setLabelString("Trigger time: ");
+	deviceField4.setNumCols(35);
+	deviceField4.setOffsetNid(6);
+	jPanel8.add(deviceField4);
+
+	jPanel3.add(jPanel8);
+
+	jPanel2.add(jPanel3, java.awt.BorderLayout.NORTH);
+
+	jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Clock"));
+	deviceChoice4.setChoiceItems(new String[] {"500 MHz", "1 GHz", "EXTERNAL"});
+	deviceChoice4.setIdentifier("");
+	deviceChoice4.setLabelString("Clock Mode:");
+	deviceChoice4.setOffsetNid(8);
+	deviceChoice4.setUpdateIdentifier("");
+	jPanel6.add(deviceChoice4);
+
+	deviceField5.setIdentifier("");
+	deviceField5.setLabelString("Clock source:");
+	deviceField5.setNumCols(20);
+	deviceField5.setOffsetNid(9);
+	jPanel6.add(deviceField5);
+
+	jPanel2.add(jPanel6, java.awt.BorderLayout.CENTER);
+
+	jPanel4.setLayout(new java.awt.BorderLayout());
+
+	jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder("Monitor"));
+	deviceChoice5.setChoiceItems(new String[] {"MAJORITY", "SAWTOOTH", "BUF. OCCUPANCY", "SELECTED LEVEL"});
+	deviceChoice5.setIdentifier("");
+	deviceChoice5.setLabelString("Mode: ");
+	deviceChoice5.setOffsetNid(10);
+	deviceChoice5.setUpdateIdentifier("");
+	jPanel11.add(deviceChoice5);
+
+	deviceField6.setIdentifier("");
+	deviceField6.setLabelString("Level(V): ");
+	deviceField6.setNumCols(5);
+	deviceField6.setOffsetNid(11);
+	jPanel11.add(deviceField6);
+
+	jPanel4.add(jPanel11, java.awt.BorderLayout.NORTH);
+
+	jPanel10.setLayout(new java.awt.GridLayout(2, 1));
+
+	jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("Data"));
+	deviceChoice6.setChoiceItems(new String[] {"YES", "NO"});
+	deviceChoice6.setIdentifier("");
+	deviceChoice6.setLabelString("Use Time:");
+	deviceChoice6.setOffsetNid(13);
+	deviceChoice6.setUpdateIdentifier("");
+	jPanel12.add(deviceChoice6);
+
+	deviceField8.setIdentifier("");
+	deviceField8.setLabelString("PTS");
+	deviceField8.setOffsetNid(14);
+	jPanel12.add(deviceField8);
+
+	deviceChoice23.setChoiceIntValues(new int[] {(int)1,(int)2,(int)4,(int)8,(int)16,(int)32,(int)64,(int)128,(int)256,(int)512,(int)1024});
+	deviceChoice23.setChoiceItems(new String[] {"1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024"});
+	deviceChoice23.setIdentifier("");
+	deviceChoice23.setLabelString("Num Segments: ");
+	deviceChoice23.setOffsetNid(12);
+	deviceChoice23.setUpdateIdentifier("");
+	jPanel12.add(deviceChoice23);
+
+	jPanel10.add(jPanel12);
+
+	deviceField9.setIdentifier("");
+	deviceField9.setLabelString("Start Time: ");
+	deviceField9.setNumCols(8);
+	deviceField9.setOffsetNid(17);
+	jPanel13.add(deviceField9);
+
+	deviceField10.setIdentifier("");
+	deviceField10.setLabelString("End Time: ");
+	deviceField10.setNumCols(8);
+	deviceField10.setOffsetNid(18);
+	jPanel13.add(deviceField10);
+
+	deviceField11.setIdentifier("");
+	deviceField11.setLabelString("Start Idx: ");
+	deviceField11.setNumCols(8);
+	deviceField11.setOffsetNid(15);
+	jPanel13.add(deviceField11);
+
+	deviceField12.setIdentifier("");
+	deviceField12.setLabelString("End Idx: ");
+	deviceField12.setNumCols(8);
+	deviceField12.setOffsetNid(16);
+	jPanel13.add(deviceField12);
+
+	jPanel10.add(jPanel13);
+
+	jPanel4.add(jPanel10, java.awt.BorderLayout.CENTER);
+
+	jPanel5.setLayout(new java.awt.BorderLayout());
+
+	jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Channels"));
+	jPanel23.setLayout(new java.awt.GridLayout(2, 1));
+
+	deviceChoice7.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice7.setIdentifier("");
+	deviceChoice7.setLabelString("State: ");
+	deviceChoice7.setOffsetNid(21);
+	deviceChoice7.setUpdateIdentifier("");
+	jPanel9.add(deviceChoice7);
+
+	deviceChoice8.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice8.setIdentifier("");
+	deviceChoice8.setLabelString("Trig. State: ");
+	deviceChoice8.setOffsetNid(22);
+	deviceChoice8.setUpdateIdentifier("");
+	jPanel9.add(deviceChoice8);
+
+	deviceField3.setIdentifier("");
+	deviceField3.setLabelString("DAC Offset: ");
+	deviceField3.setNumCols(6);
+	deviceField3.setOffsetNid(25);
+	jPanel9.add(deviceField3);
+
+	jPanel23.add(jPanel9);
+
+	deviceField7.setIdentifier("");
+	deviceField7.setLabelString("Trig. Treshold  Level: ");
+	deviceField7.setNumCols(6);
+	deviceField7.setOffsetNid(23);
+	jPanel14.add(deviceField7);
+
+	deviceField14.setIdentifier("");
+	deviceField14.setLabelString("Trig. Treshold Samples: ");
+	deviceField14.setNumCols(6);
+	deviceField14.setOffsetNid(24);
+	jPanel14.add(deviceField14);
+
+	jPanel23.add(jPanel14);
+
+	jTabbedPane1.addTab("Ch1", jPanel23);
+
+	jPanel24.setLayout(new java.awt.GridLayout(2, 1));
+
+	deviceChoice9.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice9.setIdentifier("");
+	deviceChoice9.setLabelString("State: ");
+	deviceChoice9.setOffsetNid(28);
+	deviceChoice9.setUpdateIdentifier("");
+	jPanel15.add(deviceChoice9);
+
+	deviceChoice10.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice10.setIdentifier("");
+	deviceChoice10.setLabelString("Trig. State: ");
+	deviceChoice10.setOffsetNid(29);
+	deviceChoice10.setUpdateIdentifier("");
+	jPanel15.add(deviceChoice10);
+
+	deviceField15.setIdentifier("");
+	deviceField15.setLabelString("DAC Offset: ");
+	deviceField15.setNumCols(6);
+	deviceField15.setOffsetNid(32);
+	jPanel15.add(deviceField15);
+
+	jPanel24.add(jPanel15);
+
+	deviceField16.setIdentifier("");
+	deviceField16.setLabelString("Trig. Treshold  Level: ");
+	deviceField16.setNumCols(6);
+	deviceField16.setOffsetNid(30);
+	jPanel16.add(deviceField16);
+
+	deviceField17.setIdentifier("");
+	deviceField17.setLabelString("Trig. Treshold Samples: ");
+	deviceField17.setNumCols(6);
+	deviceField17.setOffsetNid(31);
+	jPanel16.add(deviceField17);
+
+	jPanel24.add(jPanel16);
+
+	jTabbedPane1.addTab("Ch2", jPanel24);
+
+	jPanel25.setLayout(new java.awt.GridLayout(2, 1));
+
+	deviceChoice11.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice11.setIdentifier("");
+	deviceChoice11.setLabelString("State: ");
+	deviceChoice11.setOffsetNid(35);
+	deviceChoice11.setUpdateIdentifier("");
+	jPanel17.add(deviceChoice11);
+
+	deviceChoice12.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice12.setIdentifier("");
+	deviceChoice12.setLabelString("Trig. State: ");
+	deviceChoice12.setOffsetNid(36);
+	deviceChoice12.setUpdateIdentifier("");
+	jPanel17.add(deviceChoice12);
+
+	deviceField18.setIdentifier("");
+	deviceField18.setLabelString("DAC Offset: ");
+	deviceField18.setNumCols(6);
+	deviceField18.setOffsetNid(39);
+	jPanel17.add(deviceField18);
+
+	jPanel25.add(jPanel17);
+
+	deviceField19.setIdentifier("");
+	deviceField19.setLabelString("Trig. Treshold  Level: ");
+	deviceField19.setNumCols(6);
+	deviceField19.setOffsetNid(37);
+	jPanel18.add(deviceField19);
+
+	deviceField20.setIdentifier("");
+	deviceField20.setLabelString("Trig. Treshold Samples: ");
+	deviceField20.setNumCols(6);
+	deviceField20.setOffsetNid(38);
+	jPanel18.add(deviceField20);
+
+	jPanel25.add(jPanel18);
+
+	jTabbedPane1.addTab("Ch3", jPanel25);
+
+	jPanel26.setLayout(new java.awt.GridLayout(2, 1));
+
+	deviceChoice13.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice13.setIdentifier("");
+	deviceChoice13.setLabelString("State: ");
+	deviceChoice13.setOffsetNid(42);
+	deviceChoice13.setUpdateIdentifier("");
+	jPanel19.add(deviceChoice13);
+
+	deviceChoice14.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice14.setIdentifier("");
+	deviceChoice14.setLabelString("Trig. State: ");
+	deviceChoice14.setOffsetNid(43);
+	deviceChoice14.setUpdateIdentifier("");
+	jPanel19.add(deviceChoice14);
+
+	deviceField21.setIdentifier("");
+	deviceField21.setLabelString("DAC Offset: ");
+	deviceField21.setNumCols(6);
+	deviceField21.setOffsetNid(46);
+	jPanel19.add(deviceField21);
+
+	jPanel26.add(jPanel19);
+
+	deviceField22.setIdentifier("");
+	deviceField22.setLabelString("Trig. Treshold  Level: ");
+	deviceField22.setNumCols(6);
+	deviceField22.setOffsetNid(44);
+	jPanel20.add(deviceField22);
+
+	deviceField23.setIdentifier("");
+	deviceField23.setLabelString("Trig. Treshold Samples: ");
+	deviceField23.setNumCols(6);
+	deviceField23.setOffsetNid(45);
+	jPanel20.add(deviceField23);
+
+	jPanel26.add(jPanel20);
+
+	jTabbedPane1.addTab("Ch4", jPanel26);
+
+	jPanel27.setLayout(new java.awt.GridLayout(2, 1));
+
+	deviceChoice15.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice15.setIdentifier("");
+	deviceChoice15.setLabelString("State: ");
+	deviceChoice15.setOffsetNid(49);
+	deviceChoice15.setUpdateIdentifier("");
+	jPanel21.add(deviceChoice15);
+
+	deviceChoice16.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice16.setIdentifier("");
+	deviceChoice16.setLabelString("Trig. State: ");
+	deviceChoice16.setOffsetNid(50);
+	deviceChoice16.setUpdateIdentifier("");
+	jPanel21.add(deviceChoice16);
+
+	deviceField24.setIdentifier("");
+	deviceField24.setLabelString("DAC Offset: ");
+	deviceField24.setNumCols(6);
+	deviceField24.setOffsetNid(53);
+	jPanel21.add(deviceField24);
+
+	jPanel27.add(jPanel21);
+
+	deviceField25.setIdentifier("");
+	deviceField25.setLabelString("Trig. Treshold  Level: ");
+	deviceField25.setNumCols(6);
+	deviceField25.setOffsetNid(51);
+	jPanel22.add(deviceField25);
+
+	deviceField26.setIdentifier("");
+	deviceField26.setLabelString("Trig. Treshold Samples: ");
+	deviceField26.setNumCols(6);
+	deviceField26.setOffsetNid(52);
+	jPanel22.add(deviceField26);
+
+	jPanel27.add(jPanel22);
+
+	jTabbedPane1.addTab("Ch5", jPanel27);
+
+	jPanel28.setLayout(new java.awt.GridLayout(2, 1));
+
+	deviceChoice17.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice17.setIdentifier("");
+	deviceChoice17.setLabelString("State: ");
+	deviceChoice17.setOffsetNid(56);
+	deviceChoice17.setUpdateIdentifier("");
+	jPanel29.add(deviceChoice17);
+
+	deviceChoice18.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice18.setIdentifier("");
+	deviceChoice18.setLabelString("Trig. State: ");
+	deviceChoice18.setOffsetNid(57);
+	deviceChoice18.setUpdateIdentifier("");
+	jPanel29.add(deviceChoice18);
+
+	deviceField27.setIdentifier("");
+	deviceField27.setLabelString("DAC Offset: ");
+	deviceField27.setNumCols(6);
+	deviceField27.setOffsetNid(60);
+	jPanel29.add(deviceField27);
+
+	jPanel28.add(jPanel29);
+
+	deviceField28.setIdentifier("");
+	deviceField28.setLabelString("Trig. Treshold  Level: ");
+	deviceField28.setNumCols(6);
+	deviceField28.setOffsetNid(58);
+	jPanel30.add(deviceField28);
+
+	deviceField29.setIdentifier("");
+	deviceField29.setLabelString("Trig. Treshold Samples: ");
+	deviceField29.setNumCols(6);
+	deviceField29.setOffsetNid(59);
+	jPanel30.add(deviceField29);
+
+	jPanel28.add(jPanel30);
+
+	jTabbedPane1.addTab("Ch6", jPanel28);
+
+	jPanel31.setLayout(new java.awt.GridLayout(2, 1));
+
+	deviceChoice19.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice19.setIdentifier("");
+	deviceChoice19.setLabelString("State: ");
+	deviceChoice19.setOffsetNid(63);
+	deviceChoice19.setUpdateIdentifier("");
+	jPanel32.add(deviceChoice19);
+
+	deviceChoice20.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice20.setIdentifier("");
+	deviceChoice20.setLabelString("Trig. State: ");
+	deviceChoice20.setOffsetNid(64);
+	deviceChoice20.setUpdateIdentifier("");
+	jPanel32.add(deviceChoice20);
+
+	deviceField30.setIdentifier("");
+	deviceField30.setLabelString("DAC Offset: ");
+	deviceField30.setNumCols(6);
+	deviceField30.setOffsetNid(67);
+	jPanel32.add(deviceField30);
+
+	jPanel31.add(jPanel32);
+
+	deviceField31.setIdentifier("");
+	deviceField31.setLabelString("Trig. Treshold  Level: ");
+	deviceField31.setNumCols(6);
+	deviceField31.setOffsetNid(65);
+	jPanel33.add(deviceField31);
+
+	deviceField32.setIdentifier("");
+	deviceField32.setLabelString("Trig. Treshold Samples: ");
+	deviceField32.setNumCols(6);
+	deviceField32.setOffsetNid(66);
+	jPanel33.add(deviceField32);
+
+	jPanel31.add(jPanel33);
+
+	jTabbedPane1.addTab("Ch7", jPanel31);
+
+	jPanel34.setLayout(new java.awt.GridLayout(2, 1));
+
+	deviceChoice21.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice21.setIdentifier("");
+	deviceChoice21.setLabelString("State: ");
+	deviceChoice21.setOffsetNid(70);
+	deviceChoice21.setUpdateIdentifier("");
+	jPanel35.add(deviceChoice21);
+
+	deviceChoice22.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice22.setIdentifier("");
+	deviceChoice22.setLabelString("Trig. State: ");
+	deviceChoice22.setOffsetNid(71);
+	deviceChoice22.setUpdateIdentifier("");
+	jPanel35.add(deviceChoice22);
+
+	deviceField33.setIdentifier("");
+	deviceField33.setLabelString("DAC Offset: ");
+	deviceField33.setNumCols(6);
+	deviceField33.setOffsetNid(74);
+	jPanel35.add(deviceField33);
+
+	jPanel34.add(jPanel35);
+
+	deviceField34.setIdentifier("");
+	deviceField34.setLabelString("Trig. Treshold  Level: ");
+	deviceField34.setNumCols(6);
+	deviceField34.setOffsetNid(72);
+	jPanel36.add(deviceField34);
+
+	deviceField35.setIdentifier("");
+	deviceField35.setLabelString("Trig. Treshold Samples: ");
+	deviceField35.setNumCols(6);
+	deviceField35.setOffsetNid(73);
+	jPanel36.add(deviceField35);
+
+	jPanel34.add(jPanel36);
+
+	jTabbedPane1.addTab("Ch8", jPanel34);
+
+	jPanel5.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+	jTabbedPane1.getAccessibleContext().setAccessibleName("Ch 2");
+
+	jPanel4.add(jPanel5, java.awt.BorderLayout.SOUTH);
+
+	jPanel2.add(jPanel4, java.awt.BorderLayout.SOUTH);
+
+	getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
 
     }// </editor-fold>//GEN-END:initComponents
 

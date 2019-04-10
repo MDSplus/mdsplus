@@ -23,10 +23,10 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1ShowVm.C
-        Show virtual memory zone
-                SHOW_VM([print-level], [selection-mask])
+	Show virtual memory zone
+	        SHOW_VM([print-level], [selection-mask])
 
-        Ken Klare, LANL CTR-7   (c)1989,1990
+	Ken Klare, LANL CTR-7   (c)1989,1990
 */
 
 #include <STATICdef.h>

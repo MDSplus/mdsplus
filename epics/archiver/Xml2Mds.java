@@ -23,7 +23,7 @@ class Xml2Mds
 	    System.exit(0);
 	}
 	Vector groupV = new Vector();
-        String xmlFile = args[0];
+	String xmlFile = args[0];
 	String expName = args[1].trim();
 	if(args.length == 3 && args[2].compareToIgnoreCase("debug") == 0 ) debug = true;
 	Tree tree = null;
@@ -64,7 +64,7 @@ class Xml2Mds
 		String systemName = st1.nextToken();
 		if(groupV.indexOf(systemName) == -1)
 		{
-                    if (debug) System.out.println("System : " + systemName);
+	            if (debug) System.out.println("System : " + systemName);
 		    tree.addNode("."+systemName, "STRUCTURE");
 		    tree.addNode("."+systemName+":DISABLE", "NUMERIC");
 		    groupV.addElement(systemName);
@@ -79,7 +79,7 @@ class Xml2Mds
 
 		if(groupV.indexOf(subsystemName) == -1)
 		{
-                    if (debug) System.out.println("SubSystem : "+subsystemName);
+	            if (debug) System.out.println("SubSystem : "+subsystemName);
 		    tree.addNode("."+subsystemName, "STRUCTURE");
 		    tree.addNode("."+subsystemName+":DISABLE", "NUMERIC");
 		    groupV.addElement(subsystemName);
@@ -95,10 +95,10 @@ class Xml2Mds
 		    tree.addNode("."+componentPath+":DISABLE", "NUMERIC");
 		    groupV.addElement(componentPath);
 		}
-	   	//Group hierarchy checked. Add var specific nodes
-                num_pv_node++;
+		//Group hierarchy checked. Add var specific nodes
+	        num_pv_node++;
 		String name = st2.nextToken();
- 		String path = ("."+componentPath+"."+name).trim();
+		String path = ("."+componentPath+"."+name).trim();
 
 		if (debug) System.out.println("Var name : "+name);
 
@@ -119,12 +119,12 @@ class Xml2Mds
 		tree.addNode(path+":DESCRIPTION", "TEXT");
 		if(currDescription != null)
 		{
-  		    currNode = tree.getNode(path+":DESCRIPTION");
+		    currNode = tree.getNode(path+":DESCRIPTION");
 		    currNode.putData(new MDSplus.String(currDescription));
 		}
 		if(currSignalName != null)
 		{
-  		    currNode = tree.getNode(path+":REC_SIGNAL");
+		    currNode = tree.getNode(path+":REC_SIGNAL");
 		    currNode.putData(new MDSplus.String(currSignalName));
 		}
 		tree.addNode(path+":ALARM", "SIGNAL");
@@ -144,12 +144,12 @@ class Xml2Mds
 		currNode.addTag(tagName);
 	    }
 	    tree.write();
-            System.out.println("Added " + num_pv_node + " process variable nodes ");
+	    System.out.println("Added " + num_pv_node + " process variable nodes ");
 	}
 	catch(Exception exc)
 	{
 	     try{
-	    	tree.write();
+		tree.write();
 	     }catch(Exception exc1){}
 	     System.out.println("Error on eperiment "+expName+" : "+exc);
 	}

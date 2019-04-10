@@ -28,11 +28,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	Giulio Fregonese
+		Author:	Giulio Fregonese
 
 		Date:    6-OCT-90
 
-    		Purpose: Perform device specific error handling
+		Purpose: Perform device specific error handling
 
 ------------------------------------------------------------------------------
 

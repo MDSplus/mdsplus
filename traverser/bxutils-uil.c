@@ -1627,7 +1627,7 @@ XtPointer DOUBLE ARGLIST((val)) GRA(double, val)
 /*      Function Name:	BxStoreWidgetId
  *
  *      Description:   	This functions expects an address of a variable
- *		       	in client data.  The size of the variable must be
+ *			in client data.  The size of the variable must be
  *                      large enough to hold a Widget ID.  BxStoreWidgetId
  *                      copies the Widget ID to the variable whose address
  *                      is passed in client data.

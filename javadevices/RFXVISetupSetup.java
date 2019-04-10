@@ -64,7 +64,7 @@ public class RFXVISetupSetup extends DeviceSetup
     deviceChoice1.setOffsetNid(2);
     deviceChoice1.setLabelString("FIlling Type: ");
     deviceChoice1.setChoiceItems(new String[] {"Open Loop Continuous Flux", "Closed Loop Continuous Flux", "Pulsed Flux", "Fixed Charge", "Open Loop Continuous Flux + Pulsed Flux",
-        "Closed Loop Continuous Flux + Pulsed Flux", "Fixed Charge + Pulsed Flux"});
+	"Closed Loop Continuous Flux + Pulsed Flux", "Fixed Charge + Pulsed Flux"});
     deviceChoice1.setUpdateIdentifier("");
     deviceChoice1.setIdentifier("");
     deviceField3.setOffsetNid(3);

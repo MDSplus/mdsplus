@@ -169,7 +169,7 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
     }
     if STATUS_OK {
       if (utility_update) {
-        NCI *nci = &TreeGetThreadStatic()->TemplateNci;
+	NCI *nci = &TreeGetThreadStatic()->TemplateNci;
 	local_nci.flags = nci->flags;
 	bitassign(0, local_nci.flags, NciM_VERSIONS);
 	local_nci.owner_identifier = nci->owner_identifier;
@@ -272,19 +272,19 @@ static int CheckUsage(PINO_DATABASE * dblist, NID * nid_ptr, NCI * nci)
 {
 
 #define is_expression ((nci->dtype == DTYPE_FUNCTION) ||\
-                       (nci->dtype == DTYPE_NID) ||\
-                       (nci->dtype == DTYPE_PATH) ||\
-                       (nci->dtype == DTYPE_IDENT) ||\
-                       (nci->dtype == DTYPE_CALL))
+	               (nci->dtype == DTYPE_NID) ||\
+	               (nci->dtype == DTYPE_PATH) ||\
+	               (nci->dtype == DTYPE_IDENT) ||\
+	               (nci->dtype == DTYPE_CALL))
 
 #define check(boolean) (boolean) ? TreeNORMAL : TreeINVDTPUSG;
 
 #define is_numeric ( ((nci->dtype >= DTYPE_BU) &&\
-                      (nci->dtype <= DTYPE_DC)) ||\
-                     ((nci->dtype >= DTYPE_OU) &&\
-                      (nci->dtype <= DTYPE_HC)) ||\
-                     ((nci->dtype >= DTYPE_FS) &&\
-                      (nci->dtype <= DTYPE_FTC)) || (nci->dtype == DTYPE_DSC) )
+	              (nci->dtype <= DTYPE_DC)) ||\
+	             ((nci->dtype >= DTYPE_OU) &&\
+	              (nci->dtype <= DTYPE_HC)) ||\
+	             ((nci->dtype >= DTYPE_FS) &&\
+	              (nci->dtype <= DTYPE_FTC)) || (nci->dtype == DTYPE_DSC) )
 
   NODE *node_ptr;
   int status;

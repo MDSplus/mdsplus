@@ -22,31 +22,31 @@ public abstract class Array extends Data
     public Array(){}
     public Array(int []dims, Data help, Data units, Data error, Data validation)
     {
-        super(help, units, error, validation);
-        clazz = CLASS_A;
-        this.dims = dims;
+	super(help, units, error, validation);
+	clazz = CLASS_A;
+	this.dims = dims;
     }
 
     public  int[] getShape()
     {
-        return dims;
+	return dims;
     }
     public void setShape(int []newDims) throws MdsException
     {
-        int size = 1;
-        for(int i = 0; i < newDims.length; i++)
-            size *= newDims[i];
-        if (getSize() != size)
-            throw new MdsException("Invalid dimensions passed to Array.setShape");
-        dims = new int[newDims.length];
-        System.arraycopy(newDims, 0, dims, 0, newDims.length);
+	int size = 1;
+	for(int i = 0; i < newDims.length; i++)
+	    size *= newDims[i];
+	if (getSize() != size)
+	    throw new MdsException("Invalid dimensions passed to Array.setShape");
+	dims = new int[newDims.length];
+	System.arraycopy(newDims, 0, dims, 0, newDims.length);
     }
     public int getSize()
     {
-        int size = 1;
-        for(int i = 0; i< dims.length; i++)
-            size *= dims[i];
-        return size;
+	int size = 1;
+	for(int i = 0; i< dims.length; i++)
+	    size *= dims[i];
+	return size;
     }
     public abstract Data getElementAt(int idx);
     protected abstract Array getPortionAt(int startIdx, int []newDims, int newSize) throws MdsException;
@@ -65,71 +65,71 @@ public abstract class Array extends Data
      */
     public Data getElementAt(int[] getDims) throws MdsException
     {
-        if(getDims.length > dims.length)
-            throw new MdsException("Invalid dimension in Array.getElementAt");
-        for(int i = 0; i < getDims.length; i++)
-            if(getDims[i] < 0 || getDims[i] >= dims[i])
-                throw new MdsException("Invalid dimension in Array.getElementAt");
-        //Prepare actial row dimensions (in elements)
-        int []rowDims = new int[dims.length];
-        rowDims[rowDims.length - 1] = 1;
-        for(int i = dims.length-2; i>=0; i--)
-            rowDims[i] = rowDims[i+1]*dims[i+1];
-        //Compute startIdx of selected data portion
-        int startIdx = 0;
-        for(int i = 0; i < getDims.length; i++)
-            startIdx += getDims[i] * rowDims[i];
-        if(getDims.length == dims.length) //If a single element is to be returned
-            return getElementAt(startIdx);
-        else
-        {
-            int []newDims = new int[dims.length - getDims.length];
-            System.arraycopy(dims, getDims.length, newDims, 0, dims.length - getDims.length);
-            int newSize = 1;
-            for(int i = 0; i < newDims.length; i++)
-                newSize *= newDims[i];
-            return getPortionAt(startIdx, newDims, newSize);
-        }
+	if(getDims.length > dims.length)
+	    throw new MdsException("Invalid dimension in Array.getElementAt");
+	for(int i = 0; i < getDims.length; i++)
+	    if(getDims[i] < 0 || getDims[i] >= dims[i])
+	        throw new MdsException("Invalid dimension in Array.getElementAt");
+	//Prepare actial row dimensions (in elements)
+	int []rowDims = new int[dims.length];
+	rowDims[rowDims.length - 1] = 1;
+	for(int i = dims.length-2; i>=0; i--)
+	    rowDims[i] = rowDims[i+1]*dims[i+1];
+	//Compute startIdx of selected data portion
+	int startIdx = 0;
+	for(int i = 0; i < getDims.length; i++)
+	    startIdx += getDims[i] * rowDims[i];
+	if(getDims.length == dims.length) //If a single element is to be returned
+	    return getElementAt(startIdx);
+	else
+	{
+	    int []newDims = new int[dims.length - getDims.length];
+	    System.arraycopy(dims, getDims.length, newDims, 0, dims.length - getDims.length);
+	    int newSize = 1;
+	    for(int i = 0; i < newDims.length; i++)
+	        newSize *= newDims[i];
+	    return getPortionAt(startIdx, newDims, newSize);
+	}
     }
 
     public void setElementAt(int[] setDims, Data data) throws MdsException
     {
-        if(data.dtype != dtype || (data.clazz != CLASS_S || data.clazz != CLASS_A))
-            throw new MdsException("Invalid data type in Array.setElementAt");
-        if(setDims.length > dims.length)
-           throw new MdsException("Invalid passed dimension in Array.setElementAt");
-        for(int i = 0; i < setDims.length; i++)
-            if(setDims[i] < 0 || setDims[i] >= dims[i])
-                throw new MdsException("Invalid passed dimension in Array.setElementAt");
+	if(data.dtype != dtype || (data.clazz != CLASS_S || data.clazz != CLASS_A))
+	    throw new MdsException("Invalid data type in Array.setElementAt");
+	if(setDims.length > dims.length)
+	   throw new MdsException("Invalid passed dimension in Array.setElementAt");
+	for(int i = 0; i < setDims.length; i++)
+	    if(setDims[i] < 0 || setDims[i] >= dims[i])
+	        throw new MdsException("Invalid passed dimension in Array.setElementAt");
        //prepare actual row dimension
-        int [] rowDims = new int[dims.length];
-        rowDims[rowDims.length - 2] = 1;
-        for(int i = rowDims.length - 2; i >= 0; i--)
-            rowDims[i] = rowDims[i+1] * dims[i];
-        //compute start idx of selected portion
-        int startIdx = 0;
-        for(int i = 0; i < setDims.length; i++)
-            startIdx += setDims[i] * rowDims[i];
-        if(data instanceof Array)
-        {
-            Array setArray = (Array)data;
-            if(setArray.dims.length != dims.length - setDims.length)
-                throw new MdsException("Invalide dimension for new subarray in Array.setElementAt");
-            for(int i = 0; i < setArray.dims.length; i++)
-                if(setArray.dims[i] != dims[i+setDims.length])
-                    throw new MdsException("Invalide dimension for new subarray in Array.setElementAt");
+	int [] rowDims = new int[dims.length];
+	rowDims[rowDims.length - 2] = 1;
+	for(int i = rowDims.length - 2; i >= 0; i--)
+	    rowDims[i] = rowDims[i+1] * dims[i];
+	//compute start idx of selected portion
+	int startIdx = 0;
+	for(int i = 0; i < setDims.length; i++)
+	    startIdx += setDims[i] * rowDims[i];
+	if(data instanceof Array)
+	{
+	    Array setArray = (Array)data;
+	    if(setArray.dims.length != dims.length - setDims.length)
+	        throw new MdsException("Invalide dimension for new subarray in Array.setElementAt");
+	    for(int i = 0; i < setArray.dims.length; i++)
+	        if(setArray.dims[i] != dims[i+setDims.length])
+	            throw new MdsException("Invalide dimension for new subarray in Array.setElementAt");
 //Dimensionality check passed: copy passed Array
-            int setSize = 1;
-            for(int i = 0; i < setDims.length; i++)
-                setSize *= setDims[i];
-                    setPortionAt(setArray, startIdx, setSize);
-        }
-        else //data instanceof Scalar
-        {
-            //Propagate the passed scalar to all the remaining dimensions
-            for(int i = 0; i < rowDims[setDims.length - 1]; i++)
-                setElementAt(startIdx + i, data);
-        }
+	    int setSize = 1;
+	    for(int i = 0; i < setDims.length; i++)
+	        setSize *= setDims[i];
+	            setPortionAt(setArray, startIdx, setSize);
+	}
+	else //data instanceof Scalar
+	{
+	    //Propagate the passed scalar to all the remaining dimensions
+	    for(int i = 0; i < rowDims[setDims.length - 1]; i++)
+	        setElementAt(startIdx + i, data);
+	}
     }
 
 }

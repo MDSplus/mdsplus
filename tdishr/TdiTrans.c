@@ -23,55 +23,55 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Trans.C
-        Generic transformation function possibly using a mask or specifying a dimension.
-        Also includes code for C routines: ALL ANY COUNT FIRSTLOC LASTLOC REPLICATE SPREAD.
-        Note: DIM begins at zero, but F90 begins at one.
-        Note: MASK may be any logical of sufficient length or is converted.
+	Generic transformation function possibly using a mask or specifying a dimension.
+	Also includes code for C routines: ALL ANY COUNT FIRSTLOC LASTLOC REPLICATE SPREAD.
+	Note: DIM begins at zero, but F90 begins at one.
+	Note: MASK may be any logical of sufficient length or is converted.
 
-                result = xx(MASK, [DIM])
-        MASK1:  ALL ANY COUNT
-        type logical output, scalar for no DIM or vector input, else rank (n-1) with DIM-th dimension missing.
+	        result = xx(MASK, [DIM])
+	MASK1:  ALL ANY COUNT
+	type logical output, scalar for no DIM or vector input, else rank (n-1) with DIM-th dimension missing.
 
-                result = xx(ARRAY, [DIM], [MASK])
-        MASK3:  MAXVAL MEAN MINVAL PRODUCT RMS STD_DEV SUM
-        type numeric output, scalar for no DIM or vector input, else rank (n-1) with DIM-th dimension missing.
+	        result = xx(ARRAY, [DIM], [MASK])
+	MASK3:  MAXVAL MEAN MINVAL PRODUCT RMS STD_DEV SUM
+	type numeric output, scalar for no DIM or vector input, else rank (n-1) with DIM-th dimension missing.
 
-                result = xx(ARRAY, [DIM], [MASK])
-        MASK3:  ACCUMULATE
-        type numeric output of input shape, rank n.
+	        result = xx(ARRAY, [DIM], [MASK])
+	MASK3:  ACCUMULATE
+	type numeric output of input shape, rank n.
 
-                rank-n = xx(MASK, [DIM])
-        MASK1:  FIRSTLOC LASTLOC
-        type logical output of input shape, rank n.
+	        rank-n = xx(MASK, [DIM])
+	MASK1:  FIRSTLOC LASTLOC
+	type logical output of input shape, rank n.
 
-                rank-n = xx(ARRAY, DIM, [const])
-        SIGN:   DERIVATIVE, INTEGRAL, RC_DROOP
-        type numeric output of input shape, rank n, mask set to signal axis.
+	        rank-n = xx(ARRAY, DIM, [const])
+	SIGN:   DERIVATIVE, INTEGRAL, RC_DROOP
+	type numeric output of input shape, rank n, mask set to signal axis.
 
-                rank-n = REPLICATE(ARRAY, DIM, NCOPIES)
-        SIGN:   REPLICATE
-        type same as ARRAY, rank n, replicates DIM-th dimension by a factor.
+	        rank-n = REPLICATE(ARRAY, DIM, NCOPIES)
+	SIGN:   REPLICATE
+	type same as ARRAY, rank n, replicates DIM-th dimension by a factor.
 
-                rank-(n+1) = SPREAD(ARRAY, DIM, NCOPIES)
-        SIGN:   SPREAD
-        type same as ARRAY, rank n+1, spreads and jams in a dimension before DIM-th, DIM = 0..rank.
+	        rank-(n+1) = SPREAD(ARRAY, DIM, NCOPIES)
+	SIGN:   SPREAD
+	type same as ARRAY, rank n+1, spreads and jams in a dimension before DIM-th, DIM = 0..rank.
 
-                rank1 = xx(ARRAY, [MASK])
-        MASK3L:  MAXLOC MINLOC
-        vector offsets from first element.
+	        rank1 = xx(ARRAY, [MASK])
+	MASK3L:  MAXLOC MINLOC
+	vector offsets from first element.
 
-        For logical array V[3,4,5], steps in unit sizes:
-        loop    count @step     no DIM  DIM=0   optim   DIM=1   DIM=2
-        outer   aft             1 @xx   20 @3   1 @xx   5 @12   1 @60   DIM dimension and number of results
-        middle  bef             1 @1    1 @3    20 @3   3 @1    12 @1   product of dims after DIM
-        inner   dim             60 @1   3 @1    3 @1    4 @3    5 @12   product of dims before DIM
-        Example, ALL(V,0) chooses elements: [0,1,2] [3,4,5] ...
-        Example, ALL(V,1) chooses elements: [0,3,6,9] [1,4,7,10] [2,5,8,11] / [12,15,18,21] ...
-        Example, ALL(V,2) chooses elements: [0,12,24,36,48] [1,13...], ... [11,...]
+	For logical array V[3,4,5], steps in unit sizes:
+	loop    count @step     no DIM  DIM=0   optim   DIM=1   DIM=2
+	outer   aft             1 @xx   20 @3   1 @xx   5 @12   1 @60   DIM dimension and number of results
+	middle  bef             1 @1    1 @3    20 @3   3 @1    12 @1   product of dims after DIM
+	inner   dim             60 @1   3 @1    3 @1    4 @3    5 @12   product of dims before DIM
+	Example, ALL(V,0) chooses elements: [0,1,2] [3,4,5] ...
+	Example, ALL(V,1) chooses elements: [0,3,6,9] [1,4,7,10] [2,5,8,11] / [12,15,18,21] ...
+	Example, ALL(V,2) chooses elements: [0,12,24,36,48] [1,13...], ... [11,...]
 
-        Ken Klare, LANL P-4     (c)1989,1990,1991
-        NEED units for DERIVATIVE INTEGRAL.
-        NEED to know about REPLICATE and SPREAD with subscript ranges.
+	Ken Klare, LANL P-4     (c)1989,1990,1991
+	NEED units for DERIVATIVE INTEGRAL.
+	NEED to know about REPLICATE and SPREAD with subscript ranges.
 */
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
@@ -124,26 +124,26 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
   dtype_t out_dtype;
 
 	/******************************************
-        Fetch signals and data and data's category.
-        ******************************************/
+	Fetch signals and data and data's category.
+	******************************************/
   status = TdiGetArgs(opcode, narg, list, sig, uni, dat, cats);
 
 	/******************************************
-        Adjust categories need to match data types.
-        ******************************************/
+	Adjust categories need to match data types.
+	******************************************/
   if STATUS_OK
     status = (*pfun->f2) (narg, uni, dat, cats, 0);
 
 	/******************************
-        Do the needed type conversions.
-        ******************************/
+	Do the needed type conversions.
+	******************************/
   if STATUS_OK
     status = TdiCvtArgs(narg, dat, cats);
 
 	/********************
-        Get dimension number.
-        Get mask pointer.
-        ********************/
+	Get dimension number.
+	Get mask pointer.
+	********************/
   if (pfun->f2 == Tdi2Mask2) {
     if (narg > 1 && cats[1].in_dtype != DTYPE_MISSING)
       pmask = dat[1].pointer;
@@ -166,8 +166,8 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
   }
 
 	/**************************
-        Get rank,counts, and steps.
-        **************************/
+	Get rank,counts, and steps.
+	**************************/
   pa = (array_bounds *) dat[0].pointer;
   if STATUS_OK
     switch (pa->class) {
@@ -223,8 +223,8 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     step_dim = count_bef;
     step_aft = count_dim * count_bef;
 		/************
-                Optimization.
-                ************/
+	        Optimization.
+	        ************/
     if (dim == 0 && opcode != OPC_REPLICATE && opcode != OPC_SPREAD) {
       count_bef = count_aft;
       count_aft = 1;
@@ -234,8 +234,8 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
   }
 
 	/******************
-        Find correct shape.
-        ******************/
+	Find correct shape.
+	******************/
   if (STATUS_NOT_OK)
     goto err;
   head = (unsigned short)(sizeof(struct descriptor_a) +
@@ -245,8 +245,8 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
   out_dtype = cats[narg].out_dtype;
 
 	/****************************
-        Same shape as input, cleared.
-        ****************************/
+	Same shape as input, cleared.
+	****************************/
   psig = (struct descriptor_signal *)sig[0].pointer;
   if (psig)
     ndim = psig->ndesc - 2;
@@ -258,8 +258,8 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
       status = TdiConvert(&zero, out_ptr->pointer MDS_END_ARG);
   }
 	/***************************
-        Shape multiplied for DIM-th.
-        ***************************/
+	Shape multiplied for DIM-th.
+	***************************/
   else if (opcode == OPC_REPLICATE) {
     if (dim < ndim)
       psig->dimensions[dim] = 0;
@@ -276,8 +276,8 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     status = MdsGet1DxA((struct descriptor_a *)&arr, &digits, &out_dtype, out_ptr);
   }
 	/*************************************
-        Shape gets new dimension after DIM-th.
-        *************************************/
+	Shape gets new dimension after DIM-th.
+	*************************************/
   else if (opcode == OPC_SPREAD) {
     if (ndim > dim) {
       EMPTYXD(tmpxd);
@@ -327,15 +327,15 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
       status = MdsGet1DxA((struct descriptor_a *)&arr, &digits, &out_dtype, out_ptr);
   }
 	/***************
-        Overwrite input.
-        ***************/
+	Overwrite input.
+	***************/
   else if (opcode == OPC_ACCUMULATE) {
     MdsFree1Dx(out_ptr, NULL);
     *out_ptr = dat[0];
   }
 	/*******************
-        Same shape as input.
-        *******************/
+	Same shape as input.
+	*******************/
   else if (pfun->f2 == Tdi2Sign) {
     if (psig && rank <= ndim)
       pmask = psig->dimensions[dim];
@@ -344,8 +344,8 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     status = MdsGet1DxA((struct descriptor_a *)pa, &digits, &out_dtype, out_ptr);
   }
 	/****************
-        Subscript vector.
-        ****************/
+	Subscript vector.
+	****************/
   else if (pfun->f2 == Tdi2Mask2) {
     psig = 0;
     _MOVC3(head, (char *)pa, (char *)&arr);
@@ -353,8 +353,8 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     status = MdsGet1DxA((struct descriptor_a *)&arr, &digits, &out_dtype, out_ptr);
   }
 	/*******************
-        Rank reduced by one.
-        *******************/
+	Rank reduced by one.
+	*******************/
   else if (dim >= 0 && pa->aflags.coeff && rank > 1) {
     if (dim < ndim)
       --psig->ndesc;
@@ -369,8 +369,8 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     status = MdsGet1DxA((struct descriptor_a *)&arr, &digits, &out_dtype, out_ptr);
   }
 	/*************
-        Scalar result.
-        *************/
+	Scalar result.
+	*************/
   else {
     psig = 0;
     status = MdsGet1DxS(&digits, &out_dtype, out_ptr);
@@ -379,9 +379,9 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     goto err;
 
 	/****************************************
-        Adjust offset and test if we need bounds.
-        Simple array if 1D and no bounds.
-        ****************************************/
+	Adjust offset and test if we need bounds.
+	Simple array if 1D and no bounds.
+	****************************************/
   pd = (array_bounds *) out_ptr->pointer;
   if (pd->class == CLASS_A && pd->aflags.coeff) {
     if (pd->aflags.bounds) {
@@ -398,16 +398,16 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
   }
 
 	/***********
-        Act on data.
-        ***********/
+	Act on data.
+	***********/
   status =
       (*pfun->f3) (pa, pmask, pd, count_dim, count_bef, count_aft, step_dim, step_bef, step_aft);
   if (STATUS_NOT_OK)
     goto err;
 
 	/*******************************
-        Offset list from overall offset.
-        *******************************/
+	Offset list from overall offset.
+	*******************************/
   if (pfun->f2 == Tdi2Mask2 && rank > 1) {
     int *pout = (int *)pd->pointer;
     int *pin = (int *)&pa->m[0];
@@ -427,8 +427,8 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 
  err:
 	/********************
-        Free all temporaries.
-        ********************/
+	Free all temporaries.
+	********************/
   for (j = narg; --j >= 0;) {
     if (sig[j].pointer)
       MdsFree1Dx(&sig[j], NULL);
@@ -441,8 +441,8 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 }
 
 /*---------------------------------------------------------------------------
-        F90 transformation of logical test of all true.
-                logical = ALL(mask, [dim])
+	F90 transformation of logical test of all true.
+	        logical = ALL(mask, [dim])
 */
 int Tdi3All(struct descriptor *in_ptr,
 	    struct descriptor *pmask __attribute__ ((unused)),
@@ -465,8 +465,8 @@ int Tdi3All(struct descriptor *in_ptr,
 }
 
 /*---------------------------------------------------------------------------
-        F90 transformation of logical test of ANY true.
-                logical = ANY(mask, [dim])
+	F90 transformation of logical test of ANY true.
+	        logical = ANY(mask, [dim])
 */
 int Tdi3Any(struct descriptor *in_ptr,
 	    struct descriptor *pmask __attribute__ ((unused)),
@@ -489,9 +489,9 @@ int Tdi3Any(struct descriptor *in_ptr,
 }
 
 /*---------------------------------------------------------------------------
-        F90 transformation of number of trues to list.
-                scalar-long = COUNT(mask)
-                vector-long = COUNT(mask, dim)
+	F90 transformation of number of trues to list.
+	        scalar-long = COUNT(mask)
+	        vector-long = COUNT(mask, dim)
 */
 int Tdi3Count(struct descriptor *in_ptr,
 	      struct descriptor *pmask __attribute__ ((unused)),
@@ -516,8 +516,8 @@ int Tdi3Count(struct descriptor *in_ptr,
 }
 
 /*---------------------------------------------------------------------------
-        F8X-extension transformation to set first true of array or DIM reduced.
-                array-logical = FIRSTLOC(mask, [dim])
+	F8X-extension transformation to set first true of array or DIM reduced.
+	        array-logical = FIRSTLOC(mask, [dim])
 */
 int Tdi3FirstLoc(struct descriptor *in_ptr,
 		 struct descriptor *pmask __attribute__ ((unused)),
@@ -541,8 +541,8 @@ int Tdi3FirstLoc(struct descriptor *in_ptr,
 }
 
 /*---------------------------------------------------------------------------
-        F8X-extension transformation to set last true of array or DIM reduced.
-                array-logical = LASTLOC(mask, [dim])
+	F8X-extension transformation to set last true of array or DIM reduced.
+	        array-logical = LASTLOC(mask, [dim])
 */
 int Tdi3LastLoc(struct descriptor *in_ptr,
 		struct descriptor *pmask __attribute__ ((unused)),
@@ -567,8 +567,8 @@ int Tdi3LastLoc(struct descriptor *in_ptr,
 }
 
 /*---------------------------------------------------------------------------
-        F8X-extension transformation to extend a dimension of array or scalar.
-                array-rank-n = REPLICATE(array, dim, ncopies)
+	F8X-extension transformation to extend a dimension of array or scalar.
+	        array-rank-n = REPLICATE(array, dim, ncopies)
 */
 int Tdi3Replicate(struct descriptor *in_ptr,
 		  struct descriptor *pmask,
@@ -591,8 +591,8 @@ int Tdi3Replicate(struct descriptor *in_ptr,
 }
 
 /*---------------------------------------------------------------------------
-        F90 transformation to add a dimension before one of array or scalar.
-                array-rank-(n+1) = SPREAD(array, dim, ncopies)
+	F90 transformation to add a dimension before one of array or scalar.
+	        array-rank-(n+1) = SPREAD(array, dim, ncopies)
 */
 int Tdi3Spread(struct descriptor *in_ptr,
 	       struct descriptor *pmask,

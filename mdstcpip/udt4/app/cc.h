@@ -20,22 +20,22 @@ public:
    {
       if (ack == m_iLastACK)
       {
-         if (3 == ++ m_iDupACKCount)
-            DupACKAction();
-         else if (m_iDupACKCount > 3)
-            m_dCWndSize += 1.0;
-         else
-            ACKAction();
+	 if (3 == ++ m_iDupACKCount)
+	    DupACKAction();
+	 else if (m_iDupACKCount > 3)
+	    m_dCWndSize += 1.0;
+	 else
+	    ACKAction();
       }
       else
       {
-         if (m_iDupACKCount >= 3)
-            m_dCWndSize = m_issthresh;
+	 if (m_iDupACKCount >= 3)
+	    m_dCWndSize = m_issthresh;
 
-         m_iLastACK = ack;
-         m_iDupACKCount = 1;
+	 m_iLastACK = ack;
+	 m_iDupACKCount = 1;
 
-         ACKAction();
+	 ACKAction();
       }
    }
 
@@ -43,7 +43,7 @@ public:
    {
       m_issthresh = getPerfInfo()->pktFlightSize / 2;
       if (m_issthresh < 2)
-         m_issthresh = 2;
+	 m_issthresh = 2;
 
       m_bSlowStart = true;
       m_dCWndSize = 2.0;
@@ -54,13 +54,13 @@ protected:
    {
       if (m_bSlowStart)
       {
-         m_dCWndSize += 1.0;
+	 m_dCWndSize += 1.0;
 
-         if (m_dCWndSize >= m_issthresh)
-            m_bSlowStart = false;
+	 if (m_dCWndSize >= m_issthresh)
+	    m_bSlowStart = false;
       }
       else
-         m_dCWndSize += 1.0/m_dCWndSize;
+	 m_dCWndSize += 1.0/m_dCWndSize;
    }
 
    virtual void DupACKAction()
@@ -69,7 +69,7 @@ protected:
 
       m_issthresh = getPerfInfo()->pktFlightSize / 2;
       if (m_issthresh < 2)
-         m_issthresh = 2;
+	 m_issthresh = 2;
 
       m_dCWndSize = m_issthresh + 3;
    }

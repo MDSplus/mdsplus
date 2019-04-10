@@ -188,7 +188,7 @@ if( streamingPort )
 
      switch(status)
      {
-	 	case 1: printf("get frame %d complete @ %.3f\n", frameNumber, timeStamp); break;
+		case 1: printf("get frame %d complete @ %.3f\n", frameNumber, timeStamp); break;
 		case 2: printf("get frame %d incomplete\n", frameNumber); break;
 		case 3: printf("get frame %d timeout\n", frameNumber); break;
 		default: printf("NEVER!\n"); break;
@@ -201,13 +201,13 @@ if( streamingPort )
 
 	 //STREAMING
 	 if(canStream==0)
-   	 {
+	 {
 	   unsigned int lowLim = 0;
 	   unsigned int highLim = 20000;
 	   camFrameTo8bit((unsigned short *)frame, 1920, 1080, (unsigned char *)frame8bit, 1, &lowLim, &highLim, 0, 32767);  //32767=max on Y14
 	   //  printf("LowLim:%d HighLim:%d",lowLim, highLim);
 	   camSendFrameOnTcp(&kSockHandle, width, height, frame8bit);
-      	  }
+	  }
 
       }// if(status==1)
 

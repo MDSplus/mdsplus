@@ -85,7 +85,7 @@ void _test_tree_open(const char *prot, const unsigned short port, const char* mo
     cnx->openTree(test,1);
 
     Data *args[] = { new Int32(5552368),
-                     new Float64(111.234) };
+	             new Float64(111.234) };
     cnx->put("test_cnx",(char*)"$+10",args,1);
     data = cnx->get("test_cnx");
     TEST1( data->getInt() == 5552378 && "$+10");

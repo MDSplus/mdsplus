@@ -103,7 +103,7 @@ const CPerfMon* CCC::getPerfInfo()
    {
       CUDT* u = CUDT::getUDTHandle(m_UDT);
       if (NULL != u)
-         u->sample(&m_PerfInfo, false);
+	 u->sample(&m_PerfInfo, false);
    }
    catch (...)
    {
@@ -209,11 +209,11 @@ void CUDTCC::onACK(int32_t ack)
 
       if (m_dCWndSize > m_dMaxCWndSize)
       {
-         m_bSlowStart = false;
-         if (m_iRcvRate > 0)
-            m_dPktSndPeriod = 1000000.0 / m_iRcvRate;
-         else
-            m_dPktSndPeriod = (m_iRTT + m_iRCInterval) / m_dCWndSize;
+	 m_bSlowStart = false;
+	 if (m_iRcvRate > 0)
+	    m_dPktSndPeriod = 1000000.0 / m_iRcvRate;
+	 else
+	    m_dPktSndPeriod = (m_iRTT + m_iRCInterval) / m_dCWndSize;
       }
    }
    else
@@ -242,7 +242,7 @@ void CUDTCC::onACK(int32_t ack)
       inc = pow(10.0, ceil(log10(B * m_iMSS * 8.0))) * 0.0000015 / m_iMSS;
 
       if (inc < min_inc)
-         inc = min_inc;
+	 inc = min_inc;
    }
 
    m_dPktSndPeriod = (m_dPktSndPeriod * m_iRCInterval) / (m_dPktSndPeriod * inc + m_iRCInterval);
@@ -256,9 +256,9 @@ void CUDTCC::onLoss(const int32_t* losslist, int)
       m_bSlowStart = false;
       if (m_iRcvRate > 0)
       {
-         // Set the sending rate to the receiving rate.
-         m_dPktSndPeriod = 1000000.0 / m_iRcvRate;
-         return;
+	 // Set the sending rate to the receiving rate.
+	 m_dPktSndPeriod = 1000000.0 / m_iRcvRate;
+	 return;
       }
       // If no receiving rate is observed, we have to compute the sending
       // rate according to the current window size, and decrease it
@@ -283,7 +283,7 @@ void CUDTCC::onLoss(const int32_t* losslist, int)
       srand(m_iLastDecSeq);
       m_iDecRandom = (int)ceil(m_iAvgNAKNum * (double(rand()) / RAND_MAX));
       if (m_iDecRandom < 1)
-         m_iDecRandom = 1;
+	 m_iDecRandom = 1;
    }
    else if ((m_iDecCount ++ < 5) && (0 == (++ m_iNAKCount % m_iDecRandom)))
    {
@@ -299,9 +299,9 @@ void CUDTCC::onTimeout()
    {
       m_bSlowStart = false;
       if (m_iRcvRate > 0)
-         m_dPktSndPeriod = 1000000.0 / m_iRcvRate;
+	 m_dPktSndPeriod = 1000000.0 / m_iRcvRate;
       else
-         m_dPktSndPeriod = m_dCWndSize / (m_iRTT + m_iRCInterval);
+	 m_dPktSndPeriod = m_dCWndSize / (m_iRTT + m_iRCInterval);
    }
    else
    {

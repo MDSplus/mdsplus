@@ -227,7 +227,7 @@ EXPORT int DMARead2(short *buffer, const char *fname, int *chan, int *samples, i
       }
       sam += (region[idx] * coeffs[i]);
       /*
-         printf("idx = %d src= %d ans = %f ", idx, (int)region[idx], sam);
+	 printf("idx = %d src= %d ans = %f ", idx, (int)region[idx], sam);
        */
     }
     /* printf("|"); */

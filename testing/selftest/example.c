@@ -60,9 +60,9 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 
     // test block explicit //
     BEGIN_TESTING(example2) {
-        int a, *b;
-        memcpy(b,&a,10000000000);
-        printf("I should be in segfault here...\n");
+	int a, *b;
+	memcpy(b,&a,10000000000);
+	printf("I should be in segfault here...\n");
     }
     END_TESTING;
 
@@ -71,10 +71,10 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
     TEST_FORK(0);
 
     BEGIN_TESTING(example3) {
-        int c=1;
-        TEST0(c==0 && "false");
-        test_pass_function();
-        test_fail_function();
+	int c=1;
+	TEST0(c==0 && "false");
+	test_pass_function();
+	test_fail_function();
     }
     END_TESTING;
 
@@ -83,8 +83,8 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 
     TEST_FORK(1);
     BEGIN_TESTING(timeout) {
-        printf(" ... child 3 ... \n");
-        sleep(30);
+	printf(" ... child 3 ... \n");
+	sleep(30);
     }
     END_TESTING;
 

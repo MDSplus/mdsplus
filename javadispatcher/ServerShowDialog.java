@@ -32,7 +32,7 @@ public class ServerShowDialog extends JPanel {
     public ServerShowDialog(java.awt.Frame parent, boolean modal) {
 //        super(parent, modal);
 //        this.setPreferredSize(new Dimension(700,500));
-        initComponents();
+	initComponents();
     }
 
     /** This method is called from within the constructor to
@@ -44,87 +44,87 @@ public class ServerShowDialog extends JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        startAllServer = new javax.swing.JButton();
-        killAllServer = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+	jPanel1 = new javax.swing.JPanel();
+	jButton1 = new javax.swing.JButton();
+	startAllServer = new javax.swing.JButton();
+	killAllServer = new javax.swing.JButton();
+	jButton2 = new javax.swing.JButton();
+	jPanel2 = new javax.swing.JPanel();
+	jScrollPane1 = new javax.swing.JScrollPane();
+	jTable1 = new javax.swing.JTable();
 
-        //setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        //setTitle("Servers List");
+	//setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+	//setTitle("Servers List");
 
-        jButton1.setText("Update");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-        jPanel1.add(jButton1);
+	jButton1.setText("Update");
+	jButton1.addActionListener(new java.awt.event.ActionListener() {
+	    public void actionPerformed(java.awt.event.ActionEvent evt) {
+	        jButton1ActionPerformed(evt);
+	    }
+	});
+	jPanel1.add(jButton1);
 
-        startAllServer.setLabel("Start All");
-        startAllServer.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                startAllServerActionPerformed(evt);
-            }
-        });
-        jPanel1.add(startAllServer);
+	startAllServer.setLabel("Start All");
+	startAllServer.addActionListener(new java.awt.event.ActionListener() {
+	    public void actionPerformed(java.awt.event.ActionEvent evt) {
+	        startAllServerActionPerformed(evt);
+	    }
+	});
+	jPanel1.add(startAllServer);
 
-        killAllServer.setLabel("Kill All");
-        killAllServer.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                killAllServerActionPerformed(evt);
-            }
-        });
-        jPanel1.add(killAllServer);
+	killAllServer.setLabel("Kill All");
+	killAllServer.addActionListener(new java.awt.event.ActionListener() {
+	    public void actionPerformed(java.awt.event.ActionEvent evt) {
+	        killAllServerActionPerformed(evt);
+	    }
+	});
+	jPanel1.add(killAllServer);
 
-        jButton2.setText("Cancel");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-        jPanel1.add(jButton2);
+	jButton2.setText("Cancel");
+	jButton2.addActionListener(new java.awt.event.ActionListener() {
+	    public void actionPerformed(java.awt.event.ActionEvent evt) {
+	        jButton2ActionPerformed(evt);
+	    }
+	});
+	jPanel1.add(jButton2);
 
-        //getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_END);
-        add(jPanel1, java.awt.BorderLayout.PAGE_END);
+	//getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_END);
+	add(jPanel1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel2.setLayout(new java.awt.BorderLayout());
+	jPanel2.setLayout(new java.awt.BorderLayout());
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
+	jTable1.setModel(new javax.swing.table.DefaultTableModel(
+	    new Object [][] {
 
-            },
-            new String [] {
-                "State", "Class Name", "Address", "Start", "Stop"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, true, true, false, false
-            };
+	    },
+	    new String [] {
+	        "State", "Class Name", "Address", "Start", "Stop"
+	    }
+	) {
+	    boolean[] canEdit = new boolean [] {
+	        false, true, true, false, false
+	    };
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jTable1.addMouseListener(new JTableButtonMouseListener(jTable1) );
-        jScrollPane1.setViewportView(jTable1);
-        jTable1.getColumnModel().getColumn(0).setMinWidth(50);
-        jTable1.getColumnModel().getColumn(0).setPreferredWidth(50);
-        jTable1.getColumnModel().getColumn(0).setMaxWidth(50);
-        jTable1.getColumnModel().getColumn(0).setCellRenderer(new StateRenderer());
-        jTable1.getColumnModel().getColumn(3).setCellEditor(null);
-        jTable1.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer());
-        jTable1.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
+	    public boolean isCellEditable(int rowIndex, int columnIndex) {
+	        return canEdit [columnIndex];
+	    }
+	});
+	jTable1.addMouseListener(new JTableButtonMouseListener(jTable1) );
+	jScrollPane1.setViewportView(jTable1);
+	jTable1.getColumnModel().getColumn(0).setMinWidth(50);
+	jTable1.getColumnModel().getColumn(0).setPreferredWidth(50);
+	jTable1.getColumnModel().getColumn(0).setMaxWidth(50);
+	jTable1.getColumnModel().getColumn(0).setCellRenderer(new StateRenderer());
+	jTable1.getColumnModel().getColumn(3).setCellEditor(null);
+	jTable1.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer());
+	jTable1.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
 
-        jPanel2.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+	jPanel2.add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-        //getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
-        add(jPanel2, java.awt.BorderLayout.CENTER);
+	//getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
+	add(jPanel2, java.awt.BorderLayout.CENTER);
 
-        //pack();
+	//pack();
     }// </editor-fold>//GEN-END:initComponents
 
 private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -149,7 +149,7 @@ private void startAllServerActionPerformed(java.awt.event.ActionEvent evt) {//GE
 // TODO add your handling code here:
     Iterator<ServerInfo> i = serversInfo.values().iterator();//GEN-LAST:event_startAllServerActionPerformed
     while( i.hasNext() )
-         i.next().startServer();
+	 i.next().startServer();
 }
 
     /**
@@ -157,17 +157,17 @@ private void startAllServerActionPerformed(java.awt.event.ActionEvent evt) {//GE
     */
 /*
     public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                ServerShowDialog dialog = new ServerShowDialog(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
+	java.awt.EventQueue.invokeLater(new Runnable() {
+	    public void run() {
+	        ServerShowDialog dialog = new ServerShowDialog(new javax.swing.JFrame(), true);
+	        dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+	            public void windowClosing(java.awt.event.WindowEvent e) {
+	                System.exit(0);
+	            }
+	        });
+	        dialog.setVisible(true);
+	    }
+	});
     }
 */
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -185,16 +185,16 @@ private void startAllServerActionPerformed(java.awt.event.ActionEvent evt) {//GE
    {
       try
       {
-        // Retrieve the pane's document object
+	// Retrieve the pane's document object
 //        StyledDocument doc = jTextPane1.getStyledDocument();
 //        doc.remove(0, doc.getLength());
 
-        loadServerState(address, info_port);
+	loadServerState(address, info_port);
       }
       catch(Exception exc)
       {
-        ShowMessage alert = new ShowMessage(exc.getMessage());
-        SwingUtilities.invokeLater(alert);
+	ShowMessage alert = new ShowMessage(exc.getMessage());
+	SwingUtilities.invokeLater(alert);
      }
   }
 
@@ -205,76 +205,76 @@ private void startAllServerActionPerformed(java.awt.event.ActionEvent evt) {//GE
 
   public void loadServerState(String address, int info_port) throws Exception
   {
-        this.address = address;
-        this.info_port = info_port;
+	this.address = address;
+	this.info_port = info_port;
 
-        Socket s = new Socket(address, info_port);
-        s.setSoTimeout(500);
-        DataOutputStream dos = new DataOutputStream(s.getOutputStream());
-        DataInputStream dis = new DataInputStream(s.getInputStream());
+	Socket s = new Socket(address, info_port);
+	s.setSoTimeout(500);
+	DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+	DataInputStream dis = new DataInputStream(s.getInputStream());
 
-        dos.writeUTF("servers");
-        int numServer = dis.readInt();
+	dos.writeUTF("servers");
+	int numServer = dis.readInt();
 
-        for(int i = 0; i < numServer; i++)
-        {
-        //System.out.println(dis.readUTF()+" "+dis.readUTF()+" "+dis.readBoolean()+" "+dis.readInt());
-        //addString(dis.readUTF(), dis.readUTF(), dis.readBoolean());
+	for(int i = 0; i < numServer; i++)
+	{
+	//System.out.println(dis.readUTF()+" "+dis.readUTF()+" "+dis.readBoolean()+" "+dis.readInt());
+	//addString(dis.readUTF(), dis.readUTF(), dis.readBoolean());
 
-            String serverClass = dis.readUTF();
-            String addressSrv = dis.readUTF();
-            boolean active = dis.readBoolean();
-            int aDoing = dis.readInt();
+	    String serverClass = dis.readUTF();
+	    String addressSrv = dis.readUTF();
+	    boolean active = dis.readBoolean();
+	    int aDoing = dis.readInt();
 
-            System.out.println("Class :"+ serverClass +"Server :"+ addressSrv +" doing " + aDoing );
+	    System.out.println("Class :"+ serverClass +"Server :"+ addressSrv +" doing " + aDoing );
 
-            if( serversInfo != null && addressSrv != null && addressSrv.length() != 0 )
-            {
-                //System.out.println(serversInfo.get(addressSrv));
-                DefaultTableModel md = ( DefaultTableModel ) this.jTable1.getModel();
+	    if( serversInfo != null && addressSrv != null && addressSrv.length() != 0 )
+	    {
+	        //System.out.println(serversInfo.get(addressSrv));
+	        DefaultTableModel md = ( DefaultTableModel ) this.jTable1.getModel();
 
-                ServerInfo si = serversInfo.get(addressSrv);
-                si.setActive(active);
+	        ServerInfo si = serversInfo.get(addressSrv);
+	        si.setActive(active);
 
 
-                int numRow = md.getRowCount();
-                int j;
+	        int numRow = md.getRowCount();
+	        int j;
 
-                for(j = 0; j < numRow; j++)
-                {
-                    Object o = md.getValueAt(j, 2);
-                    if(o != null && o.equals(addressSrv))
-                    {
-                        md.setValueAt(new Boolean(active), j, 0);
-                        break;
-                    }
-                }
+	        for(j = 0; j < numRow; j++)
+	        {
+	            Object o = md.getValueAt(j, 2);
+	            if(o != null && o.equals(addressSrv))
+	            {
+	                md.setValueAt(new Boolean(active), j, 0);
+	                break;
+	            }
+	        }
 
-                if(j == numRow)
-                    md.addRow( si.getAsArray() );
+	        if(j == numRow)
+	            md.addRow( si.getAsArray() );
 
-            }
+	    }
 
-        }
-        s.close();
+	}
+	s.close();
   }
 
 
   public class StateRenderer extends JPanel implements TableCellRenderer
   {
       public Component getTableCellRendererComponent(JTable table, Object value,
-                                                     boolean isSelected, boolean hasFocus,
-                                                     int row, int column)
+	                                             boolean isSelected, boolean hasFocus,
+	                                             int row, int column)
       {
-          if(value instanceof Boolean)
-          {
-              Boolean b = (Boolean)value;
-              if(b.booleanValue())
-                  setBackground(Color.GREEN);
-              else
-                  setBackground(Color.RED);
-          }
-          return this;
+	  if(value instanceof Boolean)
+	  {
+	      Boolean b = (Boolean)value;
+	      if(b.booleanValue())
+	          setBackground(Color.GREEN);
+	      else
+	          setBackground(Color.RED);
+	  }
+	  return this;
       }
    }
 
@@ -283,23 +283,23 @@ private void startAllServerActionPerformed(java.awt.event.ActionEvent evt) {//GE
   {
 
       public Component getTableCellRendererComponent(JTable table, Object value,
-                                                     boolean isSelected, boolean hasFocus,
-                                                     int row, int column)
+	                                             boolean isSelected, boolean hasFocus,
+	                                             int row, int column)
       {
-          /*
-          if (isSelected)
-          {
-              setForeground(table.getSelectionForeground());
-              setBackground(table.getSelectionBackground());
-          } else{
-              setForeground(table.getForeground());
-              setBackground(UIManager.getColor("Button.background"));
-          }
-         */
+	  /*
+	  if (isSelected)
+	  {
+	      setForeground(table.getSelectionForeground());
+	      setBackground(table.getSelectionBackground());
+	  } else{
+	      setForeground(table.getForeground());
+	      setBackground(UIManager.getColor("Button.background"));
+	  }
+	 */
       //    command = value.toString();
-          //setText( (value == null) ? "" : value.toString() );
-        //  return this;
-            return (Component)value;
+	  //setText( (value == null) ? "" : value.toString() );
+	//  return this;
+	    return (Component)value;
       }
 
    }
@@ -361,16 +361,16 @@ class JTableButtonMouseListener implements MouseListener {
 }
  class ShowMessage implements Runnable
     {
-        String msg;
+	String msg;
 
-        public ShowMessage(String msg)
-        {
-            this.msg = msg;
-        }
+	public ShowMessage(String msg)
+	{
+	    this.msg = msg;
+	}
 
-            public void run() {
-                JOptionPane.showMessageDialog(null, msg, "alert", JOptionPane.ERROR_MESSAGE);
-            }
+	    public void run() {
+	        JOptionPane.showMessageDialog(null, msg, "alert", JOptionPane.ERROR_MESSAGE);
+	    }
 
     }
 }

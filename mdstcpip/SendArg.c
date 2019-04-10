@@ -86,8 +86,8 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned
 #endif
   memcpy(m->bytes, bytes, nbytes);
   m->h.message_id = (idx == 0 || nargs == 0)
-            ? IncrementConnectionMessageIdC(c)
-            : c->message_id;
+	    ? IncrementConnectionMessageIdC(c)
+	    : c->message_id;
   int status = m->h.message_id ? SendMdsMsgC(c, m, 0) : MDSplusERROR;
   free(m);
   if STATUS_NOT_OK UnlockConnection(c);

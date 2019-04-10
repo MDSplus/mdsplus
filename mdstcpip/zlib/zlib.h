@@ -393,11 +393,11 @@ ZEXTERN int ZEXPORT inflateInit OF((z_streamp strm));
 
 /*
 ZEXTERN int ZEXPORT deflateInit2 OF((z_streamp strm,
-                                     int  level,
-                                     int  method,
-                                     int  windowBits,
-                                     int  memLevel,
-                                     int  strategy));
+	                             int  level,
+	                             int  method,
+	                             int  windowBits,
+	                             int  memLevel,
+	                             int  strategy));
 
      This is another version of deflateInit with more compression options. The
    fields next_in, zalloc, zfree and opaque must be initialized before by
@@ -519,7 +519,7 @@ ZEXTERN int ZEXPORT deflateInit2 OF((z_streamp strm,
 
 /*
 ZEXTERN int ZEXPORT inflateInit2 OF((z_streamp strm,
-                                     int  windowBits));
+	                             int  windowBits));
 
      This is another version of inflateInit with an extra parameter. The
    fields next_in, avail_in, zalloc, zfree and opaque must be initialized
@@ -849,14 +849,14 @@ ZEXTERN int ZEXPORT inflateInit2 OF((z_streamp strm,
   ZEXTERN int ZEXPORT inflateInit2_ OF((z_streamp strm, int windowBits,
 					const char *version, int stream_size));
 #define deflateInit(strm, level) \
-        deflateInit_((strm), (level),       ZLIB_VERSION, sizeof(z_stream))
+	deflateInit_((strm), (level),       ZLIB_VERSION, sizeof(z_stream))
 #define inflateInit(strm) \
-        inflateInit_((strm),                ZLIB_VERSION, sizeof(z_stream))
+	inflateInit_((strm),                ZLIB_VERSION, sizeof(z_stream))
 #define deflateInit2(strm, level, method, windowBits, memLevel, strategy) \
-        deflateInit2_((strm),(level),(method),(windowBits),(memLevel),\
-                      (strategy),           ZLIB_VERSION, sizeof(z_stream))
+	deflateInit2_((strm),(level),(method),(windowBits),(memLevel),\
+	              (strategy),           ZLIB_VERSION, sizeof(z_stream))
 #define inflateInit2(strm, windowBits) \
-        inflateInit2_((strm), (windowBits), ZLIB_VERSION, sizeof(z_stream))
+	inflateInit2_((strm), (windowBits), ZLIB_VERSION, sizeof(z_stream))
 
 #if !defined(_Z_UTIL_H) && !defined(NO_DUMMY_DECL)
   struct internal_state {

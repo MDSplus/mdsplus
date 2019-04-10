@@ -54,7 +54,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 }
 
 // abbreviations for NULL and MdsEND_ARG terminated va_lists
-#define VA_LIST_NULL(arglist,nargs,pre,post,anchor)	 	VA_LIST_TO_ARGLIST(arglist,nargs,pre,post,anchor,NULL)
+#define VA_LIST_NULL(arglist,nargs,pre,post,anchor)		VA_LIST_TO_ARGLIST(arglist,nargs,pre,post,anchor,NULL)
 #define VA_LIST_MDS_END_ARG(arglist,nargs,pre,post,anchor)	VA_LIST_TO_ARGLIST(arglist,nargs,pre,post,anchor,MdsEND_ARG)
 
 

@@ -16,28 +16,28 @@ public class String extends Scalar
 
     public String(java.lang.String datum)
     {
-        this(datum, null, null, null, null);
+	this(datum, null, null, null, null);
     }
     public String(java.lang.String datum, Data help, Data units, Data error, Data validation)
     {
-        super(help, units, error, validation);
-        clazz = CLASS_S;
-        dtype = DTYPE_T;
-        this.datum = datum;
+	super(help, units, error, validation);
+	clazz = CLASS_S;
+	dtype = DTYPE_T;
+	this.datum = datum;
     }
     public boolean equals(Object data)
     {
-        if(!(data instanceof String))
-            return false;
-        return((String)data).datum.equals(datum);
+	if(!(data instanceof String))
+	    return false;
+	return((String)data).datum.equals(datum);
     }
     public static Data getData(java.lang.String datum, Data help, Data units, Data error, Data validation)
     {
-        return new String(datum, help, units, error, validation);
+	return new String(datum, help, units, error, validation);
     }
     public  byte getByte() throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a byte");
+	throw new MdsException("Cannot convert a string to a byte");
     }
 
     /**
@@ -47,7 +47,7 @@ public class String extends Scalar
      */
     public  short getShort() throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a short");
+	throw new MdsException("Cannot convert a string to a short");
     }
 
     /**
@@ -57,7 +57,7 @@ public class String extends Scalar
      */
     public  int getInt() throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a int");
+	throw new MdsException("Cannot convert a string to a int");
     }
 
 
@@ -68,7 +68,7 @@ public class String extends Scalar
      */
     public  long getLong() throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a long");
+	throw new MdsException("Cannot convert a string to a long");
     }
 
     /**
@@ -78,7 +78,7 @@ public class String extends Scalar
      */
     public  float getFloat()throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a float");
+	throw new MdsException("Cannot convert a string to a float");
     }
 
     /**
@@ -88,7 +88,7 @@ public class String extends Scalar
      */
     public  double getDouble()throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a double");
+	throw new MdsException("Cannot convert a string to a double");
     }
 
     /**
@@ -99,7 +99,7 @@ public class String extends Scalar
      */
     public  byte[] getByteArray() throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a byte array");
+	throw new MdsException("Cannot convert a string to a byte array");
     }
 
 
@@ -111,7 +111,7 @@ public class String extends Scalar
      */
     public  short[] getShortArray()throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a short array");
+	throw new MdsException("Cannot convert a string to a short array");
     }
 
 
@@ -123,7 +123,7 @@ public class String extends Scalar
      */
     public  int[] getIntArray()throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a int array");
+	throw new MdsException("Cannot convert a string to a int array");
     }
 
     /**
@@ -134,7 +134,7 @@ public class String extends Scalar
      */
     public  long[] getLongArray()throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a long array");
+	throw new MdsException("Cannot convert a string to a long array");
     }
 
     /**
@@ -145,7 +145,7 @@ public class String extends Scalar
      */
     public  float[] getFloatArray()throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a float array");
+	throw new MdsException("Cannot convert a string to a float array");
     }
     /**
      * Convert this data into a long array. Implemented at this class level by
@@ -155,12 +155,12 @@ public class String extends Scalar
      */
     public  double[] getDoubleArray()throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a double array");
+	throw new MdsException("Cannot convert a string to a double array");
     }
 
     public java.lang.String getString()
     {
-        return datum;
+	return datum;
     }
     public int getSizeInBytes() {return (datum == null)?0:datum.length();}
 }

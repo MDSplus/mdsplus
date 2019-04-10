@@ -17,19 +17,19 @@ class MonitorEvent extends EventObject
 
     public MonitorEvent(Object obj, String tree, int shot, String phase, Action action)
     {
-        super(obj);
-        eventId = ACTION_EVENT;
-        this.tree   = tree;
-        this.shot   = shot;
-        this.phase  = phase;
-        this.action = action;
+	super(obj);
+	eventId = ACTION_EVENT;
+	this.tree   = tree;
+	this.shot   = shot;
+	this.phase  = phase;
+	this.action = action;
     }
 
     public MonitorEvent(Object obj, int eventId, String message)
     {
-        super(obj);
-        this.eventId = eventId;
-        this.message = message;
+	super(obj);
+	this.eventId = eventId;
+	this.message = message;
     }
 
 

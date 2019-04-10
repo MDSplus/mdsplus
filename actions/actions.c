@@ -28,11 +28,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	TOM FREDIAN
+		Author:	TOM FREDIAN
 
 		Date:   25-FEB-1993
 
-    		Purpose: Action Modification program
+		Purpose: Action Modification program
 
 ------------------------------------------------------------------------------
 

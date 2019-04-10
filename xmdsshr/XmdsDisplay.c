@@ -39,12 +39,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	JOSH STILLERMAN
+		Author:	JOSH STILLERMAN
 
 		Date:    6-MAY-1992
 
-    		Purpose: Xmds Widget to display a node's contents. (e.g. the
-                         decompile ( value ( node ))
+		Purpose: Xmds Widget to display a node's contents. (e.g. the
+	                 decompile ( value ( node ))
 
 ------------------------------------------------------------------------------
 
@@ -61,7 +61,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 

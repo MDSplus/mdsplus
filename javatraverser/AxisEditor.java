@@ -45,7 +45,7 @@ public class AxisEditor extends JPanel implements ActionListener, Editor
 	    else
 		mode_idx = 2;
 	}
-    	curr_mode_idx = mode_idx;
+	curr_mode_idx = mode_idx;
 	String names[] = {"Undefined", "Range", "Expression"};
 	combo = new JComboBox(names);
 	combo.setEditable(false);
@@ -178,7 +178,7 @@ public class AxisEditor extends JPanel implements ActionListener, Editor
     public void setEditable(boolean editable)
     {
 	this.editable = editable;
-        if(expr_edit != null) expr_edit.setEditable(editable);
+	if(expr_edit != null) expr_edit.setEditable(editable);
 	if(range_edit != null) range_edit.setEditable(editable);
 	if(units_edit != null) units_edit.setEditable(editable);
    }

@@ -15,11 +15,11 @@
 
 		Type:   C include
 
-     		Author:	Josh Stillerman
+		Author:	Josh Stillerman
 
 		Date:   12-NOV-1991
 
-    		Purpose: Private declarations for  XdBox widget class widgets.
+		Purpose: Private declarations for  XdBox widget class widgets.
 
 ------------------------------------------------------------------------------
    Copyright (c) 1991

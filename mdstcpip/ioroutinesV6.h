@@ -67,8 +67,8 @@ static int io_reuseCheck(char *host, char *unique, size_t buflen){
   if IS_OK(GetHostAndPort(host, &sin)) {
     uint16_t *addr = (uint16_t *)&sin.sin6_addr;
     snprintf(unique, buflen, "%s://%04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x#%u", PROT,
-             addr[0], addr[1], addr[2], addr[3],
-             addr[4], addr[5], addr[6], addr[7], (unsigned)ntohs(sin.sin6_port));
+	     addr[0], addr[1], addr[2], addr[3],
+	     addr[4], addr[5], addr[6], addr[7], (unsigned)ntohs(sin.sin6_port));
     return C_OK;
   } else {
     *unique = 0;

@@ -91,7 +91,7 @@ public class RFXGClockSetup extends DeviceSetup
     deviceChoice3.setOffsetNid(11);
     deviceChoice3.setLabelString("Output mode: ");
     deviceChoice3.setChoiceItems(new String[] {"SINGLE SWITCH: TOGGLE", "SINGLE SWICH: HIGH PULSES", "SINGLE SWITCH: LOW PULSES", "DOUBLE SWITCH: TOGGLE", "DOUBLE SWICH: HIGH PULSES",
-        "DOUBLE SWITCH: LOW PULSES"});
+	"DOUBLE SWITCH: LOW PULSES"});
     deviceChoice3.setUpdateIdentifier("");
     deviceChoice3.setIdentifier("");
     deviceField6.setOffsetNid(9);

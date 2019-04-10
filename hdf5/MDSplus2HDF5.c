@@ -102,8 +102,8 @@ static char *ChildMangle(char *name)
   NID to substitiute into it.
 
   Arguments: nid - node id to subsitute into the expression
-             expr - Expression to evaluate.  For example:
-			        getnci($, "child")
+	     expr - Expression to evaluate.  For example:
+				getnci($, "child")
 
   Will return any integer answer, and zero for all other cases.
 */
@@ -168,7 +168,7 @@ static int NextSibling(int nid)
 
 /*
   Routine GetNidInt - routine to return an integer given an
-                      expression and an integer to substitute
+	              expression and an integer to substitute
 					  into it.
 
   Since NIDs are Ints just use GetNidNCI
@@ -180,7 +180,7 @@ static int GetNidInt(int nid, char *expr)
 
 /*
   Routine GetNidString - Routine to return a string given an
-                         expression and a string to substitute
+	                 expression and a string to substitute
 						 into it.
 
  Arguments

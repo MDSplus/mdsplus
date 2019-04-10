@@ -109,7 +109,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 #if defined( _QUAD_HIGHWORD) && defined(_QUAD_LOWWORD)
     TEST1(status  & 1);
     TEST1((vULongLong[_QUAD_LOWWORD] == UINT_MAX - 1) &&
-          (vULongLong[_QUAD_HIGHWORD] == UINT_MAX));
+	  (vULongLong[_QUAD_HIGHWORD] == UINT_MAX));
 #else
     TEST1(status  & 1);
     TEST1((vULongLong[0] == UINT_MAX - 1) && (vULongLong[1] == UINT_MAX));
@@ -135,7 +135,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 #if defined( _QUAD_HIGHWORD) && defined(_QUAD_LOWWORD)
     TEST1(status  & 1);
     TEST1((vLongLong[_QUAD_LOWWORD] == INT_MAX - 1) &&
-          (vLongLong[_QUAD_HIGHWORD] == INT_MAX));
+	  (vLongLong[_QUAD_HIGHWORD] == INT_MAX));
 #else
     TEST1(status  & 1);
     TEST1((vLongLong[0] == INT_MAX - 1) && (vLongLong[1] == INT_MAX));
@@ -160,7 +160,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
     status = MdsValue("$-CMPLX(0,1)", &dsc, &dsc, &null, &len);
     TEST1(status  & 1);
     TEST1((vComplexDouble[0] == COMPLEX_DOUBLE_TEST0) &&
-            (vComplexDouble[1] == COMPLEX_DOUBLE_TEST1 - 1));
+	    (vComplexDouble[1] == COMPLEX_DOUBLE_TEST1 - 1));
 
     len = 14;
     dsc = descr(&dtype_cstring, vCstring, &null, &len);

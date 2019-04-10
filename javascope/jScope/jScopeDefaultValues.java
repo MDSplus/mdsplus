@@ -14,13 +14,13 @@ class jScopeDefaultValues
 
    public void Reset()
    {
-        shots = null;
-        xmin = xmax = ymax = ymin = null;
-        title_str = xlabel = ylabel = null;
-        experiment_str = shot_str = null;
-        upd_event_str = def_node_str = null;
-        is_evaluated = false;
-        upd_limits = true;
+	shots = null;
+	xmin = xmax = ymax = ymin = null;
+	title_str = xlabel = ylabel = null;
+	experiment_str = shot_str = null;
+	upd_event_str = def_node_str = null;
+	is_evaluated = false;
+	upd_limits = true;
    }
 
    public boolean getIsEvaluated()
@@ -37,8 +37,8 @@ class jScopeDefaultValues
    {
        if( this.public_variables == null || public_variables == null || ! this.public_variables.equals(public_variables) )
        {
-           is_evaluated = false;
-           this.public_variables = public_variables.trim();
+	   is_evaluated = false;
+	   this.public_variables = public_variables.trim();
        }
    }
 

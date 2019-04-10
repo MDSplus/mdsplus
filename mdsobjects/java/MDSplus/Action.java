@@ -9,56 +9,56 @@ package MDSplus;
 public class Action extends Compound
 {
 	public Action(Data dispatch, Data task, Data errorLog, Data completionMessage, Data performance,
-                Data help, Data units, Data error, Data validation)
-        {
-            super(help, units, error, validation);
-            descs = new Data[]{dispatch, task, errorLog, completionMessage, performance};
-            opcode = 0;
+	        Data help, Data units, Data error, Data validation)
+	{
+	    super(help, units, error, validation);
+	    descs = new Data[]{dispatch, task, errorLog, completionMessage, performance};
+	    opcode = 0;
 	}
 	public Action(Data dispatch, Data task, Data errorLog, Data completionMessage, Data performance)
-        {
-            this(dispatch, task, errorLog, completionMessage, performance, null, null, null, null);
+	{
+	    this(dispatch, task, errorLog, completionMessage, performance, null, null, null, null);
 	}
-        public Action(Data help, Data units, Data error, Data validation)
-        {
-             super(help, units, error, validation);
-            clazz = CLASS_R;
-            dtype = DTYPE_ACTION;
-            descs = new Data[5];
-            opcode = 0;
-        }
-        public Action()
-        {
-            this(null, null, null, null);
-        }
+	public Action(Data help, Data units, Data error, Data validation)
+	{
+	     super(help, units, error, validation);
+	    clazz = CLASS_R;
+	    dtype = DTYPE_ACTION;
+	    descs = new Data[5];
+	    opcode = 0;
+	}
+	public Action()
+	{
+	    this(null, null, null, null);
+	}
 
-        public static Action getData(Data help, Data units, Data error, Data validation)
-        {
-            return new Action(help, units, error, validation);
-        }
+	public static Action getData(Data help, Data units, Data error, Data validation)
+	{
+	    return new Action(help, units, error, validation);
+	}
 
-        public Data getDispatch()
-        {
-            return descs[0];
+	public Data getDispatch()
+	{
+	    return descs[0];
 	}
 
 	public Data getTask()
-        {
-            return descs[1];
+	{
+	    return descs[1];
 	}
 
 	public Data getErrorLog()
-        {
-            return descs[2];
+	{
+	    return descs[2];
 	}
 
 	public Data getCompletionMessage()
-        {
+	{
 	    return descs[3];
 	}
 
 	public Data getPerformance()
-        {
+	{
 	    return descs[3];
 	}
 
@@ -67,8 +67,8 @@ public class Action extends Compound
 	 * @param data
 	 */
 	public void setDispatch(Data data)
-        {
-            descs[0] = data;
+	{
+	    descs[0] = data;
 	}
 
 	/**
@@ -76,8 +76,8 @@ public class Action extends Compound
 	 * @param data
 	 */
 	public void setTask(Data data)
-        {
-            descs[1] = data;
+	{
+	    descs[1] = data;
 	}
 
 	/**
@@ -85,8 +85,8 @@ public class Action extends Compound
 	 * @param data
 	 */
 	public void setErrorLog(Data data)
-        {
-            descs[2] = data;
+	{
+	    descs[2] = data;
 	}
 
 	/**
@@ -94,8 +94,8 @@ public class Action extends Compound
 	 * @param data
 	 */
 	public void setCompletionMessage(Data data)
-        {
-            descs[3] = data;
+	{
+	    descs[3] = data;
 	}
 
 	/**
@@ -103,8 +103,8 @@ public class Action extends Compound
 	 * @param data
 	 */
 	public void setPerformance(Data data)
-        {
-            descs[4] = data;
+	{
+	    descs[4] = data;
 	}
 
 }

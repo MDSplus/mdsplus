@@ -42,14 +42,14 @@ int main(int argc, char** argv)
 
     semPause_id = sem_open("PauseControl", O_CREAT, 0666, 0);
     if(semPause_id == SEM_FAILED) {
-        perror("child sem_open");
-        return 0;
+	perror("child sem_open");
+	return 0;
     }
 
     semWake_id = sem_open("WakeControl", O_CREAT, 0666, 0);
     if(semWake_id== SEM_FAILED) {
-        perror("child sem_open");
-        return 0;
+	perror("child sem_open");
+	return 0;
     }
 
 

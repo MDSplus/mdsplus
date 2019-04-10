@@ -28,12 +28,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	TOM FREDIAN
+		Author:	TOM FREDIAN
 
 		Date:   15-AUG-1990
 
-    		Purpose: Resample a signal using stepped interpolation.
-                         Extrapolated points are set to zero.
+		Purpose: Resample a signal using stepped interpolation.
+	                 Extrapolated points are set to zero.
 
 ------------------------------------------------------------------------------
 
@@ -49,7 +49,7 @@ struct descriptor_xd *STEP_RESAMPLE(struct descriptor *sig,struct descriptor *x)
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 

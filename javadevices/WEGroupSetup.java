@@ -161,11 +161,11 @@ public class WEGroupSetup extends DeviceSetup {
     deviceButtons1.setMethods(new String[] {"init"});
     this.getContentPane().add(jPanel1, BorderLayout.CENTER);
     jPanel1.add(jPanel2,                  new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+	    ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
     jPanel2.add(deviceField1, null);
     jPanel2.add(deviceDispatch1, null);
     jPanel1.add(jPanel4,             new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+	    ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
     jPanel4.add(jLabel1, null);
     jPanel4.add(jPanel11214, null);
     jPanel11214.add(deviceChoice11111111118, null);
@@ -175,7 +175,7 @@ public class WEGroupSetup extends DeviceSetup {
     jPanel11214.add(deviceField1111111114, null);
     jPanel11214.add(deviceField1111111115, null);
     jPanel1.add(jPanel3,     new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+	    ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
     jPanel3.add(jLabel2, null);
     jPanel3.add(jPanel119, null);
     jPanel119.add(deviceChoice111115, null);
@@ -185,7 +185,7 @@ public class WEGroupSetup extends DeviceSetup {
     jPanel119.add(deviceField111114, null);
     jPanel119.add(deviceField111116, null);
     jPanel1.add(deviceButtons1,     new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+	    ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
   }
 
 }

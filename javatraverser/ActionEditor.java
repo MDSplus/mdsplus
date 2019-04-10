@@ -62,8 +62,8 @@ public class ActionEditor extends JPanel implements ActionListener, Editor
 		    task_edit = new TaskEditor(null, dialog);
 		    notify_edit = new LabeledExprEditor("Notify", new ExprEditor(null, true));
 		}
-        action_panel = new JPanel();
-        action_panel.setLayout(new GridLayout(1,2));
+	action_panel = new JPanel();
+	action_panel.setLayout(new GridLayout(1,2));
 		action_panel.add(dispatch_edit);
 		action_panel.add(task_edit);
 		add(action_panel, BorderLayout.CENTER);
@@ -89,7 +89,7 @@ public class ActionEditor extends JPanel implements ActionListener, Editor
 	switch(curr_mode_idx)  {
 	    case 1:
 		remove(action_panel);
-        action_panel = null;
+	action_panel = null;
 		task_edit = null;
 		dispatch_edit = null;
 		remove(notify_edit);
@@ -109,7 +109,7 @@ public class ActionEditor extends JPanel implements ActionListener, Editor
 
    public void reset()
     {
-    	combo.setSelectedIndex(mode_idx);
+	combo.setSelectedIndex(mode_idx);
 	switch(curr_mode_idx)  {
 		case 1:
 		    remove(action_panel);

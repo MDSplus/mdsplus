@@ -221,8 +221,8 @@ typedef void *pthread_mutex_t;
 /// \return
 ///
 EXPORT int AcceptConnection(char *protocol, char *info_name, SOCKET readfd,
-                            void *info, size_t infolen, int *conid,
-                            char **user);
+	                    void *info, size_t infolen, int *conid,
+	                    char **user);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -346,7 +346,7 @@ EXPORT void FreeMessage(void *message);
 /// \return the function returns the status held by the answered descriptor.
 ///
 EXPORT int GetAnswerInfo(int id, char *dtype, short *length, char *ndims,
-                         int *dims, int *numbytes, void **dptr);
+	                 int *dims, int *numbytes, void **dptr);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -368,9 +368,9 @@ EXPORT int GetAnswerInfo(int id, char *dtype, short *length, char *ndims,
 /// \return the function returns the status held by the answered descriptor
 ///
 EXPORT int GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims,
-                           int *dims, int *numbytes, void **dptr, void **m);
+	                   int *dims, int *numbytes, void **dptr, void **m);
 EXPORT int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims,
-                           int *dims, int *numbytes, void **dptr, void **m, int timeout);
+	                   int *dims, int *numbytes, void **dptr, void **m, int timeout);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -381,9 +381,9 @@ EXPORT int GetCompressionLevel();
 ////////////////////////////////////////////////////////////////////////////////
 ///
 EXPORT void *GetConnectionInfoC(Connection* c, char **info_name, SOCKET *readfd,
-                               size_t *len);
+	                       size_t *len);
 EXPORT void *GetConnectionInfo(int id, char **info_name, SOCKET *readfd,
-                               size_t *len);
+	                       size_t *len);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -494,10 +494,10 @@ EXPORT IoRoutines *LoadIo(char *protocol);
 EXPORT void LockAsts();
 
 EXPORT struct descrip *MakeDescrip(struct descrip *in_descrip, char dtype,
-                                   char ndims, int *dims, void *ptr);
+	                           char ndims, int *dims, void *ptr);
 EXPORT struct descrip *MakeDescripWithLength(struct descrip *in_descrip,
-                                             char dtype, int length, char ndims,
-                                             int *dims, void *ptr);
+	                                     char dtype, int length, char ndims,
+	                                     int *dims, void *ptr);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -526,7 +526,7 @@ EXPORT void MdsDispatchEvent(int id);
 /// \return
 ///
 EXPORT int MdsEventAst(int id, char *eventnam, void (*astadr)(), void *astprm,
-                       int *eventid);
+	               int *eventid);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -608,13 +608,13 @@ EXPORT int MdsValue(int id, char *exp, ...);
 EXPORT void MdsIpFree(void* ptr); // used to free ans.ptr returned by MdsValue
 
 EXPORT int NextConnection(void **ctx, char **info_name, void **info,
-                          size_t *info_len);
+	                  size_t *info_len);
 
 EXPORT void ParseCommand(int argc, char **argv, Options options[], int more,
-                         int *rem_argc, char ***rem_argv);
+	                 int *rem_argc, char ***rem_argv);
 
 EXPORT void ParseStdArgs(int argc, char **argv, int *extra_argc,
-                         char ***extra_argv);
+	                 char ***extra_argv);
 
 EXPORT void PrintHelp(char *);
 
@@ -648,7 +648,7 @@ EXPORT int ReuseCheck(char *hostin, char *unique, size_t buflen);
 /// succesfully sent or false otherwise.
 ///
 EXPORT int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs,
-                   unsigned short length, char ndims, int *dims, char *bytes);
+	           unsigned short length, char ndims, int *dims, char *bytes);
 EXPORT int SendDsc(int id, unsigned char idx, unsigned char nargs, struct descriptor* dsc);
 ////////////////////////////////////////////////////////////////////////////////
 ///

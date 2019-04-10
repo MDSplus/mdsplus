@@ -42,8 +42,8 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 //        int i;
 //        if(i) { printf("jumping condition undefined\n"); }
 
-        int success = 1;
-        TEST1(success);
+	int success = 1;
+	TEST1(success);
     }
     END_TESTING;
 

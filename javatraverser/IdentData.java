@@ -9,7 +9,7 @@ public class IdentData extends StringData
     public IdentData() {}
     public IdentData(String datum)
     {
-        super(datum);
+	super(datum);
 	    dtype = DTYPE_IDENT;
     }
     public String getString() {return datum; }

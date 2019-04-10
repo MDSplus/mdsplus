@@ -28,11 +28,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	TOM FREDIAN
+		Author:	TOM FREDIAN
 
 		Date:   17-APR-1992
 
-    		Purpose: Stop a server process
+		Purpose: Stop a server process
 
 ------------------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ int SERVER$STOP_SERVER( struct dsc$descriptor *server )
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 

@@ -37,11 +37,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	TOM FREDIAN
+		Author:	TOM FREDIAN
 
 		Date:   15-AUG-1990
 
-    		Purpose: Smooth a signal using boxcar smoothing
+		Purpose: Smooth a signal using boxcar smoothing
 
 ------------------------------------------------------------------------------
 
@@ -57,7 +57,7 @@ int boxsmooth(int *num, float *in, int *width, float *out)
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 

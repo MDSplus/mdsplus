@@ -28,12 +28,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	GABRIELE MANDUCHI
+		Author:	GABRIELE MANDUCHI
 			Istituto Gas Ionizzati del CNR - Padova (Italy)
 
 		Date:   22-AUG-1989
 
-    		Purpose:  Convert integer to code, given translation table.
+		Purpose:  Convert integer to code, given translation table.
 
 ------------------------------------------------------------------------------
 
@@ -43,7 +43,7 @@ EXPORT int GEN_DEVICE$CVT_INT_CODE( )
 
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 

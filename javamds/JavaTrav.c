@@ -421,7 +421,7 @@ JNIEXPORT void JNICALL Java_Database_setFlags(JNIEnv * env, jobject obj __attrib
     nid = (*env)->GetIntField(env, jnid, nid_fid);
     status = TreeSetNci(nid, itmlst);
     if (!(status & 1))
-        RaiseException(env, MdsGetMsg(status), status);
+	RaiseException(env, MdsGetMsg(status), status);
 }
 
 JNIEXPORT void JNICALL Java_Database_clearFlags(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jint jflags) {
@@ -435,7 +435,7 @@ JNIEXPORT void JNICALL Java_Database_clearFlags(JNIEnv * env, jobject obj __attr
     nid = (*env)->GetIntField(env, jnid, nid_fid);
     status = TreeSetNci(nid, itmlst);
     if (!(status & 1))
-        RaiseException(env, MdsGetMsg(status), status);
+	RaiseException(env, MdsGetMsg(status), status);
 }
 
 JNIEXPORT jint JNICALL Java_Database_getFlags(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid) {

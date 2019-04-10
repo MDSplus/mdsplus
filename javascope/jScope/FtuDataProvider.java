@@ -10,19 +10,19 @@ class FtuDataProvider extends MdsDataProvider
 
     public FtuDataProvider()
     {
-        super();
+	super();
     }
 
     public FtuDataProvider(String provider) throws IOException
     {
-        super(provider);
-        SetEnvironment("public _IMODE = 0;");
+	super(provider);
+	SetEnvironment("public _IMODE = 0;");
     }
 
     public void SetArgument(String arg) throws IOException
     {
-        mds.setProvider(arg);
-        SetEnvironment("public _IMODE = 0;");
+	mds.setProvider(arg);
+	SetEnvironment("public _IMODE = 0;");
     }
 
     public synchronized void Update(String exp, long s)
@@ -42,13 +42,13 @@ class FtuDataProvider extends MdsDataProvider
 		    String curr_str = st.nextToken();
 		    //System.out.println("Token: "+curr_str);
 		    switch(state)  {
-		        case 0:
+			case 0:
 			    if(curr_str.equals("\\"))
 				    state = 1;
 			    else
-		    	  	    parsed.append(curr_str);
+			  	    parsed.append(curr_str);
 			    break;
-		        case 1:
+			case 1:
 			    if(curr_str.equals("\\"))
 			    {
 				    parsed.append("\\");
@@ -56,19 +56,19 @@ class FtuDataProvider extends MdsDataProvider
 			    }
 			    else
 			    {
-			        if(curr_str.startsWith("$"))
-	        	  	    parsed.append("ftu("+shot+",\"_"+curr_str.substring(1));
-	        	    else
-	        	  	    parsed.append("ftu("+shot+",\""+curr_str);
-			  	    state = 2;
+				if(curr_str.startsWith("$"))
+				    parsed.append("ftu("+shot+",\"_"+curr_str.substring(1));
+			    else
+				    parsed.append("ftu("+shot+",\""+curr_str);
+				    state = 2;
 			    }
 			    break;
-		        case 2:
+			case 2:
 			    if(!st.hasMoreTokens())
-	        	  	    parsed.append("\", _IMODE)");
+				    parsed.append("\", _IMODE)");
 			    state = 3;
 			    break;
-		        case 3:
+			case 3:
 			    if(!curr_str.equals("\\") || !st.hasMoreTokens())
 			    {
 				    parsed.append("\", _IMODE) "+curr_str);
@@ -80,7 +80,7 @@ class FtuDataProvider extends MdsDataProvider
 				    state = 4;
 			    }
 			    break;
-		        case 4:
+			case 4:
 			    if(curr_str.equals("\\"))
 			    {
 				    parsed.append("\\");
@@ -88,13 +88,13 @@ class FtuDataProvider extends MdsDataProvider
 			    }
 			    else
 			    {
-	        	  	    parsed.append(curr_str);
-			  	    state = 2;
+				    parsed.append(curr_str);
+				    state = 2;
 			    }
 			    break;
 
 
-		        }
+			}
 		    }
 	    }catch(Exception e){System.out.println(e);}
 	//System.out.println("parsed: "+ parsed);
@@ -103,7 +103,7 @@ class FtuDataProvider extends MdsDataProvider
 
     public synchronized int[] GetIntArray(String in) throws IOException
     {
-        return super.GetIntArray(ParseExpression(in));
+	return super.GetIntArray(ParseExpression(in));
     }
 
 
@@ -113,11 +113,11 @@ class FtuDataProvider extends MdsDataProvider
 	    error= null;
 	    float [] out_array = super.GetFloatArray(ParseExpression(in));
 	    if(out_array == null&& error == null)
-	        error = "Cannot evaluate " + in + " for shot " + shot;
+		error = "Cannot evaluate " + in + " for shot " + shot;
 	    if(out_array != null && out_array.length <= 1)
 	    {
-	        error = "Cannot evaluate " + in + " for shot " + shot;
-	        return null;
+		error = "Cannot evaluate " + in + " for shot " + shot;
+		return null;
 	    }
 	    return out_array;
     }

@@ -58,8 +58,8 @@ EXPORT int mit_gclock__get_setup(struct descriptor *niddsc_ptr __attribute__ ((u
     static int gate_nid;
     DESCRIPTOR_NID(gate_dsc, (char *)&gate_nid);
     static DESCRIPTOR(output_exp, "PACK($1+$2*.5,REPLICATE([1,0],0,SIZE($1)/2)) : \
-                                       PACK($1,REPLICATE([0,1],0,SIZE($1)/2)) : \
-                                       $2");
+	                               PACK($1,REPLICATE([0,1],0,SIZE($1)/2)) : \
+	                               $2");
     static EMPTYXD(out);
     DESCRIPTOR_A(frequency_a, sizeof(float), DTYPE_NATIVE_FLOAT, (char *)frequency,
 		 sizeof(frequency));

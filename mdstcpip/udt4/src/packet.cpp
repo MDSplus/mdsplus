@@ -193,7 +193,7 @@ void CPacket::pack(int pkttype, void* lparam, void* rparam, int size)
    case 2: //0010 - Acknowledgement (ACK)
       // ACK packet seq. no.
       if (NULL != lparam)
-         m_nHeader[1] = *(int32_t *)lparam;
+	 m_nHeader[1] = *(int32_t *)lparam;
 
       // data ACK seq. no.
       // optional: RTT (microsends), RTT variance (microseconds) advertised flow window size (packets), and estimated link capacity (packets per second)
@@ -280,13 +280,13 @@ void CPacket::pack(int pkttype, void* lparam, void* rparam, int size)
 
       if (NULL != rparam)
       {
-         m_PacketVector[1].iov_base = (char *)rparam;
-         m_PacketVector[1].iov_len = size;
+	 m_PacketVector[1].iov_base = (char *)rparam;
+	 m_PacketVector[1].iov_len = size;
       }
       else
       {
-         m_PacketVector[1].iov_base = (char *)&__pad;
-         m_PacketVector[1].iov_len = 4;
+	 m_PacketVector[1].iov_base = (char *)&__pad;
+	 m_PacketVector[1].iov_len = 4;
       }
 
       break;

@@ -75,14 +75,14 @@ char *character_name_generator(const char *text, int state){
 #endif
       size_t mlen = strlen(p);
       for (i=0 ; i<mlen ; i++)
-        p[i] = tolower(p[i]);
+	p[i] = tolower(p[i]);
       if      (strcmp(&p[mlen-3],".py" )==0) mlen-= 3;
       else if (strcmp(&p[mlen-4],".fun")==0) mlen-= 4;
       else continue;
       p[mlen] = '\0';
       if (curlen>=maxlen) {
-        maxlen *= 2;
-        character_names = realloc(character_names,sizeof(void*)*maxlen);
+	maxlen *= 2;
+	character_names = realloc(character_names,sizeof(void*)*maxlen);
       }
       character_names[curlen++] = strdup(p);
     }
@@ -101,7 +101,7 @@ char *character_name_generator(const char *text, int state){
   while ((name = character_names[list_index++]))
     if (strncmp(name, text, len) == 0) {
       if (name[0] == '$') // constants like $PI
-        return strdup(name);
+	return strdup(name);
       size_t len = strlen(name);
       char *match = memcpy(malloc(len+2),name,len);
       match[len]='(';match[len+1]='\0';
@@ -142,10 +142,10 @@ static char *getExpression(FILE *f_in) {
     }
     if (nlen<=0) {
       if (ans) {
-        free(next);
-        next = ans;
+	free(next);
+	next = ans;
       } else
-        ans = next;
+	ans = next;
       break;
     }
     append = next[nlen-1] == '\\';
@@ -218,8 +218,8 @@ int main(int argc, char **argv)
     int comment = command[0] == '!';
     if (!comment) {
       if (f_in) {
-        fprintf(f_out,"%s\n",command);
-        fflush(f_out);
+	fprintf(f_out,"%s\n",command);
+	fflush(f_out);
       }
     }
     if (!comment) {

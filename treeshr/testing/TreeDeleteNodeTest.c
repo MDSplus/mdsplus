@@ -50,8 +50,8 @@ int dbiTest(void *ctx, short int code) {
     int supports;
     int len;
     struct dbi_itm dbiList[] = {
-            { sizeof(int), code, &supports, &len },
-            { 0, DbiEND_OF_LIST, 0, 0 }
+	    { sizeof(int), code, &supports, &len },
+	    { 0, DbiEND_OF_LIST, 0, 0 }
     };
 
     int status = _TreeGetDbi(ctx, dbiList);
@@ -104,11 +104,11 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
     // close tree //
     int is_modified = dbiTest(ctx, DbiMODIFIED);
     if( is_modified ) {
-        status = _TreeQuitTree(&ctx, tree_name, shot);
-        TEST1( status & 1 );
+	status = _TreeQuitTree(&ctx, tree_name, shot);
+	TEST1( status & 1 );
     } else {
-        status = _TreeClose(&ctx, tree_name, shot);
-        TEST1( status & 1 );
+	status = _TreeClose(&ctx, tree_name, shot);
+	TEST1( status & 1 );
     }
     TreeFreeDbid(ctx);
 

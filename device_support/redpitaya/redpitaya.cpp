@@ -69,7 +69,7 @@ static void writeConfig(int fd, struct rpadc_configuration *config)
     if(config->mode == EVENT_STREAMING || config->mode == EVENT_SINGLE)
 	currVal |= 0x00000008;
     if(config->mode == EVENT_STREAMING || config->mode == TRIGGER_STREAMING)
-        currVal |= 0x00000010;
+	currVal |= 0x00000010;
     if(config->clock_mode == TRIG_EXTERNAL || config->clock_mode == EXTERNAL)
 	currVal |= 0x00000020;
     if(config->clock_mode == EXTERNAL)
@@ -261,7 +261,7 @@ std::cout << "WRITE SEGMENT SAMPLES: " << segmentSamples << std::endl;
     MDSplus::Data *endSegData = MDSplus::compileWithArgs("$1+$2", t, 2, endData, triggerTime);
     try {
 //std::cout << "MAKE SEGMENT  "<< chan1 << chan1Data << std::endl;
-        chan1->makeSegment(startSegData, endSegData, timebase, chan1Data);
+	chan1->makeSegment(startSegData, endSegData, timebase, chan1Data);
 	chan2->makeSegment(startSegData, endSegData, timebase, chan2Data);
     }catch(MDSplus::MdsException &exc)
     {
@@ -459,12 +459,12 @@ static void printConfig(struct rpadc_configuration *config)
     if(config->trig_above_threshold)
 	printf("\ttrig_above_threshold: true\n");
     else
- 	printf("\ttrig_above_threshold: false\n");
+	printf("\ttrig_above_threshold: false\n");
 
     if(config->trig_from_chana)
 	printf("\ttrig_from_chana: true\n");
     else
- 	printf("\ttrig_from_chana: false\n");
+	printf("\ttrig_from_chana: false\n");
 
     printf("\ttrig_samples: %d\n", config->trig_samples);
     printf("\ttrig_threshold: %d\n", config->trig_threshold);
@@ -482,7 +482,7 @@ int rpadcInit(int mode, int clock_mode, int preSamples, int postSamples, int tri
     struct rpadc_configuration inConfig, outConfig;
     int fd = open("/dev/rpadc_dma_auto", O_RDWR | O_SYNC);
      if(fd < 0)
-        return -1;
+	return -1;
 
      deviceFd = fd;
 

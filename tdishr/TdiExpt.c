@@ -23,9 +23,9 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi3Expt.C
-        Data base info.
+	Data base info.
 
-        Ken Klare, LANL CTR-7   (c)1990
+	Ken Klare, LANL CTR-7   (c)1990
 */
 #include <stdio.h>
 #include <string.h>
@@ -39,7 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 /*--------------------------------------------------------------
-        Default path name.
+	Default path name.
 */
 int Tdi3MdsDefault(struct descriptor *in_ptr __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
@@ -62,7 +62,7 @@ int Tdi3MdsDefault(struct descriptor *in_ptr __attribute__ ((unused)), struct de
 }
 
 /*--------------------------------------------------------------
-        Experiment name.
+	Experiment name.
 */
 int Tdi3Expt(struct descriptor *in_ptr __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
@@ -86,7 +86,7 @@ int Tdi3Expt(struct descriptor *in_ptr __attribute__ ((unused)), struct descript
 }
 
 /*--------------------------------------------------------------
-        Shot number identifier.
+	Shot number identifier.
 */
 int Tdi3Shot(struct descriptor *in_ptr __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
@@ -110,7 +110,7 @@ int Tdi3Shot(struct descriptor *in_ptr __attribute__ ((unused)), struct descript
 }
 
 /*--------------------------------------------------------------
-        Shot number identifier converted to string.
+	Shot number identifier converted to string.
 */
 int Tdi3Shotname(struct descriptor *in_ptr __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {

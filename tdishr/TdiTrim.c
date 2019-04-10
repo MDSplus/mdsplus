@@ -23,9 +23,9 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Trim.C
-        Generic transformation with single string output.
+	Generic transformation with single string output.
 
-        Ken Klare, LANL P-4     (c)1989,1990,1991
+	Ken Klare, LANL P-4     (c)1989,1990,1991
 */
 #include <STATICdef.h>
 #include "tdinelements.h"
@@ -64,8 +64,8 @@ int Tdi1Trim(opcode_t opcode, int narg, struct descriptor *list[], struct descri
       status = TdiINVCLADSC;
   }
 	/***********************
-        Go off and do something.
-        ***********************/
+	Go off and do something.
+	***********************/
   if STATUS_OK
     status = (*fun_ptr->f3) (dat[0].pointer, out_ptr);
   if STATUS_OK
@@ -82,7 +82,7 @@ int Tdi1Trim(opcode_t opcode, int narg, struct descriptor *list[], struct descri
 }
 
 /*--------------------------------------------------------------
-        F90 transformation, string trailing blanks removed.
+	F90 transformation, string trailing blanks removed.
 */
 int Tdi3Trim(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 {
@@ -97,7 +97,7 @@ int Tdi3Trim(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 }
 
 /*--------------------------------------------------------------
-        Convert opcode to builtin name.
+	Convert opcode to builtin name.
 */
 int Tdi3OpcodeBuiltin(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 {
@@ -119,7 +119,7 @@ int Tdi3OpcodeBuiltin(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 }
 
 /*--------------------------------------------------------------
-        Convert opcode to string name.
+	Convert opcode to string name.
 */
 int Tdi3OpcodeString(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 {

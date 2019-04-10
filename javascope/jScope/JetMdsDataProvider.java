@@ -9,7 +9,7 @@ class JetMdsDataProvider extends MdsDataProvider
 {
     public JetMdsDataProvider()
     {
-        super("mdsplus.jet.efda.org");
+	super("mdsplus.jet.efda.org");
     }
 
     public void SetArgument(String arg){};
@@ -21,7 +21,7 @@ class JetMdsDataProvider extends MdsDataProvider
 	}
     public synchronized int[] GetIntArray(String in) throws IOException
     {
-        return super.GetIntArray(ParseExpression(in));
+	return super.GetIntArray(ParseExpression(in));
     }
 
 	//Syntax: ppf/<signal> or jpf/<signal>
@@ -42,31 +42,31 @@ class JetMdsDataProvider extends MdsDataProvider
 			  if(curr_str.equals("/"))
 			  {
 			    if(parsed.endsWith("PPF") ||parsed.endsWith("ppf")  ||
-			        parsed.endsWith("JPF") ||parsed.endsWith("jpf"))
+				parsed.endsWith("JPF") ||parsed.endsWith("jpf"))
 			    {
-			        signal = parsed.substring(parsed.length() - 3)+ "/";
-			        parsed = parsed.substring(0, parsed.length() - 3);
+				signal = parsed.substring(parsed.length() - 3)+ "/";
+				parsed = parsed.substring(0, parsed.length() - 3);
 				    state = 1;
 				}
 				else
 				    parsed += curr_str;
 			  }
 			  else
-		    	  	parsed+=curr_str;
+			  	parsed+=curr_str;
 			  break;
 		    case 1:
-		        signal += curr_str;
-                state = 2;
-		        break;
+			signal += curr_str;
+	        state = 2;
+			break;
 		    case 2:
-		        signal += curr_str;
-		        state = 3;
-		        break;
+			signal += curr_str;
+			state = 3;
+			break;
 		    case 3:
-		        parsed += ("(jet(\"" + signal + curr_str + "\", " + shot + ")) ");
-		        signal = "";
-		        state = 0;
-		        break;
+			parsed += ("(jet(\"" + signal + curr_str + "\", " + shot + ")) ");
+			signal = "";
+			state = 0;
+			break;
 		    }
 		}
 	}
@@ -96,7 +96,7 @@ class JetMdsDataProvider extends MdsDataProvider
 */
     public synchronized RealArray GetRealArray(String in) throws IOException
     {
-        return super.GetRealArray(ParseExpression(in));
+	return super.GetRealArray(ParseExpression(in));
     }
 
 public boolean SupportsCompression(){return false;}

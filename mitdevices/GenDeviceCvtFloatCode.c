@@ -28,11 +28,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	GABRIELE MANDUCHI
+		Author:	GABRIELE MANDUCHI
 
 		Date:   22-AUG-1989
 
-    		Purpose: Convert floating point number to code, given
+		Purpose: Convert floating point number to code, given
 		    translation table.
 
 ------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 EXPORT int GEN_DEVICE$CVT_FLOAT_CODE(code_ptr, value, table, dimension)
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 

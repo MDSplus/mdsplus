@@ -24,19 +24,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-                Name:   Tdi3Divide
+	        Name:   Tdi3Divide
 
-                Type:   C function
+	        Type:   C function
 
-                Author: TOM FREDIAN
+	        Author: TOM FREDIAN
 
-                Date:   5-OCT-1993
+	        Date:   5-OCT-1993
 
-                Purpose: Divide two operands
+	        Purpose: Divide two operands
 
 ------------------------------------------------------------------------------
 
-        Call sequence:
+	Call sequence:
 
 int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 
@@ -48,7 +48,7 @@ int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor
    Management.
 ---------------------------------------------------------------------------
 
-        Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 

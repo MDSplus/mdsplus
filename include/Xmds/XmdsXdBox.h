@@ -18,11 +18,11 @@
 
 		Type:   C include
 
-     		Author:	Josh Stillerman
+		Author:	Josh Stillerman
 
 		Date:   11-NOV-1991
 
-    		Purpose: Public declarations for  XdBox Widgets.
+		Purpose: Public declarations for  XdBox Widgets.
 
 
 ------------------------------------------------------------------------------
@@ -91,8 +91,8 @@ extern void XmdsXdBoxSetXd(Widget w, struct descriptor *dsc);
 
 #define XmdsNautoDestroy        "autoDestroy"
 #define XmdsNautoUnmanage	"autoUnmanage"
-#define XmdsNautoPut	        "autoPut"
-#define XmdsNputOnApply	        "putOnApply"
+#define XmdsNautoPut		"autoPut"
+#define XmdsNputOnApply		"putOnApply"
 
 #define XmdsNdefaultNid		"defaultNid"
 #define XmdsNdisplayOnly	"displayOnly"

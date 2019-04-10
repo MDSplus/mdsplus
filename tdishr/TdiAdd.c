@@ -24,19 +24,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-                Name:   Tdi3Add
+	        Name:   Tdi3Add
 
-                Type:   C function
+	        Type:   C function
 
-                Author: TOM FREDIAN
+	        Author: TOM FREDIAN
 
-                Date:   18-FEB-1993
+	        Date:   18-FEB-1993
 
-                Purpose: Add two operands
+	        Purpose: Add two operands
 
 ------------------------------------------------------------------------------
 
-        Call sequence:
+	Call sequence:
 
 int Tdi3Add(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 
@@ -48,7 +48,7 @@ int Tdi3Add(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
    Management.
 ---------------------------------------------------------------------------
 
-        Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -121,7 +121,7 @@ STATIC_CONSTANT const int roprand = 0x8000;
     {\
       if (CvtConvertFloat(&p1v,dtype,&a,native,0) && CvtConvertFloat(&p2v,dtype,&b,native,0))\
       { ans = a operator b;\
-        CvtConvertFloat(&ans,native,outp++,dtype,0);\
+	CvtConvertFloat(&ans,native,outp++,dtype,0);\
       } else CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0); \
     }\
   }\
@@ -162,14 +162,14 @@ STATIC_CONSTANT const int roprand = 0x8000;
 #define MultiplyComplexOne(type,dtype,native,operator) \
     { type a,ai,b,bi,ans,ansi;\
       if (CvtConvertFloat(&in1p[0],dtype,&a,native,0) && CvtConvertFloat(&in1p[1],dtype,&ai,native,0) && \
-          CvtConvertFloat(&in2p[0],dtype,&b,native,0) && CvtConvertFloat(&in2p[1],dtype,&bi,native,0)) \
+	  CvtConvertFloat(&in2p[0],dtype,&b,native,0) && CvtConvertFloat(&in2p[1],dtype,&bi,native,0)) \
       { ans = a * b - ai * bi;\
-        ansi = a * bi + ai * b;\
-        CvtConvertFloat(&ans,native,outp++,dtype,0);\
-        CvtConvertFloat(&ansi,native,outp++,dtype,0);\
+	ansi = a * bi + ai * b;\
+	CvtConvertFloat(&ans,native,outp++,dtype,0);\
+	CvtConvertFloat(&ansi,native,outp++,dtype,0);\
       } else {\
-        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0); \
-        CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0); }}
+	CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0); \
+	CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0); }}
 
 #define MultiplyComplex(type,dtype,native) \
 { type *in1p = (type *)in1->pointer;\

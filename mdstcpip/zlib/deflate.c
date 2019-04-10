@@ -1028,10 +1028,10 @@ deflate_state *s;
       s->block_start -= (long)wsize;
 
       /* Slide the hash table (could be avoided with 32 bit values
-         at the expense of memory usage). We slide even when level == 0
-         to keep the hash table consistent if we switch back to level > 0
-         later. (Using level 0 permanently is not an optimal usage of
-         zlib, so we don't care about this pathological case.)
+	 at the expense of memory usage). We slide even when level == 0
+	 to keep the hash table consistent if we switch back to level > 0
+	 later. (Using level 0 permanently is not an optimal usage of
+	 zlib, so we don't care about this pathological case.)
        */
       n = s->hash_size;
       p = &s->head[n];
@@ -1091,8 +1091,8 @@ deflate_state *s;
  */
 #define FLUSH_BLOCK_ONLY(s, eof) { \
    _tr_flush_block(s, (s->block_start >= 0L ? \
-                   (charf *)&s->window[(unsigned)s->block_start] : \
-                   (charf *)Z_NULL), \
+	           (charf *)&s->window[(unsigned)s->block_start] : \
+	           (charf *)Z_NULL), \
 		(ulg)((long)s->strstart - s->block_start), \
 		(eof)); \
    s->block_start = s->strstart; \

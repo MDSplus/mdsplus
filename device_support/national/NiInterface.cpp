@@ -92,8 +92,8 @@ int _xseries_get_device_info(int fd, void *cardInfo)
 
     if ( xseries_get_device_info(fd, data) < 0 )
     {
-        printf("Error %d %s\n", errno, strerror(errno));
-        return -1;
+	printf("Error %d %s\n", errno, strerror(errno));
+	return -1;
     }
 
 /*
@@ -125,33 +125,33 @@ void xseries_create_ai_conf_ptr(void **confPtr, unsigned int pre_trig_smp, unsig
 
 	if( post_trig_smp > 0 )
 	{
-            if( pre_trig_smp > 0)
-            {
-	             printf("PXI 6368 Ptretrigger analog input acquisition. pre %d post %d \n", pre_trig_smp , post_trig_smp);
+	    if( pre_trig_smp > 0)
+	    {
+		     printf("PXI 6368 Ptretrigger analog input acquisition. pre %d post %d \n", pre_trig_smp , post_trig_smp);
 		     *conf = xseries_reference_ai(pre_trig_smp, post_trig_smp);
-            }
-            else
-            {
+	    }
+	    else
+	    {
 		    if(multi_trigger)
-                    {
+	            {
 			    printf("PXI 6368 Retriggerable finite analog input acquisition. %d \n", post_trig_smp);
-		            *conf = xseries_retriggerable_finite_ai(post_trig_smp);
+			    *conf = xseries_retriggerable_finite_ai(post_trig_smp);
 		    }
-                    else
-                    {
+	            else
+	            {
 			    printf("PXI 6368 Finite analog input acquisition. %d \n", post_trig_smp);
 			    *conf = xseries_finite_ai(post_trig_smp);
-                    }
-             }
+	            }
+	     }
 	}
 	else
 	{
 		printf("Continuous analog input acquisition.\n");
-    	        *conf = xseries_continuous_ai();
+		*conf = xseries_continuous_ai();
 	}
 
 
-        *confPtr = (void *) conf;
+	*confPtr = (void *) conf;
 }
 
 int xseries_set_ai_conf_ptr(int fd,  void *conf_ptr)
@@ -239,50 +239,50 @@ class SaveItem {
 		TreeNode *dataNode = new TreeNode(dataNid, (Tree *)treePtr);
 		TreeNode *clockNode = new TreeNode(clockNid, (Tree *)treePtr);
 
-    		//printf("Counter = %d Sample to read = %d\n", counter, sampleToRead );
+		//printf("Counter = %d Sample to read = %d\n", counter, sampleToRead );
 
 		//if((counter % segmentSize) == 0 || ((int)(counter / segmentSize) * segmentSize) < counter + bufSize )
 		if( (counter % segmentSize) == 0 )
 		{
-	        //Create Segment
+		//Create Segment
 			Data *startIdx = new Int32(counter);
 			Data *endIdx;
-            //In Transient Record acquisition mode must set
-            //the last segment with the correct size
-            if( sampleToRead > 0 && sampleToRead < segmentSize )
-                endIdx = new Int32(counter + sampleToRead - 1);
-            else
-                endIdx = new Int32(counter + segmentSize);
+	    //In Transient Record acquisition mode must set
+	    //the last segment with the correct size
+	    if( sampleToRead > 0 && sampleToRead < segmentSize )
+	        endIdx = new Int32(counter + sampleToRead - 1);
+	    else
+	        endIdx = new Int32(counter + segmentSize);
 
 	 /*
-            Data *startTime = compileWithArgs("$[$]", (Tree *)treePtr, 2, clockNode, startIdx);
+	    Data *startTime = compileWithArgs("$[$]", (Tree *)treePtr, 2, clockNode, startIdx);
 			Data *endTime = compileWithArgs("$[$]", (Tree *)treePtr, 2, clockNode, endIdx);
 			Data *dim = compileWithArgs("$[$ : $]", (Tree *)treePtr, 3, clockNode, startIdx, endIdx);
 	 */
-            Data *startTime;
+	    Data *startTime;
 			Data *endTime;
 			Data *dim;
 
-            if( timeIdx0 != timeIdx0 ) //is a NaN float
-            {
-                //printf("Configuration for gclock\n");
-                //printf("---------------- time at idx 0 NAN\n");
+	    if( timeIdx0 != timeIdx0 ) //is a NaN float
+	    {
+	        //printf("Configuration for gclock\n");
+	        //printf("---------------- time at idx 0 NAN\n");
 
 			    startTime = compileWithArgs("begin_of($)+slope_of($)*$",(Tree *)treePtr, 3, clockNode, clockNode,startIdx);
 			    endTime = compileWithArgs("begin_of($)+slope_of($)*$",(Tree *)treePtr, 3, clockNode,  clockNode,endIdx);
 
-            //    dim = compileWithArgs("$", (Tree *)treePtr, 1, clockNode);
+	    //    dim = compileWithArgs("$", (Tree *)treePtr, 1, clockNode);
 			    dim = compileWithArgs("build_range(begin_of($)+slope_of($)*$, begin_of($)+slope_of($)*$, slope_of($))",
-                               (Tree *)treePtr, 7, clockNode, clockNode, startIdx, clockNode, clockNode, endIdx, clockNode);
-            }
-            else
-            {
-                Data *timeAtIdx0 = new Float32(timeIdx0);
- 			    startTime = compileWithArgs("$+slope_of($)*$",(Tree *)treePtr, 3, timeAtIdx0, clockNode, startIdx);
- 			    endTime = compileWithArgs("$+slope_of($)*$",(Tree *)treePtr, 3,timeAtIdx0,  clockNode, endIdx);
- 			    dim = compileWithArgs("build_range($+slope_of($)*$, $+slope_of($)*$, slope_of($))", (Tree *)treePtr,
-                                             7, timeAtIdx0, clockNode, startIdx, timeAtIdx0, clockNode, endIdx, clockNode);
-            }
+	                       (Tree *)treePtr, 7, clockNode, clockNode, startIdx, clockNode, clockNode, endIdx, clockNode);
+	    }
+	    else
+	    {
+	        Data *timeAtIdx0 = new Float32(timeIdx0);
+			    startTime = compileWithArgs("$+slope_of($)*$",(Tree *)treePtr, 3, timeAtIdx0, clockNode, startIdx);
+			    endTime = compileWithArgs("$+slope_of($)*$",(Tree *)treePtr, 3,timeAtIdx0,  clockNode, endIdx);
+			    dim = compileWithArgs("build_range($+slope_of($)*$, $+slope_of($)*$, slope_of($))", (Tree *)treePtr,
+	                                     7, timeAtIdx0, clockNode, startIdx, timeAtIdx0, clockNode, endIdx, clockNode);
+	    }
 
 
 			switch( dataType )
@@ -323,7 +323,7 @@ class SaveItem {
 					Int16Array *data = new Int16Array((short *)buffer, bufSize);
 					dataNode->putSegment(data, -1);
 					deleteData(data);
-		 			delete[] (short *)buffer;
+					delete[] (short *)buffer;
 				}
 				break;
 				case FLOAT:
@@ -331,11 +331,11 @@ class SaveItem {
 					Float32Array *data = new Float32Array((float *)buffer, bufSize);
 					dataNode->putSegment(data, -1);
 					deleteData(data);
-		 			delete[] (float *)buffer;
+					delete[] (float *)buffer;
 				}
 				break;
 			}
- 		 }
+		 }
 		 catch(MdsException *exc)
 		 {
 			printf("Cannot put segment: %s\n", exc->what());
@@ -453,9 +453,9 @@ extern "C" void stopSave(void *listPtr)
 {
     if(listPtr)
     {
-        SaveList *list = (SaveList *)listPtr;
-        list->stop();
-        delete list;
+	SaveList *list = (SaveList *)listPtr;
+	list->stop();
+	delete list;
     }
 }
 
@@ -475,8 +475,8 @@ int readAndSave(int chanFd, int bufSize, int segmentSize, int counter, int dataN
 	    currReadSamples = pxi6259_read_ai(chanFd, &buffer[readSamples], bufSize - readSamples);
 	if(currReadSamples <=0)
 	{
-        if( currReadSamples < 0 )
-            printf("pxi6259_read_ai failed %d\n", errno);
+	if( currReadSamples < 0 )
+	    printf("pxi6259_read_ai failed %d\n", errno);
 
 	    currReadSamples = 0;
 	}
@@ -501,7 +501,7 @@ void readAiConfiguration(int fd)
 
     status = pxi6259_read_ai_conf(fd, &conf);
     if( status < 0 )
-        return;
+	return;
 
     //printf("FOUTtimebaseSelect %d\n", conf.FOUTtimebaseSelect);
     //printf("FOUTdivider %d\n", conf.FOUTdivider);
@@ -539,79 +539,79 @@ int readAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int segmentS
     memset(counters, 0, sizeof(int) * nChan);
 
     if( (*(int*)stopAcq) == 1)
-        transientRec = false;
+	transientRec = false;
 
     (*(int*)stopAcq) = 0;
 
     while( !(*(int*)stopAcq) )
     {
-        allDataSaved = true;
-        //printf("stopAcq %d\n", *(int *)stopAcq );
+	allDataSaved = true;
+	//printf("stopAcq %d\n", *(int *)stopAcq );
 
-        for( chan = 0; chan < nChan; chan++)
-        {
-            readSamples = 0;
-            currIterations = 0;
-            buffer = new float[bufSize];
+	for( chan = 0; chan < nChan; chan++)
+	{
+	    readSamples = 0;
+	    currIterations = 0;
+	    buffer = new float[bufSize];
 
-            //printf("chanFd %d dataNid %d counters %d\n", chanFd[chan], dataNid[chan], counters[chan] );
-            //printf("counters %d Num samples %d\n",  counters[chan],  numSamples);
+	    //printf("chanFd %d dataNid %d counters %d\n", chanFd[chan], dataNid[chan], counters[chan] );
+	    //printf("counters %d Num samples %d\n",  counters[chan],  numSamples);
 
-            if(numSamples < 0 || counters[chan] < numSamples)
-            {
-                while(readSamples < bufSize)
-                {
-	                if(bufSize - readSamples > PXI6259_MAX_BUFSIZE)
-	                    currReadSamples = pxi6259_read_ai(chanFd[chan], &buffer[readSamples], PXI6259_MAX_BUFSIZE);
-	                else
-	                    currReadSamples = pxi6259_read_ai(chanFd[chan], &buffer[readSamples], bufSize - readSamples);
-	                if(currReadSamples <=0)
-	                {
-                        //if( currReadSamples < 0 )
-                        //    printf("pxi6259_read_ai failed %d chan %d \n", errno, chan);
+	    if(numSamples < 0 || counters[chan] < numSamples)
+	    {
+	        while(readSamples < bufSize)
+	        {
+		        if(bufSize - readSamples > PXI6259_MAX_BUFSIZE)
+		            currReadSamples = pxi6259_read_ai(chanFd[chan], &buffer[readSamples], PXI6259_MAX_BUFSIZE);
+		        else
+		            currReadSamples = pxi6259_read_ai(chanFd[chan], &buffer[readSamples], bufSize - readSamples);
+		        if(currReadSamples <=0)
+		        {
+	                //if( currReadSamples < 0 )
+	                //    printf("pxi6259_read_ai failed %d chan %d \n", errno, chan);
 
-	                    currReadSamples = 0;
-	                }
-	                readSamples += currReadSamples;
-	                if(currReadSamples == 0)
-	                {
-	                    currIterations++;
-	                    if(currIterations >= MAX_ITERATIONS)
-		            {
-			            counters[chan] += currReadSamples;
-			            //printf("Max Iteration\n");
-                        	    if( transientRec && readSamples == 0 )
-                                       return -1;
-			            break;
+		            currReadSamples = 0;
+		        }
+		        readSamples += currReadSamples;
+		        if(currReadSamples == 0)
+		        {
+		            currIterations++;
+		            if(currIterations >= MAX_ITERATIONS)
+			    {
+				    counters[chan] += currReadSamples;
+				    //printf("Max Iteration\n");
+	                	    if( transientRec && readSamples == 0 )
+	                               return -1;
+				    break;
 					    //return currReadSamples;
-		            }
-	                }
-                }
-                //printf("readSamples %d chan %d numSamples %d counters %d\n", readSamples, chan, numSamples, counters[chan]);
-                //printf("readSamples %d counters[%d] = %d readSamples %d\n", readSamples, chan, counters[chan], readSamples );
-                if( readSamples != 0 )
-                {
-		    		//if( numSamples > 0 ) readSamples = 	counters[chan] + readSamples < numSamples ? readSamples : numSamples - counters[chan];
-		            if( numSamples > 0 )
-                    {
-                        if ( counters[chan] + readSamples > numSamples )
-                            readSamples = numSamples - counters[chan];
-                        sampleToRead = numSamples - counters[chan];
-                    }
+			    }
+		        }
+	        }
+	        //printf("readSamples %d chan %d numSamples %d counters %d\n", readSamples, chan, numSamples, counters[chan]);
+	        //printf("readSamples %d counters[%d] = %d readSamples %d\n", readSamples, chan, counters[chan], readSamples );
+	        if( readSamples != 0 )
+	        {
+				//if( numSamples > 0 ) readSamples = 	counters[chan] + readSamples < numSamples ? readSamples : numSamples - counters[chan];
+			    if( numSamples > 0 )
+	            {
+	                if ( counters[chan] + readSamples > numSamples )
+	                    readSamples = numSamples - counters[chan];
+	                sampleToRead = numSamples - counters[chan];
+	            }
 
 
-                    //printf("readSamples %d counters[%d] = %d readSamples %d\n", readSamples, chan, counters[chan], readSamples );
+	            //printf("readSamples %d counters[%d] = %d readSamples %d\n", readSamples, chan, counters[chan], readSamples );
 
 //                  saveList->addItem(buffer, bufSize, segmentSize, counters[chan], dataNid[chan], clockNid, treePtr);
-                    saveList->addItem(buffer, readSamples, sampleToRead, FLOAT, segmentSize, counters[chan], dataNid[chan], clockNid, NAN, treePtr);
-                    counters[chan] += readSamples;
-                }
-                allDataSaved = false;
-                //return readSamples;
-            }
-        }
-        if( allDataSaved )
-            break;
+	            saveList->addItem(buffer, readSamples, sampleToRead, FLOAT, segmentSize, counters[chan], dataNid[chan], clockNid, NAN, treePtr);
+	            counters[chan] += readSamples;
+	        }
+	        allDataSaved = false;
+	        //return readSamples;
+	    }
+	}
+	if( allDataSaved )
+	    break;
     }
     printf("STOP C Acquisition %d\n", *(int *)stopAcq );
     return 1;
@@ -644,8 +644,8 @@ int pxi6259_getCalibrationParams(int chanfd, int range, float *coeffVal)
 
 /*
     for (i = 0; i < NUM_AI_SCALING_COEFFICIENTS; ++i) {
-    	coeffVal[i] = ai_coefs.cal_info.modes[0].coefficients[i].f
-    			* ai_coefs.cal_info.intervals[range].gain.f;
+	coeffVal[i] = ai_coefs.cal_info.modes[0].coefficients[i].f
+			* ai_coefs.cal_info.intervals[range].gain.f;
 	    if (i == 0) {
 		    coeffVal[i] += ai_coefs.cal_info.intervals[range].offset.f;
 	    }
@@ -654,7 +654,7 @@ int pxi6259_getCalibrationParams(int chanfd, int range, float *coeffVal)
 
 /*
     for (j = NUM_AI_SCALING_COEFFICIENTS - 1; j >= 0; j--)
-         printf("Coeff[%d] : %e\n",  j, coeffVal[j] );
+	 printf("Coeff[%d] : %e\n",  j, coeffVal[j] );
 */
 }
 
@@ -682,81 +682,81 @@ int pxi6259_readAndSaveAllChannels_OLD(int nChan, void *chanFdPtr, int bufSize, 
     memset(counters, 0, sizeof(int) * nChan);
 
     if( (*(int*)stopAcq) == 1)
-        transientRec = false;
+	transientRec = false;
 
     (*(int*)stopAcq) = 0;
 
     while( !(*(int*)stopAcq) )
     {
-        allDataSaved = true;
-        //printf("stopAcq %d\n", *(int *)stopAcq );
+	allDataSaved = true;
+	//printf("stopAcq %d\n", *(int *)stopAcq );
 
-        for( chan = 0; chan < nChan; chan++)
-        {
-            readSamples = 0;
-            currIterations = 0;
-            //buffer = new float[bufSize];
-            buffer = new short[bufSize];
+	for( chan = 0; chan < nChan; chan++)
+	{
+	    readSamples = 0;
+	    currIterations = 0;
+	    //buffer = new float[bufSize];
+	    buffer = new short[bufSize];
 
 
-            //printf("chanFd %d dataNid %d counters %d\n", chanFd[chan], dataNid[chan], counters[chan] );
-            //printf("counters %d Num samples %d\n",  counters[chan],  numSamples);
+	    //printf("chanFd %d dataNid %d counters %d\n", chanFd[chan], dataNid[chan], counters[chan] );
+	    //printf("counters %d Num samples %d\n",  counters[chan],  numSamples);
 
-            if(numSamples < 0 || counters[chan] < numSamples)
-            {
-                while(readSamples < bufSize)
-                {
-	                if(bufSize - readSamples > PXI6259_MAX_BUFSIZE)
-	                    currReadSamples = read(chanFd[chan], &buffer[readSamples], PXI6259_MAX_BUFSIZE << 1);
-	                else
-	                    currReadSamples = read(chanFd[chan], &buffer[readSamples], ( bufSize - readSamples ) << 1);
-	                if(currReadSamples <=0)
-	                {
-                        //if( currReadSamples < 0 )
-                        //    printf("pxi6259_read_ai failed %d chan %d \n", errno, chan);
+	    if(numSamples < 0 || counters[chan] < numSamples)
+	    {
+	        while(readSamples < bufSize)
+	        {
+		        if(bufSize - readSamples > PXI6259_MAX_BUFSIZE)
+		            currReadSamples = read(chanFd[chan], &buffer[readSamples], PXI6259_MAX_BUFSIZE << 1);
+		        else
+		            currReadSamples = read(chanFd[chan], &buffer[readSamples], ( bufSize - readSamples ) << 1);
+		        if(currReadSamples <=0)
+		        {
+	                //if( currReadSamples < 0 )
+	                //    printf("pxi6259_read_ai failed %d chan %d \n", errno, chan);
 
-	                    currReadSamples = 0;
-	                }
-	                readSamples += ( currReadSamples >> 1 );
-	                if(currReadSamples == 0)
-	                {
-	                    currIterations++;
-	                    if(currIterations >= MAX_ITERATIONS)
-		            {
-			            counters[chan] += (currReadSamples >> 1);
-			            //printf("Max Iteration\n");
-                        	    if( transientRec && readSamples == 0 )
-                                       return -1;
-			            break;
+		            currReadSamples = 0;
+		        }
+		        readSamples += ( currReadSamples >> 1 );
+		        if(currReadSamples == 0)
+		        {
+		            currIterations++;
+		            if(currIterations >= MAX_ITERATIONS)
+			    {
+				    counters[chan] += (currReadSamples >> 1);
+				    //printf("Max Iteration\n");
+	                	    if( transientRec && readSamples == 0 )
+	                               return -1;
+				    break;
 					    //return currReadSamples;
-		            }
-	                }
-                }
-                //printf("readSamples %d chan %d numSamples %d counters %d\n", readSamples, chan, numSamples, counters[chan]);
-                //printf("readSamples %d counters[%d] = %d readSamples %d\n", readSamples, chan, counters[chan], readSamples );
-                if( readSamples != 0 )
-                {
-		    		//if( numSamples > 0 ) readSamples = 	counters[chan] + readSamples < numSamples ? readSamples : numSamples - counters[chan];
-		            if( numSamples > 0 )
-                    {
-                        if ( counters[chan] + readSamples > numSamples )
-                            readSamples = numSamples - counters[chan];
-                        sampleToRead = numSamples - counters[chan];
-                    }
+			    }
+		        }
+	        }
+	        //printf("readSamples %d chan %d numSamples %d counters %d\n", readSamples, chan, numSamples, counters[chan]);
+	        //printf("readSamples %d counters[%d] = %d readSamples %d\n", readSamples, chan, counters[chan], readSamples );
+	        if( readSamples != 0 )
+	        {
+				//if( numSamples > 0 ) readSamples = 	counters[chan] + readSamples < numSamples ? readSamples : numSamples - counters[chan];
+			    if( numSamples > 0 )
+	            {
+	                if ( counters[chan] + readSamples > numSamples )
+	                    readSamples = numSamples - counters[chan];
+	                sampleToRead = numSamples - counters[chan];
+	            }
 
 
-                    //printf("readSamples %d counters[%d] = %d readSamples %d\n", readSamples, chan, counters[chan], readSamples );
+	            //printf("readSamples %d counters[%d] = %d readSamples %d\n", readSamples, chan, counters[chan], readSamples );
 
 //                  saveList->addItem(buffer, bufSize, segmentSize, counters[chan], dataNid[chan], clockNid, treePtr);
-                    saveList->addItem(buffer, readSamples, sampleToRead, SHORT, segmentSize, counters[chan], dataNid[chan], clockNid, NAN, treePtr);
-                    counters[chan] += readSamples;
-                }
-                allDataSaved = false;
-                //return readSamples;
-            }
-        }
-        if( allDataSaved )
-            break;
+	            saveList->addItem(buffer, readSamples, sampleToRead, SHORT, segmentSize, counters[chan], dataNid[chan], clockNid, NAN, treePtr);
+	            counters[chan] += readSamples;
+	        }
+	        allDataSaved = false;
+	        //return readSamples;
+	    }
+	}
+	if( allDataSaved )
+	    break;
     }
     printf("STOP 6259 C Acquisition %d\n", *(int *)stopAcq );
     return 1;
@@ -795,36 +795,36 @@ int xseries_AI_scale(int16_t *raw, float *scaled, uint32_t num_samples, float * 
     float rawf;
 /*
     for (j = NUM_AI_SCALING_COEFFICIENTS - 1; j >= 0; j--)
-         printf("Coeff[%d] : %e\n", j, coeff[j] );
+	 printf("Coeff[%d] : %e\n", j, coeff[j] );
 */
 
     for (i = 0; i < num_samples; i++) {
-        scaled[i] = 0.0;
-        rawf = (double)raw[i];
-        for (j = NUM_AI_SCALING_COEFFICIENTS - 1; j >= 0; j--) {
-            scaled[i] *= rawf;
-            scaled[i] += coeff[j];
-        }
-        //printf("ai sample scaled: %d %e \n", raw[i], scaled[i]);
+	scaled[i] = 0.0;
+	rawf = (double)raw[i];
+	for (j = NUM_AI_SCALING_COEFFICIENTS - 1; j >= 0; j--) {
+	    scaled[i] *= rawf;
+	    scaled[i] += coeff[j];
+	}
+	//printf("ai sample scaled: %d %e \n", raw[i], scaled[i]);
     }
 }
 
 /*
 inline static void ai_scale(int16_t *raw, float *scaled,
-                uint32_t num_samples, xseries_ai_scaling_coef_t *scaling)
+	        uint32_t num_samples, xseries_ai_scaling_coef_t *scaling)
 {
-        int32_t i, j;
-        float rawf;
-        float val;
+	int32_t i, j;
+	float rawf;
+	float val;
 
-        for (i = 0; i < num_samples; i++) {
-                scaled[i] = 0.0;
-                rawf = (double)raw[i];
-                for (j = NUM_AI_SCALING_COEFFICIENTS - 1; j >= 0; j--) {
-                    scaled[i] *= rawf;
-                    scaled[i] += scaling->c[j].f;
-                }
-        }
+	for (i = 0; i < num_samples; i++) {
+	        scaled[i] = 0.0;
+	        rawf = (double)raw[i];
+	        for (j = NUM_AI_SCALING_COEFFICIENTS - 1; j >= 0; j--) {
+	            scaled[i] *= rawf;
+	            scaled[i] += scaling->c[j].f;
+	        }
+	}
 }
 */
 
@@ -841,20 +841,20 @@ Nuova versione 5.0 codac ma sembra non funzionare
 
      retval = get_ai_scaling_coefficient(chanfd, &ai_coefs, range);
      if (retval) {
-           printf("Get ai scaling error %s \n", strerror(errno));
-           return retval;
+	   printf("Get ai scaling error %s \n", strerror(errno));
+	   return retval;
      }
 */
 
      retval = ioctl(chanfd, XSERIES_IOC_GET_AI_SCALING_COEF, &ai_coefs);
      if (retval) {
-           printf("Get ai scaling error %s\n", strerror(errno));
-           return retval;
+	   printf("Get ai scaling error %s\n", strerror(errno));
+	   return retval;
      }
 
      for (i = 0; i < NUM_AI_SCALING_COEFFICIENTS; ++i) {
-    	coeffVal[i] = ai_coefs.cal_info.modes[0].coefficients[i].f
-    			* ai_coefs.cal_info.intervals[range].gain.f;
+	coeffVal[i] = ai_coefs.cal_info.modes[0].coefficients[i].f
+			* ai_coefs.cal_info.intervals[range].gain.f;
 	    if (i == 0) {
 		    coeffVal[i] += ai_coefs.cal_info.intervals[range].offset.f;
 	    }
@@ -862,7 +862,7 @@ Nuova versione 5.0 codac ma sembra non funzionare
 
 /*
     for (j = NUM_AI_SCALING_COEFFICIENTS - 1; j >= 0; j--)
-         printf("Coeff[%d] : %e\n",  j, coeffVal[j] );
+	 printf("Coeff[%d] : %e\n",  j, coeffVal[j] );
 */
     return 0;
 }
@@ -897,7 +897,7 @@ int xseriesReadAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int s
 
 
     if (bufSize > XSERIES_MAX_BUFSIZE)  // Buffer size sets in mdsplus device is limited to module limit
-        bufSize = XSERIES_MAX_BUFSIZE;
+	bufSize = XSERIES_MAX_BUFSIZE;
 
     printf("PXIe 6368 nChan %d bufSize %d segmentSize %d numSamples %d sampleToSkip %d stopAcq %d Time 0 %e Period %e SelfList %x stoAcqPtr %x\n", nChan, bufSize, segmentSize, numSamples,sampleToSkip, *(int *)stopAcq,  timeIdx0, period, saveListPtr, stopAcq);
 
@@ -906,170 +906,170 @@ int xseriesReadAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int s
 
     // stopAcq variable used to receive from phyton device the end of acquisition is also used, when funcrion is colled, to define acq mode continuous 0 transient recorder 1
     if( (*(int*)stopAcq) == 1)
-        transientRec = true;
+	transientRec = true;
     else
-        numSamples = segmentSize;
+	numSamples = segmentSize;
 
     (*(int*)stopAcq) = 0;
 
     //Allocate buffer for each channels
     for( chan = 0; chan < nChan; chan++ )
-        if(saveConv)
-            buffers_f[chan] = new float[bufSize];
-        else
-            buffers_s[chan] = new unsigned short[bufSize];
+	if(saveConv)
+	    buffers_f[chan] = new float[bufSize];
+	else
+	    buffers_s[chan] = new unsigned short[bufSize];
 
     triggered = 0;
 
     // Start main acquisition loop
     while( !(*(int*)stopAcq) )
     {
-        //Check if there are samples to skip common for each channel.
-        //sampleToSkip is an argument of the function.
-        //ATTENTION : to check with external trigger
-        if( !skipping && sampleToSkip > 0 )
-        {
-            printf("PXI 6368 Skipping data %d Nun samples %d\n", sampleToSkip, numSamples);
-            skipping = numSamples;        // save in skipping flag the number of sample to be acuire for each channel
-            numSamples = sampleToSkip;    // save as numSample to acquire th sample to skip
-        }
+	//Check if there are samples to skip common for each channel.
+	//sampleToSkip is an argument of the function.
+	//ATTENTION : to check with external trigger
+	if( !skipping && sampleToSkip > 0 )
+	{
+	    printf("PXI 6368 Skipping data %d Nun samples %d\n", sampleToSkip, numSamples);
+	    skipping = numSamples;        // save in skipping flag the number of sample to be acuire for each channel
+	    numSamples = sampleToSkip;    // save as numSample to acquire th sample to skip
+	}
 
-        //ATTENTION : why dinamic allocation of this buffer
-        memset(bufReadChanSmp, 0, sizeof(int) * nChan);
+	//ATTENTION : why dinamic allocation of this buffer
+	memset(bufReadChanSmp, 0, sizeof(int) * nChan);
 
-        chan = 0;
-        channelRead = 0;
-        //Acquisition loop on each channel of numSamples values
-        while( channelRead != nChan )
-        {
-            //Check if for the current channel has been acquired all sample
-            //and stop acquisition has not beeen asserted
-            if( readChanSmp[chan] == numSamples || (*(int*)stopAcq) )
-            {
-                channelRead++;
-                chan = (chan + 1) % nChan;
-                continue;
-            }
+	chan = 0;
+	channelRead = 0;
+	//Acquisition loop on each channel of numSamples values
+	while( channelRead != nChan )
+	{
+	    //Check if for the current channel has been acquired all sample
+	    //and stop acquisition has not beeen asserted
+	    if( readChanSmp[chan] == numSamples || (*(int*)stopAcq) )
+	    {
+	        channelRead++;
+	        chan = (chan + 1) % nChan;
+	        continue;
+	    }
 
 
-            sampleToRead = numSamples - readChanSmp[chan]; // Compute the sample to read for the current channel
-            if( sampleToRead < bufSize )
-                currDataToRead = sampleToRead;
-            else
-                currDataToRead = bufSize;
+	    sampleToRead = numSamples - readChanSmp[chan]; // Compute the sample to read for the current channel
+	    if( sampleToRead < bufSize )
+	        currDataToRead = sampleToRead;
+	    else
+	        currDataToRead = bufSize;
 
-            //read data from device based on acquisition mode converted 1 raw data 0
-            //Functions waiting for data or timeout
-            if( saveConv )
-                //number fo data to red is expresse in aamples
-                currReadSamples = xseries_read_ai(chanFd[chan], &buffers_f[chan][bufReadChanSmp[chan]], (currDataToRead - bufReadChanSmp[chan]) );
-            else
+	    //read data from device based on acquisition mode converted 1 raw data 0
+	    //Functions waiting for data or timeout
+	    if( saveConv )
+	        //number fo data to red is expresse in aamples
+	        currReadSamples = xseries_read_ai(chanFd[chan], &buffers_f[chan][bufReadChanSmp[chan]], (currDataToRead - bufReadChanSmp[chan]) );
+	    else
 		//number of sample to read must be in byte
-                currReadSamples = read(chanFd[chan], &buffers_s[chan][bufReadChanSmp[chan]], ( currDataToRead - bufReadChanSmp[chan] ) << 1 );
+	        currReadSamples = read(chanFd[chan], &buffers_s[chan][bufReadChanSmp[chan]], ( currDataToRead - bufReadChanSmp[chan] ) << 1 );
 
-            readCalls[chan]++;
+	    readCalls[chan]++;
 
-            //if( chan == 0 )
-            //printf("bufReadChanSmp[%d] = %d  currDataToRead %d Request data %d read data %d \n",chan, bufReadChanSmp[chan] , currDataToRead, currDataToRead - bufReadChanSmp[chan], currReadSamples >> 1);
+	    //if( chan == 0 )
+	    //printf("bufReadChanSmp[%d] = %d  currDataToRead %d Request data %d read data %d \n",chan, bufReadChanSmp[chan] , currDataToRead, currDataToRead - bufReadChanSmp[chan], currReadSamples >> 1);
 
-            // Check if no data is available
-            if(currReadSamples <=0)
-            {
-                currReadSamples = 0;
-                if (errno == EAGAIN || errno == ENODATA) {
+	    // Check if no data is available
+	    if(currReadSamples <=0)
+	    {
+	        currReadSamples = 0;
+	        if (errno == EAGAIN || errno == ENODATA) {
 		    currReadSamples = 0; // No data currently available... Try again
-                }
-                else
-                {
-                    if (errno == EOVERFLOW )
-                    {
+	        }
+	        else
+	        {
+	            if (errno == EOVERFLOW )
+	            {
 			printf("PXI 6368 Error reading samples on ai%d: (%d) %s \n", chan, errno, strerror(errno));
-                        for( chan = 0; chan < nChan; chan++ )
-                            if(saveConv)
-                                delete (float *)buffers_f[chan];
-                            else
-                                delete (unsigned short *)buffers_s[chan];
-                        return -2;
-                    }
-                }
-            }
+	                for( chan = 0; chan < nChan; chan++ )
+	                    if(saveConv)
+	                        delete (float *)buffers_f[chan];
+	                    else
+	                        delete (unsigned short *)buffers_s[chan];
+	                return -2;
+	            }
+	        }
+	    }
 
-            //If sample are read the module has been triggered
+	    //If sample are read the module has been triggered
 	    if ( !triggered && currReadSamples > 0 )
 	    {
 		triggered = 1;
 		printf("6368 TRIGGER!!!\n");
- 	    }
+	    }
 
-            //Increment current data read
-            if( saveConv )
-                bufReadChanSmp[chan] += currReadSamples;
-            else
-                bufReadChanSmp[chan] += ( currReadSamples >> 1 );
+	    //Increment current data read
+	    if( saveConv )
+	        bufReadChanSmp[chan] += currReadSamples;
+	    else
+	        bufReadChanSmp[chan] += ( currReadSamples >> 1 );
 
 
 //printf("bufReadChanSmp[%d] = %d  currDataToRead %d Request data %d read data %d \n",chan, bufReadChanSmp[chan] , currDataToRead);
 
-            //Enqueue data to store in the pulse file
-            if( bufReadChanSmp[chan] == currDataToRead )
-            {
+	    //Enqueue data to store in the pulse file
+	    if( bufReadChanSmp[chan] == currDataToRead )
+	    {
 		//Check if have been read more than required samples
-                if ( readChanSmp[chan] + bufReadChanSmp[chan] > numSamples )
-                    bufReadChanSmp[chan] = numSamples - readChanSmp[chan];
+	        if ( readChanSmp[chan] + bufReadChanSmp[chan] > numSamples )
+	            bufReadChanSmp[chan] = numSamples - readChanSmp[chan];
 
-                //Compute the number of samples to complete segment acquisition
-                sampleToRead = numSamples - readChanSmp[chan];
+	        //Compute the number of samples to complete segment acquisition
+	        sampleToRead = numSamples - readChanSmp[chan];
 
-                //printf("bufReadChanSmp[%d] = %d readChanSmp[%d] = %d readChanSmp[%d] = %d sampleToRead = %d\n", chan, bufReadChanSmp[chan], chan, readChanSmp[chan], chan, readChanSmp[chan], sampleToRead );
+	        //printf("bufReadChanSmp[%d] = %d readChanSmp[%d] = %d readChanSmp[%d] = %d sampleToRead = %d\n", chan, bufReadChanSmp[chan], chan, readChanSmp[chan], chan, readChanSmp[chan], sampleToRead );
 
-                if(!skipping)
-                {
-                   saveList->addItem(((saveConv) ? (void *)buffers_f[chan] : (void *)buffers_s[chan] ),
-                                      bufReadChanSmp[chan], sampleToRead, ((saveConv) ? FLOAT  : SHORT ), segmentSize,
-                                      readChanSmp[chan], dataNid[chan], clockNid, timeIdx0, treePtr);
+	        if(!skipping)
+	        {
+	           saveList->addItem(((saveConv) ? (void *)buffers_f[chan] : (void *)buffers_s[chan] ),
+	                              bufReadChanSmp[chan], sampleToRead, ((saveConv) ? FLOAT  : SHORT ), segmentSize,
+	                              readChanSmp[chan], dataNid[chan], clockNid, timeIdx0, treePtr);
 
-                   //allocate new buffer to save the next segment
-                   if( saveConv )
-                        buffers_f[chan] = new float[bufSize];
-                   else
-                        buffers_s[chan] = new unsigned short[bufSize];
-                }
-                //Update the number of samples read
-                readChanSmp[chan] += bufReadChanSmp[chan];
-                //Reset the the number of sample read for the next segment
-                bufReadChanSmp[chan] = 0;
-            }
-            chan = (chan + 1) % nChan;
-        }//End Segment acquisition loop for each channel
+	           //allocate new buffer to save the next segment
+	           if( saveConv )
+	                buffers_f[chan] = new float[bufSize];
+	           else
+	                buffers_s[chan] = new unsigned short[bufSize];
+	        }
+	        //Update the number of samples read
+	        readChanSmp[chan] += bufReadChanSmp[chan];
+	        //Reset the the number of sample read for the next segment
+	        bufReadChanSmp[chan] = 0;
+	    }
+	    chan = (chan + 1) % nChan;
+	}//End Segment acquisition loop for each channel
 
-        //Reset variables for skiping samples
-        if( ! (*(int*)stopAcq) && skipping )
-        {
-            //printf("Data to saved %d\n", readChanSmp[0]);
-            memset(readChanSmp, 0, sizeof(int) * nChan);
+	//Reset variables for skiping samples
+	if( ! (*(int*)stopAcq) && skipping )
+	{
+	    //printf("Data to saved %d\n", readChanSmp[0]);
+	    memset(readChanSmp, 0, sizeof(int) * nChan);
 
-            numSamples = skipping;
-            sampleToSkip = 0;
-            sampleToRead = 0;
-            skipping = 0;
-            continue;
-        }
+	    numSamples = skipping;
+	    sampleToSkip = 0;
+	    sampleToRead = 0;
+	    skipping = 0;
+	    continue;
+	}
 
-        printf("PXI 6368 Acquired all channels\n");
-        if( transientRec )
-            break;
+	printf("PXI 6368 Acquired all channels\n");
+	if( transientRec )
+	    break;
 
-        numSamples = readChanSmp[0] + segmentSize;
+	numSamples = readChanSmp[0] + segmentSize;
 
     }//End main acquisition loop
 
 
 /*
     for (chan=0; chan < nChan; chan++)
-        printf("readCalls[%d] = %d readChanSmp[%d] = %d \n ",chan, readCalls[chan]);
+	printf("readCalls[%d] = %d readChanSmp[%d] = %d \n ",chan, readCalls[chan]);
 */
     if( readChanSmp[0] == 0 )
-        return -1;
+	return -1;
 
     printf("PXI 6368 STOP C Acquisition %d\n", *(int *)stopAcq );
     return 1;
@@ -1103,7 +1103,7 @@ int pxi6259_readAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int 
     int 	    triggered = 0;
 
     if (bufSize > PXI6259_MAX_BUFSIZE_NEW)
-        bufSize = PXI6259_MAX_BUFSIZE_NEW;
+	bufSize = PXI6259_MAX_BUFSIZE_NEW;
 
     printf("PXI 6259 nChan %d bufSize %d segmentSize %d numSamples %d stopAcq %d Time 0 %e Period %e\n", nChan, bufSize, segmentSize, numSamples, *(int *)stopAcq,  timeIdx0, period);
 
@@ -1114,28 +1114,28 @@ int pxi6259_readAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int 
     //Delete first all data nids
     for(int i = 0; i < nChan; i++)
     {
-        try {
-            TreeNode *currNode = new TreeNode(dataNid[i], (Tree *)treePtr);
-            currNode->deleteData();
-            delete currNode;
-        }catch(MdsException &exc)
-        {
-            printf("Error deleting data nodes\n");
-        }
+	try {
+	    TreeNode *currNode = new TreeNode(dataNid[i], (Tree *)treePtr);
+	    currNode->deleteData();
+	    delete currNode;
+	}catch(MdsException &exc)
+	{
+	    printf("Error deleting data nodes\n");
+	}
     }
 
     if( (*(int*)stopAcq) == 1)
-        transientRec = true;
+	transientRec = true;
     else
-        numSamples = segmentSize;
+	numSamples = segmentSize;
 
     (*(int*)stopAcq) = 0;
 
     for( chan = 0; chan < nChan; chan++ )
-        if(saveConv)
-            buffers_f[chan] = new float[bufSize];
-        else
-            buffers_s[chan] = new unsigned short[bufSize];
+	if(saveConv)
+	    buffers_f[chan] = new float[bufSize];
+	else
+	    buffers_s[chan] = new unsigned short[bufSize];
 
     triggered = 0;
     while( !(*(int*)stopAcq) )
@@ -1143,155 +1143,155 @@ int pxi6259_readAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int 
 
       //printf("stopAcq %d\n", *(int *)stopAcq );
 
-        if( !skipping && sampleToSkip > 0 )
-        {
-            printf("PXI 6259 Skipping data %d Nun samples %d\n", sampleToSkip, numSamples);
-            skipping = numSamples;
-            numSamples = sampleToSkip;
+	if( !skipping && sampleToSkip > 0 )
+	{
+	    printf("PXI 6259 Skipping data %d Nun samples %d\n", sampleToSkip, numSamples);
+	    skipping = numSamples;
+	    numSamples = sampleToSkip;
 
-        }
+	}
 
-        memset(bufReadChanSmp, 0, sizeof(int) * nChan);
+	memset(bufReadChanSmp, 0, sizeof(int) * nChan);
 
-        chan = 0;
-        channelRead = 0;
-        while( channelRead != nChan )
-        {
-            if( readChanSmp[chan] == numSamples || (*(int*)stopAcq) )
-            {
-                channelRead++;
-                chan = (chan + 1) % nChan;
-                continue;
-            }
+	chan = 0;
+	channelRead = 0;
+	while( channelRead != nChan )
+	{
+	    if( readChanSmp[chan] == numSamples || (*(int*)stopAcq) )
+	    {
+	        channelRead++;
+	        chan = (chan + 1) % nChan;
+	        continue;
+	    }
 
-            currDataToRead = bufSize;
-            sampleToRead = numSamples - readChanSmp[chan];
-            if( sampleToRead < bufSize )
-                currDataToRead = sampleToRead;
+	    currDataToRead = bufSize;
+	    sampleToRead = numSamples - readChanSmp[chan];
+	    if( sampleToRead < bufSize )
+	        currDataToRead = sampleToRead;
 
-            if( saveConv )
-                currReadSamples = pxi6259_read_ai(chanFd[chan], &buffers_f[chan][bufReadChanSmp[chan]], (currDataToRead - bufReadChanSmp[chan]) );
-            else
-                currReadSamples = read(chanFd[chan], &buffers_s[chan][bufReadChanSmp[chan]], (currDataToRead - bufReadChanSmp[chan]) << 1 );
+	    if( saveConv )
+	        currReadSamples = pxi6259_read_ai(chanFd[chan], &buffers_f[chan][bufReadChanSmp[chan]], (currDataToRead - bufReadChanSmp[chan]) );
+	    else
+	        currReadSamples = read(chanFd[chan], &buffers_s[chan][bufReadChanSmp[chan]], (currDataToRead - bufReadChanSmp[chan]) << 1 );
 
-            readCalls[chan]++;
+	    readCalls[chan]++;
 
-            //printf("bufReadChanSmp[%d] = %d  currDataToRead %d Request data %d read data %d \n",chan, bufReadChanSmp[chan] , currDataToRead, currDataToRead - bufReadChanSmp[chan], currReadSamples >> 1);
+	    //printf("bufReadChanSmp[%d] = %d  currDataToRead %d Request data %d read data %d \n",chan, bufReadChanSmp[chan] , currDataToRead, currDataToRead - bufReadChanSmp[chan], currReadSamples >> 1);
 
-            if(currReadSamples <=0)
-            {
-                currReadSamples = 0;
-                if (errno == EAGAIN || errno == ENODATA) {
-                    //usleep(50);
-			        currReadSamples = 0; // No data currently available... Try again
-                    //continue;
-                }
-                else
-                {
-                    if (errno == EOVERFLOW )
-                    {
+	    if(currReadSamples <=0)
+	    {
+	        currReadSamples = 0;
+	        if (errno == EAGAIN || errno == ENODATA) {
+	            //usleep(50);
+				currReadSamples = 0; // No data currently available... Try again
+	            //continue;
+	        }
+	        else
+	        {
+	            if (errno == EOVERFLOW )
+	            {
 			printf("PXI 6259 Error reading samples on ai%d: (%d) %s \n", chan, errno, strerror(errno));
 
-                        for( chan = 0; chan < nChan; chan++ )
-                            if(saveConv)
-                                delete (float *)buffers_f[chan];
-                            else
-                                delete (unsigned short *)buffers_s[chan];
+	                for( chan = 0; chan < nChan; chan++ )
+	                    if(saveConv)
+	                        delete (float *)buffers_f[chan];
+	                    else
+	                        delete (unsigned short *)buffers_s[chan];
 
-                        return -2;
-                    }
-                }
-            }
+	                return -2;
+	            }
+	        }
+	    }
 
 	    if (!triggered && currReadSamples > 0 )
 	    {
 		triggered = 1;
 		printf("6259 TRIGGER!!!\n");
- 	    }
+	    }
 
-            if( saveConv )
-            {
-                //readChanSmp[chan] += currReadSamples;
-                bufReadChanSmp[chan] += currReadSamples;
-            }
-            else
-            {
-                //readChanSmp[chan] += ( currReadSamples >> 1 );
-                bufReadChanSmp[chan] += ( currReadSamples >> 1 );
-            }
+	    if( saveConv )
+	    {
+	        //readChanSmp[chan] += currReadSamples;
+	        bufReadChanSmp[chan] += currReadSamples;
+	    }
+	    else
+	    {
+	        //readChanSmp[chan] += ( currReadSamples >> 1 );
+	        bufReadChanSmp[chan] += ( currReadSamples >> 1 );
+	    }
 
 
-            if( bufReadChanSmp[chan] == currDataToRead )
-            {
+	    if( bufReadChanSmp[chan] == currDataToRead )
+	    {
 /*
-                if ( counters[chan] + bufReadChanSmp[chan] > numSamples )
-                    bufReadChanSmp[chan] = numSamples - counters[chan];
-                sampleToRead = numSamples - counters[chan];
+	        if ( counters[chan] + bufReadChanSmp[chan] > numSamples )
+	            bufReadChanSmp[chan] = numSamples - counters[chan];
+	        sampleToRead = numSamples - counters[chan];
 */
-                if ( readChanSmp[chan] + bufReadChanSmp[chan] > numSamples )
-                    bufReadChanSmp[chan] = numSamples - readChanSmp[chan];
-                sampleToRead = numSamples - readChanSmp[chan];
+	        if ( readChanSmp[chan] + bufReadChanSmp[chan] > numSamples )
+	            bufReadChanSmp[chan] = numSamples - readChanSmp[chan];
+	        sampleToRead = numSamples - readChanSmp[chan];
 
-                //printf("bufReadChanSmp[%d] = %d readChanSmp[%d] = %d readChanSmp[%d] = %d sampleToRead = %d\n", chan, bufReadChanSmp[chan], chan, readChanSmp[chan], chan, readChanSmp[chan], sampleToRead );
+	        //printf("bufReadChanSmp[%d] = %d readChanSmp[%d] = %d readChanSmp[%d] = %d sampleToRead = %d\n", chan, bufReadChanSmp[chan], chan, readChanSmp[chan], chan, readChanSmp[chan], sampleToRead );
 
-                if(!skipping)
-                {
-                   saveList->addItem(((saveConv) ? (void *)buffers_f[chan] : (void *)buffers_s[chan] ),
-                                      bufReadChanSmp[chan], sampleToRead, ((saveConv) ? FLOAT  : SHORT ), segmentSize,
-                                      readChanSmp[chan], dataNid[chan], clockNid, timeIdx0, treePtr);
+	        if(!skipping)
+	        {
+	           saveList->addItem(((saveConv) ? (void *)buffers_f[chan] : (void *)buffers_s[chan] ),
+	                              bufReadChanSmp[chan], sampleToRead, ((saveConv) ? FLOAT  : SHORT ), segmentSize,
+	                              readChanSmp[chan], dataNid[chan], clockNid, timeIdx0, treePtr);
 
-                   if( saveConv )
-                        buffers_f[chan] = new float[bufSize];
-                   else
-                        buffers_s[chan] = new unsigned short[bufSize];
-                }
+	           if( saveConv )
+	                buffers_f[chan] = new float[bufSize];
+	           else
+	                buffers_s[chan] = new unsigned short[bufSize];
+	        }
 
-                //counters[chan] += bufReadChanSmp[chan];
-                readChanSmp[chan] += bufReadChanSmp[chan];
-                bufReadChanSmp[chan] = 0;
-            }
-            chan = (chan + 1) % nChan;
-        }
+	        //counters[chan] += bufReadChanSmp[chan];
+	        readChanSmp[chan] += bufReadChanSmp[chan];
+	        bufReadChanSmp[chan] = 0;
+	    }
+	    chan = (chan + 1) % nChan;
+	}
 
-        if( ! (*(int*)stopAcq) && skipping )
-        {
-            //printf("Data to saved %d\n", readChanSmp[0]);
-            //memset(counters, 0, sizeof(int) * nChan);
-            memset(readChanSmp, 0, sizeof(int) * nChan);
+	if( ! (*(int*)stopAcq) && skipping )
+	{
+	    //printf("Data to saved %d\n", readChanSmp[0]);
+	    //memset(counters, 0, sizeof(int) * nChan);
+	    memset(readChanSmp, 0, sizeof(int) * nChan);
 
-            numSamples = skipping;
-            sampleToSkip = 0;
-            sampleToRead = 0;
-            skipping = 0;
-            continue;
-        }
+	    numSamples = skipping;
+	    sampleToSkip = 0;
+	    sampleToRead = 0;
+	    skipping = 0;
+	    continue;
+	}
 
-        printf("PXI 6259 Acquired all channels %d\n", readChanSmp[0]);
-        if( transientRec )
-            break;
+	printf("PXI 6259 Acquired all channels %d\n", readChanSmp[0]);
+	if( transientRec )
+	    break;
 /*
-        for( chan = 0; chan < nChan; chan++ )
-            buffers_s[chan] = new unsigned short[bufSize];
-            buffers_f[chan] = new float[bufSize];
+	for( chan = 0; chan < nChan; chan++ )
+	    buffers_s[chan] = new unsigned short[bufSize];
+	    buffers_f[chan] = new float[bufSize];
 */
-        //memset(counters, 0, sizeof(int) * nChan);
-        //memset(readChanSmp, 0, sizeof(int) * nChan);
-        numSamples = readChanSmp[0] + segmentSize;
+	//memset(counters, 0, sizeof(int) * nChan);
+	//memset(readChanSmp, 0, sizeof(int) * nChan);
+	numSamples = readChanSmp[0] + segmentSize;
 
     }
 
     for( chan = 0; chan < nChan; chan++ )
-        if(saveConv)
-            delete (float *)buffers_f[chan];
-        else
-            delete (unsigned short *)buffers_s[chan];
+	if(saveConv)
+	    delete (float *)buffers_f[chan];
+	else
+	    delete (unsigned short *)buffers_s[chan];
 
 /*
     for (chan=0; chan < nChan; chan++)
-        printf("readCalls[%d] = %d \n ",chan, readCalls[chan]);
+	printf("readCalls[%d] = %d \n ",chan, readCalls[chan]);
 */
     if( readChanSmp[0] == 0 )
-        return -1;
+	return -1;
 
     printf("STOP C 6259 Acquisition %d\n", *(int *)stopAcq );
     return 1;
@@ -1322,43 +1322,43 @@ extern "C" int temperatureProbeControl(uint32_t boardID, uint32_t *inChan, int n
 
 int configureDigital(int *chanDigitFD, uint32_t deviceNum, uint32_t outChanOnOff)
 {
-        pxi6259_dio_conf_t dioConfig;
-        char filename[256];
-        int devFD;
+	pxi6259_dio_conf_t dioConfig;
+	char filename[256];
+	int devFD;
 
 	uint32_t port0Mask = 1 << outChanOnOff;
 
 
-        // open DIO file descriptor
-        sprintf(filename, "%s.%u.dio", DEVICE_FILE, deviceNum);
-        devFD = open(filename, O_RDWR);
-        if (devFD < 0) {
-                fprintf(stderr, "Failed to open device: %s\n", strerror(errno));
-                return -1;
-        }
+	// open DIO file descriptor
+	sprintf(filename, "%s.%u.dio", DEVICE_FILE, deviceNum);
+	devFD = open(filename, O_RDWR);
+	if (devFD < 0) {
+	        fprintf(stderr, "Failed to open device: %s\n", strerror(errno));
+	        return -1;
+	}
 
-        // initialize DIO configuration
-        dioConfig = pxi6259_create_dio_conf();
+	// initialize DIO configuration
+	dioConfig = pxi6259_create_dio_conf();
 
-        // configure DIO P0.0 ports
-        if (pxi6259_add_dio_channel(&dioConfig, DIO_PORT0, port0Mask)) {
-                fprintf(stderr, "Failed to configure DIO port 0!\n");
-                return -1;
-        }
+	// configure DIO P0.0 ports
+	if (pxi6259_add_dio_channel(&dioConfig, DIO_PORT0, port0Mask)) {
+	        fprintf(stderr, "Failed to configure DIO port 0!\n");
+	        return -1;
+	}
 
 
-        // load DIO configuration and let it apply
-        if (pxi6259_load_dio_conf(devFD, &dioConfig)) {
-                fprintf(stderr, "Loading DIO configuration failed!\n");
-                return -1;
-        }
+	// load DIO configuration and let it apply
+	if (pxi6259_load_dio_conf(devFD, &dioConfig)) {
+	        fprintf(stderr, "Loading DIO configuration failed!\n");
+	        return -1;
+	}
 
-        sprintf(filename, "%s.%u.dio.%u", DEVICE_FILE, deviceNum, 0);
-        *chanDigitFD = open(filename, O_RDWR | O_NONBLOCK);
-        if (*chanDigitFD < 0) {
-                fprintf(stderr, "Failed to open port: %s\n", strerror(errno));
-                return -1;
-        }
+	sprintf(filename, "%s.%u.dio.%u", DEVICE_FILE, deviceNum, 0);
+	*chanDigitFD = open(filename, O_RDWR | O_NONBLOCK);
+	if (*chanDigitFD < 0) {
+	        fprintf(stderr, "Failed to open port: %s\n", strerror(errno));
+	        return -1;
+	}
 
 	return devFD;
 
@@ -1367,72 +1367,72 @@ int configureDigital(int *chanDigitFD, uint32_t deviceNum, uint32_t outChanOnOff
 
 int configureOutput(int *chanOutFD, uint32_t deviceNum, uint32_t outChanRef , uint32_t outChanOnOff)
 {
-        char filename[256];
-        int i;
-        pxi6259_ao_conf_t aoConfig;
-        int devFD;
+	char filename[256];
+	int i;
+	pxi6259_ao_conf_t aoConfig;
+	int devFD;
 
-        // open AO file descriptor
-        sprintf(filename, "%s.%u.ao", DEVICE_FILE, deviceNum);
-        devFD = open(filename, O_RDWR);
-        if (devFD < 0) {
-                fprintf(stderr, "Failed to open device: %s\n", strerror(errno));
-                return -1;
-        }
+	// open AO file descriptor
+	sprintf(filename, "%s.%u.ao", DEVICE_FILE, deviceNum);
+	devFD = open(filename, O_RDWR);
+	if (devFD < 0) {
+	        fprintf(stderr, "Failed to open device: %s\n", strerror(errno));
+	        return -1;
+	}
 
-        // initialize AO configuration
-        //aoConfig = pxi6259_create_ao_conf();
+	// initialize AO configuration
+	//aoConfig = pxi6259_create_ao_conf();
 
-        // configure AO channel reference
-        if (pxi6259_add_ao_channel(&aoConfig, outChanRef, AO_DAC_POLARITY_BIPOLAR)) {
-                fprintf(stderr, "Failed to configure channel %d reference! %s\n", outChanRef, strerror(errno));
-                return -1;
-        }
+	// configure AO channel reference
+	if (pxi6259_add_ao_channel(&aoConfig, outChanRef, AO_DAC_POLARITY_BIPOLAR)) {
+	        fprintf(stderr, "Failed to configure channel %d reference! %s\n", outChanRef, strerror(errno));
+	        return -1;
+	}
 
-        // configure AO channel on/off
-        if (pxi6259_add_ao_channel(&aoConfig, outChanOnOff, AO_DAC_POLARITY_BIPOLAR)) {
-                fprintf(stderr, "Failed to configure channel %d reference! : %s\n", outChanOnOff, strerror(errno));
-                return -1;
-        }
+	// configure AO channel on/off
+	if (pxi6259_add_ao_channel(&aoConfig, outChanOnOff, AO_DAC_POLARITY_BIPOLAR)) {
+	        fprintf(stderr, "Failed to configure channel %d reference! : %s\n", outChanOnOff, strerror(errno));
+	        return -1;
+	}
 
-        // enable signal generation
-        if (pxi6259_set_ao_attribute(&aoConfig, AO_SIGNAL_GENERATION, AO_SIGNAL_GENERATION_STATIC)) {
-                fprintf(stderr, "Failed to enable generating static signal!: %s\n", strerror(errno));
-                return -1;
-        }
+	// enable signal generation
+	if (pxi6259_set_ao_attribute(&aoConfig, AO_SIGNAL_GENERATION, AO_SIGNAL_GENERATION_STATIC)) {
+	        fprintf(stderr, "Failed to enable generating static signal!: %s\n", strerror(errno));
+	        return -1;
+	}
 
-        // set continuous mode
-        if (pxi6259_set_ao_attribute(&aoConfig, AO_CONTINUOUS, 0)) {
-                fprintf(stderr, "Failed to set continuous mode!: %s\n", strerror(errno));
-                return -1;
-        }
+	// set continuous mode
+	if (pxi6259_set_ao_attribute(&aoConfig, AO_CONTINUOUS, 0)) {
+	        fprintf(stderr, "Failed to set continuous mode!: %s\n", strerror(errno));
+	        return -1;
+	}
 
-        // load AO configuration and let it apply
-        if (pxi6259_load_ao_conf(devFD, &aoConfig)) {
-                fprintf(stderr, "Failed to load output configuration! : %s\n", strerror(errno));
-                return -1;
-        }
+	// load AO configuration and let it apply
+	if (pxi6259_load_ao_conf(devFD, &aoConfig)) {
+	        fprintf(stderr, "Failed to load output configuration! : %s\n", strerror(errno));
+	        return -1;
+	}
 
-        // open file descriptor for each AO channel
-        sprintf(filename, "%s.%u.ao.%u", DEVICE_FILE, deviceNum, outChanRef);
-        chanOutFD[0] = open(filename, O_RDWR | O_NONBLOCK);
-        if ( *chanOutFD < 0) {
-                fprintf(stderr, "Failed to open channel %u: %s\n", outChanRef, strerror(errno));
-                return -1;
-        }
+	// open file descriptor for each AO channel
+	sprintf(filename, "%s.%u.ao.%u", DEVICE_FILE, deviceNum, outChanRef);
+	chanOutFD[0] = open(filename, O_RDWR | O_NONBLOCK);
+	if ( *chanOutFD < 0) {
+	        fprintf(stderr, "Failed to open channel %u: %s\n", outChanRef, strerror(errno));
+	        return -1;
+	}
 
-        sprintf(filename, "%s.%u.ao.%u", DEVICE_FILE, deviceNum, outChanOnOff);
-        chanOutFD[1] = open(filename, O_RDWR | O_NONBLOCK);
-        if ( *chanOutFD < 0) {
-                fprintf(stderr, "Failed to open channel %u: %s\n", outChanOnOff , strerror(errno));
-                return -1;
-        }
+	sprintf(filename, "%s.%u.ao.%u", DEVICE_FILE, deviceNum, outChanOnOff);
+	chanOutFD[1] = open(filename, O_RDWR | O_NONBLOCK);
+	if ( *chanOutFD < 0) {
+	        fprintf(stderr, "Failed to open channel %u: %s\n", outChanOnOff , strerror(errno));
+	        return -1;
+	}
 
-        // start AO segment (signal generation)
-        if (pxi6259_start_ao(devFD)) {
-                fprintf(stderr, "Failed to start segment!n");
-                return -1;
-        }
+	// start AO segment (signal generation)
+	if (pxi6259_start_ao(devFD)) {
+	        fprintf(stderr, "Failed to start segment!n");
+	        return -1;
+	}
 
 	return devFD;
 }
@@ -1441,24 +1441,24 @@ int configureOutput(int *chanOutFD, uint32_t deviceNum, uint32_t outChanRef , ui
 int configureInput(int *chanInFd, uint32_t deviceNum, uint32_t inChan[], double frequency, int numChan)
 {
 	int diffMapChannel[16] = {-1,0,1,2,3,4,5,6,7,16,17,18,19,20.21,22,23};
-        char filename[256];
-        int i;
-        pxi6259_ai_conf_t aiConfig;
-        int devFD;
+	char filename[256];
+	int i;
+	pxi6259_ai_conf_t aiConfig;
+	int devFD;
 	int period;
 
-        // open AI file descriptor
-        sprintf(filename, "%s.%u.ai", DEVICE_FILE, deviceNum);
-        devFD = open(filename, O_RDWR);
-        if (devFD < 0) {
-                fprintf(stderr, "Failed to open device: %s\n", strerror(errno));
-                return -1;
-        }
+	// open AI file descriptor
+	sprintf(filename, "%s.%u.ai", DEVICE_FILE, deviceNum);
+	devFD = open(filename, O_RDWR);
+	if (devFD < 0) {
+	        fprintf(stderr, "Failed to open device: %s\n", strerror(errno));
+	        return -1;
+	}
 
-        // initialize AI configuration
-        aiConfig = pxi6259_create_ai_conf();
+	// initialize AI configuration
+	aiConfig = pxi6259_create_ai_conf();
 
-        // configure AI channels 0 - 5 V differential
+	// configure AI channels 0 - 5 V differential
 	for( int i = 0; i < numChan; i++)
 	{
 
@@ -1469,43 +1469,43 @@ int configureInput(int *chanInFd, uint32_t deviceNum, uint32_t inChan[], double 
 
 */		{
 
-		        fprintf(stderr, "Failed to configure channel %u\n", inChan[i]);
-		        return -1;
+			fprintf(stderr, "Failed to configure channel %u\n", inChan[i]);
+			return -1;
 		}
 	}
 
-        // configure AI sampling clock to sample with 2 samples/second
+	// configure AI sampling clock to sample with 2 samples/second
 	period = (int) ( 20000000. / frequency );
-        if (pxi6259_set_ai_sample_clk(&aiConfig, period, 3, AI_SAMPLE_SELECT_SI_TC, AI_SAMPLE_POLARITY_ACTIVE_HIGH_OR_RISING_EDGE)) {
-                fprintf(stderr, "Failed to configure AI sampling clock!\n");
-                return -1;
-        }
+	if (pxi6259_set_ai_sample_clk(&aiConfig, period, 3, AI_SAMPLE_SELECT_SI_TC, AI_SAMPLE_POLARITY_ACTIVE_HIGH_OR_RISING_EDGE)) {
+	        fprintf(stderr, "Failed to configure AI sampling clock!\n");
+	        return -1;
+	}
 
-        // load AI configuration and let it apply
-        if (pxi6259_load_ai_conf(devFD, &aiConfig)) {
-                fprintf(stderr, "Failed to load input configuration! %s\n", strerror(errno) );
-                return -1;
-        }
+	// load AI configuration and let it apply
+	if (pxi6259_load_ai_conf(devFD, &aiConfig)) {
+	        fprintf(stderr, "Failed to load input configuration! %s\n", strerror(errno) );
+	        return -1;
+	}
 
-        // open file descriptor for each AI channel
+	// open file descriptor for each AI channel
 	for( int i = 0; i < numChan; i++)
 	{
 		sprintf(filename, "%s.%u.ai.%u", DEVICE_FILE, deviceNum, diffMapChannel[inChan[i]]);
 		//printf("%s\n", filename);
 		chanInFd[i] = open(filename, O_RDWR | O_NONBLOCK);
 		if (chanInFd[i] < 0) {
-		        fprintf(stderr, "Failed to open channel %u: %s\n", inChan[i], strerror(errno));
-		        return -1;
+			fprintf(stderr, "Failed to open channel %u: %s\n", inChan[i], strerror(errno));
+			return -1;
 		}
 	}
 
 	// start AI segment (data acquisition)
 	if (pxi6259_start_ai(devFD)) {
-	        fprintf(stderr, "Failed to start data acquisition!\n");
-	        return -1;
+		fprintf(stderr, "Failed to start data acquisition!\n");
+		return -1;
 	}
 
-        usleep(100);
+	usleep(100);
 
 	return devFD;
 
@@ -1520,14 +1520,14 @@ int temperatureCtrlCommand(char *cmd)
 
     semPause_id = sem_open("PauseControl", O_CREAT, 0666, 0);
     if(semPause_id == SEM_FAILED) {
-        perror("child sem_open");
-        return -1;
+	perror("child sem_open");
+	return -1;
     }
 
     semWake_id = sem_open("WakeControl", O_CREAT, 0666, 0);
     if(semWake_id== SEM_FAILED) {
-        perror("child sem_open");
-        return -1;
+	perror("child sem_open");
+	return -1;
     }
 
     if(strcmp(cmd, "stop") == 0 )
@@ -1610,9 +1610,9 @@ int temperatureCtrlCommand(char *cmd)
 
 double calibTCN(double val)
 {
-        double out;
+	double out;
 
-        double K  = 47.513 * 1.e-3  / 5. ;
+	double K  = 47.513 * 1.e-3  / 5. ;
 
 	double C1 =  3.86896e-2;
 	double C2 = -1.08267e-6;
@@ -1633,12 +1633,12 @@ double calibTCN(double val)
 	out =  C1 * val + C2 * val2 + C3 * val3 + C4 * val4 + C5 * val5 + C6 * val6 + C7 * val7;
 
 /*
-        scaled[i] = 0.0;
-        rawf = (double)raw[i];
-        for (j = NUM_AI_SCALING_COEFFICIENTS - 1; j >= 0; j--) {
-            scaled[i] *= rawf;
-            scaled[i] += scaling->c[j].f;
-        }
+	scaled[i] = 0.0;
+	rawf = (double)raw[i];
+	for (j = NUM_AI_SCALING_COEFFICIENTS - 1; j >= 0; j--) {
+	    scaled[i] *= rawf;
+	    scaled[i] += scaling->c[j].f;
+	}
 */
 	return out;
 }
@@ -1650,12 +1650,12 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 	static char log[5] = "|/-\\";
 	static int count = 0;
 
-        uint32_t deviceNum;
+	uint32_t deviceNum;
 	//int numChan = 2;
-        //uint32_t inChan[numAiChannle];
-        //double    frequency;
-        uint32_t outChanRef;
-        uint32_t outChanOnOff;
+	//uint32_t inChan[numAiChannle];
+	//double    frequency;
+	uint32_t outChanRef;
+	uint32_t outChanOnOff;
 	uint32_t rc;
 
 
@@ -1678,11 +1678,11 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 
 	float ZERO_VOLT = 0;
 	float FIVE_VOLT = 5.;
-        uint8_t ON  = 0x01;
-        uint8_t OFF = 0x00;
+	uint8_t ON  = 0x01;
+	uint8_t OFF = 0x00;
 
 	float setPointT;
-        float tempVal;
+	float tempVal;
 	float E;
 	bool enableTcCheck = true;
 
@@ -1692,14 +1692,14 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 	    aiFdChanIdx = -aiFdChanIdx;
 	    enableTcCheck = false;
 	    printf("Disable check on TC1 TC2 temperature difference\n");
- 	}
+	}
 
 	printf("BoardID %d\n", boardID );
 	printf("numChan %d\n", numChan );
-        for(int i = 0; i < numChan; i++)
+	for(int i = 0; i < numChan; i++)
 	{
 		printf("chan %d = %d\n", i, inChan[i]);
-        }
+	}
 	printf("numChan %d\n", numChan );
 	printf("FeedBack chan Idx %d\n", inChan[aiFdChanIdx] );
 	printf("frequency %e\n", frequency );
@@ -1708,18 +1708,18 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 	printf("Temperature set point %e\n", tempRef );
 
 
-        deviceNum = boardID;
+	deviceNum = boardID;
 /*
-        inChan[0] = aichan1;
+	inChan[0] = aichan1;
 	printf("ch %d\n", inChan[0] );
-        inChan[1] = aichan2;
+	inChan[1] = aichan2;
 	printf("ch %d\n", inChan[1] );
-        frequency = freq;
+	frequency = freq;
 */
-        outChanRef = aochan;
-        outChanOnOff = dochan;
+	outChanRef = aochan;
+	outChanOnOff = dochan;
 
-        setPointT = tempRef;
+	setPointT = tempRef;
 
 
 
@@ -1742,15 +1742,15 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 
 
 	try {
-  		time_t rawtime;
-  		struct tm * timeinfo;
+		time_t rawtime;
+		struct tm * timeinfo;
 		char strShot[256];
 		char dataFile[256];
 		unsigned long shot;
 		Tree *t;
 
-  		time (&rawtime);
-  		timeinfo = localtime (&rawtime);
+		time (&rawtime);
+		timeinfo = localtime (&rawtime);
 
 		sprintf(strShot, "%d%0.2d%0.2d", 1900+timeinfo->tm_year, timeinfo->tm_mon+1, timeinfo->tm_mday);
 		shot = strtoul(strShot, NULL, 0);
@@ -1807,18 +1807,18 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 		}
 
 		if ( ( devInFD = configureInput( chanInFD, deviceNum, inChan, frequency, numChan ) ) < 0 ) {
-		        fprintf(stderr, "Error configure input channel!\n");
-		        return -1;
+			fprintf(stderr, "Error configure input channel!\n");
+			return -1;
 		}
 
 		if ( ( devOutFD = configureOutput( chanOutFD, deviceNum, outChanRef, outChanOnOff ) ) < 0 ) {
-		        fprintf(stderr, "Error configure ouput channel!\n");
-		        return -1;
+			fprintf(stderr, "Error configure ouput channel!\n");
+			return -1;
 		}
 
 		if ( ( devDigitFD = configureDigital( &chanDigitFD, deviceNum, outChanOnOff) ) < 0 ) {
-		        fprintf(stderr, "Error configure digital channel!\n");
-		        return -1;
+			fprintf(stderr, "Error configure digital channel!\n");
+			return -1;
 		}
 
 		printf("START controll\n");
@@ -1826,12 +1826,12 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 		// Control tc
 		while (wakeState)
 		{
-		        int n = 0;
+			int n = 0;
 			int i = 0;
 			int nChRead;
 			int scans_read[16];
-		        float value[16];
-		        float vRef;
+			float value[16];
+			float vRef;
 
 /*
 
@@ -1861,11 +1861,11 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 					{
 						if( errno != EAGAIN )
 						{
-				                	fprintf(stderr, "Failed while reading channel: %u: %s %d\n", inChan[i], strerror(errno), errno);
+					        	fprintf(stderr, "Failed while reading channel: %u: %s %d\n", inChan[i], strerror(errno), errno);
 							error = 1;
-				                	goto out;
+					        	goto out;
 						}
-				        }
+					}
 					else
 					      nChRead++;
 				}
@@ -1873,7 +1873,7 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 			}
 
 
-		        // Start Control algorithm
+			// Start Control algorithm
 			//tempVal = 1300./5. * value[aiFdChanIdx];
 			tempVal = (float)calibTCN( (double)value[aiFdChanIdx] );
 			//printf("Temp %f V %f C \n", value[aiFdChanIdx] , tempVal);
@@ -1889,7 +1889,7 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 
 			if( fabs( value[0] - value[1] ) > 30.  && enableTcCheck )
 			{
-		    		fprintf(stderr, "Difference between TC1 and TC2 > than 30 C reset reference signal \n");
+				fprintf(stderr, "Difference between TC1 and TC2 > than 30 C reset reference signal \n");
 				vRef = 0.0;
 			}
 
@@ -1911,24 +1911,24 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 			{
 				ftime( &tb);
 				Float32 *currData;
-		   		currTime =  (int64_t)(tb.time * 1000 + tb.millitm);
+				currTime =  (int64_t)(tb.time * 1000 + tb.millitm);
 				for(int i = 0; i < numChan; i++)
 				{
-		  			currData = new Float32(value[i]);
-		   			node[i]->putRow(currData, &currTime);
+					currData = new Float32(value[i]);
+					node[i]->putRow(currData, &currTime);
 				}
 
-	  			currData = new Float32(E);
-	   			errorNode->putRow(currData, &currTime);
+				currData = new Float32(E);
+				errorNode->putRow(currData, &currTime);
 
-	  			currData = new Float32(vRef);
-	   			vRefNode->putRow(currData, &currTime);
+				currData = new Float32(vRef);
+				vRefNode->putRow(currData, &currTime);
 			}
 			catch(MdsException *exc)
 			{
 				printf("%s\n", exc->what());
 				error = 1;
-			    	goto out;
+				goto out;
 			}
 
 			if( sem_getvalue( wakeSem_id, &wakeState ) < 0 || wakeState == 2 )
@@ -1936,17 +1936,17 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 				if(wakeState != 2)
 				   perror("Control sem_open");
 				error = 1;
-		 		goto out;
+				goto out;
 			}
 /*
 			struct tm * timeinfo;
 			time_t pp =  (time_t)( tb.time );
-	  		timeinfo = localtime ( &pp );
-		        printf(" %x Value[0] %f %s:%d\n\n Wake state %d \n", currTime, value[0], asctime(timeinfo), tb.millitm, wakeState);
-		        printf("Value[0] = %f  \n", value[0]);
+			timeinfo = localtime ( &pp );
+			printf(" %x Value[0] %f %s:%d\n\n Wake state %d \n", currTime, value[0], asctime(timeinfo), tb.millitm, wakeState);
+			printf("Value[0] = %f  \n", value[0]);
 */
 			printf("\r%c", log[count], count);
-		        fflush( stdout );
+			fflush( stdout );
 			count = (count+1)%4;
 
 		}
@@ -1977,7 +1977,7 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 
 		// stop AI segment
 		if (pxi6259_stop_ai(devInFD)) {
-		        fprintf(stderr, "Failed to stop data acquisition!\n");
+			fprintf(stderr, "Failed to stop data acquisition!\n");
 		}
 
 		// close file descriptors
@@ -1988,7 +1988,7 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 
 		// stop AO segment
 		if (pxi6259_stop_ao(devOutFD)) {
-		        fprintf(stderr, "Failed to stop generating signal!\n");
+			fprintf(stderr, "Failed to stop generating signal!\n");
 		}
 
 
@@ -1996,9 +1996,9 @@ int temperatureProbeControl(uint32_t  boardID, uint32_t *inChan, int numChan, in
 		close(chanOutFD[1]);
 		close(devOutFD);
 
-       		// close digital file descriptors
-                close(chanDigitFD);
-        	close(devDigitFD);
+		// close digital file descriptors
+	        close(chanDigitFD);
+		close(devDigitFD);
 
 
 	}
@@ -2031,13 +2031,13 @@ static void createWaveform(int number_of_samples, double offset, double level, f
     double m = 4./number_of_samples;
 
     for(i = 0; i <  number_of_samples/4; i++)
-            buf[i] = (float)(offset + level * m * i);
+	    buf[i] = (float)(offset + level * m * i);
 
     for(i = number_of_samples/4; i <  3 * number_of_samples / 4; i++)
-            buf[i] = (float)(offset + level * (-m * i + 2) );
+	    buf[i] = (float)(offset + level * (-m * i + 2) );
 
     for(i = 3 * number_of_samples/ 4; i <  number_of_samples ; i++)
-            buf[i] = (float)(offset + level * (m * i - 4 ));
+	    buf[i] = (float)(offset + level * (m * i - 4 ));
 
 }
 
@@ -2071,8 +2071,8 @@ uint32_t generateWaveformOnOneChannel_6368(int selectedCard, int channel, double
 	    number_of_samples = nPoint;
 	}
 
-    	sampleRate = number_of_samples * waverate;
-    	update_period_divisor = 100000000 / sampleRate;
+	sampleRate = number_of_samples * waverate;
+	update_period_divisor = 100000000 / sampleRate;
 
 	int ao_fd = 0;
 	//int dev_fd = 0;
@@ -2081,16 +2081,16 @@ uint32_t generateWaveformOnOneChannel_6368(int selectedCard, int channel, double
 	char str[100];
 	int i = 0, k = 0;
 
-        double pi;
-        double radianPart;
+	double pi;
+	double radianPart;
 
 	float *write_array[number_of_channels];
 	xseries_ao_conf_t ao_conf;
 
-        for( i = 0; i < number_of_channels; i++ )
-        {
-        	write_array[i] = (float *)calloc( 1, sizeof(float) * number_of_samples );
-    	}
+	for( i = 0; i < number_of_channels; i++ )
+	{
+		write_array[i] = (float *)calloc( 1, sizeof(float) * number_of_samples );
+	}
 
 	//memset (write_array, 0, sizeof(write_array));
 
@@ -2147,7 +2147,7 @@ uint32_t generateWaveformOnOneChannel_6368(int selectedCard, int channel, double
 			goto out_6368;
 		}
 	}
-        else
+	else
 	{
 
 		/* Program the START1 signal (start trigger) to assert from a PFI1 rising edge */
@@ -2169,7 +2169,7 @@ uint32_t generateWaveformOnOneChannel_6368(int selectedCard, int channel, double
 			XSERIES_AO_UPDATE_COUNTER_UI_TC,	// Derive the clock line from the Update Interval Terminal Count
 			XSERIES_AO_POLARITY_RISING_EDGE);	// Make the line active on rising edge
 	if(retval)
-        {
+	{
 		if(!silent) printf("Error setting update counter!\n");
 		goto out_6368;
 	}
@@ -2197,7 +2197,7 @@ uint32_t generateWaveformOnOneChannel_6368(int selectedCard, int channel, double
 	}
 
 	/* load configuration to the device */
-        retval = xseries_load_ao_conf(ao_fd, ao_conf);
+	retval = xseries_load_ao_conf(ao_fd, ao_conf);
 	if(retval) {
 		if(!silent) printf("Cannot load AO configuration! %s (%d)\n",strerror(errno),errno);
 		goto out_6368;
@@ -2209,7 +2209,7 @@ uint32_t generateWaveformOnOneChannel_6368(int selectedCard, int channel, double
 
 	if( nPoint == 0 )
 	{
-    	    createWaveform(number_of_samples, offset, level,  write_array[0]);
+	    createWaveform(number_of_samples, offset, level,  write_array[0]);
 	}
 	else
 	{
@@ -2241,7 +2241,7 @@ uint32_t generateWaveformOnOneChannel_6368(int selectedCard, int channel, double
 				goto out_6368;
 			}
 		}
-        }
+	}
 
 	/* put segment in started state */
 	retval = xseries_start_ao(ao_fd);
@@ -2263,11 +2263,11 @@ uint32_t generateWaveformOnOneChannel_6368(int selectedCard, int channel, double
 	{
 	    int semVal;
 
- 	    semWaveGen_id = sem_open("WaveGen", O_CREAT, 0666, 0);
-    	    if(semWaveGen_id == SEM_FAILED) {
-        	perror("WaveGen sem_open");
-        	return 0;
-    	    }
+	    semWaveGen_id = sem_open("WaveGen", O_CREAT, 0666, 0);
+	    if(semWaveGen_id == SEM_FAILED) {
+		perror("WaveGen sem_open");
+		return 0;
+	    }
 
 
 	    if( sem_getvalue( semWaveGen_id, &semVal ) < 0 )
@@ -2279,9 +2279,9 @@ uint32_t generateWaveformOnOneChannel_6368(int selectedCard, int channel, double
 	    for( int i = 0; i < semVal+1; i++ )
 	    {
 		if( sem_wait( semWaveGen_id ) < 0 )
-	    	{
+		{
 		     perror("sem_wait on semWaveGen_id");
-	    	}
+		}
 	    }
 	}
 
@@ -2305,12 +2305,12 @@ out_6368:
 	//close(dev_fd);
 
 
-        for( i = 0; i < number_of_channels; i++ )
-        {
-             free( write_array[i] );
-        }
+	for( i = 0; i < number_of_channels; i++ )
+	{
+	     free( write_array[i] );
+	}
 
-        printf("Waveform generation STOP\n");
+	printf("Waveform generation STOP\n");
 
 	return retval;
 
@@ -2321,23 +2321,23 @@ out_6368:
 //uint32_t generateWaveformOnOneChannel_6259(uint8_t selectedCard, uint8_t channel, double offset, double level, uint32_t waverate, float *values, int nPoint, int softwareTrigger)
 uint32_t generateWaveformOnOneChannel_6259(int selectedCard, int channel, double offset, double level, int waverate, float *values, int nPoint , int softwareTrigger)
 {
-        uint32_t retval = 0;
-        pxi6259_ao_conf_t ao_conf;
+	uint32_t retval = 0;
+	pxi6259_ao_conf_t ao_conf;
 
-        int fdConfig = 0;
-        int fdChannel = 0;
+	int fdConfig = 0;
+	int fdChannel = 0;
 
-        uint32_t sampleRate;
+	uint32_t sampleRate;
 
-        uint32_t periodDivisor;
+	uint32_t periodDivisor;
 
-        uint32_t number_of_samples = 1000;
-        uint32_t i;
-        char str[32];
+	uint32_t number_of_samples = 1000;
+	uint32_t i;
+	char str[32];
 
-        double pi;
-        double radianPart;
-        sem_t *semWaveGen_id;
+	double pi;
+	double radianPart;
+	sem_t *semWaveGen_id;
 
 
 //printf("CARD %d\nChannel %d\nOffset %f\nLevel %f\nfreq %f\nnPoint %d\nTrigger %d\n", selectedCard, channel, offset, level, waverate, nPoint, softwareTrigger);
@@ -2356,36 +2356,36 @@ uint32_t generateWaveformOnOneChannel_6259(int selectedCard, int channel, double
 
 //printf("number_of_samples ==== %d\n", number_of_samples);
 
-        float scaledWriteArray[number_of_samples];
+	float scaledWriteArray[number_of_samples];
 
-        sampleRate = number_of_samples * waverate;
-        periodDivisor = 20000000 / sampleRate;
+	sampleRate = number_of_samples * waverate;
+	periodDivisor = 20000000 / sampleRate;
 
 //printf("sampleRate ==== %d\n", sampleRate);
 //printf("periodDivisor ==== %d\n", periodDivisor);
 
 
-        // get configuration file descriptor
-        sprintf(str,"%s.%d.ao",RESOURCE_NAME_DAQ, selectedCard);
-        fdConfig = open(str, O_RDWR | O_NONBLOCK);
-        if (fdConfig < 0) {
-                printf ("Error Opening Device! fd: %d\n",fdConfig);
-                return -1;
-        }
+	// get configuration file descriptor
+	sprintf(str,"%s.%d.ao",RESOURCE_NAME_DAQ, selectedCard);
+	fdConfig = open(str, O_RDWR | O_NONBLOCK);
+	if (fdConfig < 0) {
+	        printf ("Error Opening Device! fd: %d\n",fdConfig);
+	        return -1;
+	}
 
 
 /*
-        pi = 4.0 * atan(1.0);
-        radianPart = 2*pi / number_of_samples;
-        for (i=0; i<number_of_samples; i++) {
-                scaledWriteArray[i] = (float)(7 * sin((double) radianPart*i));
-        }
+	pi = 4.0 * atan(1.0);
+	radianPart = 2*pi / number_of_samples;
+	for (i=0; i<number_of_samples; i++) {
+	        scaledWriteArray[i] = (float)(7 * sin((double) radianPart*i));
+	}
 */
 
 
 	if( nPoint == 0 )
 	{
-            createWaveform(number_of_samples, offset, level,  scaledWriteArray);
+	    createWaveform(number_of_samples, offset, level,  scaledWriteArray);
 	}
 	else
 	{
@@ -2396,25 +2396,25 @@ uint32_t generateWaveformOnOneChannel_6259(int selectedCard, int channel, double
 	}
 
 //	retval = pxi6259_reset_ao(fdConfig);
-        if (retval) {
-                printf ("err: reset ao. retval: %x\n",retval * -1);
-                return -1;
-        }
+	if (retval) {
+	        printf ("err: reset ao. retval: %x\n",retval * -1);
+	        return -1;
+	}
 
-        ao_conf = pxi6259_create_ao_conf();
+	ao_conf = pxi6259_create_ao_conf();
 
-        if (pxi6259_set_ao_waveform_generation(&ao_conf, 1))
-                return -1;
+	if (pxi6259_set_ao_waveform_generation(&ao_conf, 1))
+	        return -1;
 
-        if (pxi6259_add_ao_channel(&ao_conf, channel, AO_DAC_POLARITY_BIPOLAR))
-                return retval;
+	if (pxi6259_add_ao_channel(&ao_conf, channel, AO_DAC_POLARITY_BIPOLAR))
+	        return retval;
 
-        if (pxi6259_set_ao_count(&ao_conf, number_of_samples, 1, 1))
-                return -1;
+	if (pxi6259_set_ao_count(&ao_conf, number_of_samples, 1, 1))
+	        return -1;
 
-        if (pxi6259_set_ao_update_clk(&ao_conf, AO_UPDATE_SOURCE_SELECT_UI_TC,
-                        AO_UPDATE_SOURCE_POLARITY_RISING_EDGE, periodDivisor))
-                return -1;
+	if (pxi6259_set_ao_update_clk(&ao_conf, AO_UPDATE_SOURCE_SELECT_UI_TC,
+	                AO_UPDATE_SOURCE_POLARITY_RISING_EDGE, periodDivisor))
+	        return -1;
 
 
 
@@ -2435,7 +2435,7 @@ uint32_t generateWaveformOnOneChannel_6259(int selectedCard, int channel, double
 
 
 	}
-        else
+	else
 	{
 		// Program the START1 signal (start trigger) to assert from a PFI1 rising edge
 		if ( pxi6259_set_ao_attribute(&ao_conf, AO_START1_SOURCE_SELECT,  AO_START1_SELECT_PFI1) )
@@ -2453,33 +2453,33 @@ uint32_t generateWaveformOnOneChannel_6259(int selectedCard, int channel, double
 	}
 
 
-        retval = pxi6259_load_ao_conf(fdConfig, &ao_conf);
-        if (retval) {
-                printf ("err: load task. retval: %x\n",retval * -1);
-                goto out_6259;
-        }
+	retval = pxi6259_load_ao_conf(fdConfig, &ao_conf);
+	if (retval) {
+	        printf ("err: load task. retval: %x\n",retval * -1);
+	        goto out_6259;
+	}
 
-        sleep(1);
+	sleep(1);
 
-        // Open channels
-        sprintf(str,"%s.%d.ao.%d",RESOURCE_NAME_DAQ,selectedCard,channel);
-        fdChannel = open(str, O_RDWR | O_NONBLOCK);
-        if (fdChannel < 0) {
-                printf ("Error Opening Channel! FD: %d\n",fdChannel);
-                return -1;
-        }
+	// Open channels
+	sprintf(str,"%s.%d.ao.%d",RESOURCE_NAME_DAQ,selectedCard,channel);
+	fdChannel = open(str, O_RDWR | O_NONBLOCK);
+	if (fdChannel < 0) {
+	        printf ("Error Opening Channel! FD: %d\n",fdChannel);
+	        return -1;
+	}
 
-        retval = pxi6259_write_ao(fdChannel, scaledWriteArray, number_of_samples);
-        if (retval != number_of_samples) {
-                printf ("err: writing. retval: %d\n",retval);
-                goto out_6259;
-        }
+	retval = pxi6259_write_ao(fdChannel, scaledWriteArray, number_of_samples);
+	if (retval != number_of_samples) {
+	        printf ("err: writing. retval: %d\n",retval);
+	        goto out_6259;
+	}
 
-        retval = pxi6259_start_ao(fdConfig);
-        if (retval) {
-                printf ("err: Starting task. retval: %d\n",retval);
-                return -1;
-        }
+	retval = pxi6259_start_ao(fdConfig);
+	if (retval) {
+	        printf ("err: Starting task. retval: %d\n",retval);
+	        return -1;
+	}
 
 /*
 	if(softwareTrigger)
@@ -2495,11 +2495,11 @@ uint32_t generateWaveformOnOneChannel_6259(int selectedCard, int channel, double
 	{
 	    int semVal;
 
- 	    semWaveGen_id = sem_open("WaveGen", O_CREAT, 0666, 0);
-    	    if(semWaveGen_id == SEM_FAILED) {
-        	perror("WaveGen sem_open");
-        	return 0;
-    	    }
+	    semWaveGen_id = sem_open("WaveGen", O_CREAT, 0666, 0);
+	    if(semWaveGen_id == SEM_FAILED) {
+		perror("WaveGen sem_open");
+		return 0;
+	    }
 
 
 	    if( sem_getvalue( semWaveGen_id, &semVal ) < 0 )
@@ -2511,64 +2511,64 @@ uint32_t generateWaveformOnOneChannel_6259(int selectedCard, int channel, double
 	    for( int i = 0; i < semVal+1; i++ )
 	    {
 		if( sem_wait( semWaveGen_id ) < 0 )
-	    	{
+		{
 		     perror("sem_wait on semWaveGen_id");
-	    	}
+		}
 	    }
 	}
 
 
 out_6259:
-        if (pxi6259_stop_ao(fdConfig))
-                printf ("err: Stoping task. retval: %x\n",retval * -1);
+	if (pxi6259_stop_ao(fdConfig))
+	        printf ("err: Stoping task. retval: %x\n",retval * -1);
 
-        close(fdChannel);
-        //sleep(1);
+	close(fdChannel);
+	//sleep(1);
 
 //	retval = pxi6259_reset_ao(fdConfig);
-        if (retval) {
-                printf ("err: reset ao. retval: %x\n",retval * -1);
-                return -1;
-        }
-        close(fdConfig);
+	if (retval) {
+	        printf ("err: reset ao. retval: %x\n",retval * -1);
+	        return -1;
+	}
+	close(fdConfig);
 
 
 /*
-        retval = pxi6259_load_ao_conf(fdConfig, &ao_conf);
-        if (retval) {
-                printf ("err: load task. retval: %x\n",retval * -1);
-                goto out_6259;
-        }
+	retval = pxi6259_load_ao_conf(fdConfig, &ao_conf);
+	if (retval) {
+	        printf ("err: load task. retval: %x\n",retval * -1);
+	        goto out_6259;
+	}
 
-        // Open channels
-        sprintf(str,"%s.%d.ao.%d",RESOURCE_NAME_DAQ,selectedCard,channel);
-        fdChannel = open(str, O_RDWR | O_NONBLOCK);
-        if (fdChannel < 0) {
-                printf ("Error Opening Channel! FD: %d\n",fdChannel);
-        }
+	// Open channels
+	sprintf(str,"%s.%d.ao.%d",RESOURCE_NAME_DAQ,selectedCard,channel);
+	fdChannel = open(str, O_RDWR | O_NONBLOCK);
+	if (fdChannel < 0) {
+	        printf ("Error Opening Channel! FD: %d\n",fdChannel);
+	}
 
-        for( i = 0; i <  number_of_samples; i++)
-            scaledWriteArray[i] = (float)0.;
+	for( i = 0; i <  number_of_samples; i++)
+	    scaledWriteArray[i] = (float)0.;
 
-        retval = pxi6259_write_ao(fdChannel, scaledWriteArray, number_of_samples);
-        if (retval != number_of_samples) {
-                printf ("err: writing. retval: %d\n",retval);
-        }
+	retval = pxi6259_write_ao(fdChannel, scaledWriteArray, number_of_samples);
+	if (retval != number_of_samples) {
+	        printf ("err: writing. retval: %d\n",retval);
+	}
 
-        retval = pxi6259_start_ao(fdConfig);
-        if (retval) {
-                printf ("err: Starting task. retval: %d\n",retval);
-        }
+	retval = pxi6259_start_ao(fdConfig);
+	if (retval) {
+	        printf ("err: Starting task. retval: %d\n",retval);
+	}
 
-        sleep(1);
+	sleep(1);
 
-        if (pxi6259_stop_ao(fdConfig))
-                printf ("err: Stoping task. retval: %x\n",retval * -1);
+	if (pxi6259_stop_ao(fdConfig))
+	        printf ("err: Stoping task. retval: %x\n",retval * -1);
 
-        close(fdChannel);
-        close(fdConfig);
+	close(fdChannel);
+	close(fdConfig);
 */
-        return 0;
+	return 0;
 }
 
 int stopWaveGeneration()
@@ -2741,12 +2741,12 @@ std::cout << "SAVE LIST WAIT..." << std::endl;
 		pthread_cond_wait(&itemAvailable, &mutex);
 std::cout << "SAVE LIST CONDITION" << std::endl;
 		if(stopReq && saveHead == NULL)
-	        {
+		{
 std::cout << "SAVE LIST EXIT" << std::endl;
 
 		    pthread_mutex_unlock(&mutex);
 		    pthread_exit(NULL);
-	        }
+		}
 	    }
 	    SaveItemEV *currItem = saveHead;
 	    saveHead = saveHead->getNext();
@@ -2793,9 +2793,9 @@ extern "C" void stopSaveEV(void *listPtr)
 {
     if(listPtr)
     {
-        SaveListEV *list = (SaveListEV *)listPtr;
-        list->stop();
-        delete list;
+	SaveListEV *list = (SaveListEV *)listPtr;
+	list->stop();
+	delete list;
     }
 }
 
@@ -2819,7 +2819,7 @@ class BufferHandler
 	this->bufSize = (preTime + maxDelay) * baseFreq;
 	this->buffer = new short[this->bufSize];
 	this->bufferIdx = this->oldestBufferIdx = 0;
-        this->sampleCount = 0;
+	this->sampleCount = 0;
 	this->saveList = saveList;
     }
     ~BufferHandler()
@@ -2844,8 +2844,8 @@ class BufferHandler
 	{
 	    for(size_t i = 0; i < bufSize - 2; i++)
 	    {
-	    	processSampleDelayed(buffer[oldestBufferIdx]);
-	    	oldestBufferIdx = (oldestBufferIdx + 1)%bufSize;
+		processSampleDelayed(buffer[oldestBufferIdx]);
+		oldestBufferIdx = (oldestBufferIdx + 1)%bufSize;
 	    }
 	    flushBuffer();
 	}
@@ -2890,7 +2890,7 @@ public:
 	double postTime, SaveListEV *saveList):BufferHandler(tree, rawNode, maxDelay, preTime, baseFreq, saveList)
     {
 	this->basePeriod = 1./baseFreq;
-        this->baseFreq = baseFreq;
+	this->baseFreq = baseFreq;
 	this->segBufSize = segBufSize;
 	this->segBuffer = new short[segBufSize];
 	this->numBuffersInSegment = segmentSize / segBufSize;
@@ -2905,7 +2905,7 @@ public:
 	this->startTime = startTime;
 	this->preTime = preTime;
 	this->postTime = postTime;
- 	this->baseSampleCount = this->segBufSampleCount = this->sampleCount = 0;
+	this->baseSampleCount = this->segBufSampleCount = this->sampleCount = 0;
 	this->currBaseSampleCount = -1;
 	this->bufStartTime = startTime;
 	double bufEndTime = startTime + segmentSize * (this->basePeriod * f12Div[0]);
@@ -2947,7 +2947,7 @@ static int i = 0;
 {
     std::cout << currTime << std::endl;
     if(switchTimes.size() > 0)
-        std::cout << switchTimes[0] << std::endl;
+	std::cout << switchTimes[0] << std::endl;
 }
 */
 	if(currBaseSampleCount % f12Div[currDivIdx] == 0)
@@ -2998,14 +2998,14 @@ std::cout << "SEGMENT FILLED" << std::endl;
 	    if(currBaseSampleCount % f12Div[currDivIdx] == 0) //A sample at previous frequency has been written at this time
 	    {
 		currBaseSampleCount = 0; //wait a period for the new frequency before saving sample
-	    	bufStartTimes.push_back(switchTimes[0] + basePeriod * f12Div[currDivIdx]);
-                bufEndTimes[bufEndTimes.size() - 1] = switchTimes[0]+ minPeriod/2.;
+		bufStartTimes.push_back(switchTimes[0] + basePeriod * f12Div[currDivIdx]);
+	        bufEndTimes[bufEndTimes.size() - 1] = switchTimes[0]+ minPeriod/2.;
 	    }
 	    else
 	    {
 		currBaseSampleCount = -1; //Next sample is being written
-	    	bufStartTimes.push_back(switchTimes[0]);
-                bufEndTimes[bufEndTimes.size() - 1] = switchTimes[0]- minPeriod/2.;
+		bufStartTimes.push_back(switchTimes[0]);
+	        bufEndTimes[bufEndTimes.size() - 1] = switchTimes[0]- minPeriod/2.;
 	    }
 
 
@@ -3122,8 +3122,8 @@ std::cout << "DISTRUTTO" << std::endl;
 	    if(!inBurst)  //Trigger considered only if not serving a previous burst
 	    {
 		inBurst = true;
-	    	currBaseSampleCount = 0;
-	    	burstCount = 0;
+		currBaseSampleCount = 0;
+		burstCount = 0;
 		windowCount = 0;
 		segStart = currTime;
 	    }
@@ -3202,10 +3202,10 @@ std::cout << "Created event handler for " << name <<std::endl;
     }
     void run()
     {
-        int bufSize;
-        MDSplus::Data *evData =  getData(); //Get raw data
+	int bufSize;
+	MDSplus::Data *evData =  getData(); //Get raw data
 	double triggerTime = evData->getDouble();
-        std::cout << "RECEIVED EVENT " << getName() << " WITH DATA  " << evData << "\n";
+	std::cout << "RECEIVED EVENT " << getName() << " WITH DATA  " << evData << "\n";
 	bufHandler->trigger(triggerTime);
 	MDSplus::deleteData(evData);
     }
@@ -3227,14 +3227,14 @@ int pxi6259EV_readAndSaveAllChannels(int nChan, void *chanFdPtr, int *isBurst, i
     //Delete first all data nids
     for(int i = 0; i < nChan; i++)
     {
-        try {
-            treeNodes[i] = new TreeNode(dataNid[i], (Tree *)treePtr);
-            treeNodes[i]->deleteData();
+	try {
+	    treeNodes[i] = new TreeNode(dataNid[i], (Tree *)treePtr);
+	    treeNodes[i]->deleteData();
 
-        }catch(MdsException &exc)
-        {
-            printf("Error deleting data nodes\n");
-        }
+	}catch(MdsException &exc)
+	{
+	    printf("Error deleting data nodes\n");
+	}
     }
 
     (*(int*)stopAcq) = 0;
@@ -3248,7 +3248,7 @@ int pxi6259EV_readAndSaveAllChannels(int nChan, void *chanFdPtr, int *isBurst, i
 	if(isBurst[chan])
 	    bufferHandlers[chan] = new BurstBufferHandler((MDSplus::Tree *)treePtr, treeNodes[chan], maxDelay, f1Div[chan], baseFreq, startTime, preTimes[chan], postTimes[chan], segmentSize, saveList);
 	else
-    	    bufferHandlers[chan] = new ClockBufferHandler((MDSplus::Tree *)treePtr, treeNodes[chan], maxDelay, f1Div[chan], f2Div[chan], baseFreq, bufSize, segmentSize,
+	    bufferHandlers[chan] = new ClockBufferHandler((MDSplus::Tree *)treePtr, treeNodes[chan], maxDelay, f1Div[chan], f2Div[chan], baseFreq, bufSize, segmentSize,
 		startTime, preTimes[chan], postTimes[chan], saveList);
 	if(eventNames[chan][0]) //Empty string is passed for no event
 	{
@@ -3264,37 +3264,37 @@ int pxi6259EV_readAndSaveAllChannels(int nChan, void *chanFdPtr, int *isBurst, i
 	for(chan = 0; chan < nChan; chan++)
 	{
 	    int currReadSamples = read(chanFd[chan], buffer, ADC_BUFFER_SIZE * 2);
-            if(currReadSamples <=0)
-            {
-                if (errno == EAGAIN || errno == ENODATA)
+	    if(currReadSamples <=0)
+	    {
+	        if (errno == EAGAIN || errno == ENODATA)
 		{
-                    usleep(50);
-			        currReadSamples = 0; // No data currently available... Try again
-                    //continue;
-                }
-                else
-                {
-                    if (errno == EOVERFLOW )
-                    {
-		    	printf("PXI 6259 Error reading samples on ai%d: (%d) %s \n", chan, errno, strerror(errno));
-                    	for( chan = 0; chan < nChan; chan++ )
-		    	{
+	            usleep(50);
+				currReadSamples = 0; // No data currently available... Try again
+	            //continue;
+	        }
+	        else
+	        {
+	            if (errno == EOVERFLOW )
+	            {
+			printf("PXI 6259 Error reading samples on ai%d: (%d) %s \n", chan, errno, strerror(errno));
+	            	for( chan = 0; chan < nChan; chan++ )
+			{
 			    if(eventHandlers[chan])
 			    {
-	    		    	eventHandlers[chan]->stop();
-	    		    	delete eventHandlers[chan];
+				eventHandlers[chan]->stop();
+				delete eventHandlers[chan];
 			    }
 			    delete bufferHandlers[chan];
-		        }
-		        delete [] eventHandlers;
-		        delete [] bufferHandlers;
-                        return -2;
-                    }
-                }
+			}
+			delete [] eventHandlers;
+			delete [] bufferHandlers;
+	                return -2;
+	            }
+	        }
 	    }
 	    else
 	    {
-	        for(int sampleIdx = 0; sampleIdx < currReadSamples/sizeof(short); sampleIdx++)
+		for(int sampleIdx = 0; sampleIdx < currReadSamples/sizeof(short); sampleIdx++)
 		{
 		    bufferHandlers[chan]->processSample(buffer[sampleIdx] );
 //		    std::cout << buffer[sampleIdx] << std::endl;

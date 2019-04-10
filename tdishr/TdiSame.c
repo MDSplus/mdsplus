@@ -23,16 +23,16 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Same.C
-        Does operations that preserve the input shape and signality.
-        It calls: status = name(&in1, ..., &out)
-        1-argument routines include: AINT, NOT, SIN.
-        2-argument routines include: ADD, AND, LOGICAL_AND, EQ. Indirectly from MAX and MIN
-        3-argument routines include: BITS, SHFTC.
-        1 or 2 arguments: CHAR D_COMPLEX ... STRING INT REAL.
-        1, 2, or 3 arguments: CMPLX.
-        Internal generic routine for elemental functions.
+	Does operations that preserve the input shape and signality.
+	It calls: status = name(&in1, ..., &out)
+	1-argument routines include: AINT, NOT, SIN.
+	2-argument routines include: ADD, AND, LOGICAL_AND, EQ. Indirectly from MAX and MIN
+	3-argument routines include: BITS, SHFTC.
+	1 or 2 arguments: CHAR D_COMPLEX ... STRING INT REAL.
+	1, 2, or 3 arguments: CMPLX.
+	Internal generic routine for elemental functions.
 
-        Ken Klare, LANL CTR-7   (c)1989,1990
+	Ken Klare, LANL CTR-7   (c)1989,1990
 */
 #include <STATICdef.h>
 #include <status.h>
@@ -66,8 +66,8 @@ int Tdi1Same(opcode_t opcode, int narg, struct descriptor *list[], struct descri
   dat[2].pointer = 0;
 
 	/******************************************
-        Fetch signals and data and data's category.
-        ******************************************/
+	Fetch signals and data and data's category.
+	******************************************/
   memset(sig, 0, sizeof(sig));
   memset(uni, 0, sizeof(uni));
   memset(dat, 0, sizeof(dat));
@@ -75,28 +75,28 @@ int Tdi1Same(opcode_t opcode, int narg, struct descriptor *list[], struct descri
   status = TdiGetArgs(opcode, narg, list, sig, uni, dat, cats);
 
 	/******************************************
-        Adjust category needed to match data types.
-        ******************************************/
+	Adjust category needed to match data types.
+	******************************************/
   if STATUS_OK
     status = (*fun_ptr->f2) (narg, uni, dat, cats, &routine, fun_ptr->o1, fun_ptr->o2);
 
 	/******************************
-        Do the needed type conversions.
-        ******************************/
+	Do the needed type conversions.
+	******************************/
   if STATUS_OK
     status = TdiCvtArgs(narg, dat, cats);
 
 	/******************
-        Find correct shape.
-        ******************/
+	Find correct shape.
+	******************/
   if STATUS_OK
     status = TdiGetShape(narg, dat, cats[narg].digits, cats[narg].out_dtype, &cmode, out_ptr);
 
 	/********************************
-        Act on data, linear arguments.
-        No action for simple conversions.
-        Default is for MIN/MAX pairwise.
-        ********************************/
+	Act on data, linear arguments.
+	No action for simple conversions.
+	Default is for MIN/MAX pairwise.
+	********************************/
   if STATUS_OK {
     if (routine == &Tdi3undef || routine == 0) {
       MdsFree1Dx(out_ptr, NULL);
@@ -124,8 +124,8 @@ int Tdi1Same(opcode_t opcode, int narg, struct descriptor *list[], struct descri
     status = TdiMasterData(narg, sig, uni, &cmode, out_ptr);
 
 	/********************
-        Free all temporaries.
-        ********************/
+	Free all temporaries.
+	********************/
   for (j = narg; --j >= 0;) {
     if (sig[j].pointer)
       MdsFree1Dx(&sig[j], NULL);

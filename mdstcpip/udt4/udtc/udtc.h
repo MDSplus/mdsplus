@@ -122,13 +122,13 @@ written by
 
       #ifndef LEGACY_WIN32
 
-         typedef unsigned __int64 uint64_t;
+	 typedef unsigned __int64 uint64_t;
 
       #else
 
-         // VC 6.0 does not support unsigned __int64: may cause potential problems.
+	 // VC 6.0 does not support unsigned __int64: may cause potential problems.
 
-         typedef __int64 uint64_t;
+	 typedef __int64 uint64_t;
 
       #endif
 
@@ -136,11 +136,11 @@ written by
 
       #ifdef UDT_EXPORTS
 
-         #define UDT_API __declspec(dllexport)
+	 #define UDT_API __declspec(dllexport)
 
       #else
 
-         #define UDT_API __declspec(dllimport)
+	 #define UDT_API __declspec(dllimport)
 
       #endif
 
@@ -552,7 +552,7 @@ UDT_API extern int udt_epoll_remove_ssock(int eid, SYSSOCKET s);
 
 UDT_API extern int udt_epoll_wait2(int eid, UDTSOCKET* readfds, int* rnum, UDTSOCKET* writefds, int* wnum, int64_t msTimeOut,
 
-                        SYSSOCKET* lrfds, int* lrnum, SYSSOCKET* lwfds, int* lwnum);
+	                SYSSOCKET* lrfds, int* lrnum, SYSSOCKET* lwfds, int* lwnum);
 
 UDT_API extern int udt_epoll_release(int eid);
 

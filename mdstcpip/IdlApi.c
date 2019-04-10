@@ -156,7 +156,7 @@ EXPORT int IdlMdsSetDefault(int lArgc, void * *lpvArgv)
 EXPORT int IdlGetAnsInfo(int lArgc, void * *lpvArgv)
 {
 /*  status = call_external('mdsipshr','IdlGetAnsInfo', connection_l, dtype_b, length_w, ndims_b, dims_l[7], numbytes_l, ans,
-                               value=[1b,0b,0b,0b,0b,0b,0b])
+	                       value=[1b,0b,0b,0b,0b,0b,0b])
 */
   int status = 0;
   if (lArgc == 7) {

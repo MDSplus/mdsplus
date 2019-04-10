@@ -104,7 +104,7 @@ int kappaOpen(const char *cameraName, void **cameraHandle)
 
 	_CHECK(SDK4DevGetControl(hDev, &hCtrl));
 	//_CHECK(SDK4SetPacketSize (hCtrl, 8192));
- 	SDK4GetPacketSize (hCtrl, &size);
+	SDK4GetPacketSize (hCtrl, &size);
 	cout << "Packet size : " << size << endl;
    return success;
 Exit:
@@ -223,7 +223,7 @@ int kappaSetExposure(void *cameraHandle, float expTime)
 		case 6: espo = 0.1; break;
 		case 7: espo = 1; break;
 	}
-        espo=espo*kExposure.counter;
+	espo=espo*kExposure.counter;
 	cout << "Exposure set to " << espo << " s" << endl;
 #endif
     return success;
@@ -261,14 +261,14 @@ int kappaSetAutoExposureLevel(void *cameraHandle, uint32_t lev)
 	CTRL_HANDLE hCtrl;
 	_CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
 	if(lev>=0 && lev<=255)
-        {
+	{
 	 _CHECK(SDK4SetAutoExposureLevel(hCtrl, lev));
 #ifdef debug
 	cout << "Auto Exposure level set to: " << lev << endl;
 #endif
 	}
 	else
-        {
+	{
 #ifdef debug
 	cout << "Auto Exposure level must be in range 0-255." << endl;
 	return error;
@@ -289,14 +289,14 @@ int kappaSetGain(void *cameraHandle, uint32_t gain)
 	_CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
 
 	if(gain>=0 && gain<=511)
-        {
-	 	_CHECK(SDK4SetGain(hCtrl, gain));
+	{
+		_CHECK(SDK4SetGain(hCtrl, gain));
 #ifdef debug
 	cout << "Gain set to: " << gain << endl;
 #endif
 	}
 	else
-        {
+	{
 #ifdef debug
 	cout << "Gain must be in range 0-511." << endl;
 	return error;
@@ -447,13 +447,13 @@ int kappaSetBinning(void *cameraHandle, int binHor, int binVer)
 {
 	SDK4_KBINNING bin;
 	CTRL_HANDLE hCtrl;
-   	bin.horizontal=binHor;
+	bin.horizontal=binHor;
 	if(bin.horizontal > 8)
 	    bin.horizontal = 8;
 	if(bin.horizontal < 1)
 	    bin.horizontal = 1;
 
-   	bin.vertical=binVer;
+	bin.vertical=binVer;
 	if(bin.vertical > 8)
 	    bin.vertical = 8;
 	if(bin.vertical < 1)
@@ -500,10 +500,10 @@ int kappaSetMeasureWindow(void *cameraHandle, int x, int y, int width, int heigh
 	SDK4_ENUM_MEASUREWINDOWSELECT select = 0;
 	SDK4_KAREA mwin;
 	CTRL_HANDLE hCtrl;
-   	mwin.start.xPos=x;
-   	mwin.start.yPos=y;
-   	mwin.end.xPos=x+width;
-   	mwin.end.yPos=y+height;
+	mwin.start.xPos=x;
+	mwin.start.yPos=y;
+	mwin.end.xPos=x+width;
+	mwin.end.yPos=y+height;
 	_CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
 	_CHECK(SDK4SetMeasureWindow(hCtrl, select, mwin));
 #ifdef debug
@@ -530,7 +530,7 @@ int kappaGetIp(void *cameraHandle, char *ip)
 	int32_t size = 24;
 	CTRL_HANDLE hCtrl;
 
-        //Camera Setup
+	//Camera Setup
 	_CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
 	_CHECK(SDK4GetCurrentIPAddress(hCtrl, ip, &size));
 #ifdef debug

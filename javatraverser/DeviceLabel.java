@@ -167,17 +167,17 @@ public class DeviceLabel extends DeviceComponent
       checkB.setSelected(is_on);
       checkB.addChangeListener(new ChangeListener()
       {
-        public void stateChanged(ChangeEvent e)
-        {
-          boolean state = checkB.isSelected();
-          if (label != null)
-            label.setEnabled(state);
-          if (textF != null && editable)
-          {
-            textF.setEnabled(state);
-            textF.setEditable(state);
-          }
-        }
+	public void stateChanged(ChangeEvent e)
+	{
+	  boolean state = checkB.isSelected();
+	  if (label != null)
+	    label.setEnabled(state);
+	  if (textF != null && editable)
+	  {
+	    textF.setEnabled(state);
+	    textF.setEditable(state);
+	  }
+	}
       });
     }
     if (textF != null && isGridBag)
@@ -194,9 +194,9 @@ public class DeviceLabel extends DeviceComponent
     {
       public void keyTyped(KeyEvent e)
       {
-        reportingChange = true;
-        reportDataChanged(textF.getText());
-        reportingChange = false;
+	reportingChange = true;
+	reportDataChanged(textF.getText());
+	reportingChange = false;
       }
     });
 
@@ -218,10 +218,10 @@ public class DeviceLabel extends DeviceComponent
       return;
     try
     {
-        String textData = Tree.dataToString((Data)data);
-        label.setText(textData);
+	String textData = Tree.dataToString((Data)data);
+	label.setText(textData);
   /*
-        textF.setText(textData);
+	textF.setText(textData);
   */
     }
     catch (Exception exc)
@@ -255,9 +255,9 @@ public class DeviceLabel extends DeviceComponent
     if (textString != null)
     {
       if (textOnly && textString.charAt(0) == '"')
-        textF.setText(textString.substring(1, textString.length() - 1));
+	textF.setText(textString.substring(1, textString.length() - 1));
       else
-        textF.setText(textString);
+	textF.setText(textString);
     }
   }
 */
@@ -274,25 +274,25 @@ public class DeviceLabel extends DeviceComponent
       String textString;
       if (displayEvaluated)
       {
-        try
-        {
-          initialField = textString = Tree.dataToString(subtree.evaluateData(
-              data, 0));
-        }
-        catch (Exception exc)
-        {
-          textString = Tree.dataToString(data);
-        }
+	try
+	{
+	  initialField = textString = Tree.dataToString(subtree.evaluateData(
+	      data, 0));
+	}
+	catch (Exception exc)
+	{
+	  textString = Tree.dataToString(data);
+	}
       }
       else
-        textString = Tree.dataToString(data);
+	textString = Tree.dataToString(data);
       if (textString != null)
       {
 
-        if (textOnly && textString.charAt(0) == '"')
-          label.setText(textString.substring(1, textString.length() - 1));
-        else
-          label.setText(textString);
+	if (textOnly && textString.charAt(0) == '"')
+	  label.setText(textString.substring(1, textString.length() - 1));
+	else
+	  label.setText(textString);
 
        }
     }
@@ -365,9 +365,9 @@ public class DeviceLabel extends DeviceComponent
     if (!initializing)
     {
       JOptionPane.showMessageDialog(null,
-          "You cannot add a component to a Device Label. Please remove the component.",
-                                    "Error adding Device field",
-                                    JOptionPane.WARNING_MESSAGE);
+	  "You cannot add a component to a Device Label. Please remove the component.",
+	                            "Error adding Device field",
+	                            JOptionPane.WARNING_MESSAGE);
       return null;
     }
     return super.add(c);
@@ -378,9 +378,9 @@ public class DeviceLabel extends DeviceComponent
     if (!initializing)
     {
       JOptionPane.showMessageDialog(null,
-          "You cannot add a component to a Device Label. Please remove the component.",
-                                    "Error adding Device field",
-                                    JOptionPane.WARNING_MESSAGE);
+	  "You cannot add a component to a Device Label. Please remove the component.",
+	                            "Error adding Device field",
+	                            JOptionPane.WARNING_MESSAGE);
       return null;
     }
     return super.add(c);
@@ -391,9 +391,9 @@ public class DeviceLabel extends DeviceComponent
     if (!initializing)
     {
       JOptionPane.showMessageDialog(null,
-          "You cannot add a component to a Device Label. Please remove the component.",
-                                    "Error adding Device field",
-                                    JOptionPane.WARNING_MESSAGE);
+	  "You cannot add a component to a Device Label. Please remove the component.",
+	                            "Error adding Device field",
+	                            JOptionPane.WARNING_MESSAGE);
       return null;
     }
     return super.add(c);

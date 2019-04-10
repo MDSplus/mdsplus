@@ -26,7 +26,7 @@ public class MethodEditor extends JPanel implements Editor
 	jp.add(device_edit);
 	jp.add(method_edit);
     add(jp, BorderLayout.NORTH);
-   	arg_edit = new ArgEditor(this.method.getArguments());
+	arg_edit = new ArgEditor(this.method.getArguments());
 	add(arg_edit, BorderLayout.CENTER);
 	timeout_edit = new LabeledExprEditor("Timeout", new ExprEditor(
 	    this.method.getTimeout(), false));
@@ -49,7 +49,7 @@ public class MethodEditor extends JPanel implements Editor
 
     public void setData(Data data)
     {
-    	this.method = (MethodData) data;
+	this.method = (MethodData) data;
 	if(this.method == null)
 	{
 	    this.method = new MethodData(null, null, null, new Data[0]);
@@ -59,7 +59,7 @@ public class MethodEditor extends JPanel implements Editor
 
     public void setEditable(boolean editable)
     {
-        if(device_edit != null) device_edit.setEditable(editable);
+	if(device_edit != null) device_edit.setEditable(editable);
 	if(method_edit != null) method_edit.setEditable(editable);
 	if(timeout_edit != null) timeout_edit.setEditable(editable);
 	if(arg_edit != null) arg_edit.setEditable(editable);

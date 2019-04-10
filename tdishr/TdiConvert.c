@@ -109,40 +109,40 @@ extern int IsRoprand();
 #ifdef WORDS_BIGENDIAN
 
 #define CONVERT_BINARY_ZETEND(ti,pa,pb,numb,nints) { int i; ti *ip = (ti *)pa; unsigned int *op = (unsigned int *)pb; \
-                   while (numb-- > 0) {for(i=1;i<nints;i++) *op++ = (unsigned int)0; *op++ = (unsigned int)*ip++; }\
-                   status = MDSplusSUCCESS;}
+	           while (numb-- > 0) {for(i=1;i<nints;i++) *op++ = (unsigned int)0; *op++ = (unsigned int)*ip++; }\
+	           status = MDSplusSUCCESS;}
 #define CONVERT_BINARY_SETEND(ti,pa,pb,numb,nints) { int i; ti *ip = (ti *)pa; int *op = (int *)pb; \
-                   while (numb-- > 0) {int extend = (*ip < 0) ? -1 : 0; for(i=1;i<nints;i++) *op++ = extend; *op++ = (int)*ip++; }\
-                   status = MDSplusSUCCESS;}
+	           while (numb-- > 0) {int extend = (*ip < 0) ? -1 : 0; for(i=1;i<nints;i++) *op++ = extend; *op++ = (int)*ip++; }\
+	           status = MDSplusSUCCESS;}
 #define CONVERT_BINARY_SMALLER(pa,pb,numb,lena,lenb) {int i; \
-                   while(numb-- > 0) {for (i=0;i<lenb;i++) *pb++ = pa[i+lena-lenb]; pa += lena;}\
-                   status = MDSplusSUCCESS;}
+	           while(numb-- > 0) {for (i=0;i<lenb;i++) *pb++ = pa[i+lena-lenb]; pa += lena;}\
+	           status = MDSplusSUCCESS;}
 #define CONVERT_BINARY_LARGER_ZEXTEND(pa,pb,numb,lena,lenb) {int i; \
-               while(numb-- > 0) {for (i=0;i<lena;i++) pb[lenb - i - 1] = pa[lena - i - 1];\
-               for (i=lena; i<lenb; i++) pb[lenb - i - 1] = (char)0; pb += lenb; pa += lena;}\
-               status = MDSplusSUCCESS;}
+	       while(numb-- > 0) {for (i=0;i<lena;i++) pb[lenb - i - 1] = pa[lena - i - 1];\
+	       for (i=lena; i<lenb; i++) pb[lenb - i - 1] = (char)0; pb += lenb; pa += lena;}\
+	       status = MDSplusSUCCESS;}
 #define CONVERT_BINARY_LARGER_SEXTEND(pa,pb,numb,lena,lenb) {int i;\
-               while(numb-- > 0) {for (i=0;i<lena;i++) pb[lenb - i - 1] = pa[lena - i - 1];\
-               for (i=lena; i<lenb; i++) pb[lenb - i - 1] = (char)((pa[0] < 0) ? -1 : 0); pb += lenb; pa += lena;}\
-               status = MDSplusSUCCESS;}
+	       while(numb-- > 0) {for (i=0;i<lena;i++) pb[lenb - i - 1] = pa[lena - i - 1];\
+	       for (i=lena; i<lenb; i++) pb[lenb - i - 1] = (char)((pa[0] < 0) ? -1 : 0); pb += lenb; pa += lena;}\
+	       status = MDSplusSUCCESS;}
 #else
 #define CONVERT_BINARY_ZETEND(ti,pa,pb,numb,nints) { int i; ti *ip = (ti *)pa; unsigned int *op = (unsigned int *)pb; \
-                   while (numb-- > 0) {*op++ = (unsigned int)*ip++; for(i=1;i<nints;i++) *op++ = (unsigned int)0;}\
-                   status = MDSplusSUCCESS;}
+	           while (numb-- > 0) {*op++ = (unsigned int)*ip++; for(i=1;i<nints;i++) *op++ = (unsigned int)0;}\
+	           status = MDSplusSUCCESS;}
 #define CONVERT_BINARY_SETEND(ti,pa,pb,numb,nints) { int i; ti *ip = (ti *)pa; int *op = (int *)pb; \
-                   while (numb-- > 0) {int extend = (*ip < 0) ? -1 : 0; *op++ = (int)*ip++; for(i=1;i<nints;i++) *op++ = extend;}\
-                   status = MDSplusSUCCESS;}
+	           while (numb-- > 0) {int extend = (*ip < 0) ? -1 : 0; *op++ = (int)*ip++; for(i=1;i<nints;i++) *op++ = extend;}\
+	           status = MDSplusSUCCESS;}
 #define CONVERT_BINARY_SMALLER(pa,pb,numb,lena,lenb) {int i; \
-                   while(numb-- > 0) {for (i=0;i<lenb;i++) *pb++ = pa[i]; pa += lena;}\
-                   status = MDSplusSUCCESS;}
+	           while(numb-- > 0) {for (i=0;i<lenb;i++) *pb++ = pa[i]; pa += lena;}\
+	           status = MDSplusSUCCESS;}
 #define CONVERT_BINARY_LARGER_ZEXTEND(pa,pb,numb,lena,lenb) {int i; \
-               while(numb-- > 0) {for (i=0;i<lena;i++) *pb++ = *pa++;\
-               for (i=lena; i<lenb; i++) *pb++ = (char)0;}\
-               status = MDSplusSUCCESS;}
+	       while(numb-- > 0) {for (i=0;i<lena;i++) *pb++ = *pa++;\
+	       for (i=lena; i<lenb; i++) *pb++ = (char)0;}\
+	       status = MDSplusSUCCESS;}
 #define CONVERT_BINARY_LARGER_SEXTEND(pa,pb,numb,lena,lenb) {int i;\
-               while(numb-- > 0) {for (i=0;i<lena;i++) *pb++ = *pa++; \
-               for (i=lena; i<lenb; i++) *pb++ = (char)((pa[-1] < 0) ? -1 : 0);}\
-               status = MDSplusSUCCESS;}
+	       while(numb-- > 0) {for (i=0;i<lena;i++) *pb++ = *pa++; \
+	       for (i=lena; i<lenb; i++) *pb++ = (char)((pa[-1] < 0) ? -1 : 0);}\
+	       status = MDSplusSUCCESS;}
 #endif
 
 #define BU_QU(lena,pa,lenb,pb,numb) CONVERT_BINARY_ZETEND(unsigned char,pa,pb,numb,2)
@@ -520,14 +520,14 @@ typedef union {
   {int i=numb; binary_##it *ip=(binary_##it*)pa; binary_##ot *op=(binary_##ot*)pb; \
    binary_##ot zero = {0.0};\
    while (i-- > 0) { if (itype == otype) *op++ = *(binary_##ot *)ip++; else { \
-          binary_##it tmp = *ip++; CvtConvertFloat(&tmp, itype, op++, otype,0);} \
+	  binary_##it tmp = *ip++; CvtConvertFloat(&tmp, itype, op++, otype,0);} \
    *op++ = zero;\
    } status = MDSplusSUCCESS;}
 
 #define COMPLEX_TO_FLOAT(itype,it,pa,otype,ot,pb,numb)  \
   {int i=numb; binary_##it *ip=(binary_##it*)pa; binary_##ot *op=(binary_##ot*)pb; \
    while (i-- > 0) { if (itype == otype) *op++ = *(binary_##ot *)ip++; else { \
-          binary_##it tmp = *ip++; CvtConvertFloat(&tmp, itype, op++, otype,0);} ip++;} status = MDSplusSUCCESS;}
+	  binary_##it tmp = *ip++; CvtConvertFloat(&tmp, itype, op++, otype,0);} ip++;} status = MDSplusSUCCESS;}
 
 #define COMPLEX_TO_COMPLEX(itype,it,pa,otype,ot,pb,numb) FLOAT_TO_FLOAT(itype,it,pa,otype,ot,pb,numb*2)
 
@@ -904,27 +904,27 @@ STATIC_ROUTINE void DOUBLEC_TO_TEXT(int itype, char *pa, char *pb, int numb, int
 
 #define defcase(a,b) case MAXTYPE*DTYPE_##a+DTYPE_##b : a##_##b(lena,pa,lenb,pb,numb); break;
 #define defset(a) \
-        defcase(a,BU) \
-        defcase(a,WU) \
-        defcase(a,LU) \
-        defcase(a,QU) \
-        defcase(a,OU) \
-        defcase(a,B) \
-        defcase(a,W) \
-        defcase(a,L) \
-        defcase(a,Q) \
-        defcase(a,O) \
-        defcase(a,F) \
-        defcase(a,D) \
-        defcase(a,G) \
-        defcase(a,FC) \
-        defcase(a,DC) \
-        defcase(a,GC) \
-        defcase(a,T) \
-        defcase(a,FS) \
-        defcase(a,FT) \
-        defcase(a,FSC) \
-        defcase(a,FTC)
+	defcase(a,BU) \
+	defcase(a,WU) \
+	defcase(a,LU) \
+	defcase(a,QU) \
+	defcase(a,OU) \
+	defcase(a,B) \
+	defcase(a,W) \
+	defcase(a,L) \
+	defcase(a,Q) \
+	defcase(a,O) \
+	defcase(a,F) \
+	defcase(a,D) \
+	defcase(a,G) \
+	defcase(a,FC) \
+	defcase(a,DC) \
+	defcase(a,GC) \
+	defcase(a,T) \
+	defcase(a,FS) \
+	defcase(a,FT) \
+	defcase(a,FSC) \
+	defcase(a,FTC)
 
 EXPORT int TdiConvert(struct descriptor_a *pdin, struct descriptor_a *pdout)
 {

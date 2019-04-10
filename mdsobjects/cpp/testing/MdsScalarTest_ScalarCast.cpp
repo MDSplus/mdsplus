@@ -63,9 +63,9 @@ numeric_cast_test() {
     TEST_EXCEPTION( numeric_cast<T>(min-1), std::underflow_error );
 
     if( numeric_limits<T>::digits < numeric_limits<long double>::digits ) {
-        // IS A COERCION so we can check next of max_f //
-        TEST_EXCEPTION( numeric_cast<T>(max_f+1), std::overflow_error );
-        TEST_EXCEPTION( numeric_cast<T>(min_f-1), std::underflow_error );
+	// IS A COERCION so we can check next of max_f //
+	TEST_EXCEPTION( numeric_cast<T>(max_f+1), std::overflow_error );
+	TEST_EXCEPTION( numeric_cast<T>(min_f-1), std::underflow_error );
     }
 }
 

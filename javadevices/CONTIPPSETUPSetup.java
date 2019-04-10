@@ -13,7 +13,7 @@ public class CONTIPPSETUPSetup extends DeviceSetup {
      * Creates new form CONTIPPSETUPSetup
      */
     public CONTIPPSETUPSetup() {
-        initComponents();
+	initComponents();
     }
 
     /**
@@ -25,50 +25,50 @@ public class CONTIPPSETUPSetup extends DeviceSetup {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        deviceButtons1 = new DeviceButtons();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        jPanel3 = new javax.swing.JPanel();
-        deviceField2 = new DeviceField();
-        deviceField3 = new DeviceField();
+	deviceButtons1 = new DeviceButtons();
+	jPanel1 = new javax.swing.JPanel();
+	jPanel2 = new javax.swing.JPanel();
+	deviceField1 = new DeviceField();
+	jPanel3 = new javax.swing.JPanel();
+	deviceField2 = new DeviceField();
+	deviceField3 = new DeviceField();
 
-        setDeviceProvider("localhost");
-        setDeviceTitle("Probe temperature control setup");
-        setDeviceType("CONTIPPSETUP");
-        setHeight(130);
-        setWidth(550);
+	setDeviceProvider("localhost");
+	setDeviceTitle("Probe temperature control setup");
+	setDeviceType("CONTIPPSETUP");
+	setHeight(130);
+	setWidth(550);
 
-        deviceButtons1.setCheckExpressions(new String[] {});
-        deviceButtons1.setCheckMessages(new String[] {});
-        deviceButtons1.setMethods(new String[] {"start", "stop", "exit"});
-        getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
+	deviceButtons1.setCheckExpressions(new String[] {});
+	deviceButtons1.setCheckMessages(new String[] {});
+	deviceButtons1.setMethods(new String[] {"start", "stop", "exit"});
+	getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel1.setLayout(new java.awt.GridLayout(2, 0));
+	jPanel1.setLayout(new java.awt.GridLayout(2, 0));
 
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Comment:");
-        deviceField1.setNumCols(20);
-        deviceField1.setOffsetNid(1);
-        jPanel2.add(deviceField1);
+	deviceField1.setIdentifier("");
+	deviceField1.setLabelString("Comment:");
+	deviceField1.setNumCols(20);
+	deviceField1.setOffsetNid(1);
+	jPanel2.add(deviceField1);
 
-        jPanel1.add(jPanel2);
+	jPanel1.add(jPanel2);
 
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Set Point Temperature (C):");
-        deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(8);
-        jPanel3.add(deviceField2);
+	deviceField2.setIdentifier("");
+	deviceField2.setLabelString("Set Point Temperature (C):");
+	deviceField2.setNumCols(4);
+	deviceField2.setOffsetNid(8);
+	jPanel3.add(deviceField2);
 
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Sample Rate (Hz):");
-        deviceField3.setNumCols(5);
-        deviceField3.setOffsetNid(5);
-        jPanel3.add(deviceField3);
+	deviceField3.setIdentifier("");
+	deviceField3.setLabelString("Sample Rate (Hz):");
+	deviceField3.setNumCols(5);
+	deviceField3.setOffsetNid(5);
+	jPanel3.add(deviceField3);
 
-        jPanel1.add(jPanel3);
+	jPanel1.add(jPanel3);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
+	getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;

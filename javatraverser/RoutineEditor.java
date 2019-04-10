@@ -28,7 +28,7 @@ public class RoutineEditor extends JPanel implements Editor
 	jp.add(image_edit);
 	jp.add(routine_edit);
 	add(jp, "North");
-   	arg_edit = new ArgEditor(this.routine.getArguments());
+	arg_edit = new ArgEditor(this.routine.getArguments());
 	add(arg_edit, "Center");
 	timeout_edit = new LabeledExprEditor("Timeout", new ExprEditor(
 	    this.routine.getTimeout(), false));
@@ -65,7 +65,7 @@ public class RoutineEditor extends JPanel implements Editor
     }
     public void setEditable(boolean editable)
     {
-        if(image_edit != null) image_edit.setEditable(editable);
+	if(image_edit != null) image_edit.setEditable(editable);
 	if(routine_edit != null) routine_edit.setEditable(editable);
 	if(timeout_edit != null) timeout_edit.setEditable(editable);
 	if(arg_edit != null) arg_edit.setEditable(editable);

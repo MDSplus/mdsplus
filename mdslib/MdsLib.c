@@ -512,7 +512,7 @@ static inline int MdsValueVargs(va_list incrmtr, int connection, char *expressio
 	  status = 0;
 	  break;
 	}
-        if (status & 1)
+	if (status & 1)
 	  MdsValueSet(dscAnswer, GetDescriptorCache()[ansdescr - 1], length);
       }
       free(dnew);
@@ -560,8 +560,8 @@ static inline int MdsValueVargs(va_list incrmtr, int connection, char *expressio
 	status = TdiCvt(&xd2, dsc, &xd3 MDS_END_ARG);
 	  /**  get string length right if scalar string (if answer descriptor has longer
 	   **  length than returned value, then make sure the length is the length of the
-           **  returned value
-           **/
+	   **  returned value
+	   **/
 	if ((xd3.pointer)->dtype == DTYPE_CSTRING && (xd3.pointer->class != CLASS_A))
 	  (xd3.pointer)->length = MIN(templen, (xd3.pointer)->length);
       }
@@ -788,8 +788,8 @@ static inline int MdsValue2Vargs(va_list incrmtr, int connection, char *expressi
 	status = TdiCvt(&xd2, dsc, &xd3 MDS_END_ARG);
 	  /**  get string length right if scalar string (if answer descriptor has longer
 	   **  length than returned value, then make sure the length is the length of the
-           **  returned value
-           **/
+	   **  returned value
+	   **/
 	if ((xd3.pointer)->dtype == DTYPE_CSTRING && (xd3.pointer->class != CLASS_A))
 	  (xd3.pointer)->length = MIN(templen, (xd3.pointer)->length);
       }

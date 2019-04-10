@@ -46,7 +46,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    \param name [in] Value to match with the content of the first property of the node found based on category.
    \param list [in] Pointer to a dclNodList which describes an array of xmlNodes
    \param exactFound [in,out] Pointer to an int flag which is set if the name parameter exactly matches the
-          property of the xml node.
+	  property of the xml node.
 
    *** NOTE: This is only applicable for use on xml nodes which look like <category name="name"/> ***
    *** NOTE: This routine recurses on node siblings and children. ****
